@@ -1,0 +1,181 @@
+(************************************************************************
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Frederic Blanqui, 2005-02-17
+
+rewriting
+************************************************************************)
+
+(* $Id: ATrs.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+
+Set Implicit Arguments.
+
+Section S.
+
+Require Export ASignature.
+
+Variable Sig : Signature.
+
+Require Export ATerm.
+
+Notation term := (term Sig).
+Notation terms := (vector term).
+
+(***********************************************************************)
+(* rule *)
+
+Record rule : Set := mkRule {
+  lhs : term;
+  rhs : term
+}.
+
+Notation rules := (list rule).
+
+(***********************************************************************)
+(* rewrite step *)
+
+Variable R : rules.
+
+Require Export AContext.
+Require Export ASubstitution.
+
+Definition red (t1 t2 : term) :=
+  exists l, exists r, exists c, exists s,
+  In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
+
+Definition hd_red (t1 t2 : term) :=
+  exists l, exists r, exists s,
+  In (mkRule l r) R /\ t1 = app s l /\ t2 = app s r.
+
+Definition int_red (t1 t2 : term) :=
+  exists l, exists r, exists c, exists s, c <> Hole
+  /\ In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
+
+Ltac redtac := repeat
+  match goal with
+    | H : red ?t ?u |- _ =>
+      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
+      let s := fresh "s" in let h1 := fresh in
+      (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
+      destruct H as [s]; destruct H as [H h1]; destruct h1)
+    | H : transp red _ _ |- _ =>
+      unfold transp in H; redtac
+    | H : hd_red ?t ?u |- _ =>
+      let l := fresh "l" in let r := fresh "r" in
+      let s := fresh "s" in let h1 := fresh in
+      (unfold hd_red in H; destruct H as [l]; destruct H as [r];
+      destruct H as [s]; destruct H as [H h1]; destruct h1)
+    | H : transp hd_red _ _ |- _ =>
+      unfold transp in H; redtac
+    | H : int_red ?t ?u |- _ =>
+      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
+      let s := fresh "s" in let h1 := fresh in let h2 := fresh in
+      (unfold int_red in H; destruct H as [l]; destruct H as [r];
+      destruct H as [c]; destruct H as [s]; destruct H as [H h1];
+      destruct h1 as [h1 h2]; destruct h2)
+    | H : transp int_red _ _ |- _ =>
+      unfold transp in H; redtac
+  end.
+
+Lemma red_rule : forall l r c s, In (mkRule l r) R ->
+  red (fill c (app s l)) (fill c (app s r)).
+
+Proof.
+intros. unfold red. exists l. exists r. exists c. exists s. auto.
+Qed.
+
+Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
+  red (app s l) (app s r).
+
+Proof.
+intros. unfold red. exists l . exists r. exists (@Hole Sig). exists s. auto.
+Qed.
+
+Lemma red_fill : forall c t u,
+  red t u -> red (fill c t) (fill c u).
+
+Proof.
+intros. redtac. unfold red.
+exists l. exists r. exists (AContext.comp c c0). exists s. split. assumption.
+subst t. subst u. do 2 rewrite fill_comp. auto.
+Qed.
+
+Lemma red_subterm : forall u u' t, red u u' -> subterm_eq u t
+  -> exists t', red t t' /\ subterm_eq u' t'.
+
+Proof.
+unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u. subst u'.
+exists (fill (AContext.comp d c) (app s r)). split.
+exists l. exists r. exists (AContext.comp d c). exists s. split. assumption.
+rewrite fill_comp. auto. exists d. rewrite fill_comp. refl.
+Qed.
+
+Lemma int_red_fun : forall f ts v, int_red (Fun f ts) v
+  -> exists i, exists vi : terms i, exists t, exists j, exists vj : terms j,
+    exists h, exists t', ts = Vcast (Vapp vi (Vcons t vj)) h
+    /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red t t'.
+
+Proof.
+intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. clear H. simpl in H1.
+Funeqtac. exists i. exists v0. exists (fill c (app s l)). exists j. exists v1.
+exists e. exists (fill c (app s r)). split. assumption. split. assumption.
+unfold red. exists l. exists r. exists c. exists s. auto.
+Qed.
+
+Lemma int_red_incl_red : inclusion int_red red.
+
+Proof.
+unfold inclusion, int_red. intros. decomp H. subst x. subst y. apply red_rule.
+assumption.
+Qed.
+
+(***********************************************************************)
+(* rewriting vectors of terms *)
+
+Require Export VecOrd.
+
+Definition terms_lt := Vlt_prod (transp red).
+
+Lemma Vlt_prod_fun : forall f ts ts', Vlt_prod (transp red) ts ts'
+  -> transp int_red (Fun f ts) (Fun f ts').
+
+Proof.
+intros. deduce (Vlt_prod_lt H). do 8 destruct H0. destruct H1. redtac.
+subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
+exists l. exists r. exists (Cont f x4 x0 c x3). exists s. split. discriminate.
+auto.
+Qed.
+
+End S.
+
+Implicit Arguments int_red_fun [Sig R f ts v].
+
+(***********************************************************************)
+(* tactics *)
+
+Ltac redtac := repeat
+  match goal with
+    | H : red ?R ?t ?u |- _ =>
+      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
+      let s := fresh "s" in let h1 := fresh in
+      (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
+      destruct H as [s]; destruct H as [H h1]; destruct h1)
+    | H : transp (red _) _ _ |- _ =>
+      unfold transp in H; redtac
+    | H : hd_red ?R ?t ?u |- _ =>
+      let l := fresh "l" in let r := fresh "r" in
+      let s := fresh "s" in let h1 := fresh in
+      (unfold hd_red in H; destruct H as [l]; destruct H as [r];
+      destruct H as [s]; destruct H as [H h1]; destruct h1)
+    | H : transp (hd_red _) _ _ |- _ =>
+      unfold transp in H; redtac
+    | H : int_red ?R ?t ?u |- _ =>
+      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
+      let s := fresh "s" in let h1 := fresh in let h2 := fresh in
+      (unfold int_red in H; destruct H as [l]; destruct H as [r];
+      destruct H as [c]; destruct H as [s]; destruct H as [H h1];
+      destruct h1 as [h1 h2]; destruct h2)
+    | H : transp (int_red _) _ _ |- _ =>
+      unfold transp in H; redtac
+  end.

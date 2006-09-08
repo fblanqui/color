@@ -1,0 +1,35 @@
+CoLoR, a Coq library on rewriting and termination
+-------------------------------------------------
+
+The aim of this Coq library (Coq is a proof assistant developped at
+INRIA available at http://coq.inria.fr/) is to provide the necessary
+formal basis for certifying the termination proof candidates searched
+and built by tools like CiME, AProVE, TTT, Cariboo, etc.
+
+Among other things, it includes:
+
+- Util/List: a library on lists
+- Util/Vector: a library on vectors
+- Util/Multiset: a library on finite multisets
+- Util/Polynom: a library on integer polynomials with multiple variables
+
+- Term/Varyadic: a library on varyadic terms
+- Term/WithArity: a library on algebraic terms with symbols of fixed arity
+- Term/SimpleType: a library on simply typed lambda-terms with de Bruijn indices
+
+- PolyInt: a proof of the termination criterion based on polynomial interpretations
+- DP: a proof of the basic dependency pairs theorem
+- Filter: a library on arguments filterings
+- MPO: multiset path ordering
+- RPO: recursive path ordering with lexicographic and multiset statuses
+- Conversion: conversions between term structures
+- HORPO: a proof the well-foundedness of HORPO
+
+The library is likely to evolve and include more developments quickly.
+For more recent informations, see the CoLoR web page http://color.loria.fr/.
+
+Contributions to this project are very welcome!
+
+LICENSE: this file describes the license governing this library.
+COPYRIGHTS: this file describes the copyrights holders.
+INSTALL: this file describes a compilation procedure.
