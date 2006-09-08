@@ -1,0 +1,55 @@
+06-07-21: first release of Rainbow
+- Util/Multiset: parameter eqA_dec added to functor arguments
+- RPO: the module structure has been flattened
+- Util/Vector: V0_eq redefined with Vcast to make it computable
+  (the previous version was using the axiom eq_rect_eq)
+- Util/Polynom: tactics for monotony and termination [Hinderer]
+
+06-05-10:
+- HORPO: higher-order recursive path ordering, by Adam Koprowski
+- Term/SimpleType: simply typed lambda-terms with de Bruijn indices, by Adam Koprowski
+- Util/List: more functions and lemmas (nth element, initial segment, etc.)
+- Util/Multiset: a few modifications and additions (decidability, etc.)
+
+06-01-10:
+- RPO: recursive path ordering with statuses, by Solange Coupet-Grimal and William Delobel
+- Util/Multiset: additions in MultisetOrder, MultisetListOrder
+- Util/List: additions in ListUtil
+- Util/Relation: additions in WfUtil
+- MPO/VMPO: elimination of irreflexivity hypothesis
+- Util/Multiset/MultisetListOrder: elimination of transitivity hypothesis in HAccTermsToTermlist
+- Util/List: creation of LexicographicOrder
+- Util/Relation: creation of Preorder
+
+05-12-06:
+- Conversion/VTerm_of_ATerm: conversion from algebraic terms to varyadic terms
+- Term/Varyadic: creation of VContext, VSubstitution, VTrs
+
+05-10-07:
+- MPO: multiset path ordering, by Solange Coupet-Grimal and William Delobel
+- Term/Varyadic: terms without arity
+- Util/Multiset: creation of MultisetListOrder
+- Util/Multiset: proof of Acc_iso in MultisetAuxiliary
+- Util: additions in Multiset
+
+05-09-19:
+- Licence: CeCILL version 2
+- Util/Multiset: finite multisets and proof that the multiset extension of an ordering
+  preserves well-foundedness, by Adam Koprowski
+- Util: creation of Bool/BoolUtil, Pair/PairUtil, Logic/EqUtil
+- Util: additions in ListUtil, LogicUtil
+
+05-06-10:
+- Filter: arguments filtering
+- Term/WithArity: bug fixed in ARedOrd.v/manna_ness2
+- Term/WithArity: renamings in ARelation
+- Term/WithArity: additions in ARelation, ASubstitution, ATrs, ARedOrd
+- Util/Vector: creation of VecBool, VecFilter
+- Util: additions in LogicUtil, NatUtil, RelUtil, WfUtil, VecUtil
+
+05-03-14: first release of CoLoR
+- Util/Vector: a library on vectors
+- Util/Polynom: a library on integer polynomials with multiple variables
+- Term/WithArity: a library on algebraic terms with symbols of fixed arity
+- PolyInt: a proof of the termination criterion based on polynomial interpretations
+- DP: a proof of the basic dependancy pairs theorem

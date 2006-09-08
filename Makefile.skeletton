@@ -1,0 +1,21 @@
+# CoLoR, a Coq library on rewriting and termination.
+# See the COPYRIGHTS and LICENSE files.
+#
+# - Frederic Blanqui, 2005-02-03
+
+SHELL := /bin/sh
+
+MAKEFLAGS := -r
+
+.SUFFIXES:
+
+.PHONY: default
+
+SUBDIRS :=
+
+default:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d; done
+
+%:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d $*; done
+
