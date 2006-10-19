@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 monotone polynomials
 ************************************************************************)
 
-(* $Id: MonotonePolynom.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: MonotonePolynom.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -26,7 +26,7 @@ Ltac montacrec :=
     | H:lt _ O |- _ => elimtype False; apply (lt_n_O _ H)
     | H:lt ?i (S _) |- _ =>
       destruct i;
-	[(compute; (refl | idtac))
+	[(compute; (refl || idtac))
           | (generalize (lt_S_n H); intro; montacrec)]
     |  _ => idtac
   end.

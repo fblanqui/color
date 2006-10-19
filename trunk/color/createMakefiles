@@ -23,7 +23,7 @@ mkmf () {
 mkcoqmf () {
   echo create $dir/Makefile ...
   cd $dir
-  coq_makefile -R $cwd Rewriting [^\.]*.v > Makefile
+  coq_makefile -R $Rdir Rewriting [^\.]*.v > Makefile
   cd $cwd
 }
 
@@ -34,7 +34,7 @@ mkmfsub () {
   dir=$root; mkmf
   for d in $subdirs
   do
-    dir=$root/$d; mkcoqmf
+    dir=$root/$d; Rdir=../..; mkcoqmf
   done
 }
 
@@ -52,6 +52,7 @@ mkmfsub
 
 # simple directories
 
+Rdir=..
 for dir in PolyInt DP Filter MPO Conversion RPO HORPO
 do
   mkcoqmf

@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 ************************************************************************)
 
-(* $Id: TermsConv.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -801,13 +801,13 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros i j; intros; destruct mn; firstorder.
   Qed.
 
-  Lemma conv_env_trans : forall M N P mn np, conv_env M N mn -> conv_env N P np ->
-    conv_env M P (envSubst_compose mn np).
+  Lemma conv_env_trans : forall M N P mn np,
+    conv_env M N mn -> conv_env N P np -> conv_env M P (envSubst_compose mn np).
 
   Proof.
     intros; destruct mn; destruct np.
     intros x y xy A; destruct xy as [z [xz zy]].
-    split; intro.
+    split; intro. Set Firstorder Depth 5.
     set (hint := H x z xz); firstorder.
     set (hint := H0 z y zy); firstorder.
   Qed. 
