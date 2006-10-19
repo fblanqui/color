@@ -8,12 +8,11 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 ************************************************************************)
 
-(* $Id: LexOrder.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.1 2006-10-19 14:51:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Import RelExtras.
-Require Import ListExtras.
 Require Import Notations.
 Require Import Setoid.
 
