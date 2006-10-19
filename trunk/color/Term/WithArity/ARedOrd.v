@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 ************************************************************************)
 
-(* $Id: ARedOrd.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ARedOrd.v,v 1.2 2006-10-19 14:51:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -35,9 +35,9 @@ Lemma manna_ness : reduction_ordering succ -> compatible succ R -> wf (red R).
 
 Proof.
 intros (Hwf, (Hsubst, Hcont)) Hcomp.
-apply wf_incl with (R2 := transp succ). 2: assumption.
+apply wf_incl with (R2 := transp succ). 2: exact Hwf.
 apply incl_transp. unfold inclusion. apply comp_rewrite_ord.
-split; assumption. assumption.
+split; [exact Hsubst | exact Hcont]. exact Hcomp.
 Qed.
 
 End manna_ness.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.2 2006-10-19 14:51:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -51,8 +51,8 @@ Lemma comp_rewrite_ord : forall R, rewrite_ordering -> compatible R
   -> forall t u, red R t u -> succ t u.
 
 Proof.
-intros. redtac. subst t. subst u. destruct H. apply H2. apply H. apply H0.
-assumption.
+intros R (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
+apply Hcont. apply Hsubs. apply Hcomp. exact H.
 Qed.
 
 Lemma comp_head_rewrite_ord : forall R, substitution_closed -> compatible R
@@ -75,12 +75,11 @@ Qed.
 
 End basic.
 
-(*Record Rewrite_ordering : Type := mkRewrite_ordering {
-  rord_rel :> relation term;
-  rord_trans : transitive rord_rel;
-  rord_subs : substitution_closed rord_rel;
-  rord_cont : context_closed rord_rel
-}.*)
+Record Rewrite_ordering : Type := mkRewrite_ordering {
+  rew_ord_rel :> relation term;
+  rew_ord_subs : substitution_closed rew_ord_rel;
+  rew_ord_cont : context_closed rew_ord_rel
+}.
 
 Lemma comp_preserv : forall (succ succ' : relation term) R,
   (forall l r, In (mkRule l r) R -> succ l r -> succ' l r)
@@ -114,6 +113,18 @@ Definition reduction_pair :=
   /\ reflexive succ_eq /\ transitive succ_eq /\ rewrite_ordering succ_eq.
 
 End reduction_pair.
+
+Record Reduction_pair : Type := mkReduction_pair {
+  rp_succ : relation term;
+  rp_succ_eq : relation term;
+  rp_subs : substitution_closed rp_succ;
+  rp_subs_eq : substitution_closed rp_succ_eq;
+  rp_cont : weak_context_closed rp_succ rp_succ_eq;
+  rp_cont_eq : context_closed rp_succ_eq;
+  rp_comp : inclusion (compose rp_succ_eq rp_succ) rp_succ;
+  rp_succ_eq_refl : reflexive rp_succ_eq;
+  rp_succ_eq_trans : transitive rp_succ_eq
+}.
 
 (***********************************************************************)
 (* reflexive closure *)
