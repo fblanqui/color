@@ -9,7 +9,7 @@ operating system with the following commands:
 - GNU bash version 3.00 http://www.gnu.org/software/bash/
 - GNU sed version 4.1.4 http://www.gnu.org/software/sed/
 
-For compiling CoLoR, use the command "make compile".
+For compiling CoLoR, use the command "make all".
 
 For compiling the html version of CoLoR, use the command "make doc".
 

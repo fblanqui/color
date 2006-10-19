@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 ************************************************************************)
 
-(* $Id: ZUtil.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -67,11 +67,18 @@ Proof.
 induction n; simpl. refl. rewrite IHn. refl.
 Qed.
 
+Lemma power_succ : forall x n, power x (S n) = x * power x n.
+
+Proof.
+refl.
+Qed.
+
 Lemma power_mult : forall x n1 n2, power x (n1*n2) = power (power x n1) n2.
 
 Proof.
 induction n1; induction n2; intros. refl. rewrite power_one. refl.
-rewrite mult_0_r. refl. rewrite <- mult_n_Sm. rewrite power_plus. rewrite IHn2. ring.
+rewrite mult_0_r. refl. rewrite power_succ. rewrite <- IHn2.
+rewrite <- mult_n_Sm. simpl. repeat rewrite power_plus. simpl. ring.
 Qed.
 
 Lemma pos_power : forall x n, 0 <= x -> 0 <= power x n.

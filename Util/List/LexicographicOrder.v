@@ -5,11 +5,11 @@ See the COPYRIGHTS and LICENSE files.
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 
 Definition and properties of lexicographic order on lists of elements
-of a setoid In particular, proofs that lex 'transmits' strict partial
-order property, and is a lifting
+of a setoid. In particular, proofs that lex 'transmits' strict partial
+order property, and is a lifting.
 ************************************************************************)
 
-(* $Id: LexicographicOrder.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: LexicographicOrder.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
 
 Require Export RelExtras.
 Require Export ListUtil.
@@ -27,7 +27,8 @@ Module LexOrder (ES : Eqset).
       | lex2 : forall (h : ES.A) (l l' : list ES.A),
 	lex l l' -> lex (h::l) (h::l').
     
-    Lemma lex_length : forall ss ts : list ES.A, lex ss ts -> length ss = length ts.
+    Lemma lex_length : forall ss ts : list ES.A,
+      lex ss ts -> length ss = length ts.
 
     Proof.
       induction ss as [ | s ss IHss]; intros ts Hlex.
@@ -38,8 +39,10 @@ Module LexOrder (ES : Eqset).
     Qed.
     
     Lemma SPO_to_lex_SPO : forall (ss : list ES.A), 
-      (forall s, In s ss -> (forall t u, r s t -> r t u -> r s u) /\ (r s s -> False)) ->
-      (forall (ts us : list ES.A), lex ss ts -> lex ts us -> lex ss us) /\ (lex ss ss -> False).
+      (forall s, In s ss ->
+        (forall t u, r s t -> r t u -> r s u) /\ (r s s -> False)) ->
+      (forall (ts us : list ES.A),
+        lex ss ts -> lex ts us -> lex ss us) /\ (lex ss ss -> False).
 
     Proof.
       induction ss as [ | s ss IHss]; intro Hss; split.
@@ -77,7 +80,8 @@ Module LexOrder (ES : Eqset).
       (forall s, In s ss -> r s s -> False) -> lex ss ss -> False.
 
     Proof.
-      intro ss; induction ss as [ | h ss IHss]; intros Hss Hlex; inversion Hlex; subst.
+      intro ss; induction ss as [ | h ss IHss]; intros Hss Hlex;
+        inversion Hlex; subst.
       apply Hss with h; try left; trivial.
       apply IHss; trivial.
       intros s s_in_ss; apply Hss; try right; trivial.

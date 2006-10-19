@@ -9,7 +9,7 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 ************************************************************************)
 
-(* $Id: RelExtras.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: RelExtras.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -44,7 +44,8 @@ Section StrictOrder.
   Qed.
 
   Variable eq : relation.
-  Variable Req_compat : forall x x' y y', eq x x' -> eq y y' -> R x y -> R x' y'.
+  Variable Req_compat : forall x x' y y',
+    eq x x' -> eq y y' -> R x y -> R x' y'.
   Variable eq_setoid : Setoid_Theory A eq.
 
   Lemma so_strict : forall x y, eq x y -> R x y -> False.
@@ -60,7 +61,6 @@ Section StrictOrder.
   Qed.
 
 End StrictOrder.
-
 
 Module Type Eqset.
 
@@ -124,12 +124,12 @@ Module Type Ord.
 
   Notation "X > Y" := (gtA X Y) : sets_scope.
 
-  Axiom gtA_eqA_compat : forall x x' y y', x =A= x' -> y =A= y' -> x > y -> x' > y'.
+  Axiom gtA_eqA_compat : forall x x' y y',
+    x =A= x' -> y =A= y' -> x > y -> x' > y'.
 
   Hint Resolve gtA_eqA_compat : sets.
 
 End Ord.
-
 
 Module OrdLemmas (P : Ord).
 
@@ -158,15 +158,18 @@ Module OrdLemmas (P : Ord).
 
   Proof.
     split. eauto with sets.
-    cut (x2 =A= x1). intro. eauto with sets. apply (Seq_sym _ _ sid_theoryA). assumption.
+    cut (x2 =A= x1). intro. eauto with sets.
+    apply (Seq_sym _ _ sid_theoryA). assumption.
   Qed.
 
   Add Morphism AccA : AccA_morph.
 
   Proof.
     intros a b eq_ab. split.
-    intro acc_a. inversion acc_a. constructor. intros. apply H. rewrite eq_ab. assumption.
-    intros acc_b. inversion acc_b. constructor. intros. apply H. rewrite <- eq_ab. assumption.
+    intro acc_a. inversion acc_a. constructor. intros.
+    apply H. rewrite eq_ab. assumption.
+    intros acc_b. inversion acc_b. constructor. intros.
+    apply H. rewrite <- eq_ab. assumption.
   Qed.
 
 End OrdLemmas.
@@ -240,7 +243,8 @@ Section Transitive_Closure.
   Variable eqA : A -> A -> Prop.
 
   Axiom sid_theoryA : Setoid_Theory A eqA.
-  Axiom R_eqA_comp : forall x y x' y', eqA x x' -> eqA y y' -> R x y -> R x' y'.
+  Axiom R_eqA_comp : forall x y x' y',
+    eqA x x' -> eqA y y' -> R x y -> R x' y'.
   Axiom R_so : strict_order R.
 
   Hint Resolve R_eqA_comp.
@@ -282,7 +286,8 @@ Section Transitive_Closure.
   Variable R' : A -> A -> Prop.
   Variable R'sub : inclusion A R' R.
   
-  Lemma trans_clos_inclusion : forall a b, clos_trans A R' a b -> clos_trans A R a b.
+  Lemma trans_clos_inclusion : forall a b,
+    clos_trans A R' a b -> clos_trans A R a b.
 
   Proof.
     intros a b a_b.
@@ -351,7 +356,8 @@ Section Accessibility.
     Variable T : B -> B -> Prop.
     Variable z : B.
     Variable iso : A -> B -> Prop.
-    Variable iso_comp : forall x y' x',	iso x x' -> T y' x' -> {y: A | R y x & iso y y'}.
+    Variable iso_comp : forall x y' x',
+      iso x x' -> T y' x' -> {y: A | R y x & iso y y'}.
 
     Lemma Acc_iso : iso x z -> Acc R x -> Acc T z.
 
@@ -399,7 +405,8 @@ Section Transposition.
     split; auto.
   Qed.
     
-  Lemma transp_transp_wf : well_founded R -> well_founded (transp A (transp A R)).
+  Lemma transp_transp_wf :
+    well_founded R -> well_founded (transp A (transp A R)).
 
   Proof.
     intros R_wf x.
@@ -415,7 +422,8 @@ Section Specif.
   Inductive sigPS2 (A: Set) (P: A -> Prop) (Q: A -> Set) : Type :=
     existPS2: forall x:A, P x -> Q x -> sigPS2 (A:=A) P Q.
 
-  Notation "{ x : A # P & Q }" := (sigPS2 (fun x:A => P) (fun x:A => Q)) : type_scope.
+  Notation "{ x : A # P & Q }"
+    := (sigPS2 (fun x:A => P) (fun x:A => Q)) : type_scope.
 
   Variable A : Set.
   Variables P Q : A -> Prop.

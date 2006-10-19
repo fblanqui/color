@@ -9,7 +9,7 @@ MAKEFLAGS := -r
 
 .SUFFIXES:
 
-.PHONY: clean clean-doc compile config default dist doc dump html install-dist install-doc tags
+.PHONY: clean clean-doc all config default dist doc dump html install-dist install-doc tags
 
 SUBDIRS := Util Term PolyInt DP Filter MPO Conversion RPO HORPO
 
@@ -55,7 +55,7 @@ config:
 	./createMakefiles
 	$(MAKE) depend
 
-compile: config
+all: config
 	$(MAKE)
 
 %:

@@ -8,7 +8,7 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 ************************************************************************)
 
-(* $Id: LexOrder.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -72,7 +72,8 @@ Section LexPair.
 
   Definition lp_pair := (lp_L * lp_R).
 
-  Definition lp_eqPair (x y: lp_pair) := lp_eqL (fst x) (fst y) /\ lp_eqR (snd x) (snd y).
+  Definition lp_eqPair (x y: lp_pair) :=
+    lp_eqL (fst x) (fst y) /\ lp_eqR (snd x) (snd y).
 
   (* --- Definition of an order *)
   Reserved Notation "a >lex b" (at level 40).
@@ -135,8 +136,10 @@ Section LexPair.
 
   Proof.
     intros p p' p_p'. split.
-    intro acc_p. inversion acc_p. constructor. intros q q_p'. apply H. rewrite p_p'. trivial.
-    intro acc_p'. inversion acc_p'. constructor. intros q q_p. apply H. rewrite <- p_p'. trivial.
+    intro acc_p. inversion acc_p. constructor. intros q q_p'.
+    apply H. rewrite p_p'. trivial.
+    intro acc_p'. inversion acc_p'. constructor. intros q q_p.
+    apply H. rewrite <- p_p'. trivial.
   Qed.
 
 (* ===============================================================
@@ -184,7 +187,8 @@ Section LexPair.
      (* case 3 *)
     constructor 1. setoid_rewrite eq_la. setoid_rewrite eq1. assumption.
      (* case 4 *)
-    constructor 2. setoid_rewrite eq_la. setoid_rewrite <- eq_ra. rewrite eq1. auto with sets.
+    constructor 2. setoid_rewrite eq_la. setoid_rewrite <- eq_ra. rewrite eq1.
+    auto with sets.
     apply (sord_trans lp_gtR_so lb lb' rb'); 
       [ trivial 
       | rewrite eq2; trivial ].
@@ -200,7 +204,7 @@ Section LexPair.
 
 (* =================================================================
      Proof of the fact that lexicographic order is well-founded (if 
-   so are the underlaying orders)
+   so are the underlying orders)
    ================================================================= *)
   Section LexProd_WellFounded.
 
@@ -226,7 +230,7 @@ Section LexPair.
     apply wf_l; auto with sets.
     fold lp_Acc_LexProd.
 (* #NN#, Coq error!, following does not work: *)
-(*    seteoid_replace (a', b') with (l, b'). *)
+(*    setoid_replace (a', b') with (l, b'). *)
     cut (lp_eqPair (a',b') (l,b')).
     intro. apply (proj2 (lp_AccLexProd_morph H4)). apply wf_r. assumption.
     auto with sets.
@@ -283,9 +287,11 @@ Module LexicographicOrder (A_ord B_ord : Ord).
 
   Proof.
     intros p p' pp' q q' qq'. split.
-    intro pq. unfold LexProd_Gt. eapply lp_LexProdGt_morph with (lp_eqR := eqR); eauto with sets.
+    intro pq. unfold LexProd_Gt.
+    eapply lp_LexProdGt_morph with (lp_eqR := eqR); eauto with sets.
     cut (eqPair p' p). intro. cut (eqPair q' q). intro.
-    intro p'q'. unfold LexProd_Gt. eapply lp_LexProdGt_morph with (lp_eqR := eqR); eauto with sets.
+    intro p'q'. unfold LexProd_Gt.
+    eapply lp_LexProdGt_morph with (lp_eqR := eqR); eauto with sets.
     apply Seq_sym; auto with sets. exact sid_theory_pair.
     apply Seq_sym; auto with sets. exact sid_theory_pair.
   Qed.
@@ -450,14 +456,16 @@ End Well_foundedness.
     inversion_clear ord; inversion_clear H; auto.
   Qed.
 
-  Lemma LexProd3_1 : forall a a' b b' c c', gtL a a' -> (a, b, c) >lex3 (a', b', c').
+  Lemma LexProd3_1 : forall a a' b b' c c',
+    gtL a a' -> (a, b, c) >lex3 (a', b', c').
 
   Proof.
     intros a a' b b' c c' a_a'.
     constructor 1; constructor 1; trivial.
   Qed.
 
-  Lemma LexProd3_2 : forall a a' b b' c c', eqL a a' -> gtM b b' -> (a, b, c) >lex3 (a', b', c').
+  Lemma LexProd3_2 : forall a a' b b' c c',
+    eqL a a' -> gtM b b' -> (a, b, c) >lex3 (a', b', c').
 
   Proof.
     intros a a' b b' c c' a_a' b_b'.
@@ -482,7 +490,8 @@ End Well_foundedness.
     trivial.
   Qed.
 
-  Lemma LexProd3_lt_1 : forall a a' b b' c c', gtL a' a -> (a, b, c) <lex3 (a', b', c').
+  Lemma LexProd3_lt_1 : forall a a' b b' c c',
+    gtL a' a -> (a, b, c) <lex3 (a', b', c').
 
   Proof.
     intros a a' b b' c c' a_a'.
@@ -490,7 +499,8 @@ End Well_foundedness.
     apply LexProd3_1; trivial.
   Qed.
 
-  Lemma LexProd3_lt_2 : forall a a' b b' c c', eqL a' a -> gtM b' b -> (a, b, c) <lex3 (a', b', c').
+  Lemma LexProd3_lt_2 : forall a a' b b' c c',
+    eqL a' a -> gtM b' b -> (a, b, c) <lex3 (a', b', c').
 
   Proof.
     intros a a' b b' c c' a_a' b_b'.
@@ -498,8 +508,8 @@ End Well_foundedness.
     apply LexProd3_2; trivial.
   Qed.
 
-  Lemma LexProd3_lt_3 : forall a a' b b' c c', eqL a' a -> eqM b' b -> gtR c' c ->
-    (a, b, c) <lex3 (a', b', c').
+  Lemma LexProd3_lt_3 : forall a a' b b' c c',
+    eqL a' a -> eqM b' b -> gtR c' c -> (a, b, c) <lex3 (a', b', c').
 
   Proof.
     intros a a' b b' c c' a_a' b_b' c_c'.
