@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 ************************************************************************)
 
-(* $Id: AInterpretation.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -29,7 +29,8 @@ Notation "'args' f" := (terms (arity f)) (at level 70).
 Require Export NaryFunction.
 
 Record interpretation : Type := mkInterpretation {
-  domain : Set;
+  domain :> Set;
+  some_elt : domain;
   fint : forall f : Sig, naryFunction domain (arity f)
 }.
 

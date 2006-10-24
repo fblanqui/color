@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 ************************************************************************)
 
-(* $Id: ASubstitution.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,7 +32,7 @@ Notation Var := (@Var Sig).
 
 Require Export AInterpretation.
 
-Notation I0 := (mkInterpretation (@Fun Sig)).
+Notation I0 := (mkInterpretation (Var 0) (@Fun Sig)).
 
 Definition substitution := valuation I0.
 

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 ************************************************************************)
 
-(* $Id: APolyInt.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -114,7 +114,7 @@ End coef_pos.
 (* interpretation *)
 
 Definition Int_of_PI :=
-  mkInterpretation (fun f => peval_D (proj1 (PI_mon PI f))).
+  mkInterpretation D0 (fun f => peval_D (proj1 (PI_mon PI f))).
 
 Let W := Int_of_PI.
 
@@ -225,7 +225,7 @@ Lemma polyInterpretationTermination : forall R,
   lforall (fun r => coef_pos (rulePoly r)) R -> wf (red R).
 
 Proof.
-intros R H. eapply manna_ness. apply (@IR_reduction_ordering Sig W Dgt D0).
+intros R H. eapply manna_ness. apply (@IR_reduction_ordering Sig W Dgt).
 apply pi_monotone. apply Dgt_wf. unfold compatible. intros l r.
 set (rho := mkRule l r). intro. change (IR W Dgt (lhs rho) (rhs rho)).
 apply compatibility. eapply lforall_in. apply H. exact H0.
