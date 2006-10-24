@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.3 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.4 2006-10-24 13:59:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -47,19 +47,33 @@ Definition reduction_ordering := wf succ /\ rewrite_ordering.
 
 Definition compatible R := forall l r : term, In (mkRule l r) R -> succ l r.
 
-Lemma comp_rewrite_ord : forall R, rewrite_ordering -> compatible R
-  -> forall t u, red R t u -> succ t u.
+Lemma comp_rewrite_ord : forall R, rewrite_ordering -> compatible R ->
+  forall t u, red R t u -> succ t u.
 
 Proof.
 intros R (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
 apply Hcont. apply Hsubs. apply Hcomp. exact H.
 Qed.
 
-Lemma comp_head_rewrite_ord : forall R, substitution_closed -> compatible R
-  -> forall t u, hd_red R t u -> succ t u.
+Lemma comp_rewrite_ord_incl : forall R, rewrite_ordering -> compatible R ->
+  inclusion (red R) succ.
+
+Proof.
+unfold inclusion. intros. apply comp_rewrite_ord with (R := R); assumption.
+Qed.
+
+Lemma comp_head_rewrite_ord : forall R, substitution_closed -> compatible R ->
+  forall t u, hd_red R t u -> succ t u.
 
 Proof.
 intros. redtac. subst t. subst u. apply H. apply H0. assumption.
+Qed.
+
+Lemma comp_head_rewrite_ord_incl : forall R, substitution_closed ->
+  compatible R -> inclusion (hd_red R) succ.
+
+Proof.
+unfold inclusion. intros. apply comp_head_rewrite_ord with (R := R); assumption.
 Qed.
 
 Require Export Relations.
@@ -109,8 +123,7 @@ Definition weak_reduction_ordering := wf succ /\ weak_rewrite_ordering.
 Definition left_compatible := inclusion (compose succ_eq succ) succ.
 
 Definition reduction_pair :=
-  weak_reduction_ordering /\ left_compatible
-  /\ reflexive succ_eq /\ transitive succ_eq /\ rewrite_ordering succ_eq.
+  weak_reduction_ordering /\ left_compatible /\ rewrite_ordering succ_eq.
 
 End reduction_pair.
 
@@ -121,9 +134,7 @@ Record Reduction_pair : Type := mkReduction_pair {
   rp_subs_eq : substitution_closed rp_succ_eq;
   rp_cont : weak_context_closed rp_succ rp_succ_eq;
   rp_cont_eq : context_closed rp_succ_eq;
-  rp_comp : inclusion (compose rp_succ_eq rp_succ) rp_succ;
-  rp_succ_eq_refl : reflexive rp_succ_eq;
-  rp_succ_eq_trans : transitive rp_succ_eq
+  rp_comp : inclusion (compose rp_succ_eq rp_succ) rp_succ
 }.
 
 (***********************************************************************)
