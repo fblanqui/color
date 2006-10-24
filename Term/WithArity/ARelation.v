@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.2 2006-10-19 14:51:51 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.3 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -168,10 +168,10 @@ Section strict.
 Variables (succ_eq : relation term)
   (succ_eq_trans : transitive succ_eq).
 
-Lemma strict_left_compatible : left_compatible (strict succ_eq) succ_eq.
+Lemma strict_left_compatible : left_compatible (strict_part succ_eq) succ_eq.
 
 Proof.
-unfold left_compatible, inclusion, compose, strict. intros; split; decomp H.
+unfold left_compatible, inclusion, compose, strict_part. intros; split; decomp H.
 eapply succ_eq_trans. apply H1. assumption.
 unfold not; intro. deduce (succ_eq_trans H H1). contradiction.
 Qed.

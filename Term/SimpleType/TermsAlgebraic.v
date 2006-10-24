@@ -8,7 +8,7 @@ Algebraic terms (functions with arity; simple output type of a function
 assumed) encoded via lambda-terms.
 ************************************************************************)
 
-(* $Id: TermsAlgebraic.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: TermsAlgebraic.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -789,13 +789,14 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       rewrite MR; trivial.
     Qed.
 
-    Lemma algebraic_swap_app : forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+    Lemma algebraic_swap_app : forall M (pos: Pos M) (MP: PlaceHolder pos)
+      (P := proj1_sig2 MP),
       (forall Min (pos: Pos Min) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
-	subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min -> algebraic P ->
-	algebraic (swap MP)
+	subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min ->
+        algebraic P -> algebraic (swap MP)
       ) ->
-      pos <> PThis M -> ~isFunApp (M // pos) -> isApp M -> algebraic M -> algebraic P ->
-      algebraic (swap MP).
+      pos <> PThis M -> ~isFunApp (M // pos) -> isApp M -> algebraic M ->
+      algebraic P -> algebraic (swap MP).
 
     Proof.
       intros.
@@ -804,17 +805,18 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       apply swap_isFunApp; trivial.
       rewrite swap_type_eq.
       inversion H3; term_inv M.
-      intros; apply algebraic_swap_isFunApp with M pos MP; trivial.
+      intros. apply (algebraic_swap_isFunApp MP); trivial.
       inversion H3; term_inv M.
       apply AlgApp; trivial.
       apply app_swap_app; trivial.
       apply swap_not_funApp; trivial.
       fold P; inversion H4; term_inv P.
-      intros; apply algebraic_swap_notFunApp with M pos MP; trivial.
+      intros. apply (algebraic_swap_notFunApp MP); trivial.
       inversion H3; term_inv M.
     Qed.
 
-    Lemma algebraic_swap : forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+    Lemma algebraic_swap : forall M (pos: Pos M) (MP: PlaceHolder pos)
+      (P := proj1_sig2 MP),
       ~isFunApp (M // pos) -> algebraic M -> algebraic P -> algebraic (swap MP).
 
     Proof.

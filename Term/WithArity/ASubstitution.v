@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 ************************************************************************)
 
-(* $Id: ASubstitution.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -42,7 +42,8 @@ Definition id x := Var x.
 
 Definition app := @term_int Sig I0.
 
-Lemma app_fun : forall s f (v : args f), app s (Fun f v) = Fun f (Vmap (app s) v).
+Lemma app_fun : forall s f (v : args f),
+  app s (Fun f v) = Fun f (Vmap (app s) v).
 
 Proof.
 intros. unfold app. rewrite term_int_fun. reflexivity.
@@ -80,6 +81,33 @@ change (P t). apply term_ind_forall with (P := P); intros; unfold P.
 reflexivity. repeat rewrite app_fun. apply f_equal with (f := Fun f).
 rewrite Vmap_map. apply Vmap_eq. assumption.
 Qed.
+
+(***********************************************************************)
+(* substitution lemma for interpretations *)
+
+Section substitution_lemma.
+
+Variable I : interpretation Sig.
+
+Definition beta (xint : valuation I) (s : substitution) x :=
+  term_int xint (s x).
+
+Lemma substitutionLemma : forall xint s t,
+  term_int xint (app s t) = term_int (beta xint s) t.
+
+Proof.
+intros xint s t. pattern t.
+eapply term_ind with (Q := fun n (ts : terms n) =>
+  Vmap (term_int xint) (Vmap (app s) ts) = Vmap (term_int (beta xint s)) ts).
+intro x. simpl. refl.
+intros f ts.
+rewrite term_int_fun. rewrite app_fun. rewrite term_int_fun.
+intro H. apply (f_equal (fint I f)). exact H.
+simpl. refl.
+intros. simpl. rewrite H. rewrite <- H0. refl.
+Qed.
+
+End substitution_lemma.
 
 (***********************************************************************)
 (* domain of a substitution *)

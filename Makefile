@@ -9,15 +9,18 @@ MAKEFLAGS := -r
 
 .SUFFIXES:
 
-.PHONY: clean clean-doc all config default dist doc dump html install-dist install-doc tags
+.PHONY: clean clean-doc all makefiles dist doc dump html install-dist install-doc tags
 
 SUBDIRS := Util Term PolyInt DP Filter MPO Conversion RPO HORPO
 
 DUMP := /tmp/dump
 WEB := /local/color/htdocs
 
-default:
+all: Util/Makefile
 	for d in $(SUBDIRS); do $(MAKE) -C $$d OTHERFLAGS="-dont-load-proofs"; done
+
+Util/Makefile:
+	$(MAKE) makefiles
 
 clean:
 	rm -f `find . -name \*~ -o -name .\*~`
@@ -51,12 +54,9 @@ install-dist:
 	mv -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
 	cp -f CHANGES $(WEB)/CHANGES.CoLoR
 
-config:
+makefiles:
 	./createMakefiles
 	$(MAKE) depend
-
-all: config
-	$(MAKE)
 
 %:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d $*; done
