@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 ************************************************************************)
 
-(* $Id: AWFMInterpretation.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -55,12 +55,10 @@ simpl fill. do 2 rewrite term_int_fun.
 do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
 Qed.
 
-Variable some_elt : domain I.
-
 Lemma IR_wf : wf R -> wf IR.
 
 Proof.
-intro. set (xint := fun x:nat => some_elt).
+intro. set (xint := fun x:nat => some_elt I).
 apply wf_incl with (R2 := fun t1 t2 =>
   transp R (term_int xint t1) (term_int xint t2)).
 unfold inclusion, transp. auto.
