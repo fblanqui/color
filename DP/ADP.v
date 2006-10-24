@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 ************************************************************************)
 
-(* $Id: ADP.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.2 2006-10-24 13:59:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -70,14 +70,13 @@ Qed.
 (***********************************************************************)
 (* dependancy chains *)
 
-Definition chain t u :=
-  exists t' : term, clos_refl_trans (int_red R) t t' /\ hd_red dp t' u.
+Definition chain := compose (clos_refl_trans (int_red R)) (hd_red dp).
 
 Lemma in_calls_chain : forall l r t s,
   In (mkRule l r) R -> In t (calls R r) -> chain (app s l) (app s t).
 
 Proof.
-intros. unfold chain. exists (app s l). split. apply rt_refl.
+intros. unfold chain, compose. exists (app s l). split. apply rt_refl.
 eapply in_calls_dpr. apply H. assumption.
 Qed.
 
@@ -85,9 +84,9 @@ Lemma lt_chain : forall f ts y u,
   terms_lt R y ts -> chain (Fun f y) u -> chain (Fun f ts) u.
 
 Proof.
-unfold chain. intros. destruct H0 as [v]. destruct H0. exists v. split.
+unfold chain, compose. intros. destruct H0 as [v]. destruct H0. exists v. split.
 apply rt_trans with (y := Fun f y). apply rt_step. apply Vlt_prod_fun.
-assumption. assumption. assumption.
+exact H. exact H0. exact H1.
 Qed.
 
 (***********************************************************************)
@@ -193,64 +192,5 @@ intros ts Hsnts. apply chain_fun. assumption. apply Hwf. assumption.
 (* f undefined *)
 apply sn_args_sn_fun; auto.
 Qed.
-
-(***********************************************************************)
-(* application theorems *)
-
-Require Export ARelation.
-
-Section dp1.
-
-Variables (succ succ_eq : relation term)
-  (succ_eq_refl : reflexive succ_eq) (succ_eq_trans : transitive succ_eq)
-  (succ_eq_incl : inclusion succ succ_eq)
-  (compat : inclusion (compose succ_eq succ) succ)
-  (hwf : wf succ) (hsucc : substitution_closed succ)
-  (hsucc_eq : rewrite_ordering succ_eq)
-  (comp_succ_eq : compatible succ_eq R)
-  (comp_succ : compatible succ dp).
-
-Require Export ARedOrd.
-
-Lemma dp1 : wf (red R).
-
-Proof. (* similar to RedOrd.v/manna_ness2_head *)
-apply wf_chain. unfold well_founded. intro.
-generalize (hwf a). intro. elim H. clear a H. intros. apply Acc_intro. intros.
-unfold transp, chain in H1. decomp H1. apply H0. unfold transp.
-apply compat. unfold compose. exists x0. split. eapply comp_rewrite_ord_rtc.
-assumption. assumption. assumption. apply comp_succ_eq.
-apply (@incl_rtc term (int_red R) (red R)). apply int_red_incl_red. assumption.
-eapply comp_head_rewrite_ord. assumption. apply comp_succ. assumption.
-Qed.
-
-End dp1.
-
-(***********************************************************************)
-(* corollary when succ_eq is the reflexive closure of succ *)
-
-Section dp1rc.
-
-Require Export ARelation.
-
-Variable succ : relation term.
-
-Notation succ_eq := (clos_refl succ).
-
-Variables (succ_trans : transitive succ)
-  (hsucc : weak_reduction_ordering succ succ_eq)
-  (comp_succ_eq : compatible succ_eq R)
-  (comp_succ : compatible succ dp).
-
-Lemma dp1rc : wf (red R).
-
-Proof.
-destruct hsucc as [hwf (hsubs,hcont)].
-apply (@dp1 succ succ_eq). apply rc_refl. apply rc_trans. assumption.
-apply rc_incl_comp. assumption. assumption. assumption.
-apply rc_rewrite_ordering. split; assumption. assumption. assumption.
-Qed.
-
-End dp1rc.
 
 End S.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 ************************************************************************)
 
-(* $Id: RelUtil.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.3 2006-10-24 13:59:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -151,14 +151,21 @@ Proof.
 unfold inclusion, transp. auto.
 Qed.
 
-Lemma incl_rtc : inclusion R R'
-  -> inclusion (clos_refl_trans R) (clos_refl_trans R').
+Lemma incl_rtc : inclusion R R' ->
+  inclusion (clos_refl_trans R) (clos_refl_trans R').
 
 Proof.
 intro. unfold inclusion. intros. elim H0; intros.
 apply rt_step. apply H. assumption.
 apply rt_refl.
 eapply rt_trans. apply H2. assumption.
+Qed.
+
+Lemma incl_rtc_in : inclusion R R' ->
+  forall x y, clos_refl_trans R x y -> clos_refl_trans R' x y.
+
+Proof.
+intros. apply incl_rtc. exact H. exact H0.
 Qed.
 
 (***********************************************************************)
@@ -207,6 +214,13 @@ Lemma comp_rtc_incl :
 Proof.
 intro. unfold inclusion, compose. intros. do 2 destruct H0.
 generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+Qed.
+
+Lemma comp_rtc_incl_in : inclusion (compose R R') R' ->
+  forall x y, compose (clos_refl_trans R) R' x y -> R' x y.
+
+Proof.
+intros. apply comp_rtc_incl. exact H. exact H0.
 Qed.
 
 End S.
