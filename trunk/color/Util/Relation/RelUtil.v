@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 ************************************************************************)
 
-(* $Id: RelUtil.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -44,30 +44,30 @@ Variable R : relation A.
 
 Definition quasi_ordering := reflexive R /\ transitive R. (* preorder in coq *)
 
-(*Record Quasi_ordering : Type := mkQuasi_ordering {
+Record Quasi_ordering : Type := mkQuasi_ordering {
   qord_rel :> relation A;
   qord_refl : reflexive qord_rel;
   qord_trans : transitive qord_rel
-}.*)
+}.
 
 Definition ordering := reflexive R /\ transitive R /\ antisymmetric R.
 
-(*Record Ordering : Type := mkOrdering {
+Record Ordering : Type := mkOrdering {
   ord_rel :> relation A;
   ord_refl : reflexive ord_rel;
   ord_trans : transitive ord_rel;
-  ord_antisymm : antisymmetric ord_rel
-}.*)
+  ord_antisym : antisymmetric ord_rel
+}.
 
 Definition strict_ordering := irreflexive R /\ transitive R.
 
-(*Record Strict_ordering : Type := mkStrict_ordering {
+Record Strict_ordering : Type := mkStrict_ordering {
   sord_rel :> relation A;
   sord_irrefl : irreflexive sord_rel;
   sord_trans : transitive sord_rel
-}.*)
+}.
 
-Definition strict x y := R x y /\ ~ R y x.
+Definition strict_part x y := R x y /\ ~ R y x.
 
 (***********************************************************************)
 (* reflexive closure *)
@@ -89,6 +89,17 @@ Lemma rc_incl : inclusion R (clos_refl R).
 
 Proof.
 unfold inclusion, clos_refl. auto.
+Qed.
+
+(***********************************************************************)
+(* transitive closure *)
+
+Lemma tc_transp : forall x y, clos_trans R y x -> clos_trans (transp R) x y.
+
+Proof.
+induction 1.
+apply t_step. assumption.
+eapply t_trans. apply IHclos_trans2. apply IHclos_trans1.
 Qed.
 
 (***********************************************************************)
@@ -117,14 +128,6 @@ left. transitivity y0; assumption.
 subst y0. right. assumption.
 subst y0. right. assumption.
 right. apply t_trans with (y := y0); assumption.
-Qed.
-
-Lemma tc_transp : forall x y, clos_trans R y x -> clos_trans (transp R) x y.
-
-Proof.
-induction 1.
-apply t_step. assumption.
-eapply t_trans. apply IHclos_trans2. apply IHclos_trans1.
 Qed.
 
 Lemma rtc_transp : forall x y,
@@ -183,7 +186,8 @@ Definition compose (R R' : relation A) x y := exists z, R x z /\ R' z y.
 
 Variables R R' : relation A.
 
-Lemma incl_comp_left : inclusion R R' -> inclusion (compose R' R) R -> transitive R.
+Lemma incl_comp_left :
+  inclusion R R' -> inclusion (compose R' R) R -> transitive R.
 
 Proof.
 unfold transitive. intros. apply H0. unfold compose. exists y. split.
@@ -195,6 +199,14 @@ Lemma rc_incl_comp : transitive R -> inclusion (compose (clos_refl R) R) R.
 Proof.
 intro. unfold inclusion, compose, clos_refl. intros. decomp H0.
 subst x0. assumption. eapply H. apply H1. assumption.
+Qed.
+
+Lemma comp_rtc_incl :
+  inclusion (compose R R') R' -> inclusion (compose (clos_refl_trans R) R') R'.
+
+Proof.
+intro. unfold inclusion, compose. intros. do 2 destruct H0.
+generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
 Qed.
 
 End S.

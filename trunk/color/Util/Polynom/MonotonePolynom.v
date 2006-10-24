@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 monotone polynomials
 ************************************************************************)
 
-(* $Id: MonotonePolynom.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
+(* $Id: MonotonePolynom.v,v 1.3 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -100,8 +100,8 @@ Lemma coef_pos_monotone_peval_Dle : forall n (p : poly n) (H : coef_pos p),
 
 Proof.
 unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
-intros n p H_coef_pos i j Hij vi vj. destruct x as (x, Hx). destruct y as (y, Hy).
- simpl. intro Hxy.
+intros n p H_coef_pos i j Hij vi vj. destruct x as (x, Hx).
+destruct y as (y, Hy). simpl. intro Hxy.
 generalize dependent p. intro p. elim p.
  intro. simpl. omega.
  unfold coef_pos. intros (c, m) p' Hrec H_coef_pos.
@@ -133,8 +133,8 @@ Qed.
 
 Implicit Arguments i_lt_n [n i j].
 
-Lemma pmonotone'_imp_monotone_peval_Dlt : forall n (p : poly n) (H: pmonotone' p),
-  Vmonotone (peval_D (proj1 H)) Dlt.
+Lemma pmonotone'_imp_monotone_peval_Dlt :
+  forall n (p : poly n) (H: pmonotone' p), Vmonotone (peval_D (proj1 H)) Dlt.
 
 Proof.
 unfold pmonotone', Vmonotone. intros n p (H_coef_pos_p, H_pmonotone_p) i j Hij.

@@ -2,13 +2,13 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Sebastien Hinderer, 2004-04-20
 - Frederic Blanqui, 2004-12-13
+- Sebastien Hinderer, 2004-04-20
 
 proof of the termination criterion based on polynomial interpretations
 ************************************************************************)
 
-(* $Id: APolyInt.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,12 +22,12 @@ Require Export ABterm.
 
 Notation bterm := (bterm Sig).
 
+Require Export Polynom.
+
 (***********************************************************************)
 (* polynomial associated to a term *)
 
 Section poly_of_bterm.
-
-Require Export Polynom.
 
 Variable fpoly : forall f : Sig, poly (arity f).
 
@@ -51,10 +51,8 @@ Lemma termpoly_eq :
 
 Proof.
 intros. simpl termpoly at 1.
-apply (f_equal (@pcomp (arity f) (fpoly f) (S k))).
-elim ts.
- auto.
- intros t' n' ts' Hrec. rewrite Hrec. auto.
+apply (f_equal (@pcomp (arity f) (fpoly f) (S k))). elim ts.
+auto. intros t' n' ts' Hrec. rewrite Hrec. auto.
 Qed.
 
 End poly_of_bterm.
@@ -64,12 +62,12 @@ End poly_of_bterm.
 
 Require Export MonotonePolynom.
 
-Record polyInterpretation : Type := mkPolyInterpretation {
+Record PolyInterpretation : Type := mkPolyInterpretation {
   PI_poly : forall f : Sig, poly (arity f);
-  PI_PMonotone : forall f : Sig, pmonotone (PI_poly f)
+  PI_mon : forall f : Sig, pmonotone (PI_poly f)
 }.
 
-Variable PI : polyInterpretation.
+Variable PI : PolyInterpretation.
 
 (***********************************************************************)
 (* coefficients are positive *)
@@ -86,7 +84,7 @@ intros k t. apply (bterm_ind (@P k) (@Q k)).
  intros v Hv. unfold P. simpl. intuition.
  unfold Q. intros f ts H. unfold P. rewrite termpoly_eq.
  apply coef_pos_pcomp.
-  apply (proj1 (PI_PMonotone PI f)).
+  apply (proj1 (PI_mon PI f)).
   unfold P in H. apply Vforall_map_elim. auto.
  unfold Q. simpl. trivial.
  intros t' n' s' H1. unfold Q. intro H2. simpl. split; assumption.
@@ -97,7 +95,7 @@ Lemma termpoly_v_eq_1 : forall (x : variable) (k : nat) (H : x<=k),
   ((1)%Z, (mxi (gt_le_S x (S k) (le_lt_n_Sm x k H)))) :: (pzero (S k)).
 
 Proof.
-intros. simpl. reflexivity.
+intros. simpl. refl.
 Qed.
 
 Lemma termpoly_v_eq_2 :
@@ -106,9 +104,7 @@ Lemma termpoly_v_eq_2 :
   meval (mxi (gt_le_S _ _ (le_lt_n_Sm x k H))) v.
 
 Proof.
-intros x k H v.
-rewrite termpoly_v_eq_1.
-unfold pzero. unfold peval at 1.
+intros x k H v. rewrite termpoly_v_eq_1. unfold pzero. unfold peval at 1.
 ring.
 Qed.
 
@@ -117,24 +113,19 @@ End coef_pos.
 (***********************************************************************)
 (* interpretation *)
 
-Definition Int_of_PI : interpretation Sig.
-eapply (@mkInterpretation Sig D). intro f.
-apply (peval_D (proj1 (PI_PMonotone PI f))).
-Defined.
+Definition Int_of_PI :=
+  mkInterpretation (fun f => peval_D (proj1 (PI_mon PI f))).
+
+Let W := Int_of_PI.
 
 Require Export AWFMInterpretation.
 
-Definition WFMInt_of_PI : WFMinterpretation Sig.
-eapply (@mkWFMInterpretation Sig Int_of_PI).
-apply (exist pos Z0). omega.
-assert (H : wf (transp Dlt)).
-unfold transp. apply Dlt_wf.
-apply H.
-intro f. apply Vmonotone_transp.
-apply (pmonotone_imp_monotone_peval_Dlt (PI_PMonotone PI f)).
-Defined.
+Lemma pi_monotone : monotone W Dgt.
 
-Let W := WFMInt_of_PI.
+Proof.
+intro f. unfold Dgt. apply Vmonotone_transp.
+apply (pmonotone_imp_monotone_peval_Dlt (PI_mon PI f)).
+Qed.
 
 Let f1 (xint : valuation W) (k : nat) (t : bterm k) :=
   proj1_sig (bterm_int xint t).
@@ -211,22 +202,19 @@ Definition rulePoly r :=
 Require Export ARedOrd.
 
 Let P1 rho := coef_pos (rulePoly rho).
-Let P2 rho := WFMI_R' W (lhs rho) (rhs rho).
+Let P2 rho := IR W Dgt (lhs rho) (rhs rho).
 
 Require Export ZUtil.
 
 Lemma compatibility : forall r, P1 r -> P2 r.
 
 Proof.
-intros r H_coef_pos. unfold P2, WFMI_R'. intro xint.
-simpl (WFMI_R W). unfold transp, Dlt.
+intros r H_coef_pos. unfold P2, IR. intro xint. unfold Dgt, Dlt, transp.
 set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)). set (m := max mvl mvr).
 rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
-rewrite (PI_term_int_eq xint (le_max_r mvl mvr)).
-do 2 rewrite val_peval_D.
+rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). do 2 rewrite val_peval_D.
 pose (v := (Vmap (proj1_sig (P:=pos)) (fval xint (S (max mvl mvr))))).
-apply pos_lt. rewrite <- (peval_const (1)%Z v).
-do 2 rewrite <- peval_minus.
+apply pos_lt. rewrite <- (peval_const (1)%Z v). do 2 rewrite <- peval_minus.
 unfold v. apply pos_peval. exact H_coef_pos.
 Qed.
 
@@ -237,10 +225,10 @@ Lemma polyInterpretationTermination : forall R,
   lforall (fun r => coef_pos (rulePoly r)) R -> wf (red R).
 
 Proof.
-intros R H. eapply manna_ness. apply (WFMI_R'_is_redOrder W).
-unfold compatible. intros l r. set (rho := mkRule l r). intro.
-change (WFMI_R' W (lhs rho) (rhs rho)). apply compatibility.
-eapply lforall_in. apply H. assumption.
+intros R H. eapply manna_ness. apply (@IR_reduction_ordering Sig W Dgt D0).
+apply pi_monotone. apply Dgt_wf. unfold compatible. intros l r.
+set (rho := mkRule l r). intro. change (IR W Dgt (lhs rho) (rhs rho)).
+apply compatibility. eapply lforall_in. apply H. exact H0.
 Qed.
 
 End S.

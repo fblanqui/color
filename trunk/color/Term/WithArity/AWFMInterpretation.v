@@ -2,12 +2,13 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
+- Frederic Blanqui, 2006-10-19
 - Sebastien Hinderer, 2004-02-25
 
 well-founded monotone interpretations
 ************************************************************************)
 
-(* $Id: AWFMInterpretation.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,79 +26,52 @@ Notation terms := (vector term).
 Require Export AInterpretation.
 Require Export WfUtil.
 
-Record WFMinterpretation : Type := mkWFMInterpretation {
-  WFMI :> interpretation Sig;
-  WFMI_a : domain WFMI;
-  WFMI_R : relation (domain WFMI);
-  WFMI_wf : wf WFMI_R;
-  WFMI_mon : forall f, Vmonotone (fint WFMI f) WFMI_R
-}.
-
 (***********************************************************************)
-(* ordering on terms *)
+(* well-founded interpretations *)
 
-Variable W : WFMinterpretation.
+Variable (I : interpretation Sig) (R : relation (domain I)).
 
-Definition WFMI_R' t1 t2 :=
-  forall xint, WFMI_R W (term_int xint t1) (term_int xint t2).
-
-(***********************************************************************)
-(* substitution lemma *)
-
-Require Export ASubstitution.
-
-Definition beta (xint : valuation W) (s : substitution Sig) :=
-  fun x => term_int xint (s x).
-
-Lemma substitutionLemma : forall xint s t,
-  term_int xint (app s t) = term_int (beta xint s) t.
-
-Proof.
-intros xint s t. pattern t.
-eapply term_ind with (Q := fun n (ts : terms n) =>
-  Vmap (term_int xint) (Vmap (app s) ts) = Vmap (term_int (beta xint s)) ts).
-intro x. simpl. reflexivity.
-intros f ts.
-rewrite term_int_fun. rewrite app_fun. rewrite term_int_fun.
-intro H. apply (f_equal (fint W f)). assumption.
-simpl. reflexivity.
-intros. simpl. rewrite H. rewrite <- H0. reflexivity.
-Qed.
+Definition IR t1 t2 :=
+  forall xint, R (term_int xint t1) (term_int xint t2).
 
 Require Export ARelation.
 
-(***********************************************************************)
-(* R' is a reduction ordering *)
-
-Lemma WFMI_R'_is_redOrder : reduction_ordering WFMI_R'.
+Lemma IR_substitution_closed : substitution_closed IR.
 
 Proof.
-split; [idtac | split].
+unfold transp, substitution_closed, IR. intros t1 t2 s H xint0.
+do 2 rewrite substitutionLemma. apply (H (beta xint0 s)).
+Qed.
 
-(* Proof of well-foundedness *)
-apply wf_incl with (R2 :=
-  let xint := fun t => WFMI_a W in fun t1 t2 =>
-  transp (WFMI_R W) (term_int xint t1) (term_int xint t2)).
+Definition monotone := forall f, Vmonotone (fint I f) R.
 
- unfold transp, WFMI_R'. unfold inclusion. auto.
- unfold WFMI_R'. apply wf_inverse_image
- with (f := (term_int (fun t => WFMI_a W))).
- exact (WFMI_wf W).
+Lemma IR_context_closed : monotone -> context_closed IR.
 
-(* Proof of closure under substitution *)
-unfold transp, substitution_closed, WFMI_R'.
-intros t1 t2 s H xint0.
-do 2 rewrite substitutionLemma.
-apply (H (beta xint0 s)).
-
-(* Proof of closure under context *)
-unfold transp, context_closed, WFMI_R'.
-intros t1 t2 c H xint0. generalize (H xint0). clear H. intro H.
-induction c.
-simpl. assumption.
+Proof.
+unfold transp, context_closed, IR. intros.
+generalize (H0 xint). clear H0. intro. induction c.
+simpl. exact H0.
 simpl fill. do 2 rewrite term_int_fun.
-do 2 (rewrite Vmap_cast; rewrite Vmap_app).
-simpl. apply (WFMI_mon W). assumption.
+do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
+Qed.
+
+Variable some_elt : domain I.
+
+Lemma IR_wf : wf R -> wf IR.
+
+Proof.
+intro. set (xint := fun x:nat => some_elt).
+apply wf_incl with (R2 := fun t1 t2 =>
+  transp R (term_int xint t1) (term_int xint t2)).
+unfold inclusion, transp. auto.
+apply wf_inverse_image with (f := term_int xint). exact H.
+Qed.
+
+Lemma IR_reduction_ordering : monotone -> wf R -> reduction_ordering IR.
+
+Proof.
+split. apply IR_wf. exact H0. split. apply IR_substitution_closed.
+apply IR_context_closed. exact H.
 Qed.
 
 End S.

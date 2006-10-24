@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 ************************************************************************)
 
-(* $Id: AInterpretation.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -60,7 +60,8 @@ Lemma term_int_fun : forall f ts,
   term_int (Fun f ts) = fint I f (Vmap term_int ts).
 
 Proof.
-intros. simpl. apply (f_equal (fint I f)). induction ts. auto. rewrite IHts. auto.
+intros. simpl. apply (f_equal (fint I f)). induction ts. auto.
+rewrite IHts. auto.
 Qed.
 
 (***********************************************************************)

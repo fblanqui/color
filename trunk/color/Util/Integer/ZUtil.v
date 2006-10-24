@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 ************************************************************************)
 
-(* $Id: ZUtil.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.3 2006-10-24 12:41:36 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -110,25 +110,45 @@ Notation D := (sig pos).
 Notation val := (@proj1_sig Z pos).
 Notation inj := (@exist Z pos _).
 
+Lemma Zero_in_D : pos 0.
+
+Proof.
+simpl. omega.
+Qed.
+
+Notation D0 := (inj Zero_in_D).
+
 Lemma pos_power_val : forall x n, pos (power (val x) n).
 
 Proof.
 intros. destruct x. apply pos_power. assumption.
 Qed.
 
-Definition Dlt (x y : D) := Zlt (val x) (val y).
-Definition Dle (x y : D) := Zle (val x) (val y).
+Definition Dlt x y := Zlt (val x) (val y).
+Definition Dle x y := Zle (val x) (val y).
+
+Require Export RelUtil.
+
+Definition Dgt := transp Dlt.
+Definition Dge := transp Dle.
 
 Require Export Zwf.
 Require Export Wellfounded.
-Require Export Relations.
 
-Lemma Dlt_wf : well_founded Dlt.
+Lemma Dlt_well_founded : well_founded Dlt.
 
 Proof.
 unfold Dlt. apply wf_incl with (R2 := (fun x y : D => Zwf 0 (val x) (val y))).
 unfold inclusion, Zwf. intros (x,Hx) (y,Hy). simpl. intuition omega.
 apply (wf_inverse_image D Z (Zwf 0) val). apply Zwf_well_founded.
+Qed.
+
+Require Export WfUtil.
+
+Lemma Dgt_wf : wf Dgt.
+
+Proof.
+unfold transp. apply Dlt_well_founded.
 Qed.
 
 Lemma power_Dlt_compat : forall x y n,
