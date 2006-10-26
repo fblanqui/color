@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 ************************************************************************)
 
-(* $Id: ARedOrd.v,v 1.3 2006-10-24 13:59:07 blanqui Exp $ *)
+(* $Id: ARedOrd.v,v 1.4 2006-10-26 14:26:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -81,8 +81,6 @@ Section manna_ness2_head.
 Variables R1 R2 : rules.
 
 Let R := compose (clos_refl_trans (red R1)) (hd_red R2).
-
-(*Let R t v := exists u, clos_refl_trans (red R1) t u /\ hd_red R2 u v.*)
 
 Variables (succ succ_eq : relation term)
   (compat : inclusion (compose succ_eq succ) succ).
