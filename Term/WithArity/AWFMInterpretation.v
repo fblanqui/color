@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 ************************************************************************)
 
-(* $Id: AWFMInterpretation.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.4 2006-10-26 14:26:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,6 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 
 Require Export AInterpretation.
-Require Export WfUtil.
 
 (***********************************************************************)
 (* well-founded interpretations *)
@@ -33,6 +32,20 @@ Variable (I : interpretation Sig) (R : relation (domain I)).
 
 Definition IR t1 t2 :=
   forall xint, R (term_int xint t1) (term_int xint t2).
+
+Require Export RelUtil.
+
+Lemma IR_reflexive : reflexive R -> reflexive IR.
+
+Proof.
+intro. unfold reflexive, IR. auto.
+Qed.
+
+Lemma IR_transitive : transitive R -> transitive IR.
+
+Proof.
+intro. unfold transitive, IR. intros. exact (H _ _ _ (H0 xint) (H1 xint)).
+Qed.
 
 Require Export ARelation.
 
@@ -54,6 +67,8 @@ simpl. exact H0.
 simpl fill. do 2 rewrite term_int_fun.
 do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
 Qed.
+
+Require Export WfUtil.
 
 Lemma IR_wf : wf R -> wf IR.
 

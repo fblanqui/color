@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 ************************************************************************)
 
-(* $Id: RelUtil.v,v 1.3 2006-10-24 13:59:07 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.4 2006-10-26 14:26:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -141,9 +141,36 @@ eapply rt_trans. apply IHclos_refl_trans2. apply IHclos_refl_trans1.
 Qed.
 
 (***********************************************************************)
+(* inverse *)
+
+Lemma transp_refl : reflexive R -> reflexive (transp R).
+
+Proof.
+auto.
+Qed.
+
+Lemma transp_trans : transitive R -> transitive (transp R).
+
+Proof.
+unfold transitive, transp. intros. exact (H z y x H1 H0).
+Qed.
+
+Lemma transp_sym : symmetric R -> symmetric (transp R).
+
+Proof.
+unfold symmetric, transp. auto.
+Qed.
+
+(***********************************************************************)
 (* inclusion *)
 
 Variable R' : relation A.
+
+Lemma incl_elim : inclusion R R' -> forall x y, R x y -> R' x y.
+
+Proof.
+auto.
+Qed.
 
 Lemma incl_transp : inclusion R R' -> inclusion (transp R) (transp R').
 
@@ -193,19 +220,12 @@ Definition compose (R R' : relation A) x y := exists z, R x z /\ R' z y.
 
 Variables R R' : relation A.
 
-Lemma incl_comp_left :
+Lemma incl_comp_left_trans :
   inclusion R R' -> inclusion (compose R' R) R -> transitive R.
 
 Proof.
 unfold transitive. intros. apply H0. unfold compose. exists y. split.
 apply H. assumption. assumption.
-Qed.
-
-Lemma rc_incl_comp : transitive R -> inclusion (compose (clos_refl R) R) R.
-
-Proof.
-intro. unfold inclusion, compose, clos_refl. intros. decomp H0.
-subst x0. assumption. eapply H. apply H1. assumption.
 Qed.
 
 Lemma comp_rtc_incl :

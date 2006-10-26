@@ -1,3 +1,6 @@
+?: update to compile with the new version of Coq
+- Term/WithArity: elimination of useless hypotheses in AWFMInterpretation and ARedOrd
+
 06-07-21: first release of Rainbow
 - Util/Multiset: parameter eqA_dec added to functor arguments
 - RPO: the module structure has been flattened

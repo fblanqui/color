@@ -14,6 +14,8 @@ Require Export LogicUtil.
 Require Export RelUtil.
 Require Export Wellfounded.
 
+Implicit Arguments wf_incl [A R1 R2].
+
 (***********************************************************************)
 (* the way wellfoundedness is usually used in rewriting *)
 
@@ -105,7 +107,8 @@ Variables (A B : Set) (R : relation B) (f : A->B).
 
 Let Rof x y := R (f x) (f y).
 
-Lemma transp_Rof : inclusion (fun x y => Rof y x) (fun x y => transp R (f x) (f y)).
+Lemma transp_Rof :
+  inclusion (fun x y => Rof y x) (fun x y => transp R (f x) (f y)).
 
 Proof.
 unfold transp, inclusion. auto.

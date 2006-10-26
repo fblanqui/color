@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.4 2006-10-24 13:59:07 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.5 2006-10-26 14:26:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -76,17 +76,6 @@ Proof.
 unfold inclusion. intros. apply comp_head_rewrite_ord with (R := R); assumption.
 Qed.
 
-Require Export Relations.
-
-Lemma comp_rewrite_ord_rtc : rewrite_ordering
-  -> reflexive succ -> transitive succ -> forall R, compatible R
-  -> forall t u, clos_refl_trans (red R) t u -> succ t u.
-
-Proof.
-intros. elim H3; intros. eapply comp_rewrite_ord. assumption. apply H2.
-assumption. apply H0. eapply H1. apply H5. assumption.
-Qed.
-
 End basic.
 
 Record Rewrite_ordering : Type := mkRewrite_ordering {
@@ -113,7 +102,8 @@ Variables succ succ_eq : relation term.
 Definition weak_context_closed :=
   forall t1 t2 c, succ t1 t2 -> succ_eq (fill c t1) (fill c t2).
 
-Definition weak_rewrite_ordering := substitution_closed succ /\ weak_context_closed.
+Definition weak_rewrite_ordering :=
+  substitution_closed succ /\ weak_context_closed.
 
 Definition weak_reduction_ordering := wf succ /\ weak_rewrite_ordering.
 
@@ -146,7 +136,8 @@ Variable succ : relation term.
 
 Notation succ_eq := (clos_refl succ).
 
-Lemma rc_context_closed : weak_context_closed succ succ_eq -> context_closed succ_eq.
+Lemma rc_context_closed :
+  weak_context_closed succ succ_eq -> context_closed succ_eq.
 
 Proof.
 intro. unfold context_closed. intros. unfold clos_refl in H0. decomp H0.
