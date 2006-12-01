@@ -33,7 +33,7 @@ tags:
 	coqtags `find . -name \*.v`
 
 dump: clean-doc clean
-	$(MAKE) OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"
+	for d in $(SUBDIRS); do $(MAKE) -C $$d OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"; done
 
 html:
 	coqdoc --html -g -d doc --glob-from $(DUMP) -R `pwd` Rewriting `find . -name \*.v`
@@ -44,7 +44,8 @@ doc: dump html
 install-doc:
 	rm -rf $(WEB)/doc
 	mkdir $(WEB)/doc
-	cp doc/*.html doc/style.css $(WEB)/doc
+	cp doc/*.html doc/coqdoc.css $(WEB)/doc
+	cp -f CHANGES $(WEB)/CHANGES.CoLoR
 
 dist:
 	./createDist
