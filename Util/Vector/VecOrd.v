@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 ************************************************************************)
 
-(* $Id: VecOrd.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.2 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -47,7 +47,8 @@ unfold Vsplit. simpl. intro. inversion H0.
 exists 0. exists (@Vnil A). exists a. exists n. exists (Vtail v2).
 exists (refl_equal (S n)). exists (Vhead v2). split. rewrite Vcast_refl. refl.
 split. rewrite Vcast_refl. refl. assumption.
-deduce (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6. rewrite H7.
+deduce (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6.
+rewrite H7.
 exists (S x0). exists (Vcons (Vhead v2) x1). exists x2.
 exists x3. exists x4. assert (S x0 + S x3 = S n). omega. exists H9. exists x6.
 simpl. intuition. apply Vcons_eq_tail. apply Vcast_eq.

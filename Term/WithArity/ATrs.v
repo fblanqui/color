@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 ************************************************************************)
 
-(* $Id: ATrs.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.2 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -34,6 +34,8 @@ Notation rules := (list rule).
 
 (***********************************************************************)
 (* rewrite step *)
+
+Section rewriting.
 
 Variable R : rules.
 
@@ -146,6 +148,21 @@ subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
 exists l. exists r. exists (Cont f x4 x0 c x3). exists s. split. discriminate.
 auto.
 Qed.
+
+End rewriting.
+
+(***********************************************************************)
+(* rewriting modulo *)
+
+Section rewriting_modulo.
+
+Variable E R : rules.
+
+Definition red_mod := compose (clos_refl_trans (red E)) (red R).
+
+Definition hd_red_mod := compose (clos_refl_trans (red E)) (hd_red R).
+
+End rewriting_modulo.
 
 End S.
 

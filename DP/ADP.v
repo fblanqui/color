@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 ************************************************************************)
 
-(* $Id: ADP.v,v 1.2 2006-10-24 13:59:07 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.3 2006-12-01 09:37:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -112,6 +112,8 @@ Notation alien_sub := (alien_sub R).
 
 Require Export WfUtil.
 
+Notation "'wf' R" := (well_founded (transp R)) (at level 70).
+Notation "'sn' R" := (Acc (transp R)) (at level 0).
 Notation SN := (sn (red R)).
 
 Require Export ASN.

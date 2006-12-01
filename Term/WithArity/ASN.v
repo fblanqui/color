@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 ************************************************************************)
 
-(* $Id: ASN.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.2 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,9 +32,7 @@ Variable R : rules.
 
 Notation Red := (@red Sig R).
 
-Require Export WfUtil.
-
-Notation SN := (sn Red).
+Notation SN := (Acc (transp Red)).
 
 (***********************************************************************)
 (* every subterm of an sn term is sn *)
@@ -154,7 +152,8 @@ intros. apply H1 with (a := Fun g vs). refl. assumption.
 intro a. pattern a. apply subterm_ind. clear a. intros. subst t.
 apply Vforall_elim. intros w H2.
 deduce (Vin_map H2). destruct H4 as [v]. destruct H4. subst w.
-assert (v = app (alien_sub R v) (cap R v)). apply sym_eq. apply (alien_sub_cap R).
+assert (v = app (alien_sub R v) (cap R v)). apply sym_eq.
+apply (alien_sub_cap R).
 rewrite H5. rewrite app_app. apply no_call_app_sn. apply calls_cap. intros.
 (* begin assert *)
 assert (subterm v r). eapply subterm_trans_eq2 with (u := Fun g vs).

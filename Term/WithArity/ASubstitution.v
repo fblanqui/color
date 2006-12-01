@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 ************************************************************************)
 
-(* $Id: ASubstitution.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.4 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -156,7 +156,7 @@ Lemma sub_eq_varlist_app : forall s1 s2 t, sub_eq_dom s1 s2 (varlist t)
   -> app s1 t = app s2 t.
 
 Proof.
-intros. eapply sub_eq_dom_incl_app. apply H. apply incl_refl.
+intros. eapply sub_eq_dom_incl_app. apply H. apply List.incl_refl.
 Qed.
 
 Lemma sub_eq_dom_app : forall s1 s2 t,
@@ -176,8 +176,9 @@ apply (f_equal (Fun f)). apply H. assumption.
 unfold Q. simpl. auto.
 (* cons *)
 intros. unfold Q. simpl. intro. apply Vcons_eq. apply H.
-eapply sub_eq_dom_incl. apply H1. apply incl_appl. apply incl_refl.
-apply H0. eapply sub_eq_dom_incl. apply H1. apply incl_appr. apply incl_refl.
+eapply sub_eq_dom_incl. apply H1. apply incl_appl. apply List.incl_refl.
+apply H0. eapply sub_eq_dom_incl. apply H1. apply incl_appr.
+apply List.incl_refl.
 Qed.
 
 (***********************************************************************)

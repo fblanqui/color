@@ -17,17 +17,17 @@ Require Export Wellfounded.
 Implicit Arguments wf_incl [A R1 R2].
 
 (***********************************************************************)
-(* the way wellfoundedness is usually used in rewriting *)
+(* the way wellfoundedness is used in rewriting *)
 
-Notation "'wf' R" := (well_founded (transp R)) (at level 70).
-Notation "'sn' R" := (Acc (transp R)) (at level 0).
-
-Section S.
-
-Variables (A : Set) (R : relation A).
+(*Notation "'wf' R" := (well_founded (transp R)) (at level 70).
+Notation "'sn' R" := (Acc (transp R)) (at level 0).*)
 
 (***********************************************************************)
 (* transitive closure *)
+
+Section rtc.
+
+Variables (A : Set) (R : relation A).
 
 Lemma Acc_rtc : forall x y, clos_refl_trans R x y -> Acc R y -> Acc R x.
 
@@ -50,7 +50,7 @@ apply H. intros. apply H1. assumption.
 apply Acc_clos_trans. assumption.
 Qed.
 
-End S.
+End rtc.
 
 (***********************************************************************)
 (* symmetric product *)
@@ -93,35 +93,11 @@ Qed.
 Lemma Acc_symprod_inv : forall x y, Acc Symprod (x,y) -> Acc leA x /\ Acc leB y.
 
 Proof.
-intros. split. eapply Acc_symprod_invl. apply H. eapply Acc_symprod_invr. apply H.
+intros. split. eapply Acc_symprod_invl. apply H. eapply Acc_symprod_invr.
+apply H.
 Qed.
 
 End symprod.
-
-(***********************************************************************)
-(* inverse image *)
-
-Section inverse.
-
-Variables (A B : Set) (R : relation B) (f : A->B).
-
-Let Rof x y := R (f x) (f y).
-
-Lemma transp_Rof :
-  inclusion (fun x y => Rof y x) (fun x y => transp R (f x) (f y)).
-
-Proof.
-unfold transp, inclusion. auto.
-Qed.
-
-Lemma wf_inv_image : wf R -> wf Rof.
-
-Proof.
-intro. eapply wf_incl. apply transp_Rof.
-apply wf_inverse_image with (R := transp R). assumption.
-Qed.
-
-End inverse.
 
 (***********************************************************************)
 (* restricted accessibility *)

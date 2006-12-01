@@ -1,26 +1,40 @@
-?: update to compile with the new version of Coq
-- Term/WithArity: elimination of useless hypotheses in AWFMInterpretation and ARedOrd
+06-12-01:
+- various modifications for compiling with the new version of Coq
+- Util/Relation/SN: inductive definition of strong normalization
+  (inverse of Coq accessibility)
+- Util/Relation/RelUtil: practical notations and useful results
+  on composition, union and reflexive and transitive closures
+- Term/WithArity: elimination of useless hypotheses
+  in AWFMInterpretation and ARedOrd
+- Util/Relation/Lexico: new formalization of lexicographic ordering
+  with minimal hypotheses
+- Term/WithArity/ATrs: rewriting modulo the transitive closure of some relation
+- Term/WithArity/ARedOrd: proof of a modularity result
 
-06-07-21: first release of Rainbow
+06-07-21:
+- various updates for the first release of Rainbow
 - Util/Multiset: parameter eqA_dec added to functor arguments
 - RPO: the module structure has been flattened
 - Util/Vector: V0_eq redefined with Vcast to make it computable
-  (the previous version was using the axiom eq_rect_eq)
+	(the previous version was using the axiom eq_rect_eq)
 - Util/Polynom: tactics for monotony and termination [Hinderer]
 
 06-05-10:
 - HORPO: higher-order recursive path ordering, by Adam Koprowski
-- Term/SimpleType: simply typed lambda-terms with de Bruijn indices, by Adam Koprowski
+- Term/SimpleType: simply typed lambda-terms with de Bruijn indices,
+	by Adam Koprowski
 - Util/List: more functions and lemmas (nth element, initial segment, etc.)
 - Util/Multiset: a few modifications and additions (decidability, etc.)
 
 06-01-10:
-- RPO: recursive path ordering with statuses, by Solange Coupet-Grimal and William Delobel
+- RPO: recursive path ordering with statuses,
+	by Solange Coupet-Grimal and William Delobel
 - Util/Multiset: additions in MultisetOrder, MultisetListOrder
 - Util/List: additions in ListUtil
 - Util/Relation: additions in WfUtil
 - MPO/VMPO: elimination of irreflexivity hypothesis
-- Util/Multiset/MultisetListOrder: elimination of transitivity hypothesis in HAccTermsToTermlist
+- Util/Multiset/MultisetListOrder:
+	elimination of transitivity hypothesis in HAccTermsToTermlist
 - Util/List: creation of LexicographicOrder
 - Util/Relation: creation of Preorder
 

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 ************************************************************************)
 
-(* $Id: ZUtil.v,v 1.3 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.4 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -143,12 +143,12 @@ unfold inclusion, Zwf. intros (x,Hx) (y,Hy). simpl. intuition omega.
 apply (wf_inverse_image D Z (Zwf 0) val). apply Zwf_well_founded.
 Qed.
 
-Require Export WfUtil.
+Require Export SN.
 
-Lemma Dgt_wf : wf Dgt.
+Lemma Dgt_wf : WF Dgt.
 
 Proof.
-unfold transp. apply Dlt_well_founded.
+apply wf_WF. apply Dlt_well_founded.
 Qed.
 
 Lemma power_Dlt_compat : forall x y n,

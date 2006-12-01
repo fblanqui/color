@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 ************************************************************************)
 
-(* $Id: AFilter.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.2 2006-12-01 09:37:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -165,10 +165,10 @@ Qed.
 (***********************************************************************)
 (* well-foundedness *)
 
-Lemma filter_wf : wf succ -> wf fsucc.
+Lemma WF_filter : WF succ -> WF fsucc.
 
 Proof.
-intro. unfold filter_ord. apply wf_inv_image with (f := filter). assumption.
+intro. unfold filter_ord. apply (WF_inverse filter H).
 Qed.
 
 (***********************************************************************)
@@ -286,7 +286,8 @@ Lemma filter_weak_cont_closed :
 
 Proof.
 intro. unfold weak_context_closed. intros.
-assert (clos_refl fsucc t1 t2). unfold clos_refl. auto. deduce (rc_filter_ord H1).
+assert (clos_refl fsucc t1 t2). unfold clos_refl. auto.
+deduce (rc_filter_ord H1).
 assert (context_closed fsucc_eq). apply filter_cont_closed. apply rc_refl.
 apply rc_context_closed. assumption. apply H3. assumption.
 Qed.
@@ -298,7 +299,7 @@ Lemma filter_weak_red_ord : weak_reduction_ordering succ succ_eq
   -> weak_reduction_ordering fsucc fsucc_eq.
 
 Proof.
-intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply filter_wf. assumption.
+intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply WF_filter. assumption.
 split. apply filter_subs_closed. assumption.
 apply filter_weak_cont_closed. assumption.
 Qed.
