@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 ************************************************************************)
 
-(* $Id: APolyInt.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.4 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -210,7 +210,8 @@ Lemma compatibility : forall r, P1 r -> P2 r.
 
 Proof.
 intros r H_coef_pos. unfold P2, IR. intro xint. unfold Dgt, Dlt, transp.
-set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)). set (m := max mvl mvr).
+set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
+set (m := max mvl mvr).
 rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
 rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). do 2 rewrite val_peval_D.
 pose (v := (Vmap (proj1_sig (P:=pos)) (fval xint (S (max mvl mvr))))).
@@ -222,7 +223,7 @@ Qed.
 (* termination *)
 
 Lemma polyInterpretationTermination : forall R,
-  lforall (fun r => coef_pos (rulePoly r)) R -> wf (red R).
+  lforall (fun r => coef_pos (rulePoly r)) R -> WF (red R).
 
 Proof.
 intros R H. eapply manna_ness. apply (@IR_reduction_ordering Sig W Dgt).
@@ -238,7 +239,7 @@ End S.
 
 Ltac poly_int PI :=
   match goal with
-    |- wf (red ?R) =>
+    |- WF (red ?R) =>
       apply (polyInterpretationTermination PI R);
 	compute; intuition; discriminate
   end.

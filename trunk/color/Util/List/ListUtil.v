@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 ************************************************************************)
 
-(* $Id: ListUtil.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.2 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -127,7 +127,8 @@ Proof.
 intros. subst l1. subst l2. reflexivity.
 Qed.
 
-Lemma in_elim : forall (x : A) l, In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
+Lemma in_elim : forall (x : A) l,
+  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
 
 Proof.
 induction l; simpl; intros. contradiction. destruct H. subst x.
@@ -273,7 +274,8 @@ Section Element_At_List.
   Notation "l '[' p ']'" := (element_at l p) (at level 50).
   Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50).
 
-  Lemma element_at_exists : forall l p, p < length l <-> ex (fun a => l[p] = Some a).
+  Lemma element_at_exists : forall l p,
+    p < length l <-> ex (fun a => l[p] = Some a).
 
   Proof.
     intro l; induction l as [ | h t IHl].
@@ -341,8 +343,8 @@ Section Element_At_List.
 
 End Element_At_List.
 
-Notation "l '[' p ']'" := (element_at l p) (at level 50).
-Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50).
+Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
+Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
 
 (***********************************************************************)
 (* one_less *)

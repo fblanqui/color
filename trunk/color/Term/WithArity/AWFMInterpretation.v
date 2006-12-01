@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 ************************************************************************)
 
-(* $Id: AWFMInterpretation.v,v 1.4 2006-10-26 14:26:06 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.5 2006-12-01 09:37:48 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -68,22 +68,18 @@ simpl fill. do 2 rewrite term_int_fun.
 do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
 Qed.
 
-Require Export WfUtil.
-
-Lemma IR_wf : wf R -> wf IR.
+Lemma IR_WF : WF R -> WF IR.
 
 Proof.
 intro. set (xint := fun x:nat => some_elt I).
-apply wf_incl with (R2 := fun t1 t2 =>
-  transp R (term_int xint t1) (term_int xint t2)).
-unfold inclusion, transp. auto.
-apply wf_inverse_image with (f := term_int xint). exact H.
+apply WF_incl with (S := fun t1 t2 => R (term_int xint t1) (term_int xint t2)).
+unfold inclusion. auto. apply (WF_inverse (term_int xint) H).
 Qed.
 
-Lemma IR_reduction_ordering : monotone -> wf R -> reduction_ordering IR.
+Lemma IR_reduction_ordering : monotone -> WF R -> reduction_ordering IR.
 
 Proof.
-split. apply IR_wf. exact H0. split. apply IR_substitution_closed.
+split. apply IR_WF. exact H0. split. apply IR_substitution_closed.
 apply IR_context_closed. exact H.
 Qed.
 

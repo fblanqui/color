@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 ************************************************************************)
 
-(* $Id: VTerm_of_ATerm.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.2 2006-12-01 09:37:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -179,20 +179,20 @@ Qed.
 (***********************************************************************)
 (* preservation of termination *)
 
-Require Export WfUtil.
+Require Export SN.
 
-Lemma Acc_vred_imp_Acc_ared : forall t,
-  sn (vred S) t -> forall u, t = vterm_of_aterm u -> sn (ared R) u.
+Lemma SN_vred_imp_SN_ared : forall t,
+  SN (vred S) t -> forall u, t = vterm_of_aterm u -> SN (ared R) u.
 
 Proof.
-induction 1. intros. subst x. apply Acc_intro. intros. apply (H0 (vterm_of_aterm y)).
-unfold transp. apply vred_of_ared. exact H1. refl.
+induction 1. intros. subst x. apply SN_intro. intros.
+apply (H0 (vterm_of_aterm y)). apply vred_of_ared. exact H1. refl.
 Qed.
 
-Lemma wf_vred_imp_wf_ared : wf (vred S) -> wf (ared R).
+Lemma WF_vred_imp_WF_ared : WF (vred S) -> WF (ared R).
 
 Proof.
-intro. unfold well_founded. intro. eapply Acc_vred_imp_Acc_ared. apply H. refl.
+intro. unfold well_founded. intro. eapply SN_vred_imp_SN_ared. apply H. refl.
 Qed.
 
 End S.
