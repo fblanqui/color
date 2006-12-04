@@ -53,7 +53,7 @@ mkmfsub
 # simple directories
 
 Rdir=..
-for dir in PolyInt DP Filter MPO Conversion RPO HORPO
+for dir in MannaNess PolyInt DP Filter Conversion MPO RPO HORPO
 do
   mkcoqmf
 done

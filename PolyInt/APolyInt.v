@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 ************************************************************************)
 
-(* $Id: APolyInt.v,v 1.4 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.5 2006-12-04 15:20:15 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -199,8 +199,6 @@ Definition rulePoly r :=
 (***********************************************************************)
 (* compatibility *)
 
-Require Export ARedOrd.
-
 Let P1 rho := coef_pos (rulePoly rho).
 Let P2 rho := IR W Dgt (lhs rho) (rhs rho).
 
@@ -221,6 +219,8 @@ Qed.
 
 (***********************************************************************)
 (* termination *)
+
+Require Export AMannaNess.
 
 Lemma polyInterpretationTermination : forall R,
   lforall (fun r => coef_pos (rulePoly r)) R -> WF (red R).
