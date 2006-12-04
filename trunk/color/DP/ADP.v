@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 ************************************************************************)
 
-(* $Id: ADP.v,v 1.4 2006-12-04 12:53:51 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.5 2006-12-04 15:02:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -70,7 +70,7 @@ Qed.
 (***********************************************************************)
 (* dependancy chains *)
 
-Definition chain := compose (clos_refl_trans (int_red R)) (hd_red dp).
+Definition chain := int_red R # @ hd_red dp.
 
 Lemma in_calls_chain : forall l r t s,
   In (mkRule l r) R -> In t (calls R r) -> chain (app s l) (app s t).
@@ -177,7 +177,7 @@ apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
 eapply red_rule. assumption. refl.
 Qed.
 
-Lemma wf_chain : WF chain -> WF (red R).
+Lemma WF_chain : WF chain -> WF (red R).
 
 Proof.
 intro Hwf. unfold WF. apply term_ind_forall.
@@ -189,6 +189,15 @@ intro f. pattern (defined f R). apply bool_eq_ind; intro.
 intros ts Hsnts. apply chain_fun. assumption. apply Hwf. assumption.
 (* f undefined *)
 apply sn_args_sn_fun; auto.
+Qed.
+
+(***********************************************************************)
+(* chain termination *)
+
+Lemma chain_hd_red_mod : chain << hd_red_mod R dp.
+
+Proof.
+unfold chain, hd_red_mod. comp. apply incl_rtc. apply int_red_incl_red.
 Qed.
 
 End S.

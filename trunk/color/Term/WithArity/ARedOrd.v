@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 ************************************************************************)
 
-(* $Id: ARedOrd.v,v 1.6 2006-12-04 12:53:52 blanqui Exp $ *)
+(* $Id: ARedOrd.v,v 1.7 2006-12-04 15:02:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -50,13 +50,11 @@ Variables R E : rules.
 
 Lemma manna_ness2_incl : forall rp : Reduction_pair Sig,
   compatible (rp_succ_eq rp) E -> compatible (rp_succ rp) R ->
-  inclusion (red_mod E R) (rp_succ rp).
+  red_mod E R << rp_succ rp.
 
 Proof.
-intros. unfold red_mod. apply incl_trans with
-  (S := compose (clos_refl_trans (rp_succ_eq rp)) (rp_succ rp)).
-apply incl_comp. apply incl_rtc. incl_red. incl_red.
-apply comp_rtc_incl. exact (rp_comp rp).
+intros. unfold red_mod. trans (rp_succ_eq rp # @ rp_succ rp).
+comp. apply incl_rtc. incl_red. incl_red. apply comp_rtc_incl. rptac.
 Qed.
 
 Lemma manna_ness2 : forall rp : Reduction_pair Sig,
@@ -78,13 +76,11 @@ Variables R E : rules.
 
 Lemma manna_ness2_head_incl : forall wp : Weak_reduction_pair Sig,
   compatible (wp_succ_eq wp) E -> compatible (wp_succ wp) R ->
-  inclusion (hd_red_mod E R) (wp_succ wp).
+  hd_red_mod E R << wp_succ wp.
 
 Proof.
-intros. unfold hd_red_mod. apply incl_trans with
-  (S := compose (clos_refl_trans (wp_succ_eq wp)) (wp_succ wp)).
-apply incl_comp. apply incl_rtc. incl_red. incl_red.
-apply comp_rtc_incl. exact (wp_comp wp).
+intros. unfold hd_red_mod. trans (wp_succ_eq wp # @ wp_succ wp).
+comp. apply incl_rtc. incl_red. incl_red. apply comp_rtc_incl. rptac.
 Qed.
 
 Lemma manna_ness2_head : forall wp : Weak_reduction_pair Sig,
@@ -103,6 +99,8 @@ End manna_ness2_head.
 Section rule_elimination.
 
 Variables R R' E E' : rules.
+
+Require Import Lexico.
 
 Lemma rule_elimination : forall rp : Reduction_pair Sig,
   compatible (rp_succ_eq rp) E -> compatible (rp_succ rp) E' ->
@@ -142,7 +140,7 @@ apply incl_rc_rtc. exact h0.
 assert (h4 : succ_eq# @ succ! << succ!).
 apply comp_incl_tc. apply comp_rtc_incl. rptac.
 (* lexico *)
-Require Import Lexico. eapply WF_incl with (S := lex' gt (er!)).
+eapply WF_incl with (S := lex' gt (er!)).
 trans (er U gt). exact h3. trans (er! U gt). union.
 apply tc_incl. trans (gt U er!). apply union_commut.
 apply lex'_intro. apply lex'_WF.
@@ -157,6 +155,25 @@ apply comp_tc_incl. trans (succ_eq! @ gt). comp. exact h0.
 apply comp_tc_incl. unfold gt.
 trans ((succ_eq @ succ!) @ succ_eq#). apply comp_assoc'.
 comp. apply comp_incl_tc. rptac.
+Qed.
+
+Lemma weak_rule_elimination : forall wp : Weak_reduction_pair Sig,
+  compatible (wp_succ_eq wp) E ->
+  compatible (wp_succ_eq wp) R -> compatible (wp_succ wp) R' ->
+  WF (hd_red_mod E R) -> WF (hd_red_mod E (R ++ R')).
+
+Proof.
+intros. set (succ := wp_succ wp). set (succ_eq := wp_succ_eq wp).
+set (er := hd_red_mod E R). set (er' := hd_red_mod E R').
+apply WF_incl with (S := lex' succ (er!)).
+trans (er U succ). trans (er U er'). unfold er, er'. apply hd_red_mod_union.
+union. unfold er', succ. incl_red.
+trans (succ U er). apply union_commut.
+trans (succ U er!). union. apply tc_incl.
+apply lex'_intro. apply lex'_WF. WFtac. apply WF_tc. exact H2. apply tc_trans.
+apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
+trans (red_mod E R). apply hd_red_mod_incl_red_mod. incl_red.
+apply comp_tc_incl. rptac.
 Qed.
 
 End rule_elimination.
