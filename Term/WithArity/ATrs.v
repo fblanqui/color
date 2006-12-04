@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 ************************************************************************)
 
-(* $Id: ATrs.v,v 1.3 2006-12-04 12:53:52 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.4 2006-12-04 15:02:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -91,11 +91,17 @@ Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
   red (app s l) (app s r).
 
 Proof.
-intros. unfold red. exists l . exists r. exists (@Hole Sig). exists s. auto.
+intros. unfold red. exists l. exists r. exists (@Hole Sig). exists s. auto.
 Qed.
 
-Lemma red_fill : forall c t u,
-  red t u -> red (fill c t) (fill c u).
+Lemma hd_red_rule : forall l r s, In (mkRule l r) R ->
+  hd_red (app s l) (app s r).
+
+Proof.
+intros. unfold hd_red. exists l. exists r. exists s. auto.
+Qed.
+
+Lemma red_fill : forall c t u, red t u -> red (fill c t) (fill c u).
 
 Proof.
 intros. redtac. unfold red.
@@ -125,11 +131,17 @@ exists e. exists (fill c (app s r)). split. assumption. split. assumption.
 unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
-Lemma int_red_incl_red : inclusion int_red red.
+Lemma int_red_incl_red : int_red << red.
 
 Proof.
 unfold inclusion, int_red. intros. decomp H. subst x. subst y. apply red_rule.
 assumption.
+Qed.
+
+Lemma hd_red_incl_red : hd_red << red.
+
+Proof.
+unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. exact H.
 Qed.
 
 (***********************************************************************)
@@ -158,9 +170,15 @@ Section rewriting_modulo.
 
 Variable E R : rules.
 
-Definition red_mod := compose (clos_refl_trans (red E)) (red R).
+Definition red_mod := red E # @ red R.
 
-Definition hd_red_mod := compose (clos_refl_trans (red E)) (hd_red R).
+Definition hd_red_mod := red E # @ hd_red R.
+
+Lemma hd_red_mod_incl_red_mod : hd_red_mod << red_mod.
+
+Proof.
+unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
+Qed.
 
 End rewriting_modulo.
 

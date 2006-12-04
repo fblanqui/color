@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.6 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.7 2006-12-04 15:02:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -44,56 +44,7 @@ Require Export SN.
 
 Definition reduction_ordering := WF succ /\ rewrite_ordering.
 
-(***********************************************************************)
-(* compatibility *)
-
-Variable R : rules.
-
-Definition compatible := forall l r : term, In (mkRule l r) R -> succ l r.
-
-Lemma comp_rewrite_ord : rewrite_ordering -> compatible ->
-  forall t u, red R t u -> succ t u.
-
-Proof.
-intros (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
-apply Hcont. apply Hsubs. apply Hcomp. exact H.
-Qed.
-
-Lemma comp_rewrite_ord_incl : rewrite_ordering -> compatible -> red R << succ.
-
-Proof.
-unfold inclusion. intros. apply comp_rewrite_ord; assumption.
-Qed.
-
-Lemma comp_head_rewrite_ord : substitution_closed -> compatible ->
-  forall t u, hd_red R t u -> succ t u.
-
-Proof.
-intros. redtac. subst t. subst u. apply H. apply H0. assumption.
-Qed.
-
-Lemma comp_head_rewrite_ord_incl :
-  substitution_closed -> compatible -> hd_red R << succ.
-
-Proof.
-unfold inclusion. intros. apply comp_head_rewrite_ord; assumption.
-Qed.
-
 End basic.
-
-Lemma comp_mod_rewrite_ord_incl : forall succ R E,
-  rewrite_ordering succ -> compatible succ E -> compatible succ R ->
-  red_mod E R << succ!.
-
-Proof.
-unfold inclusion. intros. do 2 destruct H2. deduce (rtc_split H2). destruct H4.
-subst x0. apply t_step. apply incl_elim with (R := red R). 2: exact H3.
-apply comp_rewrite_ord_incl; assumption.
-apply t_trans with (y := x0). apply incl_elim with (R := red E !).
-2: exact H4. apply incl_tc. apply comp_rewrite_ord_incl; assumption.
-apply t_step. apply incl_elim with (R := red R). 2: exact H3.
-apply comp_rewrite_ord_incl; assumption.
-Qed.
 
 Record Rewrite_ordering : Type := mkRewrite_ordering {
   rew_ord_rel :> relation term;
@@ -101,7 +52,57 @@ Record Rewrite_ordering : Type := mkRewrite_ordering {
   rew_ord_cont : context_closed rew_ord_rel
 }.
 
-Lemma comp_preserv : forall (succ succ' : relation term) R,
+(***********************************************************************)
+(* compatibility *)
+
+Section compat.
+
+Variable (succ : relation term) (R : rules).
+
+Definition compatible := forall l r : term, In (mkRule l r) R -> succ l r.
+
+(*Lemma comp_rewrite_ord : rewrite_ordering -> compatible ->
+  forall t u, red R t u -> succ t u.
+
+Proof.
+intros (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
+apply Hcont. apply Hsubs. apply Hcomp. exact H.
+Qed.*)
+
+Lemma compat_red : rewrite_ordering succ -> compatible -> red R << succ.
+
+Proof.
+unfold inclusion. intros (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
+apply Hcont. apply Hsubs. apply Hcomp. exact H.
+Qed.
+
+(*Lemma comp_head_rewrite_ord : substitution_closed -> compatible ->
+  forall t u, hd_red R t u -> succ t u.
+
+Proof.
+intros. redtac. subst t. subst u. apply H. apply H0. assumption.
+Qed.*)
+
+Lemma compat_hd_red : substitution_closed succ -> compatible -> hd_red R << succ.
+
+Proof.
+unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0.
+assumption.
+Qed.
+
+End compat.
+
+Lemma compat_red_mod : forall succ R E,
+  rewrite_ordering succ -> compatible succ E -> compatible succ R ->
+  red_mod E R << succ!.
+
+Proof.
+intros. unfold red_mod. trans (succ# @ succ). comp.
+apply incl_rtc. apply compat_red; assumption. apply compat_red; assumption.
+apply rtc_step_incl_tc.
+Qed.
+
+Lemma incl_compat : forall (succ succ' : relation term) R,
   (forall l r, In (mkRule l r) R -> succ l r -> succ' l r)
   -> compatible succ R -> compatible succ' R.
 
@@ -110,7 +111,7 @@ unfold compatible. intros. apply H. assumption. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(* weak context closed *)
+(* reduction pair *)
 
 Section reduction_pair.
 
@@ -122,12 +123,20 @@ Definition weak_context_closed :=
 Definition weak_rewrite_ordering :=
   substitution_closed succ /\ weak_context_closed.
 
+Definition left_compatible := succ_eq @ succ << succ.
+
+Lemma compat_hd_red_mod : forall R E,
+  weak_rewrite_ordering -> rewrite_ordering succ_eq ->
+  compatible succ_eq E -> compatible succ R ->
+  left_compatible -> hd_red_mod E R << succ.
+
+Proof.
+intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
+apply compat_red; assumption. destruct H. apply compat_hd_red; assumption.
+apply comp_rtc_incl. exact H3.
+Qed.
+
 Definition weak_reduction_ordering := WF succ /\ weak_rewrite_ordering.
-
-(***********************************************************************)
-(* reduction pairs *)
-
-Definition left_compatible := inclusion (compose succ_eq succ) succ.
 
 Definition reduction_pair :=
   weak_reduction_ordering /\ left_compatible /\ rewrite_ordering succ_eq.
@@ -141,7 +150,7 @@ Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
   wp_subs_eq : substitution_closed wp_succ_eq;
   wp_cont : weak_context_closed wp_succ wp_succ_eq;
   wp_cont_eq : context_closed wp_succ_eq;
-  wp_comp : inclusion (compose wp_succ_eq wp_succ) wp_succ;
+  wp_comp : wp_succ_eq @ wp_succ << wp_succ;
   wp_succ_wf : WF wp_succ
 }.
 
@@ -152,7 +161,7 @@ Record Reduction_pair : Type := mkReduction_pair {
   rp_subs_eq : substitution_closed rp_succ_eq;
   rp_cont : context_closed rp_succ;
   rp_cont_eq : context_closed rp_succ_eq;
-  rp_comp : inclusion (compose rp_succ_eq rp_succ) rp_succ;
+  rp_comp : rp_succ_eq @ rp_succ << rp_succ;
   rp_succ_wf : WF rp_succ
 }.
 
@@ -171,6 +180,14 @@ deduce (in_app_or H). destruct H0.
 left. apply red_rule. exact H0. right. apply red_rule. exact H0.
 Qed.
 
+Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
+
+Proof.
+unfold inclusion. intros. redtac. subst x. subst y.
+deduce (in_app_or H). destruct H0.
+left. apply hd_red_rule. exact H0. right. apply hd_red_rule. exact H0.
+Qed.
+
 Variables E E' : rules.
 
 Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
@@ -180,6 +197,16 @@ unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 deduce (in_app_or H0). destruct H1.
 left. exists (fill c (app s l)); split. assumption. apply red_rule. exact H1.
 right. exists (fill c (app s l)); split. assumption. apply red_rule. exact H1.
+Qed.
+
+Lemma hd_red_mod_union :
+  hd_red_mod E (R ++ R') << hd_red_mod E R U hd_red_mod E R'.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
+deduce (in_app_or H0). destruct H1.
+left. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
+right. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
 Qed.
 
 End union.
@@ -256,7 +283,10 @@ Ltac rptac := repeat destruct_rp; try split; assumption.
 
 Ltac incl_red :=
   match goal with
-    | |- inclusion (red _) ?succ => apply comp_rewrite_ord_incl
-    | |- inclusion (red_mod _ _) ?succ => apply comp_mod_rewrite_ord_incl
-    | |- inclusion (hd_red _) ?succ => apply comp_head_rewrite_ord_incl
+    | |- inclusion (red _) ?succ => apply compat_red
+    | |- inclusion (red_mod _ _) ?succ => apply compat_red_mod
+    | |- inclusion (hd_red _) ?succ => apply compat_hd_red
+    | |- inclusion (hd_red_mod _ _) (wp_succ ?wp) =>
+      apply compat_hd_red_mod with (succ_eq := wp_succ_eq wp)
+    | |- inclusion (hd_red_mod _ _) ?succ => eapply compat_hd_red_mod
   end; rptac.
