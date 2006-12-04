@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 ************************************************************************)
 
-(* $Id: ARedOrd.v,v 1.7 2006-12-04 15:02:49 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.1 2006-12-04 15:20:15 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
