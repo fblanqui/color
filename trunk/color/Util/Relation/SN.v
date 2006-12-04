@@ -186,3 +186,66 @@ intros. unfold WF. intro. apply SN_tc. apply H.
 Qed.
 
 End tc.
+
+(***********************************************************************)
+(* symmetric product *)
+
+Section symprod.
+
+Variable (A B : Set) (gtA : relation A) (gtB : relation B).
+
+Notation gt := (symprod A B gtA gtB).
+
+Require Import Wellfounded.
+
+Lemma SN_symprod : forall x, SN gtA x -> forall y, SN gtB y -> SN gt (x,y).
+
+Proof.
+induction 1 as [x _ IHAcc]; intros y H2.
+induction H2 as [x1 H3 IHAcc1].
+apply SN_intro; intros y H5.
+inversion_clear H5; auto with sets.
+apply IHAcc; auto.
+apply SN_intro; trivial.
+Qed.
+
+Lemma WF_symprod : WF gtA -> WF gtB -> WF gt.
+
+Proof.
+red in |- *. intros. destruct x. apply SN_symprod; auto with sets.
+Qed.
+
+Lemma SN_symprod_fst : forall x, SN gt x -> SN gtA (fst x).
+
+Proof.
+induction 1. destruct x. simpl. apply SN_intro. intros. deduce (H0 (y,b)).
+apply H2. apply left_sym. assumption.
+Qed.
+
+Lemma SN_symprod_snd : forall x, SN gt x -> SN gtB (snd x).
+
+Proof.
+induction 1. destruct x. simpl. apply SN_intro. intros. deduce (H0 (a,y)).
+apply H2. apply right_sym. assumption.
+Qed.
+
+Lemma SN_symprod_invl : forall x y, SN gt (x,y) -> SN gtA x.
+
+Proof.
+intros. deduce (SN_symprod_fst H). assumption.
+Qed.
+
+Lemma SN_symprod_invr : forall x y, SN gt (x,y) -> SN gtB y.
+
+Proof.
+intros. deduce (SN_symprod_snd H). assumption.
+Qed.
+
+Lemma SN_symprod_inv : forall x y, SN gt (x,y) -> SN gtA x /\ SN gtB y.
+
+Proof.
+intros. split. eapply SN_symprod_invl. apply H. eapply SN_symprod_invr.
+apply H.
+Qed.
+
+End symprod.
