@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 ************************************************************************)
 
-(* $Id: RelUtil.v,v 1.5 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.6 2006-12-04 18:04:57 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -45,6 +45,8 @@ Open Scope relation_scope.
 Section basic_properties.
 
 Variables (A : Set) (R : relation A).
+
+Definition Rel_dec := forall x y, {R x y}+{~R x y}.
 
 Definition irreflexive := forall x, ~ R x x.
 
@@ -130,6 +132,22 @@ End inclusion.
 Ltac incl_refl := apply incl_refl.
 
 Ltac trans S := apply incl_trans with (S := S); try incl_refl.
+
+(***********************************************************************)
+(* irreflexive *)
+
+Section irrefl.
+
+Variable A : Set.
+
+Lemma incl_irrefl : forall R S : relation A,
+  R << S -> irreflexive S -> irreflexive R.
+
+Proof.
+unfold inclusion, irreflexive. intros. intro. exact (H0 x (H x x H1)).
+Qed.
+
+End irrefl.
 
 (***********************************************************************)
 (* monotony *)
@@ -236,6 +254,13 @@ induction 1. exists y. split. exact H. apply rt_refl.
 destruct IHclos_trans1. destruct H1. exists x0. split. exact H1.
 apply rt_trans with (y := y). exact H2.
 apply incl_elim with (R := R!). apply tc_incl_rtc. exact H0.
+Qed.
+
+Lemma trans_tc_incl : transitive R -> R! << R.
+
+Proof.
+unfold transitive, inclusion. intros. induction H0. assumption. 
+apply H with y; assumption.
 Qed.
 
 End clos_trans.
