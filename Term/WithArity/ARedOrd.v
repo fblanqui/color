@@ -2,13 +2,12 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Sebastien Hinderer, 2004-02-09
-- Frederic Blanqui, 2005-02-17
+- Frederic Blanqui, 2006-12-01
 
 termination by using compatible reduction orderings
 ************************************************************************)
 
-(* $Id: ARedOrd.v,v 1.5 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: ARedOrd.v,v 1.6 2006-12-04 12:53:52 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

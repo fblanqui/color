@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 ************************************************************************)
 
-(* $Id: ADP.v,v 1.3 2006-12-01 09:37:47 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.4 2006-12-04 12:53:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -80,12 +80,12 @@ intros. unfold chain, compose. exists (app s l). split. apply rt_refl.
 eapply in_calls_dpr. apply H. assumption.
 Qed.
 
-Lemma lt_chain : forall f ts y u,
-  terms_lt R y ts -> chain (Fun f y) u -> chain (Fun f ts) u.
+Lemma gt_chain : forall f ts us v,
+  terms_gt R ts us -> chain (Fun f us) v -> chain (Fun f ts) v.
 
 Proof.
-unfold chain, compose. intros. destruct H0 as [v]. destruct H0. exists v. split.
-apply rt_trans with (y := Fun f y). apply rt_step. apply Vlt_prod_fun.
+unfold chain, compose. intros. do 2 destruct H0. exists x. split.
+apply rt_trans with (y := Fun f us). apply rt_step. apply Vgt_prod_fun.
 exact H. exact H0. exact H1.
 Qed.
 
@@ -110,41 +110,37 @@ Notation capa := (capa R).
 Notation cap := (cap R).
 Notation alien_sub := (alien_sub R).
 
-Require Export WfUtil.
-
-Notation "'wf' R" := (well_founded (transp R)) (at level 70).
-Notation "'sn' R" := (Acc (transp R)) (at level 0).
-Notation SN := (sn (red R)).
+Notation SNR := (SN (red R)).
 
 Require Export ASN.
 
 Lemma chain_fun : forall f, defined f R = true
-  -> forall ts, sn chain (Fun f ts) -> Vforall SN ts -> SN (Fun f ts).
+  -> forall ts, SN chain (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
 
 Proof.
-cut (forall t, sn chain t -> forall f, defined f R = true
-  -> forall ts, t = Fun f ts -> Vforall SN ts -> SN t).
+cut (forall t, SN chain t -> forall f, defined f R = true
+  -> forall ts, t = Fun f ts -> Vforall SNR ts -> SNR t).
 intros. apply H with (t := Fun f ts) (f := f) (ts := ts); (assumption || refl).
 (* induction on t with chain as well-founded ordering *)
 intros t H. pattern t. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
-assert (Acc (@terms_lt Sig R (arity f)) ts). unfold terms_lt.
-apply Vforall_Acc_lt_prod. assumption.
+assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
+apply Vforall_SN_gt_prod. assumption.
 (* induction on ts with red as well-founded ordering (ts is SN) *)
 generalize IH. rewrite H1. elim H2. clear IH ts H1 Hsnts H2.
 intros ts H1 IH1 IH2.
-assert (Hsnts : Vforall SN ts). apply Acc_lt_prod_forall. apply Acc_intro.
+assert (Hsnts : Vforall SNR ts). apply SN_gt_prod_forall. apply SN_intro.
 assumption. clear H1.
-assert (H1 : forall y, terms_lt R y ts -> SN (Fun f y)). intros. apply IH1.
-assumption. intros. eapply IH2. unfold transp. eapply lt_chain. apply H1.
+assert (H1 : forall y, terms_gt R ts y -> SNR (Fun f y)). intros. apply IH1.
+assumption. intros. eapply IH2. unfold transp. eapply gt_chain. apply H1.
 apply H2. apply H3. apply H4. assumption. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
-apply Acc_intro. intros u H2. redtac. destruct c; simpl in H3, H4.
+apply SN_intro. intros u H2. redtac. destruct c; simpl in H3, H4.
 (* c = Hole *)
 deduce (fun_eq_app H3). destruct H5.
 (* lhs = Fun f us *)
 destruct e as [ls]. rewrite H5 in H3. rewrite app_fun in H3. Funeqtac.
 (* begin assert: the substitution s is SN *)
-assert (Hsnsx : forall x, In x (varlist l) -> SN (s x)). intros.
+assert (Hsnsx : forall x, In x (varlist l) -> SNR (s x)). intros.
 eapply sub_fun_sn with (f := f). rewrite H5 in H3. apply H3.
 rewrite <- H7. assumption.
 (* end assert *)
@@ -176,15 +172,15 @@ assumption.
 destruct e. absurd (l = Var x). eapply lhs_notvar. apply hyp1. apply H2.
 assumption.
 (* c <> Hole *)
-Funeqtac. subst u. apply H1. rewrite H6. unfold terms_lt. apply Vlt_prod_cast.
-apply Vlt_prod_app. apply Vlt_prod_cons. left. split.
-unfold transp. eapply red_rule. assumption. refl.
+Funeqtac. subst u. apply H1. rewrite H6. unfold terms_gt. apply Vgt_prod_cast.
+apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
+eapply red_rule. assumption. refl.
 Qed.
 
-Lemma wf_chain : wf chain -> wf (red R).
+Lemma wf_chain : WF chain -> WF (red R).
 
 Proof.
-intro Hwf. unfold well_founded. apply term_ind_forall.
+intro Hwf. unfold WF. apply term_ind_forall.
 (* var *)
 apply sn_var. apply hyp1.
 (* fun *)

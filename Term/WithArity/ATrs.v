@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 ************************************************************************)
 
-(* $Id: ATrs.v,v 1.2 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.3 2006-12-04 12:53:52 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -137,13 +137,13 @@ Qed.
 
 Require Export VecOrd.
 
-Definition terms_lt := Vlt_prod (transp red).
+Definition terms_gt := Vgt_prod red.
 
-Lemma Vlt_prod_fun : forall f ts ts', Vlt_prod (transp red) ts ts'
-  -> transp int_red (Fun f ts) (Fun f ts').
+Lemma Vgt_prod_fun : forall f ts ts',
+  Vgt_prod red ts ts' -> int_red (Fun f ts) (Fun f ts').
 
 Proof.
-intros. deduce (Vlt_prod_lt H). do 8 destruct H0. destruct H1. redtac.
+intros. deduce (Vgt_prod_gt H). do 8 destruct H0. destruct H1. redtac.
 subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
 exists l. exists r. exists (Cont f x4 x0 c x3). exists s. split. discriminate.
 auto.
