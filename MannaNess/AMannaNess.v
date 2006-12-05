@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 ************************************************************************)
 
-(* $Id: AMannaNess.v,v 1.2 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.3 2006-12-05 14:39:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,54 +46,36 @@ End manna_ness.
 (* an extension for proving the well-foundedness of relations of the form:
 several steps of R1 followed by a step of R2 *)
 
-Section manna_ness2.
+Section manna_ness_mod.
 
 Variables R E : rules.
 
-Lemma manna_ness2_incl : forall rp : Reduction_pair Sig,
-  compatible (rp_succ_eq rp) E -> compatible (rp_succ rp) R ->
-  red_mod E R << rp_succ rp.
-
-Proof.
-intros. unfold red_mod. trans (rp_succ_eq rp # @ rp_succ rp).
-comp. apply incl_rtc. incl_red. incl_red. apply comp_rtc_incl. rptac.
-Qed.
-
-Lemma manna_ness2 : forall rp : Reduction_pair Sig,
+Lemma manna_ness_mod : forall rp : Reduction_pair Sig,
   compatible (rp_succ_eq rp) E -> compatible (rp_succ rp) R -> WF (red_mod E R).
 
 Proof.
-intros. WF_incl (rp_succ rp). apply manna_ness2_incl; auto.
+intros. WF_incl (rp_succ rp). incl_red.
 Qed.
 
-End manna_ness2.
+End manna_ness_mod.
 
 (***********************************************************************)
 (* an extension for proving the well-foundedness of relations of the form:
 several steps of R1 followed by a -head- step of R2 *)
 
-Section manna_ness2_head.
+Section manna_ness_hd_mod.
 
 Variables R E : rules.
 
-Lemma manna_ness2_head_incl : forall wp : Weak_reduction_pair Sig,
-  compatible (wp_succ_eq wp) E -> compatible (wp_succ wp) R ->
-  hd_red_mod E R << wp_succ wp.
-
-Proof.
-intros. unfold hd_red_mod. trans (wp_succ_eq wp # @ wp_succ wp).
-comp. apply incl_rtc. incl_red. incl_red. apply comp_rtc_incl. rptac.
-Qed.
-
-Lemma manna_ness2_head : forall wp : Weak_reduction_pair Sig,
+Lemma manna_ness_hd_mod : forall wp : Weak_reduction_pair Sig,
   compatible (wp_succ_eq wp) E -> compatible (wp_succ wp) R ->
   WF (hd_red_mod E R).
 
 Proof.
-intros. WF_incl (wp_succ wp). apply manna_ness2_head_incl; auto.
+intros. WF_incl (wp_succ wp). incl_red.
 Qed.
 
-End manna_ness2_head.
+End manna_ness_hd_mod.
 
 (***********************************************************************)
 (* rule elimination *)
@@ -118,7 +100,7 @@ assert (h0 : er << succ_eq!). unfold er, succ_eq. incl_red.
 assert (h1 : red F # << succ # @ red E #).
 trans ((red E U red E')#). apply incl_rtc. unfold F. apply red_union.
 trans (red_mod E E' # @ red E #). unfold red_mod. apply rtc_union.
-comp. apply incl_rtc. unfold succ. apply manna_ness2_incl; assumption.
+comp. apply incl_rtc. unfold succ. incl_red.
 (* h2 *)
 assert (h2 : red_mod F (R ++ R') << succ# @ er U succ!).
 trans (red_mod F R U red_mod F R'). apply red_mod_union. union.
@@ -129,8 +111,7 @@ trans (succ # @ (red E # @ red R)). apply comp_assoc.
 trans ((succ # @ red E #) @ red R'). unfold red_mod. comp. exact h1.
 trans (succ # @ (red E # @ red R')). apply comp_assoc.
 trans (succ # @ succ). comp.
-trans (red_mod E R'). unfold succ.
-apply manna_ness2_incl; assumption. apply rtc_step_incl_tc.
+trans (red_mod E R'). unfold succ. incl_red. apply rtc_step_incl_tc.
 (* h3 *)
 set (gt := succ! @ succ_eq#). assert (h3 : red_mod F (R ++ R') << er U gt).
 trans (succ# @ er U succ!). exact h2.

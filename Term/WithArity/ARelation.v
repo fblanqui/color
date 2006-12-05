@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.8 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.9 2006-12-05 14:39:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -78,7 +78,7 @@ Qed.
 
 End compat.
 
-Lemma compat_red_mod : forall succ R E,
+Lemma compat_red_mod_tc : forall succ R E,
   rewrite_ordering succ -> compatible succ E -> compatible succ R ->
   red_mod E R << succ!.
 
@@ -103,42 +103,23 @@ Section reduction_pair.
 
 Variables succ succ_eq : relation term.
 
-Definition weak_context_closed :=
-  forall t1 t2 c, succ t1 t2 -> succ_eq (fill c t1) (fill c t2).
-
-Definition weak_rewrite_ordering :=
-  substitution_closed succ /\ weak_context_closed.
-
 Definition left_compatible := succ_eq @ succ << succ.
 
-Lemma compat_hd_red_mod : forall R E,
-  weak_rewrite_ordering -> rewrite_ordering succ_eq ->
+Lemma compat_red_mod : forall R E,
+  rewrite_ordering succ -> rewrite_ordering succ_eq ->
   compatible succ_eq E -> compatible succ R ->
-  left_compatible -> hd_red_mod E R << succ.
+  left_compatible -> red_mod E R << succ.
 
 Proof.
-intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
-apply compat_red; assumption. destruct H. apply compat_hd_red; assumption.
+intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
+apply compat_red; assumption. destruct H0. apply compat_red; assumption.
 apply comp_rtc_incl. exact H3.
 Qed.
 
-Definition weak_reduction_ordering := WF succ /\ weak_rewrite_ordering.
-
 Definition reduction_pair :=
-  weak_reduction_ordering /\ left_compatible /\ rewrite_ordering succ_eq.
+  reduction_ordering succ /\ left_compatible /\ rewrite_ordering succ_eq.
 
 End reduction_pair.
-
-Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
-  wp_succ : relation term;
-  wp_succ_eq : relation term;
-  wp_subs : substitution_closed wp_succ;
-  wp_subs_eq : substitution_closed wp_succ_eq;
-  wp_cont : weak_context_closed wp_succ wp_succ_eq;
-  wp_cont_eq : context_closed wp_succ_eq;
-  wp_comp : wp_succ_eq @ wp_succ << wp_succ;
-  wp_succ_wf : WF wp_succ
-}.
 
 Record Reduction_pair : Type := mkReduction_pair {
   rp_succ : relation term;
@@ -149,6 +130,49 @@ Record Reduction_pair : Type := mkReduction_pair {
   rp_cont_eq : context_closed rp_succ_eq;
   rp_comp : rp_succ_eq @ rp_succ << rp_succ;
   rp_succ_wf : WF rp_succ
+}.
+
+(***********************************************************************)
+(* weak reduction pair *)
+
+Section weak_reduction_pair.
+
+Variables succ succ_eq : relation term.
+
+Definition weak_context_closed :=
+  forall t1 t2 c, succ t1 t2 -> succ_eq (fill c t1) (fill c t2).
+
+Definition weak_rewrite_ordering :=
+  substitution_closed succ /\ weak_context_closed.
+
+Lemma compat_hd_red_mod : forall R E,
+  weak_rewrite_ordering -> rewrite_ordering succ_eq ->
+  compatible succ_eq E -> compatible succ R ->
+  left_compatible succ succ_eq -> hd_red_mod E R << succ.
+
+Proof.
+intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
+apply compat_red; assumption. destruct H. apply compat_hd_red; assumption.
+apply comp_rtc_incl. exact H3.
+Qed.
+
+Definition weak_reduction_ordering := WF succ /\ weak_rewrite_ordering.
+
+Definition weak_reduction_pair :=
+  weak_reduction_ordering /\ left_compatible succ succ_eq
+  /\ rewrite_ordering succ_eq.
+
+End weak_reduction_pair.
+
+Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
+  wp_succ : relation term;
+  wp_succ_eq : relation term;
+  wp_subs : substitution_closed wp_succ;
+  wp_subs_eq : substitution_closed wp_succ_eq;
+  wp_cont : weak_context_closed wp_succ wp_succ_eq;
+  wp_cont_eq : context_closed wp_succ_eq;
+  wp_comp : wp_succ_eq @ wp_succ << wp_succ;
+  wp_succ_wf : WF wp_succ
 }.
 
 (***********************************************************************)
@@ -270,7 +294,11 @@ Ltac rptac := repeat destruct_rp; try split; assumption.
 Ltac incl_red :=
   match goal with
     | |- inclusion (red _) ?succ => apply compat_red
-    | |- inclusion (red_mod _ _) ?succ => apply compat_red_mod
+    | |- inclusion (red_mod _ _) (rp_succ ?rp) =>
+      apply compat_red_mod with (succ_eq := rp_succ_eq rp)
+    | |- inclusion (red_mod _ _) (wp_succ ?wp) =>
+      apply compat_red_mod with (succ_eq := wp_succ_eq wp)
+    | |- inclusion (red_mod _ _) ?succ => apply compat_red_mod_tc
     | |- inclusion (hd_red _) ?succ => apply compat_hd_red
     | |- inclusion (hd_red_mod _ _) (wp_succ ?wp) =>
       apply compat_hd_red_mod with (succ_eq := wp_succ_eq wp)
