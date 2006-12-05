@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 ************************************************************************)
 
-(* $Id: ADP.v,v 1.5 2006-12-04 15:02:49 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.6 2006-12-05 09:53:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -54,8 +54,10 @@ Lemma in_calls_dp : forall l r t,
   In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
 
 Proof.
-intros. deduce (in_elim H). do 2 destruct H1. deduce (in_elim H0). do 2 destruct H2.
-unfold dp. rewrite H1. simpl. rewrite mkdp_app. simpl. rewrite H2. rewrite map_app.
+intros. deduce (in_elim H). do 2 destruct H1. deduce (in_elim H0).
+do 2 destruct H2.
+unfold dp. rewrite H1. simpl. rewrite mkdp_app. simpl. rewrite H2.
+rewrite map_app.
 simpl. apply in_appr. apply in_appl. apply in_appr. apply in_eq.
 Qed.
 
@@ -190,9 +192,6 @@ intros ts Hsnts. apply chain_fun. assumption. apply Hwf. assumption.
 (* f undefined *)
 apply sn_args_sn_fun; auto.
 Qed.
-
-(***********************************************************************)
-(* chain termination *)
 
 Lemma chain_hd_red_mod : chain << hd_red_mod R dp.
 

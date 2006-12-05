@@ -1,3 +1,11 @@
+06-12-04:
+- Acc replaced by SN in various files
+- Util/List/ListUtil: many new functions and lemmas [Le Roux]
+- Util/Relation/Path and Util/Relation/Total: results on the decidability
+  of relations and total orderings [Le Roux]
+- Term/WithArity/ARedOrd moved to MannaNess/AMannaNess
+- MannaNess/AMannaNess: rule elimination for relative top termination [Blanqui]
+
 06-12-01:
 - various modifications for compiling with the new version of Coq
 - Util/Relation/SN: inductive definition of strong normalization
@@ -9,32 +17,30 @@
 - Util/Relation/Lexico: new formalization of lexicographic ordering
   with minimal hypotheses
 - Term/WithArity/ATrs: rewriting modulo the transitive closure of some relation
-- Term/WithArity/ARedOrd: proof of a modularity result
+- Term/WithArity/ARedOrd: rule elimination for relative elimination [Blanqui]
 
 06-07-21:
 - various updates for the first release of Rainbow
 - Util/Multiset: parameter eqA_dec added to functor arguments
 - RPO: the module structure has been flattened
 - Util/Vector: V0_eq redefined with Vcast to make it computable
-	(the previous version was using the axiom eq_rect_eq)
+  (the previous version was using the axiom eq_rect_eq)
 - Util/Polynom: tactics for monotony and termination [Hinderer]
 
 06-05-10:
-- HORPO: higher-order recursive path ordering, by Adam Koprowski
-- Term/SimpleType: simply typed lambda-terms with de Bruijn indices,
-	by Adam Koprowski
+- HORPO: higher-order recursive path ordering [Koprowski]
+- Term/SimpleType: simply typed lambda-terms with de Bruijn indices [Koprowski]
 - Util/List: more functions and lemmas (nth element, initial segment, etc.)
 - Util/Multiset: a few modifications and additions (decidability, etc.)
 
 06-01-10:
-- RPO: recursive path ordering with statuses,
-	by Solange Coupet-Grimal and William Delobel
+- RPO: recursive path ordering with statuses [Coupet-Grimal,Delobel]
 - Util/Multiset: additions in MultisetOrder, MultisetListOrder
 - Util/List: additions in ListUtil
 - Util/Relation: additions in WfUtil
 - MPO/VMPO: elimination of irreflexivity hypothesis
 - Util/Multiset/MultisetListOrder:
-	elimination of transitivity hypothesis in HAccTermsToTermlist
+  elimination of transitivity hypothesis in HAccTermsToTermlist
 - Util/List: creation of LexicographicOrder
 - Util/Relation: creation of Preorder
 
@@ -43,7 +49,7 @@
 - Term/Varyadic: creation of VContext, VSubstitution, VTrs
 
 05-10-07:
-- MPO: multiset path ordering, by Solange Coupet-Grimal and William Delobel
+- MPO: multiset path ordering [Coupet-Grimal,Delobel]
 - Term/Varyadic: terms without arity
 - Util/Multiset: creation of MultisetListOrder
 - Util/Multiset: proof of Acc_iso in MultisetAuxiliary
@@ -51,8 +57,8 @@
 
 05-09-19:
 - Licence: CeCILL version 2
-- Util/Multiset: finite multisets and proof that the multiset extension of an ordering
-  preserves well-foundedness, by Adam Koprowski
+- Util/Multiset: finite multisets and proof that the multiset extension
+  of an ordering preserves well-foundedness [Koprowski]
 - Util: creation of Bool/BoolUtil, Pair/PairUtil, Logic/EqUtil
 - Util: additions in ListUtil, LogicUtil
 
@@ -65,8 +71,9 @@
 - Util: additions in LogicUtil, NatUtil, RelUtil, WfUtil, VecUtil
 
 05-03-14: first release of CoLoR
-- Util/Vector: a library on vectors
-- Util/Polynom: a library on integer polynomials with multiple variables
-- Term/WithArity: a library on algebraic terms with symbols of fixed arity
-- PolyInt: a proof of the termination criterion based on polynomial interpretations
-- DP: a proof of the basic dependancy pairs theorem
+- Util/Vector: library on vectors
+- Util/Polynom: library on integer polynomials with multiple variables
+- Term/WithArity: library on algebraic terms with symbols of fixed arity
+- PolyInt: proof of the termination criterion based on polynomial
+  interpretations [Hinderer]
+- DP: proof of the fundamental dependancy pairs theorem [Blanqui]
