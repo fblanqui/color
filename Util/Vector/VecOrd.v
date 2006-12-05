@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 ************************************************************************)
 
-(* $Id: VecOrd.v,v 1.3 2006-12-04 12:53:52 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.4 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -114,8 +114,8 @@ Lemma Vforall_SN_gt_prod : forall n (v : vec n),
   Vforall (SN gtA) v -> SN (@Vgt_prod n) v.
 
 Proof.
-induction v; intros; apply SN_intro; intros. contradiction.
-simpl. eapply SN_inverse with (R := symprod gtA (@Vgt_prod n)).
+induction v; intros; apply SN_intro; intros. contradiction. simpl.
+eapply SN_inverse with (f := @Vsplit A n) (R := symprod gtA (@Vgt_prod n)).
 VSntac y. unfold Vsplit. simpl. simpl in H. destruct H.
 rewrite H1 in H0. inversion H0.
 apply SN_symprod. eapply SN_inv. apply H. assumption.

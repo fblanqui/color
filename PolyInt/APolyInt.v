@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 ************************************************************************)
 
-(* $Id: APolyInt.v,v 1.5 2006-12-04 15:20:15 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.6 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,7 @@ Notation bterm := (bterm Sig).
 Require Export Polynom.
 
 (***********************************************************************)
-(* polynomial associated to a term *)
+(* polynomial associated to a bterm *)
 
 Section poly_of_bterm.
 
@@ -90,28 +90,10 @@ intros k t. apply (bterm_ind (@P k) (@Q k)).
  intros t' n' s' H1. unfold Q. intro H2. simpl. split; assumption.
 Qed.
 
-Lemma termpoly_v_eq_1 : forall (x : variable) (k : nat) (H : x<=k),
-  termpoly (PI_poly PI) (BVar H) =
-  ((1)%Z, (mxi (gt_le_S x (S k) (le_lt_n_Sm x k H)))) :: (pzero (S k)).
-
-Proof.
-intros. simpl. refl.
-Qed.
-
-Lemma termpoly_v_eq_2 :
-  forall (x : variable) (k : nat) (H : x<=k) (v : vector Z (S k)),
-  peval (termpoly (PI_poly PI) (BVar H)) v =
-  meval (mxi (gt_le_S _ _ (le_lt_n_Sm x k H))) v.
-
-Proof.
-intros x k H v. rewrite termpoly_v_eq_1. unfold pzero. unfold peval at 1.
-ring.
-Qed.
-
 End coef_pos.
 
 (***********************************************************************)
-(* interpretation *)
+(* interpretation in D *)
 
 Definition Int_of_PI :=
   mkInterpretation D0 (fun f => peval_D (proj1 (PI_mon PI f))).
@@ -120,6 +102,9 @@ Let W := Int_of_PI.
 
 Require Export AWFMInterpretation.
 
+(***********************************************************************)
+(* monotony *)
+
 Lemma pi_monotone : monotone W Dgt.
 
 Proof.
@@ -127,20 +112,49 @@ intro f. unfold Dgt. apply Vmonotone_transp.
 apply (pmonotone_imp_monotone_peval_Dlt (PI_mon PI f)).
 Qed.
 
-Let f1 (xint : valuation W) (k : nat) (t : bterm k) :=
-  proj1_sig (bterm_int xint t).
+(***********************************************************************)
+(* reduction ordering *)
 
-Let f2 (xint : valuation W) (k : nat) (t : bterm k) :=
+Definition succ := IR W Dgt.
+
+Lemma pi_red_ord : reduction_ordering succ.
+
+Proof.
+unfold succ. apply IR_reduction_ordering. apply pi_monotone. apply WF_Dgt.
+Qed.
+
+(***********************************************************************)
+(* equivalence between (xint) and (fval xint) *)
+
+Let f1 (xint : valuation W) k (t : bterm k) := proj1_sig (bterm_int xint t).
+
+Let f2 (xint : valuation W) k (t : bterm k) :=
   proj1_sig (peval_D (bterm_poly_pos t) (fval xint (S k))).
   
-Let P (xint : valuation W) (k : nat) (t : bterm k) :=
-  f1 xint t = f2 xint t.
+Let P (xint : valuation W) k (t : bterm k) := f1 xint t = f2 xint t.
 
-Let Q (xint : valuation W) (k n : nat) (ts : vector (bterm k) n) :=
+Let Q (xint : valuation W) k n (ts : vector (bterm k) n) :=
   Vforall (@P xint k) ts.
 
-Lemma PI_bterm_int_eq :
-  forall (xint : valuation W) (k : nat) (t : bterm k), P xint t.
+Lemma termpoly_v_eq_1 : forall x k (H : x<=k),
+  termpoly (PI_poly PI) (BVar H) =
+  (1%Z, mxi (gt_le_S x (S k) (le_lt_n_Sm x k H))) :: pzero (S k).
+
+Proof.
+intros. simpl. refl.
+Qed.
+
+Lemma termpoly_v_eq_2 :
+  forall x k (H : x<=k) (v : vector Z (S k)),
+  peval (termpoly (PI_poly PI) (BVar H)) v =
+  meval (mxi (gt_le_S _ _ (le_lt_n_Sm x k H))) v.
+
+Proof.
+intros x k H v. rewrite termpoly_v_eq_1. unfold pzero. unfold peval at 1.
+ring.
+Qed.
+
+Lemma PI_bterm_int_eq : forall xint k (t : bterm k), P xint t.
 
 Proof.
  intros xint k t. apply (bterm_ind (@P xint k) (@Q xint k)).
@@ -199,15 +213,12 @@ Definition rulePoly r :=
 (***********************************************************************)
 (* compatibility *)
 
-Let P1 rho := coef_pos (rulePoly rho).
-Let P2 rho := IR W Dgt (lhs rho) (rhs rho).
-
 Require Export ZUtil.
 
-Lemma compatibility : forall r, P1 r -> P2 r.
+Lemma pi_compat_rule : forall r, coef_pos (rulePoly r) -> succ (lhs r) (rhs r).
 
 Proof.
-intros r H_coef_pos. unfold P2, IR. intro xint. unfold Dgt, Dlt, transp.
+intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
 set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
 set (m := max mvl mvr).
 rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
@@ -215,6 +226,15 @@ rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). do 2 rewrite val_peval_D.
 pose (v := (Vmap (proj1_sig (P:=pos)) (fval xint (S (max mvl mvr))))).
 apply pos_lt. rewrite <- (peval_const (1)%Z v). do 2 rewrite <- peval_minus.
 unfold v. apply pos_peval. exact H_coef_pos.
+Qed.
+
+Lemma pi_compat : forall R,
+  lforall (fun r => coef_pos (rulePoly r)) R -> compatible succ R.
+
+Proof.
+unfold compatible. intros. set (rho := mkRule l r).
+change (succ (lhs rho) (rhs rho)). apply pi_compat_rule.
+apply (lforall_in H H0).
 Qed.
 
 (***********************************************************************)
@@ -226,10 +246,8 @@ Lemma polyInterpretationTermination : forall R,
   lforall (fun r => coef_pos (rulePoly r)) R -> WF (red R).
 
 Proof.
-intros R H. eapply manna_ness. apply (@IR_reduction_ordering Sig W Dgt).
-apply pi_monotone. apply Dgt_wf. unfold compatible. intros l r.
-set (rho := mkRule l r). intro. change (IR W Dgt (lhs rho) (rhs rho)).
-apply compatibility. eapply lforall_in. apply H. exact H0.
+intros R H. apply manna_ness with (succ := succ). apply pi_red_ord.
+apply pi_compat. exact H.
 Qed.
 
 End S.

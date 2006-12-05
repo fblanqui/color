@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 ************************************************************************)
 
-(* $Id: AWFMInterpretation.v,v 1.5 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.6 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,10 +23,10 @@ Require Export ATerm.
 Notation term := (term Sig).
 Notation terms := (vector term).
 
-Require Export AInterpretation.
-
 (***********************************************************************)
 (* well-founded interpretations *)
+
+Require Export AInterpretation.
 
 Variable (I : interpretation Sig) (R : relation (domain I)).
 

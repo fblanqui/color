@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 ************************************************************************)
 
-(* $Id: ARelation.v,v 1.7 2006-12-04 15:02:49 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.8 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,14 +23,14 @@ Notation term := (term Sig).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
 
-Require Export ASubstitution.
-
 (***********************************************************************)
 (* basic definitions and properties *)
 
 Section basic.
 
 Variable succ : relation term.
+
+Require Export ASubstitution.
 
 Definition substitution_closed :=
   forall t1 t2 s, succ t1 t2 -> succ (app s t1) (app s t2).
@@ -61,14 +61,6 @@ Variable (succ : relation term) (R : rules).
 
 Definition compatible := forall l r : term, In (mkRule l r) R -> succ l r.
 
-(*Lemma comp_rewrite_ord : rewrite_ordering -> compatible ->
-  forall t u, red R t u -> succ t u.
-
-Proof.
-intros (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
-apply Hcont. apply Hsubs. apply Hcomp. exact H.
-Qed.*)
-
 Lemma compat_red : rewrite_ordering succ -> compatible -> red R << succ.
 
 Proof.
@@ -76,14 +68,8 @@ unfold inclusion. intros (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
 apply Hcont. apply Hsubs. apply Hcomp. exact H.
 Qed.
 
-(*Lemma comp_head_rewrite_ord : substitution_closed -> compatible ->
-  forall t u, hd_red R t u -> succ t u.
-
-Proof.
-intros. redtac. subst t. subst u. apply H. apply H0. assumption.
-Qed.*)
-
-Lemma compat_hd_red : substitution_closed succ -> compatible -> hd_red R << succ.
+Lemma compat_hd_red :
+  substitution_closed succ -> compatible -> hd_red R << succ.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0.
