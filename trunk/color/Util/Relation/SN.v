@@ -125,7 +125,7 @@ Section inverse.
 
 Variables (A B : Set) (f : A->B) (R : relation B).
 
-Let Rof x y := R (f x) (f y).
+Notation Rof := (Rof f R).
 
 Lemma SN_Rof : forall y, SN R y -> forall x, y = f x -> SN Rof x.
 

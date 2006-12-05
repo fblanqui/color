@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 ************************************************************************)
 
-(* $Id: RelUtil.v,v 1.6 2006-12-04 18:04:57 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.7 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -541,3 +541,27 @@ apply rt_trans with (y := y); assumption.
 Qed.
 
 End properties.
+
+(***********************************************************************)
+(* inverse image *)
+
+Section inverse_image.
+
+Variables (A B : Set) (f : A->B) (R : relation B).
+
+Definition Rof x y := R (f x) (f y).
+
+Lemma Rof_refl : reflexive R -> reflexive Rof.
+
+Proof.
+intro. unfold reflexive, Rof. auto.
+Qed.
+
+Lemma Rof_trans : transitive R -> transitive Rof.
+
+Proof.
+intro. unfold transitive, Rof. intros. unfold transitive in H.
+apply H with (y := f y); assumption.
+Qed.
+
+End inverse_image.

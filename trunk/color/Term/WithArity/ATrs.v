@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 ************************************************************************)
 
-(* $Id: ATrs.v,v 1.4 2006-12-04 15:02:49 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.5 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -39,7 +39,6 @@ Section rewriting.
 
 Variable R : rules.
 
-Require Export AContext.
 Require Export ASubstitution.
 
 Definition red (t1 t2 : term) :=
@@ -113,7 +112,8 @@ Lemma red_subterm : forall u u' t, red u u' -> subterm_eq u t
   -> exists t', red t t' /\ subterm_eq u' t'.
 
 Proof.
-unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u. subst u'.
+unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
+subst u'.
 exists (fill (AContext.comp d c) (app s r)). split.
 exists l. exists r. exists (AContext.comp d c). exists s. split. assumption.
 rewrite fill_comp. auto. exists d. rewrite fill_comp. refl.
@@ -125,11 +125,14 @@ Lemma int_red_fun : forall f ts v, int_red (Fun f ts) v
     /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red t t'.
 
 Proof.
-intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. clear H. simpl in H1.
+intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. clear H.
+simpl in H1.
 Funeqtac. exists i. exists v0. exists (fill c (app s l)). exists j. exists v1.
 exists e. exists (fill c (app s r)). split. assumption. split. assumption.
 unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
+
+Require Export RelUtil.
 
 Lemma int_red_incl_red : int_red << red.
 

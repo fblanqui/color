@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 ************************************************************************)
 
-(* $Id: ZUtil.v,v 1.4 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.5 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -145,7 +145,7 @@ Qed.
 
 Require Export SN.
 
-Lemma Dgt_wf : WF Dgt.
+Lemma WF_Dgt : WF Dgt.
 
 Proof.
 apply wf_WF. apply Dlt_well_founded.

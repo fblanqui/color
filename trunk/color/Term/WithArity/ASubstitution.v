@@ -2,13 +2,13 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Sebastien Hinderer, 2004-02-10
 - Frederic Blanqui, 2005-01-27
+- Sebastien Hinderer, 2004-02-10
 
 substitutions
 ************************************************************************)
 
-(* $Id: ASubstitution.v,v 1.4 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.5 2006-12-05 13:35:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -38,6 +38,7 @@ Definition substitution := valuation I0.
 
 Definition id x := Var x.
 
+(***********************************************************************)
 (* application of a substitution *)
 
 Definition app := @term_int Sig I0.
@@ -69,6 +70,7 @@ intro E. rewrite E. exists v. reflexivity.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
+(***********************************************************************)
 (* composition *)
 
 Definition comp (s1 s2 : substitution) x := app s1 (s2 x).
@@ -116,6 +118,7 @@ Notation Inb_var := (Inb eq_nat_dec).
 
 Definition dom_incl s l := forall x, Inb_var x l = false -> s x = Var x.
 
+(***********************************************************************)
 (* when two substitutions are equal on some domain *)
 
 Require Export ListForall.
