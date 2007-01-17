@@ -14,7 +14,7 @@ cwd=`pwd`
 
 mkmf () {
   echo create $dir/Makefile ...
-  sed -e "s|SUBDIRS :=|SUBDIRS := $subdirs|" Makefile.skeletton > $dir/Makefile
+  sed -e "s|SUBDIRS :=|SUBDIRS := $subdirs|" Makefile.skeleton > $dir/Makefile
 }
 
 # makefile with coq files
