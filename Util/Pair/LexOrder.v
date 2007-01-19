@@ -8,7 +8,7 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 *)
 
-(* $Id: LexOrder.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.3 2007-01-19 17:27:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -141,9 +141,9 @@ Section LexPair.
     apply H. rewrite <- p_p'. trivial.
   Qed.
 
-(** ===============================================================
-    Proof of the fact that lexicographic order is a strict order.
-   =============================================================== *)
+(* =============================================================== *)
+(** Proof of the fact that lexicographic order is a strict order.  *)
+(* =============================================================== *)
 
   Section LexProd_StrictOrder.
 
@@ -202,10 +202,10 @@ Section LexPair.
 
   End LexProd_StrictOrder.
 
-(** =================================================================
-     Proof of the fact that lexicographic order is well-founded (if 
-   so are the underlying orders)
-   ================================================================= *)
+(* ================================================================= *)
+(** Proof of the fact that lexicographic order is well-founded
+  (if so are the underlying orders) *)
+(* ================================================================= *)
 
   Section LexProd_WellFounded.
 
@@ -314,9 +314,9 @@ Module LexicographicOrder (A_ord B_ord : Ord).
     eapply w; eauto with sets.  
   Qed.
 
-(** ===============================================================
-    Proof of the fact that lexicographic order is a strict order.
-   =============================================================== *)
+(* =============================================================== *)
+(** Proof of the fact that lexicographic order is a strict order.  *)
+(* =============================================================== *)
 
 Module LexProd_StrictOrder 
   (pA: Poset with Definition A := A_ord.S.A with Module O := A_ord)
@@ -346,10 +346,10 @@ Module LexProd_StrictOrder
 
 End LexProd_StrictOrder.
 
-(** =================================================================
-     Proof of the fact that lexicographic order is well-founded (if 
-   so are the underlaying orders)
-   ================================================================= *)
+(* ================================================================= *)
+(**     Proof of the fact that lexicographic order is well-founded
+  (if so are the underlaying orders) *)
+(* ================================================================= *)
 
 Section LexProd_WellFounded.
 
