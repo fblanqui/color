@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2006-12-01
 
 termination by using compatible reduction orderings
-************************************************************************)
+*)
 
-(* $Id: AMannaNess.v,v 1.3 2006-12-05 14:39:45 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.4 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,7 +28,7 @@ Require Export ARelation.
 Ltac WF_incl succ := apply WF_incl with (S := succ); [idtac | WFtac].
 
 (***********************************************************************)
-(* Manna-Ness theorem (1970) *)
+(** Manna-Ness theorem (1970) *)
 
 Section manna_ness.
 
@@ -43,7 +43,7 @@ Qed.
 End manna_ness.
 
 (***********************************************************************)
-(* an extension for proving the well-foundedness of relations of the form:
+(** an extension for proving the well-foundedness of relations of the form:
 several steps of R1 followed by a step of R2 *)
 
 Section manna_ness_mod.
@@ -60,7 +60,7 @@ Qed.
 End manna_ness_mod.
 
 (***********************************************************************)
-(* an extension for proving the well-foundedness of relations of the form:
+(** an extension for proving the well-foundedness of relations of the form:
 several steps of R1 followed by a -head- step of R2 *)
 
 Section manna_ness_hd_mod.
@@ -78,7 +78,7 @@ Qed.
 End manna_ness_hd_mod.
 
 (***********************************************************************)
-(* rule elimination *)
+(** rule elimination *)
 
 Section rule_elimination.
 

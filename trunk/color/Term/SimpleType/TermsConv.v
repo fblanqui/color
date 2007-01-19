@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -9,9 +9,9 @@ of simply-typed lambda terms. This convertibility relation is an
 extension of alpha-conversion to environments. So terms equal up to
 permutation of the order of declarations of ground variables in
 environment are identified.   
-************************************************************************)
+*)
 
-(* $Id: TermsConv.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

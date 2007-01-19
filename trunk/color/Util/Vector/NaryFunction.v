@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
 
 basic definitions on functions taking vectors as arguments
-************************************************************************)
+*)
 
-(* $Id: NaryFunction.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: NaryFunction.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -49,8 +49,6 @@ Qed.
 End S.
 
 Implicit Arguments Vmonotone_i [A n i j].
-
-(***********************************************************************)
 
 Section preserv.
 

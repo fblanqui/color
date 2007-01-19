@@ -1,20 +1,17 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
 
 general lemmas and tactics
-************************************************************************)
+*)
 
-(* $Id: EqUtil.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
-
-(***********************************************************************)
-(* decidable equalities *)
 
 Section beq.
 

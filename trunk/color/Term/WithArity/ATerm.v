@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-17
 
 algebraic terms with fixed arity
-************************************************************************)
+*)
 
-(* $Id: ATerm.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,7 +19,7 @@ Require Export ASignature.
 Variable Sig : Signature.
 
 (***********************************************************************)
-(* terms *)
+(** terms *)
 
 Require Export VecUtil.
 
@@ -37,7 +37,7 @@ Notation terms := (vector term).
 Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
-(* induction principles *)
+(** induction principles *)
 
 Section term_rect.
 
@@ -82,7 +82,7 @@ exact I. intros. simpl. split; assumption.
 Qed.
 
 (***********************************************************************)
-(* maximal index of a variable *)
+(** maximal index of a variable *)
 
 Require Export VecMax.
 
@@ -131,7 +131,7 @@ assumption.
 Qed.
 
 (***********************************************************************)
-(* list of variables in a term:
+(** list of variables in a term:
 a variable occurs in the list as much as it has occurrences in t *)
 
 Require Export List.
@@ -239,7 +239,7 @@ unfold Q in H2. rewrite H1. rewrite H2. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* decidability of equality *)
+(** decidability of equality *)
 
 Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
 
@@ -277,7 +277,7 @@ Implicit Arguments varlists_in [Sig x t n ts].
 Implicit Arguments varlist_max [Sig x t].
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac Funeqtac := repeat
   match goal with

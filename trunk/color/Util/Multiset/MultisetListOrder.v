@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 This file provides an order on lists derived from the order on
 multisets, along with some properties of this order.
-************************************************************************)
+*)
 
 Require Import Relations.
 Require Import Wellfounded.
@@ -22,7 +22,8 @@ Require Import Arith.
 
 Module MultisetListOrder (ES : Eqset).
 
-(* Instantiation of Finite MultiSets of elements of A as Lists of elements of A *)
+(* Instantiation of Finite MultiSets of elements of A
+as Lists of elements of A *)
 
   Export ES.
   Module FMultisetList := FiniteMultisetList ES. 
@@ -40,10 +41,14 @@ Module MultisetListOrder (ES : Eqset).
 
     Variable r : relation A.
 
-    Hypothesis r_eqA_compat : forall x x' y y', x =A=x' -> y=A=y' -> r x y -> r x' y'.
-    Hypothesis In_eqA_compat : forall ss x x', In x' ss -> x =A= x' -> In x ss.
+    Hypothesis r_eqA_compat : forall x x' y y',
+      x =A=x' -> y=A=y' -> r x y -> r x' y'.
 
-    Definition mult := fun ss ts => MultisetLT r (list2multiset ss) (list2multiset ts). 
+    Hypothesis In_eqA_compat : forall ss x x',
+      In x' ss -> x =A= x' -> In x ss.
+
+    Definition mult ss ts :=
+      MultisetLT r (list2multiset ss) (list2multiset ts). 
     
     Lemma mult2element : forall ss ts, mult ss ts -> 
       forall s, In s ss -> ex (fun t => In t ts /\ (t =A= s \/ r t s)).
@@ -77,7 +82,8 @@ Module MultisetListOrder (ES : Eqset).
     Qed.
 
     Lemma transp_trans_to_mult_trans : forall us, 
-      (forall u, In u us -> forall t s, transp A r u t -> transp A r t s -> transp A r u s) ->
+      (forall u, In u us -> forall t s,
+        transp A r u t -> transp A r t s -> transp A r u s) ->
       forall ts ss, mult us ts -> mult ts ss -> mult us ss.
 
     Proof.

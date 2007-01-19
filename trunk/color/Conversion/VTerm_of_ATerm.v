@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-12-05
 
 from algebraic terms to varyadic terms
-************************************************************************)
+*)
 
-(* $Id: VTerm_of_ATerm.v,v 1.2 2006-12-01 09:37:47 blanqui Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Section S.
 Require Export ASignature.
 
 (***********************************************************************)
-(* algebraic signature *)
+(** algebraic signature *)
 
 Variable ASig : Signature.
 
@@ -28,7 +28,7 @@ Notation AFun := (@Fun ASig).
 Notation "'args' f" := (aterms (arity f)) (at level 70).
 
 (***********************************************************************)
-(* corresponding varyadic signature *)
+(** corresponding varyadic signature *)
 
 Require Export VSignature.
 
@@ -43,7 +43,7 @@ Notation vterms := (list vterm).
 Notation VFun := (@Fun VSig).
 
 (***********************************************************************)
-(* conversion of terms *)
+(** conversion of terms *)
 
 Fixpoint vterm_of_aterm (t : aterm) : vterm :=
   match t with
@@ -93,7 +93,7 @@ induction v; simpl. refl. apply (f_equal (cons (vterm_of_aterm (f a)))). apply I
 Qed.
 
 (***********************************************************************)
-(* conversion of contexts *)
+(** conversion of contexts *)
 
 Require Export AContext.
 
@@ -122,7 +122,7 @@ simpl. apply (f_equal (VFun f)). apply (f_equal (app (vterms_of_aterms v))). rew
 Qed.
 
 (***********************************************************************)
-(* conversion of substitutions *)
+(** conversion of substitutions *)
 
 Require Export ASubstitution.
 
@@ -148,7 +148,7 @@ apply (f_equal (cons (vapp (vsubs_of_asubs s) (vterm_of_aterm t0)))). exact H0.
 Qed.
 
 (***********************************************************************)
-(* conversion of rules *)
+(** conversion of rules *)
 
 Require Export ATrs.
 
@@ -177,7 +177,7 @@ apply red_rule. change (In (vrule_of_arule (ATrs.mkRule l r)) S). unfold S. appl
 Qed.
 
 (***********************************************************************)
-(* preservation of termination *)
+(** preservation of termination *)
 
 Require Export SN.
 

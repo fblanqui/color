@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,13 +6,13 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-24
 
 polynomials with multiple variables and integer coefficients
-************************************************************************)
+*)
 
-(* $Id: Polynom.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: Polynom.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-(* monomials with [n] variables *)
+(** monomials with [n] variables *)
 
 Require Export VecUtil.
 
@@ -24,7 +24,7 @@ Proof.
 intros. eapply eq_vec_dec. apply eq_nat_dec.
 Defined.
 
-(* polynomials with [n] variables *)
+(** polynomials with [n] variables *)
 
 Require Export ZArith.
 
@@ -33,7 +33,7 @@ Definition poly n := (list (Z * monom n)).
 Delimit Scope poly_scope with poly.
 Bind Scope poly_scope with poly.
 
-(* coefficient of monomial m in polynomial p *)
+(** coefficient of monomial m in polynomial p *)
 
 Open Local Scope Z_scope.
 
@@ -48,7 +48,7 @@ Fixpoint coef n (m : monom n) (p : poly n) {struct p} : Z :=
   end.
 
 (***********************************************************************)
-(* simple polynomials *)
+(** simple polynomials *)
 
 (* monomial 1 *)
 
@@ -79,7 +79,7 @@ Definition pzero (n : nat) : poly n := nil.
 Definition pconst n (c : Z) : poly n := (c, mone n) :: nil.
 
 (***********************************************************************)
-(* multiplication by a constant *)
+(** multiplication by a constant *)
 
 Definition cpmult c n (p : poly n) := map (fun cm => (c * fst cm, snd cm)) p.
 
@@ -88,7 +88,7 @@ Definition popp n (p : poly n) := map (fun cm => (- fst cm, snd cm)) p.
 Notation "'-' p" := (popp p) (at level 35, right associativity) : poly_scope.
 
 (***********************************************************************)
-(* addition *)
+(** addition *)
 
 Fixpoint mpplus n (c : Z) (m : monom n) (p : poly n) {struct p} : poly n :=
   match p with
@@ -115,7 +115,7 @@ Definition pminus n (p1 p2 : poly n) := p1 + (- p2).
 Infix "-" := pminus : poly_scope.
 
 (***********************************************************************)
-(* multiplication *)
+(** multiplication *)
 
 Definition mmult n (m1 m2 : monom n) := Vmap2 plus m1 m2.
 
@@ -131,7 +131,7 @@ Fixpoint pmult n (p1 p2 : poly n) {struct p1} : poly n :=
 Infix "*" := pmult : poly_scope.
 
 (***********************************************************************)
-(* power *)
+(** power *)
 
 Fixpoint ppower n (p : poly n) (k : nat) {struct k} : poly n :=
   match k with
@@ -142,7 +142,7 @@ Fixpoint ppower n (p : poly n) (k : nat) {struct k} : poly n :=
 Infix "^" := ppower : poly_scope.
 
 (***********************************************************************)
-(* composition *)
+(** composition *)
 
 Fixpoint mcomp (n : nat) : monom n -> forall k, vector (poly k) n -> poly k :=
   match n as n return monom n -> forall k, vector (poly k) n -> poly k with
@@ -159,7 +159,7 @@ Fixpoint pcomp n (p : poly n) k (ps : vector (poly k) n) {struct p} : poly k :=
 Close Local Scope poly_scope.
 
 (***********************************************************************)
-(* evaluation *)
+(** evaluation *)
 
 Notation vec := (vector Z).
 

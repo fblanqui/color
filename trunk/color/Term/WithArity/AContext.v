@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-17
 
 one-hole contexts
-************************************************************************)
+*)
 
-(* $Id: AContext.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,7 +27,7 @@ Notation terms := (vector term).
 Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
-(* contexts and replacement of the hole *)
+(** contexts and replacement of the hole *)
 
 Inductive context : Set :=
   | Hole : context
@@ -43,7 +43,7 @@ Fixpoint fill (c : context) (t : term) {struct c} : term :=
   end.
 
 (***********************************************************************)
-(* properties of fill *)
+(** properties of fill *)
 
 Lemma var_eq_fill : forall x c t, Var x = fill c t -> c = Hole /\ t = Var x.
 
@@ -63,7 +63,7 @@ reflexivity.
 Qed.
 
 (***********************************************************************)
-(* subterm ordering *)
+(** subterm ordering *)
 
 Definition subterm_eq u t := exists C, t = fill C u.
 
@@ -124,7 +124,7 @@ exists (Cont e v C v0). split. discriminate. subst t. refl.
 Qed.
 
 (***********************************************************************)
-(* context composition *)
+(** context composition *)
 
 Fixpoint comp (C : context) : context -> context :=
   match C with
@@ -140,7 +140,7 @@ rewrite (IHC D u). reflexivity.
 Qed.
 
 (***********************************************************************)
-(* transitivity of the subterm ordering *)
+(** transitivity of the subterm ordering *)
 
 Lemma subterm_trans_eq1 : forall t u v,
   subterm_eq t u -> subterm u v -> subterm t v.
@@ -172,7 +172,7 @@ destruct x0; simpl; discriminate. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* subterms and variables *)
+(** subterms and variables *)
 
 Lemma subterm_varlist : forall u t x,
   subterm_eq u t -> In x (varlist u) -> In x (varlist t).
@@ -203,7 +203,7 @@ apply subterm_noteq. assumption. discriminate.
 Qed.
 
 (***********************************************************************)
-(* subterm-based induction principle *)
+(** subterm-based induction principle *)
 
 Lemma forall_subterm_eq : forall (P : term -> Prop) t,
   (forall u, subterm_eq u t -> P u) -> P t.

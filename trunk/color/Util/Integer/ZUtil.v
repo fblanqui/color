@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-25
 
 useful definitions and lemmas about integers
-************************************************************************)
+*)
 
-(* $Id: ZUtil.v,v 1.5 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.6 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -19,7 +19,7 @@ Require Export ZArith.
 Open Local Scope Z_scope.
 
 (***********************************************************************)
-(* simplification *)
+(** simplification *)
 
 Lemma zeql : forall x, match x with Z0 => 0 | Zpos y' => Zpos y'
   | Zneg y' => Zneg y' end = x.
@@ -36,7 +36,7 @@ intro. destruct x; refl.
 Qed.
 
 (***********************************************************************)
-(* inequalities *)
+(** inequalities *)
 
 Lemma pos_lt : forall x y : Z, 0 <= y-x-1 -> x < y.
 
@@ -45,7 +45,7 @@ intros. omega.
 Qed.
 
 (***********************************************************************)
-(* power *)
+(** power *)
 
 Fixpoint power (x : Z) (n : nat) {struct n} : Z :=
   match n with
@@ -103,7 +103,7 @@ apply IHn; assumption. assumption. apply pos_power. assumption.
 Qed.
 
 (***********************************************************************)
-(* positive integers *)
+(** positive integers *)
 
 Notation pos := (fun z => 0 <= z).
 Notation D := (sig pos).

@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
 
 useful definitions and lemmas on natural numbers
-************************************************************************)
+*)
 
-(* $Id: NatUtil.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,7 +17,7 @@ Implicit Arguments lt_S_n [n m].
 Implicit Arguments lt_n_S [n m].
 
 (***********************************************************************)
-(* unicity of eq/le/lt proofs *)
+(** unicity of eq/le/lt proofs *)
 
 Scheme eq_ind_dep := Induction for eq Sort Prop.
 
@@ -59,7 +59,7 @@ induction n; simpl. reflexivity. rewrite IHn. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* max *)
+(** max *)
 
 Require Export Max.
 

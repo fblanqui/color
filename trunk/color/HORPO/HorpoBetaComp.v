@@ -1,11 +1,11 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2006-04-27
 
-    Some computability results for horpo union beta.
-************************************************************************)
+Some computability results for horpo union beta.
+*)
 
 Set Implicit Arguments.
 Require Import RelExtras.

@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-02-09
 
 general definitions and results about relations on terms
-************************************************************************)
+*)
 
-(* $Id: ARelation.v,v 1.9 2006-12-05 14:39:45 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.10 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,7 @@ Notation rule := (rule Sig).
 Notation rules := (list rule).
 
 (***********************************************************************)
-(* basic definitions and properties *)
+(** basic definitions and properties *)
 
 Section basic.
 
@@ -53,7 +53,7 @@ Record Rewrite_ordering : Type := mkRewrite_ordering {
 }.
 
 (***********************************************************************)
-(* compatibility *)
+(** compatibility *)
 
 Section compat.
 
@@ -97,7 +97,7 @@ unfold compatible. intros. apply H. assumption. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(* reduction pair *)
+(** reduction pair *)
 
 Section reduction_pair.
 
@@ -133,7 +133,7 @@ Record Reduction_pair : Type := mkReduction_pair {
 }.
 
 (***********************************************************************)
-(* weak reduction pair *)
+(** weak reduction pair *)
 
 Section weak_reduction_pair.
 
@@ -176,7 +176,7 @@ Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
 }.
 
 (***********************************************************************)
-(* union of rewrite rules *)
+(** union of rewrite rules *)
 
 Section union.
 
@@ -222,7 +222,7 @@ Qed.
 End union.
 
 (***********************************************************************)
-(* reflexive closure *)
+(** reflexive closure *)
 
 Section clos_refl.
 
@@ -257,7 +257,7 @@ Qed.
 End clos_refl.
 
 (***********************************************************************)
-(* when succ is the strict part of succ_eq *)
+(** when succ is the strict part of succ_eq *)
 
 Section strict.
 
@@ -277,7 +277,7 @@ End strict.
 End S.
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac destruct_rp :=
   match goal with

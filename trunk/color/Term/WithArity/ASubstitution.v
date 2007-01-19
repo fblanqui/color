@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Sebastien Hinderer, 2004-02-10
 
 substitutions
-************************************************************************)
+*)
 
-(* $Id: ASubstitution.v,v 1.5 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.6 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,7 +28,7 @@ Notation "'args' f" := (terms (arity f)) (at level 70).
 Notation Var := (@Var Sig).
 
 (***********************************************************************)
-(* definition of substitutions as interpretations in terms *)
+(** definition of substitutions as interpretations in terms *)
 
 Require Export AInterpretation.
 
@@ -39,7 +39,7 @@ Definition substitution := valuation I0.
 Definition id x := Var x.
 
 (***********************************************************************)
-(* application of a substitution *)
+(** application of a substitution *)
 
 Definition app := @term_int Sig I0.
 
@@ -71,7 +71,7 @@ intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
 (***********************************************************************)
-(* composition *)
+(** composition *)
 
 Definition comp (s1 s2 : substitution) x := app s1 (s2 x).
 
@@ -85,7 +85,7 @@ rewrite Vmap_map. apply Vmap_eq. assumption.
 Qed.
 
 (***********************************************************************)
-(* substitution lemma for interpretations *)
+(** substitution lemma for interpretations *)
 
 Section substitution_lemma.
 
@@ -112,14 +112,14 @@ Qed.
 End substitution_lemma.
 
 (***********************************************************************)
-(* domain of a substitution *)
+(** domain of a substitution *)
 
 Notation Inb_var := (Inb eq_nat_dec).
 
 Definition dom_incl s l := forall x, Inb_var x l = false -> s x = Var x.
 
 (***********************************************************************)
-(* when two substitutions are equal on some domain *)
+(** when two substitutions are equal on some domain *)
 
 Require Export ListForall.
 
@@ -185,7 +185,7 @@ apply List.incl_refl.
 Qed.
 
 (***********************************************************************)
-(* restriction of a substitution *)
+(** restriction of a substitution *)
 
 Definition restrict s l x := if Inb_var x l then s x else Var x.
 
@@ -233,7 +233,7 @@ rewrite H1. rewrite H2. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* substitution on contexts *)
+(** substitution on contexts *)
 
 Require Export AContext.
 
@@ -263,7 +263,7 @@ apply app_fill.
 Qed.
 
 (***********************************************************************)
-(* function generating the sequence of variables x0, .., x0+n-1 *)
+(** function generating the sequence of variables x0, .., x0+n-1 *)
 
 Fixpoint fresh (x0 n : nat) {struct n} : terms n :=
   match n as n return terms n with
@@ -294,7 +294,7 @@ intros. assert (x0+S i=(S x0)+i). omega. rewrite H. apply IHn.
 Qed.
 
 (***********************************************************************)
-(* given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
+(** given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
 is the substitution {x0 -> v1, .., x0+n-1 -> vn} *)
 
 Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.

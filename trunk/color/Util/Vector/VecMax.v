@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-02
 
 greatest component of a vector of natural numbers
-************************************************************************)
+*)
 
-(* $Id: VecMax.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: VecMax.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

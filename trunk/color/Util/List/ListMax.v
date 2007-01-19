@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
 
 greatest component of a list of natural numbers
-************************************************************************)
+*)
 
-(* $Id: ListMax.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: ListMax.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

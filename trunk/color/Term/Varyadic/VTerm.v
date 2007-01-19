@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-06-10
 
 algebraic terms with no arity
-************************************************************************)
+*)
 
-(* $Id: VTerm.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: VTerm.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -34,7 +34,7 @@ Reset term_rect.
 Notation terms := (list term).
 
 (***********************************************************************)
-(* induction principle *)
+(** induction principle *)
 
 Section term_rect.
 
@@ -89,7 +89,7 @@ intros. destruct H3. subst. assumption. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(* maximal index of a variable *)
+(** maximal index of a variable *)
 
 Require Export ListMax.
 

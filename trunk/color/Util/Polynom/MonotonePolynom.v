@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-25
 
 monotone polynomials
-************************************************************************)
+*)
 
-(* $Id: MonotonePolynom.v,v 1.3 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: MonotonePolynom.v,v 1.4 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,7 +19,7 @@ Definition pmonotone n (p : poly n) := coef_pos p
   /\ forall i (H : lt i n), 0 < coef (mxi H) p.
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac montacrec :=
   match goal with
@@ -39,7 +39,7 @@ Ltac pmonotone :=
   intro f; unfold pmonotone, coef_pos; case f; (split; [postac | montac]).
 
 (***********************************************************************)
-(* alternative definition *)
+(** alternative definition *)
 
 Definition pmonotone' n (p : poly n) := coef_pos p
   /\ forall i (H : lt i n), exists p1, exists c, exists p2,
@@ -82,7 +82,7 @@ generalize dependent p. intro p. elim p.
 Qed.
 
 (***********************************************************************)
-(* monotony wrt evaluation *)
+(** monotony wrt evaluation *)
 
 Lemma meval_monotone_D : forall i (vi : vec i) (mi : monom i)
   j (vj : vec j) (mj : monom j) k x y (Hx : 0 <= x) (Hy : 0 <= y), x<=y -> 

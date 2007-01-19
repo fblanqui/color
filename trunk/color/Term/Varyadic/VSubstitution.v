@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-12-05
 
 substitutions
-************************************************************************)
+*)
 
-(* $Id: VSubstitution.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: VSubstitution.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

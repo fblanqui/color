@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -7,9 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 Definition and properties of lexicographic order on lists of elements
 of a setoid. In particular, proofs that lex 'transmits' strict partial
 order property, and is a lifting.
-************************************************************************)
+*)
 
-(* $Id: LexicographicOrder.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
+(* $Id: LexicographicOrder.v,v 1.3 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Require Export RelExtras.
 Require Export ListUtil.

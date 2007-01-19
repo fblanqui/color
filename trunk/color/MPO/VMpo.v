@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 This file provides a definition of the multiset path ordering and proofs
 that it preserves various properties
-************************************************************************)
+*)
 
 Require Import Relations.
 Require Import Wellfounded.
@@ -32,7 +32,7 @@ Notation term := (term Sig).
 Notation terms := (list term).
 
 (***********************************************************************)
-(* eqset module of terms *)
+(** eqset module of terms *)
 
 Module Term <: Eqset.
 
@@ -53,13 +53,13 @@ Module Term <: Eqset.
 End Term.
 
 (***********************************************************************)
-(* multisets on terms *)
+(** multisets on terms *)
   
 Module LMO := MultisetListOrder.MultisetListOrder Term.
 Export LMO.
 
 (***********************************************************************)
-(* precedence *)
+(** precedence *)
 
 Parameter ltF : Sig -> Sig -> Prop.
 
@@ -67,7 +67,7 @@ Hypothesis wf_ltF : well_founded ltF.
 Hypothesis ltF_trans : transitive ltF.  
 
 (***********************************************************************)
-(* mpo *)
+(** mpo *)
 
 Inductive lt_mpo : relation term :=
   | mpo1 : forall f g ss ts, ltF g f -> 
@@ -84,7 +84,7 @@ Notation "ss << ts" := (mult (transp term lt_mpo) ss ts) (at level 50).
 Definition le_mpo := fun t s => t = s \/ lt_mpo t s.
 
 (***********************************************************************)
-(* compatibility with setoid equality *)
+(** compatibility with setoid equality *)
 
 Lemma tlt_mpo_eqA_compat : forall x x' y y', 
   x =A= x' -> y =A= y' -> transp lt_mpo x y -> transp lt_mpo x' y'.
@@ -100,7 +100,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(* inductive predicate saying when a variable occurs in a term *)
+(** inductive predicate saying when a variable occurs in a term *)
 
 Inductive in_term_vars : variable -> term -> Prop :=
   | is_var : forall x, in_term_vars x (Var x)
@@ -108,7 +108,7 @@ Inductive in_term_vars : variable -> term -> Prop :=
     ex (fun s => In s ss /\ in_term_vars x s) -> in_term_vars x (Fun f ss).
 
 (***********************************************************************)
-(* basic properties *)
+(** basic properties *)
 
 Lemma var_in : forall x t, lt_mpo (Var x) t -> in_term_vars x t.
 
@@ -203,7 +203,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(* transitivity *)
+(** transitivity *)
 
 Lemma transitive_lt_mpo : forall u t s : term,
   lt_mpo u t -> lt_mpo t s -> lt_mpo u s. 
@@ -348,7 +348,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(* preservation of irreflexivity *)
+(** preservation of irreflexivity *)
 
 Lemma irreflexive_lt_mpo : irreflexive ltF -> irreflexive lt_mpo.
 
@@ -375,7 +375,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(* well-foundedness *)
+(** well-foundedness *)
 
 Lemma Acc_lt_mpo_var : forall x, Acc lt_mpo (Var x).
 

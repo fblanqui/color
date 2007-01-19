@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-01-27
 
 extension of the Coq library Bool/Bvector
-************************************************************************)
+*)
 
-(* $Id: VecUtil.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -42,7 +42,7 @@ Variable A : Set.
 Notation vec := (vector A).
 
 (***********************************************************************)
-(* elementary identities *)
+(** elementary identities *)
 
 Definition Vid n : vec n -> vec n :=
   match n return vec n -> vec n with
@@ -84,7 +84,7 @@ intros. apply Vcons_eq. reflexivity. assumption.
 Qed.
 
 (***********************************************************************)
-(* cast *)
+(** cast *)
 
 Require Export NatUtil.
 
@@ -199,7 +199,7 @@ intros. eapply Vcast_lr. apply H.
 Qed.
 
 (***********************************************************************)
-(* null vector *)
+(** null vector *)
 
 Lemma VO_eq : forall v : vec O, v = Vnil.
 
@@ -215,7 +215,7 @@ Ltac VOtac := repeat
   end.
 
 (***********************************************************************)
-(* add an element at the end *)
+(** add an element at the end *)
 
 Fixpoint Vadd n (v : vec n) (x : A) { struct v } : vec (S n) :=
   match v in vector _ n return vec (S n) with
@@ -224,7 +224,7 @@ Fixpoint Vadd n (v : vec n) (x : A) { struct v } : vec (S n) :=
   end.
 
 (***********************************************************************)
-(* i-th element *)
+(** i-th element *)
 
 Require Export Arith.
 
@@ -312,7 +312,7 @@ generalize dependent v. intro v. elim v.
 Qed.
 
 (***********************************************************************)
-(* concatenation *)
+(** concatenation *)
 
 Fixpoint Vapp n1 n2 (v1 : vec n1) (v2 : vec n2) {struct v1} : vec (n1+n2) :=
   match v1 in vector _ n1 return vec (n1+n2) with
@@ -410,7 +410,7 @@ intros. rewrite H. rewrite H0. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* breaking a vector in various pieces *)
+(** breaking a vector in various pieces *)
 
 Definition Vsplit n (v : vec (S n)) := (Vhead v, Vtail v).
 
@@ -455,7 +455,7 @@ repeat rewrite Vcast_refl. apply Vbreak_eq_app.
 Qed.
 
 (***********************************************************************)
-(* membership *)
+(** membership *)
 
 Fixpoint Vin (x : A) n (v : vec n) {struct v} : Prop :=
   match v with
@@ -550,7 +550,7 @@ simpl in H0. rewrite H0. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* forall *)
+(** forall *)
 
 Fixpoint Vforall (P : A->Prop) n (v : vec n) { struct v } : Prop :=
   match v with
@@ -632,7 +632,7 @@ Fixpoint Vforall2 (R : A->A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2)
 Definition Vforall2n (R : A->A->Prop) n (v1 v2 : vec n) := Vforall2 R v1 v2.
 
 (***********************************************************************)
-(* iteration *)
+(** iteration *)
 
 (* Vfold_left f b [a1 .. an] = f .. (f (f b x1) x2) .. xn *)
 
@@ -651,7 +651,7 @@ Fixpoint Vfold_right (B : Set) (f : A->B->B) n (v : vec n) (b : B) {struct v} : 
   end.
 
 (***********************************************************************)
-(* conversion to lists *)
+(** conversion to lists *)
 
 Require Export List.
 
@@ -668,7 +668,7 @@ Fixpoint list_of_vec n (v : vec n) {struct v} : list A :=
   end.
 
 (***********************************************************************)
-(* decidability of equality *)
+(** decidability of equality *)
 
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
@@ -694,7 +694,7 @@ Implicit Arguments Vin_cast_intro [A m n H v x].
 Implicit Arguments Vin_elim [A x n v].
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac VOtac := repeat
   match goal with
@@ -710,7 +710,7 @@ Ltac VSntac y :=
 Ltac castrefl h := rewrite (UIP_refl h); rewrite Vcast_refl; refl.
 
 (***********************************************************************)
-(* map *)
+(** map *)
 
 Section map.
 
@@ -801,7 +801,7 @@ Implicit Arguments Vin_map [A B f x n v].
 Implicit Arguments Vforall_map_intro [A B f P n v].
 
 (***********************************************************************)
-(* map with a binary function *)
+(** map with a binary function *)
 
 Fixpoint Vmap2 (A B C : Set) (f : A->B->C) n {struct n}
   : vector A n -> vector B n -> vector C n :=
@@ -824,7 +824,7 @@ rewrite IHv. reflexivity.
 Qed.
 
 (***********************************************************************)
-(* vforall and specifications *)
+(** vforall and specifications *)
 
 Fixpoint Vforall_of_vsig (A : Set) (P : A -> Prop) n (v : vector (sig P) n)
   {struct v} : Vforall P (Vmap (@proj1_sig A P) v) :=
@@ -847,7 +847,7 @@ Qed.
 Implicit Arguments Vmap_proj1 [A P n v].
 
 (***********************************************************************)
-(* equality of vmap's *)
+(** equality of vmap's *)
 
 Lemma Vmap_eq : forall (A B : Set) (f g : A->B) n (v : vector A n),
   Vforall (fun a => f a = g a) v -> Vmap f v = Vmap g v.

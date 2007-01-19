@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
 
 general definitions and results about relations
-************************************************************************)
+*)
 
-(* $Id: RelUtil.v,v 1.7 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.8 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -40,7 +40,7 @@ Arguments Scope union [type_scope relation_scope relation_scope].
 Open Scope relation_scope.
 
 (***********************************************************************)
-(* basic properties *)
+(** basic properties *)
 
 Section basic_properties.
 
@@ -58,7 +58,7 @@ Definition commut (A : Set) (R S : relation A) := forall x y z,
   R x y -> S x z -> exists t, R y t /\ S z t.
 
 (***********************************************************************)
-(* basic definitions *)
+(** basic definitions *)
 
 Section basic_definitions.
 
@@ -75,7 +75,7 @@ Definition strict_part x y := R x y /\ ~ R y x.
 End basic_definitions.
 
 (***********************************************************************)
-(* ordering structures *)
+(** ordering structures *)
 
 Section ordering_structures.
 
@@ -103,7 +103,7 @@ Record Strict_ordering : Type := mkStrict_ordering {
 End ordering_structures.
 
 (***********************************************************************)
-(* inclusion *)
+(** inclusion *)
 
 Section inclusion.
 
@@ -134,7 +134,7 @@ Ltac incl_refl := apply incl_refl.
 Ltac trans S := apply incl_trans with (S := S); try incl_refl.
 
 (***********************************************************************)
-(* irreflexive *)
+(** irreflexive *)
 
 Section irrefl.
 
@@ -150,7 +150,7 @@ Qed.
 End irrefl.
 
 (***********************************************************************)
-(* monotony *)
+(** monotony *)
 
 Section monotone.
 
@@ -167,7 +167,7 @@ Qed.
 End monotone.
 
 (***********************************************************************)
-(* reflexive closure *)
+(** reflexive closure *)
 
 Definition clos_refl (A : Set) (R : relation A) x y := x = y \/ R x y.
 
@@ -205,7 +205,7 @@ Qed.
 End clos_refl.
 
 (***********************************************************************)
-(* transitive closure *)
+(** transitive closure *)
 
 Section clos_trans.
 
@@ -266,7 +266,7 @@ Qed.
 End clos_trans.
 
 (***********************************************************************)
-(* reflexive transitive closure *)
+(** reflexive transitive closure *)
 
 Section clos_refl_trans.
 
@@ -330,7 +330,7 @@ Qed.
 End clos_refl_trans.
 
 (***********************************************************************)
-(* inverse/transp *)
+(** inverse/transp *)
 
 Section transp.
 
@@ -369,7 +369,7 @@ Qed.
 End transp.
 
 (***********************************************************************)
-(* composition *)
+(** composition *)
 
 Definition compose (A : Set) (R S : relation A) x y :=
   exists z, R x z /\ S z y.
@@ -428,7 +428,7 @@ End compose.
 Ltac comp := apply incl_comp; try incl_refl.
 
 (***********************************************************************)
-(* union *)
+(** union *)
 
 Section union.
 
@@ -460,7 +460,7 @@ End union.
 Ltac union := apply incl_union; try incl_refl.
 
 (***********************************************************************)
-(* relations between closures, union and composition *)
+(** relations between closures, union and composition *)
 
 Section properties.
 
@@ -543,7 +543,7 @@ Qed.
 End properties.
 
 (***********************************************************************)
-(* inverse image *)
+(** inverse image *)
 
 Section inverse_image.
 
