@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Sebastien Hinderer, 2004-02-25
 
 well-founded monotone interpretations
-************************************************************************)
+*)
 
-(* $Id: AWFMInterpretation.v,v 1.6 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.7 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,9 +22,6 @@ Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
-
-(***********************************************************************)
-(* well-founded interpretations *)
 
 Require Export AInterpretation.
 

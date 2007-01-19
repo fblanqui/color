@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-02-09
 
 interpretation of algebraic terms with arity
-************************************************************************)
+*)
 
-(* $Id: AInterpretation.v,v 1.3 2006-10-24 12:57:11 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.4 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,7 @@ Notation terms := (vector term).
 Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
-(* interpretation of symbols *)
+(** interpretation of symbols *)
 
 Require Export NaryFunction.
 
@@ -35,7 +35,7 @@ Record interpretation : Type := mkInterpretation {
 }.
 
 (***********************************************************************)
-(* interpretation of terms *)
+(** interpretation of terms *)
 
 Variable I : interpretation.
 
@@ -66,7 +66,7 @@ rewrite IHts. auto.
 Qed.
 
 (***********************************************************************)
-(* gives the vector (xint 0) .. (xint (n-1)) *)
+(** gives the vector (xint 0) .. (xint (n-1)) *)
 
 Fixpoint fval (n : nat) : vector D n :=
   match n as n0 return vector _ n0 with

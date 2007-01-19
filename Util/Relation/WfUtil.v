@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 
 useful results on accessibility
-************************************************************************)
+*)
 
 Set Implicit Arguments.
 
@@ -17,13 +17,7 @@ Require Export Wellfounded.
 Implicit Arguments wf_incl [A R1 R2].
 
 (***********************************************************************)
-(* the way wellfoundedness is used in rewriting *)
-
-(*Notation "'wf' R" := (well_founded (transp R)) (at level 70).
-Notation "'sn' R" := (Acc (transp R)) (at level 0).*)
-
-(***********************************************************************)
-(* transitive closure *)
+(** transitive closure *)
 
 Section rtc.
 
@@ -53,7 +47,7 @@ Qed.
 End rtc.
 
 (***********************************************************************)
-(* symmetric product *)
+(** symmetric product *)
 
 Section symprod.
 
@@ -100,7 +94,7 @@ Qed.
 End symprod.
 
 (***********************************************************************)
-(* restricted accessibility *)
+(** restricted accessibility *)
 
 Section RestrictedAcc.
 

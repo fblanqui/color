@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-17
 
 general results on the strong normalization of rewrite relations
-************************************************************************)
+*)
 
-(* $Id: ASN.v,v 1.3 2006-12-04 12:53:52 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.4 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -37,7 +37,7 @@ Require Export SN.
 Notation SNR := (SN Red).
 
 (***********************************************************************)
-(* every subterm of an sn term is sn *)
+(** every subterm of an sn term is sn *)
 
 Lemma subterm_sn : forall t, SNR t -> forall u, subterm_eq u t -> SNR u.
 
@@ -66,7 +66,7 @@ apply subterm_app. assumption.
 Qed.
 
 (***********************************************************************)
-(* strongly normalizing terms when no lhs is a variable *)
+(** strongly normalizing terms when no lhs is a variable *)
 
 Require Export ANotvar.
 
@@ -80,7 +80,7 @@ destruct H0 as [f]. destruct H0 as [ts]. rewrite H0. discriminate.
 Qed.
 
 (***********************************************************************)
-(* variables are sn *)
+(** variables are sn *)
 
 Lemma sn_var : forall v, SNR (Var v).
 
@@ -90,7 +90,7 @@ apply notvar_var. rewrite H0. apply notvar_fillapp. eapply hyp1. apply H.
 Qed.
 
 (***********************************************************************)
-(* undefined symbol whose arguments are sn *)
+(** undefined symbol whose arguments are sn *)
 
 Require Export ACalls.
 
@@ -116,7 +116,7 @@ apply Vgt_prod_cons. left. split. 2: reflexivity. apply red_rule. assumption.
 Qed.
 
 (***********************************************************************)
-(* application of an sn substitution to a term without defined symbols *)
+(** application of an sn substitution to a term without defined symbols *)
 
 Lemma no_call_app_sn : forall t, calls R t = nil -> forall s,
   (forall x, In x (varlist t) -> SNR (s x)) -> SNR (app s t).
@@ -134,7 +134,7 @@ intros. apply H1. rewrite varlist_fun. eapply varlists_in. apply H5. assumption.
 Qed.
 
 (***********************************************************************)
-(* given a substitution [s] that is sn on [varlist r],
+(** given a substitution [s] that is sn on [varlist r],
 if [app s (Fun g vs)] is sn whenever [Fun g vs] is a call in [r]
 such that [Vmap (app s) vs] are sn,
 then [app s (Fun g vs)] is sn whenever [Gun g vs] is a call in [r] *)
@@ -192,4 +192,3 @@ apply H0. assumption.
 Qed.
 
 End S.
-

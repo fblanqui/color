@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -7,9 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Theory concerning extension of an relation to multisets is developed
 in this file.
-************************************************************************)
+*)
 
-(* $Id: MultisetOrder.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

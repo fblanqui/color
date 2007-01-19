@@ -1,12 +1,12 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2006-04-27
 
-    This file introduces definition of the higher-order
-  recursive path ordering due to Jouannaud and Rubio.
-************************************************************************)
+This file introduces definition of the higher-order
+recursive path ordering due to Jouannaud and Rubio.
+*)
 
 Set Implicit Arguments.
 Require Import RelExtras.

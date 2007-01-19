@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 
 Model of LPO statisfying Hypotheses in RPO_Types
-************************************************************************)
+*)
 
-(* $Id: VLPO.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: VLPO.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Require Export Signature.
 Require Export LexicographicOrder.

@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -8,9 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 - Sebastien Hinderer, 2004-05-25
 
 extension of the Coq library on lists
-************************************************************************)
+*)
 
-(* $Id: ListUtil.v,v 1.3 2006-12-04 18:04:57 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.4 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -20,7 +20,7 @@ Require Export List.
 Implicit Arguments in_app_or [A l m a].
 
 (***********************************************************************)
-(* concatenation *)
+(** concatenation *)
 
 Section app.
 
@@ -35,7 +35,7 @@ Qed.
 End app.
 
 (***********************************************************************)
-(* tail *)
+(** tail *)
 
 Require Import Omega.
 
@@ -52,7 +52,7 @@ Qed.
 End tail.
 
 (***********************************************************************)
-(* filtering *)
+(** filtering *)
 
 Section filter.
 
@@ -71,7 +71,7 @@ Fixpoint filter (l : list A) : list A :=
 End filter.
 
 (***********************************************************************)
-(* list inclusion *)
+(** list inclusion *)
 
 Section incl.
 
@@ -122,7 +122,7 @@ Qed.
 End incl.
 
 (***********************************************************************)
-(* equivalence *)
+(** equivalence *)
 
 Section equiv.
 
@@ -152,7 +152,7 @@ Qed.
 End equiv.
 
 (***********************************************************************)
-(* membership *)
+(** membership *)
 
 Section In.
 
@@ -185,7 +185,7 @@ End In.
 Implicit Arguments in_elim [A x l].
 
 (***********************************************************************)
-(* boolean membership when the equality on A is decidable *)
+(** boolean membership when the equality on A is decidable *)
 
 Section Inb.
 
@@ -242,7 +242,7 @@ Qed.
 End Inb.
 
 (***********************************************************************)
-(* removing *)
+(** removing *)
 
 Section remove.
 
@@ -298,7 +298,7 @@ Qed.
 End remove.
 
 (***********************************************************************)
-(* map *)
+(** map *)
 
 Section map.
 
@@ -313,7 +313,7 @@ Qed.
 End map.
 
 (***********************************************************************)
-(* flattening *)
+(** flattening *)
 
 Section flat.
 
@@ -328,7 +328,7 @@ Fixpoint flat (l : list (list A)) : list A :=
 End flat.
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac inbtac :=
   match goal with
@@ -342,7 +342,7 @@ Ltac intac := repeat (apply in_eq || apply in_cons).
 Ltac incltac := repeat (apply incl_cons; [intac | idtac]); apply incl_nil.
 
 (***********************************************************************)
-(* element_at *)
+(** element_at *)
 
 Section Element_At_List.
   
@@ -444,7 +444,7 @@ Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
 Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
 
 (***********************************************************************)
-(* one_less *)
+(** one_less *)
 
 Section one_less.
 
@@ -477,12 +477,12 @@ Implicit Arguments one_less [A].
 Implicit Arguments one_less_cons [A].
 
 (***********************************************************************)
-(* accessibility *)
+(** accessibility *)
 
 Definition accs (A : Set) r l := forall a : A, In a l -> Acc r a.
 
 (***********************************************************************)
-(* prefix *)
+(** prefix *)
 
 Section prefix.
 
@@ -540,7 +540,7 @@ Qed.
 End prefix.
 
 (***********************************************************************)
-(* reverse *)
+(** reverse *)
 
 Section reverse.
 
@@ -575,7 +575,7 @@ Qed.
 End reverse.
 
 (***********************************************************************)
-(* suffix *)
+(** suffix *)
 
 Section suffix.
 
@@ -603,7 +603,7 @@ Qed.
 End suffix.
 
 (***********************************************************************)
-(* mono *)
+(** mono *)
 
 Section mono.
 
@@ -631,7 +631,7 @@ Qed.
 End mono.
 
 (***********************************************************************)
-(* cut *)
+(** cut *)
 
 Section cut.
 
@@ -689,7 +689,7 @@ Qed.
 End cut.
 
 (***********************************************************************)
-(* shrink *)
+(** shrink *)
 
 Section shrink.
 

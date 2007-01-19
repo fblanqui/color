@@ -1,17 +1,20 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2006-10-25
 
 lexicographic ordering
-************************************************************************)
+*)
 
-(* $Id: Lexico.v,v 1.2 2006-12-01 09:37:48 blanqui Exp $ *)
+(* $Id: Lexico.v,v 1.3 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export SN.
+
+(****************************************************************************)
+(** lexicographic ordering on pairs *)
 
 Section lexp.
 
@@ -71,6 +74,9 @@ exact H. exact H0.
 Qed.
 
 End lexp.
+
+(****************************************************************************)
+(** lexicographic ordering on the same argument *)
 
 Section lex.
 

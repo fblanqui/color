@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-06-17
 
 general results on pairs
-************************************************************************)
+*)
 
-(* $Id: PairUtil.v,v 1.2 2006-10-26 14:26:06 blanqui Exp $ *)
+(* $Id: PairUtil.v,v 1.3 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

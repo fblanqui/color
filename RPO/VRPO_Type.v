@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
-************************************************************************)
+*)
 
-(* $Id: VRPO_Type.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: VRPO_Type.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Require Export Signature.
 

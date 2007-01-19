@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
 
 rewriting
-************************************************************************)
+*)
 
-(* $Id: ATrs.v,v 1.5 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.6 2007-01-19 17:22:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,7 +23,7 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 
 (***********************************************************************)
-(* rule *)
+(** rule *)
 
 Record rule : Set := mkRule {
   lhs : term;
@@ -33,7 +33,7 @@ Record rule : Set := mkRule {
 Notation rules := (list rule).
 
 (***********************************************************************)
-(* rewrite step *)
+(** rewrite step *)
 
 Section rewriting.
 
@@ -148,7 +148,7 @@ unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. exact H.
 Qed.
 
 (***********************************************************************)
-(* rewriting vectors of terms *)
+(** rewriting vectors of terms *)
 
 Require Export VecOrd.
 
@@ -167,7 +167,7 @@ Qed.
 End rewriting.
 
 (***********************************************************************)
-(* rewriting modulo *)
+(** rewriting modulo *)
 
 Section rewriting_modulo.
 
@@ -190,7 +190,7 @@ End S.
 Implicit Arguments int_red_fun [Sig R f ts v].
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac redtac := repeat
   match goal with

@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Positions in terms, replacement of term at position,
 monotonicity property.
-************************************************************************)
+*)
 
-(* $Id: TermsPos.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: TermsPos.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

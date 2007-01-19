@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-12-05
 
 one-hole contexts
-************************************************************************)
+*)
 
-(* $Id: VContext.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: VContext.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,7 @@ Notation term := (term Sig).
 Notation terms := (list term).
 
 (***********************************************************************)
-(* contexts and replacement of the hole *)
+(** contexts and replacement of the hole *)
 
 Inductive context : Set :=
   | Hole : context
@@ -38,7 +38,7 @@ Fixpoint fill (c : context) (t : term) {struct c} : term :=
   end.
 
 (***********************************************************************)
-(* context composition *)
+(** context composition *)
 
 Fixpoint comp (C : context) : context -> context :=
   match C with

@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Algebraic terms (functions with arity; simple output type of a function
 assumed) encoded via lambda-terms.
-************************************************************************)
+*)
 
-(* $Id: TermsAlgebraic.v,v 1.2 2006-10-24 12:41:36 blanqui Exp $ *)
+(* $Id: TermsAlgebraic.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 

@@ -1,13 +1,12 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2006-04-27
 
-    This file provides definition of computability due to Tait
-  and Girard and introduces, as hypothesis, some computability 
-  properties.  
-************************************************************************)
+This file provides definition of computability due to Tait and Girard
+and introduces, as hypothesis, some computability properties.
+*)
 
 Set Implicit Arguments.
 Require Import RelExtras.

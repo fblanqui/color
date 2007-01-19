@@ -1,13 +1,12 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2006-04-27
 
-    This file is the development of the proof of 
-  well-foundedness of the higher-order recursive
-  path ordering due to Jouannaud and Rubio.
-************************************************************************)
+This file is the development of the proof of well-foundedness of the
+higher-order recursive path ordering due to Jouannaud and Rubio.
+*)
 
 Set Implicit Arguments.
 Require Import RelExtras.

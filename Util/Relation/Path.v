@@ -1,12 +1,12 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
 
-************************************************************************)
+*)
 
-(* $Id: Path.v,v 1.1 2006-12-04 18:04:57 blanqui Exp $ *)
+(* $Id: Path.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,7 +19,7 @@ Require Export RelUtil.
 Require Export ListUtil.
 
 (***********************************************************************)
-(* Path *)
+(** path *)
 
 Section Path.
 
@@ -100,7 +100,7 @@ apply path_shrink. assumption.
 Qed. 
 
 (***********************************************************************)
-(* bound_path *)
+(** bound_path *)
 
 Require Import Arith.
 
@@ -153,7 +153,7 @@ split. pose (H x a). tauto. pose (IHl' a). tauto.
 Qed.
 
 (***********************************************************************)
-(*  Restriction *)
+(** restriction *)
 
 Section sub_Rel.
 
@@ -222,7 +222,7 @@ unfold inclusion, sub. intros. pose (H x y). tauto.
 Qed.
 
 (***********************************************************************)
-(* bound_path is decidable for sub *)
+(** bound_path is decidable for sub *)
 
 Section bp_sub_decidable.
 
@@ -265,15 +265,12 @@ Qed.
 End bp_sub_decidable.
 
 (***********************************************************************)
-(* decidability of a relation is equivalent to decidability of the
+(** decidability of a relation is equivalent to decidability of the
 transitive closure of every finite restriction of the relation *)
 
 Section dec_clos_trans.
 
 Variable R : relation A.
-
-(***********************************************************************)
-(* bound_path and  clos_trans *)
 
 Lemma clos_trans_sub_bound_path : forall l : list A,
   sub R l ! << bound_path (sub R l) (length l).

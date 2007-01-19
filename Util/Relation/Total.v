@@ -1,12 +1,12 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
 
-************************************************************************)
+*)
 
-(* $Id: Total.v,v 1.1 2006-12-04 18:04:57 blanqui Exp $ *)
+(* $Id: Total.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,7 +18,7 @@ Variable A : Set.
 Variable A_dec : forall x y : A, {x=y}+{x<>y}.
 
 (***********************************************************************)
-(* total *)
+(** total *)
 
 Section total.
 
@@ -41,7 +41,7 @@ unfold inclusion, xytotal. intros. pose (H x y). pose (H y x). tauto.
 Qed. 
 
 (***********************************************************************)
-(* add *)
+(** add *)
 
 Section add.
 
@@ -180,7 +180,7 @@ Qed.
 End add.
 
 (***********************************************************************)
-(* ladd: multiple add with one list *)
+(** ladd: multiple add with one list *)
 
 Section ladd.
 
@@ -247,7 +247,7 @@ Qed.
 End ladd.
 
 (***********************************************************************)
-(* lladd: multiple add with two lists *)
+(** lladd: multiple add with two lists *)
 
 Section lladd.
 
@@ -313,7 +313,7 @@ Qed.
 End lladd.
 
 (***********************************************************************)
-(*  *)
+(**  *)
 
 Section TC.
 

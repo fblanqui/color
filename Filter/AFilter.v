@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-05-13
 
 arguments filtering
-************************************************************************)
+*)
 
-(* $Id: AFilter.v,v 1.2 2006-12-01 09:37:47 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,14 +23,14 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 
 (***********************************************************************)
-(* filtering function *)
+(** filtering function *)
 
 Require Export VecFilter.
 
 Variable pi : forall f, bools (@arity Sig f).
 
 (***********************************************************************)
-(* generated signature *)
+(** associated signature *)
 
 Definition arity' f := Vtrue (pi f).
 
@@ -44,7 +44,7 @@ Notation "'args' f" := (terms (arity f)) (at level 70).
 Notation Fun' := (@Fun Sig').
 
 (***********************************************************************)
-(* term transformation *)
+(** term transformation *)
 
 Fixpoint filter (t : term) : term' :=
   match t with
@@ -87,7 +87,7 @@ Qed.
 *)
 
 (***********************************************************************)
-(* context transformation *)
+(** context transformation *)
 
 Require Export AContext.
 
@@ -97,7 +97,7 @@ Notation context' := (AContext.context Sig').
 Definition Cont' := (@Cont Sig').
 
 (***********************************************************************)
-(* properties wrt substitutions *)
+(** properties wrt substitutions *)
 
 Require Export ASubstitution.
 
@@ -115,7 +115,7 @@ eapply Vfilter_in. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(* extension to rules *)
+(** extension to rules *)
 
 Require Export ATrs.
 
@@ -130,7 +130,7 @@ Definition filter_rule rho := mkRule (filter (lhs rho)) (filter (rhs rho)).
 Notation filter_rules := (List.map filter_rule).
 
 (***********************************************************************)
-(* filter ordering *)
+(** filter ordering *)
 
 Require Export ARelation.
 
@@ -142,7 +142,7 @@ Variable succ : relation term'.
 Notation fsucc := (filter_ord succ).
 
 (***********************************************************************)
-(* transitivity *)
+(** transitivity *)
 
 Lemma filter_trans : transitive succ -> transitive fsucc.
 
@@ -151,7 +151,7 @@ intro. unfold transitive, filter_ord. intros. eapply H. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(* compatibility *)
+(** compatibility *)
 
 Lemma filter_comp : forall R : rules,
   compatible succ (filter_rules R) -> compatible fsucc R.
@@ -163,7 +163,7 @@ apply in_map. assumption.
 Qed.
 
 (***********************************************************************)
-(* well-foundedness *)
+(** well-foundedness *)
 
 Lemma WF_filter : WF succ -> WF fsucc.
 
@@ -172,7 +172,7 @@ intro. unfold filter_ord. apply (WF_inverse filter H).
 Qed.
 
 (***********************************************************************)
-(* stability by substitution *)
+(** stability by substitution *)
 
 Lemma filter_subs_closed :
   substitution_closed succ -> substitution_closed fsucc.
@@ -183,7 +183,7 @@ apply H. assumption.
 Qed.
 
 (***********************************************************************)
-(* properties wrt contexts *)
+(** properties wrt contexts *)
 
 Section filter_cont.
 
@@ -243,7 +243,7 @@ Implicit Arguments filter_cont_true [f i j].
 Implicit Arguments filter_cont_false [f i j].
 
 (***********************************************************************)
-(* stability wrt contexts *)
+(** stability wrt contexts *)
 
 Lemma filter_cont_closed :
   reflexive succ -> context_closed succ -> context_closed fsucc.
@@ -260,7 +260,7 @@ Qed.
 End filter_ordering.
 
 (***********************************************************************)
-(* weak stability wrt contexts *)
+(** weak stability wrt contexts *)
 
 Section weak_cont_closed.
 
@@ -293,7 +293,7 @@ apply rc_context_closed. assumption. apply H3. assumption.
 Qed.
 
 (***********************************************************************)
-(* reduction ordering *)
+(** reduction ordering *)
 
 Lemma filter_weak_red_ord : weak_reduction_ordering succ succ_eq
   -> weak_reduction_ordering fsucc fsucc_eq.

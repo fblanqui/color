@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 
 Various properties of preorders
-************************************************************************)
+*)
 
-(* $Id: Preorder.v,v 1.1.1.1 2006-09-08 09:07:00 blanqui Exp $ *)
+(* $Id: Preorder.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Require Export Relations.
 

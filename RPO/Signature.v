@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 
 recursive path orderings are monotonic well-founded strict orders
-************************************************************************)
+*)
 
-(* $Id: Signature.v,v 1.1.1.1 2006-09-08 09:06:59 blanqui Exp $ *)
+(* $Id: Signature.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Require Export VSignature.
 
@@ -19,7 +19,7 @@ Notation term := (term Sig).
 Notation terms := (list term).
 
 (***********************************************************************)
-(* eqset module of terms *)
+(** eqset module of terms *)
 
 Require Import RelExtras.
 
@@ -42,7 +42,7 @@ Module Term <: Eqset.
 End Term.
 
 (***********************************************************************)
-(* precedence *)
+(** precedence *)
 
 Parameter leF : Sig -> Sig -> Prop.
 

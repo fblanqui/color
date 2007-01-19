@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-01-24
 
 symmetric product on vectors
-************************************************************************)
+*)
 
-(* $Id: VecOrd.v,v 1.4 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.5 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,8 +21,6 @@ Variables (A : Set) (gtA : A->A->Prop).
 Notation vec := (vector A).
 
 Infix ">A" := gtA (at level 70).
-
-(* product ordering *)
 
 Require Export Relations.
 

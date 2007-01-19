@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -6,9 +6,9 @@ See the COPYRIGHTS and LICENSE files.
 - Sebastien Hinderer, 2004-04-20
 
 proof of the termination criterion based on polynomial interpretations
-************************************************************************)
+*)
 
-(* $Id: APolyInt.v,v 1.6 2006-12-05 13:35:14 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.7 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,7 @@ Notation bterm := (bterm Sig).
 Require Export Polynom.
 
 (***********************************************************************)
-(* polynomial associated to a bterm *)
+(** polynomial associated to a bterm *)
 
 Section poly_of_bterm.
 
@@ -58,7 +58,7 @@ Qed.
 End poly_of_bterm.
 
 (***********************************************************************)
-(* polynomial interpretation *)
+(** polynomial interpretation *)
 
 Require Export MonotonePolynom.
 
@@ -70,7 +70,7 @@ Record PolyInterpretation : Type := mkPolyInterpretation {
 Variable PI : PolyInterpretation.
 
 (***********************************************************************)
-(* coefficients are positive *)
+(** coefficients are positive *)
 
 Section coef_pos.
 
@@ -93,7 +93,7 @@ Qed.
 End coef_pos.
 
 (***********************************************************************)
-(* interpretation in D *)
+(** interpretation in D *)
 
 Definition Int_of_PI :=
   mkInterpretation D0 (fun f => peval_D (proj1 (PI_mon PI f))).
@@ -103,7 +103,7 @@ Let W := Int_of_PI.
 Require Export AWFMInterpretation.
 
 (***********************************************************************)
-(* monotony *)
+(** monotony *)
 
 Lemma pi_monotone : monotone W Dgt.
 
@@ -113,7 +113,7 @@ apply (pmonotone_imp_monotone_peval_Dlt (PI_mon PI f)).
 Qed.
 
 (***********************************************************************)
-(* reduction ordering *)
+(** reduction ordering *)
 
 Definition succ := IR W Dgt.
 
@@ -124,7 +124,7 @@ unfold succ. apply IR_reduction_ordering. apply pi_monotone. apply WF_Dgt.
 Qed.
 
 (***********************************************************************)
-(* equivalence between (xint) and (fval xint) *)
+(** equivalence between (xint) and (fval xint) *)
 
 Let f1 (xint : valuation W) k (t : bterm k) := proj1_sig (bterm_int xint t).
 
@@ -197,7 +197,7 @@ Qed.
 Implicit Arguments PI_term_int_eq [t k].
 
 (***********************************************************************)
-(* polynomial associated to a rule *)
+(** polynomial associated to a rule *)
 
 Require Export ATrs.
 Require Export Max.
@@ -211,7 +211,7 @@ Definition rulePoly r :=
     (popp (pconst (S m) 1))).
 
 (***********************************************************************)
-(* compatibility *)
+(** compatibility *)
 
 Require Export ZUtil.
 
@@ -238,7 +238,7 @@ apply (lforall_in H H0).
 Qed.
 
 (***********************************************************************)
-(* termination *)
+(** termination *)
 
 Require Export AMannaNess.
 
@@ -253,7 +253,7 @@ Qed.
 End S.
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac poly_int PI :=
   match goal with

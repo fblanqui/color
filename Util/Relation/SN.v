@@ -1,12 +1,11 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2006-11-26
 
-inductive definition of strong normalization
-(inverse of accessibility)
-************************************************************************)
+inductive definition of strong normalization (inverse of accessibility)
+*)
 
 Set Implicit Arguments.
 
@@ -30,7 +29,7 @@ Definition WF := forall x, SN x.
 End sn.
 
 (***********************************************************************)
-(* accessibility *)
+(** accessibility *)
 
 Section acc.
 
@@ -63,7 +62,7 @@ Qed.
 End acc.
 
 (***********************************************************************)
-(* inclusion *)
+(** inclusion *)
 
 Section incl.
 
@@ -79,7 +78,7 @@ Qed.
 End incl.
 
 (***********************************************************************)
-(* inverse relation *)
+(** inverse relation *)
 
 Section transp.
 
@@ -94,7 +93,7 @@ Qed.
 End transp.
 
 (***********************************************************************)
-(* compatibility *)
+(** compatibility *)
 
 Section compat.
 
@@ -119,7 +118,7 @@ Qed.
 End compat.
 
 (***********************************************************************)
-(* inverse image *)
+(** inverse image *)
 
 Section inverse.
 
@@ -149,7 +148,7 @@ Qed.
 End inverse.
 
 (***********************************************************************)
-(* reflexive transitive closure *)
+(** reflexive transitive closure *)
 
 Section rtc.
 
@@ -164,7 +163,7 @@ Qed.
 End rtc.
 
 (***********************************************************************)
-(* transitive closure *)
+(** transitive closure *)
 
 Section tc.
 
@@ -188,7 +187,7 @@ Qed.
 End tc.
 
 (***********************************************************************)
-(* symmetric product *)
+(** symmetric product *)
 
 Section symprod.
 

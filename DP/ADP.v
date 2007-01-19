@@ -1,13 +1,13 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2004-12-22
 
 dependancy pairs
-************************************************************************)
+*)
 
-(* $Id: ADP.v,v 1.6 2006-12-05 09:53:34 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.7 2007-01-19 17:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,7 +32,7 @@ Notation rules := (list rule).
 Variable R : rules.
 
 (***********************************************************************)
-(* dependancy pairs *)
+(** definition of dependancy pairs *)
 
 Require Export ACalls.
 
@@ -70,7 +70,7 @@ eapply in_calls_dp. apply H. assumption. auto.
 Qed.
 
 (***********************************************************************)
-(* dependancy chains *)
+(** dependancy chains *)
 
 Definition chain := int_red R # @ hd_red dp.
 
@@ -92,7 +92,7 @@ exact H. exact H0. exact H1.
 Qed.
 
 (***********************************************************************)
-(* usual assumptions on rules *)
+(** assumptions on rules *)
 
 Require Export ANotvar.
 
@@ -104,7 +104,7 @@ Variable hyp2 : forall l r x,
 Implicit Arguments hyp2 [l r x].
 
 (***********************************************************************)
-(* fundamental dp theorem *)
+(** fundamental dp theorem *)
 
 Require Export ACap.
 

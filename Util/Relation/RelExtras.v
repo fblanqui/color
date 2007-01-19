@@ -1,4 +1,4 @@
-(************************************************************************
+(**
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
@@ -7,9 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 
 This file provides some basic results concerning relations that were
 missing in the standard library.
-************************************************************************)
+*)
 
-(* $Id: RelExtras.v,v 1.2 2006-10-19 11:52:08 blanqui Exp $ *)
+(* $Id: RelExtras.v,v 1.3 2007-01-19 17:22:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
