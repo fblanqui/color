@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -152,7 +152,7 @@ Lemma Vmap_sum_conc : forall n (ts : terms n),
   Vmap_sum (Vmap capa ts) (conc (Vmap capa ts)) = ts.
 
 Proof.
-intros. apply Vmap_sum_conc_forall. apply Vforall_elim_ext. apply sub_capa.
+intros. apply Vmap_sum_conc_forall. apply Vforall_intro_ext. apply sub_capa.
 Qed.
 
 (***********************************************************************)
@@ -201,19 +201,19 @@ Qed.
 (***********************************************************************)
 (** variables of the cap *)
 
-Lemma varlist_fcap_fresh_inf : forall x t m, maxvar t <= m
-  -> In x (varlist (fcap (capa t) (fresh (S m) (nb_aliens t))))
-  -> x <= m -> In x (varlist t).
+Lemma vars_fcap_fresh_inf : forall x t m, maxvar t <= m
+  -> In x (vars (fcap (capa t) (fresh (S m) (nb_aliens t))))
+  -> x <= m -> In x (vars t).
 
 Proof.
 intro. set (Q := fun n (ts : terms n) => forall m, Vmax (Vmap maxvar ts) <= m
-  -> In x (varlists (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
-  -> x <= m -> In x (varlists ts)).
+  -> In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
+  -> x <= m -> In x (vars_vec ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
 (* var *)
 assumption.
 (* fun *)
-rewrite varlist_fun. unfold nb_aliens in H1. rewrite capa_fun in H1.
+rewrite vars_fun. unfold nb_aliens in H1. rewrite capa_fun in H1.
 destruct (defined f R); simpl in H1. destruct H1.
 absurd (x<=m); omega. contradiction. apply H with (m := m); assumption.
 (* nil *)
@@ -232,33 +232,33 @@ assert (Vmax (Vmap maxvar v) <= m0). eapply intro_max_r. unfold m in H1. apply H
 omega. assumption. omega.
 Qed.
 
-Lemma varlist_cap_inf : forall x t,
-  In x (varlist (cap t)) -> x <= maxvar t -> In x (varlist t).
+Lemma vars_cap_inf : forall x t,
+  In x (vars (cap t)) -> x <= maxvar t -> In x (vars t).
 
 Proof.
-intros. apply varlist_fcap_fresh_inf with (m := maxvar t). apply le_refl.
+intros. apply vars_fcap_fresh_inf with (m := maxvar t). apply le_refl.
 rewrite cap_eq in H. assumption. assumption.
 Qed.
 
-Lemma varlist_cap_sup : forall x t,
-  In x (varlist (cap t)) -> x > maxvar t -> In x (varlist t) -> False.
+Lemma vars_cap_sup : forall x t,
+  In x (vars (cap t)) -> x > maxvar t -> In x (vars t) -> False.
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
-intuition. change (In x (varlists v)) in H2.
+intuition. change (In x (vars_vec v)) in H2.
 set (m := Vmax (Vmap maxvar v)). change (x > m) in H1.
-deduce (in_varlists H2). destruct H3 as [t]. destruct H3.
-deduce (varlist_max H4). deduce (maxvar_in _ _ H5 H3).
+deduce (in_vars_vec_elim H2). destruct H3 as [t]. destruct H3.
+deduce (vars_max H4). deduce (maxvar_in _ _ H5 H3).
 fold m in H6. absurd (x>m); omega.
 Qed.
 
-Lemma varlist_fcap_fresh : forall x t m, maxvar t <= m
-  -> In x (varlist (fcap (capa t) (fresh (S m) (nb_aliens t))))
+Lemma vars_fcap_fresh : forall x t m, maxvar t <= m
+  -> In x (vars (fcap (capa t) (fresh (S m) (nb_aliens t))))
   -> x <= m + nb_aliens t.
 
 Proof.
 intro. set (Q := fun n (ts : terms n) => forall m, Vmax (Vmap maxvar ts) <= m
-  -> In x (varlists (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
+  -> In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
   -> x <= m + sum (Vmap capa ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t.
 (* var *)
@@ -278,11 +278,11 @@ rewrite plus_assoc. apply H0. assert (Vmax (Vmap maxvar v) <= m).
 eapply intro_max_r. apply H1. omega. assumption.
 Qed.
 
-Lemma varlist_cap : forall x t,
-  In x (varlist (cap t)) -> x <= maxvar t + nb_aliens t.
+Lemma vars_cap : forall x t,
+  In x (vars (cap t)) -> x <= maxvar t + nb_aliens t.
 
 Proof.
-intros. apply varlist_fcap_fresh. apply le_refl. rewrite cap_eq in H.
+intros. apply vars_fcap_fresh. apply le_refl. rewrite cap_eq in H.
 assumption.
 Qed.
 
@@ -412,6 +412,6 @@ Qed.
 
 End S.
 
-Implicit Arguments varlist_cap_inf [Sig x t].
-Implicit Arguments varlist_cap_sup [Sig x t].
-Implicit Arguments varlist_cap [Sig x t].
+Implicit Arguments vars_cap_inf [Sig x t].
+Implicit Arguments vars_cap_sup [Sig x t].
+Implicit Arguments vars_cap [Sig x t].

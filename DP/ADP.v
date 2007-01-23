@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.7 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.8 2007-01-23 16:42:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -99,7 +99,7 @@ Require Export ANotvar.
 Variable hyp1 : forall l r, In (mkRule l r) R -> notvar l.
 
 Variable hyp2 : forall l r x,
-  In (mkRule l r) R -> In x (varlist r) -> In x (varlist l).
+  In (mkRule l r) R -> In x (vars r) -> In x (vars l).
 
 Implicit Arguments hyp2 [l r x].
 
@@ -142,7 +142,7 @@ deduce (fun_eq_app H3). destruct H5.
 (* lhs = Fun f us *)
 destruct e as [ls]. rewrite H5 in H3. rewrite app_fun in H3. Funeqtac.
 (* begin assert: the substitution s is SN *)
-assert (Hsnsx : forall x, In x (varlist l) -> SNR (s x)). intros.
+assert (Hsnsx : forall x, In x (vars l) -> SNR (s x)). intros.
 eapply sub_fun_sn with (f := f). rewrite H5 in H3. apply H3.
 rewrite <- H7. assumption.
 (* end assert *)
@@ -151,10 +151,10 @@ subst u. assert (r = app (alien_sub r) (cap r)). apply sym_eq.
 apply (alien_sub_cap R). rewrite H3. rewrite app_app.
 apply no_call_app_sn. apply hyp1. apply calls_cap.
 (* we prove that the alien substitution is SN *)
-intros. deduce (varlist_cap R H4).
+intros. deduce (vars_cap R H4).
 case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
 (* x <= maxvar r *)
-deduce (varlist_cap_inf R H4 l0). deduce (hyp2 H2 H8).
+deduce (vars_cap_inf R H4 l0). deduce (hyp2 H2 H8).
 rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
 (* x > maxvar r *)
 rewrite (fsub_nth (aliens (capa r)) l0 H6).

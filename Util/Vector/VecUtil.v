@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -122,7 +122,7 @@ Proof.
 intros. apply Vcast_refl_eq.
 Defined.
 
-Lemma Vcast_eq_intro : forall n (v1 v2 : vec n) m (h : n = m),
+Lemma Vcast_eq_elim : forall n (v1 v2 : vec n) m (h : n = m),
   Vcast v1 h = Vcast v2 h -> v1 = v2.
 
 Proof.
@@ -151,7 +151,7 @@ Proof.
 intros. apply Vcast_cast_eq.
 Qed.
 
-Lemma Vcast_eq_elimr : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
+Lemma Vcast_eq_intror : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
   n2 (v2 : vec n2) (h2 : n2=n0) (h : n1=n2),
   Vcast v1 h = v2 -> Vcast v1 h1 = Vcast v2 h2.
 
@@ -184,14 +184,14 @@ induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
 Veqtac. apply Vcons_eq_tail. eapply IHv1. apply H2.
 Qed.
 
-Lemma Vcast_elimrl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h21 : n2=n1),
+Lemma Vcast_introrl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h21 : n2=n1),
   Vcast v1 (sym_eq h21) = v2 -> v1 = Vcast v2 h21.
 
 Proof.
 intros. eapply Vcast_lr. apply H.
 Qed.
 
-Lemma Vcast_introlr : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2),
+Lemma Vcast_elimlr : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2),
   Vcast v1 h12 = v2 -> v1 = Vcast v2 (sym_eq h12).
 
 Proof.
@@ -476,21 +476,21 @@ induction v. intros. absurd (k<0); omega.
 intro. destruct k; simpl. auto. intro. right. apply IHv.
 Qed.
 
-Lemma Vin_cast_elim : forall m n (H : m=n) (v : vec m) x,
+Lemma Vin_cast_intro : forall m n (H : m=n) (v : vec m) x,
   Vin x v -> Vin x (Vcast v H).
 
 Proof.
 intros m n H. case H. intros. rewrite Vcast_refl. assumption.
 Qed.
 
-Lemma Vin_cast_intro : forall m n (H : m=n) (v : vec m) x,
+Lemma Vin_cast_elim : forall m n (H : m=n) (v : vec m) x,
   Vin x (Vcast v H) -> Vin x v.
 
 Proof.
 intros m n H. case H. intros v x. rewrite Vcast_refl. auto.
 Qed.
 
-Implicit Arguments Vin_cast_intro [m n H v x].
+Implicit Arguments Vin_cast_elim [m n H v x].
 
 Lemma Vin_appl : forall x n1 (v1 : vec n1) n2 (v2 : vec n2),
   Vin x v1 -> Vin x (Vapp v1 v2).
@@ -541,7 +541,8 @@ exists 0. exists (@Vnil A). exists n. exists v. exists (refl_equal (S n)).
 rewrite Vcast_refl. reflexivity.
 assert (exists n1, exists v1 : vec n1, exists n2, exists v2 : vec n2,
   exists H : n1 + S n2 = n, v = Vcast (Vapp v1 (Vcons x v2)) H). exact (IHv H).
-destruct H0 as [n1]. destruct H0 as [v1]. destruct H0 as [n2]. destruct H0 as [v2].
+destruct H0 as [n1]. destruct H0 as [v1]. destruct H0 as [n2].
+destruct H0 as [v2].
 destruct H0 as [H1].
 exists (S n1). exists (Vcons a v1). exists n2. exists v2. exists (S_add_S H1).
 rewrite H0. clear H0. simpl.
@@ -558,14 +559,14 @@ Fixpoint Vforall (P : A->Prop) n (v : vec n) { struct v } : Prop :=
     | Vcons a _ w => P a /\ Vforall P w
   end.
 
-Lemma Vforall_elim_ext : forall (P : A->Prop), (forall x, P x) ->
+Lemma Vforall_intro_ext : forall P : A->Prop, (forall x, P x) ->
   forall n (v : vec n), Vforall P v.
 
 Proof.
 induction v; intros; simpl; auto.
 Qed.
 
-Lemma Vforall_elim : forall (P : A->Prop) n (v : vec n),
+Lemma Vforall_intro : forall (P : A->Prop) n (v : vec n),
   (forall x, Vin x v -> P x) -> Vforall P v.
 
 Proof.
@@ -587,22 +588,22 @@ Lemma Vforall_incl : forall (P : A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2),
   (forall x, Vin x v1 -> Vin x v2) -> Vforall P v2 -> Vforall P v1.
 
 Proof.
-intros. apply Vforall_elim. intros. apply Vforall_in with (v := v2).
+intros. apply Vforall_intro. intros. apply Vforall_in with (v := v2).
 assumption. apply H. assumption.
 Qed.
 
 Lemma Vforall_cast : forall P n v p (h : n=p), Vforall P v -> Vforall P (Vcast v h).
 
 Proof.
-intros. apply Vforall_elim. intros.
-eapply Vforall_in with (n := n). apply H. deduce (Vin_cast_intro H0). assumption.
+intros. apply Vforall_intro. intros.
+eapply Vforall_in with (n := n). apply H. deduce (Vin_cast_elim H0). assumption.
 Qed.
 
 Lemma Vforall_imp : forall (P Q : A->Prop) n (v : vec n),
   Vforall P v -> (forall x, Vin x v -> P x -> Q x) -> Vforall Q v.
 
 Proof.
-intros. apply Vforall_elim. intros. apply H0. assumption.
+intros. apply Vforall_intro. intros. apply H0. assumption.
 eapply Vforall_in with (n := n). apply H. apply H1.
 Qed.
 
@@ -684,14 +685,18 @@ Defined.
 
 End S.
 
+(***********************************************************************)
+(** declaration of implicit arguments *)
+
 Implicit Arguments VSn_eq [A n].
 Implicit Arguments Vsig_of_v [A P n v].
 Implicit Arguments Vbreak [A n1 n2].
 Implicit Arguments Vbreak_eq_app [A n1 n2].
 Implicit Arguments Vbreak_eq_app_cast [A n n1 n2].
 Implicit Arguments Vforall_in [A P x n v].
-Implicit Arguments Vin_cast_intro [A m n H v x].
+Implicit Arguments Vin_cast_elim [A m n H v x].
 Implicit Arguments Vin_elim [A x n v].
+Implicit Arguments Vin_app [A x n1 v1 n2 v2].
 
 (***********************************************************************)
 (** tactics *)
@@ -743,20 +748,20 @@ assert (exists y, Vin y v /\ x = f y). apply IHv. assumption. destruct H0 as [y]
 exists y. intuition.
 Qed.
 
-Lemma Vin_map_elim : forall x n (v : vector A n), Vin x v -> Vin (f x) (Vmap v).
+Lemma Vin_map_intro : forall x n (v : vector A n), Vin x v -> Vin (f x) (Vmap v).
 
 Proof.
 induction v; simpl; intros. contradiction. destruct H. subst x. auto. intuition.
 Qed.
 
-Lemma Vforall_map_intro : forall (P : B->Prop) n (v : vector A n),
+Lemma Vforall_map_elim : forall (P : B->Prop) n (v : vector A n),
   Vforall P (Vmap v) -> Vforall (fun a : A => P (f a)) v.
 
 Proof.
 induction v; simpl; intuition.
 Qed.
 
-Lemma Vforall_map_elim : forall (P : B->Prop) n (v : vector A n),
+Lemma Vforall_map_intro : forall (P : B->Prop) n (v : vector A n),
   Vforall (fun a : A => P (f a)) v -> Vforall P (Vmap v).
 
 Proof.
@@ -798,7 +803,8 @@ Qed.
 End map.
 
 Implicit Arguments Vin_map [A B f x n v].
-Implicit Arguments Vforall_map_intro [A B f P n v].
+Implicit Arguments Vforall_map_elim [A B f P n v].
+Implicit Arguments Vin_map_intro [A B x n v].
 
 (***********************************************************************)
 (** map with a binary function *)

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -183,7 +183,7 @@ injection H0. intros. subst f0.
 assert (ts = Vcast (Vapp v (Vcons (fill C (Fun g us)) v0)) e).
 apply (inj_pair2 Sig (fun f => args f)). assumption.
 apply in_cons. apply IH. exists (fill C (Fun g us)). split.
-rewrite H3. apply Vin_cast_elim. apply Vin_app_cons.
+rewrite H3. apply Vin_cast_intro. apply Vin_app_cons.
 unfold subterm_eq. exists C. refl.
 (* undefined f *)
 (* C = Hole *)
@@ -193,7 +193,7 @@ injection H0. intros. subst f0.
 assert (ts = Vcast (Vapp v (Vcons (fill C (Fun g us)) v0)) e).
 apply (inj_pair2 Sig (fun f => args f)). assumption.
 apply IH. exists (fill C (Fun g us)). split.
-rewrite H3. apply Vin_cast_elim. apply Vin_app_cons.
+rewrite H3. apply Vin_cast_intro. apply Vin_app_cons.
 unfold subterm_eq. exists C. refl.
 (* nil *)
 unfold Q. simpl. intro. destruct H0 as [t]. intuition.

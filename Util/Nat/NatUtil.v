@@ -7,10 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
+Require Export LogicUtil.
 Require Export Arith.
 
 Implicit Arguments lt_S_n [n m].
@@ -78,7 +79,6 @@ case (le_dec b c); intro H.
  case (le_dec a b); intro H'.
   rewrite (max_r (le_trans H' H)).
   rewrite (max_r H'). rewrite (max_r H). reflexivity.
-
   case (le_dec a c); intro H''; rewrite (max_l H'); reflexivity.
   rewrite (max_l H).
   case (le_dec a b); intro H'.
@@ -110,4 +110,32 @@ Lemma intro_max_r : forall x y z, max x y <= z -> y <= z.
 
 Proof.
 intros. eapply le_trans. 2: apply H. apply le_max_r.
+Qed.
+
+(***********************************************************************)
+(** min *)
+
+Require Export Min.
+
+Lemma elim_min_l : forall x y z, x <= z -> min x y <= z.
+
+Proof.
+intros. eapply le_trans. apply le_min_l. exact H.
+Qed.
+
+Lemma elim_min_r : forall x y z, y <= z -> min x y <= z.
+
+Proof.
+intros. eapply le_trans. apply le_min_r. exact H.
+Qed.
+
+(***********************************************************************)
+(** minus *)
+
+Require Export Omega.
+
+Lemma plus_minus : forall v p, v+p-p=v.
+
+Proof.
+intros. omega.
 Qed.
