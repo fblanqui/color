@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.6 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.7 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -148,6 +148,21 @@ unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. exact H.
 Qed.
 
 (***********************************************************************)
+(** preservation of variables under reduction *)
+
+Section variables.
+
+Variable hyp : forall a, In a R -> incl (vars (rhs a)) (vars (lhs a)).
+
+Lemma vars_preserved : forall t u, red t u -> incl (vars u) (vars t).
+
+Proof.
+intros. redtac. subst t. subst u.
+Abort.
+
+End variables.
+
+(***********************************************************************)
 (** rewriting vectors of terms *)
 
 Require Export VecOrd.
@@ -186,6 +201,9 @@ Qed.
 End rewriting_modulo.
 
 End S.
+
+(***********************************************************************)
+(** declarations of implicit arguments *)
 
 Implicit Arguments int_red_fun [Sig R f ts v].
 

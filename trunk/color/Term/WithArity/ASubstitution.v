@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.6 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.7 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,7 +32,7 @@ Notation Var := (@Var Sig).
 
 Require Export AInterpretation.
 
-Notation I0 := (mkInterpretation (Var 0) (@Fun Sig)).
+Definition I0 := (mkInterpretation (Var 0) (@Fun Sig)).
 
 Definition substitution := valuation I0.
 
@@ -82,6 +82,13 @@ intros. set (P := fun t => app s1 (app s2 t) = app (comp s1 s2) t).
 change (P t). apply term_ind_forall with (P := P); intros; unfold P.
 reflexivity. repeat rewrite app_fun. apply f_equal with (f := Fun f).
 rewrite Vmap_map. apply Vmap_eq. assumption.
+Qed.
+
+Lemma comp_assoc : forall (s1 s2 s3 : substitution) x,
+  comp (comp s1 s2) s3 x = comp s1 (comp s2 s3) x.
+
+Proof.
+intros. unfold comp. rewrite app_app. refl.
 Qed.
 
 (***********************************************************************)
@@ -134,20 +141,20 @@ intros. unfold sub_eq_dom. eapply lforall_incl. apply H0. assumption.
 Qed.
 
 Lemma sub_eq_dom_incl_app : forall s1 s2 l, sub_eq_dom s1 s2 l
-  -> forall t, incl (varlist t) l -> app s1 t = app s2 t.
+  -> forall t, incl (vars t) l -> app s1 t = app s2 t.
 
 Proof.
 intros until t. unfold sub_eq_dom in H.
-set (P := fun t => incl (varlist t) l -> app s1 t = app s2 t).
+set (P := fun t => incl (vars t) l -> app s1 t = app s2 t).
 set (Q := fun n (ts : terms n) =>
-  incl (varlists ts) l -> Vmap (app s1) ts = Vmap (app s2) ts).
+  incl (vars_vec ts) l -> Vmap (app s1) ts = Vmap (app s2) ts).
 apply (term_ind P Q).
 (* var *)
 unfold P. simpl. intros. generalize (incl_cons_in H0). intro.
 pattern x. eapply lforall_in. apply H. assumption.
 (* fun *)
 unfold P. intros. do 2 rewrite app_fun. apply (f_equal (Fun f)).
-apply H0. rewrite varlist_fun in H1. assumption.
+apply H0. rewrite vars_fun in H1. assumption.
 (* nil *)
 unfold Q. intro. reflexivity.
 (* cons *)
@@ -155,7 +162,7 @@ intros. unfold Q. simpl. intro. apply Vcons_eq. apply H0.
 eapply incl_appr_incl. apply H2. apply H1. eapply incl_appl_incl. apply H2.
 Qed.
 
-Lemma sub_eq_varlist_app : forall s1 s2 t, sub_eq_dom s1 s2 (varlist t)
+Lemma sub_eq_vars_app : forall s1 s2 t, sub_eq_dom s1 s2 (vars t)
   -> app s1 t = app s2 t.
 
 Proof.
@@ -163,17 +170,17 @@ intros. eapply sub_eq_dom_incl_app. apply H. apply List.incl_refl.
 Qed.
 
 Lemma sub_eq_dom_app : forall s1 s2 t,
-  sub_eq_dom s1 s2 (varlist t) -> app s1 t = app s2 t.
+  sub_eq_dom s1 s2 (vars t) -> app s1 t = app s2 t.
 
 Proof.
 intros until t.
-set (P := fun t => sub_eq_dom s1 s2 (varlist t) -> app s1 t = app s2 t).
-set (Q := fun n (ts : terms n) => sub_eq_dom s1 s2 (varlists ts)
+set (P := fun t => sub_eq_dom s1 s2 (vars t) -> app s1 t = app s2 t).
+set (Q := fun n (ts : terms n) => sub_eq_dom s1 s2 (vars_vec ts)
   -> Vmap (app s1) ts = Vmap (app s2) ts). change (P t). apply (term_ind P Q).
 (* var *)
 unfold P. simpl. intuition.
 (* fun *)
-intros. unfold P. rewrite varlist_fun. intro. do 2 rewrite app_fun.
+intros. unfold P. rewrite vars_fun. intro. do 2 rewrite app_fun.
 apply (f_equal (Fun f)). apply H. assumption.
 (* nil *)
 unfold Q. simpl. auto.
@@ -209,26 +216,26 @@ Lemma sub_eq_restrict : forall s l, sub_eq_dom (restrict s l) s l.
 Proof.
 unfold sub_eq_dom. induction l; simpl. exact I. split.
 unfold restrict. simpl. case (eq_nat_dec a a). auto.
-intro. absurd (a = a); auto. apply lforall_elim. intros.
+intro. absurd (a = a); auto. apply lforall_intro. intros.
 unfold restrict. simpl. case (eq_nat_dec x a). intro. reflexivity.
 assert (Inb_var x l = true). apply Inb_intro. assumption. intro.
 pattern x. eapply lforall_in. apply IHl. assumption.
 Qed.
 
-Lemma app_restrict : forall s t, app s t = app (restrict s (varlist t)) t.
+Lemma app_restrict : forall s t, app s t = app (restrict s (vars t)) t.
 
 Proof.
 intros. apply sym_eq. apply sub_eq_dom_app. apply sub_eq_restrict.
 Qed.
 
 Lemma app_restrict_incl : forall s (l r : term),
-  incl (varlist r) (varlist l) -> app s r = app (restrict s (varlist l)) r.
+  incl (vars r) (vars l) -> app s r = app (restrict s (vars l)) r.
 
 Proof.
 intros. rewrite app_restrict. apply sub_eq_dom_app. unfold sub_eq_dom.
-apply lforall_elim. intros. unfold restrict.
-assert (Inb_var x (varlist r) = true). apply Inb_intro. assumption.
-assert (Inb_var x (varlist l) = true). apply Inb_intro. apply H. assumption.
+apply lforall_intro. intros. unfold restrict.
+assert (Inb_var x (vars r) = true). apply Inb_intro. assumption.
+assert (Inb_var x (vars l) = true). apply Inb_intro. apply H. assumption.
 rewrite H1. rewrite H2. reflexivity.
 Qed.
 

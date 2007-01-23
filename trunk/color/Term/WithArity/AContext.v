@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -59,7 +59,7 @@ Proof.
 intros. destruct c. auto. right.
 simpl in H. injection H. intros. subst f0.
 exists i. exists j. exists e. exists v. exists c. exists v0.
-reflexivity.
+refl.
 Qed.
 
 (***********************************************************************)
@@ -72,7 +72,7 @@ Definition subterm u t := exists C, C <> Hole /\ t = fill C u.
 Lemma subterm_eq_refl : forall t, subterm_eq t t.
 
 Proof.
-intro. exists Hole. reflexivity.
+intro. exists Hole. refl.
 Qed.
 
 Lemma subterm_eq_var : forall u x, subterm_eq u (Var x) -> u = Var x.
@@ -92,8 +92,8 @@ destruct C. absurd (Hole = Hole); auto.
 clear H. simpl in H0. injection H0. intros. subst f0.
 assert (ts = Vcast (Vapp v (Vcons (fill C u) v0)) e).
 apply (inj_pair2 Sig (fun f => args f)). exact H.
-exists (fill C u). split. rewrite H1. apply Vin_cast_elim. apply Vin_app_cons.
-unfold subterm_eq. exists C. reflexivity.
+exists (fill C u). split. rewrite H1. apply Vin_cast_intro. apply Vin_app_cons.
+unfold subterm_eq. exists C. refl.
 Qed.
 
 Lemma subterm_fun : forall f (ts : args f) u, Vin u ts -> subterm u (Fun f ts).
@@ -106,7 +106,7 @@ apply Vin_elim. assumption.
 destruct H0 as [n1]. destruct H0 as [ts1].
 destruct H0 as [n2]. destruct H0 as [ts2]. destruct H0 as [H1].
 exists (Cont H1 ts1 Hole ts2). split. discriminate.
-rewrite H0. reflexivity.
+rewrite H0. refl.
 Qed.
 
 Lemma subterm_strict : forall u t, subterm u t -> subterm_eq u t.
@@ -135,8 +135,8 @@ Fixpoint comp (C : context) : context -> context :=
 Lemma fill_comp : forall C D u, fill C (fill D u) = fill (comp C D) u.
 
 Proof.
-induction C; simpl; intros. reflexivity.
-rewrite (IHC D u). reflexivity.
+induction C; simpl; intros. refl.
+rewrite (IHC D u). refl.
 Qed.
 
 (***********************************************************************)
@@ -148,7 +148,7 @@ Lemma subterm_trans_eq1 : forall t u v,
 Proof.
 unfold subterm, subterm_eq. intros. destruct H. destruct H0. destruct H0.
 subst u. subst v. rewrite (fill_comp x0 x t). exists (comp x0 x).
-split. destruct x0. absurd (Hole = Hole); auto. simpl. discriminate. reflexivity.
+split. destruct x0. absurd (Hole = Hole); auto. simpl. discriminate. refl.
 Qed.
 
 Lemma subterm_trans_eq2 : forall t u v,
@@ -158,7 +158,7 @@ Proof.
 unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
 subst u. subst v. rewrite (fill_comp x0 x t). exists (comp x0 x).
 split. destruct x. absurd (Hole = Hole); auto.
-destruct x0; simpl; discriminate. reflexivity.
+destruct x0; simpl; discriminate. refl.
 Qed.
 
 Lemma subterm_trans : forall t u v,
@@ -168,37 +168,39 @@ Proof.
 unfold subterm. intros. do 2 destruct H. do 2 destruct H0.
 subst u. subst v. rewrite (fill_comp x0 x t). exists (comp x0 x).
 split. destruct x. absurd (Hole = Hole); auto.
-destruct x0; simpl; discriminate. reflexivity.
+destruct x0; simpl; discriminate. refl.
 Qed.
 
 (***********************************************************************)
 (** subterms and variables *)
 
-Lemma subterm_varlist : forall u t x,
-  subterm_eq u t -> In x (varlist u) -> In x (varlist t).
+Lemma subterm_vars : forall u t x,
+  subterm_eq u t -> In x (vars u) -> In x (vars t).
 
 Proof.
 unfold subterm_eq. intros. destruct H as [C]. subst t. elim C; clear C.
-simpl. assumption. intros. simpl fill. rewrite varlist_fun.
-rewrite varlists_cast. rewrite varlists_app. rewrite varlists_cons.
+simpl. assumption. intros. simpl fill. rewrite vars_fun.
+rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
 apply in_appr. apply in_appl. assumption.
 Qed.
 
-Lemma in_varlist_subterm : forall x t, In x (varlist t) -> subterm_eq (Var x) t.
+Lemma in_vars_subterm : forall x t, In x (vars t) -> subterm_eq (Var x) t.
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
-intuition. rewrite H0. apply subterm_eq_refl. generalize (in_varlists H0). intro.
+intuition. rewrite H0. apply subterm_eq_refl.
+generalize (in_vars_vec_elim H0). intro.
 destruct H1 as [t]. destruct H1. generalize (Vforall_in H H1). intro.
-generalize (H3 H2). intro. apply subterm_strict. eapply subterm_trans_eq1. apply H4.
+generalize (H3 H2). intro. apply subterm_strict. eapply subterm_trans_eq1.
+apply H4.
 apply subterm_fun. assumption.
 Qed.
 
-Lemma in_varlist_fun : forall x f ts,
-  In x (varlist (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
+Lemma in_vars_fun : forall x f ts,
+  In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
 
 Proof.
-intros. apply subterm_fun_elim. deduce (in_varlist_subterm _ _ H).
+intros. apply subterm_fun_elim. deduce (in_vars_subterm _ _ H).
 apply subterm_noteq. assumption. discriminate.
 Qed.
 
@@ -226,7 +228,8 @@ destruct x. absurd (Hole = Hole); auto. discriminate.
 (* fun *)
 intros. unfold P'. intros. apply IH. intros.
 assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. assumption.
-assert (exists t, Vin t v /\ subterm_eq u0 t). apply subterm_fun_elim. assumption.
+assert (exists t, Vin t v /\ subterm_eq u0 t). apply subterm_fun_elim.
+assumption.
 destruct H3. destruct H3.
 assert (P' x). eapply Vforall_in with (n := arity f). apply H. assumption.
 apply H5. assumption.
@@ -240,8 +243,29 @@ Proof.
 intros. apply forall_subterm_eq. apply subterm_ind_sub. assumption.
 Qed.
 
+(***********************************************************************)
+(** variables of a context *)
+
+Fixpoint cvars (c : context) : variables :=
+  match c with
+    | Hole => nil
+    | Cont f i j H v1 c' v2 => vars_vec v1 ++ cvars c' ++ vars_vec v2
+  end.
+
+Lemma vars_fill : forall t c, incl (vars (fill c t)) (cvars c ++ vars t).
+
+Proof.
+induction c. simpl. apply incl_refl. simpl fill. rewrite vars_fun. simpl.
+unfold incl. intros. deduce (in_vars_vec_elim H). do 2 destruct H0.
+deduce (Vin_cast_elim H0). deduce (Vin_app H2). destruct H3.
+repeat apply in_appl.
+Abort.
+
 End S.
 
+(***********************************************************************)
+(** declarations of implicit arguments *)
+
 Implicit Arguments Hole [Sig].
-Implicit Arguments in_varlist_subterm [Sig x t].
-Implicit Arguments in_varlist_fun [Sig x f ts].
+Implicit Arguments in_vars_subterm [Sig x t].
+Implicit Arguments in_vars_fun [Sig x f ts].

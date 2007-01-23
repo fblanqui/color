@@ -8,13 +8,16 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-Section S.
-
 Require Export ASignature.
+Require Export ListUtil.
+
+Notation variables := (list variable).
+
+Section S.
 
 Variable Sig : Signature.
 
@@ -82,7 +85,7 @@ exact I. intros. simpl. split; assumption.
 Qed.
 
 (***********************************************************************)
-(** maximal index of a variable *)
+(** maximal variable index in a term *)
 
 Require Export VecMax.
 
@@ -118,7 +121,7 @@ Lemma maxvar_le_fun : forall m f ts,
 
 Proof.
 intros until ts. rewrite maxvar_fun. intro. generalize (Vmax_forall H).
-clear H. intro H. generalize (Vforall_map_intro H). intuition.
+clear H. intro H. generalize (Vforall_map_elim H). intuition.
 Qed.
 
 Lemma maxvar_le_arg : forall f ts m t,
@@ -134,81 +137,87 @@ Qed.
 (** list of variables in a term:
 a variable occurs in the list as much as it has occurrences in t *)
 
-Require Export List.
-
-Fixpoint varlist (t : term) : list variable :=
+Fixpoint vars (t : term) : variables :=
   match t with
     | Var x => x :: nil
     | Fun f v =>
-      let fix varlists n (ts : terms n) {struct ts} : list variable :=
+      let fix vars_vec n (ts : terms n) {struct ts} : variables :=
         match ts with
           | Vnil => nil
-          | Vcons t' n' ts' => varlist t' ++ varlists n' ts'
+          | Vcons t' n' ts' => vars t' ++ vars_vec n' ts'
         end
-      in varlists (arity f) v
+      in vars_vec (arity f) v
   end.
 
-Fixpoint varlists n (ts : terms n) {struct ts} : list variable :=
+Fixpoint vars_vec n (ts : terms n) {struct ts} : variables :=
   match ts with
     | Vnil => nil
-    | Vcons t' _ ts' => varlist t' ++ varlists ts'
+    | Vcons t' _ ts' => vars t' ++ vars_vec ts'
   end.
 
-Lemma varlist_fun : forall f (ts : args f), varlist (Fun f ts) = varlists ts.
+Lemma vars_fun : forall f (ts : args f), vars (Fun f ts) = vars_vec ts.
 
 Proof.
 auto.
 Qed.
 
-Lemma varlists_cast : forall n (ts : terms n) m (h : n=m),
-  varlists (Vcast ts h) = varlists ts.
+Lemma vars_vec_cast : forall n (ts : terms n) m (h : n=m),
+  vars_vec (Vcast ts h) = vars_vec ts.
 
 Proof.
 induction ts; intros; destruct m; simpl; try (reflexivity || discriminate).
-apply (f_equal (fun l => varlist a ++ l)). apply IHts.
+apply (f_equal (fun l => vars a ++ l)). apply IHts.
 Qed.
 
-Lemma varlists_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
-  varlists (Vapp ts1 ts2) = varlists ts1 ++ varlists ts2.
+Lemma vars_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
+  vars_vec (Vapp ts1 ts2) = vars_vec ts1 ++ vars_vec ts2.
 
 Proof.
 induction ts1; intros; simpl. reflexivity. rewrite app_ass.
-apply (f_equal (fun l => varlist a ++ l)). apply IHts1.
+apply (f_equal (fun l => vars a ++ l)). apply IHts1.
 Qed.
 
-Lemma varlists_cons : forall t n (ts : terms n),
-  varlists (Vcons t ts) = varlist t ++ varlists ts.
+Lemma vars_vec_cons : forall t n (ts : terms n),
+  vars_vec (Vcons t ts) = vars t ++ vars_vec ts.
 
 Proof.
 intros. reflexivity.
 Qed.
 
-Implicit Arguments in_app_or [A l m a].
-
-Lemma in_varlists : forall x n (ts : terms n),
-  In x (varlists ts) -> exists t, Vin t ts /\ In x (varlist t).
+Lemma in_vars_vec_elim : forall x n (ts : terms n),
+  In x (vars_vec ts) -> exists t, Vin t ts /\ In x (vars t).
 
 Proof.
 induction ts; simpl; intros. contradiction. generalize (in_app_or H). intro.
-destruct H0. exists a. intuition. generalize (IHts H0). intro. destruct H1 as [t].
+destruct H0. exists a. intuition. generalize (IHts H0). intro.
+destruct H1 as [t].
 exists t. intuition.
+Qed.
+
+Lemma in_vars_vec_intro : forall x t n (ts : terms n),
+  Vin t ts -> In x (vars t) -> In x (vars_vec ts).
+
+Proof.
+intros. deduce (Vin_elim H). do 5 destruct H1. subst ts.
+rewrite vars_vec_cast. rewrite vars_vec_app. simpl.
+apply in_appr. apply in_appl. exact H0.
 Qed.
 
 Require Export ListUtil.
 
-Lemma varlists_in : forall x t n (ts : terms n),
-  In x (varlist t) -> Vin t ts -> In x (varlists ts).
+Lemma vars_vec_in : forall x t n (ts : terms n),
+  In x (vars t) -> Vin t ts -> In x (vars_vec ts).
 
 Proof.
 induction ts; simpl; intros. contradiction. destruct H0. subst t.
 apply in_appl. assumption. apply in_appr. apply IHts; assumption.
 Qed.
 
-Lemma varlist_max : forall x t, In x (varlist t) -> x <= maxvar t.
+Lemma vars_max : forall x t, In x (vars t) -> x <= maxvar t.
 
 Proof.
 intro.
-set (Q := fun n (ts : terms n) => In x (varlists ts) -> x <= Vmax (Vmap maxvar ts)).
+set (Q := fun n (ts : terms n) => In x (vars_vec ts) -> x <= Vmax (Vmap maxvar ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t; unfold Q; simpl; intros.
 intuition. apply H. assumption. contradiction. generalize (in_app_or H1).
 intro. destruct H2. apply elim_max_l. apply H. assumption.
@@ -225,14 +234,14 @@ Qed.
 
 Require Export ListMax.
 
-Lemma maxvar_lmax : forall t, maxvar t = lmax (varlist t).
+Lemma maxvar_lmax : forall t, maxvar t = lmax (vars t).
 
 Proof.
 intro t. pattern t.
-set (Q := fun n (ts : terms n) => Vmax (Vmap maxvar ts) = lmax (varlists ts)).
+set (Q := fun n (ts : terms n) => Vmax (Vmap maxvar ts) = lmax (vars_vec ts)).
 apply term_ind with (Q := Q); clear t.
 intro. simpl. apply (sym_equal (max_l (le_O_n x))).
-intros f ts H. rewrite maxvar_fun. rewrite varlist_fun. assumption.
+intros f ts H. rewrite maxvar_fun. rewrite vars_fun. assumption.
 unfold Q. auto.
 intros t n ts H1 H2. unfold Q. simpl. rewrite lmax_app.
 unfold Q in H2. rewrite H1. rewrite H2. reflexivity.
@@ -272,9 +281,9 @@ Implicit Arguments Var [Sig].
 Implicit Arguments maxvar_var [Sig k x].
 Implicit Arguments maxvar_le_fun [Sig m f ts].
 Implicit Arguments maxvar_le_arg [Sig f ts m t].
-Implicit Arguments in_varlists [Sig x n ts].
-Implicit Arguments varlists_in [Sig x t n ts].
-Implicit Arguments varlist_max [Sig x t].
+Implicit Arguments in_vars_vec_elim [Sig x n ts].
+Implicit Arguments vars_vec_in [Sig x t n ts].
+Implicit Arguments vars_max [Sig x t].
 
 (***********************************************************************)
 (** tactics *)

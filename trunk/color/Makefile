@@ -11,7 +11,7 @@ MAKEFLAGS := -r
 
 .PHONY: clean clean-doc all makefiles dist doc dump html install-dist install-doc tags
 
-SUBDIRS := Util Term PolyInt DP Filter MPO Conversion RPO HORPO
+SUBDIRS := Util Term MannaNess PolyInt DP Filter MPO Conversion RPO HORPO
 
 DUMP := /tmp/dump
 WEB := /local/color/htdocs

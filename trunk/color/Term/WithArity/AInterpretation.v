@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.4 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.5 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,6 +43,8 @@ Notation D := (domain I).
 
 Definition valuation := variable -> D.
 
+Section term_int.
+
 Variable xint : valuation.
 
 Fixpoint term_int (t : term) : D :=
@@ -65,8 +67,23 @@ intros. simpl. apply (f_equal (fint I f)). induction ts. auto.
 rewrite IHts. auto.
 Qed.
 
+End term_int.
+
+Lemma term_int_eq : forall xint1 xint2, (forall x, xint1 x = xint2 x) ->
+  forall t, term_int xint1 t = term_int xint2 t.
+
+Proof.
+intros xint1 xint2 hyp. apply term_ind_forall. exact hyp.
+intros. repeat rewrite term_int_fun. apply (f_equal (fint I f)).
+apply Vmap_eq. exact H.
+Qed.
+
 (***********************************************************************)
 (** gives the vector (xint 0) .. (xint (n-1)) *)
+
+Section fval.
+
+Variable xint : valuation.
 
 Fixpoint fval (n : nat) : vector D n :=
   match n as n0 return vector _ n0 with
@@ -84,6 +101,8 @@ intro n. elim n.
   rewrite (Vnth_addl (fval p) (xint p) H0 H1). apply Hrec.
   rewrite Vnth_addr. 2: assumption. rewrite H1. reflexivity.
 Qed.
+
+End fval.
 
 End S.
 

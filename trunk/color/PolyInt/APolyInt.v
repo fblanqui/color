@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.7 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.8 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -85,7 +85,7 @@ intros k t. apply (bterm_ind (@P k) (@Q k)).
  unfold Q. intros f ts H. unfold P. rewrite termpoly_eq.
  apply coef_pos_pcomp.
   apply (proj1 (PI_mon PI f)).
-  unfold P in H. apply Vforall_map_elim. auto.
+  unfold P in H. apply Vforall_map_intro. auto.
  unfold Q. simpl. trivial.
  intros t' n' s' H1. unfold Q. intro H2. simpl. split; assumption.
 Qed.

@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.4 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.5 2007-01-23 16:42:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -310,7 +310,16 @@ Proof.
 induction l1; simpl; intros. refl. rewrite IHl1. refl.
 Qed.
 
+Lemma map_in : forall x l, In x (map f l) -> exists y, In y l /\ x = f y.
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H.
+exists a. auto. deduce (IHl H). do 2 destruct H0. exists x0. auto.
+Qed.
+
 End map.
+
+Implicit Arguments map_in [A B f x l].
 
 (***********************************************************************)
 (** flattening *)
