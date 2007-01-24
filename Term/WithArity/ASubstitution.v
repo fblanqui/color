@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.10 2007-01-24 17:28:44 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.11 2007-01-24 17:38:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -249,8 +249,13 @@ Lemma union_correct : forall l1 l2, dom_incl s1 l1 -> dom_incl s2 l2 ->
   sub_eq_dom union s1 l1 /\ sub_eq_dom union s2 l2.
 
 Proof.
-unfold sub_eq_dom.
-Abort.
+unfold sub_eq_dom, union. intuition; case (eq_term_dec (s1 x) (Var x)); intros.
+case (In_dec eq_nat_dec x l2); intro. apply sym_eq. auto.
+deduce (H0 _ n). rewrite e. rewrite H3. refl.
+refl. refl.
+case (In_dec eq_nat_dec x l1); intro. auto.
+deduce (H _ n0). contradiction.
+Qed.
 
 End union.
 
