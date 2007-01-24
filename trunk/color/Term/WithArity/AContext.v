@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.4 2007-01-24 11:52:35 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.5 2007-01-24 15:50:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -252,7 +252,7 @@ Fixpoint cvars (c : context) : variables :=
     | Cont f i j H v1 c' v2 => vars_vec v1 ++ cvars c' ++ vars_vec v2
   end.
 
-Lemma vars_fill : forall t c, incl (vars (fill c t)) (cvars c ++ vars t).
+Lemma vars_fill_elim : forall t c, incl (vars (fill c t)) (cvars c ++ vars t).
 
 Proof.
 induction c. simpl. apply incl_refl. simpl fill. rewrite vars_fun. simpl.
@@ -264,6 +264,14 @@ rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
 apply in_appl. repeat apply in_appr. apply (in_vars_vec_intro H1 H3).
 Qed.
 
+Lemma vars_fill_intro : forall t c, incl (cvars c ++ vars t) (vars (fill c t)).
+
+Proof.
+induction c. simpl. apply incl_refl. simpl cvars. simpl fill. rewrite vars_fun.
+rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
+rewrite app_ass. apply appl_incl. apply app_com_incl. apply appr_incl. exact IHc.
+Qed.
+
 End S.
 
 (***********************************************************************)
@@ -272,3 +280,4 @@ End S.
 Implicit Arguments Hole [Sig].
 Implicit Arguments in_vars_subterm [Sig x t].
 Implicit Arguments in_vars_fun [Sig x f ts].
+Implicit Arguments vars_fill_elim [Sig t c].
