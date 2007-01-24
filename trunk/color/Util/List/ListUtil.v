@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.7 2007-01-24 15:50:41 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.8 2007-01-24 16:48:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -259,6 +259,13 @@ Lemma Inb_intro : forall x l, In x l -> Inb x l = true.
 Proof.
 induction l; simpl; intros. contradiction. case (eq_dec x a). auto.
 destruct H. intro. absurd (x = a); auto. auto.
+Qed.
+
+Lemma Inb_elim : forall x l, ~In x l -> Inb x l = false.
+
+Proof.
+induction l; simpl; intros. refl. case (eq_dec x a). intro. subst x. intuition.
+intuition.
 Qed.
 
 Lemma Inb_incl : forall x l l', incl l l' -> Inb x l = true -> Inb x l' = true.
