@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.4 2007-01-24 11:52:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -130,11 +130,37 @@ intros. eapply le_trans. apply le_min_r. exact H.
 Qed.
 
 (***********************************************************************)
-(** minus *)
+(** various arithmetical lemmas *)
 
 Require Export Omega.
 
 Lemma plus_minus : forall v p, v+p-p=v.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments lt_pm [n k x].
+
+Lemma le_plus : forall k l, k <= k+l.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma misc1 : forall x k, S k = x+2+k-x-1.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma misc2 : forall x k, k = x+2+k-(x+1)-1.
 
 Proof.
 intros. omega.

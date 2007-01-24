@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.4 2007-01-24 11:52:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -195,12 +195,12 @@ exists t. intuition.
 Qed.
 
 Lemma in_vars_vec_intro : forall x t n (ts : terms n),
-  Vin t ts -> In x (vars t) -> In x (vars_vec ts).
+  In x (vars t) -> Vin t ts -> In x (vars_vec ts).
 
 Proof.
-intros. deduce (Vin_elim H). do 5 destruct H1. subst ts.
+intros. deduce (Vin_elim H0). do 5 destruct H1. subst ts.
 rewrite vars_vec_cast. rewrite vars_vec_app. simpl.
-apply in_appr. apply in_appl. exact H0.
+apply in_appr. apply in_appl. exact H.
 Qed.
 
 Require Export ListUtil.
@@ -282,6 +282,7 @@ Implicit Arguments maxvar_var [Sig k x].
 Implicit Arguments maxvar_le_fun [Sig m f ts].
 Implicit Arguments maxvar_le_arg [Sig f ts m t].
 Implicit Arguments in_vars_vec_elim [Sig x n ts].
+Implicit Arguments in_vars_vec_intro [Sig x t n ts].
 Implicit Arguments vars_vec_in [Sig x t n ts].
 Implicit Arguments vars_max [Sig x t].
 

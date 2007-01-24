@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.4 2007-01-24 11:52:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -258,8 +258,11 @@ Proof.
 induction c. simpl. apply incl_refl. simpl fill. rewrite vars_fun. simpl.
 unfold incl. intros. deduce (in_vars_vec_elim H). do 2 destruct H0.
 deduce (Vin_cast_elim H0). deduce (Vin_app H2). destruct H3.
-repeat apply in_appl.
-Abort.
+repeat apply in_appl. apply (in_vars_vec_intro H1 H3).
+simpl in H3. destruct H3. subst x. deduce (IHc _ H1).
+rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
+apply in_appl. repeat apply in_appr. apply (in_vars_vec_intro H1 H3).
+Qed.
 
 End S.
 

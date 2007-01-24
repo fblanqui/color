@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.5 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.6 2007-01-24 11:52:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -178,6 +178,15 @@ Proof.
 induction l; simpl; intros. contradiction. destruct H. subst x.
 exists (@nil A). exists l. refl. deduce (IHl H). do 2 destruct H0. rewrite H0.
 exists (a :: x0). exists x1. refl.
+Qed.
+
+Lemma in_app_com : forall (x : A) l1 l2 l3,
+  In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
+
+Proof.
+intros. deduce (in_app_or H). destruct H0. deduce (in_app_or H0). destruct H1.
+rewrite app_ass. apply in_appl. exact H1. apply in_appr. exact H1.
+rewrite app_ass. apply in_appr. apply in_appl. exact H0.
 Qed.
 
 End In.
