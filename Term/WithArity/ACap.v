@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.4 2007-01-24 11:52:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -228,7 +228,8 @@ eapply intro_max_l. unfold m in H1. apply H1.
 unfold nb_aliens. assumption. assumption.
 (* tail *)
 apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projS1 (capa t)).
-assert (Vmax (Vmap maxvar v) <= m0). eapply intro_max_r. unfold m in H1. apply H1.
+assert (Vmax (Vmap maxvar v) <= m0). eapply intro_max_r. unfold m in H1.
+apply H1.
 omega. assumption. omega.
 Qed.
 

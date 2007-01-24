@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.7 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.8 2007-01-24 11:52:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -117,6 +117,72 @@ intros. simpl. rewrite H. rewrite <- H0. refl.
 Qed.
 
 End substitution_lemma.
+
+(***********************************************************************)
+(** substitutions preserve variables *)
+
+Section vars.
+
+Variable s : substitution.
+
+Fixpoint svars (l : variables) : variables :=
+  match l with
+    | nil => nil
+    | x :: l' => vars (s x) ++ svars l'
+  end.
+
+Lemma in_svars_intro : forall x y l,
+  In x (vars (s y)) -> In y l -> In x (svars l).
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H0.
+subst a. apply in_appl. exact H.
+deduce (IHl H H0). apply in_appr. exact H1.
+Qed.
+
+Lemma in_svars_elim : forall x l,
+  In x (svars l) -> exists y, In y l /\ In x (vars (s y)).
+
+Proof.
+induction l; simpl; intros. contradiction. deduce (in_app_or H). destruct H0.
+exists a. auto. deduce (IHl H0). do 2 destruct H1. exists x0. auto.
+Qed.
+
+Implicit Arguments in_svars_elim [x l].
+
+Lemma svars_app : forall l2 l1, svars (l1 ++ l2) = svars l1 ++ svars l2.
+
+Proof.
+induction l1; simpl; intros. refl. rewrite IHl1. rewrite app_ass. refl.
+Qed.
+
+Lemma incl_svars : forall l1 l2, incl l1 l2 -> incl (svars l1) (svars l2).
+
+Proof.
+intros. unfold incl. intros. deduce (in_svars_elim H0). do 2 destruct H1.
+eapply in_svars_intro. apply H2. apply H. exact H1.
+Qed.
+
+Lemma vars_app : forall t, vars (app s t) = svars (vars t).
+
+Proof.
+apply term_ind with (Q := fun n (v : terms n) =>
+  vars_vec (Vmap (app s) v) = svars (vars_vec v)).
+simpl. intro. rewrite <- app_nil_end. refl.
+intros. rewrite app_fun. repeat rewrite vars_fun. exact H.
+simpl. refl.
+intros. simpl. rewrite H. rewrite svars_app.
+apply (f_equal (List.app (svars (vars t)))). exact H0.
+Qed.
+
+Lemma incl_vars_app : forall l r,
+  incl (vars r) (vars l) -> incl (vars (app s r)) (vars (app s l)).
+
+Proof.
+intros. repeat rewrite vars_app. apply incl_svars. exact H.
+Qed.
+
+End vars.
 
 (***********************************************************************)
 (** domain of a substitution *)
@@ -304,14 +370,6 @@ Qed.
 (** given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
 is the substitution {x0 -> v1, .., x0+n-1 -> vn} *)
 
-Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.
-
-Proof.
-intros. omega.
-Qed.
-
-Implicit Arguments lt_pm [n k x].
-
 Definition fsub x0 n (ts : terms n) x :=
   match le_lt_dec x x0 with
     | left _ => Var x (* x <= x0 *)
@@ -351,18 +409,6 @@ Proof.
 intros. subst x. unfold fsub. case (le_lt_dec (x0+1) x0); intros.
 absurd (x0+1<=x0); omega. case (le_lt_dec (x0+1) (x0+S n)); intros.
 rewrite Vnth_head. reflexivity. omega. absurd (x0+S n<x0+1); omega.
-Qed.
-
-Lemma misc1 : forall x0 k, S k = x0+2+k-x0-1.
-
-Proof.
-intros. omega.
-Qed.
-
-Lemma misc2 : forall x0 k, k = x0+2+k-(x0+1)-1.
-
-Proof.
-intros. omega.
 Qed.
 
 Lemma fsub_cons_rec : forall x0 t n (ts : terms n) x k,

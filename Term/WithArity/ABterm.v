@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 terms whose variable indexes are bounded
 *)
 
-(* $Id: ABterm.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: ABterm.v,v 1.3 2007-01-24 11:52:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -244,12 +244,6 @@ Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l) {struct bts}
     | Vnil => Vnil
     | Vcons bt n' bts' => Vcons (bterm_le bt h0) (bterms_le bts' h0)
   end.
-
-Lemma le_plus : forall k l, k <= k+l.
-
-Proof.
-intros. omega.
-Qed.
 
 Definition bterm_plus k bt l := bterm_le bt (le_plus k l).
 
