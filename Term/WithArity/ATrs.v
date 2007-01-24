@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.7 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.8 2007-01-24 15:50:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -39,6 +39,7 @@ Section rewriting.
 
 Variable R : rules.
 
+Require Export AContext.
 Require Export ASubstitution.
 
 Definition red (t1 t2 : term) :=
@@ -150,17 +151,34 @@ Qed.
 (***********************************************************************)
 (** preservation of variables under reduction *)
 
-Section variables.
+Section vars.
 
-Variable hyp : forall a, In a R -> incl (vars (rhs a)) (vars (lhs a)).
+Variable hyp : forall l r, In (mkRule l r) R -> incl (vars r) (vars l).
 
-Lemma vars_preserved : forall t u, red t u -> incl (vars u) (vars t).
+Lemma red_vars : forall t u, red t u -> incl (vars u) (vars t).
 
 Proof.
 intros. redtac. subst t. subst u.
-Abort.
+apply incl_tran with (cvars c ++ vars (app s r)). apply vars_fill_elim.
+apply incl_tran with (cvars c ++ vars (app s l)). apply appl_incl.
+apply incl_vars_app. apply hyp. exact H.
+apply vars_fill_intro.
+Qed.
 
-End variables.
+Lemma t_red_vars : forall t u, red ! t u -> incl (vars u) (vars t).
+
+Proof.
+induction 1. apply red_vars. exact H. apply incl_tran with (vars y); assumption.
+Qed.
+
+Lemma rt_red_vars : forall t u, red # t u -> incl (vars u) (vars t).
+
+Proof.
+induction 1. apply red_vars. exact H. apply List.incl_refl.
+apply incl_tran with (vars y); assumption.
+Qed.
+
+End vars.
 
 (***********************************************************************)
 (** rewriting vectors of terms *)

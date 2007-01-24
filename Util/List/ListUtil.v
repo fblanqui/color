@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.6 2007-01-24 11:52:36 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.7 2007-01-24 15:50:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -71,6 +71,48 @@ Fixpoint filter (l : list A) : list A :=
 End filter.
 
 (***********************************************************************)
+(** membership *)
+
+Section In.
+
+Variable A : Set.
+
+Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
+
+Proof.
+induction l1; simpl; intros. contradiction. destruct H. subst x. auto.
+right. apply IHl1. assumption.
+Qed.
+
+Lemma in_appr : forall (x : A) l1 l2, In x l2 -> In x (l1 ++ l2).
+
+Proof.
+induction l1; simpl; intros. assumption. right. apply IHl1. assumption.
+Qed.
+
+Lemma in_elim : forall (x : A) l,
+  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H. subst x.
+exists (@nil A). exists l. refl. deduce (IHl H). do 2 destruct H0. rewrite H0.
+exists (a :: x0). exists x1. refl.
+Qed.
+
+Lemma in_app_com : forall (x : A) l1 l2 l3,
+  In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
+
+Proof.
+intros. deduce (in_app_or H). destruct H0. deduce (in_app_or H0). destruct H1.
+rewrite app_ass. apply in_appl. exact H1. apply in_appr. exact H1.
+rewrite app_ass. apply in_appr. apply in_appl. exact H0.
+Qed.
+
+End In.
+
+Implicit Arguments in_elim [A x l].
+
+(***********************************************************************)
 (** list inclusion *)
 
 Section incl.
@@ -119,6 +161,36 @@ eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
 apply (incl_appr (a :: l1) (incl_refl l2)).
 Qed.
 
+Lemma app_incl : forall l1 l1' l2 l2' : list A,
+  incl l1 l1' -> incl l2 l2' -> incl (l1 ++ l2) (l1' ++ l2').
+
+Proof.
+intros. unfold incl. intros. deduce (in_app_or H1). destruct H2.
+deduce (H _ H2). apply in_appl. exact H3.
+deduce (H0 _ H2). apply in_appr. exact H3.
+Qed.
+
+Lemma appl_incl : forall l l2 l2' : list A,
+  incl l2 l2' -> incl (l ++ l2) (l ++ l2').
+
+Proof.
+intros. apply app_incl. apply incl_refl. exact H.
+Qed.
+
+Lemma appr_incl : forall l l1 l1' : list A,
+  incl l1 l1' -> incl (l1 ++ l) (l1' ++ l).
+
+Proof.
+intros. apply app_incl. exact H. apply incl_refl.
+Qed.
+
+Lemma app_com_incl : forall l1 l2 l3 l4 : list A,
+  incl ((l1 ++ l3) ++ l2) l4 -> incl ((l1 ++ l2) ++ l3) l4.
+
+Proof.
+unfold incl. intros. apply H. apply in_app_com. exact H0.
+Qed.
+
 End incl.
 
 (***********************************************************************)
@@ -150,48 +222,6 @@ eapply incl_tran. apply H2. assumption.
 Qed.
 
 End equiv.
-
-(***********************************************************************)
-(** membership *)
-
-Section In.
-
-Variable A : Set.
-
-Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
-
-Proof.
-induction l1; simpl; intros. contradiction. destruct H. subst x. auto.
-right. apply IHl1. assumption.
-Qed.
-
-Lemma in_appr : forall (x : A) l1 l2, In x l2 -> In x (l1 ++ l2).
-
-Proof.
-induction l1; simpl; intros. assumption. right. apply IHl1. assumption.
-Qed.
-
-Lemma in_elim : forall (x : A) l,
-  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
-
-Proof.
-induction l; simpl; intros. contradiction. destruct H. subst x.
-exists (@nil A). exists l. refl. deduce (IHl H). do 2 destruct H0. rewrite H0.
-exists (a :: x0). exists x1. refl.
-Qed.
-
-Lemma in_app_com : forall (x : A) l1 l2 l3,
-  In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
-
-Proof.
-intros. deduce (in_app_or H). destruct H0. deduce (in_app_or H0). destruct H1.
-rewrite app_ass. apply in_appl. exact H1. apply in_appr. exact H1.
-rewrite app_ass. apply in_appr. apply in_appl. exact H0.
-Qed.
-
-End In.
-
-Implicit Arguments in_elim [A x l].
 
 (***********************************************************************)
 (** boolean membership when the equality on A is decidable *)

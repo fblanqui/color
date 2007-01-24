@@ -8,12 +8,13 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.4 2007-01-24 11:52:35 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.5 2007-01-24 15:50:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export ASignature.
 Require Export ListUtil.
+Require Export LogicUtil.
 
 Notation variables := (list variable).
 
@@ -165,7 +166,7 @@ Lemma vars_vec_cast : forall n (ts : terms n) m (h : n=m),
   vars_vec (Vcast ts h) = vars_vec ts.
 
 Proof.
-induction ts; intros; destruct m; simpl; try (reflexivity || discriminate).
+induction ts; intros; destruct m; simpl; try (refl || discriminate).
 apply (f_equal (fun l => vars a ++ l)). apply IHts.
 Qed.
 
@@ -173,7 +174,7 @@ Lemma vars_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
   vars_vec (Vapp ts1 ts2) = vars_vec ts1 ++ vars_vec ts2.
 
 Proof.
-induction ts1; intros; simpl. reflexivity. rewrite app_ass.
+induction ts1; intros; simpl. refl. rewrite app_ass.
 apply (f_equal (fun l => vars a ++ l)). apply IHts1.
 Qed.
 
@@ -181,7 +182,7 @@ Lemma vars_vec_cons : forall t n (ts : terms n),
   vars_vec (Vcons t ts) = vars t ++ vars_vec ts.
 
 Proof.
-intros. reflexivity.
+intros. refl.
 Qed.
 
 Lemma in_vars_vec_elim : forall x n (ts : terms n),
@@ -244,7 +245,7 @@ intro. simpl. apply (sym_equal (max_l (le_O_n x))).
 intros f ts H. rewrite maxvar_fun. rewrite vars_fun. assumption.
 unfold Q. auto.
 intros t n ts H1 H2. unfold Q. simpl. rewrite lmax_app.
-unfold Q in H2. rewrite H1. rewrite H2. reflexivity.
+unfold Q in H2. rewrite H1. rewrite H2. refl.
 Qed.
 
 (***********************************************************************)
