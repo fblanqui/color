@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.8 2007-01-24 16:48:14 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.9 2007-01-24 17:28:44 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -143,6 +143,15 @@ Proof.
 unfold incl. simpl. intros. apply H. tauto.
 Qed.
 
+Lemma incl_app_elim : forall l1 l2 l3 : list A,
+  incl (l1 ++ l2) l3 -> incl l1 l3 /\ incl l2 l3.
+
+Proof.
+intuition.
+apply incl_tran with (l1 ++ l2). apply incl_appl. apply incl_refl. exact H.
+apply incl_tran with (l1 ++ l2). apply incl_appr. apply incl_refl. exact H.
+Qed.
+
 Lemma incl_appr_incl : forall l1 l2 l3 : list A,
   incl (l1 ++ l2) l3 -> incl l1 l3.
 
@@ -192,6 +201,8 @@ unfold incl. intros. apply H. apply in_app_com. exact H0.
 Qed.
 
 End incl.
+
+Implicit Arguments incl_app_elim [A l1 l2 l3].
 
 (***********************************************************************)
 (** equivalence *)

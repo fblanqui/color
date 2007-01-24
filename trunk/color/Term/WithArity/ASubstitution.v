@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.9 2007-01-24 16:48:14 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.10 2007-01-24 17:28:44 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -194,36 +194,34 @@ Definition dom_incl s l := forall x, ~In x l -> s x = Var x.
 
 Require Export ListForall.
 
-Definition sub_eq_dom (s1 s2 : substitution) :=
-  lforall (fun x : variable => s1 x = s2 x).
+Definition sub_eq_dom (s1 s2 : substitution) l :=
+  forall x, In x l -> s1 x = s2 x.
 
 Lemma sub_eq_dom_incl : forall s1 s2 l1 l2,
   sub_eq_dom s1 s2 l2 -> incl l1 l2 -> sub_eq_dom s1 s2 l1.
 
 Proof.
-intros. unfold sub_eq_dom. eapply lforall_incl. apply H0. assumption.
+unfold sub_eq_dom. auto.
 Qed.
 
 Lemma sub_eq_dom_incl_app : forall s1 s2 l, sub_eq_dom s1 s2 l
   -> forall t, incl (vars t) l -> app s1 t = app s2 t.
 
 Proof.
-intros until t. unfold sub_eq_dom in H.
-set (P := fun t => incl (vars t) l -> app s1 t = app s2 t).
-set (Q := fun n (ts : terms n) =>
+intros until t. unfold sub_eq_dom in H. apply term_ind with
+(P := fun t => incl (vars t) l -> app s1 t = app s2 t)
+(Q := fun n (ts : terms n) =>
   incl (vars_vec ts) l -> Vmap (app s1) ts = Vmap (app s2) ts).
-apply (term_ind P Q).
 (* var *)
-unfold P. simpl. intros. generalize (incl_cons_in H0). intro.
-pattern x. eapply lforall_in. apply H. assumption.
+unfold incl. simpl. intuition.
 (* fun *)
-unfold P. intros. do 2 rewrite app_fun. apply (f_equal (Fun f)).
-apply H0. rewrite vars_fun in H1. assumption.
+intros. repeat rewrite app_fun. apply (f_equal (Fun f)).
+apply H0. rewrite vars_fun in H1. exact H1.
 (* nil *)
-unfold Q. intro. refl.
+refl.
 (* cons *)
-intros. unfold Q. simpl. intro. apply Vcons_eq. apply H0.
-eapply incl_appr_incl. apply H2. apply H1. eapply incl_appl_incl. apply H2.
+intros. rewrite vars_vec_cons in H2. unfold incl in H2.
+deduce (incl_app_elim H2). destruct H3. simpl. apply Vcons_eq; auto.
 Qed.
 
 Lemma sub_eq_vars_app : forall s1 s2 t,
@@ -232,6 +230,29 @@ Lemma sub_eq_vars_app : forall s1 s2 t,
 Proof.
 intros. eapply sub_eq_dom_incl_app. apply H. apply List.incl_refl.
 Qed.
+
+(***********************************************************************)
+(** union of substitutions *)
+
+Section union.
+
+Variables s1 s2 : substitution.
+
+Definition union x :=
+  match eq_term_dec (s1 x) (Var x) with
+    | left _ => s2 x
+    | right _ => s1 x
+  end.
+
+Lemma union_correct : forall l1 l2, dom_incl s1 l1 -> dom_incl s2 l2 ->
+  (forall x, In x l1 -> In x l2 -> s1 x = s2 x) ->
+  sub_eq_dom union s1 l1 /\ sub_eq_dom union s2 l2.
+
+Proof.
+unfold sub_eq_dom.
+Abort.
+
+End union.
 
 (***********************************************************************)
 (** restriction of a substitution *)
@@ -257,12 +278,9 @@ Qed.
 Lemma sub_eq_restrict : forall s l, sub_eq_dom (restrict s l) s l.
 
 Proof.
-unfold sub_eq_dom. induction l; simpl. exact I. split.
-unfold restrict. simpl. case (eq_nat_dec a a). auto.
-intro. absurd (a = a); auto. apply lforall_intro. intros.
-unfold restrict. simpl. case (eq_nat_dec x a). intro. refl.
-assert (Inb x l = true). apply Inb_intro. assumption. intro.
-pattern x. eapply lforall_in. apply IHl. assumption.
+unfold sub_eq_dom, restrict. induction l; simpl. intros. contradiction.
+intro. case (eq_nat_dec x a); intuition. rewrite H0 in n.
+deduce (n (refl_equal x)). contradiction.
 Qed.
 
 Lemma app_restrict : forall s t, app s t = app (restrict s (vars t)) t.
@@ -276,9 +294,9 @@ Lemma app_restrict_incl : forall s (l r : term),
 
 Proof.
 intros. rewrite app_restrict. apply sub_eq_vars_app. unfold sub_eq_dom.
-apply lforall_intro. intros. unfold restrict.
-assert (Inb x (vars r) = true). apply Inb_intro. assumption.
-assert (Inb x (vars l) = true). apply Inb_intro. apply H. assumption.
+intros. unfold restrict.
+assert (Inb x (vars r) = true). apply Inb_intro. exact H0.
+assert (Inb x (vars l) = true). apply Inb_intro. apply H. exact H0.
 rewrite H1. rewrite H2. refl.
 Qed.
 
@@ -474,4 +492,3 @@ Qed.
 End S.
 
 Implicit Arguments fun_eq_app [Sig f ts s u].
-Implicit Arguments lt_pm [n k x].
