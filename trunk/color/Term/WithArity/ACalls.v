@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.4 2007-01-25 14:50:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -208,3 +208,4 @@ End S.
 Implicit Arguments lhs_fun_defined [Sig l r f us R].
 Implicit Arguments in_calls [Sig R x t].
 Implicit Arguments in_calls_defined [Sig R t g vs].
+Implicit Arguments in_calls_subterm [Sig R u t].

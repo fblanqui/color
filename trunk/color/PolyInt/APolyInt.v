@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.8 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.9 2007-01-25 14:50:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,12 +22,12 @@ Require Export ABterm.
 
 Notation bterm := (bterm Sig).
 
-Require Export Polynom.
-
 (***********************************************************************)
 (** polynomial associated to a bterm *)
 
 Section poly_of_bterm.
+
+Require Export Polynom.
 
 Variable fpoly : forall f : Sig, poly (arity f).
 
@@ -100,10 +100,10 @@ Definition Int_of_PI :=
 
 Let W := Int_of_PI.
 
-Require Export AWFMInterpretation.
-
 (***********************************************************************)
 (** monotony *)
+
+Require Export AWFMInterpretation.
 
 Lemma pi_monotone : monotone W Dgt.
 
@@ -227,6 +227,8 @@ pose (v := (Vmap (proj1_sig (P:=pos)) (fval xint (S (max mvl mvr))))).
 apply pos_lt. rewrite <- (peval_const (1)%Z v). do 2 rewrite <- peval_minus.
 unfold v. apply pos_peval. exact H_coef_pos.
 Qed.
+
+Require Export ACompat.
 
 Lemma pi_compat : forall R,
   lforall (fun r => coef_pos (rulePoly r)) R -> compatible succ R.

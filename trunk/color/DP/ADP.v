@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.8 2007-01-23 16:42:55 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.9 2007-01-25 14:50:05 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -36,10 +36,10 @@ Variable R : rules.
 
 Require Export ACalls.
 
-Fixpoint mkdp (l : rules) : rules :=
-  match l with
+Fixpoint mkdp (S : rules) : rules :=
+  match S with
     | nil => nil
-    | r :: l' => map (mkRule (lhs r)) (calls R (rhs r)) ++ mkdp l'
+    | a :: S' => map (mkRule (lhs a)) (calls R (rhs a)) ++ mkdp S'
   end.
 
 Lemma mkdp_app : forall l1 l2, mkdp (l1 ++ l2) = mkdp l1 ++ mkdp l2.
@@ -48,9 +48,21 @@ Proof.
 induction l1; simpl; intros. refl. rewrite app_ass. rewrite IHl1. refl.
 Qed.
 
+Lemma mkdp_elim : forall l t S,
+  In (mkRule l t) (mkdp S) -> exists r, In (mkRule l r) S /\ In t (calls R r).
+
+Proof.
+induction S; simpl; intros. contradiction. destruct a. simpl in H.
+deduce (in_app_or H). destruct H0. deduce (map_in H0). do 2 destruct H1.
+injection H2. intros. subst x. subst lhs. exists rhs. intuition.
+deduce (IHS H0). destruct H1. exists x. intuition.
+Qed.
+
+Implicit Arguments mkdp_elim [l t S].
+
 Definition dp := mkdp R.
 
-Lemma in_calls_dp : forall l r t,
+Lemma dp_intro : forall l r t,
   In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
 
 Proof.
@@ -61,12 +73,21 @@ rewrite map_app.
 simpl. apply in_appr. apply in_appl. apply in_appr. apply in_eq.
 Qed.
 
-Lemma in_calls_dpr : forall l r t s,
+Lemma dp_elim : forall l t,
+  In (mkRule l t) dp -> exists r, In (mkRule l r) R /\ In t (calls R r).
+
+Proof.
+intros. deduce (mkdp_elim H). exact H0.
+Qed.
+
+Implicit Arguments dp_elim [l t].
+
+Lemma in_calls_hd_red_dp : forall l r t s,
   In (mkRule l r) R -> In t (calls R r) -> hd_red dp (app s l) (app s t).
 
 Proof.
 intros. unfold hd_red. exists l. exists t. exists s. split.
-eapply in_calls_dp. apply H. assumption. auto.
+eapply dp_intro. apply H. assumption. auto.
 Qed.
 
 (***********************************************************************)
@@ -79,7 +100,7 @@ Lemma in_calls_chain : forall l r t s,
 
 Proof.
 intros. unfold chain, compose. exists (app s l). split. apply rt_refl.
-eapply in_calls_dpr. apply H. assumption.
+eapply in_calls_hd_red_dp. apply H. assumption.
 Qed.
 
 Lemma gt_chain : forall f ts us v,
@@ -98,10 +119,17 @@ Require Export ANotvar.
 
 Variable hyp1 : forall l r, In (mkRule l r) R -> notvar l.
 
-Variable hyp2 : forall l r x,
-  In (mkRule l r) R -> In x (vars r) -> In x (vars l).
+Variable hyp2 : rules_preserv_vars R.
 
-Implicit Arguments hyp2 [l r x].
+Implicit Arguments hyp2 [l r].
+
+Lemma dp_vars : rules_preserv_vars dp.
+
+Proof.
+unfold rules_preserv_vars, incl. intros. deduce (dp_elim H). do 2 destruct H1.
+deduce (in_calls_subterm H2). deduce (subterm_vars _ H3 H0).
+unfold preserv_vars, incl in hyp2. apply hyp2 with (r := x); assumption.
+Qed.
 
 (***********************************************************************)
 (** fundamental dp theorem *)
@@ -154,7 +182,7 @@ apply no_call_app_sn. apply hyp1. apply calls_cap.
 intros. deduce (vars_cap R H4).
 case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
 (* x <= maxvar r *)
-deduce (vars_cap_inf R H4 l0). deduce (hyp2 H2 H8).
+deduce (vars_cap_inf R H4 l0). deduce (hyp2 H2 _ H8).
 rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
 (* x > maxvar r *)
 rewrite (fsub_nth (aliens (capa r)) l0 H6).
@@ -163,8 +191,8 @@ assert (Fun f ts = app s l). rewrite H5. rewrite H7. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vin_nth.
 deduce (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
 (* every call is SN *)
-eapply calls_sn. apply hyp1.
-intros. apply Hsnsx. eapply hyp2. apply H2. apply H12.
+eapply calls_sn with (r := r). apply hyp1.
+intros. apply Hsnsx. apply (hyp2 H2 _ H12).
 intros h ws H13 H14.
 apply IH2 with (y := Fun h (Vmap (app s) ws)) (f := h) (ts := Vmap (app s) ws).
 unfold transp. rewrite H8. rewrite <- app_fun. eapply in_calls_chain.

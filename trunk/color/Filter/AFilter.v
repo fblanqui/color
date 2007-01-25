@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.4 2007-01-25 14:50:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -152,6 +152,8 @@ Qed.
 
 (***********************************************************************)
 (** compatibility *)
+
+Require Export ACompat.
 
 Lemma filter_comp : forall R : rules,
   compatible succ (filter_rules R) -> compatible fsucc R.
