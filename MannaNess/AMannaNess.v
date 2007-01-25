@@ -7,23 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 *)
 
-(* $Id: AMannaNess.v,v 1.4 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.5 2007-01-25 14:50:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
+Require Export ACompat.
+
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
-
-Require Export ATrs.
 
 Notation term := (term Sig).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
-
-Require Export ARelation.
 
 Ltac WF_incl succ := apply WF_incl with (S := succ); [idtac | WFtac].
 
