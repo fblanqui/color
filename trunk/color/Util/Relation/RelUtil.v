@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.9 2007-02-01 17:27:56 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.10 2007-02-01 18:38:17 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -541,6 +541,48 @@ apply rt_trans with (y := y); assumption.
 Qed.
 
 End properties.
+
+(***********************************************************************)
+(** iteration of a relation *)
+
+Section iter.
+
+Require Import Omega.
+
+Variables (A : Set) (R : relation A).
+
+Fixpoint iter (n : nat) : relation A :=
+  match n with
+    | O => R
+    | S p => fun x y => exists z, R x z /\ iter p z y
+  end.
+
+Lemma iter_tc : forall n, iter n << R!.
+
+Proof.
+induction n; intros; simpl. apply tc_incl. unfold inclusion. intros.
+do 2 destruct H. apply t_trans with x0. apply t_step. exact H.
+apply IHn. exact H0.
+Qed.
+
+Lemma iter_plus : forall p q x y z,
+  iter p x y -> iter q y z -> iter (p+q+1) x z.
+
+Proof.
+induction p; simpl; intros. assert (q+1 = S q). omega. rewrite H1. simpl.
+exists y. auto.
+do 2 destruct H. exists x0. intuition. eapply IHp. apply H1. exact H0.
+Qed.
+
+Lemma tc_iter : forall x y, R! x y -> exists n, iter n x y.
+
+Proof.
+induction 1; simpl; intros. exists 0. auto.
+destruct IHclos_trans1. destruct IHclos_trans2.
+exists (x0+x1+1). eapply iter_plus. apply H1. exact H2.
+Qed.
+
+End iter.
 
 (***********************************************************************)
 (** inverse image *)
