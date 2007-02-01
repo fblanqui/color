@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 *)
 
-(* $Id: VTerm_of_ATerm.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.4 2007-02-01 16:12:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -67,7 +67,8 @@ Lemma vterm_fun : forall f (ts : args f),
   vterm_of_aterm (AFun f ts) = VFun f (vterms_of_aterms ts).
 
 Proof.
-intros. simpl. apply (f_equal (VFun f)). generalize dependent (arity f). induction ts; simpl; auto.
+intros. simpl. apply args_eq. generalize dependent (arity f).
+induction ts; simpl; auto.
 Qed.
 
 Lemma vterms_cast : forall n (ts : aterms n) m (h : n=m),
@@ -75,21 +76,22 @@ Lemma vterms_cast : forall n (ts : aterms n) m (h : n=m),
 
 Proof.
 induction ts; intros; destruct m; try (refl || discriminate). simpl.
-apply (f_equal (cons (vterm_of_aterm a))). apply IHts.
+apply tail_eq. apply IHts.
 Qed.
 
 Lemma vterms_app : forall n1 (ts1 : aterms n1) n2 (ts2 : aterms n2),
   vterms_of_aterms (Vapp ts1 ts2) = vterms_of_aterms ts1 ++ vterms_of_aterms ts2.
 
 Proof.
-induction ts1; simpl. refl. intros. apply (f_equal (cons (vterm_of_aterm a))). apply IHts1.
+induction ts1; simpl. refl. intros. apply tail_eq. apply IHts1.
 Qed.
 
 Lemma vterms_map : forall (A : Set) (f : A -> aterm) n (v : vector A n),
-  vterms_of_aterms (Vmap f v) = map (fun x => vterm_of_aterm (f x)) (list_of_vec v).
+  vterms_of_aterms (Vmap f v)
+  = map (fun x => vterm_of_aterm (f x)) (list_of_vec v).
 
 Proof.
-induction v; simpl. refl. apply (f_equal (cons (vterm_of_aterm (f a)))). apply IHv.
+induction v; simpl. refl. apply tail_eq. apply IHv.
 Qed.
 
 (***********************************************************************)
@@ -117,8 +119,9 @@ Lemma vterm_fill : forall t c,
   vterm_of_aterm (afill c t) = fill (vcont_of_acont c) (vterm_of_aterm t).
 
 Proof.
-induction c. refl. simpl afill. rewrite vterm_fun. rewrite vterms_cast. rewrite vterms_app.
-simpl. apply (f_equal (VFun f)). apply (f_equal (app (vterms_of_aterms v))). rewrite IHc. refl.
+induction c. refl. simpl afill. rewrite vterm_fun. rewrite vterms_cast.
+rewrite vterms_app.
+simpl. apply args_eq. apply appr_eq. rewrite IHc. refl.
 Qed.
 
 (***********************************************************************)
@@ -141,10 +144,12 @@ Lemma vterm_subs : forall s t,
 
 Proof.
 intros. pattern t. apply ATerm.term_ind with (Q := fun n (ts : aterms n) =>
-  vterms_of_aterms (Vmap (aapp s) ts) = map (vapp (vsubs_of_asubs s)) (vterms_of_aterms ts)).
-refl. intros. rewrite ASubstitution.app_fun. do 2 rewrite vterm_fun. rewrite app_fun.
-apply (f_equal (VFun f)). exact H. refl. intros. simpl. rewrite H.
-apply (f_equal (cons (vapp (vsubs_of_asubs s) (vterm_of_aterm t0)))). exact H0.
+  vterms_of_aterms (Vmap (aapp s) ts)
+  = map (vapp (vsubs_of_asubs s)) (vterms_of_aterms ts)).
+refl. intros. rewrite ASubstitution.app_fun. do 2 rewrite vterm_fun.
+rewrite app_fun.
+apply args_eq. exact H. refl. intros. simpl. rewrite H.
+apply tail_eq. exact H0.
 Qed.
 
 (***********************************************************************)
@@ -169,11 +174,14 @@ Definition vrules_of_arules := map vrule_of_arule R.
 
 Notation S := vrules_of_arules.
 
-Lemma vred_of_ared : forall t u, ared R t u -> vred S (vterm_of_aterm t) (vterm_of_aterm u).
+Lemma vred_of_ared : forall t u,
+  ared R t u -> vred S (vterm_of_aterm t) (vterm_of_aterm u).
 
 Proof.
-intros. ATrs.redtac. subst t. subst u. do 2 rewrite vterm_fill. do 2 rewrite vterm_subs.
-apply red_rule. change (In (vrule_of_arule (ATrs.mkRule l r)) S). unfold S. apply in_map. exact H.
+intros. ATrs.redtac. subst t. subst u. do 2 rewrite vterm_fill.
+do 2 rewrite vterm_subs.
+apply red_rule. change (In (vrule_of_arule (ATrs.mkRule l r)) S). unfold S.
+apply in_map. exact H.
 Qed.
 
 (***********************************************************************)

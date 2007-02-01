@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 *)
 
-(* $Id: VecOrd.v,v 1.6 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.7 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -49,8 +49,8 @@ deduce (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6.
 rewrite H7.
 exists (S x0). exists (Vcons (Vhead v2) x1). exists x2.
 exists x3. exists x4. assert (S x0 + S x3 = S n). omega. exists H9. exists x6.
-simpl. intuition. apply Vcons_eq_tail. apply Vcast_eq.
-apply Vcons_eq_tail. apply Vcast_eq.
+simpl. intuition. apply Vtail_eq. apply Vcast_eq.
+apply Vtail_eq. apply Vcast_eq.
 Qed.
 
 Lemma Vgt_prod_cons : forall x1 x2 n (v1 v2 : vec n),

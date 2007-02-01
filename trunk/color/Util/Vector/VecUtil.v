@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.4 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -77,7 +77,7 @@ Proof.
 intros. subst a1. subst v1. reflexivity.
 Qed.
 
-Lemma Vcons_eq_tail : forall a n (v1 v2 : vec n), v1 = v2 -> Vcons a v1 = Vcons a v2.
+Lemma Vtail_eq : forall a n (v1 v2 : vec n), v1 = v2 -> Vcons a v1 = Vcons a v2.
 
 Proof.
 intros. apply Vcons_eq. reflexivity. assumption.
@@ -141,7 +141,7 @@ Lemma Vcast_cast_eq : forall n (v : vec n) m (h1 : n=m) p (h2 : m=p) (h3 : n=p),
 Proof.
 induction v; intro m; case m; intros until p; case p; simpl; intros;
   (discriminate || auto).
-apply Vcons_eq_tail. apply IHv.
+apply Vtail_eq. apply IHv.
 Qed.
 
 Lemma Vcast_cast : forall n (v : vec n) m (h1 : n=m) p (h2 : m=p),
@@ -157,7 +157,7 @@ Lemma Vcast_eq_intror : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
 
 Proof.
 induction v1; intros until n0; case n0; intros until v2; case v2; simpl; intros;
-  (discriminate || auto). Veqtac. apply Vcons_eq_tail. eapply IHv1. apply H2.
+  (discriminate || auto). Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
@@ -165,7 +165,7 @@ Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
 
 Proof.
 induction v; intros until p; case p; intros; simpl; (discriminate || auto).
-apply Vcons_eq_tail. apply IHv.
+apply Vtail_eq. apply IHv.
 Qed.
 
 Lemma Vcast_lr : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
@@ -173,7 +173,7 @@ Lemma Vcast_lr : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
 
 Proof.
 induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
-Veqtac. apply Vcons_eq_tail. eapply IHv1. apply H2.
+Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
@@ -181,7 +181,7 @@ Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
 
 Proof.
 induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
-Veqtac. apply Vcons_eq_tail. eapply IHv1. apply H2.
+Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_introrl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h21 : n2=n1),
@@ -332,7 +332,7 @@ Lemma Vapp_nil_eq : forall n (v : vec n) (w : vec 0) (h : n=n+0),
 
 Proof.
 induction v; intros. VOtac. reflexivity.
-simpl. apply Vcons_eq_tail. apply IHv.
+simpl. apply Vtail_eq. apply IHv.
 Qed.
 
 Lemma Vapp_nil : forall n (v : vec n) (w : vec 0), Vapp v w = Vcast v (plus_n_O n).
@@ -347,7 +347,7 @@ Lemma Vapp_rcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2 (h1 : n2=p2)
 Proof.
 induction v1; simpl; intros.
 assert (h1=h2). apply UIP. rewrite H. reflexivity.
-apply Vcons_eq_tail. apply IHv1.
+apply Vtail_eq. apply IHv1.
 Qed.
 
 Lemma plus_reg_l_inv : forall n1 n2 p2, n2=p2 -> n1+n2=n1+p2.
@@ -369,7 +369,7 @@ Lemma Vapp_lcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1 (h1 : n1=p1)
 Proof.
 induction v1; intros until p1; case p1; simpl; intros.
 rewrite Vcast_refl_eq. reflexivity. discriminate. discriminate.
-apply Vcons_eq_tail. apply IHv1.
+apply Vtail_eq. apply IHv1.
 Qed.
 
 Lemma plus_reg_r_inv : forall n1 p1 n2, n1=p1 -> n1+n2=p1+n2.
@@ -392,7 +392,7 @@ Lemma Vapp_assoc_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n3 (v3 : vec n3)
 Proof.
 induction v1; intros; simpl.
 rewrite Vcast_refl_eq. reflexivity.
-apply Vcons_eq_tail. apply IHv1.
+apply Vtail_eq. apply IHv1.
 Qed.
 
 Lemma Vapp_assoc : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n3 (v3 : vec n3),
@@ -592,7 +592,8 @@ intros. apply Vforall_intro. intros. apply Vforall_in with (v := v2).
 assumption. apply H. assumption.
 Qed.
 
-Lemma Vforall_cast : forall P n v p (h : n=p), Vforall P v -> Vforall P (Vcast v h).
+Lemma Vforall_cast : forall P n v p (h : n=p),
+  Vforall P v -> Vforall P (Vcast v h).
 
 Proof.
 intros. apply Vforall_intro. intros.

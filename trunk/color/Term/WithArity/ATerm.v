@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.5 2007-01-24 15:50:41 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -83,6 +83,21 @@ Lemma term_ind_forall : forall (P : term -> Prop)
 Proof.
 intros. apply term_ind with (Q := Vforall P). assumption. assumption.
 exact I. intros. simpl. split; assumption.
+Qed.
+
+(***********************************************************************)
+(** equality *)
+
+Lemma var_eq : forall x x', x = x' -> Var x = Var x'.
+
+Proof.
+intros. rewrite H. refl.
+Qed.
+
+Lemma args_eq : forall f (v v' : args f), v = v' -> Fun f v = Fun f v'.
+
+Proof.
+intros. rewrite H. refl.
 Qed.
 
 (***********************************************************************)
@@ -218,7 +233,8 @@ Lemma vars_max : forall x t, In x (vars t) -> x <= maxvar t.
 
 Proof.
 intro.
-set (Q := fun n (ts : terms n) => In x (vars_vec ts) -> x <= Vmax (Vmap maxvar ts)).
+set (Q := fun n (ts : terms n) =>
+  In x (vars_vec ts) -> x <= Vmax (Vmap maxvar ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t; unfold Q; simpl; intros.
 intuition. apply H. assumption. contradiction. generalize (in_app_or H1).
 intro. destruct H2. apply elim_max_l. apply H. assumption.

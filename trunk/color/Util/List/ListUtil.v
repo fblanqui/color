@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.9 2007-01-24 17:28:44 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.10 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,6 +18,35 @@ Require Export LogicUtil.
 Require Export List.
 
 Implicit Arguments in_app_or [A l m a].
+Implicit Arguments in_map [A B l x].
+
+(***********************************************************************)
+(** cons *)
+
+Section cons.
+
+Variable A : Set.
+
+Lemma cons_eq : forall x x' : A, forall l l',
+  x = x' -> l = l' -> x :: l = x' :: l'.
+
+Proof.
+intros. rewrite H. rewrite H0. refl.
+Qed.
+
+Lemma head_eq : forall x x' : A, forall l, x = x' -> x :: l = x' :: l.
+
+Proof.
+intros. rewrite H. refl.
+Qed.
+
+Lemma tail_eq : forall x : A, forall l l', l = l' -> x :: l = x :: l'.
+
+Proof.
+intros. rewrite H. refl.
+Qed.
+
+End cons.
 
 (***********************************************************************)
 (** concatenation *)
@@ -26,10 +55,29 @@ Section app.
 
 Variable A : Set.
 
-Lemma app_nil : forall l1 l2 : list A, l1 = nil -> l2 = nil -> app l1 l2 = nil.
+Lemma app_nil : forall l1 l2 : list A, l1 = nil -> l2 = nil -> l1 ++ l2 = nil.
 
 Proof.
 intros. subst l1. subst l2. reflexivity.
+Qed.
+
+Lemma app_eq : forall l1 l2 l1' l2' : list A,
+  l1 = l1' -> l2 = l2' -> l1 ++ l2 = l1' ++ l2'.
+
+Proof.
+intros. rewrite H. rewrite H0. refl.
+Qed.
+
+Lemma appl_eq : forall l1 l2 l1' : list A, l1 = l1' -> l1 ++ l2 = l1' ++ l2.
+
+Proof.
+intros. rewrite H. refl.
+Qed.
+
+Lemma appr_eq : forall l1 l2 l2' : list A, l2 = l2' -> l1 ++ l2 = l1 ++ l2'.
+
+Proof.
+intros. rewrite H. refl.
 Qed.
 
 End app.
@@ -367,7 +415,7 @@ Proof.
 induction l1; simpl; intros. refl. rewrite IHl1. refl.
 Qed.
 
-Lemma map_in : forall x l, In x (map f l) -> exists y, In y l /\ x = f y.
+Lemma in_map_elim : forall x l, In x (map f l) -> exists y, In y l /\ x = f y.
 
 Proof.
 induction l; simpl; intros. contradiction. destruct H.
@@ -376,7 +424,7 @@ Qed.
 
 End map.
 
-Implicit Arguments map_in [A B f x l].
+Implicit Arguments in_map_elim [A B f x l].
 
 (***********************************************************************)
 (** flattening *)

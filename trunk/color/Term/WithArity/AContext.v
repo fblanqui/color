@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.5 2007-01-24 15:50:41 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -174,7 +174,7 @@ Qed.
 (***********************************************************************)
 (** subterms and variables *)
 
-Lemma subterm_vars : forall u t x,
+Lemma subterm_eq_vars : forall u t x,
   subterm_eq u t -> In x (vars u) -> In x (vars t).
 
 Proof.
@@ -184,7 +184,7 @@ rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
 apply in_appr. apply in_appl. assumption.
 Qed.
 
-Lemma in_vars_subterm : forall x t, In x (vars t) -> subterm_eq (Var x) t.
+Lemma in_vars_subterm_eq : forall x t, In x (vars t) -> subterm_eq (Var x) t.
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
@@ -200,7 +200,7 @@ Lemma in_vars_fun : forall x f ts,
   In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
 
 Proof.
-intros. apply subterm_fun_elim. deduce (in_vars_subterm _ _ H).
+intros. apply subterm_fun_elim. deduce (in_vars_subterm_eq _ _ H).
 apply subterm_noteq. assumption. discriminate.
 Qed.
 
@@ -278,6 +278,6 @@ End S.
 (** declarations of implicit arguments *)
 
 Implicit Arguments Hole [Sig].
-Implicit Arguments in_vars_subterm [Sig x t].
+Implicit Arguments in_vars_subterm_eq [Sig x t].
 Implicit Arguments in_vars_fun [Sig x f ts].
 Implicit Arguments vars_fill_elim [Sig t c].

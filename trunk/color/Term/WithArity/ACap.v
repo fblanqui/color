@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.4 2007-01-24 11:52:35 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.5 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -135,7 +135,7 @@ Lemma Vmap_sum_conc_forall : forall n (ts : terms n),
 
 Proof.
 induction ts; simpl; intros. reflexivity. destruct H. rewrite Vbreak_app.
-unfold fcap_aliens in H. rewrite H. apply Vcons_eq_tail. apply IHts. assumption.
+unfold fcap_aliens in H. rewrite H. apply Vtail_eq. apply IHts. assumption.
 Qed.
 
 Lemma sub_capa : forall t, fcap_aliens (capa t) = t.
@@ -143,8 +143,7 @@ Lemma sub_capa : forall t, fcap_aliens (capa t) = t.
 Proof.
 intro. pattern t. apply term_ind_forall; intros. reflexivity.
 unfold fcap_aliens, fcap, aliens. simpl. case (defined f R); simpl. refl.
-apply f_equal with (f := Fun f).
-change (Vmap_sum (Vmap capa v) (conc (Vmap capa v)) = v).
+apply args_eq. change (Vmap_sum (Vmap capa v) (conc (Vmap capa v)) = v).
 rewrite Vmap_sum_conc_forall. reflexivity. assumption.
 Qed.
 
@@ -356,7 +355,7 @@ apply term_ind with (Q := Q); clear t.
 intros. unfold fcap. simpl. apply H. assumption.
 intros f ts IH H0. rewrite capa_fun. unfold fcap. case (defined f R); simpl; intros.
 VSntac v. reflexivity.
-apply (f_equal (Fun f)). apply IH. assumption.
+apply args_eq. apply IH. assumption.
 unfold Q. auto.
 intros. unfold Q. simpl. intros.
 generalize (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.

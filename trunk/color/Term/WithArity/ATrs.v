@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.9 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.10 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -179,7 +179,7 @@ Definition rules_preserv_vars :=
 
 Variable hyp : rules_preserv_vars.
 
-Lemma red_vars : preserv_vars (red R).
+Lemma red_preserv_vars : preserv_vars (red R).
 
 Proof.
 unfold preserv_vars. intros. redtac. subst t. subst u.
@@ -189,17 +189,17 @@ apply incl_vars_app. apply hyp. exact H.
 apply vars_fill_intro.
 Qed.
 
-Lemma t_red_vars : preserv_vars (red R !).
+Lemma tred_preserv_vars : preserv_vars (red R !).
 
 Proof.
-unfold preserv_vars. induction 1. apply red_vars. exact H.
+unfold preserv_vars. induction 1. apply red_preserv_vars. exact H.
 apply incl_tran with (vars y); assumption.
 Qed.
 
-Lemma rt_red_vars : preserv_vars (red R #).
+Lemma rtred_preserv_vars : preserv_vars (red R #).
 
 Proof.
-unfold preserv_vars. induction 1. apply red_vars. exact H.
+unfold preserv_vars. induction 1. apply red_preserv_vars. exact H.
 apply List.incl_refl. apply incl_tran with (vars y); assumption.
 Qed.
 
