@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.9 2007-01-25 14:50:05 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.10 2007-02-01 16:12:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,6 +28,7 @@ Require Export ATrs.
 
 Notation rule := (rule Sig).
 Notation rules := (list rule).
+Notation lhs := (@lhs Sig).
 
 Variable R : rules.
 
@@ -53,7 +54,7 @@ Lemma mkdp_elim : forall l t S,
 
 Proof.
 induction S; simpl; intros. contradiction. destruct a. simpl in H.
-deduce (in_app_or H). destruct H0. deduce (map_in H0). do 2 destruct H1.
+deduce (in_app_or H). destruct H0. deduce (in_map_elim H0). do 2 destruct H1.
 injection H2. intros. subst x. subst lhs. exists rhs. intuition.
 deduce (IHS H0). destruct H1. exists x. intuition.
 Qed.
@@ -90,6 +91,14 @@ intros. unfold hd_red. exists l. exists t. exists s. split.
 eapply dp_intro. apply H. assumption. auto.
 Qed.
 
+Lemma lhs_dp : incl (map lhs dp) (map lhs R).
+
+Proof.
+unfold incl. intros. deduce (in_map_elim H). do 2 destruct H0. subst a.
+destruct x as [l r]. deduce (dp_elim H0). do 2 destruct H1.
+change (In (lhs (mkRule l x)) (map lhs R)). apply in_map. exact H1.
+Qed.
+
 (***********************************************************************)
 (** dependancy chains *)
 
@@ -123,12 +132,36 @@ Variable hyp2 : rules_preserv_vars R.
 
 Implicit Arguments hyp2 [l r].
 
-Lemma dp_vars : rules_preserv_vars dp.
+(***********************************************************************)
+(** dp preserves variables *)
+
+Lemma dp_elim_vars : forall l t, In (mkRule l t) dp ->
+  exists r, In (mkRule l r) R /\ In t (calls R r) /\ incl (vars t) (vars l).
 
 Proof.
-unfold rules_preserv_vars, incl. intros. deduce (dp_elim H). do 2 destruct H1.
-deduce (in_calls_subterm H2). deduce (subterm_vars _ H3 H0).
-unfold preserv_vars, incl in hyp2. apply hyp2 with (r := x); assumption.
+intros. deduce (dp_elim H). do 2 destruct H0. exists x. intuition.
+apply incl_tran with (m := vars x). unfold incl. intros.
+eapply subterm_eq_vars. eapply in_calls_subterm. apply H1. exact H2.
+apply hyp2. exact H0.
+Qed.
+
+Implicit Arguments dp_elim_vars [l t].
+
+Lemma dp_preserv_vars : rules_preserv_vars dp.
+
+Proof.
+unfold rules_preserv_vars. intros. deduce (dp_elim_vars H). destruct H0.
+intuition.
+Qed.
+
+Require Export ARename.
+
+Lemma dp_preserv_pw_disjoint_vars :
+  pw_disjoint_vars (map lhs R) -> pw_disjoint_vars (map lhs dp).
+
+Proof.
+unfold pw_disjoint_vars, disjoint_vars. intros. eapply H.
+apply lhs_dp. exact H0. apply lhs_dp. exact H1. apply H2. exact H3.
 Qed.
 
 (***********************************************************************)
@@ -228,3 +261,9 @@ unfold chain, hd_red_mod. comp. apply incl_rtc. apply int_red_incl_red.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** declaration of implicit arguments *)
+
+Implicit Arguments dp_elim [Sig l t].
+Implicit Arguments dp_elim_vars [Sig l t].

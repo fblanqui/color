@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.4 2007-01-24 11:52:36 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.5 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -135,6 +135,26 @@ Qed.
 Require Export Omega.
 
 Lemma plus_minus : forall v p, v+p-p=v.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma minus_plus : forall v p, p<=v -> v-p+p=v.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments minus_plus [v p].
+
+Lemma lt_from_le : forall x y, 0 < y -> x <= y-1 -> x < y.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma le_from_lt : forall x y, x < y+1 -> x <= y.
 
 Proof.
 intros. omega.

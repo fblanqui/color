@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.5 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -69,13 +69,16 @@ Qed.
 
 End term_int.
 
-Lemma term_int_eq : forall xint1 xint2, (forall x, xint1 x = xint2 x) ->
-  forall t, term_int xint1 t = term_int xint2 t.
+Lemma term_int_eq : forall xint1 xint2 t,
+  (forall x, In x (vars t) -> xint1 x = xint2 x) ->
+  term_int xint1 t = term_int xint2 t.
 
 Proof.
-intros xint1 xint2 hyp. apply term_ind_forall. exact hyp.
-intros. repeat rewrite term_int_fun. apply (f_equal (fint I f)).
-apply Vmap_eq. exact H.
+intros xint1 xint2 t. pattern t; apply term_ind_forall; clear t; intros.
+simpl. apply H. simpl. intuition.
+repeat rewrite term_int_fun. apply (f_equal (fint I f)). apply Vmap_eq.
+apply Vforall_intro. intros. apply (Vforall_in H H1). intros. apply H0.
+rewrite vars_fun. apply (vars_vec_in H2 H1).
 Qed.
 
 (***********************************************************************)

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.11 2007-01-24 17:38:32 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.12 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,16 +32,16 @@ Notation Var := (@Var Sig).
 
 Require Export AInterpretation.
 
-Definition I0 := (mkInterpretation (Var 0) (@Fun Sig)).
+Definition I0 := mkInterpretation (Var 0) (@Fun Sig).
 
 Definition substitution := valuation I0.
 
-Definition id x := Var x.
+Definition id : substitution := fun x => Var x.
 
 (***********************************************************************)
 (** application of a substitution *)
 
-Definition app := @term_int Sig I0.
+Definition app : substitution -> term -> term := @term_int Sig I0.
 
 Lemma app_fun : forall s f (v : args f),
   app s (Fun f v) = Fun f (Vmap (app s) v).
@@ -70,10 +70,17 @@ intro E. rewrite E. exists v. refl.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
+Lemma app_eq : forall (s1 s2 : substitution) (t : term),
+  (forall x : variable, In x (vars t) -> s1 x = s2 x) -> app s1 t = app s2 t.
+
+Proof.
+intros. unfold app. rewrite (term_int_eq I0 s1 s2 t H). refl.
+Qed.
+
 (***********************************************************************)
 (** composition *)
 
-Definition comp (s1 s2 : substitution) x := app s1 (s2 x).
+Definition comp (s1 s2 : substitution) : substitution := fun x => app s1 (s2 x).
 
 Lemma app_app : forall s1 s2 t, app s1 (app s2 t) = app (comp s1 s2) t.
 
@@ -185,16 +192,17 @@ Qed.
 End vars.
 
 (***********************************************************************)
-(** domain of a substitution *)
+(** domain and codomain of a substitution *)
 
-Definition dom_incl s l := forall x, ~In x l -> s x = Var x.
+Definition dom_incl (s : substitution) (l : variables) :=
+  forall x, ~In x l -> s x = Var x.
 
 (***********************************************************************)
 (** when two substitutions are equal on some domain *)
 
 Require Export ListForall.
 
-Definition sub_eq_dom (s1 s2 : substitution) l :=
+Definition sub_eq_dom (s1 s2 : substitution) (l : variables) :=
   forall x, In x l -> s1 x = s2 x.
 
 Lemma sub_eq_dom_incl : forall s1 s2 l1 l2,
@@ -238,23 +246,46 @@ Section union.
 
 Variables s1 s2 : substitution.
 
-Definition union x :=
+Definition union (x : variable) : term :=
   match eq_term_dec (s1 x) (Var x) with
     | left _ => s2 x
     | right _ => s1 x
   end.
 
-Lemma union_correct : forall l1 l2, dom_incl s1 l1 -> dom_incl s2 l2 ->
-  (forall x, In x l1 -> In x l2 -> s1 x = s2 x) ->
-  sub_eq_dom union s1 l1 /\ sub_eq_dom union s2 l2.
+Variables l1 l2 : variables.
+
+Definition compat := forall x : variable, In x l1 -> In x l2 -> s1 x = s2 x.
+
+Variable hyp1 : dom_incl s1 l1.
+Variable hyp2 : dom_incl s2 l2.
+Variable hyp : compat.
+
+Lemma union_correct1 : sub_eq_dom union s1 l1.
 
 Proof.
-unfold sub_eq_dom, union. intuition; case (eq_term_dec (s1 x) (Var x)); intros.
+unfold sub_eq_dom, union. intros. case (eq_term_dec (s1 x) (Var x)); intros.
 case (In_dec eq_nat_dec x l2); intro. apply sym_eq. auto.
-deduce (H0 _ n). rewrite e. rewrite H3. refl.
-refl. refl.
-case (In_dec eq_nat_dec x l1); intro. auto.
-deduce (H _ n0). contradiction.
+deduce (hyp2 _ n). rewrite e. rewrite H0. refl. refl.
+Qed.
+
+Lemma union_correct2 : sub_eq_dom union s2 l2.
+
+Proof.
+unfold sub_eq_dom, union. intros. case (eq_term_dec (s1 x) (Var x)); intros.
+refl. case (In_dec eq_nat_dec x l1); intro. auto.
+deduce (hyp1 _ n0). contradiction.
+Qed.
+
+Lemma app_union1 : forall t, incl (vars t) l1 -> app union t = app s1 t.
+
+Proof.
+intros. eapply sub_eq_dom_incl_app. apply union_correct1. exact H.
+Qed.
+
+Lemma app_union2 : forall t, incl (vars t) l2 -> app union t = app s2 t.
+
+Proof.
+intros. eapply sub_eq_dom_incl_app. apply union_correct2. exact H.
 Qed.
 
 End union.
@@ -264,7 +295,8 @@ End union.
 
 Notation Inb := (Inb eq_nat_dec).
 
-Definition restrict s l x := if Inb x l then s x else Var x.
+Definition restrict (s : substitution) (l : variables) (x : variable) :=
+  if Inb x l then s x else Var x.
 
 Lemma restrict_var : forall s l x, In x l -> restrict s l x = s x.
 
@@ -349,7 +381,7 @@ Lemma Vbreak_fresh : forall n1 n2 x0,
 
 Proof.
 induction n1; simpl; intros. rewrite plus_0_r. refl.
-apply Vcons_eq_tail. rewrite IHn1.
+apply Vtail_eq. rewrite IHn1.
 assert (S x0 + n1 = x0 + S n1). omega. rewrite H. refl.
 Qed.
 
@@ -497,3 +529,4 @@ Qed.
 End S.
 
 Implicit Arguments fun_eq_app [Sig f ts s u].
+Implicit Arguments app_restrict_incl [Sig l r].

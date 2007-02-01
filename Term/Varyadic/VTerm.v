@@ -7,9 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VTerm.v,v 1.3 2007-02-01 16:12:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
+
+Require Export LogicUtil.
 
 Section S.
 
@@ -86,6 +88,27 @@ Proof.
 intros. apply term_ind with (Q := fun v => forall t, In t v -> P t); simpl.
 assumption. assumption. intros. contradiction.
 intros. destruct H3. subst. assumption. apply H0. assumption.
+Qed.
+
+(***********************************************************************)
+(** equality *)
+
+Lemma term_eq : forall f f' v v', f = f' -> v = v' -> Fun f v = Fun f' v'.
+
+Proof.
+intros. rewrite H. rewrite H0. refl.
+Qed.
+
+Lemma fun_eq : forall f f' v, f = f' -> Fun f v = Fun f' v.
+
+Proof.
+intros. rewrite H. refl.
+Qed.
+
+Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
+
+Proof.
+intros. rewrite H. refl.
 Qed.
 
 (***********************************************************************)

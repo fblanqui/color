@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.4 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.5 2007-02-01 16:12:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -66,15 +66,14 @@ Lemma filters_eq : forall n (ts : terms n),
     end) n ts = Vmap filter ts.
 
 Proof.
-induction ts; intros; simpl. refl. apply (f_equal (@Vcons term' (filter a) n)).
-apply IHts.
+induction ts; intros; simpl. refl. apply Vtail_eq. apply IHts.
 Qed.
 
 Lemma filter_fun : forall f (ts : args f),
   filter (Fun f ts) = Fun' f (Vfilter (pi f) (Vmap filter ts)).
 
 Proof.
-intros. simpl. apply (f_equal (Fun' f)). rewrite filters_eq. refl.
+intros. simpl. apply args_eq. rewrite filters_eq. refl.
 Qed.
 
 (*
@@ -109,7 +108,7 @@ Proof.
 intro. apply term_ind_forall with
 (P := fun t => filter (app s t) = app (filter_subs s) (filter t)); intros. refl.
 rewrite app_fun. repeat rewrite filter_fun. rewrite app_fun.
-apply (f_equal (Fun' f)). repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
+apply args_eq. repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
 apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
 eapply Vfilter_in. apply H0. assumption.
 Qed.

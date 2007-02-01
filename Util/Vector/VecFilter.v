@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 vector filtering
 *)
 
-(* $Id: VecFilter.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: VecFilter.v,v 1.3 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,16 +43,18 @@ Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1) n2 (v2 : vec n2)
 Proof.
 induction bs; induction n1; induction n2; intros. VOtac. simpl. refl.
 discriminate. discriminate. discriminate. discriminate.
-VOtac. generalize h'. clear h'. case a; simpl; intro. apply Vcons_eq_tail.
+VOtac. generalize h'. clear h'. case a; simpl; intro. apply Vtail_eq.
 VSntac v2. simpl.
-deduce (IHbs 0 Vnil n2 (Vtail v2) (f_equal pred h) (f_equal pred h')). simpl in H0.
+deduce (IHbs 0 Vnil n2 (Vtail v2) (f_equal pred h) (f_equal pred h')).
+simpl in H0.
 assumption.
 VSntac v2. simpl.
 deduce (IHbs 0 Vnil n2 (Vtail v2) (f_equal pred h) h'). simpl in H0. assumption.
-VOtac. VSntac v1. generalize h'. clear h'. case a; simpl; intro. apply Vcons_eq_tail.
-deduce (IHbs n1 (Vtail v1) 0 Vnil (f_equal pred h) (f_equal pred h')). assumption.
+VOtac. VSntac v1. generalize h'. clear h'. case a; simpl; intro. apply Vtail_eq.
+deduce (IHbs n1 (Vtail v1) 0 Vnil (f_equal pred h) (f_equal pred h')).
+assumption.
 deduce (IHbs n1 (Vtail v1) 0 Vnil (f_equal pred h) h'). assumption.
-VSntac v1. generalize h'. clear h'. case a; simpl; intro. apply Vcons_eq_tail.
+VSntac v1. generalize h'. clear h'. case a; simpl; intro. apply Vtail_eq.
 deduce (IHbs n1 (Vtail v1) (S n2) v2 (f_equal pred h) (f_equal pred h')).
 assumption.
 deduce (IHbs n1 (Vtail v1) (S n2) v2 (f_equal pred h) h'). assumption.
@@ -170,7 +172,7 @@ Lemma Vfilter_app2_eq : forall n1 (bs1 : bools n1) (v1 : vec n1)
 
 Proof.
 induction bs1; simpl. intros. VOtac. simpl. castrefl h.
-case a; simpl; intros; VSntac v1; simpl. apply Vcons_eq_tail. apply IHbs1.
+case a; simpl; intros; VSntac v1; simpl. apply Vtail_eq. apply IHbs1.
 apply IHbs1.
 Qed.
 
@@ -191,7 +193,7 @@ Lemma Vfilter_break_eq : forall n1 n2 (bs : bools (n1+n2)) (v : vec (n1+n2))
 Proof.
 induction n1; simpl. intros. castrefl h.
 intros n2 bs v. VSntac bs. VSntac v. simpl. case (Vhead bs); simpl; intros.
-apply Vcons_eq_tail. apply IHn1. apply IHn1.
+apply Vtail_eq. apply IHn1. apply IHn1.
 Qed.
 
 Lemma Vfilter_break : forall n1 n2 (bs : bools (n1+n2)) (v : vec (n1+n2)),
@@ -202,14 +204,14 @@ Proof.
 intros. apply Vfilter_break_eq.
 Qed.
 
-Lemma Vfilter_cast_eq : forall n (bs : bools n) p (v : vec p) (hpn : p=n) (hnp: n=p)
-  (h' : Vtrue (Vcast bs hnp) = Vtrue bs),
+Lemma Vfilter_cast_eq : forall n (bs : bools n) p (v : vec p)
+  (hpn : p=n) (hnp: n=p) (h' : Vtrue (Vcast bs hnp) = Vtrue bs),
   Vfilter bs (Vcast v hpn) = Vcast (Vfilter (Vcast bs hnp) v) h'.
 
 Proof.
 induction bs; induction p; simpl; intros. refl. discriminate. discriminate.
 VSntac v. simpl. generalize h'. clear h'. case a; simpl; intro.
-apply Vcons_eq_tail. apply IHbs. apply IHbs.
+apply Vtail_eq. apply IHbs. apply IHbs.
 Qed.
 
 Lemma Vfilter_cast : forall n (bs : bools n) p (v : vec p) (h : p=n),
@@ -225,8 +227,8 @@ End S.
 Implicit Arguments Vfilter_head_true [A n bs].
 Implicit Arguments Vfilter_head_false [A n bs].
 
-Lemma Vmap_filter : forall (A B : Set) (f : A->B) n (bs : bools n) (v : vector A n),
-  Vmap f (Vfilter bs v) = Vfilter bs (Vmap f v).
+Lemma Vmap_filter : forall (A B : Set) (f : A->B) n (bs : bools n)
+  (v : vector A n), Vmap f (Vfilter bs v) = Vfilter bs (Vmap f v).
 
 Proof.
 induction v; intros; simpl. VOtac. refl. deduce (IHv (Vtail bs)).

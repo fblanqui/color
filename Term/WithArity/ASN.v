@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.5 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -51,7 +51,7 @@ Lemma sub_sn : forall l x s, In x (vars l) -> SNR (app s l) -> SNR (s x).
 
 Proof.
 intros. change (SNR (app s (Var x))). eapply subterm_sn. apply H0.
-apply subterm_app. apply in_vars_subterm. assumption.
+apply subterm_app. apply in_vars_subterm_eq. assumption.
 Qed.
 
 Lemma sub_fun_sn : forall f ts x s,
@@ -60,7 +60,7 @@ Lemma sub_fun_sn : forall f ts x s,
 Proof.
 intros. change (SNR (app s (Var x))). rewrite vars_fun in H.
 deduce (in_vars_vec_elim H). destruct H1 as [t]. destruct H1.
-deduce (in_vars_subterm H2). apply subterm_sn with (t := app s t).
+deduce (in_vars_subterm_eq H2). apply subterm_sn with (t := app s t).
 eapply Vforall_in with (n := arity f). apply H0. apply Vin_map_intro. assumption.
 apply subterm_app. assumption.
 Qed.
@@ -163,7 +163,7 @@ apply subterm_fun. assumption. eapply in_calls_subterm. apply H3.
 unfold comp. unfold alien_sub. case (le_lt_dec x (maxvar v)); intro.
 (* x <= maxvar v *)
 rewrite fsub_inf. 2: assumption. simpl. apply H.
-eapply subterm_vars. apply subterm_strict. apply H7.
+eapply subterm_eq_vars. apply subterm_strict. apply H7.
 apply (vars_cap_inf R). assumption. assumption.
 (* x > maxvar v *)
 deduce (vars_cap R H6). rewrite (fsub_nth (aliens (capa R v)) l H8).

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rule renaming
 *)
 
-(* $Id: ARename.v,v 1.1 2007-01-25 14:52:01 blanqui Exp $ *)
+(* $Id: ARename.v,v 1.2 2007-02-01 16:12:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,16 +32,24 @@ Notation rules := (list rule).
 Notation lhs := (@lhs Sig).
 
 (***********************************************************************)
-(** shift variable indices *)
+(** shift variable indices in terms *)
 
 Section shift.
 
 Variable p : nat.
 
+Definition shift_var x := x+p.
+
 Require Export ASubstitution.
 
 Definition shift_sub x := @Var Sig (x+p).
 Definition shift := app shift_sub.
+
+Definition shift_rule (rho : rule) :=
+  let (l,r) := rho in mkRule (shift l) (shift r).
+
+(***********************************************************************)
+(** properties of shifting *)
 
 Lemma in_vars_shift_min : forall x t, In x (vars (shift t)) -> p <= x.
 
@@ -67,35 +75,71 @@ deduce (Vforall_in H H3). deduce (H4 H2).
 rewrite maxvar_fun. deduce (Vin_map_intro (@maxvar Sig) H3).
 deduce (Vmax_in H6). omega.
 Qed.
- 
-Definition shift_inv_sub x := @Var Sig (x-p).
+
+Lemma vars_shift : forall t, vars (shift t) = map shift_var (vars t).
+
+Proof.
+apply term_ind with (Q := fun n (v : terms n) =>
+  vars_vec (Vmap shift v) = map shift_var (vars_vec v)); intros. refl.
+unfold shift. rewrite app_fun. repeat rewrite vars_fun. exact H.
+refl. simpl. rewrite map_app. rewrite H. apply appr_eq. exact H0.
+Qed.
+
+Lemma notin_vars_shift : forall x l,
+  ~In x (vars (shift l)) -> p <= x -> ~In (x-p) (vars l).
+
+Proof.
+intros. intro. apply H. rewrite vars_shift. rewrite <- (minus_plus H0).
+fold (shift_var (x-p)). apply in_map. exact H1.
+Qed.
+
+(***********************************************************************)
+(** inverse shifting wrt a term *)
+
+Section inverse.
+
+Variable l : term.
+
+Definition shift_inv_var x :=
+  match le_lt_dec p x with
+    | left _ => (* p <= x *) if Inb eq_nat_dec (x-p) (vars l) then x-p else x
+    | right _ => (* p > x *) x
+  end.
+
+Definition shift_inv_sub x := @Var Sig (shift_inv_var x).
 Definition shift_inv := app shift_inv_sub.
 
-Lemma shift_inv_shift : forall t, shift_inv (shift t) = t.
+Lemma app_shift : forall s, app s l = app (comp s shift_inv_sub) (shift l).
 
 Proof.
-apply term_ind_forall. simpl. unfold shift_inv_sub. intro. rewrite plus_minus.
-refl. intros. unfold shift_inv, shift. repeat rewrite app_fun.
-apply (f_equal (@Fun _ f)). rewrite Vmap_map. apply Vmap_eq_id. exact H.
+intro. unfold shift. rewrite app_app. apply app_eq. intros.
+rewrite comp_assoc. unfold comp. simpl. apply (f_equal s).
+unfold shift_inv_var. rewrite plus_minus.
+assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. exact H. rewrite H0.
+case (le_lt_dec p (x+p)); intro. refl. omega.
 Qed.
 
-Lemma app_shift : forall s t, app s t = app (comp s shift_inv_sub) (shift t).
+Lemma app_shift_incl : forall s r, incl (vars r) (vars l) ->
+  app s r = app (comp s shift_inv_sub) (shift r).
 
 Proof.
-intros. unfold shift. rewrite app_app. unfold app. apply term_int_eq.
-intro. rewrite comp_assoc. unfold comp. simpl. rewrite plus_minus. refl.
+intros. unfold shift. rewrite app_app. apply app_eq. intros.
+rewrite comp_assoc. unfold comp. simpl. apply (f_equal s).
+unfold shift_inv_var. rewrite plus_minus.
+assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. apply H. exact H0.
+rewrite H1. case (le_lt_dec p (x+p)); intro. refl. omega.
 Qed.
 
-Definition shift_rule (rho : rule) :=
-  let (l,r) := rho in mkRule (shift l) (shift r).
-
-Definition shift_rule_inv (rho : rule) :=
-  let (l,r) := rho in mkRule (shift_inv l) (shift_inv r).
+End inverse.
 
 End shift.
 
+(***********************************************************************)
+(** declaration of implicit arguments *)
+
 Implicit Arguments in_vars_shift_min [p x t].
 Implicit Arguments in_vars_shift_max [p x t].
+Implicit Arguments app_shift_incl [l r].
 
 (***********************************************************************)
 (** red included in shifted red *)
@@ -104,6 +148,8 @@ Section red_incl_shift_red.
 
 Variables R R' : rules.
 
+Variable hyp0 : rules_preserv_vars R.
+
 Variable hyp : forall a, In a R -> exists p, In (shift_rule p a) R'.
 
 Implicit Arguments hyp [a].
@@ -111,9 +157,11 @@ Implicit Arguments hyp [a].
 Lemma red_incl_shift_red : red R << red R'.
 
 Proof.
-unfold inclusion. intros. redtac. deduce (hyp H). destruct H2.
-rewrite (app_shift x0) in H0. subst x. rewrite (app_shift x0) in H1. subst y.
-apply red_rule. auto.
+unfold inclusion. intros. redtac. deduce (hyp H). destruct H2 as [p].
+rewrite (app_shift p l) in H0. subst x.
+assert (incl (vars r) (vars l)). apply hyp0. exact H.
+rewrite (app_shift_incl p s H0) in H1. subst y.
+apply red_rule. exact H2.
 Qed.
 
 End red_incl_shift_red.
@@ -226,8 +274,9 @@ Lemma shift_rules_lhs : forall R p,
   map lhs (shift_rules p R) = shift_terms p (map lhs R).
 
 Proof.
-induction R; simpl; intros. refl. destruct a. simpl.
-apply (f_equal (cons (shift p lhs))). apply IHR.
+induction R; simpl; intros. refl. destruct a. simpl. apply tail_eq. apply IHR.
 Qed.
 
 End S.
+
+Implicit Arguments in_vars_shift_min [Sig p x t].

@@ -1,3 +1,8 @@
+07-01-25:
+- Term/WithArity/ARename: variable renamings [Blanqui]
+- Term/WithArity/ASubstitution: union of 2 substitutions
+- various lemmas renamed with intro or elim suffix
+
 06-12-04:
 - Acc replaced by SN in various files
 - Util/List/ListUtil: many new functions and lemmas [Le Roux]
