@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-(* $Id: Path.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: Path.v,v 1.3 2007-02-01 18:38:17 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,6 +30,8 @@ Fixpoint path (x y : A) (l : list A) {struct l} : Prop :=
     | nil => R x y
     | z::l => R x z /\ path z y l
   end.
+
+Definition cycle x := path x x.
 
 Lemma path_clos_trans : forall (y : A) l x, path x y l -> R! x y.
 
