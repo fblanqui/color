@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.8 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.9 2007-02-01 17:27:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -547,9 +547,9 @@ End properties.
 
 Section inverse_image.
 
-Variables (A B : Set) (f : A->B) (R : relation B).
+Variables (A B : Set) (R : relation B) (f : A->B).
 
-Definition Rof x y := R (f x) (f y).
+Definition Rof a a' := R (f a) (f a').
 
 Lemma Rof_refl : reflexive R -> reflexive Rof.
 
@@ -563,5 +563,9 @@ Proof.
 intro. unfold transitive, Rof. intros. unfold transitive in H.
 apply H with (y := f y); assumption.
 Qed.
+
+Variable F : A -> B -> Prop.
+
+Definition RoF a a' := exists b', F a' b' /\ forall b, F a b -> R b b'.
 
 End inverse_image.

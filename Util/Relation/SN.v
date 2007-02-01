@@ -118,22 +118,22 @@ Qed.
 End compat.
 
 (***********************************************************************)
-(** inverse image *)
+(** functional inverse image *)
 
 Section inverse.
 
 Variables (A B : Set) (f : A->B) (R : relation B).
 
-Notation Rof := (Rof f R).
+Notation Rof := (Rof R f).
 
-Lemma SN_Rof : forall y, SN R y -> forall x, y = f x -> SN Rof x.
+Lemma SN_Rof : forall b, SN R b -> forall a, b = f a -> SN Rof a.
 
 Proof.
 induction 1. intros. apply SN_intro. intros.
 apply (H0 (f y)). rewrite H1. exact H2. refl.
 Qed.
 
-Lemma SN_inverse : forall x, SN R (f x) -> SN Rof x.
+Lemma SN_inverse : forall a, SN R (f a) -> SN Rof a.
 
 Proof.
 intros. apply (SN_Rof H). refl.
@@ -142,10 +142,41 @@ Qed.
 Lemma WF_inverse : WF R -> WF Rof.
 
 Proof.
-red in |- *. intros. apply SN_inverse; auto.
+unfold WF. intros. apply SN_inverse; auto.
 Qed.
 
 End inverse.
+
+(***********************************************************************)
+(** relational inverse image *)
+
+Section rel_inverse.
+
+Variables (A B : Set) (R : relation B) (F : A->B->Prop).
+
+Notation RoF := (RoF R F).
+
+Lemma SN_RoF : forall b, SN R b -> forall a, F a b -> SN RoF a.
+
+Proof.
+induction 1. rename x into b. intros a H1. apply SN_intro. intros a' H2.
+destruct H2 as [b']. destruct H2. apply (H0 b'). apply H3. exact H1. exact H2.
+Qed.
+
+Lemma SN_Inverse : forall a, (exists b, F a b /\ SN R b) -> SN RoF a.
+
+Proof.
+intros. destruct H as [b]. destruct H. eapply SN_RoF. apply H0. exact H.
+Qed.
+
+Lemma WF_Inverse : WF R -> WF RoF.
+
+Proof.
+unfold WF. intros H a. apply SN_intro. intros a' H'. destruct H' as [b'].
+destruct H0. apply (@SN_RoF b'). apply H. exact H0.
+Qed.
+
+End rel_inverse.
 
 (***********************************************************************)
 (** reflexive transitive closure *)
