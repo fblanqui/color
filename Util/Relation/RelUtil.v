@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.10 2007-02-01 18:38:17 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.11 2007-02-06 09:54:15 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -53,9 +53,6 @@ Definition irreflexive := forall x, ~ R x x.
 Definition asymmetric := forall x y, R x y -> ~ R y x.
 
 End basic_properties.
-
-Definition commut (A : Set) (R S : relation A) := forall x y z,
-  R x y -> S x z -> exists t, R y t /\ S z t.
 
 (***********************************************************************)
 (** basic definitions *)
@@ -129,9 +126,11 @@ Qed.
 
 End inclusion.
 
+Implicit Arguments incl_elim [A R S x y].
+
 Ltac incl_refl := apply incl_refl.
 
-Ltac trans S := apply incl_trans with (S := S); try incl_refl.
+Ltac trans S := apply incl_trans with (S); try incl_refl.
 
 (***********************************************************************)
 (** irreflexive *)
@@ -252,7 +251,7 @@ Lemma tc_split : forall x y, R! x y -> exists x', R x x' /\ R# x' y.
 Proof.
 induction 1. exists y. split. exact H. apply rt_refl.
 destruct IHclos_trans1. destruct H1. exists x0. split. exact H1.
-apply rt_trans with (y := y). exact H2.
+apply rt_trans with (y := y). exact H2. 
 apply incl_elim with (R := R!). apply tc_incl_rtc. exact H0.
 Qed.
 
@@ -271,6 +270,12 @@ End clos_trans.
 Section clos_refl_trans.
 
 Variables (A : Set) (R S : relation A).
+
+Lemma rtc_incl : R << R#.
+
+Proof.
+unfold inclusion. intros. apply rt_step. exact H.
+Qed.
 
 Lemma rtc_refl : reflexive (R#).
 
@@ -423,6 +428,18 @@ induction 1; intros. apply t_step. apply H. exists x1; split; assumption.
 apply t_trans with (y := y0); auto.
 Qed.
 
+Lemma trans_intro : R @ R << R -> transitive R.
+
+Proof.
+unfold transitive. intros. apply H. exists y. intuition.
+Qed.
+
+Lemma tc_idem : R! @ R! << R!.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; assumption.
+Qed.
+
 End compose.
 
 Ltac comp := apply incl_comp; try incl_refl.
@@ -474,6 +491,15 @@ subst x0. apply t_step. exact H0.
 apply t_trans with (y := x0). exact H1. apply t_step. exact H0.
 Qed.
 
+Lemma tc_incl_step_rtc : R! << R @ R#.
+
+Proof.
+unfold inclusion. induction 1. exists y. intuition.
+destruct IHclos_trans1. destruct H1. exists x0. intuition.
+apply rt_trans with y. exact H2. destruct IHclos_trans2. destruct H3.
+apply rt_trans with x1. apply rt_step. exact H3. exact H4.
+Qed.
+
 Lemma rtc_comp_permut : R# @ (R# @ S)# << (R# @ S)# @ R#.
 
 Proof.
@@ -522,15 +548,14 @@ Qed.
 Lemma union_fact2 : R @ S U R << R @ S%.
 
 Proof.
-apply incl_trans with (S := R U R @ S). apply union_commut.
-apply union_fact.
+trans (R U R @ S). apply union_commut. apply union_fact.
 Qed.
 
 Lemma incl_rc_rtc : R << S! -> R% << S#.
 
 Proof.
 intro. unfold inclusion. intros. destruct H0. subst y. apply rt_refl.
-apply incl_elim with (R := S !). apply tc_incl_rtc. apply H. exact H0.
+apply incl_elim with (R := S!). apply tc_incl_rtc. apply H. exact H0.
 Qed.
 
 Lemma incl_tc_rtc : R << S# -> R! << S#.
@@ -541,6 +566,60 @@ apply rt_trans with (y := y); assumption.
 Qed.
 
 End properties.
+
+Section properties2.
+
+Variables (A : Set) (R S : relation A).
+
+Lemma rtc_comp_modulo : R# @ (R# @ S)! << (R# @ S)!.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H.
+deduce (tc_incl_step_rtc H0). do 2 destruct H1. do 2 destruct H1.
+deduce (rtc_split H2). destruct H4. subst x1.
+apply t_step. exists x2. intuition. apply rt_trans with x0; assumption.
+apply t_trans with x1. apply t_step. exists x2. intuition.
+apply rt_trans with x0; assumption. exact H4.
+Qed.
+
+Lemma tc_union : (R U S)! << R! U (R# @ S)! @ R#.
+
+Proof.
+unfold inclusion. induction 1. destruct H. left. apply t_step. exact H.
+right. exists y. intuition. apply t_step. exists x. intuition.
+destruct IHclos_trans1. destruct IHclos_trans2.
+left. apply t_trans with y; assumption.
+right. do 2 destruct H2. exists x0. intuition.
+apply rtc_comp_modulo. exists y. intuition. apply tc_incl_rtc. exact H1.
+right. do 2 destruct H1. destruct IHclos_trans2. exists x0.
+intuition. apply rt_trans with y. exact H2. apply tc_incl_rtc. exact H3.
+do 2 destruct H3. exists x1. intuition. apply t_trans with x0. exact H1.
+apply rtc_comp_modulo. exists y. intuition.
+Qed.
+
+End properties2.
+
+(***********************************************************************)
+(** commutation properties *)
+
+Section commut.
+
+Variables (A : Set) (R S : relation A) (commut : R @ S << S @ R).
+
+Lemma commut_rtc : R# @ S << S @ R#.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. generalize x x0 H y H0.
+clear H0 y H x0 x. induction 1; intros.
+assert ((S @ R) x y0). apply commut. exists y. intuition.
+do 2 destruct H1. exists x0. intuition.
+exists y. intuition.
+deduce (IHclos_refl_trans2 _ H1). do 2 destruct H2.
+deduce (IHclos_refl_trans1 _ H2). do 2 destruct H4.
+exists x1. intuition. apply rt_trans with x0; assumption.
+Qed.
+
+End commut.
 
 (***********************************************************************)
 (** iteration of a relation *)
@@ -554,7 +633,7 @@ Variables (A : Set) (R : relation A).
 Fixpoint iter (n : nat) : relation A :=
   match n with
     | O => R
-    | S p => fun x y => exists z, R x z /\ iter p z y
+    | S p => R @ iter p
   end.
 
 Lemma iter_tc : forall n, iter n << R!.
@@ -565,21 +644,50 @@ do 2 destruct H. apply t_trans with x0. apply t_step. exact H.
 apply IHn. exact H0.
 Qed.
 
-Lemma iter_plus : forall p q x y z,
-  iter p x y -> iter q y z -> iter (p+q+1) x z.
+Require Export NatUtil.
+
+Lemma comp_iter : forall p q, iter p @ iter q << iter (p+q+1).
 
 Proof.
-induction p; simpl; intros. assert (q+1 = S q). omega. rewrite H1. simpl.
-exists y. auto.
-do 2 destruct H. exists x0. intuition. eapply IHp. apply H1. exact H0.
+induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
+trans (R @ (iter p @ iter q)). apply comp_assoc. comp. apply IHp.
 Qed.
 
-Lemma tc_iter : forall x y, R! x y -> exists n, iter n x y.
+Lemma iter_plus_1 : forall p q, iter (p+q+1) << iter p @ iter q.
 
 Proof.
-induction 1; simpl; intros. exists 0. auto.
-destruct IHclos_trans1. destruct IHclos_trans2.
-exists (x0+x1+1). eapply iter_plus. apply H1. exact H2.
+induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
+trans (R @ (iter p @ iter q)). comp. apply IHp. apply comp_assoc'.
+Qed.
+
+Definition Iter_ge k x y := exists n, n >= k /\ iter n x y.
+
+Definition Iter := Iter_ge 0.
+
+Lemma tc_iter : R! << Iter.
+
+Proof.
+unfold inclusion. induction 1; simpl; intros. exists 0. auto.
+destruct IHclos_trans1. destruct IHclos_trans2. intuition.
+exists (x0+x1+1). intuition. eapply incl_elim. apply comp_iter. exists y. auto.
+Qed.
+
+Fixpoint iter_le (n : nat) : relation A :=
+  match n with
+    | O => R
+    | S p => iter n U iter_le p
+  end.
+
+Lemma Iter_split : forall n, Iter << iter_le n U Iter_ge (S n).
+
+Proof.
+induction n; simpl; intros; unfold inclusion; intros.
+do 2 destruct H. destruct x0. left. auto.
+right. exists (S x0). intuition.
+deduce (IHn _ _ H). destruct H0. left. right. exact H0.
+do 2 destruct H0. case (le_lt_dec x0 (S n)); intro.
+assert (x0 = S n). omega. subst x0. left. left. exact H1.
+right. exists x0. intuition.
 Qed.
 
 End iter.

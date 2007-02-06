@@ -279,3 +279,19 @@ apply H.
 Qed.
 
 End symprod.
+
+(***********************************************************************)
+(** reduction modulo *)
+
+Section modulo.
+
+Variables (A : Set) (E R : relation A).
+
+Lemma SN_modulo : forall x x', SN (E# @ R) x -> E# x x' -> SN (E# @ R) x'.
+
+Proof.
+intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
+exists x0. intuition. apply rt_trans with x'; assumption.
+Qed.
+
+End modulo.
