@@ -92,3 +92,37 @@ trans (R# @ T!). comp. apply tc_incl_rtc. unfold T. apply rtc_comp_modulo.
 Qed.
 
 End union1.
+
+(***********************************************************************)
+(** WF (Iter_ge R n) -> WF R *)
+
+Section iter.
+
+Variables (A : Set) (R : relation A).
+
+Lemma SN_Iter_ge_S : forall n x, SN (Iter_ge R (S n)) x -> SN (Iter_ge R n) x.
+
+Proof.
+induction 1. apply SN_intro. intros. deduce (Iter_ge_split H1). destruct H2.
+apply SN_intro. intros. deduce (Iter_ge_split H3). destruct H4.
+apply H0. exists (n+n+1). intuition. apply comp_iter. exists y. intuition.
+apply H0. apply incl_elim with (R := Iter_ge R (n+n+1)). apply incl_Iter_ge.
+omega. apply iter_Iter_ge. exists y. intuition.
+apply H0. exact H2.
+Qed.
+
+Lemma WF_Iter_ge_S : forall n, WF (Iter_ge R (S n)) -> WF (Iter_ge R n).
+
+Proof.
+unfold WF. intros. apply SN_Iter_ge_S. apply H.
+Qed.
+
+Lemma WF_Iter_ge : forall n, WF (Iter_ge R n) -> WF R.
+
+Proof.
+induction n; intros. apply WF_incl with (Iter_ge R 0).
+unfold inclusion. intros. exists 0. intuition. exact H.
+apply IHn. apply WF_Iter_ge_S. exact H.
+Qed.
+
+End iter.
