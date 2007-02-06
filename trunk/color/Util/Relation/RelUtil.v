@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.11 2007-02-06 09:54:15 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.12 2007-02-06 13:12:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -646,7 +646,7 @@ Qed.
 
 Require Export NatUtil.
 
-Lemma comp_iter : forall p q, iter p @ iter q << iter (p+q+1).
+Lemma iter_iter : forall p q, iter p @ iter q << iter (p+q+1).
 
 Proof.
 induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
@@ -660,6 +660,13 @@ induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
 trans (R @ (iter p @ iter q)). comp. apply IHp. apply comp_assoc'.
 Qed.
 
+Lemma iter_commut : forall p q, iter p @ iter q << iter q @ iter p.
+
+Proof.
+intros. trans (iter (p+q+1)). apply iter_iter. assert (p+q+1 = q+p+1). omega.
+rewrite H. apply iter_plus_1.
+Qed.
+
 Definition Iter_ge k x y := exists n, n >= k /\ iter n x y.
 
 Definition Iter := Iter_ge 0.
@@ -669,7 +676,7 @@ Lemma tc_iter : R! << Iter.
 Proof.
 unfold inclusion. induction 1; simpl; intros. exists 0. auto.
 destruct IHclos_trans1. destruct IHclos_trans2. intuition.
-exists (x0+x1+1). intuition. eapply incl_elim. apply comp_iter. exists y. auto.
+exists (x0+x1+1). intuition. eapply incl_elim. apply iter_iter. exists y. auto.
 Qed.
 
 Fixpoint iter_le (n : nat) : relation A :=
@@ -688,6 +695,40 @@ deduce (IHn _ _ H). destruct H0. left. right. exact H0.
 do 2 destruct H0. case (le_lt_dec x0 (S n)); intro.
 assert (x0 = S n). omega. subst x0. left. left. exact H1.
 right. exists x0. intuition.
+Qed.
+
+Lemma Iter_ge_split : forall n, Iter_ge n << iter n U Iter_ge (S n).
+
+Proof.
+induction n; simpl; intros; unfold inclusion; intros; do 2 destruct H.
+case (le_lt_dec x0 0); intro. assert (x0 = 0). omega. subst x0.
+left. exact H0.
+right. exists x0. intuition.
+case (le_lt_dec x0 (S n)); intro. assert (x0 = S n). omega. subst x0.
+left. exact H0.
+right. exists x0. intuition.
+Qed.
+
+Lemma iter_Iter_ge_commut : forall n p, iter n @ Iter_ge p << Iter_ge p @ iter n.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
+assert ((iter x1 @ iter n) x y). eapply incl_elim. apply iter_commut.
+exists x0. intuition. do 2 destruct H2. exists x2. intuition.
+exists x1. intuition.
+Qed.
+
+Lemma iter_Iter_ge : forall n p, iter n @ Iter_ge p << Iter_ge (n+p+1).
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
+exists (n+x1+1). intuition. apply iter_iter. exists x0. intuition.
+Qed.
+
+Lemma incl_Iter_ge : forall n p, p <= n -> Iter_ge n << Iter_ge p.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H0. exists x0. intuition.
 Qed.
 
 End iter.
