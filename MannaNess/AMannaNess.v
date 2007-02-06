@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 *)
 
-(* $Id: AMannaNess.v,v 1.6 2007-02-06 10:04:06 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.7 2007-02-06 13:40:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -101,11 +101,9 @@ comp. apply incl_rtc. unfold succ. incl_red.
 assert (h2 : red_mod F (R ++ R') << succ# @ er U succ!).
 trans (red_mod F R U red_mod F R'). apply red_mod_union. union.
 (* left *)
-unfold red_mod. trans ((succ # @ red E #) @ red R). comp. exact h1.
-trans (succ # @ (red E # @ red R)). apply comp_assoc.
+unfold red_mod. trans ((succ # @ red E #) @ red R). comp. exact h1. assoc.
 (* right *)
-trans ((succ # @ red E #) @ red R'). unfold red_mod. comp. exact h1.
-trans (succ # @ (red E # @ red R')). apply comp_assoc.
+trans ((succ # @ red E #) @ red R'). unfold red_mod. comp. exact h1. assoc.
 trans (succ # @ succ). comp.
 trans (red_mod E R'). unfold succ. incl_red. apply rtc_step_incl_tc.
 (* h3 *)
@@ -131,9 +129,7 @@ apply WF_tc. exact H3.
 apply tc_trans.
 (* compat *)
 apply comp_tc_incl. trans (succ_eq! @ gt). comp. exact h0.
-apply comp_tc_incl. unfold gt.
-trans ((succ_eq @ succ!) @ succ_eq#). apply comp_assoc'.
-comp. apply comp_incl_tc. rptac.
+apply comp_tc_incl. unfold gt. assoc. comp. apply comp_incl_tc. rptac.
 Qed.
 
 Lemma weak_rule_elimination : forall wp : Weak_reduction_pair Sig,

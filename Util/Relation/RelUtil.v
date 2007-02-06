@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.12 2007-02-06 13:12:29 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.13 2007-02-06 13:40:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -444,6 +444,12 @@ End compose.
 
 Ltac comp := apply incl_comp; try incl_refl.
 
+Ltac assoc :=
+  match goal with
+    | |- (?s @ ?t) @ ?u << ?v => trans (s @ (t @ u)); try apply comp_assoc
+    | |- ?s @ (?t @ ?u) << ?V => trans ((s @ t) @ u); try apply comp_assoc'
+  end.
+
 (***********************************************************************)
 (** union *)
 
@@ -650,7 +656,7 @@ Lemma iter_iter : forall p q, iter p @ iter q << iter (p+q+1).
 
 Proof.
 induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
-trans (R @ (iter p @ iter q)). apply comp_assoc. comp. apply IHp.
+assoc. comp. apply IHp.
 Qed.
 
 Lemma iter_plus_1 : forall p q, iter (p+q+1) << iter p @ iter q.
