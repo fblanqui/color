@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lexicographic ordering
 *)
 
-(* $Id: Lexico.v,v 1.3 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: Lexico.v,v 1.4 2007-02-06 10:04:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -33,7 +33,7 @@ Inductive lexp : relation (prod A B) :=
 | lexp1 : forall a a' b b', gtA a a' -> lexp (a,b) (a',b')
 | lexp2 : forall a a' b b', eqA a a' -> gtB b b' -> lexp (a,b) (a',b').
 
-Variable (gtB_WF : WF gtB) (eqA_trans : transitive eqA).
+Variable (WF_gtB : WF gtB) (eqA_trans : transitive eqA).
 
 Lemma lexp_SN_eq : forall a b,
   SN lexp (a,b) -> forall a', eqA a a' -> SN lexp (a',b).
@@ -52,17 +52,17 @@ Proof.
 induction 1 as [a Ha1 Ha2]. induction 1 as [b Hb1 Hb2]. apply SN_intro.
 destruct y as (a'',b'). intro H. inversion H; subst a'' b'0 a0 b0.
 (* gtA a a' *)
-apply Ha2. exact H1. apply gtB_WF.
+apply Ha2. exact H1. apply WF_gtB.
 (* eqA a a' /\ gtB b b' *)
 apply (@lexp_SN_eq a). 2: exact H3. apply Hb2. exact H5.
 Qed.
 
-Variable gtA_WF : WF gtA.
+Variable WF_gtA : WF gtA.
 
-Lemma lexp_WF : WF lexp.
+Lemma WF_lexp : WF lexp.
 
 Proof.
-unfold WF. destruct x as (a,b). apply lexp_SN. apply gtA_WF. apply gtB_WF.
+unfold WF. destruct x as (a,b). apply lexp_SN. apply WF_gtA. apply WF_gtB.
 Qed.
 
 Lemma lexp_intro : forall a a' b b',
@@ -82,14 +82,14 @@ Section lex.
 
 Variable (A : Set) (gtA eqA gtA' : relation A)
   (eqA_trans : transitive eqA) (Hcomp : eqA @ gtA << gtA)
-  (gtA_WF : WF gtA) (gtA'_WF : WF gtA').
+  (WF_gtA : WF gtA) (WF_gtA' : WF gtA').
 
 Definition lex x y := lexp gtA eqA gtA' (x,x) (y,y).
 
-Lemma lex_WF : WF lex.
+Lemma WF_lex : WF lex.
 
 Proof.
-exact (WF_inverse (fun x:A => (x,x)) (lexp_WF Hcomp gtA'_WF eqA_trans gtA_WF)).
+exact (WF_inverse (fun x:A => (x,x)) (WF_lexp Hcomp WF_gtA' eqA_trans WF_gtA)).
 Qed.
 
 End lex.
@@ -97,15 +97,15 @@ End lex.
 Section lex'.
 
 Variable (A : Set) (gt1 gt2 : relation A)
-  (gt1_WF : WF gt1) (gt2_WF : WF gt2)
-  (gt2_trans : transitive gt2) (Hcomp : gt2 @ gt1 << gt1).
+  (WF_gt1 : WF gt1) (WF_gt2 : WF gt2)
+  (trans_gt2 : transitive gt2) (Hcomp : gt2 @ gt1 << gt1).
 
 Definition lex' := lex gt1 gt2 gt2.
 
-Lemma lex'_WF : WF lex'.
+Lemma WF_lex' : WF lex'.
 
 Proof.
-unfold lex'. apply lex_WF; assumption.
+unfold lex'. apply WF_lex; assumption.
 Qed.
 
 Lemma lex'_intro : gt1 U gt2 << lex'.
