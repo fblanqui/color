@@ -77,7 +77,7 @@ Proof.
 intros. eapply WF_incl. apply tc_incl. eapply WF_incl. apply tc_union.
 set (T := R# @ S). set (gt1 := T! @ R#). set (gt2 := R!).
 eapply WF_incl. apply union_commut.
-eapply WF_incl. apply lex'_intro. apply lex'_WF.
+eapply WF_incl. apply lex'_intro. apply WF_lex'.
 (* WF gt1 *)
 unfold gt1. apply absorb_WF_modulo_r. trans (R# @ T!). comp.
 apply rtc_incl. unfold T. apply rtc_comp_modulo.

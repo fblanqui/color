@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 *)
 
-(* $Id: AMannaNess.v,v 1.5 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.6 2007-02-06 10:04:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -122,7 +122,7 @@ apply comp_incl_tc. apply comp_rtc_incl. rptac.
 eapply WF_incl with (S := lex' gt (er!)).
 trans (er U gt). exact h3. trans (er! U gt). union.
 apply tc_incl. trans (gt U er!). apply union_commut.
-apply lex'_intro. apply lex'_WF.
+apply lex'_intro. apply WF_lex'.
 (* WF gt *)
 unfold gt. apply WF_compat_inv. exact h4. apply WF_tc. WFtac.
 (* WF er! *)
@@ -149,7 +149,7 @@ trans (er U succ). trans (er U er'). unfold er, er'. apply hd_red_mod_union.
 union. unfold er', succ. incl_red.
 trans (succ U er). apply union_commut.
 trans (succ U er!). union. apply tc_incl.
-apply lex'_intro. apply lex'_WF. WFtac. apply WF_tc. exact H2. apply tc_trans.
+apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. exact H2. apply tc_trans.
 apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
 trans (red_mod E R). apply hd_red_mod_incl_red_mod. incl_red.
 apply comp_tc_incl. rptac.
