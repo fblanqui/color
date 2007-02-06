@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.5 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.6 2007-02-06 09:54:15 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -147,6 +147,12 @@ intros. omega.
 Qed.
 
 Implicit Arguments minus_plus [v p].
+
+Lemma plus_1_S : forall n, n+1 = S n.
+
+Proof.
+intro. omega.
+Qed.
 
 Lemma lt_from_le : forall x y, 0 < y -> x <= y-1 -> x < y.
 
