@@ -9,11 +9,11 @@ of a setoid. In particular, proofs that lex 'transmits' strict partial
 order property, and is a lifting.
 *)
 
-(* $Id: LexicographicOrder.v,v 1.3 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: LexicographicOrder.v,v 1.4 2007-02-07 12:44:06 blanqui Exp $ *)
 
 Require Export RelExtras.
 Require Export ListUtil.
-Require Export WfUtil.
+Require Export AccUtil.
 
 Module LexOrder (ES : Eqset).
 

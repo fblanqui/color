@@ -3,7 +3,7 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
-SHELL := /bin/bash
+SHELL := /bin/sh
 
 MAKEFLAGS := -r
 
