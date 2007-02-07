@@ -21,9 +21,14 @@ mkmf () {
 # parameters: Rdir dir
 
 mkcoqmf () {
+  if test ! -d $dir
+  then
+    echo "error: directory \"$dir\" does not exist !"
+    exit 1
+  fi
   echo create $dir/Makefile ...
   cd $dir
-  coq_makefile -R $Rdir Rewriting [^\.]*.v > $dir/Makefile
+  coq_makefile -R $Rdir Rewriting [^\.]*.v > Makefile
   cd $start
 }
 
@@ -55,7 +60,7 @@ mkmfsub
 
 # simple directories
 
-root=$start
+root=.
 subdirs='MannaNess PolyInt DP Filter Conversion MPO RPO HORPO'
 Rdir=..
 mkmfsub
