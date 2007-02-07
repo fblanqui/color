@@ -1,6 +1,6 @@
 07-02-06:
 - Term/WithArity/ACompat: results on compatibility moved here
-- Util/Relation/RelUtil: iteration of a relation
+- Util/Relation/Iter: iteration of a relation
 - Util/Relation/Union: union of two wellfounded relations [Blanqui]
 - Term/WithArity/ARename: variable renamings [Blanqui]
 - Term/WithArity/ASubstitution: union of 2 substitutions
