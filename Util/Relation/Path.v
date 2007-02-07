@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-(* $Id: Path.v,v 1.3 2007-02-01 18:38:17 blanqui Exp $ *)
+(* $Id: Path.v,v 1.4 2007-02-07 11:16:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -61,7 +61,8 @@ Lemma path_suffix : forall (y z : A) l' l'' (x : A),
 Proof.
 induction l'; intros. assert (rev (z :: l'')=nil). apply prefix_nil. assumption.
 simpl in H1. symmetry in H1. pose (app_cons_not_nil (rev l'') nil z H1). tauto.
-destruct (list_eq_dec A_dec (z :: l'')(a :: l')). inversion e. simpl in H. tauto. simpl in H. 
+destruct (list_eq_dec A_dec (z :: l'')(a :: l')). inversion e. simpl in H.
+tauto. simpl in H. 
 apply IHl' with a. tauto. apply suffix_smaller with a; assumption.
 Qed.
 
@@ -241,10 +242,12 @@ induction l'; intros. simpl. constructor 2. intro. destruct H1. tauto.
 destruct (IHl' H H0). constructor. destruct s. exists x0. simpl. tauto. 
 destruct (H x a). destruct (H0 a y). constructor. exists a. simpl. tauto. 
 constructor 2. intro. destruct H1. simpl in H1. decompose [and or] H1.  
-rewrite H4 in n0. tauto. assert (exists z : A, In z l' /\ R' x z /\ R'' z y). exists x0. 
+rewrite H4 in n0. tauto. assert (exists z : A, In z l' /\ R' x z /\ R'' z y).
+exists x0. 
 tauto. contradiction. constructor 2. intro. destruct H1. simpl in H1. 
 decompose  [and or] H1. rewrite H4 in n0. contradiction.
-assert (exists z : A, In z l' /\ R' x z /\ R'' z y). exists x0. tauto. contradiction.
+assert (exists z : A, In z l' /\ R' x z /\ R'' z y). exists x0. tauto.
+contradiction.
 Qed. 
 
 Lemma bound_path_dec : forall n : nat,
@@ -252,15 +255,18 @@ Lemma bound_path_dec : forall n : nat,
 
 Proof.
 unfold Rel_dec. induction n; intros. destruct (H x y). constructor. 
-apply bp_intro with (nil : list A). trivial. simpl. assumption. constructor 2. intro. 
-inversion H0. destruct l'. simpl in H2. contradiction. simpl in H1. exact (le_Sn_O (length l') H1). 
+apply bp_intro with (nil : list A). trivial. simpl. assumption. constructor 2.
+intro. 
+inversion H0. destruct l'. simpl in H2. contradiction. simpl in H1.
+exact (le_Sn_O (length l') H1). 
 destruct (IHn H x y). constructor. apply bound_path_n_Sn. assumption. 
 assert ({z : A | In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y}
 +{~exists z : A, In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y}).
 apply dec_lem; tauto. destruct H0. constructor. destruct s. 
 apply R_bound_path_n_Sn with x0; tauto. 
 constructor 2. intro. pose (bound_path_Sn_n_or_Rn H0). destruct o. contradiction.
-destruct H1. assert (exists z : A, In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y). 
+destruct H1.
+assert (exists z : A, In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y). 
 exists x0. split. unfold sub in H1. tauto. assumption. contradiction.   
 Qed.
 
@@ -306,11 +312,13 @@ pose inclusion_sub. unfold inclusion in i.
 destruct l'; simpl in H1. apply i with (x :: y :: nil). assumption. 
 destruct (A_dec y a). apply i with (x::y::nil). rewrite <- e in H1. tauto. 
 simpl in H4. assert (x=a). pose (H4 a). tauto.
-destruct l'; simpl in H1. apply i with (x :: y :: nil). rewrite <- H5 in H1. tauto. 
+destruct l'; simpl in H1. apply i with (x :: y :: nil). rewrite <- H5 in H1.
+tauto. 
 destruct (A_dec y a0). apply i with (x::y::nil). rewrite <- e in H1. 
 rewrite <- H5 in H1. tauto. 
 simpl in H4. assert (x=a0). pose (H4 a0). tauto.
-destruct l'; simpl in H1. apply i with (x :: y :: nil). rewrite <- H6 in H1. tauto. 
+destruct l'; simpl in H1. apply i with (x :: y :: nil). rewrite <- H6 in H1.
+tauto. 
 simpl in H0. inversion H0. inversion H8. inversion H10. 
 Qed.
 
@@ -319,7 +327,8 @@ Lemma R_clos_trans_sub : forall x y : A,
 
 Proof.
 intros. pose bound_path_clos_trans. unfold inclusion in i. 
-apply i with 2. apply bp_intro with (nil : list A). simpl. apply le_O_n. unfold sub. 
+apply i with 2. apply bp_intro with (nil : list A). simpl. apply le_O_n.
+unfold sub. 
 simpl. tauto. 
 Qed.
 
