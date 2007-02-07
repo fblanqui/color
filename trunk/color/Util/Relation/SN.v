@@ -68,11 +68,16 @@ Section incl.
 
 Variable (A : Set) (R S : relation A).
 
+Lemma SN_incl : R << S -> forall x, SN S x -> SN R x.
+
+Proof.
+intros. elim H0; intros. apply SN_intro. intros. apply H2. apply H. exact H3.
+Qed.
+
 Lemma WF_incl : R << S -> WF S -> WF R.
 
 Proof.
-unfold WF. intros. deduce (H0 x). elim H1. intros. apply SN_intro. intros.
-apply H3. apply (incl_elim H). exact H4.
+unfold WF. intros. apply SN_incl; auto.
 Qed.
 
 End incl.
@@ -297,35 +302,61 @@ Qed.
 End modulo.
 
 (***********************************************************************)
-(** WF (Iter_ge R n) -> WF R *)
+(** S @ R << R @ S -> SN R x -> S x x' -> SN R x' *)
+
+Section commut.
+
+Variables (A : Set) (R S : relation A) (commut : S @ R << R @ S).
+
+Lemma commut_SN : forall x, SN R x -> forall x', S x x' -> SN R x'.
+
+Proof.
+induction 1; intros. apply SN_intro. intros.
+assert ((S @ R) x y). exists x'. intuition. deduce (commut H3).
+do 2 destruct H4. apply (H0 _ H4 _ H5).
+Qed.
+
+End commut.
+
+(***********************************************************************)
+(** WF (iter R n) -> WF R *)
 
 Section iter.
 
 Variables (A : Set) (R : relation A).
 
-Lemma SN_Iter_ge_S : forall n x, SN (Iter_ge R (S n)) x -> SN (Iter_ge R n) x.
+Lemma SN_iter_S : forall n x, SN (iter R n) x -> SN (iter R (S n)) x.
 
 Proof.
-induction 1. apply SN_intro. intros. deduce (Iter_ge_split H1). destruct H2.
-apply SN_intro. intros. deduce (Iter_ge_split H3). destruct H4.
-apply H0. exists (n+n+1). intuition. apply iter_iter. exists y. intuition.
-apply H0. apply incl_elim with (R := Iter_ge R (n+n+1)). apply incl_Iter_ge.
-omega. apply iter_Iter_ge. exists y. intuition.
-apply H0. exact H2.
+intros. elim H. intros. apply SN_intro. intros.
+assert ((iter R n @ iter R 0) x0 y). apply iter_commut. exact H2.
+do 2 destruct H3. deduce (H1 _ H3).
+eapply commut_SN with (S := iter R 0). apply iter_commut. apply H5. exact H4.
 Qed.
 
-Lemma WF_Iter_ge_S : forall n, WF (Iter_ge R (S n)) -> WF (Iter_ge R n).
+Lemma SN_iter_S' : forall n x, SN (iter R (S n)) x -> SN (iter R n) x.
 
 Proof.
-unfold WF. intros. apply SN_Iter_ge_S. apply H.
+intros. elim H; intros. do 2 (apply SN_intro; intros). destruct n.
+simpl in *. apply H1. exists y. intuition.
+assert ((iter R (S (S n)) @ iter R n) x0 y0).
+apply incl_elim with (R := iter R (S n) @ iter R (S n)).
+trans (iter R (S n+S n+1)). apply iter_iter.
+assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
+exists y. intuition. do 2 destruct H4. deduce (H1 _ H4).
+eapply commut_SN with (S := iter R n). apply iter_commut. apply H6. exact H5.
 Qed.
 
-Lemma WF_Iter_ge : forall n, WF (Iter_ge R n) -> WF R.
+Lemma SN_iter : forall n x, SN (iter R n) x -> SN R x.
 
 Proof.
-induction n; intros. apply WF_incl with (Iter_ge R 0).
-unfold inclusion. intros. exists 0. intuition. exact H.
-apply IHn. apply WF_Iter_ge_S. exact H.
+induction n; intros. exact H. apply IHn. apply SN_iter_S'. exact H.
+Qed.
+
+Lemma WF_iter : forall n, WF (iter R n) -> WF R.
+
+Proof.
+unfold WF. intros. eapply SN_iter. apply H.
 Qed.
 
 End iter.
