@@ -321,6 +321,8 @@ End commut.
 (***********************************************************************)
 (** WF (iter R n) -> WF R *)
 
+Require Export Iter.
+
 Section iter.
 
 Variables (A : Set) (R : relation A).
@@ -360,3 +362,24 @@ unfold WF. intros. eapply SN_iter. apply H.
 Qed.
 
 End iter.
+
+(***********************************************************************)
+(** extension of SN_intro to paths of fixed length *)
+
+Require Export Path.
+
+Section path.
+
+Variables (A : Set) (R : relation A).
+
+Lemma SN_path : forall n x,
+  (forall y l, length l = n -> path R x y l -> SN R y) -> SN R x.
+
+Proof.
+intros. apply SN_iter with n. apply SN_intro. intros.
+apply SN_incl with (R!). apply iter_tc. apply SN_tc.
+deduce (iter_path H0). do 2 destruct H1. subst n.
+apply H with x0. refl. exact H2.
+Qed.
+
+End path.

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # CoLoR, a Coq library on rewriting and termination.
 # See the COPYRIGHTS and LICENSE files.

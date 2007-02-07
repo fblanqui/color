@@ -7,12 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ARelation.v,v 1.11 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.12 2007-02-07 12:44:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-Require Export ASubstitution.
 Require Export SN.
+Require Export ASubstitution.
 
 Section S.
 

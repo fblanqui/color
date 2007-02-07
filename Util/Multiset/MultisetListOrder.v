@@ -370,7 +370,7 @@ as Lists of elements of A *)
 
   End MultisetListOrderFacts.
 
-  Require Export WfUtil.
+  Require Export AccUtil.
   Require Export ListUtil.
 
   Lemma mult_lifting : forall (r : relation A),

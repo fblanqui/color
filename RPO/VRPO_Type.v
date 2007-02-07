@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VRPO_Type.v,v 1.3 2007-02-07 12:44:06 blanqui Exp $ *)
 
 Require Export Signature.
 
@@ -146,7 +146,7 @@ Module Type RPO_Wf_Type.
   Declare Module Base : RPO_Axioms_Type.
   Export Base.
 
-  Require Export WfUtil.
+  Require Export AccUtil.
   Require Export ListUtil.
 
   Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
