@@ -5,36 +5,35 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
-# root directory
+# start directory
 
-cwd=`pwd`
+start=`pwd`
 
 # makefile without coq files
-# parameters: dir subdirs
+# parameters: root subdirs
 
 mkmf () {
-  echo create $dir/Makefile ...
-  sed -e "s|SUBDIRS :=|SUBDIRS := $subdirs|" Makefile.skeleton > $dir/Makefile
+  echo create $root/Makefile ...
+  sed -e "s|SUBDIRS :=|SUBDIRS := $subdirs|" Makefile.skeleton > $root/Makefile
 }
 
 # makefile with coq files
-# parameters: dir
+# parameters: Rdir dir
 
 mkcoqmf () {
   echo create $dir/Makefile ...
   cd $dir
   coq_makefile -R $Rdir Rewriting [^\.]*.v > Makefile
-  cd $cwd
+  cd $start
 }
 
 # makefiles for a directory and its subdirectories
-# parameters: root subdirs
+# parameters: Rdir root subdirs
 
 mkmfsub () {
-  dir=$root; mkmf
   for d in $subdirs
   do
-    dir=$root/$d; Rdir=../..; mkcoqmf
+    dir=$root/$d; mkcoqmf
   done
 }
 
@@ -42,18 +41,21 @@ mkmfsub () {
 
 root=Util
 subdirs='Logic Pair Bool Relation Nat Integer List Vector Polynom Multiset'
+mkmf
+Rdir=../..
 mkmfsub
 
 # Term
 
 root=Term
 subdirs='WithArity Varyadic SimpleType'
+mkmf
+Rdir=../..
 mkmfsub
 
 # simple directories
 
+root=$start
+subdirs='MannaNess PolyInt DP Filter Conversion MPO RPO HORPO'
 Rdir=..
-for dir in MannaNess PolyInt DP Filter Conversion MPO RPO HORPO
-do
-  mkcoqmf
-done
+mkmfsub
