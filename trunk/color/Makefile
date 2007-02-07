@@ -5,7 +5,7 @@
 
 SHELL := /bin/sh
 
-MAKEFLAGS := -r
+MAKEFLAGS := -r -j
 
 .SUFFIXES:
 

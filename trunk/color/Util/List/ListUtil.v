@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.10 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.11 2007-02-07 16:46:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -138,15 +138,6 @@ Proof.
 induction l1; simpl; intros. assumption. right. apply IHl1. assumption.
 Qed.
 
-Lemma in_elim : forall (x : A) l,
-  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
-
-Proof.
-induction l; simpl; intros. contradiction. destruct H. subst x.
-exists (@nil A). exists l. refl. deduce (IHl H). do 2 destruct H0. rewrite H0.
-exists (a :: x0). exists x1. refl.
-Qed.
-
 Lemma in_app_com : forall (x : A) l1 l2 l3,
   In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
 
@@ -156,9 +147,32 @@ rewrite app_ass. apply in_appl. exact H1. apply in_appr. exact H1.
 rewrite app_ass. apply in_appr. apply in_appl. exact H0.
 Qed.
 
+Lemma in_elim : forall (x : A) l,
+  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H. subst x.
+exists (@nil A). exists l. refl. deduce (IHl H). do 2 destruct H0. rewrite H0.
+exists (a :: x0). exists x1. refl.
+Qed.
+
+Variable eqA_dec : forall x y : A, {x=y}+{~x=y}.
+
+Lemma in_elim_dec : forall (x : A) l,
+  In x l -> exists m, exists p, l = m ++ x :: p /\ ~In x m.
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H. subst x.
+exists (@nil A). exists l. intuition. deduce (IHl H). do 3 destruct H0. subst l.
+case (eqA_dec a x); intro.
+subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
+exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
+Qed.
+
 End In.
 
 Implicit Arguments in_elim [A x l].
+Implicit Arguments in_elim_dec [A x l].
 
 (***********************************************************************)
 (** list inclusion *)
@@ -591,11 +605,6 @@ Implicit Arguments one_less [A].
 Implicit Arguments one_less_cons [A].
 
 (***********************************************************************)
-(** accessibility *)
-
-Definition accs (A : Set) r l := forall a : A, In a l -> Acc r a.
-
-(***********************************************************************)
 (** prefix *)
 
 Section prefix.
@@ -843,3 +852,74 @@ apply incl_tran with l. apply incl_shrink. assumption.
 Qed.
 
 End shrink.
+
+(***********************************************************************)
+(** occurrences *)
+
+Section occur.
+
+Variable A : Set.
+Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
+
+Fixpoint occur x (l : list A) : nat :=
+  match l with
+    | nil => O
+    | y :: m =>
+      match eq_dec x y with
+        | left _ => S (occur x m)
+        | right _ => occur x m
+      end
+  end.
+
+Lemma occur_app : forall x l m, occur x (l ++ m) = occur x l + occur x m.
+
+Proof.
+induction l; simpl; intros. refl. case (eq_dec x a); intro. subst a.
+deduce (IHl m). omega. auto.
+Qed.
+
+Lemma in_occur : forall x l, In x l -> occur x l > 0.
+
+Proof.
+induction l; simpl; intros. contradiction. case (eq_dec x a); intro. omega.
+destruct H. subst a. irrefl. auto.
+Qed.
+
+Lemma notin_occur : forall x l, ~In x l -> occur x l = 0.
+
+Proof.
+induction l; simpl; intros. refl. case (eq_dec x a); intro.
+subst a. absurd (x=x \/ In x l). exact H. left. refl.
+apply IHl. intro. apply H. right. exact H0.
+Qed.
+
+Lemma occur_in : forall x l, occur x l > 0 -> In x l.
+
+Proof.
+induction l; simpl. intro. omega. case (eq_dec x a); auto.
+Qed.
+
+Implicit Arguments occur_in [x l].
+
+Lemma occur_notin : forall x l, occur x l = 0 -> ~In x l.
+
+Proof.
+induction l; simpl. do 2 intro. contradiction. case (eq_dec x a); intros.
+discriminate. intro. destruct H0. subst a. irrefl. intuition.
+Qed.
+
+Lemma occur_in_rec : forall x l n, occur x l = S n ->
+  exists m, exists p, l = m ++ x :: p /\ ~In x m /\ occur x p = n.
+
+Proof.
+intros. assert (occur x l > 0). omega. deduce (occur_in H0).
+deduce (in_elim_dec eq_dec H1). do 3 destruct H2. subst l.
+exists x0. exists x1. (* intuition makes occur untypable ! *)
+split. refl. split. exact H3.
+assert (S n = S (occur x x1)). rewrite <- H. rewrite occur_app. simpl.
+case (eq_dec x x); intro. assert (occur x x0 = 0). apply notin_occur. exact H3.
+rewrite H2. simpl. refl. irrefl. injection H2; auto.
+Qed.
+
+End occur.
+

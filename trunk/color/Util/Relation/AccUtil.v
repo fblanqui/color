@@ -124,3 +124,10 @@ Section RestrictedAcc.
   Qed.
 
 End RestrictedAcc.
+
+(***********************************************************************)
+(** accessibility *)
+
+Require Export List.
+
+Definition accs (A : Set) r l := forall a : A, In a l -> Acc r a.
