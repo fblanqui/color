@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ARelation.v,v 1.12 2007-02-07 12:44:06 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.13 2007-02-08 17:59:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -54,10 +54,8 @@ Section reduction_pair.
 
 Variables succ succ_eq : relation term.
 
-Definition left_compatible := succ_eq @ succ << succ.
-
 Definition reduction_pair :=
-  reduction_ordering succ /\ left_compatible /\ rewrite_ordering succ_eq.
+  reduction_ordering succ /\ absorb succ succ_eq /\ rewrite_ordering succ_eq.
 
 End reduction_pair.
 
@@ -88,7 +86,7 @@ Definition weak_rewrite_ordering :=
 Definition weak_reduction_ordering := WF succ /\ weak_rewrite_ordering.
 
 Definition weak_reduction_pair :=
-  weak_reduction_ordering /\ left_compatible succ succ_eq
+  weak_reduction_ordering /\ absorb succ succ_eq
   /\ rewrite_ordering succ_eq.
 
 End weak_reduction_pair.
@@ -147,10 +145,10 @@ Section strict.
 Variables (succ_eq : relation term)
   (succ_eq_trans : transitive succ_eq).
 
-Lemma strict_left_compatible : left_compatible (strict_part succ_eq) succ_eq.
+Lemma absorb_strict : absorb (strict_part succ_eq) succ_eq.
 
 Proof.
-unfold left_compatible, inclusion, compose, strict_part.
+unfold absorb, inclusion, compose, strict_part.
 intros; split; decomp H. eapply succ_eq_trans. apply H1. assumption.
 unfold not; intro. deduce (succ_eq_trans H H1). contradiction.
 Qed.

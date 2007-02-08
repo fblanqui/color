@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.1 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.2 2007-02-08 17:59:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -76,7 +76,7 @@ Variables succ succ_eq : relation term.
 Lemma compat_red_mod : forall R E,
   rewrite_ordering succ -> rewrite_ordering succ_eq ->
   compatible succ_eq E -> compatible succ R ->
-  left_compatible succ succ_eq -> red_mod E R << succ.
+  absorb succ succ_eq -> red_mod E R << succ.
 
 Proof.
 intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
@@ -96,7 +96,7 @@ Variables succ succ_eq : relation term.
 Lemma compat_hd_red_mod : forall R E,
   weak_rewrite_ordering succ succ_eq -> rewrite_ordering succ_eq ->
   compatible succ_eq E -> compatible succ R ->
-  left_compatible succ succ_eq -> hd_red_mod E R << succ.
+  absorb succ succ_eq -> hd_red_mod E R << succ.
 
 Proof.
 intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
