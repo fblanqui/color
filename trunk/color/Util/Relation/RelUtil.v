@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.14 2007-02-07 12:44:06 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.15 2007-02-08 17:59:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -380,6 +380,8 @@ Definition compose (A : Set) (R S : relation A) x y :=
   exists z, R x z /\ S z y.
 
 Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
+
+Definition absorb (A : Set) (R S : relation A) := S @ R << R.
 
 Section compose.
 
