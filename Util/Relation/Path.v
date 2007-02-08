@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-(* $Id: Path.v,v 1.4 2007-02-07 11:16:46 blanqui Exp $ *)
+(* $Id: Path.v,v 1.5 2007-02-08 13:35:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Variable A : Set.
 Variable A_dec : forall x y : A, {x=y}+{x<>y}.
 
 Require Export RelUtil.
-Require Export ListUtil.
+Require Export ListShrink.
 
 (***********************************************************************)
 (** path *)

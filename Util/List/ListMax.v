@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 greatest/smallest component of a list of natural numbers
 *)
 
-(* $Id: ListMax.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ListMax.v,v 1.4 2007-02-08 13:35:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,7 +46,7 @@ Lemma incl_le_lmax : forall l1 l2, incl l1 l2 -> lmax l1 <= lmax l2.
 Proof.
 intros l1 l2. induction l1 as [| a' l' Hrec].
  auto with arith.
- intro H. generalize (incl_cons H). clear H. intros (H1, H2). simpl.
+ intro H. generalize (incl_cons_l H). clear H. intros (H1, H2). simpl.
  apply (max_case2 a' (lmax l') (fun n : nat => n <= lmax l2)).
   apply in_le_lmax. assumption.
   apply Hrec. assumption.
