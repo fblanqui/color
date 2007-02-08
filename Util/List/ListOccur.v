@@ -1,0 +1,158 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Frederic Blanqui, 2007-02-08
+
+number of occurrences of an element in a list 
+*)
+
+Set Implicit Arguments.
+
+Require Export ListUtil.
+Require Export Arith.
+
+(***********************************************************************)
+(** number of occurrences *)
+
+Section occur.
+
+Variable A : Set.
+Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
+
+Definition delta x y :=
+  match eq_dec x y with
+    | left _ => 1
+    | right _ => 0
+  end.
+
+Lemma eq_delta : forall x, delta x x = 1.
+
+Proof.
+intros. unfold delta. case (eq_dec x x); intro. refl. irrefl.
+Qed.
+
+Lemma neq_delta : forall x y, x <> y -> delta x y = 0.
+
+Proof.
+intros. unfold delta. case (eq_dec x y); intro. contradiction. refl.
+Qed.
+
+Fixpoint occur x (l : list A) : nat :=
+  match l with
+    | nil => O
+    | y :: m => delta x y + occur x m
+  end.
+
+Lemma occur_app : forall x l m, occur x (l ++ m) = occur x l + occur x m.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. unfold delta.
+case (eq_dec x a); intro; omega.
+Qed.
+
+Lemma in_occur : forall x l, In x l -> occur x l > 0.
+
+Proof.
+induction l; simpl; intros. contradiction. unfold delta.
+case (eq_dec x a); intro. omega. destruct H. subst a. irrefl. auto.
+Qed.
+
+Lemma notin_occur : forall x l, ~In x l -> occur x l = 0.
+
+Proof.
+induction l; simpl; intros. refl. unfold delta. case (eq_dec x a); intro.
+subst a. absurd (x=x \/ In x l). exact H. auto.
+apply IHl. intro. apply H. auto.
+Qed.
+
+Implicit Arguments notin_occur [x l].
+
+Lemma occur_in : forall x l, occur x l > 0 -> In x l.
+
+Proof.
+induction l; simpl. intro. omega. unfold delta. case (eq_dec x a); auto.
+Qed.
+
+Implicit Arguments occur_in [x l].
+
+Lemma occur_notin : forall x l, occur x l = 0 -> ~In x l.
+
+Proof.
+induction l; simpl. do 2 intro. contradiction. unfold delta.
+case (eq_dec x a); intros.
+discriminate. intro. destruct H0. subst a. irrefl. intuition.
+Qed.
+
+Lemma occur_in_rec : forall x l n, occur x l = S n ->
+  exists m, exists p, l = m ++ x :: p /\ ~In x m /\ occur x p = n.
+
+Proof.
+intros. assert (occur x l > 0). omega. deduce (occur_in H0).
+deduce (in_elim_dec eq_dec H1). do 3 destruct H2. subst l.
+exists x0. exists x1. (* intuition makes occur untypable ! *)
+split. refl. split. exact H3.
+rewrite occur_app in H. simpl in H. rewrite eq_delta in H.
+deduce (notin_occur H3). omega.
+Qed.
+
+End occur.
+
+Implicit Arguments in_occur [A x l].
+Implicit Arguments notin_occur [A x l].
+
+(***********************************************************************)
+(** redundancy *)
+
+Section redundancy.
+
+Variable A : Set.
+Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
+
+Notation occur := (occur eq_dec).
+Notation delta := (delta eq_dec).
+
+Lemma redundancy : forall s l,
+  incl l s -> length l > length s -> exists x : A, occur x l >= 2.
+
+Proof.
+induction s; simpl; intros.
+(* case s=nil *)
+apply False_ind. destruct l. simpl in H0. omega.
+unfold incl in H. simpl in H. apply (H a). auto.
+(* case s=a::s *)
+destruct l. apply False_ind. simpl in H0. omega.
+case (In_dec eq_dec a0 l); intro. deduce (in_occur eq_dec i).
+exists a0. simpl. rewrite eq_delta. omega.
+case (le_lt_dec (occur a l) 1); intro.
+(* case occur a l <= 1 *)
+deduce (incl_cons_l H). clear H. destruct H1.
+deduce (incl_cons_r H1). destruct H2.
+(* case In a l *)
+simpl in H. destruct H. subst a0. contradiction.
+deduce (in_elim_dec eq_dec H2). do 3 destruct H3.
+(* ~In a x0 *)
+assert (~In a x0). apply (occur_notin eq_dec). rewrite H3 in l0.
+rewrite occur_app in l0. simpl in l0. rewrite eq_delta in l0. omega.
+(* x and x0 included in s *)
+rewrite H3 in H1. deduce (incl_app_elim H1). clear H1. destruct H6.
+deduce (incl_cons_r H1). clear H1. destruct H7. contradiction.
+deduce (incl_cons_l H6). clear H6. destruct H7. clear H6.
+deduce (incl_cons_r H7). clear H7. destruct H6. contradiction.
+(* l' = l - a + a0 *)
+set (l' := x ++ a0 :: x0).
+assert (incl l' s). unfold l'. apply incl_app. exact H1.
+apply incl_cons. exact H. exact H6.
+assert (length l' > length s). unfold l'. rewrite length_app. simpl.
+simpl in H0. rewrite H3 in H0. rewrite length_app in H0. simpl in H0. omega.
+deduce (IHs l' H7 H8). destruct H9. exists x1.
+assert (occur x1 (a0 :: l) = occur x1 l' + delta x1 a). unfold l'. rewrite H3.
+simpl. repeat rewrite occur_app. simpl. omega. omega.
+(* incl l s *)
+assert (length l > length s). simpl in H0. omega.
+deduce (IHs l H2 H3). destruct H4. exists x. simpl. omega.
+(* 1 < occur a l *)
+exists a. simpl. omega.
+Qed.
+ 
+End redundancy.
