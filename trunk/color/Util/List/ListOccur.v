@@ -4,7 +4,8 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2007-02-08
 
-number of occurrences of an element in a list 
+number of occurrences of an element in a list
+proof of the pigeon-hole principle
 *)
 
 Set Implicit Arguments.
@@ -102,9 +103,9 @@ Implicit Arguments in_occur [A x l].
 Implicit Arguments notin_occur [A x l].
 
 (***********************************************************************)
-(** redundancy *)
+(** pigeon-hole principle *)
 
-Section redundancy.
+Section pigeon_hole.
 
 Variable A : Set.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
@@ -112,7 +113,7 @@ Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 Notation occur := (occur eq_dec).
 Notation delta := (delta eq_dec).
 
-Lemma redundancy : forall s l,
+Lemma pigeon_hole : forall s l,
   incl l s -> length l > length s -> exists x : A, occur x l >= 2.
 
 Proof.
@@ -155,4 +156,4 @@ deduce (IHs l H2 H3). destruct H4. exists x. simpl. omega.
 exists a. simpl. omega.
 Qed.
  
-End redundancy.
+End pigeon_hole.

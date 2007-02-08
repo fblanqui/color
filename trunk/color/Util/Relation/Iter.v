@@ -137,9 +137,16 @@ do 2 destruct H. deduce (IHn _ _ H0). do 2 destruct H1. subst n.
 exists (x0 :: x1). simpl. intuition.
 Qed.
 
+Lemma path_iter : forall l x y, path R x y l -> iter (length l) x y.
+
+Proof.
+induction l; simpl; intros. exact H. exists a. intuition.
+Qed.
+
 End S.
 
 (***********************************************************************)
 (** implicit arguments *)
 
 Implicit Arguments iter_path [A R n x y].
+Implicit Arguments path_iter [A R l x y].

@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-(* $Id: Path.v,v 1.5 2007-02-08 13:35:10 blanqui Exp $ *)
+(* $Id: Path.v,v 1.6 2007-02-08 16:51:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -31,7 +31,20 @@ Fixpoint path (x y : A) (l : list A) {struct l} : Prop :=
     | z::l => R x z /\ path z y l
   end.
 
-Definition cycle x := path x x.
+Lemma path_app_elim : forall l x y z m,
+  path x y (l ++ z :: m) -> path x z l /\ path z y m.
+
+Proof.
+induction l; simpl; intros. exact H. destruct H. deduce (IHl _ _ _ _ H0).
+intuition.
+Qed.
+
+Lemma path_app_intro : forall l x y z m,
+  path x z l -> path z y m -> path x y (l ++ z :: m).
+
+Proof.
+induction l; simpl; intuition.
+Qed.
 
 Lemma path_clos_trans : forall (y : A) l x, path x y l -> R! x y.
 
@@ -166,6 +179,15 @@ Variable l : list A.
 Definition sub (x y : A) := In x l /\ In y l /\ R x y.
 
 Definition restricted := R << sub.
+
+Lemma restricted_path_incl : restricted ->
+  forall m x y, path R x y m -> incl m l.
+
+Proof.
+induction m; simpl; intros. apply incl_nil. destruct H0. apply incl_cons.
+deduce (incl_elim H H0). unfold sub in H2. intuition.
+eapply IHm. apply H1.
+Qed.
 
 Lemma inclusion_sub : sub << R.
 
@@ -344,3 +366,5 @@ Qed.
 End dec_clos_trans.
 
 End On_transitive_closure.
+
+Implicit Arguments path_app_elim [A R l x y z m].

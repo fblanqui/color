@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.10 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.11 2007-02-08 16:51:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,6 +27,12 @@ Record rule : Set := mkRule {
   lhs : term;
   rhs : term
 }.
+
+Lemma eq_rule_dec : forall a b : rule, {a=b}+{~a=b}.
+
+Proof.
+decide equality; apply eq_term_dec.
+Qed.
 
 Notation rules := (list rule).
 
