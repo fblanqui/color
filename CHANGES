@@ -1,10 +1,12 @@
-07-02-06:
-- Term/WithArity/ACompat: results on compatibility moved here
-- Util/Relation/Iter: iteration of a relation [Blanqui]
+08-02-06:
+- Util/List/ListOccur: number of occurrences and pigeon-hole principle [Blanqui]
 - Util/Relation/Union: union of two wellfounded relations [Blanqui]
+- Util/Relation/SN: new general lemmas on termination [Blanqui]
+- Util/Relation/Iter: iteration of a relation
 - Term/WithArity/ARename: variable renamings
 - Term/WithArity/ASubstitution: added union of 2 substitutions
-- Util/Relation/AccUtil: WfUtil moved here
+- Term/WithArity/ARelation: results on compatibility moved into ACompat
+- Util/Relation/WfUtil renamed into AccUtil
 - various lemmas renamed with intro or elim suffix
 
 06-12-04:
