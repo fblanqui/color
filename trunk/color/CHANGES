@@ -1,14 +1,15 @@
 07-02-06:
 - Term/WithArity/ACompat: results on compatibility moved here
-- Util/Relation/Iter: iteration of a relation
+- Util/Relation/Iter: iteration of a relation [Blanqui]
 - Util/Relation/Union: union of two wellfounded relations [Blanqui]
-- Term/WithArity/ARename: variable renamings [Blanqui]
-- Term/WithArity/ASubstitution: union of 2 substitutions
+- Term/WithArity/ARename: variable renamings
+- Term/WithArity/ASubstitution: added union of 2 substitutions
+- Util/Relation/AccUtil: WfUtil moved here
 - various lemmas renamed with intro or elim suffix
 
 06-12-04:
 - Acc replaced by SN in various files
-- Util/List/ListUtil: many new functions and lemmas [Le Roux]
+- Util/List/ListShrink: new functions and lemmas on lists [Le Roux]
 - Util/Relation/Path and Util/Relation/Total: results on the decidability
   of relations and total orderings [Le Roux]
 - Term/WithArity/ARedOrd moved to MannaNess/AMannaNess

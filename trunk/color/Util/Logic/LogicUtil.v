@@ -7,13 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.3 2007-02-08 13:35:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-Ltac deduce h := generalize h; intro.
-
 Ltac refl := reflexivity.
+
+Ltac gen h := generalize h.
+
+Ltac deduce h := gen h; intro.
 
 Ltac decomp h := decompose [and or ex] h; clear h.
 

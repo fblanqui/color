@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.11 2007-02-07 16:46:58 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.12 2007-02-08 13:35:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -49,7 +49,7 @@ Qed.
 End cons.
 
 (***********************************************************************)
-(** concatenation *)
+(** append *)
 
 Section app.
 
@@ -97,10 +97,16 @@ Proof.
 induction l; simpl; intros; omega.
 Qed.
 
+Lemma length_app : forall l m : list A, length (l ++ m) = length l + length m.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. refl.
+Qed.
+
 End tail.
 
 (***********************************************************************)
-(** filtering *)
+(** filter *)
 
 Section filter.
 
@@ -174,8 +180,10 @@ End In.
 Implicit Arguments in_elim [A x l].
 Implicit Arguments in_elim_dec [A x l].
 
+Ltac intac := repeat (apply in_eq || apply in_cons).
+
 (***********************************************************************)
-(** list inclusion *)
+(** inclusion *)
 
 Section incl.
 
@@ -187,19 +195,19 @@ Proof.
 induction l. apply incl_refl. apply incl_tl. assumption.
 Qed.
 
-Lemma incl_cons : forall (a : A) l m, incl (a :: l) m -> In a m /\ incl l m.
+Lemma incl_cons_l : forall (a : A) l m, incl (a :: l) m -> In a m /\ incl l m.
 
 Proof.
 intros a l m. unfold incl. simpl. intuition.
 Qed.
 
-Lemma incl_cons_in : forall (x : A) l m, incl (x :: l) m -> In x m.
+Lemma incl_cons_l_in : forall (x : A) l m, incl (x :: l) m -> In x m.
 
 Proof.
 unfold incl. simpl. intros. apply H. left. refl.
 Qed.
 
-Lemma incl_cons_left : forall (x : A) l m, incl (x :: l) m -> incl l m.
+Lemma incl_cons_l_incl : forall (x : A) l m, incl (x :: l) m -> incl l m.
 
 Proof.
 unfold incl. simpl. intros. apply H. tauto.
@@ -262,9 +270,21 @@ Proof.
 unfold incl. intros. apply H. apply in_app_com. exact H0.
 Qed.
 
+Lemma incl_cons_r : forall x : A, forall m l,
+  incl l (x :: m) -> In x l \/ incl l m.
+
+Proof.
+induction l; simpl; intros. right. apply incl_nil.
+deduce (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
+deduce (IHl H1). destruct H2. auto.
+right. apply List.incl_cons; assumption.
+Qed.
+
 End incl.
 
 Implicit Arguments incl_app_elim [A l1 l2 l3].
+
+Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.
 
 (***********************************************************************)
 (** equivalence *)
@@ -360,8 +380,15 @@ Qed.
 
 End Inb.
 
+Ltac inbtac :=
+  match goal with
+    | _ : In ?x ?l |- _ =>
+      let H0 := fresh "H" in
+	(assert (H0 : Inb x l = true); apply Inb_intro; assumption; rewrite H0)
+  end.
+
 (***********************************************************************)
-(** removing *)
+(** remove *)
 
 Section remove.
 
@@ -411,7 +438,7 @@ Proof.
 induction l; simpl; intros. apply incl_nil. assert (~a=x /\ ~In x l). tauto.
 unfold incl. intros. simpl in H2. destruct H2. subst a0.
 apply In_remove. auto. unfold incl in H0. apply H0. simpl. auto.
-apply IHl. auto. apply incl_cons_left with (x := a). exact H0. exact H2.
+apply IHl. auto. apply incl_cons_l_incl with (x := a). exact H0. exact H2.
 Qed.
 
 End remove.
@@ -456,21 +483,7 @@ Fixpoint flat (l : list (list A)) : list A :=
 End flat.
 
 (***********************************************************************)
-(** tactics *)
-
-Ltac inbtac :=
-  match goal with
-    | _ : In ?x ?l |- _ =>
-      let H0 := fresh "H" in
-	(assert (H0 : Inb x l = true); apply Inb_intro; assumption; rewrite H0)
-  end.
-
-Ltac intac := repeat (apply in_eq || apply in_cons).
-
-Ltac incltac := repeat (apply incl_cons; [intac | idtac]); apply incl_nil.
-
-(***********************************************************************)
-(** element_at *)
+(** element at a position *)
 
 Section Element_At_List.
   
@@ -605,64 +618,6 @@ Implicit Arguments one_less [A].
 Implicit Arguments one_less_cons [A].
 
 (***********************************************************************)
-(** prefix *)
-
-Section prefix.
-
-Variable A : Set.
-
-Fixpoint prefix (l l' : list A) {struct l} : Prop :=
-  match l with
-    | nil => True
-    | x::l => match l' with
-                | nil => False
-                | y::l' => x=y /\ prefix l l'
-              end
-  end.
-
-Lemma prefix_nil : forall l : list A, prefix l nil -> l = nil.
-
-Proof.
-destruct l; intros. trivial. simpl. contradiction.
-Qed.
-
-Lemma reflexive_prefix : forall l : list A, prefix l l.
-
-Proof.
-induction l; simpl; intros; tauto.
-Qed.
-
-Lemma prefix_incl : forall l l' : list A, prefix l l' -> incl l l'.
-
-Proof.
-induction l; intros. apply incl_nil.
-destruct l'. pose (prefix_nil (a::l) H). inversion e. simpl in H. 
-rewrite (proj1 H). unfold incl. simpl. intros. 
-destruct H0. tauto. constructor 2. apply IHl; tauto. 
-Qed.
-
-Lemma prefix_app_right_right : forall l l' l'',
-  prefix l l' -> prefix l (l' ++ l'').
-
-Proof.
-induction l; simpl; intros. trivial. destruct l'; simpl in *|-* . contradiction.
-split. tauto. apply IHl. tauto.
-Qed.
-
-Lemma prefix_smaller : forall (x : A) l l',
-  l <> l'++x::nil -> prefix l (l'++x::nil) -> prefix l l'.
-
-Proof.
-induction l; intros. trivial. destruct l'. simpl in H0. destruct H0.
-pose (prefix_nil l H1). rewrite H0 in H. rewrite e in H. tauto. simpl in H0.
-simpl. 
-split. tauto. apply IHl. intro. rewrite (proj1 H0) in H. rewrite H1 in H.
-tauto. tauto.
-Qed.
-
-End prefix.
-
-(***********************************************************************)
 (** reverse *)
 
 Section reverse.
@@ -698,34 +653,6 @@ Qed.
 End reverse.
 
 (***********************************************************************)
-(** suffix *)
-
-Section suffix.
-
-Variable A : Set.
-
-Definition suffix (l l' : list A) : Prop := prefix (rev l)(rev l').
-
-Lemma suffix_incl : forall l l' : list A, suffix l l' -> incl l l'.
-
-Proof.
-intros. apply rev_incl_left. unfold suffix in H. apply prefix_incl. assumption. 
-Qed.
-
-Lemma suffix_smaller : forall l (x : A) l',
-  l <> x::l' -> suffix l (x::l') -> suffix l l'.
-
-Proof.
-unfold suffix. intros. assert (rev l<>rev (x::l')). intro.
-assert (rev (rev l)=rev(rev (x::l'))).
-rewrite H1. trivial. pose (rev_involutive l). pose (rev_involutive (x::l')).
-rewrite e in H2.
-rewrite e0 in H2. tauto. apply prefix_smaller with x; assumption.
-Qed.
-
-End suffix.
-
-(***********************************************************************)
 (** mono *)
 
 Section mono.
@@ -747,179 +674,8 @@ Proof.
 induction l; simpl; intros. apply le_O_n.
 apply le_trans with (S (length (remove eq_dec a l'))).
 apply le_n_S. apply IHl. tauto. apply incl_remove. tauto.
-apply incl_cons_left with a. assumption.
-apply lt_le_S. apply In_length_remove. apply  incl_cons_in with l. assumption.
+apply incl_cons_l_incl with a. assumption.
+apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. assumption.
 Qed.
 
 End mono.
-
-(***********************************************************************)
-(** cut *)
-
-Section cut.
-
-Variable A : Set.
-Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
-
-Fixpoint cut (x : A) (l : list A) {struct l} : list A :=
-  match l with
-    | nil => nil
-    | y::l' => if eq_dec x y then l else cut x l'
-  end.
-
-Lemma suffix_cut : forall (x : A) l, suffix (cut x l) l.
-
-Proof.
-unfold suffix. induction l; simpl; intros. trivial. destruct (eq_dec x a).
-rewrite <- e. apply reflexive_prefix. apply prefix_app_right_right. assumption.
-Qed.
-
-Lemma cut_head : forall (x : A) l, In x l -> cut x l = x::(tail (cut x l)).
-
-Proof.
-induction l; simpl; intros. contradiction. destruct (eq_dec x a). simpl.
-rewrite e. trivial.
-destruct H. rewrite H in n. tauto. tauto.
-Qed.
-
-Lemma length_cut : forall (x : A) l, length (cut x l) <= length l.
-
-Proof.
-induction l; simpl. apply le_O_n. destruct (eq_dec x a).
-apply le_refl. apply le_trans with (length l). assumption. apply le_n_Sn.
-Qed.
-
-Lemma length_tail_cut_cons : forall (x y : A) l,
-  length (tail (cut x (y::l))) <= length l.
-
-Proof.
-intros. simpl. destruct (eq_dec x y); simpl. trivial.
-apply le_trans with (length (cut x l)). apply length_tail. apply length_cut. 
-Qed.
-
-Lemma mono_cut : forall (x : A) l, mono l -> mono (cut x l).
-
-Proof.
-induction l; simpl; intros. trivial. destruct (eq_dec x a). simpl. tauto. tauto.
-Qed.
-
-Lemma incl_cut :  forall (x : A) l, incl (cut x l) l.
-
-Proof.
-intros. apply suffix_incl. apply suffix_cut. 
-Qed.
-
-End cut.
-
-(***********************************************************************)
-(** shrink *)
-
-Section shrink.
-
-Variable A : Set.
-Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
-
-Fixpoint shrink (l :list A) : list A :=
-  match l with
-    | nil => nil
-    | x::l => if In_dec eq_dec x (shrink l) then cut eq_dec x (shrink l)
-      else x::(shrink l)
-  end.
-
-Lemma mono_shrink : forall l : list A, mono (shrink l).
-
-Proof.
-induction l; simpl; intros. trivial. destruct (In_dec eq_dec a (shrink l)).
-apply mono_cut. assumption. simpl. tauto.
-Qed.
-
-Lemma incl_shrink : forall l : list A, incl (shrink l) l.
-
-Proof.
-induction l; simpl; intros. apply incl_nil.
-destruct (In_dec eq_dec a (shrink l)).
-apply incl_tran with (shrink l). apply incl_cut. apply incl_tl. assumption.
-unfold incl. intros. simpl in H. simpl. case (eq_dec a a0); intro.
-subst a0. auto. right. apply IHl. destruct H. contradiction. exact H.
-Qed.
-
-Lemma length_shrink : forall l l' : list A,
-  incl l l' -> length (shrink l) <= length l'.
-
-Proof.
-intros. apply mono_incl_length. exact eq_dec. apply mono_shrink.
-apply incl_tran with l. apply incl_shrink. assumption.
-Qed.
-
-End shrink.
-
-(***********************************************************************)
-(** occurrences *)
-
-Section occur.
-
-Variable A : Set.
-Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
-
-Fixpoint occur x (l : list A) : nat :=
-  match l with
-    | nil => O
-    | y :: m =>
-      match eq_dec x y with
-        | left _ => S (occur x m)
-        | right _ => occur x m
-      end
-  end.
-
-Lemma occur_app : forall x l m, occur x (l ++ m) = occur x l + occur x m.
-
-Proof.
-induction l; simpl; intros. refl. case (eq_dec x a); intro. subst a.
-deduce (IHl m). omega. auto.
-Qed.
-
-Lemma in_occur : forall x l, In x l -> occur x l > 0.
-
-Proof.
-induction l; simpl; intros. contradiction. case (eq_dec x a); intro. omega.
-destruct H. subst a. irrefl. auto.
-Qed.
-
-Lemma notin_occur : forall x l, ~In x l -> occur x l = 0.
-
-Proof.
-induction l; simpl; intros. refl. case (eq_dec x a); intro.
-subst a. absurd (x=x \/ In x l). exact H. left. refl.
-apply IHl. intro. apply H. right. exact H0.
-Qed.
-
-Lemma occur_in : forall x l, occur x l > 0 -> In x l.
-
-Proof.
-induction l; simpl. intro. omega. case (eq_dec x a); auto.
-Qed.
-
-Implicit Arguments occur_in [x l].
-
-Lemma occur_notin : forall x l, occur x l = 0 -> ~In x l.
-
-Proof.
-induction l; simpl. do 2 intro. contradiction. case (eq_dec x a); intros.
-discriminate. intro. destruct H0. subst a. irrefl. intuition.
-Qed.
-
-Lemma occur_in_rec : forall x l n, occur x l = S n ->
-  exists m, exists p, l = m ++ x :: p /\ ~In x m /\ occur x p = n.
-
-Proof.
-intros. assert (occur x l > 0). omega. deduce (occur_in H0).
-deduce (in_elim_dec eq_dec H1). do 3 destruct H2. subst l.
-exists x0. exists x1. (* intuition makes occur untypable ! *)
-split. refl. split. exact H3.
-assert (S n = S (occur x x1)). rewrite <- H. rewrite occur_app. simpl.
-case (eq_dec x x); intro. assert (occur x x0 = 0). apply notin_occur. exact H3.
-rewrite H2. simpl. refl. irrefl. injection H2; auto.
-Qed.
-
-End occur.
-
