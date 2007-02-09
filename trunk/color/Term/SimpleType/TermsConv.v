@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.4 2007-02-09 17:17:05 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -786,7 +786,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Add Morphism conv_env : conv_env_morph.
 
   Proof.
-    firstorder.
+    Set Firstorder Depth 5. firstorder.
   Qed.
 
   Lemma conv_env_refl : forall M, conv_env M M (idEnvSubst (length (env M))).
