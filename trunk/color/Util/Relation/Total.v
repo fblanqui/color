@@ -4,9 +4,10 @@ See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
 
+on the total completion of a relation
 *)
 
-(* $Id: Total.v,v 1.3 2007-02-09 10:10:27 blanqui Exp $ *)
+(* $Id: Total.v,v 1.4 2007-02-09 10:15:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -323,7 +324,7 @@ Variable l : list A.
 
 Definition TC := lladd R l l.
 
-Theorem TC_dec : Rel_dec TC.
+Lemma TC_dec : Rel_dec TC.
 
 Proof.
 intros. unfold TC. apply lladd_dec. assumption.
@@ -369,7 +370,7 @@ Qed.
 
 End TC.
  
-Theorem  TC_properties : forall R : relation A,
+Lemma TC_properties : forall R : relation A,
   Rel_dec R -> irreflexive (R!) ->
   forall l, sub R l << TC R l /\ restricted (TC R l) l
     /\ trans_total_irrefl (TC R l) l.
@@ -380,7 +381,7 @@ apply TC_strict_total_order. assumption.
 apply incl_irrefl with (R!). apply incl_tc. apply inclusion_sub. assumption.
 Qed.
 
-Theorem total_completion_converse : forall (R : relation A),
+Lemma total_completion_converse : forall (R : relation A),
   (forall l, exists R', sub R l << R' /\ transitive R' /\ irreflexive R') ->
   irreflexive (R!).
 
