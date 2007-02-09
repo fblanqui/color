@@ -5,7 +5,7 @@
 
 SHELL := /bin/sh
 
-MAKEFLAGS := -r
+MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
@@ -32,14 +32,16 @@ clean:
 tags:
 	coqtags `find . -name \*.v`
 
-dump:
+$(DUMP): dump
+
+dump: clean
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"
 
-html:
+html: $(DUMP)
 	coqdoc --html -g -d doc --glob-from $(DUMP) -R . Rewriting `find . -name \*.v`
 	./createIndex
 
-doc: clean dump html
+doc: dump html
 
 install-doc:
 	rm -rf $(WEB)/doc
