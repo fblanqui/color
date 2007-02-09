@@ -6,16 +6,16 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-(* $Id: Total.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: Total.v,v 1.3 2007-02-09 10:10:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Section On_total_completion.
 
-Require Export Path.
+Require Export RelDec.
 
 Variable A : Set.
-Variable A_dec : forall x y : A, {x=y}+{x<>y}.
+Variable eq_dec : forall x y : A, {x=y}+{x<>y}.
 
 (***********************************************************************)
 (** total *)
@@ -88,15 +88,15 @@ Lemma add_dec : forall x y, Rel_dec R -> Rel_dec (add x y).
 
 Proof.
 unfold Rel_dec. intros. unfold add. destruct (H x0 y0). tauto. 
-destruct (A_dec x0 y0). tauto. destruct (H y0 x0). tauto. destruct (A_dec x x0).
-destruct (A_dec y y0).
-destruct (A_dec x0 y0). tauto. tauto. tauto. tauto. 
+destruct (eq_dec x0 y0). tauto. destruct (H y0 x0). tauto. destruct (eq_dec x x0).
+destruct (eq_dec y y0).
+destruct (eq_dec x0 y0). tauto. tauto. tauto. tauto. 
 Qed.
 
 Lemma add_xytotal : forall x y, xytotal (add x y) x y.
 
 Proof.
-unfold xytotal. intros. destruct (A_dec x y). tauto. unfold add.
+unfold xytotal. intros. destruct (eq_dec x y). tauto. unfold add.
 destruct (R_dec x y). tauto. 
 destruct (R_dec y x). tauto. tauto.
 Qed.
@@ -137,7 +137,7 @@ apply trans_add2_R with x y z; assumption.
 simpl in H1. pose (le_Sn_O (length l') H1). contradiction. apply IHn.
 inversion H0. clear H0 H3 H4 x0 y0. 
 (* mono *)
-destruct (path_mono_length A_dec (add x y)  z z l' H2). destruct H0. 
+destruct (path_mono_length eq_dec (add x y)  z z l' H2). destruct H0. 
 destruct H3. assert (length x0 <= S n).
 apply le_trans with (length l'); assumption.
 clear H1 H2 H3 l'. 
@@ -145,7 +145,7 @@ clear H1 H2 H3 l'.
 destruct x0. exists (nil : list A). apply le_O_n. assumption. 
 (* length x0 = 1 *) 
 (* z in x0 *)
-destruct (In_dec A_dec z (a::x0)). exists (tail (cut A_dec z (a::x0))). 
+destruct (In_dec eq_dec z (a::x0)). exists (tail (cut eq_dec z (a::x0))). 
 apply le_trans with (length x0). apply length_tail_cut_cons. apply le_S_n. tauto.
 apply path_cut; assumption. 
 (* z not in x0 *)
@@ -350,7 +350,7 @@ Qed.
 Lemma TC_total : total TC l.
 
 Proof.
-unfold TC, total. intros. pose (R_dec_clos_trans_sub_dec A_dec R_dec l). 
+unfold TC, total. intros. pose (R_dec_clos_trans_sub_dec eq_dec R_dec l). 
 apply lladd_xytotal; assumption.
 Qed.
 

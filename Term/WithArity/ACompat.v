@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.2 2007-02-08 17:59:35 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.3 2007-02-09 10:10:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -48,6 +48,13 @@ Qed.
 
 End compat.
 
+Lemma incl_compat : forall succ (R S : rules),
+  incl R S -> compatible succ S -> compatible succ R.
+
+Proof.
+unfold compatible. intros. apply H0. apply H. exact H1.
+Qed.
+
 Lemma compat_red_mod_tc : forall succ R E,
   rewrite_ordering succ -> compatible succ E -> compatible succ R ->
   red_mod E R << succ!.
@@ -56,14 +63,6 @@ Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
 apply incl_rtc. apply compat_red; assumption. apply compat_red; assumption.
 apply rtc_step_incl_tc.
-Qed.
-
-Lemma incl_compat : forall (succ succ' : relation term) R,
-  (forall l r, In (mkRule l r) R -> succ l r -> succ' l r)
-  -> compatible succ R -> compatible succ' R.
-
-Proof.
-unfold compatible. intros. apply H. assumption. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
