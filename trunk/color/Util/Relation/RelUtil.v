@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.15 2007-02-08 17:59:35 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.16 2007-02-09 10:10:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -448,8 +448,10 @@ Ltac comp := apply incl_comp; try incl_refl.
 
 Ltac assoc :=
   match goal with
-    | |- (?s @ ?t) @ ?u << ?v => trans (s @ (t @ u)); try apply comp_assoc
-    | |- ?s @ (?t @ ?u) << ?V => trans ((s @ t) @ u); try apply comp_assoc'
+    | |- (?s @ ?t) @ ?u << _ => trans (s @ (t @ u)); try apply comp_assoc
+    | |- ?s @ (?t @ ?u) << _ => trans ((s @ t) @ u); try apply comp_assoc'
+    | |- _ << (?s @ ?t) @ ?u => trans (s @ (t @ u)); try apply comp_assoc'
+    | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
   end.
 
 (***********************************************************************)

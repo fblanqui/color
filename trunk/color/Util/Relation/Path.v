@@ -6,14 +6,14 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-(* $Id: Path.v,v 1.6 2007-02-08 16:51:50 blanqui Exp $ *)
+(* $Id: Path.v,v 1.7 2007-02-09 10:10:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-Section On_transitive_closure.
+Section S.
 
 Variable A : Set.
-Variable A_dec : forall x y : A, {x=y}+{x<>y}.
+Variable eq_dec : forall x y : A, {x=y}+{x<>y}.
 
 Require Export RelUtil.
 Require Export ListShrink.
@@ -74,35 +74,35 @@ Lemma path_suffix : forall (y z : A) l' l'' (x : A),
 Proof.
 induction l'; intros. assert (rev (z :: l'')=nil). apply prefix_nil. assumption.
 simpl in H1. symmetry in H1. pose (app_cons_not_nil (rev l'') nil z H1). tauto.
-destruct (list_eq_dec A_dec (z :: l'')(a :: l')). inversion e. simpl in H.
+destruct (list_eq_dec eq_dec (z :: l'')(a :: l')). inversion e. simpl in H.
 tauto. simpl in H. 
 apply IHl' with a. tauto. apply suffix_smaller with a; assumption.
 Qed.
 
 Lemma path_cut : forall (y : A) l' (x : A),
-  In x l' -> path x y l' -> path x y (tail(cut A_dec x l')). 
+  In x l' -> path x y l' -> path x y (tail(cut eq_dec x l')). 
 
 Proof.
 intros. apply path_suffix with l' x. assumption.
-rewrite <- (cut_head  A_dec x l' H). apply suffix_cut.
+rewrite <- (cut_head eq_dec x l' H). apply suffix_cut.
 Qed.
 
 Lemma path_cut_bis : forall l' (x y z : A),
-  In z l' -> R x z -> path z y l' -> path x y (cut A_dec z l'). 
+  In z l' -> R x z -> path z y l' -> path x y (cut eq_dec z l'). 
 
 Proof.
-intros. rewrite (cut_head A_dec z l'). simpl.
-assert (path z y (tail (cut A_dec z l'))).
+intros. rewrite (cut_head eq_dec z l'). simpl.
+assert (path z y (tail (cut eq_dec z l'))).
 apply path_cut; assumption. destruct l'. pose (in_nil H).
 contradiction. tauto. assumption. 
 Qed.
 
 Lemma path_shrink : forall (y : A) l' (x : A),
-  path x y l' -> path x y (shrink A_dec l').
+  path x y l' -> path x y (shrink eq_dec l').
 
 Proof.
-induction l'; simpl; intros. assumption. assert (path a y (shrink A_dec l')).
-apply IHl'; tauto. destruct (In_dec A_dec a (shrink A_dec l')).
+induction l'; simpl; intros. assumption. assert (path a y (shrink eq_dec l')).
+apply IHl'; tauto. destruct (In_dec eq_dec a (shrink eq_dec l')).
 apply path_cut_bis; tauto. simpl. tauto.
 Qed.
 
@@ -110,7 +110,7 @@ Lemma path_mono_length : forall (x y : A) l', path x y l' ->
   exists l'', mono l'' /\ length l''<= length l' /\ path x y l''.
 
 Proof.
-intros. exists (shrink A_dec l'). 
+intros. exists (shrink eq_dec l'). 
 split. apply mono_shrink. split. apply length_shrink. apply incl_refl. 
 apply path_shrink. assumption.
 Qed. 
@@ -146,7 +146,7 @@ Lemma bound_path_Sn_n_or_Rn : forall (n : nat) (x y : A),
 Proof.
 intros. inversion H. destruct (le_le_S_dec (length l') n). 
 constructor. apply bp_intro with l'; assumption. constructor 2. 
-destruct l'. simpl in l. pose (le_Sn_O n l). tauto. exists a. simpl in H0, H1.  
+destruct l'. simpl in l. pose (le_Sn_O n l). tauto. exists a. simpl in H0, H1. 
 split. tauto. apply bp_intro with l'. apply le_S_n. assumption. tauto.
 Qed.
 
@@ -195,14 +195,6 @@ Proof.
 unfold inclusion, sub. intros. tauto.
 Qed.
 
-Lemma sub_dec : Rel_dec R -> Rel_dec sub.
-
-Proof.
-unfold Rel_dec, sub. intros. destruct (H x y). destruct (In_dec A_dec x l).
-destruct (In_dec A_dec y l). constructor. tauto. constructor 2. intro. tauto. 
-constructor 2. intro. tauto. constructor 2. intro. tauto.
-Qed. 
-
 Lemma path_sub_In_left : forall (x y : A) l', path sub x y l' -> In x l.
 
 Proof.
@@ -225,7 +217,7 @@ Lemma path_sub : forall (R : relation A) (y : A) l (x : A),
 
 Proof.
 unfold sub. induction l; simpl; intros. tauto. split. tauto. simpl in IHl. 
-apply path_monotonic with (fun x0 y0 : A =>  (a = x0 \/ y = x0 \/ In x0 l) /\
+apply path_monotonic with (fun x0 y0 : A => (a = x0 \/ y = x0 \/ In x0 l) /\
 (a = y0 \/ y = y0 \/ In y0 l) /\ R x0 y0). unfold inclusion. intros. tauto. 
 apply IHl. tauto.
 Qed.
@@ -246,125 +238,6 @@ Proof.
 unfold inclusion, sub. intros. pose (H x y). tauto.
 Qed.
 
-(***********************************************************************)
-(** bound_path is decidable for sub *)
-
-Section bp_sub_decidable.
-
-Variable R : relation A.
-Variable l : list A.
-
-Lemma dec_lem : forall (R' R'': relation A) (x y : A) l',
-  Rel_dec R' -> Rel_dec R'' -> 
-  {z : A | In z l' /\ R' x z /\ R'' z y}
-  +{~exists z, In z l' /\ R' x z /\ R'' z y}.
-
-Proof.
-induction l'; intros. simpl. constructor 2. intro. destruct H1. tauto. 
-destruct (IHl' H H0). constructor. destruct s. exists x0. simpl. tauto. 
-destruct (H x a). destruct (H0 a y). constructor. exists a. simpl. tauto. 
-constructor 2. intro. destruct H1. simpl in H1. decompose [and or] H1.  
-rewrite H4 in n0. tauto. assert (exists z : A, In z l' /\ R' x z /\ R'' z y).
-exists x0. 
-tauto. contradiction. constructor 2. intro. destruct H1. simpl in H1. 
-decompose  [and or] H1. rewrite H4 in n0. contradiction.
-assert (exists z : A, In z l' /\ R' x z /\ R'' z y). exists x0. tauto.
-contradiction.
-Qed. 
-
-Lemma bound_path_dec : forall n : nat,
-  Rel_dec (sub R l) -> Rel_dec (bound_path (sub R l) n).
-
-Proof.
-unfold Rel_dec. induction n; intros. destruct (H x y). constructor. 
-apply bp_intro with (nil : list A). trivial. simpl. assumption. constructor 2.
-intro. 
-inversion H0. destruct l'. simpl in H2. contradiction. simpl in H1.
-exact (le_Sn_O (length l') H1). 
-destruct (IHn H x y). constructor. apply bound_path_n_Sn. assumption. 
-assert ({z : A | In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y}
-+{~exists z : A, In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y}).
-apply dec_lem; tauto. destruct H0. constructor. destruct s. 
-apply R_bound_path_n_Sn with x0; tauto. 
-constructor 2. intro. pose (bound_path_Sn_n_or_Rn H0). destruct o. contradiction.
-destruct H1.
-assert (exists z : A, In z l /\ (sub R l) x z /\ bound_path (sub R l) n z y). 
-exists x0. split. unfold sub in H1. tauto. assumption. contradiction.   
-Qed.
-
-End bp_sub_decidable.
-
-(***********************************************************************)
-(** decidability of a relation is equivalent to decidability of the
-transitive closure of every finite restriction of the relation *)
-
-Section dec_clos_trans.
-
-Variable R : relation A.
-
-Lemma clos_trans_sub_bound_path : forall l : list A,
-  sub R l ! << bound_path (sub R l) (length l).
-
-Proof.
-unfold inclusion. intros. destruct (clos_trans_path H).
-destruct (path_mono_length (sub R l) x y x0 H0). apply bp_intro with x1. 
-apply mono_incl_length. assumption. tauto. apply path_sub_incl with R y x. 
-tauto. tauto. 
-Qed.
-
-Theorem R_dec_clos_trans_sub_dec :
-  Rel_dec R -> forall l : list A, Rel_dec (sub R l !).
-
-Proof.
-unfold Rel_dec. intros. pose (sub_dec l H). 
-destruct (bound_path_dec (length l) r x y). constructor. 
-pose bound_path_clos_trans. unfold inclusion in i. 
-apply i with (length l). assumption. constructor 2. intro.
-pose (clos_trans_sub_bound_path H0). contradiction. 
-Qed. 
-
-Lemma clos_trans_sub_R : forall x y : A,
-  sub R (x :: y :: nil) ! x y -> R x y.
-
-Proof.
-intros. pose (clos_trans_sub_bound_path H). inversion b.  
-assert (incl l' (x :: y :: nil)). apply path_sub_incl with R y x. assumption. 
-unfold incl in H4. simpl in H4. 
-pose inclusion_sub. unfold inclusion in i.
-destruct l'; simpl in H1. apply i with (x :: y :: nil). assumption. 
-destruct (A_dec y a). apply i with (x::y::nil). rewrite <- e in H1. tauto. 
-simpl in H4. assert (x=a). pose (H4 a). tauto.
-destruct l'; simpl in H1. apply i with (x :: y :: nil). rewrite <- H5 in H1.
-tauto. 
-destruct (A_dec y a0). apply i with (x::y::nil). rewrite <- e in H1. 
-rewrite <- H5 in H1. tauto. 
-simpl in H4. assert (x=a0). pose (H4 a0). tauto.
-destruct l'; simpl in H1. apply i with (x :: y :: nil). rewrite <- H6 in H1.
-tauto. 
-simpl in H0. inversion H0. inversion H8. inversion H10. 
-Qed.
-
-Lemma R_clos_trans_sub : forall x y : A,
-  R x y -> sub R (x :: y :: nil) ! x y.
-
-Proof.
-intros. pose bound_path_clos_trans. unfold inclusion in i. 
-apply i with 2. apply bp_intro with (nil : list A). simpl. apply le_O_n.
-unfold sub. 
-simpl. tauto. 
-Qed.
-
-Theorem clos_trans_sub_dec_R_dec :
-  (forall l : list A, Rel_dec (sub R l !)) -> Rel_dec R.
-
-Proof.
-unfold Rel_dec. intros. destruct (H (x::y::nil) x y). constructor. 
-apply clos_trans_sub_R. assumption. constructor 2. intro. 
-pose (R_clos_trans_sub H0). contradiction. 
-Qed. 
-
-End dec_clos_trans.
-
-End On_transitive_closure.
+End S.
 
 Implicit Arguments path_app_elim [A R l x y z m].
