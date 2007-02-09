@@ -1,24 +1,31 @@
-08-02-06:
-- Util/List/ListOccur: number of occurrences and pigeon-hole principle [Blanqui]
+09-02-06:
+- DP/ADPGraph: proof of the dp criterion based on cycles [Blanqui]
+
 - Util/Relation/Union: union of two wellfounded relations [Blanqui]
 - Util/Relation/SN: new general lemmas on termination [Blanqui]
 - Util/Relation/Iter: iteration of a relation
-- Term/WithArity/ARename: variable renamings
-- Term/WithArity/ASubstitution: added union of 2 substitutions
-- Term/WithArity/ARelation: results on compatibility moved into ACompat
+
+- Util/Relation/Total: total completion [Le Roux]
+- Util/Relation/RelDec: decidability of relations [Le Roux]
+- Util/Relation/Path: paths and subrelations [Le Roux]
+
+- Util/List/ListOccur: number of occurrences and pigeon-hole principle [Blanqui]
+- Util/List/ListShrink: new functions and lemmas on lists [Le Roux]
+
+- Term/WithArity/ARename: variable renamings [Blanqui]
+- Term/WithArity/ASubstitution: added union of two substitutions
+
+- Term/WithArity/ARelation: results on compatibility moved to ACompat
 - Util/Relation/WfUtil renamed into AccUtil
-- various lemmas renamed with intro or elim suffix
+- Various lemmas renamed with intro or elim suffix
 
 06-12-04:
+- MannaNess/AMannaNess: added rule elimination for relative termination [Blanqui]
 - Acc replaced by SN in various files
-- Util/List/ListShrink: new functions and lemmas on lists [Le Roux]
-- Util/Relation/Path and Util/Relation/Total: results on the decidability
-  of relations and total orderings [Le Roux]
 - Term/WithArity/ARedOrd moved to MannaNess/AMannaNess
-- MannaNess/AMannaNess: rule elimination for relative top termination [Blanqui]
 
 06-12-01:
-- various modifications for compiling with the new version of Coq
+- Various modifications for compiling with the new version of Coq
 - Util/Relation/SN: inductive definition of strong normalization
   (inverse of Coq accessibility)
 - Util/Relation/RelUtil: practical notations and useful results

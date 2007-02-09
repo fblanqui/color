@@ -5,11 +5,11 @@
 
 SHELL := /bin/sh
 
-MAKEFLAGS := -r -j
+MAKEFLAGS := -r
 
 .SUFFIXES:
 
-.PHONY: clean clean-doc all makefiles dist doc dump html install-dist install-doc tags
+.PHONY: clean all makefiles dist doc dump html install-dist install-doc tags
 
 SUBDIRS := Util Term MannaNess PolyInt DP Filter MPO Conversion RPO HORPO
 
@@ -23,23 +23,20 @@ Util/Makefile:
 	$(MAKE) makefiles
 
 clean:
-	rm -f `find . -name \*~ -o -name .\*~`
+	rm -f *~ .*~ $(DUMP) doc/Rewriting.*.html doc/index.html
 	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
-
-clean-doc:
-	rm -f $(DUMP) doc/Rewriting.*.html doc/index.html
 
 tags:
 	coqtags `find . -name \*.v`
 
-dump: clean-doc clean
+dump:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"; done
 
 html:
 	coqdoc --html -g -d doc --glob-from $(DUMP) -R `pwd` Rewriting `find . -name \*.v`
 	./createIndex
 
-doc: dump html
+doc: clean dump html
 
 install-doc:
 	rm -rf $(WEB)/doc
