@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.1 2007-02-09 13:15:27 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.2 2007-02-09 14:58:23 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -123,7 +123,7 @@ Qed.
 Implicit Arguments iter_chain_chain_dps [n t u].
 
 (***********************************************************************)
-(** two consecutive chain steps provide a a dp_graph step *)
+(** two consecutive chain steps provide a dp_graph step *)
 
 Lemma chain_dp2_dp_graph : forall a1 a2 t u v,
   chain_dp a1 t u -> chain_dp a2 u v -> dp_graph a1 a2.

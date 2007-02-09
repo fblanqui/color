@@ -4,20 +4,22 @@ Compilation procedure
 The compilation procedure that is provided requires a UNIX-like
 operating system with the following commands:
 
-- Coq version 8.1 http://coq.inria.fr/
+- Coq SVN trunk branch revision 9407 http://coq.inria.fr/
 - GNU make version 3.80 http://www.gnu.org/software/make/
 - GNU bash version 3.00 http://www.gnu.org/software/bash/
 - GNU sed version 4.1.4 http://www.gnu.org/software/sed/
 
 Make sure that /bin/sh is bash.
 
-For compiling CoLoR, use the command "make all".
+Let MAKE be your command for make (usually: make or gmake).
 
-For compiling the html documentation, use the command "make doc".
+For compiling CoLoR, use the command "MAKE all".
 
-For compiling the TAGS file, use the command "make tags"
-(this requires the program coqtags distributed with ProofGeneral
-version 3.5 http://proofgeneral.inf.ed.ac.uk/).
+For compiling the html documentation, use the command "MAKE doc".
+
+For compiling the TAGS file, use the command "MAKE tags". This requires:
+- coqtags from ProofGeneral version 3.5 http://proofgeneral.inf.ed.ac.uk/
+- GNU find version 4.2.24 http://www.gnu.org/software/findutils/findutils.html
 
 For using the library, type the following command in Coq (you can also
 add it in your ~/.coqrc file):
