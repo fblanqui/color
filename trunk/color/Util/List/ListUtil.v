@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.13 2007-02-09 10:10:27 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.14 2007-02-09 13:15:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -688,14 +688,17 @@ Section last.
 Variable A : Set.
 
 Lemma last_intro : forall l : list A, length l > 0 ->
-  exists m, exists a, l = m ++ a :: nil.
+  exists m, exists a, l = m ++ a :: nil /\ length m = length l - 1.
 
 Proof.
 induction l; simpl; intros. apply False_ind. omega.
-destruct l. exists (@nil A). exists a. refl.
+destruct l. exists (@nil A). exists a. intuition.
 assert (length (a0::l) > 0). simpl. omega.
-deduce (IHl H0). do 2 destruct H1. rewrite H1.
-exists (a::x). exists x0. refl.
+deduce (IHl H0). do 3 destruct H1.
+exists (a::x). exists x0. split. rewrite H1. refl.
+simpl. simpl in H2. omega.
 Qed.
 
 End last.
+
+Implicit Arguments last_intro [A l].

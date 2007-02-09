@@ -1,0 +1,285 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Frederic Blanqui, 2007-01-22
+
+dependancy pairs graph
+*)
+
+(* $Id: ADPGraph.v,v 1.1 2007-02-09 13:15:27 blanqui Exp $ *)
+
+Set Implicit Arguments.
+
+Require Export LogicUtil.
+
+Section S.
+
+Require Export ASignature.
+
+Variable Sig : Signature.
+
+Require Export ATerm.
+
+Notation term := (term Sig).
+Notation terms := (vector term).
+
+Require Export ATrs.
+
+Notation rule := (rule Sig).
+Notation rules := (list rule).
+Notation lhs := (@lhs Sig).
+Notation rhs := (@rhs Sig).
+
+Variable R : rules.
+
+Variable hyp : rules_preserv_vars R.
+
+Require Export ADP.
+
+Notation DP := (dp R).
+Notation Chain := (chain R).
+
+Lemma hyp' : rules_preserv_vars DP.
+
+Proof.
+apply dp_preserv_vars. exact hyp.
+Qed.
+
+(***********************************************************************)
+(** dependancy pairs graph *)
+
+Require Export ARename.
+
+Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
+  /\ exists p, exists s,
+    int_red R # (app s (rhs a1)) (app s (shift p (lhs a2))).
+
+Lemma restricted_dp_graph : restricted dp_graph DP.
+
+Proof.
+unfold restricted, sub, dp_graph, inclusion. intros. intuition.
+Qed.
+
+(***********************************************************************)
+(** chain relation for a given dependency pair *)
+
+Definition chain_dp a t u := In a DP /\
+  exists s, int_red R # t (app s (lhs a)) /\ u = app s (rhs a).
+
+Lemma chain_dp_chain : forall a, chain_dp a << Chain.
+
+Proof.
+unfold inclusion. intros. destruct H. do 2 destruct H0.
+exists (app x0 (lhs a)). intuition.
+subst y. destruct a. simpl. apply hd_red_rule. exact H.
+Qed.
+
+Lemma chain_chain_dp : forall t u, Chain t u -> exists a, chain_dp a t u.
+
+Proof.
+intros. do 2 destruct H. redtac. subst x. subst u. exists (mkRule l r).
+unfold chain_dp. simpl. intuition. exists s. intuition.
+Qed.
+
+(***********************************************************************)
+(** iteration of chain steps given a list of dependency pairs *)
+
+Fixpoint chain_dps (a : rule) (l : rules) {struct l} : relation term :=
+  match l with
+    | nil => chain_dp a
+    | b :: m => chain_dp a @ chain_dps b m
+  end.
+
+Lemma chain_dps_app : forall l a b m,
+  chain_dps a (l ++ b :: m) << chain_dps a l @ chain_dps b m.
+
+Proof.
+induction l; simpl; intros. apply incl_refl. assoc. comp. apply IHl.
+Qed.
+
+Implicit Arguments chain_dps_app [l a b m].
+
+Require Export Iter.
+
+Lemma chain_dps_iter_chain : forall l a, chain_dps a l << iter Chain (length l).
+
+Proof.
+induction l; simpl; intros. apply chain_dp_chain.
+comp. apply chain_dp_chain. apply IHl.
+Qed.
+
+Lemma iter_chain_chain_dps : forall n t u, iter Chain n t u ->
+  exists a, exists l, length l = n /\ chain_dps a l t u.
+
+Proof.
+induction n; simpl; intros. deduce (chain_chain_dp H). destruct H0.
+exists x. exists (@nil rule). intuition.
+do 2 destruct H. deduce (chain_chain_dp H). destruct H1. exists x0.
+deduce (IHn _ _ H0). do 3 destruct H2. exists (x1 :: x2). simpl. intuition.
+exists x. intuition.
+Qed.
+
+Implicit Arguments iter_chain_chain_dps [n t u].
+
+(***********************************************************************)
+(** two consecutive chain steps provide a a dp_graph step *)
+
+Lemma chain_dp2_dp_graph : forall a1 a2 t u v,
+  chain_dp a1 t u -> chain_dp a2 u v -> dp_graph a1 a2.
+
+Proof.
+intros. destruct a1 as [l0 r0]. destruct a2 as [l1 r1].
+destruct H. simpl in H1. do 2 destruct H1. subst u. rename x into s0.
+destruct H0. simpl in H2. do 2 destruct H2. subst v. rename x into s1.
+(* [maxvar l0 + 1] for shift *)
+unfold dp_graph. intuition. simpl. set (p := maxvar l0 + 1). exists p.
+(* take the union of s0 (restricted to [vars l0])
+and [comp s1 (shift_inv_sub p l1)] (restricted to [vars (shift p l1)] *)
+set (s0' := restrict s0 (vars l0)).
+set (s1' := restrict (comp s1 (shift_inv_sub p l1)) (vars (shift p l1))).
+set (s := union s0' s1'). exists s.
+(* compatibility *)
+assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
+deduce (vars_max H3). deduce (in_vars_shift_min H4). unfold p in H6.
+absurd (x <= maxvar l0). omega. assumption.
+(* domains of substitutions *)
+assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
+assert (dom_incl s1' (vars (shift p l1))). unfold s1'. apply dom_incl_restrict.
+(* inclusion in the dp_graph *)
+assert (app s r0 = app s0' r0). unfold s. eapply app_union1. apply H5. apply H3.
+apply hyp'. assumption. rewrite H6.
+assert (app s0' r0 = app s0 r0). unfold s0'. symmetry.
+apply app_restrict_incl. apply hyp'. assumption. rewrite H7.
+assert (app s (shift p l1) = app s1' (shift p l1)).
+unfold s. eapply app_union2. apply H4. apply H3. apply List.incl_refl.
+rewrite H8.
+assert (app s1' (shift p l1) = app s1 l1). unfold s1'.
+rewrite <- app_restrict. rewrite <- app_shift.
+refl. rewrite H9. assumption.
+Qed.
+
+Lemma chain_dps_path_dp_graph : forall l a b t u,
+  chain_dps a (l ++ b :: nil) t u -> path dp_graph a b l.
+
+Proof.
+induction l; simpl; intros; do 2 destruct H.
+eapply chain_dp2_dp_graph. apply H. apply H0.
+deduce (IHl _ _ _ _ H0). intuition.
+destruct l; simpl in H0; do 2 destruct H0.
+eapply chain_dp2_dp_graph. apply H. apply H0.
+eapply chain_dp2_dp_graph. apply H. apply H0.
+Qed.
+
+Implicit Arguments chain_dps_path_dp_graph [l a b t u].
+
+(***********************************************************************)
+(** hypotheses of the criterion based on cycles *)
+
+Require Export ACompat.
+Require Export Cycle.
+
+Variables (succ succ_eq : relation term)
+  (Hredord : weak_rewrite_ordering succ succ_eq)
+  (Hreword : rewrite_ordering succ_eq)
+  (Habsorb : absorb succ succ_eq)
+  (HcompR : compatible succ_eq R)
+  (HcompDP : compatible succ_eq (dp R))
+  (Hwf : WF succ)
+  (Hcycle : forall a l,
+    cycle_min dp_graph a l -> exists b, In b l /\ succ (lhs b) (rhs b)).
+
+Notation eq_dec := (@eq_rule_dec Sig).
+Notation occur := (occur eq_dec).
+
+(***********************************************************************)
+(** compatibility properties of chains *)
+
+Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
+
+Proof.
+unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
+destruct a. simpl. simpl in H0. exists (app x0 lhs). split.
+apply incl_elim with (R := int_red R #). apply incl_rtc. apply int_red_incl_red.
+exact H0. apply hd_red_rule. simpl. auto.
+Qed.
+
+Lemma compat_chain_dp : forall a, chain_dp a << succ_eq!.
+
+Proof.
+intros. trans (red_mod R DP). trans (Chain). apply chain_dp_chain.
+trans (hd_red_mod R DP). apply chain_hd_red_mod. apply hd_red_mod_incl_red_mod.
+apply compat_red_mod_tc; assumption.
+Qed.
+
+Lemma compat_chain_dps : forall l a, chain_dps a l << succ_eq!.
+
+Proof.
+induction l; simpl; intros. apply compat_chain_dp. trans (succ_eq! @ succ_eq!).
+comp. apply compat_chain_dp. apply IHl. apply tc_idem.
+Qed.
+
+Lemma compat_chain_dp_strict : forall a,
+  succ (lhs a) (rhs a) -> chain_dp a << succ.
+
+Proof.
+unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
+apply (comp_rtc_incl Habsorb). exists (app x0 (lhs a)). split.
+apply incl_elim with (R := int_red R #). 2: exact H1. apply incl_rtc.
+trans (red R). apply int_red_incl_red. apply compat_red; assumption.
+destruct Hredord. apply H2. exact H.
+Qed.
+
+(***********************************************************************)
+(** proof of the criterion based on cycles *)
+
+Lemma WF_cycles : WF (chain R).
+
+Proof.
+(* we prove it by looking at paths of length n+3, where n = length DP *)
+set (n := length DP). apply WF_iter with (S (S n)). intro.
+(* we proceed by induction on succ @ succ_eq# *)
+assert (Hwf' : WF (succ @ succ_eq#)). apply absorb_WF_modulo_r; assumption.
+generalize (Hwf' x). induction 1. apply SN_intro; intros. apply H0.
+(* path in the dp_graph corresponding to the chains *)
+deduce (iter_chain_chain_dps H1). do 3 destruct H2.
+assert (length x1 > 0). omega. deduce (last_intro H4). do 3 destruct H5.
+clear H4. rewrite H5 in H3. deduce (chain_dps_path_dp_graph H3).
+(* pigeon-hole principle: there is a dp visited twice *)
+assert (exists z, occur z x2 >= 2). eapply long_path_occur.
+apply restricted_dp_graph. apply H4. rewrite H6. rewrite H2. unfold n. omega.
+(* we prove (A): in this cycle, a dp is included in succ *)
+assert (exists l, exists a, exists m, x2 ++ x3 :: nil = l ++ a :: m
+  /\ succ (lhs a) (rhs a)).
+destruct H7. set (p := occur x4 x2 - 2). assert (occur x4 x2 = S (S p)).
+unfold p. omega. deduce (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
+clear H8. rewrite H9. deduce (occur_S eq_dec H11). do 3 destruct H8.
+destruct H12. clear H11. clear H13. clear p. rewrite H8. rewrite H8 in H9.
+clear H8. clear H10.
+(* cycle_min dp_graph x4 x7 *)
+assert (cycle_min dp_graph x4 x7). unfold cycle_min, cycle. intuition.
+rewrite H9 in H4. deduce (path_app_elim H4). destruct H8.
+deduce (path_app_elim H10). intuition.
+(* end of the proof of (A) *)
+deduce (Hcycle H8). do 2 destruct H10. deduce (in_elim H10). do 2 destruct H13.
+rewrite H13. exists (x5++x4::x10). exists x9. exists (x11++x4::x8++x3::nil).
+intuition. simpl. do 3 (repeat rewrite app_ass; simpl). refl. do 4 destruct H8.
+rewrite H8 in H3. deduce (incl_elim (@chain_dps_app _ _ _ _) H3).
+do 2 destruct H10.
+(* succ_eq# x x7 *)
+assert (succ_eq# x x7). eapply incl_elim. apply tc_incl_rtc.
+eapply incl_elim. apply compat_chain_dps. apply H10.
+(* (succ @ succ_eq#) x7 y *)
+assert ((succ @ succ_eq#) x7 y). destruct x6; simpl in H11.
+deduce (compat_chain_dp_strict H9 H11). exists y. intuition.
+do 2 destruct H11. exists x8. split. eapply incl_elim.
+apply (compat_chain_dp_strict H9). exact H11.
+eapply incl_elim with (R := succ_eq!). apply tc_incl_rtc.
+eapply incl_elim. apply compat_chain_dps. apply H13.
+(* (succ @ succ_eq#) x y *)
+do 2 destruct H13. exists x8. intuition.
+eapply incl_elim with (R := succ_eq# @ succ). apply comp_rtc_incl. intuition.
+exists x7. intuition.
+Qed.
+
+End S.
