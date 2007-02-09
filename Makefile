@@ -16,24 +16,27 @@ SUBDIRS := Util Term MannaNess PolyInt DP Filter MPO Conversion RPO HORPO
 DUMP := /tmp/dump
 WEB := /local/color/htdocs
 
-all: Util/Makefile
-	for d in $(SUBDIRS); do $(MAKE) -C $$d OTHERFLAGS="-dont-load-proofs"; done
+COQMAKE := $(MAKE) -f Makefile.coq
 
-Util/Makefile:
-	$(MAKE) makefiles
+all: Makefile.coq
+	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
+
+Makefile.coq:
+	coq_makefile -R . Rewriting `find . -name \*.v` > Makefile.coq
 
 clean:
-	rm -f *~ .*~ $(DUMP) doc/Rewriting.*.html doc/index.html
-	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
+	rm -f `find . -name \*~`
+	rm -f $(DUMP) doc/Rewriting.*.html doc/index.html
+	$(COQMAKE) clean
 
 tags:
 	coqtags `find . -name \*.v`
 
 dump:
-	for d in $(SUBDIRS); do $(MAKE) -C $$d OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"; done
+	$(COQMAKE) OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"
 
 html:
-	coqdoc --html -g -d doc --glob-from $(DUMP) -R `pwd` Rewriting `find . -name \*.v`
+	coqdoc --html -g -d doc --glob-from $(DUMP) -R . Rewriting `find . -name \*.v`
 	./createIndex
 
 doc: clean dump html
@@ -52,9 +55,5 @@ install-dist:
 	mv -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
 	cp -f CHANGES $(WEB)/CHANGES.CoLoR
 
-makefiles:
-	./createMakefiles
-	$(MAKE) depend
-
 %:
-	for d in $(SUBDIRS); do $(MAKE) -C $$d $*; done
+	$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $*
