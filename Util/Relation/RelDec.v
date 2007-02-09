@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 decidability of a relation
 *)
 
-(* $Id: RelDec.v,v 1.1 2007-02-09 10:10:27 blanqui Exp $ *)
+(* $Id: RelDec.v,v 1.2 2007-02-09 10:15:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -92,7 +92,7 @@ apply mono_incl_length. assumption. tauto. apply path_sub_incl with R y x.
 tauto. tauto. 
 Qed.
 
-Theorem R_dec_clos_trans_sub_dec :
+Lemma R_dec_clos_trans_sub_dec :
   Rel_dec R -> forall l : list A, Rel_dec (sub R l !).
 
 Proof.
@@ -134,7 +134,7 @@ unfold sub.
 simpl. tauto. 
 Qed.
 
-Theorem clos_trans_sub_dec_R_dec :
+Lemma clos_trans_sub_dec_R_dec :
   (forall l : list A, Rel_dec (sub R l !)) -> Rel_dec R.
 
 Proof.

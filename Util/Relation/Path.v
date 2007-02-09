@@ -4,9 +4,10 @@ See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
 
+paths and finite restrictions
 *)
 
-(* $Id: Path.v,v 1.7 2007-02-09 10:10:27 blanqui Exp $ *)
+(* $Id: Path.v,v 1.8 2007-02-09 10:15:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
