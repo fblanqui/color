@@ -85,7 +85,7 @@ case (eq_dec x a); intros.
 discriminate. intro. destruct H0. subst a. irrefl. intuition.
 Qed.
 
-Lemma occur_in_rec : forall x l n, occur x l = S n ->
+Lemma occur_S : forall x l n, occur x l = S n ->
   exists m, exists p, l = m ++ x :: p /\ ~In x m /\ occur x p = n.
 
 Proof.
@@ -101,6 +101,7 @@ End occur.
 
 Implicit Arguments in_occur [A x l].
 Implicit Arguments notin_occur [A x l].
+Implicit Arguments occur_S [A x l n].
 
 (***********************************************************************)
 (** pigeon-hole principle *)
