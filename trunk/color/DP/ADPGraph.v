@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.3 2007-02-12 16:16:34 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.4 2007-02-12 17:10:03 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -198,7 +198,7 @@ Variables (succ succ_eq : relation term)
   (HcompR : compatible succ_eq R)
   (HcompDP : compatible succ_eq (dp R))
   (Hwf : WF succ)
-  (Hcycle : forall a l, cycle_min dp_graph a l ->
+  (Hcycle : forall a l, length l <= length DP -> cycle_min dp_graph a l ->
     exists b, In b (a :: l) /\ succ (lhs b) (rhs b)).
 
 Notation eq_dec := (@eq_rule_dec Sig).
@@ -249,7 +249,7 @@ Lemma WF_cycles : WF (chain R).
 
 Proof.
 (* we prove it by looking at paths of length n+3, where n = length DP *)
-set (n := length DP). apply WF_iter with (S (S n)). intro.
+set (n := length DP). apply WF_iter with (S n). intro.
 (* we proceed by induction on succ @ succ_eq# *)
 assert (Hwf' : WF (succ @ succ_eq#)). apply absorb_WF_modulo_r; assumption.
 generalize (Hwf' x). induction 1. apply SN_intro; intros. apply H0.
@@ -260,7 +260,7 @@ clear H4. rewrite H5 in H3. deduce (chain_dps_path_dp_graph H3).
 (* pigeon-hole principle: there is a dp visited twice *)
 set (l' := x0 :: x2 ++ x3 :: nil). assert (exists z, occur z l' >= 2).
 unfold l'. eapply long_path_occur. apply restricted_dp_graph. apply H4.
-simpl. rewrite H6. rewrite H2. unfold n. omega.
+rewrite H6. rewrite H2. unfold n. omega.
 (* we prove (A): in this cycle, a dp is included in succ *)
 assert (exists l, exists a, exists m, l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
 destruct H7. set (p := occur x4 l' - 2). assert (occur x4 l' = S (S p)).
@@ -272,7 +272,10 @@ clear H8. clear H10.
 assert (cycle_min dp_graph x4 x7). unfold cycle_min, cycle. intuition.
 eapply sub_path. unfold l' in H9. apply H9. exact H4.
 (* end of the proof of (A) *)
-deduce (Hcycle H8). do 2 destruct H10. deduce (in_elim H10). do 2 destruct H13.
+assert (h : length x7 <= length DP). assert (length l' = n+2).
+unfold l'. simpl. rewrite <- H5. omega. rewrite H9 in H10.
+repeat (rewrite length_app in H10; simpl in H10). unfold n in H10. omega.
+deduce (Hcycle h H8). do 2 destruct H10. deduce (in_elim H10). do 2 destruct H13.
 exists (x5++x10). exists x9. exists (x11++x4::x8). intuition.
 rewrite app_ass. apply appr_eq. apply trans_eq with ((x4::x7)++x4::x8). refl.
 rewrite H13. rewrite app_ass. refl.
