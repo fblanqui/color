@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some results concerning permutations of lists.
 *)
 
-(* $Id: ListPermutation.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ListPermutation.v,v 1.3 2007-02-12 17:10:03 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -228,7 +228,8 @@ Section Permutation.
     end.
     replace (multiplicity (list_contents eqA eqA_dec (initialSeg l n)) w + 
       multiplicity (list_contents eqA eqA_dec (finalSeg l n)) w) 
-    with (multiplicity (list_contents eqA eqA_dec (initialSeg l n ++ finalSeg l n)) w).
+    with (multiplicity
+      (list_contents eqA eqA_dec (initialSeg l n ++ finalSeg l n)) w).
     rewrite initialSeg_finalSeg_full; trivial.
     rewrite (H w); auto with arith.
     rewrite list_contents_app; trivial.
@@ -251,7 +252,8 @@ Section ListSim.
       list_sim xs ys ->
       list_sim (x::xs) (y::ys).
 
-  Lemma list_sim_nth : forall p l l' a, list_sim l l' -> nth_error l p = Some a ->
+  Lemma list_sim_nth : forall p l l' a, list_sim l l' ->
+    nth_error l p = Some a ->
     exists b, nth_error l' p = Some b /\ R a b.
 
   Proof.
@@ -271,7 +273,8 @@ Section ListSim.
     exists x0; split; trivial.
   Qed.
 
-  Lemma list_sim_nth_rev : forall p l l' b, list_sim l l' -> nth_error l' p = Some b ->
+  Lemma list_sim_nth_rev : forall p l l' b, list_sim l l' ->
+    nth_error l' p = Some b ->
     exists a, nth_error l p = Some a /\ R a b.
 
   Proof.
@@ -291,8 +294,8 @@ Section ListSim.
     exists x0; split; trivial.
   Qed.
 
-  Lemma list_sim_app : forall l1 l1' l2 l2', list_sim l1 l1' -> list_sim l2 l2' ->
-    list_sim (l1 ++ l2) (l1' ++ l2').
+  Lemma list_sim_app : forall l1 l1' l2 l2',
+    list_sim l1 l1' -> list_sim l2 l2' -> list_sim (l1 ++ l2) (l1' ++ l2').
 
   Proof.
     induction l1; intros.
@@ -324,8 +327,8 @@ Section ListSim.
   Qed.
 
   Lemma list_sim_insert_nth : forall l l' p a a', nth_error l p = Some a ->
-    nth_error l' p = Some a' -> R a a' -> list_sim (drop_nth l p) (drop_nth l' p) ->
-    list_sim l l'.
+    nth_error l' p = Some a' -> R a a' ->
+    list_sim (drop_nth l p) (drop_nth l' p) -> list_sim l l'.
 
   Proof.
     intros l l' p; generalize p l l'; clear l l' p.
@@ -361,7 +364,8 @@ Section ListSim.
     inversion H; trivial.
   Qed.
 
-  Lemma list_sim_tail : forall l l', list_sim l l' -> list_sim (tail l) (tail l').
+  Lemma list_sim_tail : forall l l',
+    list_sim l l' -> list_sim (tail l) (tail l').
 
   Proof.
     intros.
@@ -378,11 +382,13 @@ Section ListSim_iso.
   Variable eqA : A -> A -> Prop.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq : Setoid_Theory A eqA.
-  Variable P_eqA_comp : forall x x' y y', eqA x x' -> eqA y y' -> P x y -> P x' y'.
+  Variable P_eqA_comp : forall x x' y y',
+    eqA x x' -> eqA y y' -> P x y -> P x' y'.
 
   Definition list_simA := @list_sim A A P.
 
-  Lemma list_sim_permutation : forall l l' m, list_simA l l' -> permutation eqA eqA_dec l m ->
+  Lemma list_sim_permutation : forall l l' m,
+    list_simA l l' -> permutation eqA eqA_dec l m ->
     exists m', list_simA m m' /\ permutation eqA eqA_dec l' m'.
 
   Proof.
