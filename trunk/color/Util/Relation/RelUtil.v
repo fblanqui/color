@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.16 2007-02-09 10:10:27 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.17 2007-02-12 16:16:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -48,9 +48,9 @@ Variables (A : Set) (R : relation A).
 
 Definition Rel_dec := forall x y, {R x y}+{~R x y}.
 
-Definition irreflexive := forall x, ~ R x x.
+Definition irreflexive := forall x, ~R x x.
 
-Definition asymmetric := forall x y, R x y -> ~ R y x.
+Definition asymmetric := forall x y, R x y -> ~R y x.
 
 End basic_properties.
 
@@ -67,7 +67,7 @@ Definition ordering := reflexive R /\ transitive R /\ antisymmetric R.
 
 Definition strict_ordering := irreflexive R /\ transitive R.
 
-Definition strict_part x y := R x y /\ ~ R y x.
+Definition strict_part x y := R x y /\ ~R y x.
 
 End basic_definitions.
 
@@ -166,6 +166,60 @@ Qed.
 End monotone.
 
 (***********************************************************************)
+(** composition *)
+
+Definition compose (A : Set) (R S : relation A) x y :=
+  exists z, R x z /\ S z y.
+
+Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
+
+Definition absorb (A : Set) (R S : relation A) := S @ R << R.
+
+Section compose.
+
+Variables (A : Set) (R R' S S' : relation A).
+
+Lemma incl_comp : R << R' -> S << S' -> R @ S << R' @ S'.
+
+Proof.
+intros h1 h2. unfold inclusion, compose. intros. do 2 destruct H.
+exists x0. auto.
+Qed.
+
+Lemma comp_assoc : forall T, (R @ S) @ T << R @ (S @ T).
+
+Proof.
+unfold inclusion. intros. do 4 destruct H. exists x1; split. assumption.
+exists x0; split; assumption.
+Qed.
+
+Lemma comp_assoc' : forall T, R @ (S @ T) << (R @ S) @ T.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
+exists x1; split. exists x0; split; assumption. exact H1.
+Qed.
+
+Lemma comp_rtc_incl : R @ S << S -> R# @ S << S.
+
+Proof.
+intro. unfold inclusion, compose. intros. do 2 destruct H0.
+generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+Qed.
+
+End compose.
+
+Ltac comp := apply incl_comp; try incl_refl.
+
+Ltac assoc :=
+  match goal with
+    | |- (?s @ ?t) @ ?u << _ => trans (s @ (t @ u)); try apply comp_assoc
+    | |- ?s @ (?t @ ?u) << _ => trans ((s @ t) @ u); try apply comp_assoc'
+    | |- _ << (?s @ ?t) @ ?u => trans (s @ (t @ u)); try apply comp_assoc'
+    | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
+  end.
+
+(***********************************************************************)
 (** reflexive closure *)
 
 Definition clos_refl (A : Set) (R : relation A) x y := x = y \/ R x y.
@@ -246,10 +300,10 @@ apply t_step. apply H. exact H1.
 apply t_trans with (y := y0); assumption.
 Qed.
 
-Lemma tc_split : forall x y, R! x y -> exists x', R x x' /\ R# x' y.
+Lemma tc_split : R! << R @ R#.
 
 Proof.
-induction 1. exists y. split. exact H. apply rt_refl.
+unfold inclusion. induction 1. exists y. split. exact H. apply rt_refl.
 destruct IHclos_trans1. destruct H1. exists x0. split. exact H1.
 apply rt_trans with (y := y). exact H2. 
 apply incl_elim with (R := R!). apply tc_incl_rtc. exact H0.
@@ -260,6 +314,33 @@ Lemma trans_tc_incl : transitive R -> R! << R.
 Proof.
 unfold transitive, inclusion. intros. induction H0. assumption. 
 apply H with y; assumption.
+Qed.
+
+Lemma comp_tc_incl : R @ S << S -> R! @ S << S.
+
+Proof.
+intro. unfold inclusion, compose. intros. do 2 destruct H0.
+generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+Qed.
+
+Lemma comp_incl_tc : R @ S << S -> R @ S! << S!.
+
+Proof.
+intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
+induction 1; intros. apply t_step. apply H. exists x1; split; assumption.
+apply t_trans with (y := y0); auto.
+Qed.
+
+Lemma trans_intro : R @ R << R -> transitive R.
+
+Proof.
+unfold transitive. intros. apply H. exists y. intuition.
+Qed.
+
+Lemma tc_idem : R! @ R! << R!.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; assumption.
 Qed.
 
 End clos_trans.
@@ -289,10 +370,10 @@ Proof.
 unfold transitive. intros. eapply rt_trans. apply H. assumption.
 Qed.
 
-Lemma rtc_split : forall x y, R# x y -> x = y \/ R! x y.
+Lemma rtc_split : R# << @eq A U R!.
 
 Proof.
-intros. elim H.
+unfold inclusion, union. intros. elim H.
 intros. right. apply t_step. assumption.
 intro. left. reflexivity.
 intros. destruct H1; destruct H3.
@@ -302,11 +383,10 @@ subst y0. right. assumption.
 right. apply t_trans with (y := y0); assumption.
 Qed.
 
-Lemma rtc_split2 : forall x y,
-  R# x y -> x = y \/ (exists x', R x x' /\ R# x' y).
+Lemma rtc_split2 : R# << @eq A U R @ R#.
 
 Proof.
-intros. elim H; clear H x y; intros.
+unfold inclusion, union. intros. elim H; clear H x y; intros.
 right. exists y; split. exact H. apply rt_refl.
 auto.
 destruct H0. subst y. destruct H2. auto. destruct H0. right. exists x0. auto.
@@ -314,10 +394,10 @@ do 2 destruct H0. right. exists x0. split. exact H0.
 apply rt_trans with (y := y); auto.
 Qed.
 
-Lemma rtc_transp : forall x y, R# y x -> (transp R)# x y.
+Lemma rtc_transp : transp (R#) << (transp R)#.
 
 Proof.
-induction 1.
+unfold inclusion. induction 1.
 apply rt_step. assumption.
 apply rt_refl.
 eapply rt_trans. apply IHclos_refl_trans2. apply IHclos_refl_trans1.
@@ -330,6 +410,12 @@ intro. unfold inclusion. intros. elim H0; intros.
 apply rt_step. apply H. assumption.
 apply rt_refl.
 eapply rt_trans. apply H2. assumption.
+Qed.
+
+Lemma rtc_idem : R# @ R# << R#.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; assumption.
 Qed.
 
 End clos_refl_trans.
@@ -372,87 +458,6 @@ unfold inclusion, transp. auto.
 Qed.
 
 End transp.
-
-(***********************************************************************)
-(** composition *)
-
-Definition compose (A : Set) (R S : relation A) x y :=
-  exists z, R x z /\ S z y.
-
-Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
-
-Definition absorb (A : Set) (R S : relation A) := S @ R << R.
-
-Section compose.
-
-Variables (A : Set) (R R' S S' : relation A).
-
-Lemma incl_comp : R << R' -> S << S' -> R @ S << R' @ S'.
-
-Proof.
-intros h1 h2. unfold inclusion, compose. intros. do 2 destruct H.
-exists x0. auto.
-Qed.
-
-Lemma comp_assoc : forall T, (R @ S) @ T << R @ (S @ T).
-
-Proof.
-unfold inclusion. intros. do 4 destruct H. exists x1; split. assumption.
-exists x0; split; assumption.
-Qed.
-
-Lemma comp_assoc' : forall T, R @ (S @ T) << (R @ S) @ T.
-
-Proof.
-unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
-exists x1; split. exists x0; split; assumption. exact H1.
-Qed.
-
-Lemma comp_rtc_incl : R @ S << S -> R# @ S << S.
-
-Proof.
-intro. unfold inclusion, compose. intros. do 2 destruct H0.
-generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
-Qed.
-
-Lemma comp_tc_incl : R @ S << S -> R! @ S << S.
-
-Proof.
-intro. unfold inclusion, compose. intros. do 2 destruct H0.
-generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
-Qed.
-
-Lemma comp_incl_tc : R @ S << S -> R @ S! << S!.
-
-Proof.
-intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
-induction 1; intros. apply t_step. apply H. exists x1; split; assumption.
-apply t_trans with (y := y0); auto.
-Qed.
-
-Lemma trans_intro : R @ R << R -> transitive R.
-
-Proof.
-unfold transitive. intros. apply H. exists y. intuition.
-Qed.
-
-Lemma tc_idem : R! @ R! << R!.
-
-Proof.
-unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; assumption.
-Qed.
-
-End compose.
-
-Ltac comp := apply incl_comp; try incl_refl.
-
-Ltac assoc :=
-  match goal with
-    | |- (?s @ ?t) @ ?u << _ => trans (s @ (t @ u)); try apply comp_assoc
-    | |- ?s @ (?t @ ?u) << _ => trans ((s @ t) @ u); try apply comp_assoc'
-    | |- _ << (?s @ ?t) @ ?u => trans (s @ (t @ u)); try apply comp_assoc'
-    | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
-  end.
 
 (***********************************************************************)
 (** union *)
