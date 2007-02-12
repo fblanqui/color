@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.2 2007-02-09 14:58:23 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.3 2007-02-12 16:16:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -100,6 +100,18 @@ Qed.
 
 Implicit Arguments chain_dps_app [l a b m].
 
+Lemma chain_dps_app' : forall a l m b p, a :: l = m ++ b :: p ->
+  chain_dps a l << chain_dps a (tail m) % @ chain_dps b p.
+
+Proof.
+intros. destruct m; simpl in H; injection H; unfold inclusion; intros.
+subst p. subst b. exists x. unfold clos_refl. intuition.
+subst r. subst l. simpl. deduce (chain_dps_app _ _ H2). do 2 destruct H0.
+exists x0. unfold clos_refl. intuition.
+Qed.
+
+Implicit Arguments chain_dps_app' [a l m b p x y].
+
 Require Export Iter.
 
 Lemma chain_dps_iter_chain : forall l a, chain_dps a l << iter Chain (length l).
@@ -186,8 +198,8 @@ Variables (succ succ_eq : relation term)
   (HcompR : compatible succ_eq R)
   (HcompDP : compatible succ_eq (dp R))
   (Hwf : WF succ)
-  (Hcycle : forall a l,
-    cycle_min dp_graph a l -> exists b, In b l /\ succ (lhs b) (rhs b)).
+  (Hcycle : forall a l, cycle_min dp_graph a l ->
+    exists b, In b (a :: l) /\ succ (lhs b) (rhs b)).
 
 Notation eq_dec := (@eq_rule_dec Sig).
 Notation occur := (occur eq_dec).
@@ -204,19 +216,19 @@ apply incl_elim with (R := int_red R #). apply incl_rtc. apply int_red_incl_red.
 exact H0. apply hd_red_rule. simpl. auto.
 Qed.
 
-Lemma compat_chain_dp : forall a, chain_dp a << succ_eq!.
+Lemma compat_chain_dp : forall a, chain_dp a << succ_eq#.
 
 Proof.
 intros. trans (red_mod R DP). trans (Chain). apply chain_dp_chain.
 trans (hd_red_mod R DP). apply chain_hd_red_mod. apply hd_red_mod_incl_red_mod.
-apply compat_red_mod_tc; assumption.
+trans (succ_eq!). apply compat_red_mod_tc; assumption. apply tc_incl_rtc.
 Qed.
 
-Lemma compat_chain_dps : forall l a, chain_dps a l << succ_eq!.
+Lemma compat_chain_dps : forall l a, chain_dps a l << succ_eq#.
 
 Proof.
-induction l; simpl; intros. apply compat_chain_dp. trans (succ_eq! @ succ_eq!).
-comp. apply compat_chain_dp. apply IHl. apply tc_idem.
+induction l; simpl; intros. apply compat_chain_dp. trans (succ_eq# @ succ_eq#).
+comp. apply compat_chain_dp. apply IHl. apply rtc_idem.
 Qed.
 
 Lemma compat_chain_dp_strict : forall a,
@@ -246,35 +258,35 @@ deduce (iter_chain_chain_dps H1). do 3 destruct H2.
 assert (length x1 > 0). omega. deduce (last_intro H4). do 3 destruct H5.
 clear H4. rewrite H5 in H3. deduce (chain_dps_path_dp_graph H3).
 (* pigeon-hole principle: there is a dp visited twice *)
-assert (exists z, occur z x2 >= 2). eapply long_path_occur.
-apply restricted_dp_graph. apply H4. rewrite H6. rewrite H2. unfold n. omega.
+set (l' := x0 :: x2 ++ x3 :: nil). assert (exists z, occur z l' >= 2).
+unfold l'. eapply long_path_occur. apply restricted_dp_graph. apply H4.
+simpl. rewrite H6. rewrite H2. unfold n. omega.
 (* we prove (A): in this cycle, a dp is included in succ *)
-assert (exists l, exists a, exists m, x2 ++ x3 :: nil = l ++ a :: m
-  /\ succ (lhs a) (rhs a)).
-destruct H7. set (p := occur x4 x2 - 2). assert (occur x4 x2 = S (S p)).
+assert (exists l, exists a, exists m, l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
+destruct H7. set (p := occur x4 l' - 2). assert (occur x4 l' = S (S p)).
 unfold p. omega. deduce (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
 clear H8. rewrite H9. deduce (occur_S eq_dec H11). do 3 destruct H8.
 destruct H12. clear H11. clear H13. clear p. rewrite H8. rewrite H8 in H9.
 clear H8. clear H10.
 (* cycle_min dp_graph x4 x7 *)
 assert (cycle_min dp_graph x4 x7). unfold cycle_min, cycle. intuition.
-rewrite H9 in H4. deduce (path_app_elim H4). destruct H8.
-deduce (path_app_elim H10). intuition.
+eapply sub_path. unfold l' in H9. apply H9. exact H4.
 (* end of the proof of (A) *)
 deduce (Hcycle H8). do 2 destruct H10. deduce (in_elim H10). do 2 destruct H13.
-rewrite H13. exists (x5++x4::x10). exists x9. exists (x11++x4::x8++x3::nil).
-intuition. simpl. do 3 (repeat rewrite app_ass; simpl). refl. do 4 destruct H8.
-rewrite H8 in H3. deduce (incl_elim (@chain_dps_app _ _ _ _) H3).
+exists (x5++x10). exists x9. exists (x11++x4::x8). intuition.
+rewrite app_ass. apply appr_eq. apply trans_eq with ((x4::x7)++x4::x8). refl.
+rewrite H13. rewrite app_ass. refl.
+(* consequence of (A) *)
+do 4 destruct H8. unfold l' in H8. deduce (chain_dps_app' H8 H3).
 do 2 destruct H10.
 (* succ_eq# x x7 *)
-assert (succ_eq# x x7). eapply incl_elim. apply tc_incl_rtc.
+assert (succ_eq# x x7). destruct H10. subst x7. intuition.
 eapply incl_elim. apply compat_chain_dps. apply H10.
 (* (succ @ succ_eq#) x7 y *)
 assert ((succ @ succ_eq#) x7 y). destruct x6; simpl in H11.
 deduce (compat_chain_dp_strict H9 H11). exists y. intuition.
 do 2 destruct H11. exists x8. split. eapply incl_elim.
 apply (compat_chain_dp_strict H9). exact H11.
-eapply incl_elim with (R := succ_eq!). apply tc_incl_rtc.
 eapply incl_elim. apply compat_chain_dps. apply H13.
 (* (succ @ succ_eq#) x y *)
 do 2 destruct H13. exists x8. intuition.

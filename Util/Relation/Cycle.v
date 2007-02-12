@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cycles
 *)
 
-(* $Id: Cycle.v,v 1.1 2007-02-09 13:15:27 blanqui Exp $ *)
+(* $Id: Cycle.v,v 1.2 2007-02-12 16:16:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -59,12 +59,12 @@ Require Export ListOccur.
 Notation occur := (occur eq_dec).
 
 Lemma long_path_occur : forall s, restricted R s ->
-  forall x y l, path R x y l -> length l > length s ->
-    exists z, occur z l >= 2.
+  forall x y l, path R x y l -> length (x :: l) >= length s ->
+    exists z, occur z (x :: l ++ y :: nil) >= 2.
 
 Proof.
-intros. apply pigeon_hole with s.
-eapply restricted_path_incl. apply H. apply H0. exact H1.
+intros. apply pigeon_hole with s. eapply restricted_path_incl.
+apply H. apply H0. simpl. rewrite length_app. simpl. simpl in H1. omega.
 Qed.
 
 End S.

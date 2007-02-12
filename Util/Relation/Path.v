@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 paths and finite restrictions
 *)
 
-(* $Id: Path.v,v 1.8 2007-02-09 10:15:16 blanqui Exp $ *)
+(* $Id: Path.v,v 1.9 2007-02-12 16:16:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -38,6 +38,38 @@ Lemma path_app_elim : forall l x y z m,
 Proof.
 induction l; simpl; intros. exact H. destruct H. deduce (IHl _ _ _ _ H0).
 intuition.
+Qed.
+
+Lemma sub_path : forall l x y x' y' l' m p,
+  x :: l ++ y :: nil = m ++ x' :: l' ++ y' :: p -> path x y l -> path x' y' l'.
+
+Proof.
+induction l; simpl; intros.
+(* case l=nil *)
+destruct m; simpl in H.
+(* case m=nil *)
+injection H; intros. subst x'. destruct l'; simpl in H1.
+(* case l'=nil *)
+injection H1; intros. subst y'. exact H0.
+(* case l'=a::l' *)
+injection H1; intros. destruct l'; discriminate.
+(* case m=a::m *)
+injection H; intros. destruct m; simpl in H1.
+(* case m=nil *)
+injection H1; intros. destruct l'; discriminate.
+(* case m=a0::m *)
+injection H1; intros. destruct m; discriminate.
+(* case l=a::l *)
+destruct H0. destruct m; simpl in H.
+(* case m=nil *)
+injection H; intros. subst x'. destruct l'; simpl in H2; simpl in H.
+(* case l'=nil *)
+injection H2; intros. subst a. exact H0.
+(* case l'=a0::l' *)
+simpl. injection H2; intros. subst a0. intuition.
+apply (IHl a y a y' l' (@nil A) p). simpl. exact H2. exact H1.
+(* case m=a0::m *)
+injection H; intros. subst a0. eapply IHl. apply H2. exact H1.
 Qed.
 
 Lemma path_app_intro : forall l x y z m,
@@ -182,12 +214,14 @@ Definition sub (x y : A) := In x l /\ In y l /\ R x y.
 Definition restricted := R << sub.
 
 Lemma restricted_path_incl : restricted ->
-  forall m x y, path R x y m -> incl m l.
+  forall m x y, path R x y m -> incl (x :: m ++ y :: nil) l.
 
 Proof.
-induction m; simpl; intros. apply incl_nil. destruct H0. apply incl_cons.
-deduce (incl_elim H H0). unfold sub in H2. intuition.
-eapply IHm. apply H1.
+induction m; simpl; intros.
+deduce (H _ _ H0). unfold sub in H1. unfold incl. simpl. intuition.
+subst a. exact H2. subst a. exact H1.
+destruct H0. apply incl_cons. deduce (H _ _ H0). unfold sub in H2. intuition.
+apply IHm. exact H1.
 Qed.
 
 Lemma inclusion_sub : sub << R.
@@ -242,3 +276,4 @@ Qed.
 End S.
 
 Implicit Arguments path_app_elim [A R l x y z m].
+Implicit Arguments restricted_path_incl [A R l m x y].
