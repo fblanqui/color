@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cycles
 *)
 
-(* $Id: Cycle.v,v 1.3 2007-02-12 17:10:03 blanqui Exp $ *)
+(* $Id: Cycle.v,v 1.4 2007-02-12 18:46:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -52,19 +52,6 @@ intros. case (In_dec eq_dec x l); intro.
 deduce (path_cycle_min H i). do 3 destruct H0. subst l.
 exists x0. exists (x :: x1). intuition.
 exists l. exists (@nil A). unfold cycle_min. intuition.
-Qed.
-
-Require Export ListOccur.
-
-Notation occur := (occur eq_dec).
-
-Lemma long_path_occur : forall s, restricted R s ->
-  forall x y l, path R x y l -> length l >= length s - 1 ->
-    exists z, occur z (x :: l ++ y :: nil) >= 2.
-
-Proof.
-intros. apply pigeon_hole with s. eapply restricted_path_incl.
-apply H. apply H0. simpl. rewrite length_app. simpl. omega.
 Qed.
 
 End S.
