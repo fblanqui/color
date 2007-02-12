@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 paths and finite restrictions
 *)
 
-(* $Id: Path.v,v 1.9 2007-02-12 16:16:34 blanqui Exp $ *)
+(* $Id: Path.v,v 1.10 2007-02-12 18:46:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -140,7 +140,7 @@ apply path_cut_bis; tauto. simpl. tauto.
 Qed.
 
 Lemma path_mono_length : forall (x y : A) l', path x y l' ->
-  exists l'', mono l'' /\ length l''<= length l' /\ path x y l''.
+  exists l'', mono l'' /\ length l'' <= length l' /\ path x y l''.
 
 Proof.
 intros. exists (shrink eq_dec l'). 
@@ -222,6 +222,19 @@ deduce (H _ _ H0). unfold sub in H1. unfold incl. simpl. intuition.
 subst a. exact H2. subst a. exact H1.
 destruct H0. apply incl_cons. deduce (H _ _ H0). unfold sub in H2. intuition.
 apply IHm. exact H1.
+Qed.
+
+Require Export ListOccur.
+
+Notation occur := (occur eq_dec).
+
+Lemma long_path_occur : restricted ->
+  forall x y m, path R x y m -> length m >= length l - 1 ->
+    exists z, occur z (x :: m ++ y :: nil) >= 2.
+
+Proof.
+intros. apply pigeon_hole with l. apply restricted_path_incl.
+apply H. apply H0. simpl. rewrite length_app. simpl. omega.
 Qed.
 
 Lemma inclusion_sub : sub << R.
