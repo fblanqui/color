@@ -51,7 +51,7 @@ Lemma mono_rev : forall l, mono l -> mono (rev l).
 
 Proof.
 induction l; simpl; intros. exact H. destruct H. apply mono_last. apply IHl.
-exact H0. intro. apply H. apply rev_refl_incl_left. exact H1.
+exact H0. intro. apply H. apply rev_incl. exact H1.
 Qed.
 
 Lemma mono_app_elim : forall l m,
@@ -179,7 +179,7 @@ rewrite rev_unit. rewrite rev_involutive.
 case (In_dec eq_dec x (rev (least_mono l) ++ a :: nil)); intro. split.
 apply in_cons. exact H2. exists x0. refl.
 absurd (In x (rev (least_mono l) ++ a :: nil)). exact n0.
-apply in_appl. apply rev_In. exact H2.
+apply in_appl. apply in_rev. exact H2.
 Qed.
 
 Lemma mono_intro: forall l,

@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.16 2007-02-16 13:28:32 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.17 2007-02-16 13:39:12 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -624,30 +624,29 @@ Section reverse.
 
 Variable A : Set.
 
-Lemma rev_In : forall (x : A) l, In x l -> In x (rev l).
+Lemma in_rev : forall (x : A) l, In x l -> In x (rev l).
 
 Proof.
 induction l; simpl; intros. assumption. apply in_or_app. simpl. tauto.
 Qed.
 
-Lemma rev_refl_incl_right : forall l : list A, incl l (rev l).
+Lemma incl_rev : forall l : list A, incl l (rev l).
 
 Proof.
-unfold incl. intros. apply rev_In. assumption. 
+unfold incl. intros. apply in_rev. assumption. 
 Qed. 
 
-Lemma rev_refl_incl_left : forall l : list A, incl (rev l) l. 
+Lemma rev_incl : forall l : list A, incl (rev l) l. 
 
 Proof.
-intros. pose (rev_refl_incl_right (rev l)).
-rewrite (rev_involutive l) in i. assumption. 
+intros. pose (incl_rev (rev l)). rewrite (rev_involutive l) in i. assumption.
 Qed.
 
-Lemma rev_incl_left : forall l l' : list A, incl (rev l) (rev l') -> incl l l'.
+Lemma incl_rev_intro : forall l l' : list A, incl (rev l) (rev l') -> incl l l'.
 
 Proof.
-intros. apply incl_tran with (rev l). apply rev_refl_incl_right. 
-apply incl_tran with (rev l'). assumption. apply rev_refl_incl_left. 
+intros. apply incl_tran with (rev l). apply incl_rev.
+apply incl_tran with (rev l'). assumption. apply rev_incl.
 Qed.
 
 End reverse.
