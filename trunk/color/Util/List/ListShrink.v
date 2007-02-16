@@ -9,8 +9,7 @@ prefix, suffix, cut, elimination of doubles, etc.
 
 Set Implicit Arguments.
 
-Require Export ListUtil.
-Require Export Arith.
+Require Export ListMono.
 
 (***********************************************************************)
 (** prefix *)

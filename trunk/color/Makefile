@@ -9,7 +9,7 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean all makefiles dist doc dump html install-dist install-doc tags
+.PHONY: clean all config dist doc dump html install-dist install-doc tags
 
 SUBDIRS := Util Term MannaNess PolyInt DP Filter MPO Conversion RPO HORPO
 
@@ -22,6 +22,9 @@ all: Makefile.coq
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
 
 Makefile.coq:
+	$(MAKE) config
+
+config:
 	coq_makefile -R . Rewriting `find . -name \*.v` > Makefile.coq
 
 clean:

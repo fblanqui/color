@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.15 2007-02-12 18:46:55 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.16 2007-02-16 13:28:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -651,76 +651,6 @@ apply incl_tran with (rev l'). assumption. apply rev_refl_incl_left.
 Qed.
 
 End reverse.
-
-(***********************************************************************)
-(** mono *)
-
-Section mono.
-
-Variable A : Set.
-
-Fixpoint mono (l : list A) : Prop :=
-  match l with
-    | nil => True
-    | x::l => ~In x l /\ mono l
-  end.
-
-Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
-
-Lemma mono_incl_length : forall l l',
-  mono l -> incl l l' -> length l <= length l'.
-
-Proof.
-induction l; simpl; intros. apply le_O_n.
-apply le_trans with (S (length (remove eq_dec a l'))).
-apply le_n_S. apply IHl. tauto. apply incl_remove. tauto.
-apply incl_cons_l_incl with a. assumption.
-apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. assumption.
-Qed.
-
-Lemma mono_last : forall a l, mono l -> ~In a l -> mono (l ++ a :: nil).
-
-Proof.
-induction l; simpl; intros. auto. intuition. deduce (in_app_or H). destruct H5.
-auto. simpl in H5. intuition.
-Qed.
-
-Lemma mono_rev : forall l, mono l -> mono (rev l).
-
-Proof.
-induction l; simpl; intros. exact H. destruct H. apply mono_last. apply IHl.
-exact H0. intro. apply H. apply rev_refl_incl_left. exact H1.
-Qed.
-
-Fixpoint least_mono_aux (acc l : list A) {struct l} : list A :=
-  match l with
-    | nil => rev acc
-    | cons x l =>
-      match In_dec eq_dec x acc with
-        | left _ => rev acc
-        | right _ => least_mono_aux (x :: acc) l
-      end
-  end.
-
-Definition least_mono l := rev (least_mono_aux nil l).
-
-Lemma least_mono_aux_correct : forall l acc,
-  mono acc -> mono (least_mono_aux acc l).
-
-Proof.
-induction l; simpl; intros. apply mono_rev. exact H.
-case (In_dec eq_dec a acc); intro. apply mono_rev. exact H.
-apply IHl. simpl. auto.
-Qed.
-
-Lemma least_mono_correct : forall l, mono (least_mono l).
-
-Proof.
-unfold least_mono. intro. apply mono_rev. apply least_mono_aux_correct.
-simpl. exact I.
-Qed.
-
-End mono.
 
 (***********************************************************************)
 (** last element *)
