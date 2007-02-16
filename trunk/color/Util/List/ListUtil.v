@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.17 2007-02-16 13:39:12 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.18 2007-02-16 17:10:18 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -90,6 +90,12 @@ Require Import Omega.
 Section tail.
 
 Variable A : Set.
+
+Lemma length_0 : forall l : list A, length l = 0 -> l = nil.
+
+Proof.
+intros. destruct l. refl. discriminate.
+Qed.
 
 Lemma length_tail : forall l : list A, length (tail l) <= length l.
 

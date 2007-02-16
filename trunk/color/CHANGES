@@ -1,4 +1,7 @@
-09-02-06:
+07-02-16:
+- Util/List/ListMono: smallest prefix without duplication [Blanqui]
+
+07-02-06:
 - DP/ADPGraph: proof of the dp criterion based on cycles [Blanqui]
 
 - Util/Relation/Union: union of two wellfounded relations [Blanqui]
