@@ -81,7 +81,7 @@ Definition suffix (l l' : list A) : Prop := prefix (rev l)(rev l').
 Lemma suffix_incl : forall l l' : list A, suffix l l' -> incl l l'.
 
 Proof.
-intros. apply rev_incl_left. unfold suffix in H. apply prefix_incl. assumption. 
+intros. apply incl_rev_intro. unfold suffix in H. apply prefix_incl. assumption. 
 Qed.
 
 Lemma suffix_smaller : forall l (x : A) l',
