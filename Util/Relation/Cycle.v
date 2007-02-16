@@ -7,20 +7,22 @@ See the COPYRIGHTS and LICENSE files.
 cycles
 *)
 
-(* $Id: Cycle.v,v 1.4 2007-02-12 18:46:55 blanqui Exp $ *)
+(* $Id: Cycle.v,v 1.5 2007-02-16 17:10:18 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export Path.
+Require Export ListMono.
 
 Section S.
 
 Variables (A : Set) (R : relation A).
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
-Definition cycle x := path R x x.
+(***********************************************************************)
+(** cycles *)
 
-Definition cycle_min x l := cycle x l /\ ~In x l.
+Definition cycle x := path R x x.
 
 Lemma path_cycle : forall x y l, path R x y l -> In x l ->
   exists m, exists p, l = m ++ x :: p /\ cycle x m.
@@ -33,25 +35,37 @@ Qed.
 
 Implicit Arguments path_cycle [x y l].
 
-Lemma path_cycle_min : forall x y l, path R x y l -> In x l ->
-  exists m, exists p, l = m ++ x :: p /\ cycle_min x m.
+(***********************************************************************)
+(** cycles of minimum length *)
+
+Definition cycle_min x l := cycle x l /\ ~In x l /\ mono l.
+
+Lemma cycle_min_intro : forall x l, cycle x l ->
+  exists m, exists y, exists p, exists q,
+    x :: l = m ++ y :: p ++ q /\ cycle_min y p.
 
 Proof.
-intros. deduce (in_elim_dec eq_dec H0). do 3 destruct H1. subst l.
-deduce (path_app_elim H). destruct H1. exists x0. exists x1.
-unfold cycle_min. intuition.
-Qed.
-
-Implicit Arguments path_cycle_min [x y l].
-
-Lemma cycle_cycle_min : forall x l, cycle x l ->
-  exists m, exists p, l = m ++ p /\ cycle_min x m.
-
-Proof.
-intros. case (In_dec eq_dec x l); intro.
-deduce (path_cycle_min H i). do 3 destruct H0. subst l.
-exists x0. exists (x :: x1). intuition.
-exists l. exists (@nil A). unfold cycle_min. intuition.
+intros. unfold cycle_min. deduce (mono_intro eq_dec (x::l)). decomp H0.
+(* mono (x::l) *)
+exists (@nil A). exists x. exists l. exists (@nil A). rewrite <- app_nil_end.
+simpl in H1. intuition.
+(* x::l = x0++x1::x2 *)
+rewrite H1. deduce (in_elim H4). decomp H0. rewrite H5.
+exists x3. exists x1. exists x4. exists (x1::x2). rewrite app_ass. simpl.
+rewrite H5 in H2. deduce (mono_app_elim H2). simpl in H0. decomp H0. intuition.
+(* cycle x1 x4 *)
+destruct x0. contradiction. injection H1; intros. subst a.
+unfold cycle in H. destruct x3; injection H5; intros.
+(* x3=nil *)
+subst x1. subst x4. rewrite H0 in H. deduce (path_app_elim H). intuition.
+(* x3=x::x3 *)
+subst a. subst x0. rewrite app_ass in H0. simpl in H0. rewrite H0 in H.
+deduce (path_app_elim H). destruct H7. deduce (path_app_elim H10). intuition.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** implicit arguments *)
+
+Implicit Arguments cycle_min_intro [A R x l].

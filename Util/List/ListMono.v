@@ -8,6 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 lists without duplications
 *)
 
+Set Implicit Arguments.
+
 Section S.
 
 Variable A : Set.
@@ -182,6 +184,14 @@ absurd (In x (rev (least_mono l) ++ a :: nil)). exact n0.
 apply in_appl. apply in_rev. exact H2.
 Qed.
 
+Lemma least_mono_intro' : forall l, exists m, l = least_mono l ++ m.
+
+Proof.
+intro. deduce (least_mono_intro l). destruct H.
+exists (@nil A). rewrite <- H. apply app_nil_end.
+decomp H. exists (x::x0). exact H0.
+Qed.
+
 Lemma mono_intro: forall l,
   mono l \/ exists m, exists x, exists p, l = m ++ x :: p /\ mono m /\ In x m.
 
@@ -192,9 +202,14 @@ left. rewrite H. exact H0.
 right. decomp H. exists (least_mono l). exists x. exists x0. intuition.
 Qed.
 
+Lemma mono_intro' : forall l, exists m, exists p, l = m ++ p /\ mono m.
+
+Proof.
+intro. deduce (mono_intro l). destruct H.
+exists l. exists (@nil A). rewrite <- app_nil_end. auto.
+decomp H. exists x. exists (x0::x1). auto.
+Qed.
+
 End S.
 
-(***********************************************************************)
-(** implicit arguments *)
-
-Implicit Arguments mono [A].
+Implicit Arguments mono_app_elim [A l m].

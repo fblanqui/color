@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.4 2007-02-12 17:10:03 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.5 2007-02-16 17:10:18 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -198,7 +198,7 @@ Variables (succ succ_eq : relation term)
   (HcompR : compatible succ_eq R)
   (HcompDP : compatible succ_eq (dp R))
   (Hwf : WF succ)
-  (Hcycle : forall a l, length l <= length DP -> cycle_min dp_graph a l ->
+  (Hcycle : forall a l, length l < length DP -> cycle_min dp_graph a l ->
     exists b, In b (a :: l) /\ succ (lhs b) (rhs b)).
 
 Notation eq_dec := (@eq_rule_dec Sig).
@@ -268,17 +268,24 @@ unfold p. omega. deduce (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
 clear H8. rewrite H9. deduce (occur_S eq_dec H11). do 3 destruct H8.
 destruct H12. clear H11. clear H13. clear p. rewrite H8. rewrite H8 in H9.
 clear H8. clear H10.
-(* cycle_min dp_graph x4 x7 *)
-assert (cycle_min dp_graph x4 x7). unfold cycle_min, cycle. intuition.
-eapply sub_path. unfold l' in H9. apply H9. exact H4.
+(* cycle min *)
+assert (cycle dp_graph x4 x7). unfold cycle. eapply sub_path. unfold l' in H9.
+apply H9. exact H4. deduce (cycle_min_intro eq_dec H8). decomp H10.
+(* length x11 < length DP *)
+assert (length l' = n+2). unfold l'. simpl. rewrite <- H5. omega.
+rewrite H9 in H10. change (length (x5++(x4::x7)++x4::x8) = n+2) in H10.
+rewrite H11 in H10. repeat (rewrite length_app in H10; simpl in H10).
+unfold n in H10. assert (h : length x11 < length DP).
+unfold cycle_min in H14. destruct H14. assert (length (x10::x11) <= length DP).
+apply mono_incl_length. apply eq_dec. exact H14.
+apply incl_appr_incl with (x10::nil). simpl. eapply restricted_path_incl.
+apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
 (* end of the proof of (A) *)
-assert (h : length x7 <= length DP). assert (length l' = n+2).
-unfold l'. simpl. rewrite <- H5. omega. rewrite H9 in H10.
-repeat (rewrite length_app in H10; simpl in H10). unfold n in H10. omega.
-deduce (Hcycle h H8). do 2 destruct H10. deduce (in_elim H10). do 2 destruct H13.
-exists (x5++x10). exists x9. exists (x11++x4::x8). intuition.
-rewrite app_ass. apply appr_eq. apply trans_eq with ((x4::x7)++x4::x8). refl.
-rewrite H13. rewrite app_ass. refl.
+deduce (Hcycle h H14). do 2 destruct H10. deduce (in_elim H10).
+do 2 destruct H15. exists (x5++x9++x14). exists x13. exists (x15++x12++x4::x8).
+intuition. repeat rewrite app_ass. transitivity (x5++(x4::x7)++x4::x8). refl.
+rewrite H11. rewrite app_ass. transitivity (x5++x9++(x10::x11)++x12++x4::x8).
+simpl. rewrite app_ass. refl. rewrite H15. rewrite app_ass. refl.
 (* consequence of (A) *)
 do 4 destruct H8. unfold l' in H8. deduce (chain_dps_app' H8 H3).
 do 2 destruct H10.
