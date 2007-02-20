@@ -26,6 +26,7 @@ Makefile.coq:
 
 config:
 	coq_makefile -R . Rewriting `find . -name \*.v` > Makefile.coq
+	$(COQMAKE) depend
 
 clean:
 	rm -f `find . -name \*~`
