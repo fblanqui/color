@@ -373,7 +373,7 @@ Section path.
 Variables (A : Set) (R : relation A).
 
 Lemma SN_path : forall n x,
-  (forall y l, length l = n -> path R x y l -> SN R y) -> SN R x.
+  (forall y l, length l = n -> is_path R x y l -> SN R y) -> SN R x.
 
 Proof.
 intros. apply SN_iter with n. apply SN_intro. intros.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cycles
 *)
 
-(* $Id: Cycle.v,v 1.5 2007-02-16 17:10:18 blanqui Exp $ *)
+(* $Id: Cycle.v,v 1.6 2007-02-21 12:38:33 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,9 +22,9 @@ Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 (***********************************************************************)
 (** cycles *)
 
-Definition cycle x := path R x x.
+Definition cycle x := is_path R x x.
 
-Lemma path_cycle : forall x y l, path R x y l -> In x l ->
+Lemma path_cycle : forall x y l, is_path R x y l -> In x l ->
   exists m, exists p, l = m ++ x :: p /\ cycle x m.
 
 Proof.

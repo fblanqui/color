@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.5 2007-02-16 17:10:18 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.6 2007-02-21 12:38:33 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -172,7 +172,7 @@ refl. rewrite H9. assumption.
 Qed.
 
 Lemma chain_dps_path_dp_graph : forall l a b t u,
-  chain_dps a (l ++ b :: nil) t u -> path dp_graph a b l.
+  chain_dps a (l ++ b :: nil) t u -> is_path dp_graph a b l.
 
 Proof.
 induction l; simpl; intros; do 2 destruct H.

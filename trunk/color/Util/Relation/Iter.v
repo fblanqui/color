@@ -129,7 +129,7 @@ Qed.
 (** relation with paths *)
 
 Lemma iter_path : forall n x y,
-  iter n x y -> exists l, length l = n /\ path R x y l.
+  iter n x y -> exists l, length l = n /\ is_path R x y l.
 
 Proof.
 induction n; simpl; intros. exists (@nil A). intuition.
@@ -137,7 +137,7 @@ do 2 destruct H. deduce (IHn _ _ H0). do 2 destruct H1. subst n.
 exists (x0 :: x1). simpl. intuition.
 Qed.
 
-Lemma path_iter : forall l x y, path R x y l -> iter (length l) x y.
+Lemma path_iter : forall l x y, is_path R x y l -> iter (length l) x y.
 
 Proof.
 induction l; simpl; intros. exact H. exists a. intuition.
