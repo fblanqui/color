@@ -12,10 +12,89 @@ Set Implicit Arguments.
 
 Section S.
 
-Variable A : Set.
-
 Require Export ListUtil.
 Require Export Arith.
+Require Export dec_midex. 
+
+(***********************************************************************)
+(* GENERAL DEFINITIONS AND LEMMAS ON LISTS *)
+
+Section On_List.
+
+Variable A : Set.
+
+Lemma In_midex : eq_midex A -> forall (x : A) l, In x l \/ ~In x l. 
+
+Proof.
+induction l. tauto. simpl. destruct (H a x); destruct IHl; tauto.
+Qed.
+
+Lemma In_elim_right : eq_midex A -> forall (x : A) l, 
+In x l -> exists l', exists l'', l=l'++(x::l'') /\ ~In x l''. 
+
+Proof.
+induction l; simpl; intros. contradiction. 
+destruct (In_midex H x l). destruct IHl. assumption. destruct H2. 
+exists (a::x0). exists x1. rewrite (proj1 H2). rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
+destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto. contradiction.
+Qed.
+
+Lemma incl_nil : forall l : list A, incl nil l. 
+
+Proof.
+do 2 intro. simpl. tauto.
+Qed. 
+
+Lemma incl_elim_cons : forall l l' (x : A), incl (x::l) l' -> incl l l'.
+
+Proof.
+unfold incl. simpl. intros. apply H. tauto.
+Qed.
+
+Lemma incl_double_cons : forall (x : A) l l', incl l l' -> incl (x::l) (x::l').
+
+Proof.
+unfold incl. simpl. intros. pose (H a). tauto. 
+Qed.
+
+Lemma length_app : forall l l' : list A, length (l++l')=length l + length l'.
+
+Proof.
+induction l; simpl; intro; try rewrite IHl; trivial.  
+Qed.
+
+(***********************************************************************)
+(* repeat-free *)
+
+Fixpoint repeat_free (l : list A) : Prop :=
+match l with
+| nil => True
+| a::l' => ~In a l' /\ repeat_free l'
+end.
+
+Lemma repeat_free_app_elim_right : forall l l' ,
+repeat_free (l++l') -> repeat_free l'. 
+
+Proof.
+induction l; simpl; intros. assumption. apply IHl. tauto. 
+Qed.
+
+Lemma repeat_free_incl_length : eq_midex A -> forall l l',
+repeat_free l -> incl l l' -> length l<=length l'.
+
+Proof.
+induction l; simpl; intros. apply le_O_n. 
+destruct (In_elim_right H a l'). apply H1. simpl. tauto. destruct H2. rewrite (proj1 H2). 
+rewrite (length_app x (a::x0)). assert (length l <= length (x++x0)). apply IHl. 
+tauto. unfold incl in *|-* . intros. apply in_or_app. destruct (H a0 a). 
+rewrite H4 in H3. tauto. assert (In a0 x \/ In a0 (a::x0)). apply in_app_or. 
+rewrite <- (proj1 H2). apply H1. simpl. tauto. simpl in H5. intuition. rewrite H5 in H4. tauto. 
+rewrite (length_app x x0) in H3. simpl. omega. 
+Qed. 
+
+End On_List.
+
+Variable A : Set.
 
 (***********************************************************************)
 (** predicate saying if a list has no duplicated elements *)
