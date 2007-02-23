@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Extensions of the Coq library on lists
 *)
 
-(* $Id: ListExt.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ListExt.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -26,7 +26,8 @@ Section ListsGeneral.
     right; congruence.
   Qed.
 
-  Lemma list_app_first_last : forall l m (a: A), (l ++ a::nil) ++ m = l ++ a::m.
+  Lemma list_app_first_last : forall l m (a : A),
+    (l ++ a::nil) ++ m = l ++ a::m.
 
   Proof.
     induction l.
@@ -36,7 +37,8 @@ Section ListsGeneral.
     destruct (IHl m a'); trivial.
   Qed.
 
-  Lemma list_app_last : forall l m n (a: A), l ++ m = n ++ a::nil -> m <> nil -> In a m.
+  Lemma list_app_last : forall l m n (a : A),
+    l ++ m = n ++ a::nil -> m <> nil -> In a m.
 
   Proof.
     intros l m n; generalize n l m; clear l m n.
@@ -54,8 +56,8 @@ Section ListsGeneral.
     apply IHn with l; trivial.
   Qed.
 
-  Lemma list_drop_last : forall l m n (a: A), l ++ m = n ++ a::nil -> m <> nil ->
-    (exists2 w, incl w m & l ++ w = n).
+  Lemma list_drop_last : forall l m n (a : A),
+    l ++ m = n ++ a::nil -> m <> nil -> exists2 w, incl w m & l ++ w = n.
 
   Proof.
     induction l; intros.
@@ -86,7 +88,8 @@ Section ListsGeneral.
     destruct l; auto with datatypes.
   Qed.
 
-  Lemma tail_cons_tail : forall (l1 l2: list A), l1 <> nil -> tail l1 ++ l2 = tail (l1 ++ l2).
+  Lemma tail_cons_tail : forall (l1 l2: list A),
+    l1 <> nil -> tail l1 ++ l2 = tail (l1 ++ l2).
 
   Proof.
     destruct l1.
@@ -94,13 +97,14 @@ Section ListsGeneral.
     auto.
   Qed.
 
-  Lemma length_tail : forall (l: list A), length (tail l) = length l - 1.
+  Lemma length_tail : forall (l : list A), length (tail l) = length l - 1.
 
   Proof.
     destruct l; simpl; omega.
   Qed.
 
-  Definition head_notNil : forall (l: list A)(lne: l <> nil), {a: A | head l = Some a}.
+  Definition head_notNil : forall (l : list A) (lne : l <> nil),
+    {a : A | head l = Some a}.
 
   Proof.
     destruct l.
@@ -108,8 +112,8 @@ Section ListsGeneral.
     exists a; auto.
   Defined.
 
-  Lemma head_of_notNil : forall (l: list A) a (lne: l <> nil), head l = Some a ->
-     proj1_sig (head_notNil lne) = a.
+  Lemma head_of_notNil : forall (l : list A) a (lne: l <> nil),
+    head l = Some a -> proj1_sig (head_notNil lne) = a.
 
   Proof.
     intros.
@@ -125,7 +129,7 @@ Section ListsGeneral.
     auto.
   Qed.
 
-  Lemma list_decompose_head : forall (l: list A) el (lne: l <> nil),
+  Lemma list_decompose_head : forall (l : list A) el (lne: l <> nil),
     head l = Some el -> l = el :: tail l.
 
   Proof.
@@ -146,7 +150,8 @@ Section ListsGeneral.
     rewrite (IHl m); trivial.
   Qed.
 
-  Lemma in_head_tail : forall a (l: list A), In a l -> Some a = head l \/ In a (tail l).
+  Lemma in_head_tail : forall a (l : list A),
+    In a l -> Some a = head l \/ In a (tail l).
 
   Proof.
     induction l; intros; inversion H.
@@ -163,8 +168,8 @@ Section ListsNth.
 
   Variable A: Set.
 
-  Lemma nth_error_In : forall (l: list A) i, 
-    {a: A | nth_error l i = Some a} + {nth_error l i = None}.
+  Lemma nth_error_In : forall (l : list A) i, 
+    {a : A | nth_error l i = Some a} + {nth_error l i = None}.
 
   Proof.
     induction l.
@@ -178,7 +183,7 @@ Section ListsNth.
     right; trivial.
   Qed.
 
-  Lemma nth_some_in : forall (l: list A) i a, nth_error l i = Some a -> In a l.
+  Lemma nth_some_in : forall (l : list A) i a, nth_error l i = Some a -> In a l.
 
   Proof.
     induction l; intros.
@@ -188,7 +193,8 @@ Section ListsNth.
     right; eapply IHl; eauto.
   Qed.
 
-  Lemma list_In_nth : forall (l: list A) a, In a l -> exists p: nat, nth_error l p = Some a.
+  Lemma list_In_nth : forall (l : list A) a,
+    In a l -> exists p: nat, nth_error l p = Some a.
 
   Proof.
     induction l.
@@ -200,7 +206,8 @@ Section ListsNth.
     exists (S x); trivial.
   Qed.
 
-  Lemma nth_app_left : forall (l m: list A) i, i < length l -> nth_error (l ++ m) i = nth_error l i.
+  Lemma nth_app_left : forall (l m: list A) i,
+    i < length l -> nth_error (l ++ m) i = nth_error l i.
 
   Proof.
     induction l; simpl; intros m i i_l.
@@ -236,7 +243,8 @@ Section ListsNth.
     rewrite (nth_app_left l m l0) in H; trivial.
   Qed.
 
-  Lemma nth_beyond : forall (l: list A) i, i >= length l -> nth_error l i = None.
+  Lemma nth_beyond : forall (l : list A) i,
+    i >= length l -> nth_error l i = None.
 
   Proof.
     induction l; simpl; intro i.
@@ -249,7 +257,8 @@ Section ListsNth.
     auto with arith.
   Qed.
 
-  Lemma nth_beyond_idx : forall (l: list A) i, nth_error l i = None -> i >= length l.
+  Lemma nth_beyond_idx : forall (l : list A) i,
+    nth_error l i = None -> i >= length l.
 
   Proof.
     induction l; simpl; intro i.
@@ -263,7 +272,8 @@ Section ListsNth.
     auto with arith.
   Qed.
 
-  Lemma nth_in : forall (l: list A) i, nth_error l i <> None <-> i < length l.
+  Lemma nth_in : forall (l : list A) i,
+    nth_error l i <> None <-> i < length l.
 
   Proof.
     induction l; simpl; intro i.
@@ -281,7 +291,8 @@ Section ListsNth.
     apply (proj2 (IHl i)); auto with arith.
   Qed.
 
-  Lemma nth_some : forall (l: list A) n a, nth_error l n = Some a -> n < length l.
+  Lemma nth_some : forall (l : list A) n a,
+    nth_error l n = Some a -> n < length l.
 
   Proof.
     intros.
@@ -289,8 +300,8 @@ Section ListsNth.
     rewrite H; discriminate.
   Qed.
 
-  Lemma nth_map_none : forall (l: list A) i (f: A -> A), nth_error l i = None -> 
-    nth_error (map f l) i = None.
+  Lemma nth_map_none : forall (l : list A) i (f: A -> A),
+    nth_error l i = None -> nth_error (map f l) i = None.
 
   Proof. 
     induction l.
@@ -300,8 +311,8 @@ Section ListsNth.
     apply IHl.
   Qed.
 
-  Lemma nth_map_none_rev : forall (l: list A) i (f: A -> A), nth_error (map f l) i = None ->
-    nth_error l i = None.
+  Lemma nth_map_none_rev : forall (l : list A) i (f: A -> A),
+    nth_error (map f l) i = None -> nth_error l i = None.
 
   Proof.
     induction l.
@@ -311,8 +322,8 @@ Section ListsNth.
     apply IHl.
   Qed.
 
-  Lemma nth_map_some : forall (l: list A) i (f: A -> A) a, nth_error l i = Some a ->
-    nth_error (map f l) i = Some (f a).
+  Lemma nth_map_some : forall (l : list A) i (f: A -> A) a,
+    nth_error l i = Some a -> nth_error (map f l) i = Some (f a).
 
   Proof.
     induction l.
@@ -323,7 +334,8 @@ Section ListsNth.
     apply IHl.
   Qed.
 
-  Lemma nth_map_some_rev : forall (l: list A) i (f: A -> A) a, nth_error (map f l) i = Some a ->
+  Lemma nth_map_some_rev : forall (l : list A) i (f: A -> A) a,
+    nth_error (map f l) i = Some a ->
     exists a', nth_error l i = Some a' /\ f a' = a.
 
   Proof.
@@ -335,8 +347,8 @@ Section ListsNth.
     apply IHl.
   Qed.
 
-  Lemma nth_error_singleton_in : forall (a b: A) i, nth_error (a :: nil) i = Some b ->
-    a = b /\ i = 0.
+  Lemma nth_error_singleton_in : forall (a b: A) i,
+    nth_error (a :: nil) i = Some b -> a = b /\ i = 0.
 
   Proof.
     intros.

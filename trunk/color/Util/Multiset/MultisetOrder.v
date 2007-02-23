@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -487,7 +487,7 @@ Section OrderCharacterization.
 
    (* Be careful this equivalence holds only if >gtA is a strict order and 
       if >gtA is decidable *)
-  Theorem red_eq_direct : forall M N, M >mul N <-> M >MUL N.
+  Lemma red_eq_direct : forall M N, M >mul N <-> M >MUL N.
   
   Proof.
     intros; split.
@@ -672,7 +672,7 @@ Section MultisetOrder_StrictOrder.
   Qed.
 
    (* ...so it's a strict ordering *)
-  Theorem mord_sorder : strict_order MultisetGt.
+  Lemma mord_sorder : strict_order MultisetGt.
   
   Proof.
     exact (Build_strict_order mord_trans mord_irreflex).
@@ -789,7 +789,7 @@ Section MultisetOrder_Wf.
     apply mord_acc; trivial.
   Qed.
 
-  Theorem mOrd_wf : well_founded ltA -> well_founded MultisetLT. 
+  Lemma mOrd_wf : well_founded ltA -> well_founded MultisetLT. 
   
   Proof.
     intro wf_lt; constructor; intros; apply mOrd_acc.

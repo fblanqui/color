@@ -446,7 +446,7 @@ Module HorpoWf (S : TermsSig.Signature)
     apply algebraic_appBodyR; trivial.
   Qed.
 
-  Theorem horpo_beta_wf : forall M, algebraic M ->
+  Lemma horpo_beta_wf : forall M, algebraic M ->
     Acc (transp Term HB) M.
 
   Proof.

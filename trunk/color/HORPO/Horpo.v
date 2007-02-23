@@ -9,6 +9,7 @@ recursive path ordering due to Jouannaud and Rubio.
 *)
 
 Set Implicit Arguments.
+
 Require Import RelExtras.
 Require Import ListExtras.
 Require Import Relations.
@@ -1174,7 +1175,7 @@ Module Horpo (S : TermsSig.Signature)
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
   Qed.
 
-  Theorem horpo_dec: forall M N, {M >> N} + {~ M >> N}.
+  Lemma horpo_dec: forall M N, {M >> N} + {~ M >> N}.
 
   Proof.
     intros M N.
@@ -1215,7 +1216,7 @@ Module Horpo (S : TermsSig.Signature)
     destruct (Res (M, N)); auto.
   Qed.
 
-  Theorem horpo_monotonous : algebraic_monotonicity horpo.
+  Lemma horpo_monotonous : algebraic_monotonicity horpo.
 
   Proof.
     apply algebraic_monotonicity_criterion; intros.
