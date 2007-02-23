@@ -2,12 +2,15 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Stephane Le Roux, 2006-10-17
+- Stephane Le Roux, 2006-02-23
 
-on the total completion of a relation
+on the total completion of a relation:
+Consider a decidable (resp. middle-excluding) relation over an arbitrary set. 
+Equality on the set is decidable (resp. middle-excluding) and the relation is acyclic 
+iff its restriction to any finite set has a decidable (resp. middle-excluding) irreflexive linear extension.
 *)
-
-(* $Id: Total.v,v 1.5 2007-02-21 12:38:33 stephaneleroux Exp $ *)
+ 
+(* $Id: Total.v,v 1.6 2007-02-23 14:20:53 stephaneleroux Exp $ *)
 
 Require Import Sumbool. 
 Require Export RelDec.
@@ -210,14 +213,14 @@ In x l -> incl l' l -> is_restricted R l -> is_restricted (try_add_arc_one_to_ma
 Proof.
 induction l'; simpl; intros. assumption. apply restricted_clos_trans. 
 apply restricted_try_add_arc. assumption. apply H0. simpl. tauto. apply IHl'. 
-assumption. exact (incl_elim_cons H0). assumption. 
+assumption. exact (incl_cons_l_incl H0). assumption. 
 Qed.
 
 Lemma try_add_arc_one_to_many_dec : eq_dec A -> forall x l l',
 In x l -> incl l' l -> is_restricted R l -> rel_dec R -> rel_dec (try_add_arc_one_to_many x l').
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_elim_cons H1). 
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H1). 
 apply resticted_dec_clos_trans_dec with l. assumption. 
 apply try_add_arc_dec. assumption. apply IHl'; tauto. 
 apply restricted_try_add_arc. assumption. apply H1. simpl. tauto. 
@@ -228,7 +231,7 @@ Lemma try_add_arc_one_to_many_midex : eq_midex A -> forall x l l',
 In x l -> incl l' l -> is_restricted R l -> rel_midex R ->  rel_midex (try_add_arc_one_to_many x l').
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_elim_cons H1). 
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H1). 
 apply resticted_midex_clos_trans_midex with l. assumption. 
 apply try_add_arc_midex. assumption. apply IHl'; tauto. 
 apply restricted_try_add_arc. assumption. apply H1. simpl. tauto. 
@@ -239,7 +242,7 @@ Lemma try_add_arc_one_to_many_trichotomy : eq_midex A -> rel_midex R -> forall x
 In y l' -> In x l ->  incl l' l -> is_restricted R l -> trichotomy (try_add_arc_one_to_many x l') x y.
 
 Proof.
-induction l';  simpl; intros. contradiction. pose (incl_elim_cons H3). 
+induction l';  simpl; intros. contradiction. pose (incl_cons_l_incl H3). 
 apply trichotomy_preserved with (try_add_arc (try_add_arc_one_to_many x l') x a). 
 apply sub_rel_clos_trans. destruct H1. rewrite H1. 
 apply try_add_arc_trichotomy. assumption. apply try_add_arc_one_to_many_midex with l; assumption. 
@@ -285,14 +288,14 @@ is_restricted R l -> is_restricted (try_add_arc_many_to_many l' l) l.
 Proof.
 induction l'; simpl; intros. assumption. 
 apply restricted_try_add_arc_one_to_many. apply H. simpl. tauto. apply incl_refl. 
-apply IHl'. exact (incl_elim_cons H). assumption. 
+apply IHl'. exact (incl_cons_l_incl H). assumption. 
 Qed.
 
 Lemma try_add_arc_many_to_many_dec : eq_dec A ->  forall l l',
 incl l' l -> is_restricted R l -> rel_dec R -> rel_dec (try_add_arc_many_to_many l' l).
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_elim_cons H0). 
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0). 
 apply try_add_arc_one_to_many_dec with l. assumption. apply H0. simpl. tauto. apply incl_refl. 
 apply  restricted_try_add_arc_many_to_many; assumption. tauto. 
 Qed.
@@ -301,7 +304,7 @@ Lemma try_add_arc_many_to_many_midex : eq_midex A ->  forall l l',
 incl l' l -> is_restricted R l -> rel_midex R -> rel_midex (try_add_arc_many_to_many l' l).
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_elim_cons H0). 
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0). 
 apply try_add_arc_one_to_many_midex with l. assumption. apply H0. simpl. tauto. apply incl_refl. 
 apply  restricted_try_add_arc_many_to_many; assumption. tauto. 
 Qed.
@@ -310,7 +313,7 @@ Lemma try_add_arc_many_to_many_trichotomy : eq_midex A -> rel_midex R -> forall 
 is_restricted R l -> incl l' l -> In y l -> In x l' -> trichotomy (try_add_arc_many_to_many l' l) x y.
 
 Proof.
-induction l';  simpl; intros. contradiction. pose (incl_elim_cons H2). 
+induction l';  simpl; intros. contradiction. pose (incl_cons_l_incl H2). 
 destruct H4. rewrite H4. 
 apply try_add_arc_one_to_many_trichotomy with l; try assumption. 
 apply try_add_arc_many_to_many_midex; assumption. 
@@ -324,7 +327,7 @@ Lemma try_add_arc_many_to_many_irrefl : eq_midex A -> forall l l',
 incl l' l -> is_restricted R l -> transitive R -> irreflexive R -> irreflexive (try_add_arc_many_to_many l' l).
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_elim_cons H0).   
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0).   
 apply try_add_arc_one_to_many_irrefl with l. assumption. 
 apply restricted_try_add_arc_many_to_many; assumption. 
 destruct l'; simpl. assumption. destruct l. pose (i a0). simpl in i0. tauto. 
@@ -575,388 +578,3 @@ destruct (l0 l). tauto.
 Qed.
 
 End On_relation_completion.
-
-(*
-Section On_total_completion.
-
-Require Export RelDec.
-
-Variable A : Set.
-Variable eq_dec : forall x y : A, {x=y}+{x<>y}.
-
-(***********************************************************************)
-(** total *)
-
-Section total.
-
-Variable R : relation A.
-
-Definition xytotal x y := R x y \/ x=y \/ R y x.
-
-Definition total (l : list A) := forall x y, In x l -> In y l -> xytotal x y.
-
-End total.
-
-Definition trans_total_irrefl  (R : relation A) (l : list A) :=
-  transitive R /\ total R l /\ irreflexive R.
-
-Lemma xytotal_monotonic : forall (R R' : relation A) x y,
-  R << R' -> xytotal R x y -> xytotal R' x y.
-
-Proof.
-unfold inclusion, xytotal. intros. pose (H x y). pose (H y x). tauto.
-Qed. 
-
-(***********************************************************************)
-(** add *)
-
-Section add.
-
-Variable R : relation A.
-Variable R_dec : Rel_dec R.
-Variable l : list A. 
-
-Definition add (x y z t : A) := R z t \/ (z<>t /\ x=z /\ y=t /\ ~R t z).
-
-Lemma add_refl : forall x y z, add x y z z -> R z z.
-
-Proof.
-intros. inversion H. assumption. tauto. 
-Qed.
-
-Lemma inclusion_R_add : forall x y, R << add x y.
-
-Proof.
-unfold inclusion, add. intros. tauto.
-Qed.
-
-Lemma inclusion_add_R : forall x y, R x y \/ R y x -> add x y << R.
-
-Proof.
-unfold inclusion, add; intros. destruct H0. assumption. decompose [and] H0. 
-rewrite H3 in H. rewrite H2 in H. tauto.
-Qed.
-
-Lemma add2_R :  forall x y z t, add x y z t -> add x y t z -> R z t.
-
-Proof.
-unfold add. intros. decompose [or and] H. assumption.  
-decompose [or and] H0. tauto. rewrite H1 in H4. tauto.
-Qed.
-
-Lemma add_notR : forall x y z t, 
-  ~R z t -> add x y z t -> (x=z \/ x=t) /\ (y=z \/ y=t) /\ z<>t.
-
-Proof.
-unfold add. intros. tauto.
-Qed. 
-
-Lemma add_dec : forall x y, Rel_dec R -> Rel_dec (add x y).
-
-Proof.
-unfold Rel_dec. intros. unfold add. destruct (H x0 y0). tauto. 
-destruct (eq_dec x0 y0). tauto. destruct (H y0 x0). tauto. destruct (eq_dec x x0).
-destruct (eq_dec y y0).
-destruct (eq_dec x0 y0). tauto. tauto. tauto. tauto. 
-Qed.
-
-Lemma add_xytotal : forall x y, xytotal (add x y) x y.
-
-Proof.
-unfold xytotal. intros. destruct (eq_dec x y). tauto. unfold add.
-destruct (R_dec x y). tauto. 
-destruct (R_dec y x). tauto. tauto.
-Qed.
-
-Lemma xytotal_sub : forall x y,
-  In x l -> In y l -> xytotal R x y -> xytotal (sub R l) x y.
-
-Proof.
-unfold xytotal, sub. intros. tauto. 
-Qed.
-
-Lemma  path_add_path : forall y z t (l' : list A) x, 
-  ~(z=x \/ In z l') \/ ~(t=y \/ In t l') ->
-  path (add z t) x y l' -> path R x y l'. 
-
-Proof.
-unfold add. induction l'; simpl; intuition. apply IHl'.
-constructor. intro. destruct H3. rewrite H3 in H0. tauto. tauto. assumption.
-apply IHl'. constructor 2. intro. destruct H3. rewrite H3 in H0. tauto. tauto.
-assumption. rewrite H3 in H0. tauto. 
-Qed.
-
-Lemma trans_add2_R : forall x y z t,
-  transitive R -> add x y z t -> add x y t z -> R z z.
-
-Proof.
-unfold transitive. intros. apply H with t; apply add2_R with x y; assumption. 
-Qed.
-
-Require Import Arith.
-
-Lemma trans_bound_path_add : forall x y z n,
-  transitive R -> bound_path (add x y ) n z z -> R z z.
-
-Proof.
-intros. induction n. inversion H0. destruct l'. simpl in H2. 
-apply trans_add2_R with x y z; assumption. 
-simpl in H1. pose (le_Sn_O (length l') H1). contradiction. apply IHn.
-inversion H0. clear H0 H3 H4 x0 y0. 
-(* mono *)
-destruct (path_mono_length eq_dec (add x y)  z z l' H2). destruct H0. 
-destruct H3. assert (length x0 <= S n).
-apply le_trans with (length l'); assumption.
-clear H1 H2 H3 l'. 
-(* x0=nil *) 
-destruct x0. exists (nil : list A). apply le_O_n. assumption. 
-(* length x0 = 1 *) 
-(* z in x0 *)
-destruct (In_dec eq_dec z (a::x0)). exists (tail (cut eq_dec z (a::x0))). 
-apply le_trans with (length x0). apply length_tail_cut_cons. apply le_S_n. tauto.
-apply path_cut; assumption. 
-(* z not in x0 *)
-destruct x0; simpl in * |- . exists (nil : list A). apply le_O_n. simpl. 
-apply inclusion_R_add. apply trans_add2_R with x y a; tauto. 
-(* length x0 >= 2*)
-destruct H4. destruct H2. unfold add in H1, H2. intuition. 
-exists (a0::x0). simpl. apply le_S_n. assumption.
-simpl. split. apply (inclusion_R_add). apply H with a; assumption. tauto. 
-(**)
-absurd (R a0 a). tauto. apply trans_tc_incl. assumption. 
-apply path_clos_trans with (x0++(z::nil)). apply path_app. 
-apply path_add_path with x y. rewrite H1. tauto. assumption. simpl. assumption.  
-(**)
-absurd (R a z). tauto. apply trans_tc_incl. assumption. 
-apply path_clos_trans with (a0::x0). split. assumption.  
-apply path_add_path with x y. rewrite H8. tauto. assumption. 
-(**) 
-rewrite H9 in H6. tauto. 
-Qed.
-
-Lemma add_irrefl : forall x y,
-  transitive R -> irreflexive R -> irreflexive (add x y !).
- 
-Proof.
-unfold irreflexive. intros. intro. apply H0 with x0.
-destruct (clos_trans_path H1).
-apply trans_bound_path_add with x y (length x1). assumption.
-apply bp_intro with x1; trivial. 
-Qed.
-
-End add.
-
-(***********************************************************************)
-(** ladd: multiple add with one list *)
-
-Section ladd.
-
-Variable R : relation A.
-Variable R_dec : Rel_dec R.
-Variable l : list A.
-
-Fixpoint ladd (x : A) (l' : list A) {struct l'} : relation A :=
-  sub (match l' with
-         | nil => R
-         | y::l' => add (ladd x l') x y 
-       end) l !.
-
-Lemma ladd_dec : forall x l', Rel_dec (ladd x l').
-
-Proof.
-induction l'; simpl; intros. apply R_dec_clos_trans_sub_dec; assumption. 
-apply R_dec_clos_trans_sub_dec. assumption. apply add_dec. apply IHl'.
-Qed.
-
-Lemma transitive_ladd : forall x l', transitive (ladd x l'). 
-
-Proof.
-intros. unfold ladd. destruct l'; apply tc_trans.
-Qed.
-
-Lemma restricted_ladd : forall x l', restricted (ladd x l') l.
-
-Proof.
-destruct l'; simpl; apply restricted_clos_trans_sub; assumption. 
-Qed.
-
-Lemma  inclusion_subR_ladd :  forall x l', sub R l << ladd x l'.
-
-Proof.
-induction l'; simpl; intros. apply tc_incl.
-apply incl_trans with (ladd x l'). assumption. 
-apply incl_trans with (sub (add (ladd x l') x a) l). 
-apply incl_trans with (sub (ladd x l') l). apply restricted_ladd. 
-apply sub_monotonic. apply inclusion_R_add. apply tc_incl.
-Qed. 
-
-Lemma ladd_xytotal : forall x y l',
-  In x l -> In y l -> In y l' -> xytotal (ladd x l') x y.
-
-Proof.
-induction l';  simpl; intros. contradiction. 
-apply xytotal_monotonic with (sub (add (ladd x l') x a) l). 
-apply tc_incl. apply xytotal_sub. assumption. assumption.
-destruct H1. rewrite H1. apply add_xytotal. apply ladd_dec. 
-apply xytotal_monotonic with (ladd x l'). apply inclusion_R_add. tauto.
-Qed.
-
-Lemma ladd_irrefl : forall x l',
-  irreflexive (sub R l !) -> irreflexive (ladd x l').
-
-Proof.
-induction l'; simpl; intros. assumption. 
-apply incl_irrefl with (add (ladd x l') x a !). 
-apply incl_tc. apply inclusion_sub. unfold ladd.
-destruct l'; apply add_irrefl; try apply tc_trans; try tauto.
-Qed.
-
-End ladd.
-
-(***********************************************************************)
-(** lladd: multiple add with two lists *)
-
-Section lladd.
-
-Variable R : relation A.
-Variable R_dec : Rel_dec R.
-Variable l : list A.
-
-Fixpoint lladd (l' : list A) : relation A :=
-  match l' with
-    | nil => sub R l !
-    | x::l' => ladd (lladd l') l x l 
-  end.
-
-Lemma lladd_dec : forall l', Rel_dec (lladd l').
-
-Proof.
-induction l'; simpl; intros. apply R_dec_clos_trans_sub_dec. assumption. 
-assumption. apply ladd_dec. assumption. 
-Qed.
-
-Lemma transitive_lladd : forall l', transitive (lladd l').
-
-Proof.
-unfold lladd. destruct l'. apply tc_trans. apply transitive_ladd.
-Qed.
-
-Lemma restricted_lladd : forall l', restricted (lladd l') l.
-
-Proof.
-destruct l'; simpl. apply restricted_clos_trans_sub. apply restricted_ladd.  
-Qed.
-
-Lemma  inclusion_subR_lladd : forall l', sub R l << lladd l'.
- 
-Proof.
-induction l'; simpl; intros. apply tc_incl.
-apply incl_trans with (lladd l'). assumption. 
-apply incl_trans with (sub (lladd l') l). apply restricted_lladd.  
-apply inclusion_subR_ladd.  
-Qed.
-
-Lemma lladd_xytotal : forall x y l',
-  In x l -> In y l -> In x l' -> xytotal (lladd l') x y.
-
-Proof.
-induction l';  simpl; intros. contradiction. destruct H1. rewrite H1. 
-apply ladd_xytotal. apply lladd_dec. assumption. assumption. assumption. 
-apply xytotal_monotonic with (lladd l'). 
-apply incl_trans with (sub (lladd l') l). apply restricted_lladd. 
-apply inclusion_subR_ladd. tauto.
-Qed.
-
-Lemma lladd_irrefl : forall (l' : list A),
-  irreflexive (sub R l !) -> irreflexive (lladd l').
-
-Proof.
-induction l'; simpl; intros. assumption. 
-apply ladd_irrefl. apply incl_irrefl with (lladd l').
-apply incl_trans with (lladd l' !). apply incl_tc. apply inclusion_sub.
-apply trans_tc_incl. apply transitive_lladd. tauto.
-Qed. 
-
-End lladd.
-
-(***********************************************************************)
-(**  *)
-
-Section TC.
-
-Variable R : relation A.
-Variable R_dec : Rel_dec R.
-Variable l : list A.
-
-Definition TC := lladd R l l.
-
-Lemma TC_dec : Rel_dec TC.
-
-Proof.
-intros. unfold TC. apply lladd_dec. assumption.
-Qed.
-
-Lemma TC_inclusion : sub R l << TC.
-
-Proof.
-intros. unfold TC. apply inclusion_subR_lladd. 
-Qed.
-
-Lemma TC_restricted : restricted TC l.
-
-Proof.
-unfold inclusion, TC. intros. apply restricted_lladd.  
-Qed.
-
-Lemma TC_trans : transitive TC.
-
-Proof.
-intros. unfold TC. destruct l; simpl; apply tc_trans.
-Qed.
-
-Lemma TC_total : total TC l.
-
-Proof.
-unfold TC, total. intros. pose (R_dec_clos_trans_sub_dec eq_dec R_dec l). 
-apply lladd_xytotal; assumption.
-Qed.
-
-Lemma TC_irrefl : irreflexive (sub R l !) -> irreflexive TC.
-
-Proof.
-intros. unfold TC. apply lladd_irrefl. assumption. 
-Qed. 
-
-Lemma TC_strict_total_order :
-  irreflexive (sub R l !) -> trans_total_irrefl TC l.
-
-Proof.
-split. apply TC_trans. split. apply TC_total. apply TC_irrefl. assumption.
-Qed.
-
-End TC.
- 
-Lemma TC_properties : forall R : relation A,
-  Rel_dec R -> irreflexive (R!) ->
-  forall l, sub R l << TC R l /\ restricted (TC R l) l
-    /\ trans_total_irrefl (TC R l) l.
-
-Proof.
-intros. split. apply TC_inclusion. split. apply TC_restricted.
-apply TC_strict_total_order. assumption. 
-apply incl_irrefl with (R!). apply incl_tc. apply inclusion_sub. assumption.
-Qed.
-
-Lemma total_completion_converse : forall (R : relation A),
-  (forall l, exists R', sub R l << R' /\ transitive R' /\ irreflexive R') ->
-  irreflexive (R!).
-
-Proof.
-intros. do 2 intro. destruct (clos_trans_path H0). 
-assert (sub R (x::x::x0) ! x x). apply path_clos_trans with x0. 
-apply path_sub. assumption. destruct (H (x::x::x0)). destruct H3. destruct H4. 
-apply H5 with x. apply trans_tc_incl. assumption.
-apply incl_tc with (sub R (x :: x :: x0)). assumption. assumption.
-Qed.
-
-End On_total_completion. *)
