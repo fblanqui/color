@@ -9,7 +9,7 @@ prefix, suffix, cut, elimination of doubles, etc.
 
 Set Implicit Arguments.
 
-Require Export ListMono.
+Require Export ListRepeatFree. 
 
 (***********************************************************************)
 (** prefix *)
@@ -141,7 +141,7 @@ intros. simpl. destruct (eq_dec x y); simpl. trivial.
 apply le_trans with (length (cut x l)). apply length_tail. apply length_cut. 
 Qed.
 
-Lemma mono_cut : forall (x : A) l, mono l -> mono (cut x l).
+Lemma repeat_free_cut : forall (x : A) l, repeat_free l -> repeat_free (cut x l).
 
 Proof.
 induction l; simpl; intros. trivial. destruct (eq_dec x a). simpl. tauto. tauto.
@@ -170,11 +170,11 @@ Fixpoint shrink (l :list A) : list A :=
       else x::(shrink l)
   end.
 
-Lemma mono_shrink : forall l : list A, mono (shrink l).
+Lemma repeat_free_shrink : forall l : list A, repeat_free (shrink l).
 
 Proof.
 induction l; simpl; intros. trivial. destruct (In_dec eq_dec a (shrink l)).
-apply mono_cut. assumption. simpl. tauto.
+apply repeat_free_cut. assumption. simpl. tauto.
 Qed.
 
 Lemma incl_shrink : forall l : list A, incl (shrink l) l.
@@ -191,7 +191,7 @@ Lemma length_shrink : forall l l' : list A,
   incl l l' -> length (shrink l) <= length l'.
 
 Proof.
-intros. apply mono_incl_length. exact eq_dec. apply mono_shrink.
+intros. apply repeat_free_incl_length. exact (eq_dec_midex eq_dec). apply repeat_free_shrink.
 apply incl_tran with l. apply incl_shrink. assumption.
 Qed.
 

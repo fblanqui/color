@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.6 2007-02-21 12:38:33 stephaneleroux Exp $ *)
+(* $Id: ADPGraph.v,v 1.7 2007-02-23 14:20:53 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -277,7 +277,7 @@ rewrite H9 in H10. change (length (x5++(x4::x7)++x4::x8) = n+2) in H10.
 rewrite H11 in H10. repeat (rewrite length_app in H10; simpl in H10).
 unfold n in H10. assert (h : length x11 < length DP).
 unfold cycle_min in H14. destruct H14. assert (length (x10::x11) <= length DP).
-apply mono_incl_length. apply eq_dec. exact H14.
+apply repeat_free_dec_incl_length. apply eq_dec. exact H14.
 apply incl_appr_incl with (x10::nil). simpl. eapply restricted_path_incl.
 apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
 (* end of the proof of (A) *)

@@ -4,10 +4,12 @@ See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
 
-paths and finite restrictions
+paths:
+Section S is required for RelDec.v and Total.v
+Section S2 offers additional lemmas.
 *)
 
-(* $Id: Path.v,v 1.11 2007-02-21 12:38:33 stephaneleroux Exp $ *)
+(* $Id: Path.v,v 1.12 2007-02-23 14:20:53 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -168,7 +170,6 @@ Qed.
 
 End S.
 
-
 (***********************************************************************)
 (** some other lemmas *)
 
@@ -262,60 +263,21 @@ apply IHl'; tauto. destruct (In_dec eqdec a (shrink eqdec l')).
 apply path_cut_bis; tauto. simpl. tauto.
 Qed.
 
-Lemma path_mono_length : forall (x y : A) l', is_path R x y l' ->
-  exists l'', mono l'' /\ length l'' <= length l' /\ is_path R x y l''.
+(*
+Lemma path_repeat_free_length : forall (x y : A) l', is_path R x y l' ->
+  exists l'', repeat_free l'' /\ length l'' <= length l' /\ is_path R x y l''.
 
 Proof.
 intros. exists (shrink eqdec l'). 
-split. apply mono_shrink. split. apply length_shrink. apply incl_refl. 
+split. apply repeat_free_shrink. split. apply length_shrink. apply incl_refl. 
 apply path_shrink. assumption.
 Qed. 
+*)
 
 (***********************************************************************)
 (** bound_path *)
 
 Require Import Arith.
-
-(*
-Inductive bound_path (n : nat) : relation A :=
-| bp_intro : forall (x y : A) l',
-  length l'<= n -> is_path R x y l' -> bound_path n x y.
-
-Lemma bound_path_n_Sn : forall (n : nat) (x y : A),
-  bound_path n x y -> bound_path (S n) x y.
-
-Proof.
-intros. inversion H. apply bp_intro with l'. apply le_trans with n. assumption. 
-apply le_n_Sn. assumption.
-Qed.
-
-Lemma bound_path_clos_trans : forall n : nat, bound_path n << R!.
-
-Proof.
-unfold inclusion. intros. inversion H. apply path_clos_trans with l'.
-assumption. 
-Qed.
-
-Lemma bound_path_Sn_n_or_Rn : forall (n : nat) (x y : A),
-  bound_path (S n) x y ->
-  bound_path n x y \/ exists z : A, R x z /\ bound_path n z y.
-
-Proof.
-intros. inversion H. destruct (le_le_S_dec (length l') n). 
-constructor. apply bp_intro with l'; assumption. constructor 2. 
-destruct l'. simpl in l. pose (le_Sn_O n l). tauto. exists a. simpl in H0, H1. 
-split. tauto. apply bp_intro with l'. apply le_S_n. assumption. tauto.
-Qed.
-
-Lemma R_bound_path_n_Sn : forall (x y z : A) (n : nat),
-  R x y -> bound_path n y z -> bound_path (S n) x z.
-
-Proof.
-intros. inversion H0. apply bp_intro with (y::l'). simpl. apply le_n_S.
-assumption. simpl. tauto. 
-Qed.
-
-*)
 
 Lemma path_monotonic : forall (R R' : relation A) (y : A) l' (x : A),
   R << R' -> is_path R x y l' -> is_path R' x y l'.
