@@ -14,7 +14,7 @@ Section S.
 
 Require Export ListUtil.
 Require Export Arith.
-Require Export dec_midex. 
+Require Export RelMidex. 
 
 (***********************************************************************)
 (* GENERAL DEFINITIONS AND LEMMAS ON LISTS *)
