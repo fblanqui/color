@@ -9,12 +9,12 @@ Section S is required for RelDec.v and Total.v
 Section S2 offers additional lemmas.
 *)
 
-(* $Id: Path.v,v 1.12 2007-02-23 14:20:53 stephaneleroux Exp $ *)
+(* $Id: Path.v,v 1.13 2007-02-23 18:04:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export RelUtil.
-Require Export sub_rel_and_other.
+Require Export RelSub.
 
 Section S.
 
