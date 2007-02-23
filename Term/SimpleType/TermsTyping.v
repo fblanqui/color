@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsTyping.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -113,7 +113,8 @@ Section Typing.
       apply eq_SimpleType_dec.
   Qed.
 
-  Lemma Type_unique : forall Pt E T1 T2 (d1 : Typing E Pt T1) (d2 : Typing E Pt T2), T1 = T2.
+  Lemma Type_unique : forall Pt E T1 T2 (d1 : Typing E Pt T1)
+    (d2 : Typing E Pt T2), T1 = T2.
 
   Proof.
     induction Pt; intros; inversion d1; 
@@ -179,7 +180,8 @@ Section Typing.
     apply refl_equal.
   Qed.
 
-  Theorem deriv_uniq : forall M N, env M = env N -> term M = term N -> type M = type N -> M = N.
+  Lemma deriv_uniq : forall M N, env M = env N -> term M = term N ->
+    type M = type N -> M = N.
 
   Proof.
     intros; destruct M; destruct N; simpl in *.
@@ -190,7 +192,8 @@ Section Typing.
     apply refl_equal.
   Qed.
 
-  Lemma typing_uniq : forall M N, env M = env N -> term M = term N -> type M = type N.
+  Lemma typing_uniq : forall M N, env M = env N -> term M = term N ->
+    type M = type N.
 
   Proof.
     intros; destruct M; destruct N; simpl in *.

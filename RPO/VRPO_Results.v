@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VRPO_Results.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -417,7 +417,7 @@ Module RPO_Wf_Facts (RPO : RPO_Wf_Type).
     elim (var_are_min x t); assumption.
   Qed.
     
-  Theorem wf_lt : well_founded lt.
+  Lemma wf_lt : well_founded lt.
 
   Proof.
     intro s; induction s as [ | f ss HInd1] using term_ind_forall2.

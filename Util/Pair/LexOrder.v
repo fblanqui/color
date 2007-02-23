@@ -8,7 +8,7 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 *)
 
-(* $Id: LexOrder.v,v 1.3 2007-01-19 17:27:56 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.4 2007-02-23 18:03:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -194,7 +194,7 @@ Section LexPair.
       | rewrite eq2; trivial ].
   Qed.
 
-  Theorem lp_lexprod_so : strict_order lp_LexProd_Gt.
+  Lemma lp_lexprod_so : strict_order lp_LexProd_Gt.
 
   Proof.
     exact (Build_strict_order lp_lexprod_trans lp_lexprod_irreflex).
@@ -212,7 +212,7 @@ Section LexPair.
   Variable lp_wf_ltL : well_founded lp_ltL.
   Variable lp_wf_ltR : well_founded lp_ltR.
 
-  Theorem lp_lexprod_wf : well_founded lp_LexProd_Lt.
+  Lemma lp_lexprod_wf : well_founded lp_LexProd_Lt.
 
   Proof.
     unfold well_founded; intro x.
@@ -338,7 +338,7 @@ Module LexProd_StrictOrder
     eapply lp_lexprod_trans; eauto with sets.
   Qed.
 
-  Theorem lexprod_so : strict_order LexProd_Gt.
+  Lemma lexprod_so : strict_order LexProd_Gt.
 
   Proof.
     exact (Build_strict_order lexprod_trans lexprod_irreflex).
@@ -356,7 +356,7 @@ Section LexProd_WellFounded.
   Variable wf_ltL : well_founded ltL.
   Variable wf_ltR : well_founded ltR.
 
-  Theorem lexprod_wf : well_founded LexProd_Lt.
+  Lemma lexprod_wf : well_founded LexProd_Lt.
 
   Proof.
     change LexProd_Lt with (lp_LexProd_Lt eqL gtL gtR).
@@ -442,7 +442,7 @@ Section Well_foundedness.
    Variable WF_M : well_founded ltM.
    Variable WF_R : well_founded ltR.
 
-   Theorem lexprod_wf : well_founded LexProd3_Lt.
+   Lemma lexprod_wf : well_founded LexProd3_Lt.
 
    Proof.
      apply Lex3.lexprod_wf; trivial.

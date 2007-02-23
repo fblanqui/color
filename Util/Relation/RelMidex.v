@@ -38,14 +38,15 @@ do 3 intro. destruct (H x y); tauto.
 Qed.
 
 Lemma bool_rel_dec :
-{f : A -> A -> bool | forall x y : A, if f x y then R x y else ~R x y} -> rel_dec.
+  {f : A -> A -> bool | forall x y : A, if f x y then R x y else ~R x y} ->
+  rel_dec.
 
 Proof. 
 intros (f,H) x y. generalize (H x y). case (f x y) ; intros ; tauto.
 Qed.
 
-Lemma rel_dec_bool : 
-rel_dec -> { f : A -> A -> bool | forall x y : A, if f x y then R x y else ~R x y }.
+Lemma rel_dec_bool : rel_dec ->
+  { f : A -> A -> bool | forall x y : A, if f x y then R x y else ~R x y }.
 
 Proof.
 intro H. exists (fun x y : A => if H x y then true else false).

@@ -9,6 +9,7 @@ and introduces, as hypothesis, some computability properties.
 *)
 
 Set Implicit Arguments.
+
 Require Import RelExtras.
 Require Import ListExtras.
 Require Import LexOrder.
@@ -50,7 +51,8 @@ Section Computability_def.
       
   Definition AllComputable Ts := forall T, In T Ts -> Computable T.
 
-  Lemma CompBasic : forall M, isBaseType M.(type) -> algebraic M -> AccR M -> Computable M.
+  Lemma CompBasic : forall M, isBaseType M.(type) -> algebraic M -> AccR M ->
+    Computable M.
 
   Proof.
     intro M; term_type_inv M; split; trivial.
@@ -76,11 +78,13 @@ Section Computability_def.
   Lemma CompCase : forall M, Computable M ->
     { isBaseType M.(type) /\ AccR M /\ algebraic M } +
     { isArrowType M.(type) /\ algebraic M /\
-      forall N (Napp: isApp N), algebraic (appBodyR Napp) -> Computable (appBodyR Napp) ->
+      forall N (Napp: isApp N), algebraic (appBodyR Napp) ->
+        Computable (appBodyR Napp) ->
 	appBodyL Napp ~ M -> Computable N }.
 
   Proof.
-    intro M; term_type_inv M; intros; unfold Computable in H; simpl in H; inversion H.
+    intro M; term_type_inv M; intros; unfold Computable in H; simpl in H;
+      inversion H.
     inversion H1; left; do 2 split; trivial.
     right; do 2 split; trivial.
     intros N Napp Nnorm NR NL.
@@ -104,7 +108,8 @@ Section Computability_def.
   Qed.
 
   Lemma CompCaseArrow : forall M, Computable M -> isArrowType M.(type) ->
-    forall N (Napp: isApp N), algebraic (appBodyR Napp) -> Computable (appBodyR Napp) ->
+    forall N (Napp: isApp N), algebraic (appBodyR Napp) ->
+      Computable (appBodyR Napp) ->
       appBodyL Napp ~ M -> Computable N.
 
   Proof.
@@ -128,14 +133,16 @@ Section Computability_theory.
 
   Hypothesis R_env_preserving : forall M N, M -R-> N -> env M = env N.
 
-  Hypothesis R_var_consistent : forall M N, M -R-> N -> envSubset (activeEnv N) (activeEnv M).
+  Hypothesis R_var_consistent : forall M N, M -R-> N ->
+    envSubset (activeEnv N) (activeEnv M).
 
-  Hypothesis R_algebraic_preserving : forall M N, algebraic M -> M -R-> N -> algebraic N.
+  Hypothesis R_algebraic_preserving : forall M N, algebraic M -> M -R-> N ->
+    algebraic N.
 
   Hypothesis R_var_normal : forall M N, isVar M -> ~M -R-> N.
 
-  Hypothesis R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' -> M -R-> N ->
-    env M' = env N' -> M' -R-> N'.
+  Hypothesis R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' ->
+    M -R-> N -> env M' = env N' -> M' -R-> N'.
 
   Hypothesis R_app_reduct : forall M N (Mapp: isApp M),
       ~isFunApp M \/ isArrowType (type M) -> (* x-man, use algebraic *)
@@ -151,15 +158,17 @@ Section Computability_theory.
 
   Hypothesis R_monotonous : algebraic_monotonicity R.
 
-  Hypothesis R_subst_stable : forall M N G (MS: correct_subst M G) (NS: correct_subst N G),
+  Hypothesis R_subst_stable : forall M N G (MS: correct_subst M G)
+    (NS: correct_subst N G),
     algebraicSubstitution G -> M -R-> N -> subst MS -R-> subst NS.
 
-  Hypothesis R_abs_reduct : forall M (Mabs: isAbs M) N, M -R-> N -> exists Nabs: isAbs N,
-    absBody Mabs -R-> absBody Nabs.
+  Hypothesis R_abs_reduct : forall M (Mabs: isAbs M) N, M -R-> N ->
+    exists Nabs: isAbs N, absBody Mabs -R-> absBody Nabs.
 
   Hint Resolve R_type_preserving R_env_preserving R_var_normal : comp.
 
-  Lemma R_right_app_monotonous : forall M N M' N' (M'app: isApp M') (N'app: isApp N'),
+  Lemma R_right_app_monotonous : forall M N M' N' (M'app: isApp M')
+    (N'app: isApp N'),
     algebraic M -> M -R-> N -> appBodyL M'app = M -> appBodyL N'app = N ->
     appBodyR M'app = appBodyR N'app -> algebraic (appBodyR M'app) -> M' -R-> N'.
 
@@ -221,7 +230,8 @@ Section Computability_theory.
     rewrite <- H1; trivial.
   Qed.
 
-  Lemma R_conv_to : forall M N M', M -R-> N -> M ~ M' -> exists N', M' -R-> N' /\ N ~ N'.
+  Lemma R_conv_to : forall M N M', M -R-> N -> M ~ M' ->
+    exists N', M' -R-> N' /\ N ~ N'.
 
   Proof.
     intros.
@@ -235,15 +245,16 @@ Section Computability_theory.
     exists x'; trivial.
   Qed.
 
-  Lemma base_step_base : forall M N, isBaseType (type M) -> M -R-> N -> isBaseType (type N).
+  Lemma base_step_base : forall M N, isBaseType (type M) -> M -R-> N ->
+    isBaseType (type N).
 
   Proof.
     intros M N Mbase MN.
     rewrite <- (R_type_preserving MN); trivial.
   Qed.
 
-  Lemma base_comp_step_comp : forall M N, isBaseType (type M) -> Computable M -> M -R-> N ->
-    Computable N.
+  Lemma base_comp_step_comp : forall M N, isBaseType (type M) ->
+    Computable M -> M -R-> N -> Computable N.
 
   Proof.
     intros M N Mbase Mcomp MN.
@@ -319,7 +330,8 @@ Section Computability_theory.
 
   Proof.
     intros M M' M'M AccM'; unfold AccR.
-    apply Acc_homo with (x := M) (R := transp Term R) (morphism := terms_conv); trivial.
+    apply Acc_homo with (x := M) (R := transp Term R) (morphism := terms_conv);
+      trivial.
     unfold transp; intros x y x' x'x xy.
     destruct (R_conv_to (M':=x') xy (terms_conv_sym x'x)) as [y' [x'y' yy']].
     exists y'; trivial.
@@ -333,7 +345,9 @@ Section Computability_theory.
     split; apply AccR_morph_aux; auto using terms_conv_sym.
   Qed.
 
-  Lemma Computable_morph_aux : forall x1 x2 : Term, x1 ~ x2 -> (Computable x1 -> Computable x2).
+  Lemma Computable_morph_aux : forall x1 x2 : Term, x1 ~ x2 ->
+    (Computable x1 -> Computable x2).
+
   Proof.
     intro M.
     term_type_inv M; intros M' MM' Mcomp.
@@ -357,7 +371,8 @@ Section Computability_theory.
   Add Morphism Computable : Computable_morph.
 
   Proof.
-    intros t t' teqt'; split; apply Computable_morph_aux; auto using terms_conv_sym.
+    intros t t' teqt'; split; apply Computable_morph_aux;
+      auto using terms_conv_sym.
   Qed.
 
   Lemma comp_lift_comp : forall M n, Computable M -> Computable (lift M n).
@@ -397,7 +412,7 @@ Section Computability_theory.
     apply var_is_var with (length (env M)); try_solve.
   Qed.
 
-  Theorem comp_prop : forall A,
+  Lemma comp_prop : forall A,
     ( (* (i) *)
     forall M, type M = A -> Computable M -> AccR M 
     ) /\
@@ -405,9 +420,8 @@ Section Computability_theory.
     forall M N, type M = A -> Computable M -> M -R-> N -> Computable N
     ) /\ 
     ( (* (iii) *)
-    forall P, type P = A -> algebraic P -> isNeutral P -> (forall S, P -R-> S -> Computable S) ->
-      Computable P
-    ).
+    forall P, type P = A -> algebraic P -> isNeutral P ->
+      (forall S, P -R-> S -> Computable S) -> Computable P).
 
   Proof.
     intro B.
@@ -450,7 +464,8 @@ Section Computability_theory.
        so M is strongly normalizable (app_acc)
      *)
     intros M Marr Mcomp.
-    destruct (apply_var_comp M Mcomp Marr) as [Mx [Mx_app [MxL [_ [_ Mxcomp]]]]]; trivial.
+    destruct (apply_var_comp M Mcomp Marr)
+      as [Mx [Mx_app [MxL [_ [_ Mxcomp]]]]]; trivial.
     rewrite <- MxL.
     apply acc_app_acc_L; trivial.
     rewrite MxL; apply comp_algebraic; trivial.
@@ -549,10 +564,12 @@ Section Computability_theory.
         by definition P computable if for every computable S, @(P S) computable
         By (i) S is accessible so do induction on S.
         We have three possibilities by R_app_reduct:
-        @(P, S) -R-> @(P', S)  but P' computable since every reduct of P is computable
-        @(P, S) -R-> @(P, S')  S' computable by (ii) and use IH
+        @(P, S) -R-> @(P', S) but P' computable
+          since every reduct of P is computable
+        @(P, S) -R-> @(P, S') S' computable by (ii) and use IH
         @(P, S) -R-> @(P', S') combination of two above cases
-        In any way we conclude that every reduct of @(P, S) is computable and we are done
+        In any way we conclude that every reduct of @(P, S) is computable
+        and we are done
      *)
     intros P Parr Palg Pneutral PScomp.
     apply CompArrow; trivial.
@@ -653,7 +670,8 @@ Section Computability_theory.
     apply P2 with M; trivial.
   Qed.
 
-  Lemma comp_manysteps_comp : forall M N, Computable M -> M -R*-> N -> Computable N.
+  Lemma comp_manysteps_comp : forall M N, Computable M -> M -R*-> N ->
+    Computable N.
 
   Proof.
     intros M N Mcomp M_rew_N.
@@ -705,7 +723,8 @@ Section Computability_theory.
     auto with datatypes.
   Qed.
 
-  Lemma comp_pflat : forall N Ns, isPartialFlattening Ns N -> AllComputable Ns -> Computable N.
+  Lemma comp_pflat : forall N Ns, isPartialFlattening Ns N ->
+    AllComputable Ns -> Computable N.
 
   Proof.
     intro N.
@@ -804,8 +823,8 @@ Section Computability_theory.
     W (Wapp: isApp W) (WLabs: isAbs (appBodyL Wapp)),
     (forall G (cs: correct_subst (absBody WLabs) G) T, isSingletonSubst T G -> 
       Computable T -> Computable (subst cs)) ->
-    algebraic W -> absBody WLabs = proj1_sig (fst P) -> appBodyR Wapp = proj1_sig (snd P) ->
-    Computable W.
+    algebraic W -> absBody WLabs = proj1_sig (fst P) ->
+    appBodyR Wapp = proj1_sig (snd P) -> Computable W.
 
   Proof.
     intro P.
@@ -834,7 +853,8 @@ Section Computability_theory.
     apply algebraic_appBodyL; trivial.
     unfold isFunApp; intro WFapp.
     rewrite (appHead_app W Wapp) in WFapp.
-    rewrite (appHead_notApp (appBodyL Wapp) (abs_isnot_app (appBodyL Wapp) WLabs)) in WFapp.
+    rewrite (appHead_notApp (appBodyL Wapp)
+      (abs_isnot_app (appBodyL Wapp) WLabs)) in WFapp.
     term_inv (appBodyL Wapp).
     assert (WRnorm: algebraic (appBodyR Wapp)).
     apply algebraic_appBodyR; trivial.
@@ -842,7 +862,8 @@ Section Computability_theory.
     intros W' WW'.
     destruct P as [[PLT PLC] [PRT PRC]]; simpl in * .
     destruct (R_app_reduct (N:=W') Wapp) as [[W'abs W'beta] | 
-      [W'app [[W'L_eq W'R_red] | [[W'L_red W'R_eq] | [W'L_red W'R_red]]]]]; trivial.
+      [W'app [[W'L_eq W'R_red] | [[W'L_red W'R_eq] | [W'L_red W'R_red]]]]];
+    trivial.
     left; apply funAbs_notFunApp.
     rewrite (appHead_app W Wapp).
     rewrite appHead_notApp; trivial.
@@ -850,8 +871,8 @@ Section Computability_theory.
 
      (* beta-reduction step *)
     rewrite W'beta.
-    rewrite <- (Computable_morph (terms_lower_conv (subst (beta_subst W Wapp W'abs))
-      (beta_lowering W Wapp W'abs))).
+    rewrite <- (Computable_morph (terms_lower_conv
+      (subst (beta_subst W Wapp W'abs)) (beta_lowering W Wapp W'abs))).
     rewrite (abs_proof_irr (appBodyL Wapp) W'abs WLabs).
     apply WL_Hyp with (lift (appBodyR Wapp) 1).
     apply singletonSubst_cond.
@@ -954,8 +975,8 @@ Section Computability_theory.
           ...
    *)
   Lemma comp_abs : forall M (Mabs: isAbs M), algebraic M ->
-    (forall G (cs: correct_subst (absBody Mabs) G) T, isSingletonSubst T G -> Computable T -> 
-      Computable (subst cs)) -> Computable M.
+    (forall G (cs: correct_subst (absBody Mabs) G) T, isSingletonSubst T G ->
+      Computable T -> Computable (subst cs)) -> Computable M.
 
   Proof.
     intros M Mabs Mnorm H.
@@ -987,7 +1008,8 @@ Section Computability_theory.
     apply abs_conv_absBody; trivial.
     set (PL := (exist (fun T => Computable T) TL TLC)).
     set (PR := (exist (fun T => Computable T) TR WR)).
-    apply comp_abs_ind with (Wapp := Wapp) (WLabs := WLabs) (P := (PL, PR)); trivial.
+    apply comp_abs_ind with (Wapp := Wapp) (WLabs := WLabs) (P := (PL, PR));
+      trivial.
     intros.
     destruct WL. 
     set (WLM := abs_conv_absBody_aux WLabs Mabs H2).
