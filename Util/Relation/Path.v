@@ -3,13 +3,12 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
+- Frederic Blanqui, 2007-01-22
 
-paths:
-Section S is required for RelDec.v and Total.v
-Section S2 offers additional lemmas.
+paths
 *)
 
-(* $Id: Path.v,v 1.13 2007-02-23 18:04:46 blanqui Exp $ *)
+(* $Id: Path.v,v 1.14 2007-02-26 16:32:23 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,20 +20,20 @@ Section S.
 Variable A : Set.
 
 (***********************************************************************)
-(*  Path *)
+(** paths *)
 
 Section Path.
 
 Variable R : relation A.
 
-Fixpoint is_path (x y : A)(l : list A){struct l} : Prop :=
-match l with
-| nil => R x y
-| z::l' => R x z /\ is_path z y l'
-end.
+Fixpoint is_path (x y : A) (l : list A) {struct l} : Prop :=
+  match l with
+    | nil => R x y
+    | z::l' => R x z /\ is_path z y l'
+  end.
 
 Lemma path_clos_trans : forall y l x, 
-is_path x y l -> clos_trans R x y.
+  is_path x y l -> clos_trans R x y.
 
 Proof.
 induction l; simpl; intros. constructor. assumption.
@@ -42,31 +41,32 @@ constructor 2 with a. constructor. tauto. apply IHl. tauto.
 Qed.
 
 Lemma path_app : forall y z l' l x,
-is_path x y l -> is_path y z l' -> is_path x z (l++(y::l')). 
+  is_path x y l -> is_path y z l' -> is_path x z (l++y::l'). 
 
 Proof.
 induction l; simpl; intros. tauto. split. tauto. apply IHl; tauto.
 Qed. 
 
 Lemma clos_trans_path : forall x y, 
-clos_trans R x y -> exists l, is_path x y l. 
+  clos_trans R x y -> exists l, is_path x y l.
 
 Proof.
 intros. induction H. exists (nil : list A). simpl. assumption.
-destruct IHclos_trans1. destruct IHclos_trans2. exists (x0++(y::x1)). 
+destruct IHclos_trans1. destruct IHclos_trans2. exists (x0++y::x1). 
 apply path_app; assumption.
 Qed.
 
 Lemma path_app_elim_right : forall y z l l' x, 
-is_path x z (l++(y::l')) -> is_path y z l'.
+  is_path x z (l++y::l') -> is_path y z l'.
 
 Proof.
 induction l; simpl; intros. tauto. apply IHl with a. tauto. 
 Qed.  
 
 Lemma path_repeat_free_length : 
-eq_midex A -> forall y l x,  is_path x y l -> 
-exists l',  ~In x l' /\ ~In y l' /\ repeat_free l' /\ length l'<= length l /\ incl l' l /\ is_path x y l'.
+  eq_midex A -> forall y l x,  is_path x y l -> 
+    exists l', ~In x l' /\ ~In y l' /\ repeat_free l'
+      /\ length l'<= length l /\ incl l' l /\ is_path x y l'.
 
 Proof.
 induction l; intros; simpl in H0. exists (nil : list A). simpl.
@@ -76,13 +76,17 @@ destruct (H y a). exists (nil : list A). simpl.
 pose (le_O_n (S (length l))). pose (incl_nil (a::l)). rewrite H2. tauto. 
 destruct (In_midex H x x0). destruct (In_elim_right H x x0). assumption. 
 destruct H4. exists x2. split. tauto. split. intro. absurd (In y x0). tauto. 
-rewrite (proj1 H4). apply in_or_app. simpl. tauto. rewrite (proj1 H4) in H1. split. 
+rewrite (proj1 H4). apply in_or_app. simpl. tauto. rewrite (proj1 H4) in H1.
+split. 
 destruct (repeat_free_app_elim_right x1 (x::x2)). tauto. tauto.   
 split. rewrite (length_app x1 (x::x2)) in H1. simpl in H1|-* . omega. split.
 apply incl_tran with (x::x2). apply incl_tl. apply incl_refl.
-apply incl_tran with (x1++(x::x2)). apply incl_appr. apply incl_refl. apply incl_tran with l. 
-tauto. apply incl_tl. apply incl_refl. apply path_app_elim_right with x1 a. tauto. 
-destruct (H x a). exists x0. rewrite H4. simpl. assert (length x0 <= S (length l)). omega. 
+apply incl_tran with (x1++(x::x2)). apply incl_appr. apply incl_refl.
+apply incl_tran with l. 
+tauto. apply incl_tl. apply incl_refl. apply path_app_elim_right with x1 a.
+tauto. 
+destruct (H x a). exists x0. rewrite H4. simpl.
+assert (length x0 <= S (length l)). omega. 
 assert (incl x0 (a :: l)). apply incl_tl. tauto. tauto. exists (a::x0). simpl.
 assert (S (length x0) <= S (length l)). omega. 
 assert (incl (a :: x0) (a :: l)). apply incl_double_cons. tauto. 
@@ -91,7 +95,7 @@ assert (a<>y). intro. rewrite H8 in H2. tauto. tauto.
 Qed.
 
 Lemma path_restricted_incl : forall y l l' x,
-is_restricted R l -> is_path x y l' -> incl l' l.
+  is_restricted R l -> is_path x y l' -> incl l' l.
 
 Proof.
 unfold is_restricted. induction l'; simpl; intros. intro. simpl. tauto.
@@ -99,21 +103,21 @@ apply incl_cons. pose (H x a). tauto. apply IHl' with a; tauto.
 Qed. 
 
 (***********************************************************************)
-(* bound_path *)
+(** paths of bounded length *)
 
 Inductive bound_path (n : nat) : relation A :=
 | bp_intro : forall x y l,
-length l<= n -> is_path x y l -> bound_path n x y.
+  length l<= n -> is_path x y l -> bound_path n x y.
 
 Lemma bound_path_clos_trans : forall n,
-sub_rel (bound_path n)  (clos_trans R).
+  sub_rel (bound_path n)  (clos_trans R).
 
 Proof.
 unfold sub_rel. intros. inversion H. apply path_clos_trans with l. assumption. 
 Qed.
 
 Lemma clos_trans_bound_path : eq_midex A -> forall l,
-is_restricted R l -> sub_rel (clos_trans R) (bound_path (length l)) .
+  is_restricted R l -> sub_rel (clos_trans R) (bound_path (length l)).
 
 Proof.
 do 6 intro. destruct (clos_trans_path H1).
@@ -123,7 +127,7 @@ apply path_restricted_incl with y x;tauto. tauto.
 Qed.
 
 Lemma bound_path_n_Sn : forall n x y,
-bound_path n x y -> bound_path (S n) x y.
+  bound_path n x y -> bound_path (S n) x y.
 
 Proof.
 intros. inversion H. apply bp_intro with l. apply le_trans with n. assumption. 
@@ -131,8 +135,8 @@ apply le_n_Sn. assumption.
 Qed.
 
 Lemma bound_path_Sn_n_or_Rn : forall n x y,
-bound_path (S n) x y ->
-bound_path n x y \/ exists z : A, R x z /\ bound_path n z y.
+  bound_path (S n) x y ->
+  bound_path n x y \/ exists z : A, R x z /\ bound_path n z y.
 
 Proof.
 intros. inversion H. destruct (le_le_S_dec (length l) n). 
@@ -142,27 +146,33 @@ split. tauto. apply bp_intro with l. apply le_S_n. assumption. tauto.
 Qed.
 
 Lemma R_bound_path_n_Sn : forall x y z n,
-R x y -> bound_path n y z -> bound_path (S n) x z.
+  R x y -> bound_path n y z -> bound_path (S n) x z.
 
 Proof.
-intros. inversion H0. apply bp_intro with (y::l). simpl. apply le_n_S. assumption. 
+intros. inversion H0. apply bp_intro with (y::l). simpl. apply le_n_S.
+assumption. 
 simpl. tauto. 
 Qed.
 
 End Path.
 
+(***********************************************************************)
+(** paths and sub-relations *)
+
 Lemma path_preserved : forall R R' y l x,
-sub_rel R R' -> is_path R x y l -> is_path R' x y l.
+  sub_rel R R' -> is_path R x y l -> is_path R' x y l.
 
 Proof.
 unfold sub_rel. induction l; intros; simpl in H0 |- * . apply H. assumption. 
 split. pose (H x a). tauto. pose (IHl a). tauto.
 Qed.
 
-Lemma path_restriction : forall R y l x, is_path R x y l -> is_path (restriction R (x::y::l)) x y l.
+Lemma path_restriction : forall R y l x,
+  is_path R x y l -> is_path (restriction R (x::y::l)) x y l.
 
 Proof.
-unfold restriction. induction l; simpl; intros. tauto. split. tauto. simpl in IHl. 
+unfold restriction. induction l; simpl; intros. tauto. split. tauto.
+simpl in IHl. 
 apply path_preserved with (fun x0 y0 : A =>  (a = x0 \/ y = x0 \/ In x0 l) /\
 (a = y0 \/ y = y0 \/ In y0 l) /\ R x0 y0). unfold sub_rel. intros. tauto. 
 apply IHl. tauto.
@@ -171,12 +181,12 @@ Qed.
 End S.
 
 (***********************************************************************)
-(** some other lemmas *)
+(** properties when the equality is decidable *)
 
 Section S2.
 
 Variable A : Set.
-Variable eqdec : forall x0 y0 : A, {x0 = y0} + {x0 <> y0}.
+Variable eqdec : forall x y : A, {x=y}+{x<>y}.
 
 (***********************************************************************)
 (** path *)
@@ -194,7 +204,8 @@ intuition.
 Qed.
 
 Lemma sub_path : forall l x y x' y' l' m p,
-  x :: l ++ y :: nil = m ++ x' :: l' ++ y' :: p -> is_path R x y l -> is_path R x' y' l'.
+  x :: l ++ y :: nil = m ++ x' :: l' ++ y' :: p ->
+  is_path R x y l -> is_path R x' y' l'.
 
 Proof.
 induction l; simpl; intros.
@@ -258,24 +269,11 @@ Lemma path_shrink : forall (y : A) l' (x : A),
   is_path R x y l' -> is_path R x y (shrink eqdec l').
 
 Proof.
-induction l'; simpl; intros. assumption. assert (is_path R a y (shrink eqdec l')).
+induction l'; simpl; intros. assumption.
+assert (is_path R a y (shrink eqdec l')).
 apply IHl'; tauto. destruct (In_dec eqdec a (shrink eqdec l')).
 apply path_cut_bis; tauto. simpl. tauto.
 Qed.
-
-(*
-Lemma path_repeat_free_length : forall (x y : A) l', is_path R x y l' ->
-  exists l'', repeat_free l'' /\ length l'' <= length l' /\ is_path R x y l''.
-
-Proof.
-intros. exists (shrink eqdec l'). 
-split. apply repeat_free_shrink. split. apply length_shrink. apply incl_refl. 
-apply path_shrink. assumption.
-Qed. 
-*)
-
-(***********************************************************************)
-(** bound_path *)
 
 Require Import Arith.
 
@@ -286,7 +284,6 @@ Proof.
 unfold inclusion. induction l'; intros; simpl in H0 |- * . apply H. assumption. 
 split. pose (H x a). tauto. pose (IHl' a). tauto.
 Qed.
-
 
 (***********************************************************************)
 (** restriction *)

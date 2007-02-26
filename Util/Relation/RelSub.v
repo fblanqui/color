@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2007-02-20
 
-subrelation, restriction, etc.
+sub-relation, restriction, etc.
 *)
 
 Require Export ListShrink.
