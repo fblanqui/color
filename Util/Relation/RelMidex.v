@@ -7,9 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 excluded middle and decidability for relation.
 *)
 
-(***********************************************************************)
-(* ON EXCLUDED MIDDLE AND DECIDABILITY *)
-
 Require Import Relations. 
 
 Set Implicit Arguments.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.17 2007-02-12 16:16:34 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.18 2007-03-02 15:58:52 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,7 +46,7 @@ Section basic_properties.
 
 Variables (A : Set) (R : relation A).
 
-Definition Rel_dec := forall x y, {R x y}+{~R x y}.
+(*Definition Rel_dec := forall x y, {R x y}+{~R x y}.*)
 
 Definition irreflexive := forall x, ~R x x.
 
@@ -118,7 +118,7 @@ Proof.
 intros T h h'. unfold inclusion. auto.
 Qed.
 
-Lemma incl_refl : R << R.
+Lemma inclusion_refl : R << R.
 
 Proof.
 unfold inclusion. auto.
@@ -128,9 +128,9 @@ End inclusion.
 
 Implicit Arguments incl_elim [A R S x y].
 
-Ltac incl_refl := apply incl_refl.
+Ltac inclusion_refl := apply inclusion_refl.
 
-Ltac trans S := apply incl_trans with (S); try incl_refl.
+Ltac trans S := apply incl_trans with (S); try inclusion_refl.
 
 (***********************************************************************)
 (** irreflexive *)
@@ -209,7 +209,7 @@ Qed.
 
 End compose.
 
-Ltac comp := apply incl_comp; try incl_refl.
+Ltac comp := apply incl_comp; try inclusion_refl.
 
 Ltac assoc :=
   match goal with
@@ -489,7 +489,7 @@ Qed.
 
 End union.
 
-Ltac union := apply incl_union; try incl_refl.
+Ltac union := apply incl_union; try inclusion_refl.
 
 (***********************************************************************)
 (** relations between closures, union and composition *)

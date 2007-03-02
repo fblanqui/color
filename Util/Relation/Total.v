@@ -11,22 +11,19 @@ acyclic iff its restriction to any finite set has a decidable
 (resp. middle-excluding) irreflexive linear extension.
 *)
  
-(* $Id: Total.v,v 1.7 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: Total.v,v 1.8 2007-03-02 15:58:52 stephaneleroux Exp $ *)
 
 Require Import Sumbool. 
 Require Export RelDec.
 
 Set Implicit Arguments.
 
-(***********************************************************************)
-(* RELATION COMPLETION *)
-
 Section On_relation_completion.
 
 Variable A : Set.
 
 (***********************************************************************)
-(* total *)
+(** total *)
 
 Section total.
  
@@ -39,14 +36,14 @@ Definition total l : Prop := forall x y,  In x l -> In y l -> trichotomy x y.
 End total.
 
 Lemma trichotomy_preserved : forall R R' x y,
-  sub_rel R R' -> trichotomy R x y -> trichotomy R' x y.
+  R << R' -> trichotomy R x y -> trichotomy R' x y.
 
 Proof.
-unfold sub_rel, trichotomy. intros. pose (H x y). pose (H y x). tauto.
+unfold inclusion, trichotomy. intros. pose (H x y). pose (H y x). tauto.
 Qed. 
  
 (***********************************************************************)
-(* add *)
+(** add *)
 
 Section try_add_arc.
 
@@ -56,10 +53,10 @@ Inductive try_add_arc (x y : A) : A -> A -> Prop :=
 | keep : forall z t, R z t -> try_add_arc x y z t
 | try_add : x<>y -> ~R y x ->  try_add_arc x y x y.
 
-Lemma sub_rel_try_add_arc : forall x y, sub_rel R (try_add_arc x y).
+Lemma sub_rel_try_add_arc : forall x y, R << (try_add_arc x y).
 
 Proof.
-unfold sub_rel. intros. constructor. assumption. 
+unfold inclusion. intros. constructor. assumption. 
 Qed.
 
 Lemma try_add_arc_sym :  forall x y z t,
@@ -172,12 +169,12 @@ exists (a0::x0). simpl. apply le_S_n. assumption.
 simpl. split. apply (sub_rel_try_add_arc). apply H0 with a; assumption.
 assumption.  
 (**)
-absurd (R a0 a). tauto. apply transitive_sub_rel_clos_trans. assumption. 
+absurd (R a0 a). tauto. apply trans_tc_incl. assumption. 
 apply path_clos_trans with (x0++(z::nil)). apply path_app. 
 apply path_try_add_arc_path with x y. rewrite H13. tauto. assumption. simpl.
 assumption.  
 (**)
-absurd (R a z). tauto. apply transitive_sub_rel_clos_trans. assumption. 
+absurd (R a z). tauto. apply trans_tc_incl. assumption. 
 apply path_clos_trans with (a0::x0). split. assumption.  
 apply path_try_add_arc_path with x y. rewrite H10. tauto. assumption. 
 (**) 
@@ -196,7 +193,7 @@ Qed.
 End try_add_arc.
 
 (***********************************************************************)
-(* try_add_arc_one_to_many: multiple try_add_arc with one list *)
+(** try_add_arc_one_to_many: multiple try_add_arc with one list *)
 
 Section try_add_arc_one_to_many.
 
@@ -209,13 +206,13 @@ match l with
 end.
 
 Lemma sub_rel_try_add_arc_one_to_many : forall x l,
-  sub_rel R (try_add_arc_one_to_many x l). 
+  R << (try_add_arc_one_to_many x l). 
 
 Proof.
-induction l; simpl; intros. apply reflexive_sub_rel. 
-apply transitive_sub_rel with (try_add_arc_one_to_many x l). assumption. 
-apply transitive_sub_rel with (try_add_arc (try_add_arc_one_to_many x l) x a).
-apply sub_rel_try_add_arc. apply sub_rel_clos_trans. 
+induction l; simpl; intros. apply inclusion_refl. 
+apply incl_trans with (try_add_arc_one_to_many x l). assumption. 
+apply incl_trans with (try_add_arc (try_add_arc_one_to_many x l) x a).
+apply sub_rel_try_add_arc. apply tc_incl. 
 Qed. 
 
 Lemma restricted_try_add_arc_one_to_many : forall l x l', 
@@ -260,7 +257,7 @@ Proof.
 induction l';  simpl; intros. contradiction. pose (incl_cons_l_incl H3). 
 apply trichotomy_preserved
   with (try_add_arc (try_add_arc_one_to_many x l') x a). 
-apply sub_rel_clos_trans. destruct H1. rewrite H1. 
+apply tc_incl. destruct H1. rewrite H1. 
 apply try_add_arc_trichotomy. assumption.
 apply try_add_arc_one_to_many_midex with l; assumption. 
 apply trichotomy_preserved with (try_add_arc_one_to_many x l').
@@ -274,13 +271,13 @@ Lemma try_add_arc_one_to_many_irrefl : eq_midex A -> forall x l l',
 Proof.
 induction l'; simpl; intros. assumption.  
 apply try_add_arc_irrefl. assumption. 
-destruct l'; simpl. assumption. apply transitive_clos_trans. tauto. 
+destruct l'; simpl. assumption. apply tc_trans. tauto. 
 Qed.
 
 End try_add_arc_one_to_many.
 
 (***********************************************************************)
-(* try_add_arc_many_to_many: multiple try_add_arc with two lists *)
+(** try_add_arc_many_to_many: multiple try_add_arc with two lists *)
 
 Section try_add_arc_many_to_many.
 
@@ -293,11 +290,11 @@ Fixpoint try_add_arc_many_to_many (l' l: list A){struct l'}: relation A :=
   end.
 
 Lemma sub_rel_try_add_arc_many_to_many : forall l l',
-  sub_rel R (try_add_arc_many_to_many l' l). 
+  R << (try_add_arc_many_to_many l' l). 
 
 Proof. 
-induction l'; simpl; intros. apply reflexive_sub_rel. 
-apply transitive_sub_rel with (try_add_arc_many_to_many l' l). assumption. 
+induction l'; simpl; intros. apply inclusion_refl. 
+apply incl_trans with (try_add_arc_many_to_many l' l). assumption. 
 apply sub_rel_try_add_arc_one_to_many. 
 Qed.
 
@@ -357,13 +354,13 @@ induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0).
 apply try_add_arc_one_to_many_irrefl with l. assumption. 
 apply restricted_try_add_arc_many_to_many; assumption. 
 destruct l'; simpl. assumption. destruct l. pose (i a0). simpl in i0. tauto. 
-simpl. apply transitive_clos_trans. tauto.   
+simpl. apply tc_trans. tauto.   
 Qed. 
 
 End try_add_arc_many_to_many.
 
 (***********************************************************************)
-(*  *)
+(** Llinear Extension and Topological Sorting *)
 
 Section LETS.
 
@@ -372,24 +369,24 @@ Variable l : list A.
 
 Definition LETS := try_add_arc_many_to_many (clos_trans (restriction R l)) l l.
 
-Lemma LETS_sub_rel_clos_trans : sub_rel (clos_trans (restriction R l)) LETS.
+Lemma LETS_restriction_clos_trans : (clos_trans (restriction R l)) << LETS.
 
 Proof.
 intros. unfold LETS. apply sub_rel_try_add_arc_many_to_many. 
 Qed.
 
-Lemma LETS_sub_rel : sub_rel (restriction R l) LETS.
+Lemma LETS_sub_rel : (restriction R l) << LETS.
 
 Proof.
 intros. unfold LETS.
-apply transitive_sub_rel with (clos_trans (restriction R l)). 
-apply sub_rel_clos_trans. apply  LETS_sub_rel_clos_trans. 
+apply incl_trans with (clos_trans (restriction R l)). 
+apply tc_incl. apply  LETS_restriction_clos_trans. 
 Qed.
 
 Lemma LETS_restricted : is_restricted LETS l.
 
 Proof.
-unfold sub_rel, LETS. intros. apply restricted_try_add_arc_many_to_many.
+unfold LETS. intros. apply restricted_try_add_arc_many_to_many.
 apply incl_refl. 
 apply restricted_clos_trans. apply restricted_restriction.  
 Qed.
@@ -397,7 +394,7 @@ Qed.
 Lemma LETS_transitive : transitive LETS.
 
 Proof.
-intros. unfold LETS. destruct l; simpl; apply transitive_clos_trans.
+intros. unfold LETS. destruct l; simpl; apply tc_trans.
 Qed.
 
 Lemma LETS_irrefl : eq_midex A -> 
@@ -407,8 +404,8 @@ Proof.
 split;intros. unfold LETS.
 apply try_add_arc_many_to_many_irrefl; try assumption. apply incl_refl. 
 apply restricted_clos_trans. apply restricted_restriction.
-apply transitive_clos_trans.  
-apply irreflexive_preserved with LETS. apply LETS_sub_rel_clos_trans.
+apply tc_trans.  
+apply incl_irrefl with LETS. apply LETS_restriction_clos_trans.
 assumption. 
 Qed. 
 
@@ -441,15 +438,15 @@ Qed.
 
 End LETS.
 
-(* Linear Extension *)
+(** Linear Extension *)
 
 Definition linear_extension R l R' :=
-  is_restricted R' l /\ sub_rel (restriction R l) R' /\ 
+  is_restricted R' l /\ (restriction R l) << R' /\ 
   transitive R' /\ irreflexive R' /\ total R' l.
 
 Lemma local_global_acyclic : forall R : relation A,
   (forall l, exists R',
-    sub_rel (restriction R l) R' /\ transitive R' /\ irreflexive R') ->
+    (restriction R l) << R' /\ transitive R' /\ irreflexive R') ->
   irreflexive (clos_trans R).
 
 Proof.
@@ -458,8 +455,8 @@ assert (clos_trans (restriction R (x::x::x0)) x x).
 apply path_clos_trans with x0. 
 apply path_restriction. assumption. destruct (H (x::x::x0)). destruct H3.
 destruct H4. 
-apply H5 with x. apply transitive_sub_rel_clos_trans. assumption. 
-apply clos_trans_monotonic with (restriction R (x :: x :: x0)). assumption.
+apply H5 with x. apply trans_tc_incl. assumption. 
+apply incl_tc with (restriction R (x :: x :: x0)). assumption.
 assumption. 
 Qed.
 
@@ -486,8 +483,8 @@ unfold linear_extension. split; intros. exists (LETS R l). split. split.
 apply LETS_restricted. split. 
 apply LETS_sub_rel. split. apply LETS_transitive. split.
 destruct (LETS_irrefl R l). 
-tauto. apply H1. apply irreflexive_preserved with (clos_trans R).
-unfold sub_rel. apply clos_trans_monotonic. apply sub_rel_restriction. tauto.
+tauto. apply H1. apply incl_irrefl with (clos_trans R).
+unfold inclusion. apply incl_tc. apply incl_restriction. tauto.
 apply LETS_total; tauto. apply LETS_midex; tauto. 
 (**)
 split. apply total_order_eq_midex. intro. destruct (H0 l). exists x. tauto. 
@@ -495,7 +492,7 @@ apply local_global_acyclic. intro. destruct (H0 l). exists x. tauto.
 Qed.
 
 
-(* Topological Sorting *)
+(** Topological Sorting *)
 
 Definition topo_sortable R := 
   {F : list A -> A -> A -> bool |
@@ -589,14 +586,14 @@ do 2 intro. destruct H6. inversion H6. split.
 do 3 intro. destruct (H2 l x y). apply (LETS_restricted R l x y). assumption.
 inversion H3. split. 
 do 3 intro. destruct (H2 l x y). trivial. absurd (LETS R l x y). assumption.
-apply LETS_sub_rel_clos_trans. apply sub_rel_clos_trans. assumption. split. 
+apply LETS_restriction_clos_trans. apply tc_incl. assumption. split. 
 do 5 intro. destruct (H2 l x y). destruct (H2 l y z).
 pose (LETS_transitive R l x y z l0 l1). 
 destruct (H2 l x z). trivial. contradiction. inversion H4. inversion H3. split. 
 do 2 intro. destruct (H2 l x x). absurd (LETS R l x x).
 destruct (LETS_irrefl R l). 
-assumption. apply H4. apply irreflexive_preserved with (clos_trans R). 
-apply clos_trans_monotonic. apply sub_rel_restriction. assumption. assumption.
+assumption. apply H4. apply incl_irrefl with (clos_trans R). 
+apply incl_tc. apply incl_restriction. assumption. assumption.
 inversion H3. 
 do 4 intro. unfold trichotomy. destruct (H2 l x y). tauto. destruct (H2 l y x).
 tauto. 

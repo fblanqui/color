@@ -37,14 +37,14 @@ Qed.
 Lemma iter_iter : forall p q, iter p @ iter q << iter (p+q+1).
 
 Proof.
-induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
+induction p; simpl; intros. rewrite plus_1_S. simpl. apply inclusion_refl.
 assoc. comp. apply IHp.
 Qed.
 
 Lemma iter_plus_1 : forall p q, iter (p+q+1) << iter p @ iter q.
 
 Proof.
-induction p; simpl; intros. rewrite plus_1_S. simpl. apply incl_refl.
+induction p; simpl; intros. rewrite plus_1_S. simpl. apply inclusion_refl.
 trans (R @ (iter p @ iter q)). comp. apply IHp. apply comp_assoc'.
 Qed.
 

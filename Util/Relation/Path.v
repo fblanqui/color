@@ -8,11 +8,10 @@ See the COPYRIGHTS and LICENSE files.
 paths
 *)
 
-(* $Id: Path.v,v 1.14 2007-02-26 16:32:23 blanqui Exp $ *)
+(* $Id: Path.v,v 1.15 2007-03-02 15:58:52 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
-Require Export RelUtil.
 Require Export RelSub.
 
 Section S.
@@ -110,14 +109,14 @@ Inductive bound_path (n : nat) : relation A :=
   length l<= n -> is_path x y l -> bound_path n x y.
 
 Lemma bound_path_clos_trans : forall n,
-  sub_rel (bound_path n)  (clos_trans R).
+  (bound_path n)  << (clos_trans R).
 
 Proof.
-unfold sub_rel. intros. inversion H. apply path_clos_trans with l. assumption. 
+repeat intro. inversion H. apply path_clos_trans with l. assumption. 
 Qed.
 
 Lemma clos_trans_bound_path : eq_midex A -> forall l,
-  is_restricted R l -> sub_rel (clos_trans R) (bound_path (length l)).
+  is_restricted R l -> (clos_trans R) << (bound_path (length l)).
 
 Proof.
 do 6 intro. destruct (clos_trans_path H1).
@@ -160,10 +159,10 @@ End Path.
 (** paths and sub-relations *)
 
 Lemma path_preserved : forall R R' y l x,
-  sub_rel R R' -> is_path R x y l -> is_path R' x y l.
+  R << R' -> is_path R x y l -> is_path R' x y l.
 
 Proof.
-unfold sub_rel. induction l; intros; simpl in H0 |- * . apply H. assumption. 
+induction l; repeat intro; simpl in H0 |- * . apply H. assumption. 
 split. pose (H x a). tauto. pose (IHl a). tauto.
 Qed.
 
@@ -174,7 +173,7 @@ Proof.
 unfold restriction. induction l; simpl; intros. tauto. split. tauto.
 simpl in IHl. 
 apply path_preserved with (fun x0 y0 : A =>  (a = x0 \/ y = x0 \/ In x0 l) /\
-(a = y0 \/ y = y0 \/ In y0 l) /\ R x0 y0). unfold sub_rel. intros. tauto. 
+(a = y0 \/ y = y0 \/ In y0 l) /\ R x0 y0). repeat intro. tauto. 
 apply IHl. tauto.
 Qed.
 
@@ -186,14 +185,11 @@ End S.
 Section S2.
 
 Variable A : Set.
-Variable eqdec : forall x y : A, {x=y}+{x<>y}.
+Variable eqdec : eq_dec A.
+Variable R : relation A.
 
 (***********************************************************************)
 (** path *)
-
-Section Path2.
-
-Variable R : relation A.
 
 Lemma path_app_elim : forall l x y z m,
   is_path R x y (l ++ z :: m) -> is_path R x z l /\ is_path R z y m.
@@ -277,14 +273,6 @@ Qed.
 
 Require Import Arith.
 
-Lemma path_monotonic : forall (R R' : relation A) (y : A) l' (x : A),
-  R << R' -> is_path R x y l' -> is_path R' x y l'.
-
-Proof.
-unfold inclusion. induction l'; intros; simpl in H0 |- * . apply H. assumption. 
-split. pose (H x a). tauto. pose (IHl' a). tauto.
-Qed.
-
 (***********************************************************************)
 (** restriction *)
 
@@ -292,18 +280,14 @@ Section sub_Rel2.
 
 Variable l : list A.
 
-Definition sub (x y : A) := In x l /\ In y l /\ R x y.
-
-Definition restricted := R << sub.
-
-Lemma restricted_path_incl : restricted ->
+Lemma restricted_path_incl : is_restricted R l ->
   forall m x y, is_path R x y m -> incl (x :: m ++ y :: nil) l.
 
 Proof.
 induction m; simpl; intros.
-deduce (H _ _ H0). unfold sub in H1. unfold incl. simpl. intuition.
-subst a. exact H2. subst a. exact H1.
-destruct H0. apply incl_cons. deduce (H _ _ H0). unfold sub in H2. intuition.
+deduce (H _ _ H0). unfold is_restricted in H. unfold incl. simpl. intuition.
+subst a. exact H2. subst a. exact H3.
+destruct H0. apply incl_cons. deduce (H _ _ H0). unfold is_restricted in H2. intuition.
 apply IHm. exact H1.
 Qed.
 
@@ -311,7 +295,7 @@ Require Export ListOccur.
 
 Notation occur := (occur eqdec).
 
-Lemma long_path_occur : restricted ->
+Lemma long_path_occur : is_restricted R l ->
   forall x y m, is_path R x y m -> length m >= length l - 1 ->
     exists z, occur z (x :: m ++ y :: nil) >= 2.
 
@@ -320,56 +304,14 @@ intros. apply pigeon_hole with l. apply restricted_path_incl.
 apply H. apply H0. simpl. rewrite length_app. simpl. omega.
 Qed.
 
-Lemma inclusion_sub : sub << R.
+Lemma path_restriction_In_left : forall (x y : A) l', 
+is_path (restriction R l) x y l' -> In x l.
 
 Proof.
-unfold inclusion, sub. intros. tauto.
+unfold restriction. intros; destruct l'; simpl in H; tauto.
 Qed.
-
-Lemma path_sub_In_left : forall (x y : A) l', is_path sub x y l' -> In x l.
-
-Proof.
-unfold sub. intros; destruct l'; simpl in H; tauto.
-Qed.
-
-Lemma path_sub_incl : forall (y : A) l' (x : A), is_path sub x y l' -> incl l' l.
-
-Proof.
-induction l'; simpl; intros. apply incl_nil.
-destruct H. unfold incl. intros. simpl in H1. destruct H1. subst a0.
-eapply path_sub_In_left. apply H0. unfold incl in IHl'. eapply IHl'. apply H0.
-exact H1.
-Qed. 
 
 End sub_Rel2.
-
-End Path2.
-
-Lemma path_sub : forall (R : relation A)(y : A) l (x : A),
-  is_path R x y l -> is_path (sub R (x::y::l)) x y l.
-
-Proof.
-unfold sub. induction l; simpl; intros. tauto. split. tauto. simpl in IHl. 
-apply path_monotonic with (fun x0 y0 : A => (a = x0 \/ y = x0 \/ In x0 l) /\
-(a = y0 \/ y = y0 \/ In y0 l) /\ R x0 y0). unfold inclusion. intros. tauto. 
-apply IHl. tauto.
-Qed.
-
-Lemma restricted_clos_trans_sub : forall (R : relation A) (l : list A),
-  restricted (sub R l !) l.
-
-Proof.
-unfold restricted, sub, inclusion. intros. induction H. 
-split. tauto. split. tauto. constructor. assumption.  
-split. tauto. split. tauto. constructor 2 with y; assumption. 
-Qed. 
-
-Lemma sub_monotonic : forall (R' R'' : relation A) l,
-  R' << R'' -> sub R' l << sub R'' l.
-
-Proof.
-unfold inclusion, sub. intros. pose (H x y). tauto.
-Qed.
 
 End S2.
 

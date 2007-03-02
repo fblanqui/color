@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.7 2007-02-23 14:20:53 stephaneleroux Exp $ *)
+(* $Id: ADPGraph.v,v 1.8 2007-03-02 15:58:52 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -55,10 +55,10 @@ Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
   /\ exists p, exists s,
     int_red R # (app s (rhs a1)) (app s (shift p (lhs a2))).
 
-Lemma restricted_dp_graph : restricted dp_graph DP.
+Lemma restricted_dp_graph : is_restricted dp_graph DP.
 
 Proof.
-unfold restricted, sub, dp_graph, inclusion. intros. intuition.
+unfold is_restricted, dp_graph, inclusion. intros. intuition.
 Qed.
 
 (***********************************************************************)
@@ -95,7 +95,7 @@ Lemma chain_dps_app : forall l a b m,
   chain_dps a (l ++ b :: m) << chain_dps a l @ chain_dps b m.
 
 Proof.
-induction l; simpl; intros. apply incl_refl. assoc. comp. apply IHl.
+induction l; simpl; intros. apply inclusion_refl. assoc. comp. apply IHl.
 Qed.
 
 Implicit Arguments chain_dps_app [l a b m].
