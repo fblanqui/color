@@ -11,7 +11,7 @@ iff the transitive closures of its finite restrictions are decidable
 (resp. middle-excluding)
 *)
 
-(* $Id: RelDec.v,v 1.5 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: RelDec.v,v 1.6 2007-03-02 15:58:52 stephaneleroux Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,7 +22,7 @@ Section S.
 Variable A : Set.
 
 (***********************************************************************)
-(* bound_path preserves middle exclusion and decidability for restrictions *)
+(** bound_path preserves middle exclusion and decidability for restrictions *)
 
 Section bp_restriction_midex_dec.
 
@@ -123,7 +123,7 @@ Qed.
 End bp_restriction_midex_dec.
 
 (***********************************************************************)
-(* middle-excluding/decidability of a relation
+(** middle-excluding/decidability of a relation
 is equivalent to middle-excluding/decidability of
 the transitive closure of every finite restriction of the relation *)
 
@@ -152,7 +152,7 @@ Lemma clos_trans_restriction_dec_R_dec :
 
 Proof.
 do 3 intro. destruct (H (x::y::nil) x y). constructor.
-pose sub_rel_restriction. unfold sub_rel in s. apply s with A (x::y::nil). 
+pose incl_restriction. unfold inclusion in i. apply i with A (x::y::nil). 
 apply clos_trans_restricted_pair. apply restricted_restriction. assumption. 
 constructor 2. intro. pose (clos_trans_restriction R x y). tauto.  
 Qed. 
@@ -162,7 +162,7 @@ Lemma clos_trans_restriction_midex_R_midex :
 
 Proof.
 do 3 intro. destruct (H (x::y::nil) x y). constructor.
-pose sub_rel_restriction. unfold sub_rel in s. apply s with A (x::y::nil). 
+pose incl_restriction. unfold inclusion in i. apply i with A (x::y::nil). 
 apply clos_trans_restricted_pair. apply restricted_restriction. assumption. 
 constructor 2. intro. pose (clos_trans_restriction R x y). tauto. 
 Qed. 
