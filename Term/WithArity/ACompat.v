@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.3 2007-02-09 10:10:27 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.4 2007-03-21 13:59:28 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -93,13 +93,13 @@ Section weak_reduction_pair.
 Variables succ succ_eq : relation term.
 
 Lemma compat_hd_red_mod : forall R E,
-  weak_rewrite_ordering succ succ_eq -> rewrite_ordering succ_eq ->
+  substitution_closed succ -> rewrite_ordering succ_eq ->
   compatible succ_eq E -> compatible succ R ->
   absorb succ succ_eq -> hd_red_mod E R << succ.
 
 Proof.
 intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
-apply compat_red; assumption. destruct H. apply compat_hd_red; assumption.
+apply compat_red; assumption. apply compat_hd_red; assumption.
 apply comp_rtc_incl. exact H3.
 Qed.
 
