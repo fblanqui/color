@@ -3,6 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2006-11-26
+- Adam Koprowski & Hans Zantema, 2007-03-13, added WF_union_mod
 
 inductive definition of strong normalization (inverse of accessibility)
 *)
@@ -297,6 +298,29 @@ Lemma SN_modulo : forall x x', SN (E# @ R) x -> E# x x' -> SN (E# @ R) x'.
 Proof.
 intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
 exists x0. intuition. apply rt_trans with x'; assumption.
+Qed.
+
+Lemma WF_union_mod : WF E -> WF (E# @ R) -> WF (R U E).
+
+Proof.
+  intros WF_E WF_ER x.
+  apply SN_ind with A (E# @ R); auto. 
+  clear x. intros x _ IH.
+  apply SN_intro. intros y RExy.
+  destruct RExy as [Rxy | Exy].
+  apply IH. exists x. 
+  split; [constructor rt_refl | assumption].
+  cut (forall y, (E# @ R) x y -> SN (R U E) y); [idtac | assumption].
+  cut (E! x y). pattern y. apply SN_ind with A E; auto.
+  clear y IH Exy. intros y _ IH_out Exy IH_in.
+  apply SN_intro. intros z REyz.
+  destruct REyz.
+  apply IH_in. exists y. split; trivial.
+  apply tc_incl_rtc. assumption.
+  apply IH_out; trivial.
+  constructor 2 with y. trivial.
+  constructor. assumption.
+  constructor. assumption.
 Qed.
 
 End modulo.
