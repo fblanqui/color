@@ -3,11 +3,12 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
+- Adam Koprowski and Hans Zantema, 2007-03
 
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.18 2007-03-02 15:58:52 stephaneleroux Exp $ *)
+(* $Id: RelUtil.v,v 1.19 2007-03-22 11:41:53 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -68,6 +69,8 @@ Definition ordering := reflexive R /\ transitive R /\ antisymmetric R.
 Definition strict_ordering := irreflexive R /\ transitive R.
 
 Definition strict_part x y := R x y /\ ~R y x.
+
+Definition empty (x y: A) := False.
 
 End basic_definitions.
 
@@ -394,6 +397,16 @@ do 2 destruct H0. right. exists x0. split. exact H0.
 apply rt_trans with (y := y); auto.
 Qed.
 
+Lemma tc_split_inv : R# @ R << R!.
+
+Proof.
+intros x y RRxy. destruct RRxy as [z [Rxz Rzy]].
+destruct (rtc_split Rxz).
+rewrite H. intuition.
+constructor 2 with z. assumption.
+constructor 1. assumption.
+Qed.
+
 Lemma rtc_transp : transp (R#) << (transp R)#.
 
 Proof.
@@ -401,6 +414,15 @@ unfold inclusion. induction 1.
 apply rt_step. assumption.
 apply rt_refl.
 eapply rt_trans. apply IHclos_refl_trans2. apply IHclos_refl_trans1.
+Qed.
+
+Lemma incl_rtc_rtc : R << S# -> R# << S#.
+
+Proof.
+unfold inclusion. induction 2.
+apply H. assumption.
+constructor 2.
+constructor 3 with y; assumption.
 Qed.
 
 Lemma incl_rtc : R << S -> R# << S#.
@@ -485,6 +507,34 @@ Lemma union_assoc : (R U S) U T << R U (S U T).
 Proof.
 unfold inclusion. intros. destruct H. destruct H. left. exact H.
 right. left. exact H. right. right. exact H.
+Qed.
+
+Lemma union_distr_comp : (R U S) @ T << (R @ T) U (S @ T).
+
+Proof.
+intros x y H. destruct H as [z [[Rxz | Sxz] Tzy]].
+left. exists z. auto.
+right. exists z. auto.
+Qed.
+
+Lemma union_distr_comp_inv : (R @ T) U (S @ T) << (R U S) @ T.
+
+Proof.
+intros x y H. destruct H as [[z [Rxz Tzy]] | [z [Sxz Tzy]]].
+exists z. split; [left; assumption | assumption].
+exists z. split; [right; assumption | assumption].
+Qed.
+
+Lemma union_empty_r : R U (@empty A) << R.
+
+Proof.
+  intros x y Rxy. destruct Rxy. assumption. contradiction.
+Qed.
+
+Lemma union_empty_l : (@empty A) U R << R.
+
+Proof.
+  intros x y Rxy. destruct Rxy. contradiction. assumption.
 Qed.
 
 End union.

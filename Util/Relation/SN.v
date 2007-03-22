@@ -3,7 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2006-11-26
-- Adam Koprowski & Hans Zantema, 2007-03-13, added WF_union_mod
+- Adam Koprowski & Hans Zantema, 2007-03
 
 inductive definition of strong normalization (inverse of accessibility)
 *)
@@ -185,6 +185,31 @@ Qed.
 End rel_inverse.
 
 (***********************************************************************)
+(** relation composition *)
+
+Section compose.
+
+Variable (A : Set) (R S : relation A).
+
+Lemma WF_compose_swap : WF (R @ S) -> WF (S @ R).
+
+Proof.
+  intro WF_RS.
+  assert (forall p q, R p q -> SN (S @ R) q).
+  intro p. pattern p.
+  apply SN_ind with A (R @ S); auto.
+  intros. apply SN_intro. intros.
+  destruct H2. apply H0 with x0.
+  exists q; intuition.
+  intuition.
+  unfold WF. intro. apply SN_intro. intros.
+  destruct H0 as [z [Sxz Rzy]].
+  apply H with z. assumption.
+Qed.
+
+End compose.
+
+(***********************************************************************)
 (** reflexive transitive closure *)
 
 Section rtc.
@@ -326,6 +351,30 @@ Qed.
 End modulo.
 
 (***********************************************************************)
+(** union *)
+
+Section union.
+
+Variable (A : Set) (R S : relation A).
+
+Lemma WF_union : WF R -> WF S -> WF (R! @ S!) -> WF (R U S).
+Proof.
+  intros. apply WF_union_mod. assumption.
+  apply WF_compose_swap. apply WF_incl with (R @ S! U R).
+  intros x y Q. destruct Q as [z [Rxz zy]].
+  destruct (rtc_split zy).
+  rewrite <- H2. intuition.
+  left. exists z. intuition.
+  apply WF_union_mod. assumption.
+  apply WF_incl with (R! @ S!); [idtac | assumption].
+  intros x y Q. destruct Q as [z [Rxz [w [Rzw RSwy]]]].
+  exists w. intuition.
+  apply tc_split_inv. exists z. auto.
+Qed.
+
+End union.
+
+(***********************************************************************)
 (** S @ R << R @ S -> SN R x -> S x x' -> SN R x' *)
 
 Section commut.
@@ -460,3 +509,67 @@ unfold WF. intros. eapply absorb_SN_modulo_r. apply H.
 Qed.
 
 End absorb.
+
+(***********************************************************************)
+(** Modular removal of rules for relative termination *)
+Section wf_mod_shift.
+    
+  Variable (A : Set) (R S T : relation A).
+
+  Lemma wf_mod_shift : WF (T# @ (R U S)) -> WF ((S U T)# @ R).
+
+  Proof.
+    intro. apply WF_incl with ((T # @ (R U S)) !).
+    intros x y Rxy. apply tc_split_inv. apply comp_assoc.
+    destruct Rxy as [z [STxz Rzy]]. exists z. split; [idtac | intuition].
+    apply rtc_union. apply incl_rtc with (S U T); trivial.
+    intros s t STst. destruct STst as [Sst | Tst]; solve [intuition].
+    apply WF_tc. assumption.
+  Qed.
+  
+End wf_mod_shift.
+
+Section wf_rel_mod.
+
+  Variable (A : Set) (R S R' S': relation A).
+
+  Theorem wf_rel_mod : WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> 
+    WF ((S U S')# @ (R U R')).
+
+  Proof.
+    intros. apply WF_incl with ((S' U S)# @ (R U R')).
+    comp. apply incl_rtc. apply union_commut.
+    apply wf_mod_shift.
+    apply WF_incl with (S# @ (R' U S') U S# @ R).
+    intros x y Q.
+    destruct Q as [z [Sxz [[Rxz | R'xz] | S'xz]]]; 
+      solve [ right; exists z; intuition | left; exists z; intuition].
+    apply WF_union_mod. assumption.
+    apply WF_incl with ((R U S)# @ (R' U S')); [idtac | assumption].
+    intros x y Q. destruct Q as [z [Lxz [w [Szw RSwy]]]].
+    exists w. split; [idtac | assumption].
+    constructor 3 with z.
+    apply incl_rtc_rtc with (S# @ R); [idtac | intuition].
+    intros a b B. destruct B as [c [Sac Rcb]].
+    constructor 3 with c; [idtac | intuition].
+    apply incl_rtc with S; intuition.
+    apply incl_rtc with S; intuition.
+  Qed.
+
+End wf_rel_mod.
+
+Section wf_rel_mod_simpl.
+
+  Variable (A : Set) (R R' S : relation A).
+
+  Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') -> WF (S# @ (R U R')).
+
+  Proof.
+    intros. apply WF_incl with ((S U (@empty A))# @ (R U R')).
+    comp. apply incl_rtc. intuition.
+    apply wf_rel_mod. assumption.
+    apply WF_incl with ((R U S)# @ R'); trivial.
+    comp. apply union_empty_r.
+  Qed.
+
+End wf_rel_mod_simpl.
