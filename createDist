@@ -8,21 +8,20 @@
 set -x
 
 cwd=`pwd`
-dir=CoLoR_`date +%y%m%d`
 
 cd /tmp
+
+rm -rf color
+cvs -d :ext:blanqui@scm.gforge.inria.fr:/cvsroot/color co color
+
+dir=CoLoR_`date +%y%m%d`
 rm -rf $dir
-cvs -d :ext:blanqui@cvs-sop.inria.fr:/CVS/rewriting co color
 mv color $dir
 
-cd $dir
-rm -rf `find . -name CVS -o -name .cvsignore`
-rm -f `find . -mindepth 2 -name Makefile`
-rm -f createDist
+rm -rf `find $dir -name CVS -o -name .cvsignore -o -name createDist`
 
-cd /tmp
 tar cf $dir.tar $dir
 gzip $dir.tar
 mv $dir.tar.gz $cwd
 
-#rm -rf $dir
+rm -rf $dir

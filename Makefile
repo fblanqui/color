@@ -57,8 +57,7 @@ dist:
 	./createDist
 
 install-dist:
-	cp CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR/
-	mv -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
+	cp -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
 	cp -f CHANGES $(WEB)/CHANGES.CoLoR
 
 %:
