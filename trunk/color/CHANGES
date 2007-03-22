@@ -1,7 +1,7 @@
-07-02-16:
-- Util/List/ListMono: smallest prefix without duplication [Blanqui]
 
-07-02-06:
+07-02-16:
+- simplification of the compilation procedure
+
 - DP/ADPGraph: proof of the dp criterion based on cycles [Blanqui]
 
 - Util/Relation/Union: union of two wellfounded relations [Blanqui]
@@ -13,6 +13,7 @@
 - Util/Relation/Path: paths and subrelations [Le Roux]
 
 - Util/List/ListOccur: number of occurrences and pigeon-hole principle [Blanqui]
+- Util/List/ListRepeatFree: smallest prefix without duplication [Blanqui]
 - Util/List/ListShrink: new functions and lemmas on lists [Le Roux]
 
 - Term/WithArity/ARename: variable renamings [Blanqui]
