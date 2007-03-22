@@ -3,11 +3,12 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
+- Adam Koprowski and Hans Zantema, 2007-03-20
 
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.11 2007-02-08 16:51:50 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.12 2007-03-22 11:41:53 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -101,7 +102,7 @@ Notation rules := (list rule).
 
 Section rewriting.
 
-Variable R : rules.
+Variable R R' : rules.
 
 Lemma red_rule : forall l r c s, In (mkRule l r) R ->
   red R (fill c (app s l)) (fill c (app s r)).
@@ -154,6 +155,20 @@ simpl in H1.
 Funeqtac. exists i. exists v0. exists (fill c (app s l)). exists j. exists v1.
 exists e. exists (fill c (app s r)). split. assumption. split. assumption.
 unfold red. exists l. exists r. exists c. exists s. auto.
+Qed.
+
+Lemma red_swap : red (R ++ R') << red (R' ++ R).
+Proof.
+  intros x y RR'xy. redtac.
+  exists l. exists r. exists c. exists s. repeat split; auto.
+  destruct (in_app_or RR'xy); apply in_or_app; auto.
+Qed.
+
+Lemma hd_red_swap : hd_red (R ++ R') << hd_red (R' ++ R).
+Proof.
+  intros x y RR'xy. redtac.
+  exists l. exists r. exists s. repeat split; auto.
+  destruct (in_app_or RR'xy); apply in_or_app; auto.
 Qed.
 
 Require Export RelUtil.
@@ -249,12 +264,28 @@ deduce (in_app_or H). destruct H0.
 left. apply red_rule. exact H0. right. apply red_rule. exact H0.
 Qed.
 
+Lemma red_union_inv : red R U red R' << red (R ++ R').
+
+Proof.
+intros x y RR'xy.
+destruct RR'xy as [Rxy | Rxy]; destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]]; 
+  subst x; subst y; exists rl; exists rr; exists c; exists s; intuition.
+Qed.
+
 Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y.
 deduce (in_app_or H). destruct H0.
 left. apply hd_red_rule. exact H0. right. apply hd_red_rule. exact H0.
+Qed.
+
+Lemma hd_red_union_inv : hd_red R U hd_red R' << hd_red (R ++ R').
+
+Proof.
+intros x y RR'xy.
+destruct RR'xy as [Rxy | Rxy]; destruct Rxy as [rl [rr [s [Rr [dx dy]]]]]; 
+  subst x; subst y; exists rl; exists rr; exists s; intuition.
 Qed.
 
 End union.
