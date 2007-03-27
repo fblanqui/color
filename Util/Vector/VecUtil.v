@@ -4,11 +4,12 @@ See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
 - Frederic Blanqui, 2005-01-27
+- Adam Koprowski and Hans Zantema, 2007-03-26
 
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.4 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.5 2007-03-27 15:33:01 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -616,22 +617,54 @@ Fixpoint Vsig_of_v (P : A->Prop) n (v : vec n) {struct v}
       Vcons (exist P a (proj1 H)) (Vsig_of_v P w (proj2 H))
   end.
 
-Fixpoint Vforall2 (R : A->A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2)
-  {struct v1} : Prop :=
+Section Vforall2_sec.
+
+Variable R : A -> A -> Prop.
+
+Fixpoint Vforall2 n1 (v1 : vec n1) n2 (v2 : vec n2) {struct v1} : Prop :=
   match eq_nat_dec n1 n2 with
-    | left _ =>
+  | left _ =>
       match v1 with
-	| Vnil => True
-	| Vcons a _ v =>
-	  match v2 with
-	    | Vnil => False
-	    | Vcons b _ w => R a b /\ Vforall2 R v w
+      | Vnil => True
+      | Vcons a _ v =>
+          match v2 with
+	  | Vnil => False
+	  | Vcons b _ w => R a b /\ Vforall2 v w
 	  end
       end
-    | _ => False
+  | _ => False
   end.
 
-Definition Vforall2n (R : A->A->Prop) n (v1 v2 : vec n) := Vforall2 R v1 v2.
+Definition Vforall2n n (v1 v2 : vec n) := Vforall2 v1 v2.
+
+Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i (ip : i < n), 
+  Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
+
+Proof.
+Admitted.
+
+Lemma Vforall2_intro : forall n (v1 : vec n) (v2 : vec n),
+  (forall i (ip : i < n), R (Vnth v1 ip) (Vnth v2 ip)) -> Vforall2n v1 v2.
+
+Proof.
+  induction v1.
+Admitted.
+
+Require Import RelDec.
+
+Variable R_dec : rel_dec R.
+
+Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2), 
+  {Vforall2 v1 v2} + {~Vforall2 v1 v2}.
+
+Proof.
+  induction v1; intros; destruct v2; simpl; auto.
+  destruct (eq_nat_dec n n0); simpl; intuition.
+  destruct (IHv1 n0 v2); intuition. 
+  destruct (R_dec a a0); intuition.
+Defined.
+
+End Vforall2_sec.
 
 (***********************************************************************)
 (** iteration *)
@@ -829,6 +862,14 @@ simpl; reflexivity.
 simpl Vmap at 2. simpl Vmap at 1.
 rewrite IHv. reflexivity.
 Qed.
+
+(* nth element in a map *)
+
+Lemma Vmap2_nth : forall (A B C : Set) (f : A -> B -> C) n 
+  (vl : vector A n) (vr : vector B n) i (ip : i < n),
+  Vnth (Vmap2 f vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
+Proof.
+Admitted.
 
 (***********************************************************************)
 (** vforall and specifications *)
