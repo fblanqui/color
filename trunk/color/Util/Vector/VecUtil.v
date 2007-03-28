@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.5 2007-03-27 15:33:01 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.6 2007-03-28 16:49:46 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -272,6 +272,17 @@ Lemma Vnth_cons : forall k n (v : vec n) a (H1 : S k < S n) (H2 : k < n),
 Proof.
 intros. simpl. assert (H : lt_S_n H1 = H2). apply lt_unique.
 rewrite H. reflexivity.
+Qed.
+
+Lemma Veq_nth : forall n (v v' : vec n), 
+  (forall i (ip : i < n), Vnth v ip = Vnth v' ip) -> v = v'.
+
+Proof.
+  induction n; intros.
+  VOtac. refl.
+  VSntac v. VSntac v'. apply Vcons_eq.
+  do 2 rewrite Vhead_nth. apply H.
+  apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
 Qed.
 
 Lemma Vnth_head : forall x n (v : vec n) k (h : k < S n),
@@ -665,6 +676,32 @@ Proof.
 Defined.
 
 End Vforall2_sec.
+
+(***********************************************************************)
+(** vector construction *)
+
+Definition Vbuild_spec : forall n (gen : forall i, i < n -> A), 
+  { v : vec n | forall i (ip : i < n), Vnth v ip = gen i ip }.
+
+Proof.
+  induction n; intros.
+  exists (Vnil (A:=A)). intros. elimtype False. omega.
+  set (gen' := fun i H => gen (S i) (lt_n_S H)).
+  set (access0 := lt_O_Sn n).
+  destruct (IHn gen') as [v vs].
+  exists (Vcons(gen 0 access0) v). intros.
+  destruct i; simpl.
+  rewrite (le_unique ip (lt_O_Sn n)). refl.
+  rewrite vs. unfold gen'. rewrite (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
+Defined.
+
+Definition Vbuild n gen : vec n := proj1_sig (Vbuild_spec gen).
+
+Lemma Vbuild_nth : forall n gen i (ip : i < n), Vnth (Vbuild gen) ip = gen i ip.
+
+Proof.
+  intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl. apply e.
+Qed.
 
 (***********************************************************************)
 (** iteration *)
