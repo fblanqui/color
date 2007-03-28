@@ -9,54 +9,12 @@ See the COPYRIGHTS and LICENSE files.
 
 Require Import MatrixCarrier.
 Require Import VecUtil.
+Require Import RelUtil.
 
 Set Implicit Arguments.
 
-(** module type structure for matrices *)
-Module Type TMatrix.
-
-  Declare Module C : Carrier.
-  Notation A := C.A.
-  Notation A0 := C.A0.
-  Notation Aplus := C.Aplus.
-  Notation Amult := C.Amult.
-  Notation vec := (vector A).
-
-  Parameter matrix : nat -> nat -> Set.
-
-  Parameter get_elem : forall m n, matrix m n -> forall i j, i < m -> j < n -> A.
-  Parameter get_row : forall m n, matrix m n -> forall i, i < m -> vector A n.
-  Parameter get_col : forall m n, matrix m n -> forall i, i < n -> vector A m.
-
-  Definition row_matrix n := matrix 1 n.
-  Definition col_matrix n := matrix n 1.  
-
-  Parameter vector_to_row_matrix : forall n (v : vec n), row_matrix n.
-  Parameter vector_to_col_matrix : forall n (v : vec n), col_matrix n.
-  Parameter row_matrix_to_vector : forall n (m : row_matrix n), vec n.
-  Parameter col_matrix_to_vector : forall n (m : col_matrix n), vec n.
-
-  Parameter access_0 : 0 < 1.
-  Parameter vector_to_col_matrix_spec : forall n (v : vec n) i (ip : i < n) j (jp : j < 1),
-    get_elem (vector_to_col_matrix v) ip jp = Vnth v ip.
-  Parameter vector_to_row_matrix_spec : forall n (v : vec n) i (ip : i < 1) j (jp : j < n),
-    get_elem (vector_to_row_matrix v) ip jp = Vnth v jp.
-  Parameter Vnth_col_matrix : forall n (m : col_matrix n) i (ip : i < n),
-    Vnth (col_matrix_to_vector m) ip = get_elem m ip access_0.
-  Parameter Vnth_row_matrix : forall n (m : row_matrix n) i (ip : i < n),
-    Vnth (row_matrix_to_vector m) ip = get_elem m access_0 ip.
-
-  Parameter mat_build : forall m n (f : forall i j, i < m -> j < n -> A), matrix m n.
-  Parameter mat_transpose : forall m n, matrix m n -> matrix n m.
-  Parameter mat_add : forall m n, matrix m n -> matrix m n -> matrix m n.
-  Parameter mat_mult : forall m n p, matrix m n -> matrix n p -> matrix m p.
-
-End TMatrix.
-
 (** functor building matrices structure given a carrier *)
-Module Matrix (C : Carrier) : TMatrix with Module C := C.
-
-  Module C := C.
+Module Matrix (C : Carrier).
 
    (** basic definitions *)
   Notation A := C.A.
@@ -72,81 +30,163 @@ Module Matrix (C : Carrier) : TMatrix with Module C := C.
   Definition matrix m n := vector (vec n) m.
 
    (** accessors *)
-  Definition get_row m n (M : matrix m n) i (i_ok : i < m) := Vnth M i_ok.
+  Definition get_row m n (M : matrix m n) i (ip : i < m) := Vnth M ip.
 
-  Definition get_col m n (M : matrix m n) i (i_ok : i < n) :=
-    Vmap (fun v => Vnth v i_ok) M.
+  Definition get_col m n (M : matrix m n) i (ip : i < n) := Vmap (fun v => Vnth v ip) M.
 
-  Definition get_elem m n (M : matrix m n) i j (i_ok : i < m) (j_ok : j < n) :=
-    Vnth (get_row M i_ok) j_ok.
+  Definition get_elem m n (M : matrix m n) i j (ip : i < m) (jp : j < n) :=
+    Vnth (get_row M ip) jp.
 
-   (** matrix construction *)
-  Definition Vbuild : forall n (gen : forall i, i < n -> A), vec n.
+  Lemma get_elem_swap : forall m n (M : matrix m n) i j (ip : i < m) (jp : j < n),
+    Vnth (get_row M ip) jp = Vnth (get_col M jp) ip.
 
   Proof.
-    induction n; intros.
-    exact Vnil.
-    set (gen' := fun i H => gen (S i) (lt_n_S H)).
-    set (access0 := lt_O_Sn n).
-    exact (Vcons(gen 0 access0) (IHn gen')).
-  Defined.
+    induction M; intros.
+    elimtype False. omega.
+    destruct i.
+    trivial.
+    simpl. rewrite IHM. trivial.
+  Qed.
 
-  Definition mat_build : forall m n (gen : forall i j, i < m -> j < n -> A), matrix m n.
+  Lemma mat_eq : forall m n (M N : matrix m n),
+    (forall i j (ip : i < m) (jp : j < n), get_elem M ip jp = get_elem N ip jp) -> 
+    M = N.
+
+  Proof.
+    unfold matrix. induction m; simpl; intros.
+    VOtac. refl.
+    unfold get_elem, get_row in H.
+    VSntac M. VSntac N. apply Vcons_eq.
+    apply Veq_nth. intros.
+    do 2 rewrite Vhead_nth. apply H.
+    apply IHm. intros. 
+    unfold get_elem, get_row. do 2 rewrite Vnth_tail. apply H.
+  Qed.
+
+   (** matrix construction *)
+
+  Definition mat_build_spec : forall m n (gen : forall i j, i < m -> j < n -> A), 
+    { M : matrix m n | 
+      forall i j (ip : i < m) (jp : j < n), get_elem M ip jp = gen i j ip jp }.
 
   Proof.
     induction m; intros.
-    exact Vnil.
+    exists (Vnil (A:=vec n)). intros. elimtype False. omega.
     set (gen_1 := fun j => gen 0 j (lt_O_Sn m)).
     set (gen' := fun i j H => gen (S i) j (lt_n_S H)).
-    exact (Vcons (Vbuild gen_1) (IHm n gen')).
+    destruct (IHm n gen') as [Mtl Mtl_spec].
+    destruct (Vbuild_spec gen_1) as [Mhd Mhd_spec].
+    exists (Vcons Mhd Mtl). intros.    
+    destruct i; unfold get_elem; simpl.
+    rewrite Mhd_spec. unfold gen_1. rewrite (le_unique (lt_O_Sn m) ip). refl.
+    unfold get_elem in Mtl_spec. rewrite Mtl_spec.
+    unfold gen'. rewrite (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
   Defined.
+
+  Definition mat_build m n gen : matrix m n := proj1_sig (mat_build_spec gen).
+
+  Lemma mat_build_nth : forall m n gen i j (ip : i < m) (jp : j < n), 
+    get_elem (mat_build gen) ip jp = gen i j ip jp.
+
+  Proof.
+    intros. unfold mat_build. destruct (mat_build_spec gen). simpl. apply e.
+  Qed.
 
    (** 1-row and 1-column matrices *)
 
   Definition row_matrix n := matrix 1 n.
   Definition col_matrix n := matrix n 1.
 
-  Definition vector_to_row_matrix n (v : vec n) : row_matrix n := mat_build (fun i j _ H => Vnth v H).
-  Definition vector_to_col_matrix n (v : vec n) : col_matrix n := mat_build (fun i j H _ => Vnth v H).
+  Definition vector_to_row_matrix n (v : vec n) : row_matrix n := Vcons v Vnil.
+
+  Definition vector_to_col_matrix n (v : vec n) : col_matrix n := 
+    Vmap (fun i => Vcons i Vnil) v.
 
   Definition access_0 : 0 < 1 := le_n 1.
 
   Definition row_matrix_to_vector n (m : row_matrix n) := get_row m access_0.
   Definition col_matrix_to_vector n (m : col_matrix n) := get_col m access_0.
 
+  Lemma get_col_col_matrix : forall n (v : vec n) (p : 0 < 1),
+    get_col (vector_to_col_matrix v) p = v.
+
+  Proof.
+    induction v; intros.
+    trivial.
+    simpl.
+    rewrite IHv. trivial.
+  Qed.
+
   Lemma vector_to_col_matrix_spec : forall n (v : vec n) i (ip : i < n) j (jp : j < 1),
     get_elem (vector_to_col_matrix v) ip jp = Vnth v ip.
   
   Proof.
-  Admitted.
+    intros. unfold get_elem.
+    rewrite get_elem_swap.
+    destruct j.
+    rewrite get_col_col_matrix. trivial.
+    elimtype False. omega.
+  Qed.
 
   Lemma vector_to_row_matrix_spec : forall n (v : vec n) i (ip : i < 1) j (jp : j < n),
     get_elem (vector_to_row_matrix v) ip jp = Vnth v jp.
 
   Proof.
-  Admitted.
+    intros. unfold get_elem.
+    destruct i.
+    trivial.
+    elimtype False. omega.
+  Qed.
 
   Lemma Vnth_col_matrix : forall n (m : col_matrix n) i (ip : i < n),
     Vnth (col_matrix_to_vector m) ip = get_elem m ip access_0.
 
   Proof.
-  Admitted.
+    induction m; intros.
+    elimtype False. omega.
+    destruct i.
+    trivial.
+    simpl. rewrite IHm. trivial.
+  Qed.
 
   Lemma Vnth_row_matrix : forall n (m : row_matrix n) i (ip : i < n),
     Vnth (row_matrix_to_vector m) ip = get_elem m access_0 ip.
 
   Proof.
-  Admitted.
+    trivial.
+  Qed.
 
    (** matrix operations *)
 
    (* transposition *)
-  Definition mat_transpose m n (M : matrix m n) := mat_build (fun _ _ i j => get_elem M j i).
+  Definition mat_transpose m n (M : matrix m n) := 
+    mat_build (fun _ _ i j => get_elem M j i).
+
+  Lemma mat_transpose_row_col : forall m n (M : matrix m n) i (ip : i < m),
+    get_row M ip = get_col (mat_transpose M) ip.
+
+  Proof.
+    intros. apply Veq_nth. intros.  
+    unfold mat_transpose, get_col. rewrite Vnth_map.
+    match goal with |- _ = Vnth (Vnth ?M ?ip) ?jp => 
+      fold (get_row M ip); fold (get_elem M ip jp) end.
+    rewrite mat_build_nth. trivial.
+  Qed.
+
+  Lemma mat_transpose_idem : forall m n (M : matrix m n),
+    mat_transpose (mat_transpose M) = M.
+
+  Proof.
+    intros. apply mat_eq. intros.
+    unfold mat_transpose. do 2 rewrite mat_build_nth. refl.
+  Qed.
 
    (* addition *)
   Definition vec_add n (L R : vec n) := Vmap2 Aplus L R.
 
   Definition mat_add m n (L R : matrix m n) :=  Vmap2 (@vec_add n) L R.
+
+  Infix "+m" := mat_add (at level 50).
 
    (* multiplication *)
   Definition dot_product n (l r : vec n) := Vfold_left Aplus A0 (Vmap2 Amult l r).
@@ -156,30 +196,102 @@ Module Matrix (C : Carrier) : TMatrix with Module C := C.
 
   Definition mat_mult m n p (L : matrix m n) (R : matrix n p) :=
     Vmap (fun v => vect_matr_prod v R) L.
+  Infix "*m" := mat_mult (at level 40).
+
+  Lemma mat_mult_spec : forall m n p (M : matrix m n) (N : matrix n p) 
+    i (ip : i < m) j (jp : j < p), 
+    get_elem (M *m N) ip jp = dot_product (get_row M ip) (get_col N jp).
+
+  Proof.
+    intros. unfold mat_mult, get_elem, get_row, vect_matr_prod.
+    do 2 rewrite Vnth_map. fold (get_row (mat_transpose N) jp).
+    rewrite mat_transpose_row_col. rewrite (mat_transpose_idem N). refl.
+  Qed.
+
+   (** forall & forall2 *)
+  Section Forall.
+
+    Variables (P : A -> Prop) (m n : nat) (M : matrix m n).
+
+    Definition mat_forall := forall i j (ip : i < m) (jp : j < n), P (get_elem M ip jp).
+
+  End Forall.
+
+  Section Forall2.
+
+    Variables (P : A -> A -> Prop) (m n : nat) (M N : matrix m n).
+
+    Definition mat_forall2 := forall i j (ip : i < m) (jp : j < n), 
+      P (get_elem M ip jp) (get_elem N ip jp).
+
+    Definition mat_forall2_intro : 
+      (forall i j (ip : i < m) (jp : j < n), P (get_elem M ip jp) (get_elem N ip jp)) ->
+      mat_forall2 := fun H => H.
+
+  End Forall2.
 
 End Matrix.
 
 (** matrices over natural numbers *)
 
-Module NMatrix <: TMatrix := Matrix NCarrier.
+Module NMatrix := Matrix NCarrier.
 
 Section Matrix_nat.
 
   Import NMatrix.
 
    (** 'monotonicity' of matrix multiplication over naturals *)
-  Definition mat_ge m n (M N : matrix m n) := forall i j (ip : i < m) (jp : j < n), 
-    get_elem M ip jp >= get_elem N ip jp.
+  Section MatMultMonotonicity.
 
-  Lemma mat_ge_refl : forall m n (M : matrix m n), mat_ge M M.
+    Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
-  Proof.
-  Admitted.
+    Definition vec_ge := Vforall2 ge.
+    Infix ">=v" := vec_ge (at level 70).
 
-  Lemma mat_mult_mon : forall m n p (M M' : matrix m n) (N N' : matrix n p),
-    mat_ge M M' -> mat_ge N N' -> mat_ge (mat_mult M N) (mat_mult M' N').
+    Lemma vec_tail_ge : forall n (v v' : vec (S n)), v >=v v' -> Vtail v >=v Vtail v'.
 
-  Proof.
-  Admitted.
+    Proof.
+      unfold vec_ge. intros.
+      apply Vforall2_intro. intros.
+      do 2 rewrite Vnth_tail.
+      apply (Vforall2_nth ge). assumption.
+    Qed.
+
+    Definition mat_ge := mat_forall2 ge.
+    Infix ">=m" := mat_ge (at level 70).
+
+    Lemma mat_ge_refl : M >=m M.
+
+    Proof.
+      unfold mat_ge, mat_forall2. auto.
+    Qed.
+
+    Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> w >=v w' -> 
+      dot_product v w >= dot_product v' w'.
+
+    Proof.
+      unfold dot_product. induction v. auto.
+      intros. simpl. unfold ge. apply plus_le_compat.
+      apply IHv.
+      change v with (Vtail (Vcons a v)). apply vec_tail_ge. assumption.
+      apply vec_tail_ge. assumption.
+      set (p0 := lt_O_Sn n0). apply mult_le_compat.
+      change a with (Vnth (Vcons a v) p0). rewrite Vhead_nth.
+      apply (Vforall2_nth ge). assumption.
+      do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+    Qed.
+
+    Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M *m N >=m M' *m N'.
+
+    Proof.
+      intros. unfold mat_ge, mat_forall2. intros.
+      do 2 rewrite mat_mult_spec. apply dot_product_mon.
+      unfold vec_ge. apply Vforall2_intro. intros.
+      exact (H i i0 ip ip0).
+      unfold vec_ge. apply Vforall2_intro. intros.
+      do 2 rewrite <- get_elem_swap. exact (H0 i0 j ip0 jp).
+    Qed.
+
+  End MatMultMonotonicity.
 
 End Matrix_nat.
