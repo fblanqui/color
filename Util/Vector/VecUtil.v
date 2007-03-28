@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.6 2007-03-28 16:49:46 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.7 2007-03-28 20:29:03 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -648,18 +648,48 @@ Fixpoint Vforall2 n1 (v1 : vec n1) n2 (v2 : vec n2) {struct v1} : Prop :=
 
 Definition Vforall2n n (v1 v2 : vec n) := Vforall2 v1 v2.
 
+Lemma Vforall2_tail : forall n (v1 v2 : vec (S n)), Vforall2 v1 v2 ->
+  Vforall2 (Vtail v1) (Vtail v2).
+
+Proof.
+  intros.
+  VSntac v1. rewrite H0 in H.
+  VSntac v2. rewrite H1 in H.
+  simpl in H. destruct (eq_nat_dec n n). 
+  destruct H. assumption.
+  contradiction.
+Qed.
+
 Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i (ip : i < n), 
   Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
 Proof.
-Admitted.
+  induction n; intros.
+  elimtype False. omega.
+  VSntac v1. VSntac v2. 
+  destruct i. simpl.
+  rewrite H0 in H. rewrite H1 in H.
+  unfold Vforall2n in H. simpl in H.
+  destruct (eq_nat_dec n n). destruct H. trivial.
+  contradiction.
+  simpl. apply IHn. 
+  unfold Vforall2n. apply Vforall2_tail. assumption.
+Qed.
 
 Lemma Vforall2_intro : forall n (v1 : vec n) (v2 : vec n),
   (forall i (ip : i < n), R (Vnth v1 ip) (Vnth v2 ip)) -> Vforall2n v1 v2.
 
 Proof.
-  induction v1.
-Admitted.
+  induction n; intros.
+  VOtac. constructor.
+  VSntac v1. VSntac v2.
+  unfold Vforall2n. simpl. 
+  destruct (eq_nat_dec n n). split.
+  do 2 rewrite Vhead_nth. apply H.
+  apply IHn. intros. 
+  do 2 rewrite Vnth_tail. apply H.
+  elimtype False. omega.
+Qed.
 
 Require Import RelDec.
 
@@ -906,7 +936,11 @@ Lemma Vmap2_nth : forall (A B C : Set) (f : A -> B -> C) n
   (vl : vector A n) (vr : vector B n) i (ip : i < n),
   Vnth (Vmap2 f vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
 Proof.
-Admitted.
+  induction n; intros.
+  VOtac. elimtype False. omega.
+  VSntac vl. VSntac vr. destruct i. refl. 
+  simpl. apply IHn.
+Qed.
 
 (***********************************************************************)
 (** vforall and specifications *)
