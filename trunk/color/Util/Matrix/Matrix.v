@@ -7,23 +7,18 @@ See the COPYRIGHTS and LICENSE files.
   Matrices as a functor.
 *)
 
-Require Import MatrixCarrier.
+Require Import RingCarrier.
 Require Import VecUtil.
 Require Import RelUtil.
 
 Set Implicit Arguments.
 
 (** functor building matrices structure given a carrier *)
-Module Matrix (C : Carrier).
+Module Matrix (C : RingCarrier).
+
+  Export C.
 
    (** basic definitions *)
-  Notation A := C.A.
-  Notation A0 := C.A0.
-  Notation Aplus := C.Aplus.
-  Notation Amult := C.Amult.
-
-  Notation "x *A y" := (Amult x y) (at level 50).
-  Notation "x +A y" := (Aplus x y) (at level 40).
   Notation vec := (vector A).
 
    (* Matrix represented by a vector of vectors (in a row-wise fashion) *)
@@ -91,6 +86,18 @@ Module Matrix (C : Carrier).
   Proof.
     intros. unfold mat_build. destruct (mat_build_spec gen). simpl. apply e.
   Qed.
+
+  Definition zero_matrix m n : matrix m n := mat_build (fun i j ip jp => A0).
+
+  Definition id_matrix n : matrix n n := 
+    mat_build (fun i j ip jp =>
+      match eq_nat_dec i j with
+      | left _ => A1
+      | right _ => A0
+      end).
+
+  Definition inverse_matrix inv m n (M : matrix m n) : matrix m n :=
+    mat_build (fun i j ip jp => inv (get_elem M ip jp)).
 
    (** 1-row and 1-column matrices *)
 
@@ -182,11 +189,11 @@ Module Matrix (C : Carrier).
   Qed.
 
    (* addition *)
-  Definition vec_add n (L R : vec n) := Vmap2 Aplus L R.
+  Definition vec_plus n (L R : vec n) := Vmap2 Aplus L R.
 
-  Definition mat_add m n (L R : matrix m n) :=  Vmap2 (@vec_add n) L R.
+  Definition mat_plus m n (L R : matrix m n) :=  Vmap2 (@vec_plus n) L R.
 
-  Infix "+m" := mat_add (at level 50).
+  Infix "<+>" := mat_plus (at level 50).
 
    (* multiplication *)
   Definition dot_product n (l r : vec n) := Vfold_left Aplus A0 (Vmap2 Amult l r).
@@ -196,11 +203,11 @@ Module Matrix (C : Carrier).
 
   Definition mat_mult m n p (L : matrix m n) (R : matrix n p) :=
     Vmap (fun v => vect_matr_prod v R) L.
-  Infix "*m" := mat_mult (at level 40).
+  Infix "<*>" := mat_mult (at level 40).
 
   Lemma mat_mult_spec : forall m n p (M : matrix m n) (N : matrix n p) 
     i (ip : i < m) j (jp : j < p), 
-    get_elem (M *m N) ip jp = dot_product (get_row M ip) (get_col N jp).
+    get_elem (M <*> N) ip jp = dot_product (get_row M ip) (get_col N jp).
 
   Proof.
     intros. unfold mat_mult, get_elem, get_row, vect_matr_prod.
@@ -317,7 +324,7 @@ Section Matrix_nat.
       do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
     Qed.
 
-    Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M *m N >=m M' *m N'.
+    Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M <*> N >=m M' <*> N'.
 
     Proof.
       intros. unfold mat_ge, mat_forall2. intros.
@@ -331,3 +338,7 @@ Section Matrix_nat.
   End MatMultMonotonicity.
 
 End Matrix_nat.
+
+(** matrices over integers *)
+
+Module ZMatrix := Matrix ZCarrier.
