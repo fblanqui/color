@@ -281,6 +281,42 @@ Section Matrix_nat.
       do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
     Qed.
 
+    Lemma dot_product_mon_r : forall i j (jp : j < i) (v v' w w' : vec i),
+      v >=v v' -> w >=v w' -> Vnth v jp > 0 ->
+      Vnth w jp > Vnth w' jp -> 
+      dot_product v w > dot_product v' w'.
+
+    Proof.
+      intros i j. generalize i. clear i.
+      induction j; intros.
+      destruct i. elimtype False. omega.
+      VSntac v. VSntac w. VSntac v'. VSntac w'.
+      unfold dot_product. simpl.
+      fold (dot_product (Vtail v') (Vtail w')). 
+      fold (dot_product (Vtail v) (Vtail w)).
+      unfold gt. apply plus_le_lt_compat.
+      apply dot_product_mon; apply vec_tail_ge; assumption.
+      do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
+      apply (Vforall2_nth ge). assumption.
+      rewrite (lt_unique (lt_O_Sn i) jp). assumption.
+      rewrite (lt_unique (lt_O_Sn i) jp). assumption.
+      destruct i. elimtype False. omega.
+      VSntac v. VSntac w. VSntac v'. VSntac w'.
+      unfold dot_product. simpl.
+      fold (dot_product (Vtail v') (Vtail w')). 
+      fold (dot_product (Vtail v) (Vtail w)).
+      unfold gt. apply plus_lt_le_compat.
+      unfold gt in IHj.
+      apply IHj with (lt_S_n jp).
+      apply vec_tail_ge. assumption.
+      apply vec_tail_ge. assumption.
+      rewrite Vnth_tail. rewrite (lt_unique (lt_n_S (lt_S_n jp)) jp). assumption.
+      do 2 rewrite Vnth_tail. rewrite (lt_unique (lt_n_S (lt_S_n jp)) jp). assumption.
+      apply mult_le_compat.
+      do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+      do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+    Qed.
+
     Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M *m N >=m M' *m N'.
 
     Proof.

@@ -3,11 +3,13 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
+- Adam Koprowski, 2007-03-29, Added [mult_gt_0] and [mult_lt_compat_lr]
+
 
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.6 2007-02-06 09:54:15 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.7 2007-03-29 11:05:40 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -190,4 +192,21 @@ Lemma misc2 : forall x k, k = x+2+k-(x+1)-1.
 
 Proof.
 intros. omega.
+Qed.
+
+Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
+
+Proof.
+  destruct i; destruct j; intros; try solve [elimtype False; omega | simpl; auto with arith].
+Qed.
+
+Lemma mult_lt_compat_lr : forall i j k l, i <= j -> j > 0 -> k < l -> i * k < j * l.
+
+Proof.
+  destruct i; intros.
+  rewrite mult_0_l. apply mult_gt_0. assumption.
+  destruct l. elimtype False. omega. auto with arith.
+  simpl. destruct j. elimtype False. omega.
+  simpl. apply plus_lt_le_compat. assumption.
+  apply mult_le_compat; omega. 
 Qed.
