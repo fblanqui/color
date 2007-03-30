@@ -51,3 +51,13 @@ intros x y. destruct (H x y) ; trivial.
 Qed.
 
 End EM_DEC.
+
+Section EM_Prop_dec.
+
+  Variable A : Set.
+  Variable P : A -> Prop.
+
+  Definition prop_dec := forall x, {P x}+{~P x}.
+
+End EM_Prop_dec.
+

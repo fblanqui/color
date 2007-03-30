@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.12 2007-03-22 11:41:53 koper Exp $ *)
+(* $Id: ATrs.v,v 1.13 2007-03-30 00:37:15 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -109,6 +109,13 @@ Lemma red_rule : forall l r c s, In (mkRule l r) R ->
 
 Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
+Qed.
+
+Lemma red_empty : forall l r : term, (red nil #) l r -> l = r.
+
+Proof.
+  intros. induction H. 
+  redtac. contradiction. refl. congruence.
 Qed.
 
 Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
@@ -308,6 +315,28 @@ unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
 Qed.
 
 End rewriting_modulo.
+
+(***********************************************************************)
+(** termination as special case of relative termination *)
+
+Section termination_as_relative_term.
+
+Variable R : rules.
+
+Lemma red_incl_red_mod : red R << red_mod nil R.
+
+Proof.
+  intros s t Rst. exists s. split. constructor 2. assumption.
+Qed.
+
+Lemma red_mod_empty_incl_red : red_mod nil R << red R.
+
+Proof.
+  intros s t Rst. destruct Rst as [s' [ss' Rst]].
+  rewrite (red_empty ss'). assumption.
+Qed.
+
+End termination_as_relative_term.
 
 (***********************************************************************)
 (** union of rewrite rules modulo *)
