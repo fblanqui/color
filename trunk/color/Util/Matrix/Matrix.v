@@ -337,6 +337,14 @@ Section Matrix_nat.
 
   End MatMultMonotonicity.
 
+  Section MatrixConstruction.
+
+    Definition mkMatrix1 (v1 : nat) := Vcons (vec_of_list (v1 :: nil)) Vnil.
+    Definition mkMatrix2 (v1 v2 v3 v4 : nat) := 
+      Vcons (vec_of_list (v1 :: v2 :: nil)) (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
+
+  End MatrixConstruction.
+
 End Matrix_nat.
 
 (** matrices over integers *)

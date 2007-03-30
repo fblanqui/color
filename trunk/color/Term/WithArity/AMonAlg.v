@@ -30,6 +30,7 @@ Module Type MonotoneAlgebraType.
      - [IM]: [I] is monotone with respect to [succ]
      - [succ_wf]: [succ] is well-founded
      - [succ_succeq_compat]: compatibility between [succ] and [succeq]
+     - [succ_dec] ([succeq_dec]): decidability of [succ] ([succeq])
   *)
   Parameter I : interpretation Sig.
   
@@ -42,6 +43,10 @@ Module Type MonotoneAlgebraType.
   Parameter succ_wf : WF succ.
 
   Parameter succ_succeq_compat : absorb succ succeq.
+
+  Parameter succ_dec : rel_dec succ.
+
+  Parameter succeq_dec : rel_dec succeq.
 
 End MonotoneAlgebraType.
 
@@ -67,8 +72,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
   Export MA.
   Require Import ACompat.
 
-  Definition IR_succ := IR I succ.
-  Definition IR_succeq := IR I succeq.
+  Notation IR_succ := (IR I succ).
+  Notation IR_succeq := (IR I succeq).
 
   Notation term := (term Sig).
   Notation rule := (rule Sig).
@@ -95,9 +100,25 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
   Lemma ma_succeq_rewrite_ordering : rewrite_ordering IR_succeq.
 
   Proof.
-    unfold IR_succeq. apply IR_rewrite_ordering.
+    apply IR_rewrite_ordering.
     exact monotone_succeq.
   Qed.
+
+  Definition rule_red (ord : relation term) (r : rule) := ord (lhs r) (rhs r).
+
+  Lemma IR_succ_dec : prop_dec (rule_red IR_succ).
+
+  Proof.
+    unfold prop_dec, rule_red. intro.
+    unfold IR.
+    
+  Admitted.
+
+  Lemma IR_succeq_dec : prop_dec (rule_red IR_succeq).
+
+  Proof.
+  Admitted.
+
 
 (**********************************************************************)
 (** top termination (for DP setting) criterion with monotone algebras *)
@@ -113,10 +134,10 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     Proof.
       intros. apply WF_incl with IR_succ.
       apply compat_hd_red_mod with IR_succeq; trivial.
-      unfold IR_succ. apply IR_substitution_closed.
+      apply IR_substitution_closed.
       exact ma_succeq_rewrite_ordering.
       exact absorb_succ_succeq.
-      unfold IR_succ. apply IR_WF. exact succ_wf.
+      apply IR_WF. exact succ_wf.
     Qed.
 
   End TopTermination.
@@ -166,7 +187,7 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
   Lemma ma_succ_rewrite_ordering : rewrite_ordering IR_succ.
 
   Proof.
-    unfold IR_succ. apply IR_rewrite_ordering.
+    apply IR_rewrite_ordering.
     exact monotone_succ.
   Qed.
 
@@ -188,7 +209,7 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
       exact ma_succ_rewrite_ordering.
       exact ma_succeq_rewrite_ordering.
       exact absorb_succ_succeq.
-      unfold IR_succ. apply IR_WF. exact succ_wf.
+      apply IR_WF. exact succ_wf.
     Qed.
 
   End RelativeTermination.
@@ -200,7 +221,7 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
 
     Variable R E R' E' : rules.
 
-    (* Modular removal of rules *)
+    (* Modular removal of rules for relative termination *)
     Lemma ma_modular_red_mod :
       WF (red_mod E' R') ->
       compatible IR_succ (R  ++ E ) ->
@@ -221,5 +242,29 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
     Qed.
 
   End ModularRelativeTermination.
+
+(**********************************************************)
+(** criterion for modular removal of rules for termination 
+    (as a special case of relative termination above) *)
+  Section ModularTermination.
+
+    Variables R R' : rules.
+
+    (* Modular removal of rules for termination *)
+    Lemma ma_modular_red :
+      WF (red R') ->
+      compatible IR_succ R ->
+      compatible IR_succeq R' ->
+      WF (red (R ++ R')).
+
+    Proof.
+      intros. apply WF_incl with (red_mod nil (R ++ R')). apply red_incl_red_mod.
+      change (nil (A := MAR.rule)) with (nil (A := MAR.rule) ++ nil). apply ma_modular_red_mod.
+      apply WF_incl with (red R'). apply red_mod_empty_incl_red. assumption.
+      rewrite <- app_nil_end. assumption.
+      rewrite <- app_nil_end. assumption.
+    Qed.
+
+  End ModularTermination.
 
 End ExtendedMonotoneAlgebraResults.

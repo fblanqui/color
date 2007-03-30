@@ -14,7 +14,7 @@ References:
 
 Set Implicit Arguments.
 
-Require Import Matrix.
+Require Export Matrix.
 Require Import AMonAlg.
 
 Export NMatrix.
@@ -62,7 +62,9 @@ Module Type TMatrixInt.
 
 End TMatrixInt.
 
-Module MatrixInt_DP (MI: TMatrixInt_DP).
+Ltac matrixInt_monotonicity := intro f; destruct f; compute; auto with arith.
+
+Module MatrixInt_DP (MI : TMatrixInt_DP).
 
   Export MI.
 
@@ -194,13 +196,18 @@ Module MatrixInt_DP (MI: TMatrixInt_DP).
 
   End MonotoneAlgebra.
 
+  Export MonotoneAlgebra.
+  Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
+  Export MAR.
+
 End MatrixInt_DP.
 
 Module MatrixInt (MI : TMatrixInt).
 
+  Export MI.
+
   Module MI_DP := MatrixInt_DP MI.MI.
   Export MI_DP.
-  Export MI.
 
   Module ExtendedMonotoneAlgebra <: ExtendedMonotoneAlgebraType.
 
@@ -275,5 +282,9 @@ Module MatrixInt (MI : TMatrixInt).
     Qed.
 
   End ExtendedMonotoneAlgebra.
+
+  Export ExtendedMonotoneAlgebra.
+  Module EMAR := ExtendedMonotoneAlgebraResults ExtendedMonotoneAlgebra.
+  Export EMAR.
 
 End MatrixInt.
