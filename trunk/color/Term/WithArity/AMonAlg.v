@@ -34,19 +34,17 @@ Module Type MonotoneAlgebraType.
   *)
   Parameter I : interpretation Sig.
   
-  Parameter succ : relation (domain I).
+  Notation A := (domain I).
+
+  Parameter succ : relation A.
   
-  Parameter succeq : relation (domain I).
+  Parameter succeq : relation A.
   
   Parameter monotone_succeq : monotone I succeq.
 
   Parameter succ_wf : WF succ.
 
   Parameter succ_succeq_compat : absorb succ succeq.
-
-  Parameter succ_dec : rel_dec succ.
-
-  Parameter succeq_dec : rel_dec succeq.
 
 End MonotoneAlgebraType.
 
@@ -103,21 +101,6 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     apply IR_rewrite_ordering.
     exact monotone_succeq.
   Qed.
-
-  Definition rule_red (ord : relation term) (r : rule) := ord (lhs r) (rhs r).
-
-  Lemma IR_succ_dec : prop_dec (rule_red IR_succ).
-
-  Proof.
-    unfold prop_dec, rule_red. intro.
-    unfold IR.
-    
-  Admitted.
-
-  Lemma IR_succeq_dec : prop_dec (rule_red IR_succeq).
-
-  Proof.
-  Admitted.
 
 
 (**********************************************************************)
