@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.13 2007-03-30 00:37:15 koper Exp $ *)
+(* $Id: ATrs.v,v 1.14 2007-03-31 23:15:10 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -96,6 +96,7 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
+Notation empty := (nil (A:=rule)).
 
 (***********************************************************************)
 (** basic properties of rewriting *)
@@ -111,7 +112,7 @@ Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
-Lemma red_empty : forall l r : term, (red nil #) l r -> l = r.
+Lemma red_empty : forall l r : term, (red empty #) l r -> l = r.
 
 Proof.
   intros. induction H. 
@@ -321,9 +322,9 @@ End rewriting_modulo.
 
 Section termination_as_relative_term.
 
-Variable R : rules.
+Variable R R' : rules.
 
-Lemma red_incl_red_mod : red R << red_mod nil R.
+Lemma red_incl_red_mod : red R << red_mod empty R.
 
 Proof.
   intros s t Rst. exists s. split. constructor 2. assumption.

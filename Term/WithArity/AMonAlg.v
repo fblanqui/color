@@ -46,6 +46,17 @@ Module Type MonotoneAlgebraType.
 
   Parameter succ_succeq_compat : absorb succ succeq.
 
+  (** For certification of concrete examples we need some subrelations of 
+      [succ] and [succeq] that are decidable *)
+
+  Notation IR_succ := (IR I succ).
+  Notation IR_succeq := (IR I succeq).
+  Notation term := (term Sig).
+
+  Parameters (succ' : relation term) (succeq' : relation term).
+  Parameters (succ'_sub : succ' << IR_succ) (succeq'_sub : succeq' << IR_succeq).
+  Parameters (succ'_dec : rel_dec succ') (succeq'_dec : rel_dec succeq').
+
 End MonotoneAlgebraType.
 
 (***********************************************************************)
@@ -125,35 +136,6 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 
   End TopTermination.
 
-(**********************************************************)
-(** criterion for modular removal of rules for relative top
-    termination with monotone algebras *)
-  Section ModularTopTermination.
-
-    Variable R R' E : rules.
-
-    (* Modular removal of rules *)
-    Lemma ma_modular_hd_red_mod :
-      WF (hd_red_mod E R') ->
-      compatible IR_succ R ->
-      compatible IR_succeq (R' ++ E) ->
-      WF (hd_red_mod E (R ++ R')).
-
-    Proof.
-      intros. unfold hd_red_mod.
-      apply WF_incl with (red E# @ (hd_red R' U hd_red R)).
-      comp. trans (hd_red (R' ++ R)). 
-      apply hd_red_swap. apply hd_red_union.
-      apply wf_rel_mod_simpl. assumption.
-      apply WF_incl with (hd_red_mod (R' ++ E) R).
-      unfold hd_red_mod. comp. apply incl_rtc. 
-      trans (red R' U red E). apply incl_union. apply hd_red_incl_red. intuition.
-      apply red_union_inv.
-      apply ma_compat_hd_red_mod; trivial.
-    Qed.
-
-  End ModularTopTermination.
-
 End MonotoneAlgebraResults.
 
 (***********************************************************************)
@@ -198,56 +180,51 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
   End RelativeTermination.
 
 (**********************************************************)
-(** criterion for modular removal of rules for relative 
-    termination with monotone algebras *)
-  Section ModularRelativeTermination.
+(** results and tactics for proving relative termination 
+    of concrete examples. *)
+  Section RelativeTerminationCriterion.
 
-    Variable R E R' E' : rules.
+    Definition rule_partition R (R_dec : rel_dec R) (r : rule Sig) := 
+      partition_by_rel R_dec (lhs r, rhs r).
+    Implicit Arguments rule_partition [R].
 
-    (* Modular removal of rules for relative termination *)
-    Lemma ma_modular_red_mod :
-      WF (red_mod E' R') ->
-      compatible IR_succ (R  ++ E ) ->
-      compatible IR_succeq (R' ++ E') ->
-      WF (red_mod (E ++ E') (R ++ R')).
+    Definition part_succeq := rule_partition succeq'_dec.
+    Definition part_succ := rule_partition succ'_dec.
+
+    Variable R E : rules.
+
+    Lemma ma_relative_termination : 
+      let E_gt := partition part_succ E in
+      let E_ge := partition part_succeq (snd E_gt) in
+      let R_gt := partition part_succ R in
+      let R_ge := partition part_succeq (snd R_gt) in
+        snd R_ge = nil ->
+        snd E_ge = nil ->
+        WF (red_mod (fst E_ge) (fst R_ge)) ->
+        WF (red_mod E R).
 
     Proof.
-      intros. unfold red_mod.
-      apply WF_incl with ((red E' U red E)# @ (red R' U red R)).
-      comp. apply incl_rtc. 
-      trans (red (E' ++ E)). apply red_swap. apply red_union. 
-      trans (red (R' ++ R)). apply red_swap. apply red_union.
-      apply wf_rel_mod. fold (red_mod E' R'). assumption.
-      apply WF_incl with (red_mod (R' ++ E') (R ++ E)).
-      unfold red_mod. comp. 
-      apply incl_rtc. apply red_union_inv. apply red_union_inv.
-      apply ma_compat_red_mod; trivial.
-    Qed.
+    Admitted.
 
-  End ModularRelativeTermination.
+  End RelativeTerminationCriterion.
 
 (**********************************************************)
-(** criterion for modular removal of rules for termination 
-    (as a special case of relative termination above) *)
-  Section ModularTermination.
+(** results and tactics for proving termination (as a special
+    case of relative termination) of concrete examples. *)
+  Section TerminationCriterion.
 
-    Variables R R' : rules.
+    Variable R : rules.
 
-    (* Modular removal of rules for termination *)
-    Lemma ma_modular_red :
-      WF (red R') ->
-      compatible IR_succ R ->
-      compatible IR_succeq R' ->
-      WF (red (R ++ R')).
+    Lemma ma_termination : 
+      let R_gt := partition part_succ R in
+      let R_ge := partition part_succeq (snd R_gt) in
+        snd R_ge = nil ->
+        WF (red (fst R_ge)) ->
+        WF (red R).
 
     Proof.
-      intros. apply WF_incl with (red_mod nil (R ++ R')). apply red_incl_red_mod.
-      change (nil (A := MAR.rule)) with (nil (A := MAR.rule) ++ nil). apply ma_modular_red_mod.
-      apply WF_incl with (red R'). apply red_mod_empty_incl_red. assumption.
-      rewrite <- app_nil_end. assumption.
-      rewrite <- app_nil_end. assumption.
-    Qed.
+    Admitted.
 
-  End ModularTermination.
+  End TerminationCriterion.
 
 End ExtendedMonotoneAlgebraResults.
