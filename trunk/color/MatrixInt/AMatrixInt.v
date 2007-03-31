@@ -79,6 +79,9 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
   Definition add_vectors n (v : vector vec n) := Vfold_left vector_plus zero_vec v.
 
+  Definition add_matrices i m n (v : vector (matrix m n) i) := 
+    Vfold_left (@mat_plus m n) (zero_matrix m n) v.
+
   Definition vec_at0 (v : vec) := Vnth v dim_pos.
 
   Definition mat_vect_prod (m : mat) (v : vec) := 
@@ -87,6 +90,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
   Definition mi_eval n (mi : matrixInt dim n) (v : vector vec n) : vec :=
     add_vectors (Vmap2 mat_vect_prod (args mi) v) [+] const mi.
 
+  (** Monotone algebra instantiated to matrices *)
   Module MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := sig.
@@ -109,6 +113,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       apply (Vforall2_nth ge). assumption.
     Qed.
 
+     (** Monotonicity *)
     Section VecMonotonicity.
 
       Variables (n : nat) (vl vl' vr : vec).
@@ -196,6 +201,95 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       left. split; intuition.
       right. intro H. destruct H. intuition.
     Defined.
+
+    (** decidability of order on terms induced by matrix interpretations *)
+    Section OrderDecidability.
+
+      Require Export ABterm.
+
+      Notation bterm := (bterm sig).
+
+      (** symbolic computation of term interpretation *)
+      Definition mat_matrixInt_prod n M (mi : mint n) : mint n := 
+        mkMatrixInt (mat_vect_prod M (const mi)) (Vmap (mat_mult M) (args mi)).
+
+      Definition combine_matrices n k (v : vector (vector mat k) n) :=
+        Vbuild (fun i ip => add_matrices (Vmap (fun v => Vnth v ip) v)).
+
+      Fixpoint mi_of_term k (t : bterm k) {struct t} : mint (S k) :=
+        match t with
+        | BVar i ip => 
+            let zero_int := Vconst (zero_matrix dim dim) (S k) in
+            let args_int := Vreplace zero_int (le_lt_S ip) (id_matrix dim) in
+              mkMatrixInt zero_vec args_int
+        | BFun f v => 
+            let f_int := trsInt f in
+            let args_int := Vmap (@mi_of_term k) v in
+            let args_int' := Vmap2 (@mat_matrixInt_prod (S k)) (args f_int) args_int in
+            let res_const := add_vectors (Vcons (const f_int) (Vmap (@const dim (S k)) args_int')) in
+            let res_args := combine_matrices (Vmap (@args dim (S k)) args_int') in
+              mkMatrixInt res_const res_args
+        end.
+
+      Require Export ATrs.
+
+      Definition rule_mi r :=
+        let mvl := maxvar (lhs r) in
+        let mvr := maxvar (rhs r) in
+        let m := max mvl mvr in
+        let lt := inject_term (le_max_l mvl mvr) in
+        let rt := inject_term (le_max_r mvl mvr) in
+          (mi_of_term lt, mi_of_term rt).
+
+      (** order characteristic for symbolically computed interpretation and its decidability *)
+      Notation mat_ge := (@mat_ge dim dim).
+      Notation vec_ge := (@vec_ge dim).
+
+      Definition mint_ge n (l r : mint n) := 
+        Vforall2 mat_ge (args l) (args r) /\ vec_ge (const l) (const r).
+
+      Definition mint_gt n (l r : mint n) := 
+        mint_ge l r /\ vec_at0 (const l) > vec_at0 (const r).
+
+      Definition term_ord (ord : forall n, relation (mint n)) l r :=
+        let (li, ri) := rule_mi (mkRule l r) in
+          ord _ li ri.
+
+      Definition term_ge := term_ord mint_ge.
+      Definition term_gt := term_ord mint_gt.
+
+      Lemma term_ge_dec : rel_dec term_ge.
+    
+      Proof.
+      Admitted.
+
+      Lemma term_gt_dec : rel_dec term_gt.
+    
+      Proof.
+      Admitted.
+
+      Notation IR_succ := (IR I succ).
+      Notation IR_succeq := (IR I succeq).
+
+      Lemma term_gt_incl_succ : term_gt << IR_succ.
+
+      Proof.
+      Admitted.
+
+      Lemma term_ge_incl_succeq : term_ge << IR_succeq.
+
+      Proof.
+      Admitted.
+
+      Definition succ' := term_gt.
+      Definition succ'_sub := term_gt_incl_succ.
+      Definition succ'_dec := term_gt_dec.
+
+      Definition succeq' := term_ge.
+      Definition succeq'_sub := term_ge_incl_succeq.
+      Definition succeq'_dec := term_ge_dec.
+
+    End OrderDecidability.
 
   End MonotoneAlgebra.
 

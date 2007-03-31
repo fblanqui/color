@@ -565,7 +565,7 @@ Section wf_rel_mod_simpl.
   Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') -> WF (S# @ (R U R')).
 
   Proof.
-    intros. apply WF_incl with ((S U (@empty A))# @ (R U R')).
+    intros. apply WF_incl with ((S U (@empty_rel A))# @ (R U R')).
     comp. apply incl_rtc. intuition.
     apply wf_rel_mod. assumption.
     apply WF_incl with ((R U S)# @ R'); trivial.

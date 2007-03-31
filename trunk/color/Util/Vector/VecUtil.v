@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.7 2007-03-28 20:29:03 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.8 2007-03-31 23:15:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -322,6 +322,17 @@ generalize dependent v. intro v. elim v.
  rewrite (Vnth_cons (Vadd v' a) a' (lt_n_Sn (S p')) (lt_n_Sn p')).
  assumption.
 Qed.
+
+(***********************************************************************)
+(** replacement of i-th element *)
+
+Lemma Vreplace : forall n (v : vec n) i (ip : i < n) (a : A), vec n.
+Proof.
+  induction n; intros.  
+  elimtype False. exact (lt_n_O i ip). 
+  destruct i. exact (Vcons a (Vtail v)).  
+  exact (Vcons (Vhead v) (IHn (Vtail v) i (lt_S_n ip) a)).
+Defined.
 
 (***********************************************************************)
 (** concatenation *)

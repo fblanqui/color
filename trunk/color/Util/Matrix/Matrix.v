@@ -215,25 +215,29 @@ Module Matrix (C : RingCarrier).
     rewrite mat_transpose_row_col. rewrite (mat_transpose_idem N). refl.
   Qed.
 
-   (** forall & forall2 *)
+   (** forall *)
   Section Forall.
 
     Variables (P : A -> Prop) (m n : nat) (M : matrix m n).
 
     Definition mat_forall := forall i j (ip : i < m) (jp : j < n), P (get_elem M ip jp).
 
+     (* alternative definition *)
+    Definition mat_forall' := Vforall (@Vforall A P n) M.
+
   End Forall.
 
+   (** forall2 *)
   Section Forall2.
 
-    Variables (P : A -> A -> Prop) (m n : nat) (M N : matrix m n).
+    Variables (P : relation A) (m n : nat).
 
-    Definition mat_forall2 := forall i j (ip : i < m) (jp : j < n), 
+    Definition mat_forall2 (M N : matrix m n):= forall i j (ip : i < m) (jp : j < n), 
       P (get_elem M ip jp) (get_elem N ip jp).
 
-    Definition mat_forall2_intro : 
+    Definition mat_forall2_intro : forall M N,
       (forall i j (ip : i < m) (jp : j < n), P (get_elem M ip jp) (get_elem N ip jp)) ->
-      mat_forall2 := fun H => H.
+      mat_forall2 M N := fun M N H => H.
 
   End Forall2.
 
@@ -250,9 +254,11 @@ Section Matrix_nat.
    (** 'monotonicity' of matrix multiplication over naturals *)
   Section MatMultMonotonicity.
 
+    Require Import RelMidex.
+
     Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
-    Definition vec_ge := Vforall2 ge.
+    Definition vec_ge := Vforall2n ge.
     Infix ">=v" := vec_ge (at level 70).
 
     Lemma vec_tail_ge : forall n (v v' : vec (S n)), v >=v v' -> Vtail v >=v Vtail v'.
@@ -264,6 +270,11 @@ Section Matrix_nat.
       apply (Vforall2_nth ge). assumption.
     Qed.
 
+    Lemma vec_ge_dec : rel_dec (@vec_ge n).
+
+    Proof.
+    Admitted.
+
     Definition mat_ge := mat_forall2 ge.
     Infix ">=m" := mat_ge (at level 70).
 
@@ -272,6 +283,11 @@ Section Matrix_nat.
     Proof.
       unfold mat_ge, mat_forall2. auto.
     Qed.
+
+    Lemma mat_ge_dec : forall m n, rel_dec (@mat_ge m n).
+
+    Proof.
+    Admitted.
 
     Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> w >=v w' -> 
       dot_product v w >= dot_product v' w'.

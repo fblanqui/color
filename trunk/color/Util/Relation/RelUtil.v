@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.19 2007-03-22 11:41:53 koper Exp $ *)
+(* $Id: RelUtil.v,v 1.20 2007-03-31 23:15:10 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -70,7 +70,7 @@ Definition strict_ordering := irreflexive R /\ transitive R.
 
 Definition strict_part x y := R x y /\ ~R y x.
 
-Definition empty (x y: A) := False.
+Definition empty_rel (x y: A) := False.
 
 End basic_definitions.
 
@@ -525,13 +525,13 @@ exists z. split; [left; assumption | assumption].
 exists z. split; [right; assumption | assumption].
 Qed.
 
-Lemma union_empty_r : R U (@empty A) << R.
+Lemma union_empty_r : R U (@empty_rel A) << R.
 
 Proof.
   intros x y Rxy. destruct Rxy. assumption. contradiction.
 Qed.
 
-Lemma union_empty_l : (@empty A) U R << R.
+Lemma union_empty_l : (@empty_rel A) U R << R.
 
 Proof.
   intros x y Rxy. destruct Rxy. contradiction. assumption.

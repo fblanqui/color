@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.7 2007-03-29 11:05:40 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.8 2007-03-31 23:15:10 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -129,6 +129,14 @@ Lemma elim_min_r : forall x y z, y <= z -> min x y <= z.
 
 Proof.
 intros. eapply le_trans. apply le_min_r. exact H.
+Qed.
+
+(***********************************************************************)
+(** results on orders on nat *)
+
+Lemma le_lt_S : forall i k (ik: i <= k), i < S k.
+Proof. 
+  auto with arith.
 Qed.
 
 (***********************************************************************)

@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.18 2007-02-16 17:10:18 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.19 2007-03-31 23:15:10 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -679,3 +679,68 @@ Qed.
 End last.
 
 Implicit Arguments last_intro [A l].
+
+(***********************************************************************)
+(** partition *)
+
+Section partition.
+
+  Variables (A : Set) (P : A -> bool) (a : A) (l : list A).
+
+  Lemma partition_complete : let p := partition P l in
+    In a l -> In a (fst p)  \/ In a (snd p).
+
+  Proof.
+  Admitted.
+
+  Lemma partition_left : In a (fst (partition P l)) -> P a = true.
+
+  Proof.
+  Admitted.
+
+  Lemma partition_right : In a (snd (partition P l)) -> P a = false.
+
+  Proof.
+  Admitted.
+
+End partition.
+
+Section partition_by_prop.
+
+  Require Import RelMidex.
+
+  Variables (A : Set) (P : A -> Prop) (P_dec : prop_dec P).
+
+  Definition partition_by_prop a :=
+    match P_dec a with
+    | left _ => true
+    | right _ => false
+    end.
+
+  Lemma partition_by_prop_true : forall a, partition_by_prop a = true -> P a.
+
+  Proof.
+    intros. unfold partition_by_prop in H. 
+    destruct (P_dec a). assumption. discriminate.
+  Qed.
+
+End partition_by_prop.
+
+Section partition_by_rel.
+
+  Variables (A : Set) (R : relation A) (R_dec : rel_dec R).
+
+  Definition partition_by_rel p :=
+    match R_dec (fst p) (snd p) with
+    | left _ => true
+    | right _ => false
+    end.
+
+  Lemma partition_by_rel_true : forall a b, partition_by_rel (a, b) = true -> R a b.
+
+  Proof.
+    intros. unfold partition_by_rel in H. simpl in H.
+    destruct (R_dec a b). assumption. discriminate.
+  Qed.
+
+End partition_by_rel.
