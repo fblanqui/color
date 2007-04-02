@@ -8,8 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 *)
 
 Require Import RingCarrier.
-Require Import VecUtil.
-Require Import RelUtil.
+Require Export VecArith.
 
 Set Implicit Arguments.
 
@@ -292,24 +291,6 @@ Section Matrix_nat.
 
     Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
-    Definition vec_ge := Vforall2n ge.
-    Infix ">=v" := vec_ge (at level 70).
-
-    Lemma vec_tail_ge : forall n (v v' : vec (S n)), v >=v v' -> Vtail v >=v Vtail v'.
-
-    Proof.
-      unfold vec_ge. intros.
-      apply Vforall2_intro. intros.
-      do 2 rewrite Vnth_tail.
-      apply (Vforall2_nth ge). assumption.
-    Qed.
-
-    Lemma vec_ge_dec : rel_dec (@vec_ge n).
-
-    Proof.
-      intros P Q. destruct (Vforall2_dec nat_ge_dec P Q); intuition.
-    Defined.
-
     Definition mat_ge := mat_forall2 ge.
     Infix ">=m" := mat_ge (at level 70).
 
@@ -325,7 +306,7 @@ Section Matrix_nat.
       intros R Q. unfold mat_ge. apply mat_forall2_dec. exact nat_ge_dec.
     Defined.
 
-    Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> w >=v w' -> 
+    Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> vec_ge w w' -> 
       dot_product v w >= dot_product v' w'.
 
     Proof.
@@ -396,6 +377,8 @@ Section Matrix_nat.
       Vcons (vec_of_list (v1 :: v2 :: nil)) (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
 
   End MatrixConstruction.
+
+  Infix ">=m" := mat_ge (at level 70).
 
 End Matrix_nat.
 

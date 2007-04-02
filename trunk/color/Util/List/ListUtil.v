@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.19 2007-03-31 23:15:10 koper Exp $ *)
+(* $Id: ListUtil.v,v 1.20 2007-04-02 18:06:50 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -691,17 +691,33 @@ Section partition.
     In a l -> In a (fst p)  \/ In a (snd p).
 
   Proof.
-  Admitted.
+    induction l. auto.
+    simpl. intro. destruct (partition P l0). destruct H.
+    destruct (P a0); simpl; auto.
+    destruct (P a0); simpl in *; destruct IHl0; auto.
+  Qed.
 
   Lemma partition_left : In a (fst (partition P l)) -> P a = true.
 
   Proof.
-  Admitted.
+    induction l; simpl. auto.
+    destruct (partition P l0). destruct (bool_dec (P a0) true).
+    rewrite e. intro. destruct H.
+    subst a0. assumption.
+    apply IHl0. assumption.
+    rewrite (not_true_is_false (P a0)); assumption.
+  Qed.
 
   Lemma partition_right : In a (snd (partition P l)) -> P a = false.
 
   Proof.
-  Admitted.
+    induction l; simpl. intuition.
+    destruct (partition P l0). destruct (bool_dec (P a0) true).
+    rewrite e. apply IHl0.
+    rewrite (not_true_is_false (P a0)). intro. destruct H.
+    subst a0. destruct (P a); intuition.
+    apply IHl0. assumption. assumption.
+  Qed.
 
 End partition.
 
