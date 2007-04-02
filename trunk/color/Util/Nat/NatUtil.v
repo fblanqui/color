@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.8 2007-03-31 23:15:10 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.9 2007-04-02 12:27:42 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -132,6 +132,18 @@ intros. eapply le_trans. apply le_min_r. exact H.
 Qed.
 
 (***********************************************************************)
+(** decidability results *)
+
+Require Export RelMidex.
+Require Export Omega.
+
+Lemma nat_ge_dec : rel_dec ge.
+
+Proof.
+  intros i j. destruct (le_lt_dec j i); intuition.
+Defined. 
+
+(***********************************************************************)
 (** results on orders on nat *)
 
 Lemma le_lt_S : forall i k (ik: i <= k), i < S k.
@@ -141,8 +153,6 @@ Qed.
 
 (***********************************************************************)
 (** various arithmetical lemmas *)
-
-Require Export Omega.
 
 Lemma plus_minus : forall v p, v+p-p=v.
 

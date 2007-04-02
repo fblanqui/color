@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.14 2007-03-31 23:15:10 koper Exp $ *)
+(* $Id: ATrs.v,v 1.15 2007-04-02 12:27:42 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -194,6 +194,12 @@ Proof.
 unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. exact H.
 Qed.
 
+Lemma WF_empty : WF (red empty).
+
+Proof.
+  intro x. apply SN_intro. intros y Exy. redtac. contradiction.
+Qed.
+
 End rewriting.
 
 (***********************************************************************)
@@ -280,6 +286,14 @@ destruct RR'xy as [Rxy | Rxy]; destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]];
   subst x; subst y; exists rl; exists rr; exists c; exists s; intuition.
 Qed.
 
+Lemma red_sub : (forall r, In r R -> In r R') -> red R << red R'.
+
+Proof.
+  intros RR' u v Rst. redtac.
+  exists l. exists r. exists c. exists s. repeat split; try assumption.
+  apply RR'. assumption.
+Qed.
+
 Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
 
 Proof.
@@ -317,6 +331,34 @@ Qed.
 
 End rewriting_modulo.
 
+Section rewriting_modulo_results.
+
+Variables R R' E E' : rules.
+
+Lemma red_mod_empty_incl_red : red_mod empty R << red R.
+
+Proof.
+  intros s t Rst. destruct Rst as [s' [ss' Rst]].
+  rewrite (red_empty ss'). assumption.
+Qed.
+
+Lemma red_mod_sub : (forall r, In r R -> In r R') -> (forall r, In r E -> In r E') ->
+  red_mod E R << red_mod E' R'.
+
+Proof.
+  intros. unfold red_mod. comp. apply incl_rtc. 
+  apply red_sub. assumption.
+  apply red_sub. assumption.
+Qed.
+
+Lemma WF_mod_empty : WF (red_mod E empty).
+
+Proof.
+  intro x. apply SN_intro. intros y Exy. destruct Exy as [z [xz zy]]. redtac. contradiction.
+Qed.
+
+End rewriting_modulo_results.
+
 (***********************************************************************)
 (** termination as special case of relative termination *)
 
@@ -328,13 +370,6 @@ Lemma red_incl_red_mod : red R << red_mod empty R.
 
 Proof.
   intros s t Rst. exists s. split. constructor 2. assumption.
-Qed.
-
-Lemma red_mod_empty_incl_red : red_mod nil R << red R.
-
-Proof.
-  intros s t Rst. destruct Rst as [s' [ss' Rst]].
-  rewrite (red_empty ss'). assumption.
 Qed.
 
 End termination_as_relative_term.

@@ -239,6 +239,40 @@ Module Matrix (C : RingCarrier).
       (forall i j (ip : i < m) (jp : j < n), P (get_elem M ip jp) (get_elem N ip jp)) ->
       mat_forall2 M N := fun M N H => H.
 
+     (* alternative definition *)
+    Definition mat_forall2' (M N : matrix m n) := Vforall2n (@Vforall2n A P n) M N.
+
+    Require Import RelMidex.
+
+    Variable P_dec : rel_dec P.
+
+    Lemma mat_forall2'_dec : rel_dec mat_forall2'.
+
+    Proof.
+      intros M N. unfold mat_forall2'. do 2 apply Vforall2n_dec. assumption.
+    Defined.
+
+    Lemma mat_forall2_equiv1 : forall M N, mat_forall2 M N -> mat_forall2' M N.
+
+    Proof.
+      intros. unfold mat_forall2'. do 2 (apply Vforall2_intro; intros). exact (H i i0 ip ip0).
+    Qed.
+
+    Lemma mat_forall2_equiv2 : forall M N, mat_forall2' M N -> mat_forall2 M N.
+
+    Proof.
+      intros. unfold mat_forall2, get_elem, get_row. intros.
+      apply (Vforall2_nth P). apply (Vforall2_nth (@Vforall2n A P n)). assumption.
+    Qed.
+
+    Lemma mat_forall2_dec : rel_dec mat_forall2.
+
+    Proof.
+      intros M N. destruct (mat_forall2'_dec M N).
+      left. apply mat_forall2_equiv2. assumption.
+      right. intro. apply n0. apply mat_forall2_equiv1. assumption.
+    Defined.
+
   End Forall2.
 
 End Matrix.
@@ -273,7 +307,8 @@ Section Matrix_nat.
     Lemma vec_ge_dec : rel_dec (@vec_ge n).
 
     Proof.
-    Admitted.
+      intros P Q. destruct (Vforall2_dec nat_ge_dec P Q); intuition.
+    Defined.
 
     Definition mat_ge := mat_forall2 ge.
     Infix ">=m" := mat_ge (at level 70).
@@ -287,7 +322,8 @@ Section Matrix_nat.
     Lemma mat_ge_dec : forall m n, rel_dec (@mat_ge m n).
 
     Proof.
-    Admitted.
+      intros R Q. unfold mat_ge. apply mat_forall2_dec. exact nat_ge_dec.
+    Defined.
 
     Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> w >=v w' -> 
       dot_product v w >= dot_product v' w'.

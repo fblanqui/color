@@ -258,15 +258,39 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Definition term_ge := term_ord mint_ge.
       Definition term_gt := term_ord mint_gt.
 
+      Lemma mint_ge_dec : forall n, rel_dec (@mint_ge n).
+
+      Proof.
+        intros n x y. unfold mint_ge.
+        destruct (Vforall2_dec (@mat_ge_dec dim dim) (args x) (args y)); intuition.
+        destruct (vec_ge_dec (const x) (const y)); intuition.
+      Defined.
+
+      Lemma mint_gt_dec : forall n, rel_dec (@mint_gt n).
+      
+      Proof.
+        intros n x y. unfold mint_gt.
+        destruct (mint_ge_dec x y); intuition.
+        destruct (le_lt_dec (vec_at0 (const x)) (vec_at0 (const y))); intuition.
+      Defined.
+
       Lemma term_ge_dec : rel_dec term_ge.
     
       Proof.
-      Admitted.
+        intros l r. unfold term_ge, term_ord. simpl.
+        match goal with
+        |- {mint_ge ?l ?r} + {~mint_ge ?l ?r} => destruct (mint_ge_dec l r); auto
+        end.
+      Defined.
 
       Lemma term_gt_dec : rel_dec term_gt.
     
       Proof.
-      Admitted.
+        intros l r. unfold term_gt, term_ord. simpl.
+        match goal with
+        |- {mint_gt ?l ?r} + {~mint_gt ?l ?r} => destruct (mint_gt_dec l r); auto
+        end.
+      Defined.
 
       Notation IR_succ := (IR I succ).
       Notation IR_succeq := (IR I succeq).
