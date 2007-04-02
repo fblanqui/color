@@ -72,13 +72,6 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
   Notation mint := (matrixInt dim).
   Notation mat := (matrix dim dim).
 
-  Definition zero_vec := Vconst 0 dim.
-
-  Definition vector_plus (v1 v2 : vec) := Vmap2 plus v1 v2.
-  Infix "[+]" := vector_plus (at level 50).
-
-  Definition add_vectors n (v : vector vec n) := Vfold_left vector_plus zero_vec v.
-
   Definition add_matrices i m n (v : vector (matrix m n) i) := 
     Vfold_left (@mat_plus m n) (zero_matrix m n) v.
 
@@ -95,36 +88,36 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
     Definition Sig := sig.
     
-    Definition I := @mkInterpretation sig vec zero_vec (fun f => mi_eval (trsInt f)).
+    Definition I := @mkInterpretation sig vec (@zero_vec dim) (fun f => mi_eval (trsInt f)).
 
-    Definition succeq (v1 v2 : vec) := Vforall2n ge v1 v2.
-    Notation "x >=v y" := (succeq x y) (at level 70).
+    Definition succeq := @vec_ge dim.
 
     Definition succ v1 v2 := v1 >=v v2 /\ vec_at0 v1 > vec_at0 v2.
     Notation "x >v y" := (succ x y) (at level 70).
 
-    Lemma succeq_trans : transitive succeq.
-
-    Proof.
-      intros x y z xy yz. unfold succeq. 
-      apply Vforall2_intro. intros.
-      unfold ge. apply le_trans with (Vnth y ip).
-      apply (Vforall2_nth ge). assumption.
-      apply (Vforall2_nth ge). assumption.
-    Qed.
+    Definition succeq_trans : transitive succeq := @vec_ge_trans dim.
 
      (** Monotonicity *)
     Section VecMonotonicity.
 
-      Variables (n : nat) (vl vl' vr : vec).
-
-      Lemma vec_plus_monotone_r : vl >=v vl' -> vl [+] vr >=v vl' [+] vr.
+      Lemma vec_plus_gt_compat_l : forall vl vl' vr vr',
+        vec_at0 vl >= vec_at0 vl' -> vec_at0 vr > vec_at0 vr' -> 
+        vec_at0 (vl [+] vr) > vec_at0 (vl' [+] vr').
 
       Proof.
-        unfold vector_plus, succeq. intros. apply Vforall2_intro.
-        intros. simpl. do 2 rewrite Vmap2_nth.
-        unfold ge. apply plus_le_compat_r.
-        apply (Vforall2_nth ge). assumption.
+        unfold vec_at0, vector_plus. intros.
+        simpl. do 2 rewrite Vmap2_nth. 
+        unfold gt. apply plus_le_lt_compat. assumption. assumption.
+      Qed.
+
+      Lemma vec_plus_gt_compat_r : forall vl vl' vr vr', 
+        vec_at0 vl > vec_at0 vl' -> vec_at0 vr >= vec_at0 vr' -> 
+        vec_at0 (vl [+] vr) > vec_at0 (vl' [+] vr').
+
+      Proof.
+        unfold vec_at0, vector_plus. intros.
+        simpl. do 2 rewrite Vmap2_nth. 
+        unfold gt. apply plus_lt_le_compat. assumption. assumption.
       Qed.
 
       Variable f : matrix dim dim -> vec -> vec.
@@ -138,19 +131,29 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
       Proof.
         induction v1; intros; simpl.
-        destruct n0; try solve [elimtype False; omega].
-        unfold add_vectors, succeq. simpl. apply Vforall2_intro. intros.
+        destruct n; try solve [elimtype False; omega].
+        unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. intros.
         unfold vector_plus. do 2 rewrite Vmap2_nth.
         assert (Vnth (f (Vhead M) a) ip >= Vnth (f (Vhead M) b) ip).
         apply (Vforall2_nth ge). apply f_mon. assumption.
         omega.
-        destruct n1; try solve [elimtype False; omega].
-        unfold add_vectors, succeq. simpl. apply Vforall2_intro. intros.
+        destruct n0; try solve [elimtype False; omega].
+        unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. intros.
         unfold vector_plus. do 2 rewrite Vmap2_nth.
         unfold ge. apply plus_le_compat_r.
         match goal with |- ?Hl <= ?Hr => fold (ge Hr Hl) end.
         unfold succeq in IHv1. apply (Vforall2_nth ge).
         unfold add_vectors in IHv1. apply IHv1. assumption.
+      Qed.
+
+      Lemma mat_vect_prod_ge_compat : forall M M' m m', mat_ge M M' -> m >=v m' ->
+        mat_vect_prod M m >=v mat_vect_prod M' m'.
+
+      Proof.
+        intros. unfold mat_vect_prod. unfold vec_ge. apply Vforall2_intro. intros.
+        do 2 rewrite Vnth_col_matrix. apply mat_mult_mon. assumption.
+        unfold mat_ge. intros k l pk pl. do 2 rewrite vector_to_col_matrix_spec.
+        apply (Vforall2_nth ge). assumption.
       Qed.
 
     End VecMonotonicity.
@@ -159,9 +162,9 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
     Proof.
       intros f i j i_j vi vj a b ab.
-      simpl. unfold mi_eval. apply vec_plus_monotone_r.
+      simpl. unfold mi_eval. apply (@vec_plus_ge_compat_r dim).
       apply vec_add_monotone_map2; trivial.
-      intros. unfold succeq. apply Vforall2_intro. intros.
+      intros. unfold succeq, vec_ge. apply Vforall2_intro. intros.
       unfold mat_vect_prod. do 2 rewrite Vnth_col_matrix. apply mat_mult_mon.
       apply mat_ge_refl. intros x y xp yp.
       do 2 rewrite vector_to_col_matrix_spec.
@@ -188,7 +191,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
     Lemma succeq_dec : rel_dec succeq.
   
     Proof.
-      intros x y. unfold succeq, Vforall2n. apply Vforall2_dec.
+      intros x y. unfold succeq, vec_ge, Vforall2n. apply Vforall2_dec.
       intros m n. destruct (le_lt_dec n m); intuition.
     Defined.
 
@@ -221,7 +224,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         | BVar i ip => 
             let zero_int := Vconst (zero_matrix dim dim) (S k) in
             let args_int := Vreplace zero_int (le_lt_S ip) (id_matrix dim) in
-              mkMatrixInt zero_vec args_int
+              mkMatrixInt (@zero_vec dim) args_int
         | BFun f v => 
             let f_int := trsInt f in
             let args_int := Vmap (@mi_of_term k) v in
@@ -295,15 +298,89 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Notation IR_succ := (IR I succ).
       Notation IR_succeq := (IR I succeq).
 
-      Lemma term_gt_incl_succ : term_gt << IR_succ.
+      Definition mint_eval (val : valuation I) k (mi : mint k) :=
+        let coefs := Vbuild (fun i (ip : i < k) => val i) in
+          add_vectors (Vcons (const mi) (Vmap2 mat_vect_prod (args mi) coefs)).
+
+      Lemma mint_eval_eq_term_int : forall t (val : valuation I) k (t_b : maxvar_le k t),
+        term_int val t = mint_eval val (mi_of_term (inject_term t_b)).
 
       Proof.
       Admitted.
+
+      Lemma mint_eval_equiv : forall l r (val : valuation I),
+        let (li, ri) := rule_mi (mkRule l r) in
+        let lev := term_int val l in
+        let rev := term_int val r in
+        let lv := mint_eval val li in
+        let rv := mint_eval val ri in
+          lv = lev /\ rv = rev.
+
+      Proof.
+        intros. simpl. split.
+        rewrite (mint_eval_eq_term_int val (le_max_l (maxvar l) (maxvar r))). refl.
+        rewrite (mint_eval_eq_term_int val (le_max_r (maxvar l) (maxvar r))). refl.
+      Qed.
+
+      Lemma mint_eval_mon_succeq_args : forall k (val : vector vec k) (mi mi' : mint k),
+          mint_ge mi mi' -> 
+          add_vectors (Vmap2 mat_vect_prod (args mi) val) >=v 
+          add_vectors (Vmap2 mat_vect_prod (args mi') val).
+
+      Proof.
+        destruct mi. generalize val. clear val. induction args0. intros.
+        destruct mi'. VOtac. 
+        unfold mint_eval, add_vectors. simpl.
+        apply (vec_ge_refl (@zero_vec dim)).
+        intros. destruct mi'. VSntac args1.
+        unfold mint_eval, add_vectors. simpl.
+        destruct H. apply (@vec_plus_ge_compat dim).
+        apply (IHargs0 (Vtail val) (mkMatrixInt const1 (Vtail (args1)))).
+        split. simpl. change args0 with (Vtail (Vcons a args0)). 
+        apply Vforall2_tail. assumption. assumption.
+        apply mat_vect_prod_ge_compat.
+        change a with (Vhead (Vcons a args0)). do 2 rewrite Vhead_nth.
+        apply (Vforall2_nth mat_ge). assumption.
+        apply (vec_ge_refl (Vhead val)).
+      Qed.
+
+      Lemma mint_eval_mon_succeq : forall (val : valuation I) k (mi mi' : mint k),
+        mint_ge mi mi' -> mint_eval val mi >=v mint_eval val mi'.
+
+      Proof.
+        intros. unfold mint_eval, add_vectors. simpl.
+        apply (@vec_plus_ge_compat dim).
+        exact (mint_eval_mon_succeq_args _ H).
+        destruct H. assumption.
+      Qed.
+
+      Lemma mint_eval_mon_succ : forall (val : valuation I) k (mi mi' : mint k),
+        mint_gt mi mi' -> mint_eval val mi >v mint_eval val mi'.
+
+      Proof.
+        intros. destruct H. split.
+        apply mint_eval_mon_succeq. assumption.
+        unfold mint_eval, add_vectors. simpl.
+        apply vec_plus_gt_compat_l. 
+        unfold vec_at0. apply (Vforall2_nth ge). 
+        exact (mint_eval_mon_succeq_args _ H). assumption.
+      Qed.
 
       Lemma term_ge_incl_succeq : term_ge << IR_succeq.
 
       Proof.
-      Admitted.
+        intros l r lr v. destruct (mint_eval_equiv l r v). simpl in * .
+        rewrite <- H. rewrite <- H0.
+        apply mint_eval_mon_succeq. assumption.
+      Qed.
+
+      Lemma term_gt_incl_succ : term_gt << IR_succ.
+
+      Proof.
+        intros l r lr v. destruct (mint_eval_equiv l r v). simpl in * .
+        rewrite <- H. rewrite <- H0.
+        apply mint_eval_mon_succ. assumption.
+      Qed.
 
       Definition succ' := term_gt.
       Definition succ'_sub := term_gt_incl_succ.
@@ -337,17 +414,6 @@ Module MatrixInt (MI : TMatrixInt).
 
     Section VecMonotonicity.
       
-      Variables (n : nat) (vl vl' vr : vec).
-
-      Lemma vec_plus_monotone_r : vec_at0 vl > vec_at0 vl' ->
-        vec_at0 (vl [+] vr) > vec_at0 (vl' [+] vr).
-
-      Proof.
-        unfold vec_at0, vector_plus. intros.
-        simpl. do 2 rewrite Vmap2_nth. 
-        unfold gt. apply plus_lt_compat_r. assumption.
-      Qed.
-
       Variable f : matrix dim dim -> vec -> vec.
       Variable f_mon : forall M v1 v2, get_elem M dim_pos dim_pos > 0 ->
         v1 >=v v2 -> vec_at0 v1 > vec_at0 v2 -> vec_at0 (f M v1) > vec_at0 (f M v2).
@@ -388,7 +454,7 @@ Module MatrixInt (MI : TMatrixInt).
     Proof.
       intros f i j i_j vi vj a b ab. split.
       apply monotone_succeq. destruct ab. assumption.
-      simpl. unfold mi_eval. apply vec_plus_monotone_r.
+      simpl. unfold mi_eval. apply vec_plus_gt_compat_r.
       apply vec_add_monotone_map2; try solve [destruct ab; assumption].
       intros. unfold vec_at0. unfold mat_vect_prod. do 2 rewrite Vnth_col_matrix.
       do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
