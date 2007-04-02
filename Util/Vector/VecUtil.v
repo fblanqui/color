@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.8 2007-03-31 23:15:11 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.9 2007-04-02 12:27:42 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -631,6 +631,21 @@ intros. apply Vforall_intro. intros. apply H0. assumption.
 eapply Vforall_in with (n := n). apply H. apply H1.
 Qed.
 
+Require Import RelMidex.
+
+Lemma Vforall_dec : forall (P : A -> Prop) (P_dec : prop_dec P) n,
+  prop_dec (fun v => @Vforall P n v).
+
+Proof.
+  induction n; unfold prop_dec; intros.
+  VOtac. left. constructor.
+  VSntac x. destruct (P_dec (Vhead x)).
+  destruct (IHn (Vtail x)).
+  left. simpl. auto.
+  right. intro V. destruct V. contradiction.
+  right. intro V. destruct V. contradiction.
+Defined.
+
 Fixpoint Vsig_of_v (P : A->Prop) n (v : vec n) {struct v}
   : Vforall P v -> vector (sig P) n :=
   match v in vector _ n return Vforall P v -> vector (sig P) n with
@@ -714,6 +729,12 @@ Proof.
   destruct (eq_nat_dec n n0); simpl; intuition.
   destruct (IHv1 n0 v2); intuition. 
   destruct (R_dec a a0); intuition.
+Defined.
+
+Lemma Vforall2n_dec : forall n, rel_dec (@Vforall2n n).
+
+Proof.
+  intros n v1 v2. unfold Vforall2n. apply Vforall2_dec.
 Defined.
 
 End Vforall2_sec.

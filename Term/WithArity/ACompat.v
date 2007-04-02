@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.4 2007-03-21 13:59:28 koper Exp $ *)
+(* $Id: ACompat.v,v 1.5 2007-04-02 12:27:42 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -63,6 +63,15 @@ Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
 apply incl_rtc. apply compat_red; assumption. apply compat_red; assumption.
 apply rtc_step_incl_tc.
+Qed.
+
+Lemma compatible_app : forall succ R R', compatible succ R -> compatible succ R' -> 
+  compatible succ (R ++ R').
+
+Proof.
+  intros succ R R' Rsucc R'succ l r lr. destruct (in_app_or lr).
+  apply Rsucc. assumption. 
+  apply R'succ. assumption.
 Qed.
 
 (***********************************************************************)
