@@ -8,25 +8,30 @@ and built by tools like CiME, AProVE, TTT, Cariboo, etc.
 
 Among other things, it includes:
 
-- Util/List: a library on lists
-- Util/Vector: a library on vectors
-- Util/Multiset: a library on finite multisets
-- Util/Polynom: a library on integer polynomials with multiple variables
+* libraries on useful data structures in Util/
+	- List: lists
+	- Vector: vectors
+	- Multiset: finite multisets
+	- Polynom: integer polynomials with multiple variables
 
-- Term/Varyadic: a library on varyadic terms
-- Term/WithArity: a library on algebraic terms with symbols of fixed arity
-- Term/SimpleType: a library on simply typed lambda-terms with de Bruijn indices
+* libraries on term structures in Term/
+	- Varyadic: varyadic terms
+	- WithArity: algebraic terms with symbols of fixed arity
+	- SimpleType: simply typed lambda-terms with de Bruijn indices
 
-- PolyInt: a proof of the termination criterion based on polynomial interpretations
-- DP: a proof of the basic dependency pairs theorem
-- Filter: a library on arguments filterings
-- MPO: multiset path ordering
-- RPO: recursive path ordering with lexicographic and multiset statuses
-- Conversion: conversions between term structures
-- HORPO: a proof the well-foundedness of HORPO
+* transformation techniques:
+	- DP: basic dependency pairs theorem
+	- Filter: arguments filterings
+	- Conversion: conversions between term structures
+
+* termination criteria:
+	- PolyInt: polynomial interpretations
+	- MPO: multiset path ordering
+	- RPO: recursive path ordering
+	- HORPO: higher-order recursive path ordering
 
 The library is likely to evolve and include more developments quickly.
-For more recent informations, see the CoLoR web page http://color.loria.fr/.
+For more recent informations, see http://color.loria.fr/.
 
 Contributions to this project are very welcome!
 
@@ -34,3 +39,6 @@ LICENSE: this file describes the license governing this library.
 COPYRIGHTS: this file describes the copyrights holders.
 INSTALL: this file describes a compilation procedure.
 THANKS: thanks to various people for their comments or help.
+
+The development version is available under CVS on
+http://gforge.inria.fr/projects/color/.
