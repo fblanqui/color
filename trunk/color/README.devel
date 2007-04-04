@@ -1,0 +1,50 @@
+Guideline for CoLoR developers
+------------------------------
+
+- For new contributors, update the COPYRIGHT file.
+
+- Don't forget to update CHANGES and THANKS.
+
+- If you bring important modifications to an already existing file,
+add your name with the modification date yy-mm-dd.
+
+About compilation:
+------------------
+
+- Before any commit, make sure that CoLoR compiles with the last
+stable release of Coq and, if possible, with the development version
+of Coq.
+
+- When you add a file, do "make config" to build Makefile.Coq and the
+dependencies again.
+
+About the CoLoR style:
+----------------------
+
+- Add the CoLoR header at the beginning of each file with the creation
+date yy-mm-dd.
+
+- Only use Parameter, Definition, Lemma (no Axiom, Theorem, etc.).
+
+- Put comments! And use the possibilities offered by coqdoc. For
+instance, "(** " creates a section title. Check the result by doing
+"make doc".
+
+- Try to build the names of lemmas by concatening its main
+ingredients. For instance:
+
+Lemma Vforall_in : forall P x n (v : vec n), Vforall P v -> Vin x v -> P x.
+
+You can also add the suffix "intro" or "elim" for specifying its
+use. For instance:
+
+Lemma Vforall_intro : forall (P : A->Prop) n (v : vec n),
+  (forall x, Vin x v -> P x) -> Vforall P v.
+
+provides a way of proving Vforall (introduction rule).
+
+Lemma Vin_elim : forall x n (v : vec n),
+  Vin x v -> exists n1, exists v1 : vec n1, exists n2, exists v2 : vec n2,
+    exists H : n1 + S n2 = n, v = Vcast (Vapp v1 (Vcons x v2)) H.
+
+provides a way to deduce some information from Vin (elimination rule).
