@@ -458,7 +458,7 @@ Qed.
 End path.
 
 (***********************************************************************)
-(** R @ S << S @ R -> WF S -> WF (R# @ S) *)
+(** R @ S << S @ R -> WF S -> WF (R## @ S) *)
 
 Section commut_modulo.
 
@@ -480,7 +480,7 @@ Qed.
 End commut_modulo.
 
 (***********************************************************************)
-(** R @ T << T -> WF T -> WF (T @ R#) *)
+(** R @ T << T -> WF T -> WF (T @ R##) *)
 
 Section absorb.
 
@@ -512,6 +512,7 @@ End absorb.
 
 (***********************************************************************)
 (** Modular removal of rules for relative termination *)
+
 Section wf_mod_shift.
     
   Variable (A : Set) (R S T : relation A).
@@ -562,7 +563,8 @@ Section wf_rel_mod_simpl.
 
   Variable (A : Set) (R R' S : relation A).
 
-  Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') -> WF (S# @ (R U R')).
+  Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') ->
+    WF (S# @ (R U R')).
 
   Proof.
     intros. apply WF_incl with ((S U (@empty_rel A))# @ (R U R')).
