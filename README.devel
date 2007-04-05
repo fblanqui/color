@@ -21,6 +21,8 @@ dependencies again.
 About the CoLoR style:
 ----------------------
 
+- Use maximum 78 characters per line.
+
 - Add the CoLoR header at the beginning of each file with the creation
 date yy-mm-dd.
 
