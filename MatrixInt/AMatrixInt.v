@@ -429,20 +429,20 @@ Module MatrixInt (MI : TMatrixInt).
 
       Proof.
         induction v1; intros; simpl.
-        destruct n0; [solve [elimtype False; omega] | idtac].
+        destruct n; [solve [elimtype False; omega] | idtac].
         unfold add_vectors, vec_at0, vector_plus. simpl.
         do 2 rewrite Vmap2_nth. 
         unfold gt. apply plus_lt_compat_l.
         unfold vec_at0 in f_mon. apply f_mon; try assumption.
         apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
-        destruct n1; [solve [elimtype False; omega] | idtac].
+        destruct n0; [solve [elimtype False; omega] | idtac].
         unfold add_vectors, vec_at0, vector_plus. simpl.
         do 2 rewrite Vmap2_nth.
         unfold gt. apply plus_lt_compat_r.
         match goal with |- ?Hl < ?Hr => fold (gt Hr Hl) end.
         unfold vec_at0, add_vectors in IHv1. 
         apply IHv1; try assumption.
-        apply Vforall_incl with (S n1) M. 
+        apply Vforall_incl with (S n0) M. 
         intros. VSntac M. simpl. auto.
         assumption.
       Qed.
@@ -465,6 +465,7 @@ Module MatrixInt (MI : TMatrixInt).
       assumption.
       do 2 rewrite get_col_col_matrix. assumption.
       apply matrixInt_monotone.
+      auto with arith.
     Qed.
 
   End ExtendedMonotoneAlgebra.
