@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ARelation.v,v 1.13 2007-02-08 17:59:35 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.14 2007-04-11 17:51:02 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -66,7 +66,7 @@ Record Reduction_pair : Type := mkReduction_pair {
   rp_subs_eq : substitution_closed rp_succ_eq;
   rp_cont : context_closed rp_succ;
   rp_cont_eq : context_closed rp_succ_eq;
-  rp_comp : rp_succ_eq @ rp_succ << rp_succ;
+  rp_absorb : absorb rp_succ rp_succ_eq;
   rp_succ_wf : WF rp_succ
 }.
 
@@ -98,7 +98,7 @@ Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
   wp_subs_eq : substitution_closed wp_succ_eq;
   wp_cont : weak_context_closed wp_succ wp_succ_eq;
   wp_cont_eq : context_closed wp_succ_eq;
-  wp_comp : wp_succ_eq @ wp_succ << wp_succ;
+  wp_absorb : absorb wp_succ wp_succ_eq;
   wp_succ_wf : WF wp_succ
 }.
 
@@ -145,7 +145,9 @@ Section strict.
 Variables (succ_eq : relation term)
   (succ_eq_trans : transitive succ_eq).
 
-Lemma absorb_strict : absorb (strict_part succ_eq) succ_eq.
+Notation succ := (strict_part succ_eq).
+
+Lemma absorb_strict : absorb succ succ_eq.
 
 Proof.
 unfold absorb, inclusion, compose, strict_part.

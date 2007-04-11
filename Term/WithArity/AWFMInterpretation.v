@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 *)
 
-(* $Id: AWFMInterpretation.v,v 1.7 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.8 2007-04-11 17:51:03 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,11 @@ Notation terms := (vector term).
 
 Require Export AInterpretation.
 
-Variable (I : interpretation Sig) (R : relation (domain I)).
+Variable I : interpretation Sig.
+
+Section IR.
+
+Variable R : relation (domain I).
 
 Definition IR t1 t2 :=
   forall xint, R (term_int xint t1) (term_int xint t2).
@@ -79,5 +83,19 @@ Proof.
 split. apply IR_WF. exact H0. split. apply IR_substitution_closed.
 apply IR_context_closed. exact H.
 Qed.
+
+End IR.
+
+Section inclusion.
+
+Variables R R' : relation (domain I).
+
+Lemma IR_inclusion : R << R' -> IR R << IR R'.
+
+Proof.
+intro. unfold inclusion, IR. intros. apply H. apply H0.
+Qed.
+
+End inclusion.
 
 End S.
