@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.9 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.10 2007-04-11 17:51:02 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -112,6 +112,13 @@ intro f. unfold Dgt. apply Vmonotone_transp.
 apply (pmonotone_imp_monotone_peval_Dlt (PI_mon PI f)).
 Qed.
 
+Lemma pi_monotone_eq : monotone W Dge.
+
+Proof.
+intro f. unfold Dge. apply Vmonotone_transp.
+apply (pmonotone_imp_monotone_peval_Dle (PI_mon PI f)).
+Qed.
+
 (***********************************************************************)
 (** reduction ordering *)
 
@@ -122,6 +129,37 @@ Lemma pi_red_ord : reduction_ordering succ.
 Proof.
 unfold succ. apply IR_reduction_ordering. apply pi_monotone. apply WF_Dgt.
 Qed.
+
+(***********************************************************************)
+(** reduction pair *)
+
+Definition succ_eq := IR W Dge.
+
+Lemma pi_absorb : absorb succ succ_eq.
+
+Proof.
+unfold absorb, inclusion. intros. do 2 destruct H.
+unfold succ_eq, succ, IR, Dge, Dgt, transp, Dle, Dlt in *. intro.
+eapply Zlt_le_trans. apply H0. apply H.
+Qed.
+
+Definition rp := @mkReduction_pair Sig
+  (*rp_succ : relation term;*)
+  succ
+  (*rp_succ_eq : relation term;*)
+  succ_eq
+  (*rp_subs : substitution_closed rp_succ;*)
+  (@IR_substitution_closed _ W Dgt)
+  (*rp_subs_eq : substitution_closed rp_succ_eq;*)
+  (@IR_substitution_closed _ W Dge)
+  (*rp_cont : context_closed rp_succ;*)
+  (@IR_context_closed _ _ _ pi_monotone)
+  (*rp_cont_eq : context_closed rp_succ_eq;*)
+  (@IR_context_closed _ _ _ pi_monotone_eq)
+  (*rp_absorb : absorb rp_succ rp_succ_eq;*)
+  pi_absorb
+  (*rp_succ_wf : WF rp_succ*)
+  (@IR_WF _ W _ WF_Dgt).
 
 (***********************************************************************)
 (** equivalence between (xint) and (fval xint) *)
