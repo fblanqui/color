@@ -7,9 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 Termination criterion based on matrix interpretations.
 
 References:
--  J. Endrullis, J. Waldmann and H. Zantema, "Matrix Interpretations for Proving
-   Termination of Term Rewriting", Proceedings of the 3rd International Joint
-   Conference (IJCAR 2006), 2006.
+-  J. Endrullis, J. Waldmann and H. Zantema, "Matrix Interpretations for 
+   Proving Termination of Term Rewriting", Proceedings of the 3rd 
+   International Joint Conference (IJCAR 2006), 2006.
 *)
 
 Set Implicit Arguments.
@@ -77,7 +77,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
   Definition vec_at0 (v : vec) := Vnth v dim_pos.
 
-  Notation mat_times_vec := (@mat_vect_prod dim dim).
+  Notation mat_times_vec := (@mat_vec_prod dim dim).
 
   Definition mi_eval n (mi : matrixInt dim n) (v : vector vec n) : vec :=
     add_vectors (Vmap2 mat_times_vec (args mi) v) [+] const mi.
@@ -142,14 +142,14 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Proof.
         induction v1; intros; simpl.
         destruct n; try solve [elimtype False; omega].
-        unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. intros.
-        unfold vector_plus. do 2 rewrite Vmap2_nth.
+        unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
+        intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
         assert (Vnth (f (Vhead M) a) ip >= Vnth (f (Vhead M) b) ip).
         apply (Vforall2_nth ge). apply f_mon. assumption.
         unfold A in * . omega.
         destruct n0; try solve [elimtype False; omega].
-        unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. intros.
-        unfold vector_plus. do 2 rewrite Vmap2_nth.
+        unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
+        intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
         unfold ge. apply plus_le_compat_r.
         match goal with |- ?Hl <= ?Hr => fold (ge Hr Hl) end.
         unfold succeq in IHv1. apply (Vforall2_nth ge).
@@ -165,16 +165,17 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       simpl. unfold mi_eval. apply (@vec_plus_ge_compat_r dim).
       apply vec_add_monotone_map2; trivial.
       intros. unfold succeq, vec_ge. apply Vforall2_intro. intros.
-      unfold mat_vect_prod. do 2 rewrite Vnth_col_matrix. apply mat_mult_mon.
+      unfold mat_vec_prod. do 2 rewrite Vnth_col_mat. apply mat_mult_mon.
       apply mat_ge_refl. intros x y xp yp.
-      do 2 rewrite vector_to_col_matrix_spec.
+      do 2 rewrite vec_to_col_mat_spec.
       apply (Vforall2_nth ge). assumption.
     Qed.
 
     Lemma succ_wf : WF succ.
 
     Proof.
-      apply wf_WF. apply well_founded_lt_compat with (fun v : vec => vec_at0 v).
+      apply wf_WF. 
+      apply well_founded_lt_compat with (fun v : vec => vec_at0 v).
       intros. destruct H. omega.
     Qed.
 
@@ -214,7 +215,8 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
       (** symbolic computation of term interpretation *)
       Definition mat_matrixInt_prod n M (mi : mint n) : mint n := 
-        mkMatrixInt (mat_times_vec M (const mi)) (Vmap (mat_mult M) (args mi)).
+        mkMatrixInt (mat_times_vec M (const mi)) 
+        (Vmap (mat_mult M) (args mi)).
 
       Definition combine_matrices n k (v : vector (vector mat k) n) :=
         Vbuild (fun i ip => add_matrices (Vmap (fun v => Vnth v ip) v)).
@@ -299,7 +301,8 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Proof.
         intros n x y. unfold mint_gt.
         destruct (mint_ge_dec x y); intuition.
-        destruct (le_lt_dec (vec_at0 (const x)) (vec_at0 (const y))); intuition.
+        destruct (le_lt_dec (vec_at0 (const x)) (vec_at0 (const y))); 
+          intuition.
       Defined.
 
       Lemma term_ge_dec : rel_dec term_ge.
@@ -340,31 +343,31 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Lemma mint_eval_var_aux : forall M i k (v : vector vec k) (ip : i < k),
         add_vectors (Vmap2 mat_times_vec (Vreplace (Vconst 
           (zero_matrix dim dim) k) ip M) v) =
-        col_matrix_to_vector (M <*> (vector_to_col_matrix (Vnth v ip))).
+        col_mat_to_vec (M <*> (vec_to_col_mat (Vnth v ip))).
         
       Proof.
         induction i; intros.
         destruct k. elimtype False. omega.
         rewrite Vreplace_head. unfold add_vectors. simpl.
-        fold (add_vectors (Vmap2 mat_times_vec (Vconst (zero_matrix dim dim) k)
-          (Vtail v))).
+        fold (add_vectors (Vmap2 mat_times_vec 
+          (Vconst (zero_matrix dim dim) k) (Vtail v))).
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.
         rewrite vector_plus_zero_l.
         replace (Vhead (A:=NMatrix.vec dim) v) with (Vnth v ip). refl.
         rewrite Vhead_nth. rewrite (lt_unique ip (lt_O_Sn k)). refl.
         symmetry.  apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vmap2_nth. rewrite Vnth_const. 
-        unfold mat_vect_prod. rewrite zero_matrix_mult_l.
-        apply Veq_nth. intros. rewrite Vnth_col_matrix.
+        unfold mat_vec_prod. rewrite zero_matrix_mult_l.
+        apply Veq_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix, zero_vec. 
         rewrite mat_build_elem. rewrite Vnth_const. refl.
         destruct k. elimtype False. omega.
         rewrite Vreplace_tail. simpl. rewrite add_vectors_cons.
-        unfold mat_vect_prod at 1. rewrite zero_matrix_mult_l.
+        unfold mat_vec_prod at 1. rewrite zero_matrix_mult_l.
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.
         rewrite vector_plus_zero_l. rewrite IHi. rewrite Vnth_tail. 
         rewrite (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
-        apply Veq_nth. intros. rewrite Vnth_col_matrix.
+        apply Veq_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix, zero_vec. 
         rewrite mat_build_elem. rewrite Vnth_const. refl.
       Qed.
@@ -382,7 +385,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
           (zero_matrix dim dim) (S k)) (le_lt_S (maxvar_var t_b)) 
           (id_matrix dim)).
         rewrite mint_eval_var_aux. simpl. 
-        rewrite mat_mult_id_l. rewrite col_matrix_to_vector_idem.
+        rewrite mat_mult_id_l. rewrite col_mat_to_vec_idem.
         rewrite Vbuild_nth. refl. deduce dim_pos. auto. 
       Qed.
 
@@ -396,8 +399,8 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         autorewrite with arith. refl.
         symmetry. apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vmap2_nth. rewrite combine_matrices_nil. rewrite Vnth_const.
-        unfold mat_vect_prod. autorewrite with arith. 
-        apply Veq_nth. intros. rewrite Vnth_col_matrix.
+        unfold mat_vec_prod. autorewrite with arith. 
+        apply Veq_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix. rewrite mat_build_elem. 
         unfold zero_vec. rewrite Vnth_const. refl.
       Qed.
@@ -416,10 +419,10 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         autorewrite with arith. repeat rewrite <- vector_plus_assoc.
         simpl. autorewrite with arith.
         Vplus_eq. rewrite vector_plus_assoc.
-        rewrite (vector_plus_comm (add_vectors (Vmap2 mat_times_vec a_hd vali)) 
-          c_tl). rewrite <- vector_plus_assoc.
+        rewrite (vector_plus_comm (add_vectors (Vmap2 mat_times_vec a_hd 
+          vali)) c_tl). rewrite <- vector_plus_assoc.
         Vplus_eq. apply add_vectors_split. intros.
-        repeat rewrite Vmap2_nth. apply mat_vect_prod_distr_mat.
+        repeat rewrite Vmap2_nth. apply mat_vec_prod_distr_mat.
       Qed.
 
       Lemma mint_eval_mult_factor : forall k val M (mi : mint k),
@@ -428,13 +431,13 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
       Proof.
         unfold mint_eval. intros. simpl. autorewrite with arith. 
-        rewrite mat_vect_prod_distr_vec. Vplus_eq.
+        rewrite mat_vec_prod_distr_vec. Vplus_eq.
         set (gen := Vbuild (A:=vec) (fun i (_ : i < k) => val i)).
-        rewrite (mat_vect_prod_distr_add_vectors M 
+        rewrite (mat_vec_prod_distr_add_vectors M 
           (Vmap2 mat_times_vec (args mi) gen)
           (Vmap2 mat_times_vec (Vmap (mat_mult M) (args mi)) gen)).
         refl. intros. repeat rewrite Vmap2_nth. rewrite Vnth_map.
-        unfold mat_vect_prod. rewrite vector_to_col_matrix_idem.
+        unfold mat_vec_prod. rewrite vec_to_col_mat_idem.
         rewrite mat_mult_assoc. refl.
       Qed.
 
@@ -442,8 +445,9 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         (v : vector (bterm k) i),
         let arg_eval := Vmap2 (@mat_matrixInt_prod (S k)) (args fi) 
           (Vmap (@mi_of_term k) v) in
-        mi_eval fi (Vmap (fun t : bterm k => mint_eval val (mi_of_term t)) v) =
-        mint_eval val (mkMatrixInt
+          mi_eval fi (Vmap (fun t : bterm k => mint_eval val (mi_of_term t)) 
+          v) =
+          mint_eval val (mkMatrixInt
           (add_vectors (Vcons (const fi) (Vmap (@const dim (S k)) arg_eval)))
           (combine_matrices (Vmap (@args dim (S k)) arg_eval))).
 
@@ -457,7 +461,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         VSntac v. simpl mi_eval.
         rewrite mi_eval_cons. rewrite IHi. simpl.
         rewrite add_vectors_perm.
-        rewrite (add_vectors_cons (i := S i) (mat_vect_prod (Vhead (args fi))
+        rewrite (add_vectors_cons (i := S i) (mat_vec_prod (Vhead (args fi))
                  (const (Vhead (Vmap (mi_of_term (k:=k)) v))))).
         rewrite mint_eval_cons. Vplus_eq.
         rewrite Vmap_tail. refl.
@@ -522,7 +526,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         apply (IHargs0 (Vtail val) (mkMatrixInt const1 (Vtail (args1)))).
         split. simpl. change args0 with (Vtail (Vcons a args0)). 
         apply Vforall2_tail. assumption. assumption.
-        apply mat_vect_prod_ge_compat.
+        apply mat_vec_prod_ge_compat.
         change a with (Vhead (Vcons a args0)). do 2 rewrite Vhead_nth.
         apply (Vforall2_nth mat_ge). assumption.
         apply (vec_ge_refl (Vhead val)).
@@ -539,8 +543,9 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         destruct H. assumption.
       Qed.
 
-      Lemma mint_eval_mon_succ : forall (val : valuation I) k (mi mi' : mint k),
-        mint_gt mi mi' -> mint_eval val mi >v mint_eval val mi'.
+      Lemma mint_eval_mon_succ : forall (val : valuation I) k 
+        (mi mi' : mint k), mint_gt mi mi' -> 
+        mint_eval val mi >v mint_eval val mi'.
 
       Proof.
         intros. destruct H. split.
@@ -642,15 +647,15 @@ Module MatrixInt (MI : TMatrixInt).
       apply monotone_succeq. destruct ab. assumption.
       simpl. unfold mi_eval. apply vec_plus_gt_compat_r.
       apply vec_add_monotone_map2; try solve [destruct ab; assumption].
-      intros. unfold vec_at0. unfold mat_vect_prod. 
-      do 2 rewrite Vnth_col_matrix.
+      intros. unfold vec_at0. unfold mat_vec_prod. 
+      do 2 rewrite Vnth_col_mat.
       do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
       unfold vec_ge. apply Vforall2_intro. auto.
       unfold vec_ge. apply Vforall2_intro. intros.
-      do 2 rewrite get_col_col_matrix. destruct ab.
+      do 2 rewrite get_col_col_mat. destruct ab.
       apply (Vforall2_nth ge). assumption.
       assumption.
-      do 2 rewrite get_col_col_matrix. assumption.
+      do 2 rewrite get_col_col_mat. assumption.
       apply matrixInt_monotone.
       auto with arith.
     Qed.

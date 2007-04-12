@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 terms whose variable indexes are bounded
 *)
 
-(* $Id: ABterm.v,v 1.4 2007-04-12 12:36:25 koper Exp $ *)
+(* $Id: ABterm.v,v 1.5 2007-04-12 13:56:36 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -131,12 +131,20 @@ Proof.
 intros. simpl. auto.
 Qed.
 
-Lemma inject_terms_nth : forall n (ts : terms n) (H : Vforall max_le ts)
-  i (ip : i < n), 
+Lemma inject_terms_nth : forall i n (ts : terms n) (H : Vforall max_le ts)
+  (ip : i < n), 
   Vnth (inject_terms H) ip = inject_term (Vforall_nth max_le ts ip H).
 
 Proof.
-Admitted.
+  induction i; intros.
+  destruct ts. elimtype False. omega. simpl. 
+  match goal with |- inject_term ?Hl = inject_term ?Hr =>
+    rewrite (le_unique Hl Hr) end. refl.
+  destruct ts. elimtype False. omega.
+  simpl. rewrite IHi.
+  match goal with |- inject_term ?Hl = inject_term ?Hr =>
+    rewrite (le_unique Hl Hr) end. refl.
+Qed.
 
 (***********************************************************************)
 (** interpretation of bterm's *)
