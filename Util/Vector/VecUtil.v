@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.9 2007-04-02 12:27:42 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.10 2007-04-12 12:36:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -78,7 +78,8 @@ Proof.
 intros. subst a1. subst v1. reflexivity.
 Qed.
 
-Lemma Vtail_eq : forall a n (v1 v2 : vec n), v1 = v2 -> Vcons a v1 = Vcons a v2.
+Lemma Vtail_eq : forall a n (v1 v2 : vec n), v1 = v2 -> 
+  Vcons a v1 = Vcons a v2.
 
 Proof.
 intros. apply Vcons_eq. reflexivity. assumption.
@@ -157,8 +158,8 @@ Lemma Vcast_eq_intror : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
   Vcast v1 h = v2 -> Vcast v1 h1 = Vcast v2 h2.
 
 Proof.
-induction v1; intros until n0; case n0; intros until v2; case v2; simpl; intros;
-  (discriminate || auto). Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
+induction v1; intros until n0; case n0; intros until v2; case v2; simpl; 
+intros; (discriminate || auto). Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
@@ -323,6 +324,13 @@ generalize dependent v. intro v. elim v.
  assumption.
 Qed.
 
+Lemma Vnth_const : forall n (a : A) i (ip : i < n),
+  Vnth (Vconst a n) ip = a.
+
+Proof.
+Admitted.
+
+
 (***********************************************************************)
 (** replacement of i-th element *)
 
@@ -333,6 +341,18 @@ Proof.
   destruct i. exact (Vcons a (Vtail v)).  
   exact (Vcons (Vhead v) (IHn (Vtail v) i (lt_S_n ip) a)).
 Defined.
+
+Lemma Vreplace_head : forall n (ip : 0 < S n) (v : vec (S n)) (a : A),
+  Vreplace v ip a = Vcons a (Vtail v).
+
+Proof.
+Admitted.
+
+Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vec (S n)) (a : A),
+  Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
+
+Proof.
+Admitted.
 
 (***********************************************************************)
 (** concatenation *)
@@ -358,7 +378,8 @@ induction v; intros. VOtac. reflexivity.
 simpl. apply Vtail_eq. apply IHv.
 Qed.
 
-Lemma Vapp_nil : forall n (v : vec n) (w : vec 0), Vapp v w = Vcast v (plus_n_O n).
+Lemma Vapp_nil : forall n (v : vec n) (w : vec 0), 
+  Vapp v w = Vcast v (plus_n_O n).
 
 Proof.
 intros. apply Vapp_nil_eq.
@@ -597,6 +618,12 @@ induction v; simpl; intros. exact I. split.
 apply H. left. reflexivity. apply IHv. intros. apply H. right. assumption.
 Qed.
 
+Lemma Vforall_nth_intro : forall (P : A -> Prop) n (v : vec n),
+  (forall i (ip : i < n), P (Vnth v ip)) -> Vforall P v.
+
+Proof.
+Admitted.
+
 Lemma Vforall_in : forall P x n (v : vec n), Vforall P v -> Vin x v -> P x.
 
 Proof.
@@ -606,6 +633,12 @@ intros Ha Hv. destruct Ha. destruct Hv.
 rewrite H1. exact H.
 auto.
 Qed.
+
+Lemma Vforall_nth : forall P n (v : vec n) i (ip : i < n), 
+  Vforall P v -> P (Vnth v ip).
+
+Proof.
+Admitted.
 
 Lemma Vforall_incl : forall (P : A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2),
   (forall x, Vin x v1 -> Vin x v2) -> Vforall P v2 -> Vforall P v1.
@@ -686,8 +719,8 @@ Proof.
   contradiction.
 Qed.
 
-Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i (ip : i < n), 
-  Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
+Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i 
+  (ip : i < n), Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
 Proof.
   induction n; intros.
@@ -1035,3 +1068,4 @@ Lemma Vmap_eq_ext_id : forall (A : Set) (f : A->A), (forall a, f a = a) ->
 Proof.
 intros. rewrite <- Vmap_id. apply Vmap_eq_ext. assumption.
 Qed.
+
