@@ -1,7 +1,7 @@
 Guideline for CoLoR developers
 ------------------------------
 
-- For new contributors, update the COPYRIGHT file.
+- For new contributors, update COPYRIGHT.
 
 - Don't forget to update CHANGES and THANKS.
 
@@ -31,6 +31,18 @@ date yy-mm-dd.
 - Put comments! And use the possibilities offered by coqdoc. For
 instance, "(** " creates a section title. Check the result by doing
 "make doc".
+
+- Try to use the Coq standard library as much as possible except for
+the definition of well-foundedness: it is redefined in
+Util/Relation/SN.v.
+
+- Definitions and lemmas about structures of general interest must be
+put in Util. Term structures are in Term and every termination
+technique must be put in a new directory at the root of the project.
+
+- Files about algebraic terms (Term/WithArity) should be prefixed with
+A. Files about varyadic terms (Term/Varyadic) should be prefixed with
+V.
 
 - Try to build the names of lemmas by concatening its main
 ingredients. For instance:
