@@ -212,17 +212,17 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
 
     Proof.
       clear R. intros. set (Rge := fst R_ge) in * . set (Rgt := fst R_gt) in * .
-      trans (red (Rge ++ Rgt)). apply red_sub. intros.
-      destruct (partition_complete part_succ r R). assumption.
+      trans (red (Rge ++ Rgt)). apply red_sub. unfold incl. intros.
+      destruct (partition_complete part_succ a R). assumption.
       apply in_or_app. auto.
-      destruct (partition_complete part_succeq r (snd R_gt)). assumption.
+      destruct (partition_complete part_succeq a (snd R_gt)). assumption.
       apply in_or_app. auto.
       fold R_ge in H2. rewrite H in H2. destruct H2.
       apply red_union.
     Qed.
 
-    Lemma partition_compatible : forall R succ succ' (succ'_dec : rel_dec succ'),
-      succ' << succ ->
+    Lemma partition_compatible : forall R succ succ'
+      (succ'_dec : rel_dec succ'), succ' << succ ->
       compatible succ (fst (partition (rule_partition succ'_dec) R)).
 
     Proof.
