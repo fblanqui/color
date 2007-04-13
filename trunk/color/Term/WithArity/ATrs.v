@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.15 2007-04-02 12:27:42 koper Exp $ *)
+(* $Id: ATrs.v,v 1.16 2007-04-13 08:42:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -96,6 +96,7 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
+
 Notation empty := (nil (A:=rule)).
 
 (***********************************************************************)
@@ -112,11 +113,10 @@ Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
-Lemma red_empty : forall l r : term, (red empty #) l r -> l = r.
+Lemma red_empty : forall t u : term, (red empty #) t u -> t = u.
 
 Proof.
-  intros. induction H. 
-  redtac. contradiction. refl. congruence.
+intros. induction H. redtac. contradiction. refl. congruence.
 Qed.
 
 Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
@@ -146,8 +146,7 @@ Lemma red_subterm : forall u u' t, red R u u' -> subterm_eq u t
 
 Proof.
 unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
-subst u'.
-exists (fill (AContext.comp d c) (app s r)). split.
+subst u'. exists (fill (AContext.comp d c) (app s r)). split.
 exists l. exists r. exists (AContext.comp d c). exists s. split. assumption.
 rewrite fill_comp. auto. exists d. rewrite fill_comp. refl.
 Qed.
@@ -166,17 +165,19 @@ unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
 Lemma red_swap : red (R ++ R') << red (R' ++ R).
+
 Proof.
-  intros x y RR'xy. redtac.
-  exists l. exists r. exists c. exists s. repeat split; auto.
-  destruct (in_app_or RR'xy); apply in_or_app; auto.
+intros x y RR'xy. redtac.
+exists l. exists r. exists c. exists s. repeat split; auto.
+destruct (in_app_or RR'xy); apply in_or_app; auto.
 Qed.
 
 Lemma hd_red_swap : hd_red (R ++ R') << hd_red (R' ++ R).
+
 Proof.
-  intros x y RR'xy. redtac.
-  exists l. exists r. exists s. repeat split; auto.
-  destruct (in_app_or RR'xy); apply in_or_app; auto.
+intros x y RR'xy. redtac.
+exists l. exists r. exists s. repeat split; auto.
+destruct (in_app_or RR'xy); apply in_or_app; auto.
 Qed.
 
 Require Export RelUtil.
@@ -286,7 +287,7 @@ destruct RR'xy as [Rxy | Rxy]; destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]];
   subst x; subst y; exists rl; exists rr; exists c; exists s; intuition.
 Qed.
 
-Lemma red_sub : (forall r, In r R -> In r R') -> red R << red R'.
+Lemma red_sub : incl R R' -> red R << red R'.
 
 Proof.
   intros RR' u v Rst. redtac.
@@ -338,23 +339,30 @@ Variables R R' E E' : rules.
 Lemma red_mod_empty_incl_red : red_mod empty R << red R.
 
 Proof.
-  intros s t Rst. destruct Rst as [s' [ss' Rst]].
-  rewrite (red_empty ss'). assumption.
+intros s t Rst. destruct Rst as [s' [ss' Rst]].
+rewrite (red_empty ss'). assumption.
 Qed.
 
-Lemma red_mod_sub : (forall r, In r R -> In r R') -> (forall r, In r E -> In r E') ->
-  red_mod E R << red_mod E' R'.
+Lemma red_incl_red_mod_empty : red R << red_mod empty R.
 
 Proof.
-  intros. unfold red_mod. comp. apply incl_rtc. 
-  apply red_sub. assumption.
-  apply red_sub. assumption.
+unfold inclusion. intros. redtac. exists x. intuition. subst x. subst y.
+apply red_rule. exact H.
+Qed.
+
+Lemma red_mod_sub : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
+
+Proof.
+intros. unfold red_mod. comp. apply incl_rtc. 
+apply red_sub. assumption.
+apply red_sub. assumption.
 Qed.
 
 Lemma WF_mod_empty : WF (red_mod E empty).
 
 Proof.
-  intro x. apply SN_intro. intros y Exy. destruct Exy as [z [xz zy]]. redtac. contradiction.
+intro x. apply SN_intro. intros y Exy. destruct Exy as [z [xz zy]]. redtac.
+contradiction.
 Qed.
 
 End rewriting_modulo_results.
