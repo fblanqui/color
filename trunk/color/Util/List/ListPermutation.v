@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some results concerning permutations of lists.
 *)
 
-(* $Id: ListPermutation.v,v 1.3 2007-02-12 17:10:03 blanqui Exp $ *)
+(* $Id: ListPermutation.v,v 1.4 2007-04-13 17:47:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -306,7 +306,8 @@ Section ListSim.
   Qed.
 
   Lemma list_sim_unique : forall l m m',
-    (forall x y y', In x l -> In y m -> In y' m' -> R x y -> R x y' -> y = y') ->
+    (forall x y y', In x l -> In y m -> In y' m' ->
+      R x y -> R x y' -> y = y') ->
     list_sim l m -> list_sim l m' -> m = m'.
 
   Proof.
