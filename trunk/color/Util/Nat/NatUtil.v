@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.11 2007-04-13 15:39:43 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.12 2007-04-13 20:28:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -161,6 +161,11 @@ Qed.
 Implicit Arguments i_lt_n [n i j].
 
 (***********************************************************************)
+(** tactics *)
+
+Ltac absurd_arith := elimtype False; omega.
+
+(***********************************************************************)
 (** various arithmetical lemmas *)
 
 Lemma plus_minus : forall v p, v+p-p=v.
@@ -224,7 +229,7 @@ Qed.
 Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
 
 Proof.
-  destruct i; destruct j; intros; try solve [elimtype False; omega | simpl; auto with arith].
+  destruct i; destruct j; intros; solve [absurd_arith | simpl; auto with arith].
 Qed.
 
 Lemma mult_lt_compat_lr : forall i j k l,
@@ -233,8 +238,8 @@ Lemma mult_lt_compat_lr : forall i j k l,
 Proof.
   destruct i; intros.
   rewrite mult_0_l. apply mult_gt_0. assumption.
-  destruct l. elimtype False. omega. auto with arith.
-  simpl. destruct j. elimtype False. omega.
+  destruct l. absurd_arith. auto with arith.
+  simpl. destruct j. absurd_arith.
   simpl. apply plus_lt_le_compat. assumption.
   apply mult_le_compat; omega. 
 Qed.

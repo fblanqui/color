@@ -8,7 +8,7 @@ Operations on environments of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsEnv.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsEnv.v,v 1.3 2007-04-13 20:28:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1883,7 +1883,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes.
     destruct (le_gt_dec (length El) (length Er)).
 
-    rewrite (Max.max_r (length El) (length Er)); trivial.
+    rewrite (@Max.max_r (length El) (length Er)); trivial.
     destruct (le_gt_dec k (length Er)).
     rewrite (Min.min_l k (length Er)); trivial.
     destruct (le_gt_dec k (length El)).
@@ -1899,7 +1899,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Max.max_r; trivial.
     omega.
 
-    rewrite (Max.max_l (length El) (length Er)); trivial.
+    rewrite (@Max.max_l (length El) (length Er)); trivial.
     destruct (le_gt_dec k (length El)).
     rewrite (Min.min_l k (length El)); trivial.
     destruct (le_gt_dec k (length Er)).
@@ -2004,7 +2004,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes.
     destruct (le_gt_dec (length El) (length Er)).
 
-    rewrite (Max.max_r (length El) (length Er)); trivial.
+    rewrite (@Max.max_r (length El) (length Er)); trivial.
     destruct (le_gt_dec n (length Er)).
     rewrite (Min.min_l n (length Er)); trivial.
     destruct (le_gt_dec n (length El)).
@@ -2020,7 +2020,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Max.max_r; trivial.
     omega.
 
-    rewrite (Max.max_l (length El) (length Er)); trivial.
+    rewrite (@Max.max_l (length El) (length Er)); trivial.
     destruct (le_gt_dec n (length El)).
     rewrite (Min.min_l n (length El)); trivial.
     destruct (le_gt_dec n (length Er)).
