@@ -18,8 +18,7 @@ Variable A : Set.
 
 Section restriction.
 
-Variable R : relation A.
-Variable l : list A.
+Variables (R : relation A) (l : list A).
 
 Definition restriction x y := In x l /\ In y l /\ R x y.
 
@@ -34,7 +33,7 @@ Qed.
 Lemma restriction_dec : eq_dec A -> rel_dec R -> rel_dec restriction.
 
 Proof.
-unfold restriction. do 4 intro. destruct (H0 x y). destruct (In_dec H x l).
+unfold restriction. intros H H0 x y. destruct (H0 x y). destruct (In_dec H x l).
 destruct (In_dec H y l). 
 constructor. tauto. constructor 2. tauto. constructor 2. tauto. constructor 2.
 tauto.

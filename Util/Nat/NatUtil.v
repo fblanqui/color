@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.10 2007-04-11 17:51:03 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.11 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -146,10 +146,10 @@ Defined.
 (***********************************************************************)
 (** results on orders on nat *)
 
-Lemma le_lt_S : forall i k (ik: i <= k), i < S k.
+Lemma le_lt_S : forall i k, i <= k -> i < S k.
 
-Proof. 
-  auto with arith.
+Proof.
+auto with arith.
 Qed.
 
 Lemma i_lt_n : forall n i j : nat, n = (i + S j)%nat -> lt i n.

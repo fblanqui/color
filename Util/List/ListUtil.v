@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.20 2007-04-02 18:06:50 koper Exp $ *)
+(* $Id: ListUtil.v,v 1.21 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -752,7 +752,8 @@ Section partition_by_rel.
     | right _ => false
     end.
 
-  Lemma partition_by_rel_true : forall a b, partition_by_rel (a, b) = true -> R a b.
+  Lemma partition_by_rel_true : forall a b,
+    partition_by_rel (a, b) = true -> R a b.
 
   Proof.
     intros. unfold partition_by_rel in H. simpl in H.

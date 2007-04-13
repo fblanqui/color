@@ -7,9 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.3 2007-02-08 13:35:10 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.4 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
+
+Definition prop_dec A (P : A -> Prop) := forall x, {P x}+{~P x}.
 
 Ltac refl := reflexivity.
 
