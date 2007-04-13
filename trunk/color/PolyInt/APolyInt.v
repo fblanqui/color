@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.11 2007-04-13 10:36:36 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.12 2007-04-13 12:39:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -162,12 +162,12 @@ Definition rp := @mkReduction_pair Sig
   (@IR_WF _ W _ WF_Dgt).
 
 (***********************************************************************)
-(** equivalence between (xint) and (fval xint) *)
+(** equivalence between (xint) and (vec_of_val xint) *)
 
 Let f1 (xint : valuation W) k (t : bterm k) := proj1_sig (bterm_int xint t).
 
 Let f2 (xint : valuation W) k (t : bterm k) :=
-  proj1_sig (peval_D (bterm_poly_pos t) (fval xint (S k))).
+  proj1_sig (peval_D (bterm_poly_pos t) (vec_of_val xint (S k))).
   
 Let P (xint : valuation W) k (t : bterm k) := f1 xint t = f2 xint t.
 
@@ -201,7 +201,7 @@ Proof.
  rewrite termpoly_v_eq_2.
  rewrite meval_xi. rewrite Vnth_map.
  pattern (xint v) at 1.
- rewrite <- (fval_eq xint (gt_le_S v (S k) (le_lt_n_Sm v k Hv))).
+ rewrite <- (vec_of_val_eq xint (gt_le_S v (S k) (le_lt_n_Sm v k Hv))).
  reflexivity.
 
  intros f ts. unfold Q. intro H. unfold P, f1, f2.
@@ -225,7 +225,7 @@ Qed.
 
 Lemma PI_term_int_eq : forall (xint : valuation W) t k (H : maxvar t <= k),
   proj1_sig (term_int xint t)
-  = proj1_sig (peval_D (bterm_poly_pos (inject_term H)) (fval xint (S k))).
+  = proj1_sig (peval_D (bterm_poly_pos (inject_term H)) (vec_of_val xint (S k))).
 
 Proof.
 intros xint t k H. rewrite <- (term_int_eq_bterm_int xint H).
@@ -261,7 +261,7 @@ set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
 set (m := max mvl mvr).
 rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
 rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). do 2 rewrite val_peval_D.
-pose (v := (Vmap (proj1_sig (P:=pos)) (fval xint (S (max mvl mvr))))).
+pose (v := (Vmap (proj1_sig (P:=pos)) (vec_of_val xint (S (max mvl mvr))))).
 apply pos_lt. rewrite <- (peval_const (1)%Z v). do 2 rewrite <- peval_minus.
 unfold v. apply pos_peval. exact H_coef_pos.
 Qed.

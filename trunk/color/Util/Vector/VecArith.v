@@ -23,10 +23,11 @@ Notation vecn := (vec n).
 (** [ge] on vectors *)
 
 Definition vec_ge := Vforall2n ge.
+
 Infix ">=v" := vec_ge (at level 70).
 
-Lemma vec_tail_ge : forall n (v v' : vec (S n)), v >=v v' -> 
-  Vtail v >=v Vtail v'.
+Lemma vec_tail_ge : forall n (v v' : vec (S n)),
+  v >=v v' -> Vtail v >=v Vtail v'.
 
 Proof.
   unfold vec_ge. intros.
@@ -64,6 +65,7 @@ Qed.
 Definition zero_vec := Vconst 0 n.
 
 Definition vector_plus (v1 v2 : vecn) := Vmap2 plus v1 v2.
+
 Infix "[+]" := vector_plus (at level 50).
 
 Lemma vector_plus_comm : forall (v1 v2 : vecn), v1 [+] v2 = v2 [+] v1.
