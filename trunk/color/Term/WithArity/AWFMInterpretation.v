@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 *)
 
-(* $Id: AWFMInterpretation.v,v 1.10 2007-04-13 15:39:43 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.11 2007-04-13 15:57:13 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -122,8 +122,6 @@ Lemma IR_eq_IR' : IR == IR'.
 Proof.
 split. exact IR_incl_IR'. exact IR'_incl_IR.
 Qed.
-
-End IR.
 
 (***********************************************************************)
 (** monotony wrt R *)
