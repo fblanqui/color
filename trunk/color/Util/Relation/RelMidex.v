@@ -11,27 +11,18 @@ Require Import Relations.
 
 Set Implicit Arguments.
 
-Section EM_DEC.
+Section relation.
 
-Variable A : Set.
-Variable R : relation A.
+Variable (A : Type) (R : relation A).
 
-Definition eq_midex :=  forall x y : A, x=y \/ x<>y.
 Definition rel_midex := forall x y, R x y \/ ~R x y.
 
-Definition eq_dec := forall x y : A, {x=y}+{x<>y}.
 Definition rel_dec := forall x y, {R x y}+{~R x y}.
-
-Lemma eq_dec_midex : eq_dec -> eq_midex.
-
-Proof.
-do 3 intro. destruct (H x y); tauto.  
-Qed.
 
 Lemma rel_dec_midex : rel_dec -> rel_midex.
 
 Proof.
-do 3 intro. destruct (H x y); tauto. 
+do 3 intro. destruct (X x y); tauto.
 Qed.
 
 Lemma bool_rel_dec :
@@ -50,14 +41,23 @@ intro H. exists (fun x y : A => if H x y then true else false).
 intros x y. destruct (H x y) ; trivial.
 Qed.
 
-End EM_DEC.
+End relation.
 
-Section EM_Prop_dec.
+(***********************************************************************)
+(** identity relation *)
 
-  Variable A : Set.
-  Variable P : A -> Prop.
+Section identity.
 
-  Definition prop_dec := forall x, {P x}+{~P x}.
+Variable A : Type.
 
-End EM_Prop_dec.
+Definition eq_midex := forall x y : A, x=y \/ x<>y.
 
+Definition eq_dec := forall x y : A, {x=y}+{x<>y}.
+
+Lemma eq_dec_midex : eq_dec -> eq_midex.
+
+Proof.
+do 3 intro. destruct (X x y); tauto.  
+Qed.
+
+End identity.

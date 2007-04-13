@@ -11,7 +11,7 @@ iff the transitive closures of its finite restrictions are decidable
 (resp. middle-excluding)
 *)
 
-(* $Id: RelDec.v,v 1.6 2007-03-02 15:58:52 stephaneleroux Exp $ *)
+(* $Id: RelDec.v,v 1.7 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -33,14 +33,14 @@ Lemma dec_lem : forall R' R'' x y l, rel_dec R' -> rel_dec R'' ->
   + {~exists z : A, In z l /\ R' x z /\ R'' z y}.
 
 Proof.
-induction l; intros. simpl. constructor 2. intro. destruct H1. tauto. 
+induction l; intros. simpl. constructor 2. intro. destruct H. tauto. 
 destruct IHl; try assumption. constructor. destruct s. exists x0. simpl. tauto. 
-destruct (H x a). destruct (H0 a y). constructor. exists a. simpl. tauto. 
-constructor 2. intro. destruct H1. simpl in H1. decompose [and or] H1.  
-rewrite H4 in n0. tauto. assert (exists z : A, In z l /\ R' x z /\ R'' z y).
+destruct (X x a). destruct (X0 a y). constructor. exists a. simpl. tauto. 
+constructor 2. intro. destruct H. simpl in H. decompose [and or] H.  
+rewrite H2 in n0. tauto. assert (exists z : A, In z l /\ R' x z /\ R'' z y).
 exists x0. 
-tauto. contradiction. constructor 2. intro. destruct H1. simpl in H1. 
-decompose  [and or] H1. rewrite H4 in n0. contradiction.
+tauto. contradiction. constructor 2. intro. destruct H. simpl in H. 
+decompose [and or] H. rewrite H2 in n0. contradiction.
 assert (exists z : A, In z l /\ R' x z /\ R'' z y). exists x0. tauto.
 contradiction.
 Qed. 
@@ -104,9 +104,9 @@ Lemma resticted_dec_clos_trans_dec : eq_dec A -> rel_dec R ->
   forall l, is_restricted R l  -> rel_dec (clos_trans R).
 
 Proof.
-do 6 intro. destruct (bound_path_dec (length l) H1 H0 x y) . 
+do 6 intro. destruct (bound_path_dec (length l) H X0 x y) . 
 constructor. apply (bound_path_clos_trans b). 
-constructor 2. intro. pose (clos_trans_bound_path (eq_dec_midex H) H1 H2). 
+constructor 2. intro. pose (clos_trans_bound_path (eq_dec_midex X) H H0). 
 contradiction. 
 Qed. 
 
@@ -151,7 +151,7 @@ Lemma clos_trans_restriction_dec_R_dec :
   (forall l, rel_dec (clos_trans (restriction R l))) -> rel_dec R.
 
 Proof.
-do 3 intro. destruct (H (x::y::nil) x y). constructor.
+do 3 intro. destruct (X (x::y::nil) x y). constructor.
 pose incl_restriction. unfold inclusion in i. apply i with A (x::y::nil). 
 apply clos_trans_restricted_pair. apply restricted_restriction. assumption. 
 constructor 2. intro. pose (clos_trans_restriction R x y). tauto.  

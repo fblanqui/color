@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 *)
 
-(* $Id: AWFMInterpretation.v,v 1.9 2007-04-13 12:39:42 blanqui Exp $ *)
+(* $Id: AWFMInterpretation.v,v 1.10 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -33,7 +33,11 @@ Section IR.
 
 Variable R : relation D.
 
-Definition IR t u := forall xint, R (term_int xint t) (term_int xint u).
+Definition IR : relation term :=
+  fun t u => forall xint, R (term_int xint t) (term_int xint u).
+
+(***********************************************************************)
+(** properties of IR *)
 
 Require Export RelUtil.
 
@@ -85,13 +89,44 @@ split. apply IR_WF. exact H0. split. apply IR_substitution_closed.
 apply IR_context_closed. exact H.
 Qed.
 
-Definition IR' t u :=
-  let n := max (maxvar t) (maxvar u) in
+(***********************************************************************)
+(** equivalent definition *)
+
+Definition IR' : relation term := fun t u =>
+  let n := 1 + max (maxvar t) (maxvar u) in
   forall v : vector D n,
   let xint := val_of_vec I v in
   R (term_int xint t) (term_int xint u).
 
+Lemma IR_incl_IR' : IR << IR'.
+
+Proof.
+unfold inclusion, IR, IR'. intros. apply H.
+Qed.
+
+Lemma IR'_incl_IR : IR' << IR.
+
+Proof.
+unfold inclusion, IR, IR'. intros. set (m := max (maxvar x) (maxvar y)).
+assert (maxvar x <= m). unfold m. apply le_max_l.
+assert (maxvar y <= m). unfold m. apply le_max_r.
+assert (term_int xint x = term_int (fval xint (1+m)) x).
+apply term_int_eq_fval_lt. omega. rewrite H2.
+assert (term_int xint y = term_int (fval xint (1+m)) y).
+apply term_int_eq_fval_lt. omega. rewrite H3.
+unfold fval. apply H.
+Qed.
+
+Lemma IR_eq_IR' : IR == IR'.
+
+Proof.
+split. exact IR_incl_IR'. exact IR'_incl_IR.
+Qed.
+
 End IR.
+
+(***********************************************************************)
+(** monotony wrt R *)
 
 Section inclusion.
 

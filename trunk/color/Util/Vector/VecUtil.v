@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.11 2007-04-12 13:56:36 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.12 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -603,13 +603,6 @@ Fixpoint Vforall (P : A->Prop) n (v : vec n) { struct v } : Prop :=
     | Vcons a _ w => P a /\ Vforall P w
   end.
 
-Lemma Vforall_intro_ext : forall P : A->Prop, (forall x, P x) ->
-  forall n (v : vec n), Vforall P v.
-
-Proof.
-induction v; intros; simpl; auto.
-Qed.
-
 Lemma Vforall_intro : forall (P : A->Prop) n (v : vec n),
   (forall x, Vin x v -> P x) -> Vforall P v.
 
@@ -911,11 +904,12 @@ Lemma Vin_map : forall x n (v : vector A n), Vin x (Vmap v)
 
 Proof.
 induction v; simpl; intros. contradiction. destruct H. subst x. exists a. auto.
-assert (exists y, Vin y v /\ x = f y). apply IHv. assumption. destruct H0 as [y].
-exists y. intuition.
+assert (exists y, Vin y v /\ x = f y). apply IHv. assumption.
+destruct H0 as [y]. exists y. intuition.
 Qed.
 
-Lemma Vin_map_intro : forall x n (v : vector A n), Vin x v -> Vin (f x) (Vmap v).
+Lemma Vin_map_intro : forall x n (v : vector A n),
+  Vin x v -> Vin (f x) (Vmap v).
 
 Proof.
 induction v; simpl; intros. contradiction. destruct H. subst x. auto. intuition.

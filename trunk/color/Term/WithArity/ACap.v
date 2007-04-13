@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.5 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.6 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -151,7 +151,7 @@ Lemma Vmap_sum_conc : forall n (ts : terms n),
   Vmap_sum (Vmap capa ts) (conc (Vmap capa ts)) = ts.
 
 Proof.
-intros. apply Vmap_sum_conc_forall. apply Vforall_intro_ext. apply sub_capa.
+intros. apply Vmap_sum_conc_forall. apply Vforall_intro. intros. apply sub_capa.
 Qed.
 
 (***********************************************************************)

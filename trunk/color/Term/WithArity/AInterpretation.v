@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.7 2007-04-13 12:39:42 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.8 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,12 +43,6 @@ Notation D := (domain I).
 
 Definition valuation := variable -> D.
 
-Definition val_of_vec n (v : vector D n) x :=
-  match le_lt_dec n x with
-    | left _ => (* n <= x *) some_elt I
-    | right h => (* x < n *) Vnth v h
-  end.
-
 Fixpoint vec_of_val (xint : valuation) (n : nat) : vector D n :=
   match n as n0 return vector _ n0 with
     | O => Vnil
@@ -66,6 +60,20 @@ intros xint n. elim n.
   rewrite (Vnth_addl (vec_of_val xint p) (xint p) H0 H1). apply Hrec.
   rewrite Vnth_addr. 2: assumption. rewrite H1. refl.
 Qed.
+
+Definition val_of_vec n (v : vector D n) : valuation :=
+  fun x => match le_lt_dec n x with
+    | left _ => (* n <= x *) some_elt I
+    | right h => (* x < n *) Vnth v h
+  end.
+
+Definition fval (xint : valuation) n := val_of_vec (vec_of_val xint n).
+
+Definition restrict (xint : valuation) (n : nat) : valuation :=
+  fun x => match le_lt_dec n x with
+    | left _ => (* n <= x *) some_elt I
+    | right h => (* x < n *) xint x
+  end.
 
 (***********************************************************************)
 (** interpretation of terms *)
@@ -106,6 +114,46 @@ simpl. apply H. simpl. intuition.
 repeat rewrite term_int_fun. apply (f_equal (fint I f)). apply Vmap_eq.
 apply Vforall_intro. intros. apply (Vforall_in H H1). intros. apply H0.
 rewrite vars_fun. apply (vars_vec_in H2 H1).
+Qed.
+
+Lemma term_int_eq_restrict_lt : forall xint t k,
+  maxvar t < k -> term_int xint t = term_int (restrict xint k) t.
+
+Proof.
+intros xint t. pattern t; apply term_ind_forall; clear t; intros.
+simpl. unfold restrict. case (le_lt_dec k v); intro.
+simpl in H. absurd (v<k); omega. refl.
+repeat rewrite term_int_fun. apply (f_equal (fint I f)).
+apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
+rewrite maxvar_fun in H0. deduce (Vin_map_intro (maxvar (Sig:=Sig)) H1).
+deduce (Vmax_in H2). omega.
+Qed.
+
+Lemma term_int_eq_restrict : forall xint t,
+  term_int xint t = term_int (restrict xint (maxvar t + 1)) t.
+
+Proof.
+intros. apply term_int_eq_restrict_lt. omega.
+Qed.
+
+Lemma term_int_eq_fval_lt : forall xint t k,
+  maxvar t < k -> term_int xint t = term_int (fval xint k) t.
+
+Proof.
+intros xint t. pattern t; apply term_ind_forall; clear t; intros.
+simpl in *. unfold fval, val_of_vec. case (le_lt_dec k v); intro.
+absurd (v<k); omega. symmetry. apply vec_of_val_eq.
+repeat rewrite term_int_fun. apply (f_equal (fint I f)).
+apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
+rewrite maxvar_fun in H0. deduce (Vin_map_intro (maxvar (Sig:=Sig)) H1).
+deduce (Vmax_in H2). omega.
+Qed.
+
+Lemma term_int_eq_fval : forall xint t,
+  term_int xint t = term_int (fval xint (maxvar t + 1)) t.
+
+Proof.
+intros. apply term_int_eq_fval_lt. omega.
 Qed.
 
 End S.

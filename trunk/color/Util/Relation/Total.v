@@ -11,7 +11,7 @@ acyclic iff its restriction to any finite set has a decidable
 (resp. middle-excluding) irreflexive linear extension.
 *)
  
-(* $Id: Total.v,v 1.8 2007-03-02 15:58:52 stephaneleroux Exp $ *)
+(* $Id: Total.v,v 1.9 2007-04-13 15:39:43 blanqui Exp $ *)
 
 Require Import Sumbool. 
 Require Export RelDec.
@@ -87,13 +87,13 @@ Lemma try_add_arc_dec : eq_dec A -> forall x y,  rel_dec R ->
   rel_dec (try_add_arc x y).
 
 Proof.
-repeat intro. destruct (H0 x0 y0). do 2 constructor. assumption. 
-destruct (H x0 y0). constructor 2. intro. inversion H1; contradiction. 
-destruct (H0 y0 x0). constructor 2. intro. inversion H1; contradiction. 
-destruct (H x x0). destruct (H y y0). rewrite e. rewrite e0. 
+repeat intro. destruct (X0 x0 y0). do 2 constructor. assumption. 
+destruct (X x0 y0). constructor 2. intro. inversion H; contradiction. 
+destruct (X0 y0 x0). constructor 2. intro. inversion H; contradiction. 
+destruct (X x x0). destruct (X y y0). rewrite e. rewrite e0. 
 constructor. constructor 2; assumption. 
-constructor 2. intro. inversion H1; contradiction. 
-constructor 2. intro. inversion H1; contradiction. 
+constructor 2. intro. inversion H; contradiction. 
+constructor 2. intro. inversion H; contradiction. 
 Qed.
 
 Lemma try_add_arc_midex : eq_midex A -> forall x y, rel_midex R ->
@@ -230,10 +230,10 @@ Lemma try_add_arc_one_to_many_dec : eq_dec A -> forall x l l',
   rel_dec (try_add_arc_one_to_many x l').
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H1). 
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0). 
 apply resticted_dec_clos_trans_dec with l. assumption. 
 apply try_add_arc_dec. assumption. apply IHl'; tauto. 
-apply restricted_try_add_arc. assumption. apply H1. simpl. tauto. 
+apply restricted_try_add_arc. assumption. apply H0. simpl. tauto. 
 apply restricted_try_add_arc_one_to_many; simpl; tauto. 
 Qed.
 
@@ -313,8 +313,8 @@ Lemma try_add_arc_many_to_many_dec : eq_dec A ->  forall l l',
   rel_dec (try_add_arc_many_to_many l' l).
 
 Proof.
-induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0). 
-apply try_add_arc_one_to_many_dec with l. assumption. apply H0. simpl. tauto.
+induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H). 
+apply try_add_arc_one_to_many_dec with l. assumption. apply H. simpl. tauto.
 apply incl_refl. 
 apply  restricted_try_add_arc_many_to_many; assumption. tauto. 
 Qed.
@@ -577,25 +577,25 @@ Lemma possible_antisym_topo_sort : forall R, eq_dec A -> rel_dec R ->
 Proof.
 do 4 intro. assert (forall l, rel_dec (LETS R l)). intro.
 apply LETS_dec; assumption. 
-pose (eq_dec_midex H). pose (rel_dec_midex H0).
-exists (fun l x y => if (H2 l x y) then true else false). simpl. split.
-do 5 intro. case (H2 (x :: y :: nil) x y). case (H2 (y :: x :: nil) x y). 
+pose (eq_dec_midex X). pose (rel_dec_midex X0).
+exists (fun l x y => if (X1 l x y) then true else false). simpl. split.
+do 5 intro. case (X1 (x :: y :: nil) x y). case (X1 (y :: x :: nil) x y). 
 do 2 intro. absurd (LETS R (x :: y :: nil) x y /\ LETS R (y :: x :: nil) x y). 
-apply LETS_antisym; assumption. tauto. do 3 intro. destruct H6. inversion H7. 
-do 2 intro. destruct H6. inversion H6. split.
-do 3 intro. destruct (H2 l x y). apply (LETS_restricted R l x y). assumption.
-inversion H3. split. 
-do 3 intro. destruct (H2 l x y). trivial. absurd (LETS R l x y). assumption.
+apply LETS_antisym; assumption. tauto. do 3 intro. destruct H3. inversion H4. 
+do 2 intro. destruct H3. inversion H3. split.
+do 3 intro. destruct (X1 l x y). apply (LETS_restricted R l x y). assumption.
+inversion H0. split. 
+do 3 intro. destruct (X1 l x y). trivial. absurd (LETS R l x y). assumption.
 apply LETS_restriction_clos_trans. apply tc_incl. assumption. split. 
-do 5 intro. destruct (H2 l x y). destruct (H2 l y z).
+do 5 intro. destruct (X1 l x y). destruct (X1 l y z).
 pose (LETS_transitive R l x y z l0 l1). 
-destruct (H2 l x z). trivial. contradiction. inversion H4. inversion H3. split. 
-do 2 intro. destruct (H2 l x x). absurd (LETS R l x x).
+destruct (X1 l x z). trivial. contradiction. inversion H1. inversion H0. split. 
+do 2 intro. destruct (X1 l x x). absurd (LETS R l x x).
 destruct (LETS_irrefl R l). 
-assumption. apply H4. apply incl_irrefl with (clos_trans R). 
+assumption. apply H1. apply incl_irrefl with (clos_trans R). 
 apply incl_tc. apply incl_restriction. assumption. assumption.
-inversion H3. 
-do 4 intro. unfold trichotomy. destruct (H2 l x y). tauto. destruct (H2 l y x).
+inversion H0. 
+do 4 intro. unfold trichotomy. destruct (X1 l x y). tauto. destruct (X1 l y x).
 tauto. 
 destruct (LETS_total l e r x y); tauto.  
 Qed. 
@@ -620,38 +620,38 @@ assert (eq_dec A). apply total_order_eq_dec. exists (let (f,s):= H0 in f).
 intro. destruct H0. 
 destruct a. pose (H2 l). split; tauto. 
 (**)
-do 2 intro. destruct (H2 x y). rewrite e. constructor 2. intro. apply (H1 y).
+do 2 intro. destruct (X x y). rewrite e. constructor 2. intro. apply (H1 y).
 constructor. assumption. 
-destruct H0. destruct a. pose (H0 x y). decompose [and] (H3 (x::y::nil)). 
+destruct H0. destruct a. pose (H0 x y). decompose [and] (H2 (x::y::nil)). 
 destruct (sumbool_of_bool (x0 (x::y::nil) x y)).
 destruct (sumbool_of_bool (x0 (y::x::nil) x y)). 
 constructor. destruct (H x y). assumption. destruct (H y x).
 absurd (x0 (x :: y :: nil) y x=true). 
-intro. apply (H7 x). apply H5 with y; assumption. apply H6. unfold restriction.
+intro. apply (H6 x). apply H4 with y; assumption. apply H5. unfold restriction.
 simpl. tauto. generalize n0 e e0.
 case (x0 (x :: y :: nil) x y); case (x0 (y :: x :: nil) x y); tauto.  
 constructor 2. intro. absurd (x0 (y :: x :: nil) x y=true). intro.
-rewrite e0 in H10. inversion H10. 
-pose (H3 (y::x::nil)). decompose [and] a. apply H12. unfold restriction. simpl.
+rewrite e0 in H9. inversion H9. 
+pose (H2 (y::x::nil)). decompose [and] a. apply H11. unfold restriction. simpl.
 tauto. 
 constructor 2. intro. absurd (x0 (x::y:: nil) x y=true). intro.
-rewrite e in H10. inversion H10. 
-apply H6. unfold restriction. simpl. tauto. 
+rewrite e in H9. inversion H9. 
+apply H5. unfold restriction. simpl. tauto. 
 Qed. 
 
 Lemma rel_dec_topo_sortable_eq_dec :  forall R, 
   rel_dec R -> topo_sortable R -> eq_dec A.
 
 Proof.
-intros. apply total_order_eq_dec. exists (let (first,second):=H0 in first). 
-destruct H0. intro. pose (l l0). destruct l1. split; tauto. 
+intros. apply total_order_eq_dec. exists (let (first,second):=H in first). 
+destruct H. intro. pose (l l0). destruct l1. split; tauto. 
 Qed. 
 
 Lemma rel_dec_topo_sortable_acyclic :  forall R, 
   rel_dec R -> topo_sortable R -> irreflexive (clos_trans R).
 
 Proof.
-intros. apply local_global_acyclic. intro. destruct H0.
+intros. apply local_global_acyclic. intro. destruct H.
 exists (fun x0 y => x l x0 y=true). destruct (l0 l). tauto. 
 Qed.
 
