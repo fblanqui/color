@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.9 2007-04-13 10:36:36 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.10 2007-04-13 13:37:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -150,7 +150,7 @@ unfold dp_graph. intuition. simpl. set (p := maxvar l0 + 1). exists p.
 and [comp s1 (shift_inv_sub p l1)] (restricted to [vars (shift p l1)] *)
 set (s0' := restrict s0 (vars l0)).
 set (s1' := restrict (comp s1 (shift_inv_sub p l1)) (vars (shift p l1))).
-set (s := union s0' s1'). exists s.
+set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
 deduce (vars_max H3). deduce (in_vars_shift_min H4). unfold p in H6.
