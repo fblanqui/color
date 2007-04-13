@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.20 2007-03-31 23:15:10 koper Exp $ *)
+(* $Id: RelUtil.v,v 1.21 2007-04-13 10:36:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,8 +46,6 @@ Open Scope relation_scope.
 Section basic_properties.
 
 Variables (A : Set) (R : relation A).
-
-(*Definition Rel_dec := forall x y, {R x y}+{~R x y}.*)
 
 Definition irreflexive := forall x, ~R x x.
 
