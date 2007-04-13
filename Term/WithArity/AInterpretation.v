@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.7 2007-04-13 12:39:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -34,14 +34,41 @@ Record interpretation : Type := mkInterpretation {
   fint : forall f : Sig, naryFunction domain (arity f)
 }.
 
-(***********************************************************************)
-(** interpretation of terms *)
-
 Variable I : interpretation.
 
 Notation D := (domain I).
 
+(***********************************************************************)
+(** valuations *)
+
 Definition valuation := variable -> D.
+
+Definition val_of_vec n (v : vector D n) x :=
+  match le_lt_dec n x with
+    | left _ => (* n <= x *) some_elt I
+    | right h => (* x < n *) Vnth v h
+  end.
+
+Fixpoint vec_of_val (xint : valuation) (n : nat) : vector D n :=
+  match n as n0 return vector _ n0 with
+    | O => Vnil
+    | S p => Vadd (vec_of_val xint p) (xint p)
+  end.
+
+Lemma vec_of_val_eq : forall xint n x (H : lt x n),
+  Vnth (vec_of_val xint n) H = xint x.
+
+Proof.
+intros xint n. elim n.
+ intros x Hx. elimtype False. apply (lt_n_O _ Hx).
+ intros p Hrec x H0. simpl vec_of_val.
+ case (le_lt_eq_dec _ _ (le_S_n _ _ H0)); intro H1.
+  rewrite (Vnth_addl (vec_of_val xint p) (xint p) H0 H1). apply Hrec.
+  rewrite Vnth_addr. 2: assumption. rewrite H1. refl.
+Qed.
+
+(***********************************************************************)
+(** interpretation of terms *)
 
 Section term_int.
 
@@ -80,32 +107,6 @@ repeat rewrite term_int_fun. apply (f_equal (fint I f)). apply Vmap_eq.
 apply Vforall_intro. intros. apply (Vforall_in H H1). intros. apply H0.
 rewrite vars_fun. apply (vars_vec_in H2 H1).
 Qed.
-
-(***********************************************************************)
-(** gives the vector (xint 0) .. (xint (n-1)) *)
-
-Section fval.
-
-Variable xint : valuation.
-
-Fixpoint fval (n : nat) : vector D n :=
-  match n as n0 return vector _ n0 with
-    | O => Vnil
-    | S p => Vadd (fval p) (xint p)
-  end.
-
-Lemma fval_eq : forall n x (H : lt x n), Vnth (fval n) H = xint x.
-
-Proof.
-intro n. elim n.
- intros x Hx. elimtype False. apply (lt_n_O _ Hx).
- intros p Hrec x H0. simpl fval.
- case (le_lt_eq_dec _ _ (le_S_n _ _ H0)); intro H1.
-  rewrite (Vnth_addl (fval p) (xint p) H0 H1). apply Hrec.
-  rewrite Vnth_addr. 2: assumption. rewrite H1. reflexivity.
-Qed.
-
-End fval.
 
 End S.
 
