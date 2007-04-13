@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: MultisetTheory.v,v 1.3 2007-04-13 20:28:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,6 +22,7 @@ Require Import Setoid.
 Require Import Multiset.
 Require Import Permutation.
 Require Import ListPermutation.
+Require Import NatUtil.
 
 Module FiniteMultiset (MC : FiniteMultisetCore).
 
@@ -245,7 +246,7 @@ Section MultisetLemmas.
     mset_unfold; intros.
     case (eqA_dec x y); [trivial | intro x_neq_y].
     assert (x/{{y}} = 0); [auto with multisets | idtac].
-    rewrite H0 in H; elimtype False; omega.
+    rewrite H0 in H; absurd_arith.
   Qed.
 
   Lemma singleton_member_eqA : forall a b, a in {{b}} -> a =A= b.
@@ -297,7 +298,7 @@ Section MultisetLemmas.
     rewrite union_mult.
     repeat rewrite singleton_mult_notin; trivial.
     unfold member in H.
-    rewrite H0 in H; elimtype False; omega.
+    rewrite H0 in H; absurd_arith.
   Qed.
 
   Lemma union_perm : forall M N P, M + N + P =mul= M + P + N.

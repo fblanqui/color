@@ -7,12 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 Extensions of the Coq library on lists
 *)
 
-(* $Id: ListExt.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: ListExt.v,v 1.4 2007-04-13 20:28:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export List.
-Require Import Arith.
+Require Import NatUtil.
 Require Omega.
 
 Section ListsGeneral.
@@ -211,7 +211,7 @@ Section ListsNth.
 
   Proof.
     induction l; simpl; intros m i i_l.
-    elimtype False; omega.
+    absurd_arith.
     destruct i; simpl.
     trivial.
     apply (IHl m i).
@@ -225,7 +225,7 @@ Section ListsNth.
     induction l; simpl; intros m i i_l.
     auto with arith.
     destruct i; simpl.
-    elimtype False; omega.
+    absurd_arith.
     apply IHl.
     auto with arith.
   Qed.
@@ -251,7 +251,7 @@ Section ListsNth.
     destruct i; trivial.
     destruct i; simpl.
     intros.
-    elimtype False; omega.
+    absurd_arith.
     intro.
     rewrite (IHl i); trivial.
     auto with arith.
@@ -279,7 +279,7 @@ Section ListsNth.
     induction l; simpl; intro i.
     split.
     destruct i; intro; elimtype False; auto.
-    intro; elimtype False; omega.
+    intro; absurd_arith.
     destruct i; simpl.
     split; intro.
     auto with arith.

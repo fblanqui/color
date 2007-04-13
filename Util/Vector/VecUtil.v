@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.12 2007-04-13 15:39:43 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.13 2007-04-13 20:28:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -513,6 +513,11 @@ Proof.
 intros. VSntac v. simpl. auto.
 Qed.
 
+Lemma Vin_tail : forall n x (v : vec (S n)), Vin x (Vtail v) -> Vin x v.
+
+Proof.
+Admitted.
+
 Lemma Vin_nth : forall n (v : vec n) k (h : k<n), Vin (Vnth v h) v.
 
 Proof.
@@ -716,8 +721,7 @@ Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i
   (ip : i < n), Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
 Proof.
-  induction n; intros.
-  elimtype False. omega.
+  induction n; intros. absurd_arith.
   VSntac v1. VSntac v2. 
   destruct i. simpl.
   rewrite H0 in H. rewrite H1 in H.
@@ -740,7 +744,7 @@ Proof.
   do 2 rewrite Vhead_nth. apply H.
   apply IHn. intros. 
   do 2 rewrite Vnth_tail. apply H.
-  elimtype False. omega.
+  absurd_arith.
 Qed.
 
 Require Import RelDec.
@@ -773,7 +777,7 @@ Definition Vbuild_spec : forall n (gen : forall i, i < n -> A),
 
 Proof.
   induction n; intros.
-  exists (Vnil (A:=A)). intros. elimtype False. omega.
+  exists (Vnil (A:=A)). intros. absurd_arith.
   set (gen' := fun i H => gen (S i) (lt_n_S H)).
   set (access0 := lt_O_Sn n).
   destruct (IHn gen') as [v vs].
@@ -997,7 +1001,7 @@ Lemma Vmap2_nth : forall (A B C : Set) (f : A -> B -> C) n
   Vnth (Vmap2 f vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
 Proof.
   induction n; intros.
-  VOtac. elimtype False. omega.
+  VOtac. absurd_arith.
   VSntac vl. VSntac vr. destruct i. refl. 
   simpl. apply IHn.
 Qed.

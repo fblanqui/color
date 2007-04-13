@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some results concerning permutations of lists.
 *)
 
-(* $Id: ListPermutation.v,v 1.4 2007-04-13 17:47:40 blanqui Exp $ *)
+(* $Id: ListPermutation.v,v 1.5 2007-04-13 20:28:11 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Require Export List.
 Require Import Multiset.
 Require Import Permutation.
 Require Export ListExtras.
-Require Import Arith.
+Require Import NatUtil.
 Require Omega.
 
 Section Multiplicity.
@@ -34,7 +34,7 @@ Section Multiplicity.
 
   Proof.
     induction l; simpl; intros.
-    elimtype False; omega.
+    absurd_arith.
     destruct (eqA_dec a x).
     exists a; auto.
     destruct (IHl x) as [x' [x'x x'l]]; trivial.
@@ -400,7 +400,7 @@ Section ListSim_iso.
     constructor.
     set (w := H0 a); inversion w.
     destruct (eqA_dec a a).
-    elimtype False; omega.
+    absurd_arith.
     absurd (eqA a a); intuition.
     inversion H.
     apply permut_refl.

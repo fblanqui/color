@@ -16,7 +16,6 @@ Set Implicit Arguments.
 
 Require Export Matrix.
 Require Import AMonAlg.
-
 Export NMatrix.
 
 (** Interpretation type for matrix interpretations *)
@@ -141,13 +140,13 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
       Proof.
         induction v1; intros; simpl.
-        destruct n; try solve [elimtype False; omega].
+        destruct n; try solve [absurd_arith].
         unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
         intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
         assert (Vnth (f (Vhead M) a) ip >= Vnth (f (Vhead M) b) ip).
         apply (Vforall2_nth ge). apply f_mon. assumption.
         unfold A in * . omega.
-        destruct n0; try solve [elimtype False; omega].
+        destruct n0; try solve [absurd_arith].
         unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
         intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
         unfold ge. apply plus_le_compat_r.
@@ -347,7 +346,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         
       Proof.
         induction i; intros.
-        destruct k. elimtype False. omega.
+        destruct k. absurd_arith.
         rewrite Vreplace_head. unfold add_vectors. simpl.
         fold (add_vectors (Vmap2 mat_times_vec 
           (Vconst (zero_matrix dim dim) k) (Vtail v))).
@@ -361,7 +360,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         apply Veq_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix, zero_vec. 
         rewrite mat_build_elem. rewrite Vnth_const. refl.
-        destruct k. elimtype False. omega.
+        destruct k. absurd_arith.
         rewrite Vreplace_tail. simpl. rewrite add_vectors_cons.
         unfold mat_vec_prod at 1. rewrite zero_matrix_mult_l.
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.
@@ -620,13 +619,13 @@ Module MatrixInt (MI : TMatrixInt).
 
       Proof.
         induction v1; intros; simpl.
-        destruct n; [solve [elimtype False; omega] | idtac].
+        destruct n; [absurd_arith | idtac].
         unfold add_vectors, vec_at0, vector_plus. simpl.
         do 2 rewrite Vmap2_nth. 
         unfold gt. apply plus_lt_compat_l.
         unfold vec_at0 in f_mon. apply f_mon; try assumption.
         apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
-        destruct n0; [solve [elimtype False; omega] | idtac].
+        destruct n0; [absurd_arith | idtac].
         unfold add_vectors, vec_at0, vector_plus. simpl.
         do 2 rewrite Vmap2_nth.
         unfold gt. apply plus_lt_compat_r.
