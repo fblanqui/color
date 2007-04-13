@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.22 2007-04-13 13:21:03 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.23 2007-04-13 13:37:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -169,7 +169,8 @@ End monotone.
 (***********************************************************************)
 (** composition *)
 
-Definition compose A (R S : relation A) x y := exists z, R x z /\ S z y.
+Definition compose A (R S : relation A) : relation A :=
+  fun x y => exists z, R x z /\ S z y.
 
 Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
 
@@ -222,7 +223,8 @@ Ltac assoc :=
 (***********************************************************************)
 (** reflexive closure *)
 
-Definition clos_refl A (R : relation A) x y := x = y \/ R x y.
+Definition clos_refl A (R : relation A) : relation A :=
+  fun x y => x = y \/ R x y.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
@@ -710,3 +712,79 @@ Variable F : A -> B -> Prop.
 Definition RoF a a' := exists b', F a' b' /\ forall b, F a b -> R b b'.
 
 End inverse_image.
+
+(***********************************************************************)
+(** equality on relations *)
+
+Lemma same_relation_refl : forall A, reflexive (same_relation A).
+
+Proof.
+intuition.
+Qed.
+
+Lemma same_relation_sym : forall A, symmetric (same_relation A).
+
+Proof.
+unfold symmetric, same_relation. intuition.
+Qed.
+
+Lemma same_relation_trans : forall A, transitive (same_relation A).
+
+Proof.
+unfold transitive, same_relation. intuition.
+Qed.
+
+Add Relation relation same_relation
+  reflexivity proved by (same_relation_refl)
+  symmetry proved by (same_relation_sym)
+  transitivity proved by (same_relation_trans)
+    as same_relation_rel.
+
+Notation "R == S" := (same_relation _ R S) (at level 70).
+
+Definition union : forall A, relation A -> relation A -> relation A := union.
+
+Add Morphism union
+  with signature same_relation ==> same_relation ==> same_relation
+  as union_morph.
+
+Proof.
+unfold same_relation. intuition; union; assumption.
+Qed.
+
+Add Morphism compose
+  with signature same_relation ==> same_relation ==> same_relation
+  as compose_morph.
+
+Proof.
+unfold same_relation. intuition; comp; assumption.
+Qed.
+
+Add Morphism clos_refl
+  with signature same_relation ==> same_relation
+  as clos_refl_morph.
+
+Proof.
+unfold same_relation. intuition; apply incl_rc; assumption.
+Qed.
+
+Definition clos_trans : forall A, relation A -> relation A := clos_trans.
+
+Add Morphism clos_trans
+  with signature same_relation ==> same_relation
+  as clos_trans_morph.
+
+Proof.
+unfold same_relation. intuition; apply incl_tc; assumption.
+Qed.
+
+Definition clos_refl_trans : forall A, relation A -> relation A :=
+  clos_refl_trans.
+
+Add Morphism clos_refl_trans
+  with signature same_relation ==> same_relation
+  as clos_refl_trans_morph.
+
+Proof.
+unfold same_relation. intuition; apply incl_rtc; assumption.
+Qed.
