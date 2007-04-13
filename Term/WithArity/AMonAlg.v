@@ -222,8 +222,8 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
         red R << red (fst R_ge) U red (fst R_gt).
 
     Proof.
-      clear R. intros. set (Rge := fst R_ge) in * . set (Rgt := fst R_gt) in * .
-      trans (red (Rge ++ Rgt)). apply red_sub. unfold incl. intros.
+      clear R. intros. set (Rge := fst R_ge) in *. set (Rgt := fst R_gt) in *.
+      trans (red (Rge ++ Rgt)). apply red_incl. unfold incl. intros.
       destruct (partition_complete part_succ a R). assumption.
       apply in_or_app. auto.
       destruct (partition_complete part_succeq a (snd R_gt)). assumption.
@@ -254,8 +254,8 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
 
     Proof.
       intros. unfold red_mod.
-      set (Ege := fst E_ge) in * . set (Egt := fst E_gt) in * .
-      set (Rge := fst R_ge) in * . set (Rgt := fst R_gt) in * .
+      set (Ege := fst E_ge) in *. set (Egt := fst E_gt) in *.
+      set (Rge := fst R_ge) in *. set (Rgt := fst R_gt) in *.
       apply WF_incl with ((red Ege U red Egt)# @ (red Rge U red Rgt)).
       comp. apply incl_rtc. 
       unfold Ege, Egt, E_ge, E_gt. apply partition_complete. trivial.

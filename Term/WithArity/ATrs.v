@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.17 2007-04-13 09:32:00 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.18 2007-04-13 16:09:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -180,8 +180,6 @@ exists l. exists r. exists s. repeat split; auto.
 destruct (in_app_or RR'xy); apply in_or_app; auto.
 Qed.
 
-Require Export RelUtil.
-
 Lemma int_red_incl_red : int_red R << red R.
 
 Proof.
@@ -287,7 +285,7 @@ destruct RR'xy as [Rxy | Rxy]; destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]];
   subst x; subst y; exists rl; exists rr; exists c; exists s; intuition.
 Qed.
 
-Lemma red_sub : incl R R' -> red R << red R'.
+Lemma red_incl : incl R R' -> red R << red R'.
 
 Proof.
   intros RR' u v Rst. redtac.
@@ -353,9 +351,8 @@ Qed.
 Lemma red_mod_sub : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
 
 Proof.
-intros. unfold red_mod. comp. apply incl_rtc. 
-apply red_sub. assumption.
-apply red_sub. assumption.
+intros. unfold red_mod. comp. apply incl_rtc.
+apply red_incl. assumption. apply red_incl. assumption.
 Qed.
 
 Lemma WF_mod_empty : WF (red_mod E empty).
