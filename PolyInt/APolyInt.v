@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.10 2007-04-11 17:51:02 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.11 2007-04-13 10:36:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -269,10 +269,10 @@ Qed.
 Require Export ACompat.
 
 Lemma pi_compat : forall R,
-  lforall (fun r => coef_pos (rulePoly r)) R -> compatible succ R.
+  lforall (fun r => coef_pos (rulePoly r)) R -> compat succ R.
 
 Proof.
-unfold compatible. intros. set (rho := mkRule l r).
+unfold compat. intros. set (rho := mkRule l r).
 change (succ (lhs rho) (rhs rho)). apply pi_compat_rule.
 apply (lforall_in H H0).
 Qed.

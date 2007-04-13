@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.7 2007-04-13 09:32:49 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.8 2007-04-13 10:36:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -29,10 +29,10 @@ Section compat.
 
 Variable succ : relation term.
 
-Definition compatible R := forall l r : term, In (mkRule l r) R -> succ l r.
+Definition compat R := forall l r : term, In (mkRule l r) R -> succ l r.
 
 Lemma compat_red : forall R,
-  rewrite_ordering succ -> compatible R -> red R << succ.
+  rewrite_ordering succ -> compat R -> red R << succ.
 
 Proof.
 intro. unfold inclusion. intros (Hsubs,Hcont) Hcomp t u H. redtac.
@@ -40,20 +40,20 @@ subst t. subst u. apply Hcont. apply Hsubs. apply Hcomp. exact H.
 Qed.
 
 Lemma compat_hd_red : forall R,
-  substitution_closed succ -> compatible R -> hd_red R << succ.
+  substitution_closed succ -> compat R -> hd_red R << succ.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0. exact H1.
 Qed.
 
-Lemma incl_compat : forall R S, incl R S -> compatible S -> compatible R.
+Lemma incl_compat : forall R S, incl R S -> compat S -> compat R.
 
 Proof.
-unfold compatible. intros. apply H0. apply H. exact H1.
+unfold compat. intros. apply H0. apply H. exact H1.
 Qed.
 
 Lemma compat_red_mod_tc : forall R E,
-  rewrite_ordering succ -> compatible E -> compatible R -> red_mod E R << succ!.
+  rewrite_ordering succ -> compat E -> compat R -> red_mod E R << succ!.
 
 Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
@@ -61,22 +61,73 @@ apply incl_rtc. apply compat_red; assumption. apply compat_red; assumption.
 apply rtc_step_incl_tc.
 Qed.
 
-Lemma compatible_app : forall R R',
-  compatible R -> compatible R' -> compatible (R ++ R').
+Lemma compat_cons : forall l r R,
+  succ l r -> compat R -> compat (mkRule l r :: R).
 
 Proof.
-  intros R R' Rsucc R'succ l r lr. destruct (in_app_or lr).
-  apply Rsucc. assumption. 
-  apply R'succ. assumption.
+unfold compat. simpl. intros. destruct H1.
+injection H1. intros. subst l0. subst r0. exact H.
+apply H0. exact H1.
 Qed.
 
-Definition compatible_rule a := match a with mkRule l r => succ l r end.
-
-Lemma compatible_lforall : forall R, lforall compatible_rule R -> compatible R.
+Lemma compat_cons_elim : forall l r R,
+  compat (mkRule l r :: R) -> succ l r /\ compat R.
 
 Proof.
-induction R; unfold compatible; simpl; intros.
+unfold compat. simpl. intros. split; intros; apply H; intuition.
+Qed.
+
+Lemma compat_app : forall R R',
+  compat R -> compat R' -> compat (R ++ R').
+
+Proof.
+intros R R' Rsucc R'succ l r lr. destruct (in_app_or lr).
+apply Rsucc. assumption. apply R'succ. assumption.
+Qed.
+
+Definition compat_rule a := match a with mkRule l r => succ l r end.
+
+Lemma compat_lforall : forall R, lforall compat_rule R -> compat R.
+
+Proof.
+induction R; unfold compat; simpl; intros.
 contradiction. intuition. subst a. exact H1.
+Qed.
+
+(***********************************************************************)
+(** decidability *)
+
+Variable succ_dec : rel_dec succ.
+
+Function is_compat (R : rules) : bool :=
+  match R with
+    | nil => true
+    | cons a R' =>
+      match a with mkRule l r =>
+        match succ_dec l r with
+          | left _ => is_compat R'
+          | right _ => false
+        end
+      end
+  end.
+
+Lemma is_compat_correct : forall R,
+  is_compat R = true -> compat R /\ is_compat R = false -> ~compat R.
+
+Proof.
+induction R; simpl. intuition.
+destruct a. case (succ_dec lhs rhs); intros;
+  destruct H0; deduce (compat_cons_elim H0); intuition.
+Qed.
+
+Lemma is_compat_complete : forall R,
+  compat R -> is_compat R = true /\ ~compat R -> is_compat R = false.
+
+Proof.
+induction R; simpl. intuition.
+destruct a. intro. deduce (compat_cons_elim H). destruct H0.
+case (succ_dec lhs rhs); intros; destruct H2.
+apply IHR. exact H1. intuition. refl.
 Qed.
 
 End compat.
@@ -90,7 +141,7 @@ Variables succ succ_eq : relation term.
 
 Lemma compat_red_mod : forall R E,
   rewrite_ordering succ -> rewrite_ordering succ_eq ->
-  compatible succ_eq E -> compatible succ R ->
+  compat succ_eq E -> compat succ R ->
   absorb succ succ_eq -> red_mod E R << succ.
 
 Proof.
@@ -110,7 +161,7 @@ Variables succ succ_eq : relation term.
 
 Lemma compat_hd_red_mod : forall R E,
   substitution_closed succ -> rewrite_ordering succ_eq ->
-  compatible succ_eq E -> compatible succ R ->
+  compat succ_eq E -> compat succ R ->
   absorb succ succ_eq -> hd_red_mod E R << succ.
 
 Proof.

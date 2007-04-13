@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.8 2007-03-02 15:58:52 stephaneleroux Exp $ *)
+(* $Id: ADPGraph.v,v 1.9 2007-04-13 10:36:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -195,8 +195,8 @@ Variables (succ succ_eq : relation term)
   (Hredord : weak_rewrite_ordering succ succ_eq)
   (Hreword : rewrite_ordering succ_eq)
   (Habsorb : absorb succ succ_eq)
-  (HcompR : compatible succ_eq R)
-  (HcompDP : compatible succ_eq (dp R))
+  (HcompR : compat succ_eq R)
+  (HcompDP : compat succ_eq (dp R))
   (Hwf : WF succ)
   (Hcycle : forall a l, length l < length DP -> cycle_min dp_graph a l ->
     exists b, In b (a :: l) /\ succ (lhs b) (rhs b)).

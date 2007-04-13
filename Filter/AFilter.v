@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.5 2007-02-01 16:12:24 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.6 2007-04-13 10:36:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -155,10 +155,10 @@ Qed.
 Require Export ACompat.
 
 Lemma filter_comp : forall R : rules,
-  compatible succ (filter_rules R) -> compatible fsucc R.
+  compat succ (filter_rules R) -> compat fsucc R.
 
 Proof.
-unfold compatible. intros. unfold filter_ord. apply H.
+unfold compat. intros. unfold filter_ord. apply H.
 change (In (filter_rule (mkRule l r)) (filter_rules R)).
 apply in_map. assumption.
 Qed.
