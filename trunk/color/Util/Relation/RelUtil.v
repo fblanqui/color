@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.21 2007-04-13 10:36:36 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.22 2007-04-13 13:21:03 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -45,7 +45,7 @@ Open Scope relation_scope.
 
 Section basic_properties.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Definition irreflexive := forall x, ~R x x.
 
@@ -58,7 +58,7 @@ End basic_properties.
 
 Section basic_definitions.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Definition quasi_ordering := reflexive R /\ transitive R. (* preorder in coq *)
 
@@ -68,7 +68,7 @@ Definition strict_ordering := irreflexive R /\ transitive R.
 
 Definition strict_part x y := R x y /\ ~R y x.
 
-Definition empty_rel (x y: A) := False.
+Definition empty_rel (x y : A) := False.
 
 End basic_definitions.
 
@@ -77,7 +77,7 @@ End basic_definitions.
 
 Section ordering_structures.
 
-Variable A : Set.
+Variable A : Type.
 
 Record Quasi_ordering : Type := mkQuasi_ordering {
   qord_rel :> relation A;
@@ -105,7 +105,7 @@ End ordering_structures.
 
 Section inclusion.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma incl_elim : R << S -> forall x y, R x y -> S x y.
 
@@ -138,7 +138,7 @@ Ltac trans S := apply incl_trans with (S); try inclusion_refl.
 
 Section irrefl.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma incl_irrefl : forall R S : relation A,
   R << S -> irreflexive S -> irreflexive R.
@@ -154,7 +154,7 @@ End irrefl.
 
 Section monotone.
 
-Variable A : Set.
+Variable A : Type.
 
 Definition monotone (R : relation A) f := forall x y, R x y -> R (f x) (f y).
 
@@ -169,16 +169,15 @@ End monotone.
 (***********************************************************************)
 (** composition *)
 
-Definition compose (A : Set) (R S : relation A) x y :=
-  exists z, R x z /\ S z y.
+Definition compose A (R S : relation A) x y := exists z, R x z /\ S z y.
 
 Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
 
-Definition absorb (A : Set) (R S : relation A) := S @ R << R.
+Definition absorb A (R S : relation A) := S @ R << R.
 
 Section compose.
 
-Variables (A : Set) (R R' S S' : relation A).
+Variables (A : Type) (R R' S S' : relation A).
 
 Lemma incl_comp : R << R' -> S << S' -> R @ S << R' @ S'.
 
@@ -223,13 +222,13 @@ Ltac assoc :=
 (***********************************************************************)
 (** reflexive closure *)
 
-Definition clos_refl (A : Set) (R : relation A) x y := x = y \/ R x y.
+Definition clos_refl A (R : relation A) x y := x = y \/ R x y.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
 Section clos_refl.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma rc_refl : reflexive (R%).
 
@@ -263,7 +262,7 @@ End clos_refl.
 
 Section clos_trans.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma tc_incl : R << R!.
 
@@ -351,7 +350,7 @@ End clos_trans.
 
 Section clos_refl_trans.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma rtc_incl : R << R#.
 
@@ -445,7 +444,7 @@ End clos_refl_trans.
 
 Section transp.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma transp_refl : reflexive R -> reflexive (transp R).
 
@@ -484,7 +483,7 @@ End transp.
 
 Section union.
 
-Variables (A : Set) (R R' S S' T: relation A).
+Variables (A : Type) (R R' S S' T: relation A).
 
 Lemma incl_union : R << R' -> S << S' -> R U S << R' U S'.
 
@@ -544,7 +543,7 @@ Ltac union := apply incl_union; try inclusion_refl.
 
 Section properties.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma rtc_step_incl_tc : R# @ R << R!.
 
@@ -632,7 +631,7 @@ End properties.
 
 Section properties2.
 
-Variables (A : Set) (R S : relation A).
+Variables (A : Type) (R S : relation A).
 
 Lemma rtc_comp_modulo : R# @ (R# @ S)! << (R# @ S)!.
 
@@ -667,7 +666,7 @@ End properties2.
 
 Section commut.
 
-Variables (A : Set) (R S : relation A) (commut : R @ S << S @ R).
+Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 
 Lemma commut_rtc : R# @ S << S @ R#.
 
@@ -689,7 +688,7 @@ End commut.
 
 Section inverse_image.
 
-Variables (A B : Set) (R : relation B) (f : A->B).
+Variables (A B : Type) (R : relation B) (f : A->B).
 
 Definition Rof a a' := R (f a) (f a').
 
