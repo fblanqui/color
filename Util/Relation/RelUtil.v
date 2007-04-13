@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.23 2007-04-13 13:37:45 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.24 2007-04-13 15:57:13 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -787,4 +787,15 @@ Add Morphism clos_refl_trans
 
 Proof.
 unfold same_relation. intuition; apply incl_rtc; assumption.
+Qed.
+
+Require Export RelMidex.
+
+Lemma rel_dec_eq : forall A (R S : relation A),
+  R == S -> rel_dec S -> rel_dec R.
+
+Proof.
+unfold rel_dec. intros. case (X x y); intro.
+left. apply (proj2 H). exact s.
+right. intro. apply n. apply (proj1 H). exact H0.
 Qed.
