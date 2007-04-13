@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.6 2007-04-11 17:51:02 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.7 2007-04-13 09:32:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,37 +27,33 @@ Notation rules := (list rule).
 
 Section compat.
 
-Variable (succ : relation term) (R : rules).
+Variable succ : relation term.
 
-Definition compatible := forall l r : term, In (mkRule l r) R -> succ l r.
+Definition compatible R := forall l r : term, In (mkRule l r) R -> succ l r.
 
-Lemma compat_red : rewrite_ordering succ -> compatible -> red R << succ.
-
-Proof.
-unfold inclusion. intros (Hsubs,Hcont) Hcomp t u H. redtac. subst t. subst u.
-apply Hcont. apply Hsubs. apply Hcomp. exact H.
-Qed.
-
-Lemma compat_hd_red :
-  substitution_closed succ -> compatible -> hd_red R << succ.
+Lemma compat_red : forall R,
+  rewrite_ordering succ -> compatible R -> red R << succ.
 
 Proof.
-unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0.
-assumption.
+intro. unfold inclusion. intros (Hsubs,Hcont) Hcomp t u H. redtac.
+subst t. subst u. apply Hcont. apply Hsubs. apply Hcomp. exact H.
 Qed.
 
-End compat.
+Lemma compat_hd_red : forall R,
+  substitution_closed succ -> compatible R -> hd_red R << succ.
 
-Lemma incl_compat : forall succ (R S : rules),
-  incl R S -> compatible succ S -> compatible succ R.
+Proof.
+unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0. exact H1.
+Qed.
+
+Lemma incl_compat : forall R S, incl R S -> compatible S -> compatible R.
 
 Proof.
 unfold compatible. intros. apply H0. apply H. exact H1.
 Qed.
 
-Lemma compat_red_mod_tc : forall succ R E,
-  rewrite_ordering succ -> compatible succ E -> compatible succ R ->
-  red_mod E R << succ!.
+Lemma compat_red_mod_tc : forall R E,
+  rewrite_ordering succ -> compatible E -> compatible R -> red_mod E R << succ!.
 
 Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
@@ -65,14 +61,25 @@ apply incl_rtc. apply compat_red; assumption. apply compat_red; assumption.
 apply rtc_step_incl_tc.
 Qed.
 
-Lemma compatible_app : forall succ R R',
-  compatible succ R -> compatible succ R' -> compatible succ (R ++ R').
+Lemma compatible_app : forall R R',
+  compatible R -> compatible R' -> compatible (R ++ R').
 
 Proof.
-  intros succ R R' Rsucc R'succ l r lr. destruct (in_app_or lr).
+  intros R R' Rsucc R'succ l r lr. destruct (in_app_or lr).
   apply Rsucc. assumption. 
   apply R'succ. assumption.
 Qed.
+
+Definition compatible_rule a := match a with mkRule l r => succ l r end.
+
+Lemma compatible_lforall : forall R, lforall compatible_rule R -> compatible R.
+
+Proof.
+induction R; unfold compatible; simpl; intros.
+contradiction. intuition. subst a. exact H1.
+Qed.
+
+End compat.
 
 (***********************************************************************)
 (** reduction pair *)
