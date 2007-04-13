@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.12 2007-04-13 12:39:42 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.13 2007-04-13 17:47:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -225,7 +225,8 @@ Qed.
 
 Lemma PI_term_int_eq : forall (xint : valuation W) t k (H : maxvar t <= k),
   proj1_sig (term_int xint t)
-  = proj1_sig (peval_D (bterm_poly_pos (inject_term H)) (vec_of_val xint (S k))).
+  = proj1_sig (peval_D (bterm_poly_pos (inject_term H))
+    (vec_of_val xint (S k))).
 
 Proof.
 intros xint t k H. rewrite <- (term_int_eq_bterm_int xint H).

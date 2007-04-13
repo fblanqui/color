@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.6 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.7 2007-04-13 17:47:40 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -104,6 +104,12 @@ Qed.
 
 (***********************************************************************)
 (** positive integers *)
+
+Definition is_pos z :=
+  match z with
+    | Zpos _ => true
+    | _ => false
+  end.
 
 Notation pos := (fun z => 0 <= z).
 Notation D := (sig pos).

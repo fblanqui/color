@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 polynomials with non-negative integers as coefficients
 *)
 
-(* $Id: PositivePolynom.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: PositivePolynom.v,v 1.3 2007-04-13 17:47:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -41,6 +41,10 @@ Definition meval_D n (m : monom n) := restrict (preserv_pos_meval m).
 Require Export ListForall.
 
 Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
+
+Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
+
+Definition are_coef_pos n (p : poly n) := forallb (@is_pos_monom n) p.
 
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 

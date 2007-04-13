@@ -8,11 +8,11 @@ See the COPYRIGHTS and LICENSE files.
 polynomials with multiple variables and integer coefficients
 *)
 
-(* $Id: Polynom.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: Polynom.v,v 1.3 2007-04-13 17:47:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-(** monomials with [n] variables *)
+(** monomials with n variables *)
 
 Require Export VecUtil.
 
@@ -24,7 +24,7 @@ Proof.
 intros. eapply eq_vec_dec. apply eq_nat_dec.
 Defined.
 
-(** polynomials with [n] variables *)
+(** polynomials with n variables *)
 
 Require Export ZArith.
 
