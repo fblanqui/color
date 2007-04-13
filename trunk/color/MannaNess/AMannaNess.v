@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 *)
 
-(* $Id: AMannaNess.v,v 1.9 2007-04-13 10:36:36 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.10 2007-04-13 16:49:59 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -182,5 +182,11 @@ apply H0. eapply WF_incl. simpl. apply hd_red_mod_empty_incl_hd_red. exact H1.
 Qed.
 
 End rule_elimination.
+
+(*Lemma rule_filter : forall (rp : Reduction_pair Sig)
+  f (h : fun_rel_dec (rp_succ rp) f) RR',
+  let f_rule a := match a with mkRule l r => f l r end in
+  let (R', R) := partition f_rule RR' in
+  compat (rp_succ_eq rp) R -> WF (red R) -> WF (red RR').*)
 
 End S.
