@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.16 2007-04-13 08:42:55 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.17 2007-04-13 09:32:00 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -343,11 +343,11 @@ intros s t Rst. destruct Rst as [s' [ss' Rst]].
 rewrite (red_empty ss'). assumption.
 Qed.
 
-Lemma red_incl_red_mod_empty : red R << red_mod empty R.
+Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty R << hd_red R.
 
 Proof.
-unfold inclusion. intros. redtac. exists x. intuition. subst x. subst y.
-apply red_rule. exact H.
+unfold inclusion. intros. do 2 destruct H. deduce (red_empty H). subst x0.
+exact H0.
 Qed.
 
 Lemma red_mod_sub : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
@@ -377,7 +377,13 @@ Variable R R' : rules.
 Lemma red_incl_red_mod : red R << red_mod empty R.
 
 Proof.
-  intros s t Rst. exists s. split. constructor 2. assumption.
+intros s t Rst. exists s. split. constructor 2. assumption.
+Qed.
+
+Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod empty R.
+
+Proof.
+intros s t Rst. exists s. split. constructor 2. assumption.
 Qed.
 
 End termination_as_relative_term.
