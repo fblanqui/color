@@ -61,7 +61,7 @@ Module Type TMatrixInt.
 
 End TMatrixInt.
 
-Ltac matrixInt_monotonicity := intro f; destruct f; compute; auto with arith.
+Ltac matrixInt_monotonicity := intro f; destruct f; vm_compute; auto with arith.
 
 Module MatrixInt_DP (MI : TMatrixInt_DP).
 

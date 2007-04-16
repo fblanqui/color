@@ -302,9 +302,9 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
   Ltac prove_termination :=  
     match goal with
     | |- WF (red ?R) =>
-      apply ma_termination; simpl; trivial; try apply WF_empty
+      apply ma_termination; [vm_compute; trivial | simpl; try apply WF_empty]
     | |- WF (red_mod ?E ?R) =>
-      apply ma_relative_termination; simpl; trivial; try apply WF_mod_empty
-    end.
+      apply ma_relative_termination; [vm_compute; trivial | simpl; try apply WF_empty]
+   end.
 
 End ExtendedMonotoneAlgebraResults.

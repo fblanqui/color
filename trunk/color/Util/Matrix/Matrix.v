@@ -73,7 +73,8 @@ Module Matrix (CT : CoefType).
 
   Proof.
     induction m; intros.
-    exists (Vnil (A:=vec n)). intros. absurd_arith.
+    exists (Vnil (A:=vec n)). intros.
+    elimtype False. exact (lt_n_O i ip).
     set (gen_1 := fun j => gen 0 j (lt_O_Sn m)).
     set (gen' := fun i j H => gen (S i) j (lt_n_S H)).
     destruct (IHm n gen') as [Mtl Mtl_spec].

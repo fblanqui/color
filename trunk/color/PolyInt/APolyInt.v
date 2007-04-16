@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.13 2007-04-13 17:47:40 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.14 2007-04-16 20:19:34 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -300,5 +300,5 @@ Ltac poly_int PI :=
   match goal with
     |- WF (red ?R) =>
       apply (polyInterpretationTermination PI R);
-	compute; intuition; discriminate
+	vm_compute; intuition; discriminate
   end.
