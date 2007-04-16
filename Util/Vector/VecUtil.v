@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.14 2007-04-16 14:39:16 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.15 2007-04-16 20:19:35 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -672,7 +672,7 @@ Proof.
   VOtac. left. constructor.
   VSntac x. destruct (P_dec (Vhead x)).
   destruct (IHn (Vtail x)).
-  left. simpl. auto.
+  left. simpl. split; assumption.
   right. intro V. destruct V. contradiction.
   right. intro V. destruct V. contradiction.
 Defined.
@@ -756,8 +756,8 @@ Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2),
 
 Proof.
   induction v1; intros; destruct v2; simpl; auto.
-  destruct (eq_nat_dec n n0); simpl; intuition.
-  destruct (IHv1 n0 v2); intuition. 
+  destruct (eq_nat_dec n n0); simpl; auto.
+  destruct (IHv1 n0 v2); intuition.
   destruct (R_dec a a0); intuition.
 Defined.
 
@@ -777,7 +777,8 @@ Definition Vbuild_spec : forall n (gen : forall i, i < n -> A),
 
 Proof.
   induction n; intros.
-  exists (Vnil (A:=A)). intros. absurd_arith.
+  exists (Vnil (A:=A)). intros. 
+  elimtype False. exact (lt_n_O i ip).   
   set (gen' := fun i H => gen (S i) (lt_n_S H)).
   set (access0 := lt_O_Sn n).
   destruct (IHn gen') as [v vs].
