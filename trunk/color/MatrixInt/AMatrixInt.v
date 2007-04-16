@@ -67,7 +67,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
   Export MI.
 
-  Notation vec := (NMatrix.vec dim).
+  Notation vec := (vec dim).
   Notation mint := (matrixInt dim).
   Notation mat := (matrix dim dim).
 
@@ -145,7 +145,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
         assert (Vnth (f (Vhead M) a) ip >= Vnth (f (Vhead M) b) ip).
         apply (Vforall2_nth ge). apply f_mon. assumption.
-        unfold A in * . omega.
+        unfold A, Aplus in * . omega.
         destruct n0; try solve [absurd_arith].
         unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
         intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
@@ -352,7 +352,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
           (Vconst (zero_matrix dim dim) k) (Vtail v))).
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.
         rewrite vector_plus_zero_l.
-        replace (Vhead (A:=NMatrix.vec dim) v) with (Vnth v ip). refl.
+        replace (Vhead (A:=vec) v) with (Vnth v ip). refl.
         rewrite Vhead_nth. rewrite (lt_unique ip (lt_O_Sn k)). refl.
         symmetry.  apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vmap2_nth. rewrite Vnth_const. 
@@ -392,8 +392,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         mint_eval (k:=k) val (mkMatrixInt c (combine_matrices Vnil)) = c.
 
       Proof.
-        intros. unfold mint_eval. simpl.
-        autorewrite with arith.
+        intros. unfold mint_eval. simpl. autorewrite with arith.
         match goal with |- _ [+] ?V = _ => replace V with (@zero_vec dim) end.
         autorewrite with arith. refl.
         symmetry. apply add_vectors_zero. apply Vforall_nth_intro. intros.

@@ -7,23 +7,25 @@ See the COPYRIGHTS and LICENSE files.
   Matrices as a functor.
 *)
 
-Require Import RingCarrier.
 Require Export VecArith.
 
 Set Implicit Arguments.
 
-(** functor building matrices structure given a carrier *)
-Module Matrix (C : RingCarrier).
+(** functor building matrices over given a carrier *)
+Module Matrix (CT : CoefType).
 
-  Export C.
+  Module CA := VectorArith CT.
+  Export CA.
 
    (** basic definitions *)
+
   Notation vec := (vector A).
 
    (* Matrix represented by a vector of vectors (in a row-wise fashion) *)
   Definition matrix m n := vector (vec n) m.
 
    (** accessors *)
+
   Definition get_row m n (M : matrix m n) i (ip : i < m) := Vnth M ip.
 
   Definition get_col m n (M : matrix m n) i (ip : i < n) := 
@@ -36,8 +38,7 @@ Module Matrix (C : RingCarrier).
     (jp : j < n), Vnth (get_row M ip) jp = Vnth (get_col M jp) ip.
 
   Proof.
-    induction M; intros.
-    elimtype False. omega.
+    induction M; intros. absurd_arith.
     destruct i.
     trivial.
     simpl. rewrite IHM. trivial.
@@ -58,6 +59,11 @@ Module Matrix (C : RingCarrier).
     unfold get_elem, get_row. do 2 rewrite Vnth_tail. apply H.
   Qed.
 
+  Ltac prove_mat_eq := 
+    match goal with 
+    |- ?L = ?R => apply (mat_eq L R); intros 
+    end.
+
    (** matrix construction *)
 
   Definition mat_build_spec : forall m n 
@@ -67,7 +73,7 @@ Module Matrix (C : RingCarrier).
 
   Proof.
     induction m; intros.
-    exists (Vnil (A:=vec n)). intros. elimtype False. omega.
+    exists (Vnil (A:=vec n)). intros. absurd_arith.
     set (gen_1 := fun j => gen 0 j (lt_O_Sn m)).
     set (gen' := fun i j H => gen (S i) j (lt_n_S H)).
     destruct (IHm n gen') as [Mtl Mtl_spec].
@@ -88,14 +94,20 @@ Module Matrix (C : RingCarrier).
     intros. unfold mat_build. destruct (mat_build_spec gen). simpl. apply e.
   Qed.
 
+  Lemma mat_build_nth : forall m n gen i j (ip : i < m) (jp : j < n),
+    Vnth (Vnth (mat_build gen) ip) jp = gen i j ip jp.
+
+  Proof.
+    intros. fold (get_row (mat_build gen) ip).
+    fold (get_elem (mat_build gen) ip jp).
+    apply mat_build_elem.
+  Qed.
+
+   (** Some elementary matrices *)
+
   Definition zero_matrix m n : matrix m n := mat_build (fun i j ip jp => A0).
 
-  Definition id_matrix n : matrix n n := 
-    mat_build (fun i j ip jp =>
-      match eq_nat_dec i j with
-      | left _ => A1
-      | right _ => A0
-      end).
+  Definition id_matrix n : matrix n n := Vbuild (fun i ip => id_vec n i).
 
   Definition inverse_matrix inv m n (M : matrix m n) : matrix m n :=
     mat_build (fun i j ip jp => inv (get_elem M ip jp)).
@@ -115,6 +127,12 @@ Module Matrix (C : RingCarrier).
   Definition row_mat_to_vec n (m : row_mat n) := get_row m access_0.
   Definition col_mat_to_vec n (m : col_mat n) := get_col m access_0.
 
+  Ltac mat_get_simpl :=
+    repeat progress unfold get_elem, get_col, get_row, 
+      vec_to_col_mat, vec_to_row_mat, col_mat_to_vec, row_mat_to_vec; 
+      repeat progress ( try rewrite Vnth_map; try rewrite Vmap2_nth );
+        try refl.
+
   Lemma get_col_col_mat : forall n (v : vec n) (p : 0 < 1),
     get_col (vec_to_col_mat v) p = v.
 
@@ -133,7 +151,7 @@ Module Matrix (C : RingCarrier).
     rewrite get_elem_swap.
     destruct j.
     rewrite get_col_col_mat. trivial.
-    elimtype False. omega.
+    absurd_arith.
   Qed.
 
   Lemma vec_to_row_mat_spec : forall n (v : vec n) i (ip : i < 1) j 
@@ -141,17 +159,14 @@ Module Matrix (C : RingCarrier).
 
   Proof.
     intros. unfold get_elem.
-    destruct i.
-    trivial.
-    elimtype False. omega.
+    destruct i. trivial. absurd_arith.
   Qed.
 
   Lemma Vnth_col_mat : forall n (m : col_mat n) i (ip : i < n),
     Vnth (col_mat_to_vec m) ip = get_elem m ip access_0.
 
   Proof.
-    induction m; intros.
-    elimtype False. omega.
+    induction m; intros. absurd_arith.
     destruct i.
     trivial.
     simpl. rewrite IHm. trivial.
@@ -168,50 +183,67 @@ Module Matrix (C : RingCarrier).
     col_mat_to_vec (vec_to_col_mat v) = v.
 
   Proof.
-  Admitted.
+    intros. apply Veq_nth. intros. mat_get_simpl.
+  Qed.
 
   Lemma vec_to_col_mat_idem : forall n (M : col_mat n), 
     vec_to_col_mat (col_mat_to_vec M) = M.
 
   Proof.
-  Admitted.
+    intros. prove_mat_eq. mat_get_simpl.
+    destruct j. rewrite (lt_unique access_0 jp). refl.
+    absurd_arith.
+  Qed.
 
   Lemma row_mat_to_vec_idem : forall n (v : vec n), 
     row_mat_to_vec (vec_to_row_mat v) = v.
 
   Proof.
-  Admitted.
+    intros. apply Veq_nth. intros. mat_get_simpl.
+  Qed.
 
   Lemma vec_to_row_mat_idem : forall n (M : row_mat n), 
     vec_to_row_mat (row_mat_to_vec M) = M.
 
   Proof.
-  Admitted.
+    intros. prove_mat_eq. mat_get_simpl.
+    destruct i. simpl. rewrite (lt_unique access_0 ip). refl.
+    absurd_arith.
+  Qed.
 
    (** matrix transposition *)
+
   Definition mat_transpose m n (M : matrix m n) := 
     mat_build (fun _ _ i j => get_elem M j i).
 
   Lemma mat_transpose_row_col : forall m n (M : matrix m n) i (ip : i < m),
-    get_row M ip = get_col (mat_transpose M) ip.
+    get_col (mat_transpose M) ip = get_row M ip.
 
   Proof.
     intros. apply Veq_nth. intros.  
-    unfold mat_transpose, get_col. rewrite Vnth_map.
-    match goal with |- _ = Vnth (Vnth ?M ?ip) ?jp => 
-      fold (get_row M ip); fold (get_elem M ip jp) end.
-    rewrite mat_build_elem. trivial.
+    mat_get_simpl. unfold mat_transpose.
+    rewrite mat_build_nth. trivial.
+  Qed.
+
+  Lemma mat_transpose_col_row : forall m n (M : matrix m n) i (ip : i < n),
+    get_row (mat_transpose M) ip = get_col M ip.
+
+  Proof.
+    intros. apply Veq_nth. intros.
+    mat_get_simpl. unfold mat_transpose.
+    rewrite mat_build_nth. trivial.
   Qed.
 
   Lemma mat_transpose_idem : forall m n (M : matrix m n),
     mat_transpose (mat_transpose M) = M.
 
   Proof.
-    intros. apply mat_eq. intros.
+    intros. prove_mat_eq.
     unfold mat_transpose. do 2 rewrite mat_build_elem. refl.
   Qed.
 
    (** matrix addition *)
+
   Definition vec_plus n (L R : vec n) := Vmap2 Aplus L R.
 
   Definition mat_plus m n (L R : matrix m n) :=  Vmap2 (@vec_plus n) L R.
@@ -222,51 +254,191 @@ Module Matrix (C : RingCarrier).
     L <+> R = R <+> L.
 
   Proof.
-  Admitted.
+    intros. prove_mat_eq. 
+    unfold mat_plus, vec_plus. mat_get_simpl.
+    apply Aplus_comm.
+  Qed.
 
    (** matrix multiplication *)
-  Definition dot_product n (l r : vec n) := 
-    Vfold_left Aplus A0 (Vmap2 Amult l r).
-
-  Definition vec_mat_prod n p (v : vec n) (M : matrix n p) := 
-    Vmap (dot_product v) (mat_transpose M).
 
   Definition mat_mult m n p (L : matrix m n) (R : matrix n p) :=
-    Vmap (fun v => vec_mat_prod v R) L.
+    mat_build (fun i j ip jp => dot_product (get_row L ip) (get_col R jp)).
   Infix "<*>" := mat_mult (at level 40).
+
+  Lemma mat_mult_elem : forall m n p (M : matrix m n) (N : matrix n p) 
+    i (ip : i < m) j (jp : j < p), 
+    Vnth (Vnth (M <*> N) ip) jp = dot_product (get_row M ip) (get_col N jp).
+
+  Proof.
+    intros. unfold mat_mult. rewrite mat_build_nth. refl.
+  Qed.
 
   Lemma mat_mult_spec : forall m n p (M : matrix m n) (N : matrix n p) 
     i (ip : i < m) j (jp : j < p), 
     get_elem (M <*> N) ip jp = dot_product (get_row M ip) (get_col N jp).
 
   Proof.
-    intros. unfold mat_mult, get_elem, get_row, vec_mat_prod.
-    do 2 rewrite Vnth_map. fold (get_row (mat_transpose N) jp).
-    rewrite mat_transpose_row_col. rewrite (mat_transpose_idem N). refl.
+    intros. mat_get_simpl. rewrite mat_mult_elem. refl.
+  Qed.
+
+  Lemma mat_mult_row : forall m n p (M : matrix m n) (N : matrix n p) 
+    i (ip : i < m),
+    get_row (M <*> N) ip = 
+    Vbuild (fun j jp => dot_product (get_row M ip) (get_col N jp)).
+
+  Proof.
+    intros. apply Veq_nth. intros. mat_get_simpl. 
+    rewrite mat_mult_elem. rewrite Vbuild_nth. refl.
+  Qed.
+
+  Lemma mat_mult_col : forall m n p (M : matrix m n) (N : matrix n p) 
+    j (jp : j < p),
+    get_col (M <*> N) jp = 
+    Vbuild (fun i ip => dot_product (get_row M ip) (get_col N jp)).
+
+  Proof.
+    intros. apply Veq_nth. intros. mat_get_simpl. 
+    rewrite mat_mult_elem. rewrite Vbuild_nth. refl.
   Qed.
 
   Lemma mat_mult_id_l : forall n p (np : n >= p) (M : matrix n p), 
     id_matrix n <*> M = M.
 
   Proof.
-  Admitted.
+    intros. prove_mat_eq. rewrite mat_mult_spec.
+    unfold id_matrix, get_row. rewrite Vbuild_nth.
+    rewrite (dot_product_id ip). mat_get_simpl.
+  Qed.
 
   Lemma zero_matrix_mult_l : forall m n p (M : matrix n p), 
     zero_matrix m n <*> M = zero_matrix m p.
 
   Proof.
-  Admitted.
+    intros. prove_mat_eq.
+    unfold zero_matrix at 2. mat_get_simpl.
+    fold (get_row (zero_matrix m n <*> M) ip).
+    fold (get_elem (zero_matrix m n <*> M) ip jp).
+    rewrite mat_mult_spec. rewrite dot_product_zero. 
+    rewrite mat_build_nth. refl.
+    apply Vforall_nth_intro. intros.
+    unfold zero_matrix. mat_get_simpl. rewrite mat_build_nth. refl.
+  Qed.
+
+  Lemma dot_product_assoc : forall m n v v' (M : matrix m n),
+    dot_product v (Vbuild (fun i (ip : i < m ) => 
+      dot_product (get_row M ip) v')) =
+    dot_product (Vbuild (fun j (jp : j < n) =>
+      dot_product v (get_col M jp))) v'.
+  
+  Proof.
+    induction m; intros.
+     (* induction base *)
+    VOtac. repeat rewrite dot_product_zero. refl.
+    apply Vforall_nth_intro. intros. rewrite Vbuild_nth. 
+    unfold dot_product. trivial.
+    apply Vforall_intro. intros. destruct H.
+     (* induction case *)
+    VSntac v.
+    rewrite (VSn_eq (Vbuild (fun i ip => dot_product (get_row M ip) v'))).
+    rewrite dot_product_cons. do 2 rewrite Vhead_nth. rewrite Vbuild_nth.
+    rewrite Vtail_Vbuild. unfold matrix in M. VSntac M. simpl.
+    match goal with
+    |- _ + dot_product _ (Vbuild ?gen) = _ => replace (Vbuild gen) with 
+      (Vbuild (fun i ip => dot_product (get_row (Vtail M) ip) v')) end.
+    rewrite (IHm n (Vtail v) v' (Vtail M)).    
+    set (w := dot_product_cons).
+    replace (Vbuild (fun j jp => dot_product (Vcons (Vnth v (lt_O_Sn m)) 
+      (Vtail v)) (Vcons (Vnth (Vhead M) jp) (get_col (Vtail M) jp)))) with
+    (Vbuild (fun j jp => Vnth v (lt_O_Sn m) * (Vnth (Vhead M) jp)) [+]
+    (Vbuild (fun j jp => dot_product (Vtail v) (get_col (Vtail M) jp)))).
+    rewrite dot_product_distr_l. rewrite dot_product_distr_mult. refl.
+    apply Veq_nth. intros. rewrite vector_plus_nth. do 3 rewrite Vbuild_nth. 
+    rewrite dot_product_cons. refl.
+    apply Veq_nth. intros. do 2 rewrite Vbuild_nth. 
+    rewrite (lt_unique (lt_S_n (lt_n_S ip)) ip). refl.
+  Qed.
 
   Lemma mat_mult_assoc : forall m n p l 
-    (M1 : matrix m n) (M2 : matrix n p) (M3 : matrix p l),
-    M1 <*> (M2 <*> M3) = M1 <*> M2 <*> M3.
+    (M : matrix m n) (N : matrix n p) (P : matrix p l),
+    M <*> (N <*> P) = M <*> N <*> P.
 
   Proof.
-  Admitted.
+    intros. apply (mat_eq (M <*> (N <*> P))). intros.
+    mat_get_simpl. repeat rewrite mat_mult_elem.
+    rewrite mat_mult_row. rewrite mat_mult_col.
+    apply dot_product_assoc.
+  Qed.
 
-  Hint Rewrite mat_mult_id_l zero_matrix_mult_l using simpl : arith.
+   (** matrix-col vector product *)
+
+  Definition mat_vec_prod m n (m : matrix m n) (v : vec n) :=
+    col_mat_to_vec (m <*> (vec_to_col_mat v)).
+
+  Lemma mat_vec_prod_distr_vec : forall m n (M : matrix m n) v1 v2,
+    mat_vec_prod M (v1 [+] v2) =
+    mat_vec_prod M v1 [+] mat_vec_prod M v2.
+
+  Proof.
+    intros. unfold mat_vec_prod. apply Veq_nth. intros.
+    rewrite vector_plus_nth. mat_get_simpl.
+    repeat rewrite mat_mult_elem. rewrite <- dot_product_distr_r.
+    match goal with 
+    |- dot_product _ ?X = dot_product _ (?Y [+] ?Z) => 
+      replace X with (Y [+] Z) 
+    end. refl.
+    apply Veq_nth. unfold get_col. intros.
+    rewrite vector_plus_nth. repeat rewrite Vnth_map.
+    simpl. rewrite vector_plus_nth. refl.
+  Qed.
+
+  Lemma mat_vec_prod_distr_mat : forall m n (Ml Mr : matrix m n) v,
+    mat_vec_prod (Ml <+> Mr) v =
+    mat_vec_prod Ml v [+] mat_vec_prod Mr v.
+
+  Proof.
+    intros. unfold mat_vec_prod. apply Veq_nth. intros.
+    rewrite vector_plus_nth. mat_get_simpl.
+    repeat rewrite mat_mult_elem. 
+    rewrite dot_product_comm with (u := get_row Ml ip).
+    rewrite dot_product_comm with (u := get_row Mr ip).
+    rewrite <- dot_product_distr_r.
+    rewrite dot_product_comm with 
+      (u := get_col (Vmap (fun i => Vcons i Vnil) v) access_0).
+    match goal with 
+    |- dot_product ?X _ = dot_product (?Y [+] ?Z) _ => 
+      replace X with (Y [+] Z) 
+    end. refl.
+    apply Veq_nth. unfold get_row. intros.
+    rewrite vector_plus_nth. unfold mat_plus. rewrite Vmap2_nth.
+    rewrite vector_plus_nth. refl.
+  Qed.
+
+  Lemma mat_vec_prod_distr_add_vectors : forall m n (M : matrix m n) k v1 v2,
+    (forall i (ip : i < k), mat_vec_prod M (Vnth v1 ip) = Vnth v2 ip) ->
+    mat_vec_prod M (add_vectors v1) = add_vectors v2.
+    
+  Proof.
+    induction k; intros.
+     (* induction base *)
+    VOtac. unfold add_vectors. simpl.
+    apply Veq_nth. intros.
+    unfold mat_vec_prod. rewrite Vnth_col_mat. 
+    unfold zero_vec. rewrite Vnth_const.
+    rewrite mat_mult_spec. 
+    rewrite dot_product_comm. rewrite dot_product_zero. refl.
+    apply Vforall_nth_intro. intros.
+    rewrite get_col_col_mat. rewrite Vnth_const. refl.
+     (* induction step *)
+    VSntac v1. VSntac v2. 
+    do 2 rewrite add_vectors_cons. rewrite mat_vec_prod_distr_vec. 
+    do 2 rewrite Vhead_nth. rewrite H. 
+    rewrite (IHk (Vtail v1) (Vtail v2)). refl.
+    intros. rewrite Vnth_tail. rewrite H.
+    rewrite Vnth_tail. refl.
+  Qed.
 
    (** forall *)
+
   Section Forall.
 
     Variables (P : A -> Prop) (m n : nat) (M : matrix m n).
@@ -280,6 +452,7 @@ Module Matrix (C : RingCarrier).
   End Forall.
 
    (** forall2 *)
+
   Section Forall2.
 
     Variables (P : relation A) (m n : nat).
@@ -333,15 +506,17 @@ Module Matrix (C : RingCarrier).
 
   End Forall2.
 
+  Hint Rewrite mat_mult_id_l zero_matrix_mult_l using simpl : arith.
+
 End Matrix.
 
 (** matrices over natural numbers *)
 
-Module NMatrix := Matrix NCarrier.
+Module NMatrix.
 
-Section Matrix_nat.
-
-  Import NMatrix.
+  Module NM := Matrix NCoefT.
+  Export NM.
+  Export VectorNatArith.
 
    (** 'monotonicity' of matrix multiplication over naturals *)
   Section MatMultMonotonicity.
@@ -388,7 +563,7 @@ Section Matrix_nat.
     Proof.
       intros i j. generalize i. clear i.
       induction j; intros.
-      destruct i. elimtype False. omega.
+      destruct i. absurd_arith.
       VSntac v. VSntac w. VSntac v'. VSntac w'.
       unfold dot_product. simpl.
       fold (dot_product (Vtail v') (Vtail w')). 
@@ -399,7 +574,7 @@ Section Matrix_nat.
       apply (Vforall2_nth ge). assumption.
       rewrite (lt_unique (lt_O_Sn i) jp). assumption.
       rewrite (lt_unique (lt_O_Sn i) jp). assumption.
-      destruct i. elimtype False. omega.
+      destruct i. absurd_arith.
       VSntac v. VSntac w. VSntac v'. VSntac w'.
       unfold dot_product. simpl.
       fold (dot_product (Vtail v') (Vtail w')). 
@@ -436,35 +611,19 @@ Section Matrix_nat.
     Definition mkMatrix1 (v1 : nat) := Vcons (vec_of_list (v1 :: nil)) Vnil.
     Definition mkMatrix2 (v1 v2 v3 v4 : nat) := 
       Vcons (vec_of_list (v1 :: v2 :: nil)) 
-      (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
+     (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
+    Definition mkMatrix3 (v1 v2 v3 v4 v5 v6 v7 v8 v9 : nat) := 
+      Vcons (vec_of_list (v1 :: v2 :: v3 :: nil)) 
+     (Vcons (vec_of_list (v4 :: v5 :: v6 :: nil))
+     (Vcons (vec_of_list (v7 :: v8 :: v9 :: nil)) Vnil)).
+    Definition mkMatrix4 (v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 
+      v12 v13 v14 v15 v16 : nat) := 
+      Vcons (vec_of_list ( v1 ::  v2 ::  v3 ::  v4 :: nil)) 
+     (Vcons (vec_of_list ( v5 ::  v6 ::  v7 ::  v8 :: nil))
+     (Vcons (vec_of_list ( v9 :: v10 :: v11 :: v12 :: nil))
+     (Vcons (vec_of_list (v13 :: v14 :: v15 :: v16 :: nil)) Vnil))).
 
   End MatrixConstruction.
-
-   (** matrix-col vector product *)
-
-  Definition mat_vec_prod m n (m : matrix m n) (v : vec n) :=
-    col_mat_to_vec (m <*> (vec_to_col_mat v)).
-
-  Lemma mat_vec_prod_distr_vec : forall m n (M : matrix m n) v1 v2,
-    mat_vec_prod M (v1 [+] v2) =
-    mat_vec_prod M v1 [+] mat_vec_prod M v2.
-
-  Proof.
-  Admitted.
-
-  Lemma mat_vec_prod_distr_mat : forall m n (Ml Mr : matrix m n) v,
-    mat_vec_prod (Ml <+> Mr) v =
-    mat_vec_prod Ml v [+] mat_vec_prod Mr v.
-
-  Proof.
-  Admitted.
-
-  Lemma mat_vec_prod_distr_add_vectors : forall m n (M : matrix m n) k v1 v2,
-    (forall i (ip : i < k), mat_vec_prod M (Vnth v1 ip) = Vnth v2 ip) ->
-    mat_vec_prod M (add_vectors v1) = add_vectors v2.
-    
-  Proof.
-  Admitted.
 
   Lemma mat_vec_prod_ge_compat : forall i j (M M' : matrix i j) m m', 
     mat_ge M M' -> m >=v m' -> mat_vec_prod M m >=v mat_vec_prod M' m'.
@@ -478,8 +637,8 @@ Section Matrix_nat.
 
   Infix ">=m" := mat_ge (at level 70).
 
-End Matrix_nat.
+End NMatrix.
 
 (** matrices over integers *)
 
-Module ZMatrix := Matrix ZCarrier.
+Module ZMatrix := Matrix ZCoefT.
