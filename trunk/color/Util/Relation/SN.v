@@ -534,7 +534,7 @@ Section wf_rel_mod.
 
   Variable (A : Set) (R S R' S': relation A).
 
-  Theorem wf_rel_mod : WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> 
+  Lemma wf_rel_mod : WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> 
     WF ((S U S')# @ (R U R')).
 
   Proof.
