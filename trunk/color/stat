@@ -8,26 +8,38 @@
 #set -x
 
 lines () {
-  wc -l `find $dirs -name \*.v` | grep total | sed 's|total||'
+  wc -l Makefile `find $dir -name \*.v` | grep total | sed 's|total||'
 }
 
-dirs=Util; util=`lines`
-dirs=Term; term=`lines`
-dirs=.; total=`lines`
+dir=Util; data=`lines`
+dir=Term; term=`lines`
+dir=.; total=`lines`
+dir='Util/Logic Util/Relation Util/Algebra'; math=`lines`
 
-dirs='Util/Logic Util/Relation Util/Algebra'; math=`lines`
+data=`expr $data - $math`
 
-util=`expr $util - $math`
-
-termin=`expr $total - $util - $term`
+termin=`expr $total - $data - $term`
 
 display () {
   mean=`expr 100 \* $val / $total`
   echo $dir $val $mean%
 }
 
-dir=Util; val=$util; display
+dir=Data; val=$data; display
 dir=Term; val=$term; display
 dir=Math; val=$math; display
 dir=Termin; val=$termin; display
 dir=Total; val=$total; display
+
+echo ""
+
+files=`find . -name \*.v`
+
+number () {
+  echo $key `grep $key $files | wc -l`
+}
+
+key=Inductive; number
+key=Fixpoint; number
+key=Definition; number
+key=Lemma; number
