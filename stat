@@ -8,17 +8,14 @@
 #set -x
 
 lines () {
-  wc -l `find $dir -name \*.v` | grep total | sed 's|total||'
+  wc -l `find $dirs -name \*.v` | grep total | sed 's|total||'
 }
 
-dir=Util; util=`lines`
-dir=Term; term=`lines`
-dir=.; total=`lines`
+dirs=Util; util=`lines`
+dirs=Term; term=`lines`
+dirs=.; total=`lines`
 
-dir=Util/Logic; logic=`lines`
-dir=Util/Relation; relation=`lines`
-dir=Util/Algebra; algebra=`lines`
-math=`expr $logic + $relation + $algebra`
+dirs='Util/Logic Util/Relation Util/Algebra'; math=`lines`
 
 util=`expr $util - $math`
 
