@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.15 2007-04-16 20:19:35 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.16 2007-04-17 16:28:45 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -796,6 +796,12 @@ Lemma Vbuild_nth : forall n gen i (ip : i < n),
 Proof.
   intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl. apply e.
 Qed.
+
+Lemma Vhead_Vbuild : forall n (gen : forall i, i < S n -> A),
+  Vhead (Vbuild gen) = gen 0 (lt_O_Sn n).
+
+Proof.
+Admitted.
 
 Lemma Vtail_Vbuild : forall n (gen : forall i, i < S n -> A),
   Vtail (Vbuild gen) = Vbuild (fun i ip => gen (S i) (lt_n_S ip)).

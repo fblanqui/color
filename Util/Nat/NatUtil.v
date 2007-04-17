@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.12 2007-04-13 20:28:11 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.13 2007-04-17 16:28:45 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -53,6 +53,18 @@ Lemma lt_unique : forall n m (h1 h2 : lt n m), h1 = h2.
 
 Proof.
 intros n m. unfold lt. intros. apply le_unique.
+Qed.
+
+Lemma lt_Sn_nS : forall m n (H : m < n), lt_S_n (lt_n_S H) = H.
+
+Proof.
+  intros. apply lt_unique.
+Qed.
+
+Lemma lt_nS_Sn : forall m n (H : S m < S n), lt_n_S (lt_S_n H) = H.
+
+Proof.
+  intros. apply lt_unique.
 Qed.
 
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).

@@ -17,8 +17,8 @@ dir=.; total=`lines`
 
 dir=Util/Logic; logic=`lines`
 dir=Util/Relation; relation=`lines`
-#dir=Util/Algebra; algebra=`lines`
-math=`expr $logic + $relation`
+dir=Util/Algebra; algebra=`lines`
+math=`expr $logic + $relation + $algebra`
 
 util=`expr $util - $math`
 
