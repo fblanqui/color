@@ -12,10 +12,10 @@ Require Export VecArith.
 Set Implicit Arguments.
 
 (** functor building matrices over given a carrier *)
-Module Matrix (CT : CoefType).
+Module Matrix (SRT : SemiRingType).
 
-  Module CA := VectorArith CT.
-  Export CA.
+  Module VA := VectorArith SRT.
+  Export VA.
 
    (** basic definitions *)
 
@@ -132,7 +132,7 @@ Module Matrix (CT : CoefType).
     repeat progress unfold get_elem, get_col, get_row, 
       vec_to_col_mat, vec_to_row_mat, col_mat_to_vec, row_mat_to_vec; 
       repeat progress ( try rewrite Vnth_map; try rewrite Vmap2_nth );
-        try refl.
+        ring_simplify; try refl.
 
   Lemma get_col_col_mat : forall n (v : vec n) (p : 0 < 1),
     get_col (vec_to_col_mat v) p = v.
@@ -255,9 +255,7 @@ Module Matrix (CT : CoefType).
     L <+> R = R <+> L.
 
   Proof.
-    intros. prove_mat_eq. 
-    unfold mat_plus, vec_plus. mat_get_simpl.
-    apply Aplus_comm.
+    intros. prove_mat_eq. unfold mat_plus, vec_plus. mat_get_simpl.
   Qed.
 
    (** matrix multiplication *)
@@ -356,7 +354,7 @@ Module Matrix (CT : CoefType).
     apply Veq_nth. intros. rewrite vector_plus_nth. do 3 rewrite Vbuild_nth. 
     rewrite dot_product_cons. refl.
     apply Veq_nth. intros. do 2 rewrite Vbuild_nth. 
-    rewrite (lt_unique (lt_S_n (lt_n_S ip)) ip). refl.
+    rewrite lt_Sn_nS. refl.
   Qed.
 
   Lemma mat_mult_assoc : forall m n p l 
@@ -515,7 +513,7 @@ End Matrix.
 
 Module NMatrix.
 
-  Module NM := Matrix NCoefT.
+  Module NM := Matrix NSemiRingT.
   Export NM.
   Export VectorNatArith.
 
@@ -585,10 +583,8 @@ Module NMatrix.
       apply IHj with (lt_S_n jp).
       apply vec_tail_ge. assumption.
       apply vec_tail_ge. assumption.
-      rewrite Vnth_tail. rewrite (lt_unique (lt_n_S (lt_S_n jp)) jp). 
-      assumption.
-      do 2 rewrite Vnth_tail. rewrite (lt_unique (lt_n_S (lt_S_n jp)) jp). 
-      assumption.
+      rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
+      do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
       apply mult_le_compat.
       do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
       do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
@@ -642,4 +638,4 @@ End NMatrix.
 
 (** matrices over integers *)
 
-Module ZMatrix := Matrix ZCoefT.
+Module ZMatrix := Matrix ZSemiRingT.

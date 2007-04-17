@@ -87,8 +87,10 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
   Proof.
     induction n; intros.
-    VOtac. unfold mi_eval. rewrite vector_plus_assoc. Vplus_eq.
-    VSntac vs. unfold mi_eval. rewrite vector_plus_assoc. Vplus_eq.
+    VOtac. unfold mi_eval. rewrite vector_plus_assoc. 
+    simpl. autorewrite with arith. refl.
+    VSntac vs. unfold mi_eval. rewrite vector_plus_assoc. 
+    simpl. autorewrite with arith. refl.
   Qed.
 
   (** Monotone algebra instantiated to matrices *)
@@ -353,7 +355,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.
         rewrite vector_plus_zero_l.
         replace (Vhead (A:=vec) v) with (Vnth v ip). refl.
-        rewrite Vhead_nth. rewrite (lt_unique ip (lt_O_Sn k)). refl.
+        rewrite Vhead_nth. rewrite (lt_unique (lt_O_Sn k) ip). refl.
         symmetry.  apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vmap2_nth. rewrite Vnth_const. 
         unfold mat_vec_prod. rewrite zero_matrix_mult_l.
