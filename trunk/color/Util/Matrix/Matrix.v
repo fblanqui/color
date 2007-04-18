@@ -340,7 +340,7 @@ Module Matrix (SRT : SemiRingType).
     VSntac v.
     rewrite (VSn_eq (Vbuild (fun i ip => dot_product (get_row M ip) v'))).
     rewrite dot_product_cons. do 2 rewrite Vhead_nth. rewrite Vbuild_nth.
-    rewrite Vtail_Vbuild. unfold matrix in M. VSntac M. simpl.
+    rewrite Vbuild_tail. unfold matrix in M. VSntac M. simpl.
     match goal with
     |- _ + dot_product _ (Vbuild ?gen) = _ => replace (Vbuild gen) with 
       (Vbuild (fun i ip => dot_product (get_row (Vtail M) ip) v')) end.
