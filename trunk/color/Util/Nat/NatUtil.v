@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.13 2007-04-17 16:28:45 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.14 2007-04-18 12:12:00 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -179,6 +179,24 @@ Ltac absurd_arith := elimtype False; omega.
 
 (***********************************************************************)
 (** various arithmetical lemmas *)
+
+Lemma S_neq_O : forall n, S n = O -> False.
+
+Proof.
+intros. discriminate.
+Qed.
+
+Lemma plus_reg_l_inv : forall n1 n2 p2, n2=p2 -> n1+n2=n1+p2.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma plus_reg_r_inv : forall n1 p1 n2, n1=p1 -> n1+n2=p1+n2.
+
+Proof.
+intros. omega.
+Qed.
 
 Lemma plus_minus : forall v p, v+p-p=v.
 
