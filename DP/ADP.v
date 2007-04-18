@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.10 2007-02-01 16:12:24 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.11 2007-04-18 11:50:29 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -221,7 +221,7 @@ rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
 rewrite (fsub_nth (aliens (capa r)) l0 H6).
 set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H6)).
 assert (Fun f ts = app s l). rewrite H5. rewrite H7. refl.
-assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vin_nth.
+assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
 deduce (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
 (* every call is SN *)
 eapply calls_sn with (r := r). apply hyp1.

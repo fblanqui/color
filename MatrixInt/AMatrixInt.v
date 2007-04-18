@@ -349,7 +349,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Proof.
         induction i; intros.
         destruct k. absurd_arith.
-        rewrite Vreplace_head. unfold add_vectors. simpl.
+        unfold add_vectors. simpl.
         fold (add_vectors (Vmap2 mat_times_vec 
           (Vconst (zero_matrix dim dim) k) (Vtail v))).
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.

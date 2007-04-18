@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.16 2007-04-17 16:28:45 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.17 2007-04-18 11:50:29 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -328,8 +328,10 @@ Lemma Vnth_const : forall n (a : A) i (ip : i < n),
   Vnth (Vconst a n) ip = a.
 
 Proof.
-Admitted.
-
+  induction n; intros. absurd_arith.
+  destruct i. trivial.
+  simpl. rewrite IHn. refl.
+Qed.
 
 (***********************************************************************)
 (** replacement of i-th element *)
@@ -342,17 +344,13 @@ Proof.
   exact (Vcons (Vhead v) (IHn (Vtail v) i (lt_S_n ip) a)).
 Defined.
 
-Lemma Vreplace_head : forall n (ip : 0 < S n) (v : vec (S n)) (a : A),
-  Vreplace v ip a = Vcons a (Vtail v).
-
-Proof.
-Admitted.
-
 Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vec (S n)) (a : A),
   Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
 
 Proof.
-Admitted.
+  destruct n; intros. absurd_arith.
+  destruct i; refl.
+Qed.
 
 (***********************************************************************)
 (** concatenation *)
@@ -516,13 +514,27 @@ Qed.
 Lemma Vin_tail : forall n x (v : vec (S n)), Vin x (Vtail v) -> Vin x v.
 
 Proof.
-Admitted.
+  intros. VSntac v. simpl. auto.
+Qed.
 
-Lemma Vin_nth : forall n (v : vec n) k (h : k<n), Vin (Vnth v h) v.
+Lemma Vnth_in : forall n (v : vec n) k (h : k<n), Vin (Vnth v h) v.
 
 Proof.
 induction v. intros. absurd (k<0); omega.
 intro. destruct k; simpl. auto. intro. right. apply IHv.
+Qed.
+
+Lemma Vin_nth : forall n (v : vec n) a, Vin a v ->
+  exists i, exists ip : i < n, Vnth v ip = a.
+
+Proof.
+  induction n; intros. 
+  VOtac. destruct H.
+  VSntac v. rewrite H0 in H. destruct H.
+  exists 0. exists (lt_O_Sn n). simpl. congruence.
+  destruct (IHn (Vtail v) a H) as [j [jp v_j]]. 
+  exists (S j). exists (lt_n_S jp). simpl.
+  rewrite lt_Sn_nS. assumption.
 Qed.
 
 Lemma Vin_cast_intro : forall m n (H : m=n) (v : vec m) x,
@@ -620,7 +632,10 @@ Lemma Vforall_nth_intro : forall (P : A -> Prop) n (v : vec n),
   (forall i (ip : i < n), P (Vnth v ip)) -> Vforall P v.
 
 Proof.
-Admitted.
+  intros. apply Vforall_intro. intros.
+  destruct (Vin_nth v x H0) as [i [ip v_i]].
+  rewrite <- v_i. apply H.
+Qed.
 
 Lemma Vforall_in : forall P x n (v : vec n), Vforall P v -> Vin x v -> P x.
 
@@ -636,7 +651,8 @@ Lemma Vforall_nth : forall P n (v : vec n) i (ip : i < n),
   Vforall P v -> P (Vnth v ip).
 
 Proof.
-Admitted.
+  intros. apply Vforall_in with n v. assumption. apply Vnth_in.
+Qed.
 
 Lemma Vforall_incl : forall (P : A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2),
   (forall x, Vin x v1 -> Vin x v2) -> Vforall P v2 -> Vforall P v1.
@@ -797,17 +813,21 @@ Proof.
   intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl. apply e.
 Qed.
 
-Lemma Vhead_Vbuild : forall n (gen : forall i, i < S n -> A),
+Lemma Vbuild_head : forall n (gen : forall i, i < S n -> A),
   Vhead (Vbuild gen) = gen 0 (lt_O_Sn n).
 
 Proof.
-Admitted.
+  intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl.
+  rewrite Vhead_nth. apply e.
+Qed.
 
-Lemma Vtail_Vbuild : forall n (gen : forall i, i < S n -> A),
+Lemma Vbuild_tail : forall n (gen : forall i, i < S n -> A),
   Vtail (Vbuild gen) = Vbuild (fun i ip => gen (S i) (lt_n_S ip)).
 
 Proof.
-Admitted.
+  intros. apply Veq_nth. intros.
+  rewrite Vnth_tail. do 2 rewrite Vbuild_nth. refl.
+Qed.
 
 (***********************************************************************)
 (** iteration *)
@@ -1080,4 +1100,3 @@ Lemma Vmap_eq_ext_id : forall (A : Set) (f : A->A), (forall a, f a = a) ->
 Proof.
 intros. rewrite <- Vmap_id. apply Vmap_eq_ext. assumption.
 Qed.
-

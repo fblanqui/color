@@ -239,7 +239,7 @@ Proof.
   rewrite (VSn_eq (Vbuild (fun i (ip : i < S n) => a * Vnth v ip))).
   VSntac v. VSntac v'. do 2 rewrite dot_product_cons. 
   ring_simplify. rewrite IHn. 
-  rewrite Vtail_Vbuild. rewrite Vhead_Vbuild. simpl. ring_simplify.
+  rewrite Vbuild_tail. rewrite Vbuild_head. simpl. ring_simplify.
   match goal with
   |- _ + dot_product ?X _ = _ + dot_product ?Y _ => replace X with Y end.
   refl. apply Veq_nth. intros. 

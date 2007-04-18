@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.7 2007-04-18 11:50:29 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -168,7 +168,7 @@ apply (vars_cap_inf R). assumption. assumption.
 (* x > maxvar v *)
 deduce (vars_cap R H6). rewrite (fsub_nth (aliens (capa R v)) l H8).
 set (a := Vnth (aliens (capa R v)) (lt_pm (k:=projS1 (capa R v)) l H8)).
-assert (Vin a (aliens (capa R v))). unfold a. apply Vin_nth.
+assert (Vin a (aliens (capa R v))). unfold a. apply Vnth_in.
 assert (subterm_eq a v). apply (in_aliens_subterm R). assumption.
 assert (In a (calls R v)). apply aliens_incl_calls. assumption.
 deduce (in_calls H11). destruct H12 as [f]. destruct H12 as [us]. destruct H12.
