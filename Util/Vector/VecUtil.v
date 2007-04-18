@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.17 2007-04-18 11:50:29 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.18 2007-04-18 12:12:00 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -90,12 +90,6 @@ Qed.
 
 Require Export NatUtil.
 
-Lemma S_eq_O : forall n, S n = O -> False.
-
-Proof.
-intros. discriminate.
-Qed.
-
 Fixpoint Vcast m (v : vec m) {struct v} : forall n, m=n -> vec n :=
   match v in vector _ m return forall n, m=n -> vec n with
     | Vnil => fun n =>
@@ -105,7 +99,7 @@ Fixpoint Vcast m (v : vec m) {struct v} : forall n, m=n -> vec n :=
       end
     | Vcons x m' w => fun n =>
       match n return S m' = n -> vec n with
-	| O => fun H => False_rec (vec O) (S_eq_O H)
+	| O => fun H => False_rec (vec O) (S_neq_O H)
 	| S n' => fun H => Vcons x (Vcast w (f_equal pred H))
       end
   end.
@@ -392,12 +386,6 @@ assert (h1=h2). apply UIP. rewrite H. reflexivity.
 apply Vtail_eq. apply IHv1.
 Qed.
 
-Lemma plus_reg_l_inv : forall n1 n2 p2, n2=p2 -> n1+n2=n1+p2.
-
-Proof.
-intros. omega.
-Qed.
-
 Lemma Vapp_rcast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2 (h1 : n2=p2),
   Vapp v1 (Vcast v2 h1) = Vcast (Vapp v1 v2) (plus_reg_l_inv n1 h1).
 
@@ -412,12 +400,6 @@ Proof.
 induction v1; intros until p1; case p1; simpl; intros.
 rewrite Vcast_refl_eq. reflexivity. discriminate. discriminate.
 apply Vtail_eq. apply IHv1.
-Qed.
-
-Lemma plus_reg_r_inv : forall n1 p1 n2, n1=p1 -> n1+n2=p1+n2.
-
-Proof.
-intros. omega.
 Qed.
 
 Lemma Vapp_lcast :  forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1 (h1 : n1=p1),
