@@ -8,20 +8,20 @@
 #set -x
 
 lines () {
-  wc -l Makefile `find $dir -name \*.v` | grep total | sed 's|total||'
+  wc -l /dev/null `find $dir -name \*.v` | grep total | sed 's|total||'
 }
 
+dir=.; total=`lines`
 dir=Util; data=`lines`
 dir=Term; term=`lines`
-dir=.; total=`lines`
 dir='Util/Logic Util/Relation Util/Algebra'; math=`lines`
 
 data=`expr $data - $math`
 
-termin=`expr $total - $data - $term`
+termin=`expr $total - $data - $term - $math`
 
 display () {
-  mean=`expr 100 \* $val / $total`
+  mean=`expr 10000 \* $val / $total | sed 's|\(.*\)\([0-9][0-9]\)$|\1.\2|'`
   echo $dir $val $mean%
 }
 
