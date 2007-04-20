@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.18 2007-04-13 16:09:49 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.19 2007-04-20 13:56:36 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -96,8 +96,7 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
-
-Notation empty := (nil (A:=rule)).
+Notation empty_trs := (nil (A:=rule)).
 
 (***********************************************************************)
 (** basic properties of rewriting *)
@@ -113,7 +112,7 @@ Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
-Lemma red_empty : forall t u : term, (red empty #) t u -> t = u.
+Lemma red_empty : forall t u : term, (red empty_trs #) t u -> t = u.
 
 Proof.
 intros. induction H. redtac. contradiction. refl. congruence.
@@ -193,7 +192,7 @@ Proof.
 unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. exact H.
 Qed.
 
-Lemma WF_empty : WF (red empty).
+Lemma WF_red_empty : WF (red empty_trs).
 
 Proof.
   intro x. apply SN_intro. intros y Exy. redtac. contradiction.
@@ -334,14 +333,14 @@ Section rewriting_modulo_results.
 
 Variables R R' E E' : rules.
 
-Lemma red_mod_empty_incl_red : red_mod empty R << red R.
+Lemma red_mod_empty_incl_red : red_mod empty_trs R << red R.
 
 Proof.
 intros s t Rst. destruct Rst as [s' [ss' Rst]].
 rewrite (red_empty ss'). assumption.
 Qed.
 
-Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty R << hd_red R.
+Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty_trs R << hd_red R.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. deduce (red_empty H). subst x0.
@@ -355,11 +354,19 @@ intros. unfold red_mod. comp. apply incl_rtc.
 apply red_incl. assumption. apply red_incl. assumption.
 Qed.
 
-Lemma WF_mod_empty : WF (red_mod E empty).
+Lemma WF_red_mod_empty : WF (red_mod E empty_trs).
 
 Proof.
 intro x. apply SN_intro. intros y Exy. destruct Exy as [z [xz zy]]. redtac.
 contradiction.
+Qed.
+
+Lemma WF_hd_red_mod_empty : WF (hd_red_mod E empty_trs).
+
+Proof.
+  apply WF_incl with (red_mod E empty_trs).
+  apply hd_red_mod_incl_red_mod.
+  apply WF_red_mod_empty.
 Qed.
 
 End rewriting_modulo_results.
@@ -371,13 +378,13 @@ Section termination_as_relative_term.
 
 Variable R R' : rules.
 
-Lemma red_incl_red_mod : red R << red_mod empty R.
+Lemma red_incl_red_mod : red R << red_mod empty_trs R.
 
 Proof.
 intros s t Rst. exists s. split. constructor 2. assumption.
 Qed.
 
-Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod empty R.
+Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod empty_trs R.
 
 Proof.
 intros s t Rst. exists s. split. constructor 2. assumption.
@@ -419,3 +426,22 @@ End union_modulo.
 End S.
 
 Implicit Arguments int_red_fun [Sig R f ts v].
+
+(***********************************************************************)
+(** declarations of tactics *)
+
+Ltac solve_termination R lemma :=
+  match type of R with
+  | list ?rule => first 
+    [ solve [replace R with (nil (A:=rule)); [apply lemma | vm_compute; trivial]]
+    | fail "The termination problem is non-trivial"]
+  | _ => fail "Unrecognized TRS type"
+  end.
+
+Ltac termination_trivial := 
+  match goal with
+  | |- WF (red ?R) => solve_termination R WF_red_empty
+  | |- WF (red_mod ?E ?R) => solve_termination R WF_red_mod_empty
+  | |- WF (hd_red_mod ?E ?R) => solve_termination R WF_hd_red_mod_empty
+  | _ => fail "The goal does not seem to be a termination problem"
+  end.

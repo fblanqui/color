@@ -215,62 +215,71 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
 
     Variable R E : rules.
 
-    Lemma partition_complete : forall R,
-      let R_gt := partition part_succ R in
-      let R_ge := partition part_succeq (snd R_gt) in
-        snd R_ge = nil ->
-        red R << red (fst R_ge) U red (fst R_gt).
+    Lemma rule_partition_complete : forall pf (R : rules),
+      let part := partition pf R in
+        red R << red (snd part) U red (fst part).
 
     Proof.
-      clear R. intros. set (Rge := fst R_ge) in *. set (Rgt := fst R_gt) in *.
-      trans (red (Rge ++ Rgt)). apply red_incl. unfold incl. intros.
-      destruct (partition_complete part_succ a R). assumption.
+      clear R. intros. trans (red (snd part ++ fst part)). 
+      apply red_incl. unfold incl. intros.
+      destruct (partition_complete pf a R). assumption.
       apply in_or_app. auto.
-      destruct (partition_complete part_succeq a (snd R_gt)). assumption.
       apply in_or_app. auto.
-      fold R_ge in H2. rewrite H in H2. destruct H2.
       apply red_union.
     Qed.
 
-    Lemma partition_compat : forall R succ succ'
-      (succ'_dec : rel_dec succ'), succ' << succ ->
-      compat succ (fst (partition (rule_partition succ'_dec) R)).
+    Lemma partition_succ_compat : forall R,
+      compat IR_succ (fst (partition part_succ R)).
 
     Proof.
-      clear R E. intros R ord ord' ord'_dec ord'_sub l r lr.
-      apply ord'_sub. apply partition_by_rel_true with term ord'_dec.
+      clear R. intros R l r lr.
+      apply succ'_sub. apply partition_by_rel_true with term succ'_dec.
       apply rule_partition_left with R. assumption.
+    Qed.
+
+    Lemma partition_succeq_compat : forall R,
+      snd (partition part_succeq R) = nil ->
+      compat IR_succeq (snd (partition part_succ R)).
+
+    Proof.
+      clear R. intros R Rpart l r lr.
+      apply succeq'_sub. apply partition_by_rel_true with term succeq'_dec.
+      apply rule_partition_left with R. fold part_succeq.
+      deduce (partition_complete part_succeq (mkRule l r) R).
+      simpl in H. rewrite Rpart in H. destruct H.
+      apply partition_inright with part_succ. assumption.
+      assumption. destruct H.
     Qed.
 
     Lemma ma_relative_termination : 
       let E_gt := partition part_succ E in
-      let E_ge := partition part_succeq (snd E_gt) in
+      let E_ge := partition part_succeq E in
       let R_gt := partition part_succ R in
-      let R_ge := partition part_succeq (snd R_gt) in
+      let R_ge := partition part_succeq R in
         snd R_ge = nil ->
         snd E_ge = nil ->
-        WF (red_mod (fst E_ge) (fst R_ge)) ->
+        WF (red_mod (snd E_gt) (snd R_gt)) ->
         WF (red_mod E R).
 
     Proof.
       intros. unfold red_mod.
-      set (Ege := fst E_ge) in *. set (Egt := fst E_gt) in *.
-      set (Rge := fst R_ge) in *. set (Rgt := fst R_gt) in *.
+      set (Egt := fst E_gt) in *. set (Ege := snd E_gt) in *.
+      set (Rgt := fst R_gt) in *. set (Rge := snd R_gt) in *.
       apply WF_incl with ((red Ege U red Egt)# @ (red Rge U red Rgt)).
       comp. apply incl_rtc. 
-      unfold Ege, Egt, E_ge, E_gt. apply partition_complete. trivial.
-      unfold Rge, Rgt, R_ge, R_gt. apply partition_complete. trivial.
+      unfold Ege, Egt, E_ge, E_gt. apply rule_partition_complete.
+      unfold Rge, Rgt, R_ge, R_gt. apply rule_partition_complete.
       apply wf_rel_mod. fold (red_mod Ege Rge). assumption.
       apply WF_incl with (red_mod (Rge ++ Ege) (Rgt ++ Egt)).
       unfold red_mod. comp. 
       apply incl_rtc. apply red_union_inv. apply red_union_inv.
       apply ma_compat_red_mod; trivial.
       apply compat_app.
-      unfold Rgt, R_gt, part_succ. apply partition_compat. exact succ'_sub.
-      unfold Egt, E_gt, part_succ. apply partition_compat. exact succ'_sub.
+      unfold Rgt, R_gt, part_succ. apply partition_succ_compat.
+      unfold Egt, E_gt, part_succ. apply partition_succ_compat.
       apply compat_app.
-      unfold Rge, R_ge, part_succeq. apply partition_compat. exact succeq'_sub.
-      unfold Ege, E_ge, part_succeq. apply partition_compat. exact succeq'_sub.
+      unfold Rge, R_gt. apply partition_succeq_compat. assumption.
+      unfold Ege, E_gt. apply partition_succeq_compat. assumption.
     Qed.
 
   End RelativeTerminationCriterion.
@@ -282,29 +291,30 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
 
     Variable R : rules.
 
-    Lemma ma_termination : 
+    Lemma ma_termination :       
       let R_gt := partition part_succ R in
-      let R_ge := partition part_succeq (snd R_gt) in
+      let R_ge := partition part_succeq R in
         snd R_ge = nil ->
-        WF (red (fst R_ge)) ->
+        WF (red (snd R_gt)) ->
         WF (red R).
 
     Proof.
       intros. apply WF_incl with (red_mod nil R). apply red_incl_red_mod.
       apply ma_relative_termination. assumption. trivial.
-      simpl. apply WF_incl with
-      (red (fst (partition part_succeq (snd (partition part_succ R))))).
+      simpl. apply WF_incl with (red (snd (partition part_succ R))).
       apply red_mod_empty_incl_red. assumption.
     Qed.
 
   End TerminationCriterion.
 
+  Ltac do_prove_termination lemma := 
+    apply lemma; [solve [vm_compute; trivial] | idtac].
+
   Ltac prove_termination :=  
     match goal with
-    | |- WF (red ?R) =>
-      apply ma_termination; [vm_compute; trivial | simpl; try apply WF_empty]
-    | |- WF (red_mod ?E ?R) =>
-      apply ma_relative_termination; [vm_compute; trivial | simpl; try apply WF_empty]
+    | |- WF (red ?R) => do_prove_termination ma_termination
+    | |- WF (red_mod ?E ?R) => do_prove_termination ma_relative_termination
+    | _ => fail "Unsupported termination problem type"
    end.
 
 End ExtendedMonotoneAlgebraResults.
