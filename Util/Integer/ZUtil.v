@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.7 2007-04-13 17:47:40 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.8 2007-04-27 19:13:36 koper Exp $ *)
 
 Require Export LogicUtil.
 
@@ -39,6 +39,12 @@ Qed.
 (** inequalities *)
 
 Lemma pos_lt : forall x y : Z, 0 <= y-x-1 -> x < y.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma pos_le : forall x y : Z, 0 <= y-x -> x <= y.
 
 Proof.
 intros. omega.

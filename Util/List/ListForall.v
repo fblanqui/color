@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: ListForall.v,v 1.4 2007-04-27 19:13:36 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -81,6 +81,21 @@ Proof.
 intros. apply lforall_intro. intros. eapply lforall_in. apply H0.
 apply H. assumption.
 Qed.
+
+Require Import LogicUtil.
+Variable P_dec : prop_dec P.
+
+Lemma lforall_dec : forall l, {lforall l} + {~lforall l}.
+
+Proof.
+  induction l.
+  left. simpl. trivial.
+  simpl. destruct (P_dec a). 
+  destruct IHl.
+  left; auto.
+  right; intuition.
+  right; intuition.
+Defined.
 
 End S.
 

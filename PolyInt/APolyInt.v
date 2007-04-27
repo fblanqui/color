@@ -4,11 +4,12 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2004-12-13
 - Sebastien Hinderer, 2004-04-20
+- Adam Koprowski, 2007-04-26, added support for modular removal of rules 
 
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.14 2007-04-16 20:19:34 koper Exp $ *)
+(* $Id: APolyInt.v,v 1.15 2007-04-27 19:13:35 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -241,25 +242,29 @@ Implicit Arguments PI_term_int_eq [t k].
 Require Export ATrs.
 Require Export Max.
 
-Definition rulePoly r :=
+Definition rulePoly_ge r := 
   let mvl := maxvar (lhs r) in
   let mvr := maxvar (rhs r) in
   let m := max mvl mvr in
-    (pplus (pplus (termpoly (PI_poly PI) (inject_term (le_max_l mvl mvr)))
-      (popp (termpoly (PI_poly PI) (inject_term (le_max_r mvl mvr)))))
-    (popp (pconst (S m) 1))).
+    pplus (termpoly (PI_poly PI) (inject_term (le_max_l mvl mvr)))
+      (popp (termpoly (PI_poly PI) (inject_term (le_max_r mvl mvr)))).
+
+Definition rulePoly_gt r :=
+  let mvl := maxvar (lhs r) in
+  let mvr := maxvar (rhs r) in
+  let m := max mvl mvr in
+    pplus (rulePoly_ge r) (popp (pconst (S m) 1)).
 
 (***********************************************************************)
 (** compatibility *)
 
 Require Export ZUtil.
 
-Lemma pi_compat_rule : forall r, coef_pos (rulePoly r) -> succ (lhs r) (rhs r).
+Lemma pi_compat_rule : forall r, coef_pos (rulePoly_gt r) -> succ (lhs r) (rhs r).
 
 Proof.
 intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
 set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-set (m := max mvl mvr).
 rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
 rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). do 2 rewrite val_peval_D.
 pose (v := (Vmap (proj1_sig (P:=pos)) (vec_of_val xint (S (max mvl mvr))))).
@@ -267,10 +272,22 @@ apply pos_lt. rewrite <- (peval_const (1)%Z v). do 2 rewrite <- peval_minus.
 unfold v. apply pos_peval. exact H_coef_pos.
 Qed.
 
+Lemma pi_compat_rule_weak : forall r, coef_pos (rulePoly_ge r) -> 
+  succ_eq (lhs r) (rhs r).
+
+Proof.
+intros r H_coef_pos. unfold succ_eq, IR. intro xint. unfold Dge, Dle, transp.
+set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
+rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
+rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). 
+do 2 rewrite val_peval_D. apply pos_le. rewrite <- peval_minus.
+apply pos_peval. exact H_coef_pos.
+Qed.
+
 Require Export ACompat.
 
 Lemma pi_compat : forall R,
-  lforall (fun r => coef_pos (rulePoly r)) R -> compat succ R.
+  lforall (fun r => coef_pos (rulePoly_gt r)) R -> compat succ R.
 
 Proof.
 unfold compat. intros. set (rho := mkRule l r).
@@ -284,7 +301,7 @@ Qed.
 Require Export AMannaNess.
 
 Lemma polyInterpretationTermination : forall R,
-  lforall (fun r => coef_pos (rulePoly r)) R -> WF (red R).
+  lforall (fun r => coef_pos (rulePoly_gt r)) R -> WF (red R).
 
 Proof.
 intros R H. apply manna_ness with (succ := succ). apply pi_red_ord.
