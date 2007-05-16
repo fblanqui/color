@@ -23,6 +23,7 @@ Module PolyInt (PI : TPolyInt).
   Export PI.
 
   (** Monotone algebra instantiated to polynomials *)
+
   Module MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := sig.
@@ -48,8 +49,8 @@ Module PolyInt (PI : TPolyInt).
       unfold Dgt, Dlt, transp. apply Zlt_le_trans with (val r); auto.
     Qed.
 
-    Definition succ' (l r : term sig) := coef_pos (rulePoly_gt PI (mkRule l r)).
-    Definition succeq' (l r : term sig) := coef_pos (rulePoly_ge PI (mkRule l r)).
+    Definition succ' l r := coef_pos (rulePoly_gt PI (@mkRule sig l r)).
+    Definition succeq' l r := coef_pos (rulePoly_ge PI (@mkRule sig l r)).
 
     Lemma succ'_sub : succ' << IR I succ.
 
