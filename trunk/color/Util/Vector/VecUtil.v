@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.18 2007-04-18 12:12:00 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.19 2007-05-16 15:04:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -594,7 +594,8 @@ simpl in H0. rewrite H0. reflexivity.
 Qed.
 
 (***********************************************************************)
-(** forall *)
+(** proposition saying that all the elements of a vector satisfy some
+predicate *)
 
 Fixpoint Vforall (P : A->Prop) n (v : vec n) { struct v } : Prop :=
   match v with
@@ -682,6 +683,10 @@ Fixpoint Vsig_of_v (P : A->Prop) n (v : vec n) {struct v}
     | Vcons a _ w => fun H =>
       Vcons (exist P a (proj1 H)) (Vsig_of_v P w (proj2 H))
   end.
+
+(***********************************************************************)
+(** proposition saying that the elements of two vectors are pair-wise
+in relation *)
 
 Section Vforall2_sec.
 

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.4 2007-04-27 19:13:36 koper Exp $ *)
+(* $Id: ListForall.v,v 1.5 2007-05-16 15:04:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -68,7 +68,7 @@ intros a l. elim l.
   intros (H3, H4). apply (Hrec H4 H2).
 Qed.
 
-Lemma lforall_intro : forall l, (forall x, In x l -> P x) -> lforall l.
+Lemma lforall_elim : forall l, (forall x, In x l -> P x) -> lforall l.
 
 Proof.
 induction l; simpl; intros. exact I. split. apply H. auto.
@@ -78,7 +78,7 @@ Qed.
 Lemma lforall_incl : forall l1 l2, incl l1 l2 -> lforall l2 -> lforall l1.
 
 Proof.
-intros. apply lforall_intro. intros. eapply lforall_in. apply H0.
+intros. apply lforall_elim. intros. eapply lforall_in. apply H0.
 apply H. assumption.
 Qed.
 
