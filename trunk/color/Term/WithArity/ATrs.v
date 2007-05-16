@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.19 2007-04-20 13:56:36 koper Exp $ *)
+(* $Id: ATrs.v,v 1.20 2007-05-16 16:48:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -289,6 +289,14 @@ Lemma red_incl : incl R R' -> red R << red R'.
 Proof.
   intros RR' u v Rst. redtac.
   exists l. exists r. exists c. exists s. repeat split; try assumption.
+  apply RR'. assumption.
+Qed.
+
+Lemma hd_red_incl : incl R R' -> hd_red R << hd_red R'.
+
+Proof.
+  intros RR' u v Rst. redtac.
+  exists l. exists r. exists s. repeat split; try assumption.
   apply RR'. assumption.
 Qed.
 
