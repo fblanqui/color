@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 properties of function-headed terms
 *)
 
-(* $Id: ANotvar.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ANotvar.v,v 1.3 2007-05-16 15:04:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,13 +21,25 @@ Variable Sig : Signature.
 
 Require Export ATerm.
 
-Definition notvar t := exists f : Sig, exists ts, t = Fun f ts.
+Notation term := (term Sig).
+
+Fixpoint notvar (t : term) : Prop :=
+  match t with
+    | Var _ => False
+    | _ => True
+  end.
+
+Lemma notvar_elim : forall t,
+  notvar t -> exists f : Sig, exists ts, t = Fun f ts.
+
+Proof.
+intro t. case t; simpl; intros. contradiction. exists f. exists v. refl.
+Qed.
 
 Lemma notvar_var : forall v, ~ notvar (Var v).
 
 Proof.
-unfold not. intros. unfold notvar in H.
-destruct H as [f]. destruct H as [ts]. discriminate.
+auto.
 Qed.
 
 Require Export ASubstitution.
@@ -35,18 +47,14 @@ Require Export ASubstitution.
 Lemma notvar_app : forall s t, notvar t -> notvar (app s t).
 
 Proof.
-intros. unfold notvar in H. destruct H as [f]. destruct H as [ts].
-rewrite H. simpl. unfold notvar. exists f. exists (Vmap (app s) ts). refl.
+intros s t. case t; simpl; intros. contradiction. exact I.
 Qed.
 
 
 Lemma notvar_fill : forall c t, notvar t -> notvar (fill c t).
 
 Proof.
-intros. unfold notvar in H. destruct H as [f]. destruct H as [ts].
-rewrite H. destruct c. simpl. unfold notvar. exists f. exists ts. reflexivity.
-simpl. unfold notvar. exists f0.
-exists (Vcast (Vapp v (Vcons (fill c (Fun f ts)) v0)) e). reflexivity.
+intro c. case c; simpl; intros. exact H. exact I.
 Qed.
 
 Lemma notvar_fillapp : forall c s t, notvar t -> notvar (fill c (app s t)).

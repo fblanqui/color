@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.7 2007-04-18 11:50:29 koper Exp $ *)
+(* $Id: ASN.v,v 1.8 2007-05-16 15:04:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -75,8 +75,7 @@ Variable hyp1 : forall l r, In (mkRule l r) R -> notvar l.
 Lemma lhs_notvar : forall l r x, In (mkRule l r) R -> l <> Var x.
 
 Proof.
-intros. deduce (hyp1 l r H). unfold notvar in H0.
-destruct H0 as [f]. destruct H0 as [ts]. rewrite H0. discriminate.
+intros. deduce (hyp1 l r H). intro. subst l. contradiction.
 Qed.
 
 (***********************************************************************)
