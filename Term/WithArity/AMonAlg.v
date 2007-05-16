@@ -448,6 +448,8 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
     match goal with
     | |- WF (red ?R) => do_prove_termination ma_termination
     | |- WF (red_mod ?E ?R) => do_prove_termination ma_relative_termination
+    | |- WF (hd_red_mod ?E ?R) =>
+      do_prove_termination ma_relative_top_termination
     | _ => fail "Unsupported termination problem type"
    end.
 
