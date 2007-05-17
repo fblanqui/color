@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-(* $Id: Signature.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: Signature.v,v 1.3 2007-05-17 15:30:54 koper Exp $ *)
 
 Require Export VSignature.
 
@@ -48,7 +48,7 @@ Parameter leF : Sig -> Sig -> Prop.
 
 Require Export Preorder.
 
-Axiom leF_preorder : preorder Sig leF.
+Parameter leF_preorder : preorder Sig leF.
 
 Definition ltF := ltA Sig leF.
 Definition eqF := eqA Sig leF.

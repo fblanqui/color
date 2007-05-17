@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.3 2007-04-13 20:28:11 koper Exp $ *)
+(* $Id: MultisetTheory.v,v 1.4 2007-05-17 15:30:54 koper Exp $ *)
 
 Set Implicit Arguments.
 

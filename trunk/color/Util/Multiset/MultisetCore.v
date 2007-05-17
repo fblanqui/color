@@ -8,7 +8,7 @@ This file provides a specification of finite multiset data-type along
 with specification of operations on multisets.
 *)
 
-(* $Id: MultisetCore.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: MultisetCore.v,v 1.3 2007-05-17 15:30:54 koper Exp $ *)
 
 Set Implicit Arguments.
 

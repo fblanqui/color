@@ -8,7 +8,7 @@ This file provides an implementation of finite multisets using list
 representation.
 *)
 
-(* $Id: MultisetList.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: MultisetList.v,v 1.3 2007-05-17 15:30:54 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,12 +19,12 @@ Require Import Multiset.
 Require Import List.
 Require Import ListExtras.
 
-Module FiniteMultisetList (ES : Eqset) : 
+Module FiniteMultisetList (ES : Eqset) <:
 
   FiniteMultisetCore with Module Sid := ES.
 
   Module Sid := ES.
-  Import Sid.
+  Export Sid.
 
   Parameter eqA_dec : forall x y, {eqA x y}+{~eqA x y}.
 
@@ -47,14 +47,26 @@ Section Operations.
 
 End Operations.
 
+  Notation "X =mul= Y" := (meq X Y) (at level 70) : msets_scope.
+  Notation "X <>mul Y" := (~meq X Y) (at level 50) : msets_scope.
+  Notation "{{ x }}" := (singleton x) (at level 5) : msets_scope.
+  Notation "X + Y" := (union X Y) : msets_scope.
+  Notation "X - Y" := (diff X Y) : msets_scope.
+  Notation "X # Y" := (intersection X Y) (at level 50, left associativity) : msets_scope.
+  Notation "x / M" := (mult x M) : msets_scope.
+
+  Delimit Scope msets_scope with msets.
+  Open Scope msets_scope.
+  Bind Scope msets_scope with Multiset.
+
 Section ImplLemmas.
 
-  Lemma empty_empty : forall M, (forall x, mult x M = 0) -> M = empty.
+  Lemma empty_empty : forall M, (forall x, x / M = 0) -> M = empty.
 
   Proof.
     intros M mulM; destruct M.
     trivial.
-    absurd (mult a (a::M) = 0).
+    absurd (a / (a::M) = 0).
     simpl; case (eqA_dec a a); auto with sets.
     auto.
   Qed.
@@ -63,11 +75,7 @@ End ImplLemmas.
 
 Section SpecConformation.
 
-  Notation "X =mul= Y" := (meq X Y) (at level 70).
-  Notation "X =A= Y" := (eqA X Y) (at level 70).
-  Notation "{{ x }}" := (singleton x) (at level 0).
-  
-  Lemma mult_eqA_compat : forall M x y, x =A= y -> mult x M = mult y M.
+  Lemma mult_eqA_compat : forall M x y, x =A= y -> x / M = y / M.
 
   Proof.
      induction M.
@@ -75,11 +83,11 @@ Section SpecConformation.
      intros; simpl.
      case (eqA_dec x a); case (eqA_dec y a); intros;
        solve [ absurd (y =A= a); eauto with sets
-             | assert (mult x M = mult y M); auto ].
+             | assert (x / M = y / M); auto ].
   Qed.
 
   Lemma mult_comp : forall l a,
-    mult a l = multiplicity (list_contents eqA eqA_dec l) a.
+    a / l = multiplicity (list_contents eqA eqA_dec l) a.
 
   Proof.
     induction l.
@@ -90,7 +98,7 @@ Section SpecConformation.
             | rewrite (IHl a0); trivial].
   Qed.
 
-  Lemma multeq_meq : forall M N, (forall x, mult x M = mult x N) -> M =mul= N.
+  Lemma multeq_meq : forall M N, (forall x, x / M = x / N) -> M =mul= N.
 
   Proof.
     unfold meq.
@@ -99,7 +107,7 @@ Section SpecConformation.
     exact (mult_MN x).
   Qed.
 
-  Lemma meq_multeq : forall M N, M =mul= N -> (forall x, mult x M = mult x N).
+  Lemma meq_multeq : forall M N, M =mul= N -> (forall x, x / M = x / N).
 
   Proof.
     unfold meq, permutation, Multiset.meq.
@@ -114,28 +122,28 @@ Section SpecConformation.
     auto.
   Qed.
 
-  Lemma union_mult : forall M N x, mult x (union M N) = mult x M + mult x N.
+  Lemma union_mult : forall M N x, x / (M + N) = (x / M + x / N)%nat.
 
   Proof.
     induction M; auto.
     intros; simpl; case (eqA_dec x a); intro; auto.
-    replace (mult x (union M N)) with (mult x M + mult x N); 
+    replace (x / (M + N)) with (x / M + x / N)%nat; 
       solve [auto | apply IHM].
   Qed.
 
-  Lemma diff_empty_l : forall M, diff empty M = empty.
+  Lemma diff_empty_l : forall M, empty - M = empty.
 
   Proof.
     induction M; auto.
   Qed.
 
-  Lemma diff_empty_r : forall M, diff M empty = M.
+  Lemma diff_empty_r : forall M, M - empty = M.
 
   Proof.
     induction M; auto.
   Qed.
 
-  Lemma mult_remove_in : forall x a M, x =A= a -> mult x (rem a M) = mult x M - 1.
+  Lemma mult_remove_in : forall x a M, x =A= a -> x / (rem a M) = (x / M - 1)%nat.
 
   Proof.
     induction M.
@@ -150,7 +158,7 @@ Section SpecConformation.
   Qed.
 
   Lemma mult_remove_not_in : forall M a x,
-    ~ x =A= a -> mult x (rem a M) = mult x M.
+    ~ x =A= a -> x / (rem a M) = x / M.
 
   Proof.
     induction M; intros.
@@ -164,7 +172,7 @@ Section SpecConformation.
   Qed.
 
   Lemma remove_perm_single : forall x a b M,
-   mult x (rem a (rem b M)) = mult x (rem b (rem a M)).
+   x / (rem a (rem b M)) = x / (rem b (rem a M)).
 
   Proof.
     intros x a b M.
@@ -184,7 +192,7 @@ Section SpecConformation.
   Qed.
 
   Lemma diff_mult_comp : forall x N M M',
-    M =mul= M' -> mult x (diff M N) = mult x (diff M' N).
+    M =mul= M' -> x / (M - N) = x / (M' - N).
 
   Proof.
     induction N.
@@ -202,7 +210,7 @@ Section SpecConformation.
   Qed.
 
   Lemma diff_perm_single : forall x a b M N, 
-    mult x (diff M (a::b::N)) = mult x (diff M (b::a::N)).
+    x / (M - (a::b::N)) = x / (M - (b::a::N)).
 
   Proof.
     intros x a b M N.
@@ -212,20 +220,20 @@ Section SpecConformation.
   Qed.
 
   Lemma diff_perm : forall M N a x,
-    mult x (diff (rem a M) N) = mult x (rem a (diff M N)).
+    x / ((rem a M) - N) = x / (rem a (M - N)).
 
   Proof.
     intros M N; generalize M; clear M.
     induction N.
     auto.
     intros M b x.
-    change (diff (rem b M) (a::N)) with (diff M (b::a::N)).
+    change (rem b M - (a::N)) with (M - (b::a::N)).
     rewrite diff_perm_single.
     simpl; apply IHN.
   Qed.
 
   Lemma diff_mult_step_eq : forall M N a x,
-    x =A= a -> mult x (diff (rem a M) N) = mult x (diff M N) - 1.
+    x =A= a -> x / (rem a M - N) = (x / (M - N)%msets - 1)%nat.
 
   Proof.
     intros M N a x x_a.
@@ -234,7 +242,7 @@ Section SpecConformation.
   Qed.
 
   Lemma diff_mult_step_neq : forall M N a x,
-    ~ x =A= a -> mult x (diff (rem a M) N) = mult x (diff M N).
+    ~ x =A= a -> x / (rem a M - N) = x / (M - N).
 
   Proof.
     intros M N a x x_a.
@@ -242,7 +250,7 @@ Section SpecConformation.
     rewrite mult_remove_not_in; trivial.
   Qed.
  
-  Lemma diff_mult : forall M N x, mult x (diff M N) = mult x M - mult x N.
+  Lemma diff_mult : forall M N x, x / (M - N) = (x / M - x / N)%nat.
 
   Proof.
     induction N.
@@ -264,14 +272,14 @@ Section SpecConformation.
 
   Definition intersection_mult := inter_as_diff_ok mult diff diff_mult.
 
-  Lemma singleton_mult_in : forall x y, x =A= y -> mult x {{y}} = 1.
+  Lemma singleton_mult_in : forall x y, x =A= y -> x / {{y}} = 1.
 
   Proof.
     intros; compute.
     case (eqA_dec x y); [trivial | contradiction].
   Qed.
   
-  Lemma singleton_mult_notin : forall x y, ~x =A= y -> mult x {{y}} = 0.
+  Lemma singleton_mult_notin : forall x y, ~x =A= y -> x / {{y}} = 0.
 
   Proof.
     intros; compute.
@@ -283,7 +291,7 @@ Section SpecConformation.
 
   Proof.
     induction l; auto.
-  Qed.
+  Defined.
 
   Lemma rev_ind_type : forall P : Multiset -> Type,
     P nil -> (forall x l, P l -> P (l ++ x :: nil)) -> forall l, P l.
@@ -298,7 +306,7 @@ Section SpecConformation.
     intros.
     apply (X0 a (rev l0)).
     auto.
-  Qed.
+  Defined.
 
   Lemma mset_ind_type : forall P : Multiset -> Type,
     P empty -> (forall M a, P M -> P (union M {{a}})) -> forall M, P M.
@@ -307,8 +315,30 @@ Section SpecConformation.
     induction M as [| x M] using rev_ind_type.
     exact X.
     exact (X0 M x IHM).
-  Qed.
+  Defined.
  
 End SpecConformation.
+
+  Hint Unfold meq 
+	      empty
+              singleton
+              mult
+              union
+              diff : multisets.
+
+  Hint Resolve mult_eqA_compat 
+               meq_multeq
+               multeq_meq
+               empty_mult
+               union_mult
+               diff_mult
+               intersection_mult
+               singleton_mult_in
+               singleton_mult_notin : multisets.
+
+  Hint Rewrite empty_mult
+               union_mult
+	       diff_mult
+	       intersection_mult using trivial : multisets.
 
 End FiniteMultisetList.
