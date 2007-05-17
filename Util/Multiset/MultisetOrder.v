@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.4 2007-05-17 15:30:54 koper Exp $ *)
 
 Set Implicit Arguments.
 

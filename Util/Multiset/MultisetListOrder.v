@@ -25,7 +25,6 @@ Module MultisetListOrder (ES : Eqset).
 (* Instantiation of Finite MultiSets of elements of A
 as Lists of elements of A *)
 
-  Export ES.
   Module FMultisetList := FiniteMultisetList ES. 
   Export FMultisetList.
 
@@ -102,12 +101,12 @@ as Lists of elements of A *)
     Lemma nonempty_mset_ind : forall (P : Multiset -> Prop), 
       (forall M N, P M -> M =mul= N -> P N)  -> 
       (forall a, P {{a}}) -> (forall a M, P M -> P (M+{{a}})) -> 
-      forall M, M <>mul empty -> P M.
+      forall M : Multiset, M <>mul empty -> P M.
 
     Proof.
       intros P P_morph Ha HMa M; induction M using mset_ind.
       intro H; elim H; auto with multisets.
-      intro H; clear H.
+      intros H; clear H.
       elim (empty_dec M); intro case_M.
         (* case M empty : *)
       apply (P_morph {{a}}).
@@ -156,13 +155,13 @@ as Lists of elements of A *)
       exists x0; split; trivial.
       exists x'; split; trivial.
       apply Htrans with a; trivial.
-      apply (r_eqA_compat x0 a x x); auto with multisets.
+      apply (r_eqA_compat x0 a x x); auto with sets multisets.
       elim H''; intros x Hx; elim Hx; clear Hx; intros Hx1 Hx2.
       exists x; split; trivial.
       auto with multisets.
           (* case x = a : *)
       exists a; split; auto with multisets.
-      apply (r_eqA_compat x' a a a); auto with multisets.
+      apply (r_eqA_compat x' a a a); auto with sets multisets.
     Qed.
 
     Lemma self_dom2 : forall X,  X <>mul empty ->
@@ -193,7 +192,7 @@ as Lists of elements of A *)
         (* Property true on singletons : *)
       intros a H Ha; exists a; split; auto with multisets.
       elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2.
-      apply (r_eqA_compat x' a a a); auto with multisets.
+      apply (r_eqA_compat x' a a a); auto with sets multisets.
         (* Property preserved by adding an element : *)
       intros a M HM Htrans H.
       assert (H' : a in (M + {{a}})); auto with multisets.
@@ -419,7 +418,9 @@ as Lists of elements of A *)
       unfold mult, MultisetLT, transp; simpl.
       constructor 1 with (X := {{a'}}) (Y :={{a}}) (Z := (list2multiset l)); auto with multisets.
       unfold insert; simpl; auto with multisets.
+      rewrite union_comm; auto with multisets.
       unfold insert; simpl; auto with multisets.
+      rewrite union_comm; auto with multisets.
       intros y Hy; assert (HY : y =A= a).
       apply (member_singleton Hy).
       exists a'; auto with multisets.
