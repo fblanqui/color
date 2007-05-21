@@ -263,13 +263,16 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 (**********************************************************)
 (** tactics *)
 
-  Ltac do_prove_termination lemma := 
-    apply lemma; [solve [vm_compute; trivial] | idtac].
+  Ltac partition R :=
+    set (S := snd (partition part_succ R)); vm_compute in S; subst S.
+
+  Ltac do_prove_termination lemma R :=
+    apply lemma; [vm_compute; trivial | vm_compute; trivial | partition R].
 
   Ltac prove_termination :=  
     match goal with
-    | |- WF (hd_red_mod ?E ?R) =>
-      do_prove_termination ma_relative_top_termination
+    | |- WF (hd_red_mod _ ?R) =>
+      do_prove_termination ma_relative_top_termination R
     | _ => fail "Unsupported termination problem type"
    end.
 
@@ -447,10 +450,8 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
   Ltac prove_termination :=  
     match goal with
     | |- WF (red ?R) => do_prove_termination ma_termination
-    | |- WF (red_mod ?E ?R) => do_prove_termination ma_relative_termination
-    | |- WF (hd_red_mod ?E ?R) =>
-      do_prove_termination ma_relative_top_termination
-    | _ => fail "Unsupported termination problem type"
+    | |- WF (red_mod _ _) => do_prove_termination ma_relative_termination
+    | _ => MAR.prove_termination
    end.
 
 End ExtendedMonotoneAlgebraResults.
