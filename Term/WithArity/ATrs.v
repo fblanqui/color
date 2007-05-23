@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.20 2007-05-16 16:48:08 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.21 2007-05-23 17:42:19 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -40,6 +40,8 @@ Notation rules := (list rule).
 (***********************************************************************)
 (** rewrite steps *)
 
+Section rewriting.
+
 Variable R : rules.
 
 Definition red (t1 t2 : term) :=
@@ -54,6 +56,21 @@ Definition int_red (t1 t2 : term) :=
   exists l, exists r, exists c, exists s, c <> Hole
   /\ In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
 
+End rewriting.
+
+(***********************************************************************)
+(** rewrite modulo steps *)
+
+Section rewriting_modulo.
+
+Variable E R : rules.
+
+Definition red_mod := red E # @ red R.
+
+Definition hd_red_mod := red E # @ hd_red R.
+
+End rewriting_modulo.
+
 End basic_definitions.
 
 (***********************************************************************)
@@ -66,23 +83,22 @@ Ltac redtac := repeat
       let s := fresh "s" in let h1 := fresh in
       (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
       destruct H as [s]; destruct H as [H h1]; destruct h1)
-    | H : transp (red _) _ _ |- _ =>
-      unfold transp in H; redtac
+    | H : transp (red _) _ _ |- _ => unfold transp in H; redtac
     | H : hd_red ?R ?t ?u |- _ =>
       let l := fresh "l" in let r := fresh "r" in
       let s := fresh "s" in let h1 := fresh in
       (unfold hd_red in H; destruct H as [l]; destruct H as [r];
       destruct H as [s]; destruct H as [H h1]; destruct h1)
-    | H : transp (hd_red _) _ _ |- _ =>
-      unfold transp in H; redtac
+    | H : transp (hd_red _) _ _ |- _ => unfold transp in H; redtac
     | H : int_red ?R ?t ?u |- _ =>
       let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
       let s := fresh "s" in let h1 := fresh in let h2 := fresh in
       (unfold int_red in H; destruct H as [l]; destruct H as [r];
       destruct H as [c]; destruct H as [s]; destruct H as [H h1];
       destruct h1 as [h1 h2]; destruct h2)
-    | H : transp (int_red _) _ _ |- _ =>
-      unfold transp in H; redtac
+    | H : transp (int_red _) _ _ |- _ => unfold transp in H; redtac
+    | H : red_mod ?E ?R ?t ?u |- _ => do 2 destruct H; redtac
+    | H : hd_red_mod ?E ?R ?t ?u |- _ => do 2 destruct H; redtac
   end.
 
 (***********************************************************************)
@@ -196,6 +212,12 @@ Lemma WF_red_empty : WF (red empty_trs).
 
 Proof.
   intro x. apply SN_intro. intros y Exy. redtac. contradiction.
+Qed.
+
+Lemma hd_red_mod_incl_red_mod : forall E, hd_red_mod E R << red_mod E R.
+
+Proof.
+intro. unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
 Qed.
 
 End rewriting.
@@ -320,22 +342,6 @@ End union.
 
 (***********************************************************************)
 (** rewriting modulo *)
-
-Section rewriting_modulo.
-
-Variable E R : rules.
-
-Definition red_mod := red E # @ red R.
-
-Definition hd_red_mod := red E # @ hd_red R.
-
-Lemma hd_red_mod_incl_red_mod : hd_red_mod << red_mod.
-
-Proof.
-unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
-Qed.
-
-End rewriting_modulo.
 
 Section rewriting_modulo_results.
 

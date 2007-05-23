@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.4 2007-04-13 15:39:43 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.5 2007-05-23 17:42:19 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -31,3 +31,5 @@ Ltac irrefl :=
     | _ : ?x <> ?y, _ : ?z = ?x, _ : ?z = ?y |- _ => subst y; irrefl
     | _ : ?x <> ?y, _ : ?z = ?x, _ : ?y = ?z |- _ => subst y; irrefl
   end.
+
+Ltac normalize e := let x := fresh in set (x := e); vm_compute in x; subst x.
