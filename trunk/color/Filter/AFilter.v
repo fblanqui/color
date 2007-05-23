@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.6 2007-04-13 10:36:36 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.7 2007-05-23 17:42:19 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,11 +30,13 @@ Require Export VecFilter.
 Variable pi : forall f, bools (@arity Sig f).
 
 (***********************************************************************)
-(** associated signature *)
+(** filtered signature *)
 
 Definition arity' f := Vtrue (pi f).
 
-Definition Sig' := mkSignature arity' (@eq_symb_dec Sig).
+Definition filter_sig := mkSignature arity' (@eq_symb_dec Sig).
+
+Notation Sig' := filter_sig.
 
 Notation term' := (ATerm.term Sig').
 Notation terms' := (vector term').
@@ -44,7 +46,7 @@ Notation "'args' f" := (terms (arity f)) (at level 70).
 Notation Fun' := (@Fun Sig').
 
 (***********************************************************************)
-(** term transformation *)
+(** term filtering *)
 
 Fixpoint filter (t : term) : term' :=
   match t with
@@ -86,7 +88,7 @@ Qed.
 *)
 
 (***********************************************************************)
-(** context transformation *)
+(** filtered contexts *)
 
 Require Export AContext.
 
@@ -94,6 +96,21 @@ Notation context := (context Sig).
 Notation context' := (AContext.context Sig').
 
 Definition Cont' := (@Cont Sig').
+
+(***********************************************************************)
+(** rule filtering *)
+
+Require Export ATrs.
+
+Notation rule := (ATrs.rule Sig).
+Notation rules := (list rule).
+
+Notation rule' := (ATrs.rule Sig').
+Notation rules' := (list rule').
+
+Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
+
+Notation filter_rules := (List.map filter_rule).
 
 (***********************************************************************)
 (** properties wrt substitutions *)
@@ -114,31 +131,15 @@ eapply Vfilter_in. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(** extension to rules *)
-
-Require Export ATrs.
-
-Notation rule := (ATrs.rule Sig).
-Notation rules := (list rule).
-
-Notation rule' := (ATrs.rule Sig').
-Notation rules' := (list rule').
-
-Definition filter_rule rho := mkRule (filter (lhs rho)) (filter (rhs rho)).
-
-Notation filter_rules := (List.map filter_rule).
-
-(***********************************************************************)
 (** filter ordering *)
-
-Require Export ARelation.
-
-Definition filter_ord (succ : relation term') t u := succ (filter t) (filter u).
 
 Section filter_ordering.
 
 Variable succ : relation term'.
-Notation fsucc := (filter_ord succ).
+
+Definition filter_ord : relation term := fun t u => succ (filter t) (filter u).
+
+Notation fsucc := filter_ord.
 
 (***********************************************************************)
 (** transitivity *)
@@ -150,21 +151,9 @@ intro. unfold transitive, filter_ord. intros. eapply H. apply H0. assumption.
 Qed.
 
 (***********************************************************************)
-(** compatibility *)
-
-Require Export ACompat.
-
-Lemma filter_comp : forall R : rules,
-  compat succ (filter_rules R) -> compat fsucc R.
-
-Proof.
-unfold compat. intros. unfold filter_ord. apply H.
-change (In (filter_rule (mkRule l r)) (filter_rules R)).
-apply in_map. assumption.
-Qed.
-
-(***********************************************************************)
 (** well-foundedness *)
+
+Require Export ARelation.
 
 Lemma WF_filter : WF succ -> WF fsucc.
 
@@ -181,6 +170,20 @@ Lemma filter_subs_closed :
 Proof.
 unfold substitution_closed. intros. unfold filter_ord. repeat rewrite filter_app.
 apply H. assumption.
+Qed.
+
+(***********************************************************************)
+(** compatibility *)
+
+Require Export ACompat.
+
+Lemma filter_comp : forall R : rules,
+  compat succ (filter_rules R) -> compat fsucc R.
+
+Proof.
+unfold compat. intros. unfold filter_ord. apply H.
+change (In (filter_rule (mkRule l r)) (filter_rules R)).
+apply in_map. assumption.
 Qed.
 
 (***********************************************************************)
@@ -202,10 +205,11 @@ Section filter_cont_true.
 
 Variable H : Vhead (snd bs) = true.
 
-Let e' := trans_eq (plus_reg_l_inv (Vtrue (fst bs)) (Vtrue_Sn_true (snd bs) H)) h.
+Definition e_true := trans_eq (plus_reg_l_inv (Vtrue (fst bs))
+  (Vtrue_Sn_true (snd bs) H)) h.
 
 Lemma filter_cont_true :
-  filter (fill (Cont f e v1 c v2) t) = fill (Cont' f e' v1' Hole v2') t'.
+  filter (fill (Cont f e v1 c v2) t) = fill (Cont' f e_true v1' Hole v2') t'.
 
 Proof.
 simpl fill. rewrite filter_fun. rewrite Vmap_cast. rewrite Vmap_app. simpl.
@@ -222,10 +226,11 @@ Section filter_cont_false.
 
 Variable H : Vhead (snd bs) = false.
 
-Let e' := trans_eq (plus_reg_l_inv (Vtrue (fst bs)) (Vtrue_Sn_false (snd bs) H)) h.
+Definition e_false := trans_eq (plus_reg_l_inv (Vtrue (fst bs))
+  (Vtrue_Sn_false (snd bs) H)) h.
 
 Lemma filter_cont_false :
-  filter (fill (Cont f e v1 c v2) t) = Fun' f (Vcast (Vapp v1' v2') e').
+  filter (fill (Cont f e v1 c v2) t) = Fun' f (Vcast (Vapp v1' v2') e_false).
 
 Proof.
 simpl fill. rewrite filter_fun. rewrite Vmap_cast. rewrite Vmap_app. simpl.
@@ -251,7 +256,8 @@ Lemma filter_cont_closed :
 
 Proof.
 intros Hrefl H. unfold context_closed, filter_ord. induction c; intros.
-simpl. assumption. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
+simpl. assumption.
+set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
 booltac (Vhead (snd bs)). rewrite (filter_cont_true e v c v0 t1 H2).
 rewrite (filter_cont_true e v c v0 t2 H2). apply H. apply IHc. assumption.
 rewrite (filter_cont_false e v c v0 t1 H2).
@@ -259,6 +265,15 @@ rewrite (filter_cont_false e v c v0 t2 H2). apply Hrefl.
 Qed.
 
 End filter_ordering.
+
+(***********************************************************************)
+(** monotony wrt inclusion *)
+
+Lemma incl_filter : forall R S, R << S -> filter_ord R << filter_ord S.
+
+Proof.
+intros. unfold inclusion, filter_ord. intros. apply H. exact H0.
+Qed.
 
 (***********************************************************************)
 (** weak stability wrt contexts *)
@@ -306,5 +321,73 @@ apply filter_weak_cont_closed. assumption.
 Qed.
 
 End weak_cont_closed.
+
+(***********************************************************************)
+(** rewriting *)
+
+Section red.
+
+Variable R : rules.
+Notation R' := (filter_rules R).
+
+Lemma red_incl_filter_red_rc : red R << filter_ord (red R' %).
+
+Proof.
+unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
+elim c. simpl. right. repeat rewrite filter_app. apply red_rule_top.
+change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
+intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
+booltac (Vhead (snd bs)).
+rewrite (filter_cont_true f e v c0 v0 (app s l) H2).
+rewrite (filter_cont_true f e v c0 v0 (app s r) H2).
+fold bs. destruct H0.
+left. simpl fill. rewrite H0. refl.
+right. apply red_fill. exact H0.
+left.
+rewrite (filter_cont_false f e v c0 v0 (app s l) H2).
+rewrite (filter_cont_false f e v c0 v0 (app s r) H2).
+refl.
+Qed.
+
+Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
+
+Proof.
+unfold inclusion. induction 1.
+apply incl_filter with (red R' %). apply rc_incl_rtc.
+apply red_incl_filter_red_rc. exact H.
+unfold filter_ord. apply rt_refl.
+unfold filter_ord. apply rt_trans with (filter y).
+apply IHclos_refl_trans1. apply IHclos_refl_trans2.
+Qed.
+
+Lemma hd_red_incl_filter_hd_red : hd_red R << filter_ord (hd_red R').
+
+Proof.
+unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
+repeat rewrite filter_app. apply hd_red_rule.
+change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
+Qed.
+
+End red.
+
+(***********************************************************************)
+(** rewriting modulo *)
+
+Section red_mod.
+
+Variable E R : rules.
+Notation E' := (filter_rules E).
+Notation R' := (filter_rules R).
+
+Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
+
+Proof.
+unfold inclusion, filter_ord. intros. redtac. exists (filter x0). split.
+apply red_rtc_incl_filter_red_rtc. exact H.
+subst x0. subst y. repeat rewrite filter_app. apply hd_red_rule.
+change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H0.
+Qed.
+
+End red_mod.
 
 End S.

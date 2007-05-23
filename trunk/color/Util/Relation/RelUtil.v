@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.24 2007-04-13 15:57:13 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.25 2007-05-23 17:42:19 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -370,6 +370,13 @@ Lemma rtc_trans : transitive (R#).
 
 Proof.
 unfold transitive. intros. eapply rt_trans. apply H. assumption.
+Qed.
+
+Lemma rc_incl_rtc : R% << R#.
+
+Proof.
+unfold inclusion, clos_refl. intros. destruct H.
+subst y. apply rt_refl. apply rt_step. exact H.
 Qed.
 
 Lemma rtc_split : R# << @eq A U R!.

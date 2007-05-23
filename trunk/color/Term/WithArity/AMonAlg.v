@@ -263,8 +263,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 (**********************************************************)
 (** tactics *)
 
-  Ltac partition R :=
-    set (S := snd (partition part_succ R)); vm_compute in S; subst S.
+  Ltac partition R := normalize (snd (partition part_succ R)).
 
   Ltac do_prove_termination lemma R :=
     apply lemma; [vm_compute; trivial | vm_compute; trivial | partition R].
