@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.11 2007-04-18 11:50:29 koper Exp $ *)
+(* $Id: ADP.v,v 1.12 2007-05-25 10:00:00 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -126,7 +126,9 @@ Qed.
 
 Require Export ANotvar.
 
-Variable hyp1 : forall l r, In (mkRule l r) R -> notvar l.
+Definition no_lhs_variable R := forall l r, In (mkRule l r) R -> @notvar Sig l.
+
+Variable hyp1 : no_lhs_variable R.
 
 Variable hyp2 : rules_preserv_vars R.
 
@@ -267,3 +269,29 @@ End S.
 
 Implicit Arguments dp_elim [Sig l t].
 Implicit Arguments dp_elim_vars [Sig l t].
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac no_lhs_variable :=
+  match goal with
+    | |- no_lhs_variable ?R =>
+      unfold no_lhs_variable; let T := elt_type R in
+      let P := fresh in set (P := fun a : T => notvar (lhs a));
+        let H := fresh in assert (H : lforall P R);
+          [unfold P; simpl; intuition
+            | let H0 := fresh in
+              do 2 intro; intro H0; apply (lforall_in H H0)]
+  end.
+
+Ltac rules_preserv_vars :=
+  match goal with
+    | |- rules_preserv_vars ?R =>
+      unfold rules_preserv_vars; let T := elt_type R in
+        let P := fresh in
+          set (P := fun a : T => incl (vars (rhs a)) (vars (lhs a)));
+            let H := fresh in assert (H : lforall P R);
+              [unfold P, incl; simpl; intuition
+                | let H0 := fresh in
+                  do 2 intro; intro H0; apply (lforall_in H H0)]
+  end.

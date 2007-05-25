@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.22 2007-04-20 13:56:36 koper Exp $ *)
+(* $Id: ListUtil.v,v 1.23 2007-05-25 10:00:01 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,6 +19,11 @@ Require Export List.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
+
+Ltac elt_type l :=
+  match type of l with
+    | list ?A => A
+  end.
 
 (***********************************************************************)
 (** cons *)
