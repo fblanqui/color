@@ -148,52 +148,10 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 
   Section RelativeTopTerminationCriterion.
 
-    Definition rule_partition R (R_dec : rel_dec R) (r : rule) := 
-      partition_by_rel R_dec (lhs r, rhs r).
-    Implicit Arguments rule_partition [R].
-
-    Lemma rule_partition_left : forall R (R_dec : rel_dec R) l r rs,
-      In (mkRule l r) (fst (partition (rule_partition R_dec) rs)) ->
-      partition_by_rel R_dec (l, r) = true.
-
-    Proof.
-      intros. unfold rule_partition in H.
-      set (w := partition_left
-        (fun r => partition_by_rel R_dec (lhs r, rhs r))). simpl in w.
-      change l with (lhs (mkRule l r)). change r with (rhs (mkRule l r)).
-      apply w with rs. assumption.
-    Qed.
-
     Definition part_succeq := rule_partition succeq'_dec.
     Definition part_succ := rule_partition succ'_dec.
 
     Variable R E : rules.
-
-    Lemma rule_partition_complete : forall pf (R : rules),
-      let part := partition pf R in
-        red R << red (snd part) U red (fst part).
-
-    Proof.
-      clear R. intros. trans (red (snd part ++ fst part)). 
-      apply red_incl. unfold incl. intros.
-      destruct (partition_complete pf a R). assumption.
-      apply in_or_app. auto.
-      apply in_or_app. auto.
-      apply red_union.
-    Qed.
-
-    Lemma hd_rule_partition_complete : forall pf (R : rules),
-      let part := partition pf R in
-        hd_red R << hd_red (snd part) U hd_red (fst part).
-
-    Proof.
-      clear R. intros. trans (hd_red (snd part ++ fst part)).
-      apply hd_red_incl. unfold incl. intros.
-      destruct (partition_complete pf a R). assumption.
-      apply in_or_app. auto.
-      apply in_or_app. auto.
-      apply hd_red_union.
-    Qed.
 
     Lemma partition_succ_compat : forall R,
       compat IR_succ (fst (partition part_succ R)).
@@ -346,19 +304,6 @@ Module ExtendedMonotoneAlgebraResults (EMA : ExtendedMonotoneAlgebraType).
     Definition part_succ := rule_partition succ'_dec.
 
     Variable R E : rules.
-
-    Lemma rule_partition_complete : forall pf (R : rules),
-      let part := partition pf R in
-        red R << red (snd part) U red (fst part).
-
-    Proof.
-      clear R. intros. trans (red (snd part ++ fst part)). 
-      apply red_incl. unfold incl. intros.
-      destruct (partition_complete pf a R). assumption.
-      apply in_or_app. auto.
-      apply in_or_app. auto.
-      apply red_union.
-    Qed.
 
     Lemma partition_succ_compat : forall R,
       compat IR_succ (fst (partition part_succ R)).
