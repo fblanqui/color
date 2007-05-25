@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.21 2007-05-23 17:42:19 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.22 2007-05-25 09:03:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -26,8 +26,7 @@ Notation terms := (vector term).
 
 Record rule : Set := mkRule {
   lhs : term;
-  rhs : term
-}.
+  rhs : term }.
 
 Lemma eq_rule_dec : forall a b : rule, {a=b}+{~a=b}.
 
@@ -112,6 +111,7 @@ Notation term := (term Sig).
 Notation terms := (vector term).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
+
 Notation empty_trs := (nil (A:=rule)).
 
 (***********************************************************************)
@@ -442,7 +442,7 @@ End S.
 Implicit Arguments int_red_fun [Sig R f ts v].
 
 (***********************************************************************)
-(** declarations of tactics *)
+(** tactics *)
 
 Ltac solve_termination R lemma :=
   match type of R with
@@ -458,4 +458,11 @@ Ltac termination_trivial :=
   | |- WF (red_mod ?E ?R) => solve_termination R WF_red_mod_empty
   | |- WF (hd_red_mod ?E ?R) => solve_termination R WF_hd_red_mod_empty
   | _ => fail "The goal does not seem to be a termination problem"
+  end.
+
+Ltac no_relative_rules :=
+  match goal with
+    |- WF (red_mod ?E _) =>
+      normalize E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
+    | _ => idtac
   end.
