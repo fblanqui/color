@@ -43,3 +43,4 @@ key=Inductive; number
 key=Fixpoint; number
 key=Definition; number
 key=Lemma; number
+key=Ltac; number
