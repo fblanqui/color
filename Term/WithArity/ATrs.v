@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.23 2007-05-25 14:59:53 koper Exp $ *)
+(* $Id: ATrs.v,v 1.24 2007-05-25 16:28:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,9 +24,7 @@ Notation terms := (vector term).
 (***********************************************************************)
 (** rule *)
 
-Record rule : Set := mkRule {
-  lhs : term;
-  rhs : term }.
+Record rule : Set := mkRule { lhs : term; rhs : term }.
 
 Lemma eq_rule_dec : forall a b : rule, {a=b}+{~a=b}.
 
@@ -43,16 +41,14 @@ Section rewriting.
 
 Variable R : rules.
 
-Definition red (t1 t2 : term) :=
-  exists l, exists r, exists c, exists s,
+Definition red t1 t2 := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
 
-Definition hd_red (t1 t2 : term) :=
-  exists l, exists r, exists s,
+Definition hd_red t1 t2 := exists l, exists r, exists s,
   In (mkRule l r) R /\ t1 = app s l /\ t2 = app s r.
 
-Definition int_red (t1 t2 : term) :=
-  exists l, exists r, exists c, exists s, c <> Hole
+Definition int_red t1 t2 := exists l, exists r, exists c, exists s,
+  c <> Hole
   /\ In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
 
 End rewriting.

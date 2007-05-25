@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: VTrs.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VTrs.v,v 1.3 2007-05-25 16:28:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,10 +25,7 @@ Notation terms := (list term).
 (***********************************************************************)
 (** rule *)
 
-Record rule : Set := mkRule {
-  lhs : term;
-  rhs : term
-}.
+Record rule : Set := mkRule { lhs : term; rhs : term }.
 
 Notation rules := (list rule).
 
@@ -40,16 +37,14 @@ Variable R : rules.
 Require Export VContext.
 Require Export VSubstitution.
 
-Definition red (t1 t2 : term) :=
-  exists l, exists r, exists c, exists s,
+Definition red t1 t2 := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
 
-Definition hd_red (t1 t2 : term) :=
-  exists l, exists r, exists s,
+Definition hd_red t1 t2 := exists l, exists r, exists s,
   In (mkRule l r) R /\ t1 = app s l /\ t2 = app s r.
 
-Definition int_red (t1 t2 : term) :=
-  exists l, exists r, exists c, exists s, c <> Hole
+Definition int_red t1 t2 := exists l, exists r, exists c, exists s,
+  c <> Hole
   /\ In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
 
 Require Export RelUtil.
