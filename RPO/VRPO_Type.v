@@ -8,9 +8,9 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.3 2007-02-07 12:44:06 blanqui Exp $ *)
+(* $Id: VRPO_Type.v,v 1.4 2007-05-25 16:22:34 blanqui Exp $ *)
 
-Require Export Signature.
+Require Export VPrecedence.
 
 Module Type RPO_Axioms_Type.
 

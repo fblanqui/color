@@ -7,9 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VMPO.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VMPO.v,v 1.3 2007-05-25 16:22:34 blanqui Exp $ *)
 
-Require Export Signature.
+Require Export VPrecedence.
 Require Export MultisetListOrder.
 
 Module LMO := MultisetListOrder Term.
