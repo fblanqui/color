@@ -40,33 +40,17 @@ Section FunInt.
 
 End FunInt.
 
-(** Module type for proving relative-top termination (in the DP setting) *)
-Module Type TMatrixInt_DP.
+(** Module type for proving termination with matrix interpretations *)
+Module Type TMatrixInt.
 
   Parameter sig : Signature.
   Parameter dim : nat.
   Parameter dim_pos : dim > 0.
   Parameter trsInt : forall f : sig, matrixInt dim (arity f).
 
-End TMatrixInt_DP.
-
-(** Module type for proving relative termination *)
-Module Type TMatrixInt.
-
-  Declare Module MI : TMatrixInt_DP.
-  Export MI.
-
-  Parameter matrixInt_monotone : forall f : sig, 
-    monotone_interpretation dim_pos (trsInt f).
-
 End TMatrixInt.
 
-Ltac matrixInt_monotonicity := first 
-  [ solve [intro f; destruct f; vm_compute; auto with arith]
-  | fail "Failed to prove monotonicity of given matrix interpretation"
-  ].
-
-Module MatrixInt_DP (MI : TMatrixInt_DP).
+Module MatrixInt (MI : TMatrixInt).
 
   Export MI.
 
@@ -138,7 +122,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
       Variable f_mon : forall M v1 v2, v1 >=v v2 -> f M v1 >=v f M v2.
       Variables (a b : vec).
 
-      Lemma vec_add_monotone_map2 : forall n1 (v1 : vector vec n1) n2 
+      Lemma vec_add_weak_monotone_map2 : forall n1 (v1 : vector vec n1) n2 
         (v2 : vector vec n2) n (M : vector (matrix dim dim) n) i_j, a >=v b ->
         add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons a v2)) i_j)) >=v 
         add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons b v2)) i_j)).
@@ -167,7 +151,7 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
     Proof.
       intros f i j i_j vi vj a b ab.
       simpl. unfold mi_eval. apply (@vec_plus_ge_compat_r dim).
-      apply vec_add_monotone_map2; trivial.
+      apply vec_add_weak_monotone_map2; trivial.
       intros. unfold succeq, vec_ge. apply Vforall2_intro. intros.
       unfold mat_vec_prod. do 2 rewrite Vnth_col_mat. apply mat_mult_mon.
       apply mat_ge_refl. intros x y xp yp.
@@ -585,88 +569,82 @@ Module MatrixInt_DP (MI : TMatrixInt_DP).
 
     End OrderDecidability.
 
+    Section ExtendedMonotoneAlgebra.
+
+      Section VecMonotonicity.
+      
+        Variable f : matrix dim dim -> vec -> vec.
+        Variable f_mon : forall M v1 v2, get_elem M dim_pos dim_pos > 0 ->
+          v1 >=v v2 -> vec_at0 v1 > vec_at0 v2 -> 
+          vec_at0 (f M v1) > vec_at0 (f M v2).
+
+        Variables (a b : vec).
+
+        Lemma vec_add_monotone_map2 : forall n1 (v1 : vector vec n1) n2 
+          (v2 : vector vec n2)  n (M : vector (matrix dim dim) n) i_j,  
+          Vforall (fun m => get_elem m dim_pos dim_pos > 0) M ->
+          a >=v b -> vec_at0 a > vec_at0 b ->
+          vec_at0 (add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons a v2)) i_j))) >
+          vec_at0 (add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons b v2)) i_j))).
+
+        Proof.
+          induction v1; intros; simpl.
+          destruct n; [absurd_arith | idtac].
+          unfold add_vectors, vec_at0, vector_plus. simpl.
+          do 2 rewrite Vmap2_nth. 
+          unfold gt. apply plus_lt_compat_l.
+          unfold vec_at0 in f_mon. apply f_mon; try assumption.
+          apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
+          destruct n0; [absurd_arith | idtac].
+          unfold add_vectors, vec_at0, vector_plus. simpl.
+          do 2 rewrite Vmap2_nth.
+          unfold gt. apply plus_lt_compat_r.
+          match goal with |- ?Hl < ?Hr => fold (gt Hr Hl) end.
+          unfold vec_at0, add_vectors in IHv1. 
+          apply IHv1; try assumption.
+          apply Vforall_incl with (S n0) M. 
+          intros. VSntac M. simpl. auto.
+          assumption.
+        Qed.
+
+      End VecMonotonicity.
+
+      Variable matrixInt_monotone : forall f : sig,
+        monotone_interpretation dim_pos (trsInt f).
+
+      Lemma monotone_succ : monotone I succ.
+
+      Proof.
+        intros f i j i_j vi vj a b ab. split.
+        apply monotone_succeq. destruct ab. assumption.
+        simpl. unfold mi_eval. apply vec_plus_gt_compat_r.
+        apply vec_add_monotone_map2; try solve [destruct ab; assumption].
+        intros. unfold vec_at0. unfold mat_vec_prod. 
+        do 2 rewrite Vnth_col_mat.
+        do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
+        unfold vec_ge. apply Vforall2_intro. auto.
+        unfold vec_ge. apply Vforall2_intro. intros.
+        do 2 rewrite get_col_col_mat. destruct ab.
+        apply (Vforall2_nth ge). assumption.
+        assumption.
+        do 2 rewrite get_col_col_mat. assumption.
+        apply matrixInt_monotone.
+        auto with arith.
+      Qed.
+
+    End ExtendedMonotoneAlgebra.
+
   End MonotoneAlgebra.
 
   Export MonotoneAlgebra.
   Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
   Export MAR.
 
-End MatrixInt_DP.
+  Ltac matrixInt_monotonicity := first 
+    [ solve [apply monotone_succ; intro f; destruct f; vm_compute; auto with arith]
+    | fail "Failed to prove monotonicity of given matrix interpretation"
+    ].
 
-Module MatrixInt (MI : TMatrixInt).
-
-  Export MI.
-
-  Module MI_DP := MatrixInt_DP MI.MI.
-  Export MI_DP.
-
-  Module ExtendedMonotoneAlgebra <: ExtendedMonotoneAlgebraType.
-
-    Module MA := MI_DP.MonotoneAlgebra.
-    Export MA.
-
-    Section VecMonotonicity.
-      
-      Variable f : matrix dim dim -> vec -> vec.
-      Variable f_mon : forall M v1 v2, get_elem M dim_pos dim_pos > 0 ->
-        v1 >=v v2 -> vec_at0 v1 > vec_at0 v2 -> 
-        vec_at0 (f M v1) > vec_at0 (f M v2).
-
-      Variables (a b : vec).
-
-      Lemma vec_add_monotone_map2 : forall n1 (v1 : vector vec n1) n2 
-        (v2 : vector vec n2)  n (M : vector (matrix dim dim) n) i_j,  
-        Vforall (fun m => get_elem m dim_pos dim_pos > 0) M ->
-        a >=v b -> vec_at0 a > vec_at0 b ->
-        vec_at0 (add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons a v2)) i_j))) >
-        vec_at0 (add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons b v2)) i_j))).
-
-      Proof.
-        induction v1; intros; simpl.
-        destruct n; [absurd_arith | idtac].
-        unfold add_vectors, vec_at0, vector_plus. simpl.
-        do 2 rewrite Vmap2_nth. 
-        unfold gt. apply plus_lt_compat_l.
-        unfold vec_at0 in f_mon. apply f_mon; try assumption.
-        apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
-        destruct n0; [absurd_arith | idtac].
-        unfold add_vectors, vec_at0, vector_plus. simpl.
-        do 2 rewrite Vmap2_nth.
-        unfold gt. apply plus_lt_compat_r.
-        match goal with |- ?Hl < ?Hr => fold (gt Hr Hl) end.
-        unfold vec_at0, add_vectors in IHv1. 
-        apply IHv1; try assumption.
-        apply Vforall_incl with (S n0) M. 
-        intros. VSntac M. simpl. auto.
-        assumption.
-      Qed.
-
-    End VecMonotonicity.
-
-    Lemma monotone_succ : monotone I succ.
-
-    Proof.
-      intros f i j i_j vi vj a b ab. split.
-      apply monotone_succeq. destruct ab. assumption.
-      simpl. unfold mi_eval. apply vec_plus_gt_compat_r.
-      apply vec_add_monotone_map2; try solve [destruct ab; assumption].
-      intros. unfold vec_at0. unfold mat_vec_prod. 
-      do 2 rewrite Vnth_col_mat.
-      do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
-      unfold vec_ge. apply Vforall2_intro. auto.
-      unfold vec_ge. apply Vforall2_intro. intros.
-      do 2 rewrite get_col_col_mat. destruct ab.
-      apply (Vforall2_nth ge). assumption.
-      assumption.
-      do 2 rewrite get_col_col_mat. assumption.
-      apply matrixInt_monotone.
-      auto with arith.
-    Qed.
-
-  End ExtendedMonotoneAlgebra.
-
-  Export ExtendedMonotoneAlgebra.
-  Module EMAR := ExtendedMonotoneAlgebraResults ExtendedMonotoneAlgebra.
-  Export EMAR.
+  Ltac prove_termination := MAR.prove_termination matrixInt_monotonicity.
 
 End MatrixInt.

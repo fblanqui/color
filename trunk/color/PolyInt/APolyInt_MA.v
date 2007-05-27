@@ -90,27 +90,27 @@ Module PolyInt (PI : TPolyInt).
       right. intuition.
     Defined.
 
+    Section ExtendedMonotoneAlgebra.
+
+      Lemma monotone_succ : AWFMInterpretation.monotone I succ.
+
+      Proof.
+        unfold I. apply pi_monotone.
+      Qed.
+
+    End ExtendedMonotoneAlgebra.
+
   End MonotoneAlgebra.
 
   Export MonotoneAlgebra.
   Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
   Export MAR.
 
-  Module ExtendedMonotoneAlgebra <: ExtendedMonotoneAlgebraType.
+  Ltac polyInt_monotonicity := first 
+    [ solve [apply monotone_succ]
+    | fail "Failed to prove monotonicity of polynomial interpretation."
+    ].
 
-    Module MA := MonotoneAlgebra.
-    Export MA.
-
-    Lemma monotone_succ : AWFMInterpretation.monotone I succ.
-
-    Proof.
-      unfold I. apply pi_monotone.
-    Qed.
-
-  End ExtendedMonotoneAlgebra.
-
-  Export ExtendedMonotoneAlgebra.
-  Module EMAR := ExtendedMonotoneAlgebraResults ExtendedMonotoneAlgebra.
-  Export EMAR.
+  Ltac prove_termination := MAR.prove_termination polyInt_monotonicity.
 
 End PolyInt.
