@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATerm_of_String.v,v 1.1 2007-05-25 16:24:22 blanqui Exp $ *)
+(* $Id: ATerm_of_String.v,v 1.2 2007-05-28 16:28:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -113,7 +113,7 @@ Lemma red_of_sred : forall x y,
 
 Proof.
 intros. do 3 destruct H. decomp H. subst x. subst y. repeat rewrite term_sfill.
-apply red_rule. change (In (rule_of_srule (Srs.mkRule SSig x0 x1)) R).
+apply red_rule. change (In (rule_of_srule (Srs.mkRule x0 x1)) R).
 unfold trs_of_srs. apply in_map. exact H0.
 Qed.
 
