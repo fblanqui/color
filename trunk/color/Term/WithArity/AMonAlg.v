@@ -317,10 +317,15 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
   Ltac partition R := normalize (snd (partition part_succ R)).
 
   Ltac do_prove_termination prove_int_monotonicity lemma R :=
-    apply lemma; first 
-      [ solve [vm_compute; trivial | prove_int_monotonicity] 
-      | partition R
-      ].
+    apply lemma; 
+      match goal with
+      | |- monotone _ _ => prove_int_monotonicity
+      | |- WF _ => partition R
+      | _ => first 
+        [ solve [vm_compute; trivial] 
+        | fail "Failed to deal with generated goal"
+        ]
+      end.
 
   Ltac prove_termination prove_int_monotone :=
     let prove := do_prove_termination prove_int_monotone in
