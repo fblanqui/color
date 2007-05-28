@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.24 2007-05-25 16:28:56 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.25 2007-05-28 16:28:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -33,6 +33,10 @@ decide equality; apply eq_term_dec.
 Qed.
 
 Notation rules := (list rule).
+
+Require Export ANotvar.
+
+Definition no_lhs_variable R := forall l r, In (mkRule l r) R -> @notvar Sig l.
 
 (***********************************************************************)
 (** rewrite steps *)
@@ -491,7 +495,8 @@ Implicit Arguments int_red_fun [Sig R f ts v].
 Ltac solve_termination R lemma :=
   match type of R with
   | list ?rule => first 
-    [ solve [replace R with (nil (A:=rule)); [apply lemma | vm_compute; trivial]]
+    [ solve [replace R with (nil (A:=rule));
+      [apply lemma | vm_compute; trivial]]
     | fail "The termination problem is non-trivial"]
   | _ => fail "Unrecognized TRS type"
   end.
@@ -509,4 +514,27 @@ Ltac no_relative_rules :=
     |- WF (red_mod ?E _) =>
       normalize E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
     | _ => idtac
+  end.
+
+Ltac no_lhs_variable :=
+  match goal with
+    | |- no_lhs_variable ?R =>
+      unfold no_lhs_variable; let T := elt_type R in
+      let P := fresh in set (P := fun a : T => notvar (lhs a));
+        let H := fresh in assert (H : lforall P R);
+          [unfold P; simpl; intuition
+            | let H0 := fresh in
+              do 2 intro; intro H0; apply (lforall_in H H0)]
+  end.
+
+Ltac rules_preserv_vars :=
+  match goal with
+    | |- rules_preserv_vars ?R =>
+      unfold rules_preserv_vars; let T := elt_type R in
+        let P := fresh in
+          set (P := fun a : T => incl (vars (rhs a)) (vars (lhs a)));
+            let H := fresh in assert (H : lforall P R);
+              [unfold P, incl; simpl; intuition
+                | let H0 := fresh in
+                  do 2 intro; intro H0; apply (lforall_in H H0)]
   end.
