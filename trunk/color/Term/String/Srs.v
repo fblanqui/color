@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 string rewriting
 *)
 
-(* $Id: Srs.v,v 1.2 2007-05-28 16:28:14 blanqui Exp $ *)
+(* $Id: Srs.v,v 1.3 2007-05-28 16:45:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -49,8 +49,7 @@ Ltac redtac := repeat
       let h1 := fresh in
       (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
       destruct H as [H h1]; destruct h1)
-    | H : transp red _ _ _ |- _ =>
-      unfold transp in H; redtac
+    | H : red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
   end.
 
 (***********************************************************************)
@@ -60,6 +59,7 @@ Section S.
 
 Variable Sig : Signature.
 
+Notation string := (list Sig).
 Notation rule := (rule Sig).
 
 Variable R : list rule.
@@ -78,4 +78,35 @@ exists l. exists r. exists (comp c c0). split. assumption.
 subst t. subst u. do 2 rewrite fill_comp. auto.
 Qed.
 
+Lemma red_nil : forall x y : string, red nil x y -> x = y.
+
+Proof.
+unfold red. intros. decomp H. destruct H1.
+Qed.
+
+Lemma red_nil_rtc : forall x y : string, red nil # x y -> x = y.
+
+Proof.
+induction 1. apply red_nil. exact H. refl. transitivity y; assumption.
+Qed.
+
+Lemma red_mod_empty_incl_red : red_mod nil R << red R.
+
+Proof.
+unfold inclusion. intros. redtac. deduce (red_nil_rtc H). subst x0.
+subst x. subst y. apply red_rule. exact H0.
+Qed.
+
 End S.
+
+(***********************************************************************)
+(** tactics *)
+
+Require Export SN.
+
+Ltac no_relative_rules :=
+  match goal with
+    |- WF (red_mod ?E _) =>
+      normalize E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
+    | _ => idtac
+  end.
