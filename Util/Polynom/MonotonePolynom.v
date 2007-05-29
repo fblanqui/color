@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 monotone polynomials
 *)
 
-(* $Id: MonotonePolynom.v,v 1.7 2007-05-24 15:18:11 blanqui Exp $ *)
+(* $Id: MonotonePolynom.v,v 1.8 2007-05-29 13:05:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -42,8 +42,15 @@ Ltac montac := intros; normalize_arity; montacrec.
 (*Ltac postac := simpl; intuition; (idtac || trivial || omega).*)
 Ltac postac := vm_compute; intuition; try discriminate.
 
+Ltac destruct_symbol :=
+  match goal with
+    | f : _ |- _ => destruct f; destruct_symbol
+    | _ => idtac
+  end.
+
 Ltac pmonotone :=
-  intro f; unfold pmonotone, coef_pos; case f; (split; [postac | montac]).
+  intro f; unfold pmonotone, coef_pos;
+    destruct_symbol; (split; [postac | montac]).
 
 (***********************************************************************)
 (** alternative definition *)
