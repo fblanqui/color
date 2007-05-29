@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.15 2007-04-27 19:13:35 koper Exp $ *)
+(* $Id: APolyInt.v,v 1.16 2007-05-29 11:49:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -123,7 +123,7 @@ Qed.
 (***********************************************************************)
 (** reduction ordering *)
 
-Definition succ := IR W Dgt.
+Let succ := IR W Dgt.
 
 Lemma pi_red_ord : reduction_ordering succ.
 
@@ -134,7 +134,7 @@ Qed.
 (***********************************************************************)
 (** reduction pair *)
 
-Definition succ_eq := IR W Dge.
+Let succ_eq := IR W Dge.
 
 Lemma pi_absorb : absorb succ succ_eq.
 
