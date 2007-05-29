@@ -640,7 +640,9 @@ Module MatrixInt (MI : TMatrixInt).
   Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
   Export MAR.
 
-  Ltac matrixInt_monotonicity := first 
+  Ltac matrixInt_monotonicity := 
+    let f := fresh "f" in
+    first 
     [ solve [apply monotone_succ; intro f; destruct f; vm_compute; auto with arith]
     | fail "Failed to prove monotonicity of given matrix interpretation"
     ].
