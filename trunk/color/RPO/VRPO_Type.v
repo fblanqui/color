@@ -8,11 +8,14 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.4 2007-05-25 16:22:34 blanqui Exp $ *)
+(* $Id: VRPO_Type.v,v 1.5 2007-05-29 17:41:53 koper Exp $ *)
 
 Require Export VPrecedence.
 
 Module Type RPO_Axioms_Type.
+
+  Declare Module P : VPrecedenceType.
+  Export P.
 
   Parameter tau : Sig -> relation term -> relation terms.
 
@@ -150,6 +153,8 @@ Module Type RPO_Wf_Type.
   Require Export ListUtil.
 
   Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
+
+  Axiom ltF_dec : rel_dec ltF.
 
   Axiom wf_ltF : well_founded ltF.
     

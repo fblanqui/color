@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.4 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: VRPO_Results.v,v 1.5 2007-05-29 17:41:53 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -459,5 +459,20 @@ Module RPO_Wf_Facts (RPO : RPO_Wf_Type).
     apply (status_lifting f).
     intros s s_in_ss; apply Hss; trivial.
   Qed.
+
+(*
+  Require Import AContext.
+
+  About term.
+
+  Lemma forall_subterm_eq_set : forall (P: term sig -> Set) t,
+    (forall u, subterm_eq u t -> P u) -> P t.
+*)
+
+  Lemma rpo_lt_dec : rel_dec lt.
+
+  Proof.
+(*    intros x y. apply forall_subterm_eq.*)
+  Admitted.
 
 End RPO_Wf_Facts.
