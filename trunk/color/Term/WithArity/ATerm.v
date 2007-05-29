@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.7 2007-05-29 11:58:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -278,7 +278,7 @@ right. unfold not. intro. injection H. auto.
 right. unfold not. intro. discriminate.
 (* fun *)
 intros f ts H u. destruct u. right. unfold not. intro. discriminate.
-case (eq_symb_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
+case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
 right. unfold not. intro. injection H0. intros. assert (ts=v).
 apply (inj_pair2 Sig (fun f => args f)). assumption. auto.
 right. unfold not. intro. injection H0. intros. auto.

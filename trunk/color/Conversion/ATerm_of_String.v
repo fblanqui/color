@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATerm_of_String.v,v 1.3 2007-05-29 07:37:40 blanqui Exp $ *)
+(* $Id: ATerm_of_String.v,v 1.4 2007-05-29 11:58:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,7 +22,7 @@ Variable SSig : Signature.
 
 Notation string := (list SSig).
 Notation letter := (symbol SSig).
-Notation eq_letter_dec := (@eq_symb_dec SSig).
+Notation eq_letter_dec := (@eq_symbol_dec SSig).
 Notation srule := (rule SSig).
 
 (***********************************************************************)
@@ -30,23 +30,23 @@ Notation srule := (rule SSig).
 
 Require Export ASignature.
 
-Inductive symbol : Set :=
-| Empty : symbol
-| Letter : letter -> symbol.
+Inductive symb : Set :=
+| Empty : symb
+| Letter : letter -> symb.
 
-Lemma eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}.
+Lemma eq_symb_dec : forall f g : symb, {f=g}+{~f=g}.
 
 Proof.
 decide equality. apply eq_letter_dec.
 Qed.
 
-Fixpoint arity (s : symbol) : nat :=
+Fixpoint ar (s : symb) : nat :=
   match s with
     | Empty => 0
     | Letter _ => 1
   end.
 
-Definition ASig_of_SSig := mkSignature arity eq_symbol_dec.
+Definition ASig_of_SSig := mkSignature ar eq_symb_dec.
 
 Notation ASig := ASig_of_SSig.
 
