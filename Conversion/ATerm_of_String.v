@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATerm_of_String.v,v 1.2 2007-05-28 16:28:14 blanqui Exp $ *)
+(* $Id: ATerm_of_String.v,v 1.3 2007-05-29 07:37:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -117,7 +117,7 @@ apply red_rule. change (In (rule_of_srule (Srs.mkRule x0 x1)) R).
 unfold trs_of_srs. apply in_map. exact H0.
 Qed.
 
-Lemma WF_sred_of_WF_sred : WF (red R) -> WF (Srs.red S).
+Lemma WF_red_of_WF_sred : WF (red R) -> WF (Srs.red S).
 
 Proof.
 unfold WF. intro H.
