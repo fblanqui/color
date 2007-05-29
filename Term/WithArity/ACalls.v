@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.4 2007-01-25 14:50:06 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.5 2007-05-29 11:58:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -40,7 +40,7 @@ Fixpoint defined (f : Sig) (l : rules) {struct l} : bool :=
       match lhs r with
 	| Var _ => defined f l'
 	| Fun g ts =>
-	  match eq_symb_dec f g with
+	  match eq_symbol_dec f g with
 	    | left _ => true
 	    | _ => defined f l'
 	  end
@@ -52,8 +52,8 @@ Lemma lhs_fun_defined : forall l r f us, l = Fun f us ->
 
 Proof.
 induction R. auto. subst l. simpl. intro Hor. destruct Hor. subst a. simpl.
-case (eq_symb_dec f f). auto. intro. absurd (f=f); auto.
-destruct a. simpl. destruct lhs. auto. case (eq_symb_dec f f0); auto.
+case (eq_symbol_dec f f). auto. intro. absurd (f=f); auto.
+destruct a. simpl. destruct lhs. auto. case (eq_symbol_dec f f0); auto.
 Qed.
 
 (***********************************************************************)

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 signature for algebraic terms with arity
 *)
 
-(* $Id: ASignature.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: ASignature.v,v 1.3 2007-05-29 11:58:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,8 +16,8 @@ Notation variable := nat (only parsing).
 Record Signature : Type := mkSignature {
   symbol :> Set;
   arity : symbol -> nat;
-  eq_symb_dec : forall f g : symbol, {f=g}+{~f=g}
+  eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}
 }.
 
 Implicit Arguments arity [s].
-Implicit Arguments eq_symb_dec [s].
+Implicit Arguments eq_symbol_dec [s].

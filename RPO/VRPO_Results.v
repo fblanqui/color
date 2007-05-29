@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: VRPO_Results.v,v 1.4 2007-05-29 11:58:35 blanqui Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -69,7 +69,7 @@ Module RPO_Symb_Beh_Facts (RPO : RPO_Axioms_Type).
     right; intro H; inversion H.
     intro t; destruct t as [y | g ts].
     right; intro H; inversion H.
-    elim (eq_symb_dec f g); intro case_f.
+    elim (eq_symbol_dec f g); intro case_f.
     subst g.
     elim (eq_elem_to_eq_list_dec ss IHs ts); intro case_ss_ts.
     subst; left; trivial.

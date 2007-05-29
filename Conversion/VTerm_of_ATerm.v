@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 *)
 
-(* $Id: VTerm_of_ATerm.v,v 1.4 2007-02-01 16:12:24 blanqui Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.5 2007-05-29 11:58:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,7 +32,7 @@ Notation "'args' f" := (aterms (arity f)) (at level 70).
 
 Require Export VSignature.
 
-Definition VSig_of_ASig := mkSignature (@ASignature.eq_symb_dec ASig).
+Definition VSig_of_ASig := mkSignature (@ASignature.eq_symbol_dec ASig).
 
 Notation VSig := VSig_of_ASig.
 
