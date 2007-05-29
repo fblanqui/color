@@ -7,37 +7,44 @@ See the COPYRIGHTS and LICENSE files.
 Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VMPO.v,v 1.3 2007-05-25 16:22:34 blanqui Exp $ *)
+(* $Id: VMPO.v,v 1.4 2007-05-29 17:41:53 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
 
-Module LMO := MultisetListOrder Term.
-Export LMO.
+Module MPO (PT : VPrecedenceType).
 
-Hypothesis wf_ltF : well_founded ltF.
-  
-Inductive lt_mpo : relation term :=
-  | mpo1 : forall f g ss ts, g <F f -> 
-    (forall t, In t ts -> lt_mpo t (Fun f ss)) -> 
-      lt_mpo (Fun g ts) (Fun f ss)
-  | mpo2 : forall f g, f =F= g ->
-    forall ss ts, mult (transp lt_mpo) ts ss -> 
-      lt_mpo (Fun g ts) (Fun f ss)
-  | mpo3 : forall t f ss, 
-    ex (fun s => In s ss /\ (s = t \/ lt_mpo t s)) -> 
-    lt_mpo t (Fun f ss).
+  Module P := VPrecedence PT.
+  Export P.
 
-Definition mytau (f : Sig) (r : relation term) := mult (transp r).
+  Module LMO := MultisetListOrder Term.
+  Export LMO.
+
+  Inductive lt_mpo : relation term :=
+    | mpo1 : forall f g ss ts, g <F f -> 
+        (forall t, In t ts -> lt_mpo t (Fun f ss)) -> 
+        lt_mpo (Fun g ts) (Fun f ss)
+    | mpo2 : forall f g, f =F= g ->
+        forall ss ts, mult (transp lt_mpo) ts ss -> 
+          lt_mpo (Fun g ts) (Fun f ss)
+    | mpo3 : forall t f ss, 
+        ex (fun s => In s ss /\ (s = t \/ lt_mpo t s)) -> 
+        lt_mpo t (Fun f ss).
+
+  Definition mytau (f : Sig) (r : relation term) := mult (transp r).
+
+End MPO.
 
 (***********************************************************************)
 
 Require Export VRPO_Type.
 
-Module RPO_Base_Model : RPO_Axioms_Type
-  with Definition lt := lt_mpo
-    with Definition tau := mytau.
+Module MPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
     
+  Module P := PT.
+  Module MPO := MPO PT.
+  Export MPO.
+
   Definition tau := mytau.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.
@@ -115,13 +122,13 @@ Module RPO_Base_Model : RPO_Axioms_Type
     elim Ht; [left; subst | right]; trivial.
   Qed.
 
-End RPO_Base_Model.
+End MPO_Base_Model.
 
 (***********************************************************************)
 
-Module RPO_MSO_Model : RPO_MSO_Type with Module Base := RPO_Base_Model.
+Module MPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
 
-  Module Base := RPO_Base_Model.
+  Module Base := MPO_Base_Model PT.
   Export Base.
 
   Lemma SPO_to_status_SPO : forall f (r : relation term), 
@@ -148,16 +155,17 @@ Module RPO_MSO_Model : RPO_MSO_Type with Module Base := RPO_Base_Model.
     unfold Sid.eqA, Term.eqA; intros; subst; trivial.
   Qed.
 
-End RPO_MSO_Model.
+End MPO_MSO_Model.
 
 (***********************************************************************)
 
-Module RPO_Wf_Model : RPO_Wf_Type with Module Base := RPO_Base_Model.
+Module MPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
 
-  Module Base := RPO_Base_Model.
+  Module Base := MPO_Base_Model PT.
   Export Base.
 
-  Definition wf_ltF := wf_ltF.
+  Definition wf_ltF := ltF_wf.
+  Definition ltF_dec := ltF_dec.
 
   Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
 
@@ -171,7 +179,5 @@ Module RPO_Wf_Model : RPO_Wf_Type with Module Base := RPO_Base_Model.
     unfold Sid.eqA, Term.eqA; intros; subst; trivial.
   Qed.
   
-End RPO_Wf_Model.
-
-
+End MPO_Wf_Model.
 

@@ -7,52 +7,73 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-(* $Id: VPrecedence.v,v 1.1 2007-05-25 16:29:55 blanqui Exp $ *)
+(* $Id: VPrecedence.v,v 1.2 2007-05-29 17:41:53 koper Exp $ *)
 
 Require Export VSignature.
-
-Variable Sig : Signature.
-
 Require Export VTerm.
-
-Notation term := (term Sig).
-Notation terms := (list term).
-
-(***********************************************************************)
-(** eqset module of terms *)
-
-Require Import RelExtras.
-
-Module Term <: Eqset.
-
-  Definition A := term.
-
-  Definition eqA := eq (A := term).
-
-  Require Import Setoid.
-
-  Lemma sid_theoryA : Setoid_Theory A eqA.
-  Proof.
-    constructor.
-    unfold eqA; simpl; trivial.
-    unfold eqA; intros; subst; trivial.
-    unfold eqA; intros; subst; trivial.
-  Qed.
-
-End Term.
-
-(***********************************************************************)
-(** precedence *)
-
-Parameter leF : Sig -> Sig -> Prop.
-
 Require Export Preorder.
 
-Axiom leF_preorder : preorder Sig leF.
+Module Type VPrecedenceType.
 
-Definition ltF := ltA Sig leF.
-Definition eqF := eqA Sig leF.
+  Parameter Sig : Signature.
 
-Infix "=F=" := eqF (at level 50).
-Infix "<F" := ltF (at level 50).
-Infix "<=F" := leF (at level 50).
+  Notation term := (term Sig).
+  Notation terms := (list term).
+
+  Parameter leF : Sig -> Sig -> Prop.
+
+  (***********************************************************************)
+  (** precedence *)
+
+  Definition ltF := ltA Sig leF.
+  Definition eqF := eqA Sig leF.
+
+  Parameter ltF_wf : well_founded ltF.
+  Parameter ltF_dec : rel_dec ltF.
+  Parameter leF_preorder : preorder Sig leF.
+
+  Infix "=F=" := eqF (at level 50).
+  Infix "<F" := ltF (at level 50).
+  Infix "<=F" := leF (at level 50).
+
+End VPrecedenceType.
+
+Module VPrecedence (P : VPrecedenceType).
+
+  Export P.
+
+  (***********************************************************************)
+  (** eqset module of terms *)
+
+  Require Import RelExtras.
+
+  Module Term <: Eqset.
+
+    Definition A := term.
+
+    Definition eqA := eq (A := term).
+
+    Require Import Setoid.
+
+    Lemma sid_theoryA : Setoid_Theory A eqA.
+    Proof.
+      constructor.
+      unfold eqA; simpl; trivial.
+      unfold eqA; intros; subst; trivial.
+      unfold eqA; intros; subst; trivial.
+    Qed.
+
+  End Term.
+
+  (***********************************************************************)
+  (** precedence *)
+
+  Definition ltF := ltA Sig leF.
+  Definition eqF := eqA Sig leF.
+
+  Infix "=F=" := eqF (at level 50).
+  Infix "<F" := ltF (at level 50).
+  Infix "<=F" := leF (at level 50).
+
+End VPrecedence.
+

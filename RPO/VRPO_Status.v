@@ -7,55 +7,62 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-(* $Id: VRPO_Status.v,v 1.3 2007-05-25 16:22:34 blanqui Exp $ *)
+(* $Id: VRPO_Status.v,v 1.4 2007-05-29 17:41:53 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
-
-Module LMO := MultisetListOrder Term.
-Export LMO.
-
 Require Export LexicographicOrder.
 
-Module LO := LexOrder Term.
-Export LO.
-
 Inductive status_name : Set := 
-  | lexicographic : status_name 
-  | multiset : status_name.
+| lexicographic : status_name 
+| multiset : status_name.
   
-Variable status : Sig -> status_name.
+Module RPO (PT : VPrecedenceType).
 
-Definition mytau f (r : relation term) : relation terms := 
-  match status f with 
+  Module P := VPrecedence PT.
+  Export P.
+
+  Module LMO := MultisetListOrder Term.
+  Export LMO.
+
+  Module LO := LexOrder Term.
+  Export LO.
+
+  Parameter status : Sig -> status_name.
+
+  Definition mytau f (r : relation term) : relation terms := 
+    match status f with 
     | lexicographic => lex r
     | multiset => mult (transp r)
-  end.
+    end.
 
-Hypothesis eq_st : forall f g, f =F= g -> status f = status g.
-Hypothesis wf_ltF : well_founded ltF.
+  Parameter eq_st : forall f g, f =F= g -> status f = status g.
 
-Inductive lt_rpo : relation term :=
-  | rpo1 : forall f g ss ts, g <F f -> 
-    (forall t, In t ts -> lt_rpo t (Fun f ss)) -> 
-    lt_rpo (Fun g ts) (Fun f ss)
-  | rpo2_lex : forall f g, f =F= g -> status f = lexicographic -> 
-    forall ss ts, (forall t, In t ts -> lt_rpo t (Fun f ss)) ->       
-      lex lt_rpo ts ss -> lt_rpo (Fun g ts) (Fun f ss)
-  | rpo2_mult : forall f g, f =F= g -> status f = multiset -> 
-    forall ss ts, mult (transp lt_rpo) ts ss -> 
-      lt_rpo (Fun g ts) (Fun f ss)
-  | rpo3 : forall t f ss, 
-    ex (fun s => In s ss /\ (s = t \/ lt_rpo t s)) -> 
-    lt_rpo t (Fun f ss).
+  Inductive lt_rpo : relation term :=
+    | rpo1 : forall f g ss ts, g <F f -> 
+        (forall t, In t ts -> lt_rpo t (Fun f ss)) -> 
+        lt_rpo (Fun g ts) (Fun f ss)
+    | rpo2_lex : forall f g, f =F= g -> status f = lexicographic -> 
+        forall ss ts, (forall t, In t ts -> lt_rpo t (Fun f ss)) ->       
+          lex lt_rpo ts ss -> lt_rpo (Fun g ts) (Fun f ss)
+    | rpo2_mult : forall f g, f =F= g -> status f = multiset -> 
+        forall ss ts, mult (transp lt_rpo) ts ss -> 
+          lt_rpo (Fun g ts) (Fun f ss)
+    | rpo3 : forall t f ss, 
+      ex (fun s => In s ss /\ (s = t \/ lt_rpo t s)) -> 
+      lt_rpo t (Fun f ss).
+
+End RPO.
 
 (***********************************************************************)
 
 Require Export VRPO_Type.
 
-Module RPO_Axioms_Model : RPO_Axioms_Type
-  with Definition lt := lt_rpo
-    with Definition tau := mytau.
+Module RPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
+
+  Module P := PT.
+  Module RPO := RPO PT.
+  Export RPO.
 
   Definition tau := mytau.
 
@@ -151,13 +158,13 @@ Module RPO_Axioms_Model : RPO_Axioms_Type
     elim Ht; [left; subst | right]; trivial.
   Qed.
 
-End RPO_Axioms_Model.
+End RPO_Base_Model.
 
 (***********************************************************************)
 
-Module RPO_MSO_Model : RPO_MSO_Type with Module Base := RPO_Axioms_Model.
+Module RPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
 
-  Module Base := RPO_Axioms_Model.
+  Module Base := RPO_Base_Model PT.
   Export Base.
 
   Lemma SPO_to_status_SPO : forall f (r : relation term), forall ss, 
@@ -191,12 +198,13 @@ End RPO_MSO_Model.
 
 (***********************************************************************)
 
-Module RPO_Wf_Model : RPO_Wf_Type with Module Base := RPO_Axioms_Model.
+Module RPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
 
-  Module Base := RPO_Axioms_Model.
+  Module Base := RPO_Base_Model PT.
   Export Base.
 
-  Definition wf_ltF := wf_ltF.
+  Definition wf_ltF := ltF_wf.
+  Definition ltF_dec := ltF_dec.
 
   Definition lifting (R : relation terms) := 
     forall l, accs lt l ->  Restricted_acc (accs lt) R l.
