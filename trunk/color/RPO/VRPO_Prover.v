@@ -45,7 +45,8 @@ Module RPO_Prover (R : TRPO).
 
     Proof.
       unfold ltF, Preorder.ltA, Preorder.eqA, leF. simpl.
-      apply WF_wf. (*apply WF_incl with (fun f g => f > g).*)
+      apply WF_wf. 
+      (*apply WF_incl with (fun f g => f > g).*)
     Admitted.
 
     Lemma ltF_dec : rel_dec ltF.
@@ -64,9 +65,8 @@ Module RPO_Prover (R : TRPO).
 
   End VPrecedence.
 
-  Module VRPO_Wf_Model := VRPO_Status.RPO_Wf_Model VPrecedence.
-  Module VRPO_Wf := VRPO_Results.RPO_Wf_Facts VRPO_Wf_Model.
-  Module VRPO := VRPO_Wf_Model.Base.
+  Module VRPO := VRPO_Status.RPO_Model VPrecedence.
+  Module VRPO_Results := VRPO_Results.RPO_Results VRPO.
 
   Section TerminationCriterion.
 
@@ -78,7 +78,7 @@ Module RPO_Prover (R : TRPO).
 
     Proof.
       intros p q.
-      destruct (VRPO_Wf.rpo_lt_dec (VTerm_of_ATerm.vterm_of_aterm q)
+      destruct (VRPO_Results.rpo_lt_dec (VTerm_of_ATerm.vterm_of_aterm q)
         (VTerm_of_ATerm.vterm_of_aterm p)); intuition.
     Defined.
 
@@ -94,7 +94,7 @@ Module RPO_Prover (R : TRPO).
       intro x. unfold arpo. set (t := VTerm_of_ATerm.vterm_of_aterm x).
       apply SN_Rof with t; trivial.
       apply Acc_SN. apply Acc_transp_transp.
-      apply VRPO_Wf.wf_lt.
+      apply VRPO_Results.wf_lt.
     Qed.
 
     Lemma arpo_subst_closed : substitution_closed arpo.
@@ -108,13 +108,7 @@ Module RPO_Prover (R : TRPO).
     Proof.
       unfold context_closed. intros. induction c.
       simpl. assumption.
-      simpl fill. apply monotonic_lt.
-      Lemma monotonic_lt : forall f ss ts,
-
-do 2 rewrite term_int_fun.
-do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
-      
-      unfold context_closed. intros.
+      simpl fill. 
     Admitted.
 
     Require Import ACompat.
