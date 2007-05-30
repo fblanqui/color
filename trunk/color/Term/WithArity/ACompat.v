@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.8 2007-04-13 10:36:36 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.9 2007-05-30 23:00:54 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -172,7 +172,68 @@ Qed.
 
 End weak_reduction_pair.
 
+(***********************************************************************)
+(** partitioning rewrite rules according to some decidable relation *)
+Section rule_partition.
+  
+  Variable R : rules.
+  Definition rule_partition succ (succ_dec : rel_dec succ) (r : rule) := 
+    partition_by_rel succ_dec (lhs r, rhs r).
+
+  Lemma rule_partition_left : forall succ (succ_dec : rel_dec succ) l r rs,
+    In (mkRule l r) (fst (partition (rule_partition succ_dec) rs)) ->
+    partition_by_rel succ_dec (l, r) = true.
+
+  Proof.
+    intros. unfold rule_partition in H.
+    set (w := partition_left
+      (fun r => partition_by_rel succ_dec (lhs r, rhs r))). simpl in w.
+    change l with (lhs (mkRule l r)). change r with (rhs (mkRule l r)).
+    apply w with rs. assumption.
+  Qed.
+
+  Lemma rule_partition_compat : forall succ (succ_dec : rel_dec succ),
+    snd (partition (rule_partition succ_dec) R) = nil ->
+    compat succ R.
+
+  Proof.
+    intros. intros l r Rlr.
+    apply partition_by_rel_true with term succ_dec.
+    apply rule_partition_left with R.
+    destruct (partition_complete (rule_partition succ_dec) (mkRule l r) R).
+    assumption. assumption. rewrite H in H0. destruct H0.
+  Qed.
+
+  Lemma rule_partition_complete : forall pf (R : rules),
+    let part := partition pf R in
+      red R << red (snd part) U red (fst part).
+
+  Proof.
+    clear R. intros. trans (red (snd part ++ fst part)). 
+    apply red_incl. unfold incl. intros.
+    destruct (partition_complete pf a R). assumption.
+    apply in_or_app. auto.
+    apply in_or_app. auto.
+    apply red_union.
+  Qed.
+
+  Lemma hd_rule_partition_complete : forall pf (R : rules),
+    let part := partition pf R in
+      hd_red R << hd_red (snd part) U hd_red (fst part).
+
+  Proof.
+    clear R. intros. trans (hd_red (snd part ++ fst part)).
+    apply hd_red_incl. unfold incl. intros.
+    destruct (partition_complete pf a R). assumption.
+    apply in_or_app. auto.
+    apply in_or_app. auto.
+    apply hd_red_union.
+  Qed.
+
+End rule_partition.
+
 End S.
+
 
 (***********************************************************************)
 (** tactics *)

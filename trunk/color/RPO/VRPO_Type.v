@@ -8,33 +8,33 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.5 2007-05-29 17:41:53 koper Exp $ *)
+(* $Id: VRPO_Type.v,v 1.6 2007-05-30 23:00:54 koper Exp $ *)
 
 Require Export VPrecedence.
 
-Module Type RPO_Axioms_Type.
+Module Type RPO_Model.
 
   Declare Module P : VPrecedenceType.
   Export P.
 
   Parameter tau : Sig -> relation term -> relation terms.
 
-  Axiom status_eq : forall f g, f =F= g -> tau f = tau g.
+  Parameter status_eq : forall f g, f =F= g -> tau f = tau g.
 
   Parameter lt : relation term.
 
-  Axiom lt_roots : forall f g, g <F f -> 
+  Parameter lt_roots : forall f g, g <F f -> 
     forall ss ts, (forall t, In t ts -> lt t (Fun f ss)) -> 
       lt (Fun g ts) (Fun f ss).
     
-  Axiom lt_status : forall f g, f =F= g -> 
+  Parameter lt_status : forall f g, f =F= g -> 
     forall ss ts, (forall t, In t ts -> lt t (Fun f ss)) ->       
       tau f lt ts ss -> lt (Fun g ts) (Fun f ss).
 
-  Axiom lt_subterm : forall f ss t, 
+  Parameter lt_subterm : forall f ss t, 
     ex (fun s => In s ss /\ (s = t \/ lt t s)) -> lt t (Fun f ss).
 
-  Axiom lt_decomp : forall s t, lt s t -> 
+  Parameter lt_decomp : forall s t, lt s t -> 
     ((ex (fun f => ex (fun g => ex (fun ss => ex (fun ts =>
       ltF f g /\
       (forall s, In s ss -> lt s (Fun g ts)) /\
@@ -52,6 +52,26 @@ Module Type RPO_Axioms_Type.
     ex (fun f => ex (fun ts => ex (fun t' =>
       In t' ts /\ (s = t' \/ lt s t')) /\ t = Fun f ts)).
 
+  Parameter SPO_to_status_SPO : forall f (r : relation term) ss, 
+    (forall s, In s ss -> (forall t u, r s t -> r t u -> r s u)
+      /\ (r s s -> False)) ->
+    (forall ts us, tau f r ss ts -> tau f r ts us -> tau f r ss us)
+    /\ (tau f r ss ss -> False).
+
+  Parameter mono_axiom : forall f (r : relation term), 
+    forall ss ts, one_less r ss ts -> tau f r ss ts.
+
+  Require Export AccUtil.
+  Require Export ListUtil.
+
+  Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
+
+  Parameter ltF_dec : rel_dec ltF.
+
+  Parameter wf_ltF : well_founded ltF.
+    
+  Parameter status_lifting : forall f, lifting (tau f lt).
+
   Ltac lt_inversion_cases H :=
     match type of H with
       | lt ?s ?t =>
@@ -63,7 +83,7 @@ Module Type RPO_Axioms_Type.
                   [intro Hr | intro Hs] | intro Ht])
       | _ => fail "Hyp should be ~ lt s t"
     end.
-
+ 
   Ltac inversion_case_root H :=
     let f := fresh "f" in let g := fresh "g" in
       let ss := fresh "ss" in let ts := fresh "ts" in
@@ -91,7 +111,7 @@ Module Type RPO_Axioms_Type.
                         elim H; clear H; intros Hsub H;
                           elim H; clear H; intros Hstat H;
                             elim H; clear H; intros s_is t_is).
-
+ 
   Ltac inversion_case_subterm H :=
     let f := fresh "f" in let ts := fresh "ts" in
       let Hex := fresh "Hex" in let t' := fresh "t'" in
@@ -122,42 +142,4 @@ Module Type RPO_Axioms_Type.
       | _ => fail "Hyp should be ~ lt s t"
     end.
 
-End RPO_Axioms_Type.
-
-(***********************************************************************)
-
-Module Type RPO_MSO_Type.
-
-  Declare Module Base : RPO_Axioms_Type.
-  Export Base.
-  
-  Axiom SPO_to_status_SPO : forall f (r : relation term) ss, 
-    (forall s, In s ss -> (forall t u, r s t -> r t u -> r s u)
-      /\ (r s s -> False)) ->
-    (forall ts us, tau f r ss ts -> tau f r ts us -> tau f r ss us)
-    /\ (tau f r ss ss -> False).
-
-  Axiom mono_axiom : forall f (r : relation term), 
-    forall ss ts, one_less r ss ts -> tau f r ss ts.
-
-End RPO_MSO_Type.
-
-(***********************************************************************)
-
-Module Type RPO_Wf_Type.
-
-  Declare Module Base : RPO_Axioms_Type.
-  Export Base.
-
-  Require Export AccUtil.
-  Require Export ListUtil.
-
-  Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
-
-  Axiom ltF_dec : rel_dec ltF.
-
-  Axiom wf_ltF : well_founded ltF.
-    
-  Axiom status_lifting : forall f, lifting (tau f lt).
-
-End RPO_Wf_Type.
+End RPO_Model.

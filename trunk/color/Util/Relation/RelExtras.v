@@ -9,7 +9,7 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 *)
 
-(* $Id: RelExtras.v,v 1.3 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: RelExtras.v,v 1.4 2007-05-30 23:00:55 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -73,7 +73,7 @@ Module Type Eqset.
   Open Scope sets_scope.
   Bind Scope sets_scope with A.
 
-  Axiom sid_theoryA : Setoid_Theory A eqA.
+  Parameter sid_theoryA : Setoid_Theory A eqA.
 
   Hint Resolve (Seq_refl  A eqA sid_theoryA) : sets.
   Hint Resolve (Seq_trans A eqA sid_theoryA) : sets.
@@ -124,7 +124,7 @@ Module Type Ord.
 
   Notation "X > Y" := (gtA X Y) : sets_scope.
 
-  Axiom gtA_eqA_compat : forall x x' y y',
+  Parameter gtA_eqA_compat : forall x x' y y',
     x =A= x' -> y =A= y' -> x > y -> x' > y'.
 
   Hint Resolve gtA_eqA_compat : sets.
@@ -181,7 +181,7 @@ Module Type Poset.
   Declare Module O : Ord with Definition A := A.
   Export O.
 
-  Axiom gtA_so : strict_order gtA.
+  Parameter gtA_so : strict_order gtA.
 
   Hint Resolve (sord_trans gtA_so) : sets.
   Hint Resolve (sord_irrefl gtA_so) : sets.
@@ -242,10 +242,10 @@ Section Transitive_Closure.
 
   Variable eqA : A -> A -> Prop.
 
-  Axiom sid_theoryA : Setoid_Theory A eqA.
-  Axiom R_eqA_comp : forall x y x' y',
+  Parameter sid_theoryA : Setoid_Theory A eqA.
+  Parameter R_eqA_comp : forall x y x' y',
     eqA x x' -> eqA y y' -> R x y -> R x' y'.
-  Axiom R_so : strict_order R.
+  Parameter R_so : strict_order R.
 
   Hint Resolve R_eqA_comp.
 

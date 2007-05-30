@@ -8,11 +8,11 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.5 2007-05-29 17:41:53 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.6 2007-05-30 23:00:54 koper Exp $ *)
 
 Require Export VRPO_Type.
 
-Module RPO_Symb_Beh_Facts (RPO : RPO_Axioms_Type).
+Module RPO_Results (RPO : RPO_Model).
 
   Export RPO.
   
@@ -190,16 +190,7 @@ Module RPO_Symb_Beh_Facts (RPO : RPO_Axioms_Type).
     intros s f g ts f_eq H; apply (lt_eq_f (Fun f ts) s) with f; trivial.
   Qed.
 
-End RPO_Symb_Beh_Facts.
-
 (***********************************************************************)
-
-Module RPO_MSO_Facts (RPO : RPO_MSO_Type).
-
-  Export RPO.
-
-  Module RPO_SBF := RPO_Symb_Beh_Facts RPO.Base.
-  Export RPO_SBF.
 
   Lemma SPO_lt : forall u,
     (forall t s, lt u t -> lt t s -> lt u s) /\ (lt u u -> False).
@@ -386,17 +377,8 @@ Module RPO_MSO_Facts (RPO : RPO_MSO_Type).
     apply mono_axiom; assumption.
   Qed.
 
-End RPO_MSO_Facts.
-
 (***********************************************************************)
-(* well-foundedness *)
-
-Module RPO_Wf_Facts (RPO : RPO_Wf_Type).
-
-  Export RPO.
-
-  Module RPO_SBF := RPO_Symb_Beh_Facts RPO.Base.
-  Export RPO_SBF.
+(* RPO is a reduction ordering *)
 
   Lemma acc_eq_f : forall f g ss,
     f =F= g -> Acc lt (Fun f ss) -> Acc lt (Fun g ss).
@@ -460,19 +442,10 @@ Module RPO_Wf_Facts (RPO : RPO_Wf_Type).
     intros s s_in_ss; apply Hss; trivial.
   Qed.
 
-(*
-  Require Import AContext.
-
-  About term.
-
-  Lemma forall_subterm_eq_set : forall (P: term sig -> Set) t,
-    (forall u, subterm_eq u t -> P u) -> P t.
-*)
-
   Lemma rpo_lt_dec : rel_dec lt.
 
   Proof.
 (*    intros x y. apply forall_subterm_eq.*)
   Admitted.
 
-End RPO_Wf_Facts.
+End RPO_Results.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-(* $Id: VRPO_Status.v,v 1.4 2007-05-29 17:41:53 koper Exp $ *)
+(* $Id: VRPO_Status.v,v 1.5 2007-05-30 23:00:54 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
@@ -58,7 +58,7 @@ End RPO.
 
 Require Export VRPO_Type.
 
-Module RPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
+Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Module P := PT.
   Module RPO := RPO PT.
@@ -158,14 +158,7 @@ Module RPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
     elim Ht; [left; subst | right]; trivial.
   Qed.
 
-End RPO_Base_Model.
-
 (***********************************************************************)
-
-Module RPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
-
-  Module Base := RPO_Base_Model PT.
-  Export Base.
 
   Lemma SPO_to_status_SPO : forall f (r : relation term), forall ss, 
     (forall s, In s ss -> (forall t u, r s t -> r t u -> r s u)
@@ -174,7 +167,7 @@ Module RPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
     /\ (tau f r ss ss -> False).
 
   Proof.
-    intros f r. 
+    intros f r.
     unfold tau, mytau; destruct (status f); simpl.
     apply SPO_to_lex_SPO.
     intros.
@@ -194,14 +187,7 @@ Module RPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
     unfold Sid.eqA, Term.eqA; intros; subst; trivial.
   Qed.  
 
-End RPO_MSO_Model.
-
 (***********************************************************************)
-
-Module RPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
-
-  Module Base := RPO_Base_Model PT.
-  Export Base.
 
   Definition wf_ltF := ltF_wf.
   Definition ltF_dec := ltF_dec.
@@ -220,4 +206,4 @@ Module RPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
     unfold Sid.eqA, Term.eqA; intros; subst; trivial.
   Qed.
   
-End RPO_Wf_Model.
+End RPO_Model.

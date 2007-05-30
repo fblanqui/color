@@ -8,7 +8,7 @@ This file provides a specification of finite multiset data-type along
 with specification of operations on multisets.
 *)
 
-(* $Id: MultisetCore.v,v 1.3 2007-05-17 15:30:54 koper Exp $ *)
+(* $Id: MultisetCore.v,v 1.4 2007-05-30 23:00:54 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -64,25 +64,25 @@ Section Specification.
 
   Open Scope msets_scope.
 
-  Axiom mult_eqA_compat: x =A= y -> x/M = y/M.
+  Parameter mult_eqA_compat: x =A= y -> x/M = y/M.
 
-  Axiom meq_multeq: M =mul= N -> (forall x, x/M = x/N).
+  Parameter meq_multeq: M =mul= N -> (forall x, x/M = x/N).
 
-  Axiom multeq_meq: (forall x, x/M = x/N) -> M =mul= N.
+  Parameter multeq_meq: (forall x, x/M = x/N) -> M =mul= N.
 
-  Axiom empty_mult: x/empty = 0.
+  Parameter empty_mult: x/empty = 0.
 
-  Axiom union_mult: x/(M+N) = (x/M + x/N)%nat.
+  Parameter union_mult: x/(M+N) = (x/M + x/N)%nat.
 
-  Axiom diff_mult: x/(M-N) = (x/M - x/N)%nat.
+  Parameter diff_mult: x/(M-N) = (x/M - x/N)%nat.
 
-  Axiom intersection_mult: x/(M#N) = Min.min (x/M) (x/N).
+  Parameter intersection_mult: x/(M#N) = Min.min (x/M) (x/N).
 
-  Axiom singleton_mult_in: x =A= y -> x/{{y}} = 1.
+  Parameter singleton_mult_in: x =A= y -> x/{{y}} = 1.
 
-  Axiom singleton_mult_notin: ~x =A= y -> x/{{y}} = 0.
+  Parameter singleton_mult_notin: ~x =A= y -> x/{{y}} = 0.
 
-  Axiom mset_ind_type: forall P : Multiset -> Type,
+  Parameter mset_ind_type: forall P : Multiset -> Type,
     P empty -> (forall M a, P M -> P (M + {{a}})) -> forall M, P M.
 
 End Specification.

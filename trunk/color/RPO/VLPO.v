@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VLPO.v,v 1.4 2007-05-29 17:41:53 koper Exp $ *)
+(* $Id: VLPO.v,v 1.5 2007-05-30 23:00:54 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export LexicographicOrder.
@@ -39,7 +39,7 @@ End LPO.
 
 Require Export VRPO_Type.
 
-Module LPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
+Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Module P := PT.
   Module LPO := LPO PT.
@@ -116,14 +116,7 @@ Module LPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
     elim Ht; [left; subst | right]; trivial.
   Qed.
 
-End LPO_Base_Model.
-
 (***********************************************************************)
-
-Module LPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type. 
-
-  Module Base := LPO_Base_Model PT.
-  Export Base.
 
   Lemma SPO_to_status_SPO : forall f (r : relation term), 
     forall ss, 
@@ -143,14 +136,7 @@ Module LPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
     intros f r ss ts. unfold tau, mytau. apply one_less2lex.
   Qed.
 
-End LPO_MSO_Model.
-
 (***********************************************************************)
-
-Module LPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
-
-  Module Base := LPO_Base_Model PT.
-  Export Base.
 
   Definition wf_ltF := ltF_wf.
   Definition ltF_dec := ltF_dec.
@@ -163,4 +149,4 @@ Module LPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
     intro f; unfold tau, mytau, lt, lifting. apply (lex_lifting lt_lpo).
   Qed.
   
-End LPO_Wf_Model.
+End LPO_Model.

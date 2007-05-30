@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VMPO.v,v 1.4 2007-05-29 17:41:53 koper Exp $ *)
+(* $Id: VMPO.v,v 1.5 2007-05-30 23:00:54 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
@@ -39,7 +39,7 @@ End MPO.
 
 Require Export VRPO_Type.
 
-Module MPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
+Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     
   Module P := PT.
   Module MPO := MPO PT.
@@ -122,14 +122,7 @@ Module MPO_Base_Model (PT : VPrecedenceType) <: RPO_Axioms_Type.
     elim Ht; [left; subst | right]; trivial.
   Qed.
 
-End MPO_Base_Model.
-
 (***********************************************************************)
-
-Module MPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
-
-  Module Base := MPO_Base_Model PT.
-  Export Base.
 
   Lemma SPO_to_status_SPO : forall f (r : relation term), 
     forall ss, 
@@ -155,14 +148,7 @@ Module MPO_MSO_Model (PT : VPrecedenceType) <: RPO_MSO_Type.
     unfold Sid.eqA, Term.eqA; intros; subst; trivial.
   Qed.
 
-End MPO_MSO_Model.
-
 (***********************************************************************)
-
-Module MPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
-
-  Module Base := MPO_Base_Model PT.
-  Export Base.
 
   Definition wf_ltF := ltF_wf.
   Definition ltF_dec := ltF_dec.
@@ -179,5 +165,4 @@ Module MPO_Wf_Model (PT : VPrecedenceType) <: RPO_Wf_Type.
     unfold Sid.eqA, Term.eqA; intros; subst; trivial.
   Qed.
   
-End MPO_Wf_Model.
-
+End MPO_Model.
