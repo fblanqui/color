@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.23 2007-05-25 10:00:01 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.24 2007-05-30 23:57:03 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -588,6 +588,28 @@ Section Element_At_List.
     destruct p as [ | p]; inversion Hp.
     left; trivial.
     right; apply IHl; exists p; trivial.
+  Qed.
+
+  Lemma element_at_app_r : forall l l' p, 
+    p >= length l ->
+    (l ++ l') [p] = l' [p - length l].
+
+  Proof.
+    induction l. intuition.
+    intros. destruct p.
+    inversion H.
+    simpl. apply IHl. simpl in H. auto with arith.
+  Qed.
+
+  Lemma replace_at_app_r : forall l l' p a,
+    p >= length l ->
+    (l ++ l') [p := a] = l ++ l' [p-length l := a].
+
+  Proof.
+    induction l; intros.
+    simpl. rewrite <- minus_n_O. refl.
+    destruct p. inversion H.
+    simpl. rewrite IHl. refl. intuition.
   Qed.
 
 End Element_At_List.

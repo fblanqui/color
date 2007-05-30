@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 *)
 
-(* $Id: VTerm_of_ATerm.v,v 1.5 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.6 2007-05-30 23:57:03 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -92,6 +92,14 @@ Lemma vterms_map : forall (A : Set) (f : A -> aterm) n (v : vector A n),
 
 Proof.
 induction v; simpl. refl. apply tail_eq. apply IHv.
+Qed.
+
+Lemma vterms_length : forall n (ts : aterms n),
+  length (vterms_of_aterms ts) = n.
+
+Proof.
+  induction ts. trivial.
+  simpl. rewrite IHts. refl.
 Qed.
 
 (***********************************************************************)
