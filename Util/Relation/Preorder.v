@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Various properties of preorders
 *)
 
-(* $Id: Preorder.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: Preorder.v,v 1.3 2007-05-30 23:00:55 koper Exp $ *)
 
 Require Export Relations.
 
@@ -18,7 +18,7 @@ Section PreOrderFacts.
   Definition eqA : relation A := fun (f g : A) => leA f g /\ leA g f.
   Definition ltA : (relation A) := fun (f g : A) => leA f g /\ ~ eqA f g.
 
-  Hypothesis leA_preorder : preorder A leA.
+  Variable leA_preorder : preorder A leA.
   
   Lemma eqA_equivalence : equivalence A eqA.
   Proof.
