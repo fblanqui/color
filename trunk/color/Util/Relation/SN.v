@@ -69,6 +69,12 @@ Section incl.
 
 Variable (A : Set) (R S : relation A).
 
+Lemma Acc_incl : R << S -> forall x, Acc S x -> Acc R x.
+  
+Proof.
+  intros. elim H0; intros. apply Acc_intro. intros. apply H2. apply H. exact H3.
+Qed.
+
 Lemma SN_incl : R << S -> forall x, SN S x -> SN R x.
 
 Proof.

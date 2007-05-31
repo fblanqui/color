@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Various properties of preorders
 *)
 
-(* $Id: Preorder.v,v 1.3 2007-05-30 23:00:55 koper Exp $ *)
+(* $Id: Preorder.v,v 1.4 2007-05-31 16:10:20 koper Exp $ *)
 
 Require Export Relations.
 
@@ -97,5 +97,27 @@ Section PreOrderFacts.
     elim (eqA_equivalence); intros eqA_refl eqA_trans eqA_sym.
     intro; apply b_neq_a; apply eqA_trans with b'; trivial.
   Qed.
+
+  Section Decidability.
+
+    Variable leA_dec : forall a b, {leA a b} + {~leA a b}.
+
+    Lemma eqA_dec : forall a b, {eqA a b} + {~eqA a b}.
+
+    Proof.
+      intros. unfold eqA.
+      destruct (leA_dec a b); intuition.
+      destruct (leA_dec b a); intuition.
+    Defined.
+
+    Lemma ltA_dec : forall a b, {ltA a b} + {~ltA a b}.
+
+    Proof.
+      intros. unfold ltA.
+      destruct (leA_dec a b); intuition.
+      destruct (eqA_dec a b); intuition.
+    Defined.
+
+  End Decidability.
 
 End PreOrderFacts.  
