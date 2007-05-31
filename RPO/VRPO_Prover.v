@@ -42,20 +42,27 @@ Module RPO_Prover (R : TRPO).
     Lemma ltF_wf : well_founded ltF.
 
     Proof.
-      unfold ltF, ltA, eqA, leF. simpl.
-      apply WF_wf. 
-      (*apply WF_incl with (fun f g => f > g).*)
-    Admitted.
+      unfold ltF, ltA, eqA, leF.
+      apply WF_wf. unfold transp.
+      apply WF_incl with (fun x y => prec x > prec y).
+      intros p q pq. destruct pq.
+      destruct (lt_eq_lt_dec (prec p) (prec q)) as [[pq | pq] | pq]; intuition.
+      intro x. apply (@SN_Rof Sig nat prec gt) with (prec x); trivial.
+      apply Acc_SN. apply Acc_incl with lt. intuition. apply lt_wf.
+    Qed.
 
     Lemma ltF_dec : rel_dec ltF.
 
     Proof.
-    Admitted.
+      intros x y. unfold ltF, ltA, leF, eqA.
+      destruct (le_lt_dec (prec y) (prec x)); intuition.
+    Defined.
 
     Lemma leF_preorder : preorder Sig leF.
 
     Proof.
-    Admitted.
+      unfold leF. intuition.
+    Qed.
 
     Infix "=F=" := eqF (at level 50).
     Infix "<F" := ltF (at level 50).
@@ -80,25 +87,19 @@ Module RPO_Prover (R : TRPO).
         intuition.
     Defined.
 
-    Lemma Acc_transp_transp : forall (A : Set) (R : relation A), 
-      forall x, Acc R x -> Acc (transp (transp R)) x.
-
-    Proof.
-    Admitted.
-
     Lemma arpo_wf : WF arpo.
 
     Proof.
       intro x. unfold arpo. set (t := vterm_of_aterm x).
-      apply SN_Rof with t; trivial.
-      apply Acc_SN. apply Acc_transp_transp.
+      apply SN_Rof with t; trivial. apply Acc_SN. 
+      apply Acc_incl with VRPO.lt. intuition.
       apply VRPO_Results.wf_lt.
     Qed.
 
     Lemma arpo_subst_closed : substitution_closed arpo.
 
     Proof.
-      intro t. 
+      unfold substitution_closed, arpo.       
     Admitted.
 
     Lemma arpo_context_closed : context_closed arpo.
