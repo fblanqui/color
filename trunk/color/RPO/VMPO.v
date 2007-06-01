@@ -7,18 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VMPO.v,v 1.6 2007-06-01 19:32:08 koper Exp $ *)
+(* $Id: VMPO.v,v 1.7 2007-06-01 23:04:23 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
+Require Export VRPO_Type.
 
 Module MPO (PT : VPrecedenceType).
 
   Module P := VPrecedence PT.
   Export P.
 
-  Module LMO := MultisetListOrder Term.
-  Export LMO.
+  Module S := Status PT.
+  Export S.
 
   Inductive lt_mpo : relation term :=
     | mpo1 : forall f g ss ts, g <F f -> 
@@ -52,7 +53,9 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     {tau f R ts ss} + {~tau f R ts ss}.
 
   Proof.
-  Admitted.
+    intros. unfold tau, mytau.
+    apply mul_status_dec. assumption.
+  Defined.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.
 

@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.7 2007-06-01 19:32:08 koper Exp $ *)
+(* $Id: VRPO_Type.v,v 1.8 2007-06-01 23:04:23 koper Exp $ *)
 
 Require Export VPrecedence.
 
@@ -147,3 +147,47 @@ Module Type RPO_Model.
     end.
 
 End RPO_Model.
+
+Module Status (PT : VPrecedenceType).
+
+  Module P := VPrecedence PT.
+  Export P.
+
+  Require Import MultisetListOrder.
+  Module LMO := MultisetListOrder Term.
+  Export LMO.
+
+  Require Import LexicographicOrder.
+  Module LO := LexOrder Term.
+  Export LO.
+
+  Lemma lex_status_dec : forall R ts ss,
+    (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
+    {lex R ts ss} + {~lex R ts ss}.
+
+  Proof.
+    intros. apply lex_dec. 
+    intros. destruct (term_eq_dec a b); intuition.
+    assumption.
+  Defined.
+
+  Lemma mul_status_dec : forall R ts ss,
+    (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
+    {mult (transp R) ts ss} + {~mult (transp R) ts ss}.
+
+  Proof.    
+    intros.
+    assert (eq_comp : forall x x' y y', x = x' -> y = y' -> 
+      (transp R) x y -> (transp R) x' y').
+    intuition. rewrite <- H0. rewrite <- H1. assumption.
+    destruct (@mOrd_dec_aux (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
+    assert (R_transp_dec : forall t s, In t ts -> In s ss ->
+      {(transp R) s t} + {~(transp R) s t}).
+    intros. destruct (H t s); intuition.
+    intros. apply R_transp_dec. 
+    destruct (member_multiset_list ts H1). compute in H3. rewrite H3. assumption.
+    destruct (member_multiset_list ss H0). compute in H3. rewrite H3. assumption.
+    intuition. intuition.
+  Defined.
+
+End Status.

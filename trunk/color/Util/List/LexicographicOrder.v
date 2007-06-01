@@ -3,13 +3,14 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
+- Adam Koprowski, 2007-06-01 added Decidability section
 
 Definition and properties of lexicographic order on lists of elements
 of a setoid. In particular, proofs that lex 'transmits' strict partial
 order property, and is a lifting.
 *)
 
-(* $Id: LexicographicOrder.v,v 1.4 2007-02-07 12:44:06 blanqui Exp $ *)
+(* $Id: LexicographicOrder.v,v 1.5 2007-06-01 23:04:23 koper Exp $ *)
 
 Require Export RelExtras.
 Require Export ListUtil.
@@ -148,5 +149,35 @@ Module LexOrder (ES : Eqset).
   Proof.
     intros r l; apply (lex_lifting_aux r (length l) l); trivial.
   Qed.
+
+  Section Decidability.
+
+    Require Import Peano_dec.
+
+    Variable eqA_dec : forall a b : ES.A, {a = b} + {~a = b}.
+
+    Lemma lex_dec : forall R l l',
+      (forall a b, In a l -> In b l' -> {R a b} + {~R a b}) ->
+      {lex R l l'} + {~lex R l l'}.
+
+    Proof.
+      induction l; intros.
+      right. intro nil_l. inversion nil_l.
+      destruct l'.
+      right. intro al_nil. inversion al_nil.
+      destruct (H a a0); auto with datatypes.
+      destruct (eq_nat_dec (length l) (length l')).
+      left. constructor; trivial.
+      right. intro al_nil. inversion al_nil; intuition.
+      apply n. apply lex_length with R. assumption.
+      destruct (eqA_dec a a0).
+      rewrite e. destruct (IHl l'). intuition.
+      left. constructor 2. assumption.
+      right. intro ll'. inversion ll'; intuition.
+      apply n. congruence.
+      right. intro ll'. inversion ll'; intuition.
+    Defined.
+
+  End Decidability.
 
 End LexOrder.
