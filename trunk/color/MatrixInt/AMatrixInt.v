@@ -643,7 +643,10 @@ Module MatrixInt (MI : TMatrixInt).
   Ltac matrixInt_monotonicity := 
     let f := fresh "f" in
     first 
-    [ solve [apply monotone_succ; intro f; destruct f; vm_compute; auto with arith]
+    [ solve [
+      apply monotone_succ; intro f; destruct f; 
+        vm_compute; repeat split; auto with arith
+      ]
     | fail "Failed to prove monotonicity of given matrix interpretation"
     ].
 
