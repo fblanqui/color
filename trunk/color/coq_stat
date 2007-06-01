@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# CoLoR, a Coq library on rewriting and termination.
+# See the COPYRIGHTS and LICENSE files.
+#
+# - Frederic Blanqui, 2007-04-19
+
+dir=${1:-.}
+
+files=`find $dir -name \*.v`
+
+total=`wc -l /dev/null $files | grep total | sed 's|total||'`
+
+echo Lines $total
+
+number () {
+  echo $key `grep $key $files | wc -l`
+}
+
+key=Inductive; number
+key=Fixpoint; number
+key=Definition; number
+key=Lemma; number
+key=Ltac; number

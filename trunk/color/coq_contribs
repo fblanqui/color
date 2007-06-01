@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# CoLoR, a Coq library on rewriting and termination.
+# See the COPYRIGHTS and LICENSE files.
+#
+# - Frederic Blanqui, 2007-04-19
+
+prog=`basename $0`
+
+if test $# -ne 1
+then
+  echo "usage: $prog coq_contribs_dir"
+  exit 1
+fi
+
+root=$1
+
+subdirs () {
+  ls -F $dir | grep / | sed 's|/||' | xargs
+}
+
+for d in `dir=$root; subdirs`
+do
+  for e in `dir=$root/$d; subdirs`
+  do
+    echo $e
+    coq_stat $root/$d/$e
+    echo ""
+  done
+done
