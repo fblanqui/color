@@ -7,11 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-(* $Id: VRPO_Status.v,v 1.6 2007-06-01 19:32:08 koper Exp $ *)
+(* $Id: VRPO_Status.v,v 1.7 2007-06-01 23:04:23 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
 Require Export LexicographicOrder.
+Require Export VRPO_Type.
 
 Inductive status_name : Set := 
 | lexicographic : status_name 
@@ -22,11 +23,8 @@ Module RPO (PT : VPrecedenceType).
   Module P := VPrecedence PT.
   Export P.
 
-  Module LMO := MultisetListOrder Term.
-  Export LMO.
-
-  Module LO := LexOrder Term.
-  Export LO.
+  Module S := Status PT.
+  Export S.
 
   Parameter status : Sig -> status_name.
 
@@ -66,12 +64,23 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Definition tau := mytau.
 
+  Lemma status_dec : forall f, 
+    {status f = lexicographic} + {status f = multiset}.
+
+  Proof.
+    intros. destruct (status f); intuition.
+  Defined.
+
   Lemma tau_dec : forall f R ts ss,
     (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
     {tau f R ts ss} + {~tau f R ts ss}.
 
   Proof.
-  Admitted.
+    intros. unfold tau, mytau.
+    destruct (status_dec f); rewrite e.
+    apply lex_status_dec. assumption.
+    apply mul_status_dec. assumption.
+  Defined.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.
 

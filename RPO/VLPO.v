@@ -7,18 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VLPO.v,v 1.6 2007-06-01 19:32:08 koper Exp $ *)
+(* $Id: VLPO.v,v 1.7 2007-06-01 23:04:23 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export LexicographicOrder.
+Require Export VRPO_Type.
 
 Module LPO (PT : VPrecedenceType).
 
   Module P := VPrecedence PT.
   Export P.
 
-  Module LO := LexOrder Term.
-  Export LO.
+  Module S := Status PT.
+  Export S.
 
   Inductive lt_lpo : relation term :=
     | lpo1 : forall f g ss ts, g <F f -> 
@@ -52,7 +53,8 @@ Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     {tau f R ts ss} + {~tau f R ts ss}.
 
   Proof.
-  Admitted.
+    unfold tau, mytau. intros. apply lex_status_dec. assumption.
+  Defined.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.
 
