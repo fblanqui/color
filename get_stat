@@ -30,17 +30,3 @@ dir=Term; val=$term; display
 dir=Math; val=$math; display
 dir=Termin; val=$termin; display
 dir=Total; val=$total; display
-
-echo ""
-
-files=`find . -name \*.v`
-
-number () {
-  echo $key `grep $key $files | wc -l`
-}
-
-key=Inductive; number
-key=Fixpoint; number
-key=Definition; number
-key=Lemma; number
-key=Ltac; number
