@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.6 2007-05-30 23:00:54 koper Exp $ *)
+(* $Id: VRPO_Type.v,v 1.7 2007-06-01 19:32:08 koper Exp $ *)
 
 Require Export VPrecedence.
 
@@ -18,6 +18,10 @@ Module Type RPO_Model.
   Export P.
 
   Parameter tau : Sig -> relation term -> relation terms.
+
+  Parameter tau_dec : forall f R ts ss,
+    (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
+    {tau f R ts ss} + {~tau f R ts ss}.
 
   Parameter status_eq : forall f g, f =F= g -> tau f = tau g.
 
@@ -66,7 +70,7 @@ Module Type RPO_Model.
 
   Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
 
-  Parameter ltF_dec : rel_dec ltF.
+  Parameter leF_dec : rel_dec leF.
 
   Parameter wf_ltF : well_founded ltF.
     

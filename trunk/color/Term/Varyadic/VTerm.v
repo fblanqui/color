@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.3 2007-02-01 16:12:24 blanqui Exp $ *)
+(* $Id: VTerm.v,v 1.4 2007-06-01 19:32:09 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -110,6 +110,12 @@ Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
 Proof.
 intros. rewrite H. refl.
 Qed.
+
+Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
+
+Proof.
+  intro. pattern t. 
+Admitted.
 
 (***********************************************************************)
 (** maximal index of a variable *)

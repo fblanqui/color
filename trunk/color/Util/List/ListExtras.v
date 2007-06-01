@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.3 2007-04-13 20:28:11 koper Exp $ *)
+(* $Id: ListExtras.v,v 1.4 2007-06-01 19:32:09 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -859,7 +859,7 @@ Section List_Rel_Dec.
     destruct H0.
     rewrite <- H0; trivial.
     apply n0; trivial.
-  Qed.
+  Defined.
 
   Lemma list_dec_all : forall (ll: list A),
     (forall l, In l ll -> {P l} + {~P l}) ->
@@ -880,7 +880,7 @@ Section List_Rel_Dec.
     right.
     destruct e as [l [l_ll nPl]].
     exists l; split; auto with datatypes.
-  Qed.
+  Defined.
 
 End List_Rel_Dec.
 

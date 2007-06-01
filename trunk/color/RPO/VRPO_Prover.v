@@ -4,7 +4,8 @@ See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2007-05-17
 
-  RPO employed for proving termination of concrete examples.
+  RPO employed for proving termination of concrete examples (after
+converting varyadic terms to terms with arities).
 *)
 
 Require Import ATrs.
@@ -51,11 +52,11 @@ Module RPO_Prover (R : TRPO).
       apply Acc_SN. apply Acc_incl with lt. intuition. apply lt_wf.
     Qed.
 
-    Lemma ltF_dec : rel_dec ltF.
+    Lemma leF_dec : rel_dec leF.
 
     Proof.
       intros x y. unfold ltF, ltA, leF, eqA.
-      destruct (le_lt_dec (prec y) (prec x)); intuition.
+      destruct (le_lt_dec (prec x) (prec y)); intuition.
     Defined.
 
     Lemma leF_preorder : preorder Sig leF.
@@ -83,7 +84,7 @@ Module RPO_Prover (R : TRPO).
 
     Proof.
       intros p q.
-      destruct (VRPO_Results.rpo_lt_dec (vterm_of_aterm q) (vterm_of_aterm p)); 
+      destruct (VRPO_Results.rpo_lt_dec (vterm_of_aterm q) (vterm_of_aterm p));
         intuition.
     Defined.
 

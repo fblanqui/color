@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: VContext.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VContext.v,v 1.3 2007-06-01 19:32:09 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -51,6 +51,36 @@ Lemma fill_comp : forall C D u, fill C (fill D u) = fill (comp C D) u.
 Proof.
 induction C; simpl; intros. refl. rewrite (IHC D u). refl.
 Qed.
+
+(***********************************************************************)
+(** subterm ordering *)
+
+Definition subterm_eq u t := exists C, t = fill C u.
+
+Definition subterm u t := exists C, C <> Hole /\ t = fill C u.
+
+Lemma subterm_immediate : forall f v a, In a v -> subterm a (Fun f v).
+
+Proof.
+Admitted.    
+
+(***********************************************************************)
+(** subterm-based induction principle *)
+
+Lemma subterm_rect : forall (P : term -> Type)
+  (IH : forall t, (forall u, subterm u t -> P u) -> P t),
+  forall t, P t.
+
+Proof.
+Admitted.
+
+Definition subterm_ind : forall (P : term -> Prop)
+  (IH : forall t, (forall u, subterm u t -> P u) -> P t),
+  forall t, P t := subterm_rect.
+
+Definition subterm_rec : forall (P : term -> Set)
+  (IH : forall t, (forall u, subterm u t -> P u) -> P t),
+  forall t, P t := subterm_rect.
 
 End S.
 

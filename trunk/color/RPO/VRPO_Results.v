@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.6 2007-05-30 23:00:54 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.7 2007-06-01 19:32:08 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -442,10 +442,103 @@ Module RPO_Results (RPO : RPO_Model).
     intros s s_in_ss; apply Hss; trivial.
   Qed.
 
+  Require Import VContext.
+  Require Import ListExtras.
+
+  Lemma eqF_dec : forall f g, {f =F= g} + {~f =F= g}.
+
+  Proof.
+    intros. unfold eqF, eqA.
+    destruct (leF_dec f g); intuition.
+    destruct (leF_dec g f); intuition.
+  Defined.
+
+  Lemma ltF_dec : forall f g, {f <F g} + {~f <F g}.
+
+  Proof.
+    intros. unfold ltF, ltA, eqA.
+    destruct (leF_dec f g); intuition.
+    destruct (leF_dec g f); intuition.    
+  Defined.
+
+  Lemma eqF_sym : forall f g, f =F= g -> g =F= f.
+
+  Proof.
+    intros. destruct (eqA_equivalence Sig leF). apply leF_preorder.
+    unfold eqF; intuition.
+  Qed.
+
   Lemma rpo_lt_dec : rel_dec lt.
 
   Proof.
-(*    intros x y. apply forall_subterm_eq.*)
-  Admitted.
+     (*   A bit of juggling to make an induction on pair of terms 
+      * ordered lexicographically (by nested induction). 
+      *   Still seems to be easier than to instantiate one of 
+      * lexicographic order definitions.
+      *)
+    intros p q. generalize p. clear p.
+    pattern q. apply subterm_rec. clear q. intros q.
+    intros IH p. generalize IH. clear IH.
+    pattern p. apply subterm_rec. clear p. intros p IH IH'.
+    destruct q.
+     (* Compare: lt p (Var n) *)
+    right. intro F. apply var_are_min with n p. assumption.
+     (* Compare: lt p (Fun f l) *)
+    set (ge := fun x y => lt y x \/ x = y).
+    destruct (many_one_dec ge l p).
+    intros. destruct (IH' l0 (subterm_immediate f l l0 H) p).
+    left. left. assumption.
+    destruct (term_eq_dec l0 p).
+    left. right. assumption.
+    right. intro. destruct H0; auto.
+    left. destruct s as [q [lq pa]]. apply lt_subterm. exists q. 
+    destruct pa; split; intuition.
+    destruct p.
+     (* Compare: lt (Var n0) (Fun f l) *)
+    right. intro H. lt_inversion H; try discriminate.
+    absurd (ge t' (Var n0)).
+    apply n. congruence.
+    destruct Ht'; [right | left]; intuition.
+     (* Compare: lt (Fun f0 l0) (Fun f l) *)
+    assert (all_lt_dec : 
+      { forall l0a, In l0a l0 -> lt l0a (Fun f l) } + 
+      { exists l0a, In l0a l0 /\ ~lt l0a (Fun f l) }).
+    destruct (list_dec_all (fun v => lt v (Fun f l)) l0); try solve [intuition].
+    intros. destruct (IH l1); intuition.
+    apply subterm_immediate. assumption.
+     (* RPO clause: lt_roots *)
+    assert (lt_roots_dec : {lt (Fun f0 l0) (Fun f l)} + 
+      {~(f0 <F f) \/ exists t, In t l0 /\ ~lt t (Fun f l)}).
+    destruct (ltF_dec f0 f); try solve [intuition].
+    destruct all_lt_dec; intuition.
+    left. apply lt_roots; assumption.
+    destruct lt_roots_dec. intuition.
+     (* RPO clause: lt_status *)
+    assert (lt_status_dec : {lt (Fun f0 l0) (Fun f l)} + 
+      {~f0 =F= f \/ ~tau f lt l0 l \/ exists t, In t l0 /\ ~lt t (Fun f l)}).
+    destruct (eqF_dec f0 f); try solve [intuition].
+    destruct (tau_dec f lt l0 l); try solve [intuition].
+    intros. apply (IH' s). apply subterm_immediate. assumption.
+    destruct all_lt_dec; try solve [intuition].
+    left. apply lt_status; try solve [intuition].
+    apply eqF_sym. assumption.
+    destruct lt_status_dec. intuition.
+     (* proof that order does not hold *)
+    right. intro ord. lt_inversion ord.
+    destruct o as [f0_f | [t [t_l0 t_fl]]].
+    apply f0_f. congruence.
+    apply t_fl. replace f with g; replace l with ts; try solve [congruence].
+    apply Hsub. congruence. 
+    destruct o0 as [f0_f | [tau_l0l | [t [t_l0 t_fl]]]].
+    apply f0_f. congruence.
+    apply tau_l0l. rewrite (status_eq f f1). congruence. 
+    apply eqF_sym. congruence.
+    apply t_fl. replace f with g; replace l with ts; try solve [congruence].
+    apply Hsub. congruence.
+    absurd (ge t' (Fun f0 l0)).
+    apply n. congruence. destruct Ht'. 
+    right. auto.
+    left. assumption.
+  Defined.
 
 End RPO_Results.
