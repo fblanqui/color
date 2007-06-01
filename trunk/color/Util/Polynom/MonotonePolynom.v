@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 monotone polynomials
 *)
 
-(* $Id: MonotonePolynom.v,v 1.8 2007-05-29 13:05:35 blanqui Exp $ *)
+(* $Id: MonotonePolynom.v,v 1.9 2007-06-01 14:27:05 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -49,8 +49,9 @@ Ltac destruct_symbol :=
   end.
 
 Ltac pmonotone :=
-  intro f; unfold pmonotone, coef_pos;
-    destruct_symbol; (split; [postac | montac]).
+  let f := fresh "f" in
+    intro f; unfold pmonotone, coef_pos;
+      destruct_symbol; (split; [postac | montac]).
 
 (***********************************************************************)
 (** alternative definition *)
