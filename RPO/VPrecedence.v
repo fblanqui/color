@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-(* $Id: VPrecedence.v,v 1.2 2007-05-29 17:41:53 koper Exp $ *)
+(* $Id: VPrecedence.v,v 1.3 2007-06-01 19:32:08 koper Exp $ *)
 
 Require Export VSignature.
 Require Export VTerm.
@@ -29,7 +29,7 @@ Module Type VPrecedenceType.
   Definition eqF := eqA Sig leF.
 
   Parameter ltF_wf : well_founded ltF.
-  Parameter ltF_dec : rel_dec ltF.
+  Parameter leF_dec : rel_dec leF.
   Parameter leF_preorder : preorder Sig leF.
 
   Infix "=F=" := eqF (at level 50).

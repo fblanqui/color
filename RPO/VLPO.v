@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VLPO.v,v 1.5 2007-05-30 23:00:54 koper Exp $ *)
+(* $Id: VLPO.v,v 1.6 2007-06-01 19:32:08 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export LexicographicOrder.
@@ -46,6 +46,13 @@ Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
   Export LPO.
     
   Definition tau := mytau.
+
+  Lemma tau_dec : forall f R ts ss,
+    (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
+    {tau f R ts ss} + {~tau f R ts ss}.
+
+  Proof.
+  Admitted.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.
 
@@ -139,7 +146,7 @@ Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 (***********************************************************************)
 
   Definition wf_ltF := ltF_wf.
-  Definition ltF_dec := ltF_dec.
+  Definition leF_dec := leF_dec.
 
   Definition lifting R := forall l, accs lt l ->  Restricted_acc (accs lt) R l.
 
