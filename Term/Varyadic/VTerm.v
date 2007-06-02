@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.4 2007-06-01 19:32:09 koper Exp $ *)
+(* $Id: VTerm.v,v 1.5 2007-06-02 23:29:29 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -67,7 +67,17 @@ Definition term_ind (P : term -> Prop) (Q : terms -> Prop) := term_rect P Q.
 
 Definition term_rec (P : term -> Set) (Q : terms -> Set) := term_rect P Q.
 
-Require Export ListForall.
+Lemma term_rect_forall : forall (P : term -> Type)
+  (H1 : forall x, P (Var x))
+  (H2 : forall f v, (forall x, In x v -> P x) -> P (Fun f v)),
+  forall t, P t.
+
+Proof.
+  intros. apply term_rect with (Q := fun v => forall x, In x v -> P x). 
+  assumption. assumption. intros. destruct H.
+Admitted.
+
+Require Import ListForall.
 
 Lemma term_ind_forall : forall (P : term -> Prop)
   (H1 : forall x, P (Var x))
@@ -75,8 +85,8 @@ Lemma term_ind_forall : forall (P : term -> Prop)
   forall t, P t.
 
 Proof.
-intros. apply term_ind with (Q := lforall P). assumption. assumption.
-exact I. intros. simpl. split; assumption.
+intros. apply term_rect_forall. assumption. 
+intros. apply H2. apply lforall_elim. assumption.
 Qed.
 
 Lemma term_ind_forall2 : forall (P : term -> Prop)
@@ -111,11 +121,34 @@ Proof.
 intros. rewrite H. refl.
 Qed.
 
+Require Import Peano_dec.
+
 Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
 
 Proof.
-  intro. pattern t. 
-Admitted.
+  intro. pattern t. apply term_rec with
+    (Q := fun ts : terms => forall us, {ts=us} + {~ts=us}); clear t; intros.
+  destruct u. 
+  destruct (eq_nat_dec x n). 
+  intuition. right. congruence.
+  right. discriminate.
+  destruct u. 
+  right. discriminate.
+  destruct (eq_symbol_dec f f0). destruct (H l).
+  left. congruence.
+  right. intro diff. apply n. congruence.
+  right. intro diff. apply n. congruence.
+  destruct us. 
+  left. trivial.
+  right. discriminate.
+  destruct us. 
+  right. discriminate.
+  destruct (H t0).
+  destruct (H0 us).
+  left. congruence.
+  right. intro diff. apply n. congruence.
+  right. intro diff. apply n. congruence.
+Defined.
 
 (***********************************************************************)
 (** maximal index of a variable *)

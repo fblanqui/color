@@ -10,7 +10,7 @@ converting varyadic terms to terms with arities).
 
 Require Import ATrs.
 Require Import VPrecedence.
-Require Import VRPO_Status.
+Require Export VRPO_Status.
 Require Import VRPO_Results.
 Require Import VTerm_of_ATerm.
 
@@ -143,5 +143,11 @@ Module RPO_Prover (R : TRPO).
     Qed.
 
   End TerminationCriterion.
+
+  Ltac prove_termination :=
+    match goal with
+    | |- WF (red ?R) => apply rpo_termination; vm_compute; trivial
+    | _ => fail "Unsupported problem for RPO"
+   end.
 
 End RPO_Prover.
