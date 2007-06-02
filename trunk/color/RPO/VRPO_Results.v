@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.7 2007-06-01 19:32:08 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.8 2007-06-02 23:29:29 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -468,6 +468,10 @@ Module RPO_Results (RPO : RPO_Model).
     unfold eqF; intuition.
   Qed.
 
+Lemma subterm_wf : well_founded (@subterm Sig).
+Proof.
+Admitted.
+
   Lemma rpo_lt_dec : rel_dec lt.
 
   Proof.
@@ -477,10 +481,19 @@ Module RPO_Results (RPO : RPO_Model).
       * lexicographic order definitions.
       *)
     intros p q. generalize p. clear p.
+    pattern q. apply well_founded_induction with term (@subterm Sig).
+    apply subterm_wf. clear q.
+    intros q IH p. generalize IH. clear IH.
+    pattern p. apply well_founded_induction with term (@subterm Sig).
+    apply subterm_wf. clear p. intros p IH IH'.
+    destruct q.
+(*
+    intros p q. generalize p. clear p.
     pattern q. apply subterm_rec. clear q. intros q.
     intros IH p. generalize IH. clear IH.
     pattern p. apply subterm_rec. clear p. intros p IH IH'.
     destruct q.
+*)
      (* Compare: lt p (Var n) *)
     right. intro F. apply var_are_min with n p. assumption.
      (* Compare: lt p (Fun f l) *)
