@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: VContext.v,v 1.4 2007-06-02 23:29:29 koper Exp $ *)
+(* $Id: VContext.v,v 1.5 2007-06-03 00:10:24 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -111,41 +111,43 @@ Proof.
   intros. apply X. unfold subterm_eq. exists Hole. auto.
 Qed.
 
-Lemma subterm_sub_rect : forall (P : term -> Type)
+Require Import ListForall.
+
+Lemma subterm_sub_ind : forall (P : term -> Prop)
   (IH : forall t, (forall u, subterm u t -> P u) -> P t),
   forall t u, subterm_eq u t -> P u.
 
 Proof.
-(*
-  intros P IH t. pattern t. apply term_rect_forall; clear t; intros.
-   (* var *)
-  rewrite (subterm_eq_var H). apply IH. unfold subterm. intros.
-  destruct H0 as [C [CH xC]]. destruct C. intuition. discriminate.
-   (* fun *)
-  apply IH. intros.
-  assert (exists t, In t v /\ subterm_eq u0 t). 
-  eapply subterm_fun_elim. eapply subterm_trans_eq2.
-  eexact H1. eexact H0.
-  destruct H2 as [t [tv u0t]].
-  apply (lforall_in H tv). assumption.
-*)
-Admitted.
+intros P IH. set (P' := fun t => forall u, subterm_eq u t -> P u).
+change (forall t, P' t). apply term_ind_forall.
+(* var *)
+unfold P'. intros. assert (u = Var x). apply subterm_eq_var. assumption.
+subst u. apply IH. unfold subterm. intros. destruct H0. destruct H0.
+destruct x0. absurd (Hole = Hole); auto. discriminate.
+(* fun *)
+intros. unfold P'. intros. apply IH. intros.
+assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. assumption.
+assert (exists t, In t v /\ subterm_eq u0 t). apply subterm_fun_elim with f.
+assumption.
+destruct H3. destruct H3.
+assert (P' x). apply lforall_in with term v. assumption. assumption.
+apply H5. assumption.
+Qed.
 
-Lemma subterm_rect : forall (P : term -> Type)
+Lemma subterm_ind : forall (P : term -> Prop)
   (IH : forall t, (forall u, subterm u t -> P u) -> P t),
   forall t, P t.
 
 Proof.
-  intros. apply subterm_eq_rect. apply subterm_sub_rect. assumption.
+  intros. apply subterm_eq_rect. apply subterm_sub_ind. assumption.
 Qed.
 
-Definition subterm_ind : forall (P : term -> Prop)
-  (IH : forall t, (forall u, subterm u t -> P u) -> P t),
-  forall t, P t := subterm_rect.
+Lemma subterm_wf : well_founded subterm.
 
-Definition subterm_rec : forall (P : term -> Set)
-  (IH : forall t, (forall u, subterm u t -> P u) -> P t),
-  forall t, P t := subterm_rect.
+Proof.
+  intro t. induction t using subterm_ind. constructor. intros.
+  apply H. assumption.
+Qed.
 
 End S.
 
