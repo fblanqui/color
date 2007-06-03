@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.9 2007-06-03 00:10:23 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.10 2007-06-03 12:59:30 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -60,24 +60,6 @@ Module RPO_Results (RPO : RPO_Model).
     right; injection; trivial.
   Qed.
 
-(*
-  Lemma eq_term_dec : forall s t : term, s = t \/ s <> t.
-
-  Proof.
-    intro s; induction s as [x | f ss IHs] using term_ind_forall2.
-    intro t; destruct t as [y | g ts].
-    elim (eq_nat_dec x y); intro; [left; subst | right; injection]; trivial.
-    right; intro H; inversion H.
-    intro t; destruct t as [y | g ts].
-    right; intro H; inversion H.
-    elim (eq_symbol_dec f g); intro case_f.
-    subst g.
-    elim (eq_elem_to_eq_list_dec ss IHs ts); intro case_ss_ts.
-    subst; left; trivial.
-    right; injection; trivial.
-    right; injection; trivial.
-  Qed.
-*)
   Lemma in_var : forall x t, t <> Var x -> in_term_vars x t -> lt (Var x) t.
 
   Proof.
@@ -399,7 +381,69 @@ Module RPO_Results (RPO : RPO_Model).
     intro x; constructor; intros t lt_t_var_x.
     elim (var_are_min x t); assumption.
   Qed.
-    
+
+  Require Import ListExtras.
+
+  Lemma eqF_sym : forall f g, f =F= g -> g =F= f.
+
+  Proof.
+    intros. destruct (eqA_equivalence Sig leF). apply leF_preorder.
+    unfold eqF; intuition.
+  Qed.
+
+  Require Import VSubstitution.
+  Require Import VContext.
+
+  Section subst_closed.
+
+  Variable status_homomorphic : forall F ss ts f,
+    (forall s t, In s ss -> In t ts -> lt s t -> lt (F s) (F t)) ->
+    tau f lt ss ts -> tau f lt (map F ss) (map F ts).
+
+  Lemma lt_subst_closed : substitution_closed lt.
+
+  Proof.
+    intros p q. generalize p. clear p.
+    pattern q. apply well_founded_ind with term (@subterm Sig).
+    apply subterm_wf. clear q.
+    intros q IH p. generalize IH. clear IH.
+    pattern p. apply well_founded_ind with term (@subterm Sig).
+    apply subterm_wf. clear p. intros p IH IH'.
+    destruct q.
+     (* variable *)
+    intros. elimtype False. eapply var_are_min. eexact H.
+     (* fun. *)
+     (* lt_roots *)
+    intros. lt_inversion H.
+    subst p. do 2 rewrite app_fun.
+    apply lt_roots. replace f with g. assumption. congruence.
+    intros. rewrite <- app_fun.
+    destruct (proj1 (in_map_iff (app s) ss t)) as [t' [t't t'ss]]. assumption.
+    subst t. apply IH. apply subterm_immediate. assumption. assumption.
+    rewrite t_is. apply Hsub. assumption.
+     (* lt_status *)
+    subst p. do 2 rewrite app_fun.
+    apply lt_status. apply eqF_sym. replace f with g. assumption. congruence.
+    intros. rewrite <- app_fun.
+    destruct (proj1 (in_map_iff (app s) ss t)) as [t' [t't t'ss]]. assumption.
+    subst t. apply IH. apply subterm_immediate. assumption. assumption.
+    rewrite t_is. apply Hsub. assumption.
+    replace f with g; [rewrite <- (status_eq f0 g eqFfg) | congruence].
+    apply status_homomorphic. intros.
+    apply IH'. apply subterm_immediate. assumption. assumption. congruence.    
+     (* lt_subterm *)
+    rewrite app_fun. apply lt_subterm.
+    exists (app s t'). split.
+    apply (proj2 (in_map_iff (app s) l (app s t'))).
+    exists t'. split. refl. replace l with ts. assumption. congruence.
+    destruct Ht'.
+    left. congruence.
+    right. apply IH'. apply subterm_immediate. replace l with ts.
+    assumption. congruence. assumption.
+  Qed.
+   
+  End subst_closed. 
+
   Lemma wf_lt : well_founded lt.
 
   Proof.
@@ -443,9 +487,6 @@ Module RPO_Results (RPO : RPO_Model).
     intros s s_in_ss; apply Hss; trivial.
   Qed.
 
-  Require Import VContext.
-  Require Import ListExtras.
-
   Lemma eqF_dec : forall f g, {f =F= g} + {~f =F= g}.
 
   Proof.
@@ -461,13 +502,6 @@ Module RPO_Results (RPO : RPO_Model).
     destruct (leF_dec f g); intuition.
     destruct (leF_dec g f); intuition.    
   Defined.
-
-  Lemma eqF_sym : forall f g, f =F= g -> g =F= f.
-
-  Proof.
-    intros. destruct (eqA_equivalence Sig leF). apply leF_preorder.
-    unfold eqF; intuition.
-  Qed.
 
   Lemma rpo_lt_dec : rel_dec lt.
 

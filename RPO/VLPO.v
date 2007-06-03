@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VLPO.v,v 1.7 2007-06-01 23:04:23 koper Exp $ *)
+(* $Id: VLPO.v,v 1.8 2007-06-03 12:59:30 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export LexicographicOrder.
@@ -157,5 +157,5 @@ Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
   Proof.
     intro f; unfold tau, mytau, lt, lifting. apply (lex_lifting lt_lpo).
   Qed.
-  
+
 End LPO_Model.

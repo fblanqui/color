@@ -10,14 +10,14 @@ converting varyadic terms to terms with arities).
 
 Require Import ATrs.
 Require Import VPrecedence.
-Require Export VRPO_Status.
+Require Export VLPO.
 Require Import VRPO_Results.
 Require Import VTerm_of_ATerm.
 
 Module Type TRPO.
 
   Parameter Sig : ASignature.Signature.
-  Parameter stat : Sig -> status_name.
+(*  Parameter stat : Sig -> status_name.*)
   Parameter prec : Sig -> nat.
 
 End TRPO.
@@ -71,7 +71,7 @@ Module RPO_Prover (R : TRPO).
 
   End VPrecedence.
 
-  Module VRPO := RPO_Model VPrecedence.
+  Module VRPO := LPO_Model VPrecedence.
   Module VRPO_Results := RPO_Results VRPO.
 
   Section TerminationCriterion.
@@ -97,12 +97,17 @@ Module RPO_Prover (R : TRPO).
       apply VRPO_Results.wf_lt.
     Qed.
 
-    Lemma arpo_subst_closed : substitution_closed arpo.
+    Lemma arpo_subst_closed : ARelation.substitution_closed arpo.
 
     Proof.
-      unfold substitution_closed, arpo.       
-    Admitted.
-
+      unfold substitution_closed, arpo, Rof, transp. 
+      intros t u s tu. do 2 rewrite vterm_subs.
+      apply VRPO_Results.lt_subst_closed. 
+      unfold VRPO.tau, VRPO.LPO.mytau. intros.
+      apply VRPO.LPO.S.LO.lex_homomorphic. assumption. assumption.
+      assumption.
+    Qed.
+      
     Lemma arpo_context_closed : context_closed arpo.
 
     Proof.
