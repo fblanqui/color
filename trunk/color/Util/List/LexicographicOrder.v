@@ -10,7 +10,7 @@ of a setoid. In particular, proofs that lex 'transmits' strict partial
 order property, and is a lifting.
 *)
 
-(* $Id: LexicographicOrder.v,v 1.5 2007-06-01 23:04:23 koper Exp $ *)
+(* $Id: LexicographicOrder.v,v 1.6 2007-06-03 12:59:31 koper Exp $ *)
 
 Require Export RelExtras.
 Require Export ListUtil.
@@ -179,5 +179,27 @@ Module LexOrder (ES : Eqset).
     Defined.
 
   End Decidability.
+
+  Section Homomorphism.
+
+    Variable R : relation ES.A.
+    Variable f : ES.A -> ES.A.
+
+    Lemma lex_homomorphic : forall l l',
+      (forall x x', In x l -> In x' l' -> R x x' -> R (f x) (f x')) ->
+      lex R l l' -> lex R (map f l) (map f l').
+
+    Proof.
+      induction l; intros.
+      inversion H0.
+      destruct l'. inversion H0.
+      simpl. inversion H0.
+      constructor 1. apply H; auto with datatypes.
+      do 2 rewrite map_length. assumption.
+      constructor 2. apply IHl.
+      intros. apply H; intuition. assumption.
+    Qed.
+
+  End Homomorphism.
 
 End LexOrder.

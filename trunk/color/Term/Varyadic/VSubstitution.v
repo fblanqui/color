@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: VSubstitution.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: VSubstitution.v,v 1.3 2007-06-03 12:59:31 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,5 +46,14 @@ Lemma app_fun : forall s f v, app s (Fun f v) = Fun f (map (app s) v).
 Proof.
 intros f s. induction v; simpl; refl.
 Qed.
+
+Section properties.
+
+Variable succ : relation term.
+
+Definition substitution_closed :=
+  forall t1 t2 s, succ t1 t2 -> succ (app s t1) (app s t2).
+
+End properties.
 
 End S.

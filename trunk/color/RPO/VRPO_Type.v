@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.8 2007-06-01 23:04:23 koper Exp $ *)
+(* $Id: VRPO_Type.v,v 1.9 2007-06-03 12:59:30 koper Exp $ *)
 
 Require Export VPrecedence.
 
@@ -76,6 +76,12 @@ Module Type RPO_Model.
     
   Parameter status_lifting : forall f, lifting (tau f lt).
 
+(*
+  Parameter status_homomorphic : forall F ss ts f,
+    (forall s t, In s ss -> In t ts -> lt s t -> lt (F s) (F t)) ->
+    tau f lt ss ts -> tau f lt (map F ss) (map F ts).
+*)
+    
   Ltac lt_inversion_cases H :=
     match type of H with
       | lt ?s ?t =>
@@ -161,33 +167,64 @@ Module Status (PT : VPrecedenceType).
   Module LO := LexOrder Term.
   Export LO.
 
-  Lemma lex_status_dec : forall R ts ss,
-    (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
-    {lex R ts ss} + {~lex R ts ss}.
+  Section Decidability.
 
-  Proof.
-    intros. apply lex_dec. 
-    intros. destruct (term_eq_dec a b); intuition.
-    assumption.
-  Defined.
+    Variable R : relation Term.A.
+    Variables ts ss : terms.
 
-  Lemma mul_status_dec : forall R ts ss,
-    (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
-    {mult (transp R) ts ss} + {~mult (transp R) ts ss}.
+    Lemma lex_status_dec : 
+      (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
+      {lex R ts ss} + {~lex R ts ss}.
+      
+    Proof.
+      intros. apply lex_dec.
+      intros. destruct (term_eq_dec a b); intuition.
+      assumption.
+    Defined.
 
-  Proof.    
-    intros.
-    assert (eq_comp : forall x x' y y', x = x' -> y = y' -> 
-      (transp R) x y -> (transp R) x' y').
-    intuition. rewrite <- H0. rewrite <- H1. assumption.
-    destruct (@mOrd_dec_aux (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
-    assert (R_transp_dec : forall t s, In t ts -> In s ss ->
-      {(transp R) s t} + {~(transp R) s t}).
-    intros. destruct (H t s); intuition.
-    intros. apply R_transp_dec. 
-    destruct (member_multiset_list ts H1). compute in H3. rewrite H3. assumption.
-    destruct (member_multiset_list ss H0). compute in H3. rewrite H3. assumption.
-    intuition. intuition.
-  Defined.
+    Lemma mul_status_dec : 
+      (forall t s, In t ts -> In s ss -> {R t s} + {~R t s}) ->
+      {mult (transp R) ts ss} + {~mult (transp R) ts ss}.
+
+    Proof.    
+      intros.
+      assert (eq_comp : forall x x' y y', x = x' -> y = y' -> 
+        (transp R) x y -> (transp R) x' y').
+      intuition. rewrite <- H0. rewrite <- H1. assumption.
+      destruct (@mOrd_dec_aux (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
+      assert (R_transp_dec : forall t s, In t ts -> In s ss ->
+        {(transp R) s t} + {~(transp R) s t}).
+      intros. destruct (H t s); intuition.
+      intros. apply R_transp_dec. 
+      destruct (member_multiset_list ts H1). compute in H3. rewrite H3. assumption.
+      destruct (member_multiset_list ss H0). compute in H3. rewrite H3. assumption.
+      intuition. intuition.
+    Defined.
+
+  End Decidability.
+
+(*
+  Section Homomorphism.
+
+    Variable R : relation Term.A.
+    Variable F : Term.A -> Term.A.
+    Variables ts ss : terms.
+
+    Lemma mul_status_homomorphic : 
+      (forall s t, In s ss -> In t ts -> R s t -> R (F s) (F t)) ->
+      mult (transp R) ss ts -> mult (transp R) (map F ss) (map F ts).
+
+    Proof.
+      intros. unfold mult, MultisetLT, transp. 
+      apply mord_list_sim with R ts ss; unfold eqA, Term.eqA; trivial.
+      congruence. 
+      unfold order_compatible. intros. split.
+      destruct (proj1 (in_map_iff F ts x') H2) as [x'' [x''x' x''ts]].
+      destruct (proj1 (in_map_iff F ss y') H5) as [y'' [y''y' y''ss]].
+      subst x'. subst y'. intro. apply H; try assumption. 
+    Qed.
+
+  End Homomorphism.
+*)
 
 End Status.
