@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.5 2007-06-02 23:29:29 koper Exp $ *)
+(* $Id: VTerm.v,v 1.6 2007-06-03 00:10:24 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -67,16 +67,6 @@ Definition term_ind (P : term -> Prop) (Q : terms -> Prop) := term_rect P Q.
 
 Definition term_rec (P : term -> Set) (Q : terms -> Set) := term_rect P Q.
 
-Lemma term_rect_forall : forall (P : term -> Type)
-  (H1 : forall x, P (Var x))
-  (H2 : forall f v, (forall x, In x v -> P x) -> P (Fun f v)),
-  forall t, P t.
-
-Proof.
-  intros. apply term_rect with (Q := fun v => forall x, In x v -> P x). 
-  assumption. assumption. intros. destruct H.
-Admitted.
-
 Require Import ListForall.
 
 Lemma term_ind_forall : forall (P : term -> Prop)
@@ -85,8 +75,11 @@ Lemma term_ind_forall : forall (P : term -> Prop)
   forall t, P t.
 
 Proof.
-intros. apply term_rect_forall. assumption. 
-intros. apply H2. apply lforall_elim. assumption.
+  intros. apply term_ind with (Q := fun v => lforall P v).
+  assumption. assumption. constructor.
+  intros. apply lforall_elim. intros.
+  destruct H3. subst t0. assumption.
+  apply lforall_in with term v; assumption. 
 Qed.
 
 Lemma term_ind_forall2 : forall (P : term -> Prop)

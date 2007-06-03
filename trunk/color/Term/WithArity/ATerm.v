@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.7 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.8 2007-06-03 00:10:24 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -290,7 +290,7 @@ case (H0 (Vtail u)); intro. rewrite e0. auto.
 right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
 apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
 right. unfold not. intro. injection H2. intros. auto.
-Qed.
+Defined.
 
 End S.
 

@@ -8,7 +8,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.8 2007-06-02 23:29:29 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.9 2007-06-03 00:10:23 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -60,6 +60,7 @@ Module RPO_Results (RPO : RPO_Model).
     right; injection; trivial.
   Qed.
 
+(*
   Lemma eq_term_dec : forall s t : term, s = t \/ s <> t.
 
   Proof.
@@ -76,7 +77,7 @@ Module RPO_Results (RPO : RPO_Model).
     right; injection; trivial.
     right; injection; trivial.
   Qed.
-
+*)
   Lemma in_var : forall x t, t <> Var x -> in_term_vars x t -> lt (Var x) t.
 
   Proof.
@@ -86,7 +87,7 @@ Module RPO_Results (RPO : RPO_Model).
     subst.
     elim H2; clear H2; intros s Hs; elim Hs; clear Hs; intros s_in_ss Hs.
     apply lt_subterm; exists s; split; trivial.
-    elim (eq_term_dec s (Var x)); intro case_s.
+    elim (term_eq_dec s (Var x)); intro case_s.
     left; trivial.
     right; apply (IHt s s_in_ss case_s Hs).
   Qed.
@@ -211,7 +212,7 @@ Module RPO_Results (RPO : RPO_Model).
                       (* case u < t : *)
     lt_inversion H1; try inversion s_is; try inversion t_is.
                       (* x < s : *)
-    elim (eq_term_dec s (Var x)); intro case_s.
+    elim (term_eq_dec s (Var x)); intro case_s.
     subst s; elim (var_are_min x t H2).
     apply in_var; trivial.
     apply (var_inclusion (Fun f ts) s); try right; subst; trivial.
@@ -468,10 +469,6 @@ Module RPO_Results (RPO : RPO_Model).
     unfold eqF; intuition.
   Qed.
 
-Lemma subterm_wf : well_founded (@subterm Sig).
-Proof.
-Admitted.
-
   Lemma rpo_lt_dec : rel_dec lt.
 
   Proof.
@@ -487,13 +484,6 @@ Admitted.
     pattern p. apply well_founded_induction with term (@subterm Sig).
     apply subterm_wf. clear p. intros p IH IH'.
     destruct q.
-(*
-    intros p q. generalize p. clear p.
-    pattern q. apply subterm_rec. clear q. intros q.
-    intros IH p. generalize IH. clear IH.
-    pattern p. apply subterm_rec. clear p. intros p IH IH'.
-    destruct q.
-*)
      (* Compare: lt p (Var n) *)
     right. intro F. apply var_are_min with n p. assumption.
      (* Compare: lt p (Fun f l) *)
