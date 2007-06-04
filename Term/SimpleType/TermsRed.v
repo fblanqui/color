@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Formalization of reductions of simply-typed lambda terms.
 *)
 
-(* $Id: TermsRed.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsRed.v,v 1.3 2007-06-04 00:47:41 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -49,15 +49,15 @@ Module TermsRed (Sig : TermsSig.Signature).
 
   Section conv_comp.
 
-    Hypothesis R : relation Term.
+    Variable R : relation Term.
     Notation Red := (Reduction R).
 
-    Hypothesis R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' -> R M N -> 
+    Variable R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' -> R M N -> 
       env M' = env N' -> R M' N'.
 
-    Hypothesis R_type_preserving: forall M N, R M N -> type M = type N.
+    Variable R_type_preserving: forall M N, R M N -> type M = type N.
 
-    Hypothesis R_env_preserving: forall M N, R M N -> env M = env N.
+    Variable R_env_preserving: forall M N, R M N -> env M = env N.
    
     Lemma Red_env_preserving : forall M N, Red M N -> env M = env N.
 
@@ -144,10 +144,10 @@ Module TermsRed (Sig : TermsSig.Signature).
 
   Section var_comp.
 
-    Hypothesis R : relation Term.
+    Variable R : relation Term.
     Notation Red := (Reduction R).
 
-    Hypothesis step_var_consistent : forall M N, R M N -> envSubset (activeEnv N) (activeEnv M).
+    Variable step_var_consistent : forall M N, R M N -> envSubset (activeEnv N) (activeEnv M).
 
     Lemma red_var_consistent : forall M N, Red M N -> envSubset (activeEnv N) (activeEnv M).
 
@@ -180,10 +180,10 @@ Module TermsRed (Sig : TermsSig.Signature).
 
   Section Decidability.
 
-    Hypothesis R : relation Term.
+    Variable R : relation Term.
     Notation Red := (Reduction R).
 
-    Hypothesis step_dec : forall M N, {R M N} + {~R M N}.
+    Variable step_dec : forall M N, {R M N} + {~R M N}.
 
     Lemma red_dec : forall M N, {Red M N} + {~Red M N}.
 
