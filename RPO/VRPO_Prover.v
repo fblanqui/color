@@ -147,11 +147,59 @@ Module RPO_Prover (R : TRPO).
       apply arpo_wf.
     Qed.
 
+    Lemma arpo_self_absorb : absorb arpo arpo.
+
+    Proof.
+      unfold absorb, arpo, Rof, transp. intros t u tu.
+      destruct tu as [s [ts su]]. 
+      apply VRPO_Results.lt_trans with (vterm_of_aterm s); assumption.
+    Qed.
+
+    Variable E : rules.
+
+    Lemma rpo_rel_termination :
+      let R_gt := partition part_rpo R in
+      let E_gt := partition part_rpo E in
+        snd R_gt = nil ->
+        snd E_gt = nil ->
+        WF (ATrs.red_mod E R).
+
+    Proof.
+      intros. apply WF_incl with arpo.
+      apply compat_red_mod with arpo. 
+      apply arpo_rewrite_ordering.
+      apply arpo_rewrite_ordering.
+      apply rule_partition_compat with arpo_dec. assumption.
+      apply rule_partition_compat with arpo_dec. assumption.
+      apply arpo_self_absorb.
+      apply arpo_wf.
+    Qed.
+
+    Lemma rpo_rel_top_termination :
+      let R_gt := partition part_rpo R in
+      let E_gt := partition part_rpo E in
+        snd R_gt = nil ->
+        snd E_gt = nil ->
+        WF (ATrs.hd_red_mod E R).
+
+    Proof.
+      intros. apply WF_incl with arpo.
+      apply compat_hd_red_mod with arpo.
+      apply arpo_subst_closed.
+      apply arpo_rewrite_ordering.
+      apply rule_partition_compat with arpo_dec. assumption.
+      apply rule_partition_compat with arpo_dec. assumption.
+      apply arpo_self_absorb.
+      apply arpo_wf.
+    Qed.
+
   End TerminationCriterion.
 
   Ltac prove_termination :=
     match goal with
     | |- WF (red ?R) => apply rpo_termination; vm_compute; trivial
+    | |- WF (red_mod ?E ?R) => apply rpo_rel_termination; vm_compute; trivial
+    | |- WF (hd_red_mod ?E ?R) => apply rpo_rel_top_termination; vm_compute; trivial
     | _ => fail "Unsupported problem for RPO"
    end.
 
