@@ -3,12 +3,15 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
+- Adam Koprowski, 2007-06-03, added section proving that RPO is a 
+   reduction ordering + a number of smaller things for certification
+   of examples.
 
 Proofs of a relation verifying Hypotheses in RPO_Type is 
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.10 2007-06-03 12:59:30 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.11 2007-06-04 00:22:19 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -362,6 +365,18 @@ Module RPO_Results (RPO : RPO_Model).
 
 (***********************************************************************)
 (* RPO is a reduction ordering *)
+
+  Lemma lt_trans : transitive lt.
+
+  Proof.
+    intros s t u st tu. destruct (SPO_lt s). apply H with t; assumption.
+  Qed.
+
+  Lemma lt_irrefl : irreflexive lt.
+
+  Proof.
+    intros s. destruct (SPO_lt s). trivial.
+  Qed.
 
   Lemma acc_eq_f : forall f g ss,
     f =F= g -> Acc lt (Fun f ss) -> Acc lt (Fun g ss).
