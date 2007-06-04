@@ -5,7 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Adam Koprowski, 2006-04-27
 
 This file provides definition of computability due to Tait and Girard
-and introduces, as hypothesis, some computability properties.
+and introduces, as Variable, some computability properties.
 *)
 
 Set Implicit Arguments.
@@ -128,23 +128,23 @@ Section Computability_def.
     
 Section Computability_theory.
   
-  Hypothesis R_type_preserving : forall M N, M -R-> N -> type M = type N.
+  Variable R_type_preserving : forall M N, M -R-> N -> type M = type N.
 
 
-  Hypothesis R_env_preserving : forall M N, M -R-> N -> env M = env N.
+  Variable R_env_preserving : forall M N, M -R-> N -> env M = env N.
 
-  Hypothesis R_var_consistent : forall M N, M -R-> N ->
+  Variable R_var_consistent : forall M N, M -R-> N ->
     envSubset (activeEnv N) (activeEnv M).
 
-  Hypothesis R_algebraic_preserving : forall M N, algebraic M -> M -R-> N ->
+  Variable R_algebraic_preserving : forall M N, algebraic M -> M -R-> N ->
     algebraic N.
 
-  Hypothesis R_var_normal : forall M N, isVar M -> ~M -R-> N.
+  Variable R_var_normal : forall M N, isVar M -> ~M -R-> N.
 
-  Hypothesis R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' ->
+  Variable R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' ->
     M -R-> N -> env M' = env N' -> M' -R-> N'.
 
-  Hypothesis R_app_reduct : forall M N (Mapp: isApp M),
+  Variable R_app_reduct : forall M N (Mapp: isApp M),
       ~isFunApp M \/ isArrowType (type M) -> (* x-man, use algebraic *)
       M -R-> N ->
       (exists MLabs: isAbs (appBodyL Mapp),
@@ -156,13 +156,13 @@ Section Computability_theory.
 	(appBodyL Mapp -R-> appBodyL Napp /\ appBodyR Mapp  =   appBodyR Napp) \/
 	(appBodyL Mapp -R-> appBodyL Napp /\ appBodyR Mapp -R-> appBodyR Napp).
 
-  Hypothesis R_monotonous : algebraic_monotonicity R.
+  Variable R_monotonous : algebraic_monotonicity R.
 
-  Hypothesis R_subst_stable : forall M N G (MS: correct_subst M G)
+  Variable R_subst_stable : forall M N G (MS: correct_subst M G)
     (NS: correct_subst N G),
     algebraicSubstitution G -> M -R-> N -> subst MS -R-> subst NS.
 
-  Hypothesis R_abs_reduct : forall M (Mabs: isAbs M) N, M -R-> N ->
+  Variable R_abs_reduct : forall M (Mabs: isAbs M) N, M -R-> N ->
     exists Nabs: isAbs N, absBody Mabs -R-> absBody Nabs.
 
   Hint Resolve R_type_preserving R_env_preserving R_var_normal : comp.

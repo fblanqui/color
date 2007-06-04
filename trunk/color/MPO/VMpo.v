@@ -63,8 +63,8 @@ Export LMO.
 
 Parameter ltF : Sig -> Sig -> Prop.
 
-Hypothesis wf_ltF : well_founded ltF.
-Hypothesis ltF_trans : transitive ltF.  
+Variable wf_ltF : well_founded ltF.
+Variable ltF_trans : transitive ltF.  
 
 (***********************************************************************)
 (** mpo *)

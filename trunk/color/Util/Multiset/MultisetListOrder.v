@@ -40,10 +40,10 @@ as Lists of elements of A *)
 
     Variable r : relation A.
 
-    Hypothesis r_eqA_compat : forall x x' y y',
+    Variable r_eqA_compat : forall x x' y y',
       x =A=x' -> y=A=y' -> r x y -> r x' y'.
 
-    Hypothesis In_eqA_compat : forall ss x x',
+    Variable In_eqA_compat : forall ss x x',
       In x' ss -> x =A= x' -> In x ss.
 
     Definition mult ss ts :=
