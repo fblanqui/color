@@ -80,6 +80,8 @@ Module RPO_Prover (R : TRPO).
 
     Definition arpo := Rof (transp VRPO.lt) (@vterm_of_aterm Sig).
 
+    Definition arpo_gt t u := VRPO_Results.rpo_gt (vterm_of_aterm t) (vterm_of_aterm u).
+
     Lemma arpo_dec : rel_dec arpo.
 
     Proof.
@@ -87,6 +89,14 @@ Module RPO_Prover (R : TRPO).
       destruct (VRPO_Results.rpo_lt_dec (vterm_of_aterm q) (vterm_of_aterm p));
         intuition.
     Defined.
+
+    Lemma arpo_gt_correct : forall t u, 
+      arpo_gt t u = true -> VRPO.lt (vterm_of_aterm u) (vterm_of_aterm t).
+
+    Proof.
+      intros. unfold arpo_gt in H.
+      apply VRPO_Results.rpo_gt_correct. assumption.      
+    Qed.
 
     Lemma arpo_wf : WF arpo.
 
@@ -127,23 +137,29 @@ Module RPO_Prover (R : TRPO).
 
     Require Import ACompat.
 
-    Definition part_rpo := rule_partition arpo_dec.
-
     Lemma arpo_rewrite_ordering : rewrite_ordering arpo.
 
     Proof.
       constructor. apply arpo_subst_closed. apply arpo_context_closed.
     Qed.
 
-    Lemma rpo_termination :
-      let R_gt := partition part_rpo R in
-        snd R_gt = nil ->
-        WF (ATrs.red R).
+    Definition orient R := 
+      forallb (fun r : ATrs.rule Sig => arpo_gt (ATrs.lhs r) (ATrs.rhs r)) R = true.
+    
+    Lemma orient_correct : forall R, orient R -> compat arpo R.
+
+    Proof.
+      unfold orient, arpo, Rof, transp. intros S So l r lrS.
+      apply arpo_gt_correct.
+      apply (proj1 (forallb_forall _ S) So (ATrs.mkRule l r)). assumption.
+    Qed.
+
+    Lemma rpo_termination : orient R -> WF (ATrs.red R).
 
     Proof.
       intros. apply WF_incl with arpo.
       apply compat_red. apply arpo_rewrite_ordering.
-      apply rule_partition_compat with arpo_dec. assumption.
+      apply orient_correct. assumption.
       apply arpo_wf.
     Qed.
 
@@ -158,37 +174,31 @@ Module RPO_Prover (R : TRPO).
     Variable E : rules.
 
     Lemma rpo_rel_termination :
-      let R_gt := partition part_rpo R in
-      let E_gt := partition part_rpo E in
-        snd R_gt = nil ->
-        snd E_gt = nil ->
-        WF (ATrs.red_mod E R).
+      orient R -> orient E ->
+      WF (ATrs.red_mod E R).
 
     Proof.
       intros. apply WF_incl with arpo.
       apply compat_red_mod with arpo. 
       apply arpo_rewrite_ordering.
       apply arpo_rewrite_ordering.
-      apply rule_partition_compat with arpo_dec. assumption.
-      apply rule_partition_compat with arpo_dec. assumption.
+      apply orient_correct. assumption.
+      apply orient_correct. assumption.
       apply arpo_self_absorb.
       apply arpo_wf.
     Qed.
 
     Lemma rpo_rel_top_termination :
-      let R_gt := partition part_rpo R in
-      let E_gt := partition part_rpo E in
-        snd R_gt = nil ->
-        snd E_gt = nil ->
-        WF (ATrs.hd_red_mod E R).
+      orient R -> orient E ->
+      WF (ATrs.hd_red_mod E R).
 
     Proof.
       intros. apply WF_incl with arpo.
       apply compat_hd_red_mod with arpo.
       apply arpo_subst_closed.
       apply arpo_rewrite_ordering.
-      apply rule_partition_compat with arpo_dec. assumption.
-      apply rule_partition_compat with arpo_dec. assumption.
+      apply orient_correct. assumption.
+      apply orient_correct. assumption.
       apply arpo_self_absorb.
       apply arpo_wf.
     Qed.
@@ -197,9 +207,9 @@ Module RPO_Prover (R : TRPO).
 
   Ltac prove_termination :=
     match goal with
-    | |- WF (red ?R) => apply rpo_termination; vm_compute; trivial
-    | |- WF (red_mod ?E ?R) => apply rpo_rel_termination; vm_compute; trivial
-    | |- WF (hd_red_mod ?E ?R) => apply rpo_rel_top_termination; vm_compute; trivial
+    | |- WF (ATrs.red ?R) => apply rpo_termination; vm_compute; trivial
+    | |- WF (ATrs.red_mod ?E ?R) => apply rpo_rel_termination; vm_compute; trivial
+    | |- WF (ATrs.hd_red_mod ?E ?R) => apply rpo_rel_top_termination; vm_compute; trivial
     | _ => fail "Unsupported problem for RPO"
    end.
 

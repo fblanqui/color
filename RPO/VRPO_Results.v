@@ -11,7 +11,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.11 2007-06-04 00:22:19 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.12 2007-06-04 02:44:54 koper Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -517,6 +517,59 @@ Module RPO_Results (RPO : RPO_Model).
     destruct (leF_dec f g); intuition.
     destruct (leF_dec g f); intuition.    
   Defined.
+
+  Definition term_eq (t u : term) :=
+    if term_eq_dec t u then
+      true
+    else
+      false.
+
+  Lemma term_eq_correct : forall t u, term_eq t u = true -> t = u.
+
+  Proof.
+    intros. unfold term_eq in H. 
+    destruct (term_eq_dec t u). assumption. discriminate.    
+  Qed.
+
+  Function rpo_gt (t u : term) {struct t} : bool :=
+    let rpo_ge t u := rpo_gt t u || term_eq t u in
+      match t, u with
+      | Var _, _ => false
+      | Fun f fa, Var x => existsb (fun t => rpo_ge t u) fa
+      | Fun f fa, Fun g ga => 
+          let lt_sub := existsb (fun t => rpo_ge t u) fa in
+            lt_sub
+      end.  
+
+  Lemma rpo_gt_correct : forall t u, rpo_gt t u = true -> lt u t.
+
+  Proof.
+    intro p. 
+    pattern p. apply well_founded_ind with term (@subterm Sig).
+    apply subterm_wf. clear p.
+    intros p IH q. generalize IH. clear IH.
+    pattern q. apply well_founded_ind with term (@subterm Sig).
+    apply subterm_wf. clear q. intros q IH IH'.
+    destruct p; intro pq.
+     (* var *)
+    inversion pq.
+     (* fun - var *)
+    destruct q. inversion pq.
+    apply lt_subterm. 
+    destruct (proj1 (existsb_exists _ l) H0) as [s [sl sgt]].
+    exists s; split. assumption.
+    destruct (orb_true_elim _ _ sgt).
+    right. apply IH'. apply subterm_immediate. assumption. assumption.
+    left. apply term_eq_correct. assumption.
+     (* fun - fun *)
+    inversion pq.
+    apply lt_subterm. 
+    destruct (proj1 (existsb_exists _ l) H0) as [s [sl sgt]].
+    exists s; split. assumption.
+    destruct (orb_true_elim _ _ sgt).
+    right. apply IH'. apply subterm_immediate. assumption. assumption.
+    left. apply term_eq_correct. assumption.
+  Qed.
 
   Lemma rpo_lt_dec : rel_dec lt.
 
