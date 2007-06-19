@@ -10,14 +10,16 @@ converting varyadic terms to terms with arities).
 
 Require Import ATrs.
 Require Import VPrecedence.
-Require Export VLPO.
+Require Export VRPO_Status.
 Require Import VRPO_Results.
 Require Import VTerm_of_ATerm.
+
+Set Implicit Arguments.
 
 Module Type TRPO.
 
   Parameter Sig : ASignature.Signature.
-(*  Parameter stat : Sig -> status_name.*)
+  Parameter stat : Sig -> status_name.
   Parameter prec : Sig -> nat.
 
 End TRPO.
@@ -71,7 +73,7 @@ Module RPO_Prover (R : TRPO).
 
   End VPrecedence.
 
-  Module VRPO := LPO_Model VPrecedence.
+  Module VRPO := RPO_Model VPrecedence.
   Module VRPO_Results := RPO_Results VRPO.
 
   Section TerminationCriterion.
@@ -80,8 +82,6 @@ Module RPO_Prover (R : TRPO).
 
     Definition arpo := Rof (transp VRPO.lt) (@vterm_of_aterm Sig).
 
-    Definition arpo_gt t u := VRPO_Results.rpo_gt (vterm_of_aterm t) (vterm_of_aterm u).
-
     Lemma arpo_dec : rel_dec arpo.
 
     Proof.
@@ -89,14 +89,6 @@ Module RPO_Prover (R : TRPO).
       destruct (VRPO_Results.rpo_lt_dec (vterm_of_aterm q) (vterm_of_aterm p));
         intuition.
     Defined.
-
-    Lemma arpo_gt_correct : forall t u, 
-      arpo_gt t u = true -> VRPO.lt (vterm_of_aterm u) (vterm_of_aterm t).
-
-    Proof.
-      intros. unfold arpo_gt in H.
-      apply VRPO_Results.rpo_gt_correct. assumption.      
-    Qed.
 
     Lemma arpo_wf : WF arpo.
 
@@ -113,8 +105,9 @@ Module RPO_Prover (R : TRPO).
       unfold substitution_closed, arpo, Rof, transp. 
       intros t u s tu. do 2 rewrite vterm_subs.
       apply VRPO_Results.lt_subst_closed. 
-      unfold VRPO.tau, VRPO.LPO.mytau. intros.
-      apply VRPO.LPO.S.LO.lex_homomorphic. assumption. assumption.
+      unfold VRPO.tau, VRPO.RPO.mytau. intros. destruct (VRPO.RPO.status f). 
+      apply VRPO.RPO.S.LO.lex_homomorphic. assumption. assumption.
+      apply VRPO.RPO.S.mul_status_homomorphic. assumption. assumption.
       assumption.
     Qed.
       
@@ -137,29 +130,23 @@ Module RPO_Prover (R : TRPO).
 
     Require Import ACompat.
 
+    Definition part_rpo := rule_partition arpo_dec.
+
     Lemma arpo_rewrite_ordering : rewrite_ordering arpo.
 
     Proof.
       constructor. apply arpo_subst_closed. apply arpo_context_closed.
     Qed.
 
-    Definition orient R := 
-      forallb (fun r : ATrs.rule Sig => arpo_gt (ATrs.lhs r) (ATrs.rhs r)) R = true.
-    
-    Lemma orient_correct : forall R, orient R -> compat arpo R.
-
-    Proof.
-      unfold orient, arpo, Rof, transp. intros S So l r lrS.
-      apply arpo_gt_correct.
-      apply (proj1 (forallb_forall _ S) So (ATrs.mkRule l r)). assumption.
-    Qed.
-
-    Lemma rpo_termination : orient R -> WF (ATrs.red R).
+    Lemma rpo_termination : 
+      let R_gt := partition part_rpo R in
+        snd R_gt = nil -> 
+        WF (ATrs.red R).
 
     Proof.
       intros. apply WF_incl with arpo.
       apply compat_red. apply arpo_rewrite_ordering.
-      apply orient_correct. assumption.
+      apply rule_partition_compat with arpo_dec. assumption.
       apply arpo_wf.
     Qed.
 
@@ -174,33 +161,34 @@ Module RPO_Prover (R : TRPO).
     Variable E : rules.
 
     Lemma rpo_rel_termination :
-      orient R -> orient E ->
-      WF (ATrs.red_mod E R).
+      let R_gt := partition part_rpo R in
+      let E_gt := partition part_rpo E in
+        snd R_gt = nil ->
+        snd E_gt = nil ->
+        WF (ATrs.red_mod E R).
 
     Proof.
       intros. apply WF_incl with arpo.
       apply compat_red_mod with arpo. 
       apply arpo_rewrite_ordering.
       apply arpo_rewrite_ordering.
-      apply orient_correct. assumption.
-      apply orient_correct. assumption.
+      apply rule_partition_compat with arpo_dec. assumption.
+      apply rule_partition_compat with arpo_dec. assumption.
       apply arpo_self_absorb.
       apply arpo_wf.
     Qed.
 
     Lemma rpo_rel_top_termination :
-      orient R -> orient E ->
+      let R_gt := partition part_rpo R in
+      let E_gt := partition part_rpo E in
+        snd R_gt = nil ->
+        snd E_gt = nil ->
       WF (ATrs.hd_red_mod E R).
 
     Proof.
-      intros. apply WF_incl with arpo.
-      apply compat_hd_red_mod with arpo.
-      apply arpo_subst_closed.
-      apply arpo_rewrite_ordering.
-      apply orient_correct. assumption.
-      apply orient_correct. assumption.
-      apply arpo_self_absorb.
-      apply arpo_wf.
+      intros. apply WF_incl with (ATrs.red_mod E R).
+      apply hd_red_mod_incl_red_mod.
+      apply rpo_rel_termination; assumption.
     Qed.
 
   End TerminationCriterion.

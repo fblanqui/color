@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.9 2007-06-03 12:59:30 koper Exp $ *)
+(* $Id: VRPO_Type.v,v 1.10 2007-06-19 17:45:51 koper Exp $ *)
 
 Require Export VPrecedence.
 
@@ -203,7 +203,6 @@ Module Status (PT : VPrecedenceType).
 
   End Decidability.
 
-(*
   Section Homomorphism.
 
     Variable R : relation Term.A.
@@ -222,9 +221,8 @@ Module Status (PT : VPrecedenceType).
       destruct (proj1 (in_map_iff F ts x') H2) as [x'' [x''x' x''ts]].
       destruct (proj1 (in_map_iff F ss y') H5) as [y'' [y''y' y''ss]].
       subst x'. subst y'. intro. apply H; try assumption. 
-    Qed.
+    Admitted.
 
   End Homomorphism.
-*)
 
 End Status.

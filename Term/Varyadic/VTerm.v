@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.6 2007-06-03 00:10:24 koper Exp $ *)
+(* $Id: VTerm.v,v 1.7 2007-06-19 17:45:51 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -92,6 +92,27 @@ intros. apply term_ind with (Q := fun v => forall t, In t v -> P t); simpl.
 assumption. assumption. intros. contradiction.
 intros. destruct H3. subst. assumption. apply H0. assumption.
 Qed.
+
+Section term_rec_forall.
+
+Require Export ListUtil.
+
+Variable term_eq_dec : forall t u : term, {t=u} + {t<>u}.
+
+Lemma term_rec_forall : forall (P : term -> Set)
+  (H1 : forall x, P (Var x))
+  (H2 : forall f v, (forall t, Inb term_eq_dec t v = true -> P t) -> P (Fun f v)),
+  forall t, P t.
+
+Proof.
+intros. apply term_rect with 
+  (Q := fun v => forall t, Inb term_eq_dec t v = true -> P t); simpl.
+assumption. assumption. intros. discriminate.
+intros. destruct (term_eq_dec t1 t0). subst t1. assumption. 
+apply H0. assumption.
+Qed.
+
+End term_rec_forall.
 
 (***********************************************************************)
 (** equality *)

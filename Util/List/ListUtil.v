@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.24 2007-05-30 23:57:03 koper Exp $ *)
+(* $Id: ListUtil.v,v 1.25 2007-06-19 17:45:52 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -791,11 +791,8 @@ Section partition_by_rel.
 
   Variables (A : Set) (R : relation A) (R_dec : rel_dec R).
 
-  Definition partition_by_rel p :=
-    match R_dec (fst p) (snd p) with
-    | left _ => true
-    | right _ => false
-    end.
+  Definition partition_by_rel p := 
+    if R_dec (fst p) (snd p) then true else false.
 
   Lemma partition_by_rel_true : forall a b,
     partition_by_rel (a, b) = true -> R a b.
