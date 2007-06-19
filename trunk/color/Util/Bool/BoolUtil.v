@@ -7,12 +7,23 @@ See the COPYRIGHTS and LICENSE files.
 general results on booleans
 *)
 
-(* $Id: BoolUtil.v,v 1.2 2007-01-19 17:22:40 blanqui Exp $ *)
+(* $Id: BoolUtil.v,v 1.3 2007-06-19 17:45:51 koper Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export Bool.
+
+(***********************************************************************)
+(** decidable relation (into bool) *)
+
+Section BoolRelation.
+
+  Variable A : Set.
+
+  Definition relation_bool :=  A -> A -> bool.
+
+End BoolRelation.
 
 (***********************************************************************)
 (** implication *)

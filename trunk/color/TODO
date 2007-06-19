@@ -1,3 +1,4 @@
+- MI [Adam]: try to improve performance
 - MPO [Adam]: remove MPO hypotheses (put them into a section?)
 - RPO [Adam]: solve problems with decidability procedure (dealing with RPO for concrete terms)
 - RPO [Adam]: support for Rainbow
