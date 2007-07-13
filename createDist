@@ -24,4 +24,4 @@ tar cf $dir.tar $dir
 gzip $dir.tar
 mv $dir.tar.gz $cwd
 
-rm -rf $dir
+#rm -rf $dir

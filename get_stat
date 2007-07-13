@@ -5,8 +5,6 @@
 #
 # - Frederic Blanqui, 2007-04-17
 
-#set -x
-
 lines () {
   wc -l /dev/null `find $dir -name \*.v` | grep total | sed 's|total||'
 }
