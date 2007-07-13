@@ -1,4 +1,13 @@
 
+07-05-25:
+- Term/String: strings [Blanqui]
+- Conversion/ATerm_of_String: conversion from strings to algebraic terms [Blanqui]
+
+07-04-25:
+- MatrixInt: matrix interpretations [Koprowski,Zantema]
+- Util/Matrix: matrices [Koprowski,Zantema]
+- Util/Algebra/SemiRing: semi-rings [Koprowski,Zantema]
+
 07-02-16:
 - simplification of the compilation procedure
 
