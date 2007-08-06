@@ -83,6 +83,14 @@ Variable A : Set.
 
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
+Lemma repeat_free_unique : forall  l (x:A) , repeat_free l -> forall n m,
+ l[n] =Some x -> l[m]=Some x -> n=m.
+intro;intro;induction l;intros;simpl in H; try discriminate.
+destruct n;destruct m;auto with *;simpl in *.
+rewrite <- H0 in H1; deduce (element_at_in2 _ _ H1); tauto.
+rewrite <- H1 in H0; deduce (element_at_in2 _ _ H0); tauto.
+destruct H;deduce (IHl H2 n m H0 H1);auto.
+Qed.
 
 Lemma repeat_free_dec_incl_length : forall l l' : list A,
   repeat_free l -> incl l l' -> length l <= length l'.

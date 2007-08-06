@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.25 2007-06-19 17:45:52 koper Exp $ *)
+(* $Id: ListUtil.v,v 1.26 2007-08-06 15:18:25 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -589,6 +589,15 @@ Section Element_At_List.
     left; trivial.
     right; apply IHl; exists p; trivial.
   Qed.
+
+
+Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n<length l.
+intro;intro;induction l;intros;simpl in H; try discriminate.
+destruct n.
+inversion H; subst;simpl;auto with *.
+deduce (IHl n H).
+intuition;simpl;omega.
+Qed.
 
   Lemma element_at_app_r : forall l l' p, 
     p >= length l ->
