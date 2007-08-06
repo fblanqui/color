@@ -7,11 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.6 2007-05-24 15:18:11 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.7 2007-08-06 16:08:38 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Definition prop_dec A (P : A -> Prop) := forall x, {P x}+{~P x}.
+
+(***********************************************************************)
+(** tactics *)
 
 Ltac refl := reflexivity.
 
@@ -37,3 +40,63 @@ Ltac normalize e :=
 
 Ltac normalize_in H e :=
   let x := fresh in set (x := e) in H; vm_compute in x; subst x.
+
+(***********************************************************************)
+(** dependent equality on decidable types *)
+
+Require Export EqdepFacts.
+Require Export Eqdep_dec.
+
+Section eq_dep.
+
+Variables (U : Type) (eq_dec : forall x y : U, {x=y}+{~x=y}).
+
+Lemma eq_rect_eq : forall (p : U) Q x h, x = eq_rect p Q x p h.
+  
+Proof.
+exact (eq_rect_eq_dec eq_dec).
+Qed.
+
+Theorem eq_dep_eq : forall P (p : U) x y, eq_dep U P p x p y -> x = y.
+
+Proof.
+exact (eq_rect_eq__eq_dep_eq U eq_rect_eq).
+Qed.
+
+Lemma UIP : forall (x y : U) (p1 p2 : x = y), p1 = p2.
+
+Proof.
+exact (eq_dep_eq__UIP U eq_dep_eq).
+Qed.
+
+Lemma UIP_refl : forall (x : U) (p : x = x), p = refl_equal x.
+
+Proof.
+exact (UIP__UIP_refl U UIP).
+Qed.
+
+Lemma Streicher_K :
+  forall (x : U) (P : x = x -> Prop), P (refl_equal x) -> forall p, P p.
+
+Proof.
+exact (K_dec_type eq_dec).
+Qed.
+
+Lemma inj_pairT2 : forall P (p : U) x y, existT P p x = existT P p y -> x = y.
+
+Proof.
+exact (eq_dep_eq__inj_pairT2 U eq_dep_eq).
+Qed.
+
+Lemma inj_pairP2 :
+  forall P (x : U) p q, ex_intro P x p = ex_intro P x q -> p = q.
+
+Proof.
+intros. apply inj_right_pair with (A:=U).
+intros x0 y0; case (eq_dec x0 y0); [left|right]; assumption.
+assumption.
+Qed.
+
+End eq_dep.
+
+Implicit Arguments UIP_refl [U x].

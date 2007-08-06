@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.19 2007-05-16 15:04:49 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.20 2007-08-06 16:08:38 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,18 +22,29 @@ Implicit Arguments Vhead.
 Implicit Arguments Vtail.
 Implicit Arguments Vconst.
 
-Require Export Eqdep.
-
-Ltac Veqtac := repeat
+(*Ltac Veqtac := repeat
   match goal with
     | H : @Vcons ?B ?x _ ?v = Vcons ?x ?w |- _ =>
       let H1 := fresh in let H3 := fresh in
       (injection H; intro H1; assert (H3 : v = w);
-      [apply (inj_pair2 nat (fun n => @vector B n)); assumption | clear H H1])
+      [apply (inj_pairT2 nat (fun n => @vector B n)); assumption | clear H H1])
     | H : @Vcons ?B ?x _ ?v = Vcons ?y ?w |- _ =>
       let H1 := fresh in let H2 := fresh in let H3 := fresh in
       (injection H; intros H1 H2; subst x; assert (H3 : v = w);
-      [apply (inj_pair2 nat (fun n => @vector B n)); assumption | clear H H1])
+      [apply (inj_pairT2 nat (fun n => @vector B n)); assumption | clear H H1])
+  end.*)
+
+Require Export NatUtil.
+
+Ltac Veqtac := repeat
+  match goal with
+    | H : @Vcons ?B ?x _ ?v = Vcons ?x ?w |- _ =>
+      let H1 := fresh in
+      (injection H; intro H1; deduce (inj_pairT2 eq_nat_dec H1); clear H)
+    | H : @Vcons ?B ?x _ ?v = Vcons ?y ?w |- _ =>
+      let H1 := fresh in let H2 := fresh in
+      (injection H; intros H1 H2; subst x; deduce (inj_pairT2 eq_nat_dec H1);
+        clear H)
   end.
 
 Section S.
@@ -126,7 +137,7 @@ intros until v1. destruct v1; intros; destruct m.
 simpl in H. rewrite <- (Vcast_refl_eq v2 h). assumption.
 discriminate. discriminate.
 assert (n = m). apply eq_add_S. assumption. subst n.
-assert (h = refl_equal (S m)). apply UIP. subst h.
+assert (h = refl_equal (S m)). apply (UIP eq_nat_dec). subst h.
 simpl in H. rewrite (Vcast_refl v1) in H. rewrite (Vcast_refl v2) in H.
 assumption.
 Qed.
@@ -153,7 +164,7 @@ Lemma Vcast_eq_intror : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
 
 Proof.
 induction v1; intros until n0; case n0; intros until v2; case v2; simpl; 
-intros; (discriminate || auto). Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
+intros; (discriminate || auto). Veqtac. apply Vtail_eq. eapply IHv1. apply H1.
 Qed.
 
 Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
@@ -169,7 +180,7 @@ Lemma Vcast_lr : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
 
 Proof.
 induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
-Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
+Veqtac. apply Vtail_eq. eapply IHv1. apply H1.
 Qed.
 
 Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
@@ -177,7 +188,7 @@ Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
 
 Proof.
 induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
-Veqtac. apply Vtail_eq. eapply IHv1. apply H2.
+Veqtac. apply Vtail_eq. eapply IHv1. apply H1.
 Qed.
 
 Lemma Vcast_introrl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h21 : n2=n1),
@@ -273,11 +284,11 @@ Lemma Veq_nth : forall n (v v' : vec n),
   (forall i (ip : i < n), Vnth v ip = Vnth v' ip) -> v = v'.
 
 Proof.
-  induction n; intros.
-  VOtac. refl.
-  VSntac v. VSntac v'. apply Vcons_eq.
-  do 2 rewrite Vhead_nth. apply H.
-  apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
+induction n; intros.
+VOtac. refl.
+VSntac v. VSntac v'. apply Vcons_eq.
+do 2 rewrite Vhead_nth. apply H.
+apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
 Qed.
 
 Lemma Vnth_head : forall x n (v : vec n) k (h : k < S n),
@@ -312,38 +323,39 @@ Lemma Vnth_addr : forall k n (v : vec n) a (H1 : k < S n) (H2 : k = n),
 Proof.
 intros. subst k. assert (H2 : H1 = lt_n_Sn n). apply lt_unique. subst H1.
 generalize dependent v. intro v. elim v.
- simpl. reflexivity.
- intros a' p' v' Hrec. simpl Vadd.
- rewrite (Vnth_cons (Vadd v' a) a' (lt_n_Sn (S p')) (lt_n_Sn p')).
- assumption.
+simpl. reflexivity.
+intros a' p' v' Hrec. simpl Vadd.
+rewrite (Vnth_cons (Vadd v' a) a' (lt_n_Sn (S p')) (lt_n_Sn p')).
+assumption.
 Qed.
 
 Lemma Vnth_const : forall n (a : A) i (ip : i < n),
   Vnth (Vconst a n) ip = a.
 
 Proof.
-  induction n; intros. absurd_arith.
-  destruct i. trivial.
-  simpl. rewrite IHn. refl.
+induction n; intros. absurd_arith.
+destruct i. trivial.
+simpl. rewrite IHn. refl.
 Qed.
 
 (***********************************************************************)
 (** replacement of i-th element *)
 
 Lemma Vreplace : forall n (v : vec n) i (ip : i < n) (a : A), vec n.
+
 Proof.
-  induction n; intros.  
-  elimtype False. exact (lt_n_O i ip). 
-  destruct i. exact (Vcons a (Vtail v)).  
-  exact (Vcons (Vhead v) (IHn (Vtail v) i (lt_S_n ip) a)).
+induction n; intros.  
+elimtype False. exact (lt_n_O i ip). 
+destruct i. exact (Vcons a (Vtail v)).  
+exact (Vcons (Vhead v) (IHn (Vtail v) i (lt_S_n ip) a)).
 Defined.
 
 Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vec (S n)) (a : A),
   Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
 
 Proof.
-  destruct n; intros. absurd_arith.
-  destruct i; refl.
+destruct n; intros. absurd_arith.
+destruct i; refl.
 Qed.
 
 (***********************************************************************)
@@ -382,7 +394,7 @@ Lemma Vapp_rcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2 (h1 : n2=p2)
 
 Proof.
 induction v1; simpl; intros.
-assert (h1=h2). apply UIP. rewrite H. reflexivity.
+assert (h1=h2). apply (UIP eq_nat_dec). rewrite H. refl.
 apply Vtail_eq. apply IHv1.
 Qed.
 
@@ -589,8 +601,8 @@ destruct H0 as [v2].
 destruct H0 as [H1].
 exists (S n1). exists (Vcons a v1). exists n2. exists v2. exists (S_add_S H1).
 rewrite H0. clear H0. simpl.
-assert (f_equal pred (S_add_S H1) = H1). apply UIP.
-simpl in H0. rewrite H0. reflexivity.
+assert (f_equal pred (S_add_S H1) = H1). apply (UIP eq_nat_dec).
+simpl in H0. rewrite H0. refl.
 Qed.
 
 (***********************************************************************)
@@ -821,7 +833,7 @@ Qed.
 
 (* Vfold_left f b [a1 .. an] = f .. (f (f b x1) x2) .. xn *)
 
-Fixpoint Vfold_left (B : Set) (f : B->A->B) (b : B) n (v : vec n) {struct v} : B :=
+Fixpoint Vfold_left (B:Set) (f : B->A->B) (b:B) n (v : vec n) {struct v} : B :=
   match v with
     | Vnil => b
     | Vcons a _ w => f (Vfold_left f b w) a
@@ -829,7 +841,7 @@ Fixpoint Vfold_left (B : Set) (f : B->A->B) (b : B) n (v : vec n) {struct v} : B
 
 (* Vfold_right f [a1 .. an] b = f x1 (f x2 .. (f xn b) .. ) *)
 
-Fixpoint Vfold_right (B : Set) (f : A->B->B) n (v : vec n) (b : B) {struct v} : B :=
+Fixpoint Vfold_right (B:Set) (f : A->B->B) n (v : vec n) (b:B) {struct v} : B :=
   match v with
     | Vnil => b
     | Vcons a _ w => f a (Vfold_right f w b)
@@ -896,7 +908,7 @@ Ltac VSntac y :=
       (assert (H : y = Vcons (Vhead y) (Vtail y)); [apply VSn_eq | rewrite H])
   end.
 
-Ltac castrefl h := rewrite (UIP_refl h); rewrite Vcast_refl; refl.
+Ltac castrefl h := rewrite (UIP_refl eq_nat_dec h); rewrite Vcast_refl; refl.
 
 (***********************************************************************)
 (** map *)

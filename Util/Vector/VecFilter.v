@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 vector filtering
 *)
 
-(* $Id: VecFilter.v,v 1.3 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: VecFilter.v,v 1.4 2007-08-06 16:08:38 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -87,8 +87,8 @@ Lemma Vfilter_cons_eq : forall n (bs : bools (S n)) x (v : vec n)
 
 Proof.
 intros n bs. VSntac bs. unfold Vtrue_cons. case (Vhead bs); simpl; intros.
-assert (f_equal pred h' = refl_equal (Vtrue (Vtail bs))). apply UIP.
-rewrite H0. rewrite Vcast_refl. refl. castrefl h'.
+assert (f_equal pred h' = refl_equal (Vtrue (Vtail bs))).
+apply (UIP eq_nat_dec). rewrite H0. rewrite Vcast_refl. refl. castrefl h'.
 Qed.
 
 Lemma Vfilter_cons : forall n (bs : bools (S n)) x (v : vec n),

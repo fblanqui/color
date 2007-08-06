@@ -364,6 +364,7 @@ Section union.
 Variable (A : Set) (R S : relation A).
 
 Lemma WF_union : WF R -> WF S -> WF (R! @ S!) -> WF (R U S).
+
 Proof.
   intros. apply WF_union_mod. assumption.
   apply WF_compose_swap. apply WF_incl with (R @ S! U R).
