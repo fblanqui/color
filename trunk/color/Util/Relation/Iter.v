@@ -3,6 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2007-02-07
+- Ducas Leo 2007-08-06
 
 iteration of a relation
 *)
@@ -125,6 +126,120 @@ Proof.
 unfold inclusion. intros. do 2 destruct H0. exists x0. intuition.
 Qed.
 
+(** Other definitions of iter_le, easier for induction *)
+
+Fixpoint iter_le2  n :=
+match n with 
+  |O => R
+  |S i => (R @ iter_le2 i)  U iter_le2 i 
+  end.
+
+Fixpoint iter_le_fast n :=
+match n with 
+  |O => R
+  |S i => let R':=iter_le_fast i in 
+  R' @ R' U R'
+  end.
+
+(** Equivalence between differents definitions *)
+
+Lemma iter_le_spec : forall n x y, iter_le n x y <-> 
+exists p, p <= n /\ iter p x y.
+intro;induction n.
+intros;simpl in *.
+split;intros. exists 0;split;auto with *.
+destruct H as [p];destruct H; assert(p=0);auto with *.
+subst;auto with *. 
+split;intros;simpl in *.
+unfold compose in H;destruct H.
+destruct H as [z]; exists (S n); split;auto with *.
+simpl;unfold compose;exists z;assumption.
+
+rewrite IHn in H;destruct H as [p]; exists p; intuition; auto with *.
+
+destruct H as [p];destruct H. destruct (le_lt_eq_dec p (S n) H).
+right; apply lt_n_Sm_le in l;rewrite IHn;exists p;auto with *.
+subst;left;unfold compose in H0;auto with *.
+Qed.
+
+Lemma iter_le2_spec : forall n x y, iter_le2 n x y <-> 
+exists p, p <= n /\ iter p x y.
+intro. induction n.
+intros;simpl in *;split;intros. exists 0;split;auto with *.
+destruct H as [p];destruct H; assert(p=0);auto with *.
+subst;auto with *. 
+split;intros;simpl in *.
+
+unfold compose in H; destruct H.
+destruct H as [z];destruct H;rewrite IHn in H0;destruct H0 as [p];exists (S p).
+ split;auto with *. simpl;unfold compose;exists z;intuition; auto with *.
+
+rewrite IHn in H;destruct H as [p]; exists p; intuition; auto with *.
+
+destruct H as [p];destruct H.
+destruct (le_lt_eq_dec p (S n) H).
+right; apply lt_n_Sm_le in l;rewrite IHn;exists p;auto with *.
+subst;left;unfold compose in H0;auto with *.
+simpl in H0;unfold compose in *;destruct H0 as [z];exists z.
+split;destruct H0;auto with *.
+rewrite IHn;exists n;auto.
+Qed.
+
+
+Lemma iter_compose : forall p q, iter p @ iter q << iter (p+q+1).
+Proof.
+intros; induction p.
+assert (S(q) = q+1);auto with *.
+simpl;rewrite <- H;simpl;intuition.
+unfold inclusion;intros.
+simpl in H;repeat destruct H.
+simpl;unfold compose.
+exists x1;split;auto with *.
+unfold inclusion in IHp;eapply IHp.
+simpl;unfold compose.
+exists x0;split;auto with *.
+Qed.
+
+Require Export log2.
+
+Lemma iter_le_fast_spec : forall n x y, iter_le_fast n x y <-> 
+exists p,(S p) <= exp2 n /\ iter p x y.
+intro. induction n.
+intros;simpl in *;split;intros. exists 0;split;auto with *.
+destruct H as [p];destruct H; assert(p=0);auto with *.
+subst;auto with *. split;intros;simpl in *.
+destruct H. 
+destruct H as [z];destruct H. rewrite IHn in H0;rewrite IHn in H.
+destruct H0 as [p];destruct H as [p'];destruct H0;destruct H.
+exists (p+p'+1). split. omega.
+assert ((iter p' @ iter p) x y). unfold compose; exists z; auto with *.
+assert (p+p'+1=p'+p+1);intuition.
+rewrite H4;apply iter_compose;auto with *.
+rewrite IHn in H;destruct H as [p];exists p;intuition.
+destruct H as [p]; destruct H;simpl in H.
+
+destruct (le_gt_dec (S p) (exp2 n)).
+right;rewrite IHn;exists p;split;auto with *.
+assert(p = (exp2 n - 1) + (p - exp2 n) +1 ).
+omega.
+rewrite H1 in H0. deduce (iter_plus_1 _ _ _ _ H0).
+left;unfold compose in *; destruct H2 as [z];destruct H2.
+exists z;split; rewrite IHn.
+exists (exp2 n -1); intuition;omega.
+exists (p -exp2 n); intuition;omega. 
+Qed.
+
+
+Lemma iter_le_same : forall n x y, iter_le2 n x y <-> iter_le n x y.
+Proof.
+intros;rewrite iter_le_spec; rewrite iter_le2_spec; tauto.
+Qed.
+Lemma iter_le_fast_exp2_same : forall n x y, iter_le_fast n x y <-> iter_le ((exp2 n)-1) x y.
+intros;rewrite iter_le_spec; rewrite iter_le_fast_spec.
+split;intro;destruct H as [p];exists p; intuition.
+deduce (exp2_pos n);omega.
+Qed.
+
 (***********************************************************************)
 (** relation with paths *)
 
@@ -142,6 +257,30 @@ Lemma path_iter : forall l x y, is_path R x y l -> iter (length l) x y.
 Proof.
 induction l; simpl; intros. exact H. exists a. intuition.
 Qed.
+
+Lemma bound_path_iter_le : forall n  x y, bound_path R n x y -> iter_le n x y.
+Proof.
+intro;induction n;intros; simpl in *.
+inversion H;subst;destruct l;simpl in *; auto with *;inversion H0.
+generalize (bound_path_Sn_n_or_Rn H);intros; destruct H0.
+simpl in *;right; apply IHn; auto with *.
+destruct H0 as [z];destruct H0;deduce (IHn _ _ H1).
+simpl;rewrite iter_le_spec in *;destruct H2 as [p];destruct H2.
+destruct (le_lt_eq_dec p n H2).
+right;rewrite iter_le_spec;exists (S p);intuition.
+simpl;unfold compose;exists z;intuition.
+left;subst;unfold compose;exists z;intuition.
+Qed.
+
+Lemma iter_le_bound_path : forall n x y, iter_le n x y -> bound_path R n x y .
+Proof.
+intros.
+rewrite iter_le_spec in H;destruct H as [j];destruct H.
+deduce (iter_path _ _ _ H0);destruct H1 as [l];destruct H1.
+eapply bp_intro;try eassumption;auto;subst;assumption.
+Qed.
+
+
 
 End S.
 

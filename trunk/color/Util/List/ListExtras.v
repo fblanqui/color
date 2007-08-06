@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.4 2007-06-01 19:32:09 koper Exp $ *)
+(* $Id: ListExtras.v,v 1.5 2007-08-06 15:18:25 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -833,6 +833,71 @@ Section ListFind.
 
 End ListFind.
 
+Section ListFind_more.
+Variable A:Set.
+
+Lemma list_find_first_indep (P Q : A -> Prop) P_dec Q_dec :
+(forall x, P x <-> Q x) -> forall l, list_find_first P P_dec l = list_find_first Q Q_dec l.
+Proof.
+intros.
+induction l.
+simpl;auto.
+
+simpl.
+destruct (P_dec a);destruct (Q_dec a);try rewrite H in *;try tauto.
+rewrite IHl;auto.
+Qed.
+
+Lemma list_find_first_exist (P: A -> Prop) P_dec x l:
+In x l -> P x -> list_find_first P P_dec l <> None.
+intros.
+induction l.
+simpl in H;tauto.
+simpl in H. destruct H. subst; simpl.
+destruct (P_dec x);auto;discriminate.
+
+simpl.
+destruct (P_dec a). discriminate.
+deduce (IHl H).
+destruct (list_find_first P P_dec l ).
+discriminate.
+tauto.
+Qed.
+
+Lemma list_find_first_Some (P: A -> Prop) P_dec l:
+list_find_first P P_dec l <> None -> exists z, In z l /\ P z.
+Proof.
+intros.
+induction l.
+simpl in H;tauto.
+simpl in H. destruct (P_dec a).
+exists a;split;simpl;tauto.
+destruct (list_find_first P P_dec l);try discriminate.
+assert (exists z : A, In z l /\ P z).
+apply IHl;discriminate.
+destruct H0. exists x.
+simpl;tauto.
+tauto.
+Qed.
+
+
+Lemma list_find_first_Some_bound (P: A -> Prop) P_dec l x:
+list_find_first P P_dec l = Some x -> x < length l.
+Proof.
+induction l;intros.
+simpl in H;discriminate.
+simpl in H. destruct (P_dec a).
+inversion H;subst.
+simpl;omega.
+destruct (list_find_first P P_dec l).
+inversion H;subst.
+simpl;apply lt_n_S;apply IHl;auto.
+discriminate.
+Qed.
+
+
+End ListFind_more.
+
 Section List_Rel_Dec.
 
   Variable A : Set.
@@ -883,6 +948,35 @@ Section List_Rel_Dec.
   Defined.
 
 End List_Rel_Dec.
+
+Section nfirst.
+Fixpoint nfirst_list n := match n with
+| 0 => nil
+| S(k) => k::(nfirst_list k)
+end.
+
+Lemma nfirst_exact x dim: In x (nfirst_list dim) <-> lt x dim.
+intros.
+induction dim.
+unfold nfirst_list;simpl.
+split;omega.
+unfold nfirst_list;fold nfirst_list.
+destruct (gt_eq_gt_dec x dim).
+intuition.
+subst;apply in_eq.
+intuition.
+apply lt_S;apply H.
+inversion H1.
+auto with *.
+simpl in *;clear H2.
+inversion H1;auto with *.
+Qed.
+
+Lemma nfirst_length l: length (nfirst_list l) = l.
+Proof.
+induction l;simpl;auto with *.
+Qed.
+End nfirst.
 
 Hint Rewrite initialSeg_full initialSeg_nth seg_nth seg_tillEnd seg_exceeded
   finalSeg_empty nth_finalSeg_nth nth_copy_in nth_app_left nth_app_right

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.25 2007-05-23 17:42:19 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.26 2007-08-06 15:18:25 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,6 +30,8 @@ Notation "x << y" := (inclusion x y) (at level 50) : relation_scope.
 Notation "x 'U' y" := (union x y) (at level 45) : relation_scope.
 Notation "x #" := (clos_refl_trans x) (at level 35) : relation_scope.
 Notation "x !" := (clos_trans x) (at level 35) : relation_scope.
+
+
 
 Bind Scope relation_scope with relation.
 
@@ -311,6 +313,7 @@ apply rt_trans with (y := y). exact H2.
 apply incl_elim with (R := R!). apply tc_incl_rtc. exact H0.
 Qed.
 
+
 Lemma trans_tc_incl : transitive R -> R! << R.
 
 Proof.
@@ -392,6 +395,7 @@ subst y0. right. assumption.
 right. apply t_trans with (y := y0); assumption.
 Qed.
 
+
 Lemma rtc_split2 : R# << @eq A U R @ R#.
 
 Proof.
@@ -412,6 +416,16 @@ rewrite H. intuition.
 constructor 2 with z. assumption.
 constructor 1. assumption.
 Qed.
+
+Lemma tc_merge : R @ R# << R!.
+Proof.
+unfold inclusion. intros. destruct H. destruct H.
+deduce (rtc_split H0). destruct H1; subst.
+apply t_step;assumption.
+eapply t_trans. apply t_step.
+eassumption. assumption.
+Qed.
+
 
 Lemma rtc_transp : transp (R#) << (transp R)#.
 
@@ -806,3 +820,7 @@ unfold rel_dec. intros. case (X x y); intro.
 left. apply (proj2 H). exact s.
 right. intro. apply n. apply (proj1 H). exact H0.
 Qed.
+
+Definition intersection A (R R' : relation A) x y :=
+R x y /\ R' x y.
+
