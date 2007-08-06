@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.14 2007-04-18 12:12:00 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.15 2007-08-06 16:08:38 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,11 +23,6 @@ Implicit Arguments lt_n_S [n m].
 (** unicity of eq/le/lt proofs *)
 
 Scheme eq_ind_dep := Induction for eq Sort Prop.
-
-Require Export Eqdep.
-
-Implicit Arguments UIP_refl [U x].
-
 Scheme le_ind_dep := Induction for le Sort Prop.
 
 Lemma le_unique : forall n m (h1 h2 : le n m), h1 = h2.
@@ -45,8 +40,8 @@ assert (forall m : nat, forall h1 : le n m, forall p : nat, forall h2 : le n p,
    subst n; absurd (S m0 <= m0); auto with arith.
    assert (m0=m1); auto ; subst m0.
    replace l0 with l; auto.
-   apply (eq_dep_eq nat (le n)); auto.
- intros; apply (eq_dep_eq nat (le n)); auto.
+   apply (@eq_dep_eq _ eq_nat_dec (le n) m1); auto.
+ intros; apply (@eq_dep_eq _ eq_nat_dec (le n) m); auto.
 Qed.
 
 Lemma lt_unique : forall n m (h1 h2 : lt n m), h1 = h2.

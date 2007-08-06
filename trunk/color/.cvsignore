@@ -1,1 +1,1 @@
-.depend Makefile.coq
+*.vo .depend Makefile.coq

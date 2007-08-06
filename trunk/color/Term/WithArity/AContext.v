@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.6 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.7 2007-08-06 16:08:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -89,9 +89,7 @@ Lemma subterm_fun_elim : forall u f (ts : args f),
 Proof.
 intros. unfold subterm in H. destruct H as [C]. destruct H.
 destruct C. absurd (Hole = Hole); auto.
-clear H. simpl in H0. injection H0. intros. subst f0.
-assert (ts = Vcast (Vapp v (Vcons (fill C u) v0)) e).
-apply (inj_pair2 Sig (fun f => args f)). exact H.
+clear H. simpl in H0. Funeqtac.
 exists (fill C u). split. rewrite H1. apply Vin_cast_intro. apply Vin_app_cons.
 unfold subterm_eq. exists C. refl.
 Qed.

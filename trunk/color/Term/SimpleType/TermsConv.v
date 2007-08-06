@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.4 2007-02-09 17:17:05 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.5 2007-08-06 16:08:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,7 +19,6 @@ Require Import RelExtras.
 Require Import ListPermutation.
 Require Import Compare_dec.
 Require TermsPos.
-Require Eqdep.
 Require Import Max.
 Require Import Setoid.
 
