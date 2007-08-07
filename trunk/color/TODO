@@ -21,3 +21,5 @@ explicit at every proof step
 - Eqdep uses an axiom: it is still used in ATerm and ACap (grep Eqdep)
 and in the tactic Funeqtac.
 is it possible to get rid of it by using Eqdep_dec only?
+
+- move ListExt into ListUtil and ListExtras?

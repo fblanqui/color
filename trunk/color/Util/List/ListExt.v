@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Extensions of the Coq library on lists
 *)
 
-(* $Id: ListExt.v,v 1.4 2007-04-13 20:28:11 koper Exp $ *)
+(* $Id: ListExt.v,v 1.5 2007-08-07 09:23:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,7 +17,7 @@ Require Omega.
 
 Section ListsGeneral.
 
-  Variable A: Set.
+  Variable A: Type.
 
   Lemma list_empty_dec : forall l : list A, {l = nil} + {l <> nil}.
 
@@ -166,7 +166,7 @@ Hint Rewrite head_app length_app : datatypes.
 
 Section ListsNth.
 
-  Variable A: Set.
+  Variable A: Type.
 
   Lemma nth_error_In : forall (l : list A) i, 
     {a : A | nth_error l i = Some a} + {nth_error l i = None}.
