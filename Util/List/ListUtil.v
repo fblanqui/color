@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.27 2007-08-07 08:44:53 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.28 2007-08-07 09:23:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,7 +30,7 @@ Ltac elt_type l :=
 
 Section cons.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma cons_eq : forall x x' : A, forall l l',
   x = x' -> l = l' -> x :: l = x' :: l'.
@@ -58,7 +58,7 @@ End cons.
 
 Section app.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma app_nil : forall l1 l2 : list A, l1 = nil -> l2 = nil -> l1 ++ l2 = nil.
 
@@ -94,7 +94,7 @@ Require Import Omega.
 
 Section tail.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma length_0 : forall l : list A, length l = 0 -> l = nil.
 
@@ -121,7 +121,7 @@ End tail.
 
 Section filter.
 
-Variable (A : Set) (p : A -> bool).
+Variable (A : Type) (p : A -> bool).
 
 Fixpoint filter (l : list A) : list A :=
   match l with
@@ -140,7 +140,7 @@ End filter.
 
 Section In.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
@@ -218,7 +218,7 @@ Ltac intac := repeat (apply in_eq || apply in_cons).
 
 Section incl.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma incl_nil : forall l : list A, incl nil l.
 
@@ -328,7 +328,7 @@ Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.
 
 Section equiv.
 
-Variable A : Set.
+Variable A : Type.
 
 Definition lequiv (l1 l2 : list A) : Prop := incl l1 l2 /\ incl l2 l1.
 
@@ -358,7 +358,7 @@ End equiv.
 
 Section Inb.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Fixpoint Inb (x : A) (l : list A) {struct l} : bool :=
@@ -429,7 +429,7 @@ Ltac inbtac :=
 
 Section remove.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Fixpoint remove (y : A) (l : list A) {struct l} : list A :=
@@ -485,7 +485,7 @@ End remove.
 
 Section map.
 
-Variable (A B : Set) (f : A->B).
+Variable (A B : Type) (f : A->B).
 
 Lemma map_app : forall l1 l2, map f (l1 ++ l2) = (map f l1) ++ map f l2.
 
@@ -509,7 +509,7 @@ Implicit Arguments in_map_elim [A B f x l].
 
 Section flat.
 
-Variable A : Set.
+Variable A : Type.
 
 Fixpoint flat (l : list (list A)) : list A :=
   match l with
@@ -524,7 +524,7 @@ End flat.
 
 Section Element_At_List.
   
-  Variable A : Set.
+  Variable A : Type.
   
   Fixpoint element_at (l : list A) (p : nat) {struct l} : option A := 
     match l with 
@@ -657,7 +657,7 @@ Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
 
 Section one_less.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Require Export Relations.
 
@@ -690,7 +690,7 @@ Implicit Arguments one_less_cons [A].
 
 Section reverse.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma in_rev : forall (x : A) l, In x l -> In x (rev l).
 
@@ -724,7 +724,7 @@ End reverse.
 
 Section last.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma last_intro : forall l : list A, length l > 0 ->
   exists m, exists a, l = m ++ a :: nil /\ length m = length l - 1.
@@ -747,7 +747,7 @@ Implicit Arguments last_intro [A l].
 
 Section partition.
 
-  Variables (A : Set) (P : A -> bool) (a : A) (l : list A).
+  Variables (A : Type) (P : A -> bool) (a : A) (l : list A).
 
   Lemma partition_complete : let p := partition P l in
     In a l -> In a (fst p) \/ In a (snd p).
@@ -805,7 +805,7 @@ Section partition_by_prop.
 
   Require Import RelMidex.
 
-  Variables (A : Set) (P : A -> Prop) (P_dec : prop_dec P).
+  Variables (A : Type) (P : A -> Prop) (P_dec : prop_dec P).
 
   Definition partition_by_prop a :=
     match P_dec a with
@@ -824,7 +824,7 @@ End partition_by_prop.
 
 Section partition_by_rel.
 
-  Variables (A : Set) (R : relation A) (R_dec : rel_dec R).
+  Variables (A : Type) (R : relation A) (R_dec : rel_dec R).
 
   Definition partition_by_rel p := 
     if R_dec (fst p) (snd p) then true else false.

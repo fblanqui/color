@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.6 2007-08-07 08:44:52 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.7 2007-08-07 09:23:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,7 @@ Require Import Permutation.
 
 Section InitialSeg.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Fixpoint initialSeg (l: list A) (size: nat) {struct size} : list A :=
   match size, l with
@@ -105,7 +105,7 @@ End InitialSeg.
 
 Section Seg.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Fixpoint seg (l: list A) (from size : nat) {struct from} : list A := 
   match from, l with
@@ -162,7 +162,7 @@ End Seg.
 
 Section FinalSeg.
 
-  Variable A: Set.
+  Variable A: Type.
 
   Definition finalSeg (l: list A) fromPos := seg l fromPos (length l - fromPos).
 
@@ -305,7 +305,7 @@ End FinalSeg.
 
 Section Copy.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Fixpoint copy (n : nat) (el : A) {struct n} : list A := 
   match n with
@@ -412,7 +412,7 @@ End Copy.
 
 Section InsertNth.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Definition insert_nth (l: list A) (n: nat) (el: A) : list A :=
     initialSeg l n ++ el :: finalSeg l n.
@@ -446,7 +446,7 @@ End InsertNth.
 
 Section DropNth.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Definition drop_nth (l: list A) n := initialSeg l n ++ finalSeg l (S n).
 
@@ -546,7 +546,7 @@ End DropNth.
 
 Section CountIn.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable eqA : A -> A -> Prop.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq : Setoid_Theory A eqA.
@@ -646,7 +646,7 @@ End CountIn.
 
 Section DropLast.
 
-  Variable A : Set.
+  Variable A : Type.
 
   (*Definition dropLast (l: list A) : list A := drop_nth l (pred (length l)).*)
 
@@ -700,7 +700,7 @@ End DropLast.
 
 Section Last.
 
-  Variable A : Set.
+  Variable A : Type.
 
   Fixpoint last (l: list A) : option A :=
     match l with
@@ -747,7 +747,7 @@ End Last.
 
 Section Remove.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable eqA : A -> A -> Prop.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
 
@@ -789,7 +789,7 @@ End Remove.
 
 Section ListFind.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable P : A -> Prop.
   Variable P_dec : forall a : A, {P a} + {~P a}.
 
@@ -885,7 +885,7 @@ End ListFind.
 
 Section ListFind_more.
 
-Variable A : Set.
+Variable A : Type.
 
 Lemma list_find_first_indep : forall (P Q : A -> Prop) P_dec Q_dec,
   (forall x, P x <-> Q x)
@@ -947,8 +947,8 @@ End ListFind_more.
 
 Section List_Rel_Dec.
 
-  Variable A : Set.
-  Variable B : Set.
+  Variable A : Type.
+  Variable B : Type.
   Variable P : A -> Prop.
   Variable R : A -> B -> Prop.
 
@@ -959,18 +959,18 @@ Section List_Rel_Dec.
   Proof.
     induction l; intros.
     right; intros.
-    inversion H0.
-    destruct (H a); auto with datatypes.
+    inversion H.
+    destruct (X a); auto with datatypes.
     left; exists a; auto with datatypes.
     case (IHl r); intro.
-    intros; apply H; auto with datatypes.
+    intros; apply X; auto with datatypes.
     left.
     destruct s as [x [x_l x_r]].
     exists x; auto with datatypes.
     right.
     intros.
-    destruct H0.
-    rewrite <- H0; trivial.
+    destruct H.
+    rewrite <- H; trivial.
     apply n0; trivial.
   Defined.
 
@@ -980,14 +980,14 @@ Section List_Rel_Dec.
 
   Proof.
     induction l; intros.
-    left; intros; inversion H0.
+    left; intros; inversion H.
     destruct (IHl).
-    intros; apply H.
+    intros; apply X.
     auto with datatypes.
-    destruct (H a).
+    destruct (X a).
     auto with datatypes.
-    left; intros; inversion H0.
-    rewrite <- H1; trivial.
+    left; intros; inversion H.
+    rewrite <- H0; trivial.
     apply p; trivial.
     right; exists a; split; auto with datatypes.
     right.
