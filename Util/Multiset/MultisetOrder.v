@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.4 2007-05-17 15:30:54 koper Exp $ *)
+(* $Id: MultisetOrder.v,v 1.5 2007-08-07 08:44:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1567,7 +1567,7 @@ Section OrderDec.
       (fun LRS N => Ord (fst (fst LRS)) (snd (fst LRS)))
       x N).
     intros.
-    destruct l as [[L R] S].
+    destruct x0 as [[L R] S].
     apply Ord_dec; simpl; intros.
     destruct (proj1 (a L R S) H0).
     apply H.

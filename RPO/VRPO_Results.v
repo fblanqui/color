@@ -11,7 +11,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.13 2007-06-19 17:45:51 koper Exp $ *)
+(* $Id: VRPO_Results.v,v 1.14 2007-08-07 08:44:52 blanqui Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -540,14 +540,15 @@ Module RPO_Results (RPO : RPO_Model).
   Definition ge p q := lt q p \/ p = q.
 
   Lemma rpo_lt_subterm_dec : forall p v
-    (IH : forall t, Inb term_eq_dec t v = true -> forall  p, {lt p t} + {~lt p t}),
+    (IH : forall t, Inb term_eq_dec t v = true
+      -> forall  p, {lt p t} + {~lt p t}),
     { a : term | In a v /\ ge a p } + { ~exists a : term, In a v /\ ge a p }.
 
   Proof.
     intros. destruct (many_one_dec ge v p).
-    intros. destruct (IH l (Inb_intro term_eq_dec l v H) p).
+    intros. destruct (IH x (Inb_intro term_eq_dec x v H) p).
     left. left. assumption.
-    destruct (term_eq_dec l p).
+    destruct (term_eq_dec x p).
     left. right. assumption.
     right. intro abs. destruct abs; contradiction.
     left. exact s.
@@ -584,7 +585,8 @@ Module RPO_Results (RPO : RPO_Model).
     assert (all_lt_dec : 
       { forall t, In t vf -> lt t (Fun q v) } + 
       { exists t, In t vf /\ ~lt t (Fun q v) }).
-    destruct (list_dec_all (fun vs => lt vs (Fun q v)) vf); try solve [intuition].
+    destruct (list_dec_all (fun vs => lt vs (Fun q v)) vf);
+      try solve [intuition].
     intros. apply IH. apply Inb_intro. assumption. assumption. 
      (* RPO clause: lt_roots *)
     assert (lt_roots_dec : {lt (Fun f vf) (Fun q v)} + 

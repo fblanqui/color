@@ -17,7 +17,7 @@ Variable (A : Type) (R : relation A).
 
 Definition rel_midex := forall x y, R x y \/ ~R x y.
 
-Definition rel_dec := forall x y, {R x y}+{~R x y}.
+Definition rel_dec := forall x y, {R x y} + {~R x y}.
 
 Lemma rel_dec_midex : rel_dec -> rel_midex.
 

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.26 2007-08-06 15:18:25 ducasleo2 Exp $ *)
+(* $Id: RelUtil.v,v 1.27 2007-08-07 08:44:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,8 +30,6 @@ Notation "x << y" := (inclusion x y) (at level 50) : relation_scope.
 Notation "x 'U' y" := (union x y) (at level 45) : relation_scope.
 Notation "x #" := (clos_refl_trans x) (at level 35) : relation_scope.
 Notation "x !" := (clos_trans x) (at level 35) : relation_scope.
-
-
 
 Bind Scope relation_scope with relation.
 
@@ -71,6 +69,8 @@ Definition strict_ordering := irreflexive R /\ transitive R.
 Definition strict_part x y := R x y /\ ~R y x.
 
 Definition empty_rel (x y : A) := False.
+
+Definition intersection (S : relation A) x y := R x y /\ S x y.
 
 End basic_definitions.
 
@@ -812,15 +812,10 @@ Qed.
 
 Require Export RelMidex.
 
-Lemma rel_dec_eq : forall A (R S : relation A),
-  R == S -> rel_dec S -> rel_dec R.
+Lemma rel_dec_eq : forall A (R S : relation A), R == S -> rel_dec S -> rel_dec R.
 
 Proof.
 unfold rel_dec. intros. case (X x y); intro.
 left. apply (proj2 H). exact s.
 right. intro. apply n. apply (proj1 H). exact H0.
 Qed.
-
-Definition intersection A (R R' : relation A) x y :=
-R x y /\ R' x y.
-
