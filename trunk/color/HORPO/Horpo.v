@@ -955,7 +955,7 @@ Module Horpo (S : TermsSig.Signature)
     left; constructor 2; trivial.
     destruct (many_one_dec horpoRC (appArgs M) a) as [[Marg [MMarg MargN]] | noSub].
     intros.
-    destruct (H l a); try_solve.
+    destruct (H x a); try_solve.
     apply arg_subterm; trivial.
     left; constructor 3; trivial.
     exists Marg; trivial.
@@ -1009,8 +1009,8 @@ Module Horpo (S : TermsSig.Signature)
       apply horpoArgs_dec.
       intros; apply IH_horpoRC; left; trivial.
       intros; apply IH; right; split; trivial.
-      apply (partialFlattening_subterm N l); trivial.
-      apply (proj2 (Npf_ok l)); trivial.
+      apply (partialFlattening_subterm N x); trivial.
+      apply (proj2 (Npf_ok x)); trivial.
       left; exists Np; trivial.
       apply (proj2 (Npf_ok Np)); trivial.
       right; intro flat; destruct flat.

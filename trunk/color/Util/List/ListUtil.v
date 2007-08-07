@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.26 2007-08-06 15:18:25 ducasleo2 Exp $ *)
+(* $Id: ListUtil.v,v 1.27 2007-08-07 08:44:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -186,6 +186,26 @@ subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
 exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
 Qed.
 
+Require Export RelMidex.
+
+Lemma In_midex : eq_midex A -> forall (x : A) l, In x l \/ ~In x l. 
+
+Proof.
+induction l. tauto. simpl. destruct (H a x); destruct IHl; tauto.
+Qed.
+
+Lemma In_elim_right : eq_midex A -> forall (x : A) l,
+  In x l -> exists l', exists l'', l = l'++x::l'' /\ ~In x l''. 
+
+Proof.
+induction l; simpl; intros. contradiction. 
+destruct (In_midex H x l). destruct IHl. assumption. destruct H2. 
+exists (a::x0). exists x1. rewrite (proj1 H2).
+rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
+destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
+contradiction.
+Qed.
+
 End In.
 
 Implicit Arguments in_elim [A x l].
@@ -222,6 +242,12 @@ Lemma incl_cons_l_incl : forall (x : A) l m, incl (x :: l) m -> incl l m.
 
 Proof.
 unfold incl. simpl. intros. apply H. tauto.
+Qed.
+
+Lemma incl_double_cons : forall (x : A) l l', incl l l' -> incl (x::l) (x::l').
+
+Proof.
+unfold incl. simpl. intros. pose (H a). tauto. 
 Qed.
 
 Lemma incl_app_elim : forall l1 l2 l3 : list A,
@@ -442,7 +468,7 @@ destruct (eq_dec a x); destruct H0. rewrite e in H0. tauto.
 tauto. rewrite H0. simpl. tauto. simpl. tauto.
 Qed.
 
-Lemma  incl_remove : forall (x : A) l m,
+Lemma incl_remove : forall (x : A) l m,
   ~In x l -> incl l m -> incl l (remove x m).
 
 Proof.
@@ -592,34 +618,34 @@ Section Element_At_List.
 
 
 Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n<length l.
-intro;intro;induction l;intros;simpl in H; try discriminate.
+
+Proof.
+induction l; intros; simpl in H; try discriminate.
 destruct n.
-inversion H; subst;simpl;auto with *.
+inversion H; subst; simpl; auto with *.
 deduce (IHl n H).
-intuition;simpl;omega.
+intuition; simpl; omega.
 Qed.
 
-  Lemma element_at_app_r : forall l l' p, 
-    p >= length l ->
-    (l ++ l') [p] = l' [p - length l].
+Lemma element_at_app_r : forall l l' p, 
+  p >= length l -> (l ++ l') [p] = l' [p - length l].
 
-  Proof.
-    induction l. intuition.
-    intros. destruct p.
-    inversion H.
-    simpl. apply IHl. simpl in H. auto with arith.
-  Qed.
+Proof.
+  induction l. intuition.
+  intros. destruct p.
+  inversion H.
+  simpl. apply IHl. simpl in H. auto with arith.
+Qed.
 
-  Lemma replace_at_app_r : forall l l' p a,
-    p >= length l ->
-    (l ++ l') [p := a] = l ++ l' [p-length l := a].
+Lemma replace_at_app_r : forall l l' p a,
+  p >= length l -> (l ++ l') [p := a] = l ++ l' [p-length l := a].
 
-  Proof.
-    induction l; intros.
-    simpl. rewrite <- minus_n_O. refl.
-    destruct p. inversion H.
-    simpl. rewrite IHl. refl. intuition.
-  Qed.
+Proof.
+  induction l; intros.
+  simpl. rewrite <- minus_n_O. refl.
+  destruct p. inversion H.
+  simpl. rewrite IHl. refl. intuition.
+Qed.
 
 End Element_At_List.
 

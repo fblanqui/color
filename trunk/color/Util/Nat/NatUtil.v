@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.15 2007-08-06 16:08:38 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.16 2007-08-07 08:44:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -147,7 +147,7 @@ Require Export Omega.
 Lemma nat_ge_dec : rel_dec ge.
 
 Proof.
-  intros i j. destruct (le_lt_dec j i); intuition.
+intros i j. destruct (le_lt_dec j i); intuition.
 Defined. 
 
 (***********************************************************************)

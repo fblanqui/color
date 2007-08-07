@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.5 2007-08-06 15:18:25 ducasleo2 Exp $ *)
+(* $Id: ListExtras.v,v 1.6 2007-08-07 08:44:52 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,6 +18,9 @@ Require Omega.
 Require Import Setoid.
 Require Import Min.
 Require Import Permutation.
+
+(***********************************************************************)
+(** initial segment of a list *)
 
 Section InitialSeg.
 
@@ -69,8 +72,8 @@ Section InitialSeg.
     auto with arith.
   Qed.
 
-  Lemma initialSeg_prefix : forall (l: list A) x p el, nth_error (initialSeg l x) p = Some el ->
-    nth_error l p = Some el.
+  Lemma initialSeg_prefix : forall (l: list A) x p el,
+    nth_error (initialSeg l x) p = Some el -> nth_error l p = Some el.
 
   Proof.
     induction l; intros.
@@ -83,7 +86,8 @@ Section InitialSeg.
     simpl; apply IHl with x; trivial.
   Qed.
 
-  Lemma initialSeg_app : forall l l' n, n <= length l -> initialSeg (l ++ l') n = initialSeg l n.
+  Lemma initialSeg_app : forall l l' n,
+    n <= length l -> initialSeg (l ++ l') n = initialSeg l n.
 
   Proof.
     induction l; intros.
@@ -96,18 +100,22 @@ Section InitialSeg.
 
 End InitialSeg.
 
+(***********************************************************************)
+(** sublist *)
+
 Section Seg.
 
   Variable A : Set.
 
-  Fixpoint seg (l: list A) (from size: nat) {struct from} : list A := 
+  Fixpoint seg (l: list A) (from size : nat) {struct from} : list A := 
   match from, l with
   | 0, _ => initialSeg l size
   | _, nil => nil
   | S n, hd::tl => seg tl n size
   end.
 
-  Lemma seg_tillEnd : forall l m n, n >= length l - m -> seg l m n = seg l m (length l - m).
+  Lemma seg_tillEnd : forall l m n,
+    n >= length l - m -> seg l m n = seg l m (length l - m).
 
   Proof.
     induction l.
@@ -119,7 +127,8 @@ Section Seg.
     intro n_m; rewrite (IHl m (S n)); trivial.
   Qed.
 
-  Lemma seg_nth : forall (l: list A) i j x, x < j -> nth_error (seg l i j) x = nth_error l (i + x).
+  Lemma seg_nth : forall (l: list A) i j x,
+    x < j -> nth_error (seg l i j) x = nth_error l (i + x).
 
   Proof.
     induction l.
@@ -135,7 +144,8 @@ Section Seg.
     apply IHl; trivial.
   Qed.
 
-  Lemma seg_exceeded : forall l k n, n >= length l -> seg l k n = seg l k (length l).
+  Lemma seg_exceeded : forall l k n,
+    n >= length l -> seg l k n = seg l k (length l).
 
   Proof.
     intros.
@@ -147,11 +157,14 @@ Section Seg.
 
 End Seg.
 
+(***********************************************************************)
+(** final segment of a list *)
+
 Section FinalSeg.
 
   Variable A: Set.
 
-  Definition finalSeg (l: list A) (fromPos: nat) := seg l fromPos (length l - fromPos).
+  Definition finalSeg (l: list A) fromPos := seg l fromPos (length l - fromPos).
 
   Lemma finalSeg_full : forall l, finalSeg l 0 = l.
   Proof.
@@ -244,8 +257,8 @@ Section FinalSeg.
     simpl in H; omega.
   Qed.
 
-  Lemma finalSeg_nth_idx : forall l i j a, nth_error (finalSeg l i) j = Some a ->
-    length l > i + j.
+  Lemma finalSeg_nth_idx : forall l i j a,
+    nth_error (finalSeg l i) j = Some a -> length l > i + j.
 
   Proof.
     induction l; unfold finalSeg; intros.
@@ -272,7 +285,8 @@ Section FinalSeg.
       solve [rewrite min_l; omega | rewrite min_r; omega].
   Qed.
 
-  Lemma initialSeg_finalSeg_full : forall l k, initialSeg l k ++ finalSeg l k = l.
+  Lemma initialSeg_finalSeg_full : forall l k,
+    initialSeg l k ++ finalSeg l k = l.
 
   Proof.
     intros l k; generalize k l; clear k l.
@@ -286,11 +300,14 @@ Section FinalSeg.
 
 End FinalSeg.
 
+(***********************************************************************)
+(** create copies of an element *)
+
 Section Copy.
 
   Variable A : Set.
 
-  Fixpoint copy (n: nat) (el: A) {struct n} : list A := 
+  Fixpoint copy (n : nat) (el : A) {struct n} : list A := 
   match n with
   | 0 => nil
   | S n => el :: copy n el
@@ -338,7 +355,8 @@ Section Copy.
     absurd (x < sn); auto with arith.
   Qed.
 
-  Lemma nth_after_copy : forall n el el', nth_error (copy n el' ++ el::nil) n = Some el.
+  Lemma nth_after_copy : forall n el el',
+    nth_error (copy n el' ++ el::nil) n = Some el.
 
   Proof.
     intros.
@@ -364,7 +382,8 @@ Section Copy.
     rewrite IHn; trivial.
   Qed.
 
-  Lemma initialSeg_copy : forall el n k, initialSeg (copy n el) k = copy (min n k) el.
+  Lemma initialSeg_copy : forall el n k,
+    initialSeg (copy n el) k = copy (min n k) el.
 
   Proof.
     induction n; destruct k; intros; simpl; trivial.
@@ -388,6 +407,9 @@ Section Copy.
 
 End Copy.
 
+(***********************************************************************)
+(** insert an element *)
+
 Section InsertNth.
 
   Variable A : Set.
@@ -395,13 +417,15 @@ Section InsertNth.
   Definition insert_nth (l: list A) (n: nat) (el: A) : list A :=
     initialSeg l n ++ el :: finalSeg l n.
 
-  Lemma insert_nth_step : forall a l n el, insert_nth (a :: l) (S n) el = a :: insert_nth l n el.
+  Lemma insert_nth_step : forall a l n el,
+    insert_nth (a :: l) (S n) el = a :: insert_nth l n el.
 
   Proof.
     trivial.
   Qed.
 
-  Lemma nth_insert_nth : forall l p el, length l >= p -> nth_error (insert_nth l p el) p = Some el.
+  Lemma nth_insert_nth : forall l p el,
+    length l >= p -> nth_error (insert_nth l p el) p = Some el.
 
   Proof.
     induction l; simpl; intros.
@@ -417,13 +441,17 @@ Section InsertNth.
 
 End InsertNth.
 
+(***********************************************************************)
+(** erase an element *)
+
 Section DropNth.
 
   Variable A : Set.
 
-  Definition drop_nth (l: list A) (n: nat) : list A := initialSeg l n ++ finalSeg l (S n).
+  Definition drop_nth (l: list A) n := initialSeg l n ++ finalSeg l (S n).
 
-  Lemma drop_nth_in_length : forall l p, length l > p -> length (drop_nth l p) = pred (length l).
+  Lemma drop_nth_in_length : forall l p,
+    length l > p -> length (drop_nth l p) = pred (length l).
 
   Proof.
     intros l p; generalize p l; clear p l.
@@ -473,7 +501,8 @@ Section DropNth.
     unfold drop_nth, finalSeg; trivial.
   Qed.
 
-  Lemma drop_nth_insert_nth : forall l p el, length l >= p -> drop_nth (insert_nth l p el) p = l.
+  Lemma drop_nth_insert_nth : forall l p el,
+    length l >= p -> drop_nth (insert_nth l p el) p = l.
 
   Proof.
     induction l; simpl; intros.
@@ -512,6 +541,9 @@ Section DropNth.
 
 End DropNth.
 
+(***********************************************************************)
+(** number of occurrences of an element *)
+
 Section CountIn.
 
   Variable A : Set.
@@ -542,7 +574,8 @@ Section CountIn.
     apply IHl; trivial.
   Qed.
 
-  Lemma count_pos_in : forall a (l: list A), countIn a l > 0 -> exists a', eqA a a' /\ In a' l.
+  Lemma count_pos_in : forall a (l: list A),
+    countIn a l > 0 -> exists a', eqA a a' /\ In a' l.
 
   Proof.
     induction l; simpl.
@@ -555,8 +588,8 @@ Section CountIn.
     exists a'; auto.
   Qed.
 
-  Lemma countIn_nth : forall a (l: list A), countIn a l > 0 -> exists p, exists a', 
-    eqA a a' /\ nth_error l p = Some a'.
+  Lemma countIn_nth : forall a (l: list A),
+    countIn a l > 0 -> exists p, exists a', eqA a a' /\ nth_error l p = Some a'.
 
   Proof.
     induction l.
@@ -569,7 +602,8 @@ Section CountIn.
     exists (S p); exists a'; split; trivial.
   Qed.
 
-  Lemma countIn_dropNth_eq : forall l p el el', nth_error l p = Some el' -> eqA el el' -> 
+  Lemma countIn_dropNth_eq : forall l p el el',
+    nth_error l p = Some el' -> eqA el el' -> 
     countIn el (drop_nth l p) = countIn el l - 1.
 
   Proof.
@@ -590,7 +624,8 @@ Section CountIn.
     omega.
   Qed.
 
-  Lemma countIn_dropNth_neq : forall l p el el', nth_error l p = Some el' -> ~eqA el el' ->
+  Lemma countIn_dropNth_neq : forall l p el el',
+    nth_error l p = Some el' -> ~eqA el el' ->
     countIn el (drop_nth l p) = countIn el l.
 
   Proof.
@@ -606,12 +641,15 @@ Section CountIn.
 
 End CountIn.
 
+(***********************************************************************)
+(** erase the last element of a list *)
+
 Section DropLast.
 
   Variable A : Set.
-(* x-man, use this:
-  Definition dropLast (l: list A) : list A := drop_nth l (pred (length l)).
-*)
+
+  (*Definition dropLast (l: list A) : list A := drop_nth l (pred (length l)).*)
+
   Fixpoint dropLast (l: list A) : list A :=
     match l with
     | nil => nil
@@ -619,7 +657,8 @@ Section DropLast.
     | x::xs  => x :: dropLast xs
     end.
 
-  Lemma dropLast_last : forall a (l: list A), l <> nil -> dropLast (l ++ a::nil) = l.
+  Lemma dropLast_last : forall a (l: list A),
+    l <> nil -> dropLast (l ++ a::nil) = l.
 
   Proof.
     induction l; trivial.
@@ -645,7 +684,8 @@ Section DropLast.
   Proof.
     induction l1; trivial.
     intro.
-    replace (dropLast ((a0 :: l1) ++ a :: l2)) with (a0 :: dropLast (l1 ++ a::l2)).
+    replace (dropLast ((a0 :: l1) ++ a :: l2))
+      with (a0 :: dropLast (l1 ++ a::l2)).
     rewrite (IHl1 l2); trivial.
     simpl.
     cut (l1 ++ a :: l2 <> nil).
@@ -654,6 +694,9 @@ Section DropLast.
   Qed.
 
 End DropLast.
+
+(***********************************************************************)
+(** last element of a list *)
 
 Section Last.
 
@@ -672,7 +715,8 @@ Section Last.
     intros; rewrite H; trivial.
   Qed.
 
-  Lemma last_app : forall a (l1 l2: list A), last (l1 ++ a :: l2) = last (a :: l2).
+  Lemma last_app : forall a (l1 l2: list A),
+    last (l1 ++ a :: l2) = last (a :: l2).
 
   Proof.
     induction l1; trivial.
@@ -684,8 +728,8 @@ Section Last.
     auto with datatypes.
   Qed.
 
-  Lemma dropLast_plus_last : forall (l1: list A) a b, last (a :: l1) = Some b ->
-    dropLast (a :: l1) ++ b :: nil = a :: l1.
+  Lemma dropLast_plus_last : forall (l1: list A) a b,
+    last (a :: l1) = Some b -> dropLast (a :: l1) ++ b :: nil = a :: l1.
 
   Proof.
     induction l1.
@@ -697,6 +741,9 @@ Section Last.
   Qed.
 
 End Last.
+
+(***********************************************************************)
+(** remove the first occurrence of an element *)
 
 Section Remove.
 
@@ -737,11 +784,14 @@ Section Remove.
 
 End Remove.
 
+(***********************************************************************)
+(** find the first occurrence of an element *)
+
 Section ListFind.
 
   Variable A : Set.
   Variable P : A -> Prop.
-  Variable P_dec : forall a:A, {P a} + {~P a}.
+  Variable P_dec : forall a : A, {P a} + {~P a}.
 
   Fixpoint list_find_first (l: list A) : option nat := 
     match l with
@@ -834,38 +884,33 @@ Section ListFind.
 End ListFind.
 
 Section ListFind_more.
-Variable A:Set.
 
-Lemma list_find_first_indep (P Q : A -> Prop) P_dec Q_dec :
-(forall x, P x <-> Q x) -> forall l, list_find_first P P_dec l = list_find_first Q Q_dec l.
+Variable A : Set.
+
+Lemma list_find_first_indep : forall (P Q : A -> Prop) P_dec Q_dec,
+  (forall x, P x <-> Q x)
+  -> forall l, list_find_first P P_dec l = list_find_first Q Q_dec l.
+
 Proof.
-intros.
-induction l.
-simpl;auto.
-
-simpl.
-destruct (P_dec a);destruct (Q_dec a);try rewrite H in *;try tauto.
-rewrite IHl;auto.
+induction l; simpl. refl.
+destruct (P_dec a); destruct (Q_dec a); try rewrite H in *; try tauto.
+rewrite IHl. refl.
 Qed.
 
-Lemma list_find_first_exist (P: A -> Prop) P_dec x l:
-In x l -> P x -> list_find_first P P_dec l <> None.
-intros.
-induction l.
-simpl in H;tauto.
+Lemma list_find_first_exist : forall (P: A -> Prop) P_dec x l,
+  In x l -> P x -> list_find_first P P_dec l <> None.
+
+Proof.
+intros. induction l. simpl in H;tauto.
 simpl in H. destruct H. subst; simpl.
-destruct (P_dec x);auto;discriminate.
-
-simpl.
-destruct (P_dec a). discriminate.
-deduce (IHl H).
-destruct (list_find_first P P_dec l ).
-discriminate.
-tauto.
+destruct (P_dec x); auto; discriminate.
+simpl. destruct (P_dec a). discriminate.
+deduce (IHl H). destruct (list_find_first P P_dec l ). discriminate. tauto.
 Qed.
 
-Lemma list_find_first_Some (P: A -> Prop) P_dec l:
-list_find_first P P_dec l <> None -> exists z, In z l /\ P z.
+Lemma list_find_first_Some : forall (P: A -> Prop) P_dec l,
+  list_find_first P P_dec l <> None -> exists z, In z l /\ P z.
+
 Proof.
 intros.
 induction l.
@@ -880,9 +925,9 @@ simpl;tauto.
 tauto.
 Qed.
 
+Lemma list_find_first_Some_bound : forall (P: A -> Prop) P_dec l x,
+  list_find_first P P_dec l = Some x -> x < length l.
 
-Lemma list_find_first_Some_bound (P: A -> Prop) P_dec l x:
-list_find_first P P_dec l = Some x -> x < length l.
 Proof.
 induction l;intros.
 simpl in H;discriminate.
@@ -895,8 +940,10 @@ simpl;apply lt_n_S;apply IHl;auto.
 discriminate.
 Qed.
 
-
 End ListFind_more.
+
+(***********************************************************************)
+(** decidability of finding an element satisfying some relation *)
 
 Section List_Rel_Dec.
 
@@ -905,20 +952,21 @@ Section List_Rel_Dec.
   Variable P : A -> Prop.
   Variable R : A -> B -> Prop.
 
-  Lemma many_one_dec : forall (ll: list A) r, (forall l, In l ll -> {R l r} + {~R l r}) ->
-    {l: A | In l ll /\ R l r} + {forall l, In l ll -> ~R l r}.
+  Lemma many_one_dec : forall (l : list A) r,
+    (forall x, In x l -> {R x r} + {~R x r})
+    -> {x : A | In x l /\ R x r} + {forall x, In x l -> ~R x r}.
 
   Proof.
-    induction ll; intros.
+    induction l; intros.
     right; intros.
     inversion H0.
     destruct (H a); auto with datatypes.
     left; exists a; auto with datatypes.
-    case (IHll r); intro.
+    case (IHl r); intro.
     intros; apply H; auto with datatypes.
     left.
-    destruct s as [l [l_ll l_r]].
-    exists l; auto with datatypes.
+    destruct s as [x [x_l x_r]].
+    exists x; auto with datatypes.
     right.
     intros.
     destruct H0.
@@ -926,14 +974,14 @@ Section List_Rel_Dec.
     apply n0; trivial.
   Defined.
 
-  Lemma list_dec_all : forall (ll: list A),
-    (forall l, In l ll -> {P l} + {~P l}) ->
-    {forall l, In l ll -> P l} + {exists l, In l ll /\ ~P l}.
+  Lemma list_dec_all : forall (l : list A),
+    (forall x, In x l -> {P x} + {~P x}) ->
+    {forall x, In x l -> P x} + {exists x, In x l /\ ~P x}.
 
   Proof.
-    induction ll; intros.
+    induction l; intros.
     left; intros; inversion H0.
-    destruct (IHll).
+    destruct (IHl).
     intros; apply H.
     auto with datatypes.
     destruct (H a).
@@ -943,19 +991,26 @@ Section List_Rel_Dec.
     apply p; trivial.
     right; exists a; split; auto with datatypes.
     right.
-    destruct e as [l [l_ll nPl]].
-    exists l; split; auto with datatypes.
+    destruct e as [x [x_l nPx]].
+    exists x; split; auto with datatypes.
   Defined.
 
 End List_Rel_Dec.
 
-Section nfirst.
-Fixpoint nfirst_list n := match n with
-| 0 => nil
-| S(k) => k::(nfirst_list k)
-end.
+(***********************************************************************)
+(** list [n-1,..,0] *)
 
-Lemma nfirst_exact x dim: In x (nfirst_list dim) <-> lt x dim.
+Section nfirst.
+
+  Fixpoint nfirst_list n :=
+    match n with
+      | 0 => nil
+      | S k => k :: nfirst_list k
+    end.
+
+Lemma nfirst_exact : forall x dim, In x (nfirst_list dim) <-> lt x dim.
+
+Proof.
 intros.
 induction dim.
 unfold nfirst_list;simpl.
@@ -972,11 +1027,16 @@ simpl in *;clear H2.
 inversion H1;auto with *.
 Qed.
 
-Lemma nfirst_length l: length (nfirst_list l) = l.
+Lemma nfirst_length : forall l, length (nfirst_list l) = l.
+
 Proof.
 induction l;simpl;auto with *.
 Qed.
+
 End nfirst.
+
+(***********************************************************************)
+(** hints *)
 
 Hint Rewrite initialSeg_full initialSeg_nth seg_nth seg_tillEnd seg_exceeded
   finalSeg_empty nth_finalSeg_nth nth_copy_in nth_app_left nth_app_right
