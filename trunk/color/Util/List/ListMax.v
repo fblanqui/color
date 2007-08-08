@@ -8,18 +8,18 @@ See the COPYRIGHTS and LICENSE files.
 greatest/smallest component of a list of natural numbers
 *)
 
-(* $Id: ListMax.v,v 1.4 2007-02-08 13:35:10 blanqui Exp $ *)
+(* $Id: ListMax.v,v 1.5 2007-08-08 09:33:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-Require Export List.
+Require Export ListUtil.
+Require Export Max.
+Require Export Min.
 
 Notation nats := (list nat).
 
 (***********************************************************************)
 (** max *)
-
-Require Export Max.
 
 Fixpoint lmax (l : nats) : nat :=
   match l with
@@ -27,9 +27,7 @@ Fixpoint lmax (l : nats) : nat :=
     | a :: l' => max a (lmax l')
   end.
 
-Require Export NatUtil.
-
-Lemma in_le_lmax : forall x l, In x l -> x <= lmax l.
+Lemma in_lmax : forall x l, In x l -> x <= lmax l.
 
 Proof.
 induction l; simpl; intro. contradiction.
@@ -37,22 +35,18 @@ destruct H. subst a. apply le_max_l.
 deduce (IHl H). apply elim_max_r. exact H0.
 Qed.
 
-Implicit Arguments in_le_lmax [x l].
+Implicit Arguments in_lmax [x l].
 
-Require Export ListUtil.
-
-Lemma incl_le_lmax : forall l1 l2, incl l1 l2 -> lmax l1 <= lmax l2.
+Lemma incl_lmax : forall l1 l2, incl l1 l2 -> lmax l1 <= lmax l2.
 
 Proof.
 intros l1 l2. induction l1 as [| a' l' Hrec].
  auto with arith.
  intro H. generalize (incl_cons_l H). clear H. intros (H1, H2). simpl.
  apply (max_case2 a' (lmax l') (fun n : nat => n <= lmax l2)).
-  apply in_le_lmax. assumption.
+  apply in_lmax. assumption.
   apply Hrec. assumption.
 Qed.
-
-Require Export NatUtil.
 
 Lemma lmax_app : forall l m, lmax (l ++ m) = max (lmax l) (lmax m).
 
@@ -62,10 +56,17 @@ intros. induction l as [| a l Hrec].
  simpl. rewrite Hrec. rewrite max_assoc. reflexivity.
 Qed.
 
+Lemma lmax_in : forall l, length l > 0 -> exists x, In x l /\ lmax l = x.
+
+Proof.
+induction l; simpl; intros. absurd_hyp H; omega. destruct l.
+exists a. intuition. set (l' := n::l) in *. assert (length l'>0). simpl. omega.
+deduce (IHl H0). do 2 destruct H1. case (max_dec a (lmax l')); intro.
+exists a. intuition. exists x. intuition.
+Qed.
+
 (***********************************************************************)
 (** min *)
-
-Require Export Min.
 
 Fixpoint lmin (l : nats) : nat :=
   match l with
@@ -73,7 +74,7 @@ Fixpoint lmin (l : nats) : nat :=
     | a :: l' => min a (lmin l')
   end.
 
-Lemma in_lmin_le : forall x l, In x l -> lmin l <= x.
+Lemma in_lmin : forall x l, In x l -> lmin l <= x.
 
 Proof.
 induction l; simpl; intro. contradiction.
@@ -81,4 +82,4 @@ destruct H. subst a. apply le_min_l.
 deduce (IHl H). apply elim_min_r. exact H0.
 Qed.
 
-Implicit Arguments in_lmin_le [x l].
+Implicit Arguments in_lmin [x l].

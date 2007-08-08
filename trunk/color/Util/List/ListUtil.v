@@ -10,12 +10,13 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.28 2007-08-07 09:23:36 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.29 2007-08-08 09:33:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export List.
+Require Export NatUtil.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
@@ -115,6 +116,8 @@ induction l; simpl; intros. refl. rewrite IHl. refl.
 Qed.
 
 End tail.
+
+Implicit Arguments length_0 [A l].
 
 (***********************************************************************)
 (** filter *)
@@ -838,3 +841,102 @@ Section partition_by_rel.
   Qed.
 
 End partition_by_rel.
+
+(****************************************************************************)
+(* ith *)
+
+Unset Strict Implicit.
+Set Contextual Implicit.
+
+Section ith.
+
+Variable A : Type.
+
+Fixpoint ith (l : list A) : forall i, i < length l -> A :=
+  match l as l return forall i, i < length l -> A with
+    | nil => fun i H => False_rect A (lt_n_O i H)
+    | cons x m => fun i =>
+      match i return i < S (length m) -> A with
+	| O => fun _ => x
+	| S j => fun H => ith (lt_S_n H)
+      end
+  end.
+
+Lemma ith_In : forall l i (h : i < length l), In (ith h) l.
+
+Proof.
+induction l; simpl; intros. omega. destruct i. auto. right. apply IHl.
+Qed.
+
+Lemma ith_eq : forall l i (hi : i < length l) j (hj : j < length l),
+  i = j -> ith hi = ith hj.
+
+Proof.
+intros. subst j. rewrite (lt_unique hi hj). refl.
+Qed.
+
+Lemma ith_eq_app : forall m l i (hi : i < length (l++m)) j (hj : j < length l),
+  i = j -> ith hi = ith hj.
+
+Proof.
+induction l; simpl; intros. absurd_hyp hj; omega. subst j.
+destruct i. refl. apply IHl. refl.
+Qed.
+
+End ith.
+
+Implicit Arguments ith_In [A l i].
+
+(****************************************************************************)
+(* list of values of a function *)
+
+Section values.
+
+Variables (A : Type) (f : nat -> A).
+
+Fixpoint values j : list A :=
+  match j with
+    | 0 => nil
+    | S k => f k :: values k
+  end.
+
+End values.
+
+(****************************************************************************)
+(* list of values of a partial function *)
+
+Section pvalues.
+
+Variable A : Type.
+
+Fixpoint pvalues n : (forall i, i < n -> A) -> list A :=
+  match n as n return (forall i, i < n -> A) -> list A with
+    | 0 => fun _ => nil
+    | S k => fun f => f 0 (lt_O_Sn k) :: pvalues (fun i h => f (S i) (lt_n_S h))
+  end.
+
+Lemma pvalues_eq : forall n (f g : forall i, i < n -> A),
+  (forall i (hi : i < n), f i hi = g i hi) -> pvalues f = pvalues g.
+
+Proof.
+induction n; intros; simpl. refl. apply cons_eq. apply H. apply IHn.
+intros. apply H.
+Qed.
+
+End pvalues.
+
+Section pvalues_map.
+
+Variables (A B : Type) (f : A -> B).
+
+Definition f_ith (l : list A) i (hi : i < length l) := f (ith hi).
+
+Lemma pvalues_ith_eq_map : forall l, pvalues (@f_ith l) = map f l.
+
+Proof.
+induction l; intros; unfold f_ith; simpl. refl. apply tail_eq.
+rewrite <- IHl. apply pvalues_eq. intros. unfold f_ith. apply (f_equal f).
+apply ith_eq. refl.
+Qed.
+
+End pvalues_map.

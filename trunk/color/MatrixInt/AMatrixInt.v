@@ -162,7 +162,7 @@ Module MatrixInt (MI : TMatrixInt).
     Lemma succ_wf : WF succ.
 
     Proof.
-      apply wf_WF. 
+      apply wf_transp_WF. 
       apply well_founded_lt_compat with (fun v : vec => vec_at0 v).
       intros. destruct H. omega.
     Qed.

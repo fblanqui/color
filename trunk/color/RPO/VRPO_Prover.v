@@ -46,12 +46,12 @@ Module RPO_Prover (R : TRPO).
 
     Proof.
       unfold ltF, ltA, eqA, leF.
-      apply WF_wf. unfold transp.
+      apply WF_transp_wf. unfold transp.
       apply WF_incl with (fun x y => prec x > prec y).
       intros p q pq. destruct pq.
       destruct (lt_eq_lt_dec (prec p) (prec q)) as [[pq | pq] | pq]; intuition.
       intro x. apply (@SN_Rof Sig nat prec gt) with (prec x); trivial.
-      apply Acc_SN. apply Acc_incl with lt. intuition. apply lt_wf.
+      apply Acc_transp_SN. apply Acc_incl with lt. intuition. apply lt_wf.
     Qed.
 
     Lemma leF_dec : rel_dec leF.
@@ -94,7 +94,7 @@ Module RPO_Prover (R : TRPO).
 
     Proof.
       intro x. unfold arpo. set (t := vterm_of_aterm x).
-      apply SN_Rof with t; trivial. apply Acc_SN. 
+      apply SN_Rof with t; trivial. apply Acc_transp_SN. 
       apply Acc_incl with VRPO.lt. intuition.
       apply VRPO_Results.wf_lt.
     Qed.

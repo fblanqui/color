@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.16 2007-08-07 08:44:53 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.17 2007-08-08 09:33:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,6 +18,10 @@ Require Export Arith.
 
 Implicit Arguments lt_S_n [n m].
 Implicit Arguments lt_n_S [n m].
+Implicit Arguments le_S [n m].
+Implicit Arguments gt_le_S [n m].
+Implicit Arguments le_lt_n_Sm [n m].
+Implicit Arguments lt_le_weak [n m].
 
 (***********************************************************************)
 (** unicity of eq/le/lt proofs *)

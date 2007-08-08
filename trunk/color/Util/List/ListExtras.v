@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.7 2007-08-07 09:23:36 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.8 2007-08-08 09:33:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1013,24 +1013,24 @@ Lemma nfirst_exact : forall x dim, In x (nfirst_list dim) <-> lt x dim.
 Proof.
 intros.
 induction dim.
-unfold nfirst_list;simpl.
-split;omega.
-unfold nfirst_list;fold nfirst_list.
+unfold nfirst_list; simpl.
+split; omega.
+unfold nfirst_list; fold nfirst_list.
 destruct (gt_eq_gt_dec x dim).
 intuition.
-subst;apply in_eq.
+subst; apply in_eq.
 intuition.
-apply lt_S;apply H.
+apply lt_S; apply H.
 inversion H1.
 auto with *.
-simpl in *;clear H2.
-inversion H1;auto with *.
+simpl in *; clear H2.
+inversion H1; auto with *.
 Qed.
 
-Lemma nfirst_length : forall l, length (nfirst_list l) = l.
+Lemma nfirst_length : forall n, length (nfirst_list n) = n.
 
 Proof.
-induction l;simpl;auto with *.
+induction n; simpl; auto with *.
 Qed.
 
 End nfirst.

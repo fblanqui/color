@@ -23,3 +23,5 @@ and in the tactic Funeqtac.
 is it possible to get rid of it by using Eqdep_dec only?
 
 - move ListExt into ListUtil and ListExtras?
+
+- replace defs and lemmas when they are added in coq std lib

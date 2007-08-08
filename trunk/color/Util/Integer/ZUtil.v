@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.8 2007-04-27 19:13:36 koper Exp $ *)
+(* $Id: ZUtil.v,v 1.9 2007-08-08 09:33:42 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -160,7 +160,7 @@ Require Export SN.
 Lemma WF_Dgt : WF Dgt.
 
 Proof.
-apply wf_WF. apply Dlt_well_founded.
+apply wf_transp_WF. apply Dlt_well_founded.
 Qed.
 
 Lemma power_Dlt_compat : forall x y n,

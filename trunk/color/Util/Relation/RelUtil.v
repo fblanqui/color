@@ -8,12 +8,13 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.27 2007-08-07 08:44:53 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.28 2007-08-08 09:33:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export Relations.
+Require Export List.
 
 Implicit Arguments transp.
 Implicit Arguments inclusion.
@@ -43,7 +44,21 @@ Open Scope relation_scope.
 (***********************************************************************)
 (** basic properties *)
 
-Section basic_properties.
+Section basic_properties1.
+
+Variables (A B : Type) (R : A -> B -> Prop).
+
+Definition classic_left_total := forall x, exists y, R x y.
+
+Definition left_total := forall x, {y | R x y}.
+
+Definition functional := forall x y z, R x y -> R x z -> y = z.
+
+Definition finitely_branching := forall x, {l | forall y, R x y <-> In y l}.
+
+End basic_properties1.
+
+Section basic_properties2.
 
 Variables (A : Type) (R : relation A).
 
@@ -51,7 +66,9 @@ Definition irreflexive := forall x, ~R x x.
 
 Definition asymmetric := forall x y, R x y -> ~R y x.
 
-End basic_properties.
+Definition IS f := forall i, R (f i) (f (S i)).
+
+End basic_properties2.
 
 (***********************************************************************)
 (** basic definitions *)
@@ -73,6 +90,33 @@ Definition empty_rel (x y : A) := False.
 Definition intersection (S : relation A) x y := R x y /\ S x y.
 
 End basic_definitions.
+
+(***********************************************************************)
+(** finitely branching relations *)
+
+Section finitely_branching.
+
+Variables (A : Type) (R : relation A) (FB : finitely_branching R).
+
+Definition sons x := proj1_sig (FB x).
+
+Lemma in_sons_R : forall x y, In y (sons x) -> R x y.
+
+Proof.
+intros x y. exact (proj2 (proj2_sig (FB x) y)).
+Qed.
+
+Lemma R_in_sons : forall x y, R x y -> In y (sons x).
+
+Proof.
+intros x y. exact (proj1 (proj2_sig (FB x) y)).
+Qed.
+
+End finitely_branching.
+
+Implicit Arguments sons [A R].
+Implicit Arguments in_sons_R [A R x y].
+Implicit Arguments R_in_sons [A R x y].
 
 (***********************************************************************)
 (** ordering structures *)

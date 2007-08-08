@@ -14,7 +14,7 @@ Set Implicit Arguments.
 
 Section On_Rel_Gen.
 
-Variable A : Set.
+Variable A : Type.
 
 Section restriction.
 
