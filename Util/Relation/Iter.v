@@ -16,7 +16,7 @@ Require Export RelUtil.
 
 Section S.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Fixpoint iter (n : nat) : relation A :=
   match n with

@@ -16,7 +16,7 @@ Require Export ListUtil.
 Require Export Arith.
 Require Export RelMidex. 
 
-Variable A : Set.
+Variable A : Type.
 
 (***********************************************************************)
 (** predicate saying if a list has no duplicated elements *)

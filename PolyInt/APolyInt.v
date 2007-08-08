@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.16 2007-05-29 11:49:14 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.17 2007-08-08 09:33:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -35,7 +35,7 @@ Variable fpoly : forall f : Sig, poly (arity f).
 Fixpoint termpoly k (t : bterm k) {struct t} : poly (S k) :=
   match t with
     | BVar x H =>
-      ((1)%Z, mxi (gt_le_S x (S k) (le_lt_n_Sm x k H))) :: nil
+      ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: nil
     | BFun f v =>
       let fix tmp n0 (v : vector (bterm k) n0) {struct v}
 	: vector (poly (S k)) n0 :=
@@ -177,7 +177,7 @@ Let Q (xint : valuation W) k n (ts : vector (bterm k) n) :=
 
 Lemma termpoly_v_eq_1 : forall x k (H : x<=k),
   termpoly (PI_poly PI) (BVar H) =
-  (1%Z, mxi (gt_le_S x (S k) (le_lt_n_Sm x k H))) :: pzero (S k).
+  (1%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: pzero (S k).
 
 Proof.
 intros. simpl. refl.
@@ -186,7 +186,7 @@ Qed.
 Lemma termpoly_v_eq_2 :
   forall x k (H : x<=k) (v : vector Z (S k)),
   peval (termpoly (PI_poly PI) (BVar H)) v =
-  meval (mxi (gt_le_S _ _ (le_lt_n_Sm x k H))) v.
+  meval (mxi (gt_le_S (le_lt_n_Sm H))) v.
 
 Proof.
 intros x k H v. rewrite termpoly_v_eq_1. unfold pzero. unfold peval at 1.
@@ -202,7 +202,7 @@ Proof.
  rewrite termpoly_v_eq_2.
  rewrite meval_xi. rewrite Vnth_map.
  pattern (xint v) at 1.
- rewrite <- (vec_of_val_eq xint (gt_le_S v (S k) (le_lt_n_Sm v k Hv))).
+ rewrite <- (vec_of_val_eq xint (gt_le_S (le_lt_n_Sm Hv))).
  reflexivity.
 
  intros f ts. unfold Q. intro H. unfold P, f1, f2.

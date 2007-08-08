@@ -14,7 +14,7 @@ Require Export RelUtil.
 
 Section sn.
 
-Variable (A : Set) (R : relation A).
+Variable (A : Type) (R : relation A).
 
 Inductive SN : A -> Prop :=
   SN_intro : forall x, (forall y, R x y -> SN y) -> SN x.
@@ -34,45 +34,75 @@ End sn.
 
 Section acc.
 
-Variable (A : Set) (R : relation A).
+Variable (A : Type) (R : relation A).
 
-Lemma SN_Acc : forall x, SN (transp R) x -> Acc R x.
+Lemma SN_transp_Acc : forall x, SN (transp R) x -> Acc R x.
 
 Proof.
 induction 1. apply Acc_intro. intros. apply H0. exact H1.
 Qed.
 
-Lemma Acc_SN : forall x, Acc (transp R) x -> SN R x.
+Lemma Acc_transp_SN : forall x, Acc (transp R) x -> SN R x.
 
 Proof.
 induction 1. apply SN_intro. intros. apply H0. exact H1.
 Qed.
 
-Lemma WF_wf : WF (transp R) -> well_founded R.
+Lemma WF_transp_wf : WF (transp R) -> well_founded R.
 
 Proof.
-unfold well_founded. intros. apply SN_Acc. apply H.
+unfold well_founded. intros. apply SN_transp_Acc. apply H.
 Qed.
 
-Lemma wf_WF : well_founded (transp R) -> WF R.
+Lemma wf_transp_WF : well_founded (transp R) -> WF R.
 
 Proof.
-unfold WF. intros. apply Acc_SN. apply H.
+unfold WF. intros. apply Acc_transp_SN. apply H.
 Qed.
 
 End acc.
+
+Section acc_transp.
+
+Variable (A : Type) (R : relation A).
+
+Lemma SN_Acc_transp : forall x, SN R x -> Acc (transp R) x.
+
+Proof.
+induction 1. apply Acc_intro. intros. apply H0. exact H1.
+Qed.
+
+Lemma Acc_SN_transp : forall x, Acc R x -> SN (transp R) x.
+
+Proof.
+induction 1. apply SN_intro. intros. apply H0. exact H1.
+Qed.
+
+Lemma WF_wf_transp : WF R -> well_founded (transp R).
+
+Proof.
+unfold well_founded. intros. apply SN_Acc_transp. apply H.
+Qed.
+
+Lemma wf_WF_transp : well_founded R -> WF (transp R).
+
+Proof.
+unfold WF. intros. apply Acc_SN_transp. apply H.
+Qed.
+
+End acc_transp.
 
 (***********************************************************************)
 (** inclusion *)
 
 Section incl.
 
-Variable (A : Set) (R S : relation A).
+Variable (A : Type) (R S : relation A).
 
 Lemma Acc_incl : R << S -> forall x, Acc S x -> Acc R x.
   
 Proof.
-  intros. elim H0; intros. apply Acc_intro. intros. apply H2. apply H. exact H3.
+intros. elim H0; intros. apply Acc_intro. intros. apply H2. apply H. exact H3.
 Qed.
 
 Lemma SN_incl : R << S -> forall x, SN S x -> SN R x.
@@ -94,7 +124,7 @@ End incl.
 
 Section transp.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Lemma WF_transp : WF R -> WF (transp (transp R)).
 
@@ -109,7 +139,7 @@ End transp.
 
 Section compat.
 
-Variable (A : Set) (E R : relation A) (Hcomp : E @ R << R).
+Variable (A : Type) (E R : relation A) (Hcomp : E @ R << R).
 
 Lemma SN_compat_inv : forall x,
   SN (R @ E) x -> forall x', E x x' -> SN (R @ E) x'.
@@ -134,7 +164,7 @@ End compat.
 
 Section inverse.
 
-Variables (A B : Set) (f : A->B) (R : relation B).
+Variables (A B : Type) (f : A->B) (R : relation B).
 
 Notation Rof := (Rof R f).
 
@@ -164,7 +194,7 @@ End inverse.
 
 Section rel_inverse.
 
-Variables (A B : Set) (R : relation B) (F : A->B->Prop).
+Variables (A B : Type) (R : relation B) (F : A->B->Prop).
 
 Notation RoF := (RoF R F).
 
@@ -195,7 +225,7 @@ End rel_inverse.
 
 Section compose.
 
-Variable (A : Set) (R S : relation A).
+Variable (A : Type) (R S : relation A).
 
 Lemma WF_compose_swap : WF (R @ S) -> WF (S @ R).
 
@@ -220,7 +250,7 @@ End compose.
 
 Section rtc.
 
-Variable (A : Set) (R : relation A).
+Variable (A : Type) (R : relation A).
 
 Lemma SN_rtc : forall x, SN R x -> forall x', R# x x' -> SN R x'.
 
@@ -235,7 +265,7 @@ End rtc.
 
 Section tc.
 
-Variable (A : Set) (R : relation A).
+Variable (A : Type) (R : relation A).
 
 Lemma SN_tc : forall x, SN R x -> SN (R!) x.
 
@@ -259,7 +289,7 @@ End tc.
 
 Section symprod.
 
-Variable (A B : Set) (gtA : relation A) (gtB : relation B).
+Variable (A B : Type) (gtA : relation A) (gtB : relation B).
 
 Notation gt := (symprod A B gtA gtB).
 
@@ -322,7 +352,7 @@ End symprod.
 
 Section modulo.
 
-Variables (A : Set) (E R : relation A).
+Variables (A : Type) (E R : relation A).
 
 Lemma SN_modulo : forall x x', SN (E# @ R) x -> E# x x' -> SN (E# @ R) x'.
 
@@ -361,7 +391,7 @@ End modulo.
 
 Section union.
 
-Variable (A : Set) (R S : relation A).
+Variable (A : Type) (R S : relation A).
 
 Lemma WF_union : WF R -> WF S -> WF (R! @ S!) -> WF (R U S).
 
@@ -386,7 +416,7 @@ End union.
 
 Section commut.
 
-Variables (A : Set) (R S : relation A) (commut : S @ R << R @ S).
+Variables (A : Type) (R S : relation A) (commut : S @ R << R @ S).
 
 Lemma commut_SN : forall x, SN R x -> forall x', S x x' -> SN R x'.
 
@@ -405,7 +435,7 @@ Require Export Iter.
 
 Section iter.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Lemma SN_iter_S : forall n x, SN (iter R n) x -> SN (iter R (S n)) x.
 
@@ -450,7 +480,7 @@ Require Export Path.
 
 Section path.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Lemma SN_path : forall n x,
   (forall y l, length l = n -> is_path R x y l -> SN R y) -> SN R x.
@@ -469,7 +499,7 @@ End path.
 
 Section commut_modulo.
 
-Variables (A : Set) (R S : relation A) (commut : R @ S << S @ R).
+Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 
 Lemma commut_SN_modulo : forall x, SN S x -> SN (R# @ S) x.
 
@@ -491,7 +521,7 @@ End commut_modulo.
 
 Section absorb.
 
-Variables (A : Set) (R T : relation A) (absorb : R @ T << T).
+Variables (A : Type) (R T : relation A) (absorb : R @ T << T).
 
 Lemma SN_modulo_r : forall x x', SN (T @ R#) x -> R# x x' -> SN (T @ R#) x'.
 
@@ -522,7 +552,7 @@ End absorb.
 
 Section wf_mod_shift.
     
-  Variable (A : Set) (R S T : relation A).
+  Variable (A : Type) (R S T : relation A).
 
   Lemma wf_mod_shift : WF (T# @ (R U S)) -> WF ((S U T)# @ R).
 
@@ -539,7 +569,7 @@ End wf_mod_shift.
 
 Section wf_rel_mod.
 
-  Variable (A : Set) (R S R' S': relation A).
+  Variable (A : Type) (R S R' S': relation A).
 
   Lemma wf_rel_mod : WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> 
     WF ((S U S')# @ (R U R')).
@@ -568,7 +598,7 @@ End wf_rel_mod.
 
 Section wf_rel_mod_simpl.
 
-  Variable (A : Set) (R R' S : relation A).
+  Variable (A : Type) (R R' S : relation A).
 
   Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') ->
     WF (S# @ (R U R')).
