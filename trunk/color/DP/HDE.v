@@ -1,11 +1,27 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Leo Ducas, 2007-08-06
+
+HDE
+*)
+(** HDE : a simple overGraph on DP ; Head_equality *)
+
 Require Export ADPGraph.
 
+Set Implicit Arguments.
+
 Section S.
+
+
 Variable Sig : Signature.
 Notation rule := (rule Sig).
 Notation rules := (list rule).
 Notation lhs := (@lhs Sig).
 Notation rhs := (@rhs Sig).
+
+
 
 Variable R : rules.
 
@@ -28,13 +44,20 @@ Definition hde (r1 r2:rule) := In r1 DP /\ In r2 DP /\
     end
   end.
 
+Lemma hde_restricted : is_restricted hde DP.
+Proof.
+unfold is_restricted.
+intros.
+unfold hde in H;tauto.
+Qed.
+
 Lemma in_rule_dec (a:rule) L : {In a L} + {~ In a L}.
 Proof.
 intros.
 induction L; auto.
 simpl;destruct IHL; destruct (rule_eq_dec a a0);subst;try tauto.
 right. intuition; auto.
-Qed.
+Defined.
 
 Lemma hde_dec r1 r2 : {hde r1 r2} + {~hde r1 r2}.
 Proof.
@@ -45,7 +68,7 @@ destruct (in_rule_dec r1 DP); try tauto.
 destruct (in_rule_dec r2 DP); try tauto.
 destruct (rhs r1). left;auto. destruct (lhs r2); auto. 
 destruct (Sig_eq_dec f f0);try tauto.
-Qed.
+Defined.
 
 
 Lemma int_red_preserv_hd t1 t2 : int_red R t1 t2 ->
@@ -85,7 +108,7 @@ do 2 destruct H1.
 unfold hde;destruct lhs0;destruct rhs;simpl;auto.
 intuition;auto.
 
-deduce (int_red_rtc_preserv_hd _ _ H1).
+deduce (int_red_rtc_preserv_hd H1).
 destruct H2.
 simpl in H2. inversion H2;auto.
 

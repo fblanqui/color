@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.21 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.22 2007-08-09 16:14:28 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -300,9 +300,9 @@ Qed.
 
 Lemma Vnth_addl : forall k n (v : vec n) a (H1 : k < S n) (H2 : k < n),
   Vnth (Vadd v a) H1 = Vnth v H2.
-
 Proof.
-intros. assert (H3 : H1 = le_S H2). apply lt_unique.
+
+intros. assert (H3 : H1 = (@le_S (S k) n H2)). apply lt_unique.
 subst H1. generalize dependent k. generalize dependent n. intro n. elim n.
  intros v k H. elimtype False. apply (lt_n_O _ H).
  intros n' Hrec v k H. rewrite (VSn_eq v). destruct k.
@@ -863,6 +863,28 @@ Fixpoint list_of_vec n (v : vec n) {struct v} : list A :=
     | Vnil => nil
     | Vcons x _ v => x :: list_of_vec v
   end.
+
+
+Lemma vec_of_list_exact i l (Hi:i < length(l)) : l[i]=Some (Vnth (vec_of_list l) Hi).
+Proof.
+induction i;intros.
+destruct l;simpl in *. absurd_hyp Hi; omega.
+auto.
+
+destruct l;simpl in *. absurd_hyp Hi; omega.
+apply IHi.
+Qed.
+
+Lemma list_of_vec_exact i n (v:vector A n) (Hi:i < n) : (list_of_vec v)[i]=Some (Vnth v Hi).
+Proof.
+induction i;intros.
+destruct v;simpl in *. absurd_hyp Hi; omega.
+auto.
+
+destruct v;simpl in *. absurd_hyp Hi; omega.
+apply IHi.
+Qed.
+
 
 (***********************************************************************)
 (** decidability of equality *)

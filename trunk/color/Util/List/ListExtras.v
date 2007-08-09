@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.8 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.9 2007-08-09 16:14:28 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -908,9 +908,9 @@ simpl. destruct (P_dec a). discriminate.
 deduce (IHl H). destruct (list_find_first P P_dec l ). discriminate. tauto.
 Qed.
 
-Lemma list_find_first_Some : forall (P: A -> Prop) P_dec l,
-  list_find_first P P_dec l <> None -> exists z, In z l /\ P z.
 
+Lemma list_find_first_Some (P: A -> Prop) P_dec l:
+list_find_first P P_dec l <> None -> exists z, In z l /\ P z.
 Proof.
 intros.
 induction l.

@@ -10,6 +10,8 @@ AdjMat
 (** Describe the morphism between graph restricted to [[0,n-1]]
 and the boolean matrix of size n*n *)
 
+Set Implicit Arguments.
+
 Require Export Matrix.
 Require Export SemiRing.
 Require Export Bool.
@@ -122,7 +124,7 @@ Lemma Gmorph_plus :forall x y,@gofmat dim (M <+> N ) x y <->
  ((@gofmat dim M) U (@gofmat dim N)) x y.
 Proof.
 intros.
-assert (gofmat dim (M <+> N) x y <-> (gofmat dim M x y \/ gofmat dim N x y)).
+assert (gofmat (M <+> N) x y <-> (gofmat M x y \/ gofmat N x y)).
 unfold gofmat.
 rewrite orb_matadd.
 split;intro.
@@ -215,8 +217,8 @@ Qed.
 
 
 
-Lemma Gmorph_mult :forall x y, gofmat dim (M <*> N ) x y <->
-  ((gofmat dim M) @ (gofmat dim N)) x y .
+Lemma Gmorph_mult :forall x y, gofmat (M <*> N ) x y <->
+  ((gofmat M) @ (gofmat N)) x y .
 Proof.
 intros.
 unfold gofmat;unfold compose.
@@ -233,7 +235,7 @@ Variable dim : nat.
 Fixpoint mat_expp_fast (M : matrix dim dim) n :=
  match n with 
   |O => M
-  |S i => let N := (mat_expp_fast M i) in
+  |S i => let N := (@mat_expp_fast M i) in
 	(N <+> (id_matrix dim)) <*> N
   end.
 
@@ -265,15 +267,15 @@ unfold id_vec;rewrite Vbuild_nth.
 unfold A0, A1 in *;destruct (eq_nat_dec x y);auto.
 Qed.
 
-Lemma G_morph_id : forall x y, gofmat dim (id_matrix dim) x y <-> x=y /\ x<dim /\ y<dim.
+Lemma G_morph_id : forall x y, gofmat (id_matrix dim) x y <-> x=y /\ x<dim /\ y<dim.
 Proof.
 intros.
 unfold gofmat.
 apply mat_id_spec.
 Qed.
 
-Lemma Gmorph_iter_le_fast : forall n x y, gofmat dim (mat_expp_fast dim M n) x y <->
- (iter_le_fast (gofmat dim M) n) x y.
+Lemma Gmorph_iter_le_fast : forall n x y, gofmat (mat_expp_fast M n) x y <->
+ (iter_le_fast (gofmat M) n) x y.
 induction n;intros.
 simpl;auto;tauto.
 simpl;split;intros.
@@ -291,7 +293,7 @@ destruct H as [z];exists z;destruct H.
 rewrite Gmorph_plus;split;
 try left;auto; rewrite IHn;auto.
 exists x;split;rewrite <- IHn in H;auto.
-generalize (gofmat_true_bounds dim _ x y H);intros.
+generalize (gofmat_true_bounds H);intros.
 rewrite Gmorph_plus;right;unfold gofmat;rewrite mat_id_spec;
 intuition;auto with *.
 Qed.
@@ -307,7 +309,7 @@ Variable dim : nat.
 Variable M : matrix dim dim.
 
 
-Lemma Gmorph_clos_trans :forall x y, gofmat dim (mat_expp_fast dim M (S (log2 dim))) x y <-> (gofmat dim M)! x y.
+Lemma Gmorph_clos_trans :forall x y, gofmat (mat_expp_fast M (S (log2 dim))) x y <-> (gofmat M)! x y.
 Proof.
 split;intros.
 rewrite Gmorph_iter_le_fast in H;rewrite  iter_le_fast_exp2_same in H.
@@ -315,7 +317,7 @@ rewrite iter_le_spec in H;destruct H as [p];destruct H.
 deduce (iter_tc _ _ _ _ H0);trivial.
 
 deduce(eq_dec_midex eq_nat_dec).
-deduce (clos_trans_bound_path H0 (gofmat_restricted dim M) ).
+deduce (clos_trans_bound_path H0 (@gofmat_restricted dim M) ).
 rewrite nfirst_length in H1;unfold inclusion in H1.
 deduce (H1 _ _ H); deduce (bound_path_iter_le H2).
 rewrite Gmorph_iter_le_fast;rewrite iter_le_fast_spec.
@@ -340,7 +342,7 @@ unfold mat_transpose;rewrite mat_build_nth;trivial.
 Qed.
 
 
-Lemma Gmorph_transpose :forall x y, gofmat dim (mat_transpose M) x y <-> transp (gofmat dim M) x y.
+Lemma Gmorph_transpose :forall x y, gofmat (mat_transpose M) x y <-> transp (gofmat M) x y.
 Proof.
 intros;unfold gofmat;unfold transp;rewrite transp_mat_unbound;tauto.
 Qed.
@@ -363,8 +365,8 @@ destruct  (le_gt_dec dim y);auto with *.
 unfold mat_andb; repeat rewrite Vmap2_nth; auto.
 Qed.
 
-Lemma Gmorph_intersect : forall x y, gofmat _ (mat_andb M N) x y <->
- gofmat _ M x y /\ gofmat _ N x y.
+Lemma Gmorph_intersect : forall x y, gofmat (mat_andb M N) x y <->
+ gofmat M x y /\ gofmat N x y.
 Proof.
 intros;unfold gofmat.
 rewrite andb_mat_unbound.
@@ -378,13 +380,13 @@ Section GofMat_SCC.
 Variable dim : nat.
 
 Definition SCC_mat M:=
-  let N := mat_expp_fast dim  M (S(log2 dim)) in
-  mat_andb dim N (mat_transpose N).
+  let N := mat_expp_fast M (S(log2 dim)) in
+  mat_andb N (@mat_transpose dim dim N).
 
 Variable M : matrix dim dim.
 
 
-Theorem gofmat_SCC :forall x y, gofmat _ (SCC_mat M) x y <-> SCC _ (gofmat _ M) x y.
+Theorem gofmat_SCC :forall x y, gofmat (SCC_mat M) x y <-> SCC (gofmat M) x y.
 Proof.
 unfold SCC_mat in *; split; intros; rewrite Gmorph_intersect in *; 
 try rewrite Gmorph_transpose in *; unfold transp in *;
@@ -408,7 +410,7 @@ Definition matofG (R_dec : forall x y, {R x y} + {~ R x y}) :=
   end).
   
 Lemma mat_G_isom R_dec : (forall x y, R x y -> x < dim /\ y < dim) ->
- forall x y, (gofmat dim (matofG R_dec) x y <-> R x y).
+ forall x y, (gofmat (matofG R_dec) x y <-> R x y).
 intros;unfold gofmat,mat_unbound;split;intros;
 destruct (le_gt_dec dim x);destruct (le_gt_dec dim y);
 try deduce (H _ _ H0);

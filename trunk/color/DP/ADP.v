@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.13 2007-05-28 16:28:14 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.14 2007-08-09 16:14:28 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -61,15 +61,22 @@ Qed.
 
 Implicit Arguments mkdp_elim [l t S].
 
-Definition dp := mkdp R.
+Definition dp := repeat_remove (@eq_rule_dec Sig) (mkdp R).
 
+Lemma repeat_free_dp : repeat_free dp.
+Proof.
+unfold dp.
+apply repeat_remove_repeat_free.
+Qed.
 Lemma dp_intro : forall l r t,
   In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
 
 Proof.
 intros. deduce (in_elim H). do 2 destruct H1. deduce (in_elim H0).
 do 2 destruct H2.
-unfold dp. rewrite H1. simpl. rewrite mkdp_app. simpl. rewrite H2.
+unfold dp. 
+intros; apply incl_repeat_remove .
+ rewrite H1. simpl. rewrite mkdp_app. simpl. rewrite H2.
 rewrite map_app.
 simpl. apply in_appr. apply in_appl. apply in_appr. apply in_eq.
 Qed.
@@ -78,7 +85,8 @@ Lemma dp_elim : forall l t,
   In (mkRule l t) dp -> exists r, In (mkRule l r) R /\ In t (calls R r).
 
 Proof.
-intros. deduce (mkdp_elim H). exact H0.
+intros. unfold dp in H. apply (mkdp_elim).
+deduce  (repeat_remove_incl (@eq_rule_dec Sig) _ _ H);auto.
 Qed.
 
 Implicit Arguments dp_elim [l t].

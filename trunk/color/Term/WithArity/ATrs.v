@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.26 2007-05-30 23:00:54 koper Exp $ *)
+(* $Id: ATrs.v,v 1.27 2007-08-09 16:14:28 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,7 +30,7 @@ Lemma eq_rule_dec : forall a b : rule, {a=b}+{~a=b}.
 
 Proof.
 decide equality; apply eq_term_dec.
-Qed.
+Defined.
 
 Notation rules := (list rule).
 

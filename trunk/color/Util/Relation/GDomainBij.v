@@ -10,6 +10,8 @@ GDomainBij
 (* given a list Dom, we make a bijection between element of Dom and [[0,n-1]],
 and relation restricted to Dom with relation restricted to [[1,n]] *)
 
+Set Implicit Arguments.
+
 Require Export ListUtil.
 Require Export SCC.
 Require Export ListExtras.
@@ -92,7 +94,7 @@ Variable A_eq_dec :forall (x:A) (y:A), {x=y} +{~x=y}.
 Variable Dom : list A.
 Variable R : relation A.
 
-Lemma domtonat_elim  : forall a b, (domtonat _ Dom R) a b -> exists x,exists y,
+Lemma domtonat_elim  : forall a b, (domtonat Dom R) a b -> exists x,exists y,
 R x y /\ Dom [a] = Some x /\ Dom [b] = Some y.
 intros.
 unfold domtonat in H.
@@ -103,7 +105,7 @@ Qed.
 
 
 
-Lemma domtonat_is_restricted : is_restricted (domtonat _ Dom R) (nfirst_list (length Dom)).
+Lemma domtonat_is_restricted : is_restricted (domtonat Dom R) (nfirst_list (length Dom)).
 Proof.
 unfold is_restricted;intros.
 repeat rewrite nfirst_exact;deduce (domtonat_elim x y H).
@@ -116,7 +118,7 @@ Qed.
 Variable restriction : is_restricted R Dom.
 
 Lemma nattodom_elim :forall x y (R' : relation nat),
-nattodom A A_eq_dec Dom (R') x y -> exists a, exists b,
+nattodom A_eq_dec Dom (R') x y -> exists a, exists b,
 R' a b /\ Dom [a] = Some x /\ Dom [b] = Some y.
 intros;unfold nattodom in H.
 assert (exists a, list_find_first (eq x) (A_eq_dec x) Dom =Some a).
@@ -125,14 +127,14 @@ exists n;auto. destruct H0; subst. rewrite H0 in H.
 assert (exists b,list_find_first (eq y) (A_eq_dec y) Dom =Some b).
 destruct (list_find_first (eq y) (A_eq_dec y) Dom ); try tauto.
 exists n;auto. destruct H1; subst;rewrite H1 in H.
-deduce(eq_list_find_first_exact _ _ _ _ A_eq_dec H1).
-deduce(eq_list_find_first_exact _ _ _ _ A_eq_dec H0).
+deduce(eq_list_find_first_exact _ _ _  H1).
+deduce(eq_list_find_first_exact _ _ _ H0).
 exists x0;exists x1;intuition;auto.
 Qed.
 
 
 Lemma nattodom_elim2 :forall x y (R' : relation nat),
-nattodom A A_eq_dec Dom (R') x y -> exists a, exists b,
+nattodom A_eq_dec Dom (R') x y -> exists a, exists b,
 R' a b /\ list_find_first (eq x) (A_eq_dec x) Dom = Some a
 /\ list_find_first (eq y) (A_eq_dec y) Dom = Some b.
 
@@ -143,14 +145,14 @@ exists n;auto. destruct H0; subst. rewrite H0 in H.
 assert (exists b,list_find_first (eq y) (A_eq_dec y) Dom =Some b).
 destruct (list_find_first (eq y) (A_eq_dec y) Dom ); try tauto.
 exists n;auto. destruct H1; subst;rewrite H1 in H.
-deduce(eq_list_find_first_exact _ _ _ _ A_eq_dec H1).
-deduce(eq_list_find_first_exact _ _ _ _ A_eq_dec H0).
+deduce(eq_list_find_first_exact _ _ _ H1).
+deduce(eq_list_find_first_exact _ _ _ H0).
 exists x0;exists x1;intuition;auto.
 Qed.
 
 
 Lemma dom_change:forall x y,
-nattodom _ A_eq_dec Dom (domtonat _ Dom R) x y <-> R x y.
+nattodom A_eq_dec Dom (domtonat Dom R) x y <-> R x y.
 intros;split;intro.
 deduce (nattodom_elim _ _ _ H).
 repeat destruct H0;destruct H1.
@@ -158,8 +160,8 @@ unfold domtonat in H0.
 rewrite H1 in H0;rewrite H2 in H0;auto.
 
 unfold is_restricted in restriction.
-deduce (restriction x y H);destruct H0.
-deduce (eq_In_find_first _ _ _ A_eq_dec H0);deduce (eq_In_find_first _ _ _ A_eq_dec H1).
+deduce (restriction H);destruct H0.
+deduce (eq_In_find_first _ _  A_eq_dec H0);deduce (eq_In_find_first _ _ A_eq_dec H1).
 destruct H2;destruct H2;destruct H3;destruct H3.
 unfold nattodom.
 rewrite H2;rewrite H3.
@@ -168,13 +170,13 @@ rewrite H4;rewrite H5;auto.
 Qed.
 
 Lemma domtonat_dec ( Rdec :forall x y, {R x y}+{~R x y}): forall x y,
-{domtonat _ Dom R x y}+{~(domtonat _ Dom R x y)}.
+{domtonat Dom R x y}+{~(domtonat Dom R x y)}.
 Proof.
 intros.
 unfold domtonat.
 destruct (Dom[x]). destruct (Dom[y]). apply Rdec.
 tauto. tauto.
-Qed.
+Defined.
 
 End bijection.
 
@@ -191,12 +193,12 @@ Variable restriction' : is_restricted R' (nfirst_list (length Dom)).
 Variable rp_free: repeat_free Dom.
 
 Lemma dom_change_compose: forall x y,
-nattodom _ A_eq_dec Dom (R @ R') x y
-<-> ((nattodom _ A_eq_dec Dom R)@ nattodom _ A_eq_dec Dom R') x y.
+nattodom A_eq_dec Dom (R @ R') x y
+<-> ((nattodom A_eq_dec Dom R)@ nattodom A_eq_dec Dom R') x y.
 intros;split;intro.
-deduce (nattodom_elim _ A_eq_dec _ _ _ _ H).
+deduce (nattodom_elim A_eq_dec _ _ _ _ H).
 repeat destruct H0;destruct H1.
-unfold compose; deduce (restriction _ _ H0); destruct H4.
+unfold compose; deduce (restriction H0); destruct H4.
 rewrite nfirst_exact in H5; rewrite element_at_exists in H5.
 destruct H5 as [z]; exists z.
 deduce (element_at_in2  _ _ H1).
@@ -206,9 +208,9 @@ unfold nattodom.
 destruct H6; clear H9.
 destruct H7; clear H9.
 destruct H8; clear H9.
-deduce (eq_In_find_first _ _ _ (A_eq_dec) H6);destruct H9;destruct H9.
-deduce (eq_In_find_first _ _ _ (A_eq_dec) H7);destruct H11; destruct H11.
-deduce (eq_In_find_first _ _ _ (A_eq_dec) H8);destruct H13;destruct H13.
+deduce (eq_In_find_first _ _ (A_eq_dec) H6);destruct H9;destruct H9.
+deduce (eq_In_find_first _ _ (A_eq_dec) H7); destruct H11; destruct H11.
+deduce (eq_In_find_first _ _ (A_eq_dec) H8);destruct H13;destruct H13.
 deduce (repeat_free_unique _ rp_free _ _ H1 H10).
 deduce (repeat_free_unique _ rp_free _ _ H3 H12).
 deduce (repeat_free_unique _ rp_free _ _ H5 H14).
@@ -241,7 +243,7 @@ intro;induction n;try trivial.
 simpl;unfold is_restricted;unfold compose.
 intros;destruct H as [z];destruct H.
 intuition.
-deduce(restriction _ _ H);tauto.
+deduce(restriction H);tauto.
 deduce(IHn _ _ H0);tauto.
 Qed.
 
@@ -249,7 +251,7 @@ Qed.
 
 
 Lemma dom_change_iter : forall n x y,
-nattodom _ A_eq_dec Dom (iter (domtonat _ Dom R) n) x y
+nattodom A_eq_dec Dom (iter (domtonat Dom R) n) x y
 <-> (iter R n) x y.
 intro n; induction n;intros;simpl.
 apply dom_change;auto.
@@ -273,11 +275,11 @@ Qed.
 
 
 Lemma dom_change_tc: forall x y, 
-nattodom _  A_eq_dec Dom ((domtonat _ Dom R)!) x y <-> R! x y.
+nattodom  A_eq_dec Dom ((domtonat Dom R)!) x y <-> R! x y.
 
 split;intros.
 
-deduce(nattodom_elim2 _ A_eq_dec _ _ _ _ H);do 3 destruct H0.
+deduce(nattodom_elim2 A_eq_dec _ _ _ _ H);do 3 destruct H0.
 deduce (tc_iter H0);unfold Iter in *;unfold Iter_ge in *.
 destruct H2 as [n]. destruct H2;destruct H1.
 eapply (iter_tc R n);rewrite <- dom_change_iter.
@@ -289,7 +291,7 @@ rewrite <- dom_change_iter in H1.
 unfold nattodom in *.
 destruct (list_find_first (eq x) (A_eq_dec x) Dom);auto with *.
 destruct (list_find_first (eq y) (A_eq_dec y) Dom);auto with *.
-deduce (iter_tc (domtonat A Dom R) n);auto.
+deduce (iter_tc (domtonat Dom R) n);auto.
 Qed.
 
 End iter.
@@ -303,8 +305,8 @@ Variable R R': relation nat.
 
 
 Lemma dom_change_inter : forall x y,
-nattodom _ A_eq_dec Dom (intersection R R') x y
-<-> (nattodom _ A_eq_dec Dom R) x y /\ (nattodom _ A_eq_dec Dom R') x y.
+nattodom A_eq_dec Dom (intersection R R') x y
+<-> (nattodom A_eq_dec Dom R) x y /\ (nattodom A_eq_dec Dom R') x y.
 split;intros;
 unfold nattodom in *;
 destruct (list_find_first (eq x) (A_eq_dec x) Dom);auto with *;
@@ -322,8 +324,8 @@ Variable R : relation nat.
 
 
 Lemma dom_change_transp : forall x y,
-nattodom _ A_eq_dec Dom (transp R ) x y
-<-> transp (nattodom _ A_eq_dec Dom R) x y.
+nattodom A_eq_dec Dom (transp R ) x y
+<-> transp (nattodom A_eq_dec Dom R) x y.
 split;intros;unfold transp in *;
 unfold nattodom in *;
 destruct (list_find_first (eq x) (A_eq_dec x) Dom);auto with *;
@@ -343,19 +345,19 @@ Variable rp_free: repeat_free Dom.
 
 
 Theorem dom_change_SCC : forall x y,
-nattodom _  A_eq_dec Dom (SCC _ (domtonat _ Dom R)) x y <-> SCC _ R x y.
+nattodom  A_eq_dec Dom (SCC (domtonat  Dom R)) x y <-> SCC  R x y.
 split;intros;unfold SCC in *.
 change ((R !) x y /\ transp (R !) x y).
-change (nattodom A A_eq_dec Dom (intersection (domtonat A Dom R !) 
-(transp (domtonat A Dom R !))) x y) in H.
+change (nattodom A_eq_dec Dom (intersection (domtonat Dom R !) 
+(transp (domtonat Dom R !))) x y) in H.
 rewrite dom_change_inter in H.
 destruct H;rewrite dom_change_transp in H0.
 unfold transp in *.
 rewrite dom_change_tc in *;auto with *.
 
 change ((R !) x y /\ transp (R !) x y) in H.
-change (nattodom A A_eq_dec Dom (intersection (domtonat A Dom R !) 
-(transp (domtonat A Dom R !))) x y).
+change (nattodom A_eq_dec Dom (intersection (domtonat Dom R !) 
+(transp (domtonat Dom R !))) x y).
 rewrite dom_change_inter.
 destruct H;rewrite dom_change_transp.
 unfold transp in *.

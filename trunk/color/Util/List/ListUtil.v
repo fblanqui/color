@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.29 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.30 2007-08-09 16:14:28 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -842,6 +842,42 @@ Section partition_by_rel.
 
 End partition_by_rel.
 
+Section ListFilter.
+  Variables (A : Set).
+
+Fixpoint listfilter (L:list A) l {struct L} := match L with
+  |nil => nil
+  |a::Q => match l with 
+    |nil => nil
+    |true::q => a::(@listfilter Q q)
+    |false::q =>(@listfilter Q q)
+    end
+  end.
+
+Lemma listfilter_in L l i x : L[i]=Some x -> l[i]=Some true -> In x (listfilter L l) .
+Proof.
+induction L.
+intros. simpl in *. discriminate.
+
+intros.
+destruct i;simpl in H.
+simpl.
+inversion H;subst.
+destruct l;simpl in *. discriminate.
+inversion H0;subst. simpl;left; auto.
+
+destruct l;auto. simpl in H0; discriminate.
+inversion H0.
+simpl.
+destruct b.
+right. eapply IHL;eauto.
+eapply IHL;eauto.
+Qed.
+
+
+End ListFilter.
+
+
 (****************************************************************************)
 (* ith *)
 
@@ -940,3 +976,4 @@ apply ith_eq. refl.
 Qed.
 
 End pvalues_map.
+
