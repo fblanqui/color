@@ -9,6 +9,8 @@ SCCTopoOrdering
 
 (** We build here the quotient graph by the relation SCC, which is Topo Sortable *)
 
+Set Implicit Arguments.
+
 Require Export SCC_dec.
 
 Section SCC_quotient.
@@ -27,8 +29,8 @@ Variables
 	(M : matrix dim dim)
   (HM: M= SCC_mat_effective hyps) .
 (* We represent the quotient of the Domain by SCC with a function to nat *)
-Notation SCC:=(SCC _ R).
-Notation SCC_dec := (SCC_effective_dec hyps M HM).
+Notation SCC:=(SCC R).
+Notation SCC_dec := (SCC_effective_dec hyps HM).
 
 (** We give a second definition of SCC :SCC' now isolated points are also considered as SCC
 (refl cosure) *)
@@ -44,7 +46,7 @@ destruct (A_eq_dec a x);auto.
 destruct IHl.
 left;auto.
 right;tauto.
-Qed.
+Defined.
 
 Lemma SCC'_dec : forall x y, {SCC' x y} + {~SCC' x y}.
 Proof.
@@ -58,7 +60,7 @@ right;tauto.
 destruct (SCC_dec x y);
 destruct (In_dec y Dom);destruct (In_dec x Dom);
 rewrite <- SCC_effective_exact in *; try tauto.
-Qed.
+Defined.
 
 Lemma trans_SCC' : forall x y z, SCC' x y -> SCC' y z -> SCC' x z.
 intros.
@@ -131,8 +133,8 @@ rewrite H in H2.
 unfold SCC'_tag in H1.
 unfold SCC'_tag in H2.
 
-deduce (In_find_first2 _ _ _ _ H1).
-deduce (In_find_first2 _ _ _ _ H2).
+deduce (In_find_first2 _ _ _ H1).
+deduce (In_find_first2 _ _ _ H2).
 destruct H3;destruct H4.
 destruct H3;destruct H4.
 rewrite H3 in H4.
@@ -143,6 +145,33 @@ eassumption.
 apply sym_SCC'.
 auto.
 Qed.
+
+Check Vcons.
+(* faster way to compute SCC'_tag but not certified *)
+Fixpoint bools_find_first n (v : vector bool n) {struct v} := match n with
+  |0 => None
+  |S i => match v with
+    |Vnil => None
+    |Vcons true i w =>Some 0
+    |Vcons false i w => match bools_find_first w with 
+       |None => None
+       |Some r => Some (S r)
+       end
+    end
+  end.
+
+Definition SCC_tag_fast M t := 
+  let oi:= list_find_first (eq t) (A_eq_dec t) Dom in
+  match oi with 
+  |None => None
+  |Some i => match le_gt_dec dim i with
+     |right Hi => @bools_find_first dim (Vnth M Hi)
+     |left _ => None
+     end
+   end.
+
+
+
 
 
 (* Quotient relation *)
@@ -170,7 +199,7 @@ inversion H;tauto.
 right;discriminate.
 right;discriminate.
 left;auto.
-Qed.
+Defined.
 
 
 
@@ -192,7 +221,7 @@ do 2 destruct H.
 simpl in H0. destruct H0. subst;tauto.
 apply n0.
 exists x;auto.
-Qed.
+Defined.
 
 
 (** Decidability of the quotient relation *)
@@ -256,7 +285,7 @@ right;intuition;apply n.
 destruct H.
 exists x0;intuition.
 deduce (restriction r x0);tauto.
-Qed.
+Defined.
 
 
 (** This new relation will be acyclic *)
@@ -266,7 +295,7 @@ Lemma Rquo'_dec x y : {Rquo' x y} + {~Rquo' x y}.
 Proof.
 unfold Rquo';intros;destruct (eq_nat_dec x y);destruct (Rquo_dec x y);auto;
 right;tauto.
-Qed.
+Defined.
 
 
 Require Export Total.
@@ -384,7 +413,7 @@ cut (l=l0). intro;subst. intuition.
 apply lt_unique.
 destruct x. destruct y.
 right;intuition;inversion H;tauto.
-Qed.
+Defined.
 
 Lemma bnat_spec x: x<dim <-> exists y:bnat,  (proj1_sig y)=x.
 Proof.
@@ -399,7 +428,7 @@ Lemma lt_ge_dec x y : {x<y} + { x>= y}.
 Proof.
 intros.
 destruct (lt_eq_lt_dec x y); auto;try destruct s;auto with *.
-Qed.
+Defined.
 
 Fixpoint natlist_to_bnatlist L := match L with
   | nil => nil

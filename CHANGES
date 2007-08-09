@@ -1,5 +1,11 @@
+07-08-09:
+- Faster theorems to check modular termination criterion hypotheses with their tactics [Ducas]
 
-- added support for SCC decomposition [Ducas]
+07-08-06:
+- Notion of SCC, way to compute SCC on restricted graphs [Ducas]                         
+- Proof of SCC modular termination criterion [Ducas]                                     
+- HACK : One simple overgraph (HDE : Head Equal) for tests (will be replaced by MGU) [Ducas]                       
+
 
 - added support for classical reasoning [Blanqui]:
 . Util/Logic/ClassicUtil: basic meta-theorems of classical logic

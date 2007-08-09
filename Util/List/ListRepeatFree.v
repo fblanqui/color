@@ -262,6 +262,81 @@ exists l. exists (@nil A). rewrite <- app_nil_end. auto.
 decomp H. exists x. exists (x0::x1). auto.
 Qed.
 
+
+(***********************************************************************)
+(** repeat free list with sames element *)
+
+
+Fixpoint repeat_remove  l {struct l} := match l with
+  | nil => @nil A
+  | t::q => t:: (remove eq_dec t (repeat_remove q)) 
+  end.
+
+Lemma remove_ok x l: ~In x (remove eq_dec x l).
+Proof.
+intros.
+induction l.
+simpl;tauto.
+simpl.
+destruct (eq_dec a x). auto.
+simpl;tauto. 
+Qed.
+
+Lemma remove_In a x l : In a (remove eq_dec x l) -> In a l.
+Proof.
+induction l;intros.
+simpl in *. auto.
+simpl in H.
+destruct (eq_dec a0 x). subst;simpl;right;auto.
+simpl in *;tauto.
+Qed.
+
+Lemma repeat_free_remove n l x :(length l)=n -> repeat_free l -> repeat_free (remove eq_dec x l).
+Proof.
+induction n; intros.
+destruct l;simpl in *;auto. assert False. omega. tauto.
+
+destruct l;simpl in *. tauto.
+destruct (eq_dec a x).
+inversion H. apply IHn;try tauto.
+
+simpl;split. destruct H0.
+assert (x<>a);auto.
+intuition. apply H0. eapply remove_In. eauto.
+apply IHn.
+inversion H;auto. tauto.
+Qed.
+
+Lemma repeat_remove_repeat_free l: repeat_free (repeat_remove l).
+Proof.
+induction l.
+simpl;auto.
+simpl. split.
+apply remove_ok.
+eapply repeat_free_remove;eauto.
+Qed.
+
+Lemma repeat_remove_incl l : incl (repeat_remove l) l.
+Proof.
+induction l.
+simpl;unfold incl;auto.
+unfold incl; simpl. intros.
+destruct H. left;auto. 
+right;apply IHl. eapply remove_In. eauto.
+Qed.
+
+Lemma incl_repeat_remove l : incl l (repeat_remove l).
+Proof.
+induction l.
+simpl;unfold incl;auto.
+unfold incl; simpl. intros.
+destruct (eq_dec a a0). auto.
+destruct H. auto. 
+right. 
+apply In_remove;auto.
+Qed.
+
+
 End S.
 
 Implicit Arguments repeat_free_app_elim [A l m].

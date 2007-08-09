@@ -1,3 +1,14 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Leo Ducas, 2007-08-06
+
+log2
+*)
+(**Definition of log2 (floor) and exp2, and some equalities *)
+
+
 Require Export Div2.
 Require Export Le.
 Lemma div2_le_n : forall n, div2 n <= n.
@@ -27,7 +38,7 @@ match count with
   end
 end.
 
-(* log2_aux est correcte dès que count >= n *)
+(* log2_aux is correct as soon as count >= n *)
 
 Lemma log2_aux_matches : forall count n, n <= count ->
   log2_prop n (log2_aux n count).
