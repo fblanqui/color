@@ -8,7 +8,7 @@ HDE
 *)
 (** HDE : a simple overGraph on DP ; Head_equality *)
 
-Require Export ADPGraph.
+Require Export AGraph.
 
 Set Implicit Arguments.
 
@@ -23,19 +23,17 @@ Notation rhs := (@rhs Sig).
 
 
 
-Variable R : rules.
+Variable E R : rules.
 
 Variable Sig_eq_dec : forall (x y :Sig) , {x=y} +{~x=y}.
+
 Variable hyp : rules_preserv_vars R.
 
-Notation DP := (dp R).
-Notation DPG := (dp_graph R).
-
-Variable rule_eq_dec :forall (x y :rule) , {x=y} +{~x=y}.
-Definition dim := length DP.
+Definition rule_eq_dec := @eq_rule_dec Sig.
+Definition dim := length R.
 
 
-Definition hde (r1 r2:rule) := In r1 DP /\ In r2 DP /\
+Definition hde (r1 r2:rule) := In r1 R /\ In r2 R /\
   match (rhs r1) with 
   |Var n => True
   |Fun f v => match lhs r2 with
@@ -44,7 +42,7 @@ Definition hde (r1 r2:rule) := In r1 DP /\ In r2 DP /\
     end
   end.
 
-Lemma hde_restricted : is_restricted hde DP.
+Lemma hde_restricted : is_restricted hde R.
 Proof.
 unfold is_restricted.
 intros.
@@ -64,14 +62,14 @@ Proof.
 intros.
 unfold hde.
 
-destruct (in_rule_dec r1 DP); try tauto.
-destruct (in_rule_dec r2 DP); try tauto.
+destruct (in_rule_dec r1 R); try tauto.
+destruct (in_rule_dec r2 R); try tauto.
 destruct (rhs r1). left;auto. destruct (lhs r2); auto. 
 destruct (Sig_eq_dec f f0);try tauto.
 Defined.
 
 
-Lemma int_red_preserv_hd t1 t2 : int_red R t1 t2 ->
+Lemma int_red_preserv_hd t1 t2 : int_red E t1 t2 ->
  exists f, exists v,exists w, t1=Fun f v /\ t2=Fun f w.
 Proof.
 intros.
@@ -84,7 +82,7 @@ exists (Vcast (Vapp v (Vcons (fill x1 (ASubstitution.app x2 x0)) v0)) e).
 tauto.
 Qed.
 
-Lemma int_red_rtc_preserv_hd t1 t2 : (int_red R) # t1 t2 ->
+Lemma int_red_rtc_preserv_hd t1 t2 : (int_red E) # t1 t2 ->
 t1=t2 \/ exists f, exists v,exists w, t1=Fun f v /\ t2=Fun f w.
 Proof.
 intros.
@@ -99,7 +97,7 @@ inversion H1. subst.
 exists x3;exists x1;exists x5. auto.
 Qed.
 
-Lemma dp_graph_incl_hde : DPG << hde.
+Lemma hd_rules_graph_incl_hde : hd_rules_graph (int_red E#) R  << hde.
 Proof.
 unfold inclusion;intros.
 destruct x;destruct y.
@@ -117,4 +115,6 @@ inversion H2.
 inversion H3.
 congruence.
 Qed.
+
+
 End S.
