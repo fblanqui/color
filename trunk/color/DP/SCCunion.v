@@ -12,6 +12,7 @@ SCCUnion
 Set Implicit Arguments.
 
 Require Export SCCTopoOrdering.
+Require Export AGraph.
 Require Export ADPGraph.
 Require Export ATerm.
 Require Export ATrs.
@@ -24,21 +25,21 @@ Notation rules := (list rule).
 Notation lhs := (@lhs Sig).
 Notation rhs := (@rhs Sig).
 
+Variable S : relation (term Sig).
 Variable R : rules.
 
 Variable hyp : rules_preserv_vars R.
 
 
-Notation DP := (dp R).
-Notation DPG := (dp_graph R).
+Notation DPG := (hd_rules_graph S R).
 
-Variable rule_eq_dec :forall (x y :rule) , {x=y} +{~x=y}.
-Definition dim := length DP.
+Definition rule_eq_dec := @ATrs.eq_rule_dec Sig.
+Definition dim := length R.
 
 Variable ODPG : relation rule.
 Variable over_DPG : DPG << ODPG.
-Variable restriction : is_restricted ODPG DP.
-Variable rp_free: repeat_free DP.
+Variable restriction : is_restricted ODPG R.
+Variable rp_free: repeat_free R.
 Variable ODPG_dec : forall x y, {ODPG x y} + {~ ODPG x y }.
 
 
@@ -113,7 +114,7 @@ Definition hd_red_SCC' i t1 t2 := exists l, exists r, exists s,
 
 
 
-Lemma hd_red_SCC'_cover t1 t2 : hd_red DP t1 t2 -> exists i, hd_red_SCC' i t1 t2 /\ i<dim.
+Lemma hd_red_SCC'_cover t1 t2 : hd_red R t1 t2 -> exists i, hd_red_SCC' i t1 t2 /\ i<dim.
 Proof.
 intros.
 unfold hd_red in *.
@@ -126,21 +127,21 @@ split;try tauto.
 unfold dim.
 apply (list_find_first_Some_bound (SCC' (mkRule x x0)) (SCC'_dec M HM (mkRule x x0)) ).
 intuition.
-deduce (list_find_first_exist (SCC' (mkRule x x0)) (SCC'_dec M HM (mkRule x x0)) _ DP H).
+deduce (list_find_first_exist (SCC' (mkRule x x0)) (SCC'_dec M HM (mkRule x x0)) _ R H).
 assert (SCC'_tag M HM (mkRule x x0) <> None). apply H2.
 split;try tauto. left;auto.
 destruct (SCC'_tag M HM (mkRule x x0)). exists n;auto. congruence.
 Qed.
 
 
-Definition chain_SCC' i :=  int_red R # @ hd_red_SCC' i.
+Definition hd_red_Mod_SCC' i :=  S @ hd_red_SCC' i.
 Notation union := (Relation_Operators.union).
 
-Definition sorted_chain_SCC' := map chain_SCC' s_SCC's.
+Definition sorted_hd_red_Mod_SCC' := map hd_red_Mod_SCC' s_SCC's.
 
 (** union of chain_SCC' *)
 
-Definition chain_SCC'_union := fold_right (@union (term Sig)) (fun _ _ => False ) sorted_chain_SCC'.
+Definition hd_red_Mod_SCC'_union := fold_right (@union (term Sig)) (fun _ _ => False ) sorted_hd_red_Mod_SCC'.
 
 Lemma union_list_spec (A:Set) L (x y:A) (r : relation A):
 (In r L) -> r x y ->  (fold_right (@union A) (fun _ _ => False ) L) x y.
@@ -167,19 +168,20 @@ split;try tauto.
 Qed.
 
 
-Theorem chain_SCC'_cover : chain R << chain_SCC'_union.
+Theorem hd_red_Mod_SCC'_cover : hd_red_Mod S R << hd_red_Mod_SCC'_union.
 Proof.
 unfold inclusion.
 intros.
-unfold chain in H. do 2 destruct H.
-inversion H0. do 2 destruct H1.
+unfold hd_red_Mod_SCC'_union in H.
+unfold hd_red_Mod in H.
+do 2 destruct H.
 deduce (hd_red_SCC'_cover H0).
-destruct H2 as [i].
-assert (chain_SCC' i x y).
+destruct H1 as [i].
+assert (hd_red_Mod_SCC' i x y).
 exists x0;tauto. 
-unfold chain_SCC'_union.
+unfold hd_red_Mod_SCC'_union.
 eapply union_list_spec;eauto.
-unfold sorted_chain_SCC'.
+unfold sorted_hd_red_Mod_SCC'.
 apply in_map.
 apply s_SCC's_spec_cover;tauto.
 Qed.
@@ -188,7 +190,7 @@ Qed.
 
 Notation RT_ODPG := (RT hyps HM).
 
-Lemma compose_empty i j: RT_ODPG i j -> chain_SCC' j @ chain_SCC' i << empty.
+Lemma compose_empty i j: RT_ODPG i j -> hd_red_Mod_SCC' j @ hd_red_Mod_SCC' i << empty.
 Proof.
 intros.
 unfold inclusion.
@@ -214,7 +216,7 @@ eapply H5;eassumption.
 assert (ODPGquo' j i). 
 unfold Rquo'. intuition.
 unfold Rquo in *.
-unfold chain_SCC' in *.
+unfold hd_red_Mod_SCC' in *.
 destruct H0 as [x']. destruct H0.
 destruct H1 as [z']. destruct H1.
 destruct H3 as [t1]. destruct H3 as [r1]. destruct H3 as [s1].
@@ -222,19 +224,18 @@ exists (mkRule t1 r1); split;try tauto.
 destruct H4 as [t2]. destruct H4 as [r2]. destruct H4 as [s2].
 exists (mkRule t2 r2); split;try tauto.
 apply (over_DPG ).
-eapply chain_dp2_dp_graph;intuition. unfold chain_dp.
+eapply hd_red_Mod_rule2_hd_rules_graph;intuition. unfold hd_red_Mod_rule.
 
 
 split. assert (SCC' (mkRule t1 r1) (mkRule t1 r1)).
 rewrite (SCC'_tag_exact hyps HM ).
 split;try tauto. congruence. destruct H7. tauto.
-exists s1. split;simpl;auto;eauto. intuition.
-
+exists s1. subst x'. split;simpl;auto;eauto. intuition.
 
 split. assert (SCC' (mkRule t2 r2) (mkRule t2 r2)).
 rewrite (SCC'_tag_exact hyps HM ) .
 split;try tauto. congruence. destruct H7;tauto.
-exists s2. split;simpl;auto;eauto. congruence.
+exists s2. subst z. split;simpl;auto;eauto. congruence.
 
 subst j.
 unfold RT in *.
@@ -244,7 +245,7 @@ destruct H3. intuition. unfold irreflexive in H6. deduce (H6 i). auto.
 tauto.
 Qed.
 
-(** Proof of the modular termination criterion *)
+(** Proof of the Modular termination criterion *)
 Require Export Union.
 Lemma sort_transitive (B:Set) (a:B) L rel :
  transitive rel -> sort rel (a::L) -> forall x, In x L  -> rel a x.
@@ -273,8 +274,8 @@ destruct IHl. auto. destruct H0.
  exists x0;split;simpl; try congruence. right;auto.
 Qed.
 
-Lemma WF_SCC'_union_aux L : (forall i, In i L -> WF (chain_SCC' i)) -> sort RT_ODPG L -> 
-WF ((fold_right (@union _) empty) (map chain_SCC' L)).
+Lemma WF_SCC'_union_aux L : (forall i, In i L -> WF (hd_red_Mod_SCC' i)) -> sort RT_ODPG L -> 
+WF ((fold_right (@union _) empty) (map hd_red_Mod_SCC' L)).
 Proof.
 intros.
 induction L; simpl in *.
@@ -287,7 +288,7 @@ unfold inclusion. intros. cut False;try tauto.
 destruct H1 as [z]. destruct H1.
 deduce (union_list_spec2 _ _ _ H1). destruct H5 as [r]. destruct H5.
 
-assert (exists b, In b L /\ r = chain_SCC' b).
+assert (exists b, In b L /\ r = hd_red_Mod_SCC' b).
 apply In_map_elim_Type;auto.
 destruct H7 as [b]. destruct H7;subst r.
 cut (RT_ODPG a b). intro. eapply (compose_empty H8 ). exists z; eauto.
@@ -300,11 +301,11 @@ apply IHL. intros. apply H. right;auto.
 destruct H0;auto. apply H. left;auto.
 Qed.
 
-Lemma WF_SCC'_union : (forall i, i<dim -> WF (chain_SCC' i)) -> WF (chain R).
+Lemma WF_SCC'_union : (forall i, i<dim -> WF (hd_red_Mod_SCC' i)) -> WF (hd_red_Mod S R).
 Proof.
 intros.
 eapply WF_incl.
-apply chain_SCC'_cover. unfold chain_SCC'_union,sorted_chain_SCC'. 
+apply hd_red_Mod_SCC'_cover. unfold hd_red_Mod_SCC'_union,sorted_hd_red_Mod_SCC'. 
 eapply WF_SCC'_union_aux.
 intros. apply H. apply  s_SCC's_spec_bound. auto.
 unfold s_SCC's; destruct sorted_SCC'. simpl in *. auto.
@@ -353,7 +354,7 @@ split. rewrite SCC'_list_aux_exact. tauto.
 Qed.
 
 
-Definition SCC'_list i := SCC'_list_aux i DP.
+Definition SCC'_list i := SCC'_list_aux i R.
 
 Lemma SCC'_list_exact i r : In r (SCC'_list i) <->(SCC'_tag hyps  HM r)=(Some i).
 Proof.
@@ -374,20 +375,13 @@ unfold SCC'_list;intros.
 apply repeat_free_SCC'_list_aux. auto.
 Qed.
  
-Lemma chain_SCC'_red_mod i: chain_SCC' i << red_mod R (SCC'_list i).
+Lemma chain_SCC'_red_Mod i: hd_red_Mod_SCC' i << hd_red_Mod S (SCC'_list i).
 Proof.
 unfold inclusion; intros.
-unfold red_mod.
 do 2 destruct H.
+exists x0. split. auto.
 
-exists x0.
-split.
-deduce (@int_red_incl_red _ R). 
-deduce (incl_rtc H1).
-apply H2;auto.
-
-apply hd_red_incl_red. 
- unfold hd_red_SCC'  in H0. unfold hd_red.
+unfold hd_red_SCC'  in H0. unfold hd_red.
 do 3 destruct H0.
 exists x1;exists x2;exists x3.
 rewrite  SCC'_list_exact.
@@ -395,7 +389,7 @@ intuition.
 Qed.
 
 (** A faster way to compute SCC'_list but only half-certified *)
-Definition SCC_list_fast i (Hi : i < dim) := listfilter DP (list_of_vec (Vnth M Hi)).
+Definition SCC_list_fast i (Hi : i < dim) := listfilter R (list_of_vec (Vnth M Hi)).
 
 Lemma list_find_first_exact (B:Set) (P: B -> Prop) P_dec l i:
 list_find_first P P_dec l = Some i -> exists z, (element_at l i) = Some z /\ P z.
@@ -447,25 +441,24 @@ rewrite <- H9. unfold gt in *.
 assert (g=Hi). apply lt_unique. subst g; apply list_of_vec_exact.
 Qed.
 
-Lemma chain_SCC'_red_mod_fast i (Hi : i < dim): Vnth (Vnth M Hi) Hi = true ->
-chain_SCC' i << red_mod R (SCC_list_fast Hi).
+Lemma hd_red_Mod_SCC'_hd_red_Mod_fast i (Hi : i < dim): Vnth (Vnth M Hi) Hi = true ->
+hd_red_Mod_SCC' i << hd_red_Mod S (SCC_list_fast Hi).
 Proof.
 intros.
 eapply incl_trans.
-apply chain_SCC'_red_mod.
+apply chain_SCC'_red_Mod.
 deduce (incl_SCC_list_fast Hi H).
 unfold inclusion;intros.
-unfold red_mod in *.
 destruct H1 as [z];exists z. destruct H1;split;auto.
-do 5 destruct H2.
-exists x0;exists x1;exists x2;exists x3; split;try split;try tauto.
+do 4 destruct H2. destruct H3.
+exists x0;exists x1;exists x2; split;try split;try tauto.
 apply H0. auto.
 Qed.
 
 
 (** Somme lemma to proof trivial case of sub-problem termination *)
 
-Lemma red_mod_SCC_trivial_empty : WF (red_mod R nil).
+Lemma red_Mod_SCC_trivial_empty : WF (hd_red_Mod S nil).
 Proof.
 unfold WF;intro;
 apply SN_intro;intros.
@@ -473,17 +466,17 @@ do 2 destruct H.
 do 4 destruct H0. simpl in *;tauto.
 Qed.
 
-Lemma WF_chain_SCC_trivial i : SCC'_list i=nil -> WF (chain_SCC' i).
+Lemma WF_chain_SCC_trivial i : SCC'_list i=nil -> WF (hd_red_Mod_SCC' i).
 Proof.
 intros.
 eapply WF_incl.
-apply chain_SCC'_red_mod.
+apply chain_SCC'_red_Mod.
 rewrite H.
-apply red_mod_SCC_trivial_empty.
+apply red_Mod_SCC_trivial_empty.
 Qed.
  
 
-Lemma red_mod_SCC_trivial_singl i r : SCC'_list i = (r::nil) -> ~ODPG r r ->  WF (chain_SCC' i).
+Lemma red_Mod_SCC_trivial_singl i r : SCC'_list i = (r::nil) -> ~ODPG r r ->  WF (hd_red_Mod_SCC' i).
 Proof.
 intros.
 unfold WF. intros.
@@ -495,15 +488,15 @@ apply  over_DPG;auto.
 assert (In r (SCC'_list i)). rewrite H;simpl;auto.
 unfold SCC'_list in H1. rewrite SCC'_list_aux_exact in H1. destruct H1.
 
-eapply chain_dp2_dp_graph; auto; unfold red_mod in *;unfold chain_SCC' in *.
+eapply hd_red_Mod_rule2_hd_rules_graph; auto; unfold red_mod in *;unfold hd_red_Mod_SCC' in *.
 destruct Hy. destruct H3.
 
- unfold chain_dp. split;auto.
+unfold hd_red_Mod_rule. split;auto.
 do 4 destruct H4. exists x3.
 assert (r=(mkRule x1 x2)). rewrite <- SCC'_list_exact in H4. rewrite H in H4; simpl in *;tauto.
 rewrite H6;simpl. destruct H5;subst x0.  split; eauto.
  
- unfold chain_dp. split;auto.
+ unfold hd_red_Mod_rule. split;auto.
 destruct Hz. destruct H3.
 do 4 destruct H4. exists x3.
 assert (r=(mkRule x1 x2)). rewrite <- SCC'_list_exact in H4. rewrite H in H4; simpl in *;tauto.
@@ -511,7 +504,7 @@ rewrite H6;simpl. destruct H5;subst x0.  split; eauto.
 Qed. 
 
 
-Lemma WF_chain_SCC_fast_trivial i ( Hi:i<dim) : SCC_list_fast Hi = nil -> WF( chain_SCC' i).
+Lemma WF_hd_red_Mod_SCC_fast_trivial i ( Hi:i<dim) : SCC_list_fast Hi = nil -> WF( hd_red_Mod_SCC' i).
 Proof.
 intros i Hi;intros.
 set (L:=SCC'_list i).
@@ -519,7 +512,7 @@ assert (L=SCC'_list i);auto. destruct L.
 apply WF_chain_SCC_trivial. auto.
 destruct L.
 destruct (ODPG_dec h h).
-assert (DP [i] =Some h).
+assert (R [i] =Some h).
 assert (In h (SCC'_list i)). rewrite <-H0;simpl;auto.
 rewrite SCC'_list_exact in H1. generalize H1;intro.
 unfold SCC'_tag in H1. simpl in *. 
@@ -543,10 +536,10 @@ unfold SCC_effective in H2. simpl in *. unfold nattodom in H2.
 deduce (restriction o);intuition.
 deduce (eq_In_find_first _ _ rule_eq_dec H4).
 do 2 destruct H3.
-deduce(@repeat_free_unique rule DP h rp_free _ _ H1 H6). subst x.
+deduce(@repeat_free_unique rule R h rp_free _ _ H1 H6). subst x.
 rewrite H3 in H2. intuition.
 
-eapply red_mod_SCC_trivial_singl ;eauto.
+eapply red_Mod_SCC_trivial_singl ;eauto.
  
 deduce(repeat_free_SCC'_list i).
 rewrite <-H0 in H1;simpl in H1;intuition. clear H1 H4 H5.
@@ -575,40 +568,62 @@ deduce (H12 h). simpl in *. tauto.
 
 rewrite (SCC_effective_exact hyps HM) in H10.
 unfold SCC_effective in H10. simpl in *. unfold nattodom in H10.
-assert (In x DP ). eapply element_at_in. exists i;auto.
+assert (In x R ). eapply element_at_in. exists i;auto.
 deduce (eq_In_find_first _ _ rule_eq_dec H11).
 do 2 destruct H12.
-deduce(@repeat_free_unique rule DP _ rp_free _ _ H13 H6). subst x0.
+deduce(@repeat_free_unique rule R _ rp_free _ _ H13 H6). subst x0.
 rewrite H12 in H10. intuition.
 Qed.
 
 
 
+
+
+Lemma hd_red_mod_of_hd_red_Mod (E R:rules) : WF(hd_red_mod E R) ->
+WF(hd_red_Mod (int_red E #) R).
+Proof.
+intros.
+unfold hd_red_Mod. eapply WF_incl.
+apply incl_comp. assert (int_red E # << ATrs.red E #).
+apply incl_rtc. apply int_red_incl_red. eauto.
+apply inclusion_refl.
+unfold hd_red_mod in H. auto.
+Qed.
+
 End S.
-Ltac use_DP_tag h M R t:=
+
+
+Ltac use_SCC_tag h M S R t:=
  let x := fresh in set (x := (SCC_tag_fast h M t)); vm_compute in x;
   match (eval compute in x) with
  |Some ?X1 =>
   let Hi:=fresh in assert(Hi:X1< dim R);normalize(dim R); auto;
   let L:=fresh in set(L:=(SCC_list_fast R M Hi));normalize_in L (SCC_list_fast R M Hi);
- assert (WF(ATrs.red_mod R L));subst L;clear x;clear Hi
+ assert (WF(hd_red_Mod S L));subst L;clear x;clear Hi
   |?X2 => idtac
 end.
 
 
 
-Ltac use_DP_hyp h M R Hi := 
+Ltac use_SCC_hyp h M R Hi := 
   let L:=fresh in set(L:=(SCC_list_fast R M Hi));normalize_in L (SCC_list_fast R M Hi);
   match (eval compute in L) with 
-  |nil => apply WF_chain_SCC_fast_trivial with (Hi:=Hi);eauto
-  |?A => eapply WF_incl;try eapply chain_SCC'_red_mod_fast with (Hi:=Hi);auto;clear L
+  |nil => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi);eauto
+  |?A => eapply WF_incl;[ eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=Hi)| auto];auto;clear L
   end.
 
-Ltac use_DP_all_hyps h m R i Hi :=
-  match 	(type of Hi) with
-  | lt ?X1 ?X2 =>try (cut False;[tauto | omega]) ;
-                         try(destruct i;[use_DP_hyp h m R Hi | idtac])
+Ltac use_SCC_all_hyps h m R i Hi :=
+  match i with
+  |?X => elimtype False; omega
+  |?X => destruct i;[use_SCC_hyp h m R Hi | idtac]
+  end.
 
+
+Ltac SCC_name n1 n2:=
+match goal with 
+  | |-WF(chain ?R) => set(n1:=(dp R));set (n2:=int_red R #)
+  | |-WF(hd_red_mod ?E ?R) => set (n1:=R); set (n2:=red E #)
+  | |-WF(?X @ hd_red ?R) => set (n1:=R); set (n2:=X)
   end.
 
 
