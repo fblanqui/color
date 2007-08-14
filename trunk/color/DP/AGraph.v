@@ -31,10 +31,11 @@ Notation rules := (list rule).
 Notation lhs := (@lhs Sig).
 Notation rhs := (@rhs Sig).
 
+Section S1.
 Variable S : relation term.
 Variable R : rules.
-
 Variable hyp : rules_preserv_vars R.
+
 
 (***********************************************************************)
 
@@ -107,11 +108,36 @@ assert (app s1' (shift p l1) = app s1 l1). unfold s1'.
 rewrite <- app_restrict. rewrite <- app_shift.
 refl. rewrite H9. assumption.
 Qed.
+End S1.
 
+Section S2.
+Variable E R : rules.
+Variable hyp : rules_preserv_vars R.
+
+Lemma hd_red_mod_of_hd_red_Mod  :  hd_red_Mod (int_red E #) R << hd_red_mod E R.
+Proof.
+unfold hd_red_Mod,hd_red_mod.
+apply incl_comp. assert (int_red E # << ATrs.red E #).
+apply incl_rtc. apply int_red_incl_red. eauto.
+apply inclusion_refl.
+Qed.
+
+End S2.
+
+Section S3.
+Require Export ADPGraph.
+Variable R : rules.
+Variable hyp : rules_preserv_vars R.
+
+Lemma hd_red_Mod_of_chain : chain R << hd_red_Mod  (int_red R #) (dp R).
+Proof.
+unfold chain, hd_red_Mod.
+apply inclusion_refl.
+Qed.
+
+End S3.
 
 End S.
-
-
 
 
 
