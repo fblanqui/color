@@ -579,16 +579,6 @@ Qed.
 
 
 
-Lemma hd_red_mod_of_hd_red_Mod (E R:rules) : WF(hd_red_mod E R) ->
-WF(hd_red_Mod (int_red E #) R).
-Proof.
-intros.
-unfold hd_red_Mod. eapply WF_incl.
-apply incl_comp. assert (int_red E # << ATrs.red E #).
-apply incl_rtc. apply int_red_incl_red. eauto.
-apply inclusion_refl.
-unfold hd_red_mod in H. auto.
-Qed.
 
 End S.
 
@@ -624,6 +614,7 @@ match goal with
   | |-WF(chain ?R) => set(n1:=(dp R));set (n2:=int_red R #)
   | |-WF(hd_red_mod ?E ?R) => set (n1:=R); set (n2:=red E #)
   | |-WF(?X @ hd_red ?R) => set (n1:=R); set (n2:=X)
+  | |-WF(hd_red_Mod ?E ?R) => set (n1:=R); set (n2:=E)
   end.
 
 

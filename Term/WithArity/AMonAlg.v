@@ -15,7 +15,7 @@ References:
 *)
 
 Require Export AWFMInterpretation.
-
+Require Export AGraph.
 (***********************************************************************)
 (** * Module type specifying a weakly monotone algebra.                *)
 (***********************************************************************)
@@ -335,7 +335,10 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     | |- WF (red_mod _ ?R) => 
             prove ma_relative_termination R
     | |- WF (hd_red_mod _ ?R) => 
-            prove ma_relative_top_termination R
+            prove ma_relative_top_termination R 
+    | |- WF (hd_red_Mod _ ?R) =>
+	    eapply WF_incl;[apply hd_red_mod_of_hd_red_Mod | idtac];
+	    prove ma_relative_top_termination R 
     | _ => fail "Unsupported termination problem type"
    end.
 
