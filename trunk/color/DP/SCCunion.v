@@ -584,28 +584,33 @@ End S.
 
 
 Ltac use_SCC_tag h M S R t:=
- let x := fresh in set (x := (SCC_tag_fast h M t)); vm_compute in x;
+ let x := fresh in set (x := (SCC_tag_fast h M t)); normalize_in x (SCC_tag_fast h M t);
   match (eval compute in x) with
  |Some ?X1 =>
-  let Hi:=fresh in assert(Hi:X1< dim R);normalize(dim R); auto;
+  let Hi:=fresh in assert(Hi:X1< dim R);normalize(dim R);[omega|
   let L:=fresh in set(L:=(SCC_list_fast R M Hi));normalize_in L (SCC_list_fast R M Hi);
- assert (WF(hd_red_Mod S L));subst L;clear x;clear Hi
+ assert (WF(hd_red_Mod S L));subst L];clear x;clear Hi
   |?X2 => idtac
 end.
 
 
 
 Ltac use_SCC_hyp h M R Hi := 
-  let L:=fresh in set(L:=(SCC_list_fast R M Hi));normalize_in L (SCC_list_fast R M Hi);
-  match (eval compute in L) with 
-  |nil => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi);eauto
-  |?A => eapply WF_incl;[ eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=Hi)| auto];auto;clear L
+  let b:=fresh in set(b:=Vnth (Vnth M Hi) Hi);normalize_in b (Vnth (Vnth M Hi) Hi);
+  match (eval compute in b) with 
+  |false => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi);eauto;clear b
+  |true => eapply WF_incl;[ eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=Hi)| auto];
+	auto;clear b
   end.
 
-Ltac use_SCC_all_hyps h m R i Hi :=
-  match i with
-  |?X => elimtype False; omega
-  |?X => destruct i;[use_SCC_hyp h m R Hi | idtac]
+Ltac use_SCC_all_hyps h m R i Hi Hj :=
+  let rec aux x := match x with
+  |0 => elimtype False; omega
+  |S ?y => destruct i;[use_SCC_hyp h m R Hi | aux y]
+  end
+    in	
+  match (type of Hj) with
+  |le ?X ?Y => aux Y
   end.
 
 
