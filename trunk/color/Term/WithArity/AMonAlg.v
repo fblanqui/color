@@ -321,8 +321,10 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       match goal with
       | |- monotone _ _ => prove_int_monotonicity
       | |- WF _ => partition R
+      | |- ?A = ?B => normalize A; trivial
       | _ => first 
-        [ solve [vm_compute; trivial] 
+        [ solve [vm_compute; trivial]
+	| idtac
         | fail "Failed to deal with generated goal"
         ]
       end.
@@ -337,7 +339,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     | |- WF (hd_red_mod _ ?R) => 
             prove ma_relative_top_termination R 
     | |- WF (hd_red_Mod _ ?R) =>
-	    eapply WF_incl;[apply hd_red_mod_of_hd_red_Mod | idtac];
+	    eapply WF_incl;[try apply hd_red_mod_of_hd_red_Mod;
+			try apply hd_red_mod_of_hd_red_Mod_int | idtac];
 	    prove ma_relative_top_termination R 
     | _ => fail "Unsupported termination problem type"
    end.

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.27 2007-08-09 16:14:28 ducasleo2 Exp $ *)
+(* $Id: ATrs.v,v 1.28 2007-08-23 17:06:44 ducasleo2 Exp $ *)
 
 Set Implicit Arguments.
 
@@ -37,6 +37,7 @@ Notation rules := (list rule).
 Require Export ANotvar.
 
 Definition no_lhs_variable R := forall l r, In (mkRule l r) R -> @notvar Sig l.
+Definition no_rhs_variable R := forall l r, In (mkRule l r) R -> @notvar Sig r.
 
 (***********************************************************************)
 (** rewrite steps *)
@@ -448,6 +449,10 @@ Ltac solve_termination R lemma :=
   match type of R with
   | list ?rule => first 
     [ solve [replace R with (nil (A:=rule));
+      [apply lemma | normalize R; trivial]]
+    | fail "The termination problem is non-trivial"]
+  | list ?rule => first 
+    [ solve [replace R with (nil (A:=rule));
       [apply lemma | vm_compute; trivial]]
     | fail "The termination problem is non-trivial"]
   | _ => fail "Unrecognized TRS type"
@@ -471,8 +476,19 @@ Ltac no_relative_rules :=
 Ltac no_lhs_variable :=
   match goal with
     | |- no_lhs_variable ?R =>
-      unfold no_lhs_variable; let T := elt_type R in
+      normalize R;unfold no_lhs_variable; let T := elt_type R in
       let P := fresh in set (P := fun a : T => notvar (lhs a));
+        let H := fresh in assert (H : lforall P R);
+          [unfold P; simpl; intuition
+            | let H0 := fresh in
+              do 2 intro; intro H0; apply (lforall_in H H0)]
+  end.
+
+Ltac no_rhs_variable :=
+  match goal with
+    | |- no_rhs_variable ?R =>
+      normalize R;unfold no_rhs_variable; let T := elt_type R in
+      let P := fresh in set (P := fun a : T => notvar (rhs a));
         let H := fresh in assert (H : lforall P R);
           [unfold P; simpl; intuition
             | let H0 := fresh in
