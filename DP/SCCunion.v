@@ -30,7 +30,6 @@ Variable R : rules.
 
 Variable hyp : rules_preserv_vars R.
 
-
 Notation DPG := (hd_rules_graph S R).
 
 Definition rule_eq_dec := @ATrs.eq_rule_dec Sig.
