@@ -412,72 +412,17 @@ Section Computability_theory.
     apply var_is_var with (length (env M)); try_solve.
   Qed.
 
-  Lemma comp_prop : forall A,
-    ( (* (i) *)
-    forall M, type M = A -> Computable M -> AccR M 
-    ) /\
-    ( (* (ii) *)
-    forall M N, type M = A -> Computable M -> M -R-> N -> Computable N
-    ) /\ 
-    ( (* (iii) *)
-    forall P, type P = A -> algebraic P -> isNeutral P ->
-      (forall S, P -R-> S -> Computable S) -> Computable P).
+  Lemma comp_step_comp : forall M N, Computable M -> M -R-> N -> Computable N.
 
   Proof.
+    assert (forall A M N, type M = A -> Computable M -> M -R-> N -> Computable N).    
     intro B.
     induction B.
      (* induction base *)
-    split.
-    intros M MT Mcomp.
-     (* (i) *)
-    apply CompCaseBasic; trivial.
-    rewrite MT; auto with terms.
-    split.
-     (* (ii) *)
     intros M N MT Mcomp MN.
     apply base_comp_step_comp with M; trivial.
     rewrite MT; auto with terms.
-     (* (iii) *)
-    intros P Pbase Pnorm Pneutral PScomp.
-    assert (P_base: isBaseType (type P)).
-    rewrite Pbase; auto with terms.
-    apply CompBasic; trivial.
-    constructor.
-    intros S RS.
-    apply CompCaseBasic.
-    apply PScomp; trivial.
-    apply base_step_base with P; trivial.
-
-     (* induction step *)
-    destruct IHB1 as [IH_L1 [IH_L2 IH_L3]].
-    destruct IHB2 as [IH_R1 [IH_R2 IH_R3]].
-    split.
-
-     (* (i)
-       M: U -> V   M computable
-       To prove: M accessible
-
-       take variable x: U
-       x is variable so by IH(iii) it is computable
-       so by definition of computability (M x):V is computable
-       by IH(i) (M x):U is strongly normalizable
-       so M is strongly normalizable (app_acc)
-     *)
-    intros M Marr Mcomp.
-    destruct (apply_var_comp M Mcomp Marr)
-      as [Mx [Mx_app [MxL [_ [_ Mxcomp]]]]]; trivial.
-    rewrite <- MxL.
-    apply acc_app_acc_L; trivial.
-    rewrite MxL; apply comp_algebraic; trivial.
-    apply algebraic_appBodyR.
-    apply comp_algebraic; trivial.
-    apply IH_R1; trivial.
-    apply app_typeL_type with B1 Mx_app; trivial.
-    rewrite <- terms_conv_eq_type with M (appBodyL Mx_app); trivial.
-    apply terms_conv_sym; trivial.
-
-    split.
-     (* (ii) 
+     (* (induction case) 
         M: U --> V   M computable   M -R-> N
         To prove: N computable
         
@@ -540,7 +485,7 @@ Section Computability_theory.
     apply env_comp_sym; apply env_subset_comp; trivial.
     unfold N''; rewrite appBodyL_env; trivial.
     rewrite NS_conv.
-    apply IH_R2 with M'S'; unfold M'S'.
+    apply IHB2 with M'S'; unfold M'S'.
     rewrite buildApp_type; simpl.
     rewrite <- typeMM'; rewrite Marr; trivial.
     apply CompCaseArrow with M' (buildApp_isApp M'S'_cond); trivial.
@@ -556,8 +501,66 @@ Section Computability_theory.
     apply comp_algebraic; trivial.
     unfold M'S'_app; rewrite M'S'_R.
     simpl; rewrite <- SS'; trivial.
+    intros. apply H with (type M) M; trivial.
+  Qed.
 
-     (* (iii)
+  Lemma comp_prop : forall A,
+    ( (* (i) *)
+    forall M, type M = A -> Computable M -> AccR M 
+    ) /\
+    ( (* (ii) *)
+    forall P, type P = A -> algebraic P -> isNeutral P ->
+      (forall S, P -R-> S -> Computable S) -> Computable P).
+
+  Proof.
+    intro B.
+    induction B.
+     (* induction base *)
+    split.
+    intros M MT Mcomp.
+     (* (i) *)
+    apply CompCaseBasic; trivial.
+    rewrite MT; auto with terms.
+     (* (ii) *)
+    intros P Pbase Pnorm Pneutral PScomp.
+    assert (P_base: isBaseType (type P)).
+    rewrite Pbase; auto with terms.
+    apply CompBasic; trivial.
+    constructor.
+    intros S RS.
+    apply CompCaseBasic.
+    apply PScomp; trivial.
+    apply base_step_base with P; trivial.
+
+     (* induction step *)
+    destruct IHB1 as [IH_L1 IH_L2].
+    destruct IHB2 as [IH_R1 IH_R2].
+    split.
+
+     (* (i)
+       M: U -> V   M computable
+       To prove: M accessible
+
+       take variable x: U
+       x is variable so by IH(iii) it is computable
+       so by definition of computability (M x):V is computable
+       by IH(i) (M x):U is strongly normalizable
+       so M is strongly normalizable (app_acc)
+     *)
+    intros M Marr Mcomp.
+    destruct (apply_var_comp M Mcomp Marr)
+      as [Mx [Mx_app [MxL [_ [_ Mxcomp]]]]]; trivial.
+    rewrite <- MxL.
+    apply acc_app_acc_L; trivial.
+    rewrite MxL; apply comp_algebraic; trivial.
+    apply algebraic_appBodyR.
+    apply comp_algebraic; trivial.
+    apply IH_R1; trivial.
+    apply app_typeL_type with B1 Mx_app; trivial.
+    rewrite <- terms_conv_eq_type with M (appBodyL Mx_app); trivial.
+    apply terms_conv_sym; trivial.
+
+     (* (ii)
         P: U -> V,  P neutral,  forall S, P -R-> S, S computable
         To prove: P computable
 
@@ -603,7 +606,7 @@ Section Computability_theory.
     ); trivial.
     clear N NRnorm Napp NL NR W Wcomp Wtyp Wacc.
     intros W _ IH Pnorm Wcomp Wtype N Napp NL NR.
-    apply IH_R3; trivial.
+    apply IH_R2; trivial.
     apply app_typeL_type with B1 Napp; trivial.
     rewrite (terms_conv_eq_type NL); trivial.
     apply algebraic_app with Napp.
@@ -625,8 +628,7 @@ Section Computability_theory.
     apply IH with (appBodyR Sapp) Sapp; trivial.
     unfold transp; simpl.
     rewrite <- NR; trivial.
-    apply IH_L2 with (appBodyR Napp); trivial.
-    rewrite NR; trivial.
+    apply comp_step_comp with (appBodyR Napp); trivial.
     rewrite NR; trivial.
     rewrite <- (R_type_preserving Rgt).
     rewrite NR; trivial.
@@ -645,7 +647,7 @@ Section Computability_theory.
     destruct (R_conv_to (M':=P) Lgt NL) as [S' [PS' SLS']].
     rewrite SLS'.
     apply PScomp; trivial.
-    apply IH_L2 with W; trivial.
+    apply comp_step_comp with W; trivial.
     rewrite <- NR; trivial.
 
      (* application of above result *)
@@ -658,16 +660,8 @@ Section Computability_theory.
 
   Proof.
     intros M MC.
-    destruct (comp_prop (type M)) as [P1 [P2 P3]].
+    destruct (comp_prop (type M)) as [P1 P2].
     apply P1; trivial.
-  Qed.
-
-  Lemma comp_step_comp : forall M N, Computable M -> M -R-> N -> Computable N.
-
-  Proof.
-    intros M N Mcomp MN.
-    destruct (comp_prop (type M)) as [P1 [P2 P3]].
-    apply P2 with M; trivial.
   Qed.
 
   Lemma comp_manysteps_comp : forall M N, Computable M -> M -R*-> N ->
@@ -685,14 +679,14 @@ Section Computability_theory.
 
   Proof.
     intros M Mneutral.
-    destruct (comp_prop (type M)) as [P1 [P2 P3]].
+    destruct (comp_prop (type M)) as [P1 P2].
     split.
      (* => *)
     intros Mcomp N MN.
-    apply P2 with M; trivial.
+    apply comp_step_comp with M; trivial.
      (* <= *)
     intros MNcomp.
-    apply P3; trivial.
+    apply P2; trivial.
   Qed.
 
   Lemma var_comp : forall M, isVar M -> Computable M.
