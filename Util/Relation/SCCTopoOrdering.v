@@ -4,10 +4,8 @@ See the COPYRIGHTS and LICENSE files.
 
 - Leo Ducas, 2007-08-06
 
-SCCTopoOrdering
+We build here the quotient graph by the relation SCC, which is Topo Sortable.
 *)
-
-(** We build here the quotient graph by the relation SCC, which is Topo Sortable *)
 
 Set Implicit Arguments.
 
@@ -25,19 +23,22 @@ Notation restriction:=(hyp_restriction hyps).
 Notation rp_free:=(hyp_rp_free hyps).
 Notation R_dec:=(hyp_R_dec hyps).
 Notation dim := (length Dom).
-Variables 
-	(M : matrix dim dim)
-  (HM: M= SCC_mat_effective hyps) .
+
+Variables (M : matrix dim dim) (HM : M = SCC_mat_effective hyps).
+
 (* We represent the quotient of the Domain by SCC with a function to nat *)
+
 Notation SCC:=(SCC R).
 Notation SCC_dec := (SCC_effective_dec hyps HM).
 
-(** We give a second definition of SCC :SCC' now isolated points are also considered as SCC
-(refl cosure) *)
-Definition SCC' x y:= (SCC %) x y/\ In x Dom /\ In y Dom.
+(** We give a second definition of SCC :SCC' now isolated points are
+also considered as SCC (refl cosure) *)
 
-Lemma In_dec (x:A) l: {In x l}+{~ In x l}.
-Proof. 
+Definition SCC' x y := (SCC%) x y /\ In x Dom /\ In y Dom.
+
+Lemma In_dec : forall (x:A) l, {In x l}+{~ In x l}.
+
+Proof.
 intros.
 induction l.
 auto.
@@ -49,6 +50,7 @@ right;tauto.
 Defined.
 
 Lemma SCC'_dec : forall x y, {SCC' x y} + {~SCC' x y}.
+
 Proof.
 intros.
 unfold SCC'.
@@ -63,6 +65,8 @@ rewrite <- SCC_effective_exact in *; try tauto.
 Defined.
 
 Lemma trans_SCC' : forall x y z, SCC' x y -> SCC' y z -> SCC' x z.
+
+Proof.
 intros.
 unfold SCC' in *.
 destruct H;destruct H0.
@@ -76,6 +80,7 @@ eauto. assumption.
 Qed.
 
 Lemma sym_SCC' : forall x y ,SCC' x y -> SCC' y x.
+
 Proof.
 intros;destruct H.
 split;try tauto.
@@ -85,11 +90,13 @@ right;apply sym_SCC;auto.
 Qed.
 
 (* SCC'_tag map each vertex of the graph to its SCC number *)
+
 Definition SCC'_tag x := list_find_first (SCC' x) (SCC'_dec x) Dom.
 
+Lemma In_find_first2 : forall (l:list A) P P_dec z,
+  list_find_first P P_dec l = Some z ->
+  exists y, element_at l z = Some y /\ P y.
 
-Lemma In_find_first2 (l:list A) P P_dec z:
- list_find_first P P_dec l = Some z -> exists y, element_at l z= Some y /\ P y.
 Proof.
 intros l P P_dec; induction l;intros.
 simpl in H. discriminate;tauto.
@@ -107,8 +114,9 @@ inversion H.
 simpl;auto.
 Qed.
 
+Lemma SCC'_tag_exact : forall x y,
+  SCC' x y <-> SCC'_tag x = SCC'_tag y /\ SCC'_tag x <> None.
 
-Lemma SCC'_tag_exact x y: SCC' x y <-> SCC'_tag x = SCC'_tag y /\ SCC'_tag x <> None.
 Proof.
 intros.
 split;intros.
@@ -146,41 +154,41 @@ apply sym_SCC'.
 auto.
 Qed.
 
-Check Vcons.
 (* faster way to compute SCC'_tag but not certified *)
-Fixpoint bools_find_first n (v : vector bool n) {struct v} := match n with
-  |0 => None
-  |S i => match v with
-    |Vnil => None
-    |Vcons true i w =>Some 0
-    |Vcons false i w => match bools_find_first w with 
-       |None => None
-       |Some r => Some (S r)
-       end
-    end
+
+Fixpoint bools_find_first n (v : vector bool n) {struct v} :=
+  match n with
+    | 0 => None
+    | S i =>
+      match v with
+        | Vnil => None
+        | Vcons true i w =>Some 0
+        | Vcons false i w =>
+          match bools_find_first w with 
+            | None => None
+            | Some r => Some (S r)
+          end
+      end
   end.
 
 Definition SCC_tag_fast M t := 
   let oi:= list_find_first (eq t) (A_eq_dec t) Dom in
   match oi with 
-  |None => None
-  |Some i => match le_gt_dec dim i with
-     |right Hi => @bools_find_first dim (Vnth M Hi)
-     |left _ => None
-     end
-   end.
-
-
-
-
+    | None => None
+    | Some i =>
+      match le_gt_dec dim i with
+        | right Hi => @bools_find_first dim (Vnth M Hi)
+        | left _ => None
+      end
+  end.
 
 (* Quotient relation *)
 
-
-Definition Rquo (x y :nat) :=
-exists r, SCC'_tag r = Some  x /\ exists s,  SCC'_tag s = Some y /\ R r s.
+Definition Rquo (x y : nat) :=
+  exists r, SCC'_tag r = Some  x /\ exists s,  SCC'_tag s = Some y /\ R r s.
 
 Lemma Rquo_restricted : is_restricted Rquo (nfirst_list dim).
+
 Proof.
 unfold is_restricted;intros.
 do 2 rewrite nfirst_exact.
@@ -189,7 +197,8 @@ do 2 destruct H. do 2 destruct H0. unfold SCC'_tag in *.
 split;  eapply list_find_first_Some_bound;eauto.
 Qed.
 
-Lemma eq_opt_nat_dec (x y : option nat) : {x=y} + {~x= y}.
+Lemma eq_opt_nat_dec : forall x y : option nat, {x=y} + {~x= y}.
+
 Proof.
 intros.
 destruct x;destruct y.
@@ -201,10 +210,10 @@ right;discriminate.
 left;auto.
 Defined.
 
+Lemma exists_in_list_dec : forall (L : list A) P
+  (P_dec : forall r, {P r}+{~P r}),
+  {exists r, P r /\ In r L} + {~exists r, P r /\ In r L}.
 
-
-Lemma exists_in_list_dec (L : list A) P (P_dec :forall r, {P r}+{~P r}) :
- {exists r, P r /\ In r L } + {~exists r, P r /\ In r L }.
 Proof.
 intros. 
 induction L.
@@ -223,18 +232,17 @@ apply n0.
 exists x;auto.
 Defined.
 
-
 (** Decidability of the quotient relation *)
-Lemma Rquo_dec x y : {Rquo x y} + {~Rquo x y}.
+
+Lemma Rquo_dec : forall x y, {Rquo x y} + {~Rquo x y}.
+
 Proof.
 intros;simpl in *.
 unfold Rquo.
-cut(
-{(exists r : A,
-    SCC'_tag r = Some x /\ (exists s : A, SCC'_tag s = Some y /\ R r s) /\ In r Dom)} +
-{~
- (exists r : A,
-    SCC'_tag r = Some x /\ (exists s : A, SCC'_tag s = Some y /\ R r s) /\ In r Dom)} ).
+cut ({(exists r : A, SCC'_tag r = Some x
+  /\ (exists s : A, SCC'_tag s = Some y /\ R r s) /\ In r Dom)} +
+{~(exists r : A, SCC'_tag r = Some x
+  /\ (exists s : A, SCC'_tag s = Some y /\ R r s) /\ In r Dom)}).
 intro.
 destruct H.
 left; destruct e;exists x0;tauto.
@@ -244,15 +252,10 @@ do 2 destruct H.
 exists x0;intuition.
 destruct H0;deduce (restriction x0 x1).
 tauto.
-cut (
-{(exists r : A,
-    (fun t =>SCC'_tag t = Some x /\
-    (exists s : A, SCC'_tag s = Some y /\ R t s)) r /\ In r Dom)} +
-{~
- (exists r : A,
-    (fun t =>SCC'_tag t = Some x /\
-    (exists s : A, SCC'_tag s = Some y /\ R t s)) r /\ In r Dom)}).
-
+cut ({(exists r : A, (fun t =>SCC'_tag t = Some x /\
+  (exists s : A, SCC'_tag s = Some y /\ R t s)) r /\ In r Dom)} +
+{~(exists r : A, (fun t =>SCC'_tag t = Some x /\
+  (exists s : A, SCC'_tag s = Some y /\ R t s)) r /\ In r Dom)}).
 intro.
 destruct H.  left;destruct e;auto. exists x0. intuition.
 right. intuition. apply n. destruct H. exists x0. intuition.
@@ -268,10 +271,10 @@ cut ({ (exists s : A, SCC'_tag s = Some y /\ R r s)} +
 intros. destruct H.  left. intuition. right; intuition.
 
 change ({(exists s : A,(fun t => SCC'_tag t = Some y /\ R r t) s)} +
-{~ (exists s : A,(fun t => SCC'_tag t = Some y /\ R r t) s)}).
+{~(exists s : A,(fun t => SCC'_tag t = Some y /\ R r t) s)}).
 assert (
 {(exists s : A, (fun t : A => SCC'_tag t = Some y /\ R r t) s /\ In s Dom)} +
-{~ (exists s : A, (fun t : A => SCC'_tag t = Some y /\ R r t) s /\In s Dom) }).
+{~(exists s : A, (fun t : A => SCC'_tag t = Some y /\ R r t) s /\In s Dom) }).
 
 apply exists_in_list_dec.
 
@@ -287,22 +290,24 @@ exists x0;intuition.
 deduce (restriction r x0);tauto.
 Defined.
 
-
 (** This new relation will be acyclic *)
+
 Definition Rquo' x y := Rquo x y /\ x <> y.
 
 Lemma Rquo'_dec x y : {Rquo' x y} + {~Rquo' x y}.
+
 Proof.
 unfold Rquo';intros;destruct (eq_nat_dec x y);destruct (Rquo_dec x y);auto;
 right;tauto.
 Defined.
 
-
 Require Export Total.
 
 (** A path in the quotient relation gives a path in the relation *)
+
 Lemma Rquo'_path L x y: is_path Rquo' x y L -> 
-exists r, SCC'_tag r = Some x /\ exists s,  SCC'_tag s = Some y /\ R! r s.
+  exists r, SCC'_tag r = Some x /\ exists s,  SCC'_tag s = Some y /\ R! r s.
+
 Proof.
 induction L;intros;simpl in *.
 unfold Rquo',Rquo in H.
@@ -340,7 +345,9 @@ discriminate.
 Qed.
 
 (** Rquo' is acyclic *)
+
 Lemma irrefl_tc_Rquo' : irreflexive (Rquo'!).
+
 Proof.
 unfold irreflexive. intuition.
 deduce (clos_trans_path H).
@@ -381,9 +388,10 @@ split. congruence.
 rewrite H3. discriminate.
 Qed.
  
-
 (** Rquo' is topo_sortable *)
+
 Lemma topo_sortable_Rquo' : topo_sortable Rquo'.
+
 Proof.
 apply antisym_topo_sortable_topo_sortable.
 apply possible_antisym_topo_sort;auto.
@@ -392,17 +400,18 @@ unfold rel_dec; apply Rquo'_dec.
 apply irrefl_tc_Rquo'.
 Qed. 
 
-
 Require Export Heap.
 Require Export Sorting.
 
 (** We will now sort the SCC in the sens of list *)
 (* We need an order on a whole type *)
+
 Definition bnat := { x : nat | x < dim}. 
 
-
 (** Lots of technical meaningless lemmas *)
-Lemma eq_bnat_dec (x y:bnat) :{x = y} + {x<> y}.
+
+Lemma eq_bnat_dec : forall x y : bnat, {x = y} + {x <> y}.
+
 Proof.
 intros.
 destruct (eq_nat_dec (proj1_sig x) (proj1_sig y));
@@ -415,7 +424,8 @@ destruct x. destruct y.
 right;intuition;inversion H;tauto.
 Defined.
 
-Lemma bnat_spec x: x<dim <-> exists y:bnat,  (proj1_sig y)=x.
+Lemma bnat_spec : forall x, x < dim <-> exists y : bnat, proj1_sig y = x.
+
 Proof.
 split;intro.
 Focus 2.
@@ -423,25 +433,28 @@ destruct H. destruct x0. simpl in *. intuition.
 exists (exist (fun x => x<dim) x H). simpl. refl.
 Qed.
 
+Lemma lt_ge_dec : forall x y, {x < y} + {x >= y}.
 
-Lemma lt_ge_dec x y : {x<y} + { x>= y}.
 Proof.
 intros.
 destruct (lt_eq_lt_dec x y); auto;try destruct s;auto with *.
 Defined.
 
-Fixpoint natlist_to_bnatlist L := match L with
-  | nil => nil
-  | x::q => match lt_ge_dec x dim with 
-     |left H =>(exist (fun x => x<dim) x H)::natlist_to_bnatlist q
-     |right _ => natlist_to_bnatlist q
+Fixpoint natlist_to_bnatlist L :=
+  match L with
+    | nil => nil
+    | x::q =>
+      match lt_ge_dec x dim with 
+        | left H => exist (fun x => x<dim) x H :: natlist_to_bnatlist q
+        | right _ => natlist_to_bnatlist q
      end
   end.
  
-Definition bnatlist :=  (natlist_to_bnatlist (nfirst_list dim)).
+Definition bnatlist := natlist_to_bnatlist (nfirst_list dim).
 
-Lemma natlist_to_bnatlist_spec x L (H:x<dim) : In x L -> In (exist (fun x => x<dim) x H) 
-(natlist_to_bnatlist L).
+Lemma natlist_to_bnatlist_spec : forall x L (H : x<dim),
+  In x L -> In (exist (fun x => x<dim) x H) (natlist_to_bnatlist L).
+
 Proof.
 intros.
 induction L.
@@ -460,23 +473,27 @@ cut False;try tauto;try omega.
 tauto.
 Qed.
 
+Lemma bnatlist_exact : forall x : bnat, In x bnatlist.
 
-Lemma bnatlist_exact (x:bnat) : In x bnatlist.
 Proof.
 intros.
 unfold bnatlist. destruct x. apply natlist_to_bnatlist_spec.
 rewrite nfirst_exact. auto.
 Qed.
 
-Definition le_Rquo' (x y :nat) :=  ~Rquo'! y x /\ x<dim /\ y < dim.
+Definition le_Rquo' (x y : nat) := ~Rquo'! y x /\ x < dim /\ y < dim.
 
-Lemma sort_incl_aux (B : Set) (T S:relation B) a L : T<< S -> lelistA T a L  -> lelistA S a L.
+Lemma sort_incl_aux : forall (B : Set) (T S : relation B) a L,
+  T<< S -> lelistA T a L  -> lelistA S a L.
+
 Proof.
 induction L;intros. intuition.
 destruct H0;intuition.
 Qed.
 
-Lemma sort_incl (B:Set) (T S:relation B) L : T<< S -> sort T L -> sort S L.
+Lemma sort_incl : forall (B : Set) (T S : relation B) L,
+  T<< S -> sort T L -> sort S L.
+
 Proof.
 intros;induction L. intuition.
 inversion H0.
@@ -485,9 +502,10 @@ subst.
 eapply sort_incl_aux;eassumption.
 Qed.
 
-Lemma map_lelistA_bnat_to_nat RT (a:bnat) L :
-lelistA (fun x y : bnat => RT (proj1_sig x) (proj1_sig y)) a L ->
-lelistA RT (proj1_sig a) (map (fun y:bnat =>proj1_sig y) L).
+Lemma map_lelistA_bnat_to_nat : forall RT (a : bnat) L,
+  lelistA (fun x y : bnat => RT (proj1_sig x) (proj1_sig y)) a L ->
+  lelistA RT (proj1_sig a) (map (fun y:bnat =>proj1_sig y) L).
+
 Proof.
 induction L;intros.
 simpl;apply nil_leA.
@@ -496,9 +514,10 @@ inversion H;subst.
 apply cons_leA;auto.
 Qed.
 
-Lemma map_sort_bnat_to_nat RT L : 
-sort  (fun x y : bnat => RT (proj1_sig x) (proj1_sig y)) L ->
-sort RT (map (fun y:bnat =>proj1_sig y) L).
+Lemma map_sort_bnat_to_nat : forall RT L,
+  sort (fun x y : bnat => RT (proj1_sig x) (proj1_sig y)) L ->
+  sort RT (map (fun y:bnat =>proj1_sig y) L).
+
 Proof.
 induction L;intros.
 simpl;apply nil_sort.
@@ -512,8 +531,11 @@ Require Export Permutation.
 Require Export Multiset.
 
 Section multiplicity.
-Lemma nfirst_multiplicity n i : multiplicity (list_contents (@eq nat) eq_nat_dec (nfirst_list n)) i = 
-if lt_ge_dec i n then 1 else 0.
+
+Lemma nfirst_multiplicity : forall n i,
+  multiplicity (list_contents (@eq nat) eq_nat_dec (nfirst_list n)) i = 
+  if lt_ge_dec i n then 1 else 0.
+
 Proof. 
 induction n;intros. simpl.
 destruct (lt_ge_dec i 0);omega.
@@ -522,9 +544,11 @@ rewrite IHn.
 destruct(lt_ge_dec i n);destruct(eq_nat_dec n i);destruct(lt_ge_dec i (S n));try omega.
 Qed.
 
-Lemma bnfirst_multiplicity n (i:bnat) :
- multiplicity (list_contents (@eq bnat) eq_bnat_dec (natlist_to_bnatlist (nfirst_list n))) i = 
-if lt_ge_dec (proj1_sig i) n then 1 else 0.
+Lemma bnfirst_multiplicity n (i : bnat) :
+  multiplicity (list_contents (@eq bnat) eq_bnat_dec
+    (natlist_to_bnatlist (nfirst_list n))) i = 
+  if lt_ge_dec (proj1_sig i) n then 1 else 0.
+
 Proof.
 destruct i as [i hi].
 simpl.
@@ -533,32 +557,36 @@ simpl.
 destruct (lt_ge_dec i 0);omega.
 
 simpl;destruct(lt_ge_dec n dim);simpl; rewrite IHn;destruct(eq_nat_dec n i);
-destruct(lt_ge_dec i n);destruct(lt_ge_dec i (S n));subst;simpl;try omega;try congruence.
+destruct(lt_ge_dec i n);destruct(lt_ge_dec i (S n));subst;simpl;try omega;
+try congruence.
 
-destruct(eq_bnat_dec (exist (fun x : nat => x < dim) i l) (exist (fun x : nat => x < dim) i hi));try omega.
+destruct (eq_bnat_dec (exist (fun x : nat => x < dim) i l)
+  (exist (fun x : nat => x < dim) i hi));try omega.
 deduce (lt_unique l hi);subst; congruence.
 
-destruct(eq_bnat_dec (exist (fun x : nat => x < dim) n l) (exist (fun x : nat => x < dim) i hi));
+destruct(eq_bnat_dec (exist (fun x : nat => x < dim) n l)
+  (exist (fun x : nat => x < dim) i hi));
 try omega; congruence.
 
-destruct(eq_bnat_dec (exist (fun x : nat => x < dim) n l) (exist (fun x : nat => x < dim) i hi));
+destruct(eq_bnat_dec (exist (fun x : nat => x < dim) n l)
+  (exist (fun x : nat => x < dim) i hi));
 try omega; congruence.
-
 Qed.
 
-
-Lemma map_multiplicity a (l : a<dim) mb:
+Lemma map_multiplicity : forall a (l : a<dim) mb,
   multiplicity (list_contents (eq (A:=bnat)) eq_bnat_dec mb)
-       (exist (fun x : nat => x < dim) a l) =
-      multiplicity   (list_contents (eq (A:=nat)) eq_nat_dec
-     (map (fun y : bnat => proj1_sig y) mb)) a.
+  (exist (fun x : nat => x < dim) a l) =
+  multiplicity   (list_contents (eq (A:=nat)) eq_nat_dec
+    (map (fun y : bnat => proj1_sig y) mb)) a.
+
 Proof.
 induction mb.
 simpl;auto.
 simpl.
 rewrite IHmb.
 destruct(eq_nat_dec (proj1_sig a0) a);
-destruct(eq_bnat_dec a0 (exist (fun x : nat => x < dim) a l));try omega;try congruence.
+destruct(eq_bnat_dec a0 (exist (fun x : nat => x < dim) a l));try omega;
+try congruence.
 
 destruct a0.
 simpl in *.
@@ -571,9 +599,10 @@ simpl in *.
 congruence.
 Qed.
 
-Lemma lemme_foo a (H:a>=dim) mb: 
-multiplicity (list_contents (eq (A:=nat)) eq_nat_dec
-     (map (fun y : bnat => proj1_sig y) mb)) a =0.
+Lemma lemme_foo : forall a (H:a>=dim) mb, 
+  multiplicity (list_contents (eq (A:=nat)) eq_nat_dec
+    (map (fun y : bnat => proj1_sig y) mb)) a =0.
+
 Proof.
 induction mb.
 simpl;auto.
@@ -583,9 +612,9 @@ destruct a0;simpl in *;subst;omega.
 simpl. apply IHmb.
 Qed.
 
+Lemma rp_free_lelistA_strict : forall (B: Set) a S (mb : list B)
+  (HL :repeat_free (a::mb)), lelistA (S %) a mb -> lelistA S a mb.
 
-Lemma rp_free_lelistA_strict (B: Set) a S (mb : list B) (HL :repeat_free (a::mb)) :
-lelistA (S %) a mb -> lelistA S a mb.
 Proof.
 intros.
 induction mb;intuition.
@@ -596,8 +625,9 @@ apply cons_leA.
 destruct H1;subst;try tauto.
 Qed.
 
-Lemma rp_free_sort_strict (B: Set) S (mb : list B) (HL :repeat_free mb) :
-sort (S %) mb -> sort S mb.
+Lemma rp_free_sort_strict : forall (B: Set) S (mb : list B)
+  (HL :repeat_free mb), sort (S %) mb -> sort S mb.
+
 Proof.
 intros.
 induction mb.
@@ -610,22 +640,21 @@ apply cons_sort;auto.
 apply rp_free_lelistA_strict;auto.
 Qed.
 
-Variables 
- (B:Set)
- (B_eq_dec : forall x y : B,{x=y} + {x<>y}).
+Variables (B : Set) (B_eq_dec : forall x y : B, {x=y}+{x<>y}).
 
-Lemma In_multiplicity mb a : In a mb ->
-multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a >=1.
+Lemma In_multiplicity : forall mb a, In a mb ->
+  multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a >=1.
+
 Proof.
 intros; induction mb;simpl in *;try tauto.
 destruct H;destruct (B_eq_dec a0 a);subst;try congruence;simpl;try omega.
 tauto.
 Qed.
 
+Lemma multiplicity_repeat_free : forall mb,
+  (forall a, multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a <=1)
+  -> repeat_free mb.
 
-Lemma multiplicity_repeat_free mb : (forall a, 
-multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a <=1 )
--> repeat_free mb.
 Proof.
 intros.
 induction mb;simpl;auto.
@@ -645,11 +674,13 @@ Qed.
 
 End multiplicity.
 
-(** Definition of a total order on the SCC which include the natural order on SCC*)
-Definition RT x y := (proj1_sig  topo_sortable_Rquo') (nfirst_list dim) x y = true.
+(** Definition of a total order on the SCC which include the natural
+order on SCC*)
 
+Definition RT x y := proj1_sig topo_sortable_Rquo' (nfirst_list dim) x y = true.
 
 Lemma Rquo'_incl_RT : Rquo' << RT.
+
 Proof.
   unfold inclusion;intros.
   unfold RT.
@@ -666,21 +697,24 @@ Proof.
   rewrite (nfirst_exact);eapply list_find_first_Some_bound; eauto.
 Qed. 
 
-
 (** The SCC can be sorted *)
+
 Theorem sorted_SCC' : {m : list nat | sort RT m &
- Permutation.permutation (@eq nat) eq_nat_dec (nfirst_list dim) m}.
+  Permutation.permutation (@eq nat) eq_nat_dec (nfirst_list dim) m}.
+
 Proof.
 unfold RT.
 destruct topo_sortable_Rquo' as [F HF];simpl.
 
-set (RTb := (fun x y : bnat => (F (nfirst_list dim)  (proj1_sig x) (proj1_sig y)) = true)) in *.
+set (RTb := (fun x y : bnat =>
+  (F (nfirst_list dim)  (proj1_sig x) (proj1_sig y)) = true)) in *.
 cut ({m : list bnat | sort RTb m & 
 Permutation.permutation (eq (A:=bnat)) eq_bnat_dec bnatlist m}).
 
 intro.
 destruct H as [mb].
-exists (map (fun y:bnat =>proj1_sig y) mb). apply map_sort_bnat_to_nat. intuition.
+exists (map (fun y:bnat =>proj1_sig y) mb). apply map_sort_bnat_to_nat.
+intuition.
 
 unfold permutation in *.
 unfold meq in *.
