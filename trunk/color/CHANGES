@@ -1,5 +1,6 @@
 07-08-09:
-- Faster theorems to check modular termination criterion hypotheses with their tactics [Ducas]
+- Faster theorems to check modular termination criterion hypotheses
+with their tactics [Ducas]
 
 07-08-06:
 - Notion of SCC, way to compute SCC on restricted graphs [Ducas]                         

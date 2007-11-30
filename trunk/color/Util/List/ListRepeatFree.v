@@ -262,17 +262,17 @@ exists l. exists (@nil A). rewrite <- app_nil_end. auto.
 decomp H. exists x. exists (x0::x1). auto.
 Qed.
 
-
 (***********************************************************************)
-(** repeat free list with sames element *)
+(** repeat free list with same element *)
 
-
-Fixpoint repeat_remove  l {struct l} := match l with
-  | nil => @nil A
-  | t::q => t:: (remove eq_dec t (repeat_remove q)) 
+Fixpoint repeat_remove l :=
+  match l with
+    | nil => @nil A
+    | t :: q => t :: remove eq_dec t (repeat_remove q) 
   end.
 
-Lemma remove_ok x l: ~In x (remove eq_dec x l).
+Lemma remove_ok : forall x l, ~In x (remove eq_dec x l).
+
 Proof.
 intros.
 induction l.
@@ -282,7 +282,8 @@ destruct (eq_dec a x). auto.
 simpl;tauto. 
 Qed.
 
-Lemma remove_In a x l : In a (remove eq_dec x l) -> In a l.
+Lemma remove_In : forall a x l, In a (remove eq_dec x l) -> In a l.
+
 Proof.
 induction l;intros.
 simpl in *. auto.
@@ -291,7 +292,9 @@ destruct (eq_dec a0 x). subst;simpl;right;auto.
 simpl in *;tauto.
 Qed.
 
-Lemma repeat_free_remove n l x :(length l)=n -> repeat_free l -> repeat_free (remove eq_dec x l).
+Lemma repeat_free_remove : forall n l x,
+  length l = n -> repeat_free l -> repeat_free (remove eq_dec x l).
+
 Proof.
 induction n; intros.
 destruct l;simpl in *;auto. assert False. omega. tauto.
@@ -307,7 +310,8 @@ apply IHn.
 inversion H;auto. tauto.
 Qed.
 
-Lemma repeat_remove_repeat_free l: repeat_free (repeat_remove l).
+Lemma repeat_remove_repeat_free : forall l, repeat_free (repeat_remove l).
+
 Proof.
 induction l.
 simpl;auto.
@@ -316,7 +320,8 @@ apply remove_ok.
 eapply repeat_free_remove;eauto.
 Qed.
 
-Lemma repeat_remove_incl l : incl (repeat_remove l) l.
+Lemma repeat_remove_incl : forall l, incl (repeat_remove l) l.
+
 Proof.
 induction l.
 simpl;unfold incl;auto.
@@ -325,7 +330,8 @@ destruct H. left;auto.
 right;apply IHl. eapply remove_In. eauto.
 Qed.
 
-Lemma incl_repeat_remove l : incl l (repeat_remove l).
+Lemma incl_repeat_remove : forall l, incl l (repeat_remove l).
+
 Proof.
 induction l.
 simpl;unfold incl;auto.
@@ -335,7 +341,6 @@ destruct H. auto.
 right. 
 apply In_remove;auto.
 Qed.
-
 
 End S.
 

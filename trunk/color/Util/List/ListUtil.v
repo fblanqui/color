@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.30 2007-08-09 16:14:28 ducasleo2 Exp $ *)
+(* $Id: ListUtil.v,v 1.31 2007-11-30 14:45:19 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -620,7 +620,7 @@ Section Element_At_List.
   Qed.
 
 
-Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n<length l.
+Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l.
 
 Proof.
 induction l; intros; simpl in H; try discriminate.
@@ -641,7 +641,7 @@ Proof.
 Qed.
 
 Lemma replace_at_app_r : forall l l' p a,
-  p >= length l -> (l ++ l') [p := a] = l ++ l' [p-length l := a].
+  p >= length l -> (l ++ l') [p := a] = l ++ l' [p - length l := a].
 
 Proof.
   induction l; intros.
@@ -842,19 +842,27 @@ Section partition_by_rel.
 
 End partition_by_rel.
 
-Section ListFilter.
-  Variables (A : Set).
+(***********************************************************************)
+(** partition *)
 
-Fixpoint listfilter (L:list A) l {struct L} := match L with
-  |nil => nil
-  |a::Q => match l with 
-    |nil => nil
-    |true::q => a::(@listfilter Q q)
-    |false::q =>(@listfilter Q q)
-    end
+Section ListFilter.
+
+Variable A : Set.
+
+Fixpoint listfilter (L : list A) l {struct L} :=
+  match L with
+    | nil => nil
+    | a :: Q =>
+      match l with 
+        | nil => nil
+        | true :: q => a :: @listfilter Q q
+        | false :: q => @listfilter Q q
+      end
   end.
 
-Lemma listfilter_in L l i x : L[i]=Some x -> l[i]=Some true -> In x (listfilter L l) .
+Lemma listfilter_in : forall L l i x,
+  L[i]=Some x -> l[i]=Some true -> In x (listfilter L l) .
+
 Proof.
 induction L.
 intros. simpl in *. discriminate.
@@ -874,9 +882,7 @@ right. eapply IHL;eauto.
 eapply IHL;eauto.
 Qed.
 
-
 End ListFilter.
-
 
 (****************************************************************************)
 (* ith *)
