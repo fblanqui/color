@@ -9,6 +9,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Require Import Ring.
 Require Import Ring_theory.
+Require Import RelDec.
+Require Export Relations.
 
 (** Semi-ring structure type *)
 Module Type SemiRingType.
@@ -29,6 +31,7 @@ End SemiRingType.
 (** Some derived results about the semi-ring structure *)
 Module SemiRing (SR : SemiRingType).
 
+  Import SR.
   Export SR.
 
   Definition Aplus_comm := SRadd_comm A_semi_ring.

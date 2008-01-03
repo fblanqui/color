@@ -262,10 +262,13 @@ Ltac Vplus_eq := simpl; (try ring_simplify);
 End VectorArith.
 
 (** Arithmetic over vectors of natural numbers *)
-Module VectorNatArith.
+Module OrdVectorArith (OSRT : OrdSemiRingType).
 
-Module VA := VectorArith NSemiRingT.
-Import VA.
+  Module VA := VectorArith OSRT.SR.
+  Export VA.
+
+  Module OSR := OrdSemiRing OSRT.
+  Export OSR.
 
 Section VectorGe.
 
@@ -292,14 +295,14 @@ Qed.
 Lemma vec_ge_dec : rel_dec (@vec_ge n).
 
 Proof.
-  intros P Q. destruct (Vforall2_dec nat_ge_dec P Q); intuition.
+  intros P Q. destruct (Vforall2_dec ge_dec P Q); intuition.
 Defined.
 
 Lemma vec_ge_refl : reflexive (@vec_ge n).
 
 Proof.
   intros x. unfold vec_ge. apply Vforall2_intro. intros.
-  unfold ge. apply le_refl.
+  apply ge_refl.
 Qed.
 
 Lemma vec_ge_trans : transitive (@vec_ge n).
@@ -307,7 +310,7 @@ Lemma vec_ge_trans : transitive (@vec_ge n).
 Proof.
   intros x y z xy yz. unfold vec_ge.
   apply Vforall2_intro. intros.
-  unfold ge. apply le_trans with (Vnth y ip).
+  apply ge_trans with (Vnth y ip).
   apply (Vforall2_nth ge). assumption.
   apply (Vforall2_nth ge). assumption.
 Qed.
@@ -321,7 +324,7 @@ Lemma vec_plus_ge_compat : forall (vl vl' vr vr' : vecn),
 Proof.
   unfold vector_plus, vec_ge. intros. apply Vforall2_intro.
   intros. simpl. do 2 rewrite Vmap2_nth.
-  unfold ge. apply plus_le_compat.
+  apply plus_ge_compat.
   apply (Vforall2_nth ge). assumption.
   apply (Vforall2_nth ge). assumption.
 Qed.
@@ -344,4 +347,4 @@ End VectorGe.
 
 Infix ">=v" := vec_ge (at level 70).
 
-End VectorNatArith.
+End OrdVectorArith.

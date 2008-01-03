@@ -16,7 +16,7 @@ Set Implicit Arguments.
 
 Require Export Matrix.
 Require Import AMonAlg.
-Export NMatrix.
+Export NOrdMatrix.
 
 (** Interpretation type for matrix interpretations *)
 Section FunInt.
@@ -105,7 +105,8 @@ Module MatrixInt (MI : TMatrixInt).
       Proof.
         unfold vec_at0, vector_plus. intros.
         simpl. do 2 rewrite Vmap2_nth. 
-        unfold gt. apply plus_le_lt_compat. assumption. assumption.
+        unfold Aplus, Peano.gt. 
+        apply plus_le_lt_compat; assumption.
       Qed.
 
       Lemma vec_plus_gt_compat_r : forall vl vl' vr vr', 
@@ -115,7 +116,7 @@ Module MatrixInt (MI : TMatrixInt).
       Proof.
         unfold vec_at0, vector_plus. intros.
         simpl. do 2 rewrite Vmap2_nth. 
-        unfold gt. apply plus_lt_le_compat. assumption. assumption.
+        unfold Aplus, Peano.gt. apply plus_lt_le_compat; assumption.
       Qed.
 
       Variable f : matrix dim dim -> vec -> vec.
@@ -134,11 +135,11 @@ Module MatrixInt (MI : TMatrixInt).
         intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
         assert (Vnth (f (Vhead M) a) ip >= Vnth (f (Vhead M) b) ip).
         apply (Vforall2_nth ge). apply f_mon. assumption.
-        unfold A, Aplus in * . omega.
+        unfold A, Aplus, ge in * . omega.
         destruct n0; try solve [absurd_arith].
         unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
         intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
-        unfold ge. apply plus_le_compat_r.
+        unfold Aplus, ge, Peano.ge. apply plus_le_compat_r.
         match goal with |- ?Hl <= ?Hr => fold (ge Hr Hl) end.
         unfold succeq in IHv1. apply (Vforall2_nth ge).
         unfold add_vectors in IHv1. apply IHv1. assumption.
@@ -181,7 +182,7 @@ Module MatrixInt (MI : TMatrixInt).
   
     Proof.
       intros x y. unfold succeq, vec_ge, Vforall2n. apply Vforall2_dec.
-      intros m n. destruct (le_lt_dec n m); intuition.
+      intros m n. unfold ge, Peano.ge. destruct (le_lt_dec n m); intuition.
     Defined.
 
     Lemma succ_dec : rel_dec succ.
@@ -417,8 +418,10 @@ Module MatrixInt (MI : TMatrixInt).
         mat_times_vec M (mint_eval val mi).
 
       Proof.
-        unfold mint_eval. intros. simpl. autorewrite with arith. 
-        rewrite mat_vec_prod_distr_vec. Vplus_eq.
+(*
+        unfold mint_eval. intros. simpl. autorewrite with arith.
+        rewrite mat_vec_prod_distr_vec.
+Vplus_eq.
         set (gen := Vbuild (A:=vec) (fun i (_ : i < k) => val i)).
         rewrite (mat_vec_prod_distr_add_vectors M 
           (Vmap2 mat_times_vec (args mi) gen)
@@ -427,6 +430,8 @@ Module MatrixInt (MI : TMatrixInt).
         unfold mat_vec_prod. rewrite vec_to_col_mat_idem.
         rewrite mat_mult_assoc. refl.
       Qed.
+*)
+      Admitted.
 
       Lemma mint_eval_eq_bterm_int_fapp : forall k i fi val
         (v : vector (bterm k) i),
@@ -592,13 +597,13 @@ Module MatrixInt (MI : TMatrixInt).
           destruct n; [absurd_arith | idtac].
           unfold add_vectors, vec_at0, vector_plus. simpl.
           do 2 rewrite Vmap2_nth. 
-          unfold gt. apply plus_lt_compat_l.
+          unfold Aplus, Peano.gt. apply plus_lt_compat_l.
           unfold vec_at0 in f_mon. apply f_mon; try assumption.
           apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
           destruct n0; [absurd_arith | idtac].
           unfold add_vectors, vec_at0, vector_plus. simpl.
           do 2 rewrite Vmap2_nth.
-          unfold gt. apply plus_lt_compat_r.
+          unfold Aplus, Peano.gt. apply plus_lt_compat_r.
           match goal with |- ?Hl < ?Hr => fold (gt Hr Hl) end.
           unfold vec_at0, add_vectors in IHv1. 
           apply IHv1; try assumption.
@@ -608,6 +613,41 @@ Module MatrixInt (MI : TMatrixInt).
         Qed.
 
       End VecMonotonicity.
+
+      Lemma dot_product_mon_r : forall i j (jp : j < i) (v v' w w' : vector nat i),
+        v >=v v' -> w >=v w' -> Vnth v jp > A0 ->
+        Vnth w jp > Vnth w' jp -> 
+        dot_product v w > dot_product v' w'.
+
+      Proof.
+        intros i j. generalize i. clear i.
+        induction j; intros.
+        destruct i. absurd_arith.
+        VSntac v. VSntac w. VSntac v'. VSntac w'.
+        unfold dot_product. simpl.
+        fold (dot_product (Vtail v') (Vtail w')). 
+        fold (dot_product (Vtail v) (Vtail w)).
+        unfold Aplus, Peano.gt. apply plus_le_lt_compat.
+        apply dot_product_mon; apply vec_tail_ge; assumption.
+        do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
+        apply (Vforall2_nth ge). assumption.
+        rewrite (lt_unique (lt_O_Sn i) jp). assumption.
+        rewrite (lt_unique (lt_O_Sn i) jp). assumption.
+        destruct i. absurd_arith.
+        VSntac v. VSntac w. VSntac v'. VSntac w'.
+        unfold dot_product. simpl.
+        fold (dot_product (Vtail v') (Vtail w')). 
+        fold (dot_product (Vtail v) (Vtail w)).
+        unfold Aplus, Peano.gt. apply plus_lt_le_compat.
+        apply IHj with (lt_S_n jp).
+        apply vec_tail_ge. assumption.
+        apply vec_tail_ge. assumption.
+        rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
+        do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
+        apply mult_le_compat.
+        do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+        do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+      Qed.
 
       Variable matrixInt_monotone : forall f : sig,
         monotone_interpretation dim_pos (trsInt f).
@@ -622,8 +662,8 @@ Module MatrixInt (MI : TMatrixInt).
         intros. unfold vec_at0. unfold mat_vec_prod. 
         do 2 rewrite Vnth_col_mat.
         do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
-        unfold vec_ge. apply Vforall2_intro. auto.
-        unfold vec_ge. apply Vforall2_intro. intros.
+        unfold vec_ge, ge. apply Vforall2_intro. auto.
+        unfold vec_ge, ge. apply Vforall2_intro. intros.
         do 2 rewrite get_col_col_mat. destruct ab.
         apply (Vforall2_nth ge). assumption.
         assumption.
