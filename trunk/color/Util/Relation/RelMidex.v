@@ -41,6 +41,18 @@ intro H. exists (fun x y : A => if H x y then true else false).
 intros x y. destruct (H x y) ; trivial.
 Qed.
 
+Lemma fun_rel_dec_true : forall f x y, fun_rel_dec f -> f x y = true -> R x y.
+
+Proof.
+intros. set (w := H x y). rewrite H0 in w. assumption.
+Qed.
+
+Lemma fun_rel_dec_false : forall f x y, fun_rel_dec f -> f x y = false -> ~R x y.
+
+Proof.
+intros. set (w := H x y). rewrite H0 in w. assumption.
+Qed.
+
 End relation.
 
 (***********************************************************************)

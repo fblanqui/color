@@ -49,6 +49,7 @@ Module BMatrix := Matrix BSemiRing.
 
 Export BSemiRing.
 Export BMatrix.
+Export BMatrix.VA.
 
 (** Definition of th Graph of a boolean matrix *)
 Section GraphofMat.

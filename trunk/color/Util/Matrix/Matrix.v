@@ -15,7 +15,7 @@ Set Implicit Arguments.
 Module Matrix (SRT : SemiRingType).
 
   Module VA := VectorArith SRT.
-  Export VA.
+  Import VA.
 
    (** basic definitions *)
 
@@ -509,13 +509,14 @@ Module Matrix (SRT : SemiRingType).
 
 End Matrix.
 
-(** matrices over natural numbers *)
+(** matrices equipped with order *)
 
-Module NMatrix.
+Module OrdMatrix (OSRT : OrdSemiRingType).
 
-  Module NM := Matrix NSemiRingT.
-  Export NM.
-  Export VectorNatArith.
+  Module M := Matrix OSRT.SR.
+  Export M.
+  Module VA := OrdVectorArith OSRT.
+  Export VA.
 
    (** 'monotonicity' of matrix multiplication over naturals *)
   Section MatMultMonotonicity.
@@ -530,63 +531,28 @@ Module NMatrix.
     Lemma mat_ge_refl : M >=m M.
 
     Proof.
-      unfold mat_ge, mat_forall2. auto.
+      unfold mat_ge, mat_forall2. 
+      intros. apply ge_refl.
     Qed.
 
     Lemma mat_ge_dec : forall m n, rel_dec (@mat_ge m n).
 
     Proof.
-      intros R Q. unfold mat_ge. apply mat_forall2_dec. exact nat_ge_dec.
+      intros R Q. unfold mat_ge. apply mat_forall2_dec. exact ge_dec.
     Defined.
 
     Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> 
       vec_ge w w' -> dot_product v w >= dot_product v' w'.
 
     Proof.
-      unfold dot_product. induction v. auto.
-      intros. simpl. unfold ge. apply plus_le_compat.
+      unfold dot_product. induction v. auto with arith. 
+      intros. simpl. apply plus_ge_compat.
       apply IHv.
       change v with (Vtail (Vcons a v)). apply vec_tail_ge. assumption.
       apply vec_tail_ge. assumption.
-      set (p0 := lt_O_Sn n0). apply mult_le_compat.
+      set (p0 := lt_O_Sn n0). apply mult_ge_compat.
       change a with (Vnth (Vcons a v) p0). rewrite Vhead_nth.
       apply (Vforall2_nth ge). assumption.
-      do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
-    Qed.
-
-    Lemma dot_product_mon_r : forall i j (jp : j < i) (v v' w w' : vec i),
-      v >=v v' -> w >=v w' -> Vnth v jp > 0 ->
-      Vnth w jp > Vnth w' jp -> 
-      dot_product v w > dot_product v' w'.
-
-    Proof.
-      intros i j. generalize i. clear i.
-      induction j; intros.
-      destruct i. absurd_arith.
-      VSntac v. VSntac w. VSntac v'. VSntac w'.
-      unfold dot_product. simpl.
-      fold (dot_product (Vtail v') (Vtail w')). 
-      fold (dot_product (Vtail v) (Vtail w)).
-      unfold gt. apply plus_le_lt_compat.
-      apply dot_product_mon; apply vec_tail_ge; assumption.
-      do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
-      apply (Vforall2_nth ge). assumption.
-      rewrite (lt_unique (lt_O_Sn i) jp). assumption.
-      rewrite (lt_unique (lt_O_Sn i) jp). assumption.
-      destruct i. absurd_arith.
-      VSntac v. VSntac w. VSntac v'. VSntac w'.
-      unfold dot_product. simpl.
-      fold (dot_product (Vtail v') (Vtail w')). 
-      fold (dot_product (Vtail v) (Vtail w)).
-      unfold gt. apply plus_lt_le_compat.
-      unfold gt in IHj.
-      apply IHj with (lt_S_n jp).
-      apply vec_tail_ge. assumption.
-      apply vec_tail_ge. assumption.
-      rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
-      do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
-      apply mult_le_compat.
-      do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
       do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
     Qed.
 
@@ -634,7 +600,12 @@ Module NMatrix.
 
   Infix ">=m" := mat_ge (at level 70).
 
-End NMatrix.
+End OrdMatrix.
+
+(** matrices over naturals *)
+
+Module NMatrix := Matrix NSemiRingT.
+Module NOrdMatrix := OrdMatrix NOrdSemiRingT.
 
 (** matrices over integers *)
 
