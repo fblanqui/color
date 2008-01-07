@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 Require Export VecUtil.
 Require Export RelUtil.
-Require Export SemiRing.
+Require Export OrdSemiRing.
 
 (** Module with arithmetic over vectors of coefficients *)
 Module VectorArith (SRT : SemiRingType).

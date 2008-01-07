@@ -110,3 +110,92 @@ Module ZSemiRingT <: SemiRingType.
 End ZSemiRingT.
 
 Module ZSemiRing := SemiRing ZSemiRingT.
+
+(** Arctic semi-ring over integers with minus infinity and plus-max operations *)
+
+Module ArcticSemiRingT <: SemiRingType.
+
+  Inductive Dom : Set := 
+    | Pos (n: nat)
+    | MinusInf.
+
+  Definition A := Dom.
+
+   (* max is a <+> operation in the semi-ring *)
+  Definition Aplus m n :=
+    match m, n with
+    | MinusInf, n => n
+    | m, MinusInf => m
+    | Pos m, Pos n => Pos (max m n)
+    end.
+
+   (* plus is a <*> operation in the semi-ring *)
+  Definition Amult m n := 
+    match m, n with
+    | MinusInf, _ => MinusInf
+    | _, MinusInf => MinusInf
+    | Pos m, Pos n => Pos (m + n)
+    end.
+
+  Definition A0 := MinusInf.
+  Definition A1 := Pos 0.
+  Definition Aeq := @eq A.
+
+  Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
+
+  Proof.
+    intros. unfold Aplus. destruct m; destruct n; trivial.
+    rewrite max_comm. trivial.
+  Qed.
+
+  Lemma A_plus_assoc : forall m n p, Aplus m (Aplus n p) = Aplus (Aplus m n) p.
+
+  Proof.
+    intros. unfold Aplus.
+    destruct m; destruct n; destruct p; trivial.
+    rewrite max_assoc. trivial.
+  Qed.
+
+  Lemma A_mult_comm : forall m n, Amult m n = Amult n m.
+
+  Proof.
+    intros. unfold Amult. destruct m; destruct n; trivial.
+    rewrite plus_comm. trivial.
+  Qed.
+
+  Lemma A_mult_assoc : forall m n p, Amult m (Amult n p) = Amult (Amult m n) p.
+
+  Proof.
+    intros. unfold Amult.
+    destruct m; destruct n; destruct p; trivial.
+    rewrite plus_assoc. trivial.
+  Qed.
+
+  Lemma A_mult_plus_distr : forall m n p,
+    Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
+
+  Proof.
+    intros. unfold Amult, Aplus. 
+    destruct m; destruct n; destruct p; trivial.
+    destruct (le_dec n n0).
+    rewrite max_l. rewrite max_l. trivial. auto with arith. trivial.
+    rewrite max_r. rewrite max_r. trivial. auto with arith. trivial.
+  Qed.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+
+  Proof.
+    constructor; intros.
+    compute; trivial.
+    apply A_plus_comm.
+    apply A_plus_assoc.
+    destruct n; compute; trivial.
+    compute; trivial.
+    apply A_mult_comm.
+    apply A_mult_assoc.
+    apply A_mult_plus_distr.
+  Qed.
+
+End ArcticSemiRingT.
+
+Module ArcticSemiRing := SemiRing ArcticSemiRingT.

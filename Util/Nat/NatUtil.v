@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.17 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.18 2008-01-07 16:35:00 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -125,6 +125,15 @@ Proof.
 intros. eapply le_trans. 2: apply H. apply le_max_r.
 Qed.
 
+Lemma max_ge_compat : forall x y x' y',
+  x >= x' -> y >= y' -> max x y >= max x' y'.
+
+Proof.
+intros. destruct (max_dec x' y'); rewrite e; unfold ge.
+rewrite max_comm. apply elim_max_r. assumption.
+apply elim_max_r. assumption.
+Qed.
+
 (***********************************************************************)
 (** min *)
 
@@ -153,6 +162,12 @@ Lemma nat_ge_dec : rel_dec ge.
 Proof.
 intros i j. destruct (le_lt_dec j i); intuition.
 Defined. 
+
+Lemma nat_gt_dec : rel_dec gt.
+
+Proof.
+intros i j. destruct (le_gt_dec i j); auto with arith.
+Defined.
 
 (***********************************************************************)
 (** results on orders on nat *)

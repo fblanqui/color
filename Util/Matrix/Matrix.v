@@ -610,3 +610,8 @@ Module NOrdMatrix := OrdMatrix NOrdSemiRingT.
 (** matrices over integers *)
 
 Module ZMatrix := Matrix ZSemiRingT.
+
+(** matrices over arctic semi-ring *)
+
+Module ArcticMatrix := Matrix ArcticSemiRingT.
+Module ArcticOrdMatrix := OrdMatrix ArcticOrdSemiRingT.
