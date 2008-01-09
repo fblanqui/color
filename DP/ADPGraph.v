@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.10 2007-04-13 13:37:45 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.11 2008-01-09 16:42:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -186,7 +186,8 @@ Qed.
 Implicit Arguments chain_dps_path_dp_graph [l a b t u].
 
 (***********************************************************************)
-(** hypotheses of the criterion based on cycles *)
+(** hypotheses of the criterion based on cycles
+using the same reduction pair for every cycle *)
 
 Require Export ACompat.
 Require Export Cycle.

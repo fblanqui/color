@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.28 2007-08-23 17:06:44 ducasleo2 Exp $ *)
+(* $Id: ATrs.v,v 1.29 2008-01-09 16:42:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -219,6 +219,28 @@ Lemma hd_red_mod_incl_red_mod : forall E, hd_red_mod E R << red_mod E R.
 
 Proof.
 intro. unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
+Qed.
+
+Lemma int_red_preserv_hd : forall t1 t2, int_red R t1 t2 ->
+  exists f, exists v,exists w, t1 = Fun f v /\ t2 = Fun f w.
+
+Proof.
+intros. do 5 destruct H. intuition. destruct x1. congruence.
+simpl in *. exists f.
+exists (Vcast (Vapp v (Vcons (fill x1 (ASubstitution.app x2 x)) v0)) e).
+exists (Vcast (Vapp v (Vcons (fill x1 (ASubstitution.app x2 x0)) v0)) e).
+tauto.
+Qed.
+
+Lemma int_red_rtc_preserv_hd : forall t1 t2, int_red R # t1 t2 ->
+  t1=t2 \/ exists f, exists v, exists w, t1 = Fun f v /\ t2 = Fun f w.
+
+Proof.
+intros. induction H; auto.
+right. apply int_red_preserv_hd. auto.
+destruct IHclos_refl_trans1; destruct IHclos_refl_trans2; subst; auto.
+right. do 3 destruct H1. do 3 destruct H2. intuition; subst; auto.
+inversion H1. subst. exists x3; exists x1; exists x5. auto.
 Qed.
 
 End rewriting.

@@ -1,24 +1,18 @@
-07-08-09:
-- Faster theorems to check modular termination criterion hypotheses
-with their tactics [Ducas]
+07-08-23: Added SCC decomposition [Lucas]
+- DP/AGraph: generalization of the notion of DP graph
+-
 
-07-08-06:
-- Notion of SCC, way to compute SCC on restricted graphs [Ducas]                         
-- Proof of SCC modular termination criterion [Ducas]                                     
-- HACK : One simple overgraph (HDE : Head Equal) for tests (will be replaced by MGU) [Ducas]                       
-
-
-- added support for classical reasoning [Blanqui]:
-. Util/Logic/ClassicUtil: basic meta-theorems of classical logic
-. Util/Logic/DepChoice: axiom of dependent choice
-. Util/Logic/DepChoicePrf: proof of the axiom of dependent choice
+07-08-06: Added support for classical reasoning [Blanqui]
+- Util/Logic/ClassicUtil: basic meta-theorems of classical logic
+- Util/Logic/DepChoice: axiom of dependent choice
+- Util/Logic/DepChoicePrf: proof of the axiom of dependent choice
   using classical logic and the axiom of choice
-. Util/Relation/NotSN: properties of ~SN terms in classical logic
-. Util/Relation/NotSN_IS: ~SN terms give infinite sequences
+- Util/Relation/NotSN: properties of ~SN terms in classical logic
+- Util/Relation/NotSN_IS: ~SN terms give infinite sequences
   using dependent choice and classical logic
-. Util/Relation/RedLength: maximal reduction length of a term
+- Util/Relation/RedLength: maximal reduction length of a term
   wrt a well-founded finitely branching relation
-. Util/Relation/IS_NotSN: a well-founded finitely branching relation
+- Util/Relation/IS_NotSN: a well-founded finitely branching relation
   has no infinite sequence
 
 07-05-25:
@@ -31,7 +25,7 @@ with their tactics [Ducas]
 - Util/Algebra/SemiRing: semi-rings [Koprowski,Zantema]
 
 07-02-16:
-- simplification of the compilation procedure
+- Simplification of the compilation procedure
 
 - DP/ADPGraph: proof of the dp criterion based on cycles [Blanqui]
 

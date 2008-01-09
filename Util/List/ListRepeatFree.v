@@ -50,7 +50,7 @@ rewrite (length_app x x0) in H3. simpl. omega.
 Qed. 
 
 (***********************************************************************)
-(** properties *)
+(** repeat_free properties *)
 
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
@@ -102,6 +102,24 @@ Qed.
 
 Implicit Arguments repeat_free_app_elim [l m].
 
+Lemma repeat_free_remove : forall n l x,
+  length l = n -> repeat_free l -> repeat_free (remove eq_dec x l).
+
+Proof.
+induction n; intros.
+destruct l; simpl in *; auto. assert False. omega. tauto.
+
+destruct l; simpl in *. tauto.
+destruct (eq_dec a x).
+inversion H. apply IHn; try tauto.
+
+simpl;split. destruct H0.
+assert (x<>a); auto.
+intuition. apply H0. eapply remove_In. eauto.
+apply IHn.
+inversion H; auto. tauto.
+Qed.
+
 (***********************************************************************)
 (** least prefix without duplication *)
 
@@ -118,7 +136,7 @@ Fixpoint greatest_repeat_free_prefix_aux (acc l : list A) {struct l} : list A :=
 Notation greatest_repeat_free_prefix := (greatest_repeat_free_prefix_aux nil).
 
 (***********************************************************************)
-(** properties *)
+(** greatest_repeat_free_prefix properties *)
 
 Lemma greatest_repeat_free_prefix_aux_correct : forall l acc,
   repeat_free acc -> repeat_free (greatest_repeat_free_prefix_aux acc l).
@@ -263,83 +281,36 @@ decomp H. exists x. exists (x0::x1). auto.
 Qed.
 
 (***********************************************************************)
-(** repeat free list with same element *)
+(** remove duplicated elements of a list *)
 
-Fixpoint repeat_remove l :=
+Fixpoint make_repeat_free l :=
   match l with
     | nil => @nil A
-    | t :: q => t :: remove eq_dec t (repeat_remove q) 
+    | t :: q => t :: remove eq_dec t (make_repeat_free q) 
   end.
 
-Lemma remove_ok : forall x l, ~In x (remove eq_dec x l).
+Lemma make_repeat_free_repeat_free : forall l, repeat_free (make_repeat_free l).
 
 Proof.
-intros.
-induction l.
-simpl;tauto.
-simpl.
-destruct (eq_dec a x). auto.
-simpl;tauto. 
+induction l. simpl; auto. simpl. split. apply notin_remove.
+eapply repeat_free_remove; eauto.
 Qed.
 
-Lemma remove_In : forall a x l, In a (remove eq_dec x l) -> In a l.
+Lemma make_repeat_free_incl : forall l, incl (make_repeat_free l) l.
 
 Proof.
-induction l;intros.
-simpl in *. auto.
-simpl in H.
-destruct (eq_dec a0 x). subst;simpl;right;auto.
-simpl in *;tauto.
+induction l. simpl; unfold incl; auto.
+unfold incl; simpl. intros. destruct H.
+left; auto. 
+right; apply IHl. eapply remove_In. eauto.
 Qed.
 
-Lemma repeat_free_remove : forall n l x,
-  length l = n -> repeat_free l -> repeat_free (remove eq_dec x l).
+Lemma incl_make_repeat_free : forall l, incl l (make_repeat_free l).
 
 Proof.
-induction n; intros.
-destruct l;simpl in *;auto. assert False. omega. tauto.
-
-destruct l;simpl in *. tauto.
-destruct (eq_dec a x).
-inversion H. apply IHn;try tauto.
-
-simpl;split. destruct H0.
-assert (x<>a);auto.
-intuition. apply H0. eapply remove_In. eauto.
-apply IHn.
-inversion H;auto. tauto.
-Qed.
-
-Lemma repeat_remove_repeat_free : forall l, repeat_free (repeat_remove l).
-
-Proof.
-induction l.
-simpl;auto.
-simpl. split.
-apply remove_ok.
-eapply repeat_free_remove;eauto.
-Qed.
-
-Lemma repeat_remove_incl : forall l, incl (repeat_remove l) l.
-
-Proof.
-induction l.
-simpl;unfold incl;auto.
-unfold incl; simpl. intros.
-destruct H. left;auto. 
-right;apply IHl. eapply remove_In. eauto.
-Qed.
-
-Lemma incl_repeat_remove : forall l, incl l (repeat_remove l).
-
-Proof.
-induction l.
-simpl;unfold incl;auto.
-unfold incl; simpl. intros.
-destruct (eq_dec a a0). auto.
-destruct H. auto. 
-right. 
-apply In_remove;auto.
+induction l. simpl; unfold incl; auto.
+unfold incl; simpl. intros. destruct (eq_dec a a0).
+auto. destruct H. auto. right. apply In_remove; auto.
 Qed.
 
 End S.
