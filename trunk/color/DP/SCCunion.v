@@ -310,7 +310,7 @@ destruct H0;auto. apply H. left;auto.
 Qed.
 
 Lemma WF_SCC'_union :
-  (forall i, i<dim -> WF (hd_red_Mod_SCC' i)) -> WF (hd_red_Mod S R).
+  (forall i, i < dim -> WF (hd_red_Mod_SCC' i)) -> WF (hd_red_Mod S R).
 
 Proof.
 intros.
@@ -479,7 +479,7 @@ exists x0;exists x1;exists x2; split;try split;try tauto.
 apply H0. auto.
 Qed.
 
-(** Somme lemma to proof trivial case of sub-problem termination *)
+(** Somme lemma to prove trivial case of sub-problem termination *)
 
 Lemma red_Mod_SCC_trivial_empty : WF (hd_red_Mod S nil).
 

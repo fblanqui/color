@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.31 2007-11-30 14:45:19 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.32 2008-01-09 16:42:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -207,6 +207,12 @@ exists (a::x0). exists x1. rewrite (proj1 H2).
 rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
 destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
 contradiction.
+Qed.
+
+Lemma In_cons : forall (x a : A) l, In x (a::l) <-> a=x \/ In x l. 
+
+Proof.
+intros. simpl. tauto.
 Qed.
 
 End In.
@@ -479,6 +485,22 @@ induction l; simpl; intros. apply incl_nil. assert (~a=x /\ ~In x l). tauto.
 unfold incl. intros. simpl in H2. destruct H2. subst a0.
 apply In_remove. auto. unfold incl in H0. apply H0. simpl. auto.
 apply IHl. auto. apply incl_cons_l_incl with (x := a). exact H0. exact H2.
+Qed.
+
+Lemma notin_remove : forall x l, ~In x (remove x l).
+
+Proof.
+intros. induction l. simpl; tauto.
+simpl. destruct (eq_dec a x). auto. simpl. tauto.
+Qed.
+
+Lemma remove_In : forall a x l, In a (remove x l) -> In a l.
+
+Proof.
+induction l;intros. simpl in *. auto.
+simpl in H. destruct (eq_dec a0 x).
+subst; simpl; right; auto.
+simpl in *; tauto.
 Qed.
 
 End remove.
@@ -982,4 +1004,3 @@ apply ith_eq. refl.
 Qed.
 
 End pvalues_map.
-
