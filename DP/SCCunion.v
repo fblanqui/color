@@ -432,8 +432,8 @@ Proof.
 intros.
 assert(M[[i,i]] = true).
 unfold mat_unbound;destruct (le_gt_dec dim i). cut False;try tauto;omega.
-assert (g=Hi). unfold gt in *; apply lt_unique. subst;auto.
-
+assert (g=Hi). 
+unfold Peano.gt in *; apply lt_unique. subst;auto.
 unfold incl. intros. rewrite SCC'_list_exact in H1.
 unfold SCC'_tag in H1. simpl in *.
 deduce (list_find_first_exact _ _ _ H1).
@@ -459,7 +459,7 @@ unfold gofmat in H3. rewrite HM in H3. auto.
 
 unfold mat_unbound in H9 ;destruct (le_gt_dec dim i). cut False;try tauto;omega.
 destruct (le_gt_dec dim x). cut False;try tauto;omega.
-rewrite <- H9. unfold gt in *. 
+rewrite <- H9. unfold Peano.gt in *. 
 assert (g=Hi). apply lt_unique. subst g; apply list_of_vec_exact.
 Qed.
 
@@ -557,7 +557,7 @@ rewrite <-H0 in H2;simpl in *. intuition.
 cut (M[[i,i]]=true). intros.
 unfold mat_unbound in H2.
 destruct (le_gt_dec dim i);try discriminate.
-unfold gt in *;assert (g=Hi). apply lt_unique. subst g.
+unfold Peano.gt in *;assert (g=Hi). apply lt_unique. subst g.
 deduce (incl_SCC_list_fast Hi H2).
 rewrite H in *. rewrite <- H0 in *. unfold incl in H3.
 deduce (H3 h). simpl in *. tauto.
@@ -593,7 +593,7 @@ eapply trans_SCC. apply sym_SCC.  apply H9.  apply H9.
 cut (M[[i,i]]=true). intros.
 unfold mat_unbound in H11.
 destruct (le_gt_dec dim i). cut False;try tauto;omega.
-unfold gt in *. assert (g=Hi). apply lt_unique. subst g.
+unfold Peano.gt in *. assert (g=Hi). apply lt_unique. subst g.
 deduce (incl_SCC_list_fast Hi H11).
 rewrite H in *. rewrite <- H0 in *. unfold incl in H12.
 deduce (H12 h). simpl in *. tauto.

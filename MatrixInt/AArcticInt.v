@@ -2,21 +2,14 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Adam Koprowski and Hans Zantema, 2007-03-22
-
-Termination criterion based on matrix interpretations.
-
-References:
--  J. Endrullis, J. Waldmann and H. Zantema, "Matrix Interpretations for 
-   Proving Termination of Term Rewriting", Proceedings of the 3rd 
-   International Joint Conference (IJCAR 2006), 2006.
+- Adam Koprowski and Johannes Waldmann, 2008-01
 *)
 
 Set Implicit Arguments.
 
 Require Export Matrix.
 Require Import AMonAlg.
-Export NMatrix.
+Export ArcticMatrix.
 
 (** Interpretation type for matrix interpretations *)
 Section FunInt.
@@ -26,7 +19,7 @@ Section FunInt.
    (* function interpretation : one [dim]x[dim] matrix per argument and
       one vector of dimension [dim] for a constant factor *)
   Record matrixInt (argCnt : nat) : Type := mkMatrixInt {
-    const : vector nat dim;
+    const : vector A dim;
     args : vector (matrix dim dim) argCnt
   }.
 
@@ -36,23 +29,23 @@ Section FunInt.
       monotonicity of interpretations: upper left corner of every matrix
       needs to be positive *)
   Definition monotone_interpretation n (fi : matrixInt n) := 
-    Vforall (fun m => get_elem m dim_pos dim_pos > 0) (args fi).
+    Vforall (fun m => gt (get_elem m dim_pos dim_pos) A0) (args fi).
 
 End FunInt.
 
 (** Module type for proving termination with matrix interpretations *)
-Module Type TMatrixInt.
+Module Type TArcticInt.
 
   Parameter sig : Signature.
   Parameter dim : nat.
   Parameter dim_pos : dim > 0.
   Parameter trsInt : forall f : sig, matrixInt dim (arity f).
 
-End TMatrixInt.
+End TArcticInt.
 
-Module MatrixInt (MI : TMatrixInt).
+Module ArcticInt (AI : TArcticInt).
 
-  Export MI.
+  Export AI.
 
   Notation vec := (vec dim).
   Notation mint := (matrixInt dim).
@@ -88,36 +81,17 @@ Module MatrixInt (MI : TMatrixInt).
     Definition I := @mkInterpretation sig vec (@zero_vec dim) 
       (fun f => mi_eval (trsInt f)).
 
-    Definition succeq := @vec_ge dim.
+    Definition gtx x y := gt x y \/ (x = MinusInf /\ y = MinusInf).
 
-    Definition succ v1 v2 := v1 >=v v2 /\ vec_at0 v1 > vec_at0 v2.
+    Definition succ x y := Vforall2n gtx x y /\ gt (vec_at0 x) (vec_at0 y).
     Notation "x >v y" := (succ x y) (at level 70).
+
+    Definition succeq := @vec_ge dim.
 
     Definition succeq_trans : transitive succeq := @vec_ge_trans dim.
 
      (** Monotonicity *)
     Section VecMonotonicity.
-
-      Lemma vec_plus_gt_compat_l : forall vl vl' vr vr',
-        vec_at0 vl >= vec_at0 vl' -> vec_at0 vr > vec_at0 vr' -> 
-        vec_at0 (vl [+] vr) > vec_at0 (vl' [+] vr').
-
-      Proof.
-        unfold vec_at0, vector_plus. intros.
-        simpl. do 2 rewrite Vmap2_nth. 
-        unfold Aplus, Peano.gt. 
-        apply plus_le_lt_compat; assumption.
-      Qed.
-
-      Lemma vec_plus_gt_compat_r : forall vl vl' vr vr', 
-        vec_at0 vl > vec_at0 vl' -> vec_at0 vr >= vec_at0 vr' -> 
-        vec_at0 (vl [+] vr) > vec_at0 (vl' [+] vr').
-
-      Proof.
-        unfold vec_at0, vector_plus. intros.
-        simpl. do 2 rewrite Vmap2_nth. 
-        unfold Aplus, Peano.gt. apply plus_lt_le_compat; assumption.
-      Qed.
 
       Variable f : matrix dim dim -> vec -> vec.
       Variable f_mon : forall M v1 v2, v1 >=v v2 -> f M v1 >=v f M v2.
@@ -162,36 +136,77 @@ Module MatrixInt (MI : TMatrixInt).
     Lemma succ_wf : WF succ.
 
     Proof.
-      apply wf_transp_WF. 
-      apply well_founded_lt_compat with (fun v : vec => vec_at0 v).
-      intros. destruct H. omega.
+      apply WF_incl with (fun x y => gt (vec_at0 x) (vec_at0 y)).
+      intros x y xy. destruct xy. assumption.
+      fold (@Rof vec A gt vec_at0).
+      apply WF_inverse. apply gt_WF.
+    Qed.
+
+     (* x-man, move this to OrdSemiRing? *)
+    Lemma ge_gt_compat : forall x y z,
+      ge x y -> gt y z -> gt x z.
+
+    Proof.
+      intros. destruct y. destruct x. destruct z.
+      unfold gt, ge in *. omega.
+      auto.
+      elimtype False. auto.
+      elimtype False. auto.
+    Qed.
+
+    Lemma ge_gtx_compat : forall x y z,
+      ge x y -> gtx y z -> gtx x z.
+
+    Proof.
+      intros. destruct H0.
+      left. apply ge_gt_compat with y; assumption.
+      destruct H0. subst y. subst z.
+      destruct x. left. auto.
+      right. auto.
     Qed.
 
     Lemma succ_succeq_compat : absorb succ succeq.
 
     Proof.
-      intros x z xz. destruct xz as [y [xy yz]]. split.
-      apply succeq_trans with y. assumption. destruct yz. assumption.
-      apply le_gt_trans with (Vnth y dim_pos). unfold vec_at0.
-      apply (Vforall2_nth ge). assumption. 
-      destruct yz. assumption.
+      intros x z xz. destruct xz as [y [xy yz] ].
+      destruct yz. split.
+      apply Vforall2_intro. intros.
+      apply ge_gtx_compat with (Vnth y ip).
+      apply (Vforall2_nth ge). assumption.
+      apply (Vforall2_nth gtx). assumption.
+      apply ge_gt_compat with (vec_at0 y).
+      unfold vec_at0. apply (Vforall2_nth ge). assumption.
+      assumption.
+    Qed.
+
+    Lemma gtx_dec : rel_dec gtx.
+
+    Proof.
+      intros x y. destruct (gt_dec x y).
+      left. left. assumption.
+      destruct x.
+      right. intro f. destruct f. auto. destruct H. discriminate.
+      destruct y.
+      right. intro f. destruct f. auto. destruct H. discriminate.
+      left. right. auto.
     Qed.
 
     Lemma succeq_dec : rel_dec succeq.
   
     Proof.
       intros x y. unfold succeq, vec_ge, Vforall2n. apply Vforall2_dec.
-      intros m n. unfold ge, Peano.ge. destruct (le_lt_dec n m); intuition.
+      intros m n. apply ge_dec.
     Defined.
 
     Lemma succ_dec : rel_dec succ.
   
     Proof.
-      intros x y. destruct (succeq_dec x y).
-      destruct (le_gt_dec (vec_at0 x) (vec_at0 y)).
-      right. intro H. destruct H. intuition.
-      left. split; intuition.
-      right. intro H. destruct H. intuition.
+      intros x y. unfold succ.
+      destruct (gt_dec (vec_at0 x) (vec_at0 y)).
+      destruct (Vforall2_dec gtx_dec x y).
+      left. split; assumption. 
+      right. tauto.
+      right. tauto.
     Defined.
 
     (** decidability of order on terms induced by matrix interpretations *)
@@ -266,7 +281,7 @@ Module MatrixInt (MI : TMatrixInt).
         Vforall2 mat_ge (args l) (args r) /\ vec_ge (const l) (const r).
 
       Definition mint_gt n (l r : mint n) := 
-        mint_ge l r /\ vec_at0 (const l) > vec_at0 (const r).
+        mint_ge l r /\ gt (vec_at0 (const l)) (vec_at0 (const r)).
 
       Definition term_ord (ord : forall n, relation (mint n)) l r :=
         let (li, ri) := rule_mi (mkRule l r) in
@@ -287,11 +302,14 @@ Module MatrixInt (MI : TMatrixInt).
       Lemma mint_gt_dec : forall n, rel_dec (@mint_gt n).
       
       Proof.
+(*
         intros n x y. unfold mint_gt.
         destruct (mint_ge_dec x y); intuition.
         destruct (le_lt_dec (vec_at0 (const x)) (vec_at0 (const y))); 
           intuition.
       Defined.
+*)
+      Admitted.
 
       Lemma term_ge_dec : rel_dec term_ge.
     
@@ -417,8 +435,10 @@ Module MatrixInt (MI : TMatrixInt).
         mat_times_vec M (mint_eval val mi).
 
       Proof.
+(*
         unfold mint_eval. intros. simpl. autorewrite with arith.
-        rewrite mat_vec_prod_distr_vec. Vplus_eq.
+        rewrite mat_vec_prod_distr_vec.
+Vplus_eq.
         set (gen := Vbuild (A:=vec) (fun i (_ : i < k) => val i)).
         rewrite (mat_vec_prod_distr_add_vectors M 
           (Vmap2 mat_times_vec (args mi) gen)
@@ -427,6 +447,8 @@ Module MatrixInt (MI : TMatrixInt).
         unfold mat_vec_prod. rewrite vec_to_col_mat_idem.
         rewrite mat_mult_assoc. refl.
       Qed.
+*)
+      Admitted.
 
       Lemma mint_eval_eq_bterm_int_fapp : forall k i fi val
         (v : vector (bterm k) i),
@@ -535,6 +557,7 @@ Module MatrixInt (MI : TMatrixInt).
         mint_eval val mi >v mint_eval val mi'.
 
       Proof.
+(*
         intros. destruct H. split.
         apply mint_eval_mon_succeq. assumption.
         unfold mint_eval, add_vectors. simpl.
@@ -542,6 +565,8 @@ Module MatrixInt (MI : TMatrixInt).
         unfold vec_at0. apply (Vforall2_nth ge). 
         exact (mint_eval_mon_succeq_args _ H). assumption.
       Qed.
+*)
+      Admitted.
 
       Lemma term_ge_incl_succeq : term_ge << IR_succeq.
 
@@ -569,122 +594,15 @@ Module MatrixInt (MI : TMatrixInt).
 
     End OrderDecidability.
 
-    Section ExtendedMonotoneAlgebra.
-
-      Section VecMonotonicity.
-      
-        Variable f : matrix dim dim -> vec -> vec.
-        Variable f_mon : forall M v1 v2, get_elem M dim_pos dim_pos > 0 ->
-          v1 >=v v2 -> vec_at0 v1 > vec_at0 v2 -> 
-          vec_at0 (f M v1) > vec_at0 (f M v2).
-
-        Variables (a b : vec).
-
-        Lemma vec_add_monotone_map2 : forall n1 (v1 : vector vec n1) n2 
-          (v2 : vector vec n2)  n (M : vector (matrix dim dim) n) i_j,  
-          Vforall (fun m => get_elem m dim_pos dim_pos > 0) M ->
-          a >=v b -> vec_at0 a > vec_at0 b ->
-          vec_at0 (add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons a v2)) i_j))) >
-          vec_at0 (add_vectors (Vmap2 f M (Vcast (Vapp v1 (Vcons b v2)) i_j))).
-
-        Proof.
-          induction v1; intros; simpl.
-          destruct n; [absurd_arith | idtac].
-          unfold add_vectors, vec_at0, vector_plus. simpl.
-          do 2 rewrite Vmap2_nth. 
-          unfold Aplus, Peano.gt. apply plus_lt_compat_l.
-          unfold vec_at0 in f_mon. apply f_mon; try assumption.
-          apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
-          destruct n0; [absurd_arith | idtac].
-          unfold add_vectors, vec_at0, vector_plus. simpl.
-          do 2 rewrite Vmap2_nth.
-          unfold Aplus, Peano.gt. apply plus_lt_compat_r.
-          match goal with |- ?Hl < ?Hr => fold (gt Hr Hl) end.
-          unfold vec_at0, add_vectors in IHv1. 
-          apply IHv1; try assumption.
-          apply Vforall_incl with (S n0) M. 
-          intros. VSntac M. simpl. auto.
-          assumption.
-        Qed.
-
-      End VecMonotonicity.
-
-      Lemma dot_product_mon_r : forall i j (jp : j < i) (v v' w w' : vector nat i),
-        v >=v v' -> w >=v w' -> Vnth v jp > A0 ->
-        Vnth w jp > Vnth w' jp -> 
-        dot_product v w > dot_product v' w'.
-
-      Proof.
-        intros i j. generalize i. clear i.
-        induction j; intros.
-        destruct i. absurd_arith.
-        VSntac v. VSntac w. VSntac v'. VSntac w'.
-        unfold dot_product. simpl.
-        fold (dot_product (Vtail v') (Vtail w')). 
-        fold (dot_product (Vtail v) (Vtail w)).
-        unfold Aplus, Peano.gt. apply plus_le_lt_compat.
-        apply dot_product_mon; apply vec_tail_ge; assumption.
-        do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
-        apply (Vforall2_nth ge). assumption.
-        rewrite (lt_unique (lt_O_Sn i) jp). assumption.
-        rewrite (lt_unique (lt_O_Sn i) jp). assumption.
-        destruct i. absurd_arith.
-        VSntac v. VSntac w. VSntac v'. VSntac w'.
-        unfold dot_product. simpl.
-        fold (dot_product (Vtail v') (Vtail w')). 
-        fold (dot_product (Vtail v) (Vtail w)).
-        unfold Aplus, Peano.gt. apply plus_lt_le_compat.
-        apply IHj with (lt_S_n jp).
-        apply vec_tail_ge. assumption.
-        apply vec_tail_ge. assumption.
-        rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
-        do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
-        apply mult_le_compat.
-        do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
-        do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
-      Qed.
-
-      Variable matrixInt_monotone : forall f : sig,
-        monotone_interpretation dim_pos (trsInt f).
-
-      Lemma monotone_succ : monotone I succ.
-
-      Proof.
-        intros f i j i_j vi vj a b ab. split.
-        apply monotone_succeq. destruct ab. assumption.
-        simpl. unfold mi_eval. apply vec_plus_gt_compat_r.
-        apply vec_add_monotone_map2; try solve [destruct ab; assumption].
-        intros. unfold vec_at0. unfold mat_vec_prod. 
-        do 2 rewrite Vnth_col_mat.
-        do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
-        unfold vec_ge, ge. apply Vforall2_intro. auto.
-        unfold vec_ge, ge. apply Vforall2_intro. intros.
-        do 2 rewrite get_col_col_mat. destruct ab.
-        apply (Vforall2_nth ge). assumption.
-        assumption.
-        do 2 rewrite get_col_col_mat. assumption.
-        apply matrixInt_monotone.
-        auto with arith.
-      Qed.
-
-    End ExtendedMonotoneAlgebra.
-
   End MonotoneAlgebra.
 
   Export MonotoneAlgebra.
   Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
   Export MAR.
 
-  Ltac matrixInt_monotonicity := 
-    let f := fresh "f" in
-    first 
-    [ solve [
-      apply monotone_succ; intro f; destruct f; 
-        vm_compute; repeat split; auto with arith
-      ]
-    | fail "Failed to prove monotonicity of given matrix interpretation"
-    ].
+  Ltac noTerminationProofs := 
+    fail "Arctic matrices cannot be used for proving total termination".
 
-  Ltac prove_termination := MAR.prove_termination matrixInt_monotonicity.
+  Ltac prove_termination := MAR.prove_termination noTerminationProofs.
 
-End MatrixInt.
+End ArcticInt.

@@ -21,35 +21,8 @@ Require Export Iter.
 Require Export SCC.
 Require Export ListExtras.
 
-(** Definition of the boolean semiring (note that + is OR, not XOR) *)
-
-Module BSemiRing <: SemiRingType.
- Definition A := bool.
-  Definition Aplus := orb.
-  Definition Amult := andb.
-  Definition A0 := false.
-  Definition A1 := true.
-  Definition Aeq := @eq bool.
-
-
-Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
-constructor.
-intros;apply orb_false_l.
-intros;apply orb_comm.
-intros;apply orb_assoc.
-intros;apply andb_true_l.
-intros;apply andb_false_l.
-intros;apply andb_comm.
-intros;apply andb_assoc.
-intros;apply andb_orb_distrib_l.
-Qed.
-End BSemiRing.
-
-Module BMatrix := Matrix BSemiRing.
-
-Export BSemiRing.
+Module BMatrix := Matrix BOrdSemiRingT.
 Export BMatrix.
-Export BMatrix.VA.
 
 (** Definition of th Graph of a boolean matrix *)
 Section GraphofMat.

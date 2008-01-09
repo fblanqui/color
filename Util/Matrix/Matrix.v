@@ -12,10 +12,10 @@ Require Export VecArith.
 Set Implicit Arguments.
 
 (** functor building matrices over given a carrier *)
-Module Matrix (SRT : SemiRingType).
+Module Matrix (OSRT : OrdSemiRingType).
 
-  Module VA := VectorArith SRT.
-  Import VA.
+  Module VA := OrdVectorArith OSRT.
+  Export VA.
 
    (** basic definitions *)
 
@@ -507,17 +507,6 @@ Module Matrix (SRT : SemiRingType).
 
   Hint Rewrite mat_mult_id_l zero_matrix_mult_l using simpl : arith.
 
-End Matrix.
-
-(** matrices equipped with order *)
-
-Module OrdMatrix (OSRT : OrdSemiRingType).
-
-  Module M := Matrix OSRT.SR.
-  Export M.
-  Module VA := OrdVectorArith OSRT.
-  Export VA.
-
    (** 'monotonicity' of matrix multiplication over naturals *)
   Section MatMultMonotonicity.
 
@@ -542,7 +531,7 @@ Module OrdMatrix (OSRT : OrdSemiRingType).
     Defined.
 
     Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> 
-      vec_ge w w' -> dot_product v w >= dot_product v' w'.
+      vec_ge w w' -> dot_product v w >>= dot_product v' w'.
 
     Proof.
       unfold dot_product. induction v. auto with arith. 
@@ -600,18 +589,10 @@ Module OrdMatrix (OSRT : OrdSemiRingType).
 
   Infix ">=m" := mat_ge (at level 70).
 
-End OrdMatrix.
+End Matrix.
 
-(** matrices over naturals *)
+(** matrices over different domains *)
 
-Module NMatrix := Matrix NSemiRingT.
-Module NOrdMatrix := OrdMatrix NOrdSemiRingT.
+Module NMatrix := Matrix NOrdSemiRingT.
+Module ArcticMatrix := Matrix ArcticOrdSemiRingT.
 
-(** matrices over integers *)
-
-Module ZMatrix := Matrix ZSemiRingT.
-
-(** matrices over arctic semi-ring *)
-
-Module ArcticMatrix := Matrix ArcticSemiRingT.
-Module ArcticOrdMatrix := OrdMatrix ArcticOrdSemiRingT.
