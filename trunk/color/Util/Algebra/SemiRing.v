@@ -111,7 +111,8 @@ End ZSemiRingT.
 
 Module ZSemiRing := SemiRing ZSemiRingT.
 
-(** Arctic semi-ring over integers with minus infinity and plus-max operations *)
+(** Arctic semi-ring over integers with minus infinity and 
+    plus-max operations *)
 
 Module ArcticSemiRingT <: SemiRingType.
 
@@ -199,3 +200,32 @@ Module ArcticSemiRingT <: SemiRingType.
 End ArcticSemiRingT.
 
 Module ArcticSemiRing := SemiRing ArcticSemiRingT.
+
+(** Semi-ring of booleans with 'or' and 'and' *)
+
+Module BSemiRingT <: SemiRingType.
+
+  Definition A := bool.
+  Definition Aplus := orb.
+  Definition Amult := andb.
+  Definition A0 := false.
+  Definition A1 := true.
+  Definition Aeq := @eq bool.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+
+  Proof.
+    constructor.
+    intros; apply orb_false_l.
+    intros; apply orb_comm.
+    intros; apply orb_assoc.
+    intros; apply andb_true_l.
+    intros; apply andb_false_l.
+    intros; apply andb_comm.
+    intros; apply andb_assoc.
+    intros; apply andb_orb_distrib_l.
+  Qed.
+
+End BSemiRingT.
+
+Module BSemiRing := SemiRing BSemiRingT.
