@@ -1,12 +1,12 @@
 Guideline for CoLoR developers
 ------------------------------
 
-- For new contributors, update COPYRIGHT.
+- For new contributors, update the COPYRIGHT file.
 
-- Don't forget to update CHANGES and THANKS.
+- Don't forget to update the CHANGES and THANKS files.
 
 - If you bring important modifications to an already existing file,
-add your name with the modification date yy-mm-dd.
+add in the header your name with the modification date yy-mm-dd.
 
 About compilation:
 ------------------
@@ -20,6 +20,8 @@ dependencies again.
 
 About the CoLoR style:
 ----------------------
+
+- Try to follow the style currently used in CoLoR.
 
 - Use maximum 78 characters per line.
 

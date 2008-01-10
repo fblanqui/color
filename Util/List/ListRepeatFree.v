@@ -289,7 +289,7 @@ Fixpoint make_repeat_free l :=
     | t :: q => t :: remove eq_dec t (make_repeat_free q) 
   end.
 
-Lemma make_repeat_free_repeat_free : forall l, repeat_free (make_repeat_free l).
+Lemma make_repeat_free_correct : forall l, repeat_free (make_repeat_free l).
 
 Proof.
 induction l. simpl; auto. simpl. split. apply notin_remove.
