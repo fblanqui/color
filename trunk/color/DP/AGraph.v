@@ -149,6 +149,14 @@ intros. unfold hd_red_Mod. comp. unfold inclusion. intros. redtac.
 exists l; exists r; exists s. intuition. apply incl_make_repeat_free. auto.
 Qed.
 
+Lemma hd_red_mod_make_repeat_free :
+  hd_red_mod E R << hd_red_mod E (make_repeat_free (@eq_rule_dec Sig) R).
+
+Proof.
+intros. unfold hd_red_mod. comp. unfold inclusion. intros. redtac.
+exists l; exists r; exists s. intuition. apply incl_make_repeat_free. auto.
+Qed.
+
 (***********************************************************************)
 (* relation between hd_red_Mod and chain *)
 
