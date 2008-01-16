@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2007-04-14
 
-  Semi-ring equipped with two (strict and non-strict) orders.
+Semi-ring equipped with two (strict and non-strict) orders.
 *)
 
 Require Import RelDec.

@@ -17,12 +17,12 @@ Section SCC_effectif.
 
 Record TSCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_A : Set;
-  hyp_A_eq_dec : forall x y : hyp_A, {x=y} +{~x=y};
+  hyp_A_eq_dec : forall x y : hyp_A, {x=y} + {~x=y};
   hyp_Dom : list hyp_A;
   hyp_R : relation hyp_A;
   hyp_restriction : is_restricted hyp_R hyp_Dom;
   hyp_rp_free: repeat_free hyp_Dom;
-  hyp_R_dec : forall x y, {hyp_R x y} + {~hyp_R x y }
+  hyp_R_dec : forall x y, {hyp_R x y} + {~hyp_R x y}
 }.
 
 Variable hyps : TSCC_dec_hyps.
@@ -47,7 +47,7 @@ it once *)
 Definition SCC_effective M (H : M = SCC_mat_effective) x y :=
   nattodom A_eq_dec Dom (gofmat M) x y.
 
-Theorem SCC_effective_exact : forall M (H : M = SCC_mat_effective) x y,
+Lemma SCC_effective_exact : forall M (H : M = SCC_mat_effective) x y,
   SCC R x y <-> SCC_effective H x y.
 
 Proof.
@@ -86,7 +86,7 @@ apply gofmat_dec.
 Defined.
 
 (*
-Theorem SCC_dec : forall x y, {SCC _ R x y} + {~SCC _ R x y}.
+Lemma SCC_dec : forall x y, {SCC _ R x y} + {~SCC _ R x y}.
 
 Proof.
 intros.

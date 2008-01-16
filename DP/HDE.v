@@ -68,7 +68,7 @@ Qed.
 End S.
 
 (***********************************************************************)
-(** *)
+(** properties wrt marked symbols *)
 
 Section S'.
 
@@ -89,8 +89,7 @@ Definition int_lhs_rules_only := forall l r, In (mkRule l r) E' ->
 Variable int_hyp : int_lhs_rules_only.
 
 Lemma dup_int_rules_int_red : forall f v t,
-  red E' (Fun' (hd_symb _ f) v) t -> 
-    int_red E' (Fun' (hd_symb _ f) v) t.
+  red E' (Fun' (hd_symb _ f) v) t -> int_red E' (Fun' (hd_symb _ f) v) t.
 
 Proof.
 intros.
@@ -117,17 +116,17 @@ assert (int_red E' # x y).
 apply rt_step.
 rewrite H0.
 apply dup_int_rules_int_red. subst;auto.
-split.  auto.
+split. auto.
 clear H.
 deduce (int_red_rtc_preserv_hd H1).
 destruct H.
-exists v. subst. rewrite H;auto.
-do 3 destruct H;subst.
+exists v. subst. rewrite H; auto.
+do 3 destruct H; subst.
 destruct H. inversion H. subst.
 exists x2. apply refl_equal.
 
 split. apply rt_refl.
-exists v;auto.
+exists v; auto.
 deduce (IHclos_refl_trans1 _ _ H1).
 clear IHclos_refl_trans1.
 destruct H2.
@@ -135,18 +134,15 @@ destruct H3 as [w].
 deduce (IHclos_refl_trans2 _ _ H3).
 destruct H4. destruct H5.
 split.
-eapply rt_trans;eauto.
+eapply rt_trans; eauto.
 exists x0. auto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc : forall f v t,
-  red E' # (Fun' (hd_symb _ f) v) t -> 
-    int_red E' # (Fun' (hd_symb _ f) v) t.
+  red E' # (Fun' (hd_symb _ f) v) t -> int_red E' # (Fun' (hd_symb _ f) v) t.
 
 Proof.
-intros.
-deduce (dup_int_rules_int_red_rtc_aux H (refl_equal _)).
-tauto.
+intros. deduce (dup_int_rules_int_red_rtc_aux H (refl_equal _)). tauto.
 Qed. 
 
 Definition hd_rhs_rules_only := forall l r, In (mkRule l r) R' ->

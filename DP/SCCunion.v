@@ -22,23 +22,20 @@ Variable Sig : Signature.
 
 Notation rule := (rule Sig).
 Notation rules := (list rule).
-Notation lhs := (@lhs Sig).
-Notation rhs := (@rhs Sig).
 
 Variable S : relation (term Sig).
 Variable R : rules.
 Variable hyp : rules_preserv_vars R.
 
 Notation DPG := (hd_rules_graph S R).
-
-Definition rule_eq_dec := @ATrs.eq_rule_dec Sig.
-Definition dim := length R.
+Notation rule_eq_dec := (@ATrs.eq_rule_dec Sig).
+Notation dim := (length R).
 
 Variable ODPG : relation rule.
 Variable over_DPG : DPG << ODPG.
 Variable restriction : is_restricted ODPG R.
 Variable rp_free: repeat_free R.
-Variable ODPG_dec : forall x y, {ODPG x y} + {~ ODPG x y }.
+Variable ODPG_dec : forall x y, {ODPG x y} + {~ODPG x y}.
 
 Definition hyps := mkSCC_dec_hyps rule_eq_dec restriction rp_free ODPG_dec.
 
@@ -119,7 +116,6 @@ intro.
 destruct H2 as [i].
 exists i. split. exists x;exists x0;exists x1.
 split;try tauto.
-unfold dim.
 apply (list_find_first_Some_bound (SCC' (mkRule x x0))
   (SCC'_dec M HM (mkRule x x0)) ).
 intuition.
@@ -168,7 +164,7 @@ destruct (IHL H). exists x0.
 split;try tauto.
 Qed.
 
-Theorem hd_red_Mod_SCC'_cover : hd_red_Mod S R << hd_red_Mod_SCC'_union.
+Lemma hd_red_Mod_SCC'_cover : hd_red_Mod S R << hd_red_Mod_SCC'_union.
 
 Proof.
 unfold inclusion.
@@ -442,12 +438,12 @@ subst a. unfold SCC_list_fast. eapply listfilter_in. eauto.
 rewrite <- H. apply list_of_vec_exact.
 destruct H4; deduce (eq_In_find_first _ _ rule_eq_dec H4); do 2 destruct H6.
 
-assert (x<dim). unfold dim. eapply list_find_first_Some_bound. eauto.
+assert (x<dim). eapply list_find_first_Some_bound. eauto.
 
 unfold SCC_list_fast. eapply listfilter_in. eauto.
 
 assert ((M [[i, x]]) = true). rewrite HM. 
-deduce (sym_SCC H3). clear H3. rename H9 into H3.
+deduce (SCC_sym H3). clear H3. rename H9 into H3.
  rewrite  (SCC_effective_exact hyps HM) in H3.
 unfold SCC_effective in H3. simpl in H3.
 unfold nattodom in H3. simpl in *. rewrite H6 in H3. 
@@ -587,9 +583,9 @@ assert (x=x0). congruence. subst x0.
 
 assert (SCC ODPG x x).
 destruct(rule_eq_dec x h). subst h.
-eapply trans_SCC.  apply H4. apply sym_SCC.  apply H4.
+eapply SCC_trans.  apply H4. apply SCC_sym.  apply H4.
 do 2 destruct H9; try subst x;try tauto. simpl in *.
-eapply trans_SCC. apply sym_SCC.  apply H9.  apply H9.
+eapply SCC_trans. apply SCC_sym.  apply H9.  apply H9.
 cut (M[[i,i]]=true). intros.
 unfold mat_unbound in H11.
 destruct (le_gt_dec dim i). cut False;try tauto;omega.
@@ -616,8 +612,8 @@ Ltac use_SCC_tag h M S R t :=
       match (eval compute in x) with
         | Some ?X1 =>
           let Hi := fresh in
-            assert (Hi : X1 < dim R);
-              normalize (dim R);
+            assert (Hi : X1 < length R);
+              normalize (length R);
               [omega |
                 let L:=fresh in
                   set (L := (SCC_list_fast R M Hi));

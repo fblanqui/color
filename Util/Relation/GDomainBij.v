@@ -344,7 +344,7 @@ Variable restriction : is_restricted R Dom.
 Variable rp_free: repeat_free Dom.
 
 
-Theorem dom_change_SCC : forall x y,
+Lemma dom_change_SCC : forall x y,
 nattodom  A_eq_dec Dom (SCC (domtonat  Dom R)) x y <-> SCC  R x y.
 split;intros;unfold SCC in *.
 change ((R !) x y /\ transp (R !) x y).
