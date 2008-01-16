@@ -64,7 +64,7 @@ destruct (In_dec y Dom);destruct (In_dec x Dom);
 rewrite <- SCC_effective_exact in *; try tauto.
 Defined.
 
-Lemma trans_SCC' : forall x y z, SCC' x y -> SCC' y z -> SCC' x z.
+Lemma SCC_trans' : forall x y z, SCC' x y -> SCC' y z -> SCC' x z.
 
 Proof.
 intros.
@@ -75,18 +75,18 @@ destruct H;destruct H0;subst;auto.
 left;auto.
 right;auto.
 right;auto.
-right;eapply trans_SCC.
+right;eapply SCC_trans.
 eauto. assumption.
 Qed.
 
-Lemma sym_SCC' : forall x y ,SCC' x y -> SCC' y x.
+Lemma SCC_sym' : forall x y ,SCC' x y -> SCC' y x.
 
 Proof.
 intros;destruct H.
 split;try tauto.
 destruct H.
 left;auto.
-right;apply sym_SCC;auto.
+right;apply SCC_sym;auto.
 Qed.
 
 (* SCC'_tag map each vertex of the graph to its SCC number *)
@@ -124,8 +124,8 @@ unfold SCC'_tag in *.
 split.
 apply list_find_first_indep.
 intros.
-split;intros;eapply trans_SCC';auto;eauto.
-apply  sym_SCC';auto.
+split;intros;eapply SCC_trans';auto;eauto.
+apply  SCC_sym';auto.
 eapply list_find_first_exist;unfold SCC' in *.
 Focus 2. eassumption.
 tauto.
@@ -148,9 +148,9 @@ destruct H3;destruct H4.
 rewrite H3 in H4.
 inversion H4.
 subst x1.
-eapply trans_SCC'.
+eapply SCC_trans'.
 eassumption.
-apply sym_SCC'.
+apply SCC_sym'.
 auto.
 Qed.
 
@@ -699,7 +699,7 @@ Qed.
 
 (** The SCC can be sorted *)
 
-Theorem sorted_SCC' : {m : list nat | sort RT m &
+Lemma sorted_SCC' : {m : list nat | sort RT m &
   Permutation.permutation (@eq nat) eq_nat_dec (nfirst_list dim) m}.
 
 Proof.

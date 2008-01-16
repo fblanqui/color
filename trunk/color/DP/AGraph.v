@@ -126,7 +126,7 @@ Lemma hd_red_mod_of_hd_red_Mod_int :
   hd_red_Mod (int_red E #) R << hd_red_mod E R.
 
 Proof.
-unfold hd_red_Mod,hd_red_mod.
+unfold hd_red_Mod, hd_red_mod.
 apply incl_comp. assert (int_red E # << ATrs.red E #).
 apply incl_rtc. apply int_red_incl_red. eauto.
 apply inclusion_refl.
@@ -135,11 +135,11 @@ Qed.
 Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
 
 Proof.
-unfold hd_red_Mod,hd_red_mod. apply inclusion_refl.
+unfold hd_red_Mod, hd_red_mod. apply inclusion_refl.
 Qed.
 
 (***********************************************************************)
-(* properties *)
+(* remove duplicated rules *)
 
 Lemma hd_red_Mod_make_repeat_free :
   hd_red_Mod S R << hd_red_Mod S (make_repeat_free (@eq_rule_dec Sig) R).

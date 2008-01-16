@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.8 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.9 2008-01-16 14:52:20 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -57,7 +57,7 @@ Proof.
 exact (eq_rect_eq_dec eq_dec).
 Qed.
 
-Theorem eq_dep_eq : forall P (p : U) x y, eq_dep U P p x p y -> x = y.
+Lemma eq_dep_eq : forall P (p : U) x y, eq_dep U P p x p y -> x = y.
 
 Proof.
 exact (eq_rect_eq__eq_dep_eq U eq_rect_eq).

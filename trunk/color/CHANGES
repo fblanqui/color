@@ -1,6 +1,11 @@
 07-08-23: Added SCC decomposition [Lucas]
+(SCC = Strongly Connected Component)
 - DP/AGraph: generalization of the notion of DP graph
--
+- DP/HDE: simple over DP graph based on head symbol equality
+- Util/Relation/SCC: definition of SCC and basic properties
+- Util/Relation/SCC_dec:
+- Util/Relation/SCCTopoOrdering:
+- Util/Relation/AdjMat: adjacence matrix of a finite relation on N
 
 07-08-06: Added support for classical reasoning [Blanqui]
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic
