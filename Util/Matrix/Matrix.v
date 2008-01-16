@@ -14,6 +14,8 @@ Set Implicit Arguments.
 (** functor building matrices over given a carrier *)
 Module Matrix (OSRT : OrdSemiRingType).
 
+  Module OSR := OrdSemiRing OSRT.
+  Export OSR.
   Module VA := OrdVectorArith OSRT.
   Export VA.
 
@@ -531,7 +533,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     Defined.
 
     Lemma dot_product_mon : forall i (v v' w w' : vec i), v >=v v' -> 
-      vec_ge w w' -> dot_product v w >>= dot_product v' w'.
+      w >=v w' -> dot_product v w >>= dot_product v' w'.
 
     Proof.
       unfold dot_product. induction v. auto with arith. 
@@ -560,16 +562,16 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Section MatrixConstruction.
 
-    Definition mkMatrix1 (v1 : nat) := Vcons (vec_of_list (v1 :: nil)) Vnil.
-    Definition mkMatrix2 (v1 v2 v3 v4 : nat) := 
+    Definition mkMatrix1 (v1 : A) := Vcons (vec_of_list (v1 :: nil)) Vnil.
+    Definition mkMatrix2 (v1 v2 v3 v4 : A) := 
       Vcons (vec_of_list (v1 :: v2 :: nil)) 
      (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
-    Definition mkMatrix3 (v1 v2 v3 v4 v5 v6 v7 v8 v9 : nat) := 
+    Definition mkMatrix3 (v1 v2 v3 v4 v5 v6 v7 v8 v9 : A) := 
       Vcons (vec_of_list (v1 :: v2 :: v3 :: nil)) 
      (Vcons (vec_of_list (v4 :: v5 :: v6 :: nil))
      (Vcons (vec_of_list (v7 :: v8 :: v9 :: nil)) Vnil)).
     Definition mkMatrix4 (v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 
-      v12 v13 v14 v15 v16 : nat) := 
+      v12 v13 v14 v15 v16 : A) := 
       Vcons (vec_of_list ( v1 ::  v2 ::  v3 ::  v4 :: nil)) 
      (Vcons (vec_of_list ( v5 ::  v6 ::  v7 ::  v8 :: nil))
      (Vcons (vec_of_list ( v9 :: v10 :: v11 :: v12 :: nil))

@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.22 2007-08-09 16:14:28 ducasleo2 Exp $ *)
+(* $Id: VecUtil.v,v 1.23 2008-01-16 15:40:13 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -730,6 +730,13 @@ Proof.
   simpl in H. destruct (eq_nat_dec n n). 
   destruct H. assumption.
   contradiction.
+Qed.
+
+Lemma Vforall2n_tail : forall n (v1 v2 : vec (S n)), Vforall2n v1 v2 ->
+  Vforall2n (Vtail v1) (Vtail v2).
+
+Proof.
+  intros. unfold Vforall2n. apply Vforall2_tail. assumption.
 Qed.
 
 Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i 
