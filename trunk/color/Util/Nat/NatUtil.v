@@ -9,12 +9,13 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.18 2008-01-07 16:35:00 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.19 2008-01-16 15:40:12 koper Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export Arith.
+Require Omega.
 
 Implicit Arguments lt_S_n [n m].
 Implicit Arguments lt_n_S [n m].
@@ -132,6 +133,15 @@ Proof.
 intros. destruct (max_dec x' y'); rewrite e; unfold ge.
 rewrite max_comm. apply elim_max_r. assumption.
 apply elim_max_r. assumption.
+Qed.
+
+Lemma max_gt_compat : forall x y x' y',
+  x > x' -> y > y' -> max x y > max x' y'.
+
+Proof.
+intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
+  do 2 first [rewrite max_r; [idtac | assumption] | rewrite max_l; [idtac | assumption]]; 
+    omega.
 Qed.
 
 (***********************************************************************)

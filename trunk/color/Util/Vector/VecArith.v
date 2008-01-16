@@ -118,10 +118,12 @@ Proof.
   rewrite vector_plus_assoc. refl.
 Qed.
 
-(*
 Lemma add_vectors_nth : forall k (vs : vector vecn k) i (ip : i < n),
-  Vnth (add_vectors vs) ip = Vfold_left Aplus A0 (Vmap (fun v => Vnth v ip) vs).
-*)
+  Vnth (add_vectors vs) ip = 
+  Vfold_left Aplus A0 (Vmap (fun v => Vnth v ip) vs).
+
+Proof.
+Admitted.
 
 Lemma add_vectors_split : forall k (v vl vr : vector vecn k),
   (forall i (ip : i < k), Vnth v ip = Vnth vl ip [+] Vnth vr ip) ->
@@ -286,10 +288,7 @@ Lemma vec_tail_ge : forall n (v v' : vec (S n)),
   v >=v v' -> Vtail v >=v Vtail v'.
 
 Proof.
-  unfold vec_ge. intros.
-  apply Vforall2_intro. intros.
-  do 2 rewrite Vnth_tail.
-  apply (Vforall2_nth ge). assumption.
+  intros. unfold vec_ge. apply Vforall2n_tail. assumption.
 Qed.
 
 Lemma vec_ge_dec : rel_dec (@vec_ge n).
