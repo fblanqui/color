@@ -8,7 +8,7 @@ Definition and properties of active environments: subset of term
 environments with declarations that are really used in a term.
 *)
 
-(* $Id: TermsActiveEnv.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsActiveEnv.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -54,7 +54,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply Max.max_case2; trivial.
   Qed.
 
-  Lemma activeEnv_abs : forall M (Mabs: isAbs M), activeEnv M = tail (activeEnv (absBody Mabs)).
+  Lemma activeEnv_abs : forall M (Mabs: isAbs M),
+    activeEnv M = tail (activeEnv (absBody Mabs)).
 
   Proof.
     intros M; term_inv M.
@@ -73,8 +74,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     intro M; term_inv M.
   Qed.
 
-  Lemma activeEnv_var_det : forall M x i A, term M = %x -> activeEnv M |= i := A ->
-    i = x /\ A = type M.
+  Lemma activeEnv_var_det : forall M x i A,
+    term M = %x -> activeEnv M |= i := A -> i = x /\ A = type M.
 
   Proof.
     unfold VarD; intros.
@@ -102,14 +103,16 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes using omega.
   Qed.
 
-  Lemma activeEnv_var_single : forall M x y A, term M = %x -> activeEnv M |= y := A -> x = y.
+  Lemma activeEnv_var_single : forall M x y A,
+    term M = %x -> activeEnv M |= y := A -> x = y.
 
   Proof.
     intros.
     destruct (activeEnv_var_det M H H0); auto.
   Qed.
 
-  Lemma activeEnv_var_type : forall M x y A, term M = %x -> activeEnv M |= y := A -> A = type M.
+  Lemma activeEnv_var_type : forall M x y A,
+    term M = %x -> activeEnv M |= y := A -> A = type M.
 
   Proof.
     intros.
@@ -138,8 +141,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply IHM2; trivial.
   Qed.
 
-  Lemma activeEnv_abs0 : forall M (Mabs: isAbs M) A, activeEnv (absBody Mabs) |= 0 := A ->
-    A = absType Mabs.
+  Lemma activeEnv_abs0 : forall M (Mabs: isAbs M) A,
+    activeEnv (absBody Mabs) |= 0 := A -> A = absType Mabs.
 
   Proof.
     intros.
@@ -166,7 +169,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
 
   Proof.
     intro M; term_inv M.
-    fold (activeEnv (buildT T1)); fold (activeEnv (buildT T2)); intros; intros x A0.
+    fold (activeEnv (buildT T1)); fold (activeEnv (buildT T2)); intros;
+      intros x A0.
     apply env_sum_ly; trivial.
     apply (activeEnv_app_comp (buildT (TApp T1 T2)) I).
   Qed.
@@ -176,7 +180,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
 
   Proof.
     intro M; term_inv M.
-    fold (activeEnv (buildT T1)); fold (activeEnv (buildT T2)); intros; intros x A0.
+    fold (activeEnv (buildT T1)); fold (activeEnv (buildT T2)); intros;
+      intros x A0.
     apply env_sum_ry; trivial.
   Qed.
 
@@ -218,8 +223,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply activeEnv_subset.
   Qed.
 
-  Lemma equiv_term_activeEnv : forall M N, term M = term N -> env M [<->] env N ->
-    activeEnv M = activeEnv N.
+  Lemma equiv_term_activeEnv : forall M N,
+    term M = term N -> env M [<->] env N -> activeEnv M = activeEnv N.
 
   Proof.
     intro M; destruct M as [E Pt T M]; induction M; intro N; term_inv N; intros.
@@ -244,13 +249,15 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Lemma activeEnv_var : forall M x, term M = %x -> activeEnv M = copy x None ++ type M [#] EmptyEnv.
+  Lemma activeEnv_var : forall M x,
+    term M = %x -> activeEnv M = copy x None ++ type M [#] EmptyEnv.
 
   Proof.
     intro M; term_inv M.
   Qed.
 
-  Lemma activeEnv_var_decl : forall M x A, term M = %x -> env M |= x := A -> activeEnv M |= x := A.
+  Lemma activeEnv_var_decl : forall M x A,
+    term M = %x -> env M |= x := A -> activeEnv M |= x := A.
 
   Proof.
     intro M; term_inv M; intros.
@@ -301,7 +308,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply env_eq_refl.
      (* application *)
     rewrite activeEnv_app with (buildT (TApp M1 M2)) I.
-    rewrite (liftedEnv_distr_sum (activeEnv (appBodyL (M:=buildT (TApp M1 M2)) I))
+    rewrite (liftedEnv_distr_sum
+      (activeEnv (appBodyL (M:=buildT (TApp M1 M2)) I))
       (activeEnv (appBodyR (M:=buildT (TApp M1 M2)) I)) n k).
     set (l := proj1_sig (lift_aux n (buildT (TApp M1 M2)) k)).
     assert (lapp: isApp l).
@@ -317,7 +325,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply env_eq_sum; apply env_eq_refl.
   Qed.
 
-  Lemma activeEnv_lift : forall M n, activeEnv (lift M n) [=] liftedEnv n (activeEnv M) 0.
+  Lemma activeEnv_lift : forall M n,
+    activeEnv (lift M n) [=] liftedEnv n (activeEnv M) 0.
 
   Proof.
     intros; unfold lift.
@@ -368,7 +377,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     set (l := proj1_sig (lower_aux (buildT (TApp M1 M2)) Menv)).
     assert (lapp: isApp l).
     apply app_isApp with (prelower_aux PtL n) (prelower_aux PtR n).
-    unfold l; destruct (lower_aux (buildT (TApp M1 M2)) Menv) as [W [WE [WPt WT]]].
+    unfold l; destruct (lower_aux (buildT (TApp M1 M2)) Menv)
+      as [W [WE [WPt WT]]].
     simpl; rewrite WPt; trivial.
     rewrite (activeEnv_app l lapp).
     unfold l.
@@ -378,7 +388,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite (IHM2 n); trivial.
   Qed.
 
-  Lemma activeEnv_lower : forall M Menv, activeEnv (lower M Menv) = loweredEnv (activeEnv M) 0.
+  Lemma activeEnv_lower : forall M Menv,
+    activeEnv (lower M Menv) = loweredEnv (activeEnv M) 0.
 
   Proof.
     intros.
@@ -386,8 +397,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply activeEnv_lower_aux.
   Qed.
 
-  Lemma activeEnv_minimal_len : forall M M', env M [<->] env M' -> term M = term M' ->
-    length (activeEnv M) = length (activeEnv M').
+  Lemma activeEnv_minimal_len : forall M M', env M [<->] env M' ->
+    term M = term M' -> length (activeEnv M) = length (activeEnv M').
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros; term_inv M'.
@@ -396,7 +407,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes using simpl; trivial.
      (* abstraction *)
     fold (activeEnv (buildT M)) in *; fold (activeEnv (buildT T)).
-    repeat rewrite length_tail.
+    repeat rewrite length_tail_minus.
     inversion H0.
     rewrite (IHM (buildT T)); simpl; trivial.
     unfold decl; apply env_comp_cons; trivial.
@@ -410,8 +421,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite (IHM2 (buildT T2)); trivial.
   Qed.
 
-  Lemma activeEnv_minimal_aux : forall M M', env M [<->] env M' -> term M = term M' ->
-    envSubset (activeEnv M) (activeEnv M').
+  Lemma activeEnv_minimal_aux : forall M M', env M [<->] env M' ->
+    term M = term M' -> envSubset (activeEnv M) (activeEnv M').
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros; term_inv M'.
@@ -443,8 +454,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply IHM2; simpl; trivial.
   Qed.
 
-  Lemma activeEnv_minimal : forall M M', env M [<->] env M' -> term M = term M' ->
-    activeEnv M = activeEnv M'.
+  Lemma activeEnv_minimal : forall M M',
+    env M [<->] env M' -> term M = term M' -> activeEnv M = activeEnv M'.
 
   Proof.
     intros.
@@ -456,9 +467,9 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     apply activeEnv_minimal_len; trivial.
   Qed.
 
-  Lemma envMinimal_app : forall M Ml Mr (Mapp: isApp M), envMinimal Ml -> envMinimal Mr ->
-    env Ml [<->] env Mr -> env M = env Ml [+] env Mr -> term M = term Ml @@ term Mr ->
-    envMinimal M.
+  Lemma envMinimal_app : forall M Ml Mr (Mapp: isApp M),
+    envMinimal Ml -> envMinimal Mr -> env Ml [<->] env Mr ->
+    env M = env Ml [+] env Mr -> term M = term Ml @@ term Mr -> envMinimal M.
 
   Proof.
     unfold envMinimal; intros.
@@ -478,8 +489,10 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite (appBodyL_term M H3); trivial.
   Qed.
 
-  Lemma envMinimal_abs : forall M N (Mabs: isAbs M), term (absBody Mabs) = term N ->
-    tail (env (absBody Mabs)) = tail (env N) -> (env N |= 0 :! \/ env N |= 0 := absType Mabs) ->
+  Lemma envMinimal_abs : forall M N (Mabs: isAbs M),
+    term (absBody Mabs) = term N ->
+    tail (env (absBody Mabs)) = tail (env N) ->
+    (env N |= 0 :! \/ env N |= 0 := absType Mabs) ->
     envMinimal N -> envMinimal M.
 
   Proof.
@@ -499,7 +512,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     destruct H1; inversion H1; try_solve.
   Qed.
 
-  Lemma activeEnv_subset_unit : forall Mu M, isAppUnit Mu M -> envSubset (activeEnv Mu) (activeEnv M).
+  Lemma activeEnv_subset_unit : forall Mu M,
+    isAppUnit Mu M -> envSubset (activeEnv Mu) (activeEnv M).
 
   Proof.
     destruct M as [E Pt T M]; induction M.
@@ -560,7 +574,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite appUnits_notApp; auto with datatypes.
   Qed.
 
-  Lemma activeEnv_subset_partialFlattening : forall M N Ns, isPartialFlattening Ns N ->
+  Lemma activeEnv_subset_partialFlattening : forall M N Ns,
+    isPartialFlattening Ns N ->
     (forall N', In N' Ns -> envSubset (activeEnv N') (activeEnv M)) ->
     envSubset (activeEnv N) (activeEnv M).
 

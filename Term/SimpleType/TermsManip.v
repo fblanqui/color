@@ -8,7 +8,7 @@ In this file some basic operations on terms of simply
 typed lambda-calculus are defined.
 *)
 
-(* $Id: TermsManip.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsManip.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -448,7 +448,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     intros.
     unfold isAppUnit in H.
     rewrite (appUnits_app M Mapp) in H.
-    destruct (in_app_or (appUnits (appBodyL Mapp)) (appBodyR Mapp :: nil) Mu H).
+    destruct (in_app_or H).
     right; trivial.
     inversion H0; try_solve.
   Qed.
@@ -509,7 +509,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     symmetry; auto with terms datatypes.
   Qed.
 
-  Lemma app_units_app : forall M (Mapp: isApp M), appUnits M = appHead M :: nil ++ appArgs M.
+  Lemma app_units_app : forall M (Mapp: isApp M),
+    appUnits M = appHead M :: nil ++ appArgs M.
 
   Proof.
     destruct M as [E Pt T M]; induction M; try_solve.
@@ -538,8 +539,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     induction typM; simpl; intros; try contradiction.
     unfold isArg in H.
     rewrite (appArgs_app (buildT (TApp typM1 typM2)) Mapp) in H.
-    case (in_app_or (appArgs (buildT typM1)) (buildT typM2::nil) N); 
-      auto.
+    case (@in_app_or _ (appArgs (buildT typM1)) (buildT typM2::nil) N); auto.
     destruct 1; solve [auto | contradiction].
   Qed.
 
@@ -726,7 +726,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     unfold isAppUnit in Narg.
     rewrite (appUnits_app (buildT (TApp TypM1 TypM2)) M1M2app) in Narg.
     simpl in Narg.
-    case (in_app_or (appUnits (buildT TypM1)) (buildT TypM2::nil) N).
+    case (@in_app_or _ (appUnits (buildT TypM1)) (buildT TypM2::nil) N).
     trivial.
     constructor 1 with M1M2app; constructor.
     apply IHTypM1; trivial.
@@ -741,7 +741,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     simpl in Narg.
     change TypM1 at 2 with (typing (buildT TypM1)) in Narg.
     fold (appUnits (buildT TypM1)) in Narg.
-    case (in_app_or (appUnits (buildT TypM1)) (buildT TypM2::nil) N).
+    case (@in_app_or _ (appUnits (buildT TypM1)) (buildT TypM2::nil) N).
     trivial.
     intro N_M1; constructor 1 with M1M2app.
     rewrite appUnits_notApp in N_M1; trivial.
@@ -1092,7 +1092,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     unfold isAppUnit in H.
     rewrite (appUnits_app (buildT (TApp M1 M2)) I) in H.
     simpl in H.
-    destruct (in_app_or (appUnits (buildT M1)) (buildT M2::nil) Mu H).
+    destruct (in_app_or H).
     apply IHM1; trivial.
     inversion H0; try_solve.
     rewrite <- H1; trivial.

@@ -8,7 +8,7 @@ Algebraic terms (functions with arity; simple output type of a function
 assumed) encoded via lambda-terms.
 *)
 
-(* $Id: TermsAlgebraic.v,v 1.3 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsAlgebraic.v,v 1.4 2008-01-17 07:54:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -533,7 +533,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     rewrite <- appHead_app; trivial.
     rewrite <- (subject_reduction MN); trivial.
     unfold isArg; rewrite (appArgs_app N Napp); intros.
-    destruct (in_app_or (appArgs (appBodyL Napp)) (appBodyR Napp :: nil) M' H7).
+    destruct (in_app_or H7).
     apply H5.
     apply appArg_left with Mapp.
     simpl; rewrite H0; trivial.
@@ -546,7 +546,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply AlgApp; trivial.
     apply (notFunApp_left_eq M Mapp N Napp); trivial.
     unfold isAppUnit; rewrite (appUnits_app N Napp); intros.
-    destruct (in_app_or (appUnits (appBodyL Napp)) (appBodyR Napp :: nil) M' H7).
+    destruct (in_app_or H7).
     apply H5.
     apply appUnit_left with Mapp.
     simpl; rewrite H0; trivial.
@@ -687,7 +687,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       set (SL := swap_in_appL MLP MP Lapp ML).
       unfold isAppUnit in M'unit.
       rewrite (appUnits_app (swap MP) Lapp) in M'unit.
-      destruct (in_app_or _ _ _ M'unit).
+      destruct (in_app_or M'unit).
       destruct (posThis_dec pos).
       apply algebraic_appUnits with P; trivial.
       apply algebraic_arrowType; trivial.
@@ -723,7 +723,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       set (SR := swap_in_appR MRP MP Rapp MR).
       unfold isAppUnit in M'unit.
       rewrite (appUnits_app (swap MP) Rapp) in M'unit.
-      destruct (in_app_or _ _ _ M'unit).
+      destruct (in_app_or M'unit).
       apply Mualg.
       apply appUnit_left with I; simpl.
       rewrite <- (appBodyL_swap_in_appR MRP MP Rapp MR); trivial.
@@ -753,7 +753,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       set (SL := swap_in_appL MLP MP Lapp ML).
       unfold isArg in M'arg.
       rewrite (appArgs_app (swap MP) Lapp) in M'arg.
-      destruct (in_app_or _ _ _ M'arg).
+      destruct (in_app_or M'arg).
       apply IHpos with MLP; trivial.
       intros; apply IH; trivial.
       apply AppLsub with I; constructor; trivial.
@@ -775,7 +775,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       set (SR := swap_in_appR MRP MP Rapp MR).
       unfold isArg in M'arg.
       rewrite (appArgs_app (swap MP) Rapp) in M'arg.
-      destruct (in_app_or _ _ _ M'arg).
+      destruct (in_app_or M'arg).
       apply Mualg.
       apply appArg_left with I; simpl.
       rewrite <- (appBodyL_swap_in_appR MRP MP Rapp MR); trivial.
