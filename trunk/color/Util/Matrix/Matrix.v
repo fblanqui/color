@@ -562,6 +562,8 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Section MatrixConstruction.
 
+    Variable A : Set.
+
     Definition mkMatrix1 (v1 : A) := Vcons (vec_of_list (v1 :: nil)) Vnil.
     Definition mkMatrix2 (v1 v2 v3 v4 : A) := 
       Vcons (vec_of_list (v1 :: v2 :: nil)) 
