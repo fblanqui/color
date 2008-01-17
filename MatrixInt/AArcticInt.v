@@ -26,7 +26,7 @@ Section FunInt.
   Variable dim_pos : dim > 0.
 
   Definition monotone_interpretation n (fi : matrixInt n) := 
-    Vforall (fun m => gt (get_elem m dim_pos dim_pos) A0) (args fi).
+    Vexists (fun m => gt (get_elem m dim_pos dim_pos) A0) (args fi).
 
 End FunInt.
 
@@ -675,6 +675,9 @@ Module ArcticInt (AI : TArcticInt).
         vec_at0 (mint_eval val mi) <> MinusInf.
 
       Proof.
+        intros. rewrite mint_eval_split. unfold vec_at0. 
+        rewrite vector_plus_nth. rewrite add_vectors_nth. 
+        
       Admitted.
 
       Lemma mint_eval_mon_succ : forall (val : valuation I) k 

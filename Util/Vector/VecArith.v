@@ -123,7 +123,11 @@ Lemma add_vectors_nth : forall k (vs : vector vecn k) i (ip : i < n),
   Vfold_left Aplus A0 (Vmap (fun v => Vnth v ip) vs).
 
 Proof.
-Admitted.
+  induction vs; simpl; intros.
+  unfold add_vectors, zero_vec; simpl. rewrite Vnth_const. trivial.
+  rewrite add_vectors_cons. rewrite vector_plus_nth. rewrite IHvs.
+  rewrite Aplus_comm. trivial.
+Qed.
 
 Lemma add_vectors_split : forall k (v vl vr : vector vecn k),
   (forall i (ip : i < k), Vnth v ip = Vnth vl ip [+] Vnth vr ip) ->
