@@ -8,7 +8,7 @@ Operations on environments of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsEnv.v,v 1.3 2007-04-13 20:28:11 koper Exp $ *)
+(* $Id: TermsEnv.v,v 1.4 2008-01-17 16:22:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -346,7 +346,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Qed.
 
   Definition dropEmptySuffix (E: Env) : Env :=
-    match list_find_last isNotEmpty isNotEmpty_dec E with
+    match find_last isNotEmpty isNotEmpty_dec E with
     | None => EmptyEnv
     | Some i => initialSeg E (S i)
     end.
@@ -355,7 +355,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof.
     intros.
-    destruct (list_find_last_last isNotEmpty isNotEmpty_dec E x H)
+    destruct (find_last_last isNotEmpty isNotEmpty_dec E x H)
       as [q [Eq qx]]; try_solve.
     unfold dropEmptySuffix.
     rewrite Eq.
@@ -363,12 +363,14 @@ Module TermsEnv (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Lemma dropSuffix_decl_rev : forall E x A, dropEmptySuffix E |= x := A -> E |= x := A.
+  Lemma dropSuffix_decl_rev : forall E x A,
+    dropEmptySuffix E |= x := A -> E |= x := A.
 
   Proof.
     intros.
     unfold dropEmptySuffix in H.
-    destruct (option_dec (list_find_last isNotEmpty isNotEmpty_dec E)) as [Ee | [p Ep]].
+    destruct (option_dec (find_last isNotEmpty isNotEmpty_dec E))
+      as [Ee | [p Ep]].
     rewrite Ee in H.
     destruct x; try_solve.
     rewrite Ep in H.
@@ -381,10 +383,11 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     intro E.
     unfold dropEmptySuffix.
-    destruct (option_dec (list_find_last isNotEmpty isNotEmpty_dec E)) as [Ee | [p Ep]].
+    destruct (option_dec (find_last isNotEmpty isNotEmpty_dec E))
+      as [Ee | [p Ep]].
     rewrite Ee; left; trivial.
     rewrite Ep; right.
-    destruct (list_find_last_ok isNotEmpty isNotEmpty_dec E Ep) as [w [pEpw wSome]].
+    destruct (find_last_ok isNotEmpty isNotEmpty_dec E Ep) as [w [pEpw wSome]].
     destruct w.
     exists s.
     autorewrite with datatypes.

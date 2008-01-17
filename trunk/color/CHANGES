@@ -6,6 +6,8 @@
 - Util/Relation/SCC_dec:
 - Util/Relation/SCCTopoOrdering:
 - Util/Relation/AdjMat: adjacence matrix of a finite relation on N
+- Util/Relation/GDomainBij:
+- Util/Nat/log2: definition and properties of log2 and exp2
 
 07-08-06: Added support for classical reasoning [Blanqui]
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic

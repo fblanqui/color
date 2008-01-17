@@ -116,10 +116,10 @@ intro.
 destruct H2 as [i].
 exists i. split. exists x;exists x0;exists x1.
 split;try tauto.
-apply (list_find_first_Some_bound (SCC' (mkRule x x0))
+apply (find_first_Some_bound (SCC' (mkRule x x0))
   (SCC'_dec M HM (mkRule x x0)) ).
 intuition.
-deduce (list_find_first_exist (SCC' (mkRule x x0))
+deduce (find_first_exist (SCC' (mkRule x x0))
   (SCC'_dec M HM (mkRule x x0)) _ R H).
 assert (SCC'_tag M HM (mkRule x x0) <> None). apply H2.
 split;try tauto. left;auto.
@@ -406,19 +406,18 @@ Definition SCC_list_fast i (Hi : i < dim) :=
   listfilter R (list_of_vec (Vnth M Hi)).
 
 Lemma list_find_first_exact : forall (B : Set) (P : B -> Prop) P_dec l i,
-  list_find_first P P_dec l = Some i ->
-  exists z, (element_at l i) = Some z /\ P z.
+  find_first P P_dec l = Some i -> exists z, (element_at l i) = Some z /\ P z.
 
 Proof.
 induction l;intros.
 simpl in H. discriminate.
 simpl in H. destruct (P_dec a).
-inversion H. exists a;subst;simpl;tauto.
+inversion H. exists a; subst; simpl; tauto.
 
-destruct(list_find_first P P_dec l);try discriminate.
-inversion H;subst.
+destruct (find_first P P_dec l); try discriminate.
+inversion H; subst.
 simpl.
-apply IHl;auto.
+apply IHl; auto.
 Qed.
 
 Lemma incl_SCC_list_fast i (Hi : i < dim) :
@@ -438,7 +437,7 @@ subst a. unfold SCC_list_fast. eapply listfilter_in. eauto.
 rewrite <- H. apply list_of_vec_exact.
 destruct H4; deduce (eq_In_find_first rule_eq_dec H4); do 2 destruct H6.
 
-assert (x<dim). eapply list_find_first_Some_bound. eauto.
+assert (x<dim). eapply find_first_Some_bound. eauto.
 
 unfold SCC_list_fast. eapply listfilter_in. eauto.
 
@@ -446,7 +445,7 @@ assert ((M [[i, x]]) = true). rewrite HM.
 deduce (SCC_sym H3). clear H3. rename H9 into H3.
  rewrite  (SCC_effective_exact hyps HM) in H3.
 unfold SCC_effective in H3. simpl in H3.
-unfold nattodom in H3. simpl in *. rewrite H6 in H3. 
+unfold rel_on_dom in H3. simpl in *. rewrite H6 in H3. 
 deduce (eq_In_find_first rule_eq_dec H5).
 do 2 destruct H9. rewrite H9 in H3.
 
@@ -559,7 +558,7 @@ rewrite H in *. rewrite <- H0 in *. unfold incl in H3.
 deduce (H3 h). simpl in *. tauto.
 assert (SCC ODPG h h). split;apply t_step;auto.
 rewrite (SCC_effective_exact hyps HM) in H2.
-unfold SCC_effective in H2. simpl in *. unfold nattodom in H2.
+unfold SCC_effective in H2. simpl in *. unfold rel_on_dom in H2.
 deduce (restriction o);intuition.
 deduce (eq_In_find_first rule_eq_dec H4).
 do 2 destruct H3.
@@ -595,11 +594,10 @@ rewrite H in *. rewrite <- H0 in *. unfold incl in H12.
 deduce (H12 h). simpl in *. tauto.
 
 rewrite (SCC_effective_exact hyps HM) in H10.
-unfold SCC_effective in H10. simpl in *. unfold nattodom in H10.
-assert (In x R ). eapply element_at_in. exists i;auto.
-deduce (eq_In_find_first rule_eq_dec H11).
-do 2 destruct H12.
-deduce(@repeat_free_unique rule R _ rp_free _ _ H13 H6). subst x0.
+unfold SCC_effective in H10. simpl in *. unfold rel_on_dom in H10.
+assert (In x R). eapply exists_element_at_in. exists i; auto.
+deduce (eq_In_find_first rule_eq_dec H11). do 2 destruct H12.
+deduce (repeat_free_unique rp_free H13 H6). subst x0.
 rewrite H12 in H10. intuition.
 Qed.
 

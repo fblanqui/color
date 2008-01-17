@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.10 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.11 2008-01-17 16:22:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -784,33 +784,33 @@ Section Remove.
 End Remove.
 
 (***********************************************************************)
-(** find the first occurrence of an element *)
+(** find the first/last occurrence of an element *)
 
-Section ListFind.
+Section Find.
 
   Variable A : Type.
   Variable P : A -> Prop.
   Variable P_dec : forall a : A, {P a} + {~P a}.
 
-  Fixpoint list_find_first (l: list A) : option nat := 
+  Fixpoint find_first (l: list A) : option nat := 
     match l with
     | nil => None
     | hd::tl => 
       match P_dec hd with
       | left _ => Some 0
       | right _ => 
-	match list_find_first tl with
+	match find_first tl with
         | None => None
 	| Some i => Some (S i)
 	end
       end
     end.
 
-  Fixpoint list_find_last (l: list A) : option nat := 
+  Fixpoint find_last (l: list A) : option nat := 
     match l with
     | nil => None
     | hd::tl => 
-      match list_find_last tl with
+      match find_last tl with
       | Some i => Some (S i)
       | None => 
 	match P_dec hd with
@@ -820,7 +820,7 @@ Section ListFind.
       end
     end.
 
-  Lemma list_find_first_ok : forall l p, list_find_first l = Some p ->
+  Lemma find_first_ok : forall l p, find_first l = Some p ->
     exists el, nth_error l p = Some el /\ P el.
 
   Proof.
@@ -832,14 +832,14 @@ Section ListFind.
     inversion q0.
     exists a; split; trivial.
     destruct p.
-    destruct (list_find_first l); inversion 1.
+    destruct (find_first l); inversion 1.
     intros pl.
     destruct (IHl p) as [el [lp Pl]].
-    destruct (list_find_first l); inversion pl; trivial.
+    destruct (find_first l); inversion pl; trivial.
     exists el; split; trivial.
   Qed.
 
-  Lemma list_find_last_ok : forall l p, list_find_last l = Some p ->
+  Lemma find_last_ok : forall l p, find_last l = Some p ->
     exists el, nth_error l p = Some el /\ P el.
 
   Proof.
@@ -851,18 +851,18 @@ Section ListFind.
     destruct q.
     exists a; split; trivial.
     destruct (IHl q) as [el [lq Pel]].
-    destruct (list_find_last l); inversion q0; trivial.
+    destruct (find_last l); inversion q0; trivial.
     exists el; split; trivial.
     intros q q0.
     destruct q.
-    destruct (list_find_last l); discriminate.
+    destruct (find_last l); discriminate.
     destruct (IHl q) as [el [lq Pel]].
-    destruct (list_find_last l); inversion q0; trivial.
+    destruct (find_last l); inversion q0; trivial.
     exists el; split; trivial.
   Qed.
 
-  Lemma list_find_last_last: forall l p el, nth_error l p = Some el -> P el ->
-    exists q, list_find_last l = Some q /\ q >= p.
+  Lemma find_last_last: forall l p el, nth_error l p = Some el -> P el ->
+    exists q, find_last l = Some q /\ q >= p.
 
   Proof.
     induction l; intros.
@@ -870,7 +870,7 @@ Section ListFind.
     destruct p.
     inversion H.
     simpl; destruct (P_dec el).
-    destruct (list_find_last l).
+    destruct (find_last l).
     exists (S n); split; [trivial | omega].
     exists 0; split; [trivial | omega].
     absurd (P el); trivial.
@@ -880,20 +880,19 @@ Section ListFind.
     omega.
   Qed.
 
-Lemma list_find_first_exist : forall x l,
-  In x l -> P x -> list_find_first l <> None.
+Lemma find_first_exist : forall x l, In x l -> P x -> find_first l <> None.
 
 Proof.
 intros. induction l. simpl in H;tauto.
 simpl in H. destruct H. subst; simpl.
 destruct (P_dec x); auto; discriminate.
 simpl. destruct (P_dec a). discriminate.
-deduce (IHl H). destruct (list_find_first l ). discriminate. tauto.
+deduce (IHl H). destruct (find_first l ). discriminate. tauto.
 Qed.
 
 
-Lemma list_find_first_Some : forall l,
-  list_find_first l <> None -> exists z, In z l /\ P z.
+Lemma find_first_Some : forall l,
+  find_first l <> None -> exists z, In z l /\ P z.
 
 Proof.
 intros.
@@ -901,7 +900,7 @@ induction l.
 simpl in H; tauto.
 simpl in H. destruct (P_dec a).
 exists a; split; simpl; tauto.
-destruct (list_find_first l); try discriminate.
+destruct (find_first l); try discriminate.
 assert (exists z : A, In z l /\ P z).
 apply IHl; discriminate.
 destruct H0. exists x.
@@ -909,8 +908,7 @@ simpl; tauto.
 tauto.
 Qed.
 
-Lemma list_find_first_Some_bound : forall l x,
-  list_find_first l = Some x -> x < length l.
+Lemma find_first_Some_bound : forall l x, find_first l = Some x -> x < length l.
 
 Proof.
 induction l; intros.
@@ -918,23 +916,23 @@ simpl in H; discriminate.
 simpl in H. destruct (P_dec a).
 inversion H; subst.
 simpl; omega.
-destruct (list_find_first l).
+destruct (find_first l).
 inversion H; subst.
 simpl; apply lt_n_S; apply IHl; auto.
 discriminate.
 Qed.
 
-End ListFind.
+End Find.
 
-Section ListFind_more.
+Section Find_more.
 
 Variable A : Type.
 Variables P Q : A -> Prop.
 Variable P_dec : forall a : A, {P a} + {~P a}.
 Variable Q_dec : forall a : A, {Q a} + {~Q a}.
 
-Lemma list_find_first_indep : (forall x, P x <-> Q x)
-  -> forall l, list_find_first P P_dec l = list_find_first Q Q_dec l.
+Lemma find_first_indep : (forall x, P x <-> Q x) ->
+  forall l, find_first P P_dec l = find_first Q Q_dec l.
 
 Proof.
 induction l; simpl. refl.
@@ -945,7 +943,7 @@ Qed.
 Variable eq_dec : forall x y : A, {x=y} +{~x=y}.
 
 Lemma eq_In_find_first : forall x l, In x l ->
-  exists z, list_find_first (eq x) (eq_dec x) l = Some z /\ l[z] = Some x.
+  exists z, find_first (eq x) (eq_dec x) l = Some z /\ l[z] = Some x.
 
 Proof.
 intros; induction l.
@@ -958,20 +956,20 @@ destruct H; subst; try tauto.
 deduce (IHl H); destruct H0 as [z]; destruct H0.
 exists (S z); split; simpl; auto with *.
 destruct (eq_dec x a); subst; try tauto.
-destruct (list_find_first (eq x) (eq_dec x) l); subst; try tauto;
+destruct (find_first (eq x) (eq_dec x) l); subst; try tauto;
 inversion H0; subst; auto.
 Qed.
 
-Lemma eq_list_find_first_exact : forall l x z,
-  list_find_first (eq x) (eq_dec x) l = Some z -> l[z] = Some x.
+Lemma eq_find_first_exact : forall l x z,
+  find_first (eq x) (eq_dec x) l = Some z -> l[z] = Some x.
 
 Proof.
 intro; intro.
 induction l; intros; simpl in *. discriminate.
 destruct (eq_dec x a); subst.
 inversion H; subst; auto with *.
-assert (exists i, list_find_first (eq x) (eq_dec x) l = Some i).
-destruct (list_find_first (eq x) (eq_dec x) l); try discriminate.
+assert (exists i, find_first (eq x) (eq_dec x) l = Some i).
+destruct (find_first (eq x) (eq_dec x) l); try discriminate.
 exists n0; auto with *.
 destruct H0.
 deduce (IHl _ H0).
@@ -979,9 +977,21 @@ rewrite H0 in H.
 destruct z; inversion H; subst; assumption.
 Qed.
 
-End ListFind_more.
+Lemma element_at_find_first_eq : forall l x i,
+  l[i] = Some x -> exists j, j <= i /\ find_first (eq x) (eq_dec x) l = Some j.
+
+Proof.
+induction l; simpl; intros. discriminate. destruct i.
+inversion H. subst x. case (eq_dec a a); intro. exists 0. auto. irrefl.
+case (eq_dec x a); intro. exists 0. intuition.
+destruct (IHl _ _ H). destruct H0. rewrite H1. exists (S x0). intuition.
+Qed.
+
+End Find_more.
 
 Implicit Arguments eq_In_find_first [A x l].
+Implicit Arguments eq_find_first_exact [A eq_dec l x z].
+Implicit Arguments element_at_find_first_eq [A l x i].
 
 (***********************************************************************)
 (** decidability of finding an element satisfying some relation *)

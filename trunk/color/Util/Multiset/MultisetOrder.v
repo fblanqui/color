@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.6 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.7 2008-01-17 16:22:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -575,11 +575,11 @@ Section OrderCharacterization.
   Proof.
     intros; split; intros.
      (* => *)
-    destruct (iff_LR (red_eq_direct M N) H).
+    destruct (proj1 (red_eq_direct M N) H).
     rewrite_rl (red_eq_direct (M + {{a}}) (N + {{a}})).
     constructor 1 with X Y (insert a Z); solve [solve_meq_ext; auto].
      (* <= *)
-    destruct (iff_LR (red_eq_direct (M + {{a}}) (N + {{a}})) H).
+    destruct (proj1 (red_eq_direct (M + {{a}}) (N + {{a}})) H).
     rewrite_rl (red_eq_direct M N).
      (* a in equal part of two multisets *)
     case (member_dec a Z); intro a_Z.
@@ -754,8 +754,8 @@ Section MultisetOrder_Wf.
     intros; unfold AccM.
     apply Acc_eq_rel with clos_transM_RedLt.
     split.
-    apply (iff_RL (lt_as_red a b)).
-    apply (iff_LR (lt_as_red a b)).
+    apply (proj2 (lt_as_red a b)).
+    apply (proj1 (lt_as_red a b)).
     unfold clos_transM_RedLt; apply Transitive_Closure.Acc_clos_trans.
     apply mred_acc; trivial.
   Qed.
