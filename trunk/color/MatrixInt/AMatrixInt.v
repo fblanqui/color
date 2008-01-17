@@ -32,12 +32,6 @@ Section FunInt.
 
   Variable dim_pos : dim > 0.
 
-   (* additional property of interpretation required to ensure strict
-      monotonicity of interpretations: upper left corner of every matrix
-      needs to be positive *)
-  Definition monotone_interpretation n (fi : matrixInt n) := 
-    Vforall (fun m => get_elem m dim_pos dim_pos > 0) (args fi).
-
 End FunInt.
 
 (** Module type for proving termination with matrix interpretations *)
@@ -644,8 +638,13 @@ Module MatrixInt (MI : TMatrixInt).
         do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
       Qed.
 
-      Variable matrixInt_monotone : forall f : sig,
-        monotone_interpretation dim_pos (trsInt f).
+       (* additional property of interpretation required to ensure strict
+          monotonicity of interpretations: upper left corner of every matrix
+          needs to be positive *)
+      Definition monotone_interpretation n (fi : matrixInt dim n) := 
+        Vforall (fun m => get_elem m dim_pos dim_pos > 0) (args fi).
+
+      Variable matrixInt_monotone : forall f : sig, monotone_interpretation (trsInt f).
 
       Lemma monotone_succ : monotone I succ.
 

@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.23 2008-01-16 15:40:13 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.24 2008-01-17 12:19:04 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -790,6 +790,20 @@ Proof.
 Defined.
 
 End Vforall2_sec.
+
+(***********************************************************************)
+(** proposition saying that some elements of a vector satisfies some
+predicate *)
+
+Section Vexists.
+
+Fixpoint Vexists (P : A -> Prop) n (v : vec n) {struct v} : Prop :=
+  match v with
+  | Vnil => False
+  | Vcons a _ w => P a \/ Vexists P w
+  end.
+
+End Vexists.
 
 (***********************************************************************)
 (** vector construction *)
