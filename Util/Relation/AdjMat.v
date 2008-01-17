@@ -5,7 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Leo Ducas, 2007-08-06
 
 Describe the morphism between graph restricted to [[0,n-1]]
-and the boolean matrix of size n*n.
+and the corresponding boolean adjacency matrix of size n*n.
 *)
 
 Set Implicit Arguments.
@@ -22,6 +22,7 @@ Require Export ListExtras.
 Module BMatrix := Matrix BOrdSemiRingT.
 Export BMatrix.
 
+(***********************************************************************)
 (** Definition of the graph of a boolean matrix *)
 
 Section GraphofMat.
@@ -42,6 +43,7 @@ Notation "z [[ x , y ]]" := (@mat_unbound z x y) (at level 30).
 
 Definition gofmat M x y := M[[x,y]] = true.
 
+(***********************************************************************)
 (** Basic properties *)
 
 Section basic.
@@ -73,6 +75,7 @@ Qed.
 
 End basic.
 
+(***********************************************************************)
 (** Addition of matrix is union of relation *)
 
 Section GofMat_union.
@@ -98,6 +101,7 @@ Qed.
 
 End GofMat_union.
 
+(***********************************************************************)
 (** Product of matrix is composition of relation *)
 
 Section GofMat_Compose.
@@ -131,7 +135,8 @@ rewrite (Vnth_cons (Vtail v) (Vhead v) (lt_n_S x0) x0).
 rewrite (Vnth_cons (Vtail w) (Vhead w) (lt_n_S x0) x0).
 auto.
 
-exists 0; exists (lt_O_Sn n); rewrite Hv; rewrite Hw; repeat rewrite Vnth_head; auto.
+exists 0; exists (lt_O_Sn n); rewrite Hv; rewrite Hw;
+  repeat rewrite Vnth_head; auto.
 unfold Amult in *; auto with *.
 
 repeat destruct H; unfold Amult; apply Is_true_eq_true; apply orb_prop_intro.
@@ -193,6 +198,7 @@ Qed.
 
 End GofMat_Compose.
 
+(***********************************************************************)
 (** Exponentiation of matrix is iteration of relation *)
 
 Section GofMat_Iter_le.
@@ -255,6 +261,7 @@ rewrite Gmorph_plus; right; unfold gofmat; rewrite mat_id_spec;
 intuition; auto with *.
 Qed.
 
+(***********************************************************************)
 (** High enough exponentiation is transitive closure *)
 
 Lemma Gmorph_clos_trans : forall x y,
@@ -278,6 +285,7 @@ Qed.
 
 End GofMat_Iter_le.
 
+(***********************************************************************)
 (** Tranposition of matrix is transposition of relation *)
 
 Section GofMat_transpose.
@@ -301,6 +309,7 @@ Qed.
 
 End GofMat_transpose.
 
+(***********************************************************************)
 (** The "and" of matrix (element by element) is intersection of relation *)
 
 Section GofMat_intersection.
@@ -329,6 +338,7 @@ Qed.
 
 End GofMat_intersection.
 
+(***********************************************************************)
 (** Exponentation, transposition, AND of the matrix,
 gives the SCC of the relation *)
 
@@ -355,6 +365,7 @@ End GraphofMat.
 
 Notation "z [[ x , y ]] " := (@mat_unbound _ z x y) (at level 30).
 
+(***********************************************************************)
 (** Adjacency matrix of a relation. *)
 
 Section matofG.

@@ -60,9 +60,9 @@ Lemma repeat_free_unique : forall l (x:A),
 Proof.
 intro;intro;induction l;intros;simpl in H; try discriminate.
 destruct n;destruct m;auto with *;simpl in *.
-rewrite <- H0 in H1; deduce (element_at_in2 _ _ H1); tauto.
-rewrite <- H1 in H0; deduce (element_at_in2 _ _ H0); tauto.
-destruct H;deduce (IHl H2 n m H0 H1);auto.
+rewrite <- H0 in H1; deduce (element_at_in2 H1); tauto.
+rewrite <- H1 in H0; deduce (element_at_in2 H0); tauto.
+destruct H; deduce (IHl H2 n m H0 H1);auto.
 Qed.
 
 Lemma repeat_free_dec_incl_length : forall l l' : list A,
@@ -316,3 +316,4 @@ Qed.
 End S.
 
 Implicit Arguments repeat_free_app_elim [A l m].
+Implicit Arguments repeat_free_unique [A l x n m].

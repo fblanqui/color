@@ -3,6 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2006-10-17
+- Adam Koprowski, 2006-04-28
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 - Frederic Blanqui, 2005-02-03
 - Sebastien Hinderer, 2004-05-25
@@ -10,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.33 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.34 2008-01-17 16:22:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -753,7 +754,7 @@ Section Element_At_List.
     intro H; apply p_neq_q; subst; trivial.
   Qed.
 
-  Lemma in_element_at : forall l a, In a l -> ex (fun p => l[p] = Some a).
+  Lemma in_exists_element_at : forall l a, In a l -> ex (fun p => l[p] = Some a).
 
   Proof.
     intro l; induction l as [ | h t IHl]; intros a a_in_l.
@@ -764,7 +765,7 @@ Section Element_At_List.
     exists (S p); simpl; trivial.
   Qed.
 
-  Lemma element_at_in : forall l a, ex (fun p => l[p] = Some a) -> In a l.
+  Lemma exists_element_at_in : forall l a, ex (fun p => l[p] = Some a) -> In a l.
 
   Proof.
     intro l; induction l as [ | h t IHl]; intros a Hex; 
@@ -775,15 +776,19 @@ Section Element_At_List.
     right; apply IHl; exists p; trivial.
   Qed.
 
+Lemma element_at_in : forall (x:A) l n, l[n] = Some x -> In x l.
+
+Proof.
+induction l; simpl; intros. discriminate. destruct n.
+inversion H. subst. auto. deduce (IHl _ H). auto.
+Qed.
 
 Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l.
 
 Proof.
-induction l; intros; simpl in H; try discriminate.
-destruct n.
+induction l; intros; simpl in H; try discriminate. destruct n.
 inversion H; subst; simpl; auto with *.
-deduce (IHl n H).
-intuition; simpl; omega.
+deduce (IHl n H). intuition; simpl; omega.
 Qed.
 
 Lemma element_at_app_r : forall l l' p, 
@@ -807,6 +812,11 @@ Proof.
 Qed.
 
 End Element_At_List.
+
+Implicit Arguments element_at_in [A x l n].
+Implicit Arguments element_at_in2 [A x l n].
+Implicit Arguments in_exists_element_at [A l a].
+Implicit Arguments element_at_exists [A l p].
 
 Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
 Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.

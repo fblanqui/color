@@ -15,20 +15,20 @@ Section SCC_quotient.
 
 Variable hyps : TSCC_dec_hyps.
 
-Notation A:=(hyp_A hyps).
-Notation A_eq_dec:=(hyp_A_eq_dec hyps).
-Notation Dom:=(hyp_Dom hyps).
-Notation R:=(hyp_R hyps).
-Notation restriction:=(hyp_restriction hyps).
-Notation rp_free:=(hyp_rp_free hyps).
-Notation R_dec:=(hyp_R_dec hyps).
+Notation A := (hyp_A hyps).
+Notation A_eq_dec := (hyp_A_eq_dec hyps).
+Notation Dom := (hyp_Dom hyps).
+Notation R := (hyp_R hyps).
+Notation restriction := (hyp_restriction hyps).
+Notation rp_free := (hyp_rp_free hyps).
+Notation R_dec := (hyp_R_dec hyps).
 Notation dim := (length Dom).
 
 Variables (M : matrix dim dim) (HM : M = SCC_mat_effective hyps).
 
 (* We represent the quotient of the Domain by SCC with a function to nat *)
 
-Notation SCC:=(SCC R).
+Notation SCC := (SCC R).
 Notation SCC_dec := (SCC_effective_dec hyps HM).
 
 (** We give a second definition of SCC :SCC' now isolated points are
@@ -91,10 +91,10 @@ Qed.
 
 (* SCC'_tag map each vertex of the graph to its SCC number *)
 
-Definition SCC'_tag x := list_find_first (SCC' x) (SCC'_dec x) Dom.
+Definition SCC'_tag x := find_first (SCC' x) (SCC'_dec x) Dom.
 
 Lemma In_find_first2 : forall (l:list A) P P_dec z,
-  list_find_first P P_dec l = Some z ->
+  find_first P P_dec l = Some z ->
   exists y, element_at l z = Some y /\ P y.
 
 Proof.
@@ -104,7 +104,7 @@ simpl in H.
 destruct (P_dec a).
 inversion H;subst.
 exists a;simpl;split; auto.
-destruct ( list_find_first P P_dec l);try discriminate;try tauto.
+destruct ( find_first P P_dec l);try discriminate;try tauto.
 assert (Some n0=Some n0).
 trivial.
 deduce (IHl n0 H0).
@@ -122,11 +122,11 @@ intros.
 split;intros.
 unfold SCC'_tag in *.
 split.
-apply list_find_first_indep.
+apply find_first_indep.
 intros.
 split;intros;eapply SCC_trans';auto;eauto.
 apply  SCC_sym';auto.
-eapply list_find_first_exist;unfold SCC' in *.
+eapply find_first_exist;unfold SCC' in *.
 Focus 2. eassumption.
 tauto.
 
@@ -172,7 +172,7 @@ Fixpoint bools_find_first n (v : vector bool n) {struct v} :=
   end.
 
 Definition SCC_tag_fast M t := 
-  let oi:= list_find_first (eq t) (A_eq_dec t) Dom in
+  let oi:= find_first (eq t) (A_eq_dec t) Dom in
   match oi with 
     | None => None
     | Some i =>
@@ -194,7 +194,7 @@ unfold is_restricted;intros.
 do 2 rewrite nfirst_exact.
 unfold Rquo in H.
 do 2 destruct H. do 2 destruct H0. unfold SCC'_tag in *.
-split;  eapply list_find_first_Some_bound;eauto.
+split;  eapply find_first_Some_bound;eauto.
 Qed.
 
 Lemma eq_opt_nat_dec : forall x y : option nat, {x=y} + {~x= y}.
@@ -693,8 +693,8 @@ Proof.
   generalize H;intro.
     unfold Rquo' ,Rquo,  SCC'_tag in H;
     auto; do 3 destruct H; do 2 destruct H7.
-  split;try split; try tauto;
-  rewrite (nfirst_exact);eapply list_find_first_Some_bound; eauto.
+  split; try split; try tauto;
+  rewrite (nfirst_exact); eapply find_first_Some_bound; eauto.
 Qed. 
 
 (** The SCC can be sorted *)

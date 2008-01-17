@@ -9,7 +9,7 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 *)
 
-(* $Id: RelExtras.v,v 1.4 2007-05-30 23:00:55 koper Exp $ *)
+(* $Id: RelExtras.v,v 1.5 2008-01-17 16:22:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -445,16 +445,13 @@ Section Specif.
 
 End Specif.
 
-Definition iff_LR := proj1.
-Definition iff_RL := proj2.
-
 Ltac pair_destruct t0 t1 :=
   first [destruct t0 | intros until t0; destruct t0];
   first [destruct t1 | intros until t1; destruct t1];
   try contradiction; simpl.
 
-Ltac rewrite_lr term := apply (iff_LR term).
-Ltac rewrite_rl term := apply (iff_RL term).
+Ltac rewrite_lr term := apply (proj1 term).
+Ltac rewrite_rl term := apply (proj2 term).
 
 Ltac try_solve := 
    simpl in *; try (intros; solve 

@@ -11,7 +11,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.14 2007-08-07 08:44:52 blanqui Exp $ *)
+(* $Id: VRPO_Results.v,v 1.15 2008-01-17 16:22:49 blanqui Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -344,22 +344,22 @@ Module RPO_Results (RPO : RPO_Model).
     split; apply leF_refl.
     intros s s_in_ss.
     inversion Hol; subst.
-    elim (in_element_at ss s s_in_ss); intros p' Hp'.
+    elim (in_exists_element_at s_in_ss); intros p' Hp'.
     elim (eq_nat_dec p p'); intro case_p_p'.
 	(* p = p' : *)
     subst p'; rewrite H0 in Hp'.
     inversion Hp'; subst.
     apply lt_subterm.
     exists a'; split; trivial.
-    apply (element_at_in).
+    apply exists_element_at_in.
     exists p; apply element_at_replaced.
-    elim (element_at_exists ss p); intros H1 H2.
+    elim (@element_at_exists _ ss p); intros H1 H2.
     apply H2; exists s; trivial.
     right; assumption.
 	(* p <> p' : *)
     apply lt_subterm.
     exists s; split.
-    apply element_at_in.
+    apply exists_element_at_in.
     exists p'; rewrite <- (@element_at_not_replaced _ ss p' p); trivial.
     intro; elim case_p_p'; subst; trivial.
     left; trivial.

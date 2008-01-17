@@ -27,51 +27,52 @@ Record TSCC_dec_hyps : Type := mkSCC_dec_hyps {
 
 Variable hyps : TSCC_dec_hyps.
 
-Notation A:=(hyp_A hyps).
-Notation A_eq_dec:=(hyp_A_eq_dec hyps).
-Notation Dom:=(hyp_Dom hyps).
-Notation R:=(hyp_R hyps).
-Notation restriction:=(hyp_restriction hyps).
-Notation rp_free:=(hyp_rp_free hyps).
-Notation R_dec:=(hyp_R_dec hyps).
+Notation A := (hyp_A hyps).
+Notation A_eq_dec := (hyp_A_eq_dec hyps).
+Notation Dom := (hyp_Dom hyps).
+Notation R := (hyp_R hyps).
+Notation restriction := (hyp_restriction hyps).
+Notation rp_free := (hyp_rp_free hyps).
+Notation R_dec := (hyp_R_dec hyps).
 
 Notation dim := (length Dom).
 
 Definition SCC_mat_effective :=
-  let M:=matofG dim (domtonat Dom R) (domtonat_dec  Dom R R_dec ) in
+  let M := matofG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec) in
   SCC_mat M.
 
 (** The Matrix M is keep as an argument, so main file may only compute
 it once *)
 
 Definition SCC_effective M (H : M = SCC_mat_effective) x y :=
-  nattodom A_eq_dec Dom (gofmat M) x y.
+  rel_on_dom A_eq_dec Dom (gofmat M) x y.
 
 Lemma SCC_effective_exact : forall M (H : M = SCC_mat_effective) x y,
   SCC R x y <-> SCC_effective H x y.
 
 Proof.
-split;intros;unfold SCC_effective in *;unfold SCC_mat_effective in *;
+split; intros; unfold SCC_effective in *; unfold SCC_mat_effective in *;
 rewrite <- (dom_change_SCC A_eq_dec restriction rp_free x y) in *;
-unfold nattodom in *;
-destruct (list_find_first (eq x) (A_eq_dec x) Dom);auto with *;
-destruct (list_find_first (eq y) (A_eq_dec y) Dom);auto with *;
+unfold rel_on_dom in *;
+destruct (find_first (eq x) (A_eq_dec x) Dom); auto with *;
+destruct (find_first (eq y) (A_eq_dec y) Dom); auto with *;
 subst;
 rewrite (gofmat_SCC ) in *.
-assert ((domtonat Dom R) <<
- (gofmat (matofG dim (domtonat Dom R) (domtonat_dec Dom R R_dec)))).
+assert ((rel_on_nat Dom R) <<
+ (gofmat (matofG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec)))).
 
-unfold inclusion;intros;
-rewrite mat_G_isom;intros.
-deduce (domtonat_is_restricted _ _ _ _ H1).
-do 2 rewrite nfirst_exact in H2;trivial.
+unfold inclusion; intros;
+rewrite mat_G_isom; intros.
+deduce (rel_on_nat_is_restricted _ _ _ _ H1).
+do 2 rewrite nfirst_exact in H2; trivial.
 trivial.
-deduce(SCC_incl H);auto.
-assert ( (gofmat (matofG dim (domtonat Dom R) 
-(domtonat_dec Dom R R_dec))) << (domtonat Dom R)).
-unfold inclusion;intros.
-rewrite mat_G_isom in H;intros;auto. deduce (domtonat_is_restricted _ _ _ _ H1). 
-do 2 rewrite nfirst_exact in H2;trivial. deduce (SCC_incl H).  auto.
+deduce(SCC_incl H); auto.
+assert ( (gofmat (matofG dim (rel_on_nat Dom R) 
+(rel_on_nat_dec Dom R R_dec))) << (rel_on_nat Dom R)).
+unfold inclusion; intros.
+rewrite mat_G_isom in H; intros; auto.
+deduce (rel_on_nat_is_restricted _ _ _ _ H1). 
+do 2 rewrite nfirst_exact in H2; trivial. deduce (SCC_incl H).  auto.
 Qed.
 
 Lemma SCC_effective_dec : forall M (H: M= SCC_mat_effective) x y,
@@ -79,9 +80,9 @@ Lemma SCC_effective_dec : forall M (H: M= SCC_mat_effective) x y,
 
 Proof.
 intros. unfold SCC_effective. subst.
-unfold nattodom.
-destruct (list_find_first (eq x) (A_eq_dec x));auto with *.
-destruct (list_find_first (eq y) (A_eq_dec y));auto with *.
+unfold rel_on_dom.
+destruct (find_first (eq x) (A_eq_dec x)); auto with *.
+destruct (find_first (eq y) (A_eq_dec y)); auto with *.
 apply gofmat_dec.
 Defined.
 
@@ -91,9 +92,9 @@ Lemma SCC_dec : forall x y, {SCC _ R x y} + {~SCC _ R x y}.
 Proof.
 intros.
 set (M:= SCC_mat_effective).
-assert (M = SCC_mat_effective);auto.
+assert (M = SCC_mat_effective); auto.
 deduce (SCC_effective_dec M H x y).
-destruct H0;rewrite <- SCC_effectif_exact in *;tauto.
+destruct H0; rewrite <- SCC_effectif_exact in *; tauto.
 Qed.
 *)
 

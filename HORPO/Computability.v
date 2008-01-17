@@ -695,7 +695,7 @@ Section Computability_theory.
     intros M Mvar.
     assert (Mneutral: isNeutral M).
     term_inv M.
-    apply (iff_RL (neutral_comp_step (algebraic_var M Mvar) Mneutral)).
+    apply (proj2 (neutral_comp_step (algebraic_var M Mvar) Mneutral)).
     intros N MN.
     absurd (M -R-> N); trivial.
     apply R_var_normal; trivial.
