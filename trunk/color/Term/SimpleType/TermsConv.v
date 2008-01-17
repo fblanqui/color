@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.5 2007-08-06 16:08:37 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.6 2008-01-17 07:54:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -2203,7 +2203,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     destruct (isApp_dec M) as [Mapp | Mnapp].
     rewrite (appArgs_app M Mapp) in MargM.
     set (Napp := proj1 (isApp_morph (conv_by MN)) Mapp).
-    destruct (in_app_or (appArgs (appBodyL Mapp)) (appBodyR Mapp :: nil) Marg MargM).
+    destruct (in_app_or MargM).
     set (Msub := appBodyL_subterm M Mapp).
     destruct (IH (appBodyL Mapp) Msub Marg (appBodyL Napp) Q) 
       as [Narg [NargN MNargs]]; trivial.

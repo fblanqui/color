@@ -436,7 +436,7 @@ deduce (list_find_first_exact _ _ _ H1).
 destruct H2 as [r]; destruct H2; destruct H3; destruct H3. 
 subst a. unfold SCC_list_fast. eapply listfilter_in. eauto.
 rewrite <- H. apply list_of_vec_exact.
-destruct H4; deduce (eq_In_find_first _ _ rule_eq_dec H4); do 2 destruct H6.
+destruct H4; deduce (eq_In_find_first rule_eq_dec H4); do 2 destruct H6.
 
 assert (x<dim). eapply list_find_first_Some_bound. eauto.
 
@@ -447,7 +447,7 @@ deduce (SCC_sym H3). clear H3. rename H9 into H3.
  rewrite  (SCC_effective_exact hyps HM) in H3.
 unfold SCC_effective in H3. simpl in H3.
 unfold nattodom in H3. simpl in *. rewrite H6 in H3. 
-deduce (eq_In_find_first _ _ rule_eq_dec H5).
+deduce (eq_In_find_first rule_eq_dec H5).
 do 2 destruct H9. rewrite H9 in H3.
 
 assert (i=x0). eapply repeat_free_unique; eauto. subst x0.
@@ -561,7 +561,7 @@ assert (SCC ODPG h h). split;apply t_step;auto.
 rewrite (SCC_effective_exact hyps HM) in H2.
 unfold SCC_effective in H2. simpl in *. unfold nattodom in H2.
 deduce (restriction o);intuition.
-deduce (eq_In_find_first _ _ rule_eq_dec H4).
+deduce (eq_In_find_first rule_eq_dec H4).
 do 2 destruct H3.
 deduce(@repeat_free_unique rule R h rp_free _ _ H1 H6). subst x.
 rewrite H3 in H2. intuition.
@@ -597,7 +597,7 @@ deduce (H12 h). simpl in *. tauto.
 rewrite (SCC_effective_exact hyps HM) in H10.
 unfold SCC_effective in H10. simpl in *. unfold nattodom in H10.
 assert (In x R ). eapply element_at_in. exists i;auto.
-deduce (eq_In_find_first _ _ rule_eq_dec H11).
+deduce (eq_In_find_first rule_eq_dec H11).
 do 2 destruct H12.
 deduce(@repeat_free_unique rule R _ rp_free _ _ H13 H6). subst x0.
 rewrite H12 in H10. intuition.

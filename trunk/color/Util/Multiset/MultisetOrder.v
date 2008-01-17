@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.5 2007-08-07 08:44:53 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.6 2008-01-17 07:54:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1412,7 +1412,8 @@ Section OrderDec.
     exists (map joinL restN ++ map joinS restNa); intros.
     split; intros.
      (*   - soundness *)
-    destruct (in_app_or (map joinL restN) (map joinS restNa) (L, R, S)); trivial.
+    destruct (@in_app_or _ (map joinL restN) (map joinS restNa) (L, R, S));
+      trivial.
     destruct (list_In_nth (map joinL restN) (L, R, S) H1).
     destruct (nth_map_some_rev _ _ _ H2) as [x' [restNx x'LRS]].
     inversion x'LRS.

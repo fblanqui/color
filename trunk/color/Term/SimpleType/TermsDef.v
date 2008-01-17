@@ -8,7 +8,7 @@ This file provides a definition of terms of simply typed
 lambda-calculus.
 *)
 
-(* $Id: TermsDef.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsDef.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -118,13 +118,13 @@ Module TermsDef (Sig : Signature).
   Notation "^ f" := (Fun f) (at level 20).
   Notation "% x" := (Var x) (at level 20).
   Infix "@@" := App (at level 25, left associativity).
-  Notation "s [ x ]" := (s @@ x) (at level 30).
-  Notation "s [ x , y ]" := (s @@ x @@ y) (at level 30).
-  Notation "s [ x , y , z ]" := (s @@ x @@ y @@ z) (at level 30).
+  Notation "s [ x ]" := (s @@ x) (at level 50).
+  Notation "s [ x , y ]" := (s @@ x @@ y) (at level 50).
+  Notation "s [ x , y , z ]" := (s @@ x @@ y @@ z) (at level 50).
   Notation "s [ x , y , z , w ]" := (s @@ x @@ y @@ z @@ w) 
-    (at level 30).
+    (at level 50).
   Notation "s [ x , y , z , w , v ]" := (s @@ x @@ y @@ z @@ w @@ v) 
-    (at level 30).
+    (at level 50).
   Notation "\ A => M" := (Abs A M) (at level 35).
 
   Reserved Notation "E |- Pt := A" (at level 60).
