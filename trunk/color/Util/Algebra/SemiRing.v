@@ -197,6 +197,25 @@ Module ArcticSemiRingT <: SemiRingType.
     apply A_mult_plus_distr.
   Qed.
 
+  Lemma arctic_plus_notInf_left : forall (a b : A),
+    a <> MinusInf -> Aplus a b <> MinusInf.
+
+  Proof.
+    intros. destruct a. 
+    destruct b; simpl; discriminate.
+    auto. 
+  Qed.
+
+  Lemma arctic_mult_notInf : forall (a b : A),
+    a <> MinusInf -> b <> MinusInf -> Amult a b <> MinusInf.
+
+  Proof.
+    intros. 
+    destruct a; auto. 
+    destruct b; auto. 
+    simpl. discriminate.
+  Qed.
+
 End ArcticSemiRingT.
 
 Module ArcticSemiRing := SemiRing ArcticSemiRingT.

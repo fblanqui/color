@@ -25,8 +25,9 @@ Section FunInt.
 
   Variable dim_pos : dim > 0.
 
-  Definition monotone_interpretation n (fi : matrixInt n) := 
-    Vexists (fun m => gt (get_elem m dim_pos dim_pos) A0) (args fi).
+  Definition proper_interpretation n (fi : matrixInt n) := 
+    Vexists (fun m => get_elem m dim_pos dim_pos <> MinusInf) (args fi)
+    \/ Vnth (const fi) dim_pos <> MinusInf.
 
 End FunInt.
 
@@ -37,6 +38,7 @@ Module Type TArcticInt.
   Parameter dim : nat.
   Parameter dim_pos : dim > 0.
   Parameter trsInt : forall f : sig, matrixInt dim (arity f).
+  Parameter trsIntOk : forall f : sig, proper_interpretation dim_pos (trsInt f).
 
 End TArcticInt.
 
@@ -61,18 +63,78 @@ Module ArcticInt (AI : TArcticInt).
   Definition mi_eval_aux n (mi : matrixInt dim n) (v : vector vec n) : vec :=
     add_vectors (Vmap2 mat_times_vec (args mi) v) [+] const mi.
 
-  Lemma mi_eval_at0 : forall n (mi : matrixInt dim n) (v : vector vec n),
-    vec_at0 (mi_eval_aux mi v) <> MinusInf.
+  Lemma mat_times_vec_at0_positive : forall n (m : matrix n n) 
+    (v : vector A n)
+    (dim_pos : n > 0),
+    get_elem m dim_pos dim_pos <> MinusInf ->   
+    Vnth v dim_pos <> MinusInf ->
+    Vnth (mat_vec_prod m v) dim_pos <> MinusInf.
 
   Proof.
+    destruct n; intros. absurd_arith.
+    VSntac v. unfold matrix in m. VSntac m. 
+    unfold mat_vec_prod, col_mat_to_vec, get_col. rewrite Vnth_map. 
+    set (w := mat_mult_spec). unfold get_elem, get_row in w. rewrite w.
+    simpl. VSntac (Vhead m). unfold dot_product. 
+    simpl. rewrite Aplus_comm. apply arctic_plus_notInf_left.
+    apply arctic_mult_notInf. 
+    rewrite H2 in H. unfold get_elem in H. simpl in H.
+    rewrite Vhead_nth. 
+    rewrite <- (Vnth_eq (Vhead m) dim_pos0 (lt_O_Sn n)); trivial.
+    rewrite H1 in H0. assumption.
+  Qed.
+
+  Lemma eval_some_notInf : forall n (mi : mint n) (v : vector dom n),
+    Vexists (fun m => get_elem m dim_pos dim_pos <> MinusInf) (args mi) ->
+    Vfold_left Aplus A0
+      (Vmap (fun v => Vnth v dim_pos)
+        (Vmap2 mat_times_vec (args mi) (Vmap dom2vec v))) <> MinusInf.
+
+  Proof.
+    induction n; intros; simpl; destruct mi.
+    VOtac. auto.
+    simpl in H. VSntac args0. rewrite H0 in H; simpl. destruct H.
+    rewrite Aplus_comm. apply arctic_plus_notInf_left.
+    apply mat_times_vec_at0_positive. assumption.
+    VSntac v. simpl. destruct (Vhead v). auto.
+    apply arctic_plus_notInf_left. 
+    rewrite <- Vmap_tail.
+    apply (IHn (mkMatrixInt const0 (Vtail args0))). assumption.
+  Qed.
+
+  Lemma mi_eval_at0 : forall n (mi : matrixInt dim n) (v : vector dom n),
+    proper_interpretation dim_pos mi ->
+    vec_at0 (mi_eval_aux mi (Vmap dom2vec v)) <> MinusInf.
+
+  Proof.
+    intros. unfold mi_eval_aux, vec_at0. 
+    rewrite vector_plus_nth. destruct H.
+    rewrite add_vectors_nth. apply arctic_plus_notInf_left.
+    apply eval_some_notInf. assumption.
+    rewrite Aplus_comm. apply arctic_plus_notInf_left. assumption.
+  Qed.
+
+  Definition mi_eval n (mi : matrixInt dim n) 
+    (pmi : proper_interpretation dim_pos mi) (v : vector dom n) : dom :=
+    exist _ (mi_eval_aux mi (Vmap dom2vec v)) 
+      (mi_eval_at0 v pmi).
+
+(*
+  Lemma mi_eval_tail : forall n (mi : matrixInt dim (S n)),
+    proper_interpretation dim_pos mi ->
+    proper_interpretation dim_pos (mkMatrixInt (const mi) (Vtail (args mi))).
+
+  Proof.
+    intros. destruct H.
+    left. simpl.
+
   Admitted.
 
-  Definition mi_eval n (mi : matrixInt dim n) (v : vector dom n) : dom :=
-    exist _ (mi_eval_aux mi (Vmap dom2vec v)) (mi_eval_at0 mi (Vmap dom2vec v)).
-
-  Lemma mi_eval_cons : forall n (mi : matrixInt dim (S n)) v vs,
-    dom2vec (mi_eval mi (Vcons v vs)) = mat_times_vec (Vhead (args mi)) (dom2vec v) [+] 
-    dom2vec (mi_eval (mkMatrixInt (const mi) (Vtail (args mi))) vs).
+  Lemma mi_eval_cons : forall n (mi : matrixInt dim (S n)) 
+    (pmi : proper_interpretation dim_pos mi) v vs,
+    dom2vec (mi_eval pmi (Vcons v vs)) = 
+      mat_times_vec (Vhead (args mi)) (dom2vec v) [+] 
+      dom2vec (mi_eval (mi_eval_tail pmi) vs). 
 
   Proof.
     induction n; intros; unfold mi_eval, mi_eval_aux.
@@ -81,6 +143,7 @@ Module ArcticInt (AI : TArcticInt).
     VSntac vs. simpl. rewrite vector_plus_assoc. 
     simpl. autorewrite with arith. refl.
   Qed.
+*)
 
   (** Monotone algebra instantiated to matrices *)
   Module MonotoneAlgebra <: MonotoneAlgebraType.
@@ -94,7 +157,8 @@ Module ArcticInt (AI : TArcticInt).
       unfold vec_at0. rewrite Vnth_Vreplace_replaced. discriminate.
     Defined.
 
-    Definition I := @mkInterpretation sig dom dom_zero (fun f => mi_eval (trsInt f)).
+    Definition I := @mkInterpretation sig dom dom_zero 
+      (fun f => mi_eval (trsIntOk f)).
 
     Definition gtx x y := gt x y \/ (x = MinusInf /\ y = MinusInf).
     Notation "x >_0 y" := (gtx x y) (at level 70).
@@ -510,24 +574,23 @@ Module ArcticInt (AI : TArcticInt).
         rewrite mat_mult_assoc. refl.
       Qed.
 
-(*
       Lemma mint_eval_eq_bterm_int_fapp : forall k i fi val 
         (v : vector (bterm k) i),
         let arg_eval := Vmap2 (@mat_matrixInt_prod (S k)) (args fi) 
           (Vmap (@mi_of_term k) v) in
-          mi_eval fi (Vmap (fun t : bterm k => mint_eval val (mi_of_term t))
-          v) =
+          mi_eval_aux fi (Vmap (fun t : bterm k => mint_eval val (mi_of_term t)) v) =
           mint_eval val (mkMatrixInt
           (add_vectors (Vcons (const fi) (Vmap (@const dim (S k)) arg_eval)))
           (combine_matrices (Vmap (@args dim (S k)) arg_eval))).
 
       Proof.
+(*
         induction i; intros.
-         ( i = 0 )
+         (* i = 0 *)
         VOtac. simpl.
         unfold mi_eval, add_vectors. simpl. autorewrite with arith.
         symmetry. apply mint_eval_const.
-         ( i > 0 )
+         (* i > 0 *)
         VSntac v. simpl mi_eval.
         rewrite mi_eval_cons. rewrite IHi. simpl.
         rewrite add_vectors_perm.
@@ -540,23 +603,24 @@ Module ArcticInt (AI : TArcticInt).
         apply mint_eval_mult_factor.
       Qed.
 *)
+Admitted.
 
-      Lemma mint_eval_eq_bterm_int : forall (val : valuation I) t k (t_b : maxvar_le k t),
+      Lemma mint_eval_eq_bterm_int : forall (val : valuation I) t k 
+        (t_b : maxvar_le k t),
         dom2vec (bterm_int val (inject_term t_b)) =
         mint_eval val (mi_of_term (inject_term t_b)).
 
       Proof.
-(*
         intros val t. pattern t. apply term_ind_forall; intros.
         apply mint_eval_eq_term_int_var.
         rewrite inject_term_eq. rewrite bterm_int_fun. unfold bterms_int.
+(*
         rewrite (@Vmap_eq _ _ (bterm_int val) 
           (fun (t : bterm k) => mint_eval val (mi_of_term t))).
         simpl. apply mint_eval_eq_bterm_int_fapp.
         apply Vforall_nth_intro. intros.
         rewrite inject_terms_nth. apply (Vforall_nth _ v ip H).
-      Qed.
-*)
+*) 
 Admitted.
 
       Lemma mint_eval_eq_term_int : forall t (val : valuation I) k
@@ -679,12 +743,12 @@ Admitted.
         apply (Vforall2_nth ge). assumption.
       Qed.
 
-      Lemma mint_eval_mon_gtx : forall (val : valuation I) k
-        (mi mi' : mint k), mint_gt mi mi' ->
-        Vforall2n gtx (mint_eval val mi) (mint_eval val mi').
+      Lemma mint_eval_mon_succ : forall (val : valuation I) k 
+        (mi mi' : mint k), mint_gt mi mi' -> 
+        succ_vec (mint_eval val mi) (mint_eval val mi').
 
       Proof.
-        intros. apply Vforall2_intro. intros. destruct H.
+        intros. unfold succ_vec. apply Vforall2_intro. intros. destruct H.
         do 2 rewrite mint_eval_split. do 2 rewrite vector_plus_nth.
         apply gtx_plus_compat. 
         apply (Vforall2_nth gtx). assumption.
@@ -696,35 +760,6 @@ Admitted.
         apply (Vforall2_nth mat_gt). assumption.
         apply vec_ge_refl.
       Qed.
-
-(* x-man, remove
-      Lemma mint_eval_at0_pos : forall (val : valuation I) k (mi : mint k), 
-        vec_at0 (mint_eval val mi) <> MinusInf.
-
-      Proof.
-        intros. rewrite mint_eval_split. unfold vec_at0. 
-        rewrite vector_plus_nth. rewrite add_vectors_nth. 
-        
-      Admitted.
-*)
-
-      Lemma mint_eval_mon_succ : forall (val : valuation I) k 
-        (mi mi' : mint k), mint_gt mi mi' -> 
-        succ_vec (mint_eval val mi) (mint_eval val mi').
-
-      Proof.
-(*
-        intros. split.
-        apply mint_eval_mon_gtx. assumption.
-        set (w := mint_eval_mon_gtx val H).
-        destruct (Vforall2_nth gtx (mint_eval val mi) (mint_eval val mi') 
-          dim_pos w). assumption.
-        destruct H0. absurd (vec_at0 (mint_eval val mi) = MinusInf).
-        apply mint_eval_at0_pos. assumption.
-      Qed.
-*)
-      Admitted.
-
 
       Lemma term_ge_incl_succeq : term_ge << IR_succeq.
 
