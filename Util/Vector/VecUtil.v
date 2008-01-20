@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.25 2008-01-18 15:42:00 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.26 2008-01-20 10:49:15 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -362,14 +362,23 @@ Lemma Vnth_Vreplace_replaced : forall n i (ip : i < n) (v : vec n) (a : A),
   Vnth (Vreplace v ip a) ip = a.
 
 Proof.
-Admitted.
+induction n; intros.
+elimtype False. omega.
+VSntac v. destruct i. trivial.
+simpl. apply IHn.
+Qed.
 
 Lemma Vnth_Vreplace_notReplaced : forall n i (ip : i < n) j (jp : j < n) 
   (v : vec n) (a : A), i <> j ->
   Vnth (Vreplace v ip a) jp = Vnth v jp.
 
 Proof.
-Admitted.
+induction n; intros.
+elimtype False. omega.
+VSntac v. destruct i; destruct j; trivial.
+elimtype False. omega.
+simpl. rewrite IHn. trivial. omega.
+Qed.
 
 (***********************************************************************)
 (** concatenation *)
