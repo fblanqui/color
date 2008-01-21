@@ -11,6 +11,7 @@
   and the set of integers 0 .. n-1
 - Util/Relation/SCC_dec: decidability of SCC decomposition
 - Util/Relation/SCCTopoOrdering: topological ordering on SCCs
+- DP/SCCunion: termination based on SCC decomposition
 
 07-08-06: Added support for classical reasoning [Blanqui]
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic

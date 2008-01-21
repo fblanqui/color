@@ -12,6 +12,9 @@ Set Implicit Arguments.
 Require Export Sorting.
 Require Export RelUtil.
 
+(***********************************************************************)
+(** lelistA and sort *)
+
 Lemma sort_incl_aux : forall (B : Set) (T S : relation B) a l,
   T << S -> lelistA T a l  -> lelistA S a l.
 
@@ -26,6 +29,17 @@ Proof.
 intros; induction l. intuition.
 inversion H0. apply cons_sort; intuition. subst.
 eapply sort_incl_aux; eassumption.
+Qed.
+
+Lemma sort_transitive : forall (B : Set) (a : B) L rel,
+  transitive rel -> sort rel (a::L) -> forall x, In x L  -> rel a x.
+
+Proof.
+intros. induction L. destruct H1.
+simpl in H1; destruct H1. subst. inversion H0; subst; auto.
+inversion H4; subst; auto. apply IHL; auto. inversion H0; inversion H4.
+subst. apply cons_sort. subst; auto. inversion H5. subst. inversion H9.
+apply nil_leA. subst. apply cons_leA. eapply H; eauto.
 Qed.
 
 Require Export ListRepeatFree.
@@ -48,6 +62,9 @@ generalize HL; intro. simpl in HL0. inversion H; subst.
 assert (sort S mb). tauto.
 clear IHmb. apply cons_sort; auto. apply rp_free_lelistA_strict; auto.
 Qed.
+
+(***********************************************************************)
+(** multiplicity *)
 
 Require Export Multiset.
 Require Export Permutation.
@@ -72,7 +89,7 @@ Lemma multiplicity_repeat_free : forall mb,
 Proof.
 intros. induction mb; simpl; auto. simpl in H. split.
 deduce (H a). intuition. deduce (In_multiplicity _ _ H1).
-destruct(B_eq_dec a a); auto. omega.
+destruct (B_eq_dec a a); auto. omega.
 apply IHmb. intros. deduce (H a0). destruct (B_eq_dec a a0); simpl in *; omega.
 Qed.
 
