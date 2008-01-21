@@ -789,3 +789,14 @@ Module ArcticInt (AI : TArcticInt).
   Ltac prove_termination := MAR.prove_termination noTerminationProofs.
 
 End ArcticInt.
+
+Ltac arcticDiscriminate :=
+  try discriminate;
+    solve [left; arcticDiscriminate | right; arcticDiscriminate].
+
+Ltac showIntOk :=
+  let f := fresh "f" in
+  let s := fresh "s" in 
+    intros f; destruct f as [s | s]; destruct s; 
+      vm_compute; arcticDiscriminate.
+

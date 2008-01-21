@@ -169,7 +169,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     left. unfold ge. trivial.
     right. unfold ge. tauto.
     left. unfold ge. trivial.
-  Qed.
+  Defined.
 
   Lemma gt_irrefl : irreflexive gt.
 
@@ -199,7 +199,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     left. unfold gt. trivial.
     right. unfold gt. tauto.
     right. unfold gt. tauto.
-  Qed.
+  Defined.
 
   Lemma gt_WF : WF gt.
 
