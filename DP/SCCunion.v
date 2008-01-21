@@ -52,8 +52,7 @@ Definition proj1_sig2 T P Q (e : @sig2 T P Q) :=
 
 Definition s_SCC's := proj1_sig2 (sorted_SCC' hyps HM).
 
-Notation ODPGquo' :=(Rquo' hyps HM ).
-Notation le_ODPGquo' := (le_Rquo' hyps HM).
+Notation ODPGquo' := (Rquo' hyps HM).
 
 (** s_SCCs properties *)
 
@@ -87,7 +86,7 @@ deduce (p i).
 rewrite nfirst_multiplicity in H0.
 destruct(lt_ge_dec i (length (hyp_Dom hyps)));try omega.
 assert (dim=(length (hyp_Dom hyps))). auto. rewrite H1 in *;auto.
-cut(exists j,j=i /\ In j (nfirst_list dim)). intros;destruct H1. destruct H1. 
+cut(exists j,j=i /\ In j (nfirst dim)). intros;destruct H1. destruct H1. 
 rewrite nfirst_exact in H2. subst i;auto.
 eapply permutation_in.
 intuition.
@@ -200,8 +199,8 @@ assert (~ ODPGquo' j i).
 unfold RT in  *.
 destruct (topo_sortable_Rquo' ). simpl in *.
 intuition.
-deduce (l (nfirst_list dim )). clear l.
-set (RTbis :=(fun x y : nat => x0 (nfirst_list dim) x y = true)) in *.
+deduce (l (nfirst dim )). clear l.
+set (RTbis :=(fun x y : nat => x0 (nfirst dim) x y = true)) in *.
 change (RTbis i j) in H.
 assert (RTbis j i).
 destruct H3. intuition.
@@ -237,7 +236,7 @@ exists s2. subst z. split;simpl;auto;eauto. congruence.
 subst j.
 unfold RT in *.
 destruct (topo_sortable_Rquo'). simpl in *.
-deduce (l (nfirst_list dim)). clear l.
+deduce (l (nfirst dim)). clear l.
 destruct H3. intuition. unfold irreflexive in H6. deduce (H6 i). auto.
 tauto.
 Qed.
@@ -297,7 +296,7 @@ apply In_map_elim_Type;auto.
 destruct H7 as [b]. destruct H7;subst r.
 cut (RT_ODPG a b). intro. eapply (compose_empty H8 ). exists z; eauto.
 eapply sort_transitive. unfold RT; destruct topo_sortable_Rquo'. simpl in *. 
-deduce (l (nfirst_list dim)).
+deduce (l (nfirst dim)).
 destruct H8. intuition.
 eassumption. auto.
 
@@ -450,7 +449,7 @@ deduce (eq_In_find_first rule_eq_dec H5).
 do 2 destruct H9. rewrite H9 in H3.
 
 assert (i=x0). eapply repeat_free_unique; eauto. subst x0.
-unfold gofmat in H3. rewrite HM in H3. auto.
+unfold GoM in H3. rewrite HM in H3. auto.
 
 unfold mat_unbound in H9 ;destruct (le_gt_dec dim i). cut False;try tauto;omega.
 destruct (le_gt_dec dim x). cut False;try tauto;omega.
@@ -575,8 +574,8 @@ rewrite SCC'_list_exact in *. rewrite <- H2 in H1.
 assert (SCC' hyps h h0). rewrite (SCC'_tag_exact hyps HM);auto. split;congruence.
 destruct H4. destruct H4. assert False;auto. tauto.
 rewrite H2 in H1. unfold SCC'_tag in *. 
-deduce (In_find_first2 _ _ _ (SCC'_dec hyps HM h0) H2).
-deduce (In_find_first2 _ _ _ (SCC'_dec hyps HM h) H1).
+deduce (In_find_first2 H2).
+deduce (In_find_first2 H1).
 do 2 destruct H6. do 2 destruct H7. simpl in *.
 assert (x=x0). congruence. subst x0.
 
@@ -605,18 +604,18 @@ End S.
 
 Ltac use_SCC_tag h M S R t :=
   let x := fresh in
-    set (x := (SCC_tag_fast h M t));
+    set (x := SCC_tag_fast h M t);
       normalize_in x (SCC_tag_fast h M t);
-      match (eval compute in x) with
+      match eval compute in x with
         | Some ?X1 =>
           let Hi := fresh in
             assert (Hi : X1 < length R);
               normalize (length R);
               [omega |
                 let L:=fresh in
-                  set (L := (SCC_list_fast R M Hi));
+                  set (L := SCC_list_fast R M Hi);
                     normalize_in L (SCC_list_fast R M Hi);
-                    assert (WF(hd_red_Mod S L)); subst L];
+                    assert (WF (hd_red_Mod S L)); subst L];
               clear x; clear Hi
         | ?X2 => idtac
       end.
@@ -625,7 +624,7 @@ Ltac use_SCC_hyp h M R Hi :=
   let b:=fresh in
     set (b := Vnth (Vnth M Hi) Hi);
       normalize_in b (Vnth (Vnth M Hi) Hi);
-      match (eval compute in b) with
+      match eval compute in b with
         | false => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi);
           eauto;clear b
         | true => eapply WF_incl;
@@ -639,17 +638,16 @@ Ltac use_SCC_all_hyps h m R i Hi Hj :=
       | 0 => elimtype False; omega
       | S ?y => destruct i; [use_SCC_hyp h m R Hi | aux y]
     end in	
-    match (type of Hj) with
+    match type of Hj with
       | le ?X ?Y => aux Y
     end.
 
 Ltac SCC_name n1 n2 :=
   match goal with 
-    | |- WF (chain ?R) => set (n1 := (dp R)); set (n2 := int_red R #)
+    | |- WF (chain ?R) => set (n1 := dp R); set (n2 := int_red R #)
     | |- WF (hd_red_mod ?E ?R) => set (n1 := R); set (n2 := red E #)
     | |- WF (?X @ hd_red ?R) => set (n1 := R); set (n2 := X)
     | |- WF (hd_red_Mod ?E ?R) => set (n1 := R); set (n2 := E)
   end.
 
 Implicit Arguments WF_SCC'_union [Sig R ODPG M].
- 

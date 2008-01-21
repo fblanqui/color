@@ -1,13 +1,16 @@
 07-08-23: Added SCC decomposition [Lucas]
 (SCC = Strongly Connected Component)
+- Util/List/SortUtil: lemmas on list sorting
+- Util/Nat/log2: definition and properties of log2 and exp2
+- Util/Nat/BoundNat: type of natural numbers smaller than some constant
 - DP/AGraph: generalization of the notion of DP graph
 - DP/HDE: simple over DP graph based on head symbol equality
 - Util/Relation/SCC: definition of SCC and basic properties
-- Util/Relation/SCC_dec:
-- Util/Relation/SCCTopoOrdering:
-- Util/Relation/AdjMat: adjacence matrix of a finite relation on N
-- Util/Relation/GDomainBij:
-- Util/Nat/log2: definition and properties of log2 and exp2
+- Util/Relation/AdjMat: adjacency matrix of a finite relation on N
+- Util/Relation/GDomainBij: bijection between a set of n elements
+  and the set of integers 0 .. n-1
+- Util/Relation/SCC_dec: decidability of SCC decomposition
+- Util/Relation/SCCTopoOrdering: topological ordering on SCCs
 
 07-08-06: Added support for classical reasoning [Blanqui]
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic

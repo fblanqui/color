@@ -4,8 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Leo Ducas, 2007-08-06
 
-We give a way to decide of the SCC relation, using the 2 morphisms
-Domain bijection and Adjacence Matrix.
+We give a way to decide the SCC relation using the adjacency matrix.
 *)
 
 Set Implicit Arguments.
@@ -15,9 +14,9 @@ Require Export AdjMat.
 
 Section SCC_effectif.
 
-Record TSCC_dec_hyps : Type := mkSCC_dec_hyps {
+Record SCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_A : Set;
-  hyp_A_eq_dec : forall x y : hyp_A, {x=y} + {~x=y};
+  hyp_eq_dec : forall x y : hyp_A, {x=y} + {~x=y};
   hyp_Dom : list hyp_A;
   hyp_R : relation hyp_A;
   hyp_restriction : is_restricted hyp_R hyp_Dom;
@@ -25,65 +24,63 @@ Record TSCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_R_dec : forall x y, {hyp_R x y} + {~hyp_R x y}
 }.
 
-Variable hyps : TSCC_dec_hyps.
+Variable hyps : SCC_dec_hyps.
 
 Notation A := (hyp_A hyps).
-Notation A_eq_dec := (hyp_A_eq_dec hyps).
+Notation eq_dec := (hyp_eq_dec hyps).
 Notation Dom := (hyp_Dom hyps).
 Notation R := (hyp_R hyps).
 Notation restriction := (hyp_restriction hyps).
 Notation rp_free := (hyp_rp_free hyps).
 Notation R_dec := (hyp_R_dec hyps).
-
 Notation dim := (length Dom).
 
 Definition SCC_mat_effective :=
-  let M := matofG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec) in
+  let M := MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec) in
   SCC_mat M.
 
-(** The Matrix M is keep as an argument, so main file may only compute
+(* The Matrix M is kept as an argument, so main file may only compute
 it once *)
 
 Definition SCC_effective M (H : M = SCC_mat_effective) x y :=
-  rel_on_dom A_eq_dec Dom (gofmat M) x y.
+  rel_on_dom eq_dec Dom (GoM M) x y.
 
 Lemma SCC_effective_exact : forall M (H : M = SCC_mat_effective) x y,
   SCC R x y <-> SCC_effective H x y.
 
 Proof.
 split; intros; unfold SCC_effective in *; unfold SCC_mat_effective in *;
-rewrite <- (dom_change_SCC A_eq_dec restriction rp_free x y) in *;
+rewrite <- (dom_change_SCC eq_dec restriction rp_free x y) in *;
 unfold rel_on_dom in *;
-destruct (find_first (eq x) (A_eq_dec x) Dom); auto with *;
-destruct (find_first (eq y) (A_eq_dec y) Dom); auto with *;
+destruct (find_first (eq x) (eq_dec x) Dom); auto with *;
+destruct (find_first (eq y) (eq_dec y) Dom); auto with *;
 subst;
-rewrite (gofmat_SCC ) in *.
-assert ((rel_on_nat Dom R) <<
- (gofmat (matofG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec)))).
-
+rewrite GoM_SCC in *.
+assert (rel_on_nat Dom R
+  << GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))).
 unfold inclusion; intros;
-rewrite mat_G_isom; intros.
+rewrite GoM_MoG; intros.
 deduce (rel_on_nat_is_restricted _ _ _ _ H1).
 do 2 rewrite nfirst_exact in H2; trivial.
 trivial.
 deduce(SCC_incl H); auto.
-assert ( (gofmat (matofG dim (rel_on_nat Dom R) 
-(rel_on_nat_dec Dom R R_dec))) << (rel_on_nat Dom R)).
+assert (GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))
+  << rel_on_nat Dom R).
 unfold inclusion; intros.
-rewrite mat_G_isom in H; intros; auto.
+rewrite GoM_MoG in H; intros; auto.
 deduce (rel_on_nat_is_restricted _ _ _ _ H1). 
-do 2 rewrite nfirst_exact in H2; trivial. deduce (SCC_incl H).  auto.
+do 2 rewrite nfirst_exact in H2; trivial. deduce (SCC_incl H). auto.
 Qed.
 
-Lemma SCC_effective_dec : forall M (H: M= SCC_mat_effective) x y,
+Lemma SCC_effective_dec : forall M (H : M = SCC_mat_effective) x y,
   {SCC_effective H x y} + {~SCC_effective H x y}.
 
 Proof.
 intros. unfold SCC_effective. subst.
 unfold rel_on_dom.
-destruct (find_first (eq x) (A_eq_dec x)); auto with *.
-destruct (find_first (eq y) (A_eq_dec y)); auto with *.
-apply gofmat_dec.
+destruct (find_first (eq x) (eq_dec x)); auto with *.
+destruct (find_first (eq y) (eq_dec y)); auto with *.
+apply GoM_dec.
 Defined.
 
 (*

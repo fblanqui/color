@@ -25,7 +25,7 @@ Export BMatrix.
 (***********************************************************************)
 (** Definition of the graph of a boolean matrix *)
 
-Section GraphofMat.
+Section GoM.
 
 Variable dim : nat.
 
@@ -41,7 +41,7 @@ Definition mat_unbound (M : matrix dim dim) i j :=
 
 Notation "z [[ x , y ]]" := (@mat_unbound z x y) (at level 30).
 
-Definition gofmat M x y := M[[x,y]] = true.
+Definition GoM M x y := M[[x,y]] = true.
 
 (***********************************************************************)
 (** Basic properties *)
@@ -50,25 +50,25 @@ Section basic.
 
 Variable M : matrix dim dim.
 
-Lemma gofmat_true_bounds : forall x y, gofmat M x y -> x < dim /\ y < dim.
+Lemma GoM_true_bounds : forall x y, GoM M x y -> x < dim /\ y < dim.
 
 Proof.
-intros. split; unfold gofmat, mat_unbound in H;
+intros. split; unfold GoM, mat_unbound in H;
 destruct (le_gt_dec dim x);
 destruct (le_gt_dec dim y); try discriminate; auto with *.
 Qed.
 
-Lemma gofmat_dec : forall x y, {gofmat M x y} + {~gofmat M x y}.
+Lemma GoM_dec : forall x y, {GoM M x y} + {~GoM M x y}.
 
 Proof.
-intros; unfold gofmat; apply (bool_dec (M[[x,y]]) true).
+intros; unfold GoM; apply (bool_dec (M[[x,y]]) true).
 Qed.
 
-Lemma gofmat_restricted : is_restricted (gofmat M) (nfirst_list dim).
+Lemma GoM_restricted : is_restricted (GoM M) (nfirst dim).
 
 Proof.
 unfold is_restricted; intros x y. repeat rewrite nfirst_exact.
-intro. unfold gofmat in H. unfold mat_unbound in *.
+intro. unfold GoM in H. unfold mat_unbound in *.
 destruct (le_gt_dec dim x); auto. discriminate.
 destruct (le_gt_dec dim y); auto. discriminate.
 Qed.
@@ -78,7 +78,7 @@ End basic.
 (***********************************************************************)
 (** Addition of matrix is union of relation *)
 
-Section GofMat_union.
+Section GoM_union.
 
 Variables M N : matrix dim dim.
 
@@ -91,20 +91,20 @@ unfold mat_plus. unfold vec_plus. mat_get_simpl.
 Qed.
 
 Lemma Gmorph_plus : forall x y,
-  gofmat (M <+> N) x y <-> ((gofmat M) U (gofmat N)) x y.
+  GoM (M <+> N) x y <-> ((GoM M) U (GoM N)) x y.
 
 Proof.
-intros. assert (gofmat (M <+> N) x y <-> (gofmat M x y \/ gofmat N x y)).
-unfold gofmat. rewrite orb_matadd. split; intro.
+intros. assert (GoM (M <+> N) x y <-> (GoM M x y \/ GoM N x y)).
+unfold GoM. rewrite orb_matadd. split; intro.
 eapply orb_prop; auto. destruct H; auto with *. auto.
 Qed.
 
-End GofMat_union.
+End GoM_union.
 
 (***********************************************************************)
 (** Product of matrix is composition of relation *)
 
-Section GofMat_Compose.
+Section GoM_Compose.
 
 Variables M N : matrix dim dim.
 
@@ -189,26 +189,26 @@ exists x0; exists g1; rewrite Vnth_map; auto with *.
 Qed.
 
 Lemma Gmorph_mult : forall x y,
-  gofmat (M <*> N) x y <-> (gofmat M @ gofmat N) x y.
+  GoM (M <*> N) x y <-> (GoM M @ GoM N) x y.
 
 Proof.
-intros. unfold gofmat; unfold compose. rewrite existandb_matmult.
+intros. unfold GoM; unfold compose. rewrite existandb_matmult.
 intuition; destruct H as [z]; exists z; auto with *.
 Qed.
 
-End GofMat_Compose.
+End GoM_Compose.
 
 (***********************************************************************)
 (** Exponentiation of matrix is iteration of relation *)
 
-Section GofMat_Iter_le.
+Section GoM_Iter_le.
 
 Variable M : matrix dim dim.
 
-Fixpoint mat_expp_fast (M : matrix dim dim) n :=
+Fixpoint mat_exp_fast (M : matrix dim dim) n :=
   match n with
     | O => M
-    | S i => let N := @mat_expp_fast M i in (N <+> id_matrix dim) <*> N
+    | S i => let N := @mat_exp_fast M i in (N <+> id_matrix dim) <*> N
   end.
 
 Lemma mat_id_spec : forall x y,
@@ -231,14 +231,14 @@ unfold A0, A1 in *; destruct (eq_nat_dec x y); auto.
 Qed.
 
 Lemma G_morph_id : forall x y,
-  gofmat (id_matrix dim) x y <-> x=y /\ x<dim /\ y<dim.
+  GoM (id_matrix dim) x y <-> x=y /\ x<dim /\ y<dim.
 
 Proof.
-intros. unfold gofmat. apply mat_id_spec.
+intros. unfold GoM. apply mat_id_spec.
 Qed.
 
 Lemma Gmorph_iter_le_fast : forall n x y,
-  gofmat (mat_expp_fast M n) x y <-> iter_le_fast (gofmat M) n x y.
+  GoM (mat_exp_fast M n) x y <-> iter_le_fast (GoM M) n x y.
 
 Proof.
 induction n; intros.
@@ -248,7 +248,7 @@ rewrite Gmorph_mult in H.
 unfold compose in H; destruct H as [z]; destruct H.
 rewrite Gmorph_plus in H. destruct H.
 left; unfold compose; exists z; rewrite IHn in *; auto with *.
-right; unfold gofmat in H; rewrite mat_id_spec in H.
+right; unfold GoM in H; rewrite mat_id_spec in H.
 destruct H; destruct H1; subst; rewrite IHn in H0; auto with *.
 rewrite Gmorph_mult.
 unfold compose in *; destruct H.
@@ -256,8 +256,8 @@ destruct H as [z]; exists z; destruct H.
 rewrite Gmorph_plus; split;
 try left; auto; rewrite IHn; auto.
 exists x; split; rewrite <- IHn in H; auto.
-generalize (gofmat_true_bounds H); intros.
-rewrite Gmorph_plus; right; unfold gofmat; rewrite mat_id_spec;
+generalize (GoM_true_bounds H); intros.
+rewrite Gmorph_plus; right; unfold GoM; rewrite mat_id_spec;
 intuition; auto with *.
 Qed.
 
@@ -265,7 +265,7 @@ Qed.
 (** High enough exponentiation is transitive closure *)
 
 Lemma Gmorph_clos_trans : forall x y,
-  gofmat (mat_expp_fast M (S (log2 dim))) x y <-> gofmat M! x y.
+  GoM (mat_exp_fast M (S (log2 dim))) x y <-> GoM M! x y.
 
 Proof.
 split; intros.
@@ -273,7 +273,7 @@ rewrite Gmorph_iter_le_fast in H; rewrite iter_le_fast_exp2_same in H.
 rewrite iter_le_spec in H; destruct H as [p]; destruct H.
 deduce (iter_tc _ _ _ _ H0); trivial.
 deduce(eq_dec_midex eq_nat_dec).
-deduce (clos_trans_bound_path H0 (@gofmat_restricted M)).
+deduce (clos_trans_bound_path H0 (@GoM_restricted M)).
 rewrite nfirst_length in H1; unfold inclusion in H1.
 deduce (H1 _ _ H); deduce (bound_path_iter_le H2).
 rewrite Gmorph_iter_le_fast; rewrite iter_le_fast_spec.
@@ -283,12 +283,12 @@ deduce (exp2_log2 dim).
 omega.
 Qed.
 
-End GofMat_Iter_le.
+End GoM_Iter_le.
 
 (***********************************************************************)
 (** Tranposition of matrix is transposition of relation *)
 
-Section GofMat_transpose.
+Section GoM_transpose.
 
 Variable M : matrix dim dim.
 
@@ -301,18 +301,18 @@ unfold mat_transpose; rewrite mat_build_nth; trivial.
 Qed.
 
 Lemma Gmorph_transpose : forall x y,
-  gofmat (mat_transpose M) x y <-> transp (gofmat M) x y.
+  GoM (mat_transpose M) x y <-> transp (GoM M) x y.
 
 Proof.
-intros; unfold gofmat; unfold transp; rewrite transp_mat_unbound; tauto.
+intros; unfold GoM; unfold transp; rewrite transp_mat_unbound; tauto.
 Qed.
 
-End GofMat_transpose.
+End GoM_transpose.
 
 (***********************************************************************)
 (** The "and" of matrix (element by element) is intersection of relation *)
 
-Section GofMat_intersection.
+Section GoM_intersection.
 
 Variable M N : matrix dim dim.
 
@@ -329,28 +329,28 @@ unfold mat_andb; repeat rewrite Vmap2_nth; auto.
 Qed.
 
 Lemma Gmorph_intersect : forall x y,
-  gofmat (mat_andb M N) x y <-> gofmat M x y /\ gofmat N x y.
+  GoM (mat_andb M N) x y <-> GoM M x y /\ GoM N x y.
 
 Proof.
-intros; unfold gofmat. rewrite andb_mat_unbound.
+intros; unfold GoM. rewrite andb_mat_unbound.
 destruct (M [[x, y]]); destruct (M [[x, y]]); intuition; simpl.
 Qed.
 
-End GofMat_intersection.
+End GoM_intersection.
 
 (***********************************************************************)
 (** Exponentation, transposition, AND of the matrix,
 gives the SCC of the relation *)
 
-Section GofMat_SCC.
+Section GoM_SCC.
 
 Definition SCC_mat M :=
-  let N := mat_expp_fast M (S(log2 dim)) in
+  let N := mat_exp_fast M (S(log2 dim)) in
   mat_andb N (@mat_transpose dim dim N).
 
 Variable M : matrix dim dim.
 
-Lemma gofmat_SCC : forall x y, gofmat (SCC_mat M) x y <-> SCC (gofmat M) x y.
+Lemma GoM_SCC : forall x y, GoM (SCC_mat M) x y <-> SCC (GoM M) x y.
 
 Proof.
 unfold SCC_mat in *; split; intros; rewrite Gmorph_intersect in *; 
@@ -359,23 +359,23 @@ repeat rewrite Gmorph_clos_trans in *; unfold SCC in *;
 trivial.
 Qed.
 
-End GofMat_SCC.
+End GoM_SCC.
 
-End GraphofMat.
+End GoM.
 
 Notation "z [[ x , y ]] " := (@mat_unbound _ z x y) (at level 30).
 
 (***********************************************************************)
 (** Adjacency matrix of a relation. *)
 
-Section matofG.
+Section MoG.
 
 Variable dim : nat.
 Variable R : relation nat.
 Variable R_dec : forall x y, {R x y} + {~R x y}.
 
-Definition matofG := mat_build
-  (fun x y (g : x < dim) (g': y < dim) =>
+Definition MoG := @mat_build dim dim
+  (fun x y _ _ =>
     match R_dec x y with
       | left _ => true
       | right _ => false 
@@ -383,17 +383,17 @@ Definition matofG := mat_build
 
 Variable hyp : forall x y, R x y -> x < dim /\ y < dim.
 
-Lemma mat_G_isom : forall x y, gofmat matofG x y <-> R x y.
+Lemma GoM_MoG : forall x y, GoM MoG x y <-> R x y.
 
 Proof.
-intros. unfold gofmat, mat_unbound. split; intros;
+intros. unfold GoM, mat_unbound. split; intros;
 destruct (le_gt_dec dim x); destruct (le_gt_dec dim y);
 try deduce (hyp H);
 auto; intuition; try omega; try tauto; try discriminate.
-unfold matofG in H; rewrite mat_build_nth in H.
+unfold MoG in H; rewrite mat_build_nth in H.
 destruct (R_dec x y); auto; try discriminate.
-unfold matofG; rewrite mat_build_nth.
+unfold MoG; rewrite mat_build_nth.
 destruct (R_dec x y); auto with *.
 Qed.
 
-End matofG.
+End MoG.
