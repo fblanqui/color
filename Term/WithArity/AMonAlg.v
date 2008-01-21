@@ -321,8 +321,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       match goal with
       | |- monotone _ _ => prove_int_monotonicity
       | |- WF _ => partition R
-      | |- ?A = ?B => normalize A; trivial
-      | _ => first 
+      | |- _ = _ => reflexivity
+      | _ => first
         [ solve [vm_compute; trivial]
 	| idtac
         | fail "Failed to deal with generated goal"
