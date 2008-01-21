@@ -119,22 +119,10 @@ Module ArcticInt (AI : TArcticInt).
     exist _ (mi_eval_aux mi (Vmap dom2vec v)) 
       (mi_eval_at0 v pmi).
 
-(*
-  Lemma mi_eval_tail : forall n (mi : matrixInt dim (S n)),
-    proper_interpretation dim_pos mi ->
-    proper_interpretation dim_pos (mkMatrixInt (const mi) (Vtail (args mi))).
-
-  Proof.
-    intros. destruct H.
-    left. simpl.
-
-  Admitted.
-
-  Lemma mi_eval_cons : forall n (mi : matrixInt dim (S n)) 
-    (pmi : proper_interpretation dim_pos mi) v vs,
-    dom2vec (mi_eval pmi (Vcons v vs)) = 
-      mat_times_vec (Vhead (args mi)) (dom2vec v) [+] 
-      dom2vec (mi_eval (mi_eval_tail pmi) vs). 
+  Lemma mi_eval_cons : forall n (mi : matrixInt dim (S n)) v vs,
+    mi_eval_aux mi (Vcons v vs) = 
+      mat_times_vec (Vhead (args mi)) v [+] 
+      mi_eval_aux (mkMatrixInt (const mi) (Vtail (args mi))) vs.
 
   Proof.
     induction n; intros; unfold mi_eval, mi_eval_aux.
@@ -143,7 +131,6 @@ Module ArcticInt (AI : TArcticInt).
     VSntac vs. simpl. rewrite vector_plus_assoc. 
     simpl. autorewrite with arith. refl.
   Qed.
-*)
 
   (** Monotone algebra instantiated to matrices *)
   Module MonotoneAlgebra <: MonotoneAlgebraType.
@@ -224,9 +211,11 @@ Module ArcticInt (AI : TArcticInt).
     Lemma succ_wf : WF succ.
 
     Proof.
-      apply WF_incl with (fun x y => gt (vec_at0 (dom2vec x)) (vec_at0 (dom2vec y))).
+      apply WF_incl with 
+        (fun x y => gt (vec_at0 (dom2vec x)) (vec_at0 (dom2vec y))).
       intros x y xy.
-      destruct (Vforall2_nth gtx (dom2vec x) (dom2vec y) dim_pos xy). assumption.
+      destruct (Vforall2_nth gtx (dom2vec x) (dom2vec y) dim_pos xy). 
+      assumption.
       destruct H. destruct x. elimtype False. auto.
       fold (@Rof dom A gt (fun v => vec_at0 (dom2vec v))).
       apply WF_inverse. apply gt_WF.
@@ -578,20 +567,20 @@ Module ArcticInt (AI : TArcticInt).
         (v : vector (bterm k) i),
         let arg_eval := Vmap2 (@mat_matrixInt_prod (S k)) (args fi) 
           (Vmap (@mi_of_term k) v) in
-          mi_eval_aux fi (Vmap (fun t : bterm k => mint_eval val (mi_of_term t)) v) =
+          mi_eval_aux fi (Vmap 
+            (fun t : bterm k => mint_eval val (mi_of_term t)) v) =
           mint_eval val (mkMatrixInt
           (add_vectors (Vcons (const fi) (Vmap (@const dim (S k)) arg_eval)))
           (combine_matrices (Vmap (@args dim (S k)) arg_eval))).
 
       Proof.
-(*
         induction i; intros.
          (* i = 0 *)
         VOtac. simpl.
-        unfold mi_eval, add_vectors. simpl. autorewrite with arith.
+        unfold mi_eval_aux, add_vectors. simpl. autorewrite with arith.
         symmetry. apply mint_eval_const.
          (* i > 0 *)
-        VSntac v. simpl mi_eval.
+        VSntac v. simpl mi_eval_aux.
         rewrite mi_eval_cons. rewrite IHi. simpl.
         rewrite add_vectors_perm.
         rewrite (add_vectors_cons (i := S i) (mat_vec_prod (Vhead (args fi))
@@ -602,8 +591,6 @@ Module ArcticInt (AI : TArcticInt).
         fold (mat_matrixInt_prod (Vhead (args fi)) (mi_of_term (Vhead v))).
         apply mint_eval_mult_factor.
       Qed.
-*)
-Admitted.
 
       Lemma mint_eval_eq_bterm_int : forall (val : valuation I) t k 
         (t_b : maxvar_le k t),
@@ -614,18 +601,19 @@ Admitted.
         intros val t. pattern t. apply term_ind_forall; intros.
         apply mint_eval_eq_term_int_var.
         rewrite inject_term_eq. rewrite bterm_int_fun. unfold bterms_int.
-(*
-        rewrite (@Vmap_eq _ _ (bterm_int val) 
+        unfold fint. simpl dom2vec.
+        rewrite Vmap_map.
+        rewrite (@Vmap_eq _ _ (fun x => dom2vec (bterm_int val x)) 
           (fun (t : bterm k) => mint_eval val (mi_of_term t))).
         simpl. apply mint_eval_eq_bterm_int_fapp.
         apply Vforall_nth_intro. intros.
         rewrite inject_terms_nth. apply (Vforall_nth _ v ip H).
-*) 
-Admitted.
+      Qed.
 
       Lemma mint_eval_eq_term_int : forall t (val : valuation I) k
         (t_b : maxvar_le k t),
-        dom2vec (term_int val t) = mint_eval val (mi_of_term (inject_term t_b)).
+        dom2vec (term_int val t) = 
+          mint_eval val (mi_of_term (inject_term t_b)).
 
       Proof.
         intros. rewrite <- (term_int_eq_bterm_int val t_b).
@@ -719,7 +707,8 @@ Admitted.
           do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
         Qed.
 
-        Lemma mat_arctic_mult_mon : mgt _ _ M M' -> mge N N' -> mgt _ _ (M <*> N) (M' <*> N').
+        Lemma mat_arctic_mult_mon : mgt _ _ M M' -> mge N N' -> 
+          mgt _ _ (M <*> N) (M' <*> N').
 
         Proof.
           intros. unfold mat_forall2. intros.
@@ -738,7 +727,8 @@ Admitted.
 
       Proof.
         intros. unfold mat_vec_prod, vec_gt. apply Vforall2_intro. 
-        intros. do 2 rewrite Vnth_col_mat. apply mat_arctic_mult_mon. assumption.
+        intros. do 2 rewrite Vnth_col_mat. 
+        apply mat_arctic_mult_mon. assumption.
         intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
         apply (Vforall2_nth ge). assumption.
       Qed.
