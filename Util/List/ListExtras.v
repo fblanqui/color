@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.12 2008-01-21 09:29:56 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.13 2008-01-21 11:10:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -946,6 +946,17 @@ inversion H; subst. exists a; simpl; split; auto.
 destruct (find_first l); try discriminate; try tauto.
 inversion H. deduce (IHl n0 (refl_equal (Some n0))).
 destruct H0. exists x. simpl; auto.
+Qed.
+
+Lemma find_first_exact : forall l i,
+  find_first l = Some i -> exists z, l[i] = Some z /\ P z.
+
+Proof.
+induction l; intros. simpl in H. discriminate.
+simpl in H. destruct (P_dec a).
+inversion H. exists a; subst; simpl; tauto.
+destruct (find_first l); try discriminate.
+inversion H; subst. simpl. apply IHl; auto.
 Qed.
 
 End Find.
