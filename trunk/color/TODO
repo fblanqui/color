@@ -1,15 +1,16 @@
-- MI [Adam]: try to improve performance
 
-- MPO [Adam]: remove MPO hypotheses (put them into a section?)
+- vm_compute: make sure that the calls to vm_compute are really necessary
 
-- RPO [Adam]: solve problems with decidability procedure
+- MI: try to improve performance
+
+- MPO: remove MPO hypotheses (put them into a section?)
+
+- RPO: solve problems with decidability procedure
 (dealing with RPO for concrete terms)
 
-- RPO [Adam]: support for Rainbow
+- RPO: support for Rainbow
 
 - DP: add improvement to DP pairs by ignoring pairs where rhs is a subterm of lhs
-
-- DP: improve by introducing DP symbols (sharp symbols)
 
 - AF: extend by allowing collapsing argument filterings
 
@@ -22,9 +23,13 @@ explicit at every proof step
 and in the tactic Funeqtac.
 is it possible to get rid of it by using Eqdep_dec only?
 
-- move ListExt into ListUtil and ListExtras?
-
 - replace defs and lemmas when they are added in coq std lib
 
 - replace decidability lemmas by boolean functions
 
+Done list:
+----------
+
+- DP: improve by introducing DP symbols (sharp symbols)
+
+- move ListExt into ListUtil and ListExtras?
