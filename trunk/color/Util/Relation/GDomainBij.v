@@ -79,7 +79,7 @@ exists a0; exists a1; intuition; auto.
 Qed.
 
 Lemma rel_on_nat_is_restricted :
-  is_restricted (rel_on_nat R) (nfirst_list (length Dom)).
+  is_restricted (rel_on_nat R) (nfirst (length Dom)).
 
 Proof.
 unfold is_restricted; intros.
@@ -177,8 +177,8 @@ End bijection.
 Section compose.
 
 Variable R S : relation nat.
-Variable restriction : is_restricted R (nfirst_list (length Dom)).
-Variable restriction' : is_restricted S (nfirst_list (length Dom)).
+Variable restriction : is_restricted R (nfirst (length Dom)).
+Variable restriction' : is_restricted S (nfirst (length Dom)).
 Variable rp_free : repeat_free Dom.
 
 Lemma dom_change_compose: forall x y,

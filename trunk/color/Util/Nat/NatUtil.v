@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.19 2008-01-16 15:40:12 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.20 2008-01-21 09:29:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -177,6 +177,18 @@ Lemma nat_gt_dec : rel_dec gt.
 
 Proof.
 intros i j. destruct (le_gt_dec i j); auto with arith.
+Defined.
+
+Lemma lt_ge_dec : forall x y, {x < y} + {x >= y}.
+
+Proof.
+intros. destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
+Defined.
+
+Lemma eq_opt_nat_dec : forall x y : option nat, {x=y} + {~x=y}.
+
+Proof.
+decide equality. apply eq_nat_dec.
 Defined.
 
 (***********************************************************************)

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.11 2008-01-17 16:22:50 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.12 2008-01-21 09:29:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -792,6 +792,20 @@ Section Find.
   Variable P : A -> Prop.
   Variable P_dec : forall a : A, {P a} + {~P a}.
 
+Lemma exists_in_list_dec : forall l,
+  {exists r, P r /\ In r l} + {~exists r, P r /\ In r l}.
+
+Proof.
+induction l.
+right. intuition. do 2 destruct H; simpl in H; auto.
+destruct (P_dec a).
+left; exists a; simpl; auto.
+destruct IHl.
+left. destruct e. exists x. simpl; tauto.
+right; intuition. do 2 destruct H. simpl in H0. destruct H0.
+subst; tauto. apply n0. exists x; auto.
+Defined.
+
   Fixpoint find_first (l: list A) : option nat := 
     match l with
     | nil => None
@@ -922,7 +936,21 @@ simpl; apply lt_n_S; apply IHl; auto.
 discriminate.
 Qed.
 
+Lemma In_find_first2 : forall l z,
+  find_first l = Some z -> exists y, l[z] = Some y /\ P y.
+
+Proof.
+induction l; intros; simpl in H. discriminate; tauto.
+destruct (P_dec a).
+inversion H; subst. exists a; simpl; split; auto.
+destruct (find_first l); try discriminate; try tauto.
+inversion H. deduce (IHl n0 (refl_equal (Some n0))).
+destruct H0. exists x. simpl; auto.
+Qed.
+
 End Find.
+
+Implicit Arguments In_find_first2 [A P P_dec l z].
 
 Section Find_more.
 
@@ -1053,20 +1081,20 @@ End List_Rel_Dec.
 
 Section nfirst.
 
-  Fixpoint nfirst_list n :=
-    match n with
-      | 0 => nil
-      | S k => k :: nfirst_list k
-    end.
+Fixpoint nfirst n :=
+  match n with
+    | 0 => nil
+    | S k => k :: nfirst k
+  end.
 
-Lemma nfirst_exact : forall x dim, In x (nfirst_list dim) <-> lt x dim.
+Lemma nfirst_exact : forall x dim, In x (nfirst dim) <-> lt x dim.
 
 Proof.
 intros.
 induction dim.
-unfold nfirst_list; simpl.
+unfold nfirst; simpl.
 split; omega.
-unfold nfirst_list; fold nfirst_list.
+unfold nfirst; fold nfirst.
 destruct (gt_eq_gt_dec x dim).
 intuition.
 subst; apply in_eq.
@@ -1078,7 +1106,7 @@ simpl in *; clear H2.
 inversion H1; auto with *.
 Qed.
 
-Lemma nfirst_length : forall n, length (nfirst_list n) = n.
+Lemma nfirst_length : forall n, length (nfirst n) = n.
 
 Proof.
 induction n; simpl; auto with *.
