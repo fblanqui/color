@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.9 2007-08-06 16:08:37 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.10 2008-01-22 13:05:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -99,6 +99,34 @@ Lemma args_eq : forall f (v v' : args f), v = v' -> Fun f v = Fun f v'.
 Proof.
 intros. rewrite H. refl.
 Qed.
+
+(***********************************************************************)
+(** decidability of equality *)
+
+Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
+
+Proof.
+intro. pattern t. apply term_rec with
+  (Q := fun n (ts : terms n) => forall u, {ts=u}+{~ts=u}); clear t.
+(* var *)
+intros. destruct u. case (eq_nat_dec x n); intro. subst n. auto.
+right. unfold not. intro. injection H. auto.
+right. unfold not. intro. discriminate.
+(* fun *)
+intros f ts H u. destruct u. right. unfold not. intro. discriminate.
+case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
+right. intro. injection H0. intro. assert (ts=v).
+Require Import Eqdep. apply (inj_pair2 Sig (fun f => args f)). assumption. auto.
+right. unfold not. intro. injection H0. intros. auto.
+(* nil *)
+intro. VOtac. auto.
+(* cons *)
+intros. VSntac u. case (H (Vhead u)); intro. rewrite e.
+case (H0 (Vtail u)); intro. rewrite e0. auto.
+right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
+apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
+right. unfold not. intro. injection H2. intros. auto.
+Defined.
 
 (***********************************************************************)
 (** maximal variable index in a term *)
@@ -265,34 +293,32 @@ unfold Q in H2. rewrite H1. rewrite H2. refl.
 Qed.
 
 (***********************************************************************)
-(** decidability of equality *)
+(** number of distinct variables in a term *)
 
-Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
+Require Export ListRepeatFree.
 
-Proof.
-intro. pattern t. apply term_rec with
-  (Q := fun n (ts : terms n) => forall u, {ts=u}+{~ts=u}); clear t.
-(* var *)
-intros. destruct u. case (eq_nat_dec x n); intro. subst n. auto.
-right. unfold not. intro. injection H. auto.
-right. unfold not. intro. discriminate.
-(* fun *)
-intros f ts H u. destruct u. right. unfold not. intro. discriminate.
-case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
-right. intro. injection H0. intro. assert (ts=v).
-Require Import Eqdep. apply (inj_pair2 Sig (fun f => args f)). assumption. auto.
-right. unfold not. intro. injection H0. intros. auto.
-(* nil *)
-intro. VOtac. auto.
-(* cons *)
-intros. VSntac u. case (H (Vhead u)); intro. rewrite e.
-case (H0 (Vtail u)); intro. rewrite e0. auto.
-right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
-apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
-right. unfold not. intro. injection H2. intros. auto.
-Defined.
+Definition nb_of_distinct_vars t :=
+  length (make_repeat_free eq_nat_dec (vars t)).
+
+(***********************************************************************)
+(** number of symbol occurrences in a term *)
+
+Fixpoint nb_of_symbols t :=
+  match t with
+    | Var x => 0
+    | Fun f ts =>
+      let fix nb_of_symbols_terms n (ts : terms n) {struct ts} :=
+        match ts with
+          | Vnil => 0
+          | Vcons u p us => nb_of_symbols u + nb_of_symbols_terms p us
+        end
+        in nb_of_symbols_terms _ ts
+  end.
 
 End S.
+
+(***********************************************************************)
+(** implicit arguments *)
 
 Implicit Arguments Var [Sig].
 Implicit Arguments maxvar_var [Sig k x].

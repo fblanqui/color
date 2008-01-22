@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rule renaming
 *)
 
-(* $Id: ARename.v,v 1.2 2007-02-01 16:12:25 blanqui Exp $ *)
+(* $Id: ARename.v,v 1.3 2008-01-22 13:05:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -89,7 +89,7 @@ Lemma notin_vars_shift : forall x l,
   ~In x (vars (shift l)) -> p <= x -> ~In (x-p) (vars l).
 
 Proof.
-intros. intro. apply H. rewrite vars_shift. rewrite <- (minus_plus H0).
+intros. intro. apply H. rewrite vars_shift. rewrite <- (le_minus_plus H0).
 fold (shift_var (x-p)). apply in_map. exact H1.
 Qed.
 
@@ -114,7 +114,7 @@ Lemma app_shift : forall s, app s l = app (comp s shift_inv_sub) (shift l).
 Proof.
 intro. unfold shift. rewrite app_app. apply app_eq. intros.
 rewrite comp_assoc. unfold comp. simpl. apply (f_equal s).
-unfold shift_inv_var. rewrite plus_minus.
+unfold shift_inv_var. rewrite plus_minus_eq.
 assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. exact H. rewrite H0.
 case (le_lt_dec p (x+p)); intro. refl. omega.
 Qed.
@@ -125,7 +125,7 @@ Lemma app_shift_incl : forall s r, incl (vars r) (vars l) ->
 Proof.
 intros. unfold shift. rewrite app_app. apply app_eq. intros.
 rewrite comp_assoc. unfold comp. simpl. apply (f_equal s).
-unfold shift_inv_var. rewrite plus_minus.
+unfold shift_inv_var. rewrite plus_minus_eq.
 assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. apply H. exact H0.
 rewrite H1. case (le_lt_dec p (x+p)); intro. refl. omega.
 Qed.

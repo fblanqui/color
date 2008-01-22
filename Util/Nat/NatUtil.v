@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.20 2008-01-21 09:29:56 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.21 2008-01-22 13:05:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,12 +17,22 @@ Require Export LogicUtil.
 Require Export Arith.
 Require Omega.
 
+(***********************************************************************)
+(** implicit arguments *)
+
 Implicit Arguments lt_S_n [n m].
 Implicit Arguments lt_n_S [n m].
 Implicit Arguments le_S [n m].
 Implicit Arguments gt_le_S [n m].
 Implicit Arguments le_lt_n_Sm [n m].
 Implicit Arguments lt_le_weak [n m].
+Implicit Arguments le_plus_minus [n m].
+Implicit Arguments le_plus_minus_r [n m].
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac absurd_arith := elimtype False; omega.
 
 (***********************************************************************)
 (** unicity of eq/le/lt proofs *)
@@ -209,11 +219,6 @@ Qed.
 Implicit Arguments i_lt_n [n i j].
 
 (***********************************************************************)
-(** tactics *)
-
-Ltac absurd_arith := elimtype False; omega.
-
-(***********************************************************************)
 (** various arithmetical lemmas *)
 
 Lemma S_neq_O : forall n, S n = O -> False.
@@ -234,19 +239,19 @@ Proof.
 intros. omega.
 Qed.
 
-Lemma plus_minus : forall v p, v+p-p=v.
+Lemma plus_minus_eq : forall v p, v+p-p=v.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma minus_plus : forall v p, p<=v -> v-p+p=v.
+Lemma le_minus_plus : forall v p, p<=v -> v-p+p=v.
 
 Proof.
 intros. omega.
 Qed.
 
-Implicit Arguments minus_plus [v p].
+Implicit Arguments le_minus_plus [v p].
 
 Lemma plus_1_S : forall n, n+1 = S n.
 
