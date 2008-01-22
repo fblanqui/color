@@ -298,7 +298,7 @@ Module ArcticInt (AI : TArcticInt).
       destruct y.
       right. intro f. destruct f. auto. destruct H. discriminate.
       left. right. auto.
-    Qed.
+    Defined.
 
     Lemma succeq_dec : rel_dec succeq.
   
