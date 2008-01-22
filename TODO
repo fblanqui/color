@@ -30,6 +30,6 @@ is it possible to get rid of it by using Eqdep_dec only?
 Done list:
 ----------
 
-- DP: improve by introducing DP symbols (sharp symbols)
+- DP: improve by introducing marked symbols
 
-- move ListExt into ListUtil and ListExtras?
+- move ListExt into ListUtil
