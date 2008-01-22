@@ -4,28 +4,36 @@ CoLoR, a Coq library on rewriting and termination
 The aim of this Coq library (Coq is a proof assistant developped at
 INRIA available at http://coq.inria.fr/) is to provide the necessary
 formal basis for certifying the termination proof candidates searched
-and built by tools like CiME, AProVE, TTT, Cariboo, etc.
+and built by tools like TPA, MatchBox, AProVE, TTT, etc.
 
 Among other things, it includes:
 
-* libraries on useful data structures in Util/
+* libraries on mathematical structures in Util/
+	- Relation: binary relations
+	- Algebra: (ordered) semi-rings
+
+* libraries on data structures in Util/
 	- List: lists
 	- Vector: vectors
 	- Multiset: finite multisets
 	- Polynom: integer polynomials with multiple variables
+	- Matrix: matrices over an (ordered) semi-ring
 
 * libraries on term structures in Term/
 	- Varyadic: varyadic terms
 	- WithArity: algebraic terms with symbols of fixed arity
 	- SimpleType: simply typed lambda-terms with de Bruijn indices
+	- String: words
 
 * transformation techniques:
-	- DP: basic dependency pairs theorem
+	- DP: dependency pairs transformation and graph decomposition
 	- Filter: arguments filterings
 	- Conversion: conversions between term structures
 
 * termination criteria:
+	- MannaNess: inclusion in some reduction ordering
 	- PolyInt: polynomial interpretations
+	- MatrixInt: matrix interpretations
 	- MPO: multiset path ordering
 	- RPO: recursive path ordering
 	- HORPO: higher-order recursive path ordering
@@ -42,3 +50,14 @@ THANKS: thanks to various people for their comments or help.
 
 The development version is available under CVS on
 http://gforge.inria.fr/projects/color/.
+
+The following scripts provide some statistics:
+
+- get_stat: provides the number of coq lines (including newlines and
+comments) for the various kind of formalizations (mathematical
+structures, data structures, etc.)
+
+- coq_stat [<directory>] (default is .): provides the number of
+definitions, lemmas, etc.
+
+- coq_contribs <directory>: run coq_stat on every coq contrib
