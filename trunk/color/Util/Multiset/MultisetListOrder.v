@@ -22,10 +22,9 @@ Require Import Arith.
 
 Module MultisetListOrder (ES : Eqset).
 
-(* Instantiation of Finite MultiSets of elements of A
-as Lists of elements of A *)
+(* Instantiation of MultiSets of elements of A as Lists of elements of A *)
 
-  Module FMultisetList := FiniteMultisetList ES. 
+  Module FMultisetList := MultisetList ES. 
   Export FMultisetList.
 
 (* The basic relation on A needs not to be known at this point *)

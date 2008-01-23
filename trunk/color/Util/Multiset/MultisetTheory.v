@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.4 2007-05-17 15:30:54 koper Exp $ *)
+(* $Id: MultisetTheory.v,v 1.5 2008-01-23 10:23:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,7 @@ Require Import Permutation.
 Require Import ListPermutation.
 Require Import NatUtil.
 
-Module FiniteMultiset (MC : FiniteMultisetCore).
+Module Multiset (MC : MultisetCore).
 
   Export MC.
 
@@ -1545,4 +1545,4 @@ Module MultisetEqset <: Eqset.
 
 End MultisetEqset.
 
-End FiniteMultiset.
+End Multiset.
