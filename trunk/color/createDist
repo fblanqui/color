@@ -14,11 +14,19 @@ cd /tmp
 rm -rf color
 cvs -d :ext:blanqui@scm.gforge.inria.fr:/cvsroot/color co color
 
-dir=CoLoR_`date +%y%m%d`
+date=`date +%y%m%d`
+
+dir=CoLoR_$date
 rm -rf $dir
 mv color $dir
 
 rm -rf `find $dir -name CVS -o -name .cvsignore`
+
+echo "This is the CoLoR library on `date`." > newREADME
+echo "Check http://color.loria.fr/ for more recent versions." >> newREADME
+echo >> newREADME
+cat $dir/README >> newREADME
+mv -f newREADME $dir/README
 
 tar cf $dir.tar $dir
 gzip $dir.tar
