@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.7 2007-06-19 17:45:51 koper Exp $ *)
+(* $Id: VTerm.v,v 1.8 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -101,7 +101,8 @@ Variable term_eq_dec : forall t u : term, {t=u} + {t<>u}.
 
 Lemma term_rec_forall : forall (P : term -> Set)
   (H1 : forall x, P (Var x))
-  (H2 : forall f v, (forall t, Inb term_eq_dec t v = true -> P t) -> P (Fun f v)),
+  (H2 : forall f v, (forall t, Inb term_eq_dec t v = true -> P t) ->
+    P (Fun f v)),
   forall t, P t.
 
 Proof.
@@ -163,6 +164,83 @@ Proof.
   right. intro diff. apply n. congruence.
   right. intro diff. apply n. congruence.
 Defined.
+
+Section beq.
+
+Variable beq_var : variable -> variable -> bool.
+Variable beq_var_ok : forall x y, beq_var x y = true <-> x = y.
+
+Variable beq_symb : Sig -> Sig -> bool.
+Variable beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
+
+Fixpoint beq (t u : term) {struct t} :=
+  match t with
+    | Var x =>
+      match u with
+        | Var y => beq_var x y
+        | _ => false
+      end
+    | Fun f ts =>
+      match u with
+        | Fun g us =>
+          let fix beq_terms (ts us : terms) {struct ts} :=
+            match ts with
+              | nil =>
+                match us with
+                  | nil => true
+                  | _ => false
+                end
+              | t :: ts' =>
+                match us with
+                  | u :: us' => beq t u && beq_terms ts' us'
+                  | _ => false
+                end
+            end
+            in beq_symb f g && beq_terms ts us
+        | _ => false
+      end
+  end.
+
+Lemma beq_terms : forall ts us,
+  (fix beq_terms (ts us : terms) {struct ts} :=
+    match ts with
+      | nil =>
+        match us with
+          | nil => true
+          | _ => false
+        end
+      | t :: ts' =>
+        match us with
+          | u :: us' => beq t u && beq_terms ts' us'
+          | _ => false
+        end
+    end) ts us = beq_list beq ts us.
+
+Proof.
+induction ts; destruct us; refl.
+Qed.
+
+Lemma beq_fun : forall f ts g us,
+  beq (Fun f ts) (Fun g us) = beq_symb f g && beq_list beq ts us.
+
+Proof.
+intros. rewrite <- beq_terms. refl.
+Qed.
+
+Lemma beq_ok : forall t u, beq t u = true <-> t = u.
+
+Proof.
+intro t. pattern t. apply term_ind_forall2; destruct u.
+simpl. rewrite beq_var_ok. intuition. inversion H. refl.
+intuition; discriminate. intuition; discriminate.
+rewrite beq_fun. split; intro. destruct (andb_elim H0).
+rewrite beq_symb_ok in H1. subst f0.
+rewrite beq_list_ok_in in H2. subst l. refl. exact H.
+inversion H0. apply andb_intro. apply (beq_refl beq_symb_ok).
+deduce (beq_list_ok_in H). subst v. rewrite H1. refl.
+Qed.
+
+End beq.
 
 (***********************************************************************)
 (** maximal index of a variable *)

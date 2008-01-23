@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.34 2008-01-17 16:22:50 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.35 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -69,6 +69,79 @@ intros. rewrite H. refl.
 Qed.
 
 End cons.
+
+(***********************************************************************)
+(** boolean decidability of equality *)
+
+Section beq.
+
+Require Export BoolUtil.
+
+Variable A : Type.
+Variable beq : A -> A -> bool.
+Variable beq_ok : forall x y, beq x y = true <-> x = y.
+
+Fixpoint beq_list (l m : list A) {struct l} :=
+  match l with
+    | nil =>
+      match m with
+        | nil => true
+        | _ => false
+      end
+    | x :: l' =>
+      match m with
+        | y :: m' => beq x y && beq_list l' m'
+        | _ => false
+      end
+  end.
+
+Lemma beq_list_refl : forall l, beq_list l l = true.
+
+Proof.
+induction l; simpl. refl. rewrite IHl. rewrite (beq_refl beq_ok). refl.
+Qed.
+
+Lemma beq_list_ok : forall l m, beq_list l m = true <-> l = m.
+
+Proof.
+induction l; destruct m; simpl; split; intro; try (refl || discriminate).
+destruct (andb_elim H). rewrite beq_ok in H0. subst a0.
+rewrite IHl in H1. subst m. refl.
+inversion H. subst a0. subst m. apply andb_intro.
+rewrite beq_ok. refl. rewrite IHl. refl.
+Qed.
+
+End beq.
+
+Section beq_in.
+
+Variable A : Type.
+Variable beq : A -> A -> bool.
+
+Lemma beq_list_ok_in : forall l,
+  forall hyp : forall x, In x l -> forall y, beq x y = true <-> x = y,
+    forall m, beq_list beq l m = true <-> l = m.
+
+Proof.
+induction l; destruct m; split; intro; try (refl || discriminate).
+inversion H. destruct (andb_elim H1).
+assert (h : In a (a::l)). simpl. auto.
+deduce (hyp _ h a0). rewrite H3 in H0. subst a0.
+apply tail_eq.
+assert (hyp' : forall x, In x l -> forall y, beq x y = true <-> x=y).
+intros x hx. apply hyp. simpl. auto.
+destruct (andb_elim H1). deduce (IHl hyp' m). rewrite H5 in H4. exact H4.
+rewrite <- H. simpl. apply andb_intro.
+assert (h : In a (a::l)). simpl. auto.
+deduce (hyp _ h a). rewrite H0. refl.
+assert (hyp' : forall x, In x l -> forall y, beq x y = true <-> x=y).
+intros x hx. apply hyp. simpl. auto.
+deduce (IHl hyp' l). rewrite H0. refl.
+Qed.
+
+End beq_in.
+
+Implicit Arguments beq_list_ok_in [A beq l].
 
 (***********************************************************************)
 (** append *)

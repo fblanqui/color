@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.11 2008-01-23 09:27:49 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.12 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -81,8 +81,19 @@ Lemma term_ind_forall : forall (P : term -> Prop)
   forall t, P t.
 
 Proof.
-intros. apply term_ind with (Q := Vforall P). assumption. assumption.
+intros. apply term_ind with (Q := Vforall P). exact H1. exact H2.
 exact I. intros. simpl. split; assumption.
+Qed.
+
+Lemma term_ind_forall2 : forall (P : term -> Prop)
+  (H1 : forall v, P (Var v))
+  (H2 : forall f (v : args f), (forall t, Vin t v -> P t) -> P (Fun f v)),
+  forall t, P t.
+
+Proof.
+intros. apply term_ind
+with (Q := fun n (ts : terms n) => forall t, Vin t ts -> P t).
+exact H1. exact H2. contradiction. simpl. intuition. subst t1. exact H.
 Qed.
 
 (***********************************************************************)
@@ -103,6 +114,7 @@ Qed.
 (***********************************************************************)
 (** decidability of equality *)
 
+(* old version using Eqdep's axiom:
 Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
 
 Proof.
@@ -126,7 +138,95 @@ case (H0 (Vtail u)); intro. rewrite e0. auto.
 right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
 apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
 right. unfold not. intro. injection H2. intros. auto.
-Defined.
+Defined.*)
+
+Section beq.
+
+Variable beq_var : variable -> variable -> bool.
+Variable beq_var_ok : forall x y, beq_var x y = true <-> x = y.
+
+Variable beq_symb : Sig -> Sig -> bool.
+Variable beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
+
+Fixpoint beq (t u : term) {struct t} :=
+  match t with
+    | Var x =>
+      match u with
+        | Var y => beq_var x y
+        | _ => false
+      end
+    | Fun f ts =>
+      match u with
+        | Fun g us =>
+          let fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
+            match ts with
+              | Vnil =>
+                match us with
+                  | Vnil => true
+                  | _ => false
+                end
+              | Vcons t _ ts' =>
+                match us with
+                  | Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
+                  | _ => false
+                end
+            end
+            in beq_symb f g && beq_terms _ ts _ us
+        | _ => false
+      end
+  end.
+
+Lemma beq_terms : forall n (ts : terms n) p (us : terms p),
+  (fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
+    match ts with
+      | Vnil =>
+        match us with
+          | Vnil => true
+          | _ => false
+        end
+      | Vcons t _ ts' =>
+        match us with
+          | Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
+          | _ => false
+        end
+    end) _ ts _ us = beq_vec beq ts us.
+
+Proof.
+induction ts; destruct us; refl.
+Qed.
+
+Lemma beq_fun : forall f ts g us,
+  beq (Fun f ts) (Fun g us) = beq_symb f g && beq_vec beq ts us.
+
+Proof.
+intros. rewrite <- beq_terms. refl.
+Qed.
+
+Lemma beq_ok : forall t u, beq t u = true <-> t = u.
+
+Proof.
+intro t. pattern t. apply term_ind_forall2; destruct u.
+simpl. rewrite beq_var_ok. intuition. inversion H. refl.
+intuition; discriminate. intuition; discriminate.
+rewrite beq_fun. split; intro. destruct (andb_elim H0).
+rewrite beq_symb_ok in H1. subst f0. apply args_eq.
+deduce (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl_eq. refl.
+inversion H0 as [[h0 h1]]. clear h1. subst f0. simpl.
+apply andb_intro. apply (beq_refl beq_symb_ok).
+apply beq_vec_ok_in2. exact H. refl.
+Qed.
+
+End beq.
+
+Implicit Arguments beq_ok [beq_var beq_symb].
+
+Let beq_symb := beq_eq_dec (@eq_symbol_dec Sig).
+Let beq_symb_ok := beq_eq_dec_ok (@eq_symbol_dec Sig).
+
+Let beq_term := beq beq_nat beq_symb.
+Let beq_term_ok := beq_ok beq_nat_ok beq_symb_ok.
+
+Definition eq_term_dec := eq_dec_beq beq_term_ok.
 
 (***********************************************************************)
 (** maximal variable index in a term *)
@@ -332,6 +432,8 @@ Implicit Arguments vars_max [Sig x t].
 (***********************************************************************)
 (** tactics *)
 
+Require Import Eqdep.
+
 Ltac Funeqtac := repeat
   match goal with
     | H : @Fun ?Sig ?f ?ts = Fun ?f ?us |- _ =>
@@ -342,3 +444,15 @@ Ltac Funeqtac := repeat
     | H : @Fun ?Sig ?f ?ts = Fun ?g ?us |- _ =>
       injection H; intros _ fresh; subst g; Funeqtac
   end.
+
+(*Ltac Funeqtac :=
+  match goal with
+    | H : @Fun ?Sig ?f ?ts = @Fun _ ?g ?us |- _ =>
+      let H1 := fresh in
+        (inversion H as [[fresh H1]]; try (subst g || subst f || idtac);
+          generalize (inj_pair2 Sig
+            (fun h => @vector (@ATerm.term Sig) (@ASignature.arity Sig h))
+            f _ _ H1); intro;
+          try (subst us || subst ts || idtac); clear H1)
+  end.*)
+

@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.21 2008-01-22 13:05:55 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.22 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -33,6 +33,31 @@ Implicit Arguments le_plus_minus_r [n m].
 (** tactics *)
 
 Ltac absurd_arith := elimtype False; omega.
+
+(***********************************************************************)
+(** decidability of equality *)
+
+Fixpoint beq_nat (x y : nat) {struct x} :=
+  match x with
+    | 0 =>
+      match y with
+        | 0 => true
+        | _ => false
+      end
+    | S x' =>
+      match y with
+        | S y' => beq_nat x' y'
+        | _ => false
+      end
+  end.
+
+Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
+
+Proof.
+induction x; destruct y; simpl; split; intro; try (refl || discriminate).
+apply (f_equal S). rewrite IHx in H. exact H.
+rewrite IHx. inversion H. refl.
+Qed.
 
 (***********************************************************************)
 (** unicity of eq/le/lt proofs *)

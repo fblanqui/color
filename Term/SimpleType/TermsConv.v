@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.7 2008-01-23 09:27:49 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.8 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -67,18 +67,18 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Definition envSubst_extends S1 S2 := forall i j,
     envSub S2 i j -> envSub S1 i j.
+
   Notation "S1 |=> S2" := (envSubst_extends S1 S2) (at level 70).
 
   Definition envSubst_eq S1 S2 := S1 |=> S2 /\ S2 |=> S1.
+
   Notation "S1 <=> S2" := (envSubst_eq S1 S2) (at level 70).
   
   Lemma envSubst_eq_def : forall S1 S2 i j,
     S1 <=> S2 -> (envSub S1 i j <-> envSub S2 i j).
 
   Proof.
-    intros; destruct H; split; intro.
-    apply (H0 i j H1).
-    apply (H i j H1).
+    intros; destruct H; split; intro. apply (H0 i j H1). apply (H i j H1).
   Qed.
 
   Lemma envSubst_extends_refl : forall S, S |=> S.
@@ -593,7 +593,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Proof.
     intuition.
     eapply conv_term_morph_aux. apply H. exact H0.
-    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H. exact H0.   
+    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H. exact H0.
   Qed.
 
   Lemma conv_term_refl : forall M,
@@ -806,7 +806,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
 
   Definition conv_env (M N: Term) (S: EnvSubst) : Prop := forall x y,
-      S.(envSub) x y -> activeEnv_compSubst_on M N x y.
+    S.(envSub) x y -> activeEnv_compSubst_on M N x y.
 
   Add Morphism conv_env : conv_env_morph.
 
@@ -1236,6 +1236,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Definition terms_conv_with S M N :=
     conv_term (term M) (term N) S /\ conv_env M N S.
+
   Notation "M ~ ( S ) N" := (terms_conv_with S M N) (at level 70).
 
   Lemma terms_conv_with_morph_aux :
@@ -1255,6 +1256,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Definition terms_conv M N := exists S, M ~(S) N.
+
   Notation "M ~ N" := (terms_conv M N) (at level 70).
 
   Lemma terms_conv_criterion : forall M N,
@@ -1368,13 +1370,13 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Add Setoid Term terms_conv sid_theoryConv as terms_conv_Setoid.
 
-    Add Morphism isApp 
+  Add Morphism isApp 
     with signature terms_conv ==> iff
     as isApp_morph.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1; 
-    term_inv t; term_inv t'.
+      term_inv t; term_inv t'.
   Qed.
 
   Add Morphism isVar
