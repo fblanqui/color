@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.26 2008-01-20 10:49:15 koper Exp $ *)
+(* $Id: VecUtil.v,v 1.27 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,18 +21,6 @@ Implicit Arguments Vcons.
 Implicit Arguments Vhead.
 Implicit Arguments Vtail.
 Implicit Arguments Vconst.
-
-(*Ltac Veqtac := repeat
-  match goal with
-    | H : @Vcons ?B ?x _ ?v = Vcons ?x ?w |- _ =>
-      let H1 := fresh in let H3 := fresh in
-      (injection H; intro H1; assert (H3 : v = w);
-      [apply (inj_pairT2 nat (fun n => @vector B n)); assumption | clear H H1])
-    | H : @Vcons ?B ?x _ ?v = Vcons ?y ?w |- _ =>
-      let H1 := fresh in let H2 := fresh in let H3 := fresh in
-      (injection H; intros H1 H2; subst x; assert (H3 : v = w);
-      [apply (inj_pairT2 nat (fun n => @vector B n)); assumption | clear H H1])
-  end.*)
 
 Require Export NatUtil.
 
@@ -928,9 +916,10 @@ destruct v;simpl in *. absurd_hyp Hi; omega.
 apply IHi.
 Qed.
 
-
 (***********************************************************************)
 (** decidability of equality *)
+
+Section beq.
 
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
@@ -944,7 +933,96 @@ right. unfold not. intro. Veqtac. auto.
 right. unfold not. intro. Veqtac. auto.
 Defined.
 
+Variable beq : A -> A -> bool.
+Variable beq_ok : forall x y, beq x y = true <-> x = y.
+
+Fixpoint beq_vec n (v : vec n) p (w : vec p) {struct v} :=
+  match v with
+    | Vnil =>
+      match w with
+        | Vnil => true
+        | _ => false
+      end
+    | Vcons x _ v' =>
+      match w with
+        | Vcons y _ w' => beq x y && beq_vec v' w'
+        | _ => false
+      end
+  end.
+
+Lemma beq_vec_refl : forall n (v : vec n), beq_vec v v = true.
+
+Proof.
+induction v; simpl. refl. apply andb_intro. apply (beq_refl beq_ok). exact IHv.
+Qed.
+
+Lemma beq_vec_ok_length : forall n (v : vec n) p (w : vec p),
+  beq_vec v w = true -> n = p.
+
+Proof.
+induction v; destruct w; simpl; intros; try (refl || discriminate).
+destruct (andb_elim H). deduce (IHv _ _ H1). subst n0. refl.
+Qed.
+
+Implicit Arguments beq_vec_ok_length [n v p w].
+
+Lemma beq_vec_ok1 : forall n (v : vec n) p (w : vec p)
+  (h : beq_vec v w = true), Vcast v (beq_vec_ok_length h) = w.
+
+Proof.
+induction v; destruct w; simpl; intros; try (refl || discriminate).
+destruct (andb_elim h). rewrite beq_ok in H. subst a0. apply Vtail_eq.
+rewrite <- (IHv _ _ H0). apply Vcast_eq.
+Qed.
+
+Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
+
+Proof.
+induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac. simpl.
+rewrite (beq_refl beq_ok). simpl. rewrite H2. apply beq_vec_refl.
+Qed.
+
+End beq.
+
+Implicit Arguments beq_vec_ok_length [n v p w].
+
+Section beq_in.
+
+Variable beq : A -> A -> bool.
+
+Lemma beq_vec_ok_in1 : forall n (v : vec n)
+  (hyp : forall x, Vin x v -> forall y, beq x y = true <-> x = y)
+  p (w : vec p) (h : beq_vec beq v w = true),
+  Vcast v (beq_vec_ok_length beq h) = w.
+
+Proof.
+induction v; destruct w; simpl; intro; try (refl || discriminate).
+destruct (andb_elim h).
+assert (ha : Vin a (Vcons a v)). simpl. auto.
+deduce (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
+assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
+intros x hx. apply hyp. simpl. auto.
+destruct (andb_elim h). deduce (IHv hyp' _ w H2). rewrite <- H3. apply Vcast_eq.
+Qed.
+
+Lemma beq_vec_ok_in2 : forall n (v : vec n)
+  (hyp : forall x, Vin x v -> forall y, beq x y = true <-> x = y) w,
+  v = w -> beq_vec beq v w = true.
+
+Proof.
+induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac.
+simpl. apply andb_intro. set (a := Vhead w).
+assert (Vin a (Vcons a v)). simpl. auto.
+deduce (hyp _ H a). rewrite H3. refl.
+apply IHv. intros. apply hyp. simpl. auto. exact H2.
+Qed.
+
+End beq_in.
+
 End S.
+
+Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
+Implicit Arguments beq_vec_ok_in2 [A beq n v w].
 
 (***********************************************************************)
 (** declaration of implicit arguments *)

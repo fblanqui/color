@@ -7,9 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.9 2008-01-16 14:52:20 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.10 2008-01-23 18:22:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
+
+Require Export Setoid.
 
 Definition prop_dec A (P : A -> Prop) := forall x, {P x}+{~P x}.
 

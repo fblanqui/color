@@ -1,4 +1,11 @@
-07-08-23: Added SCC decomposition [Lucas]
+08-01-23: added support for boolean reasoning and boolean functions
+testing equality [Blanqui]
+- Util/Bool/BoolUtil
+- Util/List/ListUtil
+- Term/Varyadic/VTerm
+- Term/WithArity/ATerm: removed use of Eqdep in eq_term_dec
+
+07-08-23: added SCC decomposition [Lucas]
 (SCC = Strongly Connected Component)
 - Util/List/SortUtil: lemmas on list sorting
 - Util/Nat/log2: definition and properties of log2 and exp2
@@ -13,7 +20,7 @@
 - Util/Relation/SCCTopoOrdering: topological ordering on SCCs
 - DP/SCCunion: termination based on SCC decomposition
 
-07-08-06: Added support for classical reasoning [Blanqui]
+07-08-06: added support for classical reasoning [Blanqui]
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic
 - Util/Logic/DepChoice: axiom of dependent choice
 - Util/Logic/DepChoicePrf: proof of the axiom of dependent choice
