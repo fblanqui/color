@@ -1,4 +1,7 @@
 
+- strange thing about eq_nat_dec and Hint Resolve eq_nat_dec : terms.
+see Term/SimpleType/TermsTyping.v.
+
 - vm_compute: make sure that the calls to vm_compute are really necessary
 
 - MI: try to improve performance

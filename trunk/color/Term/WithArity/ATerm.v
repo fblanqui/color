@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.10 2008-01-22 13:05:55 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.11 2008-01-23 09:27:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -297,22 +297,22 @@ Qed.
 
 Require Export ListRepeatFree.
 
-Definition nb_of_distinct_vars t :=
+Definition nb_distinct_vars t :=
   length (make_repeat_free eq_nat_dec (vars t)).
 
 (***********************************************************************)
 (** number of symbol occurrences in a term *)
 
-Fixpoint nb_of_symbols t :=
+Fixpoint nb_symbols t :=
   match t with
     | Var x => 0
     | Fun f ts =>
-      let fix nb_of_symbols_terms n (ts : terms n) {struct ts} :=
+      let fix nb_symbols_terms n (ts : terms n) {struct ts} :=
         match ts with
           | Vnil => 0
-          | Vcons u p us => nb_of_symbols u + nb_of_symbols_terms p us
+          | Vcons u p us => nb_symbols u + nb_symbols_terms p us
         end
-        in nb_of_symbols_terms _ ts
+        in nb_symbols_terms _ ts
   end.
 
 End S.
