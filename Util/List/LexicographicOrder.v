@@ -10,7 +10,7 @@ of a setoid. In particular, proofs that lex 'transmits' strict partial
 order property, and is a lifting.
 *)
 
-(* $Id: LexicographicOrder.v,v 1.6 2007-06-03 12:59:31 koper Exp $ *)
+(* $Id: LexicographicOrder.v,v 1.7 2008-01-23 09:29:23 blanqui Exp $ *)
 
 Require Export RelExtras.
 Require Export ListUtil.
@@ -42,8 +42,8 @@ Module LexOrder (ES : Eqset).
     Lemma SPO_to_lex_SPO : forall (ss : list ES.A), 
       (forall s, In s ss ->
         (forall t u, r s t -> r t u -> r s u) /\ (r s s -> False)) ->
-      (forall (ts us : list ES.A),
-        lex ss ts -> lex ts us -> lex ss us) /\ (lex ss ss -> False).
+      (forall ts us : list ES.A, lex ss ts -> lex ts us -> lex ss us)
+      /\ (lex ss ss -> False).
 
     Proof.
       induction ss as [ | s ss IHss]; intro Hss; split.
