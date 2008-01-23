@@ -8,7 +8,7 @@ This file provides an implementation of finite multisets using list
 representation.
 *)
 
-(* $Id: MultisetList.v,v 1.3 2007-05-17 15:30:54 koper Exp $ *)
+(* $Id: MultisetList.v,v 1.4 2008-01-23 10:23:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,9 +19,9 @@ Require Import Multiset.
 Require Import List.
 Require Import ListExtras.
 
-Module FiniteMultisetList (ES : Eqset) <:
+Module MultisetList (ES : Eqset) <:
 
-  FiniteMultisetCore with Module Sid := ES.
+  MultisetCore with Module Sid := ES.
 
   Module Sid := ES.
   Export Sid.
@@ -341,4 +341,4 @@ End SpecConformation.
 	       diff_mult
 	       intersection_mult using trivial : multisets.
 
-End FiniteMultisetList.
+End MultisetList.

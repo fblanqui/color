@@ -8,7 +8,7 @@ This file provides a specification of finite multiset data-type along
 with specification of operations on multisets.
 *)
 
-(* $Id: MultisetCore.v,v 1.4 2007-05-30 23:00:54 koper Exp $ *)
+(* $Id: MultisetCore.v,v 1.5 2008-01-23 10:23:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,7 +17,7 @@ Require Setoid.
 Require Omega.
 Require Min.
 
-Module Type FiniteMultisetCore.
+Module Type MultisetCore.
 
   Declare Module Sid: Eqset.
   Export Sid.  
@@ -108,9 +108,9 @@ End Specification.
 	       diff_mult
 	       intersection_mult using trivial : multisets.
 
-End FiniteMultisetCore.
+End MultisetCore.
 
-Section FiniteMultiset_IntersectionAsDifference.
+Section Multiset_IntersectionAsDifference.
 
   Variable A : Set.
   Variable Multiset : Set.
@@ -135,4 +135,4 @@ Section FiniteMultiset_IntersectionAsDifference.
     rewrite Min.min_l; [omega | auto with arith].
   Qed.
 
-End FiniteMultiset_IntersectionAsDifference.
+End Multiset_IntersectionAsDifference.

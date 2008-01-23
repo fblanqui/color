@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.8 2008-01-23 09:27:49 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.9 2008-01-23 10:23:27 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,9 +22,9 @@ Require Import Setoid.
 Require Import Permutation.
 Require Import ListPermutation.
 
-Module MultisetOrder (MC: FiniteMultisetCore).
+Module MultisetOrder (MC: MultisetCore).
 
-  Module MSet := MultisetTheory.FiniteMultiset MC.
+  Module MSet := MultisetTheory.Multiset MC.
   Import MSet.
 
 Section OrderDefinition. 
