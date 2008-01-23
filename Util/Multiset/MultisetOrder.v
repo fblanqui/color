@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.7 2008-01-17 16:22:50 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.8 2008-01-23 09:27:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -107,8 +107,10 @@ Section OrderDefinition.
 
   Proof.
     intros x1 x2 H x3 x4 H0. split; intros H1; inversion H1.
-    constructor 1 with X a Y; trivial. rewrite <- H; trivial. rewrite <- H0; trivial.
-    constructor 1 with X a Y; trivial. rewrite H; trivial. rewrite H0; trivial.
+    constructor 1 with X a Y; trivial. rewrite <- H; trivial.
+    rewrite <- H0; trivial.
+    constructor 1 with X a Y; trivial. rewrite H; trivial.
+    rewrite H0; trivial.
   Qed.
 
   Add Morphism AccM_1 : AccM_1_morph.
@@ -125,7 +127,8 @@ Section OrderDefinition.
     compute; intros m m' meq_mm' n n' meq_nn'. split; intro R_mn.
     exact (trans_clos_mirror meq m' n' meq_mm' meq_nn' R_mn).
     cut (m' =mul= m). intro. cut (n' =mul= n). intro.
-    eapply trans_clos_mirror with (R := MultisetRedGt). apply H. apply H0. assumption.
+    eapply trans_clos_mirror with (R := MultisetRedGt).
+    apply H. apply H0. assumption.
     apply Seq_sym. exact MultisetSetoidTheory. assumption.
     apply Seq_sym. exact MultisetSetoidTheory. assumption.
   Qed.
@@ -136,7 +139,8 @@ Section OrderDefinition.
     compute; intros m m' meq_mm' n n' meq_nn'. split; intro R_mn.
     exact (trans_clos_mirror meq m' n' meq_mm' meq_nn' R_mn).
     cut (m' =mul= m). intro. cut (n' =mul= n). intro.
-    eapply trans_clos_mirror with (R := fun x y => y >mul_1 x). apply H. apply H0. assumption.
+    eapply trans_clos_mirror with (R := fun x y => y >mul_1 x).
+    apply H. apply H0. assumption.
     apply Seq_sym. exact MultisetSetoidTheory. assumption.
     apply Seq_sym. exact MultisetSetoidTheory. assumption.
   Qed.
@@ -180,7 +184,8 @@ Section OrderDefinition.
   (* Variable gtA_so: strict_order gtA. *)
   Variable gtA_transitive: transitive gtA.
   Variable gtA_irreflexive : irreflexive gtA.
-  Variable gtA_eqA_compat: forall (x x' y y': A), x =A= x' -> y =A= y' -> x >A y -> x' >A y'.
+  Variable gtA_eqA_compat: forall x x' y y',
+    x =A= x' -> y =A= y' -> x >A y -> x' >A y'.
 
   (*Hint Resolve (sord_trans gtA_so) : sets.
   Hint Resolve (sord_irrefl gtA_so) : sets.
@@ -188,7 +193,8 @@ Section OrderDefinition.
   Hint Resolve gtA_eqA_compat : sets. *)
   Hint Resolve (gtA_transitive) : sets.
   Hint Resolve (gtA_irreflexive) : sets.
-  Hint Resolve (so_not_symmetric (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
+  Hint Resolve (so_not_symmetric
+    (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
   Hint Resolve gtA_eqA_compat : sets.
 
   Add Morphism gtA : gtA_morph.
@@ -330,7 +336,8 @@ Section OrderCharacterization.
     intros y y_less_x.
     apply (IHM (M - {{x}} + {{y}})); auto with multisets.
     constructor.
-    apply MSetRed with (X := M - {{x}}) (a := x) (Y := {{y}}); auto with multisets.
+    apply MSetRed with (X := M - {{x}}) (a := x) (Y := {{y}});
+      auto with multisets.
     intros y0 Hy0.
     generalize (member_singleton Hy0); clear Hy0; intro Hy0.
     apply gtA_eqA_compat with (x' := x) (x := x) (y := y); auto with multisets.
@@ -511,7 +518,8 @@ Section OrderCharacterization.
      (* a = a0, order proved using inserted element *)
     exists Y; right; split.
     rewrite H1; setoid_replace X with M. auto with multisets.
-    apply meq_union_meq with {{a}}. setoid_rewrite <- a_a0 in H0. auto with multisets.
+    apply meq_union_meq with {{a}}. setoid_rewrite <- a_a0 in H0.
+    auto with multisets.
     intros; rewrite a_a0; apply (H2 x); trivial.
      (* a <> a0, order proved with other element that inserted one *)
     assert (a0_a: ~a0 =A= a); auto with sets.
@@ -633,9 +641,9 @@ End OrderCharacterization.
 
 Hint Resolve empty_min empty_min_red : multisets.
 
-(* ---------------------------------------------------------------------------------------
+(* -----------------------------------------------------------------
      Multiset order being strict order
-   --------------------------------------------------------------------------------------- *)
+   ----------------------------------------------------------------- *)
 
 Section MultisetOrder_StrictOrder.
 
@@ -773,7 +781,8 @@ Section MultisetOrder_Wf.
   Proof.
     intros.
     unfold ACC_M.
-    apply Acc_homo with Multiset MultisetLt (fun (x y: Multiset) => x = y) x; trivial.
+    apply Acc_homo with Multiset MultisetLt (fun x y : Multiset => x = y) x;
+      trivial.
     intros.
     exists y; trivial.
     unfold MultisetLt, transp; simpl.
@@ -836,7 +845,8 @@ Section OrderLemmas.
     left; trivial.
   Qed.
 
-  Lemma mord_elts_ge: M >mul N -> forall n, n in N -> exists2 m, m in M & m >*A n \/ m =A= n.
+  Lemma mord_elts_ge: M >mul N -> forall n, n in N ->
+    exists2 m, m in M & m >*A n \/ m =A= n.
 
   Proof.
      (* induction on number of steps needed to show the ordering *)
@@ -870,36 +880,44 @@ Section MOrdPair.
 
   Variables aL aR bL bR : A.
 
-  Lemma pair_mord_left : aL >A aR -> bL >=A bR -> {{ aL, bL }} >mul {{ aR, bR }}.
+  Lemma pair_mord_left :
+    aL >A aR -> bL >=A bR -> {{ aL, bL }} >mul {{ aR, bR }}.
 
   Proof.
     intros; destruct H0.
     constructor 2 with {{aR, bL}}.
-    constructor; constructor 1 with {{bL}} aL {{aR}}; intros; eauto with multisets.
+    constructor; constructor 1 with {{bL}} aL {{aR}}; intros;
+      eauto with multisets.
     assert (xAr: y =A= aR); [apply member_singleton | rewrite xAr]; 
       trivial.
-    constructor; constructor 1 with {{aR}} bL {{bR}}; intros; eauto with multisets.
+    constructor; constructor 1 with {{aR}} bL {{bR}}; intros;
+      eauto with multisets.
     assert (xAr: y =A= bR); [apply member_singleton | rewrite xAr]; 
       trivial.
     rewrite H0.
-    constructor; constructor 1 with {{bR}} aL {{aR}}; intros; eauto with multisets.
+    constructor; constructor 1 with {{bR}} aL {{aR}}; intros;
+      eauto with multisets.
     assert (xAr: y =A= aR); [apply member_singleton | rewrite xAr]; 
       trivial.
   Qed.
 
-  Lemma pair_mord_right : aL >=A aR -> bL >A bR -> {{ aL, bL }} >mul {{ aR, bR }}.
+  Lemma pair_mord_right :
+    aL >=A aR -> bL >A bR -> {{ aL, bL }} >mul {{ aR, bR }}.
 
   Proof.
     intros; destruct H.
     constructor 2 with {{aR, bL}}.
-    constructor; constructor 1 with {{bL}} aL {{aR}}; intros; eauto with multisets.
+    constructor; constructor 1 with {{bL}} aL {{aR}}; intros;
+      eauto with multisets.
     assert (xAr: y =A= aR); [apply member_singleton | rewrite xAr]; 
       trivial.
-    constructor; constructor 1 with {{aR}} bL {{bR}}; intros; eauto with multisets.
+    constructor; constructor 1 with {{aR}} bL {{bR}}; intros;
+      eauto with multisets.
     assert (xAr: y =A= bR); [apply member_singleton | rewrite xAr]; 
       trivial.
     rewrite H.
-    constructor; constructor 1 with {{aR}} bL {{bR}}; intros; eauto with multisets.
+    constructor; constructor 1 with {{aR}} bL {{bR}}; intros;
+      eauto with multisets.
     assert (xAr: y =A= bR); [apply member_singleton | rewrite xAr]; 
       trivial.
   Qed.
@@ -913,7 +931,8 @@ Section MOrdPair.
   Proof.
     intros.
     inversion H.
-    destruct (pair_decomp H1) as [[ZaLbL Xempty] | [[Zempty XaLbL] | [[ZaL XbL] | [ZbL XaL]]]].
+    destruct (pair_decomp H1)
+      as [[ZaLbL Xempty] | [[Zempty XaLbL] | [[ZaL XbL] | [ZbL XaL]]]].
      (* {aL, bL}, {} *)
     absurd (X =mul= empty); trivial.
      (* {}, {aL, bL} *)
@@ -1028,7 +1047,8 @@ Section MOrdPair.
     apply meq_multeq; trivial.
   Qed.
 
-  Lemma pair_mOrd_left : aL >A aR -> bL >=A bR -> {{ aL, bL }} >MUL {{ aR, bR }}.
+  Lemma pair_mOrd_left :
+    aL >A aR -> bL >=A bR -> {{ aL, bL }} >MUL {{ aR, bR }}.
 
   Proof.
     intros.
@@ -1050,7 +1070,8 @@ Section MOrdPair.
     rewrite (member_singleton H1); trivial.
   Qed.
 
-  Lemma pair_mOrd_right : aL >=A aR -> bL >A bR -> {{ aL, bL }} >MUL {{ aR, bR }}.
+  Lemma pair_mOrd_right :
+    aL >=A aR -> bL >A bR -> {{ aL, bL }} >MUL {{ aR, bR }}.
 
   Proof.
     intros.
@@ -1106,7 +1127,8 @@ Section OrderSim.
   Proof.
     intros M M' a b Pab MM'.
     destruct (multiset2list_insert a M) as [a' [p [a'a [Mperm Mp]]]].
-    destruct (list_sim_permutation STA P_eqA_comp MM' Mperm) as [M''  [M''sim M'M'']].
+    destruct (list_sim_permutation STA P_eqA_comp MM' Mperm)
+      as [M'' [M''sim M'M'']].
     exists (insert_nth M'' p b); split.
     rewrite (list2multiset_insert_nth b M'' p).
     rewrite (permutation_meq M'M''); auto with multisets.
@@ -1151,8 +1173,9 @@ Section OrderSim.
 
   Lemma multiset_split : forall xs xs' A B,
     list_sim P xs xs' -> list2multiset xs =mul= A + B ->
-    exists A', exists B', list2multiset xs' =mul= list2multiset A' + list2multiset B' /\
-    list_sim P (multiset2list A) A' /\ list_sim P (multiset2list B) B'.
+    exists A', exists B',
+      list2multiset xs' =mul= list2multiset A' + list2multiset B'
+      /\ list_sim P (multiset2list A) A' /\ list_sim P (multiset2list B) B'.
 
   Proof.
     induction xs.
@@ -1245,8 +1268,10 @@ Section OrderSim.
   Proof.
     intros xs ys xs' ys' ordC eqC xs_xs' ys_ys' xs_ys.
     inversion xs_ys as [X Y Z Xne xs_split ys_split Cond].
-    destruct (multiset_split xs_xs' xs_split) as [Z' [X' [xs'_split [Z_sim X_sim]]]].
-    destruct (multiset_split ys_ys' ys_split) as [Z'' [Y' [ys'_split [Z'_sim Y_sim]]]].
+    destruct (multiset_split xs_xs' xs_split)
+      as [Z' [X' [xs'_split [Z_sim X_sim]]]].
+    destruct (multiset_split ys_ys' ys_split)
+      as [Z'' [Y' [ys'_split [Z'_sim Y_sim]]]].
     exists (list2multiset X') (list2multiset Y') (list2multiset Z'); trivial.
     cut (multiset2list X <> nil).
     destruct (multiset2list X); try_solve.
@@ -1522,7 +1547,8 @@ Section OrderDec.
     (forall r, r in R -> (exists2 l, l in L & l >A r)).
     
   Lemma Ord_dec : forall M N, 
-    (forall m n, m in M -> n in N -> {m >A n} + {~m >A n}) -> {Ord M N} + {~Ord M N}.
+    (forall m n, m in M -> n in N -> {m >A n} + {~m >A n}) ->
+    {Ord M N} + {~Ord M N}.
 
   Proof.
     intros M N; generalize M; clear M.

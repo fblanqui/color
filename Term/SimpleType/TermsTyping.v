@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.3 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: TermsTyping.v,v 1.4 2008-01-23 09:27:49 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,28 +32,27 @@ Module TermsTyping (Sig : TermsSig.Signature).
   Lemma type_discr : forall A B, ~A = A --> B.
 
   Proof.
-    induction A; try_solve.
-    intros; intro e.
-    inversion e.
-    apply (IHA1 A2); trivial.
+    induction A; unfold not; simpl; intros. discriminate.
+    unfold not in *. inversion H. eapply IHA1. apply H1.
   Qed.
 
   Lemma type_discr2 : forall A B C, ~A = (A --> B) --> C.
 
   Proof.
-    induction A; try_solve.
-    intros; intro e.
-    inversion e.
-    apply (IHA1 A2 B); trivial.
+    induction A; unfold not; simpl; intros. discriminate.
+    unfold not in *. inversion H. eapply IHA1. apply H1.
   Qed.
 
 Section Equality_Decidable.
 
+(* FIXME: eq_nat_dec has to be redefined here for the following Hint
+Resolve, otherwise it does not work! *)
   Lemma eq_nat_dec : forall (m n: nat), {m=n}+{m<>n}.
 
-  Proof. 
-    decide equality. 
+  Proof.
+    decide equality.
   Qed.
+
   Hint Resolve eq_nat_dec : terms.
 
   Lemma eq_SimpleType_dec : forall (A B: SimpleType), {A=B} + {A<>B}.
@@ -69,6 +68,7 @@ Section Equality_Decidable.
     decide equality; generalize a o; decide equality; 
       apply eq_SimpleType_dec.
   Qed.
+
   Hint Resolve eq_Env_dec : terms.
 
   Lemma eq_Preterm_dec : forall (F G: Preterm), {F=G}+{F<>G}.
@@ -76,6 +76,7 @@ Section Equality_Decidable.
   Proof. 
     decide equality; auto with terms. 
   Qed.
+
   Hint Resolve eq_Preterm_dec : terms.
 
   Lemma isVarDecl_dec : forall E x, {A: SimpleType | E |= x := A} + {E |= x :!}.
