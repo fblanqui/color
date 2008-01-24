@@ -220,14 +220,14 @@ destruct (le_gt_dec dim x). discriminate.
 destruct (le_gt_dec dim y). discriminate.
 unfold id_matrix in H; rewrite Vbuild_nth in H.
 unfold id_vec in H; rewrite Vbuild_nth in H.
-unfold A0, A1 in *; destruct (eq_nat_dec x y); auto.
+unfold A0, A1 in *; destruct (NatUtil.eq_nat_dec x y); auto.
 discriminate.
 destruct H; destruct H0; unfold mat_unbound.
 destruct (le_gt_dec dim x); auto with *.
 destruct (le_gt_dec dim y); auto with *.
 unfold id_matrix; rewrite Vbuild_nth.
 unfold id_vec; rewrite Vbuild_nth.
-unfold A0, A1 in *; destruct (eq_nat_dec x y); auto.
+unfold A0, A1 in *; destruct (NatUtil.eq_nat_dec x y); auto.
 Qed.
 
 Lemma G_morph_id : forall x y,

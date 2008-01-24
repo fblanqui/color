@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.27 2008-01-23 18:22:39 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.28 2008-01-24 13:22:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -734,12 +734,8 @@ Lemma Vforall2_tail : forall n (v1 v2 : vec (S n)), Vforall2 v1 v2 ->
   Vforall2 (Vtail v1) (Vtail v2).
 
 Proof.
-  intros.
-  VSntac v1. rewrite H0 in H.
-  VSntac v2. rewrite H1 in H.
-  simpl in H. destruct (eq_nat_dec n n). 
-  destruct H. assumption.
-  contradiction.
+  intros. VSntac v1. rewrite H0 in H. VSntac v2. rewrite H1 in H.
+  simpl in H. rewrite eq_nat_dec_refl in H. destruct H. exact H2.
 Qed.
 
 Lemma Vforall2n_tail : forall n (v1 v2 : vec (S n)), Vforall2n v1 v2 ->
@@ -758,9 +754,8 @@ Proof.
   destruct i. simpl.
   rewrite H0 in H. rewrite H1 in H.
   unfold Vforall2n in H. simpl in H.
-  destruct (eq_nat_dec n n). destruct H. trivial.
-  contradiction.
-  simpl. apply IHn. 
+  rewrite eq_nat_dec_refl in H. destruct H. trivial.
+  simpl. apply IHn.
   unfold Vforall2n. apply Vforall2_tail. assumption.
 Qed.
 
@@ -771,12 +766,11 @@ Proof.
   induction n; intros.
   VOtac. constructor.
   VSntac v1. VSntac v2.
-  unfold Vforall2n. simpl. 
-  destruct (eq_nat_dec n n). split.
+  unfold Vforall2n. simpl.
+  rewrite eq_nat_dec_refl. split.
   do 2 rewrite Vhead_nth. apply H.
-  apply IHn. intros. 
+  apply IHn. intros.
   do 2 rewrite Vnth_tail. apply H.
-  absurd_arith.
 Qed.
 
 Require Import RelDec.
@@ -788,7 +782,7 @@ Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2),
 
 Proof.
   induction v1; intros; destruct v2; simpl; auto.
-  destruct (eq_nat_dec n n0); simpl; auto.
+  destruct (eq_nat_dec (S n) (S n0)); simpl; auto.
   destruct (IHv1 n0 v2); intuition.
   destruct (R_dec a a0); intuition.
 Defined.
@@ -919,7 +913,9 @@ Qed.
 (***********************************************************************)
 (** decidability of equality *)
 
-Section beq.
+(* you should use a boolean function instead *)
+
+Section eq_dec.
 
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
@@ -933,21 +929,21 @@ right. unfold not. intro. Veqtac. auto.
 right. unfold not. intro. Veqtac. auto.
 Defined.
 
+End eq_dec.
+
+(***********************************************************************)
+(** boolean function testing equality *)
+
+Section beq.
+
 Variable beq : A -> A -> bool.
 Variable beq_ok : forall x y, beq x y = true <-> x = y.
 
 Fixpoint beq_vec n (v : vec n) p (w : vec p) {struct v} :=
-  match v with
-    | Vnil =>
-      match w with
-        | Vnil => true
-        | _ => false
-      end
-    | Vcons x _ v' =>
-      match w with
-        | Vcons y _ w' => beq x y && beq_vec v' w'
-        | _ => false
-      end
+  match v, w with
+    | Vnil, Vnil => true
+    | Vcons x _ v', Vcons y _ w' => beq x y && beq_vec v' w'
+    | _, _ => false
   end.
 
 Lemma beq_vec_refl : forall n (v : vec n), beq_vec v v = true.
@@ -1002,7 +998,8 @@ assert (ha : Vin a (Vcons a v)). simpl. auto.
 deduce (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
 assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
 intros x hx. apply hyp. simpl. auto.
-destruct (andb_elim h). deduce (IHv hyp' _ w H2). rewrite <- H3. apply Vcast_eq.
+destruct (andb_elim h). deduce (IHv hyp' _ w H2). rewrite <- H3.
+apply Vcast_eq.
 Qed.
 
 Lemma beq_vec_ok_in2 : forall n (v : vec n)

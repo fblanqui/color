@@ -13,7 +13,8 @@ see Term/SimpleType/TermsTyping.v.
 
 - RPO: support for Rainbow
 
-- DP: add improvement to DP pairs by ignoring pairs where rhs is a subterm of lhs
+- DP: add improvement to DP pairs by ignoring pairs where rhs is a
+subterm of lhs
 
 - AF: extend by allowing collapsing argument filterings
 
@@ -23,12 +24,16 @@ explicit at every proof step
 - define strategies
 
 - Eqdep uses an axiom: it is still used in ATerm and ACap (grep Eqdep)
-and in the tactic Funeqtac.
-is it possible to get rid of it by using Eqdep_dec only?
+and in the tactic Funeqtac. is it possible to get rid of it by using
+Eqdep_dec only?
 
 - replace defs and lemmas when they are added in coq std lib
 
 - replace decidability lemmas by boolean functions
+
+- remove the use of beq_dec and beqtac
+
+- replace unary integers by binary integers
 
 Done list:
 ----------
