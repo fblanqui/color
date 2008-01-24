@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.22 2008-01-23 18:22:39 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.23 2008-01-24 13:22:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -38,17 +38,10 @@ Ltac absurd_arith := elimtype False; omega.
 (** decidability of equality *)
 
 Fixpoint beq_nat (x y : nat) {struct x} :=
-  match x with
-    | 0 =>
-      match y with
-        | 0 => true
-        | _ => false
-      end
-    | S x' =>
-      match y with
-        | S y' => beq_nat x' y'
-        | _ => false
-      end
+  match x, y with
+    | 0, 0 => true
+    | S x', S y' => beq_nat x' y'
+    | _, _ => false
   end.
 
 Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
@@ -59,10 +52,29 @@ apply (f_equal S). rewrite IHx in H. exact H.
 rewrite IHx. inversion H. refl.
 Qed.
 
+Require Export EqUtil.
+
+Definition eq_nat_dec := dec_beq beq_nat_ok.
+
+Require Export EqUtil.
+
+Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
+
+Proof.
+intro. gen (eq_nat_dec n n). destruct s. rewrite (UIP_refl eq_nat_dec e).
+refl. irrefl.
+Qed.
+
+(*old version with Coq's eq_nat_dec:
+Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
+
+Proof.
+induction n; simpl. reflexivity. rewrite IHn. reflexivity.
+Qed.*)
+
 (***********************************************************************)
 (** unicity of eq/le/lt proofs *)
 
-Scheme eq_ind_dep := Induction for eq Sort Prop.
 Scheme le_ind_dep := Induction for le Sort Prop.
 
 Lemma le_unique : forall n m (h1 h2 : le n m), h1 = h2.
@@ -100,12 +112,6 @@ Lemma lt_nS_Sn : forall m n (H : S m < S n), lt_n_S (lt_S_n H) = H.
 
 Proof.
   intros. apply lt_unique.
-Qed.
-
-Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
-
-Proof.
-induction n; simpl. reflexivity. rewrite IHn. reflexivity.
 Qed.
 
 (***********************************************************************)

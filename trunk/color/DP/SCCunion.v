@@ -60,7 +60,7 @@ unfold permutation, meq in *. deduce (p i). rewrite nfirst_multiplicity in H0.
 destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 cut (exists j, j=i /\ In j x). intros; destruct H1. destruct H1.
 rewrite <- H1; auto.
-apply (multiplicity_in (@eq nat) eq_nat_dec). omega.
+apply (multiplicity_in (@eq nat) NatUtil.eq_nat_dec). omega.
 assert (length (hyp_Dom hyps) = dim); intuition.
 rewrite <- H1 in H. assert False. omega. tauto.
 Qed.

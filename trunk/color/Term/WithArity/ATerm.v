@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.12 2008-01-23 18:22:39 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.13 2008-01-24 13:22:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -149,46 +149,25 @@ Variable beq_symb : Sig -> Sig -> bool.
 Variable beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
 
 Fixpoint beq (t u : term) {struct t} :=
-  match t with
-    | Var x =>
-      match u with
-        | Var y => beq_var x y
-        | _ => false
-      end
-    | Fun f ts =>
-      match u with
-        | Fun g us =>
-          let fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
-            match ts with
-              | Vnil =>
-                match us with
-                  | Vnil => true
-                  | _ => false
-                end
-              | Vcons t _ ts' =>
-                match us with
-                  | Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
-                  | _ => false
-                end
-            end
-            in beq_symb f g && beq_terms _ ts _ us
-        | _ => false
-      end
+  match t, u with
+    | Var x, Var y => beq_var x y
+    | Fun f ts, Fun g us =>
+      let fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
+        match ts, us with
+          | Vnil, Vnil => true
+          | Vcons t _ ts', Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
+          | _, _ => false
+        end
+        in beq_symb f g && beq_terms _ ts _ us
+    | _, _ => false
   end.
 
 Lemma beq_terms : forall n (ts : terms n) p (us : terms p),
   (fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
-    match ts with
-      | Vnil =>
-        match us with
-          | Vnil => true
-          | _ => false
-        end
-      | Vcons t _ ts' =>
-        match us with
-          | Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
-          | _ => false
-        end
+    match ts, us with
+      | Vnil, Vnil => true
+      | Vcons t _ ts', Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
+      | _, _ => false
     end) _ ts _ us = beq_vec beq ts us.
 
 Proof.
@@ -220,13 +199,23 @@ End beq.
 
 Implicit Arguments beq_ok [beq_var beq_symb].
 
-Let beq_symb := beq_eq_dec (@eq_symbol_dec Sig).
-Let beq_symb_ok := beq_eq_dec_ok (@eq_symbol_dec Sig).
+Definition beq_symb := beq_dec (@eq_symbol_dec Sig).
 
-Let beq_term := beq beq_nat beq_symb.
-Let beq_term_ok := beq_ok beq_nat_ok beq_symb_ok.
+Lemma beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
 
-Definition eq_term_dec := eq_dec_beq beq_term_ok.
+Proof.
+exact (beq_dec_ok (@eq_symbol_dec Sig)).
+Qed.
+
+Definition beq_term := beq beq_nat beq_symb.
+
+Lemma beq_term_ok : forall t u, beq_term t u = true <-> t = u.
+
+Proof.
+exact (beq_ok beq_nat_ok beq_symb_ok).
+Qed.
+
+Definition eq_term_dec := dec_beq beq_term_ok.
 
 (***********************************************************************)
 (** maximal variable index in a term *)
@@ -439,8 +428,8 @@ Ltac Funeqtac := repeat
     | H : @Fun ?Sig ?f ?ts = Fun ?f ?us |- _ =>
       let H1 := fresh in let H2 := fresh in
       (injection H; intro H1; assert (H2 : ts = us);
-      [apply (inj_pair2 Sig (fun h => @vector (@term Sig) (arity h))); assumption
-      | clear H H1])
+      [apply (inj_pair2 Sig (fun h => @vector (@term Sig) (arity h)));
+        assumption | clear H H1])
     | H : @Fun ?Sig ?f ?ts = Fun ?g ?us |- _ =>
       injection H; intros _ fresh; subst g; Funeqtac
   end.

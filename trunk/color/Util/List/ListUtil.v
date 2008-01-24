@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.35 2008-01-23 18:22:39 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.36 2008-01-24 13:22:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -82,17 +82,10 @@ Variable beq : A -> A -> bool.
 Variable beq_ok : forall x y, beq x y = true <-> x = y.
 
 Fixpoint beq_list (l m : list A) {struct l} :=
-  match l with
-    | nil =>
-      match m with
-        | nil => true
-        | _ => false
-      end
-    | x :: l' =>
-      match m with
-        | y :: m' => beq x y && beq_list l' m'
-        | _ => false
-      end
+  match l, m with
+    | nil, nil => true
+    | x :: l', y :: m' => beq x y && beq_list l' m'
+    | _, _ => false
   end.
 
 Lemma beq_list_refl : forall l, beq_list l l = true.
@@ -110,6 +103,8 @@ rewrite IHl in H1. subst m. refl.
 inversion H. subst a0. subst m. apply andb_intro.
 rewrite beq_ok. refl. rewrite IHl. refl.
 Qed.
+
+Definition list_eq_dec := dec_beq beq_list_ok.
 
 End beq.
 
