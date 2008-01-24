@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.15 2007-08-23 17:06:43 ducasleo2 Exp $ *)
+(* $Id: ADP.v,v 1.16 2008-01-24 14:52:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -207,7 +207,7 @@ destruct e as [ls]. rewrite H5 in H3. rewrite app_fun in H3. Funeqtac.
 (* begin assert: the substitution s is SN *)
 assert (Hsnsx : forall x, In x (vars l) -> SNR (s x)). intros.
 eapply sub_fun_sn with (f := f). rewrite H5 in H3. apply H3.
-rewrite <- H7. assumption.
+rewrite H6 in Hsnts. exact Hsnts.
 (* end assert *)
 (* we decompose r into its caps and its aliens *)
 subst u. assert (r = app (alien_sub r) (cap r)). apply sym_eq.
@@ -220,9 +220,9 @@ case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
 deduce (vars_cap_inf R H4 l0). deduce (hyp2 H2 _ H8).
 rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
 (* x > maxvar r *)
-rewrite (fsub_nth (aliens (capa r)) l0 H6).
-set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H6)).
-assert (Fun f ts = app s l). rewrite H5. rewrite H7. refl.
+rewrite (fsub_nth (aliens (capa r)) l0 H7).
+set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H7)).
+assert (Fun f ts = app s l). rewrite H5. rewrite H6. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
 deduce (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
 (* every call is SN *)
@@ -237,7 +237,7 @@ assumption.
 destruct e. absurd (l = Var x). eapply lhs_notvar. apply hyp1. apply H2.
 assumption.
 (* c <> Hole *)
-Funeqtac. subst u. apply H1. rewrite H6. unfold terms_gt. apply Vgt_prod_cast.
+Funeqtac. subst u. apply H1. rewrite H5. unfold terms_gt. apply Vgt_prod_cast.
 apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
 eapply red_rule. assumption. refl.
 Qed.

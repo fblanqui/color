@@ -15,6 +15,8 @@ About compilation:
 stable release of Coq and, if possible, with the development version
 of Coq.
 
+- Put useful messages when you commit.
+
 - When you add a file, do "make config" to build Makefile.Coq and the
 dependencies again.
 
@@ -45,6 +47,9 @@ technique must be put in a new directory at the root of the project.
 - Files about algebraic terms (Term/WithArity) should be prefixed with
 A. Files about varyadic terms (Term/Varyadic) should be prefixed with
 V.
+
+- Define decidability lemmas using boolean function. See for instance
+NatUtil.eq_nat_dec.
 
 - Try to build the names of lemmas by concatening its main
 ingredients. For instance:

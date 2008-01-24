@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.7 2007-08-06 16:08:37 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.8 2008-01-24 14:52:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -397,10 +397,10 @@ set (s := sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs)).
 assert (s = sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs)). refl.
 destruct s. destruct p as [f0 v0]. injection H0. intros. subst x.
 assert (v0 = conc cs).
-Require Import Eqdep. apply (inj_pair2 nat (fun x => terms x)). assumption.
+apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x)). assumption.
 assert (f0 = fun ts => Fun f (Vmap_sum cs ts)).
-apply (inj_pair2 nat (fun x => terms x -> term)). assumption. subst f0.
-rewrite app_fun. apply f_equal with (f := Fun f).
+apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x -> term)). assumption.
+subst f0. rewrite app_fun. apply f_equal with (f := Fun f).
 set (s := fsub m v0). set (v1 := fresh (S m) (sum cs)).
 assert (Vmap (app s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (app s) v1)).
 unfold cs. eapply Vmap_map_sum with (m := m).

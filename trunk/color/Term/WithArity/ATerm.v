@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.13 2008-01-24 13:22:24 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.14 2008-01-24 14:52:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -217,6 +217,13 @@ Qed.
 
 Definition eq_term_dec := dec_beq beq_term_ok.
 
+Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
+
+Proof.
+intros. inversion H.
+apply (inj_pairT2 (U := symbol Sig) (@eq_symbol_dec _) H1).
+Qed.
+
 (***********************************************************************)
 (** maximal variable index in a term *)
 
@@ -421,27 +428,12 @@ Implicit Arguments vars_max [Sig x t].
 (***********************************************************************)
 (** tactics *)
 
-Require Import Eqdep.
-
-Ltac Funeqtac := repeat
+Ltac Funeqtac :=
   match goal with
-    | H : @Fun ?Sig ?f ?ts = Fun ?f ?us |- _ =>
-      let H1 := fresh in let H2 := fresh in
-      (injection H; intro H1; assert (H2 : ts = us);
-      [apply (inj_pair2 Sig (fun h => @vector (@term Sig) (arity h)));
-        assumption | clear H H1])
-    | H : @Fun ?Sig ?f ?ts = Fun ?g ?us |- _ =>
-      injection H; intros _ fresh; subst g; Funeqtac
-  end.
-
-(*Ltac Funeqtac :=
-  match goal with
+    | H : @Fun ?Sig ?f ?ts = @Fun _ ?f ?us |- _ =>
+      deduce (fun_eq H); clear H
     | H : @Fun ?Sig ?f ?ts = @Fun _ ?g ?us |- _ =>
-      let H1 := fresh in
-        (inversion H as [[fresh H1]]; try (subst g || subst f || idtac);
-          generalize (inj_pair2 Sig
-            (fun h => @vector (@ATerm.term Sig) (@ASignature.arity Sig h))
-            f _ _ H1); intro;
-          try (subst us || subst ts || idtac); clear H1)
-  end.*)
-
+      let H0 := fresh in let H1 := fresh in
+        (inversion H as [[H0 H1]]; clear H1; subst g;
+          deduce (fun_eq H); clear H)
+  end.

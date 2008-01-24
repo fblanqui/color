@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.6 2007-08-06 16:08:37 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.7 2008-01-24 14:52:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -179,16 +179,14 @@ pattern (defined f R). apply bool_eq_ind; intro; destruct C; simpl in H0.
 (* C = Hole *)
 rewrite H0. apply in_eq.
 (* C <> Hole *)
-Funeqtac. apply in_cons. apply IH. exists (fill C (Fun g us)). split.
-rewrite H3. apply Vin_cast_intro. apply Vin_app_cons.
-unfold subterm_eq. exists C. refl.
+Funeqtac. subst ts. apply in_cons. apply IH. exists (fill C (Fun g us)). split.
+apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
 (* undefined f *)
 (* C = Hole *)
 injection H0. intros. subst f. rewrite H in H1. discriminate.
 (* C <> Hole *)
-Funeqtac. apply IH. exists (fill C (Fun g us)). split.
-rewrite H3. apply Vin_cast_intro. apply Vin_app_cons.
-unfold subterm_eq. exists C. refl.
+Funeqtac. subst ts. apply IH. exists (fill C (Fun g us)). split.
+apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
 (* nil *)
 unfold Q. simpl. intro. destruct H0 as [t]. intuition.
 (* cons *)
