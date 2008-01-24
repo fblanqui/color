@@ -1,4 +1,6 @@
 
+- give a signature to every morphism to avoid coq warnings on iff
+
 - remove warnings occurring at compilation
 
 - strange thing about eq_nat_dec and Hint Resolve eq_nat_dec : terms.

@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.8 2008-01-23 18:22:39 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.9 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -118,7 +118,9 @@ Module TermsConv (Sig : TermsSig.Signature).
   
   Add Setoid EnvSubst envSubst_eq envSubst_setoid as EnvSubstSetoid.
 
-  Add Morphism envSubst_extends : envSubst_extends_morph.
+  Add Morphism envSubst_extends
+    with signature envSubst_eq ==> envSubst_eq ==> iff
+      as envSubst_extends_morph.
 
   Proof.
     firstorder.
@@ -588,12 +590,14 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply IHx2 with E; trivial.   
   Qed.
 
-  Add Morphism conv_term : conv_term_morph.
+  Add Morphism conv_term
+    with signature envSubst_eq ==> iff
+      as conv_term_morph.
 
   Proof.
     intuition.
-    eapply conv_term_morph_aux. apply H. exact H0.
-    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H. exact H0.
+    eapply conv_term_morph_aux. apply H1. exact H2.
+    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H1. exact H2.
   Qed.
 
   Lemma conv_term_refl : forall M,
@@ -804,11 +808,12 @@ Module TermsConv (Sig : TermsSig.Signature).
   Definition activeEnv_compSubst_on M N x y := forall A,
     activeEnv M |= x := A <-> activeEnv N |= y := A.
 
-
   Definition conv_env (M N: Term) (S: EnvSubst) : Prop := forall x y,
     S.(envSub) x y -> activeEnv_compSubst_on M N x y.
 
-  Add Morphism conv_env : conv_env_morph.
+  Add Morphism conv_env
+    with signature envSubst_eq ==> iff
+      as conv_env_morph.
 
   Proof.
     Set Firstorder Depth 5. firstorder.

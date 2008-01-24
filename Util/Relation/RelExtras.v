@@ -9,7 +9,7 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 *)
 
-(* $Id: RelExtras.v,v 1.5 2008-01-17 16:22:50 blanqui Exp $ *)
+(* $Id: RelExtras.v,v 1.6 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -148,13 +148,17 @@ Module OrdLemmas (P : Ord).
 
   Add Setoid A eqA sid_theoryA as sidA.
 
-  Add Morphism gtA : gtA_morph.
+  Add Morphism gtA
+    with signature eqA ==> eqA ==> iff
+      as gtA_morph.
 
   Proof.
     split; eauto with sets.
   Qed.
 
-  Add Morphism ltA : ltA_morph.
+  Add Morphism ltA
+    with signature eqA ==> eqA ==> iff
+      as ltA_morph.
 
   Proof.
     split. eauto with sets.
@@ -162,7 +166,9 @@ Module OrdLemmas (P : Ord).
     apply (Seq_sym _ _ sid_theoryA). assumption.
   Qed.
 
-  Add Morphism AccA : AccA_morph.
+  Add Morphism AccA
+    with signature eqA ==> iff
+      as AccA_morph.
 
   Proof.
     intros a b eq_ab. split.

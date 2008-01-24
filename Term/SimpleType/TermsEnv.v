@@ -8,7 +8,7 @@ Operations on environments of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsEnv.v,v 1.4 2008-01-17 16:22:50 blanqui Exp $ *)
+(* $Id: TermsEnv.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1601,7 +1601,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Add Setoid Env env_eq EnvEqSetoidTheory as EnvSetoid.
 
-  Add Morphism envSubset : envSubset_morph.
+  Add Morphism envSubset
+    with signature env_eq ==> env_eq ==> iff
+      as envSubset_morph.
 
   Proof.
     firstorder.
@@ -1616,7 +1618,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_subset_lowered; trivial.
   Qed.
 
-  Add Morphism env_comp : env_comp_morph.
+  Add Morphism env_comp
+    with signature env_eq ==> env_eq ==> iff
+      as env_comp_morph.
 
   Proof.
     firstorder.
@@ -1730,7 +1734,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_compose_morph_aux0; trivial.
   Qed.
 
-  Add Morphism env_compose : env_compose_morph.
+  Add Morphism env_compose
+    with signature env_eq ==> env_eq ==> env_eq
+      as env_compose_morph.
 
   Proof.
     intros; split.
