@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.9 2008-01-23 10:23:27 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.10 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -75,13 +75,15 @@ Section OrderDefinition.
      M =mul= Z + X ->
      N =mul= Z + Y ->
      (forall y, y in Y -> (exists2 x, x in X & x >A y)) ->
-     MultisetGT M N. 
+     MultisetGT M N.
+
   Definition MultisetLT := transp Multiset MultisetGT.
 
   Let AccA := Acc ltA.
   Let AccM := Acc MultisetLt.
   Let AccM_1 := Acc MultisetRedLt.
   Let ACC_M := Acc MultisetLT.
+
   Let clos_transM_RedGt := clos_trans Multiset MultisetRedGt.
   Let clos_transM_RedLt := clos_trans Multiset MultisetRedLt.
 
@@ -103,7 +105,9 @@ Section OrderDefinition.
      Some morphisms
    ------------------------------------------------------------------ *)
 
-  Add Morphism MultisetRedGt : MultisetRed_morph.
+  Add Morphism MultisetRedGt
+    with signature meq ==> meq ==> iff
+      as MultisetRed_morph.
 
   Proof.
     intros x1 x2 H x3 x4 H0. split; intros H1; inversion H1.
@@ -113,7 +117,9 @@ Section OrderDefinition.
     rewrite H0; trivial.
   Qed.
 
-  Add Morphism AccM_1 : AccM_1_morph.
+  Add Morphism AccM_1
+    with signature meq ==> iff
+      as AccM_1_morph.
 
   Proof.
     intros; split; intro H0; inversion H0.
@@ -121,7 +127,9 @@ Section OrderDefinition.
     constructor; intros. apply H1; compute in *; rewrite <- H; trivial.
   Qed.
 
-  Add Morphism clos_transM_RedGt : clos_trans_redgt_morph.
+  Add Morphism clos_transM_RedGt
+    with signature meq ==> meq ==> iff
+      as clos_trans_redgt_morph.
 
   Proof.
     compute; intros m m' meq_mm' n n' meq_nn'. split; intro R_mn.
@@ -133,7 +141,9 @@ Section OrderDefinition.
     apply Seq_sym. exact MultisetSetoidTheory. assumption.
   Qed.
 
-  Add Morphism clos_transM_RedLt : clos_trans_redlt_morph.
+  Add Morphism clos_transM_RedLt
+    with signature meq ==> meq ==> iff
+      as clos_trans_redlt_morph.
 
   Proof.
     compute; intros m m' meq_mm' n n' meq_nn'. split; intro R_mn.
@@ -145,7 +155,9 @@ Section OrderDefinition.
     apply Seq_sym. exact MultisetSetoidTheory. assumption.
   Qed.
 
-  Add Morphism MultisetGt : MultisetGt_morph_equiv.
+  Add Morphism MultisetGt
+    with signature meq ==> meq ==> iff
+      as MultisetGt_morph_equiv.
 
   Proof.
     intros; split; intro; inversion H1.
@@ -164,7 +176,9 @@ Section OrderDefinition.
     intros. apply (proj1 (MultisetGt_morph_equiv H H0)). assumption.
   Qed.
 
-  Add Morphism AccM : Access_morph.
+  Add Morphism AccM
+    with signature meq ==> iff
+      as Access_morph.
 
   Proof.
     intros; split; intro; inversion H0.
@@ -197,13 +211,20 @@ Section OrderDefinition.
     (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
   Hint Resolve gtA_eqA_compat : sets.
 
-  Add Morphism gtA : gtA_morph.
+  Add Morphism gtA
+    with signature eqA ==> eqA ==> iff
+      as gtA_morph.
 
   Proof.
-    split; eauto with sets.
+    (*split; eauto with sets.*)
+    intuition. eapply gtA_eqA_compat. apply H. apply H0. exact H1.
+    eapply gtA_eqA_compat. apply Seq_sym. exact sid_theoryA. apply H.
+    apply Seq_sym. exact sid_theoryA. apply H0. exact H1.
   Qed.
 
-  Add Morphism ltA : ltA_morph.
+  Add Morphism ltA
+    with signature eqA ==> eqA ==> iff
+      as ltA_morph.
 
   Proof.
     split. eauto with sets.
@@ -211,7 +232,9 @@ Section OrderDefinition.
     apply Seq_sym. exact sid_theoryA. assumption.
   Qed.
 
-  Add Morphism gtA_trans : gtA_trans_morph.
+  Add Morphism gtA_trans
+    with signature eqA ==> eqA ==> iff
+      as gtA_trans_morph.
 
   Proof.
     compute. intros a a' a_a' b b' b_b'. split; intro a_gtAt_b.
@@ -222,7 +245,9 @@ Section OrderDefinition.
     apply Seq_sym. exact sid_theoryA. assumption.
   Qed.
 
-  Add Morphism geA : geA_morph.
+  Add Morphism geA
+    with signature eqA ==> eqA ==> iff
+      as geA_morph.
   
   Proof.
     intros; split; intro; destruct H1.

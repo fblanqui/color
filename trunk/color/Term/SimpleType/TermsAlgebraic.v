@@ -8,7 +8,7 @@ Algebraic terms (functions with arity; simple output type of a function
 assumed) encoded via lambda-terms.
 *)
 
-(* $Id: TermsAlgebraic.v,v 1.4 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: TermsAlgebraic.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -79,7 +79,9 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply H1; trivial.
   Qed.
 
-  Add Morphism algebraic : algebraic_morph.
+  Add Morphism algebraic
+    with signature terms_conv ==> iff
+      as algebraic_morph.
 
   Proof.
     intuition.

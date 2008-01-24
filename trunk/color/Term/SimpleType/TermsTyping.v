@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.4 2008-01-23 09:27:49 blanqui Exp $ *)
+(* $Id: TermsTyping.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,7 +23,7 @@ Module TermsTyping (Sig : TermsSig.Signature).
   Module TD := TermsDef.TermsDef Sig.
   Export TD.
 
-  Lemma baseType_dec : forall (A: SimpleType), {isBaseType A} + {isArrowType A}.
+  Lemma baseType_dec : forall A, {isBaseType A} + {isArrowType A}.
 
   Proof.
     destruct A; firstorder.

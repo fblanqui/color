@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.5 2008-01-23 10:23:27 blanqui Exp $ *)
+(* $Id: MultisetTheory.v,v 1.6 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -141,7 +141,9 @@ End meq_equivalence.
   Add Setoid A eqA sid_theoryA as ASetoid.
   Add Setoid Multiset meq MultisetSetoidTheory as MultisetSetoid.
 
-  Add Morphism union : union_morph.
+  Add Morphism union
+    with signature meq ==> meq ==> meq
+      as union_morph.
 
   Proof.
     solve_meq.
@@ -149,7 +151,9 @@ End meq_equivalence.
 
   Variable eqA_dec : forall x y, {x =A= y}+{~x =A= y}.
 
-  Add Morphism singleton : singleton_morph.
+  Add Morphism singleton
+    with signature eqA ==> meq
+      as singleton_morph.
 
   Proof.
     try_solve_meq_ext; case (eqA_dec x x1); intros.
@@ -163,43 +167,57 @@ End meq_equivalence.
       solve [auto with multisets | congruence].
   Qed.
 
-  Add Morphism pair : pair_morph.
+  Add Morphism pair
+    with signature eqA ==> eqA ==> meq
+      as pair_morph.
 
   Proof.
     solve_meq_ext.
   Qed.
 
-  Add Morphism mult : mult_morph.
+  Add Morphism mult
+    with signature eqA ==> meq ==> (@eq nat)
+      as mult_morph.
 
   Proof.
     solve_meq_ext.
   Qed.
 
-  Add Morphism diff : diff_morph.
+  Add Morphism diff
+    with signature meq ==> meq ==> meq
+      as diff_morph.
 
   Proof.
     solve_meq_ext.
   Qed.
 
-  Add Morphism insert : insert_morph.
+  Add Morphism insert
+    with signature eqA ==> meq ==> meq
+      as insert_morph.
 
   Proof.
     solve_meq_ext.
   Qed.
 
-  Add Morphism member : member_morph.
+  Add Morphism member
+    with signature eqA ==> meq ==> iff
+      as member_morph.
 
   Proof.
     mset_unfold; intros a a0 h m m0 H. setoid_rewrite h. setoid_rewrite H. intuition.
   Qed.
 
-  Add Morphism remove : remove_morph.
+  Add Morphism remove
+    with signature eqA ==> meq ==> meq
+      as remove_morph.
 
   Proof.
     solve_meq_ext.
   Qed.
 
-  Add Morphism intersection : intersection_morph.
+  Add Morphism intersection
+    with signature meq ==> meq ==> meq
+      as intersection_morph.
 
   Proof.
     solve_meq.
@@ -1336,7 +1354,9 @@ Section MultisetCardinality.
     rewrite multiset2list_empty; trivial.
   Qed.
 
-  Add Morphism card : card_morph.
+  Add Morphism card
+    with signature meq ==> (@eq nat)
+      as card_morph.
   
   Proof.
     intros m m0; unfold card.

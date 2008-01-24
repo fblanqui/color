@@ -8,7 +8,7 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 *)
 
-(* $Id: LexOrder.v,v 1.4 2007-02-23 18:03:10 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,7 +46,9 @@ Section LexPair.
 
   Add Setoid lp_L lp_eqL lp_sid_theoryL as lp_L_Setoid. 
 
-  Add Morphism lp_gtL : lp_gtL_morph.
+  Add Morphism lp_gtL
+    with signature lp_eqL ==> lp_eqL ==> iff
+    as lp_gtL_morph.
 
   Proof.
     split; eauto with sets.
@@ -63,7 +65,9 @@ Section LexPair.
 
   Add Setoid lp_R lp_eqR lp_sid_theoryR as lp_R_Setoid. 
 
-  Add Morphism lp_gtR : lp_gtR_morph.
+  Add Morphism lp_gtR
+    with signature lp_eqR ==> lp_eqR ==> iff
+      as lp_gtR_morph.
 
   Proof.
     split; eauto with sets.
@@ -102,11 +106,14 @@ Section LexPair.
 
   Add Setoid lp_pair lp_eqPair lp_sid_theory_pair as lp_pair_Setoid.
 
-  Add Morphism lp_LexProd_Gt : lp_LexProdGt_morph_equiv.
+  Add Morphism lp_LexProd_Gt
+    with signature lp_eqPair ==> lp_eqPair ==> iff
+      as lp_LexProdGt_morph_equiv.
 
   Proof.
     intros p p' pp' q q' qq'. split; intro p_q;
-    destruct p; destruct q; destruct p'; destruct q'; destruct pp'; destruct qq';
+    destruct p; destruct q; destruct p'; destruct q'; destruct pp';
+      destruct qq';
     simpl in *; inversion p_q.
     constructor 1; rewrite <- H; rewrite <- H1; trivial.
     constructor 2. rewrite <- H; rewrite <- H1; trivial.
@@ -123,7 +130,9 @@ Section LexPair.
     intros. apply (proj1 (lp_LexProdGt_morph_equiv H H0)). assumption.
   Qed.
 
-  Add Morphism lp_LexProd_Lt : lp_LexProdLt_morph.
+  Add Morphism lp_LexProd_Lt
+    with signature lp_eqPair ==> lp_eqPair ==> iff
+      as lp_LexProdLt_morph.
 
   Proof.
     unfold lp_LexProd_Lt, transp. intros p p' pp' q q' qq'. split; intro p_q.
@@ -131,7 +140,9 @@ Section LexPair.
     rewrite pp'; rewrite qq'; trivial.
   Qed.
 
-  Add Morphism lp_Acc_LexProd : lp_AccLexProd_morph.
+  Add Morphism lp_Acc_LexProd
+    with signature lp_eqPair ==> iff
+      as lp_AccLexProd_morph.
 
   Proof.
     intros p p' p_p'. split.
@@ -284,7 +295,9 @@ Module LexicographicOrder (A_ord B_ord : Ord).
 
   Hint Resolve A_ord.S.sid_theoryA B_ord.S.sid_theoryA : sets.
 
-  Add Morphism LexProd_Gt : LexProdGt_morph.
+  Add Morphism LexProd_Gt
+    with signature eqPair ==> eqPair ==> iff
+      as LexProdGt_morph.
 
   Proof.
     intros p p' pp' q q' qq'. split.
@@ -297,7 +310,9 @@ Module LexicographicOrder (A_ord B_ord : Ord).
     apply Seq_sym; auto with sets. exact sid_theory_pair.
   Qed.
 
-  Add Morphism LexProd_Lt : LexProdLt_morph.
+  Add Morphism LexProd_Lt
+    with signature eqPair ==> eqPair ==> iff
+      as LexProdLt_morph.
 
   Proof.
     unfold LexProd_Lt; unfold transp.
@@ -306,7 +321,9 @@ Module LexicographicOrder (A_ord B_ord : Ord).
     rewrite pp'; rewrite qq'; trivial.
   Qed.
 
-  Add Morphism Acc_LexProd : AccLexProd_morph.
+  Add Morphism Acc_LexProd
+    with signature eqPair ==> iff
+      as AccLexProd_morph.
 
   Proof.
     compute; intros.

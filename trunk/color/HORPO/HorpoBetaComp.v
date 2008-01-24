@@ -196,7 +196,9 @@ Module HorpoBetaComp (S : TermsSig.Signature) (Prec : Horpo.Precedence with Modu
     apply Computable_morph_aux with t; eauto with horpo_beta.
   Qed.
 
-  Add Morphism CompHB : CompHB_morph.
+  Add Morphism CompHB
+    with signature terms_conv ==> iff
+      as CompHB_morph.
 
   Proof.
     intros; split; apply CompHB_morph_aux; auto using terms_conv_sym.

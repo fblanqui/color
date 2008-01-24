@@ -338,7 +338,9 @@ Section Computability_theory.
     apply terms_conv_sym; trivial.
   Qed.
 
-  Add Morphism AccR : AccR_morph.
+  Add Morphism AccR
+    with signature terms_conv ==> iff
+      as AccR_morph.
 
   Proof.
     intros M M' M'M.
@@ -368,7 +370,9 @@ Section Computability_theory.
     apply terms_conv_trans with M'; auto with terms_eq.
   Qed.
 
-  Add Morphism Computable : Computable_morph.
+  Add Morphism Computable
+    with signature terms_conv ==> iff
+      as Computable_morph.
 
   Proof.
     intros t t' teqt'; split; apply Computable_morph_aux;
