@@ -560,27 +560,6 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   End MatMultMonotonicity.
 
-  Section MatrixConstruction.
-
-    Variable A : Set.
-
-    Definition mkMatrix1 (v1 : A) := Vcons (vec_of_list (v1 :: nil)) Vnil.
-    Definition mkMatrix2 (v1 v2 v3 v4 : A) := 
-      Vcons (vec_of_list (v1 :: v2 :: nil)) 
-     (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
-    Definition mkMatrix3 (v1 v2 v3 v4 v5 v6 v7 v8 v9 : A) := 
-      Vcons (vec_of_list (v1 :: v2 :: v3 :: nil)) 
-     (Vcons (vec_of_list (v4 :: v5 :: v6 :: nil))
-     (Vcons (vec_of_list (v7 :: v8 :: v9 :: nil)) Vnil)).
-    Definition mkMatrix4 (v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 
-      v12 v13 v14 v15 v16 : A) := 
-      Vcons (vec_of_list ( v1 ::  v2 ::  v3 ::  v4 :: nil)) 
-     (Vcons (vec_of_list ( v5 ::  v6 ::  v7 ::  v8 :: nil))
-     (Vcons (vec_of_list ( v9 :: v10 :: v11 :: v12 :: nil))
-     (Vcons (vec_of_list (v13 :: v14 :: v15 :: v16 :: nil)) Vnil))).
-
-  End MatrixConstruction.
-
   Lemma mat_vec_prod_ge_compat : forall i j (M M' : matrix i j) m m', 
     mat_ge M M' -> m >=v m' -> mat_vec_prod M m >=v mat_vec_prod M' m'.
 
@@ -594,6 +573,27 @@ Module Matrix (OSRT : OrdSemiRingType).
   Infix ">=m" := mat_ge (at level 70).
 
 End Matrix.
+
+Section MatrixConstruction.
+
+  Variable A : Set.
+
+  Definition mkMatrix1 (v1 : A) := Vcons (vec_of_list (v1 :: nil)) Vnil.
+  Definition mkMatrix2 (v1 v2 v3 v4 : A) := 
+    Vcons (vec_of_list (v1 :: v2 :: nil)) 
+    (Vcons (vec_of_list (v3 :: v4 :: nil)) Vnil).
+  Definition mkMatrix3 (v1 v2 v3 v4 v5 v6 v7 v8 v9 : A) := 
+    Vcons (vec_of_list (v1 :: v2 :: v3 :: nil)) 
+    (Vcons (vec_of_list (v4 :: v5 :: v6 :: nil))
+      (Vcons (vec_of_list (v7 :: v8 :: v9 :: nil)) Vnil)).
+  Definition mkMatrix4 (v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 
+    v11 v12 v13 v14 v15 v16 : A) := 
+  Vcons (vec_of_list ( v1 ::  v2 ::  v3 ::  v4 :: nil)) 
+  (Vcons (vec_of_list ( v5 ::  v6 ::  v7 ::  v8 :: nil))
+    (Vcons (vec_of_list ( v9 :: v10 :: v11 :: v12 :: nil))
+      (Vcons (vec_of_list (v13 :: v14 :: v15 :: v16 :: nil)) Vnil))).
+
+End MatrixConstruction.
 
 (** matrices over different domains *)
 
