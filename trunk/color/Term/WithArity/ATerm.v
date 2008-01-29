@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.14 2008-01-24 14:52:42 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.15 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -111,34 +111,15 @@ Proof.
 intros. rewrite H. refl.
 Qed.
 
-(***********************************************************************)
-(** decidability of equality *)
-
-(* old version using Eqdep's axiom:
-Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
+Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
 
 Proof.
-intro. pattern t. apply term_rec with
-  (Q := fun n (ts : terms n) => forall u, {ts=u}+{~ts=u}); clear t.
-(* var *)
-intros. destruct u. case (eq_nat_dec x n); intro. subst n. auto.
-right. unfold not. intro. injection H. auto.
-right. unfold not. intro. discriminate.
-(* fun *)
-intros f ts H u. destruct u. right. unfold not. intro. discriminate.
-case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
-right. intro. injection H0. intro. assert (ts=v).
-Require Import Eqdep. apply (inj_pair2 Sig (fun f => args f)). assumption. auto.
-right. unfold not. intro. injection H0. intros. auto.
-(* nil *)
-intro. VOtac. auto.
-(* cons *)
-intros. VSntac u. case (H (Vhead u)); intro. rewrite e.
-case (H0 (Vtail u)); intro. rewrite e0. auto.
-right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
-apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
-right. unfold not. intro. injection H2. intros. auto.
-Defined.*)
+intros. inversion H.
+apply (inj_pairT2 (U := symbol Sig) (@eq_symbol_dec _) H1).
+Qed.
+
+(***********************************************************************)
+(** decidability of equality *)
 
 Section beq.
 
@@ -215,14 +196,34 @@ Proof.
 exact (beq_ok beq_nat_ok beq_symb_ok).
 Qed.
 
-Definition eq_term_dec := dec_beq beq_term_ok.
+(* FIXME: Definition eq_term_dec := dec_beq beq_term_ok.*)
 
-Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
+(* old version using Eqdep's axiom: *)
+
+Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
 
 Proof.
-intros. inversion H.
-apply (inj_pairT2 (U := symbol Sig) (@eq_symbol_dec _) H1).
-Qed.
+intro. pattern t. apply term_rec with
+  (Q := fun n (ts : terms n) => forall u, {ts=u}+{~ts=u}); clear t.
+(* var *)
+intros. destruct u. case (eq_nat_dec x n); intro. subst n. auto.
+right. unfold not. intro. injection H. auto.
+right. unfold not. intro. discriminate.
+(* fun *)
+intros f ts H u. destruct u. right. unfold not. intro. discriminate.
+case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
+right. intro. injection H0. intro. assert (ts=v).
+Require Import Eqdep. apply (inj_pair2 Sig (fun f => args f)). assumption. auto.
+right. unfold not. intro. injection H0. intros. auto.
+(* nil *)
+intro. VOtac. auto.
+(* cons *)
+intros. VSntac u. case (H (Vhead u)); intro. rewrite e.
+case (H0 (Vtail u)); intro. rewrite e0. auto.
+right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
+apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
+right. unfold not. intro. injection H2. intros. auto.
+Defined.
 
 (***********************************************************************)
 (** maximal variable index in a term *)
@@ -389,26 +390,39 @@ unfold Q in H2. rewrite H1. rewrite H2. refl.
 Qed.
 
 (***********************************************************************)
-(** number of distinct variables in a term *)
+(** boolean function testing if a variable occurs in a term *)
 
-Require Export ListRepeatFree.
+Section var_occurs_in.
 
-Definition nb_distinct_vars t :=
-  length (make_repeat_free eq_nat_dec (vars t)).
+Variable x : variable.
+
+Fixpoint var_occurs_in t :=
+  match t with
+    | Var y => beq_nat x y
+    | Fun f ts =>
+      let fix var_occurs_in_terms n (ts : terms n) :=
+        match ts with
+          | Vnil => false
+          | Vcons t _ ts' => var_occurs_in t || var_occurs_in_terms _ ts'
+        end
+        in var_occurs_in_terms _ ts
+  end.
+
+End var_occurs_in.
 
 (***********************************************************************)
 (** number of symbol occurrences in a term *)
 
-Fixpoint nb_symbols t :=
+Fixpoint nb_symb_occs t :=
   match t with
     | Var x => 0
     | Fun f ts =>
-      let fix nb_symbols_terms n (ts : terms n) {struct ts} :=
+      let fix nb_symb_occs_terms n (ts : terms n) {struct ts} :=
         match ts with
           | Vnil => 0
-          | Vcons u p us => nb_symbols u + nb_symbols_terms p us
+          | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
         end
-        in nb_symbols_terms _ ts
+        in nb_symb_occs_terms _ ts
   end.
 
 End S.

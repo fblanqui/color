@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.10 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.11 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -57,7 +57,7 @@ Section OrderDefinition.
        (forall y, y in Y -> a >A y) ->
        MultisetRedGt A B.
 
-  (* Then multiset order is just a transitive clousure of this
+  (* Then multiset order is just a transitive closure of this
       reduction *)
 
   Definition MultisetGt := clos_trans Multiset MultisetRedGt.

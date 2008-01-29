@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.23 2008-01-24 13:22:25 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.24 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -48,15 +48,13 @@ Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
 
 Proof.
 induction x; destruct y; simpl; split; intro; try (refl || discriminate).
-apply (f_equal S). rewrite IHx in H. exact H.
-rewrite IHx. inversion H. refl.
-Qed.
+apply (f_equal S). exact (proj1 (IHx _) H).
+apply (proj2 (IHx y)). inversion H. refl.
+Defined.
 
 Require Export EqUtil.
 
-Definition eq_nat_dec := dec_beq beq_nat_ok.
-
-Require Export EqUtil.
+Definition eq_nat_dec := eq_nat_dec. (* FIXME: dec_beq beq_nat_ok. *)
 
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 

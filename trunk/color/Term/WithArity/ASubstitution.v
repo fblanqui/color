@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.13 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.14 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -37,6 +37,8 @@ Definition I0 := mkInterpretation (Var 0) (@Fun Sig).
 Definition substitution := valuation I0.
 
 Definition id : substitution := fun x => Var x.
+
+Definition single x t y := if beq_nat x y then t else Var y.
 
 (***********************************************************************)
 (** application of a substitution *)

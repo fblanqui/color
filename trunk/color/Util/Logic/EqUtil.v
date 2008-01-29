@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.3 2008-01-24 13:22:25 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.4 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -96,17 +96,16 @@ Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 
 Proof.
 unfold not. split; intros.
-rewrite <- beq_ok in H0. rewrite H in H0. discriminate.
-booltac (beq x y). rewrite beq_ok in H1. tauto. exact H1.
-Qed.
+rewrite (proj2 (beq_ok _ _) H0) in H. discriminate.
+booltac (beq x y). deduce (proj1 (beq_ok _ _) H1). tauto. exact H1.
+Defined.
 
 Lemma dec_beq : forall x y : A, {x=y}+{~x=y}. 
 
 Proof.
 intros. cut (forall b, beq x y = b -> {x=y}+{~x=y}). intro. eapply H. refl.
 destruct b; intro.
-rewrite beq_ok in H. left. exact H.
-right. rewrite <- beq_ko. exact H.
+left. exact (proj1 (beq_ok _ _) H). right. exact (proj1 (beq_ko _ _) H).
 Defined.
 
 End beq.
@@ -187,6 +186,8 @@ Qed.
 
 End eq_dec.
 
+(*old code used no where:
+
 Ltac beqtac eq_dec :=
   match goal with
     | _ : ?x = ?y |- _ => subst y; rewrite beq_refl; simpl
@@ -199,4 +200,4 @@ Ltac beqtac_simpl x y :=
   match goal with
     | |- context [beq_dec ?eq_dec x y] =>
       case (eq_dec x y); intro; beqtac eq_dec
-  end.
+  end.*)

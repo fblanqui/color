@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.28 2008-01-24 13:22:25 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.29 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -782,7 +782,7 @@ Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2),
 
 Proof.
   induction v1; intros; destruct v2; simpl; auto.
-  destruct (eq_nat_dec (S n) (S n0)); simpl; auto.
+  destruct (eq_nat_dec n n0); simpl; auto.
   destruct (IHv1 n0 v2); intuition.
   destruct (R_dec a a0); intuition.
 Defined.
@@ -1018,9 +1018,6 @@ End beq_in.
 
 End S.
 
-Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
-Implicit Arguments beq_vec_ok_in2 [A beq n v w].
-
 (***********************************************************************)
 (** declaration of implicit arguments *)
 
@@ -1033,6 +1030,8 @@ Implicit Arguments Vforall_in [A P x n v].
 Implicit Arguments Vin_cast_elim [A m n H v x].
 Implicit Arguments Vin_elim [A x n v].
 Implicit Arguments Vin_app [A x n1 v1 n2 v2].
+Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
+Implicit Arguments beq_vec_ok_in2 [A beq n v w].
 
 (***********************************************************************)
 (** tactics *)

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 signature for algebraic terms with arity
 *)
 
-(* $Id: ASignature.v,v 1.3 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: ASignature.v,v 1.4 2008-01-29 18:07:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,3 +21,7 @@ Record Signature : Type := mkSignature {
 
 Implicit Arguments arity [s].
 Implicit Arguments eq_symbol_dec [s].
+
+Module Type SIGNATURE.
+  Parameter Sig : Signature.
+End SIGNATURE.

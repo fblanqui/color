@@ -51,6 +51,8 @@ V.
 - Define decidability lemmas using boolean function. See for instance
 NatUtil.eq_nat_dec.
 
+- Do not use setoid rewrites in decidability lemmas.
+
 - Try to build the names of lemmas by concatening its main
 ingredients. For instance:
 
