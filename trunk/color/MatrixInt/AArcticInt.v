@@ -23,7 +23,7 @@ Section FunInt.
     args : vector (matrix dim dim) argCnt
   }.
 
-  Variable dim_pos : dim > 0.
+  Variable dim_pos : (dim > 0)%nat.
 
   Definition proper_interpretation n (fi : matrixInt n) := 
     Vexists (fun m => get_elem m dim_pos dim_pos <> MinusInf) (args fi)
@@ -36,7 +36,7 @@ Module Type TArcticInt.
 
   Parameter sig : Signature.
   Parameter dim : nat.
-  Parameter dim_pos : dim > 0.
+  Parameter dim_pos : (dim > 0)%nat.
   Parameter trsInt : forall f : sig, matrixInt dim (arity f).
   Parameter trsIntOk : forall f : sig, proper_interpretation dim_pos (trsInt f).
 
@@ -65,7 +65,7 @@ Module ArcticInt (AI : TArcticInt).
 
   Lemma mat_times_vec_at0_positive : forall n (m : matrix n n) 
     (v : vector A n)
-    (dim_pos : n > 0),
+    (dim_pos : (n > 0)%nat),
     get_elem m dim_pos dim_pos <> MinusInf ->   
     Vnth v dim_pos <> MinusInf ->
     Vnth (mat_vec_prod m v) dim_pos <> MinusInf.
@@ -147,7 +147,7 @@ Module ArcticInt (AI : TArcticInt).
     Definition I := @mkInterpretation sig dom dom_zero 
       (fun f => mi_eval (trsIntOk f)).
 
-    Definition gtx x y := gt x y \/ (x = MinusInf /\ y = MinusInf).
+    Definition gtx x y := x > y \/ (x = MinusInf /\ y = MinusInf).
     Notation "x >_0 y" := (gtx x y) (at level 70).
 
     Definition succ_vec (x y : vec) := Vforall2n gtx x y.
@@ -212,7 +212,7 @@ Module ArcticInt (AI : TArcticInt).
 
     Proof.
       apply WF_incl with 
-        (fun x y => gt (vec_at0 (dom2vec x)) (vec_at0 (dom2vec y))).
+        (fun x y => vec_at0 (dom2vec x) > vec_at0 (dom2vec y)).
       intros x y xy.
       destruct (Vforall2_nth gtx (dom2vec x) (dom2vec y) dim_pos xy). 
       assumption.
@@ -223,24 +223,26 @@ Module ArcticInt (AI : TArcticInt).
 
      (* x-man, move this to OrdSemiRing? *)
     Lemma ge_gt_compat : forall x y z,
-      ge x y -> gt y z -> gt x z.
+      x >= y -> y > z -> x > z.
 
     Proof.
       intros. destruct y. destruct x. destruct z.
-      unfold gt, ge in *. omega.
+      unfold gt, ge in *. destruct H. 
+      simpl in H. omega.
+      injection H. intro. subst n0. assumption.
       auto.
-      elimtype False. auto.
-      elimtype False. auto.
+      elimtype False. destruct H. auto. discriminate.
+      elimtype False. destruct H. auto. subst x.  auto.
     Qed.
 
     Lemma ge_gtx_compat : forall x y z,
-      ge x y -> gtx y z -> gtx x z.
+      x >= y -> y >_0 z -> x >_0 z.
 
     Proof.
       intros. destruct H0.
       left. apply ge_gt_compat with y; assumption.
       destruct H0. subst y. subst z.
-      destruct x. left. auto.
+      destruct x. destruct H. left. auto. discriminate.
       right. auto.
     Qed.
 
@@ -276,6 +278,7 @@ Module ArcticInt (AI : TArcticInt).
           | left; simpl in *; omega
           | right; auto
           ].
+      left. simpl. injection H0. intro. subst n. simpl in H. omega.
     Qed.
 
     Lemma succ_succeq_compat : absorb succ succeq.
@@ -799,4 +802,3 @@ Ltac showIntOk :=
   let s := fresh "s" in 
     intros f; destruct f as [s | s]; destruct s; 
       vm_compute; arcticDiscriminate.
-

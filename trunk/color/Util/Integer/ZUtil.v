@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.9 2007-08-08 09:33:42 blanqui Exp $ *)
+(* $Id: ZUtil.v,v 1.10 2008-01-30 15:24:16 koper Exp $ *)
 
 Require Export LogicUtil.
 
@@ -172,4 +172,43 @@ induction n; simpl; intros. omega. deduce (IHn H).
 apply Zle_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
 omega. assumption. apply Zmult_gt_0_lt_compat_r. apply Zlt_gt.
 apply Zmult_lt_O_compat. omega. apply spos_power. omega. assumption.
+Qed.
+
+(***********************************************************************)
+(** max *)
+
+Lemma Zmax_gub : forall m n k, m >= k -> n >= k -> Zmax m n >= k.
+
+Proof.
+intros. apply Zmax_case; assumption.
+Qed.
+
+Lemma elim_Zmax_l : forall x y z, x <= y -> x <= Zmax y z.
+
+Proof.
+intros. eapply Zle_trans. apply H. apply Zle_max_l.
+Qed.
+
+Lemma elim_Zmax_r : forall x y z, x <= z -> x <= Zmax y z.
+
+Proof.
+intros. eapply Zle_trans. apply H. apply Zle_max_r.
+Qed.
+
+Lemma Zmax_ge_compat : forall x y x' y',
+  x >= x' -> y >= y' -> Zmax x y >= Zmax x' y'.
+
+Proof.
+intros. destruct (Zmax_irreducible_inf x' y'); rewrite H1; unfold ge.
+rewrite Zmax_comm. apply Zle_ge. apply elim_Zmax_r. omega.
+apply Zle_ge. apply elim_Zmax_r. omega.
+Qed.
+
+(***********************************************************************)
+(** orders *)
+
+Lemma Zge_refl : forall k, k >= k.
+
+Proof.
+intros. omega.
 Qed.

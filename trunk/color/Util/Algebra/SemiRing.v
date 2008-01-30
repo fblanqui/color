@@ -61,6 +61,15 @@ Module SemiRing (SR : SemiRingType).
     intros. rewrite Amult_comm. apply Amult_1_l.
   Qed.
 
+  Lemma A_plus_mult_distr_r : forall m n p,
+    m * (n + p) = m * n + m * p.
+
+  Proof.
+    intros. rewrite Amult_comm. 
+    rewrite (Amult_comm m n). rewrite (Amult_comm m p).
+    apply A_plus_mult_distr_l.
+  Qed.
+
   Hint Rewrite Aplus_0_l Aplus_0_r Amult_0_l Amult_0_r 
     Amult_1_l Amult_1_r : arith.
 
@@ -111,7 +120,7 @@ End ZSemiRingT.
 
 Module ZSemiRing := SemiRing ZSemiRingT.
 
-(** Arctic semi-ring over integers with minus infinity and 
+(** Arctic semi-ring over naturals with minus infinity and 
     plus-max operations *)
 
 Module ArcticSemiRingT <: SemiRingType.
@@ -219,6 +228,118 @@ Module ArcticSemiRingT <: SemiRingType.
 End ArcticSemiRingT.
 
 Module ArcticSemiRing := SemiRing ArcticSemiRingT.
+
+(** Arctic semi-ring over integers with minus infinity and 
+    plus-max operations *)
+
+Require Export ZUtil.
+
+Module ArcticBZSemiRingT <: SemiRingType.
+
+  Open Scope Z_scope.
+
+  Inductive Dom : Set := 
+    | Fin (z : Z)
+    | MinusInf.
+
+  Definition A := Dom.
+
+   (* max is a <+> operation in the semi-ring *)
+  Definition Aplus m n :=
+    match m, n with
+    | MinusInf, n => n
+    | m, MinusInf => m
+    | Fin m, Fin n => Fin (Zmax m n)
+    end.
+
+   (* plus is a <*> operation in the semi-ring *)
+  Definition Amult m n := 
+    match m, n with
+    | MinusInf, _ => MinusInf
+    | _, MinusInf => MinusInf
+    | Fin m, Fin n => Fin (m + n)
+    end.
+
+  Definition A0 := MinusInf.
+  Definition A1 := Fin 0.
+  Definition Aeq := @eq A.
+
+  Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
+
+  Proof.
+    intros. unfold Aplus. destruct m; destruct n; trivial. 
+    rewrite Zmax_comm. refl.
+  Qed.
+
+  Lemma A_plus_assoc : forall m n p, Aplus m (Aplus n p) = Aplus (Aplus m n) p.
+
+  Proof.
+    intros. unfold Aplus.
+    destruct m; destruct n; destruct p; trivial.
+    rewrite Zmax_assoc. refl.
+  Qed.
+
+  Lemma A_mult_comm : forall m n, Amult m n = Amult n m.
+
+  Proof.
+    intros. unfold Amult. destruct m; destruct n; trivial.
+    rewrite Zplus_comm. refl.
+  Qed.
+
+  Lemma A_mult_assoc : forall m n p, Amult m (Amult n p) = Amult (Amult m n) p.
+
+  Proof.
+    intros. unfold Amult.
+    destruct m; destruct n; destruct p; trivial.
+    rewrite Zplus_assoc. refl.
+  Qed.
+
+  Lemma A_mult_plus_distr : forall m n p,
+    Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
+
+  Proof.
+    intros. unfold Amult, Aplus. 
+    destruct m; destruct n; destruct p; trivial.
+    rewrite Zplus_max_distr_r.
+    destruct (Zmax_irreducible_inf z z0); rewrite H; refl.
+  Qed.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+
+  Proof.
+    constructor; intros.
+    compute; trivial.
+    apply A_plus_comm.
+    apply A_plus_assoc.
+    destruct n; unfold Aeq; refl.
+    unfold Aeq. trivial.
+    apply A_mult_comm.
+    apply A_mult_assoc.
+    apply A_mult_plus_distr.
+  Qed.
+
+  Lemma arctic_plus_notInf_left : forall (a b : A),
+    a <> MinusInf -> Aplus a b <> MinusInf.
+
+  Proof.
+    intros. destruct a. 
+    destruct b; simpl; discriminate.
+    auto. 
+  Qed.
+
+  Lemma arctic_mult_notInf : forall (a b : A),
+    a <> MinusInf -> b <> MinusInf -> Amult a b <> MinusInf.
+
+  Proof.
+    intros. 
+    destruct a; auto. 
+    destruct b; auto.
+    simpl. discriminate.
+  Qed.
+
+End ArcticBZSemiRingT.
+
+Module ArcticBZSemiRing := SemiRing ArcticBZSemiRingT.
 
 (** Semi-ring of booleans with 'or' and 'and' *)
 
