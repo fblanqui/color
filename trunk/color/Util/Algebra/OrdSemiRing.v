@@ -440,6 +440,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Notation "x + y" := (Aplus x y).
   Notation "x * y" := (Amult x y).
+  Notation "x > y" := (gt x y).
   Notation "x >= y" := (ge x y).
 
   Lemma fin_ge_Zge : forall m n,
@@ -474,6 +475,13 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     left. exists z. exists z0. repeat split.
     right. auto.
     right. auto.
+  Qed.
+
+  Lemma minusInf_ge_min : forall a, a >= MinusInf.
+
+  Proof.
+    intros. destruct a. left. simpl. trivial.
+    right. refl.
   Qed.
 
   Lemma ge_impl_fin_ge : forall m n, (m >= n)%Z -> Fin m >= Fin n.
@@ -528,6 +536,18 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
     omega.
+  Qed.
+
+  Lemma arctic_plus_ge_monotone : forall (a b c : A),
+    a >= c -> Aplus a b >= c.
+
+  Proof.
+    intros. destruct c.
+    destruct a. destruct b. simpl. arctic_ord. 
+    apply Zle_ge. apply elim_Zmax_l. omega.
+    trivial.
+    arctic_ord.
+    apply minusInf_ge_min.
   Qed.
 
 End ArcticBZOrdSemiRingT.

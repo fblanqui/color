@@ -4,11 +4,12 @@ See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-20
 - Frederic Blanqui, 2005-02-25
+- Adam Koprowski, 2008-01-30
 
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.10 2008-01-30 15:24:16 koper Exp $ *)
+(* $Id: ZUtil.v,v 1.11 2008-02-01 14:07:02 koper Exp $ *)
 
 Require Export LogicUtil.
 
@@ -195,6 +196,20 @@ Proof.
 intros. eapply Zle_trans. apply H. apply Zle_max_r.
 Qed.
 
+Lemma Zmax_l : forall x y, x >= y -> Zmax x y = x.
+
+Proof.
+intros. unfold Zmax. 
+destruct (Dcompare_inf (x ?= y)) as [[xy | xy] | xy]; rewrite xy; try refl.
+assert (x < y). assumption. omega.
+Qed.
+
+Lemma Zmax_r : forall x y, y >= x -> Zmax x y = y.
+
+Proof.
+intros. rewrite Zmax_comm. apply Zmax_l. assumption.
+Qed.
+
 Lemma Zmax_ge_compat : forall x y x' y',
   x >= x' -> y >= y' -> Zmax x y >= Zmax x' y'.
 
@@ -202,6 +217,19 @@ Proof.
 intros. destruct (Zmax_irreducible_inf x' y'); rewrite H1; unfold ge.
 rewrite Zmax_comm. apply Zle_ge. apply elim_Zmax_r. omega.
 apply Zle_ge. apply elim_Zmax_r. omega.
+Qed.
+
+Lemma Zmax_gt_compat : forall x y x' y',
+  x > x' -> y > y' -> Zmax x y > Zmax x' y'.
+
+Proof.
+intros. destruct (Z_ge_dec x y); destruct (Z_ge_dec x' y');
+  do 2 first 
+    [ rewrite Zmax_r; [idtac | omega]
+    | rewrite Zmax_l; [idtac | omega]
+      | idtac
+    ];
+    omega.
 Qed.
 
 (***********************************************************************)

@@ -599,4 +599,5 @@ End MatrixConstruction.
 
 Module NMatrix := Matrix NOrdSemiRingT.
 Module ArcticMatrix := Matrix ArcticOrdSemiRingT.
+Module ArcticBZMatrix := Matrix ArcticBZOrdSemiRingT.
 

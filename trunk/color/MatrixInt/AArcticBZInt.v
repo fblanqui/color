@@ -9,7 +9,7 @@ Set Implicit Arguments.
 
 Require Export Matrix.
 Require Import AMonAlg.
-Import ArcticMatrix.
+Import ArcticBZMatrix.
 
 (** Interpretation type for matrix interpretations *)
 Section FunInt.
@@ -24,25 +24,28 @@ Section FunInt.
   }.
 
   Variable dim_pos : (dim > 0)%nat.
+  
+  Variable lb : Z.
 
-  Definition proper_interpretation n (fi : matrixInt n) := 
-    Vexists (fun m => get_elem m dim_pos dim_pos <> MinusInf) (args fi)
-    \/ Vnth (const fi) dim_pos <> MinusInf.
+  Definition absolute_finite n (fi : matrixInt n) := 
+    Vnth (const fi) dim_pos >= Fin lb.
 
 End FunInt.
 
 (** Module type for proving termination with matrix interpretations *)
-Module Type TArcticInt.
+Module Type TArcticBZInt.
 
   Parameter sig : Signature.
   Parameter dim : nat.
   Parameter dim_pos : (dim > 0)%nat.
+  Parameter lb : Z.
   Parameter trsInt : forall f : sig, matrixInt dim (arity f).
-  Parameter trsIntOk : forall f : sig, proper_interpretation dim_pos (trsInt f).
+  Parameter trsIntOk : forall f : sig, 
+    absolute_finite dim_pos lb (trsInt f).
 
-End TArcticInt.
+End TArcticBZInt.
 
-Module ArcticInt (AI : TArcticInt).
+Module ArcticBZInt (AI : TArcticBZInt).
 
   Export AI.
 
@@ -51,7 +54,7 @@ Module ArcticInt (AI : TArcticInt).
   Notation mat := (matrix dim dim).
   
   Definition vec_at0 (v : vec) := Vnth v dim_pos.
-  Definition dom := { v : vec | vec_at0 v <> MinusInf }. 
+  Definition dom := { v : vec | vec_at0 v >= Fin lb }.
 
   Definition dom2vec (d : dom) : vec := proj1_sig d.
 
@@ -63,59 +66,18 @@ Module ArcticInt (AI : TArcticInt).
   Definition mi_eval_aux n (mi : matrixInt dim n) (v : vector vec n) : vec :=
     add_vectors (Vmap2 mat_times_vec (args mi) v) [+] const mi.
 
-  Lemma mat_times_vec_at0_positive : forall n (m : matrix n n) 
-    (v : vector A n)
-    (dim_pos : (n > 0)%nat),
-    get_elem m dim_pos dim_pos <> MinusInf ->   
-    Vnth v dim_pos <> MinusInf ->
-    Vnth (mat_vec_prod m v) dim_pos <> MinusInf.
-
-  Proof.
-    destruct n; intros. absurd_arith.
-    VSntac v. unfold matrix in m. VSntac m. 
-    unfold mat_vec_prod, col_mat_to_vec, get_col. rewrite Vnth_map. 
-    set (w := mat_mult_spec). unfold get_elem, get_row in w. rewrite w.
-    simpl. VSntac (Vhead m). unfold dot_product. 
-    simpl. rewrite Aplus_comm. apply arctic_plus_notInf_left.
-    apply arctic_mult_notInf. 
-    rewrite H2 in H. unfold get_elem in H. simpl in H.
-    rewrite Vhead_nth. 
-    rewrite <- (Vnth_eq (Vhead m) dim_pos0 (lt_O_Sn n)); trivial.
-    rewrite H1 in H0. assumption.
-  Qed.
-
-  Lemma eval_some_notInf : forall n (mi : mint n) (v : vector dom n),
-    Vexists (fun m => get_elem m dim_pos dim_pos <> MinusInf) (args mi) ->
-    Vfold_left Aplus A0
-      (Vmap (fun v => Vnth v dim_pos)
-        (Vmap2 mat_times_vec (args mi) (Vmap dom2vec v))) <> MinusInf.
-
-  Proof.
-    induction n; intros; simpl; destruct mi.
-    VOtac. auto.
-    simpl in H. VSntac args0. rewrite H0 in H; simpl. destruct H.
-    rewrite Aplus_comm. apply arctic_plus_notInf_left.
-    apply mat_times_vec_at0_positive. assumption.
-    VSntac v. simpl. destruct (Vhead v). auto.
-    apply arctic_plus_notInf_left. 
-    rewrite <- Vmap_tail.
-    apply (IHn (mkMatrixInt const0 (Vtail args0))). assumption.
-  Qed.
-
   Lemma mi_eval_at0 : forall n (mi : matrixInt dim n) (v : vector dom n),
-    proper_interpretation dim_pos mi ->
-    vec_at0 (mi_eval_aux mi (Vmap dom2vec v)) <> MinusInf.
+    absolute_finite dim_pos lb mi ->
+    vec_at0 (mi_eval_aux mi (Vmap dom2vec v)) >= Fin lb.
 
   Proof.
     intros. unfold mi_eval_aux, vec_at0. 
-    rewrite vector_plus_nth. destruct H.
-    rewrite add_vectors_nth. apply arctic_plus_notInf_left.
-    apply eval_some_notInf. assumption.
-    rewrite Aplus_comm. apply arctic_plus_notInf_left. assumption.
+    rewrite vector_plus_nth. rewrite Aplus_comm. 
+    apply arctic_plus_ge_monotone. exact H.
   Qed.
 
   Definition mi_eval n (mi : matrixInt dim n) 
-    (pmi : proper_interpretation dim_pos mi) (v : vector dom n) : dom :=
+    (pmi : absolute_finite dim_pos lb mi) (v : vector dom n) : dom :=
     exist _ (mi_eval_aux mi (Vmap dom2vec v)) 
       (mi_eval_at0 v pmi).
 
@@ -140,8 +102,8 @@ Module ArcticInt (AI : TArcticInt).
     Definition dom_zero : dom.
 
     Proof.
-      exists (Vreplace (Vconst MinusInf dim) dim_pos (Pos 0)).
-      unfold vec_at0. rewrite Vnth_Vreplace_replaced. discriminate.
+      exists (Vreplace (Vconst MinusInf dim) dim_pos (Fin lb)).
+      unfold vec_at0. rewrite Vnth_Vreplace_replaced. apply ge_refl.
     Defined.
 
     Definition I := @mkInterpretation sig dom dom_zero 
@@ -208,18 +170,52 @@ Module ArcticInt (AI : TArcticInt).
       apply (Vforall2_nth ge). assumption.
     Qed.
 
+Axiom Cheat : forall P, P.
+
     Lemma succ_wf : WF succ.
 
     Proof.
+
+      apply wf_transp_WF.
+      unfold succ, transp.
+      apply well_founded_lt_compat with (f := 
+        (fun d: dom => 
+          match vec_at0 (dom2vec d) with
+          | Fin x => 
+              match (x - lb + 1)%Z with
+              | Z0 => 0%nat
+              | Zneg p => 0%nat
+              | Zpos p => nat_of_P p
+              end
+          | MinusInf => 0%nat
+          end
+        )
+      ).
+      intros x y xy. destruct x. destruct y. simpl.
+      generalize g. generalize g0.
+      generalize (vec_at0 x). generalize (vec_at0 x0).
+      clear x g x0 g0 xy. intros.
+      destruct a0; destruct a; arctic_ord.
+      assert (exists p, (z - lb + 1)%Z = Zpos p).
+      apply Cheat.
+      assert (exists p, (z0 - lb + 1)%Z = Zpos p).
+      apply Cheat.
+      destruct H1. rewrite H1.
+      destruct H2. rewrite H2. 
+(*
       apply WF_incl with 
         (fun x y => vec_at0 (dom2vec x) > vec_at0 (dom2vec y)).
       intros x y xy.
       destruct (Vforall2_nth gtx (dom2vec x) (dom2vec y) dim_pos xy). 
       assumption.
-      destruct H. destruct x. elimtype False. auto.
+      destruct H. destruct x. 
+      absurd (ge MinusInf (Fin lb)).
+      intro abs. destruct abs. contradiction. discriminate.
+      simpl in H. rewrite <- H. assumption.
       fold (@Rof dom A gt (fun v => vec_at0 (dom2vec v))).
-      apply WF_inverse. apply gt_WF.
-    Qed.
+      apply WF_inverse. (*apply gt_WF.*)
+*)
+    Admitted.
 
      (* x-man, move this to OrdSemiRing? *)
     Lemma ge_gt_compat : forall x y z,
@@ -229,7 +225,7 @@ Module ArcticInt (AI : TArcticInt).
       intros. destruct y. destruct x. destruct z.
       unfold gt, ge in *. destruct H. 
       simpl in H. omega.
-      injection H. intro. subst n0. assumption.
+      injection H. intro. subst z0. assumption.
       auto.
       elimtype False. destruct H. auto. discriminate.
       elimtype False. destruct H. auto. subst x.  auto.
@@ -258,9 +254,11 @@ Module ArcticInt (AI : TArcticInt).
           | intuition; discriminate
           | left; auto
           ].
-      left. simpl. apply max_gt_compat; assumption.
-      left. simpl. apply le_gt_trans with n0. auto with arith. assumption.
-      left. simpl. apply le_gt_trans with n. auto with arith. assumption.
+      left. simpl. apply Zmax_gt_compat; assumption.      
+      left. simpl in *. apply Zle_gt_trans with z. 
+      apply Zle_max_l. assumption.
+      left. simpl in *. apply Zle_gt_trans with z0. 
+      apply Zle_max_r. assumption.
       right. auto.
     Qed.
 
@@ -278,7 +276,7 @@ Module ArcticInt (AI : TArcticInt).
           | left; simpl in *; omega
           | right; auto
           ].
-      left. simpl. injection H0. intro. subst n. simpl in H. omega.
+      left. simpl. injection H0. intro. subst z1. simpl in H. omega.
     Qed.
 
     Lemma succ_succeq_compat : absorb succ succeq.
@@ -452,12 +450,12 @@ Module ArcticInt (AI : TArcticInt).
       Notation IR_succ := (IR I succ).
       Notation IR_succeq := (IR I succeq).
 
-      Definition mint_eval (val : valuation I) k (mi : mint k) : vec :=
-        let coefs := Vbuild (fun i (ip : i < k) => dom2vec (val i)) in
+      Definition mint_eval (val : valuation I) n (mi : mint n) : vec :=
+        let coefs := Vbuild (fun i (ip : (i < n)%nat) => dom2vec (val i)) in
          add_vectors (Vcons (const mi) (Vmap2 mat_times_vec (args mi) coefs)).
 
       Lemma mint_eval_split : forall val k (mi : mint k),
-        let coefs := Vbuild (fun i (ip : i < k) => dom2vec (val i)) in
+        let coefs := Vbuild (fun i (ip : (i < k)%nat) => dom2vec (val i)) in
           mint_eval val mi = const mi [+] 
           add_vectors (Vmap2 mat_times_vec (args mi) coefs).
 
@@ -466,7 +464,8 @@ Module ArcticInt (AI : TArcticInt).
         rewrite vector_plus_comm. refl.
       Qed.
 
-      Lemma mint_eval_var_aux : forall M i k (v : vector vec k) (ip : i < k),
+      Lemma mint_eval_var_aux : forall M i k (v : vector vec k) 
+        (ip : (i < k)%nat),
         add_vectors (Vmap2 mat_times_vec (Vreplace (Vconst 
           (zero_matrix dim dim) k) ip M) v) =
         col_mat_to_vec (M <*> (vec_to_col_mat (Vnth v ip))).
@@ -479,7 +478,7 @@ Module ArcticInt (AI : TArcticInt).
           (Vconst (zero_matrix dim dim) k) (Vtail v))).
         match goal with |- ?V [+] _ = _ => replace V with (@zero_vec dim) end.
         rewrite vector_plus_zero_l.
-        replace (Vhead (A:=ArcticMatrix.vec dim) v) with (Vnth v ip). refl.
+        replace (Vhead (A:=ArcticBZMatrix.vec dim) v) with (Vnth v ip). refl.
         rewrite Vhead_nth. rewrite (lt_unique (lt_O_Sn k) ip). refl.
         symmetry. apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vmap2_nth. rewrite Vnth_const. 
@@ -515,8 +514,8 @@ Module ArcticInt (AI : TArcticInt).
         rewrite Vbuild_nth. refl. deduce dim_pos. auto. 
       Qed.
 
-      Lemma mint_eval_const : forall val k (c : vec),
-        mint_eval (k:=k) val (mkMatrixInt c (combine_matrices Vnil)) = c.
+      Lemma mint_eval_const : forall val n (c : vec),
+        mint_eval (n:=n) val (mkMatrixInt c (combine_matrices Vnil)) = c.
 
       Proof.
         intros. unfold mint_eval. simpl. autorewrite with arith.
@@ -530,8 +529,8 @@ Module ArcticInt (AI : TArcticInt).
         unfold zero_vec. rewrite Vnth_const. refl.
       Qed.
 
-      Lemma mint_eval_cons : forall n k val c_hd c_tl a_hd 
-        (a_tl : vector (vector mat k) n),
+      Lemma mint_eval_cons : forall n p val c_hd c_tl a_hd 
+        (a_tl : vector (vector mat p) n),
         mint_eval val (mkMatrixInt (c_hd [+] c_tl)
           (combine_matrices (Vcons a_hd a_tl))) =
         mint_eval val (mkMatrixInt c_hd a_hd) [+]
@@ -539,7 +538,8 @@ Module ArcticInt (AI : TArcticInt).
 
       Proof.
         intros. unfold mint_eval. simpl.
-        set (vali := Vbuild (A := vec) (fun i (_ : i < k) => dom2vec (val i))).
+        set (vali := Vbuild (A := vec) (fun i (_ : (i < p)%nat) => 
+          dom2vec (val i))).
         rewrite combine_matrices_cons.
         autorewrite with arith. repeat rewrite <- vector_plus_assoc.
         simpl. autorewrite with arith.
@@ -557,7 +557,8 @@ Module ArcticInt (AI : TArcticInt).
       Proof.
         unfold mint_eval. intros. simpl. autorewrite with arith.
         rewrite mat_vec_prod_distr_vec. Vplus_eq.
-        set (gen := Vbuild (A:=vec) (fun i (_ : i < k) => dom2vec (val i))).
+        set (gen := Vbuild (A:=vec) (fun i (_ : (i < k)%nat) => 
+          dom2vec (val i))).
         rewrite (mat_vec_prod_distr_add_vectors M 
           (Vmap2 mat_times_vec (args mi) gen)
           (Vmap2 mat_times_vec (Vmap (mat_mult M) (args mi)) gen)).
@@ -673,7 +674,7 @@ Module ArcticInt (AI : TArcticInt).
       Qed.
 
       Lemma Vfold_left_gtx_compat : forall n (v v' : vector A n),
-        (forall i (ip: i < n), Vnth v ip >_0 Vnth v' ip) ->
+        (forall i (ip: (i < n)%nat), Vnth v ip >_0 Vnth v' ip) ->
         Vfold_left Aplus A0 v >_0 Vfold_left Aplus A0 v'.
 
       Proof.
@@ -690,9 +691,9 @@ Module ArcticInt (AI : TArcticInt).
 
         Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
-        Notation vge := ArcticMatrix.VA.vec_ge.
+        Notation vge := ArcticBZMatrix.VA.vec_ge.
         Notation vgt := (Vforall2n gtx).
-        Notation mge := ArcticMatrix.mat_ge.
+        Notation mge := ArcticBZMatrix.mat_ge.
         Notation mgt := (mat_forall2 gtx).
 
         Lemma arctic_dot_product_mon : forall i (v v' w w' : vector A i), 
@@ -748,7 +749,7 @@ Module ArcticInt (AI : TArcticInt).
         do 2 rewrite add_vectors_nth.
         apply Vfold_left_gtx_compat. intros.
         do 2 rewrite Vnth_map. do 2 rewrite Vmap2_nth.
-        set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
+        set (eval := Vnth (Vbuild (fun i (_ : (i < k)%nat) => val i)) ip0).
         apply (Vforall2_nth gtx). apply mat_vec_prod_gt_compat.
         apply (Vforall2_nth mat_gt). assumption.
         apply vec_ge_refl.
@@ -791,14 +792,9 @@ Module ArcticInt (AI : TArcticInt).
 
   Ltac prove_termination := MAR.prove_termination noTerminationProofs.
 
-End ArcticInt.
+End ArcticBZInt.
 
-Ltac arcticDiscriminate :=
-  try discriminate;
-    solve [left; arcticDiscriminate | right; arcticDiscriminate].
-
-Ltac showArcticIntOk :=
+Ltac showArcticBZIntOk :=
   let f := fresh "f" in
   let s := fresh "s" in 
-    intros f; destruct f as [s | s]; destruct s; 
-      vm_compute; arcticDiscriminate.
+    intros f; destruct f as [s | s]; destruct s; vm_compute; auto.

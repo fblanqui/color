@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.24 2008-01-29 18:07:58 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.25 2008-02-01 14:07:02 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -179,7 +179,10 @@ Lemma max_gt_compat : forall x y x' y',
 
 Proof.
 intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
-  do 2 first [rewrite max_r; [idtac | assumption] | rewrite max_l; [idtac | assumption]]; 
+  do 2 first 
+    [ rewrite max_r; [idtac | assumption] 
+    | rewrite max_l; [idtac | assumption]
+    ]; 
     omega.
 Qed.
 
