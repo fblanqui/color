@@ -13,7 +13,7 @@ About compilation:
 
 - Before any commit, make sure that CoLoR compiles with the last
 stable release of Coq and, if possible, with the development version
-of Coq.
+of Coq. Check also that Rainbow examples still work.
 
 - Put useful messages when you commit.
 
