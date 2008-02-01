@@ -16,7 +16,7 @@ Set Implicit Arguments.
 
 Require Export Matrix.
 Require Import AMonAlg.
-Export NMatrix.
+Import NMatrix.
 
 (** Interpretation type for matrix interpretations *)
 Section FunInt.
