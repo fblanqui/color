@@ -170,52 +170,31 @@ Module ArcticBZInt (AI : TArcticBZInt).
       apply (Vforall2_nth ge). assumption.
     Qed.
 
-Axiom Cheat : forall P, P.
-
     Lemma succ_wf : WF succ.
 
     Proof.
-
       apply wf_transp_WF.
       unfold succ, transp.
       apply well_founded_lt_compat with (f := 
         (fun d: dom => 
           match vec_at0 (dom2vec d) with
-          | Fin x => 
-              match (x - lb + 1)%Z with
-              | Z0 => 0%nat
-              | Zneg p => 0%nat
-              | Zpos p => nat_of_P p
-              end
+          | Fin x => Zabs_nat (x - lb)
           | MinusInf => 0%nat
           end
         )
       ).
-      intros x y xy. destruct x. destruct y. simpl.
-      generalize g. generalize g0.
-      generalize (vec_at0 x). generalize (vec_at0 x0).
-      clear x g x0 g0 xy. intros.
-      destruct a0; destruct a; arctic_ord.
-      assert (exists p, (z - lb + 1)%Z = Zpos p).
-      apply Cheat.
-      assert (exists p, (z0 - lb + 1)%Z = Zpos p).
-      apply Cheat.
-      destruct H1. rewrite H1.
-      destruct H2. rewrite H2. 
-(*
-      apply WF_incl with 
-        (fun x y => vec_at0 (dom2vec x) > vec_at0 (dom2vec y)).
-      intros x y xy.
-      destruct (Vforall2_nth gtx (dom2vec x) (dom2vec y) dim_pos xy). 
-      assumption.
-      destruct H. destruct x. 
-      absurd (ge MinusInf (Fin lb)).
-      intro abs. destruct abs. contradiction. discriminate.
-      simpl in H. rewrite <- H. assumption.
-      fold (@Rof dom A gt (fun v => vec_at0 (dom2vec v))).
-      apply WF_inverse. (*apply gt_WF.*)
-*)
-    Admitted.
+      intros x y xy. destruct x. destruct y. simpl. 
+      cut (ge (vec_at0 x) (Fin lb)). 2: assumption.
+      cut (ge (vec_at0 x0) (Fin lb)). 2: assumption.
+      cut (gtx (vec_at0 x0) (vec_at0 x)).
+      generalize (vec_at0 x0). generalize (vec_at0 x).
+      clear x g x0 g0 xy. intros x y xy x_lb y_lb.
+      destruct x; destruct y; arctic_ord.
+      destruct xy; simpl in H1.
+      apply Zabs_nat_lt; omega.
+      destruct H1; discriminate.
+      unfold vec_at0. apply (Vforall2_nth gtx). assumption.
+    Qed.
 
      (* x-man, move this to OrdSemiRing? *)
     Lemma ge_gt_compat : forall x y z,
