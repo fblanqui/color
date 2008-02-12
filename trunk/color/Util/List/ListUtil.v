@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.37 2008-02-12 16:21:10 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.38 2008-02-12 18:50:14 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -972,6 +972,18 @@ Lemma rev'_app : forall l l' : list A, rev' (l ++ l') = rev' l' ++ rev' l.
 Proof.
 intros. unfold rev'. rewrite rev_append_app. repeat rewrite rev_append_rev.
 repeat rewrite <- app_nil_end. refl.
+Qed.
+
+Lemma rev'_rev : forall l : list A, rev' l = rev l.
+
+Proof.
+intro. unfold rev'. rewrite rev_append_rev. rewrite <- app_nil_end. refl.
+Qed.
+
+Lemma rev'_rev' : forall l : list A, rev' (rev' l) = l.
+
+Proof.
+intro. repeat rewrite rev'_rev. apply rev_involutive.
 Qed.
 
 End reverse_tail_recursive.
