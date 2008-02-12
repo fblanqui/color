@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: SContext.v,v 1.1 2007-05-25 16:24:22 blanqui Exp $ *)
+(* $Id: SContext.v,v 1.2 2008-02-12 16:20:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,3 +43,5 @@ unfold fill. simpl. repeat rewrite app_ass. refl.
 Qed.
 
 End S.
+
+Implicit Arguments mkContext [Sig].
