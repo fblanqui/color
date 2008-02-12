@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.36 2008-01-24 13:22:25 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.37 2008-02-12 16:21:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -955,6 +955,26 @@ apply incl_tran with (rev l'). assumption. apply rev_incl.
 Qed.
 
 End reverse.
+
+Section reverse_tail_recursive.
+
+Variable A : Type.
+
+Lemma rev_append_app : forall l l' acc : list A,
+  rev_append (l ++ l') acc = rev_append l' (rev_append l acc).
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. refl.
+Qed.
+
+Lemma rev'_app : forall l l' : list A, rev' (l ++ l') = rev' l' ++ rev' l.
+
+Proof.
+intros. unfold rev'. rewrite rev_append_app. repeat rewrite rev_append_rev.
+repeat rewrite <- app_nil_end. refl.
+Qed.
+
+End reverse_tail_recursive.
 
 (***********************************************************************)
 (** last element *)
