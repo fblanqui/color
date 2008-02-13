@@ -119,6 +119,13 @@ Qed.
 
 End incl.
 
+Add Morphism WF with signature same_relation ==> iff as WF_mor.
+
+Proof.
+intros. destruct H. split; intro.
+apply WF_incl with x1; assumption. apply WF_incl with x2; assumption.
+Qed.
+
 (***********************************************************************)
 (** inverse relation *)
 

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.29 2008-01-09 16:42:53 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.30 2008-02-13 14:08:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -490,8 +490,8 @@ Ltac termination_trivial :=
 
 Ltac no_relative_rules :=
   match goal with
-    |- WF (red_mod ?E _) =>
-      normalize E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
+    |- WF (@red_mod ?S ?E _) =>
+      normalize E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
     | _ => idtac
   end.
 

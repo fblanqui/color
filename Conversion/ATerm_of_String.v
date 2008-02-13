@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATerm_of_String.v,v 1.4 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: ATerm_of_String.v,v 1.5 2008-02-13 14:08:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -102,6 +102,8 @@ elim s. refl. intros. simpl. rewrite H. refl.
 intros. rewrite H. refl.
 Qed.
 
+Section red_of_sred.
+
 Variable S : list srule.
 
 Definition trs_of_srs := List.map rule_of_srule S.
@@ -117,15 +119,38 @@ apply red_rule. change (In (rule_of_srule (Srs.mkRule x0 x1)) R).
 unfold trs_of_srs. apply in_map. exact H0.
 Qed.
 
-Lemma WF_red_of_WF_sred : WF (red R) -> WF (Srs.red S).
+Lemma red_of_sred_rtc : forall x y,
+  Srs.red S # x y -> red R # (term_of_string x) (term_of_string y).
+
+Proof.
+intros. elim H; intros. apply rt_step. apply red_of_sred. exact H0.
+apply rt_refl. eapply rt_trans. apply H1. exact H3.
+Qed.
+
+End red_of_sred.
+
+Variable D S : list srule.
+
+Notation E := (trs_of_srs D).
+Notation R := (trs_of_srs S).
+
+Lemma red_mod_of_sred_mod : forall x y,
+  Srs.red_mod D S x y -> red_mod E R (term_of_string x) (term_of_string y).
+
+Proof.
+intros. do 2 destruct H. exists (term_of_string x0). split.
+apply red_of_sred_rtc. exact H. apply red_of_sred. exact H0.
+Qed.
+
+Lemma WF_red_mod_of_WF_sred_mod : WF (red_mod E R) -> WF (Srs.red_mod D S).
 
 Proof.
 unfold WF. intro H.
-cut (forall (t : term) (s : string), t = term_of_string s -> SN (Srs.red S) s).
+cut (forall t s, t = term_of_string s -> SN (Srs.red_mod D S) s).
 intros. apply H0 with (term_of_string x). refl.
 intro t. generalize (H t). induction 1. intros. apply SN_intro. intros.
-apply H1 with (term_of_string y). 2: refl. do 3 destruct H3. decomp H3. subst x.
-apply red_of_sred. subst s. subst y. apply Srs.red_rule. exact H4.
+apply H1 with (term_of_string y). 2: refl. subst x. apply red_mod_of_sred_mod.
+exact H3.
 Qed.
 
 End S.

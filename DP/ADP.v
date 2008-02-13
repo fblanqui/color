@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.16 2008-01-24 14:52:42 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.17 2008-02-13 14:08:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -269,3 +269,9 @@ End S.
 
 Implicit Arguments dp_elim [Sig l t].
 Implicit Arguments dp_elim_vars [Sig l t].
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac chain := no_relative_rules;
+  apply WF_chain; [no_lhs_variable | rules_preserv_vars | idtac].
