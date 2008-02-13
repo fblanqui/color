@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.38 2008-02-12 18:50:14 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.39 2008-02-13 14:08:17 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -960,8 +960,22 @@ Section reverse_tail_recursive.
 
 Variable A : Type.
 
+Fixpoint rev_append (l' l : list A) {struct l} : list A :=
+  match l with
+    | nil => l'
+    | a :: l => rev_append (a :: l') l
+  end.
+
+Notation rev' := (rev_append nil).
+
+Lemma rev_append_rev : forall l l', rev_append l' l = rev l ++ l'.
+
+Proof.
+  induction l; simpl; auto; intros. rewrite <- ass_app; firstorder.
+Qed.
+
 Lemma rev_append_app : forall l l' acc : list A,
-  rev_append (l ++ l') acc = rev_append l' (rev_append l acc).
+  rev_append acc (l ++ l') = rev_append (rev_append acc l) l'.
 
 Proof.
 induction l; simpl; intros. refl. rewrite IHl. refl.
@@ -970,14 +984,14 @@ Qed.
 Lemma rev'_app : forall l l' : list A, rev' (l ++ l') = rev' l' ++ rev' l.
 
 Proof.
-intros. unfold rev'. rewrite rev_append_app. repeat rewrite rev_append_rev.
+intros. rewrite rev_append_app. repeat rewrite rev_append_rev.
 repeat rewrite <- app_nil_end. refl.
 Qed.
 
 Lemma rev'_rev : forall l : list A, rev' l = rev l.
 
 Proof.
-intro. unfold rev'. rewrite rev_append_rev. rewrite <- app_nil_end. refl.
+intro. rewrite rev_append_rev. rewrite <- app_nil_end. refl.
 Qed.
 
 Lemma rev'_rev' : forall l : list A, rev' (rev' l) = l.
@@ -987,6 +1001,8 @@ intro. repeat rewrite rev'_rev. apply rev_involutive.
 Qed.
 
 End reverse_tail_recursive.
+
+Notation rev' := (rev_append nil).
 
 (***********************************************************************)
 (** last element *)

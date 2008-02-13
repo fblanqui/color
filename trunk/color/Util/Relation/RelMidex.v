@@ -47,7 +47,8 @@ Proof.
 intros. set (w := H x y). rewrite H0 in w. assumption.
 Qed.
 
-Lemma fun_rel_dec_false : forall f x y, fun_rel_dec f -> f x y = false -> ~R x y.
+Lemma fun_rel_dec_false : forall f x y,
+  fun_rel_dec f -> f x y = false -> ~R x y.
 
 Proof.
 intros. set (w := H x y). rewrite H0 in w. assumption.
@@ -55,8 +56,21 @@ Qed.
 
 End relation.
 
+(* replace by morphism:
+
+Require Export RelUtil.
+
+Lemma rel_dec_eq : forall A (R S : relation A),
+  R == S -> rel_dec S -> rel_dec R.
+
+Proof.
+unfold rel_dec. intros. case (X x y); intro.
+left. apply (proj2 H). exact s.
+right. intro. apply n. apply (proj1 H). exact H0.
+Qed.*)
+
 (***********************************************************************)
-(** identity relation *)
+(** equality relation *)
 
 Section identity.
 

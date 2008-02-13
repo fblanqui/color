@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 string rewriting
 *)
 
-(* $Id: Srs.v,v 1.3 2007-05-28 16:45:24 blanqui Exp $ *)
+(* $Id: Srs.v,v 1.4 2008-02-13 14:08:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,8 +28,9 @@ Record rule : Set := mkRule { lhs : string; rhs : string }.
 
 Require Export SContext.
 
-Definition red R (s1 s2 : string) := exists l, exists r, exists c,
-  In (mkRule l r) R /\ s1 = fill c l /\ s2 = fill c r.
+Definition red R : relation string := fun s1 s2 =>
+  exists l, exists r, exists c,
+    In (mkRule l r) R /\ s1 = fill c l /\ s2 = fill c r.
 
 Require Export RelUtil.
 
@@ -97,6 +98,18 @@ unfold inclusion. intros. redtac. deduce (red_nil_rtc H). subst x0.
 subst x. subst y. apply red_rule. exact H0.
 Qed.
 
+Lemma red_incl_red_mod_empty : red R << red_mod nil R.
+
+Proof.
+unfold inclusion. intros. exists x. split. apply rt_refl. exact H.
+Qed.
+
+Lemma red_mod_empty : red_mod nil R == red R.
+
+Proof.
+split. apply red_mod_empty_incl_red. apply red_incl_red_mod_empty.
+Qed.
+
 End S.
 
 (***********************************************************************)
@@ -106,7 +119,7 @@ Require Export SN.
 
 Ltac no_relative_rules :=
   match goal with
-    |- WF (red_mod ?E _) =>
-      normalize E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
+    |- WF (@red_mod ?S ?E _) =>
+      normalize E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
     | _ => idtac
   end.

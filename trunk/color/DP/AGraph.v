@@ -169,3 +169,8 @@ unfold chain, hd_red_Mod. apply inclusion_refl.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(* tactics *)
+
+Ltac dp_trans := chain; eapply WF_incl; [apply hd_red_Mod_of_chain | idtac].
