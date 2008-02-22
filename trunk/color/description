@@ -1,0 +1,21 @@
+Name: CoLoR
+Title: A Coq library on Rewriting and termination
+Author: Frédéric Blanqui
+Author: Sébastien Hinderer
+Institution: INRIA
+Author: Solange Coupet-Grimal
+Author: William Delobel
+Institution: CNRS
+Institution: Université de la Méditerranée Aix-Marseille 2,
+Institution: Université de Provence Aix-Marseille 1,
+Author: Adam Koprowski
+Institution: Vrije Universiteit Amsterdam
+Description: The aim of this Coq library is to provide the necessary
+formal basis for certifying termination proofs for rewriting systems
+Url: http://color.loria.fr
+License: CeCILL
+Keywords: termination, rewriting, lambda-calculus, polynom, typing,
+term, multiset, vector, list, rpo, horpo, dependency pair, filtering,
+conversion, manna-ness, interpretation, context, substitution,
+lexicographic, ordering, well-founded, algebra, monotony, matrix,
+string
