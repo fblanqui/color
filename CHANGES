@@ -3,7 +3,6 @@ testing equality [Blanqui]
 - Util/Bool/BoolUtil
 - Util/List/ListUtil
 - Term/Varyadic/VTerm
-- Term/WithArity/ATerm: removed use of Eqdep in eq_term_dec
 
 07-08-23: added SCC decomposition [Lucas]
 (SCC = Strongly Connected Component)

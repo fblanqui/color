@@ -24,7 +24,7 @@ For compiling the TAGS file, use the command "MAKE tags". This requires:
 For using the library, type the following command in Coq (you can also
 add it in your ~/.coqrc file):
 
-	Add Rec LoadPath "<dir>" as Rewriting.
+	Add Rec LoadPath "<dir>" as CoLoR.
 
 where <dir> is the directory where the library is installed.
 

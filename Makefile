@@ -23,12 +23,12 @@ Makefile.coq:
 	$(MAKE) config
 
 config:
-	coq_makefile -R . Rewriting `find . -name \*.v` > Makefile.coq
+	coq_makefile -R . CoLoR `find . -name \*.v` > Makefile.coq
 	$(COQMAKE) depend
 
 clean:
 	rm -f `find . -name \*~`
-	rm -f $(DUMP) doc/Rewriting.*.html doc/index.html
+	rm -f $(DUMP) doc/CoLoR.*.html doc/index.html
 	$(COQMAKE) clean
 
 tags:
@@ -40,7 +40,7 @@ dump: clean
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"
 
 html: $(DUMP)
-	coqdoc --html -g -d doc --glob-from $(DUMP) -R . Rewriting `find . -name \*.v`
+	coqdoc --html -g -d doc --glob-from $(DUMP) -R . CoLoR `find . -name \*.v`
 	./createIndex
 
 doc: dump html

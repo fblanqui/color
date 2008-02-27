@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.4 2008-01-29 18:07:58 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.5 2008-02-27 17:35:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -108,10 +108,34 @@ destruct b; intro.
 left. exact (proj1 (beq_ok _ _) H). right. exact (proj1 (beq_ko _ _) H).
 Defined.
 
+Lemma beq_com : forall x y, beq x y = beq y x.
+
+Proof.
+intros. case_eq (beq x y); intro.
+symmetry. rewrite beq_ok. symmetry. rewrite <- beq_ok. exact H.
+symmetry. rewrite beq_ko. cut (x <> y). auto. rewrite <- beq_ko. exact H.
+Qed.
+
+Lemma beq_sym : forall x y, beq x y = true -> beq y x = true.
+
+Proof.
+intros. rewrite beq_com. exact H.
+Qed.
+
+Lemma beq_trans : forall x y z,
+  beq x y = true -> beq y z = true -> beq x z = true.
+
+Proof.
+intros. rewrite beq_ok in H. rewrite beq_ok in H0.
+assert (x = z). apply trans_eq with y; assumption.
+rewrite beq_ok. exact H1.
+Qed.
+
 End beq.
 
 Implicit Arguments beq_refl [A beq].
 Implicit Arguments dec_beq [A beq].
+Implicit Arguments beq_com [A beq].
 
 (***********************************************************************)
 (** boolean function testing equality from decidability predicate *)
