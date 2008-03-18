@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.11 2008-02-01 14:07:02 koper Exp $ *)
+(* $Id: ZUtil.v,v 1.12 2008-03-18 20:15:31 koper Exp $ *)
 
 Require Export LogicUtil.
 
@@ -190,10 +190,22 @@ Proof.
 intros. eapply Zle_trans. apply H. apply Zle_max_l.
 Qed.
 
+Lemma elim_lt_Zmax_l : forall x y z, x < y -> x < Zmax y z.
+
+Proof.
+intros. eapply Zlt_le_trans. eexact H. apply Zle_max_l.
+Qed.
+
 Lemma elim_Zmax_r : forall x y z, x <= z -> x <= Zmax y z.
 
 Proof.
 intros. eapply Zle_trans. apply H. apply Zle_max_r.
+Qed.
+
+Lemma elim_lt_Zmax_r : forall x y z, x < z -> x < Zmax y z.
+
+Proof.
+intros. rewrite Zmax_comm. apply elim_lt_Zmax_l. assumption.
 Qed.
 
 Lemma Zmax_l : forall x y, x >= y -> Zmax x y = x.

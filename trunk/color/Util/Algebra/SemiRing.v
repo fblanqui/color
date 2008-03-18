@@ -24,6 +24,8 @@ Module Type SemiRingType.
   Notation "x + y" := (Aplus x y).
   Notation "x * y" := (Amult x y).
 
+  Parameter Aeq_dec : forall x y : A, {x = y} + {x <> y}.
+
   Parameter A_semi_ring : semi_ring_theory A0 A1 Aplus Amult (@eq A).
 
 End SemiRingType.
@@ -83,6 +85,7 @@ Require Import Arith.
 
 Module NSemiRingT <: SemiRingType.
 
+  Definition Aeq_dec := eq_nat_dec.
   Definition A := nat.
   Definition Aplus := plus.
   Definition Amult := mult.
@@ -102,6 +105,7 @@ Require Import ZArith.
 Module ZSemiRingT <: SemiRingType.
 
   Definition A := Z.
+  Definition Aeq_dec := Z_eq_dec.
   Definition Aplus := Zplus.
   Definition Amult := Zmult.
   Definition A0 := Z0.
@@ -150,6 +154,16 @@ Module ArcticSemiRingT <: SemiRingType.
   Definition A0 := MinusInf.
   Definition A1 := Pos 0.
   Definition Aeq := @eq A.
+
+  Lemma Aeq_dec : forall m n : A, {m = n} + {m <> n}.
+
+  Proof.
+    intros. destruct m; destruct n; try solve [right; congruence].
+    destruct (eq_nat_dec n0 n).
+    subst n. auto.
+    right. congruence.
+    left. auto.
+  Qed.
 
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
 
@@ -264,6 +278,16 @@ Module ArcticBZSemiRingT <: SemiRingType.
   Definition A1 := Fin 0.
   Definition Aeq := @eq A.
 
+  Lemma Aeq_dec : forall m n : A, {m = n} + {m <> n}.
+
+  Proof.
+    intros. destruct m; destruct n; try solve [right; congruence].
+    destruct (Z_eq_dec z0 z).
+    subst z. auto.
+    right. congruence.
+    left. auto.
+  Qed.
+
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
 
   Proof.
@@ -346,6 +370,7 @@ Module ArcticBZSemiRing := SemiRing ArcticBZSemiRingT.
 Module BSemiRingT <: SemiRingType.
 
   Definition A := bool.
+  Definition Aeq_dec := bool_dec.
   Definition Aplus := orb.
   Definition Amult := andb.
   Definition A0 := false.

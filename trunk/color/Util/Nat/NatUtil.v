@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.25 2008-02-01 14:07:02 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.26 2008-03-18 20:15:31 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -147,10 +147,22 @@ Proof.
 intros. eapply le_trans. apply H. apply le_max_l.
 Qed.
 
+Lemma elim_lt_max_l : forall x y z, x < y -> x < max y z.
+
+Proof.
+intros. eapply lt_le_trans. eexact H. apply le_max_l.
+Qed.
+
 Lemma elim_max_r : forall x y z, x <= z -> x <= max y z.
 
 Proof.
 intros. eapply le_trans. apply H. apply le_max_r.
+Qed.
+
+Lemma elim_lt_max_r : forall x y z, x < z -> x < max y z.
+
+Proof.
+intros. rewrite max_comm. apply elim_lt_max_l. assumption.
 Qed.
 
 Lemma intro_max_l : forall x y z, max x y <= z -> x <= z.

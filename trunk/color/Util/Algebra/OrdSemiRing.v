@@ -34,8 +34,13 @@ Module Type OrdSemiRingType.
   Parameter ge_dec : rel_dec ge.
   Parameter gt_dec : rel_dec gt.
 
+  Parameter ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+
+  Parameter plus_gt_compat : forall m n m' n',
+    m >> m' -> n >> n' -> m + n >> m' + n'.
   Parameter plus_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m + n >>= m' + n'.
+
   Parameter mult_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
@@ -92,6 +97,19 @@ Module NOrdSemiRingT <: OrdSemiRingType.
   Proof.
     apply wf_transp_WF. 
     apply well_founded_lt_compat with (fun x:nat => x). auto.
+  Qed.
+
+  Lemma ge_gt_compat : forall x y z, x >= y -> y > z -> x > z.
+
+  Proof.
+    intros. apply le_gt_trans with y; assumption.
+  Qed.
+
+  Lemma plus_gt_compat : forall m n m' n',
+    m > m' -> n > n' -> m + n > m' + n'.
+
+  Proof.
+    intros. omega.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
@@ -229,11 +247,29 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Notation "x + y" := (Aplus x y).
   Notation "x * y" := (Amult x y).
-  Notation "x >= y" := (ge x y).
-  Notation "x > y" := (gt x y).
+  Notation "x >>= y" := (ge x y) (at level 70).
+  Notation "x >> y" := (gt x y) (at level 70).
+
+  Lemma ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
+
+  Proof.
+    destruct 1; auto.
+  Qed.
+
+  Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+
+  Proof.
+    intros. destruct y. destruct x. destruct z.
+    unfold gt, ge in *. destruct H. 
+    simpl in H. omega.
+    injection H. intro. subst n0. assumption.
+    auto.
+    elimtype False. destruct H. auto. discriminate.
+    elimtype False. destruct H. auto. subst x.  auto.
+  Qed.
 
   Lemma pos_ord : forall m n,
-    Pos m >= Pos n -> Peano.ge m n.
+    Pos m >>= Pos n -> Peano.ge m n.
 
   Proof.
     intros. inversion H; simpl in H0. omega.
@@ -266,26 +302,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     right. auto.
   Qed.
 
-  Lemma plus_gt_compat_l : forall m n m' n',
-    m > m' -> n > n' -> m + n > m' + n'.
-
-  Proof.
-    intros. 
-    destruct m; destruct m'; destruct n; destruct n'; simpl in *;
-      try solve [contradiction | auto with arith | discriminate].
-    apply max_gt_compat; assumption.
-    destruct (max_dec n0 n); rewrite e. assumption.
-    assert (n0 <= n).
-    apply intro_max_l with n. rewrite e. auto.
-    omega.
-    destruct (max_dec n0 n); rewrite e. 
-    assert (n <= n0).
-    apply intro_max_l with n0. rewrite max_comm. rewrite e. auto.
-    omega.
-    assumption.
-  Qed.
-
-  Lemma ge_impl_pos_ge : forall m n, (m >= n)%nat -> Pos m >= Pos n.
+  Lemma ge_impl_pos_ge : forall m n, (m >= n)%nat -> Pos m >>= Pos n.
 
   Proof.
     intros. destruct (lt_eq_lt_dec m n) as [[m_n | m_n] | m_n].
@@ -294,7 +311,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     left. trivial.
   Qed.
 
-  Lemma pos_ge_impl_ge : forall m n, Pos m >= Pos n -> (m >= n)%nat.
+  Lemma pos_ge_impl_ge : forall m n, Pos m >>= Pos n -> (m >= n)%nat.
 
   Proof.
     intros. destruct H. auto with arith. 
@@ -303,22 +320,34 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Ltac arctic_ord :=
     match goal with
-    | H: MinusInf > Pos _ |- _ =>
+    | H: MinusInf >> Pos _ |- _ =>
         contradiction
-    | H: MinusInf >= Pos _ |- _ =>
+    | H: MinusInf >>= Pos _ |- _ =>
         destruct H; [ contradiction | discriminate ]
-    | H: Pos ?m >= Pos ?n |- _ =>
+    | H: Pos ?m >>= Pos ?n |- _ =>
         assert ((m >= n)%nat); 
           [ apply pos_ge_impl_ge; assumption 
           | clear H; arctic_ord
           ]
-    | |- Pos _ >= MinusInf => left; simpl; trivial
-    | |- Pos ?m >= Pos ?n => apply ge_impl_pos_ge
+    | |- Pos _ >>= MinusInf => left; simpl; trivial
+    | |- Pos ?m >>= Pos ?n => apply ge_impl_pos_ge
     | _ => try solve [contradiction | discriminate]
     end.
 
+  Lemma plus_gt_compat : forall m n m' n',
+    m >> m' -> n >> n' -> m + n >> m' + n'.
+
+  Proof.
+    intros.
+    destruct m; destruct n; destruct m'; destruct n'; 
+      simpl; trivial; arctic_ord.
+    apply max_gt_compat; assumption.
+    unfold Peano.gt. apply elim_lt_max_l. assumption.
+    unfold Peano.gt. apply elim_lt_max_r. assumption.
+  Qed.
+
   Lemma plus_ge_compat : forall m n m' n',
-    m >= m' -> n >= n' -> m + n >= m' + n'.
+    m >>= m' -> n >>= n' -> m + n >>= m' + n'.
 
   Proof.
     intros.
@@ -330,13 +359,30 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
-    m >= m' -> n >= n' -> m * n >= m' * n'.
+    m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
   Proof.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
     omega.
+  Qed.
+
+  Lemma not_minusInf_ge_A1 : forall a, a <> MinusInf -> a >>= A1.
+
+  Proof.
+    intros. destruct a. destruct n.
+    right. refl.
+    left. simpl. omega.
+    tauto.
+  Qed.
+
+  Lemma ge_A1_not_minusInf : forall a, a >>= A1 -> a <> MinusInf.
+
+  Proof.
+    intros. destruct a. 
+    discriminate.
+    destruct H. contradiction. discriminate.
   Qed.
 
 End ArcticOrdSemiRingT.
@@ -440,11 +486,29 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Notation "x + y" := (Aplus x y).
   Notation "x * y" := (Amult x y).
-  Notation "x > y" := (gt x y).
-  Notation "x >= y" := (ge x y).
+  Notation "x >> y" := (gt x y) (at level 70).
+  Notation "x >>= y" := (ge x y) (at level 70).
+
+  Lemma ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
+
+  Proof.
+    destruct 1; auto.
+  Qed.
+
+  Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+
+  Proof.
+    intros. destruct y. destruct x. destruct z.
+    unfold gt, ge in *. destruct H. 
+    simpl in H. omega.
+    injection H. intro. subst z0. assumption.
+    auto.
+    elimtype False. destruct H. auto. discriminate.
+    elimtype False. destruct H. auto. subst x.  auto.
+  Qed.
 
   Lemma fin_ge_Zge : forall m n,
-    Fin m >= Fin n -> (m >= n)%Z.
+    Fin m >>= Fin n -> (m >= n)%Z.
  
   Proof.
     intros. inversion H; simpl in H0. omega.
@@ -477,14 +541,14 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     right. auto.
   Qed.
 
-  Lemma minusInf_ge_min : forall a, a >= MinusInf.
+  Lemma minusInf_ge_min : forall a, a >>= MinusInf.
 
   Proof.
     intros. destruct a. left. simpl. trivial.
     right. refl.
   Qed.
 
-  Lemma ge_impl_fin_ge : forall m n, (m >= n)%Z -> Fin m >= Fin n.
+  Lemma ge_impl_fin_ge : forall m n, (m >= n)%Z -> Fin m >>= Fin n.
 
   Proof.
     intros. destruct (Z_le_lt_eq_dec n m). omega.
@@ -492,7 +556,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     subst n. right. refl.
   Qed.
 
-  Lemma fin_ge_impl_ge : forall m n, Fin m >= Fin n -> (m >= n)%Z.
+  Lemma fin_ge_impl_ge : forall m n, Fin m >>= Fin n -> (m >= n)%Z.
 
   Proof.
     intros. destruct H. 
@@ -502,22 +566,34 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Ltac arctic_ord :=
     match goal with
-    | H: MinusInf > Fin _ |- _ =>
+    | H: MinusInf >> Fin _ |- _ =>
         contradiction
-    | H: MinusInf >= Fin _ |- _ =>
+    | H: MinusInf >>= Fin _ |- _ =>
         destruct H; [ contradiction | discriminate ]
-    | H: Fin ?m >= Fin ?n |- _ =>
+    | H: Fin ?m >>= Fin ?n |- _ =>
         assert ((m >= n)%Z); 
           [ apply fin_ge_impl_ge; assumption 
           | clear H; arctic_ord
           ]
-    | |- Fin _ >= MinusInf => left; simpl; trivial
-    | |- Fin ?m >= Fin ?n => apply ge_impl_fin_ge
+    | |- Fin _ >>= MinusInf => left; simpl; trivial
+    | |- Fin ?m >>= Fin ?n => apply ge_impl_fin_ge
     | _ => try solve [contradiction | discriminate]
     end.
 
+  Lemma plus_gt_compat : forall m n m' n',
+    m >> m' -> n >> n' -> m + n >> m' + n'.
+
+  Proof.
+    intros.
+    destruct m; destruct n; destruct m'; destruct n'; 
+      simpl; trivial; arctic_ord; simpl in *.
+    apply Zmax_gt_compat; assumption.
+    apply Zlt_gt. apply elim_lt_Zmax_l. omega.
+    apply Zlt_gt. apply elim_lt_Zmax_r. omega.
+  Qed.
+
   Lemma plus_ge_compat : forall m n m' n',
-    m >= m' -> n >= n' -> m + n >= m' + n'.
+    m >>= m' -> n >>= n' -> m + n >>= m' + n'.
 
   Proof.
     intros.
@@ -529,7 +605,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
-    m >= m' -> n >= n' -> m * n >= m' * n'.
+    m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
   Proof.
     intros.
@@ -539,7 +615,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma arctic_plus_ge_monotone : forall (a b c : A),
-    a >= c -> Aplus a b >= c.
+    a >>= c -> Aplus a b >>= c.
 
   Proof.
     intros. destruct c.
@@ -550,7 +626,17 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     apply minusInf_ge_min.
   Qed.
 
+  Lemma ge_A1_not_minusInf : forall a, a >>= A1 -> a <> MinusInf.
+
+  Proof.
+    intros. destruct a. 
+    discriminate.
+    destruct H. contradiction. discriminate.
+  Qed.
+
 End ArcticBZOrdSemiRingT.
+
+Module ArcticBZOrdSemiRing := OrdSemiRing ArcticBZOrdSemiRingT.
 
 (** Semi-ring of booleans with order True > False *)
 
@@ -571,6 +657,8 @@ Module BOrdSemiRingT <: OrdSemiRingType.
     | _, _ => True
     end.
 
+  Notation "x + y" := (Aplus x y).
+  Notation "x * y" := (Amult x y).
   Notation "x >> y" := (gt x y) (at level 70).
   Notation "x >>= y" := (ge x y) (at level 70).
 
@@ -629,18 +717,32 @@ Module BOrdSemiRingT <: OrdSemiRingType.
         | false => 0
         | true => 1
         end).
-    destruct x; destruct y; unfold transp, gt; solve [tauto | auto with arith].
+    destruct x; destruct y; unfold transp, gt; 
+      solve [tauto | auto with arith].
+  Qed.
+
+  Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+
+  Proof.
+    destruct x; destruct y; destruct z; simpl; tauto.
+  Qed.
+
+  Lemma plus_gt_compat : forall m n m' n',
+    m >> m' -> n >> n' -> m + n >> m' + n'.
+
+  Proof.
+    destruct m; destruct m'; destruct n; destruct n'; simpl; tauto.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
-    m >>= m' -> n >>= n' -> Aplus m n >>= Aplus m' n'.
+    m >>= m' -> n >>= n' -> m + n >>= m' + n'.
 
   Proof.
     destruct m; destruct m'; destruct n; destruct n'; simpl; tauto.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
-    m >>= m' -> n >>= n' -> Amult m n >>= Amult m' n'.
+    m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
   Proof.
     destruct m; destruct m'; destruct n; destruct n'; simpl; tauto.
