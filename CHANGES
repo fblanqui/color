@@ -1,3 +1,9 @@
+08-03-14: added support for arctic matrix interpretations proofs;
+uinified with development on matrix interpretations [Koprowski, Waldmann]
+- MatrixInt/*
+- Util/Algebra/SemiRing
+- Util/Algebra/OrdSemiRing
+
 08-01-23: added support for boolean reasoning and boolean functions
 testing equality [Blanqui]
 - Util/Bool/BoolUtil
