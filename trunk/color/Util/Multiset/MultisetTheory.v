@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.6 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: MultisetTheory.v,v 1.7 2008-05-07 15:26:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1046,7 +1046,8 @@ Section List2Multiset.
     elimtype False; apply not_empty with (list2multiset (a::n)) a.
     simpl; unfold insert; auto with multisets.
     rewrite H; solve_meq.
-    elimtype False; apply not_empty with (list2multiset (a::m) + list2multiset n) a.
+    elimtype False; apply not_empty with
+      (list2multiset (a::m) + list2multiset n) a.
     simpl; unfold insert; auto with multisets.
     rewrite H; solve_meq.    
     destruct (@member_union a (list2multiset m) (list2multiset n)).
