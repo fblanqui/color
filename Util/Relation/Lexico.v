@@ -7,14 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 lexicographic ordering
 *)
 
-(* $Id: Lexico.v,v 1.4 2007-02-06 10:04:06 blanqui Exp $ *)
+(* $Id: Lexico.v,v 1.5 2008-05-07 15:26:30 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export SN.
 
 (****************************************************************************)
-(** lexicographic ordering on pairs *)
+(** lexicographic quasi-ordering on pairs *)
 
 Section lexp.
 

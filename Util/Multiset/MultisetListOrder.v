@@ -86,15 +86,18 @@ Module MultisetListOrder (ES : Eqset).
 
     Proof.
       intros us Hsub ts ss; unfold mult, MultisetLT, transp; intros H1 H2.
-      assert (Hsub' : forall p, p in (list2multiset us) -> forall x y, r x p -> r y x -> r y p).
+      assert (Hsub' : forall p, p in (list2multiset us) ->
+        forall x y, r x p -> r y x -> r y p).
       intros p p_in_us x y H H'.
       elim (member_multiset_list us p_in_us); intros p' p'_in_us p'eq.
       apply r_eqA_compat with y p'; auto with multisets.
       auto with sets. auto with sets.
-      generalize (Hsub p' p'_in_us x y); unfold transp; simpl; intro Hsub'; apply Hsub'; trivial.
+      generalize (Hsub p' p'_in_us x y); unfold transp; simpl; intro Hsub';
+        apply Hsub'; trivial.
       apply r_eqA_compat with x p; auto with multisets.
       auto with sets.
-      apply (sub_transp_trans_2_mOrd_trans Hsub') with (list2multiset ts); trivial.
+      apply (sub_transp_trans_2_mOrd_trans Hsub') with (list2multiset ts);
+        trivial.
     Qed.
 
     Lemma nonempty_mset_ind : forall (P : Multiset -> Prop), 
