@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.29 2008-01-29 18:07:58 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.30 2008-05-07 15:25:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -889,25 +889,28 @@ Fixpoint list_of_vec n (v : vec n) {struct v} : list A :=
     | Vcons x _ v => x :: list_of_vec v
   end.
 
+Lemma in_list_of_vec : forall n (v : vec n) x, In x (list_of_vec v) -> Vin x v.
 
-Lemma vec_of_list_exact i l (Hi:i < length(l)) : l[i]=Some (Vnth (vec_of_list l) Hi).
 Proof.
-induction i;intros.
-destruct l;simpl in *. absurd_hyp Hi; omega.
-auto.
+induction v; simpl; intros. assumption. destruct H. auto. right. auto.
+Qed.
+ 
+Lemma vec_of_list_exact i l (Hi :i < length(l)) :
+  l[i] = Some (Vnth (vec_of_list l) Hi).
 
-destruct l;simpl in *. absurd_hyp Hi; omega.
-apply IHi.
+Proof.
+induction i; intros.
+destruct l; simpl in *. absurd_hyp Hi; omega. auto.
+destruct l;simpl in *. absurd_hyp Hi; omega. apply IHi.
 Qed.
 
-Lemma list_of_vec_exact i n (v:vector A n) (Hi:i < n) : (list_of_vec v)[i]=Some (Vnth v Hi).
-Proof.
-induction i;intros.
-destruct v;simpl in *. absurd_hyp Hi; omega.
-auto.
+Lemma list_of_vec_exact i n (v:vector A n) (Hi:i < n) :
+  (list_of_vec v)[i] = Some (Vnth v Hi).
 
-destruct v;simpl in *. absurd_hyp Hi; omega.
-apply IHi.
+Proof.
+induction i; intros.
+destruct v; simpl in *. absurd_hyp Hi; omega. auto.
+destruct v; simpl in *. absurd_hyp Hi; omega. apply IHi.
 Qed.
 
 (***********************************************************************)
@@ -1032,6 +1035,7 @@ Implicit Arguments Vin_elim [A x n v].
 Implicit Arguments Vin_app [A x n1 v1 n2 v2].
 Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
 Implicit Arguments beq_vec_ok_in2 [A beq n v w].
+Implicit Arguments in_list_of_vec [A n v x].
 
 (***********************************************************************)
 (** tactics *)
