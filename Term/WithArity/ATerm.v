@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.15 2008-01-29 18:07:58 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.16 2008-05-07 15:24:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -422,8 +422,40 @@ Fixpoint nb_symb_occs t :=
           | Vnil => 0
           | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
         end
-        in nb_symb_occs_terms _ ts
+        in 1 + nb_symb_occs_terms _ ts
   end.
+
+Fixpoint nb_symb_occs_terms n (ts : terms n) {struct ts} :=
+  match ts with
+    | Vnil => 0
+    | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms us
+  end.
+
+Lemma nb_symb_occs_fix : forall n (ts : terms n),
+  (fix nb_symb_occs_terms n (ts : terms n) {struct ts} :=
+    match ts with
+      | Vnil => 0
+      | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
+    end) _ ts = nb_symb_occs_terms ts.
+
+Proof.
+induction ts; simpl; intros. refl. rewrite IHts. refl.
+Qed.
+
+Lemma nb_symb_occs_fun : forall f (ts : args f),
+  nb_symb_occs (Fun f ts) = 1 + nb_symb_occs_terms ts.
+
+Proof.
+intros. simpl. rewrite nb_symb_occs_fix. refl.
+Qed.
+
+Lemma nb_symb_occs_ge : forall n (ts : terms n) t,
+  Vin t ts -> nb_symb_occs_terms ts >= nb_symb_occs t.
+
+Proof.
+induction ts; simpl; intros. contradiction. destruct H. subst a. omega.
+deduce (IHts _ H). omega.
+Qed.
 
 End S.
 
@@ -438,6 +470,7 @@ Implicit Arguments in_vars_vec_elim [Sig x n ts].
 Implicit Arguments in_vars_vec_intro [Sig x t n ts].
 Implicit Arguments vars_vec_in [Sig x t n ts].
 Implicit Arguments vars_max [Sig x t].
+Implicit Arguments nb_symb_occs_ge [Sig n ts t].
 
 (***********************************************************************)
 (** tactics *)
