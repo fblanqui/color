@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.39 2008-02-13 14:08:17 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.40 2008-05-07 15:25:06 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,6 +21,8 @@ Require Export NatUtil.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
+Implicit Arguments in_combine_l [A B l l' x y].
+Implicit Arguments in_combine_r [A B l l' x y].
 
 Ltac elt_type l :=
   match type of l with
