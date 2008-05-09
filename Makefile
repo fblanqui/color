@@ -12,7 +12,7 @@ MAKEFLAGS := -r -j
 .PHONY: clean all config dist doc dump html install-dist install-doc tags
 
 DUMP := /tmp/dump
-WEB := /local/color/htdocs
+WEB := /local/web-serveurs/color/htdocs
 
 COQMAKE := $(MAKE) -f Makefile.coq
 
