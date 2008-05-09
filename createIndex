@@ -20,7 +20,7 @@ prfiles () {
       d=$root.$dir
     fi
     g=`basename $f .v`
-    echo "<li><a href=\"Rewriting.$d.$g.html\">$g</a></li>" >> $doc
+    echo "<li><a href=\"CoLoR.$d.$g.html\">$g</a></li>" >> $doc
   done
   echo "</ul></li>" >> $doc
 }
@@ -45,19 +45,19 @@ cat doc/begin.html > $doc
 # Util
 
 root=Util
-subdirs='Logic Pair Bool Relation Nat Integer List Vector Polynom Multiset Matrix'
+subdirs=`ls -1 $root | sed -e 's|CVS||'`
 prdir
 
 # Term
 
 root=Term
-subdirs='WithArity Varyadic SimpleType'
+subdirs=`ls -1 $root | sed -e 's|CVS||'`
 prdir
 
 # simple directories
 
 root=''
-for dir in MannaNess PolyInt MatrixInt DP Filter Conversion MPO RPO HORPO
+for dir in `ls -1F | grep / | sed -e 's|/||' -e 's|CVS||' -e 's|doc||' -e 's|Util||' -e 's|Term||'`
 do
   prfiles
 done
