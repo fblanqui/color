@@ -1,5 +1,5 @@
 08-03-14: added support for arctic matrix interpretations proofs;
-uinified with development on matrix interpretations [Koprowski, Waldmann]
+unified with development on matrix interpretations [Koprowski, Waldmann]
 - MatrixInt/*
 - Util/Algebra/SemiRing
 - Util/Algebra/OrdSemiRing
@@ -10,8 +10,7 @@ testing equality [Blanqui]
 - Util/List/ListUtil
 - Term/Varyadic/VTerm
 
-07-08-23: added SCC decomposition [Lucas]
-(SCC = Strongly Connected Component)
+07-08-23: added SCC decomposition [Lucas] (SCC = Strongly Connected Component)
 - Util/List/SortUtil: lemmas on list sorting
 - Util/Nat/log2: definition and properties of log2 and exp2
 - Util/Nat/BoundNat: type of natural numbers smaller than some constant
