@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.29 2008-02-13 14:08:17 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.30 2008-05-09 07:50:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -63,9 +63,9 @@ unfold transitive, same_relation. intuition.
 Qed.
 
 Add Relation relation same_relation
-  reflexivity proved by (same_relation_refl)
-  symmetry proved by (same_relation_sym)
-  transitivity proved by (same_relation_trans)
+  reflexivity proved by same_relation_refl
+  symmetry proved by same_relation_sym
+  transitivity proved by same_relation_trans
     as same_relation_rel.
 
 Notation "R == S" := (same_relation _ R S) (at level 70).
