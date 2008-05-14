@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.31 2008-05-14 12:26:56 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.32 2008-05-14 14:30:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -586,14 +586,6 @@ Proof.
 induction v1; intros; simpl in * . auto. destruct H. auto.
 assert (Vin x v1 \/ Vin x v2). apply IHv1. exact H. destruct H0; auto.
 Qed.
-
-Lemma S_add_S : forall n1 n2 n, n1 + S n2 = n -> S n1 + S n2 = S n.
-
-Proof.
-intros. subst n. reflexivity.
-Qed.
-
-Implicit Arguments S_add_S [n1 n2 n].
 
 Lemma Vin_elim : forall x n (v : vec n),
   Vin x v -> exists n1, exists v1 : vec n1, exists n2, exists v2 : vec n2,

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.10 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.11 2008-05-14 14:30:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,6 +21,7 @@ Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
+Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
 (** filtering function *)
@@ -40,9 +41,6 @@ Notation Sig' := filter_sig.
 
 Notation term' := (ATerm.term Sig').
 Notation terms' := (vector term').
-
-Notation "'args' f" := (terms (arity f)) (at level 70).
-
 Notation Fun' := (@Fun Sig').
 
 (***********************************************************************)

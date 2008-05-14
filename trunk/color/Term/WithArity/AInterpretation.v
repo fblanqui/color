@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.10 2008-05-14 14:30:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,7 +21,6 @@ Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
-Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
 (** interpretation of symbols *)

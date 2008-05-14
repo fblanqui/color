@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.15 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.16 2008-05-14 14:30:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,9 +22,7 @@ Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
-
 Notation "'args' f" := (terms (arity f)) (at level 70).
-
 Notation Var := (@Var Sig).
 
 (***********************************************************************)
