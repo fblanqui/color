@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.14 2008-01-29 18:07:58 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.15 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -146,15 +146,15 @@ Lemma in_svars_intro : forall x y l,
 Proof.
 induction l; simpl; intros. contradiction. destruct H0.
 subst a. apply in_appl. exact H.
-deduce (IHl H H0). apply in_appr. exact H1.
+ded (IHl H H0). apply in_appr. exact H1.
 Qed.
 
 Lemma in_svars_elim : forall x l,
   In x (svars l) -> exists y, In y l /\ In x (vars (s y)).
 
 Proof.
-induction l; simpl; intros. contradiction. deduce (in_app_or H). destruct H0.
-exists a. auto. deduce (IHl H0). do 2 destruct H1. exists x0. auto.
+induction l; simpl; intros. contradiction. ded (in_app_or H). destruct H0.
+exists a. auto. ded (IHl H0). do 2 destruct H1. exists x0. auto.
 Qed.
 
 Implicit Arguments in_svars_elim [x l].
@@ -168,7 +168,7 @@ Qed.
 Lemma incl_svars : forall l1 l2, incl l1 l2 -> incl (svars l1) (svars l2).
 
 Proof.
-intros. unfold incl. intros. deduce (in_svars_elim H0). do 2 destruct H1.
+intros. unfold incl. intros. ded (in_svars_elim H0). do 2 destruct H1.
 eapply in_svars_intro. apply H2. apply H. exact H1.
 Qed.
 
@@ -231,7 +231,7 @@ apply H0. rewrite vars_fun in H1. exact H1.
 refl.
 (* cons *)
 intros. rewrite vars_vec_cons in H2. unfold incl in H2.
-deduce (incl_app_elim H2). destruct H3. simpl. apply Vcons_eq; auto.
+ded (incl_app_elim H2). destruct H3. simpl. apply Vcons_eq; auto.
 Qed.
 
 Lemma sub_eq_vars_app : forall s1 s2 t,
@@ -267,7 +267,7 @@ Lemma union_correct1 : sub_eq_dom union s1 l1.
 Proof.
 unfold sub_eq_dom, union. intros. case (eq_term_dec (s1 x) (Var x)); intros.
 case (In_dec eq_nat_dec x l2); intro. apply sym_eq. auto.
-deduce (hyp2 _ n). rewrite e. rewrite H0. refl. refl.
+ded (hyp2 _ n). rewrite e. rewrite H0. refl. refl.
 Qed.
 
 Lemma union_correct2 : sub_eq_dom union s2 l2.
@@ -275,7 +275,7 @@ Lemma union_correct2 : sub_eq_dom union s2 l2.
 Proof.
 unfold sub_eq_dom, union. intros. case (eq_term_dec (s1 x) (Var x)); intros.
 refl. case (In_dec eq_nat_dec x l1); intro. auto.
-deduce (hyp1 _ n0). contradiction.
+ded (hyp1 _ n0). contradiction.
 Qed.
 
 Lemma app_union1 : forall t, incl (vars t) l1 -> app union t = app s1 t.
@@ -310,7 +310,7 @@ Qed.
 Lemma dom_incl_restrict : forall s l, dom_incl (restrict s l) l.
 
 Proof.
-unfold dom_incl. intros. deduce (Inb_elim eq_nat_dec _ _ H). unfold restrict.
+unfold dom_incl. intros. ded (Inb_elim eq_nat_dec _ _ H). unfold restrict.
 rewrite H0. refl.
 Qed.
 
@@ -319,7 +319,7 @@ Lemma sub_eq_restrict : forall s l, sub_eq_dom (restrict s l) s l.
 Proof.
 unfold sub_eq_dom, restrict. induction l; simpl. intros. contradiction.
 intro. case (eq_nat_dec x a); intuition. rewrite H0 in n.
-deduce (n (refl_equal x)). contradiction.
+ded (n (refl_equal x)). contradiction.
 Qed.
 
 Lemma app_restrict : forall s t, app s t = app (restrict s (vars t)) t.
@@ -514,7 +514,7 @@ Fixpoint freshl (x0 n : nat) {struct n} : list variable :=
 Lemma in_freshl : forall x n x0, ~In x (freshl x0 n) -> x < x0 \/ x >= x0 + n.
 
 Proof.
-induction n; simpl; intuition. omega. deduce (IHn (S x0) H1). omega.
+induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega.
 Qed.
 
 Implicit Arguments in_freshl [x n x0].
@@ -524,7 +524,7 @@ Lemma fsub_dom : forall x0 n (ts : terms n),
 
 Proof.
 unfold dom_incl. induction ts; simpl; intros. apply fsub_nil.
-intuition. deduce (in_freshl H1). destruct H.
+intuition. ded (in_freshl H1). destruct H.
 apply fsub_inf. omega. apply fsub_sup. omega.
 Qed.
 

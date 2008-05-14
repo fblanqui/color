@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.30 2008-02-13 14:08:16 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.31 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -298,7 +298,7 @@ Lemma Vgt_prod_fun : forall f ts ts',
   Vgt_prod (red R) ts ts' -> int_red R (Fun f ts) (Fun f ts').
 
 Proof.
-intros. deduce (Vgt_prod_gt H). do 8 destruct H0. destruct H1. redtac.
+intros. ded (Vgt_prod_gt H). do 8 destruct H0. destruct H1. redtac.
 subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
 exists l. exists r. exists (Cont f x4 x0 c x3). exists s. split. discriminate.
 auto.
@@ -317,7 +317,7 @@ Lemma red_union : red (R ++ R') << red R U red R'.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y.
-deduce (in_app_or H). destruct H0.
+ded (in_app_or H). destruct H0.
 left. apply red_rule. exact H0. right. apply red_rule. exact H0.
 Qed.
 
@@ -349,7 +349,7 @@ Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y.
-deduce (in_app_or H). destruct H0.
+ded (in_app_or H). destruct H0.
 left. apply hd_red_rule. exact H0. right. apply hd_red_rule. exact H0.
 Qed.
 
@@ -380,7 +380,7 @@ Qed.
 Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty_trs R << hd_red R.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H. deduce (red_empty H). subst x0.
+unfold inclusion. intros. do 2 destruct H. ded (red_empty H). subst x0.
 exact H0.
 Qed.
 
@@ -440,7 +440,7 @@ Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
-deduce (in_app_or H0). destruct H1.
+ded (in_app_or H0). destruct H1.
 left. exists (fill c (app s l)); split. assumption. apply red_rule. exact H1.
 right. exists (fill c (app s l)); split. assumption. apply red_rule. exact H1.
 Qed.
@@ -450,7 +450,7 @@ Lemma hd_red_mod_union :
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
-deduce (in_app_or H0). destruct H1.
+ded (in_app_or H0). destruct H1.
 left. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
 right. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
 Qed.
@@ -471,7 +471,7 @@ Ltac solve_termination R lemma :=
   match type of R with
   | list ?rule => first 
     [ solve [replace R with (nil (A:=rule));
-      [apply lemma | normalize R; trivial]]
+      [apply lemma | norm R; trivial]]
     | fail "The termination problem is non-trivial"]
   | list ?rule => first 
     [ solve [replace R with (nil (A:=rule));
@@ -491,14 +491,14 @@ Ltac termination_trivial :=
 Ltac no_relative_rules :=
   match goal with
     |- WF (@red_mod ?S ?E _) =>
-      normalize E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
+      norm E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
     | _ => idtac
   end.
 
 Ltac no_lhs_variable :=
   match goal with
     | |- no_lhs_variable ?R =>
-      normalize R;unfold no_lhs_variable; let T := elt_type R in
+      norm R; unfold no_lhs_variable; let T := elt_type R in
       let P := fresh in set (P := fun a : T => notvar (lhs a));
         let H := fresh in assert (H : lforall P R);
           [unfold P; simpl; intuition
@@ -509,7 +509,7 @@ Ltac no_lhs_variable :=
 Ltac no_rhs_variable :=
   match goal with
     | |- no_rhs_variable ?R =>
-      normalize R;unfold no_rhs_variable; let T := elt_type R in
+      norm R; unfold no_rhs_variable; let T := elt_type R in
       let P := fresh in set (P := fun a : T => notvar (rhs a));
         let H := fresh in assert (H : lforall P R);
           [unfold P; simpl; intuition

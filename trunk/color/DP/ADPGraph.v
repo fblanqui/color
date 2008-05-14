@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.11 2008-01-09 16:42:53 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.12 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -106,7 +106,7 @@ Lemma chain_dps_app' : forall a l m b p, a :: l = m ++ b :: p ->
 Proof.
 intros. destruct m; simpl in H; injection H; unfold inclusion; intros.
 subst p. subst b. exists x. unfold clos_refl. intuition.
-subst r. subst l. simpl. deduce (chain_dps_app _ _ H2). do 2 destruct H0.
+subst r. subst l. simpl. ded (chain_dps_app _ _ H2). do 2 destruct H0.
 exists x0. unfold clos_refl. intuition.
 Qed.
 
@@ -125,10 +125,10 @@ Lemma iter_chain_chain_dps : forall n t u, iter Chain n t u ->
   exists a, exists l, length l = n /\ chain_dps a l t u.
 
 Proof.
-induction n; simpl; intros. deduce (chain_chain_dp H). destruct H0.
+induction n; simpl; intros. ded (chain_chain_dp H). destruct H0.
 exists x. exists (@nil rule). intuition.
-do 2 destruct H. deduce (chain_chain_dp H). destruct H1. exists x0.
-deduce (IHn _ _ H0). do 3 destruct H2. exists (x1 :: x2). simpl. intuition.
+do 2 destruct H. ded (chain_chain_dp H). destruct H1. exists x0.
+ded (IHn _ _ H0). do 3 destruct H2. exists (x1 :: x2). simpl. intuition.
 exists x. intuition.
 Qed.
 
@@ -153,7 +153,7 @@ set (s1' := restrict (comp s1 (shift_inv_sub p l1)) (vars (shift p l1))).
 set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
-deduce (vars_max H3). deduce (in_vars_shift_min H4). unfold p in H6.
+ded (vars_max H3). ded (in_vars_shift_min H4). unfold p in H6.
 absurd (x <= maxvar l0). omega. assumption.
 (* domains of substitutions *)
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
@@ -177,7 +177,7 @@ Lemma chain_dps_path_dp_graph : forall l a b t u,
 Proof.
 induction l; simpl; intros; do 2 destruct H.
 eapply chain_dp2_dp_graph. apply H. apply H0.
-deduce (IHl _ _ _ _ H0). intuition.
+ded (IHl _ _ _ _ H0). intuition.
 destruct l; simpl in H0; do 2 destruct H0.
 eapply chain_dp2_dp_graph. apply H. apply H0.
 eapply chain_dp2_dp_graph. apply H. apply H0.
@@ -255,9 +255,9 @@ set (n := length DP). apply WF_iter with (S n). intro.
 assert (Hwf' : WF (succ @ succ_eq#)). apply absorb_WF_modulo_r; assumption.
 generalize (Hwf' x). induction 1. apply SN_intro; intros. apply H0.
 (* path in the dp_graph corresponding to the chains *)
-deduce (iter_chain_chain_dps H1). do 3 destruct H2.
-assert (length x1 > 0). omega. deduce (last_intro H4). do 3 destruct H5.
-clear H4. rewrite H5 in H3. deduce (chain_dps_path_dp_graph H3).
+ded (iter_chain_chain_dps H1). do 3 destruct H2.
+assert (length x1 > 0). omega. ded (last_intro H4). do 3 destruct H5.
+clear H4. rewrite H5 in H3. ded (chain_dps_path_dp_graph H3).
 (* pigeon-hole principle: there is a dp visited twice *)
 set (l' := x0 :: x2 ++ x3 :: nil). assert (exists z, occur z l' >= 2).
 unfold l'. eapply long_path_occur. apply restricted_dp_graph. apply H4.
@@ -265,13 +265,13 @@ rewrite H6. rewrite H2. unfold n. omega.
 (* we prove (A): in this cycle, a dp is included in succ *)
 assert (exists l, exists a, exists m, l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
 destruct H7. set (p := occur x4 l' - 2). assert (occur x4 l' = S (S p)).
-unfold p. omega. deduce (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
-clear H8. rewrite H9. deduce (occur_S eq_dec H11). do 3 destruct H8.
+unfold p. omega. ded (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
+clear H8. rewrite H9. ded (occur_S eq_dec H11). do 3 destruct H8.
 destruct H12. clear H11. clear H13. clear p. rewrite H8. rewrite H8 in H9.
 clear H8. clear H10.
 (* cycle min *)
 assert (cycle dp_graph x4 x7). unfold cycle. eapply sub_path. unfold l' in H9.
-apply H9. exact H4. deduce (cycle_min_intro eq_dec H8). decomp H10.
+apply H9. exact H4. ded (cycle_min_intro eq_dec H8). decomp H10.
 (* length x11 < length DP *)
 assert (length l' = n+2). unfold l'. simpl. rewrite <- H5. omega.
 rewrite H9 in H10. change (length (x5++(x4::x7)++x4::x8) = n+2) in H10.
@@ -282,20 +282,20 @@ apply repeat_free_dec_incl_length. apply eq_dec. exact H14.
 apply incl_appr_incl with (x10::nil). simpl. eapply restricted_path_incl.
 apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
 (* end of the proof of (A) *)
-deduce (Hcycle h H14). do 2 destruct H10. deduce (in_elim H10).
+ded (Hcycle h H14). do 2 destruct H10. ded (in_elim H10).
 do 2 destruct H15. exists (x5++x9++x14). exists x13. exists (x15++x12++x4::x8).
 intuition. repeat rewrite app_ass. transitivity (x5++(x4::x7)++x4::x8). refl.
 rewrite H11. rewrite app_ass. transitivity (x5++x9++(x10::x11)++x12++x4::x8).
 simpl. rewrite app_ass. refl. rewrite H15. rewrite app_ass. refl.
 (* consequence of (A) *)
-do 4 destruct H8. unfold l' in H8. deduce (chain_dps_app' H8 H3).
+do 4 destruct H8. unfold l' in H8. ded (chain_dps_app' H8 H3).
 do 2 destruct H10.
 (* succ_eq# x x7 *)
 assert (succ_eq# x x7). destruct H10. subst x7. intuition.
 eapply incl_elim. apply compat_chain_dps. apply H10.
 (* (succ @ succ_eq#) x7 y *)
 assert ((succ @ succ_eq#) x7 y). destruct x6; simpl in H11.
-deduce (compat_chain_dp_strict H9 H11). exists y. intuition.
+ded (compat_chain_dp_strict H9 H11). exists y. intuition.
 do 2 destruct H11. exists x8. split. eapply incl_elim.
 apply (compat_chain_dp_strict H9). exact H11.
 eapply incl_elim. apply compat_chain_dps. apply H13.

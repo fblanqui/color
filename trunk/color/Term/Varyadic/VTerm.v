@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.8 2008-01-23 18:22:39 blanqui Exp $ *)
+(* $Id: VTerm.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -237,7 +237,7 @@ rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0.
 rewrite beq_list_ok_in in H2. subst l. refl. exact H.
 inversion H0. apply andb_intro. apply (beq_refl beq_symb_ok).
-deduce (beq_list_ok_in H). subst v. rewrite H1. refl.
+ded (beq_list_ok_in H). subst v. rewrite H1. refl.
 Qed.
 
 End beq.

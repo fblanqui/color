@@ -89,12 +89,12 @@ Lemma occur_S : forall x l n, occur x l = S n ->
   exists m, exists p, l = m ++ x :: p /\ ~In x m /\ occur x p = n.
 
 Proof.
-intros. assert (occur x l > 0). omega. deduce (occur_in H0).
-deduce (in_elim_dec eq_dec H1). do 3 destruct H2. subst l.
+intros. assert (occur x l > 0). omega. ded (occur_in H0).
+ded (in_elim_dec eq_dec H1). do 3 destruct H2. subst l.
 exists x0. exists x1. (* intuition makes occur untypable ! *)
 split. refl. split. exact H3.
 rewrite occur_app in H. simpl in H. rewrite eq_delta in H.
-deduce (notin_occur H3). omega.
+ded (notin_occur H3). omega.
 Qed.
 
 End occur.
@@ -124,35 +124,35 @@ apply False_ind. destruct l. simpl in H0. omega.
 unfold incl in H. simpl in H. apply (H a). auto.
 (* case s=a::s *)
 destruct l. apply False_ind. simpl in H0. omega.
-case (In_dec eq_dec a0 l); intro. deduce (in_occur eq_dec i).
+case (In_dec eq_dec a0 l); intro. ded (in_occur eq_dec i).
 exists a0. simpl. rewrite eq_delta. omega.
 case (le_lt_dec (occur a l) 1); intro.
 (* case occur a l <= 1 *)
-deduce (incl_cons_l H). clear H. destruct H1.
-deduce (incl_cons_r H1). destruct H2.
+ded (incl_cons_l H). clear H. destruct H1.
+ded (incl_cons_r H1). destruct H2.
 (* case In a l *)
 simpl in H. destruct H. subst a0. contradiction.
-deduce (in_elim_dec eq_dec H2). do 3 destruct H3.
+ded (in_elim_dec eq_dec H2). do 3 destruct H3.
 (* ~In a x0 *)
 assert (~In a x0). apply (occur_notin eq_dec). rewrite H3 in l0.
 rewrite occur_app in l0. simpl in l0. rewrite eq_delta in l0. omega.
 (* x and x0 included in s *)
-rewrite H3 in H1. deduce (incl_app_elim H1). clear H1. destruct H6.
-deduce (incl_cons_r H1). clear H1. destruct H7. contradiction.
-deduce (incl_cons_l H6). clear H6. destruct H7. clear H6.
-deduce (incl_cons_r H7). clear H7. destruct H6. contradiction.
+rewrite H3 in H1. ded (incl_app_elim H1). clear H1. destruct H6.
+ded (incl_cons_r H1). clear H1. destruct H7. contradiction.
+ded (incl_cons_l H6). clear H6. destruct H7. clear H6.
+ded (incl_cons_r H7). clear H7. destruct H6. contradiction.
 (* l' = l - a + a0 *)
 set (l' := x ++ a0 :: x0).
 assert (incl l' s). unfold l'. apply incl_app. exact H1.
 apply incl_cons. exact H. exact H6.
 assert (length l' > length s). unfold l'. rewrite length_app. simpl.
 simpl in H0. rewrite H3 in H0. rewrite length_app in H0. simpl in H0. omega.
-deduce (IHs l' H7 H8). destruct H9. exists x1.
+ded (IHs l' H7 H8). destruct H9. exists x1.
 assert (occur x1 (a0 :: l) = occur x1 l' + delta x1 a). unfold l'. rewrite H3.
 simpl. repeat rewrite occur_app. simpl. omega. omega.
 (* incl l s *)
 assert (length l > length s). simpl in H0. omega.
-deduce (IHs l H2 H3). destruct H4. exists x. simpl. omega.
+ded (IHs l H2 H3). destruct H4. exists x. simpl. omega.
 (* 1 < occur a l *)
 exists a. simpl. omega.
 Qed.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.8 2007-04-13 15:39:43 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -125,8 +125,8 @@ simpl. unfold restrict. case (le_lt_dec k v); intro.
 simpl in H. absurd (v<k); omega. refl.
 repeat rewrite term_int_fun. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
-rewrite maxvar_fun in H0. deduce (Vin_map_intro (maxvar (Sig:=Sig)) H1).
-deduce (Vmax_in H2). omega.
+rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
+ded (Vmax_in H2). omega.
 Qed.
 
 Lemma term_int_eq_restrict : forall xint t,
@@ -145,8 +145,8 @@ simpl in *. unfold fval, val_of_vec. case (le_lt_dec k v); intro.
 absurd (v<k); omega. symmetry. apply vec_of_val_eq.
 repeat rewrite term_int_fun. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
-rewrite maxvar_fun in H0. deduce (Vin_map_intro (maxvar (Sig:=Sig)) H1).
-deduce (Vmax_in H2). omega.
+rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
+ded (Vmax_in H2). omega.
 Qed.
 
 Lemma term_int_eq_fval : forall xint t,

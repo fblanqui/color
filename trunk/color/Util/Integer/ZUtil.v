@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.12 2008-03-18 20:15:31 koper Exp $ *)
+(* $Id: ZUtil.v,v 1.13 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Require Export LogicUtil.
 
@@ -169,7 +169,7 @@ Lemma power_Dlt_compat : forall x y n,
 
 Proof.
 intros x y. destruct x. destruct y. unfold Dlt. simpl.
-induction n; simpl; intros. omega. deduce (IHn H).
+induction n; simpl; intros. omega. ded (IHn H).
 apply Zle_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
 omega. assumption. apply Zmult_gt_0_lt_compat_r. apply Zlt_gt.
 apply Zmult_lt_O_compat. omega. apply spos_power. omega. assumption.

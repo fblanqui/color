@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rule renaming
 *)
 
-(* $Id: ARename.v,v 1.3 2008-01-22 13:05:55 blanqui Exp $ *)
+(* $Id: ARename.v,v 1.4 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -57,9 +57,9 @@ Proof.
 intros x t. pattern t. apply term_ind_forall; clear t.
 simpl. intros. destruct H. omega. contradiction.
 intros. unfold shift in H0. rewrite app_fun in H0. rewrite vars_fun in H0.
-deduce (in_vars_vec_elim H0). do 2 destruct H1.
-deduce (Vin_map H1). do 2 destruct H3. subst x0.
-deduce (Vforall_in H H3). auto.
+ded (in_vars_vec_elim H0). do 2 destruct H1.
+ded (Vin_map H1). do 2 destruct H3. subst x0.
+ded (Vforall_in H H3). auto.
 Qed.
 
 Lemma in_vars_shift_max : forall x t,
@@ -69,11 +69,11 @@ Proof.
 intros x t. pattern t. apply term_ind_forall; clear t.
 simpl. intros. destruct H. omega. contradiction.
 intros. unfold shift in H0. rewrite app_fun in H0. rewrite vars_fun in H0.
-deduce (in_vars_vec_elim H0). do 2 destruct H1.
-deduce (Vin_map H1). do 2 destruct H3. subst x0.
-deduce (Vforall_in H H3). deduce (H4 H2).
-rewrite maxvar_fun. deduce (Vin_map_intro (@maxvar Sig) H3).
-deduce (Vmax_in H6). omega.
+ded (in_vars_vec_elim H0). do 2 destruct H1.
+ded (Vin_map H1). do 2 destruct H3. subst x0.
+ded (Vforall_in H H3). ded (H4 H2).
+rewrite maxvar_fun. ded (Vin_map_intro (@maxvar Sig) H3).
+ded (Vmax_in H6). omega.
 Qed.
 
 Lemma vars_shift : forall t, vars (shift t) = map shift_var (vars t).
@@ -157,7 +157,7 @@ Implicit Arguments hyp [a].
 Lemma red_incl_shift_red : red R << red R'.
 
 Proof.
-unfold inclusion. intros. redtac. deduce (hyp H). destruct H2 as [p].
+unfold inclusion. intros. redtac. ded (hyp H). destruct H2 as [p].
 rewrite (app_shift p l) in H0. subst x.
 assert (incl (vars r) (vars l)). apply hyp0. exact H.
 rewrite (app_shift_incl p s H0) in H1. subst y.
@@ -182,7 +182,7 @@ Lemma shift_red_incl_red : red R' << red R.
 
 Proof.
 unfold inclusion. intros. redtac. rename l into l'. rename r into r'.
-subst x. subst y. deduce (hyp H). do 3 destruct H0. destruct x0 as [l r].
+subst x. subst y. ded (hyp H). do 3 destruct H0. destruct x0 as [l r].
 simpl in H1. inversion H1. subst l'. subst r'. unfold shift.
 repeat rewrite app_app. apply red_rule. exact H0.
 Qed.
@@ -236,7 +236,7 @@ Lemma in_vars_shift_terms : forall t l p, In t (shift_terms p l) ->
 Proof.
 induction l; simpl; intros. contradiction. destruct H.
 exists a. exists p. auto.
-deduce (IHl _ H). do 3 destruct H0. destruct H1. subst t. exists x. exists x0.
+ded (IHl _ H). do 3 destruct H0. destruct H1. subst t. exists x. exists x0.
 intuition.
 Qed.
 
@@ -246,8 +246,8 @@ Lemma in_vars_shift_terms_min : forall p t l x,
   In t (shift_terms p l) -> In x (vars t) -> p <= x.
 
 Proof.
-intros. deduce (in_vars_shift_terms H). do 3 destruct H1. destruct H2. subst t.
-deduce (in_vars_shift_min H0). omega.
+intros. ded (in_vars_shift_terms H). do 3 destruct H1. destruct H2. subst t.
+ded (in_vars_shift_min H0). omega.
 Qed.
 
 Implicit Arguments in_vars_shift_terms_min [p t l x].
@@ -257,8 +257,8 @@ Lemma shift_terms_correct : forall l p, pw_disjoint_vars (shift_terms p l).
 Proof.
 induction l. unfold pw_disjoint_vars. intros. contradiction.
 intro. simpl. apply pw_disjoint_vars_cons. apply IHl.
-unfold disjoint_vars. intros. deduce (in_vars_shift_max H0).
-deduce (in_vars_shift_terms_min H H1). absurd (x <= maxvar a + p); omega.
+unfold disjoint_vars. intros. ded (in_vars_shift_max H0).
+ded (in_vars_shift_terms_min H H1). absurd (x <= maxvar a + p); omega.
 Qed.
 
 (***********************************************************************)

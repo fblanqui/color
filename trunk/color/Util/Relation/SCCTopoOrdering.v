@@ -82,7 +82,7 @@ destruct H. assert (exists n, SCC'_tag x = Some n).
 destruct (SCC'_tag x); try tauto. exists n; tauto.
 destruct H1. generalize H1; intro. rewrite H in H2.
 unfold SCC'_tag in H1. unfold SCC'_tag in H2.
-deduce (In_find_first2 H1). deduce (In_find_first2 H2).
+ded (In_find_first2 H1). ded (In_find_first2 H2).
 do 2 (destruct H3; destruct H4). rewrite H3 in H4. inversion H4.
 subst x1. eapply SCC'_trans. eassumption. apply SCC'_sym. auto.
 Qed.
@@ -137,7 +137,7 @@ cut ({exists r, SCC'_tag r = Some x
 intro. destruct H.
 left; destruct e; exists x0; tauto.
 right. intuition. apply n. do 2 destruct H. exists x0; intuition.
-destruct H0; deduce (restriction x0 x1). tauto.
+destruct H0; ded (restriction x0 x1). tauto.
 
 cut ({exists r, (fun t => SCC'_tag t = Some x
   /\ exists s, SCC'_tag s = Some y /\ R t s) r /\ In r Dom}
@@ -165,7 +165,7 @@ left; auto. right; tauto. right; tauto. right; tauto.
 
 destruct H. left; destruct e0; exists x0; tauto.
 right; intuition; apply n. destruct H. exists x0; intuition.
-deduce (restriction r x0); tauto.
+ded (restriction r x0); tauto.
 Defined.
 
 (***********************************************************************)
@@ -188,7 +188,7 @@ induction l; intros; simpl in *.
 unfold Rquo', Rquo in H. do 2 destruct H. exists x0; intuition.
 destruct H2; exists x1; intuition.
 destruct H. unfold Rquo', Rquo in H. do 2 destruct H. exists x0; intuition.
-destruct H3; destruct H. deduce (IHl _ _ H0). do 2 destruct H4.
+destruct H3; destruct H. ded (IHl _ _ H0). do 2 destruct H4.
 do 2 destruct H5; exists x3. intuition. eapply t_trans; eauto.
 destruct (eq_dec x1 x2). subst x1. apply t_step. auto.
 eapply t_trans. apply t_step. eauto. cut (SCC' x1 x2).
@@ -199,17 +199,17 @@ Qed.
 Lemma irrefl_tc_Rquo' : irreflexive (Rquo'!).
 
 Proof.
-unfold irreflexive. intuition. deduce (clos_trans_path H).
+unfold irreflexive. intuition. ded (clos_trans_path H).
 destruct H0 as [l]. destruct l. simpl in H0; destruct H0; auto.
-simpl in H0; destruct H0. deduce (Rquo'_path l n x H1).
+simpl in H0; destruct H0. ded (Rquo'_path l n x H1).
 do 2 destruct H2. do 2 destruct H3.
 unfold Rquo' in H0. destruct H0. unfold Rquo in H0.
 do 2 destruct H0. do 2 destruct H6. cut (R! x3 x2).
 intro. cut (x=n). intuition. cut (SCC' x3 x2).
 intro. rewrite  SCC'_tag_exact in H9. destruct H9; congruence.
-unfold SCC'. intuition; deduce (restriction x2 x3); try tauto.
+unfold SCC'. intuition; ded (restriction x2 x3); try tauto.
 right. split; auto. apply t_step; auto. cut(R# x3 x2).
-intro. deduce (rtc_split H8). destruct H9; try tauto. subst x3; congruence.
+intro. ded (rtc_split H8). destruct H9; try tauto. subst x3; congruence.
 assert (R# x3 x0). cut (SCC' x3 x0).
 intro. do 2 destruct H8. subst x3; intuition.
 destruct H8. apply tc_incl_rtc. intuition.
@@ -241,7 +241,7 @@ Lemma Rquo'_incl_RT : Rquo' << RT.
 
 Proof.
 unfold inclusion; intros. unfold RT. destruct topo_sortable_Rquo'. simpl.
-deduce (l (nfirst dim)). destruct H0. intuition. apply H2. generalize H; intro.
+ded (l (nfirst dim)). destruct H0. intuition. apply H2. generalize H; intro.
 unfold Rquo', Rquo, SCC'_tag in H; auto; do 3 destruct H; do 2 destruct H7.
 split; try split; try tauto; rewrite nfirst_exact;
   eapply find_first_Some_bound; eauto.
@@ -270,7 +270,7 @@ apply (@map_sort_bnat_to_nat dim). intuition.
 
 unfold permutation in *. unfold meq in *. intros.
 rewrite nfirst_multiplicity in *. destruct (lt_ge_dec a dim).
-deduce (p (mkbnat l)). rewrite (@bnfirst_multiplicity dim dim) in *.
+ded (p (mkbnat l)). rewrite (@bnfirst_multiplicity dim dim) in *.
 simpl in H. destruct (lt_ge_dec a dim); try omega.
 rewrite map_multiplicity in H; auto. rewrite (@lemme_foo dim); auto.
 
@@ -281,7 +281,7 @@ eapply multiplicity_repeat_free. intros. unfold permutation in *.
 unfold meq in *. rewrite <- p. unfold nfirst_bnats.
 rewrite bnfirst_multiplicity. destruct (lt_ge_dec (proj1_sig a) dim); omega.
 
-apply treesort. deduce (HF (nfirst dim)). destruct H; intuition.
+apply treesort. ded (HF (nfirst dim)). destruct H; intuition.
 intros. unfold total in H4. destruct x; destruct y.
 assert (trichotomy (fun x0 y0 : nat => F (nfirst dim) x0 y0 = true) x x0).
 apply H4; rewrite nfirst_exact; auto.
@@ -291,7 +291,7 @@ assert ({F (nfirst dim) x x0 = true}+{~F (nfirst dim) x x0 = true}).
 destruct (F (nfirst dim) x x0); auto.
 destruct H5. left; auto. right; auto. right; auto. right; tauto.
 
-apply rc_trans. intros. unfold RTb in *. simpl in *. deduce (HF (nfirst dim)).
+apply rc_trans. intros. unfold RTb in *. simpl in *. ded (HF (nfirst dim)).
 destruct H. intuition. unfold transitive in *. intros. eapply H0; eauto.
 Qed.
 

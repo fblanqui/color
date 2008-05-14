@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 string rewriting
 *)
 
-(* $Id: Srs.v,v 1.4 2008-02-13 14:08:16 blanqui Exp $ *)
+(* $Id: Srs.v,v 1.5 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -94,7 +94,7 @@ Qed.
 Lemma red_mod_empty_incl_red : red_mod nil R << red R.
 
 Proof.
-unfold inclusion. intros. redtac. deduce (red_nil_rtc H). subst x0.
+unfold inclusion. intros. redtac. ded (red_nil_rtc H). subst x0.
 subst x. subst y. apply red_rule. exact H0.
 Qed.
 
@@ -120,6 +120,6 @@ Require Export SN.
 Ltac no_relative_rules :=
   match goal with
     |- WF (@red_mod ?S ?E _) =>
-      normalize E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
+      norm E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
     | _ => idtac
   end.

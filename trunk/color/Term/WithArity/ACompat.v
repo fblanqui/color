@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.9 2007-05-30 23:00:54 koper Exp $ *)
+(* $Id: ACompat.v,v 1.10 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -117,7 +117,7 @@ Lemma is_compat_correct : forall R,
 Proof.
 induction R; simpl. intuition.
 destruct a. case (succ_dec lhs rhs); intros;
-  destruct H0; deduce (compat_cons_elim H0); intuition.
+  destruct H0; ded (compat_cons_elim H0); intuition.
 Qed.
 
 Lemma is_compat_complete : forall R,
@@ -125,7 +125,7 @@ Lemma is_compat_complete : forall R,
 
 Proof.
 induction R; simpl. intuition.
-destruct a. intro. deduce (compat_cons_elim H). destruct H0.
+destruct a. intro. ded (compat_cons_elim H). destruct H0.
 case (succ_dec lhs rhs); intros; destruct H2.
 apply IHR. exact H1. intuition. refl.
 Qed.

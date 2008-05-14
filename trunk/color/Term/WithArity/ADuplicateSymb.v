@@ -194,11 +194,11 @@ change (In (dup_hd_rule (mkRule l r)) (map dup_hd_rule R)).
 apply in_map. auto.
 destruct l.
 cut False. tauto. unfold no_lhs_variable in hyp.
-deduce (hyp _ _ H). simpl in H2; tauto.
+ded (hyp _ _ H). simpl in H2; tauto.
 rewrite dup_int_subst_hd_dup. split; subst. refl.
 destruct r.
 cut False. tauto. unfold no_rhs_variable in hyp'.
-deduce (hyp' _ _ H). simpl in H0. tauto.
+ded (hyp' _ _ H). simpl in H0. tauto.
 rewrite dup_int_subst_hd_dup. split; subst.
 Qed.
 

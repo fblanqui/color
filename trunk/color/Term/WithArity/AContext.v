@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.8 2008-01-24 14:52:42 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -197,7 +197,7 @@ Lemma in_vars_fun : forall x f ts,
   In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
 
 Proof.
-intros. apply subterm_fun_elim. deduce (in_vars_subterm_eq _ _ H).
+intros. apply subterm_fun_elim. ded (in_vars_subterm_eq _ _ H).
 apply subterm_noteq. assumption. discriminate.
 Qed.
 
@@ -253,10 +253,10 @@ Lemma vars_fill_elim : forall t c, incl (vars (fill c t)) (cvars c ++ vars t).
 
 Proof.
 induction c. simpl. apply incl_refl. simpl fill. rewrite vars_fun. simpl.
-unfold incl. intros. deduce (in_vars_vec_elim H). do 2 destruct H0.
-deduce (Vin_cast_elim H0). deduce (Vin_app H2). destruct H3.
+unfold incl. intros. ded (in_vars_vec_elim H). do 2 destruct H0.
+ded (Vin_cast_elim H0). ded (Vin_app H2). destruct H3.
 repeat apply in_appl. apply (in_vars_vec_intro H1 H3).
-simpl in H3. destruct H3. subst x. deduce (IHc _ H1).
+simpl in H3. destruct H3. subst x. ded (IHc _ H1).
 rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
 apply in_appl. repeat apply in_appr. apply (in_vars_vec_intro H1 H3).
 Qed.

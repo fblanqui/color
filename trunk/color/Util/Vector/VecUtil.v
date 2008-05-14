@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.30 2008-05-07 15:25:34 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.31 2008-05-14 12:26:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,10 +28,10 @@ Ltac Veqtac := repeat
   match goal with
     | H : @Vcons ?B ?x _ ?v = Vcons ?x ?w |- _ =>
       let H1 := fresh in
-      (injection H; intro H1; deduce (inj_pairT2 eq_nat_dec H1); clear H)
+      (injection H; intro H1; ded (inj_pairT2 eq_nat_dec H1); clear H)
     | H : @Vcons ?B ?x _ ?v = Vcons ?y ?w |- _ =>
       let H1 := fresh in let H2 := fresh in
-      (injection H; intros H1 H2; subst x; deduce (inj_pairT2 eq_nat_dec H1);
+      (injection H; intros H1 H2; subst x; ded (inj_pairT2 eq_nat_dec H1);
         clear H)
   end.
 
@@ -200,7 +200,7 @@ Lemma VO_eq : forall v : vec O, v = Vnil.
 
 Proof.
 cut (forall n (v : vec n) (h: n=0), Vcast v h = Vnil).
-intros. deduce (H 0 v (refl_equal 0)). rewrite Vcast_refl in H0. assumption.
+intros. ded (H 0 v (refl_equal 0)). rewrite Vcast_refl in H0. assumption.
 destruct v. auto. intro. discriminate.
 Defined.
 
@@ -672,7 +672,7 @@ Lemma Vforall_cast : forall P n v p (h : n=p),
 
 Proof.
 intros. apply Vforall_intro. intros.
-eapply Vforall_in with (n := n). apply H. deduce (Vin_cast_elim H0). assumption.
+eapply Vforall_in with (n := n). apply H. ded (Vin_cast_elim H0). assumption.
 Qed.
 
 Lemma Vforall_imp : forall (P Q : A->Prop) n (v : vec n),
@@ -960,7 +960,7 @@ Lemma beq_vec_ok_length : forall n (v : vec n) p (w : vec p),
 
 Proof.
 induction v; destruct w; simpl; intros; try (refl || discriminate).
-destruct (andb_elim H). deduce (IHv _ _ H1). subst n0. refl.
+destruct (andb_elim H). ded (IHv _ _ H1). subst n0. refl.
 Qed.
 
 Implicit Arguments beq_vec_ok_length [n v p w].
@@ -998,10 +998,10 @@ Proof.
 induction v; destruct w; simpl; intro; try (refl || discriminate).
 destruct (andb_elim h).
 assert (ha : Vin a (Vcons a v)). simpl. auto.
-deduce (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
+ded (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
 assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
 intros x hx. apply hyp. simpl. auto.
-destruct (andb_elim h). deduce (IHv hyp' _ w H2). rewrite <- H3.
+destruct (andb_elim h). ded (IHv hyp' _ w H2). rewrite <- H3.
 apply Vcast_eq.
 Qed.
 
@@ -1013,7 +1013,7 @@ Proof.
 induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac.
 simpl. apply andb_intro. set (a := Vhead w).
 assert (Vin a (Vcons a v)). simpl. auto.
-deduce (hyp _ H a). rewrite H3. refl.
+ded (hyp _ H a). rewrite H3. refl.
 apply IHv. intros. apply hyp. simpl. auto. exact H2.
 Qed.
 

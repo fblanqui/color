@@ -88,9 +88,9 @@ Lemma multiplicity_repeat_free : forall mb,
 
 Proof.
 intros. induction mb; simpl; auto. simpl in H. split.
-deduce (H a). intuition. deduce (In_multiplicity _ _ H1).
+ded (H a). intuition. ded (In_multiplicity _ _ H1).
 destruct (B_eq_dec a a); auto. omega.
-apply IHmb. intros. deduce (H a0). destruct (B_eq_dec a a0); simpl in *; omega.
+apply IHmb. intros. ded (H a0). destruct (B_eq_dec a a0); simpl in *; omega.
 Qed.
 
 End multiplicity.

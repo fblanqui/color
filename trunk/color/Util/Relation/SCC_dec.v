@@ -60,16 +60,16 @@ assert (rel_on_nat Dom R
   << GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))).
 unfold inclusion; intros;
 rewrite GoM_MoG; intros.
-deduce (rel_on_nat_is_restricted _ _ _ _ H1).
+ded (rel_on_nat_is_restricted _ _ _ _ H1).
 do 2 rewrite nfirst_exact in H2; trivial.
 trivial.
-deduce(SCC_incl H); auto.
+ded(SCC_incl H); auto.
 assert (GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))
   << rel_on_nat Dom R).
 unfold inclusion; intros.
 rewrite GoM_MoG in H; intros; auto.
-deduce (rel_on_nat_is_restricted _ _ _ _ H1). 
-do 2 rewrite nfirst_exact in H2; trivial. deduce (SCC_incl H). auto.
+ded (rel_on_nat_is_restricted _ _ _ _ H1). 
+do 2 rewrite nfirst_exact in H2; trivial. ded (SCC_incl H). auto.
 Qed.
 
 Lemma SCC_effective_dec : forall M (H : M = SCC_mat_effective) x y,
@@ -90,7 +90,7 @@ Proof.
 intros.
 set (M:= SCC_mat_effective).
 assert (M = SCC_mat_effective); auto.
-deduce (SCC_effective_dec M H x y).
+ded (SCC_effective_dec M H x y).
 destruct H0; rewrite <- SCC_effectif_exact in *; tauto.
 Qed.
 *)

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.7 2008-01-24 14:52:42 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.8 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -108,7 +108,7 @@ Lemma in_vcalls_nil : forall x n (v : terms n),
 
 Proof.
 induction v; simpl; intros. contradiction.
-deduce (app_eq_nil _ _ H0). destruct H1.
+ded (app_eq_nil _ _ H0). destruct H1.
 destruct H. subst x. assumption. apply IHv; assumption.
 Qed.
 
@@ -124,7 +124,7 @@ pattern (defined f R). apply bool_eq_ind; simpl; intros.
 destruct H0. exists f. exists ts. auto. apply IH. assumption.
 apply IH. assumption.
 unfold Q. simpl. intro. contradiction.
-unfold Q. simpl. intros. deduce (in_app_or H1). intuition.
+unfold Q. simpl. intros. ded (in_app_or H1). intuition.
 Qed.
 
 Implicit Arguments in_calls [x t].
@@ -133,7 +133,7 @@ Lemma in_calls_defined : forall t g vs,
   In (Fun g vs) (calls t) -> defined g R = true.
 
 Proof.
-intros. deduce (in_calls H). do 3 destruct H0. injection H0. intros. subst x.
+intros. ded (in_calls H). do 3 destruct H0. injection H0. intros. subst x.
 assumption.
 Qed.
 
@@ -149,17 +149,17 @@ simpl. intros. contradiction.
 intros f ts IH. rewrite calls_fun. case (defined f R); simpl; intro.
 (* f defined *)
 destruct H. rewrite H. apply subterm_eq_refl.
-deduce (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
+ded (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
 eapply subterm_trans_eq1. apply H1. apply subterm_fun. assumption.
 (* f undefined *)
-deduce (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
+ded (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
 eapply subterm_trans_eq1. apply H1. apply subterm_fun. assumption.
 (* nil *)
 unfold Q. simpl. intros. contradiction.
 (* cons *)
-unfold Q. simpl. intros. deduce (in_app_or H1). destruct H2.
-deduce (H H2). exists t. auto.
-deduce (H0 H2). destruct H3 as [w]. destruct H3. exists w. auto.
+unfold Q. simpl. intros. ded (in_app_or H1). destruct H2.
+ded (H H2). exists t. auto.
+ded (H0 H2). destruct H3 as [w]. destruct H3. exists w. auto.
 Qed.
 
 Lemma subterm_in_calls : forall g us, defined g R = true
@@ -173,7 +173,8 @@ apply term_ind with (Q := Q); clear t.
 unfold subterm_eq. simpl. intros. destruct H0 as [C].
 destruct C; simpl in H0; discriminate.
 (* fun *)
-intros f ts IH H0. unfold subterm_eq in H0. destruct H0 as [C]. rewrite calls_fun.
+intros f ts IH H0. unfold subterm_eq in H0. destruct H0 as [C].
+rewrite calls_fun.
 pattern (defined f R). apply bool_eq_ind; intro; destruct C; simpl in H0.
 (* f defined *)
 (* C = Hole *)

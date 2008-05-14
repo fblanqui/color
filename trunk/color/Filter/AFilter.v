@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.9 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.10 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -303,7 +303,7 @@ Lemma filter_weak_cont_closed :
 Proof.
 intro. unfold weak_context_closed. intros.
 assert (clos_refl fsucc t1 t2). unfold clos_refl. auto.
-deduce (rc_filter_ord H1).
+ded (rc_filter_ord H1).
 assert (context_closed fsucc_eq). apply filter_cont_closed. apply rc_refl.
 apply rc_context_closed. assumption. apply H3. assumption.
 Qed.

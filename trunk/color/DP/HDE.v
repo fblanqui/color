@@ -61,7 +61,7 @@ Proof.
 unfold inclusion. intros. destruct x. destruct y. destruct H. destruct H0.
 do 2 destruct H1. unfold hde. destruct lhs0; destruct rhs; simpl; auto.
 intuition; auto.
-deduce (int_red_rtc_preserv_hd H1). destruct H2. simpl in H2. inversion H2; auto.
+ded (int_red_rtc_preserv_hd H1). destruct H2. simpl in H2. inversion H2; auto.
 do 4 destruct H2. inversion H2. inversion H3. congruence.
 Qed.
 
@@ -97,7 +97,7 @@ redtac.
 exists l; exists r;exists c;exists s.
 split.
 destruct c. simpl in *.
-deduce (int_hyp _ _ H).
+ded (int_hyp _ _ H).
 do 2 destruct H2; subst.
 rewrite app_fun in H0.
 inversion H0.
@@ -118,7 +118,7 @@ rewrite H0.
 apply dup_int_rules_int_red. subst;auto.
 split. auto.
 clear H.
-deduce (int_red_rtc_preserv_hd H1).
+ded (int_red_rtc_preserv_hd H1).
 destruct H.
 exists v. subst. rewrite H; auto.
 do 3 destruct H; subst.
@@ -127,11 +127,11 @@ exists x2. apply refl_equal.
 
 split. apply rt_refl.
 exists v; auto.
-deduce (IHclos_refl_trans1 _ _ H1).
+ded (IHclos_refl_trans1 _ _ H1).
 clear IHclos_refl_trans1.
 destruct H2.
 destruct H3 as [w].
-deduce (IHclos_refl_trans2 _ _ H3).
+ded (IHclos_refl_trans2 _ _ H3).
 destruct H4. destruct H5.
 split.
 eapply rt_trans; eauto.
@@ -142,7 +142,7 @@ Lemma dup_int_rules_int_red_rtc : forall f v t,
   red E' # (Fun' (hd_symb _ f) v) t -> int_red E' # (Fun' (hd_symb _ f) v) t.
 
 Proof.
-intros. deduce (dup_int_rules_int_red_rtc_aux H (refl_equal _)). tauto.
+intros. ded (dup_int_rules_int_red_rtc_aux H (refl_equal _)). tauto.
 Qed. 
 
 Definition hd_rhs_rules_only := forall l r, In (mkRule l r) R' ->
@@ -155,12 +155,12 @@ Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red E' #) R' << hde R'.
 Proof.
 unfold inclusion. intros.
 destruct H. intuition. destruct H2. destruct H0. destruct x as [l r].
-deduce (hd_hyp _ _ H). do 2 destruct H2. simpl in *. subst.
+ded (hd_hyp _ _ H). do 2 destruct H2. simpl in *. subst.
 rewrite app_fun in H0.
 apply (@int_red_hd_rules_graph_incl_hde _ E' R'
   (mkRule l (Fun' (hd_symb Sig x) x2)) y).
 unfold hd_rules_graph. split. tauto. split. tauto. exists x0. exists x1.
-normalize (rhs (mkRule l (Fun' (hd_symb Sig x) x2))). rewrite app_fun.
+norm (rhs (mkRule l (Fun' (hd_symb Sig x) x2))). rewrite app_fun.
 change (int_red E' #
   (Fun' (hd_symb Sig x) (Vmap (ASubstitution.app x1) x2))
   (ASubstitution.app x1 (shift x0 (lhs y)))).
@@ -175,7 +175,7 @@ End S'.
 Ltac prove_int_lhs_rules_only :=
   match goal with
     | |- int_lhs_rules_only ?L =>
-      unfold int_lhs_rules_only; normalize L;
+      unfold int_lhs_rules_only; norm L;
         let aux l r H0 :=
           match type of H0 with
             | In ?X nil => simpl in H0; tauto
@@ -193,7 +193,7 @@ Ltac prove_int_lhs_rules_only :=
 Ltac prove_hd_rhs_rules_only :=
   match goal with
     | |- hd_rhs_rules_only ?L =>
-      unfold hd_rhs_rules_only; normalize L;
+      unfold hd_rhs_rules_only; norm L;
         let aux l r H0 :=
           match type of H0 with
             | In ?X nil => simpl in H0; tauto

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 *)
 
-(* $Id: VecOrd.v,v 1.8 2007-08-06 16:08:38 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.9 2008-05-14 12:26:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -45,7 +45,7 @@ unfold Vsplit. simpl. intro. inversion H0.
 exists 0. exists (@Vnil A). exists a. exists n. exists (Vtail v2).
 exists (refl_equal (S n)). exists (Vhead v2). split. rewrite Vcast_refl. refl.
 split. rewrite Vcast_refl. refl. assumption.
-deduce (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6.
+ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6.
 rewrite H7.
 exists (S x0). exists (Vcons (Vhead v2) x1). exists x2.
 exists x3. exists x4. assert (S x0 + S x3 = S n). omega. exists H9. exists x6.
@@ -127,7 +127,7 @@ Lemma SN_gt_prod_Sn_head : forall n (v : vec (S n)),
 
 Proof.
 induction 1. VSntac x. apply SN_intro. intros.
-deduce (H0 (Vcons y (Vtail x))). apply H3. rewrite H1. simpl.
+ded (H0 (Vcons y (Vtail x))). apply H3. rewrite H1. simpl.
 unfold Vsplit. simpl. apply left_sym. assumption.
 Qed.
 
@@ -135,7 +135,7 @@ Lemma SN_gt_prod_head : forall a n (v : vec n),
   SN (@Vgt_prod (S n)) (Vcons a v) -> SN gtA a.
 
 Proof.
-intros. deduce (SN_gt_prod_Sn_head H). assumption.
+intros. ded (SN_gt_prod_Sn_head H). assumption.
 Qed.
 
 Lemma SN_gt_prod_Sn_tail : forall n (v : vec (S n)),
@@ -143,7 +143,7 @@ Lemma SN_gt_prod_Sn_tail : forall n (v : vec (S n)),
 
 Proof.
 induction 1. VSntac x. apply SN_intro. intros.
-deduce (H0 (Vcons (Vhead x) y)). rewrite H1 in H3. apply H3.
+ded (H0 (Vcons (Vhead x) y)). rewrite H1 in H3. apply H3.
 simpl. unfold Vsplit. simpl. apply right_sym. assumption.
 Qed.
 
@@ -151,7 +151,7 @@ Lemma SN_gt_prod_tail : forall a n (v : vec n),
   SN (@Vgt_prod (S n)) (Vcons a v) -> SN (@Vgt_prod n) v.
 
 Proof.
-intros. deduce (SN_gt_prod_Sn_tail H). assumption.
+intros. ded (SN_gt_prod_Sn_tail H). assumption.
 Qed.
 
 Lemma SN_gt_prod_forall : forall n (v : vec n),

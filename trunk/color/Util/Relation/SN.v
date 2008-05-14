@@ -160,8 +160,8 @@ Qed.
 Lemma WF_compat_inv : WF R -> WF (R @ E).
 
 Proof.
-unfold WF. intros. deduce (H x). elim H0. intros. apply SN_intro. intros.
-do 2 destruct H3. deduce (H2 _ H3). apply (SN_compat_inv H5 H4).
+unfold WF. intros. ded (H x). elim H0. intros. apply SN_intro. intros.
+do 2 destruct H3. ded (H2 _ H3). apply (SN_compat_inv H5 H4).
 Qed.
 
 End compat.
@@ -277,7 +277,7 @@ Variable (A : Type) (R : relation A).
 Lemma SN_tc : forall x, SN R x -> SN (R!) x.
 
 Proof.
-induction 1. apply SN_intro. intros. deduce (tc_split H1). do 2 destruct H2.
+induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
 apply SN_rtc with (x := x0). apply H0. exact H2.
 apply incl_elim with (R := R#). apply incl_rtc. apply tc_incl.
 exact H3.
@@ -322,27 +322,27 @@ Qed.
 Lemma SN_symprod_fst : forall x, SN gt x -> SN gtA (fst x).
 
 Proof.
-induction 1. destruct x. simpl. apply SN_intro. intros. deduce (H0 (y,b)).
+induction 1. destruct x. simpl. apply SN_intro. intros. ded (H0 (y,b)).
 apply H2. apply left_sym. assumption.
 Qed.
 
 Lemma SN_symprod_snd : forall x, SN gt x -> SN gtB (snd x).
 
 Proof.
-induction 1. destruct x. simpl. apply SN_intro. intros. deduce (H0 (a,y)).
+induction 1. destruct x. simpl. apply SN_intro. intros. ded (H0 (a,y)).
 apply H2. apply right_sym. assumption.
 Qed.
 
 Lemma SN_symprod_invl : forall x y, SN gt (x,y) -> SN gtA x.
 
 Proof.
-intros. deduce (SN_symprod_fst H). assumption.
+intros. ded (SN_symprod_fst H). assumption.
 Qed.
 
 Lemma SN_symprod_invr : forall x y, SN gt (x,y) -> SN gtB y.
 
 Proof.
-intros. deduce (SN_symprod_snd H). assumption.
+intros. ded (SN_symprod_snd H). assumption.
 Qed.
 
 Lemma SN_symprod_inv : forall x y, SN gt (x,y) -> SN gtA x /\ SN gtB y.
@@ -429,7 +429,7 @@ Lemma commut_SN : forall x, SN R x -> forall x', S x x' -> SN R x'.
 
 Proof.
 induction 1; intros. apply SN_intro. intros.
-assert ((S @ R) x y). exists x'. intuition. deduce (commut H3).
+assert ((S @ R) x y). exists x'. intuition. ded (commut H3).
 do 2 destruct H4. apply (H0 _ H4 _ H5).
 Qed.
 
@@ -449,7 +449,7 @@ Lemma SN_iter_S : forall n x, SN (iter R n) x -> SN (iter R (S n)) x.
 Proof.
 intros. elim H. intros. apply SN_intro. intros.
 assert ((iter R n @ iter R 0) x0 y). apply iter_commut. exact H2.
-do 2 destruct H3. deduce (H1 _ H3).
+do 2 destruct H3. ded (H1 _ H3).
 eapply commut_SN with (S := iter R 0). apply iter_commut. apply H5. exact H4.
 Qed.
 
@@ -462,7 +462,7 @@ assert ((iter R (S (S n)) @ iter R n) x0 y0).
 apply incl_elim with (R := iter R (S n) @ iter R (S n)).
 trans (iter R (S n+S n+1)). apply iter_iter.
 assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
-exists y. intuition. do 2 destruct H4. deduce (H1 _ H4).
+exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
 eapply commut_SN with (S := iter R n). apply iter_commut. apply H6. exact H5.
 Qed.
 
@@ -495,7 +495,7 @@ Lemma SN_path : forall n x,
 Proof.
 intros. apply SN_iter with n. apply SN_intro. intros.
 apply SN_incl with (R!). apply iter_tc. apply SN_tc.
-deduce (iter_path H0). do 2 destruct H1. subst n.
+ded (iter_path H0). do 2 destruct H1. subst n.
 apply H with x0. refl. exact H2.
 Qed.
 
@@ -511,7 +511,7 @@ Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 Lemma commut_SN_modulo : forall x, SN S x -> SN (R# @ S) x.
 
 Proof.
-induction 1. apply SN_intro. intros. deduce (commut_rtc commut H1).
+induction 1. apply SN_intro. intros. ded (commut_rtc commut H1).
 do 2 destruct H2. eapply SN_modulo. apply H0. apply H2. exact H3.
 Qed.
 
@@ -543,7 +543,7 @@ Proof.
 induction 1. apply SN_intro. intros. apply SN_intro. intros.
 do 2 destruct H1. do 2 destruct H2.
 assert (T x0 x1). apply (comp_rtc_incl absorb). exists y. intuition.
-deduce (H0 _ H1). apply (SN_inv H6). exists x1. intuition.
+ded (H0 _ H1). apply (SN_inv H6). exists x1. intuition.
 Qed.
 
 Lemma absorb_WF_modulo_r : WF T -> WF (T @ R#).
