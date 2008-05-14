@@ -55,7 +55,7 @@ Lemma bnats_of_nats_spec : forall x l (H : x<dim),
 Proof.
 intros. induction l. simpl in H0; tauto.
 simpl. destruct(lt_ge_dec a dim). simpl. simpl in H0; destruct H0. subst.
-left. deduce (lt_unique l0 H); subst; auto.
+left. ded (lt_unique l0 H); subst; auto.
 right; tauto.
 simpl in H0; destruct H0. subst. cut False; try tauto; try omega.
 tauto.
@@ -113,7 +113,7 @@ simpl. destruct (lt_ge_dec n dim); simpl; rewrite IHn; destruct(eq_nat_dec n i);
 destruct(lt_ge_dec i n); destruct(lt_ge_dec i (S n)); subst; simpl; try omega;
 try congruence.
 destruct (eq_bnat_dec (mkbnat l) (mkbnat hi)); try omega.
-deduce (lt_unique l hi); subst; congruence.
+ded (lt_unique l hi); subst; congruence.
 destruct (eq_bnat_dec (mkbnat l) (mkbnat hi)); try omega.
 unfold mkbnat in * |-; congruence.
 destruct (eq_bnat_dec (mkbnat l) (mkbnat hi)); try omega.
@@ -129,7 +129,7 @@ Proof.
 induction mb. simpl; auto.
 simpl. rewrite IHmb. destruct (eq_nat_dec (proj1_sig a0) a);
 destruct (eq_bnat_dec a0 (mkbnat h)); try omega; try congruence.
-destruct a0. simpl in *. subst. deduce (lt_unique h l).
+destruct a0. simpl in *. subst. ded (lt_unique h l).
 unfold mkbnat in n. congruence.
 destruct a0. simpl in *. unfold mkbnat in e. congruence.
 Qed.

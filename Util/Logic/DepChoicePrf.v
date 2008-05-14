@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of dependent choice in classical logic + axiom of choice
 *)
 
-(* $Id: DepChoicePrf.v,v 1.1 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: DepChoicePrf.v,v 1.2 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -42,12 +42,12 @@ Lemma choice_imply_dep_choice : exists f, IS R f.
 
 Proof.
 destruct (choice G G_is_classic_left_total) as [f H]. exists f.
-assert (forall i x, G i x -> x = f i). intros. deduce (H i).
+assert (forall i x, G i x -> x = f i). intros. ded (H i).
 exact (G_is_functional H0 H1).
-assert (f 0 = a). deduce (H 0). inversion H1. refl.
+assert (f 0 = a). ded (H 0). inversion H1. refl.
 assert (forall i, f (S i) = next_elt (f i)). induction i.
-deduce (H 1). inversion H2. inversion H5. rewrite H1. subst x. refl.
-deduce (H (S (S i))). inversion H2. deduce (H0 _ _ H5). subst x. refl.
+ded (H 1). inversion H2. inversion H5. rewrite H1. subst x. refl.
+ded (H (S (S i))). inversion H2. ded (H0 _ _ H5). subst x. refl.
 intro. rewrite H2. exact (proj2_sig (h (f i))).
 Qed.
 

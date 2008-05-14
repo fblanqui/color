@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 paths
 *)
 
-(* $Id: Path.v,v 1.16 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: Path.v,v 1.17 2008-05-14 12:26:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -195,7 +195,7 @@ Lemma path_app_elim : forall l x y z m,
   is_path R x y (l ++ z :: m) -> is_path R x z l /\ is_path R z y m.
 
 Proof.
-induction l; simpl; intros. exact H. destruct H. deduce (IHl _ _ _ _ H0).
+induction l; simpl; intros. exact H. destruct H. ded (IHl _ _ _ _ H0).
 intuition.
 Qed.
 
@@ -285,9 +285,10 @@ Lemma restricted_path_incl : is_restricted R l ->
 
 Proof.
 induction m; simpl; intros.
-deduce (H _ _ H0). unfold is_restricted in H. unfold incl. simpl. intuition.
+ded (H _ _ H0). unfold is_restricted in H. unfold incl. simpl. intuition.
 subst a. exact H2. subst a. exact H3.
-destruct H0. apply incl_cons. deduce (H _ _ H0). unfold is_restricted in H2. intuition.
+destruct H0. apply incl_cons. ded (H _ _ H0). unfold is_restricted in H2.
+intuition.
 apply IHm. exact H1.
 Qed.
 

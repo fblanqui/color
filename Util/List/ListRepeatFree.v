@@ -60,9 +60,9 @@ Lemma repeat_free_unique : forall l (x:A),
 Proof.
 intro;intro;induction l;intros;simpl in H; try discriminate.
 destruct n;destruct m;auto with *;simpl in *.
-rewrite <- H0 in H1; deduce (element_at_in2 H1); tauto.
-rewrite <- H1 in H0; deduce (element_at_in2 H0); tauto.
-destruct H; deduce (IHl H2 n m H0 H1);auto.
+rewrite <- H0 in H1; ded (element_at_in2 H1); tauto.
+rewrite <- H1 in H0; ded (element_at_in2 H0); tauto.
+destruct H; ded (IHl H2 n m H0 H1);auto.
 Qed.
 
 Lemma repeat_free_dec_incl_length : forall l l' : list A,
@@ -80,7 +80,7 @@ Lemma repeat_free_last : forall (a : A) l,
   repeat_free l -> ~In a l -> repeat_free (l ++ a :: nil).
 
 Proof.
-induction l; simpl; intros. auto. intuition. deduce (in_app_or H). destruct H5.
+induction l; simpl; intros. auto. intuition. ded (in_app_or H). destruct H5.
 auto. simpl in H5. intuition.
 Qed.
 
@@ -95,7 +95,7 @@ Lemma repeat_free_app_elim : forall l m : list A, repeat_free (l ++ m)
   -> repeat_free l /\ repeat_free m /\ forall x, In x l -> ~In x m.
 
 Proof.
-induction l; simpl; intros. intuition. destruct H. deduce (IHl m H0).
+induction l; simpl; intros. intuition. destruct H. ded (IHl m H0).
 decomp H1. intuition. subst a. apply H. apply in_appr. exact H3.
 apply (H5 x); assumption.
 Qed.
@@ -160,7 +160,7 @@ Lemma greatest_repeat_free_prefix_aux_elim : forall l acc,
 Proof.
 induction l; simpl; intros. exists (@nil A). rewrite <- app_nil_end. refl.
 case (In_dec eq_dec a acc); intro. exists (@nil A). rewrite <- app_nil_end. refl.
-deduce (IHl (a::acc)). destruct H. rewrite H. simpl. rewrite app_ass. simpl.
+ded (IHl (a::acc)). destruct H. rewrite H. simpl. rewrite app_ass. simpl.
 exists (a::x). refl.
 Qed.
 
@@ -212,11 +212,11 @@ assert (repeat_free (greatest_repeat_free_prefix l)).
 apply greatest_repeat_free_prefix_correct.
 case (In_dec eq_dec a (greatest_repeat_free_prefix l)); intro.
 (* In a (greatest_repeat_free_prefix l) *)
-right. deduce (in_elim_dec eq_dec i). do 3 destruct H0. exists a.
+right. ded (in_elim_dec eq_dec i). do 3 destruct H0. exists a.
 (* repeat_free (a::x) *)
 assert (repeat_free (a::x)). simpl. split. exact H1.
-rewrite H0 in H. deduce (repeat_free_app_elim H). intuition. split.
-simpl. deduce (greatest_repeat_free_prefix_aux_elim l (a::nil)). destruct H3.
+rewrite H0 in H. ded (repeat_free_app_elim H). intuition. split.
+simpl. ded (greatest_repeat_free_prefix_aux_elim l (a::nil)). destruct H3.
 rewrite H3.
 simpl. auto.
 (* exists p, l = greatest_repeat_free_prefix l ++ p *)
@@ -254,7 +254,7 @@ Lemma greatest_repeat_free_prefix_intro' : forall l,
   exists m, l = greatest_repeat_free_prefix l ++ m.
 
 Proof.
-intro. deduce (greatest_repeat_free_prefix_intro l). destruct H.
+intro. ded (greatest_repeat_free_prefix_intro l). destruct H.
 exists (@nil A). rewrite <- H. apply app_nil_end.
 decomp H. exists (x::x0). exact H0.
 Qed.
@@ -263,7 +263,7 @@ Lemma repeat_free_intro: forall l : list A, repeat_free l
   \/ exists m, exists x, exists p, l = m ++ x :: p /\ repeat_free m /\ In x m.
 
 Proof.
-intro. deduce (greatest_repeat_free_prefix_intro l).
+intro. ded (greatest_repeat_free_prefix_intro l).
 assert (repeat_free (greatest_repeat_free_prefix l)).
 apply greatest_repeat_free_prefix_correct. destruct H.
 left. rewrite H. exact H0.
@@ -275,7 +275,7 @@ Lemma repeat_free_intro' : forall l : list A,
   exists m, exists p, l = m ++ p /\ repeat_free m.
 
 Proof.
-intro. deduce (repeat_free_intro l). destruct H.
+intro. ded (repeat_free_intro l). destruct H.
 exists l. exists (@nil A). rewrite <- app_nil_end. auto.
 decomp H. exists x. exists (x0::x1). auto.
 Qed.

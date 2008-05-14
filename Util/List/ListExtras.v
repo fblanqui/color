@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.13 2008-01-21 11:10:37 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.14 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -901,7 +901,7 @@ intros. induction l. simpl in H;tauto.
 simpl in H. destruct H. subst; simpl.
 destruct (P_dec x); auto; discriminate.
 simpl. destruct (P_dec a). discriminate.
-deduce (IHl H). destruct (find_first l ). discriminate. tauto.
+ded (IHl H). destruct (find_first l ). discriminate. tauto.
 Qed.
 
 
@@ -944,7 +944,7 @@ induction l; intros; simpl in H. discriminate; tauto.
 destruct (P_dec a).
 inversion H; subst. exists a; simpl; split; auto.
 destruct (find_first l); try discriminate; try tauto.
-inversion H. deduce (IHl n0 (refl_equal (Some n0))).
+inversion H. ded (IHl n0 (refl_equal (Some n0))).
 destruct H0. exists x. simpl; auto.
 Qed.
 
@@ -992,7 +992,7 @@ destruct (eq_dec x a); subst.
 exists 0; split; simpl; auto with *.
 destruct (eq_dec a a); auto with *; tauto.
 destruct H; subst; try tauto.
-deduce (IHl H); destruct H0 as [z]; destruct H0.
+ded (IHl H); destruct H0 as [z]; destruct H0.
 exists (S z); split; simpl; auto with *.
 destruct (eq_dec x a); subst; try tauto.
 destruct (find_first (eq x) (eq_dec x) l); subst; try tauto;
@@ -1011,7 +1011,7 @@ assert (exists i, find_first (eq x) (eq_dec x) l = Some i).
 destruct (find_first (eq x) (eq_dec x) l); try discriminate.
 exists n0; auto with *.
 destruct H0.
-deduce (IHl _ H0).
+ded (IHl _ H0).
 rewrite H0 in H.
 destruct z; inversion H; subst; assumption.
 Qed.

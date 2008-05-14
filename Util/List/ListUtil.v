@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.40 2008-05-07 15:25:06 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.41 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -123,17 +123,17 @@ Proof.
 induction l; destruct m; split; intro; try (refl || discriminate).
 inversion H. destruct (andb_elim H1).
 assert (h : In a (a::l)). simpl. auto.
-deduce (hyp _ h a0). rewrite H3 in H0. subst a0.
+ded (hyp _ h a0). rewrite H3 in H0. subst a0.
 apply tail_eq.
 assert (hyp' : forall x, In x l -> forall y, beq x y = true <-> x=y).
 intros x hx. apply hyp. simpl. auto.
-destruct (andb_elim H1). deduce (IHl hyp' m). rewrite H5 in H4. exact H4.
+destruct (andb_elim H1). ded (IHl hyp' m). rewrite H5 in H4. exact H4.
 rewrite <- H. simpl. apply andb_intro.
 assert (h : In a (a::l)). simpl. auto.
-deduce (hyp _ h a). rewrite H0. refl.
+ded (hyp _ h a). rewrite H0. refl.
 assert (hyp' : forall x, In x l -> forall y, beq x y = true <-> x=y).
 intros x hx. apply hyp. simpl. auto.
-deduce (IHl hyp' l). rewrite H0. refl.
+ded (IHl hyp' l). rewrite H0. refl.
 Qed.
 
 End beq_in.
@@ -366,7 +366,7 @@ Lemma in_app_com : forall (x : A) l1 l2 l3,
   In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
 
 Proof.
-intros. deduce (in_app_or H). destruct H0. deduce (in_app_or H0). destruct H1.
+intros. ded (in_app_or H). destruct H0. ded (in_app_or H0). destruct H1.
 rewrite app_ass. apply in_appl. exact H1. apply in_appr. exact H1.
 rewrite app_ass. apply in_appr. apply in_appl. exact H0.
 Qed.
@@ -376,7 +376,7 @@ Lemma in_elim : forall (x : A) l,
 
 Proof.
 induction l; simpl; intros. contradiction. destruct H. subst x.
-exists (@nil A). exists l. refl. deduce (IHl H). do 2 destruct H0. rewrite H0.
+exists (@nil A). exists l. refl. ded (IHl H). do 2 destruct H0. rewrite H0.
 exists (a :: x0). exists x1. refl.
 Qed.
 
@@ -387,7 +387,7 @@ Lemma in_elim_dec : forall (x : A) l,
 
 Proof.
 induction l; simpl; intros. contradiction. destruct H. subst x.
-exists (@nil A). exists l. intuition. deduce (IHl H). do 3 destruct H0. subst l.
+exists (@nil A). exists l. intuition. ded (IHl H). do 3 destruct H0. subst l.
 case (eqA_dec a x); intro.
 subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
 exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
@@ -494,9 +494,9 @@ Lemma app_incl : forall l1 l1' l2 l2' : list A,
   incl l1 l1' -> incl l2 l2' -> incl (l1 ++ l2) (l1' ++ l2').
 
 Proof.
-intros. unfold incl. intros. deduce (in_app_or H1). destruct H2.
-deduce (H _ H2). apply in_appl. exact H3.
-deduce (H0 _ H2). apply in_appr. exact H3.
+intros. unfold incl. intros. ded (in_app_or H1). destruct H2.
+ded (H _ H2). apply in_appl. exact H3.
+ded (H0 _ H2). apply in_appr. exact H3.
 Qed.
 
 Lemma appl_incl : forall l l2 l2' : list A,
@@ -525,8 +525,8 @@ Lemma incl_cons_r : forall x : A, forall m l,
 
 Proof.
 induction l; simpl; intros. right. apply incl_nil.
-deduce (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
-deduce (IHl H1). destruct H2. auto.
+ded (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
+ded (IHl H1). destruct H2. auto.
 right. apply List.incl_cons; assumption.
 Qed.
 
@@ -726,7 +726,7 @@ Lemma in_map_elim : forall x l, In x (map f l) -> exists y, In y l /\ x = f y.
 
 Proof.
 induction l; simpl; intros. contradiction. destruct H.
-exists a. auto. deduce (IHl H). do 2 destruct H0. exists x0. auto.
+exists a. auto. ded (IHl H). do 2 destruct H0. exists x0. auto.
 Qed.
 
 End map.
@@ -850,7 +850,7 @@ Lemma element_at_in : forall (x:A) l n, l[n] = Some x -> In x l.
 
 Proof.
 induction l; simpl; intros. discriminate. destruct n.
-inversion H. subst. auto. deduce (IHl _ H). auto.
+inversion H. subst. auto. ded (IHl _ H). auto.
 Qed.
 
 Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l.
@@ -858,7 +858,7 @@ Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l
 Proof.
 induction l; intros; simpl in H; try discriminate. destruct n.
 inversion H; subst; simpl; auto with *.
-deduce (IHl n H). intuition; simpl; omega.
+ded (IHl n H). intuition; simpl; omega.
 Qed.
 
 Lemma element_at_app_r : forall l l' p, 
@@ -1020,7 +1020,7 @@ Proof.
 induction l; simpl; intros. apply False_ind. omega.
 destruct l. exists (@nil A). exists a. intuition.
 assert (length (a0::l) > 0). simpl. omega.
-deduce (IHl H0). do 3 destruct H1.
+ded (IHl H0). do 3 destruct H1.
 exists (a::x). exists x0. split. rewrite H1. refl.
 simpl. simpl in H2. omega.
 Qed.

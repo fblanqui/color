@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on boolean vectors
 *)
 
-(* $Id: VecBool.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: VecBool.v,v 1.3 2008-05-14 12:26:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -26,7 +26,8 @@ Lemma Vtrue_app : forall n1 (bs1 : bools n1) n2 (bs2 : bools n2),
   Vtrue (Vapp bs1 bs2) = Vtrue bs1 + Vtrue bs2.
 
 Proof.
-induction bs1; simpl. auto. intros. deduce (IHbs1 n2 bs2). rewrite H. case a; refl.
+induction bs1; simpl. auto. intros. ded (IHbs1 n2 bs2). rewrite H.
+case a; refl.
 Qed.
 
 Lemma Vtrue_break : forall n1 n2 (bs : bools (n1+n2)),
@@ -44,7 +45,8 @@ Lemma Vtrue_cast : forall n (bs : bools n) p (h:n=p),
 
 Proof.
 induction bs; induction p; intros. castrefl h.
-discriminate. discriminate. simpl. case a. apply (f_equal S). apply IHbs. apply IHbs.
+discriminate. discriminate. simpl. case a. apply (f_equal S). apply IHbs.
+apply IHbs.
 Qed.
 
 Definition Vtrue_cons_if (b : bool) n (bs : bools (S n)) :=

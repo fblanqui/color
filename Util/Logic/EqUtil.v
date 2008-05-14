@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.5 2008-02-27 17:35:24 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.6 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -97,7 +97,7 @@ Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 Proof.
 unfold not. split; intros.
 rewrite (proj2 (beq_ok _ _) H0) in H. discriminate.
-booltac (beq x y). deduce (proj1 (beq_ok _ _) H1). tauto. exact H1.
+booltac (beq x y). ded (proj1 (beq_ok _ _) H1). tauto. exact H1.
 Defined.
 
 Lemma dec_beq : forall x y : A, {x=y}+{~x=y}. 
@@ -111,9 +111,9 @@ Defined.
 Lemma beq_com : forall x y, beq x y = beq y x.
 
 Proof.
-intros. case_eq (beq x y); intro.
-symmetry. rewrite beq_ok. symmetry. rewrite <- beq_ok. exact H.
-symmetry. rewrite beq_ko. cut (x <> y). auto. rewrite <- beq_ko. exact H.
+intros. case_eq (beq x y); symmetry.
+rewrite beq_ok. symmetry. rewrite <- beq_ok. assumption.
+rewrite beq_ko. cut (x <> y). auto. rewrite <- beq_ko. assumption.
 Qed.
 
 Lemma beq_sym : forall x y, beq x y = true -> beq y x = true.
@@ -136,6 +136,11 @@ End beq.
 Implicit Arguments beq_refl [A beq].
 Implicit Arguments dec_beq [A beq].
 Implicit Arguments beq_com [A beq].
+
+Ltac case_beq beq_ok e := coq_case_eq e;
+  [let h := fresh in intro h; rewrite beq_ok in h;
+    match type of h with ?x = ?y => subst y end
+    | intro].
 
 (***********************************************************************)
 (** boolean function testing equality from decidability predicate *)
@@ -209,19 +214,3 @@ assumption. irrefl. refl.
 Qed.
 
 End eq_dec.
-
-(*old code used no where:
-
-Ltac beqtac eq_dec :=
-  match goal with
-    | _ : ?x = ?y |- _ => subst y; rewrite beq_refl; simpl
-    | _ : not (?x = ?y) |- _ => let H := fresh in
-      (assert (H : beq_dec eq_dec x y = false);
-        [apply false_beq_dec; assumption | rewrite H; clear H; simpl])
-  end.
-
-Ltac beqtac_simpl x y :=
-  match goal with
-    | |- context [beq_dec ?eq_dec x y] =>
-      case (eq_dec x y); intro; beqtac eq_dec
-  end.*)

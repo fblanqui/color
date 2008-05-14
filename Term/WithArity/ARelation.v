@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ARelation.v,v 1.14 2007-04-11 17:51:02 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.15 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -152,7 +152,7 @@ Lemma absorb_strict : absorb succ succ_eq.
 Proof.
 unfold absorb, inclusion, compose, strict_part.
 intros; split; decomp H. eapply succ_eq_trans. apply H1. assumption.
-unfold not; intro. deduce (succ_eq_trans H H1). contradiction.
+unfold not; intro. ded (succ_eq_trans H H1). contradiction.
 Qed.
 
 End strict.

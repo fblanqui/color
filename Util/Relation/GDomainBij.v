@@ -83,10 +83,10 @@ Lemma rel_on_nat_is_restricted :
 
 Proof.
 unfold is_restricted; intros.
-repeat rewrite nfirst_exact; deduce (rel_on_nat_elim x y H).
+repeat rewrite nfirst_exact; ded (rel_on_nat_elim x y H).
 repeat destruct H0; destruct H1.
-deduce (element_at_in2 H1).
-deduce (element_at_in2 H2).
+ded (element_at_in2 H1).
+ded (element_at_in2 H2).
 tauto.
 Qed.
 
@@ -101,8 +101,8 @@ exists n; auto. destruct H0; subst. rewrite H0 in H.
 assert (exists b,find_first (eq y) (eq_dec y) Dom =Some b).
 destruct (find_first (eq y) (eq_dec y) Dom ); try tauto.
 exists n; auto. destruct H1; subst; rewrite H1 in H.
-deduce (eq_find_first_exact H1).
-deduce (eq_find_first_exact H0).
+ded (eq_find_first_exact H1).
+ded (eq_find_first_exact H0).
 exists x0; exists x1; intuition; auto.
 Qed.
 
@@ -121,8 +121,8 @@ exists n; auto. destruct H0; subst. rewrite H0 in H.
 assert (exists b,find_first (eq y) (eq_dec y) Dom =Some b).
 destruct (find_first (eq y) (eq_dec y) Dom ); try tauto.
 exists n; auto. destruct H1; subst; rewrite H1 in H.
-deduce (eq_find_first_exact H1).
-deduce (eq_find_first_exact H0).
+ded (eq_find_first_exact H1).
+ded (eq_find_first_exact H0).
 exists x0; exists x1; intuition; auto.
 Qed.
 
@@ -154,14 +154,14 @@ Lemma dom_change : forall x y, rel_on_dom (rel_on_nat R) x y <-> R x y.
 
 Proof.
 intros; split; intro.
-deduce (rel_on_dom_elim H).
+ded (rel_on_dom_elim H).
 repeat destruct H0; destruct H1.
 unfold rel_on_nat in H0.
 rewrite H1 in H0; rewrite H2 in H0; auto.
 
 unfold is_restricted in restriction.
-deduce (restriction H); destruct H0.
-deduce (eq_In_find_first eq_dec H0); deduce (eq_In_find_first eq_dec H1).
+ded (restriction H); destruct H0.
+ded (eq_In_find_first eq_dec H0); ded (eq_In_find_first eq_dec H1).
 destruct H2; destruct H2; destruct H3; destruct H3.
 unfold rel_on_dom.
 rewrite H2; rewrite H3.
@@ -186,24 +186,24 @@ Lemma dom_change_compose: forall x y,
 
 Proof.
 intros; split; intro.
-deduce (rel_on_dom_elim H).
+ded (rel_on_dom_elim H).
 repeat destruct H0; destruct H1.
-unfold compose; deduce (restriction H0); destruct H4.
+unfold compose; ded (restriction H0); destruct H4.
 rewrite nfirst_exact in H5. rewrite (@element_at_exists A) in H5.
 destruct H5 as [z]. exists z.
-deduce (element_at_in2 H1).
-deduce (element_at_in2 H3).
-deduce (element_at_in2 H5).
+ded (element_at_in2 H1).
+ded (element_at_in2 H3).
+ded (element_at_in2 H5).
 unfold rel_on_dom.
 destruct H6; clear H9.
 destruct H7; clear H9.
 destruct H8; clear H9.
-deduce (eq_In_find_first eq_dec H6); destruct H9; destruct H9.
-deduce (eq_In_find_first eq_dec H7); destruct H11; destruct H11.
-deduce (eq_In_find_first eq_dec H8); destruct H13; destruct H13.
-deduce (repeat_free_unique rp_free H1 H10).
-deduce (repeat_free_unique rp_free H3 H12).
-deduce (repeat_free_unique rp_free H5 H14).
+ded (eq_In_find_first eq_dec H6); destruct H9; destruct H9.
+ded (eq_In_find_first eq_dec H7); destruct H11; destruct H11.
+ded (eq_In_find_first eq_dec H8); destruct H13; destruct H13.
+ded (repeat_free_unique rp_free H1 H10).
+ded (repeat_free_unique rp_free H3 H12).
+ded (repeat_free_unique rp_free H5 H14).
 subst; rewrite H9; rewrite H11; rewrite H13; auto.
 
 unfold compose in H; destruct H as [z]; destruct H.
@@ -234,8 +234,8 @@ intro; induction n; try trivial.
 simpl; unfold is_restricted; unfold compose.
 intros; destruct H as [z]; destruct H.
 intuition.
-deduce (restriction H); tauto.
-deduce (IHn _ _ H0); tauto.
+ded (restriction H); tauto.
+ded (IHn _ _ H0); tauto.
 Qed.
 
 Lemma dom_change_iter : forall n x y,
@@ -266,19 +266,19 @@ Lemma dom_change_tc: forall x y,
 Proof.
 split; intros.
 
-deduce (rel_on_dom_elim2 H); do 3 destruct H0.
-deduce (tc_iter H0); unfold Iter in *; unfold Iter_ge in *.
+ded (rel_on_dom_elim2 H); do 3 destruct H0.
+ded (tc_iter H0); unfold Iter in *; unfold Iter_ge in *.
 destruct H2 as [n]. destruct H2; destruct H1.
 eapply (iter_tc R n); rewrite <- dom_change_iter.
 unfold rel_on_dom; rewrite H1; rewrite H4; trivial.
 
-deduce (tc_iter H); unfold Iter in *; unfold Iter_ge in *.
+ded (tc_iter H); unfold Iter in *; unfold Iter_ge in *.
 destruct H0 as [n]; destruct H0.
 rewrite <- dom_change_iter in H1.
 unfold rel_on_dom in *.
 destruct (find_first (eq x) (eq_dec x) Dom); auto with *.
 destruct (find_first (eq y) (eq_dec y) Dom); auto with *.
-deduce (iter_tc (rel_on_nat R) n); auto.
+ded (iter_tc (rel_on_nat R) n); auto.
 Qed.
 
 End iter.

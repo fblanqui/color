@@ -182,7 +182,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       clear R. intros R Rpart l r lr.
       apply succeq'_sub. apply partition_by_rel_true with MA.term succeq'_dec.
       apply rule_partition_left with R. fold part_succeq.
-      deduce (partition_complete part_succeq (mkRule l r) R).
+      ded (partition_complete part_succeq (mkRule l r) R).
       simpl in H. rewrite Rpart in H. destruct H.
       apply partition_inright with part_succ. assumption.
       assumption. destruct H.
@@ -272,7 +272,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       clear R. intros R Rpart l r lr.
       apply succeq'_sub. apply partition_by_rel_true with MA.term succeq'_dec.
       apply rule_partition_left with R. fold part_succeq.
-      deduce (partition_complete part_succeq (mkRule l r) R).
+      ded (partition_complete part_succeq (mkRule l r) R).
       simpl in H. rewrite Rpart in H. destruct H.
       apply partition_inright with part_succ. assumption.
       assumption. destruct H.
@@ -314,7 +314,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 (**********************************************************)
 (** tactics *)
 
-  Ltac partition R := normalize (snd (partition part_succ R)).
+  Ltac partition R := norm (snd (partition part_succ R)).
 
   Ltac do_prove_termination prove_int_monotonicity lemma R :=
     apply lemma; 

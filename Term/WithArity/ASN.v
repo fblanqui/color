@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.8 2007-05-16 15:04:49 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,7 +43,7 @@ Lemma subterm_sn : forall t, SNR t -> forall u, subterm_eq u t -> SNR u.
 
 Proof.
 intros t H. elim H. clear t H. intros t H IH u H0. apply SN_intro.
-intros u' H1. deduce (red_subterm H1 H0). destruct H2 as [t']. destruct H2.
+intros u' H1. ded (red_subterm H1 H0). destruct H2 as [t']. destruct H2.
 eapply IH. apply H2. assumption.
 Qed.
 
@@ -59,8 +59,8 @@ Lemma sub_fun_sn : forall f ts x s,
 
 Proof.
 intros. change (SNR (app s (Var x))). rewrite vars_fun in H.
-deduce (in_vars_vec_elim H). destruct H1 as [t]. destruct H1.
-deduce (in_vars_subterm_eq H2). apply subterm_sn with (t := app s t).
+ded (in_vars_vec_elim H). destruct H1 as [t]. destruct H1.
+ded (in_vars_subterm_eq H2). apply subterm_sn with (t := app s t).
 eapply Vforall_in with (n := arity f). apply H0. apply Vin_map_intro. assumption.
 apply subterm_app. assumption.
 Qed.
@@ -75,7 +75,7 @@ Variable hyp1 : forall l r, In (mkRule l r) R -> notvar l.
 Lemma lhs_notvar : forall l r x, In (mkRule l r) R -> l <> Var x.
 
 Proof.
-intros. deduce (hyp1 l r H). intro. subst l. contradiction.
+intros. ded (hyp1 l r H). intro. subst l. contradiction.
 Qed.
 
 (***********************************************************************)
@@ -122,11 +122,11 @@ Lemma no_call_app_sn : forall t, calls R t = nil -> forall s,
 
 Proof.
 intro. pattern t. apply term_ind_forall; clear t; intros.
-deduce (H0 v). apply H1. simpl. auto.
+ded (H0 v). apply H1. simpl. auto.
 rewrite app_fun. pattern (defined f R). apply bool_eq_ind; intro.
 simpl in H0. rewrite H2 in H0. discriminate.
 apply sn_args_sn_fun. assumption. apply Vforall_map_intro. apply Vforall_intro.
-intros. deduce (Vforall_in H H3). apply H4.
+intros. ded (Vforall_in H H3). apply H4.
 simpl in H0. rewrite H2 in H0. change (vcalls R v = nil) in H0.
 eapply in_vcalls_nil with (n := arity f). apply H3. assumption.
 intros. apply H1. rewrite vars_fun. eapply vars_vec_in. apply H5. assumption.
@@ -151,7 +151,7 @@ intros r s H H0. cut (forall a g vs, a = Fun g vs
 intros. apply H1 with (a := Fun g vs). refl. assumption.
 intro a. pattern a. apply subterm_ind. clear a. intros. subst t.
 apply Vforall_intro. intros w H2.
-deduce (Vin_map H2). destruct H4 as [v]. destruct H4. subst w.
+ded (Vin_map H2). destruct H4 as [v]. destruct H4. subst w.
 assert (v = app (alien_sub R v) (cap R v)). apply sym_eq.
 apply (alien_sub_cap R).
 rewrite H5. rewrite app_app. apply no_call_app_sn. apply calls_cap. intros.
@@ -165,12 +165,12 @@ rewrite fsub_inf. 2: assumption. simpl. apply H.
 eapply subterm_eq_vars. apply subterm_strict. apply H7.
 apply (vars_cap_inf R). assumption. assumption.
 (* x > maxvar v *)
-deduce (vars_cap R H6). rewrite (fsub_nth (aliens (capa R v)) l H8).
+ded (vars_cap R H6). rewrite (fsub_nth (aliens (capa R v)) l H8).
 set (a := Vnth (aliens (capa R v)) (lt_pm (k:=projS1 (capa R v)) l H8)).
 assert (Vin a (aliens (capa R v))). unfold a. apply Vnth_in.
 assert (subterm_eq a v). apply (in_aliens_subterm R). assumption.
 assert (In a (calls R v)). apply aliens_incl_calls. assumption.
-deduce (in_calls H11). destruct H12 as [f]. destruct H12 as [us]. destruct H12.
+ded (in_calls H11). destruct H12 as [f]. destruct H12 as [us]. destruct H12.
 rewrite H12. rewrite H12 in H10. rewrite H12 in H11.
 assert (In (Fun f us) (calls R r)). apply subterm_in_calls. assumption.
 apply subterm_strict. eapply subterm_trans_eq1. apply H10. assumption.
@@ -185,7 +185,7 @@ Lemma calls_sn : forall r s, (forall x, In x (vars r) -> SNR (s x))
   -> forall a, In a (calls R r) -> SNR (app s a).
 
 Proof.
-intros. deduce (in_calls H1). destruct H2 as [g]. destruct H2 as [vs].
+intros. ded (in_calls H1). destruct H2 as [g]. destruct H2 as [vs].
 destruct H2. subst a. apply H0. assumption. eapply calls_sn_args. apply H.
 apply H0. assumption.
 Qed.

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.30 2008-05-09 07:50:29 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.31 2008-05-14 12:26:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -528,7 +528,7 @@ Qed.
 Lemma tc_merge : R @ R# << R!.
 Proof.
 unfold inclusion. intros. destruct H. destruct H.
-deduce (rtc_split H0). destruct H1; subst.
+ded (rtc_split H0). destruct H1; subst.
 apply t_step;assumption.
 eapply t_trans. apply t_step.
 eassumption. assumption.
@@ -699,7 +699,7 @@ Variables (A : Type) (R S : relation A).
 Lemma rtc_step_incl_tc : R# @ R << R!.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H. deduce (rtc_split H). destruct H1.
+unfold inclusion. intros. do 2 destruct H. ded (rtc_split H). destruct H1.
 subst x0. apply t_step. exact H0.
 apply t_trans with (y := x0). exact H1. apply t_step. exact H0.
 Qed.
@@ -716,7 +716,7 @@ Qed.
 Lemma rtc_comp_permut : R# @ (R# @ S)# << (R# @ S)# @ R#.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H. deduce (rtc_split2 H0). destruct H1.
+unfold inclusion. intros. do 2 destruct H. ded (rtc_split2 H0). destruct H1.
 subst x0. exists x; split. apply rt_refl. exact H.
 do 4 destruct H1. exists y; split. apply rt_trans with (y := x1).
 apply rt_step. exists x2; split. apply rt_trans with (y := x0); assumption.
@@ -746,7 +746,7 @@ Qed.
 Lemma rtc_comp : R# @ S << S U R! @ S.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H. deduce (rtc_split H). destruct H1.
+unfold inclusion. intros. do 2 destruct H. ded (rtc_split H). destruct H1.
 subst x0. left. exact H0. right. exists x0; split; assumption.
 Qed.
 
@@ -788,8 +788,8 @@ Lemma rtc_comp_modulo : R# @ (R# @ S)! << (R# @ S)!.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H.
-deduce (tc_incl_step_rtc H0). do 2 destruct H1. do 2 destruct H1.
-deduce (rtc_split H2). destruct H4. subst x1.
+ded (tc_incl_step_rtc H0). do 2 destruct H1. do 2 destruct H1.
+ded (rtc_split H2). destruct H4. subst x1.
 apply t_step. exists x2. intuition. apply rt_trans with x0; assumption.
 apply t_trans with x1. apply t_step. exists x2. intuition.
 apply rt_trans with x0; assumption. exact H4.
@@ -827,8 +827,8 @@ clear H0 y H x0 x. induction 1; intros.
 assert ((S @ R) x y0). apply commut. exists y. intuition.
 do 2 destruct H1. exists x0. intuition.
 exists y. intuition.
-deduce (IHclos_refl_trans2 _ H1). do 2 destruct H2.
-deduce (IHclos_refl_trans1 _ H2). do 2 destruct H4.
+ded (IHclos_refl_trans2 _ H1). do 2 destruct H2.
+ded (IHclos_refl_trans1 _ H2). do 2 destruct H4.
 exists x1. intuition. apply rt_trans with x0; assumption.
 Qed.
 

@@ -58,10 +58,10 @@ Lemma WF_reverse : forall E R,
 
 Proof.
 unfold WF. intros E R H. cut (forall x, SN (red_mod E R) (rev' x)).
-intros. deduce (H0 (rev' x)). rewrite rev'_rev' in H1. exact H1.
-intro. deduce (H x). elim H0. intros. apply SN_intro. intros.
-deduce (H2 (rev' y)). rewrite rev'_rev' in H4. apply H4.
-deduce (red_mod_rev H3). rewrite rev'_rev' in H5. exact H5.
+intros. ded (H0 (rev' x)). rewrite rev'_rev' in H1. exact H1.
+intro. ded (H x). elim H0. intros. apply SN_intro. intros.
+ded (H2 (rev' y)). rewrite rev'_rev' in H4. apply H4.
+ded (red_mod_rev H3). rewrite rev'_rev' in H5. exact H5.
 Qed.
 
 End S.

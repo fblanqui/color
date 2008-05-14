@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 finitely branching well-founded relations have no infinite sequences
 *)
 
-(* $Id: IS_NotSN.v,v 1.1 2007-08-08 09:33:43 blanqui Exp $ *)
+(* $Id: IS_NotSN.v,v 1.2 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,7 @@ Proof.
 do 2 intro. assert (forall i, len (f i) + i <= len (f 0)).
 induction i; intros. omega.
 assert (len (f i) > len (f (S i))). apply R_len. apply H. omega.
-deduce (H0 (S (len (f 0)))). omega.
+ded (H0 (S (len (f 0)))). omega.
 Qed.
 
 End S.

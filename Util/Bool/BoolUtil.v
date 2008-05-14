@@ -7,12 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 general results on booleans
 *)
 
-(* $Id: BoolUtil.v,v 1.5 2008-01-24 13:22:25 blanqui Exp $ *)
+(* $Id: BoolUtil.v,v 1.6 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export Bool.
+
+Implicit Arguments orb_false_elim [b1 b2].
+Implicit Arguments orb_true_elim [b1 b2].
 
 (***********************************************************************)
 (** tactics *)

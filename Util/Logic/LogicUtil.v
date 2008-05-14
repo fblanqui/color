@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.11 2008-01-24 13:22:25 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.12 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,11 +18,13 @@ Definition prop_dec A (P : A -> Prop) := forall x, {P x}+{~P x}.
 (***********************************************************************)
 (** tactics *)
 
+Ltac hyp := assumption.
+
 Ltac refl := reflexivity.
 
-Ltac gen h := generalize h.
+Ltac gen h := generalize h; clear h.
 
-Ltac deduce h := gen h; intro.
+Ltac ded h := generalize h; intro.
 
 Ltac decomp h := decompose [and or ex] h; clear h.
 
@@ -37,11 +39,15 @@ Ltac irrefl :=
     | _ : ?x <> ?y, _ : ?z = ?x, _ : ?y = ?z |- _ => subst y; irrefl
   end.
 
-Ltac normalize e :=
+Ltac norm e :=
   let x := fresh in set (x := e); vm_compute in x; subst x.
 
-Ltac normalize_in H e :=
+Ltac norm_in H e :=
   let x := fresh in set (x := e) in H; vm_compute in x; subst x.
+
+Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
+
+Ltac case_eq e := coq_case_eq e; let h := fresh in intro h.
 
 (***********************************************************************)
 (** basic meta-theorems *)
@@ -71,7 +77,7 @@ Qed.
 Lemma exists_not_imply_not_forall : (exists x, ~(P x)) -> ~(forall x, P x).
 
 Proof.
-intros. destruct H. intro. deduce (H0 x). contradiction.
+intros. destruct H. intro. ded (H0 x). contradiction.
 Qed.
 
 End meta.

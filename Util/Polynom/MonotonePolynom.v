@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 monotone polynomials
 *)
 
-(* $Id: MonotonePolynom.v,v 1.9 2007-06-01 14:27:05 koper Exp $ *)
+(* $Id: MonotonePolynom.v,v 1.10 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -33,7 +33,7 @@ Ltac montacrec :=
 
 Ltac normalize_arity :=
   match goal with
-    | H : lt _ ?a |- _ => normalize_in H a
+    | H : lt _ ?a |- _ => norm_in H a
     | _ => idtac
   end.
 

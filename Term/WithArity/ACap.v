@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.8 2008-01-24 14:52:42 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -219,7 +219,7 @@ absurd (x<=m); omega. contradiction. apply H with (m := m); assumption.
 unfold Q. simpl. intros. contradiction.
 (* cons *)
 unfold Q. simpl. set (m := max (maxvar t) (Vmax (Vmap maxvar v))). intros m0 H1.
-rewrite Vbreak_fresh. rewrite Vbreak_app. simpl. intros. deduce (in_app_or H2).
+rewrite Vbreak_fresh. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
 destruct H4.
 (* head *)
 apply in_appl. apply H with (m := m0).
@@ -247,8 +247,8 @@ Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
 intuition. change (In x (vars_vec v)) in H2.
 set (m := Vmax (Vmap maxvar v)). change (x > m) in H1.
-deduce (in_vars_vec_elim H2). destruct H3 as [t]. destruct H3.
-deduce (vars_max H4). deduce (maxvar_in _ _ H5 H3).
+ded (in_vars_vec_elim H2). destruct H3 as [t]. destruct H3.
+ded (vars_max H4). ded (maxvar_in _ _ H5 H3).
 fold m in H6. absurd (x>m); omega.
 Qed.
 
@@ -271,7 +271,7 @@ apply H; assumption.
 unfold Q. simpl. intros. contradiction.
 (* cons *)
 intros. unfold Q. simpl. intros m H1. rewrite Vbreak_fresh. rewrite Vbreak_app.
-simpl. intro. deduce (in_app_or H2). destruct H3.
+simpl. intro. ded (in_app_or H2). destruct H3.
 assert (x <= m + projS1 (capa t)). apply H. eapply intro_max_l. apply H1.
 assumption. omega.
 rewrite plus_assoc. apply H0. assert (Vmax (Vmap maxvar v) <= m).
@@ -322,8 +322,8 @@ Lemma aliens_incl_calls : forall u t, Vin u (aliens (capa t)) -> In u (calls t).
 Proof.
 intros u t. pattern t. apply term_ind_forall; clear t. simpl. auto.
 intros f ts H. rewrite calls_fun. rewrite capa_fun. case (defined f R); simpl.
-intuition. unfold aliens. simpl. intro. deduce (in_conc H0). do 2 destruct H1.
-deduce (Vin_map H1). do 2 destruct H3. subst x. deduce (Vforall_in H H3).
+intuition. unfold aliens. simpl. intro. ded (in_conc H0). do 2 destruct H1.
+ded (Vin_map H1). do 2 destruct H3. subst x. ded (Vforall_in H H3).
 eapply in_vcalls. apply H4. assumption. assumption.
 Qed.
 

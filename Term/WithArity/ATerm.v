@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.16 2008-05-07 15:24:09 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.17 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -170,7 +170,7 @@ simpl. rewrite beq_var_ok. intuition. inversion H. refl.
 intuition; discriminate. intuition; discriminate.
 rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0. apply args_eq.
-deduce (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl_eq. refl.
+ded (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl_eq. refl.
 inversion H0 as [[h0 h1]]. clear h1. subst f0. simpl.
 apply andb_intro. apply (beq_refl beq_symb_ok).
 apply beq_vec_ok_in2. exact H. refl.
@@ -180,13 +180,8 @@ End beq.
 
 Implicit Arguments beq_ok [beq_var beq_symb].
 
-Definition beq_symb := beq_dec (@eq_symbol_dec Sig).
-
-Lemma beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
-
-Proof.
-exact (beq_dec_ok (@eq_symbol_dec Sig)).
-Qed.
+Notation beq_symb := (@beq_symb Sig).
+Notation beq_symb_ok := (@beq_symb_ok Sig).
 
 Definition beq_term := beq beq_nat beq_symb.
 
@@ -339,7 +334,7 @@ Lemma in_vars_vec_intro : forall x t n (ts : terms n),
   In x (vars t) -> Vin t ts -> In x (vars_vec ts).
 
 Proof.
-intros. deduce (Vin_elim H0). do 5 destruct H1. subst ts.
+intros. ded (Vin_elim H0). do 5 destruct H1. subst ts.
 rewrite vars_vec_cast. rewrite vars_vec_app. simpl.
 apply in_appr. apply in_appl. exact H.
 Qed.
@@ -454,7 +449,7 @@ Lemma nb_symb_occs_ge : forall n (ts : terms n) t,
 
 Proof.
 induction ts; simpl; intros. contradiction. destruct H. subst a. omega.
-deduce (IHts _ H). omega.
+ded (IHts _ H). omega.
 Qed.
 
 End S.
@@ -478,9 +473,9 @@ Implicit Arguments nb_symb_occs_ge [Sig n ts t].
 Ltac Funeqtac :=
   match goal with
     | H : @Fun ?Sig ?f ?ts = @Fun _ ?f ?us |- _ =>
-      deduce (fun_eq H); clear H
+      ded (fun_eq H); clear H
     | H : @Fun ?Sig ?f ?ts = @Fun _ ?g ?us |- _ =>
       let H0 := fresh in let H1 := fresh in
         (inversion H as [[H0 H1]]; clear H1; subst g;
-          deduce (fun_eq H); clear H)
+          ded (fun_eq H); clear H)
   end.

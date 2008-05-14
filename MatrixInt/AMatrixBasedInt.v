@@ -331,7 +331,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       (id_matrix dim)).
       rewrite mint_eval_var_aux. simpl. 
       rewrite mat_mult_id_l. rewrite col_mat_to_vec_idem.
-      rewrite Vbuild_nth. refl. deduce dim_pos. auto. 
+      rewrite Vbuild_nth. refl. ded dim_pos. auto. 
     Qed.
 
     Lemma mint_eval_const : forall val k (c : vec),

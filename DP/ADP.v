@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.17 2008-02-13 14:08:16 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.18 2008-05-14 12:26:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -54,9 +54,9 @@ Lemma mkdp_elim : forall l t S,
 
 Proof.
 induction S; simpl; intros. contradiction. destruct a. simpl in H.
-deduce (in_app_or H). destruct H0. deduce (in_map_elim H0). do 2 destruct H1.
+ded (in_app_or H). destruct H0. ded (in_map_elim H0). do 2 destruct H1.
 injection H2. intros. subst x. subst lhs. exists rhs. intuition.
-deduce (IHS H0). destruct H1. exists x. intuition.
+ded (IHS H0). destruct H1. exists x. intuition.
 Qed.
 
 Implicit Arguments mkdp_elim [l t S].
@@ -68,7 +68,7 @@ Lemma dp_intro : forall l r t,
   In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
 
 Proof.
-intros. deduce (in_elim H). do 2 destruct H1. deduce (in_elim H0).
+intros. ded (in_elim H). do 2 destruct H1. ded (in_elim H0).
 do 2 destruct H2.
 unfold dp. 
 intros; 
@@ -98,8 +98,8 @@ Qed.
 Lemma lhs_dp : incl (map lhs dp) (map lhs R).
 
 Proof.
-unfold incl. intros. deduce (in_map_elim H). do 2 destruct H0. subst a.
-destruct x as [l r]. deduce (dp_elim H0). do 2 destruct H1.
+unfold incl. intros. ded (in_map_elim H). do 2 destruct H0. subst a.
+destruct x as [l r]. ded (dp_elim H0). do 2 destruct H1.
 change (In (lhs (mkRule l x)) (map lhs R)). apply in_map. exact H1.
 Qed.
 
@@ -141,7 +141,7 @@ Lemma dp_elim_vars : forall l t, In (mkRule l t) dp ->
   exists r, In (mkRule l r) R /\ In t (calls R r) /\ incl (vars t) (vars l).
 
 Proof.
-intros. deduce (dp_elim H). do 2 destruct H0. exists x. intuition.
+intros. ded (dp_elim H). do 2 destruct H0. exists x. intuition.
 apply incl_tran with (m := vars x). unfold incl. intros.
 eapply subterm_eq_vars. eapply in_calls_subterm. apply H1. exact H2.
 apply hyp2. exact H0.
@@ -152,7 +152,7 @@ Implicit Arguments dp_elim_vars [l t].
 Lemma dp_preserv_vars : rules_preserv_vars dp.
 
 Proof.
-unfold rules_preserv_vars. intros. deduce (dp_elim_vars H). destruct H0.
+unfold rules_preserv_vars. intros. ded (dp_elim_vars H). destruct H0.
 intuition.
 Qed.
 
@@ -201,7 +201,7 @@ apply H2. apply H3. apply H4. assumption. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
 apply SN_intro. intros u H2. redtac. destruct c; simpl in H3, H4.
 (* c = Hole *)
-deduce (fun_eq_app H3). destruct H5.
+ded (fun_eq_app H3). destruct H5.
 (* lhs = Fun f us *)
 destruct e as [ls]. rewrite H5 in H3. rewrite app_fun in H3. Funeqtac.
 (* begin assert: the substitution s is SN *)
@@ -214,17 +214,17 @@ subst u. assert (r = app (alien_sub r) (cap r)). apply sym_eq.
 apply (alien_sub_cap R). rewrite H3. rewrite app_app.
 apply no_call_app_sn. apply hyp1. apply calls_cap.
 (* we prove that the alien substitution is SN *)
-intros. deduce (vars_cap R H4).
+intros. ded (vars_cap R H4).
 case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
 (* x <= maxvar r *)
-deduce (vars_cap_inf R H4 l0). deduce (hyp2 H2 _ H8).
+ded (vars_cap_inf R H4 l0). ded (hyp2 H2 _ H8).
 rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
 (* x > maxvar r *)
 rewrite (fsub_nth (aliens (capa r)) l0 H7).
 set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H7)).
 assert (Fun f ts = app s l). rewrite H5. rewrite H6. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
-deduce (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
+ded (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
 (* every call is SN *)
 eapply calls_sn with (r := r). apply hyp1.
 intros. apply Hsnsx. apply (hyp2 H2 _ H12).

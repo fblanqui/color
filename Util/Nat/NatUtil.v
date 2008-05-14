@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.26 2008-03-18 20:15:31 koper Exp $ *)
+(* $Id: NatUtil.v,v 1.27 2008-05-14 12:26:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -54,12 +54,14 @@ Defined.
 
 Require Export EqUtil.
 
+Ltac case_nat_eq x y := case_beq beq_nat_ok (beq_nat x y).
+
 Definition eq_nat_dec := eq_nat_dec. (* FIXME: dec_beq beq_nat_ok. *)
 
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
 Proof.
-intro. gen (eq_nat_dec n n). destruct s. rewrite (UIP_refl eq_nat_dec e).
+intro. generalize (eq_nat_dec n n). destruct s. rewrite (UIP_refl eq_nat_dec e).
 refl. irrefl.
 Qed.
 

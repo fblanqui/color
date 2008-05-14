@@ -41,6 +41,7 @@ prdir () {
 # begin
 
 cat doc/begin.html > $doc
+echo "<ul>" >> $doc
 
 # Util
 
@@ -64,4 +65,5 @@ done
 
 # end
 
+echo "</ul>" >> $doc
 cat doc/end.html >> $doc

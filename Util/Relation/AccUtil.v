@@ -61,27 +61,27 @@ Notation Symprod := (symprod A B leA leB).
 Lemma Acc_symprod_fst : forall x, Acc Symprod x -> Acc leA (fst x).
 
 Proof.
-induction 1. destruct x. simpl. apply Acc_intro. intros. deduce (H0 (y,b)).
+induction 1. destruct x. simpl. apply Acc_intro. intros. ded (H0 (y,b)).
 apply H2. apply left_sym. assumption.
 Qed.
 
 Lemma Acc_symprod_snd : forall x, Acc Symprod x -> Acc leB (snd x).
 
 Proof.
-induction 1. destruct x. simpl. apply Acc_intro. intros. deduce (H0 (a,y)).
+induction 1. destruct x. simpl. apply Acc_intro. intros. ded (H0 (a,y)).
 apply H2. apply right_sym. assumption.
 Qed.
 
 Lemma Acc_symprod_invl : forall x y, Acc Symprod (x,y) -> Acc leA x.
 
 Proof.
-intros. deduce (Acc_symprod_fst H). assumption.
+intros. ded (Acc_symprod_fst H). assumption.
 Qed.
 
 Lemma Acc_symprod_invr : forall x y, Acc Symprod (x,y) -> Acc leB y.
 
 Proof.
-intros. deduce (Acc_symprod_snd H). assumption.
+intros. ded (Acc_symprod_snd H). assumption.
 Qed.
 
 Lemma Acc_symprod_inv : forall x y, Acc Symprod (x,y) -> Acc leA x /\ Acc leB y.

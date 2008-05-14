@@ -93,7 +93,7 @@ set (s1' := restrict (comp s1 (shift_inv_sub p l1)) (vars (shift p l1))).
 set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
-deduce (vars_max H3). deduce (in_vars_shift_min H4). unfold p in H6.
+ded (vars_max H3). ded (in_vars_shift_min H4). unfold p in H6.
 absurd (x <= maxvar l0). omega. assumption.
 (* domains of substitutions *)
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
