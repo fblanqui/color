@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.27 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.28 2008-05-14 14:30:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -360,3 +360,11 @@ Proof.
   simpl. apply plus_lt_le_compat. assumption.
   apply mult_le_compat; omega. 
 Qed.
+
+Lemma S_add_S : forall n1 n2 n, n1 + S n2 = n -> S n1 + S n2 = S n.
+
+Proof.
+intros. subst n. reflexivity.
+Qed.
+
+Implicit Arguments S_add_S [n1 n2 n].

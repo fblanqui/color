@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 terms whose variable indexes are bounded
 *)
 
-(* $Id: ABterm.v,v 1.5 2007-04-12 13:56:36 koper Exp $ *)
+(* $Id: ABterm.v,v 1.6 2008-05-14 14:30:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,7 +22,6 @@ Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
-Notation "'args' f" := (terms (arity f)) (at level 70).
 
 Section bterm.
 
