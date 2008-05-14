@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.17 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.18 2008-05-14 14:30:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -444,12 +444,99 @@ Proof.
 intros. simpl. rewrite nb_symb_occs_fix. refl.
 Qed.
 
-Lemma nb_symb_occs_ge : forall n (ts : terms n) t,
+Lemma Vin_nb_symb_occs_terms_ge : forall n (ts : terms n) t,
   Vin t ts -> nb_symb_occs_terms ts >= nb_symb_occs t.
 
 Proof.
 induction ts; simpl; intros. contradiction. destruct H. subst a. omega.
 ded (IHts _ H). omega.
+Qed.
+
+(***********************************************************************)
+(** size of a term *)
+
+Fixpoint size t :=
+  match t with
+    | Var x => 1
+    | Fun f ts =>
+      let fix size_terms n (ts : terms n) {struct ts} :=
+        match ts with
+          | Vnil => 0
+          | Vcons u p us => size u + size_terms p us
+        end
+        in 1 + size_terms _ ts
+  end.
+
+Fixpoint size_terms n (ts : terms n) {struct ts} :=
+  match ts with
+    | Vnil => 0
+    | Vcons u _ us => size u + size_terms us
+  end.
+
+Lemma size_fix : forall n (ts : terms n),
+  (fix size_terms n (ts : terms n) {struct ts} :=
+    match ts with
+      | Vnil => 0
+      | Vcons u p us => size u + size_terms p us
+    end) _ ts = size_terms ts.
+
+Proof.
+induction ts; simpl; intros. refl. rewrite IHts. refl.
+Qed.
+
+Lemma size_fun : forall f (ts : args f),
+  size (Fun f ts) = 1 + size_terms ts.
+
+Proof.
+intros. simpl. rewrite size_fix. refl.
+Qed.
+
+Lemma size_non_zero : forall t, size t > 0.
+
+Proof.
+intro. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
+  size_terms ts >= 0); clear t.
+intro. simpl. omega.
+intros. rewrite size_fun. omega.
+simpl. omega.
+intros. simpl. omega.
+Qed.
+
+Lemma Vin_size_terms_ge : forall n (ts : terms n) t,
+  Vin t ts -> size_terms ts >= size t.
+
+Proof.
+induction ts; simpl; intros. contradiction. destruct H. subst a. omega.
+ded (IHts _ H). omega.
+Qed.
+
+Implicit Arguments Vin_size_terms_ge [n ts t].
+
+Lemma Vin_size_terms_gt : forall n (ts : terms n) t,
+  Vin t ts -> n > 1 -> size_terms ts > size t.
+
+Proof.
+intro. destruct n. intros. omega. destruct n. intros. omega. intros.
+VSntac ts. rewrite H1 in H. VSntac (Vtail ts). rewrite H2 in H. simpl in *.
+ded (size_non_zero (Vhead ts)). ded (size_non_zero (Vhead (Vtail ts))).
+destruct H. subst t. omega. destruct H. subst t. omega.
+ded (Vin_size_terms_ge H). omega.
+Qed.
+
+Lemma size_terms_Vcast : forall n (ts : terms n) m (h : n=m),
+  size_terms (Vcast ts h) = size_terms ts.
+
+Proof.
+induction ts. intro. destruct m. intro. castrefl h. intro. discriminate.
+intro. destruct m. intro. discriminate. intro. inversion h. simpl. rewrite IHts.
+refl.
+Qed.
+
+Lemma size_terms_Vapp : forall n (ts : terms n) m (us : terms m),
+  size_terms (Vapp ts us) = size_terms ts + size_terms us.
+
+Proof.
+induction ts; simpl; intros. refl. rewrite IHts. omega.
 Qed.
 
 End S.
@@ -465,7 +552,9 @@ Implicit Arguments in_vars_vec_elim [Sig x n ts].
 Implicit Arguments in_vars_vec_intro [Sig x t n ts].
 Implicit Arguments vars_vec_in [Sig x t n ts].
 Implicit Arguments vars_max [Sig x t].
-Implicit Arguments nb_symb_occs_ge [Sig n ts t].
+Implicit Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t].
+Implicit Arguments Vin_size_terms_ge [Sig n ts t].
+Implicit Arguments Vin_size_terms_gt [Sig n ts t].
 
 (***********************************************************************)
 (** tactics *)
