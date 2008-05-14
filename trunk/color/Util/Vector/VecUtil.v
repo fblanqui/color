@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.32 2008-05-14 14:30:54 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.33 2008-05-14 15:44:01 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -26,13 +26,14 @@ Require Export NatUtil.
 
 Ltac Veqtac := repeat
   match goal with
-    | H : @Vcons ?B ?x _ ?v = Vcons ?x ?w |- _ =>
-      let H1 := fresh in
-      (injection H; intro H1; ded (inj_pairT2 eq_nat_dec H1); clear H)
-    | H : @Vcons ?B ?x _ ?v = Vcons ?y ?w |- _ =>
-      let H1 := fresh in let H2 := fresh in
-      (injection H; intros H1 H2; subst x; ded (inj_pairT2 eq_nat_dec H1);
-        clear H)
+    | H : Vcons ?x ?v = Vcons ?x ?w |- _ =>
+      let h := fresh in
+      (injection H; intro h; ded (inj_pairT2 eq_nat_dec h);
+        clear h; clear H)
+    | H : Vcons ?x ?v = Vcons ?y ?w |- _ =>
+      let h1 := fresh in let h2 := fresh in
+      (injection H; intros h1 h2; ded (inj_pairT2 eq_nat_dec h1);
+        clear h1; clear H)
   end.
 
 Section S.
@@ -152,7 +153,8 @@ Lemma Vcast_eq_intror : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
 
 Proof.
 induction v1; intros until n0; case n0; intros until v2; case v2; simpl; 
-intros; (discriminate || auto). Veqtac. apply Vtail_eq. eapply IHv1. apply H1.
+  intros; (discriminate || auto). Veqtac. subst a0. apply Vtail_eq. eapply IHv1.
+apply H2.
 Qed.
 
 Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
@@ -168,7 +170,7 @@ Lemma Vcast_lr : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
 
 Proof.
 induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
-Veqtac. apply Vtail_eq. eapply IHv1. apply H1.
+Veqtac. subst a0. apply Vtail_eq. eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
@@ -176,7 +178,7 @@ Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
 
 Proof.
 induction v1; induction v2; simpl; intros. refl. discriminate. discriminate.
-Veqtac. apply Vtail_eq. eapply IHv1. apply H1.
+Veqtac. subst a0. apply Vtail_eq. eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_introrl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h21 : n2=n1),
@@ -969,8 +971,8 @@ Qed.
 Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
 
 Proof.
-induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac. simpl.
-rewrite (beq_refl beq_ok). simpl. rewrite H2. apply beq_vec_refl.
+induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac. subst a.
+subst v. simpl. rewrite (beq_refl beq_ok). simpl. apply beq_vec_refl.
 Qed.
 
 End beq.
@@ -1002,11 +1004,11 @@ Lemma beq_vec_ok_in2 : forall n (v : vec n)
   v = w -> beq_vec beq v w = true.
 
 Proof.
-induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac.
+induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac. subst a.
 simpl. apply andb_intro. set (a := Vhead w).
 assert (Vin a (Vcons a v)). simpl. auto.
-ded (hyp _ H a). rewrite H3. refl.
-apply IHv. intros. apply hyp. simpl. auto. exact H2.
+ded (hyp _ H a). rewrite H1. refl.
+apply IHv. intros. apply hyp. simpl. auto. exact H3.
 Qed.
 
 End beq_in.
