@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.5 2007-05-16 15:04:49 blanqui Exp $ *)
+(* $Id: ListForall.v,v 1.6 2008-05-15 08:57:39 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -36,25 +36,11 @@ Proof.
 intro a. simpl. auto.
 Qed.
 
-Lemma lforall_app : forall l1 l2 : list A,
-  lforall (l1 ++ l2) -> lforall l1 /\ lforall l2.
+Lemma lforall_app : forall l2 l1 : list A,
+  lforall (l1 ++ l2) <-> lforall l1 /\ lforall l2.
 
 Proof.
-intros l1 l2.
-elim l1.
- simpl. auto.
- intros a' l' Hrec. simpl. tauto.
-Qed.
-
-Lemma lforall_app_inv : forall l1 l2 : list A,
-  lforall l1 -> lforall l2 -> lforall (l1 ++ l2).
-
-Proof.
-intros l1 l2. elim l1.
- intros. simpl. assumption.
- intros h t Hrec. simpl. intros (H1, H2) H3. split.
-  assumption.
-  apply (Hrec H2 H3).
+induction l1; simpl; intuition.
 Qed.
 
 Lemma lforall_in : forall (a : A) (l : list A), lforall l -> In a l -> P a.
@@ -99,8 +85,6 @@ Defined.
 
 End S.
 
-Implicit Arguments lforall_app [A P l1 l2].
-Implicit Arguments lforall_app_inv [A P l1 l2].
 Implicit Arguments lforall_in [A P a l].
 
 Lemma lforall_imp : forall (A : Set) (P1 P2 : A->Prop),

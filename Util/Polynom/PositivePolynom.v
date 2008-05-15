@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 polynomials with non-negative integers as coefficients
 *)
 
-(* $Id: PositivePolynom.v,v 1.3 2007-04-13 17:47:40 blanqui Exp $ *)
+(* $Id: PositivePolynom.v,v 1.4 2008-05-15 08:57:40 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -65,8 +65,7 @@ Lemma coef_pos_app : forall n (p1 p2 : poly n),
   coef_pos (p1 ++ p2) -> coef_pos p1 /\ coef_pos p2.
 
 Proof.
-unfold coef_pos. intros n p1 p2. simpl. intro H.
-generalize (lforall_app H). intuition.
+unfold coef_pos. intros n p1 p2. simpl. rewrite lforall_app. intuition.
 Qed.
 
 Implicit Arguments coef_pos_app [n p1 p2].
