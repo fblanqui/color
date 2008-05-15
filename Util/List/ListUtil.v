@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.41 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.42 2008-05-15 13:29:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -617,15 +617,12 @@ Proof.
 intros. apply Inb_intro. apply H. apply Inb_true. assumption.
 Qed.
 
-Require Export BoolUtil.
-
 Lemma Inb_equiv : forall x l l', lequiv l l' -> Inb x l = Inb x l'.
 
 Proof.
-intros. destruct H. booltac_simpl (Inb x l).
-assert (Inb x l' = true). eapply Inb_incl. apply H. assumption. rewrite H1. refl.
-booltac_simpl (Inb x l'). assert (Inb x l = true). eapply Inb_incl. apply H0.
-assumption. rewrite H2 in H1. assumption. refl.
+intros. destruct H. case_eq (Inb x l'); case_eq (Inb x l); try refl.
+ded (Inb_incl _ H0 H1). rewrite H2 in H3. discriminate.
+ded (Inb_incl _ H H2). rewrite H1 in H3. discriminate.
 Qed.
 
 End Inb.

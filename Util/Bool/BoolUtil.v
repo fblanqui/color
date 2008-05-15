@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on booleans
 *)
 
-(* $Id: BoolUtil.v,v 1.6 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: BoolUtil.v,v 1.7 2008-05-15 13:29:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,18 +17,12 @@ Require Export Bool.
 Implicit Arguments orb_false_elim [b1 b2].
 Implicit Arguments orb_true_elim [b1 b2].
 
-(***********************************************************************)
-(** tactics *)
-
-Ltac booltac e := let H := fresh in let H1 := fresh in
-  (assert (H : e = true \/ e = false);
-    [case e; auto | destruct H as [H1 | H1]]).
-
-Ltac booltac_simpl e := let H := fresh in let H1 := fresh in
-  let t1 := (rewrite H1; simpl) in
-  (assert (H : e = true \/ e = false);
-    [case e; auto
-    | destruct H as [H1 | H1]; [t1 | t1]]).
+Hint Rewrite eqb negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
+  orb_true_r orb_true_l orb_false_r orb_false_l orb_negb_r orb_assoc
+  andb_false_r andb_false_l andb_true_r andb_true_l andb_negb_r andb_assoc
+  absoption_andb absoption_orb
+  xorb_false_r xorb_false_l xorb_nilpotent xorb_assoc_reverse
+  : bool.
 
 (***********************************************************************)
 (** boolean equalities *)

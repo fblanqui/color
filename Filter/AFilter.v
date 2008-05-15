@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.11 2008-05-14 14:30:53 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.12 2008-05-15 13:29:44 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -256,10 +256,10 @@ Proof.
 intros Hrefl H. unfold context_closed, filter_ord. induction c; intros.
 simpl. assumption.
 set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-booltac (Vhead (snd bs)). rewrite (filter_cont_true e v c v0 t1 H2).
-rewrite (filter_cont_true e v c v0 t2 H2). apply H. apply IHc. assumption.
-rewrite (filter_cont_false e v c v0 t1 H2).
-rewrite (filter_cont_false e v c v0 t2 H2). apply Hrefl.
+case_eq (Vhead (snd bs)). rewrite (filter_cont_true e v c v0 t1 H1).
+rewrite (filter_cont_true e v c v0 t2 H1). apply H. apply IHc. assumption.
+rewrite (filter_cont_false e v c v0 t1 H1).
+rewrite (filter_cont_false e v c v0 t2 H1). apply Hrefl.
 Qed.
 
 End filter_ordering.
@@ -335,16 +335,11 @@ unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
 elim c. simpl. right. repeat rewrite filter_app. apply red_rule_top.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
 intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-booltac (Vhead (snd bs)).
-rewrite (filter_cont_true f e v c0 v0 (app s l) H2).
-rewrite (filter_cont_true f e v c0 v0 (app s r) H2).
-fold bs. destruct H0.
-left. simpl fill. rewrite H0. refl.
-right. apply red_fill. exact H0.
-left.
-rewrite (filter_cont_false f e v c0 v0 (app s l) H2).
-rewrite (filter_cont_false f e v c0 v0 (app s r) H2).
-refl.
+case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e v c0 v0 (app s l) H1).
+rewrite (filter_cont_true f e v c0 v0 (app s r) H1). fold bs. destruct H0.
+left. simpl fill. rewrite H0. refl. right. apply red_fill. exact H0.
+left. rewrite (filter_cont_false f e v c0 v0 (app s l) H1).
+rewrite (filter_cont_false f e v c0 v0 (app s r) H1). refl.
 Qed.
 
 Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
