@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.1 2008-05-15 14:58:04 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.2 2008-05-15 15:40:04 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -354,6 +354,32 @@ Definition is_sol s p :=
     | None => False
     | Some (l1, l2) => is_sol_solved_eqns s l1 /\ is_sol_eqns s l2
   end.
+
+Lemma is_sol_eqn_app : forall s s' e,
+  is_sol_eqn s e -> is_sol_eqn (comp s' s) e.
+
+Proof.
+intros s s' e. destruct e. unfold is_sol_eqn. simpl. intro.
+do 2 rewrite <- app_app. apply (f_equal (app s')). hyp.
+Qed.
+
+Lemma is_sol_solved_eqns_app : forall s s' l,
+  is_sol_solved_eqns s l -> is_sol_solved_eqns (comp s' s) l.
+
+Proof.
+induction l; simpl; intuition. destruct a. gen H0. unfold is_sol_solved_eqn.
+simpl. intro. rewrite <- app_app. rewrite <- H0. refl.
+Qed.
+
+Lemma is_sol_app : forall s s' p, is_sol s p -> is_sol (comp s' s) p.
+
+Proof.
+intros s s' p. destruct p. 2: auto. destruct p. destruct l0.
+simpl. intuition. apply is_sol_solved_eqns_app. hyp.
+destruct p. simpl. intuition. apply is_sol_solved_eqns_app. hyp.
+apply is_sol_eqn_app. hyp. gen H2. elim l0; clear l0; simpl; intuition.
+apply is_sol_eqn_app. hyp.
+Qed.
 
 (***********************************************************************)
 (** the step function preserves solutions *)
