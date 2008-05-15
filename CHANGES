@@ -1,3 +1,9 @@
+08-05-15:
+- Util/FSet/FSetUtil: lemmas and tactics on Coq FSet's [Blanqui]
+- Term/WithArity/AVariables: set of variables in a term (based on FSet)
+and properties wrt substitution [Blanqui]
+- Term/WithArity/AUnif: syntactic unification [Blanqui]
+
 08-03-14: added support for arctic matrix interpretations proofs;
 unified with development on matrix interpretations [Koprowski, Waldmann]
 - MatrixInt/*
@@ -47,7 +53,7 @@ testing equality [Blanqui]
 - Util/Algebra/SemiRing: semi-rings [Koprowski,Zantema]
 
 07-02-16:
-- Simplification of the compilation procedure
+- Simplification of the compilation procedure [Blanqui]
 
 - DP/ADPGraph: proof of the dp criterion based on cycles [Blanqui]
 
