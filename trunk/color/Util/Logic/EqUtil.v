@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.6 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.7 2008-05-15 13:29:45 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -87,7 +87,7 @@ Variable beq_ok : forall x y, beq x y = true <-> x = y.
 Lemma beq_refl : forall x, beq x x = true.
 
 Proof.
-intro. assert (x=x). refl. rewrite <- beq_ok in H. exact H.
+intro. ded (beq_ok x x). rewrite H. refl.
 Qed.
 
 Require Export BoolUtil.
@@ -95,17 +95,15 @@ Require Export BoolUtil.
 Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 
 Proof.
-unfold not. split; intros.
-rewrite (proj2 (beq_ok _ _) H0) in H. discriminate.
-booltac (beq x y). ded (proj1 (beq_ok _ _) H1). tauto. exact H1.
+intros. destruct (beq_ok x y). case_eq (beq x y); intuition.
+rewrite H1 in H4. discriminate.
 Defined.
 
 Lemma dec_beq : forall x y : A, {x=y}+{~x=y}. 
 
 Proof.
-intros. cut (forall b, beq x y = b -> {x=y}+{~x=y}). intro. eapply H. refl.
-destruct b; intro.
-left. exact (proj1 (beq_ok _ _) H). right. exact (proj1 (beq_ko _ _) H).
+intros. ded (beq_ok x y). case_eq (beq x y); intuition. rewrite beq_ko in H0.
+auto.
 Defined.
 
 Lemma beq_com : forall x y, beq x y = beq y x.
@@ -113,7 +111,7 @@ Lemma beq_com : forall x y, beq x y = beq y x.
 Proof.
 intros. case_eq (beq x y); symmetry.
 rewrite beq_ok. symmetry. rewrite <- beq_ok. assumption.
-rewrite beq_ko. cut (x <> y). auto. rewrite <- beq_ko. assumption.
+rewrite beq_ko. cut (x<>y). auto. rewrite <- beq_ko. assumption.
 Qed.
 
 Lemma beq_sym : forall x y, beq x y = true -> beq y x = true.
@@ -186,31 +184,12 @@ case (eq_dec x y); case (eq_dec y z); case (eq_dec x z);
 intros; (refl || (irrefl || idtac)).
 Qed.
 
-Lemma beq_dec_true : forall x y, beq_dec x y = true -> x = y.
+Lemma beq_dec_ko : forall x y, beq_dec x y = false <-> x <> y.
 
 Proof.
-intros x y. unfold beq_dec. case (eq_dec x y); intros. auto. discriminate.
-Qed.
-
-Lemma beq_dec_false : forall x y, beq_dec x y = false -> x = y -> False.
-
-Proof.
-intros x y. unfold beq_dec. case (eq_dec x y); intros. discriminate. irrefl.
-Qed.
-
-Lemma true_beq_dec : forall x y, x = y -> beq_dec x y = true.
-
-Proof.
-intros. rewrite H. rewrite beq_dec_refl. refl.
-Qed.
-
-Require Export BoolUtil.
-
-Lemma false_beq_dec : forall x y, x <> y -> beq_dec x y = false.
-
-Proof.
-intros. booltac_simpl (beq_dec x y). assert (x=y). apply beq_dec_true.
-assumption. irrefl. refl.
+intros. case (eq_dec x y); case_eq (beq_dec x y); intuition.
+subst y. rewrite beq_dec_refl in H. discriminate.
+rewrite beq_dec_ok in H. contradiction.
 Qed.
 
 End eq_dec.
