@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.16 2008-05-14 14:30:54 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.17 2008-05-18 13:07:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -70,17 +70,25 @@ intro E. rewrite E. exists v. refl.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
-Lemma app_eq : forall (s1 s2 : substitution) (t : term),
-  (forall x : variable, In x (vars t) -> s1 x = s2 x) -> app s1 t = app s2 t.
+Lemma app_eq : forall s1 s2 t,
+  (forall x, In x (vars t) -> s1 x = s2 x) -> app s1 t = app s2 t.
 
 Proof.
 intros. unfold app. rewrite (term_int_eq I0 s1 s2 t H). refl.
 Qed.
 
+Lemma app_eq_id : forall s t,
+  (forall x, In x (vars t) -> s x = Var x) -> app s t = t.
+
+Proof.
+intros. transitivity (app id t). apply app_eq. hyp. apply app_id.
+Qed.
+
 (***********************************************************************)
 (** composition *)
 
-Definition comp (s1 s2 : substitution) : substitution := fun x => app s1 (s2 x).
+Definition comp (s1 s2 : substitution) : substitution :=
+  fun x => app s1 (s2 x).
 
 Lemma app_app : forall s1 s2 t, app s1 (app s2 t) = app (comp s1 s2) t.
 

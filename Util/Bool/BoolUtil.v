@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on booleans
 *)
 
-(* $Id: BoolUtil.v,v 1.7 2008-05-15 13:29:45 blanqui Exp $ *)
+(* $Id: BoolUtil.v,v 1.8 2008-05-18 13:07:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,6 +23,8 @@ Hint Rewrite eqb negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
   absoption_andb absoption_orb
   xorb_false_r xorb_false_l xorb_nilpotent xorb_assoc_reverse
   : bool.
+
+Ltac bool := autorewrite with bool.
 
 (***********************************************************************)
 (** boolean equalities *)
