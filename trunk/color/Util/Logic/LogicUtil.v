@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.12 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.13 2008-05-18 13:07:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,8 +28,11 @@ Ltac ded h := generalize h; intro.
 
 Ltac decomp h := decompose [and or ex] h; clear h.
 
+Ltac discr := intros; discriminate.
+
 Ltac irrefl :=
   match goal with
+    | _ : ?x = ?x -> False |- _ => absurd (x=x); [assumption | refl]
     | _ : ?x <> ?x |- _ => absurd (x=x); [assumption | refl]
     | _ : ?x <> ?y, _ : ?x = ?y |- _ => subst y; irrefl
     | _ : ?x <> ?y, _ : ?y = ?x |- _ => subst y; irrefl

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.1 2008-05-15 14:43:57 blanqui Exp $ *)
+(* $Id: FSetUtil.v,v 1.2 2008-05-18 13:07:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -139,6 +139,8 @@ Qed.
 
 Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
   : mem.
+
+Ltac mem := autorewrite with mem.
 
 Lemma eqb_refl : forall x, ME.eqb x x = true.
 
