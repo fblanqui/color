@@ -392,7 +392,7 @@ split; eauto.
 Qed.
 
 Lemma WF_hd_red_Mod_SCC_fast_trivial : forall i (Hi : i < dim),
-  SCC_list_fast Hi = nil -> WF( hd_red_Mod_SCC' i).
+  SCC_list_fast Hi = nil -> WF (hd_red_Mod_SCC' i).
 
 Proof.
 intros i Hi; intros. set (L := SCC'_list i). assert (L = SCC'_list i); auto.

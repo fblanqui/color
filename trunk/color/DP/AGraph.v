@@ -11,19 +11,14 @@ to S @ (hd_red R) instead of (int_red R #) @ (dp R)
 Set Implicit Arguments.
 
 Require Export LogicUtil.
+Require Export ATrs.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
-
-Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
-
-Require Export ATrs.
 
 Notation rule := (rule Sig).
 Notation rules := (list rule).
@@ -67,7 +62,7 @@ exists lhs; exists rhs; exists x0. auto.
 Qed.
 
 Lemma hd_red_Mod_chain_hd_rules : forall t u,
-  hd_red_Mod t u-> exists a, hd_red_Mod_rule a t u.
+  hd_red_Mod t u -> exists a, hd_red_Mod_rule a t u.
 
 Proof.
 intros. do 2 destruct H. do 3 destruct H0.  exists (mkRule x0 x1).
@@ -162,7 +157,7 @@ Qed.
 
 Require Export ADPGraph.
 
-Lemma hd_red_Mod_of_chain : chain R << hd_red_Mod  (int_red R #) (dp R).
+Lemma hd_red_Mod_of_chain : chain R << hd_red_Mod (int_red R #) (dp R).
 
 Proof.
 unfold chain, hd_red_Mod. apply inclusion_refl.

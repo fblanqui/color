@@ -7,24 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.12 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.13 2008-05-19 20:26:18 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
+Require Export ADP.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
-
-Require Export ATerm.
 
 Notation term := (term Sig).
 Notation terms := (vector term).
-
-Require Export ATrs.
 
 Notation rule := (rule Sig).
 Notation rules := (list rule).
@@ -34,8 +29,6 @@ Notation rhs := (@rhs Sig).
 Variable R : rules.
 
 Variable hyp : rules_preserv_vars R.
-
-Require Export ADP.
 
 Notation DP := (dp R).
 Notation Chain := (chain R).
