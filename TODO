@@ -1,9 +1,13 @@
 
-- replace calls to rev by calls to rev'
+- define eq_term_dec from beq_term
+
+- only defined symbols need to be marked
+
+- replace rev by rev'
 
 - extend WF_sred_of_WF_red to red_mod
 
-- replace everywhere eq_nat_dec by NatUtil.eq_nat_dec
+- replace eq_nat_dec by NatUtil.eq_nat_dec
 
 - give a signature to every morphism to avoid coq warnings on iff
 
