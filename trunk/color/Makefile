@@ -9,9 +9,8 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean all config dist doc dump html install-dist install-doc tags
+.PHONY: clean all config dist doc install-dist install-doc tags
 
-DUMP := /tmp/dump
 WEB := /local/web-serveurs/color/htdocs
 
 COQMAKE := $(MAKE) -f Makefile.coq
@@ -28,22 +27,15 @@ config:
 
 clean:
 	rm -f `find . -name \*~`
-	rm -f $(DUMP) doc/CoLoR.*.html doc/index.html
+	rm -f doc/CoLoR.*.html doc/index.html
 	$(COQMAKE) clean
 
 tags:
 	coqtags `find . -name \*.v`
 
-$(DUMP): dump
-
-dump: clean
-	$(COQMAKE) OTHERFLAGS="-dont-load-proofs -dump-glob $(DUMP)"
-
-html: $(DUMP)
-	coqdoc --html -g -d doc --glob-from $(DUMP) -R . CoLoR `find . -name \*.v`
+doc:
+	coqdoc --html -g -d doc -R . CoLoR `find . -name \*.v`
 	./createIndex
-
-doc: dump html
 
 install-doc:
 	rm -rf $(WEB)/doc
