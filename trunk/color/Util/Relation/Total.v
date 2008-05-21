@@ -11,7 +11,7 @@ acyclic iff its restriction to any finite set has a decidable
 (resp. middle-excluding) irreflexive linear extension.
 *)
  
-(* $Id: Total.v,v 1.9 2007-04-13 15:39:43 blanqui Exp $ *)
+(* $Id: Total.v,v 1.10 2008-05-21 15:04:16 blanqui Exp $ *)
 
 Require Import Sumbool. 
 Require Export RelDec.
@@ -360,7 +360,7 @@ Qed.
 End try_add_arc_many_to_many.
 
 (***********************************************************************)
-(** Llinear Extension and Topological Sorting *)
+(** Linear Extension and Topological Sorting *)
 
 Section LETS.
 
@@ -491,23 +491,24 @@ split. apply total_order_eq_midex. intro. destruct (H0 l). exists x. tauto.
 apply local_global_acyclic. intro. destruct (H0 l). exists x. tauto. 
 Qed.
 
-
 (** Topological Sorting *)
 
 Definition topo_sortable R := 
   {F : list A -> A -> A -> bool |
-    forall l, linear_extension R l (fun x y => F l x y=true )}.
+    forall l, linear_extension R l (fun x y => F l x y = true)}.
 
 Definition antisym R SC := forall x y : A, x<>y -> ~R x y -> ~R y x ->
   ~(SC (x::y::nil) x y /\ SC (y::x::nil) x y). 
 
 Definition antisym_topo_sortable R := 
-  {F : list A -> A -> A -> bool | let G:= (fun l x y => F l x y=true) in 
-    antisym R G /\ forall l, linear_extension R l (G l)}.
+  {F : list A -> A -> A -> bool |
+    let G := (fun l x y => F l x y = true) in 
+      antisym R G /\ forall l, linear_extension R l (G l)}.
 
 Lemma total_order_eq_dec : 
-  {F : list A -> A -> A -> bool | forall l, let G := fun x y => F l x y=true in 
-    transitive G /\ irreflexive G /\ total G l} ->
+  {F : list A -> A -> A -> bool |
+    forall l, let G := fun x y => F l x y = true in 
+      transitive G /\ irreflexive G /\ total G l} ->
   eq_dec A. 
 
 Proof.
