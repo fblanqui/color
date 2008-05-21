@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.13 2008-05-19 20:26:18 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.14 2008-05-21 13:08:44 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,6 +43,7 @@ Qed.
 (** dependancy pairs graph *)
 
 Require Export ARename.
+Require Export ASubstitution.
 
 Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
   /\ exists p, exists s,

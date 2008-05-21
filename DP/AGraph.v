@@ -34,6 +34,7 @@ Variable R : rules.
 (* head rules graph *)
 
 Require Export ARename.
+Require Export ASubstitution.
 
 Definition hd_red_Mod :=  S @ hd_red R.
 
