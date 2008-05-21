@@ -8,16 +8,15 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.31 2008-05-14 12:26:56 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.32 2008-05-21 16:33:04 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export Relations.
-Require Export List.
 
-Implicit Arguments transp.
-Implicit Arguments inclusion.
+Implicit Arguments transp [A].
+Implicit Arguments inclusion [A].
 Implicit Arguments clos_refl_trans [A].
 Implicit Arguments clos_trans [A].
 Implicit Arguments reflexive [A].
@@ -82,6 +81,8 @@ Definition classic_left_total := forall x, exists y, R x y.
 Definition left_total := forall x, {y | R x y}.
 
 Definition functional := forall x y z, R x y -> R x z -> y = z.
+
+Require Import List.
 
 Definition finitely_branching := forall x, {l | forall y, R x y <-> In y l}.
 

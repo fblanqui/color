@@ -24,8 +24,6 @@ Module Computability (S : TermsSig.Signature)
 
 Section Computability_def.
   
-  Require Import Wf.
-
   Variable R : Term -> Term -> Prop.
   Notation "X <-R- Y" := (R Y X) (at level 50).
   Notation "X -R-> Y" := (R X Y) (at level 50).
