@@ -11,6 +11,7 @@ Set Implicit Arguments.
 
 Require Export Sorting.
 Require Export RelUtil.
+Require Export ListUtil.
 
 (***********************************************************************)
 (** lelistA and sort *)

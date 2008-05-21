@@ -8,11 +8,12 @@ See the COPYRIGHTS and LICENSE files.
 paths
 *)
 
-(* $Id: Path.v,v 1.17 2008-05-14 12:26:56 blanqui Exp $ *)
+(* $Id: Path.v,v 1.18 2008-05-21 16:33:04 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export RelSub.
+Require Export List.
 
 Section S.
 
