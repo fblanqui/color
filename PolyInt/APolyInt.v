@@ -5,11 +5,12 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2004-12-13
 - Sebastien Hinderer, 2004-04-20
 - Adam Koprowski, 2007-04-26, added support for modular removal of rules 
+                  2008-05-27, added support for weakly monotone polynomials
 
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.17 2007-08-08 09:33:42 blanqui Exp $ *)
+(* $Id: APolyInt.v,v 1.18 2008-05-27 22:50:06 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -63,19 +64,24 @@ End poly_of_bterm.
 
 Require Export MonotonePolynom.
 
-Record PolyInterpretation : Type := mkPolyInterpretation {
-  PI_poly : forall f : Sig, poly (arity f);
-  PI_mon : forall f : Sig, pmonotone (PI_poly f)
-}.
+Definition PolyInterpretation := forall f : Sig, poly (arity f).
+
+Definition PolyWeakMonotone (pi : PolyInterpretation) := 
+  forall f : Sig, pweak_monotone (pi f).
+Definition PolyStrongMonotone (pi : PolyInterpretation) := 
+  forall f : Sig, pstrong_monotone (pi f).
 
 Variable PI : PolyInterpretation.
+
+Variable PI_WM : PolyWeakMonotone PI.
+Variable PI_SM : PolyStrongMonotone PI.
 
 (***********************************************************************)
 (** coefficients are positive *)
 
 Section coef_pos.
 
-Let P := fun (k : nat) (t : bterm k) => coef_pos (termpoly (PI_poly PI) t).
+Let P := fun (k : nat) (t : bterm k) => coef_pos (termpoly PI t).
 Let Q := fun (k n : nat) (ts : vector (bterm k) n) => Vforall (@P k) ts.
 
 Lemma bterm_poly_pos : forall (k : nat) (t : bterm k), P t.
@@ -85,7 +91,7 @@ intros k t. apply (bterm_ind (@P k) (@Q k)).
  intros v Hv. unfold P. simpl. intuition.
  unfold Q. intros f ts H. unfold P. rewrite termpoly_eq.
  apply coef_pos_pcomp.
-  apply (proj1 (PI_mon PI f)).
+  apply (PI_WM f).
   unfold P in H. apply Vforall_map_intro. auto.
  unfold Q. simpl. trivial.
  intros t' n' s' H1. unfold Q. intro H2. simpl. split; assumption.
@@ -97,7 +103,7 @@ End coef_pos.
 (** interpretation in D *)
 
 Definition Int_of_PI :=
-  mkInterpretation D0 (fun f => peval_D (proj1 (PI_mon PI f))).
+  mkInterpretation D0 (fun f => peval_D (PI_WM f)).
 
 Let W := Int_of_PI.
 
@@ -110,14 +116,14 @@ Lemma pi_monotone : monotone W Dgt.
 
 Proof.
 intro f. unfold Dgt. apply Vmonotone_transp.
-apply (pmonotone_imp_monotone_peval_Dlt (PI_mon PI f)).
+apply (pmonotone_imp_monotone_peval_Dlt (PI_SM f)).
 Qed.
 
 Lemma pi_monotone_eq : monotone W Dge.
 
 Proof.
 intro f. unfold Dge. apply Vmonotone_transp.
-apply (pmonotone_imp_monotone_peval_Dle (PI_mon PI f)).
+apply (coef_pos_monotone_peval_Dle (PI_WM f)).
 Qed.
 
 (***********************************************************************)
@@ -175,8 +181,8 @@ Let P (xint : valuation W) k (t : bterm k) := f1 xint t = f2 xint t.
 Let Q (xint : valuation W) k n (ts : vector (bterm k) n) :=
   Vforall (@P xint k) ts.
 
-Lemma termpoly_v_eq_1 : forall x k (H : x<=k),
-  termpoly (PI_poly PI) (BVar H) =
+Lemma termpoly_v_eq_1 : forall x k (H : (x<=k)%nat),
+  termpoly PI (BVar H) =
   (1%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: pzero (S k).
 
 Proof.
@@ -184,8 +190,8 @@ intros. simpl. refl.
 Qed.
 
 Lemma termpoly_v_eq_2 :
-  forall x k (H : x<=k) (v : vector Z (S k)),
-  peval (termpoly (PI_poly PI) (BVar H)) v =
+  forall x k (H : (x<=k)%nat) (v : vector Z (S k)),
+  peval (termpoly PI (BVar H)) v =
   meval (mxi (gt_le_S (le_lt_n_Sm H))) v.
 
 Proof.
@@ -214,7 +220,7 @@ Proof.
  unfold bterms_int.
  rewrite peval_comp.
  simpl (fint W f). rewrite val_peval_D.
- apply (f_equal (peval (PI_poly PI f))).
+ apply (f_equal (peval (PI f))).
  rewrite Vmap_map. rewrite Vmap_map.
  unfold f1 in H'. unfold f2 in H'. assumption.
 
@@ -224,7 +230,8 @@ Proof.
  intuition.
 Qed.
 
-Lemma PI_term_int_eq : forall (xint : valuation W) t k (H : maxvar t <= k),
+Lemma PI_term_int_eq : forall (xint : valuation W) t k 
+  (H : (maxvar t <= k)%nat),
   proj1_sig (term_int xint t)
   = proj1_sig (peval_D (bterm_poly_pos (inject_term H))
     (vec_of_val xint (S k))).
@@ -246,8 +253,8 @@ Definition rulePoly_ge r :=
   let mvl := maxvar (lhs r) in
   let mvr := maxvar (rhs r) in
   let m := max mvl mvr in
-    pplus (termpoly (PI_poly PI) (inject_term (le_max_l mvl mvr)))
-      (popp (termpoly (PI_poly PI) (inject_term (le_max_r mvl mvr)))).
+    pplus (termpoly PI (inject_term (le_max_l mvl mvr)))
+      (popp (termpoly PI (inject_term (le_max_r mvl mvr)))).
 
 Definition rulePoly_gt r :=
   let mvl := maxvar (lhs r) in
@@ -260,7 +267,8 @@ Definition rulePoly_gt r :=
 
 Require Export ZUtil.
 
-Lemma pi_compat_rule : forall r, coef_pos (rulePoly_gt r) -> succ (lhs r) (rhs r).
+Lemma pi_compat_rule : forall r, coef_pos (rulePoly_gt r) -> 
+  succ (lhs r) (rhs r).
 
 Proof.
 intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
