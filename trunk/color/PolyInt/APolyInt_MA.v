@@ -13,8 +13,8 @@ Require Export AMonAlg.
 Module Type TPolyInt.
 
   Parameter sig : Signature.
-  Parameter trsInt : forall f : sig, poly (arity f).
-  Parameter trsInt_monotone : forall f : sig, pmonotone (trsInt f).
+  Parameter trsInt : PolyInterpretation sig.
+  Parameter trsInt_wm : PolyWeakMonotone trsInt.
 
 End TPolyInt.
 
@@ -28,8 +28,7 @@ Module PolyInt (PI : TPolyInt).
 
     Definition Sig := sig.
     
-    Definition PI := mkPolyInterpretation sig trsInt trsInt_monotone.
-    Definition I := Int_of_PI PI.
+    Definition I := Int_of_PI trsInt_wm.
 
     Definition succ := Dgt.
     Definition succeq := Dge.
@@ -49,8 +48,10 @@ Module PolyInt (PI : TPolyInt).
       unfold Dgt, Dlt, transp. apply Zlt_le_trans with (val r); auto.
     Qed.
 
-    Definition succ' l r := coef_pos (rulePoly_gt PI (@mkRule sig l r)).
-    Definition succeq' l r := coef_pos (rulePoly_ge PI (@mkRule sig l r)).
+    Definition succ' l r := 
+      coef_pos (rulePoly_gt trsInt (@mkRule sig l r)).
+    Definition succeq' l r := 
+      coef_pos (rulePoly_ge trsInt (@mkRule sig l r)).
 
     Lemma succ'_sub : succ' << IR I succ.
 
@@ -92,7 +93,8 @@ Module PolyInt (PI : TPolyInt).
 
     Section ExtendedMonotoneAlgebra.
 
-      Lemma monotone_succ : AWFMInterpretation.monotone I succ.
+      Lemma monotone_succ : PolyStrongMonotone trsInt ->
+        AWFMInterpretation.monotone I succ.
 
       Proof.
         unfold I. apply pi_monotone.
@@ -107,7 +109,7 @@ Module PolyInt (PI : TPolyInt).
   Export MAR.
 
   Ltac polyInt_monotonicity := first 
-    [ solve [apply monotone_succ]
+    [ solve [apply monotone_succ; pmonotone]
     | fail "Failed to prove monotonicity of polynomial interpretation."
     ].
 
