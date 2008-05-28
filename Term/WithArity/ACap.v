@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.10 2008-05-28 11:04:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -292,7 +292,8 @@ Qed.
 Notation calls := (calls R).
 Definition vcalls := vcalls R.
 
-Lemma calls_capa : forall t m, calls (fcap (capa t) (fresh m (nb_aliens t))) = nil.
+Lemma calls_capa : forall t m,
+  calls (fcap (capa t) (fresh m (nb_aliens t))) = nil.
 
 Proof.
 set (Q := fun n (ts : terms n) => forall m, vcalls (Vmap_sum (Vmap capa ts)
@@ -353,7 +354,8 @@ set (Q := fun n (ts : terms n) => Vmax (Vmap maxvar ts) <= m
                = Vmap_sum (Vmap capa ts) (Vmap (app s) v)).
 apply term_ind with (Q := Q); clear t.
 intros. unfold fcap. simpl. apply H. assumption.
-intros f ts IH H0. rewrite capa_fun. unfold fcap. case (defined f R); simpl; intros.
+intros f ts IH H0. rewrite capa_fun. unfold fcap.
+case (defined f R); simpl; intros.
 VSntac v. reflexivity.
 apply args_eq. apply IH. assumption.
 unfold Q. auto.

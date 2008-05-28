@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.33 2008-05-14 15:44:01 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.34 2008-05-28 11:04:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -60,9 +60,7 @@ Defined.
 Lemma VSn_eq : forall n (v : vec (S n)), v = Vcons (Vhead v) (Vtail v).
 
 Proof.
-intros.
-change (Vcons (Vhead v) (Vtail v)) with (Vid v).
-apply Vid_eq.
+intros. change (Vcons (Vhead v) (Vtail v)) with (Vid v). apply Vid_eq.
 Defined.
 
 Ltac VSntac y :=
