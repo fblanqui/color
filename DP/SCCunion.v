@@ -459,33 +459,27 @@ End S.
 
 Ltac use_SCC_tag h M S R t :=
   let x := fresh in
-    set (x := SCC_tag_fast h M t);
-      norm_in x (SCC_tag_fast h M t);
+    (set (x := SCC_tag_fast h M t); norm_in x (SCC_tag_fast h M t);
       match eval compute in x with
         | Some ?X1 =>
           let Hi := fresh in
-            assert (Hi : X1 < length R);
-              norm (length R);
-              [omega |
-                let L:=fresh in
-                  set (L := SCC_list_fast R M Hi);
-                    norm_in L (SCC_list_fast R M Hi);
-                    assert (WF (hd_red_Mod S L)); subst L];
-              clear x; clear Hi
-        | ?X2 => idtac
-      end.
+            (assert (Hi : X1 < length R);
+              [ norm (length R); omega
+              | let L := fresh in
+                (set (L := SCC_list_fast R M Hi);
+                  norm_in L (SCC_list_fast R M Hi);
+                  assert (WF (hd_red_Mod S L)); subst L; clear Hi; clear x)])
+      end).
 
 Ltac use_SCC_hyp h M R Hi := 
-  let b:=fresh in
-    set (b := Vnth (Vnth M Hi) Hi);
+  let b := fresh in
+    (set (b := Vnth (Vnth M Hi) Hi);
       norm_in b (Vnth (Vnth M Hi) Hi);
       match eval compute in b with
-        | false => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi);
-          eauto;clear b
+        | false => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi); eauto
         | true => eapply WF_incl;
-          [eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=Hi) | auto];
-	  auto;clear b
-      end.
+          [eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=Hi) | auto]; auto
+      end; clear b).
 
 Ltac use_SCC_all_hyps h m R i Hi Hj :=
   let rec aux x :=
