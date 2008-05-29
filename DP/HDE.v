@@ -149,25 +149,6 @@ Definition is_rhs_hd_symb_headed (a : rule') :=
     | _ => false
   end.
 
-Variable hd_hyp : hd_rhs_rules_only.
-
-Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red E' #) R' << hde R'.
-
-Proof.
-unfold inclusion. intros.
-destruct H. intuition. destruct H2. destruct H0. destruct x as [l r].
-ded (hd_hyp _ _ H). do 2 destruct H2. simpl in *. subst.
-rewrite app_fun in H0.
-apply (@int_red_hd_rules_graph_incl_hde _ E' R'
-  (mkRule l (Fun' (hd_symb Sig x) x2)) y).
-unfold hd_rules_graph. split. tauto. split. tauto. exists x0. exists x1.
-norm (rhs (mkRule l (Fun' (hd_symb Sig x) x2))). rewrite app_fun.
-change (int_red E' #
-  (Fun' (hd_symb Sig x) (Vmap (ASubstitution.app x1) x2))
-  (ASubstitution.app x1 (shift x0 (lhs y)))).
-apply dup_int_rules_int_red_rtc. auto.
-Qed.*)
-
 Variable hd_hyp : forallb is_rhs_hd_symb_headed R' = true.
 
 Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red E' #) R' << hde R'.
