@@ -77,32 +77,30 @@ Variable Sig : Signature.
 Require Export ADuplicateSymb.
 
 Notation Sig' := (dup_sig Sig).
+
+Notation term' := (@term Sig').
 Notation rule' := (ATrs.rule Sig').
 Notation rules' := (list rule').
 Notation Fun' := (@Fun Sig').
 
 Variable E' R' : rules'.
 
-Definition int_lhs_rules_only := forall l r, In (mkRule l r) E' ->
-  exists f, exists v, l = Fun' (int_symb Sig f) v.
+Definition is_lhs_int_symb_headed (a : rule') :=
+  match lhs a with
+    | Fun (int_symb _) _ => true
+    | _ => false
+  end.
 
-Variable int_hyp : int_lhs_rules_only.
+Variable int_hyp : forallb is_lhs_int_symb_headed E' = true.
 
 Lemma dup_int_rules_int_red : forall f v t,
   red E' (Fun' (hd_symb _ f) v) t -> int_red E' (Fun' (hd_symb _ f) v) t.
 
 Proof.
-intros.
-redtac.
-exists l; exists r;exists c;exists s.
-split.
-destruct c. simpl in *.
-ded (int_hyp _ _ H).
-do 2 destruct H2; subst.
-rewrite app_fun in H0.
-inversion H0.
-congruence.
-tauto.
+intros. redtac. exists l. exists r. exists c. exists s. split.
+destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ H).
+gen H2. compute. case_eq l. discr. gen H3. gen H2. gen v0. case_eq f0. discr.
+subst l. rewrite app_fun in H0. discr. congruence. tauto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc_aux : forall u t, red E' # u t ->
@@ -145,8 +143,11 @@ Proof.
 intros. ded (dup_int_rules_int_red_rtc_aux H (refl_equal _)). tauto.
 Qed. 
 
-Definition hd_rhs_rules_only := forall l r, In (mkRule l r) R' ->
-  exists f, exists v, r = Fun' (hd_symb Sig f) v.
+Definition is_rhs_hd_symb_headed (a : rule') :=
+  match rhs a with
+    | Fun (hd_symb _) _ => true
+    | _ => false
+  end.
 
 Variable hd_hyp : hd_rhs_rules_only.
 
@@ -165,44 +166,18 @@ change (int_red E' #
   (Fun' (hd_symb Sig x) (Vmap (ASubstitution.app x1) x2))
   (ASubstitution.app x1 (shift x0 (lhs y)))).
 apply dup_int_rules_int_red_rtc. auto.
+Qed.*)
+
+Variable hd_hyp : forallb is_rhs_hd_symb_headed R' = true.
+
+Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red E' #) R' << hde R'.
+
+Proof.
+unfold inclusion. intros. apply (@int_red_hd_rules_graph_incl_hde _ E' R' x y).
+destruct H. decomp H0. rewrite forallb_forall in hd_hyp. ded (hd_hyp _ H).
+compute in H0. destruct x. destruct rhs. discr. destruct f.
+unfold hd_rules_graph. intuition. exists x0. exists x1. simpl rhs.
+rewrite app_fun. apply dup_int_rules_int_red_rtc. hyp. discr.
 Qed.
 
 End S'.
-
-(***********************************************************************)
-(** tactics *)
-
-Ltac prove_int_lhs_rules_only :=
-  match goal with
-    | |- int_lhs_rules_only ?L =>
-      unfold int_lhs_rules_only; norm L;
-        let aux l r H0 :=
-          match type of H0 with
-            | In ?X nil => simpl in H0; tauto
-            | In ?Y (mkRule ?L ?R :: ?Q) =>
-              rewrite In_cons in H0; destruct H0; [inversion H0; subst l;
-	        (match L with 
-                   | Fun (int_symb ?i ?f) ?v => exists f; exists v; auto
-                 end)
-                | idtac]
-          end in
-          let l:=fresh in let r:=fresh in let H:=fresh in
-            intros l r H; repeat aux l r H
-  end.
-
-Ltac prove_hd_rhs_rules_only :=
-  match goal with
-    | |- hd_rhs_rules_only ?L =>
-      unfold hd_rhs_rules_only; norm L;
-        let aux l r H0 :=
-          match type of H0 with
-            | In ?X nil => simpl in H0; tauto
-            | In ?Y (mkRule ?L ?R :: ?Q) =>
-              rewrite In_cons in H0; destruct H0; [inversion H0; subst l;
-	        (match R with
-                   | Fun (hd_symb ?i ?f) ?v => exists f; exists v; auto
-                 end)
-                | idtac] end in
-          let l:=fresh in let r:=fresh in let H:=fresh in
-            intros l r H; repeat aux l r H
-  end.
