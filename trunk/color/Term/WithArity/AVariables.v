@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.2 2008-05-18 13:07:46 blanqui Exp $ *)
+(* $Id: AVariables.v,v 1.3 2008-05-29 15:04:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -169,8 +169,7 @@ coq_case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
 refl.
 (* Vcons *)
 intros u n us. simpl. mem. (*FIXME: rewrite H. rewrite H0.*)
-case_eq (mem x (vars u)); intro; bool.
-case_eq (mem x (vars_terms us)); intros.
+case_eq (mem x (vars u)); simpl. gen H1. case_eq (mem x (vars_terms us)).
 transitivity (union (union (vars v) (remove x (vars u)))
   (union (vars v) (remove x (vars_terms us)))). apply union_m; hyp.
 transitivity (union (vars v) (union (remove x (vars u))
@@ -183,7 +182,7 @@ apply union_assoc. apply union_m. refl.
 transitivity (union (remove x (vars u)) (remove x (vars_terms us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
 symmetry. apply remove_union.
-case_eq (mem x (vars_terms us)); intros.
+gen H1. case_eq (mem x (vars_terms us)).
 transitivity (union (vars u) (union (vars v) (remove x (vars_terms us)))).
 apply union_m; hyp.
 transitivity (union (vars v) (union (vars u) (remove x (vars_terms us)))).
