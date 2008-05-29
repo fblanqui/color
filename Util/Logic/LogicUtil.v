@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.13 2008-05-18 13:07:46 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.14 2008-05-29 15:04:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -48,9 +48,11 @@ Ltac norm e :=
 Ltac norm_in H e :=
   let x := fresh in set (x := e) in H; vm_compute in x; subst x.
 
+(*Tactic Notation "norm" constr(e) "in" ident(H) := norm_in H e.*)
+
 Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
 
-Ltac case_eq e := coq_case_eq e; let h := fresh in intro h.
+Ltac case_eq e := coq_case_eq e; intros.
 
 (***********************************************************************)
 (** basic meta-theorems *)
