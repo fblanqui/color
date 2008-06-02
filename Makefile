@@ -22,7 +22,7 @@ Makefile.coq:
 	$(MAKE) config
 
 config:
-	coq_makefile -R . CoLoR `find . -name \*.v` > Makefile.coq
+	coq_makefile -R . CoLoR `find . -name \*.v -a ! -path ./devel/\*` > Makefile.coq
 	$(COQMAKE) depend
 
 clean:
