@@ -179,27 +179,20 @@ Section red.
 
 Variable R : rules.
 
-Variable hyp : no_lhs_variable R.
-Variable hyp' : no_rhs_variable R.
+Variable hyp : forallb (@is_notvar_lhs Sig) R = true.
+Variable hyp' : forallb (@is_notvar_rhs Sig) R = true.
 
 Lemma hd_red_dup_hd_red : forall  t u, hd_red R t u -> 
   hd_red (dup_hd_rules R) (dup_hd_term t) (dup_hd_term u).
 
 Proof.
-intros. redtac. unfold hd_red.
+intros. redtac. subst. unfold hd_red.
 exists (dup_hd_term l). exists (dup_hd_term r). exists (dup_int_subst s).
-split.
-unfold dup_hd_rules.
-change (In (dup_hd_rule (mkRule l r)) (map dup_hd_rule R)).
-apply in_map. auto.
-destruct l.
-cut False. tauto. unfold no_lhs_variable in hyp.
-ded (hyp _ _ H). simpl in H2; tauto.
-rewrite dup_int_subst_hd_dup. split; subst. refl.
-destruct r.
-cut False. tauto. unfold no_rhs_variable in hyp'.
-ded (hyp' _ _ H). simpl in H0. tauto.
-rewrite dup_int_subst_hd_dup. split; subst.
+ded (is_notvar_lhs_elim hyp H). decomp H0.
+ded (is_notvar_rhs_elim hyp' H). decomp H0. subst.
+do 2 rewrite dup_int_subst_hd_dup. intuition. unfold dup_hd_rules.
+change (In (dup_hd_rule (mkRule (Fun x x0) (Fun x1 x2))) (map dup_hd_rule R)).
+apply in_map. hyp.
 Qed.
 
 Lemma red_dup_int_red : forall t u,
@@ -241,31 +234,22 @@ Require Export AGraph.
 
 Variables E R : rules.
 
-Variable no_lhs_var : no_lhs_variable R.
-Variable no_rhs_var : no_rhs_variable R.
+Variable no_lhs_var : forallb (@is_notvar_lhs Sig) R = true.
+Variable no_rhs_var : forallb (@is_notvar_rhs Sig) R = true.
 
 Lemma WF_duplicate_hd_int_red :
   WF (hd_red_mod (dup_int_rules E) (dup_hd_rules R))
   -> WF (hd_red_Mod (int_red E #) R).
 
 Proof.
-intros.
-set(rel:=hd_red_mod (dup_int_rules E) (dup_hd_rules R)).
-set(rel' :=Rof rel (dup_hd_term)).
-apply (@WF_incl _  (hd_red_Mod (int_red E #) R) rel').
-unfold rel',rel,hd_red_Mod,hd_red_mod.
-unfold inclusion; intros.
-destruct H0 as [z]; exists (dup_hd_term z).
-destruct H0; split.
-clear H1.
-induction H0.
-apply rt_step.
-apply int_red_dup_int_red. auto.
-apply rt_refl.
-eapply rt_trans. apply IHclos_refl_trans1. tauto.
-apply  hd_red_dup_hd_red; auto.
-subst rel rel'.
-apply WF_inverse; auto.
+intros. set (rel := hd_red_mod (dup_int_rules E) (dup_hd_rules R)).
+set (rel' := Rof rel (dup_hd_term)).
+apply (@WF_incl _ (hd_red_Mod (int_red E #) R) rel').
+unfold rel', rel, hd_red_Mod, hd_red_mod. unfold inclusion; intros.
+destruct H0 as [z]; exists (dup_hd_term z). destruct H0; split.
+clear H1. induction H0. apply rt_step. apply int_red_dup_int_red. hyp.
+apply rt_refl. eapply rt_trans. apply IHclos_refl_trans1. hyp.
+apply  hd_red_dup_hd_red; auto. subst rel rel'. apply WF_inverse; auto.
 Qed.
 
 End S.

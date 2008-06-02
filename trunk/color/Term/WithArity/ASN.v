@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.10 2008-06-02 07:47:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -68,15 +68,15 @@ Qed.
 (***********************************************************************)
 (** strongly normalizing terms when no lhs is a variable *)
 
-Require Export ANotvar.
+(*Require Export ANotvar.*)
 
-Variable hyp1 : forall l r, In (mkRule l r) R -> notvar l.
+Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
 
-Lemma lhs_notvar : forall l r x, In (mkRule l r) R -> l <> Var x.
+(*Lemma lhs_notvar : forall l r x, In (mkRule l r) R -> l <> Var x.
 
 Proof.
 intros. ded (hyp1 l r H). intro. subst l. contradiction.
-Qed.
+Qed.*)
 
 (***********************************************************************)
 (** variables are sn *)
@@ -84,8 +84,8 @@ Qed.
 Lemma sn_var : forall v, SNR (Var v).
 
 Proof.
-intro. apply SN_intro. intros t H. redtac. absurd (@notvar Sig (Var v)).
-apply notvar_var. rewrite H0. apply notvar_fillapp. eapply hyp1. apply H.
+intro. apply SN_intro. intros t H. redtac. ded (is_notvar_lhs_elim hyp1 H).
+decomp H2. subst l. rewrite app_fun in H0. destruct c; discr.
 Qed.
 
 (***********************************************************************)
@@ -108,7 +108,7 @@ case (fun_eq_app H5); intro H6; destruct H6.
 cut (defined f R = true). rewrite H. intro. discriminate.
 eapply lhs_fun_defined. apply H6. apply H4.
 (* lhs is Var *)
-absurd (l = Var x0). eapply lhs_notvar. apply H4. assumption.
+subst l. is_var_lhs.
 (* C <> Hole *)
 Funeqtac. subst x. apply H3. unfold gt. eapply Vgt_prod_cast. apply Vgt_prod_app.
 apply Vgt_prod_cons. left. split. 2: reflexivity. apply red_rule. assumption.
