@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.31 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.32 2008-06-02 07:47:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -34,10 +34,47 @@ Defined.
 
 Notation rules := (list rule).
 
-Require Export ANotvar.
+Definition is_notvar_lhs a :=
+  match lhs a with
+    | Var _ => false
+    | _ => true
+  end.
 
-Definition no_lhs_variable R := forall l r, In (mkRule l r) R -> @notvar Sig l.
-Definition no_rhs_variable R := forall l r, In (mkRule l r) R -> @notvar Sig r.
+Lemma is_notvar_lhs_elim : forall R, forallb is_notvar_lhs R = true ->
+  forall l r, In (mkRule l r) R -> exists f, exists ts, l = Fun f ts.
+
+Proof.
+intros. rewrite forallb_forall in H. ded (H _ H0). destruct l. discr.
+exists f. exists v. refl.
+Qed.
+
+Lemma is_notvar_lhs_false : forall R, forallb is_notvar_lhs R = true ->
+  forall x r, In (mkRule (Var x) r) R -> False.
+
+Proof.
+intros. rewrite forallb_forall in H. ded (H _ H0). discr.
+Qed.
+
+Definition is_notvar_rhs a :=
+  match rhs a with
+    | Var _ => false
+    | _ => true
+  end.
+
+Lemma is_notvar_rhs_elim : forall R, forallb is_notvar_rhs R = true ->
+  forall l r, In (mkRule l r) R -> exists f, exists ts, r = Fun f ts.
+
+Proof.
+intros. rewrite forallb_forall in H. ded (H _ H0). destruct r. discr.
+exists f. exists v. refl.
+Qed.
+
+Lemma is_notvar_rhs_false : forall R, forallb is_notvar_rhs R = true ->
+  forall x l, In (mkRule l (Var x)) R -> False.
+
+Proof.
+intros. rewrite forallb_forall in H. ded (H _ H0). discr.
+Qed.
 
 (***********************************************************************)
 (** rewrite steps *)
@@ -73,6 +110,9 @@ End rewriting_modulo.
 
 End basic_definitions.
 
+Implicit Arguments is_notvar_lhs_elim [Sig R l r].
+Implicit Arguments is_notvar_rhs_elim [Sig R l r].
+
 (***********************************************************************)
 (** tactics *)
 
@@ -100,6 +140,9 @@ Ltac redtac := repeat
     | H : red_mod ?E ?R ?t ?u |- _ => do 2 destruct H; redtac
     | H : hd_red_mod ?E ?R ?t ?u |- _ => do 2 destruct H; redtac
   end.
+
+Ltac is_var_lhs := cut False; [tauto | eapply is_notvar_lhs_false; eassumption].
+Ltac is_var_rhs := cut False; [tauto | eapply is_notvar_rhs_false; eassumption].
 
 (***********************************************************************)
 (** properties *)
@@ -493,28 +536,6 @@ Ltac no_relative_rules :=
     |- WF (@red_mod ?S ?E _) =>
       norm E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
     | _ => idtac
-  end.
-
-Ltac no_lhs_variable :=
-  match goal with
-    | |- no_lhs_variable ?R =>
-      norm R; unfold no_lhs_variable; let T := elt_type R in
-      let P := fresh in set (P := fun a : T => notvar (lhs a));
-        let H := fresh in assert (H : lforall P R);
-          [unfold P; simpl; intuition
-            | let H0 := fresh in
-              do 2 intro; intro H0; apply (lforall_in H H0)]
-  end.
-
-Ltac no_rhs_variable :=
-  match goal with
-    | |- no_rhs_variable ?R =>
-      norm R; unfold no_rhs_variable; let T := elt_type R in
-      let P := fresh in set (P := fun a : T => notvar (rhs a));
-        let H := fresh in assert (H : lforall P R);
-          [unfold P; simpl; intuition
-            | let H0 := fresh in
-              do 2 intro; intro H0; apply (lforall_in H H0)]
   end.
 
 Ltac rules_preserv_vars :=

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.18 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.19 2008-06-02 07:47:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -62,7 +62,6 @@ Qed.
 Implicit Arguments mkdp_elim [l t S].
 
 Definition dp := (mkdp R).
-
 
 Lemma dp_intro : forall l r t,
   In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
@@ -128,7 +127,7 @@ Qed.
 (***********************************************************************)
 (** assumptions on rules *)
 
-Variable hyp1 : no_lhs_variable R.
+Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
 
 Variable hyp2 : rules_preserv_vars R.
 
@@ -212,7 +211,7 @@ rewrite H6 in Hsnts. exact Hsnts.
 (* we decompose r into its caps and its aliens *)
 subst u. assert (r = app (alien_sub r) (cap r)). apply sym_eq.
 apply (alien_sub_cap R). rewrite H3. rewrite app_app.
-apply no_call_app_sn. apply hyp1. apply calls_cap.
+apply no_call_app_sn. hyp. apply calls_cap.
 (* we prove that the alien substitution is SN *)
 intros. ded (vars_cap R H4).
 case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
@@ -226,7 +225,7 @@ assert (Fun f ts = app s l). rewrite H5. rewrite H6. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
 ded (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
 (* every call is SN *)
-eapply calls_sn with (r := r). apply hyp1.
+eapply calls_sn with (r := r). hyp.
 intros. apply Hsnsx. apply (hyp2 H2 _ H12).
 intros h ws H13 H14.
 apply IH2 with (y := Fun h (Vmap (app s) ws)) (f := h) (ts := Vmap (app s) ws).
@@ -234,8 +233,7 @@ unfold transp. rewrite H8. rewrite <- app_fun. eapply in_calls_chain.
 apply H2. assumption. eapply in_calls_defined. apply H13. refl. assumption.
 assumption.
 (* lhs = Var x *)
-destruct e. absurd (l = Var x). eapply lhs_notvar. apply hyp1. apply H2.
-assumption.
+decomp e. subst l. is_var_lhs.
 (* c <> Hole *)
 Funeqtac. subst u. apply H1. rewrite H5. unfold terms_gt. apply Vgt_prod_cast.
 apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
@@ -274,4 +272,4 @@ Implicit Arguments dp_elim_vars [Sig l t].
 (** tactics *)
 
 Ltac chain := no_relative_rules;
-  apply WF_chain; [no_lhs_variable | rules_preserv_vars | idtac].
+  apply WF_chain; [refl | rules_preserv_vars | idtac].
