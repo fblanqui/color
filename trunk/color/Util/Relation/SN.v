@@ -619,3 +619,18 @@ Section wf_rel_mod_simpl.
   Qed.
 
 End wf_rel_mod_simpl.
+
+(***********************************************************************)
+(** WF of relations on nat. *)
+
+Section wf_nat.
+
+  Lemma WF_gt : WF gt.
+
+  Proof.
+    apply wf_transp_WF. intro n. apply Acc_incl with lt. 
+    intros x y. auto.
+    apply lt_wf.
+  Qed.
+
+End wf_nat.
