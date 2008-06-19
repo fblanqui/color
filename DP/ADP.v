@@ -3,11 +3,12 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2004-12-22
+- Joerg Endrullis, 2008-06-19
 
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.19 2008-06-02 07:47:56 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.20 2008-06-19 21:34:40 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -125,6 +126,33 @@ exact H. exact H0. exact H1.
 Qed.
 
 (***********************************************************************)
+(** minimal dependency chain (subterms are terminating) *)
+
+Definition chain_min (s : ATerm.term Sig) (t : ATerm.term Sig) : Prop :=
+  chain s t 
+  /\ lforall (SN (red R)) (direct_subterms s)
+  /\ lforall (SN (red R)) (direct_subterms t).
+
+Lemma wf_chain_min_chain : chain_min << chain.
+
+Proof.
+  red. intros x y cmin. elim cmin. auto.
+Qed.
+
+Lemma gt_chain_min : forall f ts us v,
+  terms_gt R ts us -> Vforall (SN (red R)) ts -> chain_min (Fun f us) v -> chain_min (Fun f ts) v.
+
+Proof.
+  intros f ts us v gt_ts_us sn_ts chain_min_fus_v.
+  unfold chain_min in chain_min_fus_v.
+  destruct chain_min_fus_v as [chain_fus_v sn].
+  destruct sn as [esn_us esn_ts].
+  unfold chain_min.
+  split. apply gt_chain with us; trivial.
+  split. simpl. apply Vforall_lforall in sn_ts. trivial. trivial.
+Qed.
+
+(***********************************************************************)
 (** assumptions on rules *)
 
 Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
@@ -178,15 +206,15 @@ Notation SNR := (SN (red R)).
 
 Require Export ASN.
 
-Lemma chain_fun : forall f, defined f R = true
-  -> forall ts, SN chain (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
+Lemma chain_min_fun : forall f, defined f R = true
+  -> forall ts, SN chain_min (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
 
 Proof.
-cut (forall t, SN chain t -> forall f, defined f R = true
+cut (forall t, SN chain_min t -> forall f, defined f R = true
   -> forall ts, t = Fun f ts -> Vforall SNR ts -> SNR t).
 intros. apply H with (t := Fun f ts) (f := f) (ts := ts); (assumption || refl).
 (* induction on t with chain as well-founded ordering *)
-intros t H. pattern t. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
+intros t H. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
 assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
 apply Vforall_SN_gt_prod. assumption.
 (* induction on ts with red as well-founded ordering (ts is SN) *)
@@ -195,8 +223,8 @@ intros ts H1 IH1 IH2.
 assert (Hsnts : Vforall SNR ts). apply SN_gt_prod_forall. apply SN_intro.
 assumption. clear H1.
 assert (H1 : forall y, terms_gt R ts y -> SNR (Fun f y)). intros. apply IH1.
-assumption. intros. eapply IH2. unfold transp. eapply gt_chain. apply H1.
-apply H2. apply H3. apply H4. assumption. clear IH1.
+assumption. intros. eapply IH2. eapply gt_chain_min. apply H1.
+trivial. apply H2. apply H3. apply H4. assumption. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
 apply SN_intro. intros u H2. redtac. destruct c; simpl in H3, H4.
 (* c = Hole *)
@@ -229,8 +257,12 @@ eapply calls_sn with (r := r). hyp.
 intros. apply Hsnsx. apply (hyp2 H2 _ H12).
 intros h ws H13 H14.
 apply IH2 with (y := Fun h (Vmap (app s) ws)) (f := h) (ts := Vmap (app s) ws).
-unfold transp. rewrite H8. rewrite <- app_fun. eapply in_calls_chain.
-apply H2. assumption. eapply in_calls_defined. apply H13. refl. assumption.
+unfold chain_min. split. 
+rewrite H8. rewrite <- app_fun. eapply in_calls_chain. 
+apply H2. assumption.
+split. simpl. apply Vforall_lforall. trivial. 
+simpl. apply Vforall_lforall. trivial.
+eapply in_calls_defined. apply H13. refl. assumption.
 assumption.
 (* lhs = Var x *)
 decomp e. subst l. is_var_lhs.
@@ -238,6 +270,15 @@ decomp e. subst l. is_var_lhs.
 Funeqtac. subst u. apply H1. rewrite H5. unfold terms_gt. apply Vgt_prod_cast.
 apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
 eapply red_rule. assumption. refl.
+Qed.
+
+Lemma chain_fun : forall f, defined f R = true
+  -> forall ts, SN chain (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
+
+Proof.
+  intros f defined_f ts sn_chain_f_ts sn_ts.
+  apply chain_min_fun; auto.
+  apply SN_incl with chain. apply wf_chain_min_chain. assumption.
 Qed.
 
 Lemma WF_chain : WF chain -> WF (red R).
