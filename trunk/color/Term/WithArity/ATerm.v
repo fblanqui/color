@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.18 2008-05-14 14:30:42 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.19 2008-06-19 21:25:37 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -538,6 +538,15 @@ Lemma size_terms_Vapp : forall n (ts : terms n) m (us : terms m),
 Proof.
 induction ts; simpl; intros. refl. rewrite IHts. omega.
 Qed.
+
+(***********************************************************************)
+(** direct subterms of a term *)
+
+Definition direct_subterms (t : term) : list term :=
+  match t with
+  | Var x => nil
+  | Fun f fs => list_of_vec fs
+  end.
 
 End S.
 
