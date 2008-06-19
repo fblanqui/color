@@ -5,11 +5,12 @@ See the COPYRIGHTS and LICENSE files.
 - Sebastien Hinderer, 2004-04-02
 - Frederic Blanqui, 2005-01-27
 - Adam Koprowski and Hans Zantema, 2007-03-26
+- Joerg Endrullis, 2008-06-19
 
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.34 2008-05-28 11:04:07 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.35 2008-06-19 21:19:14 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1233,4 +1234,29 @@ Lemma Vmap_eq_ext_id : forall (A : Set) (f : A->A), (forall a, f a = a) ->
 
 Proof.
 intros. rewrite <- Vmap_id. apply Vmap_eq_ext. assumption.
+Qed.
+
+(***********************************************************************)
+(** Vforall <-> lforall  *)
+
+Require Import ListForall.
+
+Lemma lforall_Vforall : forall (A : Set) (l : list A) (p : A -> Prop),
+  lforall p l -> Vforall p (vec_of_list l).
+
+Proof.
+  intros. generalize H. induction l. trivial. 
+  intros lforall. red in lforall. destruct lforall as [pa lforall].
+  red. simpl. split. trivial. 
+  unfold Vforall in IHl. apply IHl; trivial.
+Qed.
+
+Lemma Vforall_lforall : forall (A : Set) (n : nat) (v : vector A n) (p : A -> Prop),
+  Vforall p v -> lforall p (list_of_vec v).
+
+Proof.
+  intros. generalize H. induction v. trivial. 
+  intros lforall. red in lforall. destruct lforall as [pa vforall].
+  red. simpl. split. trivial. 
+  unfold lforall in IHv. apply IHv; trivial.
 Qed.
