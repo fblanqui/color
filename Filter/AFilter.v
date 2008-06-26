@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.12 2008-05-15 13:29:44 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.13 2008-06-26 12:44:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -117,12 +117,13 @@ Require Export ASubstitution.
 
 Definition filter_subs s (x : variable) := filter (s x).
 
-Lemma filter_app : forall s t, filter (app s t) = app (filter_subs s) (filter t).
+Lemma filter_app : forall s t,
+  filter (app s t) = app (filter_subs s) (filter t).
 
 Proof.
 intro. apply term_ind_forall with
-(P := fun t => filter (app s t) = app (filter_subs s) (filter t)); intros. refl.
-rewrite app_fun. repeat rewrite filter_fun. rewrite app_fun.
+(P := fun t => filter (app s t) = app (filter_subs s) (filter t)); intros.
+refl. rewrite app_fun. repeat rewrite filter_fun. rewrite app_fun.
 apply args_eq. repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
 apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
 eapply Vfilter_in. apply H0. assumption.
@@ -166,8 +167,8 @@ Lemma filter_subs_closed :
   substitution_closed succ -> substitution_closed fsucc.
 
 Proof.
-unfold substitution_closed. intros. unfold filter_ord. repeat rewrite filter_app.
-apply H. assumption.
+unfold substitution_closed. intros. unfold filter_ord.
+repeat rewrite filter_app. apply H. assumption.
 Qed.
 
 (***********************************************************************)
