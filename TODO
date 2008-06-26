@@ -1,4 +1,6 @@
 
+- absurd_hyp is OBSOLETE: use contradict instead.
+
 - define eq_term_dec from beq_term
 
 - only defined symbols need to be marked
