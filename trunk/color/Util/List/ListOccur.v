@@ -11,7 +11,7 @@ proof of the pigeon-hole principle
 Set Implicit Arguments.
 
 Require Export ListUtil.
-Require Export Arith.
+Require Export NatUtil.
 
 (***********************************************************************)
 (** number of occurrences *)

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.19 2008-06-19 21:25:37 joerg Exp $ *)
+(* $Id: ATerm.v,v 1.20 2008-06-26 12:48:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -114,8 +114,7 @@ Qed.
 Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
 
 Proof.
-intros. inversion H.
-apply (inj_pairT2 (U := symbol Sig) (@eq_symbol_dec _) H1).
+intros. inversion H. apply (inj_pairT2 (@eq_symbol_dec _) H1).
 Qed.
 
 (***********************************************************************)

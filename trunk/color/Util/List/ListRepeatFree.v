@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Section S.
 
 Require Export ListUtil.
-Require Export Arith.
+Require Export NatUtil.
 Require Export RelMidex. 
 
 Variable A : Type.
