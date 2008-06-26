@@ -197,7 +197,7 @@ Qed.
 (***********************************************************************)
 (** Proof of the modular termination criterion *)
 
-Require Export Union.
+Require Export CoLoR.Util.Relation.Union.
 Require Export SortUtil.
 
 Lemma WF_SCC'_union_aux : forall L,
