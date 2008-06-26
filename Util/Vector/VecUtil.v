@@ -10,20 +10,19 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.35 2008-06-19 21:19:14 joerg Exp $ *)
+(* $Id: VecUtil.v,v 1.36 2008-06-26 12:48:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
 Require Export Bvector.
+Require Export NatUtil.
 
 Implicit Arguments Vnil [A].
 Implicit Arguments Vcons.
 Implicit Arguments Vhead.
 Implicit Arguments Vtail.
 Implicit Arguments Vconst.
-
-Require Export NatUtil.
 
 Ltac Veqtac := repeat
   match goal with
@@ -86,8 +85,6 @@ Qed.
 
 (***********************************************************************)
 (** cast *)
-
-Require Export NatUtil.
 
 Fixpoint Vcast m (v : vec m) {struct v} : forall n, m=n -> vec n :=
   match v in vector _ m return forall n, m=n -> vec n with
@@ -222,8 +219,6 @@ Fixpoint Vadd n (v : vec n) (x : A) { struct v } : vec (S n) :=
 (***********************************************************************)
 (** i-th element *)
 
-Require Export Arith.
-
 Fixpoint Vnth n (v : vec n) {struct v} : forall i, i<n -> A :=
   match v in vector _ n return forall i, i<n -> A with
     | Vnil => fun i H => False_rec A (lt_n_O i H)
@@ -240,7 +235,6 @@ Proof.
 intros. VSntac v. reflexivity.
 Qed.
 
-Require Export NatUtil.
 Require Omega.
 
 Lemma Vnth_eq : forall n (v : vec n) i1 (h1 : i1<n) i2 (h2 : i2<n),
@@ -676,7 +670,7 @@ intros. apply Vforall_intro. intros. apply H0. assumption.
 eapply Vforall_in with (n := n). apply H. apply H1.
 Qed.
 
-Require Import RelMidex.
+Require Export RelMidex.
 
 Lemma Vforall_dec : forall (P : A -> Prop) (P_dec : prop_dec P) n,
   prop_dec (fun v => @Vforall P n v).
@@ -766,7 +760,7 @@ Proof.
   do 2 rewrite Vnth_tail. apply H.
 Qed.
 
-Require Import RelDec.
+Require Export RelDec.
 
 Variable R_dec : rel_dec R.
 
@@ -1239,7 +1233,7 @@ Qed.
 (***********************************************************************)
 (** Vforall <-> lforall  *)
 
-Require Import ListForall.
+Require Export ListForall.
 
 Lemma lforall_Vforall : forall (A : Set) (l : list A) (p : A -> Prop),
   lforall p l -> Vforall p (vec_of_list l).
@@ -1251,7 +1245,7 @@ Proof.
   unfold Vforall in IHl. apply IHl; trivial.
 Qed.
 
-Lemma Vforall_lforall : forall (A : Set) (n : nat) (v : vector A n) (p : A -> Prop),
+Lemma Vforall_lforall : forall (A : Set) n (v : vector A n) (p : A -> Prop),
   Vforall p v -> lforall p (list_of_vec v).
 
 Proof.
