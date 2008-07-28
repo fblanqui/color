@@ -4,11 +4,12 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
 - Adam Koprowski and Hans Zantema, 2007-03
+- Joerg Endrullis and Dimitri Hendriks, 2008-07
 
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.32 2008-05-21 16:33:04 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.33 2008-07-28 09:22:00 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -862,3 +863,120 @@ Variable F : A -> B -> Prop.
 Definition RoF a a' := exists b', F a' b' /\ forall b, F a b -> R b b'.
 
 End inverse_image.
+
+(***********************************************************************)
+(** Alternative Definition of the Transitive Closure *)
+(**   R x y -> R!1 x y *)
+(**   R x y /\ R!1 y z -> R!1 x z *)
+(** (more convenient for certain inductive proofs) *)
+
+Section alternative_definintions.
+
+Inductive clos_trans1 (A : Type) (R : relation A) : relation A :=
+    t1_step : forall x y : A, R x y -> clos_trans1 R x y
+  | t1_trans : forall x y z : A, R x y -> clos_trans1 R y z -> clos_trans1 R x z.
+
+Notation "x !1" := (clos_trans1 x) (at level 35) : relation_scope.
+
+Lemma clos_trans1_trans :
+  forall (A : Type) (R : relation A) ( x y z : A),
+    R!1 x y -> R!1 y z -> R!1 x z.
+
+Proof.
+  intros A R x y z.
+  induction 1; intro H1.
+  exact (t1_trans x H H1).
+  exact (t1_trans x H (IHclos_trans1 H1)).
+Qed.
+
+Lemma clos_trans_equiv : 
+  forall A : Type, forall R : relation A, forall x y : A,
+    R!1 x y <-> R! x y.
+
+Proof.
+  intros A R x y.
+  split; intro H.
+  induction H.
+  constructor; exact H.
+  exact (t_trans A R x y z (t_step A R x y H) IHclos_trans1).
+  induction H.
+  constructor; exact H.
+  exact (clos_trans1_trans IHclos_trans1 IHclos_trans2).
+Qed.
+
+(***********************************************************************)
+(** Alternative Definition of the Reflexive Transitive Closure *)
+(**   R#1 x x *)
+(**   R x y /\ R#1 y z -> R#1 x z *)
+(** (more convenient for certain inductive proofs) *)
+
+Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
+    rt1_refl : forall x : A, clos_refl_trans1 R x x
+  | rt1_trans : forall x y z : A, R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
+
+Notation "x #1" := (clos_refl_trans1 x) (at level 35) : relation_scope.
+
+Lemma clos_refl_trans1_trans :
+  forall (A : Type) (R : relation A) ( x y z : A),
+    R#1 x y -> R#1 y z -> R#1 x z.
+
+Proof.
+  intros A R x y z.
+  induction 1; intro H1.
+  assumption.
+  exact (rt1_trans x H (IHclos_refl_trans1 H1)).
+Qed.
+
+Lemma clos_refl_trans_equiv : 
+  forall A : Type, forall R : relation A, forall x y : A,
+    R#1 x y <-> R# x y.
+
+Proof.
+  intros A R x y.
+  split; intro H.
+  induction H.
+  apply rt_refl.
+  exact (rt_trans A R x y z (rt_step A R x y H) IHclos_refl_trans1).
+  induction H.
+  Print rt1_trans.
+  exact (rt1_trans x H (rt1_refl R y)).
+  apply rt1_refl.
+  exact (clos_refl_trans1_trans IHclos_refl_trans1 IHclos_refl_trans2).
+Qed.
+
+Lemma incl_t_rt :
+  forall A : Type, forall R : relation A, 
+    R!1 << R#1.
+
+Proof.
+  intros A R x y xRy.
+  induction xRy.
+  apply rt1_trans with y. assumption. apply rt1_refl.
+  apply rt1_trans with y; assumption.
+Qed.
+
+Lemma rtc1_union : forall T : Type, forall R S : relation T,
+  (R U S)#1 << (S#1 @ R)#1 @ S#1.
+
+Proof.
+  intros T R S x y xRSy.
+  induction xRSy as [ | x y z xRSy yRSz]. 
+  exists x. split; apply rt1_refl.
+  destruct IHyRSz as [m [ym mz]].
+  destruct ym as [m | m n o mn no oz].
+  induction xRSy as [xRy | xSy].
+  exists m. split; trivial. apply rt1_trans with m.
+  exists x. split; trivial. apply rt1_refl. apply rt1_refl.
+  exists x. split. apply rt1_refl. apply rt1_trans with m; trivial.
+  exists o. split; trivial.
+  induction xRSy as [xRy | xSy].
+  apply rt1_trans with m.
+  exists x. split. apply rt1_refl. assumption.
+  apply clos_refl_trans1_trans with n; trivial.
+  apply rt1_trans with n; trivial. apply rt1_refl.
+  apply rt1_trans with n.
+  destruct mn as [q [mq qn]]. exists q. split; trivial.
+  apply rt1_trans with m; assumption. assumption.
+Qed.
+
+End alternative_definintions.
