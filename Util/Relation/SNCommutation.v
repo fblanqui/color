@@ -14,32 +14,12 @@ The main theorem is:
 Thus commutation allows to prove SN in a modular way.
 *)
 
-(* $Id: SNCommutation.v,v 1.1 2008-07-28 21:27:33 joerg Exp $ *)
+(* $Id: SNCommutation.v,v 1.2 2008-07-28 21:29:22 joerg Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export ACompat.
-Require Export Lexico.
 Require Import RelUtil.
-
-(***********************************************************************)
-(** Projections. *)
-
-Record Projection (Sig : Signature) : Type := mkProjection {
-  pi : forall f : Sig, nat;
-  pi_bound : forall f, pi f <= (@arity Sig f)
-}.
-
-Section S.
-
-Variable Sig : Signature.
-
-Notation term := (term Sig).
-Notation rule := (rule Sig).
-Notation rules := (list rule).
-
-(***********************************************************************)
-(** Subterm Criterion *)
 
 Section Commutation_and_SN.
 
@@ -175,5 +155,3 @@ Proof.
 Qed.
 
 End Commutation_and_SN.
-
-End S.
