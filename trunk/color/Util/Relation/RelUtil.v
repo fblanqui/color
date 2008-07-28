@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.34 2008-07-28 10:03:52 joerg Exp $ *)
+(* $Id: RelUtil.v,v 1.35 2008-07-28 21:27:33 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -957,6 +957,17 @@ Proof.
   induction xRy.
   apply rt1_trans with y. assumption. apply rt1_refl.
   apply rt1_trans with y; assumption.
+Qed.
+
+Lemma incl_rt_rt_rt :
+  forall A : Type, forall R : relation A, 
+    R#1 @ R#1 << R#1.
+
+Proof.
+  intros A R x y [z [xRz zRy]].
+  induction xRz. trivial.
+  apply rt1_trans with y0. assumption. 
+  apply IHxRz. assumption.
 Qed.
 
 Lemma rtc1_union : forall T : Type, forall R S : relation T,
