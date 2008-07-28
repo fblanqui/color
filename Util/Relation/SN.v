@@ -4,6 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2006-11-26
 - Adam Koprowski & Hans Zantema, 2007-03
+- Joerg Endrullis, 2008-07
 
 inductive definition of strong normalization (inverse of accessibility)
 *)
@@ -265,6 +266,14 @@ Proof.
 intros x H. induction 1. inversion H. auto. exact H. auto.
 Qed.
 
+Lemma SN_rtc1 : forall x, SN R x -> forall x', R#1 x x' -> SN R x'.
+
+Proof.
+  intros x snx x' xRx'. apply SN_rtc with x.
+  assumption.
+  apply (proj1 (clos_refl_trans_equiv R x x')). assumption.
+Qed.
+
 End rtc.
 
 (***********************************************************************)
@@ -287,6 +296,16 @@ Lemma WF_tc : WF R -> WF (R!).
 
 Proof.
 intros. unfold WF. intro. apply SN_tc. apply H.
+Qed.
+
+Lemma SN_tc1 : forall x, SN R x -> SN (R!1) x.
+
+Proof.
+  intros x snx. induction snx as [x IH0 IH1].
+  apply SN_intro. intros y xRty. destruct xRty.
+  apply IH1. assumption.
+  assert (SNy := IH1 y H). destruct SNy as [y' SNy']. apply SNy'.
+  assumption.
 Qed.
 
 End tc.
