@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.33 2008-07-28 09:22:00 joerg Exp $ *)
+(* $Id: RelUtil.v,v 1.34 2008-07-28 10:03:52 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -870,13 +870,13 @@ End inverse_image.
 (**   R x y /\ R!1 y z -> R!1 x z *)
 (** (more convenient for certain inductive proofs) *)
 
-Section alternative_definintions.
-
 Inductive clos_trans1 (A : Type) (R : relation A) : relation A :=
     t1_step : forall x y : A, R x y -> clos_trans1 R x y
   | t1_trans : forall x y z : A, R x y -> clos_trans1 R y z -> clos_trans1 R x z.
 
 Notation "x !1" := (clos_trans1 x) (at level 35) : relation_scope.
+
+Section alternative_definintion_clos_trans.
 
 Lemma clos_trans1_trans :
   forall (A : Type) (R : relation A) ( x y z : A),
@@ -904,6 +904,8 @@ Proof.
   exact (clos_trans1_trans IHclos_trans1 IHclos_trans2).
 Qed.
 
+End alternative_definintion_clos_trans.
+
 (***********************************************************************)
 (** Alternative Definition of the Reflexive Transitive Closure *)
 (**   R#1 x x *)
@@ -915,6 +917,8 @@ Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
   | rt1_trans : forall x y z : A, R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
 
 Notation "x #1" := (clos_refl_trans1 x) (at level 35) : relation_scope.
+
+Section alternative_definintion_clos_refl_trans.
 
 Lemma clos_refl_trans1_trans :
   forall (A : Type) (R : relation A) ( x y z : A),
@@ -979,4 +983,55 @@ Proof.
   apply rt1_trans with m; assumption. assumption.
 Qed.
 
-End alternative_definintions.
+End alternative_definintion_clos_refl_trans.
+
+(***********************************************************************)
+(* Alternative Definition: Inclusion Properties *)
+
+Section alternative_inclusion.
+
+Lemma union_rel_rt_left : forall T : Type, forall R S : relation T,
+  R#1 << (R U S)#1.
+
+Proof.
+  intros T R S x y xRy.
+  induction xRy. apply rt1_refl.
+  apply rt1_trans with y. left. assumption. assumption.
+Qed.
+
+Lemma union_rel_rt_right : forall T : Type, forall R S : relation T,
+  S#1 << (R U S)#1.
+
+Proof.
+  intros T R S x y xRy.
+  induction xRy. apply rt1_refl.
+  apply rt1_trans with y. right. assumption. assumption.
+Qed.
+
+Lemma incl_rtunion_union : forall T : Type, forall R S : relation T,
+  (R!1 U S!1)#1 << (R U S)#1.
+
+Proof.
+  intros T R S x y xRy.
+  induction xRy. apply rt1_refl.
+  apply clos_refl_trans1_trans with y; trivial.
+  destruct H.
+  apply union_rel_rt_left. apply incl_t_rt. assumption.
+  apply union_rel_rt_right. apply incl_t_rt. assumption.
+Qed.
+
+Lemma incl_union_rtunion : forall T : Type, forall R S : relation T,
+  (R U S)#1 << (R!1 U S!1)#1.
+
+Proof.
+  intros T R S x y xRy.
+  induction xRy. apply rt1_refl.
+  apply clos_refl_trans1_trans with y; trivial.
+  destruct H.
+  apply union_rel_rt_left. apply rt1_trans with y.
+  apply t1_step. assumption. apply rt1_refl.
+  apply union_rel_rt_right. apply rt1_trans with y.
+  apply t1_step. assumption. apply rt1_refl.
+Qed.
+
+End alternative_inclusion.
