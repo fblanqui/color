@@ -352,7 +352,7 @@ apply H0. auto.
 Qed.
 
 (***********************************************************************)
-(** Somme lemma to prove trivial case of sub-problem termination *)
+(** Some lemma to prove trivial case of sub-problem termination *)
 
 Lemma red_Mod_SCC_trivial_empty : WF (hd_red_Mod S nil).
 
