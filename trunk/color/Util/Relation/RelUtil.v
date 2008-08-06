@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.35 2008-07-28 21:27:33 joerg Exp $ *)
+(* $Id: RelUtil.v,v 1.36 2008-08-06 15:14:59 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -871,30 +871,28 @@ End inverse_image.
 (** (more convenient for certain inductive proofs) *)
 
 Inductive clos_trans1 (A : Type) (R : relation A) : relation A :=
-    t1_step : forall x y : A, R x y -> clos_trans1 R x y
-  | t1_trans : forall x y z : A, R x y -> clos_trans1 R y z -> clos_trans1 R x z.
+| t1_step : forall x y, R x y -> clos_trans1 R x y
+| t1_trans : forall x y z, R x y -> clos_trans1 R y z -> clos_trans1 R x z.
 
 Notation "x !1" := (clos_trans1 x) (at level 35) : relation_scope.
 
-Section alternative_definintion_clos_trans.
+Section alternative_definition_clos_trans.
 
-Lemma clos_trans1_trans :
-  forall (A : Type) (R : relation A) ( x y z : A),
-    R!1 x y -> R!1 y z -> R!1 x z.
+Variables (A : Type) (R : relation A).
+
+Lemma clos_trans1_trans : forall x y z, R!1 x y -> R!1 y z -> R!1 x z.
 
 Proof.
-  intros A R x y z.
+  intros x y z.
   induction 1; intro H1.
   exact (t1_trans x H H1).
   exact (t1_trans x H (IHclos_trans1 H1)).
 Qed.
 
-Lemma clos_trans_equiv : 
-  forall A : Type, forall R : relation A, forall x y : A,
-    R!1 x y <-> R! x y.
+Lemma clos_trans_equiv : forall x y, R!1 x y <-> R! x y.
 
 Proof.
-  intros A R x y.
+  intros x y.
   split; intro H.
   induction H.
   constructor; exact H.
@@ -904,7 +902,7 @@ Proof.
   exact (clos_trans1_trans IHclos_trans1 IHclos_trans2).
 Qed.
 
-End alternative_definintion_clos_trans.
+End alternative_definition_clos_trans.
 
 (***********************************************************************)
 (** Alternative Definition of the Reflexive Transitive Closure *)
@@ -913,68 +911,70 @@ End alternative_definintion_clos_trans.
 (** (more convenient for certain inductive proofs) *)
 
 Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
-    rt1_refl : forall x : A, clos_refl_trans1 R x x
-  | rt1_trans : forall x y z : A, R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
+| rt1_refl : forall x, clos_refl_trans1 R x x
+| rt1_trans : forall x y z,
+  R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
 
 Notation "x #1" := (clos_refl_trans1 x) (at level 35) : relation_scope.
 
-Section alternative_definintion_clos_refl_trans.
+Section alternative_definition_clos_refl_trans.
 
-Lemma clos_refl_trans1_trans :
-  forall (A : Type) (R : relation A) ( x y z : A),
-    R#1 x y -> R#1 y z -> R#1 x z.
+Variables (A : Type) (R : relation A).
+
+Lemma clos_refl_trans1_trans : forall x y z, R#1 x y -> R#1 y z -> R#1 x z.
 
 Proof.
-  intros A R x y z.
+  intros x y z.
   induction 1; intro H1.
   assumption.
   exact (rt1_trans x H (IHclos_refl_trans1 H1)).
 Qed.
 
-Lemma clos_refl_trans_equiv : 
-  forall A : Type, forall R : relation A, forall x y : A,
-    R#1 x y <-> R# x y.
+Lemma clos_refl_trans_equiv : forall x y, R#1 x y <-> R# x y.
 
 Proof.
-  intros A R x y.
+  intros x y.
   split; intro H.
   induction H.
   apply rt_refl.
   exact (rt_trans A R x y z (rt_step A R x y H) IHclos_refl_trans1).
   induction H.
-  Print rt1_trans.
   exact (rt1_trans x H (rt1_refl R y)).
   apply rt1_refl.
   exact (clos_refl_trans1_trans IHclos_refl_trans1 IHclos_refl_trans2).
 Qed.
 
-Lemma incl_t_rt :
-  forall A : Type, forall R : relation A, 
-    R!1 << R#1.
+Lemma incl_t_rt : R!1 << R#1.
 
 Proof.
-  intros A R x y xRy.
+  intros x y xRy.
   induction xRy.
   apply rt1_trans with y. assumption. apply rt1_refl.
   apply rt1_trans with y; assumption.
 Qed.
 
-Lemma incl_rt_rt_rt :
-  forall A : Type, forall R : relation A, 
-    R#1 @ R#1 << R#1.
+Lemma incl_rt_rt_rt : R#1 @ R#1 << R#1.
 
 Proof.
-  intros A R x y [z [xRz zRy]].
+  intros x y [z [xRz zRy]].
   induction xRz. trivial.
   apply rt1_trans with y0. assumption. 
   apply IHxRz. assumption.
 Qed.
 
-Lemma rtc1_union : forall T : Type, forall R S : relation T,
-  (R U S)#1 << (S#1 @ R)#1 @ S#1.
+End alternative_definition_clos_refl_trans.
+
+(***********************************************************************)
+(* Alternative Definition: Inclusion Properties *)
+
+Section alternative_inclusion.
+
+Variables (A : Type) (R S : relation A).
+
+Lemma rtc1_union : (R U S)#1 << (S#1 @ R)#1 @ S#1.
 
 Proof.
-  intros T R S x y xRSy.
+  intros x y xRSy.
   induction xRSy as [ | x y z xRSy yRSz]. 
   exists x. split; apply rt1_refl.
   destruct IHyRSz as [m [ym mz]].
@@ -994,36 +994,26 @@ Proof.
   apply rt1_trans with m; assumption. assumption.
 Qed.
 
-End alternative_definintion_clos_refl_trans.
-
-(***********************************************************************)
-(* Alternative Definition: Inclusion Properties *)
-
-Section alternative_inclusion.
-
-Lemma union_rel_rt_left : forall T : Type, forall R S : relation T,
-  R#1 << (R U S)#1.
+Lemma union_rel_rt_left : R#1 << (R U S)#1.
 
 Proof.
-  intros T R S x y xRy.
+  intros x y xRy.
   induction xRy. apply rt1_refl.
   apply rt1_trans with y. left. assumption. assumption.
 Qed.
 
-Lemma union_rel_rt_right : forall T : Type, forall R S : relation T,
-  S#1 << (R U S)#1.
+Lemma union_rel_rt_right : S#1 << (R U S)#1.
 
 Proof.
-  intros T R S x y xRy.
+  intros x y xRy.
   induction xRy. apply rt1_refl.
   apply rt1_trans with y. right. assumption. assumption.
 Qed.
 
-Lemma incl_rtunion_union : forall T : Type, forall R S : relation T,
-  (R!1 U S!1)#1 << (R U S)#1.
+Lemma incl_rtunion_union : (R!1 U S!1)#1 << (R U S)#1.
 
 Proof.
-  intros T R S x y xRy.
+  intros x y xRy.
   induction xRy. apply rt1_refl.
   apply clos_refl_trans1_trans with y; trivial.
   destruct H.
@@ -1031,11 +1021,13 @@ Proof.
   apply union_rel_rt_right. apply incl_t_rt. assumption.
 Qed.
 
-Lemma incl_union_rtunion : forall T : Type, forall R S : relation T,
+End alternative_inclusion.
+
+Lemma incl_union_rtunion : forall A : Type, forall R S : relation A,
   (R U S)#1 << (R!1 U S!1)#1.
 
 Proof.
-  intros T R S x y xRy.
+  intros A R S x y xRy.
   induction xRy. apply rt1_refl.
   apply clos_refl_trans1_trans with y; trivial.
   destruct H.
@@ -1044,5 +1036,3 @@ Proof.
   apply union_rel_rt_right. apply rt1_trans with y.
   apply t1_step. assumption. apply rt1_refl.
 Qed.
-
-End alternative_inclusion.
