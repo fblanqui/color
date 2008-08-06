@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.36 2008-08-06 15:14:59 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.37 2008-08-06 16:22:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -114,11 +114,12 @@ Definition ordering := reflexive R /\ transitive R /\ antisymmetric R.
 
 Definition strict_ordering := irreflexive R /\ transitive R.
 
-Definition strict_part x y := R x y /\ ~R y x.
+Definition strict_part : relation A := fun x y => R x y /\ ~R y x.
 
-Definition empty_rel (x y : A) := False.
+Definition empty_rel : relation A := fun x y => False.
 
-Definition intersection (S : relation A) x y := R x y /\ S x y.
+Definition intersection (S : relation A) : relation A :=
+  fun x y => R x y /\ S x y.
 
 End basic_definitions.
 
@@ -626,7 +627,7 @@ End transp.
 
 Section union.
 
-Variables (A : Type) (R R' S S' T: relation A).
+Variables (A : Type) (R R' S S' T : relation A).
 
 Lemma incl_union : R << R' -> S << S' -> R U S << R' U S'.
 
@@ -866,9 +867,7 @@ End inverse_image.
 
 (***********************************************************************)
 (** Alternative Definition of the Transitive Closure *)
-(**   R x y -> R!1 x y *)
-(**   R x y /\ R!1 y z -> R!1 x z *)
-(** (more convenient for certain inductive proofs) *)
+(* (more convenient for certain inductive proofs) *)
 
 Inductive clos_trans1 (A : Type) (R : relation A) : relation A :=
 | t1_step : forall x y, R x y -> clos_trans1 R x y
@@ -906,9 +905,7 @@ End alternative_definition_clos_trans.
 
 (***********************************************************************)
 (** Alternative Definition of the Reflexive Transitive Closure *)
-(**   R#1 x x *)
-(**   R x y /\ R#1 y z -> R#1 x z *)
-(** (more convenient for certain inductive proofs) *)
+(* (more convenient for certain inductive proofs) *)
 
 Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
 | rt1_refl : forall x, clos_refl_trans1 R x x
@@ -965,7 +962,7 @@ Qed.
 End alternative_definition_clos_refl_trans.
 
 (***********************************************************************)
-(* Alternative Definition: Inclusion Properties *)
+(** Alternative Definitions: Inclusion Properties *)
 
 Section alternative_inclusion.
 
