@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.34 2008-08-07 12:55:00 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.35 2008-08-07 13:14:03 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -420,7 +420,46 @@ End union.
 
 Section rewriting_modulo_results.
 
-Variables R R' E E' : rules.
+Variables (S S' : relation term) (R R' E E' : rules).
+
+Lemma hd_red_Mod_incl :
+  S << S' -> incl R R' -> hd_red_Mod S R << hd_red_Mod S' R'.
+
+Proof.
+intros. unfold hd_red_Mod. comp. hyp. apply hd_red_incl. hyp.
+Qed.
+
+Lemma hd_red_mod_of_hd_red_Mod_int :
+  hd_red_Mod (int_red E #) R << hd_red_mod E R.
+
+Proof.
+unfold hd_red_Mod, hd_red_mod.
+apply incl_comp. assert (int_red E # << red E #).
+apply incl_rtc. apply int_red_incl_red. eauto.
+apply inclusion_refl.
+Qed.
+
+Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
+
+Proof.
+unfold hd_red_Mod, hd_red_mod. apply inclusion_refl.
+Qed.
+
+Lemma hd_red_Mod_make_repeat_free :
+  hd_red_Mod S R << hd_red_Mod S (make_repeat_free (@eq_rule_dec Sig) R).
+
+Proof.
+intros. unfold hd_red_Mod. comp. unfold inclusion. intros. redtac.
+exists l; exists r; exists s. intuition. apply incl_make_repeat_free. auto.
+Qed.
+
+Lemma hd_red_mod_make_repeat_free :
+  hd_red_mod E R << hd_red_mod E (make_repeat_free (@eq_rule_dec Sig) R).
+
+Proof.
+intros. unfold hd_red_mod. comp. unfold inclusion. intros. redtac.
+exists l; exists r; exists s. intuition. apply incl_make_repeat_free. auto.
+Qed.
 
 Lemma red_mod_empty_incl_red : red_mod empty_trs R << red R.
 
@@ -436,7 +475,7 @@ unfold inclusion. intros. do 2 destruct H. ded (red_empty H). subst x0.
 exact H0.
 Qed.
 
-Lemma red_mod_sub : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
+Lemma red_mod_incl : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
 
 Proof.
 intros. unfold red_mod. comp. apply incl_rtc.

@@ -114,44 +114,6 @@ Variables E R : rules.
 Variables S T : relation term.
 
 (***********************************************************************)
-(* relation between hd_red_Mod and hd_red_mod *)
-
-Lemma hd_red_mod_of_hd_red_Mod_int :
-  hd_red_Mod (int_red E #) R << hd_red_mod E R.
-
-Proof.
-unfold hd_red_Mod, hd_red_mod.
-apply incl_comp. assert (int_red E # << ATrs.red E #).
-apply incl_rtc. apply int_red_incl_red. eauto.
-apply inclusion_refl.
-Qed.
-
-Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
-
-Proof.
-unfold hd_red_Mod, hd_red_mod. apply inclusion_refl.
-Qed.
-
-(***********************************************************************)
-(* remove duplicated rules *)
-
-Lemma hd_red_Mod_make_repeat_free :
-  hd_red_Mod S R << hd_red_Mod S (make_repeat_free (@eq_rule_dec Sig) R).
-
-Proof.
-intros. unfold hd_red_Mod. comp. unfold inclusion. intros. redtac.
-exists l; exists r; exists s. intuition. apply incl_make_repeat_free. auto.
-Qed.
-
-Lemma hd_red_mod_make_repeat_free :
-  hd_red_mod E R << hd_red_mod E (make_repeat_free (@eq_rule_dec Sig) R).
-
-Proof.
-intros. unfold hd_red_mod. comp. unfold inclusion. intros. redtac.
-exists l; exists r; exists s. intuition. apply incl_make_repeat_free. auto.
-Qed.
-
-(***********************************************************************)
 (* relation between hd_red_Mod and chain *)
 
 Require Export ADPGraph.
