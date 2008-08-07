@@ -419,31 +419,6 @@ Qed.
 End modulo.
 
 (***********************************************************************)
-(** union *)
-
-Section union.
-
-Variable (A : Type) (R S : relation A).
-
-Lemma WF_union : WF R -> WF S -> WF (R! @ S!) -> WF (R U S).
-
-Proof.
-  intros. apply WF_union_mod. assumption.
-  apply WF_compose_swap. apply WF_incl with (R @ S! U R).
-  intros x y Q. destruct Q as [z [Rxz zy]].
-  destruct (rtc_split zy).
-  rewrite <- H2. intuition.
-  left. exists z. intuition.
-  apply WF_union_mod. assumption.
-  apply WF_incl with (R! @ S!); [idtac | assumption].
-  intros x y Q. destruct Q as [z [Rxz [w [Rzw RSwy]]]].
-  exists w. intuition.
-  apply tc_split_inv. exists z. auto.
-Qed.
-
-End union.
-
-(***********************************************************************)
 (** S @ R << R @ S -> SN R x -> S x x' -> SN R x' *)
 
 Section commut.
