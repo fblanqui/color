@@ -34,9 +34,7 @@ Variable R : rules.
 (* head rules graph *)
 
 Require Export ARename.
-Require Export ASubstitution.
-
-Definition hd_red_Mod :=  S @ hd_red R.
+Require Import ASubstitution. (* for app to be on substitutions *)
 
 Definition hd_rules_graph a1 a2 := In a1 R /\ In a2 R
   /\ exists p, exists s, S (app s (rhs a1)) (app s (shift p (lhs a2))).
@@ -53,7 +51,7 @@ Qed.
 Definition hd_red_Mod_rule a t u := In a R /\
   exists s, S t (app s (lhs a)) /\ u = app s (rhs a).
 
-Lemma chain_hd_rules_hd_red_Mod : forall a, hd_red_Mod_rule a << hd_red_Mod.
+Lemma chain_hd_rules_hd_red_Mod : forall a, hd_red_Mod_rule a << hd_red_Mod S R.
 
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0.
@@ -63,7 +61,7 @@ exists lhs; exists rhs; exists x0. auto.
 Qed.
 
 Lemma hd_red_Mod_chain_hd_rules : forall t u,
-  hd_red_Mod t u -> exists a, hd_red_Mod_rule a t u.
+  hd_red_Mod S R t u -> exists a, hd_red_Mod_rule a t u.
 
 Proof.
 intros. do 2 destruct H. do 3 destruct H0.  exists (mkRule x0 x1).
