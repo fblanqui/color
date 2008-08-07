@@ -8,13 +8,12 @@ Subterm Criterion from
   Dependency Pairs Revisited (Nao Hirokawa and Aart Middeldorp).
 *)
 
-(* $Id: Subterm.v,v 1.1 2008-07-28 22:12:06 joerg Exp $ *)
+(* $Id: Subterm.v,v 1.2 2008-08-07 14:00:17 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
-Require Export ACompat.
-Require Import RelUtil.
-Require Import SNCommutation.
+Require Export ATrs.
+Require Export Union.
 
 (***********************************************************************)
 (** Projections. *)
