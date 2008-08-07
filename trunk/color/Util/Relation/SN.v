@@ -30,6 +30,12 @@ Definition WF := forall x, SN x.
 
 End sn.
 
+Lemma WF_empty_rel : forall A, WF (@empty_rel A).
+
+Proof.
+intros A x. apply SN_intro. intros. contradiction.
+Qed.
+
 (***********************************************************************)
 (** accessibility *)
 
