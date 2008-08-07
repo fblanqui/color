@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.36 2008-08-07 13:19:30 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.37 2008-08-07 13:34:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -492,9 +492,15 @@ Qed.
 Lemma WF_hd_red_mod_empty : WF (hd_red_mod E empty_trs).
 
 Proof.
-  apply WF_incl with (red_mod E empty_trs).
-  apply hd_red_mod_incl_red_mod.
-  apply WF_red_mod_empty.
+apply WF_incl with (red_mod E empty_trs).
+apply hd_red_mod_incl_red_mod. apply WF_red_mod_empty.
+Qed.
+
+Lemma WF_hd_red_Mod_empty : WF (hd_red_Mod S empty_trs).
+
+Proof.
+apply WF_incl with (@empty_rel term). intros x y h. redtac. contradiction.
+apply WF_empty_rel.
 Qed.
 
 End rewriting_modulo_results.
