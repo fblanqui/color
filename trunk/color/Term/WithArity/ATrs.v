@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.32 2008-06-02 07:47:56 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.33 2008-08-07 12:44:28 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -100,7 +100,9 @@ End rewriting.
 
 Section rewriting_modulo.
 
-Variable E R : rules.
+Variables (S : relation term) (E R: rules).
+
+Definition hd_red_Mod :=  S @ hd_red R.
 
 Definition red_mod := red E # @ red R.
 
@@ -118,27 +120,28 @@ Implicit Arguments is_notvar_rhs_elim [Sig R l r].
 
 Ltac redtac := repeat
   match goal with
-    | H : red ?R ?t ?u |- _ =>
+    | H : red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
       let s := fresh "s" in let h1 := fresh in
       (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
       destruct H as [s]; destruct H as [H h1]; destruct h1)
     | H : transp (red _) _ _ |- _ => unfold transp in H; redtac
-    | H : hd_red ?R ?t ?u |- _ =>
+    | H : hd_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in
       let s := fresh "s" in let h1 := fresh in
       (unfold hd_red in H; destruct H as [l]; destruct H as [r];
       destruct H as [s]; destruct H as [H h1]; destruct h1)
     | H : transp (hd_red _) _ _ |- _ => unfold transp in H; redtac
-    | H : int_red ?R ?t ?u |- _ =>
+    | H : int_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
       let s := fresh "s" in let h1 := fresh in let h2 := fresh in
       (unfold int_red in H; destruct H as [l]; destruct H as [r];
       destruct H as [c]; destruct H as [s]; destruct H as [H h1];
       destruct h1 as [h1 h2]; destruct h2)
     | H : transp (int_red _) _ _ |- _ => unfold transp in H; redtac
-    | H : red_mod ?E ?R ?t ?u |- _ => do 2 destruct H; redtac
-    | H : hd_red_mod ?E ?R ?t ?u |- _ => do 2 destruct H; redtac
+    | H : red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
+    | H : hd_red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
+    | H : hd_red_Mod _ _ _ _ |- _ => do 2 destruct H; redtac
   end.
 
 Ltac is_var_lhs := cut False; [tauto | eapply is_notvar_lhs_false; eassumption].
