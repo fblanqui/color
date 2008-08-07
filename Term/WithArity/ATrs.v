@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.33 2008-08-07 12:44:28 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.34 2008-08-07 12:55:00 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -139,9 +139,15 @@ Ltac redtac := repeat
       destruct H as [c]; destruct H as [s]; destruct H as [H h1];
       destruct h1 as [h1 h2]; destruct h2)
     | H : transp (int_red _) _ _ |- _ => unfold transp in H; redtac
-    | H : red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
-    | H : hd_red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
-    | H : hd_red_Mod _ _ _ _ |- _ => do 2 destruct H; redtac
+    | H : red_mod _ _ _ _ |- _ =>
+      let t := fresh "t" in let h := fresh in
+        (destruct H as [t h]; destruct h; redtac)
+    | H : hd_red_mod _ _ _ _ |- _ =>
+      let t := fresh "t" in let h := fresh in
+        (destruct H as [t h]; destruct h; redtac)
+    | H : hd_red_Mod _ _ _ _ |- _ =>
+      let t := fresh "t" in let h := fresh in
+        (destruct H as [t h]; destruct h; redtac)
   end.
 
 Ltac is_var_lhs := cut False; [tauto | eapply is_notvar_lhs_false; eassumption].
