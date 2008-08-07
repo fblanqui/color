@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.13 2008-06-26 12:44:07 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.14 2008-08-07 12:55:00 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -376,9 +376,9 @@ Notation R' := (filter_rules R).
 Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
 
 Proof.
-unfold inclusion, filter_ord. intros. redtac. exists (filter x0). split.
+unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
 apply red_rtc_incl_filter_red_rtc. exact H.
-subst x0. subst y. repeat rewrite filter_app. apply hd_red_rule.
+subst t. subst y. repeat rewrite filter_app. apply hd_red_rule.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H0.
 Qed.
 
