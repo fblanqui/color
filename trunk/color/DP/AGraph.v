@@ -108,20 +108,15 @@ Qed.
 End hd_red_Mod.
 
 (***********************************************************************)
-(* properties *)
-
-Variables E R : rules.
-Variables S T : relation term.
-
-(***********************************************************************)
 (* relation between hd_red_Mod and chain *)
 
 Require Export ADPGraph.
 
-Lemma hd_red_Mod_of_chain : chain R << hd_red_Mod (int_red R #) (dp R).
+Lemma hd_red_Mod_of_chain : forall R : rules,
+  chain R << hd_red_Mod (int_red R #) (dp R).
 
 Proof.
-unfold chain, hd_red_Mod. apply inclusion_refl.
+intros. unfold chain, hd_red_Mod. apply inclusion_refl.
 Qed.
 
 End S.

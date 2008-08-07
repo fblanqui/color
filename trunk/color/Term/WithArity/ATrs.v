@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.35 2008-08-07 13:14:03 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.36 2008-08-07 13:19:30 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -525,7 +525,7 @@ End termination_as_relative_term.
 
 Section union_modulo.
 
-Variables E E' R R' : rules.
+Variables E R R' : rules.
 
 Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
 
