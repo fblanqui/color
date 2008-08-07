@@ -1,3 +1,7 @@
+08-08-07:
+- DP/ADecomp: proof that termination follows from any valid decomposition
+  of an over DP graph and the termination of each component [Blanqui]
+
 08-05-15:
 - Util/FSet/FSetUtil: lemmas and tactics on Coq FSet's [Blanqui]
 - Term/WithArity/AVariables: set of variables in a term (based on FSet)
