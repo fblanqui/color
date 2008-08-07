@@ -450,7 +450,7 @@ Section commut.
 
 Variables (A : Type) (R S : relation A) (commut : S @ R << R @ S).
 
-Lemma commut_SN : forall x, SN R x -> forall x', S x x' -> SN R x'.
+Lemma SN_commut : forall x, SN R x -> forall x', S x x' -> SN R x'.
 
 Proof.
 induction 1; intros. apply SN_intro. intros.
@@ -475,7 +475,7 @@ Proof.
 intros. elim H. intros. apply SN_intro. intros.
 assert ((iter R n @ iter R 0) x0 y). apply iter_commut. exact H2.
 do 2 destruct H3. ded (H1 _ H3).
-eapply commut_SN with (S := iter R 0). apply iter_commut. apply H5. exact H4.
+eapply SN_commut with (S := iter R 0). apply iter_commut. apply H5. exact H4.
 Qed.
 
 Lemma SN_iter_S' : forall n x, SN (iter R (S n)) x -> SN (iter R n) x.
@@ -488,7 +488,7 @@ apply incl_elim with (R := iter R (S n) @ iter R (S n)).
 trans (iter R (S n+S n+1)). apply iter_iter.
 assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
 exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
-eapply commut_SN with (S := iter R n). apply iter_commut. apply H6. exact H5.
+eapply SN_commut with (S := iter R n). apply iter_commut. apply H6. exact H5.
 Qed.
 
 Lemma SN_iter : forall n x, SN (iter R n) x -> SN R x.
@@ -533,17 +533,17 @@ Section commut_modulo.
 
 Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 
-Lemma commut_SN_modulo : forall x, SN S x -> SN (R# @ S) x.
+Lemma SN_commut_modulo : forall x, SN S x -> SN (R# @ S) x.
 
 Proof.
 induction 1. apply SN_intro. intros. ded (commut_rtc commut H1).
 do 2 destruct H2. eapply SN_modulo. apply H0. apply H2. exact H3.
 Qed.
 
-Lemma commut_WF_modulo : WF S -> WF (R# @ S).
+Lemma WF_commut_modulo : WF S -> WF (R# @ S).
 
 Proof.
-unfold WF. intros. apply commut_SN_modulo. apply H.
+unfold WF. intros. apply SN_commut_modulo. apply H.
 Qed.
 
 End commut_modulo.
