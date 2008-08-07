@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.42 2008-05-15 13:29:45 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.43 2008-08-07 15:44:43 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -742,6 +742,13 @@ Fixpoint flat (l : list (list A)) : list A :=
     | nil => nil
     | cons x l' => x ++ flat l'
   end.
+
+Lemma In_incl_flat : forall x l, In x l -> incl x (flat l).
+
+Proof.
+induction l; simpl; intros. contradiction. intuition. subst. apply incl_appl.
+apply incl_refl.
+Qed.
 
 End flat.
 
