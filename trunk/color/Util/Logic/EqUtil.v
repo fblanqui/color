@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.7 2008-05-15 13:29:45 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.8 2008-08-08 14:23:58 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -134,6 +134,7 @@ End beq.
 Implicit Arguments beq_refl [A beq].
 Implicit Arguments dec_beq [A beq].
 Implicit Arguments beq_com [A beq].
+Implicit Arguments beq_ko [A beq].
 
 Ltac case_beq beq_ok e := coq_case_eq e;
   [let h := fresh in intro h; rewrite beq_ok in h;
@@ -173,8 +174,6 @@ intros. unfold beq_dec. case (eq_dec x y); case (eq_dec y x); intros;
 (refl || irrefl).
 Qed.
 
-Require Export Bool.
-
 Lemma beq_dec_trans : forall x y z,
   implb (beq_dec x y && beq_dec y z) (beq_dec x z) = true.
 
@@ -193,3 +192,12 @@ rewrite beq_dec_ok in H. contradiction.
 Qed.
 
 End eq_dec.
+
+(***********************************************************************)
+(** type equipped with a boolean equility *)
+
+Record Bool_eq_type : Type := mkBool_eq_type {
+  bet_type :> Type;
+  bet_eq : bet_type -> bet_type -> bool;
+  bet_ok : forall x y, bet_eq x y = true <-> x = y
+}.
