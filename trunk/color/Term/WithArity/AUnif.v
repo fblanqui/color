@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.3 2008-05-18 13:07:46 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.4 2008-08-08 09:07:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -66,7 +66,9 @@ Proof.
 induction us; simpl; intros. VOtac. simpl. symmetry. apply union_empty_left.
 VSntac vs. clear H. set (x := Vhead vs). set (ts := Vtail vs). simpl.
 unfold vars_eqn. simpl.
-transitivity (union (union (vars x) (vars a)) (union (vars_terms ts) (vars_terms us))). apply union_m. refl. apply IHus. Equal; union.
+transitivity
+  (union (union (vars x) (vars a)) (union (vars_terms ts) (vars_terms us))).
+apply union_m. refl. apply IHus. Equal; union.
 Qed.
 
 Lemma mem_vars_app_single : forall n (u : term) x v,
@@ -74,7 +76,9 @@ Lemma mem_vars_app_single : forall n (u : term) x v,
   mem n (vars (app (single x v) u)) = false.
 
 Proof.
-intros. transitivity (mem n (if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u)). apply mem_m. refl. apply vars_subs.
+intros. transitivity (mem n
+  (if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u)).
+apply mem_m. refl. apply vars_subs.
 case_eq (mem x (vars u)). mem. rewrite H0. rewrite H. refl.
 hyp.
 Qed.
@@ -83,7 +87,9 @@ Lemma mem_vars_app_single' : forall n (u v : term),
   mem n (vars v) = false -> mem n (vars (app (single n v) u)) = false.
 
 Proof.
-intros. transitivity (mem n (if mem n (vars u) then union (vars v) (remove n (vars u)) else vars u)). apply mem_m. refl. apply vars_subs.
+intros. transitivity (mem n
+  (if mem n (vars u) then union (vars v) (remove n (vars u)) else vars u)).
+apply mem_m. refl. apply vars_subs.
 case_eq (mem n (vars u)). mem. rewrite H0. rewrite H. refl.
 hyp.
 Qed.
@@ -95,7 +101,10 @@ Lemma vars_eqn_subs : forall x v e,
 
 Proof.
 intros. destruct e as [l r]. unfold vars_eqn, eqn_app. simpl.
-transitivity (union (if mem x (vars l) then union (vars v) (remove x (vars l)) else vars l) (if mem x (vars r) then union (vars v) (remove x (vars r)) else vars r)). apply union_m; apply vars_subs. mem.
+transitivity (union
+  (if mem x (vars l) then union (vars v) (remove x (vars l)) else vars l)
+  (if mem x (vars r) then union (vars v) (remove x (vars r)) else vars r)).
+apply union_m; apply vars_subs. mem.
 case_eq (mem x (vars l)); case_eq (mem x (vars r)); bool.
 transitivity (union (vars v) (union (remove x (vars l)) (remove x (vars r)))).
 apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
@@ -118,11 +127,15 @@ Lemma vars_eqns_subs : forall x v l,
 
 Proof.
 induction l; simpl; intros. refl. mem.
-transitivity (union (if mem x (vars_eqn a) then union (vars v) (remove x (vars_eqn a)) else vars_eqn a) (if mem x (vars_eqns l)
-          then union (vars v) (remove x (vars_eqns l))
-          else vars_eqns l)). apply union_m. apply vars_eqn_subs. exact IHl.
+transitivity (union
+  (if mem x (vars_eqn a) then union (vars v) (remove x (vars_eqn a))
+    else vars_eqn a) (if mem x (vars_eqns l)
+      then union (vars v) (remove x (vars_eqns l)) else vars_eqns l)).
+apply union_m. apply vars_eqn_subs. exact IHl.
 case_eq (mem x (vars_eqn a)); case_eq (mem x (vars_eqns l)); bool.
-transitivity (union (vars v) (union (remove x (vars_eqn a)) (remove x (vars_eqns l)))). apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
+transitivity
+  (union (vars v) (union (remove x (vars_eqn a)) (remove x (vars_eqns l)))).
+apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
 transitivity (union (vars v) (union (remove x (vars_eqn a)) (vars_eqns l))).
 apply union_assoc. apply union_m. refl.
 transitivity (union (remove x (vars_eqn a)) (remove x (vars_eqns l))).
@@ -271,10 +284,14 @@ Lemma notin_map : forall x t, mem x (vars t) = false ->
 
 Proof.
 induction l; simpl. trivial. destruct a. unfold notin_eqn. simpl. intuition.
-transitivity (mem x (if mem x (vars t1) then union (vars t0) (remove x (vars t1)) else vars t1)). apply mem_m. refl. apply vars_subs.
+transitivity (mem x
+  (if mem x (vars t1) then union (vars t0) (remove x (vars t1)) else vars t1)).
+apply mem_m. refl. apply vars_subs.
 case_eq (mem x (vars t1)). mem. rewrite H. rewrite H0.
 refl. hyp.
-transitivity (mem x (if mem x (vars t2) then union (vars t0) (remove x (vars t2)) else vars t2)). apply mem_m. refl. apply vars_subs.
+transitivity (mem x
+  (if mem x (vars t2) then union (vars t0) (remove x (vars t2)) else vars t2)).
+apply mem_m. refl. apply vars_subs.
 case_eq (mem x (vars t2)). mem. rewrite H. rewrite H0.
 refl. hyp.
 Qed.
@@ -286,10 +303,14 @@ Lemma lforall_notin_eqn : forall x t, mem x (vars t) = false ->
 Proof.
 induction l; simpl; intuition. destruct a. unfold eqn_app. simpl.
 unfold notin_eqn. simpl. unfold notin_eqn in H1. simpl in H1. intuition.
-transitivity (mem x (if mem n (vars t1) then union (vars t0) (remove n (vars t1)) else vars t1)). apply mem_m. refl. apply vars_subs.
+transitivity (mem x
+  (if mem n (vars t1) then union (vars t0) (remove n (vars t1)) else vars t1)).
+apply mem_m. refl. apply vars_subs.
 case_eq (mem n (vars t1)). mem. rewrite H. rewrite H3. refl.
 hyp.
-transitivity (mem x (if mem n (vars t2) then union (vars t0) (remove n (vars t2)) else vars t2)). apply mem_m. refl. apply vars_subs.
+transitivity (mem x
+  (if mem n (vars t2) then union (vars t0) (remove n (vars t2)) else vars t2)).
+apply mem_m. refl. apply vars_subs.
 case_eq (mem n (vars t2)). mem. rewrite H. rewrite H4. refl.
 hyp.
 Qed.
@@ -698,11 +719,12 @@ ded (lforall_notin_solved_eqn_mem H0 H4). rewrite H7 in H8. discriminate.
 simpl. refl.
 Qed.
 
-Lemma iter_step_None : forall p k, iter_step k p = None -> forall s, ~is_sol s p.
+Lemma iter_step_None :
+  forall p k, iter_step k p = None -> forall s, ~is_sol s p.
 
 Proof.
-intros. intro. rewrite (iter_step_correct_complete s p k) in H0. rewrite H in H0.
-hyp.
+intros. intro. rewrite (iter_step_correct_complete s p k) in H0.
+rewrite H in H0. hyp.
 Qed.
 
 Lemma iter_step_solved_eqn_wf : forall p l k, problem_wf p ->

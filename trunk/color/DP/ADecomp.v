@@ -20,7 +20,7 @@ Notation term := (term Sig). Notation terms := (vector term).
 Notation rule := (rule Sig). Notation rules := (list rule).
 
 (***********************************************************************)
-(** we consider the relation hd_red_Mod S R *)
+(** we consider the relation (hd_red_Mod S R) *)
 
 Variable S : relation term.
 Variable R : rules.
