@@ -1,11 +1,15 @@
 08-08-07:
+- Util/Relation/OrdDec: type totally ordered with a comparison function
+  [Blanqui]
+- Util/List/ListDev: boolean functions on lists using a boolean equality test
+  [Blanqui]
 - DP/ADecomp: proof that termination follows from any valid decomposition
   of an over DP graph and the termination of each component [Blanqui]
 
 08-05-15:
 - Util/FSet/FSetUtil: lemmas and tactics on Coq FSet's [Blanqui]
 - Term/WithArity/AVariables: set of variables in a term (based on FSet)
-and properties wrt substitution [Blanqui]
+  and properties wrt substitution [Blanqui]
 - Term/WithArity/AUnif: syntactic unification [Blanqui]
 
 08-03-14: added support for arctic matrix interpretations proofs;
@@ -81,7 +85,8 @@ testing equality [Blanqui]
 - Various lemmas renamed with intro or elim suffix
 
 06-12-04:
-- MannaNess/AMannaNess: added rule elimination for relative termination [Blanqui]
+- MannaNess/AMannaNess: added rule elimination for relative termination
+  [Blanqui]
 - Acc replaced by SN in various files
 - Term/WithArity/ARedOrd moved to MannaNess/AMannaNess
 
