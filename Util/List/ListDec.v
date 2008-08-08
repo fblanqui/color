@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 boolean functions on lists
 *)
 
-(* $Id: ListDec.v,v 1.2 2008-08-08 14:25:42 blanqui Exp $ *)
+(* $Id: ListDec.v,v 1.3 2008-08-08 14:54:24 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -65,14 +65,14 @@ Fixpoint position_aux (i : nat) (x : A) (l : list A) {struct l} : option nat :=
     | y :: m => if beq x y then Some i else position_aux (S i) x m
   end.
 
-Notation position := (position_aux 0).
+Definition position := position_aux 0.
 
 Lemma position_ko :
   forall x l, position x l = None <-> ~In x l.
 
 Proof.
-cut (forall x l i, position_aux i x l = None <-> ~In x l). auto.
-induction l; simpl; intros. intuition. case_beq beq_ok (beq x a).
+unfold position. cut (forall x l i, position_aux i x l = None <-> ~In x l).
+auto. induction l; simpl; intros. intuition. case_beq beq_ok (beq x a).
 intuition; discr. rewrite (beq_ko beq_ok) in H. ded (IHl (S i)). intuition.
 Qed.
 
@@ -115,5 +115,3 @@ Qed.
 End position.
 
 End S.
-
-Notation position := (position_aux 0).
