@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.3 2008-05-29 15:04:34 blanqui Exp $ *)
+(* $Id: AVariables.v,v 1.4 2008-08-08 09:07:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -200,11 +200,15 @@ Lemma vars_subs_list : forall x v us,
 
 Proof.
 induction us; simpl; intros. refl. mem.
-transitivity (union (if mem x (vars a) then union (vars v) (remove x (vars a)) else vars a) (if mem x (vars_list us)
-          then union (vars v) (remove x (vars_list us))
-          else vars_list us)). apply union_m. apply vars_subs. exact IHus.
+transitivity (union
+  (if mem x (vars a) then union (vars v) (remove x (vars a)) else vars a)
+  (if mem x (vars_list us)
+    then union (vars v) (remove x (vars_list us)) else vars_list us)).
+apply union_m. apply vars_subs. exact IHus.
 case_eq (mem x (vars a)); case_eq (mem x (vars_list us)); intros; bool.
-transitivity (union (vars v) (union (remove x (vars a)) (remove x (vars_list us)))). apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
+transitivity
+  (union (vars v) (union (remove x (vars a)) (remove x (vars_list us)))).
+apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
 transitivity (union (vars v) (union (remove x (vars a)) (vars_list us))).
 apply union_assoc. apply union_m. refl.
 transitivity (union (remove x (vars a)) (remove x (vars_list us))).

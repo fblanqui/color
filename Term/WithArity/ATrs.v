@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.37 2008-08-07 13:34:25 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.38 2008-08-08 09:07:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,8 +18,7 @@ Section basic_definitions.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** rule *)
