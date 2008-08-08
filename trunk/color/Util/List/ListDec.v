@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 boolean functions on lists
 *)
 
-(* $Id: ListDec.v,v 1.1 2008-08-08 14:22:23 blanqui Exp $ *)
+(* $Id: ListDec.v,v 1.2 2008-08-08 14:25:42 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -73,7 +73,7 @@ Lemma position_ko :
 Proof.
 cut (forall x l i, position_aux i x l = None <-> ~In x l). auto.
 induction l; simpl; intros. intuition. case_beq beq_ok (beq x a).
-intuition; discr. rewrite (beq_ko _ beq_ok) in H. ded (IHl (S i)). intuition.
+intuition; discr. rewrite (beq_ko beq_ok) in H. ded (IHl (S i)). intuition.
 Qed.
 
 Lemma position_aux_plus : forall x j k l i,
@@ -107,7 +107,7 @@ Lemma position_aux_ok2 : forall i x l k, element_at l k = Some x ->
 
 Proof.
 induction l; simpl; intros. discr. case_beq beq_ok (beq x a).
-exists 0. intuition. rewrite (beq_ko _ beq_ok) in H0. destruct k.
+exists 0. intuition. rewrite (beq_ko beq_ok) in H0. destruct k.
 inversion H. subst. irrefl. destruct (IHl _ H). exists (S x0). intuition.
 rewrite <- plus_Snm_nSm. simpl. apply position_aux_S. hyp.
 Qed.
