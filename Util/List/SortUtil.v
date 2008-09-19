@@ -4,14 +4,15 @@ See the COPYRIGHTS and LICENSE files.
 
 - Leo Ducas, 2007-08-06
 
-auxiliary lemmas on sorting
+auxiliary lemmas on Coq's sort and lelistA predicates
+and on Coq's multiplicity function 
 *)
 
 Set Implicit Arguments.
 
 Require Export Sorting.
 Require Export RelUtil.
-Require Export ListUtil.
+Require Export List.
 
 (***********************************************************************)
 (** lelistA and sort *)

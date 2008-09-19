@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 boolean functions on lists
 *)
 
-(* $Id: ListDec.v,v 1.3 2008-08-08 14:54:24 blanqui Exp $ *)
+(* $Id: ListDec.v,v 1.4 2008-09-19 03:04:59 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -80,16 +80,16 @@ Lemma position_aux_plus : forall x j k l i,
   position_aux i x l = Some k -> position_aux (i+j) x l = Some (k+j).
 
 Proof.
-induction l; simpl. discr. case_beq beq_ok (beq x a); intros. inversion H. refl.
-assert (S(i+j) = S i+j). refl. rewrite H1. apply IHl. hyp.
+induction l; simpl. discr. case_beq beq_ok (beq x a); intros. inversion H.
+refl. assert (S(i+j) = S i+j). refl. rewrite H1. apply IHl. hyp.
 Qed.
 
 Lemma position_aux_S : forall x k l i,
   position_aux i x l = Some k -> position_aux (S i) x l = Some (S k).
 
 Proof.
-induction l; simpl. discr. case_beq beq_ok (beq x a); intros. inversion H. refl.
-apply IHl. hyp.
+induction l; simpl. discr. case_beq beq_ok (beq x a); intros. inversion H.
+refl. apply IHl. hyp.
 Qed.
 
 Lemma position_aux_ok1 : forall k x l i,
@@ -99,7 +99,8 @@ Proof.
 induction l; simpl. discr. case_beq beq_ok (beq x a). intros. inversion H.
 rewrite <- minus_n_n. intuition. destruct l. simpl. discr. intros.
 ded (IHl _ H0). assert (exists p', k - i = S p'). exists (k-i-1). omega.
-destruct H2. rewrite H2. assert (k - S i = x0). omega. rewrite <- H3. intuition.
+destruct H2. rewrite H2. assert (k - S i = x0). omega. rewrite <- H3.
+intuition.
 Qed.
 
 Lemma position_aux_ok2 : forall i x l k, element_at l k = Some x ->

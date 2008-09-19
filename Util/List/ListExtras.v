@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.14 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.15 2008-09-19 03:04:59 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -163,7 +163,8 @@ Section FinalSeg.
 
   Variable A: Type.
 
-  Definition finalSeg (l: list A) fromPos := seg l fromPos (length l - fromPos).
+  Definition finalSeg (l: list A) fromPos
+    := seg l fromPos (length l - fromPos).
 
   Lemma finalSeg_full : forall l, finalSeg l 0 = l.
   Proof.
@@ -340,7 +341,8 @@ Section Copy.
     apply IHn; trivial.
   Qed.
 
-  Lemma nth_copy_in : forall n el x, x < n -> nth_error (copy n el) x = Some el.
+  Lemma nth_copy_in : forall n el x,
+    x < n -> nth_error (copy n el) x = Some el.
 
   Proof.
     intros sn el x x_n.
@@ -494,7 +496,8 @@ Section DropNth.
     rewrite finalSeg_cons; trivial.
   Qed.
 
-  Lemma drop_nth_succ : forall a l p, drop_nth (a::l) (S p) = a :: drop_nth l p.
+  Lemma drop_nth_succ : forall a l p,
+    drop_nth (a::l) (S p) = a :: drop_nth l p.
 
   Proof.
     unfold drop_nth, finalSeg; trivial.
@@ -587,8 +590,8 @@ Section CountIn.
     exists a'; auto.
   Qed.
 
-  Lemma countIn_nth : forall a (l: list A),
-    countIn a l > 0 -> exists p, exists a', eqA a a' /\ nth_error l p = Some a'.
+  Lemma countIn_nth : forall a (l: list A), countIn a l > 0 ->
+    exists p, exists a', eqA a a' /\ nth_error l p = Some a'.
 
   Proof.
     induction l.
@@ -922,7 +925,8 @@ simpl; tauto.
 tauto.
 Qed.
 
-Lemma find_first_Some_bound : forall l x, find_first l = Some x -> x < length l.
+Lemma find_first_Some_bound : forall l x,
+  find_first l = Some x -> x < length l.
 
 Proof.
 induction l; intros.
