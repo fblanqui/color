@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.38 2008-08-08 09:07:09 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.39 2008-09-24 10:20:55 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -106,6 +106,18 @@ Definition hd_red_Mod :=  S @ hd_red R.
 Definition red_mod := red E # @ red R.
 
 Definition hd_red_mod := red E # @ hd_red R.
+
+Definition hd_red_mod_min (s : term) (t : term) : Prop :=
+  hd_red_mod s t 
+  /\ lforall (SN (red E)) (direct_subterms s)
+  /\ lforall (SN (red E)) (direct_subterms t).
+
+Lemma hd_red_mod_min_incl :
+  hd_red_mod_min << hd_red_mod.
+
+Proof.
+  unfold hd_red_mod_min. intros s t [hrm _]. trivial. 
+Qed.
 
 End rewriting_modulo.
 
@@ -549,6 +561,16 @@ unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 ded (in_app_or H0). destruct H1.
 left. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
 right. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
+Qed.
+
+Lemma hd_red_mod_min_union :
+  hd_red_mod_min E (R ++ R') << hd_red_mod_min E R U hd_red_mod_min E R'.
+
+Proof.
+unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0. subst y.
+ded (in_app_or H1). destruct H2.
+left. split. exists (app s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
+right. split. exists (app s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
 Qed.
 
 End union_modulo.

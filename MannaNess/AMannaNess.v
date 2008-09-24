@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 *)
 
-(* $Id: AMannaNess.v,v 1.11 2007-04-13 17:47:40 blanqui Exp $ *)
+(* $Id: AMannaNess.v,v 1.12 2008-09-24 10:20:55 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -152,6 +152,26 @@ apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. exact H2. apply tc_trans.
 apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
 trans (red_mod E R). apply hd_red_mod_incl_red_mod. incl_red.
 apply comp_tc_incl. rptac.
+Qed.
+
+Lemma weak_rule_elimination_mod_min : forall wp : Weak_reduction_pair Sig,
+  compat (wp_succ_eq wp) E ->
+  compat (wp_succ_eq wp) R -> compat (wp_succ wp) R' ->
+  WF (hd_red_mod_min E R) -> WF (hd_red_mod_min E (R ++ R')).
+
+Proof.
+  intros. set (succ := wp_succ wp). set (succ_eq := wp_succ_eq wp).
+  set (er := hd_red_mod_min E R). set (er' := hd_red_mod_min E R').
+  apply WF_incl with (S := lex' succ (er!)).
+  trans (er U succ). trans (er U er'). unfold er, er'. apply hd_red_mod_min_union.
+  union. unfold er', succ. incl_red.
+  trans (succ U er). apply union_commut.
+  trans (succ U er!). union. apply tc_incl.
+  apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. exact H2. apply tc_trans.
+  apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
+  trans (red_mod E R). apply incl_trans with (hd_red_mod E R).
+  apply hd_red_mod_min_incl. apply hd_red_mod_incl_red_mod. incl_red.
+  apply comp_tc_incl. rptac.
 Qed.
 
 End mod.
