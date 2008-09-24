@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.10 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ACompat.v,v 1.11 2008-09-24 10:20:55 joerg Exp $ *)
 
 Set Implicit Arguments.
 
@@ -170,6 +170,17 @@ apply compat_red; assumption. apply compat_hd_red; assumption.
 apply comp_rtc_incl. exact H3.
 Qed.
 
+Lemma compat_hd_red_mod_min : forall R E,
+  substitution_closed succ -> rewrite_ordering succ_eq ->
+  compat succ_eq E -> compat succ R ->
+  absorb succ succ_eq -> hd_red_mod_min E R << succ.
+
+Proof.
+intros. apply incl_trans with (hd_red_mod E R).
+apply hd_red_mod_min_incl.
+apply compat_hd_red_mod; auto.
+Qed.
+
 End weak_reduction_pair.
 
 (***********************************************************************)
@@ -250,4 +261,7 @@ Ltac incl_red :=
     | |- inclusion (hd_red_mod _ _) (wp_succ ?wp) =>
       apply compat_hd_red_mod with (succ_eq := wp_succ_eq wp)
     | |- inclusion (hd_red_mod _ _) ?succ => eapply compat_hd_red_mod
+    | |- inclusion (hd_red_mod_min _ _) (wp_succ ?wp) =>
+      apply compat_hd_red_mod_min with (succ_eq := wp_succ_eq wp)
+    | |- inclusion (hd_red_mod_min _ _) ?succ => eapply compat_hd_red_mod_min
   end; rptac.
