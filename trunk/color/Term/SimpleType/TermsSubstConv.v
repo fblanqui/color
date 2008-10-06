@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Convertibility of substituted terms.
 *)
 
-(* $Id: TermsSubstConv.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsSubstConv.v,v 1.3 2008-10-06 03:22:31 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -107,8 +107,9 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     destruct (H4 y); inversion H5; try_solve.
   Qed.
 
-  Lemma uneffective_singleton_subst_conv : forall M G T (MG: correct_subst M G),
-    isSingletonSubst T G -> (activeEnv M |= 0 :!) -> M ~ subst MG.
+  Lemma uneffective_singleton_subst_conv :
+    forall M G T (MG: correct_subst M G), isSingletonSubst T G ->
+      (activeEnv M |= 0 :!) -> terms_conv M (subst MG).
 
   Proof.
     intros.
@@ -371,8 +372,9 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     apply Q'Q; trivial.
   Qed.
 
-  Lemma conv_subst_conv : forall M M' G G' Q (MG: correct_subst M G) (M'G': correct_subst M' G'),
-    M ~(Q) M' -> G ~~(Q) G' -> subst MG ~(Q) subst M'G'.
+  Lemma conv_subst_conv : forall M M' G G' Q (MG: correct_subst M G)
+    (M'G': correct_subst M' G'),
+      M ~(Q) M' -> G ~~(Q) G' -> (subst MG) ~(Q) (subst M'G').
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros.
@@ -426,7 +428,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
      (* abstraction *)
     destruct (abs_subst (M := buildT (TAbs M)) I MG).
     assert (M'abs: isAbs M').
-    assert (H': buildT (TAbs M) ~ M') by (exists Q; trivial).
+    assert (H': (buildT (TAbs M)) ~ M') by (exists Q; trivial).
     rewrite <- H'; simpl; trivial.
     destruct (abs_subst M'abs M'G').
     apply abs_conv with (abs_subst_abs (M:=buildT (TAbs M)) I MG) 
@@ -445,7 +447,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
      (* application *)
     destruct (app_subst (M := buildT (TApp M1 M2)) I MG).
     assert (M'app: isApp M').
-    assert (H' : buildT (TApp M1 M2) ~ M') by (exists Q; trivial).
+    assert (H' : (buildT (TApp M1 M2)) ~ M') by (exists Q; trivial).
     rewrite <- H'; simpl; trivial.
     destruct (app_subst M'app M'G').
     apply app_conv with (app_subst_app (M:=buildT (TApp M1 M2)) I MG)
@@ -461,7 +463,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
   Qed.
   
   Lemma presubst_singleton_conv_sim_aux : forall M M' T T' Q R R' i,
-    (forall j, j <= i -> envSub Q j j) -> conv_term M M' Q -> lift T i ~(Q) lift T' i ->
+    (forall j, j <= i -> envSub Q j j) -> conv_term M M' Q ->
+    (lift T i) ~(Q) (lift T' i) ->
     conv_term R R' Q -> presubst_aux M i (copy i None ++ {x/T}) = R ->
     presubst_aux M' i (copy i None ++ {x/T'}) = R'.
 

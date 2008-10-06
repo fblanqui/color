@@ -19,7 +19,7 @@ Require Export AdjMat.
 
 Section S.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y} + {~x=y}.
 Variable Dom : list A.
 
@@ -254,10 +254,11 @@ assumption.
 
 unfold compose in H; destruct H as [z]; destruct H.
 rewrite dom_change_compose.
-apply rel_on_nat_is_restricted.
-assumption. unfold compose; exists z; split.
+unfold compose; exists z; split.
 rewrite dom_change;  assumption.
 rewrite IHn; assumption.
+apply rel_on_nat_is_restricted.
+assumption.
 Qed. 
 
 Lemma dom_change_tc: forall x y, 

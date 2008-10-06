@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.10 2008-06-02 07:47:56 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.11 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -47,22 +47,22 @@ intros u' H1. ded (red_subterm H1 H0). destruct H2 as [t']. destruct H2.
 eapply IH. apply H2. assumption.
 Qed.
 
-Lemma sub_sn : forall l x s, In x (vars l) -> SNR (app s l) -> SNR (s x).
+Lemma sub_sn : forall l x s, In x (vars l) -> SNR (sub s l) -> SNR (s x).
 
 Proof.
-intros. change (SNR (app s (Var x))). eapply subterm_sn. apply H0.
-apply subterm_app. apply in_vars_subterm_eq. assumption.
+intros. change (SNR (sub s (Var x))). eapply subterm_sn. apply H0.
+apply subterm_sub. apply in_vars_subterm_eq. assumption.
 Qed.
 
 Lemma sub_fun_sn : forall f ts x s,
-  In x (vars (Fun f ts)) -> Vforall SNR (Vmap (app s) ts) -> SNR (s x).
+  In x (vars (Fun f ts)) -> Vforall SNR (Vmap (sub s) ts) -> SNR (s x).
 
 Proof.
-intros. change (SNR (app s (Var x))). rewrite vars_fun in H.
+intros. change (SNR (sub s (Var x))). rewrite vars_fun in H.
 ded (in_vars_vec_elim H). destruct H1 as [t]. destruct H1.
-ded (in_vars_subterm_eq H2). apply subterm_sn with (t := app s t).
-eapply Vforall_in with (n := arity f). apply H0. apply Vin_map_intro. assumption.
-apply subterm_app. assumption.
+ded (in_vars_subterm_eq H2). apply subterm_sn with (t := sub s t).
+eapply Vforall_in with (n := arity f). apply H0. apply Vin_map_intro. hyp.
+apply subterm_sub. assumption.
 Qed.
 
 (***********************************************************************)
@@ -85,7 +85,7 @@ Lemma sn_var : forall v, SNR (Var v).
 
 Proof.
 intro. apply SN_intro. intros t H. redtac. ded (is_notvar_lhs_elim hyp1 H).
-decomp H2. subst l. rewrite app_fun in H0. destruct c; discr.
+decomp H2. subst l. rewrite sub_fun in H0. destruct c; discr.
 Qed.
 
 (***********************************************************************)
@@ -103,27 +103,28 @@ elim H1. intros.
 apply SN_intro. change (forall y, Red (Fun f x) y -> SNR y). intros.
 redtac. subst y. destruct c; simpl in H5; simpl.
 (* C = Hole *)
-case (fun_eq_app H5); intro H6; destruct H6.
+case (fun_eq_sub H5); intro H6; destruct H6.
 (* lhs is Fun *)
 cut (defined f R = true). rewrite H. intro. discriminate.
 eapply lhs_fun_defined. apply H6. apply H4.
 (* lhs is Var *)
 subst l. is_var_lhs.
 (* C <> Hole *)
-Funeqtac. subst x. apply H3. unfold gt. eapply Vgt_prod_cast. apply Vgt_prod_app.
+Funeqtac. subst x. apply H3. unfold gt. eapply Vgt_prod_cast.
+apply Vgt_prod_app.
 apply Vgt_prod_cons. left. split. 2: reflexivity. apply red_rule. assumption.
 Qed.
 
 (***********************************************************************)
 (** application of an sn substitution to a term without defined symbols *)
 
-Lemma no_call_app_sn : forall t, calls R t = nil -> forall s,
-  (forall x, In x (vars t) -> SNR (s x)) -> SNR (app s t).
+Lemma no_call_sub_sn : forall t, calls R t = nil -> forall s,
+  (forall x, In x (vars t) -> SNR (s x)) -> SNR (sub s t).
 
 Proof.
 intro. pattern t. apply term_ind_forall; clear t; intros.
 ded (H0 v). apply H1. simpl. auto.
-rewrite app_fun. pattern (defined f R). apply bool_eq_ind; intro.
+rewrite sub_fun. pattern (defined f R). apply bool_eq_ind; intro.
 simpl in H0. rewrite H2 in H0. discriminate.
 apply sn_args_sn_fun. assumption. apply Vforall_map_intro. apply Vforall_intro.
 intros. ded (Vforall_in H H3). apply H4.
@@ -134,27 +135,27 @@ Qed.
 
 (***********************************************************************)
 (** given a substitution [s] that is sn on [vars r],
-if [app s (Fun g vs)] is sn whenever [Fun g vs] is a call in [r]
-such that [Vmap (app s) vs] are sn,
-then [app s (Fun g vs)] is sn whenever [Gun g vs] is a call in [r] *)
+if [sub s (Fun g vs)] is sn whenever [Fun g vs] is a call in [r]
+such that [Vmap (sub s) vs] are sn,
+then [sub s (Fun g vs)] is sn whenever [Gun g vs] is a call in [r] *)
 
 Require Export ACap.
 
 Lemma calls_sn_args : forall r s, (forall x, In x (vars r) -> SNR (s x))
   -> (forall g vs, In (Fun g vs) (calls R r)
-                   -> Vforall SNR (Vmap (app s) vs) -> SNR (app s (Fun g vs)))
-  -> forall g vs, In (Fun g vs) (calls R r) -> Vforall SNR (Vmap (app s) vs).
+                   -> Vforall SNR (Vmap (sub s) vs) -> SNR (sub s (Fun g vs)))
+  -> forall g vs, In (Fun g vs) (calls R r) -> Vforall SNR (Vmap (sub s) vs).
 
 Proof.
 intros r s H H0. cut (forall a g vs, a = Fun g vs
-  -> In a (calls R r) -> Vforall SNR (Vmap (app s) vs)).
+  -> In a (calls R r) -> Vforall SNR (Vmap (sub s) vs)).
 intros. apply H1 with (a := Fun g vs). refl. assumption.
 intro a. pattern a. apply subterm_ind. clear a. intros. subst t.
 apply Vforall_intro. intros w H2.
 ded (Vin_map H2). destruct H4 as [v]. destruct H4. subst w.
-assert (v = app (alien_sub R v) (cap R v)). apply sym_eq.
+assert (v = sub (alien_sub R v) (cap R v)). apply sym_eq.
 apply (alien_sub_cap R).
-rewrite H5. rewrite app_app. apply no_call_app_sn. apply calls_cap. intros.
+rewrite H5. rewrite sub_sub. apply no_call_sub_sn. apply calls_cap. intros.
 (* begin assert *)
 assert (subterm v r). eapply subterm_trans_eq2 with (u := Fun g vs).
 apply subterm_fun. assumption. eapply in_calls_subterm. apply H3.
@@ -181,8 +182,8 @@ Qed.
 
 Lemma calls_sn : forall r s, (forall x, In x (vars r) -> SNR (s x))
   -> (forall g vs, In (Fun g vs) (calls R r)
-                   -> Vforall SNR (Vmap (app s) vs) -> SNR (app s (Fun g vs)))
-  -> forall a, In a (calls R r) -> SNR (app s a).
+                   -> Vforall SNR (Vmap (sub s) vs) -> SNR (sub s (Fun g vs)))
+  -> forall a, In a (calls R r) -> SNR (sub s a).
 
 Proof.
 intros. ded (in_calls H1). destruct H2 as [g]. destruct H2 as [vs].

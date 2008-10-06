@@ -44,7 +44,7 @@ Module Term <: Eqset.
 
   Lemma sid_theoryA : Setoid_Theory A eqA.
   Proof.
-    constructor.
+    constructor; unfold Reflexive, Symmetric, Transitive.
     unfold eqA; simpl; trivial.
     unfold eqA; intros; subst; trivial.
     unfold eqA; intros; subst; trivial.

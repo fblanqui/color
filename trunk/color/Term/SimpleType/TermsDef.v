@@ -8,7 +8,7 @@ This file provides a definition of terms of simply typed
 lambda-calculus.
 *)
 
-(* $Id: TermsDef.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: TermsDef.v,v 1.4 2008-10-06 03:22:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -107,7 +107,7 @@ Module TermsDef (Sig : Signature).
    (* 
       Preterm represents the set of preterms
     *)
-  Inductive Preterm : Set :=
+  Inductive Preterm : Type :=
    | Var(x: nat)
    | Fun(f: FunctionSymbol)
    | Abs(A: SimpleType)(M: Preterm)
@@ -128,7 +128,7 @@ Module TermsDef (Sig : Signature).
   Notation "\ A => M" := (Abs A M) (at level 35).
 
   Reserved Notation "E |- Pt := A" (at level 60).
-  Inductive Typing : Env -> Preterm -> SimpleType -> Set :=
+  Inductive Typing : Env -> Preterm -> SimpleType -> Type :=
   | TVar: forall E x A, 
             E |= x := A -> 
             E |- %x := A
@@ -151,14 +151,14 @@ Module TermsDef (Sig : Signature).
   Hint Extern 5 (?X1 |- \?X2 => ?X3 := ?X4) =>
          (apply TAbs; auto with terms) : terms.
 
-  Record Term : Set := buildT { 
+  Record Term : Type := buildT { 
     env: Env;
     term: Preterm;
     type: SimpleType; 
     typing: Typing env term type
   }.
   Implicit Types M N T : Term.
-  Definition TermTyping M : Set := Typing M.(env) M.(term) M.(type).
+  Definition TermTyping M : Type := Typing M.(env) M.(term) M.(type).
 
   Ltac term_inv X := 
      let  env := fresh "E"

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: VTrs.v,v 1.4 2007-05-29 09:05:57 blanqui Exp $ *)
+(* $Id: VTrs.v,v 1.5 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,20 +24,20 @@ Require Export VTerm.
 
 Notation term := (term Sig).
 
-Record rule : Set := mkRule { lhs : term; rhs : term }.
+Record rule : Type := mkRule { lhs : term; rhs : term }.
 
 Require Export VContext.
 Require Export VSubstitution.
 
 Definition red R t1 t2 := exists l, exists r, exists c, exists s,
-  In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
+  In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
 Definition hd_red R t1 t2 := exists l, exists r, exists s,
-  In (mkRule l r) R /\ t1 = app s l /\ t2 = app s r.
+  In (mkRule l r) R /\ t1 = sub s l /\ t2 = sub s r.
 
 Definition int_red R t1 t2 := exists l, exists r, exists c, exists s,
   c <> Hole
-  /\ In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
+  /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
 Require Export RelUtil.
 
@@ -86,14 +86,14 @@ Notation rule := (rule Sig).
 Variable R : list rule.
 
 Lemma red_rule : forall l r c s,
-  In (mkRule l r) R -> red R (fill c (app s l)) (fill c (app s r)).
+  In (mkRule l r) R -> red R (fill c (sub s l)) (fill c (sub s r)).
 
 Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
 Lemma red_rule_top : forall l r s,
-  In (mkRule l r) R -> red R (app s l) (app s r).
+  In (mkRule l r) R -> red R (sub s l) (sub s r).
 
 Proof.
 intros. unfold red. exists l . exists r. exists (@Hole Sig). exists s. auto.

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 paths
 *)
 
-(* $Id: Path.v,v 1.18 2008-05-21 16:33:04 blanqui Exp $ *)
+(* $Id: Path.v,v 1.19 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -185,7 +185,7 @@ End S.
 
 Section S2.
 
-Variable A : Set.
+Variable A : Type.
 Variable eqdec : eq_dec A.
 Variable R : relation A.
 

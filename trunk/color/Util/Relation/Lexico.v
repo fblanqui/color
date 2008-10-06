@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lexicographic ordering
 *)
 
-(* $Id: Lexico.v,v 1.5 2008-05-07 15:26:30 blanqui Exp $ *)
+(* $Id: Lexico.v,v 1.6 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,7 +18,7 @@ Require Export SN.
 
 Section lexp.
 
-Variable (A : Set) (gtA eqA : relation A) (Hcomp : eqA @ gtA << gtA).
+Variable (A : Type) (gtA eqA : relation A) (Hcomp : eqA @ gtA << gtA).
 
 Lemma SN_compat : forall a, SN gtA a -> forall a', eqA a a' -> SN gtA a'.
 
@@ -27,7 +27,7 @@ intros a SN_a a' eqaa'. apply SN_intro. intros a'' gta'a''.
 inversion SN_a. apply H. apply (incl_elim Hcomp). exists a'. auto.
 Qed.
 
-Variable (B : Set) (gtB : relation B).
+Variable (B : Type) (gtB : relation B).
 
 Inductive lexp : relation (prod A B) :=
 | lexp1 : forall a a' b b', gtA a a' -> lexp (a,b) (a',b')
@@ -80,7 +80,7 @@ End lexp.
 
 Section lex.
 
-Variable (A : Set) (gtA eqA gtA' : relation A)
+Variable (A : Type) (gtA eqA gtA' : relation A)
   (eqA_trans : transitive eqA) (Hcomp : eqA @ gtA << gtA)
   (WF_gtA : WF gtA) (WF_gtA' : WF gtA').
 
@@ -96,7 +96,7 @@ End lex.
 
 Section lex'.
 
-Variable (A : Set) (gt1 gt2 : relation A)
+Variable (A : Type) (gt1 gt2 : relation A)
   (WF_gt1 : WF gt1) (WF_gt2 : WF gt2)
   (trans_gt2 : transitive gt2) (Hcomp : gt2 @ gt1 << gt1).
 

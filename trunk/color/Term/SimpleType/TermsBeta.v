@@ -8,7 +8,7 @@ The beta-reduction relation of simply typed lambda-calculus
 is introduced in this file.
 *)
 
-(* $Id: TermsBeta.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: TermsBeta.v,v 1.4 2008-10-06 03:22:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -338,13 +338,13 @@ Module TermsBeta (Sig : TermsSig.Signature).
       (term (lift N 1)) (term (lift N' 1))
     ).
     destruct Q; simpl; trivial.
-    assert (Conv: absBody MLabs ~(envSubst_lift1 Q) absBody M'Labs).
+    assert (Conv: (absBody MLabs) ~(envSubst_lift1 Q) (absBody M'Labs)).
     apply abs_conv_absBody_aux.
     apply app_conv_app_left_aux; trivial.
     destruct Conv; trivial.
     apply terms_conv_conv_lift.
     apply app_conv_app_right_aux; trivial.
-    assert (Conv: lift N 1 ~(envSubst_lift1 Q) lift N' 1).
+    assert (Conv: (lift N 1) ~(envSubst_lift1 Q) (lift N' 1)).
     apply terms_conv_conv_lift; trivial.
     destruct Conv; trivial.
     rewrite <- H0.

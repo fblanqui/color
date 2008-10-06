@@ -33,13 +33,14 @@ Notation decomp := (list rules).
 (***********************************************************************)
 (** we assume given a decidable graph on rules *)
 
-Variable g : rule -> rule -> bool.
-Definition G x y := g x y = true.
+Variable approx : rule -> rule -> bool.
+
+Definition Graph x y := approx x y = true.
 
 (***********************************************************************)
-(** we assume that G is an over graph of (hd_rules_graph S R) *)
+(** we assume that Graph is an over graph of (hd_rules_graph S R) *)
 
-Variable hypG : hd_rules_graph S R << G.
+Variable approx_correct : hd_rules_graph S R << Graph.
 
 (***********************************************************************)
 (** a decomposition cs = [c1; ..; cn] is valid wrt R if for all i, for
@@ -52,7 +53,7 @@ Fixpoint valid_decomp (cs : decomp) : bool :=
     | ci :: cs' => valid_decomp cs' &&
       forallb (fun b =>
         forallb (fun cj =>
-          forallb (fun c => negb (g b c)) cj)
+          forallb (fun c => negb (approx b c)) cj)
         cs')
       ci
   end.
@@ -92,14 +93,14 @@ Implicit Arguments In_Union_elim [cs x y].
 Lemma WF_hd_red_Mod_decomp :
   forall (hypR : rules_preserv_vars R)
     (cs : decomp)
-    (hypl2 : incl (flat cs) R)
-    (hypl3 : valid_decomp cs = true)
-    (hypl4 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
+    (hyp2 : incl (flat cs) R)
+    (hyp3 : valid_decomp cs = true)
+    (hyp4 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
     WF (Union cs).
 
 Proof.
 induction cs; simpl; intros. apply WF_empty_rel.
-ded (andb_elim hypl3). clear hypl3. intuition. apply WF_union; try hyp.
+ded (andb_elim hyp3). clear hyp3. intuition. apply WF_union; try hyp.
 Focus 2. apply IHcs; try hyp. apply incl_appl_incl with a. hyp.
 clear IHcs H0 H1 H2. intros t v h. destruct h. destruct H. redtac.
 rewrite forallb_forall in H3. ded (H3 _ H1). clear H3.
@@ -107,8 +108,8 @@ destruct (In_Union_elim H0). destruct H3. clear H0. redtac.
 rewrite forallb_forall in H5. ded (H5 _ H3). clear H5.
 rewrite forallb_forall in H9. ded (H9 _ H6). clear H9.
 symmetry in H5. ded (negb_sym _ _ H5). clear H5. simpl in H9.
-absurd (G (mkRule l r) (mkRule l0 r0)). unfold G. rewrite H9. discr. clear H9.
-apply hypG.
+absurd (Graph (mkRule l r) (mkRule l0 r0)). unfold Graph. rewrite H9. discr.
+clear H9. apply approx_correct.
 apply hd_red_Mod_rule2_hd_rules_graph with (t := t) (u := x) (v := v);
   unfold hd_red_Mod_rule; subst; intuition. exists s. intuition.
 assert (incl x0 R). apply incl_tran with (flat cs). apply In_incl_flat. hyp.
@@ -119,10 +120,10 @@ Qed.
 Lemma WF_decomp :
   forall (hypR : rules_preserv_vars R)
     (cs : decomp)
-    (hypl1 : incl R (flat cs))
-    (hypl2 : incl (flat cs) R)
-    (hypl3 : valid_decomp cs = true)
-    (hypl4 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
+    (hyp1 : incl R (flat cs))
+    (hyp2 : incl (flat cs) R)
+    (hyp3 : valid_decomp cs = true)
+    (hyp4 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
     WF (hd_red_Mod S R).
 
 Proof.
@@ -131,3 +132,17 @@ apply WF_hd_red_Mod_decomp; hyp.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac incl_flat := unfold incl, dp; simpl; intuition.
+
+Ltac graph_decomp f d :=
+  apply WF_decomp with (approx := f) (cs := d);
+  [idtac
+    | rules_preserv_vars
+    | incl_flat
+    | incl_flat
+    | vm_compute; refl
+    | simpl; intuition].

@@ -8,7 +8,7 @@ This file provides an implementation of finite multisets using list
 representation.
 *)
 
-(* $Id: MultisetList.v,v 1.4 2008-01-23 10:23:27 blanqui Exp $ *)
+(* $Id: MultisetList.v,v 1.5 2008-10-06 03:22:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -43,7 +43,7 @@ Section Operations.
 
   Definition intersection := inter_as_diff diff.
 
-  Definition fold_left := fun T: Set => List.fold_left (A:=T)(B:=A).
+  Definition fold_left := fun T : Type => List.fold_left (A := T) (B := A).
 
 End Operations.
 

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.39 2008-09-24 10:20:55 joerg Exp $ *)
+(* $Id: ATrs.v,v 1.40 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,7 +23,7 @@ Notation term := (term Sig). Notation terms := (vector term).
 (***********************************************************************)
 (** rule *)
 
-Record rule : Set := mkRule { lhs : term; rhs : term }.
+Record rule : Type := mkRule { lhs : term; rhs : term }.
 
 Lemma eq_rule_dec : forall a b : rule, {a=b}+{~a=b}.
 
@@ -83,14 +83,14 @@ Section rewriting.
 Variable R : rules.
 
 Definition red t1 t2 := exists l, exists r, exists c, exists s,
-  In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
+  In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
 Definition hd_red t1 t2 := exists l, exists r, exists s,
-  In (mkRule l r) R /\ t1 = app s l /\ t2 = app s r.
+  In (mkRule l r) R /\ t1 = sub s l /\ t2 = sub s r.
 
 Definition int_red t1 t2 := exists l, exists r, exists c, exists s,
   c <> Hole
-  /\ In (mkRule l r) R /\ t1 = fill c (app s l) /\ t2 = fill c (app s r).
+  /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
 End rewriting.
 
@@ -134,8 +134,8 @@ Ltac redtac := repeat
     | H : red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
       let s := fresh "s" in let h1 := fresh in
-      (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
-      destruct H as [s]; destruct H as [H h1]; destruct h1)
+      (unfold red in H; destruct H as [l]; destruct H as [r];
+       destruct H as [c]; destruct H as [s]; destruct H as [H h1]; destruct h1)
     | H : transp (red _) _ _ |- _ => unfold transp in H; redtac
     | H : hd_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in
@@ -161,8 +161,10 @@ Ltac redtac := repeat
         (destruct H as [t h]; destruct h; redtac)
   end.
 
-Ltac is_var_lhs := cut False; [tauto | eapply is_notvar_lhs_false; eassumption].
-Ltac is_var_rhs := cut False; [tauto | eapply is_notvar_rhs_false; eassumption].
+Ltac is_var_lhs := cut False;
+  [tauto | eapply is_notvar_lhs_false; eassumption].
+Ltac is_var_rhs := cut False;
+  [tauto | eapply is_notvar_rhs_false; eassumption].
 
 (***********************************************************************)
 (** properties *)
@@ -186,7 +188,7 @@ Section rewriting.
 Variable R R' : rules.
 
 Lemma red_rule : forall l r c s, In (mkRule l r) R ->
-  red R (fill c (app s l)) (fill c (app s r)).
+  red R (fill c (sub s l)) (fill c (sub s r)).
 
 Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
@@ -199,14 +201,14 @@ intros. induction H. redtac. contradiction. refl. congruence.
 Qed.
 
 Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
-  red R (app s l) (app s r).
+  red R (sub s l) (sub s r).
 
 Proof.
 intros. unfold red. exists l. exists r. exists (@Hole Sig). exists s. auto.
 Qed.
 
 Lemma hd_red_rule : forall l r s, In (mkRule l r) R ->
-  hd_red R (app s l) (app s r).
+  hd_red R (sub s l) (sub s r).
 
 Proof.
 intros. unfold hd_red. exists l. exists r. exists s. auto.
@@ -225,7 +227,7 @@ Lemma red_subterm : forall u u' t, red R u u' -> subterm_eq u t
 
 Proof.
 unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
-subst u'. exists (fill (AContext.comp d c) (app s r)). split.
+subst u'. exists (fill (AContext.comp d c) (sub s r)). split.
 exists l. exists r. exists (AContext.comp d c). exists s. split. assumption.
 rewrite fill_comp. auto. exists d. rewrite fill_comp. refl.
 Qed.
@@ -238,8 +240,8 @@ Lemma int_red_fun : forall f ts v, int_red R (Fun f ts) v
 Proof.
 intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. clear H.
 simpl in H1.
-Funeqtac. exists i. exists v0. exists (fill c (app s l)). exists j. exists v1.
-exists e. exists (fill c (app s r)). split. assumption. split. assumption.
+Funeqtac. exists i. exists v0. exists (fill c (sub s l)). exists j. exists v1.
+exists e. exists (fill c (sub s r)). split. assumption. split. assumption.
 unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
@@ -290,8 +292,8 @@ Lemma int_red_preserv_hd : forall t1 t2, int_red R t1 t2 ->
 Proof.
 intros. do 5 destruct H. intuition. destruct x1. congruence.
 simpl in *. exists f.
-exists (Vcast (Vapp v (Vcons (fill x1 (ASubstitution.app x2 x)) v0)) e).
-exists (Vcast (Vapp v (Vcons (fill x1 (ASubstitution.app x2 x0)) v0)) e).
+exists (Vcast (Vapp v (Vcons (fill x1 (sub x2 x)) v0)) e).
+exists (Vcast (Vapp v (Vcons (fill x1 (sub x2 x0)) v0)) e).
 tauto.
 Qed.
 
@@ -324,9 +326,9 @@ Lemma red_preserv_vars : preserv_vars (red R).
 
 Proof.
 unfold preserv_vars. intros. redtac. subst t. subst u.
-apply incl_tran with (cvars c ++ vars (app s r)). apply vars_fill_elim.
-apply incl_tran with (cvars c ++ vars (app s l)). apply appl_incl.
-apply incl_vars_app. apply hyp. exact H.
+apply incl_tran with (cvars c ++ vars (sub s r)). apply vars_fill_elim.
+apply incl_tran with (cvars c ++ vars (sub s l)). apply appl_incl.
+apply incl_vars_sub. apply hyp. exact H.
 apply vars_fill_intro.
 Qed.
 
@@ -345,6 +347,53 @@ apply List.incl_refl. apply incl_tran with (vars y); assumption.
 Qed.
 
 End vars.
+
+Require Import AVariables.
+
+Definition rule_preserv_vars_bool (a : rule) :=
+  subset (vars (rhs a)) (vars (lhs a)).
+
+Definition rules_preserv_vars_bool := forallb rule_preserv_vars_bool.
+
+Lemma vars_equiv : forall x (t : term),
+  List.In x (ATerm.vars t) <-> In x (vars t).
+
+Proof.
+intros x t0. pattern t0. apply term_ind with (Q := fun n (ts : terms n) =>
+  List.In x (vars_vec ts) <-> In x (vars_terms ts)).
+intro. simpl. set_iff. intuition.
+intros. rewrite ATerm.vars_fun. rewrite vars_fun. hyp.
+simpl. set_iff. intuition.
+intros. simpl. set_iff. rewrite in_app. intuition.
+Qed.
+
+Lemma rule_preserv_vars_dec : forall l r : term,
+  incl (ATerm.vars r) (ATerm.vars l) <->
+  rule_preserv_vars_bool (mkRule l r) = true.
+
+Proof.
+unfold rule_preserv_vars_bool. intros. rewrite subset_Subset.
+split; intros h x. simpl. repeat rewrite <- vars_equiv. intuition.
+repeat rewrite vars_equiv. intuition.
+Qed.
+
+Lemma rule_preserv_vars_dec' : forall a : rule,
+  rule_preserv_vars_bool a = true <->
+  incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a)).
+
+Proof.
+intro. destruct a. rewrite rule_preserv_vars_dec. tauto.
+Qed.
+
+Lemma rules_preserv_vars_dec : forall R : rules,
+  rules_preserv_vars R <-> rules_preserv_vars_bool R = true.
+
+Proof.
+intro. unfold rules_preserv_vars_bool, rules_preserv_vars.
+rewrite forallb_forall. intuition.
+destruct x. rewrite <- rule_preserv_vars_dec. auto.
+rewrite rule_preserv_vars_dec. auto.
+Qed.
 
 (***********************************************************************)
 (** rewriting vectors of terms *)
@@ -431,7 +480,7 @@ End union.
 
 Section rewriting_modulo_results.
 
-Variables (S S' : relation term) (R R' E E' : rules).
+Variables (S S' : relation term) (E E' R R' : rules).
 
 Lemma hd_red_Mod_incl :
   S << S' -> incl R R' -> hd_red_Mod S R << hd_red_Mod S' R'.
@@ -475,7 +524,7 @@ Qed.
 Lemma red_mod_empty_incl_red : red_mod empty_trs R << red R.
 
 Proof.
-intros s t Rst. destruct Rst as [s' [ss' Rst]].
+intros u v Ruv. destruct Ruv as [s' [ss' Ruv]].
 rewrite (red_empty ss'). assumption.
 Qed.
 
@@ -526,13 +575,13 @@ Variable R R' : rules.
 Lemma red_incl_red_mod : red R << red_mod empty_trs R.
 
 Proof.
-intros s t Rst. exists s. split. constructor 2. assumption.
+intros u v Ruv. exists u. split. constructor 2. assumption.
 Qed.
 
 Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod empty_trs R.
 
 Proof.
-intros s t Rst. exists s. split. constructor 2. assumption.
+intros u v Ruv. exists u. split. constructor 2. assumption.
 Qed.
 
 End termination_as_relative_term.
@@ -549,8 +598,8 @@ Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 ded (in_app_or H0). destruct H1.
-left. exists (fill c (app s l)); split. assumption. apply red_rule. exact H1.
-right. exists (fill c (app s l)); split. assumption. apply red_rule. exact H1.
+left. exists (fill c (sub s l)); split. assumption. apply red_rule. exact H1.
+right. exists (fill c (sub s l)); split. assumption. apply red_rule. exact H1.
 Qed.
 
 Lemma hd_red_mod_union :
@@ -559,8 +608,8 @@ Lemma hd_red_mod_union :
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 ded (in_app_or H0). destruct H1.
-left. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
-right. exists (app s l); split. assumption. apply hd_red_rule. exact H1.
+left. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
+right. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
 Qed.
 
 Lemma hd_red_mod_min_union :
@@ -569,8 +618,8 @@ Lemma hd_red_mod_min_union :
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0. subst y.
 ded (in_app_or H1). destruct H2.
-left. split. exists (app s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
-right. split. exists (app s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
+left. split. exists (sub s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
+right. split. exists (sub s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
 Qed.
 
 End union_modulo.
@@ -585,42 +634,54 @@ Implicit Arguments int_red_fun [Sig R f ts v].
 (***********************************************************************)
 (** tactics *)
 
-Ltac solve_termination R lemma :=
-  match type of R with
-  | list ?rule => first 
-    [ solve [replace R with (nil (A:=rule));
-      [apply lemma | norm R; trivial]]
-    | fail "The termination problem is non-trivial"]
-  | list ?rule => first 
-    [ solve [replace R with (nil (A:=rule));
-      [apply lemma | vm_compute; trivial]]
-    | fail "The termination problem is non-trivial"]
-  | _ => fail "Unrecognized TRS type"
+Ltac set_Sig_to x :=
+  match goal with
+  | |- WF (@hd_red_Mod ?S _ _) => set (x := S)
+  | |- WF (@hd_red_mod ?S _ _) => set (x := S)
   end.
 
-Ltac termination_trivial := 
+Ltac set_rules_to x :=
   match goal with
-  | |- WF (red ?R) => solve_termination R WF_red_empty
-  | |- WF (red_mod ?E ?R) => solve_termination R WF_red_mod_empty
-  | |- WF (hd_red_mod ?E ?R) => solve_termination R WF_hd_red_mod_empty
-  | _ => fail "The goal does not seem to be a termination problem"
+  | |- WF (hd_red_Mod _ ?R) => set (x := R)
+  | |- WF (hd_red_mod _ ?R) => set (x := R)
+  | |- WF (red_mod _ ?R) => set (x := R)
+  | |- WF (red ?R) => set (x := R)
   end.
+
+Ltac set_Mod_to x :=
+  match goal with
+  | |- WF (hd_red_Mod ?S _) => set (x := S)
+  | |- WF (hd_red_mod ?E _) => set (x := red E #)
+  end.
+
+Ltac hd_red_mod :=
+  match goal with
+  | |- WF (hd_red_Mod _ _) =>
+    eapply WF_incl;
+    [(apply hd_red_mod_of_hd_red_Mod || apply hd_red_mod_of_hd_red_Mod_int)
+      | idtac]
+  | |- WF (hd_red_mod _ _) => idtac
+  end.
+
+Ltac termination_trivial :=
+  let R := fresh in set_rules_to R; norm R;
+  (apply WF_hd_red_mod_empty || apply WF_red_mod_empty || apply WF_red_empty).
 
 Ltac no_relative_rules :=
   match goal with
-    |- WF (@red_mod ?S ?E _) =>
-      norm E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
+    |- WF (red_mod ?E _) =>
+      norm E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
     | _ => idtac
   end.
 
 Ltac rules_preserv_vars :=
+  (*rewrite rules_preserv_vars_dec; refl.*)
+  (* computation is not faster than tactic in this case! *)
   match goal with
     | |- rules_preserv_vars ?R =>
-      unfold rules_preserv_vars; let T := elt_type R in
-        let P := fresh in
-          set (P := fun a : T => incl (vars (rhs a)) (vars (lhs a)));
-            let H := fresh in assert (H : lforall P R);
-              [unfold P, incl; simpl; intuition
-                | let H0 := fresh in
-                  do 2 intro; intro H0; apply (lforall_in H H0)]
+      unfold rules_preserv_vars; let H := fresh in
+      assert (H :
+        lforall (fun a => incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a))) R);
+        [unfold incl; simpl; intuition
+        | let H0 := fresh in do 2 intro; intro H0; apply (lforall_in H H0)]
   end.

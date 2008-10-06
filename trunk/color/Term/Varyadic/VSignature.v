@@ -7,14 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 signature for algebraic terms with no arity
 *)
 
-(* $Id: VSignature.v,v 1.3 2007-05-29 11:58:35 blanqui Exp $ *)
+(* $Id: VSignature.v,v 1.4 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Notation variable := nat (only parsing).
 
 Record Signature : Type := mkSignature {
-  symbol :> Set;
+  symbol :> Type;
   eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}
 }.
 

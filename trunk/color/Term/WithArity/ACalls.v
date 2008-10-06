@@ -7,27 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.9 2008-05-14 14:30:54 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.10 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
+Require Export ATrs.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
-
-Require Export ATrs.
-
-Notation rule := (rule Sig).
-Notation rules := (list rule).
+Notation term := (term Sig). Notation terms := (vector term).
+Notation rule := (rule Sig). Notation rules := (list rule).
 
 (***********************************************************************)
 (** check whether [f] is defined by [l] *)

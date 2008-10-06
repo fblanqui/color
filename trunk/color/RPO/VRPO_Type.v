@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.10 2007-06-19 17:45:51 koper Exp $ *)
+(* $Id: VRPO_Type.v,v 1.11 2008-10-06 03:22:28 blanqui Exp $ *)
 
 Require Export VPrecedence.
 
@@ -190,14 +190,15 @@ Module Status (PT : VPrecedenceType).
       intros.
       assert (eq_comp : forall x x' y y', x = x' -> y = y' -> 
         (transp R) x y -> (transp R) x' y').
-      intuition. rewrite <- H0. rewrite <- H1. assumption.
-      destruct (@mOrd_dec_aux (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
+      intuition. rewrite <- H. rewrite <- H0. assumption.
+      destruct (@mOrd_dec_aux
+        (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
       assert (R_transp_dec : forall t s, In t ts -> In s ss ->
         {(transp R) s t} + {~(transp R) s t}).
-      intros. destruct (H t s); intuition.
+      intros. destruct (X t s); intuition.
       intros. apply R_transp_dec. 
-      destruct (member_multiset_list ts H1). compute in H3. rewrite H3. assumption.
-      destruct (member_multiset_list ss H0). compute in H3. rewrite H3. assumption.
+      destruct (member_multiset_list ts H0). compute in H2. rewrite H2. hyp.
+      destruct (member_multiset_list ss H). compute in H2. rewrite H2. hyp.
       intuition. intuition.
     Defined.
 

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 *)
 
-(* $Id: VecOrd.v,v 1.9 2008-05-14 12:26:56 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.10 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Require Export VecUtil.
 
 Section S.
 
-Variables (A : Set) (gtA : A->A->Prop).
+Variables (A : Type) (gtA : A->A->Prop).
 
 Notation vec := (vector A).
 

@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.43 2008-08-07 15:44:43 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.44 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -349,6 +349,12 @@ Section In.
 
 Variable A : Type.
 
+Lemma in_app : forall l m (x : A), In x (l ++ m) <-> In x l \/ In x m.
+
+Proof.
+intuition.
+Qed.
+
 Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
 Proof.
@@ -366,9 +372,7 @@ Lemma in_app_com : forall (x : A) l1 l2 l3,
   In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
 
 Proof.
-intros. ded (in_app_or H). destruct H0. ded (in_app_or H0). destruct H1.
-rewrite app_ass. apply in_appl. exact H1. apply in_appr. exact H1.
-rewrite app_ass. apply in_appr. apply in_appl. exact H0.
+intros. repeat rewrite in_app in H. intuition.
 Qed.
 
 Lemma in_elim : forall (x : A) l,
@@ -494,9 +498,7 @@ Lemma app_incl : forall l1 l1' l2 l2' : list A,
   incl l1 l1' -> incl l2 l2' -> incl (l1 ++ l2) (l1' ++ l2').
 
 Proof.
-intros. unfold incl. intros. ded (in_app_or H1). destruct H2.
-ded (H _ H2). apply in_appl. exact H3.
-ded (H0 _ H2). apply in_appr. exact H3.
+intros. unfold incl. intro. repeat rewrite in_app. intuition.
 Qed.
 
 Lemma appl_incl : forall l l2 l2' : list A,
@@ -583,7 +585,7 @@ Fixpoint Inb (x : A) (l : list A) {struct l} : bool :=
 	| _ => Inb x l'
       end
   end.
-
+ 
 Lemma Inb_true : forall x l, Inb x l = true -> In x l.
 
 Proof.
@@ -609,6 +611,12 @@ Lemma Inb_elim : forall x l, ~In x l -> Inb x l = false.
 Proof.
 induction l; simpl; intros. refl. case (eq_dec x a). intro. subst x. intuition.
 intuition.
+Qed.
+
+Lemma Inb_correct : forall x l, In x l <-> Inb x l = true.
+
+Proof.
+intuition. apply Inb_intro. hyp. apply Inb_true. hyp.
 Qed.
 
 Lemma Inb_incl : forall x l l', incl l l' -> Inb x l = true -> Inb x l' = true.
@@ -1135,7 +1143,7 @@ End partition_by_rel.
 
 Section ListFilter.
 
-Variable A : Set.
+Variable A : Type.
 
 Fixpoint listfilter (L : list A) l {struct L} :=
   match L with
@@ -1407,7 +1415,7 @@ Lemma ith_eq_app : forall m l i (hi : i < length (l++m)) j (hj : j < length l),
   i = j -> ith hi = ith hj.
 
 Proof.
-induction l; simpl; intros. absurd_hyp hj; omega. subst j.
+induction l; simpl; intros. contradict hj; omega. subst j.
 destruct i. refl. apply IHl. refl.
 Qed.
 

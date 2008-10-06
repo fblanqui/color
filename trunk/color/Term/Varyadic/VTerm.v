@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: VTerm.v,v 1.10 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,7 @@ Variable Sig : Signature.
 
 Require Export List.
 
-Inductive term : Set :=
+Inductive term : Type :=
   | Var : variable -> term
   | Fun : forall f : Sig, list term -> term.
 
@@ -65,7 +65,7 @@ End term_rect.
 
 Definition term_ind (P : term -> Prop) (Q : terms -> Prop) := term_rect P Q.
 
-Definition term_rec (P : term -> Set) (Q : terms -> Set) := term_rect P Q.
+(*Definition term_rec (P : term -> Set) (Q : terms -> Set) := term_rect P Q.*)
 
 Require Import ListForall.
 
@@ -99,7 +99,7 @@ Require Export ListUtil.
 
 Variable term_eq_dec : forall t u : term, {t=u} + {t<>u}.
 
-Lemma term_rec_forall : forall (P : term -> Set)
+Lemma term_rect_forall : forall (P : term -> Type)
   (H1 : forall x, P (Var x))
   (H2 : forall f v, (forall t, Inb term_eq_dec t v = true -> P t) ->
     P (Fun f v)),
@@ -110,7 +110,7 @@ intros. apply term_rect with
   (Q := fun v => forall t, Inb term_eq_dec t v = true -> P t); simpl.
 assumption. assumption. intros. discriminate.
 intros. destruct (term_eq_dec t1 t0). subst t1. assumption. 
-apply H0. assumption.
+apply X0. assumption.
 Qed.
 
 End term_rec_forall.
@@ -141,7 +141,7 @@ Require Import Peano_dec.
 Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
 
 Proof.
-  intro. pattern t. apply term_rec with
+  intro. pattern t. apply term_rect with
     (Q := fun ts : terms => forall us, {ts=us} + {~ts=us}); clear t; intros.
   destruct u. 
   destruct (eq_nat_dec x n). 
@@ -149,7 +149,7 @@ Proof.
   right. discriminate.
   destruct u. 
   right. discriminate.
-  destruct (eq_symbol_dec f f0). destruct (H l).
+  destruct (eq_symbol_dec f f0). destruct (X l).
   left. congruence.
   right. intro diff. apply n. congruence.
   right. intro diff. apply n. congruence.
@@ -158,8 +158,8 @@ Proof.
   right. discriminate.
   destruct us. 
   right. discriminate.
-  destruct (H t0).
-  destruct (H0 us).
+  destruct (X t0).
+  destruct (X0 us).
   left. congruence.
   right. intro diff. apply n. congruence.
   right. intro diff. apply n. congruence.

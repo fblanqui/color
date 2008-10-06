@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.20 2008-06-26 12:48:10 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.21 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,7 +27,7 @@ Variable Sig : Signature.
 
 Require Export VecUtil.
 
-Inductive term : Set :=
+Inductive term : Type :=
   | Var : variable -> term
   | Fun : forall f : Sig, vector term (arity f) -> term.
 
@@ -72,8 +72,8 @@ End term_rect.
 Definition term_ind (P : term -> Prop) (Q : forall n, terms n -> Prop) :=
   term_rect P Q.
 
-Definition term_rec (P : term -> Set) (Q : forall n, terms n -> Set) :=
-  term_rect P Q.
+(*Definition term_rec (P : term -> Set) (Q : forall n, terms n -> Set) :=
+  term_rect P Q.*)
 
 Lemma term_ind_forall : forall (P : term -> Prop)
   (H1 : forall v, P (Var v))
@@ -115,6 +115,12 @@ Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
 
 Proof.
 intros. inversion H. apply (inj_pairT2 (@eq_symbol_dec _) H1).
+Qed.
+
+Lemma symb_eq : forall f us g vs, Fun f us = Fun g vs -> f = g.
+
+Proof.
+intros. inversion H. refl.
 Qed.
 
 (***********************************************************************)
@@ -197,7 +203,7 @@ Qed.
 Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
 
 Proof.
-intro. pattern t. apply term_rec with
+intro. pattern t. apply term_rect with
   (Q := fun n (ts : terms n) => forall u, {ts=u}+{~ts=u}); clear t.
 (* var *)
 intros. destruct u. case (eq_nat_dec x n); intro. subst n. auto.
@@ -212,11 +218,11 @@ right. unfold not. intro. injection H0. intros. auto.
 (* nil *)
 intro. VOtac. auto.
 (* cons *)
-intros. VSntac u. case (H (Vhead u)); intro. rewrite e.
-case (H0 (Vtail u)); intro. rewrite e0. auto.
-right. unfold not. intro. injection H2. intro. assert (v = Vtail u).
+intros. VSntac u. case (X (Vhead u)); intro. rewrite e.
+case (X0 (Vtail u)); intro. rewrite e0. auto.
+right. unfold not. intro. injection H0. intro. assert (v = Vtail u).
 apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
-right. unfold not. intro. injection H2. intros. auto.
+right. unfold not. intro. injection H0. intros. auto.
 Defined.
 
 (***********************************************************************)
@@ -569,10 +575,7 @@ Implicit Arguments Vin_size_terms_gt [Sig n ts t].
 
 Ltac Funeqtac :=
   match goal with
-    | H : @Fun ?Sig ?f ?ts = @Fun _ ?f ?us |- _ =>
-      ded (fun_eq H); clear H
-    | H : @Fun ?Sig ?f ?ts = @Fun _ ?g ?us |- _ =>
-      let H0 := fresh in let H1 := fresh in
-        (inversion H as [[H0 H1]]; clear H1; subst g;
-          ded (fun_eq H); clear H)
+    | H : @Fun _ ?f _ = @Fun _ ?f _ |- _ => ded (fun_eq H); clear H
+    | H : @Fun _ ?f _ = @Fun _ ?g _ |- _ =>
+      ded (symb_eq H); try ((subst g || subst f); ded (fun_eq H); clear H)
   end.

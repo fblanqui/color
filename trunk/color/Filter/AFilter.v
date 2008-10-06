@@ -7,20 +7,17 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.14 2008-08-07 12:55:00 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.15 2008-10-06 03:22:18 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ASignature.
+Require Export ATrs.
 
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
@@ -76,19 +73,15 @@ Proof.
 intros. simpl. apply args_eq. rewrite filters_eq. refl.
 Qed.
 
-(*
-Lemma filter_fun : forall f (ts : args f),
+(*Lemma filter_fun : forall f (ts : args f),
   filter (Fun f ts) = Fun' f (Vfilter_map filter (pi f) ts).
 
 Proof.
 intros. rewrite filter_fun_map. rewrite Vfilter_map_eq. refl.
-Qed.
-*)
+Qed.*)
 
 (***********************************************************************)
 (** filtered contexts *)
-
-Require Export AContext.
 
 Notation context := (context Sig).
 Notation context' := (AContext.context Sig').
@@ -98,13 +91,8 @@ Definition Cont' := (@Cont Sig').
 (***********************************************************************)
 (** rule filtering *)
 
-Require Export ATrs.
-
-Notation rule := (ATrs.rule Sig).
-Notation rules := (list rule).
-
-Notation rule' := (ATrs.rule Sig').
-Notation rules' := (list rule').
+Notation rule := (ATrs.rule Sig). Notation rules := (list rule).
+Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
 
 Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
 
@@ -113,17 +101,15 @@ Notation filter_rules := (List.map filter_rule).
 (***********************************************************************)
 (** properties wrt substitutions *)
 
-Require Export ASubstitution.
-
 Definition filter_subs s (x : variable) := filter (s x).
 
-Lemma filter_app : forall s t,
-  filter (app s t) = app (filter_subs s) (filter t).
+Lemma filter_sub : forall s t,
+  filter (sub s t) = sub (filter_subs s) (filter t).
 
 Proof.
 intro. apply term_ind_forall with
-(P := fun t => filter (app s t) = app (filter_subs s) (filter t)); intros.
-refl. rewrite app_fun. repeat rewrite filter_fun. rewrite app_fun.
+(P := fun t => filter (sub s t) = sub (filter_subs s) (filter t)); intros.
+refl. rewrite sub_fun. repeat rewrite filter_fun. rewrite sub_fun.
 apply args_eq. repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
 apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
 eapply Vfilter_in. apply H0. assumption.
@@ -168,7 +154,7 @@ Lemma filter_subs_closed :
 
 Proof.
 unfold substitution_closed. intros. unfold filter_ord.
-repeat rewrite filter_app. apply H. assumption.
+repeat rewrite filter_sub. apply H. assumption.
 Qed.
 
 (***********************************************************************)
@@ -333,14 +319,14 @@ Lemma red_incl_filter_red_rc : red R << filter_ord (red R' %).
 
 Proof.
 unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-elim c. simpl. right. repeat rewrite filter_app. apply red_rule_top.
+elim c. simpl. right. repeat rewrite filter_sub. apply red_rule_top.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
 intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e v c0 v0 (app s l) H1).
-rewrite (filter_cont_true f e v c0 v0 (app s r) H1). fold bs. destruct H0.
+case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e v c0 v0 (sub s l) H1).
+rewrite (filter_cont_true f e v c0 v0 (sub s r) H1). fold bs. destruct H0.
 left. simpl fill. rewrite H0. refl. right. apply red_fill. exact H0.
-left. rewrite (filter_cont_false f e v c0 v0 (app s l) H1).
-rewrite (filter_cont_false f e v c0 v0 (app s r) H1). refl.
+left. rewrite (filter_cont_false f e v c0 v0 (sub s l) H1).
+rewrite (filter_cont_false f e v c0 v0 (sub s r) H1). refl.
 Qed.
 
 Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
@@ -358,7 +344,7 @@ Lemma hd_red_incl_filter_hd_red : hd_red R << filter_ord (hd_red R').
 
 Proof.
 unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-repeat rewrite filter_app. apply hd_red_rule.
+repeat rewrite filter_sub. apply hd_red_rule.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
 Qed.
 
@@ -378,10 +364,21 @@ Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
 Proof.
 unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
 apply red_rtc_incl_filter_red_rtc. exact H.
-subst t. subst y. repeat rewrite filter_app. apply hd_red_rule.
+subst t. subst y. repeat rewrite filter_sub. apply hd_red_rule.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H0.
+Qed.
+
+Lemma WF_hd_red_mod_filter : WF (hd_red_mod E' R') -> WF (hd_red_mod E R).
+
+Proof.
+intro. eapply WF_incl. apply hd_red_mod_filter. apply WF_filter. hyp.
 Qed.
 
 End red_mod.
 
 End S.
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac filter p := hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p).

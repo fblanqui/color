@@ -8,7 +8,7 @@ Subterm Criterion from
   Dependency Pairs Revisited (Nao Hirokawa and Aart Middeldorp).
 *)
 
-(* $Id: Subterm.v,v 1.4 2008-09-24 10:51:02 joerg Exp $ *)
+(* $Id: Subterm.v,v 1.5 2008-10-06 03:22:17 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -46,7 +46,7 @@ Definition option_isSome (A : Type) (o : option A) : Prop :=
 
 Definition project (p: Projection Sig) (t : term) : is_Fun t -> term :=
   match t return (is_Fun t -> term) with
-    | Var x => fun isfun : is_Fun (Var x) => False_rec term isfun
+    | Var x => fun isfun : is_Fun (Var x) => False_rect term isfun
     | Fun f v => fun _ : is_Fun (Fun f v) => Vnth v (pi_bound p f)
   end.
 
@@ -99,7 +99,7 @@ Qed.
 
 Definition rule_is_Fun (r : rule) := is_Fun (lhs r) /\ is_Fun (rhs r).
 
-Record dprule : Set := mkDPRule { r : rule; proof : rule_is_Fun r }.
+Record dprule : Type := mkDPRule { r : rule; proof : rule_is_Fun r }.
 
 (* Working on it
 Lemma subterm_criterion :

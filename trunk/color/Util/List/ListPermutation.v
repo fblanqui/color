@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some results concerning permutations of lists.
 *)
 
-(* $Id: ListPermutation.v,v 1.5 2007-04-13 20:28:11 koper Exp $ *)
+(* $Id: ListPermutation.v,v 1.6 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -21,7 +21,7 @@ Require Omega.
 
 Section Multiplicity.
 
-  Variable A: Set.
+  Variable A: Type.
   Variable eqA: A -> A -> Prop.
   Variable eqA_dec: forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq: Setoid_Theory A eqA.
@@ -96,7 +96,7 @@ End Multiplicity.
 
 Section Permutation.
 
-  Variable A: Set.
+  Variable A: Type.
   Variable eqA: A -> A -> Prop.
   Variable eqA_dec: forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq: Setoid_Theory A eqA.
@@ -240,8 +240,8 @@ End Permutation.
 
 Section ListSim.
 
-  Variable A : Set.
-  Variable B : Set.
+  Variable A : Type.
+  Variable B : Type.
   Variable R : A -> B -> Prop.
 
   Inductive list_sim: list A -> list B -> Prop :=
@@ -378,7 +378,7 @@ End ListSim.
 
 Section ListSim_iso.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable P : A -> A -> Prop.
   Variable eqA : A -> A -> Prop.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
@@ -393,6 +393,7 @@ Section ListSim_iso.
     exists m', list_simA m m' /\ permutation eqA eqA_dec l' m'.
 
   Proof.
+    unfold Setoid_Theory in eqA_eq.
     induction l; intros.
      (* induction base *)
     exists (nil (A:=A)); split.

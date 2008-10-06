@@ -37,7 +37,7 @@ Require Export ARename.
 Require Import ASubstitution. (* for app to be on substitutions *)
 
 Definition hd_rules_graph a1 a2 := In a1 R /\ In a2 R
-  /\ exists p, exists s, S (app s (rhs a1)) (app s (shift p (lhs a2))).
+  /\ exists p, exists s, S (sub s (rhs a1)) (sub s (shift p (lhs a2))).
 
 Lemma restricted_dp_graph : is_restricted hd_rules_graph R.
 
@@ -49,13 +49,14 @@ Qed.
 (* corresponding chain relation *)
 
 Definition hd_red_Mod_rule a t u := In a R /\
-  exists s, S t (app s (lhs a)) /\ u = app s (rhs a).
+  exists s, S t (sub s (lhs a)) /\ u = sub s (rhs a).
 
-Lemma chain_hd_rules_hd_red_Mod : forall a, hd_red_Mod_rule a << hd_red_Mod S R.
+Lemma chain_hd_rules_hd_red_Mod : forall a,
+  hd_red_Mod_rule a << hd_red_Mod S R.
 
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0.
-exists (app x0 (lhs a)). split;auto. 
+exists (sub x0 (lhs a)). split;auto. 
 subst y. destruct a. simpl in *. unfold hd_red.
 exists lhs; exists rhs; exists x0. auto.
 Qed.
@@ -93,15 +94,15 @@ absurd (x <= maxvar l0). omega. assumption.
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
 assert (dom_incl s1' (vars (shift p l1))). unfold s1'. apply dom_incl_restrict.
 (* inclusion in the dp_graph *)
-assert (app s r0 = app s0' r0). unfold s. eapply app_union1. apply H5. apply H3.
-apply hyp. assumption. rewrite H6.
-assert (app s0' r0 = app s0 r0). unfold s0'. symmetry.
-apply app_restrict_incl. apply hyp. assumption. rewrite H7.
-assert (app s (shift p l1) = app s1' (shift p l1)).
-unfold s. eapply app_union2. apply H4. apply H3. apply List.incl_refl.
+assert (sub s r0 = sub s0' r0). unfold s. eapply sub_union1. apply H5.
+apply H3. apply hyp. assumption. rewrite H6.
+assert (sub s0' r0 = sub s0 r0). unfold s0'. symmetry.
+apply sub_restrict_incl. apply hyp. assumption. rewrite H7.
+assert (sub s (shift p l1) = sub s1' (shift p l1)).
+unfold s. eapply sub_union2. apply H4. apply H3. apply List.incl_refl.
 rewrite H8.
-assert (app s1' (shift p l1) = app s1 l1). unfold s1'.
-rewrite <- app_restrict. rewrite <- app_shift.
+assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
+rewrite <- sub_restrict. rewrite <- sub_shift.
 refl. rewrite H9. assumption.
 Qed.
 

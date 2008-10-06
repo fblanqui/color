@@ -8,7 +8,7 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 *)
 
-(* $Id: LexOrder.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.6 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,8 +18,8 @@ Require Import Setoid.
 
 Section LexPair.
 
-  Variable lp_L : Set.
-  Variable lp_R : Set.
+  Variable lp_L : Type.
+  Variable lp_R : Type.
 
   Variable lp_eqL : relation lp_L.
   Variable lp_sid_theoryL : Setoid_Theory lp_L lp_eqL.
@@ -329,6 +329,8 @@ Module LexicographicOrder (A_ord B_ord : Ord).
     compute; intros.
     set (w := lp_AccLexProd_morph); compute in w.
     eapply w; eauto with sets.  
+    exact A_ord.S.sid_theoryA.
+    exact B_ord.S.sid_theoryA.
   Qed.
 
 (* =============================================================== *)

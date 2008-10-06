@@ -8,7 +8,7 @@ Definition and properties of active environments: subset of term
 environments with declarations that are really used in a term.
 *)
 
-(* $Id: TermsActiveEnv.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: TermsActiveEnv.v,v 1.4 2008-10-06 03:22:28 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
   Definition activeEnv (M: Term) : Env :=
     match M with
     | buildT E Pt T M0 =>
-      Typing_rec
+      Typing_rect
       (fun E0 Pt0 T0 _ => Env)
       (fun _ x A _ => copy x None ++ A [#] EmptyEnv)
       (fun _ _ => EmptyEnv)

@@ -8,7 +8,7 @@ In this file some basic operations on terms of simply
 typed lambda-calculus are defined.
 *)
 
-(* $Id: TermsManip.v,v 1.3 2008-01-17 07:54:21 blanqui Exp $ *)
+(* $Id: TermsManip.v,v 1.4 2008-10-06 03:22:30 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -76,7 +76,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | buildT _ _ _ typ =>
       match typ return (isAbs (buildT typ) -> Term) with
       | TAbs _ _ _ _ absT => fun _ : True => buildT absT
-      | _ => fun notAbs: False => False_rec Term notAbs
+      | _ => fun notAbs: False => False_rect Term notAbs
       end
   end.
   Implicit Arguments absBody [M].
@@ -86,7 +86,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | buildT _ _ _ typ =>
       match typ return (isAbs (buildT typ) -> SimpleType) with
       | TAbs _ A B _ _ => fun _ : True => A
-      | _ => fun notAbs : False => False_rec SimpleType notAbs
+      | _ => fun notAbs : False => False_rect SimpleType notAbs
       end
   end.
   Implicit Arguments absType [M].
@@ -203,7 +203,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | buildT _ _ _ typ =>
       match typ return (isApp (buildT typ) -> Term) with
       | TApp _ _ _ _ _ L R => fun _ : True => buildT L
-      | _ => fun notApp: False => False_rec Term notApp
+      | _ => fun notApp: False => False_rect Term notApp
       end
   end.
   Implicit Arguments appBodyL [M].
@@ -213,7 +213,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | buildT _ _ _ typ =>
       match typ return (isApp (buildT typ) -> Term) with
       | TApp _ _ _ _ _ L R => fun _ : True => buildT R
-      | _ => fun notApp: False => False_rec Term notApp
+      | _ => fun notApp: False => False_rect Term notApp
       end
   end.
   Implicit Arguments appBodyR [M].

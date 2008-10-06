@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ARelation.v,v 1.15 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ARelation.v,v 1.16 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,7 +30,7 @@ Variable succ : relation term.
 Definition preserv_vars := forall t u, succ t u -> incl (vars u) (vars t).
 
 Definition substitution_closed :=
-  forall t1 t2 s, succ t1 t2 -> succ (app s t1) (app s t2).
+  forall t1 t2 s, succ t1 t2 -> succ (sub s t1) (sub s t2).
 
 Definition context_closed :=
   forall t1 t2 c, succ t1 t2 -> succ (fill c t1) (fill c t2).
@@ -150,7 +150,7 @@ Notation succ := (strict_part succ_eq).
 Lemma absorb_strict : absorb succ succ_eq.
 
 Proof.
-unfold absorb, inclusion, compose, strict_part.
+unfold absorb, inclusion, RelUtil.compose, strict_part.
 intros; split; decomp H. eapply succ_eq_trans. apply H1. assumption.
 unfold not; intro. ded (succ_eq_trans H H1). contradiction.
 Qed.

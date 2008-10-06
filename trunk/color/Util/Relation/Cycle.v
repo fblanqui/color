@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cycles
 *)
 
-(* $Id: Cycle.v,v 1.8 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: Cycle.v,v 1.9 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Require Export ListRepeatFree.
 
 Section S.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 (***********************************************************************)

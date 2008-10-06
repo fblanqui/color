@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.4 2008-08-08 09:07:09 blanqui Exp $ *)
+(* $Id: AVariables.v,v 1.5 2008-10-06 03:22:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,10 +23,10 @@ Module VarSetUtil := FSetUtil.Make (Nat_as_OT). Export VarSetUtil.
 
 Require Export NatUtil.
 
-Lemma eqb_beq_nat : forall x y, ME.eqb x y = beq_nat x y.
+Lemma eqb_beq_nat : forall x y, eqb x y = beq_nat x y.
 
 Proof.
-intros. unfold ME.eqb. case (ME.eq_dec x y); intro.
+intros. unfold eqb. case (eq_dec x y); intro.
 change (x=y) in e. rewrite <- beq_nat_ok in e. rewrite e. refl.
 change (x<>y) in n. rewrite <- beq_nat_ok in n.
 ded (not_true_is_false _ n). rewrite H. refl.
@@ -105,96 +105,95 @@ Implicit Arguments mem_vars_terms [x n ts].
 
 Open Scope nat_scope.
 
-Lemma mem_vars_size_app_ge : forall s x u,
-  mem x (vars u) = true -> size (app s u) >= size (s x). 
+Lemma mem_vars_size_sub_ge : forall s x u,
+  mem x (vars u) = true -> size (sub s u) >= size (s x). 
 
 Proof.
 intros s x u. pattern u. apply term_ind with (Q := fun n (ts : terms n) =>
-  mem x (vars_terms ts) = true -> size_terms (Vmap (app s) ts) >= size (s x));
+  mem x (vars_terms ts) = true -> size_terms (Vmap (sub s) ts) >= size (s x));
   clear u.
 intro. simpl. mem. intro. subst x0. omega.
-intros f v. rewrite vars_fun. rewrite app_fun. rewrite size_fun. intros.
+intros f v. rewrite vars_fun. rewrite sub_fun. rewrite size_fun. intros.
 ded (H H0). omega. simpl. mem. intros. discriminate.
 intros until v. simpl. mem. intros. destruct (orb_true_elim H1).
 ded (H e). omega. ded (H0 e). omega.
 Qed.
 
-Implicit Arguments mem_vars_size_app_ge [x u].
+Implicit Arguments mem_vars_size_sub_ge [x u].
 
-Lemma mem_vars_size_app_gt : forall s x u,
-  mem x (vars u) = true -> u <> Var x -> size (app s u) > size (s x).
+Lemma mem_vars_size_sub_gt : forall s x u,
+  mem x (vars u) = true -> u <> Var x -> size (sub s u) > size (s x).
 
 Proof.
 intros. destruct u.
 simpl in H. autorewrite with mem in H. subst n. irrefl.
-clear H0. rewrite app_fun. rewrite size_fun. rewrite vars_fun in H.
+clear H0. rewrite sub_fun. rewrite size_fun. rewrite vars_fun in H.
 destruct (mem_vars_terms H). destruct H0. ded (Vin_elim H0). decomp H2.
 rewrite H3. rewrite Vmap_cast. rewrite size_terms_Vcast. rewrite Vmap_app.
-rewrite size_terms_Vapp. simpl. ded (mem_vars_size_app_ge s H1). omega.
+rewrite size_terms_Vapp. simpl. ded (mem_vars_size_sub_ge s H1). omega.
 Qed.
 
-Implicit Arguments mem_vars_size_app_gt [x u].
+Implicit Arguments mem_vars_size_sub_gt [x u].
 
 Lemma term_wf : forall s x u,
-  s x = app s u -> mem x (vars u) = true -> u = Var x.
+  s x = sub s u -> mem x (vars u) = true -> u = Var x.
 
 Proof.
-intros. ded (mem_vars_size_app_gt s H0). rewrite H in H1.
+intros. ded (mem_vars_size_sub_gt s H0). rewrite H in H1.
 case (eq_term_dec u (Var x)). auto. intro. ded (H1 n).
-absurd_hyp H2. omega. hyp.
+contradict H2; omega.
 Qed.
 
 (***********************************************************************)
 (* vars of a term on which a substitution is applied *)
 
 Lemma vars_subs : forall x v u,
-  vars (app (single x v) u) [=]
+  vars (sub (single x v) u) [=]
   if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u.
 
 Proof.
 intros x v. apply term_ind with (Q := fun n (ts : terms n) =>
-  vars_terms (Vmap (app (single x v)) ts) [=]
+  vars_terms (Vmap (sub (single x v)) ts) [=]
   if mem x (vars_terms ts) then union (vars v) (remove x (vars_terms ts))
     else vars_terms ts).
 (* Var *)
-intro. simpl. unfold single. case_nat_eq x x0. autorewrite with mem Equal.
-transitivity (union (vars v) empty). symmetry. apply union_empty_right.
-apply union_m. refl. symmetry. apply remove_singleton.
+intro. simpl. unfold single. case_nat_eq x x0. 
+autorewrite with mem Equal. refl.
 simpl. mem. rewrite (beq_com beq_nat_ok). rewrite H. refl.
 (* Fun *)
-intros. rewrite app_fun.
+intros. rewrite sub_fun.
 coq_case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
   rewrite H0 in H; exact H.
 (* Vnil *)
 refl.
 (* Vcons *)
-intros u n us. simpl. mem. (*FIXME: rewrite H. rewrite H0.*)
+intros u n us. simpl. mem. intros. rewrite H. rewrite H0.
 case_eq (mem x (vars u)); simpl. gen H1. case_eq (mem x (vars_terms us)).
 transitivity (union (union (vars v) (remove x (vars u)))
-  (union (vars v) (remove x (vars_terms us)))). apply union_m; hyp.
+  (union (vars v) (remove x (vars_terms us)))). refl.
 transitivity (union (vars v) (union (remove x (vars u))
   (remove x (vars_terms us)))). apply union_idem_3.
 apply union_m. refl. symmetry. apply remove_union.
 transitivity (union (union (vars v) (remove x (vars u))) (vars_terms us)).
-apply union_m; hyp.
+apply union_m; refl.
 transitivity (union (vars v) (union (remove x (vars u)) (vars_terms us))).
-apply union_assoc. apply union_m. refl.
+autorewrite with Equal. refl. apply union_m. refl.
 transitivity (union (remove x (vars u)) (remove x (vars_terms us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
 symmetry. apply remove_union.
 gen H1. case_eq (mem x (vars_terms us)).
 transitivity (union (vars u) (union (vars v) (remove x (vars_terms us)))).
-apply union_m; hyp.
+apply union_m; refl.
 transitivity (union (vars v) (union (vars u) (remove x (vars_terms us)))).
 apply union_sym_2. apply union_m. refl.
 transitivity (union (remove x (vars u)) (remove x (vars_terms us))).
 apply union_m. symmetry. apply remove_equal. apply mem_4. hyp.
 refl. symmetry. apply remove_union.
-apply union_m; hyp.
+apply union_m; refl.
 Qed.
 
 Lemma vars_subs_list : forall x v us,
-  vars_list (map (app (single x v)) us) [=]
+  vars_list (map (sub (single x v)) us) [=]
   if mem x (vars_list us) then union (vars v) (remove x (vars_list us))
     else vars_list us.
 

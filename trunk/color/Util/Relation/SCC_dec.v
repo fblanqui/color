@@ -15,7 +15,7 @@ Require Export AdjMat.
 Section SCC_effectif.
 
 Record SCC_dec_hyps : Type := mkSCC_dec_hyps {
-  hyp_A : Set;
+  hyp_A : Type;
   hyp_eq_dec : forall x y : hyp_A, {x=y} + {~x=y};
   hyp_Dom : list hyp_A;
   hyp_R : relation hyp_A;
@@ -59,11 +59,10 @@ rewrite GoM_SCC in *.
 assert (rel_on_nat Dom R
   << GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))).
 unfold inclusion; intros;
-rewrite GoM_MoG; intros.
+rewrite GoM_MoG; intros. trivial.
 ded (rel_on_nat_is_restricted _ _ _ _ H1).
 do 2 rewrite nfirst_exact in H2; trivial.
-trivial.
-ded(SCC_incl H); auto.
+ded (SCC_incl H); auto.
 assert (GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))
   << rel_on_nat Dom R).
 unfold inclusion; intros.

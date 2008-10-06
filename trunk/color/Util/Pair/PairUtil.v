@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on pairs
 *)
 
-(* $Id: PairUtil.v,v 1.3 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: PairUtil.v,v 1.4 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Require Export EqUtil.
 
 Section S.
 
-Variables (A B : Set) (eqdecA : dec_eq A) (eqdecB : dec_eq B).
+Variables (A B : Type) (eqdecA : dec_eq A) (eqdecB : dec_eq B).
 
 Notation pair := (prod A B).
 

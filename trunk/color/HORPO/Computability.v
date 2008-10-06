@@ -38,7 +38,7 @@ Section Computability_def.
     match T with
     | #T => AccR M
     | TL --> TR => 
-      forall P (Papp: isApp P) (PL: appBodyL Papp ~ M)
+      forall P (Papp: isApp P) (PL: (appBodyL Papp) ~ M)
 	(typeL: type P = TR) (typeR: type (appBodyR Papp) = TL),
 	algebraic (appBodyR Papp) ->
 	ComputableS (appBodyR Papp) TL ->
@@ -58,7 +58,8 @@ Section Computability_def.
   Qed.
 
   Lemma CompArrow : forall M, algebraic M -> isArrowType (type M) ->
-    (forall N (Napp: isApp N), appBodyL Napp ~ M -> algebraic (appBodyR Napp) ->
+    (forall N (Napp: isApp N), (appBodyL Napp) ~ M ->
+      algebraic (appBodyR Napp) ->
       Computable (appBodyR Napp) -> Computable N) ->
     Computable M.
 
@@ -78,11 +79,12 @@ Section Computability_def.
     { isArrowType M.(type) /\ algebraic M /\
       forall N (Napp: isApp N), algebraic (appBodyR Napp) ->
         Computable (appBodyR Napp) ->
-	appBodyL Napp ~ M -> Computable N }.
+	(appBodyL Napp) ~ M -> Computable N }.
 
   Proof.
-    intro M; term_type_inv M; intros; unfold Computable in H; simpl in H;
-      inversion H.
+    intro M. (*term_type_inv M.*)
+    destruct M as [E Pt A0 Typ]. gen Typ. destruct A0; intro Typ; try_solve; 
+      intro; unfold Computable in H; simpl in H; inversion H.
     inversion H1; left; do 2 split; trivial.
     right; do 2 split; trivial.
     intros N Napp Nnorm NR NL.
@@ -108,7 +110,7 @@ Section Computability_def.
   Lemma CompCaseArrow : forall M, Computable M -> isArrowType M.(type) ->
     forall N (Napp: isApp N), algebraic (appBodyR Napp) ->
       Computable (appBodyR Napp) ->
-      appBodyL Napp ~ M -> Computable N.
+      (appBodyL Napp) ~ M -> Computable N.
 
   Proof.
     intros M Mcomp Marr.
@@ -388,7 +390,7 @@ Section Computability_theory.
     (forall P, type P = A -> algebraic P -> isNeutral P ->
       (forall S, P -R-> S -> Computable S) -> Computable P) ->
     exists Mx, exists Mx_app: isApp Mx,
-      appBodyL Mx_app ~ M /\ term (appBodyR Mx_app) = %(length (env M)) /\
+      (appBodyL Mx_app) ~ M /\ term (appBodyR Mx_app) = %(length (env M)) /\
       env Mx = env M ++ Some A :: EmptyEnv /\ Computable Mx.
 
   Proof.
@@ -586,7 +588,7 @@ Section Computability_theory.
 	Computable W ->
 	type W = B1 ->
 	forall N (Napp: isApp N),
-	  appBodyL Napp ~ P ->
+	  (appBodyL Napp) ~ P ->
 	  appBodyR Napp = W ->
 	  Computable N
     ).
@@ -602,7 +604,7 @@ Section Computability_theory.
 	Computable W ->
 	type W = B1 ->
 	forall N (Napp: isApp N),
-	  appBodyL Napp ~ P ->
+	  (appBodyL Napp) ~ P ->
 	  appBodyR Napp = W ->
 	  Computable N
     ); trivial.
@@ -789,7 +791,7 @@ Section Computability_theory.
   Definition SetTheory_Comp : Setoid_Theory CompTerm CompTerm_eq.
 
   Proof.
-    constructor.
+    constructor; unfold Reflexive, Symmetric, Transitive.
     constructor.
     intros; inversion H.
     unfold CompTerm_eq; auto.
@@ -987,7 +989,8 @@ Section Computability_theory.
     term_inv M.
     assert (TLC: Computable (absBody WLabs)).
     set (idS1 := idSubst_correct (absBody Mabs)).
-    simpl; setoid_replace (absBody WLabs) with (subst (idS1)).
+    simpl; setoid_replace (absBody WLabs) with (subst (idS1))
+      using relation terms_conv.
     set (S1eqS2 := idSubst_decl0 (absBody Mabs) M0).
     assert (idS2 : correct_subst (absBody Mabs) {x/buildT (TVar M0)}).
     rewrite <- S1eqS2; trivial.
@@ -1000,7 +1003,7 @@ Section Computability_theory.
     rewrite S1eqS2; trivial.
     repeat rewrite subst_term.
     rewrite S1eqS2; trivial.
-    unfold idS1; rewrite (idSubst_neutral (absBody Mabs)).
+    unfold idS1; rewrite (idSubst_neutral (absBody (M:=M) Mabs)).
     apply abs_conv_absBody; trivial.
     set (PL := (exist (fun T => Computable T) TL TLC)).
     set (PR := (exist (fun T => Computable T) TR WR)).
@@ -1020,11 +1023,12 @@ Section Computability_theory.
     rewrite H4 in H3; trivial.
     destruct (conv_subst_singleton_build Q00 Qconv Qmin H0 cs) as 
       [Q' [G' [T' [MG' [T'G' [Q'Q GG']]]]]].
-    set (Conv := conv_subst_conv cs MG' (terms_conv_extend_subst Qconv Q'Q) GG').
-    assert (Conv' : subst cs ~ subst MG') by (exists Q'; trivial).
+    set (Conv :=
+      conv_subst_conv cs MG' (terms_conv_extend_subst Qconv Q'Q) GG').
+    assert (Conv' : terms_conv (subst cs) (subst MG')) by (exists Q'; trivial).
     rewrite Conv'.
     apply H with T'; trivial.
-    setoid_replace T' with T; trivial.
+    setoid_replace T' with T using relation terms_conv; trivial.
     apply terms_conv_sym; exists Q'; trivial.
     apply singletonSubst_conv with G G'; trivial.
     rewrite <- (uneffective_singleton_subst_conv cs H0 ND); trivial.

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.9 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: AContext.v,v 1.10 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -29,7 +29,7 @@ Notation "'args' f" := (terms (arity f)) (at level 70).
 (***********************************************************************)
 (** contexts and replacement of the hole *)
 
-Inductive context : Set :=
+Inductive context : Type :=
   | Hole : context
   | Cont : forall f : Sig, forall i j : nat, i + S j = arity f ->
     terms i -> context -> terms j -> context.

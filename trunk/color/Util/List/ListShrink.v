@@ -16,7 +16,7 @@ Require Export ListRepeatFree.
 
 Section prefix.
 
-Variable A : Set.
+Variable A : Type.
 
 Fixpoint prefix (l l' : list A) {struct l} : Prop :=
   match l with
@@ -74,7 +74,7 @@ End prefix.
 
 Section suffix.
 
-Variable A : Set.
+Variable A : Type.
 
 Definition suffix (l l' : list A) : Prop := prefix (rev l)(rev l').
 
@@ -102,7 +102,7 @@ End suffix.
 
 Section cut.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Fixpoint cut (x : A) (l : list A) {struct l} : list A :=
@@ -160,7 +160,7 @@ End cut.
 
 Section shrink.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Fixpoint shrink (l :list A) : list A :=

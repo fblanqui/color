@@ -11,7 +11,7 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-(* $Id: VRPO_Results.v,v 1.15 2008-01-17 16:22:49 blanqui Exp $ *)
+(* $Id: VRPO_Results.v,v 1.16 2008-10-06 03:22:26 blanqui Exp $ *)
 
 Require Export VRPO_Type.
 
@@ -433,26 +433,26 @@ Module RPO_Results (RPO : RPO_Model).
      (* fun. *)
      (* lt_roots *)
     intros. lt_inversion H.
-    subst p. do 2 rewrite app_fun.
+    subst p. do 2 rewrite sub_fun.
     apply lt_roots. replace f with g. assumption. congruence.
-    intros. rewrite <- app_fun.
-    destruct (proj1 (in_map_iff (app s) ss t)) as [t' [t't t'ss]]. assumption.
+    intros. rewrite <- sub_fun.
+    destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. assumption.
     subst t. apply IH. apply subterm_immediate. assumption. assumption.
     rewrite t_is. apply Hsub. assumption.
      (* lt_status *)
-    subst p. do 2 rewrite app_fun.
+    subst p. do 2 rewrite sub_fun.
     apply lt_status. apply eqF_sym. replace f with g. assumption. congruence.
-    intros. rewrite <- app_fun.
-    destruct (proj1 (in_map_iff (app s) ss t)) as [t' [t't t'ss]]. assumption.
+    intros. rewrite <- sub_fun.
+    destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. assumption.
     subst t. apply IH. apply subterm_immediate. assumption. assumption.
     rewrite t_is. apply Hsub. assumption.
     replace f with g; [rewrite <- (status_eq f0 g eqFfg) | congruence].
     apply status_homomorphic. intros.
     apply IH'. apply subterm_immediate. assumption. assumption. congruence.    
      (* lt_subterm *)
-    rewrite app_fun. apply lt_subterm.
-    exists (app s t'). split.
-    apply (proj2 (in_map_iff (app s) l (app s t'))).
+    rewrite sub_fun. apply lt_subterm.
+    exists (sub s t'). split.
+    apply (proj2 (in_map_iff (sub s) l (sub s t'))).
     exists t'. split. refl. replace l with ts. assumption. congruence.
     destruct Ht'.
     left. congruence.
@@ -565,12 +565,12 @@ Module RPO_Results (RPO : RPO_Model).
       * lexicographic order definitions.
       *)
     intros p q. generalize p. clear p. pattern q. 
-    apply term_rec_forall with Sig term_eq_dec.
+    apply term_rect_forall with Sig term_eq_dec.
      (* Compare: lt p (Var x) *)
     right. intro F. apply var_are_min with x p. assumption.
     clear q. intros q v IH p.
     generalize IH. clear IH. pattern p.
-    apply term_rec_forall with Sig term_eq_dec; clear p.
+    apply term_rect_forall with Sig term_eq_dec; clear p.
      (* Compare: lt (Var x) (Fun q v) *)
     intros x IH. destruct (rpo_lt_subterm_dec (Var x) v). assumption.
     left. apply lt_subterm. destruct s as [a [av ax]].

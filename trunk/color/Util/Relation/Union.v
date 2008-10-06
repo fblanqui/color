@@ -17,7 +17,7 @@ Require Export SN.
 
 Section commut.
 
-Variables (A : Set) (R S : relation A) (commut : R @ S << S @ R).
+Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 
 Require Export Lexico.
 

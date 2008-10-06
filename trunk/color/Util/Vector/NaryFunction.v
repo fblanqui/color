@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 basic definitions on functions taking vectors as arguments
 *)
 
-(* $Id: NaryFunction.v,v 1.2 2007-01-19 17:22:41 blanqui Exp $ *)
+(* $Id: NaryFunction.v,v 1.3 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -15,7 +15,7 @@ Section S.
 
 Require Export RelUtil.
 
-Variables A : Set.
+Variables A : Type.
 
 Require Export VecUtil.
 
@@ -52,7 +52,7 @@ Implicit Arguments Vmonotone_i [A n i j].
 
 Section preserv.
 
-Variables (A : Set) (P : A->Prop) (n : nat) (f : naryFunction A n).
+Variables (A : Type) (P : A->Prop) (n : nat) (f : naryFunction A n).
 
 Definition preserv := forall v, Vforall P v -> P (f v).
 

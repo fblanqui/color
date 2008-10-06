@@ -15,7 +15,7 @@ Require Export ListUtil.
 
 Section S.
 
-Variable A : Set.
+Variable A : Type.
 
 Section definition.
 
