@@ -8,7 +8,7 @@ Algebraic terms (functions with arity; simple output type of a function
 assumed) encoded via lambda-terms.
 *)
 
-(* $Id: TermsAlgebraic.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: TermsAlgebraic.v,v 1.6 2008-10-06 03:22:28 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -401,7 +401,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     clear M; intros M IH G MG Malg Galg.    
     term_inv M.
      (* variable *)
-    destruct (var_subst MG I) as [[W [p GpW] MGterm] | MGterm].
+    destruct (var_subst MG I) as [[W [p GpW MGterm]] | MGterm].
     apply (@algebraic_morph_aux W (subst MG)).
     apply terms_conv_criterion; auto.
     apply env_comp_sym.

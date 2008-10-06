@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Constructing terms.
 *)
 
-(* $Id: TermsBuilding.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsBuilding.v,v 1.3 2008-10-06 03:22:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -20,7 +20,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
   Module TAE := TermsActiveEnv.TermsActiveEnv Sig.
   Export TAE.
 
-  Record appCond : Set := {
+  Record appCond : Type := {
      appL: Term;
      appR: Term;
      eqEnv: env appL = env appR;
@@ -75,7 +75,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
     destruct a; destruct appR0; term_type_inv appL0.
   Qed.
 
-  Record absCond : Set := {
+  Record absCond : Type := {
     absB: Term;
     absT: SimpleType;
     envNotEmpty: env absB |= 0 := absT

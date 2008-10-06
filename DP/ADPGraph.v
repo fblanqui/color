@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.14 2008-05-21 13:08:44 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.15 2008-10-06 03:22:15 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -47,7 +47,7 @@ Require Export ASubstitution.
 
 Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
   /\ exists p, exists s,
-    int_red R # (app s (rhs a1)) (app s (shift p (lhs a2))).
+    int_red R # (sub s (rhs a1)) (sub s (shift p (lhs a2))).
 
 Lemma restricted_dp_graph : is_restricted dp_graph DP.
 
@@ -59,13 +59,13 @@ Qed.
 (** chain relation for a given dependency pair *)
 
 Definition chain_dp a t u := In a DP /\
-  exists s, int_red R # t (app s (lhs a)) /\ u = app s (rhs a).
+  exists s, int_red R # t (sub s (lhs a)) /\ u = sub s (rhs a).
 
 Lemma chain_dp_chain : forall a, chain_dp a << Chain.
 
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0.
-exists (app x0 (lhs a)). intuition.
+exists (sub x0 (lhs a)). intuition.
 subst y. destruct a. simpl. apply hd_red_rule. exact H.
 Qed.
 
@@ -153,15 +153,15 @@ absurd (x <= maxvar l0). omega. assumption.
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
 assert (dom_incl s1' (vars (shift p l1))). unfold s1'. apply dom_incl_restrict.
 (* inclusion in the dp_graph *)
-assert (app s r0 = app s0' r0). unfold s. eapply app_union1. apply H5. apply H3.
-apply hyp'. assumption. rewrite H6.
-assert (app s0' r0 = app s0 r0). unfold s0'. symmetry.
-apply app_restrict_incl. apply hyp'. assumption. rewrite H7.
-assert (app s (shift p l1) = app s1' (shift p l1)).
-unfold s. eapply app_union2. apply H4. apply H3. apply List.incl_refl.
+assert (sub s r0 = sub s0' r0). unfold s. eapply sub_union1. apply H5.
+apply H3. apply hyp'. assumption. rewrite H6.
+assert (sub s0' r0 = sub s0 r0). unfold s0'. symmetry.
+apply sub_restrict_incl. apply hyp'. assumption. rewrite H7.
+assert (sub s (shift p l1) = sub s1' (shift p l1)).
+unfold s. eapply sub_union2. apply H4. apply H3. apply List.incl_refl.
 rewrite H8.
-assert (app s1' (shift p l1) = app s1 l1). unfold s1'.
-rewrite <- app_restrict. rewrite <- app_shift.
+assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
+rewrite <- sub_restrict. rewrite <- sub_shift.
 refl. rewrite H9. assumption.
 Qed.
 
@@ -206,7 +206,7 @@ Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
 
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
-destruct a. simpl. simpl in H0. exists (app x0 lhs). split.
+destruct a. simpl. simpl in H0. exists (sub x0 lhs). split.
 apply incl_elim with (R := int_red R #). apply incl_rtc. apply int_red_incl_red.
 exact H0. apply hd_red_rule. simpl. auto.
 Qed.
@@ -231,7 +231,7 @@ Lemma compat_chain_dp_strict : forall a,
 
 Proof.
 unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
-apply (comp_rtc_incl Habsorb). exists (app x0 (lhs a)). split.
+apply (comp_rtc_incl Habsorb). exists (sub x0 (lhs a)). split.
 apply incl_elim with (R := int_red R #). 2: exact H1. apply incl_rtc.
 trans (red R). apply int_red_incl_red. apply compat_red; assumption.
 destruct Hredord. apply H2. exact H.

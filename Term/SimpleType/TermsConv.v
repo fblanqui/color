@@ -11,7 +11,7 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.9 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: TermsConv.v,v 1.10 2008-10-06 03:22:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -113,7 +113,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     firstorder.
   Qed.
 
-  Definition envSubst_setoid := Build_Setoid_Theory envSubst_eq
+  Definition envSubst_setoid := Build_Setoid_Theory _ envSubst_eq
     envSubst_eq_refl envSubst_eq_sym envSubst_eq_trans.
   
   Add Setoid EnvSubst envSubst_eq envSubst_setoid as EnvSubstSetoid.
@@ -590,14 +590,14 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply IHx2 with E; trivial.   
   Qed.
 
-  Add Morphism conv_term
+  Add Parametric Morphism (t1 t2 : Preterm) : (conv_term t1 t2)
     with signature envSubst_eq ==> iff
       as conv_term_morph.
 
   Proof.
     intuition.
-    eapply conv_term_morph_aux. apply H1. exact H2.
-    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H1. exact H2.
+    eapply conv_term_morph_aux. apply H. trivial.
+    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H. trivial.
   Qed.
 
   Lemma conv_term_refl : forall M,
@@ -811,7 +811,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Definition conv_env (M N: Term) (S: EnvSubst) : Prop := forall x y,
     S.(envSub) x y -> activeEnv_compSubst_on M N x y.
 
-  Add Morphism conv_env
+  Add Parametric Morphism (t1 t2 : Term) : (conv_env t1 t2)
     with signature envSubst_eq ==> iff
       as conv_env_morph.
 
@@ -1242,7 +1242,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Definition terms_conv_with S M N :=
     conv_term (term M) (term N) S /\ conv_env M N S.
 
-  Notation "M ~ ( S ) N" := (terms_conv_with S M N) (at level 70).
+  Notation "M ~ ( S ) N" := (terms_conv_with S M N) (at level 5).
 
   Lemma terms_conv_with_morph_aux :
     forall x1 x2 : EnvSubst,
@@ -1262,7 +1262,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Definition terms_conv M N := exists S, M ~(S) N.
 
-  Notation "M ~ N" := (terms_conv M N) (at level 70).
+  Notation "M ~ N" := (terms_conv M N) (at level 7).
 
   Lemma terms_conv_criterion : forall M N,
     env M [<->] env N -> term M = term N -> M ~ N.
@@ -1315,7 +1315,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
       (* application *)
     inversion H5.
-    assert (M1N1: buildT M1 ~ buildT N1).
+    assert (M1N1: terms_conv (buildT M1) (buildT N1)).
     exists x; constructor; simpl; trivial.
     inversion H5; rewrite <- H10; trivial.
     replace (buildT M1) with (appBodyL (M := buildT (TApp M1 M2)) I); trivial.
@@ -1370,7 +1370,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_refl.
   Qed.
 
-  Definition sid_theoryConv := Build_Setoid_Theory terms_conv
+  Definition sid_theoryConv := Build_Setoid_Theory _ terms_conv
     terms_conv_refl terms_conv_sym terms_conv_trans.
 
   Add Setoid Term terms_conv sid_theoryConv as terms_conv_Setoid.
@@ -1428,7 +1428,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma abs_conv_absBody_aux : forall M N Q (Mabs: isAbs M) (Nabs: isAbs N),
-    M ~(Q) N -> absBody Mabs ~(envSubst_lift1 Q) absBody Nabs.
+    M ~(Q) N -> (absBody Mabs) ~(envSubst_lift1 Q) (absBody Nabs).
 
   Proof.
     intros.
@@ -1442,7 +1442,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma abs_conv_absBody : forall M N (Mabs: isAbs M) (Nabs: isAbs N), M ~ N -> 
-    absBody Mabs ~ absBody Nabs.
+    terms_conv (absBody Mabs) (absBody Nabs).
 
   Proof.
     intros; inversion H.
@@ -1460,7 +1460,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Lemma abs_conv : forall M N (Mabs: isAbs M) (Nabs: isAbs N) Q,
     absType Mabs = absType Nabs ->
-    absBody Mabs ~(envSubst_lift1 Q) absBody Nabs -> M ~(Q) N.
+    (absBody Mabs) ~(envSubst_lift1 Q) (absBody Nabs) -> M ~(Q) N.
 
   Proof.
     intros.
@@ -1475,7 +1475,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_conv_app_left_aux : forall M N (Mapp: isApp M) (Napp: isApp N) Q,
-    M ~(Q) N -> appBodyL Mapp ~(Q) appBodyL Napp.
+    M ~(Q) N -> (appBodyL Mapp) ~(Q) (appBodyL Napp).
 
   Proof.
     intros; term_inv M; term_inv N.
@@ -1487,7 +1487,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_conv_app_left : forall M N (Mapp: isApp M) (Napp: isApp N), M ~ N ->
-    appBodyL Mapp ~ appBodyL Napp.
+    terms_conv (appBodyL Mapp) (appBodyL Napp).
 
   Proof.
     intros; destruct H.
@@ -1495,7 +1495,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_conv_app_right_aux : forall M N (Mapp: isApp M) (Napp: isApp N) Q,
-    M ~(Q) N -> appBodyR Mapp ~(Q) appBodyR Napp.
+    M ~(Q) N -> (appBodyR Mapp) ~(Q) (appBodyR Napp).
 
   Proof.
     intros; term_inv M; term_inv N.
@@ -1507,7 +1507,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_conv_app_right : forall M N (Mapp: isApp M) (Napp: isApp N),
-    M ~ N -> appBodyR Mapp ~ appBodyR Napp.
+    M ~ N -> terms_conv (appBodyR Mapp) (appBodyR Napp).
 
   Proof.
     intros; destruct H.
@@ -1515,7 +1515,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_conv : forall M N (Mapp: isApp M) (Napp: isApp N) Q,
-    appBodyL Mapp ~(Q) appBodyL Napp -> appBodyR Mapp ~(Q) appBodyR Napp ->
+    (appBodyL Mapp) ~(Q) (appBodyL Napp) -> (appBodyR Mapp) ~(Q) (appBodyR Napp) ->
     M ~(Q) N.
 
   Proof.
@@ -1529,7 +1529,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma terms_conv_conv_lift : forall M N Q,
-    M ~(Q) N -> lift M 1 ~(envSubst_lift1 Q) lift N 1.
+    M ~(Q) N -> (lift M 1) ~(envSubst_lift1 Q) (lift N 1).
 
   Proof.
     intros; constructor.
@@ -1539,7 +1539,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_lifted; destruct  H; trivial.
   Qed.
 
-  Lemma terms_lift_conv : forall M n, M ~ lift M n.
+  Lemma terms_lift_conv : forall M n, terms_conv M (lift M n).
   Proof.
     intros M n.
     exists (liftEnvSubst n 0 (length (env M))); constructor; simpl.
@@ -1548,7 +1548,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_lift.
   Qed.
 
-  Lemma terms_lower_conv : forall M (Menv: env M |= 0 :!), M ~ lower M Menv.
+  Lemma terms_lower_conv : forall M (Menv: env M |= 0 :!), terms_conv M (lower M Menv).
 
   Proof.
     intros M Menv.
@@ -1558,7 +1558,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_lower.
   Qed.
 
-  Lemma appHead_conv : forall M N Q, M ~(Q) N -> appHead M ~(Q) appHead N.
+  Lemma appHead_conv : forall M N Q, M ~(Q) N -> (appHead M) ~(Q) (appHead N).
 
   Proof.
     intro M.
@@ -1566,7 +1566,7 @@ Module TermsConv (Sig : TermsSig.Signature).
       (P := fun M =>
 	forall N Q,
 	  M ~(Q) N ->
-	  appHead M ~(Q) appHead N).
+	  (appHead M) ~(Q) (appHead N)).
     apply subterm_wf.
     clear M; intros M IH N Q MN.
     destruct (isApp_dec M).
@@ -1702,7 +1702,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     assert (Nabs: isAbs N).
     apply abs_isAbs with A R; auto.
     term_inv N; inversion H6; unfold Tr.
-    assert (MNbody: buildT M ~(envSubst_lift1 Q') buildT T).
+    assert (MNbody: (buildT M) ~(envSubst_lift1 Q') (buildT T)).
     constructor.
     simpl; rewrite <- H10; trivial.
     change (buildT M) with (absBody (M:=buildT (TAbs M)) I).
@@ -2121,7 +2121,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     destruct MM'L; trivial.
     destruct MM'R; trivial.
     constructor; trivial.
-    apply conv_env_app with I (buildApp_isApp M'cond); simpl; unfold M'; trivial.
+    apply conv_env_app with I (buildApp_isApp M'cond).
+    simpl; unfold M'; trivial.
     rewrite buildApp_Lok; simpl.
     apply conv_env_ext with Q'; trivial.
     destruct MM'L; trivial.
@@ -2374,7 +2375,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     set (w := partialFlattening_app (buildT (TFun E f)) Ms H0); try_solve.
     set (w := partialFlattening_app (buildT (TAbs M)) Ms H0); try_solve.
     assert (Napp: isApp N).
-    assert (H' : buildT (TApp M1 M2) ~ N) by (exists Q; trivial).
+    assert (H' : (buildT (TApp M1 M2)) ~ N) by (exists Q; trivial).
     rewrite <- H'; simpl; trivial.
     destruct (partialFlattening_inv (buildT (TApp M1 M2)) I Ms) 
       as [Ms_def | [Ms' [Ms'l MsMs']]]; trivial.
@@ -2405,7 +2406,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Lemma apply_variable : forall M, isArrowType M.(type) ->
     exists MA: Term, exists Mapp: isApp MA, 
-      appBodyL Mapp ~ M /\ term (appBodyR Mapp) = %length (env M) /\ 
+      (appBodyL Mapp) ~ M /\ term (appBodyR Mapp) = %length (env M) /\ 
       env MA = env M ++ Some (type_left (type M))::EmptyEnv.
 
   Proof.

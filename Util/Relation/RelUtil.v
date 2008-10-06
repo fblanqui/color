@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.37 2008-08-06 16:22:50 blanqui Exp $ *)
+(* $Id: RelUtil.v,v 1.38 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -62,10 +62,10 @@ Proof.
 unfold transitive, same_relation. intuition.
 Qed.
 
-Add Relation relation same_relation
-  reflexivity proved by same_relation_refl
-  symmetry proved by same_relation_sym
-  transitivity proved by same_relation_trans
+Add Parametric Relation (A : Type) : (relation A) (same_relation A)
+  reflexivity proved by (@same_relation_refl A)
+  symmetry proved by (@same_relation_sym A)
+  transitivity proved by (@same_relation_trans A)
     as same_relation_rel.
 
 Notation "R == S" := (same_relation _ R S) (at level 70).
@@ -211,14 +211,15 @@ Ltac inclusion_refl := apply inclusion_refl.
 
 Ltac trans S := apply incl_trans with (S); try inclusion_refl.
 
-Add Morphism inclusion
-  with signature same_relation ==> same_relation ==> iff
+Add Parametric Morphism (A : Type) : (@inclusion A)
+  with signature (same_relation A) ==> (same_relation A) ==> iff
     as inclusion_mor.
 
 Proof.
-intros. destruct H. destruct H0. split; intro.
-trans x1; try assumption. trans x0; assumption.
-trans x2; try assumption. trans x3; assumption.
+intros x y x_eq_y x' y' x'_eq_y'. destruct x_eq_y. destruct x'_eq_y'.
+split; intro.
+trans x; try assumption. trans x'; assumption.
+trans y; try assumption. trans y'; assumption.
 Qed.
 
 (***********************************************************************)
@@ -308,8 +309,9 @@ Ltac assoc :=
     | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
   end.
 
-Add Morphism compose
-  with signature same_relation ==> same_relation ==> same_relation
+Add Parametric Morphism (A : Type) : (@compose A)
+  with signature
+    (same_relation A) ==> (same_relation A) ==> (same_relation A)
   as compose_morph.
 
 Proof.
@@ -355,8 +357,8 @@ Qed.
 
 End clos_refl.
 
-Add Morphism clos_refl
-  with signature same_relation ==> same_relation
+Add Parametric Morphism (A : Type)  : (@clos_refl A)
+  with signature (same_relation A) ==> (same_relation A)
   as clos_refl_morph.
 
 Proof.
@@ -454,8 +456,8 @@ End clos_trans.
 
 Definition clos_trans : forall A, relation A -> relation A := clos_trans.
 
-Add Morphism clos_trans
-  with signature same_relation ==> same_relation
+Add Parametric Morphism (A : Type) : (@clos_trans A)
+  with signature (same_relation A) ==> (same_relation A)
   as clos_trans_morph.
 
 Proof.
@@ -575,8 +577,8 @@ End clos_refl_trans.
 Definition clos_refl_trans : forall A, relation A -> relation A :=
   clos_refl_trans.
 
-Add Morphism clos_refl_trans
-  with signature same_relation ==> same_relation
+Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
+  with signature (same_relation A) ==> (same_relation A)
   as clos_refl_trans_morph.
 
 Proof.
@@ -684,8 +686,9 @@ Ltac union := apply incl_union; try inclusion_refl.
 
 Definition union : forall A, relation A -> relation A -> relation A := union.
 
-Add Morphism union
-  with signature same_relation ==> same_relation ==> same_relation
+Add Parametric Morphism (A : Type) : (@union A)
+  with signature
+    (same_relation A) ==> (same_relation A) ==> (same_relation A)
   as union_morph.
 
 Proof.

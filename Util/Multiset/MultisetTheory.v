@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.7 2008-05-07 15:26:29 blanqui Exp $ *)
+(* $Id: MultisetTheory.v,v 1.8 2008-10-06 03:22:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -136,7 +136,7 @@ End meq_equivalence.
   Hint Resolve meq_refl meq_trans meq_sym : multisets.
 
   Definition MultisetSetoidTheory :=
-    Build_Setoid_Theory meq meq_refl meq_sym meq_trans.
+    Build_Setoid_Theory _ meq meq_refl meq_sym meq_trans.
 
   Add Setoid A eqA sid_theoryA as ASetoid.
   Add Setoid Multiset meq MultisetSetoidTheory as MultisetSetoid.
@@ -156,14 +156,14 @@ End meq_equivalence.
       as singleton_morph.
 
   Proof.
-    try_solve_meq_ext; case (eqA_dec x x1); intros.
-    assert (x =A= x2); [rewrite <- H; trivial | idtac].
-    assert (x/{{x2}} = 1);
-      assert (x/{{x1}} = 1);
+    try_solve_meq_ext; case (eqA_dec x0 x); intros.
+    assert (x0 =A= y); [rewrite <- H; trivial | idtac].
+    assert (x0/{{y}} = 1);
+      assert (x0/{{x}} = 1);
       solve [auto with multisets | congruence].
-    assert (~x =A= x2); [rewrite <- H; trivial | idtac].
-    assert (x/{{x1}} = 0);
-      assert (x/{{x2}} = 0); 
+    assert (~x0 =A= y); [rewrite <- H; trivial | idtac].
+    assert (x0/{{x}} = 0);
+      assert (x0/{{y}} = 0); 
       solve [auto with multisets | congruence].
   Qed.
 
@@ -657,7 +657,7 @@ Section Decidability.
   Lemma empty_decomp_dec : forall M, {Ma: (Multiset * A) | M =mul= fst Ma + {{snd Ma}}} + {M =mul= empty}.
   
   Proof.
-    induction M using mset_ind_set.
+    induction M using mset_ind_type.
     right; auto with multisets.
     left; exists (M, a); auto with multisets.
   Qed.

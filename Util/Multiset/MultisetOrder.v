@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.11 2008-01-29 18:07:58 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.12 2008-10-06 03:22:36 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -160,7 +160,7 @@ Section OrderDefinition.
       as MultisetGt_morph_equiv.
 
   Proof.
-    intros; split; intro; inversion H1.
+    intros x1 x2 H x0 x3 H0; split; intro; inversion H1.
     constructor 1; rewrite <- H; rewrite <- H0; trivial.
     constructor 2 with y; fold clos_transM_RedGt.
     rewrite <- H; assumption. rewrite <- H0; assumption.
@@ -227,7 +227,7 @@ Section OrderDefinition.
       as ltA_morph.
 
   Proof.
-    split. eauto with sets.
+    intros x1 x2. split. eauto with sets.
     cut (x2 =A= x1). intro. eauto with sets.
     apply Seq_sym. exact sid_theoryA. assumption.
   Qed.
@@ -1420,7 +1420,7 @@ Section OrderDec.
 
   Proof.
     intro M.
-    apply mset_ind_set with (P := fun M =>
+    apply mset_ind_type with (P := fun M =>
       forall N,
         {MNS: list (Multiset * Multiset * Multiset) |
           forall L R S,
@@ -1451,8 +1451,8 @@ Section OrderDec.
     auto with datatypes.
      (* induction step *)
     intros.
-    destruct (H N) as [restN restNok].
-    destruct (H (remove a N)) as [restNa restNaok].
+    destruct (X N) as [restN restNok].
+    destruct (X (remove a N)) as [restNa restNaok].
     set (joinL := fun MNS: Multiset * Multiset * Multiset => 
       (insert a (fst (fst MNS)), snd (fst MNS), snd MNS)).
     set (joinS := fun MNS: Multiset * Multiset * Multiset => 
@@ -1464,36 +1464,36 @@ Section OrderDec.
      (*   - soundness *)
     destruct (@in_app_or _ (map joinL restN) (map joinS restNa) (L, R, S));
       trivial.
-    destruct (list_In_nth (map joinL restN) (L, R, S) H1).
-    destruct (nth_map_some_rev _ _ _ H2) as [x' [restNx x'LRS]].
+    destruct (list_In_nth (map joinL restN) (L, R, S) H0).
+    destruct (nth_map_some_rev _ _ _ H1) as [x' [restNx x'LRS]].
     inversion x'LRS.
     destruct x' as [[x'L x'R] x'S]; simpl in * . 
     destruct (proj1 (restNok x'L x'R x'S)).
     apply nth_some_in with x; trivial.
     split; trivial.
-    rewrite H3; solve_meq.
-    destruct (list_In_nth (map joinS restNa) (L, R, S) H1).
-    destruct (nth_map_some_rev _ _ _ H2) as [x' [restNax x'LRS]].
+    rewrite H2; solve_meq.
+    destruct (list_In_nth (map joinS restNa) (L, R, S) H0).
+    destruct (nth_map_some_rev _ _ _ H1) as [x' [restNax x'LRS]].
     inversion x'LRS.
     destruct x' as [[x'L x'R] x'S]; simpl in * . 
     destruct (proj1 (restNaok x'L x'R x'S)).
     apply nth_some_in with x; trivial.
     split; trivial.
-    rewrite H3; solve_meq.
+    rewrite H2; solve_meq.
     unfold insert; rewrite <- (union_assoc {{a}} x'S x'R).
-    rewrite <- H7.
+    rewrite <- H6.
     fold (insert a (remove a N)).
     rewrite (meq_insert_remove m); auto with multisets.
      (*   - completeness *)
     destruct (@member_union a S L) as [aS | aL]; trivial.
-    rewrite <- H0; auto with multisets.
+    rewrite <- H; auto with multisets.
     destruct (proj2 (restNaok L R (remove a S)))
       as [L' [R' [S' [LL' [RR' [SS' LRSN]]]]]]; trivial.
     rewrite (union_comm (remove a S) L).
     apply meq_remove_elem_right; trivial.
     rewrite (union_comm L S); trivial.
     rewrite <- (remove_union R aS).
-    rewrite H1; auto with multisets.
+    rewrite H0; auto with multisets.
     exists L'; exists R'; exists (insert a S'); repeat split; trivial.
     rewrite <- SS'.
     rewrite (meq_insert_remove aS); auto with multisets.
@@ -1517,19 +1517,19 @@ Section OrderDec.
     exists (map joinL restN); intros.
     split; intros.
      (*   - soundness *)
-    destruct (list_In_nth (map joinL restN) (L, R, S) H0).
-    destruct (nth_map_some_rev _ _ _ H1) as [x' [restNx x'LRS]].
+    destruct (list_In_nth (map joinL restN) (L, R, S) H).
+    destruct (nth_map_some_rev _ _ _ H0) as [x' [restNx x'LRS]].
     inversion x'LRS.
     destruct x' as [[x'L x'R] x'S]; simpl in * . 
     destruct (proj1 (restNok x'L x'R x'S)).
     apply nth_some_in with x; trivial.
     split; trivial.
-    rewrite H2; solve_meq.
+    rewrite H1; solve_meq.
     assert (aL: a in L).
     destruct (@member_union a S L); trivial.
-    rewrite <- H0; auto with multisets.
+    rewrite <- H; auto with multisets.
     absurd (a in N); trivial.
-    rewrite H1; auto with multisets.
+    rewrite H0; auto with multisets.
      (*   - completeness *)
     destruct (proj2 (restNok (remove a L) R S))
       as [L' [R' [S' [LL' [RR' [SS' LRSN]]]]]]; trivial.
@@ -1549,22 +1549,22 @@ Section OrderDec.
 
   Proof.
     intro M.
-    apply mset_ind_set with (P := fun M =>
+    apply mset_ind_type with (P := fun M =>
       forall n,
         (forall m, m in M -> {m >A n} + {~m >A n}) ->
         {m: A | m in M /\ m >A n} + {forall m, m in M -> ~m >A n}).
     right; intros.
     elimtype False; apply not_empty with empty m; auto with multisets.
     intros.
-    destruct (H n) as [[m [mM0 mn]] | nm].
-    intros; apply H0; auto with multisets.
+    destruct (X n) as [[m [mM0 mn]] | nm].
+    intros; apply X0; auto with multisets.
     left; exists m; auto with multisets.
-    destruct (H0 a); auto with multisets.
+    destruct (X0 a); auto with multisets.
     left; exists a; auto with multisets.
     right; intros.
-    destruct (member_union H1).
+    destruct (member_union H).
     apply nm; trivial.
-    rewrite (member_singleton H2); trivial.
+    rewrite (member_singleton H0); trivial.
   Qed.
 
   Definition Ord L R :=
@@ -1577,7 +1577,7 @@ Section OrderDec.
 
   Proof.
     intros M N; generalize M; clear M.
-    apply mset_ind_set with (P := fun N =>
+    apply mset_ind_type with (P := fun N =>
       forall M,
         (forall m n, m in M -> n in N -> {m >A n} + {~m >A n}) ->
         {Ord M N} + {~Ord M N}); intros.
@@ -1587,25 +1587,25 @@ Section OrderDec.
     intros; elimtype False.
     apply not_empty with empty r; auto with multisets.
     clear N.
-    destruct (H M0).
-    intros; apply H0; trivial.
+    destruct (X M0).
+    intros; apply X0; trivial.
     apply member_member_union; trivial.
     destruct (@dom_dec M0 a) as [[m [mM0 mma]] | nm].
-    intros; apply H0; trivial.
+    intros; apply X0; trivial.
     auto with multisets.
     inversion o.
     left; split; trivial.
-    intros; destruct (member_union H3).
-    apply H2; trivial.
+    intros; destruct (member_union H1).
+    apply H0; trivial.
     exists m; trivial.
-    rewrite (member_singleton H4); trivial.
+    rewrite (member_singleton H2); trivial.
     right; intro MN; inversion MN.
-    destruct (H2 a).
+    destruct (H0 a).
     auto with multisets.
     apply (nm x); trivial.
     right; intro MN; inversion MN.
     apply n; split; trivial; intros.
-    apply H2; auto with multisets.
+    apply H0; auto with multisets.
   Qed.
 
   Lemma mOrd_dec_aux : forall M N,
@@ -1621,22 +1621,22 @@ Section OrderDec.
     intros.
     destruct x0 as [[L R] S].
     apply Ord_dec; simpl; intros.
-    destruct (proj1 (a L R S) H0).
-    apply H.
+    destruct (proj1 (a L R S) H).
+    apply X.
+    rewrite H2; auto with multisets.
     rewrite H3; auto with multisets.
-    rewrite H4; auto with multisets.
     destruct s as [[[L R] S] [LRSx LRSord]].
     simpl in LRSord; inversion LRSord.
     destruct (proj1 (a L R S) LRSx).
     left; constructor 1 with L R S; trivial.
     right; intro MN; inversion MN.
-    destruct (proj2 (a X Y Z) H1 H2) as [L [R [S [XL [YR [ZS LRSx]]]]]].
+    destruct (proj2 (a X0 Y Z) H0 H1) as [L [R [S [XL [YR [ZS LRSx]]]]]].
     absurd (Ord L R).
     apply (n (L, R, S)); trivial.
     split; trivial.
     rewrite <- XL; trivial.
     intros.
-    destruct (H3 r).
+    destruct (H2 r).
     rewrite YR; trivial.
     exists x0; trivial.
     rewrite <- XL; trivial.

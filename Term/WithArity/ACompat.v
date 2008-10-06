@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.11 2008-09-24 10:20:55 joerg Exp $ *)
+(* $Id: ACompat.v,v 1.12 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -35,8 +35,8 @@ Lemma compat_red : forall R,
   rewrite_ordering succ -> compat R -> red R << succ.
 
 Proof.
-intro. unfold inclusion. intros (Hsubs,Hcont) Hcomp t u H. redtac.
-subst t. subst u. apply Hcont. apply Hsubs. apply Hcomp. exact H.
+intro. unfold inclusion. intros (Hsubs,Hcont) Hcomp u v H. redtac.
+subst u. subst v. apply Hcont. apply Hsubs. apply Hcomp. exact H.
 Qed.
 
 Lemma compat_hd_red : forall R,

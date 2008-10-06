@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: VSubstitution.v,v 1.3 2007-06-03 12:59:31 koper Exp $ *)
+(* $Id: VSubstitution.v,v 1.4 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -29,19 +29,19 @@ Definition substitution := variable -> term.
 
 (* application of a substitution *)
 
-Fixpoint app (s : substitution) (t : term) {struct t} : term :=
+Fixpoint sub (s : substitution) (t : term) {struct t} : term :=
   match t with
     | Var x => s x
     | Fun f ts =>
-      let fix apps (ts : terms) : terms :=
+      let fix subs (ts : terms) : terms :=
 	match ts with
 	  | nil => nil
-	  | cons t ts' => app s t :: apps ts'
+	  | cons t ts' => sub s t :: subs ts'
 	end
-	in Fun f (apps ts)
+	in Fun f (subs ts)
   end.
 
-Lemma app_fun : forall s f v, app s (Fun f v) = Fun f (map (app s) v).
+Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (map (sub s) v).
 
 Proof.
 intros f s. induction v; simpl; refl.
@@ -52,7 +52,7 @@ Section properties.
 Variable succ : relation term.
 
 Definition substitution_closed :=
-  forall t1 t2 s, succ t1 t2 -> succ (app s t1) (app s t2).
+  forall t1 t2 s, succ t1 t2 -> succ (sub s t1) (sub s t2).
 
 End properties.
 

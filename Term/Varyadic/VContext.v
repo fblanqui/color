@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: VContext.v,v 1.5 2007-06-03 00:10:24 koper Exp $ *)
+(* $Id: VContext.v,v 1.6 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,7 +27,7 @@ Notation terms := (list term).
 (***********************************************************************)
 (** contexts and replacement of the hole *)
 
-Inductive context : Set :=
+Inductive context : Type :=
   | Hole : context
   | Cont : forall f : Sig, terms -> context -> terms -> context.
 

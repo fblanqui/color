@@ -8,7 +8,7 @@ This file presents the definition of simple types
 for the development of theory of simpe typed lambda-calculus.
 *)
 
-(* $Id: TermsSig.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsSig.v,v 1.3 2008-10-06 03:22:31 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,7 +19,7 @@ Set Implicit Arguments.
 Module Type SimpleTypes.
 
    (* Base types; denoted as a, b, c, ... *)
-  Parameter BaseType : Set.
+  Parameter BaseType : Type.
   Implicit Types a b c : BaseType.
    (* Equality on base types needs to be decidable *)
   Parameter eq_BaseType_dec : forall (a b: BaseType), {a=b}+{~a=b}.
@@ -31,7 +31,7 @@ Module Type SimpleTypes.
       Simple types: either basic types or arrow types A->B with A and B 
       simple types. We denote them as A, B, C, ...
     *)
-  Inductive SimpleType : Set :=
+  Inductive SimpleType : Type :=
     | BasicType(T: BaseType)
     | ArrowType(A B : SimpleType).
   Notation "x --> y" := (ArrowType x y) 
@@ -54,7 +54,7 @@ Module Type Signature.
   Export ST.
 
    (* Function symbols, denoted as f, g, h, ... *)
-  Parameter FunctionSymbol : Set.
+  Parameter FunctionSymbol : Type.
   Implicit Types f g h : FunctionSymbol.
 
    (* Equality on function symbols needs to be decidable *)

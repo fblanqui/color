@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATerm_of_String.v,v 1.5 2008-02-13 14:08:16 blanqui Exp $ *)
+(* $Id: ATerm_of_String.v,v 1.6 2008-10-06 03:22:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -30,23 +30,9 @@ Notation srule := (rule SSig).
 
 Require Export ASignature.
 
-Inductive symb : Set :=
-| Empty : symb
-| Letter : letter -> symb.
+Definition ar (s : letter) := 1.
 
-Lemma eq_symb_dec : forall f g : symb, {f=g}+{~f=g}.
-
-Proof.
-decide equality. apply eq_letter_dec.
-Qed.
-
-Fixpoint ar (s : symb) : nat :=
-  match s with
-    | Empty => 0
-    | Letter _ => 1
-  end.
-
-Definition ASig_of_SSig := mkSignature ar eq_symb_dec.
+Definition ASig_of_SSig := mkSignature ar eq_letter_dec.
 
 Notation ASig := ASig_of_SSig.
 
@@ -57,8 +43,8 @@ Notation Fun := (@Fun ASig).
 
 Fixpoint term_of_string (s : string) : term :=
   match s with
-    | nil => Fun Empty Vnil
-    | a :: w => Fun (Letter a) (Vcons (term_of_string w) Vnil)
+    | nil => Var 0
+    | a :: w => Fun a (Vcons (term_of_string w) Vnil)
   end.
 
 (***********************************************************************)
@@ -67,7 +53,7 @@ Fixpoint term_of_string (s : string) : term :=
 Require Export AContext.
 
 Definition cont_of_letter a :=
-  @Cont ASig (Letter a) 0 0 (refl_equal 1) (@Vnil term) Hole Vnil.
+  @Cont ASig a 0 0 (refl_equal 1) (@Vnil term) Hole Vnil.
 
 Fixpoint cont_of_string (s : string) : context ASig :=
   match s with
@@ -80,10 +66,8 @@ Fixpoint cont_of_string (s : string) : context ASig :=
 
 Require Export ATrs.
 
-Definition rule_term_of_string s := fill (cont_of_string s) (Var 0).
-
 Definition rule_of_srule (x : srule) :=
-  mkRule (rule_term_of_string (Srs.lhs x)) (rule_term_of_string (Srs.rhs x)).
+  mkRule (term_of_string (Srs.lhs x)) (term_of_string (Srs.rhs x)).
 
 Definition subs_of_string s x :=
   match x with
@@ -94,7 +78,7 @@ Definition subs_of_string s x :=
 Lemma term_sfill : forall sc s,
   term_of_string (SContext.fill sc s) =
   fill (cont_of_string (lft sc))
-  (app (subs_of_string (rgt sc)) (rule_term_of_string s)).
+  (sub (subs_of_string (rgt sc)) (term_of_string s)).
 
 Proof.
 intros. destruct sc. elim lft; unfold SContext.fill; simpl.

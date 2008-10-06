@@ -8,7 +8,7 @@ This file provides a specification of finite multiset data-type along
 with specification of operations on multisets.
 *)
 
-(* $Id: MultisetCore.v,v 1.5 2008-01-23 10:23:27 blanqui Exp $ *)
+(* $Id: MultisetCore.v,v 1.6 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -26,7 +26,7 @@ Module Type MultisetCore.
 
 Section Operations.  
 
-  Parameter Multiset : Set.
+  Parameter Multiset : Type.
 
   Parameter mult : A -> Multiset -> nat.
 
@@ -112,8 +112,8 @@ End MultisetCore.
 
 Section Multiset_IntersectionAsDifference.
 
-  Variable A : Set.
-  Variable Multiset : Set.
+  Variable A : Type.
+  Variable Multiset : Type.
   Variable meq : Multiset -> Multiset -> Prop.
   Variable mult : A -> Multiset -> nat.
   Variable diff : Multiset -> Multiset -> Multiset.

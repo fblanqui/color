@@ -485,8 +485,8 @@ Module Horpo (S : TermsSig.Signature)
   Proof.
     intros M N.
     assert (Res: forall P M' N' Q,
-      fst P ~(Q) M' ->
-      snd P ~(Q) N' ->
+      (fst P) ~(Q) M' ->
+      (snd P) ~(Q) N' ->
       fst P >> snd P ->
       env M' = env N' ->
       M' >> N').
@@ -495,8 +495,8 @@ Module Horpo (S : TermsSig.Signature)
       (R := LexProd_Lt)
       (P := fun P =>
          forall M' N' Q,
-	   fst P ~(Q) M' ->
-	   snd P ~(Q) N' ->
+	   (fst P) ~(Q) M' ->
+	   (snd P) ~(Q) N' ->
 	   fst P >> snd P ->
 	   env M' = env N' ->
 	   M' >> N').
@@ -979,18 +979,18 @@ Module Horpo (S : TermsSig.Signature)
     left; constructor.
     destruct IHNs; trivial.
     intros.
-    destruct (H0 N); auto with datatypes.
-    destruct (H0 a); auto with datatypes.
+    destruct (X0 N); auto with datatypes.
+    destruct (X0 a); auto with datatypes.
     left; constructor 2; trivial.
     destruct (many_one_dec horpoRC (appArgs M) a)
       as [[Marg [MMarg MargN]] | noSub].
     intros.
-    destruct (H x a); try_solve.
+    destruct (X x a); try_solve.
     apply arg_subterm; trivial.
     left; constructor 3; trivial.
     exists Marg; trivial.
     right; intro MaNs; inversion MaNs; try_solve.
-    destruct H4.
+    destruct H2.
     apply (noSub x); trivial.
     right; intro MaNs; inversion MaNs; try_solve.
   Qed.
@@ -1232,8 +1232,7 @@ Module Horpo (S : TermsSig.Signature)
     apply transp_transp_wf.
     apply subterm_wf.
     clear M N P.
-    intros P IH.
-    destruct P as [M N]; simpl in * .
+    intros P. destruct P as [M N]; simpl; intro IH.
     destruct (eq_SimpleType_dec (type M) (type N)).
     destruct (eq_Env_dec (env M) (env N)).
     destruct (algebraic_dec M).

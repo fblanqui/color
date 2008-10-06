@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.36 2008-06-26 12:48:10 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.37 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -38,7 +38,7 @@ Ltac Veqtac := repeat
 
 Section S.
 
-Variable A : Set.
+Variable A : Type.
 
 Notation vec := (vector A).
 
@@ -91,11 +91,11 @@ Fixpoint Vcast m (v : vec m) {struct v} : forall n, m=n -> vec n :=
     | Vnil => fun n =>
       match n return O = n -> vec n with
 	| O => fun _ => Vnil
-	| S n' => fun H => False_rec (vec (S n')) (O_S n' H)
+	| S n' => fun H => False_rect (vec (S n')) (O_S n' H)
       end
     | Vcons x m' w => fun n =>
       match n return S m' = n -> vec n with
-	| O => fun H => False_rec (vec O) (S_neq_O H)
+	| O => fun H => False_rect (vec O) (S_neq_O H)
 	| S n' => fun H => Vcons x (Vcast w (f_equal pred H))
       end
   end.
@@ -221,7 +221,7 @@ Fixpoint Vadd n (v : vec n) (x : A) { struct v } : vec (S n) :=
 
 Fixpoint Vnth n (v : vec n) {struct v} : forall i, i<n -> A :=
   match v in vector _ n return forall i, i<n -> A with
-    | Vnil => fun i H => False_rec A (lt_n_O i H)
+    | Vnil => fun i H => False_rect A (lt_n_O i H)
     | Vcons x p v' => fun i =>
       match i return i < S p -> A with
 	| O => fun _ => x
@@ -845,7 +845,8 @@ Qed.
 
 (* Vfold_left f b [a1 .. an] = f .. (f (f b x1) x2) .. xn *)
 
-Fixpoint Vfold_left (B:Set) (f : B->A->B) (b:B) n (v : vec n) {struct v} : B :=
+Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n)
+  {struct v} : B :=
   match v with
     | Vnil => b
     | Vcons a _ w => f (Vfold_left f b w) a
@@ -853,7 +854,8 @@ Fixpoint Vfold_left (B:Set) (f : B->A->B) (b:B) n (v : vec n) {struct v} : B :=
 
 (* Vfold_right f [a1 .. an] b = f x1 (f x2 .. (f xn b) .. ) *)
 
-Fixpoint Vfold_right (B:Set) (f : A->B->B) n (v : vec n) (b:B) {struct v} : B :=
+Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B)
+  {struct v} : B :=
   match v with
     | Vnil => b
     | Vcons a _ w => f a (Vfold_right f w b)
@@ -887,8 +889,8 @@ Lemma vec_of_list_exact i l (Hi :i < length(l)) :
 
 Proof.
 induction i; intros.
-destruct l; simpl in *. absurd_hyp Hi; omega. auto.
-destruct l;simpl in *. absurd_hyp Hi; omega. apply IHi.
+destruct l; simpl in *. contradict Hi; omega. auto.
+destruct l;simpl in *. contradict Hi; omega. apply IHi.
 Qed.
 
 Lemma list_of_vec_exact i n (v:vector A n) (Hi:i < n) :
@@ -896,8 +898,8 @@ Lemma list_of_vec_exact i n (v:vector A n) (Hi:i < n) :
 
 Proof.
 induction i; intros.
-destruct v; simpl in *. absurd_hyp Hi; omega. auto.
-destruct v; simpl in *. absurd_hyp Hi; omega. apply IHi.
+destruct v; simpl in *. contradict Hi; omega. auto.
+destruct v; simpl in *. contradict Hi; omega. apply IHi.
 Qed.
 
 (***********************************************************************)
@@ -1045,7 +1047,7 @@ Ltac castrefl h := rewrite (UIP_refl eq_nat_dec h); rewrite Vcast_refl; refl.
 
 Section map.
 
-Variables (A B : Set) (f : A->B).
+Variables (A B : Type) (f : A->B).
 
 Fixpoint Vmap n (v : vector A n) {struct v} : vector B n :=
   match v in vector _ n return vector B n with
@@ -1136,7 +1138,7 @@ Implicit Arguments Vin_map_intro [A B x n v].
 (***********************************************************************)
 (** map with a binary function *)
 
-Fixpoint Vmap2 (A B C : Set) (f : A->B->C) n {struct n}
+Fixpoint Vmap2 (A B C : Type) (f : A->B->C) n {struct n}
   : vector A n -> vector B n -> vector C n :=
   match n as n return vector A n -> vector B n -> vector C n with
     | O => fun _ _ => Vnil
@@ -1146,8 +1148,8 @@ Fixpoint Vmap2 (A B C : Set) (f : A->B->C) n {struct n}
 
 (* map composition *)
 
-Lemma Vmap_map : forall (A B C : Set) (f:A->B) (g:B->C) n (v : vector A n),
-  Vmap g (Vmap f v) = Vmap (fun x : A => g (f x)) v.
+Lemma Vmap_map : forall (A B C : Type) (f:A->B) (g:B->C) n
+  (v : vector A n), Vmap g (Vmap f v) = Vmap (fun x : A => g (f x)) v.
 
 Proof.
 intros; induction v.
@@ -1158,7 +1160,7 @@ Qed.
 
 (* nth element in a map *)
 
-Lemma Vmap2_nth : forall (A B C : Set) (f : A -> B -> C) n 
+Lemma Vmap2_nth : forall (A B C : Type) (f : A -> B -> C) n 
   (vl : vector A n) (vr : vector B n) i (ip : i < n),
   Vnth (Vmap2 f vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
 Proof.
@@ -1171,14 +1173,14 @@ Qed.
 (***********************************************************************)
 (** vforall and specifications *)
 
-Fixpoint Vforall_of_vsig (A : Set) (P : A -> Prop) n (v : vector (sig P) n)
+Fixpoint Vforall_of_vsig (A : Type) (P : A -> Prop) n (v : vector (sig P) n)
   {struct v} : Vforall P (Vmap (@proj1_sig A P) v) :=
   match v in vector _ n return Vforall P (Vmap (@proj1_sig A P) v) with
     | Vnil => I
     | Vcons a _ w => conj (@proj2_sig A P a) (Vforall_of_vsig w)
   end.
 
-Lemma Vmap_proj1 : forall (A : Set) (P : A->Prop) n (v : vector A n)
+Lemma Vmap_proj1 : forall (A : Type) (P : A->Prop) n (v : vector A n)
   (Hv : Vforall P v), v = Vmap (@proj1_sig A P) (Vsig_of_v Hv).
 
 Proof.
@@ -1194,7 +1196,7 @@ Implicit Arguments Vmap_proj1 [A P n v].
 (***********************************************************************)
 (** equality of vmap's *)
 
-Lemma Vmap_eq : forall (A B : Set) (f g : A->B) n (v : vector A n),
+Lemma Vmap_eq : forall (A B : Type) (f g : A->B) n (v : vector A n),
   Vforall (fun a => f a = g a) v -> Vmap f v = Vmap g v.
 
 Proof.
@@ -1203,27 +1205,29 @@ Qed.
 
 Implicit Arguments Vmap_eq [A B f g n v].
 
-Lemma Vmap_eq_ext : forall (A B : Set) (f g : A->B), (forall a, f a = g a) ->
+Lemma Vmap_eq_ext : forall (A B : Type) (f g : A->B),
+  (forall a, f a = g a) ->
   forall n (v : vector A n), Vmap f v = Vmap g v.
 
 Proof.
 induction v; intros; simpl. reflexivity. apply Vcons_eq; auto.
 Qed.
 
-Lemma Vmap_id : forall (A : Set) n (v : vector A n), Vmap (fun x => x) v = v.
+Lemma Vmap_id : forall (A : Type) n (v : vector A n),
+  Vmap (fun x => x) v = v.
 
 Proof.
 induction v. reflexivity. simpl. apply Vcons_eq; auto.
 Qed.
 
-Lemma Vmap_eq_id : forall (A : Set) (f : A->A) n (v : vector A n),
+Lemma Vmap_eq_id : forall (A : Type) (f : A->A) n (v : vector A n),
   Vforall (fun a => f a = a) v -> Vmap f v = v.
 
 Proof.
 intros. rewrite <- Vmap_id. apply Vmap_eq. assumption.
 Qed.
 
-Lemma Vmap_eq_ext_id : forall (A : Set) (f : A->A), (forall a, f a = a) ->
+Lemma Vmap_eq_ext_id : forall (A : Type) (f : A->A), (forall a, f a = a) ->
   forall n (v : vector A n), Vmap f v = v.
 
 Proof.
@@ -1235,7 +1239,7 @@ Qed.
 
 Require Export ListForall.
 
-Lemma lforall_Vforall : forall (A : Set) (l : list A) (p : A -> Prop),
+Lemma lforall_Vforall : forall (A : Type) (l : list A) (p : A -> Prop),
   lforall p l -> Vforall p (vec_of_list l).
 
 Proof.
@@ -1245,8 +1249,8 @@ Proof.
   unfold Vforall in IHl. apply IHl; trivial.
 Qed.
 
-Lemma Vforall_lforall : forall (A : Set) n (v : vector A n) (p : A -> Prop),
-  Vforall p v -> lforall p (list_of_vec v).
+Lemma Vforall_lforall : forall (A : Type) n (v : vector A n)
+  (p : A -> Prop), Vforall p v -> lforall p (list_of_vec v).
 
 Proof.
   intros. generalize H. induction v. trivial. 

@@ -21,7 +21,7 @@ Implicit Arguments wf_incl [A R1 R2].
 
 Section rtc.
 
-Variables (A : Set) (R : relation A).
+Variables (A : Type) (R : relation A).
 
 Lemma Acc_rtc : forall x y, clos_refl_trans R x y -> Acc R y -> Acc R x.
 
@@ -51,8 +51,8 @@ End rtc.
 
 Section symprod.
 
-Variable A : Set.
-Variable B : Set.
+Variable A : Type.
+Variable B : Type.
 Variable leA : A -> A -> Prop.
 Variable leB : B -> B -> Prop.
 
@@ -98,7 +98,7 @@ End symprod.
 
 Section RestrictedAcc.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable P : A -> Prop.
 
   Inductive Restricted_acc (R : relation A) : A -> Prop :=
@@ -130,4 +130,4 @@ End RestrictedAcc.
 
 Require Export List.
 
-Definition accs (A : Set) r l := forall a : A, In a l -> Acc r a.
+Definition accs (A : Type) r l := forall a : A, In a l -> Acc r a.

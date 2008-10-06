@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 string rewriting
 *)
 
-(* $Id: Srs.v,v 1.5 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: Srs.v,v 1.6 2008-10-06 03:22:31 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -24,7 +24,7 @@ Require Export List.
 
 Notation string := (list Sig).
 
-Record rule : Set := mkRule { lhs : string; rhs : string }.
+Record rule : Type := mkRule { lhs : string; rhs : string }.
 
 Require Export SContext.
 

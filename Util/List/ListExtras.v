@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.15 2008-09-19 03:04:59 blanqui Exp $ *)
+(* $Id: ListExtras.v,v 1.16 2008-10-06 03:22:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -478,7 +478,8 @@ Section DropNth.
     simpl in H; omega.
   Qed.
 
-  Lemma drop_nth_length : forall l p, length (drop_nth l p) >= pred (length l).
+  Lemma drop_nth_length : forall l p,
+    length (drop_nth l p) >= pred (length l).
 
   Proof. 
     intros.
@@ -650,7 +651,8 @@ Section DropLast.
 
   Variable A : Type.
 
-  (*Definition dropLast (l: list A) : list A := drop_nth l (pred (length l)).*)
+  (*Definition dropLast (l: list A) : list A
+    := drop_nth l (pred (length l)).*)
 
   Fixpoint dropLast (l: list A) : list A :=
     match l with

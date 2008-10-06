@@ -75,7 +75,7 @@ destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 assert (dim = length (hyp_Dom hyps)). auto. rewrite H1 in *; auto.
 cut (exists j, j=i /\ In j (nfirst dim)). intros; destruct H1. destruct H1. 
 rewrite nfirst_exact in H2. subst i; auto.
-eapply permutation_in. intuition. apply permutation_sym. eauto. auto.
+eapply permutation_in. auto using gen_st. apply permutation_sym. eauto. auto.
 Qed.
 
 (***********************************************************************)
@@ -86,7 +86,7 @@ Notation SCC'_tag := (SCC'_tag hyps).
 Notation SCC'_dec := (SCC'_dec hyps).
 
 Definition hd_red_SCC' i t1 t2 := exists l, exists r, exists s,
-  SCC'_tag M HM (mkRule l r) = Some i /\ t1 = app s l /\ t2 = app s r.
+  SCC'_tag M HM (mkRule l r) = Some i /\ t1 = sub s l /\ t2 = sub s r.
 
 Lemma hd_red_SCC'_cover t1 t2 : hd_red R t1 t2 ->
   exists i, hd_red_SCC' i t1 t2 /\ i<dim.
@@ -116,7 +116,7 @@ Definition sorted_hd_red_Mod_SCC' := map hd_red_Mod_SCC' s_SCC's.
 Definition hd_red_Mod_SCC'_union :=
   fold_right (@union (term Sig)) empty sorted_hd_red_Mod_SCC'.
 
-Lemma union_list_spec : forall (A : Set) L (x y : A) (r : relation A),
+Lemma union_list_spec : forall (A : Type) L (x y : A) (r : relation A),
   In r L -> r x y -> fold_right (@union A) empty L x y.
 
 Proof.
@@ -124,7 +124,7 @@ intros. induction L. simpl in *; tauto.
 simpl in *. destruct H. destruct H. subst; left; auto. right; tauto.
 Qed.
 
-Lemma union_list_spec2 : forall (A : Set) L (x y : A),
+Lemma union_list_spec2 : forall (A : Type) L (x y : A),
   fold_right (@union A) empty L x y -> exists r, In r L /\ r x y.
 
 Proof.
@@ -471,24 +471,24 @@ Ltac use_SCC_tag h M S R t :=
                   assert (WF (hd_red_Mod S L)); subst L; clear Hi; clear x)])
       end).
 
-Ltac use_SCC_hyp h M R Hi := 
-  let b := fresh in
-    (set (b := Vnth (Vnth M Hi) Hi);
-      norm_in b (Vnth (Vnth M Hi) Hi);
+Ltac use_SCC_hyp M l := 
+  let b := fresh "b" in
+    (set (b := Vnth (Vnth M l) l);
+      norm_in b (Vnth (Vnth M l) l);
       match eval compute in b with
-        | false => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=Hi); eauto
+        | false => apply WF_hd_red_Mod_SCC_fast_trivial with (Hi:=l); eauto
         | true => eapply WF_incl;
-          [eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=Hi) | auto]; auto
-      end; clear b).
+          [eapply hd_red_Mod_SCC'_hd_red_Mod_fast with (Hi:=l); auto | auto]
+      end).
 
-Ltac use_SCC_all_hyps h m R i Hi Hj :=
+Ltac use_SCC_all_hyps M i Hi Hj :=
   let rec aux x :=
     match x with
       | 0 => elimtype False; omega
-      | S ?y => destruct i; [use_SCC_hyp h m R Hi | aux y]
+      | S ?y => destruct i; [use_SCC_hyp M Hi | aux y]
     end in	
     match type of Hj with
-      | le ?X ?Y => aux Y
+      | le _ ?Y => aux Y
     end.
 
 Ltac SCC_name n1 n2 :=

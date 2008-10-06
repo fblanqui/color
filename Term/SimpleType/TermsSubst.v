@@ -8,7 +8,7 @@ Operation of substitution for simple typed
 lambda-calculus is defined in this file.
 *)
 
-(* $Id: TermsSubst.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsSubst.v,v 1.3 2008-10-06 03:22:31 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -28,7 +28,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Definition varSubstTo (G: Subst) x T : Prop := nth_error G x = Some (Some T).
   Notation "G |-> x / T" := (varSubstTo G x T) (at level 50, x at level 0).
 
-  Definition varIsSubst (G: Subst) x : Set := {T: Term | G |-> x/T}.
+  Definition varIsSubst (G: Subst) x : Type := {T: Term | G |-> x/T}.
   Notation "G |-> x /*" := (varIsSubst G x) (at level 50, x at level 0).
 
   Definition varIsNotSubst (G: Subst) x : Prop := nth_error G x = None \/ nth_error G x = Some None.
@@ -1207,7 +1207,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (isVarDecl_dec E n) as [[C EC] | en]; trivial.
   Qed.
 
-  Lemma idSubst_neutral : forall M, subst (idSubst_correct M) ~ M.
+  Lemma idSubst_neutral : forall M, (subst (idSubst_correct M)) ~ M.
 
   Proof.
     intros.
@@ -1454,7 +1454,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply env_sub_ly_rn; trivial.
   Qed.
 
-  Lemma fold_progress : forall (A: Set)(B: Set) (conv: B -> A) g l (a init: A)
+  Lemma fold_progress : forall (A B: Type) (conv: B -> A) g l (a init: A)
     (f := fun r el => match el with None => r | Some e => g r (conv e) end),
   (forall a b c, g (g a b) c = g a (g b c)) -> 
   (forall a, g a init = g init a) ->
@@ -1696,7 +1696,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     compute; trivial.
   Qed.
 
-  Lemma funS_subst : forall M G (MG: correct_subst M G), isFunS M -> subst MG ~ M.
+  Lemma funS_subst : forall M G (MG: correct_subst M G),
+    isFunS M -> (subst MG) ~ M.
 
   Proof.
     intros.

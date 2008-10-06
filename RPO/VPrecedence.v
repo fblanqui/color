@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-(* $Id: VPrecedence.v,v 1.3 2007-06-01 19:32:08 koper Exp $ *)
+(* $Id: VPrecedence.v,v 1.4 2008-10-06 03:22:25 blanqui Exp $ *)
 
 Require Export VSignature.
 Require Export VTerm.
@@ -57,7 +57,7 @@ Module VPrecedence (P : VPrecedenceType).
 
     Lemma sid_theoryA : Setoid_Theory A eqA.
     Proof.
-      constructor.
+      constructor; unfold Reflexive, Symmetric, Transitive.
       unfold eqA; simpl; trivial.
       unfold eqA; intros; subst; trivial.
       unfold eqA; intros; subst; trivial.

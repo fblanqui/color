@@ -18,7 +18,7 @@ Require Export NatUtil.
 
 Section occur.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Definition delta x y :=
@@ -108,7 +108,7 @@ Implicit Arguments occur_S [A x l n].
 
 Section pigeon_hole.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Notation occur := (occur eq_dec).

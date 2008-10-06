@@ -28,7 +28,7 @@ x >_term y if x >_nat y
 assuming a total ordering >_symb on symbols
 *)
 
-(* $Id: ATrsNorm.v,v 1.1 2008-09-19 03:04:05 blanqui Exp $ *)
+(* $Id: ATrsNorm.v,v 1.2 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -69,7 +69,7 @@ End norm.
 
 (* ASSUME: incl (vars r) (vars l) *)
 Definition mkNormRule l r :=
-  let xs := vars l in mkRule (norm xs l) (norm xs r).
+  let xs := ATerm.vars l in mkRule (norm xs l) (norm xs r).
 
 (***********************************************************************)
 (** canonical representation of a list of rules *)

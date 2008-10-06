@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 terms whose variable indexes are bounded
 *)
 
-(* $Id: ABterm.v,v 1.6 2008-05-14 14:30:54 blanqui Exp $ *)
+(* $Id: ABterm.v,v 1.7 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,7 +27,7 @@ Section bterm.
 
 Variable k : nat.
 
-Inductive bterm : Set :=
+Inductive bterm : Type :=
   | BVar : forall x : nat, x<=k -> bterm
   | BFun : forall f : Sig, vector bterm (arity f) -> bterm.
 
@@ -67,8 +67,8 @@ End bterm_rect_def.
 Definition bterm_ind (P : bterm -> Prop) (Q : forall n, bterms n -> Prop) :=
   bterm_rect P Q.
 
-Definition bterm_rec (P : bterm -> Set) (Q : forall n, bterms n -> Set) :=
-  bterm_rect P Q.
+(*Definition bterm_rec (P : bterm -> Set) (Q : forall n, bterms n -> Set) :=
+  bterm_rect P Q.*)
 
 (***********************************************************************)
 (** injection of bterm into term *)

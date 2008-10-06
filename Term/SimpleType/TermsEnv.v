@@ -8,7 +8,7 @@ Operations on environments of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsEnv.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: TermsEnv.v,v 1.6 2008-10-06 03:22:29 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1307,7 +1307,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite (finalSeg_empty E (k := S i)) in H.
     destruct (j - length E); try destruct n; try_solve.
     omega.
-    assert (forall (A: Set) l (a: A) i, i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
+    assert (forall (A : Type) l (a: A) i,
+      i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
     intros; destruct i0; try_solve.
     elimtype False; omega.
     rewrite H0 in H.
@@ -1337,7 +1338,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply varD_hole_env_length_j_ge_i with j A; auto with arith.
     rewrite nth_app_right in H0; autorewrite with datatypes.
     replace (length (initialSeg E i)) with i in H0.
-    assert (forall (A: Set) l (a: A) i, i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
+    assert (forall (A : Type) l (a: A) i,
+      i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
     intros; destruct i0; try_solve.
     elimtype False; omega.
     rewrite (H2 (option SimpleType) (finalSeg E (S i)) None (j - i)) in H0.
@@ -1597,7 +1599,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Hint Immediate env_eq_refl env_eq_sym env_eq_empty_none_empty : terms.
 
   Definition EnvEqSetoidTheory :=
-    Build_Setoid_Theory env_eq env_eq_refl env_eq_sym env_eq_trans.
+    Build_Setoid_Theory _ env_eq env_eq_refl env_eq_sym env_eq_trans.
 
   Add Setoid Env env_eq EnvEqSetoidTheory as EnvSetoid.
 

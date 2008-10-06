@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.17 2008-05-18 13:07:46 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.18 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -41,24 +41,24 @@ Definition single x t y := if beq_nat x y then t else Var y.
 (***********************************************************************)
 (** application of a substitution *)
 
-Definition app : substitution -> term -> term := @term_int Sig I0.
+Definition sub : substitution -> term -> term := @term_int Sig I0.
 
-Lemma app_fun : forall s f (v : args f),
-  app s (Fun f v) = Fun f (Vmap (app s) v).
+Lemma sub_fun : forall s f (v : args f),
+  sub s (Fun f v) = Fun f (Vmap (sub s) v).
 
 Proof.
-intros. unfold app. rewrite term_int_fun. refl.
+intros. unfold sub. rewrite term_int_fun. refl.
 Qed.
 
-Lemma app_id : forall t, app id t = t.
+Lemma sub_id : forall t, sub id t = t.
 
 Proof.
-set (P := fun t => app id t = t). change (forall t, P t).
+set (P := fun t => sub id t = t). change (forall t, P t).
 apply term_ind_forall; intros; unfold P. refl.
-rewrite app_fun. apply f_equal with (f := Fun f). apply Vmap_eq_id. assumption.
+rewrite sub_fun. apply f_equal with (f := Fun f). apply Vmap_eq_id. assumption.
 Qed.
 
-Lemma fun_eq_app : forall f ts s u, Fun f ts = app s u ->
+Lemma fun_eq_sub : forall f ts s u, Fun f ts = sub s u ->
   {exists us, u = Fun f us} + {exists x, u = Var x}.
 
 Proof.
@@ -70,32 +70,32 @@ intro E. rewrite E. exists v. refl.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
-Lemma app_eq : forall s1 s2 t,
-  (forall x, In x (vars t) -> s1 x = s2 x) -> app s1 t = app s2 t.
+Lemma sub_eq : forall s1 s2 t,
+  (forall x, In x (vars t) -> s1 x = s2 x) -> sub s1 t = sub s2 t.
 
 Proof.
-intros. unfold app. rewrite (term_int_eq I0 s1 s2 t H). refl.
+intros. unfold sub. rewrite (term_int_eq I0 s1 s2 t H). refl.
 Qed.
 
-Lemma app_eq_id : forall s t,
-  (forall x, In x (vars t) -> s x = Var x) -> app s t = t.
+Lemma sub_eq_id : forall s t,
+  (forall x, In x (vars t) -> s x = Var x) -> sub s t = t.
 
 Proof.
-intros. transitivity (app id t). apply app_eq. hyp. apply app_id.
+intros. transitivity (sub id t). apply sub_eq. hyp. apply sub_id.
 Qed.
 
 (***********************************************************************)
 (** composition *)
 
 Definition comp (s1 s2 : substitution) : substitution :=
-  fun x => app s1 (s2 x).
+  fun x => sub s1 (s2 x).
 
-Lemma app_app : forall s1 s2 t, app s1 (app s2 t) = app (comp s1 s2) t.
+Lemma sub_sub : forall s1 s2 t, sub s1 (sub s2 t) = sub (comp s1 s2) t.
 
 Proof.
-intros. set (P := fun t => app s1 (app s2 t) = app (comp s1 s2) t).
+intros. set (P := fun t => sub s1 (sub s2 t) = sub (comp s1 s2) t).
 change (P t). apply term_ind_forall with (P := P); intros; unfold P.
-refl. repeat rewrite app_fun. apply f_equal with (f := Fun f).
+refl. repeat rewrite sub_fun. apply f_equal with (f := Fun f).
 rewrite Vmap_map. apply Vmap_eq. assumption.
 Qed.
 
@@ -103,7 +103,7 @@ Lemma comp_assoc : forall (s1 s2 s3 : substitution) x,
   comp (comp s1 s2) s3 x = comp s1 (comp s2 s3) x.
 
 Proof.
-intros. unfold comp. rewrite app_app. refl.
+intros. unfold comp. rewrite sub_sub. refl.
 Qed.
 
 (***********************************************************************)
@@ -117,15 +117,15 @@ Definition beta (xint : valuation I) (s : substitution) x :=
   term_int xint (s x).
 
 Lemma substitutionLemma : forall xint s t,
-  term_int xint (app s t) = term_int (beta xint s) t.
+  term_int xint (sub s t) = term_int (beta xint s) t.
 
 Proof.
 intros xint s t. pattern t.
 eapply term_ind with (Q := fun n (ts : terms n) =>
-  Vmap (term_int xint) (Vmap (app s) ts) = Vmap (term_int (beta xint s)) ts).
+  Vmap (term_int xint) (Vmap (sub s) ts) = Vmap (term_int (beta xint s)) ts).
 intro x. simpl. refl.
 intros f ts.
-rewrite term_int_fun. rewrite app_fun. rewrite term_int_fun.
+rewrite term_int_fun. rewrite sub_fun. rewrite term_int_fun.
 intro H. apply (f_equal (fint I f)). exact H.
 simpl. refl.
 intros. simpl. rewrite H. rewrite <- H0. refl.
@@ -178,23 +178,23 @@ intros. unfold incl. intros. ded (in_svars_elim H0). do 2 destruct H1.
 eapply in_svars_intro. apply H2. apply H. exact H1.
 Qed.
 
-Lemma vars_app : forall t, vars (app s t) = svars (vars t).
+Lemma vars_sub : forall t, vars (sub s t) = svars (vars t).
 
 Proof.
 apply term_ind with (Q := fun n (v : terms n) =>
-  vars_vec (Vmap (app s) v) = svars (vars_vec v)).
+  vars_vec (Vmap (sub s) v) = svars (vars_vec v)).
 simpl. intro. rewrite <- app_nil_end. refl.
-intros. rewrite app_fun. repeat rewrite vars_fun. exact H.
+intros. rewrite sub_fun. repeat rewrite vars_fun. exact H.
 simpl. refl.
 intros. simpl. rewrite H. rewrite svars_app.
-apply (f_equal (List.app (svars (vars t)))). exact H0.
+apply (f_equal (app (svars (vars t)))). exact H0.
 Qed.
 
-Lemma incl_vars_app : forall l r,
-  incl (vars r) (vars l) -> incl (vars (app s r)) (vars (app s l)).
+Lemma incl_vars_sub : forall l r,
+  incl (vars r) (vars l) -> incl (vars (sub s r)) (vars (sub s l)).
 
 Proof.
-intros. repeat rewrite vars_app. apply incl_svars. exact H.
+intros. repeat rewrite vars_sub. apply incl_svars. exact H.
 Qed.
 
 End vars.
@@ -220,18 +220,18 @@ Proof.
 unfold sub_eq_dom. auto.
 Qed.
 
-Lemma sub_eq_dom_incl_app : forall s1 s2 l, sub_eq_dom s1 s2 l
-  -> forall t, incl (vars t) l -> app s1 t = app s2 t.
+Lemma sub_eq_dom_incl_sub : forall s1 s2 l, sub_eq_dom s1 s2 l
+  -> forall t, incl (vars t) l -> sub s1 t = sub s2 t.
 
 Proof.
 intros until t. unfold sub_eq_dom in H. apply term_ind with
-(P := fun t => incl (vars t) l -> app s1 t = app s2 t)
+(P := fun t => incl (vars t) l -> sub s1 t = sub s2 t)
 (Q := fun n (ts : terms n) =>
-  incl (vars_vec ts) l -> Vmap (app s1) ts = Vmap (app s2) ts).
+  incl (vars_vec ts) l -> Vmap (sub s1) ts = Vmap (sub s2) ts).
 (* var *)
 unfold incl. simpl. intuition.
 (* fun *)
-intros. repeat rewrite app_fun. apply (f_equal (Fun f)).
+intros. repeat rewrite sub_fun. apply (f_equal (Fun f)).
 apply H0. rewrite vars_fun in H1. exact H1.
 (* nil *)
 refl.
@@ -240,11 +240,11 @@ intros. rewrite vars_vec_cons in H2. unfold incl in H2.
 ded (incl_app_elim H2). destruct H3. simpl. apply Vcons_eq; auto.
 Qed.
 
-Lemma sub_eq_vars_app : forall s1 s2 t,
-  sub_eq_dom s1 s2 (vars t) -> app s1 t = app s2 t.
+Lemma sub_eq_vars_sub : forall s1 s2 t,
+  sub_eq_dom s1 s2 (vars t) -> sub s1 t = sub s2 t.
 
 Proof.
-intros. eapply sub_eq_dom_incl_app. apply H. apply List.incl_refl.
+intros. eapply sub_eq_dom_incl_sub. apply H. apply incl_refl.
 Qed.
 
 (***********************************************************************)
@@ -284,16 +284,16 @@ refl. case (In_dec eq_nat_dec x l1); intro. auto.
 ded (hyp1 _ n0). contradiction.
 Qed.
 
-Lemma app_union1 : forall t, incl (vars t) l1 -> app union t = app s1 t.
+Lemma sub_union1 : forall t, incl (vars t) l1 -> sub union t = sub s1 t.
 
 Proof.
-intros. eapply sub_eq_dom_incl_app. apply union_correct1. exact H.
+intros. eapply sub_eq_dom_incl_sub. apply union_correct1. exact H.
 Qed.
 
-Lemma app_union2 : forall t, incl (vars t) l2 -> app union t = app s2 t.
+Lemma sub_union2 : forall t, incl (vars t) l2 -> sub union t = sub s2 t.
 
 Proof.
-intros. eapply sub_eq_dom_incl_app. apply union_correct2. exact H.
+intros. eapply sub_eq_dom_incl_sub. apply union_correct2. exact H.
 Qed.
 
 End union.
@@ -328,17 +328,17 @@ intro. case (eq_nat_dec x a); intuition. rewrite H0 in n.
 ded (n (refl_equal x)). contradiction.
 Qed.
 
-Lemma app_restrict : forall s t, app s t = app (restrict s (vars t)) t.
+Lemma sub_restrict : forall s t, sub s t = sub (restrict s (vars t)) t.
 
 Proof.
-intros. apply sym_eq. apply sub_eq_vars_app. apply sub_eq_restrict.
+intros. apply sym_eq. apply sub_eq_vars_sub. apply sub_eq_restrict.
 Qed.
 
-Lemma app_restrict_incl : forall s (l r : term),
-  incl (vars r) (vars l) -> app s r = app (restrict s (vars l)) r.
+Lemma sub_restrict_incl : forall s (l r : term),
+  incl (vars r) (vars l) -> sub s r = sub (restrict s (vars l)) r.
 
 Proof.
-intros. rewrite app_restrict. apply sub_eq_vars_app. unfold sub_eq_dom.
+intros. rewrite sub_restrict. apply sub_eq_vars_sub. unfold sub_eq_dom.
 intros. unfold restrict.
 assert (Inb x (vars r) = true). apply Inb_intro. exact H0.
 assert (Inb x (vars l) = true). apply Inb_intro. apply H. exact H0.
@@ -352,27 +352,27 @@ Require Export AContext.
 
 Notation context := (context Sig).
 
-Fixpoint appc (s : substitution) (c : context) {struct c} : context :=
+Fixpoint subc (s : substitution) (c : context) {struct c} : context :=
   match c with
     | Hole => Hole
     | Cont f _ _ H v1 c' v2 =>
-      Cont f H (Vmap (app s) v1) (appc s c') (Vmap (app s) v2)
+      Cont f H (Vmap (sub s) v1) (subc s c') (Vmap (sub s) v2)
   end.
 
-Lemma app_fill : forall s u C, app s (fill C u) = fill (appc s C) (app s u).
+Lemma sub_fill : forall s u C, sub s (fill C u) = fill (subc s C) (sub s u).
 
 Proof.
-induction C; intros. refl. simpl appc. simpl fill. rewrite app_fun.
+induction C; intros. refl. simpl subc. simpl fill. rewrite sub_fun.
 apply (f_equal (Fun f)). rewrite Vmap_cast. rewrite Vmap_app. simpl Vmap.
 rewrite IHC. refl.
 Qed.
 
-Lemma subterm_app : forall u t s,
-  subterm_eq u t -> subterm_eq (app s u) (app s t).
+Lemma subterm_sub : forall u t s,
+  subterm_eq u t -> subterm_eq (sub s u) (sub s t).
 
 Proof.
-unfold subterm_eq. intros. destruct H as [C]. subst t. exists (appc s C).
-apply app_fill.
+unfold subterm_eq. intros. destruct H as [C]. subst t. exists (subc s C).
+apply sub_fill.
 Qed.
 
 (***********************************************************************)
@@ -485,23 +485,23 @@ intros. unfold fsub. case (le_lt_dec x x0). auto.
 case (le_lt_dec x (x0+0)); intros. absurd (x0<x); omega. refl.
 Qed.
 
-Lemma app_fsub_inf : forall n (ts : terms n) m t,
-  maxvar t <= m -> app (fsub m ts) t = t.
+Lemma sub_fsub_inf : forall n (ts : terms n) m t,
+  maxvar t <= m -> sub (fsub m ts) t = t.
 
 Proof.
-intros n ts m. set (P := fun t => maxvar t <= m -> app (fsub m ts) t = t).
+intros n ts m. set (P := fun t => maxvar t <= m -> sub (fsub m ts) t = t).
 change (forall t, P t). apply term_ind_forall.
 (* var *)
 unfold P, fsub. simpl. intros. case (le_lt_dec v m). auto.
 intro. case (le_lt_dec v (m+n)). intro. absurd (v <= m); omega. auto.
 (* fun *)
-intros. unfold P. intro. rewrite app_fun. apply f_equal with (f := Fun f).
+intros. unfold P. intro. rewrite sub_fun. apply f_equal with (f := Fun f).
 apply Vmap_eq_id. eapply Vforall_imp. apply H. intros. apply H2.
 eapply maxvar_le_arg with (f := f). apply H0. assumption.
 Qed.
 
 Lemma Vmap_fsub_fresh : forall x0 n (ts : terms n),
-  Vmap (app (fsub x0 ts)) (fresh (S x0) n) = ts.
+  Vmap (sub (fsub x0 ts)) (fresh (S x0) n) = ts.
 
 Proof.
 intros. apply Vmap_eq_nth. intros. rewrite Vnth_fresh. simpl.
@@ -536,5 +536,5 @@ Qed.
 
 End S.
 
-Implicit Arguments fun_eq_app [Sig f ts s u].
-Implicit Arguments app_restrict_incl [Sig l r].
+Implicit Arguments fun_eq_sub [Sig f ts s u].
+Implicit Arguments sub_restrict_incl [Sig l r].

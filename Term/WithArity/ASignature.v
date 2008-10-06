@@ -7,16 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 signature for algebraic terms with arity
 *)
 
-(* $Id: ASignature.v,v 1.5 2008-05-14 12:26:54 blanqui Exp $ *)
+(* $Id: ASignature.v,v 1.6 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
+(** Variables are represented by natural numbers. *)
+
 Notation variable := nat (only parsing).
 
+(** Signature with a decidable set of symbols of fixed arity. *)
 (* FIXME: beq_symb should replace eq_symbol_dec *)
 
 Record Signature : Type := mkSignature {
-  symbol :> Set;
+  symbol :> Type;
   arity : symbol -> nat;
   eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}
 }.
@@ -24,9 +27,13 @@ Record Signature : Type := mkSignature {
 Implicit Arguments arity [s].
 Implicit Arguments eq_symbol_dec [s].
 
+(** Module type for signatures. *)
+
 Module Type SIGNATURE.
   Parameter Sig : Signature.
 End SIGNATURE.
+
+(** Boolean equality from a signature. *)
 
 Require Export EqUtil.
 

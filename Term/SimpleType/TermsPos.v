@@ -8,7 +8,7 @@ Positions in terms, replacement of term at position,
 monotonicity property.
 *)
 
-(* $Id: TermsPos.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
+(* $Id: TermsPos.v,v 1.3 2008-10-06 03:22:30 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -22,7 +22,7 @@ Module TermsPos (Sig : TermsSig.Signature).
   Export TB.
 
    (* Pos expresses position in preterm *)
-  Inductive Pos : Term -> Set :=
+  Inductive Pos : Term -> Type :=
   | PThis: forall M, Pos M
   | PAbs:  forall E A B Pt AbsB, 
               Pos (buildT AbsB) -> 

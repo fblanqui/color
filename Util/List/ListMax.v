@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 greatest/smallest component of a list of natural numbers
 *)
 
-(* $Id: ListMax.v,v 1.6 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: ListMax.v,v 1.7 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -59,7 +59,7 @@ Qed.
 Lemma lmax_in : forall l, length l > 0 -> exists x, In x l /\ lmax l = x.
 
 Proof.
-induction l; simpl; intros. absurd_hyp H; omega. destruct l.
+induction l; simpl; intros. contradict H; omega. destruct l.
 exists a. intuition. set (l' := n::l) in *. assert (length l'>0). simpl. omega.
 ded (IHl H0). do 2 destruct H1. case (max_dec a (lmax l')); intro.
 exists a. intuition. exists x. intuition.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 properties of function-headed terms
 *)
 
-(* $Id: ANotvar.v,v 1.3 2007-05-16 15:04:49 blanqui Exp $ *)
+(* $Id: ANotvar.v,v 1.4 2008-10-06 03:22:33 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -44,7 +44,7 @@ Qed.
 
 Require Export ASubstitution.
 
-Lemma notvar_app : forall s t, notvar t -> notvar (app s t).
+Lemma notvar_sub : forall s t, notvar t -> notvar (sub s t).
 
 Proof.
 intros s t. case t; simpl; intros. contradiction. exact I.
@@ -57,10 +57,10 @@ Proof.
 intro c. case c; simpl; intros. exact H. exact I.
 Qed.
 
-Lemma notvar_fillapp : forall c s t, notvar t -> notvar (fill c (app s t)).
+Lemma notvar_fillsub : forall c s t, notvar t -> notvar (fill c (sub s t)).
 
 Proof.
-intros. apply notvar_fill. apply notvar_app. assumption. 
+intros. apply notvar_fill. apply notvar_sub. assumption. 
 Qed.
 
 End S.

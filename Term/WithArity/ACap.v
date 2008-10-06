@@ -7,22 +7,18 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.10 2008-05-28 11:04:07 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.11 2008-10-06 03:22:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
+Require Export ACalls.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** we first defined a generic cap as a triple (k,f,v) where
@@ -75,9 +71,10 @@ Qed.
 
 Implicit Arguments in_conc [u n cs].
 
-(* given a vector cs of caps and a vector ts of (sum cs) terms, this function
-breaks ts in vectors of size the number of aliens of every cap of cs,
-apply every fcap to the corresponding vector, and concatenate all the results *)
+(* given a vector cs of caps and a vector ts of (sum cs) terms, this
+function breaks ts in vectors of size the number of aliens of every
+cap of cs, apply every fcap to the corresponding vector, and
+concatenate all the results *)
 
 Fixpoint Vmap_sum n (cs : Caps n) {struct cs} : terms (sum cs) -> terms n :=
   match cs as cs in vector _ n return terms (sum cs) -> terms n with
@@ -89,10 +86,7 @@ Fixpoint Vmap_sum n (cs : Caps n) {struct cs} : terms (sum cs) -> terms n :=
 (***********************************************************************)
 (** function computing the generic cap of a term *)
 
-Require Export ACalls.
-
-Notation rule := (@rule Sig).
-Notation rules := (list rule).
+Notation rule := (@rule Sig). Notation rules := (list rule).
 
 Variable R : rules.
 
@@ -151,13 +145,15 @@ Lemma Vmap_sum_conc : forall n (ts : terms n),
   Vmap_sum (Vmap capa ts) (conc (Vmap capa ts)) = ts.
 
 Proof.
-intros. apply Vmap_sum_conc_forall. apply Vforall_intro. intros. apply sub_capa.
+intros. apply Vmap_sum_conc_forall. apply Vforall_intro. intros.
+apply sub_capa.
 Qed.
 
 (***********************************************************************)
 (** aliens are subterms *)
 
-Lemma in_aliens_subterm : forall u t, Vin u (aliens (capa t)) -> subterm_eq u t.
+Lemma in_aliens_subterm : forall u t,
+  Vin u (aliens (capa t)) -> subterm_eq u t.
 
 Proof.
 intros u t. pattern t. apply term_ind_forall.
@@ -205,8 +201,9 @@ Lemma vars_fcap_fresh_inf : forall x t m, maxvar t <= m
   -> x <= m -> In x (vars t).
 
 Proof.
-intro. set (Q := fun n (ts : terms n) => forall m, Vmax (Vmap maxvar ts) <= m
-  -> In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
+intro. set (Q := fun n (ts : terms n) =>
+  forall m, Vmax (Vmap maxvar ts) <= m ->
+  In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
   -> x <= m -> In x (vars_vec ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
 (* var *)
@@ -218,7 +215,8 @@ absurd (x<=m); omega. contradiction. apply H with (m := m); assumption.
 (* nil *)
 unfold Q. simpl. intros. contradiction.
 (* cons *)
-unfold Q. simpl. set (m := max (maxvar t) (Vmax (Vmap maxvar v))). intros m0 H1.
+unfold Q. simpl. set (m := max (maxvar t) (Vmax (Vmap maxvar v))).
+intros m0 H1.
 rewrite Vbreak_fresh. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
 destruct H4.
 (* head *)
@@ -257,8 +255,9 @@ Lemma vars_fcap_fresh : forall x t m, maxvar t <= m
   -> x <= m + nb_aliens t.
 
 Proof.
-intro. set (Q := fun n (ts : terms n) => forall m, Vmax (Vmap maxvar ts) <= m
-  -> In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
+intro. set (Q := fun n (ts : terms n) =>
+  forall m, Vmax (Vmap maxvar ts) <= m ->
+  In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
   -> x <= m + sum (Vmap capa ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t.
 (* var *)
@@ -318,7 +317,8 @@ Proof.
 intro. rewrite cap_eq. apply calls_capa.
 Qed.
 
-Lemma aliens_incl_calls : forall u t, Vin u (aliens (capa t)) -> In u (calls t).
+Lemma aliens_incl_calls : forall u t,
+  Vin u (aliens (capa t)) -> In u (calls t).
 
 Proof.
 intros u t. pattern t. apply term_ind_forall; clear t. simpl. auto.
@@ -345,13 +345,13 @@ Implicit Arguments in_app_or [A l m a].
 
 Lemma app_fcap : forall m s, (forall x, x <= m -> s x = Var x)
   -> forall t, maxvar t <= m
-  -> forall v, app s (fcap (capa t) v) = fcap (capa t) (Vmap (app s) v).
+  -> forall v, sub s (fcap (capa t) v) = fcap (capa t) (Vmap (sub s) v).
 
 Proof.
 intros until t. pattern t.
 set (Q := fun n (ts : terms n) => Vmax (Vmap maxvar ts) <= m
-  -> forall v, Vmap (app s) (Vmap_sum (Vmap capa ts) v)
-               = Vmap_sum (Vmap capa ts) (Vmap (app s) v)).
+  -> forall v, Vmap (sub s) (Vmap_sum (Vmap capa ts) v)
+               = Vmap_sum (Vmap capa ts) (Vmap (sub s) v)).
 apply term_ind with (Q := Q); clear t.
 intros. unfold fcap. simpl. apply H. assumption.
 intros f ts IH H0. rewrite capa_fun. unfold fcap.
@@ -368,8 +368,8 @@ Qed.
 
 Lemma Vmap_map_sum : forall m s, (forall x, x <= m -> s x = Var x)
   -> forall n (ts : terms n), Vmax (Vmap maxvar ts) <= m
-  -> forall v, Vmap (app s) (Vmap_sum (Vmap capa ts) v)
-               = Vmap_sum (Vmap capa ts) (Vmap (app s) v).
+  -> forall v, Vmap (sub s) (Vmap_sum (Vmap capa ts) v)
+               = Vmap_sum (Vmap capa ts) (Vmap (sub s) v).
 
 Proof.
 induction ts; simpl; intros. reflexivity.
@@ -379,22 +379,22 @@ eapply app_fcap. apply H. eapply intro_max_l. apply H0.
 apply IHts. eapply intro_max_r. apply H0.
 Qed.
 
-Lemma alien_sub_cap : forall t, app (alien_sub t) (cap t) = t.
+Lemma alien_sub_cap : forall t, sub (alien_sub t) (cap t) = t.
 
 Proof.
 intro. pattern t. apply term_ind_forall; intros.
 (* var *)
 simpl. apply alien_sub_var.
 (* fun *)
-unfold alien_sub, cap, fresh_for. set (m := maxvar (Fun f v)). rewrite capa_fun.
-case (defined f R).
+unfold alien_sub, cap, fresh_for. set (m := maxvar (Fun f v)).
+rewrite capa_fun. case (defined f R).
 (* f defined *)
 change (fsub m (Vcons (Fun f v) Vnil) (S m) = Fun f v).
 apply fsub_cons. omega.
 (* f undefined *)
 set (cs := Vmap capa v).
 change (let (n,p) := sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs) in
-  let (f0,v0) := p in app (fsub m v0) (f0 (fresh (S m) n)) = Fun f v).
+  let (f0,v0) := p in sub (fsub m v0) (f0 (fresh (S m) n)) = Fun f v).
 set (s := sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs)).
 assert (s = sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs)). refl.
 destruct s. destruct p as [f0 v0]. injection H0. intros. subst x.
@@ -402,12 +402,12 @@ assert (v0 = conc cs).
 apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x)). assumption.
 assert (f0 = fun ts => Fun f (Vmap_sum cs ts)).
 apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x -> term)). assumption.
-subst f0. rewrite app_fun. apply f_equal with (f := Fun f).
+subst f0. rewrite sub_fun. apply f_equal with (f := Fun f).
 set (s := fsub m v0). set (v1 := fresh (S m) (sum cs)).
-assert (Vmap (app s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (app s) v1)).
+assert (Vmap (sub s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (sub s) v1)).
 unfold cs. eapply Vmap_map_sum with (m := m).
 unfold s. apply fsub_inf. apply le_refl. rewrite H4.
-assert (Vmap (app s) v1 = conc cs). unfold s, v1. rewrite H3.
+assert (Vmap (sub s) v1 = conc cs). unfold s, v1. rewrite H3.
 rewrite Vmap_fsub_fresh. reflexivity.
 rewrite H5. unfold cs. apply Vmap_sum_conc.
 Qed.

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 *)
 
-(* $Id: VTerm_of_ATerm.v,v 1.6 2007-05-30 23:57:03 koper Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.7 2008-10-06 03:22:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -138,24 +138,24 @@ Qed.
 Require Export ASubstitution.
 
 Notation asubs := (@substitution ASig).
-Notation aapp := (@app ASig).
+Notation asub := (@sub ASig).
 
 Require Export VSubstitution.
 
 Notation vsubs := (@substitution VSig).
-Notation vapp := (@app VSig).
+Notation vsub := (@sub VSig).
 
 Definition vsubs_of_asubs (s : asubs) x := vterm_of_aterm (s x).
 
 Lemma vterm_subs : forall s t,
-  vterm_of_aterm (aapp s t) = vapp (vsubs_of_asubs s) (vterm_of_aterm t).
+  vterm_of_aterm (asub s t) = vsub (vsubs_of_asubs s) (vterm_of_aterm t).
 
 Proof.
 intros. pattern t. apply ATerm.term_ind with (Q := fun n (ts : aterms n) =>
-  vterms_of_aterms (Vmap (aapp s) ts)
-  = map (vapp (vsubs_of_asubs s)) (vterms_of_aterms ts)).
-refl. intros. rewrite ASubstitution.app_fun. do 2 rewrite vterm_fun.
-rewrite app_fun.
+  vterms_of_aterms (Vmap (asub s) ts)
+  = map (vsub (vsubs_of_asubs s)) (vterms_of_aterms ts)).
+refl. intros. rewrite ASubstitution.sub_fun. do 2 rewrite vterm_fun.
+rewrite sub_fun.
 apply args_eq. exact H. refl. intros. simpl. rewrite H.
 apply tail_eq. exact H0.
 Qed.

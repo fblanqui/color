@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.2 2008-05-18 13:07:46 blanqui Exp $ *)
+(* $Id: FSetUtil.v,v 1.3 2008-10-06 03:22:34 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -64,11 +64,11 @@ Ltac rgt := apply union_3; try hyp.
 Ltac Equal_intro := unfold Equal; intuition.
 Ltac Subset_intro := unfold Subset; intuition.
 
-Ltac In_elim :=
+Ltac In_elim := repeat
   match goal with
-    | H : In _ (union _ _) |- _ => destruct (union_1 H); clear H; In_elim
-    | H : In _ (remove _ _) |- _ => destruct (remove_3 H); clear H; In_elim
-    | _ => idtac
+    | H : In ?x (singleton _) |- _ => ded (singleton_1 H); subst x; clear H
+    | H : In _ (union _ _) |- _ => destruct (union_1 H); clear H
+    | H : In _ (remove _ _) |- _ => destruct (remove_3 H); clear H
   end.
 
 Ltac In_intro :=
@@ -86,7 +86,7 @@ Ltac Subset := Subset_intro; In_elim; try In_intro.
 Lemma union_empty_left : forall s, union empty s [=] s.
 
 Proof.
-Equal. rewrite empty_iff in H0. contradiction.
+Equal.
 Qed.
 
 Lemma union_empty_right : forall s, union s empty [=] s.
@@ -142,13 +142,31 @@ Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
 
 Ltac mem := autorewrite with mem.
 
-Lemma eqb_refl : forall x, ME.eqb x x = true.
+Lemma eqb_refl : forall x, eqb x x = true.
 
 Proof.
-intro. unfold ME.eqb. case (ME.eq_dec x x). refl.
+intro. unfold eqb. case (eq_dec x x). refl.
 intro. absurd (E.eq x x). exact n. apply E.eq_refl.
 Qed.
 
 Hint Rewrite eqb_refl : mem.
+
+Lemma mem_In : forall x s, mem x s = true <-> In x s.
+
+Proof.
+intuition. apply mem_2. hyp. apply mem_1. hyp.
+Qed.
+
+Lemma subset_Subset : forall s t, subset s t = true <-> Subset s t.
+
+Proof.
+intuition. apply subset_2. hyp. apply subset_1. hyp.
+Qed.
+
+Lemma equal_Equal : forall s t, equal s t = true <-> Equal s t.
+
+Proof.
+intuition. apply equal_2. hyp. apply equal_1. hyp.
+Qed.
 
 End Make.

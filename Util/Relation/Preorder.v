@@ -7,12 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 Various properties of preorders
 *)
 
-(* $Id: Preorder.v,v 1.4 2007-05-31 16:10:20 koper Exp $ *)
+(* $Id: Preorder.v,v 1.5 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Require Export Relations.
 
 Section PreOrderFacts.
-  Variable A : Set.
+  Variable A : Type.
   Variable leA : relation A.
 
   Definition eqA : relation A := fun (f g : A) => leA f g /\ leA g f.

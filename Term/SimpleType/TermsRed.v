@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Formalization of reductions of simply-typed lambda terms.
 *)
 
-(* $Id: TermsRed.v,v 1.3 2007-06-04 00:47:41 koper Exp $ *)
+(* $Id: TermsRed.v,v 1.4 2008-10-06 03:22:31 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -52,8 +52,8 @@ Module TermsRed (Sig : TermsSig.Signature).
     Variable R : relation Term.
     Notation Red := (Reduction R).
 
-    Variable R_conv_comp : forall M N M' N' Q, M ~(Q) M' -> N ~(Q) N' -> R M N -> 
-      env M' = env N' -> R M' N'.
+    Variable R_conv_comp : forall M N M' N' Q,
+      M ~(Q) M' -> N ~(Q) N' -> R M N -> env M' = env N' -> R M' N'.
 
     Variable R_type_preserving: forall M N, R M N -> type M = type N.
 
@@ -147,9 +147,11 @@ Module TermsRed (Sig : TermsSig.Signature).
     Variable R : relation Term.
     Notation Red := (Reduction R).
 
-    Variable step_var_consistent : forall M N, R M N -> envSubset (activeEnv N) (activeEnv M).
+    Variable step_var_consistent : forall M N,
+      R M N -> envSubset (activeEnv N) (activeEnv M).
 
-    Lemma red_var_consistent : forall M N, Red M N -> envSubset (activeEnv N) (activeEnv M).
+    Lemma red_var_consistent : forall M N,
+      Red M N -> envSubset (activeEnv N) (activeEnv M).
 
     Proof.
       induction 1; intros.
@@ -189,7 +191,7 @@ Module TermsRed (Sig : TermsSig.Signature).
 
     Proof.
       intro M.
-      apply well_founded_induction with (R := subterm)
+      apply well_founded_induction_type with (R := subterm)
         (P := fun M => forall N, {Red M N} + {~Red M N}).
       apply subterm_wf.
       clear M; intros M IH N.

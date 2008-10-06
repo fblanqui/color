@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.5 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: TermsTyping.v,v 1.6 2008-10-06 03:22:31 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -79,7 +79,8 @@ Resolve, otherwise it does not work! *)
 
   Hint Resolve eq_Preterm_dec : terms.
 
-  Lemma isVarDecl_dec : forall E x, {A: SimpleType | E |= x := A} + {E |= x :!}.
+  Lemma isVarDecl_dec : forall E x,
+    {A: SimpleType | E |= x := A} + {E |= x :!}.
 
   Proof.
     intros; unfold VarUD.
@@ -90,7 +91,8 @@ Resolve, otherwise it does not work! *)
     right; auto.
   Qed.
 
-  Lemma eq_EPS_dec : forall (a b : Env * Preterm * SimpleType), {a=b} + {a<>b}.
+  Lemma eq_EPS_dec :
+    forall (a b : Env * Preterm * SimpleType), {a=b} + {a<>b}.
 
   Proof.
     decide equality.
@@ -124,8 +126,8 @@ Section Typing.
     assert(Some (Some T1) = Some (Some T2)).
     transitivity (nth_error E x); auto.
     injection H7; trivial.
-    rewrite(@IHPt _ _ _ H3 H8); auto.
-    set(e0 := IHPt1 _ _ _ H2 H8); injection e0; auto.
+    rewrite(@IHPt _ _ _ X X0); auto.
+    set(e0 := IHPt1 _ _ _ X X1); injection e0; auto.
   Qed.
 
   Lemma typing_unique : forall E Pt T (d1 d2 : Typing E Pt T), d1 = d2.
@@ -158,22 +160,22 @@ Section Typing.
 
     generalize v v0; clear v v0.
     rewrite H0; rewrite H1; rewrite H2.
-    intros; pattern cast; apply (K_dec_set eq_EPS_dec).
+    intros; pattern cast; apply (K_dec_type eq_EPS_dec).
     rewrite (VarD_unique v v0); apply refl_equal.
 
     rewrite H1; rewrite H2.
-    intros; pattern cast; apply (K_dec_set eq_EPS_dec); 
+    intros; pattern cast; apply (K_dec_type eq_EPS_dec); 
       apply refl_equal.
 
     generalize t1; clear t1.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H4.
-    intros; pattern cast; apply (K_dec_set eq_EPS_dec).
+    intros; pattern cast; apply (K_dec_type eq_EPS_dec).
     rewrite(Deriv_unique _ _ _ t0 t1); apply refl_equal.
 
     generalize t2 t3; clear t2 t3.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H3.
     intros t2 t3.
-    intros; pattern cast; apply (K_dec_set eq_EPS_dec).
+    intros; pattern cast; apply (K_dec_type eq_EPS_dec).
     set(e0 := Type_unique t0 t2); injection e0; intro H7.
     generalize t2 t3; clear e0 t2 t3; rewrite <- H7.
     intros; rewrite(Deriv_unique _ _ _ t0 t2); 
@@ -266,7 +268,7 @@ Section Auto_Typing.
     absurd (exists N, env N = decl A E /\ term N = Pt); trivial.
     destruct T as [TE TPt TA TT].
     inversion TT; simpl in *; try congruence.
-    exists (buildT H); split; simpl; congruence.
+    exists (buildT X); split; simpl; congruence.
      (* -) application *)
     destruct (IHPt1 E) as [[Tl Tl_env Tl_term] | Tln].
     destruct (IHPt2 E) as [[Tr Tr_env Tr_term] | Trn].
@@ -281,11 +283,11 @@ Section Auto_Typing.
     simpl in *.
     rewrite termL in TypL'.
     inversion TypL'.
-    assert (buildT H2 = buildT TypL).
+    assert (buildT X = buildT TypL).
     apply term_eq; simpl; congruence.
     absurd (A --> AL = #T).
     discriminate.
-    eapply Type_unique. apply H2.
+    eapply Type_unique. apply X.
     rewrite envL; rewrite <- Tl_env; rewrite <- Tl_term; assumption.
     destruct (eq_SimpleType_dec AL1 AR) as [AL1_AR | AL1_ne_AR].
      (*   - all ok *)
@@ -305,9 +307,9 @@ Section Auto_Typing.
     inversion TypL'.
     absurd (AL1 = AR).
     trivial.
-    assert (type (buildT TypL) = type (buildT H2)).
+    assert (type (buildT TypL) = type (buildT X)).
     apply typing_uniq; simpl; congruence.
-    assert (type (buildT TypR) = type (buildT H4)).
+    assert (type (buildT TypR) = type (buildT X0)).
     apply typing_uniq; simpl; congruence.
     simpl in *; congruence.
      (*   - bad: right argument not typable *)
@@ -318,7 +320,7 @@ Section Auto_Typing.
     rewrite termR in TypR.
     inversion TypR.
     apply Trn.
-    exists (buildT H4); auto.
+    exists (buildT X0); auto.
      (*   - bad: left argument not typable *)
     right.
     intro Tl; destruct Tl as [Tl [envL termL]].
@@ -327,7 +329,7 @@ Section Auto_Typing.
     rewrite termL in TypL.
     inversion TypL.
     apply Tln.
-    exists (buildT H2); auto.
+    exists (buildT X); auto.
   Defined.
 
   Definition typeTerm (E: Env) (Pt: Preterm) (T: SimpleType) : option Term.

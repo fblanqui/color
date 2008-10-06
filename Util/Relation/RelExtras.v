@@ -9,7 +9,7 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 *)
 
-(* $Id: RelExtras.v,v 1.6 2008-01-24 16:21:34 blanqui Exp $ *)
+(* $Id: RelExtras.v,v 1.7 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -64,7 +64,7 @@ End StrictOrder.
 
 Module Type Eqset.
 
-  Parameter A : Set.
+  Parameter A : Type.
   Parameter eqA : A -> A -> Prop.
 
   Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
@@ -82,14 +82,14 @@ Module Type Eqset.
 End Eqset.
 
 Module Type SetA.
-  Parameter A : Set.
+  Parameter A : Type.
 End SetA.
 
 Module Eqset_def (A : SetA) <: Eqset.
 
   Definition A := A.A.
   Definition eqA := eq (A:=A).
-  Definition sid_theoryA := Build_Setoid_Theory eqA 
+  Definition sid_theoryA := Build_Setoid_Theory _ eqA 
      (refl_equal (A:=A)) (sym_eq (A:=A)) (trans_eq (A:=A)).
 
   Hint Resolve (Seq_refl  A eqA sid_theoryA) : sets.
@@ -100,7 +100,7 @@ End Eqset_def.
 
 Section Eqset_def_gtA_eqA_compat.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable gtA : A -> A -> Prop.
 
   Lemma Eqset_def_gtA_eqA_compat : forall x x' y y',
@@ -115,7 +115,7 @@ End Eqset_def_gtA_eqA_compat.
 
 Module Type Ord.
 
-  Parameter A : Set.
+  Parameter A : Type.
 
   Declare Module S : Eqset with Definition A := A.
   Export S.
@@ -162,7 +162,7 @@ Module OrdLemmas (P : Ord).
 
   Proof.
     split. eauto with sets.
-    cut (x2 =A= x1). intro. eauto with sets.
+    cut (y0 =A= x0). intro. eauto with sets.
     apply (Seq_sym _ _ sid_theoryA). assumption.
   Qed.
 
@@ -182,7 +182,7 @@ End OrdLemmas.
 
 Module Type Poset.
 
-  Parameter A : Set.
+  Parameter A : Type.
 
   Declare Module O : Ord with Definition A := A.
   Export O.
@@ -219,7 +219,7 @@ End nat_ord.
 
 Section Transitive_Closure.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable R : A -> A -> Prop.
 
   Let R_tclos := clos_trans A R.
@@ -306,8 +306,8 @@ End Transitive_Closure.
 
 Section Accessibility.
 
-  Variable A : Set.
-  Variable B : Set.
+  Variable A : Type.
+  Variable B : Type.
   Definition relationA := A -> A -> Prop.
   Variables R S : relationA.
 
@@ -402,7 +402,7 @@ End Accessibility.
 
 Section Transposition.
 
-  Variable A : Set.
+  Variable A : Type.
   Variable R : A -> A -> Prop.
 
   Lemma transp_transp_R_eq_R : forall x y, R x y <-> transp A (transp A R) x y.
@@ -425,13 +425,13 @@ End Transposition.
 
 Section Specif.
 
-  Inductive sigPS2 (A: Set) (P: A -> Prop) (Q: A -> Set) : Type :=
+  Inductive sigPS2 (A : Type) (P: A -> Prop) (Q: A -> Set) : Type :=
     existPS2: forall x:A, P x -> Q x -> sigPS2 (A:=A) P Q.
 
   Notation "{ x : A # P & Q }"
     := (sigPS2 (fun x:A => P) (fun x:A => Q)) : type_scope.
 
-  Variable A : Set.
+  Variable A : Type.
   Variables P Q : A -> Prop.
 
   Definition proj1_sig2 (e: sig2 P Q) :=

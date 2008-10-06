@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.8 2008-08-08 14:23:58 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.9 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -146,7 +146,7 @@ Ltac case_beq beq_ok e := coq_case_eq e;
 
 Section eq_dec.
 
-Variable A : Set.
+Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Definition beq_dec x y :=

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 proof of dependent choice in classical logic + axiom of choice
 *)
 
-(* $Id: DepChoicePrf.v,v 1.2 2008-05-14 12:26:55 blanqui Exp $ *)
+(* $Id: DepChoicePrf.v,v 1.3 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,7 +16,7 @@ Require Export RelUtil.
 
 Section S.
 
-Variables (A : Set) (a : A) (R : relation A) (h : left_total R).
+Variables (A : Type) (a : A) (R : relation A) (h : left_total R).
 
 Definition next_elt x := proj1_sig (h x).
 

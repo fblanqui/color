@@ -126,11 +126,12 @@ Qed.
 
 End incl.
 
-Add Morphism WF with signature same_relation ==> iff as WF_mor.
+Add Parametric Morphism (A : Type) : (@WF A)
+  with signature (same_relation A) ==> iff as WF_mor.
 
 Proof.
-intros. destruct H. split; intro.
-apply WF_incl with x1; assumption. apply WF_incl with x2; assumption.
+intros x y x_eq_y. destruct x_eq_y. split; intro.
+apply WF_incl with x; assumption. apply WF_incl with y; assumption.
 Qed.
 
 (***********************************************************************)

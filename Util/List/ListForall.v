@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.6 2008-05-15 08:57:39 blanqui Exp $ *)
+(* $Id: ListForall.v,v 1.7 2008-10-06 03:22:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -15,7 +15,7 @@ Require Export List.
 
 Section S.
 
-Variables (A : Set) (P : A->Prop).
+Variables (A : Type) (P : A->Prop).
 
 Fixpoint lforall (l : list A) { struct l} : Prop :=
   match l with
@@ -87,7 +87,7 @@ End S.
 
 Implicit Arguments lforall_in [A P a l].
 
-Lemma lforall_imp : forall (A : Set) (P1 P2 : A->Prop),
+Lemma lforall_imp : forall (A : Type) (P1 P2 : A->Prop),
   (forall x, P1 x -> P2 x) -> forall (l : list A), lforall P1 l -> lforall P2 l.
 
 Proof.

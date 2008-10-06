@@ -231,7 +231,7 @@ Module HorpoBetaComp (S : TermsSig.Signature) (Prec : Horpo.Precedence with Modu
 
   Proof.
     intros.
-    setoid_replace (lift N 1) with N; trivial.
+    setoid_replace (lift N 1) with N using relation terms_conv; trivial.
     apply terms_conv_sym; apply terms_lift_conv.
   Qed.
 

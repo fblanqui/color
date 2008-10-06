@@ -7,13 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 vector filtering
 *)
 
-(* $Id: VecFilter.v,v 1.5 2008-05-14 12:26:56 blanqui Exp $ *)
+(* $Id: VecFilter.v,v 1.6 2008-10-06 03:22:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Section S.
 
-Variable A : Set.
+Variable A : Type.
 
 Require Export VecBool.
 
@@ -230,7 +230,7 @@ End S.
 Implicit Arguments Vfilter_head_true [A n bs].
 Implicit Arguments Vfilter_head_false [A n bs].
 
-Lemma Vmap_filter : forall (A B : Set) (f : A->B) n (bs : bools n)
+Lemma Vmap_filter : forall (A B : Type) (f : A->B) n (bs : bools n)
   (v : vector A n), Vmap f (Vfilter bs v) = Vfilter bs (Vmap f v).
 
 Proof.
