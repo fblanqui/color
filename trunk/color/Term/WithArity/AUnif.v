@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.5 2008-10-06 03:22:34 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.6 2008-10-08 08:27:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -598,6 +598,7 @@ auto. refl.
 intros u n us. simpl. mem. intros.
 destruct (orb_false_elim H1). apply Vcons_eq; intuition.
 Qed.
+
 Lemma is_sol_solved_eqns_extend : forall s n v l,
   lforall (notin_solved_eqn n) l ->
   is_sol_solved_eqns s l -> is_sol_solved_eqns (extend s n v) l.
@@ -697,6 +698,17 @@ symmetry. apply sub_eq_id. intros.
 ded (lforall_notin_vars_solved_eqn_dom H3 H4).
 ded (dom_subst_of_solved_eqns H5). hyp.
 apply is_sol_solved_eqns_extend; hyp.
+Qed.
+
+Lemma subst_of_solved_eqns_correct_problem : forall p l k, problem_wf p ->
+  iter_step k p = Some (l, nil) -> is_sol (subst_of_solved_eqns l) p.
+
+Proof.
+intros. set (s := subst_of_solved_eqns l).
+rewrite (@iter_step_correct_complete s p k). rewrite H0. simpl. intuition. 
+apply subst_of_solved_eqns_correct.
+assert (problem_wf (Some (l, nil))). rewrite <- H0. apply iter_step_wf. hyp.
+simpl in H1. intuition.
 Qed.
 
 (***********************************************************************)

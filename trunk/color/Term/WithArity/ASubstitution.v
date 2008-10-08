@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.18 2008-10-06 03:22:33 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.19 2008-10-08 08:27:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -20,9 +20,7 @@ Variable Sig : Signature.
 
 Require Export ATerm.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
-Notation "'args' f" := (terms (arity f)) (at level 70).
+Notation term := (term Sig). Notation terms := (vector term).
 Notation Var := (@Var Sig).
 
 (***********************************************************************)
@@ -43,8 +41,7 @@ Definition single x t y := if beq_nat x y then t else Var y.
 
 Definition sub : substitution -> term -> term := @term_int Sig I0.
 
-Lemma sub_fun : forall s f (v : args f),
-  sub s (Fun f v) = Fun f (Vmap (sub s) v).
+Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (Vmap (sub s) v).
 
 Proof.
 intros. unfold sub. rewrite term_int_fun. refl.

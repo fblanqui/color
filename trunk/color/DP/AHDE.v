@@ -188,8 +188,6 @@ Qed.
 (** correctness with marked symbols *)
 
 Notation Sig' := (dup_sig Sig). Notation Fun' := (@Fun Sig').
-Notation term' := (term Sig'). Notation terms' := (vector term').
-Notation "'args'' f" := (terms' (arity f)) (at level 70).
 
 Notation R' := (dup_int_rules R).
 

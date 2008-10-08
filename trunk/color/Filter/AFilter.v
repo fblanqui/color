@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.15 2008-10-06 03:22:18 blanqui Exp $ *)
+(* $Id: AFilter.v,v 1.16 2008-10-08 08:27:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,7 +18,6 @@ Require Export ATrs.
 Variable Sig : Signature.
 
 Notation term := (term Sig). Notation terms := (vector term).
-Notation "'args' f" := (terms (arity f)) (at level 70).
 
 (***********************************************************************)
 (** filtering function *)
@@ -66,14 +65,14 @@ Proof.
 induction ts; intros; simpl. refl. apply Vtail_eq. apply IHts.
 Qed.
 
-Lemma filter_fun : forall f (ts : args f),
+Lemma filter_fun : forall f ts,
   filter (Fun f ts) = Fun' f (Vfilter (pi f) (Vmap filter ts)).
 
 Proof.
 intros. simpl. apply args_eq. rewrite filters_eq. refl.
 Qed.
 
-(*Lemma filter_fun : forall f (ts : args f),
+(*Lemma filter_fun : forall f ts,
   filter (Fun f ts) = Fun' f (Vfilter_map filter (pi f) ts).
 
 Proof.

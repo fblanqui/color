@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.21 2008-10-06 03:22:33 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.22 2008-10-08 08:27:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -38,8 +38,6 @@ Reset term_rect.
 
 Notation terms := (vector term).
 
-Notation "'args' f" := (terms (arity f)) (at level 70).
-
 (***********************************************************************)
 (** induction principles *)
 
@@ -51,7 +49,7 @@ Variables
 
 Hypotheses
   (H1 : forall x, P (Var x))
-  (H2 : forall f (v : args f), Q v -> P (Fun f v))
+  (H2 : forall f v, Q v -> P (Fun f v))
   (H3 : Q Vnil)
   (H4 : forall t n (v : terms n), P t -> Q v -> Q (Vcons t v)).
 
@@ -77,7 +75,7 @@ Definition term_ind (P : term -> Prop) (Q : forall n, terms n -> Prop) :=
 
 Lemma term_ind_forall : forall (P : term -> Prop)
   (H1 : forall v, P (Var v))
-  (H2 : forall f (v : args f), Vforall P v -> P (Fun f v)),
+  (H2 : forall f v, Vforall P v -> P (Fun f v)),
   forall t, P t.
 
 Proof.
@@ -87,7 +85,7 @@ Qed.
 
 Lemma term_ind_forall2 : forall (P : term -> Prop)
   (H1 : forall v, P (Var v))
-  (H2 : forall f (v : args f), (forall t, Vin t v -> P t) -> P (Fun f v)),
+  (H2 : forall f v, (forall t, Vin t v -> P t) -> P (Fun f v)),
   forall t, P t.
 
 Proof.
@@ -105,7 +103,7 @@ Proof.
 intros. rewrite H. refl.
 Qed.
 
-Lemma args_eq : forall f (v v' : args f), v = v' -> Fun f v = Fun f v'.
+Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
 
 Proof.
 intros. rewrite H. refl.
@@ -213,7 +211,8 @@ right. unfold not. intro. discriminate.
 intros f ts H u. destruct u. right. unfold not. intro. discriminate.
 case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
 right. intro. injection H0. intro. assert (ts=v).
-Require Import Eqdep. apply (inj_pair2 Sig (fun f => args f)). assumption. auto.
+(* FIXME: can be removed ? *) Require Import Eqdep.
+apply (inj_pair2 Sig (fun f => terms (arity f))). hyp. auto.
 right. unfold not. intro. injection H0. intros. auto.
 (* nil *)
 intro. VOtac. auto.
@@ -296,7 +295,7 @@ Fixpoint vars_vec n (ts : terms n) {struct ts} : variables :=
     | Vcons t' _ ts' => vars t' ++ vars_vec ts'
   end.
 
-Lemma vars_fun : forall f (ts : args f), vars (Fun f ts) = vars_vec ts.
+Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_vec ts.
 
 Proof.
 auto.
@@ -442,7 +441,7 @@ Proof.
 induction ts; simpl; intros. refl. rewrite IHts. refl.
 Qed.
 
-Lemma nb_symb_occs_fun : forall f (ts : args f),
+Lemma nb_symb_occs_fun : forall f ts,
   nb_symb_occs (Fun f ts) = 1 + nb_symb_occs_terms ts.
 
 Proof.
@@ -489,8 +488,7 @@ Proof.
 induction ts; simpl; intros. refl. rewrite IHts. refl.
 Qed.
 
-Lemma size_fun : forall f (ts : args f),
-  size (Fun f ts) = 1 + size_terms ts.
+Lemma size_fun : forall f ts, size (Fun f ts) = 1 + size_terms ts.
 
 Proof.
 intros. simpl. rewrite size_fix. refl.
