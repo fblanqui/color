@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.11 2008-10-06 03:22:32 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.12 2008-10-08 08:27:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -36,7 +36,7 @@ Definition Cap := sigS (fun k => ((terms k -> term) * terms k)%type).
 
 Notation Caps := (vector Cap).
 
-Definition sigc := @existS nat (fun k => ((terms k -> term) * terms k)%type).
+Definition mkCap := @existS nat (fun k => ((terms k -> term) * terms k)%type).
 
 Definition fcap (c : Cap) := fst (projS2 c).
 Definition aliens (c : Cap) := snd (projS2 c).
@@ -92,7 +92,7 @@ Variable R : rules.
 
 Fixpoint capa (t : term) : Cap :=
   match t with
-    | Var x => sigc (fun _ => t, Vnil)
+    | Var x => mkCap (fun _ => t, Vnil)
     | Fun f ts =>
       let fix capas n (ts : terms n) {struct ts} : Caps n :=
 	match ts in vector _ n return Caps n with
@@ -100,18 +100,18 @@ Fixpoint capa (t : term) : Cap :=
 	  | Vcons t n' ts' => Vcons (capa t) (capas n' ts')
 	end
 	in match defined f R with
-	     | true => sigc (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+	     | true => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
 	     | false => let cs := capas (arity f) ts in
-	       sigc (fun v => Fun f (Vmap_sum cs v), conc cs)
+	       mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
 	   end
   end.
 
 Lemma capa_fun : forall f ts, capa (Fun f ts) =
- match defined f R with
-   | true => sigc (fun v => Vnth v (lt_O_Sn 0), Vcons (Fun f ts) Vnil)
-   | false => let cs := Vmap capa ts in
-     sigc (fun v => Fun f (Vmap_sum cs v), conc cs)
- end.
+  match defined f R with
+  | true => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons (Fun f ts) Vnil)
+  | false => let cs := Vmap capa ts in
+    mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
+  end.
 
 Proof.
 intros. reflexivity.
@@ -341,8 +341,6 @@ intro. unfold alien_sub, fsub. simpl. case (le_lt_dec x x). auto.
 intro. absurd (x < x). apply lt_irrefl. assumption.
 Qed.
 
-Implicit Arguments in_app_or [A l m a].
-
 Lemma app_fcap : forall m s, (forall x, x <= m -> s x = Var x)
   -> forall t, maxvar t <= m
   -> forall v, sub s (fcap (capa t) v) = fcap (capa t) (Vmap (sub s) v).
@@ -393,10 +391,10 @@ change (fsub m (Vcons (Fun f v) Vnil) (S m) = Fun f v).
 apply fsub_cons. omega.
 (* f undefined *)
 set (cs := Vmap capa v).
-change (let (n,p) := sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs) in
+change (let (n,p) := mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs) in
   let (f0,v0) := p in sub (fsub m v0) (f0 (fresh (S m) n)) = Fun f v).
-set (s := sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs)).
-assert (s = sigc (fun ts => Fun f (Vmap_sum cs ts), conc cs)). refl.
+set (s := mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs)).
+assert (s = mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs)). refl.
 destruct s. destruct p as [f0 v0]. injection H0. intros. subst x.
 assert (v0 = conc cs).
 apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x)). assumption.

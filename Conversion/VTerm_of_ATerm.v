@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 *)
 
-(* $Id: VTerm_of_ATerm.v,v 1.7 2008-10-06 03:22:11 blanqui Exp $ *)
+(* $Id: VTerm_of_ATerm.v,v 1.8 2008-10-08 08:27:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,7 +25,6 @@ Require Export ATerm.
 Notation aterm := (term ASig).
 Notation aterms := (vector aterm).
 Notation AFun := (@Fun ASig).
-Notation "'args' f" := (aterms (arity f)) (at level 70).
 
 (***********************************************************************)
 (** corresponding varyadic signature *)
@@ -63,7 +62,7 @@ Fixpoint vterms_of_aterms n (ts : aterms n) {struct ts} : vterms :=
     | Vcons t' _ ts' => vterm_of_aterm t' :: vterms_of_aterms ts'
   end.
 
-Lemma vterm_fun : forall f (ts : args f),
+Lemma vterm_fun : forall f ts,
   vterm_of_aterm (AFun f ts) = VFun f (vterms_of_aterms ts).
 
 Proof.
