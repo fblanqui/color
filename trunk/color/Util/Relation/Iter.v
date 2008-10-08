@@ -104,7 +104,8 @@ left. exact H0.
 right. exists x0. intuition.
 Qed.
 
-Lemma iter_Iter_ge_commut : forall n p, iter n @ Iter_ge p << Iter_ge p @ iter n.
+Lemma iter_Iter_ge_commut : forall n p,
+  iter n @ Iter_ge p << Iter_ge p @ iter n.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
@@ -126,7 +127,8 @@ Proof.
 unfold inclusion. intros. do 2 destruct H0. exists x0. intuition.
 Qed.
 
-(** Other definitions of iter_le, easier for induction *)
+(***********************************************************************)
+(** Alternative definitions of iter_le *)
 
 Fixpoint iter_le2 n :=
   match n with 
@@ -140,7 +142,8 @@ Fixpoint iter_le_fast n :=
     | S i => let R' := iter_le_fast i in R' @ R' U R'
   end.
 
-(** Equivalence between differents definitions *)
+(***********************************************************************)
+(** Equivalence between the different definitions *)
 
 Lemma iter_le_spec : forall n x y,
   iter_le n x y <-> exists p, p <= n /\ iter p x y.
@@ -189,7 +192,6 @@ split; destruct H0; auto with *.
 rewrite IHn; exists n; auto.
 Qed.
 
-
 Lemma iter_compose : forall p q, iter p @ iter q << iter (p+q+1).
 
 Proof.
@@ -205,7 +207,7 @@ simpl; unfold compose.
 exists x0; split; auto with *.
 Qed.
 
-Require Export log2.
+Require Export Log2.
 
 Lemma iter_le_fast_spec : forall n x y,
   iter_le_fast n x y <-> exists p,(S p) <= exp2 n /\ iter p x y.
@@ -235,7 +237,6 @@ exists z; split; rewrite IHn.
 exists (exp2 n -1); intuition; omega.
 exists (p -exp2 n); intuition; omega. 
 Qed.
-
 
 Lemma iter_le_same : forall n x y, iter_le2 n x y <-> iter_le n x y.
 
