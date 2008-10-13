@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.28 2008-05-14 14:30:54 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.29 2008-10-13 09:39:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -193,11 +193,17 @@ Lemma max_gt_compat : forall x y x' y',
 
 Proof.
 intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
-  do 2 first 
+  do 2 first
     [ rewrite max_r; [idtac | assumption] 
     | rewrite max_l; [idtac | assumption]
-    ]; 
-    omega.
+    ]; omega.
+Qed.
+
+Lemma gt_max : forall x y z, x > max y z <-> x > y /\ x > z.
+
+Proof.
+unfold gt. intuition. eapply le_lt_trans. apply le_max_l. apply H.
+eapply le_lt_trans. apply le_max_r. apply H. apply max_case; hyp.
 Qed.
 
 (***********************************************************************)
