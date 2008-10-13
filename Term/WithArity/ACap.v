@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.12 2008-10-08 08:27:51 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.13 2008-10-13 09:40:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -202,7 +202,7 @@ Lemma vars_fcap_fresh_inf : forall x t m, maxvar t <= m
 
 Proof.
 intro. set (Q := fun n (ts : terms n) =>
-  forall m, Vmax (Vmap maxvar ts) <= m ->
+  forall m, maxvars ts <= m ->
   In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
   -> x <= m -> In x (vars_vec ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
@@ -215,19 +215,18 @@ absurd (x<=m); omega. contradiction. apply H with (m := m); assumption.
 (* nil *)
 unfold Q. simpl. intros. contradiction.
 (* cons *)
-unfold Q. simpl. set (m := max (maxvar t) (Vmax (Vmap maxvar v))).
+unfold Q. simpl. set (m := max (maxvar t) (maxvars v)).
 intros m0 H1.
 rewrite Vbreak_fresh. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
 destruct H4.
 (* head *)
 apply in_appl. apply H with (m := m0).
-eapply intro_max_l. unfold m in H1. apply H1.
+eapply intro_max_l. unfold m in H1. rewrite maxvars_cons in H1. apply H1.
 unfold nb_aliens. assumption. assumption.
 (* tail *)
 apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projS1 (capa t)).
-assert (Vmax (Vmap maxvar v) <= m0). eapply intro_max_r. unfold m in H1.
-apply H1.
-omega. assumption. omega.
+assert (maxvars v <= m0). eapply intro_max_r. unfold m in H1.
+rewrite maxvars_cons in H1. apply H1. omega. assumption. omega.
 Qed.
 
 Lemma vars_cap_inf : forall x t,
@@ -244,10 +243,9 @@ Lemma vars_cap_sup : forall x t,
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
 intuition. change (In x (vars_vec v)) in H2.
-set (m := Vmax (Vmap maxvar v)). change (x > m) in H1.
+change (x > maxvars v) in H1.
 ded (in_vars_vec_elim H2). destruct H3 as [t]. destruct H3.
-ded (vars_max H4). ded (maxvar_in _ _ H5 H3).
-fold m in H6. absurd (x>m); omega.
+ded (vars_max H4). ded (maxvar_in _ _ H5 H3). omega.
 Qed.
 
 Lemma vars_fcap_fresh : forall x t m, maxvar t <= m
@@ -256,7 +254,7 @@ Lemma vars_fcap_fresh : forall x t m, maxvar t <= m
 
 Proof.
 intro. set (Q := fun n (ts : terms n) =>
-  forall m, Vmax (Vmap maxvar ts) <= m ->
+  forall m, maxvars ts <= m ->
   In x (vars_vec (Vmap_sum (Vmap capa ts) (fresh (S m) (sum (Vmap capa ts)))))
   -> x <= m + sum (Vmap capa ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t.
@@ -271,10 +269,10 @@ unfold Q. simpl. intros. contradiction.
 (* cons *)
 intros. unfold Q. simpl. intros m H1. rewrite Vbreak_fresh. rewrite Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
-assert (x <= m + projS1 (capa t)). apply H. eapply intro_max_l. apply H1.
-assumption. omega.
-rewrite plus_assoc. apply H0. assert (Vmax (Vmap maxvar v) <= m).
-eapply intro_max_r. apply H1. omega. assumption.
+assert (x <= m + projS1 (capa t)). apply H. eapply intro_max_l.
+rewrite maxvars_cons in H1. apply H1. assumption. omega.
+rewrite plus_assoc. apply H0. assert (maxvars v <= m).
+eapply intro_max_r. rewrite maxvars_cons in H1. apply H1. omega. assumption.
 Qed.
 
 Lemma vars_cap : forall x t,
@@ -347,7 +345,7 @@ Lemma app_fcap : forall m s, (forall x, x <= m -> s x = Var x)
 
 Proof.
 intros until t. pattern t.
-set (Q := fun n (ts : terms n) => Vmax (Vmap maxvar ts) <= m
+set (Q := fun n (ts : terms n) => maxvars ts <= m
   -> forall v, Vmap (sub s) (Vmap_sum (Vmap capa ts) v)
                = Vmap_sum (Vmap capa ts) (Vmap (sub s) v)).
 apply term_ind with (Q := Q); clear t.
@@ -359,20 +357,20 @@ apply args_eq. apply IH. assumption.
 unfold Q. auto.
 intros. unfold Q. simpl. intros.
 generalize (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.
-do 2 rewrite Vbreak_app. simpl. apply Vcons_eq.
+do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H2. apply Vcons_eq.
 apply H0. eapply intro_max_l. apply H2.
 apply H1. eapply intro_max_r. apply H2.
 Qed.
 
 Lemma Vmap_map_sum : forall m s, (forall x, x <= m -> s x = Var x)
-  -> forall n (ts : terms n), Vmax (Vmap maxvar ts) <= m
+  -> forall n (ts : terms n), maxvars ts <= m
   -> forall v, Vmap (sub s) (Vmap_sum (Vmap capa ts) v)
                = Vmap_sum (Vmap capa ts) (Vmap (sub s) v).
 
 Proof.
 induction ts; simpl; intros. reflexivity.
 generalize (Vbreak_eq_app v). intro. rewrite H1. rewrite Vmap_app.
-do 2 rewrite Vbreak_app. simpl. apply Vcons_eq.
+do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H0. apply Vcons_eq.
 eapply app_fcap. apply H. eapply intro_max_l. apply H0.
 apply IHts. eapply intro_max_r. apply H0.
 Qed.
