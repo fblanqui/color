@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.29 2008-10-13 09:39:21 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.30 2008-10-13 10:10:59 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -199,11 +199,17 @@ intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
     ]; omega.
 Qed.
 
+Lemma max_lt : forall x y z, max y z < x <-> y < x /\ z < x.
+
+Proof.
+intuition. eapply le_lt_trans. apply le_max_l. apply H.
+eapply le_lt_trans. apply le_max_r. apply H. apply max_case; hyp.
+Qed.
+
 Lemma gt_max : forall x y z, x > max y z <-> x > y /\ x > z.
 
 Proof.
-unfold gt. intuition. eapply le_lt_trans. apply le_max_l. apply H.
-eapply le_lt_trans. apply le_max_r. apply H. apply max_case; hyp.
+exact max_lt.
 Qed.
 
 (***********************************************************************)
