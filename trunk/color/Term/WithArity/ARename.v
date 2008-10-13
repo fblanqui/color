@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 rule renaming
 *)
 
-(* $Id: ARename.v,v 1.5 2008-10-06 03:22:33 blanqui Exp $ *)
+(* $Id: ARename.v,v 1.6 2008-10-13 09:40:22 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -66,7 +66,7 @@ ded (in_vars_vec_elim H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x0.
 ded (Vforall_in H H3). ded (H4 H2).
 rewrite maxvar_fun. ded (Vin_map_intro (@maxvar Sig) H3).
-ded (Vmax_in H6). omega.
+ded (Vmax_in H6). unfold maxvars. omega.
 Qed.
 
 Lemma vars_shift : forall t, vars (shift t) = map shift_var (vars t).

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.11 2008-10-06 03:22:33 blanqui Exp $ *)
+(* $Id: AInterpretation.v,v 1.12 2008-10-13 09:40:21 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -125,7 +125,7 @@ simpl in H. absurd (v<k); omega. refl.
 repeat rewrite term_int_fun. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
 rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
-ded (Vmax_in H2). omega.
+ded (Vmax_in H2). unfold maxvars in H0. omega.
 Qed.
 
 Lemma term_int_eq_restrict : forall xint t,
@@ -145,7 +145,7 @@ absurd (v<k); omega. symmetry. apply vec_of_val_eq.
 repeat rewrite term_int_fun. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
 rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
-ded (Vmax_in H2). omega.
+ded (Vmax_in H2). unfold maxvars in H0. omega.
 Qed.
 
 Lemma term_int_eq_fval : forall xint t,

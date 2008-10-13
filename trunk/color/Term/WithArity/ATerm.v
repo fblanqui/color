@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.22 2008-10-08 08:27:51 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.23 2008-10-13 09:40:22 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -241,7 +241,16 @@ Fixpoint maxvar (t : term) : nat :=
       in Vmax (maxvars (arity f) v)
   end.
 
-Lemma maxvar_fun : forall f ts, maxvar (Fun f ts) = Vmax (Vmap maxvar ts).
+Definition maxvars n (ts : terms n) := Vmax (Vmap maxvar ts).
+
+Lemma maxvars_cons : forall t n (ts : terms n),
+  maxvars (Vcons t ts) = max (maxvar t) (maxvars ts).
+
+Proof.
+refl.
+Qed.
+
+Lemma maxvar_fun : forall f ts, maxvar (Fun f ts) = maxvars ts.
 
 Proof.
 intros. simpl. apply (f_equal (@Vmax (arity f))).
@@ -356,21 +365,20 @@ Qed.
 Lemma vars_max : forall x t, In x (vars t) -> x <= maxvar t.
 
 Proof.
-intro.
-set (Q := fun n (ts : terms n) =>
-  In x (vars_vec ts) -> x <= Vmax (Vmap maxvar ts)).
-intro. pattern t. apply term_ind with (Q := Q); clear t; unfold Q; simpl; intros.
-intuition. apply H. assumption. contradiction. generalize (in_app_or H1).
-intro. destruct H2. apply elim_max_l. apply H. assumption.
-apply elim_max_r. apply H0. assumption.
+intros x t. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
+  In x (vars_vec ts) -> x <= maxvars ts); clear t; intros.
+simpl in *. intuition. rewrite maxvar_fun. rewrite vars_fun in H0. auto.
+contradiction. simpl in *.
+destruct (in_app_or H1); unfold maxvars; simpl. apply elim_max_l. auto.
+apply elim_max_r. auto.
 Qed.
 
 Lemma maxvar_in : forall x t n (v : terms n),
-  x <= maxvar t -> Vin t v -> x <= Vmax (Vmap maxvar v).
+  x <= maxvar t -> Vin t v -> x <= maxvars v.
 
 Proof.
-induction v; simpl; intros. contradiction. destruct H0. subst t.
-apply elim_max_l. assumption. apply elim_max_r. apply IHv; assumption.
+induction v; unfold maxvars; simpl; intros. contradiction. destruct H0.
+subst t. apply elim_max_l. hyp. apply elim_max_r. apply IHv; hyp.
 Qed.
 
 Require Export ListMax.
@@ -379,13 +387,13 @@ Lemma maxvar_lmax : forall t, maxvar t = lmax (vars t).
 
 Proof.
 intro t. pattern t.
-set (Q := fun n (ts : terms n) => Vmax (Vmap maxvar ts) = lmax (vars_vec ts)).
+set (Q := fun n (ts : terms n) => maxvars ts = lmax (vars_vec ts)).
 apply term_ind with (Q := Q); clear t.
 intro. simpl. apply (sym_equal (max_l (le_O_n x))).
 intros f ts H. rewrite maxvar_fun. rewrite vars_fun. assumption.
 unfold Q. auto.
 intros t n ts H1 H2. unfold Q. simpl. rewrite lmax_app.
-unfold Q in H2. rewrite H1. rewrite H2. refl.
+unfold Q in H2. rewrite maxvars_cons. rewrite H1. rewrite H2. refl.
 Qed.
 
 (***********************************************************************)
