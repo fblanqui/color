@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.6 2008-10-08 08:27:51 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.7 2008-10-15 00:29:37 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -662,14 +662,14 @@ Qed.
 
 Implicit Arguments lforall_notin_vars_solved_eqn_mem [x u l].
 
-Lemma sub_eq : forall s1 s2 (t : term),
+Lemma sub_eq' : forall s1 s2 (t : term),
   (forall x, mem x (vars t) = true -> s1 x = s2 x) -> sub s1 t = sub s2 t.
 
 Proof.
 intros. apply sub_eq. intro. rewrite in_vars_mem. auto.
 Qed.
 
-Lemma sub_eq_id : forall s (t : term),
+Lemma sub_eq_id' : forall s (t : term),
   (forall x, mem x (vars t) = true -> s x = Var x) -> sub s t = t.
 
 Proof.
@@ -694,7 +694,7 @@ Proof.
 induction l; simpl. auto. set (s := subst_of_solved_eqns l). destruct a.
 unfold is_sol_solved_eqn. simpl. intuition. unfold extend at 1. simpl.
 rewrite (beq_refl beq_nat_ok). rewrite app_extend_notin. 2: hyp.
-symmetry. apply sub_eq_id. intros.
+symmetry. apply sub_eq_id'. intros.
 ded (lforall_notin_vars_solved_eqn_dom H3 H4).
 ded (dom_subst_of_solved_eqns H5). hyp.
 apply is_sol_solved_eqns_extend; hyp.
@@ -724,10 +724,10 @@ Lemma subst_of_solved_eqns_most_general :
 Proof.
 induction l. refl. destruct a. unfold is_sol_solved_eqns. simpl.
 unfold is_sol_solved_eqn at 1. simpl. intuition. unfold extend.
-case_nat_eq x n. rewrite H. apply sub_eq. intros. unfold theta. simpl. mem.
+case_nat_eq x n. rewrite H. apply sub_eq'. intros. unfold theta. simpl. mem.
 case_nat_eq x x0; simpl. rewrite H1 in H4. discriminate.
 case_eq (mem x0 (dom l)). ded (lforall_notin_vars_solved_eqn_mem H5 H8).
-rewrite H4 in H9. discriminate. refl. rewrite H6. apply sub_eq. intros.
+rewrite H4 in H9. discriminate. refl. rewrite H6. apply sub_eq'. intros.
 unfold theta. simpl. mem. case_nat_eq n x0. simpl.
 ded (lforall_notin_solved_eqn_mem H0 H4). rewrite H7 in H8. discriminate.
 simpl. refl.

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.19 2008-10-08 08:27:51 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.20 2008-10-15 00:28:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -381,7 +381,7 @@ Fixpoint fresh (x0 n : nat) {struct n} : terms n :=
     | S n' => Vcons (Var x0) (fresh (S x0) n')
   end.
 
-Lemma Vbreak_fresh : forall n1 n2 x0,
+Lemma fresh_plus : forall n1 n2 x0,
   fresh x0 (n1+n2) = Vapp (fresh x0 n1) (fresh (x0+n1) n2).
 
 Proof.
@@ -403,6 +403,31 @@ induction n; simpl. intros. absurd (i<0); omega. intro. destruct i. auto.
 intros. assert (x0+S i=(S x0)+i). omega. rewrite H. apply IHn.
 Qed.
 
+Lemma Vbreak_fresh : forall p n k,
+  Vbreak (fresh k (n+p)) = (fresh k n, fresh (k+n) p).
+
+Proof.
+induction n; simpl; intros. rewrite plus_0_r. refl.
+rewrite IHn. simpl. rewrite <- plus_Snm_nSm. refl.
+Qed.
+
+(***********************************************************************)
+(** generates a list of variables *)
+
+Fixpoint freshl (x0 n : nat) {struct n} : list variable :=
+  match n with
+    | 0 => nil
+    | S n' => x0 :: freshl (S x0) n'
+  end.
+
+Lemma in_freshl : forall x n x0, ~In x (freshl x0 n) -> x < x0 \/ x >= x0 + n.
+
+Proof.
+induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega.
+Qed.
+
+Implicit Arguments in_freshl [x n x0].
+
 (***********************************************************************)
 (** given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
 is the substitution {x0 -> v1, .., x0+n-1 -> vn} *)
@@ -423,7 +448,8 @@ Proof.
 intros. unfold fsub. case (le_lt_dec x x0). auto. intro. absurd (n<x); omega.
 Qed.
 
-Lemma fsub_sup : forall x0 n (ts : terms n) x, x > x0+n -> fsub x0 ts x = Var x.
+Lemma fsub_sup : forall x0 n (ts : terms n) x,
+  x > x0+n -> fsub x0 ts x = Var x.
 
 Proof.
 intros. unfold fsub. case (le_lt_dec x x0). auto. intro.
@@ -507,20 +533,6 @@ assert (h2 : x<=x0+n). unfold x. omega.
 assert (fsub x0 ts x = Vnth ts (lt_pm h1 h2)). apply fsub_nth.
 rewrite H. apply Vnth_eq. unfold x. omega.
 Qed.
-
-Fixpoint freshl (x0 n : nat) {struct n} : list variable :=
-  match n with
-    | 0 => nil
-    | S n' => x0 :: freshl (S x0) n'
-  end.
-
-Lemma in_freshl : forall x n x0, ~In x (freshl x0 n) -> x < x0 \/ x >= x0 + n.
-
-Proof.
-induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega.
-Qed.
-
-Implicit Arguments in_freshl [x n x0].
 
 Lemma fsub_dom : forall x0 n (ts : terms n),
   dom_incl (fsub x0 ts) (freshl (x0+1) n).
