@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.13 2008-10-13 09:40:21 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.14 2008-10-15 00:34:13 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -217,7 +217,7 @@ unfold Q. simpl. intros. contradiction.
 (* cons *)
 unfold Q. simpl. set (m := max (maxvar t) (maxvars v)).
 intros m0 H1.
-rewrite Vbreak_fresh. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
+rewrite fresh_plus. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
 destruct H4.
 (* head *)
 apply in_appl. apply H with (m := m0).
@@ -267,7 +267,7 @@ apply H; assumption.
 (* nil *)
 unfold Q. simpl. intros. contradiction.
 (* cons *)
-intros. unfold Q. simpl. intros m H1. rewrite Vbreak_fresh. rewrite Vbreak_app.
+intros. unfold Q. simpl. intros m H1. rewrite fresh_plus. rewrite Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
 assert (x <= m + projS1 (capa t)). apply H. eapply intro_max_l.
 rewrite maxvars_cons in H1. apply H1. assumption. omega.
@@ -305,7 +305,7 @@ rewrite H0. apply H.
 (* nil *)
 unfold Q. reflexivity.
 (* cons *)
-unfold Q. simpl. intro. rewrite Vbreak_fresh. rewrite Vbreak_app. simpl.
+unfold Q. simpl. intro. rewrite fresh_plus. rewrite Vbreak_app. simpl.
 apply app_nil. apply H. apply H0.
 Qed.
 
