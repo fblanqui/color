@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.23 2008-10-13 09:40:22 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.24 2008-10-15 00:32:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -351,8 +351,6 @@ intros. ded (Vin_elim H0). do 5 destruct H1. subst ts.
 rewrite vars_vec_cast. rewrite vars_vec_app. simpl.
 apply in_appr. apply in_appl. exact H.
 Qed.
-
-Require Export ListUtil.
 
 Lemma vars_vec_in : forall x t n (ts : terms n),
   In x (vars t) -> Vin t ts -> In x (vars_vec ts).
