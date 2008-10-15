@@ -342,8 +342,8 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
     apply max_gt_compat; assumption.
-    unfold Peano.gt. apply elim_lt_max_l. assumption.
-    unfold Peano.gt. apply elim_lt_max_r. assumption.
+    unfold Peano.gt. apply lt_max_intro_l. assumption.
+    unfold Peano.gt. apply lt_max_intro_r. assumption.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
@@ -354,8 +354,8 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
     apply max_ge_compat; assumption.
-    unfold Peano.ge. apply elim_max_l. assumption.
-    unfold Peano.ge. apply elim_max_r. assumption.
+    unfold Peano.ge. apply le_max_intro_l. assumption.
+    unfold Peano.ge. apply le_max_intro_r. assumption.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',

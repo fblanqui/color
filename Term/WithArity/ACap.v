@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.14 2008-10-15 00:34:13 blanqui Exp $ *)
+(* $Id: ACap.v,v 1.15 2008-10-15 08:08:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -221,11 +221,11 @@ rewrite fresh_plus. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
 destruct H4.
 (* head *)
 apply in_appl. apply H with (m := m0).
-eapply intro_max_l. unfold m in H1. rewrite maxvars_cons in H1. apply H1.
+eapply le_max_elim_l. unfold m in H1. rewrite maxvars_cons in H1. apply H1.
 unfold nb_aliens. assumption. assumption.
 (* tail *)
 apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projS1 (capa t)).
-assert (maxvars v <= m0). eapply intro_max_r. unfold m in H1.
+assert (maxvars v <= m0). eapply le_max_elim_r. unfold m in H1.
 rewrite maxvars_cons in H1. apply H1. omega. assumption. omega.
 Qed.
 
@@ -269,10 +269,10 @@ unfold Q. simpl. intros. contradiction.
 (* cons *)
 intros. unfold Q. simpl. intros m H1. rewrite fresh_plus. rewrite Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
-assert (x <= m + projS1 (capa t)). apply H. eapply intro_max_l.
+assert (x <= m + projS1 (capa t)). apply H. eapply le_max_elim_l.
 rewrite maxvars_cons in H1. apply H1. assumption. omega.
 rewrite plus_assoc. apply H0. assert (maxvars v <= m).
-eapply intro_max_r. rewrite maxvars_cons in H1. apply H1. omega. assumption.
+eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. omega. assumption.
 Qed.
 
 Lemma vars_cap : forall x t,
@@ -358,8 +358,8 @@ unfold Q. auto.
 intros. unfold Q. simpl. intros.
 generalize (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.
 do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H2. apply Vcons_eq.
-apply H0. eapply intro_max_l. apply H2.
-apply H1. eapply intro_max_r. apply H2.
+apply H0. eapply le_max_elim_l. apply H2.
+apply H1. eapply le_max_elim_r. apply H2.
 Qed.
 
 Lemma Vmap_map_sum : forall m s, (forall x, x <= m -> s x = Var x)
@@ -371,8 +371,8 @@ Proof.
 induction ts; simpl; intros. reflexivity.
 generalize (Vbreak_eq_app v). intro. rewrite H1. rewrite Vmap_app.
 do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H0. apply Vcons_eq.
-eapply app_fcap. apply H. eapply intro_max_l. apply H0.
-apply IHts. eapply intro_max_r. apply H0.
+eapply app_fcap. apply H. eapply le_max_elim_l. apply H0.
+apply IHts. eapply le_max_elim_r. apply H0.
 Qed.
 
 Lemma alien_sub_cap : forall t, sub (alien_sub t) (cap t) = t.

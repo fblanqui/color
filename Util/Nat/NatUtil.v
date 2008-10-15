@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.30 2008-10-13 10:10:59 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.31 2008-10-15 08:08:52 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -143,37 +143,37 @@ case (le_dec b c); intro H.
    apply (sym_equal (max_l H'')).
 Qed.
 
-Lemma elim_max_l : forall x y z, x <= y -> x <= max y z.
+Lemma le_max_intro_l : forall x y z, x <= y -> x <= max y z.
 
 Proof.
 intros. eapply le_trans. apply H. apply le_max_l.
 Qed.
 
-Lemma elim_lt_max_l : forall x y z, x < y -> x < max y z.
+Lemma lt_max_intro_l : forall x y z, x < y -> x < max y z.
 
 Proof.
 intros. eapply lt_le_trans. eexact H. apply le_max_l.
 Qed.
 
-Lemma elim_max_r : forall x y z, x <= z -> x <= max y z.
+Lemma le_max_intro_r : forall x y z, x <= z -> x <= max y z.
 
 Proof.
 intros. eapply le_trans. apply H. apply le_max_r.
 Qed.
 
-Lemma elim_lt_max_r : forall x y z, x < z -> x < max y z.
+Lemma lt_max_intro_r : forall x y z, x < z -> x < max y z.
 
 Proof.
-intros. rewrite max_comm. apply elim_lt_max_l. assumption.
+intros. rewrite max_comm. apply lt_max_intro_l. assumption.
 Qed.
 
-Lemma intro_max_l : forall x y z, max x y <= z -> x <= z.
+Lemma le_max_elim_l : forall x y z, max x y <= z -> x <= z.
 
 Proof.
 intros. eapply le_trans. 2: apply H. apply le_max_l.
 Qed.
 
-Lemma intro_max_r : forall x y z, max x y <= z -> y <= z.
+Lemma le_max_elim_r : forall x y z, max x y <= z -> y <= z.
 
 Proof.
 intros. eapply le_trans. 2: apply H. apply le_max_r.
@@ -184,8 +184,8 @@ Lemma max_ge_compat : forall x y x' y',
 
 Proof.
 intros. destruct (max_dec x' y'); rewrite e; unfold ge.
-rewrite max_comm. apply elim_max_r. assumption.
-apply elim_max_r. assumption.
+rewrite max_comm. apply le_max_intro_r. assumption.
+apply le_max_intro_r. assumption.
 Qed.
 
 Lemma max_gt_compat : forall x y x' y',

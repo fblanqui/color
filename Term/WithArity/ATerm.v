@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.24 2008-10-15 00:32:32 blanqui Exp $ *)
+(* $Id: ATerm.v,v 1.25 2008-10-15 08:08:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -367,8 +367,8 @@ intros x t. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
   In x (vars_vec ts) -> x <= maxvars ts); clear t; intros.
 simpl in *. intuition. rewrite maxvar_fun. rewrite vars_fun in H0. auto.
 contradiction. simpl in *.
-destruct (in_app_or H1); unfold maxvars; simpl. apply elim_max_l. auto.
-apply elim_max_r. auto.
+destruct (in_app_or H1); unfold maxvars; simpl. apply le_max_intro_l. auto.
+apply le_max_intro_r. auto.
 Qed.
 
 Lemma maxvar_in : forall x t n (v : terms n),
@@ -376,7 +376,7 @@ Lemma maxvar_in : forall x t n (v : terms n),
 
 Proof.
 induction v; unfold maxvars; simpl; intros. contradiction. destruct H0.
-subst t. apply elim_max_l. hyp. apply elim_max_r. apply IHv; hyp.
+subst t. apply le_max_intro_l. hyp. apply le_max_intro_r. apply IHv; hyp.
 Qed.
 
 Require Export ListMax.
