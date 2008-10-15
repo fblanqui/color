@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 greatest/smallest component of a vector of natural numbers
 *)
 
-(* $Id: VecMax.v,v 1.3 2007-01-23 16:42:56 blanqui Exp $ *)
+(* $Id: VecMax.v,v 1.4 2008-10-15 08:08:52 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -31,8 +31,8 @@ Fixpoint Vmax n (v : nats n) {struct v} : nat :=
 Lemma Vmax_in : forall x n (v : nats n), Vin x v -> x <= Vmax v.
 
 Proof.
-induction v; simpl; intros. contradiction.
-destruct H. subst a. apply elim_max_l. apply le_refl. apply elim_max_r. auto.
+induction v; simpl; intros. contradiction. destruct H. subst a.
+apply le_max_intro_l. apply le_refl. apply le_max_intro_r. auto.
 Qed.
 
 Implicit Arguments Vmax_in [x n v].
