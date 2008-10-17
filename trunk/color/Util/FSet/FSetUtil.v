@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.3 2008-10-06 03:22:34 blanqui Exp $ *)
+(* $Id: FSetUtil.v,v 1.4 2008-10-17 10:11:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,7 +17,7 @@ Require Import FSets.
 Require Import FSetAVL.
 Require Import FSetFacts.
 
-Module Make (X: OrderedType). Export X.
+Module Make (X : OrderedType). Export X.
 
 Module XSet := FSetAVL.Make (X). Export XSet.
 Module XSetEqProp := EqProperties (XSet). Export XSetEqProp.
@@ -106,13 +106,21 @@ Qed.
 
 Hint Rewrite remove_union : Equal.
 
-Lemma union_idem : forall s t, union s (union s t) [=] union s t.
+Lemma union_idem : forall s, union s s [=] s.
 
 Proof.
 Equal.
 Qed.
 
 Hint Rewrite union_idem : Equal.
+
+Lemma union_idem_1 : forall s t, union s (union s t) [=] union s t.
+
+Proof.
+Equal.
+Qed.
+
+Hint Rewrite union_idem_1 : Equal.
 
 Lemma union_idem_2 : forall s t u,
   union s (union t (union s u)) [=] union s (union t u).
@@ -121,12 +129,16 @@ Proof.
 Equal.
 Qed.
 
+Hint Rewrite union_idem_2 : Equal.
+
 Lemma union_idem_3 : forall s t u,
   union (union s t) (union s u) [=] union s (union t u).
 
 Proof.
 Equal.
 Qed.
+
+Hint Rewrite union_idem_3 : Equal.
 
 Lemma union_sym_2 : forall s t u, union s (union t u) [=] union t (union s u).
 

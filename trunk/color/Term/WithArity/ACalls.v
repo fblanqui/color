@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.10 2008-10-06 03:22:32 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.11 2008-10-17 10:11:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -38,13 +38,13 @@ Fixpoint defined (f : Sig) (l : rules) {struct l} : bool :=
       end
   end.
 
-Lemma lhs_fun_defined : forall l r f us, l = Fun f us ->
-  forall R, In (mkRule l r) R -> defined f R = true.
+Lemma lhs_fun_defined : forall (f : Sig) us r R,
+  In (mkRule (Fun f us) r) R -> defined f R = true.
 
 Proof.
-induction R. auto. subst l. simpl. intro Hor. destruct Hor. subst a. simpl.
-case (eq_symbol_dec f f). auto. intro. absurd (f=f); auto.
-destruct a. simpl. destruct lhs. auto. case (eq_symbol_dec f f0); auto.
+induction R. auto. simpl. intro H. destruct H. subst a. simpl.
+case (eq_symbol_dec f f). auto. intros. irrefl. destruct a. simpl.
+destruct lhs. auto. case (eq_symbol_dec f f0); auto.
 Qed.
 
 (***********************************************************************)
@@ -189,7 +189,6 @@ Qed.
 
 End S.
 
-Implicit Arguments lhs_fun_defined [Sig l r f us R].
 Implicit Arguments in_calls [Sig R x t].
 Implicit Arguments in_calls_defined [Sig R t g vs].
 Implicit Arguments in_calls_subterm [Sig R u t].

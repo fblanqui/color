@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.37 2008-10-06 03:22:37 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.38 2008-10-17 10:11:11 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -127,7 +127,8 @@ simpl in H. rewrite (Vcast_refl v1) in H. rewrite (Vcast_refl v2) in H.
 assumption.
 Qed.
 
-Lemma Vcast_cast_eq : forall n (v : vec n) m (h1 : n=m) p (h2 : m=p) (h3 : n=p),
+Lemma Vcast_cast_eq :
+  forall n (v : vec n) m (h1 : n=m) p (h2 : m=p) (h3 : n=p),
   Vcast (Vcast v h1) h2 = Vcast v h3.
 
 Proof.
@@ -149,8 +150,8 @@ Lemma Vcast_eq_intror : forall n1 (v1 : vec n1) n0 (h1 : n1=n0)
 
 Proof.
 induction v1; intros until n0; case n0; intros until v2; case v2; simpl; 
-  intros; (discriminate || auto). Veqtac. subst a0. apply Vtail_eq. eapply IHv1.
-apply H2.
+  intros; (discriminate || auto). Veqtac. subst a0. apply Vtail_eq.
+eapply IHv1. apply H2.
 Qed.
 
 Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),

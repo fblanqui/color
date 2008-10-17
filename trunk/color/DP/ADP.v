@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.21 2008-10-06 03:22:14 blanqui Exp $ *)
+(* $Id: ADP.v,v 1.22 2008-10-17 10:11:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -16,27 +16,18 @@ Require Export LogicUtil.
 
 Section S.
 
-Require Export ASignature.
+Require Export ACalls.
 
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
-
-Require Export ATrs.
-
-Notation rule := (rule Sig).
-Notation rules := (list rule).
+Notation term := (term Sig). Notation terms := (vector term).
+Notation rule := (rule Sig). Notation rules := (list rule).
 Notation lhs := (@lhs Sig).
 
 Variable R : rules.
 
 (***********************************************************************)
 (** definition of dependancy pairs *)
-
-Require Export ACalls.
 
 Fixpoint mkdp (S : rules) : rules :=
   match S with

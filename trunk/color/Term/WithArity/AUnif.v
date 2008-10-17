@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.7 2008-10-15 00:29:37 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.8 2008-10-17 10:11:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -17,8 +17,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 Notation substitution := (substitution Sig).
 
 Ltac case_symb_eq f g := case_beq (@beq_symb_ok Sig) (@beq_symb Sig f g).
@@ -49,7 +48,7 @@ Fixpoint vars_eqns l :=
     | e :: l' => union (vars_eqn e) (vars_eqns l')
   end.
 
-Lemma vars_eqns_sub : forall l m,
+Lemma vars_eqns_app : forall l m,
   vars_eqns (l ++ m) [=] union (vars_eqns l) (vars_eqns m).
 
 Proof.
@@ -767,5 +766,16 @@ eapply iter_step_solved_eqn_wf; eassumption.
 cut (is_sol s (Some (l, nil))). simpl. intuition.
 rewrite <- H0. rewrite <- iter_step_correct_complete. hyp.
 Qed.
+
+(***********************************************************************)
+(* unification problem *)
+
+Definition eqn := ((term * term)%type).
+Definition eqns := (list eqn).
+
+Definition solved_eqn := ((variable * term)%type).
+Definition solved_eqns := (list solved_eqn).
+
+Definition problem := (option ((solved_eqns * eqns)%type)).
 
 End S.
