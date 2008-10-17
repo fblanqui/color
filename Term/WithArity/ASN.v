@@ -8,33 +8,23 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.11 2008-10-06 03:22:33 blanqui Exp $ *)
+(* $Id: ASN.v,v 1.12 2008-10-17 10:11:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ASignature.
+Require Export ATrs.
+Require Export SN.
 
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
-
-Require Export ATrs.
-
-Notation rule := (rule Sig).
-Notation rules := (list rule).
+Notation term := (term Sig). Notation terms := (vector term).
+Notation rule := (rule Sig). Notation rules := (list rule).
 
 Variable R : rules.
 
-Notation Red := (@red Sig R).
-
-Require Export SN.
-
-Notation SNR := (SN Red).
+Notation Red := (@red Sig R). Notation SNR := (SN Red).
 
 (***********************************************************************)
 (** every subterm of an sn term is sn *)
@@ -68,15 +58,7 @@ Qed.
 (***********************************************************************)
 (** strongly normalizing terms when no lhs is a variable *)
 
-(*Require Export ANotvar.*)
-
 Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
-
-(*Lemma lhs_notvar : forall l r x, In (mkRule l r) R -> l <> Var x.
-
-Proof.
-intros. ded (hyp1 l r H). intro. subst l. contradiction.
-Qed.*)
 
 (***********************************************************************)
 (** variables are sn *)
@@ -105,8 +87,8 @@ redtac. subst y. destruct c; simpl in H5; simpl.
 (* C = Hole *)
 case (fun_eq_sub H5); intro H6; destruct H6.
 (* lhs is Fun *)
-cut (defined f R = true). rewrite H. intro. discriminate.
-eapply lhs_fun_defined. apply H6. apply H4.
+cut (defined f R = true). rewrite H. discr.
+eapply lhs_fun_defined. subst l. apply H4.
 (* lhs is Var *)
 subst l. is_var_lhs.
 (* C <> Hole *)

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.20 2008-10-15 00:28:53 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.21 2008-10-17 10:11:09 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -547,3 +547,8 @@ End S.
 
 Implicit Arguments fun_eq_sub [Sig f ts s u].
 Implicit Arguments sub_restrict_incl [Sig l r].
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac single := simpl; unfold single; rewrite <- beq_nat_refl; refl.

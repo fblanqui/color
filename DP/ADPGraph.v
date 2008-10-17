@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.15 2008-10-06 03:22:15 blanqui Exp $ *)
+(* $Id: ADPGraph.v,v 1.16 2008-10-17 10:11:08 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -18,13 +18,9 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
-
-Notation rule := (rule Sig).
-Notation rules := (list rule).
-Notation lhs := (@lhs Sig).
-Notation rhs := (@rhs Sig).
+Notation term := (term Sig). Notation terms := (vector term).
+Notation rule := (rule Sig). Notation rules := (list rule).
+Notation lhs := (@lhs Sig). Notation rhs := (@rhs Sig).
 
 Variable R : rules.
 
@@ -108,7 +104,8 @@ Implicit Arguments chain_dps_app' [a l m b p x y].
 
 Require Export Iter.
 
-Lemma chain_dps_iter_chain : forall l a, chain_dps a l << iter Chain (length l).
+Lemma chain_dps_iter_chain :
+  forall l a, chain_dps a l << iter Chain (length l).
 
 Proof.
 induction l; simpl; intros. apply chain_dp_chain.
@@ -207,8 +204,8 @@ Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
 destruct a. simpl. simpl in H0. exists (sub x0 lhs). split.
-apply incl_elim with (R := int_red R #). apply incl_rtc. apply int_red_incl_red.
-exact H0. apply hd_red_rule. simpl. auto.
+apply incl_elim with (R := int_red R #). apply incl_rtc.
+apply int_red_incl_red. exact H0. apply hd_red_rule. simpl. auto.
 Qed.
 
 Lemma compat_chain_dp : forall a, chain_dp a << succ_eq#.
@@ -257,7 +254,8 @@ set (l' := x0 :: x2 ++ x3 :: nil). assert (exists z, occur z l' >= 2).
 unfold l'. eapply long_path_occur. apply restricted_dp_graph. apply H4.
 rewrite H6. rewrite H2. unfold n. omega.
 (* we prove (A): in this cycle, a dp is included in succ *)
-assert (exists l, exists a, exists m, l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
+assert (exists l, exists a, exists m,
+  l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
 destruct H7. set (p := occur x4 l' - 2). assert (occur x4 l' = S (S p)).
 unfold p. omega. ded (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
 clear H8. rewrite H9. ded (occur_S eq_dec H11). do 3 destruct H8.
