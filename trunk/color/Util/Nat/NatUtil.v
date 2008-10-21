@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.31 2008-10-15 08:08:52 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.32 2008-10-21 09:09:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -61,8 +61,8 @@ Definition eq_nat_dec := eq_nat_dec. (* FIXME: dec_beq beq_nat_ok. *)
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
 Proof.
-intro. generalize (eq_nat_dec n n). destruct s. rewrite (UIP_refl eq_nat_dec e).
-refl. irrefl.
+intro. generalize (eq_nat_dec n n). destruct s.
+rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
 (*old version with Coq's eq_nat_dec:

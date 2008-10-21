@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.44 2008-10-06 03:22:35 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.45 2008-10-21 09:09:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1104,7 +1104,7 @@ Section partition_by_prop.
 
   Require Import RelMidex.
 
-  Variables (A : Type) (P : A -> Prop) (P_dec : prop_dec P).
+  Variables (A : Type) (P : A -> Prop) (P_dec : forall x, {P x}+{~P x}).
 
   Definition partition_by_prop a :=
     match P_dec a with

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.8 2008-10-17 10:11:10 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.9 2008-10-21 09:09:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -25,13 +25,13 @@ Ltac case_symb_eq f g := case_beq (@beq_symb_ok Sig) (@beq_symb Sig f g).
 (***********************************************************************)
 (* unification problem *)
 
-Notation eqn := ((term * term)%type).
-Notation eqns := (list eqn).
+Definition eqn := ((term * term)%type).
+Definition eqns := (list eqn).
 
-Notation solved_eqn := ((variable * term)%type).
-Notation solved_eqns := (list solved_eqn).
+Definition solved_eqn := ((variable * term)%type).
+Definition solved_eqns := (list solved_eqn).
 
-Notation problem := (option ((solved_eqns * eqns)%type)).
+Definition problem := (option ((solved_eqns * eqns)%type)).
 
 Definition eqn_sub s (e : eqn) := (sub s (fst e), sub s (snd e)).
 
@@ -389,15 +389,15 @@ Fixpoint iter_step k (p : problem) {struct k} :=
 Lemma step_wf : forall p, problem_wf p -> problem_wf (step p).
 
 Proof.
-intro. destruct p. 2: auto. destruct p. destruct l0. auto. destruct p.
+intro. destruct p. 2: auto. destruct p. destruct e. auto. destruct e.
 destruct t0; destruct t1.
 (* var-var *)
 simpl. mem. case_nat_eq n n0; simpl.
-intuition. gen H1. elim l; simpl; intuition.
+intuition. gen H1. elim s; simpl; intuition.
 mem. rewrite H. intuition.
 eapply lforall_notin_solved_eqn_1. simpl. mem. hyp. apply H2.
 eapply solved_eqns_wf_map'. simpl. mem. hyp. hyp. apply H2.
-gen H2. elim l; simpl; intuition. unfold notin_vars_solved_eqn. simpl.
+gen H2. elim s; simpl; intuition. unfold notin_vars_solved_eqn. simpl.
 unfold notin_eqn in H2. simpl in H2. intuition.
 apply notin_map. simpl. mem. hyp.
 apply lforall_notin. hyp.
@@ -406,7 +406,7 @@ Opaque vars. simpl. set (u := Fun f v). intuition.
 case_eq (mem n (vars u)); simpl; intuition.
 eapply lforall_notin_solved_eqn_1'. hyp. apply H1.
 eapply solved_eqns_wf_map. hyp. hyp. apply H1.
-apply lforall_notin_vars_solved_eqn_2 with l0. hyp.
+apply lforall_notin_vars_solved_eqn_2 with e0. hyp.
 apply notin_map. hyp.
 apply lforall_notin'. hyp.
 (* fun-var *) (* about the same proof *)
@@ -414,12 +414,12 @@ simpl. set (u := Fun f v). intuition.
 case_eq (mem n (vars u)); simpl; intuition.
 eapply lforall_notin_solved_eqn_1. hyp. apply H1.
 eapply solved_eqns_wf_map'. hyp. hyp. apply H1.
-apply lforall_notin_vars_solved_eqn_2' with l0. hyp.
+apply lforall_notin_vars_solved_eqn_2' with e0. hyp.
 apply notin_map. hyp.
 apply lforall_notin. hyp.
 (* fun-fun *)
 simpl. case_symb_eq f f0; simpl; intuition.
-gen H1. elim l; simpl; intuition. gen H1. unfold notin_eqn. simpl.
+gen H1. elim s; simpl; intuition. gen H1. unfold notin_eqn. simpl.
 do 2 rewrite vars_fun. gen H4. unfold notin. simpl. rewrite lforall_app.
 intuition. apply lforall_notin_eqn_combine; hyp. Transparent vars.
 Qed.
@@ -466,7 +466,7 @@ Lemma is_sol_sub : forall s s' p, is_sol s p -> is_sol (comp s' s) p.
 Proof.
 intros s s' p. destruct p. 2: auto. destruct p. destruct l0.
 simpl. intuition. apply is_sol_solved_eqns_sub. hyp.
-destruct p. simpl. intuition. apply is_sol_solved_eqns_sub. hyp.
+destruct e. simpl. intuition. apply is_sol_solved_eqns_sub. hyp.
 apply is_sol_eqn_sub. hyp. gen H2. elim l0; clear l0; simpl; intuition.
 apply is_sol_eqn_sub. hyp.
 Qed.
@@ -536,7 +536,7 @@ Lemma step_correct_complete : forall s p, is_sol s p <-> is_sol s (step p).
 
 Proof.
 intros s p. destruct p. 2: simpl; intuition. destruct p. destruct l0.
-simpl. intuition. destruct p. destruct t0; destruct t1.
+simpl. intuition. destruct e. destruct t0; destruct t1.
 (* var-var *)
 simpl. unfold is_sol_eqn. mem. simpl.
 case_nat_eq n n0; simpl. intuition. unfold is_sol_solved_eqn. simpl. intuition.
@@ -766,16 +766,5 @@ eapply iter_step_solved_eqn_wf; eassumption.
 cut (is_sol s (Some (l, nil))). simpl. intuition.
 rewrite <- H0. rewrite <- iter_step_correct_complete. hyp.
 Qed.
-
-(***********************************************************************)
-(* unification problem *)
-
-Definition eqn := ((term * term)%type).
-Definition eqns := (list eqn).
-
-Definition solved_eqn := ((variable * term)%type).
-Definition solved_eqns := (list solved_eqn).
-
-Definition problem := (option ((solved_eqns * eqns)%type)).
 
 End S.

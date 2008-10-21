@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lexicographic ordering
 *)
 
-(* $Id: Lexico.v,v 1.6 2008-10-06 03:22:37 blanqui Exp $ *)
+(* $Id: Lexico.v,v 1.7 2008-10-21 09:09:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,6 +32,14 @@ Variable (B : Type) (gtB : relation B).
 Inductive lexp : relation (prod A B) :=
 | lexp1 : forall a a' b b', gtA a a' -> lexp (a,b) (a',b')
 | lexp2 : forall a a' b b', eqA a a' -> gtB b b' -> lexp (a,b) (a',b').
+
+Lemma lexp_intro : forall a a' b b',
+  gtA a a' \/ (eqA a a' /\ gtB b b') -> lexp (a,b) (a',b').
+
+Proof.
+intros. destruct H. apply lexp1. exact H. destruct H. apply lexp2.
+exact H. exact H0.
+Qed.
 
 Variable (WF_gtB : WF gtB) (eqA_trans : transitive eqA).
 
@@ -63,14 +71,6 @@ Lemma WF_lexp : WF lexp.
 
 Proof.
 unfold WF. destruct x as (a,b). apply lexp_SN. apply WF_gtA. apply WF_gtB.
-Qed.
-
-Lemma lexp_intro : forall a a' b b',
-  gtA a a' \/ (eqA a a' /\ gtB b b') -> lexp (a,b) (a',b').
-
-Proof.
-intros. destruct H. apply lexp1. exact H. destruct H. apply lexp2.
-exact H. exact H0.
 Qed.
 
 End lexp.

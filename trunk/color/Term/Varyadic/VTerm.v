@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.10 2008-10-06 03:22:32 blanqui Exp $ *)
+(* $Id: VTerm.v,v 1.11 2008-10-21 09:09:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -77,7 +77,7 @@ Lemma term_ind_forall : forall (P : term -> Prop)
 Proof.
   intros. apply term_ind with (Q := fun v => lforall P v).
   assumption. assumption. constructor.
-  intros. apply lforall_elim. intros.
+  intros. apply lforall_intro. intros.
   destruct H3. subst t0. assumption.
   apply lforall_in with term v; assumption. 
 Qed.

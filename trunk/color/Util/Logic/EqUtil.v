@@ -7,13 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.9 2008-10-06 03:22:35 blanqui Exp $ *)
+(* $Id: EqUtil.v,v 1.10 2008-10-21 09:09:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export LogicUtil.
-
-Definition dec_eq A := forall x y : A, {x=y}+{~x=y}.
 
 (***********************************************************************)
 (** dependent equality on decidable types *)

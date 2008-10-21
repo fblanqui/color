@@ -7,17 +7,18 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.7 2008-10-06 03:22:35 blanqui Exp $ *)
+(* $Id: ListForall.v,v 1.8 2008-10-21 09:09:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
+Require Export LogicUtil.
 Require Export List.
 
 Section S.
 
 Variables (A : Type) (P : A->Prop).
 
-Fixpoint lforall (l : list A) { struct l} : Prop :=
+Fixpoint lforall (l : list A) {struct l} : Prop :=
   match l with
     | nil => True
     | cons h t => P h /\ lforall t
@@ -29,8 +30,7 @@ Proof.
 simpl. auto.
 Qed.
 
-Lemma lforall_cons : forall (a : A) (l : list A),
-  lforall (cons a l) -> P a /\ lforall l.
+Lemma lforall_cons : forall a l, lforall (cons a l) -> P a /\ lforall l.
 
 Proof.
 intro a. simpl. auto.
@@ -43,7 +43,7 @@ Proof.
 induction l1; simpl; intuition.
 Qed.
 
-Lemma lforall_in : forall (a : A) (l : list A), lforall l -> In a l -> P a.
+Lemma lforall_in : forall a l, lforall l -> In a l -> P a.
 
 Proof.
 intros a l. elim l.
@@ -54,7 +54,7 @@ intros a l. elim l.
   intros (H3, H4). apply (Hrec H4 H2).
 Qed.
 
-Lemma lforall_elim : forall l, (forall x, In x l -> P x) -> lforall l.
+Lemma lforall_intro : forall l, (forall x, In x l -> P x) -> lforall l.
 
 Proof.
 induction l; simpl; intros. exact I. split. apply H. auto.
@@ -64,12 +64,11 @@ Qed.
 Lemma lforall_incl : forall l1 l2, incl l1 l2 -> lforall l2 -> lforall l1.
 
 Proof.
-intros. apply lforall_elim. intros. eapply lforall_in. apply H0.
+intros. apply lforall_intro. intros. eapply lforall_in. apply H0.
 apply H. assumption.
 Qed.
 
-Require Import LogicUtil.
-Variable P_dec : prop_dec P.
+Variable P_dec : forall x, {P x}+{~P x}.
 
 Lemma lforall_dec : forall l, {lforall l} + {~lforall l}.
 
@@ -88,7 +87,7 @@ End S.
 Implicit Arguments lforall_in [A P a l].
 
 Lemma lforall_imp : forall (A : Type) (P1 P2 : A->Prop),
-  (forall x, P1 x -> P2 x) -> forall (l : list A), lforall P1 l -> lforall P2 l.
+  (forall x, P1 x -> P2 x) -> forall l, lforall P1 l -> lforall P2 l.
 
 Proof.
 intros A P1 P2 H l. elim l.
