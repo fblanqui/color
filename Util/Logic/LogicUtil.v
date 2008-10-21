@@ -7,13 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.15 2008-10-17 10:11:11 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.16 2008-10-21 09:09:54 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
 Require Export Setoid.
-
-Definition prop_dec A (P : A -> Prop) := forall x, {P x}+{~P x}.
 
 (***********************************************************************)
 (** tactics *)

@@ -23,7 +23,7 @@ Inductive SN : A -> Prop :=
 Lemma SN_inv : forall x, SN x -> forall y, R x y -> SN y.
 
 Proof.
-  destruct 1; trivial.
+destruct 1; trivial.
 Qed.
 
 Definition WF := forall x, SN x.

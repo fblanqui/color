@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.40 2008-10-06 03:22:33 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.41 2008-10-21 09:09:53 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -31,7 +31,7 @@ Proof.
 decide equality; apply eq_term_dec.
 Defined.
 
-Notation rules := (list rule).
+Definition rules := (list rule).
 
 Definition is_notvar_lhs a :=
   match lhs a with
