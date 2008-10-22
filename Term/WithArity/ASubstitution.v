@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.22 2008-10-22 06:50:47 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.23 2008-10-22 07:09:16 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -581,4 +581,8 @@ Implicit Arguments sub_restrict_incl [Sig l r].
 (***********************************************************************)
 (** tactics *)
 
+(* to prove a goal of the form: sub (single x t) (Var x) = t. *)
 Ltac single := simpl; unfold single; rewrite <- beq_nat_refl; refl.
+
+(* to prove a goal of the form: exists s, sub s (Var x) = t. *)
+Ltac exists_single x t := exists (single x t); single.
