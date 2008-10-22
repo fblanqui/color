@@ -50,5 +50,8 @@ install-dist:
 	mv -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
 	cp -f CHANGES $(WEB)/CHANGES.CoLoR
 
+%.vo: %.v
+	$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $@
+
 %:
-	$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $*
+	$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $@
