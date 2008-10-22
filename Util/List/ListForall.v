@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.8 2008-10-21 09:09:54 blanqui Exp $ *)
+(* $Id: ListForall.v,v 1.9 2008-10-22 06:45:17 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -23,6 +23,12 @@ Fixpoint lforall (l : list A) {struct l} : Prop :=
     | nil => True
     | cons h t => P h /\ lforall t
   end.
+
+Lemma lforall_eq : forall l, lforall l <-> (forall x, In x l -> P x).
+
+Proof.
+induction l; simpl; intuition. subst. hyp.
+Qed.
 
 Lemma lforall_nil : lforall nil.
 
