@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.21 2008-10-17 10:11:09 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.22 2008-10-22 06:50:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -101,6 +101,36 @@ Lemma comp_assoc : forall (s1 s2 s3 : substitution) x,
 
 Proof.
 intros. unfold comp. rewrite sub_sub. refl.
+Qed.
+
+(***********************************************************************)
+(** extension of a substitution *)
+
+Definition extend (s : substitution) x v : substitution :=
+  fun y => if beq_nat y x then v else s y.
+
+Lemma sub_extend_notin : forall s x v u,
+  ~In x (vars u) -> sub (extend s x v) u = sub s u.
+
+Proof.
+intros s x v u. set (s' := extend s x v). pattern u.
+apply term_ind with (Q := fun n (us : terms n) =>
+  ~In x (vars_vec us) -> Vmap (sub s') us = Vmap (sub s) us); clear u.
+intro. simpl. intuition. unfold s', extend.
+case_nat_eq x0 x. intuition. refl.
+intros f us. rewrite vars_fun. do 2 rewrite sub_fun. intros. apply args_eq.
+auto. refl.
+intros u n us. simpl. rewrite in_app. intuition.
+apply Vcons_eq; intuition.
+Qed.
+
+Lemma comp_single : forall s x v (t : term),
+  sub (comp s (single x v)) t = sub (extend s x (sub s v)) t.
+
+Proof.
+intros. apply sub_eq. intros. unfold comp, single, extend.
+case_nat_eq x x0. rewrite <- beq_nat_refl. refl.
+rewrite (beq_com beq_nat_ok) in H0. rewrite H0. refl.
 Qed.
 
 (***********************************************************************)

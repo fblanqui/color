@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.9 2008-10-21 09:09:53 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.10 2008-10-22 06:50:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -93,7 +93,7 @@ case_eq (mem n (vars u)). mem. rewrite H0. rewrite H. refl.
 hyp.
 Qed.
 
-Lemma vars_eqn_subs : forall x v e,
+Lemma vars_eqn_sub : forall x v e,
   vars_eqn (eqn_sub (single x v) e) [=]
   if mem x (vars_eqn e) then union (vars v) (remove x (vars_eqn e))
     else vars_eqn e.
@@ -130,7 +130,7 @@ transitivity (union
   (if mem x (vars_eqn a) then union (vars v) (remove x (vars_eqn a))
     else vars_eqn a) (if mem x (vars_eqns l)
       then union (vars v) (remove x (vars_eqns l)) else vars_eqns l)).
-apply union_m. apply vars_eqn_subs. exact IHl.
+apply union_m. apply vars_eqn_sub. exact IHl.
 case_eq (mem x (vars_eqn a)); case_eq (mem x (vars_eqns l)); bool.
 transitivity
   (union (vars v) (union (remove x (vars_eqn a)) (remove x (vars_eqns l)))).
@@ -579,25 +579,6 @@ Qed.
 (***********************************************************************)
 (** extension of a substitution *)
 
-Definition extend (s : substitution) x v : substitution :=
-  fun y => if beq_nat y x then v else s y.
-
-Lemma app_extend_notin : forall s x v u,
-  mem x (vars u) = false -> sub (extend s x v) u = sub s u.
-
-Proof.
-intros s x v u. set (s' := extend s x v). pattern u.
-apply term_ind with (Q := fun n (us : terms n) =>
-  mem x (vars_terms us) = false -> Vmap (sub s') us = Vmap (sub s) us);
-  clear u.
-intro. simpl. mem. unfold s', extend.
-case (beq_nat x0 x). intro. discriminate. refl.
-intros f us. rewrite vars_fun. do 2 rewrite sub_fun. intros. apply args_eq.
-auto. refl.
-intros u n us. simpl. mem. intros.
-destruct (orb_false_elim H1). apply Vcons_eq; intuition.
-Qed.
-
 Lemma is_sol_solved_eqns_extend : forall s n v l,
   lforall (notin_solved_eqn n) l ->
   is_sol_solved_eqns s l -> is_sol_solved_eqns (extend s n v) l.
@@ -606,18 +587,38 @@ Proof.
 induction l; simpl. auto. destruct a.
 unfold notin_solved_eqn at 1, is_sol_solved_eqn. simpl. intuition.
 unfold extend at 1. case_nat_eq n0 n. change (n0<>n0) in H0. irrefl.
-rewrite H. symmetry. apply app_extend_notin. hyp.
+rewrite H. symmetry. apply sub_extend_notin. rewrite in_vars_mem.
+rewrite H4. discr.
+Qed.
+
+Lemma is_sol_eqn_extend : forall s x (v : term) e,
+   is_sol_eqn s (eqn_sub (single x v) e) <->
+   is_sol_eqn (extend s x (sub s v)) e.
+
+Proof.
+destruct e. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
+repeat rewrite comp_single. tauto.
+Qed.
+
+Lemma is_sol_eqns_extend : forall s x (v : term) l,
+   is_sol_eqns s (map (eqn_sub (single x v)) l) <->
+   is_sol_eqns (extend s x (sub s v)) l.
+
+Proof.
+induction l; simpl; intuition.
+clear H H1 H3. gen H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
+repeat rewrite comp_single. auto.
+clear H3 H0 H1. gen H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
+repeat rewrite comp_single. auto.
 Qed.
 
 (***********************************************************************)
 (** substitution corresponding to solved equations *)
 
-Notation id := (@id Sig).
-
 Fixpoint subst_of_solved_eqns (l : solved_eqns) :=
   match l with
     | (x, v) :: l' => extend (subst_of_solved_eqns l') x v
-    | nil => id
+    | nil => id Sig
   end.
 
 Fixpoint dom (l : solved_eqns) :=
@@ -692,10 +693,11 @@ Lemma subst_of_solved_eqns_correct : forall l, solved_eqns_wf l ->
 Proof.
 induction l; simpl. auto. set (s := subst_of_solved_eqns l). destruct a.
 unfold is_sol_solved_eqn. simpl. intuition. unfold extend at 1. simpl.
-rewrite (beq_refl beq_nat_ok). rewrite app_extend_notin. 2: hyp.
+rewrite (beq_refl beq_nat_ok). rewrite sub_extend_notin.
 symmetry. apply sub_eq_id'. intros.
 ded (lforall_notin_vars_solved_eqn_dom H3 H4).
 ded (dom_subst_of_solved_eqns H5). hyp.
+rewrite in_vars_mem. rewrite H0. discr.
 apply is_sol_solved_eqns_extend; hyp.
 Qed.
 
