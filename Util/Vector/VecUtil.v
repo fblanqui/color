@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.39 2008-10-21 09:09:54 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.40 2008-10-22 06:46:56 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -154,7 +154,14 @@ induction v1; intros until n0; case n0; intros until v2; case v2; simpl;
 eapply IHv1. apply H2.
 Qed.
 
-Lemma Vcast_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
+Lemma Vcast_eq : forall n (v1 v2 : vec n) p (e : n=p),
+  v1 = v2 -> Vcast v1 e = Vcast v2 e.
+
+Proof.
+induction v1; intros. subst v2. refl. rewrite H. refl.
+Qed.
+
+Lemma Vcast_prf_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
   Vcast v h1 = Vcast v h2.
 
 Proof.
@@ -959,7 +966,7 @@ Lemma beq_vec_ok1 : forall n (v : vec n) p (w : vec p)
 Proof.
 induction v; destruct w; simpl; intros; try (refl || discriminate).
 destruct (andb_elim h). rewrite beq_ok in H. subst a0. apply Vtail_eq.
-rewrite <- (IHv _ _ H0). apply Vcast_eq.
+rewrite <- (IHv _ _ H0). apply Vcast_prf_eq.
 Qed.
 
 Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
@@ -990,7 +997,7 @@ ded (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
 assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
 intros x hx. apply hyp. simpl. auto.
 destruct (andb_elim h). ded (IHv hyp' _ w H2). rewrite <- H3.
-apply Vcast_eq.
+apply Vcast_prf_eq.
 Qed.
 
 Lemma beq_vec_ok_in2 : forall n (v : vec n)
@@ -1112,7 +1119,8 @@ Proof.
 intros until H. case H. intro v. repeat rewrite Vcast_refl. reflexivity.
 Qed.
 
-Lemma Vmap_tail : forall n (v : vector A (S n)), Vmap (Vtail v) = Vtail (Vmap v).
+Lemma Vmap_tail : forall n (v : vector A (S n)),
+  Vmap (Vtail v) = Vtail (Vmap v).
 
 Proof.
 intros. VSntac v. reflexivity.
