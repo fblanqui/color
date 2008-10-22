@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.23 2008-10-22 07:09:16 blanqui Exp $ *)
+(* $Id: ASubstitution.v,v 1.24 2008-10-22 07:13:07 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -79,6 +79,15 @@ Lemma sub_eq_id : forall s t,
 
 Proof.
 intros. transitivity (sub id t). apply sub_eq. hyp. apply sub_id.
+Qed.
+
+Lemma Vmap_sub_eq : forall s1 s2 n (ts : terms n),
+  (forall x, In x (vars_vec ts) -> s1 x = s2 x) ->
+  Vmap (sub s1) ts = Vmap (sub s2) ts.
+
+Proof.
+intros. apply Vmap_eq. apply Vforall_intro. intros. apply sub_eq. intros.
+apply H. eapply vars_vec_in. apply H1. hyp.
 Qed.
 
 (***********************************************************************)
