@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.41 2008-10-21 09:09:53 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.42 2008-10-23 04:17:22 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -347,53 +347,6 @@ apply List.incl_refl. apply incl_tran with (vars y); assumption.
 Qed.
 
 End vars.
-
-Require Import AVariables.
-
-Definition rule_preserv_vars_bool (a : rule) :=
-  subset (vars (rhs a)) (vars (lhs a)).
-
-Definition rules_preserv_vars_bool := forallb rule_preserv_vars_bool.
-
-Lemma vars_equiv : forall x (t : term),
-  List.In x (ATerm.vars t) <-> In x (vars t).
-
-Proof.
-intros x t0. pattern t0. apply term_ind with (Q := fun n (ts : terms n) =>
-  List.In x (vars_vec ts) <-> In x (vars_terms ts)).
-intro. simpl. set_iff. intuition.
-intros. rewrite ATerm.vars_fun. rewrite vars_fun. hyp.
-simpl. set_iff. intuition.
-intros. simpl. set_iff. rewrite in_app. intuition.
-Qed.
-
-Lemma rule_preserv_vars_dec : forall l r : term,
-  incl (ATerm.vars r) (ATerm.vars l) <->
-  rule_preserv_vars_bool (mkRule l r) = true.
-
-Proof.
-unfold rule_preserv_vars_bool. intros. rewrite subset_Subset.
-split; intros h x. simpl. repeat rewrite <- vars_equiv. intuition.
-repeat rewrite vars_equiv. intuition.
-Qed.
-
-Lemma rule_preserv_vars_dec' : forall a : rule,
-  rule_preserv_vars_bool a = true <->
-  incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a)).
-
-Proof.
-intro. destruct a. rewrite rule_preserv_vars_dec. tauto.
-Qed.
-
-Lemma rules_preserv_vars_dec : forall R : rules,
-  rules_preserv_vars R <-> rules_preserv_vars_bool R = true.
-
-Proof.
-intro. unfold rules_preserv_vars_bool, rules_preserv_vars.
-rewrite forallb_forall. intuition.
-destruct x. rewrite <- rule_preserv_vars_dec. auto.
-rewrite rule_preserv_vars_dec. auto.
-Qed.
 
 (***********************************************************************)
 (** rewriting vectors of terms *)
