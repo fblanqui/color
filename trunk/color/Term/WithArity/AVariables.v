@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.5 2008-10-06 03:22:34 blanqui Exp $ *)
+(* $Id: AVariables.v,v 1.6 2008-10-23 04:17:22 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -50,22 +50,22 @@ Fixpoint vars t :=
   match t with
     | Var x => singleton x
     | Fun f ts =>
-      let fix vars_terms n (ts : terms n) {struct ts} :=
+      let fix vars_vec n (ts : terms n) {struct ts} :=
         match ts with
           | Vnil => empty
-          | Vcons u _ ts => union (vars u) (vars_terms _ ts)
+          | Vcons u _ ts => union (vars u) (vars_vec _ ts)
         end
-        in vars_terms _ ts
+        in vars_vec _ ts
   end.
 
-Definition vars_terms :=
-  fix vars_terms n (ts : terms n) {struct ts} :=
+Definition vars_vec :=
+  fix vars_vec n (ts : terms n) {struct ts} :=
   match ts with
     | Vnil => empty
-    | Vcons u _ ts => union (vars u) (vars_terms _ ts)
+    | Vcons u _ ts => union (vars u) (vars_vec _ ts)
   end.
 
-Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_terms ts.
+Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_vec ts.
 
 Proof.
 refl.
@@ -82,7 +82,7 @@ Lemma in_vars_mem : forall x (u : term),
 
 Proof.
 intros. pattern u. apply term_ind with (Q := fun n (us : terms n) =>
-  List.In x (ATerm.vars_vec us) <-> mem x (vars_terms us) = true); clear u.
+  List.In x (ATerm.vars_vec us) <-> mem x (vars_vec us) = true); clear u.
 intro. simpl. mem. intuition.
 intros f us H. rewrite ATerm.vars_fun. rewrite vars_fun. hyp.
 simpl. mem. intuition.
@@ -92,8 +92,8 @@ refl. case (orb_true_elim H0); intro.
 ded (H2 e). apply in_appl. hyp. ded (H3 e). apply in_appr. hyp.
 Qed.
 
-Lemma mem_vars_terms : forall x n (ts : terms n),
-  mem x (vars_terms ts) = true -> exists t, Vin t ts /\ mem x (vars t) = true.
+Lemma mem_vars_vec : forall x n (ts : terms n),
+  mem x (vars_vec ts) = true -> exists t, Vin t ts /\ mem x (vars t) = true.
 
 Proof.
 induction ts; simpl; mem; intuition. discriminate.
@@ -101,7 +101,7 @@ destruct (orb_true_elim H). exists a. auto.
 destruct (IHts e). exists x0. intuition.
 Qed.
 
-Implicit Arguments mem_vars_terms [x n ts].
+Implicit Arguments mem_vars_vec [x n ts].
 
 Open Scope nat_scope.
 
@@ -110,7 +110,7 @@ Lemma mem_vars_size_sub_ge : forall s x u,
 
 Proof.
 intros s x u. pattern u. apply term_ind with (Q := fun n (ts : terms n) =>
-  mem x (vars_terms ts) = true -> size_terms (Vmap (sub s) ts) >= size (s x));
+  mem x (vars_vec ts) = true -> size_terms (Vmap (sub s) ts) >= size (s x));
   clear u.
 intro. simpl. mem. intro. subst x0. omega.
 intros f v. rewrite vars_fun. rewrite sub_fun. rewrite size_fun. intros.
@@ -128,7 +128,7 @@ Proof.
 intros. destruct u.
 simpl in H. autorewrite with mem in H. subst n. irrefl.
 clear H0. rewrite sub_fun. rewrite size_fun. rewrite vars_fun in H.
-destruct (mem_vars_terms H). destruct H0. ded (Vin_elim H0). decomp H2.
+destruct (mem_vars_vec H). destruct H0. ded (Vin_elim H0). decomp H2.
 rewrite H3. rewrite Vmap_cast. rewrite size_terms_Vcast. rewrite Vmap_app.
 rewrite size_terms_Vapp. simpl. ded (mem_vars_size_sub_ge s H1). omega.
 Qed.
@@ -153,9 +153,9 @@ Lemma vars_subs : forall x v u,
 
 Proof.
 intros x v. apply term_ind with (Q := fun n (ts : terms n) =>
-  vars_terms (Vmap (sub (single x v)) ts) [=]
-  if mem x (vars_terms ts) then union (vars v) (remove x (vars_terms ts))
-    else vars_terms ts).
+  vars_vec (Vmap (sub (single x v)) ts) [=]
+  if mem x (vars_vec ts) then union (vars v) (remove x (vars_vec ts))
+    else vars_vec ts).
 (* Var *)
 intro. simpl. unfold single. case_nat_eq x x0. 
 autorewrite with mem Equal. refl.
@@ -168,25 +168,25 @@ coq_case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
 refl.
 (* Vcons *)
 intros u n us. simpl. mem. intros. rewrite H. rewrite H0.
-case_eq (mem x (vars u)); simpl. gen H1. case_eq (mem x (vars_terms us)).
+case_eq (mem x (vars u)); simpl. gen H1. case_eq (mem x (vars_vec us)).
 transitivity (union (union (vars v) (remove x (vars u)))
-  (union (vars v) (remove x (vars_terms us)))). refl.
+  (union (vars v) (remove x (vars_vec us)))). refl.
 transitivity (union (vars v) (union (remove x (vars u))
-  (remove x (vars_terms us)))). apply union_idem_3.
+  (remove x (vars_vec us)))). apply union_idem_3.
 apply union_m. refl. symmetry. apply remove_union.
-transitivity (union (union (vars v) (remove x (vars u))) (vars_terms us)).
+transitivity (union (union (vars v) (remove x (vars u))) (vars_vec us)).
 apply union_m; refl.
-transitivity (union (vars v) (union (remove x (vars u)) (vars_terms us))).
+transitivity (union (vars v) (union (remove x (vars u)) (vars_vec us))).
 autorewrite with Equal. refl. apply union_m. refl.
-transitivity (union (remove x (vars u)) (remove x (vars_terms us))).
+transitivity (union (remove x (vars u)) (remove x (vars_vec us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
 symmetry. apply remove_union.
-gen H1. case_eq (mem x (vars_terms us)).
-transitivity (union (vars u) (union (vars v) (remove x (vars_terms us)))).
+gen H1. case_eq (mem x (vars_vec us)).
+transitivity (union (vars u) (union (vars v) (remove x (vars_vec us)))).
 apply union_m; refl.
-transitivity (union (vars v) (union (vars u) (remove x (vars_terms us)))).
+transitivity (union (vars v) (union (vars u) (remove x (vars_vec us)))).
 apply union_sym_2. apply union_m. refl.
-transitivity (union (remove x (vars u)) (remove x (vars_terms us))).
+transitivity (union (remove x (vars u)) (remove x (vars_vec us))).
 apply union_m. symmetry. apply remove_equal. apply mem_4. hyp.
 refl. symmetry. apply remove_union.
 apply union_m; refl.
@@ -220,6 +220,59 @@ apply union_m. symmetry. apply remove_equal. apply mem_4. hyp. refl.
 symmetry. apply remove_union. refl.
 Qed.
 
+(***********************************************************************)
+(* preservation of variables under reduction *)
+
+Require Import ATrs.
+
+Notation rule := (rule Sig). Notation rules := (rules Sig).
+
+Definition rule_preserv_vars_bool (a : rule) :=
+  subset (vars (rhs a)) (vars (lhs a)).
+
+Definition rules_preserv_vars_bool := forallb rule_preserv_vars_bool.
+
+Lemma vars_equiv : forall x (t : term),
+  List.In x (ATerm.vars t) <-> In x (vars t).
+
+Proof.
+intros x t0. pattern t0. apply term_ind with (Q := fun n (ts : terms n) =>
+  List.In x (ATerm.vars_vec ts) <-> In x (vars_vec ts)).
+intro. simpl. set_iff. intuition.
+intros. rewrite ATerm.vars_fun. rewrite vars_fun. hyp.
+simpl. set_iff. intuition.
+intros. simpl. set_iff. rewrite in_app. intuition.
+Qed.
+
+Lemma rule_preserv_vars_dec : forall l r : term,
+  incl (ATerm.vars r) (ATerm.vars l) <->
+  rule_preserv_vars_bool (mkRule l r) = true.
+
+Proof.
+unfold rule_preserv_vars_bool. intros. rewrite subset_Subset.
+split; intros h x. simpl. repeat rewrite <- vars_equiv. intuition.
+repeat rewrite vars_equiv. intuition.
+Qed.
+
+Lemma rule_preserv_vars_dec' : forall a : rule,
+  rule_preserv_vars_bool a = true <->
+  incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a)).
+
+Proof.
+intro. destruct a. rewrite rule_preserv_vars_dec. tauto.
+Qed.
+
+Lemma rules_preserv_vars_dec : forall R : rules,
+  rules_preserv_vars R <-> rules_preserv_vars_bool R = true.
+
+Proof.
+intro. unfold rules_preserv_vars_bool, rules_preserv_vars.
+rewrite forallb_forall. intuition.
+destruct x. rewrite <- rule_preserv_vars_dec. auto.
+rewrite rule_preserv_vars_dec. auto.
+Qed.
+
 End S.
 
 Implicit Arguments term_wf [Sig s x u].
+Implicit Arguments mem_vars_vec [Sig x n ts].
