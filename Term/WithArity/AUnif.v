@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.10 2008-10-22 06:50:47 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.11 2008-10-23 04:16:50 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -59,14 +59,14 @@ Qed.
 
 Lemma vars_eqns_combine : forall n (us vs : terms n),
   vars_eqns (combine (list_of_vec vs) (list_of_vec us))
-  [=] union (vars_terms vs) (vars_terms us).
+  [=] union (vars_vec vs) (vars_vec us).
 
 Proof.
 induction us; simpl; intros. VOtac. simpl. symmetry. apply union_empty_left.
 VSntac vs. clear H. set (x := Vhead vs). set (ts := Vtail vs). simpl.
 unfold vars_eqn. simpl.
 transitivity
-  (union (union (vars x) (vars a)) (union (vars_terms ts) (vars_terms us))).
+  (union (union (vars x) (vars a)) (union (vars_vec ts) (vars_vec us))).
 apply union_m. refl. apply IHus. Equal; union.
 Qed.
 
@@ -337,14 +337,14 @@ unfold notin in H2. simpl in H2. apply lforall_notin_eqn; hyp.
 Qed.
 
 Lemma lforall_notin_eqn_combine : forall x n (v1 v2 : terms n),
-  mem x (vars_terms v1) = false -> mem x (vars_terms v2) = false ->
+  mem x (vars_vec v1) = false -> mem x (vars_vec v2) = false ->
   lforall (notin_eqn x) (combine (list_of_vec v1) (list_of_vec v2)).
 
 Proof.
 induction v1; simpl; intros. trivial. VSntac v2. simpl.
 autorewrite with mem in H. destruct (orb_false_elim H).
 assert (mem x (vars (Vhead v2)) = false
-  /\ mem x (vars_terms (Vtail v2)) = false). rewrite H1 in H0. simpl in H0.
+  /\ mem x (vars_vec (Vtail v2)) = false). rewrite H1 in H0. simpl in H0.
 autorewrite with mem in H0. destruct (orb_false_elim H0). intuition.
 intuition. unfold notin_eqn. simpl. intuition.
 Qed.
