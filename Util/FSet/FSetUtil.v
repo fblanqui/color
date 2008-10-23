@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.4 2008-10-17 10:11:10 blanqui Exp $ *)
+(* $Id: FSetUtil.v,v 1.5 2008-10-23 04:18:01 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -37,13 +37,13 @@ Implicit Arguments remove_3 [s x y].
 Implicit Arguments singleton_1 [x y].
 Implicit Arguments union_1 [s s' x].
 
-Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~E.eq y x.
+Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~X.eq y x.
 
 Proof.
 unfold not. intros. apply (remove_1 H0 H).
 Qed.
 
-Lemma remove_3 : forall x y s, In x (remove y s) -> In x s /\ ~E.eq y x.
+Lemma remove_3 : forall x y s, In x (remove y s) -> In x s /\ ~X.eq y x.
 
 Proof.
 intuition. apply (remove_3 H). ded (In_remove_neq H). contradiction.
@@ -82,6 +82,25 @@ Ltac In_intro :=
 
 Ltac Equal := Equal_intro; In_elim; try In_intro.
 Ltac Subset := Subset_intro; In_elim; try In_intro.
+
+Lemma notin_union : forall x s s', ~In x (union s s') <-> ~In x s /\ ~In x s'.
+
+Proof.
+intuition. apply H. In_intro. apply H. In_intro. In_elim; intuition.
+Qed.
+
+Lemma notin_singleton : forall x y, ~In x (singleton y) <-> ~X.eq y x.
+
+Proof.
+intuition. ded (singleton_2 H0). apply H. hyp.
+ded (singleton_1 H0). apply H. hyp.
+Qed.
+
+Ltac notIn_elim := repeat
+  match goal with
+    | H : ~In _ (union _ _) |- _ => rewrite notin_union in H; destruct H
+    | H : ~In _ (singleton _) |- _ => rewrite notin_singleton in H
+  end.
 
 Lemma union_empty_left : forall s, union empty s [=] s.
 
@@ -158,7 +177,7 @@ Lemma eqb_refl : forall x, eqb x x = true.
 
 Proof.
 intro. unfold eqb. case (eq_dec x x). refl.
-intro. absurd (E.eq x x). exact n. apply E.eq_refl.
+intro. absurd (X.eq x x). exact n. apply X.eq_refl.
 Qed.
 
 Hint Rewrite eqb_refl : mem.
