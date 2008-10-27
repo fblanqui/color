@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.5 2008-10-23 04:18:01 blanqui Exp $ *)
+(* $Id: FSetUtil.v,v 1.6 2008-10-27 08:24:05 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -69,6 +69,7 @@ Ltac In_elim := repeat
     | H : In ?x (singleton _) |- _ => ded (singleton_1 H); subst x; clear H
     | H : In _ (union _ _) |- _ => destruct (union_1 H); clear H
     | H : In _ (remove _ _) |- _ => destruct (remove_3 H); clear H
+    | H : In _ empty |- _ => rewrite empty_iff in H; contradiction
   end.
 
 Ltac In_intro :=
@@ -111,7 +112,7 @@ Qed.
 Lemma union_empty_right : forall s, union s empty [=] s.
 
 Proof.
-Equal. rewrite empty_iff in H0. contradiction.
+Equal.
 Qed.
 
 Hint Rewrite union_empty_left union_empty_right : Equal.
