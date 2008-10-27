@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.11 2008-10-23 04:16:50 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.12 2008-10-27 08:23:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -77,7 +77,7 @@ Lemma mem_vars_sub_single : forall n (u : term) x v,
 Proof.
 intros. transitivity (mem n
   (if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u)).
-apply mem_m. refl. apply vars_subs.
+apply mem_m. refl. apply vars_single.
 case_eq (mem x (vars u)). mem. rewrite H0. rewrite H. refl.
 hyp.
 Qed.
@@ -88,7 +88,7 @@ Lemma mem_vars_sub_single' : forall n (u v : term),
 Proof.
 intros. transitivity (mem n
   (if mem n (vars u) then union (vars v) (remove n (vars u)) else vars u)).
-apply mem_m. refl. apply vars_subs.
+apply mem_m. refl. apply vars_single.
 case_eq (mem n (vars u)). mem. rewrite H0. rewrite H. refl.
 hyp.
 Qed.
@@ -103,7 +103,7 @@ intros. destruct e as [l r]. unfold vars_eqn, eqn_sub. simpl.
 transitivity (union
   (if mem x (vars l) then union (vars v) (remove x (vars l)) else vars l)
   (if mem x (vars r) then union (vars v) (remove x (vars r)) else vars r)).
-apply union_m; apply vars_subs. mem.
+apply union_m; apply vars_single. mem.
 case_eq (mem x (vars l)); case_eq (mem x (vars r)); bool.
 transitivity (union (vars v) (union (remove x (vars l)) (remove x (vars r)))).
 apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
@@ -285,12 +285,12 @@ Proof.
 induction l; simpl. trivial. destruct a. unfold notin_eqn. simpl. intuition.
 transitivity (mem x
   (if mem x (vars t1) then union (vars t0) (remove x (vars t1)) else vars t1)).
-apply mem_m. refl. apply vars_subs.
+apply mem_m. refl. apply vars_single.
 case_eq (mem x (vars t1)). mem. rewrite H. rewrite H0.
 refl. hyp.
 transitivity (mem x
   (if mem x (vars t2) then union (vars t0) (remove x (vars t2)) else vars t2)).
-apply mem_m. refl. apply vars_subs.
+apply mem_m. refl. apply vars_single.
 case_eq (mem x (vars t2)). mem. rewrite H. rewrite H0.
 refl. hyp.
 Qed.
@@ -304,12 +304,12 @@ induction l; simpl; intuition. destruct a. unfold eqn_sub. simpl.
 unfold notin_eqn. simpl. unfold notin_eqn in H1. simpl in H1. intuition.
 transitivity (mem x
   (if mem n (vars t1) then union (vars t0) (remove n (vars t1)) else vars t1)).
-apply mem_m. refl. apply vars_subs.
+apply mem_m. refl. apply vars_single.
 case_eq (mem n (vars t1)). mem. rewrite H. rewrite H3. refl.
 hyp.
 transitivity (mem x
   (if mem n (vars t2) then union (vars t0) (remove n (vars t2)) else vars t2)).
-apply mem_m. refl. apply vars_subs.
+apply mem_m. refl. apply vars_single.
 case_eq (mem n (vars t2)). mem. rewrite H. rewrite H4. refl.
 hyp.
 Qed.
