@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.6 2008-10-23 04:17:22 blanqui Exp $ *)
+(* $Id: AVariables.v,v 1.7 2008-10-27 08:23:35 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -147,7 +147,7 @@ Qed.
 (***********************************************************************)
 (* vars of a term on which a substitution is applied *)
 
-Lemma vars_subs : forall x v u,
+Lemma vars_single : forall x v u,
   vars (sub (single x v) u) [=]
   if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u.
 
@@ -192,7 +192,7 @@ refl. symmetry. apply remove_union.
 apply union_m; refl.
 Qed.
 
-Lemma vars_subs_list : forall x v us,
+Lemma vars_singles : forall x v us,
   vars_list (map (sub (single x v)) us) [=]
   if mem x (vars_list us) then union (vars v) (remove x (vars_list us))
     else vars_list us.
@@ -203,7 +203,7 @@ transitivity (union
   (if mem x (vars a) then union (vars v) (remove x (vars a)) else vars a)
   (if mem x (vars_list us)
     then union (vars v) (remove x (vars_list us)) else vars_list us)).
-apply union_m. apply vars_subs. exact IHus.
+apply union_m. apply vars_single. exact IHus.
 case_eq (mem x (vars a)); case_eq (mem x (vars_list us)); intros; bool.
 transitivity
   (union (vars v) (union (remove x (vars a)) (remove x (vars_list us)))).
