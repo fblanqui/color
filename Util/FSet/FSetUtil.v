@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.6 2008-10-27 08:24:05 blanqui Exp $ *)
+(* $Id: FSetUtil.v,v 1.7 2008-10-28 05:57:25 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -31,6 +31,8 @@ Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
 
 Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all
   : Equal.
+
+Ltac Equal := autorewrite with Equal.
 
 Implicit Arguments remove_1 [s x y].
 Implicit Arguments remove_3 [s x y].
@@ -81,8 +83,8 @@ Ltac In_intro :=
     | _ => hyp
   end.
 
-Ltac Equal := Equal_intro; In_elim; try In_intro.
-Ltac Subset := Subset_intro; In_elim; try In_intro.
+Ltac Equal_tac := Equal_intro; In_elim; try In_intro.
+Ltac Subset_tac := Subset_intro; In_elim; try In_intro.
 
 Lemma notin_union : forall x s s', ~In x (union s s') <-> ~In x s /\ ~In x s'.
 
@@ -106,13 +108,13 @@ Ltac notIn_elim := repeat
 Lemma union_empty_left : forall s, union empty s [=] s.
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Lemma union_empty_right : forall s, union s empty [=] s.
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Hint Rewrite union_empty_left union_empty_right : Equal.
@@ -121,7 +123,7 @@ Lemma remove_union : forall x s s',
   remove x (union s s') [=] union (remove x s) (remove x s').
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Hint Rewrite remove_union : Equal.
@@ -129,7 +131,7 @@ Hint Rewrite remove_union : Equal.
 Lemma union_idem : forall s, union s s [=] s.
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Hint Rewrite union_idem : Equal.
@@ -137,7 +139,7 @@ Hint Rewrite union_idem : Equal.
 Lemma union_idem_1 : forall s t, union s (union s t) [=] union s t.
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Hint Rewrite union_idem_1 : Equal.
@@ -146,7 +148,7 @@ Lemma union_idem_2 : forall s t u,
   union s (union t (union s u)) [=] union s (union t u).
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Hint Rewrite union_idem_2 : Equal.
@@ -155,7 +157,7 @@ Lemma union_idem_3 : forall s t u,
   union (union s t) (union s u) [=] union s (union t u).
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 Hint Rewrite union_idem_3 : Equal.
@@ -163,7 +165,7 @@ Hint Rewrite union_idem_3 : Equal.
 Lemma union_sym_2 : forall s t u, union s (union t u) [=] union t (union s u).
 
 Proof.
-Equal.
+Equal_tac.
 Qed.
 
 (***********************************************************************)
