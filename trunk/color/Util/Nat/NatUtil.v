@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.32 2008-10-21 09:09:54 blanqui Exp $ *)
+(* $Id: NatUtil.v,v 1.33 2008-10-30 13:41:32 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -268,7 +268,7 @@ Proof.
 auto with arith.
 Qed.
 
-Lemma i_lt_n : forall n i j : nat, n = (i + S j)%nat -> lt i n.
+Lemma i_lt_n : forall n i j : nat, n = i + S j -> lt i n.
 
 Proof.
 intros. omega.
@@ -380,3 +380,11 @@ intros. subst n. reflexivity.
 Qed.
 
 Implicit Arguments S_add_S [n1 n2 n].
+
+Lemma gt_plus : forall l k, l > k -> exists m, l = (m + 1) + k.
+
+Proof.
+induction 1. exists 0. omega. destruct IHle. exists (S x). omega.
+Qed.
+
+Implicit Arguments gt_plus [l k].
