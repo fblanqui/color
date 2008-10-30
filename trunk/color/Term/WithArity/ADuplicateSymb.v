@@ -168,7 +168,8 @@ Definition dup_hd_context c :=
 Definition dup_int_rule r :=
   mkRule (dup_int_term (lhs r)) (dup_int_term (rhs r)).
 
-Definition dup_hd_rule r := mkRule (dup_hd_term (lhs r)) (dup_hd_term (rhs r)).
+Definition dup_hd_rule r :=
+  mkRule (dup_hd_term (lhs r)) (dup_hd_term (rhs r)).
 
 Definition dup_int_rules := map dup_int_rule.
 
@@ -205,7 +206,7 @@ split.
 change (In (dup_int_rule (mkRule l r)) (map dup_int_rule R)).
 apply in_map. auto.
 do 2 rewrite <- dup_int_context_spec.
-split; subst; apply refl_equal.
+split; subst; refl.
 Qed.
 
 Lemma int_red_dup_int_red : forall t u,
@@ -228,8 +229,6 @@ End red.
 
 (***********************************************************************)
 (** preservation of termination by marking *)
-
-Require Export AGraph.
 
 Variables E R : rules.
 
