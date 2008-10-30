@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.7 2008-10-27 08:23:35 blanqui Exp $ *)
+(* $Id: AVariables.v,v 1.8 2008-10-30 01:59:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -147,6 +147,87 @@ Qed.
 (***********************************************************************)
 (* vars of a term on which a substitution is applied *)
 
+Lemma vars_subs_elim : forall s x (v : term), mem x (vars (sub s v)) = true ->
+  exists y, mem y (vars v) = true /\ mem x (vars (s y)) = true.
+
+Proof.
+intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
+  mem x (vars_vec (Vmap (sub s) ts)) = true ->
+  exists y, mem y (vars_vec ts) = true /\ mem x (vars (s y)) = true); clear v.
+(* Var *)
+simpl. intros. exists x0. mem. intuition.
+(* Fun *)
+intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. intro.
+destruct (IH H). exists x0. hyp.
+(* Vnil *)
+simpl. mem. discr.
+(* Vcons *)
+simpl. intros u n us IH1 IH2. mem. intro. destruct (orb_true_elim H).
+destruct (IH1 e). exists x0. mem. intuition.
+destruct (IH2 e). exists x0. mem. intuition.
+Qed.
+
+Lemma vars_subs_intro : forall s x y, mem x (vars (s y)) = true ->
+  forall v : term, mem y (vars v) = true -> mem x (vars (sub s v)) = true.
+
+Proof.
+intros s x y H v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
+  mem y (vars_vec ts) = true -> mem x (vars_vec (Vmap (sub s) ts)) = true);
+  clear v.
+(* Var *)
+intro. simpl. mem. intro. subst. hyp.
+(* Fun *)
+intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. hyp.
+(* Vnil *)
+simpl. auto.
+(* Vcons *)
+simpl. intros u n us IH1 IH2. mem. intro. destruct (orb_true_elim H0).
+rewrite (IH1 e). refl. rewrite (IH2 e). bool. refl.
+Qed.
+
+Lemma notin_vars_subs_elim : forall s x (v : term),
+  mem x (vars (sub s v)) = false ->
+  forall y, mem y (vars v) = true -> mem x (vars (s y)) = false.
+
+Proof.
+intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
+  mem x (vars_vec (Vmap (sub s) ts)) = false ->
+  forall y, mem y (vars_vec ts) = true -> mem x (vars (s y)) = false); clear v.
+(* Var *)
+simpl. intros x0 H y. mem. intro. subst. hyp.
+(* Fun *)
+intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. hyp.
+(* Vnil *)
+simpl. intros H y. mem. discr.
+(* Vcons *)
+simpl. intros u n us IH1 IH2. mem. intros H y. mem. intro.
+destruct (orb_false_elim H). destruct (orb_true_elim H0).
+apply IH1; hyp. apply IH2; hyp.
+Qed.
+
+Lemma notin_vars_subs_intro : forall s x (v : term),
+  (forall y, mem y (vars v) = true -> mem x (vars (s y)) = false) ->
+  mem x (vars (sub s v)) = false.
+
+Proof.
+intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
+  (forall y, mem y (vars_vec ts) = true -> mem x (vars (s y)) = false) ->
+  mem x (vars_vec (Vmap (sub s) ts)) = false); clear v.
+(* Var *)
+simpl. intros. apply H. mem. refl.
+(* Fun *)
+intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. hyp.
+(* Vnil *)
+simpl. mem. refl.
+(* Vcons *)
+simpl. intros u n us IH1 IH2 H. mem. apply orb_false_intro.
+apply IH1. intros. apply H. mem. rewrite H0. refl.
+apply IH2. intros. apply H. mem. rewrite H0. bool. refl.
+Qed.
+
+(***********************************************************************)
+(* vars of a term on which a single substitution is applied *)
+
 Lemma vars_single : forall x v u,
   vars (sub (single x v) u) [=]
   if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u.
@@ -276,3 +357,4 @@ End S.
 
 Implicit Arguments term_wf [Sig s x u].
 Implicit Arguments mem_vars_vec [Sig x n ts].
+Implicit Arguments vars_subs_elim [Sig s x v].
