@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.11 2008-10-17 10:11:09 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.12 2008-10-30 13:46:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -108,7 +108,7 @@ Lemma in_calls : forall x t, In x (calls t)
 
 Proof.
 intros x t. pattern t. set (Q := fun n (ts : terms n) =>
-  In x (vcalls ts) ->  exists g, exists vs, x = Fun g vs /\ defined g R = true).
+  In x (vcalls ts) -> exists g, exists vs, x = Fun g vs /\ defined g R = true).
 apply term_ind with (Q := Q); clear t.
 simpl. intros. contradiction. intros f ts IH. rewrite calls_fun.
 pattern (defined f R). apply bool_eq_ind; simpl; intros.
