@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.13 2008-10-30 02:00:51 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.14 2008-10-30 13:47:44 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -47,6 +47,12 @@ Definition successfull (p : problem) :=
   | Some (_, nil) => true
   | _ => false
   end.
+
+Lemma successfull_solved : forall p, successfull p = true -> solved p = true.
+
+Proof.
+destruct p. destruct p. destruct e. refl. discr. discr.
+Qed.
 
 (***********************************************************************)
 (** variables of a list of equations *)
@@ -396,11 +402,54 @@ Fixpoint iter_step k (p : problem) {struct k} :=
     | S k' => step (iter_step k' p)
   end.
 
+(***********************************************************************)
+(* basic properties *)
+
 Lemma iter_step_commut : forall k (p : problem),
   iter_step k (step p) = step (iter_step k p).
 
 Proof.
 induction k. refl. simpl. intro. rewrite IHk. refl.
+Qed.
+
+Lemma successfull_elim : forall k p, successfull (iter_step k p) = true ->
+  exists l, iter_step k p = Some (l, nil).
+
+Proof.
+intros. destruct (iter_step k p). destruct p0. destruct e. exists s. refl.
+discr. discr.
+Qed.
+
+Implicit Arguments successfull_elim [k p].
+
+Lemma successfull_preserved : forall k p,
+  successfull (iter_step k p) = true ->
+  forall l, l > k -> successfull (iter_step l p) = true.
+
+Proof.
+cut (forall k p, successfull (iter_step k p) = true ->
+  forall l, successfull (iter_step (l+k) p) = true); intros.
+destruct (gt_plus H1). subst. apply H. hyp. elim l; clear l; simpl. hyp.
+intros. destruct (successfull_elim H0). rewrite H1. refl.
+Qed.
+
+Lemma unsuccessfull_preserved : forall k p,
+  iter_step k p = None -> forall l, l > k -> iter_step l p = None.
+
+Proof.
+cut (forall k p, iter_step k p = None -> forall l, iter_step (l+k) p = None);
+intros. destruct (gt_plus H1). subst. apply H. hyp.
+elim l; clear l; simpl. hyp. intros. rewrite H0. refl.
+Qed.
+
+Implicit Arguments unsuccessfull_preserved [k p l].
+
+Lemma successfull_inv : forall k p,
+  successfull (iter_step k p) = true ->
+  forall l, l < k -> iter_step l p <> None.
+
+Proof.
+intros. intro. ded (unsuccessfull_preserved H1 H0). rewrite H2 in H. discr.
 Qed.
 
 (***********************************************************************)
@@ -945,6 +994,16 @@ assert (problem_wf (Some (l, nil))). rewrite <- H0. apply iter_step_wf. hyp.
 simpl in H1. intuition.
 Qed.
 
+Implicit Arguments subst_of_solved_eqns_correct_problem [p l k].
+
+Lemma successfull_is_sol : forall k p, problem_wf p ->
+  successfull (iter_step k p) = true -> exists s, is_sol s p.
+
+Proof.
+intros. destruct (successfull_elim H0). exists (subst_of_solved_eqns x).
+eapply subst_of_solved_eqns_correct_problem. hyp. apply H1.
+Qed.
+
 (***********************************************************************)
 (** most generality *)
 
@@ -1026,3 +1085,8 @@ Qed.
 End S.
 
 Implicit Arguments iter_step_complete [Sig p].
+Implicit Arguments successfull_elim [Sig k p].
+Implicit Arguments successfull_preserved [Sig k p l].
+Implicit Arguments unsuccessfull_preserved [Sig k p l].
+Implicit Arguments successfull_inv [Sig k p l].
+Implicit Arguments successfull_is_sol [Sig k p].
