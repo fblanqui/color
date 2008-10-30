@@ -1,0 +1,136 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Frederic Blanqui, 2008-10-08
+
+over graph based on unification
+*)
+
+Set Implicit Arguments.
+
+Require Import ADecomp.
+Require Import AUnif.
+Require Import ARenCap.
+
+Section S.
+
+Variable Sig : Signature.
+
+Notation eq_rule_dec := (@eq_rule_dec Sig).
+Notation Inb := (Inb eq_rule_dec).
+
+Notation rules := (rules Sig).
+Notation problem := (problem Sig).
+
+Variables R D : rules.
+
+Definition mk_problem u v : problem := Some (nil, (u,v)::nil).
+
+Lemma wf_mk_problem : forall u v, problem_wf (mk_problem u v).
+
+Proof.
+unfold mk_problem. simpl. auto.
+Qed.
+
+Definition unifiable u v := exists s, is_sol s (mk_problem u v).
+
+Notation In_dec := (In_dec eq_nat_dec).
+
+Lemma sub_eq_is_sol : forall s1 t1 s2 t2,
+  (forall x, In x (vars t1) -> In x (vars t2) -> False) ->
+  sub s1 t1 = sub s2 t2 -> unifiable t1 t2.
+
+Proof.
+intros. set (s := fun x => match In_dec x (vars t1) with
+  | left _ => s1 x | right _ => s2 x end). exists s.
+unfold is_sol, mk_problem. simpl. intuition. unfold is_sol_eqn. simpl.
+transitivity (sub s1 t1). apply sub_eq. intros. unfold s.
+case (In_dec x (vars t1)). refl. contradiction.
+rewrite H0. apply sub_eq. intros. unfold s. case (In_dec x (vars t1)).
+intro. apply False_rec. exact (H x i H1). refl.
+Qed.
+
+Definition connectable u v := unifiable (ren_cap R (S (maxvar v)) u) v.
+
+Notation rule := (rule Sig).
+
+Definition dpg_unif (r1 r2 : rule) :=
+  In r1 D /\ In r2 D /\ connectable (rhs r1) (lhs r2).
+
+Variable hyp : forallb (@is_notvar_lhs Sig) R = true.
+
+Lemma dpg_unif_correct : hd_rules_graph (red R #) D << dpg_unif.
+
+Proof.
+intros x y h. destruct h. decomp H0. unfold dpg_unif. intuition.
+destruct x as [l1 r1]. destruct y as [l2 r2]. simpl in *.
+unfold connectable. set (k := S (maxvar l2)).
+destruct (rtc_red_sub_ren_cap hyp k H2). destruct (ren_cap_sub R x1 r1 k).
+destruct H3. gen H0. rewrite H3. unfold shift. repeat rewrite sub_sub. intro.
+assert (forall x, In x (vars (ren_cap R k r1)) -> In x (vars l2) -> False).
+intros. ded (vars_ren_cap H5). ded (vars_max H6). subst k. omega.
+unfold unifiable. eapply sub_eq_is_sol. hyp. symmetry in H0. apply H0.
+Qed.
+
+Variable N : nat. (* maximum number of unification steps *)
+
+Definition ren_cap (r1 r2 : rule) := ren_cap R (S (maxvar (lhs r2))) (rhs r1).
+
+Definition unifiable_N r1 r2 :=
+  iter_step N (mk_problem (ren_cap r1 r2) (lhs r2)).
+
+Require Import AHDE.
+
+Definition connectable_N r1 r2 :=
+  match unifiable_N r1 r2 with
+  | None => false
+  | Some (_, nil) => true
+  | _ => hd_eq (rhs r1) (lhs r2)
+  end.
+
+Definition dpg_unif_N r1 r2 := Inb r1 D && Inb r2 D && connectable_N r1 r2.
+
+(* FIXME: to be moved to ACalls *)
+Definition undefined t :=
+  match t with
+  | Fun f _ => negb (defined f R)
+  | _ => false
+  end.
+Definition undefined_lhs a := undefined (lhs a).
+Definition undefined_rhs a := undefined (rhs a).
+
+Variable hyp' : forallb undefined_rhs D = true.
+
+Lemma successfull_hd_eq : forall x r1 r2, In r1 D -> In r2 D ->
+  successfull (iter_step x (mk_problem (ren_cap r1 r2) (lhs r2))) = true ->
+  hd_eq (rhs r1) (lhs r2) = true.
+
+Proof.
+intros x r1 r2 h1 h2 H. set (p := mk_problem (ren_cap r1 r2) (lhs r2)) in H.
+assert (problem_wf p). apply wf_mk_problem. destruct (successfull_is_sol H0 H).
+gen H1. unfold p, mk_problem, ren_cap. simpl. intuition. gen H1.
+rewrite forallb_forall in hyp'. ded (hyp' _ h1). ded (hyp' _ h2).
+destruct r1 as [l1 r1]. destruct r2 as [l2 r2]. simpl. destruct r1. refl.
+destruct l2. refl. set (k := S (maxvar (Fun f0 v0))). rewrite ren_cap_fun.
+gen H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl. intro.
+rewrite H1. unfold is_sol_eqn. simpl fst. simpl snd. repeat rewrite sub_fun.
+intro. Funeqtac. rewrite H6. destruct (eq_symbol_dec f0 f0). refl. irrefl.
+Qed.
+
+Lemma dpg_unif_N_correct : hd_rules_graph (red R #) D << Graph dpg_unif_N.
+
+Proof.
+trans dpg_unif. apply dpg_unif_correct. intros r1 r2 h. destruct h.
+destruct H0. unfold Graph, dpg_unif_N.
+apply andb_intro. apply andb_intro; apply Inb_intro; hyp.
+destruct (iter_step_complete (wf_mk_problem (ren_cap r1 r2) (lhs r2)) H1).
+unfold connectable_N, unifiable_N. case (lt_eq_lt_dec x N); intro. destruct s.
+ded (successfull_preserved H2 l). destruct (successfull_elim H3). rewrite H4.
+refl. subst. destruct (successfull_elim H2). rewrite H3. refl.
+ded (successfull_inv H2 l).
+destruct (iter_step N (mk_problem (ren_cap r1 r2) (lhs r2))). 2: irrefl.
+destruct p. destruct e. refl. eapply successfull_hd_eq. hyp. hyp. apply H2.
+Qed.
+
+End S.
