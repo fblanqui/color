@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general results on booleans
 *)
 
-(* $Id: BoolUtil.v,v 1.8 2008-05-18 13:07:46 blanqui Exp $ *)
+(* $Id: BoolUtil.v,v 1.9 2008-10-30 13:40:47 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -56,4 +56,10 @@ Lemma andb_intro : forall b c, b = true -> c = true -> b && c = true.
 
 Proof.
 intros. subst b. subst c. refl.
+Qed.
+
+Lemma negb_lr : forall x y, negb x = y <-> x = negb y.
+
+Proof.
+destruct x; destruct y; intuition.
 Qed.
