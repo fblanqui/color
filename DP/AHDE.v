@@ -129,11 +129,11 @@ Notation Inb := (Inb eq_rule_dec).
 
 (* REMARK: [Inb _ D] can be optimized when D is sorted. *)
 
-Definition hde_bool (r1 r2 : rule) := Inb r1 D && Inb r2 D &&
-  match rhs r1 with
+Definition hd_eq u v :=
+  match u with
   | Var _ => true
   | Fun f _ =>
-    match lhs r2 with
+    match v with
     | Var _ => true
     | Fun g _ =>
       match eq_symbol_dec f g with
@@ -143,10 +143,13 @@ Definition hde_bool (r1 r2 : rule) := Inb r1 D && Inb r2 D &&
     end
   end.
 
+Definition hde_bool (r1 r2 : rule) :=
+  Inb r1 D && Inb r2 D && hd_eq (rhs r1) (lhs r2).
+
 Lemma hde_bool_correct_aux : forall x y, hde D x y <-> Graph hde_bool x y.
 
 Proof.
-intros x y. unfold hde, hde_bool, Graph; simpl.
+intros x y. unfold hde, hde_bool, hd_eq, Graph; simpl.
 destruct (rhs x); autorewrite with bool; intuition.
 apply andb_intro; apply Inb_intro; hyp.
 destruct (andb_elim H). rewrite <- Inb_correct in H0. hyp.
