@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.42 2008-10-23 04:17:22 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.43 2008-10-31 08:59:10 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -599,6 +599,11 @@ Ltac set_rules_to x :=
   | |- WF (hd_red_mod _ ?R) => set (x := R)
   | |- WF (red_mod _ ?R) => set (x := R)
   | |- WF (red ?R) => set (x := R)
+  end.
+
+Ltac set_mod_rules_to x :=
+  match goal with
+  | |- WF (hd_red_mod ?E _) => set (x := E)
   end.
 
 Ltac set_Mod_to x :=
