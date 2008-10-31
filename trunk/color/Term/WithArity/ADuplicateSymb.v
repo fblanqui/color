@@ -258,19 +258,26 @@ End WF.
 (***********************************************************************)
 (** basic functions on marked rules *)
 
+Notation term' := (term Sig').
 Notation rule' := (ATrs.rule Sig').
 
-Definition is_lhs_int_symb_headed (a : rule') :=
-  match lhs a with
+Definition is_int_symb (t : term') :=
+  match t with
     | Fun (int_symb _) _ => true
     | _ => false
   end.
 
-Definition is_rhs_hd_symb_headed (a : rule') :=
-  match rhs a with
+Definition is_int_symb_lhs (a : rule') := is_int_symb (lhs a).
+Definition is_int_symb_rhs (a : rule') := is_int_symb (rhs a).
+
+Definition is_hd_symb (t : term') :=
+  match t with
     | Fun (hd_symb _) _ => true
     | _ => false
   end.
+
+Definition is_hd_symb_lhs (a : rule') := is_hd_symb (lhs a).
+Definition is_hd_symb_rhs (a : rule') := is_hd_symb (rhs a).
 
 (***********************************************************************)
 (** relation between (red R) and (int_red R) when R is_lhs_int_symb_headed *)
@@ -281,7 +288,7 @@ Notation rules' := (list rule').
 
 Variable R : rules'.
 
-Variable int_hyp : forallb is_lhs_int_symb_headed R = true.
+Variable int_hyp : forallb is_int_symb_lhs R = true.
 
 Lemma dup_int_rules_int_red : forall f v t,
   red R (Fun' (hd_symb f) v) t -> int_red R (Fun' (hd_symb f) v) t.

@@ -89,8 +89,8 @@ Notation Sig' := (dup_sig Sig).
 
 Variable R D : rules Sig'.
 
-Variable int_hyp : forallb (@is_lhs_int_symb_headed Sig) R = true.
-Variable hd_hyp : forallb (@is_rhs_hd_symb_headed Sig) D = true.
+Variable int_hyp : forallb (@is_int_symb_lhs Sig) R = true.
+Variable hd_hyp : forallb (@is_hd_symb_rhs Sig) D = true.
 
 Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red R #) D << hde D.
 
@@ -175,7 +175,7 @@ Qed.
 (***********************************************************************)
 (** correctness with marked symbols *)
 
-Notation Sig' := (dup_sig Sig). Notation Fun' := (@Fun Sig').
+Notation Sig' := (dup_sig Sig).
 
 Notation R' := (dup_int_rules R).
 
