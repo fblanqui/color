@@ -112,8 +112,7 @@ absurd (Graph (mkRule l r) (mkRule l0 r0)). unfold Graph. rewrite H5. discr.
 apply approx_correct.
 apply hd_red_Mod_rule2_hd_rules_graph with (t := t) (u := x) (v := v);
   unfold hd_red_Mod_rule; subst; intuition. exists s. intuition.
-assert (incl x0 D). apply incl_tran with (flat cs). apply In_incl_flat. hyp.
-apply incl_appl_incl with a. hyp. apply H2. hyp.
+eapply incl_flat_In. apply H6. apply H3. apply incl_appl_incl with a. hyp.
 exists s0. intuition.
 Qed.
 
@@ -149,6 +148,28 @@ unfold isolated in H8. rewrite forallb_forall in H8. destruct H7.
 ded (H8 _ (H _ H7)). unfold Graph in H6. rewrite H6 in H10. discr.
 Qed.
 
+(*FIXME: define removes in ListDec and use beq_rule instead of eq_rule_dec *)
+Notation eq_rule_dec := (@eq_rule_dec Sig).
+
+Lemma WF_decomp' :
+  forall (hypD : rules_preserv_vars D)
+    (cs : decomp)
+    (hyp1 : forallb isolated (removes eq_rule_dec (flat cs) D) = true) 
+    (hyp2 : incl (flat cs) D)
+    (hyp3 : valid_decomp cs = true)
+    (hyp4 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
+    WF (hd_red_Mod S D).
+
+Proof.
+intros. set (c := removes eq_rule_dec (flat cs) D).
+eapply WF_decomp with (cs := c :: cs); try eassumption; simpl; unfold c.
+apply incl_removes_app. apply incl_app. apply incl_removes. hyp.
+apply andb_intro. hyp. gen hyp1. unfold isolated.
+repeat (rewrite forallb_forall; intros). ded (H _ H0).
+rewrite forallb_forall in H3. apply H3. eapply incl_flat_In. apply H2.
+apply H1. hyp. intuition. eapply WF_isolated. hyp. apply incl_removes. hyp.
+Qed.
+
 End S.
 
 (***********************************************************************)
@@ -161,6 +182,15 @@ Ltac graph_decomp f d :=
   [idtac
     | rules_preserv_vars
     | incl_flat
+    | incl_flat
+    | vm_compute; refl
+    | simpl; intuition].
+
+Ltac graph_decomp' f d :=
+  apply WF_decomp' with (approx := f) (cs := d);
+  [idtac
+    | rules_preserv_vars
+    | vm_compute; refl
     | incl_flat
     | vm_compute; refl
     | simpl; intuition].
