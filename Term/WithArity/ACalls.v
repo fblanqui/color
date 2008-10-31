@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.12 2008-10-30 13:46:46 blanqui Exp $ *)
+(* $Id: ACalls.v,v 1.13 2008-10-31 09:05:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -82,6 +82,15 @@ Lemma calls_fun : forall f ts, calls (Fun f ts) =
 Proof.
 intros. reflexivity.
 Qed.
+
+Definition undefined t :=
+  match t with
+  | Fun f _ => negb (defined f R)
+  | _ => false
+  end.
+
+Definition undefined_lhs a := undefined (lhs a).
+Definition undefined_rhs a := undefined (rhs a).
 
 (***********************************************************************)
 (** properties *)

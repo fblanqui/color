@@ -15,41 +15,16 @@ Require Import ARenCap.
 
 Section S.
 
+Variable N : nat. (* maximum number of unification steps *)
+
 Variable Sig : Signature.
 
-Notation eq_rule_dec := (@eq_rule_dec Sig).
-Notation Inb := (Inb eq_rule_dec).
-
 Notation rules := (rules Sig).
-Notation problem := (problem Sig).
 
 Variables R D : rules.
 
-Definition mk_problem u v : problem := Some (nil, (u,v)::nil).
-
-Lemma wf_mk_problem : forall u v, problem_wf (mk_problem u v).
-
-Proof.
-unfold mk_problem. simpl. auto.
-Qed.
-
-Definition unifiable u v := exists s, is_sol s (mk_problem u v).
-
-Notation In_dec := (In_dec eq_nat_dec).
-
-Lemma sub_eq_is_sol : forall s1 t1 s2 t2,
-  (forall x, In x (vars t1) -> In x (vars t2) -> False) ->
-  sub s1 t1 = sub s2 t2 -> unifiable t1 t2.
-
-Proof.
-intros. set (s := fun x => match In_dec x (vars t1) with
-  | left _ => s1 x | right _ => s2 x end). exists s.
-unfold is_sol, mk_problem. simpl. intuition. unfold is_sol_eqn. simpl.
-transitivity (sub s1 t1). apply sub_eq. intros. unfold s.
-case (In_dec x (vars t1)). refl. contradiction.
-rewrite H0. apply sub_eq. intros. unfold s. case (In_dec x (vars t1)).
-intro. apply False_rec. exact (H x i H1). refl.
-Qed.
+(***********************************************************************)
+(** over graph based on unification *)
 
 Definition connectable u v := unifiable (ren_cap R (S (maxvar v)) u) v.
 
@@ -73,7 +48,8 @@ intros. ded (vars_ren_cap H5). ded (vars_max H6). subst k. omega.
 unfold unifiable. eapply sub_eq_is_sol. hyp. symmetry in H0. apply H0.
 Qed.
 
-Variable N : nat. (* maximum number of unification steps *)
+(***********************************************************************)
+(** over graph using a finite number of unification steps *)
 
 Definition ren_cap (r1 r2 : rule) := ren_cap R (S (maxvar (lhs r2))) (rhs r1).
 
@@ -89,18 +65,11 @@ Definition connectable_N r1 r2 :=
   | _ => hd_eq (rhs r1) (lhs r2)
   end.
 
+Notation Inb := (Inb (@eq_rule_dec Sig)).
+
 Definition dpg_unif_N r1 r2 := Inb r1 D && Inb r2 D && connectable_N r1 r2.
 
-(* FIXME: to be moved to ACalls *)
-Definition undefined t :=
-  match t with
-  | Fun f _ => negb (defined f R)
-  | _ => false
-  end.
-Definition undefined_lhs a := undefined (lhs a).
-Definition undefined_rhs a := undefined (rhs a).
-
-Variable hyp' : forallb undefined_rhs D = true.
+Variable hyp' : forallb (undefined_rhs R) D = true.
 
 Lemma successfull_hd_eq : forall x r1 r2, In r1 D -> In r2 D ->
   successfull (iter_step x (mk_problem (ren_cap r1 r2) (lhs r2))) = true ->
@@ -134,3 +103,8 @@ destruct p. destruct e. refl. eapply successfull_hd_eq. hyp. hyp. apply H2.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac dpg_unif_N_correct := apply dpg_unif_N_correct; vm_compute; refl.
