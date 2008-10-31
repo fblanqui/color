@@ -78,8 +78,6 @@ Qed.
 
 Definition dup_int_subst (s : substitution Sig) n := dup_int_term (s n).
 
-Require Export ASubstitution.
-
 Lemma dup_int_subst_spec : forall s t,
   sub (dup_int_subst s) (dup_int_term t) = dup_int_term (sub s t).
 
@@ -163,7 +161,7 @@ Definition dup_hd_context c :=
   end.
 
 (***********************************************************************)
-(** function marking rules *)
+(** functions marking rules *)
 
 Definition dup_int_rule r :=
   mkRule (dup_int_term (lhs r)) (dup_int_term (rhs r)).
@@ -174,6 +172,9 @@ Definition dup_hd_rule r :=
 Definition dup_int_rules := map dup_int_rule.
 
 Definition dup_hd_rules := map dup_hd_rule.
+
+(***********************************************************************)
+(** reduction properties reflected by marking *)
 
 Section red.
 
@@ -230,6 +231,8 @@ End red.
 (***********************************************************************)
 (** preservation of termination by marking *)
 
+Section WF.
+
 Variables E R : rules.
 
 Variable no_lhs_var : forallb (@is_notvar_lhs Sig) R = true.
@@ -250,14 +253,12 @@ apply rt_refl. eapply rt_trans. apply IHclos_refl_trans1. hyp.
 apply  hd_red_dup_hd_red; auto. subst rel rel'. apply WF_inverse; auto.
 Qed.
 
+End WF.
+
 (***********************************************************************)
-(** relation between (@int_red Sig) and (@red Sig') *)
+(** basic functions on marked rules *)
 
-Section int_red.
-
-Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
-
-Variable E' R' : rules'.
+Notation rule' := (ATrs.rule Sig').
 
 Definition is_lhs_int_symb_headed (a : rule') :=
   match lhs a with
@@ -265,10 +266,25 @@ Definition is_lhs_int_symb_headed (a : rule') :=
     | _ => false
   end.
 
-Variable int_hyp : forallb is_lhs_int_symb_headed E' = true.
+Definition is_rhs_hd_symb_headed (a : rule') :=
+  match rhs a with
+    | Fun (hd_symb _) _ => true
+    | _ => false
+  end.
+
+(***********************************************************************)
+(** relation between (red R) and (int_red R) when R is_lhs_int_symb_headed *)
+
+Section int_red.
+
+Notation rules' := (list rule').
+
+Variable R : rules'.
+
+Variable int_hyp : forallb is_lhs_int_symb_headed R = true.
 
 Lemma dup_int_rules_int_red : forall f v t,
-  red E' (Fun' (hd_symb f) v) t -> int_red E' (Fun' (hd_symb f) v) t.
+  red R (Fun' (hd_symb f) v) t -> int_red R (Fun' (hd_symb f) v) t.
 
 Proof.
 intros. redtac. exists l. exists r. exists c. exists s. split.
@@ -277,14 +293,14 @@ gen H2. compute. case_eq l. discr. gen H3. gen H2. gen v0. case_eq f0. discr.
 subst l. rewrite sub_fun in H0. discr. congruence. tauto.
 Qed.
 
-Lemma dup_int_rules_int_red_rtc_aux : forall u t, red E' # u t ->
+Lemma dup_int_rules_int_red_rtc_aux : forall u t, red R # u t ->
   forall f v, u = Fun' (hd_symb f) v -> 
-    int_red E' # u t /\ exists w, t = Fun' (hd_symb f) w.
+    int_red R # u t /\ exists w, t = Fun' (hd_symb f) w.
 
 Proof.
 intros u t H.
 induction H; intros.
-assert (int_red E' # x y).
+assert (int_red R # x y).
 apply rt_step.
 rewrite H0.
 apply dup_int_rules_int_red. subst;auto.
@@ -311,7 +327,7 @@ exists x0. auto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc : forall f v t,
-  red E' # (Fun' (hd_symb f) v) t -> int_red E' # (Fun' (hd_symb f) v) t.
+  red R # (Fun' (hd_symb f) v) t -> int_red R # (Fun' (hd_symb f) v) t.
 
 Proof.
 intros. ded (dup_int_rules_int_red_rtc_aux H (refl_equal _)). tauto.
@@ -319,7 +335,52 @@ Qed.
 
 End int_red.
 
+(***********************************************************************)
+(** properties of (red (dup_int_rules R)) *)
+
+Section red_dup.
+
+Variable R : rules.
+
+Notation R' := (dup_int_rules R).
+
+Variable hyp : forallb (@is_notvar_lhs Sig') R' = true.
+
+Lemma red_dup_int_hd_symb : forall f us v,
+  red R' (Fun' (hd_symb f) us) v -> exists vs, v = Fun' (hd_symb f) vs.
+
+Proof.
+intros. redtac. destruct (in_map_elim H). destruct H2. destruct x.
+inversion H3. subst. destruct c; simpl in *.
+(* Hole *)
+rewrite forallb_forall in hyp. ded (hyp _ H). destruct lhs. discr.
+simpl dup_int_term in H0. rewrite sub_fun in H0. Funeqtac. discr.
+(* Cont *)
+Funeqtac.
+exists (Vcast (Vapp v (Vcons (fill c (sub s (dup_int_term rhs))) v0)) e).
+refl.
+Qed.
+
+Lemma rtc_red_dup_int_hd_symb_aux : forall f u v, red R' # u v ->
+  forall us, u = Fun' (hd_symb f) us -> exists vs, v = Fun' (hd_symb f) vs.
+
+Proof.
+induction 1; intros. eapply red_dup_int_hd_symb. subst. apply H. eauto.
+destruct (IHclos_refl_trans1 _ H1). eapply IHclos_refl_trans2. apply H2.
+Qed.
+
+Lemma rtc_red_dup_int_hd_symb : forall f us v,
+  red R' # (Fun' (hd_symb f) us) v -> exists vs, v = Fun' (hd_symb f) vs.
+
+Proof.
+intros. eapply rtc_red_dup_int_hd_symb_aux. apply H. refl.
+Qed.
+
+End red_dup.
+
 End S.
+
+Implicit Arguments rtc_red_dup_int_hd_symb [Sig R f us v].
 
 (***********************************************************************)
 (** tactics *)
