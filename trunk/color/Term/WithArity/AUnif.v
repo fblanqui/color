@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.14 2008-10-30 13:47:44 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.15 2008-10-31 09:05:55 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -1080,6 +1080,37 @@ intros. destruct (wf_iter_step p) as [k]. exists k.
 case_eq (iter_step k p). 2: refl. rewrite H2 in H1. destruct p0. destruct e.
 ded (iter_step_Some H H2). ded (H0 (subst_of_solved_eqns s)). contradiction.
 discr.
+Qed.
+
+(***********************************************************************)
+(** unifiability of two terms *)
+
+Definition mk_problem u v : problem := Some (nil, (u,v)::nil).
+
+Lemma wf_mk_problem : forall u v, problem_wf (mk_problem u v).
+
+Proof.
+unfold mk_problem. simpl. auto.
+Qed.
+
+Definition unifiable u v := exists s, is_sol s (mk_problem u v).
+
+Notation In := List.In.
+Notation In_dec := (List.In_dec eq_nat_dec).
+Notation vars := (@ATerm.vars Sig).
+
+Lemma sub_eq_is_sol : forall s1 t1 s2 t2,
+  (forall x, In x (vars t1) -> In x (vars t2) -> False) ->
+  sub s1 t1 = sub s2 t2 -> unifiable t1 t2.
+
+Proof.
+intros. set (s := fun x => match In_dec x (vars t1) with
+  | left _ => s1 x | right _ => s2 x end). exists s.
+unfold is_sol, mk_problem. simpl. intuition. unfold is_sol_eqn. simpl.
+transitivity (sub s1 t1). apply sub_eq. intros. unfold s.
+case (In_dec x (vars t1)). refl. contradiction.
+rewrite H0. apply sub_eq. intros. unfold s. case (In_dec x (vars t1)).
+intro. apply False_rec. exact (H x i H1). refl.
 Qed.
 
 End S.
