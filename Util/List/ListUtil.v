@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.45 2008-10-21 09:09:54 blanqui Exp $ *)
+(* $Id: ListUtil.v,v 1.46 2008-10-31 17:42:51 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -678,7 +678,7 @@ apply length_remove. destruct H. rewrite H in n. tauto. simpl. apply lt_n_S.
 apply IHl. assumption.
 Qed.
 
-Lemma In_remove : forall (x y : A) l, x<>y -> In y l -> In y (remove x l).
+Lemma In_remove : forall (x y : A) l, x <> y -> In y l -> In y (remove x l).
 
 Proof.
 induction l; simpl; intros. assumption. 
@@ -713,6 +713,44 @@ simpl in *; tauto.
 Qed.
 
 End remove.
+
+(***********************************************************************)
+(** removes *)
+
+Section removes.
+
+Variable (A : Type) (eqdec : forall x y : A, {x=y}+{x<>y}).
+
+Notation In_dec := (In_dec eqdec).
+
+Fixpoint removes (l m : list A) {struct m} : list A :=
+  match m with
+  | nil => nil
+  | x :: m' =>
+    match In_dec x l with
+    | left _ => removes l m'
+    | right _ => x :: removes l m'
+    end
+  end.
+
+Lemma incl_removes : forall l m, incl (removes l m) m.
+
+Proof.
+unfold incl. induction m; simpl. contradiction.
+case (In_dec a l). intros. right. apply IHm. hyp.
+simpl. intuition.
+Qed.
+
+Lemma incl_removes_app : forall l m, incl m (removes l m ++ l).
+
+Proof.
+unfold incl. induction m; simpl. contradiction. intros. destruct H.
+subst a0. case (In_dec a l); intro. apply in_appr. hyp. simpl. auto.
+case (In_dec a l); intro. apply IHm. hyp. simpl.
+case (eqdec a a0); intro. subst a0. auto. right. apply IHm. hyp.
+Qed.
+
+End removes.
 
 (***********************************************************************)
 (** map *)
@@ -758,7 +796,16 @@ induction l; simpl; intros. contradiction. intuition. subst. apply incl_appl.
 apply incl_refl.
 Qed.
 
+Lemma incl_flat_In : forall x c cs l,
+  In x c -> In c cs -> incl (flat cs) l -> In x l.
+
+Proof.
+intros. apply H1. apply (In_incl_flat _ _ H0). hyp.
+Qed.
+
 End flat.
+
+Implicit Arguments In_incl_flat [A x l].
 
 (***********************************************************************)
 (** element & replacement at a position *)
