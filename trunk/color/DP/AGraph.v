@@ -17,29 +17,25 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 
-Notation rule := (rule Sig).
-Notation rules := (list rule).
-Notation lhs := (@lhs Sig).
-Notation rhs := (@rhs Sig).
+Notation rule := (rule Sig). Notation rules := (list rule).
+Notation lhs := (@lhs Sig). Notation rhs := (@rhs Sig).
 
 Section hd_red_Mod.
 
 Variable S : relation term.
-Variable R : rules.
+Variable D : rules.
 
 (***********************************************************************)
 (* head rules graph *)
 
 Require Export ARename.
-Require Import ASubstitution. (* for app to be on substitutions *)
 
-Definition hd_rules_graph a1 a2 := In a1 R /\ In a2 R
+Definition hd_rules_graph a1 a2 := In a1 D /\ In a2 D
   /\ exists p, exists s, S (sub s (rhs a1)) (sub s (shift p (lhs a2))).
 
-Lemma restricted_dp_graph : is_restricted hd_rules_graph R.
+Lemma restricted_dp_graph : is_restricted hd_rules_graph D.
 
 Proof.
 unfold is_restricted, hd_rules_graph, inclusion. intros. intuition.
@@ -48,11 +44,11 @@ Qed.
 (***********************************************************************)
 (* corresponding chain relation *)
 
-Definition hd_red_Mod_rule a t u := In a R /\
+Definition hd_red_Mod_rule a t u := In a D /\
   exists s, S t (sub s (lhs a)) /\ u = sub s (rhs a).
 
 Lemma chain_hd_rules_hd_red_Mod : forall a,
-  hd_red_Mod_rule a << hd_red_Mod S R.
+  hd_red_Mod_rule a << hd_red_Mod S D.
 
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0.
@@ -62,7 +58,7 @@ exists lhs; exists rhs; exists x0. auto.
 Qed.
 
 Lemma hd_red_Mod_chain_hd_rules : forall t u,
-  hd_red_Mod S R t u -> exists a, hd_red_Mod_rule a t u.
+  hd_red_Mod S D t u -> exists a, hd_red_Mod_rule a t u.
 
 Proof.
 intros. do 2 destruct H. do 3 destruct H0.  exists (mkRule x0 x1).
@@ -70,7 +66,7 @@ unfold hd_red_Mod_rule. simpl. intuition. exists x2. intuition.
 subst. auto.
 Qed.
 
-Variable hyp : rules_preserv_vars R.
+Variable hyp : rules_preserv_vars D.
 
 Lemma hd_red_Mod_rule2_hd_rules_graph : forall a1 a2 t u v,
   hd_red_Mod_rule a1 t u -> hd_red_Mod_rule a2 u v -> hd_rules_graph a1 a2.
@@ -106,7 +102,25 @@ rewrite <- sub_restrict. rewrite <- sub_shift.
 refl. rewrite H9. assumption.
 Qed.
 
+Lemma hd_red_Mod2_hd_rules_graph : forall t u v,
+  hd_red_Mod S D t u -> hd_red_Mod S D u v ->
+  exists a1, exists a2, hd_rules_graph a1 a2.
+
+Proof.
+intros. ded (hd_red_Mod_chain_hd_rules H). ded (hd_red_Mod_chain_hd_rules H0).
+destruct H1. destruct H2. exists x. exists x0.
+eapply hd_red_Mod_rule2_hd_rules_graph. apply H1. apply H2.
+Qed.
+
 End hd_red_Mod.
+
+Lemma hd_rules_graph_incl : forall S D D', incl D D' ->
+  hd_rules_graph S D << hd_rules_graph S D'.
+
+Proof.
+intros. intros a b h. destruct h. decomp H1. unfold hd_rules_graph. intuition.
+exists x. exists x0. hyp.
+Qed.
 
 (***********************************************************************)
 (* relation between hd_red_Mod and chain *)
