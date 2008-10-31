@@ -21,9 +21,7 @@ Section prop_def.
 
 Variable Sig : Signature.
 
-Notation rule := (rule Sig). Notation rules := (list rule).
-
-Variable D : rules.
+Variable D : rules Sig.
 
 (* REMARK: [In _ D] can be optimized when D is sorted. *)
 
@@ -43,14 +41,17 @@ Proof.
 unfold is_restricted. intros. unfold hde in H; tauto.
 Qed.
 
+Notation eq_rule_dec := (@eq_rule_dec Sig).
+Notation eq_symbol_dec := (@eq_symbol_dec Sig).
+
 Lemma hde_dec : forall r1 r2, {hde r1 r2} + {~hde r1 r2}.
 
 Proof.
 intros. unfold hde.
-destruct (In_dec (@eq_rule_dec Sig) r1 D); try tauto.
-destruct (In_dec (@eq_rule_dec Sig) r2 D); try tauto.
+destruct (In_dec eq_rule_dec r1 D); try tauto.
+destruct (In_dec eq_rule_dec r2 D); try tauto.
 destruct (rhs r1). left; auto. destruct (lhs r2); auto.
-destruct (@eq_symbol_dec Sig f f0); try tauto.
+destruct (eq_symbol_dec f f0); try tauto.
 Defined.
 
 End prop_def.
@@ -62,9 +63,7 @@ Section prop_correct.
 
 Variable Sig : Signature.
 
-Notation rule := (rule Sig). Notation rules := (list rule).
-
-Variables R D : rules.
+Variables R D : rules Sig.
 
 Lemma int_red_hd_rules_graph_incl_hde :
   hd_rules_graph (int_red R #) D << hde D.
@@ -84,20 +83,14 @@ End prop_correct.
 
 Section prop_mark_correct.
 
-Variable Sig : Signature. Notation Sig' := (dup_sig Sig).
-Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
+Variable Sig : Signature.
 
-Variable R D : rules'.
+Notation Sig' := (dup_sig Sig).
+
+Variable R D : rules Sig'.
 
 Variable int_hyp : forallb (@is_lhs_int_symb_headed Sig) R = true.
-
-Definition is_rhs_hd_symb_headed (a : rule') :=
-  match rhs a with
-    | Fun (hd_symb _) _ => true
-    | _ => false
-  end.
-
-Variable hd_hyp : forallb is_rhs_hd_symb_headed D = true.
+Variable hd_hyp : forallb (@is_rhs_hd_symb_headed Sig) D = true.
 
 Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red R #) D << hde D.
 
@@ -118,18 +111,11 @@ Section bool_def.
 
 Variable Sig : Signature.
 
-Notation rule := (rule Sig). Notation rules := (list rule).
-
-Variables D : rules.
-
-Notation eq_symbol_dec := (@eq_symbol_dec Sig).
-Notation eq_rule_dec := (@eq_rule_dec Sig).
-
-Notation Inb := (Inb eq_rule_dec).
+Variables D : rules Sig.
 
 (* REMARK: [Inb _ D] can be optimized when D is sorted. *)
 
-Definition hd_eq u v :=
+Definition hd_eq (u v : term Sig) :=
   match u with
   | Var _ => true
   | Fun f _ =>
@@ -143,7 +129,9 @@ Definition hd_eq u v :=
     end
   end.
 
-Definition hde_bool (r1 r2 : rule) :=
+Notation Inb := (Inb (@eq_rule_dec Sig)).
+
+Definition hde_bool r1 r2 :=
   Inb r1 D && Inb r2 D && hd_eq (rhs r1) (lhs r2).
 
 Lemma hde_bool_correct_aux : forall x y, hde D x y <-> Graph hde_bool x y.
@@ -175,10 +163,7 @@ Section bool_correct.
 
 Variable Sig : Signature.
 
-Notation hd := (hd_symb Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
-
-Variables R D : rules.
+Variables R D : rules Sig.
 
 Lemma hde_bool_correct : hd_rules_graph (int_red R #) D << Graph (hde_bool D).
 
@@ -196,36 +181,6 @@ Notation R' := (dup_int_rules R).
 
 Variable hyp : forallb (@is_notvar_lhs Sig') R' = true.
 
-Lemma red_dup_int_hd_symb :
-  forall f us v, red R' (Fun' (hd f) us) v -> exists vs, v = Fun' (hd f) vs.
-
-Proof.
-intros. redtac. destruct (in_map_elim H). destruct H2. destruct x.
-inversion H3. subst. destruct c; simpl in *.
-(* Hole *)
-rewrite forallb_forall in hyp. ded (hyp _ H). destruct lhs. discr.
-simpl dup_int_term in H0. rewrite sub_fun in H0. Funeqtac. discr.
-(* Cont *)
-Funeqtac.
-exists (Vcast (Vapp v (Vcons (fill c (sub s (dup_int_term rhs))) v0)) e).
-refl.
-Qed.
-
-Lemma rtc_red_dup_int_hd_symb_aux : forall f u v, red R' # u v ->
-  forall us, u = Fun' (hd f) us -> exists vs, v = Fun' (hd f) vs.
-
-Proof.
-induction 1; intros. eapply red_dup_int_hd_symb. subst. apply H. eauto.
-destruct (IHclos_refl_trans1 _ H1). eapply IHclos_refl_trans2. apply H2.
-Qed.
-
-Lemma rtc_red_dup_int_hd_symb : forall f us v,
-  red R' # (Fun' (hd f) us) v -> exists vs, v = Fun' (hd f) vs.
-
-Proof.
-intros. eapply rtc_red_dup_int_hd_symb_aux. apply H. refl.
-Qed.
-
 Lemma hde_bool_mark_correct :
   hd_rules_graph (red (dup_int_rules R) #) (dup_hd_rules D)
   << Graph (hde_bool (dup_hd_rules D)).
@@ -240,7 +195,7 @@ destruct (in_map_elim H1). destruct H3. destruct x. unfold dup_hd_rule in H4.
 simpl in H4. subst y. simpl in *.
 destruct rhs; simpl. trivial. destruct lhs0; simpl. trivial.
 simpl dup_hd_term in H2. unfold shift in H2. repeat rewrite sub_fun in H2.
-destruct (rtc_red_dup_int_hd_symb H2). Funeqtac. auto.
+destruct (rtc_red_dup_int_hd_symb hyp H2). Funeqtac. auto.
 Qed.
 
 End bool_correct.
@@ -249,4 +204,4 @@ End bool_correct.
 (** tactics *)
 
 Ltac hde_bool_correct :=
-  (apply hde_bool_correct || apply hde_bool_mark_correct); vm_compute; refl.
+  (apply hde_bool_mark_correct || apply hde_bool_correct); vm_compute; refl.
