@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.43 2008-10-31 08:59:10 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.44 2008-10-31 16:02:13 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -347,6 +347,13 @@ apply List.incl_refl. apply incl_tran with (vars y); assumption.
 Qed.
 
 End vars.
+
+Lemma rules_preserv_vars_incl : forall R S : rules,
+  incl R S -> rules_preserv_vars S -> rules_preserv_vars R.
+
+Proof.
+unfold rules_preserv_vars, incl. intuition. eapply H0. apply H. apply H1. hyp.
+Qed.
 
 (***********************************************************************)
 (** rewriting vectors of terms *)
