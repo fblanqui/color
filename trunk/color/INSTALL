@@ -5,7 +5,7 @@ The compilation procedure that is provided hereafter requires a
 UNIX-like operating system with the following commands (it also works
 with Cygwin on Windows):
 
-- Coq version 8.1pl3 http://coq.inria.fr/
+- Coq SVN version http://coq.inria.fr/
 - GNU make version 3.80 http://www.gnu.org/software/make/
 - GNU bash version 3.00 http://www.gnu.org/software/bash/
 - GNU sed version 4.1.4 http://www.gnu.org/software/sed/
