@@ -10,7 +10,7 @@ dir=${1:-.}
 files=`find $dir -name \*.v`
 
 number () {
-  k=`grep $key $files | wc -l`
+  k=`grep "$key " $files | wc -l`
   echo $key $k
   n=`expr $n + $k`
 }
