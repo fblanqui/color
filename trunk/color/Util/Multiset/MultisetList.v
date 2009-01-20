@@ -8,7 +8,7 @@ This file provides an implementation of finite multisets using list
 representation.
 *)
 
-(* $Id: MultisetList.v,v 1.5 2008-10-06 03:22:36 blanqui Exp $ *)
+(* $Id: MultisetList.v,v 1.6 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,14 +19,14 @@ Require Import Multiset.
 Require Import List.
 Require Import ListExtras.
 
-Module MultisetList (ES : Eqset) <:
+Module MultisetList (ES : Eqset_dec) <:
 
   MultisetCore with Module Sid := ES.
 
   Module Sid := ES.
   Export Sid.
 
-  Parameter eqA_dec : forall x y, {eqA x y}+{~eqA x y}.
+  Open Scope sets_scope.
 
 Section Operations.
 

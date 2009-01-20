@@ -9,7 +9,7 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.8 2008-10-06 03:22:36 blanqui Exp $ *)
+(* $Id: MultisetTheory.v,v 1.9 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -148,8 +148,6 @@ End meq_equivalence.
   Proof.
     solve_meq.
   Qed.
-
-  Variable eqA_dec : forall x y, {x =A= y}+{~x =A= y}.
 
   Add Morphism singleton
     with signature eqA ==> meq
@@ -1558,6 +1556,15 @@ End Pair.
 
   Hint Immediate double_split : multisets.
 
+(*
+koper: At the moment I extended module Eqset to include the requirement of
+decidable equality. Hence to instantiate multisets to Eqset module decidability
+of multiset equality needs to be proven; or Eqset needs to be split to Eqset
+and Eqset_dec, with the latter one introducing the requirement for decidable
+equality. I tried to do just that but with the present pre-version of Coq 8.2
+was getting error: "Anomaly: Not_found", so I abandoned this. At the moment
+MultisetEqset is not used anywhere anyway.
+
 Module MultisetEqset <: Eqset.
 
   Definition A := Multiset.
@@ -1565,5 +1572,6 @@ Module MultisetEqset <: Eqset.
   Definition sid_theoryA := MultisetSetoidTheory.
 
 End MultisetEqset.
+*)
 
 End Multiset.

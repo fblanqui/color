@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VMPO.v,v 1.7 2007-06-01 23:04:23 koper Exp $ *)
+(* $Id: VMPO.v,v 1.8 2009-01-20 12:45:25 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
@@ -88,7 +88,7 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
   Proof.
     intros f ss t Hex; unfold lt; apply mpo3; trivial.
   Qed.
-    
+
   Lemma lt_decomp : forall s t, lt s t -> 
     ((ex (fun f => ex (fun g => ex (fun ss => ex (fun ts => 
       ltF f g /\ 
@@ -120,7 +120,7 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     split; elim feq; trivial; repeat split; trivial.
     intros t t_in_ts''.
     assert (IN_compat : forall ss x x', In x' ss -> x =A= x' -> In x ss).
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA; intros; subst; trivial.
     elim (mult2element (transp lt_mpo) IN_compat ts'' ss' Hss'ts' t t_in_ts'').
     intros s Hs; elim Hs; clear Hs; intros s_in_ss Hs.
     apply mpo3; exists s; split; trivial.
@@ -144,8 +144,8 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     unfold tau, mytau.
     intros.
     apply transp_SPO_to_mult_SPO; trivial.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
   Qed.
 
   Lemma mono_axiom : forall f (r : relation term), 
@@ -155,7 +155,7 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     intros f r ss ts.
     unfold tau, mytau.
     apply one_less2mult.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
   Qed.
 
 (***********************************************************************)
@@ -171,8 +171,8 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     intro f; unfold tau, mytau, lt.
     intro l.
     apply mult_lifting.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
   Qed.
   
 End MPO_Model.

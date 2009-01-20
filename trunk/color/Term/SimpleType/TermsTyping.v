@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.6 2008-10-06 03:22:31 blanqui Exp $ *)
+(* $Id: TermsTyping.v,v 1.7 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -59,7 +59,7 @@ Resolve, otherwise it does not work! *)
 
   Proof. 
     decide equality; auto with terms. 
-  Qed.
+  Defined.
 
   Hint Resolve eq_SimpleType_dec : terms.
 
@@ -67,7 +67,7 @@ Resolve, otherwise it does not work! *)
   Proof.
     decide equality; generalize a o; decide equality; 
       apply eq_SimpleType_dec.
-  Qed.
+  Defined.
 
   Hint Resolve eq_Env_dec : terms.
 
@@ -75,7 +75,7 @@ Resolve, otherwise it does not work! *)
 
   Proof. 
     decide equality; auto with terms. 
-  Qed.
+  Defined.
 
   Hint Resolve eq_Preterm_dec : terms.
 
@@ -89,7 +89,7 @@ Resolve, otherwise it does not work! *)
     left; exists s; trivial.
     right; auto.
     right; auto.
-  Qed.
+  Defined.
 
   Lemma eq_EPS_dec :
     forall (a b : Env * Preterm * SimpleType), {a=b} + {a<>b}.
@@ -100,7 +100,7 @@ Resolve, otherwise it does not work! *)
     generalize a p; decide equality.
     apply eq_Preterm_dec.
     apply eq_Env_dec.
-  Qed.
+  Defined.
 
 End Equality_Decidable.
 
@@ -350,6 +350,15 @@ Module TermsSet <: SetA.
 End TermsSet.
 
 Module TermsEqset <: Eqset := Eqset_def TermsSet.
+
+Module TermsEqset_dec <: Eqset_dec.
+
+  Module Eq := TermsEqset.
+  Export Eq.
+
+  Definition eqA_dec := eq_Term_dec.
+
+End TermsEqset_dec.
 
 End TermsTyping.
 

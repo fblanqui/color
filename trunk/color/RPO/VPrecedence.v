@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-(* $Id: VPrecedence.v,v 1.4 2008-10-06 03:22:25 blanqui Exp $ *)
+(* $Id: VPrecedence.v,v 1.5 2009-01-20 12:45:25 koper Exp $ *)
 
 Require Export VSignature.
 Require Export VTerm.
@@ -50,8 +50,9 @@ Module VPrecedence (P : VPrecedenceType).
   Module Term <: Eqset.
 
     Definition A := term.
-
+      
     Definition eqA := eq (A := term).
+    Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
 
     Require Import Setoid.
 
@@ -64,6 +65,15 @@ Module VPrecedence (P : VPrecedenceType).
     Qed.
 
   End Term.
+
+  Module Term_dec <: Eqset_dec.
+
+    Module Eq := Term.
+    Export Eq.
+
+    Definition eqA_dec := @term_eq_dec Sig.
+
+  End Term_dec.
 
   (***********************************************************************)
   (** precedence *)

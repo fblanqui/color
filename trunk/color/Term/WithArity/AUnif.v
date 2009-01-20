@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.15 2008-10-31 09:05:55 blanqui Exp $ *)
+(* $Id: AUnif.v,v 1.16 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -471,7 +471,7 @@ Lemma wf_sizes_lt : well_founded sizes_lt.
 
 Proof.
 unfold sizes_lt. apply wf_inverse_image with (B := Multiset).
-apply mord_wf. unfold eqA, Eqset.eqA. intros. subst. hyp. exact lt_wf.
+apply mord_wf. unfold eqA. intros. subst. hyp. exact lt_wf.
 Qed.
 
 (***********************************************************************)

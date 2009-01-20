@@ -20,7 +20,7 @@ Require Import Permutation.
 Require Import MultisetTheory.
 Require Import Arith.
 
-Module MultisetListOrder (ES : Eqset).
+Module MultisetListOrder (ES : Eqset_dec).
 
 (* Instantiation of MultiSets of elements of A as Lists of elements of A *)
 
