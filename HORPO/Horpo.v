@@ -36,7 +36,7 @@ Module Horpo (S : TermsSig.Signature)
   Module T := Terms.Terms S.
   Export T.
 
-  Module MSetCore := MultisetList.MultisetList TermsEqset.
+  Module MSetCore := MultisetList.MultisetList TermsEqset_dec.
   Module MSet := MultisetTheory.Multiset MSetCore.
   Export MSet.
   Module MSetOrd := MultisetOrder.MultisetOrder MSetCore.

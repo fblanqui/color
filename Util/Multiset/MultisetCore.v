@@ -8,7 +8,7 @@ This file provides a specification of finite multiset data-type along
 with specification of operations on multisets.
 *)
 
-(* $Id: MultisetCore.v,v 1.6 2008-10-06 03:22:35 blanqui Exp $ *)
+(* $Id: MultisetCore.v,v 1.7 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,10 +19,10 @@ Require Min.
 
 Module Type MultisetCore.
 
-  Declare Module Sid: Eqset.
+  Declare Module Sid: Eqset_dec.
   Export Sid.  
 
-  Parameter eqA_dec : forall (x y: A), {x =A= y}+{~x =A= y}.
+  Open Scope sets_scope.
 
 Section Operations.  
 

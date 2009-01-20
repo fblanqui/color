@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.12 2008-10-06 03:22:36 blanqui Exp $ *)
+(* $Id: MultisetOrder.v,v 1.13 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -167,6 +167,22 @@ Section OrderDefinition.
     constructor 1; rewrite H; rewrite H0; trivial.
     constructor 2 with y; fold clos_transM_RedGt.
     rewrite H; assumption. rewrite H0; assumption.
+  Qed.
+
+  Add Morphism MultisetGT
+    with signature meq ==> meq ==> iff
+      as MultisetGT_morph_equiv.
+
+  Proof.
+    intros xL xR H yL yR H0; split; intro; inversion H1.
+    constructor 1 with X Y Z. assumption.
+    rewrite <- H. assumption.
+    rewrite <- H0. assumption.
+    assumption.
+    constructor 1 with X Y Z. assumption.
+    rewrite H. assumption.
+    rewrite H0. assumption.
+    assumption.
   Qed.
 
   Lemma MultisetGt_morph : forall x1 x2 : Multiset, x1 =mul= x2 ->
@@ -1116,6 +1132,21 @@ Section MOrdPair.
     exists bL.
     auto with multisets.
     rewrite (member_singleton H1); trivial.
+  Qed.
+
+  Lemma pair_mOrd_fromList : 
+    aL >=A aR -> bL >=A bR -> aL >A aR \/ bL >A bR ->
+    list2multiset (aL :: bL :: nil) >MUL list2multiset (aR :: bR :: nil).
+
+  Proof.
+    intros.
+    setoid_replace (list2multiset (aL :: bL :: nil)) with {{aL, bL}}.
+    setoid_replace (list2multiset (aR :: bR :: nil)) with {{aR, bR}}.
+    destruct H1.
+    apply pair_mOrd_left; trivial.
+    apply pair_mOrd_right; trivial.
+    simpl. solve_meq.
+    simpl. solve_meq.
   Qed.
 
 End MOrdPair.

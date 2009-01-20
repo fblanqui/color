@@ -9,7 +9,7 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 *)
 
-(* $Id: RelExtras.v,v 1.7 2008-10-06 03:22:37 blanqui Exp $ *)
+(* $Id: RelExtras.v,v 1.8 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -68,10 +68,7 @@ Module Type Eqset.
   Parameter eqA : A -> A -> Prop.
 
   Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
-
-  Delimit Scope sets_scope with sets.
   Open Scope sets_scope.
-  Bind Scope sets_scope with A.
 
   Parameter sid_theoryA : Setoid_Theory A eqA.
 
@@ -80,6 +77,15 @@ Module Type Eqset.
   Hint Resolve (Seq_sym   A eqA sid_theoryA) : sets.
 
 End Eqset.
+
+Module Type Eqset_dec.
+
+  Declare Module Eq : Eqset.
+  Export Eq.
+
+  Parameter eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
+
+End Eqset_dec.
 
 Module Type SetA.
   Parameter A : Type.
@@ -200,6 +206,7 @@ Module nat_ord <: Ord.
 
   Module natSet <: SetA.
     Definition A := nat.
+    Definition eqA_dec := eq_nat_dec.
   End natSet.
 
   Module S := Eqset_def natSet.

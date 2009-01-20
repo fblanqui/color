@@ -8,7 +8,7 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 *)
 
-(* $Id: LexOrder.v,v 1.6 2008-10-06 03:22:37 blanqui Exp $ *)
+(* $Id: LexOrder.v,v 1.7 2009-01-20 12:45:25 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -275,6 +275,24 @@ Module LexicographicOrder (A_ord B_ord : Ord).
 
   Definition eqPair (x y: pair) := lp_eqPair eqL eqR x y.
 
+  Section Eq_dec.
+
+    Variable eqA_dec : forall x y : L, {eqL x y} + {~eqL x y}.
+    Variable eqB_dec : forall x y : R, {eqR x y} + {~eqR x y}.
+
+    Lemma eqPair_dec : forall (x y : pair), {eqPair x y} + {~eqPair x y}.
+  
+    Proof.
+      intros.
+      destruct (eqA_dec (fst x) (fst y)).
+      destruct (eqB_dec (snd x) (snd y)).
+      left. split; trivial.
+      right. intro. destruct H. contradiction.
+      right. intro. destruct H. contradiction.
+    Defined.
+
+  End Eq_dec.
+
   Definition LexProd_Gt (x y: pair) := lp_LexProd_Gt eqL gtL gtR x y.
 
   Notation "a >lex b" := (LexProd_Gt a b) (at level 40).
@@ -391,6 +409,7 @@ Module Rel <: Ord.
 
     Definition A := pair.
     Definition eqA := eqPair.
+    Definition eqA_dec := eqPair_dec.
     Definition sid_theoryA := sid_theory_pair.
 
   End S.

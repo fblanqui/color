@@ -39,6 +39,7 @@ Module Term <: Eqset.
   Definition A := term.
 
   Definition eqA := eq (A := term).
+  Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
 
   Require Import Setoid.
 
@@ -52,10 +53,24 @@ Module Term <: Eqset.
 
 End Term.
 
+Module Term_dec <: Eqset_dec.
+
+  Module Eq := Term.
+  Export Eq.
+
+  Definition eqA_dec := @term_eq_dec Sig.
+
+End Term_dec.
+
 (***********************************************************************)
 (** multisets on terms *)
   
-Module LMO := MultisetListOrder.MultisetListOrder Term.
+Module LMO := MultisetListOrder.MultisetListOrder Term_dec.
+ (* FIXME, the notation below is introduced only because otherwise 
+    doing 'Export LMO' results in an error: "Scope sets_scope is not
+    declared". This, I believe, should not be the case and maybe is
+    a temporary flaw of the development version of Coq 8.2. *)
+Notation "'XXX'" := I : sets_scope.
 Export LMO.
 
 (***********************************************************************)
@@ -87,7 +102,7 @@ Definition le_mpo := fun t s => t = s \/ lt_mpo t s.
 (** compatibility with setoid equality *)
 
 Lemma tlt_mpo_eqA_compat : forall x x' y y', 
-  x =A= x' -> y =A= y' -> transp lt_mpo x y -> transp lt_mpo x' y'.
+  eqA x x' -> eqA y y' -> transp lt_mpo x y -> transp lt_mpo x' y'.
 
 Proof.  
   unfold eqA,Term.eqA; intros; subst; trivial.

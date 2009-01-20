@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-(* $Id: VRPO_Status.v,v 1.7 2007-06-01 23:04:23 koper Exp $ *)
+(* $Id: VRPO_Status.v,v 1.8 2009-01-20 12:45:25 koper Exp $ *)
 
 Require Export VPrecedence.
 Require Export MultisetListOrder.
@@ -25,6 +25,8 @@ Module RPO (PT : VPrecedenceType).
 
   Module S := Status PT.
   Export S.
+
+  Open Scope sets_scope.
 
   Parameter status : Sig -> status_name.
 
@@ -160,7 +162,7 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     split; elim feq; trivial; repeat split; trivial.
     intros s s_in_ts'; apply rpo3; trivial.
     assert (Hcomp : forall ss x x', In x' ss -> x =A= x' -> In x ss).
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.      
+    unfold eqA, Term.eqA; intros; subst; trivial.      
     elim (mult2element _ Hcomp  _ _ Hss'ts' s s_in_ts').
     intros s' Hs'.
     exists s'; split; elim Hs'; trivial.
@@ -188,8 +190,8 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     apply SPO_to_lex_SPO.
     intros.
     apply transp_SPO_to_mult_SPO; trivial.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
   Qed.
 
   Lemma mono_axiom : forall f (r : relation term), 
@@ -200,7 +202,7 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     unfold tau, mytau; destruct (status f); simpl.
     apply one_less2lex.
     apply one_less2mult.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
   Qed.  
 
 (***********************************************************************)
@@ -218,8 +220,8 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     intro l; destruct (status f).
     apply (lex_lifting lt_rpo).
     apply (mult_lifting lt_rpo).
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
-    unfold Sid.eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
+    unfold eqA, Term.eqA; intros; subst; trivial.
   Qed.
   
 End RPO_Model.

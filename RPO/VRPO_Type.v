@@ -8,7 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.11 2008-10-06 03:22:28 blanqui Exp $ *)
+(* $Id: VRPO_Type.v,v 1.12 2009-01-20 12:45:25 koper Exp $ *)
 
 Require Export VPrecedence.
 
@@ -160,7 +160,12 @@ Module Status (PT : VPrecedenceType).
   Export P.
 
   Require Import MultisetListOrder.
-  Module LMO := MultisetListOrder Term.
+  Module LMO := MultisetListOrder Term_dec.
+   (* FIXME, the notation below is introduced only because otherwise 
+      doing 'Export LMO' results in an error: "Scope sets_scope is not
+      declared". This, I believe, should not be the case and maybe is
+      a temporary flaw of the development version of Coq 8.2. *)
+  Notation "'XXX'" := I : sets_scope.
   Export LMO.
 
   Require Import LexicographicOrder.
