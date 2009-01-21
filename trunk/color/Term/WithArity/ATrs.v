@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.44 2008-10-31 16:02:13 blanqui Exp $ *)
+(* $Id: ATrs.v,v 1.45 2009-01-21 00:57:46 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -32,6 +32,9 @@ decide equality; apply eq_term_dec.
 Defined.
 
 Definition rules := (list rule).
+
+(***********************************************************************)
+(** basic definitions and properties on rules *)
 
 Definition is_notvar_lhs a :=
   match lhs a with
@@ -82,15 +85,35 @@ Section rewriting.
 
 Variable R : rules.
 
-Definition red t1 t2 := exists l, exists r, exists c, exists s,
-  In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
+Definition red u v := exists l, exists r, exists c, exists s,
+  In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
-Definition hd_red t1 t2 := exists l, exists r, exists s,
-  In (mkRule l r) R /\ t1 = sub s l /\ t2 = sub s r.
+Definition hd_red u v := exists l, exists r, exists s,
+  In (mkRule l r) R /\ u = sub s l /\ v = sub s r.
 
-Definition int_red t1 t2 := exists l, exists r, exists c, exists s,
+Definition int_red u v := exists l, exists r, exists c, exists s,
   c <> Hole
-  /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
+  /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
+
+Definition NF u := forall v, ~red u v.
+
+(***********************************************************************)
+(** innermost rewriting *)
+
+Definition innermost u := forall f us, u = Fun f us -> Vforall NF us.
+
+Definition im_red u v := exists l, exists r, exists c, exists s,
+  In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
+  /\ innermost (sub s l).
+
+Definition im_hd_red u v := exists l, exists r, exists s,
+  In (mkRule l r) R /\ u = sub s l /\ v = sub s r
+  /\ innermost u.
+
+Definition im_int_red u v := exists l, exists r, exists c, exists s,
+  c <> Hole
+  /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
+  /\ innermost (sub s l).
 
 End rewriting.
 
@@ -107,17 +130,9 @@ Definition red_mod := red E # @ red R.
 
 Definition hd_red_mod := red E # @ hd_red R.
 
-Definition hd_red_mod_min (s : term) (t : term) : Prop :=
-  hd_red_mod s t 
+Definition hd_red_mod_min s t := hd_red_mod s t 
   /\ lforall (SN (red E)) (direct_subterms s)
   /\ lforall (SN (red E)) (direct_subterms t).
-
-Lemma hd_red_mod_min_incl :
-  hd_red_mod_min << hd_red_mod.
-
-Proof.
-  unfold hd_red_mod_min. intros s t [hrm _]. trivial. 
-Qed.
 
 End rewriting_modulo.
 
@@ -163,6 +178,7 @@ Ltac redtac := repeat
 
 Ltac is_var_lhs := cut False;
   [tauto | eapply is_notvar_lhs_false; eassumption].
+
 Ltac is_var_rhs := cut False;
   [tauto | eapply is_notvar_rhs_false; eassumption].
 
@@ -271,7 +287,7 @@ Qed.
 Lemma hd_red_incl_red : hd_red R << red R.
 
 Proof.
-unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. exact H.
+unfold inclusion. intros. redtac. subst x. subst y. apply red_rule_top. hyp.
 Qed.
 
 Lemma WF_red_empty : WF (red empty_trs).
@@ -286,19 +302,19 @@ Proof.
 intro. unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
 Qed.
 
-Lemma int_red_preserv_hd : forall t1 t2, int_red R t1 t2 ->
-  exists f, exists v,exists w, t1 = Fun f v /\ t2 = Fun f w.
+Lemma int_red_preserv_hd : forall u v, int_red R u v ->
+  exists f, exists us,exists vs, u = Fun f us /\ v = Fun f vs.
 
 Proof.
 intros. do 5 destruct H. intuition. destruct x1. congruence.
 simpl in *. exists f.
-exists (Vcast (Vapp v (Vcons (fill x1 (sub x2 x)) v0)) e).
-exists (Vcast (Vapp v (Vcons (fill x1 (sub x2 x0)) v0)) e).
+exists (Vcast (Vapp v0 (Vcons (fill x1 (sub x2 x)) v1)) e).
+exists (Vcast (Vapp v0 (Vcons (fill x1 (sub x2 x0)) v1)) e).
 tauto.
 Qed.
 
-Lemma int_red_rtc_preserv_hd : forall t1 t2, int_red R # t1 t2 ->
-  t1=t2 \/ exists f, exists v, exists w, t1 = Fun f v /\ t2 = Fun f w.
+Lemma int_red_rtc_preserv_hd : forall u v, int_red R # u v ->
+  u=v \/ exists f, exists us, exists vs, u = Fun f us /\ v = Fun f vs.
 
 Proof.
 intros. induction H; auto.
@@ -436,7 +452,7 @@ Qed.
 End union.
 
 (***********************************************************************)
-(** rewriting modulo *)
+(** properties of rewriting modulo *)
 
 Section rewriting_modulo_results.
 
@@ -521,6 +537,12 @@ Lemma WF_hd_red_Mod_empty : WF (hd_red_Mod S empty_trs).
 Proof.
 apply WF_incl with (@empty_rel term). intros x y h. redtac. contradiction.
 apply WF_empty_rel.
+Qed.
+
+Lemma hd_red_mod_min_incl : hd_red_mod_min E R << hd_red_mod E R.
+
+Proof.
+unfold hd_red_mod_min. intros s t [hrm _]. trivial. 
 Qed.
 
 End rewriting_modulo_results.
