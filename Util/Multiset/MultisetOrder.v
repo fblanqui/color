@@ -9,7 +9,7 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.13 2009-01-20 12:45:25 koper Exp $ *)
+(* $Id: MultisetOrder.v,v 1.14 2009-01-21 01:00:41 blanqui Exp $ *)
 
 Set Implicit Arguments.
 
@@ -767,7 +767,8 @@ Section MultisetOrder_Wf.
     trivial.
   Qed.
 
-  Lemma mord_wf_3: forall a, AccA a -> forall M, AccM_1 M -> AccM_1 (M + {{a}}).
+  Lemma mord_wf_3:
+    forall a, AccA a -> forall M, AccM_1 M -> AccM_1 (M + {{a}}).
 
   Proof.
     intros a a_wf.
