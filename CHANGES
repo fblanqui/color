@@ -6,7 +6,7 @@
 08-08-07:
 - Util/Relation/OrdDec: type totally ordered with a comparison function
   [Blanqui]
-- Util/List/ListDev: boolean functions on lists using a boolean equality test
+- Util/List/ListDec: boolean functions on lists using a boolean equality test
   [Blanqui]
 - DP/ADecomp: proof that termination follows from any valid decomposition
   of an over DP graph and the termination of each component [Blanqui]
