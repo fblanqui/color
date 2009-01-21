@@ -1,5 +1,8 @@
 
-- absurd_hyp is OBSOLETE: use contradict instead.
+
+- hd_red_mod_min: replace direct_subterms by Vforall SN?
+
+- hd_red_mod_min: needs to be symmetric?
 
 - define eq_term_dec from beq_term
 
@@ -45,10 +48,12 @@ explicit at every proof step
 
 - remove the use of beq_dec and beqtac
 
-- replace unary integers by binary integers
+- replace unary integers by binary integers?
 
 Done list:
 ----------
+
+- absurd_hyp is OBSOLETE: use contradict instead.
 
 - Eqdep uses an axiom: it is still used in ATerm and ACap (grep Eqdep)
 and in the tactic Funeqtac. is it possible to get rid of it by using
