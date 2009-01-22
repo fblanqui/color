@@ -11,26 +11,27 @@ higher-order recursive path ordering due to Jouannaud and Rubio.
 Set Implicit Arguments.
 Require Import RelExtras.
 Require Import ListExtras.
+Require Export Horpo.
 Require Computability.
-Require Horpo.
 Require LexOrder.
-Require HorpoBetaComp.
+Require HorpoComp.
 
 Module HorpoWf (S : TermsSig.Signature) 
                (Prec : Horpo.Precedence with Module S := S).
 
-  Module HBC := HorpoBetaComp.HorpoBetaComp S Prec.
-  Import HBC.
+  Module HC := HorpoComp.HorpoComp S Prec.
+  Export HC.
 
-  Lemma acc_mul_acc_wfmul_aux : forall (M: Multiset), Acc HB_mul_lt M ->
-    forall (WM: WFterms), M = WM -> Acc HB_WFterms_lt WM.
+  Lemma acc_mul_acc_wfmul_aux : forall (M: Multiset), 
+    Acc horpo_mul_lt M ->
+    forall (WM: WFterms), M = WM -> Acc H_WFterms_lt WM.
 
   Proof.
     intros M AccM.
     apply Acc_ind with
-      (R := MultisetLT HB)
+      (R := MultisetLT horpo)
       (P := fun M => forall (WM: WFterms), 
-                       M = WFterms_to_mul WM -> Acc HB_WFterms_lt WM).
+                       M = WFterms_to_mul WM -> Acc H_WFterms_lt WM).
     intros x acc_mul acc_WM WM x_WM.
     constructor.
     intros y y_lt_WM.
@@ -41,58 +42,48 @@ Module HorpoWf (S : TermsSig.Signature)
     trivial.
   Qed.
 
-  Lemma acc_mul_acc_wfterms : forall (WM: WFterms), Acc HB_mul_lt WM -> Acc HB_WFterms_lt WM.
+  Lemma acc_mul_acc_wfterms : forall (WM: WFterms), 
+    Acc horpo_mul_lt WM -> Acc H_WFterms_lt WM.
 
   Proof.
     intros WM acc_WM.
     apply acc_mul_acc_wfmul_aux with (WFterms_to_mul WM); trivial.
   Qed.
 
-  Lemma horpo_beta_dec : forall M N, {M -HB-> N} + {~M -HB-> N}.
-
-  Proof.
-    intros.
-    destruct (horpo_dec M N).
-    left; constructor 1; trivial.
-    destruct (beta_dec M N).
-    left; constructor 2; trivial.
-    right.
-    intro MN; inversion MN; auto.
-  Qed.
-
-  Lemma wf_MulLt_WFterms : well_founded HB_WFterms_lt.
+  Lemma wf_MulLt_WFterms : well_founded H_WFterms_lt.
 
   Proof.
     unfold well_founded; intro W.
     destruct W as [Ts CompTs].
     apply acc_mul_acc_wfterms.
-    unfold HB_mul_lt; apply mOrd_acc.    
-    apply (Eqset_def_gtA_eqA_compat HB).
+    unfold horpo_mul_lt; apply mOrd_acc.
+    apply (Eqset_def_gtA_eqA_compat horpo).
     intros x x_comp.
-    assert (xComp: CompHB x).
+    assert (xComp: CompH x).
     apply CompTs.
     destruct (member_multiset_list Ts x_comp).
     unfold eqA in H0; unfold TermsEqset.eqA in H0; rewrite H0; trivial.
-    apply HB_comp_imp_acc; trivial.
+    apply horpo_comp_imp_acc; trivial.
   Qed.
 
-  Module HB_WFmul_ord <: Ord.
+  Module H_WFmul_ord <: Ord.
 
     Module SetWF <: SetA.
       Definition A := WFterms.
     End SetWF.
     Module S := Eqset_def SetWF.
     Definition A := WFterms.
-    Definition gtA := transp WFterms HB_WFterms_lt.
+    Definition gtA := transp WFterms H_WFterms_lt.
     Definition gtA_eqA_compat := Eqset_def_gtA_eqA_compat gtA.
 
-  End HB_WFmul_ord.
+  End H_WFmul_ord.
 
-  Module Lex := LexOrder.LexicographicOrder Prec.P.O HB_WFmul_ord.
+  Module Lex := LexOrder.LexicographicOrder Prec.P.O H_WFmul_ord.
   Import Lex.
 
   Lemma compTerms : forall M N Ns, M [>>] Ns -> CompTerms (appArgs M) ->
-    (forall n, In n Ns -> subterm n N) -> (forall N', subterm N' N -> M -HB-> N' -> CompHB N') ->
+    (forall n, In n Ns -> subterm n N) -> 
+    (forall N', subterm N' N -> M >> N' -> CompH N') ->
     CompTerms Ns.
 
   Proof.
@@ -110,7 +101,7 @@ Module HorpoWf (S : TermsSig.Signature)
     rewrite <- xT.
     apply IH.
     apply Ns_sub_N; auto with datatypes.
-    constructor; trivial.
+    trivial.
     fold (In x Tt) in xT; apply IHargs; auto with datatypes.
      (*     case: head of arguments of N has different type than M *)
      (*           and horpo holds between some argument of M and   *)
@@ -119,9 +110,9 @@ Module HorpoWf (S : TermsSig.Signature)
     rewrite <- xT.
     destruct Marg_red_Th as [M' M'arg M'_red_Th].
     destruct M'_red_Th as [M' Th M_red_Th | M'].
-    unfold CompHB; apply HB_comp_step_comp with M'.
+    unfold CompH; apply horpo_comp_step_comp with M'.
     apply argsMcomp; trivial.
-    constructor; trivial.
+    trivial.
     apply argsMcomp; trivial.
     fold (In x Tt) in xT; apply IHargs; auto with datatypes.
   Qed.
@@ -138,19 +129,18 @@ Module HorpoWf (S : TermsSig.Signature)
   Lemma argsComp_appComp_aux :
     forall Px: pair,
       (forall Py: pair, Py <lex Px ->
-	forall M, algebraic M -> term (appHead M) = ^fst Py -> appArgs M = proj1_sig (snd Py) ->
-       CompHB M) ->
+	forall M, algebraic M -> term (appHead M) = ^fst Py -> 
+          appArgs M = proj1_sig (snd Py) -> CompH M) ->
     forall M N,
       algebraic M -> term (appHead M) = ^fst Px -> appArgs M = proj1_sig (snd Px) ->
-      (forall N', subterm N' N -> M -HB-> N' -> CompHB N') ->
-      M -HB-> N -> CompHB N.    
+      (forall N', subterm N' N -> M >> N' -> CompH N') ->
+      M >> N -> CompH N.
 
   Proof.
-    intros Px IH_out M N Mnorm Mhead Margs IH_in M_HB_N.
+    intros Px IH_out M N Mnorm Mhead Margs IH_in MN.
     destruct Px as [f fArgs]; simpl in * .
-    destruct M_HB_N as [horpo_MN | beta_MN].
      (* 1) order by horpo *)
-    destruct horpo_MN as [M N eqTypeMN eqEnvMN _ Nnorm horpoMN].
+    destruct MN as [M N eqTypeMN eqEnvMN _ Nnorm horpoMN].
     destruct horpoMN as 
       [ M N _ Msub 
       | M N f' g Mhead' Nhead f'_gt_g Margs_gt_N
@@ -158,13 +148,14 @@ Module HorpoWf (S : TermsSig.Signature)
       | M N Ns Napp Ns_flat_N Margs_Ns
       | M N Mapp' Napp Mhead' Margs_mul_Nargs
       | M N Mabs Nabs _
+      | M N MNbeta
       ].
      (* 1a) HSub *)
     destruct Msub as [M' M'arg M'_ge_N].
-    assert (M'comp: CompHB M').
+    assert (M'comp: CompH M').
     apply (proj2_sig fArgs); rewrite <- Margs; exact M'arg.
     destruct M'_ge_N as [M' N M'_N | M'].
-    unfold CompHB; apply HB_comp_step_comp with M'; auto with horpo.
+    unfold CompH; apply horpo_comp_step_comp with M'; auto with horpo.
     trivial.
      (* 1b) HFun *)
      (*    all arguments of N computable *)
@@ -191,10 +182,10 @@ Module HorpoWf (S : TermsSig.Signature)
      (*    for every argument of N, say n, we have argument of M *)
      (*    which:                                                *)
      (*    -/ either in one step rewrites by horpo to n          *)
-    apply HB_comp_step_comp with m.
+    apply horpo_comp_step_comp with m.
     apply (proj2_sig fArgs); rewrite <- Margs.
     apply arg_mul_arg; trivial.
-    left; trivial.
+    trivial.
      (*    -/ or is equal to n *)
     unfold eqA in m_eq_n; unfold TermsEqset.eqA in m_eq_n; rewrite <- m_eq_n.
     apply (proj2_sig fArgs); rewrite <- Margs.
@@ -207,23 +198,22 @@ Module HorpoWf (S : TermsSig.Signature)
     apply IH_out with (Py := (f', Nmul)); auto with terms.
     constructor 2.
     assert (ff': f = f'); [congruence | rewrite ff'; auto with sets].
-    unfold HB_WFmul_ord.gtA, HB_WFterms_lt, WFterms_to_mul, 
-           HB_mul_lt,  MultisetLT, transp.
+    unfold H_WFmul_ord.gtA, H_WFterms_lt, WFterms_to_mul, 
+           horpo_mul_lt,  MultisetLT, transp.
     simpl; apply mOrd_inclusion with horpo.
-    intros x y x_y; constructor; trivial.
+    intros x y x_y; trivial.
     rewrite <- Margs; trivial.
      (* 1d) HAppFlat *)
     assert (Ns_comp: CompTerms Ns).
     apply compTerms with M N; trivial.
     rewrite Margs; exact (proj2_sig fArgs).
     intros; apply partialFlattening_subterm with Ns; trivial.
-    unfold CompHB; apply HB_comp_pflat with Ns; trivial.
+    unfold CompH; apply horpo_comp_pflat with Ns; trivial.
      (* 1e) HApp *)
     absurd (isFunApp M); eauto with terms.
      (* 1f) HAbs *) 
     rewrite appHead_notApp in Mhead; term_inv M.
-
-     (* 2) internal beta step *)
+     (* 1g) HBeta *)
      (*    M & N are applications *)
     assert (Napp: isApp N).
     apply app_beta_isapp with M f; trivial.
@@ -233,7 +223,7 @@ Module HorpoWf (S : TermsSig.Signature)
      (*    we show that all arguments of N accessible *)
     assert (NargsComp: CompTerms (appArgs N)).
     unfold CompTerms; intros P P_arg_N.
-    case (app_beta_args_eq P Mapp beta_MN Mhead P_arg_N).
+    case (app_beta_args_eq P Mapp MNbeta Mhead P_arg_N).
      (*    -/ because they are either arguments of original M *)
     intro Parg.
     apply (proj2_sig fArgs P).
@@ -241,21 +231,22 @@ Module HorpoWf (S : TermsSig.Signature)
      (*    -/ or they are result of internal beta reduction on *)
      (*       one of arguments of M *)
     destruct 1 as [Mb Mb_P M_Mb].
-    unfold CompHB; apply HB_comp_step_comp with Mb.
+    unfold CompH; apply horpo_comp_step_comp with Mb.
     apply (proj2_sig fArgs); rewrite <- Margs; trivial.
-    auto with horpo.
+    apply beta_imp_horpo; trivial.
+    apply algebraic_arg with M; trivial.
      (* Finally we show that N' Computable using induction hypothesis *)
     set (Nmul := exist (fun Ts: Terms => CompTerms Ts) 
            (appArgs N) NargsComp).
-    fold CompHB; 
+    fold CompH; 
       apply IH_out with (Py := (f, Nmul))(M := N); 
       auto with terms.
      (* Lexicographic order holds on second coordinate *)
     constructor 2.
     auto with sets.
-    destruct (app_beta_args Mapp beta_MN Mhead) as 
+    destruct (app_beta_args Mapp MNbeta Mhead) as 
       [[al ar] [[tl tr] [tlM [trN [tltr [Mb_args Nb_args]]]]]].
-    unfold HB_WFmul_ord.gtA, transp, HB_WFterms_lt, HB_mul_lt, 
+    unfold H_WFmul_ord.gtA, transp, H_WFterms_lt, horpo_mul_lt, 
       MultisetLT, transp, WFterms_to_mul; simpl in * .
     rewrite <- Margs.
     rewrite Mb_args; rewrite Nb_args.
@@ -263,13 +254,13 @@ Module HorpoWf (S : TermsSig.Signature)
     intros x x' y y' xx' yy'.
     unfold eqA in xx', yy'. unfold TermsEqset.eqA in xx', yy'.
     rewrite <- xx'; rewrite <- yy'; trivial.
-    right; trivial.
-    apply beta_algebraic_preserving with M; trivial.
+    apply beta_imp_horpo; trivial. apply algebraic_arg with M; trivial.
     apply app_beta_headSymbol with M; trivial.
   Qed.
 
   Lemma argsComp_appComp_ind : forall (P: pair) M,
-    algebraic M -> term (appHead M) = Fun (fst P) -> appArgs M = proj1_sig (snd P) -> CompHB M.
+    algebraic M -> term (appHead M) = Fun (fst P) -> 
+    appArgs M = proj1_sig (snd P) -> CompH M.
 
   Proof.
      (* induction on pair *)
@@ -281,7 +272,7 @@ Module HorpoWf (S : TermsSig.Signature)
 	   algebraic M ->
            term (appHead M) = Fun (fst Px) ->
            appArgs M = proj1_sig (snd Px) ->
-         CompHB M).
+         CompH M).
     apply lexprod_wf.
     apply Prec.Ord_wf.
     apply wf_MulLt_WFterms.
@@ -289,13 +280,12 @@ Module HorpoWf (S : TermsSig.Signature)
     intros P IH_out M Mnorm Mhead Margs.
     assert (Mneutral: isNeutral M).
     term_inv M.
-    rewrite_rl (HB_neutral_comp_step Mnorm Mneutral).
-    intros N; fold CompHB.
+    rewrite_rl (horpo_neutral_comp_step Mnorm Mneutral).
+    intros N; fold CompH.
     apply well_founded_ind with
       (R := subterm)
       (P := fun (N: Term) =>
-         M -HB-> N ->
-         CompHB N).
+         M >> N -> CompH N).
     apply subterm_wf.
     clear N.
     intros N IH_in M_red_N.
@@ -303,7 +293,7 @@ Module HorpoWf (S : TermsSig.Signature)
   Qed.
 
   Lemma argsComp_appComp : forall M, algebraic M -> isFunS (appHead M) ->
-    (forall P, isArg P M -> CompHB P) -> CompHB M.
+    (forall P, isArg P M -> CompH P) -> CompH M.
 
   Proof.
     intros M Mnorm Mhead argsComp.
@@ -317,8 +307,9 @@ Module HorpoWf (S : TermsSig.Signature)
     apply argsComp_appComp_ind with (P := (f, Args))(M := M); trivial.
   Qed.
 
-  Lemma subst_comp : forall M G (MG: correct_subst M G), algebraic M -> CompSubst G ->
-    algebraicSubstitution G -> CompHB (subst MG).
+  Lemma subst_comp : forall M G (MG: correct_subst M G), 
+    algebraic M -> CompSubst G -> algebraicSubstitution G -> 
+    CompH (subst MG).
 
   Proof.
      (* induction on structure of Pt *)
@@ -330,7 +321,7 @@ Module HorpoWf (S : TermsSig.Signature)
 	   algebraic M ->
            CompSubst G ->
 	   (forall i T, G |-> i/T -> algebraic T) ->
-           CompHB (subst MG)).
+           CompH (subst MG)).
     apply subterm_wf.
     clear M; intros M IH G MG Mnorm Gcomp Gnorm.
     destruct M as [E Pt TM TypM]; simpl in * .
@@ -340,14 +331,14 @@ Module HorpoWf (S : TermsSig.Signature)
     dependent inversion TypM; simpl; trivial.
     destruct (var_subst MG) as [[T [p GpT MGterm]] | MG_M]; trivial.
      (*   - variable substituted *)
-    apply HB_comp_conv with T.
+    apply horpo_comp_conv with T.
     apply Gcomp; trivial.
     apply nth_some_in with p; trivial.
     apply terms_conv_criterion; auto.
     apply env_comp_sym.
     apply subst_env_compat with p; trivial.
      (*   - variable not substituted *)
-    apply HB_var_comp; trivial.
+    apply horpo_var_comp; trivial.
     apply var_is_var with x; trivial.
      (* function symbol *)
     assert (termMG: term (subst MG) = term (buildT TypM)).
@@ -365,7 +356,7 @@ Module HorpoWf (S : TermsSig.Signature)
      (* abstraction *)
     assert (Mabs: isAbs (buildT TypM)).
     apply abs_isAbs with A0 Pt; trivial.
-    unfold CompHB; apply HB_comp_abs with (abs_subst_abs Mabs MG).
+    unfold CompH; apply horpo_comp_abs with (abs_subst_abs Mabs MG).
     apply algebraic_subst; trivial.
     intros S CS T TS Tcomp.
     destruct (abs_subst Mabs MG) as [MG_type MG_body].
@@ -393,12 +384,12 @@ Module HorpoWf (S : TermsSig.Signature)
     intro Q_G.
     destruct (in_lift_subst Q G 1 Q_G) as [W W_G Q_lift_W].
     rewrite Q_lift_W.
-    unfold CompHB; apply HB_comp_lift.
+    unfold CompH; apply horpo_comp_lift.
     apply Gcomp; trivial.
     intros i W SW.
     destruct i.
     inversion SW.
-    rewrite <- H0; apply HB_comp_algebraic; trivial.
+    rewrite <- H0; apply horpo_comp_algebraic; trivial.
     inversion SW.
     destruct (var_subst_lift_rev G 1 H0) as [W' [GW' WW']].
     rewrite WW'.
@@ -435,7 +426,7 @@ Module HorpoWf (S : TermsSig.Signature)
     apply algebraic_arg with M; trivial.
     
      (*   - non-functional application *)
-    unfold CompHB; apply HB_comp_app with (app_subst_app Mapp MG).
+    unfold CompH; apply horpo_comp_app with (app_subst_app Mapp MG).
     rewrite SL.
     apply IH; trivial.
     apply appBodyL_subterm.
@@ -446,13 +437,15 @@ Module HorpoWf (S : TermsSig.Signature)
     apply algebraic_appBodyR; trivial.
   Qed.
 
-  Lemma horpo_beta_wf : forall M, algebraic M ->
-    Acc (transp Term HB) M.
+  Require SN.
+
+  Lemma horpo_beta_wf : forall M, algebraic M -> SN.SN horpo M.
 
   Proof.
     intros M Mnorm.
-    apply HB_comp_imp_acc.
-    assert (Mid_comp: CompHB (subst (emptySubst_correct M))).
+    apply SN.Acc_transp_SN.
+    apply horpo_comp_imp_acc.
+    assert (Mid_comp: CompH (subst (emptySubst_correct M))).
     apply subst_comp; trivial.
     red; contradiction.
     intros p T; destruct p; try_solve.

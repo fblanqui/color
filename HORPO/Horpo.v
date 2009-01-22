@@ -84,12 +84,17 @@ Module Horpo (S : TermsSig.Signature)
   | HAppFlat: forall M N Ns,
     isFunApp M -> isPartialFlattening Ns N -> M [>>] Ns -> M >-> N
 
-  | HApp: forall M N (MApp: isApp M) (NApp: isApp N), ~isFunApp M ->
+  | HApp: forall M N (MApp: isApp M) (NApp: isApp N), 
+    ~isFunApp M -> ~isFunApp N ->
     {{appBodyL MApp, appBodyR MApp}} {>>} {{appBodyL NApp, appBodyR NApp}} ->
     M >-> N
 
   | HAbs: forall M N (MAbs: isAbs M) (NAbs: isAbs N),
     absBody MAbs >> absBody NAbs -> M >-> N
+
+  | HBeta: forall M N, 
+    M -b-> N -> M >-> N
+
     where "M >-> N" := (prehorpo M N)
 
   with horpo : Term -> Term -> Prop :=
@@ -133,10 +138,34 @@ Module Horpo (S : TermsSig.Signature)
     intros; inversion H; trivial.
   Qed.
 
+  Lemma horpo_RC_type_preserving : forall M N, M >>= N -> type M = type N.
+
+  Proof.
+    intros. inversion H. apply horpo_type_preserving; trivial. trivial.
+  Qed.
+
   Lemma horpo_env_preserving : forall M N, M >> N -> env M = env N.
 
   Proof.
     intros; inversion H; trivial.
+  Qed.
+
+  Lemma horpo_algebraic_left : forall M N, M >> N -> algebraic M.
+
+  Proof.
+    intros. destruct H. assumption.
+  Qed.
+
+  Lemma horpo_algebraic_right : forall M N, M >> N -> algebraic N.
+
+  Proof.
+    intros. destruct H. assumption.
+  Qed.
+
+  Lemma horpo_RC_env_preserving : forall M N, M >>= N -> env M = env N.
+
+  Proof.
+    intros. inversion H. apply horpo_env_preserving; trivial. trivial.
   Qed.
 
   Lemma horpo_eq_compat : forall M M' N N',
@@ -156,6 +185,7 @@ Module Horpo (S : TermsSig.Signature)
     apply subterm_wf.
     clear N; intros N IH M Mvar MN.
     induction MN; term_inv M.
+    inversion H; inversion H0; try_solve. 
   Qed.
 
    (* Variable is not bigger than any term *)
@@ -180,6 +210,48 @@ Module Horpo (S : TermsSig.Signature)
 
   Proof.
     intros; inversion H; firstorder.
+  Qed.
+
+  Lemma horpo_algebraic_preserving : forall M N, algebraic M -> 
+    M >> N -> algebraic N.
+
+  Proof.
+    intros M N Mnorm MN. inversion MN. inversion H; trivial.
+  Qed.
+
+  Lemma beta_imp_horpo : forall M N, algebraic M -> M -b-> N -> M >> N.
+
+  Proof.
+    intros. constructor; try assumption.
+    apply subject_reduction. assumption.
+    apply beta_env_preserving. assumption.
+    apply beta_algebraic_preserving with M; assumption.
+    apply HBeta. assumption.
+  Qed.
+
+  Lemma horpo_app_inv : forall M N (Mapp: isApp M) (Napp: isApp N),
+    ~isFunApp M -> algebraic M ->
+    ~isFunApp N -> algebraic N ->
+    appBodyL Mapp >>= appBodyL Napp /\
+    appBodyR Mapp >>= appBodyR Napp /\
+    (appBodyL Mapp >> appBodyL Napp \/ appBodyR Mapp >> appBodyR Napp) ->
+    M >> N.
+
+  Proof.
+    intros. destruct H3 as [Leq [Req LRgt]].
+    constructor; trivial.
+    apply app_type_eq with Mapp Napp; trivial.
+    apply horpo_RC_type_preserving. assumption.
+    apply horpo_RC_type_preserving. assumption.
+    rewrite <- appBodyL_env with M Mapp.
+    rewrite <- appBodyL_env with N Napp.
+    apply horpo_RC_env_preserving. assumption.
+    apply HApp with Mapp Napp; trivial.
+    constructor. destruct LRgt.
+    apply pair_mOrd_left; try_solve.
+    inversion Req; intuition.
+    apply pair_mOrd_right; try_solve.
+    inversion Leq; intuition.
   Qed.
 
   Lemma horpo_app : forall M N (Mapp: isApp M) (Napp: isApp N),
@@ -245,6 +317,65 @@ Module Horpo (S : TermsSig.Signature)
     fold (type (buildT T4)).
     symmetry.
     apply Htyp; try_solve.
+  Qed.
+
+  Lemma horpo_app_reduct : forall M N (Mapp: isApp M), M >> N ->
+    ~isFunApp M \/ isArrowType (type M) ->
+    (exists MLabs: isAbs (appBodyL Mapp), 
+      N = lower (subst (beta_subst M Mapp MLabs)) (beta_lowering M Mapp MLabs)) \/
+    exists Napp: isApp N, 
+      (appBodyL Mapp =  appBodyL Napp /\ appBodyR Mapp >> appBodyR Napp) \/
+      (appBodyL Mapp >> appBodyL Napp /\ appBodyR Mapp =  appBodyR Napp) \/
+      (appBodyL Mapp >> appBodyL Napp /\ appBodyR Mapp >> appBodyR Napp).
+
+  Proof.
+    intros.
+    destruct H.
+    assert (~isFunApp M).
+    destruct H0; trivial.
+    apply algebraic_arrowType; trivial.
+    destruct H4; try_solve.
+    absurd (isFunApp M); trivial.
+    unfold isFunApp; apply funS_is_funS with f; trivial.
+    absurd (isFunApp M); trivial.
+    unfold isFunApp; apply funS_is_funS with f; trivial.
+    right. exists NApp.
+    inversion H7.
+    rewrite (app_proof_irr M Mapp MApp).
+    destruct (horpo_app M N MApp NApp H) as [LL [RR [Ls | Rs]]]; trivial.
+    inversion RR.
+    right; right; split; trivial.
+    right; left; split; trivial.
+    inversion LL.
+    right; right; split; trivial.
+    left; split; trivial.
+    term_inv M.
+    destruct (beta_app_reduct Mapp H4) as [[MLabs NL] | [Napp Mred]].
+    left. exists MLabs. trivial.
+    assert (appBodyL Mapp -b-> appBodyL Napp -> appBodyL Mapp >> appBodyL Napp).
+    apply beta_imp_horpo. apply algebraic_appBodyL; try_solve.
+    assert (appBodyR Mapp -b-> appBodyR Napp -> appBodyR Mapp >> appBodyR Napp).
+    apply beta_imp_horpo. apply algebraic_appBodyR; try_solve.
+    right; exists Napp; firstorder.
+  Qed.
+
+  Lemma horpo_abs_reduct : forall M (Mabs: isAbs M) N, M >> N ->
+    exists Nabs: isAbs N, absBody Mabs >> absBody Nabs.
+
+  Proof.
+    intros.
+    destruct H.
+    destruct H3; try solve [term_inv M; try_solve | destruct H3; try_solve].
+    exists NAbs.
+    constructor; trivial.
+    term_inv M; term_inv N.
+    term_inv M; term_inv N.
+    apply algebraic_absBody; trivial.
+    apply algebraic_absBody; trivial.
+    rewrite (abs_proof_irr M Mabs MAbs); destruct H3; trivial.
+    destruct (beta_abs_reduct Mabs H3); try_solve.
+    exists x. apply beta_imp_horpo; try_solve.
+    apply algebraic_absBody. assumption.
   Qed.
 
   Lemma horpo_args_conv : forall M N Ms Ns Q, M ~(Q) N ->
@@ -318,8 +449,9 @@ Module Horpo (S : TermsSig.Signature)
       | M N f g Mf Ng f_g M_Nargs
       | M N f Mf Nf MNargs 
       | M N Ns Mfapp NsN MNs 
-      | M N Mapp Napp Mnfapp LL RR LRstr 
-      | M N Mabs Nabs MN ].
+      | M N Mapp Napp Mnfapp Nnfapp LL RR LRstr 
+      | M N Mabs Nabs MN 
+      | M N MNbeta].
 
      (* case HSub *)
     destruct Cond as [Msub Msub_arg Cond].
@@ -432,6 +564,10 @@ Module Horpo (S : TermsSig.Signature)
     absurd (isFunApp M); trivial.
     assert (MeqM' : M ~ M') by (exists Q; trivial).
     rewrite MeqM'; trivial.
+    intro N'fapp.
+    absurd (isFunApp N); trivial.
+    assert (NeqN' : N ~ N') by (exists Q; trivial).
+    rewrite NeqN'; trivial.
     set (w := horpo_eq_compat).
     destruct (horpo_app M N Mapp Napp MNtype LL) as [left [right [Lred | Rred]]].
     constructor; apply pair_mOrd_left; trivial.
@@ -477,6 +613,10 @@ Module Horpo (S : TermsSig.Signature)
     rewrite <- (terms_conv_eq_type (conv_by MM')).
     rewrite <- (terms_conv_eq_type (conv_by NN')).
     trivial.
+
+     (* HBeta *)
+    apply HBeta. 
+    apply beta_conv_comp with M N Q; trivial.
   Qed.
 
   Lemma horpo_conv_comp : forall M N M' N' Q,
@@ -520,37 +660,6 @@ Module Horpo (S : TermsSig.Signature)
     auto with sets.
     intros.
     apply Res with (M, N) Q; trivial.
-  Qed.
-
-  Lemma horpo_app_reduct : forall M N (Mapp: isApp M),
-    ~isFunApp M \/ isArrowType (type M) ->
-    M >> N -> exists Napp: isApp N, 
-      (appBodyL Mapp =  appBodyL Napp /\ appBodyR Mapp >> appBodyR Napp) \/
-      (appBodyL Mapp >> appBodyL Napp /\ appBodyR Mapp =  appBodyR Napp) \/
-      (appBodyL Mapp >> appBodyL Napp /\ appBodyR Mapp >> appBodyR Napp).
-
-  Proof.
-    intros.
-    destruct H0.
-    assert (~isFunApp M).
-    destruct H; trivial.
-    apply algebraic_arrowType; trivial.
-    destruct H4; try_solve.
-    absurd (isFunApp M); trivial.
-    unfold isFunApp; apply funS_is_funS with f; trivial.
-    absurd (isFunApp M); trivial.
-    unfold isFunApp; apply funS_is_funS with f; trivial.
-    exists NApp.
-    inversion H6.
-    rewrite (app_proof_irr M Mapp MApp).
-    destruct (horpo_app M N MApp NApp H0) as [LL [RR [Ls | Rs]]]; trivial.
-    inversion RR.
-    right; right; split; trivial.
-    right; left; split; trivial.
-    inversion LL.
-    right; right; split; trivial.
-    left; split; trivial.
-    term_inv M.
   Qed.
 
   Lemma horpo_args_subst : forall M Ms Ns G (MG: correct_subst M G),
@@ -620,8 +729,9 @@ Module Horpo (S : TermsSig.Signature)
       | M N f g Mf Ng f_g M_Nargs
       | M N f Mf Nf MNargs 
       | M N Ns Mfapp NsN MNs 
-      | M N Mapp Napp Mnfapp LL RR LRstr 
-      | M N Mabs Nabs MN ].
+      | M N Mapp Napp Mnfapp Nnfapp LL RR LRstr 
+      | M N Mabs Nabs MN 
+      | M N MNbeta].
 
      (* case HSub *)
     destruct Cond as [Msub Msub_arg Cond].    
@@ -714,6 +824,7 @@ Module Horpo (S : TermsSig.Signature)
     left; apply appBodyR_subterm.
     constructor 5 with M'app N'app.
     apply notFunApp_subst; trivial.
+    apply notFunApp_subst; trivial.
     set (w := horpo_eq_compat).
     destruct (horpo_app M N Mapp Napp MNtype LL) as [LrL [RrR [Ls | Rs]]].
     constructor; apply pair_mOrd_left; trivial.
@@ -755,6 +866,9 @@ Module Horpo (S : TermsSig.Signature)
     apply algebraicSubstitution_cons_none.
     apply algebraicSubstitution_lifted; trivial.
     left; apply absBody_subterm.
+
+     (* HBeta *)
+    apply HBeta. apply beta_subst_stable. assumption.
   Qed.
 
   Lemma horpo_subst_stable : forall M N G (MS: correct_subst M G)
@@ -798,22 +912,6 @@ Module Horpo (S : TermsSig.Signature)
     apply (Res (M, N) G); trivial.
   Qed.
 
-  Lemma horpo_abs_reduct : forall M (Mabs: isAbs M) N, M >> N ->
-    exists Nabs: isAbs N, absBody Mabs >> absBody Nabs.
-
-  Proof.
-    intros.
-    destruct H.
-    destruct H3; try solve [term_inv M; try_solve | destruct H3; try_solve].
-    exists NAbs.
-    constructor; trivial.
-    term_inv M; term_inv N.
-    term_inv M; term_inv N.
-    apply algebraic_absBody; trivial.
-    apply algebraic_absBody; trivial.
-    rewrite (abs_proof_irr M Mabs MAbs); destruct H3; trivial.
-  Qed.
-
   Lemma horpo_args_var_consistent : forall M Ns,
     (forall L R, (subterm L M \/ (L = M /\ In R Ns)) -> L >> R ->
       envSubset (activeEnv R) (activeEnv L)) ->
@@ -853,8 +951,9 @@ Module Horpo (S : TermsSig.Signature)
       | M N f g Mf Ng f_g M_Nargs
       | M N f Mf Nf MNargs 
       | M N Ns Mfapp NsN MNs 
-      | M N Mapp Napp Mnfapp LL RR LRstr 
-      | M N Mabs Nabs MN ].
+      | M N Mapp Napp Mnfapp _ LL RR LRstr 
+      | M N Mabs Nabs MN 
+      | M N MNbeta].
 
      (* case HSub *)
     destruct Cond as [Msub Msub_arg Cond].
@@ -931,6 +1030,9 @@ Module Horpo (S : TermsSig.Signature)
     apply env_subset_tail.
     apply IH; trivial.
     left; apply absBody_subterm.
+
+     (* HBeta *)
+    apply beta_var_consistent. assumption.
   Qed.
 
   Lemma horpo_var_consistent : forall M N,
@@ -1130,6 +1232,7 @@ Module Horpo (S : TermsSig.Signature)
     destruct (eq_Term_dec L R).
     rewrite e; left; constructor 2.
     right; intro LR; destruct LR; auto.
+    destruct (beta_dec M N). left. apply HBeta. assumption.
     destruct (isFunApp_dec M).
      (* fun. app *)
     destruct (@HSub_dec M N); trivial.
@@ -1149,7 +1252,7 @@ Module Horpo (S : TermsSig.Signature)
     unfold isFunApp; apply funS_is_funS with g; trivial.
     absurd (f >#> g); auto.
     destruct o; try_solve.
-    apply n0; exists Ns; trivial.
+    apply n1; exists Ns; trivial.
     term_inv M.
     destruct (term_case M) as [[[Mvar | Mfuns] | Mabs] | Mapp].
      (* variable *)
@@ -1164,16 +1267,19 @@ Module Horpo (S : TermsSig.Signature)
     left; apply absBody_subterm.
     left; apply HAbs with Mabs Nabs; trivial.
     right; intro TrN.
-    inversion TrN; term_inv M.
-    apply n0; trivial.
+    inversion TrN; term_inv M. 
+    apply n1; trivial.
     rewrite (abs_proof_irr N Nabs NAbs); trivial.
     right; intro TrN.
     inversion TrN; term_inv M.
-     (* application *)
+     (* application *)    
     assert (forall f, term (appHead M) = ^f -> False).
-    intros; apply n; unfold isFunApp.
+    intros; apply n0; unfold isFunApp.
     apply funS_is_funS with f; trivial.
     destruct (isApp_dec N) as [Napp | Nnapp].
+    destruct (isFunApp_dec N) as [Nfapp | Nnfapp].
+    right. intro MN.
+    inversion MN; try solve [term_inv M; apply H with f; trivial].
     destruct (IHeq (appBodyL Mapp) (appBodyL Napp)).
     left; apply appBodyL_subterm.
     destruct (IHeq (appBodyR Mapp) (appBodyR Napp)).
@@ -1193,22 +1299,22 @@ Module Horpo (S : TermsSig.Signature)
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
     destruct (horpo_app M N MApp NApp MNtype) as [_ [_ [LL | RR]]]; trivial.
-    apply n0; trivial.
+    apply n1; trivial.
     rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
       trivial.
-    apply n1; trivial.
+    apply n2; trivial.
     rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
       trivial.
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
     destruct (horpo_app M N MApp NApp MNtype) as [_ [RR _]]; trivial.
-    apply n0.
+    apply n1.
     rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
       trivial.
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
     destruct (horpo_app M N MApp NApp MNtype) as [LL [_ _]]; trivial.
-    apply n0.
+    apply n1.
     rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
       trivial.
     right; intro TrN.
@@ -1343,6 +1449,9 @@ Module Horpo (S : TermsSig.Signature)
     apply HAbs with Nabs N'abs; trivial.
   Qed.
 
-  Hint Resolve horpo_prehorpo horpo_type_preserving horpo_eq_compat : horpo.
+  Hint Resolve horpo_prehorpo horpo_type_preserving horpo_eq_compat
+    horpo_env_preserving horpo_algebraic_preserving horpo_var_normal 
+    horpo_app_reduct horpo_abs_reduct horpo_monotonous horpo_conv_comp 
+    horpo_subst_stable horpo_var_consistent : horpo.
 
 End Horpo.
