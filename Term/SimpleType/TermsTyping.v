@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.7 2009-01-20 12:45:25 koper Exp $ *)
+(* $Id: TermsTyping.v,v 1.8 2009-01-22 11:18:17 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -359,6 +359,18 @@ Module TermsEqset_dec <: Eqset_dec.
   Definition eqA_dec := eq_Term_dec.
 
 End TermsEqset_dec.
+
+Ltac infer_tt :=
+  compute;
+    match goal with
+    | |- _ |- ?t := _ =>
+      match t with
+      | App _ _ => eapply TApp; infer_tt
+      | Abs _ _ => eapply TAbs; infer_tt
+      | Fun _ => intuition
+      | Var _ => eapply TVar; compute; trivial
+      end
+    end.
 
 End TermsTyping.
 

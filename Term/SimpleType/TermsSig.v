@@ -8,15 +8,11 @@ This file presents the definition of simple types
 for the development of theory of simpe typed lambda-calculus.
 *)
 
-(* $Id: TermsSig.v,v 1.3 2008-10-06 03:22:31 blanqui Exp $ *)
+(* $Id: TermsSig.v,v 1.4 2009-01-22 11:18:17 koper Exp $ *)
 
 Set Implicit Arguments.
 
-(* ==================================================================
-     Specification of simple types. They are built using base types
-   that are given as a parameter to this module.
-   ================================================================== *)
-Module Type SimpleTypes.
+Module Type BaseTypes.
 
    (* Base types; denoted as a, b, c, ... *)
   Parameter BaseType : Type.
@@ -26,6 +22,16 @@ Module Type SimpleTypes.
   Hint Resolve eq_BaseType_dec : terms.
    (* To ensure that set of base types is not empty *)
   Parameter baseTypesNotEmpty : BaseType.
+
+End BaseTypes.
+
+(* ==================================================================
+     Specification of simple types. They are built using base types
+   that are given as a parameter to this module.
+   ================================================================== *)
+Module SimpleTypes (BT : BaseTypes).
+
+  Export BT.
 
    (*
       Simple types: either basic types or arrow types A->B with A and B 
@@ -49,7 +55,8 @@ End SimpleTypes.
    ================================================================== *)
 Module Type Signature.
 
-  Declare Module ST : SimpleTypes.
+  Declare Module BT : BaseTypes.
+  Module ST := SimpleTypes BT.
   Import ST.
   Export ST.
 
