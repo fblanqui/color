@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.40 2008-10-22 06:46:56 blanqui Exp $ *)
+(* $Id: VecUtil.v,v 1.41 2009-01-26 12:15:41 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -960,13 +960,20 @@ Qed.
 
 Implicit Arguments beq_vec_ok_length [n v p w].
 
-Lemma beq_vec_ok1 : forall n (v : vec n) p (w : vec p)
-  (h : beq_vec v w = true), Vcast v (beq_vec_ok_length h) = w.
+Lemma beq_vec_ok1 : forall n (v : vec n) p (w : vec p) (leq : n = p),
+  beq_vec v w = true -> Vcast v leq = w.
 
 Proof.
 induction v; destruct w; simpl; intros; try (refl || discriminate).
-destruct (andb_elim h). rewrite beq_ok in H. subst a0. apply Vtail_eq.
-rewrite <- (IHv _ _ H0). apply Vcast_prf_eq.
+destruct (andb_elim H). rewrite beq_ok in H0. subst a0. apply Vtail_eq.
+apply IHv. assumption.
+Qed.
+
+Lemma beq_vec_beq_impl_eq : forall n (v w : vec n),
+  beq_vec v w = true -> v = w.
+
+Proof.
+  intros. rewrite <- (Vcast_refl v). apply beq_vec_ok1. assumption.
 Qed.
 
 Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
@@ -1265,3 +1272,46 @@ Proof.
   red. simpl. split. trivial. 
   unfold lforall in IHv. apply IHv; trivial.
 Qed.
+
+(***********************************************************************)
+(** bVforall *)
+
+Section bVforall_sec.
+
+Variable A : Type.
+Variable P : A -> bool.
+
+Fixpoint bVforall n (v : vector A n) { struct v } : bool :=
+  match v with
+    | Vnil => true
+    | Vcons a _ w => P a && bVforall w
+  end.
+
+End bVforall_sec.
+
+(***********************************************************************)
+(** bVforall2 *)
+
+Section bVforall2_sec.
+
+Variables A B : Type.
+Variable P : A -> B -> bool.
+
+Fixpoint bVforall2 n1 (v1 : vector A n1) n2 (v2 : vector B n2) {struct v1} : bool :=
+  match eq_nat_dec n1 n2 with
+  | right _ => false
+  | _ =>
+      match v1 with
+      | Vnil => true
+      | Vcons x _ xs =>
+        match v2 with
+        | Vnil => false
+        | Vcons y _ ys =>
+            P x y && bVforall2 xs ys
+        end
+      end
+  end.
+
+Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) := bVforall2 v1 v2.
+
+End bVforall2_sec.
