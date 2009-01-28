@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 *)
 
-(* $Id: VecOrd.v,v 1.11 2008-10-22 06:46:56 blanqui Exp $ *)
+(* $Id: VecOrd.v,v 1.12 2009-01-28 22:39:20 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -27,9 +27,9 @@ Require Export Relations.
 Implicit Arguments symprod [A B].
 
 Fixpoint Vgt_prod n : vec n -> vec n -> Prop :=
-  match n as n return vec n -> vec n -> Prop with
-    | O => fun _ _ => False
-    | S n => fun v1 v2 => symprod gtA (@Vgt_prod n) (Vsplit v1) (Vsplit v2)
+  match n with
+  | O => fun _ _ => False
+  | S n => fun v1 v2 => symprod gtA (@Vgt_prod n) (Vsplit v1) (Vsplit v2)
   end.
 
 Infix ">prod" := Vgt_prod (at level 70).
@@ -103,7 +103,7 @@ assert (v2 = Vcons (Vhead v2) (Vtail v2)). apply VSn_eq. rewrite H1.
 rewrite H0 in H. rewrite H1 in H. simpl in H. unfold Vsplit in H. simpl in H.
 apply Vgt_prod_cons. inversion H. left. split. assumption.
 eapply Vcast_eq_elim with (m := n). apply H6.
-right. split. reflexivity. eapply IHm with (n := n). apply H3.
+right. split. refl. eapply IHm with (n := n). apply H3.
 Qed.
 
 Require Export SN.

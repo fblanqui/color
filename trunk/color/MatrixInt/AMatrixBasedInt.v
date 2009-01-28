@@ -329,9 +329,9 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       change (args (mi_of_term (inject_term t_b))) with (Vreplace (Vconst 
         (zero_matrix dim dim) (S k)) (le_lt_S (maxvar_var t_b)) 
       (id_matrix dim)).
-      rewrite mint_eval_var_aux. simpl. 
-      rewrite mat_mult_id_l. rewrite col_mat_to_vec_idem.
-      rewrite Vbuild_nth. refl. ded dim_pos. auto. 
+      rewrite mint_eval_var_aux. rewrite Vbuild_nth. simpl.
+      rewrite mat_mult_id_l. rewrite col_mat_to_vec_idem. refl.
+      ded dim_pos. auto.
     Qed.
 
     Lemma mint_eval_const : forall val k (c : vec),

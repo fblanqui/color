@@ -23,12 +23,8 @@ Notation vec := (vector A).
 
 Definition zero_vec := Vconst A0.
 
-Definition id_vec n i := Vbuild
-  (fun j (jp : j < n) =>
-    match eq_nat_dec i j with
-    | left _ => A1
-    | right _ => A0
-    end).
+Definition id_vec n i (ip : i < n) := 
+  Vreplace (zero_vec n) ip A1.
 
 (***********************************************************************)
 (** vector plus *)
@@ -172,32 +168,24 @@ Proof.
 Qed.
 
 Lemma dot_product_id : forall i n (ip : i < n) v,
-  dot_product (id_vec n i) v = Vnth v ip.
+  dot_product (id_vec ip) v = Vnth v ip.
 
 Proof.
   induction i. intros. 
   destruct n. absurd_arith.
 
    (* induction base *)
-  unfold dot_product. VSntac v. simpl.
-  fold (dot_product (Vtail (id_vec (S n) 0)) (Vtail v)).
-  rewrite dot_product_zero with (v' := Vtail v).
-  unfold id_vec. rewrite Vhead_nth. rewrite Vbuild_nth. simpl. ring.
-  apply Vforall_nth_intro. intros. 
-  unfold id_vec. rewrite Vnth_tail. rewrite Vbuild_nth. refl.
+  VSntac v. unfold id_vec, dot_product. simpl.
+  fold (dot_product (Vconst A0 n) (Vtail v)).
+  rewrite dot_product_zero. ring.
+  apply Vforall_nth_intro. intros.
+  rewrite Vnth_const. refl.
 
    (* induction step *)
   intros. destruct n. absurd_arith.
   VSntac v. unfold dot_product. simpl.
   rewrite <- (IHi n (lt_S_n ip) (Vtail v)).
-  replace (Vhead (id_vec (S n) (S i))) with A0. 
-  ring_simplify. unfold dot_product.
-  replace (Vtail (id_vec (S n) (S i))) with (id_vec n i). refl.
-  apply Veq_nth. intros. rewrite Vnth_tail.
-  unfold id_vec. repeat rewrite Vbuild_nth.
-  destruct (eq_nat_dec i i0); destruct (eq_nat_dec (S i) (S i0));
-    try solve [refl | absurd_arith].
-  rewrite Vhead_nth. unfold id_vec. rewrite Vbuild_nth. refl.
+  ring_simplify. unfold dot_product. refl.
 Qed.
 
 Lemma dot_product_comm : forall n (u v : vec n),
