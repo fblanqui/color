@@ -110,7 +110,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Definition zero_matrix m n : matrix m n := mat_build (fun i j ip jp => A0).
 
-  Definition id_matrix n : matrix n n := Vbuild (fun i ip => id_vec n i).
+  Definition id_matrix n : matrix n n := Vbuild (fun i ip => id_vec ip).
 
   Definition inverse_matrix inv m n (M : matrix m n) : matrix m n :=
     mat_build (fun i j ip jp => inv (get_elem M ip jp)).

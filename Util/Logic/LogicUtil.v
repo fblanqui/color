@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.16 2008-10-21 09:09:54 blanqui Exp $ *)
+(* $Id: LogicUtil.v,v 1.17 2009-01-28 22:39:19 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -19,6 +19,8 @@ Require Export Setoid.
 Ltac hyp := assumption.
 
 Ltac refl := reflexivity.
+(* We need that because in presence of Program module 'refl' is hidden *)
+Ltac reflx := reflexivity. 
 
 Ltac gen h := generalize h; clear h.
 

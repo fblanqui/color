@@ -8,7 +8,7 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.8 2009-01-22 11:18:17 koper Exp $ *)
+(* $Id: TermsTyping.v,v 1.9 2009-01-28 22:39:19 koper Exp $ *)
 
 Set Implicit Arguments.
 
@@ -373,4 +373,3 @@ Ltac infer_tt :=
     end.
 
 End TermsTyping.
-
