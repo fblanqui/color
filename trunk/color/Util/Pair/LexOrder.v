@@ -8,12 +8,11 @@ Lexicographic order on a product and some results
 concerning it are introduced in this file.
 *)
 
-(* $Id: LexOrder.v,v 1.7 2009-01-20 12:45:25 koper Exp $ *)
-
 Set Implicit Arguments.
 
+Require Import LogicUtil.
+Require Import RelUtil.
 Require Import RelExtras.
-Require Import Notations.
 Require Import Setoid.
 
 Section LexPair.
@@ -37,7 +36,7 @@ Section LexPair.
  
   Variable lp_gtL : lp_L -> lp_L -> Prop.
 
-  Definition lp_ltL := transp lp_L lp_gtL.
+  Definition lp_ltL := transp lp_gtL.
 
   Variable lp_gtL_eqL_compat: forall (x x' y y': lp_L), 
     lp_eqL x x' -> lp_eqL y y' -> lp_gtL x y -> lp_gtL x' y'.
@@ -56,7 +55,7 @@ Section LexPair.
 
   Variable lp_gtR : lp_R -> lp_R -> Prop.
 
-  Definition lp_ltR := transp lp_R lp_gtR.
+  Definition lp_ltR := transp lp_gtR.
 
   Variable lp_gtR_eqR_compat: forall (x x' y y': lp_R), 
     lp_eqR x x' -> lp_eqR y y' -> lp_gtR x y -> lp_gtR x' y'.
@@ -73,7 +72,7 @@ Section LexPair.
     split; eauto with sets.
   Qed.
 
-  Definition lp_pair := (lp_L * lp_R).
+  Definition lp_pair := (lp_L * lp_R)%type.
 
   Definition lp_eqPair (x y: lp_pair) :=
     lp_eqL (fst x) (fst y) /\ lp_eqR (snd x) (snd y).
@@ -86,7 +85,7 @@ Section LexPair.
   | GtR: forall a a' b b', lp_eqL a a' -> lp_gtR b b' -> (a, b) >lex (a', b')
     where "a >lex b" := (lp_LexProd_Gt a b).
 
-  Definition lp_LexProd_Lt := transp lp_pair lp_LexProd_Gt.
+  Definition lp_LexProd_Lt := transp lp_LexProd_Gt.
 
   Notation "a <lex b" := (lp_LexProd_Lt a b) (at level 40).
 
@@ -297,7 +296,7 @@ Module LexicographicOrder (A_ord B_ord : Ord).
 
   Notation "a >lex b" := (LexProd_Gt a b) (at level 40).
 
-  Definition LexProd_Lt := transp pair LexProd_Gt.
+  Definition LexProd_Lt := transp LexProd_Gt.
 
   Notation "a <lex b" := (LexProd_Lt a b) (at level 40).
 

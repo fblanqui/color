@@ -7,38 +7,34 @@ See the COPYRIGHTS and LICENSE files.
 from algebraic terms to varyadic terms
 *)
 
-(* $Id: VTerm_of_ATerm.v,v 1.8 2008-10-08 08:27:50 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Section S.
+Require Import LogicUtil.
+Require Import ListUtil.
+Require Import VecUtil.
 
-Require Export ASignature.
+Section S.
 
 (***********************************************************************)
 (** algebraic signature *)
 
+Require Import ATerm.
+
 Variable ASig : Signature.
 
-Require Export ATerm.
-
-Notation aterm := (term ASig).
-Notation aterms := (vector aterm).
+Notation aterm := (term ASig). Notation aterms := (vector aterm).
 Notation AFun := (@Fun ASig).
 
 (***********************************************************************)
 (** corresponding varyadic signature *)
 
-Require Export VSignature.
+Require Import VTerm.
 
 Definition VSig_of_ASig := mkSignature (@ASignature.eq_symbol_dec ASig).
 
 Notation VSig := VSig_of_ASig.
 
-Require Export VTerm.
-
-Notation vterm := (term VSig).
-Notation vterms := (list vterm).
+Notation vterm := (term VSig). Notation vterms := (list vterm).
 Notation VFun := (@Fun VSig).
 
 (***********************************************************************)
@@ -104,13 +100,13 @@ Qed.
 (***********************************************************************)
 (** conversion of contexts *)
 
-Require Export AContext.
+Require Import AContext.
 
 Notation acont := (@context ASig).
 Notation ACont := (@Cont ASig).
 Notation afill := fill.
 
-Require Export VContext.
+Require Import VContext.
 
 Notation vcont := (@context VSig).
 Notation VCont := (@Cont VSig).
@@ -134,12 +130,12 @@ Qed.
 (***********************************************************************)
 (** conversion of substitutions *)
 
-Require Export ASubstitution.
+Require Import ASubstitution.
 
 Notation asubs := (@substitution ASig).
 Notation asub := (@sub ASig).
 
-Require Export VSubstitution.
+Require Import VSubstitution.
 
 Notation vsubs := (@substitution VSig).
 Notation vsub := (@sub VSig).
@@ -162,12 +158,12 @@ Qed.
 (***********************************************************************)
 (** conversion of rules *)
 
-Require Export ATrs.
+Require Import ATrs.
 
 Notation arule := (@ATrs.rule ASig).
 Notation ared := (@ATrs.red ASig).
 
-Require Export VTrs.
+Require Import VTrs.
 
 Notation vrule := (@VTrs.rule VSig).
 Notation vred := (@VTrs.red VSig).
@@ -194,7 +190,7 @@ Qed.
 (***********************************************************************)
 (** preservation of termination *)
 
-Require Export SN.
+Require Import SN.
 
 Lemma SN_vred_imp_SN_ared : forall t,
   SN (vred S) t -> forall u, t = vterm_of_aterm u -> SN (ared R) u.

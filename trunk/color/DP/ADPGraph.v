@@ -7,12 +7,19 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs graph
 *)
 
-(* $Id: ADPGraph.v,v 1.16 2008-10-17 10:11:08 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
 Require Export ADP.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import RelUtil.
+Require Import RelSub.
+Require Import Path.
+Require Import ARelation.
+Require Import SN.
+Require Import ListOccur.
+Require Import ListRepeatFree.
 
 Section S.
 
@@ -38,8 +45,8 @@ Qed.
 (***********************************************************************)
 (** dependancy pairs graph *)
 
-Require Export ARename.
-Require Export ASubstitution.
+Require Import ARename.
+Require Import ASubstitution.
 
 Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
   /\ exists p, exists s,
@@ -102,7 +109,7 @@ Qed.
 
 Implicit Arguments chain_dps_app' [a l m b p x y].
 
-Require Export Iter.
+Require Import Iter.
 
 Lemma chain_dps_iter_chain :
   forall l a, chain_dps a l << iter Chain (length l).
@@ -180,8 +187,8 @@ Implicit Arguments chain_dps_path_dp_graph [l a b t u].
 (** hypotheses of the criterion based on cycles
 using the same reduction pair for every cycle *)
 
-Require Export ACompat.
-Require Export Cycle.
+Require Import ACompat.
+Require Import Cycle.
 
 Variables (succ succ_eq : relation term)
   (Hredord : weak_rewrite_ordering succ succ_eq)

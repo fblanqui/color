@@ -14,10 +14,17 @@ References:
 
 Set Implicit Arguments.
 
-Require Export AMatrixBasedInt.
-Require Export AWFMInterpretation.
+Require Import AMatrixBasedInt.
 Require Import Matrix.
 Import NMatrix.
+Require Import OrdSemiRing.
+Require Import VecUtil.
+Require Import AMonAlg.
+Require Import SN.
+Require Import RelUtil.
+Require Import NatUtil.
+Require Import RelMidex.
+Require Import AWFMInterpretation.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TMatrixInt.

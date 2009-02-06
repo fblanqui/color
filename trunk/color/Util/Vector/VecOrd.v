@@ -7,12 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 symmetric product on vectors
 *)
 
-(* $Id: VecOrd.v,v 1.12 2009-01-28 22:39:20 koper Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export VecUtil.
+Require Import LogicUtil.
+Require Import VecUtil.
+Require Import EqUtil.
+Require Import Relations.
+Require Import Arith.
 
 Section S.
 
@@ -22,7 +23,7 @@ Notation vec := (vector A).
 
 Infix ">A" := gtA (at level 70).
 
-Require Export Relations.
+Require Import Relations.
 
 Implicit Arguments symprod [A B].
 
@@ -106,7 +107,7 @@ eapply Vcast_eq_elim with (m := n). apply H6.
 right. split. refl. eapply IHm with (n := n). apply H3.
 Qed.
 
-Require Export SN.
+Require Import SN.
 
 Lemma Vforall_SN_gt_prod : forall n (v : vec n),
   Vforall (SN gtA) v -> SN (@Vgt_prod n) v.

@@ -9,12 +9,13 @@ higher-order recursive path ordering due to Jouannaud and Rubio.
 *)
 
 Set Implicit Arguments.
+
 Require Import RelExtras.
 Require Import ListExtras.
-Require Export Horpo.
-Require Computability.
-Require LexOrder.
-Require HorpoComp.
+Require Import Horpo.
+Require Import Computability.
+Require Import LexOrder.
+Require Import HorpoComp.
 
 Module HorpoWf (S : TermsSig.Signature) 
                (Prec : Horpo.Precedence with Module S := S).
@@ -73,7 +74,7 @@ Module HorpoWf (S : TermsSig.Signature)
     End SetWF.
     Module S := Eqset_def SetWF.
     Definition A := WFterms.
-    Definition gtA := transp WFterms H_WFterms_lt.
+    Definition gtA := transp H_WFterms_lt.
     Definition gtA_eqA_compat := Eqset_def_gtA_eqA_compat gtA.
 
   End H_WFmul_ord.

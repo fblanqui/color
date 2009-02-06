@@ -9,12 +9,15 @@ REN(CAP(_)) operation used in the DP framework.
 Like ACap.capa except that variables are considered as aliens too.
 *)
 
-(* $Id: ARenCap.v,v 1.2 2008-10-30 01:57:21 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export ACalls.
+Require Import LogicUtil.
+Require Import ACalls.
+Require Import ATrs.
+Require Import VecUtil.
+Require Import ListUtil.
+Require Import NatUtil.
+Require Import RelUtil.
 
 Section S.
 
@@ -411,23 +414,23 @@ Lemma red_sub_ren_cap : forall u v,
   red R u v -> forall k, exists s, v = sub s (ren_cap k u).
 
 Proof.
-intros u v H. redtac. subst. elim c; simpl; intros.
+intros u v H. redtac. subst. elim c; clear c; simpl; intros.
 (* Hole *)
 destruct l. is_var_lhs. assert (defined f R = true).
 eapply lhs_fun_defined. apply H. rewrite sub_fun. rewrite ren_cap_fun.
 rewrite H0. exists_single k (sub s r).
 (* Cont *)
 rewrite ren_cap_fun. case (defined f R). simpl.
-exists_single k (Fun f (Vcast (Vapp v (Vcons (fill c0 (sub s r)) v0)) e)).
+exists_single k (Fun f (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e)).
 rewrite ren_caps_cast. rewrite ren_caps_app. simpl ren_caps.
 destruct (ren_caps_intro v k) as [s1]. destruct H1 as [H1 H1'].
 destruct (H0 (k + nb_aliens_vec v)) as [s2].
 destruct (ren_caps_intro v0
-  (k + nb_aliens_vec v + nb_aliens (fill c0 (sub s l)))) as [s3].
+  (k + nb_aliens_vec v + nb_aliens (fill c (sub s l)))) as [s3].
 destruct H3 as [H3 H3'].
 set (s' := fun x => match In_dec x (vars_vec (ren_caps k v)) with
   | left _ => s1 x | right _ => match
-  In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c0 (sub s l)))) with
+  In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))) with
   | left _ => s2 x | right _ => s3 x end end). exists s'.
 rewrite sub_fun. apply args_eq. rewrite Vmap_cast. rewrite Vmap_app. simpl.
 apply Vcast_eq. apply Vapp_eq. transitivity (Vmap (sub s1) (ren_caps k v)).
@@ -436,14 +439,14 @@ case (In_dec x (vars_vec (ren_caps k v))); intro. refl. intuition.
 apply Vcons_eq. rewrite H2. apply sub_eq. intros. ded (vars_ren_cap H4).
 unfold s'. case (In_dec x (vars_vec (ren_caps k v))); intro.
 ded (vars_ren_caps i0). absurd_arith. case
-  (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c0 (sub s l)))));
+  (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))));
   intro. refl. intuition.
 transitivity (Vmap (sub s3)
-  (ren_caps (k + nb_aliens_vec v + nb_aliens (fill c0 (sub s l))) v0)).
+  (ren_caps (k + nb_aliens_vec v + nb_aliens (fill c (sub s l))) v0)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H4). unfold s'.
 case (In_dec x (vars_vec (ren_caps k v))); intro.
 ded (vars_ren_caps i0). absurd_arith. case
-  (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c0 (sub s l)))));
+  (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))));
   intro. ded (vars_ren_cap i0). absurd_arith. refl.
 Qed.
 
@@ -457,6 +460,58 @@ destruct IHclos_refl_trans1. destruct IHclos_refl_trans2. subst.
 destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
 rewrite ren_cap_idem. rewrite sub_sub. exists (comp x1 x2). refl.
 Qed.
+
+(***********************************************************************)
+(** cap under head symbol *)
+
+Definition ren_cap' k t :=
+  match t with
+  | Fun f ts => Fun f (ren_caps k ts)
+  | _ => t
+  end.
+
+(*FIXME: to be moved to ATrs ? *)
+Lemma int_red_elim : forall u v, int_red R u v -> exists f,
+  exists i, exists vi : terms i, exists t, exists j, exists vj : terms j,
+  exists h, exists t', u = Fun f (Vcast (Vapp vi (Vcons t vj)) h)
+    /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red R t t'.
+
+Proof.
+intros. destruct u. redtac. destruct c. irrefl. discr. exists f.
+ded (int_red_fun H). decomp H0. exists x. exists x0. exists x1. exists x2.
+exists x3. exists x4. exists x5. subst. intuition.
+Qed.
+
+(*FIXME: to be finished
+
+Lemma int_red_sub_ren_cap' : forall u v,
+  int_red R u v -> forall k, exists s, v = sub s (ren_cap' k u).
+
+Proof.
+intros. ded (int_red_elim H). decomp H0. subst. unfold ren_cap'.
+rewrite ren_caps_cast. rewrite ren_caps_app. simpl ren_caps.
+destruct (ren_caps_intro x1 k) as [s1]. destruct H0.
+destruct (red_sub_ren_cap H4 (k + nb_aliens_vec x1)) as [s2].
+rewrite sub_restrict in H2.
+set (s2' := restrict s2 (vars (ren_cap (k + nb_aliens_vec x1) x2))) in H2.
+assert (forall x, x < k + nb_aliens_vec x1
+  \/ x >= k + nb_aliens_vec x1 + nb_aliens x2 -> s2' x = Var x). intros.
+assert (Inb eq_nat_dec x7 (vars (ren_cap (k + nb_aliens_vec x1) x2)) = false).
+apply Inb_elim. intro. ded (vars_ren_cap H5). omega.
+unfold s2', restrict. rewrite H5. refl.
+destruct (ren_caps_intro x4 k) as [s3]. destruct H5.
+Qed.
+
+Lemma rtc_int_red_sub_ren_cap' : forall k u v,
+  int_red R # u v -> exists s, v = sub s (ren_cap' k u).
+
+Proof.
+induction 1; intros. apply int_red_sub_ren_cap'. hyp.
+destruct (ren_cap_intro x k). exists x0. intuition.
+destruct IHclos_refl_trans1. destruct IHclos_refl_trans2. subst.
+destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
+rewrite ren_cap_idem. rewrite sub_sub. exists (comp x1 x2). refl.
+Qed.*)
 
 End S.
 

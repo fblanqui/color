@@ -12,7 +12,10 @@ Journal of Automated Reasoning, 2005, volume 34, pages 105-139
 
 Set Implicit Arguments.
 
-Require Export Srs.
+Require Import Srs.
+Require Import ListUtil.
+Require Import RelUtil.
+Require Import LogicUtil.
 
 Section S.
 
@@ -51,7 +54,7 @@ intros. redtac. exists (rev' x). split. apply red_rev_rtc. exact H.
 apply red_rev. exists l. exists r. exists c. auto.
 Qed.
 
-Require Export SN.
+Require Import SN.
 
 Lemma WF_reverse : forall E R,
   WF (red_mod (reverses E) (reverses R)) -> WF (red_mod E R).

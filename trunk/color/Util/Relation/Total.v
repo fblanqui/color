@@ -11,10 +11,14 @@ acyclic iff its restriction to any finite set has a decidable
 (resp. middle-excluding) irreflexive linear extension.
 *)
  
-(* $Id: Total.v,v 1.10 2008-05-21 15:04:16 blanqui Exp $ *)
-
 Require Import Sumbool. 
-Require Export RelDec.
+Require Import RelDec.
+Require Import RelUtil.
+Require Import ListUtil.
+Require Import RelMidex.
+Require Import RelSub.
+Require Import Path.
+Require Import Arith.
 
 Set Implicit Arguments.
 

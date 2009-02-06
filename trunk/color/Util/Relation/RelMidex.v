@@ -58,7 +58,7 @@ End relation.
 
 (* replace by morphism:
 
-Require Export RelUtil.
+Require Import RelUtil.
 
 Lemma rel_dec_eq : forall A (R S : relation A),
   R == S -> rel_dec S -> rel_dec R.

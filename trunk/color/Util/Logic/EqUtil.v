@@ -7,11 +7,10 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: EqUtil.v,v 1.10 2008-10-21 09:09:54 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Import Setoid.
 
 (***********************************************************************)
 (** dependent equality on decidable types *)
@@ -88,7 +87,7 @@ Proof.
 intro. ded (beq_ok x x). rewrite H. refl.
 Qed.
 
-Require Export BoolUtil.
+Require Import BoolUtil.
 
 Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 

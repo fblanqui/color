@@ -8,13 +8,12 @@ This file provides a definition of terms of simply typed
 lambda-calculus.
 *)
 
-(* $Id: TermsDef.v,v 1.4 2008-10-06 03:22:29 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import ListExtras.
-Require Export TermsSig.
+Require Import TermsSig.
+Require Import Setoid.
 
 Module TermsDef (Sig : Signature).
 

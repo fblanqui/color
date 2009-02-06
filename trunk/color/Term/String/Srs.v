@@ -7,32 +7,27 @@ See the COPYRIGHTS and LICENSE files.
 string rewriting
 *)
 
-(* $Id: Srs.v,v 1.6 2008-10-06 03:22:31 blanqui Exp $ *)
-
 Set Implicit Arguments.
+
+Require Import Relations.
+Require Import LogicUtil.
+Require Export SContext.
+Require Import RelUtil.
 
 (***********************************************************************)
 (** basic definitions *)
 
 Section definition.
 
-Require Export VSignature.
-
 Variable Sig : Signature.
-
-Require Export List.
 
 Notation string := (list Sig).
 
 Record rule : Type := mkRule { lhs : string; rhs : string }.
 
-Require Export SContext.
-
 Definition red R : relation string := fun s1 s2 =>
   exists l, exists r, exists c,
     In (mkRule l r) R /\ s1 = fill c l /\ s2 = fill c r.
-
-Require Export RelUtil.
 
 Definition red_mod E R := red E # @ red R.
 
@@ -48,8 +43,8 @@ Ltac redtac := repeat
     | H : red _ ?t ?u |- _ =>
       let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
       let h1 := fresh in
-      (unfold red in H; destruct H as [l]; destruct H as [r]; destruct H as [c];
-      destruct H as [H h1]; destruct h1)
+      (unfold red in H; destruct H as [l]; destruct H as [r];
+        destruct H as [c]; destruct H as [H h1]; destruct h1)
     | H : red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
   end.
 
@@ -115,7 +110,7 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-Require Export SN.
+Require Import SN.
 
 Ltac no_relative_rules :=
   match goal with

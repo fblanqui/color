@@ -7,11 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 finitely branching well-founded relations have no infinite sequences
 *)
 
-(* $Id: IS_NotSN.v,v 1.2 2008-05-14 12:26:55 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export RedLength.
+Require Import RelUtil.
+Require Import RedLength.
+Require Import SN.
+Require Import LogicUtil.
 
 Section S.
 

@@ -8,15 +8,23 @@ See the COPYRIGHTS and LICENSE files.
 dependancy pairs
 *)
 
-(* $Id: ADP.v,v 1.22 2008-10-17 10:11:08 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Import ATrs.
+Require Import ACalls.
+Require Import ARename.
+Require Import ACap.
+Require Import ASN.
+Require Import ListUtil.
+Require Import RelUtil.
+Require Import ListForall.
+Require Import SN.
+Require Import VecUtil.
+Require Import VecOrd.
+Require Import NatUtil.
 
 Section S.
-
-Require Export ACalls.
 
 Variable Sig : Signature.
 
@@ -54,6 +62,9 @@ Qed.
 Implicit Arguments mkdp_elim [l t S].
 
 Definition dp := (mkdp R).
+
+(***********************************************************************)
+(** basic properties *)
 
 Lemma dp_intro : forall l r t,
   In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
@@ -93,6 +104,21 @@ unfold incl. intros. ded (in_map_elim H). do 2 destruct H0. subst a.
 destruct x as [l r]. ded (dp_elim H0). do 2 destruct H1.
 change (In (lhs (mkRule l x)) (map lhs R)). apply in_map. exact H1.
 Qed.
+
+(*FIXME: to be finished
+
+Lemma is_notvar_lhs_dp_aux :
+  forall S, forallb (@is_notvar_lhs Sig) (mkdp S) = true.
+
+Proof.
+induction S; simpl; intros. refl. destruct a. simpl. rewrite forallb_app.
+Qed.
+
+Lemma is_notvar_lhs_dp : forallb (@is_notvar_lhs Sig) dp = true.
+
+Proof.
+unfold dp.
+Qed.*)
 
 (***********************************************************************)
 (** dependancy chains *)
@@ -174,8 +200,6 @@ unfold rules_preserv_vars. intros. ded (dp_elim_vars H). destruct H0.
 intuition.
 Qed.
 
-Require Export ARename.
-
 Lemma dp_preserv_pw_disjoint_vars :
   pw_disjoint_vars (map lhs R) -> pw_disjoint_vars (map lhs dp).
 
@@ -187,15 +211,11 @@ Qed.
 (***********************************************************************)
 (** fundamental dp theorem *)
 
-Require Export ACap.
-
 Notation capa := (capa R).
 Notation cap := (cap R).
 Notation alien_sub := (alien_sub R).
 
 Notation SNR := (SN (red R)).
-
-Require Export ASN.
 
 Lemma chain_min_fun : forall f, defined f R = true
   -> forall ts, SN chain_min (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).

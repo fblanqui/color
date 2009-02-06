@@ -8,19 +8,22 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ACompat.v,v 1.12 2008-10-06 03:22:33 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ATrs.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import RelUtil.
+Require Import ARelation.
+Require Import ListForall.
+Require Import RelMidex.
+Require Import LogicUtil.
 
 Section S.
 
 Variable Sig : Signature.
 
 Notation term := (term Sig).
-Notation rule := (rule Sig).
-Notation rules := (list rule).
+Notation rule := (rule Sig). Notation rules := (list rule).
 
 (***********************************************************************)
 (** compatibility *)

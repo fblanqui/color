@@ -11,6 +11,20 @@ We represent the quotient of the Domain by SCC with a function to nat.
 Set Implicit Arguments.
 
 Require Export SCC_dec.
+Require Import List.
+Require Import AdjMat.
+Require Import RelUtil.
+Require Import ListExtras.
+Require Import LogicUtil.
+Require Import VecUtil.
+Require Import NatUtil.
+Require Import RelSub.
+Require Import Path.
+Require Import RelMidex.
+Require Import SortUtil.
+Require Import Permutation.
+Require Import Multiset.
+Require Import ListRepeatFree.
 
 Section SCC_quotient.
 
@@ -221,7 +235,7 @@ apply tc_incl_rtc. intuition.
 rewrite SCC'_tag_exact. split. congruence. rewrite H3. discriminate.
 Qed.
 
-Require Export Total.
+Require Import Total.
 
 Lemma topo_sortable_Rquo' : topo_sortable Rquo'.
 
@@ -250,8 +264,8 @@ Qed.
 (***********************************************************************)
 (* SCCs sorting *)
 
-Require Export Heap.
-Require Export BoundNat.
+Require Import Heap.
+Require Import BoundNat.
 
 Notation bnat := (bnat dim).
 

@@ -9,7 +9,13 @@ Semi-ring equipped with two (strict and non-strict) orders.
 
 Require Import RelDec.
 Require Export SemiRing.
-Require Export SN.
+Require Import SN.
+Require Import RelExtras.
+Require Import RelMidex.
+Require Import NatUtil.
+Require Import LogicUtil.
+Require Import Max.
+Require Import ZUtil.
 
 (** Semi-rings equipped with orders *)
 

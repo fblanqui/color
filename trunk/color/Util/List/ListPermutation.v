@@ -7,17 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 Some results concerning permutations of lists.
 *)
 
-(* $Id: ListPermutation.v,v 1.6 2008-10-06 03:22:35 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Import Setoid.
-Require Export List.
 Require Import Multiset.
 Require Import Permutation.
-Require Export ListExtras.
+Require Import ListExtras.
 Require Import NatUtil.
-Require Omega.
+Require Import LogicUtil.
+Require Import Setoid.
 
 Section Multiplicity.
 

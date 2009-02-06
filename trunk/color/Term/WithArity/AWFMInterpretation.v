@@ -8,22 +8,23 @@ See the COPYRIGHTS and LICENSE files.
 well-founded monotone interpretations
 *)
 
-(* $Id: AWFMInterpretation.v,v 1.12 2007-04-13 16:09:49 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ASignature.
+Require Import ATerm.
+Require Export AInterpretation.
+Require Import RelUtil.
+Require Import ASubstitution.
+Require Import NaryFunction.
+Require Import AContext.
+Require Import VecUtil.
+Require Import SN.
+Require Import Max.
 
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
-
-Require Export AInterpretation.
+Notation term := (term Sig). Notation terms := (vector term).
 
 Variable I : interpretation Sig.
 
@@ -39,8 +40,6 @@ Definition IR : relation term :=
 (***********************************************************************)
 (** properties of IR *)
 
-Require Export RelUtil.
-
 Lemma IR_reflexive : reflexive R -> reflexive IR.
 
 Proof.
@@ -53,7 +52,7 @@ Proof.
 intro. unfold transitive, IR. intros. exact (H _ _ _ (H0 xint) (H1 xint)).
 Qed.
 
-Require Export ARelation.
+Require Import ARelation.
 
 Lemma IR_substitution_closed : substitution_closed IR.
 

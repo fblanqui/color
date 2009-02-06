@@ -11,7 +11,6 @@ that it preserves various properties
 Require Import Relations.
 Require Import Wellfounded.
 Require Import List.
-
 Require Import MultisetOrder.
 Require Import ListExtras.
 Require Import RelExtras.
@@ -21,12 +20,10 @@ Require Import Permutation.
 Require Import MultisetTheory.
 Require Import Arith.
 Require Import MultisetListOrder.
-
-Require Export VSignature.
+Require Import VTerm.
+Require Import Setoid.
 
 Variable Sig : Signature.
-
-Require Export VTerm.
 
 Notation term := (term Sig).
 Notation terms := (list term).
@@ -40,8 +37,6 @@ Module Term <: Eqset.
 
   Definition eqA := eq (A := term).
   Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
-
-  Require Import Setoid.
 
   Lemma sid_theoryA : Setoid_Theory A eqA.
   Proof.

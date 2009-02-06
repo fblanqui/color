@@ -13,11 +13,11 @@ Set Implicit Arguments.
 Require Import RelExtras.
 Require Import ListExtras.
 Require Import Relations.
-Require Export Terms.
-Require MultisetOrder.
-Require LexOrder.
-Require MultisetList.
-Require MultisetTheory.
+Require Import Terms.
+Require Import MultisetOrder.
+Require Import LexOrder.
+Require Import MultisetList.
+Require Import MultisetTheory.
 
 Module Type Precedence.
 
@@ -25,7 +25,7 @@ Module Type Precedence.
   Declare Module P : Poset with Definition A := S.FunctionSymbol.
   Export P.
 
-  Parameter Ord_wf : well_founded (transp A gtA).
+  Parameter Ord_wf : well_founded (transp gtA).
   Parameter Ord_dec : forall a b, {gtA a b} + {~gtA a b}.
 
 End Precedence.
@@ -118,7 +118,7 @@ Module Horpo (S : TermsSig.Signature)
 
     where "M >>= N" := (horpoRC M N).
 
-  Notation "M >>* N" := (clos_trans Term horpo M N) (at level 30).
+  Notation "M >>* N" := (clos_trans horpo M N) (at level 30).
 
   Scheme horpoArgs_Ind := Minimality for horpoArgs Sort Prop
     with prehorpo_Ind  := Minimality for prehorpo  Sort Prop

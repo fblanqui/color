@@ -8,8 +8,6 @@ Algebraic terms (functions with arity; simple output type of a function
 assumed) encoded via lambda-terms.
 *)
 
-(* $Id: TermsAlgebraic.v,v 1.6 2008-10-06 03:22:28 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

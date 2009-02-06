@@ -7,8 +7,17 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Export Matrix.
-Require Export AMonAlg.
+Require Import Matrix.
+Require Import AMonAlg.
+Require Import VecUtil.
+Require Import OrdSemiRing.
+Require Import ATrs.
+Require Import LogicUtil.
+Require Import RelUtil.
+Require Import NatUtil.
+Require Import AWFMInterpretation.
+Require Import RelMidex.
+Require Import Max.
 
 Section MatrixLinearFunction.
 

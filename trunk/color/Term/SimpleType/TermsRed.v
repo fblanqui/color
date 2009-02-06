@@ -7,13 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 Formalization of reductions of simply-typed lambda terms.
 *)
 
-(* $Id: TermsRed.v,v 1.4 2008-10-06 03:22:31 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import ListExtras.
-Require TermsSubstConv.
+Require Import TermsSubstConv.
 
 Module TermsRed (Sig : TermsSig.Signature).
 

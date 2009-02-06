@@ -9,22 +9,19 @@ This file provides some basic results concerning relations that were
 missing in the standard library.
 *)
 
-(* $Id: RelExtras.v,v 1.8 2009-01-20 12:45:25 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Require Export Relations.
-Require Import Setoid.
+Require Import RelUtil.
+Require Import LogicUtil.
 Require Import Max.
-Require Import Omega.
+Require Import Arith.
+Require Import Setoid.
 
 Section StrictOrder.
 
   Variable A : Type.
-
-  Definition relation := A -> A -> Prop.
- 
-  Variable R : relation.
+  Variable R : relation A.
 
   Definition transitive := forall x y z:A, R x y -> R y z -> R x z.
   Definition irreflexive := forall x:A, ~ R x x.
@@ -43,7 +40,7 @@ Section StrictOrder.
     exact (sord_irrefl so (sord_trans so Rab Rba)).
   Qed.
 
-  Variable eq : relation.
+  Variable eq : relation A.
   Variable Req_compat : forall x x' y y',
     eq x x' -> eq y y' -> R x y -> R x' y'.
   Variable eq_setoid : Setoid_Theory A eq.
@@ -141,7 +138,7 @@ Module OrdLemmas (P : Ord).
 
   Export P.
 
-  Definition ltA := transp A gtA.
+  Definition ltA := transp gtA.
   Definition geA x y := ~ ltA x y.
   Definition leA x y := ~ gtA x y.
   Definition AccA := Acc ltA.
@@ -229,7 +226,7 @@ Section Transitive_Closure.
   Variable A : Type.
   Variable R : A -> A -> Prop.
 
-  Let R_tclos := clos_trans A R.
+  Let R_tclos := clos_trans R.
 
   Lemma trans_clos_step_l : forall x y, 
     R_tclos x y -> R x y \/ (exists2 z, R x z & R_tclos z y).
@@ -284,7 +281,7 @@ Section Transitive_Closure.
   Qed.
 
   Lemma trans_clos_transp : forall x y, 
-    transp A (clos_trans A R) x y <-> clos_trans A (transp A R) x y.
+    transp (clos_trans R) x y <-> clos_trans (transp R) x y.
 
   Proof.
     intros; split; compute.
@@ -297,10 +294,10 @@ Section Transitive_Closure.
   Qed.
 
   Variable R' : A -> A -> Prop.
-  Variable R'sub : inclusion A R' R.
+  Variable R'sub : inclusion R' R.
   
   Lemma trans_clos_inclusion : forall a b,
-    clos_trans A R' a b -> clos_trans A R a b.
+    clos_trans R' a b -> clos_trans R a b.
 
   Proof.
     intros a b a_b.
@@ -315,16 +312,15 @@ Section Accessibility.
 
   Variable A : Type.
   Variable B : Type.
-  Definition relationA := A -> A -> Prop.
-  Variables R S : relationA.
+  Variables R S : relation A.
 
-  Definition mimic (P: relationA) :=
+  Definition mimic (P: relation A) :=
     forall x x',
       P x x' ->
       (forall y', R y' x' ->
 	exists2 y, R y x & P y y').
 
-  Lemma Acc_mimic : forall x (P: relationA),
+  Lemma Acc_mimic : forall x (P: relation A),
     Acc R x -> mimic P ->
     forall x', P x x' -> Acc R x'.
       
@@ -412,14 +408,14 @@ Section Transposition.
   Variable A : Type.
   Variable R : A -> A -> Prop.
 
-  Lemma transp_transp_R_eq_R : forall x y, R x y <-> transp A (transp A R) x y.
+  Lemma transp_transp_R_eq_R : forall x y, R x y <-> transp (transp R) x y.
 
   Proof.
     split; auto.
   Qed.
     
   Lemma transp_transp_wf :
-    well_founded R -> well_founded (transp A (transp A R)).
+    well_founded R -> well_founded (transp (transp R)).
 
   Proof.
     intros R_wf x.

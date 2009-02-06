@@ -7,7 +7,13 @@ See the COPYRIGHTS and LICENSE files.
   Matrices as a functor.
 *)
 
-Require Export VecArith.
+Require Import VecArith.
+Require Import OrdSemiRing.
+Require Import VecUtil.
+Require Import NatUtil.
+Require Import LogicUtil.
+Require Import Relations.
+Require Import List.
 
 Set Implicit Arguments.
 

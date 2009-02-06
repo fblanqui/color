@@ -8,8 +8,6 @@ This file provides an implementation of finite multisets using list
 representation.
 *)
 
-(* $Id: MultisetList.v,v 1.6 2009-01-20 12:45:25 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

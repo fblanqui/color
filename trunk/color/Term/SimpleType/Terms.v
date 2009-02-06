@@ -8,8 +8,6 @@ This file provides the development concerning terms of simply typed
 lambda-calculus.
 *)
 
-(* $Id: Terms.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require TermsAlgebraic.

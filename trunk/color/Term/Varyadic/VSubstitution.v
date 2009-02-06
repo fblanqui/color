@@ -7,20 +7,16 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: VSubstitution.v,v 1.4 2008-10-06 03:22:32 blanqui Exp $ *)
-
 Set Implicit Arguments.
+
+Require Import LogicUtil.
+Require Import VTerm.
 
 Section S.
 
-Require Export VSignature.
-
 Variable Sig : Signature.
 
-Require Export VTerm.
-
-Notation term := (term Sig).
-Notation terms := (list term).
+Notation term := (term Sig). Notation terms := (list term).
 
 (***********************************************************************)
 (* definition of substitutions as functions from variables to terms *)
@@ -48,6 +44,8 @@ intros f s. induction v; simpl; refl.
 Qed.
 
 Section properties.
+
+Require Import Relations.
 
 Variable succ : relation term.
 

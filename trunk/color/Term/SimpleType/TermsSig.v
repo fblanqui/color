@@ -8,8 +8,6 @@ This file presents the definition of simple types
 for the development of theory of simpe typed lambda-calculus.
 *)
 
-(* $Id: TermsSig.v,v 1.4 2009-01-22 11:18:17 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Module Type BaseTypes.

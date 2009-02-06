@@ -7,8 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 Convertibility of substituted terms.
 *)
 
-(* $Id: TermsSubstConv.v,v 1.3 2008-10-06 03:22:31 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

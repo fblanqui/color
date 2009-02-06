@@ -7,16 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 Some additional functions on lists.
 *)
 
-(* $Id: ListExtras.v,v 1.16 2008-10-06 03:22:34 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Export ListUtil.
 Require Import NatUtil.
-Require Omega.
-Require Import Setoid.
 Require Import Min.
 Require Import Permutation.
+Require Import LogicUtil.
+Require Import Setoid.
 
 (***********************************************************************)
 (** initial segment of a list *)

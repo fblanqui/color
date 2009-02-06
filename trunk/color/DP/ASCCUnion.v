@@ -9,16 +9,31 @@ Modular termination proof through SCC of an over DPGraph
 
 Set Implicit Arguments.
 
-Require Export SCCTopoOrdering.
-Require Export AGraph.
-Require Export ListPermutation.
+Require Import SCCTopoOrdering.
+Require Import AGraph.
+Require Import ATrs.
+Require Import List.
+Require Import RelUtil.
+Require Import RelSub.
+Require Import ListRepeatFree.
+Require Import AdjMat.
+Require Import Permutation.
+Require Import Multiset.
+Require Import LogicUtil.
+Require Import BoundNat.
+Require Import NatUtil.
+Require Import ListPermutation.
+Require Import ListExtras.
+Require Import Setoid.
+Require Import SN.
+Require Import VecUtil.
+Require Import GDomainBij.
 
 Section S.
 
 Variable Sig : Signature.
 
-Notation rule := (rule Sig).
-Notation rules := (list rule).
+Notation rule := (rule Sig). Notation rules := (list rule).
 
 Variable S : relation (term Sig).
 Variable R : rules.
@@ -60,7 +75,7 @@ unfold permutation, meq in *. ded (p i). rewrite nfirst_multiplicity in H0.
 destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 cut (exists j, j=i /\ In j x). intros; destruct H1. destruct H1.
 rewrite <- H1; auto.
-apply (multiplicity_in (@eq nat) NatUtil.eq_nat_dec). omega.
+apply (multiplicity_in (@eq nat) eq_nat_dec). omega.
 assert (length (hyp_Dom hyps) = dim); intuition.
 rewrite <- H1 in H. assert False. omega. tauto.
 Qed.
@@ -197,8 +212,8 @@ Qed.
 (***********************************************************************)
 (** Proof of the modular termination criterion *)
 
-Require Export CoLoR.Util.Relation.Union.
-Require Export SortUtil.
+Require Import CoLoR.Util.Relation.Union.
+Require Import SortUtil.
 
 Lemma WF_SCC'_union_aux : forall L,
   (forall i, In i L -> WF (hd_red_Mod_SCC' i)) -> sort RT_ODPG L -> 

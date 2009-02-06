@@ -8,14 +8,17 @@ See the COPYRIGHTS and LICENSE files.
 general results on the strong normalization of rewrite relations
 *)
 
-(* $Id: ASN.v,v 1.12 2008-10-17 10:11:09 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ATrs.
-Require Export SN.
+Require Import ATrs.
+Require Import SN.
+Require Import List.
+Require Import LogicUtil.
+Require Import VecUtil.
+Require Import VecOrd.
+Require Import NatUtil.
 
 Variable Sig : Signature.
 
@@ -73,7 +76,7 @@ Qed.
 (***********************************************************************)
 (** undefined symbol whose arguments are sn *)
 
-Require Export ACalls.
+Require Import ACalls.
 
 Lemma sn_args_sn_fun : forall f, defined f R = false ->
   forall ts, Vforall SNR ts -> SNR (Fun f ts).
@@ -121,7 +124,7 @@ if [sub s (Fun g vs)] is sn whenever [Fun g vs] is a call in [r]
 such that [Vmap (sub s) vs] are sn,
 then [sub s (Fun g vs)] is sn whenever [Gun g vs] is a call in [r] *)
 
-Require Export ACap.
+Require Import ACap.
 
 Lemma calls_sn_args : forall r s, (forall x, In x (vars r) -> SNR (s x))
   -> (forall g vs, In (Fun g vs) (calls R r)

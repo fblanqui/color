@@ -8,14 +8,11 @@ This file provides a specification of finite multiset data-type along
 with specification of operations on multisets.
 *)
 
-(* $Id: MultisetCore.v,v 1.7 2009-01-20 12:45:25 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
-Require Setoid.
-Require Omega.
-Require Min.
+Require Import Omega.
+Require Import Min.
 
 Module Type MultisetCore.
 

@@ -9,11 +9,17 @@ See the COPYRIGHTS and LICENSE files.
 monotone polynomials
 *)
 
-(* $Id: MonotonePolynom.v,v 1.11 2008-05-27 22:50:07 koper Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export PositivePolynom.
+Require Import Polynom.
+Require Import PositivePolynom.
+Require Import NaryFunction.
+Require Import VecUtil.
+Require Import LogicUtil.
+Require Import List.
+Require Import ZUtil.
+Require Import RelUtil.
+Require Import NatUtil.
 
 Open Local Scope Z_scope.
 

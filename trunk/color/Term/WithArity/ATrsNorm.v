@@ -28,13 +28,13 @@ x >_term y if x >_nat y
 assuming a total ordering >_symb on symbols
 *)
 
-(* $Id: ATrsNorm.v,v 1.2 2008-10-06 03:22:33 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ATrs.
+Require Import ATrs.
 Require Import ListDec.
 Require Import ListSort.
+Require Import NatUtil.
+Require Import List.
 
 Section S.
 
@@ -78,7 +78,7 @@ Section term_ordering.
 
 Variable symb_cmp : Sig -> Sig -> comparison.
 
-Require Export OrdDec.
+Require Import OrdDec.
 
 Fixpoint cmp (t u : term) {struct t} : comparison :=
   match t, u with

@@ -7,8 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas in classical logic
 *)
 
-(* $Id: ClassicUtil.v,v 1.1 2007-08-08 09:33:43 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Export Classical.

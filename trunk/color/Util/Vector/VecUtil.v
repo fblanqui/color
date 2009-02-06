@@ -10,14 +10,16 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library Bool/Bvector
 *)
 
-(* $Id: VecUtil.v,v 1.42 2009-01-28 22:39:20 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import Program.
-Require Export LogicUtil.
+Require Import LogicUtil.
 Require Export Bvector.
-Require Export NatUtil.
+Require Import NatUtil.
+Require Import EqUtil.
+Require Import RelMidex.
+Require Import ListUtil.
+Require Import BoolUtil.
 
 Implicit Arguments Vnil [A].
 Implicit Arguments Vcons.
@@ -272,7 +274,7 @@ intros. VSntac v. simpl. apply Vnth_eq. reflx.
 Qed.
 
 Lemma Vnth_cons : forall k n (v : vec n) a (H1 : S k < S n) (H2 : k < n),
- Vnth (Vcons a v) H1 = Vnth v H2.
+  Vnth (Vcons a v) H1 = Vnth v H2.
 
 Proof.
 intros. simpl. assert (H : lt_S_n H1 = H2). apply lt_unique.
@@ -299,8 +301,8 @@ Qed.
 
 Lemma Vnth_addl : forall k n (v : vec n) a (H1 : k < S n) (H2 : k < n),
   Vnth (Vadd v a) H1 = Vnth v H2.
-Proof.
 
+Proof.
 intros. assert (H3 : H1 = (@le_S (S k) n H2)). apply lt_unique.
 subst H1. generalize dependent k. generalize dependent n. intro n. elim n.
  intros v k H. elimtype False. apply (lt_n_O _ H).
@@ -328,8 +330,7 @@ rewrite (Vnth_cons (Vadd v' a) a' (lt_n_Sn (S p')) (lt_n_Sn p')).
 assumption.
 Qed.
 
-Lemma Vnth_const : forall n (a : A) i (ip : i < n),
-  Vnth (Vconst a n) ip = a.
+Lemma Vnth_const : forall n (a : A) i (ip : i < n), Vnth (Vconst a n) ip = a.
 
 Proof.
 induction n; intros. absurd_arith.
@@ -775,7 +776,7 @@ Proof.
   do 2 rewrite Vnth_tail. apply H.
 Qed.
 
-Require Export RelDec.
+Require Import RelDec.
 
 Variable R_dec : rel_dec R.
 
@@ -891,7 +892,7 @@ Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B)
 (***********************************************************************)
 (** conversion to lists *)
 
-Require Export List.
+Require Import List.
 
 Fixpoint vec_of_list (l : list A) : vec (length l) :=
   match l with
@@ -1272,7 +1273,7 @@ Qed.
 (***********************************************************************)
 (** Vforall <-> lforall  *)
 
-Require Export ListForall.
+Require Import ListForall.
 
 Lemma lforall_Vforall : forall (A : Type) (l : list A) (p : A -> Prop),
   lforall p l -> Vforall p (vec_of_list l).

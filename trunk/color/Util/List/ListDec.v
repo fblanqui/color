@@ -7,11 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 boolean functions on lists
 *)
 
-(* $Id: ListDec.v,v 1.4 2008-09-19 03:04:59 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ListUtil.
+Require Import ListUtil.
+Require Import BoolUtil.
+Require Import EqUtil.
+Require Import LogicUtil.
+Require Import Arith.
 
 Section S.
 

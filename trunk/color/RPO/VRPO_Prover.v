@@ -10,9 +10,16 @@ converting varyadic terms to terms with arities).
 
 Require Import ATrs.
 Require Import VPrecedence.
-Require Export VRPO_Status.
+Require Import VRPO_Status.
 Require Import VRPO_Results.
 Require Import VTerm_of_ATerm.
+Require Import ListUtil.
+Require Import Preorder.
+Require Import SN.
+Require Import RelMidex.
+Require Import RelUtil.
+Require Import ARelation.
+Require Import Arith.
 
 Set Implicit Arguments.
 

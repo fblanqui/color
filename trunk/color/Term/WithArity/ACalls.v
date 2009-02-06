@@ -7,12 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 symbols defined by a set of rules, list of calls in a rhs
 *)
 
-(* $Id: ACalls.v,v 1.13 2008-10-31 09:05:55 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export ATrs.
+Require Import LogicUtil.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import VecUtil.
 
 Section S.
 

@@ -8,8 +8,6 @@ Definition and properties of active environments: subset of term
 environments with declarations that are really used in a term.
 *)
 
-(* $Id: TermsActiveEnv.v,v 1.4 2008-10-06 03:22:28 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

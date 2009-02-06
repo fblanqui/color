@@ -9,8 +9,15 @@ We give a way to decide the SCC relation using the adjacency matrix.
 
 Set Implicit Arguments.
 
-Require Export GDomainBij.
-Require Export AdjMat.
+Require Import GDomainBij.
+Require Import AdjMat.
+Require Import List.
+Require Import RelSub.
+Require Import ListRepeatFree.
+Require Export SCC.
+Require Import ListExtras.
+Require Import RelUtil.
+Require Import LogicUtil.
 
 Section SCC_effectif.
 

@@ -8,11 +8,18 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: ATrs.v,v 1.45 2009-01-21 00:57:46 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ARelation.
+Require Import ARelation.
+Require Export AContext.
+Require Export ASubstitution.
+Require Import ListUtil.
+Require Import ListRepeatFree.
+Require Import LogicUtil.
+Require Import VecUtil.
+Require Import RelUtil.
+Require Import ListForall.
+Require Import SN.
 
 Section basic_definitions.
 
@@ -124,7 +131,7 @@ Section rewriting_modulo.
 
 Variables (S : relation term) (E R: rules).
 
-Definition hd_red_Mod :=  S @ hd_red R.
+Definition hd_red_Mod := S @ hd_red R.
 
 Definition red_mod := red E # @ red R.
 
@@ -376,7 +383,7 @@ Qed.
 
 Section vector.
 
-Require Export VecOrd.
+Require Import VecOrd.
 
 Variable R : rules.
 

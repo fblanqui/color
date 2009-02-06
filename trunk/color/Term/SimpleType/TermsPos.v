@@ -8,8 +8,6 @@ Positions in terms, replacement of term at position,
 monotonicity property.
 *)
 
-(* $Id: TermsPos.v,v 1.3 2008-10-06 03:22:30 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

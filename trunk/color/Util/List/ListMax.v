@@ -8,13 +8,13 @@ See the COPYRIGHTS and LICENSE files.
 greatest/smallest component of a list of natural numbers
 *)
 
-(* $Id: ListMax.v,v 1.8 2008-10-15 08:08:51 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ListUtil.
-Require Export Max.
-Require Export Min.
+Require Import ListUtil.
+Require Import Max.
+Require Import Min.
+Require Import LogicUtil.
+Require Import NatUtil.
 
 Notation nats := (list nat).
 

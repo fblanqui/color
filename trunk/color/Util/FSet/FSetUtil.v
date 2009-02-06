@@ -7,11 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 lemmas and tactics on Coq's FSets
 *)
 
-(* $Id: FSetUtil.v,v 1.7 2008-10-28 05:57:25 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
 
 Require Import FSets.
 Require Import FSetAVL.

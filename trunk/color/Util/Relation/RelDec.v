@@ -11,11 +11,14 @@ iff the transitive closures of its finite restrictions are decidable
 (resp. middle-excluding)
 *)
 
-(* $Id: RelDec.v,v 1.7 2007-04-13 15:39:43 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export Path.
+Require Import Path.
+Require Import Relations.
+Require Import List.
+Require Import RelMidex.
+Require Import RelSub.
+Require Import Arith.
 
 Section S.
 

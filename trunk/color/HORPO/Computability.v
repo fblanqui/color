@@ -13,7 +13,8 @@ Set Implicit Arguments.
 Require Import RelExtras.
 Require Import ListExtras.
 Require Import LexOrder.
-Require Horpo.
+Require Import Horpo.
+Require Import LogicUtil.
 Require Import Setoid.
 
 Module Computability (S : TermsSig.Signature) 
@@ -27,10 +28,10 @@ Section Computability_def.
   Variable R : Term -> Term -> Prop.
   Notation "X <-R- Y" := (R Y X) (at level 50).
   Notation "X -R-> Y" := (R X Y) (at level 50).
-  Let Rtrans := clos_trans Term R.
+  Let Rtrans := clos_trans R.
   Notation "X -R*-> Y" := (Rtrans X Y) (at level 50).
 
-  Definition AccR := Acc (transp Term R).
+  Definition AccR := Acc (transp R).
 
   Fixpoint ComputableS (M: Term) (T: SimpleType) {struct T} : Prop :=
     algebraic M /\
@@ -330,7 +331,7 @@ Section Computability_theory.
 
   Proof.
     intros M M' M'M AccM'; unfold AccR.
-    apply Acc_homo with (x := M) (R := transp Term R) (morphism := terms_conv);
+    apply Acc_homo with (x := M) (R := transp R) (morphism := terms_conv);
       trivial.
     unfold transp; intros x y x' x'x xy.
     destruct (R_conv_to (M':=x') xy (terms_conv_sym x'x)) as [y' [x'y' yy']].
@@ -593,12 +594,12 @@ Section Computability_theory.
 	  Computable N
     ).
     intros W Wcomp Wtyp.
-    assert (Wacc: Acc (transp Term R) W).
+    assert (Wacc: Acc (transp R) W).
     apply IH_L1; trivial.
     cut (type W = B1); trivial.
     cut (Computable W); trivial.
     cut (algebraic P); trivial.
-    apply Acc_rect with (R := transp Term R)(P :=
+    apply Acc_rect with (R := transp R)(P :=
       fun W =>
 	algebraic P ->
 	Computable W ->
@@ -799,13 +800,13 @@ Section Computability_theory.
     unfold CompTerm_eq; transitivity (proj1_sig y); trivial.
   Defined.
 
-  Lemma well_founded_R_comp : well_founded (transp CompTerm R_Comp).
+  Lemma well_founded_R_comp : well_founded (transp R_Comp).
 
   Proof.
-    set (w := Acc_ind (R := transp Term R) (fun M =>
+    set (w := Acc_ind (R := transp R) (fun M =>
       forall T,
 	proj1_sig T = M ->
-	Acc (transp CompTerm R_Comp) T
+	Acc (transp R_Comp) T
     )).
     intro T.
     apply w with (proj1_sig T); trivial.

@@ -11,8 +11,16 @@ a simple over graph of the DP graph based on the equality of head symbols
 
 Set Implicit Arguments.
 
-Require Export ADecomp.
-Require Export ADuplicateSymb.
+Require Import ADecomp.
+Require Import ADuplicateSymb.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import RelSub.
+Require Import RelUtil.
+Require Import AGraph.
+Require Import LogicUtil.
+Require Import BoolUtil.
+Require Import ARename.
 
 (***********************************************************************)
 (** definition of the hde over graph *)

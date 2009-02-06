@@ -8,22 +8,25 @@ Some computability results instantiated for horpo.
 *)
 
 Set Implicit Arguments.
+
 Require Import RelExtras.
 Require Import ListExtras.
-Require Computability.
-Require Horpo.
+Require Import Computability.
+Require Import Horpo.
+Require Import Setoid.
 
-Module HorpoComp (S : TermsSig.Signature) (Prec : Horpo.Precedence with Module S := S).
+Module HorpoComp (S : TermsSig.Signature)
+  (Prec : Horpo.Precedence with Module S := S).
 
   Module Comp := Computability.Computability S Prec.
   Export Comp.
   Import List.
 
-  Definition horpo_lt := transp Term horpo.
+  Definition horpo_lt := transp horpo.
   Definition horpo_mul_lt := MultisetLT horpo.
   
   Notation "X << Y" := (horpo_lt X Y) (at level 55).
-  Definition Htrans := clos_trans Term horpo.
+  Definition Htrans := clos_trans horpo.
 
   Definition Terms := list Term.
   Definition CompH := Computable horpo.

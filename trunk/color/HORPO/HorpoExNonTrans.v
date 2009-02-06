@@ -1,10 +1,18 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Adam Koprowski, 2009-01-22
+
+*)
+
 Require Import TermsSig.
 Require Import Horpo.
 Require Import HorpoWf.
 Require Import RelExtras.
-Require Import Setoid.
 Require Import Wf_nat.
 Require Import List.
+Require Import Terms.
 
 Module BT <: BaseTypes.
 

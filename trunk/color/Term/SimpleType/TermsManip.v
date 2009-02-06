@@ -8,13 +8,11 @@ In this file some basic operations on terms of simply
 typed lambda-calculus are defined.
 *)
 
-(* $Id: TermsManip.v,v 1.4 2008-10-06 03:22:30 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import ListExtras.
-Require TermsTyping.
+Require Import TermsTyping.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
@@ -661,7 +659,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | subterm_eq: forall M,
       subterm_le M M. 
 
-  Definition subterm_gt := transp Term subterm.
+  Definition subterm_gt := transp subterm.
 
   Module Subterm_Ord <: Ord.
     

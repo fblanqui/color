@@ -7,11 +7,10 @@ See the COPYRIGHTS and LICENSE files.
 boolean function for total ordering
 *)
 
-(* $Id: OrdDec.v,v 1.1 2008-08-08 14:23:08 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export RelUtil.
+Require Import RelUtil.
+Require Import LogicUtil.
 
 Section S.
 

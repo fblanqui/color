@@ -11,8 +11,9 @@ and on Coq's multiplicity function
 Set Implicit Arguments.
 
 Require Export Sorting.
-Require Export RelUtil.
-Require Export List.
+Require Import RelUtil.
+Require Import List.
+Require Import LogicUtil.
 
 (***********************************************************************)
 (** lelistA and sort *)
@@ -44,7 +45,7 @@ subst. apply cons_sort. subst; auto. inversion H5. subst. inversion H9.
 apply nil_leA. subst. apply cons_leA. eapply H; eauto.
 Qed.
 
-Require Export ListRepeatFree.
+Require Import ListRepeatFree.
 
 Lemma rp_free_lelistA_strict : forall (B : Type) a S (mb : list B)
   (HL : repeat_free (a::mb)), lelistA (S%) a mb -> lelistA S a mb.
@@ -68,8 +69,8 @@ Qed.
 (***********************************************************************)
 (** multiplicity *)
 
-Require Export Multiset.
-Require Export Permutation.
+Require Import Multiset.
+Require Import Permutation.
 
 Section multiplicity.
 

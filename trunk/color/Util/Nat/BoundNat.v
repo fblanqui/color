@@ -9,7 +9,10 @@ type of natural numbers smaller than some constant
 
 Set Implicit Arguments.
 
-Require Export NatUtil.
+Require Import NatUtil.
+Require Import LogicUtil.
+Require Import Multiset.
+Require Import Permutation.
 
 Section S.
 
@@ -37,7 +40,7 @@ Focus 2. destruct H. destruct x0. simpl in *. intuition.
 exists (mkbnat H). simpl. refl.
 Qed.
 
-Require Export ListExtras.
+Require Import ListExtras.
 
 Fixpoint bnats_of_nats l :=
   match l with
@@ -70,7 +73,7 @@ intros. unfold nfirst_bnats. destruct x. fold (mkbnat l).
 apply bnats_of_nats_spec. rewrite nfirst_exact. auto.
 Qed.
 
-Require Export SortUtil.
+Require Import SortUtil.
 
 Lemma map_lelistA_bnat_to_nat : forall R (a : bnat) l,
   lelistA (fun x y => R (proj1_sig x) (proj1_sig y)) a l ->

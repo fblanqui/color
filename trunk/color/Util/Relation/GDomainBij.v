@@ -10,12 +10,16 @@ and relation restricted to Dom with relation restricted to [[1,n]].
 
 Set Implicit Arguments.
 
-Require Export ListUtil.
-Require Export SCC.
-Require Export ListExtras.
-Require Export Path.
-Require Export Iter.
-Require Export AdjMat.
+Require Import ListUtil.
+Require Import SCC.
+Require Import ListExtras.
+Require Import Path.
+Require Import Iter.
+Require Import AdjMat.
+Require Import RelSub.
+Require Import LogicUtil.
+Require Import ListRepeatFree.
+Require Import RelUtil.
 
 Section S.
 

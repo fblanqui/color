@@ -8,8 +8,6 @@ Operations on environments of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsEnv.v,v 1.6 2008-10-06 03:22:29 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

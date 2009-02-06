@@ -12,6 +12,16 @@ Set Implicit Arguments.
 Require Import ADecomp.
 Require Import AUnif.
 Require Import ARenCap.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import RelUtil.
+Require Import AGraph.
+Require Import LogicUtil.
+Require Import ARename.
+Require Import ACalls.
+Require Import BoolUtil.
+Require Import Compare_dec.
+Require Import ADuplicateSymb.
 
 Section S.
 

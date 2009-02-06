@@ -9,9 +9,13 @@ Arithmetic over vectors of coefficients.
 
 Set Implicit Arguments.
 
-Require Export VecUtil.
-Require Export RelUtil.
-Require Export OrdSemiRing.
+Require Import VecUtil.
+Require Import RelUtil.
+Require Import SemiRing.
+Require Import OrdSemiRing.
+Require Import NatUtil.
+Require Import LogicUtil.
+Require Import RelMidex.
 
 (** Module with arithmetic over vectors of coefficients *)
 Module VectorArith (SRT : SemiRingType).

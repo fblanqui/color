@@ -7,12 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 rule renaming
 *)
 
-(* $Id: ARename.v,v 1.6 2008-10-13 09:40:22 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export ATrs.
+Require Import LogicUtil.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import VecUtil.
+Require Import VecMax.
+Require Import NatUtil.
+Require Import RelUtil.
 
 Section S.
 
@@ -33,7 +36,7 @@ Variable p : nat.
 
 Definition shift_var x := x+p.
 
-Require Export ASubstitution.
+Require Import ASubstitution.
 
 Definition shift_sub x := @Var Sig (x+p).
 Definition shift := sub shift_sub.

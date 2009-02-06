@@ -7,12 +7,12 @@ See the COPYRIGHTS and LICENSE files.
 properties of ~SN terms (using classical logic)
 *)
 
-(* $Id: NotSN.v,v 1.2 2008-05-14 12:26:55 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ClassicUtil.
-Require Export SN.
+Require Import ClassicUtil.
+Require Import SN.
+Require Import Relations.
+Require Import LogicUtil.
 
 Section S.
 

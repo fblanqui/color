@@ -7,11 +7,10 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on boolean vectors
 *)
 
-(* $Id: VecBool.v,v 1.3 2008-05-14 12:26:56 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export VecUtil.
+Require Import VecUtil.
+Require Import LogicUtil.
 
 Notation bools := (vector bool).
 

@@ -8,14 +8,14 @@ Operation of substitution for simple typed
 lambda-calculus is defined in this file.
 *)
 
-(* $Id: TermsSubst.v,v 1.3 2008-10-06 03:22:31 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import ListPermutation.
 Require Import Arith.
 Require Import TermsConv.
+Require Import ListUtil.
+Require Import ListExtras.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 

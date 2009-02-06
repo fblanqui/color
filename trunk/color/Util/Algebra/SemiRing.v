@@ -7,10 +7,16 @@ See the COPYRIGHTS and LICENSE files.
   Semi-ring structure.
 *)
 
-Require Import Ring.
-Require Import Ring_theory.
+Require Export Ring.
+Require Export Ring_theory.
 Require Import RelDec.
-Require Export Relations.
+Require Import Relations.
+Require Import Max.
+Require Import Arith.
+Require Import Compare.
+Require Import LogicUtil.
+Require Import Bool.
+Require Import RelExtras.
 
 (** Semi-ring structure type *)
 Module Type SemiRingType.
@@ -246,7 +252,7 @@ Module ArcticSemiRing := SemiRing ArcticSemiRingT.
 (** Arctic semi-ring over integers with minus infinity and 
     plus-max operations *)
 
-Require Export ZUtil.
+Require Import ZUtil.
 
 Module ArcticBZSemiRingT <: SemiRingType.
 

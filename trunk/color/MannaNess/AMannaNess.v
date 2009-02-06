@@ -7,11 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 termination by using compatible reduction orderings
 *)
 
-(* $Id: AMannaNess.v,v 1.12 2008-09-24 10:20:55 joerg Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ACompat.
+Require Import ATrs.
+Require Import List.
+Require Import SN.
+Require Import ARelation.
+Require Import RelUtil.
+Require Import ACompat.
 
 Section S.
 
