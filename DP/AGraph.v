@@ -10,8 +10,15 @@ to S @ (hd_red R) instead of (int_red R #) @ (dp R)
 
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export ATrs.
+Require Import LogicUtil.
+Require Import ATrs.
+Require Import List.
+Require Import RelUtil.
+Require Import RelSub.
+Require Export ADP.
+Require Import SN.
+Require Import ARename.
+Require Import ADPGraph.
 
 Section S.
 
@@ -29,8 +36,6 @@ Variable D : rules.
 
 (***********************************************************************)
 (* head rules graph *)
-
-Require Export ARename.
 
 Definition hd_rules_graph a1 a2 := In a1 D /\ In a2 D
   /\ exists p, exists s, S (sub s (rhs a1)) (sub s (shift p (lhs a2))).
@@ -124,8 +129,6 @@ Qed.
 
 (***********************************************************************)
 (* relation between hd_red_Mod and chain *)
-
-Require Export ADPGraph.
 
 Lemma hd_red_Mod_of_chain : forall R : rules,
   chain R << hd_red_Mod (int_red R #) (dp R).

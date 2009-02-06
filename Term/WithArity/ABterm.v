@@ -8,20 +8,19 @@ See the COPYRIGHTS and LICENSE files.
 terms whose variable indexes are bounded
 *)
 
-(* $Id: ABterm.v,v 1.7 2008-10-06 03:22:32 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ASignature.
+Require Import ATerm.
+Require Import VecUtil.
+Require Import AInterpretation.
+Require Import LogicUtil.
+Require Import NatUtil.
 
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 
 Section bterm.
 
@@ -147,8 +146,6 @@ Qed.
 
 (***********************************************************************)
 (** interpretation of bterm's *)
-
-Require Export AInterpretation.
 
 Variables (I : interpretation Sig) (xint : valuation I).
 

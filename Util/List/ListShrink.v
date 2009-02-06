@@ -9,7 +9,9 @@ prefix, suffix, cut, elimination of doubles, etc.
 
 Set Implicit Arguments.
 
-Require Export ListRepeatFree. 
+Require Import ListUtil.
+Require Import ListRepeatFree.
+Require Import Le.
 
 (***********************************************************************)
 (** prefix *)
@@ -186,6 +188,8 @@ apply incl_tran with (shrink l). apply incl_cut. apply incl_tl. assumption.
 unfold incl. intros. simpl in H. simpl. case (eq_dec a a0); intro.
 subst a0. auto. right. apply IHl. destruct H. contradiction. exact H.
 Qed.
+
+Require Import RelMidex.
 
 Lemma length_shrink : forall l l' : list A,
   incl l l' -> length (shrink l) <= length l'.

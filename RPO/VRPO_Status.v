@@ -7,12 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-(* $Id: VRPO_Status.v,v 1.8 2009-01-20 12:45:25 koper Exp $ *)
-
-Require Export VPrecedence.
-Require Export MultisetListOrder.
-Require Export LexicographicOrder.
-Require Export VRPO_Type.
+Require Import VPrecedence.
+Require Import MultisetListOrder.
+Require Import LexicographicOrder.
+Require Import VRPO_Type.
+Require Import Relations.
+Require Import VTerm.
+Require Import ListUtil.
+Require Import AccUtil.
 
 Inductive status_name : Set := 
 | lexicographic : status_name 
@@ -56,7 +58,7 @@ End RPO.
 
 (***********************************************************************)
 
-Require Export VRPO_Type.
+Require Import VRPO_Type.
 
 Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 

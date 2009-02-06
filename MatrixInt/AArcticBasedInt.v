@@ -7,9 +7,14 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Export AMatrixBasedInt.
 Require Import AMonAlg.
 Require Import Matrix.
+Require Import OrdSemiRing.
+Require Import VecUtil.
+Require Import SN.
+Require Import RelUtil.
+Require Import RelMidex.
+Require Import AMatrixBasedInt.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TArcticBasedInt.

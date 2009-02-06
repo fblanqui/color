@@ -7,19 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: SContext.v,v 1.2 2008-02-12 16:20:36 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Export VSignature.
+Require Export List.
 
 Section S.
 
-Require Export VSignature.
-
 Variable Sig : Signature.
-
-Require Export List.
 
 Notation string := (list Sig).
 

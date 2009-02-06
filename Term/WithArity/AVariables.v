@@ -7,21 +7,24 @@ See the COPYRIGHTS and LICENSE files.
 set of variables occuring in a term
 *)
 
-(* $Id: AVariables.v,v 1.8 2008-10-30 01:59:10 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ASubstitution.
+Require Import LogicUtil.
+Require Import ASubstitution.
+Require Import FSetUtil.
+Require Import OrderedTypeEx.
+Require Import NatUtil.
+Require Import BoolUtil.
+Require Import EqUtil.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import VecUtil.
 
 (***********************************************************************)
 (** sets of variables *)
 
-Require Export FSetUtil.
-Require Import OrderedTypeEx.
-
-Module VarSetUtil := FSetUtil.Make (Nat_as_OT). Export VarSetUtil.
-
-Require Export NatUtil.
+Module VarSetUtil := FSetUtil.Make (Nat_as_OT).
+Export VarSetUtil.
 
 Lemma eqb_beq_nat : forall x y, eqb x y = beq_nat x y.
 

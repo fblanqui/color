@@ -10,9 +10,11 @@ iteration of a relation
 
 Set Implicit Arguments.
 
-Require Export Path.
-Require Export NatUtil.
-Require Export RelUtil.
+Require Import Path.
+Require Import NatUtil.
+Require Import RelUtil.
+Require Import LogicUtil.
+Require Import List.
 
 Section S.
 
@@ -207,7 +209,7 @@ simpl; unfold compose.
 exists x0; split; auto with *.
 Qed.
 
-Require Export Log2.
+Require Import Log2.
 
 Lemma iter_le_fast_spec : forall n x y,
   iter_le_fast n x y <-> exists p,(S p) <= exp2 n /\ iter p x y.

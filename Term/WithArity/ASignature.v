@@ -7,8 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 signature for algebraic terms with arity
 *)
 
-(* $Id: ASignature.v,v 1.6 2008-10-06 03:22:33 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 (** Variables are represented by natural numbers. *)
@@ -35,7 +33,7 @@ End SIGNATURE.
 
 (** Boolean equality from a signature. *)
 
-Require Export EqUtil.
+Require Import EqUtil.
 
 Section S.
 

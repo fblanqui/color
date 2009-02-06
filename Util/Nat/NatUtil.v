@@ -9,13 +9,11 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas on natural numbers
 *)
 
-(* $Id: NatUtil.v,v 1.33 2008-10-30 13:41:32 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
 Require Export Arith.
-Require Omega.
+Require Export Omega.
 
 (***********************************************************************)
 (** implicit arguments *)
@@ -52,11 +50,11 @@ apply (f_equal S). exact (proj1 (IHx _) H).
 apply (proj2 (IHx y)). inversion H. refl.
 Defined.
 
-Require Export EqUtil.
+Require Import EqUtil.
 
 Ltac case_nat_eq x y := case_beq beq_nat_ok (beq_nat x y).
 
-Definition eq_nat_dec := eq_nat_dec. (* FIXME: dec_beq beq_nat_ok. *)
+(*FIXME Definition eq_nat_dec := dec_beq beq_nat_ok. *)
 
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
@@ -117,13 +115,13 @@ Qed.
 (***********************************************************************)
 (** max *)
 
-Require Export Max.
+Require Import Max.
 
 Implicit Arguments max_r [n m].
 Implicit Arguments max_l [n m].
 Implicit Arguments le_trans [n m p].
 
-Require Export Compare.
+Require Import Compare.
 
 Lemma max_assoc : forall a b c, max a (max b c) = max (max a b) c.
 
@@ -215,7 +213,7 @@ Qed.
 (***********************************************************************)
 (** min *)
 
-Require Export Min.
+Require Import Min.
 
 Lemma elim_min_l : forall x y z, x <= z -> min x y <= z.
 
@@ -232,8 +230,7 @@ Qed.
 (***********************************************************************)
 (** decidability results *)
 
-Require Export RelMidex.
-Require Export Omega.
+Require Import RelMidex.
 
 Lemma nat_ge_dec : rel_dec ge.
 

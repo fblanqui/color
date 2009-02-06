@@ -7,12 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 cycles
 *)
 
-(* $Id: Cycle.v,v 1.9 2008-10-06 03:22:37 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export Path.
-Require Export ListRepeatFree.
+Require Import Path.
+Require Import ListRepeatFree.
+Require Import Relations.
+Require Import ListUtil.
+Require Import LogicUtil.
 
 Section S.
 

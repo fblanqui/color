@@ -8,19 +8,17 @@ See the COPYRIGHTS and LICENSE files.
 greatest/smallest component of a vector of natural numbers
 *)
 
-(* $Id: VecMax.v,v 1.4 2008-10-15 08:08:52 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export VecUtil.
-Require Export NatUtil.
+Require Import VecUtil.
+Require Import NatUtil.
 
 Notation nats := (vector nat).
 
 (***********************************************************************)
 (** max *)
 
-Require Export Max.
+Require Import Max.
 
 Fixpoint Vmax n (v : nats n) {struct v} : nat :=
   match v with
@@ -76,7 +74,7 @@ Implicit Arguments Vmax_forall [n v p].
 (***********************************************************************)
 (** min *)
 
-Require Export Min.
+Require Import Min.
 
 Fixpoint Vmin n (v : nats n) {struct v} : nat :=
   match v with

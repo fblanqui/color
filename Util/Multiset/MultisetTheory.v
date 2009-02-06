@@ -9,20 +9,18 @@ This file provides a development of (part of) the theory of finite
 multisets.
 *)
 
-(* $Id: MultisetTheory.v,v 1.9 2009-01-20 12:45:25 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
-Require Export MultisetCore.
-Require Omega.
-Require Min.
+Require Import MultisetCore.
+Require Import Min.
 Require Import List.
-Require Import Setoid.
 Require Import Multiset.
 Require Import Permutation.
 Require Import ListPermutation.
 Require Import NatUtil.
+Require Import Setoid.
+Require Import ListExtras.
 
 Module Multiset (MC : MultisetCore).
 
@@ -997,7 +995,8 @@ Section List2Multiset.
   Qed.
 
   Lemma list2multiset_remove_in : forall a m,
-    remove a (list2multiset m) =mul= list2multiset (removeElem eqA eqA_dec a m).
+    remove a (list2multiset m)
+    =mul= list2multiset (removeElem eqA eqA_dec a m).
     
   Proof.
     induction m; simpl; intros.
@@ -1008,7 +1007,8 @@ Section List2Multiset.
     rewrite IHm; auto with multisets.
   Qed.
 
-  Lemma diff_empty : forall l m, list2multiset l - list2multiset m =mul= empty ->
+  Lemma diff_empty : forall l m,
+    list2multiset l - list2multiset m =mul= empty ->
     (length l - length m = 0)%nat.
     
   Proof.

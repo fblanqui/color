@@ -9,12 +9,14 @@ maximal reduction length of a term
 for a finitely branching well-founded relation
 *)
 
-(* $Id: RedLength.v,v 1.1 2007-08-08 09:33:43 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export SN.
-Require Export ListMax.
+Require Import SN.
+Require Import ListMax.
+Require Import RelUtil.
+Require Import ListUtil.
+Require Import LogicUtil.
+Require Import Arith.
 
 Section S.
 

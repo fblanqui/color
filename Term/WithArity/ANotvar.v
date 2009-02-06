@@ -7,19 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 properties of function-headed terms
 *)
 
-(* $Id: ANotvar.v,v 1.4 2008-10-06 03:22:33 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Import ATerm.
+Require Import AContext.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
-
-Require Export ATerm.
 
 Notation term := (term Sig).
 
@@ -42,7 +38,7 @@ Proof.
 auto.
 Qed.
 
-Require Export ASubstitution.
+Require Import ASubstitution.
 
 Lemma notvar_sub : forall s t, notvar t -> notvar (sub s t).
 

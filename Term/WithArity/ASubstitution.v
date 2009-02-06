@@ -8,25 +8,26 @@ See the COPYRIGHTS and LICENSE files.
 substitutions
 *)
 
-(* $Id: ASubstitution.v,v 1.24 2008-10-22 07:13:07 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ASignature.
+Require Import AInterpretation.
+Require Import ListForall.
+Require Import AContext.
+Require Import VecUtil.
+Require Import NatUtil.
+Require Import LogicUtil.
+Require Import ListUtil.
+Require Import EqUtil.
 
 Variable Sig : Signature.
-
-Require Export ATerm.
 
 Notation term := (term Sig). Notation terms := (vector term).
 Notation Var := (@Var Sig).
 
 (***********************************************************************)
 (** definition of substitutions as interpretations in terms *)
-
-Require Export AInterpretation.
 
 Definition I0 := mkInterpretation (Var 0) (@Fun Sig).
 
@@ -244,8 +245,6 @@ Definition dom_incl (s : substitution) (l : variables) :=
 (***********************************************************************)
 (** when two substitutions are equal on some domain *)
 
-Require Export ListForall.
-
 Definition sub_eq_dom (s1 s2 : substitution) (l : variables) :=
   forall x, In x l -> s1 x = s2 x.
 
@@ -383,8 +382,6 @@ Qed.
 
 (***********************************************************************)
 (** substitution on contexts *)
-
-Require Export AContext.
 
 Notation context := (context Sig).
 

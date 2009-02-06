@@ -71,3 +71,6 @@ Lemma Vin_elim : forall x n (v : vec n),
     exists H : n1 + S n2 = n, v = Vcast (Vapp v1 (Vcons x v2)) H.
 
 provides a way to deduce some information from Vin (elimination rule).
+
+- Use "Require Export" as less as possible. Use "Require Import"
+instead. This reduces the compilation time.

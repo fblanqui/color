@@ -7,12 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 ~SN terms give infinite sequences (using classical logic and dependent choice)
 *)
 
-(* $Id: NotSN_IS.v,v 1.3 2009-01-21 01:01:11 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export DepChoice.
-Require Export NotSN.
+Require Import DepChoice.
+Require Import NotSN.
+Require Import SN.
+Require Import RelUtil.
+Require Import LogicUtil.
 
 Section S.
 

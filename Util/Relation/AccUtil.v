@@ -10,9 +10,9 @@ useful results on accessibility
 
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export RelUtil.
-Require Export Wellfounded.
+Require Import LogicUtil.
+Require Import RelUtil.
+Require Import Wellfounded.
 
 Implicit Arguments wf_incl [A R1 R2].
 
@@ -32,7 +32,7 @@ auto.
 intro. apply IHclos_refl_trans1. apply IHclos_refl_trans2. assumption.
 Qed.
 
-Require Export Wellfounded.
+Require Import Wellfounded.
 
 Lemma Acc_tc_ind : forall P : A->Prop,
   (forall x, (forall y, clos_trans R y x -> P y) -> P x)
@@ -128,6 +128,6 @@ End RestrictedAcc.
 (***********************************************************************)
 (** accessibility *)
 
-Require Export List.
+Require Import List.
 
 Definition accs (A : Type) r l := forall a : A, In a l -> Acc r a.

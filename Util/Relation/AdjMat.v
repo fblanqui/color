@@ -10,14 +10,20 @@ and the corresponding boolean adjacency matrix of size n*n.
 
 Set Implicit Arguments.
 
-Require Export Matrix.
-Require Export SemiRing.
-Require Export Bool.
-Require Import Omega.
-Require Export Path.
-Require Export Iter.
-Require Export SCC.
-Require Export ListExtras.
+Require Import Matrix.
+Require Import Bool.
+Require Import Path.
+Require Import Iter.
+Require Import SCC.
+Require Import ListExtras.
+Require Import OrdSemiRing.
+Require Import VecUtil.
+Require Import RelSub.
+Require Import RelUtil.
+Require Import NatUtil.
+Require Import Log2.
+Require Import LogicUtil.
+Require Import RelMidex.
 
 Module BMatrix := Matrix BOrdSemiRingT.
 Export BMatrix.
@@ -219,7 +225,7 @@ intros. split; intro. unfold mat_unbound in H.
 destruct (le_gt_dec dim x). discriminate.
 destruct (le_gt_dec dim y). discriminate.
 unfold id_matrix in H; rewrite Vbuild_nth in H.
-destruct (NatUtil.eq_nat_dec x y). auto.
+destruct (eq_nat_dec x y). auto.
 unfold id_vec, zero_vec in H. rewrite Vnth_Vreplace_notReplaced in H.
 rewrite Vnth_const in H. discriminate. assumption.
 destruct H; destruct H0; unfold mat_unbound.

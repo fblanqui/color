@@ -7,22 +7,22 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with no arity
 *)
 
-(* $Id: VTerm.v,v 1.11 2008-10-21 09:09:53 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Import BoolUtil.
+Require Export List.
+Require Import ListUtil.
+Require Import EqUtil.
+Require Export VSignature.
+Require Import Peano_dec.
 
 Section S.
-
-Require Export VSignature.
 
 Variable Sig : Signature.
 
 (***********************************************************************)
 (* terms *)
-
-Require Export List.
 
 Inductive term : Type :=
   | Var : variable -> term
@@ -42,9 +42,7 @@ Section term_rect.
 
 Variables
   (P : term -> Type)
-  (Q : terms -> Type).
-
-Hypotheses
+  (Q : terms -> Type)
   (H1 : forall x, P (Var x))
   (H2 : forall f v, Q v -> P (Fun f v))
   (H3 : Q nil)
@@ -95,8 +93,6 @@ Qed.
 
 Section term_rec_forall.
 
-Require Export ListUtil.
-
 Variable term_eq_dec : forall t u : term, {t=u} + {t<>u}.
 
 Lemma term_rect_forall : forall (P : term -> Type)
@@ -135,8 +131,6 @@ Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
 Proof.
 intros. rewrite H. refl.
 Qed.
-
-Require Import Peano_dec.
 
 Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
 
@@ -245,7 +239,7 @@ End beq.
 (***********************************************************************)
 (** maximal index of a variable *)
 
-Require Export ListMax.
+Require Import ListMax.
 
 Fixpoint maxvar (t : term) : nat :=
   match t with
@@ -278,3 +272,4 @@ End S.
 
 Implicit Arguments Var [Sig].
 Implicit Arguments maxvar_var [Sig k x].
+

@@ -7,12 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations on terms
 *)
 
-(* $Id: ARelation.v,v 1.16 2008-10-06 03:22:33 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export SN.
-Require Export ASubstitution.
+Require Import SN.
+Require Import ASubstitution.
+Require Import ATerm.
+Require Import RelUtil.
+Require Import List.
+Require Import AContext.
+Require Import LogicUtil.
 
 Section S.
 

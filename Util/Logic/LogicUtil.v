@@ -7,11 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 general lemmas and tactics
 *)
 
-(* $Id: LogicUtil.v,v 1.17 2009-01-28 22:39:19 koper Exp $ *)
-
 Set Implicit Arguments.
-
-Require Export Setoid.
 
 (***********************************************************************)
 (** tactics *)

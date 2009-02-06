@@ -7,27 +7,22 @@ See the COPYRIGHTS and LICENSE files.
 rewriting
 *)
 
-(* $Id: VTrs.v,v 1.5 2008-10-06 03:22:32 blanqui Exp $ *)
-
 Set Implicit Arguments.
+
+Require Import VContext.
+Require Import VSubstitution.
+Require Import RelUtil.
 
 (***********************************************************************)
 (** definition *)
 
 Section def.
 
-Require Export VSignature.
-
 Variable Sig : Signature.
-
-Require Export VTerm.
 
 Notation term := (term Sig).
 
 Record rule : Type := mkRule { lhs : term; rhs : term }.
-
-Require Export VContext.
-Require Export VSubstitution.
 
 Definition red R t1 t2 := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
@@ -38,8 +33,6 @@ Definition hd_red R t1 t2 := exists l, exists r, exists s,
 Definition int_red R t1 t2 := exists l, exists r, exists c, exists s,
   c <> Hole
   /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
-
-Require Export RelUtil.
 
 Definition red_mod E R := red E # @ red R.
 
@@ -76,8 +69,6 @@ Ltac redtac := repeat
 (** properties *)
 
 Section S.
-
-Require Export VSignature.
 
 Variable Sig : Signature.
 

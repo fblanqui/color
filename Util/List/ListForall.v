@@ -7,12 +7,10 @@ See the COPYRIGHTS and LICENSE files.
 forall predicate
 *)
 
-(* $Id: ListForall.v,v 1.9 2008-10-22 06:45:17 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export List.
+Require Import LogicUtil.
+Require Import List.
 
 Section S.
 

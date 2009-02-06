@@ -7,15 +7,18 @@ See the COPYRIGHTS and LICENSE files.
 vector filtering
 *)
 
-(* $Id: VecFilter.v,v 1.7 2009-01-28 22:39:20 koper Exp $ *)
-
 Set Implicit Arguments.
+
+Require Export Bvector.
+Require Export VecBool.
+Require Import VecUtil.
+Require Import LogicUtil.
+Require Import EqUtil.
+Require Import Arith.
 
 Section S.
 
 Variable A : Type.
-
-Require Export VecBool.
 
 Notation vec := (vector A).
 

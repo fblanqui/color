@@ -10,8 +10,9 @@ proof of the pigeon-hole principle
 
 Set Implicit Arguments.
 
-Require Export ListUtil.
-Require Export NatUtil.
+Require Import ListUtil.
+Require Import NatUtil.
+Require Import LogicUtil.
 
 (***********************************************************************)
 (** number of occurrences *)

@@ -7,17 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 basic definitions on functions taking vectors as arguments
 *)
 
-(* $Id: NaryFunction.v,v 1.3 2008-10-06 03:22:37 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Section S.
 
-Require Export RelUtil.
+Require Import RelUtil.
 
 Variables A : Type.
 
-Require Export VecUtil.
+Require Import VecUtil.
 
 Notation vec := (vector A).
 

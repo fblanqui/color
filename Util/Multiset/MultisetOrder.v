@@ -9,18 +9,18 @@ Theory concerning extension of an relation to multisets is developed
 in this file.
 *)
 
-(* $Id: MultisetOrder.v,v 1.14 2009-01-21 01:00:41 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import MultisetTheory.
-Require Transitive_Closure.
-Require Compare_dec.
+Require Import Transitive_Closure.
+Require Import Compare_dec.
 Require Import Relations.
-Require Import Setoid.
 Require Import Permutation.
 Require Import ListPermutation.
+Require Import MultisetCore.
+Require Import Setoid.
+Require Import ListExtras.
 
 Module MultisetOrder (MC: MultisetCore).
 
@@ -31,9 +31,9 @@ Section OrderDefinition.
 
   Variable gtA : A -> A -> Prop.
 
-  Let ltA := transp A gtA.
+  Let ltA := transp gtA.
   Let leA x y := ~gtA x y.
-  Let gtA_trans := clos_trans A gtA.
+  Let gtA_trans := clos_trans gtA.
   Let geA x y := gtA x y \/ eqA x y.
   Hint Unfold ltA leA gtA_trans : sets.
 
@@ -60,12 +60,12 @@ Section OrderDefinition.
   (* Then multiset order is just a transitive closure of this
       reduction *)
 
-  Definition MultisetGt := clos_trans Multiset MultisetRedGt.
+  Definition MultisetGt := clos_trans MultisetRedGt.
 
   (* Less than part of an order *) 
 
-  Definition MultisetRedLt := transp Multiset MultisetRedGt.
-  Definition MultisetLt := transp Multiset MultisetGt.
+  Definition MultisetRedLt := transp MultisetRedGt.
+  Definition MultisetLt := transp MultisetGt.
 
   (* Alternative definition of an order *)
 
@@ -77,15 +77,15 @@ Section OrderDefinition.
      (forall y, y in Y -> (exists2 x, x in X & x >A y)) ->
      MultisetGT M N.
 
-  Definition MultisetLT := transp Multiset MultisetGT.
+  Definition MultisetLT := transp MultisetGT.
 
   Let AccA := Acc ltA.
   Let AccM := Acc MultisetLt.
   Let AccM_1 := Acc MultisetRedLt.
   Let ACC_M := Acc MultisetLT.
 
-  Let clos_transM_RedGt := clos_trans Multiset MultisetRedGt.
-  Let clos_transM_RedLt := clos_trans Multiset MultisetRedLt.
+  Let clos_transM_RedGt := clos_trans MultisetRedGt.
+  Let clos_transM_RedLt := clos_trans MultisetRedLt.
 
 (* ------------------------------------------------------------------
      Notations
@@ -1693,7 +1693,7 @@ End OrderDefinition.
 Section MultisetOrder_on_subrelation.
 
   Variables R R' : A -> A -> Prop.
-  Variable R'sub : inclusion A R' R.
+  Variable R'sub : inclusion R' R.
 
   Lemma mord_inclusion : forall M N, MultisetGt R' M N -> MultisetGt R M N.
 

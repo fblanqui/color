@@ -11,13 +11,12 @@ See the COPYRIGHTS and LICENSE files.
 extension of the Coq library on lists
 *)
 
-(* $Id: ListUtil.v,v 1.46 2008-10-31 17:42:51 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
 Require Export List.
-Require Export NatUtil.
+Require Import NatUtil.
+Require Import EqUtil.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
@@ -77,7 +76,7 @@ End cons.
 
 Section beq.
 
-Require Export BoolUtil.
+Require Import BoolUtil.
 
 Variable A : Type.
 Variable beq : A -> A -> bool.
@@ -397,7 +396,7 @@ subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
 exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
 Qed.
 
-Require Export RelMidex.
+Require Import RelMidex.
 
 Lemma In_midex : eq_midex A -> forall (x : A) l, In x l \/ ~In x l. 
 
@@ -957,7 +956,7 @@ Section one_less.
 
   Variable A : Type.
 
-  Require Export Relations.
+  Require Import Relations.
 
   Variable r : relation A.
   

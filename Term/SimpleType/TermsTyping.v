@@ -8,8 +8,6 @@ Some results concerning typing of terms of simply typed
 lambda-calculus are introduced in this file.
 *)
 
-(* $Id: TermsTyping.v,v 1.9 2009-01-28 22:39:19 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.

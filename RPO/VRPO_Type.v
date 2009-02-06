@@ -8,9 +8,12 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-(* $Id: VRPO_Type.v,v 1.12 2009-01-20 12:45:25 koper Exp $ *)
-
-Require Export VPrecedence.
+Require Import VPrecedence.
+Require Import Relations.
+Require Import ListUtil.
+Require Import VTerm.
+Require Import RelMidex.
+Require Import LogicUtil.
 
 Module Type RPO_Model.
 
@@ -65,8 +68,8 @@ Module Type RPO_Model.
   Parameter mono_axiom : forall f (r : relation term), 
     forall ss ts, one_less r ss ts -> tau f r ss ts.
 
-  Require Export AccUtil.
-  Require Export ListUtil.
+  Require Import AccUtil.
+  Require Import ListUtil.
 
   Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
 

@@ -9,9 +9,10 @@ Strongly Connected Components (SCC) of a graph seen as a relation
 
 Set Implicit Arguments.
 
-Require Export Cycle.
-Require Export Path.
-Require Export ListUtil.
+Require Import Cycle.
+Require Import Path.
+Require Import ListUtil.
+Require Import RelUtil.
 
 Section S.
 

@@ -11,7 +11,10 @@ inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-Require Export RelUtil.
+Require Import RelUtil.
+Require Import Setoid.
+Require Import LogicUtil.
+Require Import List.
 
 Section sn.
 
@@ -439,7 +442,7 @@ End commut.
 (***********************************************************************)
 (** WF (iter R n) -> WF R *)
 
-Require Export Iter.
+Require Import Iter.
 
 Section iter.
 
@@ -484,7 +487,7 @@ End iter.
 (***********************************************************************)
 (** extension of SN_intro to paths of fixed length *)
 
-Require Export Path.
+Require Import Path.
 
 Section path.
 
@@ -623,6 +626,8 @@ End wf_rel_mod_simpl.
 
 (***********************************************************************)
 (** WF of relations on nat. *)
+
+Require Import Wf_nat.
 
 Section wf_nat.
 

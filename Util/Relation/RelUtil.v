@@ -9,12 +9,11 @@ See the COPYRIGHTS and LICENSE files.
 general definitions and results about relations
 *)
 
-(* $Id: RelUtil.v,v 1.38 2008-10-06 03:22:37 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
 Require Export Relations.
+Require Import Setoid.
 
 Implicit Arguments transp [A].
 Implicit Arguments inclusion [A].

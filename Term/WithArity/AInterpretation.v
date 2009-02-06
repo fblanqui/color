@@ -7,25 +7,24 @@ See the COPYRIGHTS and LICENSE files.
 interpretation of algebraic terms with arity
 *)
 
-(* $Id: AInterpretation.v,v 1.12 2008-10-13 09:40:21 blanqui Exp $ *)
-
 Set Implicit Arguments.
+
+Require Import LogicUtil.
+Require Export ATerm.
+Require Import NaryFunction.
+Require Import VecUtil.
+Require Import Arith.
+Require Import List.
+Require Import VecMax.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
 
-Require Export ATerm.
-
-Notation term := (term Sig).
-Notation terms := (vector term).
+Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** interpretation of symbols *)
-
-Require Export NaryFunction.
 
 Record interpretation : Type := mkInterpretation {
   domain :> Type;

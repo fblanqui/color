@@ -7,11 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 general results on pairs
 *)
 
-(* $Id: PairUtil.v,v 1.5 2008-10-21 09:09:54 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
 
 Section S.
 

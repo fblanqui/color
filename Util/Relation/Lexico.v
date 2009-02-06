@@ -7,11 +7,10 @@ See the COPYRIGHTS and LICENSE files.
 lexicographic ordering
 *)
 
-(* $Id: Lexico.v,v 1.7 2008-10-21 09:09:54 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export SN.
+Require Import SN.
+Require Import RelUtil.
 
 (****************************************************************************)
 (** lexicographic quasi-ordering on pairs *)

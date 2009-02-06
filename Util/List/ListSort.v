@@ -7,11 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 sorting functions on lists
 *)
 
-(* $Id: ListSort.v,v 1.1 2008-09-19 03:04:23 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export List.
+Require Import List.
 
 Section S.
 

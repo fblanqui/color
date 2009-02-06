@@ -11,8 +11,6 @@ MAKEFLAGS := -r -j
 
 .PHONY: clean all config dist doc install-dist install-doc tags
 
-WEB := /local/web-serveurs/color/htdocs
-
 COQMAKE := $(MAKE) -f Makefile.coq
 
 all: Makefile.coq
@@ -37,11 +35,13 @@ doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -name \*.v`
 	./createIndex
 
+WEB := /local/web-serveurs/color/htdocs
+ADR := blanqui@loria.loria.fr
+
 install-doc:
-	rm -rf $(WEB)/doc
-	mkdir $(WEB)/doc
-	cp doc/*.html doc/coqdoc.css $(WEB)/doc
-	cp -f CHANGES $(WEB)/CHANGES.CoLoR
+	ssh $(ADR) "rm -rf $(WEB)/doc; mkdir $(WEB)/doc"
+	scp doc/*.html doc/coqdoc.css $(ADR):$(WEB)/doc
+	scp CHANGES $(ADR):$(WEB)/CHANGES.CoLoR
 
 dist:
 	./createDist

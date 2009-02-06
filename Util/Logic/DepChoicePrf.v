@@ -7,12 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 proof of dependent choice in classical logic + axiom of choice
 *)
 
-(* $Id: DepChoicePrf.v,v 1.3 2008-10-06 03:22:35 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ClassicalChoice.
-Require Export RelUtil.
+Require Import ClassicalChoice.
+Require Import RelUtil.
+Require Import LogicUtil.
 
 Section S.
 

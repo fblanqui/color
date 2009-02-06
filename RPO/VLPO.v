@@ -7,11 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-(* $Id: VLPO.v,v 1.8 2007-06-03 12:59:30 koper Exp $ *)
-
-Require Export VPrecedence.
-Require Export LexicographicOrder.
-Require Export VRPO_Type.
+Require Import VPrecedence.
+Require Import LexicographicOrder.
+Require Import VRPO_Type.
+Require Import Relations.
+Require Import VTerm.
+Require Import ListUtil.
+Require Import AccUtil.
 
 Module LPO (PT : VPrecedenceType).
 
@@ -38,7 +40,7 @@ End LPO.
 
 (***********************************************************************)
 
-Require Export VRPO_Type.
+Require Import VRPO_Type.
 
 Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 

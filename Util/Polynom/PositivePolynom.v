@@ -8,12 +8,16 @@ See the COPYRIGHTS and LICENSE files.
 polynomials with non-negative integers as coefficients
 *)
 
-(* $Id: PositivePolynom.v,v 1.4 2008-05-15 08:57:40 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export Polynom.
-Require Export ZUtil.
+Require Import Polynom.
+Require Import ZUtil.
+Require Import LogicUtil.
+Require Import NaryFunction.
+Require Import ListForall.
+Require Import VecUtil.
+Require Import List.
+Require Import Max.
 
 Notation vec := (vector D).
 Notation vals := (@Vmap D Z val _).
@@ -28,8 +32,6 @@ apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). assumption.
 apply IHn.
 Qed.
 
-Require Export NaryFunction.
-
 Lemma preserv_pos_meval : forall n (m : monom n), preserv pos (meval m).
 
 Proof.
@@ -37,8 +39,6 @@ intros n m v Hv. rewrite (Vmap_proj1 Hv). apply pos_meval.
 Qed.
 
 Definition meval_D n (m : monom n) := restrict (preserv_pos_meval m).
-
-Require Export ListForall.
 
 Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
 

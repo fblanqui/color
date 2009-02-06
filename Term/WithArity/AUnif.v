@@ -7,11 +7,20 @@ See the COPYRIGHTS and LICENSE files.
 syntactic unification
 *)
 
-(* $Id: AUnif.v,v 1.16 2009-01-20 12:45:25 koper Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export ASubstitution.
+Require Import ASubstitution.
+Require Import ATerm.
+Require Import EqUtil.
+Require Import ListUtil.
+Require Import LogicUtil.
+Require Import VecUtil.
+Require Import AVariables.
+Require Import BoolUtil.
+Require Import ListForall.
+Require Import NatUtil.
+Require Import Relations.
+Require Import SN.
 
 Section S.
 

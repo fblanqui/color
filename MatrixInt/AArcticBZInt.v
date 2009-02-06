@@ -7,10 +7,16 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Export Matrix.
+Require Import Matrix.
+Import ArcticBZMatrix.
 Require Import AMonAlg.
 Require Import AArcticBasedInt.
-Import ArcticBZMatrix.
+Require Import VecUtil.
+Require Import OrdSemiRing.
+Require Import SN.
+Require Import RelUtil.
+Require Import ZArith.
+Require Import AMatrixBasedInt.
 
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.

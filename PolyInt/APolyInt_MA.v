@@ -7,8 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 Polynomial interpretations in the setting of monotone algebras.
 *)
 
-Require Export APolyInt.
-Require Export AMonAlg.
+Require Import APolyInt.
+Require Import AMonAlg.
+Require Import ZUtil.
+Require Import RelUtil.
+Require Import PositivePolynom.
+Require Import ATrs.
+Require Import RelMidex.
+Require Import ListForall.
+Require Import MonotonePolynom.
 
 Module Type TPolyInt.
 

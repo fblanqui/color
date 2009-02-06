@@ -8,13 +8,15 @@ See the COPYRIGHTS and LICENSE files.
 polynomials with multiple variables and integer coefficients
 *)
 
-(* $Id: Polynom.v,v 1.3 2007-04-13 17:47:40 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-(** monomials with n variables *)
+Require Import Arith.
+Require Import VecUtil.
+Require Import List.
+Require Export ZArith.
+Require Import LogicUtil.
 
-Require Export VecUtil.
+(** monomials with n variables *)
 
 Notation monom := (vector nat).
 
@@ -25,8 +27,6 @@ intros. eapply eq_vec_dec. apply eq_nat_dec.
 Defined.
 
 (** polynomials with n variables *)
-
-Require Export ZArith.
 
 Definition poly n := (list (Z * monom n)).
 
@@ -163,7 +163,7 @@ Close Local Scope poly_scope.
 
 Notation vec := (vector Z).
 
-Require Export ZUtil.
+Require Import ZUtil.
 
 Fixpoint meval (n : nat) : monom n -> vec n -> Z :=
   match n as n return monom n -> vec n -> Z with

@@ -9,13 +9,20 @@ See the COPYRIGHTS and LICENSE files.
   on:
 
 References:
--  J. Endrullis, J. Waldmann and H. Zantema, "Matrix Interpretations for Proving
-   Termination of Term Rewriting", Proceedings of the 3rd International Joint
-   Conference (IJCAR 2006), 2006.
+  J. Endrullis, J. Waldmann and H. Zantema,
+  "Matrix Interpretations for Proving Termination of Term Rewriting",
+  Proceedings of the 3rd International Joint Conference (IJCAR 2006), 2006.
 *)
 
+Require Import ATrs.
+Require Import RelUtil.
+Require Import SN.
 Require Export AWFMInterpretation.
-Require Export AGraph.
+Require Import RelMidex.
+Require Import ListUtil.
+Require Import ARelation.
+Require Import LogicUtil.
+
 (***********************************************************************)
 (** * Module type specifying a weakly monotone algebra.                *)
 (***********************************************************************)

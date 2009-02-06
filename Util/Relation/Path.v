@@ -8,12 +8,16 @@ See the COPYRIGHTS and LICENSE files.
 paths
 *)
 
-(* $Id: Path.v,v 1.19 2008-10-06 03:22:37 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export RelSub.
-Require Export List.
+Require Import RelSub.
+Require Import ListUtil.
+Require Import ListRepeatFree.
+Require Import Arith.
+Require Import RelUtil.
+Require Import LogicUtil.
+Require Import ListShrink.
+Require Import RelMidex.
 
 Section S.
 
@@ -106,11 +110,11 @@ Qed.
 (** paths of bounded length *)
 
 Inductive bound_path (n : nat) : relation A :=
-| bp_intro : forall x y l,
-  length l<= n -> is_path x y l -> bound_path n x y.
+  | bp_intro : forall x y l,
+    length l<= n -> is_path x y l -> bound_path n x y.
 
 Lemma bound_path_clos_trans : forall n,
-  (bound_path n)  << (clos_trans R).
+  bound_path n << clos_trans R.
 
 Proof.
 repeat intro. inversion H. apply path_clos_trans with l. assumption. 
@@ -237,9 +241,9 @@ Lemma path_suffix : forall (y z : A) l' l'' (x : A),
   is_path R x y l' -> suffix (z::l'') l' -> is_path R z y l''.
 
 Proof.
-induction l'; intros. assert (rev (z :: l'')=nil). apply prefix_nil. assumption.
+induction l'; intros. assert (rev (z :: l'')=nil). apply prefix_nil. hyp.
 simpl in H1. symmetry in H1. pose (app_cons_not_nil (rev l'') nil z H1). tauto.
-destruct (list_eq_dec eqdec (z :: l'')(a :: l')). inversion e. simpl in H.
+destruct (List.list_eq_dec eqdec (z :: l'')(a :: l')). inversion e. simpl in H.
 tauto. simpl in H. 
 apply IHl' with a. tauto. apply suffix_smaller with a; assumption.
 Qed.
@@ -293,7 +297,7 @@ intuition.
 apply IHm. exact H1.
 Qed.
 
-Require Export ListOccur.
+Require Import ListOccur.
 
 Notation occur := (occur eqdec).
 

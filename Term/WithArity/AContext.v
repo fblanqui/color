@@ -8,19 +8,16 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: AContext.v,v 1.11 2008-10-08 08:27:51 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Export ATerm.
+Require Import VecUtil.
+Require Import ListUtil.
 
 Section S.
 
-Require Export ASignature.
-
 Variable Sig : Signature.
-
-Require Export ATerm.
 
 Notation term := (term Sig). Notation terms := (vector term).
 

@@ -7,8 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 signature for algebraic terms with no arity
 *)
 
-(* $Id: VSignature.v,v 1.4 2008-10-06 03:22:32 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Notation variable := nat (only parsing).

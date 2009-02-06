@@ -1,4 +1,7 @@
 
+- remove from RelExtras the things already defined in RelUtil
+
+- use RelUtil notations in RelExtras
 
 - hd_red_mod_min: replace direct_subterms by Vforall SN?
 

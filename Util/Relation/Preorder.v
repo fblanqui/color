@@ -7,9 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Various properties of preorders
 *)
 
-(* $Id: Preorder.v,v 1.5 2008-10-06 03:22:37 blanqui Exp $ *)
-
-Require Export Relations.
+Require Import Relations.
 
 Section PreOrderFacts.
   Variable A : Type.

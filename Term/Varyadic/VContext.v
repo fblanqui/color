@@ -7,22 +7,16 @@ See the COPYRIGHTS and LICENSE files.
 one-hole contexts
 *)
 
-(* $Id: VContext.v,v 1.6 2008-10-06 03:22:32 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
+Require Import LogicUtil.
+Require Export VTerm.
 
 Section S.
 
-Require Export VSignature.
-
 Variable Sig : Signature.
 
-Require Export VTerm.
-
-Notation term := (term Sig).
-Notation terms := (list term).
+Notation term := (term Sig). Notation terms := (list term).
 
 (***********************************************************************)
 (** contexts and replacement of the hole *)

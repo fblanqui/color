@@ -10,17 +10,25 @@ See the COPYRIGHTS and LICENSE files.
 proof of the termination criterion based on polynomial interpretations
 *)
 
-(* $Id: APolyInt.v,v 1.18 2008-05-27 22:50:06 koper Exp $ *)
-
 Set Implicit Arguments.
 
 Section S.
 
-Require Export ASignature.
+Require Import ATerm.
+Require Import ABterm.
+Require Import List.
+Require Import ListForall.
+Require Import VecUtil.
+Require Import PositivePolynom.
+Require Import AInterpretation.
+Require Import ZUtil.
+Require Import NaryFunction.
+Require Import ARelation.
+Require Import RelUtil.
+Require Import LogicUtil.
+Require Import SN.
 
 Variable Sig : Signature.
-
-Require Export ABterm.
 
 Notation bterm := (bterm Sig).
 
@@ -29,7 +37,7 @@ Notation bterm := (bterm Sig).
 
 Section poly_of_bterm.
 
-Require Export Polynom.
+Require Import Polynom.
 
 Variable fpoly : forall f : Sig, poly (arity f).
 
@@ -62,7 +70,7 @@ End poly_of_bterm.
 (***********************************************************************)
 (** polynomial interpretation *)
 
-Require Export MonotonePolynom.
+Require Import MonotonePolynom.
 
 Definition PolyInterpretation := forall f : Sig, poly (arity f).
 
@@ -110,7 +118,7 @@ Let W := Int_of_PI.
 (***********************************************************************)
 (** monotony *)
 
-Require Export AWFMInterpretation.
+Require Import AWFMInterpretation.
 
 Lemma pi_monotone : monotone W Dgt.
 
@@ -246,8 +254,8 @@ Implicit Arguments PI_term_int_eq [t k].
 (***********************************************************************)
 (** polynomial associated to a rule *)
 
-Require Export ATrs.
-Require Export Max.
+Require Import ATrs.
+Require Import Max.
 
 Definition rulePoly_ge r := 
   let mvl := maxvar (lhs r) in
@@ -265,7 +273,7 @@ Definition rulePoly_gt r :=
 (***********************************************************************)
 (** compatibility *)
 
-Require Export ZUtil.
+Require Import ZUtil.
 
 Lemma pi_compat_rule : forall r, coef_pos (rulePoly_gt r) -> 
   succ (lhs r) (rhs r).
@@ -292,7 +300,7 @@ do 2 rewrite val_peval_D. apply pos_le. rewrite <- peval_minus.
 apply pos_peval. exact H_coef_pos.
 Qed.
 
-Require Export ACompat.
+Require Import ACompat.
 
 Lemma pi_compat : forall R,
   lforall (fun r => coef_pos (rulePoly_gt r)) R -> compat succ R.
@@ -306,7 +314,7 @@ Qed.
 (***********************************************************************)
 (** termination *)
 
-Require Export AMannaNess.
+Require Import AMannaNess.
 
 Lemma polyInterpretationTermination : forall R,
   lforall (fun r => coef_pos (rulePoly_gt r)) R -> WF (red R).

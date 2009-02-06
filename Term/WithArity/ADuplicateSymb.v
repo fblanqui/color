@@ -9,7 +9,12 @@ Duplicate/mark symbols to distinguish internal reductions from head reductions
 
 Set Implicit Arguments.
 
-Require Export ATrs.
+Require Import ATrs.
+Require Import ListUtil.
+Require Import VecUtil.
+Require Import LogicUtil.
+Require Import RelUtil.
+Require Import SN.
 
 Section S.
 

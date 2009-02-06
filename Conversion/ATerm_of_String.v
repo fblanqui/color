@@ -4,19 +4,21 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
 
-rewriting
+convert a string into an algebraic term
 *)
 
-(* $Id: ATerm_of_String.v,v 1.6 2008-10-06 03:22:11 blanqui Exp $ *)
-
 Set Implicit Arguments.
+
+Require Import LogicUtil.
+Require Import RelUtil.
+Require Import SN.
 
 Section S.
 
 (***********************************************************************)
 (** string signature *)
 
-Require Export Srs.
+Require Import Srs.
 
 Variable SSig : Signature.
 
@@ -28,15 +30,13 @@ Notation srule := (rule SSig).
 (***********************************************************************)
 (** corresponding algebraic signature *)
 
-Require Export ASignature.
+Require Import ATrs.
 
 Definition ar (s : letter) := 1.
 
 Definition ASig_of_SSig := mkSignature ar eq_letter_dec.
 
 Notation ASig := ASig_of_SSig.
-
-Require Export ATerm.
 
 Notation term := (term ASig).
 Notation Fun := (@Fun ASig).
@@ -50,21 +50,17 @@ Fixpoint term_of_string (s : string) : term :=
 (***********************************************************************)
 (** contexts *)
 
-Require Export AContext.
-
 Definition cont_of_letter a :=
   @Cont ASig a 0 0 (refl_equal 1) (@Vnil term) Hole Vnil.
 
 Fixpoint cont_of_string (s : string) : context ASig :=
   match s with
     | nil => Hole
-    | a :: w => comp (cont_of_letter a) (cont_of_string w)
+    | a :: w => AContext.comp (cont_of_letter a) (cont_of_string w)
   end.
 
 (***********************************************************************)
 (** rewriting *)
-
-Require Export ATrs.
 
 Definition rule_of_srule (x : srule) :=
   mkRule (term_of_string (Srs.lhs x)) (term_of_string (Srs.rhs x)).

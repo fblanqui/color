@@ -7,12 +7,16 @@ See the COPYRIGHTS and LICENSE files.
 cap of undefined symbols and aliens of defined symbols
 *)
 
-(* $Id: ACap.v,v 1.15 2008-10-15 08:08:51 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Require Export LogicUtil.
-Require Export ACalls.
+Require Import LogicUtil.
+Require Import ACalls.
+Require Import ATrs.
+Require Import VecUtil.
+Require Import ListUtil.
+Require Import NatUtil.
+Require Import Max.
+Require Import EqUtil.
 
 Section S.
 

@@ -8,13 +8,16 @@ See the COPYRIGHTS and LICENSE files.
 algebraic terms with fixed arity
 *)
 
-(* $Id: ATerm.v,v 1.25 2008-10-15 08:08:51 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
+Require Export Bvector.
 Require Export ASignature.
-Require Export ListUtil.
-Require Export LogicUtil.
+Require Import ListUtil.
+Require Import LogicUtil.
+Require Import EqUtil.
+Require Import BoolUtil.
+Require Import NatUtil.
+Require Import Max.
 
 Notation variables := (list variable).
 
@@ -25,7 +28,7 @@ Variable Sig : Signature.
 (***********************************************************************)
 (** terms *)
 
-Require Export VecUtil.
+Require Import VecUtil.
 
 Inductive term : Type :=
   | Var : variable -> term
@@ -227,7 +230,7 @@ Defined.
 (***********************************************************************)
 (** maximal variable index in a term *)
 
-Require Export VecMax.
+Require Import VecMax.
 
 Fixpoint maxvar (t : term) : nat :=
   match t with
@@ -379,7 +382,7 @@ induction v; unfold maxvars; simpl; intros. contradiction. destruct H0.
 subst t. apply le_max_intro_l. hyp. apply le_max_intro_r. apply IHv; hyp.
 Qed.
 
-Require Export ListMax.
+Require Import ListMax.
 
 Lemma maxvar_lmax : forall t, maxvar t = lmax (vars t).
 

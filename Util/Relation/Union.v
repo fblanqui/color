@@ -10,7 +10,8 @@ union of two wellfounded relations
 
 Set Implicit Arguments.
 
-Require Export SN.
+Require Import SN.
+Require Import RelUtil.
 
 (***********************************************************************)
 (** R @ S << S @ R -> WF R -> WF S -> WF (R U S) *)
@@ -19,7 +20,7 @@ Section commut.
 
 Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 
-Require Export Lexico.
+Require Import Lexico.
 
 Lemma WF_union : WF R -> WF S -> WF (R U S).
 

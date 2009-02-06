@@ -11,16 +11,16 @@ permutation of the order of declarations of ground variables in
 environment are identified.   
 *)
 
-(* $Id: TermsConv.v,v 1.10 2008-10-06 03:22:29 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import ListPermutation.
 Require Import Compare_dec.
-Require TermsPos.
+Require Import TermsPos.
 Require Import Max.
 Require Import Setoid.
+Require Import ListUtil.
+Require Import ListExtras.
 
 Module TermsConv (Sig : TermsSig.Signature).
 
@@ -395,7 +395,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
-    apply (@build_envSub (transp nat es) s).
+    apply (@build_envSub (transp es) s).
     intros; destruct (es_dec j i); auto.
     firstorder.
     firstorder.

@@ -8,13 +8,13 @@ The beta-reduction relation of simply typed lambda-calculus
 is introduced in this file.
 *)
 
-(* $Id: TermsBeta.v,v 1.4 2008-10-06 03:22:29 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
 Require Import ListExtras.
-Require TermsRed.
+Require Import TermsRed.
+Require Import TermsConv.
+Require Import Setoid.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 

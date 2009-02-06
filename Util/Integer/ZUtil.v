@@ -9,12 +9,9 @@ See the COPYRIGHTS and LICENSE files.
 useful definitions and lemmas about integers
 *)
 
-(* $Id: ZUtil.v,v 1.13 2008-05-14 12:26:54 blanqui Exp $ *)
-
-Require Export LogicUtil.
-
 Set Implicit Arguments.
 
+Require Import LogicUtil.
 Require Export ZArith.
 
 Open Local Scope Z_scope.
@@ -140,13 +137,13 @@ Qed.
 Definition Dlt x y := Zlt (val x) (val y).
 Definition Dle x y := Zle (val x) (val y).
 
-Require Export RelUtil.
+Require Import RelUtil.
 
 Definition Dgt := transp Dlt.
 Definition Dge := transp Dle.
 
-Require Export Zwf.
-Require Export Wellfounded.
+Require Import Zwf.
+Require Import Wellfounded.
 
 Lemma Dlt_well_founded : well_founded Dlt.
 
@@ -156,7 +153,7 @@ unfold inclusion, Zwf. intros (x,Hx) (y,Hy). simpl. intuition omega.
 apply (wf_inverse_image D Z (Zwf 0) val). apply Zwf_well_founded.
 Qed.
 
-Require Export SN.
+Require Import SN.
 
 Lemma WF_Dgt : WF Dgt.
 

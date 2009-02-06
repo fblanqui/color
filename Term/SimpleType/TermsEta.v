@@ -7,8 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 The eta-reduction relation of simply typed lambda-calculus.
 *)
 
-(* $Id: TermsEta.v,v 1.2 2007-01-19 17:22:39 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
 Require Import RelExtras.
@@ -23,7 +21,8 @@ Module TermsEta (Sig : TermsSig.Signature).
   Definition Eta_preterm Pt A := \A => prelift Pt 1 @@ %0.
 
   Definition EtaApp : forall M A B, type M = A --> B ->
-    { M': Term | env M' = env M /\ term M' = Eta_preterm (term M) A /\ type M' = type M }.
+    { M': Term | env M' = env M
+      /\ term M' = Eta_preterm (term M) A /\ type M' = type M }.
 
   Proof.
      (* from M we need to construct \x. @(M', x) where M' = lift M 1 *)
@@ -43,7 +42,8 @@ Module TermsEta (Sig : TermsSig.Signature).
     rewrite initialSeg_full; solve [trivial | omega].
     rewrite env_comp_sum_comm.
     unfold declDummy.
-    replace (None :: env M) with (copy (length (decl A EmptyEnv)) None ++ env M); auto.
+    replace (None :: env M)
+      with (copy (length (decl A EmptyEnv)) None ++ env M); auto.
     rewrite env_sum_disjoint; auto.
     unfold decl, declDummy.
     apply env_comp_cons; auto.

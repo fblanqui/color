@@ -7,8 +7,10 @@ See the COPYRIGHTS and LICENSE files.
 sub-relation, restriction, etc.
 *)
 
-Require Export ListShrink.
-Require Export RelUtil.
+Require Import ListShrink.
+Require Import RelUtil.
+Require Import ListUtil.
+Require Import RelMidex.
 
 Set Implicit Arguments.
 

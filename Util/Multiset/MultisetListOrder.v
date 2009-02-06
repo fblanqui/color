@@ -11,7 +11,6 @@ multisets, along with some properties of this order.
 Require Import Relations.
 Require Import Wellfounded.
 Require Import List.
-
 Require Import MultisetOrder.
 Require Import RelExtras.
 Require Import MultisetCore.
@@ -81,7 +80,7 @@ Module MultisetListOrder (ES : Eqset_dec).
 
     Lemma transp_trans_to_mult_trans : forall us, 
       (forall u, In u us -> forall t s,
-        transp A r u t -> transp A r t s -> transp A r u s) ->
+        transp r u t -> transp r t s -> transp r u s) ->
       forall ts ss, mult us ts -> mult ts ss -> mult us ss.
 
     Proof.
@@ -257,8 +256,8 @@ Module MultisetListOrder (ES : Eqset_dec).
 
     Lemma transp_SPO_to_mult_SPO : forall us,
       (forall u, In u us ->
-        ((forall t s, transp A r u t -> transp A r t s -> transp A r u s)
-	  /\ (transp A r u u -> False))) ->
+        ((forall t s, transp r u t -> transp r t s -> transp r u s)
+	  /\ (transp r u u -> False))) ->
 	(forall ts ss, mult us ts -> mult ts ss -> mult us ss) /\ (mult us us -> False).
 
     Proof.
@@ -344,7 +343,7 @@ Module MultisetListOrder (ES : Eqset_dec).
     (* Using the fundamental lemma on multiset order WF *)
 
     Lemma HAccTermsToTermlist : forall ss, 
-      (forall s, In s ss -> Acc (transp A r) s) -> Acc mult ss.
+      (forall s, In s ss -> Acc (transp r) s) -> Acc mult ss.
 
     Proof.
       intros ss Hsub; cut (Acc (MultisetLT r) (list2multiset ss)).
@@ -359,7 +358,7 @@ Module MultisetListOrder (ES : Eqset_dec).
     Qed.
 
     Lemma HAccTermlistToTerms : transitive r -> forall ss : list A, 
-      Acc mult ss -> (forall s, In s ss -> Acc (transp A r) s).
+      Acc mult ss -> (forall s, In s ss -> Acc (transp r) s).
 
     Proof.
       intros r_trans ss acc_ss.
@@ -371,8 +370,8 @@ Module MultisetListOrder (ES : Eqset_dec).
 
   End MultisetListOrderFacts.
 
-  Require Export AccUtil.
-  Require Export ListUtil.
+  Require Import AccUtil.
+  Require Import ListUtil.
 
   Lemma mult_lifting : forall (r : relation A),
     (forall x x' y y', x =A= x' -> y =A= y' -> r x y -> r x' y') ->

@@ -7,13 +7,18 @@ See the COPYRIGHTS and LICENSE files.
 arguments filtering
 *)
 
-(* $Id: AFilter.v,v 1.16 2008-10-08 08:27:50 blanqui Exp $ *)
-
 Set Implicit Arguments.
 
-Section S.
+Require Import ATrs.
+Require Import VecFilter.
+Require Import VecUtil.
+Require Import LogicUtil.
+Require Import List.
+Require Import RelUtil.
+Require Import SN.
+Require Import NatUtil.
 
-Require Export ATrs.
+Section S.
 
 Variable Sig : Signature.
 
@@ -21,8 +26,6 @@ Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** filtering function *)
-
-Require Export VecFilter.
 
 Variable pi : forall f, bools (@arity Sig f).
 
@@ -137,7 +140,7 @@ Qed.
 (***********************************************************************)
 (** well-foundedness *)
 
-Require Export ARelation.
+Require Import ARelation.
 
 Lemma WF_filter : WF succ -> WF fsucc.
 
@@ -159,7 +162,7 @@ Qed.
 (***********************************************************************)
 (** compatibility *)
 
-Require Export ACompat.
+Require Import ACompat.
 
 Lemma filter_comp : forall R : rules,
   compat succ (filter_rules R) -> compat fsucc R.
