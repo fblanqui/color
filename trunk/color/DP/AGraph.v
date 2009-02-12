@@ -66,7 +66,7 @@ Lemma hd_red_Mod_chain_hd_rules : forall t u,
   hd_red_Mod S D t u -> exists a, hd_red_Mod_rule a t u.
 
 Proof.
-intros. do 2 destruct H. do 3 destruct H0.  exists (mkRule x0 x1).
+intros. do 2 destruct H. do 3 destruct H0. exists (mkRule x0 x1).
 unfold hd_red_Mod_rule. simpl. intuition. exists x2. intuition.
 subst. auto.
 Qed.
