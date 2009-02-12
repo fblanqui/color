@@ -1,4 +1,10 @@
 
+- in rainbow tactics, replace intuition by repeat split whenever possible
+
+- replace andb_elim by some rewrite
+
+- define hd_red_mod from hd_red_Mod
+
 - remove from RelExtras the things already defined in RelUtil
 
 - use RelUtil notations in RelExtras
