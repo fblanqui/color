@@ -109,15 +109,15 @@ Definition NF u := forall v, ~red u v.
 
 Definition innermost u := forall f us, u = Fun f us -> Vforall NF us.
 
-Definition im_red u v := exists l, exists r, exists c, exists s,
+Definition in_red u v := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
   /\ innermost (sub s l).
 
-Definition im_hd_red u v := exists l, exists r, exists s,
+Definition in_hd_red u v := exists l, exists r, exists s,
   In (mkRule l r) R /\ u = sub s l /\ v = sub s r
   /\ innermost u.
 
-Definition im_int_red u v := exists l, exists r, exists c, exists s,
+Definition in_int_red u v := exists l, exists r, exists c, exists s,
   c <> Hole
   /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
   /\ innermost (sub s l).
@@ -300,7 +300,7 @@ Qed.
 Lemma WF_red_empty : WF (red empty_trs).
 
 Proof.
-  intro x. apply SN_intro. intros y Exy. redtac. contradiction.
+intro x. apply SN_intro. intros y Exy. redtac. contradiction.
 Qed.
 
 Lemma hd_red_mod_incl_red_mod : forall E, hd_red_mod E R << red_mod E R.
@@ -580,6 +580,7 @@ End termination_as_relative_term.
 
 Section union_modulo.
 
+Variable S : relation term.
 Variables E R R' : rules.
 
 Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
@@ -589,6 +590,16 @@ unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 ded (in_app_or H0). destruct H1.
 left. exists (fill c (sub s l)); split. assumption. apply red_rule. exact H1.
 right. exists (fill c (sub s l)); split. assumption. apply red_rule. exact H1.
+Qed.
+
+Lemma hd_red_Mod_union :
+  hd_red_Mod S (R ++ R') << hd_red_Mod S R U hd_red_Mod S R'.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
+ded (in_app_or H0). destruct H1.
+left. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
+right. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
 Qed.
 
 Lemma hd_red_mod_union :
