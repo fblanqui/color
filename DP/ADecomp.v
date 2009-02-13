@@ -97,36 +97,18 @@ Implicit Arguments In_Union_elim [cs x y].
 (***********************************************************************)
 (** main theorem *)
 
-Definition acyclic ci :=
-  forallb (fun r => forallb (fun s => negb (approx r s)) ci) ci.
-
-Lemma WF_acyclic : forall (hypD : rules_preserv_vars D) ci,
-  incl ci D -> acyclic ci = true -> WF (hd_red_Mod S ci).
-
-Proof.
-unfold WF. intros. apply SN_intro. intros. apply SN_intro. intros.
-assert (h : rules_preserv_vars ci). eapply rules_preserv_vars_incl. apply H.
-hyp. destruct (hd_red_Mod2_hd_rules_graph h H1 H2). destruct H3.
-assert (hd_rules_graph S D x0 x1). eapply hd_rules_graph_incl. apply H. hyp.
-unfold hd_rules_graph in H3. intuition. clear H7.
-ded (approx_correct H4). unfold Graph in H6.
-unfold acyclic in H0. rewrite forallb_forall in H0. ded (H0 _ H5). clear H0.
-rewrite forallb_forall in H7. ded (H7 _ H3). rewrite H6 in H0. discr.
-Qed.
-
 Lemma WF_hd_red_Mod_decomp :
   forall (hypD : rules_preserv_vars D)
     (cs : decomp)
     (hyp1 : incl (flat cs) D)
     (hyp2 : valid_decomp cs = true)
-    (hyp3 : lforall (fun ci => acyclic ci = true \/ WF (hd_red_Mod S ci)) cs),
+    (hyp3 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
     WF (Union cs).
 
 Proof.
 induction cs; simpl; intros. apply WF_empty_rel.
 ded (andb_elim hyp2). clear hyp2. destruct H. destruct hyp3. apply WF_union.
-Focus 2. intuition. apply WF_acyclic; try hyp. eapply incl_appr_incl.
-apply hyp1. Focus 2. apply IHcs; try hyp. apply incl_appl_incl with a. hyp.
+2: hyp. Focus 2. apply IHcs; try hyp. apply incl_appl_incl with a. hyp.
 clear IHcs H H1 H2. intros t v h. destruct h. destruct H. redtac.
 rewrite forallb_forall in H0. ded (H0 _ H2). clear H0.
 destruct (In_Union_elim H1). destruct H0. redtac.
@@ -140,18 +122,38 @@ exists s. intuition. eapply incl_flat_In. apply H7. apply H0.
 apply incl_appl_incl with a. hyp. exists s0. intuition.
 Qed.
 
+Definition co_scc ci :=
+  forallb (fun r => forallb (fun s => negb (approx r s)) ci) ci.
+
+Lemma WF_co_scc : forall (hypD : rules_preserv_vars D) ci,
+  incl ci D -> co_scc ci = true -> WF (hd_red_Mod S ci).
+
+Proof.
+unfold WF. intros. apply SN_intro. intros. apply SN_intro. intros.
+assert (h : rules_preserv_vars ci). eapply rules_preserv_vars_incl. apply H.
+hyp. destruct (hd_red_Mod2_hd_rules_graph h H1 H2). destruct H3.
+assert (hd_rules_graph S D x0 x1). eapply hd_rules_graph_incl. apply H. hyp.
+unfold hd_rules_graph in H3. intuition. clear H7.
+ded (approx_correct H4). unfold Graph in H6.
+unfold co_scc in H0. rewrite forallb_forall in H0. ded (H0 _ H5). clear H0.
+rewrite forallb_forall in H7. ded (H7 _ H3). rewrite H6 in H0. discr.
+Qed.
+
 Lemma WF_decomp :
   forall (hypD : rules_preserv_vars D)
     (cs : decomp)
     (hyp4 : incl D (flat cs))
     (hyp1 : incl (flat cs) D)
     (hyp2 : valid_decomp cs = true)
-    (hyp3 : lforall (fun ci => acyclic ci = true \/ WF (hd_red_Mod S ci)) cs),
+    (hyp3 : lforall (fun ci => co_scc ci = true \/ WF (hd_red_Mod S ci)) cs),
     WF (hd_red_Mod S D).
 
 Proof.
 intros. apply WF_incl with (Union cs). apply decomp_incl. hyp.
-apply WF_hd_red_Mod_decomp; hyp.
+apply WF_hd_red_Mod_decomp; try hyp. clear hyp4 hyp2 approx_correct.
+rewrite lforall_eq. intros. rewrite lforall_eq in hyp3. ded (hyp3 _ H).
+destruct H0. apply WF_co_scc; try hyp. apply incl_tran with (flat cs).
+apply In_incl_flat. hyp. hyp. hyp.
 Qed.
 
 End S.
