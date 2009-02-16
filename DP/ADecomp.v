@@ -122,6 +122,23 @@ exists s. intuition. eapply incl_flat_In. apply H7. apply H0.
 apply incl_appl_incl with a. hyp. exists s0. intuition.
 Qed.
 
+Lemma WF_decomp :
+  forall (hypD : rules_preserv_vars D)
+    (cs : decomp)
+    (hyp1 : incl D (flat cs))
+    (hyp2 : incl (flat cs) D)
+    (hyp3 : valid_decomp cs = true)
+    (hyp4 : lforall (fun ci => WF (hd_red_Mod S ci)) cs),
+    WF (hd_red_Mod S D).
+
+Proof.
+intros. apply WF_incl with (Union cs). apply decomp_incl. hyp.
+apply WF_hd_red_Mod_decomp; hyp.
+Qed.
+
+(***********************************************************************)
+(** improvement *)
+
 Definition co_scc ci :=
   forallb (fun r => forallb (fun s => negb (approx r s)) ci) ci.
 
@@ -139,7 +156,7 @@ unfold co_scc in H0. rewrite forallb_forall in H0. ded (H0 _ H5). clear H0.
 rewrite forallb_forall in H7. ded (H7 _ H3). rewrite H6 in H0. discr.
 Qed.
 
-Lemma WF_decomp :
+Lemma WF_decomp_co_scc :
   forall (hypD : rules_preserv_vars D)
     (cs : decomp)
     (hyp4 : incl D (flat cs))
@@ -149,8 +166,7 @@ Lemma WF_decomp :
     WF (hd_red_Mod S D).
 
 Proof.
-intros. apply WF_incl with (Union cs). apply decomp_incl. hyp.
-apply WF_hd_red_Mod_decomp; try hyp. clear hyp4 hyp2 approx_correct.
+intros. apply WF_decomp with cs; try hyp. clear hyp4 hyp2 approx_correct.
 rewrite lforall_eq. intros. rewrite lforall_eq in hyp3. ded (hyp3 _ H).
 destruct H0. apply WF_co_scc; try hyp. apply incl_tran with (flat cs).
 apply In_incl_flat. hyp. hyp. hyp.
@@ -164,10 +180,10 @@ End S.
 Ltac incl_flat := unfold incl, dp; simpl; intuition.
 
 Ltac graph_decomp f d :=
-  apply WF_decomp with (approx := f) (cs := d);
+  apply WF_decomp_co_scc with (approx := f) (cs := d);
   [idtac
     | rules_preserv_vars
     | incl_flat
     | incl_flat
     | vm_compute; refl
-    | repeat split; ((left; vm_compute; refl) || right) ].
+    | unfold lforall; repeat split ].
