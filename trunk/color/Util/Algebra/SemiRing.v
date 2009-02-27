@@ -136,7 +136,7 @@ Module ZSemiRing := SemiRing ZSemiRingT.
 Module ArcticSemiRingT <: SemiRingType.
 
   Inductive Dom : Set := 
-    | Pos (n: nat)
+    | Pos (n : nat)
     | MinusInf.
 
   Definition A := Dom.
@@ -400,3 +400,5 @@ Module BSemiRingT <: SemiRingType.
 End BSemiRingT.
 
 Module BSemiRing := SemiRing BSemiRingT.
+
+Close Scope Z_scope.
