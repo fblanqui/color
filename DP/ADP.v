@@ -217,6 +217,7 @@ Notation alien_sub := (alien_sub R).
 
 Notation SNR := (SN (red R)).
 
+(* FIXME: the assumption (Vforall SNR ts) is useless *)
 Lemma chain_min_fun : forall f, defined f R = true
   -> forall ts, SN chain_min (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
 
@@ -287,9 +288,9 @@ Lemma chain_fun : forall f, defined f R = true
   -> forall ts, SN chain (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
 
 Proof.
-  intros f defined_f ts sn_chain_f_ts sn_ts.
-  apply chain_min_fun; auto.
-  apply SN_incl with chain. apply wf_chain_min_chain. assumption.
+intros f defined_f ts sn_chain_f_ts sn_ts.
+apply chain_min_fun; auto.
+apply SN_incl with chain. apply wf_chain_min_chain. assumption.
 Qed.
 
 Lemma WF_chain : WF chain -> WF (red R).
