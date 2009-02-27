@@ -679,14 +679,14 @@ Ltac no_relative_rules :=
     | _ => idtac
   end.
 
-Ltac rules_preserv_vars :=
-  (*rewrite rules_preserv_vars_dec; refl.*)
-  (* computation is not faster than tactic in this case! *)
-  match goal with
+(* we do not use "rewrite rules_preserv_vars_dec; refl."
+   since this is slower than intuition *)
+Ltac rules_preserv_vars := solve
+  [match goal with
     | |- rules_preserv_vars ?R =>
       unfold rules_preserv_vars; let H := fresh in
       assert (H :
         lforall (fun a => incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a))) R);
-        [unfold incl; simpl; intuition
+        [ unfold incl; simpl; intuition
         | let H0 := fresh in do 2 intro; intro H0; apply (lforall_in H H0)]
-  end.
+  end] || fail "some rule does not preserve variables".
