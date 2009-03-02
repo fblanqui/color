@@ -61,11 +61,9 @@ Ltac destruct_symbol :=
 Ltac pmonotone :=
   let f := fresh "f" in
     intro f; unfold pweak_monotone, pstrong_monotone, coef_pos;
-      destruct_symbol; 
-      solve 
-        [ postac
-        | split; [postac | montac]
-        ].
+      destruct_symbol;
+      solve [ postac | split; [postac | montac] ]
+      || fail "could not prove the monotony of this polynomial interpretation".
 
 (***********************************************************************)
 (** alternative definition *)

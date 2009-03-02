@@ -208,12 +208,13 @@ Module ArcticInt (AI : TArcticInt).
 
 End ArcticInt.
 
+(*FIXME: change to:
+discriminate || (left; discriminate) || (right; discriminate) ?*)
 Ltac arcticDiscriminate :=
   try discriminate;
     solve [left; arcticDiscriminate | right; arcticDiscriminate].
 
-Ltac showArcticIntOk :=
-  let f := fresh "f" in
-  let s := fresh "s" in 
-    intros f; destruct f as [s | s]; destruct s; 
-      vm_compute; arcticDiscriminate.
+Ltac showArcticIntOk := solve
+  [let f := fresh "f" in let s := fresh "s" in
+    intro f; destruct f as [s|s]; destruct s; vm_compute; arcticDiscriminate]
+  || fail "invalid arctic interpretation".
