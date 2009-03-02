@@ -180,7 +180,7 @@ destruct y_lb; [ contradiction | discriminate ].
 
 End ArcticBZInt.
 
-Ltac showArcticBZIntOk :=
-  let f := fresh "f" in
-  let s := fresh "s" in 
-    intros f; destruct f as [s | s]; destruct s; vm_compute; auto.
+Ltac showArcticBZIntOk := solve
+  [let f := fresh "f" in let s := fresh "s" in
+    intro f; destruct f as [s | s]; destruct s; vm_compute; auto]
+  || fail "invalid below-zero arctic interpretation".

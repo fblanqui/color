@@ -329,9 +329,9 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-Ltac poly_int PI :=
-  match goal with
+Ltac poly_int PI := solve
+  [match goal with
     |- WF (red ?R) =>
       apply (polyInterpretationTermination PI R);
 	vm_compute; intuition; discriminate
-  end.
+  end] || fail "invalid polynomial interpretation".
