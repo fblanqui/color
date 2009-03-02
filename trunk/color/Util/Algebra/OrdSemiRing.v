@@ -404,8 +404,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Definition gt m n :=
     match m, n with
-    | MinusInf, _ => False
-    | Fin _, MinusInf => True
+    | MinusInfBZ, _ => False
+    | Fin _, MinusInfBZ => True
     | Fin m, Fin n => m > n
     end.
 
@@ -523,7 +523,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma plus_inf_dec : forall m n,
     { exists p, (m = Fin p \/ n = Fin p) /\ m + n = Fin p} +
-    { m + n = MinusInf /\ m = MinusInf /\ n = MinusInf }.
+    { m + n = MinusInfBZ /\ m = MinusInfBZ /\ n = MinusInfBZ }.
 
   Proof.
     intros. destruct m. 
@@ -538,7 +538,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma mult_inf_dec : forall m n,
     { exists mi, exists ni, m = Fin mi /\ n = Fin ni /\ m * n = Fin (mi + ni) } +
-    { m * n = MinusInf /\ (m = MinusInf \/ n = MinusInf) }.
+    { m * n = MinusInfBZ /\ (m = MinusInfBZ \/ n = MinusInfBZ) }.
 
   Proof.
     intros. destruct m. destruct n.
@@ -547,7 +547,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     right. auto.
   Qed.
 
-  Lemma minusInf_ge_min : forall a, a >>= MinusInf.
+  Lemma minusInf_ge_min : forall a, a >>= MinusInfBZ.
 
   Proof.
     intros. destruct a. left. simpl. trivial.
@@ -572,16 +572,16 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Ltac arctic_ord :=
     match goal with
-    | H: MinusInf >> Fin _ |- _ =>
+    | H: MinusInfBZ >> Fin _ |- _ =>
         contradiction
-    | H: MinusInf >>= Fin _ |- _ =>
+    | H: MinusInfBZ >>= Fin _ |- _ =>
         destruct H; [ contradiction | discriminate ]
     | H: Fin ?m >>= Fin ?n |- _ =>
         assert ((m >= n)%Z); 
           [ apply fin_ge_impl_ge; assumption 
           | clear H; arctic_ord
           ]
-    | |- Fin _ >>= MinusInf => left; simpl; trivial
+    | |- Fin _ >>= MinusInfBZ => left; simpl; trivial
     | |- Fin ?m >>= Fin ?n => apply ge_impl_fin_ge
     | _ => try solve [contradiction | discriminate]
     end.
@@ -632,7 +632,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     apply minusInf_ge_min.
   Qed.
 
-  Lemma ge_A1_not_minusInf : forall a, a >>= A1 -> a <> MinusInf.
+  Lemma ge_A1_not_minusInf : forall a, a >>= A1 -> a <> MinusInfBZ.
 
   Proof.
     intros. destruct a. 

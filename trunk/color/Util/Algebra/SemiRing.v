@@ -260,27 +260,27 @@ Module ArcticBZSemiRingT <: SemiRingType.
 
   Inductive Dom : Set := 
     | Fin (z : Z)
-    | MinusInf.
+    | MinusInfBZ.
 
   Definition A := Dom.
 
    (* max is a <+> operation in the semi-ring *)
   Definition Aplus m n :=
     match m, n with
-    | MinusInf, n => n
-    | m, MinusInf => m
+    | MinusInfBZ, n => n
+    | m, MinusInfBZ => m
     | Fin m, Fin n => Fin (Zmax m n)
     end.
 
    (* plus is a <*> operation in the semi-ring *)
   Definition Amult m n := 
     match m, n with
-    | MinusInf, _ => MinusInf
-    | _, MinusInf => MinusInf
+    | MinusInfBZ, _ => MinusInfBZ
+    | _, MinusInfBZ => MinusInfBZ
     | Fin m, Fin n => Fin (m + n)
     end.
 
-  Definition A0 := MinusInf.
+  Definition A0 := MinusInfBZ.
   Definition A1 := Fin 0.
   Definition Aeq := @eq A.
 
@@ -349,7 +349,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
   Qed.
 
   Lemma arctic_plus_notInf_left : forall (a b : A),
-    a <> MinusInf -> Aplus a b <> MinusInf.
+    a <> MinusInfBZ -> Aplus a b <> MinusInfBZ.
 
   Proof.
     intros. destruct a. 
@@ -358,7 +358,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
   Qed.
 
   Lemma arctic_mult_notInf : forall (a b : A),
-    a <> MinusInf -> b <> MinusInf -> Amult a b <> MinusInf.
+    a <> MinusInfBZ -> b <> MinusInfBZ -> Amult a b <> MinusInfBZ.
 
   Proof.
     intros. 
