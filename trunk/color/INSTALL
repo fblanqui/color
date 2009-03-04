@@ -15,7 +15,8 @@ Make sure that /bin/sh is bash.
 For compiling CoLoR, use the command "MAKE all" (replace MAKE by your
 command for GNU make).
 
-For compiling the html documentation, use the command "MAKE doc".
+For compiling the html documentation, use the command "MAKE doc". The
+starting file is doc/main.html.
 
 For compiling the TAGS file, use the command "MAKE tags". This
 requires: "coqtags" from ProofGeneral http://proofgeneral.inf.ed.ac.uk/.
