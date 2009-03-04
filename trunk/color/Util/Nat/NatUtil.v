@@ -71,7 +71,7 @@ induction n; simpl. reflexivity. rewrite IHn. reflexivity.
 Qed.*)
 
 (***********************************************************************)
-(** unicity of eq/le/lt proofs *)
+(** unicity of le and lt proofs *)
 
 Scheme le_ind_dep := Induction for le Sort Prop.
 
