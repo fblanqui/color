@@ -5,6 +5,31 @@
 #
 # - Frederic Blanqui, 2007-04-17
 
+prog=`basename $0`
+
+usage () {
+  echo "usage: $prog [-h]"
+}
+
+help () {
+  cat <<EOF
+Provides the number of lines for the various kinds of formalizations.
+
+Options:
+-h Provide this help and exit
+EOF
+}
+
+case "$1" in
+-h) usage; echo; help; exit 0;;
+esac
+
+if test $# -ne 0
+then
+  usage
+  exit 1
+fi
+
 lines () {
   wc -l /dev/null `find $dir -name \*.v` | grep total | sed 's|total||'
 }

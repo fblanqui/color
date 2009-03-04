@@ -5,6 +5,31 @@
 #
 # - Frederic Blanqui, 2006-01-16
 
+prog=`basename $0`
+
+usage () {
+  echo "usage: $prog [-h]"
+}
+
+help () {
+  cat <<EOF
+Creates an index for CoLoR files in doc/main.html.
+
+Options:
+-h Provide this help and exit
+EOF
+}
+
+case "$1" in
+-h) usage; echo; help; exit 0;;
+esac
+
+if test $# -ne 0
+then
+  usage
+  exit 1
+fi
+
 doc=`pwd`/doc/main.html
 
 # add an entry for each file of $dir

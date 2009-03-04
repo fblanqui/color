@@ -5,6 +5,31 @@
 #
 # - Frederic Blanqui, 2007-04-19
 
+prog=`basename $0`
+
+usage () {
+  echo "usage: $prog [-h] [dir]"
+}
+
+help () {
+  cat <<EOF
+Provides the number of Definitions, Lemmas, etc.
+
+Options:
+-h Provide this help and exit
+EOF
+}
+
+case "$1" in
+-h) usage; echo; help; exit 0;;
+esac
+
+if test $# -gt 1
+then
+  usage
+  exit 1
+fi
+
 dir=${1:-.}
 
 files=`find $dir -name \*.v`

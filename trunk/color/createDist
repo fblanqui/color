@@ -5,6 +5,31 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
+prog=`basename $0`
+
+usage () {
+  echo "usage: $prog [-h]"
+}
+
+help () {
+  cat <<EOF
+Creates a tar.gz from the last CVS version of CoLoR.
+
+Options:
+-h Provide this help and exit
+EOF
+}
+
+case "$1" in
+-h) usage; echo; help; exit 0;;
+esac
+
+if test $# -ne 0
+then
+  usage
+  exit 1
+fi
+
 set -x
 
 cwd=`pwd`
@@ -23,7 +48,7 @@ mv color $dir
 rm -rf `find $dir -name CVS -o -name .cvsignore`
 
 echo "This is the CoLoR library on `date`." > newREADME
-echo "Check http://color.loria.fr/ for more recent versions." >> newREADME
+echo "Check http://color.inria.fr/ for more recent versions." >> newREADME
 echo >> newREADME
 cat $dir/README >> newREADME
 mv -f newREADME $dir/README
@@ -31,5 +56,4 @@ mv -f newREADME $dir/README
 tar cf $dir.tar $dir
 gzip $dir.tar
 mv $dir.tar.gz $cwd
-
-#rm -rf $dir
+rm -rf $dir
