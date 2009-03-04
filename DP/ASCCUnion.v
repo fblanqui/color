@@ -388,22 +388,23 @@ Lemma red_Mod_SCC_trivial_singl : forall i r,
   SCC'_list i = r :: nil -> ~ODPG r r ->  WF (hd_red_Mod_SCC' i).
 
 Proof.
-intros. unfold WF. intros.
-apply SN_intro. intros y Hy. apply SN_intro. intros z Hz.
-cut (DPG r r). intro. assert False; try tauto. apply H0. apply over_DPG; auto.
-assert (In r (SCC'_list i)). rewrite H; simpl; auto.
-unfold SCC'_list in H1. rewrite SCC'_list_aux_exact in H1. destruct H1.
+intros i r H H0 x. apply SN_intro. intros y Hy. apply SN_intro. intros z Hz.
+cut (DPG r r). intro H1. assert False. apply H0. apply over_DPG. auto. tauto.
+assert (H1 : In r (SCC'_list i)). rewrite H. simpl. auto.
+unfold SCC'_list in H1. rewrite SCC'_list_aux_exact in H1.
+destruct H1 as [H1 H2]. destruct Hy as [x0 a]. destruct a as [s h].
 eapply hd_red_Mod_rule2_hd_rules_graph; auto; unfold red_mod in *;
-  unfold hd_red_Mod_SCC' in *. destruct Hy. destruct H3.
-unfold hd_red_Mod_rule. split; auto. do 4 destruct H4. exists x3.
-assert (r = mkRule x1 x2). rewrite <- SCC'_list_exact in H4.
-rewrite H in H4; simpl in *; tauto. rewrite H6; simpl. destruct H5; subst x0.
-split; eauto.
-unfold hd_red_Mod_rule. split; auto. destruct Hz. destruct H3.
-do 4 destruct H4. exists x3.
-assert (r = mkRule x1 x2). rewrite <- SCC'_list_exact in H4.
-rewrite H in H4; simpl in *; tauto. rewrite H6; simpl. destruct H5; subst x0.
-split; eauto.
+  unfold hd_red_Mod_SCC' in *.
+unfold hd_red_Mod_rule. split. auto. destruct h as [x1 e].
+destruct e as [x2 e]. destruct e as [x3 a]. destruct a as [H3 H4].
+destruct H4 as [H4 H5]. exists x3. assert (h : r = mkRule x1 x2).
+rewrite <- SCC'_list_exact in H3. rewrite H in H3; simpl in *; tauto.
+rewrite h; simpl. subst x0. split; eauto.
+unfold hd_red_Mod_rule. split. auto. destruct Hz as [x1 H3].
+destruct H3 as [H3 H4]. destruct H4 as [x2 H4]. destruct H4 as [x3 H4].
+destruct H4 as [x4 H4]. destruct H4 as [H4 H5]. destruct H5 as [H5 H6].
+exists x4. assert (r = mkRule x2 x3). rewrite <- SCC'_list_exact in H4.
+rewrite H in H4; simpl in *; tauto. rewrite H7. simpl. subst x1. split; eauto.
 Qed.
 
 Lemma WF_hd_red_Mod_SCC_fast_trivial : forall i (Hi : i < dim),
