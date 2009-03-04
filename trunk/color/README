@@ -8,20 +8,20 @@ and built by tools like TPA, MatchBox, AProVE, TTT, etc.
 
 Among other things, it includes:
 
-* libraries on mathematical structures in Util:
-	- Relation: binary relations
+* libraries on mathematical structures in Util/:
+	- Relation: binary relations/graphs
 		. computation of strongly connected components
 		. completion into a total ordering, topological sort
 	- Algebra: (ordered) semi-rings
 
-* libraries on data structures in Util:
+* libraries on data structures in Util/:
 	- List: lists
 	- Vector: vectors
 	- Multiset: finite multisets
 	- Polynom: integer polynomials with multiple variables
 	- Matrix: matrices over an (ordered) semi-ring
 
-* libraries on term structures in Term:
+* libraries on term structures in Term/:
 	- Varyadic: varyadic terms
 	- WithArity: algebraic terms with symbols of fixed arity
 	- SimpleType: simply typed lambda-terms with de Bruijn indices
@@ -41,7 +41,7 @@ Among other things, it includes:
 	- HORPO: higher-order recursive path ordering
 
 The library is likely to evolve and include more developments quickly.
-For more recent informations, see http://color.loria.fr/.
+For more recent informations, see http://color.inria.fr/.
 
 Contributions to this project are very welcome!
 
@@ -56,7 +56,7 @@ http://gforge.inria.fr/projects/color/.
 The following scripts provide some statistics:
 
 - get_stat: provides the number of coq lines (including newlines and
-comments) for the various kind of formalizations (mathematical
+comments) for the various kinds of formalizations (mathematical
 structures, data structures, etc.)
 
 - coq_stat [<directory>] (default is .): provides the number of

@@ -5,10 +5,10 @@ The compilation procedure that is provided hereafter requires a
 UNIX-like operating system with the following commands (it also works
 with Cygwin on Windows):
 
-- Coq SVN version http://coq.inria.fr/
-- GNU make version 3.80 http://www.gnu.org/software/make/
-- GNU bash version 3.00 http://www.gnu.org/software/bash/
-- GNU sed version 4.1.4 http://www.gnu.org/software/sed/
+- Coq 8.2 or SVN http://coq.inria.fr/
+- GNU make version 3.81 http://www.gnu.org/software/make/
+- GNU bash version 3.2.39 http://www.gnu.org/software/bash/
+- GNU sed version 4.1.5 http://www.gnu.org/software/sed/
 
 Make sure that /bin/sh is bash.
 
@@ -19,7 +19,7 @@ For compiling the html documentation, use the command "MAKE doc".
 
 For compiling the TAGS file, use the command "MAKE tags". This requires:
 - coqtags from ProofGeneral version 3.5 http://proofgeneral.inf.ed.ac.uk/
-- GNU find version 4.2.24 http://www.gnu.org/software/findutils/findutils.html
+- GNU find version 4.4.0 http://www.gnu.org/software/findutils/findutils.html
 
 For using the library, type the following command in Coq (you can also
 add it in your ~/.coqrc file):
@@ -29,4 +29,4 @@ add it in your ~/.coqrc file):
 where <dir> is the directory where the library is installed.
 
 If you encounter any problem, send a mail to Frederic Blanqui
-(name@loria.fr).
+(firstname.name@inria.fr).

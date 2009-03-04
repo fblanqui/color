@@ -10,12 +10,20 @@ Institution: Université de la Méditerranée Aix-Marseille 2,
 Institution: Université de Provence Aix-Marseille 1,
 Author: Adam Koprowski
 Institution: Vrije Universiteit Amsterdam
+Author: Hans Zantema
+Institution: Technische Universiteit Eindhoven
+Author: Stephane Le Roux
+Institution: Ecole Normale Superieure de Lyon
+Author: Leo Ducas
+Institution: Ecole Normale Superieure de Paris
+Author: Johannes Waldmann
+Institution: Hochschule fur Technik, Wirtschaft und Kultur (FH) Leipzig
 Description: The aim of this Coq library is to provide the necessary
 formal basis for certifying termination proofs for rewriting systems
-Url: http://color.loria.fr
+Url: http://color.inria.fr
 License: CeCILL
 Keywords: termination, rewriting, lambda-calculus, polynom, typing,
-term, multiset, vector, list, rpo, horpo, dependency pair, filtering,
-conversion, manna-ness, interpretation, context, substitution,
+term, multiset, vector, list, rpo, lpo, mpo, horpo, dependency pair,
+filtering, conversion, manna-ness, interpretation, context, substitution,
 lexicographic, ordering, well-founded, algebra, monotony, matrix,
-string
+string, unification, graph, decomposition
