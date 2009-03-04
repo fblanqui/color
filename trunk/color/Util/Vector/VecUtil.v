@@ -91,7 +91,7 @@ Qed.
 (***********************************************************************)
 (** cast *)
 
-Program Fixpoint Vcast m (v : vec m) (n : nat) (mn : m = n) {struct v} : vec n :=
+Program Fixpoint Vcast m (v : vec m) n (mn : m = n) {struct v} : vec n :=
   match v with
   | Vnil =>
       match n with
@@ -341,7 +341,7 @@ Qed.
 (***********************************************************************)
 (** replacement of i-th element *)
 
-Program Fixpoint Vreplace n (v : vec n) (i : nat) (ip : i < n) (a : A) : vec n :=
+Program Fixpoint Vreplace n (v : vec n) i (ip : i < n) (a : A) : vec n :=
   match v with 
   | Vnil => !
   | Vcons h _ v' => 
