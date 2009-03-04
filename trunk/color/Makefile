@@ -3,8 +3,6 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
-SHELL := /bin/sh
-
 MAKEFLAGS := -r -j
 
 .SUFFIXES:
@@ -35,20 +33,21 @@ doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -name \*.v`
 	./createIndex
 
-WEB := /local/web-serveurs/color/htdocs
-ADR := blanqui@loria.loria.fr
+DIR := .public/.writable
+ADR := login-linux.inria.fr
+WEB := liama/www/color
 
 install-doc:
-	ssh $(ADR) "rm -rf $(WEB)/doc; mkdir $(WEB)/doc"
-	scp doc/*.html doc/coqdoc.css $(ADR):$(WEB)/doc
-	scp CHANGES $(ADR):$(WEB)/CHANGES.CoLoR
+	scp doc/* $(ADR):$(DIR)
+	rocexec "mv $(DIR)/* $(WEB)/doc"
 
 dist:
 	./createDist
 
 install-dist:
-	mv -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
-	cp -f CHANGES $(WEB)/CHANGES.CoLoR
+	scp CoLoR_`date +%y%m%d`.tar.gz $(ADR):$(DIR)/CoLoR.tar.gz
+	scp CHANGES $(ADR):$(DIR)/CHANGES.CoLoR
+	rocexec "mv $(DIR)/* $(WEB)"
 
 %.vo: %.v
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $@
