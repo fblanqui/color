@@ -7,9 +7,26 @@
 
 prog=`basename $0`
 
+usage () {
+  echo "usage: $prog [-h] dir"
+}
+
+help () {
+  cat <<EOF
+Run coq_stat on each Coq contribution.
+
+Options:
+-h Provide this help and exit
+EOF
+}
+
+case "$1" in
+-h) usage; echo; help; exit 0;;
+esac
+
 if test $# -ne 1
 then
-  echo "usage: $prog coq_contribs_dir"
+  usage
   exit 1
 fi
 
