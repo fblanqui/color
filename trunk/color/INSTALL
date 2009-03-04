@@ -8,7 +8,7 @@ with Cygwin on Windows):
 - Coq 8.2 or SVN http://coq.inria.fr/
 - GNU make version 3.81 http://www.gnu.org/software/make/
 - GNU bash version 3.2.39 http://www.gnu.org/software/bash/
-- GNU sed version 4.1.5 http://www.gnu.org/software/sed/
+- GNU find version 4.4.0 http://www.gnu.org/software/findutils/findutils.html
 
 Make sure that /bin/sh is bash.
 
@@ -17,9 +17,8 @@ command for GNU make).
 
 For compiling the html documentation, use the command "MAKE doc".
 
-For compiling the TAGS file, use the command "MAKE tags". This requires:
-- coqtags from ProofGeneral version 3.5 http://proofgeneral.inf.ed.ac.uk/
-- GNU find version 4.4.0 http://www.gnu.org/software/findutils/findutils.html
+For compiling the TAGS file, use the command "MAKE tags". This
+requires: "coqtags" from ProofGeneral http://proofgeneral.inf.ed.ac.uk/.
 
 For using the library, type the following command in Coq (you can also
 add it in your ~/.coqrc file):
