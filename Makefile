@@ -38,7 +38,7 @@ ADR := login-linux.inria.fr
 WEB := liama/www/color
 
 install-doc:
-	scp doc/* $(ADR):$(DIR)
+	scp doc/coqdoc.css doc/*.html $(ADR):$(DIR)
 	rocexec "mv $(DIR)/* $(WEB)/doc"
 
 dist:
