@@ -44,8 +44,8 @@ data=`expr $data - $math`
 termin=`expr $total - $data - $term - $math`
 
 display () {
-#  mean=`expr 10000 \* $val / $total | sed 's|\(.*\)\([0-9][0-9]\)$|\1.\2|'`
-  mean=`expr 100 \* $val / $total`
+  mean=`expr 1000 \* $val / $total | sed 's|\(.*\)\([0-9]\)$|\1.\2|'`
+#  mean=`expr 100 \* $val / $total`
   echo $dir $val $mean%
 }
 
