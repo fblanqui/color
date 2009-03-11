@@ -7,11 +7,11 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean all config dist doc install-dist install-doc tags
+.PHONY: clean default config dist doc install-dist install-doc tags
 
 COQMAKE := $(MAKE) -f Makefile.coq
 
-all: Makefile.coq
+default: Makefile.coq
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
 
 Makefile.coq:
