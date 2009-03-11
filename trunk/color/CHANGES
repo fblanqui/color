@@ -25,6 +25,9 @@ unified with development on matrix interpretations [Koprowski, Waldmann]
 - Util/Algebra/SemiRing
 - Util/Algebra/OrdSemiRing
 
+08-02-13:
+- Term/String/SReverse: SRS inversion preserves termination [Blanqui]
+
 08-01-23: added support for boolean reasoning and boolean functions
 testing equality [Blanqui]
 - Util/Bool/BoolUtil
