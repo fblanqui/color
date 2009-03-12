@@ -1,3 +1,7 @@
+09-01-22:
+- HORPO: beta-reduction included into HORPO; added examples, including
+  an example illustrating non-transitivity of HORPO [Koprowski]
+
 08-10-31:
 - Term/WithArity/AUnif: termination and completeness of the syntactic
   unification algorithm [Blanqui]
