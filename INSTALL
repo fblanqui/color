@@ -12,7 +12,7 @@ with Cygwin on Windows):
 
 Make sure that /bin/sh is bash.
 
-For compiling CoLoR, use the command "MAKE all" (replace MAKE by your
+For compiling CoLoR, use the command "MAKE" (replace MAKE by your
 command for GNU make).
 
 For compiling the html documentation, use the command "MAKE doc". The
