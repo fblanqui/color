@@ -33,21 +33,17 @@ doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -name \*.v`
 	./createIndex
 
-DIR := .public/.writable
-ADR := login-linux.inria.fr
-WEB := liama/www/color
+ADR := login-linux.inria.fr:liama/www/color
 
 install-doc:
-	scp doc/coqdoc.css doc/*.html $(ADR):$(DIR)
-	rocexec "mv $(DIR)/* $(WEB)/doc"
+	scp doc/coqdoc.css doc/*.html $(ADR)/doc
 
 dist:
 	./createDist
 
 install-dist:
-	scp CoLoR_`date +%y%m%d`.tar.gz $(ADR):$(DIR)/CoLoR.tar.gz
-	scp CHANGES $(ADR):$(DIR)/CHANGES.CoLoR
-	rocexec "mv $(DIR)/* $(WEB)"
+	scp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
+	scp CHANGES $(ADR)/CHANGES.CoLoR
 
 %.vo: %.v
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $@
