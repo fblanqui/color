@@ -17,7 +17,9 @@ Require Import List.
 
 Set Implicit Arguments.
 
-(** functor building matrices over given a carrier *)
+(***********************************************************************)
+(** functor building matrices over a given carrier *)
+
 Module Matrix (OSRT : OrdSemiRingType).
 
   Module OSR := OrdSemiRing OSRT.
@@ -25,14 +27,16 @@ Module Matrix (OSRT : OrdSemiRingType).
   Module VA := OrdVectorArith OSRT.
   Export VA.
 
-   (** basic definitions *)
+(***********************************************************************)
+(** basic definitions *)
 
   Notation vec := (vector A).
 
    (* Matrix represented by a vector of vectors (in a row-wise fashion) *)
   Definition matrix m n := vector (vec n) m.
 
-   (** accessors *)
+(***********************************************************************)
+(** accessors *)
 
   Definition get_row m n (M : matrix m n) i (ip : i < m) := Vnth M ip.
 
@@ -72,7 +76,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     |- ?L = ?R => apply (mat_eq L R); intros 
     end.
 
-   (** matrix construction *)
+(***********************************************************************)
+(** matrix construction *)
 
   Definition mat_build_spec : forall m n 
     (gen : forall i j, i < m -> j < n -> A), 
@@ -112,7 +117,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     apply mat_build_elem.
   Qed.
 
-   (** Some elementary matrices *)
+(***********************************************************************)
+(** Some elementary matrices *)
 
   Definition zero_matrix m n : matrix m n := mat_build (fun i j ip jp => A0).
 
@@ -121,7 +127,8 @@ Module Matrix (OSRT : OrdSemiRingType).
   Definition inverse_matrix inv m n (M : matrix m n) : matrix m n :=
     mat_build (fun i j ip jp => inv (get_elem M ip jp)).
 
-   (** 1-row and 1-column matrices *)
+(***********************************************************************)
+(** 1-row and 1-column matrices *)
 
   Definition row_mat n := matrix 1 n.
   Definition col_mat n := matrix n 1.
@@ -220,7 +227,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     absurd_arith.
   Qed.
 
-   (** matrix transposition *)
+(***********************************************************************)
+(** matrix transposition *)
 
   Definition mat_transpose m n (M : matrix m n) := 
     mat_build (fun _ _ i j => get_elem M j i).
@@ -251,7 +259,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     unfold mat_transpose. do 2 rewrite mat_build_elem. refl.
   Qed.
 
-   (** matrix addition *)
+(***********************************************************************)
+(** matrix addition *)
 
   Definition vec_plus n (L R : vec n) := Vmap2 Aplus L R.
 
@@ -266,7 +275,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     intros. prove_mat_eq. unfold mat_plus, vec_plus. mat_get_simpl.
   Qed.
 
-   (** matrix multiplication *)
+(***********************************************************************)
+(** matrix multiplication *)
 
   Definition mat_mult m n p (L : matrix m n) (R : matrix n p) :=
     mat_build (fun i j ip jp => dot_product (get_row L ip) (get_col R jp)).
@@ -376,7 +386,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     apply dot_product_assoc.
   Qed.
 
-   (** matrix-col vector product *)
+(***********************************************************************)
+(** matrix-col vector product *)
 
   Definition mat_vec_prod m n (m : matrix m n) (v : vec n) :=
     col_mat_to_vec (m <*> (vec_to_col_mat v)).
@@ -444,7 +455,8 @@ Module Matrix (OSRT : OrdSemiRingType).
     rewrite Vnth_tail. refl.
   Qed.
 
-   (** forall *)
+(***********************************************************************)
+(** forall *)
 
   Section Forall.
 
@@ -458,7 +470,8 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   End Forall.
 
-   (** forall2 *)
+(***********************************************************************)
+(** forall2 *)
 
   Section Forall2.
 
@@ -515,7 +528,9 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Hint Rewrite mat_mult_id_l zero_matrix_mult_l using simpl : arith.
 
-   (** 'monotonicity' of matrix multiplication over naturals *)
+(***********************************************************************)
+(** 'monotonicity' of matrix multiplication over naturals *)
+
   Section MatMultMonotonicity.
 
     Require Import RelMidex.
@@ -580,6 +595,9 @@ Module Matrix (OSRT : OrdSemiRingType).
 
 End Matrix.
 
+(***********************************************************************)
+(** matrix construction functions *)
+
 Section MatrixConstruction.
 
   Variable A : Set.
@@ -601,6 +619,7 @@ Section MatrixConstruction.
 
 End MatrixConstruction.
 
+(***********************************************************************)
 (** matrices over different domains *)
 
 Module NMatrix := Matrix NOrdSemiRingT.
