@@ -118,3 +118,5 @@ Qed.
 End position.
 
 End S.
+
+Implicit Arguments mem_ok [A beq].
