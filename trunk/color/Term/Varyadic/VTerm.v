@@ -132,7 +132,7 @@ Proof.
 intros. rewrite H. refl.
 Qed.
 
-Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
+(*Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
 
 Proof.
   intro. pattern t. apply term_rect with
@@ -158,20 +158,15 @@ Proof.
   right. intro diff. apply n. congruence.
   right. intro diff. apply n. congruence.
 Defined.
+*)
 
-Section beq.
-
-Variable beq_var : variable -> variable -> bool.
-Variable beq_var_ok : forall x y, beq_var x y = true <-> x = y.
-
-Variable beq_symb : Sig -> Sig -> bool.
-Variable beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
+Require Import NatUtil.
 
 Fixpoint beq (t u : term) {struct t} :=
   match t with
     | Var x =>
       match u with
-        | Var y => beq_var x y
+        | Var y => beq_nat x y
         | _ => false
       end
     | Fun f ts =>
@@ -225,16 +220,16 @@ Lemma beq_ok : forall t u, beq t u = true <-> t = u.
 
 Proof.
 intro t. pattern t. apply term_ind_forall2; destruct u.
-simpl. rewrite beq_var_ok. intuition. inversion H. refl.
+simpl. rewrite beq_nat_ok. intuition. inversion H. refl.
 intuition; discriminate. intuition; discriminate.
 rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0.
 rewrite beq_list_ok_in in H2. subst l. refl. exact H.
-inversion H0. apply andb_intro. apply (beq_refl beq_symb_ok).
+inversion H0. apply andb_intro. apply (beq_refl (@beq_symb_ok Sig)).
 ded (beq_list_ok_in H). subst v. rewrite H1. refl.
 Qed.
 
-End beq.
+Definition term_eq_dec := dec_beq beq_ok.
 
 (***********************************************************************)
 (** maximal index of a variable *)

@@ -13,6 +13,8 @@ Require Import LogicUtil.
 Require Import ATrs.
 Require Import ListUtil.
 Require Import VecUtil.
+Require Import EqUtil.
+Require Import BoolUtil.
 
 Section S.
 
@@ -30,11 +32,7 @@ Fixpoint defined (f : Sig) (l : rules) {struct l} : bool :=
     | r :: l' =>
       match lhs r with
 	| Var _ => defined f l'
-	| Fun g ts =>
-	  match eq_symbol_dec f g with
-	    | left _ => true
-	    | _ => defined f l'
-	  end
+	| Fun g ts => beq_symb f g || defined f l'
       end
   end.
 
@@ -43,8 +41,8 @@ Lemma lhs_fun_defined : forall (f : Sig) us r R,
 
 Proof.
 induction R. auto. simpl. intro H. destruct H. subst a. simpl.
-case (eq_symbol_dec f f). auto. intros. irrefl. destruct a. simpl.
-destruct lhs. auto. case (eq_symbol_dec f f0); auto.
+rewrite (beq_refl (@beq_symb_ok Sig)). auto. destruct a. simpl.
+destruct lhs. auto. apply orb_intror. auto.
 Qed.
 
 (***********************************************************************)

@@ -30,7 +30,7 @@ Notation AFun := (@Fun ASig).
 
 Require Import VTerm.
 
-Definition VSig_of_ASig := mkSignature (@ASignature.eq_symbol_dec ASig).
+Definition VSig_of_ASig := mkSignature (@ASignature.beq_symb_ok ASig).
 
 Notation VSig := VSig_of_ASig.
 
