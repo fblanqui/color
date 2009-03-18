@@ -217,7 +217,7 @@ Notation alien_sub := (alien_sub R).
 
 Notation SNR := (SN (red R)).
 
-(* FIXME: the assumption (Vforall SNR ts) is useless *)
+(* FIXME: remove the useless assumption (Vforall SNR ts) *)
 Lemma chain_min_fun : forall f, defined f R = true
   -> forall ts, SN chain_min (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
 
