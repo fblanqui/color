@@ -25,7 +25,7 @@ Hint Rewrite eqb negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
 Ltac bool := autorewrite with bool.
 
 (***********************************************************************)
-(** boolean equalities *)
+(** implication *)
 
 Lemma implb1 : forall b, implb b b = true.
 
@@ -40,15 +40,31 @@ induction b; refl.
 Qed.
 
 (***********************************************************************)
-(** introduction and elimination rules for booleans *)
+(** conjonction *)
 
 Lemma andb_elim : forall b c, b && c = true -> b = true /\ c = true.
 
 Proof.
-intros. destruct b; destruct c; intuition.
+destruct b; destruct c; intuition.
 Qed.
 
 Implicit Arguments andb_elim [b c].
+
+Lemma andb_eliml : forall b c, b && c = true -> b = true.
+
+Proof.
+destruct b; destruct c; intuition.
+Qed.
+
+Implicit Arguments andb_eliml [b c].
+
+Lemma andb_elimr : forall b c, b && c = true -> c = true.
+
+Proof.
+destruct b; destruct c; intuition.
+Qed.
+
+Implicit Arguments andb_elimr [b c].
 
 Lemma andb_intro : forall b c, b = true -> c = true -> b && c = true.
 
@@ -56,8 +72,38 @@ Proof.
 intros. subst b. subst c. refl.
 Qed.
 
-Lemma negb_lr : forall x y, negb x = y <-> x = negb y.
+Lemma andb_eq : forall b c, b && c = true <-> b = true /\ c = true.
 
 Proof.
-destruct x; destruct y; intuition.
+split. intro. apply andb_elim. hyp. intuition.
+Qed.
+
+(***********************************************************************)
+(** negation *)
+
+Lemma negb_lr : forall b c, negb b = c <-> b = negb c.
+
+Proof.
+destruct b; destruct c; intuition.
+Qed.
+
+(***********************************************************************)
+(** disjonction *)
+
+Lemma orb_intror : forall b c, c = true -> b || c = true.
+
+Proof.
+intros. subst. bool. refl.
+Qed.
+
+Lemma orb_introl : forall b c, c = true -> b || c = true.
+
+Proof.
+intros. subst. bool. refl.
+Qed.
+
+Lemma orb_eq : forall b c, b || c = true <-> b = true \/ c = true.
+
+Proof.
+intuition. destruct b; auto.
 Qed.
