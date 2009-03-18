@@ -54,21 +54,12 @@ Require Import EqUtil.
 
 Ltac case_nat_eq x y := case_beq beq_nat_ok (beq_nat x y).
 
-(*FIXME Definition eq_nat_dec := dec_beq beq_nat_ok. *)
-
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
 Proof.
 intro. generalize (eq_nat_dec n n). destruct s.
 rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
-
-(*old version with Coq's eq_nat_dec:
-Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
-
-Proof.
-induction n; simpl. reflexivity. rewrite IHn. reflexivity.
-Qed.*)
 
 (***********************************************************************)
 (** unicity of le and lt proofs *)
