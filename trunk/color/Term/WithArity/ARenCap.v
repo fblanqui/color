@@ -461,46 +461,6 @@ destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
 rewrite ren_cap_idem. rewrite sub_sub. exists (comp x1 x2). refl.
 Qed.
 
-(* FIXME: what it is for ? keep ?
-
-(***********************************************************************)
-(** cap under head symbol *)
-
-Definition ren_cap' k t :=
-  match t with
-  | Fun f ts => Fun f (ren_caps k ts)
-  | _ => t
-  end.
-
-Lemma int_red_sub_ren_cap' : forall u v,
-  int_red R u v -> forall k, exists s, v = sub s (ren_cap' k u).
-
-Proof.
-intros. ded (int_red_elim H). decomp H0. subst. unfold ren_cap'.
-rewrite ren_caps_cast. rewrite ren_caps_app. simpl ren_caps.
-destruct (ren_caps_intro x1 k) as [s1]. destruct H0.
-destruct (red_sub_ren_cap H4 (k + nb_aliens_vec x1)) as [s2].
-rewrite sub_restrict in H2.
-set (s2' := restrict s2 (vars (ren_cap (k + nb_aliens_vec x1) x2))) in H2.
-assert (forall x, x < k + nb_aliens_vec x1
-  \/ x >= k + nb_aliens_vec x1 + nb_aliens x2 -> s2' x = Var x). intros.
-assert (Inb eq_nat_dec x7 (vars (ren_cap (k + nb_aliens_vec x1) x2)) = false).
-apply Inb_elim. intro. ded (vars_ren_cap H5). omega.
-unfold s2', restrict. rewrite H5. refl.
-destruct (ren_caps_intro x4 k) as [s3]. destruct H5.
-Qed.
-
-Lemma rtc_int_red_sub_ren_cap' : forall k u v,
-  int_red R # u v -> exists s, v = sub s (ren_cap' k u).
-
-Proof.
-induction 1; intros. apply int_red_sub_ren_cap'. hyp.
-destruct (ren_cap_intro x k). exists x0. intuition.
-destruct IHclos_refl_trans1. destruct IHclos_refl_trans2. subst.
-destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
-rewrite ren_cap_idem. rewrite sub_sub. exists (comp x1 x2). refl.
-Qed.*)
-
 End S.
 
 Implicit Arguments vars_ren_cap [Sig R x t k].
