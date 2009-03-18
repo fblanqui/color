@@ -4,12 +4,16 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2009-03-18
 
-decidability of equality on bigZ
+extension of bigZ
 *)
 
 Set Implicit Arguments.
 
 Require Import LogicUtil.
+
+(***********************************************************************)
+(** decidability of equality *)
+
 Require Import Int31.
 
 Lemma eq_digits_dec : forall x y : digits, {x=y}+{~x=y}.
@@ -27,9 +31,9 @@ Defined.
 Ltac bad_case := right; intro; inversion H; contradiction.
 Ltac case_tac x y := case (eq_digits_dec x y); [idtac|bad_case].
 
-Require Export BigZ.
+Require Import BigN. Import BigN.
 
-Lemma eq_BigN_w0_dec : forall x y : BigN.w0, {x=y}+{~x=y}.
+Lemma eq_BigN_w0_dec : forall x y : w0, {x=y}+{~x=y}.
 
 Proof.
 destruct x. destruct y.
@@ -43,32 +47,32 @@ case_tac d23 d54. case_tac d24 d55. case_tac d25 d56. case_tac d26 d57.
 case_tac d27 d58. case_tac d28 d59. case_tac d29 d60. intros. subst. auto.
 Defined.
 
-Lemma eq_BigN_w1_dec : forall x y : BigN.w1, {x=y}+{~x=y}.
+Lemma eq_BigN_w1_dec : forall x y : w1, {x=y}+{~x=y}.
 Proof.
 decide equality; apply eq_BigN_w0_dec.
 Defined.
 
-Lemma eq_BigN_w2_dec : forall x y : BigN.w2, {x=y}+{~x=y}.
+Lemma eq_BigN_w2_dec : forall x y : w2, {x=y}+{~x=y}.
 Proof.
 decide equality; apply eq_BigN_w1_dec.
 Defined.
 
-Lemma eq_BigN_w3_dec : forall x y : BigN.w3, {x=y}+{~x=y}.
+Lemma eq_BigN_w3_dec : forall x y : w3, {x=y}+{~x=y}.
 Proof.
 decide equality; apply eq_BigN_w2_dec.
 Defined.
 
-Lemma eq_BigN_w4_dec : forall x y : BigN.w4, {x=y}+{~x=y}.
+Lemma eq_BigN_w4_dec : forall x y : w4, {x=y}+{~x=y}.
 Proof.
 decide equality; apply eq_BigN_w3_dec.
 Defined.
 
-Lemma eq_BigN_w5_dec : forall x y : BigN.w5, {x=y}+{~x=y}.
+Lemma eq_BigN_w5_dec : forall x y : w5, {x=y}+{~x=y}.
 Proof.
 decide equality; apply eq_BigN_w4_dec.
 Defined.
 
-Lemma eq_BigN_w6_dec : forall x y : BigN.w6, {x=y}+{~x=y}.
+Lemma eq_BigN_w6_dec : forall x y : w6, {x=y}+{~x=y}.
 Proof.
 decide equality; apply eq_BigN_w5_dec.
 Defined.
@@ -105,14 +109,22 @@ Lemma eq_bigN_dec : forall x y : bigN, {x=y}+{~x=y}.
 
 Proof.
 induction x; destruct y; try (right; discr).
-case (eq_BigN_w0_dec w w0); intro. subst. auto. bad_case.
-case (eq_BigN_w1_dec w w0); intro. subst. auto. bad_case.
-case (eq_BigN_w2_dec w w0); intro. subst. auto. bad_case.
-case (eq_BigN_w3_dec w w0); intro. subst. auto. bad_case.
-case (eq_BigN_w4_dec w w0); intro. subst. auto. bad_case.
-case (eq_BigN_w5_dec w w0); intro. subst. auto. bad_case.
-case (eq_BigN_w6_dec w w0); intro. subst. auto. bad_case.
+case (eq_BigN_w0_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w1_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w2_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w3_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w4_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w5_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w6_dec w w7); intro. subst. auto. bad_case.
 case (eq_nat_dec n n0); [idtac|bad_case]. intro. subst n0.
-case (eq_word_dec eq_BigN_w6_dec _ w w0); intro. subst. auto.
+case (eq_word_dec eq_BigN_w6_dec _ w w7); intro. subst. auto.
 right. intro. inversion H. ded (inj_pairT2 eq_nat_dec H1). contradiction.
 Defined.
+
+Require Export BigZ.
+
+Lemma eq_bigZ_dec : forall x y : bigZ, {x=y}+{~x=y}.
+
+Proof.
+decide equality; apply eq_bigN_dec.
+Qed.
