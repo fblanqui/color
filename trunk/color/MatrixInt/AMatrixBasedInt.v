@@ -21,7 +21,7 @@ Require Import Max.
 
 Section MatrixLinearFunction.
 
-  Variables (A : Set) (matrix : nat -> nat -> Set) (dim : nat).
+  Variables (A : Type) (matrix : nat -> nat -> Type) (dim : nat).
 
    (* function interpretation : one [dim]x[dim] matrix per argument and
       one vector of dimension [dim] for a constant factor *)
