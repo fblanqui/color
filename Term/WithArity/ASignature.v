@@ -14,39 +14,21 @@ Set Implicit Arguments.
 Notation variable := nat (only parsing).
 
 (** Signature with a decidable set of symbols of fixed arity. *)
-(* FIXME: beq_symb should replace eq_symbol_dec *)
 
 Record Signature : Type := mkSignature {
   symbol :> Type;
   arity : symbol -> nat;
-  eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}
+  beq_symb : symbol -> symbol -> bool;
+  beq_symb_ok : forall x y, beq_symb x y = true <-> x = y
 }.
 
+Implicit Arguments mkSignature [symbol beq_symb].
 Implicit Arguments arity [s].
-Implicit Arguments eq_symbol_dec [s].
-
-(** Module type for signatures. *)
-
-Module Type SIGNATURE.
-  Parameter Sig : Signature.
-End SIGNATURE.
-
-(** Boolean equality from a signature. *)
+Implicit Arguments beq_symb [s].
+Implicit Arguments beq_symb_ok [s x y].
 
 Require Import EqUtil.
 
-Section S.
+Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
 
-Variable Sig : Signature.
-
-Notation eq_symbol_dec := (@eq_symbol_dec Sig).
-
-Definition beq_symb := beq_dec eq_symbol_dec.
-
-Lemma beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
-
-Proof.
-exact (beq_dec_ok eq_symbol_dec).
-Qed.
-
-End S.
+Implicit Arguments eq_symb_dec [Sig].

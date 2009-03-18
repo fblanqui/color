@@ -60,10 +60,9 @@ Lemma fun_eq_sub : forall f ts s u, Fun f ts = sub s u ->
   {exists us, u = Fun f us} + {exists x, u = Var x}.
 
 Proof.
-intros f ts s u H.
-destruct u.
+intros f ts s u H. destruct u.
 right. exists n. refl.
-left. case (eq_symbol_dec f f0).
+left. case (eq_symb_dec f f0).
 intro E. rewrite E. exists v. refl.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.

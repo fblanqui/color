@@ -21,6 +21,7 @@ Require Import AGraph.
 Require Import LogicUtil.
 Require Import BoolUtil.
 Require Import ARename.
+Require Import EqUtil.
 
 (***********************************************************************)
 (** definition of the hde over graph *)
@@ -50,7 +51,7 @@ unfold is_restricted. intros. unfold hde in H; tauto.
 Qed.
 
 Notation eq_rule_dec := (@eq_rule_dec Sig).
-Notation eq_symbol_dec := (@eq_symbol_dec Sig).
+Notation eq_symb_dec := (@eq_symb_dec Sig).
 
 Lemma hde_dec : forall r1 r2, {hde r1 r2} + {~hde r1 r2}.
 
@@ -59,7 +60,7 @@ intros. unfold hde.
 destruct (In_dec eq_rule_dec r1 D); try tauto.
 destruct (In_dec eq_rule_dec r2 D); try tauto.
 destruct (rhs r1). left; auto. destruct (lhs r2); auto.
-destruct (eq_symbol_dec f f0); try tauto.
+destruct (eq_symb_dec f f0); try tauto.
 Defined.
 
 End prop_def.
@@ -121,45 +122,38 @@ Variable Sig : Signature.
 
 Variables D : rules Sig.
 
-(* REMARK: [Inb _ D] can be optimized when D is sorted. *)
-
 Definition hd_eq (u v : term Sig) :=
   match u with
   | Var _ => true
   | Fun f _ =>
     match v with
     | Var _ => true
-    | Fun g _ =>
-      match eq_symbol_dec f g with
-      | left _ => true
-      | right _ => false
-      end
+    | Fun g _ => beq_symb f g
     end
   end.
 
-Notation Inb := (Inb (@eq_rule_dec Sig)).
+(* REMARK: [Inb _ D] can be optimized when D is sorted. *)
+
+Require Import ListDec.
+
+Notation mem := (mem (@beq_rule Sig)).
+Notation mem_ok := (mem_ok (@beq_rule_ok Sig)).
 
 Definition hde_bool r1 r2 :=
-  Inb r1 D && Inb r2 D && hd_eq (rhs r1) (lhs r2).
+  mem r1 D && mem r2 D && hd_eq (rhs r1) (lhs r2).
 
 Lemma hde_bool_correct_aux : forall x y, hde D x y <-> Graph hde_bool x y.
 
 Proof.
 intros x y. unfold hde, hde_bool, hd_eq, Graph; simpl.
-destruct (rhs x); autorewrite with bool; intuition.
-apply andb_intro; apply Inb_intro; hyp.
-destruct (andb_elim H). rewrite <- Inb_correct in H0. hyp.
-destruct (andb_elim H). rewrite <- Inb_correct in H1. hyp.
-gen H2. destruct (lhs y); autorewrite with bool; intro.
-apply andb_intro; apply Inb_intro; hyp.
-subst f0. case (eq_symbol_dec f f); intro. autorewrite with bool.
-apply andb_intro; apply Inb_intro; hyp. irrefl.
-destruct (andb_elim H). destruct (andb_elim H0).
-rewrite <- Inb_correct in H2. hyp.
-destruct (andb_elim H). destruct (andb_elim H0).
-rewrite <- Inb_correct in H3. hyp.
-gen H. destruct (lhs y); autorewrite with bool; intro. trivial.
-gen H. case (eq_symbol_dec f f0). auto. autorewrite with bool. discr.
+repeat rewrite <- mem_ok. destruct (rhs x); bool; intuition.
+apply (andb_eliml H). apply (andb_elimr H). rewrite H0. rewrite H. bool.
+destruct y. simpl in *. destruct lhs. refl. subst.
+apply beq_refl. exact (@beq_symb_ok Sig).
+ded (andb_elim H); clear H. destruct H0. apply (andb_elim H).
+ded (andb_elim H); clear H. destruct H0. apply (andb_elim H).
+destruct y. simpl in *. destruct lhs. auto.
+ded (andb_elim H). rewrite beq_symb_ok in H0. intuition.
 Qed.
 
 End bool_def.

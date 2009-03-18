@@ -13,7 +13,17 @@ Notation variable := nat (only parsing).
 
 Record Signature : Type := mkSignature {
   symbol :> Type;
-  eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}
+  beq_symb : symbol -> symbol -> bool;
+  beq_symb_ok : forall x y, beq_symb x y = true <-> x = y
+  (*eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}*)
 }.
 
-Implicit Arguments eq_symbol_dec [s].
+Implicit Arguments mkSignature [symbol beq_symb].
+Implicit Arguments beq_symb [s].
+Implicit Arguments beq_symb_ok [s x y].
+
+Require Import EqUtil.
+
+Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
+
+Implicit Arguments eq_symb_dec [Sig].

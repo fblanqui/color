@@ -35,7 +35,7 @@ Variable pi : forall f, bools (@arity Sig f).
 Definition filter_arity f := Vtrue (pi f).
 Notation arity' := filter_arity.
 
-Definition filter_sig := mkSignature filter_arity (@eq_symbol_dec Sig).
+Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
 Notation Sig' := filter_sig.
 
 Notation term' := (ATerm.term Sig').

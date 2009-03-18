@@ -1,3 +1,8 @@
+09-03-18:
+- decidability properties are replaced by boolean functions
+
+09-03-11: release
+
 09-01-22:
 - HORPO: beta-reduction included into HORPO; added examples, including
   an example illustrating non-transitivity of HORPO [Koprowski]

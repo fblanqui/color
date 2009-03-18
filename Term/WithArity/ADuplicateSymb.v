@@ -36,13 +36,21 @@ Definition dup_ar s :=
     | int_symb s' => arity s'
   end.
 
-Lemma eq_dup_symb_dec : forall f g : dup_symb, {f=g}+{~f=g}.
+Definition beq_dup_symb (f g : dup_symb) : bool :=
+  match f, g with
+    | hd_symb f', hd_symb g' => beq_symb f' g'
+    | int_symb f', int_symb g' => beq_symb f' g'
+    | _, _ => false
+  end.
+
+Lemma beq_dup_symb_ok : forall f g, beq_dup_symb f g = true <-> f = g.
 
 Proof.
-decide equality; apply eq_symbol_dec.
-Defined.
+destruct f; destruct g; simpl; try rewrite beq_symb_ok; intuition; try subst;
+  refl || discr || inversion H; refl.
+Qed.
 
-Definition dup_sig := mkSignature dup_ar eq_dup_symb_dec.
+Definition dup_sig := mkSignature dup_ar beq_dup_symb_ok.
 
 Notation Sig' := dup_sig. Notation Fun' := (@Fun Sig').
 

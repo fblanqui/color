@@ -20,6 +20,8 @@ Require Import VecUtil.
 Require Import RelUtil.
 Require Import ListForall.
 Require Import SN.
+Require Import BoolUtil.
+Require Import EqUtil.
 
 Section basic_definitions.
 
@@ -32,11 +34,18 @@ Notation term := (term Sig). Notation terms := (vector term).
 
 Record rule : Type := mkRule { lhs : term; rhs : term }.
 
-Lemma eq_rule_dec : forall a b : rule, {a=b}+{~a=b}.
+Definition beq_rule (a b : rule) : bool :=
+  beq_term (lhs a) (lhs b) && beq_term (rhs a) (rhs b).
+
+Lemma beq_rule_ok : forall a b, beq_rule a b = true <-> a = b.
 
 Proof.
-decide equality; apply eq_term_dec.
-Defined.
+destruct a as [a1 a2]. destruct b as [b1 b2]. unfold beq_rule. simpl.
+rewrite andb_eq. repeat rewrite beq_term_ok. split.
+intuition. subst. refl. intro. inversion H. auto.
+Qed.
+
+Definition eq_rule_dec := dec_beq beq_rule_ok.
 
 Definition rules := (list rule).
 

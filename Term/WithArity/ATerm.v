@@ -115,7 +115,7 @@ Qed.
 Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
 
 Proof.
-intros. inversion H. apply (inj_pairT2 (@eq_symbol_dec _) H1).
+intros. inversion H. apply (inj_pairT2 (@eq_symb_dec _) H1).
 Qed.
 
 Lemma symb_eq : forall f us g vs, Fun f us = Fun g vs -> f = g.
@@ -127,22 +127,15 @@ Qed.
 (***********************************************************************)
 (** decidability of equality *)
 
-Section beq.
-
-Variable beq_var : variable -> variable -> bool.
-Variable beq_var_ok : forall x y, beq_var x y = true <-> x = y.
-
-Variable beq_symb : Sig -> Sig -> bool.
-Variable beq_symb_ok : forall f g, beq_symb f g = true <-> f = g.
-
-Fixpoint beq (t u : term) {struct t} :=
+Fixpoint beq_term (t u : term) {struct t} :=
   match t, u with
-    | Var x, Var y => beq_var x y
+    | Var x, Var y => beq_nat x y
     | Fun f ts, Fun g us =>
       let fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
         match ts, us with
           | Vnil, Vnil => true
-          | Vcons t _ ts', Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
+          | Vcons t _ ts', Vcons u _ us' =>
+            beq_term t u && beq_terms _ ts' _ us'
           | _, _ => false
         end
         in beq_symb f g && beq_terms _ ts _ us
@@ -153,55 +146,40 @@ Lemma beq_terms : forall n (ts : terms n) p (us : terms p),
   (fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
     match ts, us with
       | Vnil, Vnil => true
-      | Vcons t _ ts', Vcons u _ us' => beq t u && beq_terms _ ts' _ us'
+      | Vcons t _ ts', Vcons u _ us' => beq_term t u && beq_terms _ ts' _ us'
       | _, _ => false
-    end) _ ts _ us = beq_vec beq ts us.
+    end) _ ts _ us = beq_vec beq_term ts us.
 
 Proof.
 induction ts; destruct us; refl.
 Qed.
 
 Lemma beq_fun : forall f ts g us,
-  beq (Fun f ts) (Fun g us) = beq_symb f g && beq_vec beq ts us.
+  beq_term (Fun f ts) (Fun g us) = beq_symb f g && beq_vec beq_term ts us.
 
 Proof.
 intros. rewrite <- beq_terms. refl.
 Qed.
 
-Lemma beq_ok : forall t u, beq t u = true <-> t = u.
+Lemma beq_term_ok : forall t u, beq_term t u = true <-> t = u.
 
 Proof.
 intro t. pattern t. apply term_ind_forall2; destruct u.
-simpl. rewrite beq_var_ok. intuition. inversion H. refl.
+simpl. rewrite beq_nat_ok. intuition. inversion H. refl.
 intuition; discriminate. intuition; discriminate.
 rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0. apply args_eq.
 ded (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl_eq. refl.
 inversion H0 as [[h0 h1]]. clear h1. subst f0. simpl.
-apply andb_intro. apply (beq_refl beq_symb_ok).
+apply andb_intro. apply (beq_refl (@beq_symb_ok Sig)).
 apply beq_vec_ok_in2. exact H. refl.
 Qed.
 
-End beq.
-
-Implicit Arguments beq_ok [beq_var beq_symb].
-
-Notation beq_symb := (@beq_symb Sig).
-Notation beq_symb_ok := (@beq_symb_ok Sig).
-
-Definition beq_term := beq beq_nat beq_symb.
-
-Lemma beq_term_ok : forall t u, beq_term t u = true <-> t = u.
-
-Proof.
-exact (beq_ok beq_nat_ok beq_symb_ok).
-Qed.
-
-(* FIXME: Definition eq_term_dec := dec_beq beq_term_ok.*)
+Definition eq_term_dec := dec_beq beq_term_ok.
 
 (* old version using Eqdep's axiom: *)
 
-Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
+(*Lemma eq_term_dec : forall t u : term, {t=u}+{~t=u}.
 
 Proof.
 intro. pattern t. apply term_rect with
@@ -225,7 +203,7 @@ case (X0 (Vtail u)); intro. rewrite e0. auto.
 right. unfold not. intro. injection H0. intro. assert (v = Vtail u).
 apply (inj_pair2 nat (fun n => terms n)). assumption. auto.
 right. unfold not. intro. injection H0. intros. auto.
-Defined.
+Defined.*)
 
 (***********************************************************************)
 (** maximal variable index in a term *)

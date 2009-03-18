@@ -24,7 +24,6 @@ Variable SSig : Signature.
 
 Notation string := (list SSig).
 Notation letter := (symbol SSig).
-Notation eq_letter_dec := (@eq_symbol_dec SSig).
 Notation srule := (rule SSig).
 
 (***********************************************************************)
@@ -34,7 +33,7 @@ Require Import ATrs.
 
 Definition ar (s : letter) := 1.
 
-Definition ASig_of_SSig := mkSignature ar eq_letter_dec.
+Definition ASig_of_SSig := mkSignature ar (@VSignature.beq_symb_ok SSig).
 
 Notation ASig := ASig_of_SSig.
 

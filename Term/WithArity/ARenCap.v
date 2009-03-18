@@ -461,6 +461,8 @@ destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
 rewrite ren_cap_idem. rewrite sub_sub. exists (comp x1 x2). refl.
 Qed.
 
+(* FIXME: what it is for ? keep ?
+
 (***********************************************************************)
 (** cap under head symbol *)
 
@@ -469,20 +471,6 @@ Definition ren_cap' k t :=
   | Fun f ts => Fun f (ren_caps k ts)
   | _ => t
   end.
-
-(*FIXME: to be moved to ATrs ? *)
-Lemma int_red_elim : forall u v, int_red R u v -> exists f,
-  exists i, exists vi : terms i, exists t, exists j, exists vj : terms j,
-  exists h, exists t', u = Fun f (Vcast (Vapp vi (Vcons t vj)) h)
-    /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red R t t'.
-
-Proof.
-intros. destruct u. redtac. destruct c. irrefl. discr. exists f.
-ded (int_red_fun H). decomp H0. exists x. exists x0. exists x1. exists x2.
-exists x3. exists x4. exists x5. subst. intuition.
-Qed.
-
-(*FIXME: to be finished
 
 Lemma int_red_sub_ren_cap' : forall u v,
   int_red R u v -> forall k, exists s, v = sub s (ren_cap' k u).

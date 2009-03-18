@@ -22,6 +22,8 @@ Require Import ACalls.
 Require Import BoolUtil.
 Require Import Compare_dec.
 Require Import ADuplicateSymb.
+Require Import ListDec.
+Require Import EqUtil.
 
 Section S.
 
@@ -75,9 +77,10 @@ Definition connectable_N r1 r2 :=
   | _ => hd_eq (rhs r1) (lhs r2)
   end.
 
-Notation Inb := (Inb (@eq_rule_dec Sig)).
+Notation mem := (mem (@beq_rule Sig)).
+Notation mem_ok := (mem_ok (@beq_rule_ok Sig)).
 
-Definition dpg_unif_N r1 r2 := Inb r1 D && Inb r2 D && connectable_N r1 r2.
+Definition dpg_unif_N r1 r2 := mem r1 D && mem r2 D && connectable_N r1 r2.
 
 Variable hypD : forallb (undefined_rhs R) D = true.
 
@@ -94,22 +97,23 @@ destruct r1 as [l1 r1]. destruct r2 as [l2 r2]. simpl. destruct r1. refl.
 destruct l2. refl. set (k := S (maxvar (Fun f0 v0))). rewrite ren_cap_fun.
 gen H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl. intro.
 rewrite H1. unfold is_sol_eqn. simpl fst. simpl snd. repeat rewrite sub_fun.
-intro. Funeqtac. rewrite H6. destruct (eq_symbol_dec f0 f0). refl. irrefl.
+intro. Funeqtac. rewrite H6. rewrite (beq_refl (@beq_symb_ok Sig)). refl.
 Qed.
 
 Lemma dpg_unif_N_correct : hd_rules_graph (red R #) D << Graph dpg_unif_N.
 
 Proof.
 trans dpg_unif. apply dpg_unif_correct. intros r1 r2 h. destruct h.
-destruct H0. unfold Graph, dpg_unif_N.
-apply andb_intro. apply andb_intro; apply Inb_intro; hyp.
+destruct H0. unfold Graph, dpg_unif_N. rewrite <- mem_ok in H.
+rewrite <- mem_ok in H0. rewrite H. rewrite H0. bool.
 destruct (iter_step_complete (wf_mk_problem (ren_cap r1 r2) (lhs r2)) H1).
 unfold connectable_N, unifiable_N. case (lt_eq_lt_dec x N); intro. destruct s.
 ded (successfull_preserved H2 l). destruct (successfull_elim H3). rewrite H4.
 refl. subst. destruct (successfull_elim H2). rewrite H3. refl.
 ded (successfull_inv H2 l).
 destruct (iter_step N (mk_problem (ren_cap r1 r2) (lhs r2))). 2: irrefl.
-destruct p. destruct e. refl. eapply successfull_hd_eq. hyp. hyp. apply H2.
+destruct p. destruct e. refl. eapply successfull_hd_eq.
+rewrite <- mem_ok. hyp. rewrite <- mem_ok. hyp. apply H2.
 Qed.
 
 End unif.
