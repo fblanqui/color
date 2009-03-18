@@ -23,7 +23,7 @@ Require Import RelExtras.
 
 Module Type SemiRingType.
 
-  Parameter A : Set.
+  Parameter A : Type.
   Parameter Aplus : A -> A -> A.
   Parameter Amult : A -> A -> A.
   Parameter A0 : A.
@@ -137,12 +137,45 @@ End ZSemiRingT.
 Module ZSemiRing := SemiRing ZSemiRingT.
 
 (***********************************************************************)
+(** BigZ integers as a semi-ring *)
+
+(*Require Import BigZUtil.
+
+Module BigZSemiRingT <: SemiRingType.
+
+  Definition A := bigZ.
+  Definition Aeq_dec := eq_bigZ_dec.
+  Definition Aplus := BigZ.add.
+  Definition Amult := BigZ.mul.
+  Definition A0 := BigZ.zero.
+  Definition A1 := BigZ.one.
+  Definition Aeq := BigZ.eq.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+
+  Proof.
+  constructor.
+  exact Zadd_0_l.
+  exact Zadd_comm.
+  exact Zadd_assoc.
+  exact Zmul_1_l.
+  exact Zmul_0_l.
+  exact Zmul_comm.
+  exact Zmul_assoc.
+  exact Zmul_add_distr_r.
+  Qed.
+
+End BigZSemiRingT.
+
+Module BigZSemiRing := SemiRing BigZSemiRingT.*)
+
+(***********************************************************************)
 (** Arctic semi-ring over naturals with minus infinity and 
     plus-max operations *)
 
 Module ArcticSemiRingT <: SemiRingType.
 
-  Inductive Dom : Set := 
+  Inductive Dom : Type := 
     | Pos (n : nat)
     | MinusInf.
 
@@ -266,7 +299,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
 
   Open Scope Z_scope.
 
-  Inductive Dom : Set := 
+  Inductive Dom : Type := 
     | Fin (z : Z)
     | MinusInfBZ.
 

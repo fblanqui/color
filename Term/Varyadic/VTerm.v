@@ -267,4 +267,3 @@ End S.
 
 Implicit Arguments Var [Sig].
 Implicit Arguments maxvar_var [Sig k x].
-
