@@ -96,11 +96,11 @@ intros. destruct (beq_ok x y). case_eq (beq x y); intuition.
 rewrite H1 in H4. discriminate.
 Defined.
 
-Lemma dec_beq : forall x y : A, {x=y}+{~x=y}. 
+Lemma dec_beq : forall x y : A, {x=y}+{~x=y}.
 
 Proof.
-intros. ded (beq_ok x y). case_eq (beq x y); intuition. rewrite beq_ko in H0.
-auto.
+intros. case_eq (beq x y). left. exact (proj1 (beq_ok x y) H).
+right. intro. subst. rewrite beq_refl in H. discr.
 Defined.
 
 Lemma beq_com : forall x y, beq x y = beq y x.
