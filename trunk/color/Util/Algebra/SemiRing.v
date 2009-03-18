@@ -18,7 +18,9 @@ Require Import LogicUtil.
 Require Import Bool.
 Require Import RelExtras.
 
+(***********************************************************************)
 (** Semi-ring structure type *)
+
 Module Type SemiRingType.
 
   Parameter A : Set.
@@ -36,7 +38,9 @@ Module Type SemiRingType.
 
 End SemiRingType.
 
+(***********************************************************************)
 (** Some derived results about the semi-ring structure *)
+
 Module SemiRing (SR : SemiRingType).
 
   Import SR.
@@ -85,6 +89,7 @@ Module SemiRing (SR : SemiRingType).
 
 End SemiRing.
 
+(***********************************************************************)
 (** Natural numbers as a semi-ring *)
 
 Require Import Arith.
@@ -104,6 +109,7 @@ End NSemiRingT.
 
 Module NSemiRing := SemiRing NSemiRingT.
 
+(***********************************************************************)
 (** Integers as a semi-ring *)
 
 Require Import ZArith.
@@ -130,6 +136,7 @@ End ZSemiRingT.
 
 Module ZSemiRing := SemiRing ZSemiRingT.
 
+(***********************************************************************)
 (** Arctic semi-ring over naturals with minus infinity and 
     plus-max operations *)
 
@@ -249,6 +256,7 @@ End ArcticSemiRingT.
 
 Module ArcticSemiRing := SemiRing ArcticSemiRingT.
 
+(***********************************************************************)
 (** Arctic semi-ring over integers with minus infinity and 
     plus-max operations *)
 
@@ -371,6 +379,7 @@ End ArcticBZSemiRingT.
 
 Module ArcticBZSemiRing := SemiRing ArcticBZSemiRingT.
 
+(***********************************************************************)
 (** Semi-ring of booleans with 'or' and 'and' *)
 
 Module BSemiRingT <: SemiRingType.

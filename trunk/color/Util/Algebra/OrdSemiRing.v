@@ -17,6 +17,7 @@ Require Import LogicUtil.
 Require Import Max.
 Require Import ZUtil.
 
+(***********************************************************************)
 (** Semi-rings equipped with orders *)
 
 Module Type OrdSemiRingType.
@@ -62,6 +63,7 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
 
 End OrdSemiRing.
 
+(***********************************************************************)
 (** Natural numbers semi-rings with natural order *)
 
 Module NOrdSemiRingT <: OrdSemiRingType.
@@ -138,6 +140,7 @@ End NOrdSemiRingT.
 
 Module NOrdSemiRing := OrdSemiRing NOrdSemiRingT.
 
+(***********************************************************************)
 (** Arctic ordered semi-ring *)
 
 Module ArcticOrdSemiRingT <: OrdSemiRingType.
@@ -298,7 +301,8 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma mult_inf_dec : forall m n,
-    { exists mi, exists ni, m = Pos mi /\ n = Pos ni /\ m * n = Pos (mi + ni) } +
+    { exists mi, exists ni,
+      m = Pos mi /\ n = Pos ni /\ m * n = Pos (mi + ni) } +
     { m * n = MinusInf /\ (m = MinusInf \/ n = MinusInf) }.
 
   Proof.
@@ -395,6 +399,7 @@ End ArcticOrdSemiRingT.
 
 Module ArcticOrdSemiRing := OrdSemiRing ArcticOrdSemiRingT.
 
+(***********************************************************************)
 (** Arctic below-zero ordered semi-ring *)
 
 Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
@@ -644,6 +649,7 @@ End ArcticBZOrdSemiRingT.
 
 Module ArcticBZOrdSemiRing := OrdSemiRing ArcticBZOrdSemiRingT.
 
+(***********************************************************************)
 (** Semi-ring of booleans with order True > False *)
 
 Module BOrdSemiRingT <: OrdSemiRingType.
