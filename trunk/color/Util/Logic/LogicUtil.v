@@ -15,8 +15,6 @@ Set Implicit Arguments.
 Ltac hyp := assumption.
 
 Ltac refl := reflexivity.
-(* We need that because in presence of Program module 'refl' is hidden *)
-Ltac reflx := reflexivity. 
 
 Ltac gen h := generalize h; clear h.
 
@@ -54,6 +52,12 @@ Ltac case_eq e := coq_case_eq e; intros.
 (** basic meta-theorems *)
 
 Section meta.
+
+Lemma and_assoc : forall P Q R, P /\ Q /\ R <-> (P /\ Q) /\ R.
+
+Proof.
+intros. tauto.
+Qed.
 
 Lemma contraposee_inv : forall P Q : Prop, (P -> Q) -> ~Q -> ~P.
 
