@@ -6,6 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-01-27
 - Adam Koprowski and Hans Zantema, 2007-03-26
 - Joerg Endrullis, 2008-06-19
+- Pierre-Yves Strub, 2009-04-09
 
 extension of the Coq library Bool/Bvector
 *)
@@ -888,6 +889,30 @@ Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B)
     | Vnil => b
     | Vcons a _ w => f a (Vfold_right f w b)
   end.
+
+(* Vfold2 f x a{1..n} b{1..n} = f* a1 b1 (f* a2 b2 .. (f* an bn x) ..)
+   Vfold2 f x a{1..n} b{1..p} = ⊥ if n ≠ p
+
+   where f is partial
+     and f* x y z = if z is Some v then f x y v else None *)
+
+Section FoldOpt2 .
+  Variable aT bT cT : Type .
+  Variable x        : cT .
+  Variable F        : aT -> bT -> cT -> option cT .
+
+  Fixpoint Vfold2 nA nB (vA : vector aT nA) (vB : vector bT nB) {struct vA} :=
+  match vA, vB with
+  | Vnil, Vnil => Some x
+  | Vcons xA nA sA, Vcons xB nB sB =>
+    match Vfold2 sA sB with
+    | Some v => F xA xB v
+    | None   => None
+    end
+  | Vnil, Vcons _ _ _ => None
+  | Vcons _ _ _, Vnil => None
+  end .
+End FoldOpt2 .
 
 (***********************************************************************)
 (** conversion to lists *)
