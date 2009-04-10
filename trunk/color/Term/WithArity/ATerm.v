@@ -67,7 +67,6 @@ Fixpoint term_rect t : P t :=
         end
 	in H2 f (terms_rect (arity f) v)
   end.
-
 End term_rect.
 
 Definition term_ind (P : term -> Prop) (Q : forall n, terms n -> Prop) :=
@@ -75,6 +74,23 @@ Definition term_ind (P : term -> Prop) (Q : forall n, terms n -> Prop) :=
 
 (*Definition term_rec (P : term -> Set) (Q : forall n, terms n -> Set) :=
   term_rect P Q.*)
+
+Section term_ind_comb.
+  Variable Pt : term -> Prop .
+  Variable Ps : forall n, terms n -> Prop .
+
+  Variable Hvar : forall x, Pt (Var x) .
+  Variable Hfun : forall f ts, Ps ts -> Pt (Fun f ts) .
+  Variable Hnil : Ps Vnil .
+  Variable Hcns : forall t n (ts : terms n), Pt t -> Ps ts -> Ps (Vcons t ts) .
+
+  Lemma term_ind_comb : (forall t, Pt t) /\ (forall n (ts : terms n), Ps ts) .
+  Proof .
+    split; [by apply term_ind with (Q := Ps) | intros n ts] .
+    induction ts; [exact Hnil | apply Hcns; [idtac | assumption]] .
+    by apply term_ind with (Q := Ps) .
+  Qed .
+End term_ind_comb.
 
 Lemma term_ind_forall : forall (P : term -> Prop)
   (H1 : forall v, P (Var v))

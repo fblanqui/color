@@ -3,6 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
+- Pierre-Yves Strub, 2009-04-09
 
 general lemmas and tactics
 *)
@@ -47,6 +48,24 @@ Ltac norm_in H e :=
 Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
 
 Ltac case_eq e := coq_case_eq e; intros.
+
+Ltac done :=
+  trivial; hnf; intros; solve
+   [ repeat progress first
+       [solve [trivial | apply sym_equal; trivial]
+         | discriminate | contradiction | split]
+   | assumption
+   | match goal with H : ~ _ |- _ => solve [case H; trivial] end ].
+
+Tactic Notation "by" tactic(T) := (T; done) .
+
+(***********************************************************************)
+(** tactics on rewriting **)
+Tactic Notation "rwn" constr(R1) constr(R2) :=
+  rewrite R1; rewrite R2 .
+
+Tactic Notation "rwn" constr(R1) constr(R2) constr(R3) :=
+  rewrite R1; rewrite R2; rewrite R3 .
 
 (***********************************************************************)
 (** basic meta-theorems *)
