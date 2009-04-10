@@ -1,9 +1,9 @@
 CoLoR, a Coq library on rewriting and termination
 -------------------------------------------------
 
-The copyrights on the parts due to Frederic Blanqui and Sebastien
-Hinderer belong to the "Institut National de Recherche en Informatique
-et Automatique" (http://www.inria.fr/).
+The copyrights on the parts due to Frederic Blanqui, Sebastien
+Hinderer and Pierre-Yves Strub belong to the "Institut National
+de Recherche en Informatique et Automatique" (http://www.inria.fr/).
 
 The copyrights on the parts due to Adam Koprowski belong to the "Vrije
 Universiteit Amsterdam" (http://www.vu.nl/) for HORPO and to the
