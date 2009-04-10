@@ -1,3 +1,8 @@
+09-04-10
+- Term/ATerm/AMatching: matching algorithm + proof of correctness
+- Util/VecUtil/VecUtil: fold operation on 2 vectors
+- Util/FMap/FMapUtil: bundle for FMap definitions + properties
+
 09-03-18:
 - decidability properties are replaced by boolean functions
 
