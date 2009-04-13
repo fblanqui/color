@@ -4,6 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-01-27
 - Sebastien Hinderer, 2004-02-10
+- Pierre-Yves Strub, 2009-04-13
 
 substitutions
 *)
@@ -89,6 +90,34 @@ Proof.
 intros. apply Vmap_eq. apply Vforall_intro. intros. apply sub_eq. intros.
 apply H. eapply vars_vec_in. apply H1. hyp.
 Qed.
+
+Lemma subeq_inversion :
+  forall u θ θ', sub θ u = sub θ' u ->
+    forall x, In x (vars u) -> θ x = θ' x .
+Proof .
+  intros u; pattern u;
+    apply term_ind with
+      (Q :=
+        fun nu (us : terms nu) =>
+          forall θ θ', Vmap (sub θ) us = Vmap (sub θ') us ->
+            forall x, In x (vars_vec us) -> θ x = θ' x) .
+  (* var *)
+  intros x θ θ'; simpl; intros Hθθ' y H .
+  by case H; [intros Hxy; subst x|idtac]; tauto .
+
+  (* fun *)
+  intros f ts IHs θ θ'; repeat rewrite sub_fun; intros Hθθ' y .
+  rewrite vars_fun; intros Hvars; apply IHs; try done .
+  by rewrite (fun_eq Hθθ') .
+
+  (* nil *)
+  by intros θ θ' _ x; simpl; tauto .
+
+  (* cons *)
+  intros t nt ts IH IHs θ θ'; simpl; intros H; Veqtac .
+  intros x Hx; case (in_app_or Hx); clear Hx;intros Hx .
+    by apply IH . by apply IHs .
+Qed .
 
 (***********************************************************************)
 (** composition *)

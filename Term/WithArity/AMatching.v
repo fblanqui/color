@@ -46,9 +46,10 @@ Section Matching .
   Notation beq_term  := (@beq_term Sig) .
   Notation beq_terms := (fun x y => beq_vec beq_term x y) .
 
-  Notation "x =X y" := (NatUtil.beq_nat x y) (at level 70, no associativity) .
-  Notation "f =S g" := (@beq_symb Sig f g)   (at level 70, no associativity) .
-  Notation "t =T u" := (beq_term t u)        (at level 70, no associativity) .
+  Notation "x =X y"   := (NatUtil.beq_nat x y) (at level 70, no associativity) .
+  Notation "f =S g"   := (@beq_symb Sig f g)   (at level 70, no associativity) .
+  Notation "t =T u"   := (beq_term t u)        (at level 70, no associativity) .
+  Notation "ts =V us" := (beq_terms ts us)     (at level 70, no associativity) .
 
   Local Coercion is_true b := b = true .
   Local Hint Unfold is_true .
@@ -68,7 +69,7 @@ Section Matching .
 
   Notation "\unopt_ ( x ) v" :=
     (match v with Some v' => v' | None => x end)
-    (at level 8, v at level 36, x at level 50) .
+    (at level 8, v at level 36, x at level 50, format "\unopt_ ( x )  v") .
 
   Definition subst_of_matching (m : matching) :=
     fun (x : variable) => \unopt_(Var x) (VM.find x m) .
@@ -81,7 +82,14 @@ Section Matching .
   | Some m => Some \S(m)
   end .
 
-  Notation "t ! θ" := (sub (θ : @substitution Sig) t) (at level 15) .
+  Notation "t ! θ" := (@sub Sig θ t) (at level 15) .
+
+  (********************************************************************)
+  Lemma subst_of_matchingE :
+    forall x m v, VM.find x m = Some v -> \S(m) x = v .
+  Proof .
+    by intros x m v H; unfold subst_of_matching; rewrite H .
+  Qed .
 
   (********************************************************************)
   Lemma vmap_eqb : forall x y, VMF.eqb x y = (x =X y) .
@@ -199,6 +207,14 @@ Section Matching .
     Proof . exact (proj2 matches_var_min_comb) . Qed .
   End VarMin .
 
+  Corollary matches_var_minadded :
+    forall u t m m', matches_r u t m = Some m' ->
+      forall x, VM.mem x m = false -> VM.mem x m' -> VS.mem x (vars u) .
+  Proof .
+    intros u t m m' H x Hmem₁ Hmem₂ .
+    by rewrite (matches_var_minP H) in Hmem₂; rewrite Hmem₁ in Hmem₂ .
+  Qed .
+
   (********************************************************************)
   Section MatchMon .
     Lemma exmatch_mon :
@@ -256,10 +272,10 @@ Section Matching .
 
   Lemma nmatches_submon :
     forall nu (us : terms nu) nt (ts : terms nt) θ,
-      beq_terms (Vmap (sub \S(θ)) us) ts ->
+      (Vmap (sub \S(θ)) us) =V ts ->
       (forall x, VS.mem x (vars_vec us) -> VM.mem x θ) ->
       forall u t θ', matches_r u t θ = Some θ' ->
-        beq_terms (Vmap (sub \S(θ')) us) ts .
+        (Vmap (sub \S(θ')) us) =V ts .
   Proof .
     induction us as [|u nu us IH]; destruct ts as [|t nt ts]; try discr .
     (* nil *)
@@ -284,7 +300,7 @@ Section Matching .
 
     Notation "\nmatches_correct" :=
       (forall nu (us : terms nu) nt (ts : terms nt) θ θ',
-        Vfold2 θ matches_r us ts = Some θ' -> beq_terms (Vmap (sub \S(θ')) us) ts) .
+        Vfold2 θ matches_r us ts = Some θ' -> (Vmap (sub \S(θ')) us) =V ts) .
 
     Lemma matches_r_correct : \matches_correct /\ \nmatches_correct .
     Proof .
@@ -317,4 +333,138 @@ Section Matching .
       assumption .
     Qed .
   End MatchCorrectness .
+
+  (********************************************************************)
+  Section MatchCompletness .
+    Definition compose (m : matching) (θ : variable -> term) :=
+      fun (x : variable) => \unopt_(θ x) (VM.find x m) .
+
+    Notation "m ⊕ θ" := (compose m θ) (at level 40, no associativity) .
+
+    Lemma composeI : forall x m θ, VM.find x m = None -> (m ⊕ θ) x = θ x .
+    Proof .
+      by intros x m θ H; unfold compose; rewrite H .
+    Qed .
+
+    Lemma composeE : forall x m v θ, VM.find x m = Some v -> (m ⊕ θ) x = v .
+    Proof .
+      by intros x m v θ Hfind; unfold compose; rewrite Hfind .
+    Qed .
+
+    Notation "\matches_complete" :=
+      (forall u t m, (exists θ, u ! (m ⊕ θ) = t) -> matches_r u t m <> None) .
+
+    Notation "\nmatches_complete" :=
+      (forall nu (us : terms nu) nt (ts : terms nt) m,
+        (exists θ, (Vmap (sub (m ⊕ θ)) us) =V ts) ->
+        Vfold2 m matches_r us ts <> None) .
+
+    Lemma matches_extend_compatP :
+      forall u t m m', matches_r u t m = Some m' ->
+        forall θ, u ! (m ⊕ θ) = t -> forall x, (m ⊕ θ) x = (m' ⊕ θ) x .
+    Proof .
+      intros u t m m' H θ Hθ x; unfold compose .
+      coq_case_eq (VM.find x m); coq_case_eq (VM.find x m') .
+        (* some/some*)
+        intros v₂ Hv₂ v₁ Hv₁; rewrite <- (matches_monP H) in Hv₂ .
+        congruence . by rwn VMF.mem_find_b Hv₁ .
+        (* none/some *)
+        intros Hm' v Hv; rewrite <- (matches_monP H) in Hm' .
+        congruence . by rwn VMF.mem_find_b Hv .
+        (* some/none *)
+        intros v Hv Hm; rewrite <- (composeI θ Hm) .
+        rewrite <- (subst_of_matchingE Hv) .
+        apply subeq_inversion with u .
+          by rewrite (proj1 matches_r_correct _ _ _ _ H) .
+          apply (proj2 (AVariables.in_vars_mem _ _)) .
+          apply (matches_var_minadded H); rewrite VMF.mem_find_b .
+          by rewrite Hm . by rewrite Hv .
+        (* none/none *)
+        reflexivity .
+    Qed .
+
+    Lemma nmatches_extend_compatP :
+      forall nu (us : terms nu) nt (ts : terms nt) m m',
+        Vfold2 m matches_r us ts = Some m' ->
+        forall θ, Vmap (sub (m ⊕ θ)) us =V ts ->
+          forall x, (m ⊕ θ) x = (m' ⊕ θ) x .
+    Proof .
+      induction us as [|u nu us IH]; destruct ts as [|t nt ts];
+        intros m₁ m₂; try discr .
+        (* nil/nil *)
+        by simpl; intros H; inversion_clear H .
+        (* some/some *)
+        simpl; coq_case_eq (Vfold2 m₁ matches_r us ts); try discr .
+        intros m H₁ H₂ θ H x; elim (proj1 (andb_true_iff _ _) H) .
+        intros Hu Hus; transitivity ((m ⊕ θ) x) .
+          by apply (IH _ _ _ _ H₁) .
+
+          apply (matches_extend_compatP H₂) .
+          rewrite <- (proj1 (beq_term_ok _ _) Hu) .
+          by apply sub_eq; intros y _; symmetry; apply (IH _ _ _ _ H₁) .
+    Qed .
+
+    Lemma matches_r_complete : \matches_complete /\ \nmatches_complete .
+    Proof .
+      apply term_ind_comb .
+        (* var *)
+        intros x t m H; elim H; simpl; unfold compose .
+        coq_case_eq (VM.find x m);
+          [intros mx Hfind _ Ht | intros Hfind _ _];
+          unfold exmatch; rewrite Hfind; try done .
+        by rewrite (proj2 (beq_term_ok _ _) (sym_eq Ht)); discr .
+
+        (* fun *)
+        intros g us IH t m H; destruct t as [x|f nt ts];
+          elim H; intros θ Hθ; rewrite sub_fun in Hθ; try discr .
+        inversion_clear Hθ; simpl; rewrite (beq_refl (@beq_symb_ok Sig)) .
+        apply IH; exists θ; rewrite beq_vec_refl; try done .
+        by apply beq_term_ok .
+
+        (* nil *)
+        destruct ts as [|t nt ts]; intros m H; simpl .
+          by discriminate .
+          by elim H; intros θ Hθ; simpl in Hθ .
+
+        (* cons *)
+        intros u nu us IH IHs; destruct ts as [|t nt ts]; intros m H .
+          by elim H; intros θ Hθ; simpl in Hθ .
+
+          elim H; intros θ Hθ; simpl in Hθ .
+          case (proj1 (andb_true_iff _ _) Hθ); intros Hu Hus .
+          simpl; coq_case_eq (Vfold2 m matches_r us ts) .
+            intros m' Hm'; apply IH; exists θ .
+            rewrite <- (proj1 (beq_term_ok _ _) Hu) .
+            apply sub_eq; intros x _; symmetry .
+            by apply nmatches_extend_compatP with _ us _ ts .
+
+            intros Hfold _; eapply IHs; [idtac | eassumption] .
+            by exists θ .
+    Qed .
+
+    Lemma matches_complete :
+      forall u t θ, u!θ = t -> matches u t <> None .
+    Proof .
+      intros u t θ H; unfold matches .
+      coq_case_eq (matches_r u t (VM.empty _)) .
+        by intros; discriminate .
+        intros Habd _; eapply (proj1 matches_r_complete); [idtac|eassumption] .
+        exists θ; rewrite <- H; apply sub_eq; intros x _ .
+        by unfold compose; rewrite VMF.empty_o .
+    Qed .
+
+    Corollary matches_complete_ext :
+      forall u t θ, u!θ = t ->
+        exists Ω,
+          (  matches u t = Some Ω
+          /\ forall x, VS.mem x (vars u) -> θ x = Ω x) .
+    Proof .
+      intros u t θ H; coq_case_eq (matches u t) .
+        intros Ω HΩ; exists Ω; split; [reflexivity | idtac] .
+        intros x Hxu; apply subeq_inversion with u .
+          by rewrite H; symmetry; apply matches_correct .
+          by apply (proj2 (AVariables.in_vars_mem _ _)) .
+        intros Habs; elim (matches_complete H Habs) .
+    Qed .
+  End MatchCompletness .
 End Matching .
