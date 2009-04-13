@@ -1,3 +1,7 @@
+09-04-13
+- Term/ASubstitution: inversion lemma : uS = uS' -> x \in u -> xS = xS'
+- Term/AMatching.v: proof of completeness
+
 09-04-10
 - Term/ATerm/AMatching: matching algorithm + proof of correctness
 - Util/VecUtil/VecUtil: fold operation on 2 vectors
