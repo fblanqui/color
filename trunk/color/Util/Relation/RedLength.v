@@ -2,8 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Frederic Blanqui, 2005-02-17
-- Adam Koprowski and Hans Zantema, 2007-03
+- Frederic Blanqui, 2007-08-08
 
 maximal reduction length of a term
 for a finitely branching well-founded relation
