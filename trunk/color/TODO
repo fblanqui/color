@@ -1,4 +1,6 @@
 
+- prove that red R is finitely branching
+
 - ADP/chain_min_fun: the assumption (Vforall SNR ts) is useless
 
 - replace andb_elim by some rewrite
