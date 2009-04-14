@@ -719,17 +719,13 @@ Section Vforall2_sec.
 Variable R : A -> A -> Prop.
 
 Fixpoint Vforall2 n1 (v1 : vec n1) n2 (v2 : vec n2) {struct v1} : Prop :=
-  match eq_nat_dec n1 n2 with
-  | left _ =>
-      match v1 with
-      | Vnil => True
-      | Vcons a _ v =>
-          match v2 with
-	  | Vnil => False
-	  | Vcons b _ w => R a b /\ Vforall2 v w
-	  end
+  match v1 with
+    | Vnil => True
+    | Vcons a _ v =>
+      match v2 with
+	| Vnil => False
+	| Vcons b _ w => R a b /\ Vforall2 v w
       end
-  | _ => False
   end.
 
 Definition Vforall2n n (v1 v2 : vec n) := Vforall2 v1 v2.
@@ -738,8 +734,7 @@ Lemma Vforall2_tail : forall n (v1 v2 : vec (S n)), Vforall2 v1 v2 ->
   Vforall2 (Vtail v1) (Vtail v2).
 
 Proof.
-  intros. VSntac v1. rewrite H0 in H. VSntac v2. rewrite H1 in H.
-  simpl in H. rewrite eq_nat_dec_refl in H. destruct H. exact H2.
+  intros. gen H. VSntac v1. VSntac v2. simpl. tauto.
 Qed.
 
 Lemma Vforall2n_tail : forall n (v1 v2 : vec (S n)), Vforall2n v1 v2 ->
@@ -753,28 +748,18 @@ Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i
   (ip : i < n), Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
 Proof.
-  induction n; intros. absurd_arith.
-  VSntac v1. VSntac v2. 
-  destruct i. simpl.
-  rewrite H0 in H. rewrite H1 in H.
-  unfold Vforall2n in H. simpl in H.
-  rewrite eq_nat_dec_refl in H. destruct H. trivial.
-  simpl. apply IHn.
-  unfold Vforall2n. apply Vforall2_tail. hyp.
+induction v1; intros. absurd (i<0); omega. gen H. VSntac v2.
+unfold Vforall2n. destruct i; simpl. tauto. intuition.
 Qed.
 
 Lemma Vforall2_intro : forall n (v1 : vec n) (v2 : vec n),
   (forall i (ip : i < n), R (Vnth v1 ip) (Vnth v2 ip)) -> Vforall2n v1 v2.
 
 Proof.
-  induction n; intros.
-  VOtac. constructor.
-  VSntac v1. VSntac v2.
-  unfold Vforall2n. simpl.
-  rewrite eq_nat_dec_refl. split.
-  do 2 rewrite Vhead_nth. apply H.
-  apply IHn. intros.
-  do 2 rewrite Vnth_tail. apply H.
+unfold Vforall2n. induction v1; intros. VOtac. simpl. auto.
+gen H. VSntac v2. intro. split. apply (H0 0 (lt_O_Sn _)).
+apply IHv1. intros. assert (S i< S n). omega. ded (H0 _ H1). simpl in H2.
+assert (ip = lt_S_n H1). apply lt_unique. rewrite H3. hyp.
 Qed.
 
 Require Import RelDec.
@@ -786,7 +771,6 @@ Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2),
 
 Proof.
   induction v1; destruct v2; simpl; auto.
-  destruct (eq_nat_dec n n0); simpl; auto.
   destruct (IHv1 n0 v2); intuition.
   destruct (R_dec a a0); intuition.
 Defined.
@@ -1346,17 +1330,12 @@ Variables A B : Type.
 Variable P : A -> B -> bool.
 
 Fixpoint bVforall2 n1 (v1 : vector A n1) n2 (v2 : vector B n2) {struct v1} : bool :=
-  match eq_nat_dec n1 n2 with
-  | right _ => false
-  | _ =>
-      match v1 with
-      | Vnil => true
-      | Vcons x _ xs =>
-        match v2 with
+  match v1 with
+    | Vnil => true
+    | Vcons x _ xs =>
+      match v2 with
         | Vnil => false
-        | Vcons y _ ys =>
-            P x y && bVforall2 xs ys
-        end
+        | Vcons y _ ys => P x y && bVforall2 xs ys
       end
   end.
 
