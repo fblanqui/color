@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Require Import RelExtras.
 Require Import ListExtras.
 Require Import TermsSig.
-Require Import Setoid.
+Require Setoid.
 
 Module TermsDef (Sig : Signature).
 
