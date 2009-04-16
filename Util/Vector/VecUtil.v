@@ -82,7 +82,7 @@ Proof.
 intros. subst a1. subst v1. reflexivity.
 Qed.
 
-Lemma Vtail_eq : forall a n (v1 v2 : vec n), v1 = v2 -> 
+Lemma Vtail_eq : forall a n (v1 v2 : vec n), v1 = v2 ->
   Vcons a v1 = Vcons a v2.
 
 Proof.
