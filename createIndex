@@ -26,8 +26,7 @@ esac
 
 if test $# -ne 0
 then
-  usage
-  exit 1
+  usage; exit 1
 fi
 
 doc=`pwd`/doc/main.html
