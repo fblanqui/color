@@ -10,7 +10,7 @@ general lemmas and tactics
 Set Implicit Arguments.
 
 Require Import LogicUtil.
-Require Import Setoid.
+Require Setoid.
 
 (***********************************************************************)
 (** dependent equality on decidable types *)
