@@ -14,20 +14,65 @@ Set Implicit Arguments.
 Require Import LogicUtil.
 Require Export ZArith.
 
+(***********************************************************************)
+(** decidability of equality *)
+
+Open Local Scope positive_scope.
+
+Fixpoint beq_pos x y {struct x} :=
+  match x, y with
+    | xI x', xI y' => beq_pos x' y'
+    | xO x', xO y' => beq_pos x' y'
+    | xH, xH => true
+    | _, _ => false
+  end.
+
+Lemma beq_pos_ok : forall x y, beq_pos x y = true <-> x = y.
+
+Proof.
+induction x; destruct y; simpl; intros; try (intuition; discr).
+rewrite IHx. intuition. subst. refl. inversion H. refl.
+rewrite IHx. intuition. subst. refl. inversion H. refl.
+Qed.
+
 Open Local Scope Z_scope.
+
+Fixpoint beq_Z x y {struct x} :=
+  match x, y with
+    | Z0, Z0 => true
+    | Zpos x', Zpos y' => beq_pos x' y'
+    | Zneg x', Zneg y' => beq_pos x' y'
+    | _, _ => false
+  end.
+
+Lemma beq_Z_ok : forall x y, beq_Z x y = true <-> x = y.
+
+Proof.
+induction x; destruct y; simpl; intros; try (intuition; discr).
+rewrite beq_pos_ok. intuition. subst. refl. inversion H. refl.
+rewrite beq_pos_ok. intuition. subst. refl. inversion H. refl.
+Qed.
 
 (***********************************************************************)
 (** simplification *)
 
-Lemma zeql : forall x, match x with Z0 => 0 | Zpos y' => Zpos y'
-  | Zneg y' => Zneg y' end = x.
+Lemma zeql : forall x, 
+  match x with
+    | Z0 => 0
+    | Zpos y' => Zpos y'
+    | Zneg y' => Zneg y'
+  end = x.
 
 Proof.
 intro. destruct x; refl.
 Qed.
 
-Lemma zeqr : forall x, x = match x with Z0 => 0 | Zpos y' => Zpos y'
-  | Zneg y' => Zneg y' end.
+Lemma zeqr : forall x,
+  x = match x with
+        | Z0 => 0
+        | Zpos y' => Zpos y'
+        | Zneg y' => Zneg y'
+      end.
 
 Proof.
 intro. destruct x; refl.
