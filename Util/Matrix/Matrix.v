@@ -503,7 +503,7 @@ Module Matrix (OSRT : OrdSemiRingType).
       mat_forall2 M N -> mat_forall2' M N.
 
     Proof.
-      intros. unfold mat_forall2'. do 2 (apply Vforall2_intro; intros). 
+      intros. unfold mat_forall2'. do 2 (apply Vforall2n_intro; intros). 
       exact (H i i0 ip ip0).
     Qed.
 
@@ -512,7 +512,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
     Proof.
       intros. unfold mat_forall2, get_elem, get_row. intros.
-      apply (Vforall2_nth P). apply (Vforall2_nth (@Vforall2n A P n)). 
+      apply (Vforall2n_nth P). apply (Vforall2n_nth (@Vforall2n A P n)). 
       assumption.
     Qed.
 
@@ -564,8 +564,8 @@ Module Matrix (OSRT : OrdSemiRingType).
       apply vec_tail_ge. assumption.
       set (p0 := lt_O_Sn n0). apply mult_ge_compat.
       change a with (Vnth (Vcons a v) p0). rewrite Vhead_nth.
-      apply (Vforall2_nth ge). assumption.
-      do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+      apply (Vforall2n_nth ge). assumption.
+      do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
     Qed.
 
     Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M <*> N >=m M' <*> N'.
@@ -573,9 +573,9 @@ Module Matrix (OSRT : OrdSemiRingType).
     Proof.
       intros. unfold mat_ge, mat_forall2. intros.
       do 2 rewrite mat_mult_spec. apply dot_product_mon.
-      unfold vec_ge. apply Vforall2_intro. intros.
+      unfold vec_ge. apply Vforall2n_intro. intros.
       exact (H i i0 ip ip0).
-      unfold vec_ge. apply Vforall2_intro. intros.
+      unfold vec_ge. apply Vforall2n_intro. intros.
       do 2 rewrite <- get_elem_swap. exact (H0 i0 j ip0 jp).
     Qed.
 
@@ -585,10 +585,10 @@ Module Matrix (OSRT : OrdSemiRingType).
     mat_ge M M' -> m >=v m' -> mat_vec_prod M m >=v mat_vec_prod M' m'.
 
   Proof.
-    intros. unfold mat_vec_prod, vec_ge. apply Vforall2_intro. 
+    intros. unfold mat_vec_prod, vec_ge. apply Vforall2n_intro. 
     intros. do 2 rewrite Vnth_col_mat. apply mat_mult_mon. assumption.
     unfold mat_ge. intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
-    apply (Vforall2_nth ge). assumption.
+    apply (Vforall2n_nth ge). assumption.
   Qed.
 
   Infix ">=m" := mat_ge (at level 70).

@@ -141,7 +141,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
         (fun d: dom => 
           match vec_at0 (dom2vec d) with
           | Fin x => Zabs_nat x
-          | MinusInf => 0%nat
+          | _ => 0%nat
           end
         )
       ).
@@ -164,7 +164,7 @@ apply fin_ge_impl_ge; assumption.
 destruct x_lb; [ contradiction | discriminate ].
 destruct y_lb; [ contradiction | discriminate ].
 destruct y_lb; [ contradiction | discriminate ].
-      unfold vec_at0. apply (Vforall2_nth gtx). assumption.
+      unfold vec_at0. apply (Vforall2n_nth gtx). assumption.
     Qed.
   
   End MonotoneAlgebra.
