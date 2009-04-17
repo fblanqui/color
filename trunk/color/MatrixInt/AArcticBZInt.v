@@ -2,6 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
+- Frederic Blanqui, 2009-03-19 (setoid)
 - Adam Koprowski and Johannes Waldmann, 2008-01
 *)
 
@@ -83,9 +84,9 @@ Module ArcticBZInt (AI : TArcticBZInt).
     Proof.
       intros. destruct H. destruct H0.
       left. apply plus_gt_compat; assumption.
-      destruct H0. subst n. subst n'.
+      destruct H0. rewrite H0. rewrite H1.
       do 2 rewrite Aplus_0_r. left. assumption.
-      destruct H. subst m. subst m'.
+      destruct H. rewrite H. rewrite H1.
       do 2 rewrite Aplus_0_l. assumption.
     Qed.
 
@@ -119,9 +120,9 @@ Module ArcticBZInt (AI : TArcticBZInt).
 
     Definition succ := AIBase.succ.
     Definition succ' := AIBase.succ'.
-    Definition succ'_sub := @AIBase.succ'_sub gtx_plus_compat gtx_mult_compat
-      mi_eval_ok.
-    Definition succ'_dec := AIBase.succ'_dec eq_dec.
+    Definition succ'_sub :=
+      @AIBase.succ'_sub gtx_plus_compat gtx_mult_compat mi_eval_ok.
+    Definition succ'_dec := AIBase.succ'_dec.
 
     Definition succeq := MBI.succeq.
     Definition succeq' := MBI.succeq'.
@@ -141,7 +142,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
         (fun d: dom => 
           match vec_at0 (dom2vec d) with
           | Fin x => Zabs_nat x
-          | _ => 0%nat
+          | MinusInfBZ => 0%nat
           end
         )
       ).

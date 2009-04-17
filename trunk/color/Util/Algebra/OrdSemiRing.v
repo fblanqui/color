@@ -2,6 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
+- Frederic Blanqui, 2009-03-19 (setoid)
 - Adam Koprowski, 2007-04-14
 
 Semi-ring equipped with two (strict and non-strict) orders.
@@ -28,6 +29,8 @@ Module Type OrdSemiRingType.
   Parameter gt : relation A.
   Parameter ge : relation A.
 
+  Parameter eq_ge_compat : forall x y, x =A= y -> ge x y.
+
   Notation "x >> y" := (gt x y) (at level 70).
   Notation "x >>= y" := (ge x y) (at level 70).
 
@@ -42,6 +45,7 @@ Module Type OrdSemiRingType.
   Parameter gt_dec : rel_dec gt.
 
   Parameter ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+  Parameter ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
 
   Parameter plus_gt_compat : forall m n m' n',
     m >> m' -> n >> n' -> m + n >> m' + n'.
@@ -61,6 +65,33 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
   Export SR.
   Export OSR.
 
+  Add Relation A ge
+    reflexivity proved by ge_refl
+    transitivity proved by ge_trans
+      as ge_rel.
+
+  Add Morphism ge with signature eqA ==> eqA ==> iff as ge_mor.
+
+  Proof.
+    intuition. transitivity x. apply eq_ge_compat. symmetry. hyp.
+    transitivity x0. hyp. apply eq_ge_compat. hyp.
+    transitivity y. apply eq_ge_compat. hyp.
+    transitivity y0. hyp. apply eq_ge_compat. symmetry. hyp.
+  Qed.
+
+  Add Relation A gt
+    transitivity proved by gt_trans
+      as gt_rel.
+
+  Add Morphism gt with signature eqA ==> eqA ==> iff as gt_mor.
+
+  Proof.
+    intuition. apply ge_gt_compat2 with x0. 2: apply eq_ge_compat; hyp.
+    apply ge_gt_compat with x. apply eq_ge_compat. symmetry. hyp. hyp.
+    apply ge_gt_compat2 with y0. 2: apply eq_ge_compat; symmetry; hyp.
+    apply ge_gt_compat with y. apply eq_ge_compat. hyp. hyp.
+  Qed.
+
 End OrdSemiRing.
 
 (***********************************************************************)
@@ -73,6 +104,12 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Definition gt := Peano.gt.
   Definition ge := Peano.ge.
+
+  Lemma eq_ge_compat : forall x y, x = y -> x >= y.
+
+  Proof.
+    intros. subst. apply le_refl.
+  Qed.
 
   Lemma ge_refl : reflexive ge.
 
@@ -111,6 +148,12 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. apply le_gt_trans with y; assumption.
+  Qed.
+
+  Lemma ge_gt_compat2 : forall x y z, x > y -> y >= z -> x > z.
+
+  Proof.
+    intros. apply gt_le_trans with y; assumption.
   Qed.
 
   Lemma plus_gt_compat : forall m n m' n',
@@ -156,6 +199,12 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     end.
 
   Definition ge m n := gt m n \/ m = n.
+
+  Lemma eq_ge_compat : forall x y, x = y -> ge x y.
+
+  Proof.
+    unfold ge. intuition.
+  Qed.
 
   Lemma gt_irrefl : irreflexive gt.
 
@@ -233,23 +282,12 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     auto. assumption.
   Qed.
 
-  Lemma eq_dec : rel_dec Aeq.
-
-  Proof.
-    intros x y. unfold Aeq.
-    destruct x; destruct y; try solve [right; discriminate].
-    destruct (eq_nat_dec n n0).
-    left. subst n. refl.
-    right. injection. auto.
-    left. refl.
-  Defined.
-
   Lemma ge_dec : rel_dec ge.
 
   Proof.
     intros x y. destruct (gt_dec x y).
     left. left. assumption.
-    destruct (eq_dec x y).
+    destruct (eqA_dec x y).
     left. right. assumption.
     right. intro xy. destruct xy; auto.
   Defined.
@@ -275,6 +313,13 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     auto.
     elimtype False. destruct H. auto. discriminate.
     elimtype False. destruct H. auto. subst x.  auto.
+  Qed.
+
+  Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
+
+  Proof.
+    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition.
+    inversion H1. subst. hyp. discr.
   Qed.
 
   Lemma pos_ord : forall m n,
@@ -404,6 +449,8 @@ Module ArcticOrdSemiRing := OrdSemiRing ArcticOrdSemiRingT.
 
 Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
+  Open Scope Z_scope.
+
   Module SR := ArcticBZSemiRingT.
   Export SR.
 
@@ -415,6 +462,12 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     end.
 
   Definition ge m n := gt m n \/ m = n.
+
+  Lemma eq_ge_compat : forall x y, x = y -> ge x y.
+
+  Proof.
+    unfold ge. intuition.
+  Qed.
 
   Lemma ge_refl : reflexive ge.
 
@@ -466,16 +519,6 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     absurd (gt n m). apply gt_asym. assumption. assumption.
   Qed.
 
-  Lemma eq_dec : rel_dec Aeq.
-
-  Proof.
-    intros x y.
-    destruct x; destruct y; unfold Aeq; try solve [right; discriminate].
-    destruct (Z_eq_dec z z0). left. subst z. refl.
-    right. injection. auto.
-    left. refl.
-  Defined.
-
   Lemma gt_dec : rel_dec gt.
 
   Proof.
@@ -490,7 +533,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     intros x y.
     destruct (gt_dec x y).
     left. left. trivial.
-    destruct (eq_dec x y).
+    destruct (eqA_dec x y).
     left. right. trivial.
     right. intro xy. destruct xy; auto.
   Defined.
@@ -518,6 +561,14 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     elimtype False. destruct H. auto. subst x.  auto.
   Qed.
 
+  Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
+
+  Proof.
+    unfold ge, gt. destruct x as [x|]; destruct y as [y|];
+      try destruct z as [z|]; simpl; intuition.
+    inversion H1. subst. hyp. discr.
+  Qed.
+
   Lemma fin_ge_Zge : forall m n,
     Fin m >>= Fin n -> (m >= n)%Z.
  
@@ -542,8 +593,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma mult_inf_dec : forall m n,
-    { exists mi, exists ni, m = Fin mi /\ n = Fin ni /\ m * n = Fin (mi + ni) } +
-    { m * n = MinusInfBZ /\ (m = MinusInfBZ \/ n = MinusInfBZ) }.
+    {exists mi, exists ni, m = Fin mi /\ n = Fin ni /\ m * n = Fin (mi + ni)}
+    + {m * n = MinusInfBZ /\ (m = MinusInfBZ \/ n = MinusInfBZ)}.
 
   Proof.
     intros. destruct m. destruct n.
@@ -669,6 +720,12 @@ Module BOrdSemiRingT <: OrdSemiRingType.
     | _, _ => True
     end.
 
+  Lemma eq_ge_compat : forall x y, x = y -> ge x y.
+
+  Proof.
+    unfold ge. destruct x; destruct y; auto. discr.
+  Qed.
+
   Notation "x + y" := (Aplus x y).
   Notation "x * y" := (Amult x y).
   Notation "x >> y" := (gt x y) (at level 70).
@@ -734,6 +791,12 @@ Module BOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+
+  Proof.
+    destruct x; destruct y; destruct z; simpl; tauto.
+  Qed.
+
+  Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
 
   Proof.
     destruct x; destruct y; destruct z; simpl; tauto.
