@@ -332,7 +332,7 @@ Proof.
 intros; unfold mat_unbound.
 destruct (le_gt_dec dim x); auto with *.
 destruct (le_gt_dec dim y); auto with *.
-unfold mat_andb; repeat rewrite Vmap2_nth; auto.
+unfold mat_andb; repeat rewrite Vnth_map2; auto.
 Qed.
 
 Lemma Gmorph_intersect : forall x y,

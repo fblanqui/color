@@ -214,7 +214,7 @@ Module Matrix (OSRT : OrdSemiRingType).
   Ltac mat_get_simpl :=
     repeat progress unfold get_elem, get_col, get_row, 
       vec_to_col_mat, vec_to_row_mat, col_mat_to_vec, row_mat_to_vec; 
-      repeat progress ( try rewrite Vnth_map; try rewrite Vmap2_nth );
+      repeat progress ( try rewrite Vnth_map; try rewrite Vnth_map2 );
         ring_simplify; try refl.
 
   Lemma get_col_col_mat : forall n (v : vec n) (p : 0 < 1),
@@ -492,7 +492,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     apply dot_product_mor. refl.
     unfold eq_vec. apply Vforall2n_intro. intros. unfold get_col.
     repeat rewrite Vnth_map. simpl. rewrite vector_plus_nth.
-    unfold vector_plus. rewrite Vmap2_nth. repeat rewrite Vnth_map. refl.
+    unfold vector_plus. rewrite Vnth_map2. repeat rewrite Vnth_map. refl.
   Qed.
 
   Lemma mat_vec_prod_distr_mat : forall m n (Ml Mr : matrix m n) v,
@@ -508,7 +508,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     rewrite (dot_product_comm (get_row Mr ip)).
     rewrite <- dot_product_distr_r.
     rewrite (dot_product_comm a). apply dot_product_mor. 2: refl. clear a.
-    unfold get_row, mat_plus. rewrite Vmap2_nth. refl.
+    unfold get_row, mat_plus. rewrite Vnth_map2. refl.
   Qed.
 
   Lemma mat_vec_prod_distr_add_vectors : forall m n (M : matrix m n) k v1 v2,

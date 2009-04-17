@@ -255,7 +255,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       apply (Vforall2n_nth gtx). assumption.
       do 2 rewrite add_vectors_nth.
       apply Vfold_left_gtx_compat. intros.
-      do 2 rewrite Vnth_map. do 2 rewrite Vmap2_nth.
+      do 2 rewrite Vnth_map. do 2 rewrite Vnth_map2.
       set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
       apply (Vforall2n_nth gtx). apply mat_vec_prod_gt_compat.
       apply (Vforall2n_nth mat_gt). assumption.
