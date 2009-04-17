@@ -2,6 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
+- Frederic Blanqui, 2009-03-19 (setoid)
 - Adam Koprowski and Hans Zantema, 2007-03-22
 
 Termination criterion based on matrix interpretations.
@@ -14,6 +15,7 @@ References:
 
 Set Implicit Arguments.
 
+Require Import Setoid.
 Require Import AMatrixBasedInt.
 Require Import Matrix.
 Import NMatrix.
@@ -25,6 +27,7 @@ Require Import RelUtil.
 Require Import NatUtil.
 Require Import RelMidex.
 Require Import AWFMInterpretation.
+Require Import VecEq.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TMatrixInt.
@@ -161,7 +164,13 @@ Module MatrixInt (MI : TMatrixInt).
 
     Proof.
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in * .
-      unfold succ, I. rewrite <- H. rewrite <- H0.
+      unfold succ, I, succ_vec. symmetry in H. symmetry in H0.
+      rewrite (vec_ge_mor H H0).
+      rewrite (Vnth_mor _ H dim_pos). rewrite (Vnth_mor _ H0 dim_pos).
+      change (succ_vec (mint_eval v
+        (mi_of_term (ABterm.inject_term (Max.le_max_l (maxvar l) (maxvar r)))))
+      (mint_eval v (mi_of_term
+        (ABterm.inject_term (Max.le_max_r (maxvar l) (maxvar r)))))).
       apply mint_eval_mon_succ. assumption.
     Qed.
 

@@ -2,6 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
+- Frederic Blanqui, 2009-03-19 (setoid)
 - Adam Koprowski and Johannes Waldmann, 2008-01
 *)
 
@@ -14,7 +15,10 @@ Require Import VecUtil.
 Require Import SN.
 Require Import RelUtil.
 Require Import RelMidex.
+Require Import LogicUtil.
+Require Import Setoid.
 Require Import AMatrixBasedInt.
+Require Import VecEq.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TArcticBasedInt.
@@ -75,11 +79,20 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Notation MinusInf := A0.
 
     Variable A0_min : forall x, x >>= MinusInf.
-    Variable eq_dec : forall x y : A, {x = y} + {x <> y}. (* move to SemiRing? *)
-    Variable ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
+    Variable ge_gt_eq : forall x y, x >>= y -> x >> y \/ x =A= y.
 
-    Definition gtx x y := x >> y \/ (x = MinusInf /\ y = MinusInf).
+    Definition gtx x y := x >> y \/ (x =A= MinusInf /\ y =A= MinusInf).
     Notation "x >_0 y" := (gtx x y) (at level 70).
+
+    Add Morphism gtx with signature eqA ==> eqA ==> iff as gtx_mor.
+
+    Proof.
+      unfold gtx. intuition. left. rewrite <- H. rewrite <- H0. hyp. right.
+      split. transitivity x. symmetry. hyp. hyp. transitivity x0. symmetry.
+      hyp. hyp.
+      left. rewrite H. rewrite H0. hyp. right. split.
+      transitivity y; hyp. transitivity y0; hyp.
+    Qed.
 
     Definition succ_vec (x y : vec) := Vforall2n gtx x y.
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
@@ -87,16 +100,11 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
     Variable succ_wf : WF succ.
 
-    Lemma ge_gtx_compat : forall x y z,
-      x >>= y -> y >_0 z -> x >_0 z.
+    Lemma ge_gtx_compat : forall x y z, x >>= y -> y >_0 z -> x >_0 z.
 
     Proof.
-      intros. destruct H0.
-      left. apply ge_gt_compat with y; assumption.
-      destruct H0. subst y. subst z.
-      destruct (ge_gt_eq H). 
-      left. trivial.
-      subst x. right. auto.
+      unfold gtx. intuition. left. apply ge_gt_compat with y; hyp.
+      rewrite H2. rewrite H0 in H. destruct (ge_gt_eq H); intuition.
     Qed.
 
     Variable gtx_plus_compat : forall m m' n n',
@@ -120,11 +128,11 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Proof.
       intros x y. destruct (gt_dec x y).
       left. left. assumption.
-      destruct (eq_dec x MinusInf).
-      destruct (eq_dec y MinusInf).
-      left. subst x. subst y. right. auto.
-      right. subst x. intro f. destruct f. auto. destruct H. auto.
-      right. intro f. destruct f. auto. destruct H. auto.
+      destruct (eqA_dec x MinusInf).
+      destruct (eqA_dec y MinusInf).
+      left. right. auto.
+      right. unfold gtx. intuition.
+      right. unfold gtx. intuition.
     Defined.
 
     Lemma succ_dec : rel_dec succ.
@@ -174,13 +182,14 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       Vfold_left Aplus A0 v >_0 Vfold_left Aplus A0 v'.
 
     Proof.
-      intros. induction v; simpl; intros.
-      VOtac. simpl. right. auto.
+      induction v; simpl; intros.
+      VOtac. simpl. right. intuition.
       VSntac v'. simpl. apply gtx_plus_compat.
       apply IHv. intros. 
       apply (Vforall2n_nth gtx). change v with (Vtail (Vcons a v)). 
       apply Vforall2n_tail. apply Vforall2n_intro. assumption.
-      change a with (Vhead (Vcons a v)). do 2 rewrite Vhead_nth. apply H.
+      change a with (Vhead (Vcons a v)). do 2 rewrite Vhead_nth.
+      apply (H _ (Lt.lt_O_Sn n)).
     Qed.
 
     Section Matrix.
@@ -193,11 +202,11 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       Notation mgt := (mat_forall2 gtx).
 
       Lemma arctic_dot_product_mon : forall i (v v' w w' : vector A i), 
-        vgt _ v v' -> vge w w' -> gtx (dot_product v w) (dot_product v' w').
+        vgt _ v v' -> vge w w' -> dot_product v w >_0 dot_product v' w'.
 
       Proof.
         unfold dot_product. induction v; intros; simpl.
-        right. auto.
+        right. intuition.
         apply gtx_plus_compat.
         apply IHv.
         change v with (Vtail (Vcons a v)). apply Vforall2n_tail. assumption.
@@ -239,7 +248,9 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
     Proof.
       intros. unfold succ_vec. apply Vforall2n_intro. intros. destruct H.
-      do 2 rewrite mint_eval_split. do 2 rewrite vector_plus_nth.
+      eapply gtx_mor. apply (Vnth_mor eqA); rewrite mint_eval_split; refl.
+      apply (Vnth_mor eqA). rewrite mint_eval_split. refl.
+      do 2 rewrite vector_plus_nth.
       apply gtx_plus_compat. 
       apply (Vforall2n_nth gtx). assumption.
       do 2 rewrite add_vectors_nth.
@@ -255,7 +266,8 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
     Proof.
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in *.
-      unfold succ. rewrite <- H. rewrite <- H0.
+      unfold succ. unfold succ_vec. symmetry in H. symmetry in H0.
+      rewrite (Vforall2n_mor sid_theoryA gtx_mor H H0).
       apply mint_eval_mon_succ. assumption.
     Qed.
 

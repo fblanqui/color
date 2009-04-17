@@ -2,9 +2,10 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
+- Frederic Blanqui, 2009-03-19 (setoid)
 - Adam Koprowski, 2007-04-14
 
-  Semi-ring structure.
+Semi-ring structure.
 *)
 
 Require Export Ring.
@@ -17,24 +18,35 @@ Require Import Compare.
 Require Import LogicUtil.
 Require Import Bool.
 Require Import RelExtras.
+Require Import Setoid.
+Require Import EqUtil.
+Require Import NatUtil.
+Require Import ZUtil.
 
 (***********************************************************************)
 (** Semi-ring structure type *)
 
 Module Type SemiRingType.
 
-  Parameter A : Type.
-  Parameter Aplus : A -> A -> A.
-  Parameter Amult : A -> A -> A.
+  Declare Module Export ES : Eqset_dec.
+
+  (*FIXME: move to Eqset ? *)
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
   Parameter A0 : A.
   Parameter A1 : A.
 
+  Parameter Aplus : A -> A -> A.
   Notation "x + y" := (Aplus x y).
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+
+  Parameter Amult : A -> A -> A.
   Notation "x * y" := (Amult x y).
 
-  Parameter Aeq_dec : forall x y : A, {x = y} + {x <> y}.
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
 
-  Parameter A_semi_ring : semi_ring_theory A0 A1 Aplus Amult (@eq A).
+  Parameter A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
 End SemiRingType.
 
@@ -43,7 +55,6 @@ End SemiRingType.
 
 Module SemiRing (SR : SemiRingType).
 
-  Import SR.
   Export SR.
 
   Definition Aplus_comm := SRadd_comm A_semi_ring.
@@ -55,26 +66,26 @@ Module SemiRing (SR : SemiRingType).
   Definition Amult_1_l := SRmul_1_l A_semi_ring.
   Definition A_plus_mult_distr_l := SRdistr_l A_semi_ring.
 
-  Lemma Aplus_0_r : forall n, n + A0 = n.
+  Lemma Aplus_0_r : forall n, n + A0 =A= n.
 
   Proof.
     intros. rewrite Aplus_comm. apply Aplus_0_l.
   Qed.
 
-  Lemma Amult_0_r : forall n, n * A0 = A0.
+  Lemma Amult_0_r : forall n, n * A0 =A= A0.
 
   Proof.
     intros. rewrite Amult_comm. apply Amult_0_l.
   Qed.
 
-  Lemma Amult_1_r : forall n, n * A1 = n.
+  Lemma Amult_1_r : forall n, n * A1 =A= n.
 
   Proof.
     intros. rewrite Amult_comm. apply Amult_1_l.
   Qed.
 
   Lemma A_plus_mult_distr_r : forall m n p,
-    m * (n + p) = m * n + m * p.
+    m * (n + p) =A= m * n + m * p.
 
   Proof.
     intros. rewrite Amult_comm. 
@@ -94,15 +105,40 @@ End SemiRing.
 
 Require Import Arith.
 
+Module Nat <: SetA.
+  Definition A := nat.
+End Nat.
+
+Module Nat_Eqset := Eqset_def Nat.
+
+Module Nat_Eqset_dec <: Eqset_dec.
+  Module Export Eq := Nat_Eqset.
+  Definition eqA_dec := dec_beq beq_nat_ok.
+End Nat_Eqset_dec.
+
 Module NSemiRingT <: SemiRingType.
 
-  Definition Aeq_dec := eq_nat_dec.
-  Definition A := nat.
-  Definition Aplus := plus.
-  Definition Amult := mult.
+  Module Export ES := Nat_Eqset_dec.
+
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
   Definition A0 := 0.
   Definition A1 := 1.
-  Definition Aeq := @eq nat.
+
+  Definition Aplus := plus.
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Definition Amult := mult.
+
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
   Definition A_semi_ring := natSRth.
 
 End NSemiRingT.
@@ -114,21 +150,51 @@ Module NSemiRing := SemiRing NSemiRingT.
 
 Require Import ZArith.
 
+Module Int <: SetA.
+  Definition A := Z.
+End Int.
+
+Module Int_Eqset := Eqset_def Int.
+
+Module Int_Eqset_dec <: Eqset_dec.
+  Module Export Eq := Int_Eqset.
+  Definition eqA_dec := dec_beq beq_Z_ok.
+End Int_Eqset_dec.
+
 Module ZSemiRingT <: SemiRingType.
 
-  Definition A := Z.
-  Definition Aeq_dec := Z_eq_dec.
-  Definition Aplus := Zplus.
-  Definition Amult := Zmult.
-  Definition A0 := Z0.
-  Definition A1 := Zsucc Z0.
-  Definition Aeq := @eq Z.
+  Module Export ES := Int_Eqset_dec.
 
-  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
+  Definition A0 := 0%Z.
+  Definition A1 := 1%Z.
+
+  Definition Aplus := Zplus.
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Definition Amult := Zmult.
+
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
   Proof.
-    constructor. exact Zplus_0_l. exact Zplus_comm. exact Zplus_assoc.
-    exact Zmult_1_l. exact Zmult_0_l. exact Zmult_comm. exact Zmult_assoc.
+    constructor.
+    exact Zplus_0_l.
+    exact Zplus_comm.
+    exact Zplus_assoc.
+    exact Zmult_1_l.
+    exact Zmult_0_l.
+    exact Zmult_comm.
+    exact Zmult_assoc.
     exact Zmult_plus_distr_l.
   Qed.
 
@@ -139,19 +205,52 @@ Module ZSemiRing := SemiRing ZSemiRingT.
 (***********************************************************************)
 (** BigZ integers as a semi-ring *)
 
-(*Require Import BigZUtil.
+Require Import BigZUtil.
+
+Module BigInt_Eqset <: Eqset.
+  Definition A := bigZ.
+  Definition eqA := BigZ.eq.
+  Definition sid_theoryA : Setoid_Theory A eqA.
+  Proof.
+    unfold eqA. constructor.
+    unfold Reflexive. refl.
+    unfold Symmetric. symmetry. hyp.
+    unfold Transitive. intros. transitivity y; hyp.
+  Qed.
+End BigInt_Eqset.
+
+Module BigInt_Eqset_dec <: Eqset_dec.
+  Module Export Eq := BigInt_Eqset.
+  Lemma eqA_dec : forall x y, {eqA x y}+{~eqA x y}.
+  Proof.
+    unfold eqA. unfold BigZ.eq. intros. apply (dec_beq beq_Z_ok).
+  Defined.
+End BigInt_Eqset_dec.
 
 Module BigZSemiRingT <: SemiRingType.
 
-  Definition A := bigZ.
-  Definition Aeq_dec := eq_bigZ_dec.
-  Definition Aplus := BigZ.add.
-  Definition Amult := BigZ.mul.
+  Module Export ES := BigInt_Eqset_dec.
+
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
   Definition A0 := BigZ.zero.
   Definition A1 := BigZ.one.
-  Definition Aeq := BigZ.eq.
 
-  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+  Definition Aplus := BigZ.add.
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Definition Amult := BigZ.mul.
+
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
   Proof.
   constructor.
@@ -167,21 +266,59 @@ Module BigZSemiRingT <: SemiRingType.
 
 End BigZSemiRingT.
 
-Module BigZSemiRing := SemiRing BigZSemiRingT.*)
+Module BigZSemiRing := SemiRing BigZSemiRingT.
 
 (***********************************************************************)
 (** Arctic semi-ring over naturals with minus infinity and 
     plus-max operations *)
 
+Inductive ArcticDom : Type := 
+| Pos (n : nat)
+| MinusInf.
+
+Definition beq_ArcticDom x y :=
+  match x, y with
+    | Pos x', Pos y' => beq_nat x' y'
+    | MinusInf, MinusInf => true
+    | _, _ => false
+  end.
+
+Lemma beq_ArcticDom_ok : forall x y, beq_ArcticDom x y = true <-> x = y.
+
+Proof.
+unfold beq_ArcticDom. destruct x; destruct y; simpl; try (intuition; discr).
+rewrite beq_nat_ok. intuition. inversion H. refl.
+Qed.
+
+Module Arctic <: SetA.
+  Definition A := ArcticDom.
+End Arctic.
+
+Module Arctic_Eqset := Eqset_def Arctic.
+
+Module Arctic_Eqset_dec <: Eqset_dec.
+  Module Export Eq := Arctic_Eqset.
+  Definition eqA_dec := dec_beq beq_ArcticDom_ok.
+  (*Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
+  Proof.
+    intros. destruct x; destruct y; try solve [right; congruence].
+    destruct (eq_nat_dec n0 n).
+    subst n. auto.
+    right. congruence.
+    left. auto.
+  Defined.*)
+End Arctic_Eqset_dec.
+
 Module ArcticSemiRingT <: SemiRingType.
 
-  Inductive Dom : Type := 
-    | Pos (n : nat)
-    | MinusInf.
+  Module Export ES := Arctic_Eqset_dec.
 
-  Definition A := Dom.
+  Add Setoid A eqA sid_theoryA as A_Setoid.
 
-   (* max is a <+> operation in the semi-ring *)
+  Definition A0 := MinusInf.
+  Definition A1 := Pos 0.
+
+  (* max is a <+> operation in the semi-ring *)
   Definition Aplus m n :=
     match m, n with
     | MinusInf, n => n
@@ -189,7 +326,12 @@ Module ArcticSemiRingT <: SemiRingType.
     | Pos m, Pos n => Pos (max m n)
     end.
 
-   (* plus is a <*> operation in the semi-ring *)
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  (* plus is a <*> operation in the semi-ring *)
   Definition Amult m n := 
     match m, n with
     | MinusInf, _ => MinusInf
@@ -197,18 +339,9 @@ Module ArcticSemiRingT <: SemiRingType.
     | Pos m, Pos n => Pos (m + n)
     end.
 
-  Definition A0 := MinusInf.
-  Definition A1 := Pos 0.
-  Definition Aeq := @eq A.
-
-  Lemma Aeq_dec : forall m n : A, {m = n} + {m <> n}.
-
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
   Proof.
-    intros. destruct m; destruct n; try solve [right; congruence].
-    destruct (eq_nat_dec n0 n).
-    subst n. auto.
-    right. congruence.
-    left. auto.
+    intros. rewrite H. rewrite H0. refl.
   Qed.
 
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
@@ -241,18 +374,20 @@ Module ArcticSemiRingT <: SemiRingType.
     rewrite plus_assoc. trivial.
   Qed.
 
+  Import Compare. Import Max.
+
   Lemma A_mult_plus_distr : forall m n p,
     Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
 
   Proof.
-    intros. unfold Amult, Aplus. 
+    intros. unfold Amult, Aplus.
     destruct m; destruct n; destruct p; trivial.
     destruct (le_dec n n0).
     rewrite max_l. rewrite max_l. trivial. auto with arith. trivial.
     rewrite max_r. rewrite max_r. trivial. auto with arith. trivial.
   Qed.
 
-  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
   Proof.
     constructor; intros.
@@ -266,7 +401,7 @@ Module ArcticSemiRingT <: SemiRingType.
     apply A_mult_plus_distr.
   Qed.
 
-  Lemma arctic_plus_notInf_left : forall (a b : A),
+  Lemma arctic_plus_notInf_left : forall a b,
     a <> MinusInf -> Aplus a b <> MinusInf.
 
   Proof.
@@ -275,7 +410,7 @@ Module ArcticSemiRingT <: SemiRingType.
     auto. 
   Qed.
 
-  Lemma arctic_mult_notInf : forall (a b : A),
+  Lemma arctic_mult_notInf : forall a b,
     a <> MinusInf -> b <> MinusInf -> Amult a b <> MinusInf.
 
   Proof.
@@ -295,17 +430,53 @@ Module ArcticSemiRing := SemiRing ArcticSemiRingT.
 
 Require Import ZUtil.
 
+Inductive ArcticBZDom : Type := 
+| Fin (z : Z)
+| MinusInfBZ.
+
+Definition beq_ArcticBZDom x y :=
+  match x, y with
+    | Fin x', Fin y' => beq_Z x' y'
+    | MinusInfBZ, MinusInfBZ => true
+    | _, _ => false
+  end.
+
+Lemma beq_ArcticBZDom_ok : forall x y, beq_ArcticBZDom x y = true <-> x = y.
+
+Proof.
+unfold beq_ArcticBZDom. destruct x; destruct y; simpl; try (intuition; discr).
+rewrite beq_Z_ok. intuition. subst. refl. inversion H. refl.
+Qed.
+
+Module ArcticBZ <: SetA.
+  Definition A := ArcticBZDom.
+End ArcticBZ.
+
+Module ArcticBZ_Eqset := Eqset_def ArcticBZ.
+
+Module ArcticBZ_Eqset_dec <: Eqset_dec.
+  Module Export Eq := ArcticBZ_Eqset.
+  Definition eqA_dec := dec_beq beq_ArcticBZDom_ok.
+  (*Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
+  Proof.
+    intros. destruct x; destruct y; try solve [right; congruence].
+    destruct (Z_eq_dec z0 z).
+    subst z. auto.
+    right. congruence.
+    left. auto.
+  Defined.*)
+End ArcticBZ_Eqset_dec.
+
 Module ArcticBZSemiRingT <: SemiRingType.
 
-  Open Scope Z_scope.
+  Module Export ES := ArcticBZ_Eqset_dec.
 
-  Inductive Dom : Type := 
-    | Fin (z : Z)
-    | MinusInfBZ.
+  Add Setoid A eqA sid_theoryA as A_Setoid.
 
-  Definition A := Dom.
+  Definition A0 := MinusInfBZ.
+  Definition A1 := Fin 0.
 
-   (* max is a <+> operation in the semi-ring *)
+  (* max is a <+> operation in the semi-ring *)
   Definition Aplus m n :=
     match m, n with
     | MinusInfBZ, n => n
@@ -313,7 +484,12 @@ Module ArcticBZSemiRingT <: SemiRingType.
     | Fin m, Fin n => Fin (Zmax m n)
     end.
 
-   (* plus is a <*> operation in the semi-ring *)
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  (* plus is a <*> operation in the semi-ring *)
   Definition Amult m n := 
     match m, n with
     | MinusInfBZ, _ => MinusInfBZ
@@ -321,18 +497,9 @@ Module ArcticBZSemiRingT <: SemiRingType.
     | Fin m, Fin n => Fin (m + n)
     end.
 
-  Definition A0 := MinusInfBZ.
-  Definition A1 := Fin 0.
-  Definition Aeq := @eq A.
-
-  Lemma Aeq_dec : forall m n : A, {m = n} + {m <> n}.
-
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
   Proof.
-    intros. destruct m; destruct n; try solve [right; congruence].
-    destruct (Z_eq_dec z0 z).
-    subst z. auto.
-    right. congruence.
-    left. auto.
+    intros. rewrite H. rewrite H0. refl.
   Qed.
 
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
@@ -375,15 +542,15 @@ Module ArcticBZSemiRingT <: SemiRingType.
     destruct (Zmax_irreducible_inf z z0); rewrite H; refl.
   Qed.
 
-  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
   Proof.
     constructor; intros.
     compute; trivial.
     apply A_plus_comm.
     apply A_plus_assoc.
-    destruct n; unfold Aeq; refl.
-    unfold Aeq. trivial.
+    destruct n; unfold eqA; refl.
+    unfold eqA. trivial.
     apply A_mult_comm.
     apply A_mult_assoc.
     apply A_mult_plus_distr.
@@ -415,32 +582,54 @@ Module ArcticBZSemiRing := SemiRing ArcticBZSemiRingT.
 (***********************************************************************)
 (** Semi-ring of booleans with 'or' and 'and' *)
 
+Module Bool <: SetA.
+  Definition A := bool.
+End Bool.
+
+Module Bool_Eqset := Eqset_def Bool.
+
+Module Bool_Eqset_dec <: Eqset_dec.
+  Module Export Eq := Bool_Eqset.
+  Definition eqA_dec := bool_dec.
+End Bool_Eqset_dec.
+
 Module BSemiRingT <: SemiRingType.
 
-  Definition A := bool.
-  Definition Aeq_dec := bool_dec.
-  Definition Aplus := orb.
-  Definition Amult := andb.
+  Module Export ES := Bool_Eqset_dec.
+
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
   Definition A0 := false.
   Definition A1 := true.
-  Definition Aeq := @eq bool.
 
-  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult Aeq.
+  Definition Aplus := orb.
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Definition Amult := andb.
+
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
   Proof.
-    constructor.
-    intros; apply orb_false_l.
-    intros; apply orb_comm.
-    intros; apply orb_assoc.
-    intros; apply andb_true_l.
-    intros; apply andb_false_l.
-    intros; apply andb_comm.
-    intros; apply andb_assoc.
-    intros; apply andb_orb_distrib_l.
+    constructor; intros.
+    apply orb_false_l.
+    apply orb_comm.
+    apply orb_assoc.
+    apply andb_true_l.
+    apply andb_false_l.
+    apply andb_comm.
+    apply andb_assoc.
+    apply andb_orb_distrib_l.
   Qed.
 
 End BSemiRingT.
 
 Module BSemiRing := SemiRing BSemiRingT.
-
-Close Scope Z_scope.
