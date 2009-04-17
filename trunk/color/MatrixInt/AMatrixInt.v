@@ -112,7 +112,7 @@ Module MatrixInt (MI : TMatrixInt).
       intros x z xz. destruct xz as [y [xy yz]]. split.
       apply succeq_trans with y. assumption. destruct yz. assumption.
       apply le_gt_trans with (Vnth (dom2vec y) dim_pos). unfold MBI.vec_at0.
-      apply (Vforall2_nth ge). assumption. 
+      apply (Vforall2n_nth ge). assumption. 
       destruct yz. assumption.
     Qed.
 
@@ -153,7 +153,7 @@ Module MatrixInt (MI : TMatrixInt).
       apply mint_eval_mon_succeq. assumption.
       unfold mint_eval, add_vectors. simpl.
       apply vec_plus_gt_compat_l. 
-      unfold MBI.vec_at0. apply (Vforall2_nth ge). 
+      unfold MBI.vec_at0. apply (Vforall2n_nth ge). 
       exact (mint_eval_mon_succeq_args _ H). assumption.
     Qed.
 
@@ -247,7 +247,7 @@ Module MatrixInt (MI : TMatrixInt).
         unfold Aplus, Peano.gt. apply plus_le_lt_compat.
         apply dot_product_mon; apply vec_tail_ge; assumption.
         do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
-        apply (Vforall2_nth ge). assumption.
+        apply (Vforall2n_nth ge). assumption.
         rewrite (lt_unique (lt_O_Sn i) jp). assumption.
         rewrite (lt_unique (lt_O_Sn i) jp). assumption.
         destruct i. absurd_arith.
@@ -262,8 +262,8 @@ Module MatrixInt (MI : TMatrixInt).
         rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
         do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
         apply mult_le_compat.
-        do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
-        do 2 rewrite Vhead_nth. apply (Vforall2_nth ge). assumption.
+        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
+        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
       Qed.
 
       (* additional property of interpretation required to ensure strict
@@ -286,10 +286,10 @@ Module MatrixInt (MI : TMatrixInt).
         intros. unfold MBI.vec_at0. unfold mat_vec_prod. 
         do 2 rewrite Vnth_col_mat.
         do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0 dim_pos.
-        unfold vec_ge, ge. apply Vforall2_intro. auto.
-        unfold vec_ge, ge. apply Vforall2_intro. intros.
+        unfold vec_ge, ge. apply Vforall2n_intro. auto.
+        unfold vec_ge, ge. apply Vforall2n_intro. intros.
         do 2 rewrite get_col_col_mat. destruct ab.
-        apply (Vforall2_nth ge). assumption.
+        apply (Vforall2n_nth ge). assumption.
         assumption.
         do 2 rewrite get_col_col_mat. assumption.
         apply matrixInt_monotone.

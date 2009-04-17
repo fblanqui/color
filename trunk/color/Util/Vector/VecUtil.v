@@ -718,33 +718,23 @@ Section Vforall2_sec.
 
 Variable R : A -> A -> Prop.
 
-Fixpoint Vforall2 n1 (v1 : vec n1) n2 (v2 : vec n2) {struct v1} : Prop :=
-  match v1 with
-    | Vnil => True
-    | Vcons a _ v =>
-      match v2 with
-	| Vnil => False
-	| Vcons b _ w => R a b /\ Vforall2 v w
-      end
+Fixpoint Vforall2n_aux n1 (v1 : vec n1) n2 (v2 : vec n2) {struct v1} : Prop :=
+  match v1, v2 with
+    | Vnil, Vnil => True
+    | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2n_aux v w
+    | _, _ => False
   end.
 
-Definition Vforall2n n (v1 v2 : vec n) := Vforall2 v1 v2.
+Definition Vforall2n n (v1 v2 : vec n) := Vforall2n_aux v1 v2.
 
-Lemma Vforall2_tail : forall n (v1 v2 : vec (S n)), Vforall2 v1 v2 ->
-  Vforall2 (Vtail v1) (Vtail v2).
-
-Proof.
-  intros. gen H. VSntac v1. VSntac v2. simpl. tauto.
-Qed.
-
-Lemma Vforall2n_tail : forall n (v1 v2 : vec (S n)), Vforall2n v1 v2 ->
-  Vforall2n (Vtail v1) (Vtail v2).
+Lemma Vforall2n_tail : forall n (v1 v2 : vec (S n)),
+  Vforall2n v1 v2 -> Vforall2n (Vtail v1) (Vtail v2).
 
 Proof.
-  intros. unfold Vforall2n. apply Vforall2_tail. hyp.
+  intros. gen H. VSntac v1. VSntac v2. unfold Vforall2n. simpl. tauto.
 Qed.
 
-Lemma Vforall2_nth : forall n (v1 : vector A n) (v2 : vector A n) i 
+Lemma Vforall2n_nth : forall n (v1 : vector A n) (v2 : vector A n) i 
   (ip : i < n), Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
 Proof.
@@ -752,7 +742,7 @@ induction v1; intros. absurd (i<0); omega. gen H. VSntac v2.
 unfold Vforall2n. destruct i; simpl. tauto. intuition.
 Qed.
 
-Lemma Vforall2_intro : forall n (v1 : vec n) (v2 : vec n),
+Lemma Vforall2n_intro : forall n (v1 : vec n) (v2 : vec n),
   (forall i (ip : i < n), R (Vnth v1 ip) (Vnth v2 ip)) -> Vforall2n v1 v2.
 
 Proof.
@@ -766,8 +756,8 @@ Require Import RelDec.
 
 Variable R_dec : rel_dec R.
 
-Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2), 
-  {Vforall2 v1 v2} + {~Vforall2 v1 v2}.
+Lemma Vforall2n_aux_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2), 
+  {Vforall2n_aux v1 v2} + {~Vforall2n_aux v1 v2}.
 
 Proof.
   induction v1; destruct v2; simpl; auto.
@@ -778,7 +768,7 @@ Defined.
 Lemma Vforall2n_dec : forall n, rel_dec (@Vforall2n n).
 
 Proof.
-  intros n v1 v2. unfold Vforall2n. apply Vforall2_dec.
+  intros n v1 v2. unfold Vforall2n. apply Vforall2n_aux_dec.
 Defined.
 
 End Vforall2_sec.

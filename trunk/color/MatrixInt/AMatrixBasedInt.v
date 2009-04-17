@@ -132,16 +132,16 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
     Proof.
       induction v1; intros; simpl.
       destruct n; try solve [absurd_arith].
-      unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
+      unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2n_intro. 
       intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
       assert (Vnth (f (Vhead M) a) ip >>= Vnth (f (Vhead M) b) ip).
-      apply (Vforall2_nth ge). apply f_mon. assumption.
+      apply (Vforall2n_nth ge). apply f_mon. assumption.
       apply plus_ge_compat. apply ge_refl. assumption.
       destruct n0; try solve [absurd_arith].
-      unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2_intro. 
+      unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2n_intro. 
       intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
       apply plus_ge_compat. 
-      apply (Vforall2_nth ge). unfold add_vectors in IHv1. apply IHv1.
+      apply (Vforall2n_nth ge). unfold add_vectors in IHv1. apply IHv1.
       assumption. apply ge_refl.
     Qed.
   
@@ -155,17 +155,17 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
     apply (@vec_plus_ge_compat_r dim).
     do 2 rewrite Vmap_cast. do 2 rewrite Vmap_app. simpl.
     apply vec_add_weak_monotone_map2; trivial.
-    intros. unfold succeq, vec_ge. apply Vforall2_intro. intros.
+    intros. unfold succeq, vec_ge. apply Vforall2n_intro. intros.
     unfold mat_vec_prod. do 2 rewrite Vnth_col_mat. apply mat_mult_mon.
     apply mat_ge_refl. intros x y xp yp.
     do 2 rewrite vec_to_col_mat_spec.
-    apply (Vforall2_nth ge). assumption.
+    apply (Vforall2n_nth ge). assumption.
   Qed.
 
   Lemma succeq_dec : rel_dec succeq.
   
   Proof.
-    intros x y. unfold succeq, vec_ge, Vforall2n. apply Vforall2_dec.
+    intros x y. unfold succeq, vec_ge, Vforall2n. apply Vforall2n_aux_dec.
     intros m n. apply ge_dec.
   Defined.
 
@@ -238,7 +238,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
     Notation vec_ge := (@vec_ge dim).
 
     Definition mint_ge n (l r : mint n) := 
-      Vforall2 mat_ge (args l) (args r) /\ vec_ge (const l) (const r).
+      Vforall2n mat_ge (args l) (args r) /\ vec_ge (const l) (const r).
 
     Definition term_ord (ord : forall n, relation (mint n)) l r :=
       let (li, ri) := rule_mi (mkRule l r) in
@@ -254,7 +254,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
 
     Proof.
       intros n x y. unfold mint_ge.
-      destruct (Vforall2_dec (@mat_ge_dec dim dim) (args x) (args y)); 
+      destruct (Vforall2n_dec (@mat_ge_dec dim dim) (args x) (args y)); 
         intuition.
       destruct (vec_ge_dec (const x) (const y)); intuition.
     Defined.
@@ -483,10 +483,10 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       destruct H. apply (@vec_plus_ge_compat dim).
       apply (IHargs0 (Vtail val) (mkMatrixInt const1 (Vtail (args1)))).
       split. simpl. change args0 with (Vtail (Vcons a args0)). 
-      apply Vforall2_tail. assumption. assumption.
+      apply Vforall2n_tail. assumption. assumption.
       apply mat_vec_prod_ge_compat.
       change a with (Vhead (Vcons a args0)). do 2 rewrite Vhead_nth.
-      apply (Vforall2_nth mat_ge). assumption.
+      apply (Vforall2n_nth mat_ge). assumption.
       apply (vec_ge_refl (Vhead val)).
     Qed.
 
