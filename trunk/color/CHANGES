@@ -2,7 +2,7 @@
 - moved semi-rings and matrices (and matrix and arctic interpretations)
   to setoids
 - added boolean function for testing integer equality since the one
-  defined in Coq is too complex and uses an opqaue lemma
+  defined in Coq is too complex and uses an opaque lemma
 
 09-04-13: [Strub]
 - Term/ASubstitution: inversion lemma : uS = uS' -> x \in u -> xS = xS'
