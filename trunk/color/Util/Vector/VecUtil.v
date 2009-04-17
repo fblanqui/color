@@ -21,14 +21,13 @@ Require Import EqUtil.
 Require Import RelMidex.
 Require Import ListUtil.
 Require Import BoolUtil.
+Require Import ListUtil.
 
 Implicit Arguments Vnil [A].
 Implicit Arguments Vcons.
 Implicit Arguments Vhead.
 Implicit Arguments Vtail.
 Implicit Arguments Vconst.
-
-Require Export ListUtil.
 
 Ltac Veqtac := repeat
   match goal with
@@ -1319,16 +1318,15 @@ Section bVforall2_sec.
 Variables A B : Type.
 Variable P : A -> B -> bool.
 
-Fixpoint bVforall2 n1 (v1 : vector A n1) n2 (v2 : vector B n2) {struct v1} : bool :=
-  match v1 with
-    | Vnil => true
-    | Vcons x _ xs =>
-      match v2 with
-        | Vnil => false
-        | Vcons y _ ys => P x y && bVforall2 xs ys
-      end
+Fixpoint bVforall2n_aux n1 (v1 : vector A n1) n2 (v2 : vector B n2)
+  {struct v1} : bool :=
+  match v1, v2 with
+    | Vnil, Vnil => true
+    | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2n_aux xs ys
+    | _, _ => false
   end.
 
-Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) := bVforall2 v1 v2.
+Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) :=
+  bVforall2n_aux v1 v2.
 
 End bVforall2_sec.
