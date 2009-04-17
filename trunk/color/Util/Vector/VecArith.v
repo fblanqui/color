@@ -50,15 +50,14 @@ Definition vector_plus n (v1 v2 : vec n) := Vmap2 Aplus v1 v2.
 
 Infix "[+]" := vector_plus (at level 50).
 
-(*FIXME: rename Vmap2_nth into Vnth_map2 *)
-
 Add Parametric Morphism n : (@vector_plus n)
   with signature (@eq_vec n) ==> (@eq_vec n) ==> (@eq_vec n)
   as vector_plus_mor.
 
 Proof.
 intros. apply Vforall2n_intro. intros. unfold vector_plus.
-repeat rewrite Vmap2_nth. (*FIXME: rewrite H does not work*)
+repeat rewrite Vnth_map2.
+(*FIXME: rewrite H does not work even if Vnth is declared as morphism *)
 apply Aplus_mor; apply (Vnth_mor eqA); hyp.
 Qed.
 
@@ -66,7 +65,7 @@ Lemma vector_plus_nth : forall n (vl vr : vec n) i (ip : i < n),
   Vnth (vl [+] vr) ip =A= Vnth vl ip + Vnth vr ip.
 
 Proof.
-  intros. unfold vector_plus. rewrite Vmap2_nth. refl.
+  intros. unfold vector_plus. rewrite Vnth_map2. refl.
 Qed.
 
 Lemma vector_plus_comm : forall n (v1 v2 : vec n), v1 [+] v2 =v v2 [+] v1.
@@ -353,7 +352,7 @@ Lemma vec_plus_ge_compat : forall n (vl vl' vr vr' : vec n),
 
 Proof.
   unfold vector_plus, vec_ge. intros. apply Vforall2n_intro.
-  intros. simpl. do 2 rewrite Vmap2_nth.
+  intros. simpl. do 2 rewrite Vnth_map2.
   apply plus_ge_compat.
   apply (Vforall2n_nth ge). assumption.
   apply (Vforall2n_nth ge). assumption.

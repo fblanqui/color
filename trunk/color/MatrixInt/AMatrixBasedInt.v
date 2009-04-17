@@ -157,7 +157,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
   Proof.
     unfold mi_eval_aux. intuition. apply vector_plus_mor.
     apply add_vectors_mor.
-    apply Vforall2n_intro. intros. repeat rewrite Vmap2_nth.
+    apply Vforall2n_intro. intros. repeat rewrite Vnth_map2.
     apply mat_vec_prod_mor.
     apply (Vnth_mor mat_eqA). rewrite H. refl. apply (Vnth_mor eq_vec). hyp.
     rewrite H. refl.
@@ -217,13 +217,13 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       induction v1; intros; simpl.
       destruct n; try solve [absurd_arith].
       unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2n_intro. 
-      intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
+      intros. unfold vector_plus. do 2 rewrite Vnth_map2.
       assert (Vnth (f (Vhead M) a) ip >>= Vnth (f (Vhead M) b) ip).
       apply (Vforall2n_nth ge). apply f_mon. assumption.
       apply plus_ge_compat. apply ge_refl. assumption.
       destruct n0; try solve [absurd_arith].
       unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2n_intro. 
-      intros. unfold vector_plus. do 2 rewrite Vmap2_nth.
+      intros. unfold vector_plus. do 2 rewrite Vnth_map2.
       apply plus_ge_compat. 
       apply (Vforall2n_nth ge). unfold add_vectors in IHv1. apply IHv1.
       assumption. apply ge_refl.
@@ -284,7 +284,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
     Proof.
       intros. apply Veq_nth. intros.
       unfold combine_matrices, add_matrices. simpl.
-      rewrite Vmap2_nth. do 2 rewrite Vbuild_nth. refl.
+      rewrite Vnth_map2. do 2 rewrite Vbuild_nth. refl.
     Qed.
 
     Fixpoint mi_of_term k (t : bterm k) {struct t} : mint (S k) :=
@@ -390,19 +390,12 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       rewrite vector_plus_comm. refl.
     Qed.
 
-  (*FIXME: why do we need to define this setoid again?*)
-  (*Add Relation vec (@eq_vec dim)
-    reflexivity proved by (@eq_vec_refl dim)
-    symmetry proved by (@eq_vec_sym dim)
-    transitivity proved by (@eq_vec_trans dim)
-    as eq_vec_rel.*)
-
     Lemma mint_eval_var_aux : forall M i k (v : vector vec k) (ip : i < k),
       add_vectors (Vmap2 mat_vec_prod (Vreplace (Vconst 
         (zero_matrix dim dim) k) ip M) v) =v
       col_mat_to_vec (M <*> (vec_to_col_mat (Vnth v ip))).
 
-    Proof. (* FIXME: remove uses of transitivity *)
+    Proof.
       induction i; intros.
       destruct k. absurd_arith.
       unfold add_vectors. simpl.
@@ -415,7 +408,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       replace (Vhead v) with (Vnth v ip). refl.
       rewrite Vhead_nth. rewrite (lt_unique (lt_O_Sn k) ip). refl.
       apply add_vectors_zero. apply Vforall_nth_intro. intros.
-      rewrite Vmap2_nth. rewrite Vnth_const.
+      rewrite Vnth_map2. rewrite Vnth_const.
       unfold M.mat_vec_prod. rewrite zero_matrix_mult_l.
       apply Vforall2n_intro. intros. rewrite Vnth_col_mat.
       unfold zero_matrix, zero_vec.
@@ -456,7 +449,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       intros. unfold mint_eval. simpl. autorewrite with arith.
       transitivity (c [+] @zero_vec dim). apply vector_plus_mor. refl.
       apply add_vectors_zero. apply Vforall_nth_intro. intros.
-      rewrite Vmap2_nth. rewrite combine_matrices_nil. rewrite Vnth_const.
+      rewrite Vnth_map2. rewrite combine_matrices_nil. rewrite Vnth_const.
       unfold M.mat_vec_prod. apply Vforall2n_intro. intros.
       rewrite Vnth_col_mat.
       transitivity (get_elem (zero_matrix dim 1) ip0 access_0).
@@ -481,7 +474,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       apply vector_plus_mor. refl. rewrite vector_plus_assoc.
       rewrite (vector_plus_comm _ c_tl). rewrite <- vector_plus_assoc.
       apply vector_plus_mor. refl. apply add_vectors_split. intros.
-      repeat rewrite Vmap2_nth. rewrite vector_plus_comm.
+      repeat rewrite Vnth_map2. rewrite vector_plus_comm.
       apply mat_vec_prod_distr_mat.
     Qed.
 
@@ -496,7 +489,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       rewrite (mat_vec_prod_distr_add_vectors M 
         (Vmap2 mat_vec_prod (args mi) gen)
         (Vmap2 mat_vec_prod (Vmap (mat_mult M) (args mi)) gen)).
-      refl. intros. repeat rewrite Vmap2_nth. rewrite Vnth_map.
+      refl. intros. repeat rewrite Vnth_map2. rewrite Vnth_map.
       unfold M.mat_vec_prod. rewrite vec_to_col_mat_idem.
       apply get_col_mor. rewrite mat_mult_assoc. refl.
     Qed.

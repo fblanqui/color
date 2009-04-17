@@ -142,7 +142,7 @@ Module MatrixInt (MI : TMatrixInt).
 
     Proof.
       unfold MBI.vec_at0, vector_plus. intros.
-      simpl. do 2 rewrite Vmap2_nth. 
+      simpl. do 2 rewrite Vnth_map2. 
       unfold Aplus, Peano.gt. 
       apply plus_le_lt_compat; assumption.
     Qed.
@@ -197,7 +197,7 @@ Module MatrixInt (MI : TMatrixInt).
 
         Proof.
           unfold MBI.vec_at0, vector_plus. intros.
-          simpl. do 2 rewrite Vmap2_nth. 
+          simpl. do 2 rewrite Vnth_map2. 
           unfold Aplus, Peano.gt. apply plus_lt_le_compat; assumption.
         Qed.
       
@@ -221,13 +221,13 @@ Module MatrixInt (MI : TMatrixInt).
           induction v1; intros; simpl.
           destruct n; [absurd_arith | idtac].
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
-          do 2 rewrite Vmap2_nth. 
+          do 2 rewrite Vnth_map2. 
           unfold Aplus, Peano.gt. apply plus_lt_compat_l.
           unfold MBI.vec_at0 in f_mon. apply f_mon; try assumption.
           apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
           destruct n0; [absurd_arith | idtac].
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
-          do 2 rewrite Vmap2_nth.
+          do 2 rewrite Vnth_map2.
           unfold Aplus, Peano.gt. apply plus_lt_compat_r.
           match goal with |- ?Hl < ?Hr => fold (gt Hr Hl) end.
           unfold MBI.vec_at0, add_vectors in IHv1. 

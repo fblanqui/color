@@ -1195,7 +1195,7 @@ Qed.
 
 (* nth element in a map *)
 
-Lemma Vmap2_nth : forall (A B C : Type) (f : A -> B -> C) n 
+Lemma Vnth_map2 : forall (A B C : Type) (f : A -> B -> C) n 
   (vl : vector A n) (vr : vector B n) i (ip : i < n),
   Vnth (Vmap2 f vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
 Proof.
