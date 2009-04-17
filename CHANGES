@@ -1,8 +1,12 @@
-09-04-13
+09-04-17: [Blanqui]
+- moved semi-rings and matrices (and matrix and arctic interpretations)
+  to setoids
+- added boolean function for testing integer equality since the one
+  defined in Coq is too complex and uses an opqaue lemma
+
+09-04-13: [Strub]
 - Term/ASubstitution: inversion lemma : uS = uS' -> x \in u -> xS = xS'
 - Term/AMatching.v: proof of completeness
-
-09-04-10
 - Term/ATerm/AMatching: matching algorithm + proof of correctness
 - Util/VecUtil/VecUtil: fold operation on 2 vectors
 - Util/FMap/FMapUtil: bundle for FMap definitions + properties
