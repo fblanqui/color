@@ -8,8 +8,7 @@ This file provides a definition of the multiset path ordering and proofs
 that it preserves various properties
 *)
 
-Require Import Relations.
-Require Import Wellfounded.
+Require Import AccUtil.
 Require Import List.
 Require Import MultisetOrder.
 Require Import ListExtras.
@@ -22,6 +21,7 @@ Require Import Arith.
 Require Import MultisetListOrder.
 Require Import VTerm.
 Require Import Setoid.
+Require Import RelUtil.
 
 Variable Sig : Signature.
 

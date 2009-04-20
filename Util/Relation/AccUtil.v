@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Import LogicUtil.
 Require Import RelUtil.
-Require Import Wellfounded.
+Require Export Wellfounded.
 
 Implicit Arguments wf_incl [A R1 R2].
 
@@ -31,8 +31,6 @@ intro. eapply Acc_inv. apply H0. assumption.
 auto.
 intro. apply IHclos_refl_trans1. apply IHclos_refl_trans2. assumption.
 Qed.
-
-Require Import Wellfounded.
 
 Lemma Acc_tc_ind : forall P : A->Prop,
   (forall x, (forall y, clos_trans R y x -> P y) -> P x)
@@ -126,8 +124,111 @@ Section RestrictedAcc.
 End RestrictedAcc.
 
 (***********************************************************************)
-(** accessibility *)
+(** list of accessible arguments *)
 
 Require Import List.
 
-Definition accs (A : Type) r l := forall a : A, In a l -> Acc r a.
+Definition accs (A : Type) R l := forall a : A, In a l -> Acc R a.
+
+(***********************************************************************)
+(** simulation and morphisms *)
+
+Section Accessibility.
+
+  Variables A B : Type.
+  Variables R : relation A.
+
+  Definition mimic (P : relation A) := forall x x', P x x' ->
+    (forall y', R y' x' -> exists2 y, R y x & P y y').
+
+  Lemma Acc_mimic : forall x (P: relation A),
+    Acc R x -> mimic P -> forall x', P x x' -> Acc R x'.
+      
+  Proof.
+    induction 1.
+    intros mim x' Pxx'.
+    constructor.
+    intros y' Ry'x'.
+    unfold mimic in mim.
+    destruct (mim x x' Pxx' y' Ry'x') as [y Ryx Pyy'].
+    apply H0 with y; trivial.
+  Qed.
+
+  Variables x y : A.
+
+  Section AccHomo.
+
+    Variable T : B -> B -> Prop.
+    Variable z : B.
+    Variable morphism : A -> B -> Prop.
+    Variable comp : forall x y x',
+      morphism x' x -> T y x -> exists2 y': A, R y' x' & morphism y' y.
+
+    Lemma Acc_homo :
+      forall x, Acc R x -> forall x', morphism x x' -> Acc T x'.
+      
+    Proof.
+      induction 1.
+      intros x' x0x'.
+      constructor.
+      intros w Twx'.
+      destruct (comp x0x' Twx') as [x1 Rx x1w].
+      eapply H0; eauto.
+    Qed.
+
+  End AccHomo.
+  
+  Section AccIso.
+
+    Variable T : B -> B -> Prop.
+    Variable z : B.
+    Variable iso : A -> B -> Prop.
+    Variable iso_comp : forall x y' x',
+      iso x x' -> T y' x' -> {y: A | R y x & iso y y'}.
+
+    Lemma Acc_iso : iso x z -> Acc R x -> Acc T z.
+
+    Proof.
+      intros iso_x_z Acc_x; generalize z iso_x_z; clear iso_x_z z.
+      induction Acc_x as [x Acc_x Hind].
+      intros z iso_x_z.
+      constructor.
+      intros z' T_z'_z.
+      elim (iso_comp iso_x_z T_z'_z).
+      intros x' Rx' iso_x'_z'.
+      apply Hind with x'; assumption.
+    Qed.
+
+  End AccIso.
+
+  Lemma Acc_eq_rel : forall S,
+    (forall a b, R a b <-> S a b) -> Acc R x -> Acc S x.
+
+  Proof.
+    induction 2.
+    constructor.
+    intros z Szx; apply H1.
+    exact (proj2 (H z x) Szx).
+  Qed.
+
+End Accessibility.
+
+(***********************************************************************)
+(** transp *)
+
+Section Transposition.
+
+  Variable A : Type.
+  Variable R : A -> A -> Prop.
+    
+  Lemma transp_transp_wf :
+    well_founded R -> well_founded (transp (transp R)).
+
+  Proof.
+    intros R_wf x.
+    apply Acc_eq_rel with R.
+    apply transp_transp_R_eq_R.
+    auto.
+  Qed.
+
+End Transposition.

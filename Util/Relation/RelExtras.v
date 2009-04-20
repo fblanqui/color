@@ -18,17 +18,17 @@ Require Import Max.
 Require Import Arith.
 Require Import Setoid.
 
+(***********************************************************************)
+(** strict order *)
+
 Section StrictOrder.
 
   Variable A : Type.
   Variable R : relation A.
 
-  Definition transitive := forall x y z:A, R x y -> R y z -> R x z.
-  Definition irreflexive := forall x:A, ~ R x x.
-
   Record strict_order : Prop := {
-    sord_trans : transitive;
-    sord_irrefl : irreflexive 
+    sord_trans : transitive R;
+    sord_irrefl : irreflexive R 
   }.
 
   Variable so : strict_order.
@@ -59,6 +59,13 @@ Section StrictOrder.
 
 End StrictOrder.
 
+(***********************************************************************)
+(** module types for setoids with decidable equality *)
+
+Module Type SetA.
+  Parameter A : Type.
+End SetA.
+
 Module Type Eqset.
 
   Parameter A : Type.
@@ -84,10 +91,6 @@ Module Type Eqset_dec.
 
 End Eqset_dec.
 
-Module Type SetA.
-  Parameter A : Type.
-End SetA.
-
 Module Eqset_def (A : SetA) <: Eqset.
 
   Definition A := A.A.
@@ -101,13 +104,16 @@ Module Eqset_def (A : SetA) <: Eqset.
 
 End Eqset_def.
 
+(***********************************************************************)
+(** module types for ordered setoids *)
+
 Section Eqset_def_gtA_eqA_compat.
 
   Variable A : Type.
   Variable gtA : A -> A -> Prop.
 
-  Lemma Eqset_def_gtA_eqA_compat : forall x x' y y',
-    x = x' -> y = y' -> gtA x y -> gtA x' y'.
+  Lemma Eqset_def_gtA_eqA_compat :
+    forall x x' y y', x = x' -> y = y' -> gtA x y -> gtA x' y'.
 
   Proof.
     intros x x' y y' x_x' y_y' x_y.
@@ -221,15 +227,16 @@ Module nat_ord <: Ord.
 
 End nat_ord.
 
+(***********************************************************************)
+(** lemmas on transitive closure *)
+
 Section Transitive_Closure.
 
   Variable A : Type.
   Variable R : A -> A -> Prop.
 
-  Let R_tclos := clos_trans R.
-
   Lemma trans_clos_step_l : forall x y, 
-    R_tclos x y -> R x y \/ (exists2 z, R x z & R_tclos z y).
+    R! x y -> R x y \/ (exists2 z, R x z & R! z y).
 
   Proof.
     intros x y; compute; intro xy; induction xy.
@@ -240,7 +247,7 @@ Section Transitive_Closure.
   Qed.
 
   Lemma trans_clos_step_r : forall x y, 
-    R_tclos x y -> R x y \/ (exists2 z, R_tclos x z & R z y).
+    R! x y -> R x y \/ (exists2 z, R! x z & R z y).
 
   Proof.
     intros x y; compute; intro xy; induction xy.
@@ -260,7 +267,7 @@ Section Transitive_Closure.
   Hint Resolve R_eqA_comp.
 
   Lemma trans_clos_mirror : forall x y x' y',
-    eqA x x' -> eqA y y' -> R_tclos x y -> R_tclos x' y'.
+    eqA x x' -> eqA y y' -> R! x y -> R! x' y'.
 
   Proof.
     intros x y x' y' eq_xx' eq_yy' R_xy. 
@@ -280,8 +287,7 @@ Section Transitive_Closure.
       solve [trivial | apply (Seq_refl A eqA sid_theoryA)].
   Qed.
 
-  Lemma trans_clos_transp : forall x y, 
-    transp (clos_trans R) x y <-> clos_trans (transp R) x y.
+  Lemma trans_clos_transp : forall x y, transp (R!) x y <-> (transp R)! x y.
 
   Proof.
     intros; split; compute.
@@ -293,138 +299,10 @@ Section Transitive_Closure.
     constructor 2 with y; auto.
   Qed.
 
-  Variable R' : A -> A -> Prop.
-  Variable R'sub : inclusion R' R.
-  
-  Lemma trans_clos_inclusion : forall a b,
-    clos_trans R' a b -> clos_trans R a b.
-
-  Proof.
-    intros a b a_b.
-    induction a_b as [a b ab | a b c ab IHab bc IHbc].
-    constructor; exact (R'sub ab).
-    constructor 2 with b; trivial.
-  Qed.
-
 End Transitive_Closure.
 
-Section Accessibility.
-
-  Variable A : Type.
-  Variable B : Type.
-  Variables R S : relation A.
-
-  Definition mimic (P: relation A) :=
-    forall x x',
-      P x x' ->
-      (forall y', R y' x' ->
-	exists2 y, R y x & P y y').
-
-  Lemma Acc_mimic : forall x (P: relation A),
-    Acc R x -> mimic P ->
-    forall x', P x x' -> Acc R x'.
-      
-  Proof.
-    induction 1.
-    intros mim x' Pxx'.
-    constructor.
-    intros y' Ry'x'.
-    unfold mimic in mim.
-    destruct (mim x x' Pxx' y' Ry'x') as [y Ryx Pyy'].
-    apply H0 with y; trivial.
-  Qed.
-
-  Variables x y : A.
-
-  Section AccHomo.
-
-    Variable T : B -> B -> Prop.
-    Variable z : B.
-    Variable morphism : A -> B -> Prop.
-    Variable comp : forall x y x',
-	  morphism x' x -> T y x ->
-	  exists2 y': A, R y' x' & morphism y' y.
-
-    Lemma Acc_homo : 
-      forall x, Acc R x ->
-      forall x', morphism x x' -> Acc T x'.
-      
-    Proof.
-      induction 1.
-      intros x' x0x'.
-      constructor.
-      intros w Twx'.
-      destruct (comp x0x' Twx') as [x1 Rx x1w].
-      eapply H0; eauto.
-    Qed.
-
-  End AccHomo.
-  
-  Section AccIso.
-
-    Variable T : B -> B -> Prop.
-    Variable z : B.
-    Variable iso : A -> B -> Prop.
-    Variable iso_comp : forall x y' x',
-      iso x x' -> T y' x' -> {y: A | R y x & iso y y'}.
-
-    Lemma Acc_iso : iso x z -> Acc R x -> Acc T z.
-
-    Proof. (* William Delobel *)
-      intros iso_x_z Acc_x; generalize z iso_x_z; clear iso_x_z z.
-      induction Acc_x as [x Acc_x Hind].
-      intros z iso_x_z.
-      constructor.
-      intros z' T_z'_z.
-      elim (iso_comp iso_x_z T_z'_z).
-      intros x' Rx' iso_x'_z'.
-      apply Hind with x'; assumption.
-    Qed.
-
-  End AccIso.
-
-
-  Lemma Acc_eq_rel : (forall a b, R a b <-> S a b) -> Acc R x -> Acc S x.
-
-  Proof.
-    induction 2.
-    constructor.
-    intros z Szx; apply H1.
-    exact (proj2 (H z x) Szx).
-  Qed.
-
-  Lemma Acc_step_acc : Acc R x -> R y x -> Acc R y.
-
-  Proof.
-    intros AccX Rxy.
-    inversion AccX.
-    apply H; trivial.
-  Qed.
-
-End Accessibility.
-
-Section Transposition.
-
-  Variable A : Type.
-  Variable R : A -> A -> Prop.
-
-  Lemma transp_transp_R_eq_R : forall x y, R x y <-> transp (transp R) x y.
-
-  Proof.
-    split; auto.
-  Qed.
-    
-  Lemma transp_transp_wf :
-    well_founded R -> well_founded (transp (transp R)).
-
-  Proof.
-    intros R_wf x.
-    apply Acc_eq_rel with R.
-    exact transp_transp_R_eq_R.
-    auto.
-  Qed.
-
-End Transposition.
+(***********************************************************************)
+(** specification *)
 
 Section Specif.
 
@@ -442,6 +320,15 @@ Section Specif.
     | exist2 a p q => a
     end.
 
+End Specif.
+
+(***********************************************************************)
+(** lemmas on the option type *)
+
+Section option.
+
+  Variable A : Type.
+
   Lemma option_dec : forall (el: option A),
     el = None \/ exists w: A, el = Some w.
     
@@ -452,7 +339,10 @@ Section Specif.
     left; trivial.
   Qed.
 
-End Specif.
+End option.
+
+(***********************************************************************)
+(** tactics *)
 
 Ltac pair_destruct t0 t1 :=
   first [destruct t0 | intros until t0; destruct t0];

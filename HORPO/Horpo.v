@@ -18,6 +18,7 @@ Require Import MultisetOrder.
 Require Import LexOrder.
 Require Import MultisetList.
 Require Import MultisetTheory.
+Require Import AccUtil.
 
 Module Type Precedence.
 

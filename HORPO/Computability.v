@@ -16,6 +16,7 @@ Require Import LexOrder.
 Require Import Horpo.
 Require Import LogicUtil.
 Require Import Setoid.
+Require Import AccUtil.
 
 Module Computability (S : TermsSig.Signature) 
                      (Prec : Horpo.Precedence with Module S := S).
@@ -263,7 +264,7 @@ Section Computability_theory.
     apply base_step_base with M; trivial.
     apply R_algebraic_preserving with M; trivial.
     apply comp_algebraic; trivial.
-    unfold AccR; apply Acc_step_acc with M; auto.
+    unfold AccR; apply Acc_inv with M; auto.
     apply CompCaseBasic; trivial.
   Qed.
 

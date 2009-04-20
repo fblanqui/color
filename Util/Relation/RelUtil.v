@@ -621,6 +621,18 @@ Proof.
 unfold inclusion, transp. auto.
 Qed.
 
+Lemma transp_invol : transp (transp R) == R.
+
+Proof.
+split. apply transp_transp. intros x y h. unfold transp. hyp.
+Qed.
+
+Lemma transp_transp_R_eq_R : forall x y, R x y <-> transp (transp R) x y.
+
+Proof.
+split; auto.
+Qed.
+
 End transp.
 
 (***********************************************************************)

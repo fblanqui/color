@@ -11,6 +11,7 @@ in this file.
 
 Set Implicit Arguments.
 
+Require RelUtil.
 Require Import RelExtras.
 Require Import MultisetTheory.
 Require Import Transitive_Closure.
@@ -21,6 +22,7 @@ Require Import ListPermutation.
 Require Import MultisetCore.
 Require Import Setoid.
 Require Import ListExtras.
+Require Import AccUtil.
 
 Module MultisetOrder (MC: MultisetCore).
 
@@ -213,7 +215,7 @@ Section OrderDefinition.
   (* Variable gtA_dec: forall (a b: A), {a >A b}+{a <=A b}. *)
   (* Variable gtA_so: strict_order gtA. *)
   Variable gtA_transitive: transitive gtA.
-  Variable gtA_irreflexive : irreflexive gtA.
+  Variable gtA_irreflexive : RelUtil.irreflexive gtA.
   Variable gtA_eqA_compat: forall x x' y y',
     x =A= x' -> y =A= y' -> x >A y -> x' >A y'.
 
