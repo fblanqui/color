@@ -8,8 +8,6 @@ This file provides an order on lists derived from the order on
 multisets, along with some properties of this order.
 *)
 
-Require Import Relations.
-Require Import Wellfounded.
 Require Import List.
 Require Import MultisetOrder.
 Require Import RelExtras.
@@ -18,6 +16,8 @@ Require Import MultisetList.
 Require Import Permutation.
 Require Import MultisetTheory.
 Require Import Arith.
+Require Import AccUtil.
+Require Import RelUtil.
 
 Module MultisetListOrder (ES : Eqset_dec).
 
@@ -135,11 +135,13 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim (H1 x H); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2;
 	exists x'; split; trivial.  
       setoid_rewrite Heq; auto with multisets.
-      elim H; clear H; intros x H; elim H; clear H; intros H H'; exists x; split; trivial.
+      elim H; clear H; intros x H; elim H; clear H; intros H H'; exists x;
+        split; trivial.
       setoid_rewrite <- Heq; auto with multisets.
         (* Property true on singletons : *)
       intros a Ha; exists a; split; auto with multisets.
-      elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2.
+      elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx';
+        intros Hx'1 Hx'2.
       apply (r_eqA_compat x' a a a).
       apply member_singleton. assumption. auto with sets. assumption.
         (* Property preserved by adding an element : *)
@@ -185,14 +187,17 @@ Module MultisetListOrder (ES : Eqset_dec).
       apply Htrans; trivial.
       intros x x_in_M; assert (H : x in N).
       setoid_rewrite <- Heq; auto with multisets.
-      elim (H1 x H); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2; exists x'; split; trivial.
+      elim (H1 x H); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2;
+        exists x'; split; trivial.
       setoid_rewrite Heq; auto with multisets.
           (* H proved *)
-      elim H; clear H; intros x H; elim H; clear H; intros H H'; exists x; split; trivial.
+      elim H; clear H; intros x H; elim H; clear H; intros H H'; exists x;
+        split; trivial.
       setoid_rewrite <- Heq; auto with multisets.
         (* Property true on singletons : *)
       intros a H Ha; exists a; split; auto with multisets.
-      elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2.
+      elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx';
+        intros Hx'1 Hx'2.
       apply (r_eqA_compat x' a a a); auto with sets multisets.
         (* Property preserved by adding an element : *)
       intros a M HM Htrans H.
@@ -229,9 +234,11 @@ Module MultisetListOrder (ES : Eqset_dec).
       inversion HM.
       assert (H' : X =mul= Y).
       apply meq_union_meq with Z.
-      rewrite (union_comm X Z); rewrite (union_comm Y Z); rewrite <- H1; rewrite <- H0.
+      rewrite (union_comm X Z); rewrite (union_comm Y Z); rewrite <- H1;
+        rewrite <- H0.
       auto with multisets.
-      assert (H'' : forall (x : A), x in X -> ex (fun (x' : A) => x' in X /\ r x' x)).
+      assert (H'' : forall (x : A), x in X ->
+        ex (fun (x' : A) => x' in X /\ r x' x)).
       intros x x_in_X; assert (x_in_Y : x in Y). 
       setoid_rewrite <- H'; trivial.
       elim (H2 x x_in_Y); intros x' Hx'1 Hx'2.
@@ -258,13 +265,15 @@ Module MultisetListOrder (ES : Eqset_dec).
       (forall u, In u us ->
         ((forall t s, transp r u t -> transp r t s -> transp r u s)
 	  /\ (transp r u u -> False))) ->
-	(forall ts ss, mult us ts -> mult ts ss -> mult us ss) /\ (mult us us -> False).
+	(forall ts ss, mult us ts -> mult ts ss -> mult us ss)
+        /\ (mult us us -> False).
 
     Proof.
       intros us Hsub; unfold mult, MultisetLT, transp; split.
       (* Transitivity : *)
       intros ts ss.
-      assert (Hsub' : forall p, p in (list2multiset us) -> forall x y, r x p -> r y x -> r y p).
+      assert (Hsub' : forall p, p in (list2multiset us) ->
+        forall x y, r x p -> r y x -> r y p).
       intros p p_in_us x y H H'.
       elim (member_multiset_list us p_in_us); intros p' p'_in_us p'eq.
       apply r_eqA_compat with y p'; auto with multisets.
@@ -274,34 +283,42 @@ Module MultisetListOrder (ES : Eqset_dec).
       apply r_eqA_compat with x p; auto with multisets.
       auto with sets.
       (* Hsub' proved *)
-      intros; apply (sub_transp_trans_2_mOrd_trans Hsub') with (list2multiset ts); trivial.
+      intros; apply (sub_transp_trans_2_mOrd_trans Hsub')
+        with (list2multiset ts); trivial.
       (* Irreflexivity : *)
       intro HM; inversion HM.
       assert (H' : X =mul= Y).
       apply meq_union_meq with Z.
-      rewrite (union_comm X Z); rewrite (union_comm Y Z); rewrite <- H1; rewrite <- H0.
+      rewrite (union_comm X Z); rewrite (union_comm Y Z); rewrite <- H1;
+        rewrite <- H0.
       auto with multisets.
       (* H' proved *)
-      assert (H'' : forall (x : A), x in X -> ex (fun (x' : A) => x' in X /\ r x' x)).
+      assert (H'' : forall (x : A), x in X ->
+        ex (fun (x' : A) => x' in X /\ r x' x)).
       intros x x_in_X; assert (x_in_Y : x in Y).
       setoid_rewrite <- H'; trivial.
       elim (H2 x x_in_Y); intros x' Hx'1 Hx'2.
       exists x'; split; trivial.
       (* H'' proved *)
-      assert (Htrans : forall x, x in X -> forall y z, r y x -> r z y -> r z x).
+      assert (Htrans : forall x, x in X ->
+        forall y z, r y x -> r z y -> r z x).
       intros x x_in_X; assert (x_in_us : In x us).
       assert (x_in_usM : x in (list2multiset us)).
       rewrite H0; rewrite (union_comm Z X); apply member_member_union; trivial.
-      elim (member_multiset_list us x_in_usM); intros; apply In_eqA_compat with x0; trivial.
-      elim (Hsub x x_in_us); intros H3 H4; unfold transp in H3; simpl in H3; apply H3.
+      elim (member_multiset_list us x_in_usM); intros; apply In_eqA_compat
+        with x0; trivial.
+      elim (Hsub x x_in_us); intros H3 H4; unfold transp in H3; simpl in H3;
+        apply H3.
       (* Htrans proved *)
       elim (self_dom2 X H Htrans H''); intros x Hx.
       elim Hx; clear Hx; intros Hx1 Hx2.
       assert (x_in_us : In x us).
       assert (x_in_usM : x in (list2multiset us)).
       rewrite H0; rewrite (union_comm Z X); apply member_member_union; trivial.
-      elim (member_multiset_list us x_in_usM); intros; apply In_eqA_compat with x0; trivial.
-      elim (Hsub x x_in_us); intros H3 H4; unfold transp in H4; simpl in H4; apply H4; trivial.
+      elim (member_multiset_list us x_in_usM); intros; apply In_eqA_compat
+        with x0; trivial.
+      elim (Hsub x x_in_us); intros H3 H4; unfold transp in H4; simpl in H4;
+        apply H4; trivial.
     Qed.
 
     (* Equivalence between accessibility of lists and multisets *) 
@@ -311,9 +328,11 @@ Module MultisetListOrder (ES : Eqset_dec).
 
     Proof.
       intros r_trans ss Hacc.
-      unfold mult; apply (Acc_inverse_image (list A) Multiset (MultisetLT r) list2multiset ss).
+      unfold mult; apply (Acc_inverse_image (list A) Multiset
+        (MultisetLT r) list2multiset ss).
       generalize Hacc; apply Acc_eq_rel.
-      unfold MultisetLt,MultisetLT,transp; simpl; intros a b; apply red_eq_direct; trivial.
+      unfold MultisetLt,MultisetLT,transp; simpl; intros a b;
+        apply red_eq_direct; trivial.
     Qed.
 
      Lemma Acc_list_multiset : transitive r -> forall ss, 
@@ -323,7 +342,8 @@ Module MultisetListOrder (ES : Eqset_dec).
       intros r_trans ss Hacc.
       apply (Acc_iso (MultisetLt r) (list2multiset ss) 
         (fun (l : list A) (M : Multiset) => list2multiset l =mul= M) 
-        (R := fun ss ts : list A => MultisetLt r (list2multiset ss) (list2multiset ts))
+        (R := fun ss ts : list A =>
+          MultisetLt r (list2multiset ss) (list2multiset ts))
         (x := ss)); trivial.
       (* proof of iso_comp : *)
       intros ts M N Hts HMN. 
@@ -336,7 +356,8 @@ Module MultisetListOrder (ES : Eqset_dec).
       auto with multisets.
       (* *)
       generalize Hacc; unfold mult; apply Acc_eq_rel; trivial.
-      intros a b; elim (red_eq_direct r_trans r_eqA_compat (list2multiset b) (list2multiset a));
+      intros a b; elim (red_eq_direct r_trans r_eqA_compat
+        (list2multiset b) (list2multiset a));
         split; trivial.
     Qed.  
 
@@ -348,9 +369,11 @@ Module MultisetListOrder (ES : Eqset_dec).
     Proof.
       intros ss Hsub; cut (Acc (MultisetLT r) (list2multiset ss)).
       unfold mult;
-        apply (Acc_inverse_image (list A) Multiset (MultisetLT r) list2multiset ss).
+        apply (Acc_inverse_image (list A) Multiset (MultisetLT r)
+          list2multiset ss).
       cut (Acc (MultisetLt r) (list2multiset ss)).
-      apply Acc_incl; intros M N; unfold MultisetLT,MultisetLt,transp; simpl; apply direct_subset_red; trivial.
+      apply Acc_incl; intros M N; unfold MultisetLT,MultisetLt,transp;
+        simpl; apply direct_subset_red; trivial.
       apply mord_acc with (gtA := r) (M := list2multiset ss); trivial.
       intros x Hx; apply (Hsub x).
       elim (member_multiset_list ss Hx).
@@ -401,7 +424,8 @@ Module MultisetListOrder (ES : Eqset_dec).
       intros r l l' h Hm.
       unfold mult,MultisetLT, transp in *; simpl.
       inversion Hm.
-      constructor 1 with (X := X) (Y := Y) (Z := insert h Z); auto with multisets.
+      constructor 1 with (X := X) (Y := Y) (Z := insert h Z);
+        auto with multisets.
       rewrite H0; try_solve_meq.
       rewrite H1; try_solve_meq.
     Qed.
@@ -417,7 +441,8 @@ Module MultisetListOrder (ES : Eqset_dec).
       destruct l as [|h l]; inversion Hl. (* case l = nil done *)
       subst; simpl; simpl in H1.
       unfold mult, MultisetLT, transp; simpl.
-      constructor 1 with (X := {{a'}}) (Y :={{a}}) (Z := (list2multiset l)); auto with multisets.
+      constructor 1 with (X := {{a'}}) (Y :={{a}}) (Z := (list2multiset l));
+        auto with multisets.
       unfold insert; simpl; auto with multisets.
       rewrite union_comm; auto with multisets.
       unfold insert; simpl; auto with multisets.

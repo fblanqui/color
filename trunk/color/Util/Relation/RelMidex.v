@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Stephane Le Roux, 2007-02-20
 
-excluded middle and decidability for relation.
+excluded middle and decidability for relations.
 *)
 
 Require Import Relations. 
@@ -56,21 +56,8 @@ Qed.
 
 End relation.
 
-(* replace by morphism:
-
-Require Import RelUtil.
-
-Lemma rel_dec_eq : forall A (R S : relation A),
-  R == S -> rel_dec S -> rel_dec R.
-
-Proof.
-unfold rel_dec. intros. case (X x y); intro.
-left. apply (proj2 H). exact s.
-right. intro. apply n. apply (proj1 H). exact H0.
-Qed.*)
-
 (***********************************************************************)
-(** equality relation *)
+(** Leibniz equality relation *)
 
 Section identity.
 

@@ -17,6 +17,7 @@ Require Import NatUtil.
 Require Import LogicUtil.
 Require Import Max.
 Require Import ZUtil.
+Require Import RelUtil.
 
 (***********************************************************************)
 (** Semi-rings equipped with orders *)

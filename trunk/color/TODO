@@ -7,49 +7,27 @@
 
 - define hd_red_mod from hd_red_Mod
 
-- remove from RelExtras the things already defined in RelUtil
-
-- use RelUtil notations in RelExtras
-
 - hd_red_mod_min: replace direct_subterms by Vforall SN?
 
 - hd_red_mod_min: needs to be symmetric?
-
-- define eq_term_dec from beq_term
 
 - only defined symbols need to be marked
 
 - replace rev by rev'
 
-- extend WF_sred_of_WF_red to red_mod
-
 - replace eq_nat_dec by NatUtil.eq_nat_dec
 
-- give a signature to every morphism to avoid coq warnings on iff
-
-- remove warnings occurring at compilation
-
-- strange thing about eq_nat_dec and Hint Resolve eq_nat_dec : terms.
-see Term/SimpleType/TermsTyping.v.
-
-- vm_compute: make sure that the calls to vm_compute are really necessary
-
-- MI: try to improve performance
-
-- MPO: remove MPO hypotheses (put them into a section?)
+- MPO: remove MPO top level hypotheses -> make a functor
 
 - RPO: solve problems with decidability procedure
 (dealing with RPO for concrete terms)
-
-- RPO: support for Rainbow
 
 - DP: add improvement to DP pairs by ignoring pairs where rhs is a
 subterm of lhs
 
 - AF: extend by allowing collapsing argument filterings
 
-- General: make problem statement (including signature)
-explicit at every proof step
+- make problem statement (including signature) explicit at every proof step
 
 - define strategies
 
@@ -57,12 +35,20 @@ explicit at every proof step
 
 - replace decidability lemmas by boolean functions
 
-- remove the use of beq_dec and beqtac
-
 - replace unary integers by binary integers?
 
 Done list:
 ----------
+
+- remove from RelExtras the things already defined in RelUtil
+
+- use RelUtil notations in RelExtras
+
+- extend WF_sred_of_WF_red to red_mod
+
+- remove the use of beq_dec and beqtac
+
+- define eq_term_dec from beq_term
 
 - absurd_hyp is OBSOLETE: use contradict instead.
 
