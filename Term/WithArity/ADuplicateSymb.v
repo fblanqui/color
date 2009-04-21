@@ -202,8 +202,8 @@ Lemma hd_red_dup_hd_red : forall  t u, hd_red R t u ->
 Proof.
 intros. redtac. subst. unfold hd_red.
 exists (dup_hd_term l). exists (dup_hd_term r). exists (dup_int_subst s).
-ded (is_notvar_lhs_elim hyp H). decomp H0.
-ded (is_notvar_rhs_elim hyp' H). decomp H0. subst.
+ded (is_notvar_lhs_elim hyp lr). decomp H.
+ded (is_notvar_rhs_elim hyp' lr). decomp H. subst.
 do 2 rewrite dup_int_subst_hd_dup. intuition. unfold dup_hd_rules.
 change (In (dup_hd_rule (mkRule (Fun x x0) (Fun x1 x2))) (map dup_hd_rule R)).
 apply in_map. hyp.
@@ -308,9 +308,9 @@ Lemma dup_int_rules_int_red : forall f v t,
 
 Proof.
 intros. redtac. exists l. exists r. exists c. exists s. split.
-destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ H).
-gen H2. compute. case_eq l. discr. gen H3. gen H2. gen v0. case_eq f0. discr.
-subst l. rewrite sub_fun in H0. discr. congruence. tauto.
+destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ lr).
+gen H. compute. case_eq l. discr. gen H. gen H0. gen v0. case_eq f0. discr.
+subst l. rewrite sub_fun in xl. discr. congruence. tauto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc_aux : forall u t, red R # u t ->
@@ -370,11 +370,11 @@ Lemma red_dup_int_hd_symb : forall f us v,
   red R' (Fun' (hd_symb f) us) v -> exists vs, v = Fun' (hd_symb f) vs.
 
 Proof.
-intros. redtac. destruct (in_map_elim H). destruct H2. destruct x.
-inversion H3. subst. destruct c; simpl in *.
+intros. redtac. destruct (in_map_elim lr). destruct H. destruct x.
+inversion H0. subst. destruct c; simpl in *.
 (* Hole *)
-rewrite forallb_forall in hyp. ded (hyp _ H). destruct lhs. discr.
-simpl dup_int_term in H0. rewrite sub_fun in H0. Funeqtac. discr.
+rewrite forallb_forall in hyp. ded (hyp _ lr). destruct lhs. discr.
+simpl dup_int_term in xl. rewrite sub_fun in xl. Funeqtac. discr.
 (* Cont *)
 Funeqtac.
 exists (Vcast (Vapp v (Vcons (fill c (sub s (dup_int_term rhs))) v0)) e).

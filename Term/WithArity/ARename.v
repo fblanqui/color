@@ -153,11 +153,11 @@ Implicit Arguments hyp [a].
 Lemma red_incl_shift_red : red R << red R'.
 
 Proof.
-unfold inclusion. intros. redtac. ded (hyp H). destruct H2 as [p].
-rewrite (sub_shift p l) in H0. subst x.
-assert (incl (vars r) (vars l)). apply hyp0. exact H.
-rewrite (sub_shift_incl p s H0) in H1. subst y.
-apply red_rule. exact H2.
+unfold inclusion. intros. redtac. ded (hyp lr). destruct H as [p].
+rewrite (sub_shift p l) in xl. subst x.
+assert (incl (vars r) (vars l)). apply hyp0. hyp.
+rewrite (sub_shift_incl p s H0) in yr. subst y.
+apply red_rule. hyp.
 Qed.
 
 End red_incl_shift_red.
@@ -178,9 +178,9 @@ Lemma shift_red_incl_red : red R' << red R.
 
 Proof.
 unfold inclusion. intros. redtac. rename l into l'. rename r into r'.
-subst x. subst y. ded (hyp H). do 3 destruct H0. destruct x0 as [l r].
-simpl in H1. inversion H1. subst l'. subst r'. unfold shift.
-repeat rewrite sub_sub. apply red_rule. exact H0.
+subst x. subst y. ded (hyp lr). do 3 destruct H. destruct x0 as [l r].
+simpl in H0. inversion H0. subst l'. subst r'. unfold shift.
+repeat rewrite sub_sub. apply red_rule. hyp.
 Qed.
 
 End shift_red_incl_red.

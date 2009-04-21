@@ -14,6 +14,7 @@ Require Import ATrs.
 Require Import ListUtil.
 Require Import RelUtil.
 Require Import ARelation.
+Require Import SN.
 Require Import ListForall.
 Require Import RelMidex.
 Require Import LogicUtil.
@@ -39,20 +40,20 @@ Lemma compat_red : forall R,
 
 Proof.
 intro. unfold inclusion. intros (Hsubs,Hcont) Hcomp u v H. redtac.
-subst u. subst v. apply Hcont. apply Hsubs. apply Hcomp. exact H.
+subst u. subst v. apply Hcont. apply Hsubs. apply Hcomp. hyp.
 Qed.
 
 Lemma compat_hd_red : forall R,
   substitution_closed succ -> compat R -> hd_red R << succ.
 
 Proof.
-unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0. exact H1.
+unfold inclusion. intros. redtac. subst x. subst y. apply H. apply H0. hyp.
 Qed.
 
 Lemma incl_compat : forall R S, incl R S -> compat S -> compat R.
 
 Proof.
-unfold compat. intros. apply H0. apply H. exact H1.
+unfold compat. intros. apply H0. apply H. hyp.
 Qed.
 
 Lemma compat_red_mod_tc : forall R E,
@@ -153,6 +154,29 @@ apply compat_red; assumption. destruct H0. apply compat_red; assumption.
 apply comp_rtc_incl. exact H3.
 Qed.
 
+Lemma red_pair_stepwise_termination : forall R Rgt Rge,
+  rewrite_ordering succ -> 
+  rewrite_ordering succ_eq ->
+  compat succ Rgt ->
+  compat succ_eq Rge -> 
+  red R << red Rgt U red Rge -> 
+  WF (red R).
+Proof.
+Admitted.
+
+Lemma red_pair_stepwise_relative_termination : forall R T Rgt Rge Tgt Tge,
+  rewrite_ordering succ -> 
+  rewrite_ordering succ_eq ->
+  compat succ Rgt ->
+  compat succ_eq Rge -> 
+  compat succ Tgt ->
+  compat succ_eq Tge ->
+  red R << red Rgt U red Rge -> 
+  red T << red Tgt U red Tge ->
+  WF (red_mod T R).
+Proof.
+Admitted.
+
 End reduction_pair.
 
 (***********************************************************************)
@@ -188,6 +212,17 @@ End weak_reduction_pair.
 
 (***********************************************************************)
 (** partitioning rewrite rules according to some decidable relation *)
+
+Lemma red_partition : forall (R R1 R2 : rules),
+  (forall r, In r R -> In r R1 \/ In r R2) ->
+  red R << red R1 U red R2.
+Proof with auto.
+  intros. trans (red (R1 ++ R2)).
+  apply red_incl. unfold incl. intros.
+  destruct (H a); solve [hyp | apply in_or_app; auto].
+  apply red_union.
+Qed.
+
 Section rule_partition.
   
   Variable R : rules.
@@ -220,23 +255,19 @@ Section rule_partition.
 
   Lemma rule_partition_complete : forall pf (R : rules),
     let part := partition pf R in
-      red R << red (snd part) U red (fst part).
+      red R << red (fst part) U red (snd part).
 
   Proof.
-    clear R. intros. trans (red (snd part ++ fst part)). 
-    apply red_incl. unfold incl. intros.
-    destruct (partition_complete pf a R). assumption.
-    apply in_or_app. auto.
-    apply in_or_app. auto.
-    apply red_union.
+    clear R. intros. apply red_partition. intros. unfold part.
+    apply partition_complete. hyp.
   Qed.
 
   Lemma hd_rule_partition_complete : forall pf (R : rules),
     let part := partition pf R in
-      hd_red R << hd_red (snd part) U hd_red (fst part).
+      hd_red R << hd_red (fst part) U hd_red (snd part).
 
   Proof.
-    clear R. intros. trans (hd_red (snd part ++ fst part)).
+    clear R. intros. trans (hd_red (fst part ++ snd part)).
     apply hd_red_incl. unfold incl. intros.
     destruct (partition_complete pf a R). assumption.
     apply in_or_app. auto.

@@ -69,8 +69,8 @@ Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
 Lemma sn_var : forall v, SNR (Var v).
 
 Proof.
-intro. apply SN_intro. intros t H. redtac. ded (is_notvar_lhs_elim hyp1 H).
-decomp H2. subst l. rewrite sub_fun in H0. destruct c; discr.
+intro. apply SN_intro. intros t H. redtac. ded (is_notvar_lhs_elim hyp1 lr).
+decomp H. subst l. rewrite sub_fun in xl. destruct c; discr.
 Qed.
 
 (***********************************************************************)
@@ -86,12 +86,12 @@ intros. set (gt := (@Vgt_prod term Red (arity f))).
 assert (SN gt ts). unfold gt. apply Vforall_SN_gt_prod. assumption.
 elim H1. intros.
 apply SN_intro. change (forall y, Red (Fun f x) y -> SNR y). intros.
-redtac. subst y. destruct c; simpl in H5; simpl.
+redtac. subst y. destruct c; simpl in xl; simpl.
 (* C = Hole *)
-case (fun_eq_sub H5); intro H6; destruct H6.
+case (fun_eq_sub xl); intro H4; destruct H4.
 (* lhs is Fun *)
 cut (defined f R = true). rewrite H. discr.
-eapply lhs_fun_defined. subst l. apply H4.
+eapply lhs_fun_defined. subst l. apply lr.
 (* lhs is Var *)
 subst l. is_var_lhs.
 (* C <> Hole *)

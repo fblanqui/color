@@ -184,7 +184,7 @@ Proof.
 intros. ATrs.redtac. subst t. subst u. do 2 rewrite vterm_fill.
 do 2 rewrite vterm_subs.
 apply red_rule. change (In (vrule_of_arule (ATrs.mkRule l r)) S). unfold S.
-apply in_map. exact H.
+apply in_map. hyp.
 Qed.
 
 (***********************************************************************)

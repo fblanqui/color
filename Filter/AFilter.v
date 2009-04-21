@@ -322,13 +322,13 @@ Lemma red_incl_filter_red_rc : red R << filter_ord (red R' %).
 Proof.
 unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
 elim c. simpl. right. repeat rewrite filter_sub. apply red_rule_top.
-change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
+change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
 intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e v c0 v0 (sub s l) H1).
-rewrite (filter_cont_true f e v c0 v0 (sub s r) H1). fold bs. destruct H0.
-left. simpl fill. rewrite H0. refl. right. apply red_fill. exact H0.
-left. rewrite (filter_cont_false f e v c0 v0 (sub s l) H1).
-rewrite (filter_cont_false f e v c0 v0 (sub s r) H1). refl.
+case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e v c0 v0 (sub s l) H0).
+rewrite (filter_cont_true f e v c0 v0 (sub s r) H0). fold bs. destruct H.
+left. simpl fill. rewrite H. refl. right. apply red_fill. hyp.
+left. rewrite (filter_cont_false f e v c0 v0 (sub s l) H0).
+rewrite (filter_cont_false f e v c0 v0 (sub s r) H0). refl.
 Qed.
 
 Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
@@ -347,7 +347,7 @@ Lemma hd_red_incl_filter_hd_red : hd_red R << filter_ord (hd_red R').
 Proof.
 unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
 repeat rewrite filter_sub. apply hd_red_rule.
-change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H.
+change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
 Qed.
 
 End red.
@@ -367,7 +367,7 @@ Proof.
 unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
 apply red_rtc_incl_filter_red_rtc. exact H.
 subst t. subst y. repeat rewrite filter_sub. apply hd_red_rule.
-change (In (filter_rule (mkRule l r)) R'). apply in_map. exact H0.
+change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
 Qed.
 
 Lemma WF_hd_red_mod_filter : WF (hd_red_mod E' R') -> WF (hd_red_mod E R).

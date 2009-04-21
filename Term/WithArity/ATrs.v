@@ -7,7 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 
 rewriting
 *)
-
 Set Implicit Arguments.
 
 Require Import ARelation.
@@ -163,33 +162,34 @@ Implicit Arguments is_notvar_rhs_elim [Sig R l r].
 Ltac redtac := repeat
   match goal with
     | H : red _ _ _ |- _ =>
-      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
-      let s := fresh "s" in let h1 := fresh in
-      (unfold red in H; destruct H as [l]; destruct H as [r];
-       destruct H as [c]; destruct H as [s]; destruct H as [H h1]; destruct h1)
+      let l := fresh "l" in let r := fresh "r" in 
+      let c := fresh "c" in let s := fresh "s" in 
+      let lr := fresh "lr" in let xl := fresh "xl" in
+      let yr := fresh "yr" in
+        destruct H as [l [r [c [s [lr [xl yr]]]]]]
     | H : transp (red _) _ _ |- _ => unfold transp in H; redtac
     | H : hd_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in
-      let s := fresh "s" in let h1 := fresh in
-      (unfold hd_red in H; destruct H as [l]; destruct H as [r];
-      destruct H as [s]; destruct H as [H h1]; destruct h1)
+      let s := fresh "s" in let lr := fresh "lr" in 
+      let xl := fresh "xl" in let yr := fresh "yr" in
+        destruct H as [l [r [s [lr [xl yr]]]]]
     | H : transp (hd_red _) _ _ |- _ => unfold transp in H; redtac
     | H : int_red _ _ _ |- _ =>
-      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
-      let s := fresh "s" in let h1 := fresh in let h2 := fresh in
-      (unfold int_red in H; destruct H as [l]; destruct H as [r];
-      destruct H as [c]; destruct H as [s]; destruct H as [H h1];
-      destruct h1 as [h1 h2]; destruct h2)
+      let l := fresh "l" in let r := fresh "r" in 
+      let c := fresh "c" in let cne := fresh "cne" in
+      let s := fresh "s" in  let lr := fresh "lr" in 
+      let xl := fresh "xl" in let yr := fresh "yr" in
+        destruct H as [l [r [c [s [cne [lr [xl yr]]]]]]]
     | H : transp (int_red _) _ _ |- _ => unfold transp in H; redtac
     | H : red_mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
-        (destruct H as [t h]; destruct h; redtac)
+        destruct H as [t h]; destruct h; redtac
     | H : hd_red_mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
-        (destruct H as [t h]; destruct h; redtac)
+        destruct H as [t h]; destruct h; redtac
     | H : hd_red_Mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
-        (destruct H as [t h]; destruct h; redtac)
+        destruct H as [t h]; destruct h; redtac
   end.
 
 Ltac is_var_lhs := cut False;
@@ -270,8 +270,7 @@ Lemma int_red_fun : forall f ts v, int_red R (Fun f ts) v
     /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red R t t'.
 
 Proof.
-intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. clear H.
-simpl in H1.
+intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. simpl in xl.
 Funeqtac. exists i. exists v0. exists (fill c (sub s l)). exists j. exists v1.
 exists e. exists (fill c (sub s r)). split. assumption. split. assumption.
 unfold red. exists l. exists r. exists c. exists s. auto.
@@ -282,7 +281,7 @@ Lemma red_swap : red (R ++ R') << red (R' ++ R).
 Proof.
 intros x y RR'xy. redtac.
 exists l. exists r. exists c. exists s. repeat split; auto.
-destruct (in_app_or RR'xy); apply in_or_app; auto.
+destruct (in_app_or lr); apply in_or_app; auto.
 Qed.
 
 Lemma hd_red_swap : hd_red (R ++ R') << hd_red (R' ++ R).
@@ -290,7 +289,7 @@ Lemma hd_red_swap : hd_red (R ++ R') << hd_red (R' ++ R).
 Proof.
 intros x y RR'xy. redtac.
 exists l. exists r. exists s. repeat split; auto.
-destruct (in_app_or RR'xy); apply in_or_app; auto.
+destruct (in_app_or lr); auto with datatypes.
 Qed.
 
 Lemma int_red_incl_red : int_red R << red R.
@@ -360,21 +359,21 @@ Proof.
 unfold preserv_vars. intros. redtac. subst t. subst u.
 apply incl_tran with (cvars c ++ vars (sub s r)). apply vars_fill_elim.
 apply incl_tran with (cvars c ++ vars (sub s l)). apply appl_incl.
-apply incl_vars_sub. apply hyp. exact H.
+apply incl_vars_sub. apply hyp. hyp.
 apply vars_fill_intro.
 Qed.
 
 Lemma tred_preserv_vars : preserv_vars (red R !).
 
 Proof.
-unfold preserv_vars. induction 1. apply red_preserv_vars. exact H.
+unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
 apply incl_tran with (vars y); assumption.
 Qed.
 
 Lemma rtred_preserv_vars : preserv_vars (red R #).
 
 Proof.
-unfold preserv_vars. induction 1. apply red_preserv_vars. exact H.
+unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
 apply List.incl_refl. apply incl_tran with (vars y); assumption.
 Qed.
 
@@ -421,8 +420,9 @@ Lemma red_union : red (R ++ R') << red R U red R'.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y.
-ded (in_app_or H). destruct H0.
-left. apply red_rule. exact H0. right. apply red_rule. exact H0.
+destruct (in_app_or lr).
+left. apply red_rule. hyp. 
+right. apply red_rule. hyp.
 Qed.
 
 Lemma red_union_inv : red R U red R' << red (R ++ R').
@@ -453,8 +453,9 @@ Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
 
 Proof.
 unfold inclusion. intros. redtac. subst x. subst y.
-ded (in_app_or H). destruct H0.
-left. apply hd_red_rule. exact H0. right. apply hd_red_rule. exact H0.
+destruct (in_app_or lr).
+left. apply hd_red_rule. hyp. 
+right. apply hd_red_rule. hyp.
 Qed.
 
 Lemma hd_red_union_inv : hd_red R U hd_red R' << hd_red (R ++ R').
@@ -596,9 +597,9 @@ Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
-ded (in_app_or H0). destruct H1.
-left. exists (fill c (sub s l)); split. assumption. apply red_rule. exact H1.
-right. exists (fill c (sub s l)); split. assumption. apply red_rule. exact H1.
+destruct (in_app_or lr).
+left. exists (fill c (sub s l)); split. assumption. apply red_rule. hyp.
+right. exists (fill c (sub s l)); split. assumption. apply red_rule. hyp.
 Qed.
 
 Lemma hd_red_Mod_union :
@@ -606,9 +607,9 @@ Lemma hd_red_Mod_union :
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
-ded (in_app_or H0). destruct H1.
-left. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
-right. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
+destruct (in_app_or lr).
+left. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
+right. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
 Qed.
 
 Lemma hd_red_mod_union :
@@ -616,9 +617,9 @@ Lemma hd_red_mod_union :
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
-ded (in_app_or H0). destruct H1.
-left. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
-right. exists (sub s l); split. assumption. apply hd_red_rule. exact H1.
+destruct (in_app_or lr).
+left. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
+right. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
 Qed.
 
 Lemma hd_red_mod_min_union :
@@ -626,9 +627,9 @@ Lemma hd_red_mod_min_union :
 
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0. subst y.
-ded (in_app_or H1). destruct H2.
-left. split. exists (sub s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
-right. split. exists (sub s l); split. assumption. apply hd_red_rule. exact H2. exact H0.
+destruct (in_app_or lr).
+left. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
+right. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
 Qed.
 
 End union_modulo.

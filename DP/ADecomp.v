@@ -78,10 +78,10 @@ Lemma decomp_incl :
   forall cs (hyp1 : incl D (flat cs)), hd_red_Mod S D << Union cs.
 
 Proof.
-intros. intros x y h. redtac. ded (hyp1 _ H0). gen H3.
-elim cs; simpl; intros. contradiction. destruct (in_app_or H4).
+intros. intros x y h. redtac. ded (hyp1 _ lr). gen H0.
+elim cs; simpl; intros. contradiction. destruct (in_app_or H1).
 left. exists t. intuition. subst. apply hd_red_rule. hyp.
-right. apply H3. hyp.
+right. apply H0. hyp.
 Qed.
 
 Lemma In_Union_elim : forall cs x y, Union cs x y ->
@@ -110,15 +110,15 @@ induction cs; simpl; intros. apply WF_empty_rel.
 ded (andb_elim hyp2). clear hyp2. destruct H. destruct hyp3. apply WF_union.
 2: hyp. Focus 2. apply IHcs; try hyp. apply incl_appl_incl with a. hyp.
 clear IHcs H H1 H2. intros t v h. destruct h. destruct H. redtac.
-rewrite forallb_forall in H0. ded (H0 _ H2). clear H0.
+rewrite forallb_forall in H0. ded (H0 _ lr). clear H0.
 destruct (In_Union_elim H1). destruct H0. redtac.
-rewrite forallb_forall in H5. ded (H5 _ H0). clear H5.
-rewrite forallb_forall in H10. ded (H10 _ H7). clear H10.
+rewrite forallb_forall in H2. ded (H2 _ H0).
+rewrite forallb_forall in H4. ded (H4 _ lr0). 
 rewrite negb_lr in H5. simpl in H5.
 absurd (Graph (mkRule l r) (mkRule l0 r0)). unfold Graph. rewrite H5. discr.
 apply approx_correct. apply hd_red_Mod_rule2_hd_rules_graph
   with (t := t) (u := x) (v := v); unfold hd_red_Mod_rule; subst; intuition.
-exists s. intuition. eapply incl_flat_In. apply H7. apply H0.
+exists s. intuition. eapply incl_flat_In. apply lr0. apply H0.
 apply incl_appl_incl with a. hyp. exists s0. intuition.
 Qed.
 
