@@ -417,33 +417,33 @@ Proof.
 intros u v H. redtac. subst. elim c; clear c; simpl; intros.
 (* Hole *)
 destruct l. is_var_lhs. assert (defined f R = true).
-eapply lhs_fun_defined. apply H. rewrite sub_fun. rewrite ren_cap_fun.
-rewrite H0. exists_single k (sub s r).
+eapply lhs_fun_defined. apply lr. rewrite sub_fun. rewrite ren_cap_fun.
+rewrite H. exists_single k (sub s r).
 (* Cont *)
 rewrite ren_cap_fun. case (defined f R). simpl.
 exists_single k (Fun f (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e)).
 rewrite ren_caps_cast. rewrite ren_caps_app. simpl ren_caps.
-destruct (ren_caps_intro v k) as [s1]. destruct H1 as [H1 H1'].
-destruct (H0 (k + nb_aliens_vec v)) as [s2].
+destruct (ren_caps_intro v k) as [s1]. destruct H0 as [H0 H0'].
+destruct (H (k + nb_aliens_vec v)) as [s2].
 destruct (ren_caps_intro v0
   (k + nb_aliens_vec v + nb_aliens (fill c (sub s l)))) as [s3].
-destruct H3 as [H3 H3'].
+destruct H2 as [H2 H2'].
 set (s' := fun x => match In_dec x (vars_vec (ren_caps k v)) with
   | left _ => s1 x | right _ => match
   In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))) with
   | left _ => s2 x | right _ => s3 x end end). exists s'.
 rewrite sub_fun. apply args_eq. rewrite Vmap_cast. rewrite Vmap_app. simpl.
 apply Vcast_eq. apply Vapp_eq. transitivity (Vmap (sub s1) (ren_caps k v)).
-hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H4). unfold s'.
+hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k v))); intro. refl. intuition.
-apply Vcons_eq. rewrite H2. apply sub_eq. intros. ded (vars_ren_cap H4).
+apply Vcons_eq. rewrite H1. apply sub_eq. intros. ded (vars_ren_cap H3).
 unfold s'. case (In_dec x (vars_vec (ren_caps k v))); intro.
 ded (vars_ren_caps i0). absurd_arith. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))));
   intro. refl. intuition.
 transitivity (Vmap (sub s3)
   (ren_caps (k + nb_aliens_vec v + nb_aliens (fill c (sub s l))) v0)).
-hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H4). unfold s'.
+hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k v))); intro.
 ded (vars_ren_caps i0). absurd_arith. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))));

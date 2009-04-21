@@ -238,40 +238,40 @@ assert (H1 : forall y, terms_gt R ts y -> SNR (Fun f y)). intros. apply IH1.
 assumption. intros. eapply IH2. eapply gt_chain_min. apply H1.
 trivial. apply H2. apply H3. apply H4. assumption. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
-apply SN_intro. intros u H2. redtac. destruct c; simpl in H3, H4.
+apply SN_intro. intros u H2. redtac. destruct c; simpl in xl, yr.
 (* c = Hole *)
-ded (fun_eq_sub H3). destruct H5.
+ded (fun_eq_sub xl). destruct H2.
 (* lhs = Fun f us *)
-destruct e as [ls]. rewrite H5 in H3. rewrite sub_fun in H3. Funeqtac.
+destruct e as [ls]. rewrite H2 in xl. rewrite sub_fun in xl. Funeqtac.
 (* begin assert: the substitution s is SN *)
 assert (Hsnsx : forall x, In x (vars l) -> SNR (s x)). intros.
-eapply sub_fun_sn with (f := f). rewrite H5 in H3. apply H3.
-rewrite H6 in Hsnts. exact Hsnts.
+eapply sub_fun_sn with (f := f). subst l. apply H4.
+rewrite H3 in Hsnts. exact Hsnts.
 (* end assert *)
 (* we decompose r into its caps and its aliens *)
 subst u. assert (r = sub (alien_sub r) (cap r)). apply sym_eq.
-apply (alien_sub_cap R). rewrite H3. rewrite sub_sub.
+apply (alien_sub_cap R). rewrite H4. rewrite sub_sub.
 apply no_call_sub_sn. hyp. apply calls_cap.
 (* we prove that the alien substitution is SN *)
-intros. ded (vars_cap R H4).
+intros. ded (vars_cap R H5).
 case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
 (* x <= maxvar r *)
-ded (vars_cap_inf R H4 l0). ded (hyp2 H2 _ H8).
+ded (vars_cap_inf R H5 l0). ded (hyp2 lr _ H7).
 rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
 (* x > maxvar r *)
-rewrite (fsub_nth (aliens (capa r)) l0 H7).
-set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H7)).
-assert (Fun f ts = sub s l). rewrite H5. rewrite H6. refl.
+rewrite (fsub_nth (aliens (capa r)) l0 H6).
+set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H6)).
+assert (Fun f ts = sub s l). rewrite H3. rewrite H2. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
-ded (in_calls H9). destruct H10 as [g]. destruct H10 as [vs]. destruct H10.
+ded (in_calls H8). destruct H9 as [g]. destruct H9 as [vs]. destruct H9.
 (* every call is SN *)
 eapply calls_sn with (r := r). hyp.
-intros. apply Hsnsx. apply (hyp2 H2 _ H12).
+intros. apply Hsnsx. apply (hyp2 lr _ H11).
 intros h ws H13 H14.
 apply IH2 with (y := Fun h (Vmap (sub s) ws)) (f := h) (ts := Vmap (sub s) ws).
 unfold chain_min. split. 
-rewrite H8. rewrite <- sub_fun. eapply in_calls_chain. 
-apply H2. assumption.
+rewrite H7. rewrite <- sub_fun. eapply in_calls_chain. 
+apply lr. assumption.
 split. simpl. apply Vforall_lforall. trivial. 
 simpl. apply Vforall_lforall. trivial.
 eapply in_calls_defined. apply H13. refl. assumption.
@@ -279,7 +279,7 @@ assumption.
 (* lhs = Var x *)
 decomp e. subst l. is_var_lhs.
 (* c <> Hole *)
-Funeqtac. subst u. apply H1. rewrite H5. unfold terms_gt. apply Vgt_prod_cast.
+Funeqtac. subst u. apply H1. rewrite H2. unfold terms_gt. apply Vgt_prod_cast.
 apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
 eapply red_rule. assumption. refl.
 Qed.

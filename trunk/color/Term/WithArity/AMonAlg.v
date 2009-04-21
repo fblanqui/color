@@ -211,9 +211,11 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       set (Egt := fst E_gt) in *. set (Ege := snd E_gt) in *.
       set (Rgt := fst R_gt) in *. set (Rge := snd R_gt) in *.
       apply WF_incl with ((red Ege U red Egt)# @ (red Rge U red Rgt)).
-      comp. apply incl_rtc. 
-      unfold Ege, Egt, E_ge, E_gt. apply rule_partition_complete.
-      unfold Rge, Rgt, R_ge, R_gt. apply rule_partition_complete.
+      comp. apply incl_rtc.
+      trans (red Egt U red Ege). apply rule_partition_complete. 
+      apply union_commut.
+      trans (red Rgt U red Rge). apply rule_partition_complete.
+      apply union_commut.
       apply wf_rel_mod. fold (red_mod Ege Rge). assumption.
       apply WF_incl with (red_mod (Rge ++ Ege) (Rgt ++ Egt)).
       unfold red_mod. comp. 
@@ -298,8 +300,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       intros. unfold hd_red_mod.
       set (Rgt := fst R_gt) in *. set (Rge := snd R_gt) in *.
       apply WF_incl with (red E # @ (hd_red Rge U hd_red Rgt)).
-      comp.
-      unfold Rge, Rgt, R_ge, R_gt. apply hd_rule_partition_complete.
+      comp. trans (hd_red Rgt U hd_red Rge). apply hd_rule_partition_complete.
+      apply union_commut.
       apply wf_rel_mod_simpl. fold (red_mod E Rge). assumption.
       apply WF_incl with (hd_red_mod (Rge ++ E) Rgt).
       unfold hd_red_mod. comp.
