@@ -99,7 +99,6 @@ Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
   wp_succ_eq : relation term;
   wp_subs : substitution_closed wp_succ;
   wp_subs_eq : substitution_closed wp_succ_eq;
-  wp_cont : weak_context_closed wp_succ wp_succ_eq;
   wp_cont_eq : context_closed wp_succ_eq;
   wp_absorb : absorb wp_succ wp_succ_eq;
   wp_succ_wf : WF wp_succ

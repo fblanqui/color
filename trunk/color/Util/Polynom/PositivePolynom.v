@@ -42,10 +42,6 @@ Definition meval_D n (m : monom n) := restrict (preserv_pos_meval m).
 
 Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
 
-Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
-
-Definition are_coef_pos n (p : poly n) := forallb (@is_pos_monom n) p.
-
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
 Proof.
@@ -162,4 +158,33 @@ Proof.
 induction p; intros; simpl. exact I. destruct a. simpl. simpl in H. destruct H.
 apply coef_pos_plus. apply coef_pos_cpmult. assumption. apply coef_pos_mcomp.
 assumption. apply IHp; assumption.
+Qed.
+
+Lemma coefPos_ge0 : forall n (p : poly n) (m : monom n),
+  coef_pos p -> (coef m p >= 0)%Z.
+
+Proof with auto with zarith.
+  induction p. simpl...
+  intros. destruct a. simpl.
+  destruct (monom_eq_dec m v).
+  subst m. apply Zge_trans with (coef v p).
+  destruct H. simpl in H...
+  apply IHp. destruct H...
+  apply IHp. destruct H...
+Qed.
+
+Lemma coefPos_geC : forall n (p : poly n) (m : monom n) c,
+  coef_pos p -> In (c, m) p -> (coef m p >= c)%Z.
+
+Proof with auto with zarith.
+  induction p. simpl. tauto.
+  intros. destruct a. simpl.
+  destruct (monom_eq_dec m v). subst m.
+  destruct H0. injection H0. intros. subst z.
+  destruct H. ded (coefPos_ge0 p v H1)...
+  apply Zge_trans with (coef v p).
+  simpl in H...
+  apply IHp... destruct H...
+  destruct H0. congruence.
+  apply IHp... destruct H...
 Qed.

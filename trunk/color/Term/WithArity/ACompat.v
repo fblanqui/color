@@ -35,6 +35,12 @@ Variable succ : relation term.
 
 Definition compat R := forall l r : term, In (mkRule l r) R -> succ l r.
 
+Lemma compat_empty : compat nil.
+
+Proof.
+  intros l r lr. inversion lr.
+Qed.
+
 Lemma compat_red : forall R,
   rewrite_ordering succ -> compat R -> red R << succ.
 
@@ -153,29 +159,6 @@ intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
 apply compat_red; assumption. destruct H0. apply compat_red; assumption.
 apply comp_rtc_incl. exact H3.
 Qed.
-
-Lemma red_pair_stepwise_termination : forall R Rgt Rge,
-  rewrite_ordering succ -> 
-  rewrite_ordering succ_eq ->
-  compat succ Rgt ->
-  compat succ_eq Rge -> 
-  red R << red Rgt U red Rge -> 
-  WF (red R).
-Proof.
-Admitted.
-
-Lemma red_pair_stepwise_relative_termination : forall R T Rgt Rge Tgt Tge,
-  rewrite_ordering succ -> 
-  rewrite_ordering succ_eq ->
-  compat succ Rgt ->
-  compat succ_eq Rge -> 
-  compat succ Tgt ->
-  compat succ_eq Tge ->
-  red R << red Rgt U red Rge -> 
-  red T << red Tgt U red Tge ->
-  WF (red_mod T R).
-Proof.
-Admitted.
 
 End reduction_pair.
 

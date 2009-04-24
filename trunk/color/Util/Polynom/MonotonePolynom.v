@@ -17,6 +17,8 @@ Require Import NaryFunction.
 Require Import VecUtil.
 Require Import LogicUtil.
 Require Import List.
+Require Import ListUtil.
+Require Import ListForall.
 Require Import ZUtil.
 Require Import RelUtil.
 Require Import NatUtil.
@@ -27,6 +29,55 @@ Definition pweak_monotone n (p : poly n) := coef_pos p.
 
 Definition pstrong_monotone n (p : poly n) := pweak_monotone p /\
   forall i (H : lt i n), 0 < coef (mxi H) p.
+
+(***********************************************************************)
+(** checking monotonicity *)
+
+Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
+
+Program Definition coef_pos_check n (p : poly n) : Exc (coef_pos p) :=
+  match forallb (@is_pos_monom n) p with
+  | true => value _
+  | false => error
+  end.
+
+Next Obligation.
+  unfold pweak_monotone, coef_pos.
+  apply forallb_imp_lforall with (@is_pos_monom n); auto.
+  destruct x. unfold is_pos_monom. 
+  destruct z; compute; intros; discriminate.
+Qed.
+
+Program Definition pweak_monotone_check n (p : poly n) : 
+  Exc (pweak_monotone p) :=
+  coef_pos_check p.
+
+Program Definition check_coef_gt0 n (p : poly n) (i : dom_lt n) :
+  Exc (0 < coef (mxi (proj2_sig i)) p)%Z :=
+  let c := coef (mxi (proj2_sig i)) p in
+    match Z_lt_dec 0 c with
+    | left _ => value _
+    | _ => error
+    end. 
+
+Program Definition pstrong_monotone_check n (p : poly n) :
+  Exc (pstrong_monotone p) :=
+  match pweak_monotone_check p with
+  | error => error
+  | _ =>    
+    match check_seq (check_coef_gt0 p) with
+    | error => error
+    | _ => value _
+    end
+  end.
+
+Next Obligation.
+Proof with auto; try congruence || discriminate.
+  split. 
+  destruct pweak_monotone_check...
+  destruct (check_seq (check_coef_gt0 p))...
+  intros. exact (z (exist (fun i => i < n)%nat i H1)).
+Qed.
 
 (***********************************************************************)
 (** tactics *)
@@ -195,11 +246,12 @@ apply Zplus_le_lt_compat.
 Qed.
 
 Lemma pmonotone_imp_monotone_peval_Dlt : forall n (p : poly n) 
-  (H: pstrong_monotone p), Vmonotone (peval_D (proj1 H)) Dlt.
+  (wm : pweak_monotone p) (sm : pstrong_monotone p), 
+  Vmonotone (peval_D wm) Dlt.
 
 Proof.
-intros n p H.
-generalize (pmonotone'_imp_monotone_peval_Dlt (pmonotone_imp_pmonotone' H)).
+intros n p wm sm.
+generalize (pmonotone'_imp_monotone_peval_Dlt (pmonotone_imp_pmonotone' sm)).
 unfold Vmonotone, Dlt, Vmonotone_i, peval_D, restrict, monotone.
 intros H0 i j Hij vi vj. destruct x as (x, Hx). destruct y as (y, Hy).
 simpl. intro Hxy.

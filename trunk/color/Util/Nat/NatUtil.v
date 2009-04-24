@@ -376,3 +376,8 @@ induction 1. exists 0. omega. destruct IHle. exists (S x). omega.
 Qed.
 
 Implicit Arguments gt_plus [l k].
+
+(***********************************************************************)
+(** [dom_lt n]: a domain of numbers smaller than [n] *)
+
+Definition dom_lt n := { i | i < n }.

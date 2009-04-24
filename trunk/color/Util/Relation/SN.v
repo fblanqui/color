@@ -583,11 +583,11 @@ Section wf_rel_mod.
   Variable (A : Type) (R S R' S': relation A).
 
   Lemma wf_rel_mod : WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> 
-    WF ((S U S')# @ (R U R')).
+    WF ((S' U S)# @ (R' U R)).
 
   Proof.
     intros. apply WF_incl with ((S' U S)# @ (R U R')).
-    comp. apply incl_rtc. apply union_commut.
+    comp. apply union_commut.
     apply wf_mod_shift.
     apply WF_incl with (S# @ (R' U S') U S# @ R).
     intros x y Q.
@@ -612,10 +612,10 @@ Section wf_rel_mod_simpl.
   Variable (A : Type) (R R' S : relation A).
 
   Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') ->
-    WF (S# @ (R U R')).
+    WF (S# @ (R' U R)).
 
   Proof.
-    intros. apply WF_incl with ((S U (@empty_rel A))# @ (R U R')).
+    intros. apply WF_incl with (((@empty_rel A) U S)# @ (R' U R)).
     comp. apply incl_rtc. intuition.
     apply wf_rel_mod. assumption.
     apply WF_incl with ((R U S)# @ R'); trivial.

@@ -124,7 +124,7 @@ Lemma pi_monotone : monotone W Dgt.
 
 Proof.
 intro f. unfold Dgt. apply Vmonotone_transp.
-apply (pmonotone_imp_monotone_peval_Dlt (PI_SM f)).
+apply (pmonotone_imp_monotone_peval_Dlt (proj1 (PI_SM f)) (PI_SM f)).
 Qed.
 
 Lemma pi_monotone_eq : monotone W Dge.

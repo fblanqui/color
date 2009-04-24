@@ -100,3 +100,14 @@ intros A P1 P2 H l. elim l.
   apply H. assumption.
   apply Hrec. assumption.
 Qed.
+
+Lemma forallb_imp_lforall : forall (A : Type) (P : A -> Prop) f l,
+  (forall x, f x = true -> P x) ->
+  forallb f l = true -> lforall P l.
+
+Proof with auto.
+  induction l; simpl; intros...
+  split.
+  apply H. destruct (f a)...
+  destruct (f a)... discriminate.
+Qed.
