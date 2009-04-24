@@ -826,6 +826,14 @@ Proof.
   intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl. apply e.
 Qed.
 
+Lemma Vbuild_in : forall n gen x, Vin x (Vbuild gen) -> 
+  exists i, exists ip : i < n, x = gen i ip.
+
+Proof.
+  intros. set (w := Vin_nth (Vbuild gen) x H).
+  decomp_hyps. exists x0. exists x1. rewrite Vbuild_nth in H1. auto.
+Qed.
+
 Lemma Vbuild_head : forall n (gen : forall i, i < S n -> A),
   Vhead (Vbuild gen) = gen 0 (lt_O_Sn n).
 
@@ -908,6 +916,15 @@ Lemma in_list_of_vec : forall n (v : vec n) x, In x (list_of_vec v) -> Vin x v.
 
 Proof.
 induction v; simpl; intros. hyp. destruct H. auto. right. auto.
+Qed.
+
+Lemma list_of_vec_in : forall n (v : vec n) x, Vin x v -> In x (list_of_vec v).
+
+Proof.
+induction v. auto.
+intros. destruct H; simpl.
+subst. auto.
+right. apply IHv. hyp.
 Qed.
 
 Lemma vec_of_list_exact i l (Hi :i < length(l)) :

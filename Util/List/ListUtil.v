@@ -41,6 +41,12 @@ Proof.
 destruct l; auto. right; congruence.
 Qed.
 
+Definition is_empty (l : list A) : bool :=
+  match l with
+  | nil => true
+  | _ => false
+  end.
+
 End nil.
 
 (***********************************************************************)
@@ -1522,6 +1528,149 @@ apply ith_eq. refl.
 Qed.
 
 End pvalues_map.
+
+(****************************************************************************)
+(** checking a boolean property [P 0 && ... && P (n-1)], where the domain of
+    the predicate P is restricted to numbers smaller than [n]. *)
+
+Require Import Program.
+
+Section Check_seq_aux.
+
+Variables (n : nat) (Pr : dom_lt n -> Prop)
+  (P : forall (i : dom_lt n), Exc (Pr i)).
+
+Program Fixpoint check_seq_aux (p : nat) 
+  (H : forall (i : dom_lt n), i < p -> Pr i)
+  {measure (fun p => n - p) p} : 
+  Exc (forall (i : dom_lt n), Pr i) :=
+
+  match le_lt_dec n p with
+  | left _ => value _
+  | right cmp =>
+    match @P p with
+    | error => error
+    | value _ => @check_seq_aux (S p) _
+    end
+  end.
+
+Next Obligation.
+Proof.
+  apply H. destruct i. simpl. omega.
+Qed.
+Next Obligation.
+Proof.
+  omega.
+Qed.
+Next Obligation.
+Proof.
+  destruct i. simpl in *. 
+  destruct (eq_nat_dec x p).
+  subst. rewrite (lt_unique l 
+    (check_seq_aux_obligation_2 check_seq_aux H Heq_anonymous)). hyp.
+  apply H. simpl. omega.
+Qed.
+(*
+Next Obligation.
+Proof.
+  omega.
+Qed.
+Next Obligation.
+Proof.
+  apply well_founded_ltof.
+Defined.
+*)
+
+End Check_seq_aux.
+
+Program Definition check_seq (n : nat) (Pr : dom_lt n -> Prop)
+  (P : forall (i : dom_lt n), Exc (Pr i)) :
+  Exc (forall (i : dom_lt n), Pr i) :=
+  check_seq_aux P (p:=0) _.
+
+Next Obligation.
+Proof.
+  elimtype False. omega.
+Qed.
+
+(****************************************************************************)
+(** [lookup el default l] takes an association list of pairs of keys, values
+    and returns [v] such that [(el, v)] belongs to the list, or [default]
+    if there is no element with key equal to [el]. *)
+
+Section lookup.
+
+  Variable (A B : Type).
+  Variable (eqA_dec : forall x y : A, {x = y} + {x <> y}).
+  Variable (el : A).
+  Variable (default : B).
+
+  Fixpoint lookup (l : list (A * B)) : B :=
+    match l with
+    | nil => default
+    | (el', v)::l' => 
+        if @eqA_dec el el' then
+          v
+        else
+          lookup l'
+    end.
+
+  Variable P : B -> Prop.
+
+  Lemma lookup_prop l : 
+    (forall x, In x l -> P (snd x)) -> P default -> P (lookup l).
+  Proof with auto with datatypes.
+    induction l; intros...
+    simpl. destruct a. destruct (@eqA_dec el a).
+    apply (H (a, b))...
+    apply IHl...
+  Qed.
+
+End lookup.
+
+(****************************************************************************)
+(** [lookup_dep] is equivalent to [lookup] above but works on lists of
+    dependent pairs instead. *)
+
+Section lookup_dep.
+
+  Variable (A : Type) (B : A -> Type).
+  Variable (eqA_dec : forall x y : A, {x = y} + {x <> y}).
+  Variable (el : A).
+  Variable (default : forall a : A, B a).
+
+  Program Fixpoint lookup_dep (l : list { el : A & B el}) : B el :=
+    match l with
+    | nil => @default el
+    | x::l' => 
+        let (el', v) := x in
+        if @eqA_dec el el' then
+          v
+        else
+          lookup_dep l'
+    end.
+
+  Variable P : forall a : A, B a -> Prop.
+
+  Lemma lookup_dep_prop (l : list {el : A & B el}) : 
+    (forall x, In x l -> P (projT2 x)) -> 
+    (forall a : A, P (@default a)) -> 
+    P (lookup_dep l).
+  Proof with auto with datatypes.
+    induction l; intros.
+    apply H0.
+    simpl. destruct a. destruct (@eqA_dec el x).
+     (* FIXME, it should be possible to replace the following 3 lines with
+        something simpler, but I'm not sure how... *)
+    unfold eq_rect, lookup_dep_obligation_1.
+    set (w := eq_ind_r (fun el => x = el) refl e).
+    dependent inversion w.
+
+    apply (H (existT (fun x:A => B x) x b))...
+    apply IHl...
+  Qed.
+
+End lookup_dep.
 
 (****************************************************************************)
 (** hints *)

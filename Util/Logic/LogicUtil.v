@@ -23,6 +23,21 @@ Ltac ded h := generalize h; intro.
 
 Ltac decomp h := decompose [and or ex] h; clear h.
 
+Ltac decomp_hyp H := 
+  match type of H with
+  | _ /\ _ => decompose [and] H
+  | _ \/ _ => decompose [or] H
+  | ex _ => decompose [ex] H
+  | sig _ => decompose record H
+  end;
+  clear H.
+
+Ltac decomp_hyps :=
+  repeat
+    match goal with
+    | H: _ |- _ => decomp_hyp H
+    end.
+
 Ltac discr := intros; discriminate.
 
 Ltac irrefl := intros;
