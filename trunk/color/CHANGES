@@ -1,6 +1,9 @@
+09-04-29: [Blanqui]
+- added semi-rings and matrices on BigN and BigZ
+- removed antisymmetry and irreflexivity assumptions for ordered semirings
+
 09-04-17: [Blanqui]
-- moved semi-rings and matrices (and matrix and arctic interpretations)
-  to setoids
+- extended semi-rings, matrices and matrix interpretations on setoids
 - added boolean function for testing integer equality since the one
   defined in Coq is too complex and uses an opaque lemma
 
@@ -11,52 +14,51 @@
 - Util/VecUtil/VecUtil: fold operation on 2 vectors
 - Util/FMap/FMapUtil: bundle for FMap definitions + properties
 
-09-03-18:
-- decidability properties are replaced by boolean functions
+09-03-18: [Blanqui]
+- decidability of equality on symbols and terms are replaced
+  by boolean functions
 
 09-03-11: release
 
-09-01-22:
+09-01-22: [Koprowski]
 - HORPO: beta-reduction included into HORPO; added examples, including
-  an example illustrating non-transitivity of HORPO [Koprowski]
+  an example illustrating non-transitivity of HORPO
 
-08-10-31:
+08-10-31: [Blanqui]
 - Term/WithArity/AUnif: termination and completeness of the syntactic
-  unification algorithm [Blanqui]
-- DP/ADPUnif: correctness of the over DP graph based on unification [Blanqui]
+  unification algorithm
+- DP/ADPUnif: correctness of the over DP graph based on unification
 
-08-08-07:
+08-08-07: [Blanqui]
 - Util/Relation/OrdDec: type totally ordered with a comparison function
-  [Blanqui]
 - Util/List/ListDec: boolean functions on lists using a boolean equality test
-  [Blanqui]
 - DP/ADecomp: proof that termination follows from any valid decomposition
-  of an over DP graph and the termination of each component [Blanqui]
-- Term/WithArity/ATrsNorm: canonical representation of lists of rules [Blanqui]
+  of an over DP graph and the termination of each component
+- Term/WithArity/ATrsNorm: canonical representation of lists of rules
 
-08-05-15:
-- Util/FSet/FSetUtil: lemmas and tactics on Coq FSet's [Blanqui]
+08-05-15: [Blanqui]
+- Util/FSet/FSetUtil: lemmas and tactics on Coq FSet's
 - Term/WithArity/AVariables: set of variables in a term (based on FSet)
-  and properties wrt substitution [Blanqui]
+  and properties wrt substitution
 - Term/WithArity/AUnif: correctness of a syntactic unification algorithm
-  [Blanqui]
 
-08-03-14: added support for arctic matrix interpretations proofs;
-unified with development on matrix interpretations [Koprowski, Waldmann]
+08-03-14: [Koprowski, Waldmann]
+added support for arctic matrix interpretations proofs;
+unified with development on matrix interpretations
 - MatrixInt/*
 - Util/Algebra/SemiRing
 - Util/Algebra/OrdSemiRing
 
-08-02-13:
-- Term/String/SReverse: SRS inversion preserves termination [Blanqui]
+08-02-13: [Blanqui]
+- Term/String/SReverse: SRS inversion preserves termination
 
-08-01-23: added support for boolean reasoning and boolean functions
-testing equality [Blanqui]
+08-01-23: [Blanqui]
+added support for boolean reasoning and boolean functions testing equality
 - Util/Bool/BoolUtil
 - Util/List/ListUtil
 - Term/Varyadic/VTerm
 
-07-08-23: added SCC decomposition [Lucas] (SCC = Strongly Connected Component)
+07-08-23: [Lucas] added SCC decomposition (SCC = Strongly Connected Component)
 - Util/List/SortUtil: lemmas on list sorting
 - Util/Nat/log2: definition and properties of log2 and exp2
 - Util/Nat/BoundNat: type of natural numbers smaller than some constant
@@ -70,7 +72,7 @@ testing equality [Blanqui]
 - Util/Relation/SCCTopoOrdering: topological ordering on SCCs
 - DP/SCCunion: termination based on SCC decomposition
 
-07-08-06: added support for classical reasoning [Blanqui]
+07-08-06: [Blanqui] added support for classical reasoning
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic
 - Util/Logic/DepChoice: axiom of dependent choice
 - Util/Logic/DepChoicePrf: proof of the axiom of dependent choice
@@ -83,14 +85,14 @@ testing equality [Blanqui]
 - Util/Relation/IS_NotSN: a well-founded finitely branching relation
   has no infinite sequence
 
-07-05-25:
-- Term/String: strings [Blanqui]
-- Conversion/ATerm_of_String: conversion strings -> algebraic terms [Blanqui]
+07-05-25: [Blanqui]
+- Term/String: strings
+- Conversion/ATerm_of_String: conversion strings -> algebraic terms
 
-07-04-25:
-- MatrixInt: matrix interpretations [Koprowski,Zantema]
-- Util/Matrix: matrices [Koprowski,Zantema]
-- Util/Algebra/SemiRing: semi-rings [Koprowski,Zantema]
+07-04-25: [Koprowski,Zantema]
+- MatrixInt: matrix interpretations
+- Util/Matrix: matrices
+- Util/Algebra/SemiRing: semi-rings
 
 07-02-16:
 - Simplification of the compilation procedure [Blanqui]
@@ -116,9 +118,8 @@ testing equality [Blanqui]
 - Util/Relation/WfUtil renamed into AccUtil
 - Various lemmas renamed with intro or elim suffix
 
-06-12-04:
+06-12-04: [Blanqui]
 - MannaNess/AMannaNess: added rule elimination for relative termination
-  [Blanqui]
 - Acc replaced by SN in various files
 - Term/WithArity/ARedOrd moved to MannaNess/AMannaNess
 
