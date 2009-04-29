@@ -37,9 +37,10 @@ Module Type OrdSemiRingType.
 
   Parameter ge_refl : reflexive ge.
   Parameter ge_trans : transitive ge.
-  Parameter ge_antisym : antisymmetric ge.
+  (*FIXME: to be removed *)
+  (*Parameter ge_antisym : antisymmetric ge.*)
 
-  Parameter gt_irrefl : irreflexive gt.
+  (*Parameter gt_irrefl : irreflexive gt.*)
   Parameter gt_trans : transitive gt.
 
   Parameter ge_dec : rel_dec ge.
@@ -56,14 +57,13 @@ Module Type OrdSemiRingType.
   Parameter mult_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
-  Hint Resolve ge_refl ge_antisym : arith.
+  Hint Resolve ge_refl (*ge_antisym*) : arith.
 
 End OrdSemiRingType.
 
 Module OrdSemiRing (OSR : OrdSemiRingType).
 
-  Module SR := SemiRing OSR.SR.
-  Export SR.
+  Module Export SR := SemiRing OSR.SR.
   Export OSR.
 
   Add Relation A ge
@@ -100,8 +100,7 @@ End OrdSemiRing.
 
 Module NOrdSemiRingT <: OrdSemiRingType.
 
-  Module SR := NSemiRingT.
-  Export SR.
+  Module Export SR := NSemiRingT.
 
   Definition gt := Peano.gt.
   Definition ge := Peano.ge.
@@ -124,13 +123,13 @@ Module NOrdSemiRingT <: OrdSemiRingType.
     intros m n p. unfold ge, Peano.ge. eauto with arith.
   Qed.
 
-  Lemma ge_antisym : antisymmetric ge.
+  (*Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros m n. unfold ge, Peano.ge. auto with arith.
-  Qed.
+  Qed.*)
 
-  Definition gt_irrefl := Gt.gt_irrefl.
+  (*Definition gt_irrefl := Gt.gt_irrefl.*)
 
   Definition gt_trans := Gt.gt_trans.
 
@@ -185,6 +184,92 @@ End NOrdSemiRingT.
 Module NOrdSemiRing := OrdSemiRing NOrdSemiRingT.
 
 (***********************************************************************)
+(** BigN natural numbers semi-rings with natural order *)
+
+Module BigNOrdSemiRingT <: OrdSemiRingType.
+
+  Module Export SR := BigNSemiRingT.
+
+  Require Import BigN.
+  Open Scope bigN_scope.
+
+  Definition gt x y := BigN.lt y x.
+  Definition ge x y := BigN.le y x.
+
+  Lemma eq_ge_compat : forall x y, eqA x y -> x >= y.
+
+  Proof.
+    intros. apply eq_le_incl. symmetry. hyp.
+  Qed.
+
+  Definition ge_refl := le_refl.
+
+  Lemma ge_trans : transitive ge.
+
+  Proof.
+    intros m n p. unfold ge. intros. apply le_trans with n; hyp.
+  Qed.
+
+  Lemma gt_trans : transitive gt.
+
+  Proof.
+    intros m n p. unfold gt. intros. apply lt_trans with n; hyp.
+  Qed.
+
+  Lemma ge_dec : forall x y, {ge x y}+{~ge x y}.
+
+  Proof.
+    intros. unfold ge, BigN.le. case_eq (y ?= x).
+    left. discr. left. discr. right. unfold not. auto.
+  Qed.
+
+  Lemma gt_dec : forall x y, {gt x y}+{~gt x y}.
+
+  Proof.
+    intros. unfold gt, BigN.lt. case_eq (y ?= x).
+    right. discr. left. refl. right. discr.
+  Qed.
+
+  Definition gt_WF := wf_transp_WF lt_wf_0.
+
+  Lemma ge_gt_compat : forall x y z, ge x y -> gt y z -> gt x z.
+
+  Proof.
+    intros. apply lt_le_trans with y; hyp.
+  Qed.
+
+  Lemma ge_gt_compat2 : forall x y z, gt x y -> ge y z -> gt x z.
+
+  Proof.
+    intros. apply le_lt_trans with y; hyp.
+  Qed.
+
+  Lemma plus_gt_compat :
+    forall m n m' n', gt m m' -> gt n n' -> gt (m + n) (m' + n').
+
+  Proof.
+    intros. apply add_lt_mono; hyp.
+  Qed.
+
+  Lemma plus_ge_compat :
+    forall m n m' n', ge m m' -> ge n n' -> ge (m + n) (m' + n').
+
+  Proof.
+    intros. apply add_le_mono; hyp.
+  Qed.
+
+  Lemma mult_ge_compat :
+    forall m n m' n', ge m m' -> ge n n' -> ge (m * n) (m' * n').
+
+  Proof.
+    intros. apply mul_le_mono; hyp.
+  Qed.
+
+End BigNOrdSemiRingT.
+
+Module BigNOrdSemiRing := OrdSemiRing BigNOrdSemiRingT.
+
+(***********************************************************************)
 (** Arctic ordered semi-ring *)
 
 Module ArcticOrdSemiRingT <: OrdSemiRingType.
@@ -207,13 +292,13 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     unfold ge. intuition.
   Qed.
 
-  Lemma gt_irrefl : irreflexive gt.
+  (*Lemma gt_irrefl : irreflexive gt.
 
   Proof.
     intros x xx. destruct x.
     unfold gt in xx. omega.
     auto.
-  Qed.
+  Qed.*)
 
   Lemma gt_trans : transitive gt.
 
@@ -275,13 +360,13 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     subst x. assumption.
   Qed.
 
-  Lemma ge_antisym : antisymmetric ge.
+  (*Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros x y xy yx. destruct xy. destruct yx.
     absurd (gt y x). apply gt_asym. assumption. assumption.
     auto. assumption.
-  Qed.
+  Qed.*)
 
   Lemma ge_dec : rel_dec ge.
 
@@ -487,13 +572,13 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     simpl in *. tauto.
   Qed.
 
-  Lemma gt_irrefl : irreflexive gt.
+  (*Lemma gt_irrefl : irreflexive gt.
 
   Proof.
     intros x xx. destruct x.
     unfold gt in xx. omega.
     auto.
-  Qed.
+  Qed.*)
 
   Lemma gt_asym : forall m n, gt m n -> ~gt n m.
 
@@ -513,12 +598,12 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     rewrite H. trivial.
   Qed.
 
-  Lemma ge_antisym : antisymmetric ge.
+  (*Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros m n mn nm. destruct mn; auto. destruct nm; auto.
     absurd (gt n m). apply gt_asym. assumption. assumption.
-  Qed.
+  Qed.*)
 
   Lemma gt_dec : rel_dec gt.
 
@@ -745,18 +830,18 @@ Module BOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct p; auto.
   Qed.
 
-  Lemma ge_antisym : antisymmetric ge.
+  (*Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros m n. unfold ge. 
     destruct m; destruct n; tauto.
-  Qed.
+  Qed.*)
 
-  Lemma gt_irrefl : irreflexive gt.
+  (*Lemma gt_irrefl : irreflexive gt.
 
   Proof.
     intros x. unfold gt. destruct x; tauto.
-  Qed.
+  Qed.*)
 
   Lemma gt_trans : transitive gt.
 
