@@ -146,6 +146,60 @@ End NSemiRingT.
 Module NSemiRing := SemiRing NSemiRingT.
 
 (***********************************************************************)
+(** BigN natural numbers as a semi-ring *)
+
+Require Import BigN.
+
+Module BigNat_Eqset <: Eqset.
+  Definition A := bigN.
+  Definition eqA := BigN.eq.
+  Definition sid_theoryA : Setoid_Theory A eqA.
+  Proof.
+    unfold eqA. constructor.
+    unfold Reflexive. refl.
+    unfold Symmetric. symmetry. hyp.
+    unfold Transitive. intros. transitivity y; hyp.
+  Qed.
+End BigNat_Eqset.
+
+Module BigNat_Eqset_dec <: Eqset_dec.
+  Module Export Eq := BigNat_Eqset.
+  Lemma eqA_dec : forall x y, {eqA x y}+{~eqA x y}.
+  Proof.
+    unfold eqA. unfold BigN.eq. intros. apply (dec_beq beq_Z_ok).
+  Defined.
+End BigNat_Eqset_dec.
+
+Module BigNSemiRingT <: SemiRingType.
+
+  Module Export ES := BigNat_Eqset_dec.
+
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
+  Definition A0 := BigN.zero.
+  Definition A1 := BigN.one.
+
+  Definition Aplus := BigN.add.
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Definition Amult := BigN.mul.
+
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Definition A_semi_ring := BigNring.
+
+End BigNSemiRingT.
+
+Module BigNSemiRing := SemiRing BigNSemiRingT.
+
+(***********************************************************************)
 (** Integers as a semi-ring *)
 
 Require Import ZArith.
@@ -205,7 +259,7 @@ Module ZSemiRing := SemiRing ZSemiRingT.
 (***********************************************************************)
 (** BigZ integers as a semi-ring *)
 
-Require Import BigZUtil.
+Require Import BigZ.
 
 Module BigInt_Eqset <: Eqset.
   Definition A := bigZ.
@@ -299,7 +353,8 @@ Module Arctic_Eqset := Eqset_def Arctic.
 Module Arctic_Eqset_dec <: Eqset_dec.
   Module Export Eq := Arctic_Eqset.
   Definition eqA_dec := dec_beq beq_ArcticDom_ok.
-  (*Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
+  (*FIXME: remove:
+  Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
   Proof.
     intros. destruct x; destruct y; try solve [right; congruence].
     destruct (eq_nat_dec n0 n).
@@ -457,7 +512,8 @@ Module ArcticBZ_Eqset := Eqset_def ArcticBZ.
 Module ArcticBZ_Eqset_dec <: Eqset_dec.
   Module Export Eq := ArcticBZ_Eqset.
   Definition eqA_dec := dec_beq beq_ArcticBZDom_ok.
-  (*Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
+  (*FIXME: remove:
+  Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
   Proof.
     intros. destruct x; destruct y; try solve [right; congruence].
     destruct (Z_eq_dec z0 z).
