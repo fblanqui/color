@@ -853,7 +853,7 @@ Qed.
 (***********************************************************************)
 (** iteration *)
 
-(* Vfold_left f b [a1 .. an] = f .. (f (f b x1) x2) .. xn *)
+(* Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an *)
 
 Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n)
   {struct v} : B :=
@@ -862,7 +862,7 @@ Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n)
     | Vcons a _ w => f (Vfold_left f b w) a
   end.
 
-(* Vfold_right f [a1 .. an] b = f x1 (f x2 .. (f xn b) .. ) *)
+(* Vfold_right f [a1 .. an] b = f a1 (f a2 .. (f an b) .. ) *)
 
 Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B)
   {struct v} : B :=
