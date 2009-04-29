@@ -7,29 +7,24 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean default config dist doc install-dist install-doc tags
+.PHONY: clean default config dist doc install-dist install-doc tags extraction
 
-COQBIN ?= $(COQTOP)bin/
 COQC := $(COQBIN)coqc
+
 COQMAKE := $(MAKE) -f Makefile.coq
 
-VFILES := $(shell find . -name '*.v')
-VOFILES := $(VFILES:.v=.vo)
-VCOMPILE := $(shell find . -name '*.v' -not -name 'Extraction.v')
-
-all: extraction
+VFILES := $(shell find . -name '*.v' -not -name 'Extraction.v')
 
 default: Makefile.coq
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
 
 extraction: ProofChecker/Extraction.vo
-	
 
 Makefile.coq:
 	$(MAKE) config
 
 config:
-	coq_makefile -R . CoLoR $(VCOMPILE) > Makefile.coq
+	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
 	$(COQMAKE) depend
 
 clean:
@@ -46,7 +41,7 @@ doc:
 	./createIndex
 
 ./certifiedCode:
-	mkdir certifiedCode
+	mkdir -p certifiedCode
 
 ProofChecker/Extraction.vo: ProofChecker/Extraction.v ProofChecker/ProofChecker.vo ./certifiedCode
 	$(COQC) ProofChecker/Extraction.v
