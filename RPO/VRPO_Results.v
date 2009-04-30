@@ -19,7 +19,6 @@ Require Import Peano_dec.
 Require Import RelUtil.
 Require Import LogicUtil.
 Require Import AccUtil.
-Require Import RelMidex.
 
 Set Implicit Arguments.
 

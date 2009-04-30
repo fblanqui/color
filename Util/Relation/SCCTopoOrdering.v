@@ -20,7 +20,6 @@ Require Import VecUtil.
 Require Import NatUtil.
 Require Import RelSub.
 Require Import Path.
-Require Import RelMidex.
 Require Import SortUtil.
 Require Import Permutation.
 Require Import Multiset.

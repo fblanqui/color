@@ -18,7 +18,6 @@ Require Import ATrs.
 Require Import RelUtil.
 Require Import SN.
 Require Export AWFMInterpretation.
-Require Import RelMidex.
 Require Import ListUtil.
 Require Import ARelation.
 Require Import LogicUtil.

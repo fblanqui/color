@@ -14,7 +14,6 @@ Require Import SN.
 Require Import AWFMInterpretation.
 Require Import AMannaNess.
 Require Import ACompat.
-Require Import RelMidex.
 Require Import ListUtil.
 Require Import ListForall.
 Require Import ARelation.

@@ -23,7 +23,6 @@ Require Import RelUtil.
 Require Import NatUtil.
 Require Import Log2.
 Require Import LogicUtil.
-Require Import RelMidex.
 
 Module BMatrix := Matrix BOrdSemiRingT.
 Export BMatrix.

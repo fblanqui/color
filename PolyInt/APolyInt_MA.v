@@ -13,7 +13,6 @@ Require Import ZUtil.
 Require Import RelUtil.
 Require Import PositivePolynom.
 Require Import ATrs.
-Require Import RelMidex.
 Require Import ListForall.
 Require Import MonotonePolynom.
 

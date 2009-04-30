@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2007-05-17
 
-  RPO employed for proving termination of concrete examples (after
+RPO employed for proving termination of concrete examples (after
 converting varyadic terms to terms with arities).
 *)
 
@@ -16,7 +16,6 @@ Require Import VTerm_of_ATerm.
 Require Import ListUtil.
 Require Import Preorder.
 Require Import SN.
-Require Import RelMidex.
 Require Import RelUtil.
 Require Import ARelation.
 Require Import Arith.

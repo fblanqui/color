@@ -17,7 +17,6 @@ Require Import Arith.
 Require Import RelUtil.
 Require Import LogicUtil.
 Require Import ListShrink.
-Require Import RelMidex.
 
 Section S.
 

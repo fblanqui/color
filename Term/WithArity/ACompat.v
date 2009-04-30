@@ -16,7 +16,6 @@ Require Import RelUtil.
 Require Import ARelation.
 Require Import SN.
 Require Import ListForall.
-Require Import RelMidex.
 Require Import LogicUtil.
 
 Section S.
