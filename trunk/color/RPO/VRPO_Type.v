@@ -17,8 +17,7 @@ Require Import LogicUtil.
 
 Module Type RPO_Model.
 
-  Declare Module P : VPrecedenceType.
-  Export P.
+  Declare Module Export P : VPrecedenceType.
 
   Parameter tau : Sig -> relation term -> relation terms.
 
@@ -159,21 +158,13 @@ End RPO_Model.
 
 Module Status (PT : VPrecedenceType).
 
-  Module P := VPrecedence PT.
-  Export P.
+  Module Export P := VPrecedence PT.
 
   Require Import MultisetListOrder.
-  Module LMO := MultisetListOrder Term_dec.
-   (* FIXME, the notation below is introduced only because otherwise 
-      doing 'Export LMO' results in an error: "Scope sets_scope is not
-      declared". This, I believe, should not be the case and maybe is
-      a temporary flaw of the development version of Coq 8.2. *)
-  Notation "'XXX'" := I : sets_scope.
-  Export LMO.
+  Module Export LMO := MultisetListOrder Term_dec.
 
   Require Import LexicographicOrder.
-  Module LO := LexOrder Term.
-  Export LO.
+  Module Export LO := LexOrder Term.
 
   Section Decidability.
 

@@ -36,7 +36,7 @@ Module Term <: Eqset.
   Definition A := term.
 
   Definition eqA := eq (A := term).
-  Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
+  Notation "X =A= Y" := (eqA X Y) (at level 70).
 
   Lemma sid_theoryA : Setoid_Theory A eqA.
   Proof.
@@ -50,8 +50,7 @@ End Term.
 
 Module Term_dec <: Eqset_dec.
 
-  Module Eq := Term.
-  Export Eq.
+  Module Export Eq := Term.
 
   Definition eqA_dec := @term_eq_dec Sig.
 
@@ -60,13 +59,7 @@ End Term_dec.
 (***********************************************************************)
 (** multisets on terms *)
   
-Module LMO := MultisetListOrder.MultisetListOrder Term_dec.
- (* FIXME, the notation below is introduced only because otherwise 
-    doing 'Export LMO' results in an error: "Scope sets_scope is not
-    declared". This, I believe, should not be the case and maybe is
-    a temporary flaw of the development version of Coq 8.2. *)
-Notation "'XXX'" := I : sets_scope.
-Export LMO.
+Module Export LMO := MultisetListOrder.MultisetListOrder Term_dec.
 
 (***********************************************************************)
 (** precedence *)

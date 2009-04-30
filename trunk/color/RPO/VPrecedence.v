@@ -52,7 +52,7 @@ Module VPrecedence (P : VPrecedenceType).
     Definition A := term.
       
     Definition eqA := eq (A := term).
-    Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
+    Notation "X =A= Y" := (eqA X Y) (at level 70).
 
     Lemma sid_theoryA : Setoid_Theory A eqA.
     Proof.

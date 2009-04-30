@@ -69,10 +69,9 @@ End SetA.
 Module Type Eqset.
 
   Parameter A : Type.
-  Parameter eqA : A -> A -> Prop.
 
-  Notation "X =A= Y" := (eqA X Y) (at level 70) : sets_scope.
-  Open Scope sets_scope.
+  Parameter eqA : A -> A -> Prop.
+  Notation "X =A= Y" := (eqA X Y) (at level 70).
 
   Parameter sid_theoryA : Setoid_Theory A eqA.
 
@@ -84,17 +83,18 @@ End Eqset.
 
 Module Type Eqset_dec.
 
-  Declare Module Eq : Eqset.
-  Export Eq.
+  Declare Module Export Eq : Eqset.
 
-  Parameter eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
+  Parameter eqA_dec : forall x y, {x =A= y} + {~x =A= y}.
 
 End Eqset_dec.
 
 Module Eqset_def (A : SetA) <: Eqset.
 
   Definition A := A.A.
+
   Definition eqA := eq (A:=A).
+
   Definition sid_theoryA := Build_Setoid_Theory _ eqA 
      (refl_equal (A:=A)) (sym_eq (A:=A)) (trans_eq (A:=A)).
 
@@ -126,15 +126,13 @@ Module Type Ord.
 
   Parameter A : Type.
 
-  Declare Module S : Eqset with Definition A := A.
-  Export S.
+  Declare Module Export S : Eqset with Definition A := A.
 
   Parameter gtA : A -> A -> Prop.
-
-  Notation "X > Y" := (gtA X Y) : sets_scope.
+  Notation "X >A Y" := (gtA X Y) (at level 70).
 
   Parameter gtA_eqA_compat : forall x x' y y',
-    x =A= x' -> y =A= y' -> x > y -> x' > y'.
+    x =A= x' -> y =A= y' -> x >A y -> x' >A y'.
 
   Hint Resolve gtA_eqA_compat : sets.
 
@@ -149,9 +147,9 @@ Module OrdLemmas (P : Ord).
   Definition leA x y := ~ gtA x y.
   Definition AccA := Acc ltA.
 
-  Notation "X < Y" := (ltA X Y) : sets_scope.
-  Notation "X >= Y" := (geA X Y) : sets_scope.
-  Notation "X <= Y" := (leA X Y) : sets_scope.
+  Notation "X <A Y" := (ltA X Y) (at level 70).
+  Notation "X >=A Y" := (geA X Y) (at level 70).
+  Notation "X <=A Y" := (leA X Y) (at level 70).
 
   Hint Unfold ltA geA leA AccA : sets.
 
@@ -193,8 +191,7 @@ Module Type Poset.
 
   Parameter A : Type.
 
-  Declare Module O : Ord with Definition A := A.
-  Export O.
+  Declare Module Export O : Ord with Definition A := A.
 
   Parameter gtA_so : strict_order gtA.
 

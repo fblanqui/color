@@ -17,14 +17,9 @@ Require Import Multiset.
 Require Import List.
 Require Import ListExtras.
 
-Module MultisetList (ES : Eqset_dec) <:
+Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
 
-  MultisetCore with Module Sid := ES.
-
-  Module Sid := ES.
-  Export Sid.
-
-  Open Scope sets_scope.
+  Module Export Sid := ES.
 
 Section Operations.
 

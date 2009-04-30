@@ -28,8 +28,6 @@ Module RPO (PT : VPrecedenceType).
   Module S := Status PT.
   Export S.
 
-  Open Scope sets_scope.
-
   Parameter status : Sig -> status_name.
 
   Definition mytau f (r : relation term) : relation terms := 
