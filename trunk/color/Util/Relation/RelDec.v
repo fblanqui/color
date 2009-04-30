@@ -54,7 +54,8 @@ Lemma midex_lem : forall R' R'' x y l, rel_midex R' -> rel_midex R'' ->
 
 Proof.
 induction l; intros. simpl. constructor 2. intro. destruct H1. tauto.  
-destruct IHl; try assumption. constructor. destruct H1. exists x0. simpl. tauto. 
+destruct IHl; try assumption. constructor. destruct H1. exists x0. simpl.
+tauto. 
 destruct (H x a). destruct (H0 a y). constructor. exists a. simpl. tauto. 
 constructor 2. intro. destruct H4. simpl in H4. decompose [and or] H4.  
 rewrite H7 in H3. tauto. assert (exists z : A, In z l /\ R' x z /\ R'' z y).
@@ -79,7 +80,8 @@ assert ({z : A | In z l /\ R x z /\ bound_path R n z y}
 +{~exists z : A, In z l /\ R x z /\ bound_path R n z y}).
 apply dec_lem; tauto. destruct H1. constructor. destruct s. 
 apply R_bound_path_n_Sn with x0; tauto. 
-constructor 2. intro. pose (bound_path_Sn_n_or_Rn H1). destruct o. contradiction.
+constructor 2. intro. pose (bound_path_Sn_n_or_Rn H1). destruct o.
+contradiction.
 destruct H2. assert (exists z : A, In z l /\ R x z /\ bound_path R n z y). 
 exists x0. split. pose (H x x0). tauto. assumption. contradiction.   
 Qed.

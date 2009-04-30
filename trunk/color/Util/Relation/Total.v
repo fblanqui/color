@@ -15,7 +15,6 @@ Require Import Sumbool.
 Require Import RelDec.
 Require Import RelUtil.
 Require Import ListUtil.
-Require Import RelMidex.
 Require Import RelSub.
 Require Import Path.
 Require Import Arith.

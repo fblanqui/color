@@ -10,7 +10,6 @@ sub-relation, restriction, etc.
 Require Import ListShrink.
 Require Import RelUtil.
 Require Import ListUtil.
-Require Import RelMidex.
 
 Set Implicit Arguments.
 
