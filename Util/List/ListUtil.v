@@ -1154,8 +1154,6 @@ End partition.
 
 Section partition_by_prop.
 
-  Require Import RelMidex.
-
   Variables (A : Type) (P : A -> Prop) (P_dec : forall x, {P x}+{~P x}).
 
   Definition partition_by_prop a :=
