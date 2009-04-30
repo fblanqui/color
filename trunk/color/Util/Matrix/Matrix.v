@@ -703,5 +703,6 @@ End MatrixConstruction.
 (** matrices over different domains *)
 
 Module NMatrix := Matrix NOrdSemiRingT.
+Module BigNMatrix := Matrix BigNOrdSemiRingT.
 Module ArcticMatrix := Matrix ArcticOrdSemiRingT.
 Module ArcticBZMatrix := Matrix ArcticBZOrdSemiRingT.
