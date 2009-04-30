@@ -16,7 +16,6 @@ Require Import SemiRing.
 Require Import OrdSemiRing.
 Require Import NatUtil.
 Require Import LogicUtil.
-Require Import RelMidex.
 Require Import VecEq.
 Require Import Setoid.
 
