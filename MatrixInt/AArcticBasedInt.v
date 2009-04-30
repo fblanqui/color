@@ -14,7 +14,6 @@ Require Import OrdSemiRing.
 Require Import VecUtil.
 Require Import SN.
 Require Import RelUtil.
-Require Import RelMidex.
 Require Import LogicUtil.
 Require Import Setoid.
 Require Import AMatrixBasedInt.

@@ -18,7 +18,6 @@ Require Import AMonAlg.
 Require Import SN.
 Require Import RelUtil.
 Require Import NatUtil.
-Require Import RelMidex.
 Require Import AWFMInterpretation.
 
 Definition matrixInt := @matrixInt A matrix.
