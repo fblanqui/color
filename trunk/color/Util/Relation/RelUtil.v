@@ -14,6 +14,7 @@ Set Implicit Arguments.
 Require Import LogicUtil.
 Require Export Relations.
 Require Import Setoid.
+Require Export RelMidex.
 
 Implicit Arguments transp [A].
 Implicit Arguments inclusion [A].
@@ -121,6 +122,23 @@ Definition intersection (S : relation A) : relation A :=
   fun x y => R x y /\ S x y.
 
 End basic_definitions.
+
+(***********************************************************************)
+(** intersection *)
+
+Section intersection_dec.
+
+  Variables (A : Type) (R S : relation A)
+    (Rdec : rel_dec R) (Sdec : rel_dec S).
+
+  Lemma intersection_dec : rel_dec (intersection R S).
+
+  Proof.
+    intros x y. unfold intersection.
+    case (Rdec x y); case (Sdec x y); intuition.
+  Defined.
+
+End intersection_dec.
 
 (***********************************************************************)
 (** finitely branching relations *)
