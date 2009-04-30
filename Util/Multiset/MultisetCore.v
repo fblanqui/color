@@ -16,10 +16,7 @@ Require Import Min.
 
 Module Type MultisetCore.
 
-  Declare Module Sid: Eqset_dec.
-  Export Sid.  
-
-  Open Scope sets_scope.
+  Declare Module Export Sid : Eqset_dec.
 
 Section Operations.  
 
@@ -58,8 +55,6 @@ Section Specification.
   Variables M N P : Multiset.
   Variables x y z : A.
   Variable n : nat.
-
-  Open Scope msets_scope.
 
   Parameter mult_eqA_compat: x =A= y -> x/M = y/M.
 
