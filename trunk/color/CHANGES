@@ -1,5 +1,5 @@
 09-04-29: [Blanqui]
-- added semi-rings and matrices on BigN and BigZ
+- added (ordered) semi-rings, matrices and matrix interpretations on BigN
 - removed antisymmetry and irreflexivity assumptions for ordered semirings
 
 09-04-17: [Blanqui]
