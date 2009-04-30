@@ -17,7 +17,6 @@ Require Import LogicUtil.
 Require Import RelUtil.
 Require Import NatUtil.
 Require Import AWFMInterpretation.
-Require Import RelMidex.
 Require Import Max.
 Require Import VecEq.
 Require Import Setoid.
