@@ -571,7 +571,7 @@ Module ArcticOrdSemiRing := OrdSemiRing ArcticOrdSemiRingT.
 
 Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
-  Open Scope Z_scope.
+  Local Open Scope Z_scope.
 
   Module SR := ArcticBZSemiRingT.
   Export SR.
