@@ -12,7 +12,6 @@ Require Import RelDec.
 Require Export SemiRing.
 Require Import SN.
 Require Import RelExtras.
-Require Import RelMidex.
 Require Import NatUtil.
 Require Import LogicUtil.
 Require Import Max.
@@ -30,10 +29,10 @@ Module Type OrdSemiRingType.
   Parameter gt : relation A.
   Parameter ge : relation A.
 
-  Parameter eq_ge_compat : forall x y, x =A= y -> ge x y.
-
   Notation "x >> y" := (gt x y) (at level 70).
   Notation "x >>= y" := (ge x y) (at level 70).
+
+  Parameter eq_ge_compat : forall x y, x =A= y -> x >>= y.
 
   Parameter ge_refl : reflexive ge.
   Parameter ge_trans : transitive ge.
@@ -163,6 +162,20 @@ Module NOrdSemiRingT <: OrdSemiRingType.
     intros. omega.
   Qed.
 
+  Lemma plus_gt_compat_l : forall m n m' n',
+    m > m' -> n >= n' -> m + n > m' + n'.
+
+  Proof.
+    intros. omega.
+  Qed.
+
+  Lemma plus_gt_compat_r : forall m n m' n',
+    m >= m' -> n > n' -> m + n > m' + n'.
+
+  Proof.
+    intros. omega.
+  Qed.
+
   Lemma plus_ge_compat : forall m n m' n',
     m >= m' -> n >= n' -> m + n >= m' + n'.
 
@@ -190,8 +203,7 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Module Export SR := BigNSemiRingT.
 
-  Require Import BigN.
-  Open Scope bigN_scope.
+  Require Import BigNUtil.
 
   Definition gt x y := BigN.lt y x.
   Definition ge x y := BigN.le y x.
@@ -251,6 +263,20 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
     intros. apply add_lt_mono; hyp.
   Qed.
 
+  Lemma plus_gt_compat_l :
+    forall m n m' n', gt m m' -> ge n n' -> gt (m + n) (m' + n').
+
+  Proof.
+    intros. apply add_lt_le_mono; hyp.
+  Qed.
+
+  Lemma plus_gt_compat_r :
+    forall m n m' n', ge m m' -> gt n n' -> gt (m + n) (m' + n').
+
+  Proof.
+    intros. apply add_le_lt_mono; hyp.
+  Qed.
+
   Lemma plus_ge_compat :
     forall m n m' n', ge m m' -> ge n n' -> ge (m + n) (m' + n').
 
@@ -263,6 +289,16 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. apply mul_le_mono; hyp.
+  Qed.
+
+  Lemma mult_lt_compat_lr : forall i j k l,
+    i <= j -> j > 0 -> k < l -> i * k < j * l.
+
+  Proof.
+    intros. case (bigN_le_gt_dec j i); intro.
+    assert (i==j). apply le_antisymm; hyp. rewrite H2.
+    rewrite <- (mul_lt_mono_pos_l _ _ _ H0). hyp.
+    apply mul_lt_mono; hyp.
   Qed.
 
 End BigNOrdSemiRingT.
