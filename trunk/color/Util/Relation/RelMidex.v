@@ -7,15 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 excluded middle and decidability for relations.
 *)
 
-Require Import Relations. 
+Require Import Relations.
 
 Set Implicit Arguments.
 
-Section relation.
+Section S.
 
-Variable (A : Type) (R : relation A).
+Variables (A : Type) (R : relation A).
 
-Definition rel_midex := forall x y, R x y \/ ~R x y.
+Definition rel_midex := forall x y : A, R x y \/ ~R x y.
 
 Definition rel_dec := forall x y, {R x y} + {~R x y}.
 
@@ -54,14 +54,8 @@ Proof.
 intros. set (w := H x y). rewrite H0 in w. assumption.
 Qed.
 
-End relation.
-
 (***********************************************************************)
 (** Leibniz equality relation *)
-
-Section identity.
-
-Variable A : Type.
 
 Definition eq_midex := forall x y : A, x=y \/ x<>y.
 
@@ -70,7 +64,7 @@ Definition eq_dec := forall x y : A, {x=y}+{x<>y}.
 Lemma eq_dec_midex : eq_dec -> eq_midex.
 
 Proof.
-do 3 intro. destruct (X x y); tauto.  
+do 3 intro. destruct (X x y); tauto.
 Qed.
 
-End identity.
+End S.
