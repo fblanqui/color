@@ -2,6 +2,14 @@
 - added (ordered) semi-rings, matrices and matrix interpretations on BigN
 - removed antisymmetry and irreflexivity assumptions for ordered semirings
 
+09-04-24: [Koprowski]
+- added a framework for checking whether a given certificate is a correct
+  termination proof for a given problem. This check is done by a Coq
+  function (no Ltac), so it should be possible to extract from it
+  a certified termination proof checker.
+- added support for polynomial interpretations in the new proof
+  checker framework.
+
 09-04-17: [Blanqui]
 - extended semi-rings, matrices and matrix interpretations on setoids
 - added boolean function for testing integer equality since the one
