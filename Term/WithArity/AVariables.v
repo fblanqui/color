@@ -106,7 +106,7 @@ Qed.
 
 Implicit Arguments mem_vars_vec [x n ts].
 
-Open Scope nat_scope.
+Local Open Scope nat_scope.
 
 Lemma mem_vars_size_sub_ge : forall s x u,
   mem x (vars u) = true -> size (sub s u) >= size (s x). 
