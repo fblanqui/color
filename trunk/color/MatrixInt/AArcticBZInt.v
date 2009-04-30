@@ -19,6 +19,8 @@ Require Import RelUtil.
 Require Import ZArith.
 Require Import AMatrixBasedInt.
 
+Local Open Scope Z_scope.
+
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
 
