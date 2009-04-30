@@ -187,7 +187,7 @@ intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
     | rewrite max_l; [idtac | assumption]
     ]; omega.
 Qed.
-
+ 
 Lemma max_lt : forall x y z, max y z < x <-> y < x /\ z < x.
 
 Proof.
