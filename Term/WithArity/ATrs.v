@@ -21,6 +21,7 @@ Require Import ListForall.
 Require Import SN.
 Require Import BoolUtil.
 Require Import EqUtil.
+Require Import NatUtil.
 
 Section basic_definitions.
 
@@ -205,10 +206,8 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
-Notation rule := (rule Sig).
-Notation rules := (list rule).
+Notation term := (term Sig). Notation terms := (vector term).
+Notation rule := (rule Sig). Notation rules := (list rule).
 
 Notation empty_trs := (nil (A:=rule)).
 
@@ -337,6 +336,38 @@ right. apply int_red_preserv_hd. auto.
 destruct IHclos_refl_trans1; destruct IHclos_refl_trans2; subst; auto.
 right. do 3 destruct H1. do 3 destruct H2. intuition; subst; auto.
 inversion H1. subst. exists x3; exists x1; exists x5. auto.
+Qed.
+
+Lemma red_case : forall t u, red R t u -> hd_red R t u
+  \/ exists f, exists ts, exists i, exists p : i < arity f, exists u',
+    t = Fun f ts /\ red R (Vnth ts p) u' /\ u = Fun f (Vreplace ts p u').
+
+Proof.
+intros. redtac. destruct c.
+(* Hole *)
+left. subst. simpl. apply hd_red_rule. hyp.
+(* Cont *)
+right. exists f. exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
+exists i. assert (p : i<arity f). omega. exists p. exists (fill c (sub s r)).
+subst. simpl. intuition. rewrite Vnth_cast. rewrite Vnth_app.
+destruct (le_gt_dec i i). 2: absurd_arith. rewrite Vnth_head.
+apply red_rule. hyp. omega.
+apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_app.
+destruct (le_gt_dec i i0).
+(* 1) i <= i0 *)
+destruct (eq_nat_dec i i0).
+(* a) i = i0 *)
+subst i0. rewrite Vnth_head. rewrite Vnth_replace. refl. omega.
+(* b) i <> i0 *)
+rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast. rewrite Vnth_app.
+destruct (le_gt_dec i i0). 2: absurd_arith. assert (l0=l1). apply le_unique.
+subst l1. set (h := Vnth_app_aux (S j) (Vnth_cast_aux e ip) l0). gen h.
+assert (i0-i=S(pred(i0-i))). omega. rewrite H. intro.
+repeat rewrite Vnth_cons_eq. apply Vnth_eq. refl.
+(* 2) i > i0 *)
+rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast.
+rewrite Vnth_app. destruct (le_gt_dec i i0). absurd_arith.
+apply Vnth_eq. refl.
 Qed.
 
 End rewriting.
