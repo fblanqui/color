@@ -360,8 +360,8 @@ destruct n; intros. absurd_arith.
 VSntac v. reflexivity.
 Qed.
 
-Lemma Vnth_Vreplace_replaced : forall n i (ip : i < n) (v : vec n) (a : A),
-  Vnth (Vreplace v ip a) ip = a.
+Lemma Vnth_replace : forall n i (ip ip' : i < n) (v : vec n) (a : A),
+  Vnth (Vreplace v ip a) ip' = a.
 
 Proof.
 induction n; intros.
@@ -370,9 +370,8 @@ VSntac v. destruct i. trivial.
 simpl. apply IHn.
 Qed.
 
-Lemma Vnth_Vreplace_notReplaced : forall n i (ip : i < n) j (jp : j < n) 
-  (v : vec n) (a : A), i <> j ->
-  Vnth (Vreplace v ip a) jp = Vnth v jp.
+Lemma Vnth_replace_neq : forall n i (ip : i < n) j (jp : j < n) 
+  (v : vec n) (a : A), i <> j -> Vnth (Vreplace v ip a) jp = Vnth v jp.
 
 Proof.
 induction n; intros.

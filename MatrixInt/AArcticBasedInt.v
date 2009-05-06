@@ -22,10 +22,8 @@ Require Import VecEq.
 (** Module type for proving termination with matrix interpretations *)
 Module Type TArcticBasedInt.
 
-  Declare Module OSR : OrdSemiRingType.
-  Export OSR.
-  Module M := Matrix OSR.
-  Export M.
+  Declare Module Export OSR : OrdSemiRingType.
+  Module Export M := Matrix OSR.
 
   Parameter sig : Signature.
   Parameter dim : nat.
@@ -40,10 +38,8 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
   Module Conf <: MatrixMethodConf.
 
-    Module M := ABI.M.
-    Export M.
-    Module OSRT := ABI.OSR.
-    Export OSRT.
+    Module Export M := ABI.M.
+    Module Export OSRT := ABI.OSR.
 
     Definition sig := sig.
     Definition dim := dim.
@@ -59,14 +55,12 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       vec_invariant (Vreplace (Vconst A0 dim) dim_pos A1).
 
     Proof.
-      unfold vec_invariant, vec_at0. rewrite Vnth_Vreplace_replaced.
-      apply ge_refl.
+      unfold vec_invariant, vec_at0. rewrite Vnth_replace. apply ge_refl.
     Qed.
 
   End Conf.
 
-  Module MBI := MatrixBasedInt Conf.
-  Export MBI.
+  Module Export MBI := MatrixBasedInt Conf.
 
   Section ABI.
 
