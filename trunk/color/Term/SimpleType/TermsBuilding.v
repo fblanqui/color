@@ -15,8 +15,7 @@ Require TermsActiveEnv.
 
 Module TermsBuilding (Sig : TermsSig.Signature).
 
-  Module TAE := TermsActiveEnv.TermsActiveEnv Sig.
-  Export TAE.
+  Module Export TAE := TermsActiveEnv.TermsActiveEnv Sig.
 
   Record appCond : Type := {
      appL: Term;

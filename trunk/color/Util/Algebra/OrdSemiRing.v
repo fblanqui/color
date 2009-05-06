@@ -23,8 +23,7 @@ Require Import RelUtil.
 
 Module Type OrdSemiRingType.
 
-  Declare Module SR : SemiRingType.
-  Export SR.
+  Declare Module Export SR : SemiRingType.
 
   Parameter gt : relation A.
   Parameter ge : relation A.
@@ -310,8 +309,7 @@ Module BigNOrdSemiRing := OrdSemiRing BigNOrdSemiRingT.
 
 Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
-  Module SR := ArcticSemiRingT.
-  Export SR.
+  Module Export SR := ArcticSemiRingT.
 
   Definition gt m n :=
     match m, n with
@@ -573,8 +571,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Local Open Scope Z_scope.
 
-  Module SR := ArcticBZSemiRingT.
-  Export SR.
+  Module Export SR := ArcticBZSemiRingT.
 
   Definition gt m n :=
     match m, n with
@@ -827,8 +824,7 @@ Module ArcticBZOrdSemiRing := OrdSemiRing ArcticBZOrdSemiRingT.
 
 Module BOrdSemiRingT <: OrdSemiRingType.
 
-  Module SR := BSemiRingT.
-  Export SR.
+  Module Export SR := BSemiRingT.
 
   Definition gt x y := 
     match x, y with

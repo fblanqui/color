@@ -66,8 +66,7 @@ Module VPrecedence (P : VPrecedenceType).
 
   Module Term_dec <: Eqset_dec.
 
-    Module Eq := Term.
-    Export Eq.
+    Module Export Eq := Term.
 
     Definition eqA_dec := @term_eq_dec Sig.
 

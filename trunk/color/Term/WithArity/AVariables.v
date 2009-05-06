@@ -23,8 +23,7 @@ Require Import VecUtil.
 (***********************************************************************)
 (** sets of variables *)
 
-Module VarSetUtil := FSetUtil.Make (Nat_as_OT).
-Export VarSetUtil.
+Module Export VarSetUtil := FSetUtil.Make (Nat_as_OT).
 
 Lemma eqb_beq_nat : forall x y, eqb x y = beq_nat x y.
 

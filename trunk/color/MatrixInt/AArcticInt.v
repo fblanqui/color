@@ -59,8 +59,7 @@ Module ArcticInt (AI : TArcticInt).
 
   End AB.
 
-  Module AIBase := ArcticBasedInt AB.
-  Export AIBase.
+  Module Export AIBase := ArcticBasedInt AB.
 
   (** Monotone algebra instantiated to matrices *)
   Module MonotoneAlgebra <: MonotoneAlgebraType.
@@ -198,8 +197,8 @@ Module ArcticInt (AI : TArcticInt).
   End MonotoneAlgebra.
 
   Export MonotoneAlgebra.
-  Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
-  Export MAR.
+
+  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
   Ltac noTerminationProofs := 
     fail "Arctic matrices cannot be used for proving total termination".

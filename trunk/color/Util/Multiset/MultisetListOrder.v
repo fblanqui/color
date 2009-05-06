@@ -23,13 +23,11 @@ Module MultisetListOrder (ES : Eqset_dec).
 
 (* Instantiation of MultiSets of elements of A as Lists of elements of A *)
 
-  Module FMultisetList := MultisetList ES. 
-  Export FMultisetList.
+  Module Export FMultisetList := MultisetList ES.
 
 (* The basic relation on A needs not to be known at this point *)
 
-  Module MOrder := MultisetOrder FMultisetList.
-  Export MOrder.
+  Module Export MOrder := MultisetOrder FMultisetList.
   Export MSet.
 
 (* Order on lists of elements of A derived from multiset order *)

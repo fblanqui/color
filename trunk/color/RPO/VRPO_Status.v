@@ -22,11 +22,8 @@ Inductive status_name : Set :=
   
 Module RPO (PT : VPrecedenceType).
 
-  Module P := VPrecedence PT.
-  Export P.
-
-  Module S := Status PT.
-  Export S.
+  Module Export P := VPrecedence PT.
+  Module Export S := Status PT.
 
   Parameter status : Sig -> status_name.
 
@@ -61,8 +58,7 @@ Require Import VRPO_Type.
 Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Module P := PT.
-  Module RPO := RPO PT.
-  Export RPO.
+  Module Export RPO := RPO PT.
 
   Definition tau := mytau.
 

@@ -17,8 +17,7 @@ Require Import Arith.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 
-  Module TE := TermsEnv.TermsEnv Sig.
-  Export TE.
+  Module Export TE := TermsEnv.TermsEnv Sig.
 
   Definition activeEnv (M: Term) : Env :=
     match M with

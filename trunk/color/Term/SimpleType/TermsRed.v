@@ -15,8 +15,7 @@ Require Import TermsSubstConv.
 
 Module TermsRed (Sig : TermsSig.Signature).
 
-  Module TSC := TermsSubstConv.TermsSubstConv Sig.
-  Export TSC.
+  Module Export TSC := TermsSubstConv.TermsSubstConv Sig.
 
   Inductive Reduction (R: relation Term) : Term -> Term -> Prop :=
   | RedStep: forall M N, 

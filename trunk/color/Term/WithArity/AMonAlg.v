@@ -77,10 +77,11 @@ End MonotoneAlgebraType.
 (** * Functor with a theory of weakly monotone algebras                *)
 (***********************************************************************)
 
+Require Import ACompat.
+
 Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 
   Export MA.
-  Require Import ACompat.
 
   Notation term := (@term Sig).
   Notation rule := (@rule Sig).

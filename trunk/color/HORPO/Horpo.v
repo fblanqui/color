@@ -23,8 +23,7 @@ Require Import AccUtil.
 Module Type Precedence.
 
   Declare Module S : TermsSig.Signature.
-  Declare Module P : Poset with Definition A := S.FunctionSymbol.
-  Export P.
+  Declare Module Export P : Poset with Definition A := S.FunctionSymbol.
 
   Parameter Ord_wf : well_founded (transp gtA).
   Parameter Ord_dec : forall a b, {gtA a b} + {~gtA a b}.
@@ -34,17 +33,14 @@ End Precedence.
 Module Horpo (S : TermsSig.Signature)
              (Prec : Precedence with Module S := S).
 
-  Module T := Terms.Terms S.
-  Export T.
+  Module Export T := Terms.Terms S.
 
   Module MSetCore := MultisetList.MultisetList TermsEqset_dec.
-  Module MSet := MultisetTheory.Multiset MSetCore.
-  Export MSet.
-  Module MSetOrd := MultisetOrder.MultisetOrder MSetCore.
-  Export MSetOrd.
+  Module Export MSet := MultisetTheory.Multiset MSetCore.
 
-  Module Lex := LexOrder.LexicographicOrder Subterm_Ord Subterm_Ord.
-  Import Lex.
+  Module Export MSetOrd := MultisetOrder.MultisetOrder MSetCore.
+
+  Module Import Lex := LexOrder.LexicographicOrder Subterm_Ord Subterm_Ord.
 
   Definition TermMul := Multiset.
   Implicit Type TM : TermMul.

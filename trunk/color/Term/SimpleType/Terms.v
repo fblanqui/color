@@ -14,7 +14,6 @@ Require TermsAlgebraic.
 
 Module Terms (Sig : TermsSig.Signature).
 
-  Module TA := TermsAlgebraic.TermsAlgebraic Sig.
-  Export TA.
+  Module Export TA := TermsAlgebraic.TermsAlgebraic Sig.
 
 End Terms.

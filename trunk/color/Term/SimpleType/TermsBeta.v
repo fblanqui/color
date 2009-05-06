@@ -18,8 +18,7 @@ Require Import Setoid.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 
-  Module TR := TermsRed.TermsRed Sig.
-  Export TR.
+  Module Export TR := TermsRed.TermsRed Sig.
 
   Definition beta_subst : forall M (Mapp: isApp M)
     (MLabs: isAbs (appBodyL Mapp)),

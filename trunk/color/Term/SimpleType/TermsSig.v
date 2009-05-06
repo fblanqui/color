@@ -54,9 +54,8 @@ End SimpleTypes.
 Module Type Signature.
 
   Declare Module BT : BaseTypes.
-  Module ST := SimpleTypes BT.
-  Import ST.
-  Export ST.
+
+  Module Export ST := SimpleTypes BT.
 
    (* Function symbols, denoted as f, g, h, ... *)
   Parameter FunctionSymbol : Type.
