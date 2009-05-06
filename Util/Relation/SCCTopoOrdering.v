@@ -24,6 +24,7 @@ Require Import SortUtil.
 Require Import Permutation.
 Require Import Multiset.
 Require Import ListRepeatFree.
+Require Import ExcUtil.
 
 Section SCC_quotient.
 
@@ -161,7 +162,7 @@ left; destruct e; auto. exists x0. intuition.
 right. intuition. apply n. destruct H. exists x0. intuition.
 
 apply exists_in_list_dec. intro r.
-destruct (eq_opt_nat_dec (SCC'_tag r) (Some x)).
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag r) (Some x)).
 
 Focus 2. right. tauto.
 cut ({exists s, SCC'_tag s = Some y /\ R r s}
@@ -173,7 +174,7 @@ change ({exists s, (fun t => SCC'_tag t = Some y /\ R r t) s}
 assert ({exists s, (fun t => SCC'_tag t = Some y /\ R r t) s /\ In s Dom}
 + {~exists s, (fun t => SCC'_tag t = Some y /\ R r t) s /\In s Dom}).
 apply exists_in_list_dec. intro r0.
-destruct (eq_opt_nat_dec (SCC'_tag r0) (Some y)); destruct (R_dec r r0).
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag r0) (Some y)); destruct (R_dec r r0).
 left; auto. right; tauto. right; tauto. right; tauto.
 
 destruct H. left; destruct e0; exists x0; tauto.

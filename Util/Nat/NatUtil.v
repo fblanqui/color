@@ -223,13 +223,13 @@ Qed.
 
 Require Import RelMidex.
 
-Lemma nat_ge_dec : rel_dec ge.
+Lemma ge_dec : rel_dec ge.
 
 Proof.
 intros i j. destruct (le_lt_dec j i); intuition.
 Defined. 
 
-Lemma nat_gt_dec : rel_dec gt.
+Lemma gt_dec : rel_dec gt.
 
 Proof.
 intros i j. destruct (le_gt_dec i j); auto with arith.
@@ -239,12 +239,6 @@ Lemma lt_ge_dec : forall x y, {x < y} + {x >= y}.
 
 Proof.
 intros. destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
-Defined.
-
-Lemma eq_opt_nat_dec : forall x y : option nat, {x=y} + {~x=y}.
-
-Proof.
-decide equality. apply eq_nat_dec.
 Defined.
 
 (***********************************************************************)

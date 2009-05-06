@@ -132,9 +132,9 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Definition gt_trans := Gt.gt_trans.
 
-  Definition ge_dec := nat_ge_dec.
+  Definition ge_dec := ge_dec.
 
-  Definition gt_dec := nat_gt_dec.
+  Definition gt_dec := gt_dec.
 
   Lemma gt_WF : WF gt.
 
@@ -361,7 +361,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Proof.
     unfold rel_dec. intros.
     destruct x; destruct y.
-    destruct (nat_gt_dec n n0); auto.
+    destruct (gt_dec n n0); auto.
     left. unfold gt. trivial.
     right. unfold gt. tauto.
     right. unfold gt. tauto.
