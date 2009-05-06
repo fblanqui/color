@@ -346,7 +346,7 @@ set (p1 := Vnth_app_aux (S (arity f - S x))
 set (p2 := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0). gen p2.
 assert (i-x = S(pred(i-x))). omega. rewrite H. intros.
 assert (p2=p1). apply lt_unique. subst p2.
-repeat rewrite Vnth_cons_eq. assert (Vsub ts (Vapp_nth_aux2 x0) = v2).
+repeat rewrite Vnth_cons. assert (Vsub ts (Vapp_nth_aux2 x0) = v2).
 unfold v2. apply Veq_nth; intros. repeat rewrite Vnth_sub.
 apply Vnth_eq. refl. rewrite H0. apply Vnth_eq. refl.
 (* 2) x > i *)

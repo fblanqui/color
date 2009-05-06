@@ -353,7 +353,7 @@ Module Arctic_Eqset := Eqset_def Arctic.
 Module Arctic_Eqset_dec <: Eqset_dec.
   Module Export Eq := Arctic_Eqset.
   Definition eqA_dec := dec_beq beq_ArcticDom_ok.
-  (*FIXME: remove:
+  (*FIXME: direct proof to be removed?
   Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
   Proof.
     intros. destruct x; destruct y; try solve [right; congruence].
@@ -512,7 +512,7 @@ Module ArcticBZ_Eqset := Eqset_def ArcticBZ.
 Module ArcticBZ_Eqset_dec <: Eqset_dec.
   Module Export Eq := ArcticBZ_Eqset.
   Definition eqA_dec := dec_beq beq_ArcticBZDom_ok.
-  (*FIXME: remove:
+  (*FIXME: direct proof to be removed?
   Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
   Proof.
     intros. destruct x; destruct y; try solve [right; congruence].

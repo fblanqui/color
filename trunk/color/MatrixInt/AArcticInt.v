@@ -207,8 +207,8 @@ Module ArcticInt (AI : TArcticInt).
 
 End ArcticInt.
 
-(*FIXME: change to:
-discriminate || (left; discriminate) || (right; discriminate) ?*)
+(*FIXME: change to?
+discriminate || (left; discriminate) || (right; discriminate) *)
 Ltac arcticDiscriminate :=
   try discriminate;
     solve [left; arcticDiscriminate | right; arcticDiscriminate].

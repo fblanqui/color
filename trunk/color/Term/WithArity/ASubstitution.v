@@ -554,7 +554,7 @@ apply Vnth_eq. rewrite (misc1 x0 k). refl. rewrite H.
 assert (H2' : k < n). rewrite (misc2 x0 k). assumption.
 assert (Vnth ts H2 = Vnth ts H2').
 apply Vnth_eq. apply sym_eq. apply (misc2 x0 k). rewrite H0.
-apply Vnth_cons.
+apply Vnth_cons_aux.
 absurd (x0+1+n < x0+2+k); omega. absurd (x0+1+n < x0+2+k); omega.
 refl.
 Qed.

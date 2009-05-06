@@ -135,8 +135,8 @@ rewrite IHn in H; repeat destruct H.
 exists (S x); exists (lt_n_S x0); clear IHn.
 
 rewrite Hv; rewrite Hw.
-rewrite (Vnth_cons (Vtail v) (Vhead v) (lt_n_S x0) x0).
-rewrite (Vnth_cons (Vtail w) (Vhead w) (lt_n_S x0) x0).
+rewrite (Vnth_cons_aux (Vtail v) (Vhead v) (lt_n_S x0) x0).
+rewrite (Vnth_cons_aux (Vtail w) (Vhead w) (lt_n_S x0) x0).
 auto.
 
 exists 0; exists (lt_O_Sn n); rewrite Hv; rewrite Hw;
@@ -155,8 +155,8 @@ auto.
 
 left.
 rewrite Hv in H; rewrite Hw in H; generalize (lt_S_n x0); intro.
-rewrite (Vnth_cons (Vtail v) (Vhead v) x0 H0) in H.
-rewrite (Vnth_cons (Vtail w) (Vhead w) x0 H0) in H.
+rewrite (Vnth_cons_aux (Vtail v) (Vhead v) x0 H0) in H.
+rewrite (Vnth_cons_aux (Vtail w) (Vhead w) x0 H0) in H.
 apply Is_true_eq_left; rewrite IHn; exists x; exists H0; trivial.
 Qed.
 

@@ -363,7 +363,7 @@ rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast. rewrite Vnth_app.
 destruct (le_gt_dec i i0). 2: absurd_arith. assert (l0=l1). apply le_unique.
 subst l1. set (h := Vnth_app_aux (S j) (Vnth_cast_aux e ip) l0). gen h.
 assert (i0-i=S(pred(i0-i))). omega. rewrite H. intro.
-repeat rewrite Vnth_cons_eq. apply Vnth_eq. refl.
+repeat rewrite Vnth_cons. apply Vnth_eq. refl.
 (* 2) i > i0 *)
 rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast.
 rewrite Vnth_app. destruct (le_gt_dec i i0). absurd_arith.
