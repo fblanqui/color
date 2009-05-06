@@ -13,7 +13,7 @@ COQC := $(COQBIN)coqc
 
 COQMAKE := $(MAKE) -f Makefile.coq
 
-VFILES := $(shell find . -name '*.v' -not -name 'Extraction.v')
+VFILES := $(shell find . -name '*.v' -not -name Extraction.v -not -name ProofChecker.v)
 
 default: Makefile.coq
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
