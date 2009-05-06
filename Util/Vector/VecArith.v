@@ -285,11 +285,8 @@ End VectorArith.
 (** Arithmetic over vectors of natural numbers *)
 Module OrdVectorArith (OSRT : OrdSemiRingType).
 
-  Module VA := VectorArith OSRT.SR.
-  Export VA.
-
-  Module OSR := OrdSemiRing OSRT.
-  Export OSR.
+  Module Export VA := VectorArith OSRT.SR.
+  Module Export OSR := OrdSemiRing OSRT.
 
 (***********************************************************************)
 (** [ge] on vectors *)

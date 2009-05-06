@@ -19,8 +19,7 @@ Require Import ListExtras.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 
-  Module TC := TermsConv.TermsConv Sig.
-  Export TC.
+  Module Export TC := TermsConv.TermsConv Sig.
 
   Notation "{x/ N }" := (Some N::nil).
   Notation "{x/ N ,y/ M }" := (Some N::Some M::nil).

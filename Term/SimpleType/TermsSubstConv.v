@@ -16,12 +16,13 @@ Require Import Arith.
 
 Module TermsSubstConv (Sig : TermsSig.Signature).
 
-  Module TS := TermsSubst.TermsSubst Sig.
-  Export TS.
+  Module Export TS := TermsSubst.TermsSubst Sig.
 
   Record subst_conv_with (G1: Subst) (G2: Subst) (Q: EnvSubst) : Prop := {
-    sc_lr: forall x y T, Q.(envSub) x y -> G1 |-> x/T  -> exists T', G2 |-> y/T' /\ T ~(Q) T';
-    sc_rl: forall x y T',Q.(envSub) x y -> G2 |-> y/T' -> exists T,  G1 |-> x/T /\ T ~(Q) T';
+    sc_lr: forall x y T, Q.(envSub) x y -> G1 |-> x/T  ->
+      exists T', G2 |-> y/T' /\ T ~(Q) T';
+    sc_rl: forall x y T',Q.(envSub) x y -> G2 |-> y/T' ->
+      exists T,  G1 |-> x/T /\ T ~(Q) T';
     sc_inj_l: forall x T, G1 |-> x/T -> exists y, Q.(envSub) x y;
     sc_inj_r: forall y T, G2 |-> y/T -> exists x, Q.(envSub) x y
   }.

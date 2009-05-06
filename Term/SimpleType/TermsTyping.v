@@ -18,8 +18,7 @@ Require Import Eqdep_dec.
 
 Module TermsTyping (Sig : TermsSig.Signature).
 
-  Module TD := TermsDef.TermsDef Sig.
-  Export TD.
+  Module Export TD := TermsDef.TermsDef Sig.
 
   Lemma baseType_dec : forall A, {isBaseType A} + {isArrowType A}.
 
@@ -351,8 +350,7 @@ Module TermsEqset <: Eqset := Eqset_def TermsSet.
 
 Module TermsEqset_dec <: Eqset_dec.
 
-  Module Eq := TermsEqset.
-  Export Eq.
+  Module Export Eq := TermsEqset.
 
   Definition eqA_dec := eq_Term_dec.
 

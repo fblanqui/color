@@ -16,8 +16,7 @@ Require Import TermsBuilding.
 
 Module TermsPos (Sig : TermsSig.Signature).
 
-  Module TB := TermsBuilding.TermsBuilding Sig.
-  Export TB.
+  Module Export TB := TermsBuilding.TermsBuilding Sig.
 
    (* Pos expresses position in preterm *)
   Inductive Pos : Term -> Type :=

@@ -20,8 +20,7 @@ Require Import HorpoComp.
 Module HorpoWf (S : TermsSig.Signature) 
                (Prec : Horpo.Precedence with Module S := S).
 
-  Module HC := HorpoComp.HorpoComp S Prec.
-  Export HC.
+  Module Export HC := HorpoComp.HorpoComp S Prec.
 
   Lemma acc_mul_acc_wfmul_aux : forall (M: Multiset), 
     Acc horpo_mul_lt M ->

@@ -24,8 +24,7 @@ Require Import ListExtras.
 
 Module TermsConv (Sig : TermsSig.Signature).
 
-  Module TP := TermsPos.TermsPos Sig.
-  Export TP.
+  Module Export TP := TermsPos.TermsPos Sig.
 
   Record EnvSubst : Type := build_envSub { 
     envSub:     relation nat;

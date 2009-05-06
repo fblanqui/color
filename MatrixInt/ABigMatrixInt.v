@@ -301,8 +301,8 @@ Module MatrixInt (MI : TMatrixInt).
   End MonotoneAlgebra.
 
   Export MonotoneAlgebra.
-  Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
-  Export MAR.
+
+  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
   Ltac matrixInt_monotonicity := 
     let f := fresh "f" in

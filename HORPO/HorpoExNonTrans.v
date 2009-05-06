@@ -34,8 +34,7 @@ End BT.
 Module Sig <: Signature.
 
   Module BT := BT.
-  Module ST := SimpleTypes BT.
-  Export ST.
+  Module Export ST := SimpleTypes BT.
 
   Inductive FunctionSymbol_aux :=
   | a
@@ -66,15 +65,13 @@ Module Terms := Terms Sig.
 
 Module P <: Precedence.
 
-  Module S := Sig.
-  Import S.
+  Module Import S := Sig.
 
   Module FS <: SetA.
     Definition A := Sig.FunctionSymbol.
   End FS.
 
-  Module FS_eq := Eqset_def FS.
-  Import FS_eq.
+  Module Import FS_eq := Eqset_def FS.
 
   Module P <: Poset.
 

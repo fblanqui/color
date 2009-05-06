@@ -16,8 +16,7 @@ Require Import TermsTyping.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
-  Module TS := TermsTyping.TermsTyping Sig.
-  Export TS.
+  Module Export TS := TermsTyping.TermsTyping Sig.
 
   Implicit Types M N : Term.
 

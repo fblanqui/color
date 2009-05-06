@@ -18,8 +18,8 @@ Require Import Setoid.
 Module HorpoComp (S : TermsSig.Signature)
   (Prec : Horpo.Precedence with Module S := S).
 
-  Module Comp := Computability.Computability S Prec.
-  Export Comp.
+  Module Export Comp := Computability.Computability S Prec.
+
   Import List.
 
   Definition horpo_lt := transp horpo.

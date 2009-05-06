@@ -17,8 +17,7 @@ Require Import Setoid.
 
 Module TermsAlgebraic (Sig : TermsSig.Signature).
 
-  Module TE := TermsEta.TermsEta Sig.
-  Export TE.
+  Module Export TE := TermsEta.TermsEta Sig.
 
   Inductive algebraic: Term -> Prop :=
   | AlgVar: forall M,

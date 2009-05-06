@@ -254,11 +254,8 @@ End LexPair.
 
 Module LexicographicOrder (A_ord B_ord : Ord).
 
-  Module A_ext := OrdLemmas A_ord.
-  Import A_ext.
-
-  Module B_ext := OrdLemmas B_ord.
-  Import B_ext.
+  Module Import A_ext := OrdLemmas A_ord.
+  Module Import B_ext := OrdLemmas B_ord.
  
 (* --- Some shortcuts for convenience *)
   Notation L := A_ord.S.A.
@@ -434,14 +431,9 @@ Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
   Require Import Notations.
   Require Import Relation_Operators.
 
-  Module A_ext := OrdLemmas A_ord.
-  Import A_ext.
-
-  Module B_ext := OrdLemmas B_ord.
-  Import B_ext.
-
-  Module C_ext := OrdLemmas C_ord.
-  Import C_ext.
+  Module Import A_ext := OrdLemmas A_ord.
+  Module Import B_ext := OrdLemmas B_ord.
+  Module Import C_ext := OrdLemmas C_ord.
  
 (* --- Some shortcuts for convenience *)
   Notation L := A_ord.S.A.

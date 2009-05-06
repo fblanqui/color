@@ -22,8 +22,7 @@ Require Omega.
 
 Module TermsLifting (Sig : TermsSig.Signature).
 
-  Module TB := TermsManip.TermsManip Sig.
-  Export TB.
+  Module Export TB := TermsManip.TermsManip Sig.
 
   Fixpoint prelift_aux (n: nat) (P: Preterm) (k: nat) {struct P} : Preterm :=
     match P with

@@ -17,11 +17,8 @@ Require Import AccUtil.
 
 Module LPO (PT : VPrecedenceType).
 
-  Module P := VPrecedence PT.
-  Export P.
-
-  Module S := Status PT.
-  Export S.
+  Module Export P := VPrecedence PT.
+  Module Export S := Status PT.
 
   Inductive lt_lpo : relation term :=
     | lpo1 : forall f g ss ts, g <F f -> 
@@ -45,8 +42,7 @@ Require Import VRPO_Type.
 Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Module P := PT.
-  Module LPO := LPO PT.
-  Export LPO.
+  Module Export LPO := LPO PT.
     
   Definition tau := mytau.
 

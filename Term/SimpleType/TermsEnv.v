@@ -18,8 +18,7 @@ Require Import Setoid.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 
-  Module TL := TermsLifting.TermsLifting Sig.
-  Export TL.
+  Module Export TL := TermsLifting.TermsLifting Sig.
 
   Definition emptyEnv E := forall p, E |= p :! .
 

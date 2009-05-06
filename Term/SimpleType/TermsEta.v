@@ -15,8 +15,7 @@ Require TermsBeta.
 
 Module TermsEta (Sig : TermsSig.Signature).
 
-  Module TB := TermsBeta.TermsBeta Sig.
-  Export TB.
+  Module Export TB := TermsBeta.TermsBeta Sig.
 
   Definition Eta_preterm Pt A := \A => prelift Pt 1 @@ %0.
 

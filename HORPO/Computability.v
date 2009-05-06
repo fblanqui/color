@@ -21,8 +21,7 @@ Require Import AccUtil.
 Module Computability (S : TermsSig.Signature) 
                      (Prec : Horpo.Precedence with Module S := S).
 
-  Module H := Horpo.Horpo S Prec.
-  Export H.
+  Module Export H := Horpo.Horpo S Prec.
 
 Section Computability_def.
   

@@ -26,8 +26,7 @@ Require Import AccUtil.
 
 Module MultisetOrder (MC: MultisetCore).
 
-  Module MSet := MultisetTheory.Multiset MC.
-  Import MSet.
+  Module Import MSet := MultisetTheory.Multiset MC.
 
 Section OrderDefinition. 
 
