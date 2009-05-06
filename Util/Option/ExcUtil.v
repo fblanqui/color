@@ -7,12 +7,24 @@ See the COPYRIGHTS and LICENSE files.
   Utility results about the option/exception type.
 *)
 
+Set Implicit Arguments.
+
 Require Import Bool.
 Require Import ListForall.
 Require Import ListUtil.
 Require Import Program.
 
-Set Implicit Arguments.
+Section dec.
+
+Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}).
+
+Lemma eq_opt_dec : forall x y : option A, {x=y}+{~x=y}.
+
+Proof.
+decide equality.
+Qed.
+
+End dec.
 
 Section ExcUtil.
 
@@ -87,29 +99,5 @@ Program Fixpoint map_exc (l : list A) : Exc (list B) :=
   end.
 
 End MapExc.
-
-(* Anomaly: *)
-(*
-Section Error.
-
-Variable A B : Type.
-Variable f : A -> B.
-
-Program Fixpoint map_exc (l : list A) : Exc (list B) :=
-  match l with
-  | [] => value []
-  | cons x xs => 
-      match f x with
-      | error => error
-      | value v =>
-          match map_exc xs with
-          | error => error
-          | value vs => value (v :: vs)
-          end
-      end
-  end.
-
-End Error.
-*)
 
 Implicit Arguments exc_to_bool [P].
