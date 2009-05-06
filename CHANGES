@@ -1,3 +1,8 @@
+09-05-06: [Blanqui]
+- added definitions and lemmas on vectors (sub-vector Vsub, etc.)
+- Term/WithArity/AReduct: list of reducts of a term and proof that
+  rewriting is finitely branching
+
 09-04-29: [Blanqui]
 - added (ordered) semi-rings, matrices and matrix interpretations on BigN
 - removed antisymmetry and irreflexivity assumptions for ordered semirings
