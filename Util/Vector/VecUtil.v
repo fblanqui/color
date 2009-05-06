@@ -273,9 +273,7 @@ Proof.
 intros. VSntac v. simpl. apply Vnth_eq. reflexivity.
 Qed.
 
-(*FIXME: rename Vnth_cons_eq into Vnth_cons *)
-
-Lemma Vnth_cons : forall k n (v : vec n) a (H1 : S k < S n) (H2 : k < n),
+Lemma Vnth_cons_aux : forall k n (v : vec n) a (H1 : S k < S n) (H2 : k < n),
   Vnth (Vcons a v) H1 = Vnth v H2.
 
 Proof.
@@ -283,17 +281,11 @@ intros. simpl. assert (H : lt_S_n H1 = H2). apply lt_unique.
 rewrite H. reflexivity.
 Qed.
 
-Lemma Vnth_cons_eq_aux : forall n i', S i' < S n -> i' < n.
+Lemma Vnth_cons : forall x n (v : vec n) i (h : S i < S n),
+  Vnth (Vcons x v) h = Vnth v (lt_S_n h).
 
 Proof.
-intros. omega.
-Qed.
-
-Lemma Vnth_cons_eq : forall x n (v : vec n) i (h : S i < S n),
-  Vnth (Vcons x v) h = Vnth v (Vnth_cons_eq_aux h).
-
-Proof.
-intros. apply Vnth_cons.
+intros. apply Vnth_cons_aux.
 Qed.
 
 Lemma Veq_nth : forall n (v v' : vec n), 
@@ -325,9 +317,9 @@ subst H1. generalize dependent k. generalize dependent n. intro n. elim n.
   simpl. reflexivity.
   simpl Vadd.
   assert (H' : k < S n'). auto with arith.
-  rewrite (Vnth_cons (Vadd (Vtail v) a) (Vhead v) (le_S H) H').
+  rewrite (Vnth_cons_aux (Vadd (Vtail v) a) (Vhead v) (le_S H) H').
   assert (H'' : k < n'). auto with arith.
-  rewrite (Vnth_cons (Vtail v) (Vhead v) H H'').
+  rewrite (Vnth_cons_aux (Vtail v) (Vhead v) H H'').
   generalize (Hrec (Vtail v) k H''). intro H0.
   assert (H1 : H' = le_S H''). apply lt_unique. rewrite H1. clear H1.
   hyp.
@@ -341,7 +333,7 @@ intros. subst k. assert (H2 : H1 = lt_n_Sn n). apply lt_unique. subst H1.
 generalize dependent v. intro v. elim v.
 simpl. reflexivity.
 intros a' p' v' Hrec. simpl Vadd.
-rewrite (Vnth_cons (Vadd v' a) a' (lt_n_Sn (S p')) (lt_n_Sn p')).
+rewrite (Vnth_cons_aux (Vadd v' a) a' (lt_n_Sn (S p')) (lt_n_Sn p')).
 hyp.
 Qed.
 

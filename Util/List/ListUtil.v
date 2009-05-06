@@ -1676,14 +1676,13 @@ Section lookup_dep.
 
   Lemma lookup_dep_prop (l : list {el : A & B el}) : 
     (forall x, In x l -> P (projT2 x)) -> 
-    (forall a : A, P (@default a)) -> 
-    P (lookup_dep l).
+    (forall a : A, P (@default a)) -> P (lookup_dep l).
+
   Proof with auto with datatypes.
     induction l; intros.
     apply H0.
     simpl. destruct a. destruct (@eqA_dec el x).
-     (* FIXME, it should be possible to replace the following 3 lines with
-        something simpler, but I'm not sure how... *)
+
     unfold eq_rect, lookup_dep_obligation_1.
     set (w := eq_ind_r (fun el => x = el) refl e).
     dependent inversion w.
