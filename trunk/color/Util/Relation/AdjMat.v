@@ -24,8 +24,7 @@ Require Import NatUtil.
 Require Import Log2.
 Require Import LogicUtil.
 
-Module BMatrix := Matrix BOrdSemiRingT.
-Export BMatrix.
+Module Export BMatrix := Matrix BOrdSemiRingT.
 
 (***********************************************************************)
 (** Definition of the graph of a boolean matrix *)
@@ -225,14 +224,14 @@ destruct (le_gt_dec dim x). discriminate.
 destruct (le_gt_dec dim y). discriminate.
 unfold id_matrix in H; rewrite Vbuild_nth in H.
 destruct (eq_nat_dec x y). auto.
-unfold id_vec, zero_vec in H. rewrite Vnth_Vreplace_notReplaced in H.
+unfold id_vec, zero_vec in H. rewrite Vnth_replace_neq in H.
 rewrite Vnth_const in H. discriminate. assumption.
 destruct H; destruct H0; unfold mat_unbound.
 destruct (le_gt_dec dim x); auto with *.
 destruct (le_gt_dec dim y); auto with *.
 unfold id_matrix; rewrite Vbuild_nth.
 unfold id_vec. subst x. replace g0 with g.
-apply Vnth_Vreplace_replaced.
+apply Vnth_replace.
 apply lt_unique.
 Qed.
 
