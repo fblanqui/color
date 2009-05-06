@@ -1049,8 +1049,8 @@ Lemma beq_vec_ok_in2 : forall n (v : vec n)
   v = w -> beq_vec beq v w = true.
 
 Proof.
-induction v; intros. VOtac. reflexivity. VSntac w. rewrite H0 in H. Veqtac. subst a.
-simpl. apply andb_intro. set (a := Vhead w).
+induction v; intros. VOtac. reflexivity. VSntac w. rewrite H0 in H. Veqtac.
+subst a. simpl. apply andb_intro. set (a := Vhead w).
 assert (Vin a (Vcons a v)). simpl. auto.
 ded (hyp _ H a). rewrite H1. reflexivity.
 apply IHv. intros. apply hyp. simpl. auto. exact H3.
