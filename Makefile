@@ -13,12 +13,18 @@ COQC := $(COQBIN)coqc
 
 COQMAKE := $(MAKE) -f Makefile.coq
 
+EXT_VFILES := ProofChecker/Extraction.v ProofChecker/ProofChecker.v
+
 VFILES := $(shell find . -name '*.v' -not -name Extraction.v -not -name ProofChecker.v)
 
 default: Makefile.coq
 	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
 
-extraction: ProofChecker/Extraction.vo
+extraction: Makefile.ext ProofChecker/Extraction.vo
+
+Makefile.ext:
+	coq_makefile -R . CoLoR $(VFILES) $(EXT_VFILES) > Makefile.ext
+	$(MAKE) -f Makefile.ext depend
 
 Makefile.coq:
 	$(MAKE) config
@@ -31,7 +37,7 @@ clean:
 	rm -f `find . -name \*~`
 	rm -f doc/CoLoR.*.html doc/index.html
 	rm -f -r certifiedCode
-	$(COQMAKE) clean
+	$(MAKE) clean
 
 tags:
 	coqtags `find . -name \*.v`
@@ -43,8 +49,8 @@ doc:
 ./certifiedCode:
 	mkdir -p certifiedCode
 
-ProofChecker/Extraction.vo: ProofChecker/Extraction.v ProofChecker/ProofChecker.vo ./certifiedCode
-	$(COQC) ProofChecker/Extraction.v
+ProofChecker/Extraction.vo: ./certifiedCode
+	$(MAKE) -f Makefile.ext $@
 	mv *.ml* ./certifiedCode
 
 ADR := login-linux.inria.fr:liama/www/color
