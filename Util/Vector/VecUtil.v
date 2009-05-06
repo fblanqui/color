@@ -273,12 +273,27 @@ Proof.
 intros. VSntac v. simpl. apply Vnth_eq. reflexivity.
 Qed.
 
+(*FIXME: rename Vnth_cons_eq into Vnth_cons *)
+
 Lemma Vnth_cons : forall k n (v : vec n) a (H1 : S k < S n) (H2 : k < n),
   Vnth (Vcons a v) H1 = Vnth v H2.
 
 Proof.
 intros. simpl. assert (H : lt_S_n H1 = H2). apply lt_unique.
 rewrite H. reflexivity.
+Qed.
+
+Lemma Vnth_cons_eq_aux : forall n i', S i' < S n -> i' < n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vnth_cons_eq : forall x n (v : vec n) i (h : S i < S n),
+  Vnth (Vcons x v) h = Vnth v (Vnth_cons_eq_aux h).
+
+Proof.
+intros. apply Vnth_cons.
 Qed.
 
 Lemma Veq_nth : forall n (v v' : vec n), 
@@ -338,6 +353,22 @@ destruct i. trivial.
 simpl. rewrite IHn. reflexivity.
 Qed.
 
+Lemma Vnth_cast_aux : forall n n' k, n = n' -> k < n' -> k < n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vnth_cast : forall n (v : vec n) n' (e : n = n') k (h : k < n'),
+  Vnth (Vcast v e) h = Vnth v (Vnth_cast_aux e h).
+
+Proof.
+induction v; simpl. destruct n'. intros. absurd_arith. discr.
+destruct n'. discr. intro e. inversion e. subst n'.
+destruct k. simpl. reflexivity. intro h. simpl. rewrite IHv. apply Vnth_eq.
+reflexivity.
+Qed.
+
 (***********************************************************************)
 (** replacement of i-th element *)
 
@@ -379,6 +410,14 @@ elimtype False. omega.
 VSntac v. destruct i; destruct j; trivial.
 elimtype False. omega.
 simpl. rewrite IHn. trivial. omega.
+Qed.
+
+Lemma Vreplace_pi : forall n (v : vec n) i1 i2 (h1 : i1 < n) (h2 : i2 < n) x,
+  i1 = i2 -> Vreplace v h1 x = Vreplace v h2 x.
+
+Proof.
+intros. subst i2. gen h2. gen h1. gen i1. elim v; clear v; simpl; intros.
+absurd_arith. destruct i1. reflexivity. apply Vtail_eq. apply H.
 Qed.
 
 (***********************************************************************)
@@ -466,6 +505,46 @@ Lemma Vapp_eq : forall n1 (v1 v1' : vec n1) n2 (v2 v2' : vec n2),
 
 Proof.
 intros. rewrite H. rewrite H0. reflexivity.
+Qed.
+
+Lemma Vnth_app_aux : forall n1 n2 i, i < n1+n2 -> n1 <= i -> i - n1 < n2.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vnth_app_aux [n1 n2 i].
+
+Lemma Vnth_app : forall n1 (v1 : vec n1) n2 (v2 : vec n2) i (h : i < n1+n2),
+  Vnth (Vapp v1 v2) h =
+  match le_gt_dec n1 i with
+    | left p => Vnth v2 (Vnth_app_aux h p)
+    | right p => Vnth v1 p
+  end.
+
+Proof.
+induction v1; intros. simpl. apply Vnth_eq. omega.
+destruct i. reflexivity. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h)). gen H.
+case (le_gt_dec n i); simpl; intros.
+(* case 1 *)
+transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h) l)). hyp.
+apply Vnth_eq. omega.
+(* case 2 *)
+transitivity (Vnth v1 g). hyp. apply Vnth_eq. reflexivity.
+Qed.
+
+Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_cast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n2' (e : n2 = n2'),
+  Vapp v1 (Vcast v2 e) = Vcast (Vapp v1 v2) (Vapp_cast_aux n1 e).
+
+Proof.
+induction v1; simpl; intros. apply Vcast_prf_eq. apply Vtail_eq.
+rewrite IHv1. apply Vcast_prf_eq.
 Qed.
 
 (***********************************************************************)
@@ -570,6 +649,13 @@ Qed.
 
 Implicit Arguments Vin_cast_elim [m n H v x].
 
+Lemma Vin_cast : forall m n (H : m=n) (v : vec m) x,
+  Vin x (Vcast v H) <-> Vin x v.
+
+Proof.
+intros m n H. case H. intros. rewrite Vcast_refl. tauto.
+Qed.
+
 Lemma Vin_appl : forall x n1 (v1 : vec n1) n2 (v2 : vec n2),
   Vin x v1 -> Vin x (Vapp v1 v2).
 
@@ -620,8 +706,205 @@ apply Vtail_eq. apply Vcast_prf_eq.
 Qed.
 
 (***********************************************************************)
-(** proposition saying that all the elements of a vector satisfy some
-predicate *)
+(** sub-vector: Vsub v (h:i+k<=n) = [v_i, .., v_{i+k-1}] *)
+
+Lemma Vsub_aux1 : forall i k' n : nat, i + S k' <= n -> i < n.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vsub_aux1 [i k' n].
+
+Lemma Vsub_aux2: forall i k' n : nat, i + S k' <= n -> S i + k' <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vsub_aux2 [i k' n].
+
+Fixpoint Vsub n (v : vec n) i k {struct k}: i+k<=n -> vec k :=
+  match k as k return i+k<=n -> vec k with
+    | 0 => fun _ => Vnil
+    | S k' => fun h =>
+      Vcons (Vnth v (Vsub_aux1 h)) (Vsub v (S i) k' (Vsub_aux2 h))
+  end.
+
+Implicit Arguments Vsub [n i k].
+
+Lemma Vnth_sub_aux : forall n i k j, i+k<=n -> j<k -> i+j<n.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vnth_sub_aux [n i k j].
+
+Lemma Vnth_sub : forall k n (v : vec n) i (h : i+k<=n) j (p : j<k),
+  Vnth (Vsub v h) p = Vnth v (Vnth_sub_aux h p).
+
+Proof.
+induction k; intros. absurd_arith. simpl. destruct j. apply Vnth_eq. omega.
+rewrite IHk. apply Vnth_eq. omega.
+Qed.
+
+Lemma Vsub_cons_aux : forall n i k, S i + k <= S n -> i + k <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vsub_cons : forall x i k n (v : vec n) (h : S i + k <= S n),
+  Vsub (Vcons x v) h = Vsub v (Vsub_cons_aux h).
+
+Proof.
+intros. apply Veq_nth. intros. repeat rewrite Vnth_sub. simpl.
+apply Vnth_eq. omega.
+Qed.
+
+Lemma Vcons_nth_aux1 : forall n i k, i<n -> S i+k<=n -> i+S k<= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vcons_nth : forall n (v : vec n) i k (h1 : i<n) (h2 : S i + k <= n),
+  Vcons (Vnth v h1) (Vsub v h2) = Vsub v (Vcons_nth_aux1 h1 h2).
+
+Proof.
+intros. apply Veq_nth; intros.
+destruct i0; simpl; repeat rewrite Vnth_sub; apply Vnth_eq; omega.
+Qed.
+
+Lemma Vsub_cons_intro_aux : forall n (v : vec n) i k (h : i+k<=n)
+  (h1 : i<n) (h2 : S i + pred k <= n) (e : S (pred k) = k),
+  Vsub v h = Vcast (Vcons (Vnth v h1) (Vsub v h2)) e.
+
+Proof.
+intros. apply Veq_nth; intros. rewrite Vnth_cast.
+destruct i0; simpl; repeat rewrite Vnth_sub; apply Vnth_eq; omega.
+Qed.
+
+Lemma Vsub_cons_intro_aux1 : forall n i k, i+k<=n -> k>0 -> i<n.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vsub_cons_intro_aux1 [n i k].
+
+Lemma Vsub_cons_intro_aux2 : forall n i k, i+k<=n -> k>0 -> S i+pred k <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vsub_cons_intro_aux2 [n i k].
+
+Lemma Vsub_cons_intro_aux3 : forall k, k>0 -> S(pred k) = k.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vsub_cons_intro :  forall n (v : vec n) i k (h : i+k<=n) (p : k>0),
+  Vsub v h = Vcast (Vcons (Vnth v (Vsub_cons_intro_aux1 h p))
+    (Vsub v (Vsub_cons_intro_aux2 h p))) (Vsub_cons_intro_aux3 p).
+
+Proof.
+intros. apply Vsub_cons_intro_aux.
+Qed.
+
+Lemma Vapp_sub_aux : forall n (v : vec n) i
+  (h1 : 0 + i <= n) (h2 : i + (n - i) <= n) (e : i + (n - i) = n),
+  v = Vcast (Vapp (Vsub v h1) (Vsub v h2)) e.
+
+Proof.
+induction v; intros.
+(* Vnil *)
+apply Veq_nth; intros. absurd_arith.
+(* Vcons *)
+destruct i; simpl; apply Vtail_eq; repeat rewrite Vsub_cons.
+(* i = 0 *)
+apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_sub.
+apply Vnth_eq. omega.
+(* i > 0 *)
+apply IHv.
+Qed.
+
+Lemma Vapp_sub_aux1 : forall n i, i <= n -> 0 + i <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_sub_aux2 : forall n i, i <= n -> i + (n - i) <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_sub_aux3 : forall n i, i <= n -> i + (n - i) = n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_sub : forall n (v : vec n) i (h : i<=n),
+  v = Vcast (Vapp (Vsub v (Vapp_sub_aux1 h)) (Vsub v (Vapp_sub_aux2 h)))
+        (Vapp_sub_aux3 h).
+
+Proof.
+intros. apply Vapp_sub_aux.
+Qed.
+
+Lemma Vapp_nth_aux : forall n (v : vec n) i (h1 : 0 + i <= n) (h2 : i < n)
+  (h3 : S i + (n - S i) <= n) (e : i + S (n - S i) = n),
+  v = Vcast (Vapp (Vsub v h1) (Vcons (Vnth v h2) (Vsub v h3))) e.
+
+Proof.
+induction v; intros.
+(* Vnil *)
+apply Veq_nth; intros. absurd_arith.
+(* Vcons *)
+destruct i; simpl; apply Vtail_eq; repeat rewrite Vsub_cons.
+(* i = 0 *)
+apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_sub.
+apply Vnth_eq. omega.
+(* i > 0 *)
+apply IHv.
+Qed.
+
+Lemma Vapp_nth_aux1 : forall n i, i < n -> 0 + i <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_nth_aux2 : forall n i, i < n -> S i + (n - S i) <= n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_nth_aux3 : forall n i, i < n -> i + S (n - S i) = n.
+
+Proof.
+intros. omega.
+Qed.
+
+Lemma Vapp_nth : forall n (v : vec n) i (h : i<n),
+  v = Vcast (Vapp (Vsub v (Vapp_nth_aux1 h))
+    (Vcons (Vnth v h) (Vsub v (Vapp_nth_aux2 h))))
+        (Vapp_nth_aux3 h).
+
+Proof.
+intros. apply Vapp_nth_aux.
+Qed.
+
+(***********************************************************************)
+(** proposition saying that every element satisfies some predicate *)
 
 Fixpoint Vforall (P : A->Prop) n (v : vec n) { struct v } : Prop :=
   match v with
@@ -1076,6 +1359,8 @@ Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
 Implicit Arguments beq_vec_ok_in2 [A beq n v w].
 Implicit Arguments in_list_of_vec [A n v x].
 Implicit Arguments Vforall_nth [A P n v i].
+Implicit Arguments Vin_cast [A m n H v x].
+Implicit Arguments Vsub [A n i k].
 
 (***********************************************************************)
 (** tactics *)
@@ -1091,7 +1376,8 @@ Ltac VSntac y :=
       (assert (H : y = Vcons (Vhead y) (Vtail y)); [apply VSn_eq | rewrite H])
   end.
 
-Ltac castrefl h := rewrite (UIP_refl eq_nat_dec h); rewrite Vcast_refl; reflexivity.
+Ltac castrefl h :=
+  rewrite (UIP_refl eq_nat_dec h); rewrite Vcast_refl; reflexivity.
 
 (***********************************************************************)
 (** map *)
