@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Adam Koprowski, 2009-03-27
 
-  Utility results about the option/exception type.
+Utility results about the option/exception type.
 *)
 
 Set Implicit Arguments.
@@ -13,6 +13,12 @@ Require Import Bool.
 Require Import ListForall.
 Require Import ListUtil.
 Require Import Program.
+
+Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
+
+Proof.
+intros. inversion H. auto.
+Qed.
 
 Section dec.
 
