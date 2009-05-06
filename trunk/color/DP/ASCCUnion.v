@@ -28,6 +28,7 @@ Require Import Setoid.
 Require Import SN.
 Require Import VecUtil.
 Require Import GDomainBij.
+Require Import ExcUtil.
 
 Section S.
 
@@ -251,7 +252,7 @@ Fixpoint SCC'_list_aux i L {struct L} :=
   match L with
     | nil => nil
     | x :: q =>
-      match eq_opt_nat_dec (SCC'_tag M HM x) (Some i) with
+      match eq_opt_dec eq_nat_dec (SCC'_tag M HM x) (Some i) with
         | left _ => x :: @SCC'_list_aux i q
         |right _ => @SCC'_list_aux i q
       end
@@ -263,11 +264,11 @@ Lemma SCC'_list_aux_exact : forall i L r,
 Proof.
 intros. induction L. simpl in *. tauto.
 split; intro. simpl in *.
-destruct (eq_opt_nat_dec (SCC'_tag M HM a) (Some i));
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag M HM a) (Some i));
 destruct (rule_eq_dec a r); simpl in *; intuition.
 subst a; tauto.
 destruct H. simpl in *.
-destruct (eq_opt_nat_dec (SCC'_tag M HM a) (Some i));
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag M HM a) (Some i));
 destruct H; simpl in *; try subst a; tauto.
 Qed.
 
@@ -277,7 +278,7 @@ Lemma repeat_free_SCC'_list_aux : forall i L,
 Proof.
 induction L; intros; simpl. tauto.
 simpl in H. destruct H.
-destruct (eq_opt_nat_dec (SCC'_tag M HM a) (Some i)); try tauto.
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag M HM a) (Some i)); try tauto.
 split. rewrite SCC'_list_aux_exact. tauto. tauto.
 Qed.
 
