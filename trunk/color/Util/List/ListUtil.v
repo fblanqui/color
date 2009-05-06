@@ -29,7 +29,7 @@ Ltac elt_type l :=
   end.
 
 (***********************************************************************)
-(** nil *)
+(** empty list *)
 
 Section nil.
 
@@ -329,7 +329,7 @@ Qed.
 End head_notNil.
 
 (***********************************************************************)
-(** filter *)
+(** list filtering *)
 
 Section filter.
 
@@ -346,6 +346,22 @@ Fixpoint filter (l : list A) : list A :=
   end.
 
 End filter.
+
+Section filter_opt.
+
+Variables (A B : Type) (f : A -> option B).
+
+Fixpoint filter_opt (l : list A) : list B :=
+  match l with
+    | nil => nil
+    | cons a m =>
+      match f a with
+        | Some b => cons b (filter_opt m)
+        | _ => filter_opt m
+      end
+  end.
+
+End filter_opt.
 
 (***********************************************************************)
 (** membership *)
@@ -775,6 +791,14 @@ Lemma in_map_elim : forall x l, In x (map f l) -> exists y, In y l /\ x = f y.
 Proof.
 induction l; simpl; intros. contradiction. destruct H.
 exists a. auto. ded (IHl H). do 2 destruct H0. exists x0. auto.
+Qed.
+
+Lemma map_eq : forall (g : A->B) l,
+  (forall x, In x l -> f x = g x) -> map f l = map g l.
+
+Proof.
+induction l; simpl; intros. refl. apply cons_eq. ded (H a). intuition.
+apply IHl. intro. ded (H x). intuition.
 Qed.
 
 End map.
