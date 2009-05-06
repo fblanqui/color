@@ -130,8 +130,7 @@ intros. simpl. auto.
 Qed.
 
 Lemma inject_terms_nth : forall i n (ts : terms n) (H : Vforall max_le ts)
-  (ip : i < n), 
-  Vnth (inject_terms H) ip = inject_term (Vforall_nth max_le ts ip H).
+  (ip : i < n), Vnth (inject_terms H) ip = inject_term (Vforall_nth ip H).
 
 Proof.
   induction i; intros.

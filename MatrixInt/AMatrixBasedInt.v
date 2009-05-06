@@ -590,7 +590,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
         (fun (t : bterm k) => mint_eval val (mi_of_term t))).
       simpl. apply mint_eval_eq_bterm_int_fapp.
       apply Vforall_nth_intro. intros.
-      rewrite inject_terms_nth. apply (Vforall_nth _ v ip H).
+      rewrite inject_terms_nth. apply (Vforall_nth ip H).
     Qed.
 
     Lemma mint_eval_eq_term_int : forall t (val : valuation I) k
