@@ -660,7 +660,7 @@ Lemma Vforall_nth : forall P n (v : vec n) i (ip : i < n),
   Vforall P v -> P (Vnth v ip).
 
 Proof.
-  intros. apply Vforall_in with n v. hyp. apply Vnth_in.
+intros. apply Vforall_in with n v. hyp. apply Vnth_in.
 Qed.
 
 Lemma Vforall_incl : forall (P : A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2),
@@ -1075,6 +1075,7 @@ Implicit Arguments Vin_app [A x n1 v1 n2 v2].
 Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
 Implicit Arguments beq_vec_ok_in2 [A beq n v w].
 Implicit Arguments in_list_of_vec [A n v x].
+Implicit Arguments Vforall_nth [A P n v i].
 
 (***********************************************************************)
 (** tactics *)
