@@ -525,6 +525,23 @@ apply Vnth_eq. omega.
 transitivity (Vnth v1 g). hyp. apply Vnth_eq. reflexivity.
 Qed.
 
+Lemma Vnth_app_cons : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
+  (h : n1 < n1 + S n2) x, Vnth (Vapp v1 (Vcons x v2)) h = x.
+
+Proof.
+induction v1; intros; simpl. reflexivity. apply IHv1.
+Qed.
+
+Lemma Vnth_app_cons_neq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) k
+  (h : k < n1 + S n2) x x',
+  k <> n1 -> Vnth (Vapp v1 (Vcons x v2)) h = Vnth (Vapp v1 (Vcons x' v2)) h.
+
+Proof.
+induction v1; intros.
+simpl. destruct k. irrefl. reflexivity.
+repeat rewrite Vapp_cons. destruct k. reflexivity. apply IHv1. omega.
+Qed.
+
 Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
 
 Proof.
