@@ -35,10 +35,6 @@ Module Type OrdSemiRingType.
 
   Parameter ge_refl : reflexive ge.
   Parameter ge_trans : transitive ge.
-  (*FIXME: to be removed *)
-  (*Parameter ge_antisym : antisymmetric ge.*)
-
-  (*Parameter gt_irrefl : irreflexive gt.*)
   Parameter gt_trans : transitive gt.
 
   Parameter ge_dec : rel_dec ge.
@@ -55,7 +51,7 @@ Module Type OrdSemiRingType.
   Parameter mult_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
-  Hint Resolve ge_refl (*ge_antisym*) : arith.
+  Hint Resolve ge_refl : arith.
 
 End OrdSemiRingType.
 
@@ -121,13 +117,13 @@ Module NOrdSemiRingT <: OrdSemiRingType.
     intros m n p. unfold ge, Peano.ge. eauto with arith.
   Qed.
 
-  (*Lemma ge_antisym : antisymmetric ge.
+  Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros m n. unfold ge, Peano.ge. auto with arith.
-  Qed.*)
+  Qed.
 
-  (*Definition gt_irrefl := Gt.gt_irrefl.*)
+  Definition gt_irrefl := Gt.gt_irrefl.
 
   Definition gt_trans := Gt.gt_trans.
 
@@ -326,13 +322,13 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     unfold ge. intuition.
   Qed.
 
-  (*Lemma gt_irrefl : irreflexive gt.
+  Lemma gt_irrefl : irreflexive gt.
 
   Proof.
     intros x xx. destruct x.
     unfold gt in xx. omega.
     auto.
-  Qed.*)
+  Qed.
 
   Lemma gt_trans : transitive gt.
 
@@ -394,13 +390,13 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     subst x. assumption.
   Qed.
 
-  (*Lemma ge_antisym : antisymmetric ge.
+  Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros x y xy yx. destruct xy. destruct yx.
     absurd (gt y x). apply gt_asym. assumption. assumption.
     auto. assumption.
-  Qed.*)
+  Qed.
 
   Lemma ge_dec : rel_dec ge.
 
@@ -605,13 +601,13 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     simpl in *. tauto.
   Qed.
 
-  (*Lemma gt_irrefl : irreflexive gt.
+  Lemma gt_irrefl : irreflexive gt.
 
   Proof.
     intros x xx. destruct x.
     unfold gt in xx. omega.
     auto.
-  Qed.*)
+  Qed.
 
   Lemma gt_asym : forall m n, gt m n -> ~gt n m.
 
@@ -631,12 +627,12 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     rewrite H. trivial.
   Qed.
 
-  (*Lemma ge_antisym : antisymmetric ge.
+  Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros m n mn nm. destruct mn; auto. destruct nm; auto.
     absurd (gt n m). apply gt_asym. assumption. assumption.
-  Qed.*)
+  Qed.
 
   Lemma gt_dec : rel_dec gt.
 
@@ -862,18 +858,18 @@ Module BOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct p; auto.
   Qed.
 
-  (*Lemma ge_antisym : antisymmetric ge.
+  Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros m n. unfold ge. 
     destruct m; destruct n; tauto.
-  Qed.*)
+  Qed.
 
-  (*Lemma gt_irrefl : irreflexive gt.
+  Lemma gt_irrefl : irreflexive gt.
 
   Proof.
     intros x. unfold gt. destruct x; tauto.
-  Qed.*)
+  Qed.
 
   Lemma gt_trans : transitive gt.
 
