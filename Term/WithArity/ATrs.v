@@ -720,7 +720,7 @@ Ltac no_relative_rules :=
     | _ => idtac
   end.
 
-(* we do not use "rewrite rules_preserv_vars_dec; refl."
+(* FIXME: we do not use "rewrite rules_preserv_vars_dec; refl."
    since this is slower than intuition *)
 Ltac rules_preserv_vars := solve
   [match goal with

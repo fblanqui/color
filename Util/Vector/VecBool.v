@@ -43,8 +43,8 @@ Lemma Vtrue_cast : forall n (bs : bools n) p (h:n=p),
   Vtrue (Vcast bs h) = Vtrue bs.
 
 Proof.
-induction bs; induction p; intros. castrefl h.
-discriminate. discriminate. simpl. case a. apply (f_equal S). apply IHbs.
+induction bs; induction p; intros. rewrite Vcast_refl. refl.
+discr. discr. simpl. case a. apply (f_equal S). apply IHbs.
 apply IHbs.
 Qed.
 

@@ -50,8 +50,8 @@ ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6.
 rewrite H7.
 exists (S x0). exists (Vcons (Vhead v2) x1). exists x2.
 exists x3. exists x4. assert (S x0 + S x3 = S n). omega. exists H9. exists x6.
-simpl. intuition. apply Vtail_eq. apply Vcast_prf_eq.
-apply Vtail_eq. apply Vcast_prf_eq.
+simpl. intuition. apply Vtail_eq. apply Vcast_pi.
+apply Vtail_eq. apply Vcast_pi.
 Qed.
 
 Lemma Vgt_prod_cons : forall x1 x2 n (v1 v2 : vec n),
@@ -89,7 +89,7 @@ induction v1; intros; destruct n; intros.
 contradiction. discriminate. discriminate.
 assert (n0 = n). apply eq_add_S. assumption. subst n0.
 assert (h = refl_equal (S n)). apply (UIP eq_nat_dec). subst h.
-rewrite (Vcast_refl_eq (Vcons a v1)). rewrite (Vcast_refl_eq v2). assumption.
+rewrite (Vcast_refl (Vcons a v1)). rewrite (Vcast_refl v2). assumption.
 Qed.
 
 Lemma Vgt_prod_cast_inv : forall m n (h : m=n) (v1 v2 : vec m),

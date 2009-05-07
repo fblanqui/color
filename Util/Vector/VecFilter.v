@@ -38,8 +38,8 @@ decomp H0. subst x. auto. right. eapply IHv. apply H1. right. eapply IHv.
 apply H0.
 Qed.
 
-Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1) n2 (v2 : vec n2)
-  (h : n=n1+n2) (h' : Vtrue (fst (Vbreak (Vcast bs h)))
+Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1)
+  n2 (v2 : vec n2) (h : n=n1+n2) (h' : Vtrue (fst (Vbreak (Vcast bs h)))
     + Vtrue (snd (Vbreak (Vcast bs h))) = Vtrue (Vcast bs h)),
   Vfilter (Vcast bs h) (Vapp v1 v2)
   = Vcast (Vapp (Vfilter (fst (Vbreak (Vcast bs h))) v1)
@@ -48,7 +48,7 @@ Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1) n2 (v2 : vec n2)
 Proof.
   induction bs; intros.
   destruct n1; destruct n2; solve [discriminate | refl].
-  destruct n1; try VOtac; repeat rewrite Vcast_refl_eq;
+  destruct n1; try VOtac; repeat rewrite Vcast_refl;
     try solve [discriminate | refl].
   VSntac v1. destruct a; simpl; try apply Vtail_eq; apply IHbs.
 Qed.
@@ -62,15 +62,6 @@ Proof.
 intros. apply Vfilter_app_eq.
 Qed.
 
-(*
-Lemma Vfilter_cons_eq : forall n (bs : bools n) x n2 (v2 : vec n2)
-  (h : n = S n2) (h' : Vtrue_Sn (Vcast bs h) = Vtrue (Vcast bs h)),
-  Vfilter (Vcast bs h) (Vcons x v2) = Vcast (
-    if Vhead (Vcast bs h) as b return vec (Vtrue_Sn_if b (Vcast bs h))
-    then Vcons x (Vfilter (Vtail (Vcast bs h)) v2)
-    else Vfilter (Vtail (Vcast bs h)) v2) h'.
-*)
-
 Lemma Vfilter_cons_eq : forall n (bs : bools (S n)) x (v : vec n)
   (h' : Vtrue_cons bs = Vtrue bs),
   Vfilter bs (Vcons x v) = Vcast (
@@ -80,8 +71,7 @@ Lemma Vfilter_cons_eq : forall n (bs : bools (S n)) x (v : vec n)
 
 Proof.
 intros n bs. VSntac bs. unfold Vtrue_cons. case (Vhead bs); simpl; intros.
-rewrite Vcast_refl_eq. refl. 
-castrefl h'.
+rewrite Vcast_refl. refl. rewrite Vcast_refl. refl.
 Qed.
 
 Lemma Vfilter_cons : forall n (bs : bools (S n)) x (v : vec n),
@@ -99,11 +89,11 @@ Lemma Vfilter_cons_true_eq : forall n b (bs : bools n) x (v : vec n), b = true
   Vfilter (Vcons b bs) (Vcons x v) = Vcast (Vcons x (Vfilter bs v)) h.
 
 Proof.
-intros n b bs x v H. subst b. simpl Vtrue. intro. castrefl h.
+intros n b bs x v H. subst b. simpl Vtrue. intro. rewrite Vcast_refl. refl.
 Qed.
 
-Lemma Vfilter_cons_true : forall n b (bs : bools n) x (v : vec n) (h : b = true),
-  Vfilter (Vcons b bs) (Vcons x v)
+Lemma Vfilter_cons_true : forall n b (bs : bools n) x (v : vec n)
+  (h : b = true), Vfilter (Vcons b bs) (Vcons x v)
   = Vcast (Vcons x (Vfilter bs v)) (Vtrue_cons_true bs h).
 
 Proof.
@@ -115,7 +105,8 @@ Lemma Vfilter_head_true_eq : forall n (bs : bools (S n)) x (v : vec n),
   Vfilter bs (Vcons x v) = Vcast (Vcons x (Vfilter (Vtail bs) v)) h.
 
 Proof.
-intros n bs x v H. VSntac bs. rewrite H. simpl Vtrue. intro. castrefl h.
+intros n bs x v H. VSntac bs. rewrite H. simpl Vtrue. intro.
+rewrite Vcast_refl. refl.
 Qed.
 
 Lemma Vfilter_head_true : forall n (bs : bools (S n)) x (v : vec n)
@@ -126,12 +117,12 @@ Proof.
 intros. apply Vfilter_head_true_eq. assumption.
 Qed.
 
-Lemma Vfilter_cons_false_eq : forall n b (bs : bools n) x (v : vec n), b = false
-  -> forall h : Vtrue bs = Vtrue (Vcons b bs),
+Lemma Vfilter_cons_false_eq : forall n b (bs : bools n) x (v : vec n),
+  b = false -> forall h : Vtrue bs = Vtrue (Vcons b bs),
   Vfilter (Vcons b bs) (Vcons x v) = Vcast (Vfilter bs v) h.
 
 Proof.
-intros n b bs x v H. subst b. simpl Vtrue. intro. castrefl h.
+intros n b bs x v H. subst b. simpl Vtrue. intro. rewrite Vcast_refl. refl.
 Qed.
 
 Lemma Vfilter_cons_false : forall n b (bs : bools n) x (v : vec n)
@@ -147,7 +138,8 @@ Lemma Vfilter_head_false_eq : forall n (bs : bools (S n)) x (v : vec n),
   Vfilter bs (Vcons x v) = Vcast (Vfilter (Vtail bs) v) h.
 
 Proof.
-intros n bs x v H. VSntac bs. rewrite H. simpl Vtrue. intro. castrefl h.
+intros n bs x v H. VSntac bs. rewrite H. simpl Vtrue. intro.
+rewrite Vcast_refl. refl.
 Qed.
 
 Lemma Vfilter_head_false : forall n (bs : bools (S n)) x (v : vec n)
@@ -165,15 +157,15 @@ Lemma Vfilter_app2_eq : forall n1 (bs1 : bools n1) (v1 : vec n1)
   = Vcast (Vapp (Vfilter bs1 v1) (Vfilter bs2 v2)) h.
 
 Proof.
-induction bs1; simpl. intros. VOtac. simpl. castrefl h.
+induction bs1; simpl. intros. VOtac. simpl. rewrite Vcast_refl. refl.
 case a; simpl; intros; VSntac v1; simpl. apply Vtail_eq. apply IHbs1.
 apply IHbs1.
 Qed.
 
 Lemma Vfilter_app2 : forall n1 (bs1 : bools n1) (v1 : vec n1)
   n2 (bs2 : bools n2) (v2 : vec n2),
-  Vfilter (Vapp bs1 bs2) (Vapp v1 v2)
-  = Vcast (Vapp (Vfilter bs1 v1) (Vfilter bs2 v2)) (sym_eq (Vtrue_app bs1 bs2)).
+  Vfilter (Vapp bs1 bs2) (Vapp v1 v2) =
+  Vcast (Vapp (Vfilter bs1 v1) (Vfilter bs2 v2)) (sym_eq (Vtrue_app bs1 bs2)).
 
 Proof.
 intros. apply Vfilter_app2_eq.
@@ -185,7 +177,7 @@ Lemma Vfilter_break_eq : forall n1 n2 (bs : bools (n1+n2)) (v : vec (n1+n2))
     (Vfilter (snd (Vbreak bs)) (snd (Vbreak v)))) h.
 
 Proof.
-induction n1; simpl. intros. castrefl h.
+induction n1; simpl. intros. rewrite Vcast_refl. refl.
 intros n2 bs v. VSntac bs. VSntac v. simpl. case (Vhead bs); simpl; intros.
 apply Vtail_eq. apply IHn1. apply IHn1.
 Qed.
