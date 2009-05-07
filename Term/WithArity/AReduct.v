@@ -328,7 +328,7 @@ assert (h1 : 0+x<=arity f). omega. set (v1 := Vsub ts h1).
 assert (h2 : S x+(arity f-S x)<=arity f). omega. set (v2 := Vsub ts h2).
 assert (e : x+S(arity f-S x)=arity f). omega.
 exists (Cont f e v1 c v2). exists s. intuition. simpl. apply args_eq.
-rewrite <- xl. unfold v2. rewrite Vcons_nth. unfold v1. apply Vapp_nth_aux.
+rewrite <- xl. unfold v2. rewrite Vcons_nth. unfold v1. apply Veq_app_cons_aux.
 simpl. rewrite H2. apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast.
 rewrite Vnth_app. destruct (le_gt_dec x i).
 (* 1) x <= i *)
@@ -339,21 +339,21 @@ assert (i - x = 0). omega. rewrite H. intro. simpl.
 transitivity (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
 rewrite Vnth_replace. hyp.
 (* b) x <> i *)
-rewrite Vnth_replace_neq. 2: hyp. rewrite (Vapp_nth ts x0).
+rewrite Vnth_replace_neq. 2: hyp. rewrite (Veq_app_cons ts x0).
 rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i). 2: absurd_arith.
 set (p1 := Vnth_app_aux (S (arity f - S x))
-  (Vnth_cast_aux (Vapp_nth_aux3 x0) ip) l1). gen p1.
+  (Vnth_cast_aux (Veq_app_cons_aux3 x0) ip) l1). gen p1.
 set (p2 := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0). gen p2.
 assert (i-x = S(pred(i-x))). omega. rewrite H. intros.
 assert (p2=p1). apply lt_unique. subst p2.
-repeat rewrite Vnth_cons. assert (Vsub ts (Vapp_nth_aux2 x0) = v2).
+repeat rewrite Vnth_cons. assert (Vsub ts (Veq_app_cons_aux2 x0) = v2).
 unfold v2. apply Veq_nth; intros. repeat rewrite Vnth_sub.
 apply Vnth_eq. refl. rewrite H0. apply Vnth_eq. refl.
 (* 2) x > i *)
-rewrite Vnth_replace_neq. 2: omega. rewrite (Vapp_nth ts x0).
+rewrite Vnth_replace_neq. 2: omega. rewrite (Veq_app_cons ts x0).
 rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i). absurd_arith.
 assert (g0 = g). apply lt_unique. subst g0.
-assert (Vsub ts (Vapp_nth_aux1 x0) = v1). unfold v1.
+assert (Vsub ts (Veq_app_cons_aux1 x0) = v1). unfold v1.
 apply (f_equal (@Vsub _ _ ts _ _)). apply le_unique. rewrite H. refl.
 Qed.
 

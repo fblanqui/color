@@ -3,10 +3,11 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
-- Frederic Blanqui, 2005-01-27
+- Frederic Blanqui, 2005-01-27 and later
 - Adam Koprowski and Hans Zantema, 2007-03-26
 - Joerg Endrullis, 2008-06-19
 - Pierre-Yves Strub, 2009-04-09
+- Wang Qian & Zhang Lianyi, 2009-05-06
 
 extension of the Coq library Bool/Bvector
 *)
@@ -22,6 +23,7 @@ Require Import RelMidex.
 Require Import ListUtil.
 Require Import BoolUtil.
 Require Import ListUtil.
+Require Omega.
 
 Implicit Arguments Vnil [A].
 Implicit Arguments Vcons.
@@ -253,8 +255,6 @@ Proof.
 intros. VSntac v. reflexivity.
 Qed.
 
-Require Omega.
-
 Lemma Vnth_eq : forall n (v : vec n) i1 (h1 : i1<n) i2 (h2 : i2<n),
   i1 = i2 -> Vnth v h1 = Vnth v h2.
 
@@ -286,17 +286,6 @@ Lemma Vnth_cons : forall x n (v : vec n) i (h : S i < S n),
 
 Proof.
 intros. apply Vnth_cons_aux.
-Qed.
-
-Lemma Veq_nth : forall n (v v' : vec n), 
-  (forall i (ip : i < n), Vnth v ip = Vnth v' ip) -> v = v'.
-
-Proof.
-induction n; intros.
-VOtac. reflexivity.
-VSntac v. VSntac v'. apply Vcons_eq.
-do 2 rewrite Vhead_nth. apply H.
-apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
 Qed.
 
 Lemma Vnth_head : forall x n (v : vec n) k (h : k < S n),
@@ -361,6 +350,17 @@ destruct k. simpl. reflexivity. intro h. simpl. rewrite IHv. apply Vnth_eq.
 reflexivity.
 Qed.
 
+Lemma Veq_nth : forall n (v v' : vec n), 
+  (forall i (ip : i < n), Vnth v ip = Vnth v' ip) -> v = v'.
+
+Proof.
+induction n; intros.
+VOtac. reflexivity.
+VSntac v. VSntac v'. apply Vcons_eq.
+do 2 rewrite Vhead_nth. apply H.
+apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
+Qed.
+
 (***********************************************************************)
 (** replacement of i-th element *)
 
@@ -410,6 +410,14 @@ Lemma Vreplace_pi : forall n (v : vec n) i1 i2 (h1 : i1 < n) (h2 : i2 < n) x,
 Proof.
 intros. subst i2. gen h2. gen h1. gen i1. elim v; clear v; simpl; intros.
 absurd_arith. destruct i1. reflexivity. apply Vtail_eq. apply H.
+Qed.
+
+Lemma Vreplace_eq_elim : forall n (v : vec n) i (h : i < n) x x',
+  Vreplace v h x = Vreplace v h x' -> x = x'.
+
+Proof.
+intros. ded (f_equal (fun v => @Vnth n v i h) H).
+repeat rewrite Vnth_replace in H0. hyp.
 Qed.
 
 (***********************************************************************)
@@ -742,6 +750,28 @@ Fixpoint Vsub n (v : vec n) i k {struct k}: i+k<=n -> vec k :=
 
 Implicit Arguments Vsub [n i k].
 
+Lemma Vsub_nil_aux : forall i k (h:i+k<=0) (e : 0=k),
+  Vsub Vnil h = Vcast Vnil e.
+
+Proof.
+destruct k; intros. reflexivity. discr.
+Qed.
+
+Lemma Vsub_nil_aux1 : forall i k, i+k <= 0 -> 0=k.
+
+Proof.
+intros. omega.
+Qed.
+
+Implicit Arguments Vsub_nil_aux1 [i k].
+
+Lemma Vsub_nil : forall i k (h:i+k<=0),
+  Vsub Vnil h = Vcast Vnil (Vsub_nil_aux1 h).
+
+Proof.
+intros. apply Vsub_nil_aux.
+Qed.
+
 Lemma Vnth_sub_aux : forall n i k j, i+k<=n -> j<k -> i+j<n.
 
 Proof.
@@ -768,8 +798,24 @@ Lemma Vsub_cons : forall x i k n (v : vec n) (h : S i + k <= S n),
   Vsub (Vcons x v) h = Vsub v (Vsub_cons_aux h).
 
 Proof.
-intros. apply Veq_nth. intros. repeat rewrite Vnth_sub. simpl.
+intros. apply Veq_nth; intros. repeat rewrite Vnth_sub. simpl.
 apply Vnth_eq. omega.
+Qed.
+
+Lemma Vsub_pi : forall n (v : vec n) i k (h h' : i+k<=n), Vsub v h = Vsub v h'.
+
+Proof.
+intros. assert (h = h'). apply le_unique. subst. reflexivity.
+Qed.
+
+Lemma Vsub_cast_aux : forall n (v : vec n) n' (e : n=n') i k (h : i+k<=n')
+  (h' : i+k<=n), Vsub (Vcast v e) h = Vsub v h'.
+
+Proof.
+destruct v; destruct n'; simpl; intros. apply Vsub_pi. discr. discr.
+inversion e. subst n'.
+assert (Vcast v (Vcast_obligation_4 e refl (JMeq_refl (Vcons a v)) refl) = v).
+apply Vcast_refl_eq. rewrite H. apply Vsub_pi.
 Qed.
 
 Lemma Vcons_nth_aux1 : forall n i k, i<n -> S i+k<=n -> i+S k<= n.
@@ -825,7 +871,7 @@ Proof.
 intros. apply Vsub_cons_intro_aux.
 Qed.
 
-Lemma Vapp_sub_aux : forall n (v : vec n) i
+Lemma Veq_app_aux : forall n (v : vec n) i
   (h1 : 0 + i <= n) (h2 : i + (n - i) <= n) (e : i + (n - i) = n),
   v = Vcast (Vapp (Vsub v h1) (Vsub v h2)) e.
 
@@ -842,33 +888,33 @@ apply Vnth_eq. omega.
 apply IHv.
 Qed.
 
-Lemma Vapp_sub_aux1 : forall n i, i <= n -> 0 + i <= n.
+Lemma Veq_app_aux1 : forall n i, i <= n -> 0 + i <= n.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma Vapp_sub_aux2 : forall n i, i <= n -> i + (n - i) <= n.
+Lemma Veq_app_aux2 : forall n i, i <= n -> i + (n - i) <= n.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma Vapp_sub_aux3 : forall n i, i <= n -> i + (n - i) = n.
+Lemma Veq_app_aux3 : forall n i, i <= n -> i + (n - i) = n.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma Vapp_sub : forall n (v : vec n) i (h : i<=n),
-  v = Vcast (Vapp (Vsub v (Vapp_sub_aux1 h)) (Vsub v (Vapp_sub_aux2 h)))
-        (Vapp_sub_aux3 h).
+Lemma Veq_app : forall n (v : vec n) i (h : i<=n),
+  v = Vcast (Vapp (Vsub v (Veq_app_aux1 h)) (Vsub v (Veq_app_aux2 h)))
+        (Veq_app_aux3 h).
 
 Proof.
-intros. apply Vapp_sub_aux.
+intros. apply Veq_app_aux.
 Qed.
 
-Lemma Vapp_nth_aux : forall n (v : vec n) i (h1 : 0 + i <= n) (h2 : i < n)
+Lemma Veq_app_cons_aux : forall n (v : vec n) i (h1 : 0 + i <= n) (h2 : i < n)
   (h3 : S i + (n - S i) <= n) (e : i + S (n - S i) = n),
   v = Vcast (Vapp (Vsub v h1) (Vcons (Vnth v h2) (Vsub v h3))) e.
 
@@ -885,31 +931,84 @@ apply Vnth_eq. omega.
 apply IHv.
 Qed.
 
-Lemma Vapp_nth_aux1 : forall n i, i < n -> 0 + i <= n.
+Lemma Veq_app_cons_aux1 : forall n i, i < n -> 0 + i <= n.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma Vapp_nth_aux2 : forall n i, i < n -> S i + (n - S i) <= n.
+Lemma Veq_app_cons_aux2 : forall n i, i < n -> S i + (n - S i) <= n.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma Vapp_nth_aux3 : forall n i, i < n -> i + S (n - S i) = n.
+Lemma Veq_app_cons_aux3 : forall n i, i < n -> i + S (n - S i) = n.
 
 Proof.
 intros. omega.
 Qed.
 
-Lemma Vapp_nth : forall n (v : vec n) i (h : i<n),
-  v = Vcast (Vapp (Vsub v (Vapp_nth_aux1 h))
-    (Vcons (Vnth v h) (Vsub v (Vapp_nth_aux2 h))))
-        (Vapp_nth_aux3 h).
+Lemma Veq_app_cons : forall n (v : vec n) i (h : i<n),
+  v = Vcast (Vapp (Vsub v (Veq_app_cons_aux1 h))
+    (Vcons (Vnth v h) (Vsub v (Veq_app_cons_aux2 h))))
+        (Veq_app_cons_aux3 h).
 
 Proof.
-intros. apply Vapp_nth_aux.
+intros. apply Veq_app_cons_aux.
+Qed.
+
+Lemma Veq_sub_aux : forall n (v v' : vec n) i (h1 : 0+i<=n) (h2 : i+(n-i)<=n),
+  Vsub v h1 = Vsub v' h1 -> Vsub v h2 = Vsub v' h2 -> v = v'.
+
+Proof.
+intros. assert (e:i+(n-i)=n). omega.
+rewrite (Veq_app_aux v h1 h2 e). rewrite (Veq_app_aux v' h1 h2 e).
+apply Vcast_eq. apply Vapp_eq; hyp.
+Qed.
+
+Lemma Veq_sub : forall n (v v' : vec n) i (h : i<=n),
+  Vsub v (Veq_app_aux1 h) = Vsub v' (Veq_app_aux1 h) ->
+  Vsub v (Veq_app_aux2 h) = Vsub v' (Veq_app_aux2 h) -> v = v'.
+
+Proof.
+intros. eapply Veq_sub_aux; eassumption.
+Qed.
+
+Lemma Veq_sub_cons_aux : forall n (v v' : vec n) i (h1 : 0+i<=n)
+  (h2 : i<n) (h3 : S i+(n-S i)<=n), Vsub v h1 = Vsub v' h1 ->
+  Vnth v h2 = Vnth v' h2 -> Vsub v h3 = Vsub v' h3 -> v = v'.
+
+Proof.
+intros. assert (e:i+S(n-S i)=n). omega.
+rewrite (Veq_app_cons_aux v h1 h2 h3 e).
+rewrite (Veq_app_cons_aux v' h1 h2 h3 e).
+apply Vcast_eq. apply Vapp_eq. hyp. apply Vcons_eq; hyp.
+Qed.
+
+Lemma Veq_sub_cons : forall n (v v' : vec n) i (h : i<n),
+  Vsub v (Veq_app_cons_aux1 h) = Vsub v' (Veq_app_cons_aux1 h) ->
+  Vnth v h = Vnth v' h ->
+  Vsub v (Veq_app_cons_aux2 h) = Vsub v' (Veq_app_cons_aux2 h) -> v = v'.
+
+Proof.
+intros. eapply Veq_sub_cons_aux; eassumption.
+Qed.
+
+Lemma Vsub_replace_l : forall n (v : vec n) i (h : i<n) x j k (p : j+k<=n),
+  j+k <= i -> Vsub (Vreplace v h x) p = Vsub v p.
+
+Proof.
+intros. apply Veq_nth; intros. repeat rewrite Vnth_sub.
+rewrite Vnth_replace_neq. 2: omega. apply Vnth_eq. reflexivity.
+Qed.
+
+Lemma Vsub_replace_r : forall n (v : vec n) i (h : i<n) x j k (p : j+k<=n),
+  j > i -> Vsub (Vreplace v h x) p = Vsub v p.
+
+Proof.
+intros. apply Veq_nth; intros. repeat rewrite Vnth_sub.
+rewrite Vnth_replace_neq. 2: omega. apply Vnth_eq. reflexivity.
 Qed.
 
 (***********************************************************************)
@@ -1137,7 +1236,7 @@ Lemma Vbuild_tail : forall n (gen : forall i, i < S n -> A),
   Vtail (Vbuild gen) = Vbuild (fun i ip => gen (S i) (lt_n_S ip)).
 
 Proof.
-  intros. apply Veq_nth. intros.
+  intros. apply Veq_nth; intros.
   rewrite Vnth_tail. do 2 rewrite Vbuild_nth. reflexivity.
 Qed.
 
