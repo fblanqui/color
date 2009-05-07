@@ -1,5 +1,10 @@
+
+09-05-07: [Blanqui,Wang,Zhang]
+- added new definitions and lemmas on vectors (sub-vector Vsub, etc.)
+- Term/WithArity/APosition: positions in a term and related functions
+  and relations (subterm, replacement, context, rewriting)
+
 09-05-06: [Blanqui]
-- added definitions and lemmas on vectors (sub-vector Vsub, etc.)
 - Term/WithArity/AReduct: list of reducts of a term and proof that
   rewriting is finitely branching
 
@@ -31,7 +36,8 @@
 - decidability of equality on symbols and terms are replaced
   by boolean functions
 
-09-03-11: release
+-----------------------------------------------------------------------------
+09-03-11: NEW RELEASE
 
 09-01-22: [Koprowski]
 - HORPO: beta-reduction included into HORPO; added examples, including
@@ -107,6 +113,9 @@ added support for boolean reasoning and boolean functions testing equality
 - Util/Matrix: matrices
 - Util/Algebra/SemiRing: semi-rings
 
+-----------------------------------------------------------------------------
+07-03-22: NEW RELEASE
+
 07-02-16:
 - Simplification of the compilation procedure [Blanqui]
 
@@ -157,6 +166,9 @@ added support for boolean reasoning and boolean functions testing equality
   (the previous version was using the axiom eq_rect_eq)
 - Util/Polynom: tactics for monotony and termination [Hinderer]
 
+-----------------------------------------------------------------------------
+06-05-10: NEW RELEASE
+
 06-05-10:
 - HORPO: higher-order recursive path ordering [Koprowski]
 - Term/SimpleType: simply typed lambda-terms with de Bruijn indices [Koprowski]
@@ -200,7 +212,10 @@ added support for boolean reasoning and boolean functions testing equality
 - Util/Vector: creation of VecBool, VecFilter
 - Util: additions in LogicUtil, NatUtil, RelUtil, WfUtil, VecUtil
 
-05-03-14: first release of CoLoR
+-----------------------------------------------------------------------------
+05-03-14: NEW RELEASE
+
+05-03-14:
 - Util/Vector: library on vectors
 - Util/Polynom: library on integer polynomials with multiple variables
 - Term/WithArity: library on algebraic terms with symbols of fixed arity
