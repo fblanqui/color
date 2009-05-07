@@ -1,12 +1,13 @@
 
+09-05-07: [Blanqui]
+- Term/WithArity/AReduct: list of reducts of a term and proof that
+  rewriting is finitely branching
+- Term/WithArity/AMorphism: definitions and lemmas on algebra morphisms
+
 09-05-07: [Blanqui,Wang,Zhang]
 - added new definitions and lemmas on vectors (sub-vector Vsub, etc.)
 - Term/WithArity/APosition: positions in a term and related functions
   and relations (subterm, replacement, context, rewriting)
-
-09-05-06: [Blanqui]
-- Term/WithArity/AReduct: list of reducts of a term and proof that
-  rewriting is finitely branching
 
 09-04-29: [Blanqui]
 - added (ordered) semi-rings, matrices and matrix interpretations on BigN
