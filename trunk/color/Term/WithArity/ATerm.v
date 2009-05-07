@@ -185,7 +185,7 @@ simpl. rewrite beq_nat_ok. intuition. inversion H. refl.
 intuition; discriminate. intuition; discriminate.
 rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0. apply args_eq.
-ded (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl_eq. refl.
+ded (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl. refl.
 inversion H0 as [[h0 h1]]. clear h1. subst f0. simpl.
 apply andb_intro. apply (beq_refl (@beq_symb_ok Sig)).
 apply beq_vec_ok_in2. exact H. refl.
@@ -533,8 +533,8 @@ Lemma size_terms_Vcast : forall n (ts : terms n) m (h : n=m),
   size_terms (Vcast ts h) = size_terms ts.
 
 Proof.
-induction ts. intro. destruct m. intro. castrefl h. intro. discriminate.
-intro. destruct m. intro. discriminate. intro. inversion h. simpl. rewrite IHts.
+induction ts. intro. destruct m. intro. rewrite Vcast_refl. refl. intro. discr.
+intro. destruct m. intro. discr. intro. inversion h. simpl. rewrite IHts.
 refl.
 Qed.
 

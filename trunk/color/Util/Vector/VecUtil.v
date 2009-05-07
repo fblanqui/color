@@ -107,21 +107,12 @@ Program Fixpoint Vcast m (v : vec m) n (mn : m = n) {struct v} : vec n :=
       end
   end.
 
-Lemma Vcast_refl_eq : forall n (v : vec n) (H : n=n), Vcast v H = v.
+Lemma Vcast_refl : forall n (v : vec n) (H : n=n), Vcast v H = v.
 
 Proof.
 induction v; simpl; intros. reflexivity.
-match goal with
-| |- Vcons a ?v' = _ => assert (E : v' = v)
-end.
-apply IHv.
+match goal with |- Vcons a ?v' = _ => assert (E : v' = v) end. apply IHv.
 simpl in E. rewrite E. reflexivity.
-Defined.
-
-Lemma Vcast_refl : forall n (v : vec n), Vcast v (refl_equal n) = v.
-
-Proof.
-intros. apply Vcast_refl_eq.
 Defined.
 
 Lemma Vcast_eq_elim : forall n (v1 v2 : vec n) m (h : n = m),
@@ -129,11 +120,11 @@ Lemma Vcast_eq_elim : forall n (v1 v2 : vec n) m (h : n = m),
 
 Proof.
 intros until v1. destruct v1; intros; destruct m.
-simpl in H. rewrite <- (Vcast_refl_eq v2 h). hyp.
+simpl in H. rewrite <- (Vcast_refl v2 h). hyp.
 discr. discr.
 assert (n = m). apply eq_add_S. hyp. subst n.
 assert (h = refl_equal (S m)). apply (UIP eq_nat_dec). subst h.
-simpl in H. do 2 rewrite Vcast_refl_eq in H. hyp.
+simpl in H. do 2 rewrite Vcast_refl in H. hyp.
 Qed.
 
 Lemma Vcast_cast_eq :
@@ -170,7 +161,7 @@ Proof.
 induction v1; intros. subst v2. reflexivity. rewrite H. reflexivity.
 Qed.
 
-Lemma Vcast_prf_eq : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
+Lemma Vcast_pi : forall n (v : vec n) p (h1 : n=p) (h2 : n=p),
   Vcast v h1 = Vcast v h2.
 
 Proof.
@@ -472,7 +463,7 @@ Lemma Vapp_lcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1 (h1 : n1=p1)
 
 Proof.
 induction v1; intros until p1; case p1; simpl; intros.
-rewrite Vcast_refl_eq. reflexivity. discr. discr.
+rewrite Vcast_refl. reflexivity. discr. discr.
 apply Vtail_eq. apply IHv1.
 Qed.
 
@@ -489,7 +480,7 @@ Lemma Vapp_assoc_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n3 (v3 : vec n3)
 
 Proof.
 induction v1; intros; simpl.
-rewrite Vcast_refl_eq. reflexivity.
+rewrite Vcast_refl. reflexivity.
 apply Vtail_eq. apply IHv1.
 Qed.
 
@@ -560,8 +551,8 @@ Lemma Vapp_cast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n2' (e : n2 = n2'),
   Vapp v1 (Vcast v2 e) = Vcast (Vapp v1 v2) (Vapp_cast_aux n1 e).
 
 Proof.
-induction v1; simpl; intros. apply Vcast_prf_eq. apply Vtail_eq.
-rewrite IHv1. apply Vcast_prf_eq.
+induction v1; simpl; intros. apply Vcast_pi. apply Vtail_eq.
+rewrite IHv1. apply Vcast_pi.
 Qed.
 
 (***********************************************************************)
@@ -606,7 +597,7 @@ Lemma Vbreak_eq_app_cast : forall n n1 n2 (H : n1+n2=n) (v : vec n),
 
 Proof.
 intros until H. case H. simpl. intro v.
-rewrite <- Vbreak_eq_app. do 2 rewrite Vcast_refl_eq. reflexivity.
+rewrite <- Vbreak_eq_app. do 2 rewrite Vcast_refl. reflexivity.
 Qed.
 
 (***********************************************************************)
@@ -719,7 +710,7 @@ destruct H0 as [v2].
 destruct H0 as [H1].
 exists (S n1). exists (Vcons a v1). exists n2. exists v2. exists (S_add_S H1).
 rewrite H0. clear H0. simpl.
-apply Vtail_eq. apply Vcast_prf_eq. 
+apply Vtail_eq. apply Vcast_pi. 
 Qed.
 
 (***********************************************************************)
@@ -815,7 +806,7 @@ Proof.
 destruct v; destruct n'; simpl; intros. apply Vsub_pi. discr. discr.
 inversion e. subst n'.
 assert (Vcast v (Vcast_obligation_4 e refl (JMeq_refl (Vcons a v)) refl) = v).
-apply Vcast_refl_eq. rewrite H. apply Vsub_pi.
+apply Vcast_refl. rewrite H. apply Vsub_pi.
 Qed.
 
 Lemma Vcons_nth_aux1 : forall n i k, i<n -> S i+k<=n -> i+S k<= n.
@@ -1401,7 +1392,7 @@ Lemma beq_vec_beq_impl_eq : forall n (v w : vec n),
   beq_vec v w = true -> v = w.
 
 Proof.
-  intros. rewrite <- (Vcast_refl v). apply beq_vec_ok1. hyp.
+intros. rewrite <- (Vcast_refl v (refl_equal n)). apply beq_vec_ok1. hyp.
 Qed.
 
 Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
@@ -1432,7 +1423,7 @@ ded (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
 assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
 intros x hx. apply hyp. simpl. auto.
 destruct (andb_elim h). ded (IHv hyp' _ w H2). rewrite <- H3.
-apply Vcast_prf_eq.
+apply Vcast_pi.
 Qed.
 
 Lemma beq_vec_ok_in2 : forall n (v : vec n)
@@ -1483,9 +1474,6 @@ Ltac VSntac y :=
     | vector _ (S _) => let H := fresh in
       (assert (H : y = Vcons (Vhead y) (Vtail y)); [apply VSn_eq | rewrite H])
   end.
-
-Ltac castrefl h :=
-  rewrite (UIP_refl eq_nat_dec h); rewrite Vcast_refl; reflexivity.
 
 (***********************************************************************)
 (** map *)
