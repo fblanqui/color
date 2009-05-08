@@ -1159,10 +1159,18 @@ predicate *)
 
 Section Vexists.
 
-Fixpoint Vexists (P : A -> Prop) n (v : vec n) {struct v} : Prop :=
+Variables (P : A->Prop) (f : A->bool).
+
+Fixpoint Vexists n (v : vec n) {struct v} : Prop :=
   match v with
   | Vnil => False
-  | Vcons a _ w => P a \/ Vexists P w
+  | Vcons a _ v' => P a \/ Vexists v'
+  end.
+
+Fixpoint bVexists n (v : vec n) {struct v} : bool :=
+  match v with
+    | Vnil => false
+    | Vcons a _ v' => f a || bVexists v'
   end.
 
 End Vexists.
