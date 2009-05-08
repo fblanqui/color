@@ -15,7 +15,7 @@ Require Import EqUtil.
 Require Import NatUtil.
 Require Import VecUtil.
 Require Import ATerm.
-Require (****) AVariables.
+Require AVariables.
 Require Import ASubstitution.
 
 Require OrderedTypeEx FSetUtil FMapUtil.
@@ -142,7 +142,8 @@ Section Matching.
       assumption.
       (* fun *)
       intros g us Hus t θ θ' Hθθ'; destruct t as [y|f ts]; try discr.
-      simpl in Hθθ'; coq_case_eq (f =S g); intros Hfg; rewrite Hfg in Hθθ'; try discr.
+      simpl in Hθθ'; coq_case_eq (f =S g); intros Hfg; rewrite Hfg in Hθθ';
+        try discr.
       by apply Hfun; auto; rewrite (proj1 beq_symb_ok Hfg).
       (* nil *)
       intros nt ts θ θ'; destruct ts as [x|t nt ts]; try discr.
@@ -246,7 +247,8 @@ Section Matching.
 
         intros _ _ _ _ _ _ θ θ' Ω _ HΩθ' _ HθΩ x Hx.
         transitivity (VM.find x Ω); [by apply HθΩ | idtac].
-        apply HΩθ'; unfold is_true; rewrite <- Hx; repeat rewrite VMF.mem_find_b.
+        apply HΩθ'; unfold is_true; rewrite <- Hx;
+          repeat rewrite VMF.mem_find_b.
         by rewrite (HθΩ x Hx).
     Qed.
 
@@ -307,7 +309,8 @@ Section Matching.
       apply matches_some_ind.
       (* var *)
       intros y u θ θ'; simpl; unfold exmatch; coq_case_eq (VM.find y θ).
-        intros v Hv; coq_case_eq (u =T v); intros Htv I; inversion_clear I in Hv.
+        intros v Hv; coq_case_eq (u =T v); intros Htv I;
+          inversion_clear I in Hv.
         unfold subst_of_matching; rewrite Hv; simpl.
         by symmetry; apply (proj1 (beq_term_ok _ _)).
         intros _ I; inversion I as [Hadd]; clear I.
