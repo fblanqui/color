@@ -100,6 +100,27 @@ Fixpoint replace_pos (t : term) (ps : position) (u : term) {struct t}
       end
   end.
 
+Lemma subterm_pos_replace_eq_Some : forall p u v t,
+  subterm_pos t p = Some u -> exists w, replace_pos t p v = Some w.
+
+Proof.
+induction p; simpl; intros.
+(* nil *)
+destruct t; exists v; simpl; refl.
+(* cons *)
+destruct t. discr. simpl.
+case_eq (lt_ge_dec a (arity f)); rewrite H0 in H; clear H0.
+destruct (IHp _ v _ H). rewrite H0. exists (Fun f (Vreplace v0 l x)). refl.
+discr.
+Qed.
+
+Lemma subterm_pos_replace_neq_None : forall p u v t,
+  subterm_pos t p = Some u -> replace_pos t p v <> None.
+
+Proof.
+intros. destruct (subterm_pos_replace_eq_Some p v t H). rewrite H0. discr.
+Qed.
+
 Lemma replace_pos_elim : forall p t u t', replace_pos t p u = Some t' ->
   exists C, context_pos t p = Some C /\ t' = fill C u.
 
