@@ -94,7 +94,7 @@ Lemma in_calls_hd_red_dp : forall l r t s,
 
 Proof.
 intros. unfold hd_red. exists l. exists t. exists s. split.
-eapply dp_intro. apply H. assumption. auto.
+eapply dp_intro. apply H. hyp. auto.
 Qed.
 
 Lemma lhs_dp : incl (map lhs dp) (map lhs R).
@@ -130,7 +130,7 @@ Lemma in_calls_chain : forall l r t s,
 
 Proof.
 intros. unfold chain, compose. exists (sub s l). split. apply rt_refl.
-eapply in_calls_hd_red_dp. apply H. assumption.
+eapply in_calls_hd_red_dp. apply H. hyp.
 Qed.
 
 Lemma gt_chain : forall f ts us v,
@@ -156,8 +156,8 @@ Proof.
   red. intros x y cmin. elim cmin. auto.
 Qed.
 
-Lemma gt_chain_min : forall f ts us v,
-  terms_gt R ts us -> Vforall (SN (red R)) ts -> chain_min (Fun f us) v -> chain_min (Fun f ts) v.
+Lemma gt_chain_min : forall f ts us v, terms_gt R ts us ->
+  Vforall (SN (red R)) ts -> chain_min (Fun f us) v -> chain_min (Fun f ts) v.
 
 Proof.
   intros f ts us v gt_ts_us sn_ts chain_min_fus_v.
@@ -217,26 +217,25 @@ Notation alien_sub := (alien_sub R).
 
 Notation SNR := (SN (red R)).
 
-(* FIXME: remove the useless assumption (Vforall SNR ts) *)
 Lemma chain_min_fun : forall f, defined f R = true
   -> forall ts, SN chain_min (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).
 
 Proof.
 cut (forall t, SN chain_min t -> forall f, defined f R = true
   -> forall ts, t = Fun f ts -> Vforall SNR ts -> SNR t).
-intros. apply H with (t := Fun f ts) (f := f) (ts := ts); (assumption || refl).
+intros. apply H with (t := Fun f ts) (f := f) (ts := ts); (hyp || refl).
 (* induction on t with chain as well-founded ordering *)
 intros t H. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
 assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
-apply Vforall_SN_gt_prod. assumption.
+apply Vforall_SN_gt_prod. hyp.
 (* induction on ts with red as well-founded ordering (ts is SN) *)
 generalize IH. rewrite H1. elim H2. clear IH ts H1 Hsnts H2.
 intros ts H1 IH1 IH2.
 assert (Hsnts : Vforall SNR ts). apply SN_gt_prod_forall. apply SN_intro.
-assumption. clear H1.
+hyp. clear H1.
 assert (H1 : forall y, terms_gt R ts y -> SNR (Fun f y)). intros. apply IH1.
-assumption. intros. eapply IH2. eapply gt_chain_min. apply H1.
-trivial. apply H2. apply H3. apply H4. assumption. clear IH1.
+hyp. intros. eapply IH2. eapply gt_chain_min. apply H1.
+trivial. apply H2. apply H3. apply H4. hyp. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
 apply SN_intro. intros u H2. redtac. destruct c; simpl in xl, yr.
 (* c = Hole *)
@@ -257,7 +256,7 @@ intros. ded (vars_cap R H5).
 case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
 (* x <= maxvar r *)
 ded (vars_cap_inf R H5 l0). ded (hyp2 lr _ H7).
-rewrite fsub_inf. simpl. apply Hsnsx. assumption. assumption.
+rewrite fsub_inf. simpl. apply Hsnsx. hyp. hyp.
 (* x > maxvar r *)
 rewrite (fsub_nth (aliens (capa r)) l0 H6).
 set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H6)).
@@ -271,17 +270,17 @@ intros h ws H13 H14.
 apply IH2 with (y := Fun h (Vmap (sub s) ws)) (f := h) (ts := Vmap (sub s) ws).
 unfold chain_min. split. 
 rewrite H7. rewrite <- sub_fun. eapply in_calls_chain. 
-apply lr. assumption.
+apply lr. hyp.
 split. simpl. apply Vforall_lforall. trivial. 
 simpl. apply Vforall_lforall. trivial.
-eapply in_calls_defined. apply H13. refl. assumption.
-assumption.
+eapply in_calls_defined. apply H13. refl. hyp.
+hyp.
 (* lhs = Var x *)
 decomp e. subst l. is_var_lhs.
 (* c <> Hole *)
 Funeqtac. subst u. apply H1. rewrite H2. unfold terms_gt. apply Vgt_prod_cast.
 apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
-eapply red_rule. assumption. refl.
+eapply red_rule. hyp. refl.
 Qed.
 
 Lemma chain_fun : forall f, defined f R = true
@@ -290,7 +289,7 @@ Lemma chain_fun : forall f, defined f R = true
 Proof.
 intros f defined_f ts sn_chain_f_ts sn_ts.
 apply chain_min_fun; auto.
-apply SN_incl with chain. apply wf_chain_min_chain. assumption.
+apply SN_incl with chain. apply wf_chain_min_chain. hyp.
 Qed.
 
 Lemma WF_chain : WF chain -> WF (red R).
@@ -300,9 +299,9 @@ intro Hwf. unfold WF. apply term_ind_forall.
 (* var *)
 apply sn_var. apply hyp1.
 (* fun *)
-intro f. pattern (defined f R). apply bool_eq_ind; intro.
+intro f. case_eq (defined f R).
 (* f defined *)
-intros ts Hsnts. apply chain_fun. assumption. apply Hwf. assumption.
+apply chain_fun. hyp. apply Hwf. hyp.
 (* f undefined *)
 apply sn_args_sn_fun; auto.
 Qed.
