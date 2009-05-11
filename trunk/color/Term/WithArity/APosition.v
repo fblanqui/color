@@ -66,7 +66,7 @@ Fixpoint subterm_pos (t : term) (ps : position) {struct ps} : option term :=
   end.
 
 Lemma subterm_pos_elim : forall p t u, subterm_pos t p = Some u ->
-  exists C, context_pos t p = Some C /\  t = fill C u.
+  {C | context_pos t p = Some C /\  t = fill C u}.
 
 Proof.
 induction p; simpl; intros.
@@ -75,11 +75,11 @@ exists Hole. simpl. destruct t; inversion H; auto.
 (* cons *)
 destruct t. discr. gen H. simpl.
 destruct (lt_ge_dec a (arity f)); intros. 2: discr.
-destruct (IHp _ _ H). destruct H0. rewrite H0.
+destruct (IHp _ _ H). destruct a0. rewrite H0.
 exists (Cont f (Veq_app_cons_aux3 l)
   (Vsub v (Veq_app_cons_aux1 l)) x (Vsub v (Veq_app_cons_aux2 l))).
 intuition. simpl. apply args_eq. rewrite <- H1. apply Veq_app_cons_aux.
-Qed.
+Defined.
 
 (***********************************************************************)
 (** replace subterm at some position *)
@@ -101,7 +101,7 @@ Fixpoint replace_pos (t : term) (ps : position) (u : term) {struct t}
   end.
 
 Lemma subterm_pos_replace_eq_Some : forall p u v t,
-  subterm_pos t p = Some u -> exists w, replace_pos t p v = Some w.
+  subterm_pos t p = Some u -> {w | replace_pos t p v = Some w}.
 
 Proof.
 induction p; simpl; intros.
@@ -110,19 +110,19 @@ destruct t; exists v; simpl; refl.
 (* cons *)
 destruct t. discr. simpl.
 case_eq (lt_ge_dec a (arity f)); rewrite H0 in H; clear H0.
-destruct (IHp _ v _ H). rewrite H0. exists (Fun f (Vreplace v0 l x)). refl.
+destruct (IHp _ v _ H). rewrite e. exists (Fun f (Vreplace v0 l x)). refl.
 discr.
-Qed.
+Defined.
 
 Lemma subterm_pos_replace_neq_None : forall p u v t,
   subterm_pos t p = Some u -> replace_pos t p v <> None.
 
 Proof.
-intros. destruct (subterm_pos_replace_eq_Some p v t H). rewrite H0. discr.
+intros. destruct (subterm_pos_replace_eq_Some p v t H). rewrite e. discr.
 Qed.
 
 Lemma replace_pos_elim : forall p t u t', replace_pos t p u = Some t' ->
-  exists C, context_pos t p = Some C /\ t' = fill C u.
+  {C | context_pos t p = Some C /\ t' = fill C u}.
 
 Proof.
 induction p; intros.
@@ -146,7 +146,7 @@ destruct (lt_ge_dec a (arity f)); intro. 2: discr.
 assert (l0 = l). apply lt_unique. subst l0.
 destruct (replace_pos (Vnth v l) p u). 2: discr.
 apply (f_equal Some). apply Some_eq in H. Funeqtac.
-apply Vreplace_eq_elim in H0. hyp. destruct H0. rewrite H0.
+apply Vreplace_eq_elim in H0. hyp. destruct a0. rewrite H0.
 exists (Cont f (Veq_app_cons_aux3 l) (Vsub v (Veq_app_cons_aux1 l)) x
   (Vsub v (Veq_app_cons_aux2 l))). intuition. simpl. apply args_eq.
 assert (fill x u = Vnth (Vreplace v l t) l). rewrite <- H1.
@@ -156,7 +156,7 @@ rewrite (Veq_app_cons_aux (Vreplace v l t) (Veq_app_cons_aux1 l)
 apply Vcast_eq. apply Vapp_eq. rewrite Vsub_replace_l. refl. omega.
 apply Vcons_eq. rewrite Vnth_cast. rewrite Vnth_app_cons. refl.
 rewrite Vsub_replace_r. refl. omega.
-Qed.
+Defined.
 
 Implicit Arguments replace_pos_elim [p t u t'].
 
@@ -214,9 +214,11 @@ intuition; rewrite xl. apply subterm_fill_pos_context.
 rewrite yr. apply replace_fill_pos_context.
 (* red_pos << red *)
 unfold red. unfold red_pos in H. decomp H.
-exists x0. exists x1. apply subterm_pos_elim in H1. decomp H1.
-exists x3. exists x2. intuition. ded (replace_pos_elim H3). decomp H.
-rewrite H2 in H5. inversion H5. subst x4. hyp.
+exists x0. exists x1. apply subterm_pos_elim in H1. destruct H1. destruct a.
+exists x3. exists x2. intuition. ded (replace_pos_elim H3). destruct X.
+destruct a. rewrite H in H2. inversion H2. subst x4. hyp.
 Qed.
 
 End S.
+
+Implicit Arguments subterm_pos_elim [Sig p t u].
