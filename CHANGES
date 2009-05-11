@@ -1,4 +1,8 @@
 
+09-05-11: [Blanqui,Wang,Zhang]
+- NonTermin/ALoop: conditions of non-termination
+- NatUtil: unicity of Euclidian division
+
 09-05-07: [Blanqui]
 - Term/WithArity/AReduct: list of reducts of a term and proof that
   rewriting is finitely branching
