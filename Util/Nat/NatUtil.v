@@ -372,6 +372,74 @@ Qed.
 Implicit Arguments gt_plus [l k].
 
 (***********************************************************************)
-(** [dom_lt n]: a domain of numbers smaller than [n] *)
+(** domain of numbers smaller than [n] *)
 
 Definition dom_lt n := { i | i < n }.
+
+(***********************************************************************)
+(** Euclidian division *)
+
+Require Import Euclid.
+
+Lemma mult_is_not_O : forall m n, m * n <> 0 <-> m <> 0 /\ n <> 0.
+
+Proof.
+intuition. subst. apply H. refl. subst. apply H. apply mult_0_r.
+destruct (mult_is_O _ _ H0); auto.
+Qed.
+
+Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
+
+Proof.
+induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
+rewrite mult_succ_r in H. omega. repeat rewrite mult_0_r in H. omega.
+simpl in *. repeat rewrite mult_succ_r in H. omega.
+Qed.
+
+Implicit Arguments mult_lt_r_elim [x x' y].
+
+Lemma eucl_div_unique : forall b q1 r1 q2 r2,
+  b > r1 -> b > r2 -> q1 * b + r1 = q2 * b + r2 -> q1 = q2 /\ r1 = r2.
+
+Proof.
+intros.
+assert ((q1-q2)*b=r2-r1). rewrite mult_minus_distr_r. omega.
+assert ((q2-q1)*b=r1-r2). rewrite mult_minus_distr_r. omega.
+destruct (le_gt_dec r1 r2).
+(* r1 <= r2 *)
+destruct (eq_nat_dec r1 r2).
+(* r1 = r2 *)
+subst. rewrite minus_diag in H2. rewrite minus_diag in H3.
+destruct (mult_is_O _ _ H2); destruct (mult_is_O _ _ H3); intuition; omega.
+(* r1 < r2 *)
+assert (r2 - r1 < b). omega. rewrite <- H2 in H4.
+rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
+assert (q1=q2). omega. intuition. subst q2. omega.
+(* r1 > r2 *)
+assert (r1 - r2 < b). omega. rewrite <- H3 in H4.
+rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
+assert (q1=q2). omega. intuition. subst q2. omega.
+Qed.
+
+Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
+
+(***********************************************************************)
+(** iteration of a function *)
+
+Section iter.
+
+Variables (A : Type) (f : A -> A).
+
+Fixpoint iter n x :=
+  match n with
+    | 0 => x
+    | S n' => iter n' (f x)
+  end.
+
+Lemma iter_com : forall n x, iter n (f x) = f (iter n x).
+
+Proof.
+induction n; simpl; intros. refl. rewrite IHn. refl.
+Qed.
+
+End iter.
