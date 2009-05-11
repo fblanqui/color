@@ -20,10 +20,10 @@ Variables (A : Type) (R : relation A) (FB : finitely_branching R) (WF : WF R).
 
 Notation len := (len FB WF).
 
-Lemma WF_notIS : forall f, ~IS R f.
+Lemma WF_notIS : forall f, IS R f -> False.
 
 Proof.
-do 2 intro. assert (forall i, len (f i) + i <= len (f 0)).
+intros. assert (forall i, len (f i) + i <= len (f 0)).
 induction i; intros. omega.
 assert (len (f i) > len (f (S i))). apply R_len. apply H. omega.
 ded (H0 (S (len (f 0)))). omega.
