@@ -580,7 +580,8 @@ Proof.
 intros. destruct H. split; assumption.
 Qed.
 
-Lemma lequiv_trans : forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
+Lemma lequiv_trans :
+  forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
 
 Proof.
 intros. destruct H. destruct H0. split. eapply incl_tran. apply H. assumption.
@@ -912,7 +913,8 @@ Section Element_At_List.
     intro H; apply p_neq_q; subst; trivial.
   Qed.
 
-  Lemma in_exists_element_at : forall l a, In a l -> ex (fun p => l[p] = Some a).
+  Lemma in_exists_element_at :
+    forall l a, In a l -> ex (fun p => l[p] = Some a).
 
   Proof.
     intro l; induction l as [ | h t IHl]; intros a a_in_l.
@@ -923,7 +925,8 @@ Section Element_At_List.
     exists (S p); simpl; trivial.
   Qed.
 
-  Lemma exists_element_at_in : forall l a, ex (fun p => l[p] = Some a) -> In a l.
+  Lemma exists_element_at_in :
+    forall l a, ex (fun p => l[p] = Some a) -> In a l.
 
   Proof.
     intro l; induction l as [ | h t IHl]; intros a Hex; 
@@ -941,7 +944,8 @@ induction l; simpl; intros. discriminate. destruct n.
 inversion H. subst. auto. ded (IHl _ H). auto.
 Qed.
 
-Lemma element_at_in2 : forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l.
+Lemma element_at_in2 :
+  forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l.
 
 Proof.
 induction l; intros; simpl in H; try discriminate. destruct n.
@@ -1037,7 +1041,8 @@ Proof.
 intros. pose (incl_rev (rev l)). rewrite (rev_involutive l) in i. assumption.
 Qed.
 
-Lemma incl_rev_intro : forall l l' : list A, incl (rev l) (rev l') -> incl l l'.
+Lemma incl_rev_intro :
+  forall l l' : list A, incl (rev l) (rev l') -> incl l l'.
 
 Proof.
 intros. apply incl_tran with (rev l). apply incl_rev.
@@ -1111,6 +1116,13 @@ assert (length (a0::l) > 0). simpl. omega.
 ded (IHl H0). do 3 destruct H1.
 exists (a::x). exists x0. split. rewrite H1. refl.
 simpl. simpl in H2. omega.
+Qed.
+
+Lemma last_nth : forall x (l : list A), last l x = nth (length l - 1) l x.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl.
+elim l; simpl; intros. refl. destruct l0; simpl. refl. refl.
 Qed.
 
 End last.
@@ -1276,7 +1288,8 @@ Section ListsNth.
     right; trivial.
   Qed.
 
-  Lemma nth_some_in : forall (l : list A) i a, nth_error l i = Some a -> In a l.
+  Lemma nth_some_in :
+    forall (l : list A) i a, nth_error l i = Some a -> In a l.
 
   Proof.
     induction l; intros.
@@ -1522,7 +1535,8 @@ Variable A : Type.
 Fixpoint pvalues n : (forall i, i < n -> A) -> list A :=
   match n as n return (forall i, i < n -> A) -> list A with
     | 0 => fun _ => nil
-    | S k => fun f => f 0 (lt_O_Sn k) :: pvalues (fun i h => f (S i) (lt_n_S h))
+    | S k => fun f =>
+      f 0 (lt_O_Sn k) :: pvalues (fun i h => f (S i) (lt_n_S h))
   end.
 
 Lemma pvalues_eq : forall n (f g : forall i, i < n -> A),
