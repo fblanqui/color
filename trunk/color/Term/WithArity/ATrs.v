@@ -552,6 +552,13 @@ intros u v Ruv. destruct Ruv as [s' [ss' Ruv]].
 rewrite (red_empty ss'). assumption.
 Qed.
 
+Lemma red_mod_empty : red_mod nil R == red R.
+
+Proof.
+split. apply red_mod_empty_incl_red. intros t u h. exists t. split.
+apply rtc_refl. hyp.
+Qed.
+
 Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty_trs R << hd_red R.
 
 Proof.
@@ -657,8 +664,8 @@ Lemma hd_red_mod_min_union :
   hd_red_mod_min E (R ++ R') << hd_red_mod_min E R U hd_red_mod_min E R'.
 
 Proof.
-unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0. subst y.
-destruct (in_app_or lr).
+unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0.
+subst y. destruct (in_app_or lr).
 left. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
 right. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
 Qed.
