@@ -137,6 +137,29 @@ intros x y x_eq_y. destruct x_eq_y. split; intro.
 apply WF_incl with x; assumption. apply WF_incl with y; assumption.
 Qed.
 
+Add Parametric Morphism (A : Type) : (fun R => ~@WF A R)
+  with signature (same_relation A) ==> iff as notWF_mor.
+
+Proof.
+unfold same_relation. intuition.
+apply H. apply WF_incl with y; hyp.
+apply H. apply WF_incl with x; hyp.
+Qed.
+
+Add Parametric Morphism (A : Type) : (@WF A)
+  with signature (@inclusion A) --> impl as WF_incl_mor.
+
+Proof.
+intros x y x_eq_y h. apply WF_incl with x; hyp.
+Qed.
+
+Add Parametric Morphism (A : Type) : (fun R => ~@WF A R)
+  with signature (@inclusion A) ++> impl as notWF_incl_mor.
+
+Proof.
+unfold impl. intuition. apply H0. apply WF_incl with y; hyp.
+Qed.
+
 (***********************************************************************)
 (** inverse relation *)
 
