@@ -32,11 +32,10 @@ Ltac decomp_hyp H :=
   end;
   clear H.
 
-Ltac decomp_hyps :=
-  repeat
-    match goal with
+Ltac decomp_hyps := repeat
+  match goal with
     | H: _ |- _ => decomp_hyp H
-    end.
+  end.
 
 Ltac discr := intros; discriminate.
 
@@ -58,7 +57,7 @@ Ltac norm e :=
 Ltac norm_in H e :=
   let x := fresh in set (x := e) in H; vm_compute in x; subst x.
 
-(*Tactic Notation "norm" constr(e) "in" ident(H) := norm_in H e.*)
+(*FIXME: Tactic Notation "norm" constr(e) "in" ident(H) := norm_in H e.*)
 
 Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
 
@@ -76,11 +75,12 @@ Tactic Notation "by" tactic(T) := (T; done) .
 
 (***********************************************************************)
 (** tactics on rewriting **)
+
 Tactic Notation "rwn" constr(R1) constr(R2) :=
-  rewrite R1; rewrite R2 .
+  rewrite R1; rewrite R2.
 
 Tactic Notation "rwn" constr(R1) constr(R2) constr(R3) :=
-  rewrite R1; rewrite R2; rewrite R3 .
+  rewrite R1; rewrite R2; rewrite R3.
 
 (***********************************************************************)
 (** basic meta-theorems *)
