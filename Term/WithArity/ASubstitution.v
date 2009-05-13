@@ -123,23 +123,23 @@ Qed.
 (***********************************************************************)
 (** composition *)
 
-Definition comp (s1 s2 : substitution) : substitution :=
+Definition sub_comp (s1 s2 : substitution) : substitution :=
   fun x => sub s1 (s2 x).
 
-Lemma sub_sub : forall s1 s2 t, sub s1 (sub s2 t) = sub (comp s1 s2) t.
+Lemma sub_sub : forall s1 s2 t, sub s1 (sub s2 t) = sub (sub_comp s1 s2) t.
 
 Proof.
-intros. set (P := fun t => sub s1 (sub s2 t) = sub (comp s1 s2) t).
+intros. set (P := fun t => sub s1 (sub s2 t) = sub (sub_comp s1 s2) t).
 change (P t). apply term_ind_forall with (P := P); intros; unfold P.
 refl. repeat rewrite sub_fun. apply f_equal with (f := Fun f).
 rewrite Vmap_map. apply Vmap_eq. assumption.
 Qed.
 
-Lemma comp_assoc : forall (s1 s2 s3 : substitution) x,
-  comp (comp s1 s2) s3 x = comp s1 (comp s2 s3) x.
+Lemma sub_comp_assoc : forall (s1 s2 s3 : substitution) x,
+  sub_comp (sub_comp s1 s2) s3 x = sub_comp s1 (sub_comp s2 s3) x.
 
 Proof.
-intros. unfold comp. rewrite sub_sub. refl.
+intros. unfold sub_comp. rewrite sub_sub. refl.
 Qed.
 
 (***********************************************************************)
@@ -163,13 +163,25 @@ intros u n us. simpl. rewrite in_app. intuition.
 apply Vcons_eq; intuition.
 Qed.
 
-Lemma comp_single : forall s x v (t : term),
-  sub (comp s (single x v)) t = sub (extend s x (sub s v)) t.
+Lemma sub_comp_single_extend : forall s x v (t : term),
+  sub (sub_comp s (single x v)) t = sub (extend s x (sub s v)) t.
 
 Proof.
-intros. apply sub_eq. intros. unfold comp, single, extend.
+intros. apply sub_eq. intros. unfold sub_comp, single, extend.
 case_nat_eq x x0. rewrite <- beq_nat_refl. refl.
 rewrite (beq_com beq_nat_ok) in H0. rewrite H0. refl.
+Qed.
+
+Lemma sub_comp_single : forall s x (u : term), s x = sub s u ->
+  forall t, sub (sub_comp s (single x u)) t = sub s t.
+
+Proof.
+intros. set (s' := sub_comp s (single x u)). pattern t.
+apply term_ind with (Q := fun n (ts : terms n) =>
+  Vmap (sub s') ts = Vmap (sub s) ts); clear t.
+intro. unfold s', sub_comp, single. simpl. case_nat_eq x x0; auto.
+intros f v IH. repeat rewrite sub_fun. apply (f_equal (Fun f)). hyp.
+refl. intros. simpl. apply Vcons_eq; hyp.
 Qed.
 
 (***********************************************************************)

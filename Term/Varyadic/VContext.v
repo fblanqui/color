@@ -46,7 +46,7 @@ Fixpoint comp (C : context) : context -> context :=
     | Cont f ts1 D ts2 => fun E => Cont f ts1 (comp D E) ts2
   end.
 
-Lemma fill_comp : forall C D u, fill C (fill D u) = fill (comp C D) u.
+Lemma fill_fill : forall C D u, fill C (fill D u) = fill (comp C D) u.
 
 Proof.
 induction C; simpl; intros. refl. rewrite (IHC D u). refl.
@@ -72,7 +72,7 @@ Lemma subterm_trans_eq2 : forall t u v,
 
 Proof.
 unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
-subst u. subst v. rewrite (fill_comp x0 x t). exists (comp x0 x).
+subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
 split. destruct x. absurd (Hole = Hole); auto.
 destruct x0; simpl; discriminate. refl.
 Qed.

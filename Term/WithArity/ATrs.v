@@ -250,7 +250,7 @@ Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (AContext.comp c c0). exists s. split. assumption.
-subst t. subst u. do 2 rewrite fill_comp. auto.
+subst t. subst u. do 2 rewrite fill_fill. auto.
 Qed.
 
 Lemma red_subterm : forall u u' t, red R u u' -> subterm_eq u t
@@ -260,7 +260,7 @@ Proof.
 unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
 subst u'. exists (fill (AContext.comp d c) (sub s r)). split.
 exists l. exists r. exists (AContext.comp d c). exists s. split. assumption.
-rewrite fill_comp. auto. exists d. rewrite fill_comp. refl.
+rewrite fill_fill. auto. exists d. rewrite fill_fill. refl.
 Qed.
 
 Lemma int_red_fun : forall f ts v, int_red R (Fun f ts) v

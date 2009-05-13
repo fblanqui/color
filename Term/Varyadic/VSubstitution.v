@@ -18,12 +18,7 @@ Variable Sig : Signature.
 
 Notation term := (term Sig). Notation terms := (list term).
 
-(***********************************************************************)
-(* definition of substitutions as functions from variables to terms *)
-
 Definition substitution := variable -> term.
-
-(* application of a substitution *)
 
 Fixpoint sub (s : substitution) (t : term) {struct t} : term :=
   match t with

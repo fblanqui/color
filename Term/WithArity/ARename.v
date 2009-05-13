@@ -105,22 +105,22 @@ Definition shift_inv_var x :=
 Definition shift_inv_sub x := @Var Sig (shift_inv_var x).
 Definition shift_inv := sub shift_inv_sub.
 
-Lemma sub_shift : forall s, sub s l = sub (comp s shift_inv_sub) (shift l).
+Lemma sub_shift : forall s, sub s l = sub (sub_comp s shift_inv_sub) (shift l).
 
 Proof.
 intro. unfold shift. rewrite sub_sub. apply sub_eq. intros.
-rewrite comp_assoc. unfold comp. simpl. apply (f_equal s).
+rewrite sub_comp_assoc. unfold sub_comp. simpl. apply (f_equal s).
 unfold shift_inv_var. rewrite plus_minus_eq.
 assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. exact H.
 rewrite H0. case (le_lt_dec p (x+p)); intro. refl. omega.
 Qed.
 
 Lemma sub_shift_incl : forall s r, incl (vars r) (vars l) ->
-  sub s r = sub (comp s shift_inv_sub) (shift r).
+  sub s r = sub (sub_comp s shift_inv_sub) (shift r).
 
 Proof.
 intros. unfold shift. rewrite sub_sub. apply sub_eq. intros.
-rewrite comp_assoc. unfold comp. simpl. apply (f_equal s).
+rewrite sub_comp_assoc. unfold sub_comp. simpl. apply (f_equal s).
 unfold shift_inv_var. rewrite plus_minus_eq.
 assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. apply H. exact H0.
 rewrite H1. case (le_lt_dec p (x+p)); intro. refl. omega.

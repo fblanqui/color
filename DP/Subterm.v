@@ -75,10 +75,10 @@ Proof.
   inversion xSuby as [C [notHoleC fillCy]].
   inversion yRz as [l [r [Cred [s [rule [yfillCredl zfillCredr]]]]]].
   exists (fill C z). split.
-  exists l. exists r. exists (AContext.comp C Cred). exists s.
+  exists l. exists r. exists (comp C Cred). exists s.
   split. assumption. split.
-  rewrite <- fill_comp. rewrite <- yfillCredl. assumption.
-  rewrite <- fill_comp. rewrite <- zfillCredr. refl.
+  rewrite <- fill_fill. rewrite <- yfillCredl. assumption.
+  rewrite <- fill_fill. rewrite <- zfillCredr. refl.
   exists C. split. assumption. refl.
 Qed.
 

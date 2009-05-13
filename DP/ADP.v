@@ -253,7 +253,7 @@ apply (alien_sub_cap R). rewrite H4. rewrite sub_sub.
 apply no_call_sub_sn. hyp. apply calls_cap.
 (* we prove that the alien substitution is SN *)
 intros. ded (vars_cap R H5).
-case (le_lt_dec x (maxvar r)); intro; unfold comp, ACap.alien_sub.
+case (le_lt_dec x (maxvar r)); intro; unfold sub_comp, ACap.alien_sub.
 (* x <= maxvar r *)
 ded (vars_cap_inf R H5 l0). ded (hyp2 lr _ H7).
 rewrite fsub_inf. simpl. apply Hsnsx. hyp. hyp.

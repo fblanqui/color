@@ -147,7 +147,7 @@ unfold dp_graph. intuition. simpl. set (p := maxvar l0 + 1). exists p.
 (* take the union of s0 (restricted to [vars l0])
 and [comp s1 (shift_inv_sub p l1)] (restricted to [vars (shift p l1)] *)
 set (s0' := restrict s0 (vars l0)).
-set (s1' := restrict (comp s1 (shift_inv_sub p l1)) (vars (shift p l1))).
+set (s1' := restrict (sub_comp s1 (shift_inv_sub p l1)) (vars (shift p l1))).
 set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.

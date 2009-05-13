@@ -94,8 +94,8 @@ Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 
 Proof.
 intros. redtac. unfold red.
-exists l. exists r. exists (VContext.comp c c0). exists s. split. assumption.
-subst t. subst u. do 2 rewrite fill_comp. auto.
+exists l. exists r. exists (comp c c0). exists s. split. assumption.
+subst t. subst u. do 2 rewrite fill_fill. auto.
 Qed.
 
 End S.
