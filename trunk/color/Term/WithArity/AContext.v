@@ -175,39 +175,6 @@ exists (comp x0 x). refl.
 Qed.
 
 (***********************************************************************)
-(** subterms and variables *)
-
-Lemma subterm_eq_vars : forall u t x,
-  subterm_eq u t -> In x (vars u) -> In x (vars t).
-
-Proof.
-unfold subterm_eq. intros. destruct H as [C]. subst t. elim C; clear C.
-simpl. hyp. intros. simpl fill. rewrite vars_fun.
-rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
-apply in_appr. apply in_appl. hyp.
-Qed.
-
-Lemma in_vars_subterm_eq : forall x t, In x (vars t) -> subterm_eq (Var x) t.
-
-Proof.
-intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
-intuition. rewrite H0. apply subterm_eq_refl.
-generalize (in_vars_vec_elim H0). intro.
-destruct H1 as [t]. destruct H1. generalize (Vforall_in H H1). intro.
-generalize (H3 H2). intro. apply subterm_strict. eapply subterm_trans_eq1.
-apply H4.
-apply subterm_fun. hyp.
-Qed.
-
-Lemma in_vars_fun : forall x f ts,
-  In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
-
-Proof.
-intros. apply subterm_fun_elim. ded (in_vars_subterm_eq _ _ H).
-apply subterm_noteq. hyp. discr.
-Qed.
-
-(***********************************************************************)
 (** subterm-based induction principle *)
 
 Lemma forall_subterm_eq : forall (P : term -> Prop) t,
@@ -264,18 +231,65 @@ intro. rewrite beq_term_ok. split; intro. subst. apply subterm_eq_refl.
 apply subterm_eq_var in H. hyp.
 (* Fun *)
 split; rewrite orb_eq; rewrite beq_term_ok; intros. destruct H0.
-subst. apply subterm_eq_refl. rewrite bVexists_ok_Vin in H0.
+subst. apply subterm_eq_refl. rewrite (bVexists_ok_Vin (subterm_eq t)) in H0.
 Focus 2. intros. pattern x. apply Vforall_in with (v:=v). apply H. hyp.
 rewrite Vexists_eq in H0. decomp H0. apply subterm_eq_trans with x.
 hyp. apply subterm_strict. apply subterm_fun. hyp.
-
-Abort.
+destruct H0. destruct x. auto. right. rewrite (bVexists_ok_Vin (subterm_eq t)).
+Focus 2. intros. pattern x0. apply Vforall_in with (v:=v). apply H. hyp.
+rewrite Vexists_eq. exists (fill x t). split.
+simpl in H0. Funeqtac. rewrite H1. rewrite Vin_cast. apply Vin_app_cons.
+exists x. refl.
+Qed.
 
 Definition bsubterm (t u : term) : bool :=
   match u with
     | Var x => false
     | Fun _ us => bVexists (bsubterm_eq t) us
   end.
+
+Lemma bsubterm_ok : forall t u, bsubterm t u = true <-> subterm t u.
+
+Proof.
+destruct u; simpl. intuition. discr. destruct H. destruct H. destruct x.
+irrefl. simpl in H0. discr. rewrite (bVexists_ok (subterm_eq t)).
+rewrite Vexists_eq. split; intro. decomp H. apply subterm_trans_eq1 with x.
+hyp. apply subterm_fun. hyp. apply subterm_fun_elim in H. hyp.
+apply bsubterm_eq_ok.
+Qed.
+
+(***********************************************************************)
+(** subterms and variables *)
+
+Lemma subterm_eq_vars : forall u t x,
+  subterm_eq u t -> In x (vars u) -> In x (vars t).
+
+Proof.
+unfold subterm_eq. intros. destruct H as [C]. subst t. elim C; clear C.
+simpl. hyp. intros. simpl fill. rewrite vars_fun.
+rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
+apply in_appr. apply in_appl. hyp.
+Qed.
+
+Lemma in_vars_subterm_eq : forall x t, In x (vars t) -> subterm_eq (Var x) t.
+
+Proof.
+intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
+intuition. rewrite H0. apply subterm_eq_refl.
+generalize (in_vars_vec_elim H0). intro.
+destruct H1 as [t]. destruct H1. generalize (Vforall_in H H1). intro.
+generalize (H3 H2). intro. apply subterm_strict. eapply subterm_trans_eq1.
+apply H4.
+apply subterm_fun. hyp.
+Qed.
+
+Lemma in_vars_fun : forall x f ts,
+  In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
+
+Proof.
+intros. apply subterm_fun_elim. ded (in_vars_subterm_eq _ _ H).
+apply subterm_noteq. hyp. discr.
+Qed.
 
 (***********************************************************************)
 (** variables of a context *)
