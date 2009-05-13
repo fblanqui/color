@@ -9,8 +9,8 @@ rewriting
 
 Set Implicit Arguments.
 
-Require Import VContext.
-Require Import VSubstitution.
+Require Export VContext.
+Require Export VSubstitution.
 Require Import RelUtil.
 
 (***********************************************************************)
