@@ -1005,22 +1005,26 @@ Qed.
 (***********************************************************************)
 (** proposition saying that every element satisfies some predicate *)
 
-Fixpoint Vforall (P : A->Prop) n (v : vec n) { struct v } : Prop :=
+Section Vforall.
+
+Variable P : A->Prop.
+
+Fixpoint Vforall n (v : vec n) { struct v } : Prop :=
   match v with
   | Vnil => True
-  | Vcons a _ w => P a /\ Vforall P w
+  | Vcons a _ w => P a /\ Vforall w
   end.
 
-Lemma Vforall_intro : forall (P : A->Prop) n (v : vec n),
-  (forall x, Vin x v -> P x) -> Vforall P v.
+Lemma Vforall_intro : forall n (v : vec n),
+  (forall x, Vin x v -> P x) -> Vforall v.
 
 Proof.
 induction v; simpl; intros. exact I. split.
 apply H. left. reflexivity. apply IHv. intros. apply H. right. hyp.
 Qed.
 
-Lemma Vforall_nth_intro : forall (P : A -> Prop) n (v : vec n),
-  (forall i (ip : i < n), P (Vnth v ip)) -> Vforall P v.
+Lemma Vforall_nth_intro : forall n (v : vec n),
+  (forall i (ip : i < n), P (Vnth v ip)) -> Vforall v.
 
 Proof.
   intros. apply Vforall_intro. intros.
@@ -1028,38 +1032,64 @@ Proof.
   rewrite <- v_i. apply H.
 Qed.
 
-Lemma Vforall_in : forall P x n (v : vec n), Vforall P v -> Vin x v -> P x.
+Lemma Vforall_in : forall x n (v : vec n), Vforall v -> Vin x v -> P x.
 
 Proof.
-induction v; simpl.
-contradiction.
-intros Ha Hv. destruct Ha. destruct Hv.
-rewrite H1. exact H.
-auto.
+induction v; simpl. contradiction. intros Ha Hv. destruct Ha. destruct Hv.
+rewrite H1. exact H. auto.
 Qed.
 
-Lemma Vforall_nth : forall P n (v : vec n) i (ip : i < n), 
-  Vforall P v -> P (Vnth v ip).
+Lemma Vforall_eq : forall n (v : vec n),
+  Vforall v <-> (forall x, Vin x v -> P x).
+
+Proof.
+split; intros. eapply Vforall_in. apply H. hyp. apply Vforall_intro. hyp.
+Qed.
+
+Lemma Vforall_nth : forall n (v : vec n) i (ip : i < n), 
+  Vforall v -> P (Vnth v ip).
 
 Proof.
 intros. apply Vforall_in with n v. hyp. apply Vnth_in.
 Qed.
 
-Lemma Vforall_incl : forall (P : A->Prop) n1 (v1 : vec n1) n2 (v2 : vec n2),
-  (forall x, Vin x v1 -> Vin x v2) -> Vforall P v2 -> Vforall P v1.
+Lemma Vforall_incl : forall n1 (v1 : vec n1) n2 (v2 : vec n2),
+  (forall x, Vin x v1 -> Vin x v2) -> Vforall v2 -> Vforall v1.
 
 Proof.
 intros. apply Vforall_intro. intros. apply Vforall_in with (v := v2).
 hyp. apply H. hyp.
 Qed.
 
-Lemma Vforall_cast : forall P n v p (h : n=p),
-  Vforall P v -> Vforall P (Vcast v h).
+Lemma Vforall_cast : forall n v p (h : n=p), Vforall v -> Vforall (Vcast v h).
 
 Proof.
 intros. apply Vforall_intro. intros.
 eapply Vforall_in with (n := n). apply H. ded (Vin_cast_elim H0). hyp.
 Qed.
+
+Fixpoint Vsig_of_v n (v : vec n) {struct v} : Vforall v -> vector (sig P) n :=
+  match v in vector _ n return Vforall v -> vector (sig P) n with
+    | Vnil => fun _ => Vnil
+    | Vcons a _ w => fun H =>
+      Vcons (exist P a (proj1 H)) (Vsig_of_v w (proj2 H))
+  end.
+
+Variable P_dec : forall x, {P x}+{~P x}.
+
+Lemma Vforall_dec : forall n (v : vec n), {Vforall v}+{~Vforall v}.
+
+Proof.
+induction n; intros.
+VOtac. left. constructor.
+VSntac v. destruct (P_dec (Vhead v)).
+destruct (IHn (Vtail v)).
+left. simpl. split; hyp.
+right. intro V. destruct V. contradiction.
+right. intro V. destruct V. contradiction.
+Defined.
+
+End Vforall.
 
 Lemma Vforall_imp : forall (P Q : A->Prop) n (v : vec n),
   Vforall P v -> (forall x, Vin x v -> P x -> Q x) -> Vforall Q v.
@@ -1068,27 +1098,6 @@ Proof.
 intros. apply Vforall_intro. intros. apply H0. hyp.
 eapply Vforall_in with (n := n). apply H. apply H1.
 Qed.
-
-Lemma Vforall_dec : forall (P : A -> Prop) (P_dec : forall x, {P x}+{~P x}) n,
-  forall v : vec n, {Vforall P v}+{~Vforall P v}.
-
-Proof.
-  induction n; intros.
-  VOtac. left. constructor.
-  VSntac v. destruct (P_dec (Vhead v)).
-  destruct (IHn (Vtail v)).
-  left. simpl. split; hyp.
-  right. intro V. destruct V. contradiction.
-  right. intro V. destruct V. contradiction.
-Defined.
-
-Fixpoint Vsig_of_v (P : A->Prop) n (v : vec n) {struct v}
-  : Vforall P v -> vector (sig P) n :=
-  match v in vector _ n return Vforall P v -> vector (sig P) n with
-    | Vnil => fun _ => Vnil
-    | Vcons a _ w => fun H =>
-      Vcons (exist P a (proj1 H)) (Vsig_of_v P w (proj2 H))
-  end.
 
 (***********************************************************************)
 (** proposition saying that the elements of two vectors are pair-wise
@@ -1154,12 +1163,11 @@ Defined.
 End Vforall2_sec.
 
 (***********************************************************************)
-(** proposition saying that some elements of a vector satisfies some
-predicate *)
+(** to say that some element of a vector satisfies some predicate *)
 
 Section Vexists.
 
-Variables (P : A->Prop) (f : A->bool).
+Variables (P : A->Prop).
 
 Fixpoint Vexists n (v : vec n) {struct v} : Prop :=
   match v with
@@ -1167,11 +1175,43 @@ Fixpoint Vexists n (v : vec n) {struct v} : Prop :=
   | Vcons a _ v' => P a \/ Vexists v'
   end.
 
+Lemma Vexists_eq : forall n (v : vec n),
+  Vexists v <-> exists x, Vin x v /\ P x.
+
+Proof.
+induction v; simpl; intuition. destruct H. intuition. exists a. intuition.
+destruct H1. exists x. intuition. destruct H1. intuition. subst. auto.
+right. apply H0. exists x. intuition.
+Qed.
+
+Variable f : A->bool.
+
 Fixpoint bVexists n (v : vec n) {struct v} : bool :=
   match v with
     | Vnil => false
     | Vcons a _ v' => f a || bVexists v'
   end.
+
+Lemma bVexists_ok_Vin : forall n (v : vec n),
+  (forall x, Vin x v -> (f x = true <-> P x)) ->
+  (bVexists v = true <-> Vexists v).
+
+Proof.
+induction v; simpl. intuition. split; intros.
+rewrite orb_eq in H0. destruct H0. rewrite H in H0. auto. auto.
+rewrite IHv in H0. auto. intros. rewrite H. tauto. auto.
+destruct H0. rewrite <- H in H0. rewrite H0. reflexivity. auto.
+rewrite <- IHv in H0. rewrite H0. bool. reflexivity.
+intros. rewrite H. tauto. auto.
+Qed.
+
+Variable f_ok : forall x, f x = true <-> P x.
+
+Lemma bVexists_ok : forall n (v : vec n), bVexists v = true <-> Vexists v.
+
+Proof.
+intros. rewrite bVexists_ok_Vin. tauto. intros. rewrite f_ok. tauto.
+Qed.
 
 End Vexists.
 
