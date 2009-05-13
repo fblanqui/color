@@ -9,13 +9,18 @@ signature for algebraic terms with no arity
 
 Set Implicit Arguments.
 
+(***********************************************************************)
+(** Variables are represented by natural numbers. *)
+
 Notation variable := nat (only parsing).
+
+(***********************************************************************)
+(** Signature with a decidable set of symbols of fixed arity. *)
 
 Record Signature : Type := mkSignature {
   symbol :> Type;
   beq_symb : symbol -> symbol -> bool;
   beq_symb_ok : forall x y, beq_symb x y = true <-> x = y
-  (*eq_symbol_dec : forall f g : symbol, {f=g}+{~f=g}*)
 }.
 
 Implicit Arguments mkSignature [symbol beq_symb].
@@ -27,3 +32,10 @@ Require Import EqUtil.
 Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
 
 Implicit Arguments eq_symb_dec [Sig].
+
+(***********************************************************************)
+(** Tactic for proving beq_symb_ok *)
+
+Ltac beq_symb_ok_tac := intros f g; split;
+  [destruct f; destruct g; simpl; intro; (discriminate || reflexivity)
+    | intro; subst g; destruct f; reflexivity].
