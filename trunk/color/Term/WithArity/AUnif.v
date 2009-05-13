@@ -737,7 +737,7 @@ Definition is_sol s p :=
   end.
 
 Lemma is_sol_eqn_sub : forall s s' e,
-  is_sol_eqn s e -> is_sol_eqn (comp s' s) e.
+  is_sol_eqn s e -> is_sol_eqn (sub_comp s' s) e.
 
 Proof.
 intros s s' e. destruct e. unfold is_sol_eqn. simpl. intro.
@@ -745,14 +745,14 @@ do 2 rewrite <- sub_sub. apply (f_equal (sub s')). hyp.
 Qed.
 
 Lemma is_sol_solved_eqns_sub : forall s s' l,
-  is_sol_solved_eqns s l -> is_sol_solved_eqns (comp s' s) l.
+  is_sol_solved_eqns s l -> is_sol_solved_eqns (sub_comp s' s) l.
 
 Proof.
 induction l; simpl; intuition. destruct a. gen H0. unfold is_sol_solved_eqn.
 simpl. intro. rewrite <- sub_sub. rewrite <- H0. refl.
 Qed.
 
-Lemma is_sol_sub : forall s s' p, is_sol s p -> is_sol (comp s' s) p.
+Lemma is_sol_sub : forall s s' p, is_sol s p -> is_sol (sub_comp s' s) p.
 
 Proof.
 intros s s' p. destruct p. 2: auto. destruct p. destruct l0.
@@ -772,21 +772,9 @@ Lemma is_sol_solved_eqns_map : forall s n u, s n = sub s u ->
 Proof.
 induction l; simpl. intuition. destruct a. unfold is_sol_solved_eqn. simpl.
 intuition. rewrite H3. rewrite sub_sub. apply sub_eq. intros.
-unfold comp, single. case_nat_eq n x; auto.
+unfold sub_comp, single. case_nat_eq n x; auto.
 rewrite H3. rewrite sub_sub. apply sub_eq. intros.
-unfold comp, single. case_nat_eq n x; auto.
-Qed.
-
-Lemma app_comp_single : forall s x (u : term), s x = sub s u ->
-  forall t, sub (comp s (single x u)) t = sub s t.
-
-Proof.
-intros. set (s' := comp s (single x u)). pattern t0.
-apply term_ind with (Q := fun n (ts : terms n) =>
-  Vmap (sub s') ts = Vmap (sub s) ts); clear t0.
-intro. unfold s', comp, single. simpl. case_nat_eq x x0; auto.
-intros f v IH. repeat rewrite sub_fun. apply (f_equal (Fun f)). hyp.
-refl. intros. simpl. apply Vcons_eq; hyp.
+unfold sub_comp, single. case_nat_eq n x; auto.
 Qed.
 
 Lemma is_sol_eqns_map : forall s x u, s x = sub s u ->
@@ -795,10 +783,10 @@ Lemma is_sol_eqns_map : forall s x u, s x = sub s u ->
 Proof.
 induction l; simpl. intuition. destruct a. unfold is_sol_eqn. simpl.
 intuition. do 2 rewrite sub_sub in H3.
-transitivity (sub (comp s (single x u)) t0). symmetry. apply app_comp_single.
-hyp. rewrite H3. apply app_comp_single. hyp.
-do 2 rewrite sub_sub. transitivity (sub s t0). apply app_comp_single. hyp.
-rewrite H3. symmetry. apply app_comp_single. hyp.
+transitivity (sub (sub_comp s (single x u)) t0). symmetry.
+apply sub_comp_single. hyp. rewrite H3. apply sub_comp_single. hyp.
+do 2 rewrite sub_sub. transitivity (sub s t0). apply sub_comp_single. hyp.
+rewrite H3. symmetry. apply sub_comp_single. hyp.
 Qed.
 
 Lemma lforall_is_sol_solved_eqn : forall s x u, s x = sub s u -> forall l,
@@ -808,9 +796,9 @@ Lemma lforall_is_sol_solved_eqn : forall s x u, s x = sub s u -> forall l,
 Proof.
 induction l; simpl. intuition. destruct a. intuition.
 gen H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
-intro. rewrite H3. apply app_comp_single. hyp.
+intro. rewrite H3. apply sub_comp_single. hyp.
 gen H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
-intro. rewrite H3. symmetry. apply app_comp_single. hyp.
+intro. rewrite H3. symmetry. apply sub_comp_single. hyp.
 Qed.
 
 Lemma lforall_is_sol_eqn_combine : forall s n (v v0 : terms n),
@@ -888,7 +876,7 @@ Lemma is_sol_eqn_extend : forall s x (v : term) e,
 
 Proof.
 destruct e. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
-repeat rewrite comp_single. tauto.
+repeat rewrite sub_comp_single_extend. tauto.
 Qed.
 
 Lemma is_sol_eqns_extend : forall s x (v : term) l,
@@ -898,9 +886,9 @@ Lemma is_sol_eqns_extend : forall s x (v : term) l,
 Proof.
 induction l; simpl; intuition.
 clear H H1 H3. gen H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
-repeat rewrite comp_single. auto.
+repeat rewrite sub_comp_single_extend. auto.
 clear H3 H0 H1. gen H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
-repeat rewrite comp_single. auto.
+repeat rewrite sub_comp_single_extend. auto.
 Qed.
 
 (***********************************************************************)

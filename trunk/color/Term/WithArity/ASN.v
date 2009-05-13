@@ -145,7 +145,7 @@ rewrite H5. rewrite sub_sub. apply no_call_sub_sn. apply calls_cap. intros.
 assert (subterm v r). eapply subterm_trans_eq2 with (u := Fun g vs).
 apply subterm_fun. assumption. eapply in_calls_subterm. apply H3.
 (* end assert *)
-unfold comp. unfold alien_sub. case (le_lt_dec x (maxvar v)); intro.
+unfold sub_comp. unfold alien_sub. case (le_lt_dec x (maxvar v)); intro.
 (* x <= maxvar v *)
 rewrite fsub_inf. 2: assumption. simpl. apply H.
 eapply subterm_eq_vars. apply subterm_strict. apply H7.

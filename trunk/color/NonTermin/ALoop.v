@@ -166,8 +166,8 @@ Lemma red_g : forall a b, red R a b -> red R (g a) (g b).
 
 Proof.
 intros. redtac. unfold red. unfold g.
-exists l. exists r. exists (AContext.comp c (subc s c0)). exists (comp s s0).
-subst. repeat rewrite sub_fill. repeat rewrite fill_comp.
+exists l. exists r. exists (comp c (subc s c0)). exists (sub_comp s s0).
+subst. repeat rewrite sub_fill. repeat rewrite fill_fill.
 repeat rewrite sub_sub. intuition.
 Qed.
 

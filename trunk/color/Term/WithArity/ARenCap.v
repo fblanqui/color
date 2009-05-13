@@ -458,7 +458,7 @@ induction 1; intros. apply red_sub_ren_cap. hyp.
 destruct (ren_cap_intro x k). exists x0. intuition.
 destruct IHclos_refl_trans1. destruct IHclos_refl_trans2. subst.
 destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
-rewrite ren_cap_idem. rewrite sub_sub. exists (comp x1 x2). refl.
+rewrite ren_cap_idem. rewrite sub_sub. exists (sub_comp x1 x2). refl.
 Qed.
 
 End S.
