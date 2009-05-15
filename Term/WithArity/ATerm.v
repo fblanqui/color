@@ -67,6 +67,7 @@ Fixpoint term_rect t : P t :=
         end
 	in H2 f (terms_rect (arity f) v)
   end.
+
 End term_rect.
 
 Definition term_ind (P : term -> Prop) (Q : forall n, terms n -> Prop) :=
@@ -85,11 +86,13 @@ Section term_ind_comb.
   Variable Hcns : forall t n (ts : terms n), Pt t -> Ps ts -> Ps (Vcons t ts) .
 
   Lemma term_ind_comb : (forall t, Pt t) /\ (forall n (ts : terms n), Ps ts) .
+
   Proof .
     split; [by apply term_ind with (Q := Ps) | intros n ts] .
     induction ts; [exact Hnil | apply Hcns; [idtac | assumption]] .
     by apply term_ind with (Q := Ps) .
   Qed .
+
 End term_ind_comb.
 
 Lemma term_ind_forall : forall (P : term -> Prop)
@@ -100,6 +103,17 @@ Lemma term_ind_forall : forall (P : term -> Prop)
 Proof.
 intros. apply term_ind with (Q := Vforall P). exact H1. exact H2.
 exact I. intros. simpl. split; assumption.
+Qed.
+
+Lemma term_ind_forall_cast : forall (P : term -> Prop)
+  (Hvar : forall x, P (Var x))
+  (Hfun : forall f n (ts : terms n) (h : n = arity f),
+    Vforall P ts -> P (Fun f (Vcast ts h))),
+  forall t, P t.
+
+Proof.
+intros. apply term_ind_forall. hyp. intros.
+rewrite <- (Vcast_refl v (refl_equal (arity f))). apply Hfun. hyp.
 Qed.
 
 Lemma term_ind_forall2 : forall (P : term -> Prop)
@@ -147,11 +161,11 @@ Lemma fun_eq_cast : forall f g m (ts : terms m) n (us : terms n)
 Proof.
 destruct ts; intros.
 (* Vnil *)
-subst g. apply args_eq. destruct n. 2: discr. VOtac. assert (p=q). apply UIP.
-apply eq_nat_dec. subst q. apply Vcast_eq. auto.
+subst g. apply args_eq. destruct n. 2: discr. VOtac. assert (p=q).
+apply eq_unique. subst q. apply Vcast_eq. auto.
 (* Vcons *)
 subst g. apply args_eq. destruct n0. discr. rewrite H0. rewrite Vcast_cast.
-assert (trans_eq r q = p). apply UIP. apply eq_nat_dec. rewrite H. refl.
+assert (trans_eq r q = p). apply eq_unique. rewrite H. refl.
 Qed.
 
 Lemma fun_eq_intro : forall f ts g us (h : f = g),
