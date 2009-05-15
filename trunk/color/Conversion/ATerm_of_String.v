@@ -59,7 +59,7 @@ Fixpoint cont_of_string (s : string) : context ASig :=
   end.
 
 (***********************************************************************)
-(** rewriting *)
+(** rules *)
 
 Definition rule_of_srule (x : srule) :=
   mkRule (term_of_string (Srs.lhs x)) (term_of_string (Srs.rhs x)).
@@ -80,6 +80,9 @@ intros. destruct sc. elim lft; unfold SContext.fill; simpl.
 elim s. refl. intros. simpl. rewrite H. refl.
 intros. rewrite H. refl.
 Qed.
+
+(***********************************************************************)
+(** rewriting *)
 
 Section red_of_sred.
 
@@ -107,6 +110,9 @@ apply rt_refl. eapply rt_trans. apply H1. exact H3.
 Qed.
 
 End red_of_sred.
+
+(***********************************************************************)
+(** reflexion of termination *)
 
 Variable D S : list srule.
 
