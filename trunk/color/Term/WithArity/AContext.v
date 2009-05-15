@@ -18,6 +18,7 @@ Require Import LogicUtil.
 Require Import EqUtil.
 Require Import BoolUtil.
 Require Import VecUtil.
+Require Import Arith.
 
 Section S.
 
@@ -26,7 +27,7 @@ Variable Sig : Signature.
 Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
-(** contexts and replacement of the hole *)
+(** contexts *)
 
 Inductive context : Type :=
   | Hole : context
@@ -34,6 +35,34 @@ Inductive context : Type :=
     terms i -> context -> terms j -> context.
 
 Implicit Arguments Cont [f i j].
+
+Lemma cont_eq_intro : forall f f', f = f' -> forall c c', c = c' ->
+  forall i v1 i' v1' (h1 : i'=i) j v2 (e : i+S j=arity f) j' v2' (h2 : j'=j)
+    (e' : i'+S j'=arity f'), v1 = Vcast v1' h1 -> v2 = Vcast v2' h2 ->
+    Cont e v1 c v2 = Cont e' v1' c' v2'.
+
+Proof.
+intros f f' hf. subst f'. intros c c' hc. subst c'. destruct v1.
+(* v1=Vnil *)
+destruct i'; intros v1' h1. 2: discr. VOtac. rewrite Vcast_refl. clear h1.
+destruct v2; intros; clear H; destruct j'; try discr.
+(* v2=Vnil *)
+VOtac. assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+(* v2=Vcons *)
+inversion h2. subst j'. rewrite Vcast_refl in H0. rewrite <- H0.
+assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+(* v1=Vcons *)
+destruct i'; intros v1' h1. discr. inversion h1. subst i'. rewrite Vcast_refl.
+clear h1. destruct v2; destruct j'; try discr; intros; rewrite <- H; clear H.
+(* v2=Vnil *)
+VOtac. assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+(* v2=Vcons *)
+inversion h2. subst n0. rewrite Vcast_refl in H0. rewrite <- H0.
+assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+Qed.
+
+(***********************************************************************)
+(** replacement of the hole *)
 
 Fixpoint fill (c : context) (t : term) {struct c} : term :=
   match c with
