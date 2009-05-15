@@ -114,7 +114,7 @@ Require Import SN.
 
 Ltac no_relative_rules :=
   match goal with
-    |- WF (@red_mod ?S ?E _) =>
-      norm E; eapply WF_incl; [apply (@red_mod_empty_incl_red S) | idtac]
+    |- WF (red_mod ?E _) => norm E; (rewrite red_mod_empty
+      || fail "this certificate cannot be applied on a relative system")
     | _ => idtac
   end.
