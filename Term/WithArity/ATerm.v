@@ -140,6 +140,29 @@ Proof.
 intros. inversion H. refl.
 Qed.
 
+Lemma fun_eq_cast : forall f g m (ts : terms m) n (us : terms n)
+  (p : m = arity f) (q : n = arity g) (r : m=n), f = g ->
+  us = Vcast ts r -> Fun f (Vcast ts p) = Fun g (Vcast us q).
+
+Proof.
+destruct ts; intros.
+(* Vnil *)
+subst g. apply args_eq. destruct n. 2: discr. VOtac. assert (p=q). apply UIP.
+apply eq_nat_dec. subst q. apply Vcast_eq. auto.
+(* Vcons *)
+subst g. apply args_eq. destruct n0. discr. rewrite H0. rewrite Vcast_cast.
+assert (trans_eq r q = p). apply UIP. apply eq_nat_dec. rewrite H. refl.
+Qed.
+
+Lemma fun_eq_intro : forall f ts g us (h : f = g),
+  us = Vcast ts (f_equal (@arity Sig) h) -> Fun f ts = Fun g us.
+
+Proof.
+intros. rewrite <- (Vcast_refl ts (refl_equal (arity f))).
+rewrite <- (Vcast_refl us (refl_equal (arity g))).
+eapply fun_eq_cast. hyp. apply H.
+Qed.
+
 (***********************************************************************)
 (** decidability of equality *)
 
