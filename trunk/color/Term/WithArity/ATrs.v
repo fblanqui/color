@@ -513,6 +513,14 @@ Proof.
 intros. unfold hd_red_Mod. comp. hyp. apply hd_red_incl. hyp.
 Qed.
 
+Lemma hd_red_mod_incl :
+  incl E E' -> incl R R' -> hd_red_mod E R << hd_red_mod E' R'.
+
+Proof.
+intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
+apply hd_red_incl. hyp.
+Qed.
+
 Lemma hd_red_mod_of_hd_red_Mod_int :
   hd_red_Mod (int_red E #) R << hd_red_mod E R.
 
@@ -722,8 +730,8 @@ Ltac termination_trivial :=
 
 Ltac no_relative_rules :=
   match goal with
-    |- WF (red_mod ?E _) =>
-      norm E; eapply WF_incl; [apply red_mod_empty_incl_red | idtac]
+    |- WF (red_mod ?E _) => norm E; (rewrite red_mod_empty
+      || fail "this certificate cannot be applied on a relative system")
     | _ => idtac
   end.
 
