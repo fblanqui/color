@@ -15,10 +15,9 @@ Require Export ATerm.
 Require Import VecUtil.
 Require Import ListUtil.
 Require Import LogicUtil.
-Require Import EqUtil.
 Require Import BoolUtil.
 Require Import VecUtil.
-Require Import Arith.
+Require Import NatUtil.
 
 Section S.
 
@@ -47,18 +46,18 @@ intros f f' hf. subst f'. intros c c' hc. subst c'. destruct v1.
 destruct i'; intros v1' h1. 2: discr. VOtac. rewrite Vcast_refl. clear h1.
 destruct v2; intros; clear H; destruct j'; try discr.
 (* v2=Vnil *)
-VOtac. assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+VOtac. assert (e'=e). apply eq_unique. subst e'. refl.
 (* v2=Vcons *)
 inversion h2. subst j'. rewrite Vcast_refl in H0. rewrite <- H0.
-assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+assert (e'=e). apply eq_unique. subst e'. refl.
 (* v1=Vcons *)
 destruct i'; intros v1' h1. discr. inversion h1. subst i'. rewrite Vcast_refl.
 clear h1. destruct v2; destruct j'; try discr; intros; rewrite <- H; clear H.
 (* v2=Vnil *)
-VOtac. assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+VOtac. assert (e'=e). apply eq_unique. subst e'. refl.
 (* v2=Vcons *)
 inversion h2. subst n0. rewrite Vcast_refl in H0. rewrite <- H0.
-assert (e'=e). apply UIP. apply eq_nat_dec. subst e'. refl.
+assert (e'=e). apply eq_unique. subst e'. refl.
 Qed.
 
 (***********************************************************************)
@@ -359,3 +358,5 @@ Implicit Arguments Hole [Sig].
 Implicit Arguments in_vars_subterm_eq [Sig x t].
 Implicit Arguments in_vars_fun [Sig x f ts].
 Implicit Arguments vars_fill_elim [Sig t c].
+Implicit Arguments var_eq_fill [Sig x c t].
+Implicit Arguments fun_eq_fill [Sig f ts c u].

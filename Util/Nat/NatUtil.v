@@ -62,11 +62,17 @@ rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
 (***********************************************************************)
-(** unicity of le and lt proofs *)
+(** unicity of eq, le and lt proofs *)
+
+Lemma eq_unique : forall (n m : nat) (h1 h2 : n = m), h1 = h2.
+
+Proof.
+intros. apply UIP. apply eq_nat_dec.
+Qed.
 
 Scheme le_ind_dep := Induction for le Sort Prop.
 
-Lemma le_unique : forall n m (h1 h2 : le n m), h1 = h2.
+Lemma le_unique : forall n m (h1 h2 : n <= m), h1 = h2.
 
 Proof.
 intro n.
@@ -85,7 +91,7 @@ assert (forall m : nat, forall h1 : le n m, forall p : nat, forall h2 : le n p,
  intros; apply (@eq_dep_eq _ eq_nat_dec (le n) m); auto.
 Qed.
 
-Lemma lt_unique : forall n m (h1 h2 : lt n m), h1 = h2.
+Lemma lt_unique : forall n m (h1 h2 : n < m), h1 = h2.
 
 Proof.
 intros n m. unfold lt. intros. apply le_unique.

@@ -11,9 +11,8 @@ Set Implicit Arguments.
 
 Require Import LogicUtil.
 Require Import VecUtil.
-Require Import EqUtil.
 Require Import Relations.
-Require Import Arith.
+Require Import NatUtil.
 
 Section S.
 
@@ -88,7 +87,7 @@ Proof.
 induction v1; intros; destruct n; intros.
 contradiction. discriminate. discriminate.
 assert (n0 = n). apply eq_add_S. assumption. subst n0.
-assert (h = refl_equal (S n)). apply (UIP eq_nat_dec). subst h.
+assert (h = refl_equal (S n)). apply eq_unique. subst h.
 rewrite (Vcast_refl (Vcons a v1)). rewrite (Vcast_refl v2). assumption.
 Qed.
 
@@ -97,7 +96,7 @@ Lemma Vgt_prod_cast_inv : forall m n (h : m=n) (v1 v2 : vec m),
 
 Proof.
 induction m; destruct n; intros.
-assert (h = refl_equal 0). apply (UIP eq_nat_dec). subst h. contradiction.
+assert (h = refl_equal 0). apply eq_unique. subst h. contradiction.
 discriminate. discriminate.
 assert (v1 = Vcons (Vhead v1) (Vtail v1)). apply VSn_eq. rewrite H0.
 assert (v2 = Vcons (Vhead v2) (Vtail v2)). apply VSn_eq. rewrite H1.
