@@ -37,14 +37,58 @@ Definition ASig_of_SSig := mkSignature ar (@VSignature.beq_symb_ok SSig).
 
 Notation ASig := ASig_of_SSig.
 
-Notation term := (term ASig).
-Notation Fun := (@Fun ASig).
+Notation term := (term ASig). Notation terms := (vector term).
 
 Fixpoint term_of_string (s : string) : term :=
   match s with
     | nil => Var 0
-    | a :: w => Fun a (Vcons (term_of_string w) Vnil)
+    | a :: w => @Fun ASig a (Vcons (term_of_string w) Vnil)
   end.
+
+(*FIXME: does not work:
+Fixpoint string_of_term (t : term) : string :=
+  match t with
+    | Var _ => nil
+    | ATerm.Fun f ts => f :: match ts with
+                               | Vcons t _ _ => string_of_term t
+                               | _ => nil
+                             end
+  end.*)
+
+Require Import VecUtil.
+
+Fixpoint string_of_term (t : term) : string :=
+  match t with
+    | Var _ => nil
+    | Fun f ts => f :: Vmap_first nil string_of_term ts
+  end.
+
+Lemma string_of_term_epi : forall s, string_of_term (term_of_string s) = s.
+
+Proof.
+induction s; simpl; intros. refl. rewrite IHs. refl.
+Qed.
+
+Require Import VecUtil.
+Require Import Max.
+
+Ltac arity_1 := let f := fresh "f" in let v := fresh "v" in
+  intros f v; unfold arity in v; simpl in v; unfold ar in v; VSntac v;
+    let a := fresh "a" in let w := fresh "w" in
+      set (a := Vhead v); set (w := Vtail v); VOtac.
+
+Lemma term_of_string_epi : forall t, maxvar t = 0 ->
+  term_of_string (string_of_term t) = t.
+
+Proof.
+intro t; pattern t; apply term_ind_forall; clear t.
+(* Var *)
+simpl in *. intros. subst. refl.
+(* Fun *)
+arity_1. rewrite H0. simpl. intros. apply args_eq. destruct H1.
+assert (maxvar a <= 0). rewrite <- H2. apply le_max_l.
+assert (h : maxvar a = 0). omega. rewrite H1. refl. hyp.
+Qed.
 
 (***********************************************************************)
 (** contexts *)
@@ -116,8 +160,7 @@ End red_of_sred.
 
 Variable D S : list srule.
 
-Notation E := (trs_of_srs D).
-Notation R := (trs_of_srs S).
+Notation E := (trs_of_srs D). Notation R := (trs_of_srs S).
 
 Lemma red_mod_of_sred_mod : forall x y,
   Srs.red_mod D S x y -> red_mod E R (term_of_string x) (term_of_string y).
