@@ -91,6 +91,15 @@ intros. apply Vcons_eq. reflexivity. hyp.
 Qed.
 
 (***********************************************************************)
+(** 1st element of a vector with default value if empty *)
+
+Definition Vfirst default n (v : vec n) : A :=
+  match v with
+    | Vnil => default
+    | Vcons x _ _ => x
+  end.
+
+(***********************************************************************)
 (** cast *)
 
 Program Fixpoint Vcast m (v : vec m) n (mn : m = n) {struct v} : vec n :=
@@ -123,7 +132,7 @@ intros until v1. destruct v1; intros; destruct m.
 simpl in H. rewrite <- (Vcast_refl v2 h). hyp.
 discr. discr.
 assert (n = m). apply eq_add_S. hyp. subst n.
-assert (h = refl_equal (S m)). apply (UIP eq_nat_dec). subst h.
+assert (h = refl_equal (S m)). apply eq_unique. subst h.
 simpl in H. do 2 rewrite Vcast_refl in H. hyp.
 Qed.
 
@@ -447,7 +456,7 @@ Lemma Vapp_rcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2 (h1 : n2=p2)
 
 Proof.
 induction v1; simpl; intros.
-assert (h1=h2). apply (UIP eq_nat_dec). rewrite H. reflexivity.
+assert (h1=h2). apply eq_unique. rewrite H. reflexivity.
 apply Vtail_eq. apply IHv1.
 Qed.
 
@@ -1616,6 +1625,30 @@ End map.
 Implicit Arguments Vin_map [A B f x n v].
 Implicit Arguments Vforall_map_elim [A B f P n v].
 Implicit Arguments Vin_map_intro [A B x n v].
+
+(***********************************************************************)
+(** map first element *)
+
+Section map_first.
+
+Variables (A B : Type) (default : B) (f : A->B).
+
+Definition Vmap_first n (v : vector A n) : B :=
+  match v with
+    | Vcons a _ _ => f a
+    | _ => default
+  end.
+
+Lemma Vmap_first_cast : forall n (v : vector A n) n' (h : n=n'),
+  Vmap_first (Vcast v h) = Vmap_first v.
+
+Proof.
+destruct v; intros; destruct n'; try discr.
+rewrite Vcast_refl. reflexivity.
+inversion h. subst n'. rewrite Vcast_refl. reflexivity.
+Qed.
+
+End map_first.
 
 (***********************************************************************)
 (** map with a binary function *)
