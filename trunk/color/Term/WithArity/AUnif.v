@@ -826,7 +826,7 @@ rewrite is_sol_eqns_map in H2; auto.
 Opaque vars. simpl. set (u := Fun f v). unfold is_sol_eqn. simpl fst.
 simpl snd.
 simpl sub at 1. case_eq (mem n (vars u)). intuition; try contradiction.
-ded (term_wf H0 H). discriminate. unfold is_sol, is_sol_solved_eqns.
+ded (wf_term_var H0 H). discriminate. unfold is_sol, is_sol_solved_eqns.
 simpl lforall. unfold is_sol_solved_eqn at 2. simpl fst. simpl snd. intuition.
 rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
 rewrite lforall_is_sol_solved_eqn in H3; hyp.
@@ -834,7 +834,7 @@ rewrite is_sol_eqns_map in H2; hyp.
 (* fun-var *) (* same proof *)
 simpl. set (u := Fun f v). unfold is_sol_eqn. simpl fst. simpl snd.
 simpl sub at 2. case_eq (mem n (vars u)). intuition; try contradiction.
-symmetry in H0. ded (term_wf H0 H). discriminate.
+symmetry in H0. ded (wf_term_var H0 H). discriminate.
 unfold is_sol, is_sol_solved_eqns.
 simpl lforall. unfold is_sol_solved_eqn at 2. simpl fst. simpl snd. intuition.
 rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
