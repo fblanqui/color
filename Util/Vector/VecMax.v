@@ -12,6 +12,7 @@ Set Implicit Arguments.
 
 Require Import VecUtil.
 Require Import NatUtil.
+Require Import LogicUtil.
 
 Notation nats := (vector nat).
 
@@ -47,29 +48,32 @@ Proof.
 intros n v. rewrite (VSn_eq v). simpl. auto with arith.
 Qed.
 
-Lemma Vmax_app : forall n1 (v1 : nats n1) p n2 (v2 : nats n2),
+Lemma Vmax_app_cons : forall n1 (v1 : nats n1) p n2 (v2 : nats n2),
   p <= Vmax (Vapp v1 (Vcons p v2)).
 
 Proof.
-intros. elim v1.
- simpl. auto with arith.
- intros a n' w H. simpl.
- eapply le_trans. apply H.
- auto with arith.
+intros. elim v1. simpl. auto with arith.
+intros a n' w H. simpl. eapply le_trans. apply H. auto with arith.
 Qed.
 
 Lemma Vmax_forall : forall n (v : nats n) p,
   Vmax v <= p -> Vforall (fun n => n <= p) v.
 
 Proof.
-intros n v p. elim v.
- intro. simpl. auto.
- simpl. intros h n' t Hrec H. split.
-  eapply le_trans. apply (le_max_l h (Vmax t)). assumption.
-  apply (Hrec (le_trans (le_max_r h (Vmax t)) H)).
+intros n v p. elim v. intro. simpl. auto.
+simpl. intros h n' t Hrec H. split.
+eapply le_trans. apply (le_max_l h (Vmax t)). assumption.
+apply (Hrec (le_trans (le_max_r h (Vmax t)) H)).
 Qed.
 
 Implicit Arguments Vmax_forall [n v p].
+
+Lemma Vmax_cast : forall n (v : nats n) p (e : n=p), Vmax (Vcast v e) = Vmax v.
+
+Proof.
+induction v; destruct p; intros; try absurd_arith.
+rewrite Vcast_refl. refl. simpl. rewrite IHv. refl.
+Qed.
 
 (***********************************************************************)
 (** min *)
