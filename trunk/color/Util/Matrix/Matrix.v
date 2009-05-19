@@ -100,7 +100,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     unfold matrix. induction m; simpl; intros.
     VOtac. refl.
     unfold get_elem, get_row in H.
-    VSntac M. VSntac N. apply Vcons_eq.
+    VSntac M. VSntac N. apply Vcons_eq_intro.
     apply Veq_nth. intros.
     do 2 rewrite Vhead_nth. apply H.
     apply IHm. intros. 

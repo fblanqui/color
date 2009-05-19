@@ -153,8 +153,8 @@ assert (fill x u = Vnth (Vreplace v l t) l). rewrite <- H1.
 rewrite Vnth_replace. refl. rewrite H2.
 rewrite (Veq_app_cons_aux (Vreplace v l t) (Veq_app_cons_aux1 l)
   l (Veq_app_cons_aux2 l) (Veq_app_cons_aux3 l)).
-apply Vcast_eq. apply Vapp_eq. rewrite Vsub_replace_l. refl. omega.
-apply Vcons_eq. rewrite Vnth_cast. rewrite Vnth_app_cons. refl.
+apply Vcast_eq_intro. apply Vapp_eq_intro. rewrite Vsub_replace_l. refl. omega.
+apply Vcons_eq_intro. rewrite Vnth_cast. rewrite Vnth_app_cons. refl.
 rewrite Vsub_replace_r. refl. omega.
 Defined.
 

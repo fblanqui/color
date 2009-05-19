@@ -361,7 +361,8 @@ apply args_eq. apply IH. assumption.
 unfold Q. auto.
 intros. unfold Q. simpl. intros.
 generalize (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.
-do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H2. apply Vcons_eq.
+do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H2.
+apply Vcons_eq_intro.
 apply H0. eapply le_max_elim_l. apply H2.
 apply H1. eapply le_max_elim_r. apply H2.
 Qed.
@@ -374,7 +375,8 @@ Lemma Vmap_map_sum : forall m s, (forall x, x <= m -> s x = Var x)
 Proof.
 induction ts; simpl; intros. reflexivity.
 generalize (Vbreak_eq_app v). intro. rewrite H1. rewrite Vmap_app.
-do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H0. apply Vcons_eq.
+do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H0.
+apply Vcons_eq_intro.
 eapply app_fcap. apply H. eapply le_max_elim_l. apply H0.
 apply IHts. eapply le_max_elim_r. apply H0.
 Qed.
