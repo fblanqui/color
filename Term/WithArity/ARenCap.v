@@ -159,8 +159,8 @@ Lemma ren_caps_eq : forall n (ts : terms n) k,
   =  ren_caps k ts.
 
 Proof.
-induction ts; simpl; intros. refl. rewrite Vbreak_fresh. apply Vcons_eq. refl.
-rewrite IHts. refl.
+induction ts; simpl; intros. refl. rewrite Vbreak_fresh. apply Vcons_eq_intro.
+refl. rewrite IHts. refl.
 Qed.
 
 Lemma ren_cap_fun : forall f ts k,
@@ -302,8 +302,8 @@ simpl. destruct (H k l) as [s1]. destruct H1 as [H1 H1']. rewrite H1.
 destruct (H0 (k + nb_aliens (sub s t)) (l + nb_aliens t)) as [s2].
 destruct H2 as [H2 H2']. rewrite H2.
 set (s' := fun x => match In_dec x (vars (ren_cap l t)) with
-  | left _ => s1 x | right _ => s2 x end). exists s'. split. apply Vcons_eq.
-apply sub_eq. intros. unfold s'.
+  left _ => s1 x | right _ => s2 x end). exists s'. split.
+apply Vcons_eq_intro. apply sub_eq. intros. unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. refl. intuition.
 apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. ded (vars_ren_cap i).
@@ -336,8 +336,8 @@ rewrite H1.
 destruct (IHts (k + nb_aliens (sub s a)) (l + nb_aliens a)) as [s2].
 destruct H as [H2 H2']. rewrite H2.
 set (s' := fun x => match In_dec x (vars (ren_cap l a)) with
-  | left _ => s1 x | right _ => s2 x end). exists s'. split. apply Vcons_eq.
-apply sub_eq. intros. unfold s'.
+  left _ => s1 x | right _ => s2 x end). exists s'. split.
+apply Vcons_eq_intro. apply sub_eq. intros. unfold s'.
 case (In_dec x (vars (ren_cap l a))); intro. refl. intuition.
 apply Vmap_sub_eq. intros. ded (vars_ren_caps H). unfold s'.
 case (In_dec x (vars (ren_cap l a))); intro. ded (vars_ren_cap i).
@@ -433,10 +433,11 @@ set (s' := fun x => match In_dec x (vars_vec (ren_caps k v)) with
   In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))) with
   | left _ => s2 x | right _ => s3 x end end). exists s'.
 rewrite sub_fun. apply args_eq. rewrite Vmap_cast. rewrite Vmap_app. simpl.
-apply Vcast_eq. apply Vapp_eq. transitivity (Vmap (sub s1) (ren_caps k v)).
+apply Vcast_eq_intro. apply Vapp_eq_intro.
+transitivity (Vmap (sub s1) (ren_caps k v)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k v))); intro. refl. intuition.
-apply Vcons_eq. rewrite H1. apply sub_eq. intros. ded (vars_ren_cap H3).
+apply Vcons_eq_intro. rewrite H1. apply sub_eq. intros. ded (vars_ren_cap H3).
 unfold s'. case (In_dec x (vars_vec (ren_caps k v))); intro.
 ded (vars_ren_caps i0). absurd_arith. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec v) (fill c (sub s l)))));

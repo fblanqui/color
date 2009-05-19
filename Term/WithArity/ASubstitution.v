@@ -160,7 +160,7 @@ case_nat_eq x0 x. intuition. refl.
 intros f us. rewrite vars_fun. do 2 rewrite sub_fun. intros. apply args_eq.
 auto. refl.
 intros u n us. simpl. rewrite in_app. intuition.
-apply Vcons_eq; intuition.
+apply Vcons_eq_intro; intuition.
 Qed.
 
 Lemma sub_comp_single_extend : forall s x v (t : term),
@@ -181,7 +181,7 @@ apply term_ind with (Q := fun n (ts : terms n) =>
   Vmap (sub s') ts = Vmap (sub s) ts); clear t.
 intro. unfold s', sub_comp, single. simpl. case_nat_eq x x0; auto.
 intros f v IH. repeat rewrite sub_fun. apply (f_equal (Fun f)). hyp.
-refl. intros. simpl. apply Vcons_eq; hyp.
+refl. intros. simpl. apply Vcons_eq_intro; hyp.
 Qed.
 
 (***********************************************************************)
@@ -313,7 +313,7 @@ apply H0. rewrite vars_fun in H1. exact H1.
 refl.
 (* cons *)
 intros. rewrite vars_vec_cons in H2. unfold incl in H2.
-ded (incl_app_elim H2). destruct H3. simpl. apply Vcons_eq; auto.
+ded (incl_app_elim H2). destruct H3. simpl. apply Vcons_eq_intro; auto.
 Qed.
 
 Lemma sub_eq_vars_sub : forall s1 s2 t,
