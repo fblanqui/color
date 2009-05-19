@@ -162,7 +162,7 @@ Proof.
 destruct ts; intros.
 (* Vnil *)
 subst g. apply args_eq. destruct n. 2: discr. VOtac. assert (p=q).
-apply eq_unique. subst q. apply Vcast_eq. auto.
+apply eq_unique. subst q. apply Vcast_eq_intro. auto.
 (* Vcons *)
 subst g. apply args_eq. destruct n0. discr. rewrite H0. rewrite Vcast_cast.
 assert (trans_eq r q = p). apply eq_unique. rewrite H. refl.
@@ -314,6 +314,15 @@ Proof.
 intros. assert (Vforall (maxvar_le m) ts). apply maxvar_le_fun. assumption.
 change (maxvar_le m t). eapply Vforall_in with (n := arity f). apply H1.
 assumption.
+Qed.
+
+Lemma maxvars_cast : forall n (ts : terms n) p (e : n=p),
+  maxvars (Vcast ts e) = maxvars ts.
+
+Proof.
+induction ts; destruct p; intros; try absurd_arith.
+rewrite Vcast_refl. refl.
+simpl. repeat rewrite maxvars_cons. rewrite IHts. refl.
 Qed.
 
 (***********************************************************************)
@@ -566,7 +575,7 @@ destruct H. subst t. omega. destruct H. subst t. omega.
 ded (Vin_size_terms_ge H). omega.
 Qed.
 
-Lemma size_terms_Vcast : forall n (ts : terms n) m (h : n=m),
+Lemma size_terms_cast : forall n (ts : terms n) m (h : n=m),
   size_terms (Vcast ts h) = size_terms ts.
 
 Proof.
@@ -575,11 +584,23 @@ intro. destruct m. intro. discr. intro. inversion h. simpl. rewrite IHts.
 refl.
 Qed.
 
-Lemma size_terms_Vapp : forall n (ts : terms n) m (us : terms m),
+Lemma size_terms_app : forall n (ts : terms n) m (us : terms m),
   size_terms (Vapp ts us) = size_terms ts + size_terms us.
 
 Proof.
 induction ts; simpl; intros. refl. rewrite IHts. omega.
+Qed.
+
+Lemma term_ind_size : forall (P : term -> Prop),
+  (forall n, (forall t, size t <= n -> P t) -> forall t, size t <= S n -> P t)
+  -> forall t, P t.
+
+Proof.
+intro P. set (Q := fun n => forall t, size t <= n -> P t).
+change ((forall n, Q n -> Q (S n)) -> forall t, P t). intro IH.
+cut (forall t, Q t). intros. unfold Q in H. eapply H. apply le_refl.
+induction t. unfold Q. destruct t; simpl; intros; absurd_arith.
+apply IH. hyp.
 Qed.
 
 (***********************************************************************)
