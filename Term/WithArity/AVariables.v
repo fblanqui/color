@@ -131,13 +131,13 @@ intros. destruct u.
 simpl in H. autorewrite with mem in H. subst n. irrefl.
 clear H0. rewrite sub_fun. rewrite size_fun. rewrite vars_fun in H.
 destruct (mem_vars_vec H). destruct H0. ded (Vin_elim H0). decomp H2.
-rewrite H3. rewrite Vmap_cast. rewrite size_terms_Vcast. rewrite Vmap_app.
-rewrite size_terms_Vapp. simpl. ded (mem_vars_size_sub_ge s H1). omega.
+rewrite H3. rewrite Vmap_cast. rewrite size_terms_cast. rewrite Vmap_app.
+rewrite size_terms_app. simpl. ded (mem_vars_size_sub_ge s H1). omega.
 Qed.
 
 Implicit Arguments mem_vars_size_sub_gt [x u].
 
-Lemma term_wf : forall s x u,
+Lemma wf_term_var : forall s x u,
   s x = sub s u -> mem x (vars u) = true -> u = Var x.
 
 Proof.
@@ -357,6 +357,6 @@ Qed.
 
 End S.
 
-Implicit Arguments term_wf [Sig s x u].
+Implicit Arguments wf_term_var [Sig s x u].
 Implicit Arguments mem_vars_vec [Sig x n ts].
 Implicit Arguments vars_subs_elim [Sig s x v].
