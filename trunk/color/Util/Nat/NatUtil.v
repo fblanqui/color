@@ -207,6 +207,12 @@ Proof.
 exact max_lt.
 Qed.
 
+Lemma max_0_r : forall x, max x 0 = x.
+
+Proof.
+destruct x; refl.
+Qed.
+
 (***********************************************************************)
 (** min *)
 
