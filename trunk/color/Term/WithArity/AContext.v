@@ -84,6 +84,12 @@ Proof.
 induction C; simpl; intros. refl. rewrite (IHC D u). refl.
 Qed.
 
+Lemma comp_comp : forall C D E, comp (comp C D) E = comp C (comp D E).
+
+Proof.
+induction C; simpl; intros. refl. rewrite IHC. refl.
+Qed.
+
 (***********************************************************************)
 (** properties of fill *)
 
@@ -102,6 +108,36 @@ intros. destruct c. auto. right.
 simpl in H. injection H. intros. subst f0.
 exists i. exists j. exists e. exists v. exists c. exists v0.
 refl.
+Qed.
+
+Lemma fill_eq : forall t u c, fill c t = fill c u <-> t = u.
+
+Proof.
+split. induction c; simpl; intros. hyp. Funeqtac. rewrite Vcast_eq in H0.
+rewrite Vapp_eq in H0. decomp H0. rewrite Vcons_eq in H1. intuition.
+intro. subst. refl.
+Qed.
+
+Lemma comp_eq : forall c d e, comp c d = comp c e <-> d = e.
+
+Proof.
+split. induction c; simpl; intros. hyp. inversion H. auto. intro. subst. refl.
+Qed.
+
+Lemma size_fill : forall t c, size (fill c t) >= size t.
+
+Proof.
+induction c. simpl. omega. simpl fill. rewrite size_fun.
+rewrite size_terms_cast. rewrite size_terms_app. simpl. omega.
+Qed.
+
+Lemma wf_term : forall (t : term) c, t = fill c t -> c = Hole.
+
+Proof.
+intros. destruct c. refl. assert (size (fill (Cont e v c v0) t) > size t).
+simpl fill. rewrite size_fun. rewrite size_terms_cast.
+rewrite size_terms_app. simpl. ded (size_fill t c). omega.
+rewrite <- H in H0. absurd_arith.
 Qed.
 
 (***********************************************************************)
@@ -360,3 +396,4 @@ Implicit Arguments in_vars_fun [Sig x f ts].
 Implicit Arguments vars_fill_elim [Sig t c].
 Implicit Arguments var_eq_fill [Sig x c t].
 Implicit Arguments fun_eq_fill [Sig f ts c u].
+Implicit Arguments wf_term [Sig t c].
