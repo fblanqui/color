@@ -46,7 +46,7 @@ Lemma Ft_fun : forall f ts,
   Ft (Fun f ts) = Fun (F f) (Vcast (Fv ts) (HF f)).
 
 Proof.
-intros. simpl. apply args_eq. apply Vcast_eq. refl.
+intros. simpl. apply args_eq. apply Vcast_eq_intro. refl.
 Qed.
 
 (***********************************************************************)
