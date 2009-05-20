@@ -408,7 +408,56 @@ unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
 apply List.incl_refl. apply incl_tran with (vars y); assumption.
 Qed.
 
+Require Import ListMax.
+
+Lemma red_maxvar : forall t u, red R t u -> maxvar u <= maxvar t.
+
+Proof.
+intros. repeat rewrite maxvar_lmax. apply incl_lmax. apply red_preserv_vars.
+hyp.
+Qed.
+
+Lemma red_maxvar0 : forall t u, maxvar t = 0 -> red R t u -> maxvar u = 0.
+
+Proof.
+intros. cut (maxvar u <= maxvar t). intro. omega. apply red_maxvar. hyp.
+Qed.
+
+Lemma rtc_red_maxvar : forall t u, red R # t u -> maxvar u <= maxvar t.
+
+Proof.
+induction 1. apply red_maxvar. hyp. omega. omega.
+Qed.
+
+Lemma rtc_red_maxvar0 : forall t u,
+  maxvar t = 0 -> red R # t u -> maxvar u = 0.
+
+Proof.
+intros. cut (maxvar u <= maxvar t). intro. omega. apply rtc_red_maxvar. hyp.
+Qed.
+
 End vars.
+
+Section red_mod.
+
+Variables (E R : rules)
+  (hE : rules_preserv_vars E) (hR : rules_preserv_vars R).
+
+Lemma red_mod_maxvar : forall t u, red_mod E R t u -> maxvar u <= maxvar t.
+
+Proof.
+intros. do 2 destruct H. transitivity (maxvar x). apply (red_maxvar hR H0).
+apply (rtc_red_maxvar hE H).
+Qed.
+
+Lemma red_mod_maxvar0 : forall t u,
+  maxvar t = 0 -> red_mod E R t u -> maxvar u = 0.
+
+Proof.
+intros. cut (maxvar u <= maxvar t). intro. omega. apply red_mod_maxvar. hyp.
+Qed.
+
+End red_mod.
 
 Lemma rules_preserv_vars_incl : forall R S : rules,
   incl R S -> rules_preserv_vars S -> rules_preserv_vars R.
