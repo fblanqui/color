@@ -16,7 +16,11 @@ Require Import LogicUtil.
 
 Section S.
 
-Variables (A : Type) (R : relation A) (FB : finitely_branching R) (WF : WF R).
+Variables (A : Type) (R : relation A) (FB : finitely_branching R).
+
+Section false.
+
+Variable WF : WF R.
 
 Notation len := (len FB WF).
 
@@ -27,6 +31,14 @@ intros. assert (forall i, len (f i) + i <= len (f 0)).
 induction i; intros. omega.
 assert (len (f i) > len (f (S i))). apply R_len. apply H. omega.
 ded (H0 (S (len (f 0)))). omega.
+Qed.
+
+End false.
+
+Lemma IS_notWF : non_terminating R -> ~WF R.
+
+Proof.
+unfold not. intros. destruct H. eapply WF_notIS. hyp. apply H.
 Qed.
 
 End S.
