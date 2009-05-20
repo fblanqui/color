@@ -4,7 +4,8 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui & Wang Qian & Zhang Lianyi, 2009-05-11
 
-non-termination from TRS loops
+definition and correctness proof of a boolean function checking that
+there is a loop in a TRS
 *)
 
 Set Implicit Arguments.
