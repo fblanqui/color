@@ -33,6 +33,44 @@ Implicit Arguments le_plus_minus_r [n m].
 Ltac absurd_arith := elimtype False; omega.
 
 (***********************************************************************)
+(** domain of numbers smaller than [n] *)
+
+Definition dom_lt n := { i | i < n }.
+
+(***********************************************************************)
+(** relations and morphisms *)
+
+Add Relation nat le
+  reflexivity proved by le_refl
+  transitivity proved by le_trans
+    as le_rel.
+
+Add Relation nat lt
+  transitivity proved by lt_trans
+    as lt_rel.
+
+Lemma ge_refl : forall x, x >= x.
+
+Proof.
+intro. omega.
+Qed.
+
+Lemma ge_trans : forall x y z, x >= y -> y >= z -> x >= z.
+
+Proof.
+intros. omega.
+Qed.
+
+Add Relation nat ge
+  reflexivity proved by ge_refl
+  transitivity proved by ge_trans
+    as ge_rel.
+
+Add Relation nat gt
+  transitivity proved by gt_trans
+    as gt_rel.
+
+(***********************************************************************)
 (** decidability of equality *)
 
 Fixpoint beq_nat (x y : nat) {struct x} :=
@@ -231,7 +269,7 @@ intros. eapply le_trans. apply le_min_r. exact H.
 Qed.
 
 (***********************************************************************)
-(** decidability results *)
+(** decidability results on orderings *)
 
 Require Import RelMidex.
 
@@ -254,7 +292,75 @@ intros. destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
 Defined.
 
 (***********************************************************************)
-(** results on orders on nat *)
+(** Euclidian division *)
+
+Require Import Euclid.
+
+Lemma mult_is_not_O : forall m n, m * n <> 0 <-> m <> 0 /\ n <> 0.
+
+Proof.
+intuition. subst. apply H. refl. subst. apply H. apply mult_0_r.
+destruct (mult_is_O _ _ H0); auto.
+Qed.
+
+Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
+
+Proof.
+induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
+rewrite mult_succ_r in H. omega. repeat rewrite mult_0_r in H. omega.
+simpl in *. repeat rewrite mult_succ_r in H. omega.
+Qed.
+
+Implicit Arguments mult_lt_r_elim [x x' y].
+
+Lemma eucl_div_unique : forall b q1 r1 q2 r2,
+  b > r1 -> b > r2 -> q1 * b + r1 = q2 * b + r2 -> q1 = q2 /\ r1 = r2.
+
+Proof.
+intros.
+assert ((q1-q2)*b=r2-r1). rewrite mult_minus_distr_r. omega.
+assert ((q2-q1)*b=r1-r2). rewrite mult_minus_distr_r. omega.
+destruct (le_gt_dec r1 r2).
+(* r1 <= r2 *)
+destruct (eq_nat_dec r1 r2).
+(* r1 = r2 *)
+subst. rewrite minus_diag in H2. rewrite minus_diag in H3.
+destruct (mult_is_O _ _ H2); destruct (mult_is_O _ _ H3); intuition; omega.
+(* r1 < r2 *)
+assert (r2 - r1 < b). omega. rewrite <- H2 in H4.
+rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
+assert (q1=q2). omega. intuition. subst q2. omega.
+(* r1 > r2 *)
+assert (r1 - r2 < b). omega. rewrite <- H3 in H4.
+rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
+assert (q1=q2). omega. intuition. subst q2. omega.
+Qed.
+
+Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
+
+(***********************************************************************)
+(** iteration of a function *)
+
+Section iter.
+
+Variables (A : Type) (f : A -> A).
+
+Fixpoint iter n x :=
+  match n with
+    | 0 => x
+    | S n' => iter n' (f x)
+  end.
+
+Lemma iter_com : forall n x, iter n (f x) = f (iter n x).
+
+Proof.
+induction n; simpl; intros. refl. rewrite IHn. refl.
+Qed.
+
+End iter.
+
+(***********************************************************************)
+(** various arithmetical lemmas *)
 
 Lemma le_lt_S : forall i k, i <= k -> i < S k.
 
@@ -262,16 +368,13 @@ Proof.
 auto with arith.
 Qed.
 
-Lemma i_lt_n : forall n i j : nat, n = i + S j -> lt i n.
+Lemma i_lt_n : forall n i j : nat, n = i + S j -> i < n.
 
 Proof.
 intros. omega.
 Qed.
 
 Implicit Arguments i_lt_n [n i j].
-
-(***********************************************************************)
-(** various arithmetical lemmas *)
 
 Lemma S_neq_O : forall n, S n = O -> False.
 
@@ -352,7 +455,7 @@ Qed.
 Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
 
 Proof.
-  destruct i; destruct j; intros; solve [absurd_arith | simpl; auto with arith].
+destruct i; destruct j; intros; solve [absurd_arith | simpl; auto with arith].
 Qed.
 
 Lemma mult_lt_compat_lr : forall i j k l,
@@ -382,76 +485,3 @@ induction 1. exists 0. omega. destruct IHle. exists (S x). omega.
 Qed.
 
 Implicit Arguments gt_plus [l k].
-
-(***********************************************************************)
-(** domain of numbers smaller than [n] *)
-
-Definition dom_lt n := { i | i < n }.
-
-(***********************************************************************)
-(** Euclidian division *)
-
-Require Import Euclid.
-
-Lemma mult_is_not_O : forall m n, m * n <> 0 <-> m <> 0 /\ n <> 0.
-
-Proof.
-intuition. subst. apply H. refl. subst. apply H. apply mult_0_r.
-destruct (mult_is_O _ _ H0); auto.
-Qed.
-
-Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
-
-Proof.
-induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
-rewrite mult_succ_r in H. omega. repeat rewrite mult_0_r in H. omega.
-simpl in *. repeat rewrite mult_succ_r in H. omega.
-Qed.
-
-Implicit Arguments mult_lt_r_elim [x x' y].
-
-Lemma eucl_div_unique : forall b q1 r1 q2 r2,
-  b > r1 -> b > r2 -> q1 * b + r1 = q2 * b + r2 -> q1 = q2 /\ r1 = r2.
-
-Proof.
-intros.
-assert ((q1-q2)*b=r2-r1). rewrite mult_minus_distr_r. omega.
-assert ((q2-q1)*b=r1-r2). rewrite mult_minus_distr_r. omega.
-destruct (le_gt_dec r1 r2).
-(* r1 <= r2 *)
-destruct (eq_nat_dec r1 r2).
-(* r1 = r2 *)
-subst. rewrite minus_diag in H2. rewrite minus_diag in H3.
-destruct (mult_is_O _ _ H2); destruct (mult_is_O _ _ H3); intuition; omega.
-(* r1 < r2 *)
-assert (r2 - r1 < b). omega. rewrite <- H2 in H4.
-rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
-assert (q1=q2). omega. intuition. subst q2. omega.
-(* r1 > r2 *)
-assert (r1 - r2 < b). omega. rewrite <- H3 in H4.
-rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
-assert (q1=q2). omega. intuition. subst q2. omega.
-Qed.
-
-Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
-
-(***********************************************************************)
-(** iteration of a function *)
-
-Section iter.
-
-Variables (A : Type) (f : A -> A).
-
-Fixpoint iter n x :=
-  match n with
-    | 0 => x
-    | S n' => iter n' (f x)
-  end.
-
-Lemma iter_com : forall n x, iter n (f x) = f (iter n x).
-
-Proof.
-induction n; simpl; intros. refl. rewrite IHn. refl.
-Qed.
-
-End iter.
