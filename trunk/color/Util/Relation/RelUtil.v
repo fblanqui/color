@@ -107,6 +107,8 @@ Definition asymmetric := forall x y, R x y -> ~R y x.
 
 Definition IS f := forall i, R (f i) (f (S i)).
 
+Definition non_terminating := exists f, IS f.
+
 End basic_properties2.
 
 (***********************************************************************)
