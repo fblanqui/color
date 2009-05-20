@@ -70,6 +70,14 @@ Add Parametric Relation (A : Type) : (relation A) (same_relation A)
 
 Notation "R == S" := (same_relation _ R S) (at level 70).
 
+Lemma rel_eq : forall A (R S : relation A),
+ R == S <-> forall x y, R x y <-> S x y.
+
+Proof.
+unfold same_relation. intuition. intros x y. ded (H x y). intuition.
+intros x y. ded (H x y). intuition.
+Qed.
+
 (***********************************************************************)
 (** basic properties *)
 
