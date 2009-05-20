@@ -225,7 +225,7 @@ Proof.
 intros. unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
-Lemma red_empty : forall t u : term, (red empty_trs #) t u -> t = u.
+Lemma red_empty : forall t u : term, red empty_trs # t u -> t = u.
 
 Proof.
 intros. induction H. redtac. contradiction. refl. congruence.
@@ -245,12 +245,19 @@ Proof.
 intros. unfold hd_red. exists l. exists r. exists s. auto.
 Qed.
 
-Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
+Lemma red_fill : forall t u c, red R t u -> red R (fill c t) (fill c u).
 
 Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (AContext.comp c c0). exists s. split. assumption.
 subst t. subst u. do 2 rewrite fill_fill. auto.
+Qed.
+
+Lemma red_sub : forall t u s, red R t u -> red R (sub s t) (sub s u).
+
+Proof.
+intros. redtac. subst. repeat rewrite sub_fill. repeat rewrite sub_sub.
+apply red_rule. hyp.
 Qed.
 
 Lemma red_subterm : forall u u' t, red R u u' -> subterm_eq u t
@@ -655,6 +662,24 @@ Lemma hd_red_mod_min_incl : hd_red_mod_min E R << hd_red_mod E R.
 
 Proof.
 unfold hd_red_mod_min. intros s t [hrm _]. trivial. 
+Qed.
+
+Lemma red_mod_fill : forall t u c,
+  red_mod E R t u -> red_mod E R (fill c t) (fill c u).
+
+Proof.
+intros. do 2 destruct H. exists (fill c x); split.
+apply context_closed_rtc. unfold context_closed. apply red_fill. hyp.
+apply red_fill. hyp.
+Qed.
+
+Lemma red_mod_sub : forall t u s,
+  red_mod E R t u -> red_mod E R (sub s t) (sub s u).
+
+Proof.
+intros. do 2 destruct H. exists (sub s x); split.
+apply substitution_closed_rtc. unfold substitution_closed. apply red_sub. hyp.
+apply red_sub. hyp.
 Qed.
 
 End rewriting_modulo_results.
