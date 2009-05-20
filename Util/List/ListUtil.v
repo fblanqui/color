@@ -237,6 +237,18 @@ rewrite <- H4.
 auto with datatypes.
 Qed.
 
+Lemma last_intro : forall l : list A, length l > 0 ->
+  exists m, exists a, l = m ++ a :: nil /\ length m = length l - 1.
+
+Proof.
+induction l; simpl; intros. apply False_ind. omega.
+destruct l. exists (@nil A). exists a. intuition.
+assert (length (a0::l) > 0). simpl. omega.
+ded (IHl H0). do 3 destruct H1.
+exists (a::x). exists x0. split. rewrite H1. refl.
+simpl. simpl in H2. omega.
+Qed.
+
 End app.
 
 (***********************************************************************)
@@ -1106,23 +1118,17 @@ Section last.
 
 Variable A : Type.
 
-Lemma last_intro : forall l : list A, length l > 0 ->
-  exists m, exists a, l = m ++ a :: nil /\ length m = length l - 1.
-
-Proof.
-induction l; simpl; intros. apply False_ind. omega.
-destruct l. exists (@nil A). exists a. intuition.
-assert (length (a0::l) > 0). simpl. omega.
-ded (IHl H0). do 3 destruct H1.
-exists (a::x). exists x0. split. rewrite H1. refl.
-simpl. simpl in H2. omega.
-Qed.
-
-Lemma last_nth : forall x (l : list A), last l x = nth (length l - 1) l x.
+Lemma last_nth : forall (d : A) l, last l d = nth (length l - 1) l d.
 
 Proof.
 induction l; simpl; intros. refl. rewrite IHl.
 elim l; simpl; intros. refl. destruct l0; simpl. refl. refl.
+Qed.
+
+Lemma last_default : forall (d1 : A) d2 l, l <> nil -> last l d1 = last l d2.
+
+Proof.
+induction l; simpl; intros. irrefl. destruct l. refl. apply IHl. discr.
 Qed.
 
 End last.
