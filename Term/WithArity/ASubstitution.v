@@ -92,8 +92,7 @@ apply H. eapply vars_vec_in. apply H1. hyp.
 Qed.
 
 Lemma subeq_inversion :
-  forall u θ θ', sub θ u = sub θ' u ->
-    forall x, In x (vars u) -> θ x = θ' x.
+  forall u θ θ', sub θ u = sub θ' u -> forall x, In x (vars u) -> θ x = θ' x.
 
 Proof.
   intros u; pattern u;
@@ -212,7 +211,7 @@ Qed.
 End substitution_lemma.
 
 (***********************************************************************)
-(** substitutions preserve variables *)
+(** variables of a substitution *)
 
 Section vars.
 
@@ -278,13 +277,10 @@ Qed.
 End vars.
 
 (***********************************************************************)
-(** domain and codomain of a substitution *)
+(** domain of a substitution *)
 
 Definition dom_incl (s : substitution) (l : variables) :=
   forall x, ~In x l -> s x = Var x.
-
-(***********************************************************************)
-(** when two substitutions are equal on some domain *)
 
 Definition sub_eq_dom (s1 s2 : substitution) (l : variables) :=
   forall x, In x l -> s1 x = s2 x.
@@ -629,7 +625,9 @@ Implicit Arguments sub_restrict_incl [Sig l r].
 (** tactics *)
 
 (* to prove a goal of the form: sub (single x t) (Var x) = t. *)
+
 Ltac single := simpl; unfold single; rewrite <- beq_nat_refl; refl.
 
 (* to prove a goal of the form: exists s, sub s (Var x) = t. *)
+
 Ltac exists_single x t := exists (single x t); single.
