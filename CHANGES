@@ -1,4 +1,9 @@
 
+09-05-20: [Blanqui]
+- Term/WithArity/AUnary: properties of systems with unary symbols only
+- Conversion/ATerm_of_String: equivalence of the well-foundedness of an SRS
+  and of its translation as TRS
+
 09-05-11: [Blanqui,Wang,Zhang]
 - NonTermin/ALoop: conditions of non-termination
 - NatUtil: unicity of Euclidian division
