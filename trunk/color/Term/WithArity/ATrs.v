@@ -802,11 +802,14 @@ Ltac termination_trivial :=
   let R := fresh in set_rules_to R; norm R;
   (apply WF_hd_red_mod_empty || apply WF_red_mod_empty || apply WF_red_empty).
 
+Ltac remove_relative_rules E := norm E; rewrite red_mod_empty
+  || fail "this certificate cannot be applied on a relative system".
+
 Ltac no_relative_rules :=
   match goal with
-    |- WF (red_mod ?E _) => norm E; (rewrite red_mod_empty
-      || fail "this certificate cannot be applied on a relative system")
-    | _ => idtac
+    | |- WF (red_mod ?E _) => remove_relative_rules E
+    | |- non_terminating (red_mod ?E _) => remove_relative_rules E
+    | |- _ => idtac
   end.
 
 (* FIXME: we do not use "rewrite rules_preserv_vars_dec; refl."
