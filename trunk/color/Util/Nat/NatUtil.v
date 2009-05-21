@@ -38,6 +38,35 @@ Ltac absurd_arith := elimtype False; omega.
 Definition dom_lt n := { i | i < n }.
 
 (***********************************************************************)
+(** decidability of equality *)
+
+Fixpoint beq_nat (x y : nat) {struct x} :=
+  match x, y with
+    | 0, 0 => true
+    | S x', S y' => beq_nat x' y'
+    | _, _ => false
+  end.
+
+Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
+
+Proof.
+induction x; destruct y; simpl; split; intro; try (refl || discriminate).
+apply (f_equal S). exact (proj1 (IHx _) H).
+apply (proj2 (IHx y)). inversion H. refl.
+Defined.
+
+Require Import EqUtil.
+
+Ltac case_nat_eq := case_beq beq_nat beq_nat_ok.
+
+Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
+
+Proof.
+intro. generalize (eq_nat_dec n n). destruct s.
+rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
+Qed.
+
+(***********************************************************************)
 (** relations and morphisms *)
 
 Add Relation nat le
@@ -69,35 +98,6 @@ Add Relation nat ge
 Add Relation nat gt
   transitivity proved by gt_trans
     as gt_rel.
-
-(***********************************************************************)
-(** decidability of equality *)
-
-Fixpoint beq_nat (x y : nat) {struct x} :=
-  match x, y with
-    | 0, 0 => true
-    | S x', S y' => beq_nat x' y'
-    | _, _ => false
-  end.
-
-Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
-
-Proof.
-induction x; destruct y; simpl; split; intro; try (refl || discriminate).
-apply (f_equal S). exact (proj1 (IHx _) H).
-apply (proj2 (IHx y)). inversion H. refl.
-Defined.
-
-Require Import EqUtil.
-
-Ltac case_nat_eq x y := case_beq beq_nat_ok (beq_nat x y).
-
-Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
-
-Proof.
-intro. generalize (eq_nat_dec n n). destruct s.
-rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
-Qed.
 
 (***********************************************************************)
 (** unicity of eq, le and lt proofs *)

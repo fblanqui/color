@@ -133,7 +133,7 @@ Implicit Arguments dec_beq [A beq].
 Implicit Arguments beq_com [A beq].
 Implicit Arguments beq_ko [A beq].
 
-Ltac case_beq beq_ok e := coq_case_eq e;
+Ltac case_beq beq beq_ok x y := coq_case_eq (beq x y);
   [let h := fresh in intro h; rewrite beq_ok in h;
     match type of h with ?x = ?y => subst y end
     | intro].
