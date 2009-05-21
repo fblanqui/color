@@ -101,8 +101,10 @@ Implicit Arguments mod_rewrites_correct [ds t us].
 
 Require Import NatUtil.
 
+Notation default := (Var 0).
+
 Lemma mod_FS_red : forall ts t, mod_FS t ts -> forall i, i < length ts ->
-  red_mod E R (nth i (t::ts) (Var 0)) (nth (S i) (t::ts) (Var 0)).
+  red_mod E R (nth i (t::ts) default) (nth (S i) (t::ts) default).
 
 Proof.
 induction ts; simpl; intros. absurd_arith. destruct H. destruct i. hyp.
@@ -119,7 +121,7 @@ Variables (t : term) (ds : list mod_data)
 
 Definition k := length us.
 
-Definition nth i := nth i us (Var 0).
+Definition nth i := nth i us default.
 
 Definition last_term := nth (k-1).
 
@@ -129,8 +131,8 @@ Lemma FS_red_mod' : forall i, i < k - 1 -> red_mod E R (nth i) (nth (S i)).
 
 Proof.
 intros. unfold nth.
-change (red_mod E R (List.nth (S i) (t :: us) (Var 0))
-  (List.nth (S (S i)) (t :: us) (Var 0))).
+change (red_mod E R (List.nth (S i) (t :: us) default)
+  (List.nth (S (S i)) (t :: us) default)).
 apply mod_FS_red. eapply mod_rewrites_correct. apply h1. unfold k in *. omega.
 Qed.
 
@@ -194,8 +196,8 @@ omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
 destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
 apply red_mod_iter_g. rewrite H0. fold last_term. rewrite last_term_g.
 apply red_mod_g. unfold nth.
-change (red_mod E R (List.nth 0 (t :: us) (Var 0))
-  (List.nth 1 (t :: us) (Var 0))).
+change (red_mod E R (List.nth 0 (t :: us) default)
+  (List.nth 1 (t :: us) default)).
 apply mod_FS_red. apply (mod_rewrites_correct h1). hyp.
 (* r < k-1 *)
 assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
@@ -222,7 +224,7 @@ Definition is_mod_loop t mds p :=
       match us with
         | nil => false
         | _ =>
-          let u := last us (Var 0) in
+          let u := last us default in
             match subterm_pos u p with
               | None => false
               | Some v =>
@@ -239,7 +241,7 @@ Lemma is_mod_loop_correct : forall t ds p,
 
 Proof.
 intros t mds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds). 2: discr.
-destruct l. discr. set (us := t0::l). set (u := last us (Var 0)).
+destruct l. discr. set (us := t0::l). set (u := last us default).
 coq_case_eq (subterm_pos u p). 2: discr. intro v. case_eq (matches t v).
 2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
 assert (h : u = last_term us). unfold last_term, k, nth. rewrite <- last_nth.
