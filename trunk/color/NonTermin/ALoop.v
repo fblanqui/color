@@ -271,5 +271,5 @@ Implicit Arguments rewrites_correct [Sig R ds t us].
 (***********************************************************************)
 (** tactics *)
 
-Ltac loop t' ds' p' :=
+Ltac check_loop t' ds' p' :=
   apply is_loop_correct with (t:=t') (ds:=ds') (p:=p'); vm_compute; refl.
