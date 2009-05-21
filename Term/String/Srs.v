@@ -13,9 +13,12 @@ Require Import Relations.
 Require Import LogicUtil.
 Require Export SContext.
 Require Import RelUtil.
+Require Import ListUtil.
+Require Import BoolUtil.
+Require Import EqUtil.
 
 (***********************************************************************)
-(** basic definitions *)
+(** strings *)
 
 Section definition.
 
@@ -23,7 +26,28 @@ Variable Sig : Signature.
 
 Notation string := (list Sig).
 
+Definition beq_string := beq_list (@beq_symb Sig).
+Definition beq_string_ok := beq_list_ok (@beq_symb_ok Sig).
+
+(***********************************************************************)
+(** rules *)
+
 Record rule : Type := mkRule { lhs : string; rhs : string }.
+
+Fixpoint beq_rule (a1 a2 : rule) : bool :=
+  let (l1,r1) := a1 in let (l2,r2) := a2 in
+    beq_string l1 l2 && beq_string r1 r2.
+
+Lemma beq_rule_ok : forall a1 a2, beq_rule a1 a2 = true <-> a1 = a2.
+
+Proof.
+destruct a1 as [l1 r1]. destruct a2 as [l2 r2]. simpl. intuition.
+rewrite andb_eq in H. repeat rewrite beq_string_ok in H. destruct H. subst.
+refl. inversion H. subst. repeat rewrite (beq_refl beq_string_ok). refl.
+Qed.
+
+(***********************************************************************)
+(** rewriting *)
 
 Definition red R : relation string := fun s1 s2 =>
   exists l, exists r, exists c,
@@ -60,7 +84,8 @@ Notation rule := (rule Sig).
 
 Variable R : list rule.
 
-Lemma red_rule : forall l r c, In (mkRule l r) R -> red R (fill c l) (fill c r).
+Lemma red_rule : forall l r c,
+  In (mkRule l r) R -> red R (fill c l) (fill c r).
 
 Proof.
 intros. unfold red. exists l. exists r. exists c. auto.
@@ -70,7 +95,7 @@ Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 
 Proof.
 intros. redtac. unfold red.
-exists l. exists r. exists (comp c c0). split. assumption.
+exists l. exists r. exists (comp c c0). split. hyp.
 subst t. subst u. do 2 rewrite fill_comp. auto.
 Qed.
 
@@ -83,7 +108,7 @@ Qed.
 Lemma red_nil_rtc : forall x y : string, red nil # x y -> x = y.
 
 Proof.
-induction 1. apply red_nil. exact H. refl. transitivity y; assumption.
+induction 1. apply red_nil. exact H. refl. transitivity y; hyp.
 Qed.
 
 Lemma red_mod_empty_incl_red : red_mod nil R << red R.
@@ -112,9 +137,12 @@ End S.
 
 Require Import SN.
 
+Ltac remove_relative_rules E := norm E; rewrite red_mod_empty
+  || fail "this certificate cannot be applied on a relative system".
+
 Ltac no_relative_rules :=
   match goal with
-    |- WF (red_mod ?E _) => norm E; (rewrite red_mod_empty
-      || fail "this certificate cannot be applied on a relative system")
-    | _ => idtac
+    | |- WF (red_mod ?E _) => remove_relative_rules E
+    | |- non_terminating (red_mod ?E _) => remove_relative_rules E
+    | |- _ => idtac
   end.
