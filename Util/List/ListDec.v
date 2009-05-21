@@ -21,6 +21,8 @@ Variable A : Type.
 Variable beq : A -> A -> bool.
 Variable beq_ok : forall x y, beq x y = true <-> x = y.
 
+Ltac case_beq := EqUtil.case_beq beq beq_ok.
+
 (***********************************************************************)
 (** membership *)
 
@@ -74,7 +76,7 @@ Lemma position_ko :
 
 Proof.
 unfold position. cut (forall x l i, position_aux i x l = None <-> ~In x l).
-auto. induction l; simpl; intros. intuition. case_beq beq_ok (beq x a).
+auto. induction l; simpl; intros. intuition. case_beq x a.
 intuition; discr. rewrite (beq_ko beq_ok) in H. ded (IHl (S i)). intuition.
 Qed.
 
@@ -82,7 +84,7 @@ Lemma position_aux_plus : forall x j k l i,
   position_aux i x l = Some k -> position_aux (i+j) x l = Some (k+j).
 
 Proof.
-induction l; simpl. discr. case_beq beq_ok (beq x a); intros. inversion H.
+induction l; simpl. discr. case_beq x a; intros. inversion H.
 refl. assert (S(i+j) = S i+j). refl. rewrite H1. apply IHl. hyp.
 Qed.
 
@@ -90,7 +92,7 @@ Lemma position_aux_S : forall x k l i,
   position_aux i x l = Some k -> position_aux (S i) x l = Some (S k).
 
 Proof.
-induction l; simpl. discr. case_beq beq_ok (beq x a); intros. inversion H.
+induction l; simpl. discr. case_beq x a; intros. inversion H.
 refl. apply IHl. hyp.
 Qed.
 
@@ -98,7 +100,7 @@ Lemma position_aux_ok1 : forall k x l i,
   position_aux i x l = Some k -> k >= i /\ element_at l (k-i) = Some x.
 
 Proof.
-induction l; simpl. discr. case_beq beq_ok (beq x a). intros. inversion H.
+induction l; simpl. discr. case_beq x a. intros. inversion H.
 rewrite <- minus_n_n. intuition. destruct l. simpl. discr. intros.
 ded (IHl _ H0). assert (exists p', k - i = S p'). exists (k-i-1). omega.
 destruct H2. rewrite H2. assert (k - S i = x0). omega. rewrite <- H3.
@@ -109,7 +111,7 @@ Lemma position_aux_ok2 : forall i x l k, element_at l k = Some x ->
   exists k', k' <= k /\ position_aux i x l = Some (i+k').
 
 Proof.
-induction l; simpl; intros. discr. case_beq beq_ok (beq x a).
+induction l; simpl; intros. discr. case_beq x a.
 exists 0. intuition. rewrite (beq_ko beq_ok) in H0. destruct k.
 inversion H. subst. irrefl. destruct (IHl _ H). exists (S x0). intuition.
 rewrite <- plus_Snm_nSm. simpl. apply position_aux_S. hyp.

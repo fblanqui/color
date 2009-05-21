@@ -29,7 +29,7 @@ Variable Sig : Signature.
 Notation term := (term Sig). Notation terms := (vector term).
 Notation substitution := (substitution Sig).
 
-Ltac case_symb_eq f g := case_beq (@beq_symb_ok Sig) (@beq_symb Sig f g).
+Ltac case_symb_eq := ASignature.case_symb_eq Sig.
 
 (***********************************************************************)
 (* unification problem *)
