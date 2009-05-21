@@ -115,6 +115,8 @@ Definition list_eq_dec := dec_beq beq_list_ok.
 
 End beq.
 
+Implicit Arguments beq_list_ok [A beq].
+
 Section beq_in.
 
 Variable A : Type.
@@ -252,11 +254,9 @@ Qed.
 End app.
 
 (***********************************************************************)
-(** head & tail *)
+(** length *)
 
-Require Import Omega.
-
-Section tail.
+Section length.
 
 Variable A : Type.
 
@@ -265,6 +265,25 @@ Lemma length_0 : forall l : list A, length l = 0 -> l = nil.
 Proof.
 intros. destruct l. refl. discriminate.
 Qed.
+
+End length.
+
+Implicit Arguments length_0 [A l].
+
+(***********************************************************************)
+(** head & tail *)
+
+Section head_tail.
+
+Variable A : Type.
+
+Lemma head_app : forall (l l': list A)(lne: l <> nil), head (l ++ l') = head l.
+
+Proof.
+destruct l. tauto. auto.
+Qed.
+
+Require Import Omega.
 
 Lemma length_tail : forall l : list A, length (tail l) <= length l.
 
@@ -291,12 +310,6 @@ Proof.
 destruct l; simpl; omega.
 Qed.
 
-Lemma head_app : forall (l l': list A)(lne: l <> nil), head (l ++ l') = head l.
-
-Proof.
-destruct l. tauto. auto.
-Qed.
-
 Lemma list_decompose_head : forall (l : list A) el (lne: l <> nil),
   head l = Some el -> l = el :: tail l.
 
@@ -313,17 +326,6 @@ left; simpl; rewrite H0; trivial.
 right; trivial.
 Qed.
 
-End tail.
-
-Implicit Arguments length_0 [A l].
-
-(***********************************************************************)
-(** head_notNil *)
-
-Section head_notNil.
-
-Variable A : Type.
-
 Lemma head_notNil : forall (l : list A) (lne : l <> nil),
   {a : A | head l = Some a}.
 
@@ -338,7 +340,23 @@ Proof.
 intros. destruct l; try discriminate. simpl; inversion H; trivial.
 Qed.
 
-End head_notNil.
+End head_tail.
+
+(***********************************************************************)
+(** tail_nth *)
+
+Section tail_nth.
+
+Variable A : Type.
+
+Fixpoint tail_nth (l : list A) (n : nat) {struct n} : option (list A) :=
+  match l, n with
+    | _, 0 => Some l
+    | a :: l', S n' => tail_nth l' n'
+    | _, _ => None
+  end.
+
+End tail_nth.
 
 (***********************************************************************)
 (** list filtering *)
@@ -1107,9 +1125,57 @@ Proof.
 intro. repeat rewrite rev'_rev. apply rev_involutive.
 Qed.
 
+Lemma rev'_cons : forall a (l : list A), rev' (a::l) = rev' l ++ (a::nil).
+
+Proof.
+intros. change (rev' ((a::nil) ++ l) = rev' l ++ (a::nil)). rewrite rev'_app.
+refl.
+Qed.
+
 End reverse_tail_recursive.
 
 Notation rev' := (rev_append nil).
+
+(***********************************************************************)
+(** split *)
+
+Section split.
+
+Variable A : Type.
+
+Fixpoint split_aux (acc l : list A) (n : nat) {struct n}
+  : option (list A * list A) :=
+  match l, n with
+    | _, 0 => Some (rev' acc, l)
+    | a :: l', S n' => split_aux (a::acc) l' n'
+    | _, _ => None
+  end.
+
+Lemma split_aux_correct : forall l n l1 l2 acc,
+  split_aux acc l n = Some (l1, l2) -> rev' acc ++ l = l1 ++ l2.
+
+Proof.
+induction l; destruct n; simpl; intros. inversion H. refl. discr.
+inversion H. refl. ded (IHl _ _ _ _ H). rewrite rev'_cons in H0.
+rewrite app_ass in H0. hyp.
+Qed.
+
+Implicit Arguments split_aux_correct [l n l1 l2].
+
+Notation split := (split_aux nil).
+
+Lemma split_correct : forall l n l1 l2,
+  split l n = Some (l1, l2) -> l = l1 ++ l2.
+
+Proof.
+intros. change (rev' nil ++ l = l1 ++ l2). apply (split_aux_correct _ H).
+Qed.
+
+End split.
+
+Notation split := (split_aux nil).
+
+Implicit Arguments split_correct [A l n l1 l2].
 
 (***********************************************************************)
 (** last element *)
@@ -1612,16 +1678,6 @@ Proof.
     (check_seq_aux_obligation_2 check_seq_aux H Heq_anonymous)). hyp.
   apply H. simpl. omega.
 Qed.
-(*
-Next Obligation.
-Proof.
-  omega.
-Qed.
-Next Obligation.
-Proof.
-  apply well_founded_ltof.
-Defined.
-*)
 
 End Check_seq_aux.
 
