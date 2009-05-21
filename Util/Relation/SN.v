@@ -144,6 +144,21 @@ Proof.
 intros x y x_eq_y h. apply WF_incl with x; hyp.
 Qed.
 
+Add Parametric Morphism (A : Type) : (@IS A)
+with signature (same_relation A) ==> (@eq (nat->A)) ==> iff as IS_mor.
+
+Proof.
+unfold IS. intros x y. rewrite rel_eq. firstorder.
+Qed.
+
+Add Parametric Morphism (A : Type) : (@non_terminating A)
+with signature (same_relation A) ==> iff as non_terminating_mor.
+
+Proof.
+unfold non_terminating. intuition. destruct H0. exists x0. rewrite <- H. hyp.
+destruct H0. exists x0. rewrite H. hyp.
+Qed.
+
 (***********************************************************************)
 (** inverse relation *)
 
