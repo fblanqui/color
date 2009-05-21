@@ -22,6 +22,8 @@ Notation term := (term Sig). Notation context := (context Sig).
 Notation substitution := (substitution Sig).
 Notation rule := (rule Sig). Notation rules := (list rule).
 
+Notation beq_rule := (@beq_rule Sig).
+
 Variable R : rules.
 
 (***********************************************************************)
@@ -69,7 +71,7 @@ Definition data := (position * rule)%type.
 
 Definition rewrite (t : term) (d : data) : option term :=
   let (p,a) := d in let (l,r) := a in
-    if mem (@beq_rule Sig) (mkRule l r) R then
+    if mem beq_rule (mkRule l r) R then
       match subterm_pos t p with
         | None => None
         | Some u =>
@@ -84,7 +86,7 @@ Lemma rewrite_correct : forall t d u, rewrite t d = Some u -> red R t u.
 
 Proof.
 intros t [p [l r]] u. unfold rewrite.
-case_eq (mem (@beq_rule Sig) (mkRule l r) R). 2: discr.
+case_eq (mem beq_rule (mkRule l r) R). 2: discr.
 gen H0. case_eq (subterm_pos t p). 2: discr.
 gen H1. case_eq (matches l t0). rename t1 into s. 2: discr.
 rewrite red_pos_ok. exists p. exists l. exists r. exists s. intuition.
@@ -121,8 +123,10 @@ Implicit Arguments rewrites_correct [ds t us].
 
 Require Import NatUtil.
 
+Notation default := (Var 0).
+
 Lemma FS_red : forall ts t, FS t ts -> forall i, i < length ts ->
-  red R (nth i (t::ts) (Var 0)) (nth (S i) (t::ts) (Var 0)).
+  red R (nth i (t::ts) default) (nth (S i) (t::ts) default).
 
 Proof.
 induction ts; simpl; intros. absurd_arith. destruct H. destruct i. hyp.
@@ -139,7 +143,7 @@ Variables (t : term) (ds : list data)
 
 Definition k := length us.
 
-Definition nth i := nth i us (Var 0).
+Definition nth i := nth i us default.
 
 Definition last_term := nth (k-1).
 
@@ -149,8 +153,8 @@ Lemma FS_red' : forall i, i < k - 1 -> red R (nth i) (nth (S i)).
 
 Proof.
 intros. unfold nth.
-change (red R (List.nth (S i) (t :: us) (Var 0))
-  (List.nth (S (S i)) (t :: us) (Var 0))).
+change (red R (List.nth (S i) (t :: us) default)
+  (List.nth (S (S i)) (t :: us) default)).
 apply FS_red. eapply rewrites_correct. apply h1. unfold k in *. omega.
 Qed.
 
@@ -211,7 +215,7 @@ omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
 destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
 apply red_iter_g. rewrite H0. fold last_term. rewrite last_term_g.
 apply red_g. unfold nth.
-change (red R (List.nth 0 (t :: us) (Var 0)) (List.nth 1 (t :: us) (Var 0))).
+change (red R (List.nth 0 (t :: us) default) (List.nth 1 (t :: us) default)).
 apply FS_red. apply (rewrites_correct h1). hyp.
 (* r < k-1 *)
 assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
@@ -238,7 +242,7 @@ Definition is_loop t ds p :=
       match us with
         | nil => false
         | _ =>
-          let u := last us (Var 0) in
+          let u := last us default in
             match subterm_pos u p with
               | None => false
               | Some v =>
@@ -255,7 +259,7 @@ Lemma is_loop_correct : forall t ds p,
 
 Proof.
 intros t ds p. unfold is_loop. coq_case_eq (rewrites t ds). 2: discr.
-destruct l. discr. set (us := t0::l). set (u := last us (Var 0)).
+destruct l. discr. set (us := t0::l). set (u := last us default).
 coq_case_eq (subterm_pos u p). 2: discr. intro v. case_eq (matches t v).
 2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
 assert (h : u = last_term us). unfold last_term, k, nth. rewrite <- last_nth.
