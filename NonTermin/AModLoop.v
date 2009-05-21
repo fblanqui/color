@@ -252,13 +252,5 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-Ltac check_mod_loop t' ds' p' :=
-  apply is_mod_loop_correct with (t:=t') (ds:=ds') (p:=p'); vm_compute; refl.
-
 Ltac loop t' ds' p' :=
-  match goal with
-    | |- non_terminating (red _) => check_loop t' ds' p'
-    | |- non_terminating (red_mod ?E _) =>
-      (remove_relative_rules E; check_loop t' ds' p')
-      || check_mod_loop t' ds' p'
-  end.
+  apply is_mod_loop_correct with (t:=t') (ds:=ds') (p:=p'); vm_compute; refl.

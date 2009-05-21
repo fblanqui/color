@@ -273,3 +273,10 @@ Implicit Arguments rewrites_correct [Sig R ds t us].
 
 Ltac check_loop t' ds' p' :=
   apply is_loop_correct with (t:=t') (ds:=ds') (p:=p'); vm_compute; refl.
+
+Ltac loop t' ds' p' :=
+  match goal with
+    | |- non_terminating (red_mod ?E _) =>
+      remove_relative_rules E; check_loop t' ds' p'
+    | |- non_terminating (red _) => check_loop t' ds' p'
+  end.
