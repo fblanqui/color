@@ -1,10 +1,12 @@
 
-09-05-20: [Blanqui]
+09-05-21: [Blanqui]
 - Term/WithArity/AUnary: properties of systems with unary symbols only
 - Conversion/ATerm_of_String: equivalence of the well-foundedness of an SRS
   and of its translation as TRS
 - NonTermin/AModLoop: definition and correctness proof of a boolean function
   checking that there is a loop in a relative TRS
+- NonTermin/SLoop: definition and correctness proof of a boolean function
+  checking that there is a loop in an SRS
 
 09-05-11: [Blanqui,Wang,Zhang]
 - NonTermin/ALoop: definition and correctness proof of a boolean function
