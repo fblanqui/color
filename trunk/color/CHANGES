@@ -43,10 +43,7 @@
   defined in Coq is too complex and uses an opaque lemma
 
 09-04-13: [Strub]
-- Term/ASubstitution: inversion lemma : uS = uS' -> x \in u -> xS = xS'
-- Term/AMatching.v: proof of completeness
-- Term/ATerm/AMatching: matching algorithm + proof of correctness
-- Util/VecUtil/VecUtil: fold operation on 2 vectors
+- Term/WithArity/AMatching: correct and complete matching algorithm
 - Util/FMap/FMapUtil: bundle for FMap definitions + properties
 
 09-03-18: [Blanqui]
