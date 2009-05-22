@@ -1,0 +1,256 @@
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
+
+- Frederic Blanqui, 2009-05-22
+
+definition and correctness proof of a boolean function checking that
+there is a loop in a relative SRS
+*)
+
+Set Implicit Arguments.
+
+Require Import Srs.
+Require Import LogicUtil.
+Require Import SLoop.
+Require Import ListUtil.
+
+Section S.
+
+Variable Sig : Signature.
+
+Notation letter := (symbol Sig). Notation string := (list letter).
+Notation context := (context Sig). Notation data := (data Sig).
+Notation rule := (rule Sig). Notation rules := (list rule).
+
+Notation beq_symb_ok := (@beq_symb_ok Sig).
+Notation beq_rule := (@beq_rule Sig).
+
+Ltac case_symb_eq := VSignature.case_symb_eq Sig.
+
+Variable E R : rules.
+
+(***********************************************************************)
+(** predicates saying that [t::us] is in a sequence of rewriting steps *)
+
+Fixpoint mod_FS t us {struct us} :=
+  match us with
+    | nil => True
+    | u :: us' => red_mod E R t u /\ mod_FS u us'
+  end.
+
+Definition mod_strings_of_reduc : forall t, {us| mod_FS t us} -> list string.
+
+Proof.
+intros t x. destruct x. exact x.
+Defined.
+
+Implicit Arguments mod_strings_of_reduc [t].
+
+Definition mod_proof_of_reduc :
+  forall t, forall x : {us| mod_FS t us}, mod_FS t (mod_strings_of_reduc x).
+
+Proof.
+intros t x. destruct x. exact m.
+Defined.
+
+(***********************************************************************)
+(** data necessary for a sequence of red_mod steps *)
+
+Definition mod_data := (list data * data)%type.
+
+Definition mod_rewrite (t : string) (dm : mod_data) : option string :=
+  let (ds,d) := dm in
+    match rewrites E t ds with
+      | None => None
+      | Some ts => rewrite R (last ts t) d
+    end.
+
+Lemma mod_rewrite_correct : forall t dm u,
+  mod_rewrite t dm = Some u -> red_mod E R t u.
+
+Proof.
+intros t [ds d] u. unfold mod_rewrite. case_eq (rewrites E t ds). 2: discr.
+ded (rewrites_correct H). ded (rewrite_correct H0). exists (last l t); split.
+apply FS_rtc. hyp. hyp.
+Qed.
+
+Implicit Arguments mod_rewrite_correct [t dm u].
+
+Fixpoint mod_rewrites t (mds : list mod_data) {struct mds}
+  : option (list string) :=
+  match mds with
+    | nil => Some nil
+    | md :: mds' =>
+      match mod_rewrite t md with
+        | None => None
+        | Some u =>
+          match mod_rewrites u mds' with
+            | None => None
+            | Some us => Some (u::us)
+          end
+      end
+  end.
+
+Lemma mod_rewrites_correct : forall ds t us,
+  mod_rewrites t ds = Some us -> mod_FS t us.
+
+Proof.
+induction ds; simpl; intros. inversion H. exact I.
+gen H. case_eq (mod_rewrite t a). 2: discr.
+gen H0. case_eq (mod_rewrites l ds). 2: discr.
+inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
+Qed.
+
+Implicit Arguments mod_rewrites_correct [ds t us].
+
+Notation default := (@nil letter).
+
+Require Import NatUtil.
+
+Lemma mod_FS_red : forall ts t, mod_FS t ts -> forall i, i < length ts ->
+  red_mod E R (List.nth i (t::ts) default) (List.nth (S i) (t::ts) default).
+
+Proof.
+induction ts; simpl; intros. absurd_arith. destruct H. destruct i. hyp.
+ded (IHts _ H1 i (lt_S_n H0)). hyp.
+Qed.
+
+(***********************************************************************)
+(** assumptions for non-termination *)
+
+Section loop.
+
+Variables (t : string) (ds : list mod_data)
+  (us : list string) (h1 : mod_rewrites t ds = Some us).
+
+Definition k := length us.
+
+Definition nth i := List.nth i us default.
+
+Definition last_string := nth (k-1).
+
+Variables (h0 : k > 0).
+
+Lemma FS_red_mod' : forall i, i < k - 1 -> red_mod E R (nth i) (nth (S i)).
+
+Proof.
+intros. unfold nth.
+change (red_mod E R (List.nth (S i) (t :: us) default)
+  (List.nth (S (S i)) (t :: us) default)).
+apply mod_FS_red. eapply mod_rewrites_correct. apply h1. unfold k in *. omega.
+Qed.
+
+Variables (p : nat) (u v : string) (h2 : split last_string p = Some (u,v))
+  (s : string) (h3 : matches t v = Some s).
+
+(***********************************************************************)
+(** proof of non-termination *)
+
+Definition c := mkContext u s.
+
+Definition g t := fill c t.
+
+Lemma last_string_g : last_string = g t.
+
+Proof.
+unfold g, c. ded (split_correct h2). rewrite H. ded (matches_correct h3).
+subst. refl.
+Qed.
+
+Lemma red_mod_g : forall a b, red_mod E R a b -> red_mod E R (g a) (g b).
+
+Proof.
+intros. unfold g. apply red_mod_fill. hyp.
+Qed.
+
+Lemma red_mod_iter_g : forall a b, red_mod E R a b ->
+  forall i, red_mod E R (iter g i a) (iter g i b).
+
+Proof.
+induction i; simpl; intros. hyp. repeat rewrite iter_com.
+destruct i. simpl. apply red_mod_g. hyp. apply red_mod_g. apply IHi.
+Qed.
+
+Require Import Euclid.
+
+Definition seq (n : nat) : string.
+
+Proof.
+intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).
+Defined.
+
+Require Import RelUtil.
+Require Import Wf_nat.
+
+Lemma IS_seq : IS (red_mod E R) seq.
+
+Proof.
+intro n; pattern n; apply lt_wf_ind; clear n; intros. unfold seq at -2 .
+destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
+(* r = k-1 *)
+assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
+omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
+destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
+apply red_mod_iter_g. rewrite H0. fold last_string. rewrite last_string_g.
+apply red_mod_g. unfold nth.
+change (red_mod E R (List.nth 0 (t :: us) default)
+  (List.nth 1 (t :: us) default)).
+apply mod_FS_red. apply (mod_rewrites_correct h1). hyp.
+(* r < k-1 *)
+assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
+destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
+destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
+apply red_mod_iter_g. apply FS_red_mod'. omega.
+Qed.
+
+Lemma loop : non_terminating (red_mod E R).
+
+Proof.
+exists seq. apply IS_seq.
+Qed.
+
+End loop.
+
+(***********************************************************************)
+(** boolean function testing non-termination *)
+
+Definition is_mod_loop t ds p :=
+  match mod_rewrites t ds with
+    | None => false
+    | Some us =>
+      match us with
+        | nil => false
+        | _ =>
+          let u := last us default in
+            match split u p with
+              | None => false
+              | Some (_,w) =>
+                match matches t w with
+                  | None => false
+                  | Some _ => true
+                end
+            end
+      end
+  end.
+
+Lemma is_mod_loop_correct : forall t ds p,
+  is_mod_loop t ds p = true -> non_terminating (red_mod E R).
+
+Proof.
+intros t ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t ds). 2: discr.
+destruct l. discr. set (us := l::l0). set (u := last us default).
+coq_case_eq (split u p). 2: discr. intros [v w]. case_eq (matches t w).
+2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
+assert (h : u = last_string us). unfold last_string, k, nth.
+rewrite <- last_nth. refl. rewrite h in H0. exists (seq us h0 v l1).
+eapply IS_seq. apply H1. apply H0. hyp.
+Qed.
+
+End S.
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac loop t' ds' p' :=
+  apply is_mod_loop_correct with (t:=t') (ds:=ds') (p:=p'); vm_compute; refl.
