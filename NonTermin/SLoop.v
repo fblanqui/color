@@ -39,16 +39,16 @@ Fixpoint FS t us {struct us} :=
     | u :: us' => red R t u /\ FS u us'
   end.
 
-Definition terms_of_reduc : forall t, {us| FS t us} -> list string.
+Definition strings_of_reduc : forall t, {us| FS t us} -> list string.
 
 Proof.
 intros t x. destruct x. exact x.
 Defined.
 
-Implicit Arguments terms_of_reduc [t].
+Implicit Arguments strings_of_reduc [t].
 
 Definition proof_of_reduc :
-  forall t, forall x : {us| FS t us}, FS t (terms_of_reduc x).
+  forall t, forall x : {us| FS t us}, FS t (strings_of_reduc x).
 
 Proof.
 intros t x. destruct x. exact f.
@@ -296,6 +296,9 @@ End S.
 
 Implicit Arguments rewrite_correct [Sig R t d s].
 Implicit Arguments rewrites_correct [Sig R ds t us].
+Implicit Arguments matches [Sig].
+Implicit Arguments matches_correct [Sig p t u].
+Implicit Arguments matches_complete [Sig p t u].
 
 (***********************************************************************)
 (** tactics *)
