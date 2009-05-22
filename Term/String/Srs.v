@@ -79,8 +79,9 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation string := (list Sig).
-Notation rule := (rule Sig).
+Notation string := (list Sig). Notation rule := (rule Sig).
+
+Section red.
 
 Variable R : list rule.
 
@@ -97,6 +98,14 @@ Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (comp c c0). split. hyp.
 subst t. subst u. do 2 rewrite fill_comp. auto.
+Qed.
+
+Lemma rtc_red_fill : forall c t u,
+  red R # t u -> red R # (fill c t) (fill c u).
+
+Proof.
+induction 1. apply rt_step. apply red_fill. hyp. apply rt_refl.
+apply rt_trans with (fill c y); hyp.
 Qed.
 
 Lemma red_nil : forall x y : string, red nil x y -> x = y.
@@ -129,6 +138,22 @@ Lemma red_mod_empty : red_mod nil R == red R.
 Proof.
 split. apply red_mod_empty_incl_red. apply red_incl_red_mod_empty.
 Qed.
+
+End red.
+
+Section red_mod.
+
+Variables E R : list rule.
+
+Lemma red_mod_fill : forall c t u,
+  red_mod E R t u -> red_mod E R (fill c t) (fill c u).
+
+Proof.
+intros. do 2 destruct H. exists (fill c x); split.
+apply rtc_red_fill. hyp. apply red_fill. hyp.
+Qed.
+
+End red_mod.
 
 End S.
 
