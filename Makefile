@@ -34,10 +34,10 @@ config:
 	$(COQMAKE) depend
 
 clean:
+	$(COQMAKE) clean
 	rm -f `find . -name \*~`
 	rm -f doc/CoLoR.*.html doc/index.html
 	rm -f -r certifiedCode
-	$(MAKE) clean
 
 tags:
 	coqtags `find . -name \*.v`
