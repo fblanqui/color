@@ -4,24 +4,22 @@ CoLoR, a Coq library on rewriting and termination
 The aim of this Coq library (Coq is a proof assistant developped at
 INRIA available at http://coq.inria.fr/) is to provide the necessary
 formal basis for certifying the termination proof candidates searched
-and built by tools like TPA, MatchBox, AProVE, TTT, etc.
+and built by tools like TPA, MatchBox, AProVE, TTT2, etc.
 
 Among other things, it includes:
 
-* libraries on mathematical structures in Util/:
+* libraries on mathematical structures in Util directory:
 	- Relation: binary relations/graphs
-		. computation of strongly connected components
-		. completion into a total ordering, topological sort
 	- Algebra: (ordered) semi-rings
 
-* libraries on data structures in Util/:
+* libraries on data structures in Util directory:
 	- List: lists
 	- Vector: vectors
 	- Multiset: finite multisets
 	- Polynom: integer polynomials with multiple variables
 	- Matrix: matrices over an (ordered) semi-ring
 
-* libraries on term structures in Term/:
+* libraries on term structures in Term directory:
 	- Varyadic: varyadic terms
 	- WithArity: algebraic terms with symbols of fixed arity
 	- SimpleType: simply typed lambda-terms with de Bruijn indices
@@ -32,13 +30,14 @@ Among other things, it includes:
 	- Filter: arguments filterings
 	- Conversion: conversions between term structures
 
-* termination criteria:
+* (non-)termination criteria:
 	- MannaNess: inclusion in some reduction ordering
 	- PolyInt: polynomial interpretations
 	- MatrixInt: matrix interpretations
 	- MPO: multiset path ordering
 	- RPO: recursive path ordering
 	- HORPO: higher-order recursive path ordering
+	- NonTermin: loop certification
 
 The library is likely to evolve and include more developments quickly.
 For more recent informations, see http://color.inria.fr/.
@@ -50,7 +49,7 @@ COPYRIGHTS: this file describes the copyrights holders.
 INSTALL: this file describes a compilation procedure.
 THANKS: thanks to various people for their comments or help.
 
-The development version is available under CVS on
+The development version is available under SVN on
 http://gforge.inria.fr/projects/color/.
 
 The following scripts provide some statistics:
