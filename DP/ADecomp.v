@@ -191,4 +191,4 @@ Ltac graph_decomp f d :=
     | incl_flat || fail "the decomposition does not contain all DPs"
     | incl_flat || fail "the decomposition contains something that is not a DP"
     | valid_decomp
-    | unfold lforall; repeat split ].
+    | unfold lforall; repeat split].
