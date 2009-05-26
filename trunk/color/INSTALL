@@ -7,13 +7,15 @@ with Cygwin on Windows):
 
 - Coq 8.2 or SVN http://coq.inria.fr/
 - GNU make version 3.81 http://www.gnu.org/software/make/
-- GNU bash version 3.2.39 http://www.gnu.org/software/bash/
 - GNU find version 4.4.0 http://www.gnu.org/software/findutils/findutils.html
-
-Make sure that /bin/sh is bash.
 
 For compiling CoLoR, use the command "MAKE" (replace MAKE by your
 command for GNU make).
+
+If you use the development version of CoLoR under SVN
+(http://gforge.inria.fr/projects/color/), after an update, before
+doing "MAKE", you need to do 'MAKE config' to recompile dependencies
+when new files are added in the archive.
 
 For compiling the html documentation, use the command "MAKE doc". The
 starting file is doc/main.html.
