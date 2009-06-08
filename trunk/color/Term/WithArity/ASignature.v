@@ -37,6 +37,10 @@ Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
 
 Implicit Arguments eq_symb_dec [Sig].
 
+Module Type SIG.
+  Parameter S : Signature.
+End SIG.
+
 (***********************************************************************)
 (** Tactic for proving beq_symb_ok *)
 
