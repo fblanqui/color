@@ -25,7 +25,7 @@ Add Setoid A eqA stA as A_eqA.
 
 Notation vec := (vector A).
 
-Definition eq_vec := @Vforall2n A eqA.
+Definition eq_vec := @Vforall2n A A eqA.
 
 Notation "v1 =v v2" := (eq_vec v1 v2) (at level 70).
 
@@ -71,6 +71,13 @@ Lemma Vnth_mor : forall n (v v' : vec n), v =v v' ->
 
 Proof.
 intros. apply Vforall2n_nth with (R:=eqA). hyp.
+Qed.
+
+Lemma Veq_vec_nth : forall n (v v' : vec n), 
+  (forall i (ip : i < n), Vnth v ip =A= Vnth v' ip) ->
+  v =v v'.
+Proof.
+  apply Vforall2n_intro.
 Qed.
 
 Section Vforall.

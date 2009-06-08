@@ -1700,7 +1700,7 @@ Section lookup.
 
   Variable (A B : Type).
   Variable (eqA_dec : forall x y : A, {x = y} + {x <> y}).
-  Variable (el : A).
+  Variable (el : A). 
   Variable (default : B).
 
   Fixpoint lookup (l : list (A * B)) : B :=

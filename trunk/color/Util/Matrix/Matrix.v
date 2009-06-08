@@ -567,7 +567,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
      (* alternative definition *)
     Definition mat_forall2' (M N : matrix m n) := 
-      Vforall2n (@Vforall2n A P n) M N.
+      Vforall2n (@Vforall2n A A P n) M N.
 
     Require Import RelMidex.
 
@@ -592,7 +592,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
     Proof.
       intros. unfold mat_forall2, get_elem, get_row. intros.
-      apply (Vforall2n_nth P). apply (Vforall2n_nth (@Vforall2n A P n)). 
+      apply (Vforall2n_nth P). apply (Vforall2n_nth (@Vforall2n A A P n)). 
       assumption.
     Qed.
 
