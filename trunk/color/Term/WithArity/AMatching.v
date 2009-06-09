@@ -106,7 +106,8 @@ Section Matching.
   (** Induction principle for [matches_r] when result is [Some _] **)
   Section MatchInd.
     Variable P  : term -> term -> matching -> matching -> Prop.
-    Variable Ps : forall nt nu, terms nt -> terms nu -> matching -> matching -> Prop.
+    Variable Ps : forall nt nu,
+      terms nt -> terms nu -> matching -> matching -> Prop.
 
     Hypothesis Hvar :
       forall x t θ θ', exmatch θ x t = Some θ' -> P (Var x) t θ θ'.
