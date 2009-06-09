@@ -14,6 +14,7 @@ Require Import ATrs.
 Require Import LogicUtil.
 Require Import ALoop.
 Require Import ListUtil.
+Require Import RelUtil.
 
 Section S.
 
@@ -66,8 +67,8 @@ Lemma mod_rewrite_correct : forall t dm u,
 
 Proof.
 intros t [ds d] u. unfold mod_rewrite. case_eq (rewrites E t ds). 2: discr.
-ded (rewrites_correct H). ded (rewrite_correct H0). exists (last l t); split.
-apply FS_rtc. hyp. hyp.
+ded (rewrites_correct H). exists (last l t). split. apply FS_rtc. hyp.
+apply rewrite_correct with (d:=d). hyp.
 Qed.
 
 Implicit Arguments mod_rewrite_correct [t dm u].
@@ -116,18 +117,18 @@ Qed.
 
 Section loop.
 
-Variables (t : term) (ds : list mod_data)
-  (us : list term) (h1 : mod_rewrites t ds = Some us).
+Variables (t : term) (mds : list mod_data)
+  (us : list term) (h1 : mod_rewrites t mds = Some us).
 
 Definition k := length us.
+
+Variable (h0 : k > 0).
 
 Definition nth i := nth i us default.
 
 Definition last_term := nth (k-1).
 
-Variables (h0 : k > 0).
-
-Lemma FS_red_mod' : forall i, i < k - 1 -> red_mod E R (nth i) (nth (S i)).
+Lemma red_mod_nth : forall i, i < k-1 -> red_mod E R (nth i) (nth (S i)).
 
 Proof.
 intros. unfold nth.
@@ -136,10 +137,15 @@ change (red_mod E R (List.nth (S i) (t :: us) default)
 apply mod_FS_red. eapply mod_rewrites_correct. apply h1. unfold k in *. omega.
 Qed.
 
+Variables (ds : list data) (us' : list term)
+  (h1' : rewrites E last_term ds = Some us').
+
+Definition last_term' := last us' last_term.
+
 Require Import APosition.
 Require Import AMatching.
 
-Variables (p : position) (u : term) (h2 : subterm_pos last_term p = Some u)
+Variables (p : position) (u : term) (h2 : subterm_pos last_term' p = Some u)
   (s : substitution) (h3 : matches t u = Some s).
 
 (***********************************************************************)
@@ -153,17 +159,26 @@ Defined.
 
 Definition g t := fill c (sub s t).
 
-Lemma last_term_g : last_term = g t.
+Lemma last_term'_g : last_term' = g t.
 
 Proof.
-unfold g, c. destruct (subterm_pos_elim h2). destruct a.
-rewrite H0. ded (matches_correct h3). subst u. refl.
+unfold g, c. destruct (subterm_pos_elim h2). destruct a. rewrite H0.
+ded (matches_correct h3). subst u. refl.
 Qed.
+
+Lemma red_last_term_g : red E # last_term (g t).
+
+Proof.
+rewrite <- last_term'_g. unfold last_term'. apply FS_rtc.
+apply (rewrites_correct h1').
+Qed.
+
+Require Import ARelation.
 
 Lemma red_mod_g : forall a b, red_mod E R a b -> red_mod E R (g a) (g b).
 
 Proof.
-intros. unfold g. apply red_mod_fill. apply red_mod_sub. hyp.
+intros. apply red_mod_fill. apply red_mod_sub. hyp.
 Qed.
 
 Lemma red_mod_iter_g : forall a b, red_mod E R a b ->
@@ -194,7 +209,9 @@ destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
 assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
 omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
 destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
-apply red_mod_iter_g. rewrite H0. fold last_term. rewrite last_term_g.
+apply red_mod_iter_g. rewrite H0. fold last_term.
+cut (red_mod E R (g t) (g (nth 0))). intro. destruct H4. exists x.
+intuition. apply rt_trans with (g t). apply red_last_term_g. hyp.
 apply red_mod_g. unfold nth.
 change (red_mod E R (List.nth 0 (t :: us) default)
   (List.nth 1 (t :: us) default)).
@@ -203,7 +220,7 @@ apply mod_FS_red. apply (mod_rewrites_correct h1). hyp.
 assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
 destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
 destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
-apply red_mod_iter_g. apply FS_red_mod'. omega.
+apply red_mod_iter_g. apply red_mod_nth. omega.
 Qed.
 
 Lemma loop : non_terminating (red_mod E R).
@@ -217,7 +234,7 @@ End loop.
 (***********************************************************************)
 (** boolean function testing non-termination *)
 
-Definition is_mod_loop t mds p :=
+Definition is_mod_loop t mds ds p :=
   match mod_rewrites t mds with
     | None => false
     | Some us =>
@@ -225,28 +242,34 @@ Definition is_mod_loop t mds p :=
         | nil => false
         | _ =>
           let u := last us default in
-            match subterm_pos u p with
+            match rewrites E u ds with
               | None => false
-              | Some v =>
-                match matches t v with
-                  | None => false
-                  | Some _ => true
-                end
+              | Some us' =>
+                let u' := last us' u in
+                  match subterm_pos u' p with
+                    | None => false
+                    | Some v =>
+                      match matches t v with
+                        | None => false
+                        | Some _ => true
+                      end
+                  end
             end
       end
   end.
 
-Lemma is_mod_loop_correct : forall t ds p,
-  is_mod_loop t ds p = true -> non_terminating (red_mod E R).
+Lemma is_mod_loop_correct : forall t mds ds p,
+  is_mod_loop t mds ds p = true -> non_terminating (red_mod E R).
 
 Proof.
-intros t mds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds). 2: discr.
-destruct l. discr. set (us := t0::l). set (u := last us default).
-coq_case_eq (subterm_pos u p). 2: discr. intro v. case_eq (matches t v).
+intros t mds ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds).
+2: discr. destruct l. discr. set (us := t0::l). set (u := last us default).
+coq_case_eq (rewrites E u ds). 2: discr. intro us'. set (u' := last us' u).
+coq_case_eq (subterm_pos u' p). 2: discr. intro v. case_eq (matches t v).
 2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
 assert (h : u = last_term us). unfold last_term, k, nth. rewrite <- last_nth.
-refl. rewrite h in H0. exists (seq us h0 p H0 t1). eapply IS_seq. apply H1.
-hyp.
+refl. unfold u' in H0. rewrite h in H0. exists (seq us h0 us' p H0 t1).
+eapply IS_seq. apply H2. rewrite h in H1. apply H1. hyp.
 Qed.
 
 End S.
@@ -254,5 +277,6 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-Ltac loop t' ds' p' :=
-  apply is_mod_loop_correct with (t:=t') (ds:=ds') (p:=p'); vm_compute; refl.
+Ltac loop t' mds' ds' p' :=
+  apply is_mod_loop_correct with (t:=t') (mds:=mds') (ds:=ds') (p:=p');
+    vm_compute; refl.
