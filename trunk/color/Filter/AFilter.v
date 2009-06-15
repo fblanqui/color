@@ -48,39 +48,8 @@ Notation Fun' := (@Fun Sig').
 Fixpoint filter (t : term) : term' :=
   match t with
     | Var x => Var x
-    | Fun f ts =>
-      let fix filters n (ts : terms n) {struct ts} : terms' n :=
-	match ts in vector _ n return terms' n with
-	  | Vnil => Vnil
-	  | Vcons t n2 ts2 => Vcons (filter t) (filters n2 ts2)
-	end
-	in Fun' f (Vfilter (pi f) (filters (arity f) ts))
+    | Fun f ts => Fun' f (Vfilter (pi f) (Vmap filter ts))
   end.
-
-Lemma filters_eq : forall n (ts : terms n),
-  (fix filters n (ts : terms n) {struct ts} : terms' n :=
-    match ts in vector _ n return terms' n with
-      | Vnil => Vnil
-      | Vcons t n2 ts2 => Vcons (filter t) (filters n2 ts2)
-    end) n ts = Vmap filter ts.
-
-Proof.
-induction ts; intros; simpl. refl. apply Vtail_eq. apply IHts.
-Qed.
-
-Lemma filter_fun : forall f ts,
-  filter (Fun f ts) = Fun' f (Vfilter (pi f) (Vmap filter ts)).
-
-Proof.
-intros. simpl. apply args_eq. rewrite filters_eq. refl.
-Qed.
-
-(*Lemma filter_fun : forall f ts,
-  filter (Fun f ts) = Fun' f (Vfilter_map filter (pi f) ts).
-
-Proof.
-intros. rewrite filter_fun_map. rewrite Vfilter_map_eq. refl.
-Qed.*)
 
 (***********************************************************************)
 (** filtered contexts *)
@@ -111,7 +80,7 @@ Lemma filter_sub : forall s t,
 Proof.
 intro. apply term_ind_forall with
 (P := fun t => filter (sub s t) = sub (filter_subs s) (filter t)); intros.
-refl. rewrite sub_fun. repeat rewrite filter_fun. rewrite sub_fun.
+refl. simpl.
 apply args_eq. repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
 apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
 eapply Vfilter_in. apply H0. assumption.
@@ -199,7 +168,7 @@ Lemma filter_cont_true :
   filter (fill (Cont f e v1 c v2) t) = fill (Cont' f e_true v1' Hole v2') t'.
 
 Proof.
-simpl fill. rewrite filter_fun. rewrite Vmap_cast. rewrite Vmap_app. simpl.
+simpl. rewrite Vmap_cast. rewrite Vmap_app. simpl.
 rewrite Vfilter_cast. rewrite Vfilter_app. rewrite Vcast_cast. fold bs t' v1'.
 assert (Vfilter (snd bs) (Vcons t' (Vmap filter v2))
   = Vcast (Vcons t' v2') (Vtrue_Sn_true (snd bs) H)).
@@ -220,7 +189,7 @@ Lemma filter_cont_false :
   filter (fill (Cont f e v1 c v2) t) = Fun' f (Vcast (Vapp v1' v2') e_false).
 
 Proof.
-simpl fill. rewrite filter_fun. rewrite Vmap_cast. rewrite Vmap_app. simpl.
+simpl. rewrite Vmap_cast. rewrite Vmap_app. simpl.
 rewrite Vfilter_cast. rewrite Vfilter_app. rewrite Vcast_cast. fold bs t' v1'.
 assert (Vfilter (snd bs) (Vcons t' (Vmap filter v2))
   = Vcast v2' (Vtrue_Sn_false (snd bs) H)).

@@ -35,6 +35,7 @@ Require Import ListDec.
 Require Import ListSort.
 Require Import NatUtil.
 Require Import List.
+Require Import VecUtil.
 
 Section S.
 
@@ -56,13 +57,7 @@ Fixpoint norm (t : term) {struct t} : term :=
         | Some y => Var y
         | None => Var (length xs)
       end
-    | Fun f ts =>
-      let fix norms n (ts : terms n) {struct ts} : terms n :=
-        match ts in vector _ n return terms n with
-          | Vnil => Vnil
-          | Vcons u p us => Vcons (norm u) (norms p us)
-        end
-        in Fun f (norms (arity f) ts)
+    | Fun f ts => Fun f (Vmap norm ts)
   end.
 
 End norm.

@@ -98,26 +98,11 @@ Fixpoint capa (t : term) : Cap :=
   match t with
     | Var x => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
     | Fun f ts =>
-      let fix capas n (ts : terms n) {struct ts} : Caps n :=
-	match ts in vector _ n return Caps n with
-	  | Vnil => Vnil
-	  | Vcons t n' ts' => Vcons (capa t) (capas n' ts')
-	end
-        in if defined f R
-	  then mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
-	  else let cs := capas (arity f) ts in
-	    mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
+      if defined f R
+	then mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+	else let cs := Vmap capa ts in
+	  mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
 end.
-
-Lemma capa_fun : forall f ts, capa (Fun f ts) =
-  if defined f R
-  then mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons (Fun f ts) Vnil)
-  else let cs := Vmap capa ts in
-    mkCap (fun v => Fun f (Vmap_sum cs v), conc cs).
-
-Proof.
-intros. reflexivity.
-Qed.
 
 (***********************************************************************)
 (** number of aliens of a term *)
@@ -137,7 +122,7 @@ Lemma nb_aliens_fun : forall f ts,
   nb_aliens (Fun f ts) = if defined f R then 1 else nb_aliens_vec ts.
 
 Proof.
-intros. unfold nb_aliens, nb_aliens_vec. rewrite capa_fun.
+intros. unfold nb_aliens, nb_aliens_vec. simpl.
 case (defined f R); refl.
 Qed.
 
@@ -167,7 +152,7 @@ Lemma ren_cap_fun : forall f ts k,
   ren_cap k (Fun f ts) = if defined f R then Var k else Fun f (ren_caps k ts).
 
 Proof.
-intros. unfold ren_cap, nb_aliens. rewrite capa_fun. case (defined f R). refl.
+intros. unfold ren_cap, nb_aliens. simpl. case (defined f R). refl.
 unfold fcap. simpl. apply args_eq. apply ren_caps_eq.
 Qed.
  
@@ -184,7 +169,7 @@ intros x t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 unfold nb_aliens. simpl. intuition.
 (* Fun *)
-intros f ts H k0. rewrite ren_cap_fun. unfold nb_aliens. rewrite capa_fun.
+intros f ts H k0. rewrite ren_cap_fun. unfold nb_aliens. simpl.
 case (defined f R). simpl. intuition. rewrite vars_fun. simpl. exact (H k0).
 (* Vnil *)
 simpl. intuition.

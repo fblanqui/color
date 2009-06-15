@@ -1,3 +1,6 @@
+09-06-15: [Blanqui]
+- simplified all function definitions on terms f such that the corresponding
+  function on vectors is (Vmap f)
 
 09-05-22: [Blanqui]
 - Term/WithArity/AUnary: properties of systems with unary symbols only

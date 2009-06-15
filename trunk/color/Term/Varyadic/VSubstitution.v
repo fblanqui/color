@@ -23,19 +23,13 @@ Definition substitution := variable -> term.
 Fixpoint sub (s : substitution) (t : term) {struct t} : term :=
   match t with
     | Var x => s x
-    | Fun f ts =>
-      let fix subs (ts : terms) : terms :=
-	match ts with
-	  | nil => nil
-	  | cons t ts' => sub s t :: subs ts'
-	end
-	in Fun f (subs ts)
+    | Fun f ts => Fun f (map (sub s) ts)
   end.
 
-Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (map (sub s) v).
+Lemma sub_fun : forall s f ts, sub s (Fun f ts) = Fun f (map (sub s) ts).
 
 Proof.
-intros f s. induction v; simpl; refl.
+refl.
 Qed.
 
 Section properties.

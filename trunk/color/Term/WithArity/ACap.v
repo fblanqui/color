@@ -98,28 +98,12 @@ Fixpoint capa (t : term) : Cap :=
   match t with
     | Var x => mkCap (fun _ => t, Vnil)
     | Fun f ts =>
-      let fix capas n (ts : terms n) {struct ts} : Caps n :=
-	match ts in vector _ n return Caps n with
-	  | Vnil => Vnil
-	  | Vcons t n' ts' => Vcons (capa t) (capas n' ts')
-	end
-	in match defined f R with
-	     | true => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
-	     | false => let cs := capas (arity f) ts in
-	       mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
-	   end
+      match defined f R with
+	| true => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+	| false => let cs := Vmap capa ts in
+	  mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
+      end
   end.
-
-Lemma capa_fun : forall f ts, capa (Fun f ts) =
-  match defined f R with
-  | true => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons (Fun f ts) Vnil)
-  | false => let cs := Vmap capa ts in
-    mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
-  end.
-
-Proof.
-intros. reflexivity.
-Qed.
 
 (* number of aliens of a term *)
 
@@ -162,7 +146,7 @@ Lemma in_aliens_subterm : forall u t,
 Proof.
 intros u t. pattern t. apply term_ind_forall.
 simpl. intros. contradiction.
-intros f ts H. rewrite capa_fun. case (defined f R).
+intros f ts H. simpl. case (defined f R).
 simpl. intro. destruct H0. subst u. apply subterm_eq_refl. contradiction.
 change (Vin u (conc (Vmap capa ts)) -> subterm_eq u (Fun f ts)). intro.
 assert (exists c, Vin c (Vmap capa ts) /\ Vin u (aliens c)). apply in_conc.
@@ -213,7 +197,7 @@ intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
 (* var *)
 assumption.
 (* fun *)
-rewrite vars_fun. unfold nb_aliens in H1. rewrite capa_fun in H1.
+rewrite vars_fun. unfold nb_aliens in H1. simpl in H1.
 destruct (defined f R); simpl in H1. destruct H1.
 absurd (x<=m); omega. contradiction. apply H with (m := m); assumption.
 (* nil *)
@@ -265,7 +249,7 @@ intro. pattern t. apply term_ind with (Q := Q); clear t.
 (* var *)
 simpl. intros. destruct H0. subst x0. omega. contradiction.
 (* fun *)
-intros f ts H m H0. unfold nb_aliens. rewrite capa_fun.
+intros f ts H m H0. unfold nb_aliens. simpl.
 case (defined f R); simpl; intros. destruct H1. omega. contradiction.
 apply H; assumption.
 (* nil *)
@@ -303,7 +287,7 @@ intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
 (* var *)
 reflexivity.
 (* fun *)
-unfold nb_aliens. rewrite capa_fun.
+unfold nb_aliens. simpl.
 pattern (defined f R). apply bool_eq_ind; intros; simpl. reflexivity.
 rewrite H0. apply H.
 (* nil *)
@@ -324,7 +308,7 @@ Lemma aliens_incl_calls : forall u t,
 
 Proof.
 intros u t. pattern t. apply term_ind_forall; clear t. simpl. auto.
-intros f ts H. rewrite calls_fun. rewrite capa_fun. case (defined f R); simpl.
+intros f ts H. rewrite calls_fun. simpl. case (defined f R); simpl.
 intuition. unfold aliens. simpl. intro. ded (in_conc H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x. ded (Vforall_in H H3).
 eapply in_vcalls. apply H4. assumption. assumption.
@@ -354,7 +338,7 @@ set (Q := fun n (ts : terms n) => maxvars ts <= m
                = Vmap_sum (Vmap capa ts) (Vmap (sub s) v)).
 apply term_ind with (Q := Q); clear t.
 intros. unfold fcap. simpl. apply H. assumption.
-intros f ts IH H0. rewrite capa_fun. unfold fcap.
+intros f ts IH H0. simpl. unfold fcap.
 case (defined f R); simpl; intros.
 VSntac v. reflexivity.
 apply args_eq. apply IH. assumption.
@@ -389,7 +373,7 @@ intro. pattern t. apply term_ind_forall; intros.
 simpl. apply alien_sub_var.
 (* fun *)
 unfold alien_sub, cap, fresh_for. set (m := maxvar (Fun f v)).
-rewrite capa_fun. case (defined f R).
+simpl. case (defined f R).
 (* f defined *)
 change (fsub m (Vcons (Fun f v) Vnil) (S m) = Fun f v).
 apply fsub_cons. omega.

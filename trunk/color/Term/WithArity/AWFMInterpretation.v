@@ -69,7 +69,7 @@ Proof.
 unfold transp, context_closed, IR. intros.
 generalize (H0 xint). clear H0. intro. induction c.
 simpl. exact H0.
-simpl fill. do 2 rewrite term_int_fun.
+simpl fill. simpl.
 do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
 Qed.
 

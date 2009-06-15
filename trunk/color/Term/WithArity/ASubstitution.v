@@ -46,7 +46,7 @@ Definition sub : substitution -> term -> term := @term_int Sig I0.
 Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (Vmap (sub s) v).
 
 Proof.
-intros. unfold sub. rewrite term_int_fun. refl.
+refl.
 Qed.
 
 Lemma sub_id : forall t, sub id t = t.
@@ -54,7 +54,7 @@ Lemma sub_id : forall t, sub id t = t.
 Proof.
 set (P := fun t => sub id t = t). change (forall t, P t).
 apply term_ind_forall; intros; unfold P. refl.
-rewrite sub_fun. apply f_equal with (f := Fun f). apply Vmap_eq_id. assumption.
+simpl. apply f_equal with (f := Fun f). apply Vmap_eq_id. assumption.
 Qed.
 
 Lemma fun_eq_sub : forall f ts s u, Fun f ts = sub s u ->
@@ -106,7 +106,7 @@ Proof.
   by case H; [intros Hxy; subst x|idtac]; tauto.
 
   (* fun *)
-  intros f ts IHs θ θ'; repeat rewrite sub_fun; intros Hθθ' y.
+  intros f ts IHs θ θ'. simpl sub. intros Hθθ' y.
   rewrite vars_fun; intros Hvars; apply IHs; try done.
   by rewrite (fun_eq Hθθ').
 
@@ -130,7 +130,7 @@ Lemma sub_sub : forall s1 s2 t, sub s1 (sub s2 t) = sub (sub_comp s1 s2) t.
 Proof.
 intros. set (P := fun t => sub s1 (sub s2 t) = sub (sub_comp s1 s2) t).
 change (P t). apply term_ind_forall with (P := P); intros; unfold P.
-refl. repeat rewrite sub_fun. apply f_equal with (f := Fun f).
+refl. simpl. apply f_equal with (f := Fun f).
 rewrite Vmap_map. apply Vmap_eq. assumption.
 Qed.
 
@@ -156,7 +156,7 @@ apply term_ind with (Q := fun n (us : terms n) =>
   ~In x (vars_vec us) -> Vmap (sub s') us = Vmap (sub s) us); clear u.
 intro. simpl. intuition. unfold s', extend.
 case_nat_eq x0 x. intuition. refl.
-intros f us. rewrite vars_fun. do 2 rewrite sub_fun. intros. apply args_eq.
+intros f us. rewrite vars_fun. simpl. intros. apply args_eq.
 auto. refl.
 intros u n us. simpl. rewrite in_app. intuition.
 apply Vcons_eq_intro; intuition.
@@ -201,9 +201,7 @@ intros xint s t. pattern t.
 eapply term_ind with (Q := fun n (ts : terms n) =>
   Vmap (term_int xint) (Vmap (sub s) ts) = Vmap (term_int (beta xint s)) ts).
 intro x. simpl. refl.
-intros f ts.
-rewrite term_int_fun. rewrite sub_fun. rewrite term_int_fun.
-intro H. apply (f_equal (fint I f)). exact H.
+intros f ts. simpl. intro H. apply (f_equal (fint I f)). exact H.
 simpl. refl.
 intros. simpl. rewrite H. rewrite <- H0. refl.
 Qed.
@@ -261,7 +259,7 @@ Proof.
 apply term_ind with (Q := fun n (v : terms n) =>
   vars_vec (Vmap (sub s) v) = svars (vars_vec v)).
 simpl. intro. rewrite <- app_nil_end. refl.
-intros. rewrite sub_fun. repeat rewrite vars_fun. exact H.
+intros. simpl sub. repeat rewrite vars_fun. exact H.
 simpl. refl.
 intros. simpl. rewrite H. rewrite svars_app.
 apply (f_equal (app (svars (vars t)))). exact H0.
@@ -432,7 +430,7 @@ Fixpoint subc (s : substitution) (c : context) {struct c} : context :=
 Lemma sub_fill : forall s u C, sub s (fill C u) = fill (subc s C) (sub s u).
 
 Proof.
-induction C; intros. refl. simpl subc. simpl fill. rewrite sub_fun.
+induction C; intros. refl. simpl subc. simpl fill. simpl sub.
 apply (f_equal (Fun f)). rewrite Vmap_cast. rewrite Vmap_app. simpl Vmap.
 rewrite IHC. refl.
 Qed.
@@ -591,7 +589,7 @@ change (forall t, P t). apply term_ind_forall.
 unfold P, fsub. simpl. intros. case (le_lt_dec v m). auto.
 intro. case (le_lt_dec v (m+n)). intro. absurd (v <= m); omega. auto.
 (* fun *)
-intros. unfold P. intro. rewrite sub_fun. apply f_equal with (f := Fun f).
+intros. unfold P. intro. simpl sub. apply f_equal with (f := Fun f).
 apply Vmap_eq_id. eapply Vforall_imp. apply H. intros. apply H2.
 eapply maxvar_le_arg with (f := f). apply H0. assumption.
 Qed.

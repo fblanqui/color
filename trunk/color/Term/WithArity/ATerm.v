@@ -73,9 +73,6 @@ End term_rect.
 Definition term_ind (P : term -> Prop) (Q : forall n, terms n -> Prop) :=
   term_rect P Q.
 
-(*Definition term_rec (P : term -> Set) (Q : forall n, terms n -> Set) :=
-  term_rect P Q.*)
-
 Section term_ind_comb.
   Variable Pt : term -> Prop .
   Variable Ps : forall n, terms n -> Prop .
@@ -266,13 +263,7 @@ Require Import VecMax.
 Fixpoint maxvar (t : term) : nat :=
   match t with
     | Var x => x
-    | Fun f v =>
-      let fix maxvars (n : nat) (v : terms n) {struct v} : nats n :=
-        match v in vector _ n return nats n with
-          | Vnil => Vnil
-          | Vcons t' n' v' => Vcons (maxvar t') (maxvars n' v')
-        end
-      in Vmax (maxvars (arity f) v)
+    | Fun f v => Vmax (Vmap maxvar v)
   end.
 
 Definition maxvars n (ts : terms n) := Vmax (Vmap maxvar ts).
@@ -287,8 +278,7 @@ Qed.
 Lemma maxvar_fun : forall f ts, maxvar (Fun f ts) = maxvars ts.
 
 Proof.
-intros. simpl. apply (f_equal (@Vmax (arity f))).
-induction ts. auto. rewrite IHts. auto.
+refl.
 Qed.
 
 Lemma maxvar_var : forall k x, maxvar (Var x) <= k -> x <= k.
@@ -328,6 +318,12 @@ Qed.
 (***********************************************************************)
 (** list of variables in a term:
 a variable occurs in the list as much as it has occurrences in t *)
+
+(*COQ: Fixpoint vars (t : term) : variables :=
+  match t with
+    | Var x => x :: nil
+    | Fun f v => Vfold_left (fun xs t => vars t ++ xs) nil v
+  end.*)
 
 Fixpoint vars (t : term) : variables :=
   match t with
