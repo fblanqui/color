@@ -45,25 +45,8 @@ Fixpoint termpoly k (t : bterm k) {struct t} : poly (S k) :=
   match t with
     | BVar x H =>
       ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: nil
-    | BFun f v =>
-      let fix tmp n0 (v : vector (bterm k) n0) {struct v}
-	: vector (poly (S k)) n0 :=
-        match v in vector _ n0 return vector (poly (S k)) n0 with
-          | Vnil => Vnil
-          | Vcons t' n' v' => Vcons (termpoly t') (tmp n' v')
-        end
-      in pcomp (fpoly f) (tmp (arity f) v)
+    | BFun f v => pcomp (fpoly f) (Vmap (@termpoly k) v)
   end.
-
-Lemma termpoly_eq :
-  forall (k : nat) (f : Sig) (ts : vector (bterm k) (arity f)),
-  termpoly (BFun f ts) = pcomp (fpoly f) (Vmap (@termpoly k) ts).
-
-Proof.
-intros. simpl termpoly at 1.
-apply (f_equal (@pcomp (arity f) (fpoly f) (S k))). elim ts.
-auto. intros t' n' ts' Hrec. rewrite Hrec. auto.
-Qed.
 
 End poly_of_bterm.
 
@@ -97,7 +80,7 @@ Lemma bterm_poly_pos : forall (k : nat) (t : bterm k), P t.
 Proof.
 intros k t. apply (bterm_ind (@P k) (@Q k)).
  intros v Hv. unfold P. simpl. intuition.
- unfold Q. intros f ts H. unfold P. rewrite termpoly_eq.
+ unfold Q. intros f ts H. unfold P. simpl.
  apply coef_pos_pcomp.
   apply (PI_WM f).
   unfold P in H. apply Vforall_map_intro. auto.
@@ -220,14 +203,11 @@ Proof.
  reflexivity.
 
  intros f ts. unfold Q. intro H. unfold P, f1, f2.
- rewrite bterm_int_fun. rewrite val_peval_D.
- rewrite termpoly_eq.
+ simpl bterm_int. rewrite val_peval_D. simpl.
  
  unfold P in H.
  generalize (Vmap_eq H). intro H'.
- unfold bterms_int.
  rewrite peval_comp.
- simpl (fint W f). rewrite val_peval_D.
  apply (f_equal (peval (PI f))).
  rewrite Vmap_map. rewrite Vmap_map.
  unfold f1 in H'. unfold f2 in H'. assumption.

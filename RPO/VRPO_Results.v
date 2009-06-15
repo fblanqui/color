@@ -438,7 +438,7 @@ Module RPO_Results (RPO : RPO_Model).
      (* fun. *)
      (* lt_roots *)
     intros. lt_inversion H.
-    subst p. do 2 rewrite sub_fun.
+    subst p. simpl.
     apply lt_roots. replace f with g. assumption. congruence.
     intros. rewrite <- sub_fun.
     destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. assumption.

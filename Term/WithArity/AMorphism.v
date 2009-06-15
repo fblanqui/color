@@ -31,23 +31,10 @@ Variables (F : S1 -> S2) (HF : forall f, arity f = arity (F f)).
 Fixpoint Ft (t : term S1) : term S2 :=
   match t with
     | Var x => Var x
-    | Fun f ts =>
-      let fix Fv n (ts : vector (term S1) n) : vector (term S2) n :=
-        match ts in vector _ n return vector _ n with
-          | Vnil => Vnil
-          | Vcons t n' ts' => Vcons (Ft t) (Fv n' ts')
-        end
-        in Fun (F f) (Vcast (Fv (arity f) ts) (HF f))
+    | Fun f ts => Fun (F f) (Vcast (Vmap Ft ts) (HF f))
   end.
 
 Definition Fv := Vmap Ft.
-
-Lemma Ft_fun : forall f ts,
-  Ft (Fun f ts) = Fun (F f) (Vcast (Fv ts) (HF f)).
-
-Proof.
-intros. simpl. apply args_eq. apply Vcast_eq_intro. refl.
-Qed.
 
 (***********************************************************************)
 (** translation of contexts in S1 into contexts in S2 *)
@@ -70,8 +57,8 @@ Fixpoint Fc (c : context S1) : context S2 :=
 Lemma Ft_fill : forall t c, Ft (fill c t) = fill (Fc c) (Ft t).
 
 Proof.
-induction c; intros. refl. simpl fill. rewrite Ft_fun. apply args_eq.
-unfold Fv. rewrite Vmap_cast. rewrite Vmap_app. simpl. rewrite Vcast_cast.
+induction c; intros. refl. simpl. apply args_eq.
+rewrite Vmap_cast. rewrite Vmap_app. simpl. rewrite Vcast_cast.
 rewrite IHc. apply Vcast_pi.
 Qed.
 
@@ -90,9 +77,11 @@ Definition Fs (s : substitution S1) x := Ft (s x).
 Lemma Ft_sub : forall s t, Ft (sub s t) = sub (Fs s) (Ft t).
 
 Proof.
-intros s t. pattern t. apply term_ind with (Q := fun n (ts : vector (term S1) n)
-  => Fv (Vmap (sub s) ts) = Vmap (sub (Fs s)) (Fv ts)); clear t; intros.
-refl. rewrite Ft_fun. repeat rewrite sub_fun. rewrite Ft_fun. apply args_eq.
+intros s t. pattern t. apply term_ind
+  with (Q := fun n (ts : vector (term S1) n) =>
+    Fv (Vmap (sub s) ts) = Vmap (sub (Fs s)) (Fv ts));
+  clear t; intros.
+refl. simpl. apply args_eq. unfold Fv in H.
 rewrite H. rewrite Vmap_cast. refl.
 refl. simpl. rewrite H. rewrite H0. refl.
 Qed.
@@ -239,12 +228,13 @@ Lemma Ft_epi : forall t, Ft HF (Ft HG t) = t.
 
 Proof.
 intro t. pattern t; apply term_ind with
-  (Q := fun n (ts : vector (term S2) n) => Fv HF (Fv HG ts) = ts); clear t.
+  (Q := fun n (ts : vector (term S2) n) => Vmap (Ft HF) (Vmap (Ft HG) ts) = ts);
+  clear t.
 (* Var *)
 refl.
 (* Fun *)
-intros. repeat rewrite Ft_fun. eapply fun_eq_intro with (h:=FG f).
-unfold Fv in *. rewrite Vmap_cast. repeat rewrite Vcast_cast. rewrite H.
+intros. simpl. eapply fun_eq_intro with (h:=FG f).
+rewrite Vmap_cast. repeat rewrite Vcast_cast. rewrite H.
 symmetry. apply Vcast_refl.
 (* Vnil *)
 refl.

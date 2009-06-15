@@ -582,8 +582,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
     Proof.
       intros val t. pattern t. apply term_ind_forall; intros.
       apply mint_eval_eq_term_int_var.
-      rewrite inject_term_eq. rewrite bterm_int_fun. unfold bterms_int.
-      unfold fint. simpl dom2vec.
+      rewrite inject_term_eq. simpl.
       rewrite Vmap_map.
       rewrite (@Vmap_eqA _ _ eq_vec eq_vec_st
         (fun x => dom2vec (bterm_int val x)) 

@@ -75,7 +75,8 @@ apply tail_eq. apply IHts.
 Qed.
 
 Lemma vterms_app : forall n1 (ts1 : aterms n1) n2 (ts2 : aterms n2),
-  vterms_of_aterms (Vapp ts1 ts2) = vterms_of_aterms ts1 ++ vterms_of_aterms ts2.
+  vterms_of_aterms (Vapp ts1 ts2)
+  = vterms_of_aterms ts1 ++ vterms_of_aterms ts2.
 
 Proof.
 induction ts1; simpl. refl. intros. apply tail_eq. apply IHts1.
@@ -149,8 +150,7 @@ Proof.
 intros. pattern t. apply ATerm.term_ind with (Q := fun n (ts : aterms n) =>
   vterms_of_aterms (Vmap (asub s) ts)
   = map (vsub (vsubs_of_asubs s)) (vterms_of_aterms ts)).
-refl. intros. rewrite ASubstitution.sub_fun. do 2 rewrite vterm_fun.
-rewrite sub_fun.
+refl. intros. simpl ASubstitution.sub. do 2 rewrite vterm_fun. simpl.
 apply args_eq. exact H. refl. intros. simpl. rewrite H.
 apply tail_eq. exact H0.
 Qed.

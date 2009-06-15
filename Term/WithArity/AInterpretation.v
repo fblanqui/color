@@ -83,22 +83,8 @@ Variable xint : valuation.
 Fixpoint term_int (t : term) : D :=
   match t with
     | Var x => xint x
-    | Fun f ts =>
-      let fix terms_int n (ts : terms n) {struct ts} : vector D n :=
-        match ts in vector _ n return vector D n with
-          | Vnil => Vnil
-          | Vcons t' n' ts' => Vcons (term_int t') (terms_int n' ts')
-        end
-      in fint I f (terms_int (arity f) ts)
+    | Fun f ts => fint I f (Vmap term_int ts)
   end.
-
-Lemma term_int_fun : forall f ts,
-  term_int (Fun f ts) = fint I f (Vmap term_int ts).
-
-Proof.
-intros. simpl. apply (f_equal (fint I f)). induction ts. auto.
-rewrite IHts. auto.
-Qed.
 
 End term_int.
 
@@ -120,8 +106,7 @@ Lemma term_int_eq_restrict_lt : forall xint t k,
 Proof.
 intros xint t. pattern t; apply term_ind_forall; clear t; intros.
 simpl. unfold restrict. case (le_lt_dec k v); intro.
-simpl in H. absurd (v<k); omega. refl.
-repeat rewrite term_int_fun. apply (f_equal (fint I f)).
+simpl in H. absurd (v<k); omega. refl. simpl. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
 rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
 ded (Vmax_in H2). unfold maxvars in H0. omega.
@@ -141,7 +126,7 @@ Proof.
 intros xint t. pattern t; apply term_ind_forall; clear t; intros.
 simpl in *. unfold fval, val_of_vec. case (le_lt_dec k v); intro.
 absurd (v<k); omega. symmetry. apply vec_of_val_eq.
-repeat rewrite term_int_fun. apply (f_equal (fint I f)).
+simpl. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
 rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
 ded (Vmax_in H2). unfold maxvars in H0. omega.

@@ -63,8 +63,6 @@ End term_rect.
 
 Definition term_ind (P : term -> Prop) (Q : terms -> Prop) := term_rect P Q.
 
-(*Definition term_rec (P : term -> Set) (Q : terms -> Set) := term_rect P Q.*)
-
 Require Import ListForall.
 
 Lemma term_ind_forall : forall (P : term -> Prop)
@@ -239,21 +237,8 @@ Require Import ListMax.
 Fixpoint maxvar (t : term) : nat :=
   match t with
     | Var x => x
-    | Fun f v =>
-      let fix maxvars (v : terms) : nats :=
-        match v with
-          | nil => nil
-          | cons t' v' => cons (maxvar t') (maxvars v')
-        end
-      in lmax (maxvars v)
+    | Fun f v => lmax (map maxvar v)
   end.
-
-Lemma maxvar_fun : forall f ts, maxvar (Fun f ts) = lmax (map maxvar ts).
-
-Proof.
-intros. simpl. apply (f_equal lmax).
-induction ts. auto. rewrite IHts. auto.
-Qed.
 
 Lemma maxvar_var : forall k x, maxvar (Var x) <= k -> x <= k.
 

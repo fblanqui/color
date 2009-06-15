@@ -103,8 +103,7 @@ apply term_ind with (Q:=Q).
 (* Var *)
 intro; unfold dup_int_subst; simpl. apply refl_equal.
 (* Fun *)
-intros. rewrite dup_int_term_fun.
-do 2 rewrite sub_fun. rewrite dup_int_term_fun.
+intros. rewrite dup_int_term_fun. simpl.
 unfold Q in H.
 cut (Vmap (sub (dup_int_subst s)) (Vmap dup_int_term v) =
   Vmap dup_int_term (Vmap (sub s) v)).
@@ -123,7 +122,7 @@ Lemma dup_int_subst_hd_dup : forall s f v,
 
 Proof.
 intros.
-rewrite dup_hd_term_fun. do 2 rewrite sub_fun. rewrite dup_hd_term_fun.
+rewrite dup_hd_term_fun. simpl.
 cut ((Vmap (sub (dup_int_subst s)) (Vmap dup_int_term v)) =
  (Vmap dup_int_term (Vmap (sub s) v)) ).
 intro. rewrite <- H. apply refl_equal.
@@ -310,7 +309,7 @@ Proof.
 intros. redtac. exists l. exists r. exists c. exists s. split.
 destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ lr).
 gen H. compute. case_eq l. discr. gen H. gen H0. gen v0. case_eq f0. discr.
-subst l. rewrite sub_fun in xl. discr. congruence. tauto.
+subst l. simpl in xl. discr. congruence. tauto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc_aux : forall u t, red R # u t ->
@@ -374,7 +373,7 @@ intros. redtac. destruct (in_map_elim lr). destruct H. destruct x.
 inversion H0. subst. destruct c; simpl in *.
 (* Hole *)
 rewrite forallb_forall in hyp. ded (hyp _ lr). destruct lhs. discr.
-simpl dup_int_term in xl. rewrite sub_fun in xl. Funeqtac. discr.
+simpl dup_int_term in xl. simpl in xl. Funeqtac. discr.
 (* Cont *)
 Funeqtac.
 exists (Vcast (Vapp v (Vcons (fill c (sub s (dup_int_term rhs))) v0)) e).

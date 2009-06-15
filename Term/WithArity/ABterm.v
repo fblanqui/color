@@ -66,30 +66,14 @@ End bterm_rect_def.
 Definition bterm_ind (P : bterm -> Prop) (Q : forall n, bterms n -> Prop) :=
   bterm_rect P Q.
 
-(*Definition bterm_rec (P : bterm -> Set) (Q : forall n, bterms n -> Set) :=
-  bterm_rect P Q.*)
-
 (***********************************************************************)
 (** injection of bterm into term *)
 
 Fixpoint term_of_bterm (bt : bterm) : term :=
   match bt with
     | BVar v _ => Var v
-    | BFun f bts =>
-      let fix terms_of_bterms n (bts : bterms n) {struct bts} : terms n :=
-	match bts in vector _ n return terms n with
-	  | Vnil => Vnil
-	  | Vcons bt n' bts' => Vcons (term_of_bterm bt) (terms_of_bterms n' bts')
-	end
-	in Fun f (terms_of_bterms (arity f) bts)
+    | BFun f bts => Fun f (Vmap term_of_bterm bts)
   end.
-
-Lemma term_of_bterm_fun : forall f (bts : bterms (arity f)),
-  term_of_bterm (BFun f bts) = Fun f (Vmap term_of_bterm bts).
-
-Proof.
-intros. reflexivity.
-Qed.
 
 (***********************************************************************)
 (** injection of term into bterm *)
@@ -154,28 +138,8 @@ Notation fint := (fint I).
 Fixpoint bterm_int (t : bterm) { struct t } : D :=
   match t with
     | BVar x _ => xint x
-    | BFun f v =>
-      let fix bterms_int (n : nat) (v : bterms n) { struct v } : vector D n :=
-        match v in vector _ n return vector D n with
-          | Vnil => Vnil
-          | Vcons t' n' v' => Vcons (bterm_int t') (bterms_int n' v')
-        end
-      in fint f (bterms_int (arity f) v)
+    | BFun f v => fint f (Vmap bterm_int v)
   end.
-
-Definition bterms_int (n : nat) (ts : bterms n) : vector D n :=
-  Vmap bterm_int ts.
-
-Lemma bterm_int_fun : forall (f : Sig) (v : bterms (arity f)),
-    bterm_int (BFun f v) = fint f (bterms_int v).
-
-Proof.
-intros. simpl.
-apply (f_equal (fint f)).
-induction v.
- auto.
- rewrite IHv. auto.
-Qed.
 
 End bterm.
 
@@ -194,14 +158,8 @@ Let P (t : term) := forall (k : nat) (H : maxvar_le k t),
   bterm_int xint (inject_term H) = term_int xint t.
 
 Let Q (n1 : nat) (ts : terms n1) :=
-  forall (k : nat) (H : Vforall (maxvar_le k) ts),  
-    (fix bterms_int (n0 : nat) (v : vector (bterm k) n0) {struct v}
-      : vector D n0 :=
-      match v in vector _ n1 return vector D n1 with
-	| Vnil => Vnil
-	| Vcons t' n' v' => Vcons (bterm_int xint t') (bterms_int n' v')
-      end)
-    n1 (inject_terms H) = Vmap (term_int xint) ts.
+  forall (k : nat) (H : Vforall (maxvar_le k) ts),
+    Vmap (bterm_int xint) (inject_terms H) = Vmap (term_int xint) ts.
 
 Lemma term_int_eq_bterm_int : forall t, P t.
 
@@ -211,7 +169,7 @@ intro t. apply (term_ind P Q).
 
  intros f ts. unfold Q. intro H. unfold P.
  intros n Hn.
- rewrite inject_term_eq. simpl bterm_int. rewrite term_int_fun.
+ rewrite inject_term_eq. simpl.
  apply (f_equal (fint I f)).
  generalize (maxvar_le_fun Hn). intro H0.
  generalize (H _ H0). intro H1. assumption.
@@ -238,14 +196,7 @@ Implicit Arguments le_trans [n m p].
 Fixpoint bterm_le k (bt : bterm k) l (h0 : k <= l) {struct bt} : bterm l :=
   match bt with
     | BVar x h => BVar (le_trans h h0)
-    | BFun f bts =>
-      let fix bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l)
-	{struct bts} : vector (bterm l) n :=
-	match bts in vector _ n return vector (bterm l) n with
-	  | Vnil => Vnil
-	  | Vcons bt n' bts' => Vcons (bterm_le bt h0) (bterms_le k n' bts' l h0)
-	end
-	in BFun f (bterms_le k (arity f) bts l h0)
+    | BFun f bts => BFun f (Vmap (fun bt => @bterm_le k bt l h0) bts)
   end.
 
 Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l) {struct bts}
