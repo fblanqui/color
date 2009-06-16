@@ -58,7 +58,7 @@ Lemma IR_substitution_closed : substitution_closed IR.
 
 Proof.
 unfold transp, substitution_closed, IR. intros t1 t2 s H xint0.
-do 2 rewrite substitutionLemma. apply (H (beta xint0 s)).
+do 2 rewrite substitution_lemma. apply (H (beta xint0 s)).
 Qed.
 
 Definition monotone := forall f, Vmonotone (fint I f) R.

@@ -193,7 +193,7 @@ Variable I : interpretation Sig.
 Definition beta (xint : valuation I) (s : substitution) x :=
   term_int xint (s x).
 
-Lemma substitutionLemma : forall xint s t,
+Lemma substitution_lemma : forall xint s t,
   term_int xint (sub s t) = term_int (beta xint s) t.
 
 Proof.
