@@ -1629,8 +1629,8 @@ Qed.
 Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
 
 Proof.
-induction v; intros. VOtac. reflexivity. VSntac w. rewrite H0 in H. Veqtac. subst a.
-subst v. simpl. rewrite (beq_refl beq_ok). simpl. apply beq_vec_refl.
+induction v; intros. VOtac. reflexivity. VSntac w. rewrite H0 in H. Veqtac.
+subst a. subst v. simpl. rewrite (beq_refl beq_ok). simpl. apply beq_vec_refl.
 Qed.
 
 End beq.
