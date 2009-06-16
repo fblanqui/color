@@ -1297,7 +1297,7 @@ Section partition_by_rel.
 End partition_by_rel.
 
 (***********************************************************************)
-(** partition *)
+(** listfilter *)
 
 Section ListFilter.
 
@@ -1309,8 +1309,8 @@ Fixpoint listfilter (L : list A) l {struct L} :=
     | a :: Q =>
       match l with 
         | nil => nil
-        | true :: q => a :: @listfilter Q q
-        | false :: q => @listfilter Q q
+        | true :: q => a :: listfilter Q q
+        | false :: q => listfilter Q q
       end
   end.
 
