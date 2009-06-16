@@ -40,7 +40,7 @@ induction b; refl.
 Qed.
 
 (***********************************************************************)
-(** conjonction *)
+(** conjunction *)
 
 Lemma andb_elim : forall b c, b && c = true -> b = true /\ c = true.
 
