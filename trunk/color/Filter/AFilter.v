@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-05-13
 
-arguments filtering
+arguments filtering with no projection
 *)
 
 Set Implicit Arguments.
