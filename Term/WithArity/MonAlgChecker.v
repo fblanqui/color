@@ -51,7 +51,7 @@ Notation funInt := (funInt Sig arSymInt).
 
 Variable defaultInt : forall n, arSymInt n.
 
-Variable interpret : forall n, arSymInt n -> naryFunction domain n.
+Variable interpret : forall n, arSymInt n -> naryFunction1 domain n.
 
 Program Definition makeI (int : forall f, funInt f) :=
   mkInterpretation (Sig:=Sig) domain_elt (fun f => interpret (int f)).
@@ -218,7 +218,7 @@ Record monSpec monR :=
   { monP : symInt -> Prop
   ; mon_check : forall (i : symInt), Exc (monP i)
   ; mon_ok : forall (i : symInt), 
-      monP i -> Vmonotone (interpret (projT2 i)) monR
+      monP i -> Vmonotone1 (interpret (projT2 i)) monR
   }.
 
 Let buildSymInt := buildSymInt Sig arSymInt.
