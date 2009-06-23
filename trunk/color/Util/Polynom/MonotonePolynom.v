@@ -174,10 +174,10 @@ apply power_le_compat; assumption. apply pos_meval. apply pos_meval.
 Qed.
 
 Lemma coef_pos_monotone_peval_Dle : forall n (p : poly n) (H : coef_pos p),
-  Vmonotone (peval_D H) Dle.
+  Vmonotone1 (peval_D H) Dle.
 
 Proof.
-unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
+unfold Vmonotone1, Vmonotone, Dle, peval_D, Vmonotone_i, restrict, monotone.
 intros n p H_coef_pos i j Hij vi vj. destruct x as (x, Hx).
 destruct y as (y, Hy). simpl. intro Hxy.
 generalize dependent p. intro p. elim p.
@@ -205,7 +205,7 @@ Implicit Arguments coef_pos_monotone_peval_Dle [n p i j x y].
 
 Lemma pmonotone'_imp_monotone_peval_Dlt :
   forall n (p : poly n) (H: pstrong_monotone' p), 
-    Vmonotone (peval_D (proj1 H)) Dlt.
+    Vmonotone1 (peval_D (proj1 H)) Dlt.
 
 Proof.
 intros n p (H_coef_pos_p, H_pmonotone_p) i j Hij.
@@ -247,12 +247,12 @@ Qed.
 
 Lemma pmonotone_imp_monotone_peval_Dlt : forall n (p : poly n) 
   (wm : pweak_monotone p) (sm : pstrong_monotone p), 
-  Vmonotone (peval_D wm) Dlt.
+  Vmonotone1 (peval_D wm) Dlt.
 
 Proof.
 intros n p wm sm.
 generalize (pmonotone'_imp_monotone_peval_Dlt (pmonotone_imp_pmonotone' sm)).
-unfold Vmonotone, Dlt, Vmonotone_i, peval_D, restrict, monotone.
+unfold Vmonotone1, Vmonotone, Dlt, Vmonotone_i, peval_D, restrict, monotone.
 intros H0 i j Hij vi vj. destruct x as (x, Hx). destruct y as (y, Hy).
 simpl. intro Hxy.
 generalize (H0 i j Hij vi vj (exist _ x Hx) (exist _ y Hy) Hxy). clear H0.

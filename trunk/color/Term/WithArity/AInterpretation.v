@@ -29,7 +29,7 @@ Notation term := (term Sig). Notation terms := (vector term).
 Record interpretation : Type := mkInterpretation {
   domain :> Type;
   some_elt : domain;
-  fint : forall f : Sig, naryFunction domain (arity f)
+  fint : forall f : Sig, naryFunction1 domain (arity f)
 }.
 
 Variable I : interpretation.

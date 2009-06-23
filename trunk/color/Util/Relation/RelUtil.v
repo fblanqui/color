@@ -270,11 +270,13 @@ End irrefl.
 
 Section monotone.
 
-Variable A : Type.
+Variables A B : Type.
 
-Definition monotone (R : relation A) f := forall x y, R x y -> R (f x) (f y).
+Definition monotone (R : relation A) (S : relation B) f :=
+  forall x y, R x y -> S (f x) (f y).
 
-Lemma monotone_transp : forall R f, monotone R f -> monotone (transp R) f.
+Lemma monotone_transp : forall R S f,
+  monotone R S f -> monotone (transp R) (transp S) f.
 
 Proof.
 unfold monotone, transp. auto.

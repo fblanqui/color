@@ -61,7 +61,7 @@ unfold transp, substitution_closed, IR. intros t1 t2 s H xint0.
 do 2 rewrite substitution_lemma. apply (H (beta xint0 s)).
 Qed.
 
-Definition monotone := forall f, Vmonotone (fint I f) R.
+Definition monotone := forall f, Vmonotone1 (fint I f) R.
 
 Lemma IR_context_closed : monotone -> context_closed IR.
 

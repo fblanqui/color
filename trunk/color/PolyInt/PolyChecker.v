@@ -104,7 +104,7 @@ Proof.
   set (w := defaultPoly_wm). simpl in w. apply w.
 Qed.
 
-Program Definition interpret n (fi : polyInt n) : naryFunction D n :=
+Program Definition interpret n (fi : polyInt n) : naryFunction1 D n :=
   @peval_D n fi _.
 
 Next Obligation.
@@ -132,7 +132,7 @@ Proof.
   firstorder.
 Qed.
 
-Lemma wm_ok : forall fi, poly_wm fi -> Vmonotone (interpret (projT2 fi)) Dge.
+Lemma wm_ok : forall fi, poly_wm fi -> Vmonotone1 (interpret (projT2 fi)) Dge.
 
 Proof.
   intros. apply Vmonotone_transp. apply coef_pos_monotone_peval_Dle.
@@ -141,7 +141,7 @@ Qed.
 Program Definition check_sm (fi : symPI) : Exc (poly_sm fi) :=
   pstrong_monotone_check (projT2 fi).
 
-Lemma sm_ok : forall fi, poly_sm fi -> Vmonotone (interpret (projT2 fi)) Dgt.
+Lemma sm_ok : forall fi, poly_sm fi -> Vmonotone1 (interpret (projT2 fi)) Dgt.
 
 Proof.
   intros. apply Vmonotone_transp. 
