@@ -33,11 +33,14 @@ Definition WF := forall x, SN x.
 
 End sn.
 
-Lemma WF_empty_rel : forall A, WF (@empty_rel A).
+(***********************************************************************)
+(** tactics *)
 
-Proof.
-intros A x. apply SN_intro. intros. contradiction.
-Qed.
+(* [geneq H x e(x)] transforms a goal G(x) into:
+forall t, H t -> forall x, e(x) = t -> G(x) *)
+
+Ltac geneq H x e := generalize (refl_equal e); generalize (H e);
+  clear H; generalize e at -2; intros t h; gen x; gen h; gen t.
 
 (***********************************************************************)
 (** accessibility *)
@@ -108,6 +111,12 @@ End acc_transp.
 Section incl.
 
 Variable (A : Type) (R S : relation A).
+
+Lemma WF_empty_rel : WF (@empty_rel A).
+
+Proof.
+intro x. apply SN_intro. intros. contradiction.
+Qed.
 
 Lemma Acc_incl : R << S -> forall x, Acc S x -> Acc R x.
   

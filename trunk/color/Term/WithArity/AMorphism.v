@@ -134,10 +134,6 @@ Qed.
 (***********************************************************************)
 (** reflexion of termination *)
 
-Ltac geneq H x e := generalize (refl_equal e); generalize (H e);
-  clear H; generalize e at -2; intros t h; gen x; gen h; gen t.
-
-
 Lemma Fred_WF : forall R, WF (red (Frs R)) -> WF (red R).
 
 Proof.
