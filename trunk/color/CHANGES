@@ -1,3 +1,8 @@
+09-06-24: [Blanqui]
+- Term/WithArity/ARules: rewriting with infinite sets of rules
+- Term/WithArity/AMorphism: extended to infinite sets of rules
+- SemLab/ASemLab: theorem of semantic labelling (with ordered labels)
+
 09-06-19: [Blanqui]
 - simplified all function definitions on terms f such that the corresponding
   function on vectors is (Vmap f)
