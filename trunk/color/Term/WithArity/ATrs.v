@@ -97,23 +97,9 @@ Qed.
 (***********************************************************************)
 (** standard rewriting *)
 
-Section Red.
-
-Variable R : rule -> Prop.
-
-Definition Red u v := exists l, exists r, exists c, exists s,
-    R (mkRule l r) /\ u = fill c (sub s l) /\ v = fill c (sub s r).
-
-Definition hd_Red u v := exists l, exists r, exists s,
-    R (mkRule l r) /\ u = sub s l /\ v = sub s r.
-
-End Red.
-
 Section rewriting.
 
 Variable R : rules.
-
-Definition Rules a := In a R.
 
 Definition red u v := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
@@ -150,16 +136,6 @@ End rewriting.
 (***********************************************************************)
 (** rewrite modulo steps *)
 
-Section Red_mod.
-
-Variables (E R : rule -> Prop).
-
-Definition Red_mod := Red E # @ Red R.
-
-Definition hd_Red_mod := Red E # @ hd_Red R.
-
-End Red_mod.
-
 Section rewriting_modulo.
 
 Variables (S : relation term) (E R: rules).
@@ -192,26 +168,13 @@ Ltac redtac := repeat
       let lr := fresh "lr" in let xl := fresh "xl" in
       let yr := fresh "yr" in
         destruct H as [l [r [c [s [lr [xl yr]]]]]]
-    | H : Red _ _ _ |- _ =>
-      let l := fresh "l" in let r := fresh "r" in 
-      let c := fresh "c" in let s := fresh "s" in 
-      let lr := fresh "lr" in let xl := fresh "xl" in
-      let yr := fresh "yr" in
-        destruct H as [l [r [c [s [lr [xl yr]]]]]]
     | H : transp (red _) _ _ |- _ => unfold transp in H; redtac
-    | H : transp (Red _) _ _ |- _ => unfold transp in H; redtac
     | H : hd_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in
       let s := fresh "s" in let lr := fresh "lr" in 
       let xl := fresh "xl" in let yr := fresh "yr" in
         destruct H as [l [r [s [lr [xl yr]]]]]
-    | H : hd_Red _ _ _ |- _ =>
-      let l := fresh "l" in let r := fresh "r" in
-      let s := fresh "s" in let lr := fresh "lr" in 
-      let xl := fresh "xl" in let yr := fresh "yr" in
-        destruct H as [l [r [s [lr [xl yr]]]]]
     | H : transp (hd_red _) _ _ |- _ => unfold transp in H; redtac
-    | H : transp (hd_Red _) _ _ |- _ => unfold transp in H; redtac
     | H : int_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in 
       let c := fresh "c" in let cne := fresh "cne" in
@@ -222,13 +185,7 @@ Ltac redtac := repeat
     | H : red_mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
         destruct H as [t h]; destruct h; redtac
-    | H : Red_mod _ _ _ _ |- _ =>
-      let t := fresh "t" in let h := fresh in
-        destruct H as [t h]; destruct h; redtac
     | H : hd_red_mod _ _ _ _ |- _ =>
-      let t := fresh "t" in let h := fresh in
-        destruct H as [t h]; destruct h; redtac
-    | H : hd_Red_mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
         destruct H as [t h]; destruct h; redtac
     | H : hd_red_Mod _ _ _ _ |- _ =>
@@ -252,20 +209,7 @@ Variable Sig : Signature.
 Notation term := (term Sig). Notation terms := (vector term).
 Notation rule := (rule Sig). Notation rules := (list rule).
 
-Notation empty_trs := (nil (A:=rule)).
-
-Section Red.
-
-Variable R : rule -> Prop.
-
-Lemma context_closed_Red : context_closed (Red R).
-
-Proof.
-intros t u c h. redtac. subst. repeat rewrite fill_fill.
-exists l. exists r. exists (comp c c0). exists s. intuition.
-Qed.
-
-End Red.
+Notation empty_trs := (@nil rule).
 
 Section rewriting.
 
@@ -302,7 +246,7 @@ Lemma red_fill : forall t u c, red R t u -> red R (fill c t) (fill c u).
 
 Proof.
 intros. redtac. unfold red.
-exists l. exists r. exists (AContext.comp c c0). exists s. split. assumption.
+exists l. exists r. exists (AContext.comp c c0). exists s. split. hyp.
 subst t. subst u. do 2 rewrite fill_fill. auto.
 Qed.
 
@@ -325,7 +269,7 @@ Lemma red_subterm : forall u u' t, red R u u' -> subterm_eq u t
 Proof.
 unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
 subst u'. exists (fill (AContext.comp d c) (sub s r)). split.
-exists l. exists r. exists (AContext.comp d c). exists s. split. assumption.
+exists l. exists r. exists (AContext.comp d c). exists s. split. hyp.
 rewrite fill_fill. auto. exists d. rewrite fill_fill. refl.
 Qed.
 
@@ -337,7 +281,7 @@ Lemma int_red_fun : forall f ts v, int_red R (Fun f ts) v
 Proof.
 intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. simpl in xl.
 Funeqtac. exists i. exists v0. exists (fill c (sub s l)). exists j. exists v1.
-exists e. exists (fill c (sub s r)). split. assumption. split. assumption.
+exists e. exists (fill c (sub s r)). split. hyp. split. hyp.
 unfold red. exists l. exists r. exists c. exists s. auto.
 Qed.
 
@@ -361,7 +305,7 @@ Lemma int_red_incl_red : int_red R << red R.
 
 Proof.
 unfold inclusion, int_red. intros. decomp H. subst x. subst y. apply red_rule.
-assumption.
+hyp.
 Qed.
 
 Lemma hd_red_incl_red : hd_red R << red R.
@@ -464,14 +408,14 @@ Lemma tred_preserv_vars : preserv_vars (red R !).
 
 Proof.
 unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
-apply incl_tran with (vars y); assumption.
+apply incl_tran with (vars y); hyp.
 Qed.
 
 Lemma rtred_preserv_vars : preserv_vars (red R #).
 
 Proof.
 unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
-apply List.incl_refl. apply incl_tran with (vars y); assumption.
+apply List.incl_refl. apply incl_tran with (vars y); hyp.
 Qed.
 
 Require Import ListMax.
@@ -582,17 +526,17 @@ Qed.
 Lemma red_incl : incl R R' -> red R << red R'.
 
 Proof.
-  intros RR' u v Rst. redtac.
-  exists l. exists r. exists c. exists s. repeat split; try assumption.
-  apply RR'. assumption.
+intros RR' u v Rst. redtac.
+exists l. exists r. exists c. exists s. repeat split; try hyp.
+apply RR'. hyp.
 Qed.
 
 Lemma hd_red_incl : incl R R' -> hd_red R << hd_red R'.
 
 Proof.
-  intros RR' u v Rst. redtac.
-  exists l. exists r. exists s. repeat split; try assumption.
-  apply RR'. assumption.
+intros RR' u v Rst. redtac.
+exists l. exists r. exists s. repeat split; try hyp.
+apply RR'. hyp.
 Qed.
 
 Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
@@ -617,22 +561,16 @@ End union.
 (***********************************************************************)
 (** properties of rewriting modulo *)
 
-Section Red_mod.
-
-Variables E R : rule -> Prop.
-
-Lemma context_closed_Red_mod : context_closed (Red_mod E R).
-
-Proof.
-apply context_closed_comp. apply context_closed_rtc. apply context_closed_Red.
-apply context_closed_Red.
-Qed.
-
-End Red_mod.
-
 Section rewriting_modulo_results.
 
 Variables (S S' : relation term) (E E' R R' : rules).
+
+Lemma red_mod_incl : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
+
+Proof.
+intros. unfold red_mod. comp. apply incl_rtc.
+apply red_incl. hyp. apply red_incl. hyp.
+Qed.
 
 Lemma hd_red_Mod_incl :
   S << S' -> incl R R' -> hd_red_Mod S R << hd_red_Mod S' R'.
@@ -685,7 +623,7 @@ Lemma red_mod_empty_incl_red : red_mod empty_trs R << red R.
 
 Proof.
 intros u v Ruv. destruct Ruv as [s' [ss' Ruv]].
-rewrite (red_empty ss'). assumption.
+rewrite (red_empty ss'). hyp.
 Qed.
 
 Lemma red_mod_empty : red_mod nil R == red R.
@@ -700,13 +638,6 @@ Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty_trs R << hd_red R.
 Proof.
 unfold inclusion. intros. do 2 destruct H. ded (red_empty H). subst x0.
 exact H0.
-Qed.
-
-Lemma red_mod_incl : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
-
-Proof.
-intros. unfold red_mod. comp. apply incl_rtc.
-apply red_incl. assumption. apply red_incl. assumption.
 Qed.
 
 Lemma WF_red_mod_empty : WF (red_mod E empty_trs).
@@ -772,13 +703,13 @@ Variable R R' : rules.
 Lemma red_incl_red_mod : red R << red_mod empty_trs R.
 
 Proof.
-intros u v Ruv. exists u. split. constructor 2. assumption.
+intros u v Ruv. exists u. split. constructor 2. hyp.
 Qed.
 
 Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod empty_trs R.
 
 Proof.
-intros u v Ruv. exists u. split. constructor 2. assumption.
+intros u v Ruv. exists u. split. constructor 2. hyp.
 Qed.
 
 End termination_as_relative_term.
@@ -796,8 +727,8 @@ Lemma red_mod_union : red_mod E (R ++ R') << red_mod E R U red_mod E R'.
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 destruct (in_app_or lr).
-left. exists (fill c (sub s l)); split. assumption. apply red_rule. hyp.
-right. exists (fill c (sub s l)); split. assumption. apply red_rule. hyp.
+left. exists (fill c (sub s l)); split. hyp. apply red_rule. hyp.
+right. exists (fill c (sub s l)); split. hyp. apply red_rule. hyp.
 Qed.
 
 Lemma hd_red_Mod_union :
@@ -806,8 +737,8 @@ Lemma hd_red_Mod_union :
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 destruct (in_app_or lr).
-left. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
-right. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
+left. exists (sub s l); split. hyp. apply hd_red_rule. hyp.
+right. exists (sub s l); split. hyp. apply hd_red_rule. hyp.
 Qed.
 
 Lemma hd_red_mod_union :
@@ -816,8 +747,8 @@ Lemma hd_red_mod_union :
 Proof.
 unfold inclusion. intros. do 2 destruct H. redtac. subst x0. subst y.
 destruct (in_app_or lr).
-left. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
-right. exists (sub s l); split. assumption. apply hd_red_rule. hyp.
+left. exists (sub s l); split. hyp. apply hd_red_rule. hyp.
+right. exists (sub s l); split. hyp. apply hd_red_rule. hyp.
 Qed.
 
 Lemma hd_red_mod_min_union :
@@ -826,8 +757,8 @@ Lemma hd_red_mod_min_union :
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0.
 subst y. destruct (in_app_or lr).
-left. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
-right. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
+left. split. exists (sub s l); split. hyp. apply hd_red_rule. hyp. hyp.
+right. split. exists (sub s l); split. hyp. apply hd_red_rule. hyp. hyp.
 Qed.
 
 End union_modulo.
