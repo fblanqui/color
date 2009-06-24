@@ -1,8 +1,9 @@
+
+- define rules as (rule->Prop) instead of (list rule)
+
 - unify Arctic and Arctic-Below-Zero methods
 
 - factorize AMatrixInt and ABigMatrixInt
-
-- prove that red R is finitely branching
 
 - replace andb_elim by some rewrite
 
@@ -14,9 +15,9 @@
 
 - only defined symbols need to be marked
 
-- replace rev by rev'
+- replace plus by tail recursive plus
 
-- replace eq_nat_dec by NatUtil.eq_nat_dec
+- replace rev by rev'
 
 - MPO: remove MPO top level hypotheses -> make a functor
 
@@ -25,8 +26,6 @@
 
 - DP: add improvement to DP pairs by ignoring pairs where rhs is a
 subterm of lhs
-
-- AF: extend by allowing collapsing argument filterings
 
 - make problem statement (including signature) explicit at every proof step
 
@@ -40,6 +39,10 @@ subterm of lhs
 
 Done list:
 ----------
+
+- AF: extend by allowing collapsing argument filterings
+
+- prove that red R is finitely branching
 
 - remove from RelExtras the things already defined in RelUtil
 
