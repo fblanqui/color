@@ -28,19 +28,19 @@ Notation term := (term Sig).
 
 Section basic.
 
-Variable succ : relation term.
+Variable R : relation term.
 
-Definition preserv_vars := forall t u, succ t u -> incl (vars u) (vars t).
+Definition preserv_vars := forall t u, R t u -> incl (vars u) (vars t).
 
 Definition substitution_closed :=
-  forall t1 t2 s, succ t1 t2 -> succ (sub s t1) (sub s t2).
+  forall t1 t2 s, R t1 t2 -> R (sub s t1) (sub s t2).
 
 Definition context_closed :=
-  forall t1 t2 c, succ t1 t2 -> succ (fill c t1) (fill c t2).
+  forall t1 t2 c, R t1 t2 -> R (fill c t1) (fill c t2).
 
 Definition rewrite_ordering := substitution_closed /\ context_closed.
 
-Definition reduction_ordering := WF succ /\ rewrite_ordering.
+Definition reduction_ordering := WF R /\ rewrite_ordering.
 
 End basic.
 
@@ -50,20 +50,39 @@ Record Rewrite_ordering : Type := mkRewrite_ordering {
   rew_ord_cont : context_closed rew_ord_rel
 }.
 
-Lemma substitution_closed_rtc : forall succ,
-  substitution_closed succ -> substitution_closed (succ #).
+Lemma substitution_closed_rtc : forall R,
+  substitution_closed R -> substitution_closed (R #).
 
 Proof.
-intros succ h t u s. induction 1. apply rt_step. apply h. hyp.
+intros R h t u s. induction 1. apply rt_step. apply h. hyp.
 apply rt_refl. apply rt_trans with (sub s y); hyp.
 Qed.
 
-Lemma context_closed_rtc : forall succ,
-  context_closed succ -> context_closed (succ #).
+Lemma context_closed_rtc : forall R, context_closed R -> context_closed (R #).
 
 Proof.
-intros succ h t u c. induction 1. apply rt_step. apply h. hyp.
+intros R h t u c. induction 1. apply rt_step. apply h. hyp.
 apply rt_refl. apply rt_trans with (fill c y); hyp.
+Qed.
+
+Lemma context_closed_comp : forall R S,
+  context_closed R -> context_closed S -> context_closed (R @ S).
+
+Proof.
+intros R S hR hS t v c [u [h1 h2]]. exists (fill c u). split.
+apply hR. hyp. apply hS. hyp.
+Qed.
+
+Require Import VecUtil.
+
+Lemma context_closed_fun : forall R, context_closed R ->
+  forall f i v1 t u j v2 (e : i+S j=arity f),
+    R t u -> R (Fun f (Vcast (Vapp v1 (Vcons t v2)) e))
+               (Fun f (Vcast (Vapp v1 (Vcons u v2)) e)).
+
+Proof.
+intros. set (c := Cont f e v1 Hole v2). change (R (fill c t) (fill c u)).
+apply H. hyp.
 Qed.
 
 (***********************************************************************)
@@ -71,10 +90,10 @@ Qed.
 
 Section reduction_pair.
 
-Variables succ succ_eq : relation term.
+Variables R E : relation term.
 
 Definition reduction_pair :=
-  reduction_ordering succ /\ absorb succ succ_eq /\ rewrite_ordering succ_eq.
+  reduction_ordering R /\ absorb R E /\ rewrite_ordering E.
 
 End reduction_pair.
 
@@ -94,19 +113,18 @@ Record Reduction_pair : Type := mkReduction_pair {
 
 Section weak_reduction_pair.
 
-Variables succ succ_eq : relation term.
+Variables R E : relation term.
 
 Definition weak_context_closed :=
-  forall t1 t2 c, succ t1 t2 -> succ_eq (fill c t1) (fill c t2).
+  forall t1 t2 c, R t1 t2 -> E (fill c t1) (fill c t2).
 
 Definition weak_rewrite_ordering :=
-  substitution_closed succ /\ weak_context_closed.
+  substitution_closed R /\ weak_context_closed.
 
-Definition weak_reduction_ordering := WF succ /\ weak_rewrite_ordering.
+Definition weak_reduction_ordering := WF R /\ weak_rewrite_ordering.
 
 Definition weak_reduction_pair :=
-  weak_reduction_ordering /\ absorb succ succ_eq
-  /\ rewrite_ordering succ_eq.
+  weak_reduction_ordering /\ absorb R E /\ rewrite_ordering E.
 
 End weak_reduction_pair.
 
@@ -125,12 +143,12 @@ Record Weak_reduction_pair : Type := mkWeak_reduction_pair {
 
 Section clos_refl.
 
-Variable succ : relation term.
+Variable R : relation term.
 
-Notation succ_eq := (clos_refl succ).
+Notation E := (R %).
 
 Lemma rc_context_closed :
-  weak_context_closed succ succ_eq -> context_closed succ_eq.
+  weak_context_closed R E -> context_closed E.
 
 Proof.
 intro. unfold context_closed. intros. unfold clos_refl in H0. decomp H0.
@@ -138,7 +156,7 @@ subst t2. unfold clos_refl. auto. apply H. assumption.
 Qed.
 
 Lemma rc_substitution_closed :
-  substitution_closed succ -> substitution_closed succ_eq.
+  substitution_closed R -> substitution_closed E.
 
 Proof.
 intro. unfold substitution_closed, clos_refl. intros. decomp H0.
@@ -146,7 +164,7 @@ subst t2. auto. right. apply H. assumption.
 Qed.
 
 Lemma rc_rewrite_ordering :
-  weak_rewrite_ordering succ succ_eq -> rewrite_ordering succ_eq.
+  weak_rewrite_ordering R E -> rewrite_ordering E.
 
 Proof.
 intros (Hsubs,Hcont). split. apply rc_substitution_closed. assumption.
@@ -156,21 +174,20 @@ Qed.
 End clos_refl.
 
 (***********************************************************************)
-(** when succ is the strict part of succ_eq *)
+(** when R is the strict part of E *)
 
 Section strict.
 
-Variables (succ_eq : relation term)
-  (succ_eq_trans : transitive succ_eq).
+Variables (E : relation term) (E_trans : transitive E).
 
-Notation succ := (strict_part succ_eq).
+Notation R := (strict_part E).
 
-Lemma absorb_strict : absorb succ succ_eq.
+Lemma absorb_strict : absorb R E.
 
 Proof.
 unfold absorb, inclusion, RelUtil.compose, strict_part.
-intros; split; decomp H. eapply succ_eq_trans. apply H1. assumption.
-unfold not; intro. ded (succ_eq_trans H H1). contradiction.
+intros; split; decomp H. eapply E_trans. apply H1. assumption.
+unfold not; intro. ded (E_trans H H1). contradiction.
 Qed.
 
 End strict.
