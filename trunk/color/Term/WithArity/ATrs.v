@@ -95,11 +95,25 @@ intros. rewrite forallb_forall in H. ded (H _ H0). discr.
 Qed.
 
 (***********************************************************************)
-(** rewrite steps *)
+(** standard rewriting *)
+
+Section Red.
+
+Variable R : rule -> Prop.
+
+Definition Red u v := exists l, exists r, exists c, exists s,
+    R (mkRule l r) /\ u = fill c (sub s l) /\ v = fill c (sub s r).
+
+Definition hd_Red u v := exists l, exists r, exists s,
+    R (mkRule l r) /\ u = sub s l /\ v = sub s r.
+
+End Red.
 
 Section rewriting.
 
 Variable R : rules.
+
+Definition Rules a := In a R.
 
 Definition red u v := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
@@ -136,6 +150,16 @@ End rewriting.
 (***********************************************************************)
 (** rewrite modulo steps *)
 
+Section Red_mod.
+
+Variables (E R : rule -> Prop).
+
+Definition Red_mod := Red E # @ Red R.
+
+Definition hd_Red_mod := Red E # @ hd_Red R.
+
+End Red_mod.
+
 Section rewriting_modulo.
 
 Variables (S : relation term) (E R: rules).
@@ -168,13 +192,26 @@ Ltac redtac := repeat
       let lr := fresh "lr" in let xl := fresh "xl" in
       let yr := fresh "yr" in
         destruct H as [l [r [c [s [lr [xl yr]]]]]]
+    | H : Red _ _ _ |- _ =>
+      let l := fresh "l" in let r := fresh "r" in 
+      let c := fresh "c" in let s := fresh "s" in 
+      let lr := fresh "lr" in let xl := fresh "xl" in
+      let yr := fresh "yr" in
+        destruct H as [l [r [c [s [lr [xl yr]]]]]]
     | H : transp (red _) _ _ |- _ => unfold transp in H; redtac
+    | H : transp (Red _) _ _ |- _ => unfold transp in H; redtac
     | H : hd_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in
       let s := fresh "s" in let lr := fresh "lr" in 
       let xl := fresh "xl" in let yr := fresh "yr" in
         destruct H as [l [r [s [lr [xl yr]]]]]
+    | H : hd_Red _ _ _ |- _ =>
+      let l := fresh "l" in let r := fresh "r" in
+      let s := fresh "s" in let lr := fresh "lr" in 
+      let xl := fresh "xl" in let yr := fresh "yr" in
+        destruct H as [l [r [s [lr [xl yr]]]]]
     | H : transp (hd_red _) _ _ |- _ => unfold transp in H; redtac
+    | H : transp (hd_Red _) _ _ |- _ => unfold transp in H; redtac
     | H : int_red _ _ _ |- _ =>
       let l := fresh "l" in let r := fresh "r" in 
       let c := fresh "c" in let cne := fresh "cne" in
@@ -185,7 +222,13 @@ Ltac redtac := repeat
     | H : red_mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
         destruct H as [t h]; destruct h; redtac
+    | H : Red_mod _ _ _ _ |- _ =>
+      let t := fresh "t" in let h := fresh in
+        destruct H as [t h]; destruct h; redtac
     | H : hd_red_mod _ _ _ _ |- _ =>
+      let t := fresh "t" in let h := fresh in
+        destruct H as [t h]; destruct h; redtac
+    | H : hd_Red_mod _ _ _ _ |- _ =>
       let t := fresh "t" in let h := fresh in
         destruct H as [t h]; destruct h; redtac
     | H : hd_red_Mod _ _ _ _ |- _ =>
@@ -200,7 +243,7 @@ Ltac is_var_rhs := cut False;
   [tauto | eapply is_notvar_rhs_false; eassumption].
 
 (***********************************************************************)
-(** properties *)
+(** basic properties *)
 
 Section S.
 
@@ -211,8 +254,18 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 
 Notation empty_trs := (nil (A:=rule)).
 
-(***********************************************************************)
-(** basic properties of rewriting *)
+Section Red.
+
+Variable R : rule -> Prop.
+
+Lemma context_closed_Red : context_closed (Red R).
+
+Proof.
+intros t u c h. redtac. subst. repeat rewrite fill_fill.
+exists l. exists r. exists (comp c c0). exists s. intuition.
+Qed.
+
+End Red.
 
 Section rewriting.
 
@@ -251,6 +304,12 @@ Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (AContext.comp c c0). exists s. split. assumption.
 subst t. subst u. do 2 rewrite fill_fill. auto.
+Qed.
+
+Lemma context_closed_red : context_closed (red R).
+
+Proof.
+intros t u c h. apply red_fill. hyp.
 Qed.
 
 Lemma red_sub : forall t u s, red R t u -> red R (sub s t) (sub s u).
@@ -558,6 +617,19 @@ End union.
 (***********************************************************************)
 (** properties of rewriting modulo *)
 
+Section Red_mod.
+
+Variables E R : rule -> Prop.
+
+Lemma context_closed_Red_mod : context_closed (Red_mod E R).
+
+Proof.
+apply context_closed_comp. apply context_closed_rtc. apply context_closed_Red.
+apply context_closed_Red.
+Qed.
+
+End Red_mod.
+
 Section rewriting_modulo_results.
 
 Variables (S S' : relation term) (E E' R R' : rules).
@@ -673,6 +745,12 @@ apply context_closed_rtc. unfold context_closed. apply red_fill. hyp.
 apply red_fill. hyp.
 Qed.
 
+Lemma context_closed_red_mod : context_closed (red_mod E R).
+
+Proof.
+intros t u c h. apply red_mod_fill. hyp.
+Qed.
+
 Lemma red_mod_sub : forall t u s,
   red_mod E R t u -> red_mod E R (sub s t) (sub s u).
 
@@ -753,9 +831,6 @@ right. split. exists (sub s l); split. assumption. apply hd_red_rule. hyp. hyp.
 Qed.
 
 End union_modulo.
-
-(***********************************************************************)
-(** declarations of implicit arguments *)
 
 End S.
 
