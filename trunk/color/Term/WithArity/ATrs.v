@@ -47,7 +47,7 @@ Qed.
 
 Definition eq_rule_dec := dec_beq beq_rule_ok.
 
-Definition rules := (list rule).
+Definition rules := list rule.
 
 (***********************************************************************)
 (** basic definitions and properties on rules *)

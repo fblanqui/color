@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2009-06-22
 
-semantic labelling
+semantic labelling (with ordered labels)
 *)
 
 Set Implicit Arguments.
@@ -23,13 +23,14 @@ Require Import NaryFunction.
 Require Import NatUtil.
 Require Import ARelation.
 Require Import ARules.
+Require Import SetUtil.
 
 Section S.
 
 Variable Sig : Signature.
 
 Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Notation rule := (rule Sig). Notation rules := (rules Sig).
 
 (***********************************************************************)
 (** labels *)
@@ -62,7 +63,7 @@ Definition lab_sig := mkSignature lab_arity beq_lab_symb_ok.
 
 Notation Sig' := lab_sig. Notation Fun' := (@Fun Sig').
 Notation term' := (ATerm.term Sig'). Notation terms' := (vector term').
-Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
+Notation rule' := (ATrs.rule Sig'). Notation rules' := (rules Sig').
 
 (***********************************************************************)
 (** labelling *)
@@ -81,6 +82,8 @@ Fixpoint lab v t :=
 
 Definition lab_rule v (a : rule) :=
   let (l,r) := a in mkRule (lab v l) (lab v r).
+
+Definition lab_rules R a := exists b, exists v, R b /\ a = lab_rule v b.
 
 Definition lab_sub v s (x : variable) := lab v (s x).
 
@@ -107,11 +110,9 @@ Qed.
 (***********************************************************************)
 (** ordering of labels *)
 
-Variable Lgt : relation L.
-Infix ">L" := Lgt (at level 50).
+Variable Lgt : relation L. Infix ">L" := Lgt (at level 50).
 
-Definition Lge := Lgt %.
-Infix ">=L" := Lge (at level 50).
+Let Lge := Lgt %. Infix ">=L" := Lge (at level 50).
 
 Fixpoint fresh_vars x k :=
   match k as k return terms' k with
@@ -179,7 +180,7 @@ Qed.
 
 Definition unlab := Ft HF.
 
-Lemma unlab_lab : forall v t, unlab (lab v t) = t.
+Lemma Ft_epi : forall v t, unlab (lab v t) = t.
 
 Proof.
 intros v t. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
@@ -188,7 +189,21 @@ refl. apply args_eq. rewrite Vmap_map. rewrite H. apply Vcast_refl.
 refl. rewrite H. rewrite H0. refl.
 Qed.
 
-Lemma red_Frs_Decr_eq : red (Frs HF Decr) << @eq term.
+Lemma Frs_iso : forall R : rules, Frs HF (lab_rules R) === R.
+
+Proof.
+intros R [l r]. split.
+(* [= *)
+intros [[l' r'] [h1 h2]]. destruct h1 as [[x y] [v [h h']]]. inversion h'.
+inversion h2. subst. repeat rewrite Ft_epi. hyp.
+(* =] *)
+unfold Frs. intro. set (v := fun x : variable => some_elt I).
+exists (mkRule (lab v l) (lab v r)). split.
+unfold lab_rules. exists (mkRule l r). exists v. intuition.
+simpl. repeat rewrite Ft_epi. refl.
+Qed.
+
+Lemma red_Frs_Decr : red (Frs HF Decr) << @eq term.
 
 Proof.
 intros t u h. redtac. subst. destruct lr as [[l' r'] [h1 h2]].
@@ -196,43 +211,48 @@ destruct h1 as [f [a [b [ab h]]]]. inversion h. subst. inversion h2.
 assert (HF (f,a) = HF (f,b)). apply UIP. apply eq_nat_dec. rewrite H. refl.
 Qed.
 
-Lemma rt_red_Frs_Decr_eq : red (Frs HF Decr) # << @eq term.
+Lemma rt_red_Frs_Decr : red (Frs HF Decr) # << @eq term.
 
 Proof.
-intros t u. induction 1. apply red_Frs_Decr_eq. hyp. refl. transitivity y; hyp.
+intros t u. induction 1. apply red_Frs_Decr. hyp. refl. transitivity y; hyp.
+Qed.
+
+Lemma red_mod_Frs_Decr : forall E,
+  red (Frs HF (Decr ++ lab_rules E)) << red E %.
+
+Proof.
+intros E t u h. redtac. subst. apply Frs_app in lr. destruct lr.
+left. eapply rt_red_Frs_Decr. apply rt_step. apply red_rule. hyp.
+right. apply red_rule. do 2 destruct H. rewrite H0. clear H0. do 3 destruct H.
+subst. destruct x0. simpl. repeat rewrite Ft_epi. hyp.
+Qed.
+
+Lemma rt_red_mod_Frs_Decr : forall E,
+  red (Frs HF (Decr ++ lab_rules E)) # << red E #.
+
+Proof.
+intro E. transitivity (red E % #). rewrite red_mod_Frs_Decr. refl.
+rewrite rc_incl_rtc. rewrite rtc_invol. refl.
 Qed.
 
 (***********************************************************************)
 (** main theorem *)
 
-Variable R : rule -> Prop.
+Variable Dge : relation I. Infix ">=D" := Dge (at level 50).
 
-Definition lab_rules a := exists b, exists v, R b /\ a = lab_rule v b.
+Let ge := IR I Dge. Infix ">=" := ge.
 
-Notation R' := lab_rules.
+Variable pi_mon : forall f, Vmonotone (pi f) Dge Lge.
+Variable I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
-Lemma Frs_incl : incl (Frs HF R') R.
+Section red.
 
-Proof.
-intros [l r h]. destruct h as [[l' r'] [h1 h2]].
-destruct h1 as [[x y] [v [h h']]]. inversion h'. inversion h2. subst.
-repeat rewrite unlab_lab. hyp.
-Qed.
-
-Variable Dge : relation I.
-Infix ">=D" := Dge (at level 50).
-
-Definition ge := IR I Dge.
-Infix ">=" := ge.
+Variable R : rules. Notation R' := (lab_rules R).
 
 Variable ge_compat : forall l r, R (mkRule l r) -> l >= r.
 
-Variable pi_mon : forall f, Vmonotone (pi f) Dge Lge.
-
-Variable I_mon : forall f, Vmonotone1 (fint I f) Dge.
-
 Lemma red_lab : forall v t u,
-  red R t u -> (red_mod Decr R') (lab v t) (lab v u).
+  red R t u -> red_mod Decr R' (lab v t) (lab v u).
 
 Proof.
 intros. redtac. subst. elim c; clear c.
@@ -261,19 +281,72 @@ apply context_closed_rtc. apply context_closed_red. hyp.
 apply context_closed_fun with (R := red R'). apply context_closed_red. hyp.
 Qed.
 
-Lemma WF_lab : WF (red R) <-> WF (red_mod Decr R').
+Lemma rt_red_lab : forall v t u,
+  red R # t u -> red_mod Decr R' # (lab v t) (lab v u).
+
+Proof.
+induction 1. apply rt_step. apply red_lab. hyp. apply rt_refl.
+apply rt_trans with (lab v y); hyp.
+Qed.
+
+Lemma WF_red_lab : WF (red R) <-> WF (red_mod Decr R').
 
 Proof.
 split; intro.
 (* -> *)
 apply Fred_mod_WF with (S2:=Sig) (F:=F) (HF:=HF). apply WF_incl with (red R).
-2: hyp. intros t u h. redtac. ded (rt_red_Frs_Decr_eq H0). subst t0. subst.
-apply red_rule. apply Frs_incl. hyp.
+2: hyp. intros t u h. redtac. ded (rt_red_Frs_Decr H0). subst t0. subst.
+apply red_rule. eapply Frs_iso. hyp.
 (* <- *)
 set (v := fun x : variable => some_elt I).
 apply WF_incl with (Rof (red_mod Decr R') (lab v)).
 intros t u h. unfold Rof. apply red_lab. hyp.
 apply WF_inverse. hyp.
 Qed.
+
+End red.
+
+(***********************************************************************)
+(** rewriting modulo *)
+
+Section red_mod.
+
+Variables E R : rules.
+Notation E' := (lab_rules E). Notation R' := (lab_rules R).
+
+Variable ge_compatE : forall l r, E (mkRule l r) -> l >= r.
+Variable ge_compatR : forall l r, R (mkRule l r) -> l >= r.
+
+Lemma red_mod_lab : forall v t u,
+  red_mod E R t u -> red_mod (Decr ++ E') R' (lab v t) (lab v u).
+
+Proof.
+intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
+ded (red_lab ge_compatR v H0). do 2 destruct H2. exists x0. intuition.
+apply rt_trans with (lab v x).
+eapply inclusion_elim. apply rt_red_mod_union. hyp.
+eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
+Qed.
+
+Lemma WF_red_mod_lab : WF (red_mod E R) <-> WF (red_mod (Decr ++ E') R').
+
+Proof.
+split; intro.
+(* -> *)
+apply Fred_mod_WF with (S2:=Sig) (F:=F) (HF:=HF).
+apply WF_incl with (red_mod E R). 2: hyp. intros t u h. destruct h.
+destruct H0. apply rt_red_mod_Frs_Decr in H0. rewrite Frs_iso in H1.
+exists x. auto.
+(* <- *)
+set (v := fun x : variable => some_elt I).
+apply WF_incl with (Rof (red_mod (Decr ++ E') R') (lab v)).
+intros t u h. unfold Rof. apply red_mod_lab. hyp.
+apply WF_inverse. hyp.
+Qed.
+
+End red_mod.
+
+(***********************************************************************)
+(** enumeration of labelled rules *)
 
 End S.

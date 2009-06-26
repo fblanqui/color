@@ -14,35 +14,30 @@ Require Import List.
 Require Import RelUtil.
 Require Import ARelation.
 Require Import LogicUtil.
+Require Import SetUtil.
 
 Section defs.
 
 Variable Sig : Signature.
 
-Notation rule := (rule Sig).
+Notation term := (term Sig). Notation rule := (rule Sig).
+
+Definition rules := set rule.
 
 (***********************************************************************)
-(** infinite sets of rules *)
+(** (finite) set of rules from a list of rules *)
 
-Definition rules := rule -> Prop.
-
-Definition Empty (x : rule) := False.
-
-Definition Rules R (x : rule) := In x R.
-
-Definition incl R S := forall x : rule, R x -> S x.
-
-Definition union R S := fun x : rule => R x \/ S x.
-
-Infix "++" := union.
+Definition Rules R : rules := fun x => In x R.
 
 (***********************************************************************)
 (** rewriting *)
 
-Definition red (R : rules) u v := exists l, exists r, exists c, exists s,
+Definition red (R : rules) : relation term :=
+  fun u v => exists l, exists r, exists c, exists s,
     R (mkRule l r) /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
-Definition hd_red (R : rules) u v := exists l, exists r, exists s,
+Definition hd_red (R : rules) : relation term :=
+  fun u v => exists l, exists r, exists s,
     R (mkRule l r) /\ u = sub s l /\ v = sub s r.
 
 Definition red_mod E R := red E # @ red R.
@@ -75,22 +70,139 @@ Ltac redtac := repeat
   end.
 
 (***********************************************************************)
-(** properties of rules *)
+(** monotony properties *)
+
+Require Import Setoid.
+
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as red_incl.
+
+Proof.
+intros R R' RR' u v Rst. redtac.
+exists l. exists r. exists c. exists s. repeat split; try hyp.
+apply RR'. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==> (same_relation (term Sig))
+    as red_equiv.
+
+Proof.
+intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply red_incl; hyp.
+Qed.
+
+(*COQ: can be remobed?*)
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as red_equiv_ext.
+
+Proof.
+intros A B. rewrite equiv_elim. intros [h1 h2]. split; apply red_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as hd_red_incl.
+
+Proof.
+intros R R' RR' u v Rst. redtac.
+exists l. exists r. exists s. repeat split; try hyp.
+apply RR'. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==> (same_relation (term Sig))
+    as hd_red_equiv.
+
+Proof.
+intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply hd_red_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as hd_red_equiv_ext.
+
+Proof.
+intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply hd_red_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as red_mod_incl.
+
+Proof.
+intros. unfold red_mod. comp. apply incl_rtc.
+apply red_incl. hyp. apply red_incl. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==>
+    (@SetUtil.equiv (@rule Sig)) ==> (same_relation (term Sig))
+    as red_mod_equiv.
+
+Proof.
+intros R R'. rewrite equiv_elim. intros [h1 h2].
+intros S S'. rewrite equiv_elim. intros [h3 h4].
+split; apply red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==>
+    (@SetUtil.equiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as red_mod_equiv_ext.
+
+Proof.
+intros R R'. rewrite equiv_elim. intros [h1 h2].
+intros S S'. rewrite equiv_elim. intros [h3 h4].
+split; apply red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as hd_red_mod_incl.
+
+Proof.
+intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
+apply hd_red_incl. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==>
+    (@SetUtil.equiv (@rule Sig)) ==> (same_relation (term Sig))
+    as hd_red_mod_equiv.
+
+Proof.
+intros R R'. rewrite equiv_elim. intros [h1 h2].
+intros S S'. rewrite equiv_elim. intros [h3 h4].
+split; apply hd_red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@SetUtil.equiv (@rule Sig)) ==>
+    (@SetUtil.equiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as hd_red_mod_equiv_ext.
+
+Proof.
+intros R R'. rewrite equiv_elim. intros [h1 h2].
+intros S S'. rewrite equiv_elim. intros [h3 h4].
+split; apply hd_red_mod_incl; hyp.
+Qed.
+
+(***********************************************************************)
+(** properties of rewriting *)
 
 Section props.
 
 Variable Sig : Signature.
 
-Notation rules := (rules Sig).
-
-Lemma incl_refl : forall R : rules, incl R R.
-
-Proof.
-intros R x. auto.
-Qed.
-
-(***********************************************************************)
-(** properties of rewriting *)
+Notation rule := (rule Sig). Notation rules := (set rule).
 
 Section red.
 
@@ -117,22 +229,6 @@ intros t u c h. redtac. subst. repeat rewrite fill_fill.
 exists l. exists r. exists (comp c c0). exists s. intuition.
 Qed.
 
-Lemma red_incl : incl R R' -> red R << red R'.
-
-Proof.
-intros RR' u v Rst. redtac.
-exists l. exists r. exists c. exists s. repeat split; try assumption.
-apply RR'. assumption.
-Qed.
-
-Lemma hd_red_incl : incl R R' -> hd_red R << hd_red R'.
-
-Proof.
-intros RR' u v Rst. redtac.
-exists l. exists r. exists s. repeat split; try assumption.
-apply RR'. assumption.
-Qed.
-
 End red.
 
 Section red_mod.
@@ -146,19 +242,23 @@ apply context_closed_comp. apply context_closed_rtc. apply context_closed_red.
 apply context_closed_red.
 Qed.
 
-Lemma red_mod_incl : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
+Lemma red_mod_union : red_mod E R << red (E ++ R) #.
 
 Proof.
-intros. unfold red_mod. comp. apply incl_rtc.
-apply red_incl. hyp. apply red_incl. hyp.
+intros t u [h [h1 h2]]. gen h2. gen h1. induction 1; intro.
+apply rt_trans with y.
+apply rt_step. apply red_incl with E. apply incl_appl. hyp.
+apply rt_step. apply red_incl with R. apply incl_appr. hyp.
+apply rt_step. apply red_incl with R. apply incl_appr. hyp.
+apply rt_trans with y.
+eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
+auto.
 Qed.
 
-Lemma hd_red_mod_incl :
-  incl E E' -> incl R R' -> hd_red_mod E R << hd_red_mod E' R'.
+Lemma rt_red_mod_union : red_mod E R # << red (E ++ R) #.
 
 Proof.
-intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
-apply hd_red_incl. hyp.
+trans (red(E++R)##). rewrite red_mod_union. refl. rewrite rtc_invol. refl.
 Qed.
 
 End red_mod.
