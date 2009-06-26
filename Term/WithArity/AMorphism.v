@@ -16,6 +16,7 @@ Require Import List.
 Require Import RelUtil.
 Require Import SN.
 Require Import ARules.
+Require Import SetUtil.
 
 Section Morphism.
 
@@ -70,8 +71,22 @@ Definition Fr (a : rule S1) := let (l,r) := a in mkRule (Ft l) (Ft r).
 
 Definition Fl := map Fr.
 
-Definition Frs R a := exists b, R b /\ a = Fr b.
+Definition Frs (R : rules S1) : rules S2 := fun a => exists b, R b /\ a = Fr b.
 
+Lemma incl_Frs : forall R S, R [= S -> Frs R [= Frs S.
+
+Proof.
+intros. intros a' H0. do 2 destruct H0. subst. exists x. intuition.
+Qed.
+
+Lemma Frs_app : forall R S a, Frs (R ++ S) a <-> Frs R a \/ Frs S a.
+
+Proof.
+intuition. do 3 destruct H; subst. left. exists x. auto. right. exists x. auto.
+destruct H0. destruct H. subst. exists x. intuition. left. hyp.
+destruct H0. destruct H. subst. exists x. intuition. right. hyp.
+Qed.
+ 
 (***********************************************************************)
 (* translation of substitutions in S1 into substitutions in S2 *)
 
@@ -178,9 +193,9 @@ Section Preserv.
 Variables S1 S2 : Signature.
 Variables (F : S1 -> S2) (HF : forall f, arity f = arity (F f)).
 Variables (G : S2 -> S1) (HG : forall f, arity f = arity (G f)).
-Variables (E R : rule S1 -> Prop) (E' R' : rule S2 -> Prop).
-Variables (hyp1 : incl (Frs HG E') E) (hyp2 : incl (Frs HF E) E').
-Variables (hyp3 : incl (Frs HG R') R) (hyp4 : incl (Frs HF R) R').
+Variables (E R : rules S1) (E' R' : rules S2).
+Variables (hyp1 : Frs HG E' [= E) (hyp2 : Frs HF E [= E').
+Variables (hyp3 : Frs HG R' [= R) (hyp4 : Frs HF R [= R').
 
 Lemma WF_Fred : WF (red R) -> WF (red (Frs HF R)).
 
@@ -192,9 +207,9 @@ Qed.
 Lemma WF_Fred_mod : WF (red_mod E R) -> WF (red_mod (Frs HF E) (Frs HF R)).
 
 Proof.
-intro. eapply WF_incl. apply red_mod_incl. apply hyp4. apply hyp2.
-eapply Fred_mod_WF. eapply WF_incl. apply red_mod_incl. apply hyp3.
-apply hyp1. hyp.
+intro. eapply WF_incl. apply red_mod_incl. apply hyp2. apply hyp4.
+eapply Fred_mod_WF. eapply WF_incl. apply red_mod_incl. apply hyp1.
+apply hyp3. hyp.
 Qed.
 
 Lemma WF_Fhd_red_mod :
@@ -283,7 +298,7 @@ Variables (F : S1 -> S2) (HF : forall f, arity f = arity (F f)).
 Variables (G : S2 -> S1) (HG : forall f, arity f = arity (G f)).
 Variables (FG : forall f, F (G f) = f) (GF : forall f, G (F f) = f).
 
-Lemma Frs_incl : forall R, incl (Frs HG (Frs HF R)) R.
+Lemma Frs_epi : forall R, incl (Frs HG (Frs HF R)) R.
 
 Proof.
 intros R x H. do 2 destruct H. subst. do 2 destruct H. subst. rewrite Fr_epi.
@@ -296,7 +311,7 @@ Lemma WF_Fred_iso : WF (red R) <-> WF (red (Frs HF R)).
 
 Proof.
 split; intro. apply WF_Fred with (G:=G) (HG:=HG) (R':=Frs HF R).
-apply Frs_incl. apply incl_refl. hyp.
+apply Frs_epi. apply incl_refl. hyp.
 apply Fred_WF with (S2:=S2) (F:=F) (HF:=HF). hyp.
 Qed.
 
@@ -305,7 +320,7 @@ Lemma WF_Fred_mod_iso : WF (red_mod E R) <-> WF (red_mod (Frs HF E) (Frs HF R)).
 Proof.
 split; intro.
 apply WF_Fred_mod with (G:=G) (HG:=HG) (R':=Frs HF R) (E':=Frs HF E).
-apply Frs_incl. apply incl_refl. apply Frs_incl. apply incl_refl. hyp.
+apply Frs_epi. apply incl_refl. apply Frs_epi. apply incl_refl. hyp.
 apply Fred_mod_WF with (S2:=S2) (F:=F) (HF:=HF). hyp.
 Qed.
 
@@ -315,7 +330,7 @@ Lemma WF_Fhd_red_mod_iso :
 Proof.
 split; intro.
 apply WF_Fhd_red_mod with (G:=G) (HG:=HG) (R':=Frs HF R) (E':=Frs HF E).
-apply Frs_incl. apply incl_refl. apply Frs_incl. apply incl_refl. hyp.
+apply Frs_epi. apply incl_refl. apply Frs_epi. apply incl_refl. hyp.
 apply Fhd_red_mod_WF with (S2:=S2) (F:=F) (HF:=HF). hyp.
 Qed.
 
