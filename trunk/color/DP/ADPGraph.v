@@ -211,7 +211,7 @@ Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
 destruct a. simpl. simpl in H0. exists (sub x0 lhs). split.
-apply incl_elim with (R := int_red R #). apply incl_rtc.
+apply inclusion_elim with (R := int_red R #). apply incl_rtc.
 apply int_red_incl_red. exact H0. apply hd_red_rule. simpl. auto.
 Qed.
 
@@ -236,7 +236,7 @@ Lemma compat_chain_dp_strict : forall a,
 Proof.
 unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
 apply (comp_rtc_incl Habsorb). exists (sub x0 (lhs a)). split.
-apply incl_elim with (R := int_red R #). 2: exact H1. apply incl_rtc.
+apply inclusion_elim with (R := int_red R #). 2: exact H1. apply incl_rtc.
 trans (red R). apply int_red_incl_red. apply compat_red; assumption.
 destruct Hredord. apply H2. exact H.
 Qed.
@@ -291,17 +291,17 @@ do 4 destruct H8. unfold l' in H8. ded (chain_dps_app' H8 H3).
 do 2 destruct H10.
 (* succ_eq# x x7 *)
 assert (succ_eq# x x7). destruct H10. subst x7. intuition.
-eapply incl_elim. apply compat_chain_dps. apply H10.
+eapply inclusion_elim. apply compat_chain_dps. apply H10.
 (* (succ @ succ_eq#) x7 y *)
 assert ((succ @ succ_eq#) x7 y). destruct x6; simpl in H11.
 ded (compat_chain_dp_strict H9 H11). exists y. intuition.
-do 2 destruct H11. exists x8. split. eapply incl_elim.
+do 2 destruct H11. exists x8. split. eapply inclusion_elim.
 apply (compat_chain_dp_strict H9). exact H11.
-eapply incl_elim. apply compat_chain_dps. apply H13.
+eapply inclusion_elim. apply compat_chain_dps. apply H13.
 (* (succ @ succ_eq#) x y *)
 do 2 destruct H13. exists x8. intuition.
-eapply incl_elim with (R := succ_eq# @ succ). apply comp_rtc_incl. intuition.
-exists x7. intuition.
+eapply inclusion_elim with (R := succ_eq# @ succ). apply comp_rtc_incl.
+intuition. exists x7. intuition.
 Qed.
 
 End S.
