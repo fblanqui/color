@@ -146,7 +146,7 @@ Proof.
   apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. 
   exact H2. apply tc_trans.
   apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
-  trans (red_mod E Rge). apply incl_trans with (hd_red_mod E Rge).
+  trans (red_mod E Rge). apply inclusion_trans with (hd_red_mod E Rge).
   apply hd_red_mod_min_incl. apply hd_red_mod_incl_red_mod. incl_red.
   apply comp_tc_incl. rptac.
 Qed.
