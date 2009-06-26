@@ -212,13 +212,13 @@ Section inclusion.
 
 Variables (A : Type) (R S : relation A).
 
-Lemma incl_elim : R << S -> forall x y, R x y -> S x y.
+Lemma inclusion_elim : R << S -> forall x y, R x y -> S x y.
 
 Proof.
 auto.
 Qed.
 
-Lemma incl_trans : forall T, R << S -> S << T -> R << T.
+Lemma inclusion_trans : forall T, R << S -> S << T -> R << T.
 
 Proof.
 intros T h h'. unfold inclusion. auto.
@@ -232,11 +232,11 @@ Qed.
 
 End inclusion.
 
-Implicit Arguments incl_elim [A R S x y].
+Implicit Arguments inclusion_elim [A R S x y].
 
 Ltac inclusion_refl := apply inclusion_refl.
 
-Ltac trans S := apply incl_trans with (S); try inclusion_refl.
+Ltac trans S := apply inclusion_trans with (S); try inclusion_refl.
 
 Add Parametric Morphism (A : Type) : (@inclusion A)
   with signature (same_relation A) ==> (same_relation A) ==> iff
@@ -245,9 +245,14 @@ Add Parametric Morphism (A : Type) : (@inclusion A)
 Proof.
 intros x y x_eq_y x' y' x'_eq_y'. destruct x_eq_y. destruct x'_eq_y'.
 split; intro.
-trans x; try assumption. trans x'; assumption.
-trans y; try assumption. trans y'; assumption.
+trans x; try hyp. trans x'; hyp.
+trans y; try hyp. trans y'; hyp.
 Qed.
+
+Add Parametric Relation (A : Type) : (relation A) (@inclusion A)
+  reflexivity proved by (@inclusion_refl A)
+  transitivity proved by (@inclusion_trans A)
+    as inclusion_rel.
 
 (***********************************************************************)
 (** irreflexive *)
@@ -294,29 +299,43 @@ Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
 
 Definition absorb A (R S : relation A) := S @ R << R.
 
+Add Parametric Morphism (A : Type) : (@compose A)
+  with signature
+    (@inclusion A) ==> (@inclusion A) ==> (@inclusion A)
+  as incl_comp.
+
+Proof.
+intros R R' S S' h1 h2. unfold inclusion, compose. intros. do 2 destruct H.
+exists x0. auto.
+Qed.
+
+Ltac comp := apply incl_comp; try inclusion_refl.
+
+Add Parametric Morphism (A : Type) : (@compose A)
+  with signature
+    (same_relation A) ==> (same_relation A) ==> (same_relation A)
+  as compose_morph.
+
+Proof.
+unfold same_relation. intuition; comp; hyp.
+Qed.
+
 Section compose.
 
 Variables (A : Type) (R R' S S' : relation A).
 
-Lemma incl_comp : R << R' -> S << S' -> R @ S << R' @ S'.
-
-Proof.
-intros h1 h2. unfold inclusion, compose. intros. do 2 destruct H.
-exists x0. auto.
-Qed.
-
 Lemma comp_assoc : forall T, (R @ S) @ T << R @ (S @ T).
 
 Proof.
-unfold inclusion. intros. do 4 destruct H. exists x1; split. assumption.
-exists x0; split; assumption.
+unfold inclusion. intros. do 4 destruct H. exists x1; split. hyp.
+exists x0; split; hyp.
 Qed.
 
 Lemma comp_assoc' : forall T, R @ (S @ T) << (R @ S) @ T.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
-exists x1; split. exists x0; split; assumption. exact H1.
+exists x1; split. exists x0; split; hyp. exact H1.
 Qed.
 
 Lemma comp_rtc_incl : R @ S << S -> R# @ S << S.
@@ -328,8 +347,6 @@ Qed.
 
 End compose.
 
-Ltac comp := apply incl_comp; try inclusion_refl.
-
 Ltac assoc :=
   match goal with
     | |- (?s @ ?t) @ ?u << _ => trans (s @ (t @ u)); try apply comp_assoc
@@ -338,15 +355,6 @@ Ltac assoc :=
     | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
   end.
 
-Add Parametric Morphism (A : Type) : (@compose A)
-  with signature
-    (same_relation A) ==> (same_relation A) ==> (same_relation A)
-  as compose_morph.
-
-Proof.
-unfold same_relation. intuition; comp; assumption.
-Qed.
-
 (***********************************************************************)
 (** reflexive closure *)
 
@@ -354,6 +362,22 @@ Definition clos_refl A (R : relation A) : relation A :=
   fun x y => x = y \/ R x y.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
+
+Add Parametric Morphism (A : Type) : (@clos_refl A)
+  with signature (@inclusion A) ==> (@inclusion A)
+  as incl_rc.
+
+Proof.
+intro. unfold clos_refl, inclusion. intros. destruct H0; auto.
+Qed.
+
+Add Parametric Morphism (A : Type)  : (@clos_refl A)
+  with signature (same_relation A) ==> (same_relation A)
+  as clos_refl_morph.
+
+Proof.
+unfold same_relation. intuition; apply incl_rc; hyp.
+Qed.
 
 Section clos_refl.
 
@@ -368,8 +392,8 @@ Qed.
 Lemma rc_trans : transitive R -> transitive (R%).
 
 Proof.
-intro. unfold transitive, clos_refl. intros. decomp H0. subst y. assumption.
-decomp H1. subst z. auto. right. apply H with (y := y); assumption.
+intro. unfold transitive, clos_refl. intros. decomp H0. subst y. hyp.
+decomp H1. subst z. auto. right. apply H with (y := y); hyp.
 Qed.
 
 Lemma rc_incl : R << R%.
@@ -378,24 +402,28 @@ Proof.
 unfold inclusion, clos_refl. auto.
 Qed.
 
-Lemma incl_rc : R << S -> R% << S%.
-
-Proof.
-intro. unfold clos_refl, inclusion. intros. destruct H0; auto.
-Qed.
-
 End clos_refl.
-
-Add Parametric Morphism (A : Type)  : (@clos_refl A)
-  with signature (same_relation A) ==> (same_relation A)
-  as clos_refl_morph.
-
-Proof.
-unfold same_relation. intuition; apply incl_rc; assumption.
-Qed.
 
 (***********************************************************************)
 (** transitive closure *)
+
+Add Parametric Morphism (A : Type) : (@clos_trans A)
+  with signature (@inclusion A) ==> (@inclusion A)
+  as incl_tc.
+
+Proof.
+intros R R' H t u H0. elim H0; intros.
+apply t_step. apply H. exact H1.
+apply t_trans with (y := y); hyp.
+Qed.
+
+Add Parametric Morphism (A : Type) : (@clos_trans A)
+  with signature (same_relation A) ==> (same_relation A)
+  as clos_trans_morph.
+
+Proof.
+unfold same_relation. intuition; apply incl_tc; hyp.
+Qed.
 
 Section clos_trans.
 
@@ -410,14 +438,14 @@ Qed.
 Lemma tc_trans : transitive (R!).
 
 Proof.
-unfold transitive. intros. apply t_trans with (y := y); assumption.
+unfold transitive. intros. apply t_trans with (y := y); hyp.
 Qed.
 
 Lemma tc_transp : forall x y, R! y x -> (transp R)! x y.
 
 Proof.
 induction 1.
-apply t_step. assumption.
+apply t_step. hyp.
 eapply t_trans. apply IHclos_trans2. apply IHclos_trans1.
 Qed.
 
@@ -426,15 +454,7 @@ Lemma tc_incl_rtc : R! << R#.
 Proof.
 unfold inclusion. intros. elim H; intros.
 apply rt_step. exact H0.
-apply rt_trans with (y := y0); assumption.
-Qed.
-
-Lemma incl_tc : R << S -> R! << S!.
-
-Proof.
-intro. unfold inclusion. intros. elim H0; intros.
-apply t_step. apply H. exact H1.
-apply t_trans with (y := y0); assumption.
+apply rt_trans with (y := y0); hyp.
 Qed.
 
 Lemma tc_split : R! << R @ R#.
@@ -443,15 +463,14 @@ Proof.
 unfold inclusion. induction 1. exists y. split. exact H. apply rt_refl.
 destruct IHclos_trans1. destruct H1. exists x0. split. exact H1.
 apply rt_trans with (y := y). exact H2. 
-apply incl_elim with (R := R!). apply tc_incl_rtc. exact H0.
+apply inclusion_elim with (R := R!). apply tc_incl_rtc. exact H0.
 Qed.
-
 
 Lemma trans_tc_incl : transitive R -> R! << R.
 
 Proof.
-unfold transitive, inclusion. intros. induction H0. assumption. 
-apply H with y; assumption.
+unfold transitive, inclusion. intros. induction H0. hyp. 
+apply H with y; hyp.
 Qed.
 
 Lemma comp_tc_incl : R @ S << S -> R! @ S << S.
@@ -465,7 +484,7 @@ Lemma comp_incl_tc : R @ S << S -> R @ S! << S!.
 
 Proof.
 intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
-induction 1; intros. apply t_step. apply H. exists x1; split; assumption.
+induction 1; intros. apply t_step. apply H. exists x1; split; hyp.
 apply t_trans with (y := y0); auto.
 Qed.
 
@@ -478,23 +497,32 @@ Qed.
 Lemma tc_idem : R! @ R! << R!.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; assumption.
+unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; hyp.
 Qed.
 
 End clos_trans.
 
-Definition clos_trans : forall A, relation A -> relation A := clos_trans.
-
-Add Parametric Morphism (A : Type) : (@clos_trans A)
-  with signature (same_relation A) ==> (same_relation A)
-  as clos_trans_morph.
-
-Proof.
-unfold same_relation. intuition; apply incl_tc; assumption.
-Qed.
-
 (***********************************************************************)
 (** reflexive transitive closure *)
+
+Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
+  with signature (@inclusion A) ==> (@inclusion A)
+  as incl_rtc.
+
+Proof.
+intro. unfold inclusion. intros. elim H0; intros.
+apply rt_step. apply H. hyp.
+apply rt_refl.
+eapply rt_trans. apply H2. hyp.
+Qed.
+
+Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
+  with signature (same_relation A) ==> (same_relation A)
+  as clos_refl_trans_morph.
+
+Proof.
+unfold same_relation. intuition; apply incl_rtc; hyp.
+Qed.
 
 Section clos_refl_trans.
 
@@ -515,7 +543,7 @@ Qed.
 Lemma rtc_trans : transitive (R#).
 
 Proof.
-unfold transitive. intros. eapply rt_trans. apply H. assumption.
+unfold transitive. intros. eapply rt_trans. apply H. hyp.
 Qed.
 
 Lemma rc_incl_rtc : R% << R#.
@@ -529,13 +557,13 @@ Lemma rtc_split : R# << @eq A U R!.
 
 Proof.
 unfold inclusion, union. intros. elim H.
-intros. right. apply t_step. assumption.
+intros. right. apply t_step. hyp.
 intro. left. reflexivity.
 intros. destruct H1; destruct H3.
-left. transitivity y0; assumption.
-subst y0. right. assumption.
-subst y0. right. assumption.
-right. apply t_trans with (y := y0); assumption.
+left. transitivity y0; hyp.
+subst y0. right. hyp.
+subst y0. right. hyp.
+right. apply t_trans with (y := y0); hyp.
 Qed.
 
 Lemma rtc_split2 : R# << @eq A U R @ R#.
@@ -555,24 +583,24 @@ Proof.
 intros x y RRxy. destruct RRxy as [z [Rxz Rzy]].
 destruct (rtc_split Rxz).
 rewrite H. intuition.
-constructor 2 with z. assumption.
-constructor 1. assumption.
+constructor 2 with z. hyp.
+constructor 1. hyp.
 Qed.
 
 Lemma tc_merge : R @ R# << R!.
 Proof.
 unfold inclusion. intros. destruct H. destruct H.
 ded (rtc_split H0). destruct H1; subst.
-apply t_step;assumption.
+apply t_step;hyp.
 eapply t_trans. apply t_step.
-eassumption. assumption.
+eassumption. hyp.
 Qed.
 
 Lemma rtc_transp : transp (R#) << (transp R)#.
 
 Proof.
 unfold inclusion. induction 1.
-apply rt_step. assumption.
+apply rt_step. hyp.
 apply rt_refl.
 eapply rt_trans. apply IHclos_refl_trans2. apply IHclos_refl_trans1.
 Qed.
@@ -581,41 +609,42 @@ Lemma incl_rtc_rtc : R << S# -> R# << S#.
 
 Proof.
 unfold inclusion. induction 2.
-apply H. assumption.
+apply H. hyp.
 constructor 2.
-constructor 3 with y; assumption.
-Qed.
-
-Lemma incl_rtc : R << S -> R# << S#.
-
-Proof.
-intro. unfold inclusion. intros. elim H0; intros.
-apply rt_step. apply H. assumption.
-apply rt_refl.
-eapply rt_trans. apply H2. assumption.
+constructor 3 with y; hyp.
 Qed.
 
 Lemma rtc_idem : R# @ R# << R#.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; assumption.
+unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; hyp.
 Qed.
 
 End clos_refl_trans.
 
-Definition clos_refl_trans : forall A, relation A -> relation A :=
-  clos_refl_trans.
+Section clos_refl_trans2.
 
-Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
-  with signature (same_relation A) ==> (same_relation A)
-  as clos_refl_trans_morph.
+Variables (A : Type) (R S : relation A).
+
+Lemma rtc_invol : forall, R # # == R #.
 
 Proof.
-unfold same_relation. intuition; apply incl_rtc; assumption.
+split. intros x y. induction 1. hyp. apply rt_refl. apply rt_trans with y; hyp.
+apply rtc_incl.
 Qed.
+
+End clos_refl_trans2.
 
 (***********************************************************************)
 (** inverse/transp *)
+
+Add Parametric Morphism (A : Type) : (@transp A)
+  with signature (@inclusion A) ==> (@inclusion A)
+  as incl_transp.
+
+Proof.
+intros R S. unfold inclusion, transp. auto.
+Qed.
 
 Section transp.
 
@@ -645,12 +674,6 @@ Proof.
 unfold inclusion, transp. auto.
 Qed.
 
-Lemma incl_transp : R << S -> transp R << transp S.
-
-Proof.
-unfold inclusion, transp. auto.
-Qed.
-
 Lemma transp_invol : transp (transp R) == R.
 
 Proof.
@@ -668,17 +691,30 @@ End transp.
 (***********************************************************************)
 (** union *)
 
-Section union.
-
-Variables (A : Type) (R R' S S' T : relation A).
-
-Lemma incl_union : R << R' -> S << S' -> R U S << R' U S'.
+Add Parametric Morphism (A : Type) : (@union A)
+  with signature (@inclusion A) ==> (@inclusion A) ==> (@inclusion A)
+  as incl_union.
 
 Proof.
 intros. unfold inclusion. intros. destruct H1.
-left. apply (incl_elim H). assumption.
-right. apply (incl_elim H0). assumption.
+left. apply (inclusion_elim H). hyp.
+right. apply (inclusion_elim H0). hyp.
 Qed.
+
+Ltac union := apply incl_union; try inclusion_refl.
+
+Add Parametric Morphism (A : Type) : (@union A)
+  with signature
+    (same_relation A) ==> (same_relation A) ==> (same_relation A)
+  as union_morph.
+
+Proof.
+unfold same_relation. intuition; union; hyp.
+Qed.
+
+Section union.
+
+Variables (A : Type) (R R' S S' T : relation A).
 
 Lemma union_commut : R U S << S U R.
 
@@ -705,36 +741,23 @@ Lemma union_distr_comp_inv : (R @ T) U (S @ T) << (R U S) @ T.
 
 Proof.
 intros x y H. destruct H as [[z [Rxz Tzy]] | [z [Sxz Tzy]]].
-exists z. split; [left; assumption | assumption].
-exists z. split; [right; assumption | assumption].
+exists z. split; [left; hyp | hyp].
+exists z. split; [right; hyp | hyp].
 Qed.
 
 Lemma union_empty_r : R U (@empty_rel A) << R.
 
 Proof.
-  intros x y Rxy. destruct Rxy. assumption. contradiction.
+  intros x y Rxy. destruct Rxy. hyp. contradiction.
 Qed.
 
 Lemma union_empty_l : (@empty_rel A) U R << R.
 
 Proof.
-  intros x y Rxy. destruct Rxy. contradiction. assumption.
+  intros x y Rxy. destruct Rxy. contradiction. hyp.
 Qed.
 
 End union.
-
-Ltac union := apply incl_union; try inclusion_refl.
-
-Definition union : forall A, relation A -> relation A -> relation A := union.
-
-Add Parametric Morphism (A : Type) : (@union A)
-  with signature
-    (same_relation A) ==> (same_relation A) ==> (same_relation A)
-  as union_morph.
-
-Proof.
-unfold same_relation. intuition; union; assumption.
-Qed.
 
 (***********************************************************************)
 (** relations between closures, union and composition *)
@@ -766,8 +789,8 @@ Proof.
 unfold inclusion. intros. do 2 destruct H. ded (rtc_split2 H0). destruct H1.
 subst x0. exists x; split. apply rt_refl. exact H.
 do 4 destruct H1. exists y; split. apply rt_trans with (y := x1).
-apply rt_step. exists x2; split. apply rt_trans with (y := x0); assumption.
-assumption. assumption. apply rt_refl.
+apply rt_step. exists x2; split. apply rt_trans with (y := x0); hyp.
+hyp. hyp. apply rt_refl.
 Qed.
 
 Lemma rtc_union : (R U S)# << (R# @ S)# @ R#.
@@ -783,18 +806,18 @@ exists x0; split; apply rt_refl.
 (* trans *)
 do 2 destruct H1. do 2 destruct H3.
 assert (h : ((R# @ S)# @ clos_refl_trans R) x1 x2).
-apply incl_elim with (R := (R# @ clos_refl_trans (R# @ S))).
-apply rtc_comp_permut. exists y0; split; assumption.
+apply inclusion_elim with (R := (R# @ clos_refl_trans (R# @ S))).
+apply rtc_comp_permut. exists y0; split; hyp.
 destruct h. destruct H6. exists x3; split.
-apply rt_trans with (y := x1); assumption.
-apply rt_trans with (y := x2); assumption.
+apply rt_trans with (y := x1); hyp.
+apply rt_trans with (y := x2); hyp.
 Qed.
 
 Lemma rtc_comp : R# @ S << S U R! @ S.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. ded (rtc_split H). destruct H1.
-subst x0. left. exact H0. right. exists x0; split; assumption.
+subst x0. left. exact H0. right. exists x0; split; hyp.
 Qed.
 
 Lemma union_fact : R U R @ S << R @ S%.
@@ -815,14 +838,14 @@ Lemma incl_rc_rtc : R << S! -> R% << S#.
 
 Proof.
 intro. unfold inclusion. intros. destruct H0. subst y. apply rt_refl.
-apply incl_elim with (R := S!). apply tc_incl_rtc. apply H. exact H0.
+apply inclusion_elim with (R := S!). apply tc_incl_rtc. apply H. exact H0.
 Qed.
 
 Lemma incl_tc_rtc : R << S# -> R! << S#.
 
 Proof.
 intro. unfold inclusion. induction 1. apply H. exact H0.
-apply rt_trans with (y := y); assumption.
+apply rt_trans with (y := y); hyp.
 Qed.
 
 End properties.
@@ -837,9 +860,9 @@ Proof.
 unfold inclusion. intros. do 2 destruct H.
 ded (tc_incl_step_rtc H0). do 2 destruct H1. do 2 destruct H1.
 ded (rtc_split H2). destruct H4. subst x1.
-apply t_step. exists x2. intuition. apply rt_trans with x0; assumption.
+apply t_step. exists x2. intuition. apply rt_trans with x0; hyp.
 apply t_trans with x1. apply t_step. exists x2. intuition.
-apply rt_trans with x0; assumption. exact H4.
+apply rt_trans with x0; hyp. exact H4.
 Qed.
 
 Lemma tc_union : (R U S)! << R! U (R# @ S)! @ R#.
@@ -848,7 +871,7 @@ Proof.
 unfold inclusion. induction 1. destruct H. left. apply t_step. exact H.
 right. exists y. intuition. apply t_step. exists x. intuition.
 destruct IHclos_trans1. destruct IHclos_trans2.
-left. apply t_trans with y; assumption.
+left. apply t_trans with y; hyp.
 right. do 2 destruct H2. exists x0. intuition.
 apply rtc_comp_modulo. exists y. intuition. apply tc_incl_rtc. exact H1.
 right. do 2 destruct H1. destruct IHclos_trans2. exists x0.
@@ -876,7 +899,7 @@ do 2 destruct H1. exists x0. intuition.
 exists y. intuition.
 ded (IHclos_refl_trans2 _ H1). do 2 destruct H2.
 ded (IHclos_refl_trans1 _ H2). do 2 destruct H4.
-exists x1. intuition. apply rt_trans with x0; assumption.
+exists x1. intuition. apply rt_trans with x0; hyp.
 Qed.
 
 End commut.
@@ -900,7 +923,7 @@ Lemma Rof_trans : transitive R -> transitive Rof.
 
 Proof.
 intro. unfold transitive, Rof. intros. unfold transitive in H.
-apply H with (y := f y); assumption.
+apply H with (y := f y); hyp.
 Qed.
 
 Variable F : A -> B -> Prop.
@@ -967,7 +990,7 @@ Lemma clos_refl_trans1_trans : forall x y z, R#1 x y -> R#1 y z -> R#1 x z.
 Proof.
   intros x y z.
   induction 1; intro H1.
-  assumption.
+  hyp.
   exact (rt1_trans x H (IHclos_refl_trans1 H1)).
 Qed.
 
@@ -990,8 +1013,8 @@ Lemma incl_t_rt : R!1 << R#1.
 Proof.
   intros x y xRy.
   induction xRy.
-  apply rt1_trans with y. assumption. apply rt1_refl.
-  apply rt1_trans with y; assumption.
+  apply rt1_trans with y. hyp. apply rt1_refl.
+  apply rt1_trans with y; hyp.
 Qed.
 
 Lemma incl_rt_rt_rt : R#1 @ R#1 << R#1.
@@ -999,8 +1022,8 @@ Lemma incl_rt_rt_rt : R#1 @ R#1 << R#1.
 Proof.
   intros x y [z [xRz zRy]].
   induction xRz. trivial.
-  apply rt1_trans with y0. assumption. 
-  apply IHxRz. assumption.
+  apply rt1_trans with y0. hyp. 
+  apply IHxRz. hyp.
 Qed.
 
 End alternative_definition_clos_refl_trans.
@@ -1027,12 +1050,12 @@ Proof.
   exists o. split; trivial.
   induction xRSy as [xRy | xSy].
   apply rt1_trans with m.
-  exists x. split. apply rt1_refl. assumption.
+  exists x. split. apply rt1_refl. hyp.
   apply clos_refl_trans1_trans with n; trivial.
   apply rt1_trans with n; trivial. apply rt1_refl.
   apply rt1_trans with n.
   destruct mn as [q [mq qn]]. exists q. split; trivial.
-  apply rt1_trans with m; assumption. assumption.
+  apply rt1_trans with m; hyp. hyp.
 Qed.
 
 Lemma union_rel_rt_left : R#1 << (R U S)#1.
@@ -1040,7 +1063,7 @@ Lemma union_rel_rt_left : R#1 << (R U S)#1.
 Proof.
   intros x y xRy.
   induction xRy. apply rt1_refl.
-  apply rt1_trans with y. left. assumption. assumption.
+  apply rt1_trans with y. left. hyp. hyp.
 Qed.
 
 Lemma union_rel_rt_right : S#1 << (R U S)#1.
@@ -1048,7 +1071,7 @@ Lemma union_rel_rt_right : S#1 << (R U S)#1.
 Proof.
   intros x y xRy.
   induction xRy. apply rt1_refl.
-  apply rt1_trans with y. right. assumption. assumption.
+  apply rt1_trans with y. right. hyp. hyp.
 Qed.
 
 Lemma incl_rtunion_union : (R!1 U S!1)#1 << (R U S)#1.
@@ -1058,8 +1081,8 @@ Proof.
   induction xRy. apply rt1_refl.
   apply clos_refl_trans1_trans with y; trivial.
   destruct H.
-  apply union_rel_rt_left. apply incl_t_rt. assumption.
-  apply union_rel_rt_right. apply incl_t_rt. assumption.
+  apply union_rel_rt_left. apply incl_t_rt. hyp.
+  apply union_rel_rt_right. apply incl_t_rt. hyp.
 Qed.
 
 End alternative_inclusion.
@@ -1073,7 +1096,7 @@ Proof.
   apply clos_refl_trans1_trans with y; trivial.
   destruct H.
   apply union_rel_rt_left. apply rt1_trans with y.
-  apply t1_step. assumption. apply rt1_refl.
+  apply t1_step. hyp. apply rt1_refl.
   apply union_rel_rt_right. apply rt1_trans with y.
-  apply t1_step. assumption. apply rt1_refl.
+  apply t1_step. hyp. apply rt1_refl.
 Qed.
