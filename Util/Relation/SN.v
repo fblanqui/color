@@ -195,7 +195,7 @@ Lemma SN_compat_inv : forall x,
 
 Proof.
 intros. apply SN_intro. intros. do 2 destruct H1. assert (h : (R @ E) x y).
-exists x0; split. apply (incl_elim Hcomp). exists x'; split; assumption.
+exists x0; split. apply (inclusion_elim Hcomp). exists x'; split; assumption.
 assumption. apply (SN_inv H). exact h.
 Qed.
 
@@ -329,7 +329,7 @@ Lemma SN_tc : forall x, SN R x -> SN (R!) x.
 Proof.
 induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
 apply SN_rtc with (x := x0). apply H0. exact H2.
-apply incl_elim with (R := R#). apply incl_rtc. apply tc_incl.
+apply inclusion_elim with (R := R#). apply incl_rtc. apply tc_incl.
 exact H3.
 Qed.
 
@@ -494,7 +494,7 @@ Proof.
 intros. elim H; intros. do 2 (apply SN_intro; intros). destruct n.
 simpl in *. apply H1. exists y. intuition.
 assert ((iter R (S (S n)) @ iter R n) x0 y0).
-apply incl_elim with (R := iter R (S n) @ iter R (S n)).
+apply inclusion_elim with (R := iter R (S n) @ iter R (S n)).
 trans (iter R (S n+S n+1)). apply iter_iter.
 assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
 exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
