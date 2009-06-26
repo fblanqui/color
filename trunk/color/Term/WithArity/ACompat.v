@@ -66,7 +66,7 @@ Lemma compat_red_mod_tc : forall R E,
 
 Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
-apply incl_rtc. apply compat_red; assumption. apply compat_red; assumption.
+apply incl_rtc. apply compat_red; hyp. apply compat_red; hyp.
 apply rtc_step_incl_tc.
 Qed.
 
@@ -91,7 +91,7 @@ Lemma compat_app : forall R R',
 
 Proof.
 intros R R' Rsucc R'succ l r lr. destruct (in_app_or lr).
-apply Rsucc. assumption. apply R'succ. assumption.
+apply Rsucc. hyp. apply R'succ. hyp.
 Qed.
 
 Definition compat_rule a := match a with mkRule l r => succ l r end.
@@ -155,7 +155,7 @@ Lemma compat_red_mod : forall R E,
 
 Proof.
 intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
-apply compat_red; assumption. destruct H0. apply compat_red; assumption.
+apply compat_red; hyp. destruct H0. apply compat_red; hyp.
 apply comp_rtc_incl. exact H3.
 Qed.
 
@@ -175,7 +175,7 @@ Lemma compat_hd_red_mod : forall R E,
 
 Proof.
 intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
-apply compat_red; assumption. apply compat_hd_red; assumption.
+apply compat_red; hyp. apply compat_hd_red; hyp.
 apply comp_rtc_incl. exact H3.
 Qed.
 
@@ -185,7 +185,7 @@ Lemma compat_hd_red_mod_min : forall R E,
   absorb succ succ_eq -> hd_red_mod_min E R << succ.
 
 Proof.
-intros. apply incl_trans with (hd_red_mod E R).
+intros. apply inclusion_trans with (hd_red_mod E R).
 apply hd_red_mod_min_incl.
 apply compat_hd_red_mod; auto.
 Qed.
@@ -220,7 +220,7 @@ Section rule_partition.
     set (w := partition_left
       (fun r => partition_by_rel succ_dec (lhs r, rhs r))). simpl in w.
     change l with (lhs (mkRule l r)). change r with (rhs (mkRule l r)).
-    apply w with rs. assumption.
+    apply w with rs. hyp.
   Qed.
 
   Lemma rule_partition_compat : forall succ (succ_dec : rel_dec succ),
@@ -232,7 +232,7 @@ Section rule_partition.
     apply partition_by_rel_true with term succ_dec.
     apply rule_partition_left with R.
     destruct (partition_complete (rule_partition succ_dec) (mkRule l r) R).
-    assumption. assumption. rewrite H in H0. destruct H0.
+    hyp. hyp. rewrite H in H0. destruct H0.
   Qed.
 
   Lemma rule_partition_complete : forall pf (R : rules),
@@ -251,7 +251,7 @@ Section rule_partition.
   Proof.
     clear R. intros. trans (hd_red (fst part ++ snd part)).
     apply hd_red_incl. unfold incl. intros.
-    destruct (partition_complete pf a R). assumption.
+    destruct (partition_complete pf a R). hyp.
     apply in_or_app. auto.
     apply in_or_app. auto.
     apply hd_red_union.

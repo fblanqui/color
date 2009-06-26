@@ -213,8 +213,8 @@ Lemma sub_rel_try_add_arc_one_to_many : forall x l,
 
 Proof.
 induction l; simpl; intros. apply inclusion_refl. 
-apply incl_trans with (try_add_arc_one_to_many x l). assumption. 
-apply incl_trans with (try_add_arc (try_add_arc_one_to_many x l) x a).
+apply inclusion_trans with (try_add_arc_one_to_many x l). assumption. 
+apply inclusion_trans with (try_add_arc (try_add_arc_one_to_many x l) x a).
 apply sub_rel_try_add_arc. apply tc_incl. 
 Qed. 
 
@@ -297,7 +297,7 @@ Lemma sub_rel_try_add_arc_many_to_many : forall l l',
 
 Proof. 
 induction l'; simpl; intros. apply inclusion_refl. 
-apply incl_trans with (try_add_arc_many_to_many l' l). assumption. 
+apply inclusion_trans with (try_add_arc_many_to_many l' l). assumption. 
 apply sub_rel_try_add_arc_one_to_many. 
 Qed.
 
@@ -382,7 +382,7 @@ Lemma LETS_sub_rel : (restriction R l) << LETS.
 
 Proof.
 intros. unfold LETS.
-apply incl_trans with (clos_trans (restriction R l)). 
+apply inclusion_trans with (clos_trans (restriction R l)). 
 apply tc_incl. apply  LETS_restriction_clos_trans. 
 Qed.
 

@@ -79,7 +79,8 @@ Lemma tc_iter : R! << Iter.
 Proof.
 unfold inclusion. induction 1; simpl; intros. exists 0. auto.
 destruct IHclos_trans1. destruct IHclos_trans2. intuition.
-exists (x0+x1+1). intuition. eapply incl_elim. apply iter_iter. exists y. auto.
+exists (x0+x1+1). intuition. eapply inclusion_elim. apply iter_iter.
+exists y. auto.
 Qed.
 
 Lemma Iter_split : forall n, Iter << iter_le n U Iter_ge (S n).
@@ -111,7 +112,7 @@ Lemma iter_Iter_ge_commut : forall n p,
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
-assert ((iter x1 @ iter n) x y). eapply incl_elim. apply iter_commut.
+assert ((iter x1 @ iter n) x y). eapply inclusion_elim. apply iter_commut.
 exists x0. intuition. do 2 destruct H2. exists x2. intuition.
 exists x1. intuition.
 Qed.

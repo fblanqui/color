@@ -23,7 +23,7 @@ Lemma SN_compat : forall a, SN gtA a -> forall a', eqA a a' -> SN gtA a'.
 
 Proof.
 intros a SN_a a' eqaa'. apply SN_intro. intros a'' gta'a''.
-inversion SN_a. apply H. apply (incl_elim Hcomp). exists a'. auto.
+inversion SN_a. apply H. apply (inclusion_elim Hcomp). exists a'. auto.
 Qed.
 
 Variable (B : Type) (gtB : relation B).
@@ -48,7 +48,7 @@ Lemma lexp_SN_eq : forall a b,
 Proof.
 intros a b SN_ab a' eqaa'. inversion SN_ab. apply SN_intro.
 destruct y as (a'',b'). intro H'. inversion H'; subst a'0 b'0 a0 b0; apply H.
-apply lexp1. apply (incl_elim Hcomp). exists a'. auto.
+apply lexp1. apply (inclusion_elim Hcomp). exists a'. auto.
 apply lexp2. apply (eqA_trans eqaa' H4). exact H6.
 Qed.
 
