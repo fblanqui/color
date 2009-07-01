@@ -107,6 +107,36 @@ refl.
 apply Vcons_eq_intro; hyp.
 Qed.
 
+Require Import VecMax.
+
+Lemma lab_fval : forall v t n, n > maxvar t -> lab (fval v n) t = lab v t.
+
+Proof.
+intros v t. pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
+  forall n, n > maxvars ts -> Vmap (lab v) ts = Vmap (lab (fval v n)) ts);
+  clear t; simpl; intros.
+(* Var *)
+refl.
+(* Fun *)
+rewrite (H n). assert (Vmap (int v) v0 = Vmap (int (fval v n)) v0).
+apply Vmap_eq. apply Vforall_intro. intros. apply term_int_eq_fval_lt.
+apply le_lt_trans with (Vmax (Vmap (@maxvar Sig) v0)). apply Vmax_in.
+apply Vin_map_intro. hyp. hyp. rewrite H1. refl. unfold maxvars. omega.
+(* Vnil *)
+refl.
+(* Vcons *)
+rewrite maxvars_cons in H1. rewrite gt_max in H1. destruct H1.
+rewrite (H0 n0). 2: hyp. rewrite (H n0). 2: hyp. refl.
+Qed.
+
+Lemma lab_rule_fval : forall v a n,
+  n > maxvar_rule a -> lab_rule (fval v n) a = lab_rule v a.
+
+Proof.
+intros v [l r] n. simpl. rewrite gt_max. intuition.
+rewrite lab_fval. 2: hyp. rewrite lab_fval. 2: hyp. refl.
+Qed.
+
 (***********************************************************************)
 (** ordering of labels *)
 
@@ -189,7 +219,7 @@ refl. apply args_eq. rewrite Vmap_map. rewrite H. apply Vcast_refl.
 refl. rewrite H. rewrite H0. refl.
 Qed.
 
-Lemma Frs_iso : forall R : rules, Frs HF (lab_rules R) === R.
+Lemma Frs_iso : forall R : rules, Frs HF (lab_rules R) [=] R.
 
 Proof.
 intros R [l r]. split.
@@ -240,7 +270,7 @@ Qed.
 
 Variable Dge : relation I. Infix ">=D" := Dge (at level 50).
 
-Let ge := IR I Dge. Infix ">=" := ge.
+Let Ige := IR I Dge. Infix ">=I" := Ige (at level 70).
 
 Variable pi_mon : forall f, Vmonotone (pi f) Dge Lge.
 Variable I_mon : forall f, Vmonotone1 (fint I f) Dge.
@@ -249,7 +279,7 @@ Section red.
 
 Variable R : rules. Notation R' := (lab_rules R).
 
-Variable ge_compat : forall l r, R (mkRule l r) -> l >= r.
+Variable ge_compat : forall l r, R (mkRule l r) -> l >=I r.
 
 Lemma red_lab : forall v t u,
   red R t u -> red_mod Decr R' (lab v t) (lab v u).
@@ -314,8 +344,8 @@ Section red_mod.
 Variables E R : rules.
 Notation E' := (lab_rules E). Notation R' := (lab_rules R).
 
-Variable ge_compatE : forall l r, E (mkRule l r) -> l >= r.
-Variable ge_compatR : forall l r, R (mkRule l r) -> l >= r.
+Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
+Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
 
 Lemma red_mod_lab : forall v t u,
   red_mod E R t u -> red_mod (Decr ++ E') R' (lab v t) (lab v u).
@@ -345,5 +375,85 @@ apply WF_inverse. hyp.
 Qed.
 
 End red_mod.
+
+(***********************************************************************)
+(** enumeration of labelled rules for a finite domain *)
+
+Section enum.
+
+Require Import ListUtil.
+
+Notation rules := (list rule).
+
+Variable Is : list I.
+Variable Is_ok : forall x : I, In x Is.
+
+Fixpoint enum_tuple n : list (vector I n) :=
+  match n with
+    | 0 => cons Vnil nil
+    | S p => flat_map (fun ds => map (fun d => Vcons d ds) Is) (enum_tuple p)
+  end.
+
+Lemma enum_tuple_complete : forall n (ds : vector I n), In ds (enum_tuple n).
+
+Proof.
+induction n; simpl; intros. VOtac. auto.
+eapply In_flat_map_intro. apply (IHn (Vtail ds)).
+set (f := fun d : I => Vcons d (Vtail ds)).
+VSntac ds. change (In (f (Vhead ds)) (map f Is)). apply in_map. apply Is_ok.
+Qed.
+
+(*Fixpoint enum_tuple2 n : list (vector I n) :=
+  match n with
+    | 0 => nil
+    | S p =>
+      fold_left (fun e ds => fold_left (fun e d => Vcons d ds :: e) Is e)
+      (enum_tuple2 p) nil
+  end.*)
+
+Definition enum R :=
+  flat_map (fun ds => map (lab_rule (val_of_vec I ds)) R)
+  (enum_tuple (S (maxvar_rules R))).
+
+Notation fold_max := (@fold_max Sig).
+
+Require Import Max.
+
+Lemma map_lab_rule_fval : forall v R n,
+  n > maxvar_rules R -> map (lab_rule (fval v n)) R = map (lab_rule v) R.
+
+Proof.
+induction R; simpl; intros. refl. unfold maxvar_rules in H. simpl in H.
+rewrite lab_rule_fval. rewrite IHR. refl.
+apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
+apply maxvar_rules_init_mon. apply le_max_l. hyp.
+apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
+apply maxvar_rules_init. hyp.
+Qed.
+
+Lemma enum_complete : forall R a, lab_rules (Rules R) a -> In a (enum R).
+
+Proof.
+induction R.
+(* nil *)
+firstorder.
+(* cons *)
+intros. do 3 destruct H. set (n := maxvar_rules (a::R)).
+apply In_flat_map_intro with (y := vec_of_val x0 (S n)).
+  apply enum_tuple_complete.
+subst. change (In (lab_rule x0 x) (map (lab_rule (fval x0 (S n))) (a::R))).
+rewrite map_lab_rule_fval. apply in_map. hyp. unfold n. omega.
+Qed.
+
+(*Definition enum2 R :=
+  let n := maxvar_rules R in
+    fold_left (fun e ds =>
+      let v := val_of_vec I ds in
+        fold_left (fun e (a : rule) => let (l,r) := a in
+          mkRule (lab v l) (lab v r) :: e)
+        R e)
+    (enum_tuple n) nil.*)
+
+End enum.
 
 End S.
