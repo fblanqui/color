@@ -1,4 +1,6 @@
 
+- precedence termination
+
 - define rules as (rule->Prop) instead of (list rule)
 
 - unify Arctic and Arctic-Below-Zero methods
