@@ -293,7 +293,7 @@ Fixpoint make_repeat_free l :=
 Lemma make_repeat_free_correct : forall l, repeat_free (make_repeat_free l).
 
 Proof.
-induction l. simpl; auto. simpl. split. apply notin_remove.
+induction l. simpl; auto. simpl. split. unfold not. apply notin_remove.
 eapply repeat_free_remove; eauto.
 Qed.
 

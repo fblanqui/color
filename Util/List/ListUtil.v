@@ -484,42 +484,66 @@ Ltac intac := repeat (apply in_eq || apply in_cons).
 (***********************************************************************)
 (** inclusion *)
 
+Infix "[=" := incl (at level 70).
+
+Require Import Setoid.
+
+Add Parametric Relation (A : Type) : (list A) (@incl A)
+  reflexivity proved by (@incl_refl A)
+  transitivity proved by (@incl_tran A)
+    as incl_rel.
+
+Add Parametric Morphism (A : Type) : (@app A)
+  with signature (@incl A) ==> (@incl A) ==> (@incl A)
+    as app_incl.
+
+Proof.
+intros. unfold incl. intro. repeat rewrite in_app. intuition.
+Qed.
+
 Section incl.
 
 Variable A : Type.
 
-Lemma incl_nil : forall l : list A, incl nil l.
+Lemma incl_nil_elim : forall l : list A, l [= nil <-> l = nil.
+
+Proof.
+unfold incl. destruct l; intuition. assert (In a (a::l)). left. refl.
+ded (H _ H0). contradiction. discr.
+Qed.
+
+Lemma incl_nil : forall l : list A, nil [= l.
 
 Proof.
 induction l. apply incl_refl. apply incl_tl. assumption.
 Qed.
 
-Lemma incl_cons_l : forall (a : A) l m, incl (a :: l) m -> In a m /\ incl l m.
+Lemma incl_cons_l : forall (a : A) l m, a :: l [= m -> In a m /\ l [= m.
 
 Proof.
 intros a l m. unfold incl. simpl. intuition.
 Qed.
 
-Lemma incl_cons_l_in : forall (x : A) l m, incl (x :: l) m -> In x m.
+Lemma incl_cons_l_in : forall (x : A) l m, x :: l [= m -> In x m.
 
 Proof.
 unfold incl. simpl. intros. apply H. left. refl.
 Qed.
 
-Lemma incl_cons_l_incl : forall (x : A) l m, incl (x :: l) m -> incl l m.
+Lemma incl_cons_l_incl : forall (x : A) l m, x :: l [= m -> l [= m.
 
 Proof.
 unfold incl. simpl. intros. apply H. tauto.
 Qed.
 
-Lemma incl_double_cons : forall (x : A) l l', incl l l' -> incl (x::l) (x::l').
+Lemma incl_double_cons : forall (x : A) l l', l [= l' -> x::l [= x::l'.
 
 Proof.
 unfold incl. simpl. intros. pose (H a). tauto. 
 Qed.
 
 Lemma incl_app_elim : forall l1 l2 l3 : list A,
-  incl (l1 ++ l2) l3 -> incl l1 l3 /\ incl l2 l3.
+  l1 ++ l2 [= l3 -> l1 [= l3 /\ l2 [= l3.
 
 Proof.
 intuition.
@@ -527,8 +551,7 @@ apply incl_tran with (l1 ++ l2). apply incl_appl. apply incl_refl. exact H.
 apply incl_tran with (l1 ++ l2). apply incl_appr. apply incl_refl. exact H.
 Qed.
 
-Lemma incl_appr_incl : forall l1 l2 l3 : list A,
-  incl (l1 ++ l2) l3 -> incl l1 l3.
+Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l1 [= l3.
 
 Proof.
 induction l1; simpl; intros. apply incl_nil.
@@ -536,8 +559,7 @@ eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
 apply (incl_appl l2 (incl_refl (a :: l1))).
 Qed.
 
-Lemma incl_appl_incl : forall l1 l2 l3 : list A,
-  incl (l1 ++ l2) l3 -> incl l2 l3.
+Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l2 [= l3.
 
 Proof.
 induction l1; simpl; intros. assumption.
@@ -545,36 +567,26 @@ eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
 apply (incl_appr (a :: l1) (incl_refl l2)).
 Qed.
 
-Lemma app_incl : forall l1 l1' l2 l2' : list A,
-  incl l1 l1' -> incl l2 l2' -> incl (l1 ++ l2) (l1' ++ l2').
-
-Proof.
-intros. unfold incl. intro. repeat rewrite in_app. intuition.
-Qed.
-
-Lemma appl_incl : forall l l2 l2' : list A,
-  incl l2 l2' -> incl (l ++ l2) (l ++ l2').
+Lemma appl_incl : forall l l2 l2' : list A, l2 [= l2' -> l ++ l2 [= l ++ l2'.
 
 Proof.
 intros. apply app_incl. apply incl_refl. exact H.
 Qed.
 
-Lemma appr_incl : forall l l1 l1' : list A,
-  incl l1 l1' -> incl (l1 ++ l) (l1' ++ l).
+Lemma appr_incl : forall l l1 l1' : list A, l1 [= l1' -> l1 ++ l [= l1' ++ l.
 
 Proof.
 intros. apply app_incl. exact H. apply incl_refl.
 Qed.
 
 Lemma app_com_incl : forall l1 l2 l3 l4 : list A,
-  incl ((l1 ++ l3) ++ l2) l4 -> incl ((l1 ++ l2) ++ l3) l4.
+  (l1 ++ l3) ++ l2 [= l4 -> (l1 ++ l2) ++ l3 [= l4.
 
 Proof.
 unfold incl. intros. apply H. apply in_app_com. exact H0.
 Qed.
 
-Lemma incl_cons_r : forall x : A, forall m l,
-  incl l (x :: m) -> In x l \/ incl l m.
+Lemma incl_cons_r : forall x : A, forall m l, l [= x :: m -> In x l \/ l [= m.
 
 Proof.
 induction l; simpl; intros. right. apply incl_nil.
@@ -590,13 +602,31 @@ Implicit Arguments incl_app_elim [A l1 l2 l3].
 Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.
 
 (***********************************************************************)
+(** strict inclusion *)
+
+Definition strict_incl A (l m : list A) := l [= m /\ ~m [= l.
+
+Infix "[" := strict_incl (at level 70).
+
+Lemma strict_incl_tran : forall A (l m n : list A), l [ m -> m [ n -> l [ n.
+
+Proof.
+unfold strict_incl. intuition. transitivity m; hyp.
+apply H2. transitivity n; hyp.
+Qed.
+
+Add Parametric Relation (A : Type) : (list A) (@strict_incl A)
+  transitivity proved by (@strict_incl_tran A)
+    as strict_incl_rel.
+
+(***********************************************************************)
 (** equivalence *)
 
 Section equiv.
 
 Variable A : Type.
 
-Definition lequiv (l1 l2 : list A) : Prop := incl l1 l2 /\ incl l2 l1.
+Definition lequiv (l1 l2 : list A) : Prop := l1 [= l2 /\ l2 [= l1.
 
 Lemma lequiv_refl : forall l, lequiv l l.
 
@@ -619,6 +649,22 @@ eapply incl_tran. apply H2. assumption.
 Qed.
 
 End equiv.
+
+Infix "[=]" := lequiv (at level 70).
+
+Add Parametric Relation (A : Type) : (list A) (@lequiv A)
+  reflexivity proved by (@lequiv_refl A)
+  symmetry proved by (@lequiv_sym A)
+    transitivity proved by (@lequiv_trans A)
+    as lequiv_rel.
+
+Add Parametric Morphism (A : Type) : (@app A)
+  with signature (@lequiv A) ==> (@lequiv A) ==> (@lequiv A)
+    as app_lequiv.
+
+Proof.
+unfold lequiv. intuition.
+Qed.
 
 (***********************************************************************)
 (** boolean membership when the equality on A is decidable *)
@@ -671,7 +717,7 @@ Proof.
 intuition. apply Inb_intro. hyp. apply Inb_true. hyp.
 Qed.
 
-Lemma Inb_incl : forall x l l', incl l l' -> Inb x l = true -> Inb x l' = true.
+Lemma Inb_incl : forall x l l', l [= l' -> Inb x l = true -> Inb x l' = true.
 
 Proof.
 intros. apply Inb_intro. apply H. apply Inb_true. assumption.
@@ -738,8 +784,7 @@ destruct (eq_dec a x); destruct H0. rewrite e in H0. tauto.
 tauto. rewrite H0. simpl. tauto. simpl. tauto.
 Qed.
 
-Lemma incl_remove : forall (x : A) l m,
-  ~In x l -> incl l m -> incl l (remove x m).
+Lemma incl_remove : forall (x : A) l m, ~In x l -> l [= m -> l [= remove x m.
 
 Proof.
 induction l; simpl; intros. apply incl_nil. assert (~a=x /\ ~In x l). tauto.
@@ -748,11 +793,10 @@ apply In_remove. auto. unfold incl in H0. apply H0. simpl. auto.
 apply IHl. auto. apply incl_cons_l_incl with (x := a). exact H0. exact H2.
 Qed.
 
-Lemma notin_remove : forall x l, ~In x (remove x l).
+Lemma notin_remove : forall x l, In x (remove x l) -> False.
 
 Proof.
-intros. induction l. simpl; tauto.
-simpl. destruct (eq_dec a x). auto. simpl. tauto.
+induction l; simpl. auto. destruct (eq_dec a x). auto. simpl. tauto.
 Qed.
 
 Lemma remove_In : forall a x l, In a (remove x l) -> In a l.
@@ -762,6 +806,13 @@ induction l;intros. simpl in *. auto.
 simpl in H. destruct (eq_dec a0 x).
 subst; simpl; right; auto.
 simpl in *; tauto.
+Qed.
+
+Lemma remove_eq : forall a x l, In a (remove x l) <-> a <> x /\ In a l.
+
+Proof.
+intuition. subst. eapply notin_remove. apply H. eapply remove_In. apply H.
+apply In_remove; auto.
 Qed.
 
 End remove.
@@ -785,7 +836,7 @@ Fixpoint removes (l m : list A) {struct m} : list A :=
     end
   end.
 
-Lemma incl_removes : forall l m, incl (removes l m) m.
+Lemma incl_removes : forall l m, removes l m [= m.
 
 Proof.
 unfold incl. induction m; simpl. contradiction.
@@ -793,7 +844,7 @@ case (In_dec a l). intros. right. apply IHm. hyp.
 simpl. intuition.
 Qed.
 
-Lemma incl_removes_app : forall l m, incl m (removes l m ++ l).
+Lemma incl_removes_app : forall l m, m [= removes l m ++ l.
 
 Proof.
 unfold incl. induction m; simpl. contradiction. intros. destruct H.
@@ -837,6 +888,21 @@ End map.
 Implicit Arguments in_map_elim [A B f x l].
 
 (***********************************************************************)
+(** flat_map *)
+
+Section flat_map.
+
+Lemma In_flat_map_intro : forall A B (f : A -> list B) x l y,
+  In y l -> In x (f y) -> In x (flat_map f l).
+
+Proof.
+induction l; simpl; intuition.
+subst. apply in_appl. hyp. apply in_appr. eapply IHl. apply H1. hyp.
+Qed.
+
+End flat_map.
+
+(***********************************************************************)
 (** flattening *)
 
 Section flat.
@@ -849,7 +915,7 @@ Fixpoint flat (l : list (list A)) : list A :=
     | cons x l' => x ++ flat l'
   end.
 
-Lemma In_incl_flat : forall x l, In x l -> incl x (flat l).
+Lemma In_incl_flat : forall x l, In x l -> x [= flat l.
 
 Proof.
 induction l; simpl; intros. contradiction. intuition. subst. apply incl_appl.
@@ -857,7 +923,7 @@ apply incl_refl.
 Qed.
 
 Lemma incl_flat_In : forall x c cs l,
-  In x c -> In c cs -> incl (flat cs) l -> In x l.
+  In x c -> In c cs -> flat cs [= l -> In x l.
 
 Proof.
 intros. apply H1. apply (In_incl_flat _ _ H0). hyp.
@@ -1059,20 +1125,19 @@ Proof.
 induction l; simpl; intros. assumption. apply in_or_app. simpl. tauto.
 Qed.
 
-Lemma incl_rev : forall l : list A, incl l (rev l).
+Lemma incl_rev : forall l : list A, l [= rev l.
 
 Proof.
 unfold incl. intros. apply in_rev. assumption. 
 Qed. 
 
-Lemma rev_incl : forall l : list A, incl (rev l) l. 
+Lemma rev_incl : forall l : list A, rev l [= l. 
 
 Proof.
 intros. pose (incl_rev (rev l)). rewrite (rev_involutive l) in i. assumption.
 Qed.
 
-Lemma incl_rev_intro :
-  forall l l' : list A, incl (rev l) (rev l') -> incl l l'.
+Lemma incl_rev_intro : forall l l' : list A, rev l [= rev l' -> l [= l'.
 
 Proof.
 intros. apply incl_tran with (rev l). apply incl_rev.
