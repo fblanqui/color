@@ -1,4 +1,5 @@
-09-06-24: [Blanqui]
+09-06-26: [Blanqui]
+- Util/Set/SetUtil: infinite sets
 - Term/WithArity/ARules: rewriting with infinite sets of rules
 - Term/WithArity/AMorphism: extended to infinite sets of rules
 - SemLab/ASemLab: theorem of semantic labelling (with ordered labels)
