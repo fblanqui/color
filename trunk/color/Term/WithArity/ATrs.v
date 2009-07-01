@@ -477,6 +477,56 @@ unfold rules_preserv_vars, incl. intuition. eapply H0. apply H. apply H1. hyp.
 Qed.
 
 (***********************************************************************)
+(** biggest variable in a list of rules *)
+
+Require Import Max.
+
+Definition maxvar_rule (a : rule) :=
+  let (l,r) := a in max (maxvar l) (maxvar r).
+
+Definition fold_max m a := max m (maxvar_rule a).
+
+Definition maxvar_rules R := fold_left fold_max R 0.
+
+Lemma maxvar_rules_init : forall R x, fold_left fold_max R x >= x.
+
+Proof.
+induction R; simpl; intros. refl. rewrite IHR. apply le_max_l.
+Qed.
+
+Lemma maxvar_rules_init_mon : forall R x y,
+  x >= y -> fold_left fold_max R x >= fold_left fold_max R y.
+
+Proof.
+induction R; simpl; intros. hyp. apply IHR. unfold fold_max.
+apply max_ge_compat. hyp. refl.
+Qed.
+
+Notation rule_dec := (dec_beq (@beq_rule_ok Sig)).
+Notation remove := (remove rule_dec).
+
+Lemma maxvar_rules_remove : forall a R x y,
+  x >= y -> fold_left fold_max R x >= fold_left fold_max (remove a R) y.
+
+Proof.
+induction R; simpl; intros. hyp. case (rule_dec a0 a); intro. subst a0.
+apply IHR. transitivity x. apply le_max_l. hyp.
+simpl. apply IHR. apply max_ge_compat. hyp. refl.
+Qed.
+
+Lemma maxvar_rules_elim : forall a R n,
+  In a R -> n > maxvar_rules R -> n > maxvar_rule a.
+
+Proof.
+unfold maxvar_rules. induction R; simpl; intuition. subst.
+unfold fold_max in H0. simpl in H0. fold fold_max in H0.
+apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
+apply maxvar_rules_init. hyp.
+apply IHR. hyp. apply le_lt_trans with (fold_left fold_max R (fold_max 0 a0)).
+apply maxvar_rules_init_mon. apply le_max_l. hyp.
+Qed.
+
+(***********************************************************************)
 (** rewriting vectors of terms *)
 
 Section vector.
