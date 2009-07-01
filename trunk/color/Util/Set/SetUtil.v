@@ -109,3 +109,22 @@ Add Parametric Relation (A : Type) : (set A) (@equiv A)
   symmetry proved by (@equiv_sym A)
   transitivity proved by (@equiv_trans A)
   as equiv_rel.
+
+(***********************************************************************)
+(** union *)
+
+Add Parametric Morphism (A : Type) : (@union A)
+  with signature (@incl A) ==> (@incl A) ==> (@incl A)
+    as incl_app.
+
+Proof.
+firstorder.
+Qed.
+
+Add Parametric Morphism (A : Type) : (@union A)
+  with signature (@equiv A) ==> (@equiv A) ==> (@equiv A)
+    as equiv_app.
+
+Proof.
+firstorder.
+Qed.
