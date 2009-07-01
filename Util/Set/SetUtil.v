@@ -30,7 +30,7 @@ Definition union (R S : set) : set := fun x : A => R x \/ S x.
 End defs.
 
 Infix "[=" := incl (at level 70).
-Infix "===" := equiv (at level 70).
+Infix "[=]" := equiv (at level 70).
 Infix "++" := union (right associativity, at level 60).
 
 (***********************************************************************)
@@ -78,25 +78,25 @@ Section equiv.
 
 Variable A : Type. Notation set := (set A).
 
-Lemma equiv_refl : forall R : set, R === R.
+Lemma equiv_refl : forall R : set, R [=] R.
 
 Proof.
 firstorder.
 Qed.
 
-Lemma equiv_trans : forall R S T : set, R === S -> S === T -> R === T.
+Lemma equiv_trans : forall R S T : set, R [=] S -> S [=] T -> R [=] T.
 
 Proof.
 firstorder.
 Qed.
 
-Lemma equiv_sym : forall R S : set, R === S -> S === R.
+Lemma equiv_sym : forall R S : set, R [=] S -> S [=] R.
 
 Proof.
 firstorder.
 Qed.
 
-Lemma equiv_elim : forall R S : set, R === S <-> R [= S /\ S [= R.
+Lemma equiv_elim : forall R S : set, R [=] S <-> R [= S /\ S [= R.
 
 Proof.
 firstorder.
