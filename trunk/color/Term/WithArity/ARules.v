@@ -10,7 +10,7 @@ infinite sets of rules
 Set Implicit Arguments.
 
 Require Import ATrs.
-Require Import List.
+Require Import ListUtil.
 Require Import RelUtil.
 Require Import ARelation.
 Require Import LogicUtil.
@@ -25,9 +25,16 @@ Notation term := (term Sig). Notation rule := (rule Sig).
 Definition rules := set rule.
 
 (***********************************************************************)
-(** (finite) set of rules from a list of rules *)
+(** finite rewriting *)
 
 Definition Rules R : rules := fun x => In x R.
+
+Lemma Rules_app : forall R S, Rules (R ++ S) [=] Rules R ++ Rules S.
+
+Proof.
+split; unfold Rules, union; intro. rewrite in_app in H. hyp. destruct H.
+apply in_appl. hyp. apply in_appr. hyp.
+Qed.
 
 (***********************************************************************)
 (** rewriting *)
@@ -203,6 +210,7 @@ Section props.
 Variable Sig : Signature.
 
 Notation rule := (rule Sig). Notation rules := (set rule).
+Notation Rules := (@Rules Sig).
 
 Section red.
 
@@ -230,6 +238,23 @@ exists l. exists r. exists (comp c c0). exists s. intuition.
 Qed.
 
 End red.
+
+Lemma red_Rules : forall R, red (Rules R) == ATrs.red R.
+
+Proof.
+split; intros t u H. redtac. subst. apply ATrs.red_rule. hyp.
+ATrs.redtac. subst. apply red_rule. hyp.
+Qed.
+
+Lemma hd_red_Rules : forall R, hd_red (Rules R) == ATrs.hd_red R.
+
+Proof.
+split; intros t u H. redtac. subst. apply ATrs.hd_red_rule. hyp.
+ATrs.redtac. subst. apply hd_red_rule. hyp.
+Qed.
+
+(***********************************************************************)
+(** properties of rewriting modulo *)
 
 Section red_mod.
 
@@ -262,5 +287,20 @@ trans (red(E++R)##). rewrite red_mod_union. refl. rewrite rtc_invol. refl.
 Qed.
 
 End red_mod.
+
+Lemma red_mod_Rules : forall E R,
+  red_mod (Rules E) (Rules R) == ATrs.red_mod E R.
+
+Proof.
+intros. unfold red_mod, ATrs.red_mod. repeat rewrite red_Rules. refl.
+Qed.
+
+Lemma hd_red_mod_Rules : forall E R,
+  hd_red_mod (Rules E) (Rules R) == ATrs.hd_red_mod E R.
+
+Proof.
+intros. unfold hd_red_mod, ATrs.hd_red_mod. repeat rewrite red_Rules.
+repeat rewrite hd_red_Rules. refl.
+Qed.
 
 End props.
