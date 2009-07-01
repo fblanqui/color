@@ -92,7 +92,7 @@ Proof.
 intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply red_incl; hyp.
 Qed.
 
-(*COQ: can be remobed?*)
+(*COQ: can be removed?*)
 Add Parametric Morphism (Sig : Signature) : (@red Sig)
   with signature (@SetUtil.equiv (@rule Sig)) ==>
     (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
