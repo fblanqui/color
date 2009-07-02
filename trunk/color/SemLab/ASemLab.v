@@ -160,44 +160,12 @@ Variable Lgt : relation L. Infix ">L" := Lgt (at level 50).
 
 Let Lge := Lgt %. Infix ">=L" := Lge (at level 50).
 
-Fixpoint fresh_vars x k :=
-  match k as k return terms' k with
-    | 0 => Vnil
-    | S l => Vcons (Var x) (fresh_vars (S x) l)
-  end.
-
-Lemma Vnth_fresh_vars : forall k i (h : i<k) x,
-  Vnth (fresh_vars x k) h = Var (x+i).
-
-Proof.
-induction k; simpl; intros. absurd_arith. destruct i.
-apply (f_equal (@Var _)). omega.
-rewrite IHk. apply (f_equal (@Var _)). omega.
-Qed.
-
-Notation fvars := (fresh_vars 0).
-
-Definition Fun'_vars f a := Fun' (f,a) (fvars (arity f)).
+Definition Fun'_vars f a := Fun' (f,a) (fresh_vars (arity f)).
 
 Definition decr f a b := mkRule (Fun'_vars f a) (Fun'_vars f b).
 
 Definition Decr (rho : rule') :=
   exists f, exists a, exists b, a >L b /\ rho = decr f a b.
-
-Definition sub_vars n (ts :terms' n) x : term' :=
-  match lt_ge_dec x n with
-    | left h => Vnth ts h
-    | _ => Var x
-  end.
-
-Lemma sub_fresh_vars : forall n (ts : terms' n),
-  ts = Vmap (sub (sub_vars ts)) (fvars n).
-
-Proof.
-intros. apply Veq_nth. intros. rewrite Vnth_map.
-rewrite Vnth_fresh_vars. simpl. unfold sub_vars.
-case (lt_ge_dec i n); intro. apply Vnth_eq. refl. absurd_arith.
-Qed.
 
 Lemma Lge_Decr : forall f (ts : terms' (arity f)) a b,
   a >=L b -> red Decr # (Fun' (f,a) ts) (Fun' (f,b) ts).
@@ -225,6 +193,7 @@ intros (f,l). refl.
 Qed.
 
 Definition unlab := Ft HF.
+Definition unlab_rules := Frs HF.
 
 Lemma Ft_epi : forall v t, unlab (lab v t) = t.
 
@@ -235,7 +204,7 @@ refl. apply args_eq. rewrite Vmap_map. rewrite H. apply Vcast_refl.
 refl. rewrite H. rewrite H0. refl.
 Qed.
 
-Lemma Frs_iso : forall R : rules, Frs HF (lab_rules R) [=] R.
+Lemma Frs_iso : forall R, unlab_rules (lab_rules R) [=] R.
 
 Proof.
 intros R [l r]. split.
@@ -249,7 +218,7 @@ unfold lab_rules. exists (mkRule l r). exists v. intuition.
 simpl. repeat rewrite Ft_epi. refl.
 Qed.
 
-Lemma red_Frs_Decr : red (Frs HF Decr) << @eq term.
+Lemma red_Frs_Decr : red (unlab_rules Decr) << @eq term.
 
 Proof.
 intros t u h. redtac. subst. destruct lr as [[l' r'] [h1 h2]].
@@ -257,14 +226,14 @@ destruct h1 as [f [a [b [ab h]]]]. inversion h. subst. inversion h2.
 assert (HF (f,a) = HF (f,b)). apply UIP. apply eq_nat_dec. rewrite H. refl.
 Qed.
 
-Lemma rt_red_Frs_Decr : red (Frs HF Decr) # << @eq term.
+Lemma rt_red_Frs_Decr : red (unlab_rules Decr) # << @eq term.
 
 Proof.
 intros t u. induction 1. apply red_Frs_Decr. hyp. refl. transitivity y; hyp.
 Qed.
 
 Lemma red_mod_Frs_Decr : forall E,
-  red (Frs HF (Decr ++ lab_rules E)) << red E %.
+  red (unlab_rules (Decr ++ lab_rules E)) << red E %.
 
 Proof.
 intros E t u h. redtac. subst. apply Frs_app in lr. destruct lr.
@@ -274,7 +243,7 @@ subst. destruct x0. simpl. repeat rewrite Ft_epi. hyp.
 Qed.
 
 Lemma rt_red_mod_Frs_Decr : forall E,
-  red (Frs HF (Decr ++ lab_rules E)) # << red E #.
+  red (unlab_rules (Decr ++ lab_rules E)) # << red E #.
 
 Proof.
 intro E. transitivity (red E % #). rewrite red_mod_Frs_Decr. refl.
@@ -296,6 +265,16 @@ Section red.
 Variable R : rules. Notation R' := (lab_rules R).
 
 Variable ge_compat : forall l r, R (mkRule l r) -> l >=I r.
+
+Lemma hd_red_lab : forall v t u,
+  hd_red R t u -> hd_red_mod Decr R' (lab v t) (lab v u).
+
+Proof.
+intros. redtac. subst. exists (lab v (sub s l)). split. apply rt_refl.
+repeat rewrite lab_sub_eq. exists (lab (beta v s) l).
+exists (lab (beta v s) r). exists (lab_sub v s). intuition.
+exists (mkRule l r). exists (beta v s). intuition.
+Qed.
 
 Lemma red_lab : forall v t u,
   red R t u -> red_mod Decr R' (lab v t) (lab v u).
@@ -375,6 +354,17 @@ eapply inclusion_elim. apply rt_red_mod_union. hyp.
 eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
 Qed.
 
+Lemma hd_red_mod_lab : forall v t u,
+  hd_red_mod E R t u -> hd_red_mod (Decr ++ E') R' (lab v t) (lab v u).
+
+Proof.
+intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
+ded (hd_red_lab v H0). do 2 destruct H2. exists x0. intuition.
+apply rt_trans with (lab v x).
+eapply inclusion_elim. apply rt_red_mod_union. hyp.
+eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
+Qed.
+
 Lemma WF_red_mod_lab : WF (red_mod E R) <-> WF (red_mod (Decr ++ E') R').
 
 Proof.
@@ -388,6 +378,23 @@ exists x. auto.
 set (v := fun x : variable => some_elt I).
 apply WF_incl with (Rof (red_mod (Decr ++ E') R') (lab v)).
 intros t u h. unfold Rof. apply red_mod_lab. hyp.
+apply WF_inverse. hyp.
+Qed.
+
+Lemma WF_hd_red_mod_lab :
+  WF (hd_red_mod E R) <-> WF (hd_red_mod (Decr ++ E') R').
+
+Proof.
+split; intro.
+(* -> *)
+apply Fhd_red_mod_WF with (S2:=Sig) (F:=F) (HF:=HF).
+apply WF_incl with (hd_red_mod E R). 2: hyp. intros t u h. destruct h.
+destruct H0. apply rt_red_mod_Frs_Decr in H0. rewrite Frs_iso in H1.
+exists x. auto.
+(* <- *)
+set (v := fun x : variable => some_elt I).
+apply WF_incl with (Rof (hd_red_mod (Decr ++ E') R') (lab v)).
+intros t u h. unfold Rof. apply hd_red_mod_lab. hyp.
 apply WF_inverse. hyp.
 Qed.
 
@@ -522,10 +529,26 @@ Notation E' := (enum E). Notation R' := (enum R).
 
 Infix "++" := app.
 
+Lemma WF_red_lab_fin : WF (red R) <-> WF (red_mod D' R').
+
+Proof.
+rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab; try hyp.
+apply WF_mor. rewrite Rules_enum_Decr. rewrite lab_rules_enum. refl.
+Qed.
+
 Lemma WF_red_mod_lab_fin : WF (red_mod E R) <-> WF (red_mod (D' ++ E') R').
 
 Proof.
 repeat rewrite <- red_mod_Rules. rewrite WF_red_mod_lab; try hyp.
+apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
+repeat rewrite lab_rules_enum. refl.
+Qed.
+
+Lemma WF_hd_red_mod_lab_fin :
+  WF (hd_red_mod E R) <-> WF (hd_red_mod (D' ++ E') R').
+
+Proof.
+repeat rewrite <- hd_red_mod_Rules. rewrite WF_hd_red_mod_lab; try hyp.
 apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
 repeat rewrite lab_rules_enum. refl.
 Qed.
