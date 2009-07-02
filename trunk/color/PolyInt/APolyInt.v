@@ -199,7 +199,7 @@ Proof.
  rewrite termpoly_v_eq_2.
  rewrite meval_xi. rewrite Vnth_map.
  pattern (xint v) at 1.
- rewrite <- (vec_of_val_eq xint (gt_le_S (le_lt_n_Sm Hv))).
+ rewrite <- (Vnth_vec_of_val xint (gt_le_S (le_lt_n_Sm Hv))).
  reflexivity.
 
  intros f ts. unfold Q. intro H. unfold P, f1, f2.

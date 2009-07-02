@@ -47,7 +47,7 @@ Fixpoint vec_of_val (xint : valuation) (n : nat) : vector D n :=
     | S p => Vadd (vec_of_val xint p) (xint p)
   end.
 
-Lemma vec_of_val_eq : forall xint n x (H : lt x n),
+Lemma Vnth_vec_of_val : forall xint n x (H : lt x n),
   Vnth (vec_of_val xint n) H = xint x.
 
 Proof.
@@ -64,6 +64,14 @@ Definition val_of_vec n (v : vector D n) : valuation :=
     | left _ => (* n <= x *) some_elt I
     | right h => (* x < n *) Vnth v h
   end.
+
+Lemma val_of_vec_eq : forall n (v : vector D n) x (h : x < n),
+  val_of_vec v x = Vnth v h.
+
+Proof.
+intros. unfold val_of_vec. case (le_lt_dec n x); intro.
+absurd (x<n); omega. apply Vnth_eq. refl.
+Qed.
 
 Definition fval (xint : valuation) n := val_of_vec (vec_of_val xint n).
 
@@ -125,7 +133,7 @@ Lemma term_int_eq_fval_lt : forall xint t k,
 Proof.
 intros xint t. pattern t; apply term_ind_forall; clear t; intros.
 simpl in *. unfold fval, val_of_vec. case (le_lt_dec k v); intro.
-absurd (v<k); omega. symmetry. apply vec_of_val_eq.
+absurd (v<k); omega. symmetry. apply Vnth_vec_of_val.
 simpl. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
 rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
