@@ -25,7 +25,6 @@ Require Import EqUtil.
 Variable Sig : Signature.
 
 Notation term := (term Sig). Notation terms := (vector term).
-Notation Var := (@Var Sig).
 
 (***********************************************************************)
 (** definition of substitutions as interpretations in terms *)
@@ -36,7 +35,8 @@ Definition substitution := valuation I0.
 
 Definition id : substitution := fun x => Var x.
 
-Definition single x t y := if beq_nat x y then t else Var y.
+Definition single x t : substitution :=
+  fun y => if beq_nat x y then t else Var y.
 
 (***********************************************************************)
 (** application of a substitution *)
@@ -324,7 +324,7 @@ Section union.
 
 Variables s1 s2 : substitution.
 
-Definition union (x : variable) : term :=
+Definition union : substitution := fun x =>
   match eq_term_dec (s1 x) (Var x) with
     | left _ => s2 x
     | right _ => s1 x
@@ -373,8 +373,8 @@ End union.
 
 Notation Inb := (Inb eq_nat_dec).
 
-Definition restrict (s : substitution) (l : variables) (x : variable) :=
-  if Inb x l then s x else Var x.
+Definition restrict (s : substitution) (l : variables) : substitution :=
+  fun x => if Inb x l then s x else Var x.
 
 Lemma restrict_var : forall s l x, In x l -> restrict s l x = s x.
 
@@ -444,7 +444,30 @@ apply sub_fill.
 Qed.
 
 (***********************************************************************)
-(** function generating the sequence of variables x0, .., x0+n-1 *)
+(** function generating the sequence of terms Var 0, .., Var (n-1) *)
+
+(*COQ: cannot be declared of type (terms n),
+otherwise (apply Vnth_vec_of_val) does not work in Lemma Vnth_fresh_vars*)
+Definition fresh_vars n := @vec_of_val _ I0 (@Var Sig) n.
+
+Lemma Vnth_fresh_vars : forall n i (h : i<n), Vnth (fresh_vars n) h = Var i.
+
+Proof.
+intros. unfold fresh_vars. apply Vnth_vec_of_val.
+Qed.
+
+Definition sub_vars n (ts : terms n) : substitution := val_of_vec I0 ts.
+
+Lemma sub_fresh_vars : forall n (ts : terms n),
+  ts = Vmap (sub (sub_vars ts)) (fresh_vars n).
+
+Proof.
+intros. apply Veq_nth. intros. rewrite Vnth_map. rewrite Vnth_fresh_vars.
+simpl. unfold sub_vars. rewrite val_of_vec_eq with (h:=ip). refl.
+Qed.
+
+(***********************************************************************)
+(** function generating the sequence of terms Var x0, .., Var (x0+n-1) *)
 
 Fixpoint fresh (x0 n : nat) {struct n} : terms n :=
   match n as n return terms n with
@@ -503,6 +526,8 @@ Implicit Arguments in_freshl [x n x0].
 (** given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
 is the substitution {x0 -> v1, .., x0+n-1 -> vn} *)
 
+(*COQ: cannot be declared as substitution,
+otherwise we get problems when trying to apply Lemma fsub_inf*)
 Definition fsub x0 n (ts : terms n) x :=
   match le_lt_dec x x0 with
     | left _ => Var x (* x <= x0 *)
@@ -618,6 +643,7 @@ End S.
 
 Implicit Arguments fun_eq_sub [Sig f ts s u].
 Implicit Arguments sub_restrict_incl [Sig l r].
+Implicit Arguments fresh_vars [Sig].
 
 (***********************************************************************)
 (** tactics *)
