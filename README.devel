@@ -48,8 +48,7 @@ technique must be put in a new directory at the root of the project.
 A. Files about varyadic terms (Term/Varyadic) should be prefixed with
 V.
 
-- Define decidability lemmas using boolean function. See for instance
-NatUtil.eq_nat_dec.
+- Define decidability lemmas using boolean function.
 
 - Do not use setoid rewrites in decidability lemmas.
 
@@ -75,3 +74,6 @@ provides a way to deduce some information from Vin (elimination rule).
 - Use "Require Export" as less as possible. Use "Require Import"
 instead. This reduces the compilation time.
 
+- Use (*COQ:...*) for indicating problems with Coq, (*FIXME:...*) for
+  indicating something to be fixed, and (*REMARK:...*) for adding some
+  important remark (e.g. something can could be improved).
