@@ -163,8 +163,7 @@ Qed.
 (** concrete cap: it is obtained by applying fcap to a sequence of fresh
 variables greater than the biggest variable in t *)
 
-Notation maxvar := (@maxvar Sig).
-Notation fresh := (fresh Sig).
+Notation maxvar := (@maxvar Sig). Notation fresh := (@fresh Sig).
 
 Definition fresh_for (t : term) := fresh (S (maxvar t)).
 

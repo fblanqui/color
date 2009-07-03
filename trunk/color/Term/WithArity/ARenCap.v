@@ -130,7 +130,7 @@ Qed.
 (** concrete cap: it is obtained by applying fcap to a sequence of fresh
 variables *)
 
-Definition ren_cap k t := fcap (capa t) (fresh Sig k (nb_aliens t)).
+Definition ren_cap k t := fcap (capa t) (fresh k (nb_aliens t)).
 
 Fixpoint ren_caps k n (ts : terms n) : terms n :=
   match ts in vector _ n return terms n with
@@ -140,7 +140,7 @@ Fixpoint ren_caps k n (ts : terms n) : terms n :=
   end.
 
 Lemma ren_caps_eq : forall n (ts : terms n) k,
-  Vmap_sum (Vmap capa ts) (fresh Sig k (sum (Vmap capa ts)))
+  Vmap_sum (Vmap capa ts) (fresh k (sum (Vmap capa ts)))
   =  ren_caps k ts.
 
 Proof.
