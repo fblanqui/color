@@ -90,6 +90,17 @@ Proof.
 induction C; simpl; intros. refl. rewrite IHC. refl.
 Qed.
 
+Lemma cont_case : forall c, c = Hole \/ exists d, exists f,
+  exists i, exists vi, exists j, exists vj, exists e : i + S j = arity f,
+    c = comp d (Cont e vi Hole vj).
+
+Proof.
+induction c. auto. right. destruct IHc. subst. exists Hole. exists f.
+exists i. exists v. exists j. exists v0. exists e. refl.
+decomp H. subst. exists (Cont e v x v0). exists x0. exists x1. exists x2.
+exists x3. exists x4. exists x5. refl.
+Qed.
+
 (***********************************************************************)
 (** properties of fill *)
 
