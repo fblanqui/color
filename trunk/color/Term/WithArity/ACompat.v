@@ -196,8 +196,8 @@ End weak_reduction_pair.
 (** partitioning rewrite rules according to some decidable relation *)
 
 Lemma red_partition : forall (R R1 R2 : rules),
-  (forall r, In r R -> In r R1 \/ In r R2) ->
-  red R << red R1 U red R2.
+  (forall r, In r R -> In r R1 \/ In r R2) -> red R << red R1 U red R2.
+
 Proof with auto.
   intros. trans (red (R1 ++ R2)).
   apply red_incl. unfold incl. intros.
@@ -208,6 +208,7 @@ Qed.
 Section rule_partition.
   
   Variable R : rules.
+
   Definition rule_partition succ (succ_dec : rel_dec succ) (r : rule) := 
     partition_by_rel succ_dec (lhs r, rhs r).
 
