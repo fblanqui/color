@@ -24,6 +24,58 @@ Variable beq_ok : forall x y, beq x y = true <-> x = y.
 Ltac case_beq := EqUtil.case_beq beq beq_ok.
 
 (***********************************************************************)
+(** boolean decidability of equality *)
+
+Section beq_list.
+
+Fixpoint beq_list (l m : list A) {struct l} :=
+  match l, m with
+    | nil, nil => true
+    | x :: l', y :: m' => beq x y && beq_list l' m'
+    | _, _ => false
+  end.
+
+Lemma beq_list_refl : forall l, beq_list l l = true.
+
+Proof.
+induction l; simpl. refl. rewrite IHl. rewrite (beq_refl beq_ok). refl.
+Qed.
+
+Lemma beq_list_ok : forall l m, beq_list l m = true <-> l = m.
+
+Proof.
+induction l; destruct m; simpl; split; intro; try (refl || discriminate).
+destruct (andb_elim H). rewrite beq_ok in H0. subst a0.
+rewrite IHl in H1. subst m. refl.
+inversion H. subst a0. subst m. apply andb_intro.
+rewrite beq_ok. refl. rewrite IHl. refl.
+Qed.
+
+(*REMARK: do not use beq_ok *)
+Lemma beq_list_ok_in : forall l,
+  forall hyp : forall x, In x l -> forall y, beq x y = true <-> x = y,
+    forall m, beq_list l m = true <-> l = m.
+
+Proof.
+induction l; destruct m; split; intro; try (refl || discriminate).
+inversion H. destruct (andb_elim H1).
+assert (h : In a (a::l)). simpl. auto.
+ded (hyp _ h a0). rewrite H3 in H0. subst a0.
+apply tail_eq.
+assert (hyp' : forall x, In x l -> forall y, beq x y = true <-> x=y).
+intros x hx. apply hyp. simpl. auto.
+destruct (andb_elim H1). ded (IHl hyp' m). rewrite H5 in H4. exact H4.
+rewrite <- H. simpl. apply andb_intro.
+assert (h : In a (a::l)). simpl. auto.
+ded (hyp _ h a). rewrite H0. refl.
+assert (hyp' : forall x, In x l -> forall y, beq x y = true <-> x=y).
+intros x hx. apply hyp. simpl. auto.
+ded (IHl hyp' l). rewrite H0. refl.
+Qed.
+
+End beq_list.
+
+(***********************************************************************)
 (** membership *)
 
 Fixpoint mem (x : A) (l : list A) {struct l} : bool :=
@@ -122,3 +174,5 @@ End position.
 End S.
 
 Implicit Arguments mem_ok [A beq].
+Implicit Arguments beq_list_ok [A beq].
+Implicit Arguments beq_list_ok_in [A beq l].

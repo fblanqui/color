@@ -16,6 +16,7 @@ Require Import RelUtil.
 Require Import ListUtil.
 Require Import BoolUtil.
 Require Import EqUtil.
+Require Import ListDec.
 
 (***********************************************************************)
 (** strings *)
