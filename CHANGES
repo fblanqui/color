@@ -1,3 +1,6 @@
+09-07-03: [Blanqui]
+- SemLab/AFlatCont: flat context closure
+
 09-06-26: [Blanqui]
 - Util/Set/SetUtil: infinite sets
 - Term/WithArity/ARules: rewriting with infinite sets of rules
