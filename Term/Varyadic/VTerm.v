@@ -16,6 +16,7 @@ Require Import ListUtil.
 Require Import EqUtil.
 Require Export VSignature.
 Require Import Peano_dec.
+Require Import ListDec.
 
 Section S.
 
