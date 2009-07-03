@@ -426,7 +426,8 @@ set (f := fun d : I => Vcons d (Vtail ds)).
 VSntac ds. change (In (f (Vhead ds)) (map f Is)). apply in_map. apply Is_ok.
 Qed.
 
-(*Fixpoint enum_tuple2 n : list (vector I n) :=
+(*REMARK: define a more efficient function?
+Fixpoint enum_tuple2 n : list (vector I n) :=
   match n with
     | 0 => nil
     | S p =>
@@ -464,7 +465,8 @@ Proof.
 split. apply enum_complete. apply enum_correct.
 Qed.
 
-(*Definition enum2 R :=
+(*REMARK: define a more efficient function?
+Definition enum2 R :=
   let n := S (maxvar_rules R) in
     fold_left (fun e ds =>
       let v := val_of_vec I ds in
