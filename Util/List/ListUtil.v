@@ -111,8 +111,6 @@ inversion H. subst a0. subst m. apply andb_intro.
 rewrite beq_ok. refl. rewrite IHl. refl.
 Qed.
 
-Definition list_eq_dec := dec_beq beq_list_ok.
-
 End beq.
 
 Implicit Arguments beq_list_ok [A beq].
@@ -1833,6 +1831,70 @@ Section lookup_dep.
   Qed.
 
 End lookup_dep.
+
+(****************************************************************************)
+(** list of natural numbers strictly smaller than n with proofs *)
+
+Section nat_lt.
+
+Variable n : nat.
+
+Lemma nats_lt_aux1 : forall k', S k' < n -> k' < n.
+
+Proof.
+intros. omega.
+Qed.
+
+(* nats_lt n k h = k :: ... :: 0 *)
+
+Fixpoint nats_lt_aux k :=
+  match k as k return k<n -> list (nat_lt n) with
+    | 0 => fun h => mk_nat_lt h :: nil
+    | S k' => fun h => mk_nat_lt h :: nats_lt_aux k' (nats_lt_aux1 h)
+  end.
+
+Lemma nats_lt_aux_correct : forall x k (h : k<n) i,
+  i <= k -> val (nth i (nats_lt_aux h) x) = k - i.
+
+Proof.
+induction k; simpl; intros; destruct i. auto. absurd_arith.
+auto. rewrite IHk. auto. omega.
+Qed.
+
+Lemma nats_lt_aux_complete : forall k (h : k<n) i (p : i<n),
+  i <= k -> In (mk_nat_lt p) (nats_lt_aux h).
+
+Proof.
+induction k; simpl; intros.
+assert (i=0). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
+assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+Qed.
+
+(* nats_lt n = n-1 :: ... :: 0 *)
+
+Definition nats_lt :=
+  match lt_ge_dec (pred n) n with
+    | left h => nats_lt_aux h
+    | _ => nil
+  end.
+
+Lemma nats_lt_correct : forall x i,
+  i < n -> val (nth i nats_lt x) = pred n - i.
+
+Proof.
+intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
+apply nats_lt_aux_correct. omega. absurd_arith.
+Qed.
+
+Lemma nats_lt_complete : forall i (p : i<n), In (mk_nat_lt p) nats_lt.
+
+Proof.
+intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
+apply nats_lt_aux_complete. omega. absurd_arith.
+Qed.
+
+End nat_lt.
 
 (****************************************************************************)
 (** hints *)
