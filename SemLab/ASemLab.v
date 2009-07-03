@@ -5,6 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2009-06-22
 
 semantic labelling (with ordered labels)
+(Zantema, Fundamenta Informaticae, 1995, volume 24, pages 89-105)
 *)
 
 Set Implicit Arguments.
