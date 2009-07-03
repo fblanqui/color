@@ -318,7 +318,8 @@ intros. eapply sub_eq_dom_incl_sub. apply H. apply incl_refl.
 Qed.
 
 (***********************************************************************)
-(** union of substitutions *)
+(** union of 2 substitutions ordered by the domain of the first:
+union s1 s2 x = s1 x if s1 x <> x, and s2 x otherwise *)
 
 Section union.
 
@@ -367,6 +368,22 @@ intros. eapply sub_eq_dom_incl_sub. apply union_correct2. exact H.
 Qed.
 
 End union.
+
+(***********************************************************************)
+(** union of 2 substitutions ordered by some index n:
+maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
+
+Section maxvar_union.
+
+Variables (n : nat) (s1 s2 : substitution).
+
+Definition maxvar_union : substitution := fun x =>
+  match lt_ge_dec x n with
+    | left _ => s1 x
+    | _ => s2 x
+  end.
+
+End maxvar_union.
 
 (***********************************************************************)
 (** restriction of a substitution *)
@@ -524,16 +541,16 @@ Implicit Arguments in_freshl [x n x0].
 
 (***********************************************************************)
 (** given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
-is the substitution {x0 -> v1, .., x0+n-1 -> vn} *)
+is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
 
 (*COQ: cannot be declared as substitution,
 otherwise we get problems when trying to apply Lemma fsub_inf*)
 Definition fsub x0 n (ts : terms n) x :=
   match le_lt_dec x x0 with
-    | left _ => Var x (* x <= x0 *)
+    | left _ => (* x <= x0 *) Var x
     | right h1 => (* x0 < x *)
       match le_lt_dec x (x0+n) with
-	| left h2 => Vnth ts (lt_pm h1 h2) (* x <= x0+n *)
+	| left h2 => (* x <= x0+n *) Vnth ts (lt_pm h1 h2)
 	| _ => Var x (* x0+n < x *)
       end
   end.
@@ -639,11 +656,39 @@ intuition. ded (in_freshl H1). destruct H.
 apply fsub_inf. omega. apply fsub_sup. omega.
 Qed.
 
+Lemma fill_sub : forall n f i vi j vj e s l, n >= maxvar l ->
+  fill (Cont f e vi Hole vj) (sub s l)
+  = sub (maxvar_union (S n) s (fsub n (Vapp vi vj)))
+  (fill (Cont f e (fresh (S n) i) Hole (fresh (S n+i) j)) l).
+
+Proof.
+intros. rename H into Hn. simpl. apply args_eq. rewrite Vmap_cast.
+rewrite Vmap_app. simpl. apply Vcast_eq_intro. apply Vapp_eq_intro.
+(* vi *)
+apply Veq_nth; intros. rewrite Vnth_map. rewrite Vnth_fresh. simpl.
+unfold maxvar_union. case (lt_ge_dec (S(n+i0)) (S n)); intro. absurd_arith.
+unfold fsub. case (le_lt_dec (S(n+i0)) n); intro. absurd_arith.
+case (le_lt_dec (S(n+i0)) (n+(i+j))); intro. rewrite Vnth_app.
+case (le_gt_dec i (S(n+i0)-n-1)); intro. absurd_arith. apply Vnth_eq. omega.
+absurd_arith.
+(* cons *)
+apply Vcons_eq_intro. apply sub_eq. intros. ded (vars_max H).
+unfold maxvar_union. case (lt_ge_dec x (S n)); intro. refl. absurd_arith.
+(* v2 *)
+apply Veq_nth; intros. rewrite Vnth_map. rewrite Vnth_fresh. simpl.
+unfold maxvar_union. case (lt_ge_dec (S(n+i+i0)) (S n)); intro. absurd_arith.
+unfold fsub. case (le_lt_dec (S(n+i+i0)) n); intro. absurd_arith.
+case (le_lt_dec (S(n+i+i0)) (n+(i+j))); intro. rewrite Vnth_app.
+case (le_gt_dec i (S(n+i+i0)-n-1)); intro. apply Vnth_eq.
+clear e ip g l0 l1 l2. omega. absurd_arith. absurd_arith.
+Qed.
+
 End S.
 
 Implicit Arguments fun_eq_sub [Sig f ts s u].
 Implicit Arguments sub_restrict_incl [Sig l r].
 Implicit Arguments fresh_vars [Sig].
+Implicit Arguments fresh [Sig].
 
 (***********************************************************************)
 (** tactics *)
