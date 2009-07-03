@@ -242,7 +242,7 @@ Lemma path_suffix : forall (y z : A) l' l'' (x : A),
 Proof.
 induction l'; intros. assert (rev (z :: l'')=nil). apply prefix_nil. hyp.
 simpl in H1. symmetry in H1. pose (app_cons_not_nil (rev l'') nil z H1). tauto.
-destruct (List.list_eq_dec eqdec (z :: l'')(a :: l')). inversion e. simpl in H.
+destruct (list_eq_dec eqdec (z :: l'')(a :: l')). inversion e. simpl in H.
 tauto. simpl in H. 
 apply IHl' with a. tauto. apply suffix_smaller with a; assumption.
 Qed.
