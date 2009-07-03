@@ -56,6 +56,7 @@ Definition flat_rule n (a : rule) :=
     else map (flat_cont_rule a) (flat_conts n).
 
 Variable R : rules. Let n := maxvar_rules R.
+
 Notation R' := (flat_map (flat_rule (S n)) R).
 
 Lemma root_preserving : forall a,
