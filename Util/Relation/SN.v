@@ -40,7 +40,8 @@ End sn.
 forall t, H t -> forall x, e(x) = t -> G(x) *)
 
 Ltac geneq H x e := generalize (refl_equal e); generalize (H e);
-  clear H; generalize e at -2; intros t h; gen x; gen h; gen t.
+  clear H; generalize e at -2; let t := fresh "t" in let h := fresh "h" in
+    intros t h; gen x; gen h; gen t.
 
 (***********************************************************************)
 (** accessibility *)
