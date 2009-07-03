@@ -360,7 +360,21 @@ Qed.
 End iter.
 
 (***********************************************************************)
-(** various arithmetical lemmas *)
+(** natural numbers strictly smaller than n *)
+
+Section nat_lt.
+
+Variable n : nat.
+
+Inductive nat_lt : Type := mk_nat_lt : forall i, i<n -> nat_lt.
+
+Definition val (x : nat_lt) := let (i,_) := x in i.
+Definition prf (x : nat_lt) := let (_,h) as x return val x < n := x in h.
+
+End nat_lt.
+
+(***********************************************************************)
+(** arithmetical lemmas *)
 
 Lemma le_lt_S : forall i k, i <= k -> i < S k.
 
