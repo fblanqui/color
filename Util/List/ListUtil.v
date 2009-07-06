@@ -5,7 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Stephane Le Roux, 2006-10-17
 - Adam Koprowski, 2006-04-28
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
-- Frederic Blanqui, 2005-02-03
+- Frederic Blanqui, 2005-02-03, 2009-07-06
 - Sebastien Hinderer, 2004-05-25
 
 extension of the Coq library on lists
@@ -17,6 +17,7 @@ Require Import LogicUtil.
 Require Export List.
 Require Import NatUtil.
 Require Import EqUtil.
+Require Import Setoid.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
@@ -27,6 +28,271 @@ Ltac elt_type l :=
   match type of l with
     | list ?A => A
   end.
+
+Infix "[=" := incl (at level 70).
+
+(***********************************************************************)
+(** membership *)
+
+Section In.
+
+Variable A : Type.
+
+Lemma in_app : forall l m (x : A), In x (l ++ m) <-> In x l \/ In x m.
+
+Proof.
+intuition.
+Qed.
+
+Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
+
+Proof.
+induction l1; simpl; intros. contradiction. destruct H. subst x. auto.
+right. apply IHl1. assumption.
+Qed.
+
+Lemma in_appr : forall (x : A) l1 l2, In x l2 -> In x (l1 ++ l2).
+
+Proof.
+induction l1; simpl; intros. assumption. right. apply IHl1. assumption.
+Qed.
+
+Lemma in_app_com : forall (x : A) l1 l2 l3,
+  In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
+
+Proof.
+intros. repeat rewrite in_app in H. intuition.
+Qed.
+
+Lemma in_elim : forall (x : A) l,
+  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H. subst x.
+exists (@nil A). exists l. refl. ded (IHl H). do 2 destruct H0. rewrite H0.
+exists (a :: x0). exists x1. refl.
+Qed.
+
+Variable eqA_dec : forall x y : A, {x=y}+{~x=y}.
+
+Lemma in_elim_dec : forall (x : A) l,
+  In x l -> exists m, exists p, l = m ++ x :: p /\ ~In x m.
+
+Proof.
+induction l; simpl; intros. contradiction. destruct H. subst x.
+exists (@nil A). exists l. intuition. ded (IHl H). do 3 destruct H0. subst l.
+case (eqA_dec a x); intro.
+subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
+exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
+Qed.
+
+Require Import RelMidex.
+
+Lemma In_midex : eq_midex A -> forall (x : A) l, In x l \/ ~In x l. 
+
+Proof.
+induction l. tauto. simpl. destruct (H a x); destruct IHl; tauto.
+Qed.
+
+Lemma In_elim_right : eq_midex A -> forall (x : A) l,
+  In x l -> exists l', exists l'', l = l'++x::l'' /\ ~In x l''. 
+
+Proof.
+induction l; simpl; intros. contradiction. 
+destruct (In_midex H x l). destruct IHl. assumption. destruct H2. 
+exists (a::x0). exists x1. rewrite (proj1 H2).
+rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
+destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
+contradiction.
+Qed.
+
+Lemma In_cons : forall (x a : A) l, In x (a::l) <-> a=x \/ In x l. 
+
+Proof.
+intros. simpl. tauto.
+Qed.
+
+End In.
+
+Implicit Arguments in_elim [A x l].
+Implicit Arguments in_elim_dec [A x l].
+
+Ltac intac := repeat (apply in_eq || apply in_cons).
+
+(***********************************************************************)
+(** inclusion *)
+
+Add Parametric Relation (A : Type) : (list A) (@incl A)
+  reflexivity proved by (@incl_refl A)
+  transitivity proved by (@incl_tran A)
+    as incl_rel.
+
+Add Parametric Morphism (A : Type) : (@app A)
+  with signature (@incl A) ==> (@incl A) ==> (@incl A)
+    as app_incl.
+
+Proof.
+intros. unfold incl. intro. repeat rewrite in_app. intuition.
+Qed.
+
+Section incl.
+
+Variable A : Type.
+
+Lemma incl_nil_elim : forall l : list A, l [= nil <-> l = nil.
+
+Proof.
+unfold incl. destruct l; intuition. assert (In a (a::l)). left. refl.
+ded (H _ H0). contradiction. discr.
+Qed.
+
+Lemma incl_nil : forall l : list A, nil [= l.
+
+Proof.
+induction l. apply incl_refl. apply incl_tl. assumption.
+Qed.
+
+Lemma incl_cons_l : forall (a : A) l m, a :: l [= m -> In a m /\ l [= m.
+
+Proof.
+intros a l m. unfold incl. simpl. intuition.
+Qed.
+
+Lemma incl_cons_l_in : forall (x : A) l m, x :: l [= m -> In x m.
+
+Proof.
+unfold incl. simpl. intros. apply H. left. refl.
+Qed.
+
+Lemma incl_cons_l_incl : forall (x : A) l m, x :: l [= m -> l [= m.
+
+Proof.
+unfold incl. simpl. intros. apply H. tauto.
+Qed.
+
+Lemma incl_app_elim : forall l1 l2 l3 : list A,
+  l1 ++ l2 [= l3 -> l1 [= l3 /\ l2 [= l3.
+
+Proof.
+intuition.
+apply incl_tran with (l1 ++ l2). apply incl_appl. apply incl_refl. exact H.
+apply incl_tran with (l1 ++ l2). apply incl_appr. apply incl_refl. exact H.
+Qed.
+
+Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l1 [= l3.
+
+Proof.
+induction l1; simpl; intros. apply incl_nil.
+eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
+apply (incl_appl l2 (incl_refl (a :: l1))).
+Qed.
+
+Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l2 [= l3.
+
+Proof.
+induction l1; simpl; intros. assumption.
+eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
+apply (incl_appr (a :: l1) (incl_refl l2)).
+Qed.
+
+Lemma appl_incl : forall l l2 l2' : list A, l2 [= l2' -> l ++ l2 [= l ++ l2'.
+
+Proof.
+intros. apply app_incl. apply incl_refl. exact H.
+Qed.
+
+Lemma appr_incl : forall l l1 l1' : list A, l1 [= l1' -> l1 ++ l [= l1' ++ l.
+
+Proof.
+intros. apply app_incl. exact H. apply incl_refl.
+Qed.
+
+Lemma app_com_incl : forall l1 l2 l3 l4 : list A,
+  (l1 ++ l3) ++ l2 [= l4 -> (l1 ++ l2) ++ l3 [= l4.
+
+Proof.
+unfold incl. intros. apply H. apply in_app_com. exact H0.
+Qed.
+
+Lemma incl_cons_r : forall x : A, forall m l, l [= x :: m -> In x l \/ l [= m.
+
+Proof.
+induction l; simpl; intros. right. apply incl_nil.
+ded (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
+ded (IHl H1). destruct H2. auto.
+right. apply List.incl_cons; assumption.
+Qed.
+
+End incl.
+
+Implicit Arguments incl_app_elim [A l1 l2 l3].
+
+Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.
+
+(***********************************************************************)
+(** strict inclusion *)
+
+Definition strict_incl A (l m : list A) := l [= m /\ ~m [= l.
+
+Infix "[" := strict_incl (at level 70).
+
+Lemma strict_incl_tran : forall A (l m n : list A), l [ m -> m [ n -> l [ n.
+
+Proof.
+unfold strict_incl. intuition. transitivity m; hyp.
+apply H2. transitivity n; hyp.
+Qed.
+
+Add Parametric Relation (A : Type) : (list A) (@strict_incl A)
+  transitivity proved by (@strict_incl_tran A)
+    as strict_incl_rel.
+
+(***********************************************************************)
+(** equivalence *)
+
+Section equiv.
+
+Variable A : Type.
+
+Definition lequiv (l1 l2 : list A) : Prop := l1 [= l2 /\ l2 [= l1.
+
+Lemma lequiv_refl : forall l, lequiv l l.
+
+Proof.
+intro. split; apply incl_refl.
+Qed.
+
+Lemma lequiv_sym : forall l1 l2, lequiv l1 l2 -> lequiv l2 l1.
+
+Proof.
+intros. destruct H. split; assumption.
+Qed.
+
+Lemma lequiv_trans :
+  forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
+
+Proof.
+intros. destruct H. destruct H0. split. eapply incl_tran. apply H. assumption.
+eapply incl_tran. apply H2. assumption.
+Qed.
+
+End equiv.
+
+Infix "[=]" := lequiv (at level 70).
+
+Add Parametric Relation (A : Type) : (list A) (@lequiv A)
+  reflexivity proved by (@lequiv_refl A)
+  symmetry proved by (@lequiv_sym A)
+    transitivity proved by (@lequiv_trans A)
+    as lequiv_rel.
+
+Add Parametric Morphism (A : Type) : (@app A)
+  with signature (@lequiv A) ==> (@lequiv A) ==> (@lequiv A)
+    as app_lequiv.
+
+Proof.
+unfold lequiv. intuition.
+Qed.
 
 (***********************************************************************)
 (** empty list *)
@@ -51,6 +317,22 @@ End nil.
 
 (***********************************************************************)
 (** cons *)
+
+Add Parametric Morphism (A : Type) : (@cons A)
+  with signature (@eq A) ==> (@incl A) ==> (@incl A)
+    as incl_double_cons.
+
+Proof.
+firstorder.
+Qed.
+
+Add Parametric Morphism (A : Type) : (@cons A)
+  with signature (@eq A) ==> (@lequiv A) ==> (@lequiv A)
+    as cons_lequiv.
+
+Proof.
+firstorder.
+Qed.
 
 Section cons.
 
@@ -145,7 +427,7 @@ apply IHn with l; trivial.
 Qed.
 
 Lemma list_drop_last : forall l m n (a : A),
-  l ++ m = n ++ a::nil -> m <> nil -> exists2 w, incl w m & l ++ w = n.
+  l ++ m = n ++ a::nil -> m <> nil -> exists2 w, w [= m & l ++ w = n.
 
 Proof.
 induction l; intros.
@@ -291,6 +573,30 @@ End tail_nth.
 (***********************************************************************)
 (** list filtering *)
 
+Section filter.
+
+Variables (A : Type) (f : A -> bool).
+
+Lemma filter_incl : forall l, filter f l [= l.
+
+Proof.
+induction l; simpl; intros. refl. case (f a); rewrite IHl.
+refl. apply incl_tl. refl.
+Qed.
+
+Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
+
+Lemma notIn_filter : forall x l,
+  ~In x (filter f l) <-> ~In x l \/ (In x l /\ f x = false).
+
+Proof.
+intros. rewrite filter_In. intuition. case (In_dec eq_dec x l); intro.
+right. intuition. gen H. case (f x). irrefl. refl. auto.
+rewrite H2 in H3. discr.
+Qed.
+
+End filter.
+
 Section filter_opt.
 
 Variables (A B : Type) (f : A -> option B).
@@ -306,279 +612,6 @@ Fixpoint filter_opt (l : list A) : list B :=
   end.
 
 End filter_opt.
-
-(***********************************************************************)
-(** membership *)
-
-Section In.
-
-Variable A : Type.
-
-Lemma in_app : forall l m (x : A), In x (l ++ m) <-> In x l \/ In x m.
-
-Proof.
-intuition.
-Qed.
-
-Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
-
-Proof.
-induction l1; simpl; intros. contradiction. destruct H. subst x. auto.
-right. apply IHl1. assumption.
-Qed.
-
-Lemma in_appr : forall (x : A) l1 l2, In x l2 -> In x (l1 ++ l2).
-
-Proof.
-induction l1; simpl; intros. assumption. right. apply IHl1. assumption.
-Qed.
-
-Lemma in_app_com : forall (x : A) l1 l2 l3,
-  In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
-
-Proof.
-intros. repeat rewrite in_app in H. intuition.
-Qed.
-
-Lemma in_elim : forall (x : A) l,
-  In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
-
-Proof.
-induction l; simpl; intros. contradiction. destruct H. subst x.
-exists (@nil A). exists l. refl. ded (IHl H). do 2 destruct H0. rewrite H0.
-exists (a :: x0). exists x1. refl.
-Qed.
-
-Variable eqA_dec : forall x y : A, {x=y}+{~x=y}.
-
-Lemma in_elim_dec : forall (x : A) l,
-  In x l -> exists m, exists p, l = m ++ x :: p /\ ~In x m.
-
-Proof.
-induction l; simpl; intros. contradiction. destruct H. subst x.
-exists (@nil A). exists l. intuition. ded (IHl H). do 3 destruct H0. subst l.
-case (eqA_dec a x); intro.
-subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
-exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
-Qed.
-
-Require Import RelMidex.
-
-Lemma In_midex : eq_midex A -> forall (x : A) l, In x l \/ ~In x l. 
-
-Proof.
-induction l. tauto. simpl. destruct (H a x); destruct IHl; tauto.
-Qed.
-
-Lemma In_elim_right : eq_midex A -> forall (x : A) l,
-  In x l -> exists l', exists l'', l = l'++x::l'' /\ ~In x l''. 
-
-Proof.
-induction l; simpl; intros. contradiction. 
-destruct (In_midex H x l). destruct IHl. assumption. destruct H2. 
-exists (a::x0). exists x1. rewrite (proj1 H2).
-rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
-destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
-contradiction.
-Qed.
-
-Lemma In_cons : forall (x a : A) l, In x (a::l) <-> a=x \/ In x l. 
-
-Proof.
-intros. simpl. tauto.
-Qed.
-
-End In.
-
-Implicit Arguments in_elim [A x l].
-Implicit Arguments in_elim_dec [A x l].
-
-Ltac intac := repeat (apply in_eq || apply in_cons).
-
-(***********************************************************************)
-(** inclusion *)
-
-Infix "[=" := incl (at level 70).
-
-Require Import Setoid.
-
-Add Parametric Relation (A : Type) : (list A) (@incl A)
-  reflexivity proved by (@incl_refl A)
-  transitivity proved by (@incl_tran A)
-    as incl_rel.
-
-Add Parametric Morphism (A : Type) : (@app A)
-  with signature (@incl A) ==> (@incl A) ==> (@incl A)
-    as app_incl.
-
-Proof.
-intros. unfold incl. intro. repeat rewrite in_app. intuition.
-Qed.
-
-Section incl.
-
-Variable A : Type.
-
-Lemma incl_nil_elim : forall l : list A, l [= nil <-> l = nil.
-
-Proof.
-unfold incl. destruct l; intuition. assert (In a (a::l)). left. refl.
-ded (H _ H0). contradiction. discr.
-Qed.
-
-Lemma incl_nil : forall l : list A, nil [= l.
-
-Proof.
-induction l. apply incl_refl. apply incl_tl. assumption.
-Qed.
-
-Lemma incl_cons_l : forall (a : A) l m, a :: l [= m -> In a m /\ l [= m.
-
-Proof.
-intros a l m. unfold incl. simpl. intuition.
-Qed.
-
-Lemma incl_cons_l_in : forall (x : A) l m, x :: l [= m -> In x m.
-
-Proof.
-unfold incl. simpl. intros. apply H. left. refl.
-Qed.
-
-Lemma incl_cons_l_incl : forall (x : A) l m, x :: l [= m -> l [= m.
-
-Proof.
-unfold incl. simpl. intros. apply H. tauto.
-Qed.
-
-Lemma incl_double_cons : forall (x : A) l l', l [= l' -> x::l [= x::l'.
-
-Proof.
-unfold incl. simpl. intros. pose (H a). tauto. 
-Qed.
-
-Lemma incl_app_elim : forall l1 l2 l3 : list A,
-  l1 ++ l2 [= l3 -> l1 [= l3 /\ l2 [= l3.
-
-Proof.
-intuition.
-apply incl_tran with (l1 ++ l2). apply incl_appl. apply incl_refl. exact H.
-apply incl_tran with (l1 ++ l2). apply incl_appr. apply incl_refl. exact H.
-Qed.
-
-Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l1 [= l3.
-
-Proof.
-induction l1; simpl; intros. apply incl_nil.
-eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
-apply (incl_appl l2 (incl_refl (a :: l1))).
-Qed.
-
-Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l2 [= l3.
-
-Proof.
-induction l1; simpl; intros. assumption.
-eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
-apply (incl_appr (a :: l1) (incl_refl l2)).
-Qed.
-
-Lemma appl_incl : forall l l2 l2' : list A, l2 [= l2' -> l ++ l2 [= l ++ l2'.
-
-Proof.
-intros. apply app_incl. apply incl_refl. exact H.
-Qed.
-
-Lemma appr_incl : forall l l1 l1' : list A, l1 [= l1' -> l1 ++ l [= l1' ++ l.
-
-Proof.
-intros. apply app_incl. exact H. apply incl_refl.
-Qed.
-
-Lemma app_com_incl : forall l1 l2 l3 l4 : list A,
-  (l1 ++ l3) ++ l2 [= l4 -> (l1 ++ l2) ++ l3 [= l4.
-
-Proof.
-unfold incl. intros. apply H. apply in_app_com. exact H0.
-Qed.
-
-Lemma incl_cons_r : forall x : A, forall m l, l [= x :: m -> In x l \/ l [= m.
-
-Proof.
-induction l; simpl; intros. right. apply incl_nil.
-ded (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
-ded (IHl H1). destruct H2. auto.
-right. apply List.incl_cons; assumption.
-Qed.
-
-End incl.
-
-Implicit Arguments incl_app_elim [A l1 l2 l3].
-
-Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.
-
-(***********************************************************************)
-(** strict inclusion *)
-
-Definition strict_incl A (l m : list A) := l [= m /\ ~m [= l.
-
-Infix "[" := strict_incl (at level 70).
-
-Lemma strict_incl_tran : forall A (l m n : list A), l [ m -> m [ n -> l [ n.
-
-Proof.
-unfold strict_incl. intuition. transitivity m; hyp.
-apply H2. transitivity n; hyp.
-Qed.
-
-Add Parametric Relation (A : Type) : (list A) (@strict_incl A)
-  transitivity proved by (@strict_incl_tran A)
-    as strict_incl_rel.
-
-(***********************************************************************)
-(** equivalence *)
-
-Section equiv.
-
-Variable A : Type.
-
-Definition lequiv (l1 l2 : list A) : Prop := l1 [= l2 /\ l2 [= l1.
-
-Lemma lequiv_refl : forall l, lequiv l l.
-
-Proof.
-intro. split; apply incl_refl.
-Qed.
-
-Lemma lequiv_sym : forall l1 l2, lequiv l1 l2 -> lequiv l2 l1.
-
-Proof.
-intros. destruct H. split; assumption.
-Qed.
-
-Lemma lequiv_trans :
-  forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
-
-Proof.
-intros. destruct H. destruct H0. split. eapply incl_tran. apply H. assumption.
-eapply incl_tran. apply H2. assumption.
-Qed.
-
-End equiv.
-
-Infix "[=]" := lequiv (at level 70).
-
-Add Parametric Relation (A : Type) : (list A) (@lequiv A)
-  reflexivity proved by (@lequiv_refl A)
-  symmetry proved by (@lequiv_sym A)
-    transitivity proved by (@lequiv_trans A)
-    as lequiv_rel.
-
-Add Parametric Morphism (A : Type) : (@app A)
-  with signature (@lequiv A) ==> (@lequiv A) ==> (@lequiv A)
-    as app_lequiv.
-
-Proof.
-unfold lequiv. intuition.
-Qed.
 
 (***********************************************************************)
 (** boolean membership when the equality on A is decidable *)
@@ -765,6 +798,13 @@ unfold incl. induction m; simpl. contradiction. intros. destruct H.
 subst a0. case (In_dec a l); intro. apply in_appr. hyp. simpl. auto.
 case (In_dec a l); intro. apply IHm. hyp. simpl.
 case (eqdec a a0); intro. subst a0. auto. right. apply IHm. hyp.
+Qed.
+
+Lemma In_removes : forall x l m, In x (removes l m) <-> In x m /\ ~In x l.
+
+Proof.
+induction m; simpl; intros. tauto. case (In_dec a l); intro. rewrite IHm.
+firstorder. subst. contradiction. simpl. rewrite IHm. firstorder. subst. hyp.
 Qed.
 
 End removes.
