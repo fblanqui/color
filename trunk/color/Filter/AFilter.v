@@ -349,6 +349,8 @@ End red_mod.
 
 End S.
 
+Implicit Arguments filter_sig [Sig].
+
 (***********************************************************************)
 (** tactics *)
 
