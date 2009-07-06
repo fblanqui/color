@@ -1,5 +1,8 @@
-09-07-03: [Blanqui]
+09-07-06: [Blanqui]
 - SemLab/AFlatCont: flat context closure
+- MannaNess/ARedPair: rule elimination using reduction pairs,
+  functors building a reduction pair from a monotone algebra
+  or an argument filtering
 
 09-06-26: [Blanqui]
 - Util/Set/SetUtil: infinite sets
