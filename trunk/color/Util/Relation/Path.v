@@ -92,9 +92,9 @@ destruct (H x a). exists x0. rewrite H4. simpl.
 assert (length x0 <= S (length l)). omega. 
 assert (incl x0 (a :: l)). apply incl_tl. tauto. tauto. exists (a::x0). simpl.
 assert (S (length x0) <= S (length l)). omega. 
-assert (incl (a :: x0) (a :: l)). apply incl_double_cons. tauto. 
-assert (a<>x). intro. rewrite H7 in H4. tauto. 
-assert (a<>y). intro. rewrite H8 in H2. tauto. tauto. 
+assert (incl (a :: x0) (a :: l)). apply incl_double_cons. refl. tauto.
+assert (a<>x). intro. rewrite H7 in H4. tauto.
+assert (a<>y). intro. rewrite H8 in H2. tauto. tauto.
 Qed.
 
 Lemma path_restricted_incl : forall y l l' x,
