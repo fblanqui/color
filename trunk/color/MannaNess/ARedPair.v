@@ -239,7 +239,7 @@ Module WP_MonAlg (Export MA : MonotoneAlgebraType) <: WeakRedPair.
 End WP_MonAlg.
 
 (***********************************************************************)
-(** reduction pair associated to an argument filtering *)
+(** reduction pair associated to an argument filtering without projections *)
 
 Require Import AFilter.
 
@@ -298,3 +298,64 @@ Module WP_Filter (Export F : Filter) <: WeakRedPair.
   Qed.
 
 End WP_Filter.
+
+(***********************************************************************)
+(** reduction pair associated to an argument filtering with projections only *)
+
+Require Import AProj.
+
+Module Type Proj.
+
+  Variable Sig : Signature.
+
+  Variable pi : forall f : Sig, option {k | k < arity f}.
+
+  Declare Module WP : WeakRedPair with Definition Sig := Sig.
+
+End Proj.
+
+Module WP_Proj (Export P : Proj) <: WeakRedPair.
+
+  Definition Sig := Sig.
+
+  Export WP.
+
+  Definition succ := proj_ord pi succ.
+  Definition wf_succ := WF_proj pi wf_succ.
+  Definition sc_succ := proj_subs_closed pi sc_succ.
+
+  Definition bsucc t u := bsucc (proj pi t) (proj pi u).
+
+  Lemma bsucc_sub : rel bsucc << succ.
+
+  Proof.
+    intros t u h. apply bsucc_sub. hyp.
+  Qed.
+
+  Definition succeq := proj_ord pi succeq.
+  Definition sc_succeq := proj_subs_closed pi sc_succeq.
+  Definition cc_succeq := proj_cont_closed pi refl_succeq cc_succeq.
+  
+  Lemma refl_succeq : reflexive succeq.
+
+  Proof.
+    intro x. unfold succeq. apply refl_succeq.
+  Qed.
+
+  Lemma succ_succeq_compat : absorb succ succeq.
+
+  Proof.
+    unfold absorb, succ, succeq. intros t v [u [h1 h2]].
+    unfold proj_ord in *. apply succ_succeq_compat. exists (proj pi u).
+    auto.
+  Qed.
+
+  Definition bsucceq t u := bsucceq (proj pi t) (proj pi u).
+
+  Lemma bsucceq_sub : rel bsucceq << succeq.
+
+  Proof.
+    intros t u h. apply bsucceq_sub. hyp.
+  Qed.
+
+End WP_Proj.

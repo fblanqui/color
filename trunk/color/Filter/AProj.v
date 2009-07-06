@@ -26,7 +26,7 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 
 Section proj.
 
-Variable (pi : forall f : Sig, option {k | k < arity f}).
+Variable pi : forall f : Sig, option {k | k < arity f}.
 
 Fixpoint proj t :=
   match t with
@@ -94,7 +94,7 @@ Qed.
 
 Require Import ARelation.
 
-Lemma proj_sub_closed :
+Lemma proj_subs_closed :
   substitution_closed succ -> substitution_closed psucc.
 
 Proof.
@@ -194,7 +194,7 @@ Lemma proj_weak_red_ord : weak_reduction_ordering succ succ_eq
 
 Proof.
 intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply WF_proj. assumption.
-split. apply proj_sub_closed. assumption.
+split. apply proj_subs_closed. assumption.
 apply proj_weak_cont_closed. assumption.
 Qed.
 
