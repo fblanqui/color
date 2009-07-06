@@ -141,6 +141,13 @@ Qed.
 
 End compat.
 
+Lemma compat_incl : forall succ succ' R,
+  succ << succ' -> compat succ R -> compat succ' R.
+
+Proof.
+intros. intros l r h. apply H. apply H0. hyp.
+Qed.
+
 (***********************************************************************)
 (** reduction pair *)
 
