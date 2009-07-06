@@ -39,6 +39,12 @@ Module PolyInt (PI : TPolyInt).
     Definition succ := Dgt.
     Definition succeq := Dge.
 
+    Lemma refl_succeq : reflexive succeq.
+
+    Proof.
+      intro x. unfold succeq, Dge, transp, Dle. reflexivity.
+    Qed.
+
     Lemma monotone_succeq : AWFMInterpretation.monotone I succeq.
 
     Proof.
