@@ -89,6 +89,7 @@ Module MatrixInt (MI : TMatrixInt).
 
     Definition succeq := MBI.succeq.
 
+    Definition refl_succeq := MBI.succeq_refl.
     Definition monotone_succeq := @MBI.monotone_succeq mi_eval_ok.
 
     Definition succeq' := MBI.succeq'.

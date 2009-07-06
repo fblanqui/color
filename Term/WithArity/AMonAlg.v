@@ -52,6 +52,8 @@ Module Type MonotoneAlgebraType.
   Parameter succ : relation A.
   
   Parameter succeq : relation A.
+
+  Parameter refl_succeq : reflexive succeq.
   
   Parameter monotone_succeq : monotone I succeq.
 

@@ -193,6 +193,12 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
 
   Definition succeq (x y : dom) := (dom2vec x) >=v (dom2vec y).
 
+  Lemma succeq_refl : reflexive succeq.
+      
+  Proof.
+    intro x. apply vec_ge_refl.
+  Qed.
+
   Lemma succeq_trans : transitive succeq.
       
   Proof.
