@@ -52,8 +52,8 @@ induction R; simpl. contradiction.
 assert (h : List.incl R (a::R)). unfold List.incl. simpl. auto.
 case_eq (top_reduct t a). simpl in H0. intuition. subst. 
 eapply top_reduct_correct with (lr := a). simpl. auto. hyp.
-eapply inclusion_elim. apply hd_red_incl with (R := R). hyp. hyp.
-eapply inclusion_elim. apply hd_red_incl with (R := R). hyp. apply IHR. hyp.
+eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. hyp.
+eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. apply IHR. hyp.
 Qed.
 
 Implicit Arguments top_reducts_correct [t u R].
