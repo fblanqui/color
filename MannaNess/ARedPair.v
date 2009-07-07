@@ -188,6 +188,10 @@ Module WeakRedPairProps (Export WP : WeakRedPair).
     | |- WF (red _) => prove WF_rp_red
     | |- WF (red_mod _ _) => prove WF_rp_red_mod
     | |- WF (hd_red_mod _ _) => prove WF_wp_hd_red_mod
+    | |- WF (hd_red_Mod _ _) =>
+      try rewrite int_red_incl_red;
+        try rewrite hd_red_mod_of_hd_red_Mod;
+          prove_termination prove_cc_succ
     | _ => fail "Unsupported termination problem type"
    end.
 
@@ -217,8 +221,8 @@ Module WP_MonAlg (Export MA : MonotoneAlgebraType) <: WeakRedPair.
 
   Definition succeq := IR I succeq.
   Definition sc_succeq := @IR_substitution_closed _ _ MA.succeq.
-  Definition cc_succeq := @IR_context_closed _ _ MA.succeq monotone_succeq.
-  Definition refl_succeq := @IR_reflexive _ _ MA.succeq refl_succeq.
+  Definition cc_succeq := @IR_context_closed _ _ _ monotone_succeq.
+  Definition refl_succeq := @IR_reflexive _ _ _ refl_succeq.
 
   Lemma succ_succeq_compat : absorb succ succeq.
 
