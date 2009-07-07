@@ -304,7 +304,7 @@ Module MatrixInt (MI : TMatrixInt).
   
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
-  Ltac matrixInt_monotonicity := 
+  Ltac prove_int_monotone := 
     let f := fresh "f" in
     first 
     [ solve [
@@ -314,6 +314,8 @@ Module MatrixInt (MI : TMatrixInt).
     | fail "Failed to prove monotonicity of given matrix interpretation"
     ].
 
-  Ltac prove_termination := MAR.prove_termination matrixInt_monotonicity.
+  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.
+
+  Ltac prove_termination := MAR.prove_termination prove_int_monotone.
 
 End MatrixInt.

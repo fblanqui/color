@@ -201,10 +201,12 @@ Module ArcticInt (AI : TArcticInt).
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
-  Ltac noTerminationProofs := 
+  Ltac prove_int_monotone := 
     fail "Arctic matrices cannot be used for proving total termination".
 
-  Ltac prove_termination := MAR.prove_termination noTerminationProofs.
+  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.
+
+  Ltac prove_termination := MAR.prove_termination prove_int_monotone.
 
 End ArcticInt.
 
