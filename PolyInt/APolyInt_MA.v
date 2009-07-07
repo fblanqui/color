@@ -117,14 +117,16 @@ Module PolyInt (PI : TPolyInt).
   End MonotoneAlgebra.
 
   Export MonotoneAlgebra.
-  Module MAR := MonotoneAlgebraResults MonotoneAlgebra.
-  Export MAR.
 
-  Ltac polyInt_monotonicity := first 
+  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
+
+  Ltac prove_int_monotone := first 
     [ solve [apply monotone_succ; pmonotone]
     | fail "Failed to prove monotonicity of polynomial interpretation."
     ].
 
-  Ltac prove_termination := MAR.prove_termination polyInt_monotonicity.
+  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.
+
+  Ltac prove_termination := MAR.prove_termination prove_int_monotone.
 
 End PolyInt.
