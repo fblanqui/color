@@ -206,6 +206,152 @@ Ltac is_var_rhs := cut False;
   [tauto | eapply is_notvar_rhs_false; eassumption].
 
 (***********************************************************************)
+(** monotony properties *)
+
+Require Import Setoid.
+
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as red_incl.
+
+Proof.
+intros R R' RR' u v Rst. redtac.
+exists l. exists r. exists c. exists s. repeat split; try hyp.
+apply RR'. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    as red_equiv.
+
+Proof.
+intros R S. intros [h1 h2]. split; apply red_incl; hyp.
+Qed.
+
+(*COQ: can be removed?*)
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@lequiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as red_equiv_ext.
+
+Proof.
+intros A B. intros [h1 h2]. split; apply red_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as hd_red_incl.
+
+Proof.
+intros R R' RR' u v Rst. redtac.
+exists l. exists r. exists s. repeat split; try hyp.
+apply RR'. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    as hd_red_equiv.
+
+Proof.
+intros R S. intros [h1 h2]. split; apply hd_red_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@lequiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as hd_red_equiv_ext.
+
+Proof.
+intros R S. intros [h1 h2]. split; apply hd_red_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as red_mod_incl.
+
+Proof.
+intros. unfold red_mod. comp. apply incl_rtc.
+apply red_incl. hyp. apply red_incl. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@lequiv (@rule Sig)) ==>
+    (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    as red_mod_equiv.
+
+Proof.
+intros R R' [h1 h2] S S' [h3 h4]. split; apply red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@lequiv (@rule Sig)) ==>
+    (@lequiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as red_mod_equiv_ext.
+
+Proof.
+intros R R' [h1 h2] S S' [h3 h4]. split; apply red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as hd_red_mod_incl.
+
+Proof.
+intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
+apply hd_red_incl. hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@lequiv (@rule Sig)) ==>
+    (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    as hd_red_mod_equiv.
+
+Proof.
+intros R R' [h1 h2] S S' [h3 h4]. split; apply hd_red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@lequiv (@rule Sig)) ==>
+    (@lequiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as hd_red_mod_equiv_ext.
+
+Proof.
+intros R R' [h1 h2] S S' [h3 h4]. split; apply hd_red_mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
+  with signature (@inclusion (term Sig)) ==>
+    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
+    as hd_red_Mod_incl.
+
+Proof.
+intros. unfold hd_red_Mod. comp. hyp. rewrite H0. refl.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
+  with signature (same_relation (term Sig)) ==>
+    (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    as hd_red_Mod_equiv.
+
+Proof.
+intros R R' [h1 h2] S S' [h3 h4]. split; apply hd_red_Mod_incl; hyp.
+Qed.
+
+Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
+  with signature (same_relation (term Sig)) ==>
+    (@lequiv (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
+    as hd_red_Mod_equiv_ext.
+
+Proof.
+intros R R' [h1 h2] S S' [h3 h4]. split; apply hd_red_Mod_incl; hyp.
+Qed.
+
+(***********************************************************************)
 (** basic properties *)
 
 Section S.
@@ -396,7 +542,7 @@ Section vars.
 Variable R : rules.
 
 Definition rules_preserv_vars :=
-  forall l r, In (mkRule l r) R -> incl (vars r) (vars l).
+  forall l r, In (mkRule l r) R -> vars r [= vars l.
 
 Variable hyp : rules_preserv_vars.
 
@@ -476,7 +622,7 @@ Qed.
 End red_mod.
 
 Lemma rules_preserv_vars_incl : forall R S : rules,
-  incl R S -> rules_preserv_vars S -> rules_preserv_vars R.
+  R [= S -> rules_preserv_vars S -> rules_preserv_vars R.
 
 Proof.
 unfold rules_preserv_vars, incl. intuition. eapply H0. apply H. apply H1. hyp.
@@ -579,22 +725,6 @@ destruct RR'xy as [Rxy | Rxy]; destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]];
   subst x; subst y; exists rl; exists rr; exists c; exists s; intuition.
 Qed.
 
-Lemma red_incl : incl R R' -> red R << red R'.
-
-Proof.
-intros RR' u v Rst. redtac.
-exists l. exists r. exists c. exists s. repeat split; try hyp.
-apply RR'. hyp.
-Qed.
-
-Lemma hd_red_incl : incl R R' -> hd_red R << hd_red R'.
-
-Proof.
-intros RR' u v Rst. redtac.
-exists l. exists r. exists s. repeat split; try hyp.
-apply RR'. hyp.
-Qed.
-
 Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
 
 Proof.
@@ -620,28 +750,6 @@ End union.
 Section rewriting_modulo_results.
 
 Variables (S S' : relation term) (E E' R R' : rules).
-
-Lemma red_mod_incl : incl R R' -> incl E E' -> red_mod E R << red_mod E' R'.
-
-Proof.
-intros. unfold red_mod. comp. apply incl_rtc.
-apply red_incl. hyp. apply red_incl. hyp.
-Qed.
-
-Lemma hd_red_Mod_incl :
-  S << S' -> incl R R' -> hd_red_Mod S R << hd_red_Mod S' R'.
-
-Proof.
-intros. unfold hd_red_Mod. comp. hyp. apply hd_red_incl. hyp.
-Qed.
-
-Lemma hd_red_mod_incl :
-  incl E E' -> incl R R' -> hd_red_mod E R << hd_red_mod E' R'.
-
-Proof.
-intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
-apply hd_red_incl. hyp.
-Qed.
 
 Lemma hd_red_mod_of_hd_red_Mod_int :
   hd_red_Mod (int_red E #) R << hd_red_mod E R.
