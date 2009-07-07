@@ -57,15 +57,15 @@ Require Import MonotonePolynom.
 
 Definition PolyInterpretation := forall f : Sig, poly (arity f).
 
-Definition PolyWeakMonotone (pi : PolyInterpretation) := 
-  forall f : Sig, pweak_monotone (pi f).
-Definition PolyStrongMonotone (pi : PolyInterpretation) := 
-  forall f : Sig, pstrong_monotone (pi f).
-
 Variable PI : PolyInterpretation.
 
-Variable PI_WM : PolyWeakMonotone PI.
-Variable PI_SM : PolyStrongMonotone PI.
+Definition PolyWeakMonotone := forall f : Sig, pweak_monotone (PI f).
+
+Variable PI_WM : PolyWeakMonotone.
+
+Definition PolyStrongMonotone := forall f : Sig, pstrong_monotone (PI f).
+
+Variable PI_SM : PolyStrongMonotone.
 
 (***********************************************************************)
 (** coefficients are positive *)
@@ -93,24 +93,23 @@ End coef_pos.
 (***********************************************************************)
 (** interpretation in D *)
 
-Definition Int_of_PI :=
-  mkInterpretation D0 (fun f => peval_D (PI_WM f)).
+Definition Int_of_PI := mkInterpretation D0 (fun f => peval_D (PI_WM f)).
 
-Let W := Int_of_PI.
+Let I := Int_of_PI.
 
 (***********************************************************************)
 (** monotony *)
 
 Require Import AWFMInterpretation.
 
-Lemma pi_monotone : monotone W Dgt.
+Lemma pi_monotone : monotone I Dgt.
 
 Proof.
 intro f. unfold Dgt. apply Vmonotone_transp.
 apply (pmonotone_imp_monotone_peval_Dlt (proj1 (PI_SM f)) (PI_SM f)).
 Qed.
 
-Lemma pi_monotone_eq : monotone W Dge.
+Lemma pi_monotone_eq : monotone I Dge.
 
 Proof.
 intro f. unfold Dge. apply Vmonotone_transp.
@@ -120,7 +119,7 @@ Qed.
 (***********************************************************************)
 (** reduction ordering *)
 
-Let succ := IR W Dgt.
+Let succ := IR I Dgt.
 
 Lemma pi_red_ord : reduction_ordering succ.
 
@@ -131,7 +130,7 @@ Qed.
 (***********************************************************************)
 (** reduction pair *)
 
-Let succ_eq := IR W Dge.
+Let succ_eq := IR I Dge.
 
 Lemma pi_absorb : absorb succ succ_eq.
 
@@ -147,9 +146,9 @@ Definition rp := @mkReduction_pair Sig
   (*rp_succ_eq : relation term;*)
   succ_eq
   (*rp_subs : substitution_closed rp_succ;*)
-  (@IR_substitution_closed _ W Dgt)
+  (@IR_substitution_closed _ I Dgt)
   (*rp_subs_eq : substitution_closed rp_succ_eq;*)
-  (@IR_substitution_closed _ W Dge)
+  (@IR_substitution_closed _ I Dge)
   (*rp_cont : context_closed rp_succ;*)
   (@IR_context_closed _ _ _ pi_monotone)
   (*rp_cont_eq : context_closed rp_succ_eq;*)
@@ -157,19 +156,19 @@ Definition rp := @mkReduction_pair Sig
   (*rp_absorb : absorb rp_succ rp_succ_eq;*)
   pi_absorb
   (*rp_succ_wf : WF rp_succ*)
-  (@IR_WF _ W _ WF_Dgt).
+  (@IR_WF _ I _ WF_Dgt).
 
 (***********************************************************************)
 (** equivalence between (xint) and (vec_of_val xint) *)
 
-Let f1 (xint : valuation W) k (t : bterm k) := proj1_sig (bterm_int xint t).
+Let f1 (xint : valuation I) k (t : bterm k) := proj1_sig (bterm_int xint t).
 
-Let f2 (xint : valuation W) k (t : bterm k) :=
+Let f2 (xint : valuation I) k (t : bterm k) :=
   proj1_sig (peval_D (bterm_poly_pos t) (vec_of_val xint (S k))).
   
-Let P (xint : valuation W) k (t : bterm k) := f1 xint t = f2 xint t.
+Let P (xint : valuation I) k (t : bterm k) := f1 xint t = f2 xint t.
 
-Let Q (xint : valuation W) k n (ts : vector (bterm k) n) :=
+Let Q (xint : valuation I) k n (ts : vector (bterm k) n) :=
   Vforall (@P xint k) ts.
 
 Lemma termpoly_v_eq_1 : forall x k (H : (x<=k)%nat),
@@ -218,7 +217,7 @@ Proof.
  intuition.
 Qed.
 
-Lemma PI_term_int_eq : forall (xint : valuation W) t k 
+Lemma PI_term_int_eq : forall (xint : valuation I) t k 
   (H : (maxvar t <= k)%nat),
   proj1_sig (term_int xint t)
   = proj1_sig (peval_D (bterm_poly_pos (inject_term H))
@@ -255,8 +254,8 @@ Definition rulePoly_gt r :=
 
 Require Import ZUtil.
 
-Lemma pi_compat_rule : forall r, coef_pos (rulePoly_gt r) -> 
-  succ (lhs r) (rhs r).
+Lemma pi_compat_rule : forall r,
+  coef_pos (rulePoly_gt r) -> succ (lhs r) (rhs r).
 
 Proof.
 intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
@@ -268,8 +267,8 @@ apply pos_lt. rewrite <- (peval_const (1)%Z v). do 2 rewrite <- peval_minus.
 unfold v. apply pos_peval. exact H_coef_pos.
 Qed.
 
-Lemma pi_compat_rule_weak : forall r, coef_pos (rulePoly_ge r) -> 
-  succ_eq (lhs r) (rhs r).
+Lemma pi_compat_rule_weak : forall r,
+  coef_pos (rulePoly_ge r) -> succ_eq (lhs r) (rhs r).
 
 Proof.
 intros r H_coef_pos. unfold succ_eq, IR. intro xint. unfold Dge, Dle, transp.
