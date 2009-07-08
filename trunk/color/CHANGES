@@ -1,5 +1,6 @@
-09-07-06: [Blanqui]
+09-07-08: [Blanqui]
 - SemLab/AFlatCont: flat context closure
+- SemLab/ARootLab: root labelling
 - MannaNess/ARedPair: rule elimination using reduction pairs,
   functors building a reduction pair from a monotone algebra
   or an argument filtering
