@@ -18,6 +18,9 @@ Require Import EqUtil.
 Require Import VecUtil.
 Require Import Max.
 
+(***********************************************************************)
+(** flat context closure for standard rewriting *)
+
 Section S.
 
 Variable Sig : Signature.
@@ -55,22 +58,29 @@ Definition flat_rule n (a : rule) :=
   if is_root_preserving a then a :: nil
     else map (flat_cont_rule a) (flat_conts n).
 
-Variable R : rules. Let n := maxvar_rules R.
+Variable R : rules.
 
-Notation R' := (flat_map (flat_rule (S n)) R).
+Let n := maxvar_rules R.
+
+Definition flat_rules := flat_map (flat_rule (S n)) R.
+
+Notation R' := flat_rules.
 
 Lemma root_preserving : forall a,
   is_root_preserving a = true -> In a R -> In a R'.
 
 Proof.
-intros. rewrite in_flat_map. exists a. intuition. unfold flat_rule. rewrite H.
-simpl. auto.
+intros. unfold flat_rules. rewrite in_flat_map. exists a. intuition.
+unfold flat_rule. rewrite H. simpl. auto.
 Qed.
 
-Variable one_symbol : Sig.
-Variable hyp : arity one_symbol > 0.
+(***********************************************************************)
+(** main theorem *)
 
-Definition one_flat_cont := flat_cont_symb n one_symbol hyp.
+Variable some_symbol : Sig.
+Variable hyp : arity some_symbol > 0.
+
+Definition one_flat_cont := flat_cont_symb n some_symbol hyp.
 
 Lemma WF_flat : WF (red R) <-> WF (red R').
 
@@ -78,8 +88,8 @@ Proof.
 split; intro.
 (* -> *)
 intro t. generalize (H t). induction 1. apply SN_intro; intros. apply H1.
-redtac. rewrite in_flat_map in lr. destruct lr as [[a b] [h1 h2]].
-unfold flat_rule in h2. simpl in h2.
+redtac. unfold flat_rules in lr. rewrite in_flat_map in lr.
+destruct lr as [[a b] [h1 h2]]. unfold flat_rule in h2. simpl in h2.
 destruct a. simpl in h2. intuition. inversion H2. subst. apply red_rule. hyp.
 destruct b. simpl in h2. intuition. inversion H2. subst. apply red_rule. hyp.
 gen h2. case_symb_eq Sig f f0; intro. simpl in h2. intuition. inversion H2.
@@ -100,7 +110,8 @@ apply red_rule. hyp.
 intro t. geneq H t (fill one_flat_cont t). induction 1. intros. subst.
 apply SN_intro; intros. apply H0 with (fill one_flat_cont y). 2: refl.
 redtac. subst. repeat rewrite fill_fill.
-case_eq (is_root_preserving (mkRule l r)). apply red_rule. rewrite in_flat_map.
+case_eq (is_root_preserving (mkRule l r)). apply red_rule.
+unfold flat_rules. rewrite in_flat_map.
 exists (mkRule l r). intuition. unfold flat_rule. rewrite H1. simpl. auto.
 destruct l. discr. destruct r. discr.
 destruct (cont_case (comp one_flat_cont c)). discr.
@@ -111,9 +122,9 @@ assert (m : maxvar_rule (mkRule l r) < S n). eapply maxvar_rules_elim.
 apply lr. unfold n. omega.
 repeat rewrite fill_sub with (n:=n).
 set (s' := maxvar_union (S n) s (fsub n (Vapp vi vj))).
-apply hd_red_incl_red. apply hd_red_rule. rewrite in_flat_map.
-exists (mkRule l r). intuition. unfold flat_rule. unfold l, r. rewrite H1.
-rewrite in_map_iff. assert (h : i < arity g). omega.
+apply hd_red_incl_red. apply hd_red_rule. unfold flat_rules.
+rewrite in_flat_map. exists (mkRule l r). intuition. unfold flat_rule.
+unfold l, r. rewrite H1. rewrite in_map_iff. assert (h : i < arity g). omega.
 exists (flat_cont_symb (S n) g h). intuition. simpl.
 generalize (flat_cont_aux h). assert (arity g - S i = j). omega. rewrite H3.
 intro. assert (e0=e). apply eq_unique. subst. refl.
@@ -125,3 +136,24 @@ transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_l.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** functorization *)
+
+Module Type FlatCC.
+  Parameter Sig : Signature.
+  Parameter Fs : list Sig.
+  Parameter Fs_ok : forall x : Sig, In x Fs.
+  Parameter some_symbol : Sig.
+  Parameter hyp : arity some_symbol > 0.
+End FlatCC.
+
+Module FlatCCProps (Export F : FlatCC).
+
+  Lemma WF_flat : forall R, WF (red R) <-> WF (red (flat_rules Fs R)).
+
+  Proof.
+    intro. eapply WF_flat. apply Fs_ok. apply hyp.
+  Qed.
+
+End FlatCCProps.
