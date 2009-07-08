@@ -406,8 +406,6 @@ End red_mod.
 
 Section enum.
 
-Require Import ListUtil.
-
 Variable Is : list I.
 Variable Is_ok : forall x : I, In x Is.
 
@@ -521,16 +519,12 @@ Require Import ATrs.
 
 Section red_mod.
 
-Notation rules := (ATrs.rules Sig).
-
-Variables E R : rules.
+Variables E R : ATrs.rules Sig.
 
 Variable ge_compatE : forall l r, In (mkRule l r) E -> l >=I r.
 Variable ge_compatR : forall l r, In (mkRule l r) R -> l >=I r.
 
 Notation E' := (enum E). Notation R' := (enum R).
-
-Infix "++" := app.
 
 Lemma WF_red_lab_fin : WF (red R) <-> WF (red_mod D' R').
 
@@ -538,6 +532,8 @@ Proof.
 rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab; try hyp.
 apply WF_mor. rewrite Rules_enum_Decr. rewrite lab_rules_enum. refl.
 Qed.
+
+Infix "++" := app.
 
 Lemma WF_red_mod_lab_fin : WF (red_mod E R) <-> WF (red_mod (D' ++ E') R').
 
@@ -561,3 +557,278 @@ End red_mod.
 End enum.
 
 End S.
+
+Implicit Arguments lab_sig [Sig L beq].
+Implicit Arguments Decr [Sig L beq].
+Implicit Arguments lab_rules [Sig L beq I].
+Implicit Arguments enum [Sig L beq I].
+Implicit Arguments enum_Decr [Sig L beq].
+
+(***********************************************************************)
+(** module type for semantic labellings with unordered labels *)
+
+Module Type SemLab.
+
+  Parameter Sig : Signature.
+
+  Notation term := (term Sig). Notation terms := (vector term).
+  Notation rule := (rule Sig).
+
+  Require Export ARules. Notation rules := (rules Sig).
+
+  Parameter I : interpretation Sig.
+
+  Parameter L : Type.
+  Parameter beq : L -> L -> bool.
+  Parameter beq_ok : forall l m, beq l m = true <-> l = m.
+
+  Notation Sig' := (lab_sig beq_ok).
+
+  Parameter pi : forall f : Sig, vector I (arity f) -> L.
+
+  Notation lab_rules := (lab_rules beq_ok pi).
+
+End SemLab.
+
+(***********************************************************************)
+(** module type for semantic labellings with ordered labels *)
+
+Module Type OrdSemLab.
+
+  Declare Module Export SL : SemLab.
+
+  Parameter Lgt : relation L. Infix ">L" := Lgt (at level 50).
+
+  Notation Lge := (Lgt %). Infix ">=L" := Lge (at level 50).
+
+  Parameter Dge : relation I. Infix ">=D" := Dge (at level 50).
+
+  Notation Ige := (IR I Dge). Infix ">=I" := Ige (at level 70).
+
+  Parameter pi_mon : forall f, Vmonotone (pi f) Dge Lge.
+  Parameter I_mon : forall f, Vmonotone1 (fint I f) Dge.
+
+  Notation Decr := (Decr beq_ok Lgt).
+
+End OrdSemLab.
+
+(***********************************************************************)
+(** functor providing equality-ordered labels *)
+
+Module Ord (Export S : SemLab) <: OrdSemLab.
+
+  Module Export SL := S.
+
+  Definition Lgt (_ _ : L) := False. Infix ">L" := Lgt (at level 50).
+
+  Notation Lge := (Lgt %). Infix ">=L" := Lge (at level 50).
+
+  Lemma Lge_is_eq : forall a b, a >=L b <-> a = b.
+
+  Proof.
+    firstorder.
+  Qed.
+
+  Definition Dge := @eq I.
+
+  Lemma pi_mon : forall f, Vmonotone (pi f) Dge Lge.
+
+  Proof.
+    unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
+    rewrite Lge_is_eq. rewrite H0. refl.
+  Qed.
+
+  Lemma I_mon : forall f, Vmonotone1 (fint I f) Dge.
+
+  Proof.
+    unfold Vmonotone1, Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
+    rewrite H0. refl.
+  Qed.
+
+End Ord.
+
+(***********************************************************************)
+(** module type for finite semantic labellings with unordered labels *)
+
+Module Type FinSemLab.
+
+  Declare Module Export SL : SemLab.
+
+  Require Export ATrs. Notation rules := (rules Sig).
+
+  Parameter Fs : list Sig.
+  Parameter Fs_ok : forall x : Sig, In x Fs.
+
+  Parameter Is : list I.
+  Parameter Is_ok : forall x : I, In x Is.
+
+  Notation lab_rules := (enum beq_ok pi Is).
+
+End FinSemLab.
+
+(***********************************************************************)
+(** module type for finite semantic labellings with ordered labels *)
+
+Module Type FinOrdSemLab.
+
+  Declare Module Export OSL : OrdSemLab.
+
+  Require Export ATrs. Notation rules := (rules Sig). Infix "++" := app.
+
+  Parameter Fs : list Sig.
+  Parameter Fs_ok : forall x : Sig, In x Fs.
+
+  Parameter Is : list I.
+  Parameter Is_ok : forall x : I, In x Is.
+
+  Notation lab_rules := (enum beq_ok pi Is).
+
+  Parameter Ls : list (L*L).
+  Parameter Ls_ok : forall x y, x >L y <-> In (x,y) Ls.
+
+  Notation Decr := (enum_Decr beq_ok Fs Ls).
+
+End FinOrdSemLab.
+
+(***********************************************************************)
+(** functor providing equality-ordered labels *)
+
+Module FinOrd (Export S : FinSemLab) <: FinOrdSemLab.
+
+  Module Export OSL := Ord SL.
+
+  Definition Lgt (_ _ : L) := False.
+
+  Notation Lge := (Lgt %). Infix ">=L" := Lge (at level 50).
+
+  Lemma Lge_is_eq : forall a b, a >=L b <-> a = b.
+
+  Proof.
+    firstorder.
+  Qed.
+
+  Definition Dge := @eq I.
+
+  Lemma pi_mon : forall f, Vmonotone (pi f) Dge Lge.
+
+  Proof.
+    unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
+    rewrite Lge_is_eq. rewrite H0. refl.
+  Qed.
+
+  Lemma I_mon : forall f, Vmonotone1 (fint I f) Dge.
+
+  Proof.
+    unfold Vmonotone1, Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
+    rewrite H0. refl.
+  Qed.
+
+  Definition Fs := Fs.
+  Definition Fs_ok := Fs_ok.
+
+  Definition Is := Is.
+  Definition Is_ok := Is_ok.
+
+  Definition Ls : list (L*L) := nil.
+
+  Lemma Ls_ok : forall x y, x >L y <-> In (x,y) Ls.
+
+  Proof.
+    firstorder.
+  Qed.
+
+End FinOrd.
+
+(***********************************************************************)
+(** functor providing the properties of a semantic labelling
+with ordered labels *)
+
+Module OrdSemLabProps (Export L : OrdSemLab).
+
+  Section S.
+
+    Variables E R : rules.
+
+    Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
+    Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
+
+    Lemma WF_red_mod_lab : WF (red_mod E R)
+      <-> WF (red_mod (Decr ++ lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_mod_lab. refl. apply pi_mon. apply I_mon.
+      apply ge_compatE. apply ge_compatR.
+    Qed.
+
+    Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
+      <-> WF (hd_red_mod (Decr ++ lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_hd_red_mod_lab. refl. apply pi_mon. apply I_mon.
+      apply ge_compatE.
+    Qed.
+
+    Lemma WF_red_lab : WF (red R) <-> WF (red_mod Decr (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_lab. refl. apply pi_mon. apply I_mon. apply ge_compatR.
+    Qed.
+
+  End S.
+
+End OrdSemLabProps.
+
+(***********************************************************************)
+(** functor providing the properties of a finite semantic labelling
+with ordered labels *)
+
+Module FinOrdSemLabProps (Export L : FinOrdSemLab).
+
+  Section S.
+
+    Variables E R : rules.
+
+    Variable ge_compatE : forall l r, In (mkRule l r) E -> l >=I r.
+    Variable ge_compatR : forall l r, In (mkRule l r) R -> l >=I r.
+
+    Lemma WF_red_mod_lab : WF (red_mod E R)
+      <-> WF (red_mod (Decr ++ lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
+      apply Is_ok. apply Fs_ok. apply Ls_ok.
+      apply ge_compatE. apply ge_compatR.
+    Qed.
+
+    Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
+      <-> WF (hd_red_mod (Decr ++ lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_hd_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
+      apply Is_ok. apply Fs_ok. apply Ls_ok. apply ge_compatE.
+    Qed.
+
+    Lemma WF_red_lab : WF (red R) <-> WF (red_mod Decr (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_lab_fin. refl. apply pi_mon. apply I_mon.
+      apply Is_ok. apply Fs_ok. apply Ls_ok. apply ge_compatR.
+    Qed.
+
+  End S.
+
+End FinOrdSemLabProps.
+
+(***********************************************************************)
+(** functor providing the properties of a semantic labelling
+with unordered labels *)
+
+Module SemLabProps (Export S : SemLab).
+  Module OSL := Ord S.
+  Include (OrdSemLabProps OSL).
+End SemLabProps.
+
+Module FinSemLabProps (Export S : FinSemLab).
+  Module OSL := FinOrd S.
+  Include (FinOrdSemLabProps OSL).
+End FinSemLabProps.
