@@ -34,14 +34,12 @@ Record interpretation : Type := mkInterpretation {
 
 Variable I : interpretation.
 
-Notation D := (domain I).
-
 (***********************************************************************)
 (** valuations *)
 
-Definition valuation := variable -> D.
+Definition valuation := variable -> I.
 
-Fixpoint vec_of_val (xint : valuation) (n : nat) : vector D n :=
+Fixpoint vec_of_val (xint : valuation) (n : nat) : vector I n :=
   match n as n0 return vector _ n0 with
     | O => Vnil
     | S p => Vadd (vec_of_val xint p) (xint p)
@@ -59,13 +57,13 @@ intros xint n. elim n.
   rewrite Vnth_addr. 2: assumption. rewrite H1. refl.
 Qed.
 
-Definition val_of_vec n (v : vector D n) : valuation :=
+Definition val_of_vec n (v : vector I n) : valuation :=
   fun x => match le_lt_dec n x with
     | left _ => (* n <= x *) some_elt I
     | right h => (* x < n *) Vnth v h
   end.
 
-Lemma val_of_vec_eq : forall n (v : vector D n) x (h : x < n),
+Lemma val_of_vec_eq : forall n (v : vector I n) x (h : x < n),
   val_of_vec v x = Vnth v h.
 
 Proof.
@@ -88,7 +86,7 @@ Section term_int.
 
 Variable xint : valuation.
 
-Fixpoint term_int (t : term) : D :=
+Fixpoint term_int t :=
   match t with
     | Var x => xint x
     | Fun f ts => fint I f (Vmap term_int ts)
