@@ -50,7 +50,7 @@ End WeakRedPair.
 (***********************************************************************)
 (** properties of reduction pairs *)
 
-Module WeakRedPairProps (Export WP : WeakRedPair).
+Module WeakRedPairProps (Import WP : WeakRedPair).
 
   Notation rule := (rule Sig). Notation rules := (rules Sig).
 
@@ -178,7 +178,7 @@ End WeakRedPairProps.
 
 Require Import AMonAlg.
 
-Module WP_MonAlg (Export MA : MonotoneAlgebraType) <: WeakRedPair.
+Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
 
   Definition Sig := Sig.
 
@@ -233,11 +233,11 @@ Module Type Filter.
 
 End Filter.
 
-Module WP_Filter (Export F : Filter) <: WeakRedPair.
+Module WP_Filter (Import F : Filter) <: WeakRedPair.
 
   Definition Sig := Sig.
 
-  Export WP.
+  Import WP.
 
   Definition succ := filter_ord succ.
   Definition wf_succ := WF_filter wf_succ.
@@ -294,11 +294,11 @@ Module Type Proj.
 
 End Proj.
 
-Module WP_Proj (Export P : Proj) <: WeakRedPair.
+Module WP_Proj (Import P : Proj) <: WeakRedPair.
 
   Definition Sig := Sig.
 
-  Export WP.
+  Import WP.
 
   Definition succ := proj_ord pi succ.
   Definition wf_succ := WF_proj pi wf_succ.
