@@ -515,14 +515,14 @@ Qed.
 (***********************************************************************)
 (** main theorems (finite versions) *)
 
-Require Import ATrs.
+Import ATrs. Notation rules := (rules Sig).
 
 Variable bge : term->term->bool.
 Variable bge_ok : rel bge << Ige.
 
 Section bge.
 
-Variable R : ATrs.rules Sig.
+Variable R : rules.
 Variable bge_compat : forallb (brule bge) R = true.
 
 Lemma ge_compat : forall l r, In (mkRule l r) R -> l >=I r.
@@ -538,7 +538,7 @@ Implicit Arguments ge_compat [R].
 
 Section red_mod.
 
-Variables E R : ATrs.rules Sig.
+Variables E R : rules.
 
 Notation E' := (enum E). Notation R' := (enum R).
 
@@ -598,7 +598,7 @@ Module Type SemLab.
   Notation term := (term Sig). Notation terms := (vector term).
   Notation rule := (rule Sig).
 
-  Require Export ARules. Notation rules := (rules Sig).
+  Export ARules. Notation rules := (rules Sig).
 
   Parameter I : interpretation Sig.
 
@@ -647,9 +647,9 @@ End OrdSemLab.
 (***********************************************************************)
 (** functor providing equality-ordered labels *)
 
-Module Ord (Export S : SemLab) <: OrdSemLab.
+Module Ord (SL : SemLab) <: OrdSemLab.
 
-  Module Export SL := S.
+  Module Export SL := SL.
 
   Definition Lgt (_ _ : L) := False. Infix ">L" := Lgt (at level 50).
 
@@ -700,7 +700,7 @@ Module Type FinSemLab.
 
   Declare Module Export SL : SemLab.
 
-  Require Export ATrs. Notation rules := (rules Sig).
+  Export ATrs. Notation rules := (rules Sig).
 
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.
@@ -719,7 +719,7 @@ Module Type FinOrdSemLab.
 
   Declare Module Export OSL : OrdSemLab.
 
-  Require Export ATrs. Notation rules := (rules Sig). Infix "++" := app.
+  Export ATrs. Notation rules := (rules Sig). Infix "++" := app.
 
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.
@@ -739,9 +739,11 @@ End FinOrdSemLab.
 (***********************************************************************)
 (** functor providing equality-ordered labels *)
 
-Module FinOrd (Export S : FinSemLab) <: FinOrdSemLab.
+Module FinOrd (Import FSL : FinSemLab) <: FinOrdSemLab.
 
   Module Export OSL := Ord SL.
+
+  Export ATrs. Notation rules := (rules Sig).
 
   Definition Lgt (_ _ : L) := False.
 
@@ -783,13 +785,21 @@ Module FinOrd (Export S : FinSemLab) <: FinOrdSemLab.
     firstorder.
   Qed.
 
+  Notation Decr := (enum_Decr beq_ok Fs Ls).
+
+  Lemma Decr_empty : Decr = nil.
+
+  Proof.
+    firstorder.
+  Qed.
+
 End FinOrd.
 
 (***********************************************************************)
 (** functor providing the properties of a semantic labelling
 with ordered labels *)
 
-Module OrdSemLabProps (Export L : OrdSemLab).
+Module OrdSemLabProps (Import OSL : OrdSemLab).
 
   Section props.
 
@@ -828,7 +838,7 @@ End OrdSemLabProps.
 (** functor providing the properties of a finite semantic labelling
 with ordered labels *)
 
-Module FinOrdSemLabProps (Export L : FinOrdSemLab).
+Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
 
   Section props.
 
@@ -869,11 +879,11 @@ End FinOrdSemLabProps.
 (** functor providing the properties of a semantic labelling
 with unordered labels *)
 
-Module SemLabProps (Export S : SemLab).
+Module SemLabProps (SL : SemLab).
 
-  Module OSL := Ord S.
+  Module Import OSL := Ord SL.
 
-  Module Export P := OrdSemLabProps OSL.
+  Module Import Props := OrdSemLabProps OSL.
 
   Section props.
 
@@ -909,12 +919,17 @@ Module SemLabProps (Export S : SemLab).
 
 End SemLabProps.
 
-(* FIXME: to be finished
-Module FinSemLabProps (Export S : FinSemLab).
+(***********************************************************************)
+(** functor providing the properties of a finite semantic labelling
+with unordered labels *)
 
-  Module OSL := FinOrd S.
+Module FinSemLabProps (FSL : FinSemLab).
 
-  Module Export P := FinOrdSemLabProps OSL.
+  Module Import FOSL := FinOrd FSL.
+
+  Module Import Props := FinOrdSemLabProps FOSL.
+
+  Import FSL.
 
   Section props.
 
@@ -927,25 +942,22 @@ Module FinSemLabProps (Export S : FinSemLab).
       <-> WF (red_mod (lab_rules E) (lab_rules R)).
 
     Proof.
-      rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
-      rewrite Decr_empty. rewrite empty_union_l. refl.
+      rewrite WF_red_mod_lab. 2: apply bge_compatE. 2: apply bge_compatR. refl.
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
       <-> WF (hd_red_mod (lab_rules E) (lab_rules R)).
 
     Proof.
-      rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
-      rewrite Decr_empty. rewrite empty_union_l. refl.
+      rewrite WF_hd_red_mod_lab. 2: apply bge_compatE. refl.
     Qed.
 
     Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).
 
     Proof.
-      rewrite WF_red_lab. 2: apply ge_compatR.
-      rewrite Decr_empty. rewrite red_mod_empty. refl.
+      rewrite WF_red_lab. 2: apply bge_compatR. rewrite red_mod_empty. refl.
     Qed.
 
   End props.
 
-End FinSemLabProps.*)
+End FinSemLabProps.
