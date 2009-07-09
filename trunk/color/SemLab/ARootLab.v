@@ -10,7 +10,6 @@ root labelling (Zantema & Waldmann, RTA'07) (Sternagel & Middeldorp, RTA'08)
 Set Implicit Arguments.
 
 Require Import ATrs.
-Require Import AInterpretation.
 Require Import LogicUtil.
 Require Import ListUtil.
 Require Import VecUtil.
@@ -18,6 +17,9 @@ Require Import BoolUtil.
 Require Import EqUtil.
 Require Import ASemLab.
 Require Import SN.
+Require Import NatUtil.
+Require Import RelUtil.
+Require Import AWFMInterpretation.
 
 (***********************************************************************)
 (** data necessary for a root labelling *)
@@ -48,6 +50,23 @@ Module RootSemLab (Export R : RootLab) <: FinSemLab.
     Definition Sig := Sig.
 
     Definition I := mkInterpretation some_symbol (fun f _ => f).
+
+    Notation eqI := (IR I (@eq I)). Infix "=I" := eqI (at level 70).
+
+    Definition beqI (t u : term) :=
+      match t, u with
+        | Var x, Var y => beq_nat x y
+        | Fun f _, Fun g _ => beq_symb f g
+        | _, _ => false
+      end.
+
+    Lemma beqI_ok : rel beqI << eqI.
+
+    Proof.
+      intros t u. unfold rel. destruct t; destruct u; simpl; intros; try discr.
+      rewrite beq_nat_ok in H. subst. intro. refl.
+      rewrite beq_symb_ok in H. subst. intro. refl.
+    Qed.
 
     Record Lab : Type := mk {
       L_symb : Sig;

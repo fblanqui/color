@@ -513,24 +513,47 @@ apply enum_Decr_complete. hyp.
 Qed.
 
 (***********************************************************************)
-(** rewriting modulo (finite versions) *)
+(** main theorems (finite versions) *)
 
 Require Import ATrs.
+
+Variable bge : term->term->bool.
+Variable bge_ok : rel bge << Ige.
+
+Section bge.
+
+Variable R : ATrs.rules Sig.
+Variable bge_compat : forallb (brule bge) R = true.
+
+Lemma ge_compat : forall l r, In (mkRule l r) R -> l >=I r.
+
+Proof.
+intros. apply bge_ok. unfold rel. change (brule bge (mkRule l r) = true).
+rewrite forallb_forall in bge_compat. apply bge_compat. hyp.
+Qed.
+
+End bge.
+
+Implicit Arguments ge_compat [R].
 
 Section red_mod.
 
 Variables E R : ATrs.rules Sig.
 
-Variable ge_compatE : forall l r, In (mkRule l r) E -> l >=I r.
-Variable ge_compatR : forall l r, In (mkRule l r) R -> l >=I r.
-
 Notation E' := (enum E). Notation R' := (enum R).
+
+Variable bge_compatE : forallb (brule bge) E = true.
+Variable bge_compatR : forallb (brule bge) R = true.
+
+Notation ge_compatE := (ge_compat bge_compatE).
+Notation ge_compatR := (ge_compat bge_compatR).
 
 Lemma WF_red_lab_fin : WF (red R) <-> WF (red_mod D' R').
 
 Proof.
-rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab; try hyp.
-apply WF_mor. rewrite Rules_enum_Decr. rewrite lab_rules_enum. refl.
+rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab.
+2: apply ge_compatR. apply WF_mor. rewrite Rules_enum_Decr.
+rewrite lab_rules_enum. refl.
 Qed.
 
 Infix "++" := app.
@@ -538,7 +561,8 @@ Infix "++" := app.
 Lemma WF_red_mod_lab_fin : WF (red_mod E R) <-> WF (red_mod (D' ++ E') R').
 
 Proof.
-repeat rewrite <- red_mod_Rules. rewrite WF_red_mod_lab; try hyp.
+repeat rewrite <- red_mod_Rules. rewrite WF_red_mod_lab.
+2: apply ge_compatE. 2: apply ge_compatR.
 apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
 repeat rewrite lab_rules_enum. refl.
 Qed.
@@ -547,8 +571,8 @@ Lemma WF_hd_red_mod_lab_fin :
   WF (hd_red_mod E R) <-> WF (hd_red_mod (D' ++ E') R').
 
 Proof.
-repeat rewrite <- hd_red_mod_Rules. rewrite WF_hd_red_mod_lab; try hyp.
-apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
+repeat rewrite <- hd_red_mod_Rules. rewrite WF_hd_red_mod_lab.
+2: apply ge_compatE. apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
 repeat rewrite lab_rules_enum. refl.
 Qed.
 
@@ -578,6 +602,11 @@ Module Type SemLab.
 
   Parameter I : interpretation Sig.
 
+  Notation eqI := (IR I (@eq I)). Infix "=I" := eqI (at level 70).
+
+  Variable beqI : term->term->bool.
+  Variable beqI_ok : rel beqI << eqI.
+
   Parameter L : Type.
   Parameter beq : L -> L -> bool.
   Parameter beq_ok : forall l m, beq l m = true <-> l = m.
@@ -605,6 +634,9 @@ Module Type OrdSemLab.
 
   Notation Ige := (IR I Dge). Infix ">=I" := Ige (at level 70).
 
+  Variable bge : term->term->bool.
+  Variable bge_ok : rel bge << Ige.
+
   Parameter pi_mon : forall f, Vmonotone (pi f) Dge Lge.
   Parameter I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
@@ -630,6 +662,10 @@ Module Ord (Export S : SemLab) <: OrdSemLab.
   Qed.
 
   Definition Dge := @eq I.
+
+  Definition bge := beqI.
+
+  Definition bge_ok := beqI_ok.
 
   Lemma pi_mon : forall f, Vmonotone (pi f) Dge Lge.
 
@@ -788,16 +824,16 @@ Module FinOrdSemLabProps (Export L : FinOrdSemLab).
 
     Variables E R : rules.
 
-    Variable ge_compatE : forall l r, In (mkRule l r) E -> l >=I r.
-    Variable ge_compatR : forall l r, In (mkRule l r) R -> l >=I r.
+    Variable bge_compatE : forallb (brule bge) E = true.
+    Variable bge_compatR : forallb (brule bge) R = true.
 
     Lemma WF_red_mod_lab : WF (red_mod E R)
       <-> WF (red_mod (Decr ++ lab_rules E) (lab_rules R)).
 
     Proof.
       rewrite WF_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
-      apply Is_ok. apply Fs_ok. apply Ls_ok.
-      apply ge_compatE. apply ge_compatR.
+      apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok.
+      apply bge_compatE. apply bge_compatR.
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
@@ -805,14 +841,14 @@ Module FinOrdSemLabProps (Export L : FinOrdSemLab).
 
     Proof.
       rewrite WF_hd_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
-      apply Is_ok. apply Fs_ok. apply Ls_ok. apply ge_compatE.
+      apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok. apply bge_compatE.
     Qed.
 
     Lemma WF_red_lab : WF (red R) <-> WF (red_mod Decr (lab_rules R)).
 
     Proof.
       rewrite WF_red_lab_fin. refl. apply pi_mon. apply I_mon.
-      apply Is_ok. apply Fs_ok. apply Ls_ok. apply ge_compatR.
+      apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok. apply bge_compatR.
     Qed.
 
   End S.
