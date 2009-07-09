@@ -28,11 +28,9 @@ Notation term := (term Sig). Notation terms := (vector term).
 
 Variable I : interpretation Sig.
 
-Notation D := (domain I).
-
 Section IR.
 
-Variable R : relation D.
+Variable R : relation I.
 
 Definition IR : relation term :=
   fun t u => forall xint, R (term_int xint t) (term_int xint u).
@@ -93,7 +91,7 @@ Qed.
 
 Definition IR' : relation term := fun t u =>
   let n := 1 + max (maxvar t) (maxvar u) in
-  forall v : vector D n,
+  forall v : vector I n,
   let xint := val_of_vec I v in
   R (term_int xint t) (term_int xint u).
 
@@ -129,7 +127,7 @@ End IR.
 
 Section inclusion.
 
-Variables R R' : relation D.
+Variables R R' : relation I.
 
 Lemma IR_inclusion : R << R' -> IR R << IR R'.
 
@@ -140,3 +138,4 @@ Qed.
 End inclusion.
 
 End S.
+
