@@ -20,30 +20,6 @@ Require Import ACompat.
 Require Import BoolUtil.
 
 (***********************************************************************)
-(** some useful functions *)
-
-Section bool.
-
-Variables (A : Type) (f : A->A->bool).
-
-Definition neg x y := negb (f x y).
-
-Definition rel : relation A := fun x y => f x y = true.
-
-Variables (R : relation A) (R_dec : rel_dec R).
-
-Definition brel t u :=
-  match R_dec t u with
-    | left _ => true
-    | _ => false
-  end.
-
-End bool.
-
-Definition brule (Sig : Signature) (f : @term Sig -> @term Sig -> bool) a :=
-  f (lhs a) (rhs a).
-
-(***********************************************************************)
 (** module type for reduction pairs *)
 
 Module Type WeakRedPair.
