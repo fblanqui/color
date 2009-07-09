@@ -37,7 +37,7 @@ End RootLab.
 (***********************************************************************)
 (** root labelling *)
 
-Module RootSemLab (Export R : RootLab) <: FinSemLab.
+Module RootSemLab (Import R : RootLab) <: FinSemLab.
 
   Notation beq_symb_ok := (@beq_symb_ok Sig).
   Notation eq_symb_dec := (@eq_symb_dec Sig).
@@ -112,8 +112,7 @@ Module RootSemLab (Export R : RootLab) <: FinSemLab.
 
 End RootSemLab.
 
-(*FIXME: to be finished
-Module RootLabProps (Export R : RootLab).
-  Module SL := RootSemLab R.
-  Include (FinSemLabProps SL).
-End RootLabProps.*)
+Module RootLabProps (RL : RootLab).
+  Module FSL := RootSemLab RL.
+  Module Export Props := FinSemLabProps FSL.
+End RootLabProps.
