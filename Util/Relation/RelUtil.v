@@ -42,6 +42,25 @@ Arguments Scope union [type_scope relation_scope relation_scope].
 Open Scope relation_scope.
 
 (***********************************************************************)
+(** decidable relations *)
+
+Section bool.
+
+Variables (A : Type) (f : A->A->bool).
+
+Definition rel : relation A := fun x y => f x y = true.
+
+Variables (R : relation A) (R_dec : rel_dec R).
+
+Definition brel t u :=
+  match R_dec t u with
+    | left _ => true
+    | _ => false
+  end.
+
+End bool.
+
+(***********************************************************************)
 (** equality on relations *)
 
 Lemma same_relation_refl : forall A, reflexive (same_relation A).

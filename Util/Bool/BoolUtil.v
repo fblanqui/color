@@ -81,6 +81,8 @@ Qed.
 (***********************************************************************)
 (** negation *)
 
+Definition neg (A : Type) (f : A->A->bool) x y := negb (f x y).
+
 Lemma negb_lr : forall b c, negb b = c <-> b = negb c.
 
 Proof.
