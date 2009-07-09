@@ -128,3 +128,21 @@ Add Parametric Morphism (A : Type) : (@union A)
 Proof.
 firstorder.
 Qed.
+
+Section union.
+
+Variable A : Type. Notation set := (set A). Notation empty := (@empty A).
+
+Lemma empty_union_l : forall R, empty ++ R [=] R.
+
+Proof.
+firstorder.
+Qed.
+
+Lemma empty_union_r : forall R, R ++ empty [=] R.
+
+Proof.
+firstorder.
+Qed.
+
+End union.
