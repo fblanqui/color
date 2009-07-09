@@ -55,6 +55,8 @@ Definition eq_rule_dec := dec_beq beq_rule_ok.
 
 Definition rules := list rule.
 
+Definition brule (f : term -> term -> bool) a := f (lhs a) (rhs a).
+
 (***********************************************************************)
 (** basic definitions and properties on rules *)
 
