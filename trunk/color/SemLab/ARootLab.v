@@ -112,7 +112,8 @@ Module RootSemLab (Export R : RootLab) <: FinSemLab.
 
 End RootSemLab.
 
+(*FIXME: to be finished
 Module RootLabProps (Export R : RootLab).
   Module SL := RootSemLab R.
   Include (FinSemLabProps SL).
-End RootLabProps.
+End RootLabProps.*)

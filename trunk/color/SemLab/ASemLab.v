@@ -582,7 +582,7 @@ End enum.
 
 End S.
 
-Implicit Arguments lab_sig [Sig L beq].
+Implicit Arguments lab_sig [L beq].
 Implicit Arguments Decr [Sig L beq].
 Implicit Arguments lab_rules [Sig L beq I].
 Implicit Arguments enum [Sig L beq I].
@@ -611,7 +611,7 @@ Module Type SemLab.
   Parameter beq : L -> L -> bool.
   Parameter beq_ok : forall l m, beq l m = true <-> l = m.
 
-  Notation Sig' := (lab_sig beq_ok).
+  Notation Sig' := (lab_sig Sig beq_ok).
 
   Parameter pi : forall f : Sig, vector I (arity f) -> L.
 
@@ -663,6 +663,8 @@ Module Ord (Export S : SemLab) <: OrdSemLab.
 
   Definition Dge := @eq I.
 
+  Notation Ige := (IR I Dge). Infix ">=I" := Ige (at level 70).
+
   Definition bge := beqI.
 
   Definition bge_ok := beqI_ok.
@@ -679,6 +681,14 @@ Module Ord (Export S : SemLab) <: OrdSemLab.
   Proof.
     unfold Vmonotone1, Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
     rewrite H0. refl.
+  Qed.
+
+  Notation Decr := (Decr beq_ok Lgt).
+
+  Lemma Decr_empty : Decr [=] (@empty (@ATrs.rule Sig')).
+
+  Proof.
+    firstorder.
   Qed.
 
 End Ord.
@@ -781,7 +791,7 @@ with ordered labels *)
 
 Module OrdSemLabProps (Export L : OrdSemLab).
 
-  Section S.
+  Section props.
 
     Variables E R : rules.
 
@@ -810,7 +820,7 @@ Module OrdSemLabProps (Export L : OrdSemLab).
       rewrite WF_red_lab. refl. apply pi_mon. apply I_mon. apply ge_compatR.
     Qed.
 
-  End S.
+  End props.
 
 End OrdSemLabProps.
 
@@ -820,7 +830,7 @@ with ordered labels *)
 
 Module FinOrdSemLabProps (Export L : FinOrdSemLab).
 
-  Section S.
+  Section props.
 
     Variables E R : rules.
 
@@ -851,7 +861,7 @@ Module FinOrdSemLabProps (Export L : FinOrdSemLab).
       apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok. apply bge_compatR.
     Qed.
 
-  End S.
+  End props.
 
 End FinOrdSemLabProps.
 
@@ -860,11 +870,82 @@ End FinOrdSemLabProps.
 with unordered labels *)
 
 Module SemLabProps (Export S : SemLab).
+
   Module OSL := Ord S.
-  Include (OrdSemLabProps OSL).
+
+  Module Export P := OrdSemLabProps OSL.
+
+  Section props.
+
+    Variables E R : rules.
+
+    Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
+    Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
+
+    Lemma WF_red_mod_lab : WF (red_mod E R)
+      <-> WF (red_mod (lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
+      rewrite Decr_empty. rewrite empty_union_l. refl.
+    Qed.
+
+    Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
+      <-> WF (hd_red_mod (lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
+      rewrite Decr_empty. rewrite empty_union_l. refl.
+    Qed.
+
+    Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_lab. 2: apply ge_compatR.
+      rewrite Decr_empty. rewrite red_mod_empty. refl.
+    Qed.
+
+  End props.
+
 End SemLabProps.
 
+(* FIXME: to be finished
 Module FinSemLabProps (Export S : FinSemLab).
+
   Module OSL := FinOrd S.
-  Include (FinOrdSemLabProps OSL).
-End FinSemLabProps.
+
+  Module Export P := FinOrdSemLabProps OSL.
+
+  Section props.
+
+    Variables E R : rules.
+
+    Variable bge_compatE : forallb (brule bge) E = true.
+    Variable bge_compatR : forallb (brule bge) R = true.
+
+    Lemma WF_red_mod_lab : WF (red_mod E R)
+      <-> WF (red_mod (lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
+      rewrite Decr_empty. rewrite empty_union_l. refl.
+    Qed.
+
+    Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
+      <-> WF (hd_red_mod (lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
+      rewrite Decr_empty. rewrite empty_union_l. refl.
+    Qed.
+
+    Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_lab. 2: apply ge_compatR.
+      rewrite Decr_empty. rewrite red_mod_empty. refl.
+    Qed.
+
+  End props.
+
+End FinSemLabProps.*)
