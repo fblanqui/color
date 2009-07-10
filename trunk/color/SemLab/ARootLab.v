@@ -114,5 +114,5 @@ End RootSemLab.
 
 Module RootLabProps (RL : RootLab).
   Module FSL := RootSemLab RL.
-  Module Export Props := FinSemLabProps FSL.
+  Include (FinSemLabProps FSL).
 End RootLabProps.
