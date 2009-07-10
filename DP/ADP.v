@@ -3,7 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2004-12-22
-- Joerg Endrullis, 2008-06-19
+- Joerg Endrullis, 2008-06-19 (extension to minimal chains)
 
 dependancy pairs
 *)
@@ -61,7 +61,7 @@ Qed.
 
 Implicit Arguments mkdp_elim [l t S].
 
-Definition dp := (mkdp R).
+Definition dp := mkdp R.
 
 (***********************************************************************)
 (** basic properties *)
