@@ -535,12 +535,30 @@ apply rt_refl.
 eapply rt_trans. apply H2. hyp.
 Qed.
 
+(*COQ: can be removed?*)
+Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
+  with signature (@inclusion A) ==> (@eq A) ==> (@eq A) ==> impl
+  as incl_rtc_ext.
+
+Proof.
+unfold impl. intros. apply (incl_rtc H). hyp.
+Qed.
+
 Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
   with signature (same_relation A) ==> (same_relation A)
-  as clos_refl_trans_morph.
+  as same_rel_rtc.
 
 Proof.
 unfold same_relation. intuition; apply incl_rtc; hyp.
+Qed.
+
+(*COQ: can be removed?*)
+Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
+  with signature (same_relation A) ==> (@eq A) ==> (@eq A) ==> iff
+  as same_rel_rtc_ext.
+
+Proof.
+split; apply (same_rel_rtc H).
 Qed.
 
 Section clos_refl_trans.
