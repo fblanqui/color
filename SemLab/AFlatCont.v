@@ -205,28 +205,38 @@ Module FlatCCProps (Import F : FlatCC).
 
   Notation rules := (rules Sig).
 
-  Section Props.
+  Section red_mod.
 
     Variables E R : rules.
 
-    Definition n := max (maxvar_rules E) (maxvar_rules R).
+    Let n := max (maxvar_rules E) (maxvar_rules R).
 
-    Definition flat_rules := flat_rules n Fs.
-
-    Lemma WF_red_flat : WF (red R) <-> WF (red (flat_rules R)).
-
-    Proof.
-      eapply WF_red_flat. apply arity_some_symbol. apply Fs_ok. apply le_max_r.
-    Qed.
+    Definition flat_mod_rules := flat_rules n Fs.
 
     Lemma WF_red_mod_flat :
-      WF (red_mod E R) <-> WF (red_mod (flat_rules E) (flat_rules R)).
+      WF (red_mod E R) <-> WF (red_mod (flat_mod_rules E) (flat_mod_rules R)).
 
     Proof.
       eapply WF_red_mod_flat. apply arity_some_symbol. apply Fs_ok.
       apply le_max_l. apply le_max_r.
     Qed.
 
-  End Props.
+  End red_mod.
+
+  Section red.
+
+    Variable R : rules.
+
+    Let n := maxvar_rules R.
+
+    Definition flat_rules := flat_rules n Fs R.
+
+    Lemma WF_red_flat : WF (red R) <-> WF (red flat_rules).
+
+    Proof.
+      eapply WF_red_flat. apply arity_some_symbol. apply Fs_ok. apply le_refl.
+    Qed.
+
+  End red.
 
 End FlatCCProps.
