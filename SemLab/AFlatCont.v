@@ -67,20 +67,10 @@ Definition flat_rule n (a : rule) :=
   if is_root_preserving a then a :: nil
     else map (flat_cont_rule a) (flat_conts n).
 
-(***********************************************************************)
-(** flat context closure of a list of rules *)
+Definition flat_rules R := flat_map (flat_rule (S n)) R.
 
-Section red.
-
-Variable R : rules.
-Variable hyp : n >= maxvar_rules R.
-
-Definition flat_rules := flat_map (flat_rule (S n)) R.
-
-Notation R' := flat_rules.
-
-Lemma root_preserving : forall a,
-  is_root_preserving a = true -> In a R -> In a R'.
+Lemma root_preserving : forall R a,
+  is_root_preserving a = true -> In a R -> In a (flat_rules R).
 
 Proof.
 intros. unfold flat_rules. rewrite in_flat_map. exists a. intuition.
@@ -90,7 +80,11 @@ Qed.
 (***********************************************************************)
 (** main theorem for standard rewriting *)
 
-Lemma red_flat : red R' << red R.
+Section red.
+
+Variables (R : rules) (hyp : n >= maxvar_rules R).
+
+Lemma red_flat : red (flat_rules R) << red R.
 
 Proof.
 intros t u h. redtac. unfold flat_rules in lr. rewrite in_flat_map in lr.
@@ -113,16 +107,14 @@ change (red R (fill c (fill d' (sub s (Fun f v))))
 apply red_rule. hyp.
 Qed.
 
-Definition red_one_flat_cont := Rof (red R') (fill one_flat_cont).
+Definition red_flat_cont := Rof (red (flat_rules R)) (fill one_flat_cont).
 
-Notation redR'c := red_one_flat_cont.
-
-Lemma red_one_flat_cont_intro : red R << redR'c.
+Lemma red_one_flat_cont_intro : red R << red_flat_cont.
 
 Proof.
-intros t u h. redtac. subst. unfold redR'c, Rof. repeat rewrite fill_fill.
-case_eq (is_root_preserving (mkRule l r)). apply red_rule.
-unfold flat_rules. rewrite in_flat_map.
+intros t u h. redtac. subst. unfold red_flat_cont, Rof.
+repeat rewrite fill_fill. case_eq (is_root_preserving (mkRule l r)).
+apply red_rule. unfold flat_rules. rewrite in_flat_map.
 exists (mkRule l r). intuition. unfold flat_rule. rewrite H. simpl. auto.
 destruct l. discr. destruct r. discr.
 destruct (cont_case (comp one_flat_cont c)). discr.
@@ -146,15 +138,15 @@ transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_r.
 transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_l.
 Qed.
 
-Lemma rtc_red_one_flat_cont_intro : forall t u,
-  red R # t u -> red R' # (fill one_flat_cont t) (fill one_flat_cont u).
+Lemma rtc_red_one_flat_cont_intro : forall t u, red R # t u ->
+  red (flat_rules R) # (fill one_flat_cont t) (fill one_flat_cont u).
 
 Proof.
 induction 1. apply rt_step. apply red_one_flat_cont_intro. hyp.
 apply rt_refl. apply rt_trans with (fill one_flat_cont y); hyp.
 Qed.
 
-Lemma WF_red_flat : WF (red R) <-> WF (red R').
+Lemma WF_red_flat : WF (red R) <-> WF (red (flat_rules R)).
 
 Proof.
 split; intro.
@@ -178,9 +170,8 @@ Variables E R : rules.
 Variable hypE : n >= maxvar_rules E.
 Variable hypR : n >= maxvar_rules R.
 
-Notation E' := (flat_rules E). Notation R' := (flat_rules R).
-
-Lemma WF_red_mod_flat : WF (red_mod E R) <-> WF (red_mod E' R').
+Lemma WF_red_mod_flat :
+  WF (red_mod E R) <-> WF (red_mod (flat_rules E) (flat_rules R)).
 
 Proof.
 split; intro.
