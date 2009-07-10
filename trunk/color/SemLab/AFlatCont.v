@@ -20,7 +20,7 @@ Require Import Max.
 Require Import RelUtil.
 
 (***********************************************************************)
-(** flat context closure for standard rewriting *)
+(** flat context closure of a rule *)
 
 Section S.
 
@@ -38,8 +38,16 @@ Qed.
 Definition flat_cont_symb n (f : Sig) i (h : i < arity f) :=
   Cont f (flat_cont_aux h) (fresh n i) Hole (fresh (n+i) (arity f - S i)).
 
+Implicit Arguments flat_cont_symb [f i].
+
+Variable some_symbol : Sig.
+Variable arity_some_symbol : arity some_symbol > 0.
+Variable n : nat.
+
+Definition one_flat_cont := flat_cont_symb n arity_some_symbol.
+
 Definition flat_conts_symb n f :=
-  map (fun x => flat_cont_symb n f (prf x)) (@nats_lt (arity f)).
+  map (fun x => flat_cont_symb n (prf x)) (@nats_lt (arity f)).
 
 Variable Fs : list Sig.
 Variable Fs_ok : forall x : Sig, In x Fs.
@@ -59,9 +67,13 @@ Definition flat_rule n (a : rule) :=
   if is_root_preserving a then a :: nil
     else map (flat_cont_rule a) (flat_conts n).
 
-Variable R : rules.
+(***********************************************************************)
+(** flat context closure of a list of rules *)
 
-Let n := maxvar_rules R.
+Section red.
+
+Variable R : rules.
+Variable hyp : n >= maxvar_rules R.
 
 Definition flat_rules := flat_map (flat_rule (S n)) R.
 
@@ -76,12 +88,7 @@ unfold flat_rule. rewrite H. simpl. auto.
 Qed.
 
 (***********************************************************************)
-(** main theorem *)
-
-Variable some_symbol : Sig.
-Variable hyp : arity some_symbol > 0.
-
-Definition one_flat_cont := flat_cont_symb n some_symbol hyp.
+(** main theorem for standard rewriting *)
 
 Lemma red_flat : red R' << red R.
 
@@ -109,7 +116,7 @@ Qed.
 Definition red_one_flat_cont := Rof (red R') (fill one_flat_cont).
 
 Notation redR'c := red_one_flat_cont.
- 
+
 Lemma red_one_flat_cont_intro : red R << redR'c.
 
 Proof.
@@ -123,13 +130,13 @@ destruct H0 as [d [g [i [vi [j [vj [e]]]]]]]. repeat rewrite H0.
 repeat rewrite <- fill_fill. set (l := Fun f v). set (r := Fun f0 v0).
 apply context_closed_red.
 assert (m : maxvar_rule (mkRule l r) < S n). eapply maxvar_rules_elim.
-apply lr. unfold n. omega.
+apply lr. omega.
 repeat rewrite fill_sub with (n:=n).
 set (s' := maxvar_union (S n) s (fsub n (Vapp vi vj))).
 apply hd_red_incl_red. apply hd_red_rule. unfold flat_rules.
 rewrite in_flat_map. exists (mkRule l r). intuition. unfold flat_rule.
 unfold l, r. rewrite H. rewrite in_map_iff. assert (h : i < arity g). omega.
-exists (flat_cont_symb (S n) g h). intuition. simpl.
+exists (flat_cont_symb (S n) h). intuition. simpl.
 generalize (flat_cont_aux h). assert (arity g - S i = j). omega. rewrite H1.
 intro. assert (e0=e). apply eq_unique. subst. refl.
 unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
@@ -139,7 +146,15 @@ transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_r.
 transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_l.
 Qed.
 
-Lemma WF_flat : WF (red R) <-> WF (red R').
+Lemma rtc_red_one_flat_cont_intro : forall t u,
+  red R # t u -> red R' # (fill one_flat_cont t) (fill one_flat_cont u).
+
+Proof.
+induction 1. apply rt_step. apply red_one_flat_cont_intro. hyp.
+apply rt_refl. apply rt_trans with (fill one_flat_cont y); hyp.
+Qed.
+
+Lemma WF_red_flat : WF (red R) <-> WF (red R').
 
 Proof.
 split; intro.
@@ -152,6 +167,36 @@ apply SN_intro; intros. apply H0 with (fill one_flat_cont y). 2: refl.
 apply red_one_flat_cont_intro. hyp.
 Qed.
 
+End red.
+
+(***********************************************************************)
+(** main theorem for rewriting modulo *)
+
+Section red_mod.
+
+Variables E R : rules.
+Variable hypE : n >= maxvar_rules E.
+Variable hypR : n >= maxvar_rules R.
+
+Notation E' := (flat_rules E). Notation R' := (flat_rules R).
+
+Lemma WF_red_mod_flat : WF (red_mod E R) <-> WF (red_mod E' R').
+
+Proof.
+split; intro.
+(* -> *)
+intro t. generalize (H t). induction 1. apply SN_intro; intros. apply H1.
+do 2 destruct H2. exists x0. split. rewrite red_flat in H2. hyp.
+apply red_flat. hyp.
+(* <- *)
+intro t. geneq H t (fill one_flat_cont t). induction 1. intros. subst.
+apply SN_intro; intros. apply H0 with (fill one_flat_cont y). 2: refl.
+do 2 destruct H1. exists (fill one_flat_cont x). split.
+apply rtc_red_one_flat_cont_intro; hyp. apply red_one_flat_cont_intro; hyp.
+Qed.
+
+End red_mod.
+
 End S.
 
 (***********************************************************************)
@@ -162,15 +207,35 @@ Module Type FlatCC.
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.
   Parameter some_symbol : Sig.
-  Parameter hyp : arity some_symbol > 0.
+  Parameter arity_some_symbol : arity some_symbol > 0.
 End FlatCC.
 
-Module FlatCCProps (Export F : FlatCC).
+Module FlatCCProps (Import F : FlatCC).
 
-  Lemma WF_flat : forall R, WF (red R) <-> WF (red (flat_rules Fs R)).
+  Notation rules := (rules Sig).
 
-  Proof.
-    intro. eapply WF_flat. apply Fs_ok. apply hyp.
-  Qed.
+  Section Props.
+
+    Variables E R : rules.
+
+    Definition n := max (maxvar_rules E) (maxvar_rules R).
+
+    Definition flat_rules := flat_rules n Fs.
+
+    Lemma WF_red_flat : WF (red R) <-> WF (red (flat_rules R)).
+
+    Proof.
+      eapply WF_red_flat. apply arity_some_symbol. apply Fs_ok. apply le_max_r.
+    Qed.
+
+    Lemma WF_red_mod_flat :
+      WF (red_mod E R) <-> WF (red_mod (flat_rules E) (flat_rules R)).
+
+    Proof.
+      eapply WF_red_mod_flat. apply arity_some_symbol. apply Fs_ok.
+      apply le_max_l. apply le_max_r.
+    Qed.
+
+  End Props.
 
 End FlatCCProps.
