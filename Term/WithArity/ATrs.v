@@ -222,12 +222,22 @@ exists l. exists r. exists c. exists s. repeat split; try hyp.
 apply RR'. hyp.
 Qed.
 
+(*COQ: can be removed?*)
+Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> impl
+    as red_incl_ext.
+
+Proof.
+unfold impl. intros. apply (red_incl H). hyp.
+Qed.
+
 Add Parametric Morphism (Sig : Signature) : (@red Sig)
   with signature (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
     as red_equiv.
 
 Proof.
-intros R S. intros [h1 h2]. split; apply red_incl; hyp.
+intros R S [h1 h2]. split; apply red_incl; hyp.
 Qed.
 
 (*COQ: can be removed?*)
@@ -237,7 +247,7 @@ Add Parametric Morphism (Sig : Signature) : (@red Sig)
     as red_equiv_ext.
 
 Proof.
-intros A B. intros [h1 h2]. split; apply red_incl; hyp.
+intros A B [h1 h2]. split; apply red_incl; hyp.
 Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
@@ -250,21 +260,32 @@ exists l. exists r. exists s. repeat split; try hyp.
 apply RR'. hyp.
 Qed.
 
+(*COQ: can be removed?*)
+Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> impl
+    as hd_red_incl_ext.
+
+Proof.
+unfold impl. intros. apply (hd_red_incl H). hyp.
+Qed.
+
 Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
   with signature (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
     as hd_red_equiv.
 
 Proof.
-intros R S. intros [h1 h2]. split; apply hd_red_incl; hyp.
+intros R S [h1 h2]. split; apply hd_red_incl; hyp.
 Qed.
 
+(*COQ: can be removed?*)
 Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
   with signature (@lequiv (@rule Sig)) ==>
     (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
     as hd_red_equiv_ext.
 
 Proof.
-intros R S. intros [h1 h2]. split; apply hd_red_incl; hyp.
+intros R S [h1 h2]. split; apply hd_red_incl; hyp.
 Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
@@ -277,6 +298,17 @@ intros. unfold red_mod. comp. apply incl_rtc.
 apply red_incl. hyp. apply red_incl. hyp.
 Qed.
 
+(*COQ: can be removed?*)
+Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@incl (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> impl
+    as red_mod_incl_ext.
+
+Proof.
+unfold impl. intros. apply (red_mod_incl H H0). hyp.
+Qed.
+
 Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
   with signature (@lequiv (@rule Sig)) ==>
     (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
@@ -286,6 +318,7 @@ Proof.
 intros R R' [h1 h2] S S' [h3 h4]. split; apply red_mod_incl; hyp.
 Qed.
 
+(*COQ: can be removed?*)
 Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
   with signature (@lequiv (@rule Sig)) ==>
     (@lequiv (@rule Sig)) ==>
@@ -306,6 +339,17 @@ intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
 apply hd_red_incl. hyp.
 Qed.
 
+(*COQ: can be removed?*)
+Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
+  with signature (@incl (@rule Sig)) ==>
+    (@incl (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> impl
+    as hd_red_mod_incl_ext.
+
+Proof.
+unfold impl. intros. apply (hd_red_mod_incl H H0). hyp.
+Qed.
+
 Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
   with signature (@lequiv (@rule Sig)) ==>
     (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
@@ -315,6 +359,7 @@ Proof.
 intros R R' [h1 h2] S S' [h3 h4]. split; apply hd_red_mod_incl; hyp.
 Qed.
 
+(*COQ: can be removed?*)
 Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
   with signature (@lequiv (@rule Sig)) ==>
     (@lequiv (@rule Sig)) ==>
@@ -334,6 +379,17 @@ Proof.
 intros. unfold hd_red_Mod. comp. hyp. rewrite H0. refl.
 Qed.
 
+(*COQ: can be removed?*)
+Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
+  with signature (@inclusion (term Sig)) ==>
+    (@incl (@rule Sig)) ==>
+    (@eq (term Sig)) ==> (@eq (term Sig)) ==> impl
+    as hd_red_Mod_incl_ext.
+
+Proof.
+unfold impl. intros. apply (hd_red_Mod_incl H H0). hyp.
+Qed.
+
 Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
   with signature (same_relation (term Sig)) ==>
     (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
@@ -343,6 +399,7 @@ Proof.
 intros R R' [h1 h2] S S' [h3 h4]. split; apply hd_red_Mod_incl; hyp.
 Qed.
 
+(*COQ: can be removed?*)
 Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
   with signature (same_relation (term Sig)) ==>
     (@lequiv (@rule Sig)) ==>
