@@ -277,4 +277,4 @@ End S.
 
 Ltac loop t' mds' ds' p' :=
   apply is_mod_loop_correct with (t:=t') (mds:=mds') (ds:=ds') (p:=p');
-    vm_compute; refl.
+    check_eq.

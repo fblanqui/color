@@ -161,5 +161,4 @@ End S.
 (** tactics *)
 
 Ltac dpg_unif_N_correct :=
-  (apply dpg_unif_N_mark_correct || apply dpg_unif_N_correct);
-  vm_compute; refl.
+  (apply dpg_unif_N_mark_correct || apply dpg_unif_N_correct); check_eq.

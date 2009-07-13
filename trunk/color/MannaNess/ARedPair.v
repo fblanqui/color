@@ -154,7 +154,7 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
       match goal with
       | |- context_closed _ => solve [prove_cc_succ]
       | |- WF _ => idtac
-      | |- _ = _ => solve [vm_compute; reflexivity]
+      | |- _ = _ => solve [check_eq]
       | _ => fail "Failed to deal with generated goal"
       end.
 

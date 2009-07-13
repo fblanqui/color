@@ -239,4 +239,10 @@ Module FlatCCProps (Import F : FlatCC).
 
   End red.
 
+  Ltac flat_cc :=
+    match goal with
+      | |- WF (red_mod _ _) => rewrite WF_red_mod_flat
+      | |- WF (red _) => rewrite WF_red_flat
+    end.
+
 End FlatCCProps.

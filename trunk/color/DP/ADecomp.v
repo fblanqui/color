@@ -179,10 +179,9 @@ End S.
 
 Ltac incl_flat := solve [unfold incl, dp; simpl; intuition].
 
-Ltac valid_decomp := solve [vm_compute; refl]
-  || fail "the decomposition is not valid".
+Ltac valid_decomp := solve [check_eq] || fail "the decomposition is not valid".
 
-Ltac co_scc := solve [vm_compute; refl] || fail "not a co_scc".
+Ltac co_scc := solve [check_eq] || fail "not a co_scc".
 
 Ltac graph_decomp f d :=
   apply WF_decomp_co_scc with (approx := f) (cs := d);
