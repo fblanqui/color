@@ -960,4 +960,14 @@ Module FinSemLabProps (FSL : FinSemLab).
 
   End props.
 
+  Ltac semlab :=
+    match goal with
+      | |- WF (red_mod _ _) =>
+        rewrite WF_red_mod_lab; [idtac | check_eq | check_eq]
+      | |- WF (hd_red_mod _ _) =>
+        rewrite WF_hd_red_mod_lab; [idtac | check_eq | check_eq]
+      | |- WF (red _) =>
+        rewrite WF_red_lab; [idtac | check_eq]
+    end.
+
 End FinSemLabProps.

@@ -73,14 +73,13 @@ Ltac done :=
 
 Tactic Notation "by" tactic(T) := (T; done) .
 
-(***********************************************************************)
-(** tactics on rewriting **)
-
 Tactic Notation "rwn" constr(R1) constr(R2) :=
   rewrite R1; rewrite R2.
 
 Tactic Notation "rwn" constr(R1) constr(R2) constr(R3) :=
   rewrite R1; rewrite R2; rewrite R3.
+
+Ltac check_eq := vm_compute; refl.
 
 (***********************************************************************)
 (** basic meta-theorems *)

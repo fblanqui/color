@@ -206,4 +206,4 @@ End bool_correct.
 (** tactics *)
 
 Ltac hde_bool_correct :=
-  (apply hde_bool_mark_correct || apply hde_bool_correct); vm_compute; refl.
+  (apply hde_bool_mark_correct || apply hde_bool_correct); check_eq.

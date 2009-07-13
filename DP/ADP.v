@@ -324,4 +324,4 @@ Implicit Arguments dp_elim_vars [Sig l t].
 (** tactics *)
 
 Ltac chain := no_relative_rules;
-  apply WF_chain; [vm_compute; refl | rules_preserv_vars | idtac].
+  apply WF_chain; [check_eq | rules_preserv_vars | idtac].

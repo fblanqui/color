@@ -113,6 +113,11 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
 End RootSemLab.
 
 Module RootLabProps (RL : RootLab).
+
   Module FSL := RootSemLab RL.
+
   Include (FinSemLabProps FSL).
+
+  Ltac rootlab := semlab.
+
 End RootLabProps.
