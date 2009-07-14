@@ -91,7 +91,7 @@ intros t u h. redtac. unfold flat_rules in lr. rewrite in_flat_map in lr.
 destruct lr as [[a b] [h1 h2]]. unfold flat_rule in h2. simpl in h2.
 destruct a. simpl in h2. intuition. inversion H. subst. apply red_rule. hyp.
 destruct b. simpl in h2. intuition. inversion H. subst. apply red_rule. hyp.
-gen h2. case_symb_eq Sig f f0; intro. simpl in h2. intuition. inversion H.
+gen h2. case_beq_symb Sig f f0; intro. simpl in h2. intuition. inversion H.
 subst. apply red_rule. hyp. rewrite in_map_iff in h2.
 destruct h2 as [d [h3 h4]]. unfold flat_cont_rule in h3. inversion h3.
 clear h3. subst. unfold flat_conts in h4. rewrite in_flat_map in h4.

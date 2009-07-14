@@ -201,7 +201,7 @@ Ltac single_tac x t :=
   exists (single x t); split; [single
   | unfold single, nb_aliens; simpl;
     let y := fresh "y" in intro y; intro;
-    case_nat_eq x y; [absurd_arith | refl]].
+    case_beq_nat x y; [absurd_arith | refl]].
 
 Notation In_dec := (In_dec eq_nat_dec).
 

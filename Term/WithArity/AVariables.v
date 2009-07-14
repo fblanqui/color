@@ -240,7 +240,7 @@ intros x v. apply term_ind with (Q := fun n (ts : terms n) =>
   if mem x (vars_vec ts) then union (vars v) (remove x (vars_vec ts))
     else vars_vec ts).
 (* Var *)
-intro. simpl. unfold single. case_nat_eq x x0. 
+intro. simpl. unfold single. case_beq_nat x x0. 
 autorewrite with mem Equal. refl.
 simpl. mem. rewrite (beq_com beq_nat_ok). rewrite H. refl.
 (* Fun *)

@@ -31,7 +31,7 @@ Implicit Arguments beq_symb_ok [s x y].
 
 Require Import EqUtil.
 
-Ltac case_symb_eq Sig := EqUtil.case_beq (@beq_symb Sig) (@beq_symb_ok Sig).
+Ltac case_beq_symb Sig := EqUtil.case_beq (@beq_symb Sig) (@beq_symb_ok Sig).
 
 Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
 
