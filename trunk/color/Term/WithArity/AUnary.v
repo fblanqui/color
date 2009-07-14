@@ -279,7 +279,7 @@ Definition is_renaming (s : substitution) := forall x, exists y, s x = Var y.
 Lemma is_ren_single_var : forall x y, is_renaming (single x (Var y)).
 
 Proof.
-unfold is_renaming, single. intros. case_nat_eq x x0. exists y. refl.
+unfold is_renaming, single. intros. case_beq_nat x x0. exists y. refl.
 exists x0. refl.
 Qed.
 

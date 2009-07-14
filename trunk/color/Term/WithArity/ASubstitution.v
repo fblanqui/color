@@ -155,7 +155,7 @@ intros s x v u. set (s' := extend s x v). pattern u.
 apply term_ind with (Q := fun n (us : terms n) =>
   ~In x (vars_vec us) -> Vmap (sub s') us = Vmap (sub s) us); clear u.
 intro. simpl. intuition. unfold s', extend.
-case_nat_eq x0 x. intuition. refl.
+case_beq_nat x0 x. intuition. refl.
 intros f us. rewrite vars_fun. simpl. intros. apply args_eq.
 auto. refl.
 intros u n us. simpl. rewrite in_app. intuition.
@@ -167,7 +167,7 @@ Lemma sub_comp_single_extend : forall s x v (t : term),
 
 Proof.
 intros. apply sub_eq. intros. unfold sub_comp, single, extend.
-case_nat_eq x x0. rewrite <- beq_nat_refl. refl.
+case_beq_nat x x0. rewrite <- beq_nat_refl. refl.
 rewrite (beq_com beq_nat_ok) in H0. rewrite H0. refl.
 Qed.
 
@@ -178,7 +178,7 @@ Proof.
 intros. set (s' := sub_comp s (single x u)). pattern t.
 apply term_ind with (Q := fun n (ts : terms n) =>
   Vmap (sub s') ts = Vmap (sub s) ts); clear t.
-intro. unfold s', sub_comp, single. simpl. case_nat_eq x x0; auto.
+intro. unfold s', sub_comp, single. simpl. case_beq_nat x x0; auto.
 intros f v IH. repeat rewrite sub_fun. apply (f_equal (Fun f)). hyp.
 refl. intros. simpl. apply Vcons_eq_intro; hyp.
 Qed.

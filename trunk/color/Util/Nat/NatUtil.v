@@ -57,7 +57,7 @@ Defined.
 
 Require Import EqUtil.
 
-Ltac case_nat_eq := case_beq beq_nat beq_nat_ok.
+Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
 
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 

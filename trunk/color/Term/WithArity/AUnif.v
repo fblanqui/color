@@ -29,7 +29,7 @@ Variable Sig : Signature.
 Notation term := (term Sig). Notation terms := (vector term).
 Notation substitution := (substitution Sig).
 
-Ltac case_symb_eq := ASignature.case_symb_eq Sig.
+Ltac case_beq_symb := ASignature.case_beq_symb Sig.
 
 (***********************************************************************)
 (* unification problem *)
@@ -640,7 +640,7 @@ Proof.
 destruct p. destruct p. destruct e. simpl. discr. intro. destruct e.
 destruct t0; destruct t1.
 (* var-var *)
-simpl. mem. case_nat_eq n n0; unfold Lt'. apply Lt_cons.
+simpl. mem. case_beq_nat n n0; unfold Lt'. apply Lt_cons.
 apply Lt_eqns_subs_r. simpl. mem. hyp.
 (* var-fun *)
 unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec v)); unfold Lt'.
@@ -683,7 +683,7 @@ Proof.
 intro. destruct p. 2: auto. destruct p. destruct e. auto. destruct e.
 destruct t0; destruct t1.
 (* var-var *)
-simpl. mem. case_nat_eq n n0; simpl.
+simpl. mem. case_beq_nat n n0; simpl.
 intuition. gen H1. elim s; simpl; intuition.
 mem. rewrite H. intuition.
 eapply lforall_notin_solved_eqn_1. simpl. mem. hyp. apply H2.
@@ -709,7 +709,7 @@ apply lforall_notin_vars_solved_eqn_2' with e0. hyp.
 apply notin_map. hyp.
 apply lforall_notin_r. hyp.
 (* fun-fun *)
-simpl. case_symb_eq f f0; simpl; intuition.
+simpl. case_beq_symb f f0; simpl; intuition.
 gen H1. elim s; simpl; intuition. gen H1. unfold notin_eqn. simpl.
 do 2 rewrite vars_fun. gen H4. unfold notin. simpl. rewrite lforall_app.
 intuition. apply lforall_notin_eqn_combine; hyp. Transparent vars.
@@ -772,9 +772,9 @@ Lemma is_sol_solved_eqns_map : forall s n u, s n = sub s u ->
 Proof.
 induction l; simpl. intuition. destruct a. unfold is_sol_solved_eqn. simpl.
 intuition. rewrite H3. rewrite sub_sub. apply sub_eq. intros.
-unfold sub_comp, single. case_nat_eq n x; auto.
+unfold sub_comp, single. case_beq_nat n x; auto.
 rewrite H3. rewrite sub_sub. apply sub_eq. intros.
-unfold sub_comp, single. case_nat_eq n x; auto.
+unfold sub_comp, single. case_beq_nat n x; auto.
 Qed.
 
 Lemma is_sol_eqns_map : forall s x u, s x = sub s u ->
@@ -818,7 +818,7 @@ intros s p. destruct p. 2: simpl; intuition. destruct p. destruct l0.
 simpl. intuition. destruct e. destruct t0; destruct t1.
 (* var-var *)
 simpl. unfold is_sol_eqn. mem. simpl.
-case_nat_eq n n0; simpl. intuition. unfold is_sol_solved_eqn. simpl. intuition.
+case_beq_nat n n0; simpl. intuition. unfold is_sol_solved_eqn. simpl. intuition.
 rewrite is_sol_solved_eqns_map; auto. rewrite is_sol_eqns_map; auto.
 rewrite is_sol_solved_eqns_map in H3; auto.
 rewrite is_sol_eqns_map in H2; auto.
@@ -842,7 +842,7 @@ rewrite lforall_is_sol_solved_eqn in H3; hyp.
 rewrite is_sol_eqns_map in H2; hyp.
 (* fun-fun *)
 simpl. unfold is_sol_eqn. simpl fst. simpl snd. repeat rewrite sub_fun.
-case_symb_eq f f0. simpl. unfold is_sol_eqns at 2. rewrite lforall_app.
+case_beq_symb f f0. simpl. unfold is_sol_eqns at 2. rewrite lforall_app.
 rewrite lforall_is_sol_eqn_combine. intuition. Funeqtac. hyp.
 apply args_eq. hyp. intuition; try contradiction. Funeqtac.
 rewrite (beq_refl beq_symb_ok) in H. discriminate. Transparent vars.
@@ -865,7 +865,7 @@ Lemma is_sol_solved_eqns_extend : forall s n v l,
 Proof.
 induction l; simpl. auto. destruct a.
 unfold notin_solved_eqn at 1, is_sol_solved_eqn. simpl. intuition.
-unfold extend at 1. case_nat_eq n0 n. change (n0<>n0) in H0. irrefl.
+unfold extend at 1. case_beq_nat n0 n. change (n0<>n0) in H0. irrefl.
 rewrite H. symmetry. apply sub_extend_notin. rewrite in_vars_mem.
 rewrite H4. discr.
 Qed.
@@ -924,7 +924,7 @@ Lemma lforall_notin_vars_solved_eqn_dom : forall x u l,
 Proof.
 induction l; simpl. mem. refl. destruct a.
 unfold notin_vars_solved_eqn at 1. simpl. mem. intuition.
-case_nat_eq n x; simpl. rewrite H1 in H0. discriminate. hyp.
+case_beq_nat n x; simpl. rewrite H1 in H0. discriminate. hyp.
 Qed.
 
 Implicit Arguments lforall_notin_vars_solved_eqn_dom [x u l].
@@ -961,7 +961,7 @@ Lemma lforall_notin_solved_eqn_mem : forall n x l,
 
 Proof.
 induction l. simpl. mem. auto. simpl. destruct a. unfold notin_solved_eqn at 1.
-simpl. intuition. unfold extend. case_nat_eq x n0; hyp.
+simpl. intuition. unfold extend. case_beq_nat x n0; hyp.
 Qed.
 
 Implicit Arguments lforall_notin_solved_eqn_mem [n x l].
@@ -1014,11 +1014,11 @@ Lemma subst_of_solved_eqns_most_general :
 Proof.
 induction l. refl. destruct a. unfold is_sol_solved_eqns. simpl.
 unfold is_sol_solved_eqn at 1. simpl. intuition. unfold extend.
-case_nat_eq x n. rewrite H. apply sub_eq'. intros. unfold theta. simpl. mem.
-case_nat_eq x x0; simpl. rewrite H1 in H4. discriminate.
+case_beq_nat x n. rewrite H. apply sub_eq'. intros. unfold theta. simpl. mem.
+case_beq_nat x x0; simpl. rewrite H1 in H4. discriminate.
 case_eq (mem x0 (dom l)). ded (lforall_notin_vars_solved_eqn_mem H5 H8).
 rewrite H4 in H9. discriminate. refl. rewrite H6. apply sub_eq'. intros.
-unfold theta. simpl. mem. case_nat_eq n x0. simpl.
+unfold theta. simpl. mem. case_beq_nat n x0. simpl.
 ded (lforall_notin_solved_eqn_mem H0 H4). rewrite H7 in H8. discriminate.
 simpl. refl.
 Qed.
