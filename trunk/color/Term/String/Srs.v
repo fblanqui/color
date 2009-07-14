@@ -25,7 +25,7 @@ Section definition.
 
 Variable Sig : Signature.
 
-Notation string := (list Sig).
+Definition string := list Sig.
 
 Definition beq_string := beq_list (@beq_symb Sig).
 Definition beq_string_ok := beq_list_ok (@beq_symb_ok Sig).
@@ -46,6 +46,8 @@ destruct a1 as [l1 r1]. destruct a2 as [l2 r2]. simpl. intuition.
 rewrite andb_eq in H. repeat rewrite beq_string_ok in H. destruct H. subst.
 refl. inversion H. subst. repeat rewrite (beq_refl beq_string_ok). refl.
 Qed.
+
+Definition rules := list rule.
 
 (***********************************************************************)
 (** rewriting *)
@@ -80,11 +82,11 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation string := (list Sig). Notation rule := (rule Sig).
+Notation string := (string Sig). Notation rules := (rules Sig).
 
 Section red.
 
-Variable R : list rule.
+Variable R : rules.
 
 Lemma red_rule : forall l r c,
   In (mkRule l r) R -> red R (fill c l) (fill c r).
@@ -144,7 +146,7 @@ End red.
 
 Section red_mod.
 
-Variables E R : list rule.
+Variables E R : rules.
 
 Lemma red_mod_fill : forall c t u,
   red_mod E R t u -> red_mod E R (fill c t) (fill c u).

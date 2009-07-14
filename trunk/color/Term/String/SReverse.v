@@ -21,11 +21,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation string := (list Sig).
-Notation rule := (rule Sig).
-Notation rules := (list rule).
-
-Definition reverse (e : rule) := let (l,r) := e in mkRule (rev' l) (rev' r).
+Definition reverse (e : rule Sig) := let (l,r) := e in mkRule (rev' l) (rev' r).
 
 Notation reverses := (List.map reverse).
 
