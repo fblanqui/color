@@ -19,14 +19,13 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation letter := (symbol Sig). Notation string := (list letter).
-Notation context := (context Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Notation letter := (symbol Sig). Notation string := (string Sig).
+Notation rule := (rule Sig). Notation rules := (rules Sig).
 
 Notation beq_symb_ok := (@beq_symb_ok Sig).
 Notation beq_rule := (@beq_rule Sig).
 
-Ltac case_symb_eq := VSignature.case_symb_eq Sig.
+Ltac case_beq_symb := VSignature.case_beq_symb Sig.
 
 Variable R : rules.
 
@@ -78,7 +77,7 @@ Lemma matches_correct : forall p t u, matches p t = Some u -> t = p ++ u.
 
 Proof.
 induction p; simpl; intros. inversion H. refl.
-destruct t. discr. gen H. case_symb_eq a s. 2: discr. intro.
+destruct t. discr. gen H. case_beq_symb a s. 2: discr. intro.
 rewrite (IHp _ _ H). refl.
 Qed.
 
@@ -117,7 +116,7 @@ Proof.
 intros t [p [l r]] s. unfold rewrite.
 case_eq (mem beq_rule (mkRule l r) R). 2: discr.
 gen H0. case_eq (split t p). destruct p0 as [u v]. 2: discr.
-gen H1. case_eq (matches l v). rename l0 into w. 2: discr.
+gen H1. case_eq (matches l v). rename s0 into w. 2: discr.
 exists l. exists r. exists (mkContext u w). unfold fill. simpl.
 inversion H2. intuition. rewrite mem_ok in H. hyp. apply beq_rule_ok.
 ded (matches_correct H1). ded (split_correct H0). subst. refl.
@@ -144,7 +143,7 @@ Lemma rewrites_correct : forall ds t us, rewrites t ds = Some us -> FS t us.
 Proof.
 induction ds; simpl; intros. inversion H. exact I.
 gen H. case_eq (rewrite t a). 2: discr.
-gen H0. case_eq (rewrites l ds). 2: discr.
+gen H0. case_eq (rewrites s ds). 2: discr.
 inversion H1. simpl. ded (rewrite_correct H). intuition.
 Qed.
 
@@ -284,11 +283,11 @@ Lemma is_loop_correct : forall t ds p,
 
 Proof.
 intros t ds p. unfold is_loop. coq_case_eq (rewrites t ds). 2: discr.
-destruct l. discr. set (us := l::l0). set (u := last us default).
+destruct l. discr. set (us := s::l). set (u := last us default).
 coq_case_eq (split u p). 2: discr. intros [v w]. case_eq (matches t w).
 2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
 assert (h : u = last_string us). unfold last_string, k, nth.
-rewrite <- last_nth. refl. rewrite h in H0. exists (seq us h0 v l1).
+rewrite <- last_nth. refl. rewrite h in H0. exists (seq us h0 v s0).
 eapply IS_seq. apply H1. apply H0. hyp.
 Qed.
 

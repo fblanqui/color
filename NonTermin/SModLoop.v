@@ -19,16 +19,10 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation letter := (symbol Sig). Notation string := (list letter).
-Notation context := (context Sig). Notation data := (data Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Notation letter := (symbol Sig). Notation string := (string Sig).
+Notation data := (data Sig).
 
-Notation beq_symb_ok := (@beq_symb_ok Sig).
-Notation beq_rule := (@beq_rule Sig).
-
-Ltac case_symb_eq := VSignature.case_symb_eq Sig.
-
-Variable E R : rules.
+Variable E R : rules Sig.
 
 (***********************************************************************)
 (** predicates saying that [t::us] is in a sequence of rewriting steps *)
@@ -98,7 +92,7 @@ Lemma mod_rewrites_correct : forall mds t us,
 Proof.
 induction mds; simpl; intros. inversion H. exact I.
 gen H. case_eq (mod_rewrite t a). 2: discr.
-gen H0. case_eq (mod_rewrites l mds). 2: discr.
+gen H0. case_eq (mod_rewrites s mds). 2: discr.
 inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
 Qed.
 
@@ -260,12 +254,12 @@ Lemma is_mod_loop_correct : forall t mds ds p,
 
 Proof.
 intros t mds ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds).
-2: discr. destruct l. discr. set (us := l::l0). set (u := last us default).
+2: discr. destruct l. discr. set (us := s::l). set (u := last us default).
 coq_case_eq (rewrites E u ds). 2: discr. intro us'. set (u' := last us' u).
 coq_case_eq (split u' p). 2: discr. intros [v w]. case_eq (matches t w).
 2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
 assert (h : u = last_string us). unfold last_string, k, nth.
-rewrite <- last_nth. refl. exists (seq us h0 v l1). eapply IS_seq. apply H2.
+rewrite <- last_nth. refl. exists (seq us h0 v s0). eapply IS_seq. apply H2.
 rewrite <- h. apply H1. unfold last_string'. rewrite <- h. fold u'. apply H0.
 hyp.
 Qed.

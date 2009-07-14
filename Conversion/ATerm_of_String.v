@@ -23,13 +23,13 @@ Require Import Srs.
 
 Variable SSig : VSignature.Signature.
 
-Notation letter := (symbol SSig). Notation string := (list SSig).
-Notation srule := (rule SSig).
+Notation letter := (symbol SSig). Notation string := (string SSig).
+Notation srule := (rule SSig). Notation srules := (rules SSig).
 
 (***********************************************************************)
 (** corresponding algebraic signature *)
 
-Definition ar (s : letter) := 1.
+Definition ar (_ : letter) := 1.
 
 Require Import ATrs.
 
@@ -185,7 +185,7 @@ Ltac preserv_vars := try (apply rules_preserv_vars_trs_of_srs).
 
 Section red_of_sred.
 
-Variable R : list srule.
+Variable R : srules.
 
 Lemma red_of_sred : forall x y,
   Srs.red R x y -> red (trs_of_srs R) (term_of_string x) (term_of_string y).
@@ -233,7 +233,7 @@ End red_of_sred.
 (***********************************************************************)
 (** reflexion of termination *)
 
-Variables E R : list srule.
+Variables E R : srules.
 
 Lemma red_mod_of_sred_mod : forall x y, Srs.red_mod E R x y ->
   red_mod (trs_of_srs E) (trs_of_srs R) (term_of_string x) (term_of_string y).
