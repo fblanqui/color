@@ -298,3 +298,12 @@ apply WF_red_mod_of_WF_sred_mod. hyp.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** signature functor *)
+
+Module Make (S : VSignature.SIG) <: ASignature.SIG.
+  Definition Sig := ASig_of_SSig S.Sig.
+  Definition Fs := S.Fs.
+  Definition Fs_ok := S.Fs_ok.
+End Make.
