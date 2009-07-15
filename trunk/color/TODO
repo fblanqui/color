@@ -1,4 +1,8 @@
 
+- use Qed in beq_*_ok ?
+
+- replace dom_lt by nat_lt ?
+
 - precedence termination
 
 - define rules as (rule->Prop) instead of (list rule)
