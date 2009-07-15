@@ -33,40 +33,6 @@ Implicit Arguments le_plus_minus_r [n m].
 Ltac absurd_arith := elimtype False; omega.
 
 (***********************************************************************)
-(** domain of numbers smaller than [n] *)
-
-Definition dom_lt n := { i | i < n }.
-
-(***********************************************************************)
-(** decidability of equality *)
-
-Fixpoint beq_nat (x y : nat) {struct x} :=
-  match x, y with
-    | 0, 0 => true
-    | S x', S y' => beq_nat x' y'
-    | _, _ => false
-  end.
-
-Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
-
-Proof.
-induction x; destruct y; simpl; split; intro; try (refl || discriminate).
-apply (f_equal S). exact (proj1 (IHx _) H).
-apply (proj2 (IHx y)). inversion H. refl.
-Defined.
-
-Require Import EqUtil.
-
-Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
-
-Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
-
-Proof.
-intro. generalize (eq_nat_dec n n). destruct s.
-rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
-Qed.
-
-(***********************************************************************)
 (** relations and morphisms *)
 
 Add Relation nat le
@@ -98,6 +64,55 @@ Add Relation nat ge
 Add Relation nat gt
   transitivity proved by gt_trans
     as gt_rel.
+
+(***********************************************************************)
+(** boolean function for equality *)
+
+Fixpoint beq_nat (x y : nat) {struct x} :=
+  match x, y with
+    | 0, 0 => true
+    | S x', S y' => beq_nat x' y'
+    | _, _ => false
+  end.
+
+Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
+
+Proof.
+induction x; destruct y; simpl; split; intro; try (refl || discriminate).
+apply (f_equal S). exact (proj1 (IHx _) H).
+apply (proj2 (IHx y)). inversion H. refl.
+Defined.
+
+Require Import EqUtil.
+
+Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
+
+Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
+
+Proof.
+intro. generalize (eq_nat_dec n n). destruct s.
+rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
+Qed.
+
+(***********************************************************************)
+(** boolean function for > *)
+
+Fixpoint bgt_nat (x y : nat) {struct x} :=
+  match x, y with
+    | 0, _ => false
+    | S _, 0 => true
+    | S x', S y' => bgt_nat x' y'
+  end.
+
+Lemma bgt_nat_ok : forall x y, bgt_nat x y = true <-> x > y.
+
+Proof.
+induction x; destruct y; simpl; split; intro;
+  try (refl || discr || absurd_arith || omega).
+rewrite IHx in H. omega. apply lt_S_n in H.  rewrite IHx. hyp.
+Qed.
+
+Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
 
 (***********************************************************************)
 (** unicity of eq, le and lt proofs *)
@@ -361,6 +376,8 @@ End iter.
 
 (***********************************************************************)
 (** natural numbers strictly smaller than n *)
+
+Definition dom_lt n := { i | i < n }.
 
 Section nat_lt.
 
