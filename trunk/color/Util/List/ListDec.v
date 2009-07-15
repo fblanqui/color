@@ -51,7 +51,7 @@ inversion H. subst a0. subst m. apply andb_intro.
 rewrite beq_ok. refl. rewrite IHl. refl.
 Qed.
 
-(*REMARK: do not use beq_ok *)
+(*REMARK: this lemma does not use beq_ok *)
 Lemma beq_list_ok_in : forall l,
   forall hyp : forall x, In x l -> forall y, beq x y = true <-> x = y,
     forall m, beq_list l m = true <-> l = m.
