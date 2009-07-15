@@ -474,16 +474,31 @@ Definition enum2 R :=
     (enum_tuple n) nil.*)
 
 (***********************************************************************)
-(** enumeration of Decr rules *)
+(** enumeration of labelled symbols *)
 
 Variable Fs : list Sig.
-Variable Fs_ok : forall x : Sig, In x Fs.
+Variable Fs_ok : forall x, In x Fs.
 
-Variable Ls : list (L*L).
-Variable Ls_ok : forall x y, x >L y <-> In (x,y) Ls.
+Variable Ls : list L.
+Variable Ls_ok : forall x, In x Ls.
+
+Definition Fs_lab := flat_map (fun f => map (fun l => (f,l)) Ls) Fs.
+
+Lemma Fs_lab_ok : forall f, In f Fs_lab.
+
+Proof.
+intros [f l]. unfold Fs_lab. rewrite in_flat_map. exists f. split.
+apply Fs_ok. rewrite in_map_iff. exists l. intuition.
+Qed.
+
+(***********************************************************************)
+(** enumeration of Decr rules *)
+
+Variable L2s : list (L*L).
+Variable L2s_ok : forall x y, x >L y <-> In (x,y) L2s.
 
 Definition enum_Decr := flat_map (fun x : L*L =>
-  let (a,b) := x in map (fun f => decr f a b) Fs) Ls.
+  let (a,b) := x in map (fun f => decr f a b) Fs) L2s.
 
 Notation D' := enum_Decr.
 
@@ -493,14 +508,14 @@ Proof.
 intros. unfold enum_Decr in H. rewrite in_flat_map in H.
 destruct H as [[a b] [h1 h2]]. rewrite in_map_iff in h2.
 destruct h2 as [f [h2 h3]]. exists f. exists a. exists b. split.
-rewrite Ls_ok. hyp. auto.
+rewrite L2s_ok. hyp. auto.
 Qed.
 
 Lemma enum_Decr_complete : forall x, Decr x -> In x D'.
 
 Proof.
 intros. destruct H as [f [a [b [h]]]]. unfold enum_Decr. rewrite in_flat_map.
-exists (a,b). split. rewrite <- Ls_ok. hyp. subst.
+exists (a,b). split. rewrite <- L2s_ok. hyp. subst.
 set (G := fun f => decr f a b). change (In (G f) (map G Fs)). apply in_map.
 apply Fs_ok.
 Qed.
@@ -517,7 +532,7 @@ Qed.
 
 Import ATrs. Notation rules := (rules Sig).
 
-Variable bge : term->term->bool.
+Variable bge : term -> term -> bool.
 Variable bge_ok : rel bge << Ige.
 
 Section bge.
@@ -556,7 +571,7 @@ rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab.
 rewrite lab_rules_enum. refl.
 Qed.
 
-Infix "++" := app.
+Import List.
 
 Lemma WF_red_mod_lab_fin : WF (red_mod E R) <-> WF (red_mod (D' ++ E') R').
 
@@ -587,35 +602,35 @@ Implicit Arguments Decr [Sig L beq].
 Implicit Arguments lab_rules [Sig L beq I].
 Implicit Arguments enum [Sig L beq I].
 Implicit Arguments enum_Decr [Sig L beq].
+Implicit Arguments Fs_lab [Sig L].
+Implicit Arguments Fs_lab_ok [Sig L Fs Ls].
+
+(***********************************************************************)
+(** basic module type for semantic labellings *)
+
+Module Type Base.
+
+  Parameter Sig : Signature.
+
+  Parameter I : interpretation Sig.
+
+  Parameter L : Type.
+  Parameter beq : L -> L -> bool.
+  Parameter beq_ok : forall l m, beq l m = true <-> l = m.
+
+  Parameter pi : forall f : Sig, vector I (arity f) -> L.
+
+End Base.
 
 (***********************************************************************)
 (** module type for semantic labellings with unordered labels *)
 
 Module Type SemLab.
 
-  Parameter Sig : Signature.
+  Include Type Base.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig).
-
-  Export ARules. Notation rules := (rules Sig).
-
-  Parameter I : interpretation Sig.
-
-  Notation eqI := (IR I (@eq I)). Infix "=I" := eqI (at level 70).
-
-  Variable beqI : term->term->bool.
-  Variable beqI_ok : rel beqI << eqI.
-
-  Parameter L : Type.
-  Parameter beq : L -> L -> bool.
-  Parameter beq_ok : forall l m, beq l m = true <-> l = m.
-
-  Notation Sig' := (lab_sig Sig beq_ok).
-
-  Parameter pi : forall f : Sig, vector I (arity f) -> L.
-
-  Notation lab_rules := (lab_rules beq_ok pi).
+  Parameter beqI : term Sig -> term Sig ->bool.
+  Parameter beqI_ok : rel beqI << IR I (@eq I).
 
 End SemLab.
 
@@ -624,23 +639,17 @@ End SemLab.
 
 Module Type OrdSemLab.
 
-  Declare Module Export SL : SemLab.
+  Include Type SemLab.
 
-  Parameter Lgt : relation L. Infix ">L" := Lgt (at level 50).
-
-  Notation Lge := (Lgt %). Infix ">=L" := Lge (at level 50).
-
-  Parameter Dge : relation I. Infix ">=D" := Dge (at level 50).
-
-  Notation Ige := (IR I Dge). Infix ">=I" := Ige (at level 70).
-
-  Variable bge : term->term->bool.
-  Variable bge_ok : rel bge << Ige.
-
-  Parameter pi_mon : forall f, Vmonotone (pi f) Dge Lge.
+  Parameter Dge : relation I.
+  Parameter bge : term Sig -> term Sig -> bool.
+  Parameter bge_ok : rel bge << IR I Dge.
   Parameter I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
-  Notation Decr := (Decr beq_ok Lgt).
+  Parameter Lgt : relation L.
+  Parameter pi_mon : forall f, Vmonotone (pi f) Dge (Lgt%).
+
+  Notation "t '>=I' u" := (IR I Dge t u) (at level 70).
 
 End OrdSemLab.
 
@@ -649,32 +658,11 @@ End OrdSemLab.
 
 Module Ord (SL : SemLab) <: OrdSemLab.
 
-  Module Export SL := SL.
-
-  Definition Lgt (_ _ : L) := False. Infix ">L" := Lgt (at level 50).
-
-  Notation Lge := (Lgt %). Infix ">=L" := Lge (at level 50).
-
-  Lemma Lge_is_eq : forall a b, a >=L b <-> a = b.
-
-  Proof.
-    firstorder.
-  Qed.
+  Include SL.
 
   Definition Dge := @eq I.
-
-  Notation Ige := (IR I Dge). Infix ">=I" := Ige (at level 70).
-
   Definition bge := beqI.
-
   Definition bge_ok := beqI_ok.
-
-  Lemma pi_mon : forall f, Vmonotone (pi f) Dge Lge.
-
-  Proof.
-    unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
-    rewrite Lge_is_eq. rewrite H0. refl.
-  Qed.
 
   Lemma I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
@@ -683,9 +671,26 @@ Module Ord (SL : SemLab) <: OrdSemLab.
     rewrite H0. refl.
   Qed.
 
-  Notation Decr := (Decr beq_ok Lgt).
+  Definition Lgt (_ _ : L) := False.
 
-  Lemma Decr_empty : Decr [=] (@empty (@ATrs.rule Sig')).
+  Lemma Lge_is_eq : forall a b, (Lgt %) a b <-> a = b.
+
+  Proof.
+    firstorder.
+  Qed.
+
+  Lemma pi_mon : forall f, Vmonotone (pi f) Dge (Lgt%).
+
+  Proof.
+    unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
+    rewrite Lge_is_eq. rewrite H0. refl.
+  Qed.
+
+  Notation "t '>=I' u" := (IR I Dge t u) (at level 70).
+
+  Notation Sig' := (lab_sig Sig beq_ok).
+
+  Lemma Decr_empty : Decr beq_ok Lgt [=] @empty (@ATrs.rule Sig').
 
   Proof.
     firstorder.
@@ -698,9 +703,7 @@ End Ord.
 
 Module Type FinSemLab.
 
-  Declare Module Export SL : SemLab.
-
-  Export ATrs. Notation rules := (rules Sig).
+  Include Type SemLab.
 
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.
@@ -708,7 +711,8 @@ Module Type FinSemLab.
   Parameter Is : list I.
   Parameter Is_ok : forall x : I, In x Is.
 
-  Notation lab_rules := (enum beq_ok pi Is).
+  Parameter Ls : list L.
+  Parameter Ls_ok : forall x, In x Ls.
 
 End FinSemLab.
 
@@ -717,9 +721,7 @@ End FinSemLab.
 
 Module Type FinOrdSemLab.
 
-  Declare Module Export OSL : OrdSemLab.
-
-  Export ATrs. Notation rules := (rules Sig). Infix "++" := app.
+  Include Type OrdSemLab.
 
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.
@@ -727,12 +729,11 @@ Module Type FinOrdSemLab.
   Parameter Is : list I.
   Parameter Is_ok : forall x : I, In x Is.
 
-  Notation lab_rules := (enum beq_ok pi Is).
+  Parameter Ls : list L.
+  Parameter Ls_ok : forall x, In x Ls.
 
-  Parameter Ls : list (L*L).
-  Parameter Ls_ok : forall x y, x >L y <-> In (x,y) Ls.
-
-  Notation Decr := (enum_Decr beq_ok Fs Ls).
+  Parameter L2s : list (L*L).
+  Parameter L2s_ok : forall x y, Lgt x y <-> In (x,y) L2s.
 
 End FinOrdSemLab.
 
@@ -741,35 +742,7 @@ End FinOrdSemLab.
 
 Module FinOrd (Import FSL : FinSemLab) <: FinOrdSemLab.
 
-  Module Export OSL := Ord SL.
-
-  Export ATrs. Notation rules := (rules Sig).
-
-  Definition Lgt (_ _ : L) := False.
-
-  Notation Lge := (Lgt %). Infix ">=L" := Lge (at level 50).
-
-  Lemma Lge_is_eq : forall a b, a >=L b <-> a = b.
-
-  Proof.
-    firstorder.
-  Qed.
-
-  Definition Dge := @eq I.
-
-  Lemma pi_mon : forall f, Vmonotone (pi f) Dge Lge.
-
-  Proof.
-    unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
-    rewrite Lge_is_eq. rewrite H0. refl.
-  Qed.
-
-  Lemma I_mon : forall f, Vmonotone1 (fint I f) Dge.
-
-  Proof.
-    unfold Vmonotone1, Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
-    rewrite H0. refl.
-  Qed.
+  Include (Ord FSL).
 
   Definition Fs := Fs.
   Definition Fs_ok := Fs_ok.
@@ -777,17 +750,18 @@ Module FinOrd (Import FSL : FinSemLab) <: FinOrdSemLab.
   Definition Is := Is.
   Definition Is_ok := Is_ok.
 
-  Definition Ls : list (L*L) := nil.
+  Definition Ls := Ls.
+  Definition Ls_ok := Ls_ok.
 
-  Lemma Ls_ok : forall x y, x >L y <-> In (x,y) Ls.
+  Definition L2s : list (L*L) := nil.
+
+  Lemma L2s_ok : forall x y, Lgt x y <-> In (x,y) L2s.
 
   Proof.
     firstorder.
   Qed.
 
-  Notation Decr := (enum_Decr beq_ok Fs Ls).
-
-  Lemma Decr_empty : Decr = nil.
+  Lemma enum_Decr_empty : enum_Decr beq_ok Fs L2s = nil.
 
   Proof.
     firstorder.
@@ -799,11 +773,16 @@ End FinOrd.
 (** functor providing the properties of a semantic labelling
 with ordered labels *)
 
+Import ARules.
+
 Module OrdSemLabProps (Import OSL : OrdSemLab).
 
+  Notation Decr := (Decr beq_ok Lgt).
+  Notation lab_rules := (lab_rules beq_ok pi).
+ 
   Section props.
 
-    Variables E R : rules.
+    Variables E R : rules Sig.
 
     Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
     Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
@@ -835,47 +814,6 @@ Module OrdSemLabProps (Import OSL : OrdSemLab).
 End OrdSemLabProps.
 
 (***********************************************************************)
-(** functor providing the properties of a finite semantic labelling
-with ordered labels *)
-
-Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
-
-  Section props.
-
-    Variables E R : rules.
-
-    Variable bge_compatE : forallb (brule bge) E = true.
-    Variable bge_compatR : forallb (brule bge) R = true.
-
-    Lemma WF_red_mod_lab : WF (red_mod E R)
-      <-> WF (red_mod (Decr ++ lab_rules E) (lab_rules R)).
-
-    Proof.
-      rewrite WF_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
-      apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok.
-      apply bge_compatE. apply bge_compatR.
-    Qed.
-
-    Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
-      <-> WF (hd_red_mod (Decr ++ lab_rules E) (lab_rules R)).
-
-    Proof.
-      rewrite WF_hd_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
-      apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok. apply bge_compatE.
-    Qed.
-
-    Lemma WF_red_lab : WF (red R) <-> WF (red_mod Decr (lab_rules R)).
-
-    Proof.
-      rewrite WF_red_lab_fin. refl. apply pi_mon. apply I_mon.
-      apply Is_ok. apply Fs_ok. apply Ls_ok. apply bge_ok. apply bge_compatR.
-    Qed.
-
-  End props.
-
-End FinOrdSemLabProps.
-
-(***********************************************************************)
 (** functor providing the properties of a semantic labelling
 with unordered labels *)
 
@@ -887,7 +825,7 @@ Module SemLabProps (SL : SemLab).
 
   Section props.
 
-    Variables E R : rules.
+    Variables E R : rules Sig.
 
     Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
     Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
@@ -921,6 +859,58 @@ End SemLabProps.
 
 (***********************************************************************)
 (** functor providing the properties of a finite semantic labelling
+with ordered labels *)
+
+Import ATrs. Infix "++" := app. (*COQ: why Import List does not work?*)
+
+Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
+
+  Module LabSig <: SIG.
+    Definition Sig := lab_sig Sig beq_ok.
+    Definition Fs := Fs_lab Fs Ls.
+    Definition Fs_ok := Fs_lab_ok Fs_ok Ls_ok.
+  End LabSig.
+
+  Notation Decr := (enum_Decr beq_ok Fs L2s).
+  Notation lab_rules := (enum beq_ok pi Is).
+
+  Section props.
+
+    Variables E R : rules Sig.
+
+    Variable bge_compatE : forallb (brule bge) E = true.
+    Variable bge_compatR : forallb (brule bge) R = true.
+
+    Lemma WF_red_mod_lab : WF (red_mod E R)
+      <-> WF (red_mod (Decr ++ lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
+      apply Is_ok. apply Fs_ok. apply L2s_ok. apply bge_ok.
+      apply bge_compatE. apply bge_compatR.
+    Qed.
+
+    Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
+      <-> WF (hd_red_mod (Decr ++ lab_rules E) (lab_rules R)).
+
+    Proof.
+      rewrite WF_hd_red_mod_lab_fin. refl. apply pi_mon. apply I_mon.
+      apply Is_ok. apply Fs_ok. apply L2s_ok. apply bge_ok. apply bge_compatE.
+    Qed.
+
+    Lemma WF_red_lab : WF (red R) <-> WF (red_mod Decr (lab_rules R)).
+
+    Proof.
+      rewrite WF_red_lab_fin. refl. apply pi_mon. apply I_mon.
+      apply Is_ok. apply Fs_ok. apply L2s_ok. apply bge_ok. apply bge_compatR.
+    Qed.
+
+  End props.
+
+End FinOrdSemLabProps.
+
+(***********************************************************************)
+(** functor providing the properties of a finite semantic labelling
 with unordered labels *)
 
 Module FinSemLabProps (FSL : FinSemLab).
@@ -929,11 +919,13 @@ Module FinSemLabProps (FSL : FinSemLab).
 
   Module Import Props := FinOrdSemLabProps FOSL.
 
+  Module LabSig := LabSig.
+
   Import FSL.
 
   Section props.
 
-    Variables E R : rules.
+    Variables E R : rules Sig.
 
     Variable bge_compatE : forallb (brule bge) E = true.
     Variable bge_compatR : forallb (brule bge) R = true.
