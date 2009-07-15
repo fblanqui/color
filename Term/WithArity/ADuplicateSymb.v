@@ -405,3 +405,23 @@ Implicit Arguments rtc_red_dup_int_hd_symb [Sig R f us v].
 (** tactics *)
 
 Ltac mark := apply WF_duplicate_hd_int_red; [refl | refl | idtac].
+
+(***********************************************************************)
+(** signature functor *)
+
+Module Make (S : SIG) <: SIG.
+
+  Definition Sig := dup_sig S.Sig.
+
+  Definition Fs :=
+    fold_left (fun l f => hd_symb S.Sig f :: int_symb S.Sig f :: l) S.Fs nil.
+
+  Lemma Fs_ok : forall f, In f Fs.
+
+  Proof.
+    intro. unfold Fs. rewrite (@In_fold_left _ _ _
+      (fun f => hd_symb S.Sig f :: int_symb S.Sig f :: nil)). simpl.
+    right. destruct f; exists s; intuition; apply S.Fs_ok. refl.
+  Qed.
+
+End Make.
