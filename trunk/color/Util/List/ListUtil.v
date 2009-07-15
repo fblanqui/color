@@ -48,13 +48,13 @@ Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
 Proof.
 induction l1; simpl; intros. contradiction. destruct H. subst x. auto.
-right. apply IHl1. assumption.
+right. apply IHl1. hyp.
 Qed.
 
 Lemma in_appr : forall (x : A) l1 l2, In x l2 -> In x (l1 ++ l2).
 
 Proof.
-induction l1; simpl; intros. assumption. right. apply IHl1. assumption.
+induction l1; simpl; intros. hyp. right. apply IHl1. hyp.
 Qed.
 
 Lemma in_app_com : forall (x : A) l1 l2 l3,
@@ -99,7 +99,7 @@ Lemma In_elim_right : eq_midex A -> forall (x : A) l,
 
 Proof.
 induction l; simpl; intros. contradiction. 
-destruct (In_midex H x l). destruct IHl. assumption. destruct H2. 
+destruct (In_midex H x l). destruct IHl. hyp. destruct H2. 
 exists (a::x0). exists x1. rewrite (proj1 H2).
 rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
 destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
@@ -118,6 +118,11 @@ Implicit Arguments in_elim [A x l].
 Implicit Arguments in_elim_dec [A x l].
 
 Ltac intac := repeat (apply in_eq || apply in_cons).
+
+Ltac list_ok := let x := fresh in intro x;
+  match goal with
+    | |- In _ ?l => vm_compute; destruct x; tauto
+  end.
 
 (***********************************************************************)
 (** inclusion *)
@@ -149,7 +154,7 @@ Qed.
 Lemma incl_nil : forall l : list A, nil [= l.
 
 Proof.
-induction l. apply incl_refl. apply incl_tl. assumption.
+induction l. apply incl_refl. apply incl_tl. hyp.
 Qed.
 
 Lemma incl_cons_l : forall (a : A) l m, a :: l [= m -> In a m /\ l [= m.
@@ -183,15 +188,15 @@ Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l1 [= l3.
 
 Proof.
 induction l1; simpl; intros. apply incl_nil.
-eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
+eapply incl_tran with (m := a :: l1 ++ l2). 2: hyp.
 apply (incl_appl l2 (incl_refl (a :: l1))).
 Qed.
 
 Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l2 [= l3.
 
 Proof.
-induction l1; simpl; intros. assumption.
-eapply incl_tran with (m := a :: l1 ++ l2). 2: assumption.
+induction l1; simpl; intros. hyp.
+eapply incl_tran with (m := a :: l1 ++ l2). 2: hyp.
 apply (incl_appr (a :: l1) (incl_refl l2)).
 Qed.
 
@@ -220,7 +225,7 @@ Proof.
 induction l; simpl; intros. right. apply incl_nil.
 ded (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
 ded (IHl H1). destruct H2. auto.
-right. apply List.incl_cons; assumption.
+right. apply List.incl_cons; hyp.
 Qed.
 
 End incl.
@@ -265,15 +270,15 @@ Qed.
 Lemma lequiv_sym : forall l1 l2, lequiv l1 l2 -> lequiv l2 l1.
 
 Proof.
-intros. destruct H. split; assumption.
+intros. destruct H. split; hyp.
 Qed.
 
 Lemma lequiv_trans :
   forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
 
 Proof.
-intros. destruct H. destruct H0. split. eapply incl_tran. apply H. assumption.
-eapply incl_tran. apply H2. assumption.
+intros. destruct H. destruct H0. split. eapply incl_tran. apply H. hyp.
+eapply incl_tran. apply H2. hyp.
 Qed.
 
 End equiv.
@@ -375,7 +380,7 @@ Qed.
 Lemma app_nil : forall l1 l2 : list A, l1 = nil -> l2 = nil -> l1 ++ l2 = nil.
 
 Proof.
-intros. subst l1. subst l2. reflexivity.
+intros. subst l1. subst l2. refl.
 Qed.
 
 Lemma app_eq : forall l1 l2 l1' l2' : list A,
@@ -442,7 +447,7 @@ destruct n.
 simpl in H.
 destruct (app_eq_unit (a::l) m H) as 
   [[l_nil r_unit] | [l_unit r_nil]]; try contradiction.
-discriminate.
+discr.
 (* n <> nil *)    
 inversion H.
 destruct (IHl m n a0); trivial.
@@ -475,7 +480,7 @@ Variable A : Type.
 Lemma length_0 : forall l : list A, length l = 0 -> l = nil.
 
 Proof.
-intros. destruct l. refl. discriminate.
+intros. destruct l. refl. discr.
 Qed.
 
 End length.
@@ -526,7 +531,7 @@ Lemma list_decompose_head : forall (l : list A) el (lne: l <> nil),
   head l = Some el -> l = el :: tail l.
 
 Proof.
-intros. destruct l. discriminate. inversion H. rewrite <- H1; trivial.
+intros. destruct l. discr. inversion H. rewrite <- H1; trivial.
 Qed.
 
 Lemma in_head_tail : forall a (l : list A),
@@ -549,7 +554,7 @@ Lemma head_of_notNil : forall (l : list A) a (lne: l <> nil),
   head l = Some a -> proj1_sig (head_notNil lne) = a.
 
 Proof.
-intros. destruct l; try discriminate. simpl; inversion H; trivial.
+intros. destruct l; try discr. simpl; inversion H; trivial.
 Qed.
 
 End head_tail.
@@ -634,14 +639,14 @@ Fixpoint Inb (x : A) (l : list A) {struct l} : bool :=
 Lemma Inb_true : forall x l, Inb x l = true -> In x l.
 
 Proof.
-induction l; simpl. intro. discriminate. case (eq_dec x a); auto.
+induction l; simpl. intro. discr. case (eq_dec x a); auto.
 Qed.
 
 Lemma Inb_false : forall x l, Inb x l = false -> In x l -> False.
 
 Proof.
 induction l; simpl. intros. contradiction. case (eq_dec x a).
-intros. discriminate. intros. destruct H0; auto.
+intros. discr. intros. destruct H0; auto.
 Qed.
 
 Lemma Inb_intro : forall x l, In x l -> Inb x l = true.
@@ -667,15 +672,15 @@ Qed.
 Lemma Inb_incl : forall x l l', l [= l' -> Inb x l = true -> Inb x l' = true.
 
 Proof.
-intros. apply Inb_intro. apply H. apply Inb_true. assumption.
+intros. apply Inb_intro. apply H. apply Inb_true. hyp.
 Qed.
 
 Lemma Inb_equiv : forall x l l', lequiv l l' -> Inb x l = Inb x l'.
 
 Proof.
 intros. destruct H. case_eq (Inb x l'); case_eq (Inb x l); try refl.
-ded (Inb_incl _ H0 H1). rewrite H2 in H3. discriminate.
-ded (Inb_incl _ H H2). rewrite H1 in H3. discriminate.
+ded (Inb_incl _ H0 H1). rewrite H2 in H3. discr.
+ded (Inb_incl _ H H2). rewrite H1 in H3. discr.
 Qed.
 
 End Inb.
@@ -684,7 +689,7 @@ Ltac inbtac :=
   match goal with
     | _ : In ?x ?l |- _ =>
       let H0 := fresh "H" in
-	(assert (H0 : Inb x l = true); apply Inb_intro; assumption; rewrite H0)
+	(assert (H0 : Inb x l = true); apply Inb_intro; hyp; rewrite H0)
   end.
 
 (***********************************************************************)
@@ -720,13 +725,13 @@ Proof.
 induction l; simpl; intros. contradiction. destruct (eq_dec a x).
 apply le_lt_n_Sm.
 apply length_remove. destruct H. rewrite H in n. tauto. simpl. apply lt_n_S.
-apply IHl. assumption.
+apply IHl. hyp.
 Qed.
 
 Lemma In_remove : forall (x y : A) l, x <> y -> In y l -> In y (remove x l).
 
 Proof.
-induction l; simpl; intros. assumption. 
+induction l; simpl; intros. hyp. 
 destruct (eq_dec a x); destruct H0. rewrite e in H0. tauto.
 tauto. rewrite H0. simpl. tauto. simpl. tauto.
 Qed.
@@ -846,12 +851,21 @@ Implicit Arguments in_map_elim [A B f x l].
 
 Section flat_map.
 
-Lemma In_flat_map_intro : forall A B (f : A -> list B) x l y,
+Variables (A B : Type) (f : A -> list B).
+
+Lemma In_flat_map_intro : forall x l y,
   In y l -> In x (f y) -> In x (flat_map f l).
 
 Proof.
 induction l; simpl; intuition.
 subst. apply in_appl. hyp. apply in_appr. eapply IHl. apply H1. hyp.
+Qed.
+
+Lemma flat_map_app : forall l m,
+  flat_map f (l ++ m) = flat_map f l ++ flat_map f m.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. rewrite app_ass. refl.
 Qed.
 
 End flat_map.
@@ -990,7 +1004,7 @@ Section Element_At_List.
 Lemma element_at_in : forall (x:A) l n, l[n] = Some x -> In x l.
 
 Proof.
-induction l; simpl; intros. discriminate. destruct n.
+induction l; simpl; intros. discr. destruct n.
 inversion H. subst. auto. ded (IHl _ H). auto.
 Qed.
 
@@ -998,7 +1012,7 @@ Lemma element_at_in2 :
   forall (x:A) l n, l[n] = Some x -> In x l /\ n < length l.
 
 Proof.
-induction l; intros; simpl in H; try discriminate. destruct n.
+induction l; intros; simpl in H; try discr. destruct n.
 inversion H; subst; simpl; auto with *.
 ded (IHl n H). intuition; simpl; omega.
 Qed.
@@ -1076,26 +1090,26 @@ Variable A : Type.
 Lemma in_rev : forall (x : A) l, In x l -> In x (rev l).
 
 Proof.
-induction l; simpl; intros. assumption. apply in_or_app. simpl. tauto.
+induction l; simpl; intros. hyp. apply in_or_app. simpl. tauto.
 Qed.
 
 Lemma incl_rev : forall l : list A, l [= rev l.
 
 Proof.
-unfold incl. intros. apply in_rev. assumption. 
+unfold incl. intros. apply in_rev. hyp. 
 Qed. 
 
 Lemma rev_incl : forall l : list A, rev l [= l. 
 
 Proof.
-intros. pose (incl_rev (rev l)). rewrite (rev_involutive l) in i. assumption.
+intros. pose (incl_rev (rev l)). rewrite (rev_involutive l) in i. hyp.
 Qed.
 
 Lemma incl_rev_intro : forall l l' : list A, rev l [= rev l' -> l [= l'.
 
 Proof.
 intros. apply incl_tran with (rev l). apply incl_rev.
-apply incl_tran with (rev l'). assumption. apply rev_incl.
+apply incl_tran with (rev l'). hyp. apply rev_incl.
 Qed.
 
 End reverse.
@@ -1263,9 +1277,9 @@ Section partition.
     induction l; simpl. auto.
     destruct (partition P l0). destruct (bool_dec (P a0) true).
     rewrite e. intro. destruct H.
-    subst a0. assumption.
-    apply IHl0. assumption.
-    rewrite (not_true_is_false (P a0)); assumption.
+    subst a0. hyp.
+    apply IHl0. hyp.
+    rewrite (not_true_is_false (P a0)); hyp.
   Qed.
 
   Lemma partition_right : In a (snd (partition P l)) -> P a = false.
@@ -1276,7 +1290,7 @@ Section partition.
     rewrite e. apply IHl0.
     rewrite (not_true_is_false (P a0)). intro. destruct H.
     subst a0. destruct (P a); intuition.
-    apply IHl0. assumption. assumption.
+    apply IHl0. hyp. hyp.
   Qed.
 
 End partition.
@@ -1295,7 +1309,7 @@ Section partition_by_prop.
 
   Proof.
     intros. unfold partition_by_prop in H. 
-    destruct (P_dec a). assumption. discriminate.
+    destruct (P_dec a). hyp. discr.
   Qed.
 
 End partition_by_prop.
@@ -1312,7 +1326,7 @@ Section partition_by_rel.
 
   Proof.
     intros. unfold partition_by_rel in H. simpl in H.
-    destruct (R_dec a b). assumption. discriminate.
+    destruct (R_dec a b). hyp. discr.
   Qed.
 
 End partition_by_rel.
@@ -1340,16 +1354,16 @@ Lemma listfilter_in : forall L l i x,
 
 Proof.
 induction L.
-intros. simpl in *. discriminate.
+intros. simpl in *. discr.
 
 intros.
 destruct i;simpl in H.
 simpl.
 inversion H;subst.
-destruct l;simpl in *. discriminate.
+destruct l;simpl in *. discr.
 inversion H0;subst. simpl;left; auto.
 
-destruct l;auto. simpl in H0; discriminate.
+destruct l;auto. simpl in H0; discr.
 inversion H0.
 simpl.
 destruct b.
@@ -1386,7 +1400,7 @@ Section ListsNth.
 
   Proof.
     induction l; intros.
-    destruct i; simpl in *; discriminate.
+    destruct i; simpl in *; discr.
     destruct i; simpl in *.
     left; compute in *; congruence.
     right; eapply IHl; eauto.
@@ -1464,7 +1478,7 @@ Section ListsNth.
     auto with arith.
     destruct i; simpl.
     intros.
-    discriminate.
+    discr.
     intro.
     assert (i >= length l).
     apply (IHl i); trivial.
@@ -1482,7 +1496,7 @@ Section ListsNth.
     destruct i; simpl.
     split; intro.
     auto with arith.
-    discriminate.
+    discr.
     split; intro.
     assert (i < length l).
     apply (proj1 (IHl i)); trivial.
@@ -1496,7 +1510,7 @@ Section ListsNth.
   Proof.
     intros.
     apply (proj1 (nth_in l n)).
-    rewrite H; discriminate.
+    rewrite H; discr.
   Qed.
 
   Lemma nth_map_none : forall (l : list A) i (f: A -> A),
@@ -1506,7 +1520,7 @@ Section ListsNth.
     induction l.
     trivial.
     intros i f; destruct i; simpl.
-    intro; discriminate.
+    intro; discr.
     apply IHl.
   Qed.
 
@@ -1517,7 +1531,7 @@ Section ListsNth.
     induction l.
     trivial.
     intros i f; destruct i; simpl.
-    intro; discriminate.
+    intro; discr.
     apply IHl.
   Qed.
 
@@ -1526,7 +1540,7 @@ Section ListsNth.
 
   Proof.
     induction l.
-    destruct i; intros; discriminate.
+    destruct i; intros; discr.
     intros i f a'.
     destruct i; simpl.
     intro aa'; inversion aa'; trivial.
@@ -1539,7 +1553,7 @@ Section ListsNth.
 
   Proof.
     induction l.
-    destruct i; intros; discriminate.
+    destruct i; intros; discr.
     intros i f a'.
     destruct i; simpl.
     intros aa'; inversion aa'; exists a; auto.
@@ -1553,7 +1567,7 @@ Section ListsNth.
     intros.
     destruct i.
     inversion H; auto.
-    inversion H; destruct i; discriminate.
+    inversion H; destruct i; discr.
   Qed.
 
 End ListsNth.
@@ -1657,6 +1671,119 @@ apply ith_eq. refl.
 Qed.
 
 End pvalues_map.
+
+(****************************************************************************)
+(** list of natural numbers strictly smaller than n with proofs *)
+
+Section nat_lt.
+
+Variable n : nat.
+
+Lemma nats_lt_aux1 : forall k', S k' < n -> k' < n.
+
+Proof.
+intros. omega.
+Qed.
+
+(* nats_lt n k h = k :: ... :: 0 *)
+
+Fixpoint nats_lt_aux k :=
+  match k as k return k<n -> list (nat_lt n) with
+    | 0 => fun h => mk_nat_lt h :: nil
+    | S k' => fun h => mk_nat_lt h :: nats_lt_aux k' (nats_lt_aux1 h)
+  end.
+
+Lemma nats_lt_aux_correct : forall x k (h : k<n) i,
+  i <= k -> val (nth i (nats_lt_aux h) x) = k - i.
+
+Proof.
+induction k; simpl; intros; destruct i. auto. absurd_arith.
+auto. rewrite IHk. auto. omega.
+Qed.
+
+Lemma nats_lt_aux_complete : forall k (h : k<n) i (p : i<n),
+  i <= k -> In (mk_nat_lt p) (nats_lt_aux h).
+
+Proof.
+induction k; simpl; intros.
+assert (i=0). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
+assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+Qed.
+
+(* nats_lt n = n-1 :: ... :: 0 *)
+
+Definition nats_lt :=
+  match lt_ge_dec (pred n) n with
+    | left h => nats_lt_aux h
+    | _ => nil
+  end.
+
+Lemma nats_lt_correct : forall x i,
+  i < n -> val (nth i nats_lt x) = pred n - i.
+
+Proof.
+intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
+apply nats_lt_aux_correct. omega. absurd_arith.
+Qed.
+
+Lemma nats_lt_complete : forall i (p : i<n), In (mk_nat_lt p) nats_lt.
+
+Proof.
+intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
+apply nats_lt_aux_complete. omega. absurd_arith.
+Qed.
+
+End nat_lt.
+
+(***********************************************************************)
+(** first element satisfying some boolean predicate *)
+
+Section first.
+
+Variable (A : Type) (f : A -> bool).
+
+Fixpoint first l :=
+  match l with
+    | nil => None
+    | x :: l' => if f x then Some x else first l'
+  end.
+
+End first.
+
+(***********************************************************************)
+(** fold_left *)
+
+Section fold_left.
+
+Variable (A B : Type) (f : list A -> B -> list A).
+
+Variable g : B -> list A.
+
+Variable hyp : forall l b, f l b = g b ++ l.
+
+Lemma fold_left_flat_map : forall bs l,
+  fold_left f bs l = flat_map g (rev bs) ++ l.
+
+Proof.
+induction bs; simpl; intro. refl.
+rewrite IHbs. rewrite hyp. rewrite flat_map_app. rewrite app_ass. simpl.
+rewrite <- app_nil_end. refl.
+Qed.
+
+Lemma In_fold_left : forall a bs l,
+  In a (fold_left f bs l) <-> (In a l \/ exists b, In b bs /\ In a (g b)).
+
+Proof.
+intros. rewrite fold_left_flat_map. rewrite in_app. rewrite in_flat_map.
+intuition. destruct H0. right. exists x. rewrite In_rev. hyp.
+destruct H0. left. exists x. rewrite <- In_rev. hyp.
+Qed.
+
+End fold_left.
+
+Implicit Arguments fold_left_flat_map [A B f].
+Implicit Arguments In_fold_left [A B f].
 
 (****************************************************************************)
 (** checking a boolean property [P 0 && ... && P (n-1)], where the domain of
@@ -1789,70 +1916,6 @@ Section lookup_dep.
   Qed.
 
 End lookup_dep.
-
-(****************************************************************************)
-(** list of natural numbers strictly smaller than n with proofs *)
-
-Section nat_lt.
-
-Variable n : nat.
-
-Lemma nats_lt_aux1 : forall k', S k' < n -> k' < n.
-
-Proof.
-intros. omega.
-Qed.
-
-(* nats_lt n k h = k :: ... :: 0 *)
-
-Fixpoint nats_lt_aux k :=
-  match k as k return k<n -> list (nat_lt n) with
-    | 0 => fun h => mk_nat_lt h :: nil
-    | S k' => fun h => mk_nat_lt h :: nats_lt_aux k' (nats_lt_aux1 h)
-  end.
-
-Lemma nats_lt_aux_correct : forall x k (h : k<n) i,
-  i <= k -> val (nth i (nats_lt_aux h) x) = k - i.
-
-Proof.
-induction k; simpl; intros; destruct i. auto. absurd_arith.
-auto. rewrite IHk. auto. omega.
-Qed.
-
-Lemma nats_lt_aux_complete : forall k (h : k<n) i (p : i<n),
-  i <= k -> In (mk_nat_lt p) (nats_lt_aux h).
-
-Proof.
-induction k; simpl; intros.
-assert (i=0). omega. subst. assert (h=p). apply lt_unique. subst. auto.
-destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
-assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
-Qed.
-
-(* nats_lt n = n-1 :: ... :: 0 *)
-
-Definition nats_lt :=
-  match lt_ge_dec (pred n) n with
-    | left h => nats_lt_aux h
-    | _ => nil
-  end.
-
-Lemma nats_lt_correct : forall x i,
-  i < n -> val (nth i nats_lt x) = pred n - i.
-
-Proof.
-intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
-apply nats_lt_aux_correct. omega. absurd_arith.
-Qed.
-
-Lemma nats_lt_complete : forall i (p : i<n), In (mk_nat_lt p) nats_lt.
-
-Proof.
-intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
-apply nats_lt_aux_complete. omega. absurd_arith.
-Qed.
-
-End nat_lt.
 
 (****************************************************************************)
 (** hints *)
