@@ -24,6 +24,8 @@ Notation term := (term Sig).
 
 Record rule : Type := mkRule { lhs : term; rhs : term }.
 
+Definition rules := list rule.
+
 Definition red R t1 t2 := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
