@@ -35,13 +35,20 @@ Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
 
 Implicit Arguments eq_symb_dec [Sig].
 
-Module Type SIG.
-  Parameter S : Signature.
-End SIG.
-
 (***********************************************************************)
 (** Tactic for proving beq_symb_ok *)
 
-Ltac beq_symb_ok_tac := intros f g; split;
+Ltac beq_symb_ok := intros f g; split;
   [destruct f; destruct g; simpl; intro; (discriminate || reflexivity)
     | intro; subst g; destruct f; reflexivity].
+
+(***********************************************************************)
+(** Module for finite signatures *)
+
+Require Import List.
+
+Module Type SIG.
+  Parameter Sig : Signature.
+  Parameter Fs : list Sig.
+  Parameter Fs_ok : forall f, In f Fs.
+End SIG.
