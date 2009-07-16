@@ -29,6 +29,13 @@ Definition rules := set rule.
 
 Definition Rules R : rules := fun x => In x R.
 
+Lemma Rules_cons : forall a R, Rules (a :: R) [=] a :: Rules R.
+
+Proof.
+unfold Rules. simpl. split. intuition. subst. firstorder. firstorder.
+firstorder.
+Qed.
+
 Lemma Rules_app : forall R S, Rules (R ++ S) [=] Rules R ++ Rules S.
 
 Proof.
