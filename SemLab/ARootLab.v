@@ -121,8 +121,13 @@ Module RootLabProps (RL : RootLab).
 
   Module FSL := RootSemLab RL.
 
-  Include (FinSemLabProps FSL).
+  Module Props := FinSemLabProps FSL.
 
-  Ltac rootlab := semlab.
+  Module LabSig.
+    Include Props.LabSig.
+    Definition mk := FSL.mk.
+  End LabSig.
+
+  Ltac rootlab := Props.semlab.
 
 End RootLabProps.
