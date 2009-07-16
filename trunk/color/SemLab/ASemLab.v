@@ -195,6 +195,7 @@ Qed.
 
 Definition unlab := Ft HF.
 Definition unlab_rules := Frs HF.
+Definition unlab_rules_fin := Fl HF.
 
 Lemma Ft_epi : forall v t, unlab (lab v t) = t.
 
@@ -593,6 +594,27 @@ Qed.
 
 End red_mod.
 
+Lemma WF_red_unlab_fin : forall R, WF (red (unlab_rules_fin R)) -> WF (red R).
+
+Proof.
+intros. apply Fred_WF_fin with (S2:=Sig) (F:=F) (HF:=HF). hyp.
+Qed.
+
+Lemma WF_red_mod_unlab_fin : forall E R,
+  WF (red_mod (unlab_rules_fin E) (unlab_rules_fin R)) -> WF (red_mod E R).
+
+Proof.
+intros. apply Fred_mod_WF_fin with (S2:=Sig) (F:=F) (HF:=HF). hyp.
+Qed.
+
+Lemma WF_hd_red_mod_unlab_fin : forall E R,
+  WF (hd_red_mod (unlab_rules_fin E) (unlab_rules_fin R))
+  -> WF (hd_red_mod E R).
+
+Proof.
+intros. apply Fhd_red_mod_WF_fin with (S2:=Sig) (F:=F) (HF:=HF). hyp.
+Qed.
+
 End enum.
 
 End S.
@@ -604,6 +626,10 @@ Implicit Arguments enum [Sig L beq I].
 Implicit Arguments enum_Decr [Sig L beq].
 Implicit Arguments Fs_lab [Sig L].
 Implicit Arguments Fs_lab_ok [Sig L Fs Ls].
+Implicit Arguments unlab_rules_fin [L beq].
+Implicit Arguments WF_red_unlab_fin [Sig L beq].
+Implicit Arguments WF_red_mod_unlab_fin [Sig L beq].
+Implicit Arguments WF_hd_red_mod_unlab_fin [Sig L beq].
 
 (***********************************************************************)
 (** basic module type for semantic labellings *)
@@ -866,9 +892,20 @@ Import ATrs. Infix "++" := app. (*COQ: why Import List does not work?*)
 Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
 
   Module LabSig <: SIG.
+
     Definition Sig := lab_sig Sig beq_ok.
     Definition Fs := Fs_lab Fs Ls.
     Definition Fs_ok := Fs_lab_ok Fs_ok Ls_ok.
+
+    Notation unlab_rules := (unlab_rules_fin Sig beq_ok).
+
+    Ltac unlab :=
+      match goal with
+        | |- WF (red_mod _ _) => apply (WF_red_mod_unlab_fin beq_ok)
+        | |- WF (hd_red_mod _ _) => apply (WF_hd_red_mod_unlab_fin beq_ok)
+        | |- WF (red _) => apply (WF_red_unlab_fin beq_ok)
+      end.
+
   End LabSig.
 
   Notation Decr := (enum_Decr beq_ok Fs L2s).
@@ -906,6 +943,16 @@ Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
     Qed.
 
   End props.
+
+  Ltac semlab :=
+    match goal with
+      | |- WF (red_mod _ _) =>
+        rewrite WF_red_mod_lab; [idtac | check_eq | check_eq]
+      | |- WF (hd_red_mod _ _) =>
+        rewrite WF_hd_red_mod_lab; [idtac | check_eq | check_eq]
+      | |- WF (red _) =>
+        rewrite WF_red_lab; [idtac | check_eq]
+    end.
 
 End FinOrdSemLabProps.
 
