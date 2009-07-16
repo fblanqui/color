@@ -71,7 +71,24 @@ Definition Fr (a : rule S1) := let (l,r) := a in mkRule (Ft l) (Ft r).
 
 Definition Fl := map Fr.
 
-Definition Frs (R : rules S1) : rules S2 := fun a => exists b, R b /\ a = Fr b.
+Definition Frs := image Fr.
+
+Require Import Setoid.
+
+Add Morphism Frs
+  with signature (@SetUtil.equiv (rule S1)) ==> (@SetUtil.equiv (rule S2))
+  as Frs_equiv.
+
+Proof.
+firstorder.
+Qed.
+
+Lemma Rules_Fl : forall R, Rules (Fl R) [=] Frs (Rules R).
+
+Proof.
+induction R; simpl; intros. firstorder. repeat rewrite Rules_cons.
+rewrite IHR. unfold Frs. rewrite image_add. refl.
+Qed.
 
 Lemma incl_Frs : forall R S, R [= S -> Frs R [= Frs S.
 
@@ -175,6 +192,33 @@ intros E R H x. geneq H x (Ft x). induction 1; intros. apply SN_intro; intros.
 eapply H0. subst x. apply Fhd_red_mod. apply H2. refl.
 Qed.
 
+(***********************************************************************)
+(** finite versions *)
+
+Require Import ATrs.
+
+Lemma Fred_WF_fin : forall R, WF (red (Fl R)) -> WF (red R).
+
+Proof.
+intro. repeat rewrite <- red_Rules. rewrite Rules_Fl. apply Fred_WF.
+Qed.
+
+Lemma Fred_mod_WF_fin : forall E R,
+  WF (red_mod (Fl E) (Fl R)) -> WF (red_mod E R).
+
+Proof.
+intros E R. repeat rewrite <- red_mod_Rules. repeat rewrite Rules_Fl.
+apply Fred_mod_WF.
+Qed.
+
+Lemma Fhd_red_mod_WF_fin : forall E R,
+  WF (hd_red_mod (Fl E) (Fl R)) -> WF (hd_red_mod E R).
+
+Proof.
+intros E R. repeat rewrite <- hd_red_mod_Rules. repeat rewrite Rules_Fl.
+apply Fhd_red_mod_WF.
+Qed.
+
 End Morphism.
 
 Implicit Arguments Ft [S1 S2 F].
@@ -187,6 +231,8 @@ Implicit Arguments Frs [S1 S2 F].
 
 (***********************************************************************)
 (** preservation of termination *)
+
+Import ARules.
 
 Section Preserv.
 
