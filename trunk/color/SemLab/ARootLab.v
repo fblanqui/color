@@ -57,7 +57,7 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
   Ltac Leqtac := repeat
     match goal with
       | H : mk ?x ?v = mk ?x ?w |- _ =>
-        let h := fresh in
+        let h1 := fresh in
           (injection H; intro h1; ded (inj_pairT2 eq_symb_dec h1);
             clear h1; clear H)
       | H : mk ?x ?v = mk ?y ?w |- _ =>
