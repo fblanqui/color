@@ -49,39 +49,17 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
 
   Definition I := mkInterpretation some_symbol (fun f _ => f).
 
-  Record Lab : Type := mk {
-    L_symb : Sig;
-    L_args : vector I (arity L_symb)
-  }.
+  Definition L (f : Sig) := vector Sig (arity f).
 
-  Ltac Leqtac := repeat
-    match goal with
-      | H : mk ?x ?v = mk ?x ?w |- _ =>
-        let h1 := fresh in
-          (injection H; intro h1; ded (inj_pairT2 eq_symb_dec h1);
-            clear h1; clear H)
-      | H : mk ?x ?v = mk ?y ?w |- _ =>
-        let h1 := fresh in let h2 := fresh in
-          (injection H; intros h1 h2; subst; ded (inj_pairT2 eq_symb_dec h1);
-            clear h1; clear H)
-    end.
+  Definition beq f g (l : L f) (m : L g) := beq_vec (@beq_symb Sig) l m.
 
-  Definition L := Lab.
-
-  Definition beq (l1 l2 : L) :=
-    let (f1,v1) := l1 in let (f2,v2) := l2 in
-      beq_symb f1 f2 && beq_vec (@beq_symb Sig) v1 v2.
-
-  Lemma beq_ok : forall l1 l2, beq l1 l2 = true <-> l1 = l2.
+  Lemma beq_ok : forall f (l1 l2 : L f), beq l1 l2 = true <-> l1 = l2.
 
   Proof.
-    intros [f1 v1] [f2 v2]. simpl. rewrite andb_eq. rewrite beq_symb_ok.
-    intuition. subst. apply beq_vec_beq_impl_eq in H1. subst. refl.
-    apply beq_symb_ok. Leqtac. refl. Leqtac. apply beq_vec_ok2.
-    apply beq_symb_ok. hyp.
+    intros f l1 l2. apply beq_vec_ok. apply beq_symb_ok.
   Qed.
 
-  Definition pi := mk.
+  Definition pi (f : Sig) (v : vector Sig (arity f)) := v.
 
   Definition beqI (t u : term) :=
     match t, u with
@@ -104,15 +82,12 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
   Definition Is := Fs.
   Definition Is_ok := Fs_ok.
 
-  Definition Ls := flat_map (fun f =>
-    map (fun fs => @mk f fs) (enum_tuple I Is (arity f))) Fs.
+  Definition Ls (f : Sig) := enum_tuple I Is (arity f).
 
-  Lemma Ls_ok : forall x, In x Ls.
+  Lemma Ls_ok : forall f (x : L f), In x (Ls f).
 
   Proof.
-    intros [f fs]. unfold Ls. rewrite in_flat_map. exists f. split.
-    apply Fs_ok. rewrite in_map_iff. exists fs. intuition.
-    apply enum_tuple_complete. apply Is_ok.
+    intros f x. unfold Ls. apply (enum_tuple_complete I Is_ok).
   Qed.
 
 End RootSemLab.
@@ -125,7 +100,8 @@ Module RootLabProps (RL : RootLab).
 
   Module LabSig.
     Include Props.LabSig.
-    Definition mk := FSL.mk.
+    (*FIXME: is it really necessary to redefine mk here? *)
+    Definition mk := @mk RL.Sig FSL.L.
   End LabSig.
 
   Ltac rootlab := Props.semlab.
