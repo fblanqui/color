@@ -36,14 +36,34 @@ Notation rule := (rule Sig). Notation rules := (rules Sig).
 (***********************************************************************)
 (** labels *)
 
-Variable L : Type.
-Variable beq : L -> L -> bool.
-Variable beq_ok : forall l m, beq l m = true <-> l = m.
+Variable L : Sig -> Type.
+Variable beq : forall f g, L f -> L g -> bool.
+Variable beq_ok : forall f (l m : L f), beq l m = true <-> l = m.
 
 (***********************************************************************)
 (** labelled signature *)
 
-Definition lab_symb := (Sig * L)%type.
+Variable I : interpretation Sig.
+
+Notation int := (@term_int _ I).
+
+Record lab_symb : Type := mk {
+  l_symb : Sig;
+  l_lab : L l_symb }.
+
+Notation eq_symb_dec := (@eq_symb_dec Sig).
+
+Ltac Leqtac := repeat
+  match goal with
+    | H : @mk ?x _ = @mk ?x _ |- _ =>
+      let h1 := fresh in
+        (injection H; intro h1; ded (inj_pairT2 eq_symb_dec h1);
+          clear h1; clear H)
+    | H : @mk _ _ = @mk _ _ |- _ =>
+      let h1 := fresh in let h2 := fresh in
+        (injection H; clear H; intros h1 h2; subst;
+          ded (inj_pairT2 eq_symb_dec h1); clear h1; subst)
+  end.
 
 Definition beq_lab_symb (fl1 fl2 : lab_symb) :=
   let (f1,l1) := fl1 in let (f2,l2) := fl2 in beq_symb f1 f2 && beq l1 l2.
@@ -53,9 +73,9 @@ Lemma beq_lab_symb_ok : forall fl1 fl2,
 
 Proof.
 intros [f1 l1] [f2 l2]. simpl. split; intro. rewrite andb_eq in H. destruct H.
-rewrite beq_symb_ok in H. rewrite beq_ok in H0. subst. refl.
-inversion H. subst. rewrite andb_eq. rewrite (beq_refl beq_ok).
-rewrite (beq_refl (@beq_symb_ok Sig)). auto.
+rewrite beq_symb_ok in H. subst. rewrite beq_ok in H0. subst. refl.
+Leqtac. rewrite andb_eq. rewrite (beq_refl (@beq_symb_ok Sig)).
+rewrite beq_ok. auto.
 Qed.
 
 Definition lab_arity (fl : lab_symb) := let (f,_) := fl in arity f.
@@ -69,16 +89,12 @@ Notation rule' := (ATrs.rule Sig'). Notation rules' := (rules Sig').
 (***********************************************************************)
 (** labelling *)
 
-Variable I : interpretation Sig.
-
-Notation int := (@term_int _ I).
-
-Variable pi : forall f : Sig, vector I (arity f) -> L.
+Variable pi : forall f : Sig, vector I (arity f) -> L f.
 
 Fixpoint lab v t :=
   match t with
     | Var x => Var x
-    | Fun f ts => Fun' (f, pi f (Vmap (int v) ts)) (Vmap (lab v) ts)
+    | Fun f ts => Fun' (mk (pi f (Vmap (int v) ts))) (Vmap (lab v) ts)
   end.
 
 Definition lab_rule v (a : rule) :=
@@ -157,23 +173,23 @@ Qed.
 (***********************************************************************)
 (** ordering of labels *)
 
-Variable Lgt : relation L. Infix ">L" := Lgt (at level 50).
+Variable Lgt : forall f, relation (L f). Infix ">L" := Lgt (at level 50).
 
-Let Lge := Lgt %. Infix ">=L" := Lge (at level 50).
+Let Lge f := @Lgt f %. Infix ">=L" := Lge (at level 50).
 
-Definition Fun'_vars f a := Fun' (f,a) (fresh_vars (arity f)).
+Definition Fun'_vars f (a : L f) := Fun' (mk a) (fresh_vars (arity f)).
 
-Definition decr f a b := mkRule (Fun'_vars f a) (Fun'_vars f b).
+Definition decr f (a b : L f) := mkRule (Fun'_vars a) (Fun'_vars b).
 
 Definition Decr (rho : rule') :=
-  exists f, exists a, exists b, a >L b /\ rho = decr f a b.
+  exists f, exists a : L f, exists b, a >L b /\ rho = decr a b.
 
-Lemma Lge_Decr : forall f (ts : terms' (arity f)) a b,
-  a >=L b -> red Decr # (Fun' (f,a) ts) (Fun' (f,b) ts).
+Lemma Lge_Decr : forall f (ts : terms' (arity f)) (a b : L f),
+  a >=L b -> red Decr # (Fun' (mk a) ts) (Fun' (mk b) ts).
 
 Proof.
 intros. destruct H. subst. apply rt_refl. apply rt_step.
-exists (Fun'_vars f a). exists (Fun'_vars f b). exists Hole.
+exists (Fun'_vars a). exists (Fun'_vars b). exists Hole.
 exists (sub_vars ts). simpl. intuition.
 exists f. exists a. exists b. intuition.
 apply args_eq. apply sub_fresh_vars.
@@ -225,7 +241,7 @@ Lemma red_Frs_Decr : red (unlab_rules Decr) << @eq term.
 Proof.
 intros t u h. redtac. subst. destruct lr as [[l' r'] [h1 h2]].
 destruct h1 as [f [a [b [ab h]]]]. inversion h. subst. inversion h2.
-assert (HF (f,a) = HF (f,b)). apply UIP. apply eq_nat_dec. rewrite H. refl.
+assert (HF (mk a) = HF (mk b)). apply UIP. apply eq_nat_dec. rewrite H. refl.
 Qed.
 
 Lemma rt_red_Frs_Decr : red (unlab_rules Decr) # << @eq term.
@@ -259,7 +275,7 @@ Variable Dge : relation I. Infix ">=D" := Dge (at level 50).
 
 Let Ige := IR I Dge. Infix ">=I" := Ige (at level 70).
 
-Variable pi_mon : forall f, Vmonotone (pi f) Dge Lge.
+Variable pi_mon : forall f, Vmonotone (pi f) Dge (@Lge f).
 Variable I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
 Section red.
@@ -299,10 +315,10 @@ set (a := pi f (Vcast (Vapp v0' (Vcons (int v t) v1')) e)).
 set (b := pi f (Vcast (Vapp v0' (Vcons (int v u) v1')) e)).
 assert (a >=L b). apply pi_mon. hyp.
 set (w0 := Vmap (lab v) v0). set (w1 := Vmap (lab v) v1).
-set (ts := Vcast (Vapp w0 (Vcons (lab v t) w1)) e). ded (Lge_Decr f ts H1).
+set (ts := Vcast (Vapp w0 (Vcons (lab v t) w1)) e). ded (Lge_Decr ts H1).
 set (us := Vcast (Vapp w0 (Vcons (lab v u) w1)) e).
 do 2 destruct H. set (vs := Vcast (Vapp w0 (Vcons x w1)) e).
-exists (Fun' (f,b) vs). split. apply rt_trans with (Fun' (f,b) ts). hyp.
+exists (Fun' (mk b) vs). split. apply rt_trans with (Fun' (mk b) ts). hyp.
 apply context_closed_fun with (R := red Decr #).
 apply context_closed_rtc. apply context_closed_red. hyp.
 apply context_closed_fun with (R := red R'). apply context_closed_red. hyp.
@@ -480,12 +496,12 @@ Definition enum2 R :=
 Variable Fs : list Sig.
 Variable Fs_ok : forall x, In x Fs.
 
-Variable Ls : list L.
-Variable Ls_ok : forall x, In x Ls.
+Variable Ls : forall f, list (L f).
+Variable Ls_ok : forall f (x : L f), In x (Ls f).
 
-Definition Fs_lab := flat_map (fun f => map (fun l => (f,l)) Ls) Fs.
+Definition Fs_lab := flat_map (fun f => map (@mk f) (Ls f)) Fs.
 
-Lemma Fs_lab_ok : forall f, In f Fs_lab.
+Lemma Fs_lab_ok : forall f : Sig', In f Fs_lab.
 
 Proof.
 intros [f l]. unfold Fs_lab. rewrite in_flat_map. exists f. split.
@@ -495,11 +511,11 @@ Qed.
 (***********************************************************************)
 (** enumeration of Decr rules *)
 
-Variable L2s : list (L*L).
-Variable L2s_ok : forall x y, x >L y <-> In (x,y) L2s.
+Variable L2s : forall f, list (L f * L f).
+Variable L2s_ok : forall f (x y : L f), x >L y <-> In (x,y) (L2s f).
 
-Definition enum_Decr := flat_map (fun x : L*L =>
-  let (a,b) := x in map (fun f => decr f a b) Fs) L2s.
+Definition enum_Decr := flat_map (fun f =>
+  map (fun x : L f * L f => let (a,b) := x in decr a b) (L2s f)) Fs.
 
 Notation D' := enum_Decr.
 
@@ -507,18 +523,17 @@ Lemma enum_Decr_correct : forall x, In x D' -> Decr x.
 
 Proof.
 intros. unfold enum_Decr in H. rewrite in_flat_map in H.
-destruct H as [[a b] [h1 h2]]. rewrite in_map_iff in h2.
-destruct h2 as [f [h2 h3]]. exists f. exists a. exists b. split.
-rewrite L2s_ok. hyp. auto.
+destruct H as [f]. destruct H. rewrite in_map_iff in H0.
+destruct H0 as [[a b]]. destruct H0. exists f. exists a. exists b.
+rewrite L2s_ok. auto.
 Qed.
 
 Lemma enum_Decr_complete : forall x, Decr x -> In x D'.
 
 Proof.
 intros. destruct H as [f [a [b [h]]]]. unfold enum_Decr. rewrite in_flat_map.
-exists (a,b). split. rewrite <- L2s_ok. hyp. subst.
-set (G := fun f => decr f a b). change (In (G f) (map G Fs)). apply in_map.
-apply Fs_ok.
+exists f. split. apply Fs_ok. rewrite in_map_iff. exists (a,b).
+rewrite <- L2s_ok. auto.
 Qed.
 
 Lemma Rules_enum_Decr : Rules D' [=] Decr.
@@ -625,11 +640,12 @@ Implicit Arguments lab_rules [Sig L beq I].
 Implicit Arguments enum [Sig L beq I].
 Implicit Arguments enum_Decr [Sig L beq].
 Implicit Arguments Fs_lab [Sig L].
-Implicit Arguments Fs_lab_ok [Sig L Fs Ls].
+Implicit Arguments Fs_lab_ok [Sig L beq Fs Ls].
 Implicit Arguments unlab_rules_fin [L beq].
 Implicit Arguments WF_red_unlab_fin [Sig L beq].
 Implicit Arguments WF_red_mod_unlab_fin [Sig L beq].
 Implicit Arguments WF_hd_red_mod_unlab_fin [Sig L beq].
+Implicit Arguments enum_tuple_complete [Sig Is n].
 
 (***********************************************************************)
 (** basic module type for semantic labellings *)
@@ -638,13 +654,13 @@ Module Type Base.
 
   Parameter Sig : Signature.
 
+  Parameter L : Sig -> Type.
+  Parameter beq : forall f g, L f -> L g -> bool.
+  Parameter beq_ok : forall f (l m : L f), beq l m = true <-> l = m.
+
   Parameter I : interpretation Sig.
 
-  Parameter L : Type.
-  Parameter beq : L -> L -> bool.
-  Parameter beq_ok : forall l m, beq l m = true <-> l = m.
-
-  Parameter pi : forall f : Sig, vector I (arity f) -> L.
+  Parameter pi : forall f : Sig, vector I (arity f) -> L f.
 
 End Base.
 
@@ -655,7 +671,7 @@ Module Type SemLab.
 
   Include Type Base.
 
-  Parameter beqI : term Sig -> term Sig ->bool.
+  Parameter beqI : term Sig -> term Sig -> bool.
   Parameter beqI_ok : rel beqI << IR I (@eq I).
 
 End SemLab.
@@ -672,10 +688,13 @@ Module Type OrdSemLab.
   Parameter bge_ok : rel bge << IR I Dge.
   Parameter I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
-  Parameter Lgt : relation L.
-  Parameter pi_mon : forall f, Vmonotone (pi f) Dge (Lgt%).
-
   Notation "t '>=I' u" := (IR I Dge t u) (at level 70).
+
+  Parameter Lgt : forall f, relation (L f).
+
+  Infix ">L" := Lgt (at level 50).
+
+  Parameter pi_mon : forall f, Vmonotone (pi f) Dge (@Lgt f%).
 
 End OrdSemLab.
 
@@ -697,15 +716,15 @@ Module Ord (SL : SemLab) <: OrdSemLab.
     rewrite H0. refl.
   Qed.
 
-  Definition Lgt (_ _ : L) := False.
+  Definition Lgt (f : Sig) (_ _ : L f) := False.
 
-  Lemma Lge_is_eq : forall a b, (Lgt %) a b <-> a = b.
+  Lemma Lge_is_eq : forall f a b, (@Lgt f%) a b <-> a = b.
 
   Proof.
     firstorder.
   Qed.
 
-  Lemma pi_mon : forall f, Vmonotone (pi f) Dge (Lgt%).
+  Lemma pi_mon : forall f, Vmonotone (pi f) Dge (@Lgt f%).
 
   Proof.
     unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
@@ -737,8 +756,8 @@ Module Type FinSemLab.
   Parameter Is : list I.
   Parameter Is_ok : forall x : I, In x Is.
 
-  Parameter Ls : list L.
-  Parameter Ls_ok : forall x, In x Ls.
+  Parameter Ls : forall f, list (L f).
+  Parameter Ls_ok : forall f (x : L f), In x (Ls f).
 
 End FinSemLab.
 
@@ -755,11 +774,11 @@ Module Type FinOrdSemLab.
   Parameter Is : list I.
   Parameter Is_ok : forall x : I, In x Is.
 
-  Parameter Ls : list L.
-  Parameter Ls_ok : forall x, In x Ls.
+  Parameter Ls : forall f, list (L f).
+  Parameter Ls_ok : forall f (x : L f), In x (Ls f).
 
-  Parameter L2s : list (L*L).
-  Parameter L2s_ok : forall x y, Lgt x y <-> In (x,y) L2s.
+  Parameter L2s : forall f, list (L f * L f).
+  Parameter L2s_ok : forall f (x y : L f), x >L y <-> In (x,y) (L2s f).
 
 End FinOrdSemLab.
 
@@ -779,9 +798,9 @@ Module FinOrd (Import FSL : FinSemLab) <: FinOrdSemLab.
   Definition Ls := Ls.
   Definition Ls_ok := Ls_ok.
 
-  Definition L2s : list (L*L) := nil.
+  Definition L2s : forall f, list (L f * L f) := fun _ => nil.
 
-  Lemma L2s_ok : forall x y, Lgt x y <-> In (x,y) L2s.
+  Lemma L2s_ok : forall f (x y : L f), Lgt x y <-> In (x,y) (L2s f).
 
   Proof.
     firstorder.
@@ -790,7 +809,7 @@ Module FinOrd (Import FSL : FinSemLab) <: FinOrdSemLab.
   Lemma enum_Decr_empty : enum_Decr beq_ok Fs L2s = nil.
 
   Proof.
-    firstorder.
+    unfold enum_Decr. unfold L2s. simpl. induction Fs. refl. simpl. hyp.
   Qed.
 
 End FinOrd.
@@ -895,7 +914,7 @@ Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
 
     Definition Sig := lab_sig Sig beq_ok.
     Definition Fs := Fs_lab Fs Ls.
-    Definition Fs_ok := Fs_lab_ok Fs_ok Ls_ok.
+    Definition Fs_ok := Fs_lab_ok beq_ok Fs_ok Ls_ok.
 
     Notation unlab_rules := (unlab_rules_fin Sig beq_ok).
 
@@ -981,20 +1000,23 @@ Module FinSemLabProps (FSL : FinSemLab).
       <-> WF (red_mod (lab_rules E) (lab_rules R)).
 
     Proof.
-      rewrite WF_red_mod_lab. 2: apply bge_compatE. 2: apply bge_compatR. refl.
+      rewrite WF_red_mod_lab. 2: apply bge_compatE. 2: apply bge_compatR.
+      rewrite enum_Decr_empty. refl.
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
       <-> WF (hd_red_mod (lab_rules E) (lab_rules R)).
 
     Proof.
-      rewrite WF_hd_red_mod_lab. 2: apply bge_compatE. refl.
+      rewrite WF_hd_red_mod_lab. 2: apply bge_compatE.
+      rewrite enum_Decr_empty. refl.
     Qed.
 
     Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).
 
     Proof.
-      rewrite WF_red_lab. 2: apply bge_compatR. rewrite red_mod_empty. refl.
+      rewrite WF_red_lab. 2: apply bge_compatR.
+      rewrite enum_Decr_empty. rewrite red_mod_empty. refl.
     Qed.
 
   End props.

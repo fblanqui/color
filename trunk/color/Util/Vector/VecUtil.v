@@ -1610,7 +1610,7 @@ Qed.
 
 Implicit Arguments beq_vec_ok_length [n v p w].
 
-Lemma beq_vec_ok1 : forall n (v : vec n) p (w : vec p) (leq : n = p),
+Lemma beq_vec_ok1_cast : forall n (v : vec n) p (w : vec p) (leq : n = p),
   beq_vec v w = true -> Vcast v leq = w.
 
 Proof.
@@ -1619,11 +1619,10 @@ destruct (andb_elim H). rewrite beq_ok in H0. subst a0. apply Vtail_eq.
 apply IHv. hyp.
 Qed.
 
-Lemma beq_vec_beq_impl_eq : forall n (v w : vec n),
-  beq_vec v w = true -> v = w.
+Lemma beq_vec_ok1 : forall n (v w : vec n), beq_vec v w = true -> v = w.
 
 Proof.
-intros. rewrite <- (Vcast_refl v (refl_equal n)). apply beq_vec_ok1. hyp.
+intros. rewrite <- (Vcast_refl v (refl_equal n)). apply beq_vec_ok1_cast. hyp.
 Qed.
 
 Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
@@ -1631,6 +1630,12 @@ Lemma beq_vec_ok2 : forall n (v w : vec n), v = w -> beq_vec v w = true.
 Proof.
 induction v; intros. VOtac. reflexivity. VSntac w. rewrite H0 in H. Veqtac.
 subst a. subst v. simpl. rewrite (beq_refl beq_ok). simpl. apply beq_vec_refl.
+Qed.
+
+Lemma beq_vec_ok : forall n (v w : vec n), beq_vec v w = true <-> v = w.
+
+Proof.
+split; intro. apply beq_vec_ok1. hyp. apply beq_vec_ok2. hyp.
 Qed.
 
 End beq.
