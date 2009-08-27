@@ -98,11 +98,7 @@ Module RootLabProps (RL : RootLab).
 
   Module Props := FinSemLabProps FSL.
 
-  Module LabSig.
-    Include Props.LabSig.
-    (*FIXME: is it really necessary to redefine mk here? *)
-    Definition mk := @mk RL.Sig FSL.L.
-  End LabSig.
+  Module LabSig := Props.LabSig.
 
   Ltac rootlab := Props.semlab.
 
