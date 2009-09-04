@@ -72,6 +72,27 @@ intros. apply lforall_intro. intros. eapply lforall_in. apply H0.
 apply H. assumption.
 Qed.
 
+Lemma forallb_imp_lforall : forall f l,
+  (forall x, f x = true -> P x) -> forallb f l = true -> lforall l.
+
+Proof with auto.
+  induction l; simpl; intros...
+  split.
+  apply H. destruct (f a)...
+  destruct (f a)... discriminate.
+Qed.
+
+Require Import BoolUtil.
+Require Setoid.
+
+Lemma bforall_ok : forall f, (forall x, f x = true <-> P x) ->
+  forall l, forallb f l = true <-> lforall l.
+
+Proof.
+intros f fok. induction l; simpl. tauto.
+rewrite andb_eq. rewrite fok. intuition.
+Qed.
+
 Variable P_dec : forall x, {P x}+{~P x}.
 
 Lemma lforall_dec : forall l, {lforall l} + {~lforall l}.
@@ -99,15 +120,4 @@ intros A P1 P2 H l. elim l.
  intros a' l' Hrec. simpl. intros (H1, H2). split.
   apply H. assumption.
   apply Hrec. assumption.
-Qed.
-
-Lemma forallb_imp_lforall : forall (A : Type) (P : A -> Prop) f l,
-  (forall x, f x = true -> P x) ->
-  forallb f l = true -> lforall P l.
-
-Proof with auto.
-  induction l; simpl; intros...
-  split.
-  apply H. destruct (f a)...
-  destruct (f a)... discriminate.
 Qed.
