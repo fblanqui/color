@@ -172,6 +172,24 @@ Definition is_pos z :=
     | _ => false
   end.
 
+Lemma is_pos_ok : forall z, is_pos z = true <-> z > 0.
+
+Proof.
+destruct z; simpl; intuition; discr.
+Qed.
+
+Definition is_not_neg z :=
+  match z with
+    | Zneg _ => false
+    | _ => true
+  end.
+
+Lemma is_not_neg_ok : forall z, is_not_neg z = true <-> 0 <= z.
+
+Proof.
+destruct z; simpl; intuition; discr.
+Qed.
+
 Notation pos := (fun z => 0 <= z).
 Notation D := (sig pos).
 Notation val := (@proj1_sig Z pos).
