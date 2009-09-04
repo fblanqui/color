@@ -42,6 +42,14 @@ Definition meval_D n (m : monom n) := restrict (preserv_pos_meval m).
 
 Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
 
+Definition bcoef_pos n (p : poly n) := forallb (fun x => is_not_neg (fst x)) p.
+
+Lemma bcoef_pos_ok : forall n (p : poly n), bcoef_pos p = true <-> coef_pos p.
+
+Proof.
+intros n p. apply bforall_ok. intros [z m]. apply is_not_neg_ok.
+Qed.
+
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
 Proof.
@@ -161,7 +169,7 @@ assumption. apply IHp; assumption.
 Qed.
 
 Lemma coefPos_ge0 : forall n (p : poly n) (m : monom n),
-  coef_pos p -> (coef m p >= 0)%Z.
+  coef_pos p -> coef m p >= 0.
 
 Proof with auto with zarith.
   induction p. simpl...
@@ -174,7 +182,7 @@ Proof with auto with zarith.
 Qed.
 
 Lemma coefPos_geC : forall n (p : poly n) (m : monom n) c,
-  coef_pos p -> In (c, m) p -> (coef m p >= c)%Z.
+  coef_pos p -> In (c, m) p -> coef m p >= c.
 
 Proof with auto with zarith.
   induction p. simpl. tauto.
