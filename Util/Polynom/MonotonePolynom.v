@@ -25,13 +25,20 @@ Require Import NatUtil.
 
 Open Local Scope Z_scope.
 
+(***********************************************************************)
+(** definition of weak and strong monotony conditions *)
+
 Definition pweak_monotone n (p : poly n) := coef_pos p.
 
 Definition pstrong_monotone n (p : poly n) := pweak_monotone p /\
   forall i (H : lt i n), 0 < coef (mxi H) p.
 
 (***********************************************************************)
-(** checking monotonicity *)
+(** checking monotony conditions *)
+
+Definition bpstrong_monotone n (p : poly n) :=
+  bcoef_pos p
+  && forallb (fun x => is_not_neg (coef (mxi (prf x)) p)) (@nats_lt n).
 
 Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
 
@@ -100,7 +107,6 @@ Ltac normalize_arity :=
 
 Ltac montac := intros; normalize_arity; montacrec.
 
-(*Ltac postac := simpl; intuition; (idtac || trivial || omega).*)
 Ltac postac := vm_compute; intuition; try discriminate.
 
 Ltac destruct_symbol :=
@@ -117,7 +123,7 @@ Ltac pmonotone :=
       || fail "could not prove the monotony of this polynomial interpretation".
 
 (***********************************************************************)
-(** alternative definition *)
+(** alternative definition of monotony conditions *)
 
 Definition pstrong_monotone' n (p : poly n) := coef_pos p
   /\ forall i (H : lt i n), exists p1, exists c, exists p2,
@@ -160,7 +166,7 @@ generalize dependent p. intro p. elim p.
 Qed.
 
 (***********************************************************************)
-(** monotony wrt evaluation *)
+(** correctness of monotony conditions *)
 
 Lemma meval_monotone_D : forall i (vi : vec i) (mi : monom i)
   j (vj : vec j) (mj : monom j) k x y (Hx : 0 <= x) (Hy : 0 <= y), x<=y -> 
