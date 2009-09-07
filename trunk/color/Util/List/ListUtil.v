@@ -1675,7 +1675,7 @@ End pvalues_map.
 (****************************************************************************)
 (** list of natural numbers strictly smaller than n with proofs *)
 
-Section nat_lt.
+Section nats_lt.
 
 Variable n : nat.
 
@@ -1711,30 +1711,34 @@ destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
 assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
 Qed.
 
+End nats_lt.
+
+Implicit Arguments nats_lt_aux [].
+
 (* nats_lt n = n-1 :: ... :: 0 *)
 
-Definition nats_lt :=
-  match lt_ge_dec (pred n) n with
-    | left h => nats_lt_aux h
-    | _ => nil
+Definition nats_lt n :=
+  match n return list (nat_lt n) with
+    | 0 => nil
+    | S p => nats_lt_aux (S p) p (le_n (S p))
   end.
 
-Lemma nats_lt_correct : forall x i,
-  i < n -> val (nth i nats_lt x) = pred n - i.
+Implicit Arguments nats_lt [].
+
+Lemma nats_lt_correct : forall n x i,
+  i < n -> val (nth i (nats_lt n) x) = pred n - i.
 
 Proof.
-intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
-apply nats_lt_aux_correct. omega. absurd_arith.
+intros. unfold nats_lt. destruct n. absurd_arith.
+apply nats_lt_aux_correct. omega.
 Qed.
 
-Lemma nats_lt_complete : forall i (p : i<n), In (mk_nat_lt p) nats_lt.
+Lemma nats_lt_complete : forall n i (p : i<n), In (mk_nat_lt p) (nats_lt n).
 
 Proof.
-intros. unfold nats_lt. case (lt_ge_dec (pred n) n); intro.
-apply nats_lt_aux_complete. omega. absurd_arith.
+intros. unfold nats_lt. destruct n. absurd_arith.
+apply nats_lt_aux_complete. omega.
 Qed.
-
-End nat_lt.
 
 (***********************************************************************)
 (** first element satisfying some boolean predicate *)
