@@ -36,9 +36,42 @@ Definition pstrong_monotone n (p : poly n) := pweak_monotone p /\
 (***********************************************************************)
 (** checking monotony conditions *)
 
+Implicit Arguments nats_lt [].
+Implicit Arguments nats_lt_aux [].
+
 Definition bpstrong_monotone n (p : poly n) :=
   bcoef_pos p
-  && forallb (fun x => is_not_neg (coef (mxi (prf x)) p)) (@nats_lt n).
+  && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (nats_lt n).
+
+Require Import BoolUtil.
+
+Lemma bpstrong_monotone_ok : forall n (p : poly n),
+  bpstrong_monotone p = true <-> pstrong_monotone p.
+
+Proof.
+induction p.
+(* nil *)
+unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
+intuition. unfold nats_lt in H. destruct n. absurd_arith. destruct n; discr.
+destruct n. refl. ded (H1 n (le_n (S n))). absurd_arith.
+(* cons *)
+destruct a. intuition.
+(* -> *)
+unfold pstrong_monotone, pweak_monotone.
+unfold bpstrong_monotone, bcoef_pos in H1. Opaque coef. simpl in *. 
+repeat rewrite andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
+rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
+assert (In (mk_nat_lt H2) (nats_lt n)). apply nats_lt_complete.
+rewrite forallb_forall in H3. ded (H3 _ H5).
+rewrite is_pos_ok in H6. simpl in H6. omega.
+(* <- *)
+unfold pstrong_monotone, pweak_monotone in H1.
+unfold bpstrong_monotone, bcoef_pos. simpl in *.
+repeat rewrite andb_eq. intuition. rewrite is_not_neg_ok. hyp.
+change (bcoef_pos p = true). rewrite bcoef_pos_ok. hyp.
+rewrite forallb_forall. intros [i hi Hi]. simpl. rewrite is_pos_ok.
+ded (H3 _ hi). omega. Transparent coef.
+Qed.
 
 Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
 
