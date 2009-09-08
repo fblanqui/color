@@ -1964,13 +1964,22 @@ Qed.
 Section bVforall_sec.
 
 Variable A : Type.
-Variable P : A -> bool.
+Variable P : A -> Prop.
+Variable f : A -> bool.
+Variable f_ok : forall x, f x = true <-> P x.
 
-Fixpoint bVforall n (v : vector A n) { struct v } : bool :=
+Fixpoint bVforall n (v : vector A n) {struct v} : bool :=
   match v with
     | Vnil => true
-    | Vcons a _ w => P a && bVforall w
+    | Vcons a _ w => f a && bVforall w
   end.
+
+Lemma bVforall_ok : forall n (v : vector A n),
+  bVforall v = true <-> Vforall P v.
+
+Proof.
+induction v; simpl. tauto. rewrite andb_eq. rewrite f_ok. tauto.
+Qed.
 
 End bVforall_sec.
 
