@@ -30,7 +30,7 @@ Module PolyInt (PI : TPolyInt).
 
   (** Monotone algebra instantiated to polynomials *)
 
-  Module MonotoneAlgebra <: MonotoneAlgebraType.
+  Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := sig.
     
@@ -116,17 +116,22 @@ Module PolyInt (PI : TPolyInt).
 
   End MonotoneAlgebra.
 
-  Export MonotoneAlgebra.
+  (*FIXME: to be removed (used in a previous version of Rainbow)
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
-
-  Ltac prove_int_monotone := first 
-    [ solve [apply monotone_succ; pmonotone]
-    | fail "Failed to prove monotonicity of polynomial interpretation."
-    ].
-
-  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.
-
   Ltac prove_termination := MAR.prove_termination prove_int_monotone.
+
+  Ltac prove_int_monotone :=
+    solve [apply monotone_succ; pmonotone]
+    || fail "Failed to prove monotonicity of polynomial interpretation.".
+
+  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.*)
+
+  Ltac prove_int_monotone_by_refl Fs Fs_ok :=
+    solve [apply monotone_succ; unfold PolyStrongMonotone; monotone Fs Fs_ok]
+    || fail "Failed to prove monotonicity of polynomial interpretation.".
+
+  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
+    apply IR_context_closed; prove_int_monotone_by_refl Fs Fs_ok.
 
 End PolyInt.
