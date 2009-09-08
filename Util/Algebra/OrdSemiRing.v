@@ -578,6 +578,24 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Definition ge m n := gt m n \/ m = n.
 
+  Definition is_above_zero v :=
+    match v with
+      | MinusInfBZ => false
+      | Fin z => is_not_neg z
+    end.
+
+  Lemma is_above_zero_ok :
+    forall v, is_above_zero v = true <-> ge v (Fin 0).
+
+  Proof.
+    intro. destruct v; simpl; intuition.
+    destruct z. right. refl. left. simpl. auto with zarith. discr.
+    rewrite is_not_neg_ok. destruct H. simpl in H. auto with zarith.
+    inversion H. auto with zarith.
+    discr.
+    destruct H. simpl in H. contradiction. discr.
+  Qed.
+
   Lemma eq_ge_compat : forall x y, x = y -> ge x y.
 
   Proof.
