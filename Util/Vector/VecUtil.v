@@ -107,6 +107,13 @@ Ltac VSntac y :=
       (assert (H : y = Vcons (Vhead y) (Vtail y)); [apply VSn_eq | rewrite H])
   end.
 
+Lemma VSn_inv : forall A n (v : vector A (S n)),
+  exists x, exists w, v = Vcons x w.
+
+Proof.
+intros. VSntac v. exists (Vhead v). exists (Vtail v). reflexivity.
+Qed.
+
 (***********************************************************************)
 (** 1st element of a vector with default value if empty *)
 
@@ -1249,8 +1256,10 @@ in relation *)
 Section Vforall2_sec.
 
 Variable A B : Type.
+
 Notation vecA := (vector A).
 Notation vecB := (vector B).
+
 Variable R : A -> B -> Prop.
 
 Fixpoint Vforall2n_aux n1 (v1 : vecA n1) 
