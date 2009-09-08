@@ -85,13 +85,24 @@ Qed.
 Require Import BoolUtil.
 Require Setoid.
 
-Lemma bforall_ok : forall f, (forall x, f x = true <-> P x) ->
+Lemma forallb_ok : forall f, (forall x, f x = true <-> P x) ->
   forall l, forallb f l = true <-> lforall l.
 
 Proof.
 intros f fok. induction l; simpl. tauto.
 rewrite andb_eq. rewrite fok. intuition.
 Qed.
+
+Lemma forallb_ok_fintype : forall f (f_ok : forall x, f x = true <-> P x)
+  As (As_ok : forall x, In x As), forallb f As = true <-> (forall x, P x).
+
+  Proof.
+    intros f f_ok As As_ok. split; intro H.
+    (* -> *)
+    intro x. rewrite <- f_ok. rewrite forallb_forall in H. apply H. apply As_ok.
+    (* <- *)
+    rewrite forallb_forall. intros x hx. rewrite f_ok. apply H.
+  Qed.
 
 Variable P_dec : forall x, {P x}+{~P x}.
 
