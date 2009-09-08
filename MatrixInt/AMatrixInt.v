@@ -69,12 +69,10 @@ Module MatrixInt (MI : TMatrixInt).
 
   End Conf.
 
-  Module MBI := MatrixBasedInt Conf.
+  Module Export MBI := MatrixBasedInt Conf.
 
   (** Monotone algebra instantiated to matrices *)
-  Module MonotoneAlgebra <: MonotoneAlgebraType.
-
-    Export MBI.
+  Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
     Notation mint := (matrixInt dim).
 
@@ -273,6 +271,16 @@ Module MatrixInt (MI : TMatrixInt).
       Definition monotone_interpretation n (fi : matrixInt dim n) := 
         Vforall (fun m => get_elem m dim_pos dim_pos > 0) (args fi).
 
+      Definition bmonotone_interpretation n (fi : matrixInt dim n) := 
+        bVforall (fun m => bgt_nat (get_elem m dim_pos dim_pos) 0) (args fi).
+
+      Lemma bmonotone_interpretation_ok : forall n (fi : matrixInt dim n),
+        bmonotone_interpretation fi = true <-> monotone_interpretation fi.
+
+      Proof.
+        intros. apply bVforall_ok. intro. apply bgt_nat_ok.
+      Qed.
+
       Variable matrixInt_monotone : forall f : sig, 
         monotone_interpretation (trsInt f).
 
@@ -299,9 +307,9 @@ Module MatrixInt (MI : TMatrixInt).
     End ExtendedMonotoneAlgebra.
 
   End MonotoneAlgebra.
+ 
+  (*FIXME: to be removed (used in a previous version of Rainbow)
 
-  Export MonotoneAlgebra.
-  
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
   Ltac prove_int_monotone := 
@@ -316,6 +324,25 @@ Module MatrixInt (MI : TMatrixInt).
 
   Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.
 
-  Ltac prove_termination := MAR.prove_termination prove_int_monotone.
+  Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
+
+  Require Import ListForall.
+
+  Ltac monotone Fs Fs_ok :=
+    match goal with
+      | |- forall f, monotone_interpretation (?trsInt f) =>
+        let P := fresh "P" in
+        set (P := fun f => monotone_interpretation (trsInt f));
+        change (forall f, P f);
+        let F := fresh "F" in
+        set (F := fun f => bmonotone_interpretation (trsInt f));
+        let F_ok := fresh "F_ok" in
+        assert (F_ok : forall f, F f = true <-> P f);
+        [ intro f; unfold P, F; apply bmonotone_interpretation_ok
+        | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
+    end.
+
+  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
+    apply IR_context_closed; monotone Fs Fs_ok.
 
 End MatrixInt.
