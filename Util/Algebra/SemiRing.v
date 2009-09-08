@@ -344,6 +344,18 @@ unfold beq_ArcticDom. destruct x; destruct y; simpl; try (intuition; discr).
 rewrite beq_nat_ok. intuition. inversion H. refl.
 Qed.
 
+Definition is_finite v :=
+  match v with
+    | MinusInf => false
+    | _ => true
+  end.
+
+Lemma is_finite_ok : forall v, is_finite v = true <-> v <> MinusInf.
+
+Proof.
+  intro. destruct v; simpl; intuition. discriminate.
+Qed.
+
 Module Arctic <: SetA.
   Definition A := ArcticDom.
 End Arctic.
