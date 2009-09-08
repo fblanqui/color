@@ -95,7 +95,7 @@ rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
 (***********************************************************************)
-(** boolean function for > *)
+(** boolean functions for > and >= *)
 
 Fixpoint bgt_nat (x y : nat) {struct x} :=
   match x, y with
@@ -113,6 +113,24 @@ rewrite IHx in H. omega. apply lt_S_n in H.  rewrite IHx. hyp.
 Qed.
 
 Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
+
+Fixpoint bge_nat (x y : nat) {struct x} :=
+  match x, y with
+    | 0, 0 => true
+    | 0, _ => false
+    | S _, 0 => true
+    | S x', S y' => bge_nat x' y'
+  end.
+
+Lemma bge_nat_ok : forall x y, bge_nat x y = true <-> x >= y.
+
+Proof.
+induction x; destruct y; simpl; split; intro;
+  try (refl || discr || absurd_arith || omega).
+rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
+Qed.
+
+Ltac check_ge := rewrite <- bge_nat_ok; check_eq.
 
 (***********************************************************************)
 (** unicity of eq, le and lt proofs *)
