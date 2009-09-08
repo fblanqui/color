@@ -324,7 +324,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
   Ltac partition R := norm (snd (partition part_succ R)).
 
   Ltac do_prove_termination prove_int_monotonicity lemma R :=
-    apply lemma; 
+    apply lemma;
       match goal with
       | |- monotone _ _ => prove_int_monotonicity
       | |- WF _ => partition R
