@@ -34,128 +34,6 @@ Definition pstrong_monotone n (p : poly n) := pweak_monotone p /\
   forall i (H : lt i n), 0 < coef (mxi H) p.
 
 (***********************************************************************)
-(** checking monotony conditions *)
-
-Implicit Arguments nats_lt [].
-Implicit Arguments nats_lt_aux [].
-
-Definition bpstrong_monotone n (p : poly n) :=
-  bcoef_pos p
-  && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (nats_lt n).
-
-Require Import BoolUtil.
-
-Lemma bpstrong_monotone_ok : forall n (p : poly n),
-  bpstrong_monotone p = true <-> pstrong_monotone p.
-
-Proof.
-induction p.
-(* nil *)
-unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
-intuition. unfold nats_lt in H. destruct n. absurd_arith. destruct n; discr.
-destruct n. refl. ded (H1 n (le_n (S n))). absurd_arith.
-(* cons *)
-destruct a. intuition.
-(* -> *)
-unfold pstrong_monotone, pweak_monotone.
-unfold bpstrong_monotone, bcoef_pos in H1. Opaque coef. simpl in *. 
-repeat rewrite andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
-rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
-assert (In (mk_nat_lt H2) (nats_lt n)). apply nats_lt_complete.
-rewrite forallb_forall in H3. ded (H3 _ H5).
-rewrite is_pos_ok in H6. simpl in H6. omega.
-(* <- *)
-unfold pstrong_monotone, pweak_monotone in H1.
-unfold bpstrong_monotone, bcoef_pos. simpl in *.
-repeat rewrite andb_eq. intuition. rewrite is_not_neg_ok. hyp.
-change (bcoef_pos p = true). rewrite bcoef_pos_ok. hyp.
-rewrite forallb_forall. intros [i hi Hi]. simpl. rewrite is_pos_ok.
-ded (H3 _ hi). omega. Transparent coef.
-Qed.
-
-Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
-
-Program Definition coef_pos_check n (p : poly n) : Exc (coef_pos p) :=
-  match forallb (@is_pos_monom n) p with
-  | true => value _
-  | false => error
-  end.
-
-Next Obligation.
-  unfold pweak_monotone, coef_pos.
-  apply forallb_imp_lforall with (@is_pos_monom n); auto.
-  destruct x. unfold is_pos_monom. 
-  destruct z; compute; intros; discriminate.
-Qed.
-
-Program Definition pweak_monotone_check n (p : poly n) : 
-  Exc (pweak_monotone p) :=
-  coef_pos_check p.
-
-Program Definition check_coef_gt0 n (p : poly n) (i : dom_lt n) :
-  Exc (0 < coef (mxi (proj2_sig i)) p)%Z :=
-  let c := coef (mxi (proj2_sig i)) p in
-    match Z_lt_dec 0 c with
-    | left _ => value _
-    | _ => error
-    end. 
-
-Program Definition pstrong_monotone_check n (p : poly n) :
-  Exc (pstrong_monotone p) :=
-  match pweak_monotone_check p with
-  | error => error
-  | _ =>    
-    match check_seq (check_coef_gt0 p) with
-    | error => error
-    | _ => value _
-    end
-  end.
-
-Next Obligation.
-Proof with auto; try congruence || discriminate.
-  split. 
-  destruct pweak_monotone_check...
-  destruct (check_seq (check_coef_gt0 p))...
-  intros. exact (z (exist (fun i => i < n)%nat i H1)).
-Qed.
-
-(***********************************************************************)
-(** tactics *)
-
-Ltac montacrec :=
-  match goal with
-    | H:lt _ O |- _ => elimtype False; apply (lt_n_O _ H)
-    | H:lt ?i (S _) |- _ =>
-      destruct i;
-	[(vm_compute; try refl)
-          | (generalize (lt_S_n H); intro; montacrec)]
-    |  _ => idtac
-  end.
-
-Ltac normalize_arity :=
-  match goal with
-    | H : lt _ ?a |- _ => norm_in H a
-    | _ => idtac
-  end.
-
-Ltac montac := intros; normalize_arity; montacrec.
-
-Ltac postac := vm_compute; intuition; try discriminate.
-
-Ltac destruct_symbol :=
-  match goal with
-    | f : _ |- _ => destruct f; destruct_symbol
-    | _ => idtac
-  end.
-
-Ltac pmonotone :=
-  let f := fresh "f" in
-    intro f; unfold pweak_monotone, pstrong_monotone, coef_pos;
-      destruct_symbol;
-      solve [ postac | split; [postac | montac] ]
-      || fail "could not prove the monotony of this polynomial interpretation".
-
-(***********************************************************************)
 (** alternative definition of monotony conditions *)
 
 Definition pstrong_monotone' n (p : poly n) := coef_pos p
@@ -297,3 +175,159 @@ simpl. intro Hxy.
 generalize (H0 i j Hij vi vj (exist _ x Hx) (exist _ y Hy) Hxy). clear H0.
 simpl. intuition.
 Qed.
+
+(***********************************************************************)
+(** boolean functions for monotony *)
+
+Definition bpweak_monotone n (p : poly n) := bcoef_pos p.
+Definition bpweak_monotone_ok n (p : poly n) := bcoef_pos_ok p.
+
+Implicit Arguments nats_lt [].
+Implicit Arguments nats_lt_aux [].
+
+Definition bpstrong_monotone n (p : poly n) :=
+  bcoef_pos p
+  && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (nats_lt n).
+
+Require Import BoolUtil.
+
+Lemma bpstrong_monotone_ok : forall n (p : poly n),
+  bpstrong_monotone p = true <-> pstrong_monotone p.
+
+Proof.
+induction p.
+(* nil *)
+unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
+intuition. unfold nats_lt in H. destruct n. absurd_arith. destruct n; discr.
+destruct n. refl. ded (H1 n (le_n (S n))). absurd_arith.
+(* cons *)
+destruct a. intuition.
+(* -> *)
+unfold pstrong_monotone, pweak_monotone.
+unfold bpstrong_monotone, bcoef_pos in H1. Opaque coef. simpl in *. 
+repeat rewrite andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
+rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
+assert (In (mk_nat_lt H2) (nats_lt n)). apply nats_lt_complete.
+rewrite forallb_forall in H3. ded (H3 _ H5).
+rewrite is_pos_ok in H6. simpl in H6. omega.
+(* <- *)
+unfold pstrong_monotone, pweak_monotone in H1.
+unfold bpstrong_monotone, bcoef_pos. simpl in *.
+repeat rewrite andb_eq. intuition. rewrite is_not_neg_ok. hyp.
+change (bcoef_pos p = true). rewrite bcoef_pos_ok. hyp.
+rewrite forallb_forall. intros [i hi Hi]. simpl. rewrite is_pos_ok.
+ded (H3 _ hi). omega. Transparent coef.
+Qed.
+
+(***********************************************************************)
+(** reflexive tactic for monotony *)
+
+Ltac monotone Fs Fs_ok :=
+  match goal with
+    | |- forall f, pweak_monotone (?trsInt f) =>
+      let P := fresh "P" in
+      set (P := fun f => pweak_monotone (trsInt f));
+      change (forall f, P f);
+      let F := fresh "F" in
+      set (F := fun f => bpweak_monotone (trsInt f));
+      let F_ok := fresh "F_ok" in
+      assert (F_ok : forall f, F f = true <-> P f);
+      [ intro f; unfold P, F; apply bpweak_monotone_ok
+      | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
+    | |- forall f, pstrong_monotone (?trsInt f) =>
+      let P := fresh "P" in
+      set (P := fun f => pstrong_monotone (trsInt f));
+      change (forall f, P f);
+      let F := fresh "F" in
+      set (F := fun f => bpstrong_monotone (trsInt f));
+      let F_ok := fresh "F_ok" in
+      assert (F_ok : forall f, F f = true <-> P f);
+      [ intro f; unfold P, F; apply bpstrong_monotone_ok
+      | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
+  end.
+
+(***********************************************************************)
+(** check monotony conditions *)
+
+Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
+
+Program Definition coef_pos_check n (p : poly n) : Exc (coef_pos p) :=
+  match forallb (@is_pos_monom n) p with
+  | true => value _
+  | false => error
+  end.
+
+Next Obligation.
+  unfold pweak_monotone, coef_pos.
+  apply forallb_imp_lforall with (@is_pos_monom n); auto.
+  destruct x. unfold is_pos_monom. 
+  destruct z; compute; intros; discriminate.
+Qed.
+
+Program Definition pweak_monotone_check n (p : poly n) : 
+  Exc (pweak_monotone p) :=
+  coef_pos_check p.
+
+Program Definition check_coef_gt0 n (p : poly n) (i : dom_lt n) :
+  Exc (0 < coef (mxi (proj2_sig i)) p)%Z :=
+  let c := coef (mxi (proj2_sig i)) p in
+    match Z_lt_dec 0 c with
+    | left _ => value _
+    | _ => error
+    end. 
+
+Program Definition pstrong_monotone_check n (p : poly n) :
+  Exc (pstrong_monotone p) :=
+  match pweak_monotone_check p with
+  | error => error
+  | _ =>    
+    match check_seq (check_coef_gt0 p) with
+    | error => error
+    | _ => value _
+    end
+  end.
+
+Next Obligation.
+Proof with auto; try congruence || discriminate.
+  split. 
+  destruct pweak_monotone_check...
+  destruct (check_seq (check_coef_gt0 p))...
+  intros. exact (z (exist (fun i => i < n)%nat i H1)).
+Qed.
+
+(***********************************************************************)
+(** non-reflexive tactics for monotony (for a previous version of Rainbow) *)
+
+(*Ltac montacrec :=
+  match goal with
+    | H:lt _ O |- _ => elimtype False; apply (lt_n_O _ H)
+    | H:lt ?i (S _) |- _ =>
+      destruct i;
+	[(vm_compute; try refl)
+          | (generalize (lt_S_n H); intro; montacrec)]
+    |  _ => idtac
+  end.
+
+Ltac normalize_arity :=
+  match goal with
+    | H : lt _ ?a |- _ => norm_in H a
+    | _ => idtac
+  end.
+
+Ltac montac := intros; normalize_arity; montacrec.
+
+Ltac postac := vm_compute; intuition; try discriminate.
+
+Ltac destruct_symbol :=
+  match goal with
+    | f : _ |- _ => destruct f; destruct_symbol
+    | _ => idtac
+  end.
+
+Ltac pmonotone :=
+  let f := fresh "f" in
+    intro f; unfold pweak_monotone, pstrong_monotone, coef_pos;
+      destruct_symbol;
+      solve [ postac | split; [postac | montac] ]
+      || fail "could not prove the monotony of this polynomial interpretation".
+*)
