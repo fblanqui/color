@@ -1,4 +1,6 @@
 
+- replace showArctic[BZ]IntOk by boolean test
+
 - implement FC2
 
 - implement usable rules
