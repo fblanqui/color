@@ -18,6 +18,7 @@ Require Import SN.
 Require Import RelUtil.
 Require Import ZArith.
 Require Import AMatrixBasedInt.
+Require Import LogicUtil.
 
 Local Open Scope Z_scope.
 
@@ -31,6 +32,17 @@ Section Absolute_finite.
 
   Definition absolute_finite n (fi : matrixInt dim n) := 
     Vnth (const fi) dim_pos >>= A1.
+
+  Definition babsolute_finite n (fi : matrixInt dim n) :=
+    is_above_zero (Vnth (const fi) dim_pos).
+
+  Lemma babsolute_finite_ok : forall n (fi : matrixInt dim n),
+    babsolute_finite fi = true <-> absolute_finite fi.
+
+  Proof.
+    intros. unfold babsolute_finite, absolute_finite.
+    rewrite is_above_zero_ok. tauto.
+  Qed.
 
 End Absolute_finite.
 
@@ -63,7 +75,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
   Module Export AIBase := ArcticBasedInt AB.
 
   (** Monotone algebra instantiated to matrices *)
-  Module MonotoneAlgebra <: MonotoneAlgebraType.
+  Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := Sig.
 
@@ -84,11 +96,11 @@ Module ArcticBZInt (AI : TArcticBZInt).
 
     Proof.
       intros. destruct H. destruct H0.
-      left. apply plus_gt_compat; assumption.
+      left. apply plus_gt_compat; hyp.
       destruct H0. rewrite H0. rewrite H1.
-      do 2 rewrite Aplus_0_r. left. assumption.
+      do 2 rewrite Aplus_0_r. left. hyp.
       destruct H. rewrite H. rewrite H1.
-      do 2 rewrite Aplus_0_l. assumption.
+      do 2 rewrite Aplus_0_l. hyp.
     Qed.
 
     Lemma gtx_mult_compat : forall m m' n n',
@@ -100,7 +112,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
         destruct H; destruct H0; simpl;
         try solve
           [ elimtype False; auto
-          | intuition; discriminate
+          | intuition; discr
           | left; simpl; auto
           | left; simpl in *; omega
           | right; auto
@@ -149,8 +161,8 @@ Module ArcticBZInt (AI : TArcticBZInt).
         )
       ).
       intros x y xy. destruct x. destruct y. simpl. 
-      cut (ge (vec_at0 x) A1). 2: assumption.
-      cut (ge (vec_at0 x0) A1). 2: assumption.
+      cut (ge (vec_at0 x) A1). 2: hyp.
+      cut (ge (vec_at0 x0) A1). 2: hyp.
       cut (gtx (vec_at0 x0) (vec_at0 x)).
       generalize (vec_at0 x0). generalize (vec_at0 x).
       clear x x0 v v0 xy. intros x y xy x_lb y_lb.
@@ -158,35 +170,55 @@ Module ArcticBZInt (AI : TArcticBZInt).
 (* x-man, this should be solved by arctic_ord *)
 unfold A1, OSR.SR.A1 in *.
 assert (z >= 0).
-apply fin_ge_impl_ge; assumption.
+apply fin_ge_impl_ge; hyp.
 assert (z0 >= 0).
-apply fin_ge_impl_ge; assumption.
+apply fin_ge_impl_ge; hyp.
       destruct xy. simpl in H1.
       apply Zabs_nat_lt. omega.
-      destruct H1; discriminate.
-destruct x_lb; [ contradiction | discriminate ].
-destruct y_lb; [ contradiction | discriminate ].
-destruct y_lb; [ contradiction | discriminate ].
-      unfold vec_at0. apply (Vforall2n_nth gtx). assumption.
+      destruct H1; discr.
+destruct x_lb; [ contradiction | discr ].
+destruct y_lb; [ contradiction | discr ].
+destruct y_lb; [ contradiction | discr ].
+      unfold vec_at0. apply (Vforall2n_nth gtx). hyp.
     Qed.
   
   End MonotoneAlgebra.
 
-  Export MonotoneAlgebra.
+  (*FIXME: to be removed (used in a previous version of Rainbow)
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
   Ltac prove_int_monotone :=
     fail "Arctic matrices cannot be used for proving total termination".
 
-  Ltac prove_cc_succ :=
+  Ltac prove_cc_succ := prove_int_monotone.
+
+  Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
+
+  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
     fail "Arctic matrices cannot be used for proving total termination".
 
-  Ltac prove_termination := MAR.prove_termination prove_int_monotone.
-
 End ArcticBZInt.
+
+(*FIXME: to be removed (used in a previous version of Rainbow)
 
 Ltac showArcticBZIntOk := solve
   [let f := fresh "f" in let s := fresh "s" in
     intro f; destruct f as [s | s]; destruct s; vm_compute; auto]
-  || fail "invalid below-zero arctic interpretation".
+  || fail "invalid below-zero arctic interpretation".*)
+
+Require Import ListForall.
+
+Ltac absolute_finite Fs Fs_ok :=
+  match goal with
+    | |- forall f, absolute_finite ?dim_pos (?trsInt f) =>
+      let P := fresh "P" in
+      set (P := fun f => absolute_finite dim_pos (trsInt f));
+      change (forall f, P f);
+      let F := fresh "F" in
+      set (F := fun f => babsolute_finite dim_pos (trsInt f));
+      let F_ok := fresh "F_ok" in
+      assert (F_ok : forall f, F f = true <-> P f);
+      [ intro f; unfold P, F; apply babsolute_finite_ok
+      | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
+  end.
