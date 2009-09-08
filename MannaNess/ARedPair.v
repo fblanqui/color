@@ -147,8 +147,6 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
 
   End S.
 
-  (* inspired from AMonAlg *)
-
   Ltac do_prove_termination prove_cc_succ lemma :=
     apply lemma;
       match goal with
@@ -202,7 +200,7 @@ Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
 
   Lemma succ_succeq_compat : absorb succ succeq.
 
-  Proof. (* taken from AMonAlg *)
+  Proof.
     intros x z xz val. apply succ_succeq_compat.
     destruct xz as [y [ge_xy gt_yz]]. exists (term_int val y). split; auto.
   Qed.
