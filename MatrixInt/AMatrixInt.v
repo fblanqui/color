@@ -343,6 +343,6 @@ Module MatrixInt (MI : TMatrixInt).
     end.
 
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    apply IR_context_closed; monotone Fs Fs_ok.
+    apply IR_context_closed; apply monotone_succ; monotone Fs Fs_ok.
 
 End MatrixInt.
