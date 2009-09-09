@@ -48,6 +48,24 @@ Section Somewhere_finite.
     rewrite bVexists_ok. refl. intro. apply is_finite_ok.
   Qed.
 
+  Variable sig : Signature.
+  Variable trsInt : forall f : sig, matrixInt dim (arity f).
+
+  Require Import List.
+  Require Import ListForall.
+
+  Variable Fs : list sig.
+  Variable Fs_ok : forall f : sig, In f Fs.
+
+  Lemma fin_somewhere_finite :
+    forallb (fun f => bsomewhere_finite (trsInt f)) Fs = true ->
+    forall f : sig, somewhere_finite (trsInt f).
+
+  Proof.
+    rewrite forallb_forall. intros H f. rewrite <- bsomewhere_finite_ok.
+    apply H. apply Fs_ok.
+  Qed.
+
 End Somewhere_finite.
 
 (** Module type for proving termination with matrix interpretations *)
@@ -239,18 +257,5 @@ Ltac showArcticIntOk := solve
     intro f; destruct f as [s|s]; destruct s; vm_compute; arcticDiscr]
   || fail "invalid arctic interpretation".*)
 
-Require Import ListForall.
-
-Ltac somewhere_finite Fs Fs_ok :=
-  match goal with
-    | |- forall f, somewhere_finite ?dim_pos (?trsInt f) =>
-      let P := fresh "P" in
-      set (P := fun f => somewhere_finite dim_pos (trsInt f));
-      change (forall f, P f);
-      let F := fresh "F" in
-      set (F := fun f => bsomewhere_finite dim_pos (trsInt f));
-      let F_ok := fresh "F_ok" in
-      assert (F_ok : forall f, F f = true <-> P f);
-      [ intro f; unfold P, F; apply bsomewhere_finite_ok
-      | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
-  end.
+Ltac somewhere_finite Sig Fs Fs_ok :=
+  apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok); check_eq.

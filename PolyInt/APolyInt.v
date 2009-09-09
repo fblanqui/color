@@ -67,6 +67,21 @@ Definition PolyStrongMonotone := forall f : Sig, pstrong_monotone (PI f).
 
 Variable PI_SM : PolyStrongMonotone.
 
+Section fin_Sig.
+
+  Variable Fs : list Sig.
+  Variable Fs_ok : forall f : Sig, In f Fs.
+
+  Lemma fin_PolyWeakMonotone :
+    forallb (fun f => bpweak_monotone (PI f)) Fs = true -> PolyWeakMonotone.
+
+  Proof.
+    rewrite forallb_forall. intros H f. rewrite <- bpweak_monotone_ok.
+    apply H. apply Fs_ok.
+  Qed.
+
+End fin_Sig.
+
 (***********************************************************************)
 (** coefficients are positive *)
 
@@ -308,9 +323,17 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
+(*FIXME: to be removed: tactic used in an old version of Rainbow
+
 Ltac poly_int PI := solve
   [match goal with
     |- WF (red ?R) =>
       apply (polyInterpretationTermination PI R);
 	vm_compute; intuition; discriminate
-  end] || fail "invalid polynomial interpretation".
+  end] || fail "invalid polynomial interpretation".*)
+
+Ltac PolyWeakMonotone Fs Fs_ok :=
+  match goal with
+    | |- PolyWeakMonotone ?PI =>
+      apply (fin_PolyWeakMonotone PI Fs Fs_ok); check_eq
+  end.
