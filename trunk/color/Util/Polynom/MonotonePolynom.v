@@ -220,33 +220,6 @@ ded (H3 _ hi). omega. Transparent coef.
 Qed.
 
 (***********************************************************************)
-(** reflexive tactic for monotony *)
-
-Ltac monotone Fs Fs_ok :=
-  match goal with
-    | |- forall f, pweak_monotone (?trsInt f) =>
-      let P := fresh "P" in
-      set (P := fun f => pweak_monotone (trsInt f));
-      change (forall f, P f);
-      let F := fresh "F" in
-      set (F := fun f => bpweak_monotone (trsInt f));
-      let F_ok := fresh "F_ok" in
-      assert (F_ok : forall f, F f = true <-> P f);
-      [ intro f; unfold P, F; apply bpweak_monotone_ok
-      | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
-    | |- forall f, pstrong_monotone (?trsInt f) =>
-      let P := fresh "P" in
-      set (P := fun f => pstrong_monotone (trsInt f));
-      change (forall f, P f);
-      let F := fresh "F" in
-      set (F := fun f => bpstrong_monotone (trsInt f));
-      let F_ok := fresh "F_ok" in
-      assert (F_ok : forall f, F f = true <-> P f);
-      [ intro f; unfold P, F; apply bpstrong_monotone_ok
-      | rewrite <- (@forallb_ok_fintype _ P F F_ok Fs Fs_ok); check_eq ]
-  end.
-
-(***********************************************************************)
 (** check monotony conditions *)
 
 Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.

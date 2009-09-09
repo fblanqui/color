@@ -15,6 +15,7 @@ Require Import PositivePolynom.
 Require Import ATrs.
 Require Import ListForall.
 Require Import MonotonePolynom.
+Require Import LogicUtil.
 
 Module Type TPolyInt.
 
@@ -42,7 +43,7 @@ Module PolyInt (PI : TPolyInt).
     Lemma refl_succeq : reflexive succeq.
 
     Proof.
-      intro x. unfold succeq, Dge, transp, Dle. reflexivity.
+      intro x. unfold succeq, Dge, transp, Dle. refl.
     Qed.
 
     Lemma monotone_succeq : AWFMInterpretation.monotone I succeq.
@@ -70,7 +71,7 @@ Module PolyInt (PI : TPolyInt).
     Proof.
       intros t u tu. unfold I, succ. set (r := mkRule t u).
       change t with (lhs r). change u with (rhs r).
-      apply pi_compat_rule. assumption.
+      apply pi_compat_rule. hyp.
     Qed.
 
     Lemma succeq'_sub : succeq' << IR I succeq.
@@ -78,7 +79,7 @@ Module PolyInt (PI : TPolyInt).
     Proof.
       intros t u tu. unfold I, succ. set (r := mkRule t u).
       change t with (lhs r). change u with (rhs r).
-      apply pi_compat_rule_weak. assumption.
+      apply pi_compat_rule_weak. hyp.
     Qed.
 
     Lemma succ'_dec : rel_dec succ'.
@@ -114,6 +115,24 @@ Module PolyInt (PI : TPolyInt).
 
     End ExtendedMonotoneAlgebra.
 
+    Require Import List.
+
+    Section fin_Sig.
+
+      Variable Fs : list Sig.
+      Variable Fs_ok : forall f : Sig, In f Fs.
+
+      Lemma fin_monotone_succ :
+        forallb (fun f => bpstrong_monotone (trsInt f)) Fs = true ->
+        AWFMInterpretation.monotone I succ.
+
+      Proof.
+        intro H. apply monotone_succ. intro f. rewrite <- bpstrong_monotone_ok.
+        rewrite forallb_forall in H. apply H. apply Fs_ok.
+      Qed.
+
+    End fin_Sig.
+
   End MonotoneAlgebra.
 
   (*FIXME: to be removed (used in a previous version of Rainbow)
@@ -128,7 +147,7 @@ Module PolyInt (PI : TPolyInt).
   Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.*)
 
   Ltac prove_int_monotone_by_refl Fs Fs_ok :=
-    solve [apply monotone_succ; unfold PolyStrongMonotone; monotone Fs Fs_ok]
+    solve [apply (fin_monotone_succ Fs Fs_ok); check_eq]
     || fail "Failed to prove monotonicity of polynomial interpretation.".
 
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
