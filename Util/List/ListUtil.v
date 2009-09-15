@@ -232,7 +232,8 @@ End incl.
 
 Implicit Arguments incl_app_elim [A l1 l2 l3].
 
-Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.
+(*REMOVE: to be removed since unused
+Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.*)
 
 (***********************************************************************)
 (** strict inclusion *)
@@ -1241,55 +1242,55 @@ Require Import Bool.
 
 Section partition.
 
-  Variables (A : Type) (P : A -> bool) (a : A) (l : list A).
+  Variables (A : Type) (f : A -> bool) (a : A) (l : list A).
 
-  Lemma partition_complete : let p := partition P l in
+  Lemma partition_complete : let p := partition f l in
     In a l -> In a (fst p) \/ In a (snd p).
 
   Proof.
     induction l. auto.
-    simpl. intro. destruct (partition P l0). destruct H.
-    destruct (P a0); simpl; auto.
-    destruct (P a0); simpl in *; destruct IHl0; auto.
+    simpl. intro. destruct (partition f l0). destruct H.
+    destruct (f a0); simpl; auto.
+    destruct (f a0); simpl in *; destruct IHl0; auto.
   Qed.
 
-  Lemma partition_inleft : In a (fst (partition P l)) -> In a l.
+  Lemma partition_inleft : In a (fst (partition f l)) -> In a l.
 
   Proof.
     induction l. auto.
-    simpl. intro. destruct (partition P l0). destruct (P a0).
+    simpl. intro. destruct (partition f l0). destruct (f a0).
     destruct H; auto.
     right. apply IHl0. auto.
   Qed.
 
-  Lemma partition_inright : In a (snd (partition P l)) -> In a l.
+  Lemma partition_inright : In a (snd (partition f l)) -> In a l.
 
   Proof.
     induction l. auto.
-    simpl. intro. destruct (partition P l0). destruct (P a0).
+    simpl. intro. destruct (partition f l0). destruct (f a0).
     right. apply IHl0. auto.
     destruct H; auto.
   Qed.
 
-  Lemma partition_left : In a (fst (partition P l)) -> P a = true.
+  Lemma partition_left : In a (fst (partition f l)) -> f a = true.
 
   Proof.
     induction l; simpl. auto.
-    destruct (partition P l0). destruct (bool_dec (P a0) true).
+    destruct (partition f l0). destruct (bool_dec (f a0) true).
     rewrite e. intro. destruct H.
     subst a0. hyp.
     apply IHl0. hyp.
-    rewrite (not_true_is_false (P a0)); hyp.
+    rewrite (not_true_is_false (f a0)); hyp.
   Qed.
 
-  Lemma partition_right : In a (snd (partition P l)) -> P a = false.
+  Lemma partition_right : In a (snd (partition f l)) -> f a = false.
 
   Proof.
     induction l; simpl. intuition.
-    destruct (partition P l0). destruct (bool_dec (P a0) true).
+    destruct (partition f l0). destruct (bool_dec (f a0) true).
     rewrite e. apply IHl0.
-    rewrite (not_true_is_false (P a0)). intro. destruct H.
-    subst a0. destruct (P a); intuition.
+    rewrite (not_true_is_false (f a0)). intro. destruct H.
+    subst a0. destruct (f a); intuition.
     apply IHl0. hyp. hyp.
   Qed.
 
