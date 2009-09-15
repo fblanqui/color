@@ -323,5 +323,7 @@ Implicit Arguments dp_elim_vars [Sig l t].
 (***********************************************************************)
 (** tactics *)
 
+Require Import AVariables.
+
 Ltac chain := no_relative_rules;
   apply WF_chain; [check_eq | rules_preserv_vars | idtac].
