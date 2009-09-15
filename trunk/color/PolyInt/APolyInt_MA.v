@@ -135,7 +135,7 @@ Module PolyInt (PI : TPolyInt).
 
   End MonotoneAlgebra.
 
-  (*FIXME: to be removed (used in a previous version of Rainbow)
+  (*REMOVE: to be removed (used in a previous version of Rainbow)
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
   Ltac prove_termination := MAR.prove_termination prove_int_monotone.

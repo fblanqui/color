@@ -24,6 +24,9 @@ Require Import LogicUtil.
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
 
+(***********************************************************************)
+(** Condition for an arctic interpretation to be valid *)
+
 Section Somewhere_finite.
 
   Variable dim : nat.
@@ -68,7 +71,23 @@ Section Somewhere_finite.
 
 End Somewhere_finite.
 
-(** Module type for proving termination with matrix interpretations *)
+(*REMOVE: to be removed (used in a previous version of Rainbow)
+
+Ltac arcticDiscr :=
+  try discr;
+    solve [left; arcticDiscr | right; arcticDiscr].
+
+Ltac showArcticIntOk := solve
+  [let f := fresh "f" in let s := fresh "s" in
+    intro f; destruct f as [s|s]; destruct s; vm_compute; arcticDiscr]
+  || fail "invalid arctic interpretation".*)
+
+Ltac somewhere_finite Sig Fs Fs_ok :=
+  apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok); check_eq.
+
+(***********************************************************************)
+(** Module type for proving termination with an arctic interpretation *)
+
 Module Type TArcticInt.
 
   Parameter sig : Signature.
@@ -94,7 +113,6 @@ Module ArcticInt (Import AI : TArcticInt).
 
   Module Export AIBase := ArcticBasedInt AB.
 
-  (** Monotone algebra instantiated to matrices *)
   Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := Sig.
@@ -230,7 +248,7 @@ Module ArcticInt (Import AI : TArcticInt).
   
   End MonotoneAlgebra.
 
-  (*FIXME: to be removed (used in a previous version of Rainbow)
+  (*REMOVE: to be removed (used in a previous version of Rainbow)
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
@@ -245,17 +263,3 @@ Module ArcticInt (Import AI : TArcticInt).
     fail "Arctic matrices cannot be used for proving total termination".
 
 End ArcticInt.
-
-(*FIXME: to be removed (used in a previous version of Rainbow)
-
-Ltac arcticDiscr :=
-  try discr;
-    solve [left; arcticDiscr | right; arcticDiscr].
-
-Ltac showArcticIntOk := solve
-  [let f := fresh "f" in let s := fresh "s" in
-    intro f; destruct f as [s|s]; destruct s; vm_compute; arcticDiscr]
-  || fail "invalid arctic interpretation".*)
-
-Ltac somewhere_finite Sig Fs Fs_ok :=
-  apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok); check_eq.

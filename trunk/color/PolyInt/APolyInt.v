@@ -2,8 +2,8 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Frederic Blanqui, 2004-12-13
 - Sebastien Hinderer, 2004-04-20
+- Frederic Blanqui, 2004-12-13
 - Adam Koprowski, 2007-04-26, added support for modular removal of rules 
                   2008-05-27, added support for weakly monotone polynomials
 
@@ -11,8 +11,6 @@ proof of the termination criterion based on polynomial interpretations
 *)
 
 Set Implicit Arguments.
-
-Section S.
 
 Require Import ATerm.
 Require Import ABterm.
@@ -27,6 +25,10 @@ Require Import ARelation.
 Require Import RelUtil.
 Require Import LogicUtil.
 Require Import SN.
+Require Import Polynom.
+Require Import MonotonePolynom.
+
+Section S.
 
 Variable Sig : Signature.
 
@@ -36,8 +38,6 @@ Notation bterm := (bterm Sig).
 (** polynomial associated to a bterm *)
 
 Section poly_of_bterm.
-
-Require Import Polynom.
 
 Variable fpoly : forall f : Sig, poly (arity f).
 
@@ -52,8 +52,6 @@ End poly_of_bterm.
 
 (***********************************************************************)
 (** polynomial interpretation *)
-
-Require Import MonotonePolynom.
 
 Definition PolyInterpretation := forall f : Sig, poly (arity f).
 
@@ -323,7 +321,7 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-(*FIXME: to be removed: tactic used in an old version of Rainbow
+(*REMOVE: to be removed: tactic used in an old version of Rainbow
 
 Ltac poly_int PI := solve
   [match goal with

@@ -328,7 +328,7 @@ Module MatrixInt (MI : TMatrixInt).
 
   End MonotoneAlgebra.
  
-  (*FIXME: to be removed (used in a previous version of Rainbow)
+  (*REMOVE: to be removed (used in a previous version of Rainbow)
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
