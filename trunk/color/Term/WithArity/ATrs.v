@@ -207,6 +207,10 @@ Ltac is_var_lhs := cut False;
 Ltac is_var_rhs := cut False;
   [tauto | eapply is_notvar_rhs_false; eassumption].
 
+Require ListDec.
+
+Ltac incl_rule Sig := ListDec.incl (@beq_rule_ok Sig).
+
 (***********************************************************************)
 (** monotony properties *)
 
@@ -1041,14 +1045,14 @@ Ltac no_relative_rules :=
     | |- _ => idtac
   end.
 
-(* FIXME: we do not use "rewrite rules_preserv_vars_dec; refl."
+(* REMOVE: we do not use "rewrite rules_preserv_vars_dec; check_eq."
    since this is slower than intuition *)
-Ltac rules_preserv_vars := solve
+(*Ltac rules_preserv_vars := solve
   [match goal with
     | |- rules_preserv_vars ?R =>
       unfold rules_preserv_vars; let H := fresh in
       assert (H :
         lforall (fun a => incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a))) R);
-        [ unfold incl; simpl; intuition
+        [ unfold incl; vm_compute; intuition
         | let H0 := fresh in do 2 intro; intro H0; apply (lforall_in H H0)]
-  end] || fail "some rule does not preserve variables".
+  end] || fail "some rule does not preserve variables".*)
