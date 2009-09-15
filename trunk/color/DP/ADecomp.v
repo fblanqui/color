@@ -177,17 +177,19 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-Ltac incl_flat := solve [unfold incl, dp; simpl; intuition].
+(*REMOVE: Ltac incl_flat := solve [unfold incl, dp; simpl; intuition].*)
 
 Ltac valid_decomp := solve [check_eq] || fail "the decomposition is not valid".
 
 Ltac co_scc := solve [check_eq] || fail "not a co_scc".
 
-Ltac graph_decomp f d :=
+Require Import AVariables.
+
+Ltac graph_decomp Sig f d :=
   apply WF_decomp_co_scc with (approx := f) (cs := d);
   [idtac
     | rules_preserv_vars
-    | incl_flat || fail "the decomposition does not contain all DPs"
-    | incl_flat || fail "the decomposition contains something that is not a DP"
+    | incl_rule Sig || fail "the decomposition does not contain all DPs"
+    | incl_rule Sig || fail "the decomposition contains a rule that is not a DP"
     | valid_decomp
     | unfold lforall; repeat split].
