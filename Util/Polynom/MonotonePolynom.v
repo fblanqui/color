@@ -269,9 +269,11 @@ Proof with auto; try congruence || discriminate.
 Qed.
 
 (***********************************************************************)
-(** non-reflexive tactics for monotony (for a previous version of Rainbow) *)
+(** non-reflexive tactics for monotony *)
 
-(*Ltac montacrec :=
+(*REMOVE: to be removed (used in a previous version of Rainbow)
+
+Ltac montacrec :=
   match goal with
     | H:lt _ O |- _ => elimtype False; apply (lt_n_O _ H)
     | H:lt ?i (S _) |- _ =>
