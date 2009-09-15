@@ -48,22 +48,21 @@ Ltac Veqtac := repeat
 
 Section Velementary.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
-Definition Vid (A : Type) n : vector A n -> vector A n :=
+Definition Vid n : vec n -> vec n :=
   match n with
     | O => fun _ => Vnil
     | _ => fun v => Vcons (Vhead v) (Vtail v)
   end.
 
-Lemma Vid_eq : forall A n (v : vector A n), v = Vid v.
+Lemma Vid_eq : forall n (v : vec n), v = Vid v.
 
 Proof.
 destruct v; auto.
 Defined.
 
-Lemma VSn_eq : forall A n (v : vector A (S n)), v = Vcons (Vhead v) (Vtail v).
+Lemma VSn_eq : forall n (v : vec (S n)), v = Vcons (Vhead v) (Vtail v).
 
 Proof.
 intros. change (Vcons (Vhead v) (Vtail v)) with (Vid v). apply Vid_eq.
@@ -128,8 +127,7 @@ Definition Vfirst A default n (v : vector A n) : A :=
 
 Section Vcast.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Program Fixpoint Vcast m (v : vec m) n (mn : m = n) {struct v} : vec n :=
   match v with
@@ -253,8 +251,7 @@ End Vcast.
 
 Section Vnull.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Lemma VO_eq : forall v : vec O, v = Vnil.
 
@@ -285,10 +282,9 @@ Fixpoint Vadd A n (v : vector A n) (x : A) : vector A (S n) :=
 
 Section Vnth.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
-Program Fixpoint Vnth n (v : vector A n) : forall i, i < n -> A :=
+Program Fixpoint Vnth n (v : vec n) : forall i, i < n -> A :=
   match v with
   | Vnil => 
       fun i ip => !
@@ -422,8 +418,7 @@ Notation "v '[@' p ']'" := (Vnth v p) (at level 0) : vec_scope.
 
 Section Vreplace.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Program Fixpoint Vreplace n (v : vec n) i (ip : i < n) (a : A) : vec n :=
   match v with 
@@ -488,8 +483,7 @@ End Vreplace.
 
 Section Vapp.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Fixpoint Vapp n1 n2 (v1 : vec n1) (v2 : vec n2) {struct v1} : vec (n1+n2) :=
   match v1 with
@@ -649,8 +643,7 @@ End Vapp.
 
 Section Vbreak.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Definition Vsplit n (v : vec (S n)) := (Vhead v, Vtail v).
 
@@ -701,8 +694,7 @@ End Vbreak.
 
 Section Vin.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Fixpoint Vin (x : A) n (v : vec n) {struct v} : Prop :=
   match v with
@@ -821,8 +813,7 @@ End Vin.
 
 Section Vsub.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Lemma Vsub_aux1 : forall i k' n : nat, i + S k' <= n -> i < n.
 
@@ -1155,8 +1146,7 @@ End Vsub.
 
 Section Vforall.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 Variable P : A -> Prop.
 
 Fixpoint Vforall n (v : vec n) { struct v } : Prop :=
@@ -1302,8 +1292,7 @@ End Vforall2_sec.
 
 Section Vforall2_dec.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 Variable R : A -> A -> Prop.
 
 Require Import RelDec.
@@ -1332,8 +1321,7 @@ End Vforall2_dec.
 
 Section Vexists.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 Variables (P : A->Prop).
 
 Fixpoint Vexists n (v : vec n) {struct v} : Prop :=
@@ -1387,8 +1375,7 @@ End Vexists.
 
 Section Vbuild.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Program Fixpoint Vbuild_spec (n : nat) (gen : forall i, i < n -> A) :
   { v : vec n | forall i (ip : i < n), Vnth v ip = gen i ip } :=
@@ -1458,8 +1445,7 @@ End Vbuild.
 
 Section Vfolds.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 (* Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an *)
 
@@ -1510,8 +1496,7 @@ End Vfolds.
 
 Section vec_of_list.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 
 Require Import List.
 
@@ -1542,7 +1527,7 @@ subst. auto.
 right. apply IHv. hyp.
 Qed.
 
-Lemma vec_of_list_exact i l (Hi :i < length(l)) :
+Lemma vec_of_list_exact i l (Hi : i < length(l)) :
   element_at l i = Some (Vnth (vec_of_list l) Hi).
 
 Proof.
@@ -1551,7 +1536,7 @@ destruct l; simpl in *. contradict Hi; omega. auto.
 destruct l;simpl in *. contradict Hi; omega. apply IHi.
 Qed.
 
-Lemma list_of_vec_exact i n (v:vector A n) (Hi:i < n) :
+Lemma list_of_vec_exact i n (v : vec n) (Hi : i < n) :
   element_at (list_of_vec v) i = Some (Vnth v Hi).
 
 Proof.
@@ -1569,8 +1554,7 @@ End vec_of_list.
 
 Section eq_dec.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
 Lemma eq_vec_dec : forall n (v1 v2 : vec n), {v1=v2}+{~v1=v2}.
@@ -1590,8 +1574,7 @@ End eq_dec.
 
 Section beq.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 Variable beq : A -> A -> bool.
 Variable beq_ok : forall x y, beq x y = true <-> x = y.
 
@@ -1653,8 +1636,7 @@ Implicit Arguments beq_vec_ok_length [n v p w].
 
 Section beq_in.
 
-Variable A : Type.
-Notation vec := (vector A).
+Variable A : Type. Notation vec := (vector A).
 Variable beq : A -> A -> bool.
 
 Lemma beq_vec_ok_in1 : forall n (v : vec n)
