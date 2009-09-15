@@ -25,6 +25,9 @@ Local Open Scope Z_scope.
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
 
+(***********************************************************************)
+(** Condition for an arctic BZ interpretation to be valid *)
+
 Section Absolute_finite.
 
   Variable dim : nat.
@@ -64,7 +67,9 @@ Section Absolute_finite.
 
 End Absolute_finite.
 
+(***********************************************************************)
 (** Module type for proving termination with matrix interpretations *)
+
 Module Type TArcticBZInt.
 
   Parameter sig : Signature.
@@ -92,7 +97,6 @@ Module ArcticBZInt (AI : TArcticBZInt).
 
   Module Export AIBase := ArcticBasedInt AB.
 
-  (** Monotone algebra instantiated to matrices *)
   Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := Sig.
@@ -185,7 +189,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
       generalize (vec_at0 x0). generalize (vec_at0 x).
       clear x x0 v v0 xy. intros x y xy x_lb y_lb.
       destruct x; destruct y; arctic_ord.
-(* x-man, this should be solved by arctic_ord *)
+(*FIXME: this should be solved by arctic_ord *)
 unfold A1, OSR.SR.A1 in *.
 assert (z >= 0).
 apply fin_ge_impl_ge; hyp.
@@ -202,7 +206,7 @@ destruct y_lb; [ contradiction | discr ].
   
   End MonotoneAlgebra.
 
-  (*FIXME: to be removed (used in a previous version of Rainbow)
+  (*REMOVE: to be removed (used in a previous version of Rainbow)
 
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
@@ -218,7 +222,7 @@ destruct y_lb; [ contradiction | discr ].
 
 End ArcticBZInt.
 
-(*FIXME: to be removed (used in a previous version of Rainbow)
+(*REMOVE: to be removed (used in a previous version of Rainbow)
 
 Ltac showArcticBZIntOk := solve
   [let f := fresh "f" in let s := fresh "s" in
