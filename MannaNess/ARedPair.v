@@ -150,10 +150,9 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
   Ltac do_prove_termination prove_cc_succ lemma :=
     apply lemma;
       match goal with
-      | |- context_closed _ => solve [prove_cc_succ]
+      | |- context_closed _ => prove_cc_succ
       | |- WF _ => idtac
-      | |- _ = _ => solve [check_eq]
-      | _ => fail "Failed to deal with generated goal"
+      | |- _ = _ => check_eq || fail "some rule is not in the ordering"
       end.
 
   Ltac prove_termination prove_cc_succ :=
@@ -166,7 +165,6 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
       try rewrite int_red_incl_red;
         try rewrite hd_red_mod_of_hd_red_Mod;
           prove_termination prove_cc_succ
-    | _ => fail "Unsupported termination problem type"
    end.
 
 End WeakRedPairProps.
@@ -337,3 +335,63 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
   Qed.
 
 End WP_Proj.
+
+(***********************************************************************)
+(** module type for reduction pairs *)
+
+Require Import VRPO_Prover.
+
+Module WP_RPO (Import R : TRPO) <: WeakRedPair.
+
+  Module Export P := RPO_Prover R.
+
+  Definition Sig := Sig.
+
+  Definition succ := arpo.
+  Definition wf_succ := arpo_wf.
+  Definition sc_succ := arpo_subst_closed.
+
+  Definition bsucc := brel arpo_dec.
+
+  Lemma bsucc_ok : forall t u, bsucc t u = true <-> succ t u.
+
+  Proof.
+    intros t u. unfold bsucc, succ, brel. destruct (arpo_dec t u); intuition.
+    discr.
+  Qed.
+
+  Lemma bsucc_sub : rel bsucc << succ.
+
+  Proof.
+    intros t u. unfold rel. rewrite bsucc_ok. auto.
+  Qed.
+
+  Definition succeq := succ%.
+  Definition sc_succeq := rc_substitution_closed sc_succ.
+
+  Lemma cc_succeq : context_closed succeq.
+
+  Proof.
+    intros t u c h. destruct h. subst. left. refl. right.
+    apply arpo_context_closed. hyp.
+  Qed.
+
+  Definition refl_succeq := rc_refl succ.
+
+  Lemma succ_succeq_compat : absorb succ succeq.
+
+  Proof.
+    intros t u [v [h1 h2]]. destruct h1. subst. hyp.
+    apply arpo_self_absorb. exists v. split; hyp.
+  Qed.
+
+  Definition bsucceq t u := beq_term t u || bsucc t u.
+
+  Lemma bsucceq_sub : rel bsucceq << succeq.
+
+  Proof.
+    intros t u. unfold rel, bsucceq. rewrite orb_eq. rewrite beq_term_ok.
+    rewrite bsucc_ok. auto.
+  Qed.
+
+End WP_RPO.
