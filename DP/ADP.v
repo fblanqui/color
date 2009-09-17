@@ -325,5 +325,7 @@ Implicit Arguments dp_elim_vars [Sig l t].
 
 Require Import AVariables.
 
-Ltac chain := no_relative_rules;
-  apply WF_chain; [check_eq | rules_preserv_vars | idtac].
+Ltac chain := no_relative_rules; apply WF_chain;
+  [ check_eq || fail "a LHS is a variable"
+  | rules_preserv_vars
+  | idtac].

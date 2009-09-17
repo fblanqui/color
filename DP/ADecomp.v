@@ -179,9 +179,7 @@ End S.
 
 (*REMOVE: Ltac incl_flat := solve [unfold incl, dp; simpl; intuition].*)
 
-Ltac valid_decomp := solve [check_eq] || fail "the decomposition is not valid".
-
-Ltac co_scc := solve [check_eq] || fail "not a co_scc".
+Ltac co_scc := check_eq || fail "not a co_scc".
 
 Require Import AVariables.
 
@@ -191,5 +189,5 @@ Ltac graph_decomp Sig f d :=
     | rules_preserv_vars
     | incl_rule Sig || fail "the decomposition does not contain all DPs"
     | incl_rule Sig || fail "the decomposition contains a rule that is not a DP"
-    | valid_decomp
+    | check_eq || fail "the decomposition is not valid"
     | unfold lforall; repeat split].

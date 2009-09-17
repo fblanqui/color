@@ -83,7 +83,8 @@ Ltac showArcticIntOk := solve
   || fail "invalid arctic interpretation".*)
 
 Ltac somewhere_finite Sig Fs Fs_ok :=
-  apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok); check_eq.
+  apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok);
+    (check_eq || fail "invalid arctic interpretation").
 
 (***********************************************************************)
 (** Module type for proving termination with an arctic interpretation *)

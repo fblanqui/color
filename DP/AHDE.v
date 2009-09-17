@@ -206,4 +206,5 @@ End bool_correct.
 (** tactics *)
 
 Ltac hde_bool_correct :=
-  (apply hde_bool_mark_correct || apply hde_bool_correct); check_eq.
+  (apply hde_bool_mark_correct || apply hde_bool_correct);
+  (check_eq || fail "a LHS is a variable").
