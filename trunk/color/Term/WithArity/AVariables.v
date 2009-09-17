@@ -361,6 +361,5 @@ Implicit Arguments wf_term_var [Sig s x u].
 Implicit Arguments mem_vars_vec [Sig x n ts].
 Implicit Arguments vars_subs_elim [Sig s x v].
 
-Ltac rules_preserv_vars :=
-  solve [rewrite rules_preserv_vars_dec; check_eq]
-  || fail "some rule does not preserve variables".
+Ltac rules_preserv_vars := rewrite rules_preserv_vars_dec;
+  (check_eq || fail "some rule does not preserve variables").

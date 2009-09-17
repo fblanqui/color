@@ -1045,9 +1045,8 @@ Ltac no_relative_rules :=
     | |- _ => idtac
   end.
 
-(* REMOVE: we do not use "rewrite rules_preserv_vars_dec; check_eq."
-   since this is slower than intuition *)
-(*Ltac rules_preserv_vars := solve
+(* REMOVE: non-reflexive tactic used in a previous version of Rainbow
+Ltac rules_preserv_vars := solve
   [match goal with
     | |- rules_preserv_vars ?R =>
       unfold rules_preserv_vars; let H := fresh in
