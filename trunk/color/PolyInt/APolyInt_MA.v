@@ -146,11 +146,8 @@ Module PolyInt (PI : TPolyInt).
 
   Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.*)
 
-  Ltac prove_int_monotone_by_refl Fs Fs_ok :=
-    solve [apply (fin_monotone_succ Fs Fs_ok); check_eq]
-    || fail "Failed to prove monotonicity of polynomial interpretation.".
-
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    apply IR_context_closed; prove_int_monotone_by_refl Fs Fs_ok.
+    apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok);
+      (check_eq || fail "could not prove monotony").
 
 End PolyInt.

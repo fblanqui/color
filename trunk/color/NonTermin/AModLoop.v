@@ -279,4 +279,4 @@ End S.
 
 Ltac loop t' mds' ds' p' :=
   apply is_mod_loop_correct with (t:=t') (mds:=mds') (ds:=ds') (p:=p');
-    check_eq.
+    (check_eq || fail "not a loop").

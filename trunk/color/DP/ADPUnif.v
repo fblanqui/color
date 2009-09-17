@@ -161,4 +161,5 @@ End S.
 (** tactics *)
 
 Ltac dpg_unif_N_correct :=
-  (apply dpg_unif_N_mark_correct || apply dpg_unif_N_correct); check_eq.
+  (apply dpg_unif_N_mark_correct || apply dpg_unif_N_correct);
+  (check_eq || fail "a LHS is a variable").

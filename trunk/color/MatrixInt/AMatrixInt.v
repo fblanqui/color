@@ -347,6 +347,7 @@ Module MatrixInt (MI : TMatrixInt).
   Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
 
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok); check_eq.
+    apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok);
+      (check_eq || fail "non monotone interpretation").
 
 End MatrixInt.

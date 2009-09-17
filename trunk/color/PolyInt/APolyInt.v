@@ -333,5 +333,6 @@ Ltac poly_int PI := solve
 Ltac PolyWeakMonotone Fs Fs_ok :=
   match goal with
     | |- PolyWeakMonotone ?PI =>
-      apply (fin_PolyWeakMonotone PI Fs Fs_ok); check_eq
+      apply (fin_PolyWeakMonotone PI Fs Fs_ok);
+        (check_eq || fail "could not prove monotony")
   end.

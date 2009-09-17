@@ -303,7 +303,8 @@ Implicit Arguments matches_complete [Sig p t u].
 (** tactics *)
 
 Ltac check_loop t' ds' p' :=
-  apply is_loop_correct with (t:=t') (ds:=ds') (p:=p'); check_eq.
+  apply is_loop_correct with (t:=t') (ds:=ds') (p:=p');
+    (check_eq || fail "not a loop").
 
 Ltac loop t' ds' p' :=
   match goal with

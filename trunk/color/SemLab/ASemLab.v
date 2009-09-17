@@ -965,12 +965,16 @@ Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
 
   Ltac semlab :=
     match goal with
-      | |- WF (red_mod _ _) =>
-        rewrite WF_red_mod_lab; [idtac | check_eq | check_eq]
-      | |- WF (hd_red_mod _ _) =>
-        rewrite WF_hd_red_mod_lab; [idtac | check_eq | check_eq]
-      | |- WF (red _) =>
-        rewrite WF_red_lab; [idtac | check_eq]
+      | |- WF (red_mod _ _) => rewrite WF_red_mod_lab;
+        [ idtac
+        | check_eq || fail "some relative rule is not in the model"
+        | check_eq || fail "some rule is not in the model"]
+      | |- WF (hd_red_mod _ _) => rewrite WF_hd_red_mod_lab;
+        [ idtac
+        | check_eq || fail "some relative rule is not in the model"]
+      | |- WF (red _) => rewrite WF_red_lab;
+        [ idtac
+        | check_eq || fail "some rule is not in the model"]
     end.
 
 End FinOrdSemLabProps.
@@ -1023,12 +1027,16 @@ Module FinSemLabProps (FSL : FinSemLab).
 
   Ltac semlab :=
     match goal with
-      | |- WF (red_mod _ _) =>
-        rewrite WF_red_mod_lab; [idtac | check_eq | check_eq]
-      | |- WF (hd_red_mod _ _) =>
-        rewrite WF_hd_red_mod_lab; [idtac | check_eq | check_eq]
-      | |- WF (red _) =>
-        rewrite WF_red_lab; [idtac | check_eq]
+      | |- WF (red_mod _ _) => rewrite WF_red_mod_lab;
+        [ idtac
+        | check_eq || fail "some relative rule is not in the model"
+        | check_eq || fail "some rule is not in the model"]
+      | |- WF (hd_red_mod _ _) => rewrite WF_hd_red_mod_lab;
+        [ idtac
+        | check_eq || fail "some relative rule is not in the model"]
+      | |- WF (red _) => rewrite WF_red_lab;
+        [idtac
+        | check_eq || fail "some rule is not in the model"]
     end.
 
 End FinSemLabProps.

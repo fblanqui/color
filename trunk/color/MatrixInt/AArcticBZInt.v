@@ -230,4 +230,5 @@ Ltac showArcticBZIntOk := solve
   || fail "invalid below-zero arctic interpretation".*)
 
 Ltac absolute_finite Sig Fs Fs_ok :=
-  apply (@fin_absolute_finite _ _ Sig _ Fs Fs_ok); check_eq.
+  apply (@fin_absolute_finite _ _ Sig _ Fs Fs_ok);
+    (check_eq || fail "invalid below-zero arctic interpretation").
