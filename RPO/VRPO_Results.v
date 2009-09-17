@@ -22,10 +22,8 @@ Require Import AccUtil.
 
 Set Implicit Arguments.
 
-Module RPO_Results (RPO : RPO_Model).
+Module RPO_Results (Export RPO : RPO_Model).
 
-  Export RPO.
-  
   Lemma var_are_min : forall x t, lt t (Var x) -> False.
 
   Proof.

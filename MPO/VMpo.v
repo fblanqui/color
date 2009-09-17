@@ -23,6 +23,7 @@ Require Import VTerm.
 Require Import Setoid.
 Require Import RelUtil.
 
+(*FIXME: define a functor instead!*)
 Variable Sig : Signature.
 
 Notation term := (term Sig).
