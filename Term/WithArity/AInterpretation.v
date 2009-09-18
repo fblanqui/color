@@ -39,28 +39,18 @@ Variable I : interpretation.
 
 Definition valuation := variable -> I.
 
-Fixpoint vec_of_val (xint : valuation) (n : nat) : vector I n :=
-  match n as n0 return vector _ n0 with
-    | O => Vnil
-    | S p => Vadd (vec_of_val xint p) (xint p)
-  end.
-
-Lemma Vnth_vec_of_val : forall xint n x (H : lt x n),
-  Vnth (vec_of_val xint n) H = xint x.
-
-Proof.
-intros xint n. elim n.
- intros x Hx. elimtype False. apply (lt_n_O _ Hx).
- intros p Hrec x H0. simpl vec_of_val.
- case (le_lt_eq_dec _ _ (le_S_n _ _ H0)); intro H1.
-  rewrite (Vnth_addl (vec_of_val xint p) (xint p) H0 H1). apply Hrec.
-  rewrite Vnth_addr. 2: assumption. rewrite H1. refl.
-Qed.
-
-Definition val_of_vec n (v : vector I n) : valuation :=
-  fun x => match le_lt_dec n x with
+Definition val_of_vec n (v : vector I n) : valuation := fun x =>
+  match le_lt_dec n x with
     | left _ => (* n <= x *) some_elt I
     | right h => (* x < n *) Vnth v h
+  end.
+
+(*REMARK: alternative more efficient definition*)
+Fixpoint val_of_vec2 n (v : vector I n) : valuation := fun x =>
+  match x, v with
+    | _, Vnil => some_elt I
+    | 0, Vcons a _ _ => a
+    | S x', Vcons _ _ v' => val_of_vec2 v' x'
   end.
 
 Lemma val_of_vec_eq : forall n (v : vector I n) x (h : x < n),
@@ -71,13 +61,53 @@ intros. unfold val_of_vec. case (le_lt_dec n x); intro.
 absurd (x<n); omega. apply Vnth_eq. refl.
 Qed.
 
-Definition fval (xint : valuation) n := val_of_vec (vec_of_val xint n).
+Section vec_of_val.
 
-Definition restrict (xint : valuation) (n : nat) : valuation :=
-  fun x => match le_lt_dec n x with
+Variable xint : valuation.
+
+Require Import NatUtil.
+
+(*REMARK: use instead
+Definition restrict n : valuation :=
+  fun x => if bgt_nat n x then xint x else some_elt I.*)
+
+Definition restrict n : valuation := fun x =>
+  match le_lt_dec n x with
     | left _ => (* n <= x *) some_elt I
-    | right h => (* x < n *) xint x
+    | right _ => (* x < n *) xint x
   end.
+
+Fixpoint vec_of_val (n : nat) : vector I n :=
+  match n as n return vector _ n with
+    | O => Vnil
+    | S n' => Vadd (vec_of_val n') (xint n')
+  end.
+
+(*REMARK: attempt for being more efficient but we need casts...
+Fixpoint vec_of_val_aux k (acc : vector I k) n : vector I (n+k) :=
+  match n as n return vector I (n+k) with
+    | 0 => acc
+    | S n' => Vcast (vec_of_val_aux (Vcons (xint n') acc) n')
+      (sym_eq (plus_Snm_nSm n' k))
+  end.
+
+Definition vec_of_val := Vcast (vec_of_val Vnil) ...*)
+
+Lemma Vnth_vec_of_val : forall n x (H : x < n), Vnth (vec_of_val n) H = xint x.
+
+Proof.
+intro n. elim n.
+ intros x Hx. elimtype False. apply (lt_n_O _ Hx).
+ intros p Hrec x H0. simpl vec_of_val.
+ case (le_lt_eq_dec _ _ (le_S_n _ _ H0)); intro H1.
+  rewrite (Vnth_addl (vec_of_val p) (xint p) H0 H1). apply Hrec.
+  rewrite Vnth_addr. 2: assumption. rewrite H1. refl.
+Qed.
+
+(*REMARK: equivalent to restrict but less efficient*)
+Definition fval n := val_of_vec (vec_of_val n).
+
+End vec_of_val.
 
 (***********************************************************************)
 (** interpretation of terms *)
@@ -131,7 +161,7 @@ Lemma term_int_eq_fval_lt : forall xint t k,
 Proof.
 intros xint t. pattern t; apply term_ind_forall; clear t; intros.
 simpl in *. unfold fval, val_of_vec. case (le_lt_dec k v); intro.
-absurd (v<k); omega. symmetry. apply Vnth_vec_of_val.
+absurd (v<k); omega. rewrite Vnth_vec_of_val. refl.
 simpl. apply (f_equal (fint I f)).
 apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
 rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
