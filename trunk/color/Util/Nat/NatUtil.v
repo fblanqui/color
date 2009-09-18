@@ -109,10 +109,18 @@ Lemma bgt_nat_ok : forall x y, bgt_nat x y = true <-> x > y.
 Proof.
 induction x; destruct y; simpl; split; intro;
   try (refl || discr || absurd_arith || omega).
-rewrite IHx in H. omega. apply lt_S_n in H.  rewrite IHx. hyp.
+rewrite IHx in H. omega. apply lt_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
+
+Lemma bgt_nat_ko : forall x y, bgt_nat x y = false <-> x <= y.
+
+Proof.
+induction x; destruct y; simpl; split; intro;
+  try (refl || discr || absurd_arith || omega).
+rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
+Qed.
 
 Fixpoint bge_nat (x y : nat) {struct x} :=
   match x, y with
