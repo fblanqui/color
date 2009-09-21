@@ -15,6 +15,7 @@ Require Import LogicUtil.
 Require Export Relations.
 Require Import Setoid.
 Require Export RelMidex.
+Require Import Basics.
 
 Implicit Arguments transp [A].
 Implicit Arguments inclusion [A].
