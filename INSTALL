@@ -5,7 +5,7 @@ The compilation procedure that is provided hereafter requires a
 UNIX-like operating system with the following commands (it also works
 with Cygwin on Windows):
 
-- Coq 8.2 or SVN http://coq.inria.fr/
+- Coq 8.2pl1 or SVN http://coq.inria.fr/
 - GNU make version 3.81 http://www.gnu.org/software/make/
 - GNU find version 4.4.0 http://www.gnu.org/software/findutils/findutils.html
 
