@@ -22,6 +22,7 @@ Require Import SN.
 Require Import BoolUtil.
 Require Import EqUtil.
 Require Import NatUtil.
+Require Import Basics.
 
 Section basic_definitions.
 
