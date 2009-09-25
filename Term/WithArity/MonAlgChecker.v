@@ -245,7 +245,8 @@ Let I := (makeI (buildInt defaultInt i)).
 Let buildInt := (buildInt defaultInt i).
 
 Program Definition check_wm : Exc (monotone I succeq) :=
-  match @checkProp Sig arSymInt defaultInt (monP wm) (mon_check wm) wm_default i with
+  match @checkProp Sig arSymInt defaultInt
+    (monP wm) (mon_check wm) wm_default i with
   | error => error
   | value _ => value _
   end.
@@ -258,7 +259,8 @@ Qed.
 
 Program Definition check_sm : 
   Exc (monotone I succeq /\ monotone I succ) :=
-  match @checkProp Sig arSymInt defaultInt (monP sm) (mon_check sm) sm_default i with
+  match @checkProp Sig arSymInt defaultInt
+    (monP sm) (mon_check sm) sm_default i with
   | error => error
   | value _ => value _
   end.
