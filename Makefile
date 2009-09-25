@@ -7,30 +7,27 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean default config dist doc install-dist install-doc tags extraction
+.PHONY: clean default config dist doc install-dist install-doc tags ext
 
 COQC := $(COQBIN)coqc
 
 COQMAKE := $(MAKE) -f Makefile.coq
 
-EXT_VFILES := ProofChecker/Extraction.v ProofChecker/ProofChecker.v
+PC_VFILE := ProofChecker/ProofChecker.v
 
-VFILES := $(shell find . -name '*.v' -not -name Extraction.v -not -name ProofChecker.v)
+VFILES := $(shell find . -name \*.v -not -name ProofChecker.v)
 
 default: Makefile.coq
-	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
+	@$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $(VFILES:%=%o)
 
-extraction: Makefile.ext ProofChecker/Extraction.vo
-
-Makefile.ext:
-	coq_makefile -R . CoLoR $(VFILES) $(EXT_VFILES) > Makefile.ext
-	$(MAKE) -f Makefile.ext depend
+ext: default
+	time $(COQMAKE) OTHERFLAGS="-dont-load-proofs" $(PC_VFILE:%=%o)
 
 Makefile.coq:
 	$(MAKE) config
 
 config:
-	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
+	coq_makefile -R . CoLoR $(VFILES) $(PC_VFILE) > Makefile.coq
 	$(COQMAKE) depend
 
 clean:
@@ -45,13 +42,6 @@ tags:
 doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -name \*.v`
 	./createIndex
-
-./certifiedCode:
-	mkdir -p certifiedCode
-
-ProofChecker/Extraction.vo: ./certifiedCode
-	$(MAKE) -f Makefile.ext $@
-	mv *.ml* ./certifiedCode
 
 ADR := login-linux.inria.fr:liama/www/color
 
