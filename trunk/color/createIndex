@@ -70,19 +70,19 @@ echo "<ul>" >> $doc
 # Util
 
 root=Util
-subdirs=`ls -1 $root | sed -e 's|CVS||'`
+subdirs=`ls -1 $root`
 prdir
 
 # Term
 
 root=Term
-subdirs=`ls -1 $root | sed -e 's|CVS||'`
+subdirs=`ls -1 $root`
 prdir
 
 # simple directories
 
 root=''
-for dir in `ls -1F | grep / | sed -e 's|/||' -e 's|CVS||' -e 's|doc||' -e 's|Util||' -e 's|Term||'`
+for dir in `ls -1F | grep / | sed -e 's|/||' -e 's|doc||' -e 's|Util||' -e 's|Term||' | sed -e 's|Nonin|NonTermin|'`
 do
   prfiles
 done
