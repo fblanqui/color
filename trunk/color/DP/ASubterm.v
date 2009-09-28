@@ -3,6 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Joerg Endrullis, 2008-07
+- Adam koprowski, 2009-09
 
 Subterm Criterion from 
   Dependency Pairs Revisited (Nao Hirokawa and Aart Middeldorp).
@@ -22,7 +23,7 @@ Require Import LogicUtil.
 (***********************************************************************)
 (** Projections. *)
 
-Record Projection (Sig : Signature) : Type := mkProjection {
+Record simple_proj (Sig : Signature) : Type := mk_simple_proj {
   pi : forall f : Sig, nat;
   pi_bound : forall f, pi f < (@arity Sig f)
 }.
@@ -35,31 +36,22 @@ Notation term := (term Sig).
 Notation rule := (rule Sig).
 Notation rules := (list rule).
 
-Definition is_Fun (t : term) : Prop :=
+Definition pi_term (p : simple_proj Sig) (t : term) : term :=
   match t with
-    | Var x => False
-    | Fun f v => True
+  | Var _ => t
+  | Fun f v => Vnth v (pi_bound p f)
   end.
 
-Definition option_isSome (A : Type) (o : option A) : Prop :=
-  match o with
-    | Some a => True
-    | None => False
-  end.
-
-Definition project (p: Projection Sig) (t : term) : is_Fun t -> term :=
-  match t return (is_Fun t -> term) with
-    | Var x => fun isfun : is_Fun (Var x) => False_rect term isfun
-    | Fun f v => fun _ : is_Fun (Fun f v) => Vnth v (pi_bound p f)
-  end.
+Definition pi_trs (p : simple_proj Sig) (R : rules) : rules := 
+  List.map (fun r => mkRule (pi_term p (lhs r)) (pi_term p (rhs r))) R.
 
 (***********************************************************************)
 (* Subterm Criterion from Dependency Pairs Revisited *)
 
-Definition subterm_rel (x y : term) : Prop := subterm x y.
-Definition subterm_eq_rel (x y : term) : Prop := subterm_eq x y.
+Definition sub_lt : relation term := @subterm Sig.
+Definition sub_eq : relation term := @subterm_eq Sig.
 
-Lemma subterm_rel_wf : WF (transp subterm_rel).
+Lemma subterm_rel_wf : WF (transp sub_lt).
 
 Proof.
   intros x. apply subterm_ind. clear x.
@@ -68,7 +60,7 @@ Proof.
 Qed.
 
 Lemma comm_subterm_reduction : forall R : rules,
-    (transp subterm_rel) @ (red R) << (red R) @ (transp subterm_rel).
+  (transp sub_lt) @ (red R) << (red R) @ (transp sub_lt).
 
 Proof.
   intros R x z [y [xSuby yRz]].
@@ -84,12 +76,12 @@ Qed.
 
 Lemma subterm_and_reduction_sn : forall R : rules,
   forall x : term, 
-    SN (red R) x -> SN (red R U (transp subterm_rel)) x.
+    SN (red R) x -> SN (red R U (transp sub_lt)) x.
 
 Proof.
   intros R x snx. apply sn_comm_sn; trivial.
   intros y _. apply subterm_rel_wf. clear. intros x y xy.
-  assert ((red R @ transp subterm_rel) x y) as [z [xz zy]].
+  assert ((red R @ transp sub_lt) x y) as [z [xz zy]].
   apply comm_subterm_reduction. assumption.
   exists z. split.
   apply t1_step. assumption.
@@ -98,11 +90,16 @@ Qed.
 
 (** Subterm criterion *)
 
-(** should be an easy consequence of subterm_and_reduction_sn *)
+Lemma subterm_criterion : forall (p : simple_proj Sig) E R R',
+  compat sub_eq (pi_trs p E) ->
+  compat sub_eq (pi_trs p R) ->
+  compat sub_lt (pi_trs p R') ->
+  WF (hd_red_mod_min E  R       ) -> 
+  WF (hd_red_mod_min E (R ++ R')).
 
-Definition rule_is_Fun (r : rule) := is_Fun (lhs r) /\ is_Fun (rhs r).
-
-Record dprule : Type := mkDPRule { r : rule; proof : rule_is_Fun r }.
+Proof.
+  intros p E R R' Eeq Req R'lt wfER.
+Admitted.
 
 (* Working on it
 Lemma subterm_criterion :
