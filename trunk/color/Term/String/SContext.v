@@ -31,7 +31,7 @@ Definition fill c s := lft c ++ s ++ rgt c.
 
 Definition comp c d := mkContext (lft c ++ lft d) (rgt d ++ rgt c).
 
-Lemma fill_comp : forall c d u, fill c (fill d u) = fill (comp c d) u.
+Lemma fill_fill : forall c d u, fill c (fill d u) = fill (comp c d) u.
 
 Proof.
 intros. destruct c. destruct d.
