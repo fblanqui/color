@@ -991,6 +991,42 @@ Qed.
 
 End union_modulo.
 
+(***********************************************************************)
+(** rewriting is invariant under rule renamings *)
+
+Definition sub_rule s (a : rule) := mkRule (sub s (lhs a)) (sub s (rhs a)).
+
+Definition sub_rules s := map (sub_rule s).
+
+Section rule_renaming.
+
+Variable s1 s2 : @substitution Sig.
+Variable hyp : forall x, sub s1 (sub s2 (Var x)) = Var x.
+
+Lemma sub_rule_inv : forall x, sub_rule s1 (sub_rule s2 x) = x.
+
+Proof.
+intros [l r]. unfold sub_rule. simpl. repeat rewrite sub_inv. refl. hyp. hyp.
+Qed.
+
+Lemma sub_rules_inv : forall x, sub_rules s1 (sub_rules s2 x) = x.
+
+Proof.
+induction x. refl. simpl. rewrite sub_rule_inv. rewrite IHx. refl.
+Qed.
+
+Lemma red_ren : forall R, red R << red (map (sub_rule s2) R).
+
+Proof.
+intros R t u h. redtac. subst. rewrite <- (sub_inv hyp l).
+rewrite <- (sub_inv hyp r). rewrite sub_sub.
+rewrite sub_sub with (s1:=s) (s2:=s1). apply red_rule.
+change (In (sub_rule s2 (mkRule l r)) (map (sub_rule s2) R)).
+apply in_map. hyp.
+Qed.
+
+End rule_renaming.
+
 End S.
 
 Implicit Arguments int_red_fun [Sig R f ts v].
