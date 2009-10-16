@@ -526,6 +526,8 @@ End red_mod0.
 (***********************************************************************)
 (** equivalence with rewriting on rules with at most 0 as variable *)
 
+Require Import ListUtil.
+
 Section reset.
 
 Definition reset t := sub (swap (var t) 0) t.
@@ -542,10 +544,25 @@ unfold reset, swap, single. simpl. rewrite (beq_refl beq_nat_ok). refl.
 unfold reset. rewrite sub_fun1. repeat rewrite var_fun1. fold (reset t). hyp.
 Qed.
 
+Lemma maxvar_reset : forall t, maxvar (reset t) = 0.
+
+Proof.
+intro. rewrite maxvar_var. rewrite var_reset. refl.
+Qed.
+
+Lemma maxvar_reset_rules : forall R a, In a (reset_rules R) ->
+  maxvar (lhs a) = 0 /\ maxvar (rhs a) = 0.
+
+Proof.
+intros. unfold reset_rules in H. destruct (in_map_elim H). destruct H0. subst.
+destruct x as [l r]. unfold reset_rule. simpl. repeat rewrite maxvar_reset.
+auto.
+Qed.
+
+Section red.
+
 Variable R : rules.
 Variable hR : rules_preserv_vars R.
-
-Require Import ListUtil.
 
 Lemma rules_preserv_vars_reset : rules_preserv_vars (reset_rules R).
 
@@ -578,6 +595,31 @@ redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
 destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
 inversion H0. unfold reset. repeat rewrite sub_sub.
 ded (rules_preserv_vars_var hR H). rewrite H1. apply red_rule. hyp.
+Qed.
+
+Lemma red_reset_eq : red R == red (reset_rules R).
+
+Proof.
+split; intros t u; rewrite <- red_reset; auto.
+Qed.
+
+End red.
+
+Variable E R : rules.
+Variable hE : rules_preserv_vars E.
+Variable hR : rules_preserv_vars R.
+
+Lemma red_mod_reset_eq : red_mod E R == red_mod (reset_rules E) (reset_rules R).
+
+Proof.
+unfold red_mod. repeat rewrite <- red_reset_eq; try hyp. refl.
+Qed.
+
+Lemma red_mod_reset : forall t u,
+  red_mod E R t u <-> red_mod (reset_rules E) (reset_rules R) t u.
+
+Proof.
+rewrite <- rel_eq. apply red_mod_reset_eq.
 Qed.
 
 End reset.
