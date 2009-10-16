@@ -683,8 +683,54 @@ case (le_gt_dec i (S(n+i+i0)-n-1)); intro. apply Vnth_eq.
 clear e ip g l0 l1 l2. omega. absurd_arith. absurd_arith.
 Qed.
 
+(***********************************************************************)
+(** renamings *)
+
+Section sub_inv.
+
+Variable s1 s2 : substitution.
+Variable hyp : forall x, sub s1 (sub s2 (Var x)) = Var x.
+
+Lemma sub_inv : forall t, sub s1 (sub s2 t) = t.
+
+Proof.
+intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
+  Vmap (sub s1) (Vmap (sub s2) ts) = ts); simpl; intros.
+apply hyp. rewrite H. refl. refl. rewrite H. rewrite H0. refl.
+Qed.
+
+End sub_inv.
+
+Section swap.
+
+Definition swap x y := single x (Var y).
+
+Lemma swap_intro : forall s x y t, ~In y (vars t) ->
+  sub s t = sub (sub_comp s (swap y x)) (sub (swap x y) t).
+
+Proof.
+intros s x y t. pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
+  ~In y (vars_vec ts) -> Vmap (sub s) ts = Vmap (sub (sub_comp s (swap y x)))
+  (Vmap (sub (swap x y)) ts)); clear t; intros.
+simpl. unfold swap, single, sub_comp. case_beq_nat x x0. simpl.
+rewrite (beq_refl beq_nat_ok). refl. simpl. case_beq_nat y x0.
+simpl in H. tauto. refl. repeat rewrite sub_fun. rewrite H. refl.
+rewrite vars_fun in H0. hyp. refl. simpl in *. rewrite in_app in H1.
+rewrite H0. rewrite H. refl. tauto. tauto.
+Qed.
+
+Lemma swap_id : forall x t, sub (swap x x) t = t.
+
+Proof.
+intros. apply sub_eq_id. intros. unfold swap, single. case_beq_nat x x0; refl.
+Qed.
+
+End swap.
+
 End S.
 
+Implicit Arguments swap [Sig].
+Implicit Arguments sub_inv [Sig s1 s2].
 Implicit Arguments fun_eq_sub [Sig f ts s u].
 Implicit Arguments sub_restrict_incl [Sig l r].
 Implicit Arguments fresh_vars [Sig].
