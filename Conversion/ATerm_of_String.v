@@ -51,9 +51,13 @@ Qed.
 Ltac arity := arity1 is_unary_sig.
 Ltac is_unary := try (exact is_unary_sig).
 
+Notation Fun1 := (Fun1 is_unary_sig). Notation Cont1 := (Cont1 is_unary_sig).
 Notation cont := (cont is_unary_sig).
 Notation term_ind_forall := (term_ind_forall is_unary_sig).
- 
+
+(***********************************************************************)
+(** conversion string <-> term *)
+
 Fixpoint term_of_string (s : string) : term :=
   match s with
     | nil => Var 0
@@ -65,16 +69,6 @@ Lemma var_term_of_string : forall s, var (term_of_string s) = 0.
 Proof.
 induction s; auto.
 Qed.
-
-(*FIXME: does not work:
-Fixpoint string_of_term (t : term) : string :=
-  match t with
-    | Var _ => nil
-    | ATerm.Fun f ts => f :: match ts with
-                               | Vcons t _ _ => string_of_term t
-                               | _ => nil
-                             end
-  end.*)
 
 Require Import VecUtil.
 
@@ -103,14 +97,25 @@ Qed.
 
 Implicit Arguments term_of_string_epi [t].
 
+Lemma string_of_term_sub : forall s l,
+  string_of_term (sub s l) = string_of_term l ++ string_of_term (s (var l)).
+
+Proof.
+intro s. apply term_ind_forall. refl. intros f t IH.
+rewrite sub_fun1. simpl. rewrite IH. refl.
+Qed.
+
+(***********************************************************************)
+(** conversion string <-> context *)
+
 Fixpoint string_of_cont (c : context) : string :=
   match c with
     | Hole => nil
     | Cont f _ _ _ _ d _ => f :: string_of_cont d
   end.
 
-Lemma string_of_term_cont : forall t,
-  string_of_term t = string_of_cont (cont t).
+Lemma string_of_cont_cont : forall t,
+  string_of_cont (cont t) = string_of_term t.
 
 Proof.
 apply term_ind_forall. refl. intros f t IH. simpl. rewrite IH. refl.
@@ -124,50 +129,32 @@ induction c. refl. simpl. rewrite Vmap_first_cast. arity. simpl. rewrite IHc.
 refl.
 Qed.
 
-Lemma string_of_term_sub : forall s l,
-  string_of_term (sub s l) = string_of_term l ++ string_of_term (s (var l)).
-
-Proof.
-intro s. apply term_ind_forall. refl. intros f t IH. rewrite sub_fun. simpl.
-rewrite IH. refl.
-Qed.
-
-(***********************************************************************)
-(** contexts *)
-
-Definition cont_of_letter a :=
-  @Cont ASig a 0 0 (refl_equal 1) (@Vnil term) Hole Vnil.
-
 Fixpoint cont_of_string (s : string) : context :=
   match s with
     | nil => Hole
-    | a :: w => comp (cont_of_letter a) (cont_of_string w)
+    | a :: w => Cont1 a (cont_of_string w)
   end.
+
+(***********************************************************************)
+(** conversion string <-> substitution *)
+
+Definition sub_of_string s := single 0 (term_of_string s).
+
+Lemma term_of_string_fill : forall c s,
+  term_of_string (SContext.fill c s) = fill (cont_of_string (lft c))
+  (sub (sub_of_string (rgt c)) (term_of_string s)).
+
+Proof.
+intros [l r] s. elim l; unfold SContext.fill; simpl.
+elim s. refl. intros. simpl. rewrite H. refl.
+intros. rewrite H. refl.
+Qed.
 
 (***********************************************************************)
 (** rules *)
 
 Definition rule_of_srule (x : srule) :=
   mkRule (term_of_string (Srs.lhs x)) (term_of_string (Srs.rhs x)).
-
-Definition subs_of_string s x :=
-  match x with
-    | 0 => term_of_string s
-    | _ => @Var ASig x
-  end.
-
-Lemma term_sfill : forall sc s,
-  term_of_string (SContext.fill sc s) = fill (cont_of_string (lft sc))
-  (sub (subs_of_string (rgt sc)) (term_of_string s)).
-
-Proof.
-intros. destruct sc. elim lft; unfold SContext.fill; simpl.
-elim s. refl. intros. simpl. rewrite H. refl.
-intros. rewrite H. refl.
-Qed.
-
-(***********************************************************************)
-(** rewriting *)
 
 Definition trs_of_srs R := map rule_of_srule R.
 
@@ -183,6 +170,9 @@ Qed.
 
 Ltac preserv_vars := try (apply rules_preserv_vars_trs_of_srs).
 
+(***********************************************************************)
+(** rewriting *)
+
 Section red_of_sred.
 
 Variable R : srules.
@@ -191,7 +181,8 @@ Lemma red_of_sred : forall x y,
   Srs.red R x y -> red (trs_of_srs R) (term_of_string x) (term_of_string y).
 
 Proof.
-intros. do 3 destruct H. decomp H. subst x. subst y. repeat rewrite term_sfill.
+intros. do 3 destruct H. decomp H. subst x. subst y.
+repeat rewrite term_of_string_fill.
 apply red_rule. change (In (rule_of_srule (Srs.mkRule x0 x1)) (trs_of_srs R)).
 unfold trs_of_srs. apply in_map. exact H0.
 Qed.
@@ -204,30 +195,28 @@ intros. elim H; intros. apply rt_step. apply red_of_sred. exact H0.
 apply rt_refl. eapply rt_trans. apply H1. exact H3.
 Qed.
 
-Lemma sred_of_red0 : forall t u,
-  red0 (trs_of_srs R) t u -> Srs.red R (string_of_term t) (string_of_term u).
+Lemma sred_of_red : forall t u,
+  red (trs_of_srs R) t u -> Srs.red R (string_of_term t) (string_of_term u).
 
 Proof.
-intros. destruct H. redtac. subst. repeat rewrite string_of_term_fill.
+intros. redtac. subst. repeat rewrite string_of_term_fill.
 repeat rewrite string_of_term_sub. rewrite (rules_preserv_vars_var
   is_unary_sig (rules_preserv_vars_trs_of_srs R) lr).
 set (c' := mkContext (string_of_cont c) (string_of_term (s (var l)))).
 change (Srs.red R (SContext.fill c' (string_of_term l))
   (SContext.fill c' (string_of_term r))). apply Srs.red_rule. clear c'.
-destruct (in_map_elim lr). destruct H. destruct x. unfold rule_of_srule in H1.
-simpl in H1. inversion H1. repeat rewrite string_of_term_epi. hyp.
+destruct (in_map_elim lr). destruct H. destruct x. unfold rule_of_srule in H0.
+simpl in H0. inversion H0. repeat rewrite string_of_term_epi. hyp.
 Qed.
 
-Lemma rtc_sred_of_red0 : forall t u, red (trs_of_srs R) # t u ->
-  maxvar t = 0 -> Srs.red R # (string_of_term t) (string_of_term u).
+Lemma rtc_sred_of_red : forall t u, red (trs_of_srs R) # t u ->
+  Srs.red R # (string_of_term t) (string_of_term u).
 
 Proof.
-induction 1; intro. apply rt_step. apply sred_of_red0. unfold red0. intuition.
-apply rt_refl. apply rt_trans with (string_of_term y). auto.
-apply IHclos_refl_trans2. eapply rtc_red_maxvar0.
-apply rules_preserv_vars_trs_of_srs. apply H1. apply H.
+induction 1. apply rt_step. apply sred_of_red. hyp.
+apply rt_refl. apply rt_trans with (string_of_term y); hyp.
 Qed.
- 
+
 End red_of_sred.
 
 (***********************************************************************)
@@ -258,14 +247,13 @@ Qed.
 (***********************************************************************)
 (** preservation of termination *)
 
-Lemma sred_mod_of_red_mod0 : forall t u,
-  red_mod0 (trs_of_srs E) (trs_of_srs R) t u ->
+Lemma sred_mod_of_red_mod : forall t u,
+  red_mod (trs_of_srs E) (trs_of_srs R) t u ->
   Srs.red_mod E R (string_of_term t) (string_of_term u).
 
 Proof.
-intros. do 3 destruct H. exists (string_of_term x); split.
-apply rtc_sred_of_red0; hyp. apply sred_of_red0. unfold red0. intuition.
-eapply rtc_red_maxvar0. apply rules_preserv_vars_trs_of_srs. apply H0. apply H.
+intros. do 2 destruct H. exists (string_of_term x); split.
+apply rtc_sred_of_red. hyp. apply sred_of_red. hyp.
 Qed.
 
 Lemma WF_sred_mod_of_WF_red_mod :
@@ -286,7 +274,9 @@ apply (red_mod0_maxvar (rules_preserv_vars_trs_of_srs E)
   (rules_preserv_vars_trs_of_srs R) H4). rewrite <- (term_of_string_epi h).
 apply H1 with (string_of_term y). 3: refl.
 2: rewrite (term_of_string_epi h); hyp. rewrite <- (string_of_term_epi x).
-apply sred_mod_of_red_mod0. subst. hyp.
+apply sred_mod_of_red_mod. subst.
+eapply inclusion_elim with (R := red_mod0 (trs_of_srs E) (trs_of_srs R)).
+apply red_mod0_incl_red_mod. hyp.
 Qed.
 
 Lemma WF_conv :
