@@ -7,34 +7,38 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean default config dist doc install-dist install-doc tags ext
+.PHONY: clean default config dist doc install-dist install-doc tags all
 
 COQC := $(COQBIN)coqc
 
 COQMAKE := $(MAKE) -f Makefile.coq
+EXTMAKE := $(MAKE) -f Makefile.all
 
 PC_VFILE := ProofChecker/ProofChecker.v
 
 VFILES := $(shell find . -name \*.v -not -name ProofChecker.v)
 
 default: Makefile.coq
-	@$(COQMAKE) OTHERFLAGS="-dont-load-proofs" $(VFILES:%=%o)
+	$(COQMAKE) OTHERFLAGS="-dont-load-proofs"
 
-ext: default
-	time $(COQMAKE) OTHERFLAGS="-dont-load-proofs" $(PC_VFILE:%=%o)
+all: Makefile.all
+	time $(EXTMAKE) OTHERFLAGS="-dont-load-proofs"
 
 Makefile.coq:
 	$(MAKE) config
 
 config:
-	coq_makefile -R . CoLoR $(VFILES) $(PC_VFILE) > Makefile.coq
+	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
 	$(COQMAKE) depend
 
-clean:
-	$(COQMAKE) clean
+Makefile.all:
+	coq_makefile -R . CoLoR $(VFILES) $(PC_VFILE) > Makefile.all
+	$(EXTMAKE) depend
+
+clean: Makefile.all
+	$(EXTMAKE) clean
 	rm -f `find . -name \*~`
 	rm -f doc/CoLoR.*.html doc/index.html
-	rm -f -r certifiedCode
 
 tags:
 	coqtags `find . -name \*.v`
