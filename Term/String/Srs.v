@@ -100,7 +100,7 @@ Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (comp c c0). split. hyp.
-subst t. subst u. do 2 rewrite fill_comp. auto.
+subst t. subst u. do 2 rewrite fill_fill. auto.
 Qed.
 
 Lemma rtc_red_fill : forall c t u,
