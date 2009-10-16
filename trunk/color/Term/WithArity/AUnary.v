@@ -13,6 +13,7 @@ Require Import ATrs.
 Require Import VecUtil.
 Require Import LogicUtil.
 Require Import List.
+Require Import NatUtil.
 
 (***********************************************************************)
 (** tactics *)
@@ -38,9 +39,34 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 
 Definition is_unary := forall f : Sig, 1 = arity f.
 
-Variable hyp : is_unary.
+Variable is_unary_sig : is_unary.
 
-Ltac arity := arity1 hyp.
+Ltac arity := arity1 is_unary_sig.
+
+(***********************************************************************)
+(** unary function application *)
+
+Definition Fun1 f (t : term) := @Fun Sig f (Vcast (Vcons t Vnil) (is_unary_sig f)).
+
+Lemma sub_fun1 : forall s f u, sub s (Fun1 f u) = Fun1 f (sub s u).
+
+Proof.
+intros. unfold Fun1. rewrite sub_fun. rewrite Vmap_cast. simpl Vmap. refl.
+Qed.
+
+Lemma vars_fun1 : forall f u, vars (Fun1 f u) = vars u.
+
+Proof.
+intros. unfold Fun1. rewrite vars_fun. rewrite vars_vec_cast. simpl.
+rewrite <- app_nil_end. refl.
+Qed.
+
+Lemma maxvar_fun1 : forall f t, maxvar (Fun1 f t) = maxvar t.
+
+Proof.
+intros. unfold Fun1. rewrite maxvar_fun. rewrite maxvars_cast.
+unfold maxvars. simpl Vmap. simpl VecMax.Vmax. rewrite max_0_r. refl.
+Qed.
 
 (***********************************************************************)
 (** specific induction principle *)
@@ -49,16 +75,16 @@ Section term_ind.
 
 Variables (P : term -> Prop)
   (Hvar : forall x, P (Var x))
-  (Hfun : forall f t, P t -> P (Fun f (Vcast (Vcons t Vnil) (hyp f)))).
+  (Hfun : forall f t, P t -> P (Fun1 f t)).
 
 Require Import NatUtil.
 
 Lemma term_ind_forall : forall t, P t.
 
 Proof.
-apply term_ind_forall_cast. hyp. intro f. ded (hyp f). destruct ts.
+apply term_ind_forall_cast. hyp. intro f. ded (is_unary_sig f). destruct ts.
 intro. absurd_arith. destruct ts.
-simpl Vforall. intuition. assert (h = hyp f). apply eq_unique. subst h.
+simpl Vforall. intuition. assert (h = is_unary_sig f). apply eq_unique. subst h.
 apply Hfun. hyp.
 intro. absurd_arith.
 Qed.
@@ -74,11 +100,10 @@ Fixpoint var (t : term) : variable :=
     | Fun _ ts => Vmap_first 0 var ts
   end.
 
-Lemma var_fun : forall f u (h : 1 = arity f),
-  var (Fun f (Vcast (Vcons u Vnil) h)) = var u.
+Lemma var_fun1 : forall f u, var (Fun1 f u) = var u.
 
 Proof.
-intros. unfold var; fold var. rewrite Vmap_first_cast. refl.
+intros. unfold Fun1, var; fold var. rewrite Vmap_first_cast. refl.
 Qed.
 
 Lemma var_fill : forall c t, var (fill c t) = var t.
@@ -91,41 +116,61 @@ Qed.
 Lemma var_sub : forall s t, var (sub s t) = var (s (var t)).
 
 Proof.
-intro s. apply term_ind_forall. refl. intros. rewrite sub_fun.
-rewrite Vmap_cast. simpl Vmap. repeat rewrite var_fun. hyp.
+intro s. apply term_ind_forall. refl. intros. rewrite sub_fun1.
+repeat rewrite var_fun1. hyp.
 Qed.
 
 Lemma vars_var : forall t, vars t = var t :: nil.
 
 Proof.
-apply term_ind_forall. refl. intros. rewrite vars_fun. rewrite vars_vec_cast.
-rewrite var_fun. simpl. rewrite <- app_nil_end. hyp.
+apply term_ind_forall. refl. intros. rewrite vars_fun1. rewrite var_fun1. hyp.
+Qed.
+
+Lemma maxvar_var : forall t, maxvar t = var t.
+
+Proof.
+intro t; pattern t; apply term_ind_forall; clear t; intros. refl.
+rewrite maxvar_fun1. rewrite var_fun1. hyp.
 Qed.
 
 (***********************************************************************)
-(** biggest context of a term *)
+(** unary context application *)
 
 Lemma cont_aux : forall f : Sig, 0 + S 0 = arity f.
 
 Proof.
-intro. rewrite <- hyp. refl.
+intro. rewrite <- is_unary_sig. refl.
 Qed.
 
-Fixpoint cont (t : term) : context :=
-  match t with
-    | Var _ => Hole
-    | Fun f ts => Cont f (cont_aux f) Vnil (Vmap_first Hole cont ts) Vnil
-  end.
-
-Lemma cont_aux_eq : forall f, cont_aux f = hyp f.
+Lemma cont_aux_eq : forall f, cont_aux f = is_unary_sig f.
 
 Proof.
 intro. apply eq_unique.
 Qed.
 
-Ltac simpl_cont := unfold cont, var; repeat rewrite Vmap_first_cast;
-  fold cont; fold var; simpl Vmap_first; unfold fill;
-    repeat rewrite cont_aux_eq.
+Definition Cont1 f c := Cont f (cont_aux f) Vnil c Vnil.
+
+Lemma fill_cont1 : forall f c t, fill (Cont1 f c) t = Fun1 f (fill c t).
+
+Proof.
+intros. unfold Cont1. unfold fill. fold (fill c t). simpl Vapp. unfold Fun1.
+apply args_eq. apply Vcast_pi.
+Qed.
+
+(***********************************************************************)
+(** biggest context of a term *)
+ 
+Fixpoint cont (t : term) : context :=
+  match t with
+    | Var _ => Hole
+    | Fun f ts => Cont1 f (Vmap_first Hole cont ts)
+  end.
+
+Lemma cont_fun1 : forall f t, cont (Fun1 f t) = Cont1 f (cont t).
+
+Proof.
+intros. unfold Fun1, cont. fold cont. rewrite Vmap_first_cast. refl.
+Qed.
 
 Lemma subc_cont : forall s (c : context), subc s c = c.
 
@@ -136,15 +181,15 @@ Qed.
 Lemma term_cont_var : forall t, t = fill (cont t) (Var (var t)).
 
 Proof.
-apply term_ind_forall. refl. intros. simpl_cont. apply args_eq. simpl Vapp.
-apply Vcast_eq_intro. apply Vcons_eq_intro. hyp. refl.
+apply term_ind_forall. refl. intros. rewrite cont_fun1. rewrite fill_cont1.
+rewrite var_fun1. rewrite <- H. refl.
 Qed.
 
 Lemma sub_cont : forall s t, sub s t = fill (cont t) (s (var t)).
 
 Proof.
-intro. apply term_ind_forall. refl. intros. simpl_cont. rewrite sub_fun.
-apply args_eq. rewrite Vmap_cast. apply Vcast_eq_intro. simpl. rewrite H. refl.
+intro. apply term_ind_forall. refl. intros. rewrite sub_fun1. rewrite cont_fun1.
+rewrite var_fun1. rewrite fill_cont1. rewrite <- H. refl.
 Qed.
 
 Require Import EqUtil.
@@ -251,6 +296,8 @@ Qed.
 
 End red.
 
+Implicit Arguments rules_preserv_vars_var [R l r].
+
 (***********************************************************************)
 (** equivalent definition of rewriting modulo (when rules preserve variables) *)
 
@@ -306,7 +353,7 @@ Section red.
 
 Variables (R : rules) (hR : rules_preserv_vars R).
 
-(*FIXME: instance of a more general lemma on left-linear TRSs *)
+(*REMARK: instance of a more general lemma on left-linear TRSs *)
 Lemma red_ren : forall t u,
   red R (sub s t) u -> exists v, red R t v /\ sub s v = u.
 
@@ -390,9 +437,15 @@ Implicit Arguments red_ren [s R t u].
 Implicit Arguments red_mod_ren [s E R t u].
 
 (***********************************************************************)
-(** equivalence with rewriting on terms with one variable only *)
+(** equivalence with rewriting on terms with at most 0 as variable *)
 
 Definition red0 (R : rules) t u := red R t u /\ maxvar t = 0.
+
+Lemma red0_incl_red : forall R, red0 R << red R.
+
+Proof.
+intros R t u. unfold red0. intuition.
+Qed.
 
 Section red0.
 
@@ -430,6 +483,12 @@ End red0.
 
 Definition red_mod0 (E R : rules) t u := red_mod E R t u /\ maxvar t = 0.
 
+Lemma red_mod0_incl_red_mod : forall E R, red_mod0 E R << red_mod E R.
+
+Proof.
+intros E R t u. unfold red_mod0. intuition.
+Qed.
+
 Section red_mod0.
 
 Variables (E R : rules)
@@ -463,6 +522,65 @@ apply H1. hyp. eapply red_mod0_maxvar. apply H4.
 Qed.
 
 End red_mod0.
+
+(***********************************************************************)
+(** equivalence with rewriting on rules with at most 0 as variable *)
+
+Section reset.
+
+Definition reset t := sub (swap (var t) 0) t.
+
+Definition reset_rule (a : rule) := mkRule (reset (lhs a)) (reset (rhs a)).
+
+Definition reset_rules := map reset_rule.
+
+Lemma var_reset : forall t, var (reset t) = 0.
+
+Proof.
+intro t; pattern t; apply term_ind_forall; clear t; intros.
+unfold reset, swap, single. simpl. rewrite (beq_refl beq_nat_ok). refl.
+unfold reset. rewrite sub_fun1. repeat rewrite var_fun1. fold (reset t). hyp.
+Qed.
+
+Variable R : rules.
+Variable hR : rules_preserv_vars R.
+
+Require Import ListUtil.
+
+Lemma rules_preserv_vars_reset : rules_preserv_vars (reset_rules R).
+
+Proof.
+intros l0 r0 h. destruct (in_map_elim h). destruct H. destruct x as [l r].
+unfold reset_rule in H0. simpl in H0. inversion H0. repeat rewrite vars_var.
+repeat rewrite var_reset. apply incl_refl.
+Qed.
+
+Lemma red_reset : forall t u, red R t u <-> red (reset_rules R) t u.
+
+Proof.
+split; intro.
+(* -> *)
+redtac. subst. ded (rules_preserv_vars_var hR lr).
+case (In_dec eq_nat_dec 0 (vars l)); intro.
+(* In 0 (vars l) *)
+rewrite vars_var in i. simpl in i. intuition.
+apply red_rule. assert (mkRule l r = reset_rule (mkRule l r)).
+unfold reset_rule. simpl. unfold reset. rewrite H. repeat rewrite H0.
+repeat rewrite swap_id. refl. rewrite H1. apply in_map. hyp.
+(* ~In 0 (vars l) *)
+rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
+rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
+Focus 2. rewrite vars_var. rewrite vars_var in n. rewrite H. hyp.
+rewrite H at -2. apply red_rule.
+change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
+(* <- *)
+redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
+destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
+inversion H0. unfold reset. repeat rewrite sub_sub.
+ded (rules_preserv_vars_var hR H). rewrite H1. apply red_rule. hyp.
+Qed.
+
+End reset.
 
 End S.
 
