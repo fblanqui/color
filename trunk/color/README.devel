@@ -74,7 +74,9 @@ provides a way to deduce some information from Vin (elimination rule).
 - Use "Require Export" as less as possible. Use "Require Import"
 instead. This reduces the compilation time.
 
-- Use (*COQ:...*) for indicating problems with Coq, (*FIXME:...*) for
-  indicating something to be fixed, (*REMARK:...*) for adding some
-  important remark (e.g. something can could be improved), and
-  (*REMOVE:...*) for indicating something to be removed.
+- Use (*COQ:...*) for indicating problems with Coq,
+      (*FIXME:...*) for indicating something to be fixed,
+      (*REMARK:...*) for adding some important remark
+                     (e.g. something can could be improved), 
+      (*REMOVE:...*) for indicating something to be removed,
+      (*MOVE:...*) for indicating something to be moved.

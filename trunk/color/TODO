@@ -1,4 +1,6 @@
 
+- rename ARename into AShift
+
 - for polynomial monotony, check that, for all i, there is k>0 such
 that the coefficient of the monomial x_i^k is >0. in practice, check
 for k in {1,2,3} only?
