@@ -1,3 +1,6 @@
+09-10-19: [Blanqui]
+- Term/WithArity/AReverse: reversal of TRSs with unary symbols only
+
 09-07-08: [Blanqui]
 - SemLab/AFlatCont: flat context closure
 - SemLab/ARootLab: root labelling
