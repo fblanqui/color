@@ -25,11 +25,16 @@ Require Import ListUtil.
 Section S.
 
 Variable Sig : Signature.
+
 Variable is_unary_sig : is_unary Sig.
 
 Notation term := (term Sig).
 Notation rule := (rule Sig). Notation rules := (list rule).
+
 Notation SSig := (SSig_of_ASig Sig). Notation Sig' := (ASig_of_SSig SSig).
+
+(***********************************************************************)
+(** signature isomorphism between Sig and Sig' *)
 
 Lemma is_unary_sig' : is_unary Sig'.
 
@@ -65,6 +70,9 @@ Proof.
 refl.
 Qed.
 
+(***********************************************************************)
+(** isomorphism properties *)
+
 Require Import VecUtil.
 
 Lemma term_of_string_epi : forall t, maxvar t = 0 ->
@@ -99,6 +107,9 @@ rewrite rule_of_srule_epi; try hyp. refl.
 intros b h. assert (In b (a::R)). simpl. auto. destruct (H _ H0). intuition.
 Qed.
 
+(***********************************************************************)
+(** term and rule reversal *)
+
 Definition reverse_term (t : term) :=
   ATerm_of_String.term_of_string (ListUtil.rev' (string_of_term t)).
 
@@ -109,6 +120,9 @@ Definition reverse_trs := List.map reverse_rule.
 
 Notation reverse_srule := (@SReverse.reverse SSig).
 Notation reverse_srs := (List.map reverse_srule).
+
+(***********************************************************************)
+(** preservation of variables *)
 
 Lemma var_reverse_term : forall t, var (reverse_term t) = 0.
 
@@ -138,6 +152,9 @@ induction R. refl. simpl. destruct a as [l r]. unfold rule_of_srule. simpl.
 rewrite IHR. refl.
 Qed.
 
+(***********************************************************************)
+(** relations with reset *)
+
 Lemma reverse_term_reset : forall t, reverse_term (reset t) = reverse_term t.
 
 Proof.
@@ -164,6 +181,9 @@ repeat rewrite reverse_term_reset. rewrite IHR. unfold reset_rule. simpl.
 repeat rewrite reset_reverse_term. refl.
 Qed.
 
+(***********************************************************************)
+(** termination *)
+
 Variables E R : rules.
 Variable hE : rules_preserv_vars E.
 Variable hR : rules_preserv_vars R.
@@ -180,5 +200,7 @@ rewrite <- red_mod_reset_eq. refl. apply is_unary_sig'.
 apply rules_preserv_vars_reverse_trs; hyp.
 apply rules_preserv_vars_reverse_trs; hyp.
 Qed.
+
+Ltac tac := rewrite WF_reverse.
 
 End S.
