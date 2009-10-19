@@ -70,6 +70,14 @@ Proof.
 induction s; auto.
 Qed.
 
+Lemma reset_term_of_string :
+  forall s, reset (term_of_string s) = term_of_string s.
+
+Proof.
+induction s. refl. unfold reset. simpl. apply args_eq.
+fold (reset (term_of_string s)). rewrite IHs. refl.
+Qed.
+
 Require Import VecUtil.
 
 Fixpoint string_of_term (t : term) : string :=
@@ -148,6 +156,13 @@ Proof.
 intros [l r] s. elim l; unfold SContext.fill; simpl.
 elim s. refl. intros. simpl. rewrite H. refl.
 intros. rewrite H. refl.
+Qed.
+
+Lemma term_of_string_app : forall s1 s2,
+  term_of_string (s1 ++ s2) = sub (sub_of_string s2) (term_of_string s1).
+
+Proof.
+induction s1. refl. intro. simpl. apply args_eq. rewrite IHs1. refl.
 Qed.
 
 (***********************************************************************)
