@@ -847,6 +847,14 @@ End map.
 
 Implicit Arguments in_map_elim [A B f x l].
 
+Lemma map_eq_id : forall A (f:A->A) l,
+  (forall x, In x l -> f x = x) -> map f l = l.
+
+Proof.
+induction l; simpl; intros. refl. apply cons_eq. ded (H a). intuition.
+apply IHl. intro. ded (H x). intuition.
+Qed.
+
 (***********************************************************************)
 (** flat_map *)
 
