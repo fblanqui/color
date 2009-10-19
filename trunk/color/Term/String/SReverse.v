@@ -63,4 +63,24 @@ ded (H2 (rev' y)). rewrite rev'_rev' in H4. apply H4.
 ded (red_mod_rev H3). rewrite rev'_rev' in H5. exact H5.
 Qed.
 
+Lemma reverse_reverse : forall a, reverse (reverse a) = a.
+
+Proof.
+intros [l r]. unfold reverse. repeat rewrite rev'_rev'. refl.
+Qed.
+
+Lemma reverses_reverses : forall R, reverses (reverses R) = R.
+
+Proof.
+intro. rewrite map_map. apply map_eq_id. intros. apply reverse_reverse.
+Qed.
+
+Lemma WF_reverse_eq : forall E R,
+  WF (red_mod (reverses E) (reverses R)) <-> WF (red_mod E R).
+
+Proof.
+split; intro. apply WF_reverse. hyp. apply WF_reverse.
+repeat rewrite reverses_reverses. hyp.
+Qed.
+
 End S.
