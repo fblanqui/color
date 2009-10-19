@@ -601,14 +601,21 @@ End rewriting.
 (***********************************************************************)
 (** preservation of variables under reduction *)
 
+Definition rules_preserv_vars := fun R : rules =>
+  forall l r, In (mkRule l r) R -> vars r [= vars l.
+
+Lemma rules_preserv_vars_cons : forall a R, rules_preserv_vars (a :: R)
+  <-> vars (rhs a) [= vars (lhs a) /\ rules_preserv_vars R.
+
+Proof.
+unfold rules_preserv_vars. intuition. apply H. left. destruct a. refl.
+simpl in H. destruct H. subst. hyp. apply H1. hyp.
+Qed.
+
 Section vars.
 
 Variable R : rules.
-
-Definition rules_preserv_vars :=
-  forall l r, In (mkRule l r) R -> vars r [= vars l.
-
-Variable hyp : rules_preserv_vars.
+Variable hyp : rules_preserv_vars R.
 
 Lemma red_preserv_vars : preserv_vars (red R).
 
