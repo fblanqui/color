@@ -17,7 +17,7 @@ Require Import ListUtil.
 Require Import RelUtil.
 Require Import AGraph.
 Require Import LogicUtil.
-Require Import ARename.
+Require Import AShift.
 Require Import ACalls.
 Require Import BoolUtil.
 Require Import Compare_dec.

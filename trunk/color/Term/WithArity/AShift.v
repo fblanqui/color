@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2007-01-22
 
-rule renaming
+term variables shifting
 *)
 
 Set Implicit Arguments.

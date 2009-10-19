@@ -17,7 +17,7 @@ Require Import RelUtil.
 Require Import RelSub.
 Require Export ADP.
 Require Import SN.
-Require Import ARename.
+Require Import AShift.
 Require Import ADPGraph.
 
 Section S.

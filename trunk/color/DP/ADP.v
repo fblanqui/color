@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Require Import LogicUtil.
 Require Import ATrs.
 Require Import ACalls.
-Require Import ARename.
+Require Import AShift.
 Require Import ACap.
 Require Import ASN.
 Require Import ListUtil.

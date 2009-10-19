@@ -20,7 +20,7 @@ Require Import RelUtil.
 Require Import AGraph.
 Require Import LogicUtil.
 Require Import BoolUtil.
-Require Import ARename.
+Require Import AShift.
 Require Import EqUtil.
 
 (***********************************************************************)

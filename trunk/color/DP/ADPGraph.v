@@ -45,7 +45,7 @@ Qed.
 (***********************************************************************)
 (** dependancy pairs graph *)
 
-Require Import ARename.
+Require Import AShift.
 Require Import ASubstitution.
 
 Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
