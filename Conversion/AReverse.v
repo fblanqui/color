@@ -31,7 +31,11 @@ Variable is_unary_sig : is_unary Sig.
 Notation term := (term Sig).
 Notation rule := (rule Sig). Notation rules := (list rule).
 
-Notation SSig := (SSig_of_ASig Sig). Notation Sig' := (ASig_of_SSig SSig).
+Notation SSig := (SSig_of_ASig Sig).
+
+Definition rev_Sig := ASig_of_SSig SSig.
+
+Notation Sig' := rev_Sig.
 
 (***********************************************************************)
 (** signature isomorphism between Sig and Sig' *)
@@ -184,23 +188,48 @@ Qed.
 (***********************************************************************)
 (** termination *)
 
-Variables E R : rules.
-Variable hE : rules_preserv_vars E.
+Variables R : rules.
 Variable hR : rules_preserv_vars R.
 
-Lemma WF_reverse :
+Section red_mod.
+
+Variables E : rules.
+Variable hE : rules_preserv_vars E.
+
+Lemma WF_red_mod_rev_eq :
   WF (red_mod (reverse_trs E) (reverse_trs R)) <-> WF (red_mod E R).
 
 Proof.
 intros. symmetry. rewrite red_mod_reset_eq; try hyp.
 rewrite String_of_ATerm.WF_conv; try apply rules_preserv_vars_reset; try hyp.
-rewrite <- WF_reverse_eq. rewrite ATerm_of_String.WF_conv; try hyp.
+rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_conv; try hyp.
 repeat rewrite trs_of_srs_reverse_trs. repeat rewrite reverse_trs_reset_rules.
 rewrite <- red_mod_reset_eq. refl. apply is_unary_sig'.
 apply rules_preserv_vars_reverse_trs; hyp.
 apply rules_preserv_vars_reverse_trs; hyp.
 Qed.
 
-Ltac tac := rewrite WF_reverse.
+End red_mod.
+
+Lemma WF_red_rev_eq : WF (red (reverse_trs R)) <-> WF (red R).
+
+Proof.
+repeat rewrite <- red_mod_empty.
+assert (nil = reverse_trs nil). refl. rewrite H. apply WF_red_mod_rev_eq.
+unfold rules_preserv_vars. simpl. tauto.
+Qed.
 
 End S.
+
+Require Import AVariables.
+
+Ltac rev_tac_cond Fs_ok :=
+  match goal with
+    | |- is_unary _ => is_unary Fs_ok
+    | |- rules_preserv_vars _ => rules_preserv_vars
+    | |- WF _ => idtac
+  end.
+
+Ltac rev_tac Fs_ok :=
+  (rewrite <- WF_red_rev_eq || rewrite <- WF_red_mod_rev_eq);
+  rev_tac_cond Fs_ok.
