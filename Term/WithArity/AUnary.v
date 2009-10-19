@@ -536,6 +536,12 @@ Definition reset_rule (a : rule) := mkRule (reset (lhs a)) (reset (rhs a)).
 
 Definition reset_rules := map reset_rule.
 
+Lemma reset_fun1 : forall f t, reset (Fun1 f t) = Fun1 f (reset t).
+
+Proof.
+intros. unfold reset. rewrite var_fun1. rewrite sub_fun1. refl.
+Qed.
+
 Lemma var_reset : forall t, var (reset t) = 0.
 
 Proof.
