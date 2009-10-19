@@ -1,5 +1,6 @@
 09-10-19: [Blanqui]
-- Term/WithArity/AReverse: reversal of TRSs with unary symbols only
+- Conversion/String_of_ATerm: convert a unary TRS into an SRS
+- Term/WithArity/AReverse: reversal of unary TRSs
 
 09-07-08: [Blanqui]
 - SemLab/AFlatCont: flat context closure
