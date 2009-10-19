@@ -44,9 +44,24 @@ Variable is_unary_sig : is_unary.
 Ltac arity := arity1 is_unary_sig.
 
 (***********************************************************************)
+(** boolean function checking is_unary *)
+
+Definition bis_unary Fs := forallb (fun f : Sig => beq_nat 1 (arity f)) Fs.
+
+Require Import ListForall.
+
+Lemma bis_unary_ok : forall (Fs : list Sig) (Fs_ok : forall f, In f Fs),
+  bis_unary Fs = true <-> is_unary.
+
+Proof.
+intros. apply forallb_ok_fintype. intro. rewrite beq_nat_ok. refl. hyp.
+Qed.  
+
+(***********************************************************************)
 (** unary function application *)
 
-Definition Fun1 f (t : term) := @Fun Sig f (Vcast (Vcons t Vnil) (is_unary_sig f)).
+Definition Fun1 f (t : term) :=
+  @Fun Sig f (Vcast (Vcons t Vnil) (is_unary_sig f)).
 
 Lemma sub_fun1 : forall s f u, sub s (Fun1 f u) = Fun1 f (sub s u).
 
@@ -609,6 +624,37 @@ Proof.
 split; intros t u; rewrite <- red_reset; auto.
 Qed.
 
+Lemma hd_red_reset : forall t u, hd_red R t u <-> hd_red (reset_rules R) t u.
+
+Proof.
+split; intro.
+(* -> *)
+redtac. subst. ded (rules_preserv_vars_var hR lr).
+case (In_dec eq_nat_dec 0 (vars l)); intro.
+(* In 0 (vars l) *)
+rewrite vars_var in i. simpl in i. intuition.
+apply hd_red_rule. assert (mkRule l r = reset_rule (mkRule l r)).
+unfold reset_rule. simpl. unfold reset. rewrite H. repeat rewrite H0.
+repeat rewrite swap_id. refl. rewrite H1. apply in_map. hyp.
+(* ~In 0 (vars l) *)
+rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
+rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
+Focus 2. rewrite vars_var. rewrite vars_var in n. rewrite H. hyp.
+rewrite H at -2. apply hd_red_rule.
+change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
+(* <- *)
+redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
+destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
+inversion H0. unfold reset. repeat rewrite sub_sub.
+ded (rules_preserv_vars_var hR H). rewrite H1. apply hd_red_rule. hyp.
+Qed.
+
+Lemma hd_red_reset_eq : hd_red R == hd_red (reset_rules R).
+
+Proof.
+split; intros t u; rewrite <- hd_red_reset; auto.
+Qed.
+
 End red.
 
 Variable E R : rules.
@@ -621,6 +667,14 @@ Proof.
 unfold red_mod. repeat rewrite <- red_reset_eq; try hyp. refl.
 Qed.
 
+Lemma hd_red_mod_reset_eq :
+  hd_red_mod E R == hd_red_mod (reset_rules E) (reset_rules R).
+
+Proof.
+unfold hd_red_mod. rewrite <- hd_red_reset_eq; try hyp.
+rewrite <- red_reset_eq; try hyp. refl.
+Qed.
+
 Lemma red_mod_reset : forall t u,
   red_mod E R t u <-> red_mod (reset_rules E) (reset_rules R) t u.
 
@@ -628,8 +682,18 @@ Proof.
 rewrite <- rel_eq. apply red_mod_reset_eq.
 Qed.
 
+Lemma hd_red_mod_reset : forall t u,
+  hd_red_mod E R t u <-> hd_red_mod (reset_rules E) (reset_rules R) t u.
+
+Proof.
+rewrite <- rel_eq. apply hd_red_mod_reset_eq.
+Qed.
+
 End reset.
 
 End S.
 
 Implicit Arguments rules_preserv_vars_var [Sig R l r].
+Implicit Arguments bis_unary_ok [Sig Fs].
+
+Ltac is_unary Fs_ok := rewrite <- (bis_unary_ok Fs_ok); check_eq.
