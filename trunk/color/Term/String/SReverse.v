@@ -52,7 +52,7 @@ Qed.
 
 Require Import SN.
 
-Lemma WF_reverse : forall E R,
+Lemma WF_red_mod_rev : forall E R,
   WF (red_mod (reverses E) (reverses R)) -> WF (red_mod E R).
 
 Proof.
@@ -75,12 +75,21 @@ Proof.
 intro. rewrite map_map. apply map_eq_id. intros. apply reverse_reverse.
 Qed.
 
-Lemma WF_reverse_eq : forall E R,
+Lemma WF_red_mod_rev_eq : forall E R,
   WF (red_mod (reverses E) (reverses R)) <-> WF (red_mod E R).
 
 Proof.
-split; intro. apply WF_reverse. hyp. apply WF_reverse.
+split; intro. apply WF_red_mod_rev. hyp. apply WF_red_mod_rev.
 repeat rewrite reverses_reverses. hyp.
 Qed.
 
+Lemma WF_red_rev_eq : forall R, WF (red (reverses R)) <-> WF (red R).
+
+Proof.
+intro. repeat rewrite <- red_mod_empty.
+assert (nil = reverses nil). refl. rewrite H. apply WF_red_mod_rev_eq.
+Qed.
+
 End S.
+
+Ltac rev_tac := rewrite <- WF_red_rev_eq || rewrite <- WF_red_mod_rev_eq.
