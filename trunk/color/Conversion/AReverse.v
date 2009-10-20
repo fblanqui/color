@@ -201,8 +201,8 @@ Lemma WF_red_mod_rev_eq :
 
 Proof.
 intros. symmetry. rewrite red_mod_reset_eq; try hyp.
-rewrite String_of_ATerm.WF_conv; try apply rules_preserv_vars_reset; try hyp.
-rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_conv; try hyp.
+rewrite String_of_ATerm.WF_red_mod; try apply rules_preserv_vars_reset; try hyp.
+rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_red_mod; try hyp.
 repeat rewrite trs_of_srs_reverse_trs. repeat rewrite reverse_trs_reset_rules.
 rewrite <- red_mod_reset_eq. refl. apply is_unary_sig'.
 apply rules_preserv_vars_reverse_trs; hyp.
@@ -220,6 +220,9 @@ unfold rules_preserv_vars. simpl. tauto.
 Qed.
 
 End S.
+
+(***********************************************************************)
+(** tactics for Rainbow *)
 
 Require Import AVariables.
 
