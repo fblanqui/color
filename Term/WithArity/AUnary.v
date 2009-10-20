@@ -696,4 +696,7 @@ End S.
 Implicit Arguments rules_preserv_vars_var [Sig R l r].
 Implicit Arguments bis_unary_ok [Sig Fs].
 
+(***********************************************************************)
+(** tactics for Rainbow *)
+
 Ltac is_unary Fs_ok := rewrite <- (bis_unary_ok Fs_ok); check_eq.

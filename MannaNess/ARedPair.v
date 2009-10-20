@@ -147,6 +147,9 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
 
   End S.
 
+(***********************************************************************)
+(** tactics for Rainbow *)
+
   Ltac do_prove_termination prove_cc_succ lemma :=
     apply lemma;
       match goal with

@@ -29,7 +29,7 @@ Module PolyInt (PI : TPolyInt).
 
   Export PI.
 
-  (** Monotone algebra instantiated to polynomials *)
+  (* Monotone algebra instantiated to polynomials *)
 
   Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
@@ -134,6 +134,9 @@ Module PolyInt (PI : TPolyInt).
     End fin_Sig.
 
   End MonotoneAlgebra.
+
+(***********************************************************************)
+(** tactics for Rainbow *)
 
   (*REMOVE: to be removed (used in a previous version of Rainbow)
 
