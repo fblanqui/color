@@ -237,7 +237,11 @@ End red_of_sred.
 (***********************************************************************)
 (** reflexion of termination *)
 
-Variables E R : srules.
+Variable R : srules.
+
+Section red_mod.
+
+Variable E : srules.
 
 Lemma red_mod_of_sred_mod : forall x y, Srs.red_mod E R x y ->
   red_mod (trs_of_srs E) (trs_of_srs R) (term_of_string x) (term_of_string y).
@@ -294,12 +298,20 @@ eapply inclusion_elim with (R := red_mod0 (trs_of_srs E) (trs_of_srs R)).
 apply red_mod0_incl_red_mod. hyp.
 Qed.
 
-Lemma WF_conv :
+Lemma WF_red_mod :
   WF (Srs.red_mod E R) <-> WF (red_mod (trs_of_srs E) (trs_of_srs R)).
 
 Proof.
 split; intro. apply WF_sred_mod_of_WF_red_mod. hyp.
 apply WF_red_mod_of_WF_sred_mod. hyp.
+Qed.
+
+End red_mod.
+
+Lemma WF_red : WF (Srs.red R) <-> WF (red (trs_of_srs R)).
+
+Proof.
+rewrite <- Srs.red_mod_empty. rewrite <- red_mod_empty. apply WF_red_mod.
 Qed.
 
 End S.
@@ -312,3 +324,8 @@ Module Make (S : VSignature.SIG) <: ASignature.SIG.
   Definition Fs := S.Fs.
   Definition Fs_ok := S.Fs_ok.
 End Make.
+
+(***********************************************************************)
+(** tactics for Rainbow *)
+
+Ltac as_trs := rewrite WF_red_mod || rewrite WF_red.
