@@ -92,4 +92,7 @@ Qed.
 
 End S.
 
+(***********************************************************************)
+(** tactics for Rainbow *)
+
 Ltac rev_tac := rewrite <- WF_red_rev_eq || rewrite <- WF_red_mod_rev_eq.
