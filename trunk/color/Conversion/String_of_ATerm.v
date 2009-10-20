@@ -268,9 +268,13 @@ End sred_of_red.
 (***********************************************************************)
 (** reflexion of termination *)
 
-Variables E R : rules.
-Variable hE : rules_preserv_vars E.
+Variable R : rules.
 Variable hR : rules_preserv_vars R.
+
+Section red_mod.
+
+Variable E : rules.
+Variable hE : rules_preserv_vars E.
 
 Lemma sred_mod_of_red_mod : forall x y, red_mod E R x y -> Srs.red_mod
   (srs_of_trs E) (srs_of_trs R) (string_of_term x) (string_of_term y).
@@ -315,12 +319,21 @@ induction 1. intros. subst. apply SN_intro; intros.
 apply H1 with (term_of_string y). apply red_mod_of_sred_mod. hyp. refl.
 Qed.
 
-Lemma WF_conv :
+Lemma WF_red_mod :
   WF (red_mod E R) <-> WF (Srs.red_mod (srs_of_trs E) (srs_of_trs R)).
 
 Proof.
 split; intro. apply WF_sred_mod_of_WF_red_mod. hyp.
 apply WF_red_mod_of_WF_sred_mod. hyp.
+Qed.
+
+End red_mod.
+
+Lemma WF_red : WF (red R) <-> WF (Srs.red (srs_of_trs R)).
+
+Proof.
+rewrite <- red_mod_empty. rewrite <- Srs.red_mod_empty. apply WF_red_mod.
+unfold rules_preserv_vars. simpl. tauto.
 Qed.
 
 End S.
@@ -333,3 +346,18 @@ Module Make (S : ASignature.SIG) <: VSignature.SIG.
   Definition Fs := S.Fs.
   Definition Fs_ok := S.Fs_ok.
 End Make.
+
+(***********************************************************************)
+(** tactics for Rainbow *)
+
+Require Import AVariables.
+
+Ltac as_srs_cond Fs_ok :=
+  match goal with
+    | |- is_unary _ => is_unary Fs_ok
+    | |- rules_preserv_vars _ => rules_preserv_vars
+    | |- WF _ => idtac
+  end.
+
+Ltac as_srs Fs_ok :=
+  (rewrite WF_red_mod || rewrite WF_red); as_srs_cond Fs_ok.
