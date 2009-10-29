@@ -289,7 +289,11 @@ End proj.
 
 Variable proj : Sig -> option nat.
 
-Variable proj_ok : forall f k, proj f = Some k -> k < arity f.
+Definition good := forall f k, proj f = Some k -> k < arity f.
+
+Section pi.
+
+Variable hyp : good.
 
 Definition mk_proj (f : Sig) k := exist (fun k => k < arity f) k.
 
@@ -298,18 +302,46 @@ Implicit Arguments mk_proj [f k].
 Definition pi : forall f : Sig, option {k | k < arity f}.
 
 Proof.
-  intro f. case_eq (proj f). exact (Some (mk_proj (proj_ok H))). exact None.
+  intro f. case_eq (proj f). exact (Some (mk_proj (hyp H))). exact None.
 Defined.
+
+End pi.
+
+Require Import NatUtil.
+
+Variable Fs : list Sig.
+Variable Fs_ok : forall f : Sig, In f Fs.
+
+Definition bgood_proj f :=
+  match proj f with
+    | Some k => bgt_nat (arity f) k
+    | None => true
+  end.
+
+Lemma bgood_proj_ok : forall f, bgood_proj f = true
+  <-> forall k, proj f = Some k -> k < arity f.
+
+Proof.
+intro f. unfold bgood_proj. case_eq (proj f). rewrite bgt_nat_ok. intuition.
+inversion H1. omega. intuition. discr.
+Qed.
+
+Require Import ListForall.
+
+Definition bgood_ok : forallb bgood_proj Fs = true <-> good.
+
+Proof.
+apply forallb_ok_fintype. apply bgood_proj_ok. hyp.
+Qed.
 
 End S.
 
 Implicit Arguments pi [proj].
+Implicit Arguments good [Sig].
 
 (***********************************************************************)
 (** tactics *)
 
 Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
 
-Ltac proj_ok :=
-  intro f; case f; simpl; let k := fresh "k" in let H := fresh "H" in
-    intros k H; (discriminate || inversion H; omega).
+Ltac good Sig Fs_ok := rewrite <- (@bgood_ok Sig _ _ Fs_ok); check_eq.
