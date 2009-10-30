@@ -62,3 +62,7 @@ structures, data structures, etc.)
 definitions, lemmas, etc.
 
 - coq_contribs <directory>: run coq_stat on every coq contrib
+
+The directory Coccinelle is not part of CoLoR. It contains an
+adaptation of the Coccinelle library which is used in
+Conversion/Coccinelle.v. See Coccinelle/README for more information.
