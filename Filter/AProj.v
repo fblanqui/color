@@ -12,7 +12,7 @@ Set Implicit Arguments.
 Require Import ATrs.
 Require Import VecUtil.
 Require Import LogicUtil.
-Require Import List.
+Require Import ListUtil.
 
 Section S.
 
@@ -326,8 +326,6 @@ intro f. unfold bgood_proj. case_eq (proj f). rewrite bgt_nat_ok. intuition.
 inversion H1. omega. intuition. discr.
 Qed.
 
-Require Import ListForall.
-
 Definition bgood_ok : forallb bgood_proj Fs = true <-> good.
 
 Proof.
@@ -344,4 +342,5 @@ Implicit Arguments good [Sig].
 
 Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
 
-Ltac good Sig Fs_ok := rewrite <- (@bgood_ok Sig _ _ Fs_ok); check_eq.
+Ltac good Sig Fs_ok := rewrite <- (@bgood_ok Sig _ _ Fs_ok);
+  (check_eq || fail "bad projection").

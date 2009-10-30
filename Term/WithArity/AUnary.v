@@ -12,7 +12,7 @@ Set Implicit Arguments.
 Require Import ATrs.
 Require Import VecUtil.
 Require Import LogicUtil.
-Require Import List.
+Require Import ListUtil.
 Require Import NatUtil.
 
 (***********************************************************************)
@@ -47,8 +47,6 @@ Ltac arity := arity1 is_unary_sig.
 (** boolean function checking is_unary *)
 
 Definition bis_unary Fs := forallb (fun f : Sig => beq_nat 1 (arity f)) Fs.
-
-Require Import ListForall.
 
 Lemma bis_unary_ok : forall (Fs : list Sig) (Fs_ok : forall f, In f Fs),
   bis_unary Fs = true <-> is_unary.
@@ -540,8 +538,6 @@ End red_mod0.
 
 (***********************************************************************)
 (** equivalence with rewriting on rules with at most 0 as variable *)
-
-Require Import ListUtil.
 
 Section reset.
 

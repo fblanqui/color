@@ -76,16 +76,16 @@ Lemma forallb_imp_lforall : forall f l,
   (forall x, f x = true -> P x) -> forallb f l = true -> lforall l.
 
 Proof with auto.
-  induction l; simpl; intros...
-  split.
-  apply H. destruct (f a)...
-  destruct (f a)... discriminate.
+induction l; simpl; intros...
+split.
+apply H. destruct (f a)...
+destruct (f a)... discriminate.
 Qed.
 
 Require Import BoolUtil.
 Require Setoid.
 
-Lemma forallb_ok : forall f, (forall x, f x = true <-> P x) ->
+Lemma forallb_lforall : forall f, (forall x, f x = true <-> P x) ->
   forall l, forallb f l = true <-> lforall l.
 
 Proof.
@@ -93,29 +93,18 @@ intros f fok. induction l; simpl. tauto.
 rewrite andb_eq. rewrite fok. intuition.
 Qed.
 
-Lemma forallb_ok_fintype : forall f (f_ok : forall x, f x = true <-> P x)
-  As (As_ok : forall x, In x As), forallb f As = true <-> (forall x, P x).
-
-  Proof.
-    intros f f_ok As As_ok. split; intro H.
-    (* -> *)
-    intro x. rewrite <- f_ok. rewrite forallb_forall in H. apply H. apply As_ok.
-    (* <- *)
-    rewrite forallb_forall. intros x hx. rewrite f_ok. apply H.
-  Qed.
-
 Variable P_dec : forall x, {P x}+{~P x}.
 
 Lemma lforall_dec : forall l, {lforall l} + {~lforall l}.
 
 Proof.
-  induction l.
-  left. simpl. trivial.
-  simpl. destruct (P_dec a). 
-  destruct IHl.
-  left; auto.
-  right; intuition.
-  right; intuition.
+induction l.
+left. simpl. trivial.
+simpl. destruct (P_dec a). 
+destruct IHl.
+left; auto.
+right; intuition.
+right; intuition.
 Defined.
 
 End S.
