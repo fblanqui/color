@@ -1,0 +1,7 @@
+This is Coccinelle-v8.2-bool obtained from
+http://a3pat.ensiie.fr/pub/coccinelle-8.2.tar.gz on 26 October 2009.
+The files have been slightly modified by:
+- removing all "Add LoadPath" instructions,
+- defining every thing in Type instead of Set,
+- removing the directories examples and ordinals,
+- adapting a few proof scripts.
