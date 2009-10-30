@@ -7,7 +7,7 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean clean-all default config dist doc install-dist install-doc tags all
+.PHONY: clean clean-all default config create_Makefile.coq create_Makefile.all dist doc install-dist install-doc tags all
 
 COQC := $(COQBIN)coqc
 
@@ -24,13 +24,13 @@ default: Makefile.coq
 all: Makefile.all
 	time $(MAKEALL) OTHERFLAGS="-dont-load-proofs"
 
-config: Makefile.coq Makefile.all
+config: create_Makefile.coq create_Makefile.all
 
-Makefile.coq:
+create_Makefile.coq Makefile.coq:
 	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
 	$(MAKECOQ) depend
 
-Makefile.all:
+create_Makefile.all Makefile.all:
 	coq_makefile -R . CoLoR $(VFILES) $(PC_VFILE) > Makefile.all
 	$(MAKEALL) depend
 
