@@ -47,7 +47,7 @@ Definition bcoef_pos n (p : poly n) := forallb (fun x => is_not_neg (fst x)) p.
 Lemma bcoef_pos_ok : forall n (p : poly n), bcoef_pos p = true <-> coef_pos p.
 
 Proof.
-intros n p. apply forallb_ok. intros [z m]. apply is_not_neg_ok.
+intros n p. apply forallb_lforall. intros [z m]. apply is_not_neg_ok.
 Qed.
 
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
