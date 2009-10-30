@@ -1931,6 +1931,47 @@ Section lookup_dep.
 End lookup_dep.
 
 (****************************************************************************)
+(** forallb *)
+
+Require Import BoolUtil.
+
+Section forallb.
+
+Variables (A : Type) (P : A -> Prop)
+  (f : A -> bool) (f_ok : forall x, f x = true <-> P x).
+
+Lemma forallb_false : forall l,
+  forallb f l = false <-> exists x, In x l /\ f x = false.
+
+Proof.
+induction l; simpl. intuition. discr. destruct H. intuition.
+rewrite andb_eq_false. rewrite IHl. intuition.
+exists a. tauto. destruct H0. exists x. tauto.
+destruct H1. intuition. subst. tauto. right. exists x. tauto.
+Qed.
+
+Lemma forallb_neg : forall l,
+  forallb f l = false <-> exists x, In x l /\ ~P x.
+
+Proof.
+intro l. rewrite forallb_false. split; intro.
+do 2 destruct H. exists x. rewrite <- (ko (@f_ok)). tauto.
+do 2 destruct H. exists x. rewrite (ko (@f_ok)). tauto.
+Qed.
+
+Variables (As : list A) (As_ok : forall x, In x As).
+
+Lemma forallb_ok_fintype : forallb f As = true <-> forall x, P x.
+
+Proof.
+split; intro H.
+intro x. rewrite <- f_ok. rewrite forallb_forall in H. apply H. apply As_ok.
+rewrite forallb_forall. intros x hx. rewrite f_ok. apply H.
+Qed.
+
+End forallb.
+
+(****************************************************************************)
 (** hints *)
 
 Hint Resolve tail_in tail_cons_tail head_app : datatypes.
