@@ -24,6 +24,12 @@ Hint Rewrite eqb negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
 
 Ltac bool := autorewrite with bool.
 
+Lemma false_not_true : forall b, b = false <-> ~(b = true).
+
+Proof.
+destruct b; intuition.
+Qed.
+
 (***********************************************************************)
 (** implication *)
 
@@ -78,6 +84,12 @@ Proof.
 split. intro. apply andb_elim. hyp. intuition.
 Qed.
 
+Lemma andb_eq_false : forall b c, b && c = false <-> b = false \/ c = false.
+
+Proof.
+destruct b; destruct c; bool; intuition.
+Qed.
+
 (***********************************************************************)
 (** negation *)
 
@@ -109,3 +121,30 @@ Lemma orb_eq : forall b c, b || c = true <-> b = true \/ c = true.
 Proof.
 intuition. destruct b; auto.
 Qed.
+
+(***********************************************************************)
+(** decidability *)
+
+Require Setoid.
+
+Section dec.
+
+Variables (A : Type) (P : A -> Prop)
+  (f : A -> bool) (f_ok : forall x, f x = true <-> P x).
+
+Lemma ko : forall x, f x = false <-> ~P x.
+
+Proof.
+intro x. rewrite <- f_ok. destruct (f x); intuition; discr.
+Qed.
+
+Lemma dec : forall x, {P x}+{~P x}.
+
+Proof.
+intro x. case_eq (f x). left. rewrite <- f_ok. hyp. right. rewrite <- ko. hyp.
+Qed.
+
+End dec.
+
+Implicit Arguments ko [A P f].
+Implicit Arguments dec [A P f].
