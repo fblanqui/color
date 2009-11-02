@@ -44,6 +44,12 @@ Proof.
 intuition.
 Qed.
 
+Lemma notin_app : forall l m (x : A), ~In x (l ++ m) <-> ~In x l /\ ~In x m.
+
+Proof.
+intuition. rewrite in_app in H0. intuition.
+Qed.
+
 Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
 Proof.
@@ -226,6 +232,24 @@ induction l; simpl; intros. right. apply incl_nil.
 ded (incl_cons_l H). destruct H0. simpl in H0. destruct H0. auto.
 ded (IHl H1). destruct H2. auto.
 right. apply List.incl_cons; hyp.
+Qed.
+
+Variable eqA_dec : forall x y : A, {x=y}+{~x=y}.
+
+Lemma not_incl : forall l m, ~ l [= m <-> exists x:A, In x l /\ ~In x m.
+
+Proof.
+induction l; simpl; intros.
+intuition. absurd (nil[=m). hyp. apply incl_nil.
+do 2 destruct H. contradiction.
+split; intro.
+Focus 2. do 3 destruct H.
+subst. intro. apply H0. apply H. left. refl.
+intro. absurd (In x m). hyp. apply H1. right. hyp.
+case (In_dec eqA_dec a m); intro.
+assert (~l[=m). intro. apply H. unfold incl. intro b. simpl. intuition.
+subst. hyp. rewrite IHl in H0. do 2 destruct H0. exists x. tauto.
+exists a. tauto.
 Qed.
 
 End incl.
