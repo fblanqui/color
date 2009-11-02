@@ -3,6 +3,7 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Pierre-Yves Strub, 2009-04-09
+- Frederic Blanqui, 2009-11-02 (matches_dom)
 
 Matching algorithm for ATerms.
 *)
@@ -471,4 +472,42 @@ Section Matching.
         intros Habs; elim (matches_complete H Habs).
     Qed.
   End MatchCompletness.
+
+  (********************************************************************)
+  Require Import ListUtil.
+
+  Lemma matches_r_dom : forall u t m m' x, matches_r u t m = Some m' ->
+    ~In x (ATerm.vars u) -> VM.mem x m' = VM.mem x m.
+  Proof.
+    cut ((forall u t m m', matches_r u t m = Some m' ->
+    forall x, ~In x (ATerm.vars u) -> VM.mem x m' = VM.mem x m)
+    /\ (forall nu (us : terms nu) nt (ts : terms nt) m m',
+      Vfold2 m matches_r us ts = Some m' ->
+      forall x, ~In x (ATerm.vars_vec us) -> VM.mem x m' = VM.mem x m)).
+    intuition. eapply H0. apply H. hyp. apply matches_some_ind.
+    (* Var *)
+    simpl. intuition. unfold exmatch in H.
+    destruct (VMU.XMap.find (elt:=term) x θ).
+    revert H. case (beq_term t t0); intro. inversion H. refl. discr.
+    inversion H. rewrite VMF.add_b. rewrite vmap_eqb. change (x<>x0) in H1.
+    rewrite <- (beq_ko beq_nat_ok) in H1. rewrite H1. refl.
+    (* Fun *)
+    intros. apply H0. rewrite vars_fun in H2. hyp.
+    (* Vnil *)
+    refl.
+    (* Vcons *)
+    simpl. intros. rewrite notin_app in H3. destruct H3.
+    transitivity (VMU.XMap.mem (elt:=term) x Ω). apply H0. hyp. apply H2. hyp.
+  Qed.
+
+  Lemma matches_dom : forall u t s x,
+    matches u t = Some s -> ~In x (ATerm.vars u) -> s x = Var x.
+  Proof.
+    intros u t s x. unfold matches.
+    case_eq (matches_r u t (VMU.XMap.empty term)). inversion H0.
+    ded (matches_r_dom H H1). rewrite VMF.empty_a in H2.
+    unfold subst_of_matching. revert H2. rewrite VMF.mem_find_b.
+    destruct (VMU.XMap.find (elt:=term) x t0). discr. refl. discr.
+  Qed.
+
 End Matching.
