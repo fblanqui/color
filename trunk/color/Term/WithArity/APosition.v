@@ -13,7 +13,7 @@ definition of rewriting based on positions
 Set Implicit Arguments.
 
 Require Import ATrs.
-Require Import List.
+Require Import ListUtil.
 Require Import NatUtil.
 Require Import VecUtil.
 Require Import LogicUtil.
@@ -29,6 +29,7 @@ Section S.
 Variable Sig : Signature.
 
 Notation term := (term Sig). Notation context := (context Sig).
+Notation terms := (vector term).
 
 (***********************************************************************)
 (** context corresponding to a position *)
@@ -80,6 +81,17 @@ exists (Cont f (Veq_app_cons_aux3 l)
   (Vsub v (Veq_app_cons_aux1 l)) x (Vsub v (Veq_app_cons_aux2 l))).
 intuition. simpl. apply args_eq. rewrite <- H1. apply Veq_app_cons_aux.
 Defined.
+
+Lemma subterm_pos_sub : forall s u p t,
+  subterm_pos t p = Some u -> subterm_pos (sub s t) p = Some (sub s u).
+
+Proof.
+induction p; destruct t; simpl; intros.
+inversion H. simpl. destruct (s n); refl.
+inversion H. rewrite sub_fun. refl.
+discr. revert H. destruct (lt_ge_dec a (arity f)); intro.
+rewrite Vnth_map. apply IHp. hyp. discr.
+Qed.
 
 (***********************************************************************)
 (** replace subterm at some position *)
@@ -219,6 +231,29 @@ exists x3. exists x2. intuition. ded (replace_pos_elim H3). destruct X.
 destruct a. rewrite H in H2. inversion H2. subst x4. hyp.
 Qed.
 
+(***********************************************************************)
+(** position of a variables *)
+
+Lemma in_vars_subterm : forall x t, In x (vars t) ->
+  exists ps, subterm_pos t ps = Some (Var x).
+
+Proof.
+intros x t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
+  In x (vars_vec ts) -> exists i, exists h:i<n, exists ps,
+    subterm_pos (Vnth ts h) ps = Some (Var x)); clear t.
+intro y. simpl. intuition. subst. exists nil. refl.
+intros f ts IH h. rewrite vars_fun in h. destruct (IH h). do 2 destruct H.
+exists (x0::x2). simpl. case (lt_ge_dec x0 (arity f)); intro.
+rewrite (lt_unique l x1). hyp. absurd_arith.
+simpl. tauto.
+intros t n ts ht hts. simpl vars_vec. rewrite in_app. intros [h|h].
+destruct (ht h). exists 0. exists (lt_O_Sn n). exists x0. simpl. hyp.
+destruct (hts h). do 2 destruct H. exists (S x0). exists (lt_n_S x1).
+exists x2. simpl. rewrite (lt_unique (lt_S_n (lt_n_S x1)) x1). hyp.
+Qed.
+
 End S.
 
 Implicit Arguments subterm_pos_elim [Sig p t u].
+Implicit Arguments in_vars_subterm [Sig x t].
+Implicit Arguments subterm_pos_sub [Sig u p t].
