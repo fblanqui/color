@@ -119,6 +119,18 @@ Proof.
     by apply IH. by apply IHs.
 Qed.
 
+Lemma sub_single_not_var : forall x u t,
+  ~In x (vars t) -> sub (single x u) t = t.
+
+Proof.
+intros x u t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
+  ~In x (vars_vec ts) -> Vmap (sub (single x u)) ts = ts); intros.
+simpl in *. unfold single. case_beq_nat x x0. tauto. refl.
+simpl. rewrite vars_fun in H0. rewrite H. refl. hyp.
+refl. simpl. simpl in H1. rewrite notin_app in H1. destruct H1.
+rewrite H. 2: hyp. rewrite H0. 2: hyp. refl.
+Qed.
+
 (***********************************************************************)
 (** composition *)
 
