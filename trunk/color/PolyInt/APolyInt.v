@@ -4,8 +4,8 @@ See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-20
 - Frederic Blanqui, 2004-12-13
-- Adam Koprowski, 2007-04-26, added support for modular removal of rules 
-                  2008-05-27, added support for weakly monotone polynomials
+- Adam Koprowski, 2007-04-26 (modular removal of rules) 
+                  2008-05-27 (weakly monotone polynomials)
 
 proof of the termination criterion based on polynomial interpretations
 *)
@@ -14,7 +14,7 @@ Set Implicit Arguments.
 
 Require Import ATerm.
 Require Import ABterm.
-Require Import List.
+Require Import ListUtil.
 Require Import ListForall.
 Require Import VecUtil.
 Require Import PositivePolynom.
@@ -27,6 +27,7 @@ Require Import LogicUtil.
 Require Import SN.
 Require Import Polynom.
 Require Import MonotonePolynom.
+Require Import NatUtil.
 
 Section S.
 
@@ -34,36 +35,26 @@ Variable Sig : Signature.
 
 Notation bterm := (bterm Sig).
 
+Definition PolyInterpretation := forall f : Sig, poly (arity f).
+
 (***********************************************************************)
 (** polynomial associated to a bterm *)
 
-Section poly_of_bterm.
-
-Variable fpoly : forall f : Sig, poly (arity f).
-
-Fixpoint termpoly k (t : bterm k) {struct t} : poly (S k) :=
-  match t with
-    | BVar x H =>
-      ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: nil
-    | BFun f v => pcomp (fpoly f) (Vmap (@termpoly k) v)
-  end.
-
-End poly_of_bterm.
-
-(***********************************************************************)
-(** polynomial interpretation *)
-
-Definition PolyInterpretation := forall f : Sig, poly (arity f).
+Section pi.
 
 Variable PI : PolyInterpretation.
 
+Fixpoint termpoly k (t : bterm k) {struct t} : poly (S k) :=
+  match t with
+    | BVar x H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: nil
+    | BFun f v => pcomp (PI f) (Vmap (@termpoly k) v)
+  end.
+
+(***********************************************************************)
+(** monotony properties *)
+
 Definition PolyWeakMonotone := forall f : Sig, pweak_monotone (PI f).
-
-Variable PI_WM : PolyWeakMonotone.
-
 Definition PolyStrongMonotone := forall f : Sig, pstrong_monotone (PI f).
-
-Variable PI_SM : PolyStrongMonotone.
 
 Section fin_Sig.
 
@@ -83,9 +74,12 @@ End fin_Sig.
 (***********************************************************************)
 (** coefficients are positive *)
 
+Variable PI_WM : PolyWeakMonotone.
+Variable PI_SM : PolyStrongMonotone.
+
 Section coef_pos.
 
-Let P := fun (k : nat) (t : bterm k) => coef_pos (termpoly PI t).
+Let P := fun (k : nat) (t : bterm k) => coef_pos (termpoly t).
 Let Q := fun (k n : nat) (ts : vector (bterm k) n) => Vforall (@P k) ts.
 
 Lemma bterm_poly_pos : forall (k : nat) (t : bterm k), P t.
@@ -111,7 +105,7 @@ Definition Int_of_PI := mkInterpretation D0 (fun f => peval_D (PI_WM f)).
 Let I := Int_of_PI.
 
 (***********************************************************************)
-(** monotony *)
+(** interpretation monotony *)
 
 Require Import AWFMInterpretation.
 
@@ -185,8 +179,7 @@ Let Q (xint : valuation I) k n (ts : vector (bterm k) n) :=
   Vforall (@P xint k) ts.
 
 Lemma termpoly_v_eq_1 : forall x k (H : (x<=k)%nat),
-  termpoly PI (BVar H) =
-  (1%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: pzero (S k).
+  termpoly (BVar H) = (1%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: pzero (S k).
 
 Proof.
 intros. simpl. refl.
@@ -194,8 +187,7 @@ Qed.
 
 Lemma termpoly_v_eq_2 :
   forall x k (H : (x<=k)%nat) (v : vector Z (S k)),
-  peval (termpoly PI (BVar H)) v =
-  meval (mxi (gt_le_S (le_lt_n_Sm H))) v.
+  peval (termpoly (BVar H)) v = meval (mxi (gt_le_S (le_lt_n_Sm H))) v.
 
 Proof.
 intros x k H v. rewrite termpoly_v_eq_1. unfold pzero. unfold peval at 1.
@@ -253,8 +245,8 @@ Definition rulePoly_ge r :=
   let mvl := maxvar (lhs r) in
   let mvr := maxvar (rhs r) in
   let m := max mvl mvr in
-    pplus (termpoly PI (inject_term (le_max_l mvl mvr)))
-      (popp (termpoly PI (inject_term (le_max_r mvl mvr)))).
+    pplus (termpoly (inject_term (le_max_l mvl mvr)))
+      (popp (termpoly (inject_term (le_max_r mvl mvr)))).
 
 Definition rulePoly_gt r :=
   let mvl := maxvar (lhs r) in
@@ -315,6 +307,37 @@ Proof.
 intros R H. apply manna_ness with (succ := succ). apply pi_red_ord.
 apply pi_compat. exact H.
 Qed.
+
+End pi.
+
+(***********************************************************************)
+(** default polynomial interpretation *)
+
+Definition default_poly n :=
+  List.map (fun x => (1%Z, mxi (prf x))) (nats_lt n).
+
+Lemma coef_default_poly : forall n i (h : i<n),
+  coef (mxi h) (default_poly n) = 1%Z.
+
+Proof.
+(*TODO*)
+Abort.
+
+Definition default_pi (f : Sig) := default_poly (arity f).
+
+Lemma pweak_monotone_default : PolyWeakMonotone default_pi.
+
+Proof.
+intro f. unfold pweak_monotone, coef_pos, default_pi. rewrite lforall_eq.
+intros. destruct (in_map_elim H). destruct H0. subst. simpl. omega.
+Qed.
+
+Lemma pstrong_monotone_default : PolyStrongMonotone default_pi.
+
+Proof.
+intro f. unfold pstrong_monotone. split. apply pweak_monotone_default.
+intros. (*TODO*)
+Abort.
 
 End S.
 
