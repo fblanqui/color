@@ -150,23 +150,23 @@ Definition chain_min (s : ATerm.term Sig) (t : ATerm.term Sig) : Prop :=
   /\ lforall (SN (red R)) (direct_subterms s)
   /\ lforall (SN (red R)) (direct_subterms t).
 
-Lemma wf_chain_min_chain : chain_min << chain.
+Lemma chain_min_incl_chain : chain_min << chain.
 
 Proof.
-  red. intros x y cmin. elim cmin. auto.
+red. intros x y cmin. elim cmin. auto.
 Qed.
 
 Lemma gt_chain_min : forall f ts us v, terms_gt R ts us ->
   Vforall (SN (red R)) ts -> chain_min (Fun f us) v -> chain_min (Fun f ts) v.
 
 Proof.
-  intros f ts us v gt_ts_us sn_ts chain_min_fus_v.
-  unfold chain_min in chain_min_fus_v.
-  destruct chain_min_fus_v as [chain_fus_v sn].
-  destruct sn as [esn_us esn_ts].
-  unfold chain_min.
-  split. apply gt_chain with us; trivial.
-  split. simpl. apply Vforall_lforall in sn_ts. trivial. trivial.
+intros f ts us v gt_ts_us sn_ts chain_min_fus_v.
+unfold chain_min in chain_min_fus_v.
+destruct chain_min_fus_v as [chain_fus_v sn].
+destruct sn as [esn_us esn_ts].
+unfold chain_min.
+split. apply gt_chain with us; trivial.
+split. simpl. apply Vforall_lforall in sn_ts. trivial. trivial.
 Qed.
 
 (***********************************************************************)
@@ -289,7 +289,7 @@ Lemma chain_fun : forall f, defined f R = true
 Proof.
 intros f defined_f ts sn_chain_f_ts sn_ts.
 apply chain_min_fun; auto.
-apply SN_incl with chain. apply wf_chain_min_chain. hyp.
+apply SN_incl with chain. apply chain_min_incl_chain. hyp.
 Qed.
 
 Lemma WF_chain : WF chain -> WF (red R).
