@@ -7,7 +7,7 @@ MAKEFLAGS := -r -j
 
 .SUFFIXES:
 
-.PHONY: clean clean-all default config create_Makefile.coq create_Makefile.all dist doc install-dist install-doc tags all
+.PHONY: clean clean-all clean-doc default config create_Makefile.coq create_Makefile.all dist doc install-dist install-doc tags all
 
 COQC := $(COQBIN)coqc
 
@@ -35,17 +35,20 @@ create_Makefile.all Makefile.all:
 	$(MAKEALL) depend
 
 clean:
-	rm -f `find . -name \*~` doc/CoLoR.*.html doc/index.html
+	rm -f `find . -name \*~`
 	$(MAKEALL) clean
 
 clean-all: clean
 	rm -f Makefile.coq Makefile.all
 
+clean-doc:
+	rm -f doc/CoLoR.*.html doc/index.html
+
 tags:
 	coqtags `find . -name \*.v`
 
 doc:
-	coqdoc --html -g -d doc -R . CoLoR `find . -name \*.v`
+	coqdoc --html -g -d doc -R . CoLoR `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./createIndex
 
 ADR := login-linux.inria.fr:liama/www/color
