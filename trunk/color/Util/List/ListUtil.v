@@ -607,6 +607,12 @@ Section filter.
 
 Variables (A : Type) (f : A -> bool).
 
+Lemma filter_app : forall l m, filter f (l ++ m) = filter f l ++ filter f m.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. destruct (f a); refl.
+Qed.
+
 Lemma filter_incl : forall l, filter f l [= l.
 
 Proof.
