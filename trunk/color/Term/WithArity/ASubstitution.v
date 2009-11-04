@@ -464,7 +464,7 @@ apply (f_equal (Fun f)). rewrite Vmap_cast. rewrite Vmap_app. simpl Vmap.
 rewrite IHC. refl.
 Qed.
 
-Lemma subterm_sub : forall u t s,
+Lemma subterm_eq_sub : forall u t s,
   subterm_eq u t -> subterm_eq (sub s u) (sub s t).
 
 Proof.

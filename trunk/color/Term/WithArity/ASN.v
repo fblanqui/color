@@ -32,19 +32,19 @@ Notation Red := (@red Sig R). Notation SNR := (SN Red).
 (***********************************************************************)
 (** every subterm of an sn term is sn *)
 
-Lemma subterm_sn : forall t, SNR t -> forall u, subterm_eq u t -> SNR u.
+Lemma subterm_eq_sn : forall t, SNR t -> forall u, subterm_eq u t -> SNR u.
 
 Proof.
 intros t H. elim H. clear t H. intros t H IH u H0. apply SN_intro.
 intros u' H1. ded (red_subterm H1 H0). destruct H2 as [t']. destruct H2.
-eapply IH. apply H2. assumption.
+eapply IH. apply H2. hyp.
 Qed.
 
 Lemma sub_sn : forall l x s, In x (vars l) -> SNR (sub s l) -> SNR (s x).
 
 Proof.
-intros. change (SNR (sub s (Var x))). eapply subterm_sn. apply H0.
-apply subterm_sub. apply in_vars_subterm_eq. assumption.
+intros. change (SNR (sub s (Var x))). eapply subterm_eq_sn. apply H0.
+apply subterm_eq_sub. apply in_vars_subterm_eq. hyp.
 Qed.
 
 Lemma sub_fun_sn : forall f ts x s,
@@ -53,9 +53,9 @@ Lemma sub_fun_sn : forall f ts x s,
 Proof.
 intros. change (SNR (sub s (Var x))). rewrite vars_fun in H.
 ded (in_vars_vec_elim H). destruct H1 as [t]. destruct H1.
-ded (in_vars_subterm_eq H2). apply subterm_sn with (t := sub s t).
+ded (in_vars_subterm_eq H2). apply subterm_eq_sn with (t := sub s t).
 eapply Vforall_in with (n := arity f). apply H0. apply Vin_map_intro. hyp.
-apply subterm_sub. assumption.
+apply subterm_eq_sub. hyp.
 Qed.
 
 (***********************************************************************)
@@ -83,7 +83,7 @@ Lemma sn_args_sn_fun : forall f, defined f R = false ->
 
 Proof.
 intros. set (gt := (@Vgt_prod term Red (arity f))).
-assert (SN gt ts). unfold gt. apply Vforall_SN_gt_prod. assumption.
+assert (SN gt ts). unfold gt. apply Vforall_SN_gt_prod. hyp.
 elim H1. intros.
 apply SN_intro. change (forall y, Red (Fun f x) y -> SNR y). intros.
 redtac. subst y. destruct c; simpl in xl; simpl.
@@ -97,7 +97,7 @@ subst l. is_var_lhs.
 (* C <> Hole *)
 Funeqtac. subst x. apply H3. unfold gt. eapply Vgt_prod_cast.
 apply Vgt_prod_app.
-apply Vgt_prod_cons. left. split. 2: reflexivity. apply red_rule. assumption.
+apply Vgt_prod_cons. left. split. 2: refl. apply red_rule. hyp.
 Qed.
 
 (***********************************************************************)
@@ -111,18 +111,18 @@ intro. pattern t. apply term_ind_forall; clear t; intros.
 ded (H0 v). apply H1. simpl. auto.
 rewrite sub_fun. pattern (defined f R). apply bool_eq_ind; intro.
 simpl in H0. rewrite H2 in H0. discriminate.
-apply sn_args_sn_fun. assumption. apply Vforall_map_intro. apply Vforall_intro.
+apply sn_args_sn_fun. hyp. apply Vforall_map_intro. apply Vforall_intro.
 intros. ded (Vforall_in H H3). apply H4.
 simpl in H0. rewrite H2 in H0. change (vcalls R v = nil) in H0.
-eapply in_vcalls_nil with (n := arity f). apply H3. assumption.
-intros. apply H1. rewrite vars_fun. eapply vars_vec_in. apply H5. assumption.
+eapply in_vcalls_nil with (n := arity f). apply H3. hyp.
+intros. apply H1. rewrite vars_fun. eapply vars_vec_in. apply H5. hyp.
 Qed.
 
 (***********************************************************************)
 (** given a substitution [s] that is sn on [vars r],
-if [sub s (Fun g vs)] is sn whenever [Fun g vs] is a call in [r]
-such that [Vmap (sub s) vs] are sn,
-then [sub s (Fun g vs)] is sn whenever [Gun g vs] is a call in [r] *)
+if [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r]
+such that [Vmap (sub s) vs] are SN,
+then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
 
 Require Import ACap.
 
@@ -134,7 +134,7 @@ Lemma calls_sn_args : forall r s, (forall x, In x (vars r) -> SNR (s x))
 Proof.
 intros r s H H0. cut (forall a g vs, a = Fun g vs
   -> In a (calls R r) -> Vforall SNR (Vmap (sub s) vs)).
-intros. apply H1 with (a := Fun g vs). refl. assumption.
+intros. apply H1 with (a := Fun g vs). refl. hyp.
 intro a. pattern a. apply subterm_ind. clear a. intros. subst t.
 apply Vforall_intro. intros w H2.
 ded (Vin_map H2). destruct H4 as [v]. destruct H4. subst w.
@@ -143,26 +143,26 @@ apply (alien_sub_cap R).
 rewrite H5. rewrite sub_sub. apply no_call_sub_sn. apply calls_cap. intros.
 (* begin assert *)
 assert (subterm v r). eapply subterm_trans_eq2 with (u := Fun g vs).
-apply subterm_fun. assumption. eapply in_calls_subterm. apply H3.
+apply subterm_fun. hyp. eapply in_calls_subterm. apply H3.
 (* end assert *)
 unfold sub_comp. unfold alien_sub. case (le_lt_dec x (maxvar v)); intro.
 (* x <= maxvar v *)
-rewrite fsub_inf. 2: assumption. simpl. apply H.
+rewrite fsub_inf. 2: hyp. simpl. apply H.
 eapply subterm_eq_vars. apply subterm_strict. apply H7.
-apply (vars_cap_inf R). assumption. assumption.
+apply (vars_cap_inf R). hyp. hyp.
 (* x > maxvar v *)
 ded (vars_cap R H6). rewrite (fsub_nth (aliens (capa R v)) l H8).
 set (a := Vnth (aliens (capa R v)) (lt_pm (k:=projS1 (capa R v)) l H8)).
 assert (Vin a (aliens (capa R v))). unfold a. apply Vnth_in.
-assert (subterm_eq a v). apply (in_aliens_subterm R). assumption.
-assert (In a (calls R v)). apply aliens_incl_calls. assumption.
+assert (subterm_eq a v). apply (in_aliens_subterm R). hyp.
+assert (In a (calls R v)). apply aliens_incl_calls. hyp.
 ded (in_calls H11). destruct H12 as [f]. destruct H12 as [us]. destruct H12.
 rewrite H12. rewrite H12 in H10. rewrite H12 in H11.
-assert (In (Fun f us) (calls R r)). apply subterm_in_calls. assumption.
-apply subterm_strict. eapply subterm_trans_eq1. apply H10. assumption.
-apply H0. assumption. apply H1 with (u := Fun f us).
+assert (In (Fun f us) (calls R r)). apply subterm_in_calls. hyp.
+apply subterm_strict. eapply subterm_trans_eq1. apply H10. hyp.
+apply H0. hyp. apply H1 with (u := Fun f us).
 eapply subterm_trans_eq1. eapply in_calls_subterm. apply H11.
-apply subterm_fun. assumption. refl. assumption.
+apply subterm_fun. hyp. refl. hyp.
 Qed.
 
 Lemma calls_sn : forall r s, (forall x, In x (vars r) -> SNR (s x))
@@ -172,8 +172,8 @@ Lemma calls_sn : forall r s, (forall x, In x (vars r) -> SNR (s x))
 
 Proof.
 intros. ded (in_calls H1). destruct H2 as [g]. destruct H2 as [vs].
-destruct H2. subst a. apply H0. assumption. eapply calls_sn_args. apply H.
-apply H0. assumption.
+destruct H2. subst a. apply H0. hyp. eapply calls_sn_args. apply H.
+apply H0. hyp.
 Qed.
 
 End S.
