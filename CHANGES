@@ -1,3 +1,9 @@
+09-11-04: [Blanqui]
+- DP/ADP: use Dershowitz improvement for defining DPs
+- Coccinelle: Coccinelle library v8.2-bool (09-10-26)
+- Conversion/Coccinelle: convert CoLoR ATerm's into Coccinelle terms
+  + definition of RPO on CoLoR ATerm's using Coccinelle RPO
+
 09-10-19: [Blanqui]
 - Conversion/String_of_ATerm: convert a unary TRS into an SRS
 - Term/WithArity/AReverse: reversal of unary TRSs
