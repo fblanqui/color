@@ -7,13 +7,11 @@
 
 prog=`basename $0`
 
-usage () {
-  echo "usage: $prog [-h]"
-}
+usage () { echo "usage: $prog [-h]"; }
 
 help () {
   cat <<EOF
-Creates a tar.gz from the last CVS version of CoLoR.
+Creates a tar.gz file of CoLoR sources from the SVN archive.
 
 Options:
 -h Provide this help and exit
@@ -24,20 +22,14 @@ case "$1" in
 -h) usage; echo; help; exit 0;;
 esac
 
-if test $# -ne 0
-then
-  usage
-  exit 1
-fi
-
-set -x
+if test $# -ne 0; then usage; exit 1; fi
 
 cwd=`pwd`
 
 cd /tmp
 
 rm -rf color
-cvs -d :ext:blanqui@scm.gforge.inria.fr:/cvsroot/color co color
+svn co svn://scm.gforge.inria.fr/svn/color/trunk/color
 
 date=`date +%y%m%d`
 
@@ -45,7 +37,7 @@ dir=CoLoR_$date
 rm -rf $dir
 mv color $dir
 
-rm -rf `find $dir -name CVS -o -name .cvsignore`
+rm -rf `find $dir -name .svn`
 
 echo "This is the CoLoR library on `date`." > newREADME
 echo "Check http://color.inria.fr/ for more recent versions." >> newREADME
