@@ -2,7 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Frederic Blanqui, 2004-12-22
+- Frederic Blanqui, 2004-12-22, 2009-11-04 (Dershowitz' improvement)
 - Joerg Endrullis, 2008-06-19 (extension to minimal chains)
 
 dependancy pairs
@@ -37,26 +37,32 @@ Variable R : rules.
 (***********************************************************************)
 (** definition of dependancy pairs *)
 
+Definition nbsubterm_of (t u : term) := negb (bsubterm u t).
+
 Fixpoint mkdp (S : rules) : rules :=
   match S with
     | nil => nil
-    | a :: S' => map (mkRule (lhs a)) (calls R (rhs a)) ++ mkdp S'
+    | a :: S' => let (l,r) := a in
+      map (mkRule l) (filter (nbsubterm_of l) (calls R r)) ++ mkdp S'
   end.
 
 Lemma mkdp_app : forall l1 l2, mkdp (l1 ++ l2) = mkdp l1 ++ mkdp l2.
 
 Proof.
-induction l1; simpl; intros. refl. rewrite app_ass. rewrite IHl1. refl.
+induction l1; simpl; intros. refl. destruct a as [l r]. rewrite app_ass.
+rewrite IHl1. refl.
 Qed.
 
-Lemma mkdp_elim : forall l t S,
-  In (mkRule l t) (mkdp S) -> exists r, In (mkRule l r) S /\ In t (calls R r).
+Lemma mkdp_elim : forall l t S, In (mkRule l t) (mkdp S) -> exists r,
+  In (mkRule l r) S /\ In t (calls R r) /\ nbsubterm_of l t = true.
 
 Proof.
-induction S; simpl; intros. contradiction. destruct a. simpl in H.
-ded (in_app_or H). destruct H0. ded (in_map_elim H0). do 2 destruct H1.
-injection H2. intros. subst x. subst lhs. exists rhs. intuition.
-ded (IHS H0). destruct H1. exists x. intuition.
+induction S; simpl; intros. contradiction. destruct a.
+rewrite in_app in H. destruct H. destruct (in_map_elim H). destruct H0.
+injection H1. intros. subst x. subst lhs. clear H1.
+rewrite filter_In in H0. destruct H0.
+exists rhs. intuition. destruct (IHS H). destruct H0. destruct H1.
+exists x. intuition.
 Qed.
 
 Implicit Arguments mkdp_elim [l t S].
@@ -66,35 +72,31 @@ Definition dp := mkdp R.
 (***********************************************************************)
 (** basic properties *)
 
-Lemma dp_intro : forall l r t,
-  In (mkRule l r) R -> In t (calls R r) -> In (mkRule l t) dp.
+Lemma dp_intro : forall l r t, In (mkRule l r) R -> In t (calls R r) ->
+  nbsubterm_of l t = true -> In (mkRule l t) dp.
 
 Proof.
-intros. ded (in_elim H). do 2 destruct H1. ded (in_elim H0).
-do 2 destruct H2.
-unfold dp. 
-intros; 
- rewrite H1. simpl. rewrite mkdp_app. simpl. rewrite H2.
-rewrite map_app.
-simpl. apply in_appr. apply in_appl. apply in_appr. apply in_eq.
+intros. ded (in_elim H). do 2 destruct H2. ded (in_elim H0). do 2 destruct H3.
+unfold dp. rewrite H2. rewrite mkdp_app. simpl. rewrite H3.
+rewrite filter_app. rewrite map_app. simpl. rewrite H1.
+apply in_appr. apply in_appl. apply in_appr. apply in_eq.
 Qed.
 
-Lemma dp_elim : forall l t,
-  In (mkRule l t) dp -> exists r, In (mkRule l r) R /\ In t (calls R r).
+Lemma dp_elim : forall l t, In (mkRule l t) dp -> exists r,
+  In (mkRule l r) R /\ In t (calls R r) /\ nbsubterm_of l t = true.
 
 Proof.
-intros. unfold dp in H. apply (mkdp_elim).
-auto.
+intros. apply mkdp_elim. hyp.
 Qed.
 
 Implicit Arguments dp_elim [l t].
 
-Lemma in_calls_hd_red_dp : forall l r t s,
-  In (mkRule l r) R -> In t (calls R r) -> hd_red dp (sub s l) (sub s t).
+Lemma in_calls_hd_red_dp : forall l r t s, In (mkRule l r) R ->
+  In t (calls R r) -> nbsubterm_of l t = true -> hd_red dp (sub s l) (sub s t).
 
 Proof.
-intros. unfold hd_red. exists l. exists t. exists s. split.
-eapply dp_intro. apply H. hyp. auto.
+intros. exists l. exists t. exists s. intuition.
+eapply dp_intro. apply H. hyp. hyp.
 Qed.
 
 Lemma lhs_dp : incl (map lhs dp) (map lhs R).
@@ -125,12 +127,12 @@ Qed.*)
 
 Definition chain := int_red R # @ hd_red dp.
 
-Lemma in_calls_chain : forall l r t s,
-  In (mkRule l r) R -> In t (calls R r) -> chain (sub s l) (sub s t).
+Lemma in_calls_chain : forall l r t s, In (mkRule l r) R ->
+  In t (calls R r) -> nbsubterm_of l t = true -> chain (sub s l) (sub s t).
 
 Proof.
 intros. unfold chain, compose. exists (sub s l). split. apply rt_refl.
-eapply in_calls_hd_red_dp. apply H. hyp.
+eapply in_calls_hd_red_dp. apply H. hyp. hyp.
 Qed.
 
 Lemma gt_chain : forall f ts us v,
@@ -181,14 +183,15 @@ Implicit Arguments hyp2 [l r].
 (***********************************************************************)
 (** dp preserves variables *)
 
-Lemma dp_elim_vars : forall l t, In (mkRule l t) dp ->
-  exists r, In (mkRule l r) R /\ In t (calls R r) /\ incl (vars t) (vars l).
+Lemma dp_elim_vars : forall l t, In (mkRule l t) dp -> exists r,
+  In (mkRule l r) R /\ In t (calls R r) /\ nbsubterm_of l t = true
+  /\ incl (vars t) (vars l).
 
 Proof.
-intros. ded (dp_elim H). do 2 destruct H0. exists x. intuition.
+intros. destruct (dp_elim H). decomp H0. exists x. intuition.
 apply incl_tran with (m := vars x). unfold incl. intros.
-eapply subterm_eq_vars. eapply in_calls_subterm. apply H1. exact H2.
-apply hyp2. exact H0.
+eapply subterm_eq_vars. eapply in_calls_subterm. apply H3. hyp.
+apply hyp2. hyp.
 Qed.
 
 Implicit Arguments dp_elim_vars [l t].
@@ -196,8 +199,7 @@ Implicit Arguments dp_elim_vars [l t].
 Lemma dp_preserv_vars : rules_preserv_vars dp.
 
 Proof.
-unfold rules_preserv_vars. intros. ded (dp_elim_vars H). destruct H0.
-intuition.
+unfold rules_preserv_vars. intros. destruct (dp_elim_vars H). intuition.
 Qed.
 
 Lemma dp_preserv_pw_disjoint_vars :
@@ -205,11 +207,13 @@ Lemma dp_preserv_pw_disjoint_vars :
 
 Proof.
 unfold pw_disjoint_vars, disjoint_vars. intros. eapply H.
-apply lhs_dp. exact H0. apply lhs_dp. exact H1. apply H2. exact H3.
+apply lhs_dp. hyp. apply lhs_dp. hyp. apply H2. hyp.
 Qed.
 
 (***********************************************************************)
 (** fundamental dp theorem *)
+
+Require Import BoolUtil.
 
 Notation capa := (capa R).
 Notation cap := (cap R).
@@ -224,7 +228,7 @@ Proof.
 cut (forall t, SN chain_min t -> forall f, defined f R = true
   -> forall ts, t = Fun f ts -> Vforall SNR ts -> SNR t).
 intros. apply H with (t := Fun f ts) (f := f) (ts := ts); (hyp || refl).
-(* induction on t with chain as well-founded ordering *)
+(* induction on t with chain_min as well-founded ordering *)
 intros t H. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
 assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
 apply Vforall_SN_gt_prod. hyp.
@@ -239,14 +243,13 @@ trivial. apply H2. apply H3. apply H4. hyp. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
 apply SN_intro. intros u H2. redtac. destruct c; simpl in xl, yr.
 (* c = Hole *)
-ded (fun_eq_sub xl). destruct H2.
+destruct (fun_eq_sub xl).
 (* lhs = Fun f us *)
 destruct e as [ls]. rewrite H2 in xl. rewrite sub_fun in xl. Funeqtac.
-(* begin assert: the substitution s is SN *)
+(* the substitution s is SN *)
 assert (Hsnsx : forall x, In x (vars l) -> SNR (s x)). intros.
 eapply sub_fun_sn with (f := f). subst l. apply H4.
 rewrite H3 in Hsnts. exact Hsnts.
-(* end assert *)
 (* we decompose r into its caps and its aliens *)
 subst u. assert (r = sub (alien_sub r) (cap r)). apply sym_eq.
 apply (alien_sub_cap R). rewrite H4. rewrite sub_sub.
@@ -267,13 +270,20 @@ ded (in_calls H8). destruct H9 as [g]. destruct H9 as [vs]. destruct H9.
 eapply calls_sn with (r := r). hyp.
 intros. apply Hsnsx. apply (hyp2 lr _ H11).
 intros h ws H13 H14.
+case_eq (nbsubterm_of l (Fun h ws)). rename H11 into z.
 apply IH2 with (y := Fun h (Vmap (sub s) ws)) (f := h) (ts := Vmap (sub s) ws).
 unfold chain_min. split. 
 rewrite H7. rewrite <- sub_fun. eapply in_calls_chain. 
-apply lr. hyp.
+apply lr. hyp. hyp.
 split. simpl. apply Vforall_lforall. trivial. 
 simpl. apply Vforall_lforall. trivial.
 eapply in_calls_defined. apply H13. refl. hyp.
+(* Dershowitz' improvement *)
+revert H11. unfold nbsubterm_of. rewrite negb_lr. simpl negb.
+rewrite bsubterm_ok. intro H11.
+rewrite H2 in H11. destruct (subterm_fun_elim H11). destruct H12.
+apply subterm_eq_sn with (t := sub s x0). eapply Vforall_in. apply Hsnts.
+rewrite H3. apply Vin_map_intro. hyp. apply subterm_eq_sub. hyp.
 hyp.
 (* lhs = Var x *)
 decomp e. subst l. is_var_lhs.
