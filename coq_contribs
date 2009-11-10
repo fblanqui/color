@@ -7,9 +7,7 @@
 
 prog=`basename $0`
 
-usage () {
-  echo "usage: $prog [-h] dir"
-}
+usage () { echo "usage: $prog [-h] dir"; }
 
 help () {
   cat <<EOF
@@ -24,17 +22,11 @@ case "$1" in
 -h) usage; echo; help; exit 0;;
 esac
 
-if test $# -ne 1
-then
-  usage
-  exit 1
-fi
+if test $# -ne 1; then usage; exit 1; fi
 
 root=$1
 
-subdirs () {
-  ls -F $dir | grep / | sed 's|/||' | xargs
-}
+subdirs () { ls -F $dir | grep / | sed 's|/||' | xargs; }
 
 for d in `dir=$root; subdirs`
 do
