@@ -222,7 +222,8 @@ Qed.
 (***********************************************************************)
 (** check monotony conditions *)
 
-Definition is_pos_monom n (cm : Z * monom n) := let (c, _) := cm in is_pos c.
+Definition is_pos_monom n (cm : Z * monom n) :=
+  let (c, _) := cm in is_not_neg c.
 
 Program Definition coef_pos_check n (p : poly n) : Exc (coef_pos p) :=
   match forallb (@is_pos_monom n) p with
@@ -237,9 +238,8 @@ Next Obligation.
   destruct z; compute; intros; discriminate.
 Qed.
 
-Program Definition pweak_monotone_check n (p : poly n) : 
-  Exc (pweak_monotone p) :=
-  coef_pos_check p.
+Program Definition pweak_monotone_check n (p : poly n) : Exc (pweak_monotone p)
+  := coef_pos_check p.
 
 Program Definition check_coef_gt0 n (p : poly n) (i : dom_lt n) :
   Exc (0 < coef (mxi (proj2_sig i)) p)%Z :=
