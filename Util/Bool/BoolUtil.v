@@ -142,7 +142,7 @@ Lemma dec : forall x, {P x}+{~P x}.
 
 Proof.
 intro x. case_eq (f x). left. rewrite <- f_ok. hyp. right. rewrite <- ko. hyp.
-Qed.
+Defined.
 
 End dec.
 
