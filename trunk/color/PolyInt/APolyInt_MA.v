@@ -16,6 +16,7 @@ Require Import ATrs.
 Require Import ListForall.
 Require Import MonotonePolynom.
 Require Import LogicUtil.
+Require Import BoolUtil.
 
 Module Type TPolyInt.
 
@@ -61,10 +62,41 @@ Module PolyInt (PI : TPolyInt).
       unfold Dgt, Dlt, transp. apply Zlt_le_trans with (val r); auto.
     Qed.
 
-    Definition succ' l r := 
-      coef_pos (rulePoly_gt trsInt (@mkRule sig l r)).
-    Definition succeq' l r := 
-      coef_pos (rulePoly_ge trsInt (@mkRule sig l r)).
+    Definition rulePoly_gt l r := rulePoly_gt trsInt (@mkRule sig l r).
+
+    Definition succ' l r := coef_pos (rulePoly_gt l r).
+
+    Definition bsucc' l r := bcoef_pos (rulePoly_gt l r).
+
+    Lemma bsucc'_ok : forall l r, bsucc' l r = true <-> succ' l r.
+
+    Proof.
+      intros l r. unfold bsucc', succ'. apply bcoef_pos_ok.
+    Qed.
+
+    Lemma succ'_dec : rel_dec succ'.
+
+    Proof.
+      intros l r. unfold succ'. eapply dec. apply bcoef_pos_ok.
+    Defined.
+
+    Definition rulePoly_ge l r := rulePoly_ge trsInt (@mkRule sig l r).
+
+    Definition succeq' l r := coef_pos (rulePoly_ge l r).
+
+    Definition bsucceq' l r := bcoef_pos (rulePoly_ge l r).
+
+    Lemma bsucceq'_ok : forall l r, bsucceq' l r = true <-> succeq' l r.
+
+    Proof.
+      intros l r. unfold bsucceq', succeq'. apply bcoef_pos_ok.
+    Qed.
+
+    Lemma succeq'_dec : rel_dec succeq'.
+
+    Proof.
+      intros l r. unfold succeq'. eapply dec. apply bcoef_pos_ok.
+    Defined.
 
     Lemma succ'_sub : succ' << IR I succ.
 
@@ -81,28 +113,6 @@ Module PolyInt (PI : TPolyInt).
       change t with (lhs r). change u with (rhs r).
       apply pi_compat_rule_weak. hyp.
     Qed.
-
-    Lemma succ'_dec : rel_dec succ'.
-
-    Proof.
-      intros l r. unfold succ', coef_pos.
-      apply lforall_dec. intro p.
-      destruct (fst p). 
-      left. intuition.
-      left. intuition.
-      right. intuition.
-    Defined.
-
-    Lemma succeq'_dec : rel_dec succeq'.
-
-    Proof.
-      intros l r. unfold succeq', coef_pos.
-      apply lforall_dec. intro p.
-      destruct (fst p).
-      left. intuition.
-      left. intuition.
-      right. intuition.
-    Defined.
 
     Section ExtendedMonotoneAlgebra.
 
