@@ -1,4 +1,7 @@
 
+- replace decidability lemmas by boolean functions
+  in polynomial and matrix interpretations
+
 - for polynomial monotony, check that, for all i, there is k>0 such
 that the coefficient of the monomial x_i^k is >0. in practice, check
 for k in {1,2,3} only?
@@ -48,8 +51,6 @@ Done list:
 - use Qed in beq_*_ok
 
 - replace rev by rev'
-
-- replace decidability lemmas by boolean functions
 
 - AF: extend by allowing collapsing argument filterings
 
