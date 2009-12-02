@@ -42,7 +42,7 @@ clean-all: clean
 	rm -f Makefile.coq Makefile.all
 
 clean-doc:
-	rm -f doc/CoLoR.*.html doc/index.html
+	rm -f doc/CoLoR.*.html doc/index.html doc/main.html
 
 tags:
 	coqtags `find . -name \*.v`
