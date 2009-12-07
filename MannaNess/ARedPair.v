@@ -166,7 +166,7 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
     | |- WF (hd_red_mod _ _) => prove WF_wp_hd_red_mod
     | |- WF (hd_red_Mod _ _) =>
       try rewrite int_red_incl_red;
-        try rewrite hd_red_mod_of_hd_red_Mod;
+        rewrite hd_red_mod_of_hd_red_Mod;
           prove_termination prove_cc_succ
    end.
 
@@ -340,7 +340,7 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
 End WP_Proj.
 
 (***********************************************************************)
-(** module type for reduction pairs *)
+(** reduction pair associated to VRPO_Prover *)
 
 Require Import VRPO_Prover.
 
