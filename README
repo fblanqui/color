@@ -54,7 +54,7 @@ http://gforge.inria.fr/projects/color/.
 
 The following scripts provide some statistics:
 
-- get_stat: provides the number of coq lines (including newlines and
+- color_stat: provides the number of coq lines (including newlines and
 comments) for the various kinds of formalizations (mathematical
 structures, data structures, etc.)
 
