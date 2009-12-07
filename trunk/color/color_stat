@@ -24,14 +24,10 @@ case "$1" in
 -h) usage; echo; help; exit 0;;
 esac
 
-if test $# -ne 0
-then
-  usage
-  exit 1
-fi
+if test $# -ne 0; then usage; exit 1; fi
 
 lines () {
-  wc -l /dev/null `find $dir -name \*.v` | grep total | sed 's|total||'
+  wc -l /dev/null `find $dir -path ./Coccinelle -prune -o -name \*.v -print` | grep total | sed 's|total||'
 }
 
 dir=.; total=`lines`
