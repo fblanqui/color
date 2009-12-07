@@ -1,3 +1,6 @@
+-----------------------------------------------------------------------------
+09-12-07: NEW RELEASE (997)
+
 09-11-04: [Blanqui]
 - DP/ADP: use Dershowitz improvement for defining DPs
 - Coccinelle: Coccinelle library v8.2-bool (09-10-26)
