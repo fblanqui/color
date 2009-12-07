@@ -2,7 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Frederic Blanqui, 2008-02-22
+- Frederic Blanqui, 2008-02-22, 2009-10-20 (rpo)
 
 convert CoLoR terms into Coccinelle terms 
 *)
