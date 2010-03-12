@@ -35,7 +35,7 @@ Variable S : relation term.
 Variable D : rules.
 
 (***********************************************************************)
-(* head rules graph *)
+(** head rules graph *)
 
 Definition hd_rules_graph a1 a2 := In a1 D /\ In a2 D
   /\ exists p, exists s, S (sub s (rhs a1)) (sub s (shift p (lhs a2))).
@@ -47,7 +47,7 @@ unfold is_restricted, hd_rules_graph, inclusion. intros. intuition.
 Qed.
 
 (***********************************************************************)
-(* corresponding chain relation *)
+(** corresponding chain relation *)
 
 Definition hd_red_Mod_rule a t u := In a D /\
   exists s, S t (sub s (lhs a)) /\ u = sub s (rhs a).
@@ -128,7 +128,7 @@ exists x. exists x0. hyp.
 Qed.
 
 (***********************************************************************)
-(* relation between hd_red_Mod and chain *)
+(** relation between hd_red_Mod and chain *)
 
 Lemma hd_red_Mod_of_chain : forall R : rules,
   chain R << hd_red_Mod (int_red R #) (dp R).
@@ -140,6 +140,6 @@ Qed.
 End S.
 
 (***********************************************************************)
-(* tactics *)
+(** tactics *)
 
 Ltac dp_trans := chain; eapply WF_incl; [apply hd_red_Mod_of_chain | idtac].
