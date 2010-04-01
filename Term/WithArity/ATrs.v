@@ -110,12 +110,17 @@ Section rewriting.
 
 Variable R : rules.
 
+(* Relation associated to the TRS R *)
 Definition red u v := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
+(* Relation associated to the TRS R where the rewriting is only allowed at *)
+(* root *)
 Definition hd_red u v := exists l, exists r, exists s,
   In (mkRule l r) R /\ u = sub s l /\ v = sub s r.
 
+(* Relation associated to the TRS R where the rewriting is allowed anywhere *)
+(* but the root *)
 Definition int_red u v := exists l, exists r, exists c, exists s,
   c <> Hole
   /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
@@ -149,6 +154,7 @@ Section rewriting_modulo.
 
 Variables (S : relation term) (E R: rules).
 
+(*Composition of the relation S and the  *)
 Definition hd_red_Mod := S @ hd_red R.
 
 Definition red_mod := red E # @ red R.
