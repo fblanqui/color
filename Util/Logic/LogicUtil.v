@@ -106,13 +106,13 @@ Proof.
 intros. intro. apply H. exists x. exact H0.
 Qed.
 
-Lemma forall_not_imply_not_exists : (forall x, ~(P x)) -> ~(exists x, P x).
+Lemma forall_not_imply_not_exists : (forall x, ~P x) -> ~(exists x, P x).
 
 Proof.
 intros. intro. destruct H0. exact (H x H0).
 Qed.
 
-Lemma exists_not_imply_not_forall : (exists x, ~(P x)) -> ~(forall x, P x).
+Lemma exists_not_imply_not_forall : (exists x, ~P x) -> ~(forall x, P x).
 
 Proof.
 intros. destruct H. intro. ded (H0 x). contradiction.

@@ -152,7 +152,7 @@ End rewriting.
 
 Section rewriting_modulo.
 
-Variables (S : relation term) (E R: rules).
+Variables (S : relation term) (E R : rules).
 
 (*Composition of the relation S and the  *)
 Definition hd_red_Mod := S @ hd_red R.
