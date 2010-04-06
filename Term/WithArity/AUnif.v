@@ -32,7 +32,7 @@ Notation substitution := (substitution Sig).
 Ltac case_beq_symb := ASignature.case_beq_symb Sig.
 
 (***********************************************************************)
-(* unification problem *)
+(** unification problem *)
 
 Definition eqn := ((term * term)%type).
 Definition eqns := (list eqn).
@@ -412,7 +412,7 @@ Fixpoint iter_step k (p : problem) {struct k} :=
   end.
 
 (***********************************************************************)
-(* basic properties *)
+(** basic properties *)
 
 Lemma iter_step_commut : forall k (p : problem),
   iter_step k (step p) = step (iter_step k p).
@@ -462,7 +462,7 @@ intros. intro. ded (unsuccessfull_preserved H1 H0). rewrite H2 in H. discr.
 Qed.
 
 (***********************************************************************)
-(* size-based multiset ordering on equations *)
+(** size-based multiset ordering on equations *)
 
 Notation nb_symb_occs := (@nb_symb_occs Sig).
 
