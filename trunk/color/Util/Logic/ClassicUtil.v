@@ -42,6 +42,13 @@ Implicit Arguments not_forall_imply_exists_not [A P].
 
 Section equiv.
 
+Lemma not_forall_eq : forall (A : Type) (P : A -> Prop),
+  ~(forall x, P x) <-> exists x, ~P x.
+
+Proof.
+split. apply not_forall_imply_exists_not. apply exists_not_imply_not_forall.
+Qed.
+
 Lemma imply_eq : forall P Q : Prop, (P -> Q) <-> (~P \/ Q).
 
 Proof.
