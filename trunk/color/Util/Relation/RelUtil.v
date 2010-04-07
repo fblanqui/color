@@ -378,8 +378,7 @@ Ltac assoc :=
 (***********************************************************************)
 (** reflexive closure *)
 
-Definition clos_refl A (R : relation A) : relation A :=
-  fun x y => x = y \/ R x y.
+Definition clos_refl A (R : relation A) : relation A := @eq A U R.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
@@ -388,7 +387,7 @@ Add Parametric Morphism (A : Type) : (@clos_refl A)
   as incl_rc.
 
 Proof.
-intro. unfold clos_refl, inclusion. intros. destruct H0; auto.
+intro. unfold clos_refl, union, inclusion. intros. destruct H0; auto.
 Qed.
 
 Add Parametric Morphism (A : Type)  : (@clos_refl A)
@@ -406,20 +405,20 @@ Variables (A : Type) (R S : relation A).
 Lemma rc_refl : reflexive (R%).
 
 Proof.
-unfold reflexive, clos_refl. auto.
+unfold reflexive, clos_refl, union. auto.
 Qed.
 
 Lemma rc_trans : transitive R -> transitive (R%).
 
 Proof.
-intro. unfold transitive, clos_refl. intros. decomp H0. subst y. hyp.
+intro. unfold transitive, clos_refl, union. intros. decomp H0. subst y. hyp.
 decomp H1. subst z. auto. right. apply H with (y := y); hyp.
 Qed.
 
 Lemma rc_incl : R << R%.
 
 Proof.
-unfold inclusion, clos_refl. auto.
+unfold inclusion, clos_refl, union. auto.
 Qed.
 
 End clos_refl.
@@ -684,6 +683,14 @@ Proof.
 intros R S. unfold inclusion, transp. auto.
 Qed.
 
+Add Parametric Morphism (A : Type) : (@transp A)
+  with signature (@same_relation A) ==> (@same_relation A)
+  as equiv_transp.
+
+Proof.
+intros R S [h1 h2]. split; apply incl_transp; hyp.
+Qed.
+
 Section transp.
 
 Variables (A : Type) (R S : relation A).
@@ -795,6 +802,26 @@ Proof.
   intros x y Rxy. destruct Rxy. contradiction. hyp.
 Qed.
 
+Lemma union_idem_l : forall R S : relation A, R << R U S.
+
+Proof.
+intros x y h. left. hyp.
+Qed.
+
+Lemma union_idem_r : forall R S : relation A, R << S U R.
+
+Proof.
+intros x y h. right. hyp.
+Qed.
+
+Lemma union_incl : R U R' << S <-> R << S /\ R' << S.
+
+Proof.
+split; intro. split. trans (R U R'). apply union_idem_l. hyp.
+trans (R U R'). apply union_idem_r. hyp.
+destruct H. intros t u [h|h]. apply H. hyp. apply H0. hyp.
+Qed.
+
 End union.
 
 (***********************************************************************)
@@ -862,8 +889,8 @@ Lemma union_fact : R U R @ S << R @ S%.
 
 Proof.
 unfold inclusion. intros. destruct H.
-exists y; split; unfold clos_refl; auto.
-do 2 destruct H. exists x0; split; unfold clos_refl; auto.
+exists y; split; unfold clos_refl, union; auto.
+do 2 destruct H. exists x0; split; unfold clos_refl, union; auto.
 Qed.
 
 Lemma union_fact2 : R @ S U R << R @ S%.
