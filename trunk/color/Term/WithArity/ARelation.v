@@ -68,13 +68,6 @@ Proof.
 intros R hR t u s. unfold transp. apply hR.
 Qed.
 
-Lemma substitution_closed_subterm_eq : substitution_closed (@subterm_eq Sig).
-
-Proof.
-intros t u s h. destruct h as [C h]. subst. rewrite sub_fill.
-exists (subc s C). refl.
-Qed.
-
 (***********************************************************************)
 (** closure by context *)
 
@@ -211,6 +204,16 @@ unfold not; intro. ded (E_trans H H1). contradiction.
 Qed.
 
 End strict.
+
+(***********************************************************************)
+(** subterm relation *)
+
+Lemma substitution_closed_subterm_eq : substitution_closed (@subterm_eq Sig).
+
+Proof.
+intros t u s h. destruct h as [C h]. subst. rewrite sub_fill.
+exists (subc s C). refl.
+Qed.
 
 End S.
 
