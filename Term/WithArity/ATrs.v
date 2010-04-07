@@ -1,18 +1,20 @@
-(**************************************************************************)
-(* CoLoR, a Coq library on rewriting and termination.                     *)
-(* See the COPYRIGHTS and LICENSE files.                                  *)
-(* - Frederic Blanqui, 2005-02-17                                         *) 
-(* - Adam Koprowski and Hans Zantema, 2007-03-20                          *)
-(*                                                                        *)
-(* This file gives definitions on rewriting system :                      *)
-(* - rule         == Type of rewriting rule. It is a pair of term. A left *)
-(*                   hand (lhs) and a right hand (rhs).                   *)
-(* * Definitions on rule :                                                *)
-(*   - beq_rule   == boolean equality on rule.                            *)
+(**
+CoLoR, a Coq library on rewriting and termination.
+See the COPYRIGHTS and LICENSE files.
 
-(* *)
-(* In addition to this definitions some proofs and results are given.     *)
-(**************************************************************************)
+- Frederic Blanqui, 2005-02-17
+- Adam Koprowski and Hans Zantema, 2007-03-20
+
+Rewriting.
+
+This file gives definitions on rewrite systems:
+- rule         == Type of rewriting rule. It is a pair of term. A left
+                  hand (lhs) and a right hand (rhs).
+* Definitions on rule :
+   - beq_rule   == boolean equality on rule.
+
+In addition to this definitions some proofs and results are given.
+*)
 
 Set Implicit Arguments.
 
