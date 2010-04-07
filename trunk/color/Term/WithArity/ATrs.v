@@ -1,12 +1,19 @@
-(**
-CoLoR, a Coq library on rewriting and termination.
-See the COPYRIGHTS and LICENSE files.
+(**************************************************************************)
+(* CoLoR, a Coq library on rewriting and termination.                     *)
+(* See the COPYRIGHTS and LICENSE files.                                  *)
+(* - Frederic Blanqui, 2005-02-17                                         *) 
+(* - Adam Koprowski and Hans Zantema, 2007-03-20                          *)
+(*                                                                        *)
+(* This file gives definitions on rewriting system :                      *)
+(* - rule         == Type of rewriting rule. It is a pair of term. A left *)
+(*                   hand (lhs) and a right hand (rhs).                   *)
+(* * Definitions on rule :                                                *)
+(*   - beq_rule   == boolean equality on rule.                            *)
 
-- Frederic Blanqui, 2005-02-17
-- Adam Koprowski and Hans Zantema, 2007-03-20
+(* *)
+(* In addition to this definitions some proofs and results are given.     *)
+(**************************************************************************)
 
-rewriting
-*)
 Set Implicit Arguments.
 
 Require Import ARelation.
@@ -154,13 +161,19 @@ Section rewriting_modulo.
 
 Variables (S : relation term) (E R : rules).
 
-(*Composition of the relation S and the  *)
+(* Composition of the relation S and the relation of head rewriting with R *)
 Definition hd_red_Mod := S @ hd_red R.
 
+(* Composition of the reflexive and transitive closure of E (as a relation) *)
+(* and the relation of rewriting with R *)
 Definition red_mod := red E # @ red R.
 
+(* Composition of the reflexive and transitive closure of E (as a relation) *)
+(* and the relation of head rewriting with R *)
 Definition hd_red_mod := red E # @ hd_red R.
 
+(* Defines a notion of minimal modulo rewriting relation. It's the *)
+(* restriction of hd_red_mod to the minimal non SN terms. *)
 Definition hd_red_mod_min s t := hd_red_mod s t 
   /\ lforall (SN (red E)) (direct_subterms s)
   /\ lforall (SN (red E)) (direct_subterms t).
