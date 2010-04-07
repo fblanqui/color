@@ -183,9 +183,9 @@ Require Import RelUtil.
 Require Import ARelation.
 Require Import Union.
 
-Notation superterm := (@superterm Sig).
+Notation supterm := (@supterm Sig).
 
-Lemma WF_superterm : WF superterm.
+Lemma WF_supterm : WF supterm.
 
 Proof.
 intro x. apply subterm_ind. clear x.
@@ -193,7 +193,7 @@ intros x IH. apply SN_intro. intros y sy.
 assert (subterm y x); inversion sy as [c [hole subst]]; auto.
 Qed.
 
-Lemma superterm_red : superterm @ red R << red R @ superterm.
+Lemma supterm_red : supterm @ red R << red R @ supterm.
 
 Proof.
 intros x z [y [xSuby yRz]].
@@ -207,22 +207,22 @@ rewrite <- fill_fill. rewrite <- zfillCredr. refl.
 exists C. split. hyp. refl.
 Qed.
 
-Lemma SN_red_superterm : forall x, SN (red R) x -> SN (red R U superterm) x.
+Lemma SN_red_supterm : forall x, SN (red R) x -> SN (red R U supterm) x.
 
 Proof.
 intros x snx. apply sn_comm_sn; trivial.
-intros y _. apply WF_superterm. clear. intros x y xy.
-assert ((red R @ superterm) x y) as [z [xz zy]].
-apply superterm_red. hyp.
+intros y _. apply WF_supterm. clear. intros x y xy.
+assert ((red R @ supterm) x y) as [z [xz zy]].
+apply supterm_red. hyp.
 exists z. split.
 apply t1_step. hyp.
 apply rt1_trans with y. hyp. apply rt1_refl.
 Qed.
 
-Lemma WF_red_superterm : WF (red R) -> WF (red R U superterm).
+Lemma WF_red_supterm : WF (red R) -> WF (red R U supterm).
 
 Proof.
-intros h t. apply SN_red_superterm. apply h.
+intros h t. apply SN_red_supterm. apply h.
 Qed.
 
 End S.
