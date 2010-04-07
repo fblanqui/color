@@ -281,17 +281,17 @@ Variable (A : Type) (R S : relation A).
 Lemma WF_compose_swap : WF (R @ S) -> WF (S @ R).
 
 Proof.
-  intro WF_RS.
-  assert (forall p q, R p q -> SN (S @ R) q).
-  intro p. pattern p.
-  apply SN_ind with A (R @ S); auto.
-  intros. apply SN_intro. intros.
-  destruct H2. apply H0 with x0.
-  exists q; intuition.
-  intuition.
-  unfold WF. intro. apply SN_intro. intros.
-  destruct H0 as [z [Sxz Rzy]].
-  apply H with z. assumption.
+intro WF_RS.
+assert (forall p q, R p q -> SN (S @ R) q).
+intro p. pattern p.
+apply SN_ind with A (R @ S); auto.
+intros. apply SN_intro. intros.
+destruct H2. apply H0 with x0.
+exists q; intuition.
+intuition.
+unfold WF. intro. apply SN_intro. intros.
+destruct H0 as [z [Sxz Rzy]].
+apply H with z. assumption.
 Qed.
 
 End compose.
@@ -312,9 +312,9 @@ Qed.
 Lemma SN_rtc1 : forall x, SN R x -> forall x', R#1 x x' -> SN R x'.
 
 Proof.
-  intros x snx x' xRx'. apply SN_rtc with x.
-  assumption.
-  apply (proj1 (clos_refl_trans_equiv R x x')). assumption.
+intros x snx x' xRx'. apply SN_rtc with x.
+assumption.
+apply (proj1 (clos_refl_trans_equiv R x x')). assumption.
 Qed.
 
 End rtc.
@@ -344,11 +344,11 @@ Qed.
 Lemma SN_tc1 : forall x, SN R x -> SN (R!1) x.
 
 Proof.
-  intros x snx. induction snx as [x IH0 IH1].
-  apply SN_intro. intros y xRty. destruct xRty.
-  apply IH1. assumption.
-  assert (SNy := IH1 y H). destruct SNy as [y' SNy']. apply SNy'.
-  assumption.
+intros x snx. induction snx as [x IH0 IH1].
+apply SN_intro. intros y xRty. destruct xRty.
+apply IH1. assumption.
+assert (SNy := IH1 y H). destruct SNy as [y' SNy']. apply SNy'.
+assumption.
 Qed.
 
 End tc.
@@ -433,24 +433,24 @@ Qed.
 Lemma WF_union_mod : WF E -> WF (E# @ R) -> WF (R U E).
 
 Proof.
-  intros WF_E WF_ER x.
-  apply SN_ind with A (E# @ R); auto. 
-  clear x. intros x _ IH.
-  apply SN_intro. intros y RExy.
-  destruct RExy as [Rxy | Exy].
-  apply IH. exists x. 
-  split; [constructor rt_refl | assumption].
-  cut (forall y, (E# @ R) x y -> SN (R U E) y); [idtac | assumption].
-  cut (E! x y). pattern y. apply SN_ind with A E; auto.
-  clear y IH Exy. intros y _ IH_out Exy IH_in.
-  apply SN_intro. intros z REyz.
-  destruct REyz.
-  apply IH_in. exists y. split; trivial.
-  apply tc_incl_rtc. assumption.
-  apply IH_out; trivial.
-  constructor 2 with y. trivial.
-  constructor. assumption.
-  constructor. assumption.
+intros WF_E WF_ER x.
+apply SN_ind with A (E# @ R); auto. 
+clear x. intros x _ IH.
+apply SN_intro. intros y RExy.
+destruct RExy as [Rxy | Exy].
+apply IH. exists x. 
+split; [constructor rt_refl | assumption].
+cut (forall y, (E# @ R) x y -> SN (R U E) y); [idtac | assumption].
+cut (E! x y). pattern y. apply SN_ind with A E; auto.
+clear y IH Exy. intros y _ IH_out Exy IH_in.
+apply SN_intro. intros z REyz.
+destruct REyz.
+apply IH_in. exists y. split; trivial.
+apply tc_incl_rtc. assumption.
+apply IH_out; trivial.
+constructor 2 with y. trivial.
+constructor. assumption.
+constructor. assumption.
 Qed.
 
 End modulo.
