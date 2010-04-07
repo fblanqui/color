@@ -18,6 +18,7 @@ Require Import LogicUtil.
 Require Import BoolUtil.
 Require Import VecUtil.
 Require Import NatUtil.
+Require Import Relations.
 
 Section S.
 
@@ -157,6 +158,10 @@ Qed.
 Definition subterm_eq u t := exists C, t = fill C u.
 
 Definition subterm u t := exists C, C <> Hole /\ t = fill C u.
+
+Definition superterm := transp subterm.
+
+Definition superterm_eq := transp subterm_eq.
 
 Lemma subterm_eq_refl : forall t, subterm_eq t t.
 
