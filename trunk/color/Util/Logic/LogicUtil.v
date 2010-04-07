@@ -112,6 +112,12 @@ Proof.
 intros. intro. destruct H0. exact (H x H0).
 Qed.
 
+Lemma not_exists_eq : ~(exists x, P x) <-> (forall x, ~P x).
+
+Proof.
+split. apply not_exists_imply_forall_not. apply forall_not_imply_not_exists.
+Qed.
+
 Lemma exists_not_imply_not_forall : (exists x, ~P x) -> ~(forall x, P x).
 
 Proof.
