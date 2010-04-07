@@ -40,7 +40,7 @@ Fixpoint proj t :=
 
 Definition proj_rule a := mkRule (proj (lhs a)) (proj (rhs a)).
 
-Notation proj_rules := (map proj_rule).
+Definition proj_rules := (map proj_rule).
 
 (***********************************************************************)
 (** properties wrt substitutions *)

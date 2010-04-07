@@ -289,7 +289,7 @@ intros. apply forall_subterm_eq. apply subterm_ind_sub. hyp.
 Qed.
 
 (***********************************************************************)
-(** boolean function for testing subterm *)
+(** boolean terms inclusion or equality relation (<=) *)
 
 Fixpoint bsubterm_eq (t u : term) {struct u} : bool :=
   match u with
@@ -317,6 +317,7 @@ simpl in H0. Funeqtac. rewrite H1. rewrite Vin_cast. apply Vin_app_cons.
 exists x. refl.
 Qed.
 
+(** boolean terms strict inclusion relation ( < ) *)
 Definition bsubterm (t u : term) : bool :=
   match u with
     | Var x => false
