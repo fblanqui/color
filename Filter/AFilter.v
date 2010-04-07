@@ -244,13 +244,14 @@ Notation fsucc_eq := (filter_ord succ_eq).
 Lemma filter_ord_rc : reflexive fsucc_eq.
 
 Proof.
-unfold reflexive, filter_ord, clos_refl. auto.
+unfold reflexive, filter_ord, clos_refl, union. auto.
 Qed.
 
 Lemma rc_filter_ord : inclusion (clos_refl fsucc) fsucc_eq.
 
 Proof.
-unfold inclusion, clos_refl, filter_ord. intros. decomp H. subst y. auto. auto.
+unfold inclusion, clos_refl, union, filter_ord.
+intros. decomp H. subst y. auto. auto.
 Qed.
 
 Lemma filter_weak_cont_closed :
@@ -258,7 +259,7 @@ Lemma filter_weak_cont_closed :
 
 Proof.
 intro. unfold weak_context_closed. intros.
-assert (clos_refl fsucc t1 t2). unfold clos_refl. auto.
+assert (clos_refl fsucc t1 t2). unfold clos_refl, union. auto.
 ded (rc_filter_ord H1).
 assert (context_closed fsucc_eq). apply filter_cont_closed. apply rc_refl.
 apply rc_context_closed. assumption. apply H3. assumption.

@@ -223,6 +223,15 @@ right. exists (Cont e v x v0). intuition. discr.
 destruct h. exists Hole. auto. apply subterm_strict. hyp.
 Qed.
 
+Lemma rc_supterm : supterm_eq == supterm%.
+
+Proof.
+rewrite rel_eq. intros t u. split; intro h.
+destruct h. destruct x. left. auto.
+right. exists (Cont e v x v0). intuition. discr.
+destruct h. exists Hole. auto. apply subterm_strict. hyp.
+Qed.
+
 (***********************************************************************)
 (** transitivity of the subterm ordering *)
 

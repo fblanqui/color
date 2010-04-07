@@ -53,7 +53,7 @@ Definition SCC' x y := (SCC%) x y /\ In x Dom /\ In y Dom.
 Lemma SCC'_dec : forall x y, {SCC' x y} + {~SCC' x y}.
 
 Proof.
-intros. unfold SCC', clos_refl. destruct (eq_dec x y); auto.
+intros. unfold SCC', clos_refl, union. destruct (eq_dec x y); auto.
 subst; destruct (In_dec eq_dec y Dom). left; auto. right; tauto.
 destruct (SCC_dec x y);
   destruct (In_dec eq_dec y Dom); destruct (In_dec eq_dec x Dom);
