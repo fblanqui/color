@@ -176,4 +176,55 @@ destruct H2. subst a. apply H0. hyp. eapply calls_sn_args. apply H.
 apply H0. hyp.
 Qed.
 
+(***********************************************************************)
+(** relation with the subterm ordering *)
+
+Notation subterm := (@subterm Sig).
+
+Require Import RelUtil.
+Require Import ARelation.
+Require Import Union.
+
+Definition superterm := transp subterm.
+
+Lemma WF_superterm : WF superterm.
+
+Proof.
+intro x. apply subterm_ind. clear x.
+intros x IH. apply SN_intro. intros y sy.
+assert (subterm y x); inversion sy as [c [hole subst]]; auto.
+Qed.
+
+Lemma superterm_red : superterm @ red R << red R @ superterm.
+
+Proof.
+intros x z [y [xSuby yRz]].
+inversion xSuby as [C [notHoleC fillCy]].
+inversion yRz as [l [r [Cred [s [rule [yfillCredl zfillCredr]]]]]].
+exists (fill C z). split.
+exists l. exists r. exists (comp C Cred). exists s.
+split. hyp. split.
+rewrite <- fill_fill. rewrite <- yfillCredl. hyp.
+rewrite <- fill_fill. rewrite <- zfillCredr. refl.
+exists C. split. hyp. refl.
+Qed.
+
+Lemma SN_red_superterm : forall x, SN (red R) x -> SN (red R U superterm) x.
+
+Proof.
+intros x snx. apply sn_comm_sn; trivial.
+intros y _. apply WF_superterm. clear. intros x y xy.
+assert ((red R @ superterm) x y) as [z [xz zy]].
+apply superterm_red. hyp.
+exists z. split.
+apply t1_step. hyp.
+apply rt1_trans with y. hyp. apply rt1_refl.
+Qed.
+
+Lemma WF_red_superterm : WF (red R) -> WF (red R U superterm).
+
+Proof.
+intros h t. apply SN_red_superterm. apply h.
+Qed.
+
 End S.
