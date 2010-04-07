@@ -164,24 +164,24 @@ Lemma rc_context_closed :
   weak_context_closed R E -> context_closed E.
 
 Proof.
-intro. unfold context_closed. intros. unfold clos_refl in H0. decomp H0.
-subst t2. unfold clos_refl. auto. apply H. assumption.
+intro. unfold context_closed. intros. unfold clos_refl, union in H0. decomp H0.
+subst t2. unfold clos_refl, union. auto. apply H. hyp.
 Qed.
 
 Lemma rc_substitution_closed :
   substitution_closed R -> substitution_closed E.
 
 Proof.
-intro. unfold substitution_closed, clos_refl. intros. decomp H0.
-subst t2. auto. right. apply H. assumption.
+intro. unfold substitution_closed, clos_refl, union. intros. decomp H0.
+subst t2. auto. right. apply H. hyp.
 Qed.
 
 Lemma rc_rewrite_ordering :
   weak_rewrite_ordering R E -> rewrite_ordering E.
 
 Proof.
-intros (Hsubs,Hcont). split. apply rc_substitution_closed. assumption.
-apply rc_context_closed. assumption.
+intros (Hsubs,Hcont). split. apply rc_substitution_closed. hyp.
+apply rc_context_closed. hyp.
 Qed.
 
 End clos_refl.
@@ -199,7 +199,7 @@ Lemma absorb_strict : absorb R E.
 
 Proof.
 unfold absorb, inclusion, RelUtil.compose, strict_part.
-intros; split; decomp H. eapply E_trans. apply H1. assumption.
+intros; split; decomp H. eapply E_trans. apply H1. hyp.
 unfold not; intro. ded (E_trans H H1). contradiction.
 Qed.
 
@@ -228,6 +228,6 @@ Ltac destruct_rp :=
     | h : rewrite_ordering _ |- _ => destruct h
   end.
 
-Ltac WFtac := repeat destruct_rp; assumption.
+Ltac WFtac := repeat destruct_rp; hyp.
 
-Ltac rptac := repeat destruct_rp; try split; assumption.
+Ltac rptac := repeat destruct_rp; try split; hyp.
