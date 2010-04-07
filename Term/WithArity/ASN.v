@@ -179,13 +179,11 @@ Qed.
 (***********************************************************************)
 (** relation with the subterm ordering *)
 
-Notation subterm := (@subterm Sig).
-
 Require Import RelUtil.
 Require Import ARelation.
 Require Import Union.
 
-Definition superterm := transp subterm.
+Notation superterm := (@superterm Sig).
 
 Lemma WF_superterm : WF superterm.
 
