@@ -50,6 +50,9 @@ Record Rewrite_ordering : Type := mkRewrite_ordering {
   rew_ord_cont : context_closed rew_ord_rel
 }.
 
+(***********************************************************************)
+(** closure by substitution *)
+
 Lemma substitution_closed_rtc : forall R,
   substitution_closed R -> substitution_closed (R #).
 
@@ -57,6 +60,23 @@ Proof.
 intros R h t u s. induction 1. apply rt_step. apply h. hyp.
 apply rt_refl. apply rt_trans with (sub s y); hyp.
 Qed.
+
+Lemma substitution_closed_transp : forall R,
+  substitution_closed R -> substitution_closed (transp R).
+
+Proof.
+intros R hR t u s. unfold transp. apply hR.
+Qed.
+
+Lemma substitution_closed_subterm_eq : substitution_closed (@subterm_eq Sig).
+
+Proof.
+intros t u s h. destruct h as [C h]. subst. rewrite sub_fill.
+exists (subc s C). refl.
+Qed.
+
+(***********************************************************************)
+(** closure by context *)
 
 Lemma context_closed_rtc : forall R, context_closed R -> context_closed (R #).
 
