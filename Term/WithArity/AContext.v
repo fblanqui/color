@@ -18,7 +18,7 @@ Require Import LogicUtil.
 Require Import BoolUtil.
 Require Import VecUtil.
 Require Import NatUtil.
-Require Import Relations.
+Require Import RelUtil.
 
 Section S.
 
@@ -159,9 +159,9 @@ Definition subterm_eq u t := exists C, t = fill C u.
 
 Definition subterm u t := exists C, C <> Hole /\ t = fill C u.
 
-Definition superterm := transp subterm.
+Definition supterm := transp subterm.
 
-Definition superterm_eq := transp subterm_eq.
+Definition supterm_eq := transp subterm_eq.
 
 Lemma subterm_eq_refl : forall t, subterm_eq t t.
 
@@ -212,6 +212,15 @@ Proof.
 unfold subterm_eq, subterm. intros. destruct H as [C]. destruct C.
 subst t. simpl in H0. absurd (u<>u); auto.
 exists (Cont e v C v0). split. discr. subst t. refl.
+Qed.
+
+Lemma rc_subterm : subterm_eq == subterm%.
+
+Proof.
+rewrite rel_eq. intros t u. split; intro h.
+destruct h. destruct x. left. auto.
+right. exists (Cont e v x v0). intuition. discr.
+destruct h. exists Hole. auto. apply subterm_strict. hyp.
 Qed.
 
 (***********************************************************************)
@@ -294,7 +303,7 @@ intros. apply forall_subterm_eq. apply subterm_ind_sub. hyp.
 Qed.
 
 (***********************************************************************)
-(** boolean terms inclusion or equality relation (<=) *)
+(** boolean function deciding subterm_eq *)
 
 Fixpoint bsubterm_eq (t u : term) {struct u} : bool :=
   match u with
@@ -322,7 +331,9 @@ simpl in H0. Funeqtac. rewrite H1. rewrite Vin_cast. apply Vin_app_cons.
 exists x. refl.
 Qed.
 
-(** boolean terms strict inclusion relation ( < ) *)
+(***********************************************************************)
+(** boolean function deciding subterm *)
+
 Definition bsubterm (t u : term) : bool :=
   match u with
     | Var x => false
