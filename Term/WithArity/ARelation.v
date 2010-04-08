@@ -215,6 +215,13 @@ intros t u s h. destruct h as [C h]. subst. rewrite sub_fill.
 exists (subc s C). refl.
 Qed.
 
+Lemma substitution_closed_subterm : substitution_closed (@subterm Sig).
+
+Proof.
+intros t u s h. destruct h as [C h]. destruct h as [C0 h]. subst. rewrite sub_fill.
+exists (subc s C). split; try refl. destruct C. simpl. auto. discr.
+Qed.
+
 End S.
 
 (***********************************************************************)
