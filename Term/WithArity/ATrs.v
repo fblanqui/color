@@ -44,10 +44,11 @@ Notation term := (term Sig). Notation terms := (vector term).
 
 Record rule : Type := mkRule { lhs : term; rhs : term }.
 
-Lemma rule_eq : forall a b : rule, lhs a = lhs b -> rhs a = rhs b -> a = b.
+Lemma rule_eq : forall a b : rule, (lhs a = lhs b /\ rhs a = rhs b) <-> a = b.
 
 Proof.
-intros. destruct a. destruct b. simpl in *. subst. refl.
+intros. destruct a. destruct b. split; intros.
+destruct H. simpl in *. subst. refl. rewrite H. simpl. auto.
 Qed.
 
 Definition beq_rule (a b : rule) : bool :=
