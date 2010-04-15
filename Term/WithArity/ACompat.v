@@ -67,7 +67,7 @@ Lemma compat_red_mod_tc : forall R E,
 Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
 apply incl_rtc. apply compat_red; hyp. apply compat_red; hyp.
-apply rtc_step_incl_tc.
+apply tc_split_inv.
 Qed.
 
 Lemma compat_cons : forall l r R,

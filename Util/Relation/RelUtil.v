@@ -831,23 +831,6 @@ Section properties.
 
 Variables (A : Type) (R S : relation A).
 
-Lemma rtc_step_incl_tc : R# @ R << R!.
-
-Proof.
-unfold inclusion. intros. do 2 destruct H. ded (rtc_split H). destruct H1.
-subst x0. apply t_step. exact H0.
-apply t_trans with (y := x0). exact H1. apply t_step. exact H0.
-Qed.
-
-Lemma tc_incl_step_rtc : R! << R @ R#.
-
-Proof.
-unfold inclusion. induction 1. exists y. intuition.
-destruct IHclos_trans1. destruct H1. exists x0. intuition.
-apply rt_trans with y. exact H2. destruct IHclos_trans2. destruct H3.
-apply rt_trans with x1. apply rt_step. exact H3. exact H4.
-Qed.
-
 Lemma rtc_comp_permut : R# @ (R# @ S)# << (R# @ S)# @ R#.
 
 Proof.
@@ -923,7 +906,7 @@ Lemma rtc_comp_modulo : R# @ (R# @ S)! << (R# @ S)!.
 
 Proof.
 unfold inclusion. intros. do 2 destruct H.
-ded (tc_incl_step_rtc H0). do 2 destruct H1. do 2 destruct H1.
+ded (tc_split H0). do 2 destruct H1. do 2 destruct H1.
 ded (rtc_split H2). destruct H4. subst x1.
 apply t_step. exists x2. intuition. apply rt_trans with x0; hyp.
 apply t_trans with x1. apply t_step. exists x2. intuition.
@@ -965,6 +948,17 @@ exists y. intuition.
 ded (IHclos_refl_trans2 _ H1). do 2 destruct H2.
 ded (IHclos_refl_trans1 _ H2). do 2 destruct H4.
 exists x1. intuition. apply rt_trans with x0; hyp.
+Qed.
+
+Lemma commut_tc : R! @ S << S @ R!.
+
+Proof.
+intros x y H. destruct H as [z Hxy]. destruct (tc_split (proj1 Hxy)) as [z' Hz'].
+assert (SE : (S @ R#) z' y). apply commut_rtc. exists z. intuition.
+destruct SE as [x' Rx'].
+assert (SRx : (S @ R) x x'). apply commut. exists z'. intuition.
+destruct SRx as [y' Sy']. exists y'. split. intuition.
+apply tc_merge. exists x'. intuition.
 Qed.
 
 End commut.
