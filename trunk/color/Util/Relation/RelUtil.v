@@ -950,6 +950,19 @@ ded (IHclos_refl_trans1 _ H2). do 2 destruct H4.
 exists x1. intuition. apply rt_trans with x0; hyp.
 Qed.
 
+Lemma commut_rtc_inv : R @ S# << S# @ R.
+
+Proof.
+unfold inclusion. intros. do 2 destruct H. generalize x0 y H0 x H.
+clear H x x0 H0 y. induction 1; intros.
+assert ((S @ R) x0 y). apply commut. exists x. intuition.
+do 2 destruct H1. exists x1. intuition.
+exists x0. intuition.
+ded (IHclos_refl_trans1 _ H). do 2 destruct H0.
+ded (IHclos_refl_trans2 _ H1). do 2 destruct H2.
+exists x2. intuition. apply rtc_trans with x1; hyp.
+Qed.
+
 Lemma commut_tc : R! @ S << S @ R!.
 
 Proof.
@@ -959,6 +972,17 @@ destruct SE as [x' Rx'].
 assert (SRx : (S @ R) x x'). apply commut. exists z'. intuition.
 destruct SRx as [y' Sy']. exists y'. split. intuition.
 apply tc_merge. exists x'. intuition.
+Qed.
+
+Lemma commut_tc_inv : R @ S! << S! @ R.
+
+Proof.
+intros x y H. destruct H as [z Hxy]. destruct (tc_split (proj2 Hxy)) as [z' Hz'].
+assert (SRx : (S @ R) x z'). apply commut. exists z. intuition.
+destruct SRx as [y' Sy']. 
+assert (SE : (S# @ R) y' y). apply commut_rtc_inv. exists z'. intuition.
+destruct SE as [x' Sx']. exists x'. split; try intuition.
+apply tc_merge. exists y'. intuition.
 Qed.
 
 End commut.
