@@ -334,31 +334,23 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros x y z xy yz. 
-    destruct x. destruct y. destruct z. 
-    unfold gt. apply gt_trans with n0; assumption.
-    auto.
-    elimtype False. auto.
-    elimtype False. auto.    
+    destruct x; destruct y; destruct z; try solve [ auto | contradiction ].
+    apply gt_trans with n0; auto.
   Qed.
 
   Lemma gt_asym : forall x y, gt x y -> ~gt y x.
 
   Proof.
     intros x y xy. 
-    destruct x; auto. 
-    destruct y; auto.
-    simpl in *. omega.
+    destruct x; destruct y; simpl in *; try solve [auto | omega].
   Qed.
 
   Lemma gt_dec : rel_dec gt.
 
   Proof.
     unfold rel_dec. intros.
-    destruct x; destruct y.
+    destruct x; destruct y; simpl; auto.
     destruct (gt_dec n n0); auto.
-    left. unfold gt. trivial.
-    right. unfold gt. tauto.
-    right. unfold gt. tauto.
   Defined.
 
   Lemma gt_WF : WF gt.

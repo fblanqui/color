@@ -272,6 +272,17 @@ intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
     | rewrite max_l; [idtac | assumption]
     ]; omega.
 Qed.
+
+Lemma min_gt_compat : forall x y x' y',
+  x > x' -> y > y' -> min x y > min x' y'.
+
+Proof.
+intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
+  do 2 first
+    [ rewrite min_r; [idtac | assumption] 
+    | rewrite min_l; [idtac | assumption]
+    ]; omega.
+Qed.
  
 Lemma max_lt : forall x y z, max y z < x <-> y < x /\ z < x.
 
@@ -307,6 +318,49 @@ Lemma elim_min_r : forall x y z, y <= z -> min x y <= z.
 
 Proof.
 intros. eapply le_trans. apply le_min_r. exact H.
+Qed.
+
+ (* setting up some hints for the following lemmas *)
+Hint Resolve le_lt_trans le_min_l le_min_r le_trans.
+
+Lemma lt_min_intro_l : forall x y z, x < z -> min x y < z.
+
+Proof.
+  eauto.
+Qed.
+
+Lemma lt_min_intro_r : forall x y z, y < z -> min x y < z.
+
+Proof.
+  eauto.
+Qed.
+
+Lemma le_min_intro_l : forall x y z, x <= z -> min x y <= z.
+
+Proof.
+  eauto.
+Qed.
+
+Lemma le_min_intro_r : forall x y z, y <= z -> min x y <= z.
+
+Proof.
+  eauto.
+Qed.
+
+Ltac min_simpl :=
+  match goal with
+  | H : ?x <= ?y |- context [min ?x ?y] => 
+      rewrite (min_l x y H)
+  | H : ?y < ?x |- context [min ?x ?y] =>
+      rewrite (min_r x y (lt_le_weak H))
+  end.
+
+Lemma min_ge_compat : forall x y x' y',
+  x >= x' -> y >= y' -> min x y >= min x' y'.
+
+Proof.
+  intros. destruct (le_lt_dec x y); destruct (le_lt_dec x' y');
+    repeat min_simpl; omega.
 Qed.
 
 (***********************************************************************)
