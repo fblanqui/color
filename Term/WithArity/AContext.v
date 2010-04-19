@@ -340,6 +340,8 @@ simpl in H0. Funeqtac. rewrite H1. rewrite Vin_cast. apply Vin_app_cons.
 exists x. refl.
 Qed.
 
+Definition bsupterm_eq t u := bsubterm_eq u t.
+
 (***********************************************************************)
 (** boolean function deciding subterm *)
 
@@ -358,6 +360,8 @@ rewrite Vexists_eq. split; intro. decomp H. apply subterm_trans_eq1 with x.
 hyp. apply subterm_fun. hyp. apply subterm_fun_elim in H. hyp.
 apply bsubterm_eq_ok.
 Qed.
+
+Definition bsupterm t u := bsubterm u t.
 
 (***********************************************************************)
 (** subterms and variables *)
