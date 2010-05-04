@@ -625,6 +625,7 @@ constructor 1. hyp.
 Qed.
 
 Lemma tc_merge : R @ R# << R!.
+
 Proof.
 unfold inclusion. intros. destruct H. destruct H.
 ded (rtc_split H0). destruct H1; subst.
@@ -966,7 +967,8 @@ Qed.
 Lemma commut_tc : R! @ S << S @ R!.
 
 Proof.
-intros x y H. destruct H as [z Hxy]. destruct (tc_split (proj1 Hxy)) as [z' Hz'].
+intros x y H. destruct H as [z Hxy].
+destruct (tc_split (proj1 Hxy)) as [z' Hz'].
 assert (SE : (S @ R#) z' y). apply commut_rtc. exists z. intuition.
 destruct SE as [x' Rx'].
 assert (SRx : (S @ R) x x'). apply commut. exists z'. intuition.
