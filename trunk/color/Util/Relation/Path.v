@@ -35,8 +35,7 @@ Fixpoint is_path (x y : A) (l : list A) {struct l} : Prop :=
     | z::l' => R x z /\ is_path z y l'
   end.
 
-Lemma path_clos_trans : forall y l x, 
-  is_path x y l -> clos_trans R x y.
+Lemma path_clos_trans : forall y l x,  is_path x y l -> R! x y.
 
 Proof.
 induction l; simpl; intros. constructor. assumption.
@@ -50,8 +49,7 @@ Proof.
 induction l; simpl; intros. tauto. split. tauto. apply IHl; tauto.
 Qed. 
 
-Lemma clos_trans_path : forall x y, 
-  clos_trans R x y -> exists l, is_path x y l.
+Lemma clos_trans_path : forall x y, R! x y -> exists l, is_path x y l.
 
 Proof.
 intros. induction H. exists (nil : list A). simpl. assumption.
@@ -110,17 +108,16 @@ Qed.
 
 Inductive bound_path (n : nat) : relation A :=
   | bp_intro : forall x y l,
-    length l<= n -> is_path x y l -> bound_path n x y.
+    length l <= n -> is_path x y l -> bound_path n x y.
 
-Lemma bound_path_clos_trans : forall n,
-  bound_path n << clos_trans R.
+Lemma bound_path_clos_trans : forall n, bound_path n << R!.
 
 Proof.
 repeat intro. inversion H. apply path_clos_trans with l. assumption. 
 Qed.
 
 Lemma clos_trans_bound_path : eq_midex A -> forall l,
-  is_restricted R l -> (clos_trans R) << (bound_path (length l)).
+  is_restricted R l -> R! << bound_path (length l).
 
 Proof.
 do 6 intro. destruct (clos_trans_path H1).
@@ -310,7 +307,7 @@ apply H. apply H0. simpl. rewrite length_app. simpl. omega.
 Qed.
 
 Lemma path_restriction_In_left : forall (x y : A) l', 
-is_path (restriction R l) x y l' -> In x l.
+  is_path (restriction R l) x y l' -> In x l.
 
 Proof.
 unfold restriction. intros; destruct l'; simpl in H; tauto.

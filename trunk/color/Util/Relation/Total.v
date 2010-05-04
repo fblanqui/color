@@ -56,7 +56,7 @@ Inductive try_add_arc (x y : A) : A -> A -> Prop :=
 | keep : forall z t, R z t -> try_add_arc x y z t
 | try_add : x<>y -> ~R y x ->  try_add_arc x y x y.
 
-Lemma sub_rel_try_add_arc : forall x y, R << (try_add_arc x y).
+Lemma sub_rel_try_add_arc : forall x y, R << try_add_arc x y.
 
 Proof.
 unfold inclusion. intros. constructor. assumption. 
@@ -202,11 +202,12 @@ Section try_add_arc_one_to_many.
 
 Variable R : relation A.
 
-Fixpoint try_add_arc_one_to_many (x : A)(l : list A){struct l} : relation A :=
-match l with
-| nil => R
-| y::l' => clos_trans (try_add_arc (try_add_arc_one_to_many x l') x y) 
-end.
+Fixpoint try_add_arc_one_to_many (x : A) (l : list A) {struct l} : relation A
+  :=
+  match l with
+    | nil => R
+    | y::l' => clos_trans (try_add_arc (try_add_arc_one_to_many x l') x y) 
+  end.
 
 Lemma sub_rel_try_add_arc_one_to_many : forall x l,
   R << (try_add_arc_one_to_many x l). 
@@ -302,7 +303,7 @@ apply sub_rel_try_add_arc_one_to_many.
 Qed.
 
 Lemma restricted_try_add_arc_many_to_many : forall l l', incl l' l ->
-is_restricted R l -> is_restricted (try_add_arc_many_to_many l' l) l. 
+  is_restricted R l -> is_restricted (try_add_arc_many_to_many l' l) l. 
 
 Proof.
 induction l'; simpl; intros. assumption. 
@@ -372,13 +373,13 @@ Variable l : list A.
 
 Definition LETS := try_add_arc_many_to_many (clos_trans (restriction R l)) l l.
 
-Lemma LETS_restriction_clos_trans : (clos_trans (restriction R l)) << LETS.
+Lemma LETS_restriction_clos_trans : clos_trans (restriction R l) << LETS.
 
 Proof.
 intros. unfold LETS. apply sub_rel_try_add_arc_many_to_many. 
 Qed.
 
-Lemma LETS_sub_rel : (restriction R l) << LETS.
+Lemma LETS_sub_rel : restriction R l << LETS.
 
 Proof.
 intros. unfold LETS.
@@ -441,6 +442,7 @@ Qed.
 
 End LETS.
 
+(***********************************************************************)
 (** Linear Extension *)
 
 Definition linear_extension R l R' :=
@@ -465,8 +467,7 @@ Qed.
 
 Lemma total_order_eq_midex: 
   (forall l, exists R,
-    transitive R /\ irreflexive R /\ total R l /\ rel_midex R) ->
-  eq_midex A. 
+    transitive R /\ irreflexive R /\ total R l /\ rel_midex R) -> eq_midex A. 
 
 Proof.
 do 3 intro. destruct (H (x::y::nil)). decompose [and] H0.
@@ -478,7 +479,7 @@ destruct (H2 x y); simpl; try tauto.
 Qed.
 
 Lemma linearly_extendable :  forall R, rel_midex R ->
-  (eq_midex A /\ irreflexive (clos_trans R) <-> 
+  (eq_midex A /\ irreflexive (clos_trans R) <->
     forall l, exists R', linear_extension R l R' /\ rel_midex R').
 
 Proof.
@@ -494,6 +495,7 @@ split. apply total_order_eq_midex. intro. destruct (H0 l). exists x. tauto.
 apply local_global_acyclic. intro. destruct (H0 l). exists x. tauto. 
 Qed.
 
+(***********************************************************************)
 (** Topological Sorting *)
 
 Definition topo_sortable R := 
@@ -511,8 +513,7 @@ Definition antisym_topo_sortable R :=
 Lemma total_order_eq_dec : 
   {F : list A -> A -> A -> bool |
     forall l, let G := fun x y => F l x y = true in 
-      transitive G /\ irreflexive G /\ total G l} ->
-  eq_dec A. 
+      transitive G /\ irreflexive G /\ total G l} -> eq_dec A. 
 
 Proof.
 unfold transitive, irreflexive, total, trichotomy. do 3 intro. destruct H.
