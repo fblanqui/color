@@ -98,6 +98,14 @@ Proof.
 intros. unfold red. exists l. exists r. exists c. auto.
 Qed.
 
+Lemma red_rule_top : forall l r, In (mkRule l r) R ->
+  red R l r.
+
+Proof.
+  intros. red. exists l. exists r. exists (mkContext nil nil). 
+  repeat split; unfold fill; simpl; trivial || rewrite <- app_nil_end; trivial. 
+Qed.
+
 Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 
 Proof.
