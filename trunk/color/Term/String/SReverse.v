@@ -28,7 +28,7 @@ Notation reverses := (List.map reverse).
 Lemma red_rev : forall R t u, red R t u -> red (reverses R) (rev' t) (rev' u).
 
 Proof.
-intros. redtac. subst t. subst u. unfold fill. repeat rewrite rev'_app.
+intros. redtac. unfold fill. repeat rewrite rev'_app.
 repeat rewrite app_ass. exists (rev' l). exists (rev' r).
 exists (mkContext (rev' (rgt c)) (rev' (lft c))). intuition.
 change (In (reverse (mkRule l r)) (reverses R)). apply in_map. exact H.
@@ -46,7 +46,7 @@ Lemma red_mod_rev : forall E R t u,
   red_mod E R t u -> red_mod (reverses E) (reverses R) (rev' t) (rev' u).
 
 Proof.
-intros. redtac. exists (rev' x). split. apply red_rev_rtc. exact H.
+intros. redtac. exists (rev' (fill c l)). split. apply red_rev_rtc. exact H.
 apply red_rev. exists l. exists r. exists c. auto.
 Qed.
 

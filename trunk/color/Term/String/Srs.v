@@ -68,11 +68,14 @@ Implicit Arguments mkRule [Sig].
 Ltac redtac := repeat
   match goal with
     | H : red _ ?t ?u |- _ =>
-      let l := fresh "l" in let r := fresh "r" in let c := fresh "c" in
-      let h1 := fresh in
-      (unfold red in H; destruct H as [l]; destruct H as [r];
-        destruct H as [c]; destruct H as [H h1]; destruct h1)
-    | H : red_mod _ _ _ _ |- _ => do 2 destruct H; redtac
+      let l := fresh "l" in 
+      let r := fresh "r" in 
+      let c := fresh "c" in
+      let w := fresh "ww" in
+      unfold red in H; destruct H as [l [r [c [? [? ?]]]]]; try subst
+
+    | H : red_mod _ _ _ _ |- _ => 
+      do 2 destruct H; redtac
   end.
 
 (***********************************************************************)
@@ -100,7 +103,7 @@ Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (comp c c0). split. hyp.
-subst t. subst u. do 2 rewrite fill_fill. auto.
+do 2 rewrite fill_fill. auto.
 Qed.
 
 Lemma rtc_red_fill : forall c t u,
@@ -126,8 +129,8 @@ Qed.
 Lemma red_mod_empty_incl_red : red_mod nil R << red R.
 
 Proof.
-unfold inclusion. intros. redtac. ded (red_nil_rtc H). subst x0.
-subst x. subst y. apply red_rule. exact H0.
+unfold inclusion. intros. redtac. ded (red_nil_rtc H). subst.
+apply red_rule. exact H0.
 Qed.
 
 Lemma red_incl_red_mod_empty : red R << red_mod nil R.
