@@ -896,8 +896,15 @@ Lemma In_flat_map_intro : forall x l y,
   In y l -> In x (f y) -> In x (flat_map f l).
 
 Proof.
-induction l; simpl; intuition.
-subst. apply in_appl. hyp. apply in_appr. eapply IHl. apply H1. hyp.
+  intros. apply (proj2 (@in_flat_map _ _ f l x)).
+  exists y. auto.
+Qed.
+
+Lemma In_flat_map_elim : forall l y, 
+  In y (flat_map f l) -> exists x, In x l /\ In y (f x).
+
+Proof.
+  intros. exact (proj1 (@in_flat_map _ _ _ _ _) H).
 Qed.
 
 Lemma flat_map_app : forall l m,
