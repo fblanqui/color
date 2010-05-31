@@ -79,16 +79,16 @@ Lemma Vcons_eq_elim : forall a1 a2 n (v1 v2 : vec n),
   Vcons a1 v1 = Vcons a2 v2 -> a1 = a2 /\ v1 = v2.
 
 Proof.
-  intros. Veqtac. auto.
+intros. Veqtac. auto.
 Qed.
 
 Lemma Vcons_eq : forall a1 a2 n (v1 v2 : vec n),
   Vcons a1 v1 = Vcons a2 v2 <-> a1 = a2 /\ v1 = v2.
 
 Proof with auto.
-  split; intros. 
-  apply Vcons_eq_elim... 
-  destruct H. apply Vcons_eq_intro...
+split; intros. 
+apply Vcons_eq_elim... 
+destruct H. apply Vcons_eq_intro...
 Qed.
 
 Lemma Vtail_eq : forall a n (v1 v2 : vec n), v1 = v2 ->
