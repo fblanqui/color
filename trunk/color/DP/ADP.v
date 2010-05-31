@@ -37,14 +37,16 @@ Variable R : rules.
 (***********************************************************************)
 (** definition of dependancy pairs *)
 
-Definition nbsubterm_of (t u : term) := negb (bsubterm u t).
+Definition negb_subterm (t u : term) := negb (bsubterm u t).
 
 Fixpoint mkdp (S : rules) : rules :=
   match S with
     | nil => nil
-    | a :: S' => let (l,r) := a in
-      map (mkRule l) (filter (nbsubterm_of l) (calls R r)) ++ mkdp S'
+    | a :: S' => let (l, r) := a in
+      map (mkRule l) (filter (negb_subterm l) (calls R r)) ++ mkdp S'
   end.
+
+Definition dp := mkdp R.
 
 Lemma mkdp_app : forall l1 l2, mkdp (l1 ++ l2) = mkdp l1 ++ mkdp l2.
 
@@ -54,7 +56,7 @@ rewrite IHl1. refl.
 Qed.
 
 Lemma mkdp_elim : forall l t S, In (mkRule l t) (mkdp S) -> exists r,
-  In (mkRule l r) S /\ In t (calls R r) /\ nbsubterm_of l t = true.
+  In (mkRule l r) S /\ In t (calls R r) /\ negb_subterm l t = true.
 
 Proof.
 induction S; simpl; intros. contradiction. destruct a.
@@ -67,13 +69,11 @@ Qed.
 
 Implicit Arguments mkdp_elim [l t S].
 
-Definition dp := mkdp R.
-
 (***********************************************************************)
 (** basic properties *)
 
 Lemma dp_intro : forall l r t, In (mkRule l r) R -> In t (calls R r) ->
-  nbsubterm_of l t = true -> In (mkRule l t) dp.
+  negb_subterm l t = true -> In (mkRule l t) dp.
 
 Proof.
 intros. ded (in_elim H). do 2 destruct H2. ded (in_elim H0). do 2 destruct H3.
@@ -83,7 +83,7 @@ apply in_appr. apply in_appl. apply in_appr. apply in_eq.
 Qed.
 
 Lemma dp_elim : forall l t, In (mkRule l t) dp -> exists r,
-  In (mkRule l r) R /\ In t (calls R r) /\ nbsubterm_of l t = true.
+  In (mkRule l r) R /\ In t (calls R r) /\ negb_subterm l t = true.
 
 Proof.
 intros. apply mkdp_elim. hyp.
@@ -92,7 +92,7 @@ Qed.
 Implicit Arguments dp_elim [l t].
 
 Lemma in_calls_hd_red_dp : forall l r t s, In (mkRule l r) R ->
-  In t (calls R r) -> nbsubterm_of l t = true -> hd_red dp (sub s l) (sub s t).
+  In t (calls R r) -> negb_subterm l t = true -> hd_red dp (sub s l) (sub s t).
 
 Proof.
 intros. exists l. exists t. exists s. intuition.
@@ -128,7 +128,7 @@ Qed.*)
 Definition chain := int_red R # @ hd_red dp.
 
 Lemma in_calls_chain : forall l r t s, In (mkRule l r) R ->
-  In t (calls R r) -> nbsubterm_of l t = true -> chain (sub s l) (sub s t).
+  In t (calls R r) -> negb_subterm l t = true -> chain (sub s l) (sub s t).
 
 Proof.
 intros. unfold chain, compose. exists (sub s l). split. apply rt_refl.
@@ -184,7 +184,7 @@ Implicit Arguments hyp2 [l r].
 (** dp preserves variables *)
 
 Lemma dp_elim_vars : forall l t, In (mkRule l t) dp -> exists r,
-  In (mkRule l r) R /\ In t (calls R r) /\ nbsubterm_of l t = true
+  In (mkRule l r) R /\ In t (calls R r) /\ negb_subterm l t = true
   /\ incl (vars t) (vars l).
 
 Proof.
@@ -270,7 +270,7 @@ ded (in_calls H8). destruct H9 as [g]. destruct H9 as [vs]. destruct H9.
 eapply calls_sn with (r := r). hyp.
 intros. apply Hsnsx. apply (hyp2 lr _ H11).
 intros h ws H13 H14.
-case_eq (nbsubterm_of l (Fun h ws)). rename H11 into z.
+case_eq (negb_subterm l (Fun h ws)). rename H11 into z.
 apply IH2 with (y := Fun h (Vmap (sub s) ws)) (f := h) (ts := Vmap (sub s) ws).
 unfold chain_min. split. 
 rewrite H7. rewrite <- sub_fun. eapply in_calls_chain. 
@@ -279,7 +279,7 @@ split. simpl. apply Vforall_lforall. trivial.
 simpl. apply Vforall_lforall. trivial.
 eapply in_calls_defined. apply H13. refl. hyp.
 (* Dershowitz' improvement *)
-revert H11. unfold nbsubterm_of. rewrite negb_lr. simpl negb.
+revert H11. unfold negb_subterm. rewrite negb_lr. simpl negb.
 rewrite bsubterm_ok. intro H11.
 rewrite H2 in H11. destruct (subterm_fun_elim H11). destruct H12.
 apply subterm_eq_sn with (t := sub s x0). eapply Vforall_in. apply Hsnts.
