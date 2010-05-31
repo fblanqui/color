@@ -10,8 +10,8 @@ Rewriting.
 This file gives definitions on rewrite systems:
 - rule         == Type of rewriting rule. It is a pair of term. A left
                   hand (lhs) and a right hand (rhs).
-* Definitions on rule :
-   - beq_rule   == boolean equality on rule.
+* Definitions on rule:
+  - beq_rule   == boolean equality on rule.
 
 In addition to this definitions some proofs and results are given.
 *)
@@ -124,13 +124,13 @@ Variable R : rules.
 Definition red u v := exists l, exists r, exists c, exists s,
   In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
-(* Relation associated to the TRS R where the rewriting is only allowed at *)
-(* root *)
+(* Relation associated to the TRS R where the rewriting is only
+allowed at the root *)
 Definition hd_red u v := exists l, exists r, exists s,
   In (mkRule l r) R /\ u = sub s l /\ v = sub s r.
 
-(* Relation associated to the TRS R where the rewriting is allowed anywhere *)
-(* but the root *)
+(* Relation associated to the TRS R where the rewriting is allowed
+anywhere but at the root *)
 Definition int_red u v := exists l, exists r, exists c, exists s,
   c <> Hole
   /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
@@ -164,19 +164,19 @@ Section rewriting_modulo.
 
 Variables (S : relation term) (E R : rules).
 
+(* Composition of the reflexive and transitive closure of E (as a
+relation) and the relation of rewriting with R *)
+Definition red_mod := red E # @ red R.
+
 (* Composition of the relation S and the relation of head rewriting with R *)
 Definition hd_red_Mod := S @ hd_red R.
 
-(* Composition of the reflexive and transitive closure of E (as a relation) *)
-(* and the relation of rewriting with R *)
-Definition red_mod := red E # @ red R.
-
-(* Composition of the reflexive and transitive closure of E (as a relation) *)
-(* and the relation of head rewriting with R *)
+(* Composition of the reflexive and transitive closure of E (as a
+relation) and the relation of head rewriting with R *)
 Definition hd_red_mod := red E # @ hd_red R.
 
-(* Defines a notion of minimal modulo rewriting relation. It's the *)
-(* restriction of hd_red_mod to the minimal non SN terms. *)
+(* Defines a notion of minimal modulo rewriting relation. It's the
+restriction of hd_red_mod to the minimal non SN terms. *)
 Definition hd_red_mod_min s t := hd_red_mod s t 
   /\ lforall (SN (red E)) (direct_subterms s)
   /\ lforall (SN (red E)) (direct_subterms t).

@@ -18,6 +18,9 @@ Require Import EqUtil.
 Require Import BoolUtil.
 Require Import NatUtil.
 Require Import Max.
+Require Import VecUtil.
+Require Import VecMax.
+Require Import ListMax.
 
 Notation variables := (list variable).
 
@@ -27,8 +30,6 @@ Variable Sig : Signature.
 
 (***********************************************************************)
 (** terms *)
-
-Require Import VecUtil.
 
 Inductive term : Type :=
   | Var : variable -> term
@@ -258,8 +259,6 @@ Defined.*)
 (***********************************************************************)
 (** maximal variable index in a term *)
 
-Require Import VecMax.
-
 Fixpoint maxvar (t : term) : nat :=
   match t with
     | Var x => x
@@ -417,8 +416,6 @@ Proof.
 induction v; unfold maxvars; simpl; intros. contradiction. destruct H0.
 subst t. apply le_max_intro_l. hyp. apply le_max_intro_r. apply IHv; hyp.
 Qed.
-
-Require Import ListMax.
 
 Lemma maxvar_lmax : forall t, maxvar t = lmax (vars t).
 
