@@ -178,6 +178,9 @@ Proof.
 destruct z; simpl; intuition; discr.
 Qed.
 
+(***********************************************************************)
+(** non-negative integers *)
+
 Definition is_not_neg z :=
   match z with
     | Zneg _ => false
