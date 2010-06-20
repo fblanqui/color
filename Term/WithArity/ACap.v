@@ -36,7 +36,7 @@ its property is: if capa(t) = (k,f,v) then f(v)=t
 
 f acts as an abstract context with k holes *)
 
-Definition Cap := sigS (fun k => ((terms k -> term) * terms k)%type).
+Definition Cap := {k : nat & (terms k -> term) * terms k }%type.
 
 Notation Caps := (vector Cap).
 
