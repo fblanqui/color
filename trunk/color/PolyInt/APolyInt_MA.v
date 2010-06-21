@@ -26,9 +26,7 @@ Module Type TPolyInt.
 
 End TPolyInt.
 
-Module PolyInt (PI : TPolyInt).
-
-  Export PI.
+Module PolyInt (Export PI : TPolyInt).
 
   (* Monotone algebra instantiated to polynomials *)
 
