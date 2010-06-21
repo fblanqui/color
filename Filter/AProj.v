@@ -303,7 +303,7 @@ Implicit Arguments mk_proj [f k].
 Definition pi : forall f : Sig, option {k | k < arity f}.
 
 Proof.
-  intro f. case_eq (proj f). exact (Some (mk_proj (hyp H))). exact None.
+intro f. case_eq (proj f). exact (Some (mk_proj (hyp H))). exact None.
 Defined.
 
 End pi.

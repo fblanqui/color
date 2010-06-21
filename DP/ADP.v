@@ -147,8 +147,7 @@ Qed.
 (***********************************************************************)
 (** minimal dependency chain (subterms are terminating) *)
 
-Definition chain_min (s : ATerm.term Sig) (t : ATerm.term Sig) : Prop :=
-  chain s t 
+Definition chain_min s t := chain s t 
   /\ lforall (SN (red R)) (direct_subterms s)
   /\ lforall (SN (red R)) (direct_subterms t).
 
