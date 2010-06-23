@@ -31,7 +31,7 @@ Notation term := (term Sig). Notation terms := (vector term).
 
 Inductive context : Type :=
   | Hole : context
-  | Cont : forall f : Sig, forall i j : nat, i + S j = arity f ->
+  | Cont : forall (f : Sig) (i j : nat), i + S j = arity f ->
     terms i -> context -> terms j -> context.
 
 Implicit Arguments Cont [f i j].
