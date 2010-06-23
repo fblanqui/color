@@ -32,6 +32,7 @@ Require Import BoolUtil.
 Require Import EqUtil.
 Require Import NatUtil.
 Require Import Basics.
+Require Import Program.Syntax.
 
 Section basic_definitions.
 
@@ -121,19 +122,18 @@ Section rewriting.
 Variable R : rules.
 
 (* Relation associated to the TRS R *)
-Definition red u v := exists l, exists r, exists c, exists s,
+Definition red u v := exists l r c s,
   In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
 (* Relation associated to the TRS R where the rewriting is only
 allowed at the root *)
-Definition hd_red u v := exists l, exists r, exists s,
+Definition hd_red u v := exists l r s,
   In (mkRule l r) R /\ u = sub s l /\ v = sub s r.
 
 (* Relation associated to the TRS R where the rewriting is allowed
 anywhere but at the root *)
-Definition int_red u v := exists l, exists r, exists c, exists s,
-  c <> Hole
-  /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
+Definition int_red u v := exists l r c s, c <> Hole /\
+  In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
 Definition NF u := forall v, ~red u v.
 
