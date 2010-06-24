@@ -241,18 +241,30 @@ Implicit Arguments PI_term_int_eq [t k].
 Require Import ATrs.
 Require Import Max.
 
-Definition rulePoly_ge r := 
-  let mvl := maxvar (lhs r) in
-  let mvr := maxvar (rhs r) in
-  let m := max mvl mvr in
-    pplus (termpoly (inject_term (le_max_l mvl mvr)))
-      (popp (termpoly (inject_term (le_max_r mvl mvr)))).
+(* TODO Temporarily introducing some notations for the following 2 definitions,
+   for the paper.
+   They should be extended and used more consistently in all polynomial-related
+   definitions.
+ *)
 
-Definition rulePoly_gt r :=
-  let mvl := maxvar (lhs r) in
-  let mvr := maxvar (rhs r) in
-  let m := max mvl mvr in
-    pplus (rulePoly_ge r) (popp (pconst (S m) 1)).
+Infix "+" := pplus : poly_scope.
+Notation "- y" := (popp y) : poly_scope.
+Notation "x - y" := (x + (- y))%poly : poly_scope.
+Notation "'0'" := (pconst _ 0) : poly_scope.
+Notation "'1'" := (pconst _ 1) : poly_scope.
+
+Bind Scope poly_scope with poly.
+Open Scope poly_scope.
+
+Hint Unfold maxvar_le.
+Hint Resolve le_max_l le_max_r.
+
+Program Definition rulePoly_ge rule := 
+  let l := lhs rule in let r := rhs rule in
+  let m := max (maxvar l) (maxvar r) in
+  termpoly (@inject_term _ m l _) - termpoly (@inject_term _ m r _).
+
+Definition rulePoly_gt rule := rulePoly_ge rule - 1.
 
 (***********************************************************************)
 (** compatibility *)
