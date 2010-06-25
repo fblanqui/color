@@ -28,7 +28,7 @@ Defined.
 
 (** polynomials with n variables *)
 
-Definition poly n := (list (Z * monom n)).
+Definition poly n := list (Z * monom n).
 
 Delimit Scope poly_scope with poly.
 Bind Scope poly_scope with poly.
