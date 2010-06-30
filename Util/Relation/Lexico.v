@@ -49,7 +49,7 @@ Proof.
 intros a b SN_ab a' eqaa'. inversion SN_ab. apply SN_intro.
 destruct y as (a'',b'). intro H'. inversion H'; subst a'0 b'0 a0 b0; apply H.
 apply lexp1. apply (inclusion_elim Hcomp). exists a'. auto.
-apply lexp2. apply (eqA_trans eqaa' H4). exact H6.
+apply lexp2. apply (eqA_trans eqaa' H3). exact H5.
 Qed.
 
 Lemma lexp_SN :
