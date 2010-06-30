@@ -200,215 +200,27 @@ Notation find := (@find _ eq_var_bool _).
 End Make_Term.
 
 (***********************************************************************)
-(** convert a CoLoR precedence into a Coccinelle precedence *)
+(** module type for using Coccinelle's RPO *)
 
-Require Import rpo.
+Require Import rpo rpo_extension.
 
 Module Type PRECEDENCE.
   Parameter Sig : Signature.
   Parameter status : Sig -> status_type.
-  Parameter prec : Sig -> nat.
+  Parameter prec_nat : Sig -> nat.
   Parameter bb : nat.
+  Parameter prec_eq_status :
+    forall f g, prec_eq prec_nat f g -> status f = status g.
 End PRECEDENCE.
 
-Require Import RelUtil.
-Require Import Wf_nat.
-
-Module Make_Precedence (P : PRECEDENCE).
-
-  Definition A := symbol P.Sig.
-  Definition status := P.status.
-  Definition prec := Rof lt P.prec.
-  Definition prec_bool f g := bgt_nat (P.prec g) (P.prec f).
-
-  Lemma prec_ok : forall f g, prec_bool f g = true <-> prec f g.
-
-  Proof.
-    intros f g. apply bgt_nat_ok.
-  Qed.
-
-  Lemma prec_bool_ok : forall a1 a2,
-    match prec_bool a1 a2 with true => prec a1 a2 | false => ~prec a1 a2 end.
-
-  Proof.
-    intros a1 a2. case_eq (prec_bool a1 a2). rewrite <- prec_ok. hyp.
-    intro h. rewrite <- prec_ok in h. rewrite H in h. discr.
-  Qed.
-
-  Lemma prec_antisym : forall s, prec s s -> False.
-
-  Proof.
-    intro s. unfold prec, Rof. intro. omega.
-  Qed.
-
-  Lemma prec_transitive : transitive prec.
-
-  Proof.
-    intros x y z. unfold prec, Rof. omega.
-  Qed.
-
-  Lemma prec_wf : well_founded prec.
-
-  Proof.
-    apply well_founded_ltof.
-  Qed.
-
-  Definition Prec := Build_Precedence
-    status prec_bool prec_bool_ok prec_antisym prec_transitive.
-
-End Make_Precedence.
-
 (***********************************************************************)
-(** convert Coccinelle RPO into a CoLoR WeakRedPair using rpo_dec *)
+(** convert Coccinelle RPO into a CoLoR WeakRedPair *)
 
-Require Import ARedPair.
-Require Import ARelation.
-
-Module Make_RPO_dec (Import P : PRECEDENCE) <: WeakRedPair.
-
-  Module Q := Make_Precedence P.
-
-  Module S. Definition Sig := Sig. End S.
-
-  Module Import Term := Make_Term S.
-
-  Module Import Rpo := rpo.Make Term.
-
-  Notation rpo := (rpo Q.Prec P.bb).
-
-  Definition Sig := Sig.
-  Definition succ := transp (Rof rpo term_of_aterm).
-
-  Require Import Inverse_Image.
-
-  Lemma wf_succ : WF succ.
-
-  Proof.
-    apply wf_WF_transp. apply wf_inverse_image. apply wf_rpo. apply Q.prec_wf.
-  Qed.
-
-  Require Import Max.
-
-  Lemma sc_succ : substitution_closed succ.
-
-  Proof.
-    intros t u s h. unfold succ, transp, Rof. set (k:=max(maxvar t)(maxvar u)).
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_r.
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_l.
-    apply rpo_subst. hyp.
-  Qed.
-
-  Definition bsucc t u :=
-    match rpo_dec Q.Prec P.bb (term_of_aterm u) (term_of_aterm t) with
-      | left _ => true
-      | right _ => false
-    end.
-
-  Lemma bsucc_ok : forall t u, bsucc t u = true <-> succ t u.
-
-  Proof.
-    intros t u. unfold bsucc.
-    case (rpo_dec Q.Prec P.bb (term_of_aterm u) (term_of_aterm t)); intuition.
-    discr.
-  Qed.
-
-  Lemma bsucc_sub : rel bsucc << succ.
-
-  Proof.
-    intros t u. unfold rel. rewrite bsucc_ok. auto.
-  Qed.
-
-  Definition equiv_aterm := Rof (equiv Q.Prec) term_of_aterm.
-
-  Definition succeq := succ U equiv_aterm.
-
-  Lemma sc_succeq : substitution_closed succeq.
-
-  Proof.
-    intros t u s [h|h]. left. apply sc_succ. hyp. right.
-    unfold equiv_aterm, Rof. set (k := max (maxvar t) (maxvar u)).
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_l.
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_r.
-    apply equiv_subst. hyp.
-  Qed.
-
-  Lemma cc_succ : context_closed succ.
-
-  Proof.
-    intros t u c h. unfold succ, transp, Rof.
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=t).
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=u).
-    apply rpo_add_context. hyp. apply is_a_pos_context.
-  Qed.
-
-  Lemma cc_equiv_aterm : context_closed equiv_aterm.
-
-  Proof.
-    intros t u c h. unfold equiv_aterm, Rof.
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=t).
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=u).
-    apply equiv_add_context. hyp. apply is_a_pos_context.
-  Qed.
-
-  Lemma cc_succeq : context_closed succeq.
-
-  Proof.
-    intros t u c [h|h]. left. apply cc_succ. hyp.
-    right. apply cc_equiv_aterm. hyp.
-  Qed.
-
-  Lemma refl_succeq : reflexive succeq.
-
-  Proof.
-    intro t. right. apply Eq.
-  Qed.
-
-  Lemma succ_succeq_compat : absorb succ succeq.
-
-  Proof.
-    intros t v [u [[h1|h1] h2]]. apply rpo_trans with (term_of_aterm u); hyp.
-    unfold succ, transp, Rof. rewrite equiv_rpo_equiv_1. apply h2. hyp.
-  Qed.
-
-  Definition bequiv t u :=
-    match equiv_dec Q.Prec (term_of_aterm t) (term_of_aterm u) with
-      | left _ => true
-      | right _ => false
-    end.
-
-  Lemma bequiv_ok : forall t u, bequiv t u = true <-> equiv_aterm t u.
-
-  Proof.
-    intros t u. unfold bequiv, equiv_aterm, Rof.
-    case (equiv_dec Q.Prec (term_of_aterm t) (term_of_aterm u)); intuition.
-    discr.
-  Qed.
-
-  Definition bsucceq t u := bsucc t u || bequiv t u.
-
-  Require Import BoolUtil.
-
-  Lemma bsucceq_ok : forall t u, bsucceq t u = true <-> succeq t u.
-
-  Proof.
-    intros t u. unfold bsucceq, succeq. rewrite orb_eq. rewrite bsucc_ok.
-    rewrite bequiv_ok. unfold Relation_Operators.union. tauto.
-  Qed.
-
-  Definition bsucceq_sub : rel bsucceq << succeq.
-
-  Proof.
-    intros t u. unfold rel. rewrite bsucceq_ok. auto.
-  Qed.
-
-End Make_RPO_dec.
-
-(***********************************************************************)
-(** convert Coccinelle RPO into a CoLoR WeakRedPair using rpo_eval *)
+Require Import ARedPair ARelation RelUtil BoolUtil.
 
 Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
-  Module Q := Make_Precedence P.
+  Definition Prec := Precedence status prec_nat prec_eq_status.
 
   Module S. Definition Sig := Sig. End S.
 
@@ -416,7 +228,7 @@ Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Module Import Rpo := rpo.Make Term.
 
-  Notation rpo := (rpo Q.Prec P.bb).
+  Notation rpo := (rpo Prec P.bb).
 
   Definition Sig := Sig.
   Definition succ := transp (Rof rpo term_of_aterm).
@@ -426,7 +238,8 @@ Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Lemma wf_succ : WF succ.
 
   Proof.
-    apply wf_WF_transp. apply wf_inverse_image. apply wf_rpo. apply Q.prec_wf.
+    apply wf_WF_transp. apply wf_inverse_image. apply wf_rpo.
+    apply (prec_wf prec_nat).
   Qed.
 
   Require Import Max.
@@ -440,7 +253,7 @@ Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     apply rpo_subst. hyp.
   Qed.
 
-  Notation empty_rpo_infos := (empty_rpo_infos Q.Prec P.bb).
+  Notation empty_rpo_infos := (empty_rpo_infos Prec P.bb).
   Notation rpo_eval := (rpo_eval empty_rpo_infos P.bb).
   Notation rpo_eval_is_sound := (rpo_eval_is_sound_weak empty_rpo_infos P.bb).
 
@@ -467,7 +280,7 @@ Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     intros t u. unfold rel. intro h. apply bsucc_ok. hyp.
   Qed.
 
-  Definition equiv_aterm := Rof (equiv Q.Prec) term_of_aterm.
+  Definition equiv_aterm := Rof (equiv Prec) term_of_aterm.
 
   Definition succeq := succ U equiv_aterm.
 
@@ -542,3 +355,131 @@ Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Qed.
 
 End Make_RPO.
+
+(***********************************************************************)
+(** decide compatibility of statuses wrt precedences *)
+
+Definition beq_status s1 s2 :=
+  match s1, s2 with
+    | Lex, Lex
+    | Mul, Mul => true
+    | _, _ => false
+  end.
+
+Lemma beq_status_ok : forall s1 s2, beq_status s1 s2 = true <-> s1 = s2.
+
+Proof.
+beq_symb_ok.
+Qed.
+
+Section prec_eq_status.
+
+  Variables (Sig : Signature) (status : Sig -> status_type)
+    (prec_nat : Sig -> nat).
+
+  Lemma prec_eq_ok : forall f g,
+    prec_eq_bool prec_nat f g = true <-> prec_eq prec_nat f g.
+
+  Proof.
+    intros f g. generalize (prec_eq_bool_ok prec_nat f g). intuition.
+    rewrite H1 in H. hyp. case_eq (prec_eq_bool prec_nat f g).
+    refl. rewrite H2 in H. absurd (prec_eq prec_nat f g); hyp.
+  Qed.
+
+  Definition bprec_eq_status_symb f g :=
+    implb (prec_eq_bool prec_nat f g) (beq_status (status f) (status g)).
+
+  Lemma bprec_eq_status_symb_ok : forall f g,
+    bprec_eq_status_symb f g = true
+    <-> (prec_eq prec_nat f g -> status f = status g).
+
+  Proof.
+    intros f g. unfold bprec_eq_status_symb, implb.
+    case_eq (prec_eq_bool prec_nat f g).
+    rewrite prec_eq_ok in H. rewrite beq_status_ok. intuition.
+    intuition. rewrite <- prec_eq_ok in H1. rewrite H in H1. discr.
+  Qed.
+
+  Section bprec_eq_status_aux1.
+
+    Variable f : Sig.
+
+    Fixpoint bprec_eq_status_aux1 b gs :=
+      match gs with
+        | nil => b
+        | g :: gs' => bprec_eq_status_aux1 (b && bprec_eq_status_symb f g) gs'
+      end.
+
+    Lemma bprec_eq_status_aux1_true : forall gs b,
+      bprec_eq_status_aux1 b gs = true -> b = true.
+
+    Proof.
+      induction gs; simpl; intros. hyp.
+      cut (b && bprec_eq_status_symb f a = true). rewrite andb_eq. intuition.
+      apply IHgs. hyp.
+    Qed.
+
+    Implicit Arguments bprec_eq_status_aux1_true [gs b].
+
+    Lemma bprec_eq_status_aux1_ok : forall gs b,
+      bprec_eq_status_aux1 b gs = true ->
+      forall g, In g gs -> prec_eq prec_nat f g -> status f = status g.
+
+    Proof.
+      induction gs; simpl; intros. contradiction. destruct H0.
+      subst g. ded (bprec_eq_status_aux1_true H). rewrite andb_eq in H0.
+      destruct H0. rewrite bprec_eq_status_symb_ok in H2. intuition.
+      eapply IHgs. apply H. hyp. hyp.
+    Qed.
+
+  End bprec_eq_status_aux1.
+
+  Implicit Arguments bprec_eq_status_aux1_ok [f gs b].
+
+  Fixpoint bprec_eq_status_aux2 b fs :=
+    match fs with
+      | nil => b
+      | f :: fs' => bprec_eq_status_aux2 (bprec_eq_status_aux1 f b fs') fs'
+    end.
+
+  Lemma bprec_eq_status_aux2_true : forall fs b,
+    bprec_eq_status_aux2 b fs = true -> b = true.
+
+  Proof.
+    induction fs; simpl; intros. hyp. eapply bprec_eq_status_aux1_true.
+    apply IHfs. apply H.
+  Qed.
+
+  Implicit Arguments bprec_eq_status_aux2_true [fs b].
+
+  Lemma bprec_eq_status_aux2_ok : forall fs b,
+    bprec_eq_status_aux2 b fs = true -> forall f g, In f fs -> In g fs ->
+      prec_eq prec_nat f g -> status f = status g.
+
+  Proof.
+    induction fs; simpl; intros. contradiction. destruct H0; destruct H1.
+    subst f. subst g. refl.
+    subst f. ded (bprec_eq_status_aux2_true H).
+    apply (bprec_eq_status_aux1_ok H0); hyp.
+    subst g. ded (bprec_eq_status_aux2_true H).
+    symmetry. apply (bprec_eq_status_aux1_ok H1). hyp. apply prec_eq_sym. hyp.
+    eapply IHfs; eassumption.
+  Qed.
+  
+  Definition bprec_eq_status := bprec_eq_status_aux2 true.
+
+  Variable (Fs : list Sig) (Fs_ok : forall f, In f Fs).
+
+  Lemma bprec_eq_status_ok : bprec_eq_status Fs = true ->
+    forall f g, prec_eq prec_nat f g -> status f = status g.
+
+  Proof.
+    intros. eapply bprec_eq_status_aux2_ok. eassumption.
+    apply Fs_ok. apply Fs_ok. hyp.
+  Qed.
+
+End prec_eq_status.
+
+Implicit Arguments bprec_eq_status_ok [Sig Fs].
+
+Ltac prec_eq_status s p o := apply (bprec_eq_status_ok s p o); check_eq.

@@ -19,10 +19,16 @@ Section MakePrecedence.
   Variable status : A -> rpo.status_type.
   Variable prec_nat : A -> nat.
 
-  Definition prec (a1 a2 : A) := prec_nat a1 < prec_nat a2.
+   Definition prec (a1 a2 : A) := prec_nat a1 < prec_nat a2.
+
+   Definition prec_eq (a1 a2 : A) :=  eq_nat (prec_nat a1) (prec_nat a2).
+
   Definition prec_bool (a1 a2 : A) := leb (S (prec_nat a1)) (prec_nat a2).
 
-  Lemma prec_bool_ok : forall a1 a2,
+  Definition prec_eq_bool (a1 a2 : A) := beq_nat (prec_nat a1)  (prec_nat a2).
+
+
+Lemma prec_bool_ok : forall a1 a2,
     if prec_bool a1 a2 then prec a1 a2 else ~prec a1 a2.
   Proof.
     intros; case_eq (prec_bool a1 a2); intros;
@@ -32,6 +38,19 @@ Section MakePrecedence.
     unfold prec_bool in H; rewrite H0 in H;
     discriminate H.
   Qed.
+
+Lemma prec_eq_bool_ok: forall a1 a2, match prec_eq_bool a1 a2 with true => prec_eq a1 a2 | false => ~prec_eq a1 a2 end.
+Proof.
+unfold prec. unfold prec_eq.    unfold prec_eq_bool. 
+intros; case_eq( beq_nat (prec_nat a1) (prec_nat a2)); intros.
+assert (prec_nat a1 = prec_nat a2).   
+apply beq_nat_eq. rewrite H. trivial. rewrite H0. apply eq_nat_refl.
+intro.
+assert (prec_nat a1 = prec_nat a2).
+apply eq_nat_eq; trivial.
+contradict H1.
+apply beq_nat_false. trivial.
+Qed.
 
   Lemma prec_antisym : forall a, prec a a -> False.
   Proof.
@@ -43,13 +62,52 @@ Section MakePrecedence.
     intros a b c H1 H2; apply lt_trans with (prec_nat b); assumption.
   Qed.
 
-  Lemma prec_wf : well_founded prec.
+  Lemma prec_eq_transitive : transitive A prec_eq.
+  Proof.
+intros a b c H1 H2. unfold prec_eq. unfold prec_eq in H2. unfold prec_eq in H1. assert (H3: prec_nat a = prec_nat b).  apply eq_nat_eq.  trivial. assert (H4: prec_nat b = prec_nat c). apply eq_nat_eq. trivial. assert (H5: prec_nat a = prec_nat c). omega. rewrite H5. apply eq_nat_refl.
+  Qed.
+
+Lemma prec_eq_prec1: forall a1 a2 a3, prec a1 a2 -> prec_eq a2 a3 -> prec a1 a3.
+Proof.
+unfold prec. unfold prec_eq. intros. assert (prec_nat a2 = prec_nat a3). apply eq_nat_eq. trivial. rewrite <- H1. trivial. 
+Qed.
+
+Lemma prec_eq_prec2:  forall a1 a2 a3, prec a1 a2 -> prec_eq a1 a3 -> prec a3 a2.
+Proof.
+unfold prec. unfold prec_eq. intros. assert (prec_nat a1= prec_nat a3). apply eq_nat_eq. trivial. rewrite <- H1. trivial. 
+Qed.
+  
+Lemma  prec_eq_sym : forall s t, prec_eq s t -> prec_eq t s.
+Proof.
+unfold prec_eq. intros. assert (prec_nat s = prec_nat t). apply eq_nat_eq. trivial. rewrite H0. apply eq_nat_refl.
+Qed.
+
+Lemma  prec_eq_refl : forall s, prec_eq s s.
+Proof.
+unfold prec_eq. intros. apply eq_nat_refl.
+Qed.
+ 
+Hypothesis  prec_eq_status: forall f g, prec_eq f g -> status f = status g. 
+
+(* Proof. *)
+(* unfold prec. unfold prec_eq. *)
+(* intros. *)
+(* assert (prec_nat f = prec_nat g). apply eq_nat_eq. trivial. omega. *)
+(* Qed. *)
+
+Lemma prec_not_prec_eq: forall f g, prec f g -> prec_eq f g -> False.
+Proof.
+unfold prec. unfold prec_eq. intros.
+assert (prec_nat f = prec_nat g). apply eq_nat_eq. trivial. omega.
+Qed.
+
+Lemma prec_wf : well_founded prec.
   Proof.
     apply Inverse_Image.wf_inverse_image; apply lt_wf.
   Qed.
 
   Definition Precedence := rpo.Build_Precedence status
-    prec_bool prec_bool_ok prec_antisym prec_transitive.
+    prec_bool prec_eq_bool prec_bool_ok prec_eq_bool_ok prec_antisym prec_transitive prec_eq_transitive prec_eq_prec1 prec_eq_prec2 prec_eq_sym prec_eq_refl prec_eq_status prec_not_prec_eq.
 End MakePrecedence.
 
 Module MakeRpoExt (Eqt : equational_theory_spec.EqTh).
@@ -63,7 +121,9 @@ Module MakeRpoExt (Eqt : equational_theory_spec.EqTh).
     Variable prec : M.symbol -> nat.
     Variable status : M.symbol -> rpo.status_type.
 
-    Definition P := Precedence status prec.
+    Variable prec_eq_status: forall f, forall g, prec_eq prec f g -> status f = status g. 
+
+    Definition P := Precedence status  prec prec_eq_status.
 
     Lemma rpo_eq_trans : transitive _ (Rpo.rpo_eq P n).
     Proof.
@@ -151,8 +211,9 @@ Module MakeRpoLexAFS (Eqt : equational_theory_spec.EqTh).
     Variable prec : M.symbol -> nat.
     Variable status : M.symbol -> rpo.status_type.
     Variable afs_symb : M.symbol -> Afs.afs_val.
+   Variable prec_eq_status: forall f, forall g, prec_eq prec f g -> status f = status g. 
 
-    Definition P := Precedence status prec.
+    Definition P := Precedence status prec prec_eq_status.
 
     Let afs := Afs.afs_term afs_symb.
     Let rpo_afs (t1 t2 : M.term) := Rpo.rpo P n (afs t1) (afs t2).
@@ -254,8 +315,9 @@ Module MakeRpoSdpAFS (Eqt : equational_theory_spec.EqTh).
     Variable prec : M.symbol -> nat.
     Variable status : M.symbol -> rpo.status_type.
     Variable afs_symb : M.symbol -> Afs.afs_val.
+   Variable prec_eq_status: forall f, forall g, prec_eq prec f g -> status f = status g. 
 
-    Definition P := Precedence status prec.
+    Definition P := Precedence status prec prec_eq_status.
 
     Let afs := Afs.afs_term afs_symb.
     Let rpo_afs (t1 t2 : M.term) := Rpo.rpo P n (afs t1) (afs t2).
@@ -348,6 +410,7 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
 
     Variable afs_symb : T.symbol -> Afs.afs_val.
     Variable afs_symb_marked : T.symbol -> Afs.afs_val.
+  
 
     Definition prec_union (f : M.symbol) : nat :=
       match f with
@@ -383,7 +446,9 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
         end
       end.
 
-    Definition P := Precedence status_union prec_union.
+   Variable prec_eq_status: forall f, forall g, prec_eq prec_union f g -> status_union f = status_union g. 
+
+  Definition P := Precedence status_union prec_union prec_eq_status.
 
     Let afs := AfsM.afs_term afs_symb_union.
     Let rpo_afs (t1 t2 : M.term) := Rpo.rpo P n (afs t1) (afs t2).
