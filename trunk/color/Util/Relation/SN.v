@@ -21,8 +21,8 @@ Section sn.
 
 Variable (A : Type) (R : relation A).
 
-Inductive SN : A -> Prop :=
-  SN_intro : forall x, (forall y, R x y -> SN y) -> SN x.
+Inductive SN x : Prop :=
+  SN_intro : (forall y, R x y -> SN y) -> SN x.
 
 Lemma SN_inv : forall x, SN x -> forall y, R x y -> SN y.
 
@@ -347,8 +347,7 @@ Proof.
 intros x snx. induction snx as [x IH0 IH1].
 apply SN_intro. intros y xRty. destruct xRty.
 apply IH1. assumption.
-assert (SNy := IH1 y H). destruct SNy as [y' SNy']. apply SNy'.
-assumption.
+assert (SNy := IH1 y H). destruct SNy as [SNy]. apply SNy. assumption.
 Qed.
 
 End tc.
