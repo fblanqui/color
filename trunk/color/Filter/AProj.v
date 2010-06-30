@@ -286,6 +286,11 @@ End red_mod.
 End proj.
 
 (***********************************************************************)
+(** tactics *)
+
+Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
+
+(***********************************************************************)
 (** building a projection *)
 
 Variable proj : Sig -> option nat.
