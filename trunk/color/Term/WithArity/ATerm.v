@@ -381,17 +381,6 @@ destruct H1 as [t].
 exists t. intuition.
 Qed.
 
-(*
-Lemma in_vars_vec_intro : forall x t n (ts : terms n),
-  In x (vars t) -> Vin t ts -> In x (vars_vec ts).
-
-Proof.
-intros. ded (Vin_elim H0). do 5 destruct H1. subst ts.
-rewrite vars_vec_cast. rewrite vars_vec_app. simpl.
-apply in_appr. apply in_appl. exact H.
-Qed.
-*)
-
 Lemma vars_vec_in : forall x t n (ts : terms n),
   In x (vars t) -> Vin t ts -> In x (vars_vec ts).
 
