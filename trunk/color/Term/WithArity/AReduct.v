@@ -271,9 +271,7 @@ Fixpoint reducts2_vec k (us : terms k) {struct us} : list (terms k) :=
 Lemma reducts2_fun : forall f ts, reducts2 (Fun f ts)
   = top_reducts R (Fun f ts) ++ map (Fun f) (reducts2_vec ts).
 
-Proof.
-intros. simpl. apply app_eq. refl. apply map_eq. refl.
-Qed.
+Proof. auto. Qed.
 
 Lemma In_reducts2_vec_elim : forall n (vs ts : terms n),
   In vs (reducts2_vec ts) -> exists i, exists p : i < n, exists u,
