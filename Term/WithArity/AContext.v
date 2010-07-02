@@ -411,10 +411,10 @@ Proof.
 induction c. simpl. apply incl_refl. simpl fill. rewrite vars_fun. simpl.
 unfold incl. intros. ded (in_vars_vec_elim H). do 2 destruct H0.
 ded (Vin_cast_elim H0). ded (Vin_app H2). destruct H3.
-repeat apply in_appl. apply (in_vars_vec_intro H1 H3).
+repeat apply in_appl. apply (vars_vec_in H1 H3).
 simpl in H3. destruct H3. subst x. ded (IHc _ H1).
 rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
-apply in_appl. repeat apply in_appr. apply (in_vars_vec_intro H1 H3).
+apply in_appl. repeat apply in_appr. apply (vars_vec_in H1 H3).
 Qed.
 
 Lemma vars_fill_intro : forall t c, incl (cvars c ++ vars t) (vars (fill c t)).

@@ -346,9 +346,7 @@ Fixpoint vars_vec n (ts : terms n) {struct ts} : variables :=
 
 Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_vec ts.
 
-Proof.
-auto.
-Qed.
+Proof. auto. Qed.
 
 Lemma vars_vec_cast : forall n (ts : terms n) m (h : n=m),
   vars_vec (Vcast ts h) = vars_vec ts.
@@ -383,6 +381,7 @@ destruct H1 as [t].
 exists t. intuition.
 Qed.
 
+(*
 Lemma in_vars_vec_intro : forall x t n (ts : terms n),
   In x (vars t) -> Vin t ts -> In x (vars_vec ts).
 
@@ -391,6 +390,7 @@ intros. ded (Vin_elim H0). do 5 destruct H1. subst ts.
 rewrite vars_vec_cast. rewrite vars_vec_app. simpl.
 apply in_appr. apply in_appl. exact H.
 Qed.
+*)
 
 Lemma vars_vec_in : forall x t n (ts : terms n),
   In x (vars t) -> Vin t ts -> In x (vars_vec ts).
@@ -450,6 +450,29 @@ Fixpoint var_occurs_in t :=
         end
         in var_occurs_in_terms _ ts
   end.
+
+Fixpoint var_occurs_in_terms n (ts : terms n) :=
+  match ts with
+    | Vnil => false
+    | Vcons t _ ts' => var_occurs_in t || var_occurs_in_terms ts'
+  end.
+
+Lemma var_occurs_in_fun :
+ forall f ts, var_occurs_in (Fun f ts) = var_occurs_in_terms ts.
+
+Proof. auto. Qed.
+
+
+Lemma var_occurs_in_ok : forall t, var_occurs_in t = true <-> In x (vars t).
+
+Proof.
+apply term_ind_forall. intro n; simpl. rewrite (beq_nat_ok x n). intuition.
+intros f v Rfv. rewrite var_occurs_in_fun, vars_fun.
+induction v. simpl. intuition.
+simpl in Rfv. destruct Rfv as [Rfa Rfv]. simpl. rewrite orb_eq.
+split; intros H. apply in_or_app. rewrite <- Rfa, <- IHv; auto.
+rewrite Rfa, IHv; auto. apply in_app_or. auto.
+Qed.
 
 End var_occurs_in.
 
@@ -650,7 +673,6 @@ Implicit Arguments maxvar_var [Sig k x].
 Implicit Arguments maxvar_le_fun [Sig m f ts].
 Implicit Arguments maxvar_le_arg [Sig f ts m t].
 Implicit Arguments in_vars_vec_elim [Sig x n ts].
-Implicit Arguments in_vars_vec_intro [Sig x t n ts].
 Implicit Arguments vars_vec_in [Sig x t n ts].
 Implicit Arguments vars_max [Sig x t].
 Implicit Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t].
