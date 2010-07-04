@@ -98,11 +98,11 @@ Fixpoint capa (t : term) : Cap :=
   match t with
     | Var x => mkCap (fun _ => t, Vnil)
     | Fun f ts =>
-      match defined f R with
-	| true => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
-	| false => let cs := Vmap capa ts in
-	  mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
-      end
+      if defined f R then
+	mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+      else
+	let cs := Vmap capa ts in
+	mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
   end.
 
 (* number of aliens of a term *)
