@@ -22,7 +22,7 @@ default: Makefile.coq
 	$(MAKECOQ) OTHERFLAGS="-dont-load-proofs"
 
 all: Makefile.all
-	time -f %e $(MAKEALL) OTHERFLAGS="-dont-load-proofs"
+	/usr/bin/time -p $(MAKEALL) OTHERFLAGS="-dont-load-proofs"
 
 config: create_Makefile.coq create_Makefile.all
 
