@@ -2,14 +2,17 @@ Name: CoLoR
 Title: A Coq library on Rewriting and termination
 Author: Frédéric Blanqui
 Author: Sébastien Hinderer
+Author: Pierre-Yves Strub
+Author: Sidi Ould Biha
 Institution: INRIA
 Author: Solange Coupet-Grimal
 Author: William Delobel
 Institution: CNRS
-Institution: Université de la Méditerranée Aix-Marseille 2,
-Institution: Université de Provence Aix-Marseille 1,
+Institution: Université de la Méditerranée Aix-Marseille 2
+Institution: Université de Provence Aix-Marseille 1
 Author: Adam Koprowski
 Institution: Vrije Universiteit Amsterdam
+Institution: Technische Universiteit Eindhoven
 Author: Hans Zantema
 Institution: Technische Universiteit Eindhoven
 Author: Stephane Le Roux
@@ -18,6 +21,9 @@ Author: Leo Ducas
 Institution: Ecole Normale Superieure de Paris
 Author: Johannes Waldmann
 Institution: Hochschule fur Technik, Wirtschaft und Kultur (FH) Leipzig
+Author: Qian Wang
+Author: Lianyi Zhang
+Institution: Tsinghua University, Beijing, China
 Description: The aim of this Coq library is to provide the necessary
 formal basis for certifying termination proofs for rewriting systems
 Url: http://color.inria.fr
