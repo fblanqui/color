@@ -82,7 +82,7 @@ prdir
 # simple directories
 
 root=''
-for dir in `ls -1F | grep / | sed -e 's|/||' -e 's|doc||' -e 's|Util||' -e 's|Term||' -e 's|Coccinelle||' | sed -e 's|Nonin|NonTermin|'`
+for dir in `ls -1F | grep / | sed -e 's|/||' -e 's|doc||' -e 's|Subterm||' -e 's|Util||' -e 's|Term||' -e 's|Coccinelle||' | sed -e 's|Nonin|NonTermin|'`
 do
   prfiles
 done

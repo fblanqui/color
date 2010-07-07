@@ -1,4 +1,6 @@
 
+- add Subterm directory in createIndex when it will be non-empty
+
 - replace decidability lemmas by boolean functions
   in polynomial and matrix interpretations
 
