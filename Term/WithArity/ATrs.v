@@ -1121,3 +1121,15 @@ Ltac rules_preserv_vars := solve
         [ unfold incl; vm_compute; intuition
         | let H0 := fresh in do 2 intro; intro H0; apply (lforall_in H H0)]
   end] || fail "some rule does not preserve variables".*)
+
+Ltac norm_rules := match goal with |- forallb _ ?R = _ => norm R end.
+
+Ltac get_rule :=
+  match goal with |- forallb ?f ?l = _ =>
+    match l with context C [ @mkRule ?S ?l ?r] =>
+      let x := fresh "r" in set (x := @mkRule S l r);
+        let y := fresh "b" in set (y := f x); norm_in y (f x) end end.
+
+Ltac init := set(r:=0); set(r0:=0); set(b:=0); set(b0:=0).
+
+Ltac get_rules := norm_rules; repeat get_rule.
