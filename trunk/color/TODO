@@ -10,8 +10,6 @@ for k in {1,2,3} only?
 
 - semantic labelling with booleans
 
-- add boolean function for rpo
-
 - FC2
 
 - usable rules
@@ -36,9 +34,6 @@ for k in {1,2,3} only?
 
 - remove MPO top level hypotheses -> make a functor
 
-- add improvement to DP pairs by ignoring pairs where rhs is a
-subterm of lhs
-
 - make problem statement (including signature) explicit at every proof step?
 
 - replace defs and lemmas when they are added in coq std lib
@@ -47,6 +42,11 @@ subterm of lhs
 
 Done list:
 ----------
+
+- add improvement to DP pairs by ignoring pairs where rhs is a
+subterm of lhs
+
+- add boolean function for rpo
 
 - replace showArctic[BZ]IntOk by boolean test
 
