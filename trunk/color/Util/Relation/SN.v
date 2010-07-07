@@ -21,8 +21,7 @@ Section sn.
 
 Variable (A : Type) (R : relation A).
 
-Inductive SN x : Prop :=
-  SN_intro : (forall y, R x y -> SN y) -> SN x.
+Inductive SN x : Prop := SN_intro : (forall y, R x y -> SN y) -> SN x.
 
 Lemma SN_inv : forall x, SN x -> forall y, R x y -> SN y.
 
