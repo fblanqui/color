@@ -476,6 +476,15 @@ intros. ded (f_equal (fun v => @Vnth A n v i h) H).
 repeat rewrite Vnth_replace in H0. hyp.
 Qed.
 
+Lemma Vreplace_nth_eq : forall n (v : vec n) i (h : i < n),
+ Vreplace v h (Vnth v h) = v.
+
+Proof.
+intros. apply Veq_nth. intro j. case (eq_nat_dec i j); intro Eij.
+rewrite <- Eij. intro hj. rewrite (Vnth_eq v h hj); auto. apply Vnth_replace.
+intro hj. apply Vnth_replace_neq; auto.
+Qed.
+
 End Vreplace.
 
 (***********************************************************************)
