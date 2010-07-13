@@ -932,6 +932,20 @@ Proof.
 intros. apply Vsub_cast_aux.
 Qed.
 
+Lemma Vcast_sub_aux1 : forall n i k j, i + k <= n -> k = j -> i + j <= n.
+
+Proof. intros. omega. Qed.
+
+Implicit Arguments Vcast_sub_aux1 [n i k j].
+
+Lemma Vcast_sub : forall n (v : vec n) i k (h : i + k <= n) j (e : k = j),
+ Vcast (Vsub v h) e = Vsub v (Vcast_sub_aux1 h e).
+
+Proof.
+intros. apply Veq_nth. intros. rewrite Vnth_cast, !Vnth_sub.
+apply Vnth_eq. auto.
+Qed.
+
 Lemma Vcons_nth_aux1 : forall n i k, i < n -> S i+k <= n -> i+S k <= n.
 
 Proof.
@@ -1124,6 +1138,10 @@ Proof.
 intros. apply Veq_nth; intros. repeat rewrite Vnth_sub.
 rewrite Vnth_replace_neq. 2: omega. apply Vnth_eq. reflexivity.
 Qed.
+
+Lemma Vsub_app_l_aux : forall n1 n2 i, i <= n1 -> 0 + i <= n1 + n2.
+
+Proof. intros. omega. Qed.
 
 Lemma Vsub_app_l : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h : 0+n1<=n1+n2),
   Vsub (Vapp v1 v2) h = v1.

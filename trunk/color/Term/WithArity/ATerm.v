@@ -545,6 +545,36 @@ induction ts; intros; destruct m; simpl; try (refl || discriminate).
 apply (f_equal (fun l => symbs a ++ l)). apply IHts.
 Qed.
 
+Lemma symbs_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
+  symbs_vec (Vapp ts1 ts2) = symbs_vec ts1 ++ symbs_vec ts2.
+
+Proof.
+induction ts1; intros; simpl. refl. rewrite app_ass.
+apply (f_equal (fun l => symbs a ++ l)). apply IHts1.
+Qed.
+
+Lemma symbs_vec_cons : forall t n (ts : terms n),
+  symbs_vec (Vcons t ts) = symbs t ++ symbs_vec ts.
+
+Proof. intros. refl. Qed.
+
+Lemma in_symbs_vec_elim : forall x n (ts : terms n),
+  In x (symbs_vec ts) -> exists t, Vin t ts /\ In x (symbs t).
+
+Proof.
+induction ts; simpl; intros. contradiction. generalize (in_app_or H). intro.
+destruct H0. exists a. intuition. generalize (IHts H0). intro.
+destruct H1 as [t]. exists t. intuition.
+Qed.
+
+Lemma symbs_vec_in : forall x t n (ts : terms n),
+  In x (symbs t) -> Vin t ts -> In x (symbs_vec ts).
+
+Proof.
+induction ts; simpl; intros. contradiction. destruct H0. subst t.
+apply in_appl. assumption. apply in_appr. apply IHts; assumption.
+Qed.
+
 (***********************************************************************)
 (** size of a term *)
 
