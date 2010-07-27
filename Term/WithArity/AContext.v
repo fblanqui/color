@@ -426,6 +426,39 @@ rewrite app_ass. apply appl_incl. apply app_com_incl. apply appr_incl.
 exact IHc.
 Qed.
 
+(***********************************************************************)
+(** symbols of a context *)
+
+Fixpoint csymbs (c : context) : list Sig :=
+  match c with
+    | Hole => nil
+    | Cont f i j H v1 c' v2 => f :: (symbs_vec v1 ++ csymbs c' ++ symbs_vec v2)
+  end.
+
+Lemma symbs_fill_elim : forall t c,
+ incl (symbs (fill c t)) (csymbs c ++ symbs t).
+
+Proof.
+induction c. simpl. apply incl_refl. simpl fill. rewrite symbs_fun. simpl.
+intro x. simpl; intro H. destruct H. subst. left. refl. right.
+ded (in_symbs_vec_elim H). do 2 destruct H0. ded (Vin_cast_elim H0).
+ded (Vin_app H2). destruct H3. repeat apply in_appl.
+apply (symbs_vec_in H1 H3). simpl in H3. destruct H3. subst x0. ded (IHc _ H1).
+rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
+apply in_appl. repeat apply in_appr. apply (symbs_vec_in H1 H3).
+Qed.
+
+Lemma symbs_fill_intro : forall t c,
+ incl (csymbs c ++ symbs t) (symbs (fill c t)).
+
+Proof.
+induction c. simpl. apply incl_refl. simpl csymbs. simpl fill.
+rewrite symbs_fun, symbs_vec_cast, symbs_vec_app, symbs_vec_cons.
+rewrite <- app_comm_cons, app_ass. intro x. simpl. intro H. destruct H.
+subst. left. refl. right. generalize x H. clear x H. apply appl_incl.
+apply app_com_incl. apply appr_incl. exact IHc.
+Qed.
+
 End S.
 
 (***********************************************************************)

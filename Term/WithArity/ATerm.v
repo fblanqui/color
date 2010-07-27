@@ -693,6 +693,8 @@ Implicit Arguments maxvar_le_fun [Sig m f ts].
 Implicit Arguments maxvar_le_arg [Sig f ts m t].
 Implicit Arguments in_vars_vec_elim [Sig x n ts].
 Implicit Arguments vars_vec_in [Sig x t n ts].
+Implicit Arguments in_symbs_vec_elim [Sig x n ts].
+Implicit Arguments symbs_vec_in [Sig x t n ts].
 Implicit Arguments vars_max [Sig x t].
 Implicit Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t].
 Implicit Arguments Vin_size_terms_ge [Sig n ts t].
