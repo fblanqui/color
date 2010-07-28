@@ -708,7 +708,7 @@ Variable A : Type. Notation vec := (vector A).
 Fixpoint Vin (x : A) n (v : vec n) {struct v} : Prop :=
   match v with
   | Vnil => False
-  | Vcons y _ w => x = y \/ Vin x w
+  | Vcons y _ w => y = x \/ Vin x w
   end.
 
 Lemma Vin_head : forall n (v : vec (S n)), Vin (Vhead v) v.
@@ -1203,7 +1203,7 @@ Lemma Vforall_in : forall x n (v : vec n), Vforall v -> Vin x v -> P x.
 
 Proof.
 induction v; simpl. contradiction. intros Ha Hv. destruct Ha. destruct Hv.
-rewrite H1. exact H. auto.
+rewrite <- H1. exact H. auto.
 Qed.
 
 Lemma Vforall_eq : forall n (v : vec n),
@@ -1542,16 +1542,19 @@ Fixpoint list_of_vec n (v : vec n) {struct v} : list A :=
 Lemma in_list_of_vec : forall n (v : vec n) x, In x (list_of_vec v) -> Vin x v.
 
 Proof.
-induction v; simpl; intros. hyp. destruct H. auto. right. auto.
+induction v; simpl; intros. hyp. destruct H; auto.
 Qed.
 
 Lemma list_of_vec_in : forall n (v : vec n) x, Vin x v -> In x (list_of_vec v).
 
 Proof.
-induction v. auto.
-intros. destruct H; simpl.
-subst. auto.
-right. apply IHv. hyp.
+induction v; auto. intros. destruct H; simpl. auto. right. apply IHv. hyp.
+Qed.
+
+Lemma Vin_vec_of_list : forall l x, In x l <-> Vin x (vec_of_list l).
+
+Proof.
+induction l; simpl; intros. tauto. rewrite (IHl x). tauto.
 Qed.
 
 Lemma vec_of_list_exact i l (Hi : i < length(l)) :
