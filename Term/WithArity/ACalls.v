@@ -45,6 +45,26 @@ rewrite (beq_refl (@beq_symb_ok Sig)). auto. destruct a. simpl.
 destruct lhs. auto. apply orb_intror. auto.
 Qed.
 
+Lemma defined_app : forall f l1 l2,
+ defined f (l1 ++ l2) = defined f l1 || defined f l2.
+
+Proof.
+intros. induction l1; auto. simpl. destruct (lhs a); auto.
+rewrite IHl1, orb_assoc; refl.
+Qed.
+
+Lemma defined_elim : forall f R,
+ defined f R = true -> exists v, exists r, In (mkRule (Fun f v) r) R.
+
+Proof.
+intros. induction R. simpl in H. discriminate H.
+simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
+destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
+destruct (orb_prop _ _ H). Focus 2. destruct (IHR H0) as [v' H1].
+destruct H1 as [r H1]. exists v'; exists r. auto.
+rewrite beq_symb_ok in H0; rewrite H0. exists v; exists a2. left; refl.
+Qed.
+
 (***********************************************************************)
 (** list of calls to a defined symbol in a term *)
 

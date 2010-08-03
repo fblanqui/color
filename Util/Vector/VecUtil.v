@@ -1533,6 +1533,11 @@ Fixpoint vec_of_list (l : list A) : vec (length l) :=
   | cons x m => Vcons x (vec_of_list m)
   end.
 
+Lemma vec_of_list_cons : forall a l,
+ vec_of_list (a :: l) = Vcons a (vec_of_list l).
+
+Proof. auto. Qed.
+
 Fixpoint list_of_vec n (v : vec n) {struct v} : list A :=
   match v with
   | Vnil => nil
@@ -1555,6 +1560,14 @@ Lemma Vin_vec_of_list : forall l x, In x l <-> Vin x (vec_of_list l).
 
 Proof.
 induction l; simpl; intros. tauto. rewrite (IHl x). tauto.
+Qed.
+
+Lemma Vnth_vec_of_list : forall l d i (Hi : i < length l),
+ Vnth (vec_of_list l) Hi = nth i l d.
+
+Proof.
+induction l. simpl. intros. absurd_arith.
+intros. rewrite vec_of_list_cons. destruct i; simpl; auto.
 Qed.
 
 Lemma vec_of_list_exact i l (Hi : i < length(l)) :
