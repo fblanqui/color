@@ -122,6 +122,23 @@ exists i. exists j. exists e. exists v. exists c. exists v0.
 refl.
 Qed.
 
+Lemma fun_eq_nth_fill : forall f v i (h : i < arity f),
+ let v1 := Vsub v (Veq_app_cons_aux1 h) in
+ let v2 := Vsub v (Veq_app_cons_aux2 h) in 
+ let H := Veq_app_cons_aux3 h in
+ let c := Cont H v1 Hole v2 in Fun f v = fill c (Vnth v h).
+
+Proof.
+intros. simpl. apply args_eq. apply Veq_nth; intros j Hj.
+rewrite Vnth_cast, Vnth_app. case (le_gt_dec i j); intros. Focus 2.
+unfold v1. rewrite Vnth_sub. apply Vnth_eq. omega.
+set (H0 := Vnth_app_aux (S (arity f - S i)) (Vnth_cast_aux H Hj) l).
+case (le_lt_eq_dec _ _ l); intro. Focus 2.
+rewrite Vnth_head; try rewrite e, minus_diag; auto. apply Vnth_eq; auto.
+destruct j. absurd_arith. generalize H0. rewrite <- minus_Sn_m. Focus 2. omega.
+intros. unfold v2; rewrite Vnth_cons, Vnth_sub. apply Vnth_eq. omega.
+Qed.
+
 Lemma fill_eq : forall t u c, fill c t = fill c u <-> t = u.
 
 Proof.
