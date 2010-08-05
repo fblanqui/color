@@ -1465,6 +1465,14 @@ Proof.
   rewrite Vnth_tail. do 2 rewrite Vbuild_nth. reflexivity.
 Qed.
 
+Lemma Vin_build : forall n (gen : forall i, i < n -> A) x,
+  (exists i, exists ip : i < n, x = gen i ip) -> Vin x (Vbuild gen).
+
+Proof.
+intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl. destruct H as [i H].
+destruct H as [ip H]. rewrite H, <- (e i ip). apply Vnth_in.
+Qed.
+
 End Vbuild.
 
 (***********************************************************************)

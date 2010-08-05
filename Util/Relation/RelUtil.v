@@ -492,6 +492,13 @@ unfold transitive, inclusion. intros. induction H0. hyp.
 apply H with y; hyp.
 Qed.
 
+Lemma tc_incl_tc : R << S -> R! << S!.
+
+Proof.
+intro. unfold inclusion, union. intros. induction H0.
+apply t_step. apply H. auto. apply t_trans with (y := y); auto.
+Qed.
+
 Lemma comp_tc_incl : R @ S << S -> R! @ S << S.
 
 Proof.
@@ -760,65 +767,70 @@ Qed.
 
 Section union.
 
-Variables (A : Type) (R R' S S' T : relation A).
+Variable (A : Type).
+Implicit Type R S T : relation A.
 
-Lemma union_commut : R U S << S U R.
+Lemma union_commut : forall R S, R U S << S U R.
 
 Proof.
 unfold inclusion. intros. destruct H. right. exact H. left. exact H.
 Qed.
 
-Lemma union_assoc : (R U S) U T << R U (S U T).
+Lemma union_assoc : forall R S T, (R U S) U T << R U (S U T).
 
 Proof.
 unfold inclusion. intros. destruct H. destruct H. left. exact H.
 right. left. exact H. right. right. exact H.
 Qed.
 
-Lemma union_distr_comp : (R U S) @ T << (R @ T) U (S @ T).
+Lemma union_distr_comp : forall R S T, (R U S) @ T << (R @ T) U (S @ T).
 
 Proof.
-intros x y H. destruct H as [z [[Rxz | Sxz] Tzy]].
+intros R S T x y H. destruct H as [z [[Rxz | Sxz] Tzy]].
 left. exists z. auto.
 right. exists z. auto.
 Qed.
 
-Lemma union_distr_comp_inv : (R @ T) U (S @ T) << (R U S) @ T.
+Lemma union_distr_comp_inv : forall R S T, (R @ T) U (S @ T) << (R U S) @ T.
 
 Proof.
-intros x y H. destruct H as [[z [Rxz Tzy]] | [z [Sxz Tzy]]].
+intros R S T x y H. destruct H as [[z [Rxz Tzy]] | [z [Sxz Tzy]]].
 exists z. split; [left; hyp | hyp].
 exists z. split; [right; hyp | hyp].
 Qed.
 
-Lemma union_empty_r : R U (@empty_rel A) << R.
+Lemma union_empty_r : forall R, R U (@empty_rel A) << R.
 
 Proof.
-  intros x y Rxy. destruct Rxy. hyp. contradiction.
+intros R x y Rxy. destruct Rxy. hyp. contradiction.
 Qed.
 
-Lemma union_empty_l : (@empty_rel A) U R << R.
+Lemma union_empty_l : forall R, (@empty_rel A) U R << R.
 
 Proof.
-  intros x y Rxy. destruct Rxy. contradiction. hyp.
+intros R x y Rxy. destruct Rxy. contradiction. hyp.
 Qed.
 
-Lemma union_idem_l : forall R S : relation A, R << R U S.
+Lemma union_idem_l : forall R S, R << R U S.
+
+Proof. intros R S x y h. left. hyp. Qed.
+
+Lemma union_idem_r : forall R S, S << R U S.
+
+Proof. intros R S x y h. right. hyp. Qed.
+
+Lemma union_tc_incl_l : forall R S, R! << (R U S)!.
+
+Proof. intros; apply tc_incl_tc. apply union_idem_l. Qed.
+
+Lemma union_tc_incl_r : forall R S, S! << (R U S)!.
+
+Proof. intros. apply tc_incl_tc. apply union_idem_r. Qed.
+
+Lemma union_incl : forall R R' S, R U R' << S <-> R << S /\ R' << S.
 
 Proof.
-intros x y h. left. hyp.
-Qed.
-
-Lemma union_idem_r : forall R S : relation A, R << S U R.
-
-Proof.
-intros x y h. right. hyp.
-Qed.
-
-Lemma union_incl : R U R' << S <-> R << S /\ R' << S.
-
-Proof.
-split; intro. split. trans (R U R'). apply union_idem_l. hyp.
+intros. split; intro. split. trans (R U R'). apply union_idem_l. hyp.
 trans (R U R'). apply union_idem_r. hyp.
 destruct H. intros t u [h|h]. apply H. hyp. apply H0. hyp.
 Qed.

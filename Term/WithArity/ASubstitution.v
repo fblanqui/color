@@ -68,6 +68,12 @@ intro E. rewrite E. exists v. refl.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
+Lemma vars_eq_sub : forall n s u, Var n = sub s u -> exists m, u = Var m.
+
+Proof.
+intros. destruct u. exists n0. refl. simpl in H. discriminate H.
+Qed.
+
 Lemma sub_eq : forall s1 s2 t,
   (forall x, In x (vars t) -> s1 x = s2 x) -> sub s1 t = sub s2 t.
 
