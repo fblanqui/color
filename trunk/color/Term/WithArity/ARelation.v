@@ -78,6 +78,13 @@ intros R h t u c. induction 1. apply rt_step. apply h. hyp.
 apply rt_refl. apply rt_trans with (fill c y); hyp.
 Qed.
 
+Lemma context_closed_tc : forall R, context_closed R -> context_closed (R !).
+
+Proof.
+intros R h t u c. induction 1. apply t_step. apply h. hyp.
+apply t_trans with (fill c y); hyp.
+Qed.
+
 Lemma context_closed_comp : forall R S,
   context_closed R -> context_closed S -> context_closed (R @ S).
 
