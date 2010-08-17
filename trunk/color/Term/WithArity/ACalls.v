@@ -53,10 +53,12 @@ intros. induction l1; auto. simpl. destruct (lhs a); auto.
 rewrite IHl1, orb_assoc; refl.
 Qed.
 
-Lemma defined_elim : forall f R,
- defined f R = true -> exists v, exists r, In (mkRule (Fun f v) r) R.
+Lemma defined_equiv : forall f R,
+ defined f R = true <-> exists v, exists r, In (mkRule (Fun f v) r) R.
 
 Proof.
+intros. split. Focus 2.
+intro. destruct H as [v [r H]]. apply (lhs_fun_defined f v r). auto.
 intros. induction R. simpl in H. discriminate H.
 simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
 destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
