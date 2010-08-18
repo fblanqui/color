@@ -665,6 +665,13 @@ Proof.
 unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; hyp.
 Qed.
 
+Lemma trans_rtc_incl : transitive R -> reflexive R -> R# << R.
+
+Proof.
+unfold transitive, inclusion, reflexive. intros. induction H1. hyp. 
+apply H0. apply H with y; hyp.
+Qed.
+
 End clos_refl_trans.
 
 Section clos_refl_trans2.
