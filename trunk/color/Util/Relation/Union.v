@@ -51,8 +51,7 @@ Section Commutation_and_SN.
 
 Variable (A : Type) (R S : relation A).
 
-Lemma comm_s_rt : 
-  S@(R!1) << (R!1)@(S!1) -> (S!1)@(R!1) << (R!1)@(S!1).
+Lemma comm_s_rt : S@(R!1) << (R!1)@(S!1) -> (S!1)@(R!1) << (R!1)@(S!1).
 
 Proof.
   intros comm x y [z [H1 H2]].
@@ -68,9 +67,8 @@ Proof.
   exact (clos_trans1_trans mSu H3).
 Qed.
 
-Lemma comm_s_r :
-  S@R << (R!1)@(S#1) ->
-    (R U S)#1 @ R @ (R U S)#1 << (R!1) @ (R U S)#1.
+Lemma comm_s_r : S@R << (R!1)@(S#1) ->
+  (R U S)#1 @ R @ (R U S)#1 << (R!1) @ (R U S)#1.
 
 Proof.
   intros comm x y [z2 [[z1 [xRSz1 z1Rz2] z2RSy]]].
