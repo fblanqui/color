@@ -32,7 +32,7 @@ Fixpoint defined (f : Sig) (l : rules) {struct l} : bool :=
     | r :: l' =>
       match lhs r with
 	| Var _ => defined f l'
-	| Fun g ts => beq_symb f g || defined f l'
+	| Fun g ts => beq_symb g f || defined f l'
       end
   end.
 
@@ -64,7 +64,26 @@ simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
 destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
 destruct (orb_prop _ _ H). Focus 2. destruct (IHR H0) as [v' H1].
 destruct H1 as [r H1]. exists v'; exists r. auto.
-rewrite beq_symb_ok in H0; rewrite H0. exists v; exists a2. left; refl.
+rewrite beq_symb_ok in H0; rewrite <- H0. exists v; exists a2. left; refl.
+Qed.
+
+Fixpoint list_defined (l : rules) {struct l} : list Sig :=
+  match l with
+    | nil => nil
+    | r :: l' =>
+      match lhs r with
+	| Var _ => list_defined l'
+	| Fun f ts => f :: list_defined l'
+      end
+  end.
+
+Lemma defined_list_ok :
+ forall R f, defined f R = true <-> In f (list_defined R).
+
+Proof.
+induction R. simpl. intro; split; auto. intro H; discriminate H.
+intro; destruct a as [l r]; simpl. destruct l. auto.
+rewrite In_cons, orb_eq, (IHR f), beq_symb_ok; tauto.
 Qed.
 
 (***********************************************************************)
