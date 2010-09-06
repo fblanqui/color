@@ -626,6 +626,18 @@ End rewriting.
 Definition rules_preserv_vars := fun R : rules =>
   forall l r, In (mkRule l r) R -> vars r [= vars l.
 
+Definition brules_preserv_vars := let P := eq_nat_dec in
+ fun R : rules => forallb (fun x => Inclb P (vars (rhs x)) (vars (lhs x))) R.
+
+Lemma brules_preserv_vars_ok :
+ forall R, rules_preserv_vars R <-> brules_preserv_vars R = true.
+
+Proof.
+intro; unfold brules_preserv_vars. rewrite forallb_forall; split; intros.
+destruct x as [l r]; simpl. rewrite Inclb_ok. apply H; auto.
+intros l r Rlr. rewrite <- (Inclb_ok eq_nat_dec). apply (H _ Rlr).
+Qed. 
+
 Lemma rules_preserv_vars_cons : forall a R, rules_preserv_vars (a :: R)
   <-> vars (rhs a) [= vars (lhs a) /\ rules_preserv_vars R.
 

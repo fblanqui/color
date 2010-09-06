@@ -714,6 +714,22 @@ ded (Inb_incl _ H0 H1). rewrite H2 in H3. discr.
 ded (Inb_incl _ H H2). rewrite H1 in H3. discr.
 Qed.
 
+Definition Inclb (l1 l2 : list A) := forallb (fun x => Inb x l2) l1.
+
+Lemma Inclb_ok : forall l1 l2, Inclb l1 l2 = true <-> l1 [= l2.
+
+Proof.
+intros. induction l2. unfold Inclb. simpl. case l1. simpl; split; auto.
+intro; apply incl_refl.
+intros. simpl; split; intro. discriminate H.
+rewrite incl_nil_elim in H. discriminate H.
+split; unfold Inclb; simpl; rewrite forallb_forall; intro.
+intros x Hx. generalize (H _ Hx). case (eq_dec x a); intros.
+rewrite e; apply in_eq. apply in_cons. apply Inb_true; auto.
+intros. case (eq_dec x a); auto; intros.
+destruct (in_inv (H _ H0)); auto. apply Inb_intro; auto.
+Qed.
+
 End Inb.
 
 Ltac inbtac :=
