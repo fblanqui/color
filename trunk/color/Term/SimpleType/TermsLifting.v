@@ -165,8 +165,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
   Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted var_liftedEnv_var_lifted 
     var_liftedEnv_var_notLifted using solve [omega | auto] : terms.
 
-  Definition lift_aux (n: nat) (M: Term) (k: nat) : 
-   {N: Term | env N = liftedEnv n (env M) k /\ term N = prelift_aux n (term M) k /\ type N = type M }.
+  Definition lift_aux : forall (n: nat) (M: Term) (k: nat),
+   {N: Term | env N = liftedEnv n (env M) k
+              /\ term N = prelift_aux n (term M) k /\ type N = type M }.
 
   Proof.
     intros n M; generalize n; clear n.
@@ -764,8 +765,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Definition lower_aux (M: Term) (k: nat): env M |= k :! ->
-    {N: Term | env N = loweredEnv (env M) k /\ term N = prelower_aux (term M) k /\ type N = type M }.
+  Definition lower_aux : forall (M: Term) (k: nat), env M |= k :! ->
+    {N: Term | env N = loweredEnv (env M) k
+               /\ term N = prelower_aux (term M) k /\ type N = type M }.
 
   Proof.
     destruct M as [E Pt T TypM].

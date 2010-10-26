@@ -808,6 +808,8 @@ Proof.
   rewrite H;assumption.
 Qed.
 
+Set Implicit Arguments.
+
 Inductive product_o A B (R1 : relation A) (R2 : relation B) : relation (A*B)%type :=
 	| CaseA : forall a a' b, R1 a a' -> product_o R1 R2 (a,b) (a',b)
 	| CaseB : forall a b b', R2 b b' -> product_o R1 R2 (a,b) (a,b').

@@ -19,6 +19,7 @@ Require Import SN.
 Require Import RelUtil.
 Require Import ARelation.
 Require Import Arith.
+Require Import VSignature.
 
 Set Implicit Arguments.
 

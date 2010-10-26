@@ -16,6 +16,7 @@ Require Import Permutation.
 Require Import Multiset.
 Require Import List.
 Require Import ListExtras.
+Require Import PermutSetoid.
 
 Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
 

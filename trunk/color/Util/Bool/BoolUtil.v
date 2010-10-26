@@ -15,7 +15,7 @@ Require Export Bool.
 Implicit Arguments orb_false_elim [b1 b2].
 Implicit Arguments orb_true_elim [b1 b2].
 
-Hint Rewrite eqb negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
+Hint Rewrite negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
   orb_true_r orb_true_l orb_false_r orb_false_l orb_negb_r orb_assoc
   andb_false_r andb_false_l andb_true_r andb_true_l andb_negb_r andb_assoc
   absoption_andb absoption_orb

@@ -381,7 +381,6 @@ Qed.
 (** step function *)
 
 Notation beq_symb := (@beq_symb Sig).
-Notation beq_symb_ok := (@beq_symb_ok Sig).
 
 Definition step (p : problem) :=
   match p with
@@ -612,7 +611,8 @@ destruct (member_multiset_list _ H0). destruct (in_map_elim H1). destruct H3.
 subst. destruct x0. ded (in_combine_l H3). ded (in_combine_r H3).
 ded (in_list_of_vec H4). ded (in_list_of_vec H5).
 ded (Vin_nb_symb_occs_terms_ge H6). ded (Vin_nb_symb_occs_terms_ge H7).
-rewrite H2. unfold size. simpl. omega.
+rewrite H2. unfold size. unfold fst, snd. repeat rewrite nb_symb_occs_fun.
+omega.
 Qed.
 
 Definition Lt' (p1 p2 : problem) :=
@@ -841,11 +841,11 @@ rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
 rewrite lforall_is_sol_solved_eqn in H3; hyp.
 rewrite is_sol_eqns_map in H2; hyp.
 (* fun-fun *)
-simpl. unfold is_sol_eqn. simpl fst. simpl snd. repeat rewrite sub_fun.
+simpl. unfold is_sol_eqn. unfold fst, snd. repeat rewrite sub_fun.
 case_beq_symb f f0. simpl. unfold is_sol_eqns at 2. rewrite lforall_app.
 rewrite lforall_is_sol_eqn_combine. intuition. Funeqtac. hyp.
 apply args_eq. hyp. intuition; try contradiction. Funeqtac.
-rewrite (beq_refl beq_symb_ok) in H. discriminate. Transparent vars.
+rewrite (beq_refl (@beq_symb_ok Sig)) in H. discriminate. Transparent vars.
 Qed.
 
 Lemma iter_step_correct : forall s p k,

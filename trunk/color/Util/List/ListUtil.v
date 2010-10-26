@@ -1864,7 +1864,7 @@ Variables (n : nat) (Pr : dom_lt n -> Prop)
 
 Program Fixpoint check_seq_aux (p : nat) 
   (H : forall (i : dom_lt n), i < p -> Pr i)
-  {measure (fun p => n - p) p} : 
+  {measure (n - p)} : 
   Exc (forall (i : dom_lt n), Pr i) :=
 
   match le_lt_dec n p with
@@ -1872,7 +1872,7 @@ Program Fixpoint check_seq_aux (p : nat)
   | right cmp =>
     match @P p with
     | error => error
-    | value _ => @check_seq_aux (S p) _
+    | value _ => @check_seq_aux (S p) _ _
     end
   end.
 
@@ -1882,15 +1882,15 @@ Proof.
 Qed.
 Next Obligation.
 Proof.
-  omega.
-Qed.
-Next Obligation.
-Proof.
   destruct i. simpl in *. 
   destruct (eq_nat_dec x p).
   subst. rewrite (lt_unique l 
-    (check_seq_aux_obligation_2 check_seq_aux H Heq_anonymous)). hyp.
+    (check_seq_aux_func_obligation_2 H check_seq_aux Heq_anonymous)). hyp.
   apply H. simpl. omega.
+Qed.
+Next Obligation.
+Proof.
+  omega.
 Qed.
 
 End Check_seq_aux.
@@ -1974,7 +1974,7 @@ Section lookup_dep.
     simpl. destruct a. destruct (@eqA_dec el x).
 
     unfold eq_rect, lookup_dep_obligation_1.
-    set (w := eq_ind_r (fun el => x = el) refl e).
+    set (w := eq_ind_r (fun el => x = el) refl_equal e).
     dependent inversion w.
 
     apply (H (existT (fun x:A => B x) x b))...
@@ -1997,7 +1997,7 @@ Lemma forallb_false : forall l,
   forallb f l = false <-> exists x, In x l /\ f x = false.
 
 Proof.
-induction l; simpl. intuition. discr. destruct H. intuition.
+induction l; simpl. intuition. destruct H. intuition.
 rewrite andb_eq_false. rewrite IHl. intuition.
 exists a. tauto. destruct H0. exists x. tauto.
 destruct H1. intuition. subst. tauto. right. exists x. tauto.

@@ -312,7 +312,7 @@ intros A P H l; apply (H (length l) l); apply le_n.
 Defined.
 
 (** Induction on the the size. *)
-Definition list_rec3 (A : Type) (size : A -> nat) :
+Definition list_rec3 : forall (A : Type) (size : A -> nat),
   forall P : list A -> Type,
     (forall (n:nat) (l : list A), list_size size l <= n -> P l) -> 
     forall l : list A, P l.
@@ -1446,8 +1446,8 @@ trivial.
 trivial.
 Qed.
 
-Definition list_exists_rest (A : Type) (P : A -> Prop) l 
-(P_dec : forall a, In a l -> {P a}+{~P a}) : bool.
+Definition list_exists_rest : forall (A : Type) (P : A -> Prop) l 
+(P_dec : forall a, In a l -> {P a}+{~P a}), bool.
 Proof.
 intros A P l; induction l as [ | a l]; intro P_dec.
 exact false.
@@ -1556,7 +1556,7 @@ apply Acc_intro; intros x Sx; apply IHn; trivial.
 apply IHn; trivial.
 Defined.
 
-Definition dep_fun_tail (a : A) (l : list A) (f : forall t, In t (a :: l) -> list A) : dep_fun. 
+Definition dep_fun_tail : forall (a : A) (l : list A) (f : forall t, In t (a :: l) -> list A), dep_fun. 
 intros a l f.
 assert (f' : forall t, In t l -> list A).
 intros t t_in_l; exact (f t (or_intror _ t_in_l)).

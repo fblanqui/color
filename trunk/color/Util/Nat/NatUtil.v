@@ -193,8 +193,8 @@ Qed.
 
 Require Import Max.
 
-Implicit Arguments max_r [n m].
-Implicit Arguments max_l [n m].
+Implicit Arguments max_r [x y].
+Implicit Arguments max_l [x y].
 Implicit Arguments le_trans [n m p].
 
 Require Import Compare.

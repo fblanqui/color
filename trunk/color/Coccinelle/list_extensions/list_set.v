@@ -231,7 +231,7 @@ transitivity e; trivial.
 symmetry; trivial.
 Qed.
 
-Definition add (e : A) (s : t) : t.
+Definition add : A -> t -> t.
 intros e s.
 generalize (mem_bool_ok _ _ eq_bool_ok e s.(support)).
 case (mem_bool eq_bool e s.(support)).

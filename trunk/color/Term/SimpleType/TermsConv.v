@@ -131,7 +131,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply (@build_envSub (fun (x y: nat) => False) 0); firstorder.
   Defined.
 
-  Definition singletonEnvSubst (i j : nat) : EnvSubst.
+  Definition singletonEnvSubst : nat -> nat -> EnvSubst.
 
   Proof.
     intros i j.
@@ -142,7 +142,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     rewrite H0; auto with arith.
   Defined.
 
-  Definition idEnvSubst (size : nat) : EnvSubst.
+  Definition idEnvSubst : nat -> EnvSubst.
 
   Proof.
     intro s.
@@ -230,8 +230,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros; intros p q pq; destruct pq; auto.
   Qed.
 
-  Definition addEnvSubst (Q: EnvSubst) (i: nat) (j: nat) 
-    (ok: envSub Q i j \/ (forall x, ~envSub Q i x /\ ~envSub Q x j)) : EnvSubst.
+  Definition addEnvSubst : forall (Q: EnvSubst) (i: nat) (j: nat) 
+    (ok: envSub Q i j \/ (forall x, ~envSub Q i x /\ ~envSub Q x j)), EnvSubst.
 
   Proof.
     intros Q i j ok.
@@ -272,7 +272,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     split; eauto with arith.
   Defined.
 
-  Definition liftEnvSubst (n: nat) (k: nat) (size: nat) : EnvSubst.
+  Definition liftEnvSubst : forall (n: nat) (k: nat) (size: nat), EnvSubst.
 
   Proof.
     intros n k s.
@@ -292,7 +292,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros; destruct (le_gt_dec k i); destruct H; firstorder.
   Defined.
 
-  Definition lowerEnvSubst (k: nat) (size: nat) : EnvSubst.  
+  Definition lowerEnvSubst : forall (k: nat) (size: nat), EnvSubst.  
 
   Proof.
     intros k s.
@@ -317,7 +317,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros; destruct (eq_nat_dec k i); destruct (le_gt_dec k i); firstorder.
   Defined.
  
-  Definition envSubst_lower (S: EnvSubst) : EnvSubst.
+  Definition envSubst_lower : EnvSubst -> EnvSubst.
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
@@ -328,7 +328,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     firstorder.
   Defined.
 
-  Definition envSubst_lift1 (S: EnvSubst) : EnvSubst.
+  Definition envSubst_lift1 : EnvSubst -> EnvSubst.
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
@@ -390,7 +390,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     destruct Q; simpl; trivial.
   Qed.
 
-  Definition envSubst_transp (E: EnvSubst) : EnvSubst.
+  Definition envSubst_transp : forall (E: EnvSubst), EnvSubst.
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
@@ -401,7 +401,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     firstorder.
   Defined.
 
-  Definition envSubst_compose (E1 E2 : EnvSubst) : EnvSubst.
+  Definition envSubst_compose : forall (E1 E2 : EnvSubst), EnvSubst.
 
   Proof.
     intros E1 E2.

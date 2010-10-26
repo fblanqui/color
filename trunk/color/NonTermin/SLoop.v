@@ -22,9 +22,6 @@ Variable Sig : Signature.
 Notation letter := (symbol Sig). Notation string := (string Sig).
 Notation rule := (rule Sig). Notation rules := (rules Sig).
 
-Notation beq_symb_ok := (@beq_symb_ok Sig).
-Notation beq_rule := (@beq_rule Sig).
-
 Ltac case_beq_symb := VSignature.case_beq_symb Sig.
 
 Variable R : rules.
@@ -86,7 +83,7 @@ Implicit Arguments matches_correct [p t u].
 Lemma matches_complete : forall p t u, t = p ++ u -> matches p t = Some u.
 
 Proof.
-induction p; simpl; intros; subst. refl. rewrite (beq_refl beq_symb_ok).
+induction p; simpl; intros; subst. refl. rewrite (beq_refl (@beq_symb_ok Sig)).
 apply IHp. refl.
 Qed.
 
@@ -99,7 +96,7 @@ Definition data := (nat * rule)%type.
 
 Definition rewrite (t : string) (d : data) : option string :=
   let (p,a) := d in let (l,r) := a in
-    if mem beq_rule (mkRule l r) R then
+    if mem (@beq_rule Sig) (mkRule l r) R then
       match split t p with
         | None => None
         | Some (u,v) =>
@@ -114,7 +111,7 @@ Lemma rewrite_correct : forall t d s, rewrite t d = Some s -> red R t s.
 
 Proof.
 intros t [p [l r]] s. unfold rewrite.
-case_eq (mem beq_rule (mkRule l r) R). 2: discr.
+case_eq (mem (@beq_rule Sig) (mkRule l r) R). 2: discr.
 gen H0. case_eq (split t p). destruct p0 as [u v]. 2: discr.
 gen H1. case_eq (matches l v). rename s0 into w. 2: discr.
 exists l. exists r. exists (mkContext u w). unfold fill. simpl.
@@ -219,7 +216,7 @@ Qed.
 
 Require Import Euclid.
 
-Definition seq (n : nat) : string.
+Definition seq : nat -> string.
 
 Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).

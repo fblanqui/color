@@ -360,7 +360,6 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
 
   Proof.
     intros t u. unfold bsucc, succ, brel. destruct (arpo_dec t u); intuition.
-    discr.
   Qed.
 
   Lemma bsucc_sub : rel bsucc << succ.

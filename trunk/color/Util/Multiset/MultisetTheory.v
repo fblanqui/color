@@ -21,6 +21,7 @@ Require Import ListPermutation.
 Require Import NatUtil.
 Require Import Setoid.
 Require Import ListExtras.
+Require Import PermutSetoid.
 
 Module Multiset (MC : MultisetCore).
 

@@ -226,7 +226,7 @@ End Typing.
 
 Section Auto_Typing.
   
-  Definition autoType E Pt : {N: Term | env N = E & term N = Pt} + 
+  Definition autoType : forall E Pt, {N: Term | env N = E & term N = Pt} + 
     {~exists N: Term, env N = E /\ term N = Pt}.
 
   Proof.

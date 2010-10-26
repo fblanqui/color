@@ -96,7 +96,7 @@ rewrite forallb_forall in hypD. ded (hypD _ h1). ded (hypD _ h2).
 destruct r1 as [l1 r1]. destruct r2 as [l2 r2]. simpl. destruct r1. refl.
 destruct l2. refl. set (k := S (maxvar (Fun f0 v0))). rewrite ren_cap_fun.
 gen H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl. intro.
-rewrite H1. unfold is_sol_eqn. simpl fst. simpl snd. repeat rewrite sub_fun.
+rewrite H1. unfold is_sol_eqn. unfold fst, snd. repeat rewrite sub_fun.
 intro. Funeqtac. rewrite H6. rewrite (beq_refl (@beq_symb_ok Sig)). refl.
 Qed.
 

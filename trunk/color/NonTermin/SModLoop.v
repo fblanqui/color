@@ -182,7 +182,7 @@ Qed.
 
 Require Import Euclid.
 
-Definition seq (n : nat) : string.
+Definition seq : nat -> string.
 
 Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).

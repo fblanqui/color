@@ -50,9 +50,13 @@ Parameter list_permut_multiset_extension_step_2 :
   forall R l1 l2 l, permut l1 l2 -> 
   multiset_extension_step R l l1 -> multiset_extension_step R l l2.
 
-Add Parametric Morphism (R : relation A) : (multiset_extension_step R)
+(*REMOVE: Add Parametric Morphism (R : relation A) : (multiset_extension_step R)
   with signature  permut ==> permut ==> iff 
-  as mult_morph.
+  as mult_morph.*)
+
+Require Import Morphisms.
+Declare Instance mult_morph (R : relation A) :
+  Proper (permut ==> permut ==> iff) (multiset_extension_step R).
 
 (** *** Accessibility lemmata. *)
 Parameter list_permut_acc :
@@ -698,7 +702,7 @@ apply (proj1 (mem_permut_mem a (permut_sym Pq))).
 left; apply (equiv_refl _ _ eq_proof).
 rewrite <- mem_or_app in a_in_appl_qr.
 generalize (mem_bool_ok _ _ EDS.eq_bool_ok a (appendn l)).
-case (mem_bool DS1.eq_bool a (appendn l)); [intro a_in_appl | intro a_not_in_appl].
+case (mem_bool EDS.eq_bool a (appendn l)); [intro a_in_appl | intro a_not_in_appl].
 destruct (in_appendn _ _ a_in_appl) as [x [lx [xlx_in_l a_in_lx]]].
 destruct (mem_split_set _ _ eq_bool_ok _ _ a_in_lx) as [a' [lx' [lx'' [a_eq_a' [H _]]]]].
 simpl in a_eq_a'; simpl in H; subst lx.
