@@ -25,7 +25,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
      typOk: type_left (type appL) = type appR
   }.
 
-  Definition buildApp (t: appCond) : Term.
+  Definition buildApp : appCond -> Term.
 
   Proof.
     intro t; inversion t as [L R eq_env typ_arr typ_ok].
@@ -78,7 +78,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
     envNotEmpty: env absB |= 0 := absT
   }.
   
-  Definition buildAbs (a : absCond) : Term.
+  Definition buildAbs : absCond -> Term.
 
   Proof.
     intro t; inversion t as [aBody aType envCond].

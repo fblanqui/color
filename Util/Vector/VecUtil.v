@@ -912,8 +912,8 @@ Lemma Vsub_cast_aux : forall n (v : vec n) n' (e : n=n') i k (h : i+k<=n')
 
 Proof.
 destruct v; destruct n'; simpl; intros. apply Vsub_pi. discr. discr.
-inversion e. subst n'.
-assert (Vcast v (Vcast_obligation_4 e refl (JMeq_refl (Vcons a v)) refl) = v).
+inversion e. subst n'. assert (Vcast v
+  (Vcast_obligation_4 e refl_equal (JMeq_refl (Vcons a v)) refl_equal) = v).
 apply Vcast_refl. rewrite H. apply Vsub_pi.
 Qed.
 
@@ -1416,7 +1416,7 @@ Program Fixpoint Vbuild_spec (n : nat) (gen : forall i, i < n -> A) :
 Solve Obligations using omega.
 Next Obligation.
 Proof.
-  elimtype False. subst n. omega.
+  elimtype False. omega.
 Qed.
 Next Obligation.
   omega.
@@ -1425,11 +1425,8 @@ Next Obligation.
   omega.
 Qed.
 Next Obligation.
-  destruct_call Vbuild_spec. simpl.
-  destruct n. discr.
-  inversion Heq_n. subst.
-  simplify_eqs. destruct i. pi.
-  rewrite e. pi.
+  simpl. destruct i. apply (f_equal (gen 0)). apply lt_unique.
+  rewrite e. apply (f_equal (gen (S i))). apply lt_unique.
 Defined.
 
 Definition Vbuild n gen : vec n := proj1_sig (Vbuild_spec gen).
@@ -1578,16 +1575,16 @@ induction l. simpl. intros. absurd_arith.
 intros. rewrite vec_of_list_cons. destruct i; simpl; auto.
 Qed.
 
-Lemma vec_of_list_exact i l (Hi : i < length(l)) :
+Lemma vec_of_list_exact : forall i l (Hi : i < length(l)),
   element_at l i = Some (Vnth (vec_of_list l) Hi).
 
 Proof.
 induction i; intros.
 destruct l; simpl in *. contradict Hi; omega. auto.
-destruct l;simpl in *. contradict Hi; omega. apply IHi.
+destruct l; simpl in *. contradict Hi; omega. apply IHi.
 Qed.
 
-Lemma list_of_vec_exact i n (v : vec n) (Hi : i < n) :
+Lemma list_of_vec_exact : forall i n (v : vec n) (Hi : i < n),
   element_at (list_of_vec v) i = Some (Vnth v Hi).
 
 Proof.

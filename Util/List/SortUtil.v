@@ -71,6 +71,7 @@ Qed.
 
 Require Import Multiset.
 Require Import Permutation.
+Require Import PermutSetoid.
 
 Section multiplicity.
 

@@ -39,16 +39,15 @@ Lemma repeat_free_incl_length : eq_midex A -> forall l l',
   repeat_free l -> incl l l' -> length l <= length l'.
 
 Proof.
-induction l; simpl; intros. apply le_O_n. 
-destruct (In_elim_right H a l'). apply H1. simpl. tauto. destruct H2.
-rewrite (proj1 H2). 
-rewrite (length_app x (a::x0)). assert (length l <= length (x++x0)). apply IHl. 
-tauto. unfold incl in *|-* . intros. apply in_or_app. destruct (H a0 a). 
-rewrite H4 in H3. tauto. assert (In a0 x \/ In a0 (a::x0)). apply in_app_or. 
-rewrite <- (proj1 H2). apply H1. simpl. tauto. simpl in H5. intuition.
-rewrite H5 in H4. tauto. 
-rewrite (length_app x x0) in H3. simpl. omega. 
-Qed. 
+intro em. induction l; simpl; intros. apply le_O_n.
+destruct (In_elim_right em a l'). apply H0. simpl. tauto. destruct H1.
+rewrite (proj1 H1).
+rewrite (length_app x (a::x0)). assert (length l <= length (x++x0)). apply IHl.
+tauto. unfold incl in *|-* . intros. apply in_or_app. destruct (em a0 a).
+subst a0. tauto. assert (In a0 x \/ In a0 (a::x0)). apply in_app_or.
+rewrite <- (proj1 H1). apply H0. simpl. tauto. simpl in H4. intuition.
+rewrite (length_app x x0) in H2. simpl. omega. 
+Qed.
 
 (***********************************************************************)
 (** repeat_free properties *)

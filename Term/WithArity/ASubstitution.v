@@ -429,8 +429,7 @@ Lemma sub_eq_restrict : forall s l, sub_eq_dom (restrict s l) s l.
 
 Proof.
 unfold sub_eq_dom, restrict. induction l; simpl. intros. contradiction.
-intro. case (eq_nat_dec x a); intuition. rewrite H0 in n.
-ded (n (refl_equal x)). contradiction.
+intro. case (eq_nat_dec x a); intuition.
 Qed.
 
 Lemma sub_restrict : forall s t, sub s t = sub (restrict s (vars t)) t.

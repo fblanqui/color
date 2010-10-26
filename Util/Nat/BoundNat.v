@@ -13,6 +13,7 @@ Require Import NatUtil.
 Require Import LogicUtil.
 Require Import Multiset.
 Require Import Permutation.
+Require Import PermutSetoid.
 
 Section S.
 

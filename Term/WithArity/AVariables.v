@@ -98,7 +98,7 @@ Lemma mem_vars_vec : forall x n (ts : terms n),
   mem x (vars_vec ts) = true -> exists t, Vin t ts /\ mem x (vars t) = true.
 
 Proof.
-induction ts; simpl; mem; intuition. discriminate.
+induction ts; simpl; mem; intuition.
 destruct (orb_true_elim H). exists a. auto.
 destruct (IHts e). exists x0. intuition.
 Qed.

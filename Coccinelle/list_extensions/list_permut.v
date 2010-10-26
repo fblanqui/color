@@ -474,7 +474,7 @@ rewrite <- ass_app; apply IHl1; trivial.
 Qed.
 
 Instance equivalence_coercion (A : Type) (R : relation A) (E : equivalence _ R) : Equivalence R.
-intros A R [E1 E2 E3].
+destruct E as [E1 E2 E3].
 split; assumption.
 Qed.
 
@@ -915,17 +915,25 @@ Parameter remove_equiv_permut:
     symmetry proved by permut_sym
       transitivity proved by permut_trans as LP.
 
-   Add Morphism (mem eq_A)
+Require Import Morphisms.
+
+(*REMOVE: Add Morphism (mem eq_A)
 	with signature eq_A ==> permut ==> iff
-	as mem_morph2.
+	as mem_morph2.*)
 
- Add Morphism (List.app (A:=A)) 
+Declare Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
+
+(*REMOVE: Add Morphism (List.app (A:=A)) 
 	with signature permut ==> permut ==> permut
-	as app_morph.
+	as app_morph.*)
 
- Add Morphism (List.cons (A:=A)) 
+Declare Instance app_morph : Proper (permut ==> permut ==> permut) (@app A).
+
+(*REMOVE: Add Morphism (List.cons (A:=A)) 
 	with signature eq_A ==> permut ==> permut
-	as add_A_morph.
+	as add_A_morph.*)
+
+Declare Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (@cons A).
 
 End S.
 

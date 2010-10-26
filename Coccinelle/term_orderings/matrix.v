@@ -177,7 +177,7 @@ Section Definitions.
   Qed.
 
 
-  Definition eq_vec (dim:nat) : vector dim -> vector dim -> Prop.
+  Definition eq_vec : forall dim, vector dim -> vector dim -> Prop.
   Proof.
     fix 1.
     intros [|dim].
@@ -250,7 +250,7 @@ Section Definitions.
 
   (** Sum of vectors and its properties *)
   
-  Definition sum_vector  (dim:nat) (v1 v2: vector dim) : vector dim.
+  Definition sum_vector : forall dim (v1 v2: vector dim), vector dim.
   Proof.
     fix 1.
     intros [|dim].
@@ -630,7 +630,7 @@ Section Definitions.
     apply matrix_rect;assumption.
   Qed.
 
-  Definition eq_mat (dim:nat) : matrix dim -> matrix dim -> Prop.
+  Definition eq_mat : forall dim, matrix dim -> matrix dim -> Prop.
   Proof.
     fix 1.
     intros [|dim].
@@ -718,7 +718,7 @@ Section Definitions.
   Qed.
 
 
-  Definition sum_matrix (dim:nat) (m1 m2:matrix dim) : matrix dim.
+  Definition sum_matrix : forall dim (m1 m2:matrix dim), matrix dim.
   Proof.
     fix 1.
     intros [|dim].
@@ -925,7 +925,7 @@ Section Definitions.
   Qed.
 
   (* product of a col by a row *)
-  Definition prod_col_row (dim:nat) (c r:vector dim) : matrix dim.
+  Definition prod_col_row : forall (dim:nat) (c r:vector dim), matrix dim.
   Proof.
     fix 1.
     intros [|dim].
@@ -1054,7 +1054,7 @@ Section Definitions.
 
   (** product of a row by a matrix *)
   
-  Definition prod_row_mat (dim:nat) (r:vector dim)  (m:matrix dim): vector dim.
+  Definition prod_row_mat : forall (dim:nat) (r:vector dim)  (m:matrix dim), vector dim.
   Proof.
     fix 1.
     intros [|dim].
@@ -1214,7 +1214,7 @@ Section Definitions.
 
   (** product of a matrix by a column *)
   
-  Definition prod_mat_col (dim:nat) (m:matrix dim) (c:vector dim): vector dim.
+  Definition prod_mat_col : forall (dim:nat) (m:matrix dim) (c:vector dim), vector dim.
   Proof.
     fix 1.
     intros [|dim].
@@ -1363,7 +1363,7 @@ Section Definitions.
      product of two matrices 
      *)
 
-  Definition prod_matrix (dim:nat) (m1 m2:matrix dim) : matrix dim. 
+  Definition prod_matrix : forall (dim:nat) (m1 m2:matrix dim), matrix dim. 
   Proof.
     fix 1.
     intros [|dim].
@@ -1851,25 +1851,25 @@ Module Make(R:TRing).
   apply (vector A).
   Defined.
 
-  Definition eq_vec (dim:nat) : vector dim -> vector dim -> Prop.
+  Definition eq_vec : forall (dim:nat), vector dim -> vector dim -> Prop.
   Proof.
     exact (@eq_vec A eq).
   Defined.
 
   Notation Local "x ==v y" := (eq_vec _ x y) (at level 70, no associativity).
 
-  Lemma eq_vec_refl dim : forall (v:vector dim), eq_vec _ v v. 
+  Lemma eq_vec_refl : forall dim (v:vector dim), eq_vec _ v v. 
   Proof.
     exact (@eq_vec_refl _ eq reqTh).
   Qed.
 
-  Lemma eq_vec_trans dim : forall (v1 v2 v3:vector dim),
+  Lemma eq_vec_trans : forall dim (v1 v2 v3:vector dim),
     v1 ==v v2 -> v2 ==v v3 -> v1 ==v v3.
   Proof.
     exact (eq_vec_trans reqTh).
  Qed.
 
-  Lemma eq_vec_sym dim : forall (v1 v2:vector dim),
+  Lemma eq_vec_sym : forall dim (v1 v2:vector dim),
     v1 ==v v2 -> v2 ==v v1.
   Proof.
     exact (eq_vec_sym reqTh).
@@ -1887,7 +1887,7 @@ Module Make(R:TRing).
      to [a]
      *)
   
-  Definition create_vec (n:nat) (a:A) : vector n.
+  Definition create_vec : forall (n:nat) (a:A), vector n.
   Proof.
     apply create_vec.
   Defined.
@@ -1901,7 +1901,7 @@ Module Make(R:TRing).
 
   (** Sum of vectors and its properties *)
   
-  Definition sum_vector  (dim:nat) (v1 v2: vector dim) : vector dim.
+  Definition sum_vector : forall (dim:nat) (v1 v2: vector dim), vector dim.
   Proof.
     apply (sum_vector plus).
   Defined.
@@ -2119,7 +2119,7 @@ Module Make(R:TRing).
            end.
 
 
-  Definition sum_matrix (dim:nat) (m1 m2:matrix dim) : matrix dim.
+  Definition sum_matrix : forall (dim:nat) (m1 m2:matrix dim), matrix dim.
   Proof.
     apply (sum_matrix plus). 
   Defined.
@@ -2140,7 +2140,7 @@ Module Make(R:TRing).
      return a matrix of size [n] with all elements equal 
      to [a]
      *)
-  Definition create_mat (n:nat) (a:A)  : matrix n.
+  Definition create_mat : forall (n:nat) (a:A), matrix n.
   Proof.
     apply create_mat.
   Defined.
@@ -2238,7 +2238,7 @@ Module Make(R:TRing).
   Qed.
 
   (* product of a col by a row *)
-  Definition prod_col_row (dim:nat) (c r:vector dim) : matrix dim.
+  Definition prod_col_row : forall (dim:nat) (c r:vector dim), matrix dim.
   Proof.
     apply (prod_col_row mult).
   Defined.
@@ -2301,7 +2301,7 @@ Module Make(R:TRing).
 
   (** product of a row by a matrix *)
   
-  Definition prod_row_mat (dim:nat) (r:vector dim)  (m:matrix dim): vector dim.
+  Definition prod_row_mat : forall (dim:nat) (r:vector dim) (m:matrix dim), vector dim.
   Proof.
     apply (prod_row_mat plus mult).
   Defined.
@@ -2373,7 +2373,7 @@ Module Make(R:TRing).
 
   (** product of a matrix by a column *)
   
-  Definition prod_mat_col (dim:nat) (m:matrix dim) (c:vector dim): vector dim.
+  Definition prod_mat_col : forall (dim:nat) (m:matrix dim) (c:vector dim), vector dim.
   Proof.
     apply (prod_mat_col plus mult).
   Defined.
@@ -2452,7 +2452,7 @@ Module Make(R:TRing).
      product of two matrices 
      *)
 
-  Definition prod_matrix (dim:nat) (m1 m2:matrix dim) : matrix dim. 
+  Definition prod_matrix : forall (dim:nat) (m1 m2:matrix dim), matrix dim. 
   Proof.
     apply (prod_matrix plus mult).
   Defined.
@@ -2794,7 +2794,7 @@ Module Make(R:TRing).
     apply IHdim.
   Qed.
 
-  Definition id_matrix dim : matrix dim .
+  Definition id_matrix : forall dim, matrix dim .
   Proof.
     fix 1.
     intros [|dim].
@@ -2915,7 +2915,7 @@ Module Make_Ordered(R:Ordered_Ring).
     exact o.(le_morph).
   Qed.
 
-  Definition vec_order_large dim : vector dim -> vector dim -> Prop.
+  Definition vec_order_large : forall dim, vector dim -> vector dim -> Prop.
   Proof.
     fix 1;intros [|dim].
     exact le.
@@ -2925,7 +2925,7 @@ Module Make_Ordered(R:Ordered_Ring).
     apply (vec_order_large _ v1 v2).
   Defined.
 
-  Definition vec_order_strict dim : vector dim -> vector dim -> Prop.
+  Definition vec_order_strict : forall dim, vector dim -> vector dim -> Prop.
   Proof.
     fix 1;intros [|dim].
     exact lt.
@@ -3007,7 +3007,7 @@ Module Make_Ordered(R:Ordered_Ring).
   Defined.
     
 
-  Definition o_vec dim : ordering_pair (eq_vec dim) (vec_order_strict dim) (vec_order_large dim).
+  Definition o_vec : forall dim, ordering_pair (eq_vec dim) (vec_order_strict dim) (vec_order_large dim).
   Proof.
     intros.
     apply mk_ordering_pair.
@@ -3087,7 +3087,7 @@ Module Make_Ordered(R:Ordered_Ring).
 (********)
 
 
-  Definition mat_order_large dim : matrix dim -> matrix dim -> Prop.
+  Definition mat_order_large : forall dim, matrix dim -> matrix dim -> Prop.
   Proof.
     fix 1;intros [|dim].
     exact le.
@@ -3099,7 +3099,7 @@ Module Make_Ordered(R:Ordered_Ring).
     apply (mat_order_large _ m1 m2).
   Defined.
 
-  Definition mat_order_strict dim : matrix dim -> matrix dim -> Prop.
+  Definition mat_order_strict : forall dim, matrix dim -> matrix dim -> Prop.
   Proof.
     fix 1;intros [|dim].
     exact lt.
@@ -3194,7 +3194,7 @@ Module Make_Ordered(R:Ordered_Ring).
   Defined.
     
 
-  Definition o_mat dim : ordering_pair (eq_mat dim) (mat_order_strict dim) (mat_order_large dim).
+  Definition o_mat : forall dim, ordering_pair (eq_mat dim) (mat_order_strict dim) (mat_order_large dim).
   Proof.
     intros.
     apply mk_ordering_pair.

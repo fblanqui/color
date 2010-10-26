@@ -191,7 +191,7 @@ Qed.
 
 Require Import Euclid.
 
-Definition seq (n : nat) : term.
+Definition seq : nat -> term.
 
 Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).

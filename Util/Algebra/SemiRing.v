@@ -39,12 +39,15 @@ Module Type SemiRingType.
   Parameter Aplus : A -> A -> A.
   Notation "x + y" := (Aplus x y).
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+(*REMOVE: Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.*)
+  Require Import Morphisms.
+  Declare Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Parameter Amult : A -> A -> A.
   Notation "x * y" := (Amult x y).
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+(*REMOVE: Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.*)
+  Declare Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Parameter A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
@@ -308,14 +311,14 @@ Module BigZSemiRingT <: SemiRingType.
 
   Proof.
   constructor.
-  exact Zadd_0_l.
-  exact Zadd_comm.
-  exact Zadd_assoc.
-  exact Zmul_1_l.
-  exact Zmul_0_l.
-  exact Zmul_comm.
-  exact Zmul_assoc.
-  exact Zmul_add_distr_r.
+  exact (Radd_0_l BigZring).
+  exact (Radd_comm BigZring).
+  exact (Radd_assoc BigZring).
+  exact (Rmul_1_l BigZring).
+  exact BigZ.mul_0_l.
+  exact (Rmul_comm BigZring).
+  exact (Rmul_assoc BigZring).
+  exact BigZ.mul_add_distr_r.
   Qed.
 
 End BigZSemiRingT.
@@ -607,7 +610,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
     intros. unfold Amult, Aplus. 
     destruct m; destruct n; destruct p; trivial.
     rewrite Zplus_max_distr_r.
-    destruct (Zmax_irreducible_inf z z0); rewrite H; refl.
+    destruct (Zmax_irreducible_inf z z0); rewrite e; refl.
   Qed.
 
   Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.

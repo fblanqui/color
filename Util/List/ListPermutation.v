@@ -15,6 +15,7 @@ Require Import ListExtras.
 Require Import NatUtil.
 Require Import LogicUtil.
 Require Import Setoid.
+Require Import PermutSetoid.
 
 Section Multiplicity.
 

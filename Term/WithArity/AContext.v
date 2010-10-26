@@ -371,7 +371,7 @@ Definition bsubterm (t u : term) : bool :=
 Lemma bsubterm_ok : forall t u, bsubterm t u = true <-> subterm t u.
 
 Proof.
-destruct u; simpl. intuition. discr. destruct H. destruct H. destruct x.
+destruct u; simpl. intuition. destruct H. destruct H. destruct x.
 irrefl. simpl in H0. discr. rewrite (bVexists_ok (subterm_eq t)).
 rewrite Vexists_eq. split; intro. decomp H. apply subterm_trans_eq1 with x.
 hyp. apply subterm_fun. hyp. apply subterm_fun_elim in H. hyp.

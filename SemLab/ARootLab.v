@@ -56,7 +56,7 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
   Lemma beq_ok : forall f (l1 l2 : L f), beq l1 l2 = true <-> l1 = l2.
 
   Proof.
-    intros f l1 l2. apply beq_vec_ok. apply beq_symb_ok.
+    intros f l1 l2. apply beq_vec_ok. apply @beq_symb_ok.
   Qed.
 
   Definition pi (f : Sig) (v : vector Sig (arity f)) := v.

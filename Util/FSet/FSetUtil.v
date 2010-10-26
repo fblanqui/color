@@ -94,7 +94,6 @@ Lemma notin_singleton : forall x y, ~In x (singleton y) <-> ~X.eq y x.
 
 Proof.
 intuition. ded (singleton_2 H0). apply H. hyp.
-ded (singleton_1 H0). apply H. hyp.
 Qed.
 
 Ltac notIn_elim := repeat
@@ -186,19 +185,19 @@ Hint Rewrite eqb_refl : mem.
 Lemma mem_In : forall x s, mem x s = true <-> In x s.
 
 Proof.
-intuition. apply mem_2. hyp. apply mem_1. hyp.
+intuition. apply mem_2. hyp.
 Qed.
 
 Lemma subset_Subset : forall s t, subset s t = true <-> Subset s t.
 
 Proof.
-intuition. apply subset_2. hyp. apply subset_1. hyp.
+intuition. apply subset_2. hyp.
 Qed.
 
 Lemma equal_Equal : forall s t, equal s t = true <-> Equal s t.
 
 Proof.
-intuition. apply equal_2. hyp. apply equal_1. hyp.
+intuition. apply equal_2. hyp.
 Qed.
 
 End Make.

@@ -134,8 +134,8 @@ Module DecVar := decidable_set.Convert (X).
 Module VSet <: list_set.S with Definition EDS.A := variable :=
    list_set.Make (DecVar).
 
-Ltac unfold_types := 
-unfold VSet.LP.EDS.A, DecVar.A, variable in *.
+(*REMOVE: Ltac unfold_types := 
+unfold VSet.LP.EDS.A, DecVar.A, variable in *.*)
 
 Ltac destruct_set S S1 S2 :=  
 destruct (VSet.union_12 _ _ _ S) as [S1 | S2]; clear S.
@@ -2017,7 +2017,7 @@ case (beq_nat (length l1) (length l2)); trivial.
 discriminate.
 Defined.
 
-Definition decomposition_step_e (e : exc_pb_ok) : exc_pb_ok.
+Definition decomposition_step_e : exc_pb_ok -> exc_pb_ok.
 intros [ [ pb | pb | ]  Inv_pb ].
 exact (OK (decomposition_step pb) (inv_solved_part_e _ (or_introl _ Inv_pb))).
 exact (OK (Not_appliable _ pb) Inv_pb).

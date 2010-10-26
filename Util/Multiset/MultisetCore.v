@@ -79,12 +79,12 @@ Section Specification.
 
 End Specification.
 
-  Hint Unfold meq 
+(*REMOVE? Hint Unfold meq
 	      empty
               singleton
               mult
               union
-              diff : multisets.
+              diff : multisets.*)
 
   Hint Resolve mult_eqA_compat 
                meq_multeq
@@ -95,6 +95,7 @@ End Specification.
                intersection_mult
                singleton_mult_in
                singleton_mult_notin : multisets.
+
   Hint Rewrite empty_mult
                union_mult
 	       diff_mult

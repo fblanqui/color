@@ -76,7 +76,7 @@ Module Interp(EQT:equational_theory_spec.EqTh).
 
    Hypothesis Pols : forall f, Pol_type (get_arity f).
 
-   Definition measure (t:term) : A. 
+   Definition measure : term -> A. 
    Proof.
      fix 1.
      intros [a | f l].

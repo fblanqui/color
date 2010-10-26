@@ -782,7 +782,7 @@ Section clos_refl_trans2.
 
 Variables (A : Type) (R S : relation A).
 
-Lemma rtc_invol : forall, R # # == R #.
+Lemma rtc_invol : R # # == R #.
 
 Proof.
 split. intros x y. induction 1. hyp. apply rt_refl. apply rt_trans with y; hyp.

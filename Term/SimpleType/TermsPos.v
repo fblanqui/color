@@ -55,8 +55,9 @@ Module TermsPos (Sig : TermsSig.Signature).
 	type (M // pos) = type T
     }.
 
-  Definition swap_aux M (pos: Pos M) (R: PlaceHolder pos) :
-    {N: Term | env N = env M /\ type N = type M /\ term N = swap_term pos (proj1_sig2 R)}.
+  Definition swap_aux : forall M (pos: Pos M) (R: PlaceHolder pos),
+    {N: Term | env N = env M /\ type N = type M
+               /\ term N = swap_term pos (proj1_sig2 R)}.
 
   Proof.
     intros M pos N.

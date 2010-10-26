@@ -301,7 +301,7 @@ Lemma Zmax_ge_compat : forall x y x' y',
   x >= x' -> y >= y' -> Zmax x y >= Zmax x' y'.
 
 Proof.
-intros. destruct (Zmax_irreducible_inf x' y'); rewrite H1; unfold ge.
+intros. destruct (Zmax_irreducible_inf x' y'); rewrite e; unfold ge.
 rewrite Zmax_comm. apply Zle_ge. apply elim_Zmax_r. omega.
 apply Zle_ge. apply elim_Zmax_r. omega.
 Qed.

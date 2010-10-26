@@ -859,13 +859,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite presubst_prelift_aux; trivial.
   Qed.
 
-  Definition subst_aux (M: Term) (G: Subst)
-                       (C: correct_subst M G)
-    : {Q: Term | 
-            env Q  = env M [-] subst_dom G [+] subst_ran G /\
-            term Q = presubst (term M) G /\
-            type Q = type M
-      }.
+  Definition subst_aux : forall (M: Term) (G: Subst) (C: correct_subst M G),
+    {Q: Term | env Q  = env M [-] subst_dom G [+] subst_ran G
+               /\ term Q = presubst (term M) G
+               /\ type Q = type M }.
+
   Proof.
     destruct M as [EM PtM TM TypM].
     induction TypM; intros G C; unfold presubst; simpl.
@@ -882,7 +880,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
       elimtype False; simpl in *; congruence.
     rewrite <- TA.
     apply typing_in_subst_env with (buildT (TVar v)) x; trivial.
-    exists (buildT (typing_ext_env_l (E [-] subst_dom G) Vc)); repeat split; auto.
+    exists (buildT (typing_ext_env_l (E [-] subst_dom G) Vc));
+      repeat split; auto.
     simpl; rewrite lift_0; trivial.
      (*   - variable is not substituted *)
     assert (Vnc: (E [-] subst_dom G) [+] subst_ran G |- %x := A).
@@ -1130,7 +1129,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (H x); try_solve.
   Qed.
 
-  Definition idSubst (M: Term) : Subst.
+  Definition idSubst : forall (M: Term), Subst.
 
   Proof.
     intros M; destruct M.

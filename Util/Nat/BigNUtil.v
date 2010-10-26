@@ -131,7 +131,7 @@ Require Import Nbasic.
 Lemma opp_compare_intro : forall x y, (x?=y) = opp_compare (y?=x).
 
 Proof.
-intros. generalize (spec_compare x y). generalize (spec_compare y x).
+intros x y. generalize (spec_compare x y). generalize (spec_compare y x).
 case (x?=y); case (y?=x); intros; (absurd_arith || refl).
 Qed.
 
