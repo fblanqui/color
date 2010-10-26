@@ -1,4 +1,7 @@
 
+- uniformize the various notions of bounded nat in BoundNat and
+   NatUtil
+
 - replace decidability lemmas by boolean functions
   in polynomial and matrix interpretations
 
