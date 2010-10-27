@@ -198,3 +198,12 @@ Record Bool_eq_type : Type := mkBool_eq_type {
   bet_eq : bet_type -> bet_type -> bool;
   bet_ok : forall x y, bet_eq x y = true <-> x = y
 }.
+
+(***********************************************************************)
+(** properties of type comparison *)
+
+Lemma CompOpp_eq : forall c d, CompOpp c = CompOpp d <-> c = d.
+
+Proof.
+destruct c; destruct d; simpl; intuition; discr.
+Qed.

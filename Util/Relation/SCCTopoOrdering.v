@@ -266,18 +266,19 @@ Qed.
 
 Require Import Heap.
 Require Import BoundNat.
+Require Import PermutSetoid.
 
 Notation bnat := (bnat dim).
 
 Lemma sorted_SCC' : {m : list nat | sort RT m &
-  Permutation.permutation (@eq nat) eq_nat_dec (nfirst dim) m}.
+  permutation (@eq nat) eq_nat_dec (nfirst dim) m}.
 
 Proof.
 unfold RT. destruct topo_sortable_Rquo' as [F HF]; simpl.
 set (RTb := fun x y : bnat =>
   F (nfirst dim)  (proj1_sig x) (proj1_sig y) = true) in *.
 
-cut ({m : list bnat | sort RTb m & Permutation.permutation (eq (A:=bnat))
+cut ({m : list bnat | sort RTb m & permutation (eq (A:=bnat))
   (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
 intro. destruct H as [mb]. exists (map (fun y => proj1_sig y) mb).
 apply (@map_sort_bnat_to_nat dim). intuition.

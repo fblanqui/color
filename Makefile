@@ -3,7 +3,7 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
-MAKEFLAGS := -r -j 1
+MAKEFLAGS := -r -j 3
 
 .SUFFIXES:
 

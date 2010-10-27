@@ -314,9 +314,7 @@ intros. destruct (Z_ge_dec x y); destruct (Z_ge_dec x' y');
   do 2 first 
     [ rewrite Zmax_r; [idtac | omega]
     | rewrite Zmax_l; [idtac | omega]
-      | idtac
-    ];
-    omega.
+    | idtac ]; omega.
 Qed.
 
 (***********************************************************************)

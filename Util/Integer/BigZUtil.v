@@ -20,26 +20,29 @@ Proof.
 decide equality; apply eq_bigN_dec.
 Defined.
 
-Require Import Nbasic.
-Import BigZ.
+Require Import Zcompare.
+Require Export BigZ.
 
-Lemma opp_compare_intro : forall x y, (x?=y) = opp_compare (y?=x).
+Open Scope bigZ_scope.
+
+Lemma compare_antisym : forall x y, CompOpp (x?=y) = (y?=x).
 
 Proof.
-intros. generalize (spec_compare x y). generalize (spec_compare y x).
-case (x?=y); case (y?=x); intros; (absurd_arith || refl).
+intros x y. repeat rewrite BigZ.spec_compare. apply Zcompare_antisym.
 Qed.
 
-Lemma compare_com : forall x y c, (x?=y = c) <-> (y?=x = opp_compare c).
+Require Import EqUtil.
+
+Lemma compare_antisym_eq : forall x y c, (x?=y = CompOpp c) <-> (y?=x = c).
 
 Proof.
-intros. rewrite (opp_compare_intro y x). split; intro. rewrite H. refl.
-rewrite opp_compare_eq in H. hyp.
+intros. rewrite <- (compare_antisym y x). split; intro.
+rewrite CompOpp_eq in H. hyp. rewrite H. refl.
 Qed.
 
-Lemma bigZ_le_gt_dec : forall n m, {n <= m} + {n > m}.
+Lemma le_gt_dec : forall n m, {n <= m} + {n > m}.
 
 Proof.
-intros. unfold BigZ.le, BigZ.lt. case_eq (n ?= m).
-left. discr. left. discr. right. rewrite compare_com. hyp.
+intros. unfold BigZ.le, BigZ.lt. destruct (Z_le_gt_dec [n] [m]).
+left. hyp. right. unfold Zlt. rewrite <- Zcompare_antisym. rewrite z. refl.
 Defined.
