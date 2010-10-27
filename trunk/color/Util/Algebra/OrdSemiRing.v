@@ -206,84 +206,84 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
   Lemma eq_ge_compat : forall x y, eqA x y -> x >= y.
 
   Proof.
-    intros. apply eq_le_incl. symmetry. hyp.
+    intros x y. unfold eqA, ge, BigN.eq, BigN.le. omega.
   Qed.
 
-  Definition ge_refl := le_refl.
+  Definition ge_refl := BigN.le_refl.
 
   Lemma ge_trans : transitive ge.
 
   Proof.
-    intros m n p. unfold ge. intros. apply le_trans with n; hyp.
+    intros m n p. unfold ge, BigN.le. omega.
   Qed.
 
   Lemma gt_trans : transitive gt.
 
   Proof.
-    intros m n p. unfold gt. intros. apply lt_trans with n; hyp.
+    intros m n p. unfold gt, BigN.lt. omega.
   Qed.
 
   Lemma ge_dec : forall x y, {ge x y}+{~ge x y}.
 
   Proof.
-    intros. unfold ge, BigN.le. case_eq (y ?= x).
-    left. discr. left. discr. right. unfold not. auto.
+    intros x y. unfold ge, BigN.le. destruct (Z_le_dec [y] [x]).
+    left. omega. right. omega.
   Qed.
 
   Lemma gt_dec : forall x y, {gt x y}+{~gt x y}.
 
   Proof.
-    intros. unfold gt, BigN.lt. case_eq (y ?= x).
-    right. discr. left. refl. right. discr.
+    intros. unfold gt, BigN.lt. destruct (Z_lt_dec [y] [x]).
+    left. omega. right. omega.
   Qed.
 
-  Definition gt_WF := wf_transp_WF lt_wf_0.
+  Definition gt_WF := wf_transp_WF BigN.lt_wf_0.
 
   Lemma ge_gt_compat : forall x y z, ge x y -> gt y z -> gt x z.
 
   Proof.
-    intros. apply lt_le_trans with y; hyp.
+    intros x y z. unfold ge, gt, BigN.le, BigN.lt. omega.
   Qed.
 
   Lemma ge_gt_compat2 : forall x y z, gt x y -> ge y z -> gt x z.
 
   Proof.
-    intros. apply le_lt_trans with y; hyp.
+    intros x y z. unfold gt, BigN.lt, ge, BigN.le. omega.
   Qed.
 
   Lemma plus_gt_compat :
     forall m n m' n', gt m m' -> gt n n' -> gt (m + n) (m' + n').
 
   Proof.
-    intros. apply add_lt_mono; hyp.
+    intros m n m' n'. apply BigN.add_lt_mono; hyp.
   Qed.
 
   Lemma plus_gt_compat_l :
     forall m n m' n', gt m m' -> ge n n' -> gt (m + n) (m' + n').
 
   Proof.
-    intros. apply add_lt_le_mono; hyp.
+    intros. apply BigN.add_lt_le_mono; hyp.
   Qed.
 
   Lemma plus_gt_compat_r :
     forall m n m' n', ge m m' -> gt n n' -> gt (m + n) (m' + n').
 
   Proof.
-    intros. apply add_le_lt_mono; hyp.
+    intros. apply BigN.add_le_lt_mono; hyp.
   Qed.
 
   Lemma plus_ge_compat :
     forall m n m' n', ge m m' -> ge n n' -> ge (m + n) (m' + n').
 
   Proof.
-    intros. apply add_le_mono; hyp.
+    intros. apply BigN.add_le_mono; hyp.
   Qed.
 
   Lemma mult_ge_compat :
     forall m n m' n', ge m m' -> ge n n' -> ge (m * n) (m' * n').
 
   Proof.
-    intros. apply mul_le_mono; hyp.
+    intros. apply BigN.mul_le_mono; hyp.
   Qed.
 
   Lemma mult_lt_compat_lr : forall i j k l,
@@ -291,9 +291,9 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. case (bigN_le_gt_dec j i); intro.
-    assert (i==j). apply le_antisymm; hyp. rewrite H2.
-    rewrite <- (mul_lt_mono_pos_l _ _ _ H0). hyp.
-    apply mul_lt_mono; hyp.
+    assert (i==j). apply BigN.le_antisymm; hyp. rewrite H2.
+    rewrite <- (BigN.mul_lt_mono_pos_l _ _ _ H0). hyp.
+    apply BigN.mul_lt_mono; hyp.
   Qed.
 
 End BigNOrdSemiRingT.
@@ -584,7 +584,6 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct z. right. refl. left. simpl. auto with zarith. discr.
     rewrite is_not_neg_ok. destruct H. simpl in H. auto with zarith.
     inversion H. auto with zarith.
-    discr.
     destruct H. simpl in H. contradiction. discr.
   Qed.
 

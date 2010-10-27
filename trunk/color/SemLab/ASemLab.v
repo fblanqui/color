@@ -669,7 +669,7 @@ End Base.
 
 Module Type SemLab.
 
-  Include Type Base.
+  Include Base.
 
   Parameter beqI : term Sig -> term Sig -> bool.
   Parameter beqI_ok : rel beqI << IR I (@eq I).
@@ -681,7 +681,7 @@ End SemLab.
 
 Module Type OrdSemLab.
 
-  Include Type SemLab.
+  Include SemLab.
 
   Parameter Dge : relation I.
   Parameter bge : term Sig -> term Sig -> bool.
@@ -748,7 +748,7 @@ End Ord.
 
 Module Type FinSemLab.
 
-  Include Type SemLab.
+  Include SemLab.
 
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.
@@ -766,7 +766,7 @@ End FinSemLab.
 
 Module Type FinOrdSemLab.
 
-  Include Type OrdSemLab.
+  Include OrdSemLab.
 
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall x : Sig, In x Fs.

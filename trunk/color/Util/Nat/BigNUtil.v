@@ -122,36 +122,23 @@ right. intro. inversion H. ded (inj_pairT2 eq_nat_dec H1). contradiction.
 Defined.
 
 (***********************************************************************)
-(** properties of Nbasic.opp_compare *)
+(** properties of ?= on BigN *)
 
-Require Import NatUtil.
 Require Export BigN.
-Require Import Nbasic.
 
-Lemma opp_compare_intro : forall x y, (x?=y) = opp_compare (y?=x).
+Open Scope bigN_scope.
+
+Lemma compare_antisym : forall x y, CompOpp (x?=y) = (y?=x).
 
 Proof.
-intros x y. generalize (spec_compare x y). generalize (spec_compare y x).
-case (x?=y); case (y?=x); intros; (absurd_arith || refl).
+intros x y. repeat rewrite spec_compare. apply Zcompare_antisym.
 Qed.
 
-Lemma opp_compare_elim : forall c, opp_compare (opp_compare c) = c.
+Lemma compare_antisym_eq : forall x y c, (x?=y = CompOpp c) <-> (y?=x = c).
 
 Proof.
-destruct c; refl.
-Qed.
-
-Lemma opp_compare_eq : forall c d, opp_compare c = opp_compare d <-> c = d.
-
-Proof.
-destruct c; destruct d; simpl; intuition; discr.
-Qed.
-
-Lemma compare_com : forall x y c, (x?=y = c) <-> (y?=x = opp_compare c).
-
-Proof.
-intros. rewrite (opp_compare_intro y x). split; intro. rewrite H. refl.
-rewrite opp_compare_eq in H. hyp.
+intros. rewrite <- (compare_antisym y x). split; intro.
+rewrite CompOpp_eq in H. hyp. rewrite H. refl.
 Qed.
 
 (***********************************************************************)
@@ -160,6 +147,6 @@ Qed.
 Lemma bigN_le_gt_dec : forall n m, {n <= m} + {n > m}.
 
 Proof.
-intros. unfold le, lt. case_eq (n ?= m).
-left. discr. left. discr. right. rewrite compare_com. hyp.
+intros. unfold le, lt. destruct (Z_le_gt_dec [n] [m]). left. hyp. right.
+unfold Zlt. rewrite <- Zcompare_antisym. rewrite z. refl.
 Defined.

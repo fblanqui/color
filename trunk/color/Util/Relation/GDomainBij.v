@@ -216,7 +216,6 @@ destruct (find_first (eq x) (eq_dec x)); auto with *.
 destruct (find_first (eq y) (eq_dec y)); auto with *.
 destruct (find_first (eq z) (eq_dec z)); auto with *.
 unfold compose; exists n1; auto with *.
-tauto.
 destruct (find_first (eq z) (eq_dec z));auto with *.
 Qed.
 

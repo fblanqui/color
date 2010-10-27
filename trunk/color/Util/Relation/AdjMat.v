@@ -168,12 +168,10 @@ intros.
 unfold mat_unbound.
 destruct (le_gt_dec dim x).
 simpl; intuition.
-discriminate.
 destruct H; tauto.
 
 destruct (le_gt_dec dim y).
 intuition.
-discriminate.
 destruct H.
 destruct (le_gt_dec dim x0).
 trivial.

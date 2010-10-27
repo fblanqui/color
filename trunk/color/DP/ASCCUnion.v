@@ -29,6 +29,7 @@ Require Import SN.
 Require Import VecUtil.
 Require Import GDomainBij.
 Require Import ExcUtil.
+Require Import PermutSetoid.
 
 Section S.
 
@@ -78,7 +79,6 @@ cut (exists j, j=i /\ In j x). intros; destruct H1. destruct H1.
 rewrite <- H1; auto.
 apply (multiplicity_in (@eq nat) eq_nat_dec). omega.
 assert (length (hyp_Dom hyps) = dim); intuition.
-rewrite <- H1 in H. assert False. omega. tauto.
 Qed.
 
 Lemma s_SCC's_spec_bound i : In i s_SCC's -> i < dim.
@@ -102,22 +102,22 @@ Notation SCC'_tag := (SCC'_tag hyps).
 Notation SCC'_dec := (SCC'_dec hyps).
 
 Definition hd_red_SCC' i t1 t2 := exists l, exists r, exists s,
-  SCC'_tag M HM (mkRule l r) = Some i /\ t1 = sub s l /\ t2 = sub s r.
+  SCC'_tag HM (mkRule l r) = Some i /\ t1 = sub s l /\ t2 = sub s r.
 
 Lemma hd_red_SCC'_cover t1 t2 : hd_red R t1 t2 ->
   exists i, hd_red_SCC' i t1 t2 /\ i<dim.
 
 Proof.
 intros. unfold hd_red in *. do 4 destruct H; destruct H0.
-cut (exists n, SCC'_tag M HM (mkRule x x0) = Some n).
+cut (exists n, SCC'_tag HM (mkRule x x0) = Some n).
 intro. destruct H2 as [i]. exists i. split. exists x; exists x0; exists x1.
 split; try tauto. apply (find_first_Some_bound
-  (SCC' (mkRule x x0)) (SCC'_dec M HM (mkRule x x0))). intuition.
+  (SCC' (mkRule x x0)) (SCC'_dec HM (mkRule x x0))). intuition.
 ded (find_first_exist
-  (SCC' (mkRule x x0)) (SCC'_dec M HM (mkRule x x0)) _ R H).
-assert (SCC'_tag M HM (mkRule x x0) <> None). apply H2.
+  (SCC' (mkRule x x0)) (SCC'_dec HM (mkRule x x0)) _ R H).
+assert (SCC'_tag HM (mkRule x x0) <> None). apply H2.
 split; try tauto. left; auto.
-destruct (SCC'_tag M HM (mkRule x x0)). exists n; auto. congruence.
+destruct (SCC'_tag HM (mkRule x x0)). exists n; auto. congruence.
 Qed.
 
 Definition hd_red_Mod_SCC' i :=  S @ hd_red_SCC' i.
@@ -252,23 +252,23 @@ Fixpoint SCC'_list_aux i L {struct L} :=
   match L with
     | nil => nil
     | x :: q =>
-      match eq_opt_dec eq_nat_dec (SCC'_tag M HM x) (Some i) with
+      match eq_opt_dec eq_nat_dec (SCC'_tag HM x) (Some i) with
         | left _ => x :: @SCC'_list_aux i q
         |right _ => @SCC'_list_aux i q
       end
   end.
 
 Lemma SCC'_list_aux_exact : forall i L r,
-  In r (SCC'_list_aux i L) <-> In r L /\ SCC'_tag M HM r = Some i.
+  In r (SCC'_list_aux i L) <-> In r L /\ SCC'_tag HM r = Some i.
 
 Proof.
 intros. induction L. simpl in *. tauto.
 split; intro. simpl in *.
-destruct (eq_opt_dec eq_nat_dec (SCC'_tag M HM a) (Some i));
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag HM a) (Some i));
 destruct (rule_eq_dec a r); simpl in *; intuition.
 subst a; tauto.
 destruct H. simpl in *.
-destruct (eq_opt_dec eq_nat_dec (SCC'_tag M HM a) (Some i));
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag HM a) (Some i));
 destruct H; simpl in *; try subst a; tauto.
 Qed.
 
@@ -278,14 +278,14 @@ Lemma repeat_free_SCC'_list_aux : forall i L,
 Proof.
 induction L; intros; simpl. tauto.
 simpl in H. destruct H.
-destruct (eq_opt_dec eq_nat_dec (SCC'_tag M HM a) (Some i)); try tauto.
+destruct (eq_opt_dec eq_nat_dec (SCC'_tag HM a) (Some i)); try tauto.
 split. rewrite SCC'_list_aux_exact. tauto. tauto.
 Qed.
 
 Definition SCC'_list i := SCC'_list_aux i R.
 
 Lemma SCC'_list_exact : forall i r,
-  In r (SCC'_list i) <-> SCC'_tag M HM r = Some i.
+  In r (SCC'_list i) <-> SCC'_tag HM r = Some i.
 
 Proof.
 intros; split; intro.
