@@ -232,7 +232,7 @@ Section HorpoMap.
     rewrite <- M'eq. apply AlgVar; try_solve.
     apply AlgVar. try_solve.
     apply HSub. compute. trivial.
-    exists (buildT (@TVar env_2 0 #(Star) _)).
+    eexists (buildT (@TVar env_2 0 #(Star) _)).
     compute. left. trivial.
     constructor 2.     
     apply HArgsNil.

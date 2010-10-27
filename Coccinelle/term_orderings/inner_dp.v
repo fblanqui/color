@@ -347,7 +347,7 @@ assert False; [idtac | contradiction].
 apply Psi_not_nf with t t'; trivial.
 Defined.
 
-Definition psi (t : term) : term.
+Definition psi : forall (t : term), term.
 Proof.
 intros t.
 assert (red_dec :=compute_red_is_correct rule_list Rreg' R Req).

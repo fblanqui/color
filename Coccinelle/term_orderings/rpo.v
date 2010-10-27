@@ -2073,8 +2073,6 @@ assert (H: exists ls1, exists ls2,
  (forall b, mem equiv b ls2 -> exists a', mem equiv a' (a :: lg) /\ rpo bb b a')).
 clear P'; induction ls as [ | s ls].
 exists (nil : list term); exists (nil : list term); intuition. reflexivity.
-contradiction.
-contradiction.
 destruct IHls as [ls1 [ls2 [P' [ls1_lt_g ls2_lt_alg]]]].
 intros b b_in_ls; apply ls_lt_alg; right; trivial.
 destruct (ls_lt_alg s) as [a' [[a'_eq_a | [a'_eq_g | a'_in_lg]] b_lt_a']].
@@ -2147,8 +2145,6 @@ assert (H: exists ls1, exists ls2,
  (forall b, mem equiv b ls2 -> exists a', mem equiv a' (a :: lg) /\ rpo bb b a')).
 clear P'; induction ls as [ | s ls].
 exists (nil : list term); exists (nil : list term); intuition. reflexivity.
-contradiction.
-contradiction.
 destruct IHls as [ls1 [ls2 [P' [ls1_lt_g ls2_lt_alg]]]].
 intros b b_in_ls; apply ls_lt_alg; right; trivial.
 destruct (ls_lt_alg s) as [a' [[a'_eq_a | [a'_eq_g | a'_in_lg]] b_lt_a']].
@@ -6206,12 +6202,12 @@ destruct (not_t2_lt_t1 H); discriminate.
 intros _ _ _ _ H; apply H; trivial.
 Qed.
 
-Definition empty_rpo_infos (n : nat) : rpo_inf.
+Definition empty_rpo_infos : forall (n : nat), rpo_inf.
 Proof. 
 intro n;  constructor 1 with n (@nil (term*term)) (@nil (term*term)) (@nil (term*term));simpl;tauto.
 Defined.
 
-Definition add_equiv (rpo_infos:rpo_inf) t1 t2 (H:equiv t1 t2) : rpo_inf.
+Definition add_equiv : forall (rpo_infos:rpo_inf) t1 t2 (H:equiv t1 t2), rpo_inf.
 Proof.  
   intros rpo_infos t1 t2 H.
   case rpo_infos.
