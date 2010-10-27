@@ -1,5 +1,16 @@
+
 -----------------------------------------------------------------------------
-09-12-07: NEW RELEASE (1000)
+10-10-27: NEW RELEASE (SVN revision 1325)
+
+10-10-27:
+- migration to Coq 8.3
+
+10-06-30:
+- added Sorin Stratulat's patch to Coccinelle's RPO for allowing a
+quasi-ordering on symbols instead of an ordering
+
+-----------------------------------------------------------------------------
+09-12-07: NEW RELEASE (SVN revision 1000)
 
 09-11-04: [Blanqui]
 - DP/ADP: use Dershowitz improvement for defining DPs

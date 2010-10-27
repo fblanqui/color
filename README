@@ -48,6 +48,7 @@ LICENSE: this file describes the license governing this library.
 COPYRIGHTS: this file describes the copyrights holders.
 INSTALL: this file describes a compilation procedure.
 THANKS: thanks to various people for their comments or help.
+CHANGES: this file briefly describes the main changes between two releases.
 
 The development version is available under SVN on
 http://gforge.inria.fr/projects/color/.
