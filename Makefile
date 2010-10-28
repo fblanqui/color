@@ -3,43 +3,29 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
-MAKEFLAGS := -r -j 3
-
 .SUFFIXES:
 
-.PHONY: clean clean-all clean-doc default config create_Makefile.coq create_Makefile.all dist doc install-dist install-doc tags all
+.PHONY: clean clean-all clean-doc default config dist doc install-dist install-doc tags all
 
 COQC := $(COQBIN)coqc
 
-MAKECOQ := $(MAKE) -f Makefile.coq
-MAKEALL := $(MAKE) -f Makefile.all
+MAKECOQ := $(MAKE) -r -f Makefile.coq -j 3 OTHERFLAGS="-dont-load-proofs"
 
-PC_VFILE := ProofChecker/ProofChecker.v
-
-VFILES := $(shell find . -name \*.v -not -name ProofChecker.v)
+VFILES := $(shell find . -name \*.v)
 
 default: Makefile.coq
-	$(MAKECOQ) OTHERFLAGS="-dont-load-proofs"
+	$(MAKECOQ)
 
-all: Makefile.all
-	/usr/bin/time -p $(MAKEALL) OTHERFLAGS="-dont-load-proofs"
-
-config: create_Makefile.coq create_Makefile.all
-
-create_Makefile.coq Makefile.coq:
+config Makefile.coq:
 	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
 	$(MAKECOQ) depend
-
-create_Makefile.all Makefile.all:
-	coq_makefile -R . CoLoR $(VFILES) $(PC_VFILE) > Makefile.all
-	$(MAKEALL) depend
 
 clean:
 	rm -f `find . -name \*~`
 	$(MAKEALL) clean
 
 clean-all: clean
-	rm -f Makefile.coq Makefile.all
+	rm -f Makefile.coq
 
 clean-doc:
 	rm -f doc/CoLoR.*.html doc/index.html doc/main.html
@@ -64,7 +50,7 @@ install-dist:
 	scp CHANGES $(ADR)/CHANGES.CoLoR
 
 %.vo: %.v
-	$(MAKECOQ) OTHERFLAGS="-dont-load-proofs" $@
+	$(MAKECOQ) $@
 
 %:
-	$(MAKECOQ) OTHERFLAGS="-dont-load-proofs" $@
+	$(MAKECOQ) $@
