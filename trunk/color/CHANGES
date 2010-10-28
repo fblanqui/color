@@ -1,11 +1,11 @@
 
 -----------------------------------------------------------------------------
-10-10-27: NEW RELEASE (SVN revision 1328)
+10-10-28: NEW RELEASE (SVN revision 1329)
 
 10-10-27:
 - migration to Coq 8.3
 
-10-06-30:
+10-06-30: [Stratulat]
 - added Sorin Stratulat's patch to Coccinelle's RPO for allowing a
 quasi-ordering on symbols instead of an ordering
 
