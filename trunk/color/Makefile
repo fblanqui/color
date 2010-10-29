@@ -21,10 +21,8 @@ config Makefile.coq:
 	$(MAKECOQ) depend
 
 clean:
-	rm -f `find . -name \*.vo`
-	rm -f `find . -name \*.glob`
-	rm -f `find . -name \*.d`
-	$(MAKEALL) clean
+	rm -f `find . -name \*~`
+	$(MAKECOQ) clean
 
 clean-all: clean
 	rm -f Makefile.coq
