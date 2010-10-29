@@ -1747,7 +1747,7 @@ Proof.
 intros. omega.
 Qed.
 
-(* nats_lt n k h = k :: ... :: 0 *)
+(* nats_lt_aux k h = k :: ... :: 0 *)
 
 Fixpoint nats_lt_aux k :=
   match k as k return k<n -> list (nat_lt n) with
