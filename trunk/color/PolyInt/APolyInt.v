@@ -208,7 +208,6 @@ Proof.
 
  intros f ts. unfold Q. intro H. unfold P, f1, f2.
  simpl bterm_int. rewrite val_peval_D. simpl.
- 
  unfold P in H.
  generalize (Vmap_eq H). intro H'.
  rewrite peval_comp.

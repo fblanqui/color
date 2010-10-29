@@ -1598,8 +1598,6 @@ End vec_of_list.
 (***********************************************************************)
 (** decidability of equality *)
 
-(* you should use a boolean function instead *)
-
 Section eq_dec.
 
 Variable A : Type. Notation vec := (vector A).
