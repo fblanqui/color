@@ -199,7 +199,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
       Notation mgt := (mat_forall2 gtx).
 
       Lemma arctic_dot_product_mon : forall i (v v' w w' : vector A i), 
-        vgt _ v v' -> vge w w' -> dot_product v w >_0 dot_product v' w'.
+        vgt v v' -> vge w w' -> dot_product v w >_0 dot_product v' w'.
 
       Proof.
         unfold dot_product. induction v; intros; simpl.
@@ -213,8 +213,8 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
         do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
       Qed.
 
-      Lemma mat_arctic_mult_mon : mgt _ _ M M' -> mge N N' -> 
-        mgt _ _ (M <*> N) (M' <*> N').
+      Lemma mat_arctic_mult_mon : mgt M M' -> mge N N' -> 
+        mgt (M <*> N) (M' <*> N').
 
       Proof.
         intros. unfold mat_forall2. intros.
