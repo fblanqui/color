@@ -825,6 +825,258 @@ End ArcticBZOrdSemiRingT.
 Module ArcticBZOrdSemiRing := OrdSemiRing ArcticBZOrdSemiRingT.
 
 (***********************************************************************)
+(** Tropical ordered semi-ring *)
+
+Require Import OrdSemiRing.
+Require Import RelUtil.
+
+Module TropicalOrdSemiRingT <: OrdSemiRingType.
+ 
+  Module Export SR := TropicalSemiRingT.
+
+  Definition gt m n :=
+    match m, n with
+    | PlusInf, PlusInf => False
+    | PlusInf, _ => True
+    | TPos _, PlusInf => False
+    | TPos m, TPos n => m > n
+    end.
+
+  Definition ge m n := gt m n \/ m = n.
+
+  Lemma eq_ge_compat : forall x y, x = y -> ge x y.
+
+  Proof.
+    unfold ge. intuition.
+  Qed.
+
+  Lemma gt_irrefl : irreflexive gt.
+
+  Proof.
+    intros x xx. destruct x.
+    unfold gt in xx. omega.
+    auto.
+  Qed.
+
+  Lemma gt_trans : transitive gt.
+
+  Proof.
+    intros x y z xy yz. 
+    destruct x; destruct y; destruct z; try solve [ auto | contradiction ].
+    apply gt_trans with n0; auto.
+  Qed.
+
+  Lemma gt_asym : forall x y, gt x y -> ~gt y x.
+
+  Proof.
+    intros x y xy. 
+    destruct x; destruct y; simpl in *; try solve [auto | omega].
+  Qed.
+
+  Lemma gt_dec : rel_dec gt.
+
+  Proof.
+    unfold rel_dec. intros.
+    destruct x; destruct y; simpl; auto.
+    destruct (gt_dec n n0); auto.
+  Defined.
+
+  Lemma gt_Fin_WF x : Acc (transp gt) (TPos x).
+  Proof.
+    induction x using lt_wf_ind; apply Acc_intro; destruct y; auto || contradiction.
+  Qed.
+
+  Hint Resolve gt_Fin_WF.
+
+  Lemma gt_WF : WF gt.
+
+  Proof with auto; try contradiction.
+    apply wf_transp_WF. intro x.
+    destruct x...
+    apply Acc_intro. intros. destruct y...
+  Qed.
+
+  Lemma ge_refl : reflexive ge.
+
+  Proof.
+    intro m. right. trivial.
+  Qed.
+
+  Lemma ge_trans : transitive ge.
+
+  Proof.
+    intros x y z xy yz. destruct xy. destruct yz.
+    left. apply (gt_trans x y z); assumption.
+    subst y. left. assumption.
+    subst x. assumption.
+  Qed.
+
+  Lemma ge_antisym : antisymmetric ge.
+
+  Proof.
+    intros x y xy yx. destruct xy. destruct yx.
+    absurd (gt y x). apply gt_asym. assumption. assumption.
+    auto. assumption.
+  Qed.
+
+  Lemma ge_dec : rel_dec ge.
+
+  Proof.
+    intros x y. destruct (gt_dec x y).
+    left. left. assumption.
+    destruct (eqA_dec x y).
+    left. right. assumption.
+    right. intro xy. destruct xy; auto.
+  Defined.
+
+  Notation "x + y" := (Aplus x y).
+  Notation "x * y" := (Amult x y).
+  Notation "x >>= y" := (ge x y) (at level 70).
+  Notation "x >> y" := (gt x y) (at level 70).
+
+  Lemma ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
+
+  Proof.
+    destruct 1; auto.
+  Qed.
+
+  Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
+
+  Proof with simpl; intuition.
+    intros. 
+    destruct y; destruct x; destruct z; auto...
+    destruct H. simpl in *. omega. injection H. intros. subst...
+    destruct H. contradiction. discr.
+  Qed.
+
+  Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
+
+  Proof.
+    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition; try discr.
+    inversion H1. subst. hyp.
+  Qed.
+
+  Lemma pos_ord : forall m n,
+    TPos m >>= TPos n -> Peano.ge m n.
+
+  Proof.
+    intros. inversion H; simpl in H0. omega.
+    injection H0. omega.
+  Qed.
+
+  Lemma plus_inf_dec : forall m n,
+    { exists p, (m = TPos p \/ n = TPos p) /\ m + n = TPos p} +
+    { m + n = PlusInf /\ m = PlusInf /\ n = PlusInf }.
+
+  Proof.
+    intros. destruct m. 
+    left. destruct n.
+    exists (min n0 n). split.
+    apply min_case; auto. trivial.
+    exists n0. auto.
+    destruct n.
+    left. exists n. auto.
+    right. auto.
+  Qed.
+
+  Lemma mult_inf_dec : forall m n,
+    { exists mi, exists ni,
+      m = TPos mi /\ n = TPos ni /\ m * n = TPos (mi + ni) } +
+    { m * n = PlusInf /\ (m = PlusInf \/ n = PlusInf) }.
+
+  Proof.
+    intros. destruct m. destruct n.
+    left. exists n0. exists n. repeat split. 
+    right. auto.
+    right. auto.
+  Qed.
+
+  Lemma ge_impl_pos_ge : forall m n, (m >= n)%nat -> TPos m >>= TPos n.
+
+  Proof.
+    intros. destruct (lt_eq_lt_dec m n) as [[m_n | m_n] | m_n].
+    elimtype False. omega.
+    subst m. right. refl.
+    left. trivial.
+  Qed.
+
+  Lemma pos_ge_impl_ge : forall m n, TPos m >>= TPos n -> (m >= n)%nat.
+
+  Proof.
+    intros. destruct H. auto with arith. 
+    injection H. intro. subst m. auto with arith.
+  Qed.
+
+  Ltac tropical_ord :=
+    match goal with
+    | H: _ >> PlusInf |- _ => contradiction
+    | H: TPos _ >>= PlusInf |- _ =>
+        destruct H; [ contradiction | discriminate ]
+    | H: TPos ?m >>= TPos ?n |- _ =>
+        assert ((m >= n)%nat); 
+          [ apply pos_ge_impl_ge; assumption 
+          | clear H; tropical_ord
+          ]
+    | |- PlusInf >>= TPos _ => left; simpl; trivial
+    | |- TPos ?m >>= TPos ?n => apply ge_impl_pos_ge
+    | _ => try solve [contradiction | discriminate]
+    end.
+
+
+  Lemma plus_gt_compat : forall m n m' n',
+    m >> m' -> n >> n' -> m + n >> m' + n'.
+
+  Proof.
+    intros.
+    destruct m; destruct n; destruct m'; destruct n'; 
+      simpl; trivial; tropical_ord.
+    apply min_gt_compat; assumption.
+    unfold Peano.gt. apply lt_min_intro_l. assumption.
+    unfold Peano.gt. apply lt_min_intro_r. assumption.
+  Qed.
+
+  Lemma plus_ge_compat : forall m n m' n',
+    m >>= m' -> n >>= n' -> m + n >>= m' + n'.
+
+  Proof.
+    intros.
+    destruct m; destruct n; destruct m'; destruct n'; 
+      simpl; trivial; tropical_ord.
+    apply min_ge_compat; assumption.
+    unfold Peano.ge. apply le_min_intro_l. assumption.
+    unfold Peano.ge. apply le_min_intro_r. assumption.
+  Qed.
+
+  Lemma mult_ge_compat : forall m n m' n',
+    m >>= m' -> n >>= n' -> m * n >>= m' * n'.
+
+  Proof.
+    intros.
+    destruct m; destruct n; destruct m'; destruct n'; 
+      simpl; trivial; tropical_ord.
+    omega.
+  Qed.
+
+  Lemma not_minusInf_ge_A1 : forall a, a <> PlusInf -> a >>= A1.
+
+  Proof.
+    intros. destruct a. destruct n.
+    right. refl.
+    left. simpl. omega.
+    tauto.
+  Qed.
+
+  Lemma tropical_plus_inf_max : forall x, x <> PlusInf -> PlusInf >> x.
+  Proof.
+    intros. destruct x. simpl. auto.
+    elimtype False. apply H. trivial.
+  Qed.
+
+End TropicalOrdSemiRingT.
+
+Module TropicalOrdSemiRing := OrdSemiRing TropicalOrdSemiRingT.
+
+(***********************************************************************)
 (** Semi-ring of booleans with order True > False *)
 
 Module BOrdSemiRingT <: OrdSemiRingType.
