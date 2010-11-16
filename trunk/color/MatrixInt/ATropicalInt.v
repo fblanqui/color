@@ -10,11 +10,10 @@ Set Implicit Arguments.
 Require Import ATropicalBasedInt.
 Require Import AMatrixBasedInt.
 Require Import Matrix.
+Require Import OrdSemiRing.
  (* TODO In the main branch, this should be moved to Matrix.v *)
-Require Import TropicalSemiRing.
 Module TropicalMatrix := Matrix TropicalOrdSemiRingT.
 Import TropicalMatrix.
-Require Import OrdSemiRing.
 Require Import VecUtil.
 Require Import AMonAlg.
 Require Import SN.

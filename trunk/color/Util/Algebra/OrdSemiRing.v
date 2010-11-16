@@ -827,9 +827,6 @@ Module ArcticBZOrdSemiRing := OrdSemiRing ArcticBZOrdSemiRingT.
 (***********************************************************************)
 (** Tropical ordered semi-ring *)
 
-Require Import OrdSemiRing.
-Require Import RelUtil.
-
 Module TropicalOrdSemiRingT <: OrdSemiRingType.
  
   Module Export SR := TropicalSemiRingT.
