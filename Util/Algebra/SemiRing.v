@@ -651,6 +651,166 @@ End ArcticBZSemiRingT.
 Module ArcticBZSemiRing := SemiRing ArcticBZSemiRingT.
 
 (***********************************************************************)
+(** Tropical semi-ring over naturals with plus infinity and 
+    plus-min operations *)
+
+Inductive TropicalDom : Type := 
+| TPos (n : nat)
+| PlusInf.
+
+Definition tropical_is_finite v :=
+  match v with
+  | PlusInf => false
+  | _ => true
+  end.
+
+Lemma tropical_is_finite_ok : forall v, tropical_is_finite v = true <-> v <> PlusInf.
+
+Proof.
+  intro. destruct v; simpl; intuition. discriminate.
+Qed.
+
+Definition beq_TropicalDom x y :=
+  match x, y with
+  | TPos x', TPos y' => beq_nat x' y'
+  | PlusInf, PlusInf => true
+  | _, _ => false
+  end.
+
+Lemma beq_TropicalDom_ok : forall x y, beq_TropicalDom x y = true <-> x = y.
+
+Proof.
+  unfold beq_TropicalDom. destruct x; destruct y; simpl; try (intuition; discr).
+  rewrite beq_nat_ok. intuition. inversion H. refl.
+Qed.
+
+Module Tropical <: SetA.
+  Definition A := TropicalDom.
+End Tropical.
+
+Module Tropical_Eqset := Eqset_def Tropical.
+
+Module Tropical_Eqset_dec <: Eqset_dec.
+  Module Export Eq := Tropical_Eqset.
+  Definition eqA_dec := dec_beq beq_TropicalDom_ok.
+End Tropical_Eqset_dec.
+
+Module TropicalSemiRingT <: SemiRingType.
+
+  Module Export ES := Tropical_Eqset_dec.
+
+  Add Setoid A eqA sid_theoryA as A_Setoid.
+
+  Definition A0 := PlusInf.
+  Definition A1 := TPos 0.
+
+  (* min is a <+> operation in the semi-ring *)
+  Definition Aplus m n :=
+    match m, n with
+    | PlusInf, n => n
+    | m, PlusInf => m
+    | TPos m, TPos n => TPos (min m n)
+    end.
+
+  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  (* plus is a <*> operation in the semi-ring *)
+  Definition Amult m n := 
+    match m, n with
+    | PlusInf, _ => PlusInf
+    | _, PlusInf => PlusInf
+    | TPos m, TPos n => TPos (m + n)
+    end.
+
+  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
+
+  Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
+
+  Proof.
+    intros. unfold Aplus. destruct m; destruct n; trivial.
+    rewrite min_comm. trivial.
+  Qed.
+
+  Lemma A_plus_assoc : forall m n p, Aplus m (Aplus n p) = Aplus (Aplus m n) p.
+
+  Proof.
+    intros. unfold Aplus.
+    destruct m; destruct n; destruct p; trivial.
+    rewrite min_assoc. trivial.
+  Qed.
+
+  Lemma A_mult_comm : forall m n, Amult m n = Amult n m.
+
+  Proof.
+    intros. unfold Amult. destruct m; destruct n; trivial.
+    rewrite plus_comm. trivial.
+  Qed.
+
+  Lemma A_mult_assoc : forall m n p, Amult m (Amult n p) = Amult (Amult m n) p.
+
+  Proof.
+    intros. unfold Amult.
+    destruct m; destruct n; destruct p; trivial.
+    rewrite plus_assoc. trivial.
+  Qed.
+
+  Import Compare. Import Min.
+
+  Lemma A_mult_plus_distr : forall m n p,
+    Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
+
+  Proof.
+    intros. unfold Amult, Aplus.
+    destruct m; destruct n; destruct p; trivial.
+    destruct (le_dec n0 n).
+    rewrite min_l. rewrite min_l. trivial. auto with arith. trivial.
+    rewrite min_r. rewrite min_r. trivial. auto with arith. trivial.
+  Qed.
+
+  Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
+
+  Proof.
+    constructor; intros.
+    compute; trivial.
+    apply A_plus_comm.
+    apply A_plus_assoc.
+    destruct n; compute; trivial.
+    compute; trivial.
+    apply A_mult_comm.
+    apply A_mult_assoc.
+    apply A_mult_plus_distr.
+  Qed.
+
+  Lemma tropical_plus_notInf_left : forall a b,
+    a <> PlusInf -> Aplus a b <> PlusInf.
+
+  Proof.
+    intros. destruct a. 
+    destruct b; simpl; discriminate.
+    auto. 
+  Qed.
+
+  Lemma tropical_mult_notInf : forall a b,
+    a <> PlusInf -> b <> PlusInf -> Amult a b <> PlusInf.
+
+  Proof.
+    intros. 
+    destruct a; auto. 
+    destruct b; auto. 
+    simpl. discriminate.
+  Qed.
+
+End TropicalSemiRingT.
+
+Module TropicalSemiRing := SemiRing TropicalSemiRingT.
+
+(***********************************************************************)
 (** Semi-ring of booleans with 'or' and 'and' *)
 
 Module Bool <: SetA.
