@@ -38,8 +38,7 @@ Notation arity' := filter_arity.
 Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
 Notation Sig' := filter_sig.
 
-Notation term' := (ATerm.term Sig').
-Notation terms' := (vector term').
+Notation term' := (ATerm.term Sig'). Notation terms' := (vector term').
 Notation Fun' := (@Fun Sig').
 
 (***********************************************************************)
@@ -54,16 +53,14 @@ Fixpoint filter (t : term) : term' :=
 (***********************************************************************)
 (** filtered contexts *)
 
-Notation context := (context Sig).
-Notation context' := (AContext.context Sig').
-
+Notation context' := (context Sig'). Notation context := (context Sig).
 Definition Cont' := (@Cont Sig').
 
 (***********************************************************************)
 (** rule filtering *)
 
-Notation rule := (ATrs.rule Sig). Notation rules := (list rule).
-Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
+Notation rule' := (rule Sig'). Notation rules' := (list rule').
+Notation rule := (rule Sig). Notation rules := (list rule).
 
 Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
 
