@@ -5,7 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2007-02-16
 - Stephane Le Roux, 2006-10-17
 
-lists without duplications
+lists without duplicated elements
 *)
 
 Set Implicit Arguments.
@@ -25,11 +25,11 @@ Variable A : Type.
 Fixpoint repeat_free (l : list A) : Prop :=
   match l with
     | nil => True
-    | a::l' => ~In a l' /\ repeat_free l'
+    | a :: l' => ~In a l' /\ repeat_free l'
   end.
 
-Lemma repeat_free_app_elim_right : forall l l' ,
-  repeat_free (l++l') -> repeat_free l'. 
+Lemma repeat_free_app_elim_right : forall l l',
+  repeat_free (l++l') -> repeat_free l'.
 
 Proof.
 induction l; simpl; intros. assumption. apply IHl. tauto. 
@@ -91,8 +91,8 @@ induction l; simpl; intros. exact H. destruct H. apply repeat_free_last.
 apply IHl. exact H0. intro. apply H. apply rev_incl. exact H1.
 Qed.
 
-Lemma repeat_free_app_elim : forall l m : list A, repeat_free (l ++ m)
-  -> repeat_free l /\ repeat_free m /\ forall x, In x l -> ~In x m.
+Lemma repeat_free_app_elim : forall l m : list A, repeat_free (l ++ m) ->
+  repeat_free l /\ repeat_free m /\ forall x, In x l -> ~In x m.
 
 Proof.
 induction l; simpl; intros. intuition. destruct H. ded (IHl m H0).
@@ -101,6 +101,16 @@ apply (H5 x); assumption.
 Qed.
 
 Implicit Arguments repeat_free_app_elim [l m].
+
+Lemma repeat_free_app_cons : forall l (x : A) m,
+  repeat_free (l ++ x :: m) -> ~In x l /\ ~In x m.
+
+Proof.
+split. apply repeat_free_rev in H. rewrite rev_app_distr in H.
+apply repeat_free_app_elim in H. decomp H. rewrite List.in_rev.
+apply H3. rewrite <- List.in_rev. simpl. auto.
+apply repeat_free_app_elim in H. simpl in H. tauto.
+Qed.
 
 Lemma repeat_free_remove : forall n l x,
   length l = n -> repeat_free l -> repeat_free (remove eq_dec x l).
@@ -313,7 +323,30 @@ unfold incl; simpl. intros. destruct (eq_dec a a0).
 auto. destruct H. auto. right. apply In_remove; auto.
 Qed.
 
+(***********************************************************************)
+(** boolean function deciding repeat_free *)
+
+Require Import ListDec BoolUtil.
+
+Variables (beq : A -> A -> bool)
+  (beq_ok : forall x y, beq x y = true <-> x = y).
+
+Fixpoint brepeat_free (l : list A) : bool :=
+  match l with
+    | nil => true
+    | a :: l' => negb (mem beq a l') && brepeat_free l'
+  end.
+
+Lemma brepeat_free_ok : forall l, brepeat_free l = true <-> repeat_free l.
+
+Proof.
+induction l; simpl; intros. tauto.
+rewrite andb_eq. rewrite IHl. rewrite <- (mem_ok beq_ok). rewrite negb_lr.
+simpl. rewrite false_not_true. refl.
+Qed.
+
 End S.
 
 Implicit Arguments repeat_free_app_elim [A l m].
 Implicit Arguments repeat_free_unique [A l x n m].
+Implicit Arguments repeat_free_app_cons [A l x m].
