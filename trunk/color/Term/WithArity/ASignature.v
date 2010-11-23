@@ -9,6 +9,8 @@ signature for algebraic terms with arity
 
 Set Implicit Arguments.
 
+Require Import EqUtil List.
+
 (***********************************************************************)
 (** Variables are represented by natural numbers. *)
 
@@ -29,8 +31,6 @@ Implicit Arguments arity [s].
 Implicit Arguments beq_symb [s].
 Implicit Arguments beq_symb_ok [s x y].
 
-Require Import EqUtil.
-
 Ltac case_beq_symb Sig := EqUtil.case_beq (@beq_symb Sig) (@beq_symb_ok Sig).
 
 Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
@@ -46,8 +46,6 @@ Ltac beq_symb_ok := intros f g; split;
 
 (***********************************************************************)
 (** Module for finite signatures *)
-
-Require Import List.
 
 Module Type SIG.
   Parameter Sig : Signature.

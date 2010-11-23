@@ -18,21 +18,10 @@ In addition to this definitions some proofs and results are given.
 
 Set Implicit Arguments.
 
-Require Import ARelation.
-Require Export AContext.
-Require Export ASubstitution.
-Require Import ListUtil.
-Require Import ListRepeatFree.
-Require Import LogicUtil.
-Require Import VecUtil.
-Require Import RelUtil.
-Require Import ListForall.
-Require Import SN.
-Require Import BoolUtil.
-Require Import EqUtil.
-Require Import NatUtil.
-Require Import Basics.
-Require Import Program.Syntax.
+Require Export AContext ASubstitution.
+
+Require Import ARelation ListUtil ListRepeatFree LogicUtil VecUtil RelUtil
+  ListForall SN BoolUtil EqUtil NatUtil Basics Syntax.
 
 Section basic_definitions.
 
