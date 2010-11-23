@@ -148,3 +148,32 @@ End dec.
 
 Implicit Arguments ko [A P f].
 Implicit Arguments dec [A P f].
+
+(***********************************************************************)
+(** correspondance between boolean functions and logical connectors *)
+
+Section bool_ok.
+
+Variables (A : Type) (P Q : A->Prop) (bP bQ : A-> bool)
+  (bP_ok : forall x, bP x = true <-> P x)
+  (bQ_ok : forall x, bQ x = true <-> Q x).
+
+Lemma negb_ok : forall x, negb (bP x) = true <-> ~P x.
+
+Proof.
+intro. rewrite <- (ko bP_ok). destruct (bP x); simpl; intuition.
+Qed.
+
+Lemma andb_ok : forall x, bP x && bQ x = true <-> P x /\ Q x.
+
+Proof.
+intro. rewrite andb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
+Qed.
+
+Lemma orb_ok : forall x, bP x || bQ x = true <-> P x \/ Q x.
+
+Proof.
+intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
+Qed.
+
+End bool_ok.
