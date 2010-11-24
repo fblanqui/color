@@ -47,7 +47,7 @@ Variable n : nat.
 Definition one_flat_cont := flat_cont_symb n arity_some_symbol.
 
 Definition flat_conts_symb n f :=
-  map (fun x => flat_cont_symb n (prf x)) (@nats_lt (arity f)).
+  map (fun x => flat_cont_symb n (prf x)) (@mk_nat_lts (arity f)).
 
 Variable Fs : list Sig.
 Variable Fs_ok : forall x : Sig, In x Fs.
@@ -133,7 +133,7 @@ generalize (flat_cont_aux h). assert (arity g - S i = j). omega. rewrite H1.
 intro. assert (e0=e). apply eq_unique. subst. refl.
 unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
 unfold flat_conts_symb. rewrite in_map_iff. exists (mk_nat_lt h). intuition.
-apply nats_lt_complete.
+apply mk_nat_lts_complete.
 transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_r.
 transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_l.
 Qed.

@@ -12,19 +12,6 @@ Set Implicit Arguments.
 Require Import VecUtil ListUtil NatUtil LogicUtil ListRepeatFree.
 
 (***********************************************************************)
-(** filters are lists of bounded natural numbers *)
-
-Definition nat_lts n := list (nat_lt n).
-
-Lemma in_map_val : forall n (l : nat_lts n) i, In i (map (@val n) l) -> i<n.
-
-Proof.
-intros. destruct (in_map_elim H). destruct H0. subst. destruct x. simpl. hyp.
-Qed.
-
-Implicit Arguments in_map_val [n l i].
-
-(***********************************************************************)
 (** filtering function *)
 
 Fixpoint Vfilter A n (l : nat_lts n) (v : vector A n) : vector A (length l) :=

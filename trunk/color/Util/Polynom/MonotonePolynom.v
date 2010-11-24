@@ -182,12 +182,12 @@ Qed.
 Definition bpweak_monotone n (p : poly n) := bcoef_pos p.
 Definition bpweak_monotone_ok n (p : poly n) := bcoef_pos_ok p.
 
-Implicit Arguments nats_lt [].
-Implicit Arguments nats_lt_aux [].
+Implicit Arguments mk_nat_lts [].
+Implicit Arguments mk_nat_lts_aux [].
 
 Definition bpstrong_monotone n (p : poly n) :=
   bcoef_pos p
-  && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (nats_lt n).
+  && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (mk_nat_lts n).
 
 Require Import BoolUtil.
 
@@ -198,7 +198,7 @@ Proof.
 induction p.
 (* nil *)
 unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
-intuition. unfold nats_lt in H. destruct n. absurd_arith. destruct n; discr.
+intuition. unfold mk_nat_lts in H. destruct n. absurd_arith. destruct n; discr.
 destruct n. refl. ded (H1 n (le_n (S n))). absurd_arith.
 (* cons *)
 destruct a. intuition.
@@ -207,7 +207,7 @@ unfold pstrong_monotone, pweak_monotone.
 unfold bpstrong_monotone, bcoef_pos in H1. Opaque coef. simpl in *. 
 repeat rewrite andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
 rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
-assert (In (mk_nat_lt H2) (nats_lt n)). apply nats_lt_complete.
+assert (In (mk_nat_lt H2) (mk_nat_lts n)). apply mk_nat_lts_complete.
 rewrite forallb_forall in H3. ded (H3 _ H5).
 rewrite is_pos_ok in H6. simpl in H6. omega.
 (* <- *)

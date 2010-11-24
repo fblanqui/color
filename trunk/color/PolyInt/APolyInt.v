@@ -4,30 +4,16 @@ See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-20
 - Frederic Blanqui, 2004-12-13
-- Adam Koprowski, 2007-04-26 (modular removal of rules) 
-                  2008-05-27 (weakly monotone polynomials)
+- Adam Koprowski, 2007-04-26, 2008-05-27
 
 proof of the termination criterion based on polynomial interpretations
 *)
 
 Set Implicit Arguments.
 
-Require Import ATerm.
-Require Import ABterm.
-Require Import ListUtil.
-Require Import ListForall.
-Require Import VecUtil.
-Require Import PositivePolynom.
-Require Import AInterpretation.
-Require Import ZUtil.
-Require Import NaryFunction.
-Require Import ARelation.
-Require Import RelUtil.
-Require Import LogicUtil.
-Require Import SN.
-Require Import Polynom.
-Require Import MonotonePolynom.
-Require Import NatUtil.
+Require Import ATerm ABterm ListUtil ListForall VecUtil
+  PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
+  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs Max.
 
 Section S.
 
@@ -237,14 +223,9 @@ Implicit Arguments PI_term_int_eq [t k].
 (***********************************************************************)
 (** polynomial associated to a rule *)
 
-Require Import ATrs.
-Require Import Max.
-
-(* TODO Temporarily introducing some notations for the following 2 definitions,
-   for the paper.
-   They should be extended and used more consistently in all polynomial-related
-   definitions.
- *)
+(*TODO: Temporarily introducing some notations for the following 2
+   definitions, for the paper. They should be extended and used more
+   consistently in all polynomial-related definitions.  *)
 
 Infix "+" := pplus : poly_scope.
 Notation "- y" := (popp y) : poly_scope.
@@ -325,7 +306,7 @@ End pi.
 (** default polynomial interpretation *)
 
 Definition default_poly n :=
-  List.map (fun x => (1%Z, mxi (prf x))) (nats_lt n).
+  List.map (fun x => (1%Z, mxi (prf x))) (mk_nat_lts n).
 
 Lemma coef_default_poly : forall n i (h : i<n),
   coef (mxi h) (default_poly n) = 1%Z.
