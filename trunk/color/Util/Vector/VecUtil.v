@@ -14,15 +14,8 @@ extension of the Coq library Bool/Bvector
 
 Set Implicit Arguments.
 
-Require Import Program.
-Require Import LogicUtil.
 Require Export Bvector.
-Require Import NatUtil.
-Require Import EqUtil.
-Require Import RelMidex.
-Require Import ListUtil.
-Require Import BoolUtil.
-Require Import ListUtil.
+Require Import Program LogicUtil NatUtil EqUtil RelMidex ListUtil BoolUtil.
 Require Omega.
 
 Implicit Arguments Vnil [A].
