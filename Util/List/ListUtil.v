@@ -584,6 +584,9 @@ Qed.
 
 End head_tail.
 
+Hint Resolve tail_in tail_cons_tail head_app : datatypes.
+Hint Rewrite head_app length_app : datatypes.
+
 (***********************************************************************)
 (** tail_nth *)
 
@@ -2025,7 +2028,79 @@ Qed.
 End forallb.
 
 (****************************************************************************)
-(** hints *)
+(** sub_list *)
 
-Hint Resolve tail_in tail_cons_tail head_app : datatypes.
-Hint Rewrite head_app length_app : datatypes.
+Section sub_list.
+
+Variable A : Type.
+
+Fixpoint sub_list l k n : list A :=
+  match l, k, n with
+    | _ :: l', S k', _ => sub_list l' k' n
+    | x :: l', 0, S n' => x :: sub_list l' 0 n'
+    | _, _, _ => nil
+  end.
+
+Functional Scheme sub_list_ind := Induction for sub_list Sort Prop.
+
+Lemma sub_list_ok : forall l k n i,
+  k < length l -> k+n <= length l -> i < n ->
+  element_at (sub_list l k n) i = element_at l (k+i).
+
+Proof.
+intros l k n. functional induction (sub_list l k n); simpl; intros.
+refl. absurd_arith. destruct i. refl. apply IHl0; try omega.
+apply IHl0; omega.
+Qed.
+
+Lemma length_sub_list : forall l k n,
+  k < length l -> k+n <= length l -> length (sub_list l k n) = n.
+
+Proof.
+intros l k n. functional induction (sub_list l k n); simpl; intros.
+omega. omega.
+destruct l'. simpl in *. omega. rewrite IHl0; simpl in *; omega.
+rewrite IHl0; omega.
+Qed.
+
+Lemma eq_app_elim_l : forall l1 l l2,
+  l = l1 ++ l2 -> l1 = sub_list l 0 (length l1).
+
+Proof.
+induction l1; destruct l; simpl; intros. refl. refl. discr.
+inversion H. subst. apply tail_eq. eapply IHl1. refl.
+Qed.
+
+Lemma eq_app_elim_r : forall l1 l l2,
+  l = l1 ++ l2 -> l2 = sub_list l (length l1) (length l2).
+
+Proof.
+induction l1; simpl; intros. subst l2.
+induction l; simpl; intros. refl. rewrite <- IHl. refl.
+destruct l. discr. inversion H. subst. simpl. apply IHl1. refl.
+Qed.
+
+Lemma sub_list_0 : forall l k, sub_list l k 0 = nil.
+
+Proof.
+induction l; induction k; simpl; auto.
+Qed.
+
+Lemma sub_list_length : forall l, sub_list l 0 (length l) = l.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. refl.
+Qed.
+
+Lemma app_eq_sub_list : forall l1 l2, l1++l2 =
+  sub_list (l1++l2) 0 (length l1) ++ sub_list (l1++l2) (length l1) (length l2).
+
+Proof.
+induction l1; simpl; intros. rewrite sub_list_0. rewrite sub_list_length. refl.
+rewrite <- IHl1. refl.
+Qed.
+
+End sub_list.
+
+Implicit Arguments eq_app_elim_l [A l1 l l2].
+Implicit Arguments eq_app_elim_r [A l1 l l2].
