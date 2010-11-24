@@ -43,11 +43,20 @@ Definition build_nat_lts : forall n l,
 
 Proof.
 induction l; simpl; intros. exact nil.
-rewrite andb_eq in H. destruct H. rewrite bgt_nat_ok in H.
-exact (mk_nat_lt H :: IHl H0).
+eapply cons. eapply mk_nat_lt.
+rewrite andb_eq in H. destruct H. rewrite bgt_nat_ok in H. apply H.
+apply IHl.
+rewrite andb_eq in H. destruct H. hyp.
 Defined.
 
 Implicit Arguments build_nat_lts [n l].
+
+Lemma build_nat_lts_ok : forall n l (h : forallb (bgt_nat n) l = true),
+  map (@val n) (build_nat_lts h) = l.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. refl.
+Qed.
 
 Definition build_pi : forall f : Sig, nat_lts (arity f).
 
@@ -56,16 +65,13 @@ intro f. eapply build_nat_lts. unfold bvalid in raw_pi_ok.
 rewrite forallb_forall in raw_pi_ok. apply raw_pi_ok. apply Fs_ok.
 Defined.
 
+Lemma build_pi_ok : forall f, map (@val (arity f)) (build_pi f) = raw_pi f.
+
+Proof.
+intro. apply build_nat_lts_ok.
+Qed.
+
 Notation pi := build_pi.
-
-(* this assumption is not really necessary but it makes the proof simpler
-(otherwise, you also need to assume succ to be transitive) *)
-
-(*REMARK:
-
-prove that: map (@val (arity f)) (pi f) = raw_pi f
-
-and define:
 
 Definition permut := forall f, repeat_free (raw_pi f).
 
@@ -76,19 +82,10 @@ Lemma bpermut_ok : bpermut = true <-> permut.
 Proof.
 unfold bpermut, permut. apply forallb_ok_fintype. 2: apply Fs_ok.
 intro. apply brepeat_free_ok. apply beq_nat_ok.
-Qed.*)
-
-Definition permut := forall f, repeat_free (map (@val (arity f)) (pi f)).
-
-Definition bpermut :=
-  forallb (fun f => brepeat_free beq_nat (map (@val (arity f)) (pi f))) Fs.
-
-Lemma bpermut_ok : bpermut = true <-> permut.
-
-Proof.
-unfold bpermut, permut. apply forallb_ok_fintype. 2: apply Fs_ok.
-intro. apply brepeat_free_ok. apply beq_nat_ok.
 Qed.
+
+(* this assumption is not really necessary but it makes the proof simpler
+(otherwise, you also need to assume succ to be transitive) *)
 
 Variable hyp : bpermut = true.
 
@@ -222,7 +219,7 @@ rewrite (Vfilter_app_eq (v:=vt) a hf).
 rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
 
 assert (rf : repeat_free (map (@val (arity f)) (pi f))).
-rewrite bpermut_ok in hyp. apply hyp.
+rewrite build_pi_ok. rewrite bpermut_ok in hyp. apply hyp.
 rewrite hf in rf. rewrite map_app in rf. simpl in rf.
 destruct (repeat_free_app_cons rf) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
@@ -342,7 +339,7 @@ set (v1 := Vfilter l1 vu). set (v2 := Vfilter l2 vu).
 simpl in a. set (d := Cont (Sig:=Sig') f a v1 Hole v2).
 
 assert (rf : repeat_free (map (@val (arity f)) (pi f))).
-rewrite bpermut_ok in hyp. apply hyp.
+rewrite build_pi_ok. rewrite bpermut_ok in hyp. apply hyp.
 rewrite hf in rf. rewrite map_app in rf. simpl in rf.
 destruct (repeat_free_app_cons rf) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
@@ -418,6 +415,7 @@ Implicit Arguments build_pi [Sig raw_pi Fs].
 (***********************************************************************)
 (** tactics *)
 
+(*FIXME*)
 Ltac filter p := hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p).
 
 (***********************************************************************)
@@ -425,13 +423,13 @@ Ltac filter p := hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p).
 
 Module Type Filter.
   Declare Module Export S : SIG.
-  Parameter raw_pi : forall f : Sig, list nat.
+  Parameter raw_pi : Sig -> list nat.
   Parameter raw_pi_ok : bvalid raw_pi Fs = true.
+  Definition pi := build_pi Fs_ok raw_pi_ok.
 End Filter.
 
 Module Make (Import F : Filter) <: SIG.
   Definition Sig := filter_sig Fs_ok raw_pi_ok.
   Definition Fs := Fs.
   Definition Fs_ok := Fs_ok.
-  Definition pi := build_pi Fs_ok raw_pi_ok.
 End Make.
