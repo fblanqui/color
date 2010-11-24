@@ -601,7 +601,7 @@ Lemma fsub_cons : forall x0 t n (ts : terms n) x,
 Proof.
 intros. subst x. unfold fsub. case (le_lt_dec (x0+1) x0); intros.
 absurd (x0+1<=x0); omega. case (le_lt_dec (x0+1) (x0+S n)); intros.
-rewrite Vnth_head. refl. omega. absurd (x0+S n<x0+1); omega.
+rewrite Vnth_cons_head. refl. omega. absurd (x0+S n<x0+1); omega.
 Qed.
 
 Lemma fsub_cons_rec : forall x0 t n (ts : terms n) x k,
@@ -609,19 +609,12 @@ Lemma fsub_cons_rec : forall x0 t n (ts : terms n) x k,
 
 Proof.
 intros. subst x. unfold fsub.
-case (le_lt_dec (x0+2+k) x0). intro. absurd (x0+2+k <= x0); omega.
-case (le_lt_dec (x0+2+k) (x0+1)). intro. absurd (x0+2+k <= x0+1); omega.
-case (le_lt_dec (x0+2+k) (x0+S n)); case (le_lt_dec (x0+2+k) (x0+1+n)); intros.
-set (H1 := lt_pm l2 l0). set (H2 := lt_pm l1 l).
-assert (H1' : S k < S n). rewrite (misc1 x0 k). assumption.
-assert (Vnth (Vcons t ts) H1 = Vnth (Vcons t ts) H1').
-apply Vnth_eq. rewrite (misc1 x0 k). refl. rewrite H.
-assert (H2' : k < n). rewrite (misc2 x0 k). assumption.
-assert (Vnth ts H2 = Vnth ts H2').
-apply Vnth_eq. apply sym_eq. apply (misc2 x0 k). rewrite H0.
-apply Vnth_cons_aux.
-absurd (x0+1+n < x0+2+k); omega. absurd (x0+1+n < x0+2+k); omega.
-refl.
+destruct (le_lt_dec (x0+2+k) x0). absurd_arith.
+destruct (le_lt_dec (x0+2+k) (x0+1)). absurd_arith.
+destruct (le_lt_dec (x0+2+k) (x0+S n)); destruct (le_lt_dec (x0+2+k) (x0+1+n));
+  try absurd_arith.
+rewrite Vnth_cons. destruct (lt_ge_dec 0 (x0+2+k-x0-1)).
+apply Vnth_eq. clear l l0 l1 l2 l3. omega. absurd_arith. refl.
 Qed.
 
 Lemma fsub_cons_rec0 : forall x0 t n (ts : terms n) x,

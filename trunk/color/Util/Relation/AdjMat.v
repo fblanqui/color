@@ -10,19 +10,8 @@ and the corresponding boolean adjacency matrix of size n*n.
 
 Set Implicit Arguments.
 
-Require Import Matrix.
-Require Import Bool.
-Require Import Path.
-Require Import Iter.
-Require Import SCC.
-Require Import ListExtras.
-Require Import OrdSemiRing.
-Require Import VecUtil.
-Require Import RelSub.
-Require Import RelUtil.
-Require Import NatUtil.
-Require Import Log2.
-Require Import LogicUtil.
+Require Import Matrix Bool Path Iter SCC ListExtras OrdSemiRing VecUtil RelSub
+  RelUtil NatUtil Log2 LogicUtil.
 
 Module Export BMatrix := Matrix BOrdSemiRingT.
 
@@ -134,10 +123,8 @@ unfold dot_product in IHn.
 rewrite IHn in H; repeat destruct H.
 exists (S x); exists (lt_n_S x0); clear IHn.
 
-rewrite Hv; rewrite Hw.
-rewrite (Vnth_cons_aux (Vtail v) (Vhead v) (lt_n_S x0) x0).
-rewrite (Vnth_cons_aux (Vtail w) (Vhead w) (lt_n_S x0) x0).
-auto.
+rewrite Hv. rewrite Hw. simpl.
+assert (lt_S_n (lt_n_S x0) = x0). apply lt_unique. rewrite H0. hyp.
 
 exists 0; exists (lt_O_Sn n); rewrite Hv; rewrite Hw;
   repeat rewrite Vnth_head; auto.
@@ -147,17 +134,15 @@ repeat destruct H; unfold Amult; apply Is_true_eq_true; apply orb_prop_intro.
 
 destruct x.
 right.
-rewrite <- (Vnth_head (Vhead v) (Vtail v) x0); auto.
+rewrite <- (Vnth_cons_head (Vhead v) (Vtail v) x0); auto.
 rewrite <-Hv.
-rewrite <- (Vnth_head (Vhead w) (Vtail w) x0); auto.
+rewrite <- (Vnth_cons_head (Vhead w) (Vtail w) x0); auto.
 rewrite <-Hw.
 auto.
 
 left.
-rewrite Hv in H; rewrite Hw in H; generalize (lt_S_n x0); intro.
-rewrite (Vnth_cons_aux (Vtail v) (Vhead v) x0 H0) in H.
-rewrite (Vnth_cons_aux (Vtail w) (Vhead w) x0 H0) in H.
-apply Is_true_eq_left; rewrite IHn; exists x; exists H0; trivial.
+rewrite Hv in H. rewrite Hw in H. simpl in H.
+apply Is_true_eq_left. rewrite IHn. exists x. exists (lt_S_n x0). hyp.
 Qed.
 
 Lemma existandb_matmult : forall x y,
