@@ -22,8 +22,6 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-
 (***********************************************************************)
 (** filtering function *)
 
@@ -33,13 +31,15 @@ Variable pi : forall f, bools (@arity Sig f).
 (** filtered signature *)
 
 Definition filter_arity f := Vtrue (pi f).
-Notation arity' := filter_arity.
 
 Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
 Notation Sig' := filter_sig.
 
-Notation term' := (ATerm.term Sig'). Notation terms' := (vector term').
-Notation Fun' := (@Fun Sig').
+Notation term' := (ATerm.term Sig'). Notation Fun' := (@Fun Sig').
+Notation term := (term Sig). Notation terms := (vector term).
+
+Notation context' := (context Sig'). Definition Cont' := (@Cont Sig').
+Notation context := (context Sig).
 
 (***********************************************************************)
 (** term filtering *)
@@ -49,12 +49,6 @@ Fixpoint filter (t : term) : term' :=
     | Var x => Var x
     | Fun f ts => Fun' f (Vfilter (pi f) (Vmap filter ts))
   end.
-
-(***********************************************************************)
-(** filtered contexts *)
-
-Notation context' := (context Sig'). Notation context := (context Sig).
-Definition Cont' := (@Cont Sig').
 
 (***********************************************************************)
 (** rule filtering *)
