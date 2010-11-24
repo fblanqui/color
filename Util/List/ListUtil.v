@@ -1737,72 +1737,83 @@ Qed.
 
 End pvalues_map.
 
-(****************************************************************************)
-(** list of natural numbers strictly smaller than n with proofs *)
+(***********************************************************************)
+(** lists of bounded natural numbers *)
 
-Section nats_lt.
+Definition nat_lts n := list (nat_lt n).
 
-Variable n : nat.
-
-Lemma nats_lt_aux1 : forall k', S k' < n -> k' < n.
+Lemma in_map_val : forall n (l : nat_lts n) i, In i (map (@val n) l) -> i<n.
 
 Proof.
-intros. omega.
+intros. destruct (in_map_elim H). destruct H0. subst. destruct x. simpl. hyp.
 Qed.
 
-(* nats_lt_aux k h = k :: ... :: 0 *)
+Implicit Arguments in_map_val [n l i].
 
-Fixpoint nats_lt_aux k :=
-  match k as k return k<n -> list (nat_lt n) with
-    | 0 => fun h => mk_nat_lt h :: nil
-    | S k' => fun h => mk_nat_lt h :: nats_lt_aux k' (nats_lt_aux1 h)
-  end.
+Section mk_nat_lts.
 
-Lemma nats_lt_aux_correct : forall x k (h : k<n) i,
-  i <= k -> val (nth i (nats_lt_aux h) x) = k - i.
+  Variable n : nat.
 
-Proof.
-induction k; simpl; intros; destruct i. auto. absurd_arith.
-auto. rewrite IHk. auto. omega.
-Qed.
+  Lemma mk_nat_lts_aux1 : forall k', S k' < n -> k' < n.
 
-Lemma nats_lt_aux_complete : forall k (h : k<n) i (p : i<n),
-  i <= k -> In (mk_nat_lt p) (nats_lt_aux h).
+  Proof.
+    intros. omega.
+  Qed.
 
-Proof.
-induction k; simpl; intros.
-assert (i=0). omega. subst. assert (h=p). apply lt_unique. subst. auto.
-destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
-assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
-Qed.
+  (* mk_nat_lts_aux hk = k :: ... :: 0 *)
 
-End nats_lt.
+  Fixpoint mk_nat_lts_aux k :=
+    match k as k return k<n -> list (nat_lt n) with
+      | 0 => fun h => mk_nat_lt h :: nil
+      | S k' => fun h => mk_nat_lt h :: mk_nat_lts_aux k' (mk_nat_lts_aux1 h)
+    end.
 
-Implicit Arguments nats_lt_aux [].
+  Lemma mk_nat_lts_aux_correct : forall x k (h : k<n) i,
+    i <= k -> val (nth i (mk_nat_lts_aux h) x) = k - i.
 
-(* nats_lt n = n-1 :: ... :: 0 *)
+  Proof.
+    induction k; simpl; intros; destruct i. auto. absurd_arith.
+    auto. rewrite IHk. auto. omega.
+  Qed.
 
-Definition nats_lt n :=
+  Lemma mk_nat_lts_aux_complete : forall k (h : k<n) i (p : i<n),
+    i <= k -> In (mk_nat_lt p) (mk_nat_lts_aux h).
+
+  Proof.
+    induction k; simpl; intros.
+    assert (i=0). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+    destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
+    assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+  Qed.
+
+End mk_nat_lts.
+
+Implicit Arguments mk_nat_lts_aux [].
+
+(* mk_nat_lts n = n-1 :: ... :: 0 *)
+
+Definition mk_nat_lts n :=
   match n return list (nat_lt n) with
     | 0 => nil
-    | S p => nats_lt_aux (S p) p (le_n (S p))
+    | S p => mk_nat_lts_aux (S p) p (le_n (S p))
   end.
 
-Implicit Arguments nats_lt [].
+Implicit Arguments mk_nat_lts [].
 
-Lemma nats_lt_correct : forall n x i,
-  i < n -> val (nth i (nats_lt n) x) = pred n - i.
+Lemma mk_nat_lts_correct : forall n x i,
+  i < n -> val (nth i (mk_nat_lts n) x) = pred n - i.
 
 Proof.
-intros. unfold nats_lt. destruct n. absurd_arith.
-apply nats_lt_aux_correct. omega.
+intros. unfold mk_nat_lts. destruct n. absurd_arith.
+apply mk_nat_lts_aux_correct. omega.
 Qed.
 
-Lemma nats_lt_complete : forall n i (p : i<n), In (mk_nat_lt p) (nats_lt n).
+Lemma mk_nat_lts_complete : forall n i (p : i<n),
+  In (mk_nat_lt p) (mk_nat_lts n).
 
 Proof.
-intros. unfold nats_lt. destruct n. absurd_arith.
-apply nats_lt_aux_complete. omega.
+intros. unfold mk_nat_lts. destruct n. absurd_arith.
+apply mk_nat_lts_aux_complete. omega.
 Qed.
 
 (***********************************************************************)
