@@ -9,13 +9,8 @@ general definitions and results about relations on terms
 
 Set Implicit Arguments.
 
-Require Import SN.
-Require Import ASubstitution.
-Require Import ATerm.
-Require Import RelUtil.
-Require Import List.
-Require Import AContext.
-Require Import LogicUtil.
+Require Import SN ASubstitution ATerm RelUtil List AContext LogicUtil VecUtil
+  NaryFunction.
 
 Section S.
 
@@ -24,7 +19,7 @@ Variable Sig : Signature.
 Notation term := (term Sig).
 
 (***********************************************************************)
-(** basic definitions and properties *)
+(** basic definitions *)
 
 Section basic.
 
@@ -93,8 +88,6 @@ intros R S hR hS t v c [u [h1 h2]]. exists (fill c u). split.
 apply hR. hyp. apply hS. hyp.
 Qed.
 
-Require Import VecUtil.
-
 Lemma context_closed_fun : forall R, context_closed R ->
   forall f i v1 t u j v2 (e : i+S j=arity f),
     R t u -> R (Fun f (Vcast (Vapp v1 (Vcons t v2)) e))
@@ -102,6 +95,17 @@ Lemma context_closed_fun : forall R, context_closed R ->
 
 Proof.
 intros. set (c := Cont f e v1 Hole v2). change (R (fill c t) (fill c u)).
+apply H. hyp.
+Qed.
+
+Lemma Vmonotone_context_closed : forall R,
+  (forall f : Sig, Vmonotone (Fun f) R R) <-> context_closed R.
+
+Proof.
+split; intro.
+unfold context_closed. induction c; simpl; intros. hyp. apply H. auto.
+unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
+set (c := Cont f H0 vi Hole vj). change (R (fill c x) (fill c y)).
 apply H. hyp.
 Qed.
 
