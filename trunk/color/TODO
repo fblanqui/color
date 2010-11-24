@@ -1,21 +1,27 @@
 
+- factorize the part of the proof that is similar in
+   AFilterPerm.filter_cont_closed and
+   AFilterPerm.red_incl_filter_red_rc.
+
+- in AFilterPerm, prove that (map (@val (arity f)) (pi f) = raw_pi f)
+  and define permut on raw_pi instead of pi.
+
 - uniformize the various notions of bounded nat in BoundNat and
-   NatUtil
+   NatUtil, and use a record definition for defining projections at
+   the same time
 
 - replace decidability lemmas by boolean functions
   in polynomial and matrix interpretations
 
-- for polynomial monotony, check that, for all i, there is k>0 such
-that the coefficient of the monomial x_i^k is >0. in practice, check
-for k in {1,2,3} only?
+- for polynomial monotony, check that, all coefficients are
+  non-negative and that, for all i, there is a monomial [k_1,..,k_n]
+  which coefficient is positive and such that k_i is positive too
 
 - semantic labelling with booleans
 
 - FC2
 
 - usable rules
-
-- replace dom_lt by nat_lt
 
 - precedence termination? (special case of RPO)
 
@@ -41,11 +47,11 @@ for k in {1,2,3} only?
 
 - replace unary integers by binary integers (big nats)?
 
-Done list:
-----------
+Done:
+-----
 
 - add improvement to DP pairs by ignoring pairs where rhs is a
-subterm of lhs
+  subterm of lhs
 
 - add boolean function for rpo
 
@@ -72,8 +78,8 @@ subterm of lhs
 - absurd_hyp is OBSOLETE: use contradict instead.
 
 - Eqdep uses an axiom: it is still used in ATerm and ACap (grep Eqdep)
-and in the tactic Funeqtac. is it possible to get rid of it by using
-Eqdep_dec only? yes
+  and in the tactic Funeqtac. is it possible to get rid of it by using
+  Eqdep_dec only? yes
 
 - DP: improve by introducing marked symbols
 
