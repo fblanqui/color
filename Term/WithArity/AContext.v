@@ -130,13 +130,11 @@ Lemma fun_eq_nth_fill : forall f v i (h : i < arity f),
 
 Proof.
 intros. simpl. apply args_eq. apply Veq_nth; intros j Hj.
-rewrite Vnth_cast, Vnth_app. case (le_gt_dec i j); intros. Focus 2.
-unfold v1. rewrite Vnth_sub. apply Vnth_eq. omega.
-set (H0 := Vnth_app_aux (S (arity f - S i)) (Vnth_cast_aux H Hj) l).
-case (le_lt_eq_dec _ _ l); intro. Focus 2.
-rewrite Vnth_head; try rewrite e, minus_diag; auto. apply Vnth_eq; auto.
-destruct j. absurd_arith. generalize H0. rewrite <- minus_Sn_m. Focus 2. omega.
-intros. unfold v2; rewrite Vnth_cons, Vnth_sub. apply Vnth_eq. omega.
+rewrite Vnth_cast, Vnth_app. case (le_gt_dec i j); intros.
+Focus 2. unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.
+rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
+apply Vnth_eq. omega.
 Qed.
 
 Lemma fill_eq : forall t u c, fill c t = fill c u <-> t = u.

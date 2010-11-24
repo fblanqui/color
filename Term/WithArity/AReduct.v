@@ -339,14 +339,8 @@ rewrite Vnth_replace. hyp.
 (* b) x <> i *)
 rewrite Vnth_replace_neq. 2: hyp. rewrite (Veq_app_cons ts x0).
 rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i). 2: absurd_arith.
-set (p1 := Vnth_app_aux (S (arity f - S x))
-  (Vnth_cast_aux (Veq_app_cons_aux3 x0) ip) l1). gen p1.
-set (p2 := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0). gen p2.
-assert (i-x = S(pred(i-x))). omega. rewrite H. intros.
-assert (p2=p1). apply lt_unique. subst p2.
-repeat rewrite Vnth_cons. assert (Vsub ts (Veq_app_cons_aux2 x0) = v2).
-unfold v2. apply Veq_nth; intros. repeat rewrite Vnth_sub.
-apply Vnth_eq. refl. rewrite H0. apply Vnth_eq. refl.
+repeat rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-x)). unfold v2.
+repeat rewrite Vnth_sub. apply Vnth_eq. omega. absurd_arith.
 (* 2) x > i *)
 rewrite Vnth_replace_neq. 2: omega. rewrite (Veq_app_cons ts x0).
 rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i). absurd_arith.
