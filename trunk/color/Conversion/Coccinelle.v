@@ -218,7 +218,7 @@ End PRECEDENCE.
 
 Require Import ARedPair ARelation RelUtil BoolUtil.
 
-Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
+Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Definition Prec := Precedence status prec_nat prec_eq_status.
 
@@ -354,7 +354,7 @@ Module Make_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     intros t u. unfold rel. intro h. apply bsucceq_ok. hyp.
   Qed.
 
-End Make_RPO.
+End WP_RPO.
 
 (***********************************************************************)
 (** decide compatibility of statuses wrt precedences *)
