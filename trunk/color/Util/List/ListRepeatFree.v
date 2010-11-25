@@ -350,3 +350,9 @@ End S.
 Implicit Arguments repeat_free_app_elim [A l m].
 Implicit Arguments repeat_free_unique [A l x n m].
 Implicit Arguments repeat_free_app_cons [A l x m].
+Implicit Arguments brepeat_free_ok [A beq].
+
+(***********************************************************************)
+(** tactics *)
+
+Ltac repeat_free beq_ok := rewrite <- (brepeat_free_ok beq_ok); check_eq.
