@@ -353,7 +353,7 @@ Ltac filter p := hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p).
 
 Module Type Filter.
   Parameter Sig : Signature.
-  Parameter pi : forall f, bools (@arity Sig f).
+  Parameter pi : forall f : Sig, bools (arity f).
 End Filter.
 
 Module Make (S : SIG) (F : Filter with Definition Sig := S.Sig) <: SIG.
