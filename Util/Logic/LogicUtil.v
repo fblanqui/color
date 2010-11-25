@@ -124,11 +124,18 @@ Proof.
 intros. destruct H. intro. ded (H0 x). contradiction.
 Qed.
 
-Lemma and_iff : forall P Q P' Q',
+Lemma iff_and : forall P Q P' Q',
   ((P <-> P') /\ (Q <-> Q')) -> ((P /\ Q) <-> (P' /\ Q')).
 
 Proof.
 tauto.
+Qed.
+
+Lemma iff_forall : forall A (P Q : A->Prop),
+  (forall x, P x <-> Q x) -> ((forall x, P x) <-> (forall x, Q x)).
+
+Proof.
+firstorder.
 Qed.
 
 End meta.
