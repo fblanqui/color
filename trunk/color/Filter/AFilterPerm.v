@@ -16,78 +16,20 @@ Section S.
 
 Variable Sig : Signature.
 
+Section pi.
+
+Variable pi : forall f : Sig, nat_lts (arity f).
+
 (***********************************************************************)
-(** building a filtering function *)
+(** Assumption: pi does not duplicate arguments.
 
-Variable raw_pi : Sig -> list nat.
+This assumption is not really necessary but it makes the proof of weak
+monotony simpler. Otherwise, we also need to assume that the ordering
+is transitive. *)
 
-Definition valid := forall f x, In x (raw_pi f) -> arity f > x.
+Definition non_dup_val := forall f, repeat_free (map (@val (arity f)) (pi f)).
 
-Variable Fs : list Sig.
-Variable Fs_ok : forall f : Sig, In f Fs.
-
-Definition bvalid :=
-  forallb (fun f => forallb (bgt_nat (arity f)) (raw_pi f)) Fs.
-
-Lemma bvalid_ok : bvalid = true <-> valid.
-
-Proof.
-apply forallb_ok_fintype. 2: hyp. intro f. rewrite forallb_forall.
-intuition. rewrite <- bgt_nat_ok. auto. rewrite bgt_nat_ok. auto.
-Qed.
-
-Variable raw_pi_ok : bvalid = true.
-
-Definition build_nat_lts : forall n l,
-  forallb (bgt_nat n) l = true -> nat_lts n.
-
-Proof.
-induction l; simpl; intros. exact nil.
-eapply cons. eapply mk_nat_lt.
-rewrite andb_eq in H. destruct H. rewrite bgt_nat_ok in H. apply H.
-apply IHl.
-rewrite andb_eq in H. destruct H. hyp.
-Defined.
-
-Implicit Arguments build_nat_lts [n l].
-
-Lemma build_nat_lts_ok : forall n l (h : forallb (bgt_nat n) l = true),
-  map (@val n) (build_nat_lts h) = l.
-
-Proof.
-induction l; simpl; intros. refl. rewrite IHl. refl.
-Qed.
-
-Definition build_pi : forall f : Sig, nat_lts (arity f).
-
-Proof.
-intro f. eapply build_nat_lts. unfold bvalid in raw_pi_ok.
-rewrite forallb_forall in raw_pi_ok. apply raw_pi_ok. apply Fs_ok.
-Defined.
-
-Lemma build_pi_ok : forall f, map (@val (arity f)) (build_pi f) = raw_pi f.
-
-Proof.
-intro. apply build_nat_lts_ok.
-Qed.
-
-Notation pi := build_pi.
-
-Definition permut := forall f, repeat_free (raw_pi f).
-
-Definition bpermut := forallb (fun f => brepeat_free beq_nat (raw_pi f)) Fs.
-
-Lemma bpermut_ok : bpermut = true <-> permut.
-
-Proof.
-unfold bpermut, permut. apply forallb_ok_fintype. 2: apply Fs_ok.
-intro. apply brepeat_free_ok. apply beq_nat_ok.
-Qed.
-
-(* this assumption is not really necessary but it makes the proof simpler
-(otherwise, you also need to assume succ to be transitive) *)
-
-Variable hyp : bpermut = true.
+Variable hyp : non_dup_val.
 
 (***********************************************************************)
 (** filtered signature *)
@@ -193,8 +135,8 @@ Qed.
 (***********************************************************************)
 (** stability wrt contexts *)
 
-Lemma filter_cont_closed : reflexive succ ->
-  context_closed succ -> context_closed fsucc.
+Lemma filter_cont_closed :
+  reflexive succ -> context_closed succ -> context_closed fsucc.
 
 Proof.
 repeat rewrite <- Vmonotone_context_closed.
@@ -218,10 +160,10 @@ unfold arity, filter_sig, filter_arity. rewrite hf. rewrite length_app. refl.
 rewrite (Vfilter_app_eq (v:=vt) a hf).
 rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
 
-assert (rf : repeat_free (map (@val (arity f)) (pi f))).
-rewrite build_pi_ok. rewrite bpermut_ok in hyp. apply hyp.
-rewrite hf in rf. rewrite map_app in rf. simpl in rf.
-destruct (repeat_free_app_cons rf) as [h1 h2].
+(*REMOVE:assert (rf : repeat_free (map (@val (arity f)) (pi f))).
+rewrite build_pi_ok. rewrite bpermut_ok in hyp. apply hyp.*)
+ded (hyp f). unfold non_dup_val in H. rewrite hf in H. rewrite map_app in H.
+simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
 
 assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
@@ -280,8 +222,8 @@ Proof.
 intro. unfold weak_context_closed. intros.
 assert (clos_refl fsucc t1 t2). unfold clos_refl, union. auto.
 ded (rc_filter_ord H1).
-assert (context_closed fsucc_eq). apply filter_cont_closed. apply rc_refl.
-apply rc_context_closed. hyp. apply H3. hyp.
+assert (context_closed fsucc_eq). apply filter_cont_closed.
+apply rc_refl. apply rc_context_closed. hyp. apply H3. hyp.
 Qed.
 
 (***********************************************************************)
@@ -338,10 +280,10 @@ rewrite (Vfilter_app_eq a hf). rewrite (Vfilter_app_eq a hf). simpl.
 set (v1 := Vfilter l1 vu). set (v2 := Vfilter l2 vu).
 simpl in a. set (d := Cont (Sig:=Sig') f a v1 Hole v2).
 
-assert (rf : repeat_free (map (@val (arity f)) (pi f))).
-rewrite build_pi_ok. rewrite bpermut_ok in hyp. apply hyp.
-rewrite hf in rf. rewrite map_app in rf. simpl in rf.
-destruct (repeat_free_app_cons rf) as [h1 h2].
+(*REMOVE:assert (rf : repeat_free (map (@val (arity f)) (pi f))).
+rewrite build_pi_ok. rewrite bpermut_ok in hyp. apply hyp.*)
+ded (hyp f). unfold non_dup_val in H. rewrite hf in H. rewrite map_app in H.
+simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
 
 assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
@@ -406,30 +348,117 @@ Qed.
 
 End red_mod.
 
+End pi.
+
+(***********************************************************************)
+(** building a filtering function *)
+
+Section build_pi.
+
+Variable raw_pi : Sig -> list nat.
+
+Definition valid := forall f x, In x (raw_pi f) -> arity f > x.
+
+Variable Fs : list Sig.
+Variable Fs_ok : forall f : Sig, In f Fs.
+
+Definition bvalid :=
+  forallb (fun f => forallb (bgt_nat (arity f)) (raw_pi f)) Fs.
+
+Lemma bvalid_ok : bvalid = true <-> valid.
+
+Proof.
+apply forallb_ok_fintype. 2: hyp. intro f. rewrite forallb_forall.
+intuition. rewrite <- bgt_nat_ok. auto. rewrite bgt_nat_ok. auto.
+Qed.
+
+Variable raw_pi_ok : bvalid = true.
+
+Definition build_nat_lts : forall n l,
+  forallb (bgt_nat n) l = true -> nat_lts n.
+
+Proof.
+induction l; simpl; intros. exact nil.
+eapply cons. eapply mk_nat_lt.
+rewrite andb_eq in H. destruct H. rewrite bgt_nat_ok in H. apply H.
+apply IHl.
+rewrite andb_eq in H. destruct H. hyp.
+Defined.
+
+Implicit Arguments build_nat_lts [n l].
+
+Lemma build_nat_lts_ok : forall n l (h : forallb (bgt_nat n) l = true),
+  map (@val n) (build_nat_lts h) = l.
+
+Proof.
+induction l; simpl; intros. refl. rewrite IHl. refl.
+Qed.
+
+Definition build_pi : forall f : Sig, nat_lts (arity f).
+
+Proof.
+intro f. eapply build_nat_lts. unfold bvalid in raw_pi_ok.
+rewrite forallb_forall in raw_pi_ok. apply raw_pi_ok. apply Fs_ok.
+Defined.
+
+Lemma build_pi_ok : forall f, map (@val (arity f)) (build_pi f) = raw_pi f.
+
+Proof.
+intro. apply build_nat_lts_ok.
+Qed.
+
+Definition non_dup := forall f, repeat_free (raw_pi f).
+
+Definition bnon_dup := forallb (fun f => brepeat_free beq_nat (raw_pi f)) Fs.
+
+Lemma bnon_dup_ok : bnon_dup = true <-> non_dup.
+
+Proof.
+unfold bnon_dup, non_dup. apply forallb_ok_fintype. 2: apply Fs_ok.
+intro. apply brepeat_free_ok. apply beq_nat_ok.
+Qed.
+
+Lemma non_dup_ok : non_dup <-> non_dup_val build_pi.
+
+Proof.
+unfold non_dup, non_dup_val. apply iff_forall.
+intro f. rewrite build_pi_ok. refl.
+Qed.
+
+End build_pi.
+
 End S.
 
-Implicit Arguments filter_sig [Sig raw_pi Fs].
+Implicit Arguments filter_sig [Sig].
 Implicit Arguments bvalid [Sig].
 Implicit Arguments build_pi [Sig raw_pi Fs].
+Implicit Arguments non_dup_ok [Sig raw_pi Fs].
+Implicit Arguments bnon_dup_ok [Sig raw_pi Fs].
+Implicit Arguments non_dup_val [Sig].
 
 (***********************************************************************)
 (** tactics *)
 
-(*FIXME*)
-Ltac filter p := hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p).
+Implicit Arguments bnon_dup_ok [Sig raw_pi Fs].
+
+Ltac non_dup Fs_ok := rewrite <- (bnon_dup_ok Fs_ok); check_eq.
+
+Ltac non_dup_val Fs_ok := rewrite <- non_dup_ok; non_dup Fs_ok.
+
+Ltac filter p p_ok :=
+  hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p);
+    [apply p_ok | idtac].
 
 (***********************************************************************)
 (** signature functor *)
 
 Module Type Filter.
-  Declare Module Export S : SIG.
-  Parameter raw_pi : Sig -> list nat.
-  Parameter raw_pi_ok : bvalid raw_pi Fs = true.
-  Definition pi := build_pi Fs_ok raw_pi_ok.
+  Parameter Sig : Signature.
+  Parameter pi : forall f : Sig, nat_lts (arity f).
 End Filter.
 
-Module Make (Import F : Filter) <: SIG.
-  Definition Sig := filter_sig Fs_ok raw_pi_ok.
-  Definition Fs := Fs.
-  Definition Fs_ok := Fs_ok.
+Module Make (S : SIG) (F : Filter with Definition Sig := S.Sig) <: SIG.
+  Definition Sig := filter_sig F.pi.
+  Definition Fs := S.Fs.
+  Definition Fs_ok := S.Fs_ok.
 End Make.
