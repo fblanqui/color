@@ -414,7 +414,7 @@ Module Make (S : SIG) <: SIG.
   Definition Fs :=
     fold_left (fun l f => hd_symb S.Sig f :: int_symb S.Sig f :: l) S.Fs nil.
 
-  Lemma Fs_ok : forall f, In f Fs.
+  Lemma Fs_ok : forall f : Sig, In f Fs.
 
   Proof.
     intro. unfold Fs. rewrite (@In_fold_left _ _ _
