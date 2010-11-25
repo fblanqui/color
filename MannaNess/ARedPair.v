@@ -9,15 +9,8 @@ rule elimination with reduction pairs
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import LogicUtil.
-Require Import ARelation.
-Require Import RelUtil.
-Require Import SN.
-Require Import ListUtil.
-Require Import AMannaNess.
-Require Import ACompat.
-Require Import BoolUtil.
+Require Import ATrs LogicUtil ARelation RelUtil SN ListUtil AMannaNess ACompat
+  BoolUtil.
 
 (***********************************************************************)
 (** module type for reduction pairs *)
@@ -218,18 +211,15 @@ Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
 End WP_MonAlg.
 
 (***********************************************************************)
-(** reduction pair associated to an argument filtering without projections *)
+(** reduction pair associated to a non-permutative non-collapsing
+arguments filtering *)
 
 Require Import AFilter.
 
 Module Type Filter.
-
   Variable Sig : Signature.
-
   Variable pi : forall f, vector bool (@arity Sig f).
-
   Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
-
 End Filter.
 
 Module WP_Filter (Import F : Filter) <: WeakRedPair.
@@ -279,18 +269,73 @@ Module WP_Filter (Import F : Filter) <: WeakRedPair.
 End WP_Filter.
 
 (***********************************************************************)
-(** reduction pair associated to an argument filtering with projections only *)
+(** reduction pair associated to a permutative non-collapsing
+arguments filtering *)
+
+Require Import AFilterPerm.
+
+Module Type Perm.
+  Variable Sig : Signature.
+  Variable pi : forall f : Sig, nat_lts (arity f).
+  Variable pi_ok : non_dup_val pi.
+  Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
+End Perm.
+
+Module WP_Perm (Import F : Perm) <: WeakRedPair.
+
+  Definition Sig := Sig.
+
+  Import WP.
+
+  Definition succ := filter_ord succ.
+  Definition wf_succ := WF_filter wf_succ.
+  Definition sc_succ := filter_subs_closed sc_succ.
+
+  Definition bsucc t u := bsucc (filter pi t) (filter pi u).
+
+  Lemma bsucc_sub : rel bsucc << succ.
+
+  Proof.
+    intros t u h. apply bsucc_sub. hyp.
+  Qed.
+
+  Definition succeq := filter_ord succeq.
+  Definition sc_succeq := filter_subs_closed sc_succeq.
+  Definition cc_succeq := filter_cont_closed pi_ok refl_succeq cc_succeq.
+  
+  Lemma refl_succeq : reflexive succeq.
+
+  Proof.
+    intro x. unfold succeq. apply refl_succeq.
+  Qed.
+
+  Lemma succ_succeq_compat : absorb succ succeq.
+
+  Proof.
+    unfold absorb, succ, succeq. intros t v [u [h1 h2]].
+    unfold filter_ord in *. apply succ_succeq_compat. exists (filter pi u).
+    auto.
+  Qed.
+
+  Definition bsucceq t u := bsucceq (filter pi t) (filter pi u).
+
+  Lemma bsucceq_sub : rel bsucceq << succeq.
+
+  Proof.
+    intros t u h. apply bsucceq_sub. hyp.
+  Qed.
+
+End WP_Perm.
+
+(***********************************************************************)
+(** reduction pair associated to collapsing arguments filtering *)
 
 Require Import AProj.
 
 Module Type Proj.
-
   Variable Sig : Signature.
-
   Variable pi : forall f : Sig, option {k | k < arity f}.
-
   Declare Module WP : WeakRedPair with Definition Sig := Sig.
-
 End Proj.
 
 Module WP_Proj (Import P : Proj) <: WeakRedPair.
