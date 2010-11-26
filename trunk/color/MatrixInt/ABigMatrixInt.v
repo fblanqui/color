@@ -16,20 +16,9 @@ References:
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import Setoid.
-Require Import AMatrixBasedInt.
-Require Import Matrix.
+Require Import LogicUtil Setoid AMatrixBasedInt Matrix OrdSemiRing VecUtil
+  AMonAlg SN RelUtil AWFMInterpretation VecEq NatUtil BigNUtil.
 Import BigNMatrix.
-Require Import OrdSemiRing.
-Require Import VecUtil.
-Require Import AMonAlg.
-Require Import SN.
-Require Import RelUtil.
-Require Import AWFMInterpretation.
-Require Import VecEq.
-Require Import NatUtil.
-Require Import BigNUtil.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TMatrixInt.
@@ -311,7 +300,7 @@ Module MatrixInt (MI : TMatrixInt).
       apply monotone_succ; intro f; destruct f; 
         vm_compute; repeat split; auto with arith
       ]
-    | fail "Failed to prove monotonicity of given matrix interpretation"
+    | fail 10 "Failed to prove monotonicity of given matrix interpretation"
     ].
 
   Ltac prove_termination := MAR.prove_termination matrixInt_monotonicity.

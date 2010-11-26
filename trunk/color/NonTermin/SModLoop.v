@@ -10,10 +10,7 @@ there is a loop in a relative SRS
 
 Set Implicit Arguments.
 
-Require Import Srs.
-Require Import LogicUtil.
-Require Import SLoop.
-Require Import ListUtil.
+Require Import Srs LogicUtil SLoop ListUtil.
 
 Section S.
 
@@ -188,8 +185,7 @@ Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).
 Defined.
 
-Require Import RelUtil.
-Require Import Wf_nat.
+Require Import RelUtil Wf_nat.
 
 Lemma IS_seq : IS (red_mod E R) seq.
 
@@ -271,4 +267,4 @@ End S.
 
 Ltac loop t' mds' ds' p' :=
   apply is_mod_loop_correct with (t:=t') (mds:=mds') (ds:=ds') (p:=p');
-    (check_eq || fail "not a loop").
+    (check_eq || fail 10 "not a loop").

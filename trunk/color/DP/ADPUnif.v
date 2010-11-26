@@ -9,21 +9,8 @@ over graph based on unification
 
 Set Implicit Arguments.
 
-Require Import ADecomp.
-Require Import AUnif.
-Require Import ARenCap.
-Require Import ATrs.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import AGraph.
-Require Import LogicUtil.
-Require Import AShift.
-Require Import ACalls.
-Require Import BoolUtil.
-Require Import Compare_dec.
-Require Import ADuplicateSymb.
-Require Import ListDec.
-Require Import EqUtil.
+Require Import ADecomp AUnif ARenCap ATrs ListUtil RelUtil AGraph LogicUtil
+  AShift ACalls BoolUtil Compare_dec ADuplicateSymb ListDec EqUtil.
 
 Section S.
 
@@ -162,4 +149,4 @@ End S.
 
 Ltac dpg_unif_N_correct :=
   (apply dpg_unif_N_mark_correct || apply dpg_unif_N_correct);
-  (check_eq || fail "a LHS is a variable").
+  (check_eq || fail 10 "a LHS is a variable").

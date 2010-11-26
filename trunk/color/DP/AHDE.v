@@ -11,17 +11,8 @@ a simple over graph of the DP graph based on the equality of head symbols
 
 Set Implicit Arguments.
 
-Require Import ADecomp.
-Require Import ADuplicateSymb.
-Require Import ATrs.
-Require Import ListUtil.
-Require Import RelSub.
-Require Import RelUtil.
-Require Import AGraph.
-Require Import LogicUtil.
-Require Import BoolUtil.
-Require Import AShift.
-Require Import EqUtil.
+Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil AGraph
+  LogicUtil BoolUtil AShift EqUtil.
 
 (***********************************************************************)
 (** definition of the hde over graph *)
@@ -207,4 +198,4 @@ End bool_correct.
 
 Ltac hde_bool_correct :=
   (apply hde_bool_mark_correct || apply hde_bool_correct);
-  (check_eq || fail "a LHS is a variable").
+  (check_eq || fail 10 "a LHS is a variable").

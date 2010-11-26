@@ -148,7 +148,7 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
       match goal with
       | |- context_closed _ => prove_cc_succ
       | |- WF _ => idtac
-      | |- _ = _ => check_eq || fail "some rule is not in the ordering"
+      | |- _ = _ => check_eq || fail 10 "some rule is not in the ordering"
       end.
 
   Ltac prove_termination prove_cc_succ :=

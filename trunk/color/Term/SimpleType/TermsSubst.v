@@ -444,7 +444,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 	    autorewrite with terms datatypes using unfold decl, liftedEnv; try_solve
 	]
       )
-    | _ => fail "Goal is not of required shape"
+    | _ => fail 10 "Goal is not of required shape"
     end.
 
   Lemma subst_ran_empty : forall G, isEmptySubst G -> subst_ran G = EmptyEnv.

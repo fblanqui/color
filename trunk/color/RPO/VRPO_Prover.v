@@ -196,7 +196,7 @@ Module RPO_Prover (Export R : TRPO).
       apply rpo_rel_termination; vm_compute; trivial
     | |- WF (ATrs.hd_red_mod ?E ?R) =>
       apply rpo_rel_top_termination; vm_compute; trivial
-    | _ => fail "Unsupported problem for RPO"
+    | _ => fail 10 "Unsupported problem for RPO"
    end.
 
 End RPO_Prover.

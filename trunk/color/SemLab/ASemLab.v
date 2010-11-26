@@ -10,21 +10,8 @@ semantic labelling (with ordered labels)
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import AInterpretation.
-Require Import BoolUtil.
-Require Import LogicUtil.
-Require Import EqUtil.
-Require Import VecUtil.
-Require Import List.
-Require Import SN.
-Require Import RelUtil.
-Require Import AWFMInterpretation.
-Require Import NaryFunction.
-Require Import NatUtil.
-Require Import ARelation.
-Require Import ARules.
-Require Import SetUtil.
+Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil VecUtil List SN
+  RelUtil AWFMInterpretation NaryFunction NatUtil ARelation ARules SetUtil.
 
 Section S.
 
@@ -967,14 +954,14 @@ Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
     match goal with
       | |- WF (red_mod _ _) => rewrite WF_red_mod_lab;
         [ idtac
-        | check_eq || fail "some relative rule is not in the model"
-        | check_eq || fail "some rule is not in the model"]
+        | check_eq || fail 10 "some relative rule is not in the model"
+        | check_eq || fail 10 "some rule is not in the model"]
       | |- WF (hd_red_mod _ _) => rewrite WF_hd_red_mod_lab;
         [ idtac
-        | check_eq || fail "some relative rule is not in the model"]
+        | check_eq || fail 10 "some relative rule is not in the model"]
       | |- WF (red _) => rewrite WF_red_lab;
         [ idtac
-        | check_eq || fail "some rule is not in the model"]
+        | check_eq || fail 10 "some rule is not in the model"]
     end.
 
 End FinOrdSemLabProps.
@@ -1029,14 +1016,14 @@ Module FinSemLabProps (FSL : FinSemLab).
     match goal with
       | |- WF (red_mod _ _) => rewrite WF_red_mod_lab;
         [ idtac
-        | check_eq || fail "some relative rule is not in the model"
-        | check_eq || fail "some rule is not in the model"]
+        | check_eq || fail 10 "some relative rule is not in the model"
+        | check_eq || fail 10 "some rule is not in the model"]
       | |- WF (hd_red_mod _ _) => rewrite WF_hd_red_mod_lab;
         [ idtac
-        | check_eq || fail "some relative rule is not in the model"]
+        | check_eq || fail 10 "some relative rule is not in the model"]
       | |- WF (red _) => rewrite WF_red_lab;
         [idtac
-        | check_eq || fail "some rule is not in the model"]
+        | check_eq || fail 10 "some rule is not in the model"]
     end.
 
 End FinSemLabProps.

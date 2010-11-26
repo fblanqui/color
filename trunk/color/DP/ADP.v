@@ -10,19 +10,8 @@ dependancy pairs
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATrs.
-Require Import ACalls.
-Require Import AShift.
-Require Import ACap.
-Require Import ASN.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import ListForall.
-Require Import SN.
-Require Import VecUtil.
-Require Import VecOrd.
-Require Import NatUtil.
+Require Import LogicUtil ATrs ACalls AShift ACap ASN ListUtil RelUtil
+  ListForall SN VecUtil VecOrd NatUtil.
 
 Section S.
 
@@ -335,6 +324,6 @@ Implicit Arguments dp_elim_vars [Sig l t].
 Require Import AVariables.
 
 Ltac chain := no_relative_rules; apply WF_chain;
-  [ check_eq || fail "a LHS is a variable"
+  [ check_eq || fail 10 "a LHS is a variable"
   | rules_preserv_vars
   | idtac].

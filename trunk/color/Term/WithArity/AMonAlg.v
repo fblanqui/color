@@ -14,13 +14,8 @@ References:
   Proceedings of the 3rd International Joint Conference (IJCAR 2006), 2006.
 *)
 
-Require Import ATrs.
-Require Import RelUtil.
-Require Import SN.
+Require Import ATrs RelUtil SN ListUtil ARelation LogicUtil.
 Require Export AWFMInterpretation.
-Require Import ListUtil.
-Require Import ARelation.
-Require Import LogicUtil.
 
 (***********************************************************************)
 (** * Module type specifying a weakly monotone algebra.                *)
@@ -332,7 +327,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       | _ => first
         [ solve [vm_compute; trivial]
 	| idtac
-        | fail "Failed to deal with generated goal"
+        | fail 10 "Failed to deal with generated goal"
         ]
       end.
 
@@ -349,7 +344,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 	    eapply WF_incl;[try apply hd_red_mod_of_hd_red_Mod;
 			try apply hd_red_mod_of_hd_red_Mod_int | idtac];
 	    prove ma_relative_top_termination R 
-    | _ => fail "Unsupported termination problem type"
+    | _ => fail 10 "Unsupported termination problem type"
    end.
 
 End MonotoneAlgebraResults.

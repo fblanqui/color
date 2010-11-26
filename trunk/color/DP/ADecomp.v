@@ -9,15 +9,8 @@ decomposition of an over DP graph
 
 Set Implicit Arguments.
 
-Require Import AGraph.
-Require Import Union.
-Require Import ATrs.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import LogicUtil.
-Require Import SN.
-Require Import ListForall.
-Require Import BoolUtil.
+Require Import AGraph Union ATrs ListUtil RelUtil LogicUtil SN ListForall
+  BoolUtil.
 
 Section S.
 
@@ -179,7 +172,7 @@ End S.
 
 (*REMOVE: Ltac incl_flat := solve [unfold incl, dp; simpl; intuition].*)
 
-Ltac co_scc := check_eq || fail "not a co_scc".
+Ltac co_scc := check_eq || fail 10 "not a co_scc".
 
 Require Import AVariables.
 
@@ -187,7 +180,7 @@ Ltac graph_decomp Sig f d :=
   apply WF_decomp_co_scc with (approx := f) (cs := d);
   [idtac
     | rules_preserv_vars
-    | incl_rule Sig || fail "the decomposition does not contain all DPs"
-    | incl_rule Sig || fail "the decomposition contains a rule that is not a DP"
-    | check_eq || fail "the decomposition is not valid"
+    | incl_rule Sig || fail 10 "the decomposition does not contain all DPs"
+    | incl_rule Sig || fail 10 "the decomposition contains a rule that is not a DP"
+    | check_eq || fail 10 "the decomposition is not valid"
     | unfold lforall; repeat split].

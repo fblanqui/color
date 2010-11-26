@@ -10,9 +10,7 @@ there is a loop in a TRS
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATrs.
-Require Import ListUtil.
+Require Import LogicUtil ATrs ListUtil.
 
 Section S.
 
@@ -63,9 +61,7 @@ Qed.
 (***********************************************************************)
 (** data necessary for a sequence of rewrite steps *)
 
-Require Import AMatching.
-Require Import ListDec.
-Require Import APosition.
+Require Import AMatching ListDec APosition.
 
 Definition data := (position * rule)%type.
 
@@ -201,8 +197,7 @@ Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).
 Defined.
 
-Require Import RelUtil.
-Require Import Wf_nat.
+Require Import RelUtil Wf_nat.
 
 Lemma IS_seq : IS (red R) seq.
 
@@ -277,7 +272,7 @@ Implicit Arguments rewrites_correct [Sig R ds t us].
 
 Ltac check_loop t' ds' p' :=
   apply is_loop_correct with (t:=t') (ds:=ds') (p:=p');
-    (check_eq || fail "not a loop").
+    (check_eq || fail 10 "not a loop").
 
 Ltac loop t' ds' p' :=
   match goal with

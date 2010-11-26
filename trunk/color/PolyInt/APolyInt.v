@@ -343,11 +343,11 @@ Ltac poly_int PI := solve
     |- WF (red ?R) =>
       apply (polyInterpretationTermination PI R);
 	vm_compute; intuition; discriminate
-  end] || fail "invalid polynomial interpretation".*)
+  end] || fail 10 "invalid polynomial interpretation".*)
 
 Ltac PolyWeakMonotone Fs Fs_ok :=
   match goal with
     | |- PolyWeakMonotone ?PI =>
       apply (fin_PolyWeakMonotone PI Fs Fs_ok);
-        (check_eq || fail "could not prove monotony")
+        (check_eq || fail 10 "could not prove monotony")
   end.

@@ -7,20 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import ATropicalBasedInt.
-Require Import AMatrixBasedInt.
-Require Import Matrix.
-Require Import OrdSemiRing.
- (* TODO In the main branch, this should be moved to Matrix.v *)
-Module TropicalMatrix := Matrix TropicalOrdSemiRingT.
-Import TropicalMatrix.
-Require Import VecUtil.
-Require Import AMonAlg.
-Require Import SN.
-Require Import RelUtil.
-Require Import NatUtil.
-Require Import AWFMInterpretation.
-Require Import LogicUtil.
+Require Import ATropicalBasedInt AMatrixBasedInt Matrix OrdSemiRing VecUtil
+  AMonAlg SN RelUtil NatUtil AWFMInterpretation LogicUtil.
+
+(* TODO: this should be moved to Matrix.v *)
+Module Import TropicalMatrix := Matrix TropicalOrdSemiRingT.
 
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
@@ -74,7 +65,7 @@ End Somewhere_tfinite.
 
 Ltac somewhere_tfinite Sig Fs Fs_ok :=
   apply (@fin_somewhere_tfinite _ _ Sig _ Fs Fs_ok);
-    (check_eq || fail "invalid tropical interpretation").
+    (check_eq || fail 10 "invalid tropical interpretation").
 
 (***********************************************************************)
 (** Module type for proving termination with a tropical interpretation *)
@@ -244,6 +235,6 @@ Module TropicalInt (Import AI : TTropicalInt).
   End MonotoneAlgebra.
 
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    fail "Tropical matrices cannot be used for proving total termination".
+    fail 10 "Tropical matrices cannot be used for proving total termination".
 
 End TropicalInt.

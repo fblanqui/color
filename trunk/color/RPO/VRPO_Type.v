@@ -93,7 +93,7 @@ Module Type RPO_Model.
               (elim (lt_decomp s t H);
                 [intro Hdum; elim Hdum; clear Hdum;
                   [intro Hr | intro Hs] | intro Ht])
-      | _ => fail "Hyp should be ~ lt s t"
+      | _ => fail 10 "Hyp should be ~ lt s t"
     end.
  
   Ltac inversion_case_root H :=
@@ -151,7 +151,7 @@ Module Type RPO_Model.
                   | (* Ht : *)
                     inversion_case_subterm Ht
                 ])
-      | _ => fail "Hyp should be ~ lt s t"
+      | _ => fail 10 "Hyp should be ~ lt s t"
     end.
 
 End RPO_Model.

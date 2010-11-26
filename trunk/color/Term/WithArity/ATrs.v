@@ -1102,7 +1102,7 @@ Ltac termination_trivial :=
   (apply WF_hd_red_mod_empty || apply WF_red_mod_empty || apply WF_red_empty).
 
 Ltac remove_relative_rules E := norm E; rewrite red_mod_empty
-  || fail "this certificate cannot be applied on a relative system".
+  || fail 10 "this certificate cannot be applied on a relative system".
 
 Ltac no_relative_rules :=
   match goal with
@@ -1120,7 +1120,7 @@ Ltac rules_preserv_vars := solve
         lforall (fun a => incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a))) R);
         [ unfold incl; vm_compute; intuition
         | let H0 := fresh in do 2 intro; intro H0; apply (lforall_in H H0)]
-  end] || fail "some rule does not preserve variables".*)
+  end] || fail 10 "some rule does not preserve variables".*)
 
 Ltac norm_rules := match goal with |- forallb _ ?R = _ => norm R end.
 

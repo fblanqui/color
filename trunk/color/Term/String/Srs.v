@@ -9,14 +9,8 @@ string rewriting
 
 Set Implicit Arguments.
 
-Require Import Relations.
-Require Import LogicUtil.
+Require Import LogicUtil RelUtil ListUtil BoolUtil EqUtil ListDec.
 Require Export SContext.
-Require Import RelUtil.
-Require Import ListUtil.
-Require Import BoolUtil.
-Require Import EqUtil.
-Require Import ListDec.
 
 (***********************************************************************)
 (** strings *)
@@ -177,7 +171,7 @@ End S.
 Require Import SN.
 
 Ltac remove_relative_rules E := norm E; rewrite red_mod_empty
-  || fail "this certificate cannot be applied on a relative system".
+  || fail 10 "this certificate cannot be applied on a relative system".
 
 Ltac no_relative_rules :=
   match goal with

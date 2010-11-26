@@ -7,16 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 Polynomial interpretations in the setting of monotone algebras.
 *)
 
-Require Import APolyInt.
-Require Import AMonAlg.
-Require Import ZUtil.
-Require Import RelUtil.
-Require Import PositivePolynom.
-Require Import ATrs.
-Require Import ListForall.
-Require Import MonotonePolynom.
-Require Import LogicUtil.
-Require Import BoolUtil.
+Require Import APolyInt AMonAlg ZUtil RelUtil PositivePolynom ATrs ListForall
+  MonotonePolynom LogicUtil BoolUtil.
 
 Module Type TPolyInt.
 
@@ -153,12 +145,12 @@ Module PolyInt (Export PI : TPolyInt).
 
   Ltac prove_int_monotone :=
     solve [apply monotone_succ; pmonotone]
-    || fail "Failed to prove monotonicity of polynomial interpretation.".
+    || fail 10 "Failed to prove monotonicity of polynomial interpretation.".
 
   Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.*)
 
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
     apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok);
-      (check_eq || fail "could not prove monotony").
+      (check_eq || fail 10 "could not prove monotony").
 
 End PolyInt.
