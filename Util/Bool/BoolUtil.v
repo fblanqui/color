@@ -177,3 +177,41 @@ intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
 Qed.
 
 End bool_ok.
+
+(***********************************************************************)
+(** checking a property (P i) for all i<n *)
+
+Require Import Arith.
+Require Omega.
+
+Section bforall_lt.
+
+  Variables (P : nat->Prop) (bP : nat->bool)
+    (bP_ok : forall x, bP x = true <-> P x).
+
+  Definition forall_lt n := forall i, i < n -> P i.
+
+  Fixpoint bforall_lt_aux b n := b &&
+    match n with
+      | 0 => true
+      | S n' => bforall_lt_aux (bP n') n'
+    end.
+
+  Lemma bforall_lt_aux_ok : forall n b,
+    bforall_lt_aux b n = true <-> b = true /\ forall_lt n.
+
+  Proof.
+    unfold forall_lt. induction n; simpl; intros. bool. firstorder.    
+    rewrite andb_eq. rewrite IHn. rewrite bP_ok. intuition.
+    destruct (eq_nat_dec i n). subst. hyp. apply H2. omega.
+  Qed.
+
+  Definition bforall_lt := bforall_lt_aux true.
+
+  Lemma bforall_lt_ok : forall n, bforall_lt n = true <-> forall_lt n.
+
+  Proof.
+    intro. unfold bforall_lt. rewrite bforall_lt_aux_ok. tauto.
+  Qed.
+
+End bforall_lt.
