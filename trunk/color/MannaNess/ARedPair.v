@@ -222,6 +222,8 @@ Module Type Filter.
   Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
 End Filter.
 
+(*FIXME: define meta-theorems?*)
+
 Module WP_Filter (Import F : Filter) <: WeakRedPair.
 
   Definition Sig := Sig.
@@ -245,7 +247,6 @@ Module WP_Filter (Import F : Filter) <: WeakRedPair.
   Definition cc_succeq := filter_cont_closed refl_succeq cc_succeq.
   
   Lemma refl_succeq : reflexive succeq.
-
   Proof.
     intro x. unfold succeq. apply refl_succeq.
   Qed.
@@ -277,9 +278,11 @@ Require Import AFilterPerm.
 Module Type Perm.
   Variable Sig : Signature.
   Variable pi : forall f : Sig, nat_lts (arity f).
-  Variable pi_ok : non_dup_val pi.
+  Variable pi_ok : non_dup pi.
   Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
 End Perm.
+
+(*FIXME: define meta-theorems?*)
 
 Module WP_Perm (Import F : Perm) <: WeakRedPair.
 
@@ -301,7 +304,7 @@ Module WP_Perm (Import F : Perm) <: WeakRedPair.
 
   Definition succeq := filter_ord succeq.
   Definition sc_succeq := filter_subs_closed sc_succeq.
-  Definition cc_succeq := filter_cont_closed pi_ok refl_succeq cc_succeq.
+  Definition cc_succeq := filter_weak_cont_closed pi_ok refl_succeq cc_succeq.
   
   Lemma refl_succeq : reflexive succeq.
 
@@ -337,6 +340,8 @@ Module Type Proj.
   Variable pi : forall f : Sig, option {k | k < arity f}.
   Declare Module WP : WeakRedPair with Definition Sig := Sig.
 End Proj.
+
+(*FIXME: define a meta-theorem?*)
 
 Module WP_Proj (Import P : Proj) <: WeakRedPair.
 
