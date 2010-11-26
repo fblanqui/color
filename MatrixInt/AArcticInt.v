@@ -8,18 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import AArcticBasedInt.
-Require Import AMatrixBasedInt.
-Require Import Matrix.
+Require Import AArcticBasedInt AMatrixBasedInt Matrix OrdSemiRing VecUtil
+  AMonAlg SN RelUtil NatUtil AWFMInterpretation LogicUtil.
 Import ArcticMatrix.
-Require Import OrdSemiRing.
-Require Import VecUtil.
-Require Import AMonAlg.
-Require Import SN.
-Require Import RelUtil.
-Require Import NatUtil.
-Require Import AWFMInterpretation.
-Require Import LogicUtil.
 
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
@@ -80,11 +71,11 @@ Ltac arcticDiscr :=
 Ltac showArcticIntOk := solve
   [let f := fresh "f" in let s := fresh "s" in
     intro f; destruct f as [s|s]; destruct s; vm_compute; arcticDiscr]
-  || fail "invalid arctic interpretation".*)
+  || fail 10 "invalid arctic interpretation".*)
 
 Ltac somewhere_finite Sig Fs Fs_ok :=
   apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok);
-    (check_eq || fail "invalid arctic interpretation").
+    (check_eq || fail 10 "invalid arctic interpretation").
 
 (***********************************************************************)
 (** Module type for proving termination with an arctic interpretation *)
@@ -254,13 +245,13 @@ Module ArcticInt (Import AI : TArcticInt).
   Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
 
   Ltac prove_int_monotone :=
-    fail "Arctic matrices cannot be used for proving total termination".
+    fail 10 "Arctic matrices cannot be used for proving total termination".
 
   Ltac prove_cc_succ := prove_int_monotone.
 
   Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
 
   Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    fail "Arctic matrices cannot be used for proving total termination".
+    fail 10 "Arctic matrices cannot be used for proving total termination".
 
 End ArcticInt.

@@ -9,15 +9,8 @@ violation of variable condition
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATrs.
-Require Import AVariables.
-Require Import BoolUtil.
-Require Import EqUtil.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import NatUtil.
-Require Import APosition.
+Require Import LogicUtil ATrs AVariables BoolUtil EqUtil ListUtil RelUtil
+  NatUtil APosition.
 
 Section S.
 
@@ -57,4 +50,4 @@ End S.
 Ltac var_cond Sig :=
   (apply var_cond_mod || apply var_cond);
     rewrite <- (ko (@brules_preserv_vars_ok Sig));
-      (check_eq || fail "variable condition satisfied").
+      (check_eq || fail 10 "variable condition satisfied").

@@ -9,16 +9,8 @@ set of variables occuring in a term
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ASubstitution.
-Require Import FSetUtil.
-Require Import OrderedTypeEx.
-Require Import NatUtil.
-Require Import BoolUtil.
-Require Import EqUtil.
-Require Import ATrs.
-Require Import ListUtil.
-Require Import VecUtil.
+Require Import LogicUtil ASubstitution FSetUtil OrderedTypeEx NatUtil BoolUtil
+  EqUtil ATrs ListUtil VecUtil.
 
 (***********************************************************************)
 (** sets of variables *)
@@ -362,4 +354,4 @@ Implicit Arguments mem_vars_vec [Sig x n ts].
 Implicit Arguments vars_subs_elim [Sig s x v].
 
 Ltac rules_preserv_vars := rewrite <- brules_preserv_vars_ok;
-  (check_eq || fail "some rule does not preserve variables").
+  (check_eq || fail 10 "some rule does not preserve variables").

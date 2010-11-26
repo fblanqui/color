@@ -331,4 +331,4 @@ Implicit Arguments valid [Sig].
 Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
 
 Ltac valid Sig Fs_ok := rewrite <- (@bvalid_ok Sig _ _ Fs_ok);
-  (check_eq || fail "bad projection").
+  (check_eq || fail 10 "invalid projection").

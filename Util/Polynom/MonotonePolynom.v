@@ -11,17 +11,8 @@ monotone polynomials
 
 Set Implicit Arguments.
 
-Require Import Polynom.
-Require Import PositivePolynom.
-Require Import NaryFunction.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import List.
-Require Import ListUtil.
-Require Import ListForall.
-Require Import ZUtil.
-Require Import RelUtil.
-Require Import NatUtil.
+Require Import Polynom PositivePolynom NaryFunction VecUtil LogicUtil ListUtil
+  ListForall ZUtil RelUtil NatUtil.
 
 Open Local Scope Z_scope.
 
@@ -304,5 +295,5 @@ Ltac pmonotone :=
     intro f; unfold pweak_monotone, pstrong_monotone, coef_pos;
       destruct_symbol;
       solve [ postac | split; [postac | montac] ]
-      || fail "could not prove the monotony of this polynomial interpretation".
+      || fail 10 "could not prove the monotony of this polynomial interpretation".
 *)

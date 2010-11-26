@@ -10,11 +10,7 @@ there is a loop in a relative TRS
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import LogicUtil.
-Require Import ALoop.
-Require Import ListUtil.
-Require Import RelUtil.
+Require Import ATrs LogicUtil ALoop ListUtil RelUtil.
 
 Section S.
 
@@ -142,8 +138,7 @@ Variables (ds : list data) (us' : list term)
 
 Definition last_term' := last us' last_term.
 
-Require Import APosition.
-Require Import AMatching.
+Require Import APosition AMatching.
 
 Variables (p : position) (u : term) (h2 : subterm_pos last_term' p = Some u)
   (s : substitution) (h3 : matches t u = Some s).
@@ -197,8 +192,7 @@ Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).
 Defined.
 
-Require Import RelUtil.
-Require Import Wf_nat.
+Require Import RelUtil Wf_nat.
 
 Lemma IS_seq : IS (red_mod E R) seq.
 
@@ -279,4 +273,4 @@ End S.
 
 Ltac loop t' mds' ds' p' :=
   apply is_mod_loop_correct with (t:=t') (mds:=mds') (ds:=ds') (p:=p');
-    (check_eq || fail "not a loop").
+    (check_eq || fail 10 "not a loop").

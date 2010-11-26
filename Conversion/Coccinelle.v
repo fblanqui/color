@@ -483,4 +483,4 @@ End prec_eq_status.
 Implicit Arguments bprec_eq_status_ok [Sig Fs].
 
 Ltac prec_eq_status s p o := apply (bprec_eq_status_ok s p o); check_eq
-  || fail "statuses incompatible with precedences".
+  || fail 10 "statuses incompatible with precedences".

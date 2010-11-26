@@ -11,17 +11,8 @@ multisets.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import MultisetCore.
-Require Import Min.
-Require Import List.
-Require Import Multiset.
-Require Import Permutation.
-Require Import ListPermutation.
-Require Import NatUtil.
-Require Import Setoid.
-Require Import ListExtras.
-Require Import PermutSetoid.
+Require Import RelExtras MultisetCore Min List Multiset Permutation
+  ListPermutation NatUtil Setoid ListExtras PermutSetoid.
 
 Module Multiset (MC : MultisetCore).
 
@@ -75,7 +66,7 @@ End NewOperations.
 
   Ltac solve_meq :=
    (solve [try_solve_meq] ||
-   fail "Goal is not an equality between multisets or failes to prove").
+   fail "Goal is not an equality between multisets or fails to prove").
 
   Ltac try_solve_meq_ext :=
        (

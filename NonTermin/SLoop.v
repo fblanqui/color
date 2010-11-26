@@ -10,10 +10,7 @@ there is a loop in an SRS
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import Srs.
-Require Import ListUtil.
-Require Import EqUtil.
+Require Import LogicUtil Srs ListUtil EqUtil.
 
 Section S.
 
@@ -222,8 +219,7 @@ Proof.
 intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).
 Defined.
 
-Require Import RelUtil.
-Require Import Wf_nat.
+Require Import RelUtil Wf_nat.
 
 Lemma IS_seq : IS (red R) seq.
 
@@ -301,7 +297,7 @@ Implicit Arguments matches_complete [Sig p t u].
 
 Ltac check_loop t' ds' p' :=
   apply is_loop_correct with (t:=t') (ds:=ds') (p:=p');
-    (check_eq || fail "not a loop").
+    (check_eq || fail 10 "not a loop").
 
 Ltac loop t' ds' p' :=
   match goal with
