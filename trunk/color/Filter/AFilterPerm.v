@@ -510,13 +510,16 @@ Ltac permut :=
     | |- permut ?f => unfold f; permut
   end.
 
+(*FIXME: does not work...
 Ltac filter p :=
   match goal with
     | |- WF (hd_red_Mod _ _) => hd_red_mod; filter p
     | |- WF (hd_red_mod _ _) =>
       apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac]
-    | |- WF _ => fail "filter not defined for this goal"
-  end.
+  end.*)
+
+Ltac filter p :=
+  hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac].
 
 Ltac prove_cc tac :=
   apply filter_strong_cont_closed; [non_dup | permut | tac].
