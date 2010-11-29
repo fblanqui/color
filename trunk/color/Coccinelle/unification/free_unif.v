@@ -134,9 +134,6 @@ Module DecVar := decidable_set.Convert (X).
 Module VSet <: list_set.S with Definition EDS.A := variable :=
    list_set.Make (DecVar).
 
-(*REMOVE: Ltac unfold_types := 
-unfold VSet.LP.EDS.A, DecVar.A, variable in *.*)
-
 Ltac destruct_set S S1 S2 :=  
 destruct (VSet.union_12 _ _ _ S) as [S1 | S2]; clear S.
 

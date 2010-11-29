@@ -39,14 +39,13 @@ Module Type SemiRingType.
   Parameter Aplus : A -> A -> A.
   Notation "x + y" := (Aplus x y).
 
-(*REMOVE: Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.*)
   Require Import Morphisms.
+
   Declare Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Parameter Amult : A -> A -> A.
   Notation "x * y" := (Amult x y).
 
-(*REMOVE: Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.*)
   Declare Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Parameter A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.

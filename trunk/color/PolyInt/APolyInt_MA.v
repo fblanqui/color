@@ -138,19 +138,8 @@ Module PolyInt (Export PI : TPolyInt).
 (***********************************************************************)
 (** tactics for Rainbow *)
 
-  (*REMOVE: to be removed (used in a previous version of Rainbow)
-
-  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
-  Ltac prove_termination := MAR.prove_termination prove_int_monotone.
-
-  Ltac prove_int_monotone :=
-    solve [apply monotone_succ; pmonotone]
-    || fail 10 "Failed to prove monotonicity of polynomial interpretation.".
-
-  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.*)
-
-  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
+  Ltac prove_cc_succ Fs Fs_ok :=
     apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok);
-      (check_eq || fail 10 "could not prove monotony").
+      (check_eq || fail 10 "could not prove the monotony of this polynomial interpretation").
 
 End PolyInt.

@@ -917,21 +917,9 @@ Parameter remove_equiv_permut:
 
 Require Import Morphisms.
 
-(*REMOVE: Add Morphism (mem eq_A)
-	with signature eq_A ==> permut ==> iff
-	as mem_morph2.*)
-
 Declare Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
 
-(*REMOVE: Add Morphism (List.app (A:=A)) 
-	with signature permut ==> permut ==> permut
-	as app_morph.*)
-
 Declare Instance app_morph : Proper (permut ==> permut ==> permut) (@app A).
-
-(*REMOVE: Add Morphism (List.cons (A:=A)) 
-	with signature eq_A ==> permut ==> permut
-	as add_A_morph.*)
 
 Declare Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (@cons A).
 

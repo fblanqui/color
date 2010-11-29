@@ -318,27 +318,10 @@ Module MatrixInt (MI : TMatrixInt).
     End ExtendedMonotoneAlgebra.
 
   End MonotoneAlgebra.
- 
-  (*REMOVE: to be removed (used in a previous version of Rainbow)
 
-  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
-
-  Ltac prove_int_monotone := 
-    let f := fresh "f" in
-    first 
-    [ solve [
-      apply monotone_succ; intro f; destruct f; 
-        vm_compute; repeat split; auto with arith
-      ]
-    | fail 10 "Failed to prove monotonicity of given matrix interpretation"
-    ].
-
-  Ltac prove_cc_succ := apply IR_context_closed; prove_int_monotone.
-
-  Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
-
-  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
+  Ltac prove_cc_succ Fs Fs_ok :=
     apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok);
-      (check_eq || fail 10 "non monotone interpretation").
+      (check_eq || fail 10
+         "could not prove the monotony of this matrix interpretation").
 
 End MatrixInt.

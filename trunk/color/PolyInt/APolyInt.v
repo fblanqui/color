@@ -336,15 +336,6 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-(*REMOVE: to be removed: tactic used in an old version of Rainbow
-
-Ltac poly_int PI := solve
-  [match goal with
-    |- WF (red ?R) =>
-      apply (polyInterpretationTermination PI R);
-	vm_compute; intuition; discriminate
-  end] || fail 10 "invalid polynomial interpretation".*)
-
 Ltac PolyWeakMonotone Fs Fs_ok :=
   match goal with
     | |- PolyWeakMonotone ?PI =>

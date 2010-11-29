@@ -198,28 +198,13 @@ destruct y_lb; [ contradiction | discr ].
   
   End MonotoneAlgebra.
 
-  (*REMOVE: to be removed (used in a previous version of Rainbow)
+(***********************************************************************)
+(** tactics *)
 
-  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
-
-  Ltac prove_int_monotone :=
-    fail 10 "Arctic matrices cannot be used for proving total termination".
-
-  Ltac prove_cc_succ := prove_int_monotone.
-
-  Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
-
-  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    fail 10 "Arctic matrices cannot be used for proving total termination".
+  Ltac prove_cc_succ Fs Fs_ok :=
+    fail 10 "arctic matrices cannot be used for proving total termination".
 
 End ArcticBZInt.
-
-(*REMOVE: to be removed (used in a previous version of Rainbow)
-
-Ltac showArcticBZIntOk := solve
-  [let f := fresh "f" in let s := fresh "s" in
-    intro f; destruct f as [s | s]; destruct s; vm_compute; auto]
-  || fail 10 "invalid below-zero arctic interpretation".*)
 
 Ltac absolute_finite Sig Fs Fs_ok :=
   apply (@fin_absolute_finite _ _ Sig _ Fs Fs_ok);

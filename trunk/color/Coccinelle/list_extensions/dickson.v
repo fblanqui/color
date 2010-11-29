@@ -50,11 +50,8 @@ Parameter list_permut_multiset_extension_step_2 :
   forall R l1 l2 l, permut l1 l2 -> 
   multiset_extension_step R l l1 -> multiset_extension_step R l l2.
 
-(*REMOVE: Add Parametric Morphism (R : relation A) : (multiset_extension_step R)
-  with signature  permut ==> permut ==> iff 
-  as mult_morph.*)
-
 Require Import Morphisms.
+
 Declare Instance mult_morph (R : relation A) :
   Proper (permut ==> permut ==> iff) (multiset_extension_step R).
 

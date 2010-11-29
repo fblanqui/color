@@ -256,9 +256,6 @@ End incl.
 
 Implicit Arguments incl_app_elim [A l1 l2 l3].
 
-(*REMOVE: to be removed since unused
-Ltac incltac := repeat (apply incl_cons_l; [intac | idtac]); apply incl_nil.*)
-
 (***********************************************************************)
 (** strict inclusion *)
 
