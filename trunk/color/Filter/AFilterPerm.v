@@ -511,15 +511,16 @@ Ltac permut :=
     | |- permut ?pi => unfold pi; permut
   end.
 
+(*COQ: does not work... the recursive call on filter fails...
 Ltac filter p :=
   match goal with
     | |- WF (hd_red_Mod _ _) => hd_red_mod; filter p
     | |- WF (hd_red_mod _ _) =>
       apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac]
-  end.
+  end.*)
 
-(*Ltac filter p :=
-  hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac].*)
+Ltac filter p :=
+  hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac].
 
 Ltac prove_cc_succ tac :=
   apply filter_strong_cont_closed; [non_dup | permut | tac].
