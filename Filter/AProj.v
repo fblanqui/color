@@ -324,11 +324,12 @@ End S.
 
 Implicit Arguments build_pi [proj].
 Implicit Arguments valid [Sig].
+Implicit Arguments bvalid_ok [Sig Fs].
 
 (***********************************************************************)
 (** tactics *)
 
 Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
 
-Ltac valid Sig Fs_ok := rewrite <- (@bvalid_ok Sig _ _ Fs_ok);
-  (check_eq || fail 10 "invalid projection").
+Ltac valid Fs_ok :=
+  rewrite <- (bvalid_ok _ Fs_ok); (check_eq || fail 10 "invalid projection").

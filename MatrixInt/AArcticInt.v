@@ -62,8 +62,10 @@ Section Somewhere_finite.
 
 End Somewhere_finite.
 
-Ltac somewhere_finite Sig Fs Fs_ok :=
-  apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok);
+Implicit Arguments fin_somewhere_finite [dim sig Fs].
+
+Ltac somewhere_finite Fs_ok :=
+  apply (fin_somewhere_finite _ _ Fs_ok);
     (check_eq || fail 10 "invalid arctic interpretation").
 
 (***********************************************************************)
@@ -229,7 +231,7 @@ Module ArcticInt (Import AI : TArcticInt).
   
   End MonotoneAlgebra.
 
-  Ltac prove_cc_succ Fs Fs_ok :=
+  Ltac prove_cc_succ Fs_ok :=
     fail 10 "arctic matrices cannot be used for proving total termination".
 
 End ArcticInt.
