@@ -138,8 +138,10 @@ Module PolyInt (Export PI : TPolyInt).
 (***********************************************************************)
 (** tactics for Rainbow *)
 
-  Ltac prove_cc_succ Fs Fs_ok :=
-    apply IR_context_closed; apply (fin_monotone_succ Fs Fs_ok);
+  Implicit Arguments fin_monotone_succ [Fs].
+
+  Ltac prove_cc_succ Fs_ok :=
+    apply IR_context_closed; apply (fin_monotone_succ Fs_ok);
       (check_eq || fail 10 "could not prove the monotony of this polynomial interpretation").
 
 End PolyInt.

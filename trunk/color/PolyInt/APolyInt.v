@@ -333,12 +333,14 @@ Abort.
 
 End S.
 
+Implicit Arguments fin_PolyWeakMonotone [Sig Fs]. 
+
 (***********************************************************************)
 (** tactics *)
 
-Ltac PolyWeakMonotone Fs Fs_ok :=
+Ltac PolyWeakMonotone Fs_ok :=
   match goal with
     | |- PolyWeakMonotone ?PI =>
-      apply (fin_PolyWeakMonotone PI Fs Fs_ok);
+      apply (fin_PolyWeakMonotone PI Fs_ok);
         (check_eq || fail 10 "could not prove monotony")
   end.

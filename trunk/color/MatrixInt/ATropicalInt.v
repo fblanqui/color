@@ -64,8 +64,10 @@ Section Somewhere_tfinite.
 
 End Somewhere_tfinite.
 
-Ltac somewhere_tfinite Sig Fs Fs_ok :=
-  apply (@fin_somewhere_tfinite _ _ Sig _ Fs Fs_ok);
+Implicit Arguments fin_somewhere_tfinite [dim sig Fs].
+
+Ltac somewhere_tfinite Fs_ok :=
+  apply (fin_somewhere_tfinite _ _ Fs_ok);
     (check_eq || fail 10 "invalid tropical interpretation").
 
 (***********************************************************************)
@@ -235,7 +237,7 @@ Module TropicalInt (Import AI : TTropicalInt).
   
   End MonotoneAlgebra.
 
-  Ltac prove_cc_succ Fs Fs_ok :=
+  Ltac prove_cc_succ Fs_ok :=
     fail 10 "tropical matrices cannot be used for proving total termination".
 
 End TropicalInt.
