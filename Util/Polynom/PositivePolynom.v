@@ -32,13 +32,13 @@ apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). assumption.
 apply IHn.
 Qed.
 
-Lemma preserv_pos_meval : forall n (m : monom n), preserv pos (meval m).
+Lemma preserve_pos_meval : forall n (m : monom n), preserv pos (meval m).
 
 Proof.
 intros n m v Hv. rewrite (Vmap_proj1 Hv). apply pos_meval.
 Qed.
 
-Definition meval_D n (m : monom n) := restrict (preserv_pos_meval m).
+Definition meval_D n (m : monom n) := restrict (preserve_pos_meval m).
 
 Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
 
@@ -91,7 +91,7 @@ apply Zplus_le_0_compat. apply Zmult_le_0_compat. assumption.
 apply pos_meval. apply IHp. assumption.
 Qed.
 
-Lemma preserv_pos_peval : forall n (p : poly n),
+Lemma preserve_pos_peval : forall n (p : poly n),
   coef_pos p -> preserv pos (peval p).
 
 Proof.
@@ -100,7 +100,7 @@ rewrite (Vmap_proj1 Hv). apply pos_peval. assumption.
 Qed.
 
 Definition peval_D n (p : poly n) (H : coef_pos p) :=
-  restrict (preserv_pos_peval p H).
+  restrict (preserve_pos_peval p H).
 
 Implicit Arguments peval_D [n p].
 

@@ -138,12 +138,12 @@ rewrite term_of_string_app. change (var
 rewrite var_sub. 2: apply is_unary_sig'. rewrite H. refl.
 Qed.
 
-Lemma rules_preserv_vars_reverse_trs :
-  forall R, rules_preserv_vars R -> rules_preserv_vars (reverse_trs R).
+Lemma rules_preserve_vars_reverse_trs :
+  forall R, rules_preserve_vars R -> rules_preserve_vars (reverse_trs R).
 
 Proof.
-induction R; intros. unfold rules_preserv_vars. simpl. tauto.
-simpl. revert H. repeat rewrite rules_preserv_vars_cons. destruct a as [l r].
+induction R; intros. unfold rules_preserve_vars. simpl. tauto.
+simpl. revert H. repeat rewrite rules_preserve_vars_cons. destruct a as [l r].
 simpl. intuition. repeat rewrite vars_var; try (hyp||apply is_unary_sig').
 repeat rewrite var_reverse_term. intuition.
 Qed.
@@ -189,24 +189,24 @@ Qed.
 (** termination *)
 
 Variables R : rules.
-Variable hR : rules_preserv_vars R.
+Variable hR : rules_preserve_vars R.
 
 Section red_mod.
 
 Variables E : rules.
-Variable hE : rules_preserv_vars E.
+Variable hE : rules_preserve_vars E.
 
 Lemma WF_red_mod_rev_eq :
   WF (red_mod (reverse_trs E) (reverse_trs R)) <-> WF (red_mod E R).
 
 Proof.
 intros. symmetry. rewrite red_mod_reset_eq; try hyp.
-rewrite String_of_ATerm.WF_red_mod; try apply rules_preserv_vars_reset; try hyp.
+rewrite String_of_ATerm.WF_red_mod; try apply rules_preserve_vars_reset; try hyp.
 rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_red_mod; try hyp.
 repeat rewrite trs_of_srs_reverse_trs. repeat rewrite reverse_trs_reset_rules.
 rewrite <- red_mod_reset_eq. refl. apply is_unary_sig'.
-apply rules_preserv_vars_reverse_trs; hyp.
-apply rules_preserv_vars_reverse_trs; hyp.
+apply rules_preserve_vars_reverse_trs; hyp.
+apply rules_preserve_vars_reverse_trs; hyp.
 Qed.
 
 End red_mod.
@@ -216,7 +216,7 @@ Lemma WF_red_rev_eq : WF (red (reverse_trs R)) <-> WF (red R).
 Proof.
 repeat rewrite <- red_mod_empty.
 assert (nil = reverse_trs nil). refl. rewrite H. apply WF_red_mod_rev_eq.
-unfold rules_preserv_vars. simpl. tauto.
+unfold rules_preserve_vars. simpl. tauto.
 Qed.
 
 End S.
@@ -229,7 +229,7 @@ Require Import AVariables.
 Ltac rev_tac_cond Fs_ok :=
   match goal with
     | |- is_unary _ => is_unary Fs_ok
-    | |- rules_preserv_vars _ => rules_preserv_vars
+    | |- rules_preserve_vars _ => rules_preserve_vars
     | |- WF _ => idtac
   end.
 

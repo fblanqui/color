@@ -261,16 +261,16 @@ Qed.
 
 Section red.
 
-Variables (R : rules) (hR : rules_preserv_vars R).
+Variables (R : rules) (hR : rules_preserve_vars R).
 
-Lemma rules_preserv_vars_var : forall l r, In (mkRule l r) R -> var r = var l.
+Lemma rules_preserve_vars_var : forall l r, In (mkRule l r) R -> var r = var l.
 
 Proof.
 intros. ded (hR _ _ H). repeat rewrite vars_var in H0. unfold incl in H0.
 ded (H0 (var r)). simpl in H1. intuition.
 Qed.
 
-Implicit Arguments rules_preserv_vars_var [l r].
+Implicit Arguments rules_preserve_vars_var [l r].
 
 Definition red1 t u := exists l, exists r, exists c, exists d,
   In (mkRule l r) R /\ t = fill (comp c (comp (cont l) d)) (Var (var t))
@@ -289,13 +289,13 @@ repeat rewrite var_fill. intuition.
 rewrite (term_cont_var (s (var l))) at 1. rewrite fill_fill.
 rewrite comp_comp. refl.
 rewrite (term_cont_var (s (var r))) at 1. rewrite fill_fill.
-rewrite comp_comp. rewrite (rules_preserv_vars_var lr). refl.
+rewrite comp_comp. rewrite (rules_preserve_vars_var lr). refl.
 (* red1 -> red *)
 destruct H as [l]. destruct H as [r]. destruct H as [c]. destruct H as [d].
 decomp H. exists l. exists r. exists c.
 set (s := fun x => if beq_nat x (var l) then fill d (Var (var t)) else Var x).
 exists s. rewrite H2. rewrite H3. repeat rewrite sub_cont. unfold s.
-rewrite (rules_preserv_vars_var H0). rewrite (beq_refl beq_nat_ok).
+rewrite (rules_preserve_vars_var H0). rewrite (beq_refl beq_nat_ok).
 repeat rewrite fill_fill. repeat rewrite comp_comp. intuition.
 Qed.
 
@@ -309,7 +309,7 @@ Qed.
 
 End red.
 
-Implicit Arguments rules_preserv_vars_var [R l r].
+Implicit Arguments rules_preserve_vars_var [R l r].
 
 (***********************************************************************)
 (** equivalent definition of rewriting modulo (when rules preserve variables) *)
@@ -317,7 +317,7 @@ Implicit Arguments rules_preserv_vars_var [R l r].
 Section red_mod.
 
 Variables (E R : rules)
-  (hE : rules_preserv_vars E) (hR : rules_preserv_vars R).
+  (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
 
 Require Import RelUtil.
 
@@ -364,7 +364,7 @@ Qed.
 
 Section red.
 
-Variables (R : rules) (hR : rules_preserv_vars R).
+Variables (R : rules) (hR : rules_preserve_vars R).
 
 (*REMARK: instance of a more general lemma on left-linear TRSs *)
 Lemma red_ren : forall t u,
@@ -420,7 +420,7 @@ Implicit Arguments rtc_red_ren [R t u].
 Section red_mod.
 
 Variables (E R : rules)
-  (hE : rules_preserv_vars E) (hR : rules_preserv_vars R).
+  (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
 
 Lemma red_mod_ren : forall t u, red_mod E R (sub s t) u ->
   exists v, red_mod E R t v /\ sub s v = u.
@@ -464,7 +464,7 @@ Section red0.
 
 Require Import ListMax.
 
-Variables (R : rules) (hR : rules_preserv_vars R).
+Variables (R : rules) (hR : rules_preserve_vars R).
 
 Lemma red0_maxvar : forall t u, red0 R t u -> maxvar u = 0.
 
@@ -505,7 +505,7 @@ Qed.
 Section red_mod0.
 
 Variables (E R : rules)
-  (hE : rules_preserv_vars E) (hR : rules_preserv_vars R).
+  (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
 
 Lemma red_mod0_maxvar : forall t u, red_mod0 E R t u -> maxvar u = 0.
 
@@ -579,9 +579,9 @@ Qed.
 Section red.
 
 Variable R : rules.
-Variable hR : rules_preserv_vars R.
+Variable hR : rules_preserve_vars R.
 
-Lemma rules_preserv_vars_reset : rules_preserv_vars (reset_rules R).
+Lemma rules_preserve_vars_reset : rules_preserve_vars (reset_rules R).
 
 Proof.
 intros l0 r0 h. destruct (in_map_elim h). destruct H. destruct x as [l r].
@@ -594,7 +594,7 @@ Lemma red_reset : forall t u, red R t u <-> red (reset_rules R) t u.
 Proof.
 split; intro.
 (* -> *)
-redtac. subst. ded (rules_preserv_vars_var hR lr).
+redtac. subst. ded (rules_preserve_vars_var hR lr).
 case (In_dec eq_nat_dec 0 (vars l)); intro.
 (* In 0 (vars l) *)
 rewrite vars_var in i. simpl in i. intuition.
@@ -611,7 +611,7 @@ change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
 destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
 inversion H0. unfold reset. repeat rewrite sub_sub.
-ded (rules_preserv_vars_var hR H). rewrite H1. apply red_rule. hyp.
+ded (rules_preserve_vars_var hR H). rewrite H1. apply red_rule. hyp.
 Qed.
 
 Lemma red_reset_eq : red R == red (reset_rules R).
@@ -625,7 +625,7 @@ Lemma hd_red_reset : forall t u, hd_red R t u <-> hd_red (reset_rules R) t u.
 Proof.
 split; intro.
 (* -> *)
-redtac. subst. ded (rules_preserv_vars_var hR lr).
+redtac. subst. ded (rules_preserve_vars_var hR lr).
 case (In_dec eq_nat_dec 0 (vars l)); intro.
 (* In 0 (vars l) *)
 rewrite vars_var in i. simpl in i. intuition.
@@ -642,7 +642,7 @@ change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
 destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
 inversion H0. unfold reset. repeat rewrite sub_sub.
-ded (rules_preserv_vars_var hR H). rewrite H1. apply hd_red_rule. hyp.
+ded (rules_preserve_vars_var hR H). rewrite H1. apply hd_red_rule. hyp.
 Qed.
 
 Lemma hd_red_reset_eq : hd_red R == hd_red (reset_rules R).
@@ -654,8 +654,8 @@ Qed.
 End red.
 
 Variable E R : rules.
-Variable hE : rules_preserv_vars E.
-Variable hR : rules_preserv_vars R.
+Variable hE : rules_preserve_vars E.
+Variable hR : rules_preserve_vars R.
 
 Lemma red_mod_reset_eq : red_mod E R == red_mod (reset_rules E) (reset_rules R).
 
@@ -689,7 +689,7 @@ End reset.
 
 End S.
 
-Implicit Arguments rules_preserv_vars_var [Sig R l r].
+Implicit Arguments rules_preserve_vars_var [Sig R l r].
 Implicit Arguments bis_unary_ok [Sig Fs].
 
 (***********************************************************************)

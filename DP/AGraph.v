@@ -71,7 +71,7 @@ unfold hd_red_Mod_rule. simpl. intuition. exists x2. intuition.
 subst. auto.
 Qed.
 
-Variable hyp : rules_preserv_vars D.
+Variable hyp : rules_preserve_vars D.
 
 Lemma hd_red_Mod_rule2_hd_rules_graph : forall a1 a2 t u v,
   hd_red_Mod_rule a1 t u -> hd_red_Mod_rule a2 u v -> hd_rules_graph a1 a2.

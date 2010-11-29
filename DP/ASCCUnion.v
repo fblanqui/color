@@ -39,7 +39,7 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 
 Variable S : relation (term Sig).
 Variable R : rules.
-Variable hyp : rules_preserv_vars R.
+Variable hyp : rules_preserve_vars R.
 
 Notation DPG := (hd_rules_graph S R).
 Notation rule_eq_dec := (@ATrs.eq_rule_dec Sig).

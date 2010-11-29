@@ -195,7 +195,7 @@ rewrite IHR. rewrite srule_of_rule_reset. refl.
 Qed.
 
 Variable R : rules.
-Variable h1 : rules_preserv_vars R.
+Variable h1 : rules_preserve_vars R.
 Variable h2 : forall l r, In (mkRule l r) R -> maxvar l = 0.
 
 Require Import ListMax.
@@ -221,7 +221,7 @@ End reset.
 Section sred_of_red.
 
 Variable R : rules.
-Variable hR : rules_preserv_vars R.
+Variable hR : rules_preserve_vars R.
 
 Lemma sred_of_red : forall t u,
   red R t u -> Srs.red (srs_of_trs R) (string_of_term t) (string_of_term u).
@@ -250,7 +250,7 @@ Lemma red_of_sred : forall t u,
 
 Proof.
 intros. rewrite red_reset. apply red_of_sred_reset.
-apply rules_preserv_vars_reset. hyp. intros. destruct (in_map_elim H0).
+apply rules_preserve_vars_reset. hyp. intros. destruct (in_map_elim H0).
 destruct H1. unfold reset_rule in H2. inversion H2. rewrite maxvar_var.
 rewrite var_reset. refl. hyp. hyp. rewrite srs_of_trs_reset. hyp. hyp. hyp.
 Qed.
@@ -269,12 +269,12 @@ End sred_of_red.
 (** reflexion of termination *)
 
 Variable R : rules.
-Variable hR : rules_preserv_vars R.
+Variable hR : rules_preserve_vars R.
 
 Section red_mod.
 
 Variable E : rules.
-Variable hE : rules_preserv_vars E.
+Variable hE : rules_preserve_vars E.
 
 Lemma sred_mod_of_red_mod : forall x y, red_mod E R x y -> Srs.red_mod
   (srs_of_trs E) (srs_of_trs R) (string_of_term x) (string_of_term y).
@@ -333,7 +333,7 @@ Lemma WF_red : WF (red R) <-> WF (Srs.red (srs_of_trs R)).
 
 Proof.
 rewrite <- red_mod_empty. rewrite <- Srs.red_mod_empty. apply WF_red_mod.
-unfold rules_preserv_vars. simpl. tauto.
+unfold rules_preserve_vars. simpl. tauto.
 Qed.
 
 End S.
@@ -355,7 +355,7 @@ Require Import AVariables.
 Ltac as_srs_cond Fs_ok :=
   match goal with
     | |- is_unary _ => is_unary Fs_ok
-    | |- rules_preserv_vars _ => rules_preserv_vars
+    | |- rules_preserve_vars _ => rules_preserve_vars
     | |- WF _ => idtac
   end.
 

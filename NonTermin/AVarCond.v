@@ -20,11 +20,11 @@ Notation term := (term Sig).
 Notation rule := (rule Sig). Notation rules := (list rule).
 
 Lemma var_cond_mod : forall E R : rules,
-  ~rules_preserv_vars R -> non_terminating (red_mod E R).
+  ~rules_preserve_vars R -> non_terminating (red_mod E R).
 
 Proof.
-intros E R. rewrite <- brules_preserv_vars_ok. rewrite <- false_not_true.
-unfold brules_preserv_vars. rewrite (forallb_neg (@brule_preserv_vars_ok Sig)).
+intros E R. rewrite <- brules_preserve_vars_ok. rewrite <- false_not_true.
+unfold brules_preserve_vars. rewrite (forallb_neg (@brule_preserve_vars_ok Sig)).
 intros [[l r] [h1 h2]]. simpl in *. rewrite not_incl in h2. 2: apply eq_nat_dec.
 destruct h2. destruct H. destruct (in_vars_subterm H). rename x0 into p.
 destruct (subterm_pos_elim H1). rename x0 into c. destruct a.
@@ -39,7 +39,7 @@ rewrite <- iter_com. hyp.
 Qed.
 
 Lemma var_cond : forall R : rules,
-  ~rules_preserv_vars R -> non_terminating (red R).
+  ~rules_preserve_vars R -> non_terminating (red R).
 
 Proof.
 intros. rewrite <- red_mod_empty. apply var_cond_mod. hyp.
@@ -49,5 +49,5 @@ End S.
 
 Ltac var_cond Sig :=
   (apply var_cond_mod || apply var_cond);
-    rewrite <- (ko (@brules_preserv_vars_ok Sig));
+    rewrite <- (ko (@brules_preserve_vars_ok Sig));
       (check_eq || fail 10 "variable condition satisfied").

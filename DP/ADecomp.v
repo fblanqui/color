@@ -91,7 +91,7 @@ Implicit Arguments In_Union_elim [cs x y].
 (** main theorem *)
 
 Lemma WF_hd_red_Mod_decomp :
-  forall (hypD : rules_preserv_vars D)
+  forall (hypD : rules_preserve_vars D)
     (cs : decomp)
     (hyp1 : incl (flat cs) D)
     (hyp2 : valid_decomp cs = true)
@@ -116,7 +116,7 @@ apply incl_appl_incl with a. hyp. exists s0. intuition.
 Qed.
 
 Lemma WF_decomp :
-  forall (hypD : rules_preserv_vars D)
+  forall (hypD : rules_preserve_vars D)
     (cs : decomp)
     (hyp1 : incl D (flat cs))
     (hyp2 : incl (flat cs) D)
@@ -135,12 +135,12 @@ Qed.
 Definition co_scc ci :=
   forallb (fun r => forallb (fun s => negb (approx r s)) ci) ci.
 
-Lemma WF_co_scc : forall (hypD : rules_preserv_vars D) ci,
+Lemma WF_co_scc : forall (hypD : rules_preserve_vars D) ci,
   incl ci D -> co_scc ci = true -> WF (hd_red_Mod S ci).
 
 Proof.
 unfold WF. intros. apply SN_intro. intros. apply SN_intro. intros.
-assert (h : rules_preserv_vars ci). eapply rules_preserv_vars_incl. apply H.
+assert (h : rules_preserve_vars ci). eapply rules_preserve_vars_incl. apply H.
 hyp. destruct (hd_red_Mod2_hd_rules_graph h H1 H2). destruct H3.
 assert (hd_rules_graph S D x0 x1). eapply hd_rules_graph_incl. apply H. hyp.
 unfold hd_rules_graph in H3. intuition. clear H7.
@@ -150,7 +150,7 @@ rewrite forallb_forall in H7. ded (H7 _ H3). rewrite H6 in H0. discr.
 Qed.
 
 Lemma WF_decomp_co_scc :
-  forall (hypD : rules_preserv_vars D)
+  forall (hypD : rules_preserve_vars D)
     (cs : decomp)
     (hyp4 : incl D (flat cs))
     (hyp1 : incl (flat cs) D)
@@ -177,7 +177,7 @@ Require Import AVariables.
 Ltac graph_decomp Sig f d :=
   apply WF_decomp_co_scc with (approx := f) (cs := d);
   [idtac
-    | rules_preserv_vars
+    | rules_preserve_vars
     | incl_rule Sig || fail 10 "the decomposition does not contain all DPs"
     | incl_rule Sig || fail 10 "the decomposition contains a rule that is not a DP"
     | check_eq || fail 10 "the decomposition is not valid"

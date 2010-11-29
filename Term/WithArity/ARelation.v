@@ -25,7 +25,7 @@ Section basic.
 
 Variable R : relation term.
 
-Definition preserv_vars := forall t u, R t u -> incl (vars u) (vars t).
+Definition preserve_vars := forall t u, R t u -> incl (vars u) (vars t).
 
 Definition substitution_closed :=
   forall t1 t2 s, R t1 t2 -> R (sub s t1) (sub s t2).

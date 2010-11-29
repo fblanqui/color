@@ -31,15 +31,15 @@ Notation lhs := (@lhs Sig). Notation rhs := (@rhs Sig).
 
 Variable R : rules.
 
-Variable hyp : rules_preserv_vars R.
+Variable hyp : rules_preserve_vars R.
 
 Notation DP := (dp R).
 Notation Chain := (chain R).
 
-Lemma hyp' : rules_preserv_vars DP.
+Lemma hyp' : rules_preserve_vars DP.
 
 Proof.
-apply dp_preserv_vars. exact hyp.
+apply dp_preserve_vars. exact hyp.
 Qed.
 
 (***********************************************************************)

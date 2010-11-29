@@ -173,17 +173,17 @@ Definition rule_of_srule (x : srule) :=
 
 Definition trs_of_srs R := map rule_of_srule R.
 
-Lemma rules_preserv_vars_trs_of_srs :
-  forall R, rules_preserv_vars (trs_of_srs R).
+Lemma rules_preserve_vars_trs_of_srs :
+  forall R, rules_preserve_vars (trs_of_srs R).
 
 Proof.
-unfold rules_preserv_vars. induction R; simpl; intuition.
+unfold rules_preserve_vars. induction R; simpl; intuition.
 unfold rule_of_srule in H0. destruct a. simpl in H0. inversion H0.
 repeat rewrite vars_var; is_unary. repeat rewrite var_term_of_string.
 unfold incl; simpl; intuition.
 Qed.
 
-Ltac preserv_vars := try (apply rules_preserv_vars_trs_of_srs).
+Ltac preserve_vars := try (apply rules_preserve_vars_trs_of_srs).
 
 (***********************************************************************)
 (** rewriting *)
@@ -215,8 +215,8 @@ Lemma sred_of_red : forall t u,
 
 Proof.
 intros. redtac. subst. repeat rewrite string_of_term_fill.
-repeat rewrite string_of_term_sub. rewrite (rules_preserv_vars_var
-  is_unary_sig (rules_preserv_vars_trs_of_srs R) lr).
+repeat rewrite string_of_term_sub. rewrite (rules_preserve_vars_var
+  is_unary_sig (rules_preserve_vars_trs_of_srs R) lr).
 set (c' := mkContext (string_of_cont c) (string_of_term (s (var l)))).
 change (Srs.red R (SContext.fill c' (string_of_term l))
   (SContext.fill c' (string_of_term r))). apply Srs.red_rule. clear c'.
@@ -279,7 +279,7 @@ Lemma WF_sred_mod_of_WF_red_mod :
   WF (Srs.red_mod E R) -> WF (red_mod (trs_of_srs E) (trs_of_srs R)).
 
 Proof.
-intro. rewrite WF_red_mod0; is_unary; preserv_vars.
+intro. rewrite WF_red_mod0; is_unary; preserve_vars.
 cut (forall s, SN (Srs.red_mod E R) s -> forall t, maxvar t = 0 ->
   t = term_of_string s -> SN (red_mod0 (trs_of_srs E) (trs_of_srs R)) t).
 (* cut correctness *)
@@ -289,8 +289,8 @@ apply H0 with (string_of_term t). apply H. hyp. rewrite term_of_string_epi.
 refl. hyp.
 (* proof with cut *)
 induction 1; intros. apply SN_intro; intros. assert (h : maxvar y = 0).
-apply (red_mod0_maxvar (rules_preserv_vars_trs_of_srs E)
-  (rules_preserv_vars_trs_of_srs R) H4). rewrite <- (term_of_string_epi h).
+apply (red_mod0_maxvar (rules_preserve_vars_trs_of_srs E)
+  (rules_preserve_vars_trs_of_srs R) H4). rewrite <- (term_of_string_epi h).
 apply H1 with (string_of_term y). 3: refl.
 2: rewrite (term_of_string_epi h); hyp. rewrite <- (string_of_term_epi x).
 apply sred_mod_of_red_mod. subst.

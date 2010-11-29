@@ -302,10 +302,10 @@ Require Import ATrs.
 
 Notation rule := (rule Sig). Notation rules := (rules Sig).
 
-Definition brule_preserv_vars (a : rule) :=
+Definition brule_preserve_vars (a : rule) :=
   subset (vars (rhs a)) (vars (lhs a)).
 
-Definition brules_preserv_vars := forallb brule_preserv_vars.
+Definition brules_preserve_vars := forallb brule_preserve_vars.
 
 Lemma vars_equiv : forall x (t : term),
   List.In x (ATerm.vars t) <-> In x (vars t).
@@ -319,32 +319,32 @@ simpl. set_iff. intuition.
 intros. simpl. set_iff. rewrite in_app. intuition.
 Qed.
 
-Lemma brule_preserv_vars_ok' : forall l r,
-  brule_preserv_vars (mkRule l r) = true
+Lemma brule_preserve_vars_ok' : forall l r,
+  brule_preserve_vars (mkRule l r) = true
   <-> incl (ATerm.vars r) (ATerm.vars l).
 
 Proof.
-unfold brule_preserv_vars. intros l r. rewrite subset_Subset.
+unfold brule_preserve_vars. intros l r. rewrite subset_Subset.
 split; intros h x; simpl. repeat rewrite vars_equiv. intuition.
 repeat rewrite <- vars_equiv. intuition.
 Qed.
 
-Lemma brule_preserv_vars_ok : forall a : rule,
-  brule_preserv_vars a = true <->
+Lemma brule_preserve_vars_ok : forall a : rule,
+  brule_preserve_vars a = true <->
   incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a)).
 
 Proof.
-intro. destruct a. rewrite brule_preserv_vars_ok'. tauto.
+intro. destruct a. rewrite brule_preserve_vars_ok'. tauto.
 Qed.
 
-Lemma brules_preserv_vars_ok : forall R : rules,
-  brules_preserv_vars R = true <-> rules_preserv_vars R.
+Lemma brules_preserve_vars_ok : forall R : rules,
+  brules_preserve_vars R = true <-> rules_preserve_vars R.
 
 Proof.
-intro. unfold brules_preserv_vars, rules_preserv_vars.
+intro. unfold brules_preserve_vars, rules_preserve_vars.
 rewrite forallb_forall. intuition.
-rewrite <- brule_preserv_vars_ok'. auto.
-rewrite brule_preserv_vars_ok. destruct x. auto.
+rewrite <- brule_preserve_vars_ok'. auto.
+rewrite brule_preserve_vars_ok. destruct x. auto.
 Qed.
 
 End S.
@@ -353,5 +353,5 @@ Implicit Arguments wf_term_var [Sig s x u].
 Implicit Arguments mem_vars_vec [Sig x n ts].
 Implicit Arguments vars_subs_elim [Sig s x v].
 
-Ltac rules_preserv_vars := rewrite <- brules_preserv_vars_ok;
+Ltac rules_preserve_vars := rewrite <- brules_preserve_vars_ok;
   (check_eq || fail 10 "some rule does not preserve variables").

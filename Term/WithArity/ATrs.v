@@ -553,7 +553,7 @@ Proof.
 intro. unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
 Qed.
 
-Lemma int_red_preserv_hd : forall u v, int_red R u v ->
+Lemma int_red_preserve_hd : forall u v, int_red R u v ->
   exists f, exists us,exists vs, u = Fun f us /\ v = Fun f vs.
 
 Proof.
@@ -564,12 +564,12 @@ exists (Vcast (Vapp v0 (Vcons (fill x1 (sub x2 x0)) v1)) e).
 tauto.
 Qed.
 
-Lemma int_red_rtc_preserv_hd : forall u v, int_red R # u v ->
+Lemma int_red_rtc_preserve_hd : forall u v, int_red R # u v ->
   u=v \/ exists f, exists us, exists vs, u = Fun f us /\ v = Fun f vs.
 
 Proof.
 intros. induction H; auto.
-right. apply int_red_preserv_hd. auto.
+right. apply int_red_preserve_hd. auto.
 destruct IHclos_refl_trans1; destruct IHclos_refl_trans2; subst; auto.
 right. do 3 destruct H1. do 3 destruct H2. intuition; subst; auto.
 inversion H1. subst. exists x3; exists x1; exists x5. auto.
@@ -611,55 +611,55 @@ End rewriting.
 (***********************************************************************)
 (** preservation of variables under reduction *)
 
-Definition rules_preserv_vars := fun R : rules =>
+Definition rules_preserve_vars := fun R : rules =>
   forall l r, In (mkRule l r) R -> vars r [= vars l.
 
-Definition brules_preserv_vars := let P := eq_nat_dec in
+Definition brules_preserve_vars := let P := eq_nat_dec in
  fun R : rules => forallb (fun x => Inclb P (vars (rhs x)) (vars (lhs x))) R.
 
-Lemma brules_preserv_vars_ok :
- forall R, rules_preserv_vars R <-> brules_preserv_vars R = true.
+Lemma brules_preserve_vars_ok :
+ forall R, rules_preserve_vars R <-> brules_preserve_vars R = true.
 
 Proof.
-intro; unfold brules_preserv_vars. rewrite forallb_forall; split; intros.
+intro; unfold brules_preserve_vars. rewrite forallb_forall; split; intros.
 destruct x as [l r]; simpl. rewrite Inclb_ok. apply H; auto.
 intros l r Rlr. rewrite <- (Inclb_ok eq_nat_dec). apply (H _ Rlr).
 Qed. 
 
-Lemma rules_preserv_vars_cons : forall a R, rules_preserv_vars (a :: R)
-  <-> vars (rhs a) [= vars (lhs a) /\ rules_preserv_vars R.
+Lemma rules_preserve_vars_cons : forall a R, rules_preserve_vars (a :: R)
+  <-> vars (rhs a) [= vars (lhs a) /\ rules_preserve_vars R.
 
 Proof.
-unfold rules_preserv_vars. intuition. apply H. left. destruct a. refl.
+unfold rules_preserve_vars. intuition. apply H. left. destruct a. refl.
 simpl in H. destruct H. subst. hyp. apply H1. hyp.
 Qed.
 
 Section vars.
 
 Variable R : rules.
-Variable hyp : rules_preserv_vars R.
+Variable hyp : rules_preserve_vars R.
 
-Lemma red_preserv_vars : preserv_vars (red R).
+Lemma red_preserve_vars : preserve_vars (red R).
 
 Proof.
-unfold preserv_vars. intros. redtac. subst t. subst u.
+unfold preserve_vars. intros. redtac. subst t. subst u.
 apply incl_tran with (cvars c ++ vars (sub s r)). apply vars_fill_elim.
 apply incl_tran with (cvars c ++ vars (sub s l)). apply appl_incl.
 apply incl_vars_sub. apply hyp. hyp.
 apply vars_fill_intro.
 Qed.
 
-Lemma tred_preserv_vars : preserv_vars (red R !).
+Lemma tred_preserve_vars : preserve_vars (red R !).
 
 Proof.
-unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
+unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
 apply incl_tran with (vars y); hyp.
 Qed.
 
-Lemma rtred_preserv_vars : preserv_vars (red R #).
+Lemma rtred_preserve_vars : preserve_vars (red R #).
 
 Proof.
-unfold preserv_vars. induction 1. apply red_preserv_vars. hyp.
+unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
 apply List.incl_refl. apply incl_tran with (vars y); hyp.
 Qed.
 
@@ -668,7 +668,7 @@ Require Import ListMax.
 Lemma red_maxvar : forall t u, red R t u -> maxvar u <= maxvar t.
 
 Proof.
-intros. repeat rewrite maxvar_lmax. apply incl_lmax. apply red_preserv_vars.
+intros. repeat rewrite maxvar_lmax. apply incl_lmax. apply red_preserve_vars.
 hyp.
 Qed.
 
@@ -696,7 +696,7 @@ End vars.
 Section red_mod.
 
 Variables (E R : rules)
-  (hE : rules_preserv_vars E) (hR : rules_preserv_vars R).
+  (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
 
 Lemma red_mod_maxvar : forall t u, red_mod E R t u -> maxvar u <= maxvar t.
 
@@ -714,11 +714,11 @@ Qed.
 
 End red_mod.
 
-Lemma rules_preserv_vars_incl : forall R S : rules,
-  R [= S -> rules_preserv_vars S -> rules_preserv_vars R.
+Lemma rules_preserve_vars_incl : forall R S : rules,
+  R [= S -> rules_preserve_vars S -> rules_preserve_vars R.
 
 Proof.
-unfold rules_preserv_vars, incl. intuition. eapply H0. apply H. apply H1. hyp.
+unfold rules_preserve_vars, incl. intuition. eapply H0. apply H. apply H1. hyp.
 Qed.
 
 (***********************************************************************)
@@ -1112,10 +1112,10 @@ Ltac no_relative_rules :=
   end.
 
 (* REMOVE: non-reflexive tactic used in a previous version of Rainbow
-Ltac rules_preserv_vars := solve
+Ltac rules_preserve_vars := solve
   [match goal with
-    | |- rules_preserv_vars ?R =>
-      unfold rules_preserv_vars; let H := fresh in
+    | |- rules_preserve_vars ?R =>
+      unfold rules_preserve_vars; let H := fresh in
       assert (H :
         lforall (fun a => incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a))) R);
         [ unfold incl; vm_compute; intuition
