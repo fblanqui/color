@@ -214,7 +214,7 @@ End WP_MonAlg.
 (** reduction pair associated to a non-permutative non-collapsing
 arguments filtering *)
 
-Require Import AFilter.
+Require Import AFilterBool.
 
 Module Type Filter.
   Variable Sig : Signature.
