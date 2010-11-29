@@ -164,7 +164,7 @@ Qed.
 
 Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
 
-Variable hyp2 : rules_preserv_vars R.
+Variable hyp2 : rules_preserve_vars R.
 
 Implicit Arguments hyp2 [l r].
 
@@ -184,13 +184,13 @@ Qed.
 
 Implicit Arguments dp_elim_vars [l t].
 
-Lemma dp_preserv_vars : rules_preserv_vars dp.
+Lemma dp_preserve_vars : rules_preserve_vars dp.
 
 Proof.
-unfold rules_preserv_vars. intros. destruct (dp_elim_vars H). intuition.
+unfold rules_preserve_vars. intros. destruct (dp_elim_vars H). intuition.
 Qed.
 
-Lemma dp_preserv_pw_disjoint_vars :
+Lemma dp_preserve_pw_disjoint_vars :
   pw_disjoint_vars (map lhs R) -> pw_disjoint_vars (map lhs dp).
 
 Proof.
@@ -325,5 +325,5 @@ Require Import AVariables.
 
 Ltac chain := no_relative_rules; apply WF_chain;
   [ check_eq || fail 10 "a LHS is a variable"
-  | rules_preserv_vars
+  | rules_preserve_vars
   | idtac].

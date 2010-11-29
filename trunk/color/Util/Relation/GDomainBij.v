@@ -230,7 +230,7 @@ Variable R : relation A.
 Variable restriction : is_restricted R Dom.
 Variable rp_free : repeat_free Dom.
 
-Lemma iter_preserv_restriction : forall n, is_restricted (iter R n) Dom.
+Lemma iter_preserve_restriction : forall n, is_restricted (iter R n) Dom.
 
 Proof.
 intro; induction n; try trivial.

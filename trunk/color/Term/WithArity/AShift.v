@@ -144,7 +144,7 @@ Section red_incl_shift_red.
 
 Variables R R' : rules.
 
-Variable hyp0 : rules_preserv_vars R.
+Variable hyp0 : rules_preserve_vars R.
 
 Variable hyp : forall a, In a R -> exists p, In (shift_rule p a) R'.
 

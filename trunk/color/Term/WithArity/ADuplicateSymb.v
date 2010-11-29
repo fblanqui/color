@@ -323,7 +323,7 @@ rewrite H0.
 apply dup_int_rules_int_red. subst;auto.
 split. auto.
 clear H.
-ded (int_red_rtc_preserv_hd H1).
+ded (int_red_rtc_preserve_hd H1).
 destruct H.
 exists v. subst. rewrite H; auto.
 do 3 destruct H; subst.

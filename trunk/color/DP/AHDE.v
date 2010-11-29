@@ -72,7 +72,7 @@ Proof.
 unfold inclusion. intros. destruct x. destruct y. destruct H. destruct H0.
 do 2 destruct H1. unfold hde. destruct lhs0; destruct rhs; simpl; auto.
 intuition; auto.
-ded (int_red_rtc_preserv_hd H1). destruct H2. simpl in H2. inversion H2; auto.
+ded (int_red_rtc_preserve_hd H1). destruct H2. simpl in H2. inversion H2; auto.
 do 4 destruct H2. inversion H2. inversion H3. congruence.
 Qed.
 

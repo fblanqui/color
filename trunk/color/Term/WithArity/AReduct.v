@@ -67,11 +67,11 @@ eapply inclusion_elim. apply hd_red_incl_red. hyp.
 Qed.
 
 Lemma top_reducts_complete : forall t u R,
-  rules_preserv_vars R -> hd_red R t u -> In u (top_reducts R t).
+  rules_preserve_vars R -> hd_red R t u -> In u (top_reducts R t).
 
 Proof.
 induction R; intros; redtac. hyp. simpl in lr.
-assert (h0 : rules_preserv_vars R). eapply rules_preserv_vars_incl.
+assert (h0 : rules_preserve_vars R). eapply rules_preserve_vars_incl.
 2: apply H. apply incl_tl. apply incl_refl. intuition.
 (* In (mkRule l r) R *)
 Focus 2. simpl.  assert (h1 : hd_red R t u). subst. apply hd_red_rule. hyp.
@@ -80,7 +80,7 @@ case (top_reduct t a). right. apply H1; hyp. apply H1; hyp.
 subst a. simpl. unfold top_reduct. simpl. case_eq (matches l t).
 ded (matches_correct H0). left. subst u. apply sub_eq. intros.
 eapply subeq_inversion. rewrite xl in H2. apply H2.
-unfold rules_preserv_vars in H. unfold List.incl in H. eapply H. simpl. auto.
+unfold rules_preserve_vars in H. unfold List.incl in H. eapply H. simpl. auto.
 hyp. symmetry in xl. ded (matches_complete xl). rewrite H0 in H2. irrefl.
 Qed.
 
@@ -352,7 +352,7 @@ Qed.
 (***********************************************************************)
 (** completeness *)
 
-Lemma reducts_complete : rules_preserv_vars R ->
+Lemma reducts_complete : rules_preserve_vars R ->
   forall t u, red R t u -> In u (reducts t).
 
 Proof.
@@ -371,7 +371,7 @@ Qed.
 (***********************************************************************)
 (** rewriting is finitely branching *)
 
-Lemma fin_branch : rules_preserv_vars R -> finitely_branching (red R).
+Lemma fin_branch : rules_preserve_vars R -> finitely_branching (red R).
 
 Proof.
 unfold finitely_branching. intros. exists (reducts x). intuition.
