@@ -170,8 +170,6 @@ End S.
 (***********************************************************************)
 (** tactics *)
 
-(*REMOVE: Ltac incl_flat := solve [unfold incl, dp; simpl; intuition].*)
-
 Ltac co_scc := check_eq || fail 10 "not a co_scc".
 
 Require Import AVariables.

@@ -72,6 +72,4 @@ Module Type Signature.
     (* Types for function symbols *)
   Parameter f_type : FunctionSymbol -> SimpleType.
 
-  (*REMOVE? Hint Unfold f_type : terms.*)
-
 End Signature.

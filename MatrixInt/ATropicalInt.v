@@ -29,7 +29,8 @@ Section Somewhere_tfinite.
     \/ Vnth (const fi) dim_pos <> PlusInf.
 
   Definition bsomewhere_tfinite n (fi : matrixInt dim n) :=
-    bVexists (fun m => tropical_is_finite (get_elem m dim_pos dim_pos)) (args fi)
+    bVexists
+    (fun m => tropical_is_finite (get_elem m dim_pos dim_pos)) (args fi)
     || tropical_is_finite (Vnth (const fi) dim_pos).
 
   Require Import BoolUtil.
@@ -234,7 +235,7 @@ Module TropicalInt (Import AI : TTropicalInt).
   
   End MonotoneAlgebra.
 
-  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    fail 10 "Tropical matrices cannot be used for proving total termination".
+  Ltac prove_cc_succ Fs Fs_ok :=
+    fail 10 "tropical matrices cannot be used for proving total termination".
 
 End TropicalInt.

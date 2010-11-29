@@ -241,53 +241,6 @@ intros. unfold inclusion, filter_ord. intros. apply H. exact H0.
 Qed.
 
 (***********************************************************************)
-(** properties of a reduction pair obtained by reflexive closure *)
-
-(*REMOVE?*)
-(*FIXME: define meta-theorems*)
-(*Section clos_refl.
-
-  Variable succ : relation term'.
-  Notation fsucc := (filter_ord succ).
-
-  Notation succ_eq := (succ%).
-  Notation fsucc_eq := (filter_ord succ_eq).
-
-  Lemma filter_ord_rc : reflexive fsucc_eq.
-
-  Proof.
-    unfold reflexive, filter_ord, clos_refl, union. intuition.
-  Qed.
-
-  Lemma rc_filter_ord : fsucc% << fsucc_eq.
-
-  Proof.
-    unfold inclusion, clos_refl, filter_ord, union. intuition. subst. auto.
-  Qed.
-
-  Lemma filter_weak_cont_closed :
-    weak_context_closed succ succ_eq -> weak_context_closed fsucc fsucc_eq.
-
-  Proof.
-    intro. unfold weak_context_closed. intros.
-    assert (clos_refl fsucc t1 t2). unfold clos_refl, union. auto.
-    ded (rc_filter_ord H1).
-    assert (context_closed fsucc_eq). apply filter_cont_closed.
-    apply rc_refl. apply rc_context_closed. hyp. apply H3. hyp.
-  Qed.
-
-  Lemma filter_weak_red_ord : weak_reduction_ordering succ succ_eq ->
-    weak_reduction_ordering fsucc fsucc_eq.
-
-  Proof.
-    intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply WF_filter. hyp.
-    split. apply filter_subs_closed. hyp.
-    apply filter_weak_cont_closed. hyp.
-  Qed.
-
-End clos_refl.*)
-
-(***********************************************************************)
 (** rewriting *)
 
 Section red.

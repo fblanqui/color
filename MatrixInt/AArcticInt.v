@@ -62,17 +62,6 @@ Section Somewhere_finite.
 
 End Somewhere_finite.
 
-(*REMOVE: to be removed (used in a previous version of Rainbow)
-
-Ltac arcticDiscr :=
-  try discr;
-    solve [left; arcticDiscr | right; arcticDiscr].
-
-Ltac showArcticIntOk := solve
-  [let f := fresh "f" in let s := fresh "s" in
-    intro f; destruct f as [s|s]; destruct s; vm_compute; arcticDiscr]
-  || fail 10 "invalid arctic interpretation".*)
-
 Ltac somewhere_finite Sig Fs Fs_ok :=
   apply (@fin_somewhere_finite _ _ Sig _ Fs Fs_ok);
     (check_eq || fail 10 "invalid arctic interpretation").
@@ -240,18 +229,7 @@ Module ArcticInt (Import AI : TArcticInt).
   
   End MonotoneAlgebra.
 
-  (*REMOVE: to be removed (used in a previous version of Rainbow)
-
-  Module Export MAR := MonotoneAlgebraResults MonotoneAlgebra.
-
-  Ltac prove_int_monotone :=
-    fail 10 "Arctic matrices cannot be used for proving total termination".
-
-  Ltac prove_cc_succ := prove_int_monotone.
-
-  Ltac prove_termination := MAR.prove_termination prove_int_monotone.*)
-
-  Ltac prove_cc_succ_by_refl Fs Fs_ok :=
-    fail 10 "Arctic matrices cannot be used for proving total termination".
+  Ltac prove_cc_succ Fs Fs_ok :=
+    fail 10 "arctic matrices cannot be used for proving total termination".
 
 End ArcticInt.

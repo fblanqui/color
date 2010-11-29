@@ -79,13 +79,6 @@ Section Specification.
 
 End Specification.
 
-(*REMOVE? Hint Unfold meq
-	      empty
-              singleton
-              mult
-              union
-              diff : multisets.*)
-
   Hint Resolve mult_eqA_compat 
                meq_multeq
                multeq_meq
