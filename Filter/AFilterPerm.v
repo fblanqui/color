@@ -494,6 +494,7 @@ Implicit Arguments build_pi [Sig raw_pi Fs].
 Implicit Arguments bnon_dup_ok [Sig raw_pi Fs].
 Implicit Arguments non_dup [Sig].
 Implicit Arguments bpermut_ok [Sig raw_pi Fs].
+Implicit Arguments permut [Sig].
 
 (***********************************************************************)
 (** tactics *)
@@ -501,27 +502,26 @@ Implicit Arguments bpermut_ok [Sig raw_pi Fs].
 Ltac non_dup :=
   match goal with
     | |- non_dup (build_pi _ _) => rewrite <- bnon_dup_ok; check_eq
-    | |- non_dup ?f => unfold f; non_dup
+    | |- non_dup ?pi => unfold pi; non_dup
   end.
 
 Ltac permut :=
   match goal with
     | |- permut (build_pi _ _) => rewrite <- bpermut_ok; check_eq
-    | |- permut ?f => unfold f; permut
+    | |- permut ?pi => unfold pi; permut
   end.
 
-(*FIXME: does not work...
 Ltac filter p :=
   match goal with
     | |- WF (hd_red_Mod _ _) => hd_red_mod; filter p
     | |- WF (hd_red_mod _ _) =>
       apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac]
-  end.*)
+  end.
 
-Ltac filter p :=
-  hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac].
+(*Ltac filter p :=
+  hd_red_mod; apply WF_hd_red_mod_filter with (pi:=p); [non_dup | idtac].*)
 
-Ltac prove_cc tac :=
+Ltac prove_cc_succ tac :=
   apply filter_strong_cont_closed; [non_dup | permut | tac].
 
 (***********************************************************************)
