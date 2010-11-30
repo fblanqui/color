@@ -4,6 +4,7 @@
 - Term/WithArity/ASubterm: the subterm relation is finitely branching
 - Term/WithArity/AInfSeq: infinite sequences
 - SubtermCrit: subterm criterion
+- DP/AUsable: usable rules
 
 10-11-24: [Blanqui]
 - Util/List/ListUtil: sub_list
