@@ -1,4 +1,7 @@
 
+- extend Term/WithArity/AInfSeq.v to arbitrary relations (not only on
+   terms) and rename it in to Util/Relation/InfSeq.v
+
 - extend filter to red in case of permutations only
 
 - factorize the part of the proof that is similar in

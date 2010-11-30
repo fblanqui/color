@@ -1,4 +1,10 @@
 
+10-11-30: [Ould-Biha]
+- Util/Nat/NatLeast: min of a non-empty set of nats
+- Term/WithArity/ASubterm: the subterm relation is finitely branching
+- Term/WithArity/AInfSeq: infinite sequences
+- SubtermCrit: subterm criterion
+
 10-11-24: [Blanqui]
 - Util/List/ListUtil: sub_list
 - Util/Vector/VecFilterPerm: vector filtering with permutations
