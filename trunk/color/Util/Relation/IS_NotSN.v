@@ -9,10 +9,7 @@ finitely branching well-founded relations have no infinite sequences
 
 Set Implicit Arguments.
 
-Require Import RelUtil.
-Require Import RedLength.
-Require Import SN.
-Require Import LogicUtil.
+Require Import RelUtil RedLength SN LogicUtil.
 
 Section S.
 
