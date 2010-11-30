@@ -95,9 +95,11 @@ Lemma Vin_filter_elim_nth : forall A n (l : nat_lts n) (v : vector A n) x,
     In (mk_nat_lt hi) l /\ Vnth v hi = x.
 
 Proof.
-induction l; simpl; intros. contradiction. destruct a. simpl prf in H.
-destruct H. exists i. exists l0. auto. destruct (IHl _ _ H). destruct H0.
-exists x0. exists x1. intuition.
+induction l; simpl; intros. contradiction. destruct a as [i hi].
+simpl prf in H. destruct H.
+exists i. exists hi. auto.
+destruct (IHl _ _ H) as [j h]. destruct h as [hj h].
+exists j. exists hj. intuition.
 Qed.
 
 Lemma Vin_filter_intro : forall A n (l : nat_lts n) (v : vector A n)
