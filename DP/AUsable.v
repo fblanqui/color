@@ -206,7 +206,7 @@ End UsableRulesDefs.
 (***********************************************************************)
 (** weak reduction pairs *)
 
-Structure weakRedPairType (Sig : Signature) : Type := Make {
+Record weakRedPairType (Sig : Signature) : Type := Make {
   succ : relation (@term Sig);
   bsucc : (@term Sig) -> (@term Sig) -> bool;
   succeq : relation (@term Sig);
@@ -227,7 +227,7 @@ Structure weakRedPairType (Sig : Signature) : Type := Make {
 (** extended signature with a special symbol cons of arity 2 *)
 
 Module ExtSig.
-  Structure extSignatureType : Type := Make {
+  Record extSignatureType : Type := Make {
     Sig :> Signature;
     cons : symbol Sig;
     _ : arity cons = 2
