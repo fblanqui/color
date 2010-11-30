@@ -119,7 +119,7 @@ End basic_properties1.
 
 Section basic_properties2.
 
-  Variables (A : Type) (R : relation A).
+  Variables (A : Type) (E R : relation A).
 
   Definition irreflexive := forall x, ~R x x.
 
@@ -128,6 +128,9 @@ Section basic_properties2.
   Definition IS f := forall i, R (f i) (f (S i)).
 
   Definition non_terminating := exists f, IS f.
+
+  Definition ISMOD E R (f g : nat -> A) :=
+    forall i, E (f i) (g i) /\ R (g i) (f (S i)).
 
 End basic_properties2.
 
