@@ -232,13 +232,13 @@ Qed.
 Program Definition pweak_monotone_check n (p : poly n) : Exc (pweak_monotone p)
   := coef_pos_check p.
 
-Program Definition check_coef_gt0 n (p : poly n) (i : dom_lt n) :
-  Exc (0 < coef (mxi (proj2_sig i)) p)%Z :=
-  let c := coef (mxi (proj2_sig i)) p in
+Program Definition check_coef_gt0 n (p : poly n) (i : nat_lt n) :
+  Exc (0 < coef (mxi (prf i)) p)%Z :=
+  let c := coef (mxi (prf i)) p in
     match Z_lt_dec 0 c with
     | left _ => value _
     | _ => error
-    end. 
+    end.
 
 Program Definition pstrong_monotone_check n (p : poly n) :
   Exc (pstrong_monotone p) :=
@@ -256,5 +256,5 @@ Proof with auto; try congruence || discriminate.
   split. 
   destruct pweak_monotone_check...
   destruct (check_seq (check_coef_gt0 p))...
-  intros. exact (z (exist (fun i => i < n)%nat i H1)).
+  intros. exact (z (mk_nat_lt H1)).
 Qed.

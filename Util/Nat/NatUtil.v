@@ -457,8 +457,6 @@ End iter.
 (***********************************************************************)
 (** natural numbers strictly smaller than n *)
 
-Definition dom_lt n := { i | i < n }.
-
 Section nat_lt.
 
 Variable n : nat.
