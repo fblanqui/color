@@ -33,6 +33,11 @@ Implicit Arguments le_plus_minus_r [n m].
 Ltac absurd_arith := elimtype False; omega.
 
 (***********************************************************************)
+(** natural numbers strictly smaller than some n *)
+
+Record nat_lt (n : nat) : Type := mk_nat_lt { val :> nat; prf : val < n }.
+
+(***********************************************************************)
 (** relations and morphisms *)
 
 Add Relation nat le
@@ -453,20 +458,6 @@ induction n; simpl; intros. refl. rewrite IHn. refl.
 Qed.
 
 End iter.
-
-(***********************************************************************)
-(** natural numbers strictly smaller than n *)
-
-Section nat_lt.
-
-Variable n : nat.
-
-Inductive nat_lt : Type := mk_nat_lt : forall i, i<n -> nat_lt.
-
-Definition val (x : nat_lt) := let (i,_) := x in i.
-Definition prf (x : nat_lt) := let (_,h) as x return val x < n := x in h.
-
-End nat_lt.
 
 (***********************************************************************)
 (** arithmetical lemmas *)
