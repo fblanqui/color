@@ -3,8 +3,8 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sebastien Hinderer, 2004-04-02
-- Adam Koprowski, 2007-03-29, Added [mult_gt_0] and [mult_lt_compat_lr]
-
+- Adam Koprowski, 2007-03-29
+- Frederic Blanqui, 2009-05-11
 
 useful definitions and lemmas on natural numbers
 *)
