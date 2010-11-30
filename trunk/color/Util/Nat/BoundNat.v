@@ -19,6 +19,8 @@ Section S.
 
 Variable dim : nat.
 
+(*FIXME: use NatUtil.nat_lt instead*)
+
 Definition bnat := {x : nat | x < dim}. 
 
 Definition mkbnat x (h : x<dim) := exist (fun x => x<dim) x h.
