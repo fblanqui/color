@@ -2,7 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Frederic Blanqui & Sidi Ould-Biha, 2010-04-06
+- Sidi Ould-Biha & Frederic Blanqui, 2010-04-06
 
 Subterm criterion from:
 
