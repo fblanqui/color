@@ -1870,18 +1870,15 @@ Require Import Program.
 
 Section Check_seq_aux.
 
-Variables (n : nat) (Pr : dom_lt n -> Prop)
-  (P : forall (i : dom_lt n), Exc (Pr i)).
+Variables (n : nat) (Pr : nat_lt n -> Prop)
+  (P : forall i : nat_lt n, Exc (Pr i)).
 
-Program Fixpoint check_seq_aux (p : nat) 
-  (H : forall (i : dom_lt n), i < p -> Pr i)
-  {measure (n - p)} : 
-  Exc (forall (i : dom_lt n), Pr i) :=
-
+Program Fixpoint check_seq_aux p (H : forall i : nat_lt n, val i < p -> Pr i)
+  {measure (n - p)} : Exc (forall i : nat_lt n, Pr i) :=
   match le_lt_dec n p with
   | left _ => value _
   | right cmp =>
-    match @P p with
+    match @P (mk_nat_lt cmp) with
     | error => error
     | value _ => @check_seq_aux (S p) _ _
     end
@@ -1893,10 +1890,9 @@ Proof.
 Qed.
 Next Obligation.
 Proof.
-  destruct i. simpl in *. 
+  destruct i as [x l]. simpl in *.
   destruct (eq_nat_dec x p).
-  subst. rewrite (lt_unique l 
-    (check_seq_aux_func_obligation_2 H check_seq_aux Heq_anonymous)). hyp.
+  subst. rewrite (lt_unique l cmp). hyp.
   apply H. simpl. omega.
 Qed.
 Next Obligation.
@@ -1906,9 +1902,9 @@ Qed.
 
 End Check_seq_aux.
 
-Program Definition check_seq (n : nat) (Pr : dom_lt n -> Prop)
-  (P : forall (i : dom_lt n), Exc (Pr i)) :
-  Exc (forall (i : dom_lt n), Pr i) :=
+Program Definition check_seq (n : nat) (Pr : nat_lt n -> Prop)
+  (P : forall (i : nat_lt n), Exc (Pr i)) :
+  Exc (forall (i : nat_lt n), Pr i) :=
   check_seq_aux P (p:=0) _.
 
 Next Obligation.
