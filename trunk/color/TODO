@@ -1,9 +1,6 @@
 
 - extend filter to red in case of permutations only
 
-- remove implicit arguments from tactic absolute_finite,
-   fin_monotone_succ, prove_cc, etc.: Fs can be inferred from Fs_ok
-
 - factorize the part of the proof that is similar in
    AFilterPerm.filter_cont_closed and
    AFilterPerm.red_incl_filter_red_rc.
@@ -11,9 +8,7 @@
 - in AFilterPerm, prove that (map (@val (arity f)) (pi f) = raw_pi f)
   and define permut on raw_pi instead of pi.
 
-- uniformize the various notions of bounded nat in BoundNat and
-   NatUtil, and use a record definition for defining projections at
-   the same time
+- in BoundNat, replace bnat by nat_lt
 
 - replace decidability lemmas by boolean functions
   in polynomial and matrix interpretations
@@ -54,6 +49,12 @@
 
 Done:
 -----
+
+- uniformize the various notions of bounded nat in NatUtil, and use a
+   record definition for defining projections at the same time
+
+- remove implicit arguments from tactic absolute_finite,
+   fin_monotone_succ, prove_cc, etc.: Fs can be inferred from Fs_ok
 
 - add improvement to DP pairs by ignoring pairs where rhs is a
   subterm of lhs
