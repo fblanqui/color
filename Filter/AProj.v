@@ -138,8 +138,9 @@ Section proj.
     intros. unfold inclusion, proj_ord. intros. apply H. exact H0.
   Qed.
 
+(*REMOVE:
 (***********************************************************************)
-(** weak stability wrt contexts *)
+(** reflexive closure *)
 
   Section weak_cont_closed.
 
@@ -185,7 +186,7 @@ Section proj.
       apply proj_weak_cont_closed. hyp.
     Qed.
 
-  End weak_cont_closed.
+  End weak_cont_closed.*)
 
 (***********************************************************************)
 (** rewriting *)
@@ -270,16 +271,11 @@ Section proj.
 End proj.
 
 (***********************************************************************)
-(** tactics *)
-
-Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
-
-(***********************************************************************)
 (** building a projection *)
 
-Variable proj : Sig -> option nat.
+Variable raw_pi : Sig -> option nat.
 
-Definition valid := forall f k, proj f = Some k -> k < arity f.
+Definition valid := forall f k, raw_pi f = Some k -> k < arity f.
 
 Section pi.
 
@@ -292,7 +288,7 @@ Section pi.
   Definition build_pi : forall f : Sig, option {k | k < arity f}.
 
   Proof.
-    intro f. case_eq (proj f). exact (Some (mk_proj (hyp H))). exact None.
+    intro f. case_eq (raw_pi f). exact (Some (mk_proj (hyp H))). exact None.
   Defined.
 
 End pi.
@@ -300,30 +296,28 @@ End pi.
 Variable Fs : list Sig.
 Variable Fs_ok : forall f : Sig, In f Fs.
 
-Definition bvalid_proj f :=
-  match proj f with
+Definition bvalid_symb f :=
+  match raw_pi f with
     | Some k => bgt_nat (arity f) k
     | None => true
   end.
 
-Lemma bvalid_proj_ok : forall f, bvalid_proj f = true
-  <-> forall k, proj f = Some k -> k < arity f.
+Definition bvalid := forallb bvalid_symb Fs.
+
+Lemma bvalid_ok : bvalid = true <-> valid.
 
 Proof.
-intro f. unfold bvalid_proj. case_eq (proj f). rewrite bgt_nat_ok. intuition.
-inversion H1. omega. intuition. discr.
-Qed.
-
-Definition bvalid_ok : forallb bvalid_proj Fs = true <-> valid.
-
-Proof.
-apply forallb_ok_fintype. apply bvalid_proj_ok. hyp.
+unfold bvalid, valid. apply forallb_ok_fintype. 2: hyp.
+intro f. unfold bvalid_symb. destruct (raw_pi f).
+rewrite bgt_nat_ok. intuition. inversion H1. subst. auto.
+intuition. discr.
 Qed.
 
 End S.
 
-Implicit Arguments build_pi [proj].
+Implicit Arguments build_pi [Sig raw_pi].
 Implicit Arguments valid [Sig].
+Implicit Arguments bvalid [Sig].
 Implicit Arguments bvalid_ok [Sig Fs].
 
 (***********************************************************************)
@@ -332,4 +326,7 @@ Implicit Arguments bvalid_ok [Sig Fs].
 Ltac proj p := hd_red_mod; apply WF_hd_red_mod_proj with (pi:=p).
 
 Ltac valid Fs_ok :=
-  rewrite <- (bvalid_ok _ Fs_ok); (check_eq || fail 10 "invalid projection").
+  match goal with
+    | |- valid ?p => rewrite <- (@bvalid_ok _ p _ Fs_ok);
+      (check_eq || fail 10 "invalid projection")
+  end.
