@@ -2108,3 +2108,14 @@ End sub_list.
 
 Implicit Arguments eq_app_elim_l [A l1 l l2].
 Implicit Arguments eq_app_elim_r [A l1 l l2].
+
+(****************************************************************************)
+(** natural numbers from n-1 to 0 *)
+
+Fixpoint nats_decr_lt n :=
+  match n with
+    | 0 => nil
+    | S n' => n' :: nats_decr_lt n'
+  end.
+
+Definition nats_incr_lt n := rev' (nats_decr_lt n).
