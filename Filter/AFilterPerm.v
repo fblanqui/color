@@ -456,13 +456,13 @@ Ltac non_dup :=
   match goal with
     | |- non_dup (build_pi _ _) => rewrite <- bnon_dup_ok; check_eq
     | |- non_dup ?pi => unfold pi; non_dup
-  end.
+  end || fail 10 "duplicating arguments filter".
 
 Ltac permut :=
   match goal with
     | |- permut (build_pi _ _) => rewrite <- bpermut_ok; check_eq
     | |- permut ?pi => unfold pi; permut
-  end.
+  end || fail 10 "non-permutative arguments filter".
 
 (*COQ: does not work... the recursive call on filter fails...
 Ltac filter p :=

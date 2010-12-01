@@ -171,4 +171,5 @@ Implicit Arguments bvalid_ok [Sig Fs].
 Implicit Arguments proj [Sig pi].
 Implicit Arguments proj_ord [Sig pi].
 
-Ltac valid Fs_ok := rewrite <- (bvalid_ok _ Fs_ok); check_eq.
+Ltac valid Fs_ok := rewrite <- (bvalid_ok _ Fs_ok);
+  (check_eq || fail 10 "invalid simple projection").
