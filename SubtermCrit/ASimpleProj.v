@@ -2,7 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Sidi Ould-Biha, 2010-04-08
+- Sidi Ould-Biha & Frederic Blanqui, 2010-04-08
 
 simple projections for the subterm criterion
 *)
@@ -24,33 +24,21 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 
 Variable pi : Sig -> nat.
 
-Definition valid f := arity f > 0 -> pi f < arity f.
-
-Definition bvalid f := beq_nat (arity f) 0 || bgt_nat (arity f) (pi f).
-
-Lemma bvalid_ok : (forall f, bvalid f = true) <->
-  (forall f, arity f > 0 -> pi f < arity f).
-
-Proof.
-split; unfold bvalid. intros H f Hf0. generalize (H f). rewrite orb_eq.
-intros H'; destruct H' as [H' | H']. rewrite beq_nat_ok in H'.
-rewrite H' in Hf0. omega.
-rewrite bgt_nat_ok in H'. omega.
-intros H f. rewrite orb_eq. case_eq (arity f). auto.
-right. rewrite bgt_nat_ok, <- H0. apply H. rewrite H0. omega.
-Qed.
+Definition valid := forall f, arity f > 0 -> pi f < arity f.
 
 (***********************************************************************)
 (** projection function *)
 
-Variable Hpi : forall f, bvalid f = true.
+Variable Hpi : valid.
+
+Implicit Arguments Hpi [f].
 
 Fixpoint proj t :=
   match t with
     | Var _ => t
     | Fun f ts =>
       match zerop (arity f) with
-        | right H => Vnth ts (proj1 bvalid_ok Hpi f H)
+        | right H => Vnth ts (Hpi H)
         | left H => t
       end
   end.
@@ -138,6 +126,7 @@ intros. unfold inclusion, proj_ord. intros. apply H. exact H0.
 Qed.
 
 (* properties wrt reflexive closure *)
+(*REMOVE:
 Section clos_refl.
 
   Variable succ : relation term.
@@ -157,9 +146,29 @@ Section clos_refl.
   unfold inclusion, clos_refl, union. intros. decomp H. subst y. auto. auto.
   Qed.
 
-End clos_refl.
+End clos_refl.*)
+
+(***********************************************************************)
+(** decision procedure for validity *)
+
+Variables (Fs : list Sig) (Fs_ok : forall f, In f Fs).
+
+Definition bvalid :=
+  forallb (fun f => beq_nat (arity f) 0 || bgt_nat (arity f) (pi f)) Fs.
+
+Lemma bvalid_ok : bvalid = true <-> valid.
+
+Proof.
+unfold valid, bvalid. apply forallb_ok_fintype. 2: hyp.
+intro f. rewrite orb_eq. rewrite beq_nat_ok. rewrite bgt_nat_ok. omega.
+Qed.
 
 End S.
 
 Implicit Arguments valid [Sig].
 Implicit Arguments bvalid [Sig].
+Implicit Arguments bvalid_ok [Sig Fs].
+Implicit Arguments proj [Sig pi].
+Implicit Arguments proj_ord [Sig pi].
+
+Ltac valid Fs_ok := rewrite <- (bvalid_ok _ Fs_ok); check_eq.
