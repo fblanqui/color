@@ -129,7 +129,7 @@ Section basic_properties2.
 
   Definition non_terminating := exists f, IS f.
 
-  Definition ISMOD E R (f g : nat -> A) :=
+  Definition ISMod E R (f g : nat -> A) :=
     forall i, E (f i) (g i) /\ R (g i) (f (S i)).
 
 End basic_properties2.

@@ -827,7 +827,7 @@ Lemma Usablerules_IS : forall f g, ~ISModMin R C f g.
 
 Proof.
 intros f g HM. destruct HM as [HisM [hmin [Hsg Hsf]]].
-unfold ISModInfRuleApp in hmin. unfold MinNT in Hsf, Hsg. unfold ISMOD in HisM.
+unfold ISModInfRuleApp in hmin. unfold MinNT in Hsf, Hsg. unfold ISMod in HisM.
 assert (SNgi : forall i, SN (red R) (g i)).
 intros. case_eq (g i). apply sn_var. auto. apply sn_args_sn_fun; auto.
 destruct (proj2 (HisM i)) as [l [r [s [Clr Hgi]]]]. destruct l.
@@ -894,7 +894,7 @@ destruct Hx2 as [l [r [s [Clr Hx2]]]]. rewrite (proj1 Hx2), (proj2 Hx2).
 destruct (hyp2 _ _ Clr). left. apply sc_succeq; auto.
 right. apply sc_succ; auto.
 
-assert (IMfg : ISMOD succeq (succeq @ (succeq U succ)) f' g').
+assert (IMfg : ISMod succeq (succeq @ (succeq U succ)) f' g').
 intros i; apply (conj (IMfg1 i) (IMfg2 i)).
 
 assert (hmin' : forall d, In d C -> exists h : nat -> nat, forall j,
@@ -928,7 +928,7 @@ destruct Elr as [Elr |]; try tauto. rewrite <- rule_eq in Elr. simpl in Elr.
 rewrite (proj1 Hi), (proj2 Hi), <- (proj1 Elr), <- (proj2 Elr).
 apply sc_succ; auto.
 
-assert (IMfg' : ISMOD succeq (succeq U succ) f' g'). intro i. split.
+assert (IMfg' : ISMod succeq (succeq U succ) f' g'). intro i. split.
 apply (proj1 (IMfg i)). destruct (proj2 (IMfg i)) as [x Hx].
 destruct (proj2 Hx). left. apply trans_succeq with x; intuition.
 right. apply succ_succeq_compat. exists x. intuition.

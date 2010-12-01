@@ -187,9 +187,9 @@ End TransIS.
 Section ISModComp.
 
 Variables (E R : relation term) (f g : nat -> term)
-  (hyp1 : ISMOD E (E @ R) f g) (TE : transitive E).
+  (hyp1 : ISMod E (E @ R) f g) (TE : transitive E).
 
-Lemma ISMod_comp : exists g', ISMOD E R f g'.
+Lemma ISMod_comp : exists g', ISMod E R f g'.
 
 Proof.
 assert (Hi : forall i, exists x, E (f i) x /\ R x (f (S i))).
@@ -207,12 +207,12 @@ End ISModComp.
 Section ISModUnion.
 
 Variables (E R : relation term) (f g : nat -> term)
-  (hyp1 : ISMOD E (E U R) f g)
+  (hyp1 : ISMod E (E U R) f g)
   (hyp2 : forall i, exists j, i <= j /\ (R (g j) (f (S j))))
   (TE : transitive E).
 
 Lemma ISMod_union : exists f', exists g',
- ISMOD E R f' g' /\ forall i, (exists k, g' i = g k) /\ exists k, f' i = f k.
+ ISMod E R f' g' /\ forall i, (exists k, g' i = g k) /\ exists k, f' i = f k.
 
 Proof.
 pose (reid := rec_ch_min _ hyp2).
@@ -269,7 +269,7 @@ modulo. *)
 Section ISModCommute.
 
 Variables (E R : relation term) (f g : nat -> term)
-  (hyp1 : ISMOD E R f g) (hyp2 : R @ E @ R << E @ R).
+  (hyp1 : ISMod E R f g) (hyp2 : R @ E @ R << E @ R).
 
 Lemma existEdom_proof :
   forall x i, R x (f (S i)) -> exists y, E x y /\ R y (f (S (S i))).
@@ -323,7 +323,7 @@ End ISModCommute.
 Section ISModTrans.
 
 Variables (E R : relation term) (f g : nat -> term)
-  (hyp1 : ISMOD (E #) R f g) (NISR : forall h, ~ IS R h)
+  (hyp1 : ISMod (E #) R f g) (NISR : forall h, ~ IS R h)
   (TrsR : transitive R).
 
 Lemma build_trs_proof : forall i, exists j, i <= j /\ (E !) (f j) (g j).
@@ -347,7 +347,7 @@ generalize (proj2 (hyp1 (S i + j))). rewrite <- plus_Snm_nSm. simpl. auto.
 generalize H. apply NISR.
 Qed.
 
-Lemma trc_ISMOD : exists f', exists g', ISMOD (E !) R f' g' /\
+Lemma trc_ISMod : exists f', exists g', ISMod (E !) R f' g' /\
   (exists k, g' 0 = g k) /\ (f' 0 = f 0 \/ R (f 0) (f' 0)).
 
 Proof.
@@ -408,10 +408,10 @@ Definition MinNT M (f : nat -> term):=
 
 Definition ISModInfRuleApp (D : rules) f g :=
   forall d, In d D -> exists h : nat -> nat,
-    forall j, h (j) < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
+    forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
 
 Definition ISModMin (M D : rules) f g : Prop :=
- ISMOD (int_red M #) (hd_red D) f g /\ ISModInfRuleApp D f g
+ ISMod (int_red M #) (hd_red D) f g /\ ISModInfRuleApp D f g
  /\ MinNT M g /\ MinNT M f.
 
 End S.
