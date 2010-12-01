@@ -1,4 +1,6 @@
 
+- define default_mi
+
 - extend Term/WithArity/AInfSeq.v to arbitrary relations (not only on
    terms) and rename it in to Util/Relation/InfSeq.v
 
