@@ -24,11 +24,14 @@ Notation term := (term Sig). Notation terms := (vector term).
 Notation rule := (rule Sig). Notation rules := (list rule).
 Notation supterm := (@supterm Sig). Notation supterm_eq := (@supterm_eq Sig).
 
-Variables (pi : Sig -> nat) (Hpi : forall f : Sig, bvalid pi f = true).
+(***********************************************************************)
+(** assumptions *)
 
-Notation proj := (proj _ Hpi).
-Notation ge := (proj_ord _ Hpi supterm_eq).
-Notation gt := (proj_ord _ Hpi supterm).
+Variables (pi : Sig -> nat) (Hpi : valid pi).
+
+Notation proj := (proj Hpi).
+Notation ge := (proj_ord Hpi supterm_eq).
+Notation gt := (proj_ord Hpi supterm).
 Notation bge := (fun x y => bsupterm_eq (proj x) (proj y)).
 Notation bgt := (fun x y => bsupterm (proj x) (proj y)).
 
@@ -42,6 +45,9 @@ Variable hyp2 : exists l, exists r, In (mkRule l r) D /\ gt l r.
 
 Variable hyp3 : forall l r,
   In (mkRule l r) D -> is_notvar_lhs (mkRule l r) =  true.
+
+(***********************************************************************)
+(** properties of the projected subterm ordering *)
 
 Lemma supterm_proj : forall t u s, gt t u -> gt (sub s t) (sub s u).
 
@@ -91,12 +97,15 @@ destruct (lt_ge_dec 0 (pi f - i)). apply rt_refl.
 apply rt_step. apply red_rule. hyp. apply rt_refl.
 Qed.
 
+(***********************************************************************)
+(** main theorem *)
+
 Lemma subterm_criterion_IS : forall f g, ~ISModMin M D f g.
 
 Proof.
 intros f g HM. destruct HM as [HisM hmin]. destruct hmin as [hmin HsT].
 destruct HsT as [Rsg Rsf]. unfold ISModInfRuleApp in hmin.
-unfold ISMOD in HisM. destruct hyp2 as [l H0]. destruct H0 as [r H0].
+unfold ISMod in HisM. destruct hyp2 as [l H0]. destruct H0 as [r H0].
 destruct H0 as [Dlr Glr].
 
 pose (f0 := fun i => proj (f i)). pose (g0 := fun i => proj ( g i)).
@@ -113,7 +122,7 @@ destruct Elr as [Elr |]; try tauto. symmetry in Elr. rewrite <- rule_eq in Elr.
 simpl in Elr. destruct Elr. subst. unfold f0, g0. rewrite Efi, Egi.
 apply supterm_proj. auto.
 
-assert (ISMfg0 : ISMOD (red M #) (red M # U supterm) f0 g0).
+assert (ISMfg0 : ISMod (red M #) (red M # U supterm) f0 g0).
 intro i. unfold f0, g0. split. apply hyp5. apply (proj1 (HisM i)).
 destruct (HisM i) as [_ [l' [r' [s [Dlr' [Eg Ef]]]]]]. rewrite Eg, Ef.
 destruct (supterm_eq_proj l' r' s Dlr') as [C HC].
@@ -128,7 +137,7 @@ destruct ((commut_tc_inv (@supterm_red _ _)) _ _ Hxz) as [u Hxu].
 exists u; split. exact (proj1 Hxu). apply (@subterm_trans _ _ z _); auto.
 exact (proj2 Hxu).
 
-destruct (trc_ISMOD (proj1 Hfg1) (@NIS_supterm Sig) TrS) as [f2 [g2 HF]].
+destruct (trc_ISMod (proj1 Hfg1) (@NIS_supterm Sig) TrS) as [f2 [g2 HF]].
 destruct HF as [HF1 [[k Hk] HF]]. generalize (ISOfISMod_spec HF1 HT).
 set (h := ISOfISMod HF1 HT). intros ISM.
 assert (Hhk : (h (S 0)) = g1 k). unfold ISOfISMod; simpl. auto.
@@ -151,11 +160,13 @@ Qed.
 
 End S1.
 
-(* Equivalence between WF and IS *)
+(***********************************************************************)
+(** theorem with boolean conditions *)
+
 Axiom WF_IS : forall M D : rules,
   ~WF (hd_red_Mod (red M #) D) <-> exists f, exists g, ISModMin M D f g.
 
-Section S2. (* Proof with WF predicate *)
+Section S2.
 
 Lemma subterm_criterion_WF : forall M D1 D2,
   forallb (@is_notvar_lhs Sig) (D1 ++ D2) = true ->
@@ -181,13 +192,14 @@ apply (@subterm_criterion_IS M (a :: D1 ++ D2) H5 H6 H7 f g). hyp.
 Qed.
 
 Lemma subterm_criterion : forall M D,
- let D':= (filter (brule (neg bgt)) D) in
   forallb (@is_notvar_lhs Sig) D = true ->
   forallb (brule bge) D = true ->
-  WF (hd_red_Mod (red M #) D') -> WF (hd_red_Mod (red M #) D).
+  WF (hd_red_Mod (red M #) (filter (brule (neg bgt)) D)) ->
+  WF (hd_red_Mod (red M #) D).
 
 Proof.
-intros. pose (D0 := filter (brule bgt) D).
+intros. pose (D' := filter (brule (neg bgt)) D).
+pose (D0 := filter (brule bgt) D).
 assert (HD : (hd_red_Mod (red M #) D) << (hd_red_Mod (red M #) (D0 ++ D'))).
 apply hd_red_Mod_incl. refl. intros d Dd. apply in_or_app.
 case_eq (brule (neg bgt) d). right. apply (proj2 (filter_In _ _ _)). intuition.
@@ -209,3 +221,10 @@ Qed.
 End S2.
 
 End S.
+
+Implicit Arguments subterm_criterion [Sig pi D].
+
+Ltac subterm_crit p_ok := apply (subterm_criterion p_ok);
+  [ check_eq || fail 10 "a left-hand side is a variable"
+  | check_eq || fail 10 "error in subterm criterion application"
+  | hd_red_mod].
