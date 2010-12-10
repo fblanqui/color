@@ -10,7 +10,7 @@ dependancy pairs
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs ACalls AShift ACap ASN ListUtil RelUtil
+Require Import LogicUtil ATrs ACalls ACap ASN ListUtil RelUtil
   ListForall SN VecUtil VecOrd NatUtil.
 
 Section S.
@@ -112,7 +112,7 @@ unfold dp.
 Qed.*)
 
 (***********************************************************************)
-(** dependancy chains *)
+(** dependency chains *)
 
 Definition chain := int_red R # @ hd_red dp.
 
@@ -190,13 +190,17 @@ Proof.
 unfold rules_preserve_vars. intros. destruct (dp_elim_vars H). intuition.
 Qed.
 
+(*REMOVE? used no where
+
+Require Import AShift.
+
 Lemma dp_preserve_pw_disjoint_vars :
   pw_disjoint_vars (map lhs R) -> pw_disjoint_vars (map lhs dp).
 
 Proof.
 unfold pw_disjoint_vars, disjoint_vars. intros. eapply H.
 apply lhs_dp. hyp. apply lhs_dp. hyp. apply H2. hyp.
-Qed.
+Qed.*)
 
 (***********************************************************************)
 (** fundamental dp theorem *)

@@ -10,15 +10,8 @@ to S @ (hd_red R) instead of (int_red R #) @ (dp R)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATrs.
-Require Import List.
-Require Import RelUtil.
-Require Import RelSub.
+Require Import LogicUtil ATrs List RelUtil RelSub SN AShift ADPGraph.
 Require Export ADP.
-Require Import SN.
-Require Import AShift.
-Require Import ADPGraph.
 
 Section S.
 
