@@ -5,21 +5,15 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2007-01-22
 
 dependancy pairs graph
+
+a more general development is given in AGraph.
 *)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil ATrs ListUtil RelUtil RelSub Path ARelation SN
+  ListOccur ListRepeatFree AShift.
 Require Export ADP.
-Require Import ATrs.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import RelSub.
-Require Import Path.
-Require Import ARelation.
-Require Import SN.
-Require Import ListOccur.
-Require Import ListRepeatFree.
 
 Section S.
 
@@ -33,8 +27,7 @@ Variable R : rules.
 
 Variable hyp : rules_preserve_vars R.
 
-Notation DP := (dp R).
-Notation Chain := (chain R).
+Notation DP := (dp R). Notation Chain := (chain R).
 
 Lemma hyp' : rules_preserve_vars DP.
 
@@ -44,9 +37,6 @@ Qed.
 
 (***********************************************************************)
 (** dependancy pairs graph *)
-
-Require Import AShift.
-Require Import ASubstitution.
 
 Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
   /\ exists p, exists s,
@@ -187,8 +177,7 @@ Implicit Arguments chain_dps_path_dp_graph [l a b t u].
 (** hypotheses of the criterion based on cycles
 using the same reduction pair for every cycle *)
 
-Require Import ACompat.
-Require Import Cycle.
+Require Import ACompat Cycle.
 
 Variables (succ succ_eq : relation term)
   (Hredord : weak_rewrite_ordering succ succ_eq)
