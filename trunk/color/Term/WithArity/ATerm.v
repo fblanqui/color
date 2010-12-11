@@ -56,7 +56,7 @@ Fixpoint term_rect t : P t :=
   match t as t return P t with
     | Var x => H1 x
     | Fun f v =>
-      let fix terms_rect n (v : terms n) {struct v} : Q v :=
+      let fix terms_rect n (v : terms n) : Q v :=
         match v as v return Q v with
           | Vnil => H3
           | Vcons t' n' v' => H4 (term_rect t') (terms_rect n' v')
@@ -173,11 +173,11 @@ Qed.
 (***********************************************************************)
 (** decidability of equality *)
 
-Fixpoint beq_term (t u : term) {struct t} :=
+Fixpoint beq_term (t u : term) :=
   match t, u with
     | Var x, Var y => beq_nat x y
     | Fun f ts, Fun g us =>
-      let fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
+      let fix beq_terms n (ts : terms n) p (us : terms p) :=
         match ts, us with
           | Vnil, Vnil => true
           | Vcons t _ ts', Vcons u _ us' =>
@@ -189,7 +189,7 @@ Fixpoint beq_term (t u : term) {struct t} :=
   end.
 
 Lemma beq_terms : forall n (ts : terms n) p (us : terms p),
-  (fix beq_terms n (ts : terms n) p (us : terms p) {struct ts} :=
+  (fix beq_terms n (ts : terms n) p (us : terms p) :=
     match ts, us with
       | Vnil, Vnil => true
       | Vcons t _ ts', Vcons u _ us' => beq_term t u && beq_terms _ ts' _ us'
@@ -323,7 +323,7 @@ Fixpoint vars (t : term) : variables :=
   match t with
     | Var x => x :: nil
     | Fun f v =>
-      let fix vars_vec n (ts : terms n) {struct ts} : variables :=
+      let fix vars_vec n (ts : terms n) : variables :=
         match ts with
           | Vnil => nil
           | Vcons t' n' ts' => vars t' ++ vars_vec n' ts'
@@ -331,7 +331,7 @@ Fixpoint vars (t : term) : variables :=
       in vars_vec (arity f) v
   end.
 
-Fixpoint vars_vec n (ts : terms n) {struct ts} : variables :=
+Fixpoint vars_vec n (ts : terms n) : variables :=
   match ts with
     | Vnil => nil
     | Vcons t' _ ts' => vars t' ++ vars_vec ts'
@@ -465,7 +465,7 @@ Fixpoint nb_symb_occs t :=
   match t with
     | Var x => 0
     | Fun f ts =>
-      let fix nb_symb_occs_terms n (ts : terms n) {struct ts} :=
+      let fix nb_symb_occs_terms n (ts : terms n) :=
         match ts with
           | Vnil => 0
           | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
@@ -473,14 +473,14 @@ Fixpoint nb_symb_occs t :=
         in 1 + nb_symb_occs_terms _ ts
   end.
 
-Fixpoint nb_symb_occs_terms n (ts : terms n) {struct ts} :=
+Fixpoint nb_symb_occs_terms n (ts : terms n) :=
   match ts with
     | Vnil => 0
     | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms us
   end.
 
 Lemma nb_symb_occs_fix : forall n (ts : terms n),
-  (fix nb_symb_occs_terms n (ts : terms n) {struct ts} :=
+  (fix nb_symb_occs_terms n (ts : terms n) :=
     match ts with
       | Vnil => 0
       | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
@@ -512,7 +512,7 @@ Fixpoint symbs (t : term) : list Sig :=
   match t with
     | Var x => nil
     | Fun f v =>
-      let fix symbs_vec n (ts : terms n) {struct ts} : list Sig :=
+      let fix symbs_vec n (ts : terms n) : list Sig :=
         match ts with
           | Vnil => nil
           | Vcons t' n' ts' => symbs t' ++ symbs_vec n' ts'
@@ -520,7 +520,7 @@ Fixpoint symbs (t : term) : list Sig :=
       in (f :: symbs_vec (arity f) v)
   end.
 
-Fixpoint symbs_vec n (ts : terms n) {struct ts} : list Sig :=
+Fixpoint symbs_vec n (ts : terms n) : list Sig :=
   match ts with
     | Vnil => nil
     | Vcons t' _ ts' => symbs t' ++ symbs_vec ts'
@@ -575,7 +575,7 @@ Fixpoint size t :=
   match t with
     | Var x => 1
     | Fun f ts =>
-      let fix size_terms n (ts : terms n) {struct ts} :=
+      let fix size_terms n (ts : terms n) :=
         match ts with
           | Vnil => 0
           | Vcons u p us => size u + size_terms p us
@@ -583,14 +583,14 @@ Fixpoint size t :=
         in 1 + size_terms _ ts
   end.
 
-Fixpoint size_terms n (ts : terms n) {struct ts} :=
+Fixpoint size_terms n (ts : terms n) :=
   match ts with
     | Vnil => 0
     | Vcons u _ us => size u + size_terms us
   end.
 
 Lemma size_fix : forall n (ts : terms n),
-  (fix size_terms n (ts : terms n) {struct ts} :=
+  (fix size_terms n (ts : terms n) :=
     match ts with
       | Vnil => 0
       | Vcons u p us => size u + size_terms p us

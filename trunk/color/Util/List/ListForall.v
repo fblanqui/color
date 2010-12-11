@@ -16,7 +16,7 @@ Section S.
 
 Variables (A : Type) (P : A->Prop).
 
-Fixpoint lforall (l : list A) {struct l} : Prop :=
+Fixpoint lforall (l : list A) : Prop :=
   match l with
     | nil => True
     | cons h t => P h /\ lforall t

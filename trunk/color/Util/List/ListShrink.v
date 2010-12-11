@@ -20,7 +20,7 @@ Section prefix.
 
 Variable A : Type.
 
-Fixpoint prefix (l l' : list A) {struct l} : Prop :=
+Fixpoint prefix (l l' : list A) : Prop :=
   match l with
     | nil => True
     | x::l => match l' with
@@ -107,7 +107,7 @@ Section cut.
 Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
-Fixpoint cut (x : A) (l : list A) {struct l} : list A :=
+Fixpoint cut (x : A) (l : list A) : list A :=
   match l with
     | nil => nil
     | y::l' => if eq_dec x y then l else cut x l'

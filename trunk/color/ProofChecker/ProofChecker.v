@@ -31,7 +31,7 @@ Implicit Arguments TerminationEstablished [P].
 Implicit Arguments Error [P].
 
 Program Fixpoint check_proof (Pb : Problem Sig) (Prf : TerminationProof Sig) 
-  {struct Prf} : TerminationAnalysisResult Pb :=
+  : TerminationAnalysisResult Pb :=
 
   match Prf with
   | TP_PolyInt PI Prf' =>

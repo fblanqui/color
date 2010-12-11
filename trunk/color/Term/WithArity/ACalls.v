@@ -26,7 +26,7 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 (***********************************************************************)
 (** check whether [f] is defined by [l] *)
 
-Fixpoint defined (f : Sig) (l : rules) {struct l} : bool :=
+Fixpoint defined (f : Sig) (l : rules) : bool :=
   match l with
     | nil => false
     | r :: l' =>
@@ -67,7 +67,7 @@ destruct H1 as [r H1]. exists v'; exists r. auto.
 rewrite beq_symb_ok in H0; rewrite <- H0. exists v; exists a2. left; refl.
 Qed.
 
-Fixpoint list_defined (l : rules) {struct l} : list Sig :=
+Fixpoint list_defined (l : rules) : list Sig :=
   match l with
     | nil => nil
     | r :: l' =>
@@ -95,7 +95,7 @@ Fixpoint calls (t : term) : list term :=
   match t with
     | Var v => nil
     | Fun f ts =>
-      let fix vcalls n (ts : terms n) {struct ts} : list term :=
+      let fix vcalls n (ts : terms n) : list term :=
         match ts with
           | Vnil => nil
           | Vcons u n' ts' => calls u ++ vcalls n' ts'
@@ -106,7 +106,7 @@ Fixpoint calls (t : term) : list term :=
 	 end
   end.
 
-Fixpoint vcalls n (ts : terms n) {struct ts} : list term :=
+Fixpoint vcalls n (ts : terms n) : list term :=
   match ts with
     | Vnil => nil
     | Vcons u _ ts' => calls u ++ vcalls ts'

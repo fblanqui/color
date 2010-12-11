@@ -248,7 +248,7 @@ eapply WF_SCC'_union_aux. intros. apply H. apply s_SCC's_spec_bound. auto.
 unfold s_SCC's; destruct sorted_SCC'. simpl in *. auto.
 Qed.
 
-Fixpoint SCC'_list_aux i L {struct L} :=
+Fixpoint SCC'_list_aux i L :=
   match L with
     | nil => nil
     | x :: q =>

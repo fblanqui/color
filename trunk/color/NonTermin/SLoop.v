@@ -26,7 +26,7 @@ Variable R : rules.
 (***********************************************************************)
 (** predicates saying that [t::us] is in a sequence of rewriting steps *)
 
-Fixpoint FS t us {struct us} :=
+Fixpoint FS t us :=
   match us with
     | nil => True
     | u :: us' => red R t u /\ FS u us'
@@ -60,7 +60,7 @@ Qed.
 (***********************************************************************)
 (** matching *)
 
-Fixpoint matches (p t : string) {struct p} : option string :=
+Fixpoint matches (p t : string) : option string :=
   match p, t with
     | nil, _ => Some t
     | a :: p', b :: t' => if beq_symb a b then matches p' t' else None
@@ -118,7 +118,7 @@ Qed.
 
 Implicit Arguments rewrite_correct [t d s].
 
-Fixpoint rewrites t (ds : list data) {struct ds} : option (list string) :=
+Fixpoint rewrites t (ds : list data) : option (list string) :=
   match ds with
     | nil => Some nil
     | d :: ds' =>

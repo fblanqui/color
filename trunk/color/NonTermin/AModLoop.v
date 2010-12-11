@@ -25,7 +25,7 @@ Variable E R : rules.
 (***********************************************************************)
 (** predicates saying that [t::us] is in a sequence of rewriting steps *)
 
-Fixpoint mod_FS t us {struct us} :=
+Fixpoint mod_FS t us :=
   match us with
     | nil => True
     | u :: us' => red_mod E R t u /\ mod_FS u us'
@@ -69,7 +69,7 @@ Qed.
 
 Implicit Arguments mod_rewrite_correct [t dm u].
 
-Fixpoint mod_rewrites t (mds : list mod_data) {struct mds}
+Fixpoint mod_rewrites t (mds : list mod_data)
   : option (list term) :=
   match mds with
     | nil => Some nil

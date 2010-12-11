@@ -32,7 +32,7 @@ Module TermsPos (Sig : TermsSig.Signature).
               Pos (buildT (@TApp E A B PtL PtR AppL AppR)).
 
    (* termAtPos computes a subterm at given position *)
-  Fixpoint termAtPos M (pos: Pos M) {struct pos} : Term :=
+  Fixpoint termAtPos M (pos: Pos M) : Term :=
   match pos with
   | PThis M => M
   | PAbs _ _ _ _ _ pos => termAtPos pos
@@ -41,7 +41,7 @@ Module TermsPos (Sig : TermsSig.Signature).
   end.
   Notation "M // pos" := (@termAtPos M pos) (at level 40).
 
-  Fixpoint swap_term M (pos: Pos M) (R: Term) {struct pos} : Preterm :=
+  Fixpoint swap_term M (pos: Pos M) (R: Term) : Preterm :=
     match pos with
     | PThis M => term R
     | PAbs _ A _ _ _ pos => Abs A (swap_term pos R)

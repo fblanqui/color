@@ -21,7 +21,7 @@ Notation nats := (vector nat).
 
 Require Import Max.
 
-Fixpoint Vmax n (v : nats n) {struct v} : nat :=
+Fixpoint Vmax n (v : nats n) : nat :=
   match v with
     | Vnil => O
     | Vcons a _ w => max a (Vmax w)
@@ -80,7 +80,7 @@ Qed.
 
 Require Import Min.
 
-Fixpoint Vmin n (v : nats n) {struct v} : nat :=
+Fixpoint Vmin n (v : nats n) : nat :=
   match v with
     | Vnil => O
     | Vcons a _ w => min a (Vmin w)

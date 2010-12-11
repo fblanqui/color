@@ -72,7 +72,7 @@ Qed.
 (***********************************************************************)
 (** iteration of chain steps given a list of dependency pairs *)
 
-Fixpoint chain_dps (a : rule) (l : rules) {struct l} : relation term :=
+Fixpoint chain_dps (a : rule) (l : rules) : relation term :=
   match l with
     | nil => chain_dp a
     | b :: m => chain_dp a @ chain_dps b m

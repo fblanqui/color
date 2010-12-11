@@ -25,7 +25,7 @@ Inductive context : Type :=
   | Hole : context
   | Cont : forall f : Sig, terms -> context -> terms -> context.
 
-Fixpoint fill (c : context) (t : term) {struct c} : term :=
+Fixpoint fill (c : context) (t : term) : term :=
   match c with
     | Hole => t
     | Cont f v1 c' v2 => Fun f (v1 ++ fill c' t :: v2)

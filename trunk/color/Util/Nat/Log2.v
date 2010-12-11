@@ -28,7 +28,7 @@ Inductive log2_prop : nat -> nat -> Prop :=
 
 Hint Constructors log2_prop.
 
-Fixpoint log2_aux n count {struct count} : nat :=
+Fixpoint log2_aux n count : nat :=
   match count with
     | 0 => 0
     | S count' =>

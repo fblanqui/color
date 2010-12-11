@@ -345,7 +345,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     destruct i; destruct j; firstorder.
   Defined.
 
-  Fixpoint envSubst_lift (Q: EnvSubst) (n: nat) {struct n} : EnvSubst :=
+  Fixpoint envSubst_lift (Q: EnvSubst) (n: nat) : EnvSubst :=
     match n with
     | 0 => Q
     | S x => envSubst_lift1 (envSubst_lift Q x)

@@ -36,11 +36,12 @@ its property is: if capa(t) = (k,f,v) then f(v)=t
 
 f acts as an abstract context with k holes *)
 
-Definition Cap := {k : nat & (terms k -> term) * terms k }%type.
+Local Open Scope type_scope.
+Definition Cap := {k : nat & (terms k -> term) * terms k }.
 
 Notation Caps := (vector Cap).
 
-Definition mkCap := @existS nat (fun k => ((terms k -> term) * terms k)%type).
+Definition mkCap := @existS nat (fun k => ((terms k -> term) * terms k)).
 
 Definition fcap (c : Cap) := fst (projS2 c).
 Definition aliens (c : Cap) := snd (projS2 c).
@@ -48,7 +49,9 @@ Definition fcap_aliens (c : Cap) := fcap c (aliens c).
 
 (* total number of aliens of a vector of caps *)
 
-Fixpoint sum n (cs : Caps n) {struct cs} : nat :=
+Local Open Scope nat_scope.
+
+Fixpoint sum n (cs : Caps n) : nat :=
   match cs with
     | Vnil => 0
     | Vcons c _ cs' => projS1 c + sum cs'
@@ -56,7 +59,7 @@ Fixpoint sum n (cs : Caps n) {struct cs} : nat :=
 
 (* concatenation of all the aliens of a vector of caps *)
 
-Fixpoint conc n (cs : Caps n) {struct cs} : terms (sum cs) :=
+Fixpoint conc n (cs : Caps n) : terms (sum cs) :=
   match cs as cs return terms (sum cs) with
     | Vnil => Vnil
     | Vcons c _ cs' => Vapp (aliens c) (conc cs')
@@ -80,7 +83,7 @@ function breaks ts in vectors of size the number of aliens of every
 cap of cs, apply every fcap to the corresponding vector, and
 concatenate all the results *)
 
-Fixpoint Vmap_sum n (cs : Caps n) {struct cs} : terms (sum cs) -> terms n :=
+Fixpoint Vmap_sum n (cs : Caps n) : terms (sum cs) -> terms n :=
   match cs as cs in vector _ n return terms (sum cs) -> terms n with
     | Vnil => fun _ => Vnil
     | Vcons c _ cs' => fun ts =>

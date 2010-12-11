@@ -592,8 +592,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Hint Rewrite subst_ran_single subst_dom_lifted subst_ran_cons_none subst_ran_cons_some : terms.
 
-  Fixpoint presubst_aux (P: Preterm) (l: nat) (G: Subst) 
-     {struct P} : Preterm :=
+  Fixpoint presubst_aux (P: Preterm) (l: nat) (G: Subst) : Preterm :=
     match P with
     | Fun _ => P
     | Var i =>

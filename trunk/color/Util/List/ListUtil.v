@@ -591,7 +591,7 @@ Section tail_nth.
 
 Variable A : Type.
 
-Fixpoint tail_nth (l : list A) (n : nat) {struct n} : option (list A) :=
+Fixpoint tail_nth (l : list A) (n : nat) : option (list A) :=
   match l, n with
     | _, 0 => Some l
     | a :: l', S n' => tail_nth l' n'
@@ -657,7 +657,7 @@ Section Inb.
 Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
-Fixpoint Inb (x : A) (l : list A) {struct l} : bool :=
+Fixpoint Inb (x : A) (l : list A) : bool :=
   match l with
     | nil => false
     | cons y l' =>
@@ -747,7 +747,7 @@ Section remove.
 Variable A : Type.
 Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
-Fixpoint remove (y : A) (l : list A) {struct l} : list A :=
+Fixpoint remove (y : A) (l : list A) : list A :=
   match l with
     | nil => nil
     | cons x l' =>
@@ -825,7 +825,7 @@ Variable (A : Type) (eqdec : forall x y : A, {x=y}+{x<>y}).
 
 Notation In_dec := (In_dec eqdec).
 
-Fixpoint removes (l m : list A) {struct m} : list A :=
+Fixpoint removes (l m : list A) : list A :=
   match m with
   | nil => nil
   | x :: m' =>
@@ -970,7 +970,7 @@ Section Element_At_List.
   
   Variable A : Type.
   
-  Fixpoint element_at (l : list A) (p : nat) {struct l} : option A := 
+  Fixpoint element_at (l : list A) (p : nat) : option A := 
     match l with 
       | nil => None
       | h :: t =>
@@ -982,7 +982,7 @@ Section Element_At_List.
 
   Notation "l '[' p ']'" := (element_at l p) (at level 50).
 
-  Fixpoint replace_at (l : list A) (p : nat) (a : A) {struct l} : list A :=
+  Fixpoint replace_at (l : list A) (p : nat) (a : A) : list A :=
     match l with
       | nil => nil
       | h :: t =>
@@ -1180,7 +1180,7 @@ Section reverse_tail_recursive.
 
 Variable A : Type.
 
-Fixpoint rev_append (l' l : list A) {struct l} : list A :=
+Fixpoint rev_append (l' l : list A) : list A :=
   match l with
     | nil => l'
     | a :: l => rev_append (a :: l') l
@@ -1238,8 +1238,7 @@ Section split.
 
 Variable A : Type.
 
-Fixpoint split_aux (acc l : list A) (n : nat) {struct n}
-  : option (list A * list A) :=
+Fixpoint split_aux (acc l : list A) (n : nat) : option (list A * list A) :=
   match l, n with
     | _, 0 => Some (rev' acc, l)
     | a :: l', S n' => split_aux (a::acc) l' n'
@@ -1400,7 +1399,7 @@ Section ListFilter.
 
 Variable A : Type.
 
-Fixpoint listfilter (L : list A) l {struct L} :=
+Fixpoint listfilter (L : list A) l :=
   match L with
     | nil => nil
     | a :: Q =>

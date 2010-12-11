@@ -44,7 +44,7 @@ Fixpoint vterm_of_aterm (t : aterm) : vterm :=
   match t with
     | ATerm.Var x => Var x
     | ATerm.Fun f v =>
-      let fix vterms_of_aterms n (ts : aterms n) {struct ts} : vterms :=
+      let fix vterms_of_aterms n (ts : aterms n) : vterms :=
 	match ts with
 	  | Vnil => nil
 	  | Vcons t' n' ts' => vterm_of_aterm t' :: vterms_of_aterms n' ts'
@@ -52,7 +52,7 @@ Fixpoint vterm_of_aterm (t : aterm) : vterm :=
 	in VFun f (vterms_of_aterms (arity f) v)
   end.
 
-Fixpoint vterms_of_aterms n (ts : aterms n) {struct ts} : vterms :=
+Fixpoint vterms_of_aterms n (ts : aterms n) : vterms :=
   match ts with
     | Vnil => nil
     | Vcons t' _ ts' => vterm_of_aterm t' :: vterms_of_aterms ts'

@@ -47,7 +47,7 @@ Qed.
 
 End S.
 
-Definition naryFunction1 A := @naryFunction A A.
+Definition naryFunction1 A := naryFunction A A.
 Definition Vmonotone1_i A n f R := @Vmonotone_i A A n f R R.
 Definition Vmonotone1 A n f R := @Vmonotone A A n f R R.
 

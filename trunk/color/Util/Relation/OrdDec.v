@@ -98,7 +98,7 @@ Record Bool_ord_type : Type := mkBool_ord_type {
 (***********************************************************************)
 (** natural numbers *)
 
-Fixpoint nat_cmp (x y : nat) {struct x} : comparison :=
+Fixpoint nat_cmp (x y : nat) : comparison :=
   match x, y with
     | 0, 0 => Eq
     | 0, S _ => Lt

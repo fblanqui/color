@@ -61,7 +61,7 @@ Section Matching.
   | Some u => if t =T u then Some m else None
   end.
 
-  Fixpoint matches_r (u t : term) (m : matching) {struct u} : option matching :=
+  Fixpoint matches_r (u t : term) (m : matching) : option matching :=
   match u, t with
   | Var y   , _        => exmatch m y t
   | Fun g us, Fun f ts => if f =S g then Vfold2 m matches_r us ts else None

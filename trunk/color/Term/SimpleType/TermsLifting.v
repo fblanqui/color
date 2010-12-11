@@ -24,7 +24,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
 
   Module Export TB := TermsManip.TermsManip Sig.
 
-  Fixpoint prelift_aux (n: nat) (P: Preterm) (k: nat) {struct P} : Preterm :=
+  Fixpoint prelift_aux (n: nat) (P: Preterm) (k: nat) : Preterm :=
     match P with
     | Fun _ => P
     | Var i => 
@@ -629,7 +629,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite H; trivial.
   Qed.
 
-  Fixpoint prelower_aux (P: Preterm) (k: nat) {struct P} : Preterm :=
+  Fixpoint prelower_aux (P: Preterm) (k: nat) : Preterm :=
     match P with
     | Fun _ => P
     | Var i => 

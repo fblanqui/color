@@ -122,7 +122,7 @@ Section Vcast.
 
 Variable A : Type. Notation vec := (vector A).
 
-Program Fixpoint Vcast m (v : vec m) n (mn : m = n) {struct v} : vec n :=
+Program Fixpoint Vcast m (v : vec m) n (mn : m = n) : vec n :=
   match v with
   | Vnil =>
       match n with
@@ -490,7 +490,7 @@ Section Vapp.
 
 Variable A : Type. Notation vec := (vector A).
 
-Fixpoint Vapp n1 n2 (v1 : vec n1) (v2 : vec n2) {struct v1} : vec (n1+n2) :=
+Fixpoint Vapp n1 n2 (v1 : vec n1) (v2 : vec n2) : vec (n1+n2) :=
   match v1 with
   | Vnil => v2
   | Vcons a _ v' => Vcons a (Vapp v' v2)
@@ -652,7 +652,7 @@ Variable A : Type. Notation vec := (vector A).
 
 Definition Vsplit n (v : vec (S n)) := (Vhead v, Vtail v).
 
-Fixpoint Vbreak n1 n2 {struct n1} : vec (n1+n2) -> vec n1 * vec n2 :=
+Fixpoint Vbreak n1 n2 : vec (n1+n2) -> vec n1 * vec n2 :=
   match n1 with
   | O => fun v => (Vnil, v)
   | S p1 => fun v =>
@@ -701,7 +701,7 @@ Section Vin.
 
 Variable A : Type. Notation vec := (vector A).
 
-Fixpoint Vin (x : A) n (v : vec n) {struct v} : Prop :=
+Fixpoint Vin (x : A) n (v : vec n) : Prop :=
   match v with
   | Vnil => False
   | Vcons y _ w => y = x \/ Vin x w
@@ -836,7 +836,7 @@ Qed.
 
 Implicit Arguments Vsub_aux2 [i k' n].
 
-Fixpoint Vsub n (v : vec n) i k {struct k}: i+k<=n -> vec k :=
+Fixpoint Vsub n (v : vec n) i k : i+k<=n -> vec k :=
   match k as k return i+k<=n -> vec k with
     | 0 => fun _ => Vnil
     | S k' => fun h =>
@@ -1231,7 +1231,7 @@ intros. apply Vforall_intro. intros.
 eapply Vforall_in with (n := n). apply H. eapply Vin_cast_elim. eexact H0. 
 Qed.
 
-Fixpoint Vsig_of_v n (v : vec n) {struct v} : Vforall v -> vector (sig P) n :=
+Fixpoint Vsig_of_v n (v : vec n) : Vforall v -> vector (sig P) n :=
   match v in vector _ n return Vforall v -> vector (sig P) n with
     | Vnil => fun _ => Vnil
     | Vcons a _ w => fun H =>
@@ -1275,8 +1275,7 @@ Notation vecB := (vector B).
 
 Variable R : A -> B -> Prop.
 
-Fixpoint Vforall2n_aux n1 (v1 : vecA n1) 
-                       n2 (v2 : vecB n2) {struct v1} : Prop :=
+Fixpoint Vforall2n_aux n1 (v1 : vecA n1) n2 (v2 : vecB n2) : Prop :=
   match v1, v2 with
     | Vnil, Vnil => True
     | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2n_aux v w
@@ -1347,7 +1346,7 @@ Section Vexists.
 Variable A : Type. Notation vec := (vector A).
 Variables (P : A->Prop).
 
-Fixpoint Vexists n (v : vec n) {struct v} : Prop :=
+Fixpoint Vexists n (v : vec n) : Prop :=
   match v with
   | Vnil => False
   | Vcons a _ v' => P a \/ Vexists v'
@@ -1364,7 +1363,7 @@ Qed.
 
 Variable f : A->bool.
 
-Fixpoint bVexists n (v : vec n) {struct v} : bool :=
+Fixpoint bVexists n (v : vec n) : bool :=
   match v with
     | Vnil => false
     | Vcons a _ v' => f a || bVexists v'
@@ -1477,8 +1476,7 @@ Variable A : Type. Notation vec := (vector A).
 
 (* Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an *)
 
-Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n)
-  {struct v} : B :=
+Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n) : B :=
   match v with
     | Vnil => b
     | Vcons a _ w => f (Vfold_left f b w) a
@@ -1486,8 +1484,7 @@ Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n)
 
 (* Vfold_right f [a1 .. an] b = f a1 (f a2 .. (f an b) .. ) *)
 
-Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B)
-  {struct v} : B :=
+Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B) : B :=
   match v with
     | Vnil => b
     | Vcons a _ w => f a (Vfold_right f w b)
@@ -1504,7 +1501,7 @@ Section FoldOpt2 .
   Variable x        : cT .
   Variable F        : aT -> bT -> cT -> option cT .
 
-  Fixpoint Vfold2 nA nB (vA : vector aT nA) (vB : vector bT nB) {struct vA} :=
+  Fixpoint Vfold2 nA nB (vA : vector aT nA) (vB : vector bT nB) :=
   match vA, vB with
   | Vnil, Vnil => Some x
   | Vcons xA nA sA, Vcons xB nB sB =>
@@ -1539,7 +1536,7 @@ Lemma vec_of_list_cons : forall a l,
 
 Proof. auto. Qed.
 
-Fixpoint list_of_vec n (v : vec n) {struct v} : list A :=
+Fixpoint list_of_vec n (v : vec n) : list A :=
   match v with
   | Vnil => nil
   | Vcons x _ v => x :: list_of_vec v
@@ -1620,7 +1617,7 @@ Variable A : Type. Notation vec := (vector A).
 Variable beq : A -> A -> bool.
 Variable beq_ok : forall x y, beq x y = true <-> x = y.
 
-Fixpoint beq_vec n (v : vec n) p (w : vec p) {struct v} :=
+Fixpoint beq_vec n (v : vec n) p (w : vec p) :=
   match v, w with
   | Vnil, Vnil => true
   | Vcons x _ v', Vcons y _ w' => beq x y && beq_vec v' w'
@@ -1740,7 +1737,7 @@ Variables (A B : Type) (f : A->B).
 Notation vecA := (vector A).
 Notation vecB := (vector B).
 
-Fixpoint Vmap n (v : vecA n) {struct v} : vecB n :=
+Fixpoint Vmap n (v : vecA n) : vecB n :=
   match v with
   | Vnil => Vnil
   | Vcons a _ v' => Vcons (f a) (Vmap v')
@@ -1859,8 +1856,7 @@ Section Vmap2.
 
 Variable A B C : Type.
 
-Fixpoint Vmap2 (f : A->B->C) n {struct n}
-  : vector A n -> vector B n -> vector C n :=
+Fixpoint Vmap2 (f : A->B->C) n : vector A n -> vector B n -> vector C n :=
   match n with
   | O => fun _ _ => Vnil
   | _ => fun v1 v2 =>
@@ -1897,7 +1893,7 @@ End Vmap2.
 (** vforall and specifications *)
 
 Fixpoint Vforall_of_vsig (A : Type) (P : A -> Prop) n (v : vector (sig P) n)
-  {struct v} : Vforall P (Vmap (@proj1_sig A P) v) :=
+  : Vforall P (Vmap (@proj1_sig A P) v) :=
   match v in vector _ n return Vforall P (Vmap (@proj1_sig A P) v) with
   | Vnil => I
   | Vcons a _ w => conj (@proj2_sig A P a) (Vforall_of_vsig w)
@@ -1992,7 +1988,7 @@ Variable P : A -> Prop.
 Variable f : A -> bool.
 Variable f_ok : forall x, f x = true <-> P x.
 
-Fixpoint bVforall n (v : vector A n) {struct v} : bool :=
+Fixpoint bVforall n (v : vector A n) : bool :=
   match v with
     | Vnil => true
     | Vcons a _ w => f a && bVforall w
@@ -2016,7 +2012,7 @@ Variables A B : Type.
 Variable P : A -> B -> bool.
 
 Fixpoint bVforall2n_aux n1 (v1 : vector A n1) n2 (v2 : vector B n2)
-  {struct v1} : bool :=
+  : bool :=
   match v1, v2 with
     | Vnil, Vnil => true
     | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2n_aux xs ys

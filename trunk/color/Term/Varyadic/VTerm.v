@@ -161,7 +161,7 @@ Defined.
 
 Require Import NatUtil.
 
-Fixpoint beq (t u : term) {struct t} :=
+Fixpoint beq (t u : term) :=
   match t with
     | Var x =>
       match u with
@@ -171,7 +171,7 @@ Fixpoint beq (t u : term) {struct t} :=
     | Fun f ts =>
       match u with
         | Fun g us =>
-          let fix beq_terms (ts us : terms) {struct ts} :=
+          let fix beq_terms (ts us : terms) :=
             match ts with
               | nil =>
                 match us with
@@ -190,7 +190,7 @@ Fixpoint beq (t u : term) {struct t} :=
   end.
 
 Lemma beq_terms : forall ts us,
-  (fix beq_terms (ts us : terms) {struct ts} :=
+  (fix beq_terms (ts us : terms) :=
     match ts with
       | nil =>
         match us with

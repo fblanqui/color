@@ -105,8 +105,7 @@ Fixpoint reducts t :=
   match t with
     | Var _ => top_reducts R t
     | Fun f ts =>
-      let fix reducts_vec k (us : terms k) {struct us}
-        : k <= arity f -> list term :=
+      let fix reducts_vec k (us : terms k) : k <= arity f -> list term :=
         match us in vector _ k return k <= arity f -> list term with
           | Vnil => fun _ => nil
           | Vcons u1 k' us' => fun h =>
@@ -116,8 +115,7 @@ Fixpoint reducts t :=
         in top_reducts R t ++ reducts_vec (arity f) ts (le_refl (arity f))
   end.
 
-Fixpoint reducts_vec f ts k (us : terms k) {struct us}
-  : k <= arity f -> list term :=
+Fixpoint reducts_vec f ts k (us : terms k) : k <= arity f -> list term :=
   match us in vector _ k return k <= arity f -> list term with
     | Vnil => fun _ => nil
     | Vcons u1 k' us' => fun h =>
@@ -126,8 +124,7 @@ Fixpoint reducts_vec f ts k (us : terms k) {struct us}
   end.
 
 Lemma fix_reducts_vec : forall f ts k us h,
-  (fix reducts_vec (k : nat) (us : terms k) {struct us} :
-    k <= arity f -> list term :=
+  (fix reducts_vec (k : nat) (us : terms k) : k <= arity f -> list term :=
     match us in (vector _ k0) return (k0 <= arity f -> list term) with
       | Vnil => fun _ : 0 <= arity f => nil
       | Vcons u1 k' us' => fun h : S k' <= arity f =>
@@ -252,7 +249,7 @@ Fixpoint reducts2 t :=
   match t with
     | Var _ => top_reducts R t
     | Fun f ts =>
-      let fix reducts2_vec k (us : terms k) {struct us} : list (terms k) :=
+      let fix reducts2_vec k (us : terms k) : list (terms k) :=
         match us with
           | Vnil => nil
           | Vcons u1 _ us' => map (fun x => Vcons x us') (reducts2 u1)
@@ -261,7 +258,7 @@ Fixpoint reducts2 t :=
         in top_reducts R t ++ map (Fun f) (reducts2_vec (arity f) ts)
   end.
 
-Fixpoint reducts2_vec k (us : terms k) {struct us} : list (terms k) :=
+Fixpoint reducts2_vec k (us : terms k) : list (terms k) :=
   match us with
     | Vnil => nil
     | Vcons u1 _ us' => map (fun x => Vcons x us') (reducts2 u1)

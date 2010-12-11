@@ -368,7 +368,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Definition appUnits M : list Term :=
   let
-    fix appUnits_rec M (Mt: TermTyping M) {struct Mt} : list Term :=
+    fix appUnits_rec M (Mt: TermTyping M) : list Term :=
     match Mt with
     | (TApp _ _ _ _ _ Ltyp Rtyp) => (buildT Rtyp) :: 
                                     (@appUnits_rec (buildT Ltyp) Ltyp)

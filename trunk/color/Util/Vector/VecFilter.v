@@ -22,7 +22,7 @@ Variable A : Type.
 
 Notation vec := (vector A).
 
-Fixpoint Vfilter n (bs : bools n) {struct bs} : vec n -> vec (Vtrue bs) :=
+Fixpoint Vfilter n (bs : bools n) : vec n -> vec (Vtrue bs) :=
   match bs as bs in vector _ n return vec n -> vec (Vtrue bs) with
   | Vnil => fun _ => Vnil
   | Vcons true _ bs' => fun v => Vcons (Vhead v) (Vfilter bs' (Vtail v))

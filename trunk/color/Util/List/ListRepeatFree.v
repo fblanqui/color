@@ -133,7 +133,7 @@ Qed.
 (***********************************************************************)
 (** least prefix without duplication *)
 
-Fixpoint greatest_repeat_free_prefix_aux (acc l : list A) {struct l} : list A :=
+Fixpoint greatest_repeat_free_prefix_aux (acc l : list A) : list A :=
   match l with
     | nil => rev acc
     | cons x l =>
