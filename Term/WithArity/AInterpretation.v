@@ -37,7 +37,7 @@ Variable I : interpretation.
 (***********************************************************************)
 (** valuations *)
 
-Definition valuation := variable -> I.
+Definition valuation := variable -> (domain I).
 
 Definition val_of_vec n (v : vector I n) : valuation := fun x =>
   match le_lt_dec n x with
