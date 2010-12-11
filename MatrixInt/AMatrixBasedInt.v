@@ -292,7 +292,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       rewrite Vnth_map2. do 2 rewrite Vbuild_nth. refl.
     Qed.
 
-    Fixpoint mi_of_term k (t : bterm k) {struct t} : mint (S k) :=
+    Fixpoint mi_of_term k (t : bterm k) : mint (S k) :=
       match t with
       | BVar i ip => 
           let zero_int := Vconst (zero_matrix dim dim) (S k) in

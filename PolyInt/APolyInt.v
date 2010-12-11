@@ -30,7 +30,7 @@ Section pi.
 
 Variable PI : PolyInterpretation.
 
-Fixpoint termpoly k (t : bterm k) {struct t} : poly (S k) :=
+Fixpoint termpoly k (t : bterm k) : poly (S k) :=
   match t with
     | BVar x H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: nil
     | BFun f v => pcomp (PI f) (Vmap (@termpoly k) v)

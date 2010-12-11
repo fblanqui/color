@@ -31,7 +31,7 @@ Add Relation Z Zlt
 
 Open Local Scope positive_scope.
 
-Fixpoint beq_pos x y {struct x} :=
+Fixpoint beq_pos x y :=
   match x, y with
     | xI x', xI y' => beq_pos x' y'
     | xO x', xO y' => beq_pos x' y'
@@ -49,7 +49,7 @@ Qed.
 
 Open Local Scope Z_scope.
 
-Fixpoint beq_Z x y {struct x} :=
+Fixpoint beq_Z x y :=
   match x, y with
     | Z0, Z0 => true
     | Zpos x', Zpos y' => beq_pos x' y'
@@ -108,7 +108,7 @@ Qed.
 (***********************************************************************)
 (** power *)
 
-Fixpoint power (x : Z) (n : nat) {struct n} : Z :=
+Fixpoint power (x : Z) (n : nat) : Z :=
   match n with
     | O => 1
     | S n' => x * power x n'

@@ -398,7 +398,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct wSome; trivial.
   Qed.
 
-  Fixpoint env_compose (E F: Env) {struct E} : Env :=
+  Fixpoint env_compose (E F: Env) : Env :=
     match E, F with
     | nil, nil => EmptyEnv
     | L, nil => L
@@ -671,7 +671,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply IHPt2; trivial.
   Qed.
 
-  Fixpoint env_subtract (E F: Env) {struct E} : Env :=
+  Fixpoint env_subtract (E F: Env) : Env :=
   match E, F with
   | nil, _ => EmptyEnv
   | E, nil => E

@@ -33,7 +33,7 @@ Section Computability_def.
 
   Definition AccR := Acc (transp R).
 
-  Fixpoint ComputableS (M: Term) (T: SimpleType) {struct T} : Prop :=
+  Fixpoint ComputableS (M: Term) (T: SimpleType) : Prop :=
     algebraic M /\
     type M = T /\
     match T with

@@ -53,7 +53,7 @@ Fixpoint bterm_rect (t : bterm) : P t :=
   match t as t return P t with
     | BVar x h => H1 h
     | BFun f v =>
-      let fix bterms_rect n (v : bterms n) {struct v} : Q v :=
+      let fix bterms_rect n (v : bterms n) : Q v :=
         match v as v return Q v with
           | Vnil => H3
           | Vcons t' n' v' => H4 (bterm_rect t') (bterms_rect n' v')
@@ -84,7 +84,7 @@ Fixpoint inject_term (t : term) : max_le t -> bterm :=
   match t as t0 return max_le t0 -> bterm with
     | Var x => fun H => BVar (maxvar_var H)
     | Fun f ts => fun H =>
-      let fix inject_terms n (ts : terms n) {struct ts} : 
+      let fix inject_terms n (ts : terms n) : 
         Vforall max_le ts -> bterms n :=
 	match ts as v in vector _ n0
 	  return Vforall max_le v -> bterms n0 with
@@ -95,7 +95,7 @@ Fixpoint inject_term (t : term) : max_le t -> bterm :=
       in BFun f (inject_terms (arity f) ts (maxvar_le_fun H))
   end.
 
-Fixpoint inject_terms (n : nat) (ts : terms n) {struct ts} : 
+Fixpoint inject_terms (n : nat) (ts : terms n) : 
   Vforall max_le ts -> bterms n :=
   match ts as v in vector _ n0
     return Vforall max_le v -> bterms n0 with
@@ -193,13 +193,13 @@ Implicit Arguments inject_terms [k n ts].
 
 Implicit Arguments le_trans [n m p].
 
-Fixpoint bterm_le k (bt : bterm k) l (h0 : k <= l) {struct bt} : bterm l :=
+Fixpoint bterm_le k (bt : bterm k) l (h0 : k <= l) : bterm l :=
   match bt with
     | BVar x h => BVar (le_trans h h0)
     | BFun f bts => BFun f (Vmap (fun bt => @bterm_le k bt l h0) bts)
   end.
 
-Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l) {struct bts}
+Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l)
   : vector (bterm l) n :=
   match bts in vector _ n return vector (bterm l) n with
     | Vnil => Vnil

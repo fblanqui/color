@@ -202,7 +202,7 @@ Section try_add_arc_one_to_many.
 
 Variable R : relation A.
 
-Fixpoint try_add_arc_one_to_many (x : A) (l : list A) {struct l} : relation A
+Fixpoint try_add_arc_one_to_many (x : A) (l : list A) : relation A
   :=
   match l with
     | nil => R
@@ -287,7 +287,7 @@ Section try_add_arc_many_to_many.
 
 Variable R : relation A.
 
-Fixpoint try_add_arc_many_to_many (l' l: list A){struct l'}: relation A :=
+Fixpoint try_add_arc_many_to_many (l' l: list A) : relation A :=
   match l' with
     | nil => R
     | x::l'' => try_add_arc_one_to_many (try_add_arc_many_to_many l'' l) x l

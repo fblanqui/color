@@ -37,7 +37,7 @@ Bind Scope poly_scope with poly.
 
 Open Local Scope Z_scope.
 
-Fixpoint coef n (m : monom n) (p : poly n) {struct p} : Z :=
+Fixpoint coef n (m : monom n) (p : poly n) : Z :=
   match p with
     | nil => 0
     | cons (c,m') p' =>
@@ -90,7 +90,7 @@ Notation "'-' p" := (popp p) (at level 35, right associativity) : poly_scope.
 (***********************************************************************)
 (** addition *)
 
-Fixpoint mpplus n (c : Z) (m : monom n) (p : poly n) {struct p} : poly n :=
+Fixpoint mpplus n (c : Z) (m : monom n) (p : poly n) : poly n :=
   match p with
     | nil => (c,m) :: nil
     | cons (c',m') p' =>
@@ -100,7 +100,7 @@ Fixpoint mpplus n (c : Z) (m : monom n) (p : poly n) {struct p} : poly n :=
       end
   end.
 
-Fixpoint pplus n (p1 p2 : poly n) {struct p1} : poly n :=
+Fixpoint pplus n (p1 p2 : poly n) : poly n :=
   match p1 with
     | nil => p2
     | cons (c,m) p' => mpplus c m (pplus p' p2)
@@ -122,7 +122,7 @@ Definition mmult n (m1 m2 : monom n) := Vmap2 plus m1 m2.
 Definition mpmult n c (m : monom n) (p : poly n) :=
   map (fun cm => (c * fst cm, mmult m (snd cm))) p.
 
-Fixpoint pmult n (p1 p2 : poly n) {struct p1} : poly n :=
+Fixpoint pmult n (p1 p2 : poly n) : poly n :=
   match p1 with
     | nil => nil
     | cons (c,m) p' => mpmult c m p2 + pmult p' p2
@@ -133,7 +133,7 @@ Infix "*" := pmult : poly_scope.
 (***********************************************************************)
 (** power *)
 
-Fixpoint ppower n (p : poly n) (k : nat) {struct k} : poly n :=
+Fixpoint ppower n (p : poly n) (k : nat) : poly n :=
   match k with
     | O => pconst n 1
     | S k' => p * ppower p k'
@@ -150,7 +150,7 @@ Fixpoint mcomp (n : nat) : monom n -> forall k, vector (poly k) n -> poly k :=
     | S _ => fun m _ ps => Vhead ps ^ Vhead m * mcomp (Vtail m) (Vtail ps)
   end.
 
-Fixpoint pcomp n (p : poly n) k (ps : vector (poly k) n) {struct p} : poly k :=
+Fixpoint pcomp n (p : poly n) k (ps : vector (poly k) n) : poly k :=
   match p with
     | nil => nil
     | cons (c,m) p' => cpmult c (mcomp m ps) + pcomp p' ps
@@ -171,7 +171,7 @@ Fixpoint meval (n : nat) : monom n -> vec n -> Z :=
     | S _ => fun m v => power (Vhead v) (Vhead m) * meval (Vtail m) (Vtail v)
   end.
 
-Fixpoint peval n (p : poly n) (v : vec n) {struct p} : Z :=
+Fixpoint peval n (p : poly n) (v : vec n) : Z :=
   match p with
     | nil => 0
     | cons (c,m) p' => c * meval m v + peval p' v

@@ -44,7 +44,7 @@ Fixpoint vars t :=
   match t with
     | Var x => singleton x
     | Fun f ts =>
-      let fix vars_vec n (ts : terms n) {struct ts} :=
+      let fix vars_vec n (ts : terms n) :=
         match ts with
           | Vnil => empty
           | Vcons u _ ts => union (vars u) (vars_vec _ ts)
@@ -53,7 +53,7 @@ Fixpoint vars t :=
   end.
 
 Definition vars_vec :=
-  fix vars_vec n (ts : terms n) {struct ts} :=
+  fix vars_vec n (ts : terms n) :=
   match ts with
     | Vnil => empty
     | Vcons u _ ts => union (vars u) (vars_vec _ ts)

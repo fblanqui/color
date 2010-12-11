@@ -28,7 +28,7 @@ Ltac case_beq := EqUtil.case_beq beq beq_ok.
 
 Section beq_list.
 
-Fixpoint beq_list (l m : list A) {struct l} :=
+Fixpoint beq_list (l m : list A) :=
   match l, m with
     | nil, nil => true
     | x :: l', y :: m' => beq x y && beq_list l' m'
@@ -78,7 +78,7 @@ End beq_list.
 (***********************************************************************)
 (** membership *)
 
-Fixpoint mem (x : A) (l : list A) {struct l} : bool :=
+Fixpoint mem (x : A) (l : list A) : bool :=
   match l with
     | nil => false
     | y :: m => beq x y || mem x m
@@ -95,7 +95,7 @@ Qed.
 (***********************************************************************)
 (** inclusion *)
 
-Fixpoint incl (l l' : list A) {struct l} : bool :=
+Fixpoint incl (l l' : list A) : bool :=
   match l with
     | nil => true
     | y :: m => mem y l' && incl m l'
@@ -115,7 +115,7 @@ Qed.
 
 Section position.
 
-Fixpoint position_aux (i : nat) (x : A) (l : list A) {struct l} : option nat :=
+Fixpoint position_aux (i : nat) (x : A) (l : list A) : option nat :=
   match l with
     | nil => None
     | y :: m => if beq x y then Some i else position_aux (S i) x m

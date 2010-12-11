@@ -73,7 +73,7 @@ Add Relation nat gt
 (***********************************************************************)
 (** boolean function for equality *)
 
-Fixpoint beq_nat (x y : nat) {struct x} :=
+Fixpoint beq_nat (x y : nat) :=
   match x, y with
     | 0, 0 => true
     | S x', S y' => beq_nat x' y'
@@ -102,7 +102,7 @@ Qed.
 (***********************************************************************)
 (** boolean functions for > and >= *)
 
-Fixpoint bgt_nat (x y : nat) {struct x} :=
+Fixpoint bgt_nat (x y : nat) :=
   match x, y with
     | 0, _ => false
     | S _, 0 => true
@@ -127,7 +127,7 @@ induction x; destruct y; simpl; split; intro;
 rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
-Fixpoint bge_nat (x y : nat) {struct x} :=
+Fixpoint bge_nat (x y : nat) :=
   match x, y with
     | 0, 0 => true
     | 0, _ => false

@@ -454,7 +454,7 @@ Qed.
 
 Notation context := (context Sig).
 
-Fixpoint subc (s : substitution) (c : context) {struct c} : context :=
+Fixpoint subc (s : substitution) (c : context) : context :=
   match c with
     | Hole => Hole
     | Cont f _ _ H v1 c' v2 =>
@@ -503,7 +503,7 @@ Qed.
 (***********************************************************************)
 (** function generating the sequence of terms Var x0, .., Var (x0+n-1) *)
 
-Fixpoint fresh (x0 n : nat) {struct n} : terms n :=
+Fixpoint fresh (x0 n : nat) : terms n :=
   match n as n return terms n with
     | 0 => Vnil
     | S n' => Vcons (Var x0) (fresh (S x0) n')
@@ -542,7 +542,7 @@ Qed.
 (***********************************************************************)
 (** generates a list of variables *)
 
-Fixpoint freshl (x0 n : nat) {struct n} : list variable :=
+Fixpoint freshl (x0 n : nat) : list variable :=
   match n with
     | 0 => nil
     | S n' => x0 :: freshl (S x0) n'

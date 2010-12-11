@@ -14,7 +14,7 @@ Require Import LogicUtil.
 
 Notation bools := (vector bool).
 
-Fixpoint Vtrue n (bs : bools n) {struct bs} : nat :=
+Fixpoint Vtrue n (bs : bools n) : nat :=
   match bs with
     | Vnil => 0
     | Vcons true _ bs' => S (Vtrue bs')

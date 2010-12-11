@@ -214,7 +214,7 @@ Qed.
 (***********************************************************************)
 (** shift terms *)
 
-Fixpoint shift_terms (p : nat) (l : list term) {struct l} : list term :=
+Fixpoint shift_terms (p : nat) (l : list term) : list term :=
   match l with
     | nil => nil
     | cons t l' => shift p t :: shift_terms (maxvar t + p + 1) l'
@@ -254,7 +254,7 @@ Qed.
 (***********************************************************************)
 (** shift rules *)
 
-Fixpoint shift_rules (p : nat) (R : rules) {struct R} : rules :=
+Fixpoint shift_rules (p : nat) (R : rules) : rules :=
   match R with
     | nil => nil
     | cons a R' => shift_rule p a :: shift_rules (maxvar(lhs a)+p+1) R'

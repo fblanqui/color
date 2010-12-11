@@ -131,8 +131,8 @@ Section Typing.
 
   Proof.
     refine(
-      fix Deriv_unique e t T (d1 d2 : Typing e t T) 
-        {struct d1 } : d1 = d2 :=
+      fix Deriv_unique e t T (d1 d2 : Typing e t T) {struct d1}
+       : d1 = d2 :=
       match d1 as d1' in Typing e1 t1 T1, 
 	    d2 as d2' in Typing e2 t2 T2 
       return 

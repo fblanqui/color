@@ -29,7 +29,7 @@ Section Path.
 
 Variable R : relation A.
 
-Fixpoint is_path (x y : A) (l : list A) {struct l} : Prop :=
+Fixpoint is_path (x y : A) (l : list A) : Prop :=
   match l with
     | nil => R x y
     | z::l' => R x z /\ is_path z y l'

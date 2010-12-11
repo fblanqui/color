@@ -305,7 +305,7 @@ Section Copy.
 
   Variable A : Type.
 
-  Fixpoint copy (n : nat) (el : A) {struct n} : list A := 
+  Fixpoint copy (n : nat) (el : A) : list A := 
   match n with
   | 0 => nil
   | S n => el :: copy n el
@@ -553,7 +553,7 @@ Section CountIn.
   Variable eqA_eq : Setoid_Theory A eqA.
   Add Setoid A eqA eqA_eq as sidA. 
 
-  Fixpoint countIn (a: A) (l: list A) {struct l}: nat :=
+  Fixpoint countIn (a: A) (l: list A) : nat :=
     match l with
       | nil => 0
       | x::xs => 
@@ -753,7 +753,7 @@ Section Remove.
   Variable eqA : A -> A -> Prop.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
 
-  Fixpoint removeElem (el: A) (l: list A) {struct l} : list A :=
+  Fixpoint removeElem (el: A) (l: list A) : list A :=
     match l with
     | nil => nil
     | hd::tl =>
@@ -763,7 +763,7 @@ Section Remove.
       end
     end.
 
-  Fixpoint removeAll (l m: list A) {struct m} : list A :=
+  Fixpoint removeAll (l m: list A) : list A :=
     match m with
     | nil => l
     | hd::tl => removeAll (removeElem hd l) tl

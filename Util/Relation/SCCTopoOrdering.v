@@ -104,7 +104,7 @@ Qed.
 (***********************************************************************)
 (** faster way to compute SCC'_tag but not certified *)
 
-Fixpoint bools_find_first n (v : vector bool n) {struct v} :=
+Fixpoint bools_find_first n (v : vector bool n) :=
   match v with
     | Vnil => None
     | Vcons true i w => Some 0

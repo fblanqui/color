@@ -64,7 +64,7 @@ Qed.
 (***********************************************************************)
 (** replacement of the hole *)
 
-Fixpoint fill (c : context) (t : term) {struct c} : term :=
+Fixpoint fill (c : context) (t : term) : term :=
   match c with
     | Hole => t
     | Cont f i j H v1 c' v2 => Fun f (Vcast (Vapp v1 (Vcons (fill c' t) v2)) H)
@@ -329,7 +329,7 @@ Qed.
 (***********************************************************************)
 (** boolean function deciding subterm_eq *)
 
-Fixpoint bsubterm_eq (t u : term) {struct u} : bool :=
+Fixpoint bsubterm_eq (t u : term) : bool :=
   match u with
     | Var _ => beq_term t u
     | Fun _ us => beq_term t u || bVexists (bsubterm_eq t) us

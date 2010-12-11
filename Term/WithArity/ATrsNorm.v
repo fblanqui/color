@@ -50,7 +50,7 @@ Section norm.
 
 Variable xs : variables.
 
-Fixpoint norm (t : term) {struct t} : term :=
+Fixpoint norm (t : term) : term :=
   match t with
     | Var x =>
       match position beq_nat x xs with
@@ -75,7 +75,7 @@ Variable symb_cmp : Sig -> Sig -> comparison.
 
 Require Import OrdDec.
 
-Fixpoint cmp (t u : term) {struct t} : comparison :=
+Fixpoint cmp (t u : term) : comparison :=
   match t, u with
     | Var x, Var y => nat_cmp x y
     | Var x, _ => Lt
@@ -83,8 +83,7 @@ Fixpoint cmp (t u : term) {struct t} : comparison :=
     | Fun f ts, Fun g us =>
       match symb_cmp f g with
         | Eq =>
-          let fix cmp_terms n (ts : terms n) p (us : terms p) {struct ts}
-            : comparison :=
+          let fix cmp_terms n (ts : terms n) p (us : terms p) : comparison :=
             match ts, us with
               | Vnil, Vnil => Eq
               | Vnil, _ => Lt

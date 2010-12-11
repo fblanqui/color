@@ -404,7 +404,7 @@ Definition step (p : problem) :=
     | _ => p
   end.
 
-Fixpoint iter_step k (p : problem) {struct k} :=
+Fixpoint iter_step k (p : problem) :=
   match k with
     | 0 => p
     | S k' => step (iter_step k' p)

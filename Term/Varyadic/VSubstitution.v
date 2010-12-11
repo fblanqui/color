@@ -20,7 +20,7 @@ Notation term := (term Sig). Notation terms := (list term).
 
 Definition substitution := variable -> term.
 
-Fixpoint sub (s : substitution) (t : term) {struct t} : term :=
+Fixpoint sub (s : substitution) (t : term) : term :=
   match t with
     | Var x => s x
     | Fun f ts => Fun f (map (sub s) ts)

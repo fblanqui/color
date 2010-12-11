@@ -34,7 +34,7 @@ Notation terms := (vector term).
 (***********************************************************************)
 (** context corresponding to a position *)
 
-Fixpoint context_pos (t : term) (ps : position) {struct t} : option context :=
+Fixpoint context_pos (t : term) (ps : position) : option context :=
   match t, ps with
     | _, nil => Some Hole
     | Var x, _ :: _ => None
@@ -96,7 +96,7 @@ Qed.
 (***********************************************************************)
 (** replace subterm at some position *)
 
-Fixpoint replace_pos (t : term) (ps : position) (u : term) {struct t}
+Fixpoint replace_pos (t : term) (ps : position) (u : term)
   : option term :=
   match t, ps with
     | _, nil => Some u
