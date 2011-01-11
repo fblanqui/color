@@ -22,7 +22,7 @@ Require Import Arith.
 
 Section S.
 
-Variable A : Set.
+Variable A : Type.
 
 (***********************************************************************)
 (** bound_path preserves middle exclusion and decidability for restrictions *)
@@ -70,19 +70,19 @@ Lemma bound_path_dec : forall l n,
   is_restricted R l -> rel_dec R -> rel_dec (bound_path R n).
 
 Proof.
-unfold rel_dec. induction n; intros. destruct (H0 x y). constructor. 
+unfold rel_dec. induction n; intros. destruct (X x y). constructor. 
 apply bp_intro with (nil : list A). trivial. simpl. assumption. constructor 2.
 intro. 
-inversion H1. destruct l0. simpl in H3. contradiction. simpl in H2. 
-exact (le_Sn_O (length l0) H2). destruct (IHn H H0 x y). constructor. 
+inversion H0. destruct l0. simpl in H2. contradiction. simpl in H1. 
+exact (le_Sn_O (length l0) H1). destruct (IHn H X x y). constructor. 
 apply bound_path_n_Sn. assumption. 
 assert ({z : A | In z l /\ R x z /\ bound_path R n z y}
 +{~exists z : A, In z l /\ R x z /\ bound_path R n z y}).
-apply dec_lem; tauto. destruct H1. constructor. destruct s. 
+apply dec_lem; tauto. destruct X0. constructor. destruct s. 
 apply R_bound_path_n_Sn with x0; tauto. 
-constructor 2. intro. pose (bound_path_Sn_n_or_Rn H1). destruct o.
+constructor 2. intro. pose (bound_path_Sn_n_or_Rn H0). destruct o.
 contradiction.
-destruct H2. assert (exists z : A, In z l /\ R x z /\ bound_path R n z y). 
+destruct H1. assert (exists z : A, In z l /\ R x z /\ bound_path R n z y). 
 exists x0. split. pose (H x x0). tauto. assumption. contradiction.   
 Qed.
 
