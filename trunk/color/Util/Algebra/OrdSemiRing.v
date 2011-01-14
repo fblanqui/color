@@ -880,7 +880,8 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Lemma gt_Fin_WF x : Acc (transp gt) (TPos x).
   Proof.
-    induction x using lt_wf_ind; apply Acc_intro; destruct y; auto || contradiction.
+    induction x using lt_wf_ind; apply Acc_intro; destruct y;
+      auto || contradiction.
   Qed.
 
   Hint Resolve gt_Fin_WF.
@@ -949,7 +950,8 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
 
   Proof.
-    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition; try discr.
+    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition;
+    try discr.
     inversion H1. subst. hyp.
   Qed.
 
