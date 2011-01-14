@@ -38,6 +38,9 @@ Module Type WeakRedPair.
   Parameter bsucceq : term -> term -> bool.
   Parameter bsucceq_sub : rel bsucceq << succeq.
 
+  Parameter trans_succ : transitive succ.
+  Parameter trans_succeq : transitive succeq.
+
 End WeakRedPair.
 
 (***********************************************************************)
@@ -208,6 +211,9 @@ Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
     apply succeq'_sub. hyp. discr.
   Qed.
 
+  Definition trans_succ := IR_transitive trans_succ.
+  Definition trans_succeq := IR_transitive trans_succeq.
+
 End WP_MonAlg.
 
 (***********************************************************************)
@@ -265,6 +271,18 @@ Module WP_Filter (Import F : Filter) <: WeakRedPair.
 
   Proof.
     intros t u h. apply bsucceq_sub. hyp.
+  Qed.
+
+  Lemma trans_succ : transitive succ.
+
+  Proof.
+    apply filter_trans. apply trans_succ.
+  Qed.
+
+  Lemma trans_succeq : transitive succeq.
+
+  Proof.
+    apply filter_trans. apply trans_succeq.
   Qed.
 
 End WP_Filter.
@@ -328,6 +346,18 @@ Module WP_Perm (Import F : Perm) <: WeakRedPair.
     intros t u h. apply bsucceq_sub. hyp.
   Qed.
 
+  Lemma trans_succ : transitive succ.
+
+  Proof.
+    apply filter_trans. apply trans_succ.
+  Qed.
+
+  Lemma trans_succeq : transitive succeq.
+
+  Proof.
+    apply filter_trans. apply trans_succeq.
+  Qed.
+
 End WP_Perm.
 
 (***********************************************************************)
@@ -387,6 +417,18 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
     intros t u h. apply bsucceq_sub. hyp.
   Qed.
 
+  Lemma trans_succ : transitive succ.
+
+  Proof.
+    apply proj_trans. apply trans_succ.
+  Qed.
+
+  Lemma trans_succeq : transitive succeq.
+
+  Proof.
+    apply proj_trans. apply trans_succeq.
+  Qed.
+
 End WP_Proj.
 
 (***********************************************************************)
@@ -444,6 +486,19 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
   Proof.
     intros t u. unfold rel, bsucceq. rewrite orb_eq. rewrite beq_term_ok.
     rewrite bsucc_ok. auto.
+  Qed.
+
+  Lemma trans_succ : transitive succ.
+
+  Proof.
+    unfold succ, arpo. apply Rof_trans. apply transp_trans.
+    apply VRPO_Results.lt_trans.
+  Qed.
+
+  Lemma trans_succeq : transitive succeq.
+
+  Proof.
+    unfold succeq. apply rc_trans. apply trans_succ.
   Qed.
 
 End WP_RPO.

@@ -156,8 +156,10 @@ Module ArcticBZInt (AI : TArcticBZInt).
     Definition succeq'_sub := @MBI.succeq'_sub mi_eval_ok.
     Definition succeq'_dec := MBI.succeq'_dec.
 
-    Definition refl_succeq := MBI.succeq_refl.
+    Definition refl_succeq := MBI.refl_succeq.
     Definition monotone_succeq := @MBI.monotone_succeq mi_eval_ok.
+    Definition trans_succeq := MBI.trans_succeq.
+    Definition trans_succ := AIBase.trans_succ.
 
     Definition succ_succeq_compat := AIBase.succ_succeq_compat ge_gt_eq.
 

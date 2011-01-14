@@ -8,16 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import AMonAlg.
-Require Import Matrix.
-Require Import OrdSemiRing.
-Require Import VecUtil.
-Require Import SN.
-Require Import RelUtil.
-Require Import LogicUtil.
-Require Import Setoid.
-Require Import AMatrixBasedInt.
-Require Import VecEq.
+Require Import AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil LogicUtil Setoid
+  AMatrixBasedInt VecEq VecOrd.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TArcticBasedInt.
@@ -87,11 +79,25 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       transitivity y; hyp. transitivity y0; hyp.
     Qed.
 
-    Definition succ_vec (x y : vec) := Vforall2n gtx x y.
+    Lemma gtx_trans : transitive gtx.
+
+    Proof.
+      unfold gtx. intros x y z. intuition.
+      left. apply OSR.gt_trans with y; hyp.
+      rewrite H2. rewrite H0 in H1. auto.
+      rewrite H. rewrite H2 in H1. auto.
+    Qed.
+
+    Definition succ_vec := VecOrd.vec_ge gtx. (*REMOVE (x y : vec) := Vforall2n gtx x y.*)
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
-    Variable succ_wf : WF succ.
+    Lemma trans_succ : transitive succ.
+
+    Proof.
+      unfold succ. apply Rof_trans. unfold succ_vec. apply VecOrd.vec_ge_trans.
+      apply gtx_trans.      
+    Qed.
 
     Lemma ge_gtx_compat : forall x y z, x >>= y -> y >_0 z -> x >_0 z.
 
@@ -99,6 +105,8 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       unfold gtx. intuition. left. apply ge_gt_compat with y; hyp.
       rewrite H2. rewrite H0 in H. destruct (ge_gt_eq H); intuition.
     Qed.
+
+    Variable succ_wf : WF succ.
 
     Variable gtx_plus_compat : forall m m' n n',
       m >_0 m' -> n >_0 n' -> m + n >_0 m' + n'.
