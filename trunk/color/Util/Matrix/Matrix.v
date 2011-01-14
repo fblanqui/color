@@ -8,15 +8,8 @@ See the COPYRIGHTS and LICENSE files.
   Matrices as a functor.
 *)
 
-Require Import VecArith.
-Require Import OrdSemiRing.
-Require Import VecUtil.
-Require Import NatUtil.
-Require Import LogicUtil.
-Require Import Relations.
-Require Import List.
-Require Import Setoid.
-Require Import VecEq.
+Require Import VecArith OrdSemiRing VecUtil NatUtil LogicUtil Relations List
+  Setoid VecEq VecOrd.
 
 Set Implicit Arguments.
 
