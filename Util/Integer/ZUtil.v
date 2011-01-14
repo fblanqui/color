@@ -223,7 +223,7 @@ Definition Dge := transp Dle.
 Require Import Zwf.
 Require Import Wellfounded.
 
-Lemma Dlt_well_founded : well_founded Dlt.
+Lemma well_founded_Dlt : well_founded Dlt.
 
 Proof.
 unfold Dlt. apply wf_incl with (R2 := (fun x y : D => Zwf 0 (val x) (val y))).
@@ -236,7 +236,7 @@ Require Import SN.
 Lemma WF_Dgt : WF Dgt.
 
 Proof.
-apply wf_transp_WF. apply Dlt_well_founded.
+apply wf_transp_WF. apply well_founded_Dlt.
 Qed.
 
 Lemma power_Dlt_compat : forall x y n,
@@ -248,6 +248,24 @@ induction n; simpl; intros. omega. ded (IHn H).
 apply Zle_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
 omega. assumption. apply Zmult_gt_0_lt_compat_r. apply Zlt_gt.
 apply Zmult_lt_O_compat. omega. apply spos_power. omega. assumption.
+Qed.
+
+Lemma trans_Dgt : transitive Dgt.
+
+Proof.
+intros [x hx] [y hy] [z hz]. unfold Dgt, Dlt, transp. simpl. omega.
+Qed.
+
+Lemma trans_Dge : transitive Dge.
+
+Proof.
+intros [x hx] [y hy] [z hz]. unfold Dge, Dle, transp. simpl. omega.
+Qed.
+
+Lemma refl_Dge : reflexive Dge.
+
+Proof.
+intros [x hs]. unfold Dge, Dle, transp. simpl. refl.
 Qed.
 
 (***********************************************************************)
