@@ -11,11 +11,8 @@ general definitions and results about relations
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Export Relations.
-Require Import Setoid.
-Require Export RelMidex.
-Require Import Basics.
+Require Import LogicUtil Setoid Basics.
+Require Export Relations RelMidex.
 
 Implicit Arguments transp [A].
 Implicit Arguments inclusion [A].
