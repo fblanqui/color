@@ -4,15 +4,14 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-01-24
 
-symmetric product on vectors
+orderings on vectors
 *)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import VecUtil.
-Require Import Relations.
-Require Import NatUtil.
+Require Import LogicUtil VecUtil Relations NatUtil RelMidex.
+
+Implicit Arguments symprod [A B].
 
 Section S.
 
@@ -22,9 +21,8 @@ Notation vec := (vector A).
 
 Infix ">A" := gtA (at level 70).
 
-Require Import Relations.
-
-Implicit Arguments symprod [A B].
+(***********************************************************************)
+(** step-wise product order *)
 
 Fixpoint Vgt_prod n : vec n -> vec n -> Prop :=
   match n with
@@ -162,6 +160,44 @@ induction v; intros; simpl. exact I. split.
 apply (SN_gt_prod_head H). apply IHv. apply (SN_gt_prod_tail H).
 Qed.
 
+(***********************************************************************)
+(** product ordering on vectors *)
+
+Notation ge := @gtA.
+
+Definition vec_ge := Vforall2n ge.
+
+Infix ">=v" := vec_ge (at level 70).
+
+Lemma vec_tail_ge : forall n (v v' : vec (S n)),
+  v >=v v' -> Vtail v >=v Vtail v'.
+
+Proof.
+  intros. unfold vec_ge. apply Vforall2n_tail. assumption.
+Qed.
+
+Lemma vec_ge_refl : reflexive ge -> forall n, reflexive (@vec_ge n).
+
+Proof.
+  intros ge_refl n x. unfold vec_ge. apply Vforall2n_intro. auto.
+Qed.
+
+Lemma vec_ge_trans : transitive ge -> forall n, transitive (@vec_ge n).
+
+Proof.
+  intros ge_trans n x y z xy yz. unfold vec_ge. apply Vforall2n_intro. intros.
+  apply ge_trans with (Vnth y ip); apply (Vforall2n_nth ge); hyp.
+Qed.
+
+Variable ge_dec : forall x y, {ge x y}+{~ge x y}.
+
+Lemma vec_ge_dec : forall n, rel_dec (@vec_ge n).
+
+Proof.
+  intros n P Q. destruct (Vforall2n_dec ge_dec P Q); intuition.
+Defined.
+
 End S.
 
 Implicit Arguments Vgt_prod_gt [A gtA n v1 v2].
+Implicit Arguments vec_ge_dec [A gtA n].
