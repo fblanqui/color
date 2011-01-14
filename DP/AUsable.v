@@ -1185,7 +1185,7 @@ apply (@Usablerules_IS _ M H H0 _ H1 H3 H11 WP H15 H16 H10 f g H9).
 Qed.
 
 Lemma usable_rules_criterion : forall M D,
- let D' := (filter (brule (neg bsucc)) D) in
+ let D' := filter (brule (neg bsucc)) D in
  let UC := usable_rules M D in
  let G := fun f => defined f M && negb (defined f UC) in
   brules_preserve_vars M = true ->
@@ -1230,3 +1230,39 @@ rewrite forallb_forall; unfold D0. intros. rewrite filter_In in H7. intuition.
 Qed.
 
 End UsableRules.
+
+(***********************************************************************)
+(** build an extended signature from a signature *)
+
+Section MakeExtSig.
+
+  Variable Sig : Signature.
+
+  Inductive ext_symb : Type := Symb : Sig -> ext_symb | Pair : ext_symb.
+
+  Definition ext_arity f :=
+    match f with
+      | Symb f => arity f
+      | Pair => 2
+    end.
+
+  Definition beq_ext_symb f g :=
+    match f, g with
+      | Symb f', Symb g' => beq_symb f' g'
+      | Pair, Pair => true
+      | _, _ => false
+    end.
+
+  Lemma beq_ext_symb_ok : forall f g, beq_ext_symb f g = true <-> f = g.
+
+  Proof.
+    destruct f; destruct g; simpl.
+    rewrite beq_symb_ok. intuition. subst s0. refl. inversion H. refl.
+    intuition. discr. intuition. discr. tauto.
+  Qed.
+
+  Definition ext_sig := mkSignature ext_arity beq_ext_symb_ok.
+
+  Definition ext := ExtSig.Make ext_sig Pair (refl_equal 2).
+
+End MakeExtSig.
