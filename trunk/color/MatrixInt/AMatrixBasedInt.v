@@ -8,25 +8,15 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Matrix.
-Require Import AMonAlg.
-Require Import VecUtil.
-Require Import OrdSemiRing.
-Require Import ATrs.
-Require Import LogicUtil.
-Require Import RelUtil.
-Require Import NatUtil.
-Require Import AWFMInterpretation.
-Require Import Max.
-Require Import VecEq.
-Require Import Setoid.
+Require Import Matrix AMonAlg VecUtil OrdSemiRing ATrs LogicUtil RelUtil
+  NatUtil AWFMInterpretation Max VecEq Setoid VecOrd.
 
 Section MatrixLinearFunction.
 
   Variables (A : Type) (matrix : nat -> nat -> Type) (dim argCnt : nat).
 
-   (* function interpretation : one [dim]x[dim] matrix per argument and
-      one vector of dimension [dim] for a constant factor *)
+  (* function interpretation : one [dim]x[dim] matrix per argument and
+     one vector of dimension [dim] for a constant factor *)
   Record matrixInt : Type := mkMatrixInt {
     const : vector A dim;
     args : vector (matrix dim dim) argCnt
@@ -63,9 +53,7 @@ Module Type MatrixMethodConf.
 
 End MatrixMethodConf.
 
-Module MatrixBasedInt (MC : MatrixMethodConf).
-
-  Export MC.
+Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   Add Parametric Relation k : (vector vec k) (@VecEq.eq_vec _ eq_vec k)
     reflexivity proved by (@eq_vec_refl _ _ eq_vec_st k)
@@ -187,23 +175,23 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
   Defined.
 
   Definition I := @mkInterpretation sig dom dom_zero mi_eval.
-  
+
+(*REMOVE: unusued
   Variable succ : relation dom.
-  Notation "x >v y" := (succ x y) (at level 70).
+  Notation "x >v y" := (succ x y) (at level 70).*)
 
   Definition succeq (x y : dom) := (dom2vec x) >=v (dom2vec y).
 
-  Lemma succeq_refl : reflexive succeq.
+  Lemma refl_succeq : reflexive succeq.
       
   Proof.
     intro x. apply vec_ge_refl.
   Qed.
 
-  Lemma succeq_trans : transitive succeq.
+  Lemma trans_succeq : transitive succeq.
       
   Proof.
-    intros x y z xy yz. unfold succeq.
-    apply (vec_ge_trans (dom2vec x) (dom2vec y)); assumption.
+    unfold succeq. apply Rof_trans. apply vec_ge_trans.
   Qed.
 
   (** Monotonicity *)
@@ -365,7 +353,7 @@ Module MatrixBasedInt (MC : MatrixMethodConf).
       end.
     Defined.
 
-    Notation IR_succ := (IR I succ).
+    (*REMOVE: unused: Notation IR_succ := (IR I succ).*)
     Notation IR_succeq := (IR I succeq).
 
     Definition mint_eval (val : valuation I) k (mi : mint k) : vec :=

@@ -354,6 +354,32 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     intros t u. unfold rel. intro h. apply bsucceq_ok. hyp.
   Qed.
 
+  Lemma trans_succ : transitive succ.
+
+  Proof.
+    unfold succ. apply transp_trans. apply Rof_trans.
+    intros t u v htu huv. apply rpo_trans with u; hyp.
+  Qed.
+
+  Lemma trans_equiv_aterm : transitive equiv_aterm.
+
+  Proof.
+    unfold equiv_aterm. apply Rof_trans.
+    apply (equiv_trans _ _ (equiv_equiv Prec)).
+  Qed.
+
+  Lemma trans_succeq : transitive succeq.
+
+  Proof.
+    unfold succeq, Relation_Operators.union, transitive. intuition.
+    left. apply trans_succ with y; hyp.
+    left. gen H. unfold equiv_aterm, succ, transp, Rof. intro.
+    rewrite <- equiv_rpo_equiv_2. apply H1. hyp.
+    left. gen H1. unfold equiv_aterm, succ, transp, Rof. intro.
+    rewrite equiv_rpo_equiv_1. apply H. hyp.
+    right. apply trans_equiv_aterm with y; hyp.
+  Qed.
+
 End WP_RPO.
 
 (***********************************************************************)

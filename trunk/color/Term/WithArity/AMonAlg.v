@@ -45,10 +45,11 @@ Module Type MonotoneAlgebraType.
   Notation A := (domain I).
 
   Parameter succ : relation A.
-  
   Parameter succeq : relation A.
 
   Parameter refl_succeq : reflexive succeq.
+  Parameter trans_succ : transitive succ.
+  Parameter trans_succeq : transitive succeq.
   
   Parameter monotone_succeq : monotone I succeq.
 
@@ -61,6 +62,7 @@ Module Type MonotoneAlgebraType.
 
   Notation IR_succ := (IR I succ).
   Notation IR_succeq := (IR I succeq).
+
   Notation term := (term Sig).
 
   Parameters (succ' : relation term) (succeq' : relation term).

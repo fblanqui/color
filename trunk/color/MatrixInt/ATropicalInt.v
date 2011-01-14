@@ -212,8 +212,9 @@ Module TropicalInt (Import AI : TTropicalInt).
     Definition succeq'_sub := @MBI.succeq'_sub mi_eval_ok.
     Definition succeq'_dec := MBI.succeq'_dec.
 
-    Definition refl_succeq := MBI.succeq_refl.
+    Definition refl_succeq := MBI.refl_succeq.
     Definition monotone_succeq := @MBI.monotone_succeq mi_eval_ok.
+    Definition trans_succeq := MBI.trans_succeq.
 
     Definition succ_succeq_compat := AIBase.succ_succeq_compat ge_gt_eq.
 
@@ -233,6 +234,13 @@ Module TropicalInt (Import AI : TTropicalInt).
       intuition.
       fold (@Rof dom A gt (fun v => vec_at0 (dom2vec v))).
       apply WF_inverse. apply gt_WF.
+    Qed.
+
+    Lemma trans_succ : transitive succ.
+
+    Proof.
+      unfold succ, AIBase.succ. apply Rof_trans. unfold succ_vec.
+      apply VecOrd.vec_ge_trans. apply gtx_trans.
     Qed.
   
   End MonotoneAlgebra.

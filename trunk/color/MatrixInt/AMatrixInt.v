@@ -17,7 +17,7 @@ References:
 Set Implicit Arguments.
 
 Require Import LogicUtil Setoid AMatrixBasedInt Matrix OrdSemiRing VecUtil
-  AMonAlg SN RelUtil AWFMInterpretation VecEq NatUtil.
+  AMonAlg SN RelUtil AWFMInterpretation VecEq NatUtil VecOrd.
 
 Import NMatrix.
 
@@ -78,8 +78,9 @@ Module MatrixInt (MI : TMatrixInt).
 
     Definition succeq := MBI.succeq.
 
-    Definition refl_succeq := MBI.succeq_refl.
+    Definition refl_succeq := MBI.refl_succeq.
     Definition monotone_succeq := @MBI.monotone_succeq mi_eval_ok.
+    Definition trans_succeq := MBI.trans_succeq.
 
     Definition succeq' := MBI.succeq'.
     Definition succeq'_sub := @MBI.succeq'_sub mi_eval_ok.
@@ -98,11 +99,18 @@ Module MatrixInt (MI : TMatrixInt).
       apply WF_inverse. apply gt_WF.
     Qed.
 
+    Lemma trans_succ : transitive succ.
+
+    Proof.
+      unfold succ. apply Rof_trans. unfold succ_vec.
+      intros v1 v2 v3 h12 h23. intuition. apply vec_ge_trans with v2; hyp.
+    Qed.
+
     Lemma succ_succeq_compat : absorb succ succeq.
 
     Proof.
       intros x z xz. destruct xz as [y [xy yz]]. split.
-      apply succeq_trans with y. hyp. destruct yz. hyp.
+      apply trans_succeq with y. hyp. destruct yz. hyp.
       apply ge_gt_compat with (Vnth (dom2vec y) dim_pos). unfold MBI.vec_at0.
       apply (Vforall2n_nth ge). hyp. 
       destruct yz. hyp.

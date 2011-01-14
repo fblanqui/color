@@ -17,7 +17,7 @@ References:
 Set Implicit Arguments.
 
 Require Import LogicUtil Setoid AMatrixBasedInt Matrix OrdSemiRing VecUtil
-  AMonAlg SN RelUtil AWFMInterpretation VecEq NatUtil BigNUtil.
+  AMonAlg SN RelUtil AWFMInterpretation VecEq NatUtil BigNUtil VecOrd.
 Import BigNMatrix.
 
 (** Module type for proving termination with matrix interpretations *)
@@ -33,9 +33,7 @@ End TMatrixInt.
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
 
-Module MatrixInt (MI : TMatrixInt).
-
-  Export MI.
+Module MatrixInt (Export MI : TMatrixInt).
 
   Module Conf <: MatrixMethodConf.
 
@@ -78,8 +76,9 @@ Module MatrixInt (MI : TMatrixInt).
     Definition I := MBI.I mi_eval_ok.
 
     Definition succeq := MBI.succeq.
-    Definition refl_succeq := MBI.succeq_refl.
+    Definition refl_succeq := MBI.refl_succeq.
     Definition monotone_succeq := @MBI.monotone_succeq mi_eval_ok.
+    Definition trans_succeq := MBI.trans_succeq.
 
     Definition succeq' := MBI.succeq'.
     Definition succeq'_sub := @MBI.succeq'_sub mi_eval_ok.
@@ -89,6 +88,14 @@ Module MatrixInt (MI : TMatrixInt).
     
     Definition succ_vec v1 v2 := v1 >=v v2 /\ vec_at0 v1 > vec_at0 v2.
     Definition succ v1 v2 := succ_vec (dom2vec v1) (dom2vec v2).
+
+    Lemma trans_succ : transitive succ.
+
+    Proof.
+      unfold succ. apply Rof_trans. unfold succ_vec.
+      intros v1 v2 v3 h12 h23. intuition. apply vec_ge_trans with v2; hyp.
+      apply gt_trans with (vec_at0 v2); hyp.
+    Qed.
 
     Lemma succ_wf : WF succ.
 
@@ -102,7 +109,7 @@ Module MatrixInt (MI : TMatrixInt).
 
     Proof.
       intros x z xz. destruct xz as [y [xy yz]]. split.
-      apply succeq_trans with y. assumption. destruct yz. assumption.
+      apply trans_succeq with y. assumption. destruct yz. assumption.
       apply ge_gt_compat with (Vnth (dom2vec y) dim_pos). unfold MBI.vec_at0.
       apply (Vforall2n_nth ge). assumption. 
       destruct yz. assumption.
