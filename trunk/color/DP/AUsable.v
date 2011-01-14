@@ -14,7 +14,7 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 Set Implicit Arguments.
 
 Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation
-  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls.
+  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls RelDec RelSub.
 
 Section UsableRulesDefs.
 
@@ -28,6 +28,13 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 
 Definition def_symbs R (t : term) := filter (fun x => defined x R) (symbs t).
 
+Lemma def_symbs_incl : forall R a t, def_symbs R t [= def_symbs (a :: R) t.
+Proof.
+intros. intro x; unfold def_symbs. rewrite !filter_In; simpl.
+destruct a as [[] r]; simpl; auto. rewrite orb_true_iff.
+intro H. destruct H; split; auto.
+Qed.
+
 Definition root_eq (f : Sig) (t : term) : bool :=
   match t with | Fun g _ => beq_symb f g | _ => false end.
 
@@ -38,13 +45,194 @@ Definition symb_ord R : relation Sig := fun f g =>
   exists a, In a R /\ root_eq f (lhs a) = true /\ In g (def_symbs R (rhs a)).
 
 (***********************************************************************)
-(** We suppose the existence of a function (succs_symb) that compute
+(** Definition of the function succs_symb that compute
   all the successors of a defined symbol by the transitive closure of
-  the relation sym_ord. This can be removed by the definition of such
-  recursive function.*)
+  the relation sym_ord.*)
 
-Variable succs_symb : { F : rules -> Sig -> list Sig |
- forall R f g, In g (F R f) <-> (defined f R = true /\ (symb_ord R)# f g)}.
+Lemma symb_ord_cons : forall a R f g, symb_ord R f g -> symb_ord (a :: R) f g.
+Proof.
+intros. destruct H as [h [Hh1 [Hh2 Hh3]]]. exists h. split.
+  apply in_cons; auto.
+split; auto. unfold def_symbs; simpl. destruct a as [[] r]; simpl; auto.
+unfold def_symbs in Hh3; rewrite filter_In in Hh3; rewrite filter_In.
+split; destruct Hh3; auto. rewrite orb_true_iff, H0; right; auto.
+Qed.
+
+Lemma symb_ord_cons_var : forall R f g n r,
+ symb_ord ((mkRule (Var n) r) :: R) f g -> symb_ord R f g.
+Proof.
+intros.
+destruct H as [x [H [H1 H2]]].
+destruct (in_inv H).
+  rewrite <-H0 in H1; simpl in H1; inversion H1.
+exists x; split; auto.
+Qed.
+
+Fixpoint symb_ord_img_rec R Rc f : list Sig := 
+match Rc with nil => nil
+| a :: R' =>
+   if root_eq f (lhs a) && Inb (@eq_rule_dec Sig) a R then
+   (def_symbs R (rhs a)) ++ symb_ord_img_rec R R' f
+   else symb_ord_img_rec R R' f
+end.
+
+Lemma symb_ord_img_rec_cons1 : forall Rc a R f,
+ (symb_ord_img_rec R Rc f) [= (symb_ord_img_rec (a :: R) Rc f).
+Proof.
+intro Rc; elim Rc; simpl; intros.
+  apply incl_refl.
+destruct (eq_rule_dec a a0).
+case_eq (root_eq f (lhs a)); simpl.
+case_eq (Inb (@eq_rule_dec _) a R).
+apply app_incl. apply def_symbs_incl. apply H.
+apply incl_appr; apply H.
+apply H.
+case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R).
+apply app_incl. apply def_symbs_incl. apply H.
+apply H.
+Qed.
+
+Lemma symb_ord_img_rec_cons2 : forall Rc a R f,
+ (symb_ord_img_rec R Rc f) [= (symb_ord_img_rec R (a :: Rc) f).
+Proof.
+intros; simpl.
+case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R).
+apply incl_appr; apply incl_refl.
+apply incl_refl.
+Qed.
+
+Lemma symb_ord_img_recP1 : forall Rc R f g,
+ In g (symb_ord_img_rec R Rc f) -> symb_ord R f g.
+Proof.
+intro Rc; elim Rc; simpl; intros; try tauto.
+case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); rewrite H1 in H0.
+Focus 2. apply (H R f g H0).
+rewrite andb_true_iff in H1; destruct H1. destruct (in_app_or H0).
+  exists a; split; auto. apply (Inb_true (@eq_rule_dec _) _ _ H2).
+apply (H R f g H3).
+Qed.
+
+Lemma symb_ord_img_recP2 : forall Rc R f g a,
+ In g (def_symbs R (rhs a)) -> In a R -> In a Rc -> root_eq f (lhs a) = true ->
+ In g (symb_ord_img_rec R Rc f).
+Proof.
+intro Rc; elim Rc; intros. inversion H1.
+destruct (in_inv H2).
+simpl. subst. rewrite H3. rewrite (Inb_intro (@eq_rule_dec _) _ _ H1). simpl.
+apply in_appl; auto.
+apply symb_ord_img_rec_cons2. apply (H R f g a0); auto.
+Qed.
+
+Lemma symb_ord_img_rec_incl : forall Rc1 Rc2 R f,
+ Rc1 [= Rc2 -> (symb_ord_img_rec R Rc1 f) [= (symb_ord_img_rec R Rc2 f).
+Proof.
+intros Rc1. induction Rc1.
+simpl; intros. apply incl_nil.
+intros. simpl.
+case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R). Focus 2.
+apply IHRc1. apply incl_cons_l_incl with (x := a); auto.
+apply incl_app. intros g Hg. rewrite andb_true_iff in H0. destruct H0.
+apply symb_ord_img_recP2 with (a := a); auto.
+apply (Inb_true (@eq_rule_dec _) _ _ H1). apply (incl_cons_l_in H).
+apply IHRc1. apply incl_cons_l_incl with (x := a); auto.
+Qed.
+
+Lemma symb_ord_img_incl : forall Rc R f g,
+ R [= Rc -> symb_ord R f g -> In g (symb_ord_img_rec R Rc f).
+Proof.
+intros. apply symb_ord_img_rec_incl with (Rc1 := R); auto.
+destruct H0 as [a [H0 [H1 H2]]]. apply symb_ord_img_recP2 with (a := a); auto.
+Qed.
+
+Definition symb_ord_img R f := symb_ord_img_rec R R f.
+
+Lemma symb_ord_imgP : forall R f g, In g (symb_ord_img R f) <-> symb_ord R f g.
+Proof.
+unfold symb_ord_img; intros; split.
+  apply symb_ord_img_recP1.
+intros. destruct H as [a [H0 [H1 H2]]].
+apply (symb_ord_img_recP2 R R f g a); auto.
+Qed.
+
+Lemma sym_ord_dec : forall R, rel_dec (symb_ord R).
+Proof.
+intros R a b.
+case_eq (Inb (@eq_symb_dec _) b (symb_ord_img R a)).
+left. rewrite <- symb_ord_imgP. apply (Inb_true (@eq_symb_dec _) _ _ H).
+right. intro. rewrite  <- symb_ord_imgP in H0.
+apply (Inb_false (@eq_symb_dec _) _ _ H); auto.
+Qed.
+
+(* List of root symbols of the left hand side of a list rules *)
+Fixpoint root_lhs_rules (R : rules) : list Sig :=
+ match R with nil => nil
+ | a :: R' => match lhs a with Fun f _ => (f :: root_lhs_rules R')
+              | _ => root_lhs_rules R'
+              end
+ end.
+
+Lemma root_lhsP : forall R f,
+ In f (root_lhs_rules R) <-> exists a, In a R /\ root_eq f (lhs a) = true.
+Proof.
+induction R; simpl.
+intro. split; try tauto. intro. destruct H as [a [H _]]; auto.
+intro. destruct a as [[n| F vs] r]; simpl.
+split; intro. destruct (proj1 (IHR f) H) as [a [H0 H1]]. exists a; split; auto.
+destruct H as [a [H0 H1]]. destruct H0.
+destruct a as [[n' | F vs] r']. simpl in H1. inversion H1. inversion H.
+apply (IHR f). exists a; auto.
+split; intro. destruct H.
+exists (mkRule (Fun F vs) r). split. left; auto. simpl.
+rewrite H, beq_symb_ok; auto.
+destruct (proj1 (IHR f) H) as [a [H0 H1]]. exists a; split; auto.
+destruct H as [a [H H0]]. destruct H.
+destruct a as [[n | F' vs'] r']. inversion H0. inversion H. simpl in H0.
+rewrite <-H2 in H0. rewrite beq_symb_ok in H0; auto.
+right. apply (IHR f). exists a; auto.
+Qed.
+
+Lemma succs_symb_proof_tc : forall (R : rules) (f : Sig),
+ {l : list Sig | forall g, In g l <-> (symb_ord R)! f g}.
+Proof.
+intros R f.
+pose (symb_ord_dom :=
+ root_lhs_rules R ++ flat_map (fun x => symb_ord_img R x) (root_lhs_rules R)).
+assert (symb_ord_domP : is_restricted (symb_ord R) symb_ord_dom).
+intros x y Hxy. unfold symb_ord_dom. rewrite in_app. split.
+left. destruct Hxy as [a [H0 [H1 H2]]]. rewrite root_lhsP.
+exists a; auto.
+rewrite in_app, in_flat_map; right. exists x. split.
+destruct Hxy as [a [H0 [H1 H2]]]. rewrite root_lhsP. exists a; auto.
+rewrite symb_ord_imgP. auto.
+assert (trs_dec : rel_dec (symb_ord R !)).
+apply resticted_dec_clos_trans_dec with (l := symb_ord_dom); auto.
+intros x y. destruct (eq_symb_dec x y); auto.
+apply sym_ord_dec.
+pose (P := fun x => if (trs_dec f x) then true else false).
+pose (ls := filter P (list_defined R)).
+exists ls. intro. split; intro.
+unfold ls, P in H; rewrite filter_In in H. destruct H.
+destruct (trs_dec f g); auto. inversion H0.
+unfold ls, P. rewrite filter_In. destruct (trs_dec f g); try tauto.
+split; auto. clear c.
+induction H; auto. destruct H as [a [H0 [H1 H2]]].
+unfold def_symbs in H2; rewrite filter_In in H2. destruct H2 as [_ H2].
+apply defined_list_ok; auto.
+Defined.
+
+Lemma succs_symb_proof : forall (R : rules) (f : Sig),
+ {l : list Sig | forall g, In g l <-> (symb_ord R)# f g}.
+Proof.
+intros. destruct (succs_symb_proof_tc R f) as [l' Hl].
+exists (f :: l'). intro. split; intro.
+destruct (in_inv H). subst. apply rtc_refl.
+apply tc_incl_rtc. apply Hl; auto.
+rewrite In_cons; destruct (rtc_split H). subst; auto.
+right. apply Hl; auto.
+Qed.
+
+Definition succs_symb R f : list Sig := projT1 (succs_symb_proof R f).
+Definition succs_symbP R f := projT2 (succs_symb_proof R f).
 
 (***********************************************************************)
 (* Building the set of the successors of a list of symbols *)
@@ -52,11 +240,11 @@ Variable succs_symb : { F : rules -> Sig -> list Sig |
 Fixpoint succs_symbs R (fs : list Sig) : list Sig :=
   match fs with
     | nil => nil
-    | f :: fs' => ((projT1 succs_symb) R f) ++ succs_symbs R fs'
+    | f :: fs' => (succs_symb R f) ++ succs_symbs R fs'
   end.
 
 Lemma in_succs_symbs : forall R l f, In f (succs_symbs R l) <->
- exists g, In g l /\ In f ((projT1 succs_symb) R g).
+ exists g, In g l /\ In f (succs_symb R g).
 
 Proof.
 intros. induction l. simpl. split; try tauto. intro. destruct H. tauto.
@@ -87,11 +275,10 @@ Proof.
 intros. unfold tusable_rules, rrules_list. rewrite filter_In. split; intro.
 destruct H. split; auto. simpl in H0. generalize (Inb_true _ _ _ H0).
 rewrite in_succs_symbs. intro. destruct H1 as [g H1]. destruct H1 as [H1 H2].
-exists g. split; auto. rewrite (projT2 succs_symb R g f) in H2. intuition.
+exists g. split; auto. rewrite (succs_symbP R g f) in H2. intuition.
 simpl. destruct H. split; auto. apply Inb_intro. rewrite in_succs_symbs.
 destruct H0 as [g H0]; destruct H0. exists g. split; auto.
-rewrite (projT2 succs_symb R g f); split; auto. unfold def_symbs in H0. 
-rewrite filter_In in H0; intuition.
+rewrite (succs_symbP R g f); auto.
 Qed.
  
 Fixpoint usable_rules R (C : rules) : rules :=
@@ -394,11 +581,7 @@ Section UsableRulesProp.
 
     (* needed to be sure that the function reducts return the list of
          all reducts *)
-    (NVlR : forallb (@is_notvar_lhs Sig) R = true)
-
-    (* Transitive closure of the order on symbols *)
-    (succs_symb : { F : rules -> Sig -> list Sig | forall R f g,
-      In g (F R f) <-> (defined f R = true /\ (symb_ord R)# f g)}).
+    (NVlR : forallb (@is_notvar_lhs Sig) R = true).
 
   Lemma SN_reducts_def : forall t f v, SN (red R U supterm) t ->
     t = Fun f v -> forall i, i < length (reducts R (Fun f v)) ->
@@ -674,7 +857,7 @@ generalize (diff_false_true H6). tauto.
     Variable C : rules.
 
     Notation P := (red (proj_cons Sig)).
-    Notation UC := (usable_rules succs_symb R C).
+    Notation UC := (usable_rules R C).
     Notation G := (fun f => defined f R && negb (defined f UC)).
 
     Lemma SN_ctx_l : forall c u f i j (H : i + S j = arity f) v1 v2,
@@ -727,7 +910,7 @@ induction c; intros; simpl in H1, H2.
 (* 1 *) assert (UClr : In (mkRule l r) UC).
 generalize (Inb_intro (@eq_rule_dec Sig) _ _ Rlr).
 rewrite <- forallb_forall in NVlR.
-rewrite (Inb_equiv (@eq_rule_dec Sig) _  (urules_equiv succs_symb R C NVlR)).
+rewrite (Inb_equiv (@eq_rule_dec Sig) _  (urules_equiv R C NVlR)).
 intro. generalize (Inb_true _ _ _ H). rewrite in_app. intro. destruct H3; auto.
 unfold rrules_list in H3; rewrite filter_In in H3; destruct H3 as [_ H3].
 simpl in H3. destruct l. discriminate H3.
@@ -805,7 +988,7 @@ Require Import AInfSeq NotSN_IS.
 Variable C : rules.
 
 Notation P := (proj_cons Sig).
-Notation UC := (usable_rules succs_symb R C).
+Notation UC := (usable_rules R C).
 Notation G := (fun f => defined f R && negb (defined f UC)).
 
 Variables (HC : rules_preserve_vars C)
@@ -954,9 +1137,6 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 Axiom (WF_IS : forall M D : rules,
   ~WF (hd_red_Mod (red M #) D) <-> exists f, exists g, ISModMin M D f g).
 
-Variable succs_symb : { F : rules -> Sig -> list Sig |
- forall R f g, In g (F R f) <-> (defined f R = true /\ (symb_ord R)# f g)}.
-
 Variable WP : weakRedPairType Sig.
 
 Notation succ := (succ WP).
@@ -966,7 +1146,7 @@ Notation bsucceq := (bsucceq WP).
 Notation P := (proj_cons Sig).
 
 Lemma usable_rules_WF : forall M D1 D2,
- let UC := usable_rules succs_symb M (D1 ++ D2) in
+ let UC := usable_rules M (D1 ++ D2) in
  let G := fun f => defined f M && negb (defined f UC) in
   brules_preserve_vars M = true ->
   forallb (@is_notvar_lhs Sig) M = true ->
@@ -1001,12 +1181,12 @@ assert (H16 : forall l r,
 intros. rewrite forallb_forall in H5. generalize (H5 _ H12). unfold brule.
 rewrite orb_eq. simpl. intro TH. destruct TH. left. apply bsucceq_sub; auto.
 right. apply bsucc_sub; auto.
-apply (@Usablerules_IS _ M H H0 succs_symb _ H1 H3 H11 WP H15 H16 H10 f g H9).
+apply (@Usablerules_IS _ M H H0 _ H1 H3 H11 WP H15 H16 H10 f g H9).
 Qed.
 
 Lemma usable_rules_criterion : forall M D,
  let D' := (filter (brule (neg bsucc)) D) in
- let UC := usable_rules succs_symb M D in
+ let UC := usable_rules M D in
  let G := fun f => defined f M && negb (defined f UC) in
   brules_preserve_vars M = true ->
   forallb (@is_notvar_lhs Sig) M = true ->
