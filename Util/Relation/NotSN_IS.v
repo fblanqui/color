@@ -9,19 +9,16 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import DepChoice.
-Require Import NotSN.
-Require Import SN.
-Require Import RelUtil.
-Require Import LogicUtil.
+Require Import DepChoice NotSN SN RelUtil LogicUtil.
 
 Section S.
 
-Variables (A : Type) (R : relation A) (a : A) (h : ~SN R a).
+Variables (A : Type) (R : relation A).
 
-Lemma notSN_IS : exists f, IS R f /\ f 0 = a.
+Lemma notSN_IS : forall a, ~SN R a -> exists f, IS R f /\ f 0 = a.
 
 Proof.
+intros a h.
 set (P := fun x => ~SN R x). set (B := sig P).
 set (T := Rof R (@proj1_sig A P)). assert (forall x, exists y, T x y).
 intro. destruct x. unfold T. simpl. ded (notSN_succ p). decomp H.
@@ -31,6 +28,15 @@ set (f := fun x => proj1_sig (g x)). exists f. split; unfold f; auto.
 intro. ded (proj1 Hg i). destruct (g i). destruct (g (S i)). unfold T in H0.
 simpl in H0. exact H0.
 rewrite (proj2 Hg). simpl; refl.
+Qed.
+
+Require Import ClassicUtil.
+
+Lemma notWF_IS : ~WF R -> non_terminating R.
+
+Proof.
+unfold non_terminating, WF. rewrite not_forall_eq. intros [a h].
+destruct (notSN_IS h). exists x. intuition.
 Qed.
 
 End S.
