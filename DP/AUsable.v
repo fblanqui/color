@@ -29,6 +29,7 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 Definition def_symbs R (t : term) := filter (fun x => defined x R) (symbs t).
 
 Lemma def_symbs_incl : forall R a t, def_symbs R t [= def_symbs (a :: R) t.
+
 Proof.
 intros. intro x; unfold def_symbs. rewrite !filter_In; simpl.
 destruct a as [[] r]; simpl; auto. rewrite orb_true_iff.
@@ -50,6 +51,7 @@ Definition symb_ord R : relation Sig := fun f g =>
   the relation sym_ord.*)
 
 Lemma symb_ord_cons : forall a R f g, symb_ord R f g -> symb_ord (a :: R) f g.
+
 Proof.
 intros. destruct H as [h [Hh1 [Hh2 Hh3]]]. exists h. split.
   apply in_cons; auto.
@@ -59,7 +61,8 @@ split; destruct Hh3; auto. rewrite orb_true_iff, H0; right; auto.
 Qed.
 
 Lemma symb_ord_cons_var : forall R f g n r,
- symb_ord ((mkRule (Var n) r) :: R) f g -> symb_ord R f g.
+  symb_ord (mkRule (Var n) r :: R) f g -> symb_ord R f g.
+
 Proof.
 intros.
 destruct H as [x [H [H1 H2]]].
@@ -69,15 +72,16 @@ exists x; split; auto.
 Qed.
 
 Fixpoint symb_ord_img_rec R Rc f : list Sig := 
-match Rc with nil => nil
-| a :: R' =>
-   if root_eq f (lhs a) && Inb (@eq_rule_dec Sig) a R then
-   (def_symbs R (rhs a)) ++ symb_ord_img_rec R R' f
-   else symb_ord_img_rec R R' f
-end.
+  match Rc with nil => nil
+    | a :: R' =>
+      if root_eq f (lhs a) && Inb (@eq_rule_dec Sig) a R then
+        def_symbs R (rhs a) ++ symb_ord_img_rec R R' f
+        else symb_ord_img_rec R R' f
+  end.
 
 Lemma symb_ord_img_rec_cons1 : forall Rc a R f,
- (symb_ord_img_rec R Rc f) [= (symb_ord_img_rec (a :: R) Rc f).
+  symb_ord_img_rec R Rc f [= symb_ord_img_rec (a :: R) Rc f.
+
 Proof.
 intro Rc; elim Rc; simpl; intros.
   apply incl_refl.
@@ -93,7 +97,8 @@ apply H.
 Qed.
 
 Lemma symb_ord_img_rec_cons2 : forall Rc a R f,
- (symb_ord_img_rec R Rc f) [= (symb_ord_img_rec R (a :: Rc) f).
+  symb_ord_img_rec R Rc f [= symb_ord_img_rec R (a :: Rc) f.
+
 Proof.
 intros; simpl.
 case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R).
@@ -102,7 +107,8 @@ apply incl_refl.
 Qed.
 
 Lemma symb_ord_img_recP1 : forall Rc R f g,
- In g (symb_ord_img_rec R Rc f) -> symb_ord R f g.
+  In g (symb_ord_img_rec R Rc f) -> symb_ord R f g.
+
 Proof.
 intro Rc; elim Rc; simpl; intros; try tauto.
 case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); rewrite H1 in H0.
@@ -115,6 +121,7 @@ Qed.
 Lemma symb_ord_img_recP2 : forall Rc R f g a,
  In g (def_symbs R (rhs a)) -> In a R -> In a Rc -> root_eq f (lhs a) = true ->
  In g (symb_ord_img_rec R Rc f).
+
 Proof.
 intro Rc; elim Rc; intros. inversion H1.
 destruct (in_inv H2).
@@ -124,7 +131,8 @@ apply symb_ord_img_rec_cons2. apply (H R f g a0); auto.
 Qed.
 
 Lemma symb_ord_img_rec_incl : forall Rc1 Rc2 R f,
- Rc1 [= Rc2 -> (symb_ord_img_rec R Rc1 f) [= (symb_ord_img_rec R Rc2 f).
+  Rc1 [= Rc2 -> symb_ord_img_rec R Rc1 f [= symb_ord_img_rec R Rc2 f.
+
 Proof.
 intros Rc1. induction Rc1.
 simpl; intros. apply incl_nil.
@@ -138,7 +146,8 @@ apply IHRc1. apply incl_cons_l_incl with (x := a); auto.
 Qed.
 
 Lemma symb_ord_img_incl : forall Rc R f g,
- R [= Rc -> symb_ord R f g -> In g (symb_ord_img_rec R Rc f).
+  R [= Rc -> symb_ord R f g -> In g (symb_ord_img_rec R Rc f).
+
 Proof.
 intros. apply symb_ord_img_rec_incl with (Rc1 := R); auto.
 destruct H0 as [a [H0 [H1 H2]]]. apply symb_ord_img_recP2 with (a := a); auto.
@@ -147,6 +156,7 @@ Qed.
 Definition symb_ord_img R f := symb_ord_img_rec R R f.
 
 Lemma symb_ord_imgP : forall R f g, In g (symb_ord_img R f) <-> symb_ord R f g.
+
 Proof.
 unfold symb_ord_img; intros; split.
   apply symb_ord_img_recP1.
@@ -155,6 +165,7 @@ apply (symb_ord_img_recP2 R R f g a); auto.
 Qed.
 
 Lemma sym_ord_dec : forall R, rel_dec (symb_ord R).
+
 Proof.
 intros R a b.
 case_eq (Inb (@eq_symb_dec _) b (symb_ord_img R a)).
@@ -165,14 +176,18 @@ Qed.
 
 (* List of root symbols of the left hand side of a list rules *)
 Fixpoint root_lhs_rules (R : rules) : list Sig :=
- match R with nil => nil
- | a :: R' => match lhs a with Fun f _ => (f :: root_lhs_rules R')
-              | _ => root_lhs_rules R'
-              end
- end.
+  match R with
+    | nil => nil
+    | a :: R' =>
+      match lhs a with
+        | Fun f _ => f :: root_lhs_rules R'
+        | _ => root_lhs_rules R'
+      end
+  end.
 
 Lemma root_lhsP : forall R f,
- In f (root_lhs_rules R) <-> exists a, In a R /\ root_eq f (lhs a) = true.
+  In f (root_lhs_rules R) <-> exists a, In a R /\ root_eq f (lhs a) = true.
+
 Proof.
 induction R; simpl.
 intro. split; try tauto. intro. destruct H as [a [H _]]; auto.
@@ -192,7 +207,8 @@ right. apply (IHR f). exists a; auto.
 Qed.
 
 Lemma succs_symb_proof_tc : forall (R : rules) (f : Sig),
- {l : list Sig | forall g, In g l <-> (symb_ord R)! f g}.
+  {l : list Sig | forall g, In g l <-> (symb_ord R)! f g}.
+
 Proof.
 intros R f.
 pose (symb_ord_dom :=
@@ -221,7 +237,8 @@ apply defined_list_ok; auto.
 Defined.
 
 Lemma succs_symb_proof : forall (R : rules) (f : Sig),
- {l : list Sig | forall g, In g l <-> (symb_ord R)# f g}.
+  {l : list Sig | forall g, In g l <-> (symb_ord R)# f g}.
+
 Proof.
 intros. destruct (succs_symb_proof_tc R f) as [l' Hl].
 exists (f :: l'). intro. split; intro.
@@ -240,11 +257,11 @@ Definition succs_symbP R f := projT2 (succs_symb_proof R f).
 Fixpoint succs_symbs R (fs : list Sig) : list Sig :=
   match fs with
     | nil => nil
-    | f :: fs' => (succs_symb R f) ++ succs_symbs R fs'
+    | f :: fs' => succs_symb R f ++ succs_symbs R fs'
   end.
 
 Lemma in_succs_symbs : forall R l f, In f (succs_symbs R l) <->
- exists g, In g l /\ In f (succs_symb R g).
+  exists g, In g l /\ In f (succs_symb R g).
 
 Proof.
 intros. induction l. simpl. split; try tauto. intro. destruct H. tauto.
@@ -263,7 +280,7 @@ Definition tusable_rules R t := let P := (@eq_symb_dec Sig) in
 Lemma tusable_rules_incl : forall R t, tusable_rules R t [= R.
 
 Proof.
-  intros. apply filter_incl.
+intros. apply filter_incl.
 Qed.
 
 Lemma In_tusable : forall R t f v r,
@@ -395,9 +412,9 @@ End UsableRulesDefs.
 
 Record weakRedPairType (Sig : Signature) : Type := Make {
   succ : relation (@term Sig);
-  bsucc : (@term Sig) -> (@term Sig) -> bool;
+  bsucc : @term Sig -> @term Sig -> bool;
   succeq : relation (@term Sig);
-  bsucceq : (@term Sig) -> (@term Sig) -> bool;
+  bsucceq : @term Sig -> @term Sig -> bool;
   wf_succ : forall f, ~IS succ f;
   sc_succ : substitution_closed succ;
   bsucc_sub : rel bsucc << succ;
@@ -423,6 +440,7 @@ End ExtSig.
 
 Notation extSignature := ExtSig.extSignatureType.
 Notation Cons := ExtSig.cons.
+
 Coercion ExtSig.Sig : ExtSig.extSignatureType >-> Signature.
 
 Section ExtSigTheory.
@@ -606,7 +624,7 @@ Section UsableRulesProp.
     Variable (G : symbol Sig -> bool).
 
     Fixpoint interp_rec t (Ht : SN (red R U supterm) t) {struct Ht} :=
-      match t as t0 return (t = t0 -> term) with
+      match t as t0 return t = t0 -> term with
         | Var n => fun _ : t = Var n => Var n
         | Fun f v => fun H : t = Fun f v =>
           let fIv := Fun f (Vbuild (fun i (Hi : i < arity f) =>
@@ -757,7 +775,7 @@ Section UsableRulesProp.
 
   Section Lemma17.
 
-    Variable (G : symbol Sig -> bool).
+    Variable G : symbol Sig -> bool.
 
     Notation P := (red (proj_cons Sig)).
 
@@ -1124,6 +1142,12 @@ Qed.
 End UsableRulesProp.
 
 (***********************************************************************)
+(** Equivalence between WF and IS *)
+
+Axiom WF_IS : forall Sig, forall M D : rules Sig,
+  ~WF (hd_red_Mod (red M #) D) <-> exists f, exists g, ISModMin M D f g.
+
+(***********************************************************************)
 (** termination proof *)
 
 Section UsableRules.
@@ -1132,10 +1156,6 @@ Variable Sig : extSignature.
 
 Notation term := (term Sig). Notation terms := (vector term).
 Notation rule := (rule Sig). Notation rules := (list rule).
-
-(* Equivalence between WF and IS *)
-Axiom (WF_IS : forall M D : rules,
-  ~WF (hd_red_Mod (red M #) D) <-> exists f, exists g, ISModMin M D f g).
 
 Variable WP : weakRedPairType Sig.
 
@@ -1154,7 +1174,7 @@ Lemma usable_rules_WF : forall M D1 D2,
   is_empty (filter (fun x => defined x M) (list_defined (D1 ++ D2))) = true ->
   forallb (@is_notvar_lhs Sig) (D1 ++ D2) = true ->
   forallb (brule bsucceq) (UC ++ P) = true ->
-  forallb (brule (fun x y => bsucceq x y || (bsucc x y))) (D1 ++ D2) = true ->
+  forallb (brule (fun x y => bsucceq x y || bsucc x y)) (D1 ++ D2) = true ->
   forallb (brule bsucc) D1 = true -> 
   WF (hd_red_Mod (red M #) D2) -> WF (hd_red_Mod (red M #) (D1 ++ D2)).
 
@@ -1194,7 +1214,7 @@ Lemma usable_rules_criterion : forall M D,
   is_empty (filter (fun x => defined x M) (list_defined D)) = true ->
   forallb (@is_notvar_lhs Sig) D = true ->
   forallb (brule bsucceq) (UC ++ P) = true ->
-  forallb (brule (fun x y => bsucceq x y || (bsucc x y))) D = true ->
+  forallb (brule (fun x y => bsucceq x y || bsucc x y)) D = true ->
   WF (hd_red_Mod (red M #) D') -> WF (hd_red_Mod (red M #) D).
 
 Proof.
@@ -1232,7 +1252,7 @@ Qed.
 End UsableRules.
 
 (***********************************************************************)
-(** build an extended signature from a signature *)
+(** build an extended signature from a signature having no binary symbol *)
 
 Section MakeExtSig.
 
@@ -1266,3 +1286,58 @@ Section MakeExtSig.
   Definition ext := ExtSig.Make ext_sig Pair (refl_equal 2).
 
 End MakeExtSig.
+
+(***********************************************************************)
+(** functor *)
+
+Require Import ARedPair WF_NotIS.
+
+Module Type Binary.
+  Variable Sig : Signature.
+  Variable f : Sig.
+  Variable f_bin : arity f = 2.
+End Binary.
+
+Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig).
+
+Definition Sig := ExtSig.Make WP.Sig B.f B.f_bin.
+
+Definition WP : weakRedPairType WP.Sig.
+
+Proof.
+eapply Make. apply WF_notIS. apply WP.wf_succ.
+apply WP.sc_succ. apply WP.bsucc_sub. apply WP.sc_succeq. apply WP.cc_succeq.
+apply WP.refl_succeq. apply WP.trans_succeq. apply WP.trans_succ.
+apply WP.succ_succeq_compat. apply WP.bsucceq_sub.
+Defined.
+
+Notation succ := (succ WP).
+Notation succeq := (succeq WP).
+Notation bsucc := (bsucc WP).
+Notation bsucceq := (bsucceq WP).
+Notation P := (proj_cons Sig).
+
+Lemma usable_rules_criterion : forall M D,
+ let D' := filter (brule (neg bsucc)) D in
+ let UC := usable_rules M D in
+ let G := fun f => defined f M && negb (defined f UC) in
+  brules_preserve_vars M = true ->
+  forallb (@is_notvar_lhs Sig) M = true ->
+  brules_preserve_vars D = true ->
+  is_empty (filter (fun x => defined x M) (list_defined D)) = true ->
+  forallb (@is_notvar_lhs Sig) D = true ->
+  forallb (brule bsucceq) (UC ++ P) = true ->
+  forallb (brule (fun x y => bsucceq x y || bsucc x y)) D = true ->
+  WF (hd_red_Mod (red M #) D') -> WF (hd_red_Mod (red M #) D).
+
+Proof.
+intros. eapply usable_rules_criterion with (Sig:=Sig); try eassumption.
+Qed.
+
+Ltac usable := apply usable_rules_criterion;
+  match goal with
+    | |- WF _ => idtac
+    | |- _ = _ => check_eq || fail 10 "condition not satisfied"
+  end.
+
+End Usable.
