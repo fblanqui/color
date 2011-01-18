@@ -13,12 +13,7 @@ iff the transitive closures of its finite restrictions are decidable
 
 Set Implicit Arguments.
 
-Require Import Path.
-Require Import Relations.
-Require Import List.
-Require Import RelMidex.
-Require Import RelSub.
-Require Import Arith.
+Require Import Path Relations List RelMidex RelSub Arith.
 
 Section S.
 
@@ -32,7 +27,7 @@ Section bp_restriction_midex_dec.
 Variable R : relation A.
 
 Lemma dec_lem : forall R' R'' x y l, rel_dec R' -> rel_dec R'' -> 
-  {z : A| In z l /\ R' x z /\ R'' z y}
+  {z : A | In z l /\ R' x z /\ R'' z y}
   + {~exists z : A, In z l /\ R' x z /\ R'' z y}.
 
 Proof.
@@ -105,7 +100,7 @@ destruct H4. assert (exists z : A, In z l /\ R x z /\ bound_path R n z y).
 exists x0. split. pose (H x x0). tauto. assumption. contradiction.   
 Qed.
  
-Lemma resticted_dec_clos_trans_dec : eq_dec A -> rel_dec R ->
+Lemma restricted_dec_clos_trans_dec : eq_dec A -> rel_dec R ->
   forall l, is_restricted R l  -> rel_dec (clos_trans R).
 
 Proof.
@@ -115,7 +110,7 @@ constructor 2. intro. pose (clos_trans_bound_path (eq_dec_midex X) H H0).
 contradiction. 
 Qed. 
 
-Lemma resticted_midex_clos_trans_midex : eq_midex A -> rel_midex R ->
+Lemma restricted_midex_clos_trans_midex : eq_midex A -> rel_midex R ->
   forall l, is_restricted R l  -> rel_midex (clos_trans R).
 
 Proof.
@@ -140,7 +135,7 @@ Lemma R_midex_clos_trans_restriction_midex : eq_midex A -> rel_midex R ->
   forall l, rel_midex (clos_trans (restriction R l)).
 
 Proof.
-intros. apply resticted_midex_clos_trans_midex with l. assumption. 
+intros. apply restricted_midex_clos_trans_midex with l. assumption. 
 apply restriction_midex; assumption. apply restricted_restriction.  
 Qed.  
 
@@ -148,7 +143,7 @@ Lemma R_dec_clos_trans_restriction_dec : eq_dec A -> rel_dec R ->
   forall l, rel_dec (clos_trans (restriction R l)).
 
 Proof.
-intros. apply resticted_dec_clos_trans_dec with l. assumption. 
+intros. apply restricted_dec_clos_trans_dec with l. assumption. 
 apply restriction_dec; assumption. apply restricted_restriction.  
 Qed. 
 
