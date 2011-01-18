@@ -14,7 +14,7 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 Set Implicit Arguments.
 
 Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation
-  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls RelDec RelSub.
+  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls.
 
 Section UsableRulesDefs.
 
@@ -164,7 +164,7 @@ intros. destruct H as [a [H0 [H1 H2]]].
 apply (symb_ord_img_recP2 R R f g a); auto.
 Qed.
 
-Lemma sym_ord_dec : forall R, rel_dec (symb_ord R).
+Lemma symb_ord_dec : forall R, rel_dec (symb_ord R).
 
 Proof.
 intros R a b.
@@ -206,10 +206,47 @@ rewrite <-H2 in H0. rewrite beq_symb_ok in H0; auto.
 right. apply (IHR f). exists a; auto.
 Qed.
 
+(* version using RelDec: inefficient
+
+Require Import RelSub RelDec.
+
+Lemma succs_symb_proof_tc : forall (R : rules) (f : Sig),
+  {l : list Sig | forall g, In g l <-> (symb_ord R)! f g}.
+
+Proof.
+intros R f.
+pose (symb_ord_dom :=
+ root_lhs_rules R ++ flat_map (fun x => symb_ord_img R x) (root_lhs_rules R)).
+assert (symb_ord_domP : is_restricted (symb_ord R) symb_ord_dom).
+intros x y Hxy. unfold symb_ord_dom. rewrite in_app. split.
+left. destruct Hxy as [a [H0 [H1 H2]]]. rewrite root_lhsP.
+exists a; auto.
+rewrite in_app, in_flat_map; right. exists x. split.
+destruct Hxy as [a [H0 [H1 H2]]]. rewrite root_lhsP. exists a; auto.
+rewrite symb_ord_imgP. auto.
+assert (trs_dec : rel_dec (symb_ord R !)).
+apply restricted_dec_clos_trans_dec with (l := symb_ord_dom); auto.
+intros x y. destruct (eq_symb_dec x y); auto.
+apply symb_ord_dec.
+pose (P := fun x => if (trs_dec f x) then true else false).
+pose (ls := filter P (list_defined R)).
+exists ls. intro. split; intro.
+unfold ls, P in H; rewrite filter_In in H. destruct H.
+destruct (trs_dec f g); auto. inversion H0.
+unfold ls, P. rewrite filter_In. destruct (trs_dec f g); try tauto.
+split; auto. clear c.
+induction H; auto. destruct H as [a [H0 [H1 H2]]].
+unfold def_symbs in H2; rewrite filter_In in H2. destruct H2 as [_ H2].
+apply defined_list_ok; auto.
+Defined.*)
+
+(* version using TransClosure in Coccinelle: inefficient *)
+
 Require Import TransClosure.
 
 Lemma trans_clos_equiv : forall A (R : relation A) x y,
- trans_clos R x y <-> (R !) x y.
+  trans_clos R x y <-> R! x y.
+
 Proof.
 intros; split; intro.
 induction H. apply tc_incl; auto.
@@ -225,9 +262,8 @@ intros R f.
 cut ({l : list Sig | forall g : Sig, In g l <-> trans_clos (symb_ord R) f g}).
 intros. destruct X. exists x. intros. 
 rewrite <- trans_clos_equiv with (R := symb_ord R). auto.
-
-pose (symb_ord_dom :=
- flat_map (fun x => map (fun y => (x, y)) (symb_ord_img R x)) (root_lhs_rules R)).
+pose (symb_ord_dom := flat_map
+  (fun x => map (fun y => (x, y)) (symb_ord_img R x)) (root_lhs_rules R)).
 assert (trs_dec : rel_dec (trans_clos (symb_ord R))).
 intros x y. apply trans_clos_dec with (eq_bool := (@beq_symb Sig))
  (Rlist := symb_ord_dom).
@@ -1320,13 +1356,13 @@ Require Import ARedPair WF_NotIS.
 
 Module Type Binary.
   Variable Sig : Signature.
-  Variable f : Sig.
-  Variable f_bin : arity f = 2.
+  Variable some_symbol : Sig.
+  Variable arity_some_symbol_eq_2 : arity some_symbol = 2.
 End Binary.
 
 Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig).
 
-Definition Sig := ExtSig.Make WP.Sig B.f B.f_bin.
+Definition Sig := ExtSig.Make WP.Sig B.some_symbol B.arity_some_symbol_eq_2.
 
 Definition WP : weakRedPairType WP.Sig.
 
