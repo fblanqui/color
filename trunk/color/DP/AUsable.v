@@ -36,11 +36,11 @@ destruct a as [[] r]; simpl; auto. rewrite orb_true_iff.
 intro H. destruct H; split; auto.
 Qed.
 
+(***********************************************************************)
+(** one-step dependency ordering of defined symbols *)
+
 Definition root_eq (f : Sig) (t : term) : bool :=
   match t with | Fun g _ => beq_symb f g | _ => false end.
-
-Definition rrules_list R (G : Sig -> bool) :=
-  filter (fun x => match lhs x with | Fun f _ => G f | _ => false end) R.
 
 Definition symb_ord R : relation Sig := fun f g =>
   exists a, In a R /\ root_eq f (lhs a) = true /\ In g (def_symbs R (rhs a)).
@@ -48,7 +48,7 @@ Definition symb_ord R : relation Sig := fun f g =>
 (***********************************************************************)
 (** Definition of the function succs_symb that compute
   all the successors of a defined symbol by the transitive closure of
-  the relation sym_ord.*)
+  the relation symb_ord. *)
 
 Lemma symb_ord_cons : forall a R f g, symb_ord R f g -> symb_ord (a :: R) f g.
 
@@ -326,7 +326,10 @@ Qed.
 
 (***********************************************************************)
 (** usable rules *)
- 
+
+Definition rrules_list R (G : Sig -> bool) :=
+  filter (fun x => match lhs x with | Fun f _ => G f | _ => false end) R.
+
 Definition tusable_rules R t := let P := (@eq_symb_dec Sig) in
   rrules_list R (fun x => Inb P x (succs_symbs R (def_symbs R t))).
 
