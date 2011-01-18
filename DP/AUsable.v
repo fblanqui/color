@@ -246,7 +246,7 @@ destruct (in_inv H). subst. apply rtc_refl.
 apply tc_incl_rtc. apply Hl; auto.
 rewrite In_cons; destruct (rtc_split H). subst; auto.
 right. apply Hl; auto.
-Qed.
+Defined.
 
 Definition succs_symb R f : list Sig := projT1 (succs_symb_proof R f).
 Definition succs_symbP R f := projT2 (succs_symb_proof R f).
@@ -264,8 +264,9 @@ Lemma in_succs_symbs : forall R l f, In f (succs_symbs R l) <->
   exists g, In g l /\ In f (succs_symb R g).
 
 Proof.
-intros. induction l. simpl. split; try tauto. intro. destruct H. tauto.
-simpl. rewrite in_app. split; intro. destruct H. exists a. split; auto.
+intros. induction l. simpl; split; try tauto. intro. destruct H. tauto.
+unfold succs_symbs. rewrite in_app. split; intro. destruct H.
+exists a. split; auto. rewrite In_cons; auto.
 rewrite IHl in H. destruct H as [h H]. exists h. intuition.
 destruct H as [g H]. destruct H as [H0 H]. destruct H0. subst. auto.
 right. rewrite IHl. exists g. auto.
@@ -1143,9 +1144,18 @@ End UsableRulesProp.
 
 (***********************************************************************)
 (** Equivalence between WF and IS *)
+Axiom WF_eq_notIS : forall A (R : relation A), WF R <-> forall f, ~IS R f.
 
-Axiom WF_IS : forall Sig, forall M D : rules Sig,
-  ~WF (hd_red_Mod (red M #) D) <-> exists f, exists g, ISModMin M D f g.
+Lemma WF_IS : forall Sig, forall M D : rules Sig,
+  ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
+
+Proof.
+intros. apply not_all_not_ex. intro.
+assert (forall f g : nat -> term Sig, ~ ISModMin M D f g).
+intros f. apply not_ex_all_not. apply H0.
+apply H. rewrite WF_eq_notIS. unfold hd_red_Mod; intros f ISMf.
+unfold ISModMin, MinNT in H1.
+Admitted.
 
 (***********************************************************************)
 (** termination proof *)
@@ -1180,7 +1190,7 @@ Lemma usable_rules_WF : forall M D1 D2,
 
 Proof.
 intros. induction D1. simpl. hyp.
-simpl. apply NNPP. intro. destruct (proj1 (WF_IS _ _) H8) as [f [g H9]].
+simpl. apply NNPP. intro. destruct (WF_IS H8) as [f [g H9]].
 assert (H10 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ succ l r).
 exists (lhs a); exists (rhs a); split. simpl. left. destruct a; simpl. auto.
 rewrite forallb_forall in H6. generalize (H6 a (in_eq a D1)). unfold brule.
