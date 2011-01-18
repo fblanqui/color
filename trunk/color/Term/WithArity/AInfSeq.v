@@ -201,6 +201,22 @@ Qed.
 
 End ISModComp.
 
+Section ISCompSplit.
+
+Variables (E R : relation term) (f : nat -> term).
+
+Lemma ISComp_split : IS (E @ R) f ->  exists g, ISMod E R f g.
+
+Proof.
+intros.
+assert (Hi : forall i, exists x, E (f i) x /\ R x (f (S i))).
+intro. destruct (H i). exists x. intuition.
+pose (Hgi := fun i => (constructive_indefinite_description _ (Hi i))).
+exists (fun i => projT1 (Hgi i)). intro. apply (projT2 (Hgi i)).
+Qed.
+
+End ISCompSplit.
+
 (***********************************************************************)
 (** Properties wrt union *)
 
