@@ -1334,7 +1334,7 @@ Proof.
 intros. eapply usable_rules_criterion with (Sig:=Sig); try eassumption.
 Qed.
 
-Ltac usable := apply usable_rules_criterion;
+Ltac prove_termin := apply usable_rules_criterion;
   match goal with
     | |- WF _ => idtac
     | |- _ = _ => check_eq || fail 10 "condition not satisfied"
