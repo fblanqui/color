@@ -11,13 +11,7 @@ acyclic iff its restriction to any finite set has a decidable
 (resp. middle-excluding) irreflexive linear extension.
 *)
  
-Require Import Sumbool. 
-Require Import RelDec.
-Require Import RelUtil.
-Require Import ListUtil.
-Require Import RelSub.
-Require Import Path.
-Require Import Arith.
+Require Import Sumbool RelDec RelUtil ListUtil RelSub Path Arith.
 
 Set Implicit Arguments.
 
@@ -235,7 +229,7 @@ Lemma try_add_arc_one_to_many_dec : eq_dec A -> forall x l l',
 
 Proof.
 induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H0). 
-apply resticted_dec_clos_trans_dec with l. assumption. 
+apply restricted_dec_clos_trans_dec with l. assumption. 
 apply try_add_arc_dec. assumption. apply IHl'; tauto. 
 apply restricted_try_add_arc. assumption. apply H0. simpl. tauto. 
 apply restricted_try_add_arc_one_to_many; simpl; tauto. 
@@ -247,7 +241,7 @@ Lemma try_add_arc_one_to_many_midex : eq_midex A -> forall x l l',
 
 Proof.
 induction l'; simpl; intros. assumption. pose (incl_cons_l_incl H1). 
-apply resticted_midex_clos_trans_midex with l. assumption. 
+apply restricted_midex_clos_trans_midex with l. assumption. 
 apply try_add_arc_midex. assumption. apply IHl'; tauto. 
 apply restricted_try_add_arc. assumption. apply H1. simpl. tauto. 
 apply restricted_try_add_arc_one_to_many; simpl; tauto. 
