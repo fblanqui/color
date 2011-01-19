@@ -11,11 +11,7 @@ inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-Require Import RelUtil.
-Require Import Setoid.
-Require Import LogicUtil.
-Require Import List.
-Require Import Basics.
+Require Import RelUtil Setoid LogicUtil List Basics.
 
 Section sn.
 
