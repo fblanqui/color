@@ -598,16 +598,16 @@ Section union.
     exists z. split; [right; hyp | hyp].
   Qed.
 
-  Lemma union_empty_r : forall R, R U (@empty_rel A) << R.
+  Lemma union_empty_r : forall R, R U @empty_rel A == R.
 
   Proof.
-    intros R x y Rxy. destruct Rxy. hyp. contradiction.
+    split; intros x y Rxy. destruct Rxy. hyp. contradiction. left. hyp.
   Qed.
 
-  Lemma union_empty_l : forall R, (@empty_rel A) U R << R.
+  Lemma union_empty_l : forall R, @empty_rel A U R == R.
 
   Proof.
-    intros R x y Rxy. destruct Rxy. contradiction. hyp.
+    split; intros x y Rxy. destruct Rxy. contradiction. hyp. right. hyp.
   Qed.
 
   Lemma union_idem_l : forall R S, R << R U S.
