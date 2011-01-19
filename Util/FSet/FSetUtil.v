@@ -9,23 +9,20 @@ lemmas and tactics on Coq's FSets
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil FSets FSetAVL FSetFacts.
 
-Require Import FSets.
-Require Import FSetAVL.
-Require Import FSetFacts.
+Module Make (Export X : OrderedType).
 
-Module Make (X : OrderedType). Export X.
+Module Export XSet := FSetAVL.Make X.
+Module Export XSetEqProp := EqProperties XSet.
+Module Export XSetProp := Properties XSet.
+Module Export XSetFacts := Facts XSet.
 
-Module XSet := FSetAVL.Make (X). Export XSet.
-Module XSetEqProp := EqProperties (XSet). Export XSetEqProp.
-Module XSetProp := Properties (XSet). Export XSetProp.
-Module XSetFacts := Facts (XSet). Export XSetFacts.
+Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
+Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
 
 (***********************************************************************)
 (* lemmas and hints on Equal *)
-
-Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
 
 Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all
   : Equal.
@@ -199,5 +196,24 @@ Lemma equal_Equal : forall s t, equal s t = true <-> Equal s t.
 Proof.
 intuition. apply equal_2. hyp.
 Qed.
+
+(***********************************************************************)
+(* monotony properties of fold *)
+
+Section fold_mon.
+
+  Variables (elt A : Type) (le : A -> A -> Prop).
+
+  Infix "<=" := le.
+
+  Variables (F : X.t -> A -> A) (Fmon : forall x a b, a <= b -> a <= F x b).
+
+  Lemma fold_mon : forall s a b, a <= b -> a <= fold F s b.
+
+  Proof.
+  intros s a b. apply fold_rec; intros. hyp. apply Fmon. auto.
+  Qed.
+
+End fold_mon.
 
 End Make.

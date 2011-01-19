@@ -9,16 +9,32 @@ Wrapper for Coq's FMaps definition + facts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil FMaps FMapAVL FMapFacts.
 
-Require Import FMaps.
-Require Import FMapAVL.
-Require Import FMapFacts.
+Module Make (Export X : OrderedType).
 
-Module Make (X : OrderedType).
-  Module XMap      := FMapAVL.Make (X).
-  Module XMapProp  := Properties (XMap).
-  Module XMapFacts := Facts (XMap).
+  Module Export XMap := FMapAVL.Make X.
+  Module Export XMapProp := Properties XMap.
+  Module Export XMapFacts := Facts XMap.
 
-  Export X XMap XMapProp XMapFacts.
+(***********************************************************************)
+(* monotony properties of fold *)
+
+Section fold_mon.
+
+  Variables (elt A : Type) (le : A -> A -> Prop).
+
+  Infix "<=" := le.
+
+  Variables (F : key -> elt -> A -> A)
+    (Fmon : forall k x a b, a <= b -> a <= F k x b).
+
+  Lemma fold_mon : forall m a b, a <= b -> a <= fold F m b.
+
+  Proof.
+  intros m a b. apply fold_rec; intros. hyp. apply Fmon. auto.
+  Qed.
+
+End fold_mon.
+
 End Make.
