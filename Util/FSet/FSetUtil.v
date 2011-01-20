@@ -20,6 +20,7 @@ Module Export XSetFacts := Facts XSet.
 
 Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
 Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
+Notation "s [<>] t" := (~Equal s t) (at level 70, no associativity).
 
 (***********************************************************************)
 (* lemmas and hints on Equal *)
@@ -160,6 +161,12 @@ Lemma union_sym_2 : forall s t u, union s (union t u) [=] union t (union s u).
 
 Proof.
 Equal_tac.
+Qed.
+
+Lemma subset_empty : forall s, s [<=] empty -> s [=] empty.
+
+Proof.
+intros. rewrite double_inclusion. intuition.
 Qed.
 
 (***********************************************************************)
