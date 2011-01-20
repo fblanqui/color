@@ -13,7 +13,7 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 
 Set Implicit Arguments.
 
-Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation
+Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation ClassicalEpsilon
   NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls.
 
 Section UsableRulesDefs.
@@ -1200,6 +1200,113 @@ End UsableRulesProp.
 (***********************************************************************)
 (** Equivalence between WF and IS *)
 Axiom WF_eq_notIS : forall A (R : relation A), WF R <-> forall f, ~IS R f.
+
+Definition nonSN_min_set Sig (R : list (rule Sig)) (t : term Sig) :=
+ (exists f, f 0 = t /\ IS (red R) f) /\
+ (forall x, subterm x t -> forall g, g 0 = x -> ~IS (red R) g).
+
+Axiom WF_eq_notIS_min : forall Sig (R : list (rule Sig)), ~WF (red R) ->
+ exists t, nonSN_min_set R t.
+
+Section WF_IS_for_TRS.
+Variable Sig : Signature.
+
+Notation term := (term Sig). Notation terms := (vector term).
+Notation rule := (rule Sig). Notation rules := (list rule).
+
+Lemma int_red_IS : forall (R : rules) f, IS (int_red R) f ->
+ exists g, (forall i, subterm (g i) (f i)) /\ IS (red R) g.
+Proof.
+intros.
+assert (exists F, forall i, exists vs, f i = Fun F vs).
+destruct (H 0) as [l [r [c [s [C0 H0]]]]].
+destruct c. destruct C0; auto. exists f0. simpl in H0.
+intro. induction i0.
+exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e). intuition.
+destruct (H i0) as [li [ri [ci [si [Ci Hi]]]]].
+destruct ci. destruct Ci; auto. simpl in Hi.
+destruct Hi as [_ [Hi1 Hi2]]. destruct IHi0 as [vs IHi0].
+rewrite Hi1 in IHi0. inversion IHi0.
+exists (Vcast (Vapp v1 (Vcons (fill ci (sub si ri)) v2)) e0). auto.
+destruct H0 as [F H0].
+pose (vec_i_exP := fun i => (constructive_indefinite_description _ (H0 i))).
+pose (vec_i := fun i => projT1 (vec_i_exP i)).
+assert (forall i, exists Hk : {k | k < arity F},
+ (red R) (Vnth (vec_i i) (projT2 Hk)) (Vnth (vec_i (S i)) (projT2 Hk))).
+intro. destruct (H i) as [li [ri [ci [si [Ci [Hi1 [Hi2 Hi3]]]]]]].
+destruct ci. destruct Ci; auto. generalize (projT2 (vec_i_exP i)).
+generalize (projT2 (vec_i_exP (S i))). intros.
+rewrite H2 in Hi2. rewrite H1 in Hi3.
+assert (F = f0). inversion Hi2; auto.
+assert(i0 < arity F). generalize e; rewrite <- H3. intro. omega.
+pose (k := exist (fun x => x < arity F) i0 H4). exists k.
+exists li; exists ri. simpl in Hi2, Hi3. exists ci. exists si; split; auto.
+Admitted.
+(*
+generalize (symb_eq Hi2).
+split. inversion Hi2. rewrite H7.
+
+
+
+exists (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e). intuition.
+destruct (H (S i0)) as [li [ri [ci [si [Ci Hi]]]]].
+destruct ci. destruct Ci; auto. simpl in Hi.
+destruct Hi as [_ [Hi1 Hi2]]. destruct IHi0 as [vs [vs' [Hi01 Hi02]]].
+exists vs'. rewrite Hi1 in Hi02. inversion Hi02.
+exists (Vcast (Vapp v1 (Vcons (fill ci (sub si ri)) v2)) e0). auto.
+destruct H0 as [F H0].
+
+assert (arity f1 = arity f0). rewrite H2. auto.
+
+
+exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
+exists (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e). intuition.
+
+
+ exists l, exists r, exists c,
+exists s, x = (sub s l) /\ c <> Hole /\ In {| lhs := l; rhs := r |} R /\
+f i = fill c (sub s l) /\ f (S i) = fill c (sub s r)).
+intro. destruct (H i) as [l [r [c [s [C0 H0]]]]].
+exists (sub s l). exists l; exists r; exists c; exists s; auto.
+pose (g := fun n => (constructive_indefinite_description _ (H0 n))).
+exists (fun i => projT1 (g i)). split; intro.
+destruct (projT2 (g i)) as [l1 [r1 [c1 [s1 [E1 H1]]]]].
+rewrite E1. exists c1. destruct H1 as [H1 [_ [H2 _]]]; auto.
+destruct (projT2 (g i)) as [l1 [r1 [c1 [s1 [E1 H1]]]]].
+destruct (projT2 (g (S i))) as [l2 [r2 [c2 [s2 [E2 H2]]]]].
+
+rewrite E1.
+
+exists (sub s l). exists l; exists r; exists c; exists s
+
+
+subterm x (f n) /\ (exists y, subterm y (f (S n)) /\ (red R) x y)).
+intro. destruct (H n) as [l [r [c [s [C0 H0]]]]].
+
+exists (fun i => projT1 (g i)). split; intro. destruct (projT2 (g i)); auto.
+destruct (projT2 (g i)).
+destruct (projT2 (g (S i))).
+
+ split. intro.
+*)
+
+Lemma WF_min_term_succ : forall (R : rules) t, nonSN_min_set R t ->
+ exists a, In a R /\ (exists s, exists u, (int_red R)# t (sub s (lhs a)) /\
+ (hd_red R) (sub s (lhs a)) (sub s (rhs a)) /\
+ subterm_eq (sub s (rhs a)) (sub s u) /\ nonSN_min_set R (sub s u)).
+Proof.
+intros. destruct H as [[f [H H0]] H1].
+assert (exists i, (hd_red R) (f i) (f (S i))).
+apply not_all_not_ex. intro. generalize (H2 0).
+assert (forall n, int_red R (f n) (f (S n))).
+intro. destruct (H0 n) as [l [r [c [s H3]]]].
+destruct c. destruct (H2 n). exists l; exists r; exists s. simpl in H3. auto.
+exists l; exists r; exists (Cont f0 e v c v0); exists s. split; auto.
+intro T; inversion T.
+
+Admitted.
+
+End WF_IS_for_TRS.
 
 Lemma WF_IS : forall Sig, forall M D : rules Sig,
   ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.

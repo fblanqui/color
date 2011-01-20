@@ -170,6 +170,18 @@ rewrite <- (Vcast_refl us (refl_equal (arity g))).
 eapply fun_eq_cast. hyp. apply H.
 Qed.
 
+Lemma symb_arg_eq :  forall f us g vs (h : f = g),
+ Fun f us = Fun g vs -> vs = Vcast us (f_equal (@arity Sig) h).
+
+Proof.
+intros.
+assert (q' : arity f = arity g). rewrite h; auto.
+assert (H1 : (Vcast us q') = (Vcast us (f_equal (@arity Sig) h))).
+apply Vcast_pi.
+generalize (fun_eq_intro us h H1). intro. rewrite H0 in H.
+generalize (fun_eq H). intro T; rewrite <- T. apply Vcast_pi.
+Qed.
+
 (***********************************************************************)
 (** decidability of equality *)
 
