@@ -138,8 +138,8 @@ Section basic_definitions.
 
   Variables (A : Type) (R : relation A).
 
-  Definition quasi_ordering := reflexive R /\ transitive R.
   (* preorder in coq *)
+  Definition quasi_ordering := reflexive R /\ transitive R.
 
   Definition ordering := reflexive R /\ transitive R /\ antisymmetric R.
 
@@ -525,10 +525,11 @@ Section clos_trans.
     apply t_trans with (y := y0); auto.
   Qed.
 
-  Lemma trans_intro : R @ R << R -> transitive R.
+  Lemma trans_intro : R @ R << R <-> transitive R.
 
   Proof.
-    unfold transitive. intros. apply H. exists y. intuition.
+    split. unfold transitive. intros. apply H. exists y. intuition.
+    intros h x z [y [xy yz]]. apply (h _ _ _ xy yz).
   Qed.
 
   Lemma tc_idem : R! @ R! << R!.
@@ -538,6 +539,14 @@ Section clos_trans.
   Qed.
 
 End clos_trans.
+
+Add Parametric Morphism (A : Type) : (@transitive A)
+  with signature (@same_relation A) ==> iff
+    as transitive_mor.
+
+Proof.
+intros R S e. repeat rewrite <- trans_intro. rewrite e. refl.
+Qed.
 
 (***********************************************************************)
 (** union *)
