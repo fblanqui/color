@@ -14,7 +14,7 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 Set Implicit Arguments.
 
 Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation ClassicalEpsilon
-  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls.
+  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls ADP WF_IS_DP.
 
 Section UsableRulesDefs.
 
@@ -1057,7 +1057,7 @@ End Lemma19.
 (***********************************************************************)
 (** termination proof *)
 
-Require Import AInfSeq NotSN_IS.
+Require Import AInfSeq NotSN_IS NatLeast.
 
 Variable C : rules.
 
@@ -1198,128 +1198,6 @@ Qed.
 End UsableRulesProp.
 
 (***********************************************************************)
-(** Equivalence between WF and IS *)
-Axiom WF_eq_notIS : forall A (R : relation A), WF R <-> forall f, ~IS R f.
-
-Definition nonSN_min_set Sig (R : list (rule Sig)) (t : term Sig) :=
- (exists f, f 0 = t /\ IS (red R) f) /\
- (forall x, subterm x t -> forall g, g 0 = x -> ~IS (red R) g).
-
-Axiom WF_eq_notIS_min : forall Sig (R : list (rule Sig)), ~WF (red R) ->
- exists t, nonSN_min_set R t.
-
-Section WF_IS_for_TRS.
-Variable Sig : Signature.
-
-Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
-
-Lemma int_red_IS : forall (R : rules) f, IS (int_red R) f ->
- exists g, (forall i, subterm (g i) (f i)) /\ IS (red R) g.
-Proof.
-intros.
-assert (exists F, forall i, exists vs, f i = Fun F vs).
-destruct (H 0) as [l [r [c [s [C0 H0]]]]].
-destruct c. destruct C0; auto. exists f0. simpl in H0.
-intro. induction i0.
-exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e). intuition.
-destruct (H i0) as [li [ri [ci [si [Ci Hi]]]]].
-destruct ci. destruct Ci; auto. simpl in Hi.
-destruct Hi as [_ [Hi1 Hi2]]. destruct IHi0 as [vs IHi0].
-rewrite Hi1 in IHi0. inversion IHi0.
-exists (Vcast (Vapp v1 (Vcons (fill ci (sub si ri)) v2)) e0). auto.
-destruct H0 as [F H0].
-pose (vec_i_exP := fun i => (constructive_indefinite_description _ (H0 i))).
-pose (vec_i := fun i => projT1 (vec_i_exP i)).
-assert (forall i, exists Hk : {k | k < arity F},
- (red R) (Vnth (vec_i i) (projT2 Hk)) (Vnth (vec_i (S i)) (projT2 Hk))).
-intro. destruct (H i) as [li [ri [ci [si [Ci [Hi1 [Hi2 Hi3]]]]]]].
-destruct ci. destruct Ci; auto. generalize (projT2 (vec_i_exP i)).
-generalize (projT2 (vec_i_exP (S i))). intros.
-rewrite H2 in Hi2. rewrite H1 in Hi3.
-assert (F = f0). inversion Hi2; auto.
-assert(i0 < arity F). generalize e; rewrite <- H3. intro. omega.
-pose (k := exist (fun x => x < arity F) i0 H4). exists k.
-exists li; exists ri. simpl in Hi2, Hi3. exists ci. exists si; split; auto.
-Admitted.
-(*
-generalize (symb_eq Hi2).
-split. inversion Hi2. rewrite H7.
-
-
-
-exists (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e). intuition.
-destruct (H (S i0)) as [li [ri [ci [si [Ci Hi]]]]].
-destruct ci. destruct Ci; auto. simpl in Hi.
-destruct Hi as [_ [Hi1 Hi2]]. destruct IHi0 as [vs [vs' [Hi01 Hi02]]].
-exists vs'. rewrite Hi1 in Hi02. inversion Hi02.
-exists (Vcast (Vapp v1 (Vcons (fill ci (sub si ri)) v2)) e0). auto.
-destruct H0 as [F H0].
-
-assert (arity f1 = arity f0). rewrite H2. auto.
-
-
-exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
-exists (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e). intuition.
-
-
- exists l, exists r, exists c,
-exists s, x = (sub s l) /\ c <> Hole /\ In {| lhs := l; rhs := r |} R /\
-f i = fill c (sub s l) /\ f (S i) = fill c (sub s r)).
-intro. destruct (H i) as [l [r [c [s [C0 H0]]]]].
-exists (sub s l). exists l; exists r; exists c; exists s; auto.
-pose (g := fun n => (constructive_indefinite_description _ (H0 n))).
-exists (fun i => projT1 (g i)). split; intro.
-destruct (projT2 (g i)) as [l1 [r1 [c1 [s1 [E1 H1]]]]].
-rewrite E1. exists c1. destruct H1 as [H1 [_ [H2 _]]]; auto.
-destruct (projT2 (g i)) as [l1 [r1 [c1 [s1 [E1 H1]]]]].
-destruct (projT2 (g (S i))) as [l2 [r2 [c2 [s2 [E2 H2]]]]].
-
-rewrite E1.
-
-exists (sub s l). exists l; exists r; exists c; exists s
-
-
-subterm x (f n) /\ (exists y, subterm y (f (S n)) /\ (red R) x y)).
-intro. destruct (H n) as [l [r [c [s [C0 H0]]]]].
-
-exists (fun i => projT1 (g i)). split; intro. destruct (projT2 (g i)); auto.
-destruct (projT2 (g i)).
-destruct (projT2 (g (S i))).
-
- split. intro.
-*)
-
-Lemma WF_min_term_succ : forall (R : rules) t, nonSN_min_set R t ->
- exists a, In a R /\ (exists s, exists u, (int_red R)# t (sub s (lhs a)) /\
- (hd_red R) (sub s (lhs a)) (sub s (rhs a)) /\
- subterm_eq (sub s (rhs a)) (sub s u) /\ nonSN_min_set R (sub s u)).
-Proof.
-intros. destruct H as [[f [H H0]] H1].
-assert (exists i, (hd_red R) (f i) (f (S i))).
-apply not_all_not_ex. intro. generalize (H2 0).
-assert (forall n, int_red R (f n) (f (S n))).
-intro. destruct (H0 n) as [l [r [c [s H3]]]].
-destruct c. destruct (H2 n). exists l; exists r; exists s. simpl in H3. auto.
-exists l; exists r; exists (Cont f0 e v c v0); exists s. split; auto.
-intro T; inversion T.
-
-Admitted.
-
-End WF_IS_for_TRS.
-
-Lemma WF_IS : forall Sig, forall M D : rules Sig,
-  ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
-
-Proof.
-intros. apply not_all_not_ex. intro.
-assert (forall f g : nat -> term Sig, ~ ISModMin M D f g).
-intros f. apply not_ex_all_not. apply H0.
-apply H. rewrite WF_eq_notIS. unfold hd_red_Mod; intros f ISMf.
-unfold ISModMin, MinNT in H1.
-Admitted.
-
-(***********************************************************************)
 (** termination proof *)
 
 Section UsableRules.
@@ -1340,6 +1218,7 @@ Notation P := (proj_cons Sig).
 Lemma usable_rules_WF : forall M D1 D2,
  let UC := usable_rules M (D1 ++ D2) in
  let G := fun f => defined f M && negb (defined f UC) in
+  (D1 ++ D2) [= dp M ->
   brules_preserve_vars M = true ->
   forallb (@is_notvar_lhs Sig) M = true ->
   brules_preserve_vars (D1 ++ D2) = true ->
@@ -1352,34 +1231,35 @@ Lemma usable_rules_WF : forall M D1 D2,
 
 Proof.
 intros. induction D1. simpl. hyp.
-simpl. apply NNPP. intro. destruct (WF_IS H8) as [f [g H9]].
-assert (H10 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ succ l r).
+simpl. apply NNPP. intro. destruct (WF_IS_DP H H9) as [f [g H10]].
+assert (H11 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ succ l r).
 exists (lhs a); exists (rhs a); split. simpl. left. destruct a; simpl. auto.
-rewrite forallb_forall in H6. generalize (H6 a (in_eq a D1)). unfold brule.
+rewrite forallb_forall in H7. generalize (H7 a (in_eq a D1)). unfold brule.
 apply bsucc_sub.
-rewrite <- brules_preserve_vars_ok in H, H1.
-assert (H11 : forall f, defined f M && defined f (a :: D1 ++ D2) = false).
+rewrite <- brules_preserve_vars_ok in H0, H2.
+assert (H12 : forall f, defined f M && defined f (a :: D1 ++ D2) = false).
 intro. case_eq (defined f0 M); case_eq (defined f0 (a :: D1 ++ D2)); auto.
-rewrite defined_list_ok in H12.
+rewrite defined_list_ok in H13.
 cut (In f0 (filter (fun x => defined x M) (list_defined ((a :: D1) ++ D2)))).
 case_eq (filter (fun x => defined x M) (list_defined ((a :: D1) ++ D2))).
-destruct H14. rewrite H13 in H2. simpl in H2. discriminate H2.
+destruct H15. rewrite H14 in H3. simpl in H3. discriminate H3.
 rewrite filter_In; auto.
-assert (H15 : forall l r, In (mkRule l r) (UC ++ P) -> succeq l r).
-intros; rewrite forallb_forall in H4. generalize (H4 _ H12). unfold brule.
+assert (H16 : forall l r, In (mkRule l r) (UC ++ P) -> succeq l r).
+intros; rewrite forallb_forall in H5. generalize (H5 _ H13). unfold brule.
 apply bsucceq_sub.
-assert (H16 : forall l r,
+assert (H17 : forall l r,
  In (mkRule l r) (a :: D1 ++ D2) -> (succeq U succ) l r).
-intros. rewrite forallb_forall in H5. generalize (H5 _ H12). unfold brule.
+intros. rewrite forallb_forall in H6. generalize (H6 _ H13). unfold brule.
 rewrite orb_eq. simpl. intro TH. destruct TH. left. apply bsucceq_sub; auto.
 right. apply bsucc_sub; auto.
-apply (@Usablerules_IS _ M H H0 _ H1 H3 H11 WP H15 H16 H10 f g H9).
+apply (@Usablerules_IS _ M H0 H1 _ H2 H4 H12 WP H16 H17 H11 f g H10).
 Qed.
 
 Lemma usable_rules_criterion : forall M D,
  let D' := filter (brule (neg bsucc)) D in
  let UC := usable_rules M D in
  let G := fun f => defined f M && negb (defined f UC) in
+  D [= dp M ->
   brules_preserve_vars M = true ->
   forallb (@is_notvar_lhs Sig) M = true ->
   brules_preserve_vars D = true ->
@@ -1394,31 +1274,34 @@ intros. pose (D0 := filter (brule bsucc) D).
 assert (HD : (hd_red_Mod (red M #) D) << (hd_red_Mod (red M #) (D0 ++ D'))).
 apply hd_red_Mod_incl. refl. intros d Dd. apply in_or_app.
 case_eq (brule (neg bsucc) d). unfold D'. rewrite filter_In. intuition.
-left; unfold D0; rewrite filter_In. split; try hyp. unfold brule in H7.
-generalize (proj1 (negb_lr _ _) H7). simpl. auto.
+left; unfold D0; rewrite filter_In. split; try hyp. unfold brule in H8.
+generalize (proj1 (negb_lr _ _) H8). simpl. auto.
 apply (WF_incl HD). apply usable_rules_WF; auto.
-rewrite <- brules_preserve_vars_ok in H1 |- *. intros l r Dlr.
-apply H1. unfold D0, D' in Dlr; rewrite in_app in Dlr.
+intros x T. rewrite in_app in T. destruct T as [T|T]; apply H.
+unfold D0 in T; rewrite filter_In in T; destruct T; auto.
+unfold D' in T; rewrite filter_In in T; destruct T; auto.
+rewrite <- brules_preserve_vars_ok in H2 |- *. intros l r Dlr.
+apply H2. unfold D0, D' in Dlr; rewrite in_app in Dlr.
 destruct Dlr as [Dlr | Dlr]; rewrite filter_In in Dlr; intuition.
 case_eq (filter (fun x => defined x M) (list_defined (D0 ++ D'))); auto.
 cut (In s (filter (fun x : Sig => defined x M) (list_defined D))).
 case_eq (filter (fun x => defined x M) (list_defined D)); auto.
-rewrite H8 in H2; simpl in H2; auto.
-generalize (in_eq s l); rewrite <- H7, !filter_In, <- defined_list_ok.
-intro. destruct H8. rewrite H9; split; auto. rewrite <- defined_list_ok.
-unfold D0, D' in H8; rewrite defined_equiv in H8. destruct H8 as [v [r H8]].
-rewrite defined_equiv. exists v; exists r. rewrite in_app, !filter_In in H8.
+rewrite H9 in H3; simpl in H3; auto.
+generalize (in_eq s l); rewrite <- H8, !filter_In, <- defined_list_ok.
+intro. destruct H9. rewrite H10; split; auto. rewrite <- defined_list_ok.
+unfold D0, D' in H9; rewrite defined_equiv in H9. destruct H9 as [v [r H9]].
+rewrite defined_equiv. exists v; exists r. rewrite in_app, !filter_In in H9.
 intuition.
-rewrite forallb_forall in H3 |- *; intros. apply H3. unfold D0, D' in H7.
-rewrite in_app, 2?filter_In in H7. intuition.
-rewrite forallb_forall in H4 |- *; intros. apply H4. rewrite in_app in H7 |- *.
-destruct H7; try intuition. left. destruct x as [l r]. unfold UC.
-rewrite In_usable in H7 |- *. destruct H7 as [a H7]. exists a.
-split; try intuition. unfold D0, D' in H8; rewrite in_app in H8.
-rewrite !filter_In in H8; intuition.
-rewrite forallb_forall in H5 |- *; intros. apply H5. unfold D0, D' in H7.
-rewrite in_app, 2?filter_In in H7. intuition.
-rewrite forallb_forall; unfold D0. intros. rewrite filter_In in H7. intuition.
+rewrite forallb_forall in H4 |- *; intros. apply H4. unfold D0, D' in H8.
+rewrite in_app, 2?filter_In in H8. intuition.
+rewrite forallb_forall in H5 |- *; intros. apply H5. rewrite in_app in H8 |- *.
+destruct H8; try intuition. left. destruct x as [l r]. unfold UC.
+rewrite In_usable in H8 |- *. destruct H8 as [a H8]. exists a.
+split; try intuition. unfold D0, D' in H9; rewrite in_app in H9.
+rewrite !filter_In in H9; intuition.
+rewrite forallb_forall in H6 |- *; intros. apply H6. unfold D0, D' in H8.
+rewrite in_app, 2?filter_In in H8. intuition.
+rewrite forallb_forall; unfold D0. intros. rewrite filter_In in H8. intuition.
 Qed.
 
 End UsableRules.
@@ -1493,6 +1376,7 @@ Lemma usable_rules_criterion : forall M D,
  let D' := filter (brule (neg bsucc)) D in
  let UC := usable_rules M D in
  let G := fun f => defined f M && negb (defined f UC) in
+  D [= dp M ->
   brules_preserve_vars M = true ->
   forallb (@is_notvar_lhs Sig) M = true ->
   brules_preserve_vars D = true ->
