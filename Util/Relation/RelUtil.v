@@ -569,62 +569,37 @@ Section union.
 
   Implicit Type R S T : relation A.
 
-  Lemma union_commut : forall R S, R U S << S U R.
+  Lemma union_commut : forall R S, R U S == S U R.
 
-  Proof.
-    unfold inclusion. intros. destruct H. right. exact H. left. exact H.
-  Qed.
+  Proof. firstorder. Qed.
 
-  Lemma union_assoc : forall R S T, (R U S) U T << R U (S U T).
+  Lemma union_assoc : forall R S T, (R U S) U T == R U (S U T).
 
-  Proof.
-    unfold inclusion. intros. destruct H. destruct H. left. exact H.
-    right. left. exact H. right. right. exact H.
-  Qed.
+  Proof. firstorder. Qed.
 
-  Lemma union_distr_comp : forall R S T, (R U S) @ T << (R @ T) U (S @ T).
+  Lemma union_distr_comp : forall R S T, (R U S) @ T == (R @ T) U (S @ T).
 
-  Proof.
-    intros R S T x y H. destruct H as [z [[Rxz | Sxz] Tzy]].
-    left. exists z. auto.
-    right. exists z. auto.
-  Qed.
-
-  Lemma union_distr_comp_inv : forall R S T, (R @ T) U (S @ T) << (R U S) @ T.
-
-  Proof.
-    intros R S T x y H. destruct H as [[z [Rxz Tzy]] | [z [Sxz Tzy]]].
-    exists z. split; [left; hyp | hyp].
-    exists z. split; [right; hyp | hyp].
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma union_empty_r : forall R, R U @empty_rel A == R.
 
-  Proof.
-    split; intros x y Rxy. destruct Rxy. hyp. contradiction. left. hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma union_empty_l : forall R, @empty_rel A U R == R.
 
-  Proof.
-    split; intros x y Rxy. destruct Rxy. contradiction. hyp. right. hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma union_idem_l : forall R S, R << R U S.
 
-  Proof.
-    intros R S x y h. left. hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma union_idem_r : forall R S, S << R U S.
 
-  Proof.
-    intros R S x y h. right. hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma union_tc_incl_l : forall R S, R! << (R U S)!.
 
-  Proof.
+  Proof. 
     intros; apply tc_incl_tc. apply union_idem_l.
   Qed.
 
