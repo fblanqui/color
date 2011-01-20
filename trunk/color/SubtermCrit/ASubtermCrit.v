@@ -14,7 +14,7 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 Set Implicit Arguments.
 
 Require Import ATrs ASimpleProj RelUtil List ARelation LogicUtil NatUtil
-  VecUtil AInfSeq ASN SN Classical BoolUtil ASubterm.
+  VecUtil AInfSeq ASN SN Classical BoolUtil ListUtil ASubterm WF_IS_DP ADP.
 
 Section S.
 
@@ -163,12 +163,10 @@ End S1.
 (***********************************************************************)
 (** theorem with boolean conditions *)
 
-Axiom WF_IS : forall M D : rules,
-  ~WF (hd_red_Mod (red M #) D) <-> exists f, exists g, ISModMin M D f g.
-
 Section S2.
 
 Lemma subterm_criterion_WF : forall M D1 D2,
+  (D1 ++ D2) [= dp M ->
   forallb (@is_notvar_lhs Sig) (D1 ++ D2) = true ->
   forallb (brule bge) (D1 ++ D2) = true ->
   forallb (brule bgt) D1 = true -> 
@@ -176,22 +174,23 @@ Lemma subterm_criterion_WF : forall M D1 D2,
 
 Proof.
 intros. induction D1. simpl. hyp.
-simpl. apply NNPP. intro. destruct (proj1 (WF_IS _ _) H3) as [f [g H4]].
-assert (H5 : forall l r : term, In (mkRule l r) (a :: D1 ++ D2) -> ge l r).
-intros. generalize (proj1 (forallb_forall _ _) H0 (mkRule l r) H5).
+simpl. apply NNPP. intro. destruct (WF_IS_DP H H4) as [f [g H5]].
+assert (H6 : forall l r : term, In (mkRule l r) (a :: D1 ++ D2) -> ge l r).
+intros. generalize (proj1 (forallb_forall _ _) H1 (mkRule l r) H6).
 unfold brule; simpl. apply (proj1 (bsubterm_eq_ok _ _)).
-assert (H6 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ gt l r).
+assert (H7 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ gt l r).
 exists (lhs a). exists (rhs a). simpl. split.
 left. apply (proj1 (rule_eq _ _)). simpl. auto.
-generalize (proj1 (forallb_forall _ _) H1 a (in_eq a _)). unfold brule.
+generalize (proj1 (forallb_forall _ _) H2 a (in_eq a _)). unfold brule.
 apply (proj1 (bsubterm_ok _ _)).
-assert (H7 : forall l r, In (mkRule l r) (a :: D1 ++ D2) ->
+assert (H8 : forall l r, In (mkRule l r) (a :: D1 ++ D2) ->
  is_notvar_lhs (mkRule l r) = true).
-intros. apply (proj1 (forallb_forall _ _) H). auto.
-apply (@subterm_criterion_IS M (a :: D1 ++ D2) H5 H6 H7 f g). hyp.
+intros. apply (proj1 (forallb_forall _ _) H0). auto.
+apply (@subterm_criterion_IS M (a :: D1 ++ D2) H6 H7 H8 f g). hyp.
 Qed.
 
 Lemma subterm_criterion : forall M D,
+  D [= dp M ->
   forallb (@is_notvar_lhs Sig) D = true ->
   forallb (brule bge) D = true ->
   WF (hd_red_Mod (red M #) (filter (brule (neg bgt)) D)) ->
@@ -203,19 +202,21 @@ pose (D0 := filter (brule bgt) D).
 assert (HD : (hd_red_Mod (red M #) D) << (hd_red_Mod (red M #) (D0 ++ D'))).
 apply hd_red_Mod_incl. refl. intros d Dd. apply in_or_app.
 case_eq (brule (neg bgt) d). right. apply (proj2 (filter_In _ _ _)). intuition.
-left. apply (proj2 (filter_In _ _ _)). split; try hyp. unfold brule in H2.
-generalize (proj1 (negb_lr _ _) H2). simpl. auto.
+left. apply (proj2 (filter_In _ _ _)). split; try hyp. unfold brule in H3.
+generalize (proj1 (negb_lr _ _) H3). simpl. auto.
 apply (WF_incl HD). apply subterm_criterion_WF; auto.
+intro; rewrite in_app; unfold D0, D'; intro T. destruct T as [T|T]; apply H;
+rewrite filter_In in T; destruct T; auto.
 apply (proj2 (forallb_forall _ _)). intros.
-apply (proj1 (forallb_forall _ _) H x). destruct (in_app_or H2).
-unfold D0 in H3. rewrite filter_In in H3. destruct H3. hyp.
-unfold D' in H3. rewrite filter_In in H3. destruct H3. hyp.
+apply (proj1 (forallb_forall _ _) H0 x). destruct (in_app_or H3).
+unfold D0 in H4. rewrite filter_In in H4. destruct H4. hyp.
+unfold D' in H4. rewrite filter_In in H4. destruct H4. hyp.
 apply (proj2 (forallb_forall _ _)). intros.
-apply (proj1 (forallb_forall _ _) H0 x). destruct (in_app_or H2).
-unfold D0 in H3. rewrite filter_In in H3. destruct H3. hyp.
-unfold D' in H3. rewrite filter_In in H3. destruct H3. hyp.
-apply (proj2 (forallb_forall _ _)). intros. unfold D0 in H2.
-rewrite filter_In in H2. intuition.
+apply (proj1 (forallb_forall _ _) H1 x). destruct (in_app_or H3).
+unfold D0 in H4. rewrite filter_In in H4. destruct H4. hyp.
+unfold D' in H4. rewrite filter_In in H4. destruct H4. hyp.
+apply (proj2 (forallb_forall _ _)). intros. unfold D0 in H3.
+rewrite filter_In in H3. intuition.
 Qed.
 
 End S2.
