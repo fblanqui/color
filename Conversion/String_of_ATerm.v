@@ -9,14 +9,7 @@ conversion of a TRS with unary symbols only into an SRS
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import RelUtil.
-Require Import SN.
-Require Import ListUtil.
-Require Import Srs.
-Require Import ATrs.
-Require Import AUnary.
-Require Import VecUtil.
+Require Import LogicUtil RelUtil SN ListUtil Srs ATrs AUnary VecUtil.
 
 Section S.
 
@@ -166,8 +159,7 @@ Definition srs_of_trs := map srule_of_rule.
 
 Section reset.
 
-Require Import EqUtil.
-Require Import NatUtil.
+Require Import EqUtil NatUtil.
 
 Lemma string_of_term_reset :
   forall t, string_of_term (reset t) = string_of_term t.
@@ -341,7 +333,7 @@ End S.
 (***********************************************************************)
 (** signature functor *)
 
-Module Make (S : ASignature.SIG) <: VSignature.SIG.
+Module Make (S : ASignature.FSIG).
   Definition Sig := SSig_of_ASig S.Sig.
   Definition Fs := S.Fs.
   Definition Fs_ok := S.Fs_ok.

@@ -49,6 +49,10 @@ Require Import List.
 
 Module Type SIG.
   Parameter Sig : Signature.
+End SIG.
+
+Module Type FSIG.
+  Parameter Sig : Signature.
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall f, In f Fs.
-End SIG.
+End FSIG.

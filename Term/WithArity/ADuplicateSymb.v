@@ -407,7 +407,7 @@ Ltac mark := apply WF_duplicate_hd_int_red; [refl | refl | idtac].
 (***********************************************************************)
 (** signature functor *)
 
-Module Make (S : SIG) <: SIG.
+Module Make (S : FSIG).
 
   Definition Sig := dup_sig S.Sig.
 
