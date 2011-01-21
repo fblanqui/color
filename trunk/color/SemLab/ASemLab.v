@@ -897,7 +897,7 @@ Import ATrs. Infix "++" := app. (*COQ: why Import List does not work?*)
 
 Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
 
-  Module LabSig <: SIG.
+  Module LabSig.
 
     Definition Sig := lab_sig Sig beq_ok.
     Definition Fs := Fs_lab Fs Ls.

@@ -9,20 +9,14 @@ convert CoLoR terms into Coccinelle terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATerm.
+Require Import LogicUtil ATerm.
 
 (***********************************************************************)
 (** convert a CoLoR signature into a Coccinelle signature *)
 
-Module Type SIGNATURE.
-  Parameter Sig : Signature.
-End SIGNATURE.
+Require Import term_spec EqUtil.
 
-Require Import term_spec.
-Require Import EqUtil.
-
-Module Make_Signature (Import S : SIGNATURE) <: Signature.
+Module Make_Signature (Import S : SIG) <: Signature.
   Module Symb <: decidable_set.S.
     Definition A := symbol Sig.
     Definition eq_bool := @beq_symb Sig.
@@ -55,13 +49,9 @@ End Var.
 (***********************************************************************)
 (** convert CoLoR terms into Coccinelle terms *)
 
-Require Import term.
-Require Import List.
-Require Import Relations.
-Require Import SN.
-Require Import ASubstitution.
+Require Import term List Relations SN ASubstitution.
 
-Module Make_Term (Import S : SIGNATURE) <: Term.
+Module Make_Term (Import S : SIG) <: Term.
 
   Notation aterm := (term Sig). Notation aterms := (vector aterm).
   Notation AVar := ATerm.Var.

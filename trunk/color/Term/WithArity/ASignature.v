@@ -45,10 +45,14 @@ Ltac beq_symb_ok := intros f g; split;
     | intro; subst g; destruct f; reflexivity].
 
 (***********************************************************************)
-(** Module for finite signatures *)
+(** Module types for (finite) signatures *)
 
 Module Type SIG.
   Parameter Sig : Signature.
+End SIG.
+
+Module Type FSIG.
+  Parameter Sig : Signature.
   Parameter Fs : list Sig.
   Parameter Fs_ok : forall f, In f Fs.
-End SIG.
+End FSIG.
