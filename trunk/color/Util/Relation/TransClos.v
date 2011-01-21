@@ -16,10 +16,12 @@ Module Make (X : OrderedType).
 Module Import S := FSetUtil.Make X.
 Module Import M := FMapUtil.Make X.
 
+Import X.
+
 (***********************************************************************)
 (** type for finite graphs *)
 
-Definition graph := t XSet.t.
+Definition graph := XMap.t XSet.t.
 
 Implicit Type g h : graph.
 
@@ -38,11 +40,10 @@ Coercion rel : graph >-> relation_on_X.
 Definition incl g g' := g << g'.
 
 (*REMARK: could be improved by taking Equal on the graph argument *)
-Add Morphism rel with signature @Logic.eq graph ==> eq ==> eq ==> iff
-  as rel_mor.
+Instance rel_mor : Proper (@Logic.eq graph ==> eq ==> eq ==> iff) rel.
 
 Proof.
-intros g x x' xx' y y' yy'. split.
+intros g g' gg' x x' xx' y y' yy'. subst g'. split.
 intros [s [x1 x2]]. exists s. rewrite <- xx'. rewrite <- yy'. auto.
 intros [s' [x'1 x'2]]. exists s'. rewrite xx'. rewrite yy'. auto.
 Qed.
