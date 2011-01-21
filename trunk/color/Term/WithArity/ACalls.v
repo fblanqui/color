@@ -9,12 +9,7 @@ symbols defined by a set of rules, list of calls in a rhs
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATrs.
-Require Import ListUtil.
-Require Import VecUtil.
-Require Import EqUtil.
-Require Import BoolUtil.
+Require Import LogicUtil ATrs ListUtil VecUtil EqUtil BoolUtil.
 
 Section S.
 
