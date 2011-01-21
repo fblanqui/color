@@ -30,12 +30,7 @@ assuming a total ordering >_symb on symbols
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import ListDec.
-Require Import ListSort.
-Require Import NatUtil.
-Require Import List.
-Require Import VecUtil.
+Require Import ATrs ListDec ListSort NatUtil List VecUtil.
 
 Section S.
 
