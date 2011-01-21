@@ -11,12 +11,14 @@ Set Implicit Arguments.
 
 Require Import LogicUtil FSets FSetAVL FSetFacts.
 
-Module Make (Export X : OrderedType).
+Module Make (X : OrderedType).
 
 Module Export XSet := FSetAVL.Make X.
 Module Export XSetEqProp := EqProperties XSet.
 Module Export XSetProp := Properties XSet.
 Module Export XSetFacts := Facts XSet.
+
+Import X.
 
 Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
 Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
@@ -35,13 +37,13 @@ Implicit Arguments remove_3 [s x y].
 Implicit Arguments singleton_1 [x y].
 Implicit Arguments union_1 [s s' x].
 
-Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~X.eq y x.
+Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~eq y x.
 
 Proof.
 unfold not. intros. apply (remove_1 H0 H).
 Qed.
 
-Lemma remove_3 : forall x y s, In x (remove y s) -> In x s /\ ~X.eq y x.
+Lemma remove_3 : forall x y s, In x (remove y s) -> In x s /\ ~eq y x.
 
 Proof.
 intuition. apply (remove_3 H). ded (In_remove_neq H). contradiction.
@@ -88,7 +90,7 @@ Proof.
 intuition. apply H. In_intro. apply H. In_intro. In_elim; intuition.
 Qed.
 
-Lemma notin_singleton : forall x y, ~In x (singleton y) <-> ~X.eq y x.
+Lemma notin_singleton : forall x y, ~In x (singleton y) <-> ~eq y x.
 
 Proof.
 intuition. ded (singleton_2 H0). apply H. hyp.
@@ -181,7 +183,7 @@ Lemma eqb_refl : forall x, eqb x x = true.
 
 Proof.
 intro. unfold eqb. case (eq_dec x x). refl.
-intro. absurd (X.eq x x). exact n. apply X.eq_refl.
+intro. absurd (eq x x). exact n. apply eq_refl.
 Qed.
 
 Hint Rewrite eqb_refl : mem.

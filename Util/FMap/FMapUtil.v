@@ -11,11 +11,13 @@ Set Implicit Arguments.
 
 Require Import LogicUtil FMaps FMapAVL FMapFacts.
 
-Module Make (Export X : OrderedType).
+Module Make (X : OrderedType).
 
   Module Export XMap := FMapAVL.Make X.
   Module Export XMapProp := Properties XMap.
   Module Export XMapFacts := Facts XMap.
+
+  Import X.
 
 (***********************************************************************)
 (* monotony properties of fold *)
