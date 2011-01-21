@@ -235,7 +235,7 @@ rewrite fold_add_pred_ok. apply union_morph. refl.
 rewrite fold_raw_add_ok. refl.
 Qed.
 
-Lemma add_trans : forall x y g, transitive g -> transitive (add x y g).
+Lemma trans_add : forall x y g, transitive g -> transitive (add x y g).
 
 Proof.
 intros x y g gtrans. rewrite add_ok. 2: hyp. intros a b c.
@@ -257,5 +257,40 @@ Lemma trans_empty : transitive (rel (empty XSet.t)).
 Proof.
 rewrite rel_empty. firstorder.
 Qed.
+
+Lemma trans_fold_set : forall x g,
+  transitive g -> forall s, transitive (XSet.fold (add x) s g).
+
+Proof.
+intros x g gtrans s. pattern (XSet.fold (add x) s g).
+apply XSetProp.fold_rec_weak; intros. hyp. hyp. apply trans_add. hyp.
+Qed.
+
+Require Import List.
+
+Section trans_clos.
+
+  Variable (A : Type) (f : A -> X.t * XSet.t).
+
+  Definition adds g a := let (x,s) := f a in XSet.fold (add x) s g.
+
+  Lemma trans_adds : forall g a, transitive g -> transitive (adds g a).
+
+  Proof.
+  intros. unfold adds. destruct (f a) as [x s]. apply trans_fold_set. hyp.
+  Qed.
+
+  Definition trans_clos l := fold_left adds l (empty XSet.t).
+
+  Lemma trans_clos_ok : forall l, transitive (trans_clos l).
+
+  Proof.
+  unfold trans_clos.
+  cut (forall l g, transitive g -> transitive (fold_left adds l g)); intro h.
+  intro l. apply h. apply trans_empty. rename h into l.
+  induction l; intros; simpl. hyp. apply IHl. apply trans_adds. hyp.
+  Qed.
+
+End trans_clos.
 
 End Make.
