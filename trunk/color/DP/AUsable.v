@@ -26,7 +26,13 @@ Notation rule := (rule Sig). Notation rules := (list rule).
 (***********************************************************************)
 (** list of defined symbols of a term *)
 
-Definition def_symbs R (t : term) := filter (fun x => defined x R) (symbs t).
+(*IMPROVE:
+1) merge filter and symbs into a single function returning a set
+2) define once and for all the list of defined symbols,
+3) define defined symbols as set, assuming a total ordering on symbols?
+*)
+
+Definition def_symbs R (t : term) := filter (fun f => defined f R) (symbs t).
 
 Lemma def_symbs_incl : forall R a t, def_symbs R t [= def_symbs (a :: R) t.
 
@@ -328,10 +334,21 @@ Qed.
 (** usable rules *)
 
 Definition rrules_list R (G : Sig -> bool) :=
-  filter (fun x => match lhs x with | Fun f _ => G f | _ => false end) R.
+  filter (fun x => match lhs x with Fun f _ => G f | _ => false end) R.
 
-Definition tusable_rules R t := let P := (@eq_symb_dec Sig) in
-  rrules_list R (fun x => Inb P x (succs_symbs R (def_symbs R t))).
+(*IMPROVE:
+1) replace Inb by ListDec.mem
+2) define usable rules as a set, assuming a total ordering on rules?
+*)
+
+Definition tusable_rules R t := rrules_list R
+  (fun f => Inb (@eq_symb_dec Sig) f (succs_symbs R (def_symbs R t))).
+
+Fixpoint usable_rules R (C : rules) : rules :=
+  match C with
+    | nil => nil
+    | c :: C' => tusable_rules R (rhs c) ++ usable_rules R C'
+  end.
 
 Lemma tusable_rules_incl : forall R t, tusable_rules R t [= R.
 
@@ -353,12 +370,6 @@ simpl. destruct H. split; auto. apply Inb_intro. rewrite in_succs_symbs.
 destruct H0 as [g H0]; destruct H0. exists g. split; auto.
 rewrite (succs_symbP R g f); auto.
 Qed.
- 
-Fixpoint usable_rules R (C : rules) : rules :=
-  match C with
-    | nil => nil
-    | c :: C' => tusable_rules R (rhs c) ++ usable_rules R C'
-  end.
 
 Lemma usable_rules_incl : forall R C, usable_rules R C [= R.
 
