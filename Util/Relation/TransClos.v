@@ -13,8 +13,8 @@ Set Implicit Arguments.
 
 Module Make (X : OrderedType).
 
-Module Import S := FSetUtil.Make X.
-Module Import M := FMapUtil.Make X.
+Module Export S := FSetUtil.Make X.
+Module Export M := FMapUtil.Make X.
 
 Import X.
 
@@ -25,6 +25,12 @@ Definition graph := XMap.t XSet.t.
 
 Implicit Type g h : graph.
 
+(***********************************************************************)
+(** nodes of a graph *)
+
+Definition nodes g :=
+  fold (fun x sx s => XSet.add x (XSet.union sx s)) g XSet.empty.
+ 
 (***********************************************************************)
 (** relation corresponding to a graph *)
 
@@ -271,14 +277,20 @@ Require Import List.
 
 Section trans_clos.
 
-  Variable (A : Type) (f : A -> X.t * XSet.t).
+  Variable (A : Type) (f : A -> option (X.t * XSet.t)).
 
-  Definition adds g a := let (x,s) := f a in XSet.fold (add x) s g.
+  Definition adds g a :=
+    match f a with
+      | None => g
+      | Some (x,s) => XSet.fold (add x) s g
+    end.
 
   Lemma trans_adds : forall g a, transitive g -> transitive (adds g a).
 
   Proof.
-  intros. unfold adds. destruct (f a) as [x s]. apply trans_fold_set. hyp.
+  intros. unfold adds. destruct (f a).
+  destruct p. apply trans_fold_set. hyp.
+  hyp.
   Qed.
 
   Definition trans_clos l := fold_left adds l (empty XSet.t).
