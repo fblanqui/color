@@ -486,7 +486,7 @@ Module Type Filter.
   Parameter pi : forall f : Sig, nat_lts (arity f).
 End Filter.
 
-Module Make (S : FSIG) (F : Filter with Definition Sig := S.Sig).
+Module Make (S : FSIG) (F : Filter with Definition Sig := S.Sig) <: FSIG.
   Definition Sig := filter_sig F.pi.
   Definition Fs := S.Fs.
   Definition Fs_ok := S.Fs_ok.
