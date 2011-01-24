@@ -7,7 +7,6 @@ See the COPYRIGHTS and LICENSE files.
 Dependency relation on defined symbols implied by rules:
 
 f is bigger than g if g occurs in the RHS of a defining rule of f
-
 *)
 
 Set Implicit Arguments.
