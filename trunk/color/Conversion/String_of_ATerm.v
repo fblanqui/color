@@ -333,7 +333,7 @@ End S.
 (***********************************************************************)
 (** signature functor *)
 
-Module Make (S : ASignature.FSIG).
+Module Make (S : ASignature.FSIG) <: VSignature.FSIG.
   Definition Sig := SSig_of_ASig S.Sig.
   Definition Fs := S.Fs.
   Definition Fs_ok := S.Fs_ok.
