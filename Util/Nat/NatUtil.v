@@ -88,6 +88,8 @@ apply (f_equal S). exact (proj1 (IHx _) H).
 apply (proj2 (IHx y)). inversion H. refl.
 Defined.
 
+Definition beq_nat_ko := beq_nat_false_iff.
+
 Require Import EqUtil.
 
 Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
@@ -100,7 +102,7 @@ rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
 (***********************************************************************)
-(** boolean functions for > and >= *)
+(** boolean functions for ordering *)
 
 Fixpoint bgt_nat (x y : nat) :=
   match x, y with
@@ -144,6 +146,23 @@ rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Ltac check_ge := rewrite <- bge_nat_ok; check_eq.
+
+Definition blt_nat x y := bgt_nat y x.
+
+Lemma blt_nat_ok : forall x y, blt_nat x y = true <-> x < y.
+
+Proof. intros. unfold blt_nat. rewrite bgt_nat_ok. omega. Qed.
+
+Definition bne_nat x y := negb (beq_nat x y).
+
+Require Import BoolUtil.
+
+Lemma bne_nat_ok : forall x y, bne_nat x y = true <-> x <> y.
+
+Proof.
+  intros x y. unfold bne_nat. rewrite negb_lr. simpl.
+  rewrite beq_nat_ko. refl.
+Qed.
 
 (***********************************************************************)
 (** unicity of eq, le and lt proofs *)
