@@ -176,6 +176,14 @@ Proof.
 intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
 Qed.
 
+Lemma implb_ok : forall x, implb (bP x) (bQ x) = true <-> (P x -> Q x).
+
+Proof.
+intro x. unfold implb. coq_case_eq (bP x).
+rewrite bP_ok. rewrite bQ_ok. tauto.
+rewrite (ko bP_ok). tauto.
+Qed.
+
 End bool_ok.
 
 (***********************************************************************)
