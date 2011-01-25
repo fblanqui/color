@@ -538,6 +538,13 @@ Section clos_trans.
     unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; hyp.
   Qed.
 
+  Lemma tc_incl_trans : R << S -> transitive S -> R! << S.
+
+  Proof.
+    intros RS Strans. intros x y. induction 1. apply RS. hyp.
+    apply Strans with y; hyp.
+  Qed.
+
 End clos_trans.
 
 Add Parametric Morphism (A : Type) : (@transitive A)
