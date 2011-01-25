@@ -24,18 +24,18 @@ Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
 Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
 Notation "s [<>] t" := (~Equal s t) (at level 70, no associativity).
 
-(***********************************************************************)
-(* lemmas and hints on Equal *)
+Implicit Arguments remove_1 [s x y].
+Implicit Arguments remove_3 [s x y].
+Implicit Arguments singleton_1 [x y].
+Implicit Arguments union_1 [s s' x].
 
 Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all
   : Equal.
 
 Ltac Equal := autorewrite with Equal.
 
-Implicit Arguments remove_1 [s x y].
-Implicit Arguments remove_3 [s x y].
-Implicit Arguments singleton_1 [x y].
-Implicit Arguments union_1 [s s' x].
+(***********************************************************************)
+(* properties of In *)
 
 Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~eq y x.
 
@@ -49,20 +49,23 @@ Proof.
 intuition. apply (remove_3 H). ded (In_remove_neq H). contradiction.
 Qed.
 
-Lemma remove_singleton : forall x, remove x (singleton x) [=] empty.
-
-Proof.
-unfold Equal. intuition. destruct (remove_3 H). ded (singleton_1 H0).
-ded (remove_1 H2 H). contradiction. rewrite empty_iff in H. contradiction.
-Qed.
-
-Hint Rewrite remove_singleton : Equal.
+(***********************************************************************)
+(* tactics for In, Equal and Subset *)
 
 Ltac lft := apply union_2; try hyp.
 Ltac rgt := apply union_3; try hyp.
 
 Ltac Equal_intro := unfold Equal; intuition.
 Ltac Subset_intro := unfold Subset; intuition.
+
+Lemma remove_singleton : forall x, remove x (singleton x) [=] empty.
+
+Proof.
+Equal_intro. destruct (remove_3 H). ded (singleton_1 H0).
+ded (remove_1 H2 H). contradiction. rewrite empty_iff in H. contradiction.
+Qed.
+
+Hint Rewrite remove_singleton : Equal.
 
 Ltac In_elim := repeat
   match goal with
@@ -84,6 +87,9 @@ Ltac In_intro :=
 Ltac Equal_tac := Equal_intro; In_elim; try In_intro.
 Ltac Subset_tac := Subset_intro; In_elim; try In_intro.
 
+(***********************************************************************)
+(* lemmas and tactics for ~In *)
+
 Lemma notin_union : forall x s s', ~In x (union s s') <-> ~In x s /\ ~In x s'.
 
 Proof.
@@ -101,6 +107,9 @@ Ltac notIn_elim := repeat
     | H : ~In _ (union _ _) |- _ => rewrite notin_union in H; destruct H
     | H : ~In _ (singleton _) |- _ => rewrite notin_singleton in H
   end.
+
+(***********************************************************************)
+(* more equalities *)
 
 Lemma union_empty_left : forall s, union empty s [=] s.
 
@@ -172,7 +181,7 @@ intros. rewrite double_inclusion. intuition.
 Qed.
 
 (***********************************************************************)
-(* lemmas and hints on mem *)
+(* lemmas, hints and tactics on mem *)
 
 Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
   : mem.
