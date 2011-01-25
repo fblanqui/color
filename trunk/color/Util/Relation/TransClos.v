@@ -77,14 +77,14 @@ Proof.
 intros x y xy g h gh. unfold succs. rewrite xy. rewrite gh. refl.
 Qed.
 
-Lemma In_succs : forall x y g, XSet.In y (succs x g) <-> rel g x y.
+Lemma In_succs : forall g x y, XSet.In y (succs x g) <-> rel g x y.
 
 Proof.
 intros. unfold succs, rel. destruct (find x g); firstorder.
 inversion H. hyp. In_elim. discr.
 Qed.
 
-Lemma mem_succs : forall x y g, XSet.mem y (succs x g) = true <-> rel g x y.
+Lemma mem_succs : forall g x y, XSet.mem y (succs x g) = true <-> rel g x y.
 
 Proof.
 intros. rewrite <- mem_iff. apply In_succs.
@@ -97,7 +97,7 @@ Definition raw_add x y g : graph := add x (XSet.add y (succs x g)) g.
 
 Definition id x y a b := eq a x /\ eq b y.
 
-Lemma raw_add_ok : forall x y g, raw_add x y g == g U id x y.
+Lemma raw_add_eq : forall x y g, raw_add x y g == g U id x y.
 
 Proof.
 intros. rewrite rel_eq; intros a b.
@@ -131,7 +131,7 @@ intro x. rewrite rel_eq; intros a b. unfold succ, empty_rel. intuition.
 In_elim.
 Qed.
 
-Lemma fold_raw_add_ok : forall x s g0,
+Lemma fold_raw_add_eq : forall x s g0,
   rel (XSet.fold (raw_add x) s g0) == succ x s U g0.
 
 Proof.
@@ -142,7 +142,7 @@ intros s t g st i. rewrite <- st. hyp.
 (* empty *)
 rewrite succ_empty. rewrite union_empty_l. refl.
 (* add *)
-intros z g s nzs e. rewrite raw_add_ok. rewrite e.
+intros z g s nzs e. rewrite raw_add_eq. rewrite e.
 rewrite RelUtil.union_assoc. rewrite RelUtil.union_commut with (R:=rel g0).
 rewrite <- RelUtil.union_assoc. apply union_morph. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
@@ -189,7 +189,7 @@ destruct H. destruct H as [s [a1 a2]]. rewrite empty_o in a1. discr.
 contradiction.
 Qed.
 
-Lemma fold_add_pred_ok : forall x ysy g g0,
+Lemma fold_add_pred_eq : forall x ysy g g0,
   rel (fold (add_pred x ysy) g g0) == pred x ysy g U g0.
 
 Proof.
@@ -202,7 +202,7 @@ rewrite pred_empty. rewrite union_empty_l. refl.
 (* add *)
 intros z s g m nzm h. unfold add_pred. case_eq (XSet.mem x s).
 (* x in s *)
-rewrite <- mem_iff in H. rewrite fold_raw_add_ok. rewrite h.
+rewrite <- mem_iff in H. rewrite fold_raw_add_eq. rewrite h.
 rewrite <- RelUtil.union_assoc. apply union_morph. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
 intuition.
@@ -223,7 +223,7 @@ unfold rel in H1. rewrite add_o in H1. destruct (eq_dec z a). 2: hyp.
 destruct H1 as [t [a1 a2]]. inversion a1. subst s. contradiction.
 Qed.
  
-Lemma add_ok : forall g, transitive g -> forall x y,
+Lemma add_eq : forall g, transitive g -> forall x y,
   rel (add x y g) == let ysy := XSet.add y (succs y g) in
     pred x ysy g U (succ x ysy U g).
 
@@ -238,14 +238,14 @@ apply gtrans with x. hyp. apply gtrans with y; hyp.
 rewrite H1. rewrite <- H0. hyp.
 rewrite H1. apply gtrans with y; hyp.
 (* y notin (succs x g) *)
-rewrite fold_add_pred_ok. apply union_morph. refl.
-rewrite fold_raw_add_ok. refl.
+rewrite fold_add_pred_eq. apply union_morph. refl.
+rewrite fold_raw_add_eq. refl.
 Qed.
 
 Lemma trans_add : forall x y g, transitive g -> transitive (add x y g).
 
 Proof.
-intros x y g gtrans. rewrite add_ok. 2: hyp. intros a b c.
+intros x y g gtrans. rewrite add_eq. 2: hyp. intros a b c.
 unfold Relation_Operators.union, pred, succ. repeat rewrite add_iff.
 repeat rewrite In_succs. intuition.
 left. intuition. right. rewrite <- H0 in H2. hyp.
@@ -259,11 +259,46 @@ left. intuition. rewrite <- H. hyp.
 right. right. apply gtrans with b; hyp.
 Qed.
 
+Lemma add_ok : forall x y g, transitive g -> add x y g == raw_add x y g!.
+
+Proof.
+intros x y g gtrans. rewrite raw_add_eq. rewrite add_eq. 2: hyp.
+change (let ysy := XSet.add y (succs y g) in
+  pred x ysy g U (succ x ysy U g) == (g U id x y)!). intro ysy. split.
+(* << *)
+intros a b. unfold pred, succ, ysy. unfold Relation_Operators.union at -3.
+rewrite add_iff. rewrite In_succs. intuition.
+apply t_trans with x. apply t_step. intuition. apply t_step.
+unfold Relation_Operators.union, id. auto.
+apply t_trans with x. apply t_step. intuition.
+apply t_trans with y. apply t_step. unfold Relation_Operators.union, id. auto.
+apply t_step. intuition.
+apply t_step. unfold Relation_Operators.union, id. auto.
+apply t_trans with y. apply t_step. unfold Relation_Operators.union, id. auto.
+apply t_step. unfold Relation_Operators.union, id. auto.
+(* >> *)
+apply tc_incl_trans. apply union_incl; split.
+trans (succ x ysy U g). apply union_idem_r. apply union_idem_r.
+trans (succ x ysy U g). trans (succ x ysy).
+intros a b. unfold id, succ. unfold ysy. rewrite add_iff. intuition.
+apply union_idem_l. apply union_idem_r.
+unfold ysy. rewrite <- add_eq. 2: hyp. apply trans_add. hyp.
+Qed.
+
 Lemma trans_empty : transitive (rel (empty XSet.t)).
 
 Proof.
 rewrite rel_empty. firstorder.
 Qed.
+
+(*Definition fold_add x s g := rel (XSet.fold (add x) s g).
+
+Instance fold_add_mor :
+  Proper (eq ==> @XSet.Equal ==> @Logic.eq graph ==> @same_relation X.t)
+  fold_add.
+
+Proof.
+intros x y xy s t st g h gh. subst h. unfold fold_add.*)
 
 Lemma trans_fold_set : forall x g,
   transitive g -> forall s, transitive (XSet.fold (add x) s g).
@@ -273,11 +308,27 @@ intros x g gtrans s. pattern (XSet.fold (add x) s g).
 apply XSetProp.fold_rec_weak; intros. hyp. hyp. apply trans_add. hyp.
 Qed.
 
+Lemma fold_set_ok : forall x g, transitive g ->
+  forall s, XSet.fold (add x) s g == XSet.fold (raw_add x) s g !.
+
+Proof.
+intros x g gtrans s.
+Abort.
+
+(***********************************************************************)
+(** building a transitive graph *)
+
 Require Import List.
 
 Section trans_clos.
 
   Variable (A : Type) (f : A -> option (X.t * XSet.t)).
+
+  Definition raw_adds g a :=
+    match f a with
+      | None => g
+      | Some (x,s) => XSet.fold (raw_add x) s g
+    end.
 
   Definition adds g a :=
     match f a with
@@ -293,9 +344,16 @@ Section trans_clos.
   hyp.
   Qed.
 
+  Lemma adds_ok : forall g a, transitive g -> adds g a == raw_adds g a!.
+
+  Proof.
+  intros g a gtrans. unfold adds, raw_adds. destruct (f a).
+  destruct p as [x s].
+  Abort.
+
   Definition trans_clos l := fold_left adds l (empty XSet.t).
 
-  Lemma trans_clos_ok : forall l, transitive (trans_clos l).
+  Lemma trans_trans_clos : forall l, transitive (trans_clos l).
 
   Proof.
   unfold trans_clos.
