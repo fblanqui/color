@@ -1004,11 +1004,11 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
   Definition def_symbs_rule R a :=
     match lhs a with
       | Var _ => None
-      | Fun f _ => Some (f, XSetProp.of_list (def_symbs R (rhs a)))
+      | Fun f _ => Some (f, XSetProps.of_list (def_symbs R (rhs a)))
     end.
 
   Definition succs_symb R f :=
-    f :: XSetProp.to_list (succs f (trans_clos (def_symbs_rule R) R)).
+    f :: XSetProps.to_list (succs f (trans_clos (def_symbs_rule R) R)).
 
   Lemma succs_symbP : forall R f g,
     List.In g (succs_symb R f) <-> symb_ord R# f g.
@@ -1016,7 +1016,7 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
   Proof.
   intros R f g. unfold succs_symb. simpl. case_beq_symb WP.Sig f g.
   intuition.
-  cut (List.In g (XSetProp.to_list (succs f (trans_clos (def_symbs_rule R) R)))
+  cut (List.In g (XSetProps.to_list (succs f (trans_clos (def_symbs_rule R) R)))
     <-> symb_ord R ! f g). intuition. subst. apply rt_refl.
   apply tc_incl_rtc. hyp. apply rtc_split in H0.
   unfold Relation_Operators.union in H0. intuition.
