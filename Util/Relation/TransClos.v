@@ -25,6 +25,8 @@ Definition graph := XMap.t XSet.t.
 
 Implicit Type g h : graph.
 
+Notation geq := (@Logic.eq graph).
+
 (***********************************************************************)
 (** nodes of a graph *)
 
@@ -42,11 +44,7 @@ Definition rel g : relation_on_X :=
 
 Coercion rel : graph >-> relation_on_X.
 
-(* definition necessary to apply fold_mon lemmas *)
-Definition incl g g' := g << g'.
-
-(*REMARK: could be improved by taking Equal on the graph argument *)
-Instance rel_mor : Proper (@Logic.eq graph ==> eq ==> eq ==> iff) rel.
+Instance rel_mor : Proper (geq ==> eq ==> eq ==> iff) rel.
 
 Proof.
 intros g g' gg' x x' xx' y y' yy'. subst g'. split.
@@ -71,7 +69,7 @@ Definition succs x g :=
     | None => XSet.empty
   end.
 
-Instance succs_mor : Proper (eq ==> @Equal XSet.t ==> @XSet.Equal) succs.
+Instance succs_mor : Proper (eq ==> geq ==> XSet.Equal) succs.
 
 Proof.
 intros x y xy g h gh. unfold succs. rewrite xy. rewrite gh. refl.
@@ -95,6 +93,12 @@ Qed.
 
 Definition raw_add x y g : graph := add x (XSet.add y (succs x g)) g.
 
+Instance raw_add_mor : Proper (eq ==> eq ==> geq ==> geq) raw_add.
+
+Proof.
+intros x x' xx' y y' yy' g g' gg'. subst g'. unfold raw_add.
+Abort.
+
 Definition id x y a b := eq a x /\ eq b y.
 
 Lemma raw_add_eq : forall x y g, raw_add x y g == g U id x y.
@@ -117,7 +121,7 @@ Qed.
 
 Definition succ x s a b := eq a x /\ XSet.In b s.
 
-Instance succ_mor : Proper (eq ==> @XSet.Equal ==> @same_relation X.t) succ.
+Instance succ_mor : Proper (eq ==> XSet.Equal ==> @same_relation X.t) succ.
 
 Proof.
 split; intros a b; unfold succ; intuition.
@@ -136,7 +140,7 @@ Lemma fold_raw_add_eq : forall x s g0,
 
 Proof.
 intros x s g0. pattern (XSet.fold (raw_add x) s g0).
-apply XSetProp.fold_rec_weak; clear s.
+apply XSetProps.fold_rec_weak; clear s.
 (* [=] *)
 intros s t g st i. rewrite <- st. hyp.
 (* empty *)
@@ -170,8 +174,7 @@ Definition add x y g :=
 Definition pred x ysy g a b := rel g a x /\ XSet.In b ysy.
 
 Instance pred_mor :
-  Proper (eq ==> @XSet.Equal ==> @Equal XSet.t ==> @same_relation X.t)
-  pred.
+  Proper (eq ==> XSet.Equal ==> Equal ==> @same_relation X.t) pred.
 
 Proof.
 split; intros a b; unfold pred, rel; intuition.
@@ -291,28 +294,36 @@ Proof.
 rewrite rel_empty. firstorder.
 Qed.
 
-(*Definition fold_add x s g := rel (XSet.fold (add x) s g).
-
-Instance fold_add_mor :
-  Proper (eq ==> @XSet.Equal ==> @Logic.eq graph ==> @same_relation X.t)
-  fold_add.
-
-Proof.
-intros x y xy s t st g h gh. subst h. unfold fold_add.*)
-
 Lemma trans_fold_set : forall x g,
   transitive g -> forall s, transitive (XSet.fold (add x) s g).
 
 Proof.
 intros x g gtrans s. pattern (XSet.fold (add x) s g).
-apply XSetProp.fold_rec_weak; intros. hyp. hyp. apply trans_add. hyp.
+apply XSetProps.fold_rec_weak; intros. hyp. hyp. apply trans_add. hyp.
 Qed.
+
+Instance add_mor : Proper (eq ==> eq ==> geq ==> geq) add.
+
+Proof.
+intros x x' xx' y y' yy' g g' gg'. subst g'. unfold add.
+rewrite xx'. rewrite yy'. destruct (XSet.mem y' (succs x' g)). refl.
+Abort.
+
+Lemma compat_op_add : forall x, compat_op eq Logic.eq (add x).
+
+Proof.
+unfold compat_op. intros x y y' yy' g g' gg'. subst.
+Abort.
 
 Lemma fold_set_ok : forall x g, transitive g ->
   forall s, XSet.fold (add x) s g == XSet.fold (raw_add x) s g !.
 
 Proof.
-intros x g gtrans s.
+intros x g gtrans s. pattern s; apply set_induction_bis; clear s.
+intros s s' ss' H.
+rewrite XSetOrdProps.fold_equal with (s:=s') (s':=s).
+2: apply eq_equivalence.
+rewrite XSetOrdProps.fold_equal with (s:=s') (s':=s). 
 Abort.
 
 (***********************************************************************)
