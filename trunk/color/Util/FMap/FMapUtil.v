@@ -16,7 +16,7 @@ Module Make (X : OrderedType).
   Module Export XMap := FMapAVL.Make X.
   Module Export XMapProps := Properties XMap.
   Module Export XMapFacts := Facts XMap.
-  Module Export XOrdProps := OrdProperties XMap.
+  Module Export XMapOrdProps := OrdProperties XMap.
 
   Import X.
 
