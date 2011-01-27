@@ -14,9 +14,10 @@ Require Import LogicUtil FSets FSetAVL FSetFacts.
 Module Make (X : OrderedType).
 
 Module Export XSet := FSetAVL.Make X.
-Module Export XSetEqProp := EqProperties XSet.
-Module Export XSetProp := Properties XSet.
+Module Export XSetEqProps := EqProperties XSet.
+Module Export XSetProps := Properties XSet.
 Module Export XSetFacts := Facts XSet.
+Module Export XSetOrdProps := OrdProperties XSet.
 
 Import X.
 
@@ -214,24 +215,5 @@ Lemma equal_Equal : forall s t, equal s t = true <-> Equal s t.
 Proof.
 intuition. apply equal_2. hyp.
 Qed.
-
-(***********************************************************************)
-(* monotony properties of fold *)
-
-Section fold_mon.
-
-  Variables (elt A : Type) (le : A -> A -> Prop).
-
-  Infix "<=" := le.
-
-  Variables (F : X.t -> A -> A) (Fmon : forall x a b, a <= b -> a <= F x b).
-
-  Lemma fold_mon : forall s a b, a <= b -> a <= fold F s b.
-
-  Proof.
-  intros s a b. apply fold_rec; intros. hyp. apply Fmon. auto.
-  Qed.
-
-End fold_mon.
 
 End Make.
