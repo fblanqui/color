@@ -1099,7 +1099,7 @@ Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
 | rt1_trans : forall x y z,
   R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
 
-Notation "x #1" := (clos_refl_trans1 x) (at level 35) : relation_scope.
+Notation "x #1" := (clos_refl_trans1 x) (at level 9) : relation_scope.
 
 Section alternative_definition_clos_refl_trans.
 
