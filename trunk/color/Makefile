@@ -41,6 +41,7 @@ ADR := login-linux.inria.fr:liama/www/color
 
 install-doc:
 	scp doc/coqdoc.css doc/*.html $(ADR)/doc
+	cp doc/coqdoc.css doc/*.html ~/web/color/site/doc
 
 dist:
 	./createDist
@@ -48,6 +49,7 @@ dist:
 install-dist:
 	scp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
 	scp CHANGES $(ADR)/CHANGES.CoLoR
+	cp CHANGES ~/web/color/site/CHANGES.CoLoR
 
 %.vo: %.v
 	$(MAKECOQ) $@
