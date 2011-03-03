@@ -1091,8 +1091,8 @@ Section alternative_definition_clos_trans.
 End alternative_definition_clos_trans.
 
 (***********************************************************************)
-(** Alternative Definition of the Reflexive Transitive Closure *)
-(* (more convenient for certain inductive proofs) *)
+(** Alternative definition of the reflexive and transitive closure
+(more convenient for certain inductive proofs) *)
 
 Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
 | rt1_refl : forall x, clos_refl_trans1 R x x
@@ -1144,9 +1144,6 @@ Section alternative_definition_clos_refl_trans.
   Qed.
 
 End alternative_definition_clos_refl_trans.
-
-(***********************************************************************)
-(** Alternative Definitions: Inclusion Properties *)
 
 Section alternative_inclusion.
 
@@ -1217,3 +1214,72 @@ Proof.
   apply union_rel_rt_right. apply rt1_trans with y.
   apply t1_step. hyp. apply rt1_refl.
 Qed.
+
+(***********************************************************************)
+(** Morphisms wrt same_relation *)
+
+Require Import Morphisms.
+
+Instance Reflexive_m (A : Type) :
+  Proper (@same_relation A ==> iff) (@Reflexive A).
+
+Proof.
+firstorder.
+Qed.
+
+Instance Symmetric_m (A : Type) :
+  Proper (@same_relation A ==> iff) (@Symmetric A).
+
+Proof.
+firstorder.
+Qed.
+
+Instance Transitive_m (A : Type) :
+  Proper (@same_relation A ==> iff) (@Transitive A).
+
+Proof.
+intros R S RS. apply transitive_mor. hyp.
+Qed.
+
+Instance Equivalence_m (A : Type) :
+  Proper (@same_relation A ==> iff) (@Equivalence A).
+
+Proof.
+intros R S RS. split; intros [hr hs ht].
+constructor; rewrite <- RS; hyp.
+constructor; rewrite RS; hyp.
+Qed.
+
+(***********************************************************************)
+(** Option setoid *)
+
+Section option_setoid.
+
+  Variables (A : Type) (eq : A->A->Prop) (eq_Equiv : Equivalence eq).
+
+  Definition eq_opt x y :=
+    match x, y with
+      | Some a, Some b => eq a b
+      | None, None => True
+      | _, _ => False
+    end.
+
+  Instance eq_opt_Equiv : Equivalence eq_opt.
+
+  Proof.
+    constructor.
+    intro x. unfold eq_opt. destruct x. refl. auto.
+    intros x y. unfold eq_opt. destruct x; destruct y; intro; auto.
+    symmetry. hyp.
+    intros x y z. unfold eq_opt.
+    destruct x; destruct y; destruct z; intros; auto. transitivity a0; hyp.
+    contradiction.
+  Qed.
+
+  Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
+
+  Proof.
+    intros x y xy. unfold eq_opt. hyp.
+  Qed.
+
+End option_setoid.
