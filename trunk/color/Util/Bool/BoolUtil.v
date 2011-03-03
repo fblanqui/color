@@ -11,6 +11,7 @@ Set Implicit Arguments.
 
 Require Import LogicUtil.
 Require Export Bool.
+Require Setoid.
 
 Implicit Arguments orb_false_elim [b1 b2].
 Implicit Arguments orb_true_elim [b1 b2].
@@ -24,10 +25,20 @@ Hint Rewrite negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
 
 Ltac bool := autorewrite with bool.
 
+(***********************************************************************)
+(** equality *)
+
 Lemma false_not_true : forall b, b = false <-> ~(b = true).
 
 Proof.
 destruct b; intuition.
+Qed.
+
+Lemma beq_true : forall b c, b = c <-> (b = true <-> c = true).
+
+Proof.
+split; intro h. subst. tauto. destruct c.
+tauto. rewrite false_not_true. intuition.
 Qed.
 
 (***********************************************************************)
