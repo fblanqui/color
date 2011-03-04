@@ -1253,33 +1253,59 @@ Qed.
 (***********************************************************************)
 (** Option setoid *)
 
-Section option_setoid.
+(*COQ: we cannot use a Section
+   because Instance is not compatible with Section *)
 
-  Variables (A : Type) (eq : A->A->Prop) (eq_Equiv : Equivalence eq).
-
-  Definition eq_opt x y :=
+  Definition eq_opt (A : Type) (eq : A->A->Prop) x y :=
     match x, y with
       | Some a, Some b => eq a b
       | None, None => True
       | _, _ => False
     end.
 
-  Instance eq_opt_Equiv : Equivalence eq_opt.
+  Instance eq_opt_Refl (A : Type) (eq : A->A->Prop) :
+    Reflexive eq -> Reflexive (eq_opt eq).
 
   Proof.
-    constructor.
-    intro x. unfold eq_opt. destruct x. refl. auto.
-    intros x y. unfold eq_opt. destruct x; destruct y; intro; auto.
-    symmetry. hyp.
-    intros x y z. unfold eq_opt.
-    destruct x; destruct y; destruct z; intros; auto. transitivity a0; hyp.
-    contradiction.
+    intros heq x. unfold eq_opt. destruct x. reflexivity. auto.
   Qed.
 
-  Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
+  Instance eq_opt_Sym (A : Type) (eq : A->A->Prop) :
+    Symmetric eq -> Symmetric (eq_opt eq).
 
   Proof.
-    intros x y xy. unfold eq_opt. hyp.
+    intros heq x y. unfold eq_opt. destruct x; destruct y; auto.
   Qed.
 
-End option_setoid.
+  Instance eq_opt_Trans (A : Type) (eq : A->A->Prop) :
+    Transitive eq -> Transitive (eq_opt eq).
+
+  Proof.
+    intros heq x y z. unfold eq_opt.
+    destruct x; destruct y; destruct z; intros; auto.
+    transitivity a0; auto. contradiction.
+  Qed.
+
+  Instance eq_opt_Equiv (A : Type) (eq : A->A->Prop) :
+    Equivalence eq -> Equivalence (eq_opt eq).
+
+  Instance Some_m (A : Type) (eq : A->A->Prop) :
+    Proper (eq ==> eq_opt eq) (@Some A).
+
+  Proof.
+    intros x y xy. unfold eq_opt. auto.
+  Qed.
+
+  Lemma eq_opt_None : forall (A : Type) (eq : A->A->Prop) o,
+    o = None <-> eq_opt eq o None.
+
+  Proof.
+    intros A eq o. unfold eq_opt. destruct o. intuition. discriminate. tauto.
+  Qed.
+
+  Lemma eq_opt_refl : forall (A : Type) (eq : A->A->Prop),
+    Reflexive eq -> forall o p, o = p -> eq_opt eq o p.
+
+  Proof.
+    intros. subst. reflexivity.
+  Qed.
