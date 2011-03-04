@@ -203,11 +203,41 @@ Module Make (X : OrderedType).
       apply Empty_m. hyp.
     Qed.
 
+    Lemma Equiv_empty : forall m, Equiv eq (empty A) m <-> Empty m.
+
+    Proof.
+      intro m. unfold Equiv, Empty, Raw.Proofs.Empty. intuition.
+      assert (In a m). exists e. hyp.
+      rewrite <- H0 in H2. rewrite empty_in_iff in H2. hyp.
+      rewrite empty_in_iff in H0. contradiction.
+      rewrite empty_in_iff. destruct H0. eapply H. apply H0.
+      assert (In k (empty A)). exists e. hyp.
+      rewrite empty_in_iff in H2. contradiction.
+    Qed.
+
+    Lemma Equiv_add_remove : forall n k x m', ~In k n ->
+      Equiv eq (add k x n) m' -> Equiv eq n (remove k m').
+
+    Proof.
+      intros n k x m' hk [h1 h2]. split.
+      (* In *)
+      intro l. rewrite remove_in_iff. intuition. apply hk. rewrite H0. hyp.
+      rewrite <- h1. rewrite add_in_iff. auto.
+      rewrite <- h1 in H1. rewrite add_in_iff in H1. intuition.
+      (* eq *)
+      intros l y z ly lz.
+      assert (~X.eq k l). intro e. apply hk. exists y.
+      change (MapsTo k y n). rewrite (MapsTo_iff _ _ e). hyp.
+      apply h2 with l. rewrite add_mapsto_iff. right. intuition.
+      rewrite remove_mapsto_iff in lz. intuition.
+    Qed.
+
     Section fold.
 
       Variables (eq_Refl : PreOrder eq)
         (B : Type) (eqB : relation B) (eqB_Equiv : Equivalence eqB)
-        (f : X.t -> A -> B -> B) (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f).
+        (f : X.t -> A -> B -> B) (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
+        (hf : transpose_neqkey eqB f).
 
       Instance fold_m : Proper (Equiv eq ==> eqB ==> eqB) (fold f).
 
@@ -222,7 +252,11 @@ Module Make (X : OrderedType).
         symmetry. apply hm. hyp. refl.
         apply hm. transitivity n; hyp. hyp.
         (* Empty *)
+        intros m hm b b' bb'. rewrite Equiv_empty in hm.
+        rewrite fold_Empty; auto. 2: apply empty_1.
+        rewrite fold_1. rewrite elements_Empty in hm. rewrite hm. hyp.
         (* Add *)
+        intros k x m nxm hm m' xemm' b b' bb'.
       Abort.
 
     End fold.
