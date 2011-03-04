@@ -9,7 +9,7 @@ lemmas and tactics on Coq's FSets
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FSets FSetAVL FSetFacts.
+Require Import LogicUtil FSets FSetAVL FSetFacts RelUtil.
 
 Module Make (X : OrderedType).
 
@@ -214,6 +214,12 @@ Lemma equal_Equal : forall s t, equal s t = true <-> Equal s t.
 
 Proof.
 intuition. apply equal_2. hyp.
+Qed.
+
+Lemma rel_equal_Equal : rel equal == Equal.
+
+Proof.
+apply rel_eq. apply equal_Equal.
 Qed.
 
 End Make.
