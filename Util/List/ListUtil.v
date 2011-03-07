@@ -13,11 +13,8 @@ extension of the Coq library on lists
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil NatUtil EqUtil Setoid SetoidList.
 Require Export List.
-Require Import NatUtil.
-Require Import EqUtil.
-Require Import Setoid.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
@@ -1832,7 +1829,24 @@ End first.
 
 Section fold_left.
 
-Variable (A B : Type) (f : list A -> B -> list A).
+Variables (A : Type) (eqA : relation A) (B : Type) (eqB : relation B).
+
+Lemma eq_fold_left : forall f f',
+  (forall a a', eqA a a' -> forall b b', eqB b b' -> eqA (f a b) (f' a' b')) ->
+  forall l l', eqlistA eqB l l' -> forall a a', eqA a a' ->
+  eqA (fold_left f l a) (fold_left f' l' a').
+
+Proof.
+intros f f' ff'. induction l; destruct l'; intros; simpl.
+hyp. inversion H. inversion H.
+inversion H. subst. apply IHl. hyp. apply ff'; hyp.
+Qed.
+
+End fold_left.
+
+Section fold_left_list.
+
+Variables (A B : Type) (f : list A -> B -> list A).
 
 Variable g : B -> list A.
 
@@ -1856,7 +1870,7 @@ intuition. destruct H0. right. exists x. rewrite In_rev. hyp.
 destruct H0. left. exists x. rewrite <- In_rev. hyp.
 Qed.
 
-End fold_left.
+End fold_left_list.
 
 Implicit Arguments fold_left_flat_map [A B f].
 Implicit Arguments In_fold_left [A B f].
