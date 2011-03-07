@@ -1216,7 +1216,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Morphisms wrt same_relation *)
+(** Morphisms wrt inclusion and same_relation *)
 
 Require Import Morphisms.
 
@@ -1250,35 +1250,42 @@ constructor; rewrite <- RS; hyp.
 constructor; rewrite RS; hyp.
 Qed.
 
+Lemma Proper_m : forall A (R R' : relation A), R' << R ->
+  forall B (S S' : relation B), S << S' ->
+    forall f, Proper (R ==> S) f -> Proper (R' ==> S') f.
+
+Proof.
+intros A R R' R'R B S S' SS' f hf x y xy.
+apply SS'. apply hf. apply R'R in xy. hyp.
+Qed.
+
 (***********************************************************************)
 (** Option setoid *)
 
-(*COQ: we cannot use a Section
-   because Instance is not compatible with Section *)
+Section option_setoid.
 
-  Definition eq_opt (A : Type) (eq : A->A->Prop) x y :=
+  Variables (A : Type) (eq : A->A->Prop).
+
+  Definition eq_opt x y :=
     match x, y with
       | Some a, Some b => eq a b
       | None, None => True
       | _, _ => False
     end.
 
-  Instance eq_opt_Refl (A : Type) (eq : A->A->Prop) :
-    Reflexive eq -> Reflexive (eq_opt eq).
+  Global Instance eq_opt_Refl : Reflexive eq -> Reflexive eq_opt.
 
   Proof.
     intros heq x. unfold eq_opt. destruct x. reflexivity. auto.
   Qed.
 
-  Instance eq_opt_Sym (A : Type) (eq : A->A->Prop) :
-    Symmetric eq -> Symmetric (eq_opt eq).
+  Global Instance eq_opt_Sym : Symmetric eq -> Symmetric eq_opt.
 
   Proof.
     intros heq x y. unfold eq_opt. destruct x; destruct y; auto.
   Qed.
 
-  Instance eq_opt_Trans (A : Type) (eq : A->A->Prop) :
-    Transitive eq -> Transitive (eq_opt eq).
+  Global Instance eq_opt_Trans : Transitive eq -> Transitive eq_opt.
 
   Proof.
     intros heq x y z. unfold eq_opt.
@@ -1286,26 +1293,24 @@ Qed.
     transitivity a0; auto. contradiction.
   Qed.
 
-  Instance eq_opt_Equiv (A : Type) (eq : A->A->Prop) :
-    Equivalence eq -> Equivalence (eq_opt eq).
+  Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.
 
-  Instance Some_m (A : Type) (eq : A->A->Prop) :
-    Proper (eq ==> eq_opt eq) (@Some A).
+  Global Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
 
   Proof.
     intros x y xy. unfold eq_opt. auto.
   Qed.
 
-  Lemma eq_opt_None : forall (A : Type) (eq : A->A->Prop) o,
-    o = None <-> eq_opt eq o None.
+  Lemma eq_opt_None : forall o, o = None <-> eq_opt o None.
 
   Proof.
-    intros A eq o. unfold eq_opt. destruct o. intuition. discriminate. tauto.
+    intro o. unfold eq_opt. destruct o. intuition. discriminate. tauto.
   Qed.
 
-  Lemma eq_opt_refl : forall (A : Type) (eq : A->A->Prop),
-    Reflexive eq -> forall o p, o = p -> eq_opt eq o p.
+  Lemma eq_opt_refl : Reflexive eq -> forall o p, o = p -> eq_opt o p.
 
   Proof.
     intros. subst. reflexivity.
   Qed.
+
+End option_setoid.
