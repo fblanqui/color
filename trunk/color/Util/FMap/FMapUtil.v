@@ -39,6 +39,14 @@ Module Make (X : OrderedType).
 
     Variables (A : Type) (eq : A->A->Prop).
 
+    Lemma Equal_Equiv : Reflexive eq ->
+      forall m m', Equal m m' -> Equiv eq m m'.
+
+    Proof.
+      intros heq m m'. rewrite Equal_Equiv. apply Equiv_m'.
+      intros x y xy. subst. refl.
+    Qed.
+
 (***********************************************************************)
 (** Equiv preserves reflexivity, symmetry and transitivity *)
 
@@ -66,9 +74,6 @@ Module Make (X : OrderedType).
       rewrite H1 in H5. destruct H5 as [f].
       transitivity f. apply H2 with k; hyp. apply H3 with k; hyp.
     Qed.
-
-    (*REMOVE: useful?
-    Global Instance Equiv_Equiv : Equivalence eq -> Equivalence (Equiv eq).*)
 
 (***********************************************************************)
 (** add is a morphism wrt Equiv *)
@@ -272,22 +277,6 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** weakening of the induction principle by using Equiv instead of Equal *)
-
-    Lemma map_induction_bis_Equiv : Reflexive eq ->
-      forall P : XMap.t A -> Type,
-      (forall m m', Equiv eq m m' -> P m -> P m') ->
-      P (empty A) ->
-      (forall k x m, ~In k m -> P m -> P (add k x m)) -> 
-      forall m, P m.
-
-    Proof.
-      intros. apply map_induction_bis; auto. intros n n' nn' h. eapply X.
-      2: apply h. apply Equiv_m' with (x:=@Logic.eq A).
-      intros x y xy. subst. refl. rewrite <- Equal_Equiv. hyp.
-    Qed.
-
-(***********************************************************************)
 (** (inclusion) relation on lists of elements of type (key*A) *)
 
     Definition le_list l l' := forall k x, InA (@eq_key_elt A) (k,x) l ->
@@ -309,9 +298,6 @@ Module Make (X : OrderedType).
       destruct (mn _ _ h2) as [x3 [e' h3]]. exists x3. intuition.
       transitivity x2; hyp.
     Qed.
-
-    (*REMOVE: useful?
-    Global Instance le_list_PO : PreOrder eq -> PreOrder le_list.*)
 
 (***********************************************************************)
 (** (equivalence) relation on lists of elements of type (key*A) *)
@@ -365,20 +351,21 @@ and satisfies some commutation property *)
     Section fold.
 
       Variables (heq : PreOrder eq)
-        (B : Type) (eqB : relation B) (heqB : Equivalence eqB)
-        (f : X.t -> A -> B -> B) (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
-        (hf : transpose_neqkey eqB f).
+        (B : Type) (eqB : relation B) (heqB : Equivalence eqB).
 
-      Global Instance fold_m : Proper (Equiv eq ==> eqB ==> eqB) (fold f).
+      Global Instance fold_m : forall (f : X.t -> A -> B -> B)
+        (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
+        (hf : transpose_neqkey eqB f),
+        Proper (Equiv eq ==> eqB ==> eqB) (fold f).
 
       Proof.
-        intros m m' mm' b b' bb'; gen bb'; gen b'; gen b; gen mm'; gen m'.
-        pattern m; apply map_induction_bis_Equiv; clear m.
-        destruct heq. hyp.
-        (* Equiv *)
-        intros m n mn hm n' nn' b b' bb'. transitivity (fold f m b).
-        symmetry. apply hm. hyp. refl.
-        apply hm. transitivity n; hyp. hyp.
+        intros f f_m hf m m' mm' b b' bb';
+          gen bb'; gen b'; gen b; gen mm'; gen m'.
+        pattern m; apply map_induction_bis; clear m.
+        (* Equal *)
+        intros m n mn hm n' nn' b b' bb'. apply Equal_Equiv in mn.
+        2: intuition. transitivity (fold f m b).
+        symmetry. apply hm. hyp. refl. apply hm. transitivity n; hyp. hyp.
         (* Empty *)
         intros m hm b b' bb'. rewrite Equiv_empty in hm.
         rewrite fold_Empty; auto. 2: apply empty_1.
@@ -392,6 +379,25 @@ and satisfies some commutation property *)
         rewrite fold_Add with (m2:=m'); auto. 2: apply n. 2: apply h2.
         apply f_m; auto. apply hm; auto.
         eapply Equiv_add_remove. hyp. apply xemm'.
+      Qed.
+
+      Lemma fold_m_ext : forall (f : X.t -> A -> B -> B)
+        (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
+        (hf : transpose_neqkey eqB f) f',
+        (forall k k', X.eq k k' -> forall x x', eq x x' ->
+          forall b b', eqB b b' -> eqB (f k x b) (f' k' x' b')) ->
+        forall m m', Equiv eq m m' -> forall b b', eqB b b' ->
+          eqB (fold f m b) (fold f' m' b').
+
+      Proof.
+        intros f f_m hf f' ff' m m' mm' b b' bb'. repeat rewrite fold_1.
+        set (F := fun a (p:key*A) => f (fst p) (snd p) a).
+        set (F' := fun a (p:key*A) => f' (fst p) (snd p) a).
+        transitivity (fold_left F (elements m') b').
+        unfold F. repeat rewrite <- fold_1. apply fold_m; auto||refl.
+        apply eq_fold_left with (eqB:=@eq_key_elt A); try refl.
+        intros a a' aa' [k x] [k' x'] e. inversion e. unfold F, F'. simpl in *.
+        subst x'. apply ff'; auto||refl.
       Qed.
  
     End fold.
