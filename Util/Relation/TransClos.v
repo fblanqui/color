@@ -30,6 +30,8 @@ Implicit Type g h : graph.
 
 Definition geq : relation graph := XMap.Equiv XSet.Equal.
 
+Instance geq_Equiv : Equivalence geq.
+
 (***********************************************************************)
 (** nodes of a graph *)
 
@@ -99,6 +101,12 @@ Lemma mem_succs : forall g x y, XSet.mem y (succs x g) = true <-> rel g x y.
 
 Proof.
 intros. rewrite <- mem_iff. apply In_succs.
+Qed.
+
+Lemma succs_add : forall x s g, succs x (add x s g) = s.
+
+Proof.
+intros x s g. unfold succs. rewrite add_eq_o. refl. refl.
 Qed.
 
 (***********************************************************************)
@@ -172,6 +180,20 @@ rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
 rewrite add_iff. firstorder.
 Qed.
 
+Lemma transpose_raw_add : forall x, transpose geq (raw_add x).
+
+Proof.
+intros x y z g. unfold raw_add. set (sxg := succs x g).
+set (zsxg := XSet.add z sxg). set (ysxg := XSet.add y sxg).
+repeat rewrite succs_add. rewrite add_add. 2: intuition.
+case_eq (eq_dec x x). Focus 2. absurd (eq x x). hyp. refl.
+rewrite add_add. 2: intuition. rewrite H. clear e H. split.
+intro k. repeat rewrite add_in_iff. tauto.
+intros k e e'. repeat rewrite add_mapsto_iff. intuition.
+subst e e'. unfold zsxg, ysxg. apply XSetProps.add_add.
+apply refl_intro. intuition. apply (MapsTo_fun H2 H3).
+Qed.
+
 (***********************************************************************)
 (** given a transitive graph [g], [add x y g] adds edges to g to get
 the transitive closure of [g U id x y] *)
@@ -212,7 +234,38 @@ Instance add_pred_m :
 
 Proof.
 intros x x' xx' s s' ss' y y' yy' t t' tt' g g' gg'. unfold add_pred.
-rewrite xx', tt'. clear - yy' gg'. destruct (XSet.mem x' t'). 2: hyp.
+rewrite xx', tt'. clear - ss' yy' gg'. destruct (XSet.mem x' t'). 2: hyp.
+apply S.fold_m_ext; intuition. apply raw_add_m. refl. apply transpose_raw_add.
+apply raw_add_m. hyp.
+Qed.
+
+Lemma transpose_neqkey_add_pred : forall x s,
+  transpose_neqkey geq (add_pred x s).
+
+Proof.
+unfold transpose_neqkey. intros x ysy w w' sw sw' g nww'. unfold add_pred.
+destruct (XSet.mem x sw); destruct (XSet.mem x sw'). 4: refl.
+(* *)
+split.
+intro y. apply In_m with (eq0:=XSet.Equal). intuition. refl.
+gen g. pattern ysy; apply set_induction_bis; clear ysy.
+intros s s' ss' e g. rewrite <- ss'. auto.
+repeat rewrite fold_empty. refl.
+intros z s nzs IH g.
+rewrite XSetProps.fold_add; unfold compat_op;
+  try apply raw_add_m||apply transpose_raw_add; auto; intuition.
+rewrite XSetProps.fold_add; unfold compat_op;
+  try apply raw_add_m||apply transpose_raw_add; auto; intuition.
+(*COQ: rewrite does not work properly here *)
+transitivity (raw_add w' z
+  (XSet.fold (raw_add w') s (XSet.fold (raw_add w) (XSet.add z s) g))).
+2: symmetry; apply XSetProps.fold_add; unfold compat_op;
+  try apply raw_add_m||apply transpose_raw_add; auto; intuition.
+(*COQ: rewrite does not work properly here *)
+transitivity (raw_add w' z
+  (XSet.fold (raw_add w') s (raw_add w z (XSet.fold (raw_add w) s g)))).
+2: rewrite XSetProps.fold_add; unfold compat_op;
+  try apply raw_add_m||apply transpose_raw_add; auto; intuition.
 Abort.
 
 Instance add_m : Proper (eq ==> eq ==> geq ==> geq) add.
@@ -220,10 +273,8 @@ Instance add_m : Proper (eq ==> eq ==> geq ==> geq) add.
 Proof.
 intros x x' xx' y y' yy' g g' gg'. unfold add.
 rewrite <- xx', <- yy', <- gg'. destruct (XSet.mem y (succs x g)). hyp.
-eapply fold_m_ext with (eq0:=XSet.Equal).
-intuition.
-intuition. apply Equiv_Trans. intuition.
-clear. intros z z' zz' s s' ss' h h' hh'.
+eapply fold_m_ext with (eq0:=XSet.Equal); intuition.
+apply add_pred_m; refl. clear.
 Abort.
 
 Lemma pred_empty : forall x ysy, pred x ysy (@empty XSet.t) == @empty_rel X.t.
