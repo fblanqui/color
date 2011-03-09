@@ -36,7 +36,7 @@ Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all
 Ltac Equal := autorewrite with Equal.
 
 (***********************************************************************)
-(* properties of In *)
+(** properties of In *)
 
 Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~eq y x.
 
@@ -51,7 +51,7 @@ intuition. apply (remove_3 H). ded (In_remove_neq H). contradiction.
 Qed.
 
 (***********************************************************************)
-(* tactics for In, Equal and Subset *)
+(** tactics for In, Equal and Subset *)
 
 Ltac lft := apply union_2; try hyp.
 Ltac rgt := apply union_3; try hyp.
@@ -89,7 +89,7 @@ Ltac Equal_tac := Equal_intro; In_elim; try In_intro.
 Ltac Subset_tac := Subset_intro; In_elim; try In_intro.
 
 (***********************************************************************)
-(* lemmas and tactics for ~In *)
+(** lemmas and tactics for ~In *)
 
 Lemma notin_union : forall x s s', ~In x (union s s') <-> ~In x s /\ ~In x s'.
 
@@ -110,7 +110,7 @@ Ltac notIn_elim := repeat
   end.
 
 (***********************************************************************)
-(* more equalities *)
+(** more equalities *)
 
 Lemma union_empty_left : forall s, union empty s [=] s.
 
@@ -182,7 +182,7 @@ intros. rewrite double_inclusion. intuition.
 Qed.
 
 (***********************************************************************)
-(* lemmas, hints and tactics on mem *)
+(** lemmas, hints and tactics on mem *)
 
 Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
   : mem.
@@ -222,4 +222,75 @@ Proof.
 apply rel_eq. apply equal_Equal.
 Qed.
 
+(***********************************************************************)
+(** fold *)
+
+Section fold.
+
+  Variables (A : Type) (eqA : A->A->Prop) (heqA : Equivalence eqA).
+
+  Definition feq f f' :=
+    forall x x', eq x x' -> forall a a', eqA a a' -> eqA (f x a) (f' x' a').
+
+  Global Instance feq_Sym : Symmetric eqA -> Symmetric feq.
+
+  Proof.
+    firstorder.
+  Qed.
+
+  Global Instance Proper_m' :
+    Proper (feq ==> impl) (Proper (eq ==> eqA ==> eqA)).
+
+  Proof.
+    intros f f' ff' fm x x' xx' a a' aa'. transitivity (f x a).
+    symmetry. apply ff'; refl. apply ff'; hyp.
+  Qed.
+
+  Global Instance Proper_m :
+    Proper (feq ==> iff) (Proper (eq ==> eqA ==> eqA)).
+
+  Proof.
+    split; apply Proper_m'; auto. symmetry. hyp.
+  Qed.
+
+  Global Instance transpose_m : Proper (feq ==> impl) (transpose eqA).
+
+  Proof.
+    intros f f' ff' hf x y z. transitivity (f x (f y z)).
+    symmetry. apply ff'. refl. apply ff'; refl.
+    rewrite hf. apply ff'. refl. apply ff'; refl.
+  Qed.
+
+  Global Instance fold_m : forall f,
+    Proper (eq ==> eqA ==> eqA) f -> Proper (Equal ==> eqA ==> eqA) (fold f).
+
+  Proof.
+    intros f f_m s s' ss' a a' aa'. transitivity (fold f s' a).
+    apply fold_equal; hyp. apply fold_init; hyp.
+  Qed.
+
+  Lemma fold_m_ext : forall f,
+    Proper (eq ==> eqA ==> eqA) f -> transpose eqA f ->
+    forall f', feq f f' -> forall s s', s [=] s' -> forall a a', eqA a a' ->
+      eqA (fold f s a) (fold f' s' a').
+
+  Proof.
+    intros f fm ft f' ff' s s' ss' a a' aa';
+      gen aa'; gen a'; gen a; gen ss'; gen s'.
+    pattern s; apply set_induction_bis; clear s.
+    (* Equal *)
+    intros s s' ss' h t s't a a' aa'. transitivity (fold f s a).
+    apply fold_equal; auto. symmetry. hyp. apply h. transitivity s'; hyp. hyp.
+    (* empty *)
+    intros s' e a a' aa'. transitivity (fold f' empty a').
+    hyp. apply fold_m; try hyp||refl. rewrite <- ff'. hyp.
+    (* add *)
+    intros x s nxs h s' e a a' aa'. transitivity (fold f' (add x s) a').
+    repeat rewrite fold_add; unfold compat_op; try rewrite <- ff'; auto.
+    apply ff'. refl. apply h. refl. hyp.
+    apply fold_m; auto. rewrite <- ff'. hyp. refl.
+  Qed.
+
+End fold.
+ 
 End Make.
