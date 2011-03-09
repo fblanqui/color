@@ -33,7 +33,7 @@ Module Make (X : OrderedType).
   Proof. firstorder. Qed.
 
 (***********************************************************************)
-(** In the following, we assume given a type A equipped with a relation eq *)
+(** in the following, we assume given a type A equipped with a relation eq *)
 
   Section morphisms.
 
@@ -75,6 +75,27 @@ Module Make (X : OrderedType).
       transitivity f. apply H2 with k; hyp. apply H3 with k; hyp.
     Qed.
 
+(***********************************************************************)
+(** some properties of add *)
+
+Lemma add_add : Reflexive eq -> forall k l x y m,
+  Equiv eq (add k x (add l y m))
+  (if eq_dec k l then add k x m else add l y (add k x m)).
+
+Proof.
+intros heq k l x y m. split.
+(* In *)
+intro k'. destruct (eq_dec k l); repeat rewrite add_in_iff.
+rewrite <- e. intuition. intuition.
+(* MapsTo *)
+intros k' z z'. destruct (eq_dec k l); repeat rewrite add_mapsto_iff.
+rewrite <- e. intuition. subst z z'. refl.
+apply refl_intro. intuition. apply (MapsTo_fun H4 H3).
+intuition. apply False_rec. apply n. transitivity k'. hyp. symmetry. hyp.
+subst z z'. refl. subst z z'. refl.
+apply refl_intro. intuition. apply (MapsTo_fun H4 H5).
+Qed.
+ 
 (***********************************************************************)
 (** add is a morphism wrt Equiv *)
 
@@ -130,7 +151,7 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** Some properties of find *)
+(** some properties of find *)
 
     Lemma find_None : forall k m,
       find k m = None <-> (forall x:A, ~MapsTo k x m).
@@ -233,7 +254,7 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** Properties of Equiv wrt empty and add *)
+(** properties of Equiv wrt empty and add *)
 
     Lemma Equiv_empty : forall m, Equiv eq (empty A) m <-> Empty m.
 
@@ -401,6 +422,22 @@ and satisfies some commutation property *)
       Qed.
  
     End fold.
+
+(***********************************************************************)
+(* In is a morphism wrt Equiv *)
+
+    Global Instance In_m' : Proper (X.eq ==> Equiv eq ==> impl) (@In A).
+
+    Proof.
+      intros k k' kk' m m' [h1 h2]. rewrite h1. rewrite kk'. unfold impl. auto.
+    Qed.
+
+    Global Instance In_m : Reflexive eq ->
+      Proper (X.eq ==> Equiv eq ==> iff) (@In A).
+
+    Proof.
+      intros heq k k' kk' m m' [h1 h2]. rewrite h1. apply In_m. hyp. refl.
+    Qed.
 
   End morphisms.
 
