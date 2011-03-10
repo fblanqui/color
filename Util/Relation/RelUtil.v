@@ -1223,22 +1223,18 @@ Require Import Morphisms.
 Instance Reflexive_m (A : Type) :
   Proper (@same_relation A ==> iff) (@Reflexive A).
 
-Proof.
-firstorder.
-Qed.
+Proof. firstorder. Qed.
 
 Instance Symmetric_m (A : Type) :
   Proper (@same_relation A ==> iff) (@Symmetric A).
 
-Proof.
-firstorder.
-Qed.
+Proof. firstorder. Qed.
 
 Instance Transitive_m (A : Type) :
   Proper (@same_relation A ==> iff) (@Transitive A).
 
 Proof.
-intros R S RS. apply transitive_mor. hyp.
+  intros R S RS. apply transitive_mor. hyp.
 Qed.
 
 Instance Equivalence_m (A : Type) :
@@ -1250,13 +1246,27 @@ constructor; rewrite <- RS; hyp.
 constructor; rewrite RS; hyp.
 Qed.
 
-Lemma Proper_m : forall A (R R' : relation A), R' << R ->
-  forall B (S S' : relation B), S << S' ->
-    forall f, Proper (R ==> S) f -> Proper (R' ==> S') f.
+Instance Proper_m A B f : Proper (@inclusion A --> @inclusion B ==> impl)
+  (fun R S => Proper (R ==> S) f).
+
+Proof. firstorder. Qed.
+
+Instance Proper2_m A B C f :
+  Proper (@inclusion A --> @inclusion B --> @inclusion C ==> impl)
+  (fun R S Z => Proper (R ==> S ==> Z) f).
 
 Proof.
-intros A R R' R'R B S S' SS' f hf x y xy.
-apply SS'. apply hf. apply R'R in xy. hyp.
+intros R R' R'R S S' S'S Z Z' ZZ' hf r r' rr' s s' ss'.
+apply R'R in rr'. apply S'S in ss'. apply ZZ'. apply hf; hyp.
+Qed.
+
+Instance Proper3_m A B C D f : Proper
+  (@inclusion A --> @inclusion B --> @inclusion C --> @inclusion D ==> impl)
+  (fun R S T Z => Proper (R ==> S ==> T ==> Z) f).
+
+Proof.
+intros R R' R'R S S' S'S T T' T'T Z Z' ZZ' hf r r' rr' s s' ss' t t' tt'.
+apply R'R in rr'. apply S'S in ss'. apply T'T in tt'. apply ZZ'. apply hf; hyp.
 Qed.
 
 (***********************************************************************)
