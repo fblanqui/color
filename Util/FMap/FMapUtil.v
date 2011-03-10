@@ -78,24 +78,40 @@ Module Make (X : OrderedType).
 (***********************************************************************)
 (** some properties of add *)
 
-Lemma add_add : Reflexive eq -> forall k l x y m,
-  Equiv eq (add k x (add l y m))
-  (if eq_dec k l then add k x m else add l y (add k x m)).
+    Lemma transpose_neqkey_add :
+      Reflexive eq -> transpose_neqkey (Equiv eq) (@add A).
 
-Proof.
-intros heq k l x y m. split.
-(* In *)
-intro k'. destruct (eq_dec k l); repeat rewrite add_in_iff.
-rewrite <- e. intuition. intuition.
-(* MapsTo *)
-intros k' z z'. destruct (eq_dec k l); repeat rewrite add_mapsto_iff.
-rewrite <- e. intuition. subst z z'. refl.
-apply refl_intro. intuition. apply (MapsTo_fun H4 H3).
-intuition. apply False_rec. apply n. transitivity k'. hyp. symmetry. hyp.
-subst z z'. refl. subst z z'. refl.
-apply refl_intro. intuition. apply (MapsTo_fun H4 H5).
-Qed.
- 
+    Proof.
+      unfold transpose_neqkey. intros heq k l x y m n. split.
+      intro k'. repeat rewrite add_in_iff. intuition.
+      intros k' z z'. repeat rewrite add_mapsto_iff.
+      intuition; try subst z z'; try refl.
+      apply False_rec. apply n. transitivity k'. hyp. symmetry. hyp.
+      apply refl_intro. intuition. apply (MapsTo_fun H4 H5).
+    Qed.
+
+    Definition add_add_neq := transpose_neqkey_add.
+
+    Lemma add_add_eq : Reflexive eq -> forall k l, X.eq k l ->
+      forall x y m, Equiv eq (add k x (add l y m)) (add k x m).
+
+    Proof.
+      intros heq k l kl x y m. split.
+      intro k'. rewrite <- kl. repeat rewrite add_in_iff. intuition.
+      intros k' z z'. rewrite <- kl. repeat rewrite add_mapsto_iff. intuition.
+      subst z z'. refl.
+      apply refl_intro. intuition. apply (MapsTo_fun H4 H3).
+    Qed.
+
+    Lemma add_add : Reflexive eq -> forall k l x y m,
+      Equiv eq (add k x (add l y m))
+      (if eq_dec k l then add k x m else add l y (add k x m)).
+
+    Proof.
+      intros heq k l x y m. destruct (eq_dec k l).
+      apply add_add_eq; hyp. apply add_add_neq; hyp.
+    Qed.
+
 (***********************************************************************)
 (** add is a morphism wrt Equiv *)
 
@@ -221,9 +237,6 @@ Qed.
       destruct (Equiv_find_Some (conj h1 h2) H). destruct H0.
       rewrite hk in H0. discr.
     Qed.
-
-(***********************************************************************)
-(** find is a morphism wrt Equiv *)
 
     Global Instance find_m : Proper (X.eq ==> Equiv eq ==> eq_opt eq) (@find A).
 
@@ -438,6 +451,57 @@ and satisfies some commutation property *)
     Proof.
       intros heq k k' kk' m m' [h1 h2]. rewrite h1. apply In_m. hyp. refl.
     Qed.
+
+(***********************************************************************)
+(* properties of for_all *)
+
+    Section for_all.
+
+      Variable f : X.t -> A -> bool.
+
+      Definition for_all_aux k x b := f k x && b.
+
+      Global Instance for_all_aux_m : Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (X.eq ==> eq ==> Logic.eq ==> Logic.eq) for_all_aux.
+
+      Proof.
+        intros fm k k' kk' x x' xx' b b' bb'. subst b'. unfold for_all_aux.
+        apply (f_equal (fun c => c && b)). apply fm; hyp.
+      Qed.
+
+      Lemma transpose_neqkey_for_all_aux :
+        transpose_neqkey (@Logic.eq bool) for_all_aux.
+
+      Proof.
+        unfold transpose_neqkey. intros k k' x x' b n.
+        unfold for_all_aux. bool. rewrite andb_comm with (b1:=f k x). refl.
+      Qed.
+
+      Lemma for_all_eq : forall m, for_all f m = fold for_all_aux m true.
+
+      Proof. refl. Qed.
+
+      Lemma for_all_add : Reflexive eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
+          forall x, for_all f (add k x m) = f k x && for_all f m.
+
+      Proof.
+        intros heq fm k m n x. rewrite for_all_eq. rewrite fold_add; intuition.
+        clear - heq fm. intros k k' kk' x x' xx' b b' bb'.
+        apply for_all_aux_m; intuition. subst x'. refl.
+        apply transpose_neqkey_for_all_aux.
+      Qed.
+
+      Global Instance for_all_m : PreOrder eq ->
+        Proper (X.eq ==> eq ==> @Logic.eq bool) f ->
+        Proper (Equiv eq ==> @Logic.eq bool) (for_all f).
+
+      Proof.
+        intros heq fm m m' mm'. repeat rewrite for_all_eq.
+        apply fold_m; intuition. apply transpose_neqkey_for_all_aux.
+      Qed.
+
+    End for_all.
 
   End morphisms.
 
