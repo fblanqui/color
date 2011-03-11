@@ -39,13 +39,20 @@ Module Make (X : OrderedType).
 
     Variables (A : Type) (eq : A->A->Prop).
 
-    Lemma Equal_Equiv : Reflexive eq ->
-      forall m m', Equal m m' -> Equiv eq m m'.
+    Lemma Equal_Equiv : Reflexive eq -> Equal << Equiv eq.
 
     Proof.
       intros heq m m'. rewrite Equal_Equiv. apply Equiv_m'.
       intros x y xy. subst. refl.
     Qed.
+
+(*REMOVE:    Lemma Equal_Equiv : Reflexive eq ->
+      forall m m', Equal m m' -> Equiv eq m m'.
+
+    Proof.
+      intros heq m m'. rewrite Equal_Equiv. apply Equiv_m'.
+      intros x y xy. subst. refl.
+    Qed.*)
 
 (***********************************************************************)
 (** Equiv preserves reflexivity, symmetry and transitivity *)
@@ -76,46 +83,86 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
+(** properties of transpose_neqkey *)
+
+    Global Instance transpose_neqkey_m' : forall B,
+      Proper (@inclusion B ==> Logic.eq ==> impl) (@transpose_neqkey A B).
+
+    Proof.
+      intros B R R' RR' f f' ff' h. subst f'. unfold transpose_neqkey.
+      intros k k' e e' b n. apply RR'. apply h. hyp.
+    Qed.
+
+    Global Instance transpose_neqkey_m : forall B,
+      Proper (@same_relation B ==> Logic.eq ==> iff) (@transpose_neqkey A B).
+
+    Proof.
+      intros B R R' [h1 h2] f f' ff'. split; apply transpose_neqkey_m'; auto.
+    Qed.
+
+(***********************************************************************)
 (** some properties of add *)
 
-    Lemma transpose_neqkey_add :
+    Lemma add_transp : transpose_neqkey Equal (@add A).
+
+    Proof.
+      unfold transpose_neqkey. intros k l x y m n. unfold Equal.
+      intro k'. repeat rewrite add_o.
+      destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
+      absurd (X.eq k l). hyp. transitivity k'. hyp. symmetry. hyp.
+    Qed.
+
+    Definition add_add_neq := add_transp.
+
+    Lemma add_add_eq : forall k l, X.eq k l ->
+      forall (x y : A) m, Equal (add k x (add l y m)) (add k x m).
+
+    Proof.
+      intros k l kl x y m. unfold Equal. intro k'. repeat rewrite add_o.
+      destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
+      absurd (X.eq k k'). hyp. transitivity l; hyp.
+    Qed.
+
+    Lemma add_add : forall k l (x y : A) m,
+      Equal (add k x (add l y m))
+      (if eq_dec k l then add k x m else add l y (add k x m)).
+
+    Proof.
+      intros k l x y m. destruct (eq_dec k l).
+      apply add_add_eq; hyp. apply add_add_neq; hyp.
+    Qed.
+
+    Lemma add_transp_Equiv :
       Reflexive eq -> transpose_neqkey (Equiv eq) (@add A).
 
     Proof.
-      unfold transpose_neqkey. intros heq k l x y m n. split.
-      intro k'. repeat rewrite add_in_iff. intuition.
-      intros k' z z'. repeat rewrite add_mapsto_iff.
-      intuition; try subst z z'; try refl.
-      apply False_rec. apply n. transitivity k'. hyp. symmetry. hyp.
-      apply refl_intro. intuition. apply (MapsTo_fun H4 H5).
+      intro heq. eapply transpose_neqkey_m'. apply Equal_Equiv. intuition.
+      refl. apply add_transp.
     Qed.
 
-    Definition add_add_neq := transpose_neqkey_add.
+    Definition add_add_neq_Equiv := add_transp_Equiv.
 
-    Lemma add_add_eq : Reflexive eq -> forall k l, X.eq k l ->
+    Lemma add_add_eq_Equiv : Reflexive eq -> forall k l, X.eq k l ->
       forall x y m, Equiv eq (add k x (add l y m)) (add k x m).
 
     Proof.
-      intros heq k l kl x y m. split.
-      intro k'. rewrite <- kl. repeat rewrite add_in_iff. intuition.
-      intros k' z z'. rewrite <- kl. repeat rewrite add_mapsto_iff. intuition.
-      subst z z'. refl.
-      apply refl_intro. intuition. apply (MapsTo_fun H4 H3).
+      intros heq k l kl x y m. apply Equal_Equiv.
+      intuition. apply add_add_eq. hyp.
     Qed.
 
-    Lemma add_add : Reflexive eq -> forall k l x y m,
+    Lemma add_add_Equiv : Reflexive eq -> forall k l x y m,
       Equiv eq (add k x (add l y m))
       (if eq_dec k l then add k x m else add l y (add k x m)).
 
     Proof.
       intros heq k l x y m. destruct (eq_dec k l).
-      apply add_add_eq; hyp. apply add_add_neq; hyp.
+      apply add_add_eq_Equiv; hyp. apply add_add_neq_Equiv; hyp.
     Qed.
 
 (***********************************************************************)
 (** add is a morphism wrt Equiv *)
 
-    Global Instance add_m :
+    Global Instance add_Equiv :
       Proper (X.eq ==> eq ==> Equiv eq ==> Equiv eq) (@add A).
 
     Proof. (* by Cedric Auger *)
@@ -248,9 +295,9 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** Empty and is_empty are morphisms wrt Equiv *)
+(** properties of Empty and is_empty *)
 
-    Global Instance Empty_m : Proper (Equiv eq ==> iff) (@Empty A).
+    Global Instance Empty_Equiv : Proper (Equiv eq ==> iff) (@Empty A).
 
     Proof.
       intros m m' mm'. unfold Empty, Raw.Proofs.Empty. split; intros h k x kx.
@@ -258,12 +305,12 @@ Module Make (X : OrderedType).
       destruct (Equiv_MapsTo mm' kx) as [x' [h1 h2]]. firstorder.
     Qed.
 
-    Global Instance is_empty_m :
+    Global Instance is_empty_Equiv :
       Proper (Equiv eq ==> @Logic.eq bool) (@is_empty A).
 
     Proof.
       intros m m' mm'. apply beq_true. repeat rewrite <- is_empty_iff.
-      apply Empty_m. hyp.
+      apply Empty_Equiv. hyp.
     Qed.
 
 (***********************************************************************)
@@ -362,7 +409,8 @@ Module Make (X : OrderedType).
 (***********************************************************************)
 (** elements is a morphism wrt le_list and eq_list *)
 
-    Global Instance elements_m' : Proper (Equiv eq ==> le_list) (@elements A).
+    Global Instance elements_Equiv' :
+      Proper (Equiv eq ==> le_list) (@elements A).
 
     Proof.
       intros m m' [h1 h2] k x h. rewrite <- elements_mapsto_iff in h.
@@ -371,11 +419,11 @@ Module Make (X : OrderedType).
       rewrite <- elements_mapsto_iff. hyp.
     Qed.
 
-    Global Instance elements_m : Symmetric eq ->
+    Global Instance elements_Equiv : Symmetric eq ->
       Proper (Equiv eq ==> eq_list) (@elements A).
 
     Proof.
-      intros heq m m' mm'. split; apply elements_m'. hyp. symmetry. hyp.
+      intros heq m m' mm'. split; apply elements_Equiv'. hyp. symmetry. hyp.
     Qed.
 
 (***********************************************************************)
@@ -387,7 +435,7 @@ and satisfies some commutation property *)
       Variables (heq : PreOrder eq)
         (B : Type) (eqB : relation B) (heqB : Equivalence eqB).
 
-      Global Instance fold_m : forall (f : X.t -> A -> B -> B)
+      Global Instance fold_Equiv : forall (f : X.t -> A -> B -> B)
         (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
         (hf : transpose_neqkey eqB f),
         Proper (Equiv eq ==> eqB ==> eqB) (fold f).
@@ -415,7 +463,7 @@ and satisfies some commutation property *)
         eapply Equiv_add_remove. hyp. apply xemm'.
       Qed.
 
-      Lemma fold_m_ext : forall (f : X.t -> A -> B -> B)
+      Lemma fold_Equiv_ext : forall (f : X.t -> A -> B -> B)
         (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
         (hf : transpose_neqkey eqB f) f',
         (forall k k', X.eq k k' -> forall x x', eq x x' ->
@@ -428,7 +476,7 @@ and satisfies some commutation property *)
         set (F := fun a (p:key*A) => f (fst p) (snd p) a).
         set (F' := fun a (p:key*A) => f' (fst p) (snd p) a).
         transitivity (fold_left F (elements m') b').
-        unfold F. repeat rewrite <- fold_1. apply fold_m; auto||refl.
+        unfold F. repeat rewrite <- fold_1. apply fold_Equiv; auto||refl.
         apply eq_fold_left with (eqB:=@eq_key_elt A); try refl.
         intros a a' aa' [k x] [k' x'] e. inversion e. unfold F, F'. simpl in *.
         subst x'. apply ff'; auto||refl.
@@ -439,13 +487,13 @@ and satisfies some commutation property *)
 (***********************************************************************)
 (* In is a morphism wrt Equiv *)
 
-    Global Instance In_m' : Proper (X.eq ==> Equiv eq ==> impl) (@In A).
+    Global Instance In_Equiv' : Proper (X.eq ==> Equiv eq ==> impl) (@In A).
 
     Proof.
       intros k k' kk' m m' [h1 h2]. rewrite h1. rewrite kk'. unfold impl. auto.
     Qed.
 
-    Global Instance In_m : Reflexive eq ->
+    Global Instance In_Equiv : Reflexive eq ->
       Proper (X.eq ==> Equiv eq ==> iff) (@In A).
 
     Proof.
@@ -469,8 +517,7 @@ and satisfies some commutation property *)
         apply (f_equal (fun c => c && b)). apply fm; hyp.
       Qed.
 
-      Lemma transpose_neqkey_for_all_aux :
-        transpose_neqkey (@Logic.eq bool) for_all_aux.
+      Lemma for_all_aux_transp : transpose_neqkey Logic.eq for_all_aux.
 
       Proof.
         unfold transpose_neqkey. intros k k' x x' b n.
@@ -489,16 +536,25 @@ and satisfies some commutation property *)
         intros heq fm k m n x. rewrite for_all_eq. rewrite fold_add; intuition.
         clear - heq fm. intros k k' kk' x x' xx' b b' bb'.
         apply for_all_aux_m; intuition. subst x'. refl.
-        apply transpose_neqkey_for_all_aux.
+        apply for_all_aux_transp.
       Qed.
 
-      Global Instance for_all_m : PreOrder eq ->
-        Proper (X.eq ==> eq ==> @Logic.eq bool) f ->
-        Proper (Equiv eq ==> @Logic.eq bool) (for_all f).
+      Global Instance for_all_Equiv : PreOrder eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (Equiv eq ==> Logic.eq) (for_all f).
 
       Proof.
         intros heq fm m m' mm'. repeat rewrite for_all_eq.
-        apply fold_m; intuition. apply transpose_neqkey_for_all_aux.
+        apply fold_Equiv; intuition. apply for_all_aux_transp.
+      Qed.
+
+      Global Instance for_all_m : Reflexive eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (Equal ==> Logic.eq) (for_all f).
+
+      Proof.
+        intros fm m m' mm'. repeat rewrite for_all_eq.
+        apply fold_Equal; intuition. proper3 for_all_aux_m. hyp.
       Qed.
 
     End for_all.
