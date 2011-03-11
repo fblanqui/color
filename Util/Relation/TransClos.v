@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Computation of the transitive closure of a finite relation.
 *)
 
-Require Import FSetUtil FMapUtil OrderedType RelUtil LogicUtil.
+Require Import FSetUtil FMapUtil OrderedType RelUtil LogicUtil BoolUtil.
 
 Set Implicit Arguments.
 
@@ -19,25 +19,19 @@ Module Export M := FMapUtil.Make X.
 Import X.
 
 (***********************************************************************)
-(** type for finite graphs *)
+(** a finite graph on X.t is represented by its successor map: a
+finite map from X.t to the type of finite sets on X.t *)
 
 Definition graph := XMap.t XSet.t.
 
 Implicit Type g h : graph.
 
 (***********************************************************************)
-(** equality on graphs *)
-
-Definition geq : relation graph := XMap.Equiv XSet.Equal.
-
-Instance geq_Equiv : Equivalence geq.
-
-(***********************************************************************)
 (** nodes of a graph *)
 
-Definition nodes g :=
-  fold (fun x sx s => XSet.add x (XSet.union sx s)) g XSet.empty.
- 
+(*REMOVE: Definition nodes g :=
+  fold (fun x sx s => XSet.add x (XSet.union sx s)) g XSet.empty.*)
+
 (***********************************************************************)
 (** relation corresponding to a graph *)
 
@@ -49,7 +43,22 @@ Definition rel g : relation_on_X :=
 
 Coercion rel : graph >-> relation_on_X.
 
-Instance rel_m' : Proper (geq ==> eq ==> eq ==> impl) rel.
+Lemma rel_empty : rel (empty XSet.t) == @empty_rel X.t.
+
+Proof.
+rewrite rel_eq; intros a b. unfold empty_rel. intuition.
+destruct H as [sa [a1 a2]]. rewrite <- find_mapsto_iff in a1.
+rewrite empty_mapsto_iff in a1. hyp.
+Qed.
+
+(***********************************************************************)
+(** equality on maps *)
+
+Definition meq : relation graph := XMap.Equiv XSet.Equal.
+
+Instance meq_Equiv : Equivalence meq.
+
+Instance rel_meq' : Proper (meq ==> eq ==> eq ==> impl) rel.
 
 Proof.
 intros g g' gg' x x' xx' y y' yy'. unfold impl, rel. intuition.
@@ -58,18 +67,10 @@ destruct (Equiv_find_Some gg' hx) as [sx']. destruct H.
 exists sx'. intuition. rewrite <- yy', <- H0. hyp.
 Qed.
 
-Instance rel_m : Proper (geq ==> eq ==> eq ==> iff) rel.
+Instance rel_meq : Proper (meq ==> eq ==> eq ==> iff) rel.
 
 Proof.
-split; apply rel_m'; hyp||(symmetry;hyp).
-Qed.
-
-Lemma rel_empty : rel (empty XSet.t) == @empty_rel X.t.
-
-Proof.
-rewrite rel_eq; intros a b. unfold empty_rel. intuition.
-destruct H as [sa [a1 a2]]. rewrite <- find_mapsto_iff in a1.
-rewrite empty_mapsto_iff in a1. hyp.
+split; apply rel_meq'; hyp||(symmetry;hyp).
 Qed.
 
 (***********************************************************************)
@@ -81,7 +82,7 @@ Definition succs x g :=
     | None => XSet.empty
   end.
 
-Instance succs_m : Proper (eq ==> geq ==> XSet.Equal) succs.
+Instance succs_meq : Proper (eq ==> meq ==> XSet.Equal) succs.
 
 Proof.
 intros x y xy g h gh. unfold succs. rewrite xy. clear x xy. case_eq (find y g).
@@ -103,10 +104,213 @@ Proof.
 intros. rewrite <- mem_iff. apply In_succs.
 Qed.
 
-Lemma succs_add : forall x s g, succs x (add x s g) = s.
+Lemma succs_add : forall x y s g,
+  succs x (add y s g) = if eq_dec y x then s else succs x g.
+
+Proof.
+intros x y s g. unfold succs at 1. rewrite add_o. destruct (eq_dec y x); refl.
+Qed.
+
+Lemma succs_add_id : forall x s g, succs x (add x s g) = s.
 
 Proof.
 intros x s g. unfold succs. rewrite add_eq_o. refl. refl.
+Qed.
+
+(***********************************************************************)
+(** equality on graphs: two graphs are equivalent if they define the
+same relation *)
+
+Definition geq g h := g == h.
+
+Lemma meq_geq : meq << geq.
+
+Proof.
+intros g h gh. split; intros x y xy. rewrite <- gh. hyp. rewrite gh. hyp.
+Qed.
+
+(***********************************************************************)
+(** the representation of graphs is not unique since some node can be
+mapped to the empty set, but any map is equivalent to a minimal one
+mapping no element to the empty set (lemma min_ok proved hereafter) *)
+
+Definition has_succ (x : X.t) sx := negb (XSet.is_empty sx).
+
+Instance has_succ_m : Proper (eq ==> XSet.Equal ==> Logic.eq) has_succ.
+
+Proof.
+intros x x' xx' s s' ss'. unfold has_succ. rewrite ss'. refl.
+Qed.
+
+Definition is_min := for_all has_succ.
+
+Instance is_min_m : Proper (Equal ==> @Logic.eq bool) is_min.
+
+Proof.
+eapply for_all_m; intuition. proper2 has_succ_m.
+Qed.
+
+Instance is_min_meq : Proper (meq ==> @Logic.eq bool) is_min.
+
+Proof.
+apply for_all_Equiv; intuition.
+Qed.
+
+(***********************************************************************)
+(** minimal map *)
+
+Definition add_not_empty x sx m := if XSet.is_empty sx then m else add x sx m.
+
+Instance add_not_empty_m :
+  Proper (eq ==> Logic.eq ==> Equal ==> Equal) add_not_empty.
+
+Proof.
+intros x x' xx' y y' yy' m m' mm'. subst y'.
+unfold add_not_empty. destruct (XSet.is_empty y). hyp. rewrite xx', mm'. refl.
+Qed.
+
+Instance add_not_empty_meq :
+  Proper (eq ==> XSet.Equal ==> meq ==> meq) add_not_empty.
+
+Proof.
+intros x x' xx' s s' ss' m m' mm'. unfold add_not_empty.
+rewrite <- ss'. destruct (XSet.is_empty s). hyp. apply add_Equiv; hyp.
+Qed.
+
+Lemma add_not_empty_transp : transpose_neqkey Equal add_not_empty.
+
+Proof.
+unfold transpose_neqkey. intros k k' e e' m nkk'. unfold add_not_empty.
+destruct (XSet.is_empty e); destruct (XSet.is_empty e'); try refl.
+apply add_transp. hyp.
+Qed.
+
+Lemma add_not_empty_transp_meq : transpose_neqkey meq add_not_empty.
+
+Proof.
+eapply transpose_neqkey_m'. apply Equal_Equiv. intuition. refl.
+apply add_not_empty_transp.
+Qed.
+
+Definition min g : graph := fold add_not_empty g (@empty XSet.t).
+
+Instance min_m : Proper (Equal ==> Equal) min.
+
+Proof.
+intros m m' mm'. unfold min. apply fold_Equal; intuition.
+Qed.
+
+Instance min_meq : Proper (meq ==> meq) min.
+
+Proof.
+intros m m' mm'. unfold min.
+apply fold_Equiv with (eq0:=XSet.Equal); intuition.
+apply add_not_empty_transp_meq.
+Qed.
+
+(***********************************************************************)
+(** properties of minimal maps *)
+
+Lemma min_add : forall x s m, ~In x m ->
+  Equal (min (add x s m)) (if XSet.is_empty s then min m else add x s (min m)).
+
+Proof.
+intros x s m nxm. unfold min at 1. rewrite fold_add; intuition.
+2: apply add_not_empty_transp. refl.
+Qed.
+
+Lemma min_add_meq : forall x s m, ~In x m ->
+  meq (min (add x s m)) (if XSet.is_empty s then min m else add x s (min m)).
+
+Proof.
+intros x s m nxm. apply Equal_Equiv. intuition. apply min_add. hyp.
+Qed.
+
+Lemma In_min : forall x m, In x (min m) -> In x m.
+
+Proof.
+intros x m. pattern m; apply map_induction_bis; clear m.
+(* Equal *)
+intros m m' mm' h. apply Equal_Equiv with (eq:=XSet.Equal) in mm'.
+rewrite <- mm'. hyp. intuition.
+(* empty *)
+unfold min. rewrite fold_Empty. auto. intuition. apply empty_1.
+(* add *)
+intros y s m nym h. rewrite min_add. 2: hyp.
+destruct (XSet.is_empty s); repeat rewrite add_in_iff; intuition.
+Qed.
+
+Lemma find_min_Some : forall x m s,
+  find x (min m) = Some s -> find x m = Some s.
+
+Proof.
+intros x m. pattern m; apply map_induction_bis; clear m.
+(* Equal *)
+intros m m' mm' h s. rewrite <- mm'. apply h.
+(* empty *)
+intro s. unfold min. rewrite fold_Empty; intuition. apply empty_1.
+(* add *)
+intros y t m nym h s. rewrite min_add. 2: hyp. destruct (XSet.is_empty t);
+  repeat rewrite add_o; destruct (eq_dec y x); intuition. ded (h _ H).
+absurd (In y m). hyp. rewrite in_find_iff. rewrite e. rewrite H0. discr.
+Qed.
+
+Lemma find_Some_min : forall x m s,
+  find x m = Some s -> XSet.is_empty s = false -> find x (min m) = Some s.
+
+Proof.
+intros x m. pattern m; apply map_induction_bis; clear m.
+(* Equal *)
+intros m m' mm' h s. rewrite <- mm'. apply h.
+(* empty *)
+intro s. unfold min. rewrite fold_Empty; intuition. apply empty_1.
+(* add *)
+intros y t m nym h s. rewrite min_add. 2: hyp. coq_case_eq (XSet.is_empty t);
+  repeat rewrite add_o; destruct (eq_dec y x); intuition.
+inversion H0. subst t. rewrite H1 in H. discr.
+Qed.
+
+Lemma is_min_min : forall m, is_min (min m) = true.
+
+Proof.
+apply map_induction_bis.
+(* Equal *)
+intros m m' mm'. apply Equal_Equiv with (eq:=XSet.Equal) in mm'. 2: intuition.
+rewrite mm'. auto.
+(* empty *)
+unfold is_min, min, for_all.
+repeat rewrite fold_Empty; intuition; apply empty_1.
+(* add *)
+intros x s m nxm h. rewrite min_add_meq. 2: hyp. case_eq (XSet.is_empty s).
+hyp. unfold is_min. rewrite for_all_add with (eq0:=XSet.Equal); intuition.
+rewrite andb_true_iff. intuition. unfold has_succ. rewrite H. refl.
+apply nxm. apply In_min. hyp.
+Qed.
+
+Lemma min_In : forall x m,
+  In x m -> XSet.is_empty (succs x m) = true \/ In x (min m).
+
+Proof.
+intros x m. pattern m; apply map_induction_bis; clear m.
+(* Equal *)
+intros m m' mm' h. apply Equal_Equiv with (eq:=XSet.Equal) in mm'.
+2: intuition. rewrite <- mm'. hyp.
+(* empty *)
+rewrite empty_in_iff. auto.
+(* add *)
+intros y s m nym h. rewrite min_add. 2: hyp.
+coq_case_eq (XSet.is_empty s); rewrite succs_add; repeat rewrite add_in_iff;
+  destruct 1; destruct (eq_dec y x); intuition.
+Qed.
+
+Lemma min_ok : forall g, min g == g.
+
+Proof.
+intro g. split; intros x y [s [h1 h2]].
+apply find_min_Some in h1. exists s. intuition.
+apply find_Some_min in h1. exists s. intuition.
+rewrite false_not_true. intro h. rewrite <- XSetFacts.is_empty_iff in h.
+apply (h _ h2).
 Qed.
 
 (***********************************************************************)
@@ -114,16 +318,16 @@ Qed.
 
 Definition raw_add x y g : graph := add x (XSet.add y (succs x g)) g.
 
-Instance raw_add_m : Proper (eq ==> eq ==> geq ==> geq) raw_add.
+Instance raw_add_meq : Proper (eq ==> eq ==> meq ==> meq) raw_add.
 
 Proof.
 intros x x' xx' y y' yy' g g' gg'. unfold raw_add.
-apply add_m; auto. rewrite xx', yy', gg'. refl.
+apply add_Equiv; auto. rewrite xx', yy', gg'. refl.
 Qed.
 
 Definition id x y a b := eq a x /\ eq b y.
 
-Lemma raw_add_eq : forall x y g, raw_add x y g == g U id x y.
+Lemma raw_add_rel : forall x y g, raw_add x y g == g U id x y.
 
 Proof.
 intros. rewrite rel_eq; intros a b.
@@ -162,7 +366,7 @@ intro x. rewrite rel_eq; intros a b. unfold succ, empty_rel. intuition.
 In_elim.
 Qed.
 
-Lemma fold_raw_add_eq : forall x s g0,
+Lemma fold_raw_add_rel : forall x s g0,
   rel (XSet.fold (raw_add x) s g0) == succ x s U g0.
 
 Proof.
@@ -173,25 +377,20 @@ intros s t g st i. rewrite <- st. hyp.
 (* empty *)
 rewrite succ_empty. rewrite union_empty_l. refl.
 (* add *)
-intros z g s nzs e. rewrite raw_add_eq. rewrite e.
+intros z g s nzs e. rewrite raw_add_rel. rewrite e.
 rewrite RelUtil.union_assoc. rewrite RelUtil.union_commut with (R:=rel g0).
 rewrite <- RelUtil.union_assoc. apply union_morph. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
 rewrite add_iff. firstorder.
 Qed.
 
-Lemma transpose_raw_add : forall x, transpose geq (raw_add x).
+Lemma raw_add_transp : forall x, transpose meq (raw_add x).
 
 Proof.
 intros x y z g. unfold raw_add. set (sxg := succs x g).
 set (zsxg := XSet.add z sxg). set (ysxg := XSet.add y sxg).
-repeat rewrite succs_add. rewrite add_add. 2: intuition.
-case_eq (eq_dec x x). Focus 2. absurd (eq x x). hyp. refl.
-rewrite add_add. 2: intuition. rewrite H. clear e H. split.
-intro k. repeat rewrite add_in_iff. tauto.
-intros k e e'. repeat rewrite add_mapsto_iff. intuition.
-subst e e'. unfold zsxg, ysxg. apply XSetProps.add_add.
-apply refl_intro. intuition. apply (MapsTo_fun H2 H3).
+repeat rewrite succs_add_id. repeat (rewrite add_add_eq_Equiv; intuition).
+apply add_Equiv; try refl. unfold zsxg, ysxg. apply XSetProps.add_add.
 Qed.
 
 (***********************************************************************)
@@ -214,40 +413,39 @@ Definition add x y g :=
 
 Definition pred x ysy g a b := rel g a x /\ XSet.In b ysy.
 
-Instance pred_m' :
-  Proper (eq ==> XSet.Equal ==> geq ==> @inclusion X.t) pred.
+Instance pred_meq' :
+  Proper (eq ==> XSet.Equal ==> meq ==> @inclusion X.t) pred.
 
 Proof.
 intros x x' xx' ysy ysy' e g g' gg' a b. unfold pred. rewrite xx', e, gg'.
 tauto.
 Qed.
 
-Instance pred_m :
-  Proper (eq ==> XSet.Equal ==> geq ==> @same_relation X.t) pred.
+Instance pred_meq :
+  Proper (eq ==> XSet.Equal ==> meq ==> @same_relation X.t) pred.
 
 Proof.
-split; apply pred_m'; hyp||(symmetry;hyp).
+split; apply pred_meq'; hyp||(symmetry;hyp).
 Qed.
 
 Instance add_pred_m :
-  Proper (X.eq ==> XSet.Equal ==> X.eq ==> XSet.Equal ==> geq ==> geq) add_pred.
+  Proper (X.eq ==> XSet.Equal ==> X.eq ==> XSet.Equal ==> meq ==> meq) add_pred.
 
 Proof.
 intros x x' xx' s s' ss' y y' yy' t t' tt' g g' gg'. unfold add_pred.
 rewrite xx', tt'. clear - ss' yy' gg'. destruct (XSet.mem x' t'). 2: hyp.
-apply S.fold_m_ext; intuition. apply raw_add_m. refl. apply transpose_raw_add.
-apply raw_add_m. hyp.
+apply S.fold_m_ext; intuition. apply raw_add_meq. refl. apply raw_add_transp.
+apply raw_add_meq. hyp.
 Qed.
 
-Lemma transpose_neqkey_add_pred : forall x s,
-  transpose_neqkey geq (add_pred x s).
+Lemma add_pred_transp : forall x s, transpose_neqkey meq (add_pred x s).
 
 Proof.
 unfold transpose_neqkey. intros x ysy w w' sw sw' g nww'. unfold add_pred.
 destruct (XSet.mem x sw); destruct (XSet.mem x sw'). 4: refl.
 (* *)
 split.
-intro y. apply In_m with (eq0:=XSet.Equal). intuition. refl.
+intro y. apply In_Equiv with (eq0:=XSet.Equal). intuition. refl.
 gen g. pattern ysy; apply set_induction_bis; clear ysy.
 intros s s' ss' e g. rewrite <- ss'. auto.
 repeat rewrite fold_empty. refl.
@@ -268,12 +466,12 @@ transitivity (raw_add w' z
   try apply raw_add_m||apply transpose_raw_add; auto; intuition.
 Abort.
 
-Instance add_m : Proper (eq ==> eq ==> geq ==> geq) add.
+Instance add_meq : Proper (eq ==> eq ==> meq ==> meq) add.
 
 Proof.
 intros x x' xx' y y' yy' g g' gg'. unfold add.
 rewrite <- xx', <- yy', <- gg'. destruct (XSet.mem y (succs x g)). hyp.
-eapply fold_m_ext with (eq0:=XSet.Equal); intuition.
+eapply fold_Equiv_ext with (eq0:=XSet.Equal); intuition.
 apply add_pred_m; refl. clear.
 Abort.
 
@@ -285,7 +483,7 @@ destruct H. destruct H as [s [a1 a2]]. rewrite empty_o in a1. discr.
 contradiction.
 Qed.
 
-Lemma fold_add_pred_eq : forall x ysy g g0,
+Lemma fold_add_pred_rel : forall x ysy g g0,
   rel (fold (add_pred x ysy) g g0) == pred x ysy g U g0.
 
 Proof.
@@ -299,7 +497,7 @@ rewrite pred_empty. rewrite union_empty_l. refl.
 (* add *)
 intros z s g m nzm h. unfold add_pred. case_eq (XSet.mem x s).
 (* x in s *)
-rewrite <- mem_iff in H. rewrite fold_raw_add_eq. rewrite h.
+rewrite <- mem_iff in H. rewrite fold_raw_add_rel. rewrite h.
 rewrite <- RelUtil.union_assoc. apply union_morph. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
 intuition.
@@ -320,7 +518,7 @@ unfold rel in H1. rewrite add_o in H1. destruct (eq_dec z a). 2: hyp.
 destruct H1 as [t [a1 a2]]. inversion a1. subst s. contradiction.
 Qed.
  
-Lemma add_eq : forall g, transitive g -> forall x y,
+Lemma add_rel : forall g, transitive g -> forall x y,
   rel (add x y g) == let ysy := XSet.add y (succs y g) in
     pred x ysy g U (succ x ysy U g).
 
@@ -335,14 +533,14 @@ apply gtrans with x. hyp. apply gtrans with y; hyp.
 rewrite H1. rewrite <- H0. hyp.
 rewrite H1. apply gtrans with y; hyp.
 (* y notin (succs x g) *)
-rewrite fold_add_pred_eq. apply union_morph. refl.
-rewrite fold_raw_add_eq. refl.
+rewrite fold_add_pred_rel. apply union_morph. refl.
+rewrite fold_raw_add_rel. refl.
 Qed.
 
 Lemma trans_add : forall x y g, transitive g -> transitive (add x y g).
 
 Proof.
-intros x y g gtrans. rewrite add_eq. 2: hyp. intros a b c.
+intros x y g gtrans. rewrite add_rel. 2: hyp. intros a b c.
 unfold Relation_Operators.union, pred, succ. repeat rewrite add_iff.
 repeat rewrite In_succs. intuition.
 left. intuition. right. rewrite <- H0 in H2. hyp.
@@ -359,7 +557,7 @@ Qed.
 Lemma add_ok : forall x y g, transitive g -> add x y g == raw_add x y g!.
 
 Proof.
-intros x y g gtrans. rewrite raw_add_eq. rewrite add_eq. 2: hyp.
+intros x y g gtrans. rewrite raw_add_rel. rewrite add_rel. 2: hyp.
 change (let ysy := XSet.add y (succs y g) in
   pred x ysy g U (succ x ysy U g) == (g U id x y)!). intro ysy. split.
 (* << *)
@@ -379,7 +577,7 @@ trans (succ x ysy U g). apply union_idem_r. apply union_idem_r.
 trans (succ x ysy U g). trans (succ x ysy).
 intros a b. unfold id, succ. unfold ysy. rewrite add_iff. intuition.
 apply union_idem_l. apply union_idem_r.
-unfold ysy. rewrite <- add_eq. 2: hyp. apply trans_add. hyp.
+unfold ysy. rewrite <- add_rel. 2: hyp. apply trans_add. hyp.
 Qed.
 
 Lemma trans_empty : transitive (rel (empty XSet.t)).
