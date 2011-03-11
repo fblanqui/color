@@ -11,7 +11,7 @@ general definitions and results about relations
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Setoid Basics.
+Require Import LogicUtil Setoid Basics Morphisms.
 Require Export Relations RelMidex.
 
 Implicit Arguments transp [A].
@@ -1218,38 +1218,42 @@ Qed.
 (***********************************************************************)
 (** Morphisms wrt inclusion and same_relation *)
 
-Require Import Morphisms.
-
-Instance Reflexive_m (A : Type) :
-  Proper (@same_relation A ==> iff) (@Reflexive A).
+Instance Reflexive_m A : Proper (@same_relation A ==> iff) (@Reflexive A).
 
 Proof. firstorder. Qed.
 
-Instance Symmetric_m (A : Type) :
-  Proper (@same_relation A ==> iff) (@Symmetric A).
+Instance Symmetric_m A : Proper (@same_relation A ==> iff) (@Symmetric A).
 
 Proof. firstorder. Qed.
 
-Instance Transitive_m (A : Type) :
-  Proper (@same_relation A ==> iff) (@Transitive A).
+Instance Transitive_m A : Proper (@same_relation A ==> iff) (@Transitive A).
 
 Proof.
   intros R S RS. apply transitive_mor. hyp.
 Qed.
 
-Instance Equivalence_m (A : Type) :
-  Proper (@same_relation A ==> iff) (@Equivalence A).
+Instance Equivalence_m A : Proper (@same_relation A ==> iff) (@Equivalence A).
 
 Proof.
-intros R S RS. split; intros [hr hs ht].
-constructor; rewrite <- RS; hyp.
-constructor; rewrite RS; hyp.
+  intros R S RS. split; intros [hr hs ht].
+  constructor; rewrite <- RS; hyp.
+  constructor; rewrite RS; hyp.
 Qed.
 
-Instance Proper_m A B f : Proper (@inclusion A --> @inclusion B ==> impl)
+Lemma eq_Refl_rel : forall A R, Reflexive R -> @eq A << R.
+
+Proof.
+  intros A R hR x y xy. subst y. apply hR.
+Qed.
+
+Instance Proper_m A B f :
+  Proper (@inclusion A --> @inclusion B ==> impl)
   (fun R S => Proper (R ==> S) f).
 
 Proof. firstorder. Qed.
+
+Ltac proper l := eapply Proper_m; [idtac|idtac|apply l];
+  try (refl||apply eq_Refl_rel;intuition).
 
 Instance Proper2_m A B C f :
   Proper (@inclusion A --> @inclusion B --> @inclusion C ==> impl)
@@ -1260,6 +1264,9 @@ intros R R' R'R S S' S'S Z Z' ZZ' hf r r' rr' s s' ss'.
 apply R'R in rr'. apply S'S in ss'. apply ZZ'. apply hf; hyp.
 Qed.
 
+Ltac proper2 l := eapply Proper2_m; [idtac|idtac|idtac|apply l];
+  try (refl||apply eq_Refl_rel;intuition).
+
 Instance Proper3_m A B C D f : Proper
   (@inclusion A --> @inclusion B --> @inclusion C --> @inclusion D ==> impl)
   (fun R S T Z => Proper (R ==> S ==> T ==> Z) f).
@@ -1268,6 +1275,9 @@ Proof.
 intros R R' R'R S S' S'S T T' T'T Z Z' ZZ' hf r r' rr' s s' ss' t t' tt'.
 apply R'R in rr'. apply S'S in ss'. apply T'T in tt'. apply ZZ'. apply hf; hyp.
 Qed.
+
+Ltac proper3 l := eapply Proper3_m; [idtac|idtac|idtac|idtac|apply l];
+  try (refl||apply eq_Refl_rel;intuition).
 
 (***********************************************************************)
 (** Option setoid *)
