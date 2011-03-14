@@ -9,12 +9,7 @@ termination by using compatible reduction orderings
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import List.
-Require Import SN.
-Require Import ARelation.
-Require Import RelUtil.
-Require Import ACompat.
+Require Import ATrs List SN ARelation RelUtil ACompat.
 
 Section S.
 
@@ -96,11 +91,11 @@ Lemma rule_elimination_mod : forall rp : Reduction_pair Sig,
 
 Proof with auto.
   intros. apply WF_incl with ((red Egt U red Ege)# @ (red Rgt U red Rge)).
-  comp. apply incl_rtc. trans (red Egt U red Ege)... apply red_union.
+  comp. apply clos_refl_trans_m'. trans (red Egt U red Ege)... apply red_union.
   apply red_union.
   apply wf_rel_mod...
   apply WF_incl with ((red (Rge ++ Ege)# @ (red (Rgt ++ Egt)))).
-  comp. apply incl_rtc. apply red_union_inv.
+  comp. apply clos_refl_trans_m'. apply red_union_inv.
   apply red_union_inv.
   apply manna_ness_mod with rp; apply compat_app...
 Qed.
@@ -117,7 +112,7 @@ Proof with auto.
   comp. apply hd_red_union. 
   apply wf_rel_mod_simpl...
   apply WF_incl with (hd_red_mod (Rge ++ E) Rgt).
-  comp. apply incl_rtc.
+  comp. apply clos_refl_trans_m'.
   trans (red Rge U red E). union. apply hd_red_incl_red.
   apply red_union_inv.
   apply manna_ness_hd_mod with wp...
@@ -146,7 +141,7 @@ Proof.
   apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. 
   exact H2. apply tc_trans.
   apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
-  trans (red_mod E Rge). apply inclusion_trans with (hd_red_mod E Rge).
+  trans (red_mod E Rge). transitivity (hd_red_mod E Rge).
   apply hd_red_mod_min_incl. apply hd_red_mod_incl_red_mod. incl_red.
   apply comp_tc_incl. rptac.
 Qed.

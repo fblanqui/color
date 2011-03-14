@@ -10,11 +10,7 @@ iteration of a relation
 
 Set Implicit Arguments.
 
-Require Import Path.
-Require Import NatUtil.
-Require Import RelUtil.
-Require Import LogicUtil.
-Require Import List.
+Require Import Path NatUtil RelUtil LogicUtil List.
 
 Section S.
 
@@ -40,14 +36,14 @@ Qed.
 Lemma iter_iter : forall p q, iter p @ iter q << iter (p+q+1).
 
 Proof.
-induction p; simpl; intros. rewrite plus_1_S. simpl. apply inclusion_refl.
+induction p; simpl; intros. rewrite plus_1_S. simpl. refl.
 assoc. comp. apply IHp.
 Qed.
 
 Lemma iter_plus_1 : forall p q, iter (p+q+1) << iter p @ iter q.
 
 Proof.
-induction p; simpl; intros. rewrite plus_1_S. simpl. apply inclusion_refl.
+induction p; simpl; intros. rewrite plus_1_S. simpl. refl.
 trans (R @ (iter p @ iter q)). comp. apply IHp. apply comp_assoc'.
 Qed.
 

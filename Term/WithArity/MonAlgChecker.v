@@ -8,22 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 on (extended) weakly monotone algebra.
 *)
 
-Require Import ATrs.
-Require Import RelUtil.
-Require Import SN.
-Require Import AWFMInterpretation.
-Require Import AMannaNess.
-Require Import ACompat.
-Require Import ListUtil.
-Require Import ListForall.
-Require Import ARelation.
-Require Import LogicUtil.
-Require Import ExcUtil.
-Require Import IntBasedChecker.
-Require Import Problem.
-Require Import Program.
-Require Import NaryFunction.
-Require Import Proof.
+Require Import ATrs RelUtil SN AWFMInterpretation AMannaNess ACompat ListUtil
+  ListForall ARelation LogicUtil ExcUtil IntBasedChecker Problem Program
+  NaryFunction Proof.
 
 Set Implicit Arguments.
 
@@ -206,7 +193,7 @@ Proof with try discriminate; auto.
   do 2 destruct_call simplify... 
   clear Heq_anonymous s0 Heq_anonymous0 s.
   apply WF_incl with (red_mod (H1 ++ T') (H0 ++ R')).
-  comp. apply incl_rtc. apply red_incl... apply red_incl...
+  comp. apply clos_refl_trans_m'. apply red_incl... apply red_incl...
   apply rule_elimination_mod with (rp m m0)...
 Qed.
 

@@ -326,8 +326,8 @@ Lemma SN_tc : forall x, SN R x -> SN (R!) x.
 Proof.
 induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
 apply SN_rtc with (x := x0). apply H0. exact H2.
-apply inclusion_elim with (R := R#). apply incl_rtc. apply tc_incl.
-exact H3.
+apply inclusion_elim with (R := R#). apply clos_refl_trans_m'.
+apply tc_incl. exact H3.
 Qed.
 
 Lemma WF_tc : WF R -> WF (R!).
@@ -598,7 +598,7 @@ Section wf_mod_shift.
     intro. apply WF_incl with ((T # @ (R U S)) !).
     intros x y Rxy. apply tc_split_inv. apply comp_assoc.
     destruct Rxy as [z [STxz Rzy]]. exists z. split; [idtac | intuition].
-    apply rtc_union. apply incl_rtc with (S U T); trivial.
+    apply rtc_union. apply clos_refl_trans_m' with (S U T); trivial.
     intros s t STst. destruct STst as [Sst | Tst]; solve [intuition].
     apply WF_tc. assumption.
   Qed.
@@ -628,8 +628,8 @@ Section wf_rel_mod.
     apply incl_rtc_rtc with (S# @ R); [idtac | intuition].
     intros a b B. destruct B as [c [Sac Rcb]].
     constructor 3 with c; [idtac | intuition].
-    apply incl_rtc with S; intuition.
-    apply incl_rtc with S; intuition.
+    apply clos_refl_trans_m' with S; intuition.
+    apply clos_refl_trans_m' with S; intuition.
   Qed.
 
 End wf_rel_mod.
@@ -643,7 +643,7 @@ Section wf_rel_mod_simpl.
 
   Proof.
     intros. apply WF_incl with (((@empty_rel A) U S)# @ (R' U R)).
-    comp. apply incl_rtc. intuition.
+    comp. apply clos_refl_trans_m'. intuition.
     apply wf_rel_mod. assumption.
     apply WF_incl with ((R U S)# @ R'); trivial.
     comp. apply union_empty_r.

@@ -175,7 +175,7 @@ destruct (le_gt_dec i (val x)). 2: absurd_arith.
 repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
 (* i not in (pi f) *)
-apply refl_intro. hyp. apply args_eq. unfold vt, vu.
+apply eq_Refl_rel. hyp. apply args_eq. unfold vt, vu.
 apply Vfilter_eq_notin with (l:=pi f). intros hi h.
 ded (in_map (@val (arity f)) h). contradiction.
 Qed.

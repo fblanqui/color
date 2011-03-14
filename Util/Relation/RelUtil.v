@@ -11,7 +11,7 @@ general definitions and results about relations
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Setoid Basics Morphisms.
+Require Import LogicUtil Setoid Basics Morphisms List.
 Require Export Relations RelMidex.
 
 Implicit Arguments transp [A].
@@ -40,7 +40,7 @@ Arguments Scope union [type_scope relation_scope relation_scope].
 Open Scope relation_scope.
 
 (***********************************************************************)
-(** decidable relations *)
+(** boolean function associated to a decidable relation *)
 
 Section bool.
 
@@ -61,31 +61,19 @@ End bool.
 (***********************************************************************)
 (** equality on relations *)
 
-Lemma same_relation_refl : forall A, reflexive (same_relation A).
-
-Proof.
-intuition.
-Qed.
-
-Lemma same_relation_sym : forall A, symmetric (same_relation A).
-
-Proof.
-unfold symmetric, same_relation. intuition.
-Qed.
-
-Lemma same_relation_trans : forall A, transitive (same_relation A).
-
-Proof.
-unfold transitive, same_relation. intuition.
-Qed.
-
-Add Parametric Relation (A : Type) : (relation A) (same_relation A)
-  reflexivity proved by (@same_relation_refl A)
-  symmetry proved by (@same_relation_sym A)
-  transitivity proved by (@same_relation_trans A)
-    as same_relation_rel.
-
 Notation "R == S" := (same_relation _ R S) (at level 70).
+
+Instance same_relation_Refl A : Reflexive (same_relation A).
+
+Proof. firstorder. Qed.
+
+Instance same_relation_Sym A : Symmetric (same_relation A).
+
+Proof. firstorder. Qed.
+
+Instance same_relation_Trans A : Transitive (same_relation A).
+
+Proof. firstorder. Qed.
 
 Lemma rel_eq : forall A (R S : relation A),
   R == S <-> forall x y, R x y <-> S x y.
@@ -96,9 +84,9 @@ intros x y. ded (H x y). intuition.
 Qed.
 
 (***********************************************************************)
-(** basic properties *)
+(** basic definitions *)
 
-Section basic_properties1.
+Section basic_def1.
 
   Variables (A B : Type) (R : A -> B -> Prop).
 
@@ -108,13 +96,11 @@ Section basic_properties1.
 
   Definition functional := forall x y z, R x y -> R x z -> y = z.
 
-  Require Import List.
-
   Definition finitely_branching := forall x, {l | forall y, R x y <-> In y l}.
 
-End basic_properties1.
+End basic_def1.
 
-Section basic_properties2.
+Section basic_def2.
 
   Variables (A : Type) (E R : relation A).
 
@@ -126,15 +112,12 @@ Section basic_properties2.
 
   Definition non_terminating := exists f, IS f.
 
-  Definition ISMod E R (f g : nat -> A) :=
+  Definition ISMod (f g : nat -> A) :=
     forall i, E (f i) (g i) /\ R (g i) (f (S i)).
 
-End basic_properties2.
+End basic_def2.
 
-(***********************************************************************)
-(** basic definitions *)
-
-Section basic_definitions.
+Section basic_def3.
 
   Variables (A : Type) (R : relation A).
 
@@ -152,7 +135,7 @@ Section basic_definitions.
   Definition intersection (S : relation A) : relation A :=
     fun x y => R x y /\ S x y.
 
-End basic_definitions.
+End basic_def3.
 
 (***********************************************************************)
 (** intersection *)
@@ -199,107 +182,47 @@ Implicit Arguments in_sons_R [A R x y].
 Implicit Arguments R_in_sons [A R x y].
 
 (***********************************************************************)
-(** ordering structures *)
-
-Section ordering_structures.
-
-  Variable A : Type.
-
-  Record Quasi_ordering : Type := mkQuasi_ordering {
-    qord_rel :> relation A;
-    qord_refl : reflexive qord_rel;
-    qord_trans : transitive qord_rel
-  }.
-
-  Record Ordering : Type := mkOrdering {
-    ord_rel :> relation A;
-    ord_refl : reflexive ord_rel;
-    ord_trans : transitive ord_rel;
-    ord_antisym : antisymmetric ord_rel
-  }.
-
-  Record Strict_ordering : Type := mkStrict_ordering {
-    sord_rel :> relation A;
-    sord_irrefl : irreflexive sord_rel;
-    sord_trans : transitive sord_rel
-  }.
-
-End ordering_structures.
-
-(***********************************************************************)
 (** inclusion *)
 
-Section inclusion.
+(*REMOVE?*)
+Lemma inclusion_elim : forall A (R S : relation A),
+  R << S -> forall x y, R x y -> S x y.
 
-  Variables (A : Type) (R S : relation A).
+Proof. auto. Qed.
 
-  Lemma inclusion_elim : R << S -> forall x y, R x y -> S x y.
-
-  Proof.
-    auto.
-  Qed.
-
-  Lemma inclusion_trans : forall T, R << S -> S << T -> R << T.
-
-  Proof.
-    intros T h h'. unfold inclusion. auto.
-  Qed.
-
-  Lemma inclusion_refl : R << R.
-
-  Proof.
-    unfold inclusion. auto.
-  Qed.
-
-End inclusion.
-
+(*REMOVE?*)
 Implicit Arguments inclusion_elim [A R S x y].
 
-Ltac inclusion_refl := apply inclusion_refl.
+Instance inclusion_Refl A : Reflexive (@inclusion A).
 
-Ltac trans S := apply inclusion_trans with (S); try inclusion_refl.
+Proof. firstorder. Qed.
 
-Add Parametric Morphism (A : Type) : (@inclusion A)
-  with signature (same_relation A) ==> (same_relation A) ==> iff
-    as inclusion_mor.
+Instance inclusion_Trans A : Transitive (@inclusion A).
 
-Proof.
-intros x y x_eq_y x' y' x'_eq_y'. destruct x_eq_y. destruct x'_eq_y'.
-split; intro.
-trans x; try hyp. trans x'; hyp.
-trans y; try hyp. trans y'; hyp.
-Qed.
+Proof. firstorder. Qed.
 
-Add Parametric Relation (A : Type) : (relation A) (@inclusion A)
-  reflexivity proved by (@inclusion_refl A)
-  transitivity proved by (@inclusion_trans A)
-    as inclusion_rel.
+(*REMOVE? replace by refl*)
+Ltac inclusion_refl := apply inclusion_Refl.
 
-(***********************************************************************)
-(** reflexive *)
+(*REMOVE?*)
+Ltac trans S := apply inclusion_Trans with (S); try inclusion_refl.
 
-Lemma refl_intro : forall A (R : relation A), reflexive R ->
-  forall x y, x = y -> R x y.
+Instance inclusion_m' A :
+  Proper (same_relation A ==> same_relation A ==> impl) (@inclusion A).
 
-Proof.
-  intros. subst. apply H.
-Qed.
+Proof. firstorder. Qed.
+
+Instance inclusion_m A :
+  Proper (same_relation A ==> same_relation A ==> iff) (@inclusion A).
+
+Proof. firstorder. Qed.
 
 (***********************************************************************)
 (** irreflexive *)
 
-Section irrefl.
+Instance irreflexive_m' A : Proper (@inclusion A --> impl) (@irreflexive A).
 
-  Variable A : Type.
-
-  Lemma incl_irrefl : forall R S : relation A,
-    R << S -> irreflexive S -> irreflexive R.
-
-  Proof.
-    unfold inclusion, irreflexive. intros. intro. exact (H0 x (H x x H1)).
-  Qed.
-
-End irrefl.
+Proof. firstorder. Qed.
 
 (***********************************************************************)
 (** monotony *)
@@ -326,30 +249,20 @@ End monotone.
 Definition compose A (R S : relation A) : relation A :=
   fun x y => exists z, R x z /\ S z y.
 
-Notation "x @ y" := (compose x y) (at level 40) : relation_scope.
+Notation "R @ S" := (compose R S) (at level 40) : relation_scope.
 
-Definition absorb A (R S : relation A) := S @ R << R.
+Instance compose_m' A :
+  Proper (@inclusion A ==> @inclusion A ==> @inclusion A) (@compose A).
 
-Add Parametric Morphism (A : Type) : (@compose A)
-  with signature
-    (@inclusion A) ==> (@inclusion A) ==> (@inclusion A)
-  as incl_comp.
+Proof. firstorder. Qed.
 
-Proof.
-intros R R' S S' h1 h2. unfold inclusion, compose. intros. do 2 destruct H.
-exists x0. auto.
-Qed.
+(*REMOVE?*)
+Ltac comp := apply compose_m'; try inclusion_refl.
 
-Ltac comp := apply incl_comp; try inclusion_refl.
+Instance compose_m A :
+  Proper (same_relation A ==> same_relation A ==> same_relation A) (@compose A).
 
-Add Parametric Morphism (A : Type) : (@compose A)
-  with signature
-    (same_relation A) ==> (same_relation A) ==> (same_relation A)
-  as compose_morph.
-
-Proof.
-unfold same_relation. intuition; comp; hyp.
-Qed.
+Proof. firstorder. Qed.
 
 Section compose.
 
@@ -386,6 +299,8 @@ Ltac assoc :=
     | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
   end.
 
+Definition absorb A (R S : relation A) := S @ R << R.
+
 (***********************************************************************)
 (** reflexive closure *)
 
@@ -393,21 +308,14 @@ Definition clos_refl A (R : relation A) : relation A := @eq A U R.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
-Add Parametric Morphism (A : Type) : (@clos_refl A)
-  with signature (@inclusion A) ==> (@inclusion A)
-  as incl_rc.
+Instance clos_refl_m' A : Proper (@inclusion A ==> @inclusion A) (@clos_refl A).
 
-Proof.
-intro. unfold clos_refl, union, inclusion. intros. destruct H0; auto.
-Qed.
+Proof. firstorder. Qed.
 
-Add Parametric Morphism (A : Type)  : (@clos_refl A)
-  with signature (same_relation A) ==> (same_relation A)
-  as clos_refl_morph.
+Instance clos_refl_m A :
+  Proper (same_relation A ==> same_relation A) (@clos_refl A).
 
-Proof.
-unfold same_relation. intuition; apply incl_rc; hyp.
-Qed.
+Proof. firstorder. Qed.
 
 Section clos_refl.
 
@@ -437,22 +345,20 @@ End clos_refl.
 (***********************************************************************)
 (** transitive closure *)
 
-Add Parametric Morphism (A : Type) : (@clos_trans A)
-  with signature (@inclusion A) ==> (@inclusion A)
-  as incl_tc.
+Instance clos_trans_m' A :
+  Proper (@inclusion A ==> @inclusion A) (@clos_trans A).
 
 Proof.
-intros R R' H t u H0. elim H0; intros.
-apply t_step. apply H. exact H1.
-apply t_trans with (y := y); hyp.
+  intros R R' H t u H0. elim H0; intros.
+  apply t_step. apply H. hyp.
+  apply t_trans with y; hyp.
 Qed.
 
-Add Parametric Morphism (A : Type) : (@clos_trans A)
-  with signature (same_relation A) ==> (same_relation A)
-  as clos_trans_morph.
+Instance clos_trans_m A :
+  Proper (same_relation A ==> same_relation A) (@clos_trans A).
 
 Proof.
-unfold same_relation. intuition; apply incl_tc; hyp.
+intros R S [RS SR]. split; apply clos_trans_m'; hyp.
 Qed.
 
 Section clos_trans.
@@ -558,26 +464,18 @@ Qed.
 (***********************************************************************)
 (** union *)
 
-Add Parametric Morphism (A : Type) : (@union A)
-  with signature (@inclusion A) ==> (@inclusion A) ==> (@inclusion A)
-  as incl_union.
+Instance union_m' A :
+  Proper (@inclusion A ==> @inclusion A ==> @inclusion A) (@union A).
 
-Proof.
-intros. unfold inclusion. intros. destruct H1.
-left. apply (inclusion_elim H). hyp.
-right. apply (inclusion_elim H0). hyp.
-Qed.
+Proof. firstorder. Qed.
 
-Ltac union := apply incl_union; try inclusion_refl.
+(*REMOVE?*)
+Ltac union := apply union_m'; try inclusion_refl.
 
-Add Parametric Morphism (A : Type) : (@union A)
-  with signature
-    (same_relation A) ==> (same_relation A) ==> (same_relation A)
-  as union_morph.
+Instance union_m A :
+  Proper (same_relation A ==> same_relation A ==> same_relation A) (@union A).
 
-Proof.
-unfold same_relation. intuition; union; hyp.
-Qed.
+Proof. firstorder. Qed.
 
 Section union.
 
@@ -638,9 +536,8 @@ End union.
 (***********************************************************************)
 (** reflexive transitive closure *)
 
-Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
-  with signature (@inclusion A) ==> (@inclusion A)
-  as incl_rtc.
+Instance clos_refl_trans_m' A :
+  Proper (@inclusion A ==> @inclusion A) (@clos_refl_trans A).
 
 Proof.
 intro. unfold inclusion. intros. elim H0; intros.
@@ -649,30 +546,20 @@ apply rt_refl.
 eapply rt_trans. apply H2. hyp.
 Qed.
 
-(*COQ: can be removed?*)
-Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
-  with signature (@inclusion A) ==> (@eq A) ==> (@eq A) ==> impl
-  as incl_rtc_ext.
+(*REMOVE?*)
+Instance clos_refl_trans_m'_ext A :
+  Proper (@inclusion A ==> eq ==> eq ==> impl) (@clos_refl_trans A).
 
 Proof.
-unfold impl. intros. apply (incl_rtc H). hyp.
+intros R R' RR' x x' xx' y y' yy' h. subst.
+apply (clos_refl_trans_m' RR'). hyp.
 Qed.
 
-Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
-  with signature (same_relation A) ==> (same_relation A)
-  as same_rel_rtc.
+Instance clos_refl_trans_m A :
+  Proper (same_relation A ==> same_relation A) (@clos_refl_trans A).
 
 Proof.
-unfold same_relation. intuition; apply incl_rtc; hyp.
-Qed.
-
-(*COQ: can be removed?*)
-Add Parametric Morphism (A : Type) : (@clos_refl_trans A)
-  with signature (same_relation A) ==> (@eq A) ==> (@eq A) ==> iff
-  as same_rel_rtc_ext.
-
-Proof.
-split; apply (same_rel_rtc H).
+intros R S [RS SR]. split; apply clos_refl_trans_m'; hyp.
 Qed.
 
 Section clos_refl_trans.
@@ -803,61 +690,42 @@ End clos_refl_trans2.
 (***********************************************************************)
 (** inverse/transp *)
 
-Add Parametric Morphism (A : Type) : (@transp A)
-  with signature (@inclusion A) ==> (@inclusion A)
-  as incl_transp.
+Instance transp_m' A : Proper (@inclusion A ==> @inclusion A) (@transp A).
 
-Proof.
-intros R S. unfold inclusion, transp. auto.
-Qed.
+Proof. firstorder. Qed.
 
-Add Parametric Morphism (A : Type) : (@transp A)
-  with signature (@same_relation A) ==> (@same_relation A)
-  as equiv_transp.
+Instance transp_m A : Proper (same_relation A ==> same_relation A) (@transp A).
 
-Proof.
-intros R S [h1 h2]. split; apply incl_transp; hyp.
-Qed.
+Proof. firstorder. Qed.
 
 Section transp.
 
   Variables (A : Type) (R S : relation A).
 
+  (*COQ: declaring it as Instance creates problems*)
   Lemma transp_refl : reflexive R -> reflexive (transp R).
 
-  Proof.
-    auto.
-  Qed.
+  Proof. auto. Qed.
 
   Lemma transp_trans : transitive R -> transitive (transp R).
 
-  Proof.
-    unfold transitive, transp. intros. exact (H z y x H1 H0).
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma transp_sym : symmetric R -> symmetric (transp R).
 
-  Proof.
-    unfold symmetric, transp. auto.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma transp_transp : transp (transp R) << R.
 
-  Proof.
-    unfold inclusion, transp. auto.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma transp_invol : transp (transp R) == R.
 
-  Proof.
-    split. apply transp_transp. intros x y h. unfold transp. hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma transp_transp_R_eq_R : forall x y, R x y <-> transp (transp R) x y.
 
-  Proof.
-    split; auto.
-  Qed.
+  Proof. firstorder. Qed.
 
 End transp.
 
@@ -1035,18 +903,14 @@ Section inverse_image.
 
   Definition Rof a a' := R (f a) (f a').
 
+  (*COQ: declare as Instance creates problems *)
   Lemma Rof_refl : reflexive R -> reflexive Rof.
 
-  Proof.
-    intro. unfold reflexive, Rof. auto.
-  Qed.
+  Proof. firstorder. Qed.
 
   Lemma Rof_trans : transitive R -> transitive Rof.
 
-  Proof.
-    intro. unfold transitive, Rof. intros. unfold transitive in H.
-    apply H with (y := f y); hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
   Variable F : A -> B -> Prop.
 
@@ -1313,7 +1177,8 @@ Section option_setoid.
     transitivity a0; auto. contradiction.
   Qed.
 
-  Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.
+  (*COQ: looping...
+  Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.*)
 
   Global Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
 
@@ -1325,12 +1190,6 @@ Section option_setoid.
 
   Proof.
     intro o. unfold eq_opt. destruct o. intuition. discriminate. tauto.
-  Qed.
-
-  Lemma eq_opt_refl : Reflexive eq -> forall o p, o = p -> eq_opt o p.
-
-  Proof.
-    intros. subst. reflexivity.
   Qed.
 
 End option_setoid.

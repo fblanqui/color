@@ -82,7 +82,7 @@ Lemma chain_dps_app : forall l a b m,
   chain_dps a (l ++ b :: m) << chain_dps a l @ chain_dps b m.
 
 Proof.
-induction l; simpl; intros. apply inclusion_refl. assoc. comp. apply IHl.
+induction l; simpl; intros. inclusion_refl. assoc. comp. apply IHl.
 Qed.
 
 Implicit Arguments chain_dps_app [l a b m].
@@ -200,7 +200,7 @@ Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
 destruct a. simpl. simpl in H0. exists (sub x0 lhs). split.
-apply inclusion_elim with (R := int_red R #). apply incl_rtc.
+apply inclusion_elim with (R := int_red R #). apply clos_refl_trans_m'.
 apply int_red_incl_red. exact H0. apply hd_red_rule. simpl. auto.
 Qed.
 
@@ -225,7 +225,8 @@ Lemma compat_chain_dp_strict : forall a,
 Proof.
 unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
 apply (comp_rtc_incl Habsorb). exists (sub x0 (lhs a)). split.
-apply inclusion_elim with (R := int_red R #). 2: exact H1. apply incl_rtc.
+apply inclusion_elim with (R := int_red R #). 2: exact H1.
+apply clos_refl_trans_m'.
 trans (red R). apply int_red_incl_red. apply compat_red; assumption.
 destruct Hredord. apply H2. exact H.
 Qed.

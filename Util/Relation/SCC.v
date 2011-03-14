@@ -9,10 +9,7 @@ Strongly Connected Components (SCC) of a graph seen as a relation
 
 Set Implicit Arguments.
 
-Require Import Cycle.
-Require Import Path.
-Require Import ListUtil.
-Require Import RelUtil.
+Require Import Cycle Path ListUtil RelUtil.
 
 Section S.
 
@@ -87,7 +84,7 @@ unfold inclusion; unfold SCC.
 intros.
 destruct H0.
 assert (R1! << R2!).
-apply incl_tc; assumption.
+apply clos_trans_m'; assumption.
 split; unfold inclusion in H2.
 apply (H2 x y); assumption.
 apply (H2 y x); assumption.

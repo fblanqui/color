@@ -9,12 +9,7 @@ infinite sets of rules
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import ARelation.
-Require Import LogicUtil.
-Require Import SetUtil.
+Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil.
 
 Section defs.
 
@@ -149,7 +144,7 @@ Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
     as red_mod_incl.
 
 Proof.
-intros. unfold red_mod. comp. apply incl_rtc.
+intros. unfold red_mod. comp. apply clos_refl_trans_m'.
 apply red_incl. hyp. apply red_incl. hyp.
 Qed.
 
@@ -182,7 +177,7 @@ Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
     as hd_red_mod_incl.
 
 Proof.
-intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
+intros. unfold hd_red_mod. comp. apply clos_refl_trans_m'. apply red_incl. hyp.
 apply hd_red_incl. hyp.
 Qed.
 
@@ -281,7 +276,8 @@ apply rt_step. apply red_incl with E. apply incl_appl. hyp.
 apply rt_step. apply red_incl with R. apply incl_appr. hyp.
 apply rt_step. apply red_incl with R. apply incl_appr. hyp.
 apply rt_trans with y.
-eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
+eapply inclusion_elim. apply clos_refl_trans_m'. apply red_incl.
+apply incl_appl. hyp.
 auto.
 Qed.
 

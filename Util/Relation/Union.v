@@ -10,8 +10,7 @@ union of two wellfounded relations
 
 Set Implicit Arguments.
 
-Require Import SN.
-Require Import RelUtil.
+Require Import SN RelUtil.
 
 (***********************************************************************)
 (** R @ S << S @ R -> WF R -> WF S -> WF (R U S) *)
@@ -168,7 +167,7 @@ Proof.
   assert (SN (R!1 U S!1) x) as sntr.
   apply sn_comm_sntr; trivial.
   apply SN_incl with (R!1 U S!1).
-  apply incl_union.
+  apply union_m'.
   intros a b. apply t1_step.
   intros a b. apply t1_step.
   assumption.

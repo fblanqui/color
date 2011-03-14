@@ -779,11 +779,11 @@ assert (T : subterm x (f i)). rewrite Efi. apply subterm_fun; auto.
 apply (Hsf i x T h Hh2 Hh1).
 
 assert (Hsucceq : (red UC U red P)# << succeq).
-apply inclusion_rel_Transitive with (succeq#). Focus 2.
+apply inclusion_Trans with (succeq#). Focus 2.
 apply trans_rtc_incl; try apply trans_succeq. apply refl_succeq.
-apply incl_rtc_rtc. apply inclusion_rel_Transitive with succeq.
+apply incl_rtc_rtc. apply inclusion_Trans with succeq.
 Focus 2. apply rtc_incl.
-apply inclusion_rel_Transitive with (red (UC ++ P)). apply red_union_inv.
+apply inclusion_Trans with (red (UC ++ P)). apply red_union_inv.
 intros x y Hxy. destruct Hxy as [l [r [c [ s [Clr Hxy]]]]].
 rewrite (proj1 Hxy), (proj2 Hxy). apply cc_succeq. apply sc_succeq.
 apply hyp1; auto. 
@@ -796,7 +796,7 @@ induction H0; intros. apply tc_incl_rtc. apply Lemma19.
 apply int_red_incl_red; auto. rewrite (interp_eq _ _ s (refl_equal x)).
 apply rtc_refl. assert (sy : SN (red R) y). apply (SN_rtc s0).
 apply incl_rtc_rtc with (R := int_red R) (S := red R); auto.
-apply (@inclusion_trans _ _ (red R)). apply int_red_incl_red. apply rtc_incl.
+apply (@inclusion_Trans _ _ (red R)). apply int_red_incl_red. apply rtc_incl.
 apply rtc_trans with (y := interp G sy). apply IHclos_refl_trans1.
 apply IHclos_refl_trans2.
 
@@ -816,7 +816,7 @@ apply sub_tsub_eq. apply HC; auto.
 assert (IMfg2 : forall i, (succeq @ (succeq U succ)) (g' i) (f' (S i))).
 intro. destruct (Tfg i) as [x [Hx1 Hx2]]. exists x. split.
 apply Hsucceq. apply incl_rtc_rtc with (R := (red P)); auto.
-apply inclusion_rel_Transitive with (red UC U red P). apply union_idem_r.
+apply inclusion_Trans with (red UC U red P). apply union_idem_r.
 apply rtc_incl.
 destruct Hx2 as [l [r [s [Clr Hx2]]]]. rewrite (proj1 Hx2), (proj2 Hx2).
 destruct (hyp2 _ _ Clr). left. apply sc_succeq; auto.
@@ -849,8 +849,8 @@ assert (hMj : forall j, j <= h j). induction 0. omega.
 apply lt_le_S. apply (le_lt_trans _ _ _ IHj). destruct (h_def j). auto.
 exists (h i). split; try apply hMj. destruct (h_def i) as [_ [x [Hx Hi]]].
 apply succ_succeq_compat. exists x. split. apply Hsucceq.
-apply incl_rtc_rtc with (R := (red P)); auto.
-apply inclusion_rel_Transitive with (red UC U red P). apply union_idem_r.
+apply incl_rtc_rtc with (R := red P); auto.
+apply inclusion_Trans with (red UC U red P). apply union_idem_r.
 apply rtc_incl. destruct Hi as [l' [r' [s [Elr Hi]]]].
 destruct Elr as [Elr |]; try tauto. rewrite <- rule_eq in Elr. simpl in Elr.
 rewrite (proj1 Hi), (proj2 Hi), <- (proj1 Elr), <- (proj2 Elr).
