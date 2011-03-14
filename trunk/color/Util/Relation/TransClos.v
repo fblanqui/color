@@ -379,7 +379,7 @@ rewrite succ_empty. rewrite union_empty_l. refl.
 (* add *)
 intros z g s nzs e. rewrite raw_add_rel. rewrite e.
 rewrite RelUtil.union_assoc. rewrite RelUtil.union_commut with (R:=rel g0).
-rewrite <- RelUtil.union_assoc. apply union_morph. 2: refl.
+rewrite <- RelUtil.union_assoc. apply RelUtil.union_m. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
 rewrite add_iff. firstorder.
 Qed.
@@ -498,7 +498,7 @@ rewrite pred_empty. rewrite union_empty_l. refl.
 intros z s g m nzm h. unfold add_pred. case_eq (XSet.mem x s).
 (* x in s *)
 rewrite <- mem_iff in H. rewrite fold_raw_add_rel. rewrite h.
-rewrite <- RelUtil.union_assoc. apply union_morph. 2: refl.
+rewrite <- RelUtil.union_assoc. apply RelUtil.union_m. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
 intuition.
 rewrite H0. unfold rel. exists s. rewrite add_eq_o. intuition. refl.
@@ -509,7 +509,7 @@ unfold rel in H1. rewrite add_o in H1. destruct (eq_dec z a).
 left. intuition.
 right. intuition.
 (* x notin s *)
-rewrite <- not_mem_iff in H. rewrite h. apply union_morph. 2: refl.
+rewrite <- not_mem_iff in H. rewrite h. apply RelUtil.union_m. 2: refl.
 rewrite rel_eq; intros a b. unfold pred.
 intuition; change (~In z m) in nzm; rewrite not_find_in_iff in nzm.
 unfold rel. rewrite add_o. destruct (eq_dec z a). 2: hyp.
@@ -533,7 +533,7 @@ apply gtrans with x. hyp. apply gtrans with y; hyp.
 rewrite H1. rewrite <- H0. hyp.
 rewrite H1. apply gtrans with y; hyp.
 (* y notin (succs x g) *)
-rewrite fold_add_pred_rel. apply union_morph. refl.
+rewrite fold_add_pred_rel. apply RelUtil.union_m. refl.
 rewrite fold_raw_add_rel. refl.
 Qed.
 

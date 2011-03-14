@@ -310,7 +310,7 @@ Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
     as red_mod_incl.
 
 Proof.
-intros. unfold red_mod. comp. apply incl_rtc.
+intros. unfold red_mod. comp. apply clos_refl_trans_m'.
 apply red_incl. hyp. apply red_incl. hyp.
 Qed.
 
@@ -351,7 +351,7 @@ Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
     as hd_red_mod_incl.
 
 Proof.
-intros. unfold hd_red_mod. comp. apply incl_rtc. apply red_incl. hyp.
+intros. unfold hd_red_mod. comp. apply clos_refl_trans_m'. apply red_incl. hyp.
 apply hd_red_incl. hyp.
 Qed.
 
@@ -849,15 +849,15 @@ Lemma hd_red_mod_of_hd_red_Mod_int :
 
 Proof.
 unfold hd_red_Mod, hd_red_mod.
-apply incl_comp. assert (int_red E # << red E #).
-apply incl_rtc. apply int_red_incl_red. eauto.
-apply inclusion_refl.
+apply compose_m'. assert (int_red E # << red E #).
+apply clos_refl_trans_m'. apply int_red_incl_red. eauto.
+inclusion_refl.
 Qed.
 
 Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
 
 Proof.
-unfold hd_red_Mod, hd_red_mod. apply inclusion_refl.
+unfold hd_red_Mod, hd_red_mod. inclusion_refl.
 Qed.
 
 Lemma hd_red_Mod_make_repeat_free :

@@ -356,7 +356,8 @@ intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
 ded (red_lab ge_compatR v H0). do 2 destruct H2. exists x0. intuition.
 apply rt_trans with (lab v x).
 eapply inclusion_elim. apply rt_red_mod_union. hyp.
-eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
+eapply inclusion_elim. apply clos_refl_trans_m'. apply red_incl.
+apply incl_appl. hyp.
 Qed.
 
 Lemma hd_red_mod_lab : forall v t u,
@@ -367,7 +368,8 @@ intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
 ded (hd_red_lab v H0). do 2 destruct H2. exists x0. intuition.
 apply rt_trans with (lab v x).
 eapply inclusion_elim. apply rt_red_mod_union. hyp.
-eapply inclusion_elim. apply incl_rtc. apply red_incl. apply incl_appl. hyp.
+eapply inclusion_elim. apply clos_refl_trans_m'. apply red_incl.
+apply incl_appl. hyp.
 Qed.
 
 Lemma WF_red_mod_lab : WF (red_mod E R) <-> WF (red_mod (Decr ++ E') R').

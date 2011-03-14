@@ -9,27 +9,9 @@ Modular termination proof through SCC of an over DPGraph
 
 Set Implicit Arguments.
 
-Require Import SCCTopoOrdering.
-Require Import AGraph.
-Require Import ATrs.
-Require Import List.
-Require Import RelUtil.
-Require Import RelSub.
-Require Import ListRepeatFree.
-Require Import AdjMat.
-Require Import Permutation.
-Require Import Multiset.
-Require Import LogicUtil.
-Require Import BoundNat.
-Require Import NatUtil.
-Require Import ListPermutation.
-Require Import ListExtras.
-Require Import Setoid.
-Require Import SN.
-Require Import VecUtil.
-Require Import GDomainBij.
-Require Import ExcUtil.
-Require Import PermutSetoid.
+Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListRepeatFree
+  AdjMat Permutation Multiset LogicUtil BoundNat NatUtil ListPermutation
+  ListExtras Setoid SN VecUtil GDomainBij ExcUtil PermutSetoid Union SortUtil.
 
 Section S.
 
@@ -213,9 +195,6 @@ Qed.
 (***********************************************************************)
 (** Proof of the modular termination criterion *)
 
-Require Import CoLoR.Util.Relation.Union.
-Require Import SortUtil.
-
 Lemma WF_SCC'_union_aux : forall L,
   (forall i, In i L -> WF (hd_red_Mod_SCC' i)) -> sort RT_ODPG L -> 
   WF (fold_right (@union _) empty (map hd_red_Mod_SCC' L)).
@@ -359,7 +338,7 @@ Lemma hd_red_Mod_SCC'_hd_red_Mod_fast : forall i (Hi : i < dim),
   hd_red_Mod_SCC' i << hd_red_Mod S (SCC_list_fast Hi).
 
 Proof.
-intros. eapply inclusion_trans. apply chain_SCC'_red_Mod.
+intros. eapply inclusion_Trans. apply chain_SCC'_red_Mod.
 ded (incl_SCC_list_fast Hi H). unfold inclusion; intros.
 destruct H1 as [z]; exists z. destruct H1; split; auto.
 do 4 destruct H2. destruct H3.

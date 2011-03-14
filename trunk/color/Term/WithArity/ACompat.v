@@ -10,13 +10,7 @@ general definitions and results about relations on terms
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import ARelation.
-Require Import SN.
-Require Import ListForall.
-Require Import LogicUtil.
+Require Import ATrs ListUtil RelUtil ARelation SN ListForall LogicUtil.
 
 Section S.
 
@@ -66,7 +60,7 @@ Lemma compat_red_mod_tc : forall R E,
 
 Proof.
 intros. unfold red_mod. trans (succ# @ succ). comp.
-apply incl_rtc. apply compat_red; hyp. apply compat_red; hyp.
+apply clos_refl_trans_m'. apply compat_red; hyp. apply compat_red; hyp.
 apply tc_split_inv.
 Qed.
 
@@ -161,7 +155,7 @@ Lemma compat_red_mod : forall R E,
   absorb succ succ_eq -> red_mod E R << succ.
 
 Proof.
-intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
+intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply clos_refl_trans_m'.
 apply compat_red; hyp. destruct H0. apply compat_red; hyp.
 apply comp_rtc_incl. exact H3.
 Qed.
@@ -181,7 +175,8 @@ Lemma compat_hd_red_mod : forall R E,
   absorb succ succ_eq -> hd_red_mod E R << succ.
 
 Proof.
-intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp. apply incl_rtc.
+intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp.
+apply clos_refl_trans_m'.
 apply compat_red; hyp. apply compat_hd_red; hyp.
 apply comp_rtc_incl. exact H3.
 Qed.
@@ -192,7 +187,7 @@ Lemma compat_hd_red_mod_min : forall R E,
   absorb succ succ_eq -> hd_red_mod_min E R << succ.
 
 Proof.
-intros. apply inclusion_trans with (hd_red_mod E R).
+intros. transitivity (hd_red_mod E R).
 apply hd_red_mod_min_incl.
 apply compat_hd_red_mod; auto.
 Qed.
