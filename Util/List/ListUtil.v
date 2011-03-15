@@ -13,18 +13,17 @@ extension of the Coq library on lists
 
 Set Implicit Arguments.
 
-Require Import LogicUtil NatUtil EqUtil Setoid SetoidList.
+Require Import LogicUtil NatUtil EqUtil Setoid SetoidList RelMidex Omega
+  Relations BoolUtil.
 Require Export List.
+Require Program.
 
 Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
 Implicit Arguments in_combine_l [A B l l' x y].
 Implicit Arguments in_combine_r [A B l l' x y].
 
-Ltac elt_type l :=
-  match type of l with
-    | list ?A => A
-  end.
+Ltac elt_type l := match type of l with list ?A => A end.
 
 Infix "[=" := incl (at level 70).
 
@@ -88,8 +87,6 @@ case (eqA_dec a x); intro.
 subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
 exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
 Qed.
-
-Require Import RelMidex.
 
 Lemma In_midex : eq_midex A -> forall (x : A) l, In x l \/ ~In x l. 
 
@@ -237,15 +234,17 @@ Lemma not_incl : forall l m, ~ l [= m <-> exists x:A, In x l /\ ~In x m.
 
 Proof.
 induction l; simpl; intros.
+(* nil *)
 intuition. absurd (nil[=m). hyp. apply incl_nil.
 do 2 destruct H. contradiction.
+(* cons *)
 split; intro.
 Focus 2. do 3 destruct H.
 subst. intro. apply H0. apply H. left. refl.
 intro. absurd (In x m). hyp. apply H1. right. hyp.
-case (In_dec eqA_dec a m); intro.
+Focus 1. case (In_dec eqA_dec a m); intro.
 assert (~l[=m). intro. apply H. unfold incl. intro b. simpl. intuition.
-subst. hyp. rewrite IHl in H0. do 2 destruct H0. exists x. tauto.
+rewrite IHl in H0. do 2 destruct H0. exists x. tauto.
 exists a. tauto.
 Qed.
 
@@ -518,8 +517,6 @@ Lemma head_app : forall (l l': list A)(lne: l <> nil), head (l ++ l') = head l.
 Proof.
 destruct l. tauto. auto.
 Qed.
-
-Require Import Omega.
 
 Lemma length_tail : forall l : list A, length (tail l) <= length l.
 
@@ -1111,11 +1108,7 @@ Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
 
 Section one_less.
 
-  Variable A : Type.
-
-  Require Import Relations.
-
-  Variable r : relation A.
+  Variables (A : Type) (r : relation A).
   
   Inductive one_less : relation (list A) := 
     | one_less_cons : forall (l l' : list A) (p : nat) (a a' : A), 
@@ -1294,8 +1287,6 @@ Implicit Arguments last_intro [A l].
 
 (***********************************************************************)
 (** partition *)
-
-Require Import Bool.
 
 Section partition.
 
@@ -1825,6 +1816,23 @@ Fixpoint first l :=
 End first.
 
 (***********************************************************************)
+(** transpose *)
+
+Instance transpose_m' A B : Proper (@inclusion B ==> Logic.eq ==> impl)
+  (@transpose A B).
+
+Proof.
+intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h.
+Qed.
+
+Instance transpose_m A B : Proper (@same_relation B ==> Logic.eq ==> iff)
+  (@transpose A B).
+
+Proof.
+intros R R' [h1 h2] f f' ff'. subst f'. split; apply transpose_m'; auto.
+Qed.
+
+(***********************************************************************)
 (** fold_left *)
 
 Section fold_left.
@@ -1878,8 +1886,6 @@ Implicit Arguments In_fold_left [A B f].
 (****************************************************************************)
 (** checking a boolean property [P 0 && ... && P (n-1)], where the domain of
     the predicate P is restricted to numbers smaller than [n]. *)
-
-Require Import Program.
 
 Section Check_seq_aux.
 
@@ -2005,8 +2011,6 @@ End lookup_dep.
 
 (****************************************************************************)
 (** forallb *)
-
-Require Import BoolUtil.
 
 Section forallb.
 
