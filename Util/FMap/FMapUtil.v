@@ -20,7 +20,7 @@ Module Make (X : OrderedType).
   Module Export XMapOrdProps := OrdProperties XMap.
 
 (***********************************************************************)
-(** Equiv is a morphism wrt inclusion *)
+(** properties of Equiv *)
 
   Instance Equiv_m' A :
     Proper (@inclusion A ==> @inclusion (XMap.t A)) (@Equiv A).
@@ -46,13 +46,14 @@ Module Make (X : OrderedType).
       intros x y xy. subst. refl.
     Qed.
 
-(*REMOVE:    Lemma Equal_Equiv : Reflexive eq ->
-      forall m m', Equal m m' -> Equiv eq m m'.
+(***********************************************************************)
+(* properties of remove *)
 
-    Proof.
-      intros heq m m'. rewrite Equal_Equiv. apply Equiv_m'.
-      intros x y xy. subst. refl.
-    Qed.*)
+  Lemma remove_empty : forall x, Equal (remove x (@empty A)) (@empty A).
+
+  Proof.
+    intros x k. rewrite remove_o, empty_o. destruct (eq_dec x k); refl.
+  Qed.
 
 (***********************************************************************)
 (** Equiv preserves reflexivity, symmetry and transitivity *)
@@ -101,7 +102,7 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** some properties of add *)
+(** properties of add *)
 
     Lemma add_transp : transpose_neqkey Equal (@add A).
 
@@ -214,7 +215,7 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** some properties of find *)
+(** properties of find *)
 
     Lemma find_None : forall k m,
       find k m = None <-> (forall x:A, ~MapsTo k x m).
@@ -314,7 +315,7 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
-(** properties of Equiv wrt empty and add *)
+(** properties of Equiv *)
 
     Lemma Equiv_empty : forall m, Equiv eq (empty A) m <-> Empty m.
 
@@ -355,75 +356,6 @@ Module Make (X : OrderedType).
       apply h2 with k. rewrite add_mapsto_iff. auto. hyp.
       intro l. rewrite add_o. rewrite remove_o. destruct (eq_dec k l).
       rewrite <- e. rewrite <- find_mapsto_iff. hyp. refl.
-    Qed.
-
-(***********************************************************************)
-(** (inclusion) relation on lists of elements of type (key*A) *)
-
-    Definition le_list l l' := forall k x, InA (@eq_key_elt A) (k,x) l ->
-      exists x', eq x x' /\ InA (@eq_key_elt A) (k,x') l'.
-
-(***********************************************************************)
-(** le_list preserves reflexivity and transitivity *)
-
-    Global Instance le_list_Refl : Reflexive eq -> Reflexive le_list.
-
-    Proof.
-      intros heq l k x h. exists x. intuition.
-    Qed.
-
-    Global Instance le_list_Trans : Transitive eq -> Transitive le_list.
-
-    Proof.
-      intros heq l m n lm mn k x1 h1. destruct (lm _ _ h1) as [x2 [e h2]].
-      destruct (mn _ _ h2) as [x3 [e' h3]]. exists x3. intuition.
-      transitivity x2; hyp.
-    Qed.
-
-(***********************************************************************)
-(** (equivalence) relation on lists of elements of type (key*A) *)
-
-    Definition eq_list l l' := le_list l l' /\ le_list l' l.
-
-(***********************************************************************)
-(** eq_list preserves reflexivity, transitivity and symmetry *)
-
-    Global Instance eq_list_Reflexive : Reflexive eq -> Reflexive eq_list.
-
-    Proof.
-      intros heq l. split; refl.
-    Qed.
-
-    Global Instance eq_list_Transitive : Transitive eq -> Transitive eq_list.
-
-    Proof.
-      intros heq l m n [lm ml] [mn nm]. split; transitivity m; hyp.
-    Qed.
-
-    Global Instance eq_list_Symmetric : Symmetric eq -> Symmetric eq_list.
-
-    Proof.
-      intros heq l m. unfold eq_list. tauto.
-    Qed.
-
-(***********************************************************************)
-(** elements is a morphism wrt le_list and eq_list *)
-
-    Global Instance elements_Equiv' :
-      Proper (Equiv eq ==> le_list) (@elements A).
-
-    Proof.
-      intros m m' [h1 h2] k x h. rewrite <- elements_mapsto_iff in h.
-      assert (In k m). exists x. hyp. rewrite h1 in H. destruct H as [x'].
-      exists x'. split. apply h2 with k; hyp.
-      rewrite <- elements_mapsto_iff. hyp.
-    Qed.
-
-    Global Instance elements_Equiv : Symmetric eq ->
-      Proper (Equiv eq ==> eq_list) (@elements A).
-
-    Proof.
-      intros heq m m' mm'. split; apply elements_Equiv'. hyp. symmetry. hyp.
     Qed.
 
 (***********************************************************************)
@@ -485,7 +417,7 @@ and satisfies some commutation property *)
     End fold.
 
 (***********************************************************************)
-(* In is a morphism wrt Equiv *)
+(* properties of In *)
 
     Global Instance In_Equiv' : Proper (X.eq ==> Equiv eq ==> impl) (@In A).
 
