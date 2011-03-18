@@ -9,7 +9,7 @@ lemmas and tactics on Coq's FSets
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FSets FSetAVL FSetFacts RelUtil.
+Require Import LogicUtil FSets FSetAVL FSetFacts RelUtil BoolUtil.
 
 Module Make (X : OrderedType).
 
@@ -20,6 +20,12 @@ Module Export XSetFacts := Facts XSet.
 Module Export XSetOrdProps := OrdProperties XSet.
 
 Import X.
+
+Lemma eqb_ok : forall x y, eqb x y = true <-> eq x y.
+
+Proof.
+intros x y. unfold eqb. destruct (eq_dec x y); intuition. discr.
+Qed.
 
 Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
 Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
@@ -34,6 +40,24 @@ Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all
   : Equal.
 
 Ltac Equal := autorewrite with Equal.
+
+(***********************************************************************)
+(** properties of is_empty *)
+
+Lemma is_empty_eq : forall s, is_empty s = true <-> s [=] empty.
+
+Proof.
+intro s. split; intro hs.
+apply empty_is_empty_1. rewrite is_empty_iff. hyp.
+rewrite <- is_empty_iff. apply empty_is_empty_2. hyp.
+Qed.
+
+Lemma mem_is_empty {x s} : mem x s = true -> is_empty s = false.
+
+Proof.
+rewrite false_not_true. unfold not. rewrite <- is_empty_iff, <- mem_iff.
+firstorder.
+Qed.
 
 (***********************************************************************)
 (** properties of In *)
@@ -220,6 +244,15 @@ Lemma rel_equal_Equal : rel equal == Equal.
 
 Proof.
 apply rel_eq. apply equal_Equal.
+Qed.
+
+(***********************************************************************)
+(** remove *)
+
+Lemma remove_empty : forall x, remove x empty [=] empty.
+
+Proof.
+intros x y. split; intro H; In_elim.
 Qed.
 
 (***********************************************************************)
