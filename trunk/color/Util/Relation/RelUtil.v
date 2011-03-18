@@ -377,13 +377,13 @@ Section clos_trans.
     unfold transitive. intros. apply t_trans with (y := y); hyp.
   Qed.
 
-  Lemma tc_transp : forall x y, R! y x -> (transp R)! x y.
+  (*REMOVE:Lemma tc_transp : forall x y, R! y x -> (transp R)! x y.
 
   Proof.
     induction 1.
     apply t_step. hyp.
     eapply t_trans. apply IHclos_trans2. apply IHclos_trans1.
-  Qed.
+  Qed.*)
 
   Lemma tc_incl_rtc : R! << R#.
 
@@ -453,9 +453,14 @@ Section clos_trans.
 
 End clos_trans.
 
-Add Parametric Morphism (A : Type) : (@transitive A)
-  with signature (@same_relation A) ==> iff
-    as transitive_mor.
+Lemma trans_tc {A} {R : relation A} : transitive R -> R! == R.
+
+Proof.
+  (*split.*) intro t. split. apply tc_incl_trans. refl. hyp. apply tc_incl.
+  (*intros e x y z xy yz. apply e. apply t_trans with y; apply e; hyp.*)
+Qed.
+
+Instance transitive_m A : Proper (same_relation A ==> iff) (@transitive A).
 
 Proof.
 intros R S e. repeat rewrite <- trans_intro. rewrite e. refl.
@@ -1093,7 +1098,7 @@ Proof. firstorder. Qed.
 Instance Transitive_m A : Proper (@same_relation A ==> iff) (@Transitive A).
 
 Proof.
-  intros R S RS. apply transitive_mor. hyp.
+  intros R S RS. apply transitive_m. hyp.
 Qed.
 
 Instance Equivalence_m A : Proper (@same_relation A ==> iff) (@Equivalence A).
