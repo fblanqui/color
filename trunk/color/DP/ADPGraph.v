@@ -216,7 +216,7 @@ Lemma compat_chain_dps : forall l a, chain_dps a l << succ_eq#.
 
 Proof.
 induction l; simpl; intros. apply compat_chain_dp. trans (succ_eq# @ succ_eq#).
-comp. apply compat_chain_dp. apply IHl. apply rtc_idem.
+comp. apply compat_chain_dp. apply IHl. apply comp_rtc_idem.
 Qed.
 
 Lemma compat_chain_dp_strict : forall a,

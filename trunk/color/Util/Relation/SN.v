@@ -327,7 +327,7 @@ Proof.
 induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
 apply SN_rtc with (x := x0). apply H0. exact H2.
 apply inclusion_elim with (R := R#). apply clos_refl_trans_m'.
-apply tc_incl. exact H3.
+apply incl_tc. refl. exact H3.
 Qed.
 
 Lemma WF_tc : WF R -> WF (R!).

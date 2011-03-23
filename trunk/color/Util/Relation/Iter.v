@@ -28,7 +28,7 @@ Fixpoint iter (n : nat) : relation A :=
 Lemma iter_tc : forall n, iter n << R!.
 
 Proof.
-induction n; intros; simpl. apply tc_incl. unfold inclusion. intros.
+induction n; intros; simpl. apply incl_tc. refl. unfold inclusion. intros.
 do 2 destruct H. apply t_trans with x0. apply t_step. exact H.
 apply IHn. exact H0.
 Qed.
