@@ -363,67 +363,52 @@ Qed.
 
 Section clos_trans.
 
-  Variables (A : Type) (R S : relation A).
+  Variable A : Type.
 
-  Lemma tc_incl : R << R!.
+  Implicit Type R S : relation A.
+
+  Lemma incl_tc R S : R << S -> R << S!.
+
+  Proof. firstorder. Qed.
+
+  Lemma tc_trans R : transitive (R!).
 
   Proof.
-    unfold inclusion. intros. apply t_step. exact H.
+    unfold transitive. intros. apply t_trans with y; hyp.
   Qed.
 
-  Lemma tc_trans : transitive (R!).
-
-  Proof.
-    unfold transitive. intros. apply t_trans with (y := y); hyp.
-  Qed.
-
-  (*REMOVE:Lemma tc_transp : forall x y, R! y x -> (transp R)! x y.
-
-  Proof.
-    induction 1.
-    apply t_step. hyp.
-    eapply t_trans. apply IHclos_trans2. apply IHclos_trans1.
-  Qed.*)
-
-  Lemma tc_incl_rtc : R! << R#.
+  Lemma tc_incl_rtc R : R! << R#.
 
   Proof.
     unfold inclusion. intros. elim H; intros.
-    apply rt_step. exact H0.
-    apply rt_trans with (y := y0); hyp.
+    apply rt_step. hyp.
+    apply rt_trans with y0; hyp.
   Qed.
 
-  Lemma tc_split : R! << R @ R#.
+  Lemma tc_split R : R! << R @ R#.
 
   Proof.
-    unfold inclusion. induction 1. exists y. split. exact H. apply rt_refl.
-    destruct IHclos_trans1. destruct H1. exists x0. split. exact H1.
-    apply rt_trans with (y := y). exact H2. 
-    apply inclusion_elim with (R := R!). apply tc_incl_rtc. exact H0.
+    unfold inclusion. induction 1. exists y. split. hyp. apply rt_refl.
+    destruct IHclos_trans1. destruct H1. exists x0. split. hyp.
+    apply rt_trans with y. hyp.
+    apply inclusion_elim with (R:=R!). apply tc_incl_rtc. hyp.
   Qed.
 
-  Lemma trans_tc_incl : transitive R -> R! << R.
+  Lemma trans_tc_incl R : transitive R -> R! << R.
 
   Proof.
     unfold transitive, inclusion. intros. induction H0. hyp. 
     apply H with y; hyp.
   Qed.
 
-  Lemma tc_incl_tc : R << S -> R! << S!.
-
-  Proof.
-    intro. unfold inclusion, union. intros. induction H0.
-    apply t_step. apply H. auto. apply t_trans with (y := y); auto.
-  Qed.
-
-  Lemma comp_tc_incl : R @ S << S -> R! @ S << S.
+  Lemma comp_tc_incl R S : R @ S << S -> R! @ S << S.
 
   Proof.
     intro. unfold inclusion, compose. intros. do 2 destruct H0.
     generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
   Qed.
 
-  Lemma comp_incl_tc : R @ S << S -> R @ S! << S!.
+  Lemma comp_incl_tc R S : R @ S << S -> R @ S! << S!.
 
   Proof.
     intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
@@ -431,39 +416,52 @@ Section clos_trans.
     apply t_trans with (y := y0); auto.
   Qed.
 
-  Lemma trans_intro : R @ R << R <-> transitive R.
+  Lemma trans_intro R : R @ R << R <-> transitive R.
 
   Proof.
     split. unfold transitive. intros. apply H. exists y. intuition.
     intros h x z [y [xy yz]]. apply (h _ _ _ xy yz).
   Qed.
 
-  Lemma tc_idem : R! @ R! << R!.
+  Lemma comp_tc_idem R : R! @ R! << R!.
 
   Proof.
     unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; hyp.
   Qed.
 
-  Lemma tc_incl_trans : R << S -> transitive S -> R! << S.
+  Lemma tc_min R S : R << S -> transitive S -> R! << S.
 
   Proof.
     intros RS Strans. intros x y. induction 1. apply RS. hyp.
     apply Strans with y; hyp.
   Qed.
 
+  Lemma trans_tc R : transitive R -> R! == R.
+
+  Proof.
+    intro t. split. apply tc_min. refl. hyp. apply incl_tc. refl.
+  Qed.
+
+  Lemma tc_idem R : R!! == R!.
+
+  Proof.
+    split. intros x y. induction 1. hyp. apply t_trans with y; hyp.
+    apply incl_tc. refl.
+  Qed.
+
+  Lemma tc_eq R S : S << R -> R << S! -> R! == S!.
+
+  Proof.
+    intros SR RSt. split; apply tc_min. hyp. apply tc_trans.
+    transitivity R. hyp. apply incl_tc. refl. apply tc_trans.
+  Qed.
+
 End clos_trans.
-
-Lemma trans_tc {A} {R : relation A} : transitive R -> R! == R.
-
-Proof.
-  (*split.*) intro t. split. apply tc_incl_trans. refl. hyp. apply tc_incl.
-  (*intros e x y z xy yz. apply e. apply t_trans with y; apply e; hyp.*)
-Qed.
 
 Instance transitive_m A : Proper (same_relation A ==> iff) (@transitive A).
 
 Proof.
-intros R S e. repeat rewrite <- trans_intro. rewrite e. refl.
+  intros R S e. repeat rewrite <- trans_intro. rewrite e. refl.
 Qed.
 
 (***********************************************************************)
@@ -496,7 +494,11 @@ Section union.
 
   Proof. firstorder. Qed.
 
-  Lemma union_distr_comp : forall R S T, (R U S) @ T == (R @ T) U (S @ T).
+  Lemma comp_union_l : forall R S T, (R U S) @ T == (R @ T) U (S @ T).
+
+  Proof. firstorder. Qed.
+
+  Lemma comp_union_r : forall R S T, T @ (R U S) == (T @ R) U (T @ S).
 
   Proof. firstorder. Qed.
 
@@ -508,33 +510,17 @@ Section union.
 
   Proof. firstorder. Qed.
 
-  Lemma union_idem_l : forall R S, R << R U S.
+  Lemma incl_union_l : forall R S T, R << S -> R << S U T.
 
   Proof. firstorder. Qed.
 
-  Lemma union_idem_r : forall R S, S << R U S.
+  Lemma incl_union_r : forall R S T, R << T -> R << S U T.
 
   Proof. firstorder. Qed.
-
-  Lemma union_tc_incl_l : forall R S, R! << (R U S)!.
-
-  Proof. 
-    intros; apply tc_incl_tc. apply union_idem_l.
-  Qed.
-
-  Lemma union_tc_incl_r : forall R S, S! << (R U S)!.
-
-  Proof.
-    intros. apply tc_incl_tc. apply union_idem_r.
-  Qed.
 
   Lemma union_incl : forall R R' S, R U R' << S <-> R << S /\ R' << S.
 
-  Proof.
-    intros. split; intro. split. trans (R U R'). apply union_idem_l. hyp.
-    trans (R U R'). apply union_idem_r. hyp.
-    destruct H. intros t u [h|h]. apply H. hyp. apply H0. hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
 End union.
 
@@ -664,7 +650,7 @@ Section clos_refl_trans.
     constructor 3 with y; hyp.
   Qed.
 
-  Lemma rtc_idem : R# @ R# << R#.
+  Lemma comp_rtc_idem : R# @ R# << R#.
 
   Proof.
     unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; hyp.
@@ -1182,7 +1168,7 @@ Section option_setoid.
     transitivity a0; auto. contradiction.
   Qed.
 
-  (*COQ: looping...
+  (*COQ is looping if you do:
   Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.*)
 
   Global Instance Some_m : Proper (eq ==> eq_opt) (@Some A).

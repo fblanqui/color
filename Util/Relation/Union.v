@@ -10,7 +10,7 @@ union of two wellfounded relations
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil.
+Require Import SN RelUtil LogicUtil.
 
 (***********************************************************************)
 (** R @ S << S @ R -> WF R -> WF S -> WF (R U S) *)
@@ -24,7 +24,7 @@ Require Import Lexico.
 Lemma WF_union : WF R -> WF S -> WF (R U S).
 
 Proof.
-intros. eapply WF_incl. apply tc_incl. eapply WF_incl. apply tc_union.
+intros. eapply WF_incl. apply incl_tc. refl. eapply WF_incl. apply tc_union.
 set (T := R# @ S). set (gt1 := T! @ R#). set (gt2 := R!).
 eapply WF_incl. apply union_commut.
 eapply WF_incl. apply lex'_intro. apply WF_lex'.
@@ -35,7 +35,7 @@ apply WF_tc. unfold T. apply WF_commut_modulo. exact commut. exact H0.
 (* WF gt2 *)
 unfold gt2. apply WF_tc. exact H.
 (* transitive gt2 *)
-apply trans_intro. unfold gt2. apply tc_idem.
+apply trans_intro. unfold gt2. apply comp_tc_idem.
 (* gt2 @ gt1 << gt1 *)
 unfold gt1, gt2. assoc. comp. trans (R# @ T!). comp. apply tc_incl_rtc.
 unfold T. apply rtc_comp_modulo.

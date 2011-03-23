@@ -210,7 +210,7 @@ Proof.
 induction l; simpl; intros. refl.
 transitivity (try_add_arc_one_to_many x l). hyp. 
 transitivity (try_add_arc (try_add_arc_one_to_many x l) x a).
-apply sub_rel_try_add_arc. apply tc_incl. 
+apply sub_rel_try_add_arc. apply incl_tc. refl. 
 Qed. 
 
 Lemma restricted_try_add_arc_one_to_many : forall l x l', 
@@ -255,7 +255,7 @@ Proof.
 induction l';  simpl; intros. contradiction. pose (incl_cons_l_incl H3). 
 apply trichotomy_preserved
   with (try_add_arc (try_add_arc_one_to_many x l') x a). 
-apply tc_incl. destruct H1. rewrite H1. 
+apply incl_tc. refl. destruct H1. rewrite H1. 
 apply try_add_arc_trichotomy. hyp.
 apply try_add_arc_one_to_many_midex with l; hyp. 
 apply trichotomy_preserved with (try_add_arc_one_to_many x l').
@@ -378,7 +378,7 @@ Lemma LETS_sub_rel : restriction R l << LETS.
 Proof.
 intros. unfold LETS.
 transitivity (clos_trans (restriction R l)). 
-apply tc_incl. apply  LETS_restriction_clos_trans. 
+apply incl_tc. refl. apply  LETS_restriction_clos_trans. 
 Qed.
 
 Lemma LETS_restricted : is_restricted LETS l.
@@ -585,7 +585,7 @@ do 2 intro. destruct H3. inversion H3. split.
 do 3 intro. destruct (X1 l x y). apply (LETS_restricted R l x y). hyp.
 inversion H0. split. 
 do 3 intro. destruct (X1 l x y). trivial. absurd (LETS R l x y). hyp.
-apply LETS_restriction_clos_trans. apply tc_incl. hyp. split. 
+apply LETS_restriction_clos_trans. eapply incl_tc. refl. hyp. split. 
 do 5 intro. destruct (X1 l x y). destruct (X1 l y z).
 pose (LETS_transitive R l x y z l0 l1). 
 destruct (X1 l x z). trivial. contradiction. inversion H1. inversion H0. split. 
