@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 Module Make (X : OrderedType).
 
-Module Import G := FGraph.Make X.
+Module Export G := FGraph.Make X.
 
 Implicit Type g h : graph.
 
@@ -54,7 +54,7 @@ Proof.
 split; apply pred_geq_ext'; hyp||(symmetry;hyp).
 Qed.
 
-Lemma pred_empty : forall x s, pred x s (@empty XSet.t) == @empty_rel X.t.
+Lemma pred_empty : forall x s, pred x s empty == @empty_rel X.t.
 
 Proof.
 split; intros a b; unfold pred, empty_rel; intros.
@@ -99,8 +99,8 @@ apply S.fold_m_ext; intuition. apply add_edge_geq. refl.
 apply add_edge_transp_geq. apply add_edge_geq. hyp.
 Qed.
 
-Lemma fold_add_pred_rel : forall x s g g0,
-  rel (fold (add_pred x s) g g0) == pred x s g U g0.
+Lemma rel_map_fold_add_pred : forall x s g g0,
+  fold (add_pred x s) g g0 == pred x s g U g0.
 
 Proof.
 intros x s g g0. pattern (fold (add_pred x s) g g0).
@@ -112,7 +112,7 @@ rewrite pred_empty. rewrite union_empty_l. refl.
 (* add *)
 intros z t g m n h. unfold add_pred. case_eq (XSet.mem x t).
 (* x in t *)
-rewrite <- mem_iff in H. rewrite fold_add_edge_rel. rewrite h.
+rewrite <- mem_iff in H. rewrite rel_set_fold_add_edge. rewrite h.
 rewrite <- RelUtil.union_assoc. apply RelUtil.union_m. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
 intuition.
@@ -134,12 +134,12 @@ destruct H1 as [u [u1 u2]]. inversion u1. subst t. contradiction.
 Qed.
 
 (*COQ: can we remove this lemma? *)
-Lemma fold_add_pred_rel_ext : forall x s g g0 a b,
+Lemma rel_map_fold_add_pred_ext : forall x s g g0 a b,
   rel (fold (add_pred x s) g g0) a b <-> pred x s g a b \/ rel g0 a b.
 
 Proof.
-split; intro h. apply fold_add_pred_rel in h. hyp.
-apply fold_add_pred_rel. hyp.
+split; intro h. apply rel_map_fold_add_pred in h. hyp.
+apply rel_map_fold_add_pred. hyp.
 Qed.
 
 Lemma add_pred_transp_geq : forall x s, transpose_neqkey geq (add_pred x s).
@@ -147,14 +147,14 @@ Lemma add_pred_transp_geq : forall x s, transpose_neqkey geq (add_pred x s).
 Proof.
 unfold transpose_neqkey. intros x s w w' sw sw' g nww'.
 unfold geq, add_pred. destruct (XSet.mem x sw); destruct (XSet.mem x sw');
-  repeat rewrite fold_add_edge_rel; try refl.
+  repeat rewrite rel_set_fold_add_edge; try refl.
 repeat rewrite <- RelUtil.union_assoc. apply RelUtil.union_m.
-apply RelUtil.union_commut. refl.
+apply union_commut. refl.
 Qed.
 
 (***********************************************************************)
 (** given a transitive graph [g], [add x y g] adds edges to g to get
-the transitive closure of [g U id x y] *)
+the transitive closure of [id x y U g] *)
 
 Definition trans_add_edge x y g :=
   (* if (x,y) is already in g, do nothing *)
@@ -171,29 +171,40 @@ Instance trans_add_edge_geq : Proper (eq ==> eq ==> geq ==> geq) trans_add_edge.
 Proof.
 intros x x' xx' y y' yy' g g' gg'. unfold geq, trans_add_edge.
 rewrite xx', yy', gg'. destruct (XSet.mem y' (succs x' g')).
-hyp. repeat rewrite fold_add_pred_rel, fold_add_edge_rel.
+hyp. repeat rewrite rel_map_fold_add_pred, rel_set_fold_add_edge.
 apply RelUtil.union_m. rewrite xx', yy', gg'. refl.
 apply RelUtil.union_m. rewrite xx', yy', gg'. refl.
 hyp.
 Qed.
 
-Lemma trans_add_edge_rel_pred_succ : forall x y g,
-  rel (trans_add_edge x y g) ==
-  if XSet.mem y (succs x g) then g
+Lemma rel_trans_add_edge_pred_succ : forall x y g,
+  trans_add_edge x y g == if XSet.mem y (succs x g) then g
     else let ysy := XSet.add y (succs y g) in pred x ysy g U (succ x ysy U g).
 
 Proof.
 intros x y g. unfold trans_add_edge. case_eq (XSet.mem y (succs x g)). refl.
-rewrite fold_add_pred_rel. apply RelUtil.union_m. refl.
-rewrite fold_add_edge_rel. refl.
+rewrite rel_map_fold_add_pred. apply RelUtil.union_m. refl.
+rewrite rel_set_fold_add_edge. refl.
 Qed.
 
-Lemma trans_add_edge_rel_prod : forall x y g, rel (trans_add_edge x y g)
-  == if XSet.mem y (succs x g) then g
+Lemma add_edge_incl_trans : forall x y g,
+  add_edge x y g << trans_add_edge x y g.
+
+Proof.
+intros x y g. rewrite rel_add_edge, rel_trans_add_edge_pred_succ.
+case_eq (XSet.mem y (succs x g)). rewrite mem_succs_id. refl. hyp.
+cbv zeta; set (ysy:=XSet.add y (succs y g)).
+rewrite <- RelUtil.union_assoc, union_incl. split.
+apply incl_union_r. refl. apply incl_union_l. apply incl_union_r.
+unfold ysy. rewrite succ_add. apply incl_union_l. refl.
+Qed.
+
+Lemma rel_trans_add_edge_prod : forall x y g,
+  trans_add_edge x y g == if XSet.mem y (succs x g) then g
     else prod (XSet.add x (preds x g)) (XSet.add y (succs y g)) U g.
 
 Proof.
-intros x y g. rewrite trans_add_edge_rel_pred_succ.
+intros x y g. rewrite rel_trans_add_edge_pred_succ.
 destruct (XSet.mem y (succs x g)). refl.
 cbv zeta. set (ysy := XSet.add y (succs y g)).
 set (xpx := XSet.add x (preds x g)). rewrite <- RelUtil.union_assoc.
@@ -204,7 +215,7 @@ Lemma transitive_trans_add_edge : forall x y g,
   transitive g -> transitive (trans_add_edge x y g).
 
 Proof.
-intros x y g tg. rewrite trans_add_edge_rel_prod.
+intros x y g tg. rewrite rel_trans_add_edge_prod.
 destruct (XSet.mem y (succs x g)). hyp.
 intros a b c. unfold Relation_Operators.union, prod.
 repeat rewrite add_iff. repeat rewrite In_preds_rel, In_succs_rel. intuition.
@@ -219,39 +230,22 @@ left. intuition. right. apply tg with b; hyp.
 right. apply tg with b; hyp.
 Qed.
 
-Lemma trans_add_edge_ok : forall x y g,
+Lemma rel_trans_add_edge : forall x y g,
   transitive g -> trans_add_edge x y g == add_edge x y g!.
 
 Proof.
 intros x y g tg. cut (transitive (trans_add_edge x y g)).
 2: apply transitive_trans_add_edge; hyp.
-rewrite add_edge_rel. repeat rewrite trans_add_edge_rel_prod.
+rewrite rel_add_edge. repeat rewrite rel_trans_add_edge_prod.
 case_eq (XSet.mem y (succs x g)).
 (* y in sx *)
-rewrite mem_succs_rel in H. rewrite <- (trans_tc tg) at 1. apply clos_trans_m.
-split. apply union_idem_l. rewrite union_incl. split. refl.
-intros a b [xa yb]. rewrite xa, yb. hyp.
+rewrite mem_succs_id. rewrite trans_tc. refl. hyp. hyp.
 (* y not in sx *)
 split.
-(* << *)
-intros a b. unfold Relation_Operators.union at -2, prod.
-repeat rewrite add_iff. rewrite In_preds_rel, In_succs_rel. intuition.
-apply t_step. unfold id. intuition.
-apply t_trans with y; apply t_step; unfold id; intuition.
-apply t_trans with x; apply t_step; unfold id; intuition.
-apply t_trans with x. intuition.
-apply t_trans with y; apply t_step; unfold id; intuition.
-(* >> *)
-apply tc_incl_trans. 2: hyp. rewrite RelUtil.union_commut. apply union_m'.
-2: refl. intros a b [xa yb]. split; rewrite add_iff; intuition.
-Qed.
-
-Lemma trans_fold_set : forall x g,
-  transitive g -> forall s, transitive (XSet.fold (trans_add_edge x) s g).
-
-Proof.
-intros x g gtrans s. pattern (XSet.fold (trans_add_edge x) s g).
-apply XSetProps.fold_rec_weak; intuition. apply transitive_trans_add_edge. hyp.
+rewrite union_incl. split. apply prod_add_incl_tc_id.
+transitivity (g U id x y). apply incl_union_l. refl. apply incl_tc. refl.
+apply tc_min. 2: hyp. rewrite union_commut. apply union_m'. 2: refl.
+intros a b [xa yb]. split; rewrite add_iff; intuition.
 Qed.
 
 Lemma succs_trans_add_edge_id : forall x y g,
@@ -261,9 +255,9 @@ Lemma succs_trans_add_edge_id : forall x y g,
 
 Proof.
 intros x y g. unfold trans_add_edge. case_eq (XSet.mem y (succs x g)). refl.
-intro z. rewrite In_succs_rel, fold_add_pred_rel_ext, fold_add_edge_rel_ext.
-unfold pred, succ. rewrite union_iff. repeat rewrite add_iff.
-repeat rewrite In_succs_rel. intuition.
+intro z. rewrite In_succs_rel, rel_map_fold_add_pred_ext,
+  rel_set_fold_add_edge_ext. unfold pred, succ. rewrite union_iff.
+repeat rewrite add_iff. repeat rewrite In_succs_rel. intuition.
 Qed.
 
 Lemma preds_trans_add_edge_id : forall x y g,
@@ -275,7 +269,7 @@ Lemma preds_trans_add_edge_id : forall x y g,
 Proof.
 intros x y g. unfold trans_add_edge. case_eq (XSet.mem y (succs x g)). refl.
 set (ysy := XSet.add y (succs y g)). intro z. rewrite In_preds_rel.
-rewrite fold_add_pred_rel_ext. rewrite fold_add_edge_rel_ext.
+rewrite rel_map_fold_add_pred_ext. rewrite rel_set_fold_add_edge_ext.
 case_eq (XSet.mem x ysy).
 (* x in ysy *)
 rewrite add_iff. rewrite In_preds_rel. unfold ysy in H0.
@@ -286,6 +280,138 @@ unfold ysy, pred, succ. rewrite add_iff, In_succs_rel, In_preds_rel.
 rewrite false_not_true in H, H0. unfold ysy in H0.
 rewrite <- mem_iff, add_iff, In_succs_rel in H0. rewrite mem_succs_rel in H.
 intuition.
+Qed.
+
+(***********************************************************************)
+(** building a transitive graph using list iteration *)
+
+Require Import ListUtil.
+
+Definition trans_add_edge' x g y := trans_add_edge x y g.
+
+Lemma transitive_list_fold_left_trans_add_edge : forall x l g,
+  transitive g -> transitive (fold_left (trans_add_edge' x) l g).
+
+Proof.
+intro x. induction l; simpl. auto. intros g tg. apply IHl.
+apply transitive_trans_add_edge. hyp.
+Qed.
+
+Section list.
+
+  Variable (A : Type) (f : A -> option (X.t * list X.t)).
+
+  Definition trans_add_edge_list g a :=
+    match f a with
+      | None => g
+      | Some (x,l) => fold_left (trans_add_edge' x) l g
+    end.
+
+  Definition add_edge_list g a :=
+    match f a with
+      | None => g
+      | Some (x,l) => fold_left (add_edge' x) l g
+    end.
+
+  Lemma add_edge_list_gle : Proper (gle ==> Logic.eq ==> gle) add_edge_list.
+
+  Proof.
+    intros g g' gg' a a' aa'. subst a'. unfold add_edge_list. destruct (f a).
+    2: hyp. destruct p as [x l].
+    eapply fold_left_m_ext with (eqA:=gle) (eqB:=Logic.eq).
+    intros h h' hh' y y' yy'. subst y'. apply add_edge_gle; auto.
+    refl. hyp.
+  Qed.
+
+  Lemma transitive_trans_add_edge_list : forall g a,
+    transitive g -> transitive (trans_add_edge_list g a).
+
+  Proof.
+    intros. unfold trans_add_edge_list. destruct (f a).
+    destruct p as [x l]. apply transitive_list_fold_left_trans_add_edge. hyp.
+    hyp.
+  Qed.
+
+  Lemma rel_trans_add_edge_list : forall g a, transitive g ->
+    trans_add_edge_list g a == add_edge_list g a!.
+
+  Proof.
+    intros g a tg. unfold trans_add_edge_list, add_edge_list. destruct (f a).
+    (* f a = None *)
+    2: symmetry; apply trans_tc; hyp.
+    (* f a = Some (x, l) *)
+    destruct p as [x l]. gen tg; gen g. induction l; simpl; intros g tg.
+    (* nil *)
+    symmetry. apply trans_tc. hyp.
+    (* cons *)
+    rename a0 into y. rewrite IHl. 2: apply transitive_trans_add_edge; hyp.
+    unfold add_edge' at 3, trans_add_edge'.
+    repeat rewrite rel_list_fold_left_add_edge.
+    rewrite rel_add_edge, rel_trans_add_edge_prod.
+    case_eq (XSet.mem y (succs x g)).
+    (* y in (succs x g) *)
+    rewrite mem_succs_id. 2: hyp. refl.
+    (* y not in (succs x g): R! == S! *)
+    apply tc_eq.
+    (* S << R *)
+    apply RelUtil.union_m'. refl. rewrite union_commut. apply RelUtil.union_m'.
+    2: refl. intros u v [xu yv]. unfold prod. rewrite xu, yv.
+    repeat rewrite add_iff. intuition.
+    (* R << S! *)
+    rewrite union_incl. split. apply incl_tc. apply incl_union_l. refl.
+    rewrite union_incl. split. rewrite prod_add_incl_tc_id.
+    apply clos_trans_m'. apply incl_union_r. refl.
+    apply incl_tc. apply incl_union_r. apply incl_union_l. refl.
+  Qed.
+
+  Lemma transitive_list_fold_left_trans_add_edge_list : forall l g,
+    transitive g -> transitive (fold_left trans_add_edge_list l g).
+
+  Proof.
+    induction l; simpl. auto. intros g tg. apply IHl.
+    apply transitive_trans_add_edge_list. hyp.
+  Qed.
+
+  Lemma rel_list_fold_left_trans_add_edge_list : forall l g, transitive g ->
+    fold_left trans_add_edge_list l g == fold_left add_edge_list l g!.
+
+  Proof.
+    induction l; simpl. intros. symmetry. apply trans_tc. hyp.
+    intros g tg. rewrite IHl. 2: apply transitive_trans_add_edge_list; hyp.
+    (* R! == S! *)
+    apply tc_eq.
+    (* S << R *)
+    eapply fold_left_m_ext with (eqA:=gle) (eqB:=Logic.eq).
+    apply add_edge_list_gle. refl.
+    unfold gle. rewrite rel_trans_add_edge_list. 2: hyp. apply incl_tc. refl.
+    (* R << S! *)
+
+  Abort.
+
+  Definition trans_clos_list l := fold_left trans_add_edge_list l empty.
+
+  Lemma transitive_trans_clos_list : forall l, transitive (trans_clos_list l).
+
+  Proof.
+  Abort.
+
+  Lemma trans_clos_list_ok : forall l,
+    trans_clos_list l == fold_left add_edge_list l empty!.
+
+  Proof.
+  Abort.
+
+End list.
+
+(***********************************************************************)
+(** building a transitive graph using set iteration *)
+
+Lemma transitive_set_fold_trans_add_edge : forall x g,
+  transitive g -> forall s, transitive (XSet.fold (trans_add_edge x) s g).
+
+Proof.
+intros x g gtrans s. pattern (XSet.fold (trans_add_edge x) s g).
+apply XSetProps.fold_rec_weak; intuition. apply transitive_trans_add_edge. hyp.
 Qed.
 
 End Make.
