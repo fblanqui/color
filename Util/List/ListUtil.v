@@ -1839,15 +1839,17 @@ Section fold_left.
 
 Variables (A : Type) (eqA : relation A) (B : Type) (eqB : relation B).
 
-Lemma eq_fold_left : forall f f',
-  (forall a a', eqA a a' -> forall b b', eqB b b' -> eqA (f a b) (f' a' b')) ->
-  forall l l', eqlistA eqB l l' -> forall a a', eqA a a' ->
-  eqA (fold_left f l a) (fold_left f' l' a').
+Definition feq f f' :=
+  forall a a', eqA a a' -> forall b b', eqB b b' -> eqA (f a b) (f' a' b').
+
+Global Instance fold_left_m_ext :
+  Proper (feq ==> eqlistA eqB ==> eqA ==> eqA) (@fold_left A B).
 
 Proof.
-intros f f' ff'. induction l; destruct l'; intros; simpl.
-hyp. inversion H. inversion H.
-inversion H. subst. apply IHl. hyp. apply ff'; hyp.
+intros f f' ff' l l' ll' a a' aa'; gen aa'; gen a'; gen a; gen ll'; gen l'.
+induction l; destruct l'; intros; simpl.
+hyp. inversion ll'. inversion ll'.
+inversion ll'. subst. apply IHl. hyp. apply ff'; hyp.
 Qed.
 
 End fold_left.
