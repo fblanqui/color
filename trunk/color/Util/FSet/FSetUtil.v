@@ -113,6 +113,13 @@ Ltac Equal_tac := Equal_intro; In_elim; try In_intro.
 Ltac Subset_tac := Subset_intro; In_elim; try In_intro.
 
 (***********************************************************************)
+(** properties of Subset *)
+
+Lemma Subset_antisym : forall s t, s [=] t <-> (s [<=] t /\ t [<=] s).
+
+Proof. intuition. Qed.
+
+(***********************************************************************)
 (** lemmas and tactics for ~In *)
 
 Lemma notin_union : forall x s s', ~In x (union s s') <-> ~In x s /\ ~In x s'.
