@@ -9,7 +9,7 @@ termination by using compatible reduction orderings
 
 Set Implicit Arguments.
 
-Require Import ATrs List SN ARelation RelUtil ACompat.
+Require Import ATrs List SN ARelation RelUtil ACompat LogicUtil.
 
 Section S.
 
@@ -137,7 +137,7 @@ Proof.
   apply union_commut.
   union. unfold er', succ. incl_red.
   trans (succ U er). apply union_commut.
-  trans (succ U er!). union. apply tc_incl.
+  trans (succ U er!). union. apply incl_tc. refl.
   apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. 
   exact H2. apply tc_trans.
   apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
