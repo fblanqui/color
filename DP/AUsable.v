@@ -653,7 +653,7 @@ rewrite H2 in H0, H1. simpl in H0, H1. clear H3.
 destruct (vars_eq_sub s _ H0) as [m H3]. generalize (NVlR _ H).
 unfold is_notvar_lhs. rewrite H3; simpl. intro. discriminate H4.
 case_eq (defined f R && negb (defined f UC)).
-apply union_tc_incl_r. apply proj_interp; auto.
+eapply clos_trans_m'. apply incl_union_r. refl. apply proj_interp; auto.
 destruct H as [l H]. destruct H as [r H]. destruct H as [c H].
 destruct H as [s H]. destruct H as [Rlr H]. destruct H as [H1 H2].
 generalize f v t Hu Ht H0 Rlr H1 H2. clear Rlr H2 H1 H0 Ht Hu t v f.
@@ -683,7 +683,7 @@ set (u2 :=  (interp_vec G (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e)
         (SN_subs (SN_red_supterm Ht)))).
 assert (Hi : i < arity f). rewrite <- e. omega.
 rewrite (fun_eq_nth_fill f u1 Hi), (fun_eq_nth_fill f u2 Hi). 
-apply (tc_incl_tc (red_union UC (proj_cons Sig))).
+apply (clos_trans_m' (red_union UC (proj_cons Sig))).
 cut ((Vsub u2 (Veq_app_cons_aux1 Hi)) = (Vsub u1 (Veq_app_cons_aux1 Hi))).
 intro. Focus 2. apply Veq_nth; intros. rewrite !Vnth_sub.
 unfold u1, u2, interp_vec. rewrite !Vbuild_nth. apply interp_rec_eq.
@@ -721,11 +721,11 @@ assert (Hr : SN (red R) (fill c (sub s r))). apply subterm_eq_sn with
  (t := Fun f (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e)); auto.
 apply subterm_strict. apply subterm_fun. apply Vin_cast_intro.
 apply Vin_app_cons.
-apply (tc_incl_tc (@red_union_inv _ UC (proj_cons Sig))).
+apply (clos_trans_m' (@red_union_inv _ UC (proj_cons Sig))).
 case_eq (defined f1 R && negb (defined f1 UC)). Focus 2.
 generalize (IHc f1 v2 (fill c (sub s r)) Hl Hr H3 Rlr H (refl_equal _)).
 rewrite (interp_proof_eq _ Hl Hls), (interp_proof_eq _ Hr Hrs); auto.
-apply union_tc_incl_r. apply proj_interp; auto.
+eapply clos_trans_m'. apply incl_union_r. refl. apply proj_interp; auto.
 exists l. exists r. exists c. exists s. auto.
 Qed.
 
@@ -816,7 +816,7 @@ apply sub_tsub_eq. apply HC; auto.
 assert (IMfg2 : forall i, (succeq @ (succeq U succ)) (g' i) (f' (S i))).
 intro. destruct (Tfg i) as [x [Hx1 Hx2]]. exists x. split.
 apply Hsucceq. apply incl_rtc_rtc with (R := (red P)); auto.
-apply inclusion_Trans with (red UC U red P). apply union_idem_r.
+apply inclusion_Trans with (red UC U red P). apply incl_union_r. refl.
 apply rtc_incl.
 destruct Hx2 as [l [r [s [Clr Hx2]]]]. rewrite (proj1 Hx2), (proj2 Hx2).
 destruct (hyp2 _ _ Clr). left. apply sc_succeq; auto.
@@ -850,7 +850,7 @@ apply lt_le_S. apply (le_lt_trans _ _ _ IHj). destruct (h_def j). auto.
 exists (h i). split; try apply hMj. destruct (h_def i) as [_ [x [Hx Hi]]].
 apply succ_succeq_compat. exists x. split. apply Hsucceq.
 apply incl_rtc_rtc with (R := red P); auto.
-apply inclusion_Trans with (red UC U red P). apply union_idem_r.
+apply inclusion_Trans with (red UC U red P). apply incl_union_r. refl.
 apply rtc_incl. destruct Hi as [l' [r' [s [Elr Hi]]]].
 destruct Elr as [Elr |]; try tauto. rewrite <- rule_eq in Elr. simpl in Elr.
 rewrite (proj1 Hi), (proj2 Hi), <- (proj1 Elr), <- (proj2 Elr).
@@ -1001,14 +1001,14 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
   Require TransClos.
   Module Import TC := TransClos.Make OT.
 
-  Definition def_symbs_rule R a :=
+  Definition def_symbs_rule R (a : rule B.Sig) :=
     match lhs a with
       | Var _ => None
-      | Fun f _ => Some (f, XSetProps.of_list (def_symbs R (rhs a)))
+      | Fun f _ => Some (f, def_symbs R (rhs a))
     end.
 
   Definition succs_symb R f :=
-    f :: XSetProps.to_list (succs f (trans_clos (def_symbs_rule R) R)).
+    f :: XSetProps.to_list (succs f (trans_clos_list (def_symbs_rule R) R)).
 
   Lemma succs_symbP : forall R f g,
     List.In g (succs_symb R f) <-> symb_ord R# f g.
@@ -1016,10 +1016,10 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
   Proof.
   intros R f g. unfold succs_symb. simpl. case_beq_symb WP.Sig f g.
   intuition.
-  cut (List.In g (XSetProps.to_list (succs f (trans_clos (def_symbs_rule R) R)))
+  (*cut (List.In g (succs f (trans_clos_list (def_symbs_rule R) R)))
     <-> symb_ord R ! f g). intuition. subst. apply rt_refl.
   apply tc_incl_rtc. hyp. apply rtc_split in H0.
-  unfold Relation_Operators.union in H0. intuition.
+  unfold Relation_Operators.union in H0. intuition.*)
   Admitted.
 
   Definition Sig := ABinary.Make WP.Sig B.some_symbol B.arity_some_symbol_eq_2.
