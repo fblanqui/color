@@ -409,7 +409,7 @@ and satisfies some commutation property *)
         set (F' := fun a (p:key*A) => f' (fst p) (snd p) a).
         transitivity (fold_left F (elements m') b').
         unfold F. repeat rewrite <- fold_1. apply fold_Equiv; auto||refl.
-        apply eq_fold_left with (eqB:=@eq_key_elt A); try refl.
+        apply fold_left_m_ext with (eqB:=@eq_key_elt A); try refl.
         intros a a' aa' [k x] [k' x'] e. inversion e. unfold F, F'. simpl in *.
         subst x'. apply ff'; auto||refl.
       Qed.
