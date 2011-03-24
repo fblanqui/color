@@ -449,7 +449,7 @@ using the function [trans_add_edge] now *)
     intro l. apply transitive_list_fold_left_trans_add_edge_list. firstorder.
   Qed.
 
-  Lemma trans_clos_list_ok : forall l,
+  Lemma rel_trans_clos_list : forall l,
     trans_clos_list l == fold_left add_edge_list l empty!.
 
   Proof.
