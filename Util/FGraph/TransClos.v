@@ -187,18 +187,6 @@ rewrite rel_map_fold_add_pred. apply RelUtil.union_m. refl.
 rewrite rel_set_fold_add_edge. refl.
 Qed.
 
-Lemma add_edge_incl_trans : forall x y g,
-  add_edge x y g << trans_add_edge x y g.
-
-Proof.
-intros x y g. rewrite rel_add_edge, rel_trans_add_edge_pred_succ.
-case_eq (XSet.mem y (succs x g)). rewrite mem_succs_id. refl. hyp.
-cbv zeta; set (ysy:=XSet.add y (succs y g)).
-rewrite <- RelUtil.union_assoc, union_incl. split.
-apply incl_union_r. refl. apply incl_union_l. apply incl_union_r.
-unfold ysy. rewrite succ_add. apply incl_union_l. refl.
-Qed.
-
 Lemma rel_trans_add_edge_prod : forall x y g,
   trans_add_edge x y g == if XSet.mem y (succs x g) then g
     else prod (XSet.add x (preds x g)) (XSet.add y (succs y g)) U g.
@@ -209,6 +197,18 @@ destruct (XSet.mem y (succs x g)). refl.
 cbv zeta. set (ysy := XSet.add y (succs y g)).
 set (xpx := XSet.add x (preds x g)). rewrite <- RelUtil.union_assoc.
 apply RelUtil.union_m. apply pred_succ_prod. refl.
+Qed.
+
+Lemma add_edge_incl_trans : forall x y g,
+  add_edge x y g << trans_add_edge x y g.
+
+Proof.
+intros x y g. rewrite rel_add_edge, rel_trans_add_edge_pred_succ.
+case_eq (XSet.mem y (succs x g)). rewrite mem_succs_id. refl. hyp.
+cbv zeta; set (ysy:=XSet.add y (succs y g)).
+rewrite <- RelUtil.union_assoc, union_incl. split.
+apply incl_union_r. refl. apply incl_union_l. apply incl_union_r.
+unfold ysy. rewrite succ_add. apply incl_union_l. refl.
 Qed.
 
 Lemma transitive_trans_add_edge : forall x y g,
@@ -297,15 +297,18 @@ intro x. induction l; simpl. auto. intros g tg. apply IHl.
 apply transitive_trans_add_edge. hyp.
 Qed.
 
+(***********************************************************************)
+(** In the following, we assume given a type [A] (e.g. rule) and a
+function [f] on [A] returning either [None] or some pair [x,l] where
+[x] is an element of X.t (e.g. a symbol) and l is a list of elements
+of X.t. *)
+
 Section list.
 
   Variable (A : Type) (f : A -> option (X.t * list X.t)).
 
-  Definition trans_add_edge_list g a :=
-    match f a with
-      | None => g
-      | Some (x,l) => fold_left (trans_add_edge' x) l g
-    end.
+(***********************************************************************)
+(** graph obtained by extending [g] with the arcs provided by [f a] *)
 
   Definition add_edge_list g a :=
     match f a with
@@ -313,15 +316,58 @@ Section list.
       | Some (x,l) => fold_left (add_edge' x) l g
     end.
 
-  Lemma add_edge_list_gle : Proper (gle ==> Logic.eq ==> gle) add_edge_list.
+  Lemma rel_add_edge_list : forall g a, add_edge_list g a ==
+    match f a with
+      | None => g
+      | Some (x,l) => succ_list x l U g
+    end.
 
   Proof.
-    intros g g' gg' a a' aa'. subst a'. unfold add_edge_list. destruct (f a).
-    2: hyp. destruct p as [x l].
-    eapply fold_left_m_ext with (eqA:=gle) (eqB:=Logic.eq).
-    intros h h' hh' y y' yy'. subst y'. apply add_edge_gle; auto.
-    refl. hyp.
+    intros g a. unfold add_edge_list. destruct (f a) as [[x l]|].
+    apply rel_list_fold_left_add_edge. refl.
   Qed.
+
+  Global Instance add_edge_list_gle :
+    Proper (gle ==> Logic.eq ==> gle) add_edge_list.
+
+  Proof.
+    intros g g' gg' a a' aa'. subst a'. unfold gle.
+    do 2 rewrite rel_add_edge_list. destruct (f a) as [[x l]|].
+    rewrite gg'. refl. hyp.
+  Qed.
+
+  Global Instance add_edge_list_geq :
+    Proper (geq ==> Logic.eq ==> geq) add_edge_list.
+
+  Proof.
+    intros g g' gg' a a' aa'. subst a'. rewrite gle_antisym in gg'.
+    destruct gg' as [gg' g'g]. split.
+    rewrite gg'. refl. rewrite g'g. refl.
+  Qed.
+
+(***********************************************************************)
+(** iteration of [add_edge_list] on a list of elements of [A] *)
+
+  Lemma rel_list_fold_left_add_edge_list : forall l g,
+    fold_left add_edge_list l g == fold_left add_edge_list l empty U g.
+
+  Proof.
+    induction l; simpl; intro g. rewrite rel_empty, union_empty_l. refl.
+    rewrite IHl. rewrite (IHl (add_edge_list empty a)).
+    do 2 rewrite rel_add_edge_list.
+    destruct (f a) as [[x m]|]; rewrite rel_empty, union_empty_r.
+    rewrite RelUtil.union_assoc. refl. refl.
+  Qed.
+
+(***********************************************************************)
+(** graph obtained by extending [g] with the arcs provided by [f a]
+using the function [trans_add_edge] now *)
+
+  Definition trans_add_edge_list g a :=
+    match f a with
+      | None => g
+      | Some (x,l) => fold_left (trans_add_edge' x) l g
+    end.
 
   Lemma transitive_trans_add_edge_list : forall g a,
     transitive g -> transitive (trans_add_edge_list g a).
@@ -372,34 +418,44 @@ Section list.
     apply transitive_trans_add_edge_list. hyp.
   Qed.
 
+(***********************************************************************)
+(** iteration of [trans_add_edge_list] on a list of elements of [A] *)
+
   Lemma rel_list_fold_left_trans_add_edge_list : forall l g, transitive g ->
     fold_left trans_add_edge_list l g == fold_left add_edge_list l g!.
 
   Proof.
     induction l; simpl. intros. symmetry. apply trans_tc. hyp.
     intros g tg. rewrite IHl. 2: apply transitive_trans_add_edge_list; hyp.
-    (* R! == S! *)
-    apply tc_eq.
+    rewrite rel_list_fold_left_add_edge_list.
+    rewrite rel_list_fold_left_add_edge_list with (g:=add_edge_list g a).
+    set (g0 := fold_left add_edge_list l empty).
+    rewrite rel_trans_add_edge_list. 2: hyp. apply tc_eq.
     (* S << R *)
-    eapply fold_left_m_ext with (eqA:=gle) (eqB:=Logic.eq).
-    apply add_edge_list_gle. refl.
-    unfold gle. rewrite rel_trans_add_edge_list. 2: hyp. apply incl_tc. refl.
+    apply RelUtil.union_m'. refl. apply incl_tc. refl.
     (* R << S! *)
+    rewrite union_incl. split. apply incl_tc. apply incl_union_l. refl.
+    apply clos_trans_m'. apply incl_union_r. refl.
+  Qed.
 
-  Abort.
+(***********************************************************************)
+(** transitive closure of a graph defined by a list of elements of [A] *)
 
   Definition trans_clos_list l := fold_left trans_add_edge_list l empty.
 
   Lemma transitive_trans_clos_list : forall l, transitive (trans_clos_list l).
 
   Proof.
-  Abort.
+    intro l. apply transitive_list_fold_left_trans_add_edge_list. firstorder.
+  Qed.
 
   Lemma trans_clos_list_ok : forall l,
     trans_clos_list l == fold_left add_edge_list l empty!.
 
   Proof.
-  Abort.
+    intro l. unfold trans_clos_list.
+    rewrite rel_list_fold_left_trans_add_edge_list. refl. firstorder.
+  Qed.
 
 End list.
 
