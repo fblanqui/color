@@ -985,7 +985,7 @@ End UsableRules.
 (***********************************************************************)
 (** functor for Rainbow *)
 
-Require Import ARedPair WF_NotIS.
+Require Import ARedPair WF_NotIS SetoidList.
 
 Module Type Binary.
   Variable Sig : Signature.
@@ -1007,20 +1007,61 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
       | Fun f _ => Some (f, def_symbs R (rhs a))
     end.
 
-  Definition succs_symb R f :=
-    f :: XSetProps.to_list (succs f (trans_clos_list (def_symbs_rule R) R)).
-
-  Lemma succs_symbP : forall R f g,
-    List.In g (succs_symb R f) <-> symb_ord R# f g.
+  Lemma def_symbs_rule_ok : forall R,
+    fold_left (add_edge_list (def_symbs_rule R)) R empty == symb_ord R.
 
   Proof.
-  intros R f g. unfold succs_symb. simpl. case_beq_symb WP.Sig f g.
-  intuition.
+    intro R. rewrite rel_eq. intros f g. rewrite rel_list_fold_left.
+    (* forall G a, F G a == F empty a U G *)
+    Focus 2. intros G a. do 2 rewrite rel_add_edge_list.
+    destruct (def_symbs_rule R a). destruct p as [h l].
+    rewrite rel_empty, union_empty_r. refl.
+    rewrite rel_empty, union_empty_l. refl. Focus 1.
+    (* end In_list_fold_left conditions *)
+    unfold symb_ord. intuition.
+    (* 1 *)
+    apply rel_empty in H0. contradiction.
+    (* 2 *)
+    destruct H0 as [a [a1 a2]]. apply rel_add_edge_list in a2. gen a2.
+    case_eq (def_symbs_rule R a).
+    2: apply rel_empty in a2; contradiction.
+    destruct p as [x m]. destruct a2.
+    2: apply rel_empty in H0; contradiction.
+    unfold succ_list in H0. rewrite <- In_InA_eq in H0. destruct H0. subst x.
+    gen H. unfold def_symbs_rule, root_eq. exists a. destruct (lhs a).
+    discr. inversion H. subst m. intuition. rewrite beq_symb_ok. refl.
+    (* 3 *)
+    destruct H as [a]. case_eq (def_symbs_rule R a).
+    right. exists a. intuition. apply rel_add_edge_list. rewrite H0.
+    destruct p as [x l].
+
+  Abort.
+
+  Definition succs_symb' R f :=
+    XSet.elements (succs f (trans_clos_list (def_symbs_rule R) R)).
+
+  Lemma succs_symbP' : forall R f g,
+    List.In g (succs_symb' R f) <-> symb_ord R! f g.
+
+  Proof.
+  intros R f g. unfold succs_symb'. rewrite In_InA_eq. rewrite <- elements_iff.
+  rewrite In_succs_rel. ded (trans_clos_list_ok (def_symbs_rule R) R).
+  rewrite rel_eq in H. rewrite H. 
   (*cut (List.In g (succs f (trans_clos_list (def_symbs_rule R) R)))
     <-> symb_ord R ! f g). intuition. subst. apply rt_refl.
   apply tc_incl_rtc. hyp. apply rtc_split in H0.
   unfold Relation_Operators.union in H0. intuition.*)
   Admitted.
+
+  Definition succs_symb R f := f :: succs_symb' R f.
+
+  Lemma succs_symbP : forall R f g,
+    List.In g (succs_symb R f) <-> symb_ord R# f g.
+
+  Proof.
+    intros R f g. unfold succs_symb. simpl. rewrite succs_symbP'.
+    ded (rtc_split_eq (symb_ord R)). rewrite rel_eq in H. firstorder.
+  Qed.
 
   Definition Sig := ABinary.Make WP.Sig B.some_symbol B.arity_some_symbol_eq_2.
 
