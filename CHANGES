@@ -1,6 +1,7 @@
 
-11-01-21: [Blanqui]
-- Util/Relation/TransClos: transitive closure computation
+11-03-24: [Blanqui]
+- Util/FGraph/FGraph: library on finite graphs
+- Util/FGraph/TransClos: transitive closure of a finite graph
 
 10-11-30: [Ould-Biha]
 - SubtermCrit: subterm criterion
