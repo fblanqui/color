@@ -80,11 +80,12 @@ exists x; split; auto.
 Qed.
 
 Fixpoint symb_ord_img_rec R Rc f : list Sig := 
-  match Rc with nil => nil
-    | a :: R' =>
+  match Rc with
+    | nil => nil
+    | a :: Rc' =>
       if root_eq f (lhs a) && Inb (@eq_rule_dec Sig) a R then
-        def_symbs R (rhs a) ++ symb_ord_img_rec R R' f
-        else symb_ord_img_rec R R' f
+        def_symbs R (rhs a) ++ symb_ord_img_rec R Rc' f
+        else symb_ord_img_rec R Rc' f
   end.
 
 Lemma symb_ord_img_rec_cons1 : forall Rc a R f,
