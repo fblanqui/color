@@ -2,7 +2,7 @@
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
-- Frederic Blanqui, 2011-03-21
+- Frederic Blanqui, 2011-01-18
 
 finite graphs
 *)
@@ -226,6 +226,12 @@ Proof. firstorder. Qed.
 Instance gle_Trans : Transitive gle.
 
 Proof. firstorder. Qed.
+
+Lemma empty_gle : forall g, rel empty << g.
+
+Proof.
+intro g. rewrite rel_empty. firstorder.
+Qed.
 
 (***********************************************************************)
 (** equality on graphs: two graphs are equivalent if they define the
@@ -706,5 +712,27 @@ rewrite IHl, succ_list_cons. unfold add_edge'. rewrite rel_add_edge.
 rewrite union_commut with (R:=rel g). rewrite <- RelUtil.union_assoc.
 rewrite union_commut with (R:=id x a). refl.
 Qed.
+
+(***********************************************************************)
+(** building graphs by list iteration *)
+
+Section list_fold_left.
+
+  Variables (A : Type) (F : graph -> A -> graph)
+    (hF : forall g a, F g a == F empty a U g).
+
+  Lemma rel_list_fold_left : forall l g x y, rel (fold_left F l g) x y
+        <-> (rel g x y \/ exists a, List.In a l /\ rel (F empty a) x y).
+
+  Proof.
+    induction l; simpl. firstorder. intros g x y. rewrite IHl. intuition.
+    apply hF in H0. destruct H0. right. exists a. intuition. intuition.
+    destruct H0 as [b [b1 b2]]. right. exists b. intuition.
+    left. apply hF. right. hyp.
+    destruct H0 as [b [b1 b2]]. destruct b1.
+    subst b. left. apply hF. left. hyp. right. exists b. intuition.
+  Qed.
+
+End list_fold_left.
 
 End Make.
