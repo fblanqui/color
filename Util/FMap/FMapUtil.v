@@ -20,24 +20,34 @@ Module Make (X : OrderedType).
   Module Export XMapOrdProps := OrdProperties XMap.
 
 (***********************************************************************)
-(** properties of Equiv *)
+(** in the following, we assume given a type A equipped with a
+relation eq *)
 
-  Instance Equiv_m' A :
-    Proper (@inclusion A ==> @inclusion (XMap.t A)) (@Equiv A).
-
-  Proof. firstorder. Qed.
-
-  Instance Equiv_m A :
-    Proper (@same_relation A ==> @same_relation (XMap.t A)) (@Equiv A).
-
-  Proof. firstorder. Qed.
-
-(***********************************************************************)
-(** in the following, we assume given a type A equipped with a relation eq *)
-
-  Section morphisms.
+  Section S.
 
     Variables (A : Type) (eq : A->A->Prop).
+
+(***********************************************************************)
+(* properties of remove *)
+
+    Lemma remove_empty : forall x, Equal (remove x (@empty A)) (@empty A).
+
+    Proof.
+      intros x k. rewrite remove_o, empty_o. destruct (eq_dec x k); refl.
+    Qed.
+
+(***********************************************************************)
+(** properties of Equiv *)
+
+    Global Instance Equiv_m' :
+      Proper (@inclusion A ==> @inclusion (XMap.t A)) (@Equiv A).
+
+    Proof. firstorder. Qed.
+
+    Global Instance Equiv_m A :
+      Proper (@same_relation A ==> @same_relation (XMap.t A)) (@Equiv A).
+
+    Proof. firstorder. Qed.
 
     Lemma Equal_Equiv : Reflexive eq -> Equal << Equiv eq.
 
@@ -45,18 +55,6 @@ Module Make (X : OrderedType).
       intros heq m m'. rewrite Equal_Equiv. apply Equiv_m'.
       intros x y xy. subst. refl.
     Qed.
-
-(***********************************************************************)
-(* properties of remove *)
-
-  Lemma remove_empty : forall x, Equal (remove x (@empty A)) (@empty A).
-
-  Proof.
-    intros x k. rewrite remove_o, empty_o. destruct (eq_dec x k); refl.
-  Qed.
-
-(***********************************************************************)
-(** Equiv preserves reflexivity, symmetry and transitivity *)
 
     Global Instance Equiv_Refl : Reflexive eq -> Reflexive (Equiv eq).
 
@@ -491,7 +489,7 @@ and satisfies some commutation property *)
 
     End for_all.
 
-  End morphisms.
+  End S.
 
   Implicit Arguments Equiv_find_Some [A eq0 m m' k x].
   Implicit Arguments Equiv_find_Some' [A eq0 m m' k x].
