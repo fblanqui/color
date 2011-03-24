@@ -112,6 +112,12 @@ Proof.
 intros. simpl. tauto.
 Qed.
 
+Lemma In_InA_eq : forall (x : A) l, In x l <-> InA eq x l.
+
+Proof.
+induction l; simpl. symmetry. apply InA_nil. rewrite IHl, InA_cons. intuition.
+Qed.
+
 End In.
 
 Implicit Arguments in_elim [A x l].
