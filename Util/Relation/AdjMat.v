@@ -261,9 +261,9 @@ rewrite Gmorph_iter_le_fast in H; rewrite iter_le_fast_exp2_same in H.
 rewrite iter_le_spec in H; destruct H as [p]; destruct H.
 ded (iter_tc _ _ _ _ H0); trivial.
 ded (eq_dec_midex eq_nat_dec).
-ded (clos_trans_bound_path H0 (@GoM_restricted M)).
+ded (clos_trans_bpath H0 (@GoM_restricted M)).
 rewrite nfirst_length in H1; unfold inclusion in H1.
-ded (H1 _ _ H); ded (bound_path_iter_le H2).
+ded (H1 _ _ H); ded (bpath_iter_le H2).
 rewrite Gmorph_iter_le_fast; rewrite iter_le_fast_spec.
 rewrite iter_le_spec in H3.
 destruct H3 as [p]; exists p. intuition.

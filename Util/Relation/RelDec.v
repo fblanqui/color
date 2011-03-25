@@ -61,8 +61,8 @@ assert (exists z : A, In z l /\ R' x z /\ R'' z y). exists x0. tauto.
 contradiction.
 Qed.
 
-Lemma bound_path_dec : forall l n,
-  is_restricted R l -> rel_dec R -> rel_dec (bound_path R n).
+Lemma bpath_dec : forall l n,
+  is_restricted R l -> rel_dec R -> rel_dec (bpath R n).
 
 Proof.
 unfold rel_dec. induction n; intros. destruct (X x y). constructor. 
@@ -70,19 +70,19 @@ apply bp_intro with (nil : list A). trivial. simpl. assumption. constructor 2.
 intro. 
 inversion H0. destruct l0. simpl in H2. contradiction. simpl in H1. 
 exact (le_Sn_O (length l0) H1). destruct (IHn H X x y). constructor. 
-apply bound_path_n_Sn. assumption. 
-assert ({z : A | In z l /\ R x z /\ bound_path R n z y}
-+{~exists z : A, In z l /\ R x z /\ bound_path R n z y}).
+apply bpath_n_Sn. assumption. 
+assert ({z : A | In z l /\ R x z /\ bpath R n z y}
++{~exists z : A, In z l /\ R x z /\ bpath R n z y}).
 apply dec_lem; tauto. destruct X0. constructor. destruct s. 
-apply R_bound_path_n_Sn with x0; tauto. 
-constructor 2. intro. pose (bound_path_Sn_n_or_Rn H0). destruct o.
+apply R_bpath_n_Sn with x0; tauto. 
+constructor 2. intro. pose (bpath_Sn_n_or_Rn H0). destruct o.
 contradiction.
-destruct H1. assert (exists z : A, In z l /\ R x z /\ bound_path R n z y). 
+destruct H1. assert (exists z : A, In z l /\ R x z /\ bpath R n z y). 
 exists x0. split. pose (H x x0). tauto. assumption. contradiction.   
 Qed.
 
-Lemma bound_path_midex : forall l n,
-  is_restricted R l -> rel_midex R -> rel_midex (bound_path R n).
+Lemma bpath_midex : forall l n,
+  is_restricted R l -> rel_midex R -> rel_midex (bpath R n).
 
 Proof.
 unfold rel_midex. induction n; intros. destruct (H0 x y). constructor. 
@@ -90,13 +90,13 @@ apply bp_intro with (nil : list A). trivial. simpl. assumption. constructor 2.
 intro. 
 inversion H2. destruct l0. simpl in H4. contradiction. simpl in H3. 
 exact (le_Sn_O (length l0) H3). destruct (IHn H H0 x y). constructor. 
-apply bound_path_n_Sn. assumption. 
-assert ((exists z : A,  In z l /\ R x z /\  bound_path R n z y) \/
-(~exists z : A,  In z l /\ R x z /\  bound_path R n z y)).
+apply bpath_n_Sn. assumption. 
+assert ((exists z : A,  In z l /\ R x z /\  bpath R n z y) \/
+(~exists z : A,  In z l /\ R x z /\  bpath R n z y)).
 apply midex_lem; tauto. destruct H2. destruct H2. constructor. 
-apply R_bound_path_n_Sn with x0; tauto. 
-constructor 2. intro. destruct (bound_path_Sn_n_or_Rn H3). contradiction.
-destruct H4. assert (exists z : A, In z l /\ R x z /\ bound_path R n z y). 
+apply R_bpath_n_Sn with x0; tauto. 
+constructor 2. intro. destruct (bpath_Sn_n_or_Rn H3). contradiction.
+destruct H4. assert (exists z : A, In z l /\ R x z /\ bpath R n z y). 
 exists x0. split. pose (H x x0). tauto. assumption. contradiction.   
 Qed.
  
@@ -104,9 +104,9 @@ Lemma restricted_dec_clos_trans_dec : eq_dec A -> rel_dec R ->
   forall l, is_restricted R l  -> rel_dec (clos_trans R).
 
 Proof.
-do 6 intro. destruct (bound_path_dec (length l) H X0 x y) . 
-constructor. apply (bound_path_clos_trans b). 
-constructor 2. intro. pose (clos_trans_bound_path (eq_dec_midex X) H H0). 
+do 6 intro. destruct (bpath_dec (length l) H X0 x y) . 
+constructor. apply (bpath_clos_trans b). 
+constructor 2. intro. pose (clos_trans_bpath (eq_dec_midex X) H H0). 
 contradiction. 
 Qed. 
 
@@ -114,9 +114,9 @@ Lemma restricted_midex_clos_trans_midex : eq_midex A -> rel_midex R ->
   forall l, is_restricted R l  -> rel_midex (clos_trans R).
 
 Proof.
-do 6 intro. destruct (bound_path_midex (length l) H1 H0 x y) . 
-constructor. apply (bound_path_clos_trans H2). 
-constructor 2. intro. pose (clos_trans_bound_path H H1 H3). 
+do 6 intro. destruct (bpath_midex (length l) H1 H0 x y) . 
+constructor. apply (bpath_clos_trans H2). 
+constructor 2. intro. pose (clos_trans_bpath H H1 H3). 
 contradiction. 
 Qed. 
 

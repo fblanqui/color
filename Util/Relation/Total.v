@@ -124,8 +124,8 @@ unfold trichotomy, restriction. intros. tauto.
 Qed.
 
 Lemma  path_try_add_arc_path : forall t x y l z, 
-  ~(x=z \/ In x l) \/ ~(y=t \/ In y l) -> is_path (try_add_arc x y) z t l ->
-  is_path R z t l. 
+  ~(x=z \/ In x l) \/ ~(y=t \/ In y l) -> path (try_add_arc x y) z t l ->
+  path R z t l. 
 
 Proof.
 induction l; simpl; intros. inversion H0; tauto. 
@@ -141,8 +141,8 @@ unfold transitive. intros.
 apply H with t; apply try_add_arc_sym with x y; hyp. 
 Qed.
 
-Lemma trans_bound_path_try_add_arc : eq_midex A -> forall x y z n,
-  transitive R -> bound_path (try_add_arc x y ) n z z -> R z z.
+Lemma trans_bpath_try_add_arc : eq_midex A -> forall x y z n,
+  transitive R -> bpath (try_add_arc x y ) n z z -> R z z.
 
 Proof.
 intros. induction n. inversion H1. destruct l. simpl in H2. 
@@ -183,7 +183,7 @@ Lemma try_add_arc_irrefl : eq_midex A -> forall x y,
  
 Proof.
 do 7 intro. apply H1 with x0. destruct (clos_trans_path H2).
-apply trans_bound_path_try_add_arc with x y (length x1); try hyp.
+apply trans_bpath_try_add_arc with x y (length x1); try hyp.
 apply bp_intro with x1; trivial. 
 Qed.
 

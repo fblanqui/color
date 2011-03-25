@@ -256,7 +256,7 @@ Qed.
 (** relation with paths *)
 
 Lemma iter_path : forall n x y,
-  iter n x y -> exists l, length l = n /\ is_path R x y l.
+  iter n x y -> exists l, length l = n /\ path R x y l.
 
 Proof.
 induction n; simpl; intros. exists (@nil A). intuition.
@@ -264,18 +264,18 @@ do 2 destruct H. ded (IHn _ _ H0). do 2 destruct H1. subst n.
 exists (x0 :: x1). simpl. intuition.
 Qed.
 
-Lemma path_iter : forall l x y, is_path R x y l -> iter (length l) x y.
+Lemma path_iter : forall l x y, path R x y l -> iter (length l) x y.
 
 Proof.
 induction l; simpl; intros. exact H. exists a. intuition.
 Qed.
 
-Lemma bound_path_iter_le : forall n x y, bound_path R n x y -> iter_le n x y.
+Lemma bpath_iter_le : forall n x y, bpath R n x y -> iter_le n x y.
 
 Proof.
 intro; induction n; intros; simpl in *.
 inversion H; subst; destruct l; simpl in *; auto with *; inversion H0.
-generalize (bound_path_Sn_n_or_Rn H); intros; destruct H0.
+generalize (bpath_Sn_n_or_Rn H); intros; destruct H0.
 simpl in *; right; apply IHn; auto with *.
 destruct H0 as [z]; destruct H0; ded (IHn _ _ H1).
 simpl; rewrite iter_le_spec in *; destruct H2 as [p]; destruct H2.
@@ -285,7 +285,7 @@ simpl; unfold compose; exists z; intuition.
 left; subst; unfold compose; exists z; intuition.
 Qed.
 
-Lemma iter_le_bound_path : forall n x y, iter_le n x y -> bound_path R n x y .
+Lemma iter_le_bpath : forall n x y, iter_le n x y -> bpath R n x y .
 
 Proof.
 intros.
