@@ -174,4 +174,6 @@ Implicit Arguments beq_list_ok [A beq].
 Implicit Arguments beq_list_ok_in [A beq l].
 Implicit Arguments incl_ok [A beq].
 
-Ltac incl beq_ok := rewrite <- (incl_ok beq_ok); check_eq.
+Ltac incl beq_ok :=
+  rewrite <- (incl_ok beq_ok); check_eq
+    || fail 10 "list inclusion not satisfied".
