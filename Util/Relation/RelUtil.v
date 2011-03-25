@@ -112,6 +112,9 @@ Section basic_def2.
 
   Definition non_terminating := exists f, IS f.
 
+  (* predicate saying that [f] and [g] describe an infinite sequence
+  of R-steps modulo E: for all i, f(i) E g(i) R f(i+1) *)
+
   Definition ISMod (f g : nat -> A) :=
     forall i, E (f i) (g i) /\ R (g i) (f (S i)).
 
