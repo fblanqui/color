@@ -9,12 +9,7 @@ Duplicate/mark symbols to distinguish internal reductions from head reductions
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import ListUtil.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import RelUtil.
-Require Import SN.
+Require Import ATrs ListUtil VecUtil LogicUtil RelUtil SN.
 
 Section S.
 
@@ -268,8 +263,7 @@ End WF.
 (***********************************************************************)
 (** basic functions on marked rules *)
 
-Notation term' := (term Sig').
-Notation rule' := (ATrs.rule Sig').
+Notation term' := (term Sig'). Notation rule' := (ATrs.rule Sig').
 
 Definition is_int_symb (t : term') :=
   match t with
@@ -288,6 +282,31 @@ Definition is_hd_symb (t : term') :=
 
 Definition is_hd_symb_lhs (a : rule') := is_hd_symb (lhs a).
 Definition is_hd_symb_rhs (a : rule') := is_hd_symb (rhs a).
+
+(***********************************************************************)
+(** change marking of the top of a term *)
+
+Definition mark (t : term') : term' :=
+  match t with
+    | Fun (int_symb f) ts => Fun' (hd_symb f) ts
+    | t => t
+  end.
+
+Definition mark_rule (a : rule') : rule' :=
+  let (l,r) := a in mkRule (mark l) (mark r).
+
+Definition mark_rules := map mark_rule.
+
+Definition unmark (t : term') : term' :=
+  match t with
+    | Fun (hd_symb f) ts => Fun' (int_symb f) ts
+    | t => t
+  end.
+
+Definition unmark_rule (a : rule') : rule' :=
+  let (l,r) := a in mkRule (unmark l) (unmark r).
+
+Definition unmark_rules := map unmark_rule.
 
 (***********************************************************************)
 (** relation between (red R) and (int_red R) when R is_lhs_int_symb_headed *)
