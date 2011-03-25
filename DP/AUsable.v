@@ -897,7 +897,6 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
   (W : WSIG with Definition Sig := WP.Sig).
 
   Module OT := OrdType W.
-
   Module Import TC := TransClos.Make OT.
 
   Definition def_symbs_rule R (a : rule B.Sig) :=
