@@ -14,9 +14,11 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 Set Implicit Arguments.
 
 Require Import ATrs ASimpleProj RelUtil List ARelation LogicUtil NatUtil
-  VecUtil AInfSeq ASN SN Classical BoolUtil ListUtil ASubterm ADP.
+  VecUtil InfSeq ASN SN Classical BoolUtil ListUtil ASubterm ADP.
 
-(*WARNING: we use the following axiom *)
+(***********************************************************************)
+(** WARNING: we use the following axiom *)
+
 Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M -> 
   ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
 
