@@ -11,20 +11,8 @@ We represent the quotient of the Domain by SCC with a function to nat.
 Set Implicit Arguments.
 
 Require Export SCC_dec.
-Require Import List.
-Require Import AdjMat.
-Require Import RelUtil.
-Require Import ListExtras.
-Require Import LogicUtil.
-Require Import VecUtil.
-Require Import NatUtil.
-Require Import RelSub.
-Require Import Path.
-Require Import SortUtil.
-Require Import Permutation.
-Require Import Multiset.
-Require Import ListRepeatFree.
-Require Import ExcUtil.
+Require Import List AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil RelSub
+  Path SortUtil Permutation Multiset ListRepeatFree ExcUtil.
 
 Section SCC_quotient.
 
@@ -194,7 +182,7 @@ unfold Rquo'; intros; destruct (eq_nat_dec x y); destruct (Rquo_dec x y);
 auto; right; tauto.
 Defined.
 
-Lemma Rquo'_path : forall l x y, is_path Rquo' x y l -> 
+Lemma Rquo'_path : forall l x y, path Rquo' x y l -> 
   exists r, SCC'_tag r = Some x /\ exists s, SCC'_tag s = Some y /\ R! r s.
 
 Proof.
@@ -264,9 +252,7 @@ Qed.
 (***********************************************************************)
 (* SCCs sorting *)
 
-Require Import Heap.
-Require Import BoundNat.
-Require Import PermutSetoid.
+Require Import Heap BoundNat PermutSetoid.
 
 Notation bnat := (bnat dim).
 

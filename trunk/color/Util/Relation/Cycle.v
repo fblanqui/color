@@ -9,23 +9,18 @@ cycles
 
 Set Implicit Arguments.
 
-Require Import Path.
-Require Import ListRepeatFree.
-Require Import Relations.
-Require Import ListUtil.
-Require Import LogicUtil.
+Require Import Path ListRepeatFree Relations ListUtil LogicUtil.
 
 Section S.
 
-Variables (A : Type) (R : relation A).
-Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
+Variables (A : Type) (R : relation A) (eq_dec : forall x y : A, {x=y}+{~x=y}).
 
 (***********************************************************************)
 (** cycles *)
 
-Definition cycle x := is_path R x x.
+Definition cycle x := path R x x.
 
-Lemma path_cycle : forall x y l, is_path R x y l -> In x l ->
+Lemma path_cycle : forall x y l, path R x y l -> In x l ->
   exists m, exists p, l = m ++ x :: p /\ cycle x m.
 
 Proof.
