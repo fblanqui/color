@@ -14,7 +14,7 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 Set Implicit Arguments.
 
 Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation ClassicalEpsilon
-  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls ADP ADepRel AInfSeq.
+  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls ADP ADepRel InfSeq.
 
 (***********************************************************************)
 (** weak reduction pair *)
@@ -769,6 +769,9 @@ End UsableRulesProp.
 
 (***********************************************************************)
 (** termination proof with boolean conditions *)
+
+(***********************************************************************)
+(** WARNING: we use the following axiom *)
 
 Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M -> 
   ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
