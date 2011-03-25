@@ -884,7 +884,8 @@ End UsableRules.
 (***********************************************************************)
 (** functor for Rainbow *)
 
-Require Import ARedPair WF_NotIS SetoidList.
+Require Import ARedPair WF_NotIS ListDec.
+Require TransClos.
 
 Module Type Binary.
   Variable Sig : Signature.
@@ -897,7 +898,6 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
 
   Module OT := OrdType W.
 
-  Require TransClos.
   Module Import TC := TransClos.Make OT.
 
   Definition def_symbs_rule R (a : rule B.Sig) :=
@@ -1002,6 +1002,7 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
   Ltac prove_termin := apply usable_rules_criterion;
     match goal with
       | |- WF _ => idtac
+      | |- _ [= _ => incl (@beq_rule_ok WP.Sig)
       | |- _ = _ => check_eq || fail 10 "condition not satisfied"
     end.
 
