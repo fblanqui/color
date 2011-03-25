@@ -9,16 +9,8 @@ relation. *)
 
 Set Implicit Arguments.
 
-Require Import RelUtil ATrs NatUtil List Path ClassicalEpsilon NatLeast
+Require Import RelUtil NatUtil List Path ClassicalEpsilon NatLeast
   LogicUtil ClassicUtil.
-
-Section S.
-
-(*FIXME: extend to relations on any A:Type instead of terms only*)
-
-Variable Sig : Signature.
-
-Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** Some useful definitions and proofs *)
@@ -48,13 +40,20 @@ Section Prelude.
 End Prelude.
 
 (***********************************************************************)
+(** in the following, we assume given a type A *)
+
+Section S.
+
+Variable A : Type.
+
+(***********************************************************************)
 (** Proof that the existence of an infinite sequence for transitive
 closure imply the existence of an infinite sequence for the original
 relation. *)
 
 Section TransIS.
 
-Variables (E : relation term) (h : nat -> term) (HEh : IS (E!) h).
+Variables (E : relation A) (h : nat -> A) (HEh : IS (E!) h).
 
 Lemma IStrc : exists h', IS E h' /\ h' 0 = h 0.
 
@@ -189,7 +188,7 @@ End TransIS.
 
 Section ISModComp.
 
-Variables (E R : relation term) (f g : nat -> term)
+Variables (E R : relation A) (f g : nat -> A)
   (hyp1 : ISMod E (E @ R) f g) (TE : transitive E).
 
 Lemma ISMod_comp : exists g', ISMod E R f g'.
@@ -206,7 +205,7 @@ End ISModComp.
 
 Section ISCompSplit.
 
-Variables (E R : relation term) (f : nat -> term).
+Variables (E R : relation A) (f : nat -> A).
 
 Lemma ISComp_split : IS (E @ R) f ->  exists g, ISMod E R f g.
 
@@ -225,7 +224,7 @@ End ISCompSplit.
 
 Section ISModUnion.
 
-Variables (E R : relation term) (f g : nat -> term)
+Variables (E R : relation A) (f g : nat -> A)
   (hyp1 : ISMod E (E U R) f g)
   (hyp2 : forall i, exists j, i <= j /\ (R (g j) (f (S j))))
   (TE : transitive E).
@@ -287,7 +286,7 @@ modulo. *)
 
 Section ISModCommute.
 
-Variables (E R : relation term) (f g : nat -> term)
+Variables (E R : relation A) (f g : nat -> A)
   (hyp1 : ISMod E R f g) (hyp2 : R @ E @ R << E @ R).
 
 Lemma existEdom_proof :
@@ -298,8 +297,8 @@ intros. destruct (hyp1 (S i)). apply hyp2. exists (g (S i)).
 split; auto. exists (f (S i)). split; auto.
 Qed.
 
-Fixpoint ISOfISMod_rec n : { x : term * nat | R (fst x) (f (S (snd x))) } :=
-  let P := fun x : term * nat => R (fst x) (f (S (snd x))) in
+Fixpoint ISOfISMod_rec n : { x : A * nat | R (fst x) (f (S (snd x))) } :=
+  let P := fun x : A * nat => R (fst x) (f (S (snd x))) in
     match n with
       | S n' => let (t, Pt) := ISOfISMod_rec n' in
         let H := existEdom_proof Pt in 
@@ -341,11 +340,11 @@ End ISModCommute.
 
 Section ISModTrans.
 
-Variables (E R : relation term) (f g : nat -> term)
-  (hyp1 : ISMod (E #) R f g) (NISR : forall h, ~ IS R h)
+Variables (E R : relation A) (f g : nat -> A)
+  (hyp1 : ISMod (E #) R f g) (NISR : forall h, ~IS R h)
   (TrsR : transitive R).
 
-Lemma build_trs_proof : forall i, exists j, i <= j /\ (E !) (f j) (g j).
+Lemma build_trs_proof : forall i, exists j, i <= j /\ E! (f j) (g j).
 
 Proof.
 intro i. apply not_all_not_ex. intro HTF. induction i.
@@ -366,7 +365,7 @@ generalize (proj2 (hyp1 (S i + j))). rewrite <- plus_Snm_nSm. simpl. auto.
 generalize H. apply NISR.
 Qed.
 
-Lemma trc_ISMod : exists f', exists g', ISMod (E !) R f' g' /\
+Lemma trc_ISMod : exists f', exists g', ISMod (E!) R f' g' /\
   (exists k, g' 0 = g k) /\ (f' 0 = f 0 \/ R (f 0) (f' 0)).
 
 Proof.
@@ -416,21 +415,5 @@ rewrite (eq_fg0); try omega. apply HRfg0; omega.
 Qed.
 
 End ISModTrans.
-
-(***********************************************************************)
-(** Minimal infinite sequences *)
-
-Notation rule := (rule Sig). Notation rules := (list rule).
-
-Definition MinNT M (f : nat -> term):=
-  forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red M) g.
-
-Definition ISModInfRuleApp (D : rules) f g :=
-  forall d, In d D -> exists h : nat -> nat,
-    forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
-
-Definition ISModMin (M D : rules) f g : Prop :=
- ISMod (int_red M #) (hd_red D) f g /\ ISModInfRuleApp D f g
- /\ MinNT M g /\ MinNT M f.
 
 End S.
