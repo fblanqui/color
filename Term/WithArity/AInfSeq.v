@@ -48,8 +48,9 @@ Section Prelude.
 End Prelude.
 
 (***********************************************************************)
-(** Proof that the existence of a infinite sequence for transitive closure
-imply the existence of a infinite sequence for the orginal relation. *)
+(** Proof that the existence of an infinite sequence for transitive
+closure imply the existence of an infinite sequence for the original
+relation. *)
 
 Section TransIS.
 
@@ -58,40 +59,20 @@ Variables (E : relation term) (h : nat -> term) (HEh : IS (E!) h).
 Lemma IStrc : exists h', IS E h' /\ h' 0 = h 0.
 
 Proof.
-(*FIXME: should be moved to Path.v *)
-assert (is_path_nth_inP : forall T (R : relation T) x y l k,
- is_path R x y l -> S k < length l -> R (nth k l y) (nth (S k) l y)).
-intros T R x y l. generalize x y. clear x y. induction l.
-intros. simpl in H0. absurd_arith.
-intros. simpl in H. simpl in H0. generalize (lt_n_Sm_le _ _ H0); intro.
-simpl. induction k. induction l. simpl. simpl in H. intuition.
-simpl. simpl in H. intuition.
-clear IHk. apply (IHl a y k). intuition. omega.
-assert (is_path_lastP : forall T (R : relation T) x y l k,
- is_path R x y l -> S k = length l -> R (nth k l y) y).
-intros T R x y l k. generalize x y l. clear x y l. induction k.
-intros. destruct l. simpl in H0. absurd_arith.
-destruct l. simpl. simpl in H. intuition.
-simpl in H0. absurd_arith.
-intros. destruct l. simpl in H0. absurd_arith.
-simpl. simpl in H. simpl in H0. apply (IHk t y l); intuition.
-assert (is_path_headP : forall T (R : relation T) x y l,
- is_path R x y l -> R x (nth 0 l y)).
-intros T R x y l. generalize x y. clear x y. induction l.
-intros. simpl. simpl in H. auto.
-intros. simpl. simpl in H. intuition.
-(* end Path.v *)
-assert (exPath : forall i, exists l, is_path E (h i) (h (S i)) l).
+assert (exPath : forall i, exists l, path E (h i) (h (S i)) l).
 intros i. apply clos_trans_path; auto.
 pose (li := fun i => projT1 (constructive_indefinite_description _ (exPath i))).
 pose (F := fun i => length (cons (h i) (li i))).
+
 assert (HFi : forall i, exists y, F i = S y).
 intro i. exists (length (li i)). auto.
 pose (F0 := fun i => Interval_list F i).
 pose (P := fun i j => fst (F0 j) <= i /\ i < snd (F0 j)).
+
 assert (HinT : forall k, fst (F0 k) < snd (F0 k)).
 induction k. simpl. destruct (HFi 0) as [y Hy]; rewrite Hy; omega.
 simpl. destruct (HFi (S k)) as [y Hy]; rewrite Hy; omega.
+
 assert (HPeq : forall i j k, P k i /\ P k j -> i = j).
 intros i j k H; unfold P in H. destruct H as [H H0]. destruct H0 as [H1 H2].
 destruct H as [H H0]. generalize (le_lt_trans _ _ _ H H2). intros H3.
@@ -105,24 +86,32 @@ clear H1 H2 H4 H H0. induction i. omega. simpl in H3.
 case (le_lt_or_eq _ _ (lt_n_Sm_le _ _ H5)); intros H1.
 rewrite (IHi (lt_trans _ _ _ (HinT i) H3) H1) in H1. omega.
 rewrite H1 in H3; omega.
+
 assert (exP_F0 : forall i, exists j, P i j). intros i. apply int_exPi. auto.
 pose (F1 := fun i => projT1 (ch_min _ (exP_F0 i))).
+
 assert (HF0 : forall i, (snd (F0 i) - fst (F0 i) = F i)).
 induction i; auto. simpl. omega.
 pose (h' := fun i => let j := (F1 i) in let i' := i - (fst (F0 j)) in
  nth i' (h j :: li j) (h (S j))).
 
 assert (HT : forall i, F1 i <= F1 (S i) <= S (F1 i)). intros.
+
 assert (HSi : S i <= snd (F0 (F1 i))).
 generalize (ch_minP _ (exP_F0 i)). unfold P. intuition.
 destruct (le_lt_or_eq _ _ HSi) as [H0 | H0]. Focus 2.
+
 assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
 split; try omega. destruct (HFi (S (F1 i))) as [y Hy]. rewrite Hy; omega.
+
 cut (F1 (S i) = S (F1 i)). intros HT; rewrite HT. split; omega.
+
 destruct (projT2 (ch_min _ (exP_F0 (S i)))) as [_ H1]. apply H1.
 split; auto. intros k. unfold P. intros H2.
 rewrite (HPeq _ _ _ (conj PSi H2)). omega.
+
 cut (F1 (S i) = F1 i). intros HT; rewrite HT. split; omega.
+
 assert (PSi : P (S i) (F1 i)). split; try omega.
 apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
 destruct (projT2 (ch_min _ (exP_F0 (S i)))) as [_ H]. apply H; split; try hyp.
@@ -140,40 +129,54 @@ rewrite le_plus_minus_r; auto. apply (@le_trans _ _ _ H1 (@lt_le_weak _ _ H2)).
 apply (lt_le_trans _ _ _ H0). rewrite (HF0 (F1 i)). auto.
 
 exists h'; split; unfold h'.
-(* 1 *) intro i; destruct (DecFSi i) as [Hi | Hi]; rewrite Hi.
+
+(* 1 *)
+intro i; destruct (DecFSi i) as [Hi | Hi]; rewrite Hi.
+
 assert (S (i - fst (F0 (F1 i))) < length (h (F1 i) :: li (F1 i))).
 generalize (H (S i)). rewrite Hi. rewrite <- minus_Sn_m. auto.
 destruct (ch_minP _ (exP_F0 i)). auto.
+
 rewrite <- minus_Sn_m. Focus 2. apply (proj1 (ch_minP _ (exP_F0 i))).
 generalize H0. set (k := i - fst (F0 (F1 i))). destruct k. simpl.
-intros. apply is_path_headP.
+intros. apply path_headP.
 apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
-simpl. intros. apply is_path_nth_inP with (x := (h (F1 i))); try omega.
+simpl. intros. apply path_nth_inP with (x := (h (F1 i))); try omega.
 apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
 rewrite <- Hi. assert (S i = snd (F0 (F1 i))).
 destruct (ch_minP _ (exP_F0 i)) as [_ HT0].
 destruct (le_lt_or_eq _ _ (lt_le_S _ _ HT0)); try auto.
+
 cut (F1 (S i) = F1 i). rewrite Hi. intros. symmetry in H1. omega.
+
 assert (PSi : P (S i) (F1 i)). split; try omega; auto.
 apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
 destruct (projT2 (ch_min _ (exP_F0 (S i)))) as [_ H1]. apply H1; split; try hyp.
 intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
+
 assert (nth (S i - fst (F0 (F1 (S i)))) (h (F1 (S i)) :: li (F1 (S i)))
  (h (S (F1 (S i)))) = h (F1 (S i))).
+
 cut (S i - fst (F0 (F1 (S i))) = 0). intros. rewrite H1. simpl; auto.
+
 rewrite Hi, H0. simpl. omega.
 rewrite H1. clear H1. generalize (HF0 (F1 i)). unfold F. intros.
-cut (i - fst (F0 (F1 i)) = length (li (F1 i))). Focus 2.
-rewrite <- H0 in H1. rewrite <- minus_Sn_m in H1. simpl in H1. omega.
+
+cut (i - fst (F0 (F1 i)) = length (li (F1 i))).
+Focus 2. rewrite <- H0 in H1. rewrite <- minus_Sn_m in H1. simpl in H1. omega.
 apply (proj1 (ch_minP _ (exP_F0 i))).
 set (k := i - fst (F0 (F1 i))).
-assert (is_path E (h (F1 i)) (h (S (F1 i))) (li (F1 i))).
+
+assert (path E (h (F1 i)) (h (S (F1 i))) (li (F1 i))).
 apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
+
 destruct k. intros.  symmetry in H3.
 destruct (li (F1 i)). simpl. simpl in H3. rewrite Hi. auto.
 simpl in H3. absurd_arith. simpl. intros. 
-apply is_path_lastP with (x := (h (F1 i)));  auto. rewrite Hi. hyp.
-(* 2 *) cut ((F1 0) = 0). intro H0; rewrite H0; refl.
+apply path_lastP with (x := (h (F1 i)));  auto. rewrite Hi. hyp.
+
+(* 2 *)
+cut ((F1 0) = 0). intro H0; rewrite H0; refl.
 assert (P00 : P 0 0). unfold P. simpl. split; try omega.
 destruct (HFi 0) as [k Hk]. rewrite Hk; omega.
 symmetry. apply le_n_O_eq. apply (is_min_ch (P 0) (exP_F0 0) 0 P00).
