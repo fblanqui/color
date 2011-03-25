@@ -1,14 +1,17 @@
 
-11-03-24: [Blanqui]
-- Util/FGraph/FGraph: library on finite graphs
+11-03-25: [Blanqui]
 - Util/FGraph/TransClos: transitive closure of a finite graph
+- Util/FGraph/FGraph: library on finite graphs
+- DP/AUsable: abstraction of the function computing the transitive closure
+  of the relation ADepRel.symb_ord
 
 10-11-30: [Ould-Biha]
-- SubtermCrit: subterm criterion
 - DP/AUsable: usable rules
+- SubtermCrit: subterm criterion
 - Term/WithArity/AInfSeq: infinite sequences
 - Term/WithArity/ASubterm: the subterm relation is finitely branching
 - Util/Nat/NatLeast: min of a non-empty set of nats
+- Term/WithArity/ADepRel: relation on defined symbols implied by rules
 
 10-11-24: [Blanqui]
 - Util/List/ListUtil: sub_list
