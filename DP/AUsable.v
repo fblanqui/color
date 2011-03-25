@@ -1032,10 +1032,15 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
     discr. inversion H. subst m. intuition. rewrite beq_symb_ok. refl.
     (* 3 *)
     destruct H as [a]. case_eq (def_symbs_rule R a).
+    (* def_symbs_rule R a = Some (x,l) *)
     right. exists a. intuition. apply rel_add_edge_list. rewrite H0.
-    destruct p as [x l].
-
-  Abort.
+    destruct p as [x l]. left. unfold succ_list. rewrite <- In_InA_eq.
+    unfold def_symbs_rule in H0. unfold root_eq in H. destruct (lhs a).
+    discr. rewrite beq_symb_ok in H. inversion H0. subst f0. intuition.
+    (* def_symbs_rule R a = None *)
+    intuition. unfold def_symbs_rule in H0. unfold root_eq in H.
+    destruct (lhs a); discr.
+  Qed.
 
   Definition succs_symb' R f :=
     XSet.elements (succs f (trans_clos_list (def_symbs_rule R) R)).
@@ -1044,14 +1049,11 @@ Module Usable (WP : WeakRedPair) (B : Binary with Definition Sig := WP.Sig)
     List.In g (succs_symb' R f) <-> symb_ord R! f g.
 
   Proof.
-  intros R f g. unfold succs_symb'. rewrite In_InA_eq. rewrite <- elements_iff.
-  rewrite In_succs_rel. ded (trans_clos_list_ok (def_symbs_rule R) R).
-  rewrite rel_eq in H. rewrite H. 
-  (*cut (List.In g (succs f (trans_clos_list (def_symbs_rule R) R)))
-    <-> symb_ord R ! f g). intuition. subst. apply rt_refl.
-  apply tc_incl_rtc. hyp. apply rtc_split in H0.
-  unfold Relation_Operators.union in H0. intuition.*)
-  Admitted.
+    intros R f g. unfold succs_symb'. rewrite In_InA_eq.
+    rewrite <- elements_iff. rewrite In_succs_rel.
+    gen g; gen f. rewrite <- rel_eq. rewrite rel_trans_clos_list.
+    rewrite def_symbs_rule_ok. refl.
+  Qed.
 
   Definition succs_symb R f := f :: succs_symb' R f.
 
