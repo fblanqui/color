@@ -5,15 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-17
 - Adam Koprowski and Hans Zantema, 2007-03-20
 
-Rewriting.
-
-This file gives definitions on rewrite systems:
-- rule         == Type of rewriting rule. It is a pair of term. A left
-                  hand (lhs) and a right hand (rhs).
-* Definitions on rule:
-  - beq_rule   == boolean equality on rule.
-
-In addition to this definitions some proofs and results are given.
+rewriting
 *)
 
 Set Implicit Arguments.
@@ -30,7 +22,7 @@ Variable Sig : Signature.
 Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
-(** rule *)
+(** rules *)
 
 Record rule : Type := mkRule { lhs : term; rhs : term }.
 
@@ -108,41 +100,38 @@ Qed.
 
 Section rewriting.
 
-Variable R : rules.
+  Variable R : rules.
 
-(* Relation associated to the TRS R *)
-Definition red u v := exists l r c s,
-  In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
+  (* standard rewrite step *)
+  Definition red u v := exists l r c s,
+    In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
-(* Relation associated to the TRS R where the rewriting is only
-allowed at the root *)
-Definition hd_red u v := exists l r s,
-  In (mkRule l r) R /\ u = sub s l /\ v = sub s r.
+  (* head rewrite step *)
+  Definition hd_red u v := exists l r s,
+    In (mkRule l r) R /\ u = sub s l /\ v = sub s r.
 
-(* Relation associated to the TRS R where the rewriting is allowed
-anywhere but at the root *)
-Definition int_red u v := exists l r c s, c <> Hole /\
-  In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
+  (* internal rewrite step *)
+  Definition int_red u v := exists l r c s, c <> Hole /\
+    In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r).
 
-Definition NF u := forall v, ~red u v.
+  Definition NF u := forall v, ~red u v.
 
 (***********************************************************************)
 (** innermost rewriting *)
 
-Definition innermost u := forall f us, u = Fun f us -> Vforall NF us.
+  Definition innermost u := forall f us, u = Fun f us -> Vforall NF us.
 
-Definition in_red u v := exists l, exists r, exists c, exists s,
-  In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
-  /\ innermost (sub s l).
+  Definition in_red u v := exists l, exists r, exists c, exists s,
+    In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
+    /\ innermost (sub s l).
 
-Definition in_hd_red u v := exists l, exists r, exists s,
-  In (mkRule l r) R /\ u = sub s l /\ v = sub s r
-  /\ innermost u.
+  Definition in_hd_red u v := exists l, exists r, exists s,
+    In (mkRule l r) R /\ u = sub s l /\ v = sub s r /\ innermost u.
 
-Definition in_int_red u v := exists l, exists r, exists c, exists s,
-  c <> Hole
-  /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
-  /\ innermost (sub s l).
+  Definition in_int_red u v := exists l, exists r, exists c, exists s,
+    c <> Hole
+    /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
+    /\ innermost (sub s l).
 
 End rewriting.
 
@@ -151,26 +140,47 @@ End rewriting.
 
 Section rewriting_modulo.
 
-Variables (S : relation term) (E R : rules).
+  Variables (S : relation term) (E R : rules).
 
-(* Composition of the reflexive and transitive closure of E (as a
-relation) and the relation of rewriting with R *)
-Definition red_mod := red E # @ red R.
+  (* relative rewrite step *)
+  Definition red_mod := red E # @ red R.
 
-(* Composition of the relation S and the relation of head rewriting with R *)
-Definition hd_red_Mod := S @ hd_red R.
+  (* head rewrite step modulo some relation *)
+  Definition hd_red_Mod := S @ hd_red R.
 
-(* Composition of the reflexive and transitive closure of E (as a
-relation) and the relation of head rewriting with R *)
-Definition hd_red_mod := red E # @ hd_red R.
+  (* relative head rewrite step *)
+  Definition hd_red_mod := red E # @ hd_red R.
 
-(* Defines a notion of minimal modulo rewriting relation. It's the
-restriction of hd_red_mod to the minimal non SN terms. *)
-Definition hd_red_mod_min s t := hd_red_mod s t 
-  /\ lforall (SN (red E)) (direct_subterms s)
-  /\ lforall (SN (red E)) (direct_subterms t).
+  (* relative minimal head rewrite step *)
+  Definition hd_red_mod_min s t := hd_red_mod s t 
+    /\ lforall (SN (red E)) (direct_subterms s)
+    /\ lforall (SN (red E)) (direct_subterms t).
 
 End rewriting_modulo.
+
+(***********************************************************************)
+(** minimal infinite sequences: two functions [f] and [g] describing
+an infinite sequence of head D-steps modulo arbitrary internal M-steps
+is minimal if:
+- every rule of D is applied infinitely often
+- the strict subterms of this rewrite sequence terminate wrt M *)
+
+Section inf_seq.
+
+  (* strict subterms terminate wrt M *)
+  Definition MinNT M (f : nat -> term) :=
+    forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red M) g.
+
+  (* every rule of [D] is applied infinitely often *)
+  Definition ISModInfRuleApp (D : rules) f g :=
+    forall d, In d D -> exists h : nat -> nat,
+      forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
+
+  Definition ISModMin (M D : rules) f g :=
+    ISMod (int_red M #) (hd_red D) f g
+    /\ ISModInfRuleApp D f g /\ MinNT M g /\ MinNT M f.
+
+End inf_seq.
 
 End basic_definitions.
 
