@@ -106,7 +106,8 @@ End weight_inj.
 
 Implicit Arguments bweight_inj_ok [Sig Fs weight].
 
-Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok Fs_ok); check_eq.
+Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok Fs_ok);
+  (check_eq || fail 10 "non-injective weight function").
 
 (***********************************************************************)
 (** Ordered signatures *)
