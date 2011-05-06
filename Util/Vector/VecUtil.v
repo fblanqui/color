@@ -1532,7 +1532,7 @@ Fixpoint vec_of_list (l : list A) : vec (length l) :=
   end.
 
 Lemma vec_of_list_cons : forall a l,
- vec_of_list (a :: l) = Vcons a (vec_of_list l).
+  vec_of_list (a :: l) = Vcons a (vec_of_list l).
 
 Proof. auto. Qed.
 
