@@ -4,8 +4,8 @@ See the COPYRIGHTS and LICENSE files.
 
 - Sidi Ould-Biha, 2010-04-27
 
-Definitions and proofs about the min of a non empty set of nat
-*)
+Definitions and proofs about the min of a non empty set of natural
+numbers. *)
 
 Require Import Wf_nat ClassicalEpsilon.
 
@@ -35,7 +35,7 @@ Section P1.
     destruct (projT2 ch_min) as [H _]. destruct H. auto.
   Qed.
 
-  Lemma is_min_ch : forall n, P n -> (projT1 ch_min) <= n.
+  Lemma is_min_ch : forall n, P n -> projT1 ch_min <= n.
 
   Proof.
     destruct (projT2 ch_min) as [H _]. destruct H.
