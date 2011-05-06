@@ -604,3 +604,31 @@ induction 1. exists 0. omega. destruct IHle. exists (S x). omega.
 Qed.
 
 Implicit Arguments gt_plus [l k].
+
+(***********************************************************************)
+(** given a non-null function [F], [Interval_list F i] is the pair
+[(S(i),S(i+1)] where S(0)=0 and S(i+1)=S(i)+F(i) *)
+
+Section Interval_list.
+
+  Variable (F : nat -> nat) (HFi : forall i, exists y, F i = S y).
+
+  Fixpoint Interval_list i : nat * nat := 
+    match i with
+      | 0 => (0, F 0)
+      | S i' => let x := snd (Interval_list i') in (x, x + F i)
+    end.
+
+  Notation Local F' := Interval_list.
+
+  Lemma int_exPi : forall i, exists j, fst (F' j) <= i /\ i < snd (F' j).
+
+  Proof.
+    intros i. induction i. exists 0. simpl. destruct (HFi 0); rewrite H. omega.
+    destruct IHi as [k Hk]. assert (HSi : S i <= snd (F' k)). omega.
+    destruct (le_lt_or_eq _ _ HSi). exists k. intuition.
+    exists (S k). simpl. rewrite H. split. omega.
+    destruct (HFi (S k)). rewrite H0. omega.
+  Qed.
+
+End Interval_list.
