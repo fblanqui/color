@@ -26,8 +26,6 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
 Notation supterm := (@supterm Sig). Notation supterm_eq := (@supterm_eq Sig).
 
 (***********************************************************************)
@@ -38,12 +36,10 @@ Variables (pi : Sig -> nat) (Hpi : valid pi).
 Notation proj := (proj Hpi).
 Notation ge := (proj_ord Hpi supterm_eq).
 Notation gt := (proj_ord Hpi supterm).
-Notation bge := (fun x y => bsupterm_eq (proj x) (proj y)).
-Notation bgt := (fun x y => bsupterm (proj x) (proj y)).
 
 Section S1.
 
-Variables M D : rules.
+Variables M D : rules Sig.
 
 Variable hyp1 : forall l r, In (mkRule l r) D -> ge l r.
 
@@ -71,7 +67,7 @@ repeat rewrite proj_sub_fun. apply substitution_closed_subterm. auto.
 Qed.
 
 Lemma supterm_eq_proj : forall l r s,
- In (mkRule l r) D -> ge (sub s l) (sub s r).
+  In (mkRule l r) D -> ge (sub s l) (sub s r).
 
 Proof.
 intros l r s Dlr. generalize (hyp1 _ _ Dlr); intro.
@@ -87,7 +83,7 @@ intros. destruct r. rewrite proj_sub_fun, H0. simpl. apply subterm_eq_proj.
 clear H1. repeat rewrite proj_sub_fun. rewrite H0. apply subterm_eq_refl.
 Qed.
 
-Lemma hyp5 : forall t u, int_red M # t u -> red M # (proj t) (proj u).
+Lemma int_red_proj : forall t u, int_red M # t u -> red M # (proj t) (proj u).
 
 Proof.
 induction 1. 2: apply rt_refl.
@@ -115,7 +111,7 @@ unfold ISMod in HisM. destruct hyp2 as [l H0]. destruct H0 as [r H0].
 destruct H0 as [Dlr Glr].
 
 pose (f0 := fun i => proj (f i)). pose (g0 := fun i => proj ( g i)).
-pose (P := fun (i x : nat) => (i <= x /\ (supterm (g0 x) (f0 (S x))))).
+pose (P := fun i x => i <= x /\ supterm (g0 x) (f0 (S x))).
 
 assert (HexP : forall i, exists j, P i j).
 destruct (hmin (mkRule l r) Dlr) as [h h_def].
@@ -129,7 +125,7 @@ simpl in Elr. destruct Elr. subst. unfold f0, g0. rewrite Efi, Egi.
 apply supterm_proj. auto.
 
 assert (ISMfg0 : ISMod (red M #) (red M # U supterm) f0 g0).
-intro i. unfold f0, g0. split. apply hyp5. apply (proj1 (HisM i)).
+intro i. unfold f0, g0. split. apply int_red_proj. apply (proj1 (HisM i)).
 destruct (HisM i) as [_ [l' [r' [s [Dlr' [Eg Ef]]]]]]. rewrite Eg, Ef.
 destruct (supterm_eq_proj l' r' s Dlr') as [C HC].
 destruct C. simpl in HC. rewrite HC. left. apply rtc_refl.
@@ -169,7 +165,8 @@ End S1.
 (***********************************************************************)
 (** theorem with boolean conditions *)
 
-Section S2.
+Notation bge := (fun x y => bsupterm_eq (proj x) (proj y)).
+Notation bgt := (fun x y => bsupterm (proj x) (proj y)).
 
 Lemma subterm_criterion_WF : forall M D1 D2,
   (D1 ++ D2) [= dp M ->
@@ -179,18 +176,18 @@ Lemma subterm_criterion_WF : forall M D1 D2,
   WF (hd_red_Mod (red M #) D2) -> WF (hd_red_Mod (red M #) (D1 ++ D2)).
 
 Proof.
-intros. induction D1. simpl. hyp.
-simpl. apply NNPP. intro. destruct (WF_IS_DP H H4) as [f [g H5]].
-assert (H6 : forall l r : term, In (mkRule l r) (a :: D1 ++ D2) -> ge l r).
+intros. induction D1; simpl. hyp.
+apply NNPP. intro H4. destruct (WF_IS_DP H H4) as [f [g H5]].
+assert (H6 : forall l r, In (mkRule l r) (a :: D1 ++ D2) -> ge l r).
 intros. generalize (proj1 (forallb_forall _ _) H1 (mkRule l r) H6).
-unfold brule; simpl. apply (proj1 (bsubterm_eq_ok _ _)).
+unfold brule. simpl. apply (proj1 (bsubterm_eq_ok _ _)).
 assert (H7 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ gt l r).
 exists (lhs a). exists (rhs a). simpl. split.
 left. apply (proj1 (rule_eq _ _)). simpl. auto.
 generalize (proj1 (forallb_forall _ _) H2 a (in_eq a _)). unfold brule.
 apply (proj1 (bsubterm_ok _ _)).
 assert (H8 : forall l r, In (mkRule l r) (a :: D1 ++ D2) ->
- is_notvar_lhs (mkRule l r) = true).
+  is_notvar_lhs (mkRule l r) = true).
 intros. apply (proj1 (forallb_forall _ _) H0). auto.
 apply (@subterm_criterion_IS M (a :: D1 ++ D2) H6 H7 H8 f g). hyp.
 Qed.
@@ -225,13 +222,17 @@ apply (proj2 (forallb_forall _ _)). intros. unfold D0 in H3.
 rewrite filter_In in H3. intuition.
 Qed.
 
-End S2.
-
 End S.
 
 Implicit Arguments subterm_criterion [Sig pi D].
 
-Ltac subterm_crit p_ok := apply (subterm_criterion p_ok);
-  [ check_eq || fail 10 "a left-hand side is a variable"
+(***********************************************************************)
+(** tactics *)
+
+Require Import ListDec.
+
+Ltac subterm_crit S p_ok := apply (subterm_criterion p_ok);
+  [ incl (@beq_rule_ok S)
+  | check_eq || fail 10 "a left-hand side is a variable"
   | check_eq || fail 10 "error in subterm criterion application"
   | hd_red_mod].
