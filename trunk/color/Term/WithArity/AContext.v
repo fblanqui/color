@@ -215,6 +215,14 @@ exists (Cont H1 ts1 Hole ts2). split. discr.
 rewrite H0. refl.
 Qed.
 
+Lemma subterm_size : forall t u : term, subterm t u -> size t < size u.
+
+Proof.
+intros t u [C [hC e]]. subst u. destruct C. irrefl.
+simpl fill. rewrite size_fun, size_terms_cast, size_terms_app. simpl.
+ded (size_fill t C). omega.
+Qed.
+
 Lemma subterm_strict : forall u t, subterm u t -> subterm_eq u t.
 
 Proof.
