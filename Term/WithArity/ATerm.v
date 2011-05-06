@@ -529,7 +529,7 @@ Fixpoint symbs (t : term) : list Sig :=
           | Vnil => nil
           | Vcons t' n' ts' => symbs t' ++ symbs_vec n' ts'
         end
-      in (f :: symbs_vec (arity f) v)
+      in f :: symbs_vec (arity f) v
   end.
 
 Fixpoint symbs_vec n (ts : terms n) : list Sig :=
@@ -538,7 +538,7 @@ Fixpoint symbs_vec n (ts : terms n) : list Sig :=
     | Vcons t' _ ts' => symbs t' ++ symbs_vec ts'
   end.
 
-Lemma symbs_fun : forall f ts, symbs (Fun f ts) = (f :: symbs_vec ts).
+Lemma symbs_fun : forall f ts, symbs (Fun f ts) = f :: symbs_vec ts.
 
 Proof. auto. Qed.
 
