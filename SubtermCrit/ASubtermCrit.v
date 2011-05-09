@@ -13,8 +13,9 @@ Information and Computation 205(4), pp. 474 – 511, 2007
 
 Set Implicit Arguments.
 
-Require Import ATrs ASimpleProj RelUtil List ARelation LogicUtil NatUtil
-  VecUtil InfSeq ASN SN Classical BoolUtil ListUtil ASubterm ADP.
+Require Import ATrs ASimpleProj RelUtil List ARelation LogicUtil
+  NatUtil VecUtil InfSeq ASN SN ClassicUtil BoolUtil ListUtil ASubterm
+  ADP.
 
 (***********************************************************************)
 (** WARNING: we use the following axiom *)
@@ -106,7 +107,7 @@ Lemma subterm_criterion_IS : forall f g, ~ISModMin M D f g.
 
 Proof.
 intros f g HM. destruct HM as [HisM hmin]. destruct hmin as [hmin HsT].
-destruct HsT as [Rsg Rsf]. unfold ISModInfRuleApp in hmin.
+destruct HsT as [Rsf Rsg]. unfold ISModInfRuleApp in hmin.
 unfold ISMod in HisM. destruct hyp2 as [l H0]. destruct H0 as [r H0].
 destruct H0 as [Dlr Glr].
 

@@ -653,7 +653,7 @@ Qed.
   Lemma Usablerules_IS : forall f g, ~ISModMin R C f g.
 
 Proof.
-intros f g HM. destruct HM as [HisM [hmin [Hsg Hsf]]].
+intros f g HM. destruct HM as [HisM [hmin [Hsf Hsg]]].
 unfold ISModInfRuleApp in hmin. unfold MinNT in Hsf, Hsg. unfold ISMod in HisM.
 assert (SNgi : forall i, SN (red R) (g i)).
 intros. case_eq (g i). apply sn_var. auto. apply sn_args_sn_fun; auto.
