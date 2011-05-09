@@ -32,10 +32,10 @@ Section S.
 
   Require Import ClassicUtil.
 
-  Lemma notWF_IS : ~WF R -> non_terminating R.
+  Lemma notWF_IS : ~WF R -> EIS R.
 
   Proof.
-    unfold non_terminating, WF. rewrite not_forall_eq. intros [a h].
+    unfold EIS, WF. rewrite not_forall_eq. intros [a h].
     destruct (notSN_IS h). exists x. intuition.
   Qed.
 

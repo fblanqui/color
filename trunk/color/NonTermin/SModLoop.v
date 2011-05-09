@@ -209,7 +209,7 @@ destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
 apply red_mod_iter_g. apply FS_red_mod'. omega.
 Qed.
 
-Lemma loop : non_terminating (red_mod E R).
+Lemma loop : EIS (red_mod E R).
 
 Proof.
 exists seq. apply IS_seq.
@@ -245,7 +245,7 @@ Definition is_mod_loop t mds ds p :=
   end.
 
 Lemma is_mod_loop_correct : forall t mds ds p,
-  is_mod_loop t mds ds p = true -> non_terminating (red_mod E R).
+  is_mod_loop t mds ds p = true -> EIS (red_mod E R).
 
 Proof.
 intros t mds ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds).

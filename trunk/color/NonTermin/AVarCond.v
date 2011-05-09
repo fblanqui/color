@@ -20,7 +20,7 @@ Notation term := (term Sig).
 Notation rule := (rule Sig). Notation rules := (list rule).
 
 Lemma var_cond_mod : forall E R : rules,
-  ~rules_preserve_vars R -> non_terminating (red_mod E R).
+  ~rules_preserve_vars R -> EIS (red_mod E R).
 
 Proof.
 intros E R. rewrite <- brules_preserve_vars_ok. rewrite <- false_not_true.
@@ -38,8 +38,7 @@ unfold f. simpl. repeat rewrite iter_com. apply red_mod_fill.
 rewrite <- iter_com. hyp.
 Qed.
 
-Lemma var_cond : forall R : rules,
-  ~rules_preserve_vars R -> non_terminating (red R).
+Lemma var_cond : forall R : rules, ~rules_preserve_vars R -> EIS (red R).
 
 Proof.
 intros. rewrite <- red_mod_empty. apply var_cond_mod. hyp.

@@ -241,7 +241,7 @@ destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
 apply red_iter_g. apply FS_red'. omega.
 Qed.
 
-Lemma loop : non_terminating (red R).
+Lemma loop : EIS (red R).
 
 Proof.
 exists seq. apply IS_seq.
@@ -271,8 +271,7 @@ Definition is_loop t ds p :=
       end
   end.
 
-Lemma is_loop_correct : forall t ds p,
-  is_loop t ds p = true -> non_terminating (red R).
+Lemma is_loop_correct : forall t ds p, is_loop t ds p = true -> EIS (red R).
 
 Proof.
 intros t ds p. unfold is_loop. coq_case_eq (rewrites t ds). 2: discr.
@@ -301,7 +300,7 @@ Ltac check_loop t' ds' p' :=
 
 Ltac loop t' ds' p' :=
   match goal with
-    | |- non_terminating (red_mod ?E _) =>
+    | |- EIS (red_mod ?E _) =>
       remove_relative_rules E; check_loop t' ds' p'
-    | |- non_terminating (red _) => check_loop t' ds' p'
+    | |- EIS (red _) => check_loop t' ds' p'
   end.
