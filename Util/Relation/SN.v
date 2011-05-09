@@ -157,11 +157,11 @@ Proof.
 unfold IS. intros x y. rewrite rel_eq. firstorder.
 Qed.
 
-Add Parametric Morphism (A : Type) : (@non_terminating A)
-with signature (same_relation A) ==> iff as non_terminating_mor.
+Add Parametric Morphism (A : Type) : (@EIS A)
+with signature (same_relation A) ==> iff as EIS_mor.
 
 Proof.
-unfold non_terminating. intuition. destruct H0. exists x0. rewrite <- H. hyp.
+unfold EIS. intuition. destruct H0. exists x0. rewrite <- H. hyp.
 destruct H0. exists x0. rewrite H. hyp.
 Qed.
 

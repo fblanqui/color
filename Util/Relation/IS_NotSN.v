@@ -32,7 +32,7 @@ Section S.
 
  End false.
 
- Lemma IS_notWF : non_terminating R -> ~WF R.
+ Lemma IS_notWF : EIS R -> ~WF R.
 
  Proof.
    unfold not. intros. destruct H. eapply WF_notIS. hyp. apply H.

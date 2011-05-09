@@ -1117,7 +1117,7 @@ Ltac remove_relative_rules E := norm E; rewrite red_mod_empty
 Ltac no_relative_rules :=
   match goal with
     | |- WF (red_mod ?E _) => remove_relative_rules E
-    | |- non_terminating (red_mod ?E _) => remove_relative_rules E
+    | |- EIS (red_mod ?E _) => remove_relative_rules E
     | |- _ => idtac
   end.
 

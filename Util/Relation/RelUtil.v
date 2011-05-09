@@ -110,7 +110,9 @@ Section basic_def2.
 
   Definition IS f := forall i, R (f i) (f (S i)).
 
-  Definition non_terminating := exists f, IS f.
+  Definition EIS := exists f, IS f.
+
+  Definition EIS_from x := exists f, f 0 = x /\ IS f.
 
   (* predicate saying that [f] and [g] describe an infinite sequence
   of R-steps modulo E: for all i, f(i) E g(i) R f(i+1) *)
