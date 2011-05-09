@@ -158,30 +158,6 @@ Section rewriting_modulo.
 
 End rewriting_modulo.
 
-(***********************************************************************)
-(** minimal infinite sequences: two functions [f] and [g] describing
-an infinite sequence of head D-steps modulo arbitrary internal M-steps
-is minimal if:
-- every rule of D is applied infinitely often
-- the strict subterms of this rewrite sequence terminate wrt M *)
-
-Section inf_seq.
-
-  (* strict subterms terminate wrt M *)
-  Definition MinNT M (f : nat -> term) :=
-    forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red M) g.
-
-  (* every rule of [D] is applied infinitely often *)
-  Definition ISModInfRuleApp (D : rules) f g :=
-    forall d, In d D -> exists h : nat -> nat,
-      forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
-
-  Definition ISModMin (M D : rules) f g :=
-    ISMod (int_red M #) (hd_red D) f g
-    /\ ISModInfRuleApp D f g /\ MinNT M g /\ MinNT M f.
-
-End inf_seq.
-
 End basic_definitions.
 
 Implicit Arguments is_notvar_lhs_elim [Sig R l r].
@@ -1065,6 +1041,26 @@ apply in_map. hyp.
 Qed.
 
 End rule_renaming.
+
+(***********************************************************************)
+(** minimal infinite rewrite sequences modulo: two functions [f] and
+[g] describing an infinite sequence of head [D]-steps modulo arbitrary
+internal [M]-steps is minimal if:
+- every rule of [D] is applied infinitely often
+- the strict subterms of this rewrite sequence terminate wrt [M] *)
+
+(* strict subterms terminate wrt [red M] *)
+Definition MinNT M (f : nat -> term) :=
+  forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red M) g.
+
+(* every rule of [D] is applied infinitely often *)
+Definition ISModInfRuleApp (D : rules) f g :=
+  forall d, In d D -> exists h : nat -> nat,
+    forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
+
+Definition ISModMin (M D : rules) f g :=
+  ISMod (int_red M #) (hd_red D) f g
+  /\ ISModInfRuleApp D f g /\ MinNT M f /\ MinNT M g.
 
 End S.
 
