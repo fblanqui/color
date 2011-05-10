@@ -235,3 +235,4 @@ End S.
 Implicit Arguments in_calls [Sig R x t].
 Implicit Arguments in_calls_defined [Sig R t g vs].
 Implicit Arguments in_calls_subterm [Sig R u t].
+Implicit Arguments lhs_fun_defined [Sig f us r R].
