@@ -12,8 +12,7 @@ useful definitions and lemmas on natural numbers
 Set Implicit Arguments.
 
 Require Import LogicUtil.
-Require Export Arith.
-Require Export Omega.
+Require Export Arith Omega.
 
 (***********************************************************************)
 (** implicit arguments *)
@@ -88,8 +87,6 @@ apply (f_equal S). exact (proj1 (IHx _) H).
 apply (proj2 (IHx y)). inversion H. refl.
 Defined.
 
-Definition beq_nat_ko := beq_nat_false_iff.
-
 Require Import EqUtil.
 
 Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
@@ -161,7 +158,7 @@ Lemma bne_nat_ok : forall x y, bne_nat x y = true <-> x <> y.
 
 Proof.
   intros x y. unfold bne_nat. rewrite negb_lr. simpl.
-  rewrite beq_nat_ko. refl.
+  rewrite (beq_ko beq_nat_ok). refl.
 Qed.
 
 (***********************************************************************)

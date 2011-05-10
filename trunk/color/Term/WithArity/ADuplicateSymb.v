@@ -15,15 +15,14 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation symb := (symbol Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Notation rules := (rules Sig).
 
 (***********************************************************************)
 (** signature of symbols marked as head or internal *)
 
 Inductive dup_symb : Type :=
-| hd_symb : symb -> dup_symb
-| int_symb : symb -> dup_symb.
+| hd_symb : symbol Sig -> dup_symb
+| int_symb : symbol Sig -> dup_symb.
 
 Definition dup_ar s :=
   match s with
@@ -313,9 +312,7 @@ Definition unmark_rules := map unmark_rule.
 
 Section int_red.
 
-Notation rules' := (list rule').
-
-Variable R : rules'.
+Variable R : @ATrs.rules Sig'.
 
 Variable int_hyp : forallb is_int_symb_lhs R = true.
 

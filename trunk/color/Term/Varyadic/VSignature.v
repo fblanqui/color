@@ -100,7 +100,7 @@ Section weight_inj.
     apply forallb_ok_fintype. 2: hyp. intro g. unfold implb.
     coq_case_eq (beq_nat (weight f) (weight g)).
     rewrite beq_nat_ok. rewrite beq_symb_ok. tauto.
-    rewrite beq_nat_ko. tauto.
+    rewrite (beq_ko beq_nat_ok). tauto.
   Qed.
 
 End weight_inj.
