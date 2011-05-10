@@ -155,7 +155,7 @@ intro L; split; intros x Hx. rewrite in_app. unfold rrules_list.
 induction C. simpl. right. rewrite filter_In. split; auto.
 destruct x as [x1 x2]. simpl. destruct x1.
 rewrite forallb_forall in L; generalize (L _ Hx). auto.
-rewrite (lhs_fun_defined f v x2 R Hx); auto.
+rewrite (lhs_fun_defined Hx); auto.
 destruct IHl. left. simpl. rewrite in_app; auto.
 rewrite filter_In; rewrite filter_In in H; destruct H as [_ H].
 destruct x as [x1 x2]. simpl; simpl in H. rewrite in_app.
@@ -180,7 +180,7 @@ rewrite filter_In in H0. simpl in H0. intuition.
 rewrite In_tusable in H0. symmetry. apply negb_sym. simpl.
 apply (defined_uc _ _ _ t1 t2); split; auto.
 destruct (proj1 (defined_equiv _ _) H2) as [v' [r' H3]]. destruct H0.
-apply (lhs_fun_defined f v' r'). rewrite In_tusable. split; auto.
+apply (@lhs_fun_defined _ f v' r'). rewrite In_tusable. split; auto.
 destruct H4 as [g0 H4]. exists g0. split; try apply (proj1 H4).
 apply rtc_trans with (y := g). apply (proj2 H4). apply rt_step.
 exists (mkRule (Fun g v) r). split; auto. simpl. rewrite beq_symb_ok.
@@ -660,7 +660,7 @@ intros. case_eq (g i). apply sn_var. auto. apply sn_args_sn_fun; auto.
 destruct (proj2 (HisM i)) as [l [r [s [Clr Hgi]]]]. destruct l.
 generalize (is_notvar_lhs_false _ NVlC _ _ Clr); tauto.
 rewrite H in Hgi; simpl in Hgi. rewrite (symb_eq (proj1 Hgi)).
-generalize (HDPR f1). rewrite (lhs_fun_defined _ _ _ _ Clr), andb_true_r; auto.
+generalize (HDPR f1). rewrite (lhs_fun_defined Clr), andb_true_r; auto.
 apply Vforall_intro; intros. apply NNPP; intro HSx.
 destruct (notSN_IS HSx) as [h [Hh1 Hh2]].
 assert (T : subterm x (g i)). rewrite H. apply subterm_fun; auto.
@@ -671,7 +671,7 @@ destruct H as [F [us [vs [Efi Egi]]]]. rewrite Efi; apply sn_args_sn_fun; auto.
 destruct (proj2 (HisM i)) as [l [r [s [Clr Hgi]]]]. destruct l.
 generalize (is_notvar_lhs_false _ NVlC _ _ Clr); tauto.
 rewrite Egi in Hgi; simpl in Hgi. rewrite (symb_eq (proj1 Hgi)).
-generalize (HDPR f0). rewrite (lhs_fun_defined _ _ _ _ Clr), andb_true_r; auto.
+generalize (HDPR f0). rewrite (lhs_fun_defined Clr), andb_true_r; auto.
 apply Vforall_intro; intros. apply NNPP; intro HSx.
 destruct (notSN_IS HSx) as [h [Hh1 Hh2]].
 assert (T : subterm x (f i)). rewrite Efi. apply subterm_fun; auto.
