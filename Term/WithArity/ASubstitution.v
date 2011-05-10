@@ -13,14 +13,8 @@ Set Implicit Arguments.
 
 Section S.
 
-Require Import AInterpretation.
-Require Import ListForall.
-Require Import AContext.
-Require Import VecUtil.
-Require Import NatUtil.
-Require Import LogicUtil.
-Require Import ListUtil.
-Require Import EqUtil.
+Require Import AInterpretation ListForall AContext VecUtil NatUtil LogicUtil
+  ListUtil EqUtil.
 
 Variable Sig : Signature.
 
