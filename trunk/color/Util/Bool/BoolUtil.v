@@ -140,20 +140,21 @@ Require Setoid.
 
 Section dec.
 
-Variables (A : Type) (P : A -> Prop)
-  (f : A -> bool) (f_ok : forall x, f x = true <-> P x).
+  Variables (A : Type) (P : A -> Prop)
+    (f : A -> bool) (f_ok : forall x, f x = true <-> P x).
 
-Lemma ko : forall x, f x = false <-> ~P x.
+  Lemma ko : forall x, f x = false <-> ~P x.
 
-Proof.
-intro x. rewrite <- f_ok. destruct (f x); intuition; discr.
-Qed.
+  Proof.
+    intro x. rewrite <- f_ok. destruct (f x); intuition; discr.
+  Qed.
 
-Lemma dec : forall x, {P x}+{~P x}.
+  Lemma dec : forall x, {P x}+{~P x}.
 
-Proof.
-intro x. case_eq (f x). left. rewrite <- f_ok. hyp. right. rewrite <- ko. hyp.
-Defined.
+  Proof.
+    intro x. case_eq (f x). left. rewrite <- f_ok. hyp. right. rewrite <- ko.
+    hyp.
+  Defined.
 
 End dec.
 
@@ -165,35 +166,35 @@ Implicit Arguments dec [A P f].
 
 Section bool_ok.
 
-Variables (A : Type) (P Q : A->Prop) (bP bQ : A-> bool)
-  (bP_ok : forall x, bP x = true <-> P x)
-  (bQ_ok : forall x, bQ x = true <-> Q x).
+  Variables (A : Type) (P Q : A->Prop) (bP bQ : A-> bool)
+    (bP_ok : forall x, bP x = true <-> P x)
+    (bQ_ok : forall x, bQ x = true <-> Q x).
 
-Lemma negb_ok : forall x, negb (bP x) = true <-> ~P x.
+  Lemma negb_ok : forall x, negb (bP x) = true <-> ~P x.
 
-Proof.
-intro. rewrite <- (ko bP_ok). destruct (bP x); simpl; intuition.
-Qed.
+  Proof.
+    intro. rewrite <- (ko bP_ok). destruct (bP x); simpl; intuition.
+  Qed.
 
-Lemma andb_ok : forall x, bP x && bQ x = true <-> P x /\ Q x.
+  Lemma andb_ok : forall x, bP x && bQ x = true <-> P x /\ Q x.
 
-Proof.
-intro. rewrite andb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
-Qed.
+  Proof.
+    intro. rewrite andb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
+  Qed.
 
-Lemma orb_ok : forall x, bP x || bQ x = true <-> P x \/ Q x.
+  Lemma orb_ok : forall x, bP x || bQ x = true <-> P x \/ Q x.
 
-Proof.
-intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
-Qed.
+  Proof.
+    intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
+  Qed.
 
-Lemma implb_ok : forall x, implb (bP x) (bQ x) = true <-> (P x -> Q x).
+  Lemma implb_ok : forall x, implb (bP x) (bQ x) = true <-> (P x -> Q x).
 
-Proof.
-intro x. unfold implb. coq_case_eq (bP x).
-rewrite bP_ok. rewrite bQ_ok. tauto.
-rewrite (ko bP_ok). tauto.
-Qed.
+  Proof.
+    intro x. unfold implb. coq_case_eq (bP x).
+    rewrite bP_ok. rewrite bQ_ok. tauto.
+    rewrite (ko bP_ok). tauto.
+  Qed.
 
 End bool_ok.
 
