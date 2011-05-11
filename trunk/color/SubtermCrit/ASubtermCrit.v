@@ -9,13 +9,14 @@ Subterm criterion from:
 Tyrolean Termination Tool: Techniques and Features
 Nao Hirokawa and Aart Middeldorp
 Information and Computation 205(4), pp. 474 – 511, 2007
+
+Uses classical logic and the axiom of indefinite description.
 *)
 
 Set Implicit Arguments.
 
-Require Import ATrs ASimpleProj RelUtil List ARelation LogicUtil
-  NatUtil VecUtil InfSeq ASN SN ClassicUtil BoolUtil ListUtil ASubterm
-  ADP.
+Require Import ATrs ASimpleProj RelUtil List ARelation LogicUtil NatUtil
+  VecUtil InfSeq ASN SN ClassicUtil BoolUtil ListUtil ASubterm ADP.
 
 Section S.
 
@@ -145,7 +146,7 @@ Section S.
       set (h := ISOfISMod HF1 HT). intros ISM.
       assert (Hhk : (h (S 0)) = g1 k). unfold ISOfISMod; simpl. auto.
       set (h0 := fun i => h (S i)). assert (ISM0 : IS (red M !) h0). intro.
-      apply (ISM (S i)). destruct (IStrc ISM0) as [h1 Hh1].
+      apply (ISM (S i)). destruct (IS_tc ISM0) as [h1 Hh1].
 
       destruct (proj1 ((proj2 Hfg1) k)) as [k' Hk'].
 

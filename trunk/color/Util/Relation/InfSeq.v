@@ -5,12 +5,13 @@ See the COPYRIGHTS and LICENSE files.
 - Sidi Ould-Biha, 2010-04-27
 
 Definitions and properties of infinite sequences, possibly modulo some
-relation. *)
+relation. Uses classical logic and the axiom of indefinite
+description. *)
 
 Set Implicit Arguments.
 
-Require Import RelUtil NatUtil List Path ClassicalEpsilon NatLeast
-  LogicUtil ClassicUtil.
+Require Import RelUtil NatUtil List Path NatLeast LogicUtil ClassicUtil
+  IndefiniteDescription.
 
 Section S.
 
@@ -23,7 +24,7 @@ Section TransIS.
 
   Variables (E : relation A) (h : nat -> A) (HEh : IS (E!) h).
 
-  Lemma IStrc : exists h', IS E h' /\ h' 0 = h 0.
+  Lemma IS_tc : exists h', IS E h' /\ h' 0 = h 0.
 
   Proof.
     assert (exPath : forall i, exists l, path E (h i) (h (S i)) l).
@@ -159,7 +160,7 @@ End TransIS.
 
 (***********************************************************************)
 (** building an infinite R-sequence modulo E from an infinite
-E@R-sequence modulo E *)
+E@R-sequence modulo E if E is transitive *)
 
 Section ISModComp.
 
@@ -178,6 +179,10 @@ Section ISModComp.
 
 End ISModComp.
 
+(***********************************************************************)
+(** building an infinite R-sequence modulo E from an infinite
+E@R-sequence *)
+
 Section ISCompSplit.
 
   Variables (E R : relation A) (f : nat -> A).
@@ -188,14 +193,15 @@ Section ISCompSplit.
     intros.
     assert (Hi : forall i, exists x, E (f i) x /\ R x (f (S i))).
     intro. destruct (H i). exists x. intuition.
-    pose (Hgi := fun i => (constructive_indefinite_description _ (Hi i))).
+    pose (Hgi := fun i => constructive_indefinite_description _ (Hi i)).
     exists (fun i => projT1 (Hgi i)). intro. apply (projT2 (Hgi i)).
   Qed.
 
 End ISCompSplit.
 
 (***********************************************************************)
-(** Properties wrt union *)
+(** building an infinite R-sequence modulo E from an infinite
+EUR-sequence modulo E with infinitely many R-steps *)
 
 Section ISModUnion.
 
@@ -396,5 +402,23 @@ Section ISModTrans.
   Qed.
 
 End ISModTrans.
+
+(***********************************************************************)
+(** building an infinite R-sequence from an infinite E#R-sequence if
+R@E<<R *)
+
+Section absorb.
+
+  Variables (E R : relation A).
+
+  Lemma IS_absorb : R @ E << R -> EIS (E# @ R) -> EIS R.
+
+  Proof.
+    intros ab [f hf]. destruct (ISComp_split hf) as [g H]. exists g.
+    intro i. ded (H i). ded (H (S i)). eapply incl_comp_rtc. apply ab.
+    exists (f (S i)). intuition.
+  Qed.
+
+End absorb.
 
 End S.
