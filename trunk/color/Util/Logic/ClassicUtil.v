@@ -10,8 +10,7 @@ general lemmas in classical logic
 Set Implicit Arguments.
 
 Require Export Classical.
-Require Import LogicUtil.
-Require Import Setoid.
+Require Import LogicUtil Setoid.
 
 (***********************************************************************)
 (** basic meta-theorems *)
