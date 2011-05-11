@@ -9,12 +9,15 @@ Usable rules from:
 Tyrolean Termination Tool: Techniques and Features
 Nao Hirokawa and Aart Middeldorp
 Information and Computation 205(4), pp. 474 – 511, 2007
+
+Uses classical logic and the axiom of indefinite description.
 *)
 
 Set Implicit Arguments.
 
-Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation ClassicalEpsilon
-  NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct ACalls ADP ADepRel InfSeq.
+Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation
+  IndefiniteDescription NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct
+  ACalls ADP ADepRel InfSeq.
 
 (***********************************************************************)
 (** weak reduction pair *)
