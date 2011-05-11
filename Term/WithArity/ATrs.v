@@ -1054,6 +1054,12 @@ Section S.
   End rule_renaming.
 
 (***********************************************************************)
+(** minimal infinite sequences *)
+
+  Definition EISMin_from (R : relation term) t :=
+    EIS_from R t /\ forall u, subterm u t -> ~EIS_from R u. 
+
+(***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
 [g] describing an infinite sequence of head [D]-steps modulo arbitrary
 internal [M]-steps is minimal if:
