@@ -9,109 +9,108 @@ Properties of the subterm relation.
 
 Set Implicit Arguments.
 
-Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil
-  IS_NotSN ASN.
+Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil ASN
+  IS_NotSN_FB.
 
 Section S.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-
-Notation supterm := (@supterm Sig). Notation supterm_eq := (@supterm_eq Sig).
+  Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** list of immediate subterms *)
 
-Fixpoint subterm_lst t :=
- match t with
-    | Var _ => nil
-    | Fun f ts => 
-      let fix subterm_lst_vec k (us : terms k) {struct us} : list term :=
-        match us with
-          | Vnil => nil
-          | Vcons u1 k' us' => subterm_lst u1 ++ subterm_lst_vec k' us'
-        end
-        in list_of_vec ts ++ subterm_lst_vec (arity f) ts
-  end.
+  Fixpoint subterm_lst t :=
+    match t with
+      | Var _ => nil
+      | Fun f ts =>
+        let fix subterm_lst_vec k (us : terms k) {struct us} : list term :=
+          match us with
+            | Vnil => nil
+            | Vcons u1 k' us' => subterm_lst u1 ++ subterm_lst_vec k' us'
+          end
+          in list_of_vec ts ++ subterm_lst_vec (arity f) ts
+    end.
 
-Fixpoint subterm_lst_vec k (us : terms k) : list term :=
- match us with
-    | Vnil => nil
-    | Vcons u1 k' us' => subterm_lst u1 ++ subterm_lst_vec us'
- end.
+  Fixpoint subterm_lst_vec k (us : terms k) : list term :=
+    match us with
+      | Vnil => nil
+      | Vcons u1 k' us' => subterm_lst u1 ++ subterm_lst_vec us'
+    end.
 
-Lemma subterm_lst_fun : forall F ts,
-  subterm_lst (Fun F ts) = list_of_vec ts ++ subterm_lst_vec ts.
+  Lemma subterm_lst_fun : forall F ts,
+    subterm_lst (Fun F ts) = list_of_vec ts ++ subterm_lst_vec ts.
 
-Proof.
-refl.
-Qed.
+  Proof.
+    refl.
+  Qed.
 
 (***********************************************************************)
 (** list of immediate subterms *)
 
-Lemma In_subterm_lst_vec_elim : forall v n (ts : terms n),
-  In v (subterm_lst_vec ts) ->
-  exists i, exists p : i < n, In v (subterm_lst (Vnth ts p)).
+  Lemma In_subterm_lst_vec_elim : forall v n (ts : terms n),
+    In v (subterm_lst_vec ts) ->
+    exists i, exists p : i < n, In v (subterm_lst (Vnth ts p)).
 
-Proof.
-induction ts. contradiction.
-intros In_v; simpl in In_v. rewrite in_app in In_v. intuition.
-exists 0. exists (lt_O_Sn n). simpl. hyp.
-destruct H0 as [i H0]. destruct H0 as [p H0].
-assert (p' : S i < S n). omega. exists (S i). exists p'. simpl.
-assert (H1 : (lt_S_n p') = p). apply lt_unique. rewrite H1. hyp.
-Qed.
+  Proof.
+    induction ts. contradiction.
+    intros In_v; simpl in In_v. rewrite in_app in In_v. intuition.
+    exists 0. exists (lt_O_Sn n). simpl. hyp.
+    destruct H0 as [i H0]. destruct H0 as [p H0].
+    assert (p' : S i < S n). omega. exists (S i). exists p'. simpl.
+    assert (H1 : (lt_S_n p') = p). apply lt_unique. rewrite H1. hyp.
+  Qed.
 
-Lemma In_subterm_lst_vec_intro : forall n (ts : terms n) v i (p : i < n),
-  In v (subterm_lst (Vnth ts p)) -> In v (subterm_lst_vec ts).
+  Lemma In_subterm_lst_vec_intro : forall n (ts : terms n) v i (p : i < n),
+    In v (subterm_lst (Vnth ts p)) -> In v (subterm_lst_vec ts).
 
-Proof.
-induction ts. intros. absurd_arith.
-destruct i; simpl; intros; rewrite in_app.
-left; hyp. right. apply (IHts _ _ (lt_S_n p)); auto.
-Qed.
+  Proof.
+    induction ts. intros. absurd_arith.
+    destruct i; simpl; intros; rewrite in_app.
+    left; hyp. right. apply (IHts _ _ (lt_S_n p)); auto.
+  Qed.
 
 (***********************************************************************)
 (** the supterm relation is finitely branching *)
 
-Lemma fin_branch_supterm : finitely_branching supterm.
+  Notation supterm := (@supterm Sig).
 
-Proof.
-intros x. exists (subterm_lst x). pattern x; apply term_ind_forall; clear x.
-simpl. intros v y. split; try tauto. intro HS; destruct HS as [c Hc].
-destruct (var_eq_fill (proj2 Hc)) as [Hc' _]; intuition.
-intros f ts Hts y. split; rewrite subterm_lst_fun, in_app. Focus 2.
-intuition. generalize (in_list_of_vec H0). apply subterm_fun.
-ded (In_subterm_lst_vec_elim _ _ H0). decomp H.
-ded (Vforall_nth x0 Hts y). apply (@subterm_trans _ _ (Vnth ts x0)).
-apply H. hyp. apply subterm_fun. apply Vnth_in.
-intros. destruct H as [c Hc]. destruct (fun_eq_fill (proj2 Hc)). intuition.
-destruct H as [i H]. destruct H as [j H]. destruct H as [r H].
-destruct H as [ti H]. destruct H as [c0 H]. destruct H as [tj Hc0].
-destruct Hc as [Hc Hf]. rewrite Hc0 in Hf. simpl in Hf. Funeqtac.
-destruct c0. simpl in H. left. rewrite H. apply list_of_vec_in.
-apply Vin_cast_intro. apply Vin_appr. simpl. left; refl.
-right. assert (p : i < arity f). rewrite <- r. omega.
-assert (Hs : supterm (Vnth ts p) y).
-rewrite H. rewrite Vnth_cast, Vnth_app.
-destruct (le_gt_dec i i). 2: absurd_arith.
-set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
-rewrite (Vnth_eq _ q (lt_O_Sn j)); try omega. simpl.
-exists (Cont f0 e v c0 v0). simpl. intuition. discriminate H0.
-ded (Vforall_nth p Hts y). apply (In_subterm_lst_vec_intro _ _ p).
-apply (proj1 H0). auto.
-Qed.
+  Lemma fin_branch_supterm : finitely_branching supterm.
+
+  Proof.
+    intros x. exists (subterm_lst x). pattern x; apply term_ind_forall; clear x.
+    simpl. intros v y. split; try tauto. intro HS; destruct HS as [c Hc].
+    destruct (var_eq_fill (proj2 Hc)) as [Hc' _]; intuition.
+    intros f ts Hts y. split; rewrite subterm_lst_fun, in_app. Focus 2.
+    intuition. generalize (in_list_of_vec H0). apply subterm_fun.
+    ded (In_subterm_lst_vec_elim _ _ H0). decomp H.
+    ded (Vforall_nth x0 Hts y). apply (@subterm_trans _ _ (Vnth ts x0)).
+    apply H. hyp. apply subterm_fun. apply Vnth_in.
+    intros. destruct H as [c Hc]. destruct (fun_eq_fill (proj2 Hc)). intuition.
+    destruct H as [i H]. destruct H as [j H]. destruct H as [r H].
+    destruct H as [ti H]. destruct H as [c0 H]. destruct H as [tj Hc0].
+    destruct Hc as [Hc Hf]. rewrite Hc0 in Hf. simpl in Hf. Funeqtac.
+    destruct c0. simpl in H. left. rewrite H. apply list_of_vec_in.
+    apply Vin_cast_intro. apply Vin_appr. simpl. left; refl.
+    right. assert (p : i < arity f). rewrite <- r. omega.
+    assert (Hs : supterm (Vnth ts p) y).
+    rewrite H. rewrite Vnth_cast, Vnth_app.
+    destruct (le_gt_dec i i). 2: absurd_arith.
+    set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
+    rewrite (Vnth_eq _ q (lt_O_Sn j)); try omega. simpl.
+    exists (Cont f0 e v c0 v0). simpl. intuition. discriminate H0.
+    ded (Vforall_nth p Hts y). apply (In_subterm_lst_vec_intro _ _ p).
+    apply (proj1 H0). auto.
+  Qed.
 
 (***********************************************************************)
 (** there is no infinite sequence of subterms *)
 
-Lemma NIS_supterm : forall h, ~IS supterm h.
+  Lemma NIS_supterm : forall h, ~IS supterm h.
 
-Proof.
-intros h IsP. apply (WF_notIS fin_branch_supterm (@WF_supterm Sig) IsP).
-Qed.
+  Proof.
+    intros h IsP. apply (WF_notIS fin_branch_supterm (@WF_supterm Sig) IsP).
+  Qed.
 
 End S.
-
