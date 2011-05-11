@@ -161,6 +161,63 @@ End TransIS.
 
 (***********************************************************************)
 (** building an infinite R-sequence modulo E from an infinite
+E@R-sequence *)
+
+Section ISCompSplit.
+
+  Variables (E R : relation A) (f : nat -> A).
+
+  Lemma ISComp_split : IS (E @ R) f -> exists g, ISMod E R f g.
+
+  Proof.
+    intros.
+    assert (Hi : forall i, exists x, E (f i) x /\ R x (f (S i))).
+    intro. destruct (H i). exists x. intuition.
+    pose (Hgi := fun i => constructive_indefinite_description _ (Hi i)).
+    exists (fun i => projT1 (Hgi i)). intro. apply (projT2 (Hgi i)).
+  Qed.
+
+End ISCompSplit.
+
+(***********************************************************************)
+(** building an infinite R-sequence from an infinite E#R-sequence if
+R@E<<R *)
+
+Section absorb.
+
+  Variables (E R : relation A) (ab : R @ E << R).
+
+  Lemma IS_absorb : forall f, IS (E# @ R) f -> EIS R.
+
+  Proof.
+    intros f hf. destruct (ISComp_split hf) as [g H]. exists g.
+    intro i. ded (H i). ded (H (S i)). eapply incl_comp_rtc. apply ab.
+    exists (f (S i)). intuition.
+  Qed.
+
+  Require Import SN IS_NotSN.
+
+  Lemma WF_absorb : WF R -> WF (E# @ R).
+
+  Proof.
+    repeat rewrite WF_notIS. intros wf f hf.
+    destruct (IS_absorb hf) as [g hg]. firstorder.
+  Qed.
+
+End absorb.
+
+Lemma WF_mod_rev2 : forall E S : relation A, WF (S @ E#) -> WF (E# @ S).
+
+Proof.
+  intros E S wf. apply WF_incl with (S:=(E#@S)@E#).
+  intros x y xy. exists y. intuition.
+  apply WF_incl with (S:=E#@(S@E#)). apply comp_assoc.
+  apply WF_absorb. 2: hyp. intros x z [y [xy yz]]. destruct xy as [t [xt ty]].
+  exists t. intuition. apply rt_trans with y. hyp. apply rt_step. hyp.
+Qed.
+
+(***********************************************************************)
+(** building an infinite R-sequence modulo E from an infinite
 E@R-sequence modulo E if E is transitive *)
 
 Section ISModComp.
@@ -179,26 +236,6 @@ Section ISModComp.
   Qed.
 
 End ISModComp.
-
-(***********************************************************************)
-(** building an infinite R-sequence modulo E from an infinite
-E@R-sequence *)
-
-Section ISCompSplit.
-
-  Variables (E R : relation A) (f : nat -> A).
-
-  Lemma ISComp_split : IS (E @ R) f ->  exists g, ISMod E R f g.
-
-  Proof.
-    intros.
-    assert (Hi : forall i, exists x, E (f i) x /\ R x (f (S i))).
-    intro. destruct (H i). exists x. intuition.
-    pose (Hgi := fun i => constructive_indefinite_description _ (Hi i)).
-    exists (fun i => projT1 (Hgi i)). intro. apply (projT2 (Hgi i)).
-  Qed.
-
-End ISCompSplit.
 
 (***********************************************************************)
 (** building an infinite R-sequence modulo E from an infinite
@@ -399,46 +436,9 @@ Section ISModTrans.
     apply (lt_le_trans (reid i) (S (reid i)) (reid (S i))); auto.
     split. exists (reid 0). simpl. auto.
     unfold f0. case_eq (reid 0). left; refl. right.
-    rewrite (eq_fg0); try omega. apply HRfg0; omega.
+    rewrite eq_fg0; try omega. apply HRfg0; omega.
   Qed.
 
 End ISModTrans.
-
-(***********************************************************************)
-(** building an infinite R-sequence from an infinite E#R-sequence if
-R@E<<R *)
-
-Section absorb.
-
-  Variables (E R : relation A) (ab : R @ E << R).
-
-  Lemma IS_absorb : forall f, IS (E# @ R) f -> EIS R.
-
-  Proof.
-    intros f hf. destruct (ISComp_split hf) as [g H]. exists g.
-    intro i. ded (H i). ded (H (S i)). eapply incl_comp_rtc. apply ab.
-    exists (f (S i)). intuition.
-  Qed.
-
-  Require Import SN IS_NotSN.
-
-  Lemma WF_absorb : WF R -> WF (E# @ R).
-
-  Proof.
-    repeat rewrite WF_notIS. intros wf f hf.
-    destruct (IS_absorb hf) as [g hg]. firstorder.
-  Qed.
-
-End absorb.
-
-Lemma WF_mod_rev2 : forall E S : relation A, WF (S @ E#) -> WF (E# @ S).
-
-Proof.
-  intros E S wf. apply WF_incl with (S:=(E#@S)@E#).
-  intros x y xy. exists y. intuition.
-  apply WF_incl with (S:=E#@(S@E#)). apply comp_assoc.
-  apply WF_absorb. 2: hyp. intros x z [y [xy yz]]. destruct xy as [t [xt ty]].
-  exists t. intuition. apply rt_trans with y. hyp. apply rt_step. hyp.
-Qed.
 
 End S.
