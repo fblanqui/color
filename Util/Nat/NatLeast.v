@@ -5,9 +5,10 @@ See the COPYRIGHTS and LICENSE files.
 - Sidi Ould-Biha, 2010-04-27
 
 Definitions and proofs about the min of a non empty set of natural
-numbers. *)
+numbers, using classical logic and the axiom of indefinite
+description. *)
 
-Require Import Wf_nat ClassicalEpsilon.
+Require Import Classical_Prop IndefiniteDescription Wf_nat.
 
 Set Implicit Arguments.
 
