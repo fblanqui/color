@@ -169,7 +169,7 @@ Section S.
 (** WARNING: we use the following axiom *)
 
 Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M -> 
-  ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
+  ~WF (hd_red_mod M D) -> exists f, exists g, ISModMin M D f g.
 
 (***********************************************************************)
 (** theorem with boolean conditions *)
@@ -182,7 +182,7 @@ Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M ->
       forallb (@is_notvar_lhs Sig) (D1 ++ D2) = true ->
       forallb (brule bge) (D1 ++ D2) = true ->
       forallb (brule bgt) D1 = true -> 
-      WF (hd_red_Mod (red M #) D2) -> WF (hd_red_Mod (red M #) (D1 ++ D2)).
+      WF (hd_red_mod M D2) -> WF (hd_red_mod M (D1 ++ D2)).
 
   Proof.
     intros. induction D1; simpl. hyp.
@@ -205,13 +205,13 @@ Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M ->
     D [= dp M ->
       forallb (@is_notvar_lhs Sig) D = true ->
       forallb (brule bge) D = true ->
-      WF (hd_red_Mod (red M #) (filter (brule (neg bgt)) D)) ->
-      WF (hd_red_Mod (red M #) D).
+      WF (hd_red_mod M (filter (brule (neg bgt)) D)) ->
+      WF (hd_red_mod M D).
 
   Proof.
     intros. pose (D' := filter (brule (neg bgt)) D).
     pose (D0 := filter (brule bgt) D).
-    assert (HD : (hd_red_Mod (red M #) D) << (hd_red_Mod (red M #) (D0 ++ D'))).
+    assert (HD : (hd_red_mod M D) << (hd_red_mod M (D0 ++ D'))).
     apply hd_red_Mod_incl. refl. intros d Dd. apply in_or_app.
     case_eq (brule (neg bgt) d). right. apply (proj2 (filter_In _ _ _)).
     intuition.
