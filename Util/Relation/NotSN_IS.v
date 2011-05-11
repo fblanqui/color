@@ -23,7 +23,7 @@ Section S.
     set (T := Rof R (@proj1_sig A P)). assert (forall x, exists y, T x y).
     intro. destruct x. unfold T. simpl. ded (notSN_succ p). decomp H.
     exists (exist P x0 H2). simpl. exact H1.
-    set (b := exist P a h). ded (@dep_choice B b T H). destruct H0 as [g Hg].
+    set (b := exist P a h). ded (@dep_choice _ b _ H). destruct H0 as [g Hg].
     set (f := fun x => proj1_sig (g x)). exists f. split; unfold f; auto.
     intro. ded (proj1 Hg i). destruct (g i). destruct (g (S i)). unfold T in H0.
     simpl in H0. exact H0.
