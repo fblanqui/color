@@ -9,22 +9,19 @@ properties of ~SN terms (using classical logic)
 
 Set Implicit Arguments.
 
-Require Import ClassicUtil.
-Require Import SN.
-Require Import Relations.
-Require Import LogicUtil.
+Require Import ClassicUtil SN Relations LogicUtil.
 
 Section S.
 
-Variables (A : Type) (R : relation A) (x : A) (h : ~SN R x).
+  Variables (A : Type) (R : relation A) (x : A) (h : ~SN R x).
 
-Lemma notSN_succ : exists y, R x y /\ ~SN R y.
+  Lemma notSN_succ : exists y, R x y /\ ~SN R y.
 
-Proof.
-cut (~(forall y, R x y -> SN R y)).
-intro. ded (not_forall_imply_exists_not H). destruct H0.
-ded (imply_to_and _ _ H0). exists x0. auto.
-eapply contraposee_inv. apply SN_intro. exact h.
-Qed.
+  Proof.
+    cut (~(forall y, R x y -> SN R y)).
+    intro. ded (not_forall_imply_exists_not H). destruct H0.
+    ded (imply_to_and _ _ H0). exists x0. auto.
+    eapply contraposee_inv. apply SN_intro. exact h.
+  Qed.
 
 End S.
