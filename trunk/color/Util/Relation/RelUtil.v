@@ -287,11 +287,17 @@ Section compose.
     exists x1; split. exists x0; split; hyp. exact H1.
   Qed.
 
-  Lemma comp_rtc_incl : R @ S << S -> R# @ S << S.
+  Lemma incl_rtc_comp : R @ S << S -> R# @ S << S.
 
   Proof.
     intro. unfold inclusion, compose. intros. do 2 destruct H0.
     generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+  Qed.
+
+  Lemma incl_comp_rtc : S @ R << S -> S @ R# << S.
+
+  Proof.
+    intros h t v [u [tu uv]]. induction uv; firstorder.
   Qed.
 
 End compose.
@@ -303,6 +309,9 @@ Ltac assoc :=
     | |- _ << (?s @ ?t) @ ?u => trans (s @ (t @ u)); try apply comp_assoc'
     | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
   end.
+
+(***********************************************************************)
+(** absorbtion *)
 
 Definition absorb A (R S : relation A) := S @ R << R.
 

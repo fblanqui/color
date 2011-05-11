@@ -157,7 +157,7 @@ Lemma compat_red_mod : forall R E,
 Proof.
 intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply clos_refl_trans_m'.
 apply compat_red; hyp. destruct H0. apply compat_red; hyp.
-apply comp_rtc_incl. exact H3.
+apply incl_rtc_comp. exact H3.
 Qed.
 
 End reduction_pair.
@@ -178,7 +178,7 @@ Proof.
 intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp.
 apply clos_refl_trans_m'.
 apply compat_red; hyp. apply compat_hd_red; hyp.
-apply comp_rtc_incl. exact H3.
+apply incl_rtc_comp. exact H3.
 Qed.
 
 Lemma compat_hd_red_mod_min : forall R E,
