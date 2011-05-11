@@ -3,10 +3,11 @@ CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Sidi Ould-Biha, 2010-04-27
+- Frederic Blanqui, 2011-05-11
 
 Definitions and properties of infinite sequences, possibly modulo some
 relation. Uses classical logic and the axiom of indefinite
-description. *)
+description, and the axiom WF_notIS for WF_absorb *)
 
 Set Implicit Arguments.
 
@@ -409,16 +410,35 @@ R@E<<R *)
 
 Section absorb.
 
-  Variables (E R : relation A).
+  Variables (E R : relation A) (ab : R @ E << R).
 
-  Lemma IS_absorb : R @ E << R -> EIS (E# @ R) -> EIS R.
+  Lemma IS_absorb : forall f, IS (E# @ R) f -> EIS R.
 
   Proof.
-    intros ab [f hf]. destruct (ISComp_split hf) as [g H]. exists g.
+    intros f hf. destruct (ISComp_split hf) as [g H]. exists g.
     intro i. ded (H i). ded (H (S i)). eapply incl_comp_rtc. apply ab.
     exists (f (S i)). intuition.
   Qed.
 
+  Require Import SN IS_NotSN.
+
+  Lemma WF_absorb : WF R -> WF (E# @ R).
+
+  Proof.
+    repeat rewrite WF_notIS. intros wf f hf.
+    destruct (IS_absorb hf) as [g hg]. firstorder.
+  Qed.
+
 End absorb.
+
+Lemma WF_mod_rev2 : forall E S : relation A, WF (S @ E#) -> WF (E# @ S).
+
+Proof.
+  intros E S wf. apply WF_incl with (S:=(E#@S)@E#).
+  intros x y xy. exists y. intuition.
+  apply WF_incl with (S:=E#@(S@E#)). apply comp_assoc.
+  apply WF_absorb. 2: hyp. intros x z [y [xy yz]]. destruct xy as [t [xt ty]].
+  exists t. intuition. apply rt_trans with y. hyp. apply rt_step. hyp.
+Qed.
 
 End S.
