@@ -4,7 +4,9 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2011-05-06
 
-Properties of infinite sequences of terms *)
+Properties of infinite sequences of terms. Uses classical logic, the
+axiom of indefinite description, and the axiom WF_notIS for
+WF_absorb. *)
 
 Set Implicit Arguments.
 
@@ -17,7 +19,7 @@ Section S.
   Notation term := (term Sig).
 
 (*****************************************************************************)
-(** EIS => EISMin *)
+(** EIS -> EISMin *)
 
   Definition EISMin_from (R : relation term) t :=
     EIS_from R t /\ forall u, subterm u t -> ~EIS_from R u. 
@@ -39,7 +41,8 @@ Section S.
   Qed.
 
 (*****************************************************************************)
-(** relation between [hd_red_mod R D] and [hd_red_Mod (int_red R #) D] *)
+(** general boolean conditions for proving [WF (hd_red_mod R D)] from
+[WF (hd_red_Mod (int_red R #) D)] *)
 
   Section WF_hd_red_mod_from_WF_hd_red_Mod_int.
 
