@@ -19,21 +19,18 @@ Section S.
   Notation term := (term Sig).
 
 (*****************************************************************************)
-(** EIS -> EISMin *)
+(** NT -> NT_min *)
 
-  Definition EISMin_from (R : relation term) t :=
-    EIS_from R t /\ forall u, subterm u t -> ~EIS_from R u. 
-
-  Lemma EISMin_intro : forall R t,
-    EIS_from R t -> exists u, subterm_eq u t /\ EISMin_from R u.
+  Lemma NT_min_intro : forall R (t : term),
+    NT R t -> exists u, subterm_eq u t /\ NT_min R u.
 
   Proof.
     intros R t ht.
-    set (P := fun n => exists u, subterm_eq u t /\ size u = n /\ EIS_from R u).
+    set (P := fun n => exists u, subterm_eq u t /\ size u = n /\ NT R u).
     assert (exP : exists n, P n). exists (size t). exists t. split.
     apply subterm_eq_refl. intuition.
     destruct (ch_min P exP) as [n [[Pn nleP] nmin]].
-    destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold EISMin_from.
+    destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold NT_min.
     intuition. rename u0 into v.
     assert (size u <= size v). apply nleP. exists v. intuition.
     eapply subterm_eq_trans. apply subterm_strict. apply H. hyp.
@@ -41,8 +38,8 @@ Section S.
   Qed.
 
 (*****************************************************************************)
-(** general boolean conditions for proving [WF (hd_red_mod R D)] from
-[WF (hd_red_Mod (int_red R #) D)] *)
+(** general boolean conditions for which [WF (hd_red_mod R D)] is
+equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
   Section WF_hd_red_mod_from_WF_hd_red_Mod_int.
 

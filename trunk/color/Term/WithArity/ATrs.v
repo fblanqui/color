@@ -1054,10 +1054,10 @@ Section S.
   End rule_renaming.
 
 (***********************************************************************)
-(** minimal infinite sequences *)
+(** minimal (wrt subterm ordering) non-terminating terms *)
 
-  Definition EISMin_from (R : relation term) t :=
-    EIS_from R t /\ forall u, subterm u t -> ~EIS_from R u. 
+  Definition NT_min (R : relation term) t :=
+    NT R t /\ forall u, subterm u t -> ~NT R u. 
 
 (***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
@@ -1067,8 +1067,8 @@ internal [M]-steps is minimal if:
 - the strict subterms of this rewrite sequence terminate wrt [M] *)
 
   (* strict subterms terminate wrt [red M] *)
-  Definition MinNT M (f : nat -> term) :=
-    forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red M) g.
+  Definition ISMin R (f : nat -> term) :=
+    forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red R) g.
 
   (* every rule of [D] is applied infinitely often *)
   Definition ISModInfRuleApp (D : rules) f g :=
@@ -1077,7 +1077,7 @@ internal [M]-steps is minimal if:
 
   Definition ISModMin (M D : rules) f g :=
     ISMod (int_red M #) (hd_red D) f g
-    /\ ISModInfRuleApp D f g /\ MinNT M f /\ MinNT M g.
+    /\ ISModInfRuleApp D f g /\ ISMin M f /\ ISMin M g.
 
 End S.
 
