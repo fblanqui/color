@@ -10,8 +10,8 @@ Tyrolean Termination Tool: Techniques and Features
 Nao Hirokawa and Aart Middeldorp
 Information and Computation 205(4), pp. 474 – 511, 2007
 
-Uses classical logic and the axiom of indefinite description.
-*)
+Uses classical logic and the axiom of indefinite description, and the
+axiom WF_notIS in module Usable. *)
 
 Set Implicit Arguments.
 
@@ -657,7 +657,7 @@ Qed.
 
 Proof.
 intros f g HM. destruct HM as [HisM [hmin [Hsf Hsg]]].
-unfold ISModInfRuleApp in hmin. unfold MinNT in Hsf, Hsg. unfold ISMod in HisM.
+unfold ISModInfRuleApp in hmin. unfold ISMin in Hsf, Hsg. unfold ISMod in HisM.
 assert (SNgi : forall i, SN (red R) (g i)).
 intros. case_eq (g i). apply sn_var. auto. apply sn_args_sn_fun; auto.
 destruct (proj2 (HisM i)) as [l [r [s [Clr Hgi]]]]. destruct l.
@@ -890,7 +890,7 @@ End UsableRules.
 (***********************************************************************)
 (** functor for Rainbow *)
 
-Require Import ARedPair WF_NotIS ListDec.
+Require Import ARedPair ListDec IS_NotSN.
 Require TransClos.
 
 Module Type Binary.
