@@ -11,5 +11,5 @@ Set Implicit Arguments.
 
 Require Import RelUtil.
 
-Axiom dep_choice : forall (B : Type) (b : B) (T : relation B),
-  classic_left_total T -> exists f, IS T f /\ f 0 = b.
+Axiom dep_choice : forall (A : Type) (a : A) (R : relation A),
+  classic_left_total R -> exists f, IS R f /\ f 0 = a.
