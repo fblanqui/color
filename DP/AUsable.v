@@ -657,7 +657,7 @@ Qed.
 
 Proof.
 intros f g HM. destruct HM as [HisM [hmin [Hsf Hsg]]].
-unfold ISModInfRuleApp in hmin. unfold ISMin in Hsf, Hsg. unfold ISMod in HisM.
+unfold InfRuleApp in hmin. unfold Min in Hsf, Hsg. unfold ISMod in HisM.
 assert (SNgi : forall i, SN (red R) (g i)).
 intros. case_eq (g i). apply sn_var. auto. apply sn_args_sn_fun; auto.
 destruct (proj2 (HisM i)) as [l [r [s [Clr Hgi]]]]. destruct l.

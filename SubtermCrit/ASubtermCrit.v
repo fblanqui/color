@@ -104,7 +104,7 @@ Section S.
 
     Proof.
       intros f g HM. destruct HM as [HisM hmin]. destruct hmin as [hmin HsT].
-      destruct HsT as [Rsf Rsg]. unfold ISModInfRuleApp in hmin.
+      destruct HsT as [Rsf Rsg]. unfold InfRuleApp in hmin.
       unfold ISMod in HisM. destruct hyp2 as [l H0]. destruct H0 as [r H0].
       destruct H0 as [Dlr Glr].
 
@@ -178,7 +178,7 @@ Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M ->
   Notation bgt := (fun x y => bsupterm (proj x) (proj y)).
 
   Lemma subterm_criterion_WF : forall M D1 D2,
-    (D1 ++ D2) [= dp M ->
+    D1 ++ D2 [= dp M ->
       forallb (@is_notvar_lhs Sig) (D1 ++ D2) = true ->
       forallb (brule bge) (D1 ++ D2) = true ->
       forallb (brule bgt) D1 = true -> 

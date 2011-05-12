@@ -1062,22 +1062,24 @@ Section S.
 (***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
 [g] describing an infinite sequence of head [D]-steps modulo arbitrary
-internal [M]-steps is minimal if:
+internal [R]-steps is minimal if:
 - every rule of [D] is applied infinitely often
-- the strict subterms of this rewrite sequence terminate wrt [M] *)
+- the strict subterms of this rewrite sequence terminate wrt [R] *)
 
-  (* strict subterms terminate wrt [red M] *)
-  Definition ISMin R (f : nat -> term) :=
-    forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS (red R) g.
+  (* strict subterms terminate wrt [R] *)
+  Definition Min R (f : nat -> term) :=
+    forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS R g.
 
   (* every rule of [D] is applied infinitely often *)
-  Definition ISModInfRuleApp (D : rules) f g :=
+  Definition InfRuleApp (D : rules) f g :=
     forall d, In d D -> exists h : nat -> nat,
       forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
 
-  Definition ISModMin (M D : rules) f g :=
-    ISMod (int_red M #) (hd_red D) f g
-    /\ ISModInfRuleApp D f g /\ ISMin M f /\ ISMin M g.
+  Definition ISMin R f := IS R f /\ Min R f.
+
+  Definition ISModMin (R D : rules) f g :=
+    ISMod (int_red R #) (hd_red D) f g
+    /\ InfRuleApp D f g /\ Min (red R) f /\ Min (red R) g.
 
 End S.
 
