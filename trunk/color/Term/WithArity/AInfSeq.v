@@ -10,32 +10,58 @@ WF_absorb. *)
 
 Set Implicit Arguments.
 
-Require Import RelUtil ATrs LogicUtil ACalls SN InfSeq NatLeast List.
+Require Import RelUtil ATrs LogicUtil ACalls SN InfSeq NatLeast List
+  IndefiniteDescription.
 
 Section S.
 
   Variable Sig : Signature.
 
   Notation term := (term Sig).
+  Notation subterm_eq := (@subterm_eq Sig).
+  Notation supterm_eq := (@supterm_eq Sig).
 
 (*****************************************************************************)
-(** NT -> NT_min *)
+(** minimal non-terminating subterm *)
 
-  Lemma NT_min_intro : forall R (t : term),
-    NT R t -> exists u, subterm_eq u t /\ NT_min R u.
+  Section NT_min.
 
-  Proof.
-    intros R t ht.
-    set (P := fun n => exists u, subterm_eq u t /\ size u = n /\ NT R u).
-    assert (exP : exists n, P n). exists (size t). exists t. split.
-    apply subterm_eq_refl. intuition.
-    destruct (ch_min P exP) as [n [[Pn nleP] nmin]].
-    destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold NT_min.
-    intuition. rename u0 into v.
-    assert (size u <= size v). apply nleP. exists v. intuition.
-    eapply subterm_eq_trans. apply subterm_strict. apply H. hyp.
-    ded (subterm_size H). omega.
-  Qed.
+    Variables (R : relation term) (t : term) (ht : NT R t).
+
+    Lemma NT_min_intro : exists u, subterm_eq u t /\ NT_min R u.
+
+    Proof.
+      set (P := fun n => exists u, subterm_eq u t /\ size u = n /\ NT R u).
+      assert (exP : exists n, P n). exists (size t). exists t. split.
+      apply subterm_eq_refl. intuition.
+      destruct (ch_min P exP) as [n [[Pn nleP] nmin]].
+      destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold NT_min.
+      intuition. rename u0 into v.
+      assert (size u <= size v). apply nleP. exists v. intuition.
+      eapply subterm_eq_trans. apply subterm_strict. apply H. hyp.
+      ded (subterm_size H). omega.
+    Qed.
+
+    Definition min_term :=
+      projT1 (constructive_indefinite_description _ NT_min_intro).
+
+    Lemma NT_min_term : NT_min R min_term.
+
+    Proof.
+      unfold min_term. destruct (constructive_indefinite_description
+      (fun u : term => subterm_eq u t /\ NT_min R u) NT_min_intro) as [u hu].
+      simpl. intuition.
+    Qed.
+
+    Lemma subterm_min_term : subterm_eq min_term t.
+
+    Proof.
+      unfold min_term. destruct (constructive_indefinite_description
+      (fun u : term => subterm_eq u t /\ NT_min R u) NT_min_intro) as [u hu].
+      simpl. intuition.
+    Qed.
+
+  End NT_min.
 
 (*****************************************************************************)
 (** general boolean conditions for which [WF (hd_red_mod R D)] is
