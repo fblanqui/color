@@ -223,6 +223,23 @@ Instance inclusion_m A :
 Proof. firstorder. Qed.
 
 (***********************************************************************)
+(** infinite sequences *)
+
+Instance IS_m' A : Proper (@inclusion A ==> eq ==> impl) (@IS A).
+
+Proof.
+  intros R S RS f g fg h i. subst. apply RS. apply h.
+Qed.
+
+Instance IS_m A : Proper (same_relation A ==> eq ==> iff) (@IS A).
+
+Proof.
+  intros R S [RS SR] f g fg. split; intro h.
+  eapply IS_m'. apply RS. apply fg. hyp.
+  eapply IS_m'. apply SR. symmetry. apply fg. hyp.
+Qed.
+
+(***********************************************************************)
 (** irreflexive *)
 
 Instance irreflexive_m' A : Proper (@inclusion A --> impl) (@irreflexive A).
