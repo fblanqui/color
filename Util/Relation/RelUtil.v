@@ -239,6 +239,18 @@ Proof.
   eapply IS_m'. apply SR. symmetry. apply fg. hyp.
 Qed.
 
+Section IS.
+
+  Variables (A : Type) (R : relation A).
+
+  Lemma NT_IS_elt : forall f k, IS R f -> NT R (f k).
+
+  Proof.
+    intros f k hf. exists (fun i => f (i+k)). firstorder.
+  Qed.
+
+End IS.
+
 (***********************************************************************)
 (** irreflexive *)
 
