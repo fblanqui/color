@@ -1056,8 +1056,9 @@ Section S.
 (***********************************************************************)
 (** minimal (wrt subterm ordering) non-terminating terms *)
 
-  Definition NT_min (R : relation term) t :=
-    NT R t /\ forall u, subterm u t -> ~NT R u. 
+  Definition min (R : relation term) t := forall u, subterm u t -> ~NT R u.
+ 
+  Definition NT_min (R : relation term) t := NT R t /\ min R t.
 
 (***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
@@ -1074,8 +1075,6 @@ internal [R]-steps is minimal if:
   Definition InfRuleApp (D : rules) f g :=
     forall d, In d D -> exists h : nat -> nat,
       forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
-
-  Definition ISMin R f := IS R f /\ Min R f.
 
   Definition ISModMin (R D : rules) f g :=
     ISMod (int_red R #) (hd_red D) f g
