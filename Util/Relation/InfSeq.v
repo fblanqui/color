@@ -16,7 +16,28 @@ Require Import RelUtil NatUtil List Path NatLeast LogicUtil ClassicUtil
 
 Section S.
 
-Variable A : Type.
+  Variable A : Type.
+
+(*****************************************************************************)
+(** build an infinite sequence by iterating a function *)
+
+Section iter.
+
+  Variables (a : A) (f : A -> A).
+
+  Fixpoint iter i :=
+    match i with
+      | 0 => a
+      | S i' => f (iter i')
+    end.
+
+  Lemma IS_iter : forall R : relation A, (forall x, R x (f x)) -> IS R iter.
+
+  Proof.
+    intros R hf. unfold IS. destruct i; simpl; apply hf.
+  Qed.
+
+End iter.
 
 (***********************************************************************)
 (** building an infinite E-sequence from an infinite E!-sequence *)
