@@ -482,13 +482,17 @@ unfold subterm. intros. destruct H as [C]. intuition. destruct C. intuition.
 subst t. exists (subc s (Cont f e v C v0)). intuition. discr. apply sub_fill.
 Qed.
 
-Lemma subterm_eq_sub_elim : forall u t s, subterm_eq t (sub s u) -> exists v,
-  subterm_eq v u /\ (t = sub s v \/ exists x, v = Var x /\ subterm_eq t (s x)).
+Lemma subterm_eq_sub_elim : forall u t s,
+  subterm_eq t (sub s u) -> exists v, subterm_eq v u
+    /\ match v with
+         | Var x => subterm_eq t (s x)
+         | Fun f ts => t = sub s v
+       end.
 
 Proof.
 intro u; pattern u; apply term_ind_forall; clear u.
 (* var *)
-intro x. exists (Var x). intuition. firstorder.
+intros x t s ht. exists (Var x). intuition.
 (* fun *)
 intros f ts IH t s ht. destruct (subterm_eq_split ht).
 exists (Fun f ts). intuition.
@@ -496,8 +500,7 @@ destruct (subterm_fun_elim H) as [v [hv1 hv2]].
 change (Vin v (Vmap (sub s) ts)) in hv1.
 destruct (Vin_map hv1) as [w [hw1 hw2]]. subst.
 destruct (Vforall_in IH hw1 t s hv2) as [x [hx1 hx2]]. exists x. split.
-transitivity w. hyp. apply subterm_strict. apply subterm_fun. hyp.
-destruct hx2. auto. destruct H0 as [y [y1 y2]]. right. exists y. auto.
+transitivity w. hyp. apply subterm_strict. apply subterm_fun. hyp. hyp.
 Qed.
 
 (***********************************************************************)
@@ -768,6 +771,7 @@ Implicit Arguments fun_eq_sub [Sig f ts s u].
 Implicit Arguments sub_restrict_incl [Sig l r].
 Implicit Arguments fresh_vars [Sig].
 Implicit Arguments fresh [Sig].
+Implicit Arguments subterm_eq_sub_elim [Sig u t s].
 
 (***********************************************************************)
 (** tactics *)
