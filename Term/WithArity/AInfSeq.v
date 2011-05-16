@@ -97,8 +97,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
     Proof.
       set (P := fun n => exists u, subterm_eq u t /\ size u = n /\ NT R u).
-      assert (exP : exists n, P n). exists (size t). exists t. split.
-      apply subterm_eq_refl. intuition.
+      assert (exP : exists n, P n). exists (size t). exists t. intuition.
       destruct (ch_min P exP) as [n [[Pn nleP] nmin]].
       destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold NT_min, min.
       intuition. rename u0 into v.
@@ -136,14 +135,16 @@ infinite R-sequence *)
 
     Variable R : relation term.
 
-    Definition S : relation (NTM R) := R @ supterm_eq.
+    Definition Rsup : relation (NTM R) := R @ supterm_eq.
 
-    Lemma S_left_total : forall t, exists u, S t u.
+    (* every minimal non-terminating term admits an Rsup-reduct that is a
+    minimal non-terminating term too *)
+    Lemma Rsup_left_total : forall t, exists u, Rsup t u.
 
     Proof.
       intros [t [[f [h0 hf]] ht]].
       exists (mkNTM (NT_min_term (NT_IS_elt 1 hf))).
-      unfold S. simpl. exists (f 1). subst t. intuition.
+      unfold Rsup. simpl. exists (f 1). subst t. intuition.
       apply subterm_eq_min_term.
     Qed.
 
@@ -153,14 +154,13 @@ infinite R-sequence *)
     Proof.
       intros f hf. set (Min' := fun f : nat -> NTM R =>
         forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS R g).
-      cut (exists g : nat -> NTM R, IS S g /\ Min' g).
+      cut (exists g : nat -> NTM R, IS Rsup g /\ Min' g).
       intros [g [h1 h2]]. exists (fun i => g i). intuition.
-      destruct (choice _ S_left_total) as [next hnext].
+      destruct (choice _ Rsup_left_total) as [next hnext].
       set (a := mkNTM (NT_min_term (NT_IS_elt 0 hf))).
       exists (iter a next). split.
       apply IS_iter. apply hnext.
-      unfold Min'. intros i x hx g g0 hg.
-      destruct (iter a next i) as [t [[h [h0 hh]] ht]].
+      intros i x hx g g0 hg. destruct (iter a next i) as [t [[h [h0 hh]] ht]].
       simpl in hx. ded (ht _ hx). absurd (NT R x). hyp. exists g. intuition.
     Qed.
 

@@ -10,15 +10,9 @@ one-hole contexts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil VecUtil ListUtil LogicUtil BoolUtil VecUtil NatUtil
+  RelUtil Setoid.
 Require Export ATerm.
-Require Import VecUtil.
-Require Import ListUtil.
-Require Import LogicUtil.
-Require Import BoolUtil.
-Require Import VecUtil.
-Require Import NatUtil.
-Require Import RelUtil.
 
 Section S.
 
@@ -178,10 +172,16 @@ Definition supterm := transp subterm.
 
 Definition supterm_eq := transp subterm_eq.
 
-Lemma subterm_eq_refl : forall t, subterm_eq t t.
+Global Instance subterm_eq_refl : Reflexive subterm_eq.
 
 Proof.
-intro. exists Hole. refl.
+intro t. exists Hole. refl.
+Qed.
+
+Global Instance supterm_eq_refl : Reflexive supterm_eq.
+
+Proof.
+intro t. exists Hole. refl.
 Qed.
 
 Lemma subterm_eq_var : forall u x, subterm_eq u (Var x) -> u = Var x.
@@ -255,6 +255,13 @@ right. exists (Cont e v x v0). intuition. discr.
 destruct h. exists Hole. auto. apply subterm_strict. hyp.
 Qed.
 
+Lemma subterm_eq_split : forall t u, subterm_eq t u -> t = u \/ subterm t u.
+
+Proof.
+intros t u tu. destruct tu as [c hu]. destruct c.
+auto. right. exists (Cont e v c v0). intuition. discr.
+Qed.
+
 (***********************************************************************)
 (** transitivity of the subterm ordering *)
 
@@ -277,22 +284,30 @@ split. destruct x. absurd (Hole = Hole); auto.
 destruct x0; simpl; discr. refl.
 Qed.
 
-Lemma subterm_trans : forall t u v,
-  subterm t u -> subterm u v -> subterm t v.
+Global Instance subterm_trans : Transitive subterm.
 
 Proof.
-unfold subterm. intros. do 2 destruct H. do 2 destruct H0.
-subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-split. destruct x. absurd (Hole = Hole); auto.
-destruct x0; simpl; discr. refl.
+intros t u v tu uv. destruct tu as [c [hc hu]]. destruct uv as [d [hd hv]].
+subst. rewrite fill_fill. exists (comp d c). intuition.
+destruct d. auto. discr.
 Qed.
 
-Lemma subterm_eq_trans : forall t u v,
-  subterm_eq t u -> subterm_eq u v -> subterm_eq t v.
+Global Instance subterm_eq_trans : Transitive subterm_eq.
 
 Proof.
-intros. destruct H. destruct H0. subst. rewrite fill_fill.
-exists (comp x0 x). refl.
+intros t u v [c hu] [d hv]. subst. rewrite fill_fill. exists (comp d c). refl.
+Qed.
+
+Global Instance supterm_trans : Transitive supterm.
+
+Proof.
+intros t u v. unfold supterm, transp. intros tu uv. transitivity u; hyp.
+Qed.
+
+Global Instance supterm_eq_trans : Transitive supterm_eq.
+
+Proof.
+intros t u v. unfold supterm_eq, transp. intros tu uv. transitivity u; hyp.
 Qed.
 
 (***********************************************************************)
@@ -348,11 +363,11 @@ Lemma bsubterm_eq_ok : forall t u, bsubterm_eq t u = true <-> subterm_eq t u.
 Proof.
 intros t u. pattern u; apply term_ind_forall; clear u; simpl.
 (* Var *)
-intro. rewrite beq_term_ok. split; intro. subst. apply subterm_eq_refl.
+intro. rewrite beq_term_ok. split; intro. subst. refl.
 apply subterm_eq_var in H. hyp.
 (* Fun *)
 split; rewrite orb_eq; rewrite beq_term_ok; intros. destruct H0.
-subst. apply subterm_eq_refl. rewrite (bVexists_ok_Vin (subterm_eq t)) in H0.
+subst. refl. rewrite (bVexists_ok_Vin (subterm_eq t)) in H0.
 Focus 2. intros. pattern x. apply Vforall_in with (v:=v). apply H. hyp.
 rewrite Vexists_eq in H0. decomp H0. apply subterm_eq_trans with x.
 hyp. apply subterm_strict. apply subterm_fun. hyp.
@@ -403,7 +418,7 @@ Lemma in_vars_subterm_eq : forall x t, In x (vars t) -> subterm_eq (Var x) t.
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
-intuition. rewrite H0. apply subterm_eq_refl.
+intuition. rewrite H0. refl.
 generalize (in_vars_vec_elim H0). intro.
 destruct H1 as [t]. destruct H1. generalize (Vforall_in H H1). intro.
 generalize (H3 H2). intro. apply subterm_strict. eapply subterm_trans_eq1.
