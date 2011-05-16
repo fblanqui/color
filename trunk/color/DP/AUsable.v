@@ -817,7 +817,7 @@ assert (H11 : exists l, exists r, In (mkRule l r) (a :: D1 ++ D2) /\ succ l r).
 exists (lhs a); exists (rhs a); split. simpl. left. destruct a; simpl. auto.
 rewrite forallb_forall in H7. generalize (H7 a (in_eq a D1)). unfold brule.
 apply bsucc_sub.
-rewrite <- brules_preserve_vars_ok in H0, H2.
+rewrite brules_preserve_vars_ok in H0, H2.
 assert (H12 : forall f, defined f M && defined f (a :: D1 ++ D2) = false).
 intro. case_eq (defined f0 M); case_eq (defined f0 (a :: D1 ++ D2)); auto.
 rewrite defined_list_ok in H13.
@@ -861,7 +861,7 @@ apply (WF_incl HD). apply usable_rules_WF; auto.
 intros x T. rewrite in_app in T. destruct T as [T|T]; apply H.
 unfold D0 in T; rewrite filter_In in T; destruct T; auto.
 unfold D' in T; rewrite filter_In in T; destruct T; auto.
-rewrite <- brules_preserve_vars_ok in H2 |- *. intros l r Dlr.
+rewrite brules_preserve_vars_ok in H2 |- *. intros l r Dlr.
 apply H2. unfold D0, D' in Dlr; rewrite in_app in Dlr.
 destruct Dlr as [Dlr | Dlr]; rewrite filter_In in Dlr; intuition.
 case_eq (filter (fun x => defined x M) (list_defined (D0 ++ D'))); auto.
