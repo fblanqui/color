@@ -182,7 +182,7 @@ simpl. intros. contradiction.
 (* fun *)
 intros f ts IH. rewrite calls_fun. case (defined f R); simpl; intro.
 (* f defined *)
-destruct H. rewrite H. apply subterm_eq_refl.
+destruct H. rewrite H. refl.
 ded (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
 eapply subterm_trans_eq1. apply H1. apply subterm_fun. assumption.
 (* f undefined *)

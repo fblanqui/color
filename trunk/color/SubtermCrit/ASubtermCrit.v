@@ -77,7 +77,7 @@ Section S.
       unfold is_notvar_lhs. simpl. intros. discr.
       intros. destruct r. rewrite proj_sub_fun, H0. simpl.
       apply subterm_eq_proj.
-      clear H1. repeat rewrite proj_sub_fun. rewrite H0. apply subterm_eq_refl.
+      clear H1. repeat rewrite proj_sub_fun. rewrite H0. refl.
     Qed.
 
     Lemma int_red_proj : forall t u,

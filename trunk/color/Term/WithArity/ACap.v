@@ -9,14 +9,7 @@ cap of undefined symbols and aliens of defined symbols
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ACalls.
-Require Import ATrs.
-Require Import VecUtil.
-Require Import ListUtil.
-Require Import NatUtil.
-Require Import Max.
-Require Import EqUtil.
+Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil Max EqUtil.
 
 Section S.
 
@@ -150,7 +143,7 @@ Proof.
 intros u t. pattern t. apply term_ind_forall.
 simpl. intros. contradiction.
 intros f ts H. simpl. case (defined f R).
-simpl. intro. destruct H0. subst u. apply subterm_eq_refl. contradiction.
+simpl. intro. destruct H0. subst u. refl. contradiction.
 change (Vin u (conc (Vmap capa ts)) -> subterm_eq u (Fun f ts)). intro.
 assert (exists c, Vin c (Vmap capa ts) /\ Vin u (aliens c)). apply in_conc.
 assumption. destruct H1 as [c]. destruct H1.

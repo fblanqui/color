@@ -37,6 +37,7 @@ Definition single x t : substitution :=
 
 Definition sub : substitution -> term -> term := @term_int Sig I0.
 
+(*REMOVE?*)
 Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (Vmap (sub s) v).
 
 Proof.
@@ -463,12 +464,40 @@ apply (f_equal (Fun f)). rewrite Vmap_cast. rewrite Vmap_app. simpl Vmap.
 rewrite IHC. refl.
 Qed.
 
+(***********************************************************************)
+(** relation wrt subterm *)
+
 Lemma subterm_eq_sub : forall u t s,
   subterm_eq u t -> subterm_eq (sub s u) (sub s t).
 
 Proof.
 unfold subterm_eq. intros. destruct H as [C]. subst t. exists (subc s C).
 apply sub_fill.
+Qed.
+
+Lemma subterm_sub : forall u t s, subterm u t -> subterm (sub s u) (sub s t).
+
+Proof.
+unfold subterm. intros. destruct H as [C]. intuition. destruct C. intuition.
+subst t. exists (subc s (Cont f e v C v0)). intuition. discr. apply sub_fill.
+Qed.
+
+Lemma subterm_eq_sub_elim : forall u t s, subterm_eq t (sub s u) -> exists v,
+  subterm_eq v u /\ (t = sub s v \/ exists x, v = Var x /\ subterm_eq t (s x)).
+
+Proof.
+intro u; pattern u; apply term_ind_forall; clear u.
+(* var *)
+intro x. exists (Var x). intuition. firstorder.
+(* fun *)
+intros f ts IH t s ht. destruct (subterm_eq_split ht).
+exists (Fun f ts). intuition.
+destruct (subterm_fun_elim H) as [v [hv1 hv2]].
+change (Vin v (Vmap (sub s) ts)) in hv1.
+destruct (Vin_map hv1) as [w [hw1 hw2]]. subst.
+destruct (Vforall_in IH hw1 t s hv2) as [x [hx1 hx2]]. exists x. split.
+transitivity w. hyp. apply subterm_strict. apply subterm_fun. hyp.
+destruct hx2. auto. destruct H0 as [y [y1 y2]]. right. exists y. auto.
 Qed.
 
 (***********************************************************************)

@@ -50,8 +50,8 @@ Section S.
   Lemma subterm_eq_proj : forall t, subterm_eq (proj t) t.
 
   Proof.
-    intro. case t. simpl. intro. apply subterm_eq_refl.
-    simpl. intros. case (zerop (arity f)). intros. apply subterm_eq_refl.
+    intro. case t. simpl. intro. refl.
+    simpl. intros. case (zerop (arity f)). intros. refl.
     intros. apply subterm_strict. apply subterm_fun. apply Vnth_in.
   Qed.
 
@@ -80,7 +80,7 @@ Section S.
 
   Proof.
     intros. case t. simpl. intros. apply subterm_eq_proj.
-    intros. rewrite proj_sub_fun. apply subterm_eq_refl.
+    intros. rewrite proj_sub_fun. refl.
   Qed.
 
 (***********************************************************************)
