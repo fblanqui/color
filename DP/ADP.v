@@ -190,18 +190,6 @@ Proof.
 unfold rules_preserve_vars. intros. destruct (dp_elim_vars H). intuition.
 Qed.
 
-(*REMOVE? used no where
-
-Require Import AShift.
-
-Lemma dp_preserve_pw_disjoint_vars :
-  pw_disjoint_vars (map lhs R) -> pw_disjoint_vars (map lhs dp).
-
-Proof.
-unfold pw_disjoint_vars, disjoint_vars. intros. eapply H.
-apply lhs_dp. hyp. apply lhs_dp. hyp. apply H2. hyp.
-Qed.*)
-
 (***********************************************************************)
 (** fundamental dp theorem *)
 
