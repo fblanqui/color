@@ -325,12 +325,6 @@ Qed.
 (** list of variables in a term:
 a variable occurs in the list as much as it has occurrences in t *)
 
-(*COQ: Fixpoint vars (t : term) : variables :=
-  match t with
-    | Var x => x :: nil
-    | Fun f v => Vfold_left (fun xs t => vars t ++ xs) nil v
-  end.*)
-
 Fixpoint vars (t : term) : variables :=
   match t with
     | Var x => x :: nil
