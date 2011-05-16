@@ -265,25 +265,6 @@ Qed.
 (***********************************************************************)
 (** transitivity of the subterm ordering *)
 
-Lemma subterm_trans_eq1 : forall t u v,
-  subterm_eq t u -> subterm u v -> subterm t v.
-
-Proof.
-unfold subterm, subterm_eq. intros. destruct H. destruct H0. destruct H0.
-subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-split. destruct x0. absurd (Hole = Hole); auto. simpl. discr. refl.
-Qed.
-
-Lemma subterm_trans_eq2 : forall t u v,
-  subterm t u -> subterm_eq u v -> subterm t v.
-
-Proof.
-unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
-subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-split. destruct x. absurd (Hole = Hole); auto.
-destruct x0; simpl; discr. refl.
-Qed.
-
 Global Instance subterm_trans : Transitive subterm.
 
 Proof.
@@ -308,6 +289,25 @@ Global Instance supterm_eq_trans : Transitive supterm_eq.
 
 Proof.
 intros t u v. unfold supterm_eq, transp. intros tu uv. transitivity u; hyp.
+Qed.
+
+Lemma subterm_trans_eq1 : forall t u v,
+  subterm_eq t u -> subterm u v -> subterm t v.
+
+Proof.
+unfold subterm, subterm_eq. intros. destruct H. destruct H0. destruct H0.
+subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
+split. destruct x0. absurd (Hole = Hole); auto. simpl. discr. refl.
+Qed.
+
+Lemma subterm_trans_eq2 : forall t u v,
+  subterm t u -> subterm_eq u v -> subterm t v.
+
+Proof.
+unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
+subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
+split. destruct x. absurd (Hole = Hole); auto.
+destruct x0; simpl; discr. refl.
 Qed.
 
 (***********************************************************************)
