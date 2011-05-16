@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Require Export AContext ASubstitution.
 
 Require Import ARelation ListUtil ListRepeatFree LogicUtil VecUtil RelUtil
-  ListForall SN BoolUtil EqUtil NatUtil Basics Syntax.
+  ListForall SN BoolUtil EqUtil NatUtil Basics Syntax Setoid.
 
 Section basic_definitions.
 
@@ -164,7 +164,7 @@ Implicit Arguments is_notvar_lhs_elim [Sig R l r].
 Implicit Arguments is_notvar_rhs_elim [Sig R l r].
 
 (***********************************************************************)
-(** tactics *)
+(** basic tactic for eliminating rewriting hypotheses *)
 
 Ltac redtac := repeat
   match goal with
@@ -199,20 +199,8 @@ Ltac redtac := repeat
         destruct H as [t h]; destruct h; redtac
   end.
 
-Ltac is_var_lhs := cut False;
-  [tauto | eapply is_notvar_lhs_false; eassumption].
-
-Ltac is_var_rhs := cut False;
-  [tauto | eapply is_notvar_rhs_false; eassumption].
-
-Require ListDec.
-
-Ltac incl_rule Sig := ListDec.incl (@beq_rule_ok Sig).
-
 (***********************************************************************)
 (** monotony properties *)
-
-Require Import Setoid.
 
 Add Parametric Morphism (Sig : Signature) : (@red Sig)
   with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
@@ -601,10 +589,26 @@ Section S.
 (***********************************************************************)
 (** preservation of variables under reduction *)
 
-  Definition rules_preserve_vars := fun R : rules =>
+  Require Import ListDec.
+
+  Definition rules_preserve_vars (R : rules) :=
     forall l r, In (mkRule l r) R -> vars r [= vars l.
 
-  Definition brules_preserve_vars := let P := eq_nat_dec in
+  Definition brules_preserve_vars (R : rules) :=
+    forallb (fun x => incl beq_nat (vars (rhs x)) (vars (lhs x))) R.
+
+  Lemma brules_preserve_vars_ok :
+    forall R, brules_preserve_vars R = true <-> rules_preserve_vars R.
+
+  Proof.
+    intro R. unfold rules_preserve_vars, brules_preserve_vars.
+    rewrite forallb_forall. split.
+    intros h l r hlr. rewrite <- incl_ok. rewrite <- (h _ hlr). refl.
+    apply beq_nat_ok.
+    intros h [l r] hlr. rewrite incl_ok. apply h. hyp. apply beq_nat_ok.
+  Qed.
+
+(*REMOVE:  Definition brules_preserve_vars := let P := eq_nat_dec in
     fun R : rules => forallb (fun x => Inclb P (vars (rhs x)) (vars (lhs x))) R.
 
   Lemma brules_preserve_vars_ok :
@@ -614,7 +618,7 @@ Section S.
     intro; unfold brules_preserve_vars. rewrite forallb_forall; split; intros.
     destruct x as [l r]; simpl. rewrite Inclb_ok. apply H; auto.
     intros l r Rlr. rewrite <- (Inclb_ok eq_nat_dec). apply (H _ Rlr).
-  Qed.
+  Qed.*)
 
   Lemma rules_preserve_vars_cons : forall a R, rules_preserve_vars (a :: R)
     <-> vars (rhs a) [= vars (lhs a) /\ rules_preserve_vars R.
@@ -708,10 +712,7 @@ Section S.
   Lemma rules_preserve_vars_incl : forall R S : rules,
     R [= S -> rules_preserve_vars S -> rules_preserve_vars R.
 
-  Proof.
-    unfold rules_preserve_vars, incl. intuition. eapply H0. apply H. apply H1.
-    hyp.
-  Qed.
+  Proof. firstorder. Qed.
 
 (***********************************************************************)
 (** biggest variable in a list of rules *)
@@ -1056,9 +1057,31 @@ Section S.
 (***********************************************************************)
 (** minimal (wrt subterm ordering) non-terminating terms *)
 
-  Definition min (R : relation term) t := forall u, subterm u t -> ~NT R u.
- 
-  Definition NT_min (R : relation term) t := NT R t /\ min R t.
+  Section min.
+
+    Variable R : relation term.
+
+    Definition min t := forall u, subterm u t -> ~NT R u.
+
+    Definition NT_min t := NT R t /\ min t.
+
+  End min.
+
+  Section subterm_notNT.
+
+    Variable R : rules.
+
+    Lemma subterm_eq_notNT : forall t u,
+      subterm_eq t u -> ~NT (red R) u -> ~NT (red R) t.
+
+    Proof.
+      intros t u tu hu ht. destruct ht as [f [h0 hf]].
+      destruct tu as [c hc]. absurd (NT (red R) u). hyp.
+      exists (fun i => fill c (f i)). subst. intuition.
+      intro i. apply red_fill. apply hf.
+    Qed.
+    
+  End subterm_notNT.
 
 (***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
@@ -1086,6 +1109,14 @@ Implicit Arguments int_red_fun [Sig R f ts v].
 
 (***********************************************************************)
 (** tactics *)
+
+Ltac is_var_lhs := cut False;
+  [tauto | eapply is_notvar_lhs_false; eassumption].
+
+Ltac is_var_rhs := cut False;
+  [tauto | eapply is_notvar_rhs_false; eassumption].
+
+Ltac incl_rule Sig := incl (@beq_rule_ok Sig).
 
 Ltac set_Sig_to x :=
   match goal with
