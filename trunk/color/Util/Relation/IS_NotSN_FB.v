@@ -32,10 +32,10 @@ Section S.
 
   End false.
 
-  Lemma IS_notWF : EIS R -> ~WF R.
+  Lemma IS_notWF : forall f, IS R f -> ~WF R.
 
   Proof.
-    unfold not. intros. destruct H. eapply WF_notIS. hyp. apply H.
+    intros f hf h. eapply WF_notIS. hyp. apply hf.
   Qed.
 
 End S.
