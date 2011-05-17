@@ -1057,31 +1057,9 @@ Section S.
 (***********************************************************************)
 (** minimal (wrt subterm ordering) non-terminating terms *)
 
-  Section min.
+  Definition min R t := forall u : term, subterm u t -> ~NT R u.
 
-    Variable R : relation term.
-
-    Definition min t := forall u, subterm u t -> ~NT R u.
-
-    Definition NT_min t := NT R t /\ min t.
-
-  End min.
-
-  Section subterm_notNT.
-
-    Variable R : rules.
-
-    Lemma subterm_eq_notNT : forall t u,
-      subterm_eq t u -> ~NT (red R) u -> ~NT (red R) t.
-
-    Proof.
-      intros t u tu hu ht. destruct ht as [f [h0 hf]].
-      destruct tu as [c hc]. absurd (NT (red R) u). hyp.
-      exists (fun i => fill c (f i)). subst. intuition.
-      intro i. apply red_fill. apply hf.
-    Qed.
-    
-  End subterm_notNT.
+  Definition NT_min R t := NT R t /\ min R t.
 
 (***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
