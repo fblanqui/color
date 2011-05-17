@@ -223,7 +223,7 @@ Implicit Arguments PI_term_int_eq [t k].
 (***********************************************************************)
 (** polynomial associated to a rule *)
 
-(*TODO: Temporarily introducing some notations for the following 2
+(*FIXME: Temporarily introducing some notations for the following 2
    definitions, for the paper. They should be extended and used more
    consistently in all polynomial-related definitions.  *)
 
