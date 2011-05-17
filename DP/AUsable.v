@@ -665,9 +665,9 @@ generalize (is_notvar_lhs_false _ NVlC _ _ Clr); tauto.
 rewrite H in Hgi; simpl in Hgi. rewrite (symb_eq (proj1 Hgi)).
 generalize (HDPR f1). rewrite (lhs_fun_defined Clr), andb_true_r; auto.
 apply Vforall_intro; intros. apply NNPP; intro HSx.
-destruct (notSN_IS HSx) as [h [Hh1 Hh2]].
+destruct (notSN_NT HSx) as [h [Hh1 Hh2]].
 assert (T : subterm x (g i)). rewrite H. apply subterm_fun; auto.
-apply (Hsg i x T h Hh2 Hh1).
+apply (Hsg i x T h Hh1 Hh2).
 assert (SNfi : forall i, SN (red R) (f i)). intro i.
 destruct (int_red_rtc_preserve_hd (proj1 (HisM i))). rewrite H. apply SNgi.
 destruct H as [F [us [vs [Efi Egi]]]]. rewrite Efi; apply sn_args_sn_fun; auto.
@@ -676,9 +676,9 @@ generalize (is_notvar_lhs_false _ NVlC _ _ Clr); tauto.
 rewrite Egi in Hgi; simpl in Hgi. rewrite (symb_eq (proj1 Hgi)).
 generalize (HDPR f0). rewrite (lhs_fun_defined Clr), andb_true_r; auto.
 apply Vforall_intro; intros. apply NNPP; intro HSx.
-destruct (notSN_IS HSx) as [h [Hh1 Hh2]].
+destruct (notSN_NT HSx) as [h [Hh1 Hh2]].
 assert (T : subterm x (f i)). rewrite Efi. apply subterm_fun; auto.
-apply (Hsf i x T h Hh2 Hh1).
+apply (Hsf i x T h Hh1 Hh2).
 
 assert (Hsucceq : (red UC U red P)# << succeq).
 apply inclusion_Trans with (succeq#). Focus 2.
