@@ -6,11 +6,13 @@ See the COPYRIGHTS and LICENSE files.
 
 Axiom stating the equivalence between WF and ~IS.
 
-IS_NotSN_FB proves that, if R is finitely branching, then:
+Note however that:
+
+- In IS_NotSN_FB, it is proved that, if R is finitely branching, then:
   WF R -> (forall f, ~IS R f)
 
-NotSN_IS proves under the axiom of dependent choice (DepChoice) and
-using classical logic that:
+- In NotSN_IS, it is proved under the axiom of dependent choice
+(DepChoice) and using classical logic that:
   (forall f, ~IS R f) -> WF R
 *)
 
