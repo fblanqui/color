@@ -584,6 +584,15 @@ Section S.
       apply Vnth_eq. refl.
     Qed.
 
+    Lemma red_split : forall t u, red R t u -> hd_red R t u \/ int_red R t u.
+
+    Proof.
+      intros t u tu. redtac. destruct c; subst.
+      left. apply hd_red_rule. hyp.
+      right. exists l. exists r. exists (Cont f e v c v0). exists s.
+      intuition. discr.
+    Qed.
+
   End rewriting.
 
 (***********************************************************************)
