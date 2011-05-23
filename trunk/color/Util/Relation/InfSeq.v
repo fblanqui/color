@@ -19,6 +19,40 @@ Section S.
   Variable A : Type.
 
 (*****************************************************************************)
+(** building a constant infinite sub-sequence from an infinite
+sequence on a finite codomain *)
+
+  Lemma finite_codomain : forall As (f : nat -> A),
+    (forall i, In (f i) As) -> exists a, exists g,
+      (forall i, g i < g (S i)) /\ (forall i, f (g i) = a).
+
+  Proof.
+    induction As; intros f fin.
+    (* nil *)
+    ded (fin 0). intuition.
+    (* cons *)
+    destruct (classic (forall i, exists j, j > i /\ f j = a)).
+    (* forall i, exists j, j > i /\ f j = a *)
+    exists a. set (g := fix g i := match i with
+      | 0 => proj1_sig (ch_min (H 0))
+      | S i' => proj1_sig (ch_min (H (g i'))) end). exists g. split.
+    intro i. simpl. destruct (ch_min (H (g i))). simpl. omega.
+    intro i. destruct i; simpl.
+    destruct (ch_min (H 0)). simpl. intuition.
+    destruct (ch_min (H (g i))). simpl. intuition.
+    (* exists i0, forall j, j > i0 -> f j <> a *)
+    rewrite not_forall_eq in H. destruct H as [i0 hi0].
+    rewrite not_exists_eq in hi0. set (f' := fun i => f(i+S i0)).
+    assert (forall i, In (f' i) As). intro i.
+    ded (fin (i+S i0)). simpl in H. destruct H. 2: hyp.
+    ded (hi0 (i+S i0)). rewrite not_and_eq in H0. destruct H0.
+    absurd (i+S i0>i0). hyp. omega.
+    subst. irrefl.
+    destruct (IHAs f' H) as [a0 [g [h1 h2]]]. exists a0.
+    exists (fun i => g i+ S i0). intuition.
+  Qed.
+
+(*****************************************************************************)
 (** build an infinite sequence by iterating a function *)
 
 Section iter.
@@ -79,7 +113,7 @@ Section TransIS.
     rewrite H1 in H3; omega.
 
     assert (exP_F0 : forall i, exists j, P i j). intros i. apply int_exPi. auto.
-    pose (F1 := fun i => projT1 (ch_min _ (exP_F0 i))).
+    pose (F1 := fun i => projT1 (ch_min (exP_F0 i))).
 
     assert (HF0 : forall i, (snd (F0 i) - fst (F0 i) = F i)).
     induction i; auto. simpl. omega.
@@ -97,7 +131,7 @@ Section TransIS.
 
     cut (F1 (S i) = S (F1 i)). intros HT; rewrite HT. split; omega.
 
-    destruct (projT2 (ch_min _ (exP_F0 (S i)))) as [_ H1]. apply H1.
+    destruct (projT2 (ch_min (exP_F0 (S i)))) as [_ H1]. apply H1.
     split; auto. intros k. unfold P. intros H2.
     rewrite (HPeq _ _ _ (conj PSi H2)). omega.
 
@@ -105,7 +139,7 @@ Section TransIS.
 
     assert (PSi : P (S i) (F1 i)). split; try omega.
     apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
-    destruct (projT2 (ch_min _ (exP_F0 (S i)))) as [_ H].
+    destruct (projT2 (ch_min (exP_F0 (S i)))) as [_ H].
     apply H; split; try hyp.
     intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
 
@@ -145,7 +179,7 @@ Section TransIS.
 
     assert (PSi : P (S i) (F1 i)). split; try omega; auto.
     apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
-    destruct (projT2 (ch_min _ (exP_F0 (S i)))) as [_ H1].
+    destruct (projT2 (ch_min (exP_F0 (S i)))) as [_ H1].
     apply H1; split; try hyp.
     intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
 
