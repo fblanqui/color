@@ -121,14 +121,14 @@ Section basic_definitions.
 
     Definition innermost u := forall f us, u = Fun f us -> Vforall NF us.
 
-    Definition in_red u v := exists l, exists r, exists c, exists s,
+    Definition inner_red u v := exists l, exists r, exists c, exists s,
       In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
       /\ innermost (sub s l).
 
-    Definition in_hd_red u v := exists l, exists r, exists s,
+    Definition inner_hd_red u v := exists l, exists r, exists s,
       In (mkRule l r) R /\ u = sub s l /\ v = sub s r /\ innermost u.
 
-    Definition in_int_red u v := exists l, exists r, exists c, exists s,
+    Definition inner_int_red u v := exists l, exists r, exists c, exists s,
       c <> Hole
       /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
       /\ innermost (sub s l).
@@ -150,11 +150,6 @@ Section basic_definitions.
 
     (* relative head rewrite step *)
     Definition hd_red_mod := red E # @ hd_red R.
-
-    (* relative minimal head rewrite step *)
-    Definition hd_red_mod_min s t := hd_red_mod s t 
-      /\ lforall (SN (red E)) (direct_subterms s)
-      /\ lforall (SN (red E)) (direct_subterms t).
 
   End rewriting_modulo.
 
@@ -925,12 +920,6 @@ Section S.
       apply WF_empty_rel.
     Qed.
 
-    Lemma hd_red_mod_min_incl : hd_red_mod_min E R << hd_red_mod E R.
-
-    Proof.
-      unfold hd_red_mod_min. intros s t [hrm _]. trivial. 
-    Qed.
-
     Lemma red_mod_fill : forall t u c,
       red_mod E R t u -> red_mod E R (fill c t) (fill c u).
 
@@ -1012,16 +1001,6 @@ Section S.
       destruct (in_app_or lr).
       left. exists (sub s l); split. hyp. apply hd_red_rule. hyp.
       right. exists (sub s l); split. hyp. apply hd_red_rule. hyp.
-    Qed.
-
-    Lemma hd_red_mod_min_union :
-      hd_red_mod_min E (R ++ R') << hd_red_mod_min E R U hd_red_mod_min E R'.
-
-    Proof.
-      unfold inclusion. intros. destruct H. do 2 destruct H. redtac. subst x0.
-      subst y. destruct (in_app_or lr).
-      left. split. exists (sub s l); split. hyp. apply hd_red_rule. hyp. hyp.
-      right. split. exists (sub s l); split. hyp. apply hd_red_rule. hyp. hyp.
     Qed.
 
   End union_modulo.
