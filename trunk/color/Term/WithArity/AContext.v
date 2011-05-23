@@ -509,3 +509,4 @@ Implicit Arguments vars_fill_elim [Sig t c].
 Implicit Arguments var_eq_fill [Sig x c t].
 Implicit Arguments fun_eq_fill [Sig f ts c u].
 Implicit Arguments wf_term [Sig t c].
+Implicit Arguments subterm_fun [Sig ts u].
