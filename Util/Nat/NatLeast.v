@@ -45,6 +45,8 @@ Section P1.
 
 End P1.
 
+Implicit Arguments ch_min [P].
+
 (***********************************************************************)
 (** binary predicate *)
 
@@ -56,8 +58,8 @@ Section P2.
 
   Fixpoint rec_ch_min n : nat :=
     match n with
-      | S n' => projT1 (ch_min _ (exP2 (S (rec_ch_min n'))))
-      | 0 => projT1 (ch_min _ (exP2 0))
+      | S n' => projT1 (ch_min (exP2 (S (rec_ch_min n'))))
+      | 0 => projT1 (ch_min (exP2 0))
     end.
 
   Lemma rec_ch_minP : forall i, P2 (S (rec_ch_min i)) (rec_ch_min (S i)).
