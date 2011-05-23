@@ -181,17 +181,6 @@ apply compat_red; hyp. apply compat_hd_red; hyp.
 apply incl_rtc_comp. exact H3.
 Qed.
 
-Lemma compat_hd_red_mod_min : forall R E,
-  substitution_closed succ -> rewrite_ordering succ_eq ->
-  compat succ_eq E -> compat succ R ->
-  absorb succ succ_eq -> hd_red_mod_min E R << succ.
-
-Proof.
-intros. transitivity (hd_red_mod E R).
-apply hd_red_mod_min_incl.
-apply compat_hd_red_mod; auto.
-Qed.
-
 End weak_reduction_pair.
 
 (***********************************************************************)
@@ -279,7 +268,4 @@ Ltac incl_red :=
     | |- inclusion (hd_red_mod _ _) (wp_succ ?wp) =>
       apply compat_hd_red_mod with (succ_eq := wp_succ_eq wp)
     | |- inclusion (hd_red_mod _ _) ?succ => eapply compat_hd_red_mod
-    | |- inclusion (hd_red_mod_min _ _) (wp_succ ?wp) =>
-      apply compat_hd_red_mod_min with (succ_eq := wp_succ_eq wp)
-    | |- inclusion (hd_red_mod_min _ _) ?succ => eapply compat_hd_red_mod_min
   end; rptac.

@@ -119,33 +119,6 @@ several steps of R1 followed by a -head- step of R2 *)
         apply compat_app...
       Qed.
 
-      Require Import Lexico.
-
-      Lemma rule_elimination_hd_mod_min : forall wp : Weak_reduction_pair Sig,
-        compat (wp_succ_eq wp) E ->
-        compat (wp_succ_eq wp) Rge -> 
-        compat (wp_succ wp   ) Rgt ->
-        WF (hd_red_mod_min E Rge) -> 
-        WF (hd_red_mod_min E (Rgt ++ Rge)).
-
-      Proof.
-        intros. set (succ := wp_succ wp). set (succ_eq := wp_succ_eq wp).
-        set (er := hd_red_mod_min E Rge). set (er' := hd_red_mod_min E Rgt).
-        apply WF_incl with (S := lex' succ (er!)).
-        trans (er U succ). trans (er U er').
-        trans (er' U er). unfold er, er'. apply hd_red_mod_min_union.
-        apply union_commut.
-        union. unfold er', succ. incl_red.
-        trans (succ U er). apply union_commut.
-        trans (succ U er!). union. apply incl_tc. refl.
-        apply lex'_intro. apply WF_lex'. WFtac. apply WF_tc. 
-        exact H2. apply tc_trans.
-        apply comp_tc_incl. trans (succ_eq! @ succ). comp. unfold er.
-        trans (red_mod E Rge). transitivity (hd_red_mod E Rge).
-        apply hd_red_mod_min_incl. apply hd_red_mod_incl_red_mod. incl_red.
-        apply comp_tc_incl. rptac.
-      Qed.
-
     End mod.
 
     Lemma rule_elimination : forall rp : Reduction_pair Sig,
