@@ -608,7 +608,7 @@ Implicit Arguments gt_plus [l k].
 
 Section Interval_list.
 
-  Variable (F : nat -> nat) (HFi : forall i, exists y, F i = S y).
+  Variables (F : nat -> nat) (HFi : forall i, exists y, F i = S y).
 
   Fixpoint Interval_list i : nat * nat := 
     match i with
