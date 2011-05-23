@@ -2147,3 +2147,9 @@ Fixpoint nats_decr_lt n :=
   end.
 
 Definition nats_incr_lt n := rev' (nats_decr_lt n).
+
+Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
+
+Proof.
+induction n; simpl; intros. omega. rewrite <- IHn. omega.
+Qed.
