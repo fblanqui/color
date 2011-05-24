@@ -22,6 +22,7 @@ Implicit Arguments in_app_or [A l m a].
 Implicit Arguments in_map [A B l x].
 Implicit Arguments in_combine_l [A B l l' x y].
 Implicit Arguments in_combine_r [A B l l' x y].
+Implicit Arguments nth_In [A n l].
 
 Ltac elt_type l := match type of l with list ?A => A end.
 
