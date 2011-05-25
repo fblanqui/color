@@ -11,9 +11,7 @@ and on Coq's multiplicity function
 Set Implicit Arguments.
 
 Require Export Sorting.
-Require Import RelUtil.
-Require Import List.
-Require Import LogicUtil.
+Require Import RelUtil List LogicUtil.
 
 (***********************************************************************)
 (** lelistA and sort *)
@@ -69,32 +67,77 @@ Qed.
 (***********************************************************************)
 (** multiplicity *)
 
-Require Import Multiset.
-Require Import Permutation.
-Require Import PermutSetoid.
+Require Import Multiset Permutation PermutSetoid.
 
 Section multiplicity.
 
-Variables (B : Type) (B_eq_dec : forall x y : B, {x=y}+{x<>y}).
+  Variables (B : Type) (B_eq_dec : forall x y : B, {x=y}+{x<>y}).
 
-Lemma In_multiplicity : forall mb a, In a mb ->
-  multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a >= 1.
+  Lemma In_multiplicity : forall mb a, In a mb ->
+    multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a >= 1.
 
-Proof.
-intros; induction mb; simpl in *; try tauto.
-destruct H; destruct (B_eq_dec a0 a); subst; try congruence; simpl; try omega.
-tauto.
-Qed.
+  Proof.
+    intros; induction mb; simpl in *; try tauto.
+    destruct H; destruct (B_eq_dec a0 a); subst; try congruence; simpl;
+      try omega.
+    tauto.
+  Qed.
 
-Lemma multiplicity_repeat_free : forall mb,
-  (forall a, multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a <= 1)
-  -> repeat_free mb.
+  Lemma multiplicity_repeat_free : forall mb,
+    (forall a, multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a <= 1)
+    -> repeat_free mb.
 
-Proof.
-intros. induction mb; simpl; auto. simpl in H. split.
-ded (H a). intuition. ded (In_multiplicity _ _ H1).
-destruct (B_eq_dec a a); auto. omega.
-apply IHmb. intros. ded (H a0). destruct (B_eq_dec a a0); simpl in *; omega.
-Qed.
+  Proof.
+    intros. induction mb; simpl; auto. simpl in H. split.
+    ded (H a). intuition. ded (In_multiplicity _ _ H1).
+    destruct (B_eq_dec a a); auto. omega.
+    apply IHmb. intros. ded (H a0). destruct (B_eq_dec a a0); simpl in *; omega.
+  Qed.
 
 End multiplicity.
+
+(***********************************************************************)
+(** Sorted *)
+
+Require Import NatUtil.
+
+Section Sorted.
+
+  Variables (A : Type).
+
+  Let d := 0.
+
+  Lemma Sorted_nth_S : forall l i, Sorted lt l ->
+    i < length l -> S i < length l -> nth i l d < nth (S i) l d.
+
+  Proof.
+    induction l; destruct i; simpl; intros. omega. omega.
+    inversion H. subst. destruct l. simpl in H1. absurd_arith.
+    inversion H5. hyp.
+    inversion H. apply IHl. hyp. omega. omega.
+  Qed.
+
+  Lemma HdRel_nth : forall l i n, Sorted lt l ->
+    HdRel lt n l -> i < length l -> n < nth i l d.
+
+  Proof.
+    induction l; destruct i; simpl; intros.
+    absurd_arith. absurd_arith. inversion H0. hyp.
+    apply IHl. inversion H. hyp.
+    destruct l. apply HdRel_nil. apply HdRel_cons.
+    inversion H0. inversion H. inversion H8. subst. omega.
+    omega.
+  Qed.
+
+  Lemma Sorted_nth : forall j l i, Sorted lt l ->
+    i < length l -> j < length l -> i < j -> nth i l d < nth j l d.
+
+  Proof.
+    induction j; intros. absurd_arith.
+    destruct l; simpl in *. absurd_arith.
+    inversion H. subst. destruct i; simpl.
+    apply HdRel_nth. hyp. hyp. omega.
+    apply IHj. hyp. omega. omega. omega.
+  Qed.
+
+End Sorted.
