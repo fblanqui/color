@@ -710,3 +710,5 @@ Section ISModTrans.
 End ISModTrans.
 
 End S.
+
+Implicit Arguments finite_codomain [A As f].
