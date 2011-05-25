@@ -9,14 +9,7 @@ algebra morphisms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATrs.
-Require Import VecUtil.
-Require Import List.
-Require Import RelUtil.
-Require Import SN.
-Require Import ARules.
-Require Import SetUtil.
+Require Import LogicUtil ATrs VecUtil List RelUtil SN ARules SetUtil NatUtil.
 
 Section Morphism.
 
