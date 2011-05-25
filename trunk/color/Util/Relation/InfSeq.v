@@ -148,8 +148,7 @@ Section S.
       omega.
     Qed.
 
-(*MOVE*)
-    Require Import Sorted.
+    Require Import SortUtil.
 
     Lemma indices_aux_Sorted : forall i acc,
       Sorted lt acc -> HdRel le i acc -> Sorted lt (indices_aux acc i).
@@ -166,41 +165,6 @@ Section S.
 
     Proof.
       intro i. apply indices_aux_Sorted. apply Sorted_nil. apply HdRel_nil.
-    Qed.
-
-    Let d := 0.
-
-    Lemma Sorted_nth_S : forall l i, Sorted lt l ->
-      i < length l -> S i < length l -> nth i l d < nth (S i) l d.
-
-    Proof.
-      induction l; destruct i; simpl; intros. omega. omega.
-      inversion H. subst. destruct l. simpl in H1. absurd_arith.
-      inversion H5. hyp.
-      inversion H. apply IHl. hyp. omega. omega.
-    Qed.
-
-    Lemma HdRel_nth : forall l i n, Sorted lt l ->
-      HdRel lt n l -> i < length l -> n < nth i l d.
-
-    Proof.
-      induction l; destruct i; simpl; intros.
-      absurd_arith. absurd_arith. inversion H0. hyp.
-      apply IHl. inversion H. hyp.
-      destruct l. apply HdRel_nil. apply HdRel_cons.
-      inversion H0. inversion H. inversion H8. subst. omega.
-      omega.
-    Qed.
-
-    Lemma Sorted_nth : forall j l i, Sorted lt l ->
-      i < length l -> j < length l -> i < j -> nth i l d < nth j l d.
-
-    Proof.
-      induction j; intros. absurd_arith.
-      destruct l; simpl in *. absurd_arith.
-      inversion H. subst. destruct i; simpl.
-      apply HdRel_nth. hyp. hyp. omega.
-      apply IHj. hyp. omega. omega. omega.
     Qed.
 
   End indices.
@@ -247,18 +211,6 @@ returns a sub-sequence for the indices [i >= 0] such that [f i = a] *)
       omega. assert (e : S i - n = S (i-n)). omega. rewrite e.
       apply plus_lt_compat_l. apply hg.
     Qed.
-
-(*MOVE*)
-    Lemma In_nth : forall A d (x : A) l,
-      In x l -> exists i, i < length l /\ nth i l d = x.
-
-    Proof.
-      induction l; simpl; intros. contradiction. destruct H.
-      subst. exists 0. intuition.
-      destruct (IHl H) as [i hi]. exists (S i). intuition.
-    Qed.
-
-    Implicit Arguments In_nth [A x l].
 
     Lemma prefix_complete :
       (forall i, i >= i0 -> f i = a -> exists j, i = i0 + g j) ->
