@@ -25,7 +25,7 @@ Section S.
 (** general boolean conditions for which [WF (hd_red_mod R D)] is
 equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
-  Section WF_hd_red_mod_from_WF_hd_red_Mod_int.
+  Section WF_hd_red_mod_of_WF_hd_red_Mod_int.
 
     Variables R D : rules Sig.
 
@@ -71,7 +71,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       destruct (undef_rtc_red_is_rtc_int_red yz hy). hyp.
     Qed.
 
-  End WF_hd_red_mod_from_WF_hd_red_Mod_int.
+  End WF_hd_red_mod_of_WF_hd_red_Mod_int.
 
 (*****************************************************************************)
 (** subtype of minimal non-terminating terms *)
@@ -179,7 +179,7 @@ infinite R-sequence *)
     Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
     Variable hyp2 : rules_preserve_vars R.
 
-    Lemma min_dp : forall t u v, NT_min (red R) t -> hd_red R t u ->
+    Lemma min_hd_red_dp : forall t u v, NT_min (red R) t -> hd_red R t u ->
       subterm_eq v u -> NT_min (red R) v -> hd_red (dp R) t v.
 
     Proof.
@@ -215,6 +215,132 @@ infinite R-sequence *)
       destruct ht as [ht1 ht2]. absurd (NT (red R) (sub s (Fun f v0))).
       apply ht2. apply subterm_sub. hyp. destruct hv as [hv1 hv2]. hyp.
     Qed.
+
+    Require Import ListUtil NatUtil.
+
+    Definition int_red_pos_at i t u :=
+      exists f, exists h : i < arity f, exists ts, t = Fun f ts
+      /\ exists v, red R (Vnth ts h) v /\ u = Fun f (Vreplace ts h v).
+
+    Definition int_red_pos t u := exists i, int_red_pos_at i t u.
+
+    Lemma int_red_pos_eq : int_red_pos == int_red R.
+
+    Proof.
+      split; intros t u tu.
+      (* -> *)
+      destruct tu as [i [f [hi [ts [e [v [h1 h2]]]]]]].
+      redtac. subst. exists l. exists r.
+      (* context *)
+      assert (l1 : 0 + i <= arity f). omega. set (v1 := Vsub ts l1).
+      assert (l2 : S i + (arity f - S i) <= arity f). omega.
+      set (v2 := Vsub ts l2).
+      assert (l3 : i + S (arity f - S i) = arity f). omega.
+      exists (Cont f l3 v1 c v2). exists s. intuition. discr.
+      (* lhs *)
+      simpl. apply args_eq. apply Veq_nth. intros j hj.
+      rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
+      rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+      unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
+      assert (j=i). omega. subst. rewrite (lt_unique _ hi). hyp.
+      unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.
+      (* rhs *)
+      simpl. apply args_eq. apply Veq_nth. intros j hj.
+      rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
+      rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+      rewrite Vnth_replace_neq. 2: omega. unfold v2. rewrite Vnth_sub.
+      apply Vnth_eq. omega.
+      assert (j=i). omega. subst. apply Vnth_replace.
+      rewrite Vnth_replace_neq. 2: omega. unfold v1. rewrite Vnth_sub.
+      apply Vnth_eq. omega.
+      (* <- *)
+      redtac. subst. destruct c. irrefl. exists i. exists f.
+      assert (hi : i < arity f). omega. exists hi.
+      simpl. exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
+      intuition. exists (fill c (sub s r)). split.
+      rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i i).
+      rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). absurd_arith.
+      apply red_rule. hyp. absurd_arith.
+      apply args_eq. apply Veq_nth. intros k hk.
+      rewrite Vnth_cast, Vnth_app. case_eq (le_gt_dec i k).
+      rewrite Vnth_cons. case_eq (lt_ge_dec 0 (k-i)).
+      rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H, Vnth_cons, H0.
+      refl. omega.
+      assert (k=i). omega. subst. symmetry. apply Vnth_replace.
+      rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H. refl. omega.
+    Qed.
+
+    Lemma NT_int_red_subterm_NT_red : forall t,
+      NT (int_red R) t -> exists u, subterm u t /\ NT (red R) u.
+
+    Proof.
+      intros t [f [h0 hf]]. subst. rewrite forallb_forall in hyp1.
+      ded (hf 0). redtac. destruct l. ded (hyp1 _ lr). discr.
+      destruct c. irrefl. simpl in *. clear yr lr cne r.
+      (* forall i, exists ts, f i = Fun f1 ts *)
+      assert (h : forall i, exists ts, f i = Fun f1 ts).
+      induction i0. exists
+        (Vcast (Vapp v0 (Vcons (fill c (Fun f0 (Vmap (sub s) v))) v1)) e). hyp.
+      clear xl s v1 c v0 e j i. destruct IHi0 as [ts hts].
+      ded (hf i0). redtac. destruct l. ded (hyp1 _ lr). discr.
+      destruct c. irrefl. simpl in *. rewrite hts in xl. Funeqtac.
+      rewrite yr. exists
+        (Vcast (Vapp v1 (Vcons (fill c (sub s r)) v2)) e). refl.
+      clear xl s v1 c v0 e i j f0 v. destruct (choice _ h) as [v hv]. clear h.
+      (* forall i, exists k, exists hk : k < arity f1,
+         int_red_pos_at k (f i) (f (S i)) *)
+      assert (h : forall i, exists k, exists hk : k < arity f1,
+         int_red_pos_at k (f i) (f (S i))).
+      intro i. ded (hf i). apply int_red_pos_eq in H. destruct H as [k H].
+      cut (int_red_pos_at k (f i) (f (S i))). 2: hyp.
+      intro H'. destruct H as [g [hk [w [e H]]]]. rewrite hv in e. Funeqtac.
+      exists k. exists hk. hyp. destruct (choice _ h) as [k hk]. clear h.
+      (*REMOVE: forall i, exists k, exists hk : k < arity f1,
+         red R (Vnth hk (v i)) (Vnth hk (v (S i))) *)
+      (*assert (h : forall i, exists k, exists hk : k < arity f1,
+        red R (Vnth (v i) hk) (Vnth (v (S i)) hk)).
+      intro i. ded (hf i). redtac. destruct l. ded (hyp1 _ lr). discr.
+      destruct c. irrefl. simpl in *. rewrite hv in xl, yr. do 2 Funeqtac.
+      assert (hi0 : i0 < arity f1). omega. exists i0. exists hi0.
+      rewrite H, H0. do 2 rewrite Vnth_cast, Vnth_app_cons.
+      change (red R (fill c (sub s (Fun f0 v0))) (fill c (sub s r))).
+      apply red_rule. hyp. destruct (choice _ h) as [k hk]. clear h.*)
+      (* infinite constant sub-sequence *)
+      set (As := nats_decr_lt (arity f1)).
+      assert (h : forall i, In (k i) As). intro i. destruct (hk i) as [hi ri].
+      unfold As. rewrite <- In_nats_decr_lt. hyp.
+      destruct (finite_codomain eq_nat_dec h) as [a [g [h1 [h2 h3]]]].
+      clear h As.
+      assert (ha : a < arity f1). rewrite <- (h2 0). destruct (hk (g 0)). hyp.
+      (* monotony of g *)
+      ded (monS lt_trans h1). assert (me : forall x y, x <= y -> g x <= g y).
+      intros x y xy. destruct (lt_dec x y). ded (H _ _ l). omega.
+      assert (x=y). omega. subst. refl.
+      (* forall i j, g i < j < g (S i) -> k j <> a *)
+      assert (hg : forall i j, g i < j < g (S i) -> k j <> a).
+      intros i j hj e. destruct (h3 _ e) as [l hl]. subst.
+      destruct (ge_dec i l). ded (me _ _ g0). omega.
+      destruct (ge_dec l (S i)). ded (me _ _ g0). omega. omega.
+      (* forall i, Vnth (v (S (g i))) ha = Vnth (v (g (S i))) ha *)
+      assert (h : forall i, Vnth (v (S (g i))) ha = Vnth (v (g (S i))) ha).
+      intro i. ded (h1 i). cut (forall l, 0 <= l < g (S i) - g i ->
+        Vnth (v (S (g i))) ha = Vnth (v (S (g i) + l)) ha).
+      intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). omega.
+      rewrite e. apply hi. clear e. omega.
+      induction l; intro. rewrite plus_0_r. refl.
+      assert (hl : 0 <= l < g (S i) - g i). omega. rewrite (IHl hl).
+      rewrite <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
+      assert (n : k x <> a). apply hg with (i:=i). unfold x. omega.
+      destruct (hk x) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
+      rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H2, H3.
+      rewrite Vnth_replace_neq. refl. hyp.
+      (* [Vnth (v 0) ha] is a subterm of [f 0] *)
+      exists (Vnth (v 0) ha). split.
+      rewrite hv. apply subterm_fun. apply Vnth_in.
+      (* [Vnth (v 0) ha] is non-terminating *)
+      exists (fun i => Vnth (v (g i)) ha). split.
+
+    Abort.
 
   End ISMinDP.
 
