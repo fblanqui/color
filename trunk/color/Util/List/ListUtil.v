@@ -1432,11 +1432,20 @@ Section ListFilter.
 End ListFilter.
 
 (****************************************************************************)
-(** nth_error *)
+(** nth/nth_error *)
 
 Section ListsNth.
 
   Variable A: Type.
+
+  Lemma In_nth : forall A d (x : A) l,
+    In x l -> exists i, i < length l /\ nth i l d = x.
+
+  Proof.
+    induction l; simpl; intros. contradiction. destruct H.
+    subst. exists 0. intuition.
+    destruct (IHl H) as [i hi]. exists (S i). intuition.
+  Qed.
 
   Lemma nth_error_In : forall (l : list A) i, 
     {a : A | nth_error l i = Some a} + {nth_error l i = None}.
@@ -1630,6 +1639,8 @@ Section ListsNth.
 
 End ListsNth.
 
+Implicit Arguments In_nth [A x l].
+
 (****************************************************************************)
 (** ith *)
 
@@ -1749,9 +1760,7 @@ Section mk_nat_lts.
 
   Lemma mk_nat_lts_aux1 : forall k', S k' < n -> k' < n.
 
-  Proof.
-    intros. omega.
-  Qed.
+  Proof. Omega. Qed.
 
   (* mk_nat_lts_aux hk = k :: ... :: 0 *)
 
