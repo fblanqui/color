@@ -16,7 +16,7 @@ Require Import RelUtil NatUtil List Path NatLeast LogicUtil ClassicUtil
 
 Section S.
 
-  Variable A : Type.
+  Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}).
 
 (*****************************************************************************)
 (** given a sequence [f] having an infinite number of occurrences of
@@ -82,7 +82,7 @@ Section S.
 
   Section indices.
 
-    Variables (eq_dec : forall x y : A, {x=y}+{~x=y}) (f : nat -> A) (a : A).
+    Variables (f : nat -> A) (a : A).
 
     Fixpoint indices_aux acc i :=
       match i with
@@ -93,17 +93,17 @@ Section S.
     Definition indices := indices_aux nil.
 
     Lemma In_indices_aux_elim : forall i x acc,
-      In x (indices_aux acc i) -> In x acc \/ f x = a.
+      In x (indices_aux acc i) -> In x acc \/ (f x = a /\ x < i).
 
     Proof.
-      induction i; simpl; intros. auto. destruct (eq_dec (f i) a ).
-      destruct (IHi _ _ H). destruct H0. subst. auto. auto. auto.
-      apply IHi. hyp.
+      induction i; simpl; intros. auto.
+      destruct (eq_dec (f i) a); destruct (IHi _ _ H); intuition.
+      destruct H0. subst. auto. auto.
     Qed.
 
     Implicit Arguments In_indices_aux_elim [i x acc].
 
-    Lemma indices_correct : forall i x, In x (indices i) -> f x = a.
+    Lemma indices_correct : forall i x, In x (indices i) -> f x = a /\ x < i.
 
     Proof.
       intros i x h. destruct (In_indices_aux_elim h). inversion H. hyp.
@@ -133,6 +133,22 @@ Section S.
       intros i x xi e. apply indices_aux_complete; hyp.
     Qed.
 
+    Lemma indices_aux_length : forall i acc,
+      length (indices_aux acc i) <= i + length acc.
+
+    Proof.
+      induction i; simpl; intros. refl. destruct (eq_dec (f i) a).
+      ded (IHi (i::acc)). simpl in H. omega. ded (IHi acc). omega.
+    Qed.
+
+    Lemma indices_length : forall i, length (indices i) <= i.
+
+    Proof.
+      intro i. ded (indices_aux_length i nil). unfold indices. simpl in H.
+      omega.
+    Qed.
+
+(*MOVE*)
     Require Import Sorted.
 
     Lemma indices_aux_Sorted : forall i acc,
@@ -152,7 +168,7 @@ Section S.
       intro i. apply indices_aux_Sorted. apply Sorted_nil. apply HdRel_nil.
     Qed.
 
-    Variable d : nat.
+    Let d := 0.
 
     Lemma Sorted_nth_S : forall l i, Sorted lt l ->
       i < length l -> S i < length l -> nth i l d < nth (S i) l d.
@@ -189,21 +205,26 @@ Section S.
 
   End indices.
 
+  Implicit Arguments In_indices_aux_elim [f a i x acc].
+  Implicit Arguments indices_complete [f a i x].
+
 (*****************************************************************************)
-(** sorted list of indices [j] such that [f j = a /\ j < i] *)
+(** given a sub-sequence [g] for the indices [i >= i0] such that [f i = a],
+returns a sub-sequence for the indices [i >= 0] such that [f i = a] *)
 
   Section prefix.
 
-    Variables (eq_dec : forall x y : A, {x=y}+{~x=y}) (f : nat -> A) (a : A)
-      (i0 : nat) (g : nat -> nat) (d : nat).
+    Variables (f : nat -> A) (a : A) (i0 : nat) (g : nat -> nat).
 
-    Notation indices := (indices eq_dec f a).
+    Notation indices := (indices f a).
+
+    Let d := 0.
 
     Definition prefix i := let is := indices i0 in
-      let n := length is in if lt_dec i n then nth i is d else g (i - n).
+      let n := length is in if lt_dec i n then nth i is d else i0 + g (i - n).
 
     Lemma prefix_correct :
-      (forall i, f (g i) = a) -> (forall i, f (prefix i) = a).
+      (forall i, f (i0 + g i) = a) -> (forall i, f (prefix i) = a).
 
     Proof.
       intros hg i. unfold prefix.
@@ -215,18 +236,46 @@ Section S.
     Require Import ListUtil.
 
     Lemma prefix_mon :
-      (length (indices i0) > 0 -> last (indices i0) d < g 0) ->
       (forall i, g i < g (S i)) -> (forall i, prefix i < prefix (S i)).
 
     Proof.
-      intros hyp hg i. unfold prefix. set (is := indices i0).
+      intros hg i. unfold prefix. set (is := indices i0).
       set (n := length is). destruct (lt_dec (S i) n); destruct (lt_dec i n).
       apply Sorted_nth. apply indices_Sorted. hyp. hyp. omega.
       absurd_arith. assert (n=S i). omega. subst. rewrite H, minus_diag.
-      assert (h : length (indices i0) > 0). fold is. omega.
-      generalize (hyp h). rewrite last_nth. fold is. rewrite H. simpl.
-      rewrite <- minus_n_O. auto.
-      assert (e : S i - n = S (i-n)). omega. rewrite e. apply hg.
+      ded (nth_In d l). destruct (In_indices_aux_elim H0). inversion H1.
+      omega. assert (e : S i - n = S (i-n)). omega. rewrite e.
+      apply plus_lt_compat_l. apply hg.
+    Qed.
+
+(*MOVE*)
+    Lemma In_nth : forall A d (x : A) l,
+      In x l -> exists i, i < length l /\ nth i l d = x.
+
+    Proof.
+      induction l; simpl; intros. contradiction. destruct H.
+      subst. exists 0. intuition.
+      destruct (IHl H) as [i hi]. exists (S i). intuition.
+    Qed.
+
+    Implicit Arguments In_nth [A x l].
+
+    Lemma prefix_complete :
+      (forall i, i >= i0 -> f i = a -> exists j, i = i0 + g j) ->
+      (forall i, f i = a -> exists j, i = prefix j).
+
+    Proof.
+      intros hg i e. set (is := indices i0). set (n := length is).
+      assert (n <= i0). unfold n, is. apply indices_length.
+      destruct (lt_ge_dec i i0).
+      (* i < i0 *)
+      ded (indices_complete l e). destruct (In_nth d H0) as [j [h1 h2]].
+      exists j. unfold prefix. fold is. fold n. destruct (lt_dec j n).
+      symmetry. hyp. contradiction.
+      (* i >= i0 *)
+      destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold is.
+      fold n. destruct (lt_dec (n+j) n). absurd_arith.
+      assert (s : n+j-n=j). omega. rewrite s. hyp.
     Qed.
 
   End prefix.
@@ -238,7 +287,7 @@ sequence on a finite codomain *)
   Lemma finite_codomain : forall As (f : nat -> A),
     (forall i, In (f i) As) -> exists a, exists g,
       (forall i, g i < g (S i)) /\ (forall i, f (g i) = a)
-      (*/\ (forall i, f i = a -> exists j, i = g j)*).
+      /\ (forall i, f i = a -> exists j, i = g j).
 
   Proof.
     induction As; intros f fin.
@@ -248,16 +297,20 @@ sequence on a finite codomain *)
     destruct (classic (forall i, exists j, j >= i /\ f j = a)).
     (* forall i, exists j, j >= i /\ f j = a *)
     exists a. exists (g H). intuition. apply g_mon. apply g_correct.
-    (*apply g_complete. hyp.*)
+    apply g_complete. hyp.
     (* exists i0, forall j, j >= i0 -> f j <> a *)
     rewrite not_forall_eq in H. destruct H as [i0 hi0].
-    rewrite not_exists_eq in hi0. set (f' := fun i => f(i+i0)).
+    rewrite not_exists_eq in hi0. set (f' := fun i => f(i0+i)).
     assert (forall i, In (f' i) As). intro i.
-    ded (fin (i+i0)). simpl in H. destruct H. 2: hyp.
-    ded (hi0 (i+i0)). rewrite not_and_eq in H0. destruct H0.
-    absurd (i+i0>=i0). hyp. omega. subst. irrefl.
-    destruct (IHAs f' H) as [b [g [h1 (*[*)h2 (*h3]*)]]]. exists b.
-    exists (fun i => g i + i0). intuition.
+    ded (fin (i0+i)). simpl in H. destruct H. 2: hyp.
+    ded (hi0 (i0+i)). rewrite not_and_eq in H0. destruct H0.
+    absurd (i0+i>=i0). hyp. omega. subst. irrefl.
+    destruct (IHAs f' H) as [b [g [h1 [h2 h3]]]]. exists b.
+    exists (prefix f b i0 g). intuition.
+    apply prefix_mon. hyp. apply prefix_correct. hyp.
+    apply prefix_complete. intros j hj e. unfold f' in h3.
+    assert (j = i0 + (j-i0)). omega. rewrite H1 in e.
+    destruct (h3 _ e) as [k hk]. exists k. omega. hyp.
   Qed.
 
 (*****************************************************************************)
