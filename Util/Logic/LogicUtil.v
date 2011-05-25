@@ -17,6 +17,8 @@ Ltac hyp := assumption.
 
 Ltac refl := reflexivity.
 
+Ltac contr := contradiction.
+
 Ltac gen h := generalize h; clear h.
 
 Ltac ded h := generalize h; intro.
