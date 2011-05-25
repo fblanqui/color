@@ -672,7 +672,7 @@ Section S.
     Lemma red_maxvar0 : forall t u, maxvar t = 0 -> red R t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). intro. omega. apply red_maxvar. hyp.
+      intros. cut (maxvar u <= maxvar t). Omega. apply red_maxvar. hyp.
     Qed.
 
     Lemma rtc_red_maxvar : forall t u, red R # t u -> maxvar u <= maxvar t.
@@ -685,7 +685,7 @@ Section S.
       maxvar t = 0 -> red R # t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). intro. omega. apply rtc_red_maxvar.
+      intros. cut (maxvar u <= maxvar t). Omega. apply rtc_red_maxvar.
       hyp.
     Qed.
 
@@ -707,7 +707,7 @@ Section S.
       maxvar t = 0 -> red_mod E R t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). intro. omega. apply red_mod_maxvar.
+      intros. cut (maxvar u <= maxvar t). Omega. apply red_mod_maxvar.
       hyp.
     Qed.
 

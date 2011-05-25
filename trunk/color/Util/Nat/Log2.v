@@ -7,8 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Definition of log2 (floor) and exp2, and some equalities
 *)
 
-Require Import Div2.
-Require Import Le.
+Require Import Div2 Le.
 
 Lemma div2_le_n : forall n, div2 n <= n.
 
@@ -100,8 +99,7 @@ Fixpoint exp2 n :=
     | S i => 2 * exp2 i
   end.
 
-Require Import Omega.
-Require Import Even.
+Require Import Omega Even.
 
 Lemma double_div2 : forall n, S (2 * div2 n) >= n.
 

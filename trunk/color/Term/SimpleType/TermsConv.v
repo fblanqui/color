@@ -13,14 +13,8 @@ environment are identified.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListPermutation.
-Require Import Compare_dec.
-Require Import TermsPos.
-Require Import Max.
-Require Import Setoid.
-Require Import ListUtil.
-Require Import ListExtras.
+Require Import RelExtras ListPermutation Compare_dec TermsPos Max Setoid
+  ListUtil ListExtras.
 
 Module TermsConv (Sig : TermsSig.Signature).
 
