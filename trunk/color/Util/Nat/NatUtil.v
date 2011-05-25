@@ -29,7 +29,9 @@ Implicit Arguments le_plus_minus_r [n m].
 (***********************************************************************)
 (** tactics *)
 
-Ltac absurd_arith := elimtype False; omega.
+Ltac Omega := intros; omega.
+
+Ltac absurd_arith := elimtype False; Omega.
 
 (***********************************************************************)
 (** natural numbers strictly smaller than some n *)
@@ -50,15 +52,11 @@ Add Relation nat lt
 
 Lemma ge_refl : forall x, x >= x.
 
-Proof.
-intro. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma ge_trans : forall x y z, x >= y -> y >= z -> x >= z.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Add Relation nat ge
   reflexivity proved by ge_refl
@@ -259,7 +257,7 @@ Qed.
 Lemma lt_max_intro_r : forall x y z, x < z -> x < max y z.
 
 Proof.
-intros. rewrite max_comm. apply lt_max_intro_l. assumption.
+intros. rewrite max_comm. apply lt_max_intro_l. hyp.
 Qed.
 
 Lemma le_max_elim_l : forall x y z, max x y <= z -> x <= z.
@@ -279,8 +277,8 @@ Lemma max_ge_compat : forall x y x' y',
 
 Proof.
 intros. destruct (max_dec x' y'); rewrite e; unfold ge.
-rewrite max_comm. apply le_max_intro_r. assumption.
-apply le_max_intro_r. assumption.
+rewrite max_comm. apply le_max_intro_r. hyp.
+apply le_max_intro_r. hyp.
 Qed.
 
 Lemma max_gt_compat : forall x y x' y',
@@ -289,8 +287,8 @@ Lemma max_gt_compat : forall x y x' y',
 Proof.
 intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
   do 2 first
-    [ rewrite max_r; [idtac | assumption] 
-    | rewrite max_l; [idtac | assumption]
+    [ rewrite max_r; [idtac | hyp] 
+    | rewrite max_l; [idtac | hyp]
     ]; omega.
 Qed.
 
@@ -300,8 +298,8 @@ Lemma min_gt_compat : forall x y x' y',
 Proof.
 intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
   do 2 first
-    [ rewrite min_r; [idtac | assumption] 
-    | rewrite min_l; [idtac | assumption]
+    [ rewrite min_r; [idtac | hyp] 
+    | rewrite min_l; [idtac | hyp]
     ]; omega.
 Qed.
  
@@ -314,9 +312,7 @@ Qed.
 
 Lemma gt_max : forall x y z, x > max y z <-> x > y /\ x > z.
 
-Proof.
-exact max_lt.
-Qed.
+Proof. exact max_lt. Qed.
 
 Lemma max_0_r : forall x, max x 0 = x.
 
@@ -341,32 +337,24 @@ Proof.
 intros. eapply le_trans. apply le_min_r. exact H.
 Qed.
 
- (* setting up some hints for the following lemmas *)
+(* setting up some hints for the following lemmas *)
 Hint Resolve le_lt_trans le_min_l le_min_r le_trans.
 
 Lemma lt_min_intro_l : forall x y z, x < z -> min x y < z.
 
-Proof.
-  eauto.
-Qed.
+Proof. eauto. Qed.
 
 Lemma lt_min_intro_r : forall x y z, y < z -> min x y < z.
 
-Proof.
-  eauto.
-Qed.
+Proof. eauto. Qed.
 
 Lemma le_min_intro_l : forall x y z, x <= z -> min x y <= z.
 
-Proof.
-  eauto.
-Qed.
+Proof. eauto. Qed.
 
 Lemma le_min_intro_r : forall x y z, y <= z -> min x y <= z.
 
-Proof.
-  eauto.
-Qed.
+Proof. eauto. Qed.
 
 Ltac min_simpl :=
   match goal with
@@ -459,19 +447,19 @@ Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
 
 Section iter.
 
-Variables (A : Type) (f : A -> A).
+  Variables (A : Type) (f : A -> A).
 
-Fixpoint iter n x :=
-  match n with
-    | 0 => x
-    | S n' => iter n' (f x)
-  end.
+  Fixpoint iter n x :=
+    match n with
+      | 0 => x
+      | S n' => iter n' (f x)
+    end.
 
-Lemma iter_com : forall n x, iter n (f x) = f (iter n x).
+  Lemma iter_com : forall n x, iter n (f x) = f (iter n x).
 
-Proof.
-induction n; simpl; intros. refl. rewrite IHn. refl.
-Qed.
+  Proof.
+    induction n; simpl; intros. refl. rewrite IHn. refl.
+  Qed.
 
 End iter.
 
@@ -480,93 +468,65 @@ End iter.
 
 Lemma le_lt_S : forall i k, i <= k -> i < S k.
 
-Proof.
-auto with arith.
-Qed.
+Proof. auto with arith. Qed.
 
 Lemma i_lt_n : forall n i j : nat, n = i + S j -> i < n.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Implicit Arguments i_lt_n [n i j].
 
 Lemma S_neq_O : forall n, S n = O -> False.
 
-Proof.
-intros. discriminate.
-Qed.
+Proof. discr. Qed.
 
 Lemma plus_reg_l_inv : forall n1 n2 p2, n2=p2 -> n1+n2=n1+p2.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma plus_reg_r_inv : forall n1 p1 n2, n1=p1 -> n1+n2=p1+n2.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma plus_minus_eq : forall v p, v+p-p=v.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma le_minus_plus : forall v p, p<=v -> v-p+p=v.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Implicit Arguments le_minus_plus [v p].
 
 Lemma plus_1_S : forall n, n+1 = S n.
 
-Proof.
-intro. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma lt_from_le : forall x y, 0 < y -> x <= y-1 -> x < y.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma le_from_lt : forall x y, x < y+1 -> x <= y.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Implicit Arguments lt_pm [n k x].
 
 Lemma le_plus : forall k l, k <= k+l.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma misc1 : forall x k, S k = x+2+k-x-1.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma misc2 : forall x k, k = x+2+k-(x+1)-1.
 
-Proof.
-intros. omega.
-Qed.
+Proof. Omega. Qed.
 
 Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
 
@@ -579,10 +539,10 @@ Lemma mult_lt_compat_lr : forall i j k l,
 
 Proof.
   destruct i; intros.
-  rewrite mult_0_l. apply mult_gt_0. assumption.
+  rewrite mult_0_l. apply mult_gt_0. hyp.
   destruct l. absurd_arith. auto with arith.
   simpl. destruct j. absurd_arith.
-  simpl. apply plus_lt_le_compat. assumption.
+  simpl. apply plus_lt_le_compat. hyp.
   apply mult_le_compat; omega. 
 Qed.
 
@@ -629,3 +589,25 @@ Section Interval_list.
   Qed.
 
 End Interval_list.
+
+(***********************************************************************)
+(** monotonic functions on nat *)
+
+Require Import RelUtil.
+
+Section mon.
+
+  Variables (A : Type) (ltA : relation A) (ht : transitive ltA) (f : nat->A).
+
+  Lemma monS : (forall x, ltA (f x) (f (S x)))
+    -> (forall x y, x < y -> ltA (f x) (f y)).
+
+  Proof.
+    intros hf x. cut (forall k, ltA (f x) (f (k+S x))).
+    intros hx y xy. assert (y = (y-S x)+S x). omega. rewrite H. apply hx.
+    induction k; simpl. apply hf. apply ht with (f (k+S x)). hyp. apply hf.
+  Qed.
+
+End mon.
+
+Implicit Arguments monS [A ltA f x y].
