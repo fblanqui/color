@@ -228,40 +228,34 @@ R)-sequence *)
 
     Variable R : rules Sig.
 
-    Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
-
     Lemma NT_int_red_subterm_NT_red : forall t,
       NT (int_red R) t -> exists u, subterm u t /\ NT (red R) u.
 
     Proof.
-      intros t [f [h0 hf]]. subst. rewrite forallb_forall in hyp1.
-      ded (hf 0). redtac. destruct l. ded (hyp1 _ lr). discr.
-      destruct c. irrefl. simpl in *. clear yr lr cne r.
+      intros t [f [h0 hf]]. subst. ded (hf 0). redtac. destruct c. irrefl.
+      simpl in xl. clear yr lr cne r.
       (* forall i, exists v, f i = Fun f1 v *)
-      assert (h : forall i, exists v, f i = Fun f1 v).
-      induction i0. exists
-        (Vcast (Vapp v0 (Vcons (fill c (Fun f0 (Vmap (sub s) v))) v1)) e). hyp.
-      clear xl s v1 c v0 e j i. destruct IHi0 as [w hw].
-      ded (hf i0). redtac. destruct l. ded (hyp1 _ lr). discr.
-      destruct c. irrefl. simpl in *. rewrite hw in xl. Funeqtac.
-      rewrite yr. exists
-        (Vcast (Vapp v1 (Vcons (fill c (sub s r)) v2)) e). refl.
-      clear xl s v1 c v0 e i j f0 v. destruct (choice _ h) as [v hv]. clear h.
-      (* forall i, exists k, exists hk : k < arity f1,
+      assert (h : forall i, exists v, f i = Fun f0 v).
+      induction i0. firstorder. clear xl s v0 c v e j i l.
+      destruct IHi0 as [w hw]. ded (hf i0). redtac. destruct c. irrefl.
+      simpl in xl, yr. rewrite hw in xl. Funeqtac. rewrite yr.
+      exists (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e). refl.
+      clear xl s v0 c v e j i l. destruct (choice _ h) as [v hv]. clear h.
+      (* forall i, exists k, exists hk : k < arity f0,
          int_red_pos_at k (f i) (f (S i)) *)
-      assert (h : forall i, exists k, exists hk : k < arity f1,
+      assert (h : forall i, exists k, exists hk : k < arity f0,
          int_red_pos_at R k (f i) (f (S i))).
       intro i. ded (hf i). apply int_red_pos_eq in H. destruct H as [k H].
       cut (int_red_pos_at R k (f i) (f (S i))). 2: hyp.
       intro H'. destruct H as [g [hk [w [e H]]]]. rewrite hv in e. Funeqtac.
       exists k. exists hk. hyp. destruct (choice _ h) as [k hk]. clear h.
       (* infinite constant sub-sequence *)
-      set (As := nats_decr_lt (arity f1)).
+      set (As := nats_decr_lt (arity f0)).
       assert (h : forall i, In (k i) As). intro i. destruct (hk i) as [hi ri].
       unfold As. rewrite <- In_nats_decr_lt. hyp.
       destruct (finite_codomain eq_nat_dec h) as [a [g [h1 [h2 h3]]]].
       clear h As.
-      assert (ha : a < arity f1). rewrite <- (h2 0). destruct (hk (g 0)). hyp.
+      assert (ha : a < arity f0). rewrite <- (h2 0). destruct (hk (g 0)). hyp.
       (* monotony of g *)
       assert (me : forall x y, x <= y -> g x <= g y). intros x y xy.
       destruct (lt_dec x y). ded (monS lt_trans h1). ded (H _ _ l). omega.
