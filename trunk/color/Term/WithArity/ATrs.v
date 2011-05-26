@@ -1043,6 +1043,61 @@ Section S.
   End rule_renaming.
 
 (***********************************************************************)
+(** internal reduction in some specific subterm *)
+
+  Definition int_red_pos_at (R : rules) i t u :=
+    exists f, exists h : i < arity f, exists ts, t = Fun f ts
+      /\ exists v, red R (Vnth ts h) v /\ u = Fun f (Vreplace ts h v).
+
+  Definition int_red_pos R t u := exists i, int_red_pos_at R i t u.
+
+  Lemma int_red_pos_eq : forall R, int_red_pos R == int_red R.
+
+  Proof.
+    intro R. split; intros t u tu.
+    (* -> *)
+    destruct tu as [i [f [hi [ts [e [v [h1 h2]]]]]]].
+    redtac. subst. exists l. exists r.
+    (* context *)
+    assert (l1 : 0 + i <= arity f). omega. set (v1 := Vsub ts l1).
+    assert (l2 : S i + (arity f - S i) <= arity f). omega.
+    set (v2 := Vsub ts l2).
+    assert (l3 : i + S (arity f - S i) = arity f). omega.
+    exists (Cont f l3 v1 c v2). exists s. intuition. discr.
+    (* lhs *)
+    simpl. apply args_eq. apply Veq_nth. intros j hj.
+    rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+    unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
+    assert (j=i). omega. subst. rewrite (lt_unique _ hi). hyp.
+    unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.
+    (* rhs *)
+    simpl. apply args_eq. apply Veq_nth. intros j hj.
+    rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+    rewrite Vnth_replace_neq. 2: omega. unfold v2. rewrite Vnth_sub.
+    apply Vnth_eq. omega.
+    assert (j=i). omega. subst. apply Vnth_replace.
+    rewrite Vnth_replace_neq. 2: omega. unfold v1. rewrite Vnth_sub.
+    apply Vnth_eq. omega.
+    (* <- *)
+    redtac. subst. destruct c. irrefl. exists i. exists f.
+    assert (hi : i < arity f). omega. exists hi.
+    simpl. exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
+    intuition. exists (fill c (sub s r)). split.
+    rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i i).
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). absurd_arith.
+    apply red_rule. hyp. absurd_arith.
+    apply args_eq. apply Veq_nth. intros k hk.
+    rewrite Vnth_cast, Vnth_app. case_eq (le_gt_dec i k).
+    rewrite Vnth_cons. case_eq (lt_ge_dec 0 (k-i)).
+    rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H, Vnth_cons, H0.
+    refl. omega.
+    assert (k=i). omega. subst. symmetry. apply Vnth_replace.
+    rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H. refl. omega.
+  Qed.
+
+(***********************************************************************)
 (** minimal (wrt subterm ordering) non-terminating terms *)
 
   Definition min R t := forall u : term, subterm u t -> ~NT R u.
