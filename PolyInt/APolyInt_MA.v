@@ -11,17 +11,14 @@ Require Import APolyInt AMonAlg ZUtil RelUtil PositivePolynom ATrs ListForall
   MonotonePolynom LogicUtil BoolUtil.
 
 Module Type TPolyInt.
-
   Parameter sig : Signature.
   Parameter trsInt : PolyInterpretation sig.
   Parameter trsInt_wm : PolyWeakMonotone trsInt.
-
 End TPolyInt.
 
 Module PolyInt (Export PI : TPolyInt).
 
-  (* Monotone algebra instantiated to polynomials *)
-
+(*FIXME: remove this layer*)
   Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
     Definition Sig := sig.
