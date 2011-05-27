@@ -1137,9 +1137,7 @@ Section S.
     clear hv. destruct (eq_nat_dec j i); subst.
     (* j = i *)
     rewrite Vnth_replace. intro hw.
-    assert (NT (red R) (Vnth ts hi)). destruct hw as [f [f0 hf]].
-    exists (fun k => match k with 0 => Vnth ts hi | S k' => f k' end).
-    intuition. intro k. destruct k. rewrite f0. hyp. apply hf.
+    assert (NT (red R) (Vnth ts hi)). eapply red_NT. apply h1. hyp.
     ded (Vforall_nth hi H). contr.
     (* j <> i *)
     rewrite Vnth_replace_neq. 2: omega. intro hv.
