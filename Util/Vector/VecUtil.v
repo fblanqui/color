@@ -811,6 +811,8 @@ Section Vin.
 
 End Vin.
 
+Implicit Arguments Vin_nth [A n v a].
+
 (***********************************************************************)
 (** sub-vector: Vsub v (h:i+k<=n) = [v_i, .., v_{i+k-1}] *)
 
@@ -1157,7 +1159,7 @@ Section Vforall.
 
   Proof.
     intros. apply Vforall_intro. intros.
-    destruct (Vin_nth v x H0) as [i [ip v_i]].
+    destruct (Vin_nth H0) as [i [ip v_i]].
     rewrite <- v_i. apply H.
   Qed.
 
@@ -1399,7 +1401,7 @@ Section Vbuild.
     exists i, exists ip : i < n, x = gen i ip.
 
   Proof.
-    intros. set (w := Vin_nth (Vbuild gen) x H).
+    intros. set (w := Vin_nth H).
     decomp_hyps. exists x0. exists x1. rewrite Vbuild_nth in H1. auto.
   Qed.
 
