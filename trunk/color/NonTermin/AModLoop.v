@@ -14,257 +14,249 @@ Require Import ATrs LogicUtil ALoop ListUtil RelUtil.
 
 Section S.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Notation term := (term Sig). Notation context := (context Sig).
-Notation substitution := (substitution Sig). Notation data := (data Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
+  Notation term := (term Sig). Notation data := (data Sig).
 
-Variable E R : rules.
+  Variable E R : rules Sig.
 
 (***********************************************************************)
 (** predicates saying that [t::us] is in a sequence of rewriting steps *)
 
-Fixpoint mod_FS t us :=
-  match us with
-    | nil => True
-    | u :: us' => red_mod E R t u /\ mod_FS u us'
-  end.
+  Fixpoint mod_FS t us :=
+    match us with
+      | nil => True
+      | u :: us' => red_mod E R t u /\ mod_FS u us'
+    end.
 
-Definition mod_terms_of_reduc : forall t, {us| mod_FS t us} -> list term.
+  Definition mod_terms_of_reduc : forall t, {us| mod_FS t us} -> list term.
 
-Proof.
-intros t x. destruct x. exact x.
-Defined.
+  Proof.
+    intros t x. destruct x. exact x.
+  Defined.
 
-Implicit Arguments mod_terms_of_reduc [t].
+  Implicit Arguments mod_terms_of_reduc [t].
 
-Definition mod_proof_of_reduc :
-  forall t, forall x : {us| mod_FS t us}, mod_FS t (mod_terms_of_reduc x).
+  Definition mod_proof_of_reduc :
+    forall t, forall x : {us| mod_FS t us}, mod_FS t (mod_terms_of_reduc x).
 
-Proof.
-intros t x. destruct x. exact m.
-Defined.
+  Proof.
+    intros t x. destruct x. exact m.
+  Defined.
 
 (***********************************************************************)
 (** data necessary for a sequence of red_mod steps *)
 
-Definition mod_data := (list data * data)%type.
+  Definition mod_data := (list data * data)%type.
 
-Definition mod_rewrite (t : term) (dm : mod_data) : option term :=
-  let (ds,d) := dm in
-    match rewrites E t ds with
-      | None => None
-      | Some ts => rewrite R (last ts t) d
+  Definition mod_rewrite (t : term) (dm : mod_data) : option term :=
+    let (ds,d) := dm in
+      match rewrites E t ds with
+        | None => None
+        | Some ts => rewrite R (last ts t) d
+      end.
+
+  Lemma mod_rewrite_correct : forall t dm u,
+    mod_rewrite t dm = Some u -> red_mod E R t u.
+
+  Proof.
+    intros t [ds d] u. unfold mod_rewrite. case_eq (rewrites E t ds). 2: discr.
+    ded (rewrites_correct H). exists (last l t). split. apply FS_rtc. hyp.
+    apply rewrite_correct with (d:=d). hyp.
+  Qed.
+
+  Implicit Arguments mod_rewrite_correct [t dm u].
+
+  Fixpoint mod_rewrites t (mds : list mod_data) : option (list term) :=
+    match mds with
+      | nil => Some nil
+      | md :: mds' =>
+        match mod_rewrite t md with
+          | None => None
+          | Some u =>
+            match mod_rewrites u mds' with
+              | None => None
+              | Some us => Some (u::us)
+            end
+        end
     end.
 
-Lemma mod_rewrite_correct : forall t dm u,
-  mod_rewrite t dm = Some u -> red_mod E R t u.
+  Lemma mod_rewrites_correct : forall ds t us,
+    mod_rewrites t ds = Some us -> mod_FS t us.
 
-Proof.
-intros t [ds d] u. unfold mod_rewrite. case_eq (rewrites E t ds). 2: discr.
-ded (rewrites_correct H). exists (last l t). split. apply FS_rtc. hyp.
-apply rewrite_correct with (d:=d). hyp.
-Qed.
+  Proof.
+    induction ds; simpl; intros. inversion H. exact I.
+    gen H. case_eq (mod_rewrite t a). 2: discr.
+    gen H0. case_eq (mod_rewrites t0 ds). 2: discr.
+    inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
+  Qed.
 
-Implicit Arguments mod_rewrite_correct [t dm u].
+  Implicit Arguments mod_rewrites_correct [ds t us].
 
-Fixpoint mod_rewrites t (mds : list mod_data)
-  : option (list term) :=
-  match mds with
-    | nil => Some nil
-    | md :: mds' =>
-      match mod_rewrite t md with
-        | None => None
-        | Some u =>
-          match mod_rewrites u mds' with
-            | None => None
-            | Some us => Some (u::us)
-          end
-      end
-  end.
+  Require Import NatUtil.
 
-Lemma mod_rewrites_correct : forall ds t us,
-  mod_rewrites t ds = Some us -> mod_FS t us.
+  Notation default := (Var 0).
 
-Proof.
-induction ds; simpl; intros. inversion H. exact I.
-gen H. case_eq (mod_rewrite t a). 2: discr.
-gen H0. case_eq (mod_rewrites t0 ds). 2: discr.
-inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
-Qed.
+  Lemma mod_FS_red : forall ts t, mod_FS t ts -> forall i, i < length ts ->
+    red_mod E R (nth i (t::ts) default) (nth (S i) (t::ts) default).
 
-Implicit Arguments mod_rewrites_correct [ds t us].
-
-Require Import NatUtil.
-
-Notation default := (Var 0).
-
-Lemma mod_FS_red : forall ts t, mod_FS t ts -> forall i, i < length ts ->
-  red_mod E R (nth i (t::ts) default) (nth (S i) (t::ts) default).
-
-Proof.
-induction ts; simpl; intros. absurd_arith. destruct H. destruct i. hyp.
-ded (IHts _ H1 i (lt_S_n H0)). hyp.
-Qed.
+  Proof.
+    induction ts; simpl; intros. absurd_arith. destruct H. destruct i. hyp.
+    ded (IHts _ H1 i (lt_S_n H0)). hyp.
+  Qed.
 
 (***********************************************************************)
 (** assumptions for non-termination *)
 
-Section loop.
+  Section loop.
 
-Variables (t : term) (mds : list mod_data)
-  (us : list term) (h1 : mod_rewrites t mds = Some us).
+    Variables (t : term) (mds : list mod_data)
+      (us : list term) (h1 : mod_rewrites t mds = Some us).
 
-Definition k := length us.
+    Definition k := length us.
 
-Variable (h0 : k > 0).
+    Variable h0 : k > 0.
 
-Definition nth i := nth i us default.
+    Definition nth i := nth i us default.
 
-Definition last_term := nth (k-1).
+    Definition last_term := nth (k-1).
 
-Lemma red_mod_nth : forall i, i < k-1 -> red_mod E R (nth i) (nth (S i)).
+    Lemma red_mod_nth : forall i, i < k-1 -> red_mod E R (nth i) (nth (S i)).
 
-Proof.
-intros. unfold nth.
-change (red_mod E R (List.nth (S i) (t :: us) default)
-  (List.nth (S (S i)) (t :: us) default)).
-apply mod_FS_red. eapply mod_rewrites_correct. apply h1. unfold k in *. omega.
-Qed.
+    Proof.
+      intros. unfold nth.
+      change (red_mod E R (List.nth (S i) (t :: us) default)
+        (List.nth (S (S i)) (t :: us) default)).
+      apply mod_FS_red. eapply mod_rewrites_correct. apply h1. unfold k in *.
+      omega.
+    Qed.
 
-Variables (ds : list data) (us' : list term)
-  (h1' : rewrites E last_term ds = Some us').
+    Variables (ds : list data) (us' : list term)
+      (h1' : rewrites E last_term ds = Some us').
 
-Definition last_term' := last us' last_term.
+    Definition last_term' := last us' last_term.
 
-Require Import APosition AMatching.
+    Require Import APosition AMatching.
 
-Variables (p : position) (u : term) (h2 : subterm_pos last_term' p = Some u)
-  (s : substitution) (h3 : matches t u = Some s).
+    Variables (p : position) (u : term) (h2 : subterm_pos last_term' p = Some u)
+      (s : substitution Sig) (h3 : matches t u = Some s).
 
 (***********************************************************************)
 (** proof of non-termination *)
 
-Definition c : context.
+    Definition c : context Sig.
 
-Proof.
-destruct (subterm_pos_elim h2). exact x.
-Defined.
+    Proof.
+      destruct (subterm_pos_elim h2). exact x.
+    Defined.
 
-Definition g t := fill c (sub s t).
+    Definition g t := fill c (sub s t).
 
-Lemma last_term'_g : last_term' = g t.
+    Lemma last_term'_g : last_term' = g t.
 
-Proof.
-unfold g, c. destruct (subterm_pos_elim h2). destruct a. rewrite H0.
-ded (matches_correct h3). subst u. refl.
-Qed.
+    Proof.
+      unfold g, c. destruct (subterm_pos_elim h2). destruct a. rewrite H0.
+      ded (matches_correct h3). subst u. refl.
+    Qed.
 
-Lemma red_last_term_g : red E # last_term (g t).
+    Lemma red_last_term_g : red E # last_term (g t).
 
-Proof.
-rewrite <- last_term'_g. unfold last_term'. apply FS_rtc.
-apply (rewrites_correct h1').
-Qed.
+    Proof.
+      rewrite <- last_term'_g. unfold last_term'. apply FS_rtc.
+      apply (rewrites_correct h1').
+    Qed.
 
-Require Import ARelation.
+    Require Import ARelation.
 
-Lemma red_mod_g : forall a b, red_mod E R a b -> red_mod E R (g a) (g b).
+    Lemma red_mod_g : forall a b, red_mod E R a b -> red_mod E R (g a) (g b).
 
-Proof.
-intros. apply red_mod_fill. apply red_mod_sub. hyp.
-Qed.
+    Proof.
+      intros. apply red_mod_fill. apply red_mod_sub. hyp.
+    Qed.
 
-(*Lemma red_mod_iter_g : forall a b, red_mod E R a b ->
-  forall i, red_mod E R (iter a g i) (iter b g i).
+    Require Import Euclid.
 
-Proof.
-induction i; simpl; intros. hyp. apply red_mod_g. hyp.
-Qed.*)
+    Definition seq : nat -> term.
 
-Require Import Euclid.
+    Proof.
+      intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
+    Defined.
 
-Definition seq : nat -> term.
+    Require Import RelUtil Wf_nat.
 
-Proof.
-intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
-Defined.
+    Lemma IS_seq : IS (red_mod E R) seq.
 
-Require Import RelUtil Wf_nat.
+    Proof.
+      intro n; pattern n; apply lt_wf_ind; clear n; intros. unfold seq at -2 .
+      destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
+      (* r = k-1 *)
+      assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
+      omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
+      destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
+      rewrite <- iter_com. apply red_iter. apply red_mod_g.
+      rewrite H0. fold last_term.
+      cut (red_mod E R (g t) (g (nth 0))). intro. destruct H4. exists x.
+      intuition. apply rt_trans with (g t). apply red_last_term_g. hyp.
+      apply red_mod_g. unfold nth.
+      change (red_mod E R (List.nth 0 (t :: us) default)
+        (List.nth 1 (t :: us) default)).
+      apply mod_FS_red. apply (mod_rewrites_correct h1). hyp.
+      (* r < k-1 *)
+      assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
+      destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
+      destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
+      apply red_iter. apply red_mod_g. apply red_mod_nth. omega.
+    Qed.
 
-Lemma IS_seq : IS (red_mod E R) seq.
+    Lemma loop : EIS (red_mod E R).
 
-Proof.
-intro n; pattern n; apply lt_wf_ind; clear n; intros. unfold seq at -2 .
-destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
-(* r = k-1 *)
-assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
-omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
-destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
-rewrite <- iter_com. apply red_iter. apply red_mod_g.
-rewrite H0. fold last_term.
-cut (red_mod E R (g t) (g (nth 0))). intro. destruct H4. exists x.
-intuition. apply rt_trans with (g t). apply red_last_term_g. hyp.
-apply red_mod_g. unfold nth.
-change (red_mod E R (List.nth 0 (t :: us) default)
-  (List.nth 1 (t :: us) default)).
-apply mod_FS_red. apply (mod_rewrites_correct h1). hyp.
-(* r < k-1 *)
-assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
-destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
-destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
-apply red_iter. apply red_mod_g. apply red_mod_nth. omega.
-Qed.
+    Proof.
+      exists seq. apply IS_seq.
+    Qed.
 
-Lemma loop : EIS (red_mod E R).
-
-Proof.
-exists seq. apply IS_seq.
-Qed.
-
-End loop.
+  End loop.
 
 (***********************************************************************)
 (** boolean function testing non-termination *)
 
-Definition is_mod_loop t mds ds p :=
-  match mod_rewrites t mds with
-    | None => false
-    | Some us =>
-      match us with
-        | nil => false
-        | _ =>
-          let u := last us default in
-            match rewrites E u ds with
-              | None => false
-              | Some us' =>
-                let u' := last us' u in
-                  match subterm_pos u' p with
-                    | None => false
-                    | Some v =>
-                      match matches t v with
-                        | None => false
-                        | Some _ => true
-                      end
-                  end
-            end
-      end
-  end.
+  Definition is_mod_loop t mds ds p :=
+    match mod_rewrites t mds with
+      | None => false
+      | Some us =>
+        match us with
+          | nil => false
+          | _ =>
+            let u := last us default in
+              match rewrites E u ds with
+                | None => false
+                | Some us' =>
+                  let u' := last us' u in
+                    match subterm_pos u' p with
+                      | None => false
+                      | Some v =>
+                        match matches t v with
+                          | None => false
+                          | Some _ => true
+                        end
+                    end
+              end
+        end
+    end.
 
-Lemma is_mod_loop_correct : forall t mds ds p,
-  is_mod_loop t mds ds p = true -> EIS (red_mod E R).
+  Lemma is_mod_loop_correct : forall t mds ds p,
+    is_mod_loop t mds ds p = true -> EIS (red_mod E R).
 
-Proof.
-intros t mds ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds).
-2: discr. destruct l. discr. set (us := t0::l). set (u := last us default).
-coq_case_eq (rewrites E u ds). 2: discr. intro us'. set (u' := last us' u).
-coq_case_eq (subterm_pos u' p). 2: discr. intro v. case_eq (matches t v).
-2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
-assert (h : u = last_term us). unfold last_term, k, nth. rewrite <- last_nth.
-refl. unfold u' in H0. rewrite h in H0. exists (seq us h0 us' p H0 t1).
-eapply IS_seq. apply H2. rewrite h in H1. apply H1. hyp.
-Qed.
+  Proof.
+    intros t mds ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds).
+    2: discr. destruct l. discr. set (us := t0::l). set (u := last us default).
+    coq_case_eq (rewrites E u ds). 2: discr. intro us'. set (u' := last us' u).
+    coq_case_eq (subterm_pos u' p). 2: discr. intro v. case_eq (matches t v).
+    2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
+    assert (h : u = last_term us). unfold last_term, k, nth.
+    rewrite <- last_nth.
+    refl. unfold u' in H0. rewrite h in H0. exists (seq us h0 us' p H0 t1).
+    eapply IS_seq. apply H2. rewrite h in H1. apply H1. hyp.
+  Qed.
 
 End S.
 
