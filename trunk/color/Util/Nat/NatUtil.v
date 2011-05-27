@@ -447,21 +447,37 @@ Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
 
 Section iter.
 
-  Variables (A : Type) (f : A -> A).
+  Variables (A : Type) (a : A) (f : A -> A).
 
-  Fixpoint iter n x :=
-    match n with
-      | 0 => x
-      | S n' => iter n' (f x)
+  Fixpoint iter i :=
+    match i with
+      | 0 => a
+      | S i' => f (iter i')
     end.
 
-  Lemma iter_com : forall n x, iter n (f x) = f (iter n x).
+End iter.
+
+Section iter_prop.
+
+  Variables (A : Type) (f : A -> A).
+
+  Lemma iter_com : forall a i, iter (f a) f i = f (iter a f i).
 
   Proof.
-    induction n; simpl; intros. refl. rewrite IHn. refl.
+    induction i; simpl; intros. refl. rewrite IHi. refl.
   Qed.
 
-End iter.
+  Require Import Relations.
+
+  Lemma red_iter : forall R : relation A,
+    (forall x y, R x y -> R (f x) (f y)) ->
+    forall i x y, R x y -> R (iter x f i) (iter y f i).
+
+  Proof.
+    induction i; simpl; intros. hyp. apply H. apply IHi. hyp.
+  Qed.
+
+End iter_prop.
 
 (***********************************************************************)
 (** arithmetical lemmas *)
