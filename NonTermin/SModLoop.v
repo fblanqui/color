@@ -162,26 +162,12 @@ rewrite <- last_string'_g. unfold last_string'. apply FS_rtc.
 apply (rewrites_correct h1').
 Qed.
 
-Lemma red_mod_g : forall a b, red_mod E R a b -> red_mod E R (g a) (g b).
-
-Proof.
-intros. unfold g. apply red_mod_fill. hyp.
-Qed.
-
-Lemma red_mod_iter_g : forall a b, red_mod E R a b ->
-  forall i, red_mod E R (iter g i a) (iter g i b).
-
-Proof.
-induction i; simpl; intros. hyp. repeat rewrite iter_com.
-destruct i. simpl. apply red_mod_g. hyp. apply red_mod_g. apply IHi.
-Qed.
-
 Require Import Euclid.
 
 Definition seq : nat -> string.
 
 Proof.
-intro n. destruct (eucl_dev k h0 n). exact (iter g q (nth r)).
+intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
 Defined.
 
 Require Import RelUtil Wf_nat.
@@ -195,10 +181,11 @@ destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
 assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
 omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
 destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
-apply red_mod_iter_g. rewrite H0. fold last_string.
+rewrite <- iter_com. apply red_iter. apply red_mod_fill.
+rewrite H0. fold last_string.
 cut (red_mod E R (g t) (g (nth 0))). intro. destruct H4. exists x.
 intuition. apply rt_trans with (g t). apply red_last_string_g. hyp.
-apply red_mod_g. unfold nth.
+apply red_mod_fill. unfold nth.
 change (red_mod E R (List.nth 0 (t :: us) default)
   (List.nth 1 (t :: us) default)).
 apply red_mod_nth. apply (mod_rewrites_correct h1). hyp.
@@ -206,7 +193,7 @@ apply red_mod_nth. apply (mod_rewrites_correct h1). hyp.
 assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
 destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
 destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
-apply red_mod_iter_g. apply FS_red_mod'. omega.
+apply red_iter. apply red_mod_fill. apply FS_red_mod'. omega.
 Qed.
 
 Lemma loop : EIS (red_mod E R).

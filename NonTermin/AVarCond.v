@@ -24,18 +24,18 @@ Lemma var_cond_mod : forall E R : rules,
 
 Proof.
 intros E R. rewrite <- brules_preserve_vars_ok. rewrite <- false_not_true.
-unfold brules_preserve_vars. rewrite (forallb_neg (@brule_preserve_vars_ok Sig)).
+unfold brules_preserve_vars.
+rewrite (forallb_neg (@brule_preserve_vars_ok Sig)).
 intros [[l r] [h1 h2]]. simpl in *. rewrite not_incl in h2. 2: apply eq_nat_dec.
 destruct h2. destruct H. destruct (in_vars_subterm H). rename x0 into p.
 destruct (subterm_pos_elim H1). rename x0 into c. destruct a.
-set (s := single x l). set (f := fun n => iter (fill (subc s c)) n l).
+set (s := single x l). set (f := iter l (fill (subc s c))).
 exists f. unfold IS. induction i; simpl in *. exists (f 0). split.
 apply rt_refl. exists l. exists r. exists Hole. simpl. exists s.
 repeat split. hyp. unfold s. rewrite sub_single_not_var. refl. hyp.
 rewrite H3. rewrite sub_fill. unfold s, single. simpl.
 rewrite (beq_refl beq_nat_ok). refl.
-unfold f. simpl. repeat rewrite iter_com. apply red_mod_fill.
-rewrite <- iter_com. hyp.
+unfold f. simpl. repeat rewrite iter_com. apply red_mod_fill. hyp.
 Qed.
 
 Lemma var_cond : forall R : rules, ~rules_preserve_vars R -> EIS (red R).
