@@ -173,8 +173,9 @@ Section S.
   Implicit Arguments indices_complete [f a i x].
 
 (*****************************************************************************)
-(** given a sub-sequence [g] for the indices [i >= i0] such that [f i = a],
-returns a sub-sequence for the indices [i >= 0] such that [f i = a] *)
+(** given an infinite sub-sequence [g] of [f] for the indices [i>=i0]
+such that [f i = a], returns a sub-sequence for the indices [i>=0]
+such that [f i = a] *)
 
   Section prefix.
 
