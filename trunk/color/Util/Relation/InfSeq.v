@@ -273,13 +273,8 @@ Section iter.
 
   Variables (a : A) (f : A -> A).
 
-  Fixpoint iter i :=
-    match i with
-      | 0 => a
-      | S i' => f (iter i')
-    end.
-
-  Lemma IS_iter : forall R : relation A, (forall x, R x (f x)) -> IS R iter.
+  Lemma IS_iter : forall R : relation A,
+    (forall x, R x (f x)) -> IS R (iter a f).
 
   Proof.
     intros R hf. unfold IS. destruct i; simpl; apply hf.
