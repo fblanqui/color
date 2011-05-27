@@ -249,6 +249,14 @@ Section IS.
     intros f k hf. exists (fun i => f (i+k)). firstorder.
   Qed.
 
+  Lemma red_NT : forall t u, R t u -> NT R u -> NT R t.
+
+  Proof.
+    intros t u tu [f [f0 hf]]. subst.
+    exists (fun k => match k with 0 => t | S k' => f k' end).
+    intuition. intro k. destruct k. hyp. apply hf.
+  Qed.
+
 End IS.
 
 (***********************************************************************)
