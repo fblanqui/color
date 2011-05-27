@@ -1104,6 +1104,56 @@ Section S.
 
   Definition NT_min R t := NT R t /\ min R t.
 
+  Lemma min_eq : forall R t, min (red R) t <->
+    (forall f ts, t = Fun f ts -> Vforall (fun u => ~NT (red R) u) ts).
+
+  Proof.
+    intros R t. split.
+    (* -> *)
+    intros ht f ts e. apply Vforall_intro. intros u hu.
+    apply ht. subst. apply subterm_fun. hyp.
+    (* <- *)
+    intros h u ut hu. destruct ut as [c [hc e]]. destruct c. irrefl.
+    clear hc. simpl in e.
+    set (ts := Vcast (Vapp v (Vcons (fill c u) v0)) e0). fold ts in e.
+    ded (h f ts e).
+    assert (Vin (fill c u) ts). unfold ts. rewrite Vin_cast.
+    apply Vin_app_cons.
+    assert (NT (red R) (fill c u)). destruct hu as [g [g0 hg]].
+    exists (fun k => fill c (g k)). rewrite g0. intuition.
+    intro k. apply red_fill. apply hg.
+    ded (Vforall_in H H0). contr.
+  Qed.
+
+  Lemma int_red_min : forall R t u,
+    int_red R t u -> min (red R) t -> min (red R) u.
+
+  Proof.
+    intros R t u tu. do 2 rewrite min_eq. intros ht f us hu.
+    apply Vforall_intro. intros v hv.
+    apply int_red_pos_eq in tu.
+    destruct tu as [i [f' [hi [ts [hts [w [h1 h2]]]]]]]. ded (ht _ _ hts).
+    clear ht. subst. Funeqtac. subst. destruct (Vin_nth hv) as [j [hj e]].
+    clear hv. destruct (eq_nat_dec j i); subst.
+    (* j = i *)
+    rewrite Vnth_replace. intro hw.
+    assert (NT (red R) (Vnth ts hi)). destruct hw as [f [f0 hf]].
+    exists (fun k => match k with 0 => Vnth ts hi | S k' => f k' end).
+    intuition. intro k. destruct k. rewrite f0. hyp. apply hf.
+    ded (Vforall_nth hi H). contr.
+    (* j <> i *)
+    rewrite Vnth_replace_neq. 2: omega. intro hv.
+    ded (Vforall_nth hj H). contr.
+  Qed.
+
+  Lemma int_red_rtc_min : forall R t u,
+    int_red R # t u -> min (red R) t -> min (red R) u.
+
+  Proof.
+    induction 1; intro hx. eapply int_red_min. apply H. hyp. hyp.
+    apply IHclos_refl_trans2. apply IHclos_refl_trans1. hyp.
+  Qed.
+
 (***********************************************************************)
 (** minimal infinite rewrite sequences modulo: two functions [f] and
 [g] describing an infinite sequence of head [D]-steps modulo arbitrary
