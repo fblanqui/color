@@ -37,3 +37,12 @@ intros A R. split.
 intros wf f hf. ded (wf (f 0)). rewrite SN_notNT in H. apply H. exists f. auto.
 intros h x. rewrite SN_notNT. intros [f [h0 hf]]. eapply h. apply hf.
 Qed.
+
+Require Import ClassicUtil.
+
+Lemma notWF_IS : forall A (R : relation A), ~WF R <-> exists f, IS R f.
+
+Proof.
+intros A R. rewrite WF_notIS. rewrite not_forall_eq.
+intuition; destruct H as [f hf]; exists f. apply NNPP. hyp. auto.
+Qed.
