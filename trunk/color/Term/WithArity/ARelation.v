@@ -121,6 +121,7 @@ Section S.
 
   End reduction_pair.
 
+(*FIXME: defined as weak_reduction_pair + something*)
   Record Reduction_pair : Type := mkReduction_pair {
     rp_succ : relation term;
     rp_succ_eq : relation term;
