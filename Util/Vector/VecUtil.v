@@ -497,145 +497,142 @@ Section Vapp.
 
   Proof. refl. Qed.
 
-    Lemma Vapp_nil_eq : forall n (v : vec n) (w : vec 0) (h : n=n+0),
-      Vapp v w = Vcast v h.
+  Lemma Vapp_nil_eq : forall n (v : vec n) (w : vec 0) (h : n=n+0),
+    Vapp v w = Vcast v h.
 
-    Proof.
-      induction v; intros. VOtac. refl.
-      simpl. apply Vtail_eq. apply IHv.
-    Qed.
+  Proof.
+    induction v; intros. VOtac. refl.
+    simpl. apply Vtail_eq. apply IHv.
+  Qed.
 
-    Lemma Vapp_nil : forall n (v : vec n) (w : vec 0), 
-      Vapp v w = Vcast v (plus_n_O n).
+  Lemma Vapp_nil : forall n (v : vec n) (w : vec 0), 
+    Vapp v w = Vcast v (plus_n_O n).
 
-    Proof.
-      intros. apply Vapp_nil_eq.
-    Qed.
+  Proof.
+    intros. apply Vapp_nil_eq.
+  Qed.
 
-    Lemma Vapp_rcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2
-      (h1 : n2=p2) (h2 : n1+n2=n1+p2),
-      Vapp v1 (Vcast v2 h1) = Vcast (Vapp v1 v2) h2.
+  Lemma Vapp_rcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2
+    (h1 : n2=p2) (h2 : n1+n2=n1+p2),
+    Vapp v1 (Vcast v2 h1) = Vcast (Vapp v1 v2) h2.
 
-    Proof.
-      induction v1; simpl; intros.
-      assert (h1=h2). apply eq_unique. rewrite H. refl.
-      apply Vtail_eq. apply IHv1.
-    Qed.
+  Proof.
+    induction v1; simpl; intros.
+    assert (h1=h2). apply eq_unique. rewrite H. refl.
+    apply Vtail_eq. apply IHv1.
+  Qed.
 
-    Lemma Vapp_rcast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2 (h1 : n2=p2),
-      Vapp v1 (Vcast v2 h1) = Vcast (Vapp v1 v2) (plus_reg_l_inv n1 h1).
+  Lemma Vapp_rcast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p2 (h1 : n2=p2),
+    Vapp v1 (Vcast v2 h1) = Vcast (Vapp v1 v2) (plus_reg_l_inv n1 h1).
 
-    Proof.
-      intros. apply Vapp_rcast_eq.
-    Qed.
+  Proof.
+    intros. apply Vapp_rcast_eq.
+  Qed.
 
-    Lemma Vapp_lcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1
-      (h1 : n1=p1) (h2 : n1+n2=p1+n2),
-      Vapp (Vcast v1 h1) v2 = Vcast (Vapp v1 v2) h2.
+  Lemma Vapp_lcast_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1
+    (h1 : n1=p1) (h2 : n1+n2=p1+n2),
+    Vapp (Vcast v1 h1) v2 = Vcast (Vapp v1 v2) h2.
 
-    Proof.
-      induction v1; intros until p1; case p1; simpl; intros.
-      rewrite Vcast_refl. refl. discr. discr.
-      apply Vtail_eq. apply IHv1.
-    Qed.
+  Proof.
+    induction v1; intros until p1; case p1; simpl; intros.
+    rewrite Vcast_refl. refl. discr. discr.
+    apply Vtail_eq. apply IHv1.
+  Qed.
 
-    Lemma Vapp_lcast :  forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1
-      (h1 : n1=p1),
-      Vapp (Vcast v1 h1) v2 = Vcast (Vapp v1 v2) (plus_reg_r_inv n2 h1).
+  Lemma Vapp_lcast :  forall n1 (v1 : vec n1) n2 (v2 : vec n2) p1 (h1 : n1=p1),
+    Vapp (Vcast v1 h1) v2 = Vcast (Vapp v1 v2) (plus_reg_r_inv n2 h1).
 
-    Proof.
-      intros. apply Vapp_lcast_eq.
-    Qed.
+  Proof.
+    intros. apply Vapp_lcast_eq.
+  Qed.
 
-    Lemma Vapp_assoc_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
-      n3 (v3 : vec n3) (h : n1+(n2+n3) = (n1+n2)+n3),
-      Vapp (Vapp v1 v2) v3 = Vcast (Vapp v1 (Vapp v2 v3)) h.
+  Lemma Vapp_assoc_eq : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
+    n3 (v3 : vec n3) (h : n1+(n2+n3) = (n1+n2)+n3),
+    Vapp (Vapp v1 v2) v3 = Vcast (Vapp v1 (Vapp v2 v3)) h.
 
-    Proof.
-      induction v1; intros; simpl.
-      rewrite Vcast_refl. refl.
-      apply Vtail_eq. apply IHv1.
-    Qed.
+  Proof.
+    induction v1; intros; simpl.
+    rewrite Vcast_refl. refl.
+    apply Vtail_eq. apply IHv1.
+  Qed.
 
-    Lemma Vapp_assoc : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
-      n3 (v3 : vec n3),
-      Vapp (Vapp v1 v2) v3 = Vcast (Vapp v1 (Vapp v2 v3)) (plus_assoc n1 n2 n3).
+  Lemma Vapp_assoc : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n3 (v3 : vec n3),
+    Vapp (Vapp v1 v2) v3 = Vcast (Vapp v1 (Vapp v2 v3)) (plus_assoc n1 n2 n3).
 
-    Proof.
-      intros. apply Vapp_assoc_eq.
-    Qed.
+  Proof.
+    intros. apply Vapp_assoc_eq.
+  Qed.
 
-    Lemma Vapp_eq_intro : forall n1 (v1 v1' : vec n1) n2 (v2 v2' : vec n2),
-      v1 = v1' -> v2 = v2' -> Vapp v1 v2 = Vapp v1' v2'.
+  Lemma Vapp_eq_intro : forall n1 (v1 v1' : vec n1) n2 (v2 v2' : vec n2),
+    v1 = v1' -> v2 = v2' -> Vapp v1 v2 = Vapp v1' v2'.
 
-    Proof.
-      intros. rewrite H. rewrite H0. refl.
-    Qed.
+  Proof.
+    intros. rewrite H. rewrite H0. refl.
+  Qed.
 
-    Lemma Vapp_eq : forall n1 (v1 v1' : vec n1) n2 (v2 v2' : vec n2),
-      Vapp v1 v2 = Vapp v1' v2' <-> v1 = v1' /\ v2 = v2'.
+  Lemma Vapp_eq : forall n1 (v1 v1' : vec n1) n2 (v2 v2' : vec n2),
+    Vapp v1 v2 = Vapp v1' v2' <-> v1 = v1' /\ v2 = v2'.
 
-    Proof.
-      induction v1; simpl. intro. VOtac. simpl. intros. tauto.
-      intro. VSntac v1'. simpl. split; intro. Veqtac. subst a.
-      rewrite IHv1 in H3.
-      intuition. rewrite H0. refl. destruct H0. Veqtac. subst a.
-      apply Vcons_eq_intro. refl. rewrite IHv1. intuition.
-    Qed.
+  Proof.
+    induction v1; simpl. intro. VOtac. simpl. intros. tauto.
+    intro. VSntac v1'. simpl. split; intro. Veqtac. subst a.
+    rewrite IHv1 in H3.
+    intuition. rewrite H0. refl. destruct H0. Veqtac. subst a.
+    apply Vcons_eq_intro. refl. rewrite IHv1. intuition.
+  Qed.
 
-    Lemma Vnth_app_aux : forall n1 n2 i, i < n1+n2 -> n1 <= i -> i - n1 < n2.
+  Lemma Vnth_app_aux : forall n1 n2 i, i < n1+n2 -> n1 <= i -> i - n1 < n2.
 
-    Proof. Omega. Qed.
+  Proof. Omega. Qed.
 
-    Implicit Arguments Vnth_app_aux [n1 n2 i].
+  Implicit Arguments Vnth_app_aux [n1 n2 i].
 
-    Lemma Vnth_app : forall n1 (v1 : vec n1) n2 (v2 : vec n2) i (h : i < n1+n2),
-      Vnth (Vapp v1 v2) h =
-      match le_gt_dec n1 i with
-        | left p => Vnth v2 (Vnth_app_aux h p)
-        | right p => Vnth v1 p
-      end.
+  Lemma Vnth_app : forall n1 (v1 : vec n1) n2 (v2 : vec n2) i (h : i < n1+n2),
+    Vnth (Vapp v1 v2) h =
+    match le_gt_dec n1 i with
+      | left p => Vnth v2 (Vnth_app_aux h p)
+      | right p => Vnth v1 p
+    end.
 
-    Proof.
-      induction v1; intros. simpl. apply Vnth_eq. omega.
-      destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h)). gen H.
-      case (le_gt_dec n i); simpl; intros.
-      (* case 1 *)
-      transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h) l)). hyp.
-      apply Vnth_eq. omega.
-      (* case 2 *)
-      transitivity (Vnth v1 g). hyp. apply Vnth_eq. refl.
-    Qed.
+  Proof.
+    induction v1; intros. simpl. apply Vnth_eq. omega.
+    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h)). gen H.
+    case (le_gt_dec n i); simpl; intros.
+    (* case 1 *)
+    transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h) l)). hyp.
+    apply Vnth_eq. omega.
+    (* case 2 *)
+    transitivity (Vnth v1 g). hyp. apply Vnth_eq. refl.
+  Qed.
 
-    Lemma Vnth_app_cons : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
-      (h : n1 < n1 + S n2) x, Vnth (Vapp v1 (Vcons x v2)) h = x.
+  Lemma Vnth_app_cons : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
+    (h : n1 < n1 + S n2) x, Vnth (Vapp v1 (Vcons x v2)) h = x.
 
-    Proof.
-      induction v1; intros; simpl. refl. apply IHv1.
-    Qed.
+  Proof.
+    induction v1; intros; simpl. refl. apply IHv1.
+  Qed.
 
-    Lemma Vnth_app_cons_neq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) k
-      (h : k < n1 + S n2) x x',
-      k <> n1 -> Vnth (Vapp v1 (Vcons x v2)) h = Vnth (Vapp v1 (Vcons x' v2)) h.
+  Lemma Vnth_app_cons_neq : forall n1 (v1 : vec n1) n2 (v2 : vec n2) k
+    (h : k < n1 + S n2) x x',
+    k <> n1 -> Vnth (Vapp v1 (Vcons x v2)) h = Vnth (Vapp v1 (Vcons x' v2)) h.
 
-    Proof.
-      induction v1; intros.
-      simpl. destruct k. irrefl. refl.
-      repeat rewrite Vapp_cons. destruct k. refl. apply IHv1. omega.
-    Qed.
+  Proof.
+    induction v1; intros.
+    simpl. destruct k. irrefl. refl.
+    repeat rewrite Vapp_cons. destruct k. refl. apply IHv1. omega.
+  Qed.
 
-    Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
+  Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
 
-    Proof. Omega. Qed.
+  Proof. Omega. Qed.
 
-    Lemma Vapp_cast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n2'
-      (e : n2 = n2'),
-      Vapp v1 (Vcast v2 e) = Vcast (Vapp v1 v2) (Vapp_cast_aux n1 e).
+  Lemma Vapp_cast : forall n1 (v1 : vec n1) n2 (v2 : vec n2) n2' (e : n2 = n2'),
+    Vapp v1 (Vcast v2 e) = Vcast (Vapp v1 v2) (Vapp_cast_aux n1 e).
 
-    Proof.
-      induction v1; simpl; intros. apply Vcast_pi. apply Vtail_eq.
-      rewrite IHv1. apply Vcast_pi.
-    Qed.
+  Proof.
+    induction v1; simpl; intros. apply Vcast_pi. apply Vtail_eq.
+    rewrite IHv1. apply Vcast_pi.
+  Qed.
 
 End Vapp.
 
