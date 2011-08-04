@@ -50,98 +50,89 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
 
   Notation rule := (rule Sig). Notation rules := (rules Sig).
 
-  Definition wp := mkWeak_reduction_pair
-    sc_succ sc_succeq cc_succeq succ_succeq_compat wf_succ.
+  Lemma WF_wp_hd_red_mod : forall E R,
+    forallb (brule bsucceq) E = true ->
+    forallb (brule bsucceq) R = true ->
+    WF (hd_red_mod E (filter (brule (neg bsucc)) R)) ->
+    WF (hd_red_mod E R).
 
-  Section S.
+  Proof.
+    intros. set (Rge := filter (brule (neg bsucc)) R).
+    set (Rgt := removes (@eq_rule_dec Sig) Rge R).
+    apply WF_incl with (hd_red_mod E (Rgt ++ Rge)).
+    apply hd_red_mod_incl. refl. apply incl_removes_app.
+    apply rule_elimination_hd_mod with (wp:=mkWeak_reduction_pair
+      sc_succ sc_succeq cc_succeq succ_succeq_compat wf_succ).
+    (* E << succeq *)
+    intros l r h. apply bsucceq_sub. rewrite forallb_forall in H.
+    change (brule bsucceq (mkRule l r) = true). apply H. hyp.
+    (* Rge << succeq *)
+    apply incl_compat with R. unfold Rge. apply filter_incl.
+    (* R << succeq *)
+    intros l r h. apply bsucceq_sub. rewrite forallb_forall in H0.
+    change (brule bsucceq (mkRule l r) = true). apply H0. hyp.
+    (* Rgt << succ *)
+    intros l r h. unfold Rgt in h. rewrite In_removes in h. destruct h.
+    unfold Rge in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
+    destruct H3. contradiction. destruct H3. clear H3.
+    apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
+    rewrite negb_lr in H4. hyp.
+    (* WF (hd_red_mod E Rge) *)
+    hyp.
+  Qed.
 
-    Lemma WF_wp_hd_red_mod : forall E R,
-      forallb (brule bsucceq) E = true ->
-      forallb (brule bsucceq) R = true ->
-      WF (hd_red_mod E (filter (brule (neg bsucc)) R)) ->
-      WF (hd_red_mod E R).
+  Variable cc_succ : context_closed succ.
 
-    Proof.
-      intros. set (Rge := filter (brule (neg bsucc)) R).
-      set (Rgt := removes (@eq_rule_dec Sig) Rge R).
-      apply WF_incl with (hd_red_mod E (Rgt ++ Rge)).
-      apply hd_red_mod_incl. refl. apply incl_removes_app.
-      apply rule_elimination_hd_mod with (wp:=wp).
-      (* E << succeq *)
-      intros l r h. apply bsucceq_sub. rewrite forallb_forall in H.
-      change (brule bsucceq (mkRule l r) = true). apply H. hyp.
-      (* Rge << succeq *)
-      apply incl_compat with R. unfold Rge. apply filter_incl.
-      (* R << succeq *)
-      intros l r h. apply bsucceq_sub. rewrite forallb_forall in H0.
-      change (brule bsucceq (mkRule l r) = true). apply H0. hyp.
-      (* Rgt << succ *)
-      intros l r h. unfold Rgt in h. rewrite In_removes in h. destruct h.
-      unfold Rge in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
-      destruct H3. contradiction. destruct H3. clear H3.
-      apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
-      rewrite negb_lr in H4. hyp.
-      (* WF (hd_red_mod E Rge) *)
-      hyp.
-    Qed.
+  Lemma WF_rp_red_mod : forall E R,
+    forallb (brule bsucceq) E = true ->
+    forallb (brule bsucceq) R = true ->
+    WF (red_mod (filter (brule (neg bsucc)) E) (filter (brule (neg bsucc)) R))
+    -> WF (red_mod E R).
 
-    Variable cc_succ : context_closed succ.
+  Proof.
+    intros. set (Rge := filter (brule (neg bsucc)) R).
+    set (Ege := filter (brule (neg bsucc)) E).
+    set (Rgt := removes (@eq_rule_dec Sig) Rge R).
+    set (Egt := removes (@eq_rule_dec Sig) Ege E).
+    apply WF_incl with (red_mod (Egt ++ Ege) (Rgt ++ Rge)).
+    apply red_mod_incl; apply incl_removes_app.
+    apply rule_elimination_mod with (rp:=mkReduction_pair
+      sc_succ sc_succeq cc_succ cc_succeq succ_succeq_compat wf_succ).
+    (* Rgt << succ *)
+    intros l r h. unfold Rgt in h. rewrite In_removes in h. destruct h.
+    unfold Rge in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
+    destruct H3. contradiction. destruct H3. clear H3.
+    apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
+    rewrite negb_lr in H4. hyp.
+    (* Rge << succeq *)
+    apply incl_compat with R. unfold Rge. apply filter_incl.
+    (* R << succeq *)
+    intros l r h. apply bsucceq_sub. rewrite forallb_forall in H0.
+    change (brule bsucceq (mkRule l r) = true). apply H0. hyp.
+    (* Egt << succ *)
+    intros l r h. unfold Egt in h. rewrite In_removes in h. destruct h.
+    unfold Ege in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
+    destruct H3. contradiction. destruct H3. clear H3.
+    apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
+    rewrite negb_lr in H4. hyp.
+    (* Ege << succeq *)
+    apply incl_compat with E. unfold Ege. apply filter_incl.
+    (* E << succeq *)
+    intros l r h. apply bsucceq_sub. rewrite forallb_forall in H.
+    change (brule bsucceq (mkRule l r) = true). apply H. hyp.
+    (* WF (hd_red_mod Ege Rge) *)
+    hyp.
+  Qed.
 
-    Definition rp := mkReduction_pair
-      sc_succ sc_succeq cc_succ cc_succeq succ_succeq_compat wf_succ.
+  Lemma WF_rp_red : forall R,
+    forallb (brule bsucceq) R = true ->
+    WF (red (filter (brule (neg bsucc)) R)) ->
+    WF (red R).
 
-    Lemma WF_rp_red_mod : forall E R,
-      forallb (brule bsucceq) E = true ->
-      forallb (brule bsucceq) R = true ->
-      WF (red_mod (filter (brule (neg bsucc)) E)
-                  (filter (brule (neg bsucc)) R)) ->
-      WF (red_mod E R).
-
-    Proof.
-      intros. set (Rge := filter (brule (neg bsucc)) R).
-      set (Ege := filter (brule (neg bsucc)) E).
-      set (Rgt := removes (@eq_rule_dec Sig) Rge R).
-      set (Egt := removes (@eq_rule_dec Sig) Ege E).
-      apply WF_incl with (red_mod (Egt ++ Ege) (Rgt ++ Rge)).
-      apply red_mod_incl; apply incl_removes_app.
-      apply rule_elimination_mod with (rp:=rp).
-      (* Rgt << succ *)
-      intros l r h. unfold Rgt in h. rewrite In_removes in h. destruct h.
-      unfold Rge in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
-      destruct H3. contradiction. destruct H3. clear H3.
-      apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
-      rewrite negb_lr in H4. hyp.
-      (* Rge << succeq *)
-      apply incl_compat with R. unfold Rge. apply filter_incl.
-      (* R << succeq *)
-      intros l r h. apply bsucceq_sub. rewrite forallb_forall in H0.
-      change (brule bsucceq (mkRule l r) = true). apply H0. hyp.
-      (* Egt << succ *)
-      intros l r h. unfold Egt in h. rewrite In_removes in h. destruct h.
-      unfold Ege in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
-      destruct H3. contradiction. destruct H3. clear H3.
-      apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
-      rewrite negb_lr in H4. hyp.
-      (* Ege << succeq *)
-      apply incl_compat with E. unfold Ege. apply filter_incl.
-      (* E << succeq *)
-      intros l r h. apply bsucceq_sub. rewrite forallb_forall in H.
-      change (brule bsucceq (mkRule l r) = true). apply H. hyp.
-      (* WF (hd_red_mod Ege Rge) *)
-      hyp.
-    Qed.
-
-    Lemma WF_rp_red : forall R,
-      forallb (brule bsucceq) R = true ->
-      WF (red (filter (brule (neg bsucc)) R)) ->
-      WF (red R).
-
-    Proof.
-      intros. rewrite <- red_mod_empty. apply WF_rp_red_mod. refl. hyp.
-      simpl. rewrite red_mod_empty. hyp.
-    Qed.
-
-  End S.
+  Proof.
+    intros. rewrite <- red_mod_empty. apply WF_rp_red_mod. refl. hyp.
+    simpl. rewrite red_mod_empty. hyp.
+  Qed.
 
 (***********************************************************************)
 (** tactics for Rainbow *)
