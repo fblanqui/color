@@ -38,7 +38,6 @@ Among other things, it includes:
 	- RPO: recursive path ordering
 	- HORPO: higher-order recursive path ordering
 	- NonTermin: loop certification
-	- SubtermCrit: subterm criterion
 
 The library is likely to evolve and include more developments quickly.
 For more recent informations, see http://color.inria.fr/.
