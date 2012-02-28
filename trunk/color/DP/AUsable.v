@@ -11,13 +11,20 @@ Nao Hirokawa and Aart Middeldorp
 Information and Computation 205(4), pp. 474 – 511, 2007
 
 Uses classical logic and the axiom of indefinite description, and the
-axiom WF_notIS in module Usable. *)
+axiom WF_notIS in module Usable.
+
+The current development is not finished. The axiom WF_IS_DP should be
+removed. *)
 
 Set Implicit Arguments.
 
 Require Import ATrs RelUtil ClassicUtil LogicUtil ARelation
   IndefiniteDescription NatUtil SN ASN BoolUtil VecUtil ListUtil AReduct
   ACalls ADP ADepRel InfSeq.
+
+(*FIXME*)
+Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M -> 
+  ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
 
 (***********************************************************************)
 (** weak reduction pair *)
@@ -772,12 +779,6 @@ End UsableRulesProp.
 
 (***********************************************************************)
 (** termination proof with boolean conditions *)
-
-(***********************************************************************)
-(** WARNING: we use the following axiom *)
-
-Axiom WF_IS_DP : forall Sig (M D : rules Sig), D [= dp M -> 
-  ~WF (hd_red_Mod (red M #) D) -> exists f, exists g, ISModMin M D f g.
 
 Section UsableRules.
 
