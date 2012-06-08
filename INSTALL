@@ -5,23 +5,22 @@ The compilation procedure that is provided hereafter requires a
 UNIX-like operating system with the following commands (it also works
 with Cygwin on Windows):
 
-- Coq version 8.3pl3 http://coq.inria.fr/
+- Coq version 8.3pl4 http://coq.inria.fr/
 - GNU make version 3.81 http://www.gnu.org/software/make/
 - GNU find version 4.4.2 http://www.gnu.org/software/findutils/findutils.html
 
-For compiling CoLoR, use the command "MAKE" (replace MAKE by your
-command for GNU make). It takes about 8 minutes on my computer.
+For compiling CoLoR, do: 'make' (it takes about 8 minutes on my computer).
 
 If you use the development version of CoLoR under SVN
 (http://gforge.inria.fr/projects/color/), after an update, before
-doing "MAKE", you need to do 'MAKE config' to recompile dependencies
+doing 'make', you need to do 'make config' to recompile dependencies
 when new files are added in the archive.
 
-For compiling the html documentation, use the command "MAKE doc". The
+For compiling the html documentation, use the command 'make doc'. The
 starting file is doc/main.html.
 
-For compiling the TAGS file, use the command "MAKE tags". This
-requires: "coqtags" from ProofGeneral http://proofgeneral.inf.ed.ac.uk/.
+For compiling the TAGS file, use the command 'make tags'. This
+requires 'coqtags' from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
 
 For using the library, type the following command in Coq (you can also
 add it in your ~/.coqrc file):

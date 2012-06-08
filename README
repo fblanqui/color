@@ -4,7 +4,7 @@ CoLoR, a Coq library on rewriting and termination
 The aim of this Coq library (Coq is a proof assistant developped at
 INRIA available at http://coq.inria.fr/) is to provide the necessary
 formal basis for certifying the termination proof candidates searched
-and built by tools like AProVE, MatchBox and TTT2.
+and built by tools like AProVE, TTT2, CiME, etc.
 
 Among other things, it includes:
 
