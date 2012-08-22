@@ -483,8 +483,9 @@ and satisfies some commutation property *)
         Proper (Equal ==> Logic.eq) (for_all f).
 
       Proof.
-        intros fm m m' mm'. repeat rewrite for_all_eq.
-        apply fold_Equal; intuition. proper3 for_all_aux_m. hyp.
+        intros heq fm m m' mm'. repeat rewrite for_all_eq.
+        apply fold_Equal; intuition. eapply Proper3_m. 5: apply for_all_aux_m.
+        refl. intros x y xy. subst y. refl. refl. refl. hyp.
       Qed.
 
     End for_all.

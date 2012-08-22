@@ -142,7 +142,8 @@ Module Interp(EQT:equational_theory_spec.EqTh).
          forall x1, (A0<=x1) -> bounded_aux n (P1 x1) 
      end.
 
-   Definition bounded f Pols := bounded_aux (get_arity f) (Pols f).
+   Definition bounded f (Pols : forall f, Pol_type (get_arity f))
+     := bounded_aux (get_arity f) (Pols f).
    Hypothesis All_bounded : forall f, bounded f Pols.
 
    Lemma measure_bounded : forall t, A0 <= measure t.

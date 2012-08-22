@@ -10,14 +10,7 @@ polynomials with non-negative integers as coefficients
 
 Set Implicit Arguments.
 
-Require Import Polynom.
-Require Import ZUtil.
-Require Import LogicUtil.
-Require Import NaryFunction.
-Require Import ListForall.
-Require Import VecUtil.
-Require Import List.
-Require Import Max.
+Require Import Polynom ZUtil LogicUtil NaryFunction ListForall VecUtil List Max.
 
 Notation vec := (vector D).
 Notation vals := (@Vmap D Z val _).
@@ -54,7 +47,7 @@ Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
 Proof.
 induction p; intros; simpl. omega. destruct a. simpl in H. destruct H.
-case (monom_eq_dec m v); intro. assert (0 <= coef m p). apply IHp. assumption.
+case (monom_eq_dec m t); intro. assert (0 <= coef m p). apply IHp. assumption.
 omega. apply IHp. assumption.
 Qed.
 
@@ -116,7 +109,7 @@ Lemma coef_pos_mpplus : forall n c (m : monom n) (p : poly n),
 
 Proof.
 induction p; intros; simpl. auto. destruct a. simpl in H0. destruct H0.
-case (monom_eq_dec m v); simpl; intuition.
+case (monom_eq_dec m t); simpl; intuition.
 Qed.
 
 Lemma coef_pos_plus : forall n (p1 p2 : poly n),
@@ -174,8 +167,8 @@ Lemma coefPos_ge0 : forall n (p : poly n) (m : monom n),
 Proof with auto with zarith.
   induction p. simpl...
   intros. destruct a. simpl.
-  destruct (monom_eq_dec m v).
-  subst m. apply Zge_trans with (coef v p).
+  destruct (monom_eq_dec m t).
+  subst m. apply Zge_trans with (coef t p).
   destruct H. simpl in H...
   apply IHp. destruct H...
   apply IHp. destruct H...
@@ -187,10 +180,10 @@ Lemma coefPos_geC : forall n (p : poly n) (m : monom n) c,
 Proof with auto with zarith.
   induction p. simpl. tauto.
   intros. destruct a. simpl.
-  destruct (monom_eq_dec m v). subst m.
+  destruct (monom_eq_dec m t). subst m.
   destruct H0. injection H0. intros. subst z.
-  destruct H. ded (coefPos_ge0 p v H1)...
-  apply Zge_trans with (coef v p).
+  destruct H. ded (coefPos_ge0 p t H1)...
+  apply Zge_trans with (coef t p).
   simpl in H...
   apply IHp... destruct H...
   destruct H0. congruence.

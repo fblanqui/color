@@ -191,7 +191,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
   Lemma trans_succeq : transitive succeq.
       
   Proof.
-    unfold succeq. apply Rof_trans. apply vec_ge_trans.
+    unfold succeq. apply Rof_trans with (f:=dom2vec). apply vec_ge_trans.
   Qed.
 
   (** Monotonicity *)
@@ -626,10 +626,10 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       unfold mint_eval, add_vectors. simpl.
       destruct H. apply (@vec_plus_ge_compat dim).
       apply (IHargs0 (Vtail val) (mkMatrixInt const1 (Vtail (args1)))).
-      split. simpl. change args0 with (Vtail (Vcons a args0)). 
+      split. simpl. change args0 with (Vtail (Vcons h args0)). 
       apply Vforall2n_tail. assumption. assumption.
       apply mat_vec_prod_ge_compat.
-      change a with (Vhead (Vcons a args0)). do 2 rewrite Vhead_nth.
+      change h with (Vhead (Vcons h args0)). do 2 rewrite Vhead_nth.
       apply (Vforall2n_nth mat_ge). assumption.
       apply (vec_ge_refl (Vhead val)).
     Qed.

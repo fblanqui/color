@@ -26,7 +26,7 @@ Lemma Vtrue_app : forall n1 (bs1 : bools n1) n2 (bs2 : bools n2),
 
 Proof.
 induction bs1; simpl. auto. intros. ded (IHbs1 n2 bs2). rewrite H.
-case a; refl.
+case h; refl.
 Qed.
 
 Lemma Vtrue_break : forall n1 n2 (bs : bools (n1+n2)),
@@ -44,7 +44,7 @@ Lemma Vtrue_cast : forall n (bs : bools n) p (h:n=p),
 
 Proof.
 induction bs; induction p; intros. rewrite Vcast_refl. refl.
-discr. discr. simpl. case a. apply (f_equal S). apply IHbs.
+discr. discr. simpl. case h. apply (f_equal S). apply IHbs.
 apply IHbs.
 Qed.
 

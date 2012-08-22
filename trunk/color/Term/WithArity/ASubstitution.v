@@ -59,7 +59,7 @@ Proof.
 intros f ts s u H. destruct u.
 right. exists n. refl.
 left. case (eq_symb_dec f f0).
-intro E. rewrite E. exists v. refl.
+intro E. rewrite E. exists t. refl.
 intro E. simpl in H. simplify_eq H. contradiction.
 Qed.
 
@@ -479,7 +479,7 @@ Lemma subterm_sub : forall u t s, subterm u t -> subterm (sub s u) (sub s t).
 
 Proof.
 unfold subterm. intros. destruct H as [C]. intuition. destruct C. intuition.
-subst t. exists (subc s (Cont f e v C v0)). intuition. discr. apply sub_fill.
+subst t. exists (subc s (Cont f e t0 C t1)). intuition. discr. apply sub_fill.
 Qed.
 
 Lemma subterm_eq_sub_elim : forall u t s,
@@ -771,7 +771,7 @@ Implicit Arguments fun_eq_sub [Sig f ts s u].
 Implicit Arguments sub_restrict_incl [Sig l r].
 Implicit Arguments fresh_vars [Sig].
 Implicit Arguments fresh [Sig].
-Implicit Arguments subterm_eq_sub_elim [Sig u t s].
+Implicit Arguments subterm_eq_sub_elim [Sig u t0 s].
 
 (***********************************************************************)
 (** tactics *)

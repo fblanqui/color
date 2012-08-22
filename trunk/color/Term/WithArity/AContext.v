@@ -91,8 +91,8 @@ Lemma cont_case : forall c, c = Hole \/ exists d, exists f,
 
 Proof.
 induction c. auto. right. destruct IHc. subst. exists Hole. exists f.
-exists i. exists v. exists j. exists v0. exists e. refl.
-decomp H. subst. exists (Cont e v x v0). exists x0. exists x1. exists x2.
+exists i. exists t. exists j. exists t0. exists e. refl.
+decomp H. subst. exists (Cont e t x t0). exists x0. exists x1. exists x2.
 exists x3. exists x4. exists x5. refl.
 Qed.
 
@@ -112,7 +112,7 @@ Lemma fun_eq_fill : forall f ts c u, Fun f ts = fill c u ->
 Proof.
 intros. destruct c. auto. right.
 simpl in H. injection H. intros. subst f0.
-exists i. exists j. exists e. exists v. exists c. exists v0.
+exists i. exists j. exists e. exists t. exists c. exists t0.
 refl.
 Qed.
 
@@ -155,7 +155,7 @@ Qed.
 Lemma wf_term : forall (t : term) c, t = fill c t -> c = Hole.
 
 Proof.
-intros. destruct c. refl. assert (size (fill (Cont e v c v0) t) > size t).
+intros. destruct c. refl. assert (size (fill (Cont e t0 c t1) t) > size t).
 simpl fill. rewrite size_fun. rewrite size_terms_cast.
 rewrite size_terms_app. simpl. ded (size_fill t c). omega.
 rewrite <- H in H0. absurd_arith.
@@ -234,7 +234,7 @@ Lemma subterm_noteq : forall u t, subterm_eq u t -> u <> t -> subterm u t.
 Proof.
 unfold subterm_eq, subterm. intros. destruct H as [C]. destruct C.
 subst t. simpl in H0. absurd (u<>u); auto.
-exists (Cont e v C v0). split. discr. subst t. refl.
+exists (Cont e t0 C t1). split. discr. subst t. refl.
 Qed.
 
 Lemma rc_subterm : subterm_eq == subterm%.
@@ -242,7 +242,7 @@ Lemma rc_subterm : subterm_eq == subterm%.
 Proof.
 rewrite rel_eq. intros t u. split; intro h.
 destruct h. destruct x. left. auto.
-right. exists (Cont e v x v0). intuition. discr.
+right. exists (Cont e t0 x t1). intuition. discr.
 destruct h. exists Hole. auto. apply subterm_strict. hyp.
 Qed.
 
@@ -251,7 +251,7 @@ Lemma rc_supterm : supterm_eq == supterm%.
 Proof.
 rewrite rel_eq. intros t u. split; intro h.
 destruct h. destruct x. left. auto.
-right. exists (Cont e v x v0). intuition. discr.
+right. exists (Cont e t0 x t1). intuition. discr.
 destruct h. exists Hole. auto. apply subterm_strict. hyp.
 Qed.
 
@@ -259,7 +259,7 @@ Lemma subterm_eq_split : forall t u, subterm_eq t u -> t = u \/ subterm t u.
 
 Proof.
 intros t u tu. destruct tu as [c hu]. destruct c.
-auto. right. exists (Cont e v c v0). intuition. discr.
+auto. right. exists (Cont e t0 c t1). intuition. discr.
 Qed.
 
 (***********************************************************************)
@@ -405,7 +405,7 @@ Definition bsupterm t u := bsubterm u t.
 (** subterms and variables *)
 
 Lemma subterm_eq_vars : forall u t x,
-  subterm_eq u t -> In x (vars u) -> In x (vars t).
+  subterm_eq u t -> List.In x (vars u) -> List.In x (vars t).
 
 Proof.
 unfold subterm_eq. intros. destruct H as [C]. subst t. elim C; clear C.
@@ -414,7 +414,8 @@ rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
 apply in_appr. apply in_appl. hyp.
 Qed.
 
-Lemma in_vars_subterm_eq : forall x t, In x (vars t) -> subterm_eq (Var x) t.
+Lemma in_vars_subterm_eq : forall x t,
+  List.In x (vars t) -> subterm_eq (Var x) t.
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
@@ -427,7 +428,7 @@ apply subterm_fun. hyp.
 Qed.
 
 Lemma in_vars_fun : forall x f ts,
-  In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
+  List.In x (vars (Fun f ts)) -> exists t, Vin t ts /\ subterm_eq (Var x) t.
 
 Proof.
 intros. apply subterm_fun_elim. ded (in_vars_subterm_eq _ _ H).
@@ -439,7 +440,7 @@ Qed.
 
 Fixpoint cvars (c : context) : variables :=
   match c with
-    | Hole => nil
+    | Hole => List.nil
     | Cont f i j H v1 c' v2 => vars_vec v1 ++ cvars c' ++ vars_vec v2
   end.
 
@@ -469,7 +470,7 @@ Qed.
 
 Fixpoint csymbs (c : context) : list Sig :=
   match c with
-    | Hole => nil
+    | Hole => List.nil
     | Cont f i j H v1 c' v2 => f :: (symbs_vec v1 ++ csymbs c' ++ symbs_vec v2)
   end.
 

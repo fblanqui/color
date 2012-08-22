@@ -167,7 +167,7 @@ Section S.
     (* Vnil *)
     contradiction.
     (* Vcons *)
-    intros E h H. simpl in H. rewrite in_app in H. intuition.
+    intros E g H. simpl in H. rewrite in_app in H. intuition.
     (* case 1 *)
     ded (in_map_elim H0). decomp H. destruct (E 0 (lt_O_Sn n)). simpl in H.
     exists (arity f - S n + 0). exists x0. exists x. rewrite <- H. intuition.
@@ -210,12 +210,12 @@ Section S.
     (* Vnil *)
     intros. absurd_arith.
     (* Vcons *)
-    intros h t. simpl.
-    set (F := fun x : term => Fun f (Vreplace ts (reducts_aux2 h) x)).
+    intros g t. simpl.
+    set (F := fun x : term => Fun f (Vreplace ts (reducts_aux2 g) x)).
     destruct i; intros p q; rewrite in_app.
     (* i = 0 *)
     left. assert (e : arity f - S n + 0 = arity f - S n). omega.
-    rewrite (Vreplace_pi ts q (reducts_aux2 h) t e).
+    rewrite (Vreplace_pi ts q (reducts_aux2 g) t e).
     apply in_map with (f:=F). hyp.
     (* i > 0 *)
     right. assert (q' : arity f - n + i < arity f). omega.
@@ -295,7 +295,7 @@ Section S.
     (* Vcons *)
     destruct i; simpl; intro; rewrite in_app.
     left. apply in_map with (f := fun x => Vcons x ts). hyp.
-    right. apply in_map with (f := fun x => Vcons a x). apply IHts. hyp.
+    right. apply in_map with (f := fun x => Vcons h x). apply IHts. hyp.
   Qed.
 
 (***********************************************************************)

@@ -8,16 +8,8 @@ This file provides an order on lists derived from the order on
 multisets, along with some properties of this order.
 *)
 
-Require Import List.
-Require Import MultisetOrder.
-Require Import RelExtras.
-Require Import MultisetCore.
-Require Import MultisetList.
-Require Import Permutation.
-Require Import MultisetTheory.
-Require Import Arith.
-Require Import AccUtil.
-Require Import RelUtil.
+Require Import List MultisetOrder RelExtras MultisetCore MultisetList
+  Permutation MultisetTheory Arith AccUtil RelUtil.
 
 Module MultisetListOrder (ES : Eqset_dec).
 
@@ -408,9 +400,6 @@ Module MultisetListOrder (ES : Eqset_dec).
     apply HAccTermsToTermlist; trivial.
     unfold transp; simpl; intros x x' y y' Hxy Hx'y'.
     apply (C1 y  y' x x'); trivial.
-    intros s s_in_l; apply Acc_eq_rel with r.
-    apply transp_transp_R_eq_R.
-    apply accs_l; trivial.
   Qed.
 
   Section Mult_and_one_less.

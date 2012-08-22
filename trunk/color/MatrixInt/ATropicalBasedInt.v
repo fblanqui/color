@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil LogicUtil Setoid
-  AMatrixBasedInt VecEq VecOrd.
+  VecEq VecOrd AMatrixBasedInt.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TTropicalBasedInt.
@@ -99,8 +99,8 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
     Lemma trans_succ : transitive succ.
 
     Proof.
-      unfold succ. apply Rof_trans. unfold succ_vec. apply VecOrd.vec_ge_trans.
-      apply gtx_trans.      
+      unfold succ. apply Rof_trans with (f:=dom2vec). unfold succ_vec.
+      apply VecOrd.vec_ge_trans. apply gtx_trans.      
     Qed.
 
     Lemma ge_gtx_compat : forall x y z, x >>= y -> y >_0 z -> x >_0 z.
@@ -191,9 +191,9 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
       VOtac. simpl. right. intuition.
       VSntac v'. simpl. apply gtx_plus_compat.
       apply IHv. intros. 
-      apply (Vforall2n_nth gtx). change v with (Vtail (Vcons a v)). 
+      apply (Vforall2n_nth gtx). change v with (Vtail (Vcons h v)). 
       apply Vforall2n_tail. apply Vforall2n_intro. assumption.
-      change a with (Vhead (Vcons a v)). do 2 rewrite Vhead_nth.
+      change h with (Vhead (Vcons h v)). do 2 rewrite Vhead_nth.
       apply (H _ (Lt.lt_O_Sn n)).
     Qed.
 
@@ -214,9 +214,9 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
         right. intuition.
         apply gtx_plus_compat.
         apply IHv.
-        change v with (Vtail (Vcons a v)). apply Vforall2n_tail. assumption.
+        change v with (Vtail (Vcons h v)). apply Vforall2n_tail. assumption.
         apply vec_tail_ge. assumption.
-        apply gtx_mult_compat. change a with (Vhead (Vcons a v)). 
+        apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
         do 2 rewrite Vhead_nth. apply (Vforall2n_nth gtx). assumption.
         do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
       Qed.

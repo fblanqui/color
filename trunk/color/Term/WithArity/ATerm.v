@@ -10,7 +10,7 @@ algebraic terms with fixed arity
 
 Set Implicit Arguments.
 
-Require Export Bvector ASignature.
+Require Export Vector ASignature.
 
 Require Import ListUtil LogicUtil EqUtil BoolUtil NatUtil Max VecUtil VecMax
   ListMax.
@@ -351,7 +351,7 @@ a variable occurs in the list as much as it has occurrences in t *)
 
   Proof.
     induction ts; intros; destruct m; simpl; try (refl || discr).
-    apply (f_equal (fun l => vars a ++ l)). apply IHts.
+    apply (f_equal (fun l => vars h ++ l)). apply IHts.
   Qed.
 
   Lemma vars_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
@@ -359,7 +359,7 @@ a variable occurs in the list as much as it has occurrences in t *)
 
   Proof.
     induction ts1; intros; simpl. refl. rewrite app_ass.
-    apply (f_equal (fun l => vars a ++ l)). apply IHts1.
+    apply (f_equal (fun l => vars h ++ l)). apply IHts1.
   Qed.
 
   Lemma vars_vec_cons : forall t n (ts : terms n),
@@ -372,7 +372,7 @@ a variable occurs in the list as much as it has occurrences in t *)
 
   Proof.
     induction ts; simpl; intros. contradiction. generalize (in_app_or H). intro.
-    destruct H0. exists a. intuition. generalize (IHts H0). intro.
+    destruct H0. exists h. intuition. generalize (IHts H0). intro.
     destruct H1 as [t].
     exists t. intuition.
   Qed.
@@ -505,7 +505,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> nb_symb_occs_terms ts >= nb_symb_occs t.
 
   Proof.
-    induction ts; simpl; intros. contradiction. destruct H. subst a. omega.
+    induction ts; simpl; intros. contradiction. destruct H. subst h. omega.
     ded (IHts _ H). omega.
   Qed.
 
@@ -539,7 +539,7 @@ a variable occurs in the list as much as it has occurrences in t *)
 
   Proof.
     induction ts; intros; destruct m; simpl; try (refl || discr).
-    apply (f_equal (fun l => symbs a ++ l)). apply IHts.
+    apply (f_equal (fun l => symbs h ++ l)). apply IHts.
   Qed.
 
   Lemma symbs_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
@@ -547,7 +547,7 @@ a variable occurs in the list as much as it has occurrences in t *)
 
   Proof.
     induction ts1; intros; simpl. refl. rewrite app_ass.
-    apply (f_equal (fun l => symbs a ++ l)). apply IHts1.
+    apply (f_equal (fun l => symbs h ++ l)). apply IHts1.
   Qed.
 
   Lemma symbs_vec_cons : forall t n (ts : terms n),
@@ -560,7 +560,7 @@ a variable occurs in the list as much as it has occurrences in t *)
 
   Proof.
     induction ts; simpl; intros. contradiction. generalize (in_app_or H). intro.
-    destruct H0. exists a. intuition. generalize (IHts H0). intro.
+    destruct H0. exists h. intuition. generalize (IHts H0). intro.
     destruct H1 as [t]. exists t. intuition.
   Qed.
 
@@ -625,7 +625,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> size_terms ts >= size t.
 
   Proof.
-    induction ts; simpl; intros. contradiction. destruct H. subst a. omega.
+    induction ts; simpl; intros. contradiction. destruct H. subst h. omega.
     ded (IHts _ H). omega.
   Qed.
 
@@ -646,10 +646,15 @@ a variable occurs in the list as much as it has occurrences in t *)
     size_terms (Vcast ts h) = size_terms ts.
 
   Proof.
-    induction ts. intro. destruct m. intro. rewrite Vcast_refl. refl. intro.
+    induction ts; intro m.
+    (* Vnil *)
+    destruct m; intro h.
+    rewrite Vcast_refl. refl.
     discr.
-    intro. destruct m. intro. discr. intro. inversion h. simpl. rewrite IHts.
-    refl.
+    (* Vcons *)
+    destruct m; intro h0.
+    discr.
+    inversion h0. simpl. rewrite IHts. refl.
   Qed.
 
   Lemma size_terms_app : forall n (ts : terms n) m (us : terms m),
@@ -690,9 +695,9 @@ Implicit Arguments maxvar_var [Sig k x].
 Implicit Arguments maxvar_le_fun [Sig m f ts].
 Implicit Arguments maxvar_le_arg [Sig f ts m t].
 Implicit Arguments in_vars_vec_elim [Sig x n ts].
-Implicit Arguments vars_vec_in [Sig x t n ts].
+Implicit Arguments vars_vec_in [Sig x t0 n ts].
 Implicit Arguments in_symbs_vec_elim [Sig x n ts].
-Implicit Arguments symbs_vec_in [Sig x t n ts].
+Implicit Arguments symbs_vec_in [Sig x t0 n ts].
 Implicit Arguments vars_max [Sig x t].
 Implicit Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t].
 Implicit Arguments Vin_size_terms_ge [Sig n ts t].

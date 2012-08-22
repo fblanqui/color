@@ -40,7 +40,7 @@ Lemma Vgt_prod_gt : forall n (v1 v2 : vec n), v1 >prod v2 -> exists i,
 Proof.
 induction v1; simpl. intros. contradiction. intro. VSntac v2.
 unfold Vsplit. simpl. intro. inversion H0.
-exists 0. exists (@Vnil A). exists a. exists n. exists (Vtail v2).
+exists 0. exists (@Vnil A). exists h. exists n. exists (Vtail v2).
 exists (refl_equal (S n)). exists (Vhead v2). split. rewrite Vcast_refl. refl.
 split. rewrite Vcast_refl. refl. assumption.
 ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6.
@@ -86,7 +86,7 @@ induction v1; intros; destruct n; intros.
 contradiction. discriminate. discriminate.
 assert (n0 = n). apply eq_add_S. assumption. subst n0.
 assert (h = refl_equal (S n)). apply eq_unique. subst h.
-rewrite (Vcast_refl (Vcons a v1)). rewrite (Vcast_refl v2). assumption.
+rewrite (Vcast_refl (Vcons h0 v1)). rewrite (Vcast_refl v2). assumption.
 Qed.
 
 Lemma Vgt_prod_cast_inv : forall m n (h : m=n) (v1 v2 : vec m),

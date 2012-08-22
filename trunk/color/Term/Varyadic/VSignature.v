@@ -150,9 +150,9 @@ Module OrdType (Import S : WSIG) <: OrderedType.
 
   Proof.
     intros x y. case_eq (beq_symb x y).
-    rewrite beq_symb_ok in H. apply (EQ _ H).
+    rewrite beq_symb_ok in H. apply (EQ H).
     case_eq (blt x y).
-    rewrite blt_ok in H0. apply (LT _ H0).
+    rewrite blt_ok in H0. apply (LT H0).
     eapply GT. rewrite <- blt_ok. apply lt_total; hyp.
   Defined.
 

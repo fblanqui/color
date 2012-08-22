@@ -9,18 +9,8 @@ syntactic unification
 
 Set Implicit Arguments.
 
-Require Import ASubstitution.
-Require Import ATerm.
-Require Import EqUtil.
-Require Import ListUtil.
-Require Import LogicUtil.
-Require Import VecUtil.
-Require Import AVariables.
-Require Import BoolUtil.
-Require Import ListForall.
-Require Import NatUtil.
-Require Import Relations.
-Require Import SN.
+Require Import ASubstitution ATerm EqUtil ListUtil LogicUtil VecUtil AVariables
+  BoolUtil ListForall NatUtil Relations SN.
 
 Section S.
 
@@ -94,8 +84,8 @@ induction us; simpl; intros. VOtac. simpl. symmetry. apply union_empty_left.
 VSntac vs. clear H. set (x := Vhead vs). set (ts := Vtail vs). simpl.
 unfold vars_eqn. simpl.
 transitivity
-  (union (union (vars x) (vars a)) (union (vars_vec ts) (vars_vec us))).
-apply union_m. refl. apply IHus. Equal_tac; union.
+  (union (union (vars x) (vars h)) (union (vars_vec ts) (vars_vec us))).
+apply union_m. refl. apply IHus. Equal_tac; RelUtil.union.
 Qed.
 
 Lemma mem_vars_sub_single : forall n (u : term) x v,
@@ -643,10 +633,10 @@ destruct t0; destruct t1.
 simpl. mem. case_beq_nat n n0; unfold Lt'. apply Lt_cons.
 apply Lt_eqns_subs_r. simpl. mem. hyp.
 (* var-fun *)
-unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec v)); unfold Lt'.
+unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec t0)); unfold Lt'.
 trivial. apply Lt_eqns_subs_l. hyp.
 (* fun-var *)
-unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec v)); unfold Lt'.
+unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec t0)); unfold Lt'.
 trivial. apply Lt_eqns_subs_r. hyp.
 (* fun-fun *)
 simpl. case_eq (beq_symb f f0); unfold Lt'. apply Lt_combine. hyp. trivial.
@@ -693,7 +683,7 @@ unfold notin_eqn in H2. simpl in H2. intuition.
 apply notin_map. simpl. mem. hyp.
 apply lforall_notin_r. hyp.
 (* var-fun *)
-Opaque vars. simpl. set (u := Fun f v). intuition.
+Opaque vars. simpl. set (u := Fun f t0). intuition.
 case_eq (mem n (vars u)); simpl; intuition.
 eapply lforall_notin_solved_eqn_1'. hyp. apply H1.
 eapply solved_eqns_wf_map. hyp. hyp. apply H1.
@@ -701,7 +691,7 @@ apply lforall_notin_vars_solved_eqn_2 with e0. hyp.
 apply notin_map. hyp.
 apply lforall_notin_l. hyp.
 (* fun-var *) (* about the same proof *)
-simpl. set (u := Fun f v). intuition.
+simpl. set (u := Fun f t0). intuition.
 case_eq (mem n (vars u)); simpl; intuition.
 eapply lforall_notin_solved_eqn_1. hyp. apply H1.
 eapply solved_eqns_wf_map'. hyp. hyp. apply H1.
@@ -823,7 +813,7 @@ rewrite is_sol_solved_eqns_map; auto. rewrite is_sol_eqns_map; auto.
 rewrite is_sol_solved_eqns_map in H3; auto.
 rewrite is_sol_eqns_map in H2; auto.
 (* var-fun *)
-Opaque vars. simpl. set (u := Fun f v). unfold is_sol_eqn. simpl fst.
+Opaque vars. simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst.
 simpl snd.
 simpl sub at 1. case_eq (mem n (vars u)). intuition; try contradiction.
 ded (wf_term_var H0 H). discriminate. unfold is_sol, is_sol_solved_eqns.
@@ -832,7 +822,7 @@ rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
 rewrite lforall_is_sol_solved_eqn in H3; hyp.
 rewrite is_sol_eqns_map in H2; hyp.
 (* fun-var *) (* same proof *)
-simpl. set (u := Fun f v). unfold is_sol_eqn. simpl fst. simpl snd.
+simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst. simpl snd.
 simpl sub at 2. case_eq (mem n (vars u)). intuition; try contradiction.
 symmetry in H0. ded (wf_term_var H0 H). discriminate.
 unfold is_sol, is_sol_solved_eqns.

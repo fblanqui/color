@@ -40,7 +40,7 @@ Section S.
 
   Fixpoint term_of_string (s : string) : term :=
     match s with
-      | nil => Var 0
+      | List.nil => Var 0
       | a :: w => Fun1 a (term_of_string w)
     end.
 
@@ -52,8 +52,8 @@ Section S.
 
   Fixpoint string_of_term (t : term) : string :=
     match t with
-      | Var _ => nil
-      | Fun f ts => f :: Vmap_first nil string_of_term ts
+      | Var _ => List.nil
+      | Fun f ts => f :: Vmap_first List.nil string_of_term ts
     end.
 
   Lemma string_of_term_fun1 : forall f t,
@@ -96,7 +96,7 @@ Section S.
 
   Fixpoint string_of_cont (c : context) : string :=
     match c with
-      | Hole => nil
+      | Hole => List.nil
       | Cont f _ _ _ _ d _ => f :: string_of_cont d
     end.
 
@@ -125,7 +125,7 @@ Section S.
 
   Fixpoint cont_of_string (s : string) : context :=
     match s with
-      | nil => Hole
+      | List.nil => Hole
       | f :: s' => Cont1 f (cont_of_string s')
     end.
 
@@ -154,7 +154,7 @@ Section S.
   Definition srule_of_rule (x : rule) :=
     Srs.mkRule (string_of_term (lhs x)) (string_of_term (rhs x)).
 
-  Definition srs_of_trs := map srule_of_rule.
+  Definition srs_of_trs := List.map srule_of_rule.
 
 (***********************************************************************)
 (** invariance under reset *)
@@ -191,7 +191,7 @@ Section S.
   Section reset.
 
     Variables (R : rules) (h1 : rules_preserve_vars R)
-      (h2 : forall l r, In (mkRule l r) R -> maxvar l = 0).
+      (h2 : forall l r, List.In (mkRule l r) R -> maxvar l = 0).
 
     Lemma red_of_sred_reset : forall t u,
       Srs.red (srs_of_trs R) t u -> red R (term_of_string t) (term_of_string u).
@@ -226,8 +226,8 @@ Section S.
       set (c := SContext.mkContext (string_of_cont x1) (string_of_cont x2)).
       change (Srs.red (srs_of_trs R) (SContext.fill c (string_of_term x))
         (SContext.fill c (string_of_term x0))). apply Srs.red_rule. clear c.
-      change (In (srule_of_rule (mkRule x x0)) (srs_of_trs R)). apply in_map.
-      hyp.
+      change (List.In (srule_of_rule (mkRule x x0)) (srs_of_trs R)).
+      apply in_map. hyp.
     Qed.
 
     Lemma rtc_sred_of_red : forall t u, red R # t u ->

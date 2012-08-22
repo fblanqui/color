@@ -59,7 +59,7 @@ simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
 destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
 destruct (orb_prop _ _ H). Focus 2. destruct (IHR H0) as [v' H1].
 destruct H1 as [r H1]. exists v'; exists r. auto.
-rewrite beq_symb_ok in H0; rewrite <- H0. exists v; exists a2. left; refl.
+rewrite beq_symb_ok in H0; rewrite <- H0. exists t; exists a2. left; refl.
 Qed.
 
 Fixpoint list_defined (l : rules) : list Sig :=
@@ -146,6 +146,8 @@ ded (app_eq_nil _ _ H0). destruct H1.
 destruct H. subst x. assumption. apply IHv; assumption.
 Qed.
 
+Require Import Sumbool.
+
 Lemma in_calls : forall x t, In x (calls t)
   -> exists g, exists vs, x = Fun g vs /\ defined g R = true.
 
@@ -161,7 +163,7 @@ unfold Q. simpl. intro. contradiction.
 unfold Q. simpl. intros. ded (in_app_or H1). intuition.
 Qed.
 
-Implicit Arguments in_calls [x t].
+Implicit Arguments in_calls [x t0].
 
 Lemma in_calls_defined : forall t g vs,
   In (Fun g vs) (calls t) -> defined g R = true.
@@ -232,7 +234,7 @@ Qed.
 
 End S.
 
-Implicit Arguments in_calls [Sig R x t].
-Implicit Arguments in_calls_defined [Sig R t g vs].
+Implicit Arguments in_calls [Sig R x t0].
+Implicit Arguments in_calls_defined [Sig R t0 g vs].
 Implicit Arguments in_calls_subterm [Sig R u t].
 Implicit Arguments lhs_fun_defined [Sig f us r R].

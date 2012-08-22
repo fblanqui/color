@@ -64,7 +64,7 @@ Section basic_definitions.
 
   Proof.
     intros. rewrite forallb_forall in H. ded (H _ H0). destruct l. discr.
-    exists f. exists v. refl.
+    exists f. exists t. refl.
   Qed.
 
   Lemma is_notvar_lhs_false : forall R, forallb is_notvar_lhs R = true ->
@@ -85,7 +85,7 @@ Section basic_definitions.
 
   Proof.
     intros. rewrite forallb_forall in H. ded (H _ H0). destruct r. discr.
-    exists f. exists v. refl.
+    exists f. exists t. refl.
   Qed.
 
   Lemma is_notvar_rhs_false : forall R, forallb is_notvar_rhs R = true ->
@@ -477,8 +477,8 @@ Section S.
 
     Proof.
       intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. simpl in xl.
-      Funeqtac. exists i. exists v0. exists (fill c (sub s l)). exists j.
-      exists v1. exists e. exists (fill c (sub s r)). split. hyp. split. hyp.
+      Funeqtac. exists i. exists t. exists (fill c (sub s l)). exists j.
+      exists t0. exists e. exists (fill c (sub s r)). split. hyp. split. hyp.
       unfold red. exists l. exists r. exists c. exists s. auto.
     Qed.
 
@@ -530,8 +530,8 @@ Section S.
     Proof.
       intros. do 5 destruct H. intuition. destruct x1. congruence.
       simpl in *. exists f.
-      exists (Vcast (Vapp v0 (Vcons (fill x1 (sub x2 x)) v1)) e).
-      exists (Vcast (Vapp v0 (Vcons (fill x1 (sub x2 x0)) v1)) e).
+      exists (Vcast (Vapp t (Vcons (fill x1 (sub x2 x)) t0)) e).
+      exists (Vcast (Vapp t (Vcons (fill x1 (sub x2 x0)) t0)) e).
       tauto.
     Qed.
 
@@ -555,7 +555,7 @@ Section S.
       (* Hole *)
       left. subst. simpl. apply hd_red_rule. hyp.
       (* Cont *)
-      right. exists f. exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
+      right. exists f. exists (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e).
       exists i. assert (p : i<arity f). omega. exists p.
       exists (fill c (sub s r)).
       subst. simpl. intuition. rewrite Vnth_cast. rewrite Vnth_app.
@@ -584,7 +584,7 @@ Section S.
     Proof.
       intros t u tu. redtac. destruct c; subst.
       left. apply hd_red_rule. hyp.
-      right. exists l. exists r. exists (Cont f e v c v0). exists s.
+      right. exists l. exists r. exists (Cont f e t0 c t1). exists s.
       intuition. discr.
     Qed.
 
@@ -1083,7 +1083,7 @@ Section S.
     (* <- *)
     redtac. subst. destruct c. irrefl. exists i. exists f.
     assert (hi : i < arity f). omega. exists hi.
-    simpl. exists (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e).
+    simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
     intuition. exists (fill c (sub s r)). split.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i i).
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). absurd_arith.
@@ -1115,7 +1115,7 @@ Section S.
     (* <- *)
     intros h u ut hu. destruct ut as [c [hc e]]. destruct c. irrefl.
     clear hc. simpl in e.
-    set (ts := Vcast (Vapp v (Vcons (fill c u) v0)) e0). fold ts in e.
+    set (ts := Vcast (Vapp t0 (Vcons (fill c u) t1)) e0). fold ts in e.
     ded (h f ts e).
     assert (Vin (fill c u) ts). unfold ts. rewrite Vin_cast.
     apply Vin_app_cons.

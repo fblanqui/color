@@ -9,10 +9,7 @@ convert a string into an algebraic term
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import RelUtil.
-Require Import SN.
-Require Import ListUtil.
+Require Import LogicUtil RelUtil SN VecUtil ListUtil.
 
 Section S.
 
@@ -60,7 +57,7 @@ Notation term_ind_forall := (term_ind_forall is_unary_sig).
 
 Fixpoint term_of_string (s : string) : term :=
   match s with
-    | nil => Var 0
+    | List.nil => Var 0
     | a :: w => @Fun ASig a (Vcons (term_of_string w) Vnil)
   end.
 
@@ -82,8 +79,8 @@ Require Import VecUtil.
 
 Fixpoint string_of_term (t : term) : string :=
   match t with
-    | Var _ => nil
-    | Fun f ts => f :: Vmap_first nil string_of_term ts
+    | Var _ => List.nil
+    | Fun f ts => f :: Vmap_first List.nil string_of_term ts
   end.
 
 Lemma string_of_term_epi : forall s, string_of_term (term_of_string s) = s.
@@ -118,7 +115,7 @@ Qed.
 
 Fixpoint string_of_cont (c : context) : string :=
   match c with
-    | Hole => nil
+    | Hole => List.nil
     | Cont f _ _ _ _ d _ => f :: string_of_cont d
   end.
 
@@ -139,7 +136,7 @@ Qed.
 
 Fixpoint cont_of_string (s : string) : context :=
   match s with
-    | nil => Hole
+    | List.nil => Hole
     | a :: w => Cont1 a (cont_of_string w)
   end.
 
@@ -171,7 +168,7 @@ Qed.
 Definition rule_of_srule (x : srule) :=
   mkRule (term_of_string (Srs.lhs x)) (term_of_string (Srs.rhs x)).
 
-Definition trs_of_srs R := map rule_of_srule R.
+Definition trs_of_srs R := List.map rule_of_srule R.
 
 Lemma rules_preserve_vars_trs_of_srs :
   forall R, rules_preserve_vars (trs_of_srs R).
@@ -198,7 +195,8 @@ Lemma red_of_sred : forall x y,
 Proof.
 intros. do 3 destruct H. decomp H. subst x. subst y.
 repeat rewrite term_of_string_fill.
-apply red_rule. change (In (rule_of_srule (Srs.mkRule x0 x1)) (trs_of_srs R)).
+apply red_rule.
+change (List.In (rule_of_srule (Srs.mkRule x0 x1)) (trs_of_srs R)).
 unfold trs_of_srs. apply in_map. exact H0.
 Qed.
 

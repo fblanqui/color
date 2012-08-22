@@ -9,11 +9,7 @@ properties of systems with unary symbols only
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import ListUtil.
-Require Import NatUtil.
+Require Import ATrs VecUtil LogicUtil ListUtil NatUtil.
 
 (***********************************************************************)
 (** tactics *)
@@ -97,8 +93,8 @@ Lemma term_ind_forall : forall t, P t.
 Proof.
 apply term_ind_forall_cast. hyp. intro f. ded (is_unary_sig f). destruct ts.
 intro. absurd_arith. destruct ts.
-simpl Vforall. intuition. assert (h = is_unary_sig f). apply eq_unique. subst h.
-apply Hfun. hyp.
+simpl Vforall. intuition. assert (h0 = is_unary_sig f). apply eq_unique.
+subst h0. apply Hfun. hyp.
 intro. absurd_arith.
 Qed.
 
@@ -220,7 +216,7 @@ Lemma fill_var_elim : forall x c d (u : term), fill c (Var x) = fill d u ->
 
 Proof.
 induction c. simpl. intros. destruct (var_eq_fill H). subst. exists Hole. refl.
-simpl. intros. destruct (fun_eq_fill H). subst. exists (Cont f e v c v0). refl.
+simpl. intros. destruct (fun_eq_fill H). subst. exists (Cont f e t c t0). refl.
 decomp H0. subst. simpl in *. Funeqtac. arity. arity. simpl Vapp in *.
 assert (x2=e). apply eq_unique. subst x2. rewrite Vcast_eq in H0.
 inversion H0. destruct (IHc _ _ H3). subst. exists x0. refl.
@@ -238,7 +234,7 @@ simpl. intro. symmetry. apply (wf_term H).
 (* c=Cont *)
 destruct d; simpl.
 (* d=Hole *)
-intro. change (fill (Cont f e v c v0) t = t) in H. symmetry in H.
+intro. change (fill (Cont f e t0 c t1) t = t) in H. symmetry in H.
 ded (wf_term H). hyp.
 (* d=Cont *)
 intro. Funeqtac. arity. arity. assert (e0=e). apply eq_unique. subst.

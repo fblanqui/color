@@ -95,9 +95,9 @@ Section S.
       set (v1 := Vmap (sub s) (fresh (S n) (val x))).
       set (v2 := Vmap (sub s) (fresh (S(n+val x)) (arity g - S (val x)))).
       set (e := flat_cont_aux (prf x)). set (d' := Cont g e v1 Hole v2).
-      set (v' := Vmap (sub s) v). set (v0' := Vmap (sub s) v0).
-      change (red R (fill c (fill d' (sub s (Fun f v))))
-        (fill c (fill d' (sub s (Fun f0 v0))))). repeat rewrite fill_fill.
+      set (v' := Vmap (sub s) t0). set (v0' := Vmap (sub s) t1).
+      change (red R (fill c (fill d' (sub s (Fun f t0))))
+        (fill c (fill d' (sub s (Fun f0 t1))))). repeat rewrite fill_fill.
       apply red_rule. hyp.
     Qed.
 
@@ -113,7 +113,7 @@ Section S.
       destruct l. discr. destruct r. discr.
       destruct (cont_case (comp one_flat_cont c)). discr.
       destruct H0 as [d [g [i [vi [j [vj [e]]]]]]]. repeat rewrite H0.
-      repeat rewrite <- fill_fill. set (l := Fun f v). set (r := Fun f0 v0).
+      repeat rewrite <- fill_fill. set (l := Fun f t). set (r := Fun f0 t0).
       apply context_closed_red.
       assert (m : maxvar_rule (mkRule l r) < S n). eapply maxvar_rules_elim.
       apply lr. omega.

@@ -58,7 +58,7 @@ Ltac prove_star :=
     | H:?R ?t' ?t'' |- star _ _ ?t' ?t =>  
       (apply star_trans with t'';[apply star_R;exact H|prove_star]) || 
         (clear H;prove_star)
-    | _ => complete eauto
+    | _ => solve [eauto]
   end.
 
 

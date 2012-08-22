@@ -10,7 +10,7 @@ general results on the strong normalization of rewrite relations
 
 Set Implicit Arguments.
 
-Require Import ATrs SN List LogicUtil VecUtil VecOrd NatUtil.
+Require Import ATrs SN List LogicUtil VecUtil VecOrd NatUtil Sumbool.
 
 Section S.
 

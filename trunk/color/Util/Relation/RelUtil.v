@@ -1182,6 +1182,7 @@ intros R R' R'R S S' S'S T T' T'T Z Z' ZZ' hf r r' rr' s s' ss' t t' tt'.
 apply R'R in rr'. apply S'S in ss'. apply T'T in tt'. apply ZZ'. apply hf; hyp.
 Qed.
 
+(*FIXME: does not work anymore in COQ8.4*)
 Ltac proper3 l := eapply Proper3_m; [idtac|idtac|idtac|idtac|apply l];
   try (refl||apply eq_Refl_rel;intuition).
 

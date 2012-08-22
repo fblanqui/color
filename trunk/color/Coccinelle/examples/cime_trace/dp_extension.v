@@ -43,10 +43,10 @@ Proof.
 split.
 inversion 1;subst.
 rewrite R1_equiv_R2 in H0.
-econstructor eassumption.
+econstructor; eassumption.
 inversion 1;subst.
 rewrite <- R1_equiv_R2 in H0.
-econstructor eassumption.
+econstructor; eassumption.
 Qed.
 
 Lemma dp_equiv : forall l r, dp R1 r l <-> dp R2 r l.
@@ -54,11 +54,11 @@ Proof.
 split.
 inversion 1.
 rewrite R1_equiv_R2 in H0.
-econstructor try eassumption. 
+econstructor; try eassumption. 
 rewrite defined_equiv in H2;exact H2.
 inversion 1.
 rewrite <- R1_equiv_R2 in H0.
-econstructor try eassumption. 
+econstructor; try eassumption. 
 rewrite <- defined_equiv in H2;exact H2.
 Qed.
 

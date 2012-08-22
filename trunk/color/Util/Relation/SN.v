@@ -433,7 +433,7 @@ Section modulo.
     apply SN_intro. intros y RExy.
     destruct RExy as [Rxy | Exy].
     apply IH. exists x. 
-    split; [constructor rt_refl | hyp].
+    split; [apply rt_refl | hyp].
     cut (forall y, (E# @ R) x y -> SN (R U E) y); [idtac | hyp].
     cut (E! x y). pattern y. apply SN_ind with A E; auto.
     clear y IH Exy. intros y _ IH_out Exy IH_in.

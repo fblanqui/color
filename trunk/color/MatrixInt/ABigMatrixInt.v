@@ -16,8 +16,8 @@ References:
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Setoid AMatrixBasedInt Matrix OrdSemiRing VecUtil
-  AMonAlg SN RelUtil AWFMInterpretation VecEq NatUtil BigNUtil VecOrd.
+Require Import LogicUtil Setoid Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
+  AWFMInterpretation VecEq NatUtil BigNUtil VecOrd AMatrixBasedInt.
 Import BigNMatrix.
 
 (** Module type for proving termination with matrix interpretations *)
@@ -92,7 +92,7 @@ Module MatrixInt (Export MI : TMatrixInt).
     Lemma trans_succ : transitive succ.
 
     Proof.
-      unfold succ. apply Rof_trans. unfold succ_vec.
+      unfold succ. apply Rof_trans with (f:=dom2vec). unfold succ_vec.
       intros v1 v2 v3 h12 h23. intuition. apply vec_ge_trans with v2; hyp.
       apply gt_trans with (vec_at0 v2); hyp.
     Qed.

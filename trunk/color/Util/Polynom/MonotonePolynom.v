@@ -176,6 +176,8 @@ Definition bpweak_monotone_ok n (p : poly n) := bcoef_pos_ok p.
 Implicit Arguments mk_nat_lts [].
 Implicit Arguments mk_nat_lts_aux [].
 
+Require Import Bool.
+
 Definition bpstrong_monotone n (p : poly n) :=
   bcoef_pos p
   && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (mk_nat_lts n).
@@ -256,5 +258,5 @@ Proof with auto; try congruence || discriminate.
   split. 
   destruct pweak_monotone_check...
   destruct (check_seq (check_coef_gt0 p))...
-  intros. exact (z (mk_nat_lt H1)).
+  intros. exact (l (mk_nat_lt H1)).
 Qed.

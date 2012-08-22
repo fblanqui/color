@@ -8,15 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring equipped with two (strict and non-strict) orders.
 *)
 
-Require Import RelDec.
 Require Export SemiRing.
-Require Import SN.
-Require Import RelExtras.
-Require Import NatUtil.
-Require Import LogicUtil.
-Require Import Max.
-Require Import ZUtil.
-Require Import RelUtil.
+Require Import Morphisms RelDec SN RelExtras NatUtil LogicUtil Max ZUtil
+  RelUtil Min.
 
 (***********************************************************************)
 (** Semi-rings equipped with orders *)
@@ -65,10 +59,11 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
     transitivity proved by ge_trans
       as ge_rel.
 
-  Add Morphism ge with signature eqA ==> eqA ==> iff as ge_mor.
+  Instance ge_mor : Proper (eqA ==> eqA ==> iff) ge.
 
   Proof.
-    intuition. transitivity x. apply eq_ge_compat. symmetry. hyp.
+    intros x y H x0 y0 H0. intuition.
+    transitivity x. apply eq_ge_compat. symmetry. hyp.
     transitivity x0. hyp. apply eq_ge_compat. hyp.
     transitivity y. apply eq_ge_compat. hyp.
     transitivity y0. hyp. apply eq_ge_compat. symmetry. hyp.
@@ -78,9 +73,10 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
     transitivity proved by gt_trans
       as gt_rel.
 
-  Add Morphism gt with signature eqA ==> eqA ==> iff as gt_mor.
+  Instance gt_mor : Proper (eqA ==> eqA ==> iff) gt.
 
   Proof.
+    intros x y H x0 y0 H0.
     intuition. apply ge_gt_compat2 with x0. 2: apply eq_ge_compat; hyp.
     apply ge_gt_compat with x. apply eq_ge_compat. symmetry. hyp. hyp.
     apply ge_gt_compat2 with y0. 2: apply eq_ge_compat; symmetry; hyp.

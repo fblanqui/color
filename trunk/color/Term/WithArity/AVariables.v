@@ -91,7 +91,7 @@ Lemma mem_vars_vec : forall x n (ts : terms n),
 
 Proof.
 induction ts; simpl; mem; intuition.
-destruct (orb_true_elim H). exists a. auto.
+destruct (orb_true_elim H). exists h. auto.
 destruct (IHts e). exists x0. intuition.
 Qed.
 

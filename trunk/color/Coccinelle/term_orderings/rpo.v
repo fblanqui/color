@@ -5498,7 +5498,7 @@ case_eq (mem_bool eq_tt_bool (t1, t2) (equiv_l rpo_infos)); intro Heq_3;
 case_eq (mem_bool eq_tt_bool (t2, t1) (equiv_l rpo_infos)); intro Heq_4; intros R T R' T'; try
 (absurd (rpo rpo_infos.(bb) t1 t1);[
 intro; apply (@rpo_antirefl rpo_infos.(bb) t1); trivial|
-apply rpo_trans with t2;assumption]);try complete intuition;
+apply rpo_trans with t2;assumption]); try (solve[intuition]);
 try (absurd (rpo rpo_infos.(bb) t1 t1);
 [intro; apply (@rpo_antirefl rpo_infos.(bb) t1); trivial |
 rewrite (@equiv_rpo_equiv_1 _ _ _ R') in t1_lt_t2; trivial]).
@@ -5507,7 +5507,7 @@ destruct (equiv_eval rpo_infos (S n) t1 t2) as [ [ | ] | ];
 destruct (equiv_eval rpo_infos (S n) t2 t1) as [ [ | ] | ];
 try (absurd (rpo rpo_infos.(bb) t1 t1); [
 intro; apply (@rpo_antirefl rpo_infos.(bb) t1); trivial |
-rewrite <- (equiv_rpo_equiv_1 _ R) in t1_lt_t2; trivial]);try complete intuition;
+rewrite <- (equiv_rpo_equiv_1 _ R) in t1_lt_t2; trivial]); try solve[intuition];
 try (absurd (rpo rpo_infos.(bb) t1 t1);
 [intro; apply (@rpo_antirefl rpo_infos.(bb) t1); trivial|
 rewrite (equiv_rpo_equiv_1 _ R') in t1_lt_t2; trivial]).

@@ -122,7 +122,7 @@ Section proj.
       assert (k-i=S(k-i-1)). omega. rewrite H2. intro.
       repeat rewrite Vnth_cons. apply Hrefl. apply Hrefl.
       repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
-      set (d := Cont f e (Vmap proj v) Hole (Vmap proj v0)).
+      set (d := Cont f e (Vmap proj t) Hole (Vmap proj t0)).
       change (succ (fill d (proj (fill c t1))) (fill d (proj (fill c t2)))).
       apply H. apply IHc. hyp.
     Qed.
@@ -215,9 +215,9 @@ Section proj.
       (* None *)
       repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
       destruct H. rewrite H. left. refl. right.
-      set (d := Cont f e (Vmap proj v) Hole (Vmap proj v0)).
-      set (t := proj (fill c0 (sub s l))). set (u := proj (fill c0 (sub s r))).
-      change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
+      set (d := Cont f e (Vmap proj t) Hole (Vmap proj t0)).
+      set (t1 := proj (fill c0 (sub s l))). set (u := proj (fill c0 (sub s r))).
+      change (red R' (fill d t1) (fill d u)). apply red_fill. hyp.
     Qed.
 
     Lemma red_rtc_incl_proj_red_rtc : red R # << proj_ord (red R' #).

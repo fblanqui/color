@@ -33,6 +33,8 @@ Ltac case_tac x y := case (eq_digits_dec x y); [idtac|bad_case].
 
 Require Import BigN. Import BigN.
 
+Definition w0 := Cyclic31.Int31Cyclic.t.
+
 Lemma eq_BigN_w0_dec : forall x y : w0, {x=y}+{~x=y}.
 
 Proof.
@@ -109,7 +111,7 @@ Lemma eq_bigN_dec : forall x y : bigN, {x=y}+{~x=y}.
 
 Proof.
 induction x; destruct y; try (right; discr).
-case (eq_BigN_w0_dec w w7); intro. subst. auto. bad_case.
+case (eq_BigN_w0_dec t0 t1); intro. subst. auto. bad_case.
 case (eq_BigN_w1_dec w w7); intro. subst. auto. bad_case.
 case (eq_BigN_w2_dec w w7); intro. subst. auto. bad_case.
 case (eq_BigN_w3_dec w w7); intro. subst. auto. bad_case.
@@ -148,5 +150,5 @@ Lemma bigN_le_gt_dec : forall n m, {n <= m} + {n > m}.
 
 Proof.
 intros. unfold le, lt. destruct (Z_le_gt_dec [n] [m]). left. hyp. right.
-unfold Zlt. rewrite <- Zcompare_antisym. rewrite z. refl.
+unfold Zlt. rewrite <- Zcompare_antisym. rewrite g. refl.
 Defined.
