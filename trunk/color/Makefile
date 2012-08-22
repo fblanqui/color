@@ -7,8 +7,6 @@
 
 .PHONY: clean clean-all clean-doc default config dist doc install-dist install-doc tags all
 
-COQC := $(COQBIN)coqc
-
 MAKECOQ := $(MAKE) -r -f Makefile.coq -j 3 OTHERFLAGS="-dont-load-proofs"
 
 VFILES := $(shell find . -name \*.v)
