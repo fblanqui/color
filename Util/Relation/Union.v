@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Require Import SN RelUtil LogicUtil.
 
 (***********************************************************************)
-(** R @ S << S @ R -> WF R -> WF S -> WF (R U S) *)
+(** R @ S [<<] S @ R -> WF R -> WF S -> WF (R U S) *)
 
 Section commut.
 
