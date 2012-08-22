@@ -10,9 +10,7 @@ lambda-calculus.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsSig.
+Require Import RelExtras ListExtras TermsSig.
 Require Setoid.
 
 Module TermsDef (Sig : Signature).

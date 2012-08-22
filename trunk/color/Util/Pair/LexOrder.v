@@ -10,10 +10,7 @@ concerning it are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import RelUtil.
-Require Import RelExtras.
-Require Import Setoid.
+Require Import LogicUtil RelUtil RelExtras Setoid.
 
 Section LexPair.
 

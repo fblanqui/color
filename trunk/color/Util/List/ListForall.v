@@ -9,8 +9,7 @@ forall predicate
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import List.
+Require Import LogicUtil List.
 
 Section S.
 

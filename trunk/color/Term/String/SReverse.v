@@ -12,10 +12,7 @@ Journal of Automated Reasoning, 2005, volume 34, pages 105-139
 
 Set Implicit Arguments.
 
-Require Import Srs.
-Require Import ListUtil.
-Require Import RelUtil.
-Require Import LogicUtil.
+Require Import Srs ListUtil RelUtil LogicUtil.
 
 Section S.
 

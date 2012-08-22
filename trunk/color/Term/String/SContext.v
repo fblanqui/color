@@ -10,8 +10,7 @@ one-hole contexts
 Set Implicit Arguments.
 
 Require Import LogicUtil.
-Require Export VSignature.
-Require Export List.
+Require Export VSignature List.
 
 Section S.
 

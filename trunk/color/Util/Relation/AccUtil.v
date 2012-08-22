@@ -10,8 +10,7 @@ useful results on accessibility
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import RelUtil.
+Require Import LogicUtil RelUtil.
 Require Export Wellfounded.
 
 Implicit Arguments wf_incl [A R1 R2].

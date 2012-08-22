@@ -8,18 +8,8 @@ RPO employed for proving termination of concrete examples (after
 converting terms with arities to varyadic terms).
 *)
 
-Require Import ATrs.
-Require Import VPrecedence.
-Require Import VRPO_Status.
-Require Import VRPO_Results.
-Require Import VTerm_of_ATerm.
-Require Import ListUtil.
-Require Import Preorder.
-Require Import SN.
-Require Import RelUtil.
-Require Import ARelation.
-Require Import Arith.
-Require Import VSignature.
+Require Import ATrs VPrecedence VRPO_Status VRPO_Results VTerm_of_ATerm
+  ListUtil Preorder SN RelUtil ARelation Arith VSignature.
 
 Set Implicit Arguments.
 

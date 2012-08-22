@@ -7,14 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A machinery to check termination proofs.
 *)
 
-Require Import Relations.
-Require Import List.
-Require Import SN.
-Require Import ATrs.
-Require Import ARelation.
-Require Import Problem.
-Require Import Proof.
-Require Import EmptyChecker.
+Require Import Relations List SN ATrs ARelation Problem Proof EmptyChecker.
 Require PolyChecker.
 
 Set Implicit Arguments.

@@ -10,11 +10,8 @@ polynomials with multiple variables and integer coefficients
 
 Set Implicit Arguments.
 
-Require Import Arith.
-Require Import VecUtil.
-Require Import List.
+Require Import Arith VecUtil List LogicUtil.
 Require Export ZArith.
-Require Import LogicUtil.
 
 (** monomials with n variables *)
 

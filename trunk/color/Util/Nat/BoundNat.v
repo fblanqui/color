@@ -9,11 +9,7 @@ type of natural numbers smaller than some constant
 
 Set Implicit Arguments.
 
-Require Import NatUtil.
-Require Import LogicUtil.
-Require Import Multiset.
-Require Import Permutation.
-Require Import PermutSetoid.
+Require Import NatUtil LogicUtil Multiset Permutation PermutSetoid.
 
 Section S.
 

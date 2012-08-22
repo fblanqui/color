@@ -6,13 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-Require Import TermsSig.
-Require Import Horpo.
-Require Import HorpoWf.
-Require Import RelExtras.
-Require Import Wf_nat.
-Require Import List.
-Require Import Terms.
+Require Import TermsSig Horpo HorpoWf RelExtras Wf_nat List Terms.
 
 Module BT <: BaseTypes.
 

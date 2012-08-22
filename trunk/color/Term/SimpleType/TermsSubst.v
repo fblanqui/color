@@ -10,12 +10,7 @@ lambda-calculus is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListPermutation.
-Require Import Arith.
-Require Import TermsConv.
-Require Import ListUtil.
-Require Import ListExtras.
+Require Import RelExtras ListPermutation Arith TermsConv ListUtil ListExtras.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 

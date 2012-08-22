@@ -9,10 +9,7 @@ Convertibility of substituted terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsSubst.
-Require Import Arith.
+Require Import RelExtras ListExtras TermsSubst Arith.
 
 Module TermsSubstConv (Sig : TermsSig.Signature).
 

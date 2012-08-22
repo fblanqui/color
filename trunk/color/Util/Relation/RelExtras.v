@@ -11,12 +11,8 @@ missing in the standard library.
 
 Set Implicit Arguments.
 
+Require Import RelUtil LogicUtil Max Arith Setoid.
 Require Export Relations.
-Require Import RelUtil.
-Require Import LogicUtil.
-Require Import Max.
-Require Import Arith.
-Require Import Setoid.
 
 (***********************************************************************)
 (** strict order *)

@@ -11,14 +11,8 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-Require Import VRPO_Type.
-Require Import VTerm.
-Require Import Preorder.
-Require Import ListUtil.
-Require Import Peano_dec.
-Require Import RelUtil.
-Require Import LogicUtil.
-Require Import AccUtil.
+Require Import VRPO_Type VTerm Preorder ListUtil Peano_dec RelUtil LogicUtil
+  AccUtil.
 
 Set Implicit Arguments.
 

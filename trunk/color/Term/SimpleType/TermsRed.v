@@ -9,9 +9,7 @@ Formalization of reductions of simply-typed lambda terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsSubstConv.
+Require Import RelExtras ListExtras TermsSubstConv.
 
 Module TermsRed (Sig : TermsSig.Signature).
 

@@ -10,11 +10,7 @@ greatest/smallest component of a list of natural numbers
 
 Set Implicit Arguments.
 
-Require Import ListUtil.
-Require Import Max.
-Require Import Min.
-Require Import LogicUtil.
-Require Import NatUtil.
+Require Import ListUtil Max Min LogicUtil NatUtil.
 
 Notation nats := (list nat).
 

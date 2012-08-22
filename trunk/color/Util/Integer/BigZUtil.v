@@ -9,10 +9,8 @@ extension of BigZ
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil BigNUtil NatUtil.
 Require Export BigZ.
-Require Import BigNUtil.
-Require Import NatUtil.
 
 Lemma eq_bigZ_dec : forall x y : bigZ, {x=y}+{~x=y}.
 

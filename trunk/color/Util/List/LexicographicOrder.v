@@ -10,11 +10,7 @@ of a setoid. In particular, proofs that lex 'transmits' strict partial
 order property, and is a lifting.
 *)
 
-Require Import Relations.
-Require Import RelExtras.
-Require Import ListUtil.
-Require Import AccUtil.
-Require Import LogicUtil.
+Require Import Relations RelExtras ListUtil AccUtil LogicUtil.
 
 Module LexOrder (ES : Eqset).
 

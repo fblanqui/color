@@ -8,20 +8,9 @@ This file provides a definition of the multiset path ordering and proofs
 that it preserves various properties
 *)
 
-Require Import AccUtil.
-Require Import List.
-Require Import MultisetOrder.
-Require Import ListExtras.
-Require Import RelExtras.
-Require Import MultisetCore.
-Require Import MultisetList.
-Require Import Permutation.
-Require Import MultisetTheory.
-Require Import Arith.
-Require Import MultisetListOrder.
-Require Import VTerm.
-Require Import Setoid.
-Require Import RelUtil.
+Require Import AccUtil List MultisetOrder ListExtras RelExtras MultisetCore
+  MultisetList Permutation MultisetTheory Arith MultisetListOrder VTerm Setoid
+  RelUtil.
 
 (*FIXME: define a functor instead!*)
 Variable Sig : Signature.

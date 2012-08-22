@@ -15,8 +15,7 @@ Require Setoid.
 (***********************************************************************)
 (** dependent equality on decidable types *)
 
-Require Export EqdepFacts.
-Require Export Eqdep_dec.
+Require Export EqdepFacts Eqdep_dec.
 
 Section eq_dep.
 

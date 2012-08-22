@@ -9,11 +9,7 @@ Some computability results instantiated for horpo.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import Computability.
-Require Import Horpo.
-Require Import Setoid.
+Require Import RelExtras ListExtras Computability Horpo Setoid.
 
 Module HorpoComp (S : TermsSig.Signature)
   (Prec : Horpo.Precedence with Module S := S).

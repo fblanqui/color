@@ -10,12 +10,7 @@ higher-order recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import Horpo.
-Require Import Computability.
-Require Import LexOrder.
-Require Import HorpoComp.
+Require Import RelExtras ListExtras Horpo Computability LexOrder HorpoComp.
 
 Module HorpoWf (S : TermsSig.Signature) 
                (Prec : Horpo.Precedence with Module S := S).

@@ -12,10 +12,7 @@ Set Implicit Arguments.
 
 Section S.
 
-Require Import ListUtil.
-Require Import NatUtil.
-Require Import RelMidex. 
-Require Import LogicUtil.
+Require Import ListUtil NatUtil RelMidex LogicUtil.
 
 Variable A : Type.
 
