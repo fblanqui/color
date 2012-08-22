@@ -9,14 +9,7 @@ arguments filtering with no projection
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import VecFilter.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import List.
-Require Import RelUtil.
-Require Import SN.
-Require Import NatUtil.
+Require Import ATrs VecFilter VecUtil LogicUtil List RelUtil SN NatUtil.
 
 Section S.
 
@@ -205,10 +198,10 @@ Proof.
 intros Hrefl H. unfold context_closed, filter_ord. induction c; intros.
 simpl. assumption.
 set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-case_eq (Vhead (snd bs)). rewrite (filter_cont_true e v c v0 t1 H1).
-rewrite (filter_cont_true e v c v0 t2 H1). apply H. apply IHc. assumption.
-rewrite (filter_cont_false e v c v0 t1 H1).
-rewrite (filter_cont_false e v c v0 t2 H1). apply Hrefl.
+case_eq (Vhead (snd bs)). rewrite (filter_cont_true e t c t0 t1 H1).
+rewrite (filter_cont_true e t c t0 t2 H1). apply H. apply IHc. assumption.
+rewrite (filter_cont_false e t c t0 t1 H1).
+rewrite (filter_cont_false e t c t0 t2 H1). apply Hrefl.
 Qed.
 
 End filter_ordering.
@@ -285,11 +278,11 @@ unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
 elim c. simpl. right. repeat rewrite filter_sub. apply red_rule_top.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
 intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e v c0 v0 (sub s l) H0).
-rewrite (filter_cont_true f e v c0 v0 (sub s r) H0). fold bs. destruct H.
+case_eq (Vhead (snd bs)). rewrite (filter_cont_true f e t c0 t0 (sub s l) H0).
+rewrite (filter_cont_true f e t c0 t0 (sub s r) H0). fold bs. destruct H.
 left. simpl fill. rewrite H. refl. right. apply red_fill. hyp.
-left. rewrite (filter_cont_false f e v c0 v0 (sub s l) H0).
-rewrite (filter_cont_false f e v c0 v0 (sub s r) H0). refl.
+left. rewrite (filter_cont_false f e t c0 t0 (sub s l) H0).
+rewrite (filter_cont_false f e t c0 t0 (sub s r) H0). refl.
 Qed.
 
 Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).

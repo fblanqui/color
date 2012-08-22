@@ -9,18 +9,8 @@ unary TRS reversing
 
 Set Implicit Arguments.
 
-Require Import Srs.
-Require Import ATrs.
-Require Import SReverse.
-Require Import ATerm_of_String.
-Require Import String_of_ATerm.
-Require Import AUnary.
-Require Import SN.
-Require Import LogicUtil.
-Require Import AMorphism.
-Require Import EqUtil.
-Require Import NatUtil.
-Require Import ListUtil.
+Require Import Srs ATrs SReverse ATerm_of_String String_of_ATerm AUnary SN
+  LogicUtil AMorphism EqUtil NatUtil ListUtil.
 
 Section S.
 

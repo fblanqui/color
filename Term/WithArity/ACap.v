@@ -63,8 +63,8 @@ Lemma in_conc : forall u n (cs : Caps n), Vin u (conc cs) ->
 
 Proof.
 induction cs; simpl; intros. contradiction.
-assert (Vin u (aliens a) \/ Vin u (conc cs)). apply Vin_app. assumption.
-destruct H0. exists a. auto.
+assert (Vin u (aliens h) \/ Vin u (conc cs)). apply Vin_app. assumption.
+destruct H0. exists h. auto.
 assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. assumption.
 destruct H1 as [c]. exists c. intuition.
 Qed.
@@ -271,6 +271,8 @@ Qed.
 
 Notation calls := (calls R).
 Definition vcalls := vcalls R.
+
+Require Import Sumbool.
 
 Lemma calls_capa : forall t m,
   calls (fcap (capa t) (fresh m (nb_aliens t))) = nil.

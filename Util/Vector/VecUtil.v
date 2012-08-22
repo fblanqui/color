@@ -9,20 +9,27 @@ See the COPYRIGHTS and LICENSE files.
 - Pierre-Yves Strub, 2009-04-09
 - Wang Qian & Zhang Lianyi, 2009-05-06
 
-extension of the Coq library Bool/Bvector
+extension of the Coq library Vector
 *)
 
 Set Implicit Arguments.
 
-Require Export Bvector.
-Require Import Program LogicUtil NatUtil EqUtil RelMidex ListUtil BoolUtil.
+Require Import Vector Program LogicUtil NatUtil EqUtil RelMidex ListUtil
+  BoolUtil.
 Require Omega.
 
+Notation vector := Vector.t.
+Notation Vnil := Vector.nil.
+Notation Vcons := Vector.cons.
+Notation Vhead := Vector.hd.
+Notation Vtail := Vector.tl.
+Notation Vconst := Vector.const.
+
 Implicit Arguments Vnil [A].
-Implicit Arguments Vcons.
-Implicit Arguments Vhead.
-Implicit Arguments Vtail.
-Implicit Arguments Vconst.
+Implicit Arguments Vcons [A n].
+Implicit Arguments Vhead [A n].
+Implicit Arguments Vtail [A n].
+Implicit Arguments Vconst [A].
 
 Ltac Veqtac := repeat
   match goal with
@@ -45,7 +52,7 @@ Section Velementary.
 
   Definition Vid n : vec n -> vec n :=
     match n with
-      | O => fun _ => Vnil
+      | O => fun _ => @Vnil A
       | _ => fun v => Vcons (Vhead v) (Vtail v)
     end.
 
@@ -140,7 +147,7 @@ Section Vcast.
 
   Proof.
     induction v; simpl; intros. refl.
-    match goal with |- Vcons a ?v' = _ => assert (E : v' = v) end. apply IHv.
+    match goal with |- Vcons _ ?v' = _ => assert (E : v' = v) end. apply IHv.
     simpl in E. rewrite E. refl.
   Defined.
 
@@ -152,7 +159,7 @@ Section Vcast.
     simpl in H. rewrite <- (Vcast_refl v2 h). hyp.
     discr. discr.
     assert (n = m). apply eq_add_S. hyp. subst n.
-    assert (h = refl_equal (S m)). apply eq_unique. subst h.
+    assert (h0 = refl_equal (S m)). apply eq_unique. subst h0.
     simpl in H. do 2 rewrite Vcast_refl in H. hyp.
   Qed.
 
@@ -181,7 +188,7 @@ Section Vcast.
 
   Proof.
     induction v1; intros until n0; case n0; intros until v2; case v2; simpl; 
-      intros; (discr || auto). Veqtac. subst a0. apply Vtail_eq.
+      intros; (discr || auto). Veqtac. subst h0. apply Vtail_eq.
     eapply IHv1. apply H2.
   Qed.
 
@@ -212,7 +219,7 @@ Section Vcast.
 
   Proof.
     induction v1; induction v2; simpl; intros. refl. discr. discr.
-    Veqtac. subst a0. apply Vtail_eq. eapply IHv1. apply H2.
+    Veqtac. subst h0. apply Vtail_eq. eapply IHv1. apply H2.
   Qed.
 
   Lemma Vcast_rl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h12 : n1=n2)
@@ -220,7 +227,7 @@ Section Vcast.
 
   Proof.
     induction v1; induction v2; simpl; intros. refl. discr. discr.
-    Veqtac. subst a0. apply Vtail_eq. eapply IHv1. apply H2.
+    Veqtac. subst h0. apply Vtail_eq. eapply IHv1. apply H2.
   Qed.
 
   Lemma Vcast_introrl : forall n1 (v1 : vec n1) n2 (v2 : vec n2) (h21 : n2=n1),
@@ -386,7 +393,7 @@ Section Vnth.
   Proof.
     induction v; simpl. destruct n'. intros. absurd_arith. discr.
     destruct n'. discr. intro e. inversion e. subst n'.
-    destruct k. simpl. refl. intro h. simpl. rewrite IHv. apply Vnth_eq.
+    destruct k. simpl. refl. intro h0. simpl. rewrite IHv. apply Vnth_eq.
     refl.
   Qed.
 
@@ -575,9 +582,9 @@ Section Vapp.
 
   Proof.
     induction v1; simpl. intro. VOtac. simpl. intros. tauto.
-    intro. VSntac v1'. simpl. split; intro. Veqtac. subst a.
+    intro. VSntac v1'. simpl. split; intro. Veqtac. subst h.
     rewrite IHv1 in H3.
-    intuition. rewrite H0. refl. destruct H0. Veqtac. subst a.
+    intuition. rewrite H0. refl. destruct H0. Veqtac. subst h.
     apply Vcons_eq_intro. refl. rewrite IHv1. intuition.
   Qed.
 
@@ -596,10 +603,10 @@ Section Vapp.
 
   Proof.
     induction v1; intros. simpl. apply Vnth_eq. omega.
-    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h)). gen H.
+    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h0)). gen H.
     case (le_gt_dec n i); simpl; intros.
     (* case 1 *)
-    transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h) l)). hyp.
+    transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h0) l)). hyp.
     apply Vnth_eq. omega.
     (* case 2 *)
     transitivity (Vnth v1 g). hyp. apply Vnth_eq. refl.
@@ -800,7 +807,7 @@ Section Vin.
     destruct H0 as [n1]. destruct H0 as [v1]. destruct H0 as [n2].
     destruct H0 as [v2].
     destruct H0 as [H1].
-    exists (S n1). exists (Vcons a v1). exists n2. exists v2.
+    exists (S n1). exists (Vcons h v1). exists n2. exists v2.
     exists (S_add_S H1).
     rewrite H0. clear H0. simpl.
     apply Vtail_eq. apply Vcast_pi. 
@@ -897,7 +904,7 @@ Section Vsub.
   Proof.
     destruct v; destruct n'; simpl; intros. apply Vsub_pi. discr. discr.
     inversion e. subst n'. assert (Vcast v
-    (Vcast_obligation_4 e refl_equal (JMeq_refl (Vcons a v)) refl_equal) = v).
+    (Vcast_obligation_4 e refl_equal (JMeq_refl (Vcons h v)) refl_equal) = v).
     apply Vcast_refl. rewrite H. apply Vsub_pi.
   Qed.
 
@@ -1287,7 +1294,7 @@ Section Vforall2_dec.
   Proof.
     induction v1; destruct v2; simpl; auto.
     destruct (IHv1 n0 v2); intuition.
-    destruct (R_dec a a0); intuition.
+    destruct (R_dec h h0); intuition.
   Defined.
 
   Lemma Vforall2n_dec : forall n, rel_dec (@Vforall2n A A R n).
@@ -1317,7 +1324,7 @@ Section Vexists.
     Vexists v <-> exists x, Vin x v /\ P x.
 
   Proof.
-    induction v; simpl; intuition. destruct H. intuition. exists a. intuition.
+    induction v; simpl; intuition. destruct H. intuition. exists h. intuition.
     destruct H1. exists x. intuition. destruct H1. intuition. subst. auto.
     right. apply H0. exists x. intuition.
   Qed.
@@ -1566,7 +1573,7 @@ Section eq_dec.
 
   Proof.
     induction v1; intro. VOtac. auto. VSntac v2.
-    case (eq_dec a (Vhead v2)); intro.
+    case (eq_dec h (Vhead v2)); intro.
     rewrite e. case (IHv1 (Vtail v2)); intro. rewrite e0. auto.
     right. unfold not. intro. Veqtac. auto.
     right. unfold not. intro. Veqtac. auto.
@@ -1613,7 +1620,7 @@ Section beq.
 
   Proof.
     induction v; destruct w; simpl; intros; try (refl || discr).
-    destruct (andb_elim H). rewrite beq_ok in H0. subst a0. apply Vtail_eq.
+    destruct (andb_elim H). rewrite beq_ok in H0. subst h0. apply Vtail_eq.
     apply IHv. hyp.
   Qed.
 
@@ -1628,7 +1635,7 @@ Section beq.
 
   Proof.
     induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac.
-    subst a. subst v. simpl. rewrite (beq_refl beq_ok). simpl.
+    subst h. subst v. simpl. rewrite (beq_refl beq_ok). simpl.
     apply beq_vec_refl.
   Qed.
 
@@ -1655,12 +1662,12 @@ Section beq_in.
 
   Proof.
     induction v; destruct w; simpl; intro; try (refl || discr).
-    destruct (andb_elim h).
-    assert (ha : Vin a (Vcons a v)). simpl. auto.
-    ded (hyp _ ha a0). rewrite H1 in H. subst a0. apply Vtail_eq.
+    destruct (andb_elim h1).
+    assert (ha : Vin h (Vcons h v)). simpl. auto.
+    ded (hyp _ ha h0). rewrite H1 in H. subst h0. apply Vtail_eq.
     assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
     intros x hx. apply hyp. simpl. auto.
-    destruct (andb_elim h). ded (IHv hyp' _ w H2). rewrite <- H3.
+    destruct (andb_elim h1). ded (IHv hyp' _ w H2). rewrite <- H3.
     apply Vcast_pi.
   Qed.
 
@@ -1670,7 +1677,7 @@ Section beq_in.
 
   Proof.
     induction v; intros. VOtac. refl. VSntac w. rewrite H0 in H. Veqtac.
-    subst a. simpl. apply andb_intro. set (a := Vhead w).
+    subst h. simpl. apply andb_intro. set (a := Vhead w).
     assert (Vin a (Vcons a v)). simpl. auto.
     ded (hyp _ H a). rewrite H1. refl.
     apply IHv. intros. apply hyp. simpl. auto. exact H3.
@@ -1729,7 +1736,7 @@ Section map.
     Vin x (Vmap v) -> exists y, Vin y v /\ x = f y.
 
   Proof.
-    induction v; simpl; intros. contradiction. destruct H. subst x. exists a.
+    induction v; simpl; intros. contradiction. destruct H. subst x. exists h.
     auto.
     assert (exists y, Vin y v /\ x = f y). apply IHv. hyp.
     destruct H0 as [y]. exists y. intuition.
@@ -1817,7 +1824,7 @@ Section map_first.
   Proof.
     destruct v; intros; destruct n'; try discr.
     rewrite Vcast_refl. refl.
-    inversion h. subst n'. rewrite Vcast_refl. refl.
+    inversion h0. subst n'. rewrite Vcast_refl. refl.
   Qed.
 
 End map_first.

@@ -12,12 +12,7 @@ definition of rewriting based on positions
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import ListUtil.
-Require Import NatUtil.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import ExcUtil.
+Require Import ATrs ListUtil NatUtil VecUtil LogicUtil ExcUtil.
 
 (***********************************************************************)
 (** positions are lists of natural numbers *)
@@ -78,7 +73,7 @@ destruct t. discr. gen H. simpl.
 destruct (lt_ge_dec a (arity f)); intros. 2: discr.
 destruct (IHp _ _ H). destruct a0. rewrite H0.
 exists (Cont f (Veq_app_cons_aux3 l)
-  (Vsub v (Veq_app_cons_aux1 l)) x (Vsub v (Veq_app_cons_aux2 l))).
+  (Vsub t (Veq_app_cons_aux1 l)) x (Vsub t (Veq_app_cons_aux2 l))).
 intuition. simpl. apply args_eq. rewrite <- H1. apply Veq_app_cons_aux.
 Defined.
 
@@ -122,7 +117,7 @@ destruct t; exists v; simpl; refl.
 (* cons *)
 destruct t. discr. simpl.
 case_eq (lt_ge_dec a (arity f)); rewrite H0 in H; clear H0.
-destruct (IHp _ v _ H). rewrite e. exists (Fun f (Vreplace v0 l x)). refl.
+destruct (IHp _ v _ H). rewrite e. exists (Fun f (Vreplace t l x)). refl.
 discr.
 Defined.
 
@@ -148,22 +143,22 @@ discr.
 discr.
 (* Fun, Var *)
 gen H. simpl. destruct (lt_ge_dec a (arity f)); intro.
-destruct (replace_pos (Vnth v l) p u); inversion H. discr.
+destruct (replace_pos (Vnth t l) p u); inversion H. discr.
 (* Fun, Fun *)
 generalize H. simpl. destruct (lt_ge_dec a (arity f)); intro. 2: discr.
-destruct (replace_pos (Vnth v l) p u). 2: discr.
-apply Some_eq in H0. Funeqtac. subst v0.
-destruct (IHp (Vnth v l) u t). gen H. simpl.
+destruct (replace_pos (Vnth t l) p u). 2: discr.
+apply Some_eq in H0. Funeqtac. subst t0.
+destruct (IHp (Vnth t l) u t1). gen H. simpl.
 destruct (lt_ge_dec a (arity f)); intro. 2: discr.
 assert (l0 = l). apply lt_unique. subst l0.
-destruct (replace_pos (Vnth v l) p u). 2: discr.
+destruct (replace_pos (Vnth t l) p u). 2: discr.
 apply (f_equal Some). apply Some_eq in H. Funeqtac.
 apply Vreplace_eq_elim in H0. hyp. destruct a0. rewrite H0.
-exists (Cont f (Veq_app_cons_aux3 l) (Vsub v (Veq_app_cons_aux1 l)) x
-  (Vsub v (Veq_app_cons_aux2 l))). intuition. simpl. apply args_eq.
-assert (fill x u = Vnth (Vreplace v l t) l). rewrite <- H1.
+exists (Cont f (Veq_app_cons_aux3 l) (Vsub t (Veq_app_cons_aux1 l)) x
+  (Vsub t (Veq_app_cons_aux2 l))). intuition. simpl. apply args_eq.
+assert (fill x u = Vnth (Vreplace t l t1) l). rewrite <- H1.
 rewrite Vnth_replace. refl. rewrite H2.
-rewrite (Veq_app_cons_aux (Vreplace v l t) (Veq_app_cons_aux1 l)
+rewrite (Veq_app_cons_aux (Vreplace t l t1) (Veq_app_cons_aux1 l)
   l (Veq_app_cons_aux2 l) (Veq_app_cons_aux3 l)).
 apply Vcast_eq_intro. apply Vapp_eq_intro. rewrite Vsub_replace_l. refl. omega.
 apply Vcons_eq_intro. rewrite Vnth_cast. rewrite Vnth_app_cons. refl.
@@ -200,7 +195,7 @@ induction c; intros; simpl.
 destruct u; auto.
 (* cons *)
 case (lt_ge_dec i (arity f)); intro. rewrite Vnth_cast. rewrite Vnth_app_cons.
-2: absurd_arith. rewrite (IHc u v1). apply (f_equal Some). apply args_eq.
+2: absurd_arith. rewrite (IHc u v). apply (f_equal Some). apply args_eq.
 apply Veq_nth; intros. rewrite Vnth_cast.
 destruct (eq_nat_dec i i0).
 subst i0. rewrite Vnth_replace. rewrite Vnth_app_cons. refl.

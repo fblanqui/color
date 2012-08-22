@@ -40,7 +40,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       rewrite forallb_forall in hyp1. ded (hyp1 _ lr). discr.
       ded (fun_eq_fill xl). decomp H.
       subst. simpl in xl. Funeqtac. rewrite (lhs_fun_defined lr) in ht. discr.
-      split. rewrite xl, yr. exists (Fun f0 v0). exists r. exists c. exists s.
+      split. rewrite xl, yr. exists (Fun f0 t0). exists r. exists c. exists s.
       intuition. subst. discr.
       subst. simpl. hyp.
     Qed.
@@ -180,11 +180,11 @@ R-sequence *)
     simpl in xl. clear yr lr cne r.
     (* forall i, exists v, f i = Fun f1 v *)
     assert (h : forall i, exists v, f i = Fun f0 v).
-    induction i0. firstorder. clear xl s v0 c v e j i l.
+    induction i0. firstorder. clear xl s t0 c t e j i l.
     destruct IHi0 as [w hw]. ded (hf i0). redtac. destruct c. irrefl.
     simpl in xl, yr. rewrite hw in xl. Funeqtac. rewrite yr.
-    exists (Vcast (Vapp v (Vcons (fill c (sub s r)) v0)) e). refl.
-    clear xl s v0 c v e j i l. destruct (choice _ h) as [v hv]. clear h.
+    exists (Vcast (Vapp t (Vcons (fill c (sub s r)) t0)) e). refl.
+    clear xl s t0 c t e j i l. destruct (choice _ h) as [v hv]. clear h.
     (* forall i, exists k, exists hk : k < arity f0,
        int_red_pos_at k (f i) (f (S i)) *)
     assert (h : forall i, exists k, exists hk : k < arity f0,
@@ -267,7 +267,7 @@ minimal infinite R-sequence *)
       intros x vx nx. assert (hx : subterm (Var x) l).
       destruct (in_vars_subterm_eq vx) as [c hx]. destruct c.
       rewrite forallb_forall in hyp1. ded (hyp1 _ lr). rewrite hx in H. discr.
-      exists (Cont f e v0 c v1). intuition. discr.
+      exists (Cont f e t c t0). intuition. discr.
       ded (subterm_sub s hx). destruct ht as [ht1 ht2].
       ded (ht2 _ H). contradiction.
       destruct (subterm_eq_sub_elim vu) as [w [hw1 hw2]]. destruct w.
@@ -278,18 +278,18 @@ minimal infinite R-sequence *)
       rewrite <- SN_notNT. eapply subterm_eq_sn. rewrite SN_notNT.
       apply hs. apply hn. hyp. hyp.
       (* w = Fun f v0 *)
-      subst. exists l. exists (Fun f v0). exists s. intuition.
+      subst. exists l. exists (Fun f t). exists s. intuition.
       eapply dp_intro. apply lr.
       (* In (Fun f v0) (calls R r) *)
       apply subterm_in_calls. 2: hyp. case_eq (defined f R). refl.
       destruct hv as [hv1 hv2].
-      absurd (NT (red R) (sub s (Fun f v0))). 2: hyp.
+      absurd (NT (red R) (sub s (Fun f t))). 2: hyp.
       rewrite <- SN_notNT. apply sn_args_sn_fun. hyp. hyp.
       apply Vforall_intro. intros a ha. rewrite SN_notNT.
       apply hv2. apply subterm_fun. hyp.
-      (* nebg_subterm l (Fun f v0) = true *)
+      (* nebg_subterm l (Fun f t) = true *)
       unfold negb_subterm. rewrite negb_ok. 2: apply bsubterm_ok. intro h.
-      destruct ht as [ht1 ht2]. absurd (NT (red R) (sub s (Fun f v0))).
+      destruct ht as [ht1 ht2]. absurd (NT (red R) (sub s (Fun f t))).
       apply ht2. apply subterm_sub. hyp. destruct hv as [hv1 hv2]. hyp.
     Qed.
 

@@ -103,7 +103,7 @@ Qed.
 
 Lemma prec_wf : well_founded prec.
   Proof.
-    apply Inverse_Image.wf_inverse_image; apply lt_wf.
+    apply Inverse_Image.wf_inverse_image with (f:=prec_nat); apply lt_wf.
   Qed.
 
   Definition Precedence := rpo.Build_Precedence status
@@ -192,7 +192,7 @@ Module MakeRpoExt (Eqt : equational_theory_spec.EqTh).
       vm_compute in H;
       match rpo with
       | Rpo.rpo => exact H
-      | Rpo.rpo_eq => constructor exact H
+      | Rpo.rpo_eq => constructor; exact H
       end
     end.
 End MakeRpoExt.
@@ -232,7 +232,7 @@ Module MakeRpoLexAFS (Eqt : equational_theory_spec.EqTh).
     Lemma wf : well_founded (Eqt.one_step R_rules).
     Proof.
       apply Lex.wf_R with (Tlt:=rpo_afs).
-      apply Inverse_Image.wf_inverse_image;
+      apply Inverse_Image.wf_inverse_image with (f:=afs);
       apply Rpo.wf_rpo; apply (prec_wf prec ).
       apply Afs.Tlt_monotone_afs;
       [ apply Ext.rpo_monotone
@@ -296,7 +296,7 @@ Module MakeRpoLexAFS (Eqt : equational_theory_spec.EqTh).
                           Ext.prove_rpo  nprec nstat|
                             apply wfl|
                               intros t1 t2 H; inversion H; subst;
-                                try complete (left; constructor); right; constructor                  ]
+                                try solve [left; constructor]; right; constructor                  ]
             end.
 
 End MakeRpoLexAFS.
@@ -348,7 +348,7 @@ Module MakeRpoSdpAFS (Eqt : equational_theory_spec.EqTh).
       apply Rpo.wf_rpo; apply (prec_wf prec).
       apply Afs.Tle_monotone_afs;
       [ apply Ext.rpo_eq_monotone
-      | constructor constructor
+      | constructor; constructor
       | apply Ext.rpo_eq_trans ].
       apply Afs.Tlt_Tle_compat_afs;
       apply Ext.rpo_rpo_eq_compat.
@@ -370,7 +370,7 @@ Module MakeRpoSdpAFS (Eqt : equational_theory_spec.EqTh).
       apply Rpo.wf_rpo; apply (prec_wf prec).
       apply Afs.Tle_monotone_afs;
       [ apply Ext.rpo_eq_monotone
-      | constructor constructor
+      | constructor; constructor
       | apply Ext.rpo_eq_trans ].
       apply Afs.Tlt_Tle_compat_afs;
       apply Ext.rpo_rpo_eq_compat.
@@ -501,7 +501,7 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
       apply Rpo.wf_rpo; apply (prec_wf prec_union).
       apply AfsM.Tle_monotone_afs;
       [ apply Ext.rpo_eq_monotone
-      | constructor constructor
+      | constructor; constructor
       | apply Ext.rpo_eq_trans ].
       apply AfsM.Tlt_Tle_compat_afs;
       apply Ext.rpo_rpo_eq_compat.
@@ -529,7 +529,7 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
       apply Rpo.wf_rpo; apply (prec_wf prec_union).
       apply AfsM.Tle_monotone_afs;
       [ apply Ext.rpo_eq_monotone
-      | constructor constructor
+      | constructor; constructor
       | apply Ext.rpo_eq_trans ].
       apply AfsM.Tlt_Tle_compat_afs;
       apply Ext.rpo_rpo_eq_compat.
@@ -594,7 +594,7 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
          split; simpl; trivial
        | idtac
        | intros t1 t2 H; inversion H; subst;
-         try complete (left; constructor); right; constructor ];
+         try solve [left; constructor]; right; constructor ];
        apply Inclusion.wf_incl with (rcdp R dl);
        [ intros t1 t2 [[f l1 l2 Hl Ht] H];
          split; [ constructor 1 with l2 |]; assumption

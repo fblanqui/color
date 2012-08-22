@@ -91,7 +91,7 @@ Section BinSignatureTheory.
 
   Proof.
     intro n. induction v; intros. simpl in H. tauto.
-    apply tc_merge. exists (cons_term a v). split. apply proj_cons_r.
+    apply tc_merge. exists (cons_term h v). split. apply proj_cons_r.
     destruct H. rewrite H. apply proj_cons_rtc_l.
     apply tc_incl_rtc. apply IHv; auto.
   Qed.

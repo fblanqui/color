@@ -8,8 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import AArcticBasedInt AMatrixBasedInt Matrix OrdSemiRing VecUtil
-  AMonAlg SN RelUtil NatUtil AWFMInterpretation LogicUtil.
+Require Import AArcticBasedInt Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
+  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool.
 Import ArcticMatrix.
 
 Definition matrixInt := @matrixInt A matrix.

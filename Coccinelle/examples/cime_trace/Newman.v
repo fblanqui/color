@@ -327,7 +327,7 @@ Ltac prove_red_star head_reduction no_need_of_instance'  :=
           transitivity t';
             [prove_red_star head_reduction no_need_of_instance'|
               repeat
-                (complete (apply star_R;constructor 1;apply no_need_of_instance';constructor) (* head reduction *) || 
+                (solve [apply star_R;constructor 1;apply no_need_of_instance';constructor] (* head reduction *) || 
                   reflexivity ||
                     (apply star_list;repeat apply star_cons))
             ]

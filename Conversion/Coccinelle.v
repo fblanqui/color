@@ -9,7 +9,7 @@ convert CoLoR terms into Coccinelle terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATerm.
+Require Import LogicUtil ATerm VecUtil.
 
 (***********************************************************************)
 (** convert a CoLoR signature into a Coccinelle signature *)
@@ -179,11 +179,11 @@ Notation find := (@find _ eq_var_bool _).
   Proof.
     induction c; intros. refl. simpl fill. rewrite term_of_aterm_fun. simpl.
     rewrite terms_of_aterms_cast. rewrite terms_of_aterms_app. simpl.
-    assert (nth_error (terms_of_aterms v ++ term_of_aterm (fill c u) ::
-      terms_of_aterms v0) i = nth_error (terms_of_aterms v ++ term_of_aterm
-        (fill c u) :: terms_of_aterms v0) (length (terms_of_aterms v))).
-    apply (f_equal (nth_error (terms_of_aterms v ++ term_of_aterm (fill c u)
-      :: terms_of_aterms v0))). rewrite length_terms_of_aterms. refl.
+    assert (nth_error (terms_of_aterms t ++ term_of_aterm (fill c u) ::
+      terms_of_aterms t0) i = nth_error (terms_of_aterms t ++ term_of_aterm
+        (fill c u) :: terms_of_aterms t0) (length (terms_of_aterms t))).
+    apply (f_equal (nth_error (terms_of_aterms t ++ term_of_aterm (fill c u)
+      :: terms_of_aterms t0))). rewrite length_terms_of_aterms. refl.
     rewrite H. rewrite nth_error_at_pos. hyp.
   Qed.
 
@@ -228,8 +228,8 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Lemma wf_succ : WF succ.
 
   Proof.
-    apply wf_WF_transp. apply wf_inverse_image. apply wf_rpo.
-    apply (prec_wf prec_nat).
+    apply wf_WF_transp. apply wf_inverse_image with (f:=term_of_aterm).
+    apply wf_rpo. apply (prec_wf prec_nat).
   Qed.
 
   Require Import Max.

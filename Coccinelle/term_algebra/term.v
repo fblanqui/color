@@ -2162,7 +2162,6 @@ destruct (K2 _ (refl_equal _)) as [b [K3 K4]]; rewrite K3;  trivial.
 generalize (eq_bool_ok v_subst b); rewrite K4; intro K5; exact K5.
 intro; absurd (@None term = None); trivial.
 assert (K := IH3 _ _ (or_introl _ (refl_equal _))).
-simpl in K; injection K; clear K; intro K.
 rewrite <- K; symmetry.
 rewrite <- subst_eq_vars.
 assert (K2 : forall v, In v (var_list pat1) -> find eq_var_bool v subst1 <> None).

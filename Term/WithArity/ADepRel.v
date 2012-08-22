@@ -11,7 +11,7 @@ f is bigger than g if g occurs in the RHS of a defining rule of f
 
 Set Implicit Arguments.
 
-Require Import ATrs ListUtil ACalls Relations LogicUtil RelMidex.
+Require Import ATrs ListUtil ACalls Relations LogicUtil RelMidex VecUtil Bool.
 
 Section S.
 

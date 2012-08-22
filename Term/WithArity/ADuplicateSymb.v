@@ -144,11 +144,11 @@ induction c; intros.
 simpl.
 rewrite dup_int_subst_spec. apply refl_equal.
 simpl.
-cut (Vmap dup_int_term (Vcast (Vapp v (Vcons (fill c (sub s l)) v0)) e) =
-  (Vcast (Vapp (Vmap dup_int_term v)
+cut (Vmap dup_int_term (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e) =
+  (Vcast (Vapp (Vmap dup_int_term t)
     (Vcons
       (fill (dup_int_context c) (sub (dup_int_subst s) (dup_int_term l)))
-      (Vmap dup_int_term v0))) e)).
+      (Vmap dup_int_term t0))) e)).
 intro. rewrite H; auto.
 rewrite Vmap_cast.
 rewrite Vmap_app.
@@ -322,7 +322,7 @@ Lemma dup_int_rules_int_red : forall f v t,
 Proof.
 intros. redtac. exists l. exists r. exists c. exists s. split.
 destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ lr).
-gen H. compute. case_eq l. discr. gen H. gen H0. gen v0. case_eq f0. discr.
+gen H. compute. case_eq l. discr. gen H. gen H0. gen t0. case_eq f0. discr.
 subst l. simpl in xl. discr. congruence. tauto.
 Qed.
 
@@ -390,7 +390,7 @@ rewrite forallb_forall in hyp. ded (hyp _ lr). destruct lhs. discr.
 simpl dup_int_term in xl. simpl in xl. Funeqtac. discr.
 (* Cont *)
 Funeqtac.
-exists (Vcast (Vapp v (Vcons (fill c (sub s (dup_int_term rhs))) v0)) e).
+exists (Vcast (Vapp t (Vcons (fill c (sub s (dup_int_term rhs))) t0)) e).
 refl.
 Qed.
 

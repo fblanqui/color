@@ -951,7 +951,7 @@ destruct (remove T.eq_bool v1_val l2) as [l2' | ].
 intros [pb'_eq_pb1 | pb'_in_nil]; [subst pb' | intros; contradiction].
 split; [trivial | idtac].
 destruct O as [ [[O | O] | O] | O]; [idtac | idtac | idtac | right; trivial].
-subst x; right; right; simpl; rewrite v1_sp; trivial.
+simpl in O. subst x; right; right; simpl; rewrite v1_sp; trivial.
 left; left; destruct l1 as [ | s1 [ | t1 l1]]; [contradiction | intuition | simpl].
 apply list_permut_occurs_in_term_list with (s1 :: t1 :: l1); trivial; apply quick_permut.
 left; right; trivial.
@@ -965,7 +965,7 @@ destruct (le_gt_dec (length l1) (length l2')) as [L' | L']; [idtac | intros; con
 intros [pb'_eq_pb1 | pb'_in_nil]; [subst pb' | intros; contradiction].
 split; [trivial | idtac].
 destruct O as [ [[O | O] | O] | O]; [idtac | idtac | idtac | right; trivial].
-subst x; right; right; simpl; rewrite v1_sp; trivial.
+simpl in O. subst x; right; right; simpl; rewrite v1_sp; trivial.
 left; left; destruct l1 as [ | s1 [ | t1 l1]]; [contradiction | intuition | simpl].
 apply list_permut_occurs_in_term_list with (s1 :: t1 :: l1); trivial; apply quick_permut.
 left; right; trivial.
@@ -985,7 +985,7 @@ destruct (remove T.eq_bool (closed_term v1_pval) l2) as [l2' | ];
 intros [pb'_eq_pb1 | pb'_in_nil]; [subst pb' | intros; contradiction].
 split; [trivial | idtac].
 destruct O as [ [ [ O | O] | O] | O ]; [idtac | idtac | idtac | right; trivial].
-subst x; right; left; simpl; rewrite v1_psp; trivial.
+simpl in O. subst x; right; left; simpl; rewrite v1_psp; trivial.
 left; left; destruct l1 as [ | t1 l1]; [contradiction | idtac].
 simpl; apply list_permut_occurs_in_term_list with ((Var (new_var v1_pval)) :: t1 :: l1);
 [ apply quick_permut | right; trivial ].
@@ -1003,7 +1003,7 @@ destruct (remove T.eq_bool (closed_term v1_pval) ll2) as [ll2' | ]; [idtac | tri
 destruct (remove T.eq_bool (Term g2 ll2) l2) as [l2' | ]; [idtac | trivial].
 split; [trivial | idtac].
 destruct O as [ [[O | O] | O] | O]; [idtac | idtac | idtac | right; trivial].
-subst x; right; left; simpl; rewrite v1_psp; trivial.
+simpl in O. subst x; right; left; simpl; rewrite v1_psp; trivial.
 left; right; left; destruct l1 as [ | s1 [ | t1 l1]]; [contradiction | intuition | idtac].
 simpl; apply list_permut_occurs_in_term_list with (s1 :: t1 :: l1); trivial; apply quick_permut.
 left; right; right; trivial.
@@ -1043,7 +1043,7 @@ contradiction.
 left; right; simpl; trivial.
 right; left; simpl; case (X.eq_bool x v1); trivial.
 right; right; trivial.
-right; left; subst x; simpl; 
+right; left; simpl in O; subst x; simpl; 
 generalize (X.eq_bool_ok v1 v1); case (X.eq_bool v1 v1); [trivial | intro v1_diff_v1; apply False_rect; apply v1_diff_v1; reflexivity].
 left; left; simpl; 
 apply list_permut_occurs_in_term_list with 

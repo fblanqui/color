@@ -643,7 +643,7 @@ destruct (fold_left2
                 (t1, t2) :: current_list_of_eqs) ((t1,t2) :: l) l1 l2) as [new_list_of_equations | ];
 [idtac | contradiction].
 generalize In_pb'; clear In_pb'; intros [pb'_eq | In_pb']; [idtac | contradiction].
-simpl; rewrite (IHl1 H1); injection pb'_eq; intros; subst; rewrite (H1 _ _ In_t1t2); trivial.
+simpl; rewrite (IHl1 H1); revert pb'_eq; intros; subst; rewrite (H1 _ _ In_t1t2); trivial.
 (* in the decomposed unsolved part *)
 rewrite (H1 s t); trivial.
 generalize (In_t1t2 _ _ l1 l2 _ In_st).

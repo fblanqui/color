@@ -9,9 +9,7 @@ properties of function-headed terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ATerm.
-Require Import AContext.
+Require Import LogicUtil ATerm AContext.
 
 Section S.
 
@@ -29,7 +27,7 @@ Lemma notvar_elim : forall t,
   notvar t -> exists f : Sig, exists ts, t = Fun f ts.
 
 Proof.
-intro t. case t; simpl; intros. contradiction. exists f. exists v. refl.
+intro t. case t; simpl; intros. contradiction. exists f. exists t0. refl.
 Qed.
 
 Lemma notvar_var : forall v, ~ notvar (Var v).

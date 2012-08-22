@@ -30,7 +30,7 @@ Fixpoint Vmax n (v : nats n) : nat :=
 Lemma Vmax_in : forall x n (v : nats n), Vin x v -> x <= Vmax v.
 
 Proof.
-induction v; simpl; intros. contradiction. destruct H. subst a.
+induction v; simpl; intros. contradiction. destruct H. subst h.
 apply le_max_intro_l. apply le_refl. apply le_max_intro_r. auto.
 Qed.
 

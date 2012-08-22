@@ -992,7 +992,7 @@ Ltac soft_prove_ineq continue_tac Hacc :=
         check_goal continue_tac Hacc Zle H Zle_trans Zle_trans p q lhs rhs 
     | H:?p <= ?q |- ?lhs < ?rhs => 
         check_goal continue_tac Hacc Zle H Zlt_le_trans Zle_lt_trans p q lhs rhs 
-    | H:?p<?q |- ?lhs < ?rhs => 
+    | H:?p < ?q |- ?lhs < ?rhs => 
       check_goal continue_tac Hacc Zlt H Zle_lt_trans Zlt_le_trans p q lhs rhs
     | _ => ring_ineq
   end.
@@ -1095,7 +1095,7 @@ Ltac full_prove_ineq
   apply_subst :=
   try (simplify_star_reduction_R tt );
     first [
-      complete (apply IHx;clear IHx;
+      solve [apply IHx;clear IHx;
         match goal with 
           |- order _ (mm (term_constructor ?f ?l)) => 
             let l' := find_replacement l in 
@@ -1112,7 +1112,7 @@ Ltac full_prove_ineq
           repeat (gen_pos_hyp tt);
             pre_concl_tac tt;
             (omega) || 
-              (repeat translate_vars;( ring_ineq|| prove_ineq )))|
+              (repeat translate_vars;( ring_ineq|| prove_ineq ))]|
       let IHx' := fresh "IHx" in
         match goal with 
           | |- Acc ?R ?t => 

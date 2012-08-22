@@ -32,7 +32,7 @@ Section S.
 
     Fixpoint termpoly k (t : bterm k) : poly (S k) :=
       match t with
-        | BVar x H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: nil
+        | BVar x H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: List.nil
         | BFun f v => pcomp (PI f) (Vmap (@termpoly k) v)
       end.
 
@@ -44,7 +44,7 @@ Section S.
 
     Section fin_Sig.
 
-      Variables (Fs : list Sig) (Fs_ok : forall f : Sig, In f Fs).
+      Variables (Fs : list Sig) (Fs_ok : forall f : Sig, List.In f Fs).
 
       Lemma fin_PolyWeakMonotone :
         forallb (fun f => bpweak_monotone (PI f)) Fs = true -> PolyWeakMonotone.

@@ -99,7 +99,7 @@ Section S.
     destruct (le_gt_dec i i). 2: absurd_arith.
     set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
     rewrite (Vnth_eq _ q (lt_O_Sn j)); try omega. simpl.
-    exists (Cont f0 e v c0 v0). simpl. intuition. discriminate H0.
+    exists (Cont f0 e t c0 t0). simpl. intuition. discriminate H0.
     ded (Vforall_nth p Hts y). apply (In_subterm_lst_vec_intro _ _ p).
     apply (proj1 H0). auto.
   Qed.

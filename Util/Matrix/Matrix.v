@@ -633,10 +633,10 @@ Module Matrix (OSRT : OrdSemiRingType).
       unfold dot_product. induction v. auto with arith. 
       intros. simpl. apply plus_ge_compat.
       apply IHv.
-      change v with (Vtail (Vcons a v)). apply vec_tail_ge. assumption.
+      change v with (Vtail (Vcons h v)). apply vec_tail_ge. assumption.
       apply vec_tail_ge. assumption.
       set (p0 := lt_O_Sn n0). apply mult_ge_compat.
-      change a with (Vnth (Vcons a v) p0). rewrite Vhead_nth.
+      change h with (Vnth (Vcons h v) p0). rewrite Vhead_nth.
       apply (Vforall2n_nth ge). assumption.
       do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
     Qed.

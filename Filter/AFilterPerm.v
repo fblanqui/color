@@ -58,7 +58,7 @@ Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
 
 Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
 
-Notation filter_rules := (List.map filter_rule).
+Notation filter_rules := (map filter_rule).
 
 (***********************************************************************)
 (** properties of term filtering wrt substitutions *)
@@ -401,7 +401,8 @@ Section build_pi.
     rewrite forallb_forall in raw_pi_ok. apply raw_pi_ok. apply Fs_ok.
   Defined.
 
-  Lemma build_pi_ok : forall f, map (@val (arity f)) (build_pi f) = raw_pi f.
+  Lemma build_pi_ok : forall f,
+    map (@val (arity f)) (build_pi f) = raw_pi f.
 
   Proof.
     intro. apply build_nat_lts_ok.

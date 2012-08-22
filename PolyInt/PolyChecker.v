@@ -7,26 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 A termination solver using the polynomial interpretations method.
 *)
 
-Require Import Program.
-Require Import ListUtil.
-Require Import ListForall.
-Require Import LogicUtil.
-Require Import ZUtil.
-Require Import VecUtil.
-Require Import Problem.
-Require Import ATrs.
-Require Import SN.
-Require Import APolyInt.
-Require Import Polynom.
-Require Import RelUtil.
-Require Import MonotonePolynom.
-Require Import PositivePolynom.
-Require Import NaryFunction.
-Require Import MonAlgChecker.
-Require Import IntBasedChecker.
-Require Import Proof.
-Require Import ExcUtil.
-Require Import AWFMInterpretation.
+Require Import Program ListUtil ListForall LogicUtil ZUtil VecUtil Problem ATrs
+  SN APolyInt Polynom RelUtil MonotonePolynom PositivePolynom NaryFunction
+  MonAlgChecker IntBasedChecker Proof ExcUtil AWFMInterpretation.
 
 Set Implicit Arguments.
 
@@ -67,7 +50,7 @@ Program Definition symbol_poly_int (f : Sig) (p : polynomial) : Exc symPI :=
 Definition defaultPoly n : poly n :=
   pconst n 1 ++ list_of_vec (Vbuild (fun i (ip : i < n) => (1%Z, mxi ip))).
 
-Lemma defaultPoly_mxi_1 n i (H : i < n) : In (1%Z, mxi H) (defaultPoly n).
+Lemma defaultPoly_mxi_1 n i (H : i < n) : List.In (1%Z, mxi H) (defaultPoly n).
 
 Proof.
   intros. right. simpl.
@@ -91,7 +74,7 @@ Lemma defaultPoly_sm n : pstrong_monotone (defaultPoly n).
 Proof.
   split. apply defaultPoly_wm.
   intros. 
-  assert (HH : In (1%Z, mxi H) (defaultPoly n)).
+  assert (HH : List.In (1%Z, mxi H) (defaultPoly n)).
   apply defaultPoly_mxi_1.
   set (w := coefPos_geC (defaultPoly n) (mxi H) 1 (defaultPoly_wm n) HH).
   auto with zarith.

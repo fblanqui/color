@@ -9,17 +9,9 @@ Matching algorithm for ATerms.
 *)
 
 (**********************************************************************)
-Require Import Peano_dec.
-
-Require Import LogicUtil.
-Require Import EqUtil.
-Require Import NatUtil.
-Require Import VecUtil.
-Require Import ATerm.
-Require AVariables.
-Require Import ASubstitution.
-
-Require OrderedTypeEx FSetUtil FMapUtil.
+Require Import Peano_dec LogicUtil EqUtil NatUtil VecUtil ATerm ASubstitution
+  Bool.
+Require AVariables OrderedTypeEx FSetUtil FMapUtil.
 
 Module VSF := AVariables.VarSetUtil.XSetFacts.
 Module VS  := AVariables.VarSetUtil.XSet.

@@ -1455,7 +1455,7 @@ Section Pair.
     rewrite (@singleton_mult_notin c a); auto with sets.
     rewrite (@singleton_mult_notin c b); auto with sets.
     rewrite (@singleton_mult_in c c); auto with sets.
-    omega.
+
     apply meq_multeq; trivial.
     absurd (mult a {{a, b}} = mult a {{c, d}}).
     unfold pair, insert.
@@ -1463,7 +1463,7 @@ Section Pair.
     rewrite (@singleton_mult_notin a c); auto with sets.
     rewrite (@singleton_mult_notin a d); auto with sets.
     rewrite (@singleton_mult_in a a); auto with sets.
-    omega.
+
     apply meq_multeq; trivial.
   Qed.
 

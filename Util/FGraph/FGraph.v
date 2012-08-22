@@ -495,6 +495,15 @@ intros x x' xx' y y' yy' s s' ss' t t' tt'. unfold preds_aux. rewrite xx', ss'.
 destruct (XSet.mem x' s'). rewrite yy', tt'. refl. hyp.
 Qed.
 
+(*FIXME: remove using proper3 not working in Coq8.4?*)
+Instance preds_aux_m' : forall x,
+  Proper (eq ==> Logic.eq ==> XSet.Equal ==> XSet.Equal) (preds_aux x).
+
+Proof.
+intros x y y' yy' s s' ss' t t' tt'. unfold preds_aux. rewrite ss'.
+destruct (XSet.mem x s'). rewrite yy', tt'. refl. hyp.
+Qed.
+
 Lemma preds_aux_transp : forall x, transpose_neqkey XSet.Equal (preds_aux x).
 
 Proof.
@@ -523,7 +532,7 @@ Lemma preds_add : forall x y s g, ~In y g -> preds x (add y s g)
 
 Proof.
 intros x y s g nyg. unfold preds. rewrite fold_add. refl. intuition.
-proper3 preds_aux_m. apply preds_aux_transp. hyp.
+apply preds_aux_m'. apply preds_aux_transp. hyp.
 Qed.
 
 Lemma preds_geq_empty : forall x g,
@@ -561,14 +570,14 @@ intros x x' xx' g hg. rewrite preds_empty. symmetry. apply preds_geq_empty.
 symmetry. hyp.
 (* add *)
 intros y s g n h x x' xx' g' e. unfold preds. rewrite fold_add.
-2: intuition. 2: proper3 preds_aux_m. 2: apply preds_aux_transp. 2: hyp.
+2: intuition. 2: apply preds_aux_m'. 2: apply preds_aux_transp. 2: hyp.
 fold (preds x g). fold (preds x' g'). ded (geq_add_remove n e).
 gen H. case_eq (XSet.is_empty s); unfold preds_aux.
 (* s empty *)
 rewrite mem_3. apply h; hyp. rewrite <- XSetFacts.is_empty_iff in H. apply H.
 (* s not empty *)
 ded (geq_add n e). rewrite H in H1. unfold preds at 3. rewrite fold_Add.
-6: apply H1. 2: intuition. 2: proper3 preds_aux_m. 2: apply preds_aux_transp.
+6: apply H1. 2: intuition. 2: apply preds_aux_m'. 2: apply preds_aux_transp.
 Focus 2. rewrite remove_in_iff. intros [h1 h2]. absurd (eq y y). hyp. refl.
 Focus 1. fold (preds x' (remove y g')). unfold preds_aux. rewrite <- xx'.
 rewrite <- e at 1. rewrite succs_add_id. destruct (XSet.mem x s).

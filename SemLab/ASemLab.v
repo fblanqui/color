@@ -10,8 +10,9 @@ semantic labelling (with ordered labels)
 
 Set Implicit Arguments.
 
-Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil VecUtil List SN
-  RelUtil AWFMInterpretation NaryFunction NatUtil ARelation ARules SetUtil.
+Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil VecUtil SN
+  RelUtil AWFMInterpretation NaryFunction NatUtil ARelation ARules List
+  SetUtil.
 
 Section S.
 
@@ -145,8 +146,8 @@ Notation fold_max := (@fold_max Sig).
 
 Require Import Max.
 
-Lemma map_lab_rule_fval : forall v R n,
-  n > maxvar_rules R -> map (lab_rule (fval v n)) R = map (lab_rule v) R.
+Lemma map_lab_rule_fval : forall v R n, n > maxvar_rules R ->
+  map (lab_rule (fval v n)) R = map (lab_rule v) R.
 
 Proof.
 induction R; simpl; intros. refl. unfold maxvar_rules in H. simpl in H.
@@ -293,17 +294,17 @@ exists (lab (beta v s) r). exists Hole. exists (lab_sub v s). intuition.
 exists (mkRule l r). exists (beta v s). intuition.
 (* Cont *)
 intros. simpl. repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
-set (v0' := Vmap (int v) v0). set (t := fill c (sub s l)). fold t in H.
-set (v1' := Vmap (int v) v1). set (u := fill c (sub s r)). fold u in H.
-assert (int v t >=D int v u). assert (IR I Dge t u).
+set (v0' := Vmap (int v) t). set (l1 := fill c (sub s l)). fold l1 in H.
+set (v1' := Vmap (int v) t0). set (r1 := fill c (sub s r)). fold r1 in H.
+assert (int v l1 >=D int v r1). assert (IR I Dge l1 r1).
 apply IR_context_closed. hyp. apply IR_substitution_closed. apply ge_compat.
 hyp. apply H0.
-set (a := pi f (Vcast (Vapp v0' (Vcons (int v t) v1')) e)).
-set (b := pi f (Vcast (Vapp v0' (Vcons (int v u) v1')) e)).
+set (a := pi f (Vcast (Vapp v0' (Vcons (int v l1) v1')) e)).
+set (b := pi f (Vcast (Vapp v0' (Vcons (int v r1) v1')) e)).
 assert (a >=L b). apply pi_mon. hyp.
-set (w0 := Vmap (lab v) v0). set (w1 := Vmap (lab v) v1).
-set (ts := Vcast (Vapp w0 (Vcons (lab v t) w1)) e). ded (Lge_Decr ts H1).
-set (us := Vcast (Vapp w0 (Vcons (lab v u) w1)) e).
+set (w0 := Vmap (lab v) t). set (w1 := Vmap (lab v) t0).
+set (ts := Vcast (Vapp w0 (Vcons (lab v l1) w1)) e). ded (Lge_Decr ts H1).
+set (us := Vcast (Vapp w0 (Vcons (lab v r1) w1)) e).
 do 2 destruct H. set (vs := Vcast (Vapp w0 (Vcons x w1)) e).
 exists (Fun' (mk b) vs). split. apply rt_trans with (Fun' (mk b) ts). hyp.
 apply context_closed_fun with (R := red Decr #).
@@ -869,7 +870,9 @@ Module SemLabProps (SL : SemLab).
 
     Proof.
       rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
-      rewrite Decr_empty. rewrite empty_union_l. refl.
+      (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty.*)
+      apply WF_mor. apply red_mod_equiv. rewrite Decr_empty. 2: refl.
+      rewrite empty_union_l. refl.
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
@@ -877,14 +880,22 @@ Module SemLabProps (SL : SemLab).
 
     Proof.
       rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
-      rewrite Decr_empty. rewrite empty_union_l. refl.
+      (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty.*)
+      apply WF_mor. apply hd_red_mod_equiv. rewrite Decr_empty. 2: refl.
+      rewrite empty_union_l. refl.
     Qed.
 
     Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).
 
     Proof.
       rewrite WF_red_lab. 2: apply ge_compatR.
-      rewrite Decr_empty. rewrite red_mod_empty. refl.
+      (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty. rewrite red_mod_empty. refl.*)
+      apply WF_mor.
+      assert (a : forall x y, red Decr # x y -> x = y).
+      induction 1. redtac. firstorder. refl. transitivity y; hyp.
+      unfold red_mod. split; intros t u h.
+      destruct h. intuition. apply a in H0. subst. hyp. exists t. split.
+      apply rt_refl. hyp.
     Qed.
 
   End props.

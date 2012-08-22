@@ -9,12 +9,8 @@ vector filtering
 
 Set Implicit Arguments.
 
-Require Export Bvector.
-Require Export VecBool.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import EqUtil.
-Require Import Arith.
+Require Export Vector VecBool.
+Require Import VecUtil LogicUtil EqUtil Arith.
 
 Section S.
 
@@ -50,7 +46,7 @@ Proof.
   destruct n1; destruct n2; solve [discriminate | refl].
   destruct n1; try VOtac; repeat rewrite Vcast_refl;
     try solve [discriminate | refl].
-  VSntac v1. destruct a; simpl; try apply Vtail_eq; apply IHbs.
+  VSntac v1. destruct h; simpl; try apply Vtail_eq; apply IHbs.
 Qed.
 
 Lemma Vfilter_app : forall n (bs : bools n) n1 (v1 : vec n1) n2 (v2 : vec n2)
@@ -158,7 +154,7 @@ Lemma Vfilter_app2_eq : forall n1 (bs1 : bools n1) (v1 : vec n1)
 
 Proof.
 induction bs1; simpl. intros. VOtac. simpl. rewrite Vcast_refl. refl.
-case a; simpl; intros; VSntac v1; simpl. apply Vtail_eq. apply IHbs1.
+case h; simpl; intros; VSntac v1; simpl. apply Vtail_eq. apply IHbs1.
 apply IHbs1.
 Qed.
 
@@ -196,7 +192,7 @@ Lemma Vfilter_cast_eq : forall n (bs : bools n) p (v : vec p)
 
 Proof.
 induction bs; induction p; simpl; intros. refl. discriminate. discriminate.
-VSntac v. simpl. generalize h'. clear h'. case a; simpl; intro.
+VSntac v. simpl. generalize h'. clear h'. case h; simpl; intro.
 apply Vtail_eq. apply IHbs. apply IHbs.
 Qed.
 

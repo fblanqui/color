@@ -9,9 +9,7 @@ from algebraic terms to varyadic terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import ListUtil.
-Require Import VecUtil.
+Require Import LogicUtil ListUtil VecUtil.
 
 Section S.
 
@@ -46,7 +44,7 @@ Fixpoint vterm_of_aterm (t : aterm) : vterm :=
     | ATerm.Fun f v =>
       let fix vterms_of_aterms n (ts : aterms n) : vterms :=
 	match ts with
-	  | Vnil => nil
+	  | Vnil => List.nil
 	  | Vcons t' n' ts' => vterm_of_aterm t' :: vterms_of_aterms n' ts'
 	end
 	in VFun f (vterms_of_aterms (arity f) v)
@@ -54,7 +52,7 @@ Fixpoint vterm_of_aterm (t : aterm) : vterm :=
 
 Fixpoint vterms_of_aterms n (ts : aterms n) : vterms :=
   match ts with
-    | Vnil => nil
+    | Vnil => List.nil
     | Vcons t' _ ts' => vterm_of_aterm t' :: vterms_of_aterms ts'
   end.
 
@@ -84,7 +82,7 @@ Qed.
 
 Lemma vterms_map : forall (A : Set) (f : A -> aterm) n (v : vector A n),
   vterms_of_aterms (Vmap f v)
-  = map (fun x => vterm_of_aterm (f x)) (list_of_vec v).
+  = List.map (fun x => vterm_of_aterm (f x)) (list_of_vec v).
 
 Proof.
 induction v; simpl. refl. apply tail_eq. apply IHv.
@@ -149,7 +147,7 @@ Lemma vterm_subs : forall s t,
 Proof.
 intros. pattern t. apply ATerm.term_ind with (Q := fun n (ts : aterms n) =>
   vterms_of_aterms (Vmap (asub s) ts)
-  = map (vsub (vsubs_of_asubs s)) (vterms_of_aterms ts)).
+  = List.map (vsub (vsubs_of_asubs s)) (vterms_of_aterms ts)).
 refl. intros. simpl ASubstitution.sub. do 2 rewrite vterm_fun. simpl.
 apply args_eq. exact H. refl. intros. simpl. rewrite H.
 apply tail_eq. exact H0.
@@ -173,7 +171,7 @@ Definition vrule_of_arule (rho : arule) : vrule :=
 
 Variable R : list arule.
 
-Definition vrules_of_arules := map vrule_of_arule R.
+Definition vrules_of_arules := List.map vrule_of_arule R.
 
 Notation S := vrules_of_arules.
 
@@ -183,7 +181,7 @@ Lemma vred_of_ared : forall t u,
 Proof.
 intros. ATrs.redtac. subst t. subst u. do 2 rewrite vterm_fill.
 do 2 rewrite vterm_subs.
-apply red_rule. change (In (vrule_of_arule (ATrs.mkRule l r)) S). unfold S.
+apply red_rule. change (List.In (vrule_of_arule (ATrs.mkRule l r)) S). unfold S.
 apply in_map. hyp.
 Qed.
 

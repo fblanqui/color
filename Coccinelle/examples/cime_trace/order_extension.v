@@ -42,7 +42,7 @@ Module MakeMarkedEqTh (EqtT : equational_theory_spec.EqTh).
       Proof.
         intros [b1 t1] [b2 t2];
         destruct b1; destruct b2; simpl;
-        try complete (intros H; inversion H);
+        try solve [intros H; inversion H];
         case_eq (EqtT.T.eq_symb_bool t1 t2); intros H;
         generalize (EqtT.T.eq_symb_bool_ok t1 t2);
         rewrite H; intros H0; try (f_equal; exact H0);
@@ -664,7 +664,7 @@ Module MakeSDP (Eqt : equational_theory_spec.EqTh).
 
       split; [| assumption ];
       split with (l2:=l2); [ assumption |];
-      rewrite <- H; constructor assumption.
+      rewrite <- H; constructor; assumption.
 
       intros x Hx; apply IH1;
       apply rtc_R_step with l2; [| assumption ];
@@ -782,7 +782,7 @@ Module MakeMarkedSDP
     Lemma wf_Rcdp : well_founded (sdp.Rcdp R_rules dps).
     Proof.
       apply wf_incl with Tlt_mark;
-      [| apply Inverse_Image.wf_inverse_image; assumption ];
+      [| unfold Tlt_mark; apply Inverse_Image.wf_inverse_image; assumption ];
       intros x y H; inversion H; inversion H1; subst;
       apply rtc_R_step with l2; [| assumption ];
       rewrite <- H4; apply dps_strictly_decrease;
@@ -808,7 +808,7 @@ Module MakeMarkedSDP
     Proof.
       intros t;
       apply well_founded_ind with (R:=Tlt_mark);
-      [ apply Inverse_Image.wf_inverse_image; assumption |];
+      [ unfold Tlt_mark; apply Inverse_Image.wf_inverse_image; assumption |];
       clear t.
 
       intros t; pattern t;
@@ -828,7 +828,7 @@ Module MakeMarkedSDP
 
       split; [| assumption ];
       split with (l2:=l2); [ assumption |];
-      rewrite <- H; constructor assumption.
+      rewrite <- H; constructor; assumption.
 
       intros x Hx; apply IH1;
       apply rtc_R_step with l2; [| assumption ];
@@ -896,30 +896,30 @@ Module MakeLEX (Eqt : equational_theory_spec.EqTh).
       inversion H0; subst;
       apply rules_union_def in H5;
       destruct H5; [ left | right ];
-      constructor constructor; assumption.
+      constructor; constructor; assumption.
 
       intros t v H; inversion H; subst;
       inversion H0; subst; rewrite H1;
       inversion H0; subst;
       apply rules_union_def in H5;
       destruct H5; [ left | right ];
-      constructor constructor; assumption.
+      constructor; constructor; assumption.
 
       intros f1 f2 l1 l2 H H0;
       inversion H0; subst;
       [ inversion H1; subst;
         apply rules_union_def in H4;
         destruct H4; [ left | right ];
-        constructor constructor; assumption
+        constructor; constructor; assumption
       | apply H in H2; destruct H2; [ left | right ];
-        constructor assumption ].
+        apply Eqt.in_context; assumption ].
 
       induction l1; intros l2 H H0;
       inversion H0; subst.
 
       apply H in H4; try (left; reflexivity);
       destruct H4; [ left | right ];
-      constructor assumption.
+      constructor; assumption.
 
       apply IHl1 in H4;
       [ destruct H4; [ left | right ]

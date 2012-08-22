@@ -207,7 +207,7 @@ Lemma chain_min_fun : forall f, defined f R = true
 Proof.
 cut (forall t, SN chain_min t -> forall f, defined f R = true
   -> forall ts, t = Fun f ts -> Vforall SNR ts -> SNR t).
-intros. apply H with (t := Fun f ts) (f := f) (ts := ts); (hyp || refl).
+intros. apply H with (t0 := Fun f ts) (f := f) (ts := ts); (hyp || refl).
 (* induction on t with chain_min as well-founded ordering *)
 intros t H. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
 assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
