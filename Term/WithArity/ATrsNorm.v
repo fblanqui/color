@@ -16,16 +16,16 @@ a variable of l or r is renamed as its position in xs
 the rules of R are put in their unique representation
 and R is sorted wrt the following ordering
 
-(l1,r1) >_rule (l2,r2) if (l1,r1) (>_term)_lex (l2,r2)
+(l1,r1) >rule (l2,r2) if (l1,r1) (>term)lex (l2,r2)
 
-f(t1..tn) >_term g(u1..up) if
-  (f,(t1..tn)) (>_symb,(>_term)_lex)_lex (g,(u1..up))
+f(t1..tn) >term g(u1..up) if
+  (f,(t1..tn)) (>symb,(>term)lex)lex (g,(u1..up))
 
-f(t1..tn) >_term x
+f(t1..tn) >term x
 
-x >_term y if x >_nat y
+x >term y if x >nat y
 
-assuming a total ordering >_symb on symbols
+assuming a total ordering >symb on symbols
 *)
 
 Set Implicit Arguments.
