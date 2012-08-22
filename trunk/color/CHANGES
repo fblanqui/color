@@ -1,3 +1,8 @@
+-----------------------------------------------------------------------------
+12-08-22: NEW RELEASE (SVN revision 1735)
+
+12-08-22: [Blanqui]
+- migration to Coq 8.4
 
 11-03-25: [Blanqui]
 - Util/FGraph/TransClos: transitive closure of a finite graph
@@ -15,7 +20,7 @@
 - Filter/AFilterPerm: non-collapsing arguments filtering with permutations
 
 10-11-16: [Koprowski]
-- added tropical matrix interpretations
+- MatrixInt/ATropicalInt: tropical matrix interpretations
 
 -----------------------------------------------------------------------------
 10-10-28: NEW RELEASE (SVN revision 1341)
