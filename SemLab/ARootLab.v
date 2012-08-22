@@ -9,17 +9,8 @@ root labelling (Zantema & Waldmann, RTA'07) (Sternagel & Middeldorp, RTA'08)
 
 Set Implicit Arguments.
 
-Require Import ATrs.
-Require Import LogicUtil.
-Require Import ListUtil.
-Require Import VecUtil.
-Require Import BoolUtil.
-Require Import EqUtil.
-Require Import ASemLab.
-Require Import SN.
-Require Import NatUtil.
-Require Import RelUtil.
-Require Import AWFMInterpretation.
+Require Import ATrs LogicUtil ListUtil VecUtil BoolUtil EqUtil ASemLab SN
+  NatUtil RelUtil AWFMInterpretation.
 
 (***********************************************************************)
 (** data necessary for a root labelling *)
@@ -30,7 +21,7 @@ Module Type RootLab.
   Parameter some_symbol : Sig.
 
   Parameter Fs : list Sig.
-  Parameter Fs_ok : forall x : Sig, In x Fs.
+  Parameter Fs_ok : forall x : Sig, List.In x Fs.
 
 End RootLab.
 
@@ -84,7 +75,7 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
 
   Definition Ls (f : Sig) := enum_tuple I Is (arity f).
 
-  Lemma Ls_ok : forall f (x : L f), In x (Ls f).
+  Lemma Ls_ok : forall f (x : L f), List.In x (Ls f).
 
   Proof.
     intros f x. unfold Ls. apply (enum_tuple_complete I Is_ok).

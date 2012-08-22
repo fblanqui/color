@@ -10,9 +10,7 @@ with specification of operations on multisets.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import Omega.
-Require Import Min.
+Require Import RelExtras Omega Min.
 
 Module Type MultisetCore.
 

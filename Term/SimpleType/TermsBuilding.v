@@ -9,8 +9,7 @@ Constructing terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
+Require Import RelExtras ListExtras.
 Require TermsActiveEnv.
 
 Module TermsBuilding (Sig : TermsSig.Signature).
@@ -54,7 +53,8 @@ Module TermsBuilding (Sig : TermsSig.Signature).
     destruct a; destruct appR0; term_type_inv appL0.
   Qed.
 
-  Lemma buildApp_preterm : forall a, term (buildApp a) = term a.(appL) @@ term a.(appR).
+  Lemma buildApp_preterm : forall a,
+    term (buildApp a) = term a.(appL) @@ term a.(appR).
 
   Proof.
     destruct a; destruct appR0; term_type_inv appL0.
@@ -66,7 +66,8 @@ Module TermsBuilding (Sig : TermsSig.Signature).
     destruct a; destruct appR0; term_type_inv appL0.
   Qed.
 
-  Lemma buildApp_type : forall a, type (buildApp a) = type_right (type a.(appL)).
+  Lemma buildApp_type : forall a,
+    type (buildApp a) = type_right (type a.(appL)).
 
   Proof.
     destruct a; destruct appR0; term_type_inv appL0.

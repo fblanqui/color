@@ -10,11 +10,8 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
+Require Import RelExtras ListExtras List Eqdep_dec.
 Require TermsDef.
-Require Import List.
-Require Import Eqdep_dec.
 
 Module TermsTyping (Sig : TermsSig.Signature).
 

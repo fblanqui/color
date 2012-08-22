@@ -10,13 +10,8 @@ representation.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import MultisetCore.
-Require Import Permutation.
-Require Import Multiset.
-Require Import List.
-Require Import ListExtras.
-Require Import PermutSetoid.
+Require Import RelExtras MultisetCore Permutation Multiset List ListExtras
+  PermutSetoid.
 
 Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
 

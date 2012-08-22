@@ -10,13 +10,7 @@ and introduces, as Variable, some computability properties.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import LexOrder.
-Require Import Horpo.
-Require Import LogicUtil.
-Require Import Setoid.
-Require Import AccUtil.
+Require Import RelExtras ListExtras LexOrder Horpo LogicUtil Setoid AccUtil.
 
 Module Computability (S : TermsSig.Signature) 
                      (Prec : Horpo.Precedence with Module S := S).

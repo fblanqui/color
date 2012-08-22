@@ -8,12 +8,7 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-Require Import VPrecedence.
-Require Import Relations.
-Require Import ListUtil.
-Require Import VTerm.
-Require Import RelMidex.
-Require Import LogicUtil.
+Require Import VPrecedence Relations ListUtil VTerm RelMidex LogicUtil.
 
 Module Type RPO_Model.
 

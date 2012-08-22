@@ -9,9 +9,7 @@ A specification of termination proofs.
 
 Set Implicit Arguments.
 
-Require Import ZArith.
-Require Import List.
-Require Import ASignature.
+Require Import ZArith List ASignature.
 
 Section Proof.
 

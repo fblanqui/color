@@ -9,10 +9,7 @@ setoid equality on vectors
 
 Set Implicit Arguments.
 
-Require Import Setoid.
-Require Import VecUtil.
-Require Import LogicUtil.
-Require Import NatUtil.
+Require Import Setoid VecUtil LogicUtil NatUtil.
 
 (***********************************************************************)
 (** pointwise equality of vectors *)

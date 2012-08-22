@@ -9,8 +9,7 @@ boolean function for total ordering
 
 Set Implicit Arguments.
 
-Require Import RelUtil.
-Require Import LogicUtil.
+Require Import RelUtil LogicUtil.
 
 Section S.
 

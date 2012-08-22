@@ -7,10 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A termination solver that knows how to deal with empty problems.
 *)
 
-Require Import ListUtil.
-Require Import Problem.
-Require Import ATrs.
-Require Import SN.
+Require Import ListUtil Problem ATrs SN.
 
 Set Implicit Arguments.
 

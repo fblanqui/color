@@ -9,8 +9,7 @@ useful definitions and lemmas on boolean vectors
 
 Set Implicit Arguments.
 
-Require Import VecUtil.
-Require Import LogicUtil.
+Require Import VecUtil LogicUtil.
 
 Notation bools := (vector bool).
 

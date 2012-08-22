@@ -10,11 +10,7 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsLifting.
-Require Import Arith.
-Require Import Setoid.
+Require Import RelExtras ListExtras TermsLifting Arith Setoid.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 

@@ -9,13 +9,8 @@ Some results concerning permutations of lists.
 
 Set Implicit Arguments.
 
-Require Import Multiset.
-Require Import Permutation.
-Require Import ListExtras.
-Require Import NatUtil.
-Require Import LogicUtil.
-Require Import Setoid.
-Require Import PermutSetoid.
+Require Import Multiset Permutation ListExtras NatUtil LogicUtil Setoid
+  PermutSetoid.
 
 Section Multiplicity.
 

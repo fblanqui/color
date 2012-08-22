@@ -7,13 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-Require Import VPrecedence.
-Require Import LexicographicOrder.
-Require Import VRPO_Type.
-Require Import Relations.
-Require Import VTerm.
-Require Import ListUtil.
-Require Import AccUtil.
+Require Import VPrecedence LexicographicOrder VRPO_Type Relations VTerm
+  ListUtil AccUtil.
 
 Module LPO (PT : VPrecedenceType).
 

@@ -9,11 +9,7 @@ multisets of natural numbers
 
 Set Implicit Arguments.
 
-Require Import Arith.
-Require Import MultisetTheory.
-Require Import MultisetOrder.
-Require Import MultisetList.
-Require Import RelExtras.
+Require Import Arith MultisetTheory MultisetOrder MultisetList RelExtras.
 
 Module Nat.
   Definition A := nat.

@@ -9,9 +9,7 @@ prefix, suffix, cut, elimination of doubles, etc.
 
 Set Implicit Arguments.
 
-Require Import ListUtil.
-Require Import ListRepeatFree.
-Require Import Le.
+Require Import ListUtil ListRepeatFree Le.
 
 (***********************************************************************)
 (** prefix *)

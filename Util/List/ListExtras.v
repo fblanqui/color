@@ -10,11 +10,7 @@ Some additional functions on lists.
 Set Implicit Arguments.
 
 Require Export ListUtil.
-Require Import NatUtil.
-Require Import Min.
-Require Import Permutation.
-Require Import LogicUtil.
-Require Import Setoid.
+Require Import NatUtil Min Permutation LogicUtil Setoid.
 
 (***********************************************************************)
 (** initial segment of a list *)

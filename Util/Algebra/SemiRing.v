@@ -8,20 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring structure.
 *)
 
-Require Export Ring.
-Require Export Ring_theory.
-Require Import RelDec.
-Require Import Relations.
-Require Import Max.
-Require Import Arith.
-Require Import Compare.
-Require Import LogicUtil.
-Require Import Bool.
-Require Import RelExtras.
-Require Import Setoid.
-Require Import EqUtil.
-Require Import NatUtil.
-Require Import ZUtil.
+Require Export Ring Ring_theory.
+Require Import RelDec Relations Max Arith Compare LogicUtil Bool RelExtras
+  Setoid EqUtil NatUtil ZUtil.
 
 (***********************************************************************)
 (** Semi-ring structure type *)

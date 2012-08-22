@@ -9,9 +9,7 @@ infinite sets
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import Relations.
-Require Import Setoid.
+Require Import LogicUtil Relations Setoid.
 
 Section defs.
 

@@ -10,10 +10,7 @@ assumed) encoded via lambda-terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsEta.
-Require Import Setoid.
+Require Import RelExtras ListExtras TermsEta Setoid.
 
 Module TermsAlgebraic (Sig : TermsSig.Signature).
 

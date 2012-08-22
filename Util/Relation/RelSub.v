@@ -7,9 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 sub-relation, restriction, etc.
 *)
 
-Require Import ListShrink.
-Require Import RelUtil.
-Require Import ListUtil.
+Require Import ListShrink RelUtil ListUtil.
 
 Set Implicit Arguments.
 

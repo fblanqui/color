@@ -10,10 +10,7 @@ environments with declarations that are really used in a term.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsEnv.
-Require Import Arith.
+Require Import RelExtras ListExtras TermsEnv Arith.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 

@@ -9,14 +9,8 @@ algebraic terms with no arity
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import BoolUtil.
-Require Export List.
-Require Import ListUtil.
-Require Import EqUtil.
-Require Export VSignature.
-Require Import Peano_dec.
-Require Import ListDec.
+Require Import LogicUtil BoolUtil ListUtil EqUtil Peano_dec ListDec.
+Require Export VSignature List.
 
 Section S.
 

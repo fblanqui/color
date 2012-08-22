@@ -10,9 +10,7 @@ greatest/smallest component of a vector of natural numbers
 
 Set Implicit Arguments.
 
-Require Import VecUtil.
-Require Import NatUtil.
-Require Import LogicUtil.
+Require Import VecUtil NatUtil LogicUtil.
 
 Notation nats := (vector nat).
 

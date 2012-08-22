@@ -9,8 +9,7 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN.
-Require Import RelUtil.
+Require Import SN RelUtil.
 
 (****************************************************************************)
 (** lexicographic quasi-ordering on pairs *)

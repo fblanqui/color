@@ -9,8 +9,7 @@ substitutions
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Import VTerm.
+Require Import LogicUtil VTerm.
 
 Section S.
 

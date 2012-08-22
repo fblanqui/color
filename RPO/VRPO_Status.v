@@ -7,14 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-Require Import VPrecedence.
-Require Import MultisetListOrder.
-Require Import LexicographicOrder.
-Require Import VRPO_Type.
-Require Import Relations.
-Require Import VTerm.
-Require Import ListUtil.
-Require Import AccUtil.
+Require Import VPrecedence MultisetListOrder LexicographicOrder VRPO_Type
+  Relations VTerm ListUtil AccUtil.
 
 Inductive status_name : Set := 
 | lexicographic : status_name 

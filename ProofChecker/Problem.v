@@ -7,10 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A specification of a termination problem.
 *)
 
-Require Import List.
-Require Import Relations.
-Require Import ATrs.
-Require Import SN.
+Require Import List Relations ATrs SN.
 
 Set Implicit Arguments.
 

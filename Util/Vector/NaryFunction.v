@@ -9,8 +9,7 @@ basic definitions on functions taking vectors as arguments
 
 Set Implicit Arguments.
 
-Require Import RelUtil.
-Require Import VecUtil.
+Require Import RelUtil VecUtil.
 
 Section S.
 

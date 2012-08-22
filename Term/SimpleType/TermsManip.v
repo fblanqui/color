@@ -10,9 +10,7 @@ typed lambda-calculus are defined.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import TermsTyping.
+Require Import RelExtras ListExtras TermsTyping.
 
 Module TermsManip (Sig : TermsSig.Signature).
 

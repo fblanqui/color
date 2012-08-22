@@ -12,17 +12,8 @@ in this file.
 Set Implicit Arguments.
 
 Require RelUtil.
-Require Import RelExtras.
-Require Import MultisetTheory.
-Require Import Transitive_Closure.
-Require Import Compare_dec.
-Require Import Relations.
-Require Import Permutation.
-Require Import ListPermutation.
-Require Import MultisetCore.
-Require Import Setoid.
-Require Import ListExtras.
-Require Import AccUtil.
+Require Import RelExtras MultisetTheory Transitive_Closure Compare_dec
+  Relations Permutation ListPermutation MultisetCore Setoid ListExtras AccUtil.
 
 Module MultisetOrder (MC: MultisetCore).
 

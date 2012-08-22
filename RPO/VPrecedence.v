@@ -7,11 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-Require Import VSignature.
-Require Import VTerm.
-Require Import RelMidex.
-Require Import Preorder.
-Require Import Setoid.
+Require Import VSignature VTerm RelMidex Preorder Setoid.
 
 Module Type VPrecedenceType.
 

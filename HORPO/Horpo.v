@@ -10,15 +10,8 @@ recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import RelExtras.
-Require Import ListExtras.
-Require Import Relations.
-Require Import Terms.
-Require Import MultisetOrder.
-Require Import LexOrder.
-Require Import MultisetList.
-Require Import MultisetTheory.
-Require Import AccUtil.
+Require Import RelExtras ListExtras Relations Terms MultisetOrder LexOrder
+  MultisetList MultisetTheory AccUtil.
 
 Module Type Precedence.
 
