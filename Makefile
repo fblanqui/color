@@ -37,19 +37,20 @@ doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./createIndex
 
-ADR := login-linux.inria.fr:liama/www/color
+ADR := ~/rewriting-svn/web/formes/color
+LOCAL := ~/rewriting-svn/web/color/site
 
 install-doc:
-	scp doc/coqdoc.css doc/*.html $(ADR)/doc
-	cp doc/coqdoc.css doc/*.html ~/web/color/site/doc
+	cp doc/coqdoc.css doc/*.html $(ADR)/doc
+	cp doc/coqdoc.css doc/*.html $(LOCAL)/doc
 
 dist:
 	./createDist
 
 install-dist:
-	scp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
-	scp CHANGES $(ADR)/CHANGES.CoLoR
-	cp CHANGES ~/web/color/site/CHANGES.CoLoR
+	cp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
+	cp CHANGES $(ADR)/CHANGES.CoLoR
+	cp CHANGES $(LOCAL)/CHANGES.CoLoR
 
 %.vo: %.v
 	$(MAKECOQ) $@
