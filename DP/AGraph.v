@@ -5,7 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Leo Ducas, 2007-08-06
 
 head rules graph: generalisation of ADPGraph
-to S @ (hd_red R) instead of (int_red R #) @ (dp R)
+to S @ (hd_red R) instead of (int_red R ##) @ (dp R)
 *)
 
 Set Implicit Arguments.
