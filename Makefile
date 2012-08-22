@@ -39,16 +39,16 @@ ADR := ~/rewriting-svn/web/formes/color
 LOCAL := ~/rewriting-svn/web/color/site
 
 install-doc:
-	cp doc/coqdoc.css doc/*.html $(ADR)/doc
 	cp doc/coqdoc.css doc/*.html $(LOCAL)/doc
+	cp doc/coqdoc.css doc/*.html $(ADR)/doc
 
 dist:
 	./createDist
 
 install-dist:
+	cp CHANGES $(LOCAL)/CHANGES.CoLoR
 	cp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
 	cp CHANGES $(ADR)/CHANGES.CoLoR
-	cp CHANGES $(LOCAL)/CHANGES.CoLoR
 
 %.vo: %.v
 	$(MAKECOQ) $@
