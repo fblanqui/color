@@ -744,16 +744,18 @@ Section transp.
 
   Variables (A : Type) (R S : relation A).
 
-  (*COQ: declaring it as Instance creates problems*)
-  Lemma transp_refl : reflexive R -> reflexive (transp R).
+  (*COQ: declaring these lemmas as Global Instance makes Coq loop
+  later in some other files *)
+
+  Lemma transp_refl : Reflexive R -> Reflexive (transp R).
 
   Proof. auto. Qed.
 
-  Lemma transp_trans : transitive R -> transitive (transp R).
+  Lemma transp_trans : Transitive R -> Transitive (transp R).
 
   Proof. firstorder. Qed.
 
-  Lemma transp_sym : symmetric R -> symmetric (transp R).
+  Lemma transp_sym : Symmetric R -> Symmetric (transp R).
 
   Proof. firstorder. Qed.
 
@@ -945,12 +947,18 @@ Section inverse_image.
 
   Definition Rof a a' := R (f a) (f a').
 
-  (*COQ: declare as Instance creates problems *)
-  Lemma Rof_refl : reflexive R -> reflexive Rof.
+  (*COQ: declaring these lemmas as Global Instance makes Coq loop
+  later in some other files *)
+
+  Lemma Rof_refl : Reflexive R -> Reflexive Rof.
 
   Proof. firstorder. Qed.
 
-  Lemma Rof_trans : transitive R -> transitive Rof.
+  Lemma Rof_trans : Transitive R -> Transitive Rof.
+
+  Proof. firstorder. Qed.
+
+  Lemma Rof_sym : Symmetric R -> Symmetric Rof.
 
   Proof. firstorder. Qed.
 
@@ -1220,8 +1228,16 @@ Section option_setoid.
     transitivity a0; auto. contradiction.
   Qed.
 
-  (*COQ is looping if you do:
-  Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.*)
+  Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.
+
+  Proof.
+    intro E. split.
+    intro x. unfold eq_opt. destruct x. refl. auto.
+    intros x y. unfold eq_opt. destruct x; destruct y; auto.
+    intro h. symmetry. hyp.
+    intros x y z. unfold eq_opt. destruct x; destruct y; destruct z; try tauto.
+    intros xy yz. transitivity a0; hyp.
+  Qed.
 
   Global Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
 
