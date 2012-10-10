@@ -284,8 +284,8 @@ Qed.
 Lemma rt_red_mod_union : forall E R : rules, red_mod E R # << red (E ++ R) #.
 
 Proof.
-intros. trans (red(E++R)##). rewrite red_mod_union. refl. rewrite rtc_invol.
-refl.
+intros. incl_trans (red(E++R)##). rewrite red_mod_union. refl.
+rewrite rtc_invol. refl.
 Qed.
 
 Lemma red_mod_Rules : forall E R,

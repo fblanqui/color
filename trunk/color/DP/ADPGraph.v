@@ -82,7 +82,7 @@ Lemma chain_dps_app : forall l a b m,
   chain_dps a (l ++ b :: m) << chain_dps a l @ chain_dps b m.
 
 Proof.
-induction l; simpl; intros. inclusion_refl. assoc. comp. apply IHl.
+induction l; simpl; intros. incl_refl. assoc. comp. apply IHl.
 Qed.
 
 Implicit Arguments chain_dps_app [l a b m].
@@ -207,15 +207,17 @@ Qed.
 Lemma compat_chain_dp : forall a, chain_dp a << succ_eq#.
 
 Proof.
-intros. trans (red_mod R DP). trans (Chain). apply chain_dp_chain.
-trans (hd_red_mod R DP). apply chain_hd_red_mod. apply hd_red_mod_incl_red_mod.
-trans (succ_eq!). apply compat_red_mod_tc; assumption. apply tc_incl_rtc.
+intros. incl_trans (red_mod R DP). incl_trans (Chain). apply chain_dp_chain.
+incl_trans (hd_red_mod R DP). apply chain_hd_red_mod.
+apply hd_red_mod_incl_red_mod. incl_trans (succ_eq!).
+apply compat_red_mod_tc; assumption. apply tc_incl_rtc.
 Qed.
 
 Lemma compat_chain_dps : forall l a, chain_dps a l << succ_eq#.
 
 Proof.
-induction l; simpl; intros. apply compat_chain_dp. trans (succ_eq# @ succ_eq#).
+induction l; simpl; intros. apply compat_chain_dp.
+incl_trans (succ_eq# @ succ_eq#).
 comp. apply compat_chain_dp. apply IHl. apply comp_rtc_idem.
 Qed.
 
@@ -227,7 +229,7 @@ unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
 apply (incl_rtc_comp Habsorb). exists (sub x0 (lhs a)). split.
 apply inclusion_elim with (R := int_red R #). 2: exact H1.
 apply clos_refl_trans_m'.
-trans (red R). apply int_red_incl_red. apply compat_red; assumption.
+incl_trans (red R). apply int_red_incl_red. apply compat_red; assumption.
 destruct Hredord. apply H2. exact H.
 Qed.
 

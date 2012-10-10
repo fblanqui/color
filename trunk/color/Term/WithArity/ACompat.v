@@ -59,7 +59,7 @@ Lemma compat_red_mod_tc : forall R E,
   rewrite_ordering succ -> compat E -> compat R -> red_mod E R << succ!.
 
 Proof.
-intros. unfold red_mod. trans (succ# @ succ). comp.
+intros. unfold red_mod. incl_trans (succ# @ succ). comp.
 apply clos_refl_trans_m'. apply compat_red; hyp. apply compat_red; hyp.
 apply tc_split_inv.
 Qed.
@@ -155,7 +155,8 @@ Lemma compat_red_mod : forall R E,
   absorb succ succ_eq -> red_mod E R << succ.
 
 Proof.
-intros. unfold red_mod. trans (succ_eq# @ succ). comp. apply clos_refl_trans_m'.
+intros. unfold red_mod. incl_trans (succ_eq# @ succ). comp.
+apply clos_refl_trans_m'.
 apply compat_red; hyp. destruct H0. apply compat_red; hyp.
 apply incl_rtc_comp. exact H3.
 Qed.
@@ -175,7 +176,7 @@ Lemma compat_hd_red_mod : forall R E,
   absorb succ succ_eq -> hd_red_mod E R << succ.
 
 Proof.
-intros. unfold hd_red_mod. trans (succ_eq# @ succ). comp.
+intros. unfold hd_red_mod. incl_trans (succ_eq# @ succ). comp.
 apply clos_refl_trans_m'.
 apply compat_red; hyp. apply compat_hd_red; hyp.
 apply incl_rtc_comp. exact H3.
@@ -190,7 +191,7 @@ Lemma red_partition : forall (R R1 R2 : rules),
   (forall r, In r R -> In r R1 \/ In r R2) -> red R << red R1 U red R2.
 
 Proof with auto.
-  intros. trans (red (R1 ++ R2)).
+  intros. incl_trans (red (R1 ++ R2)).
   apply red_incl. unfold incl. intros.
   destruct (H a); solve [hyp | apply in_or_app; auto].
   apply red_union.
@@ -241,7 +242,7 @@ Section rule_partition.
       hd_red R << hd_red (fst part) U hd_red (snd part).
 
   Proof.
-    clear R. intros. trans (hd_red (fst part ++ snd part)).
+    clear R. intros. incl_trans (hd_red (fst part ++ snd part)).
     apply hd_red_incl. unfold incl. intros.
     destruct (partition_complete pf a R). hyp.
     apply in_or_app. auto.
