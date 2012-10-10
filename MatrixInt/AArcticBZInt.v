@@ -195,7 +195,7 @@ apply fin_ge_impl_ge; hyp.
 destruct x_lb; [ contradiction | discr ].
 destruct y_lb; [ contradiction | discr ].
 destruct y_lb; [ contradiction | discr ].
-      unfold vec_at0. apply (Vforall2n_nth gtx). hyp.
+      unfold vec_at0. apply Vforall2n_nth. hyp.
     Qed.
   
   End MonotoneAlgebra.

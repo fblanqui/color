@@ -585,8 +585,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
     Proof.
       intros. unfold mat_forall2, get_elem, get_row. intros.
-      apply (Vforall2n_nth P). apply (Vforall2n_nth (@Vforall2n A A P n)). 
-      assumption.
+      apply Vforall2n_nth. apply Vforall2n_nth. hyp.
     Qed.
 
     Lemma mat_forall2_dec : rel_dec mat_forall2.
@@ -637,8 +636,8 @@ Module Matrix (OSRT : OrdSemiRingType).
       apply vec_tail_ge. assumption.
       set (p0 := lt_O_Sn n0). apply mult_ge_compat.
       change h with (Vnth (Vcons h v) p0). rewrite Vhead_nth.
-      apply (Vforall2n_nth ge). assumption.
-      do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
+      apply Vforall2n_nth. assumption.
+      do 2 rewrite Vhead_nth. apply Vforall2n_nth. assumption.
     Qed.
 
     Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M <*> N >=m M' <*> N'.
@@ -661,7 +660,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     intros. unfold mat_vec_prod, vec_ge. apply Vforall2n_intro. 
     intros. do 2 rewrite Vnth_col_mat. apply mat_mult_mon. assumption.
     unfold mat_ge. intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
-    apply (Vforall2n_nth ge). assumption.
+    apply Vforall2n_nth. assumption.
   Qed.
 
   Infix ">=m" := mat_ge (at level 70).

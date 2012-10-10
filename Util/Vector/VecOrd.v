@@ -186,7 +186,7 @@ Lemma vec_ge_trans : transitive ge -> forall n, transitive (@vec_ge n).
 
 Proof.
   intros ge_trans n x y z xy yz. unfold vec_ge. apply Vforall2n_intro. intros.
-  apply ge_trans with (Vnth y ip); apply (Vforall2n_nth ge); hyp.
+  apply ge_trans with (Vnth y ip); apply Vforall2n_nth; hyp.
 Qed.
 
 Variable ge_dec : forall x y, {ge x y}+{~ge x y}.

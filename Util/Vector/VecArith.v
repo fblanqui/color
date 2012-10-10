@@ -347,8 +347,8 @@ Qed.*)
     unfold vector_plus, vec_ge. intros. apply Vforall2n_intro.
     intros. simpl. do 2 rewrite Vnth_map2.
     apply plus_ge_compat.
-    apply (Vforall2n_nth ge). hyp.
-    apply (Vforall2n_nth ge). hyp.
+    apply Vforall2n_nth. hyp.
+    apply Vforall2n_nth. hyp.
   Qed.
 
   Lemma vec_plus_ge_compat_r : forall n (vl vl' vr : vec n), 

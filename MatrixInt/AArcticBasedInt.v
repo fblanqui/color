@@ -120,8 +120,8 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       intros x z xz. destruct xz as [y [xy yz] ].
       unfold succ, succ_vec. apply Vforall2n_intro. intros.
       apply ge_gtx_compat with (Vnth (dom2vec y) ip).
-      apply (Vforall2n_nth ge). assumption.
-      apply (Vforall2n_nth gtx). assumption.
+      apply Vforall2n_nth. assumption.
+      apply Vforall2n_nth. assumption.
     Qed.
 
     Lemma gtx_dec : rel_dec gtx.
@@ -187,7 +187,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       VOtac. simpl. right. intuition.
       VSntac v'. simpl. apply gtx_plus_compat.
       apply IHv. intros. 
-      apply (Vforall2n_nth gtx). change v with (Vtail (Vcons h v)). 
+      apply Vforall2n_nth. change v with (Vtail (Vcons h v)). 
       apply Vforall2n_tail. apply Vforall2n_intro. assumption.
       change h with (Vhead (Vcons h v)). do 2 rewrite Vhead_nth.
       apply (H _ (Lt.lt_O_Sn n)).
@@ -213,8 +213,8 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
         change v with (Vtail (Vcons h v)). apply Vforall2n_tail. assumption.
         apply vec_tail_ge. assumption.
         apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth gtx). assumption.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
+        do 2 rewrite Vhead_nth. apply Vforall2n_nth. assumption.
+        do 2 rewrite Vhead_nth. apply Vforall2n_nth. assumption.
       Qed.
 
       Lemma mat_arctic_mult_mon :
@@ -240,7 +240,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       intros. do 2 rewrite Vnth_col_mat. 
       apply mat_arctic_mult_mon. assumption.
       intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
-      apply (Vforall2n_nth ge). assumption.
+      apply Vforall2n_nth. assumption.
     Qed.
 
     Lemma mint_eval_mon_succ : forall (val : valuation I) k 
@@ -253,13 +253,13 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       apply (Vnth_mor eqA). rewrite mint_eval_split. refl.
       do 2 rewrite vector_plus_nth.
       apply gtx_plus_compat. 
-      apply (Vforall2n_nth gtx). assumption.
+      apply Vforall2n_nth. assumption.
       do 2 rewrite add_vectors_nth.
       apply Vfold_left_gtx_compat. intros.
       do 2 rewrite Vnth_map. do 2 rewrite Vnth_map2.
       set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
-      apply (Vforall2n_nth gtx). apply mat_vec_prod_gt_compat.
-      apply (Vforall2n_nth mat_gt). assumption.
+      apply Vforall2n_nth. apply mat_vec_prod_gt_compat.
+      apply Vforall2n_nth. assumption.
       apply vec_ge_refl.
     Qed.
 
