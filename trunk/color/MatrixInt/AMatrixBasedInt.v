@@ -212,13 +212,13 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2n_intro. 
       intros. unfold vector_plus. do 2 rewrite Vnth_map2.
       assert (Vnth (f (Vhead M) a) ip >>= Vnth (f (Vhead M) b) ip).
-      apply (Vforall2n_nth ge). apply f_mon. assumption.
+      apply Vforall2n_nth. apply f_mon. assumption.
       apply plus_ge_compat. apply ge_refl. assumption.
       destruct n0; try solve [absurd_arith].
       unfold add_vectors, succeq, vec_ge. simpl. apply Vforall2n_intro. 
       intros. unfold vector_plus. do 2 rewrite Vnth_map2.
       apply plus_ge_compat. 
-      apply (Vforall2n_nth ge). unfold add_vectors in IHv1. apply IHv1.
+      apply Vforall2n_nth. unfold add_vectors in IHv1. apply IHv1.
       assumption. apply ge_refl.
     Qed.
   
@@ -236,7 +236,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
     unfold M.mat_vec_prod. do 2 rewrite Vnth_col_mat. apply mat_mult_mon.
     apply mat_ge_refl. intros x y xp yp.
     do 2 rewrite vec_to_col_mat_spec.
-    apply (Vforall2n_nth ge). assumption.
+    apply Vforall2n_nth. assumption.
   Qed.
 
   Lemma succeq_dec : rel_dec succeq.
@@ -630,7 +630,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       apply Vforall2n_tail. assumption. assumption.
       apply mat_vec_prod_ge_compat.
       change h with (Vhead (Vcons h args0)). do 2 rewrite Vhead_nth.
-      apply (Vforall2n_nth mat_ge). assumption.
+      apply Vforall2n_nth. assumption.
       apply (vec_ge_refl (Vhead val)).
     Qed.
 

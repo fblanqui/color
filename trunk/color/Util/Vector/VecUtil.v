@@ -100,11 +100,8 @@ Section Velementary.
 
 End Velementary.
 
-Ltac VSntac y :=
-  match type of y with
-    | vector _ (S _) => let H := fresh in
-      (assert (H : y = Vcons (Vhead y) (Vtail y)); [apply VSn_eq | rewrite H])
-  end.
+Ltac VSntac y := let h := fresh in
+  generalize (VSn_eq y); intro h; try rewrite h.
 
 Lemma VSn_inv : forall A n (v : vector A (S n)),
   exists x, exists w, v = Vcons x w.
@@ -1279,6 +1276,8 @@ Section Vforall2_sec.
   Qed.
 
 End Vforall2_sec.
+
+Implicit Arguments Vforall2n_nth [A B R n v1 v2].
 
 Require Import RelDec.
 

@@ -111,7 +111,7 @@ Module MatrixInt (Export MI : TMatrixInt).
       intros x z xz. destruct xz as [y [xy yz]]. split.
       apply trans_succeq with y. assumption. destruct yz. assumption.
       apply ge_gt_compat with (Vnth (dom2vec y) dim_pos). unfold MBI.vec_at0.
-      apply (Vforall2n_nth ge). assumption. 
+      apply Vforall2n_nth. assumption. 
       destruct yz. assumption.
     Qed.
 
@@ -146,7 +146,7 @@ Module MatrixInt (Export MI : TMatrixInt).
       apply mint_eval_mon_succeq. assumption.
       unfold mint_eval, add_vectors. simpl.
       apply vec_plus_gt_compat_l. 
-      unfold MBI.vec_at0. apply (Vforall2n_nth ge). 
+      unfold MBI.vec_at0. apply (Vforall2n_nth (R:=ge)). 
       exact (mint_eval_mon_succeq_args _ H). assumption.
     Qed.
 
@@ -244,7 +244,7 @@ Module MatrixInt (Export MI : TMatrixInt).
         unfold Aplus, Peano.gt. apply plus_gt_compat_r.
         apply dot_product_mon; apply vec_tail_ge; assumption.
         do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
-        apply (Vforall2n_nth ge). assumption.
+        apply (Vforall2n_nth (R:=ge)). assumption.
         rewrite (lt_unique (lt_O_Sn i) jp). assumption.
         rewrite (lt_unique (lt_O_Sn i) jp). assumption.
         destruct i. absurd_arith.
@@ -259,8 +259,8 @@ Module MatrixInt (Export MI : TMatrixInt).
         rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
         do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. assumption.
         apply BigN.mul_le_mono.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). assumption.
+        do 2 rewrite Vhead_nth. apply (Vforall2n_nth (R:=ge)). assumption.
+        do 2 rewrite Vhead_nth. apply (Vforall2n_nth (R:=ge)). assumption.
       Qed.
 
       (* additional property of interpretation required to ensure strict
@@ -286,7 +286,7 @@ Module MatrixInt (Export MI : TMatrixInt).
         unfold vec_ge, ge. apply Vforall2n_intro. intros. apply BigN.le_refl.
         unfold vec_ge, ge. apply Vforall2n_intro. intros.
         do 2 rewrite get_col_col_mat. destruct ab.
-        apply (Vforall2n_nth ge). assumption.
+        apply (Vforall2n_nth (R:=ge)). assumption.
         assumption.
         do 2 rewrite get_col_col_mat. assumption.
         apply matrixInt_monotone. apply BigN.le_refl.

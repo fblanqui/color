@@ -112,7 +112,7 @@ Module MatrixInt (MI : TMatrixInt).
       intros x z xz. destruct xz as [y [xy yz]]. split.
       apply trans_succeq with y. hyp. destruct yz. hyp.
       apply ge_gt_compat with (Vnth (dom2vec y) dim_pos). unfold MBI.vec_at0.
-      apply (Vforall2n_nth ge). hyp. 
+      apply Vforall2n_nth. hyp. 
       destruct yz. hyp.
     Qed.
 
@@ -147,7 +147,7 @@ Module MatrixInt (MI : TMatrixInt).
       apply mint_eval_mon_succeq. hyp.
       unfold mint_eval, add_vectors. simpl.
       apply vec_plus_gt_compat_l. 
-      unfold MBI.vec_at0. apply (Vforall2n_nth ge). 
+      unfold MBI.vec_at0. apply Vforall2n_nth. 
       exact (mint_eval_mon_succeq_args _ H). hyp.
     Qed.
 
@@ -245,7 +245,7 @@ Module MatrixInt (MI : TMatrixInt).
         unfold Aplus, Peano.gt. apply plus_gt_compat_r.
         apply dot_product_mon; apply vec_tail_ge; hyp.
         do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
-        apply (Vforall2n_nth ge). hyp.
+        apply (Vforall2n_nth (R:=ge)). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
         destruct i. absurd_arith.
@@ -260,8 +260,8 @@ Module MatrixInt (MI : TMatrixInt).
         rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
         do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
         apply mult_le_compat.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). hyp.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth ge). hyp.
+        do 2 rewrite Vhead_nth. apply (Vforall2n_nth (R:=ge)). hyp.
+        do 2 rewrite Vhead_nth. apply (Vforall2n_nth (R:=ge)). hyp.
       Qed.
 
       (* additional property of interpretation required to ensure strict
@@ -297,7 +297,7 @@ Module MatrixInt (MI : TMatrixInt).
         unfold vec_ge, ge. apply Vforall2n_intro. intros. apply le_refl.
         unfold vec_ge, ge. apply Vforall2n_intro. intros.
         do 2 rewrite get_col_col_mat. destruct ab.
-        apply (Vforall2n_nth ge). hyp.
+        apply Vforall2n_nth. hyp.
         hyp.
         do 2 rewrite get_col_col_mat. hyp.
         apply H. apply le_refl.
