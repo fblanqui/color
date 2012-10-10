@@ -296,12 +296,13 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       intros. unfold hd_red_mod.
       set (Rgt := fst R_gt) in *. set (Rge := snd R_gt) in *.
       apply WF_incl with (red E # @ (hd_red Rgt U hd_red Rge)).
-      comp. trans (hd_red Rgt U hd_red Rge). apply hd_rule_partition_complete.
+      comp. incl_trans (hd_red Rgt U hd_red Rge).
+      apply hd_rule_partition_complete.
       apply wf_rel_mod_simpl. fold (red_mod E Rge). assumption.
       apply WF_incl with (hd_red_mod (Rge ++ E) Rgt).
       unfold hd_red_mod. comp.
       apply clos_refl_trans_m'.
-      trans (red Rge U red E). union. apply hd_red_incl_red.
+      incl_trans (red Rge U red E). union. apply hd_red_incl_red.
       apply red_union_inv.
       apply ma_compat_hd_red_mod; trivial.
       unfold Rgt, R_gt, part_succ. apply partition_succ_compat.

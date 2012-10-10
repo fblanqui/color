@@ -44,13 +44,14 @@ Lemma iter_plus_1 : forall p q, iter (p+q+1) << iter p @ iter q.
 
 Proof.
 induction p; simpl; intros. rewrite plus_1_S. simpl. refl.
-trans (R @ (iter p @ iter q)). comp. apply IHp. apply comp_assoc'.
+incl_trans (R @ (iter p @ iter q)). comp. apply IHp. apply comp_assoc'.
 Qed.
 
 Lemma iter_commut : forall p q, iter p @ iter q << iter q @ iter p.
 
 Proof.
-intros. trans (iter (p+q+1)). apply iter_iter. assert (p+q+1 = q+p+1). omega.
+intros. incl_trans (iter (p+q+1)). apply iter_iter.
+assert (p+q+1 = q+p+1). omega.
 rewrite H. apply iter_plus_1.
 Qed.
 

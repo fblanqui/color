@@ -29,7 +29,7 @@ set (T := R# @ S). set (gt1 := T! @ R#). set (gt2 := R!).
 eapply WF_incl. apply union_commut.
 eapply WF_incl. apply lex'_intro. apply WF_lex'.
 (* WF gt1 *)
-unfold gt1. apply absorb_WF_modulo_r. trans (R# @ T!). comp.
+unfold gt1. apply absorb_WF_modulo_r. incl_trans (R# @ T!). comp.
 apply rtc_incl. unfold T. apply rtc_comp_modulo.
 apply WF_tc. unfold T. apply WF_commut_modulo. exact commut. exact H0.
 (* WF gt2 *)
@@ -37,7 +37,7 @@ unfold gt2. apply WF_tc. exact H.
 (* transitive gt2 *)
 apply trans_intro. unfold gt2. apply comp_tc_idem.
 (* gt2 @ gt1 << gt1 *)
-unfold gt1, gt2. assoc. comp. trans (R# @ T!). comp. apply tc_incl_rtc.
+unfold gt1, gt2. assoc. comp. incl_trans (R# @ T!). comp. apply tc_incl_rtc.
 unfold T. apply rtc_comp_modulo.
 Qed.
 

@@ -207,10 +207,10 @@ Instance inclusion_Trans A : Transitive (@inclusion A).
 Proof. firstorder. Qed.
 
 (*REMOVE? replace by refl*)
-Ltac inclusion_refl := apply inclusion_Refl.
+Ltac incl_refl := apply inclusion_Refl.
 
 (*REMOVE?*)
-Ltac trans S := apply inclusion_Trans with (S); try inclusion_refl.
+Ltac incl_trans S := apply inclusion_Trans with (S); try incl_refl.
 
 Instance inclusion_m' A :
   Proper (same_relation A ==> same_relation A ==> impl) (@inclusion A).
@@ -299,7 +299,7 @@ Instance compose_m' A :
 Proof. firstorder. Qed.
 
 (*REMOVE?*)
-Ltac comp := apply compose_m'; try inclusion_refl.
+Ltac comp := apply compose_m'; try incl_refl.
 
 Instance compose_m A :
   Proper (same_relation A ==> same_relation A ==> same_relation A) (@compose A).
@@ -341,10 +341,10 @@ End compose.
 
 Ltac assoc :=
   match goal with
-    | |- (?s @ ?t) @ ?u << _ => trans (s @ (t @ u)); try apply comp_assoc
-    | |- ?s @ (?t @ ?u) << _ => trans ((s @ t) @ u); try apply comp_assoc'
-    | |- _ << (?s @ ?t) @ ?u => trans (s @ (t @ u)); try apply comp_assoc'
-    | |- _ << ?s @ (?t @ ?u) => trans ((s @ t) @ u); try apply comp_assoc
+    | |- (?s @ ?t) @ ?u << _ => incl_trans (s @ (t @ u)); try apply comp_assoc
+    | |- ?s @ (?t @ ?u) << _ => incl_trans ((s @ t) @ u); try apply comp_assoc'
+    | |- _ << (?s @ ?t) @ ?u => incl_trans (s @ (t @ u)); try apply comp_assoc'
+    | |- _ << ?s @ (?t @ ?u) => incl_trans ((s @ t) @ u); try apply comp_assoc
   end.
 
 (***********************************************************************)
@@ -524,7 +524,7 @@ Instance union_m' A :
 Proof. firstorder. Qed.
 
 (*REMOVE?*)
-Ltac union := apply union_m'; try inclusion_refl.
+Ltac union := apply union_m'; try incl_refl.
 
 Instance union_m A :
   Proper (same_relation A ==> same_relation A ==> same_relation A) (@union A).
@@ -828,7 +828,7 @@ Section properties.
   Lemma union_fact2 : R @ S U R << R @ S%.
 
   Proof.
-    trans (R U R @ S). apply union_commut. apply union_fact.
+    incl_trans (R U R @ S). apply union_commut. apply union_fact.
   Qed.
 
   Lemma incl_rc_rtc : R << S! -> R% << S#.

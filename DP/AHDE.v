@@ -161,7 +161,7 @@ Variables R D : rules Sig.
 Lemma hde_bool_correct : hd_rules_graph (int_red R #) D << Graph (hde_bool D).
 
 Proof.
-trans (hde D). apply int_red_hd_rules_graph_incl_hde.
+incl_trans (hde D). apply int_red_hd_rules_graph_incl_hde.
 intros x y. rewrite hde_bool_correct_aux. auto.
 Qed.
 
@@ -179,7 +179,7 @@ Lemma hde_bool_mark_correct :
   << Graph (hde_bool (dup_hd_rules D)).
 
 Proof.
-trans (hde (dup_hd_rules D)).
+incl_trans (hde (dup_hd_rules D)).
 Focus 2. intros x y. rewrite hde_bool_correct_aux. auto.
 intros x y h. destruct h. decomp H0. unfold hde. intuition.
 destruct (in_map_elim H). destruct H0. destruct x2. unfold dup_hd_rule in H3.

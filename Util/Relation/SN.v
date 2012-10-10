@@ -491,7 +491,7 @@ Section iter.
     simpl in *. apply H1. exists y. intuition.
     assert ((iter R (S (S n)) @ iter R n) x0 y0).
     apply inclusion_elim with (R := iter R (S n) @ iter R (S n)).
-    trans (iter R (S n+S n+1)). apply iter_iter.
+    incl_trans (iter R (S n+S n+1)). apply iter_iter.
     assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
     exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
     eapply SN_commut with (S := iter R n). apply iter_commut. apply H6. hyp.

@@ -96,7 +96,7 @@ Section S.
     Lemma dpg_unif_N_correct : hd_rules_graph (red R #) D << Graph dpg_unif_N.
 
     Proof.
-      trans dpg_unif. apply dpg_unif_correct. intros r1 r2 h. destruct h.
+      incl_trans dpg_unif. apply dpg_unif_correct. intros r1 r2 h. destruct h.
       destruct H0. unfold Graph, dpg_unif_N. rewrite <- mem_ok in H.
       rewrite <- mem_ok in H0. rewrite H. rewrite H0. bool.
       destruct (iter_step_complete (wf_mk_problem (ren_cap r1 r2) (lhs r2)) H1).

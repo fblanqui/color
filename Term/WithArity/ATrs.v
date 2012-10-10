@@ -851,13 +851,13 @@ Section S.
       unfold hd_red_Mod, hd_red_mod.
       apply compose_m'. assert (int_red E # << red E #).
       apply clos_refl_trans_m'. apply int_red_incl_red. eauto.
-      inclusion_refl.
+      incl_refl.
     Qed.
 
     Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
 
     Proof.
-      unfold hd_red_Mod, hd_red_mod. inclusion_refl.
+      unfold hd_red_Mod, hd_red_mod. incl_refl.
     Qed.
 
     Lemma hd_red_Mod_make_repeat_free :
