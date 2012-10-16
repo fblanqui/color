@@ -1245,7 +1245,9 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros; inversion H0. constructor; rewrite <- H; trivial.
   Qed.
 
-  Add Morphism terms_conv_with : terms_conv_with_morph.
+  Add Morphism terms_conv_with
+    with signature envSubst_eq ==> eq ==> eq ==> iff
+      as terms_conv_with_morph.
 
   Proof.
     intuition.

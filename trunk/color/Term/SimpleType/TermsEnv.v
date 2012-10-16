@@ -1604,7 +1604,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
     firstorder.
   Qed.
 
-  Add Morphism loweredEnv : loweredEnv_morph.
+  Add Morphism loweredEnv
+    with signature env_eq ==> eq ==> env_eq
+      as loweredEnv_morph.
 
   Proof.
     intros.
@@ -1621,13 +1623,17 @@ Module TermsEnv (Sig : TermsSig.Signature).
     firstorder.
   Qed.
 
-  Add Morphism VarD: VarD_morph.
+  Add Morphism VarD
+    with signature env_eq ==> eq ==> eq ==> iff
+      as VarD_morph.
 
   Proof.
     firstorder.
   Qed.
 
-  Add Morphism VarUD: VarUD_morph.
+  Add Morphism VarUD
+    with signature env_eq ==> eq ==> iff
+      as VarUD_morph.
 
   Proof.
     intros e e0 H n; split; intros.

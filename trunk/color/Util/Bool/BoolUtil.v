@@ -134,6 +134,17 @@ intuition. destruct b; auto.
 Qed.
 
 (***********************************************************************)
+(** equality *)
+
+Lemma eqb_equiv : forall b b', b = b' <-> (b = true <-> b' = true).
+
+Proof.
+  intros b b'. split; intro H. subst b'. refl.
+  destruct b. sym. rewrite <- H. refl.
+  destruct b'. rewrite H. refl. refl.
+Qed.
+
+(***********************************************************************)
 (** decidability *)
 
 Require Setoid.

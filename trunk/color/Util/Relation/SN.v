@@ -11,7 +11,7 @@ inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-Require Import RelUtil Setoid LogicUtil List Basics.
+Require Import RelUtil Morphisms LogicUtil List Basics.
 
 Section sn.
 
@@ -29,11 +29,19 @@ Section sn.
 
 End sn.
 
+Global Instance SN_proper A (R E : relation A) : Equivalence E ->
+  Proper (E ==> E ==> impl) R -> Proper (E ==> impl) (SN R).
+
+Proof.
+  intros hE hR x y xy hx. apply SN_intro. intros z yz. eapply SN_inv.
+  apply hx. rewrite xy. hyp.
+Qed.
+
 (***********************************************************************)
 (** tactics *)
 
-(* [geneq H x e(x)] transforms a goal G(x) into:
-forall t, H t -> forall x, e(x) = t -> G(x) *)
+(* [geneq H x e(x)] transforms a goal [G(x)] into
+[forall t, H t -> forall x, e(x) = t -> G(x)] *)
 
 Ltac geneq H x e := generalize (refl_equal e); generalize (H e);
   clear H; generalize e at -2; let t := fresh "t" in let h := fresh "h" in
@@ -135,35 +143,16 @@ Section incl.
 
 End incl.
 
-Add Parametric Morphism (A : Type) : (@WF A)
-  with signature (same_relation A) ==> iff as WF_mor.
+Instance WF_m A : Proper (same_relation A ==> iff) (@WF A).
 
 Proof.
-intros x y x_eq_y. destruct x_eq_y. split; intro.
-apply WF_incl with x; hyp. apply WF_incl with y; hyp.
+  intros x y x_eq_y. destruct x_eq_y. split; intro.
+  apply WF_incl with x; hyp. apply WF_incl with y; hyp.
 Qed.
 
-Add Parametric Morphism (A : Type) : (@WF A)
-  with signature (@inclusion A) --> impl as WF_incl_mor.
+Instance WF_m' A : Proper (@inclusion A --> impl) (@WF A).
 
-Proof.
-intros x y x_eq_y h. apply WF_incl with x; hyp.
-Qed.
-
-Add Parametric Morphism (A : Type) : (@IS A)
-with signature (same_relation A) ==> (@eq (nat->A)) ==> iff as IS_mor.
-
-Proof.
-unfold IS. intros x y. rewrite rel_eq. firstorder.
-Qed.
-
-Add Parametric Morphism (A : Type) : (@EIS A)
-with signature (same_relation A) ==> iff as EIS_mor.
-
-Proof.
-unfold EIS. intuition. destruct H0. exists x0. rewrite <- H. hyp.
-destruct H0. exists x0. rewrite H. hyp.
-Qed.
+Proof. intros x y x_eq_y h. apply WF_incl with x; hyp. Qed.
 
 (***********************************************************************)
 (** inverse relation *)

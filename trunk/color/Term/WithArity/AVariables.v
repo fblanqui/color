@@ -11,11 +11,13 @@ Set Implicit Arguments.
 
 Require Import LogicUtil ASubstitution FSetUtil OrderedTypeEx NatUtil BoolUtil
   EqUtil ATrs ListUtil VecUtil.
+Require FSetAVL.
 
 (***********************************************************************)
 (** sets of variables *)
 
-Module Export VarSetUtil := FSetUtil.Make (Nat_as_OT).
+Module XSet := FSetAVL.Make Nat_as_OT.
+Module Export VarSetUtil := FSetUtil.Make XSet.
 
 Lemma eqb_beq_nat : forall x y, eqb x y = beq_nat x y.
 

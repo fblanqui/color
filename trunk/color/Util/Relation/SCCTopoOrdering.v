@@ -292,8 +292,8 @@ assert ({F (nfirst dim) x x0 = true}+{~F (nfirst dim) x x0 = true}).
 destruct (F (nfirst dim) x x0); auto.
 destruct H5. left; auto. right; auto. right; auto. right; tauto.
 
-apply rc_trans. intros. unfold RTb in *. simpl in *. ded (HF (nfirst dim)).
-destruct H. intuition. unfold transitive in *. intros. eapply H0; eauto.
+apply rc_trans. intros x y z xy yz. unfold RTb in *. ded (HF (nfirst dim)).
+destruct H. intuition. unfold transitive in *. eapply H0; eauto.
 Qed.
 
 End SCC_quotient.
