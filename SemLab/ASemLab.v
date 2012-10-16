@@ -573,7 +573,7 @@ Lemma WF_red_lab_fin : WF (red R) <-> WF (red_mod D' R').
 
 Proof.
 rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab.
-2: apply ge_compatR. apply WF_mor. rewrite Rules_enum_Decr.
+2: apply ge_compatR. apply WF_m. rewrite Rules_enum_Decr.
 rewrite lab_rules_enum. refl.
 Qed.
 
@@ -584,7 +584,7 @@ Lemma WF_red_mod_lab_fin : WF (red_mod E R) <-> WF (red_mod (D' ++ E') R').
 Proof.
 repeat rewrite <- red_mod_Rules. rewrite WF_red_mod_lab.
 2: apply ge_compatE. 2: apply ge_compatR.
-apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
+apply WF_m. rewrite Rules_app. rewrite Rules_enum_Decr.
 repeat rewrite lab_rules_enum. refl.
 Qed.
 
@@ -593,7 +593,7 @@ Lemma WF_hd_red_mod_lab_fin :
 
 Proof.
 repeat rewrite <- hd_red_mod_Rules. rewrite WF_hd_red_mod_lab.
-2: apply ge_compatE. apply WF_mor. rewrite Rules_app. rewrite Rules_enum_Decr.
+2: apply ge_compatE. apply WF_m. rewrite Rules_app. rewrite Rules_enum_Decr.
 repeat rewrite lab_rules_enum. refl.
 Qed.
 
@@ -871,7 +871,7 @@ Module SemLabProps (SL : SemLab).
     Proof.
       rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
       (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty.*)
-      apply WF_mor. apply red_mod_equiv. rewrite Decr_empty. 2: refl.
+      apply WF_m. apply red_mod_equiv. rewrite Decr_empty. 2: refl.
       rewrite empty_union_l. refl.
     Qed.
 
@@ -881,7 +881,7 @@ Module SemLabProps (SL : SemLab).
     Proof.
       rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
       (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty.*)
-      apply WF_mor. apply hd_red_mod_equiv. rewrite Decr_empty. 2: refl.
+      apply WF_m. apply hd_red_mod_equiv. rewrite Decr_empty. 2: refl.
       rewrite empty_union_l. refl.
     Qed.
 
@@ -890,7 +890,7 @@ Module SemLabProps (SL : SemLab).
     Proof.
       rewrite WF_red_lab. 2: apply ge_compatR.
       (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty. rewrite red_mod_empty. refl.*)
-      apply WF_mor.
+      apply WF_m.
       assert (a : forall x y, red Decr # x y -> x = y).
       induction 1. redtac. firstorder. refl. transitivity y; hyp.
       unfold red_mod. split; intros t u h.

@@ -14,7 +14,7 @@ Require Import Peano_dec LogicUtil EqUtil NatUtil VecUtil ATerm ASubstitution
 Require AVariables OrderedTypeEx FSetUtil FMapUtil.
 
 Module VSF := AVariables.VarSetUtil.XSetFacts.
-Module VS  := AVariables.VarSetUtil.XSet.
+Module VS  := AVariables.XSet.
 
 Module VMU := FMapUtil.Make (OrderedTypeEx.Nat_as_OT).
 Module VMF := VMU.XMapFacts.

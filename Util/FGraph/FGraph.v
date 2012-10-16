@@ -8,13 +8,17 @@ finite graphs
 *)
 
 Require Import ListUtil FSetUtil FMapUtil OrderedType RelUtil LogicUtil.
+Require FSetAVL.
 
 Set Implicit Arguments.
 
 Module Make (X : OrderedType).
 
-Module Export S := FSetUtil.Make X.
+Module XSet := FSetAVL.Make X.
+Module Export S := FSetUtil.Make XSet.
 Module Export M := FMapUtil.Make X.
+
+Module R := RelUtil.
 
 Import X.
 
@@ -689,11 +693,11 @@ apply XSetProps.fold_rec_weak; clear s.
 (* [=] *)
 intros s t g st i. rewrite <- st. hyp.
 (* empty *)
-rewrite succ_empty. rewrite union_empty_l. refl.
+rewrite succ_empty. rewrite R.union_empty_l. refl.
 (* add *)
 intros z g s nzs e. rewrite rel_add_edge. rewrite e.
-rewrite RelUtil.union_assoc. rewrite union_commut with (R:=rel g0).
-rewrite <- RelUtil.union_assoc. apply RelUtil.union_m. 2: refl.
+rewrite R.union_assoc. rewrite union_commut with (R:=rel g0).
+rewrite <- R.union_assoc. apply R.union_m. 2: refl.
 rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
 rewrite add_iff. firstorder.
 Qed.
@@ -716,9 +720,9 @@ Lemma rel_list_fold_left_add_edge : forall x l g0,
   fold_left (add_edge' x) l g0 == succ_list x l U g0.
 
 Proof.
-induction l; simpl; intro g. rewrite succ_list_nil, union_empty_l. refl.
+induction l; simpl; intro g. rewrite succ_list_nil, R.union_empty_l. refl.
 rewrite IHl, succ_list_cons. unfold add_edge'. rewrite rel_add_edge.
-rewrite union_commut with (R:=rel g). rewrite <- RelUtil.union_assoc.
+rewrite union_commut with (R:=rel g). rewrite <- R.union_assoc.
 rewrite union_commut with (R:=id x a). refl.
 Qed.
 

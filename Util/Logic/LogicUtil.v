@@ -1,30 +1,43 @@
 (**
+
 CoLoR, a Coq library on rewriting and termination.
 See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-02-17
 - Pierre-Yves Strub, 2009-04-09
 
-general lemmas and tactics
+* Basic lemmas and tactics
 *)
 
 Set Implicit Arguments.
 
 (***********************************************************************)
-(** tactics *)
+(** Abbreviations of some basic Coq tactics. *)
 
 Ltac hyp := assumption.
-
 Ltac refl := reflexivity.
-
+Ltac sym := symmetry.
+Ltac trans x := transitivity x.
 Ltac contr := contradiction.
+Ltac discr := intros; discriminate.
+(*FIXME: replace by revert*)Ltac gen h := generalize h; clear h.
+Ltac ded t := generalize t; intro.
+Ltac fo := firstorder.
 
-Ltac gen h := generalize h; clear h.
+(*FIXME: remove?*)
+(***********************************************************************)
+(** Re-definition of case_eq to automatically do intros after. *)
 
-Ltac ded h := generalize h; intro.
+Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
+
+Ltac case_eq e := coq_case_eq e; intros.
+
+(***********************************************************************)
+(** Tactics for decomposing disjunctions and conjonctions. *)
 
 Ltac decomp h := decompose [and or ex] h; clear h.
 
+(*REMOVE? can be replaced by decomp?*)
 Ltac decomp_hyp H := 
   match type of H with
   | _ /\ _ => decompose [and] H
@@ -39,7 +52,9 @@ Ltac decomp_hyps := repeat
     | H: _ |- _ => decomp_hyp H
   end.
 
-Ltac discr := intros; discriminate.
+(***********************************************************************)
+(** Tactic that can be used to conclude when there is an assumption of
+the form [x <> x]. *)
 
 Ltac irrefl := intros;
   match goal with
@@ -53,17 +68,31 @@ Ltac irrefl := intros;
     | _ : ?x <> ?y, _ : ?z = ?x, _ : ?y = ?z |- _ => subst y; irrefl
   end.
 
+(***********************************************************************)
+(** Normalization tactics (used in Rainbow). *)
+
 Ltac norm e :=
   let x := fresh in set (x := e); vm_compute in x; subst x.
 
 Ltac norm_in H e :=
   let x := fresh in set (x := e) in H; vm_compute in x; subst x.
 
+Ltac check_eq := vm_compute; refl.
+
 (*FIXME: Tactic Notation "norm" constr(e) "in" ident(H) := norm_in H e.*)
 
-Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
+(*REMOVE since it can be replaced by rewrite R1, R2, ...*)
+(***********************************************************************)
+(** Rewriting tactics. *)
 
-Ltac case_eq e := coq_case_eq e; intros.
+Tactic Notation "rwn" constr(R1) constr(R2) :=
+  rewrite R1; rewrite R2.
+
+Tactic Notation "rwn" constr(R1) constr(R2) constr(R3) :=
+  rewrite R1; rewrite R2; rewrite R3.
+
+(***********************************************************************)
+(** Other tactics. *)
 
 Ltac done :=
   trivial; hnf; intros; solve
@@ -75,69 +104,69 @@ Ltac done :=
 
 Tactic Notation "by" tactic(T) := (T; done) .
 
-Tactic Notation "rwn" constr(R1) constr(R2) :=
-  rewrite R1; rewrite R2.
-
-Tactic Notation "rwn" constr(R1) constr(R2) constr(R3) :=
-  rewrite R1; rewrite R2; rewrite R3.
-
-Ltac check_eq := vm_compute; refl.
-
 (***********************************************************************)
-(** basic meta-theorems *)
-
-Section meta.
-
-Lemma and_assoc : forall P Q R, P /\ Q /\ R <-> (P /\ Q) /\ R.
-
-Proof.
-intros. tauto.
-Qed.
+(** Basic theorems on (intuitionist) propositional calculus. *)
 
 Lemma contraposee_inv : forall P Q : Prop, (P -> Q) -> ~Q -> ~P.
 
-Proof.
-intros. intro. apply H0. exact (H H1).
-Qed.
+Proof. fo. Qed.
 
-Variables (A : Type) (P : A -> Prop).
+Lemma and_assoc : forall P Q R, P /\ Q /\ R <-> (P /\ Q) /\ R.
 
-Lemma not_exists_imply_forall_not : ~(exists x, P x) -> forall x, ~P x.
+Proof. fo. Qed.
 
-Proof.
-intros. intro. apply H. exists x. exact H0.
-Qed.
+Lemma or_sym : forall P Q, P \/ Q <-> Q \/ P.
 
-Lemma forall_not_imply_not_exists : (forall x, ~P x) -> ~(exists x, P x).
+Proof. fo. Qed.
 
-Proof.
-intros. intro. destruct H0. exact (H x H0).
-Qed.
+Lemma and_idem : forall P, P /\ P <-> P.
 
-Lemma not_exists_eq : ~(exists x, P x) <-> (forall x, ~P x).
+Proof. fo. Qed.
 
-Proof.
-split. apply not_exists_imply_forall_not. apply forall_not_imply_not_exists.
-Qed.
+Lemma and_idem_and_l : forall P Q, P /\ P /\ Q <-> P /\ Q.
 
-Lemma exists_not_imply_not_forall : (exists x, ~P x) -> ~(forall x, P x).
+Proof. fo. Qed.
 
-Proof.
-intros. destruct H. intro. ded (H0 x). contradiction.
-Qed.
+Lemma and_idem_and_r : forall P Q, Q /\ P /\ P <-> Q /\ P.
+
+Proof. fo. Qed.
 
 Lemma iff_and : forall P Q P' Q',
   ((P <-> P') /\ (Q <-> Q')) -> ((P /\ Q) <-> (P' /\ Q')).
 
-Proof.
-tauto.
-Qed.
+Proof. fo. Qed.
 
 Lemma iff_forall : forall A (P Q : A->Prop),
   (forall x, P x <-> Q x) -> ((forall x, P x) <-> (forall x, Q x)).
 
-Proof.
-firstorder.
-Qed.
+Proof. fo. Qed.
 
-End meta.
+(** Tactic removing identical propositions in a conjunction. *)
+
+Ltac and_idem := repeat rewrite and_assoc;
+  repeat (rewrite and_idem_and_l || rewrite and_idem_and_r || rewrite and_idem).
+
+(***********************************************************************)
+(** Basic theorems on (intuitionist) predicate calculus. *)
+
+Section pred.
+
+  Variables (A : Type) (P : A -> Prop).
+
+  Lemma not_exists_imply_forall_not : ~(exists x, P x) -> forall x, ~P x.
+
+  Proof. fo. Qed.
+
+  Lemma forall_not_imply_not_exists : (forall x, ~P x) -> ~(exists x, P x).
+
+  Proof. fo. Qed.
+
+  Lemma not_exists_eq : ~(exists x, P x) <-> (forall x, ~P x).
+
+  Proof. fo. Qed.
+
+  Lemma exists_not_imply_not_forall : (exists x, ~P x) -> ~(forall x, P x).
+
+  Proof. fo. Qed.
+
+End pred.

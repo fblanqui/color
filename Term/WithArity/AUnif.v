@@ -70,7 +70,7 @@ Lemma vars_eqns_app : forall l m,
   vars_eqns (l ++ m) [=] union (vars_eqns l) (vars_eqns m).
 
 Proof.
-induction l; simpl; intros. symmetry. apply union_empty_left.
+induction l; simpl; intros. symmetry. apply union_empty_l.
 transitivity (union (vars_eqn a) (union (vars_eqns l) (vars_eqns m))).
 apply union_m. refl. apply IHl. symmetry. apply union_assoc.
 Qed.
@@ -80,7 +80,7 @@ Lemma vars_eqns_combine : forall n (us vs : terms n),
   [=] union (vars_vec vs) (vars_vec us).
 
 Proof.
-induction us; simpl; intros. VOtac. simpl. symmetry. apply union_empty_left.
+induction us; simpl; intros. VOtac. simpl. symmetry. apply union_empty_l.
 VSntac vs. clear H. set (x := Vhead vs). set (ts := Vtail vs). simpl.
 unfold vars_eqn. simpl.
 transitivity
