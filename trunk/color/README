@@ -1,7 +1,7 @@
 CoLoR, a Coq library on rewriting and termination
 -------------------------------------------------
 
-The aim of this Coq library (Coq is a proof assistant developped at
+The aim of this Coq library (Coq is a proof assistant developed at
 INRIA available at http://coq.inria.fr/) is to provide the necessary
 formal basis for certifying the termination proof candidates searched
 and built by tools like AProVE, TTT2, CiME, etc.
@@ -57,14 +57,14 @@ http://gforge.inria.fr/projects/color/.
 
 The following scripts provide some statistics:
 
-- color_stat: provides the number of coq lines (including newlines and
+- color_stat: provides the number of Coq lines (including newlines and
 comments) for the various kinds of formalizations (mathematical
 structures, data structures, etc.)
 
 - coq_stat [<directory>] (default is .): provides the number of
 definitions, lemmas, etc.
 
-- coq_contribs <directory>: run coq_stat on every coq contrib
+- coq_contribs <directory>: run coq_stat on every Coq contrib
 
 The directory Coccinelle is not part of CoLoR. It contains an
 adaptation of the Coccinelle library which is used in

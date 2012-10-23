@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------
-12-10-23: NEW RELEASE (SVN revision ?)
+12-10-23: NEW RELEASE (SVN revision 1751)
 
 - Term/Lambda/LTerm: pure lambda-terms with names variables
 - Term/Lambda/LSubs: higher-order simultaneous substitutions
