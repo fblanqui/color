@@ -1,4 +1,15 @@
 -----------------------------------------------------------------------------
+12-10-23: NEW RELEASE (SVN revision ?)
+
+- Term/Lambda/LTerm: pure lambda-terms with names variables
+- Term/Lambda/LSubs: higher-order simultaneous substitutions
+- Term/Lambda/LAlpha: alpha-equivalence
+- Term/Lambda/LBeta: beta-reduction
+- Term/Lambda/LComp: axiomatic version of Tait-Girard computability
+- Term/Lambda/LSimple: typing relation with simple types
+- Term/Lambda/LCompSimpl: termination of beta-reduction on simply-typed terms
+
+-----------------------------------------------------------------------------
 12-08-22: NEW RELEASE (SVN revision 1743)
 
 12-08-22: [Blanqui]
@@ -49,7 +60,7 @@ quasi-ordering on symbols instead of an ordering
 
 09-07-08: [Blanqui]
 - SemLab/AFlatCont: flat context closure
-- SemLab/ARootLab: root labelling
+- SemLab/ARootLab: root labeling
 - MannaNess/ARedPair: rule elimination using reduction pairs,
   functors building a reduction pair from a monotone algebra
   or an argument filtering
@@ -58,7 +69,7 @@ quasi-ordering on symbols instead of an ordering
 - Util/Set/SetUtil: infinite sets
 - Term/WithArity/ARules: rewriting with infinite sets of rules
 - Term/WithArity/AMorphism: extended to infinite sets of rules
-- SemLab/ASemLab: theorem of semantic labelling (with ordered labels)
+- SemLab/ASemLab: theorem of semantic labeling (with ordered labels)
 
 09-06-19: [Blanqui]
 - simplified all function definitions on terms f such that the corresponding
@@ -79,7 +90,7 @@ quasi-ordering on symbols instead of an ordering
 09-05-11: [Blanqui,Wang,Zhang]
 - NonTermin/ALoop: definition and correctness proof of a boolean function
   checking that there is a loop in a TRS
-- NatUtil: unicity of Euclidian division
+- NatUtil: unicity of Euclidean division
 
 09-05-07: [Blanqui]
 - Term/WithArity/AReduct: list of reducts of a term and proof that
@@ -93,7 +104,7 @@ quasi-ordering on symbols instead of an ordering
 
 09-04-29: [Blanqui]
 - added (ordered) semi-rings, matrices and matrix interpretations on BigN
-- removed antisymmetry and irreflexivity assumptions for ordered semirings
+- removed antisymmetry and irreflexivity assumptions for ordered semi-rings
 
 09-04-24: [Koprowski]
 - added a framework for checking whether a given certificate is a correct
@@ -199,15 +210,15 @@ added support for boolean reasoning and boolean functions testing equality
 07-02-16:
 - Simplification of the compilation procedure [Blanqui]
 
-- DP/ADPGraph: proof of the dp criterion based on cycles [Blanqui]
+- DP/ADPGraph: proof of the DP criterion based on cycles [Blanqui]
 
-- Util/Relation/Union: union of two wellfounded relations [Blanqui]
+- Util/Relation/Union: union of two well-founded relations [Blanqui]
 - Util/Relation/SN: new general lemmas on termination [Blanqui]
 - Util/Relation/Iter: iteration of a relation
 
 - Util/Relation/Total: total completion [Le Roux]
 - Util/Relation/RelDec: decidability of relations [Le Roux]
-- Util/Relation/Path: paths and subrelations [Le Roux]
+- Util/Relation/Path: paths and sub-relations [Le Roux]
 
 - Util/List/ListOccur: number of occurrences and pigeon-hole principle [Blanqui]
 - Util/List/ListRepeatFree: smallest prefix without duplication [Blanqui]
@@ -278,7 +289,7 @@ added support for boolean reasoning and boolean functions testing equality
 - Util: additions in Multiset
 
 05-09-19:
-- Licence: CeCILL version 2
+- License: CeCILL version 2
 - Util/Multiset: finite multisets and proof that the multiset extension
   of an ordering preserves well-foundedness [Koprowski]
 - Util: creation of Bool/BoolUtil, Pair/PairUtil, Logic/EqUtil
@@ -301,4 +312,4 @@ added support for boolean reasoning and boolean functions testing equality
 - Term/WithArity: library on algebraic terms with symbols of fixed arity
 - PolyInt: proof of the termination criterion based on polynomial
   interpretations [Hinderer]
-- DP: proof of the fundamental dependancy pairs theorem [Blanqui]
+- DP: proof of the fundamental dependency pairs theorem [Blanqui]
