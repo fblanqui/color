@@ -18,12 +18,14 @@ Among other things, it includes:
 	- Multiset: finite multisets
 	- Polynom: integer polynomials with multiple variables
 	- Matrix: matrices over an (ordered) semi-ring
+	- FGraph: finite graphs
 
 * libraries on term structures in Term directory:
 	- Varyadic: varyadic terms
 	- WithArity: algebraic terms with symbols of fixed arity
 	- SimpleType: simply typed lambda-terms with de Bruijn indices
 	- String: words
+	- Lambda: lambda-terms with explicit alpha-equivalence
 
 * transformation techniques:
 	- DP: dependency pairs transformation and graph decomposition

@@ -39,4 +39,5 @@ universal algebra, first-order terms, varyadic terms, simply-typed lambda-terms,
 ring, semi-ring, dependency pair, dependency graph, relation, classical logic,
 ordered ring, ordered semi-ring, noetherian, root labelling,
 flat context closure, loop, finitely branching, reducts, dependent choice,
-usable rule, subterm criterion, finite graph
+usable rule, subterm criterion, finite graph, alpha-equivalence,
+transitive closure, Tait, Girard, reductibility, computability predicate
