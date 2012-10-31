@@ -114,14 +114,14 @@ Section proj.
 
     Proof.
       intros Hrefl H. unfold context_closed, proj_ord. induction c; intros.
-      simpl. hyp. simpl. case_eq (pi f). destruct s as [k h].
-      repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
+      simpl. hyp. simpl. destruct (pi f) as [[k h]|].
+      rewrite !Vnth_cast, !Vnth_app.
       case (le_gt_dec i k); intro. case (eq_nat_dec i k); intro.
-      subst. repeat rewrite Vnth_cons_head; try omega. apply IHc. hyp.
-      generalize (Vnth_app_aux (S j) (Vnth_cast_aux e h) l).
-      assert (k-i=S(k-i-1)). omega. rewrite H2. intro.
-      repeat rewrite Vnth_cons. apply Hrefl. apply Hrefl.
-      repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
+      subst. rewrite !Vnth_cons_head; try omega. apply IHc. hyp.
+      gen (Vnth_app_aux (S j) (Vnth_cast_aux e h) l).
+      assert (k-i=S(k-i-1)). omega. rewrite H1. intro.
+      rewrite !Vnth_cons. apply Hrefl. apply Hrefl.
+      rewrite !Vmap_cast, !Vmap_app. simpl.
       set (d := Cont f e (Vmap proj t) Hole (Vmap proj t0)).
       change (succ (fill d (proj (fill c t1))) (fill d (proj (fill c t2)))).
       apply H. apply IHc. hyp.
@@ -288,7 +288,9 @@ Section pi.
   Definition build_pi : forall f : Sig, option {k | k < arity f}.
 
   Proof.
-    intro f. case_eq (raw_pi f). exact (Some (mk_proj (hyp H))). exact None.
+    intro f. coq_case_eq (raw_pi f).
+    intros n H. exact (Some (mk_proj (hyp H))).
+    intro H. exact None.
   Defined.
 
 End pi.
