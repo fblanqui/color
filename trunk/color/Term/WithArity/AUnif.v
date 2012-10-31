@@ -70,9 +70,9 @@ Lemma vars_eqns_app : forall l m,
   vars_eqns (l ++ m) [=] union (vars_eqns l) (vars_eqns m).
 
 Proof.
-induction l; simpl; intros. symmetry. apply union_empty_l.
-transitivity (union (vars_eqn a) (union (vars_eqns l) (vars_eqns m))).
-apply union_m. refl. apply IHl. symmetry. apply union_assoc.
+induction l; simpl; intros. sym. apply union_empty_l.
+trans (union (vars_eqn a) (union (vars_eqns l) (vars_eqns m))).
+apply union_m. refl. apply IHl. sym. apply union_assoc.
 Qed.
 
 Lemma vars_eqns_combine : forall n (us vs : terms n),
@@ -80,10 +80,10 @@ Lemma vars_eqns_combine : forall n (us vs : terms n),
   [=] union (vars_vec vs) (vars_vec us).
 
 Proof.
-induction us; simpl; intros. VOtac. simpl. symmetry. apply union_empty_l.
+induction us; simpl; intros. VOtac. simpl. sym. apply union_empty_l.
 VSntac vs. clear H. set (x := Vhead vs). set (ts := Vtail vs). simpl.
 unfold vars_eqn. simpl.
-transitivity
+trans
   (union (union (vars x) (vars h)) (union (vars_vec ts) (vars_vec us))).
 apply union_m. refl. apply IHus. Equal_tac; RelUtil.union.
 Qed.
@@ -93,22 +93,20 @@ Lemma mem_vars_sub_single : forall n (u : term) x v,
   mem n (vars (sub (single x v) u)) = false.
 
 Proof.
-intros. transitivity (mem n
+intros. trans (mem n
   (if mem x (vars u) then union (vars v) (remove x (vars u)) else vars u)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem x (vars u)). mem. rewrite H0. rewrite H. refl.
-hyp.
+coq_case_eq (mem x (vars u)); intro H1. mem. rewrite H0, H. refl. hyp.
 Qed.
 
 Lemma mem_vars_sub_single' : forall n (u v : term),
   mem n (vars v) = false -> mem n (vars (sub (single n v) u)) = false.
 
 Proof.
-intros. transitivity (mem n
+intros. trans (mem n
   (if mem n (vars u) then union (vars v) (remove n (vars u)) else vars u)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem n (vars u)). mem. rewrite H0. rewrite H. refl.
-hyp.
+coq_case_eq (mem n (vars u)); intro H0. mem. rewrite H0, H. refl. hyp.
 Qed.
 
 Lemma vars_eqn_sub : forall x v e,
@@ -118,23 +116,23 @@ Lemma vars_eqn_sub : forall x v e,
 
 Proof.
 intros. destruct e as [l r]. unfold vars_eqn, eqn_sub. simpl.
-transitivity (union
+trans (union
   (if mem x (vars l) then union (vars v) (remove x (vars l)) else vars l)
   (if mem x (vars r) then union (vars v) (remove x (vars r)) else vars r)).
 apply union_m; apply vars_single. mem.
-case_eq (mem x (vars l)); case_eq (mem x (vars r)); bool.
-transitivity (union (vars v) (union (remove x (vars l)) (remove x (vars r)))).
-apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
-transitivity (union (vars v) (union (remove x (vars l)) (vars r))).
+coq_case_eq (mem x (vars l)); coq_case_eq (mem x (vars r)); intros H H0; bool.
+trans (union (vars v) (union (remove x (vars l)) (remove x (vars r)))).
+apply union_idem_3. apply union_m. refl. sym. apply remove_union.
+trans (union (vars v) (union (remove x (vars l)) (vars r))).
 apply union_assoc. apply union_m. refl.
-transitivity (union (remove x (vars l)) (remove x (vars r))).
-apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
-symmetry. apply remove_union.
-transitivity (union (vars v) (union (vars l) (remove x (vars r)))).
+trans (union (remove x (vars l)) (remove x (vars r))).
+apply union_m. refl. sym. apply remove_equal. apply mem_4. hyp.
+sym. apply remove_union.
+trans (union (vars v) (union (vars l) (remove x (vars r)))).
 apply union_sym_2. apply union_m. refl.
-transitivity (union (remove x (vars l)) (remove x (vars r))).
-apply union_m. symmetry. apply remove_equal. apply mem_4. hyp. refl.
-symmetry. apply remove_union. refl.
+trans (union (remove x (vars l)) (remove x (vars r))).
+apply union_m. sym. apply remove_equal. apply mem_4. hyp. refl.
+sym. apply remove_union. refl.
 Qed.
 
 Lemma vars_eqns_subs : forall x v l,
@@ -144,25 +142,26 @@ Lemma vars_eqns_subs : forall x v l,
 
 Proof.
 induction l; simpl; intros. refl. mem.
-transitivity (union
+trans (union
   (if mem x (vars_eqn a) then union (vars v) (remove x (vars_eqn a))
     else vars_eqn a) (if mem x (vars_eqns l)
       then union (vars v) (remove x (vars_eqns l)) else vars_eqns l)).
 apply union_m. apply vars_eqn_sub. exact IHl.
-case_eq (mem x (vars_eqn a)); case_eq (mem x (vars_eqns l)); bool.
-transitivity
+coq_case_eq (mem x (vars_eqn a)); coq_case_eq (mem x (vars_eqns l));
+  intros H H0; bool.
+trans
   (union (vars v) (union (remove x (vars_eqn a)) (remove x (vars_eqns l)))).
-apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
-transitivity (union (vars v) (union (remove x (vars_eqn a)) (vars_eqns l))).
+apply union_idem_3. apply union_m. refl. sym. apply remove_union.
+trans (union (vars v) (union (remove x (vars_eqn a)) (vars_eqns l))).
 apply union_assoc. apply union_m. refl.
-transitivity (union (remove x (vars_eqn a)) (remove x (vars_eqns l))).
-apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
-symmetry. apply remove_union.
-transitivity (union (vars v) (union (vars_eqn a) (remove x (vars_eqns l)))).
+trans (union (remove x (vars_eqn a)) (remove x (vars_eqns l))).
+apply union_m. refl. sym. apply remove_equal. apply mem_4. hyp.
+sym. apply remove_union.
+trans (union (vars v) (union (vars_eqn a) (remove x (vars_eqns l)))).
 apply union_sym_2. apply union_m. refl.
-transitivity (union (remove x (vars_eqn a)) (remove x (vars_eqns l))).
-apply union_m. symmetry. apply remove_equal. apply mem_4. hyp. refl.
-symmetry. apply remove_union. refl.
+trans (union (remove x (vars_eqn a)) (remove x (vars_eqns l))).
+apply union_m. sym. apply remove_equal. apply mem_4. hyp. refl.
+sym. apply remove_union. refl.
 Qed.
 
 (***********************************************************************)
@@ -301,16 +300,14 @@ Lemma notin_map : forall x t, mem x (vars t) = false ->
 
 Proof.
 induction l; simpl. trivial. destruct a. unfold notin_eqn. simpl. intuition.
-transitivity (mem x
+trans (mem x
   (if mem x (vars t1) then union (vars t0) (remove x (vars t1)) else vars t1)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem x (vars t1)). mem. rewrite H. rewrite H0.
-refl. hyp.
-transitivity (mem x
+coq_case_eq (mem x (vars t1)); intro H0. mem. rewrite H, H0. refl. hyp.
+trans (mem x
   (if mem x (vars t2) then union (vars t0) (remove x (vars t2)) else vars t2)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem x (vars t2)). mem. rewrite H. rewrite H0.
-refl. hyp.
+coq_case_eq (mem x (vars t2)); intro H0. mem. rewrite H, H0. refl. hyp.
 Qed.
 
 Lemma lforall_notin_eqn : forall x t, mem x (vars t) = false ->
@@ -320,16 +317,14 @@ Lemma lforall_notin_eqn : forall x t, mem x (vars t) = false ->
 Proof.
 induction l; simpl; intuition. destruct a. unfold eqn_sub. simpl.
 unfold notin_eqn. simpl. unfold notin_eqn in H1. simpl in H1. intuition.
-transitivity (mem x
+trans (mem x
   (if mem n (vars t1) then union (vars t0) (remove n (vars t1)) else vars t1)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem n (vars t1)). mem. rewrite H. rewrite H3. refl.
-hyp.
-transitivity (mem x
+coq_case_eq (mem n (vars t1)); intro H1. mem. rewrite H, H3. refl. hyp.
+trans (mem x
   (if mem n (vars t2) then union (vars t0) (remove n (vars t2)) else vars t2)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem n (vars t2)). mem. rewrite H. rewrite H4. refl.
-hyp.
+coq_case_eq (mem n (vars t2)); intro H1. mem. rewrite H, H4. refl. hyp.
 Qed.
 
 Lemma lforall_notin_r : forall x t l' l,
@@ -498,9 +493,10 @@ intros. simpl. unfold vars_eqn. simpl. apply subset_cardinal_lt with x.
 apply subset_trans with
   (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
     else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
-case_eq (mem x (vars_eqns l)); Subset_tac. In_intro. unfold not. intro.
+coq_case_eq (mem x (vars_eqns l)); intro H0; Subset_tac. set_iff. tauto.
+unfold not. intro.
 rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
-case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
+coq_case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
 contradiction. absurd (E.eq x x). hyp. refl.
 ded (mem_4 _ _ H0). contradiction.
 Qed.
@@ -514,9 +510,10 @@ intros. simpl. unfold vars_eqn. simpl. apply subset_cardinal_lt with x.
 apply subset_trans with
   (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
     else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
-case_eq (mem x (vars_eqns l)); Subset_tac. In_intro. unfold not. intro.
+coq_case_eq (mem x (vars_eqns l)); intro H0; Subset_tac. set_iff. tauto.
+unfold not. intro.
 rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
-case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
+coq_case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
 contradiction. absurd (E.eq x x). hyp. refl.
 ded (mem_4 _ _ H0). contradiction.
 Qed.
@@ -537,7 +534,7 @@ unfold inclusion, transp, nb_vars_eq, nb_vars_lt. intros. do 2 destruct H.
 rewrite H. hyp.
 apply wf_WF_transp. exact wf_sizes_lt.
 unfold Relation_Definitions.transitive, nb_vars_eq. intros.
-transitivity (cardinal (vars_eqns y)); hyp.
+trans (cardinal (vars_eqns y)); hyp.
 apply wf_WF_transp. exact wf_nb_vars_lt.
 Qed.
 
@@ -634,13 +631,16 @@ destruct t0; destruct t1.
 simpl. mem. case_beq_nat n n0; unfold Lt'. apply Lt_cons.
 apply Lt_eqns_subs_r. simpl. mem. hyp.
 (* var-fun *)
-unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec t0)); unfold Lt'.
+unfold step. rewrite vars_fun. simpl.
+coq_case_eq (mem n (vars_vec t0)); intro H0; unfold Lt'.
 trivial. apply Lt_eqns_subs_l. hyp.
 (* fun-var *)
-unfold step. rewrite vars_fun. simpl. case_eq (mem n (vars_vec t0)); unfold Lt'.
+unfold step. rewrite vars_fun. simpl.
+coq_case_eq (mem n (vars_vec t0)); intro H0; unfold Lt'.
 trivial. apply Lt_eqns_subs_r. hyp.
 (* fun-fun *)
-simpl. case_eq (beq_symb f f0); unfold Lt'. apply Lt_combine. hyp. trivial.
+simpl. coq_case_eq (beq_symb f f0); intro H0; unfold Lt'.
+apply Lt_combine. hyp. trivial.
 simpl. discr.
 Qed.
 
@@ -659,7 +659,7 @@ Lemma wf_iter_step : forall p, exists k, solved (iter_step k p) = true.
 Proof.
 intro. ded (wf_Lt' p). elim H; clear H p; intros.
 destruct x. 2: exists 0; refl. destruct p. destruct e. exists 0; refl.
-set (p := Some (s, e::e0)). case_eq (solved (step p)).
+set (p := Some (s, e::e0)). coq_case_eq (solved (step p)); intro H1.
 exists 1. unfold iter_step. hyp.
 destruct (H0 (step p) (Lt_step (solved_inv H1))). exists (S x).
 simpl. rewrite <- iter_step_commut. hyp.
@@ -685,7 +685,7 @@ apply notin_map. simpl. mem. hyp.
 apply lforall_notin_r. hyp.
 (* var-fun *)
 Opaque vars. simpl. set (u := Fun f t0). intuition.
-case_eq (mem n (vars u)); simpl; intuition.
+coq_case_eq (mem n (vars u)); simpl; intuition.
 eapply lforall_notin_solved_eqn_1'. hyp. apply H1.
 eapply solved_eqns_wf_map. hyp. hyp. apply H1.
 apply lforall_notin_vars_solved_eqn_2 with e0. hyp.
@@ -693,7 +693,7 @@ apply notin_map. hyp.
 apply lforall_notin_l. hyp.
 (* fun-var *) (* about the same proof *)
 simpl. set (u := Fun f t0). intuition.
-case_eq (mem n (vars u)); simpl; intuition.
+coq_case_eq (mem n (vars u)); simpl; intuition.
 eapply lforall_notin_solved_eqn_1. hyp. apply H1.
 eapply solved_eqns_wf_map'. hyp. hyp. apply H1.
 apply lforall_notin_vars_solved_eqn_2' with e0. hyp.
@@ -774,10 +774,10 @@ Lemma is_sol_eqns_map : forall s x u, s x = sub s u ->
 Proof.
 induction l; simpl. intuition. destruct a. unfold is_sol_eqn. simpl.
 intuition. do 2 rewrite sub_sub in H3.
-transitivity (sub (sub_comp s (single x u)) t0). symmetry.
+trans (sub (sub_comp s (single x u)) t0). sym.
 apply sub_comp_single. hyp. rewrite H3. apply sub_comp_single. hyp.
-do 2 rewrite sub_sub. transitivity (sub s t0). apply sub_comp_single. hyp.
-rewrite H3. symmetry. apply sub_comp_single. hyp.
+do 2 rewrite sub_sub. trans (sub s t0). apply sub_comp_single. hyp.
+rewrite H3. sym. apply sub_comp_single. hyp.
 Qed.
 
 Lemma lforall_is_sol_solved_eqn : forall s x u, s x = sub s u -> forall l,
@@ -789,7 +789,7 @@ induction l; simpl. intuition. destruct a. intuition.
 revert H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
 intro. rewrite H3. apply sub_comp_single. hyp.
 revert H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
-intro. rewrite H3. symmetry. apply sub_comp_single. hyp.
+intro. rewrite H3. sym. apply sub_comp_single. hyp.
 Qed.
 
 Lemma lforall_is_sol_eqn_combine : forall s n (v v0 : terms n),
@@ -816,7 +816,7 @@ rewrite is_sol_eqns_map in H2; auto.
 (* var-fun *)
 Opaque vars. simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst.
 simpl snd.
-simpl sub at 1. case_eq (mem n (vars u)). intuition; try contradiction.
+simpl sub at 1. coq_case_eq (mem n (vars u)). intuition; try contradiction.
 ded (wf_term_var H0 H). discriminate. unfold is_sol, is_sol_solved_eqns.
 simpl lforall. unfold is_sol_solved_eqn at 2. simpl fst. simpl snd. intuition.
 rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
@@ -824,7 +824,7 @@ rewrite lforall_is_sol_solved_eqn in H3; hyp.
 rewrite is_sol_eqns_map in H2; hyp.
 (* fun-var *) (* same proof *)
 simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst. simpl snd.
-simpl sub at 2. case_eq (mem n (vars u)). intuition; try contradiction.
+simpl sub at 2. coq_case_eq (mem n (vars u)). intuition; try contradiction.
 symmetry in H0. ded (wf_term_var H0 H). discriminate.
 unfold is_sol, is_sol_solved_eqns.
 simpl lforall. unfold is_sol_solved_eqn at 2. simpl fst. simpl snd. intuition.
@@ -857,7 +857,7 @@ Proof.
 induction l; simpl. auto. destruct a.
 unfold notin_solved_eqn at 1, is_sol_solved_eqn. simpl. intuition.
 unfold extend at 1. case_beq_nat n0 n. change (n0<>n0) in H0. irrefl.
-rewrite H. symmetry. apply sub_extend_notin. rewrite in_vars_mem.
+rewrite H. sym. apply sub_extend_notin. rewrite in_vars_mem.
 rewrite H4. discr.
 Qed.
 
@@ -964,7 +964,7 @@ Proof.
 induction l; simpl. auto. set (s := subst_of_solved_eqns l). destruct a.
 unfold is_sol_solved_eqn. simpl. intuition. unfold extend at 1. simpl.
 rewrite (beq_refl beq_nat_ok). rewrite sub_extend_notin.
-symmetry. apply sub_eq_id'. intros.
+sym. apply sub_eq_id'. intros.
 ded (lforall_notin_vars_solved_eqn_dom H3 H4).
 ded (dom_subst_of_solved_eqns H5). hyp.
 rewrite in_vars_mem. rewrite H0. discr.
@@ -1007,7 +1007,8 @@ induction l. refl. destruct a. unfold is_sol_solved_eqns. simpl.
 unfold is_sol_solved_eqn at 1. simpl. intuition. unfold extend.
 case_beq_nat x n. rewrite H. apply sub_eq'. intros. unfold theta. simpl. mem.
 case_beq_nat x x0; simpl. rewrite H1 in H4. discriminate.
-case_eq (mem x0 (dom l)). ded (lforall_notin_vars_solved_eqn_mem H5 H8).
+coq_case_eq (mem x0 (dom l)); intro H8.
+ded (lforall_notin_vars_solved_eqn_mem H5 H8).
 rewrite H4 in H9. discriminate. refl. rewrite H6. apply sub_eq'. intros.
 unfold theta. simpl. mem. case_beq_nat n x0. simpl.
 ded (lforall_notin_solved_eqn_mem H0 H4). rewrite H7 in H8. discriminate.
@@ -1065,9 +1066,9 @@ Lemma iter_step_complete2 : forall p, problem_wf p ->
 
 Proof.
 intros. destruct (wf_iter_step p) as [k]. exists k.
-case_eq (iter_step k p). 2: refl. rewrite H2 in H1. destruct p0. destruct e.
-ded (iter_step_Some H H2). ded (H0 (subst_of_solved_eqns s)). contradiction.
-discr.
+coq_case_eq (iter_step k p). 2: refl. intros p0 H2. rewrite H2 in H1.
+destruct p0. destruct e. ded (iter_step_Some H H2).
+ded (H0 (subst_of_solved_eqns s)). contradiction. discr.
 Qed.
 
 (***********************************************************************)
@@ -1095,7 +1096,7 @@ Proof.
 intros. set (s := fun x => match In_dec x (vars t1) with
   | left _ => s1 x | right _ => s2 x end). exists s.
 unfold is_sol, mk_problem. simpl. intuition. unfold is_sol_eqn. simpl.
-transitivity (sub s1 t1). apply sub_eq. intros. unfold s.
+trans (sub s1 t1). apply sub_eq. intros. unfold s.
 case (In_dec x (vars t1)). refl. contradiction.
 rewrite H0. apply sub_eq. intros. unfold s. case (In_dec x (vars t1)).
 intro. apply False_rec. exact (H x i H1). refl.

@@ -496,7 +496,8 @@ Section Matching.
     matches u t = Some s -> ~In x (ATerm.vars u) -> s x = Var x.
   Proof.
     intros u t s x. unfold matches.
-    case_eq (matches_r u t (VMU.XMap.empty term)). inversion H0.
+    coq_case_eq (matches_r u t (VMU.XMap.empty term)).
+    intros t0 H H0 H1. inversion H0.
     ded (matches_r_dom H H1). rewrite VMF.empty_a in H2.
     unfold subst_of_matching. revert H2. rewrite VMF.mem_find_b.
     destruct (VMU.XMap.find (elt:=term) x t0). discr. refl. discr.

@@ -149,9 +149,9 @@ Module OrdType (Import S : WSIG) <: OrderedType.
   Definition compare : forall x y, Compare lt (@Logic.eq t) x y.
 
   Proof.
-    intros x y. case_eq (beq_symb x y).
+    intros x y. coq_case_eq (beq_symb x y); intro H.
     rewrite beq_symb_ok in H. apply (EQ H).
-    case_eq (blt x y).
+    coq_case_eq (blt x y); intro H0.
     rewrite blt_ok in H0. apply (LT H0).
     eapply GT. rewrite <- blt_ok. apply lt_total; hyp.
   Defined.
