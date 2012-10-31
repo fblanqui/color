@@ -71,7 +71,7 @@ Section S.
 
   Proof.
     induction p; simpl; intros. inversion H. refl.
-    destruct t. discr. gen H. case_beq_symb a s. 2: discr. intro.
+    destruct t. discr. revert H. case_beq_symb a s. 2: discr. intro.
     rewrite (IHp _ _ H). refl.
   Qed.
 
@@ -110,8 +110,8 @@ Section S.
   Proof.
     intros t [p [l r]] s. unfold rewrite.
     case_eq (mem (@beq_rule Sig) (mkRule l r) R). 2: discr.
-    gen H0. case_eq (split t p). destruct p0 as [u v]. 2: discr.
-    gen H1. case_eq (matches l v). rename s0 into w. 2: discr.
+    revert H0. case_eq (split t p). destruct p0 as [u v]. 2: discr.
+    revert H1. case_eq (matches l v). rename s0 into w. 2: discr.
     exists l. exists r. exists (mkContext u w). unfold fill. simpl.
     inversion H2. intuition. rewrite mem_ok in H. hyp. apply beq_rule_ok.
     ded (matches_correct H1). ded (split_correct H0). subst. refl.
@@ -137,8 +137,8 @@ Section S.
 
   Proof.
     induction ds; simpl; intros. inversion H. exact I.
-    gen H. case_eq (rewrite t a). 2: discr.
-    gen H0. case_eq (rewrites s ds). 2: discr.
+    revert H. case_eq (rewrite t a). 2: discr.
+    revert H0. case_eq (rewrites s ds). 2: discr.
     inversion H1. simpl. ded (rewrite_correct H). intuition.
   Qed.
 

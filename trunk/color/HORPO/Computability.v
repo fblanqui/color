@@ -78,7 +78,7 @@ Section Computability_def.
 
   Proof.
     intro M. (*term_type_inv M.*)
-    destruct M as [E Pt A0 Typ]. gen Typ. destruct A0; intro Typ; try_solve; 
+    destruct M as [E Pt A0 Typ]. revert Typ. destruct A0; intro Typ; try_solve; 
       intro; unfold Computable in H; simpl in H; inversion H.
     inversion H1; left; do 2 split; trivial.
     right; do 2 split; trivial.

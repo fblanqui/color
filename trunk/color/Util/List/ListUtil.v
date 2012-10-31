@@ -631,7 +631,7 @@ Section filter.
 
   Proof.
     intros. rewrite filter_In. intuition. case (In_dec eq_dec x l); intro.
-    right. intuition. gen H. case (f x). irrefl. refl. auto.
+    right. intuition. revert H. case (f x). irrefl. refl. auto.
     rewrite H2 in H3. discr.
   Qed.
 
@@ -1864,7 +1864,7 @@ Section fold_left.
     Proper (feq ==> eqlistA eqB ==> eqA ==> eqA) (@fold_left A B).
 
   Proof.
-    intros f f' ff' l l' ll' a a' aa'; gen aa'; gen a'; gen a; gen ll'; gen l'.
+    intros f f' ff' l l' ll' a a' aa'. revert l l' ll' a a' aa'.
     induction l; destruct l'; intros; simpl.
     hyp. inversion ll'. inversion ll'.
     inversion ll'. subst. apply IHl. hyp. apply ff'; hyp.

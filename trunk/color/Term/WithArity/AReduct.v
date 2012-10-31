@@ -324,7 +324,7 @@ Section S.
     destruct (eq_nat_dec x i).
     (* a) x = i *)
     set (q := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0).
-    gen q. assert (i - x = 0). omega. rewrite H. intro. simpl.
+    generalize q. assert (i - x = 0). omega. rewrite H. intro. simpl.
     transitivity (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
     rewrite Vnth_replace. hyp.
     (* b) x <> i *)

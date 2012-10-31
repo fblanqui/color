@@ -459,7 +459,7 @@ Section Vreplace.
     i1 = i2 -> Vreplace v h1 x = Vreplace v h2 x.
 
   Proof.
-    intros. subst i2. gen h2. gen h1. gen i1. elim v; clear v; simpl; intros.
+    intros. subst i2. revert i1 h1 h2. elim v; clear v; simpl; intros.
     absurd_arith. destruct i1. refl. apply Vtail_eq. apply H.
   Qed.
 
@@ -600,7 +600,7 @@ Section Vapp.
 
   Proof.
     induction v1; intros. simpl. apply Vnth_eq. omega.
-    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h0)). gen H.
+    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h0)). revert H.
     case (le_gt_dec n i); simpl; intros.
     (* case 1 *)
     transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h0) l)). hyp.
@@ -1254,14 +1254,14 @@ Section Vforall2_sec.
     Vforall2n v1 v2 -> Vforall2n (Vtail v1) (Vtail v2).
 
   Proof.
-    intros. gen H. VSntac v1. VSntac v2. unfold Vforall2n. simpl. tauto.
+    intros. revert H. VSntac v1. VSntac v2. unfold Vforall2n. simpl. tauto.
   Qed.
 
   Lemma Vforall2n_nth : forall n (v1 : vecA n) (v2 : vecB n) i 
     (ip : i < n), Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
   Proof.
-    induction v1; intros. absurd (i<0); omega. gen H. VSntac v2.
+    induction v1; intros. absurd (i<0); omega. revert H. VSntac v2.
     unfold Vforall2n. destruct i; simpl. tauto. intuition.
   Qed.
 
@@ -1270,7 +1270,7 @@ Section Vforall2_sec.
 
   Proof.
     unfold Vforall2n. induction v1; intros. VOtac. simpl. auto.
-    gen H. VSntac v2. intro. split. apply (H0 0 (lt_O_Sn _)).
+    revert H. VSntac v2. intro. split. apply (H0 0 (lt_O_Sn _)).
     apply IHv1. intros. assert (S i< S n). omega. ded (H0 _ H1). simpl in H2.
     assert (ip = lt_S_n H1). apply lt_unique. rewrite H3. hyp.
   Qed.
