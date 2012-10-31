@@ -13,5 +13,4 @@ See the COPYRIGHTS and LICENSE files.
 
 Require Export LogicUtil.
 
-Ltac gen t := generalize t.
 Ltac case_eq := coq_case_eq.

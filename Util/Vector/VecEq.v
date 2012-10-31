@@ -96,8 +96,8 @@ Lemma Vforall2n_aux_mor : forall n1 (v1 v1' : vec n1),
 Proof.
 induction v1; simpl; intros. VOtac. simpl.
 destruct v2. VOtac. tauto. VSntac v2'. tauto.
-gen H. VSntac v1'. simpl. destruct v2. VOtac. tauto.
-gen H0. VSntac v2'. repeat rewrite eq_vec_cons.
+revert H. VSntac v1'. simpl. destruct v2. VOtac. tauto.
+revert H0. VSntac v2'. repeat rewrite eq_vec_cons.
 intros [h1 h2] [h3 h4]. rewrite <- h1. rewrite <- h3.
 rewrite (IHv1 _ h4 _ _ _ h2). tauto.
 Qed.
@@ -129,7 +129,7 @@ Lemma Vfold_left_mor : forall b b', b =B= b' ->
   forall n (v v': vec n), v =v v' -> Vfold_left f b v =B= Vfold_left f b' v'.
 
 Proof.
-induction v; simpl; intros. VOtac. simpl. hyp. gen H0. VSntac v'.
+induction v; simpl; intros. VOtac. simpl. hyp. revert H0. VSntac v'.
 rewrite eq_vec_cons. intuition. simpl. apply f_mor; try hyp. apply IHv; hyp.
 Qed.
 
@@ -188,7 +188,7 @@ Lemma Vmap_mor : forall n (v v': vector A n), eq_vec eqA v v' ->
   eq_vec eqB (Vmap f v) (Vmap f v').
 
 Proof.
-induction v; simpl; intros. VOtac. refl. gen H. VSntac v'. simpl.
+induction v; simpl; intros. VOtac. refl. revert H. VSntac v'. simpl.
 repeat rewrite eq_vec_cons. intuition.
 Qed.
 
@@ -220,7 +220,7 @@ Lemma Vmap2_mor : forall n (va va': vector A n), eq_vec eqA va va' ->
     eq_vec eqC (Vmap2 f va vb) (Vmap2 f va' vb').
 
 Proof.
-induction va; simpl; intros. refl. gen H. VSntac va'. gen H0. VSntac vb.
+induction va; simpl; intros. refl. revert H. VSntac va'. revert H0. VSntac vb.
 VSntac vb'. repeat rewrite eq_vec_cons. intuition.
 Qed.
 

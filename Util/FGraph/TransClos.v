@@ -386,7 +386,7 @@ using the function [trans_add_edge] now *)
       (* f a = None *)
       2: symmetry; apply trans_tc; hyp.
       (* f a = Some (x, l) *)
-      destruct p as [x l]. gen tg; gen g. induction l; simpl; intros g tg.
+      destruct p as [x l]. revert g tg. induction l; simpl; intros g tg.
       (* nil *)
       symmetry. apply trans_tc. hyp.
       (* cons *)

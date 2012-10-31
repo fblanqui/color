@@ -86,8 +86,8 @@ Section S.
 
   Proof.
     induction ds; simpl; intros. inversion H. exact I.
-    gen H. case_eq (mod_rewrite t a). 2: discr.
-    gen H0. case_eq (mod_rewrites t0 ds). 2: discr.
+    revert H. case_eq (mod_rewrite t a). 2: discr.
+    revert H0. case_eq (mod_rewrites t0 ds). 2: discr.
     inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
   Qed.
 

@@ -371,8 +371,7 @@ and satisfies some commutation property *)
         Proper (Equiv eq ==> eqB ==> eqB) (fold f).
 
       Proof.
-        intros f f_m hf m m' mm' b b' bb';
-          gen bb'; gen b'; gen b; gen mm'; gen m'.
+        intros f f_m hf m m' mm' b b' bb'; revert m' mm' b b' bb'.
         pattern m; apply map_induction_bis; clear m.
         (* Equal *)
         intros m n mn hm n' nn' b b' bb'. apply Equal_Equiv in mn.

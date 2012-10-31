@@ -42,7 +42,7 @@ Section S.
       unfold connectable. set (k := S (maxvar l2)).
       destruct (rtc_red_sub_ren_cap hypR k H2).
       destruct (ren_cap_sub R x1 r1 k).
-      destruct H3. gen H0. rewrite H3. unfold shift. repeat rewrite sub_sub.
+      destruct H3. revert H0. rewrite H3. unfold shift. repeat rewrite sub_sub.
       intro. assert (forall x, In x (vars (ren_cap R k r1))
         -> In x (vars l2) -> False).
       intros. ded (vars_ren_cap H5). ded (vars_max H6). subst k. omega.
@@ -83,11 +83,11 @@ Section S.
       set (p := mk_problem (ren_cap r1 r2) (lhs r2)) in H.
       assert (problem_wf p). apply wf_mk_problem.
       destruct (successfull_is_sol H0 H).
-      gen H1. unfold p, mk_problem, ren_cap. simpl. intuition. gen H1.
+      revert H1. unfold p, mk_problem, ren_cap. simpl. intuition. revert H1.
       rewrite forallb_forall in hypD. ded (hypD _ h1). ded (hypD _ h2).
       destruct r1 as [l1 r1]. destruct r2 as [l2 r2]. simpl. destruct r1. refl.
       destruct l2. refl. set (k := S (maxvar (Fun f0 t0))). rewrite ren_cap_fun.
-      gen H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl.
+      revert H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl.
       intro. rewrite H1. unfold is_sol_eqn. unfold fst, snd.
       repeat rewrite sub_fun. intro. Funeqtac. rewrite H6.
       rewrite (beq_refl (@beq_symb_ok Sig)). refl.

@@ -159,7 +159,7 @@ Module LexOrder (ES : Eqset).
     Proof.
       induction l; intros.
       right. intro nil_l. inversion nil_l.
-      gen X; destruct l'; intro.
+      revert X; destruct l'; intro.
       right. intro al_nil. inversion al_nil.
       destruct (X a a0); auto with datatypes.
       destruct (eq_nat_dec (length l) (length l')).

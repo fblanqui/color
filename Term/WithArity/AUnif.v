@@ -499,7 +499,7 @@ apply subset_trans with
   (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
     else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
 case_eq (mem x (vars_eqns l)); Subset_tac. In_intro. unfold not. intro.
-rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. gen H0.
+rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
 case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
 contradiction. absurd (E.eq x x). hyp. refl.
 ded (mem_4 _ _ H0). contradiction.
@@ -515,7 +515,7 @@ apply subset_trans with
   (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
     else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
 case_eq (mem x (vars_eqns l)); Subset_tac. In_intro. unfold not. intro.
-rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. gen H0.
+rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
 case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
 contradiction. absurd (E.eq x x). hyp. refl.
 ded (mem_4 _ _ H0). contradiction.
@@ -615,7 +615,8 @@ Definition Lt' (p1 p2 : problem) :=
 Lemma wf_Lt' : well_founded Lt'.
 
 Proof.
-intro. destruct a. destruct p. gen s. ded (wf_Lt e). elim H; clear H e; intros.
+intro. destruct a. destruct p. revert s. ded (wf_Lt e).
+elim H; clear H e; intros.
 apply Acc_intro. destruct y. destruct p. intro. apply H0. hyp.
 intro. apply Acc_intro. destruct y. destruct p; contradiction. contradiction.
 apply Acc_intro. destruct y. destruct p; contradiction. contradiction.
@@ -674,11 +675,11 @@ intro. destruct p. 2: auto. destruct p. destruct e. auto. destruct e.
 destruct t0; destruct t1.
 (* var-var *)
 simpl. mem. case_beq_nat n n0; simpl.
-intuition. gen H1. elim s; simpl; intuition.
+intuition. revert H1. elim s; simpl; intuition.
 mem. rewrite H. intuition.
 eapply lforall_notin_solved_eqn_1. simpl. mem. hyp. apply H2.
 eapply solved_eqns_wf_map'. simpl. mem. hyp. hyp. apply H2.
-gen H2. elim s; simpl; intuition. unfold notin_vars_solved_eqn. simpl.
+revert H2. elim s; simpl; intuition. unfold notin_vars_solved_eqn. simpl.
 unfold notin_eqn in H2. simpl in H2. intuition.
 apply notin_map. simpl. mem. hyp.
 apply lforall_notin_r. hyp.
@@ -700,8 +701,8 @@ apply notin_map. hyp.
 apply lforall_notin_r. hyp.
 (* fun-fun *)
 simpl. case_beq_symb f f0; simpl; intuition.
-gen H1. elim s; simpl; intuition. gen H1. unfold notin_eqn. simpl.
-do 2 rewrite vars_fun. gen H4. unfold notin. simpl. rewrite lforall_app.
+revert H1. elim s; simpl; intuition. revert H1. unfold notin_eqn. simpl.
+do 2 rewrite vars_fun. revert H4. unfold notin. simpl. rewrite lforall_app.
 intuition. apply lforall_notin_eqn_combine; hyp. Transparent vars.
 Qed.
 
@@ -738,7 +739,7 @@ Lemma is_sol_solved_eqns_sub : forall s s' l,
   is_sol_solved_eqns s l -> is_sol_solved_eqns (sub_comp s' s) l.
 
 Proof.
-induction l; simpl; intuition. destruct a. gen H0. unfold is_sol_solved_eqn.
+induction l; simpl; intuition. destruct a. revert H0. unfold is_sol_solved_eqn.
 simpl. intro. rewrite <- sub_sub. rewrite <- H0. refl.
 Qed.
 
@@ -748,7 +749,7 @@ Proof.
 intros s s' p. destruct p. 2: auto. destruct p. destruct l0.
 simpl. intuition. apply is_sol_solved_eqns_sub. hyp.
 destruct e. simpl. intuition. apply is_sol_solved_eqns_sub. hyp.
-apply is_sol_eqn_sub. hyp. gen H2. elim l0; clear l0; simpl; intuition.
+apply is_sol_eqn_sub. hyp. revert H2. elim l0; clear l0; simpl; intuition.
 apply is_sol_eqn_sub. hyp.
 Qed.
 
@@ -785,9 +786,9 @@ Lemma lforall_is_sol_solved_eqn : forall s x u, s x = sub s u -> forall l,
 
 Proof.
 induction l; simpl. intuition. destruct a. intuition.
-gen H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
+revert H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
 intro. rewrite H3. apply sub_comp_single. hyp.
-gen H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
+revert H3. unfold is_sol_solved_eqn, solved_eqn_sub. simpl. rewrite sub_sub.
 intro. rewrite H3. symmetry. apply sub_comp_single. hyp.
 Qed.
 
@@ -875,9 +876,9 @@ Lemma is_sol_eqns_extend : forall s x (v : term) l,
 
 Proof.
 induction l; simpl; intuition.
-clear H H1 H3. gen H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
+clear H H1 H3. revert H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
 repeat rewrite sub_comp_single_extend. auto.
-clear H3 H0 H1. gen H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
+clear H3 H0 H1. revert H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
 repeat rewrite sub_comp_single_extend. auto.
 Qed.
 

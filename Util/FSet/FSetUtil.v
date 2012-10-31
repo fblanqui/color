@@ -329,8 +329,7 @@ Module Make (Export XSet : FSetInterface.S).
         eqA (fold f s a) (fold f' s' a').
 
     Proof.
-      intros f fm ft f' ff' s s' ss' a a' aa';
-        gen aa'; gen a'; gen a; gen ss'; gen s'.
+      intros f fm ft f' ff' s s' ss' a a' aa'; revert s' ss' a a' aa'.
       pattern s; apply set_induction_bis; clear s.
       (* Equal *)
       intros s s' ss' h t s't a a' aa'. transitivity (fold f s a).

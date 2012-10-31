@@ -95,7 +95,7 @@ Module VectorArith (SRT : SemiRingType).
       as add_vectors_mor.
 
   Proof.
-    induction x; simpl; intros. VOtac. refl. gen H. VSntac y.
+    induction x; simpl; intros. VOtac. refl. revert H. VSntac y.
     unfold add_vectors. simpl. rewrite (eq_vec_cons (@eq_vec n)). intuition.
     rewrite H1. apply vector_plus_mor. 2: refl.
     eapply Vfold_left_mor with (b := zero_vec n) (b' := zero_vec n)
@@ -165,7 +165,7 @@ Module VectorArith (SRT : SemiRingType).
       as dot_product_mor.
 
   Proof.
-    induction n; intros. VOtac. refl. gen H0. gen H.
+    induction n; intros. VOtac. refl. revert H H0.
     VSntac x. VSntac y. VSntac x0. VSntac y0. intros.
     rewrite (eq_vec_cons eqA) in H3. rewrite (eq_vec_cons eqA) in H4. intuition.
     unfold dot_product. simpl. unfold dot_product in IHn.

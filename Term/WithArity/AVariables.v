@@ -245,7 +245,7 @@ coq_case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
 refl.
 (* Vcons *)
 intros u n us. simpl. mem. intros. rewrite H. rewrite H0.
-case_eq (mem x (vars u)); simpl. gen H1. case_eq (mem x (vars_vec us)).
+case_eq (mem x (vars u)); simpl. revert H1. case_eq (mem x (vars_vec us)).
 transitivity (union (union (vars v) (remove x (vars u)))
   (union (vars v) (remove x (vars_vec us)))). refl.
 transitivity (union (vars v) (union (remove x (vars u))
@@ -258,7 +258,7 @@ autorewrite with Equal. refl. apply union_m. refl.
 transitivity (union (remove x (vars u)) (remove x (vars_vec us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
 symmetry. apply remove_union.
-gen H1. case_eq (mem x (vars_vec us)).
+revert H1. case_eq (mem x (vars_vec us)).
 transitivity (union (vars u) (union (vars v) (remove x (vars_vec us)))).
 apply union_m; refl.
 transitivity (union (vars v) (union (vars u) (remove x (vars_vec us)))).

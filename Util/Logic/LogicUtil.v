@@ -20,17 +20,26 @@ Ltac sym := symmetry.
 Ltac trans x := transitivity x.
 Ltac contr := contradiction.
 Ltac discr := intros; discriminate.
-(*FIXME: replace by revert*)Ltac gen h := generalize h; clear h.
 Ltac ded t := generalize t; intro.
 Ltac fo := firstorder.
+Ltac gen t := generalize t.
 
 (*FIXME: remove?*)
 (***********************************************************************)
 (** Re-definition of case_eq to automatically do intros after. *)
 
-Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.
+Ltac coq_case_eq := Tactics.case_eq.
+(*Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.*)
 
 Ltac case_eq e := coq_case_eq e; intros.
+
+(***********************************************************************)
+(** [geneq H x e(x)] transforms a goal [G(x)] into
+[forall t, H t -> forall x, e(x) = t -> G(x)] *)
+
+Ltac geneq H x e := gen (refl_equal e); gen (H e);
+  clear H; generalize e at -2; let t := fresh "t" in let h := fresh "h" in
+    intros t h; revert t h x.
 
 (***********************************************************************)
 (** Tactics for decomposing disjunctions and conjonctions. *)

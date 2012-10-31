@@ -270,7 +270,7 @@ Qed.
 Lemma red_mod_union : forall E R : rules, red_mod E R << red (E ++ R) #.
 
 Proof.
-intros E R t u [h [h1 h2]]. gen h2. gen h1. induction 1; intro.
+intros E R t u [h [h1 h2]]. revert h1 h2. induction 1; intro.
 apply rt_trans with y.
 apply rt_step. apply red_incl with E. apply incl_appl. hyp.
 apply rt_step. apply red_incl with R. apply incl_appr. hyp.

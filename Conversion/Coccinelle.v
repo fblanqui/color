@@ -363,9 +363,9 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Proof.
     unfold succeq, Relation_Operators.union, transitive. intuition.
     left. apply trans_succ with y; hyp.
-    left. gen H. unfold equiv_aterm, succ, transp, Rof. intro.
+    left. revert H. unfold equiv_aterm, succ, transp, Rof. intro.
     rewrite <- equiv_rpo_equiv_2. apply H1. hyp.
-    left. gen H1. unfold equiv_aterm, succ, transp, Rof. intro.
+    left. revert H1. unfold equiv_aterm, succ, transp, Rof. intro.
     rewrite equiv_rpo_equiv_1. apply H. hyp.
     right. apply trans_equiv_aterm with y; hyp.
   Qed.

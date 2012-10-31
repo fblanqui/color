@@ -228,7 +228,7 @@ Lemma fill_eq_cont : forall (t : term) c d, fill c t = fill d t <-> c = d.
 
 Proof.
 split. Focus 2. intro. subst. refl.
-gen d. gen c. induction c.
+revert d. revert c. induction c.
 (* c=Hole *)
 simpl. intro. symmetry. apply (wf_term H).
 (* c=Cont *)
@@ -373,9 +373,9 @@ exists (fill (comp c (comp (cont r) d)) (Var (var t))). rewrite red1_ok.
 2: hyp. split.
 (* left *)
 exists l. exists r. exists c. exists d. intuition.
-gen H2. rewrite (term_cont_var t). rewrite sub_fill. repeat rewrite var_fill.
+revert H2. rewrite (term_cont_var t). rewrite sub_fill. repeat rewrite var_fill.
 simpl. rewrite subc_cont. destruct (hs (var t)). rewrite H. simpl. intro.
-destruct (fill_var_elim H2) as [e]. gen H2. rewrite H1.
+destruct (fill_var_elim H2) as [e]. revert H2. rewrite H1.
 repeat rewrite comp_comp. intro. rewrite fill_eq_cont in H2.
 repeat rewrite comp_eq in H2. rewrite H2. refl.
 (* right *)

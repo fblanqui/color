@@ -69,7 +69,7 @@ induction p; simpl; intros.
 (* nil *)
 exists Hole. simpl. destruct t; inversion H; auto.
 (* cons *)
-destruct t. discr. gen H. simpl.
+destruct t. discr. revert H. simpl.
 destruct (lt_ge_dec a (arity f)); intros. 2: discr.
 destruct (IHp _ _ H). destruct a0. rewrite H0.
 exists (Cont f (Veq_app_cons_aux3 l)
@@ -142,13 +142,13 @@ discr.
 (* Var, Fun *)
 discr.
 (* Fun, Var *)
-gen H. simpl. destruct (lt_ge_dec a (arity f)); intro.
+revert H. simpl. destruct (lt_ge_dec a (arity f)); intro.
 destruct (replace_pos (Vnth t l) p u); inversion H. discr.
 (* Fun, Fun *)
 generalize H. simpl. destruct (lt_ge_dec a (arity f)); intro. 2: discr.
 destruct (replace_pos (Vnth t l) p u). 2: discr.
 apply Some_eq in H0. Funeqtac. subst t0.
-destruct (IHp (Vnth t l) u t1). gen H. simpl.
+destruct (IHp (Vnth t l) u t1). revert H. simpl.
 destruct (lt_ge_dec a (arity f)); intro. 2: discr.
 assert (l0 = l). apply lt_unique. subst l0.
 destruct (replace_pos (Vnth t l) p u). 2: discr.

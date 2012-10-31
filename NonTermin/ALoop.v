@@ -79,8 +79,8 @@ Section S.
   Proof.
     intros t [p [l r]] u. unfold rewrite.
     case_eq (mem beq_rule (mkRule l r) R). 2: discr.
-    gen H0. case_eq (subterm_pos t p). 2: discr.
-    gen H1. case_eq (matches l t0). rename t1 into s. 2: discr.
+    revert H0. case_eq (subterm_pos t p). 2: discr.
+    revert H1. case_eq (matches l t0). rename t1 into s. 2: discr.
     rewrite red_pos_ok. exists p. exists l. exists r. exists s. intuition.
     rewrite mem_ok in H. hyp. apply beq_rule_ok.
     ded (matches_correct H1). rewrite H3. hyp.
@@ -106,8 +106,8 @@ Section S.
 
   Proof.
     induction ds; simpl; intros. inversion H. exact I.
-    gen H. case_eq (rewrite t a). 2: discr.
-    gen H0. case_eq (rewrites t0 ds). 2: discr.
+    revert H. case_eq (rewrite t a). 2: discr.
+    revert H0. case_eq (rewrites t0 ds). 2: discr.
     inversion H1. simpl. ded (rewrite_correct H). intuition.
   Qed.
 
