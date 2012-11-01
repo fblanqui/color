@@ -345,7 +345,7 @@ intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
   forall k, nb_aliens_vec (ren_caps k ts) = nb_aliens_vec ts);
   clear t; intros; auto.
 (* Fun *)
-rewrite ren_cap_fun, nb_aliens_fun. coq_case_eq (defined f R); intro H0. refl.
+rewrite ren_cap_fun, nb_aliens_fun. case_eq (defined f R); intro H0. refl.
 rewrite nb_aliens_fun. rewrite H0. auto.
 (* Vcons *)
 simpl. repeat rewrite nb_aliens_cons. auto.
@@ -358,7 +358,7 @@ intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
   forall k l, ren_caps k (ren_caps l ts) = ren_caps k ts);
   clear t; intros; auto.
 (* Fun *)
-rewrite !ren_cap_fun. coq_case_eq (defined f R); intro H0. refl.
+rewrite !ren_cap_fun. case_eq (defined f R); intro H0. refl.
 rewrite ren_cap_fun, H0, H. refl.
 (* Vcons *)
 simpl. rewrite H, H0, nb_aliens_ren_cap. refl.

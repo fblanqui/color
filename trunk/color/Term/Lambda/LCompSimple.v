@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LUtil LTerm LSimple.
+Require Import Morphisms Basics SN VecUtil LogicUtil LTerm LSimple.
 
 Module Make (Export F : ST_Struct).
 

@@ -198,7 +198,7 @@ Proof.
 intros Hrefl H. unfold context_closed, filter_ord. induction c; intros.
 simpl. assumption.
 set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-coq_case_eq (Vhead (snd bs)); intro H1.
+case_eq (Vhead (snd bs)); intro H1.
 rewrite (filter_cont_true e t c t0 t1 H1).
 rewrite (filter_cont_true e t c t0 t2 H1). apply H. apply IHc. assumption.
 rewrite (filter_cont_false e t c t0 t1 H1).
@@ -279,7 +279,7 @@ unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
 elim c. simpl. right. repeat rewrite filter_sub. apply red_rule_top.
 change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
 intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
-coq_case_eq (Vhead (snd bs)); intro H0.
+case_eq (Vhead (snd bs)); intro H0.
 rewrite (filter_cont_true f e t c0 t0 (sub s l) H0).
 rewrite (filter_cont_true f e t c0 t0 (sub s r) H0). fold bs. destruct H.
 left. simpl fill. rewrite H. refl. right. apply red_fill. hyp.

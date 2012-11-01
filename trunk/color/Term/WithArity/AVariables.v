@@ -239,14 +239,14 @@ autorewrite with mem Equal. refl.
 simpl. mem. rewrite (beq_com beq_nat_ok). rewrite H. refl.
 (* Fun *)
 intros. rewrite sub_fun.
-coq_case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
+case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
   rewrite H0 in H; exact H.
 (* Vnil *)
 refl.
 (* Vcons *)
 intros u n us. simpl. mem. intros. rewrite H, H0.
-coq_case_eq (mem x (vars u)); intro H1; simpl.
-revert H1. coq_case_eq (mem x (vars_vec us)); intro H2.
+case_eq (mem x (vars u)); intro H1; simpl.
+revert H1. case_eq (mem x (vars_vec us)); intro H2.
 trans (union (union (vars v) (remove x (vars u)))
   (union (vars v) (remove x (vars_vec us)))). refl.
 trans (union (vars v) (union (remove x (vars u))
@@ -259,7 +259,7 @@ autorewrite with Equal. refl. apply union_m. refl.
 trans (union (remove x (vars u)) (remove x (vars_vec us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
 sym. apply remove_union.
-revert H1. coq_case_eq (mem x (vars_vec us)); intros H2 H1.
+revert H1. case_eq (mem x (vars_vec us)); intros H2 H1.
 trans (union (vars u) (union (vars v) (remove x (vars_vec us)))).
 apply union_m; refl.
 trans (union (vars v) (union (vars u) (remove x (vars_vec us)))).
@@ -282,7 +282,7 @@ trans (union
   (if mem x (vars_list us)
     then union (vars v) (remove x (vars_list us)) else vars_list us)).
 apply union_m. apply vars_single. exact IHus.
-coq_case_eq (mem x (vars a)); coq_case_eq (mem x (vars_list us)); intros; bool.
+case_eq (mem x (vars a)); case_eq (mem x (vars_list us)); intros; bool.
 trans
   (union (vars v) (union (remove x (vars a)) (remove x (vars_list us)))).
 apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.

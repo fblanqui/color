@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LUtil BoolUtil.
+Require Import LogicUtil BoolUtil.
 
 (****************************************************************************)
 (** ** The set [Te] of lambda-terms

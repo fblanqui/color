@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import VecUtil LUtil LTerm LComp.
+Require Import VecUtil LogicUtil LTerm LComp.
 
 (****************************************************************************)
 (** ** Simple types over a set [B] of type constants. *)

@@ -713,7 +713,7 @@ Section Inb.
 
   Proof.
     intros. destruct H.
-    coq_case_eq (Inb x l'); intros; coq_case_eq (Inb x l); intros; try refl.
+    case_eq (Inb x l'); intros; case_eq (Inb x l); intros; try refl.
     ded (Inb_incl _ H0 H1). rewrite H2 in H3. discr.
     ded (Inb_incl _ H H2). rewrite H1 in H3. discr.
   Qed.

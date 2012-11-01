@@ -95,12 +95,12 @@ by a function testing whether a symbol occurs in a term
     intro Rc; elim Rc; simpl; intros.
     apply incl_refl.
     destruct (eq_rule_dec a a0).
-    coq_case_eq (root_eq f (lhs a)); intro H0; simpl.
-    coq_case_eq (Inb (@eq_rule_dec _) a R); intro H1.
+    case_eq (root_eq f (lhs a)); intro H0; simpl.
+    case_eq (Inb (@eq_rule_dec _) a R); intro H1.
     apply app_incl. apply def_symbs_incl. apply H.
     apply incl_appr; apply H.
     apply H.
-    coq_case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H0.
+    case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H0.
     apply app_incl. apply def_symbs_incl. apply H.
     apply H.
   Qed.
@@ -110,7 +110,7 @@ by a function testing whether a symbol occurs in a term
 
   Proof.
     intros; simpl.
-    coq_case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H.
+    case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H.
     apply incl_appr; refl. refl.
   Qed.
 
@@ -119,7 +119,7 @@ by a function testing whether a symbol occurs in a term
 
   Proof.
     intro Rc; elim Rc; simpl; intros; try tauto.
-    coq_case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H1;
+    case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H1;
       rewrite H1 in H0.
     Focus 2. apply (H R f g H0).
     rewrite andb_true_iff in H1; destruct H1. destruct (in_app_or H0).
@@ -146,7 +146,7 @@ by a function testing whether a symbol occurs in a term
     intros Rc1. induction Rc1.
     simpl; intros. apply incl_nil.
     intros. simpl.
-    coq_case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H0.
+    case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H0.
     Focus 2. apply IHRc1. apply incl_cons_l_incl with (x := a); auto.
     apply incl_app. intros g Hg. rewrite andb_true_iff in H0. destruct H0.
     apply symb_ord_img_recP2 with (a := a); auto.
@@ -179,7 +179,7 @@ by a function testing whether a symbol occurs in a term
 
   Proof.
     intros R a b.
-    coq_case_eq (Inb (@eq_symb_dec _) b (symb_ord_img R a)); intro H.
+    case_eq (Inb (@eq_symb_dec _) b (symb_ord_img R a)); intro H.
     left. rewrite <- symb_ord_imgP. apply (Inb_true (@eq_symb_dec _) _ _ H).
     right. intro. rewrite  <- symb_ord_imgP in H0.
     apply (Inb_false (@eq_symb_dec _) _ _ H); auto.

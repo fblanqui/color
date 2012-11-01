@@ -163,7 +163,7 @@ Section dec.
   Lemma dec : forall x, {P x}+{~P x}.
 
   Proof.
-    intro x. coq_case_eq (f x); intros.
+    intro x. case_eq (f x); intros.
     left. rewrite <- f_ok. hyp. right. rewrite <- ko. hyp.
   Defined.
 
@@ -202,7 +202,7 @@ Section bool_ok.
   Lemma implb_ok : forall x, implb (bP x) (bQ x) = true <-> (P x -> Q x).
 
   Proof.
-    intro x. unfold implb. coq_case_eq (bP x).
+    intro x. unfold implb. case_eq (bP x).
     rewrite bP_ok. rewrite bQ_ok. tauto.
     rewrite (ko bP_ok). tauto.
   Qed.

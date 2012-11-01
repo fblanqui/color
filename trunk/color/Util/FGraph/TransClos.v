@@ -108,7 +108,7 @@ Module Make (X : OrderedType).
     (* empty *)
     rewrite pred_empty. rewrite R.union_empty_l. refl.
     (* add *)
-    intros z t g m n h. unfold add_pred. coq_case_eq (XSet.mem x t); intros.
+    intros z t g m n h. unfold add_pred. case_eq (XSet.mem x t); intros.
     (* x in t *)
     rewrite <- mem_iff in H. rewrite rel_set_fold_add_edge. rewrite h.
     rewrite <- R.union_assoc. apply R.union_m. 2: refl.
@@ -182,7 +182,7 @@ the transitive closure of [id x y U g] *)
 
   Proof.
     intros x y g. unfold trans_add_edge.
-    coq_case_eq (XSet.mem y (succs x g)); intros. refl.
+    case_eq (XSet.mem y (succs x g)); intros. refl.
     rewrite rel_map_fold_add_pred. apply R.union_m. refl.
     rewrite rel_set_fold_add_edge. refl.
   Qed.
@@ -204,7 +204,7 @@ the transitive closure of [id x y U g] *)
 
   Proof.
     intros x y g. rewrite rel_add_edge, rel_trans_add_edge_pred_succ.
-    coq_case_eq (XSet.mem y (succs x g)); intros.
+    case_eq (XSet.mem y (succs x g)); intros.
     rewrite mem_succs_id. refl. hyp.
     cbv zeta; set (ysy:=XSet.add y (succs y g)).
     rewrite <- R.union_assoc, union_incl. split.
@@ -239,7 +239,7 @@ the transitive closure of [id x y U g] *)
     intros x y g tg. cut (Transitive (trans_add_edge x y g)).
     2: apply transitive_trans_add_edge; hyp.
     rewrite rel_add_edge. repeat rewrite rel_trans_add_edge_prod.
-    coq_case_eq (XSet.mem y (succs x g)); intros.
+    case_eq (XSet.mem y (succs x g)); intros.
     (* y in sx *)
     rewrite mem_succs_id. rewrite trans_tc. refl. hyp. hyp.
     (* y not in sx *)
@@ -257,7 +257,7 @@ the transitive closure of [id x y U g] *)
 
   Proof.
     intros x y g. unfold trans_add_edge.
-    coq_case_eq (XSet.mem y (succs x g)); intros. refl.
+    case_eq (XSet.mem y (succs x g)); intros. refl.
     intro z. rewrite In_succs_rel, rel_map_fold_add_pred_ext,
     rel_set_fold_add_edge_ext. unfold pred, succ. rewrite union_iff.
     repeat rewrite add_iff. repeat rewrite In_succs_rel. intuition.
@@ -271,10 +271,10 @@ the transitive closure of [id x y U g] *)
 
   Proof.
     intros x y g. unfold trans_add_edge.
-    coq_case_eq (XSet.mem y (succs x g)); intros. refl.
+    case_eq (XSet.mem y (succs x g)); intros. refl.
     set (ysy := XSet.add y (succs y g)). intro z. rewrite In_preds_rel.
     rewrite rel_map_fold_add_pred_ext. rewrite rel_set_fold_add_edge_ext.
-    coq_case_eq (XSet.mem x ysy); intros.
+    case_eq (XSet.mem x ysy); intros.
     (* x in ysy *)
     rewrite add_iff. rewrite In_preds_rel. unfold ysy in H0.
     rewrite XSetFacts.add_b, orb_eq, eqb_ok, mem_succs_rel in H0.
@@ -398,7 +398,7 @@ using the function [trans_add_edge] now *)
       unfold add_edge' at 3, trans_add_edge'.
       repeat rewrite rel_list_fold_left_add_edge.
       rewrite rel_add_edge, rel_trans_add_edge_prod.
-      coq_case_eq (XSet.mem y (succs x g)); intros.
+      case_eq (XSet.mem y (succs x g)); intros.
       (* y in (succs x g) *)
       rewrite mem_succs_id. 2: hyp. refl.
       (* y not in (succs x g): R! == S! *)

@@ -288,7 +288,7 @@ Section pi.
   Definition build_pi : forall f : Sig, option {k | k < arity f}.
 
   Proof.
-    intro f. coq_case_eq (raw_pi f).
+    intro f. case_eq (raw_pi f).
     intros n H. exact (Some (mk_proj (hyp H))).
     intro H. exact None.
   Defined.
