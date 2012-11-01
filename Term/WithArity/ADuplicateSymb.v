@@ -322,8 +322,8 @@ Lemma dup_int_rules_int_red : forall f v t,
 Proof.
 intros. redtac. exists l. exists r. exists c. exists s. split.
 destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ lr).
-revert H. compute. case_eq l. discr. revert t0 H0 H. case_eq f0. discr.
-subst l. simpl in xl. discr. congruence. tauto.
+revert H. compute. coq_case_eq l. discr. intro f0. coq_case_eq f0. discr.
+intros. subst l. simpl in xl. discr. congruence. tauto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc_aux : forall u t, red R # u t ->

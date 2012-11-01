@@ -91,21 +91,22 @@ Require Import BoolUtil.
 Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 
 Proof.
-intros. destruct (beq_ok x y). case_eq (beq x y); intuition.
+intros. destruct (beq_ok x y). coq_case_eq (beq x y); intuition.
 rewrite H1 in H4. discriminate.
 Defined.
 
 Lemma dec_beq : forall x y : A, {x=y}+{~x=y}.
 
 Proof.
-intros. set (b := beq x y). case_eq b. left. exact (proj1 (beq_ok x y) H).
+intros. set (b := beq x y). coq_case_eq b; intros.
+left. exact (proj1 (beq_ok x y) H).
 right. intro. unfold b in H. subst. rewrite beq_refl in H. discr.
 Defined.
 
 Lemma beq_com : forall x y, beq x y = beq y x.
 
 Proof.
-intros. case_eq (beq x y); symmetry.
+intros. coq_case_eq (beq x y); intros; symmetry.
 rewrite beq_ok. symmetry. rewrite <- beq_ok. assumption.
 rewrite beq_ko. cut (x<>y). auto. rewrite <- beq_ko. assumption.
 Qed.
@@ -182,7 +183,7 @@ Qed.
 Lemma beq_dec_ko : forall x y, beq_dec x y = false <-> x <> y.
 
 Proof.
-intros. case (eq_dec x y); case_eq (beq_dec x y); intuition.
+intros. case (eq_dec x y); coq_case_eq (beq_dec x y); intuition.
 subst y. rewrite beq_dec_refl in H. discriminate.
 rewrite beq_dec_ok in H. contradiction.
 Qed.

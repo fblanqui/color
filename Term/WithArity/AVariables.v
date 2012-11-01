@@ -244,28 +244,29 @@ coq_case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
 (* Vnil *)
 refl.
 (* Vcons *)
-intros u n us. simpl. mem. intros. rewrite H. rewrite H0.
-case_eq (mem x (vars u)); simpl. revert H1. case_eq (mem x (vars_vec us)).
-transitivity (union (union (vars v) (remove x (vars u)))
+intros u n us. simpl. mem. intros. rewrite H, H0.
+coq_case_eq (mem x (vars u)); intro H1; simpl.
+revert H1. coq_case_eq (mem x (vars_vec us)); intro H2.
+trans (union (union (vars v) (remove x (vars u)))
   (union (vars v) (remove x (vars_vec us)))). refl.
-transitivity (union (vars v) (union (remove x (vars u))
+trans (union (vars v) (union (remove x (vars u))
   (remove x (vars_vec us)))). apply union_idem_3.
 apply union_m. refl. symmetry. apply remove_union.
-transitivity (union (union (vars v) (remove x (vars u))) (vars_vec us)).
+trans (union (union (vars v) (remove x (vars u))) (vars_vec us)).
 apply union_m; refl.
-transitivity (union (vars v) (union (remove x (vars u)) (vars_vec us))).
+trans (union (vars v) (union (remove x (vars u)) (vars_vec us))).
 autorewrite with Equal. refl. apply union_m. refl.
-transitivity (union (remove x (vars u)) (remove x (vars_vec us))).
+trans (union (remove x (vars u)) (remove x (vars_vec us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
-symmetry. apply remove_union.
-revert H1. case_eq (mem x (vars_vec us)).
-transitivity (union (vars u) (union (vars v) (remove x (vars_vec us)))).
+sym. apply remove_union.
+revert H1. coq_case_eq (mem x (vars_vec us)); intros H2 H1.
+trans (union (vars u) (union (vars v) (remove x (vars_vec us)))).
 apply union_m; refl.
-transitivity (union (vars v) (union (vars u) (remove x (vars_vec us)))).
+trans (union (vars v) (union (vars u) (remove x (vars_vec us)))).
 apply union_sym_2. apply union_m. refl.
-transitivity (union (remove x (vars u)) (remove x (vars_vec us))).
-apply union_m. symmetry. apply remove_equal. apply mem_4. hyp.
-refl. symmetry. apply remove_union.
+trans (union (remove x (vars u)) (remove x (vars_vec us))).
+apply union_m. sym. apply remove_equal. apply mem_4. hyp.
+refl. sym. apply remove_union.
 apply union_m; refl.
 Qed.
 
@@ -276,23 +277,23 @@ Lemma vars_singles : forall x v us,
 
 Proof.
 induction us; simpl; intros. refl. mem.
-transitivity (union
+trans (union
   (if mem x (vars a) then union (vars v) (remove x (vars a)) else vars a)
   (if mem x (vars_list us)
     then union (vars v) (remove x (vars_list us)) else vars_list us)).
 apply union_m. apply vars_single. exact IHus.
-case_eq (mem x (vars a)); case_eq (mem x (vars_list us)); intros; bool.
-transitivity
+coq_case_eq (mem x (vars a)); coq_case_eq (mem x (vars_list us)); intros; bool.
+trans
   (union (vars v) (union (remove x (vars a)) (remove x (vars_list us)))).
 apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
-transitivity (union (vars v) (union (remove x (vars a)) (vars_list us))).
+trans (union (vars v) (union (remove x (vars a)) (vars_list us))).
 apply union_assoc. apply union_m. refl.
-transitivity (union (remove x (vars a)) (remove x (vars_list us))).
+trans (union (remove x (vars a)) (remove x (vars_list us))).
 apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
 symmetry. apply remove_union.
-transitivity (union (vars v) (union (vars a) (remove x (vars_list us)))).
+trans (union (vars v) (union (vars a) (remove x (vars_list us)))).
 apply union_sym_2. apply union_m. refl.
-transitivity (union (remove x (vars a)) (remove x (vars_list us))).
+trans (union (remove x (vars a)) (remove x (vars_list us))).
 apply union_m. symmetry. apply remove_equal. apply mem_4. hyp. refl.
 symmetry. apply remove_union. refl.
 Qed.

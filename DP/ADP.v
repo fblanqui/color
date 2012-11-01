@@ -250,7 +250,7 @@ ded (in_calls H8). destruct H9 as [g]. destruct H9 as [vs]. destruct H9.
 eapply calls_sn with (r := r). hyp.
 intros. apply Hsnsx. apply (hyp2 lr _ H11).
 intros h ws H13 H14.
-case_eq (negb_subterm l (Fun h ws)). rename H11 into z.
+coq_case_eq (negb_subterm l (Fun h ws)); intros. rename H11 into z.
 apply IH2 with (y := Fun h (Vmap (sub s) ws)) (f := h) (ts := Vmap (sub s) ws).
 unfold chain_min. split. 
 rewrite H7. rewrite <- sub_fun. eapply in_calls_chain. 
@@ -289,7 +289,7 @@ intro Hwf. unfold WF. apply term_ind_forall.
 (* var *)
 apply sn_var. apply hyp1.
 (* fun *)
-intro f. case_eq (defined f R).
+intro f. coq_case_eq (defined f R); intros.
 (* f defined *)
 apply chain_fun. hyp. apply Hwf. hyp.
 (* f undefined *)

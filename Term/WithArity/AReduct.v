@@ -32,7 +32,8 @@ Section S.
 
   Proof.
     intros R0 lr t u hlr. unfold top_reduct. destruct lr as [l r]. simpl.
-    case_eq (matches l t). ded (matches_correct H). subst. inversion H0.
+    coq_case_eq (matches l t); intros t0 H.
+    intro H0. ded (matches_correct H). subst. inversion H0.
     apply hd_red_rule. hyp. discr.
   Qed.
 
@@ -44,7 +45,8 @@ Section S.
   Proof.
     induction R; simpl. contradiction.
     assert (h : List.incl R (a::R)). unfold List.incl. simpl. auto.
-    case_eq (top_reduct t a). simpl in H0. intuition. subst. 
+    coq_case_eq (top_reduct t a); intros t0 H.
+    intro H0. simpl in H0. intuition. subst. 
     eapply top_reduct_correct with (lr := a). simpl. auto. hyp.
     eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. hyp.
     eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. apply IHR. hyp.
@@ -71,12 +73,14 @@ Section S.
     Focus 2. simpl.  assert (h1 : hd_red R t u). subst. apply hd_red_rule. hyp.
     case (top_reduct t a). right. apply H1; hyp. apply H1; hyp.
     (* a = mkRule l r *)
-    subst a. simpl. unfold top_reduct. simpl. case_eq (matches l t).
-    ded (matches_correct H0). left. subst u. apply sub_eq. intros.
+    subst a. simpl. unfold top_reduct. simpl.
+    coq_case_eq (matches l t).
+    intros t0 H0. ded (matches_correct H0). left. subst u. apply sub_eq. intros.
     eapply subeq_inversion. rewrite xl in H2. apply H2.
     unfold rules_preserve_vars in H. unfold List.incl in H. eapply H. simpl.
-    auto.
-    hyp. symmetry in xl. ded (matches_complete xl). rewrite H0 in H2. irrefl.
+    auto. hyp.
+    intro H0. symmetry in xl. ded (matches_complete xl). rewrite H0 in H2.
+    irrefl.
   Qed.
 
 (***********************************************************************)

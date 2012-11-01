@@ -856,9 +856,7 @@ Section S.
 
     Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
 
-    Proof.
-      unfold hd_red_Mod, hd_red_mod. incl_refl.
-    Qed.
+    Proof. unfold hd_red_Mod, hd_red_mod. incl_refl. Qed.
 
     Lemma hd_red_Mod_make_repeat_free :
       hd_red_Mod S R << hd_red_Mod S (make_repeat_free (@eq_rule_dec Sig) R).
@@ -1089,11 +1087,11 @@ Section S.
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). absurd_arith.
     apply red_rule. hyp. absurd_arith.
     apply args_eq. apply Veq_nth. intros k hk.
-    rewrite Vnth_cast, Vnth_app. case_eq (le_gt_dec i k).
-    rewrite Vnth_cons. case_eq (lt_ge_dec 0 (k-i)).
+    rewrite Vnth_cast, Vnth_app. coq_case_eq (le_gt_dec i k); intros l0 H.
+    rewrite Vnth_cons. coq_case_eq (lt_ge_dec 0 (k-i)); intros l1 H0.
     rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H, Vnth_cons, H0.
     refl. omega.
-    assert (k=i). omega. subst. symmetry. apply Vnth_replace.
+    assert (k=i). omega. subst. sym. apply Vnth_replace.
     rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H. refl. omega.
   Qed.
 

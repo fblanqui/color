@@ -136,8 +136,8 @@ Notation find := (@find _ eq_var_bool _).
     induction n; intros. refl. simpl sub_of_asub. simpl more_list.find.
     rewrite IHn. unfold eq_var_bool. case_beq_nat v n.
     assert (bgt_nat (S v) v = true). rewrite bgt_nat_ok. omega. rewrite H. refl.
-    case_eq (bgt_nat n v); case_eq (bgt_nat (S n) v). refl.
-    rewrite bgt_nat_ok in H0. rewrite bgt_nat_ko in H1. absurd_arith.
+    coq_case_eq (bgt_nat n v); intros; coq_case_eq (bgt_nat (S n) v); intros.
+    refl. rewrite bgt_nat_ok in H0. rewrite bgt_nat_ko in H1. absurd_arith.
     rewrite bgt_nat_ok in H1. rewrite bgt_nat_ko in H0.
     rewrite (beq_ko beq_nat_ok) in H. absurd_arith. refl.
   Qed.
@@ -150,8 +150,8 @@ Notation find := (@find _ eq_var_bool _).
       with (Q := fun n (ts : aterms n) =>
         k > maxvars ts -> terms_of_aterms (Vmap (sub s) ts) =
         map (apply_subst (sub_of_asub s k)) (terms_of_aterms ts)); clear t.
-    simpl. intros. rewrite find_sub_of_asub. case_eq (bgt_nat k x). refl.
-    rewrite bgt_nat_ko in H0. absurd_arith.
+    simpl. intros. rewrite find_sub_of_asub. coq_case_eq (bgt_nat k x); intros.
+    refl. rewrite bgt_nat_ko in H0. absurd_arith.
     intros. simpl sub. repeat rewrite term_of_aterm_fun. simpl.
     apply (f_equal (Term f)). apply H. hyp.
     refl. intros t n ts. simpl. rewrite maxvars_cons. rewrite gt_max.
@@ -398,7 +398,7 @@ Section prec_eq_status.
 
   Proof.
     intros f g. generalize (prec_eq_bool_ok prec_nat f g). intuition.
-    rewrite H1 in H. hyp. case_eq (prec_eq_bool prec_nat f g).
+    rewrite H1 in H. hyp. coq_case_eq (prec_eq_bool prec_nat f g); intros.
     refl. rewrite H2 in H. absurd (prec_eq prec_nat f g); hyp.
   Qed.
 
@@ -411,7 +411,7 @@ Section prec_eq_status.
 
   Proof.
     intros f g. unfold bprec_eq_status_symb, implb.
-    case_eq (prec_eq_bool prec_nat f g).
+    coq_case_eq (prec_eq_bool prec_nat f g); intros.
     rewrite prec_eq_ok in H. rewrite beq_status_ok. intuition.
     intuition. rewrite <- prec_eq_ok in H1. rewrite H in H1. discr.
   Qed.

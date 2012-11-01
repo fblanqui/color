@@ -107,7 +107,8 @@ Section S.
 
     Proof.
       intros t u h. redtac. subst. unfold red_flat_cont, Rof.
-      repeat rewrite fill_fill. case_eq (is_root_preserving (mkRule l r)).
+      repeat rewrite fill_fill.
+      coq_case_eq (is_root_preserving (mkRule l r)); intros.
       apply red_rule. unfold flat_rules. rewrite in_flat_map.
       exists (mkRule l r). intuition. unfold flat_rule. rewrite H. simpl. auto.
       destruct l. discr. destruct r. discr.

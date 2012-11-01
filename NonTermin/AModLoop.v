@@ -60,7 +60,8 @@ Section S.
     mod_rewrite t dm = Some u -> red_mod E R t u.
 
   Proof.
-    intros t [ds d] u. unfold mod_rewrite. case_eq (rewrites E t ds). 2: discr.
+    intros t [ds d] u. unfold mod_rewrite.
+    coq_case_eq (rewrites E t ds); intros. 2: discr.
     ded (rewrites_correct H). exists (last l t). split. apply FS_rtc. hyp.
     apply rewrite_correct with (d:=d). hyp.
   Qed.
@@ -86,8 +87,8 @@ Section S.
 
   Proof.
     induction ds; simpl; intros. inversion H. exact I.
-    revert H. case_eq (mod_rewrite t a). 2: discr.
-    revert H0. case_eq (mod_rewrites t0 ds). 2: discr.
+    revert H. coq_case_eq (mod_rewrite t a); intros. 2: discr.
+    revert H0. coq_case_eq (mod_rewrites t0 ds); intros. 2: discr.
     inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
   Qed.
 
@@ -250,7 +251,8 @@ Section S.
     intros t mds ds p. unfold is_mod_loop. coq_case_eq (mod_rewrites t mds).
     2: discr. destruct l. discr. set (us := t0::l). set (u := last us default).
     coq_case_eq (rewrites E u ds). 2: discr. intro us'. set (u' := last us' u).
-    coq_case_eq (subterm_pos u' p). 2: discr. intro v. case_eq (matches t v).
+    coq_case_eq (subterm_pos u' p). 2: discr. intro v.
+    coq_case_eq (matches t v); intros.
     2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
     assert (h : u = last_term us). unfold last_term, k, nth.
     rewrite <- last_nth.
