@@ -78,9 +78,9 @@ Section S.
 
   Proof.
     intros t [p [l r]] u. unfold rewrite.
-    coq_case_eq (mem beq_rule (mkRule l r) R); intros. 2: discr.
-    revert H0. coq_case_eq (subterm_pos t p); intros. 2: discr.
-    revert H1. coq_case_eq (matches l t0); intros. rename t1 into s. 2: discr.
+    case_eq (mem beq_rule (mkRule l r) R); intros. 2: discr.
+    revert H0. case_eq (subterm_pos t p); intros. 2: discr.
+    revert H1. case_eq (matches l t0); intros. rename t1 into s. 2: discr.
     rewrite red_pos_ok. exists p. exists l. exists r. exists s. intuition.
     rewrite mem_ok in H. hyp. apply beq_rule_ok.
     ded (matches_correct H1). rewrite H3. hyp.
@@ -106,8 +106,8 @@ Section S.
 
   Proof.
     induction ds; simpl; intros. inversion H. exact I.
-    revert H. coq_case_eq (rewrite t a); intros. 2: discr.
-    revert H0. coq_case_eq (rewrites t0 ds); intros. 2: discr.
+    revert H. case_eq (rewrite t a); intros. 2: discr.
+    revert H0. case_eq (rewrites t0 ds); intros. 2: discr.
     inversion H1. simpl. ded (rewrite_correct H). intuition.
   Qed.
 
@@ -242,10 +242,10 @@ Section S.
   Lemma is_loop_correct : forall t ds p, is_loop t ds p = true -> EIS (red R).
 
   Proof.
-    intros t ds p. unfold is_loop. coq_case_eq (rewrites t ds). 2: discr.
+    intros t ds p. unfold is_loop. case_eq (rewrites t ds). 2: discr.
     destruct l. discr. set (us := t0::l). set (u := last us default).
-    coq_case_eq (subterm_pos u p). 2: discr. intro v.
-    coq_case_eq (matches t v); intros.
+    case_eq (subterm_pos u p). 2: discr. intro v.
+    case_eq (matches t v); intros.
     2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
     assert (h : u = last_term us). unfold last_term, k, nth.
     rewrite <- last_nth.

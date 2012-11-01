@@ -24,15 +24,6 @@ Ltac ded t := generalize t; intro.
 Ltac fo := firstorder.
 Ltac gen t := generalize t.
 
-(*FIXME: remove?*)
-(***********************************************************************)
-(** Re-definition of case_eq to automatically do intros after. *)
-
-Ltac coq_case_eq := case_eq.
-(*Ltac coq_case_eq x := generalize (refl_equal x); pattern x at -1; case x.*)
-
-(*REMOVE:Ltac case_eq e := coq_case_eq e; intros.*)
-
 (***********************************************************************)
 (** [geneq H x e(x)] transforms a goal [G(x)] into
 [forall t, H t -> forall x, e(x) = t -> G(x)] *)

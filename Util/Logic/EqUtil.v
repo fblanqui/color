@@ -91,14 +91,14 @@ Require Import BoolUtil.
 Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 
 Proof.
-intros. destruct (beq_ok x y). coq_case_eq (beq x y); intuition.
+intros. destruct (beq_ok x y). case_eq (beq x y); intuition.
 rewrite H1 in H4. discriminate.
 Defined.
 
 Lemma dec_beq : forall x y : A, {x=y}+{~x=y}.
 
 Proof.
-intros. set (b := beq x y). coq_case_eq b; intros.
+intros. set (b := beq x y). case_eq b; intros.
 left. exact (proj1 (beq_ok x y) H).
 right. intro. unfold b in H. subst. rewrite beq_refl in H. discr.
 Defined.
@@ -106,7 +106,7 @@ Defined.
 Lemma beq_com : forall x y, beq x y = beq y x.
 
 Proof.
-intros. coq_case_eq (beq x y); intros; symmetry.
+intros. case_eq (beq x y); intros; symmetry.
 rewrite beq_ok. symmetry. rewrite <- beq_ok. assumption.
 rewrite beq_ko. cut (x<>y). auto. rewrite <- beq_ko. assumption.
 Qed.
@@ -133,7 +133,7 @@ Implicit Arguments dec_beq [A beq].
 Implicit Arguments beq_com [A beq].
 Implicit Arguments beq_ko [A beq].
 
-Ltac case_beq beq beq_ok x y := coq_case_eq (beq x y);
+Ltac case_beq beq beq_ok x y := case_eq (beq x y);
   [let h := fresh in intro h; rewrite beq_ok in h;
     match type of h with ?x = ?y => subst y end
     | intro].
@@ -183,7 +183,7 @@ Qed.
 Lemma beq_dec_ko : forall x y, beq_dec x y = false <-> x <> y.
 
 Proof.
-intros. case (eq_dec x y); coq_case_eq (beq_dec x y); intuition.
+intros. case (eq_dec x y); case_eq (beq_dec x y); intuition.
 subst y. rewrite beq_dec_refl in H. discriminate.
 rewrite beq_dec_ok in H. contradiction.
 Qed.

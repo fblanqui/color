@@ -366,13 +366,13 @@ same relation *)
 
   Proof.
     intros x x' xx' g g' gg'. unfold succs. rewrite <- xx'. clear x' xx'.
-    coq_case_eq (find x g); intros; coq_case_eq (find x g'); intros.
+    case_eq (find x g); intros; case_eq (find x g'); intros.
     (* find x g = Some t0, find x g' = Some t1 *)
     intros y hy.
     assert (xy : rel g x y). exists t0. intuition. rewrite gg' in xy.
     destruct xy as [s [s1 s2]]. rewrite H0 in s1. inversion s1. subst t1. hyp.
     (* find x g = Some t0, find x g' = None *)
-    coq_case_eq (XSet.is_empty t0); intros.
+    case_eq (XSet.is_empty t0); intros.
     rewrite is_empty_eq in H1. rewrite H1. refl.
     destruct (find_Some_rel H H1) as [y hy]. rewrite gg' in hy.
     destruct hy as [s [s1 s2]]. rewrite H0 in s1. discr.
@@ -428,14 +428,14 @@ successors of g' *)
     geq g (if XSet.is_empty s then g' else remove y g').
 
   Proof.
-    intros y s g g' n e. coq_case_eq (XSet.is_empty s); intros.
+    intros y s g g' n e. case_eq (XSet.is_empty s); intros.
     (* s empty *)
     rewrite geq_succs; intro z. rewrite <- e. rewrite succs_add.
     destruct (eq_dec y z). 2: refl. rewrite <- e0. unfold succs.
     rewrite not_find_in_iff in n. rewrite n. sym. apply is_empty_eq. hyp.
     (* s not empty *)
     rewrite geq_succs; intro z. unfold succs at 2. rewrite remove_o.
-    coq_case_eq (eq_dec y z); intros.
+    case_eq (eq_dec y z); intros.
     rewrite <- e0. unfold succs. rewrite not_find_in_iff in n. rewrite n. refl.
     fold (succs z g'). trans (succs z (add y s g)).
     rewrite succs_add. rewrite H0. refl. rewrite e. refl.
@@ -445,16 +445,16 @@ successors of g' *)
     if XSet.is_empty s then geq g' g else Add y (succs y g') (remove y g') g'.
 
   Proof.
-    intros y s g g' n e. coq_case_eq (XSet.is_empty s); intros.
+    intros y s g g' n e. case_eq (XSet.is_empty s); intros.
     (* s empty *)
     rewrite geq_succs; intro z. rewrite <- e. rewrite succs_add.
     destruct (eq_dec y z). 2: refl.
     rewrite <- e0. unfold succs. rewrite not_find_in_iff in n. rewrite n.
     apply is_empty_eq. hyp.
     (* s not empty *)
-    unfold Add. intro z. rewrite add_o. coq_case_eq (eq_dec y z); intros.
+    unfold Add. intro z. rewrite add_o. case_eq (eq_dec y z); intros.
     (* y = z *)
-    unfold succs. rewrite e0. coq_case_eq (find z g'); intros. refl.
+    unfold succs. rewrite e0. case_eq (find z g'); intros. refl.
     rewrite geq_succs in e. ded (e y). rewrite succs_add_id in H2.
     rewrite e0 in H2. unfold succs in H2. rewrite H1 in H2.
     rewrite <- is_empty_eq in H2. rewrite H in H2. discr.
@@ -526,7 +526,7 @@ successors of g' *)
     refl.
     (* add *)
     intros y s g n h e. rewrite preds_add. 2: hyp.
-    coq_case_eq (XSet.mem x s); intros.
+    case_eq (XSet.mem x s); intros.
     (* x in s *)
     ded (geq_add n e). rewrite (mem_is_empty H) in H0. ded (H0 y).
     rewrite empty_o, succs_empty, add_o in H1.
@@ -553,7 +553,7 @@ successors of g' *)
     intros y s g n h x x' xx' g' e. unfold preds. rewrite fold_add.
     2: intuition. 2: apply preds_aux_m'. 2: apply preds_aux_transp. 2: hyp.
     fold (preds x g). fold (preds x' g'). ded (geq_add_remove n e).
-    revert H. coq_case_eq (XSet.is_empty s); intros; unfold preds_aux.
+    revert H. case_eq (XSet.is_empty s); intros; unfold preds_aux.
     (* s empty *)
     rewrite mem_3. apply h; hyp. rewrite <- XSetFacts.is_empty_iff in H.
     apply H.
@@ -578,7 +578,7 @@ successors of g' *)
     intros [s [s1 s2]]. rewrite empty_o in s1. discr.
     (* add *)
     intros z s g n h. rewrite preds_add. 2: hyp.
-    coq_case_eq (XSet.mem y s); intros.
+    case_eq (XSet.mem y s); intros.
     (* y in s *)
     rewrite add_iff. rewrite h. split.
     (* -> *)

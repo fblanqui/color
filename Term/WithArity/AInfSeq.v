@@ -281,7 +281,7 @@ minimal infinite R-sequence *)
       subst. exists l. exists (Fun f t). exists s. intuition.
       eapply dp_intro. apply lr.
       (* In (Fun f v0) (calls R r) *)
-      apply subterm_in_calls. 2: hyp. coq_case_eq (defined f R); intro H. refl.
+      apply subterm_in_calls. 2: hyp. case_eq (defined f R); intro H. refl.
       destruct hv as [hv1 hv2].
       absurd (NT (red R) (sub s (Fun f t))). 2: hyp.
       rewrite <- SN_notNT. apply sn_args_sn_fun. hyp. hyp.

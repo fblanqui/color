@@ -35,7 +35,7 @@ Variable hyp_symrefl : is_symrefl.
 Lemma equal_refl : reflexive equal. (* forall x, cmp x x = Eq. *)
 
 Proof.
-unfold reflexive, equal. intro. coq_case_eq (cmp x x); intros. refl.
+unfold reflexive, equal. intro. case_eq (cmp x x); intros. refl.
 absurd (cmp x x = Gt). rewrite H. discr. rewrite hyp_symrefl. rewrite H. refl.
 absurd (cmp x x = Lt). rewrite H. discr. rewrite hyp_symrefl. rewrite H. refl.
 Qed.

@@ -221,7 +221,7 @@ relation eq *)
     Proof.
       intros k m. split.
       intros h x. rewrite find_mapsto_iff. rewrite h. intro. discr.
-      intro h. coq_case_eq (find k m); intros.
+      intro h. case_eq (find k m); intros.
       rewrite <- find_mapsto_iff in H. ded (h a). contradiction. refl.
     Qed.
 
@@ -276,10 +276,10 @@ relation eq *)
 
     Proof.
       intros m m' [h1 h2] k. split; intro hk.
-      coq_case_eq (find k m'); intros. 2: refl.
+      case_eq (find k m'); intros. 2: refl.
       destruct (Equiv_find_Some' (conj h1 h2) H). destruct H0.
       rewrite hk in H0. discr.
-      coq_case_eq (find k m); intros. 2: refl.
+      case_eq (find k m); intros. 2: refl.
       destruct (Equiv_find_Some (conj h1 h2) H). destruct H0.
       rewrite hk in H0. discr.
     Qed.
@@ -288,7 +288,7 @@ relation eq *)
 
     Proof.
       intros k k' kk' m m' [h1 h2]. rewrite <- kk'. clear k' kk'.
-      unfold eq_opt. coq_case_eq (find k m); intros.
+      unfold eq_opt. case_eq (find k m); intros.
       destruct (Equiv_find_Some (conj h1 h2) H). destruct H0. rewrite H0. hyp.
       rewrite (Equiv_find_None (conj h1 h2) k) in H. rewrite H. auto.
     Qed.

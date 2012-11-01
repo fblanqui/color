@@ -88,9 +88,9 @@ Section Matching.
   Lemma vmap_eqb : forall x y, VMF.eqb x y = (x =X y).
   Proof.
     intros x y; unfold VMF.eqb; unfold VMF.eq_dec.
-    coq_case_eq (eq_nat_dec x y); intros Hxy Hxydep.
+    case_eq (eq_nat_dec x y); intros Hxy Hxydep.
       by symmetry; apply (proj2 (beq_nat_ok x y)).
-      coq_case_eq (x =X y); intros Hxyb.
+      case_eq (x =X y); intros Hxyb.
         by elim (Hxy (proj1 (beq_nat_ok x y) Hxyb)).
         reflexivity.
   Qed.
@@ -136,7 +136,7 @@ Section Matching.
       assumption.
       (* fun *)
       intros g us Hus t θ θ' Hθθ'; destruct t as [y|f ts]; try discr.
-      simpl in Hθθ'; coq_case_eq (f =S g); intros Hfg; rewrite Hfg in Hθθ';
+      simpl in Hθθ'; case_eq (f =S g); intros Hfg; rewrite Hfg in Hθθ';
         try discr.
       by apply Hfun; auto; rewrite (proj1 beq_symb_ok Hfg).
       (* nil *)
@@ -145,7 +145,7 @@ Section Matching.
       (* cons *)
       intros u nu us Hu Hus nt ts θ θ'.
       destruct ts as [|t nt ts]; try discr; simpl Vfold2.
-      coq_case_eq (Vfold2 θ matches_r us ts); try discr; intros Ω HθΩ HΩθ'.
+      case_eq (Vfold2 θ matches_r us ts); try discr; intros Ω HθΩ HΩθ'.
       by apply Hcns with Ω; auto.
     Qed.
   End MatchInd.
@@ -156,13 +156,13 @@ Section Matching.
       forall y t θ θ', exmatch θ y t = Some θ' ->
         forall x, VM.mem x θ' = VM.mem x θ || (y =X x).
     Proof.
-      intros y t θ θ'; unfold exmatch; coq_case_eq (VM.find y θ).
+      intros y t θ θ'; unfold exmatch; case_eq (VM.find y θ).
         intros v H; case (t =T v); intros Htu; try discr.
-        inversion_clear Htu in H; intros x; coq_case_eq (y =X x); intros Hxy.
+        inversion_clear Htu in H; intros x; case_eq (y =X x); intros Hxy.
           by rewrite <- (proj1 (beq_nat_ok _ _) Hxy); rwn VMF.mem_find_b H.
           by rewrite orb_false_r.
 
-        intros Hymem H x; inversion_clear H in Hymem; coq_case_eq (y =X x).
+        intros Hymem H x; inversion_clear H in Hymem; case_eq (y =X x).
           intros Hxy; rewrite (proj1 (beq_nat_ok _ _) Hxy).
           rwn VMF.add_b orb_comm; unfold VMF.eqb; unfold VMF.eq_dec.
           by rewrite (eq_nat_dec_refl x).
@@ -216,7 +216,7 @@ Section Matching.
       forall θ θ' x t, exmatch θ x t = Some θ' ->
         forall y, VM.mem y θ -> VM.find y θ = VM.find y θ'.
     Proof.
-      intros θ θ' x t; unfold exmatch; coq_case_eq (VM.find x θ).
+      intros θ θ' x t; unfold exmatch; case_eq (VM.find x θ).
         by intros u H; case (t =T u); intros I; inversion_clear I.
 
         intros H I; inversion_clear I; intros y Hyθ.
@@ -302,8 +302,8 @@ Section Matching.
     Proof.
       apply matches_some_ind.
       (* var *)
-      intros y u θ θ'; simpl; unfold exmatch; coq_case_eq (VM.find y θ).
-        intros v Hv; coq_case_eq (u =T v); intros Htv I;
+      intros y u θ θ'; simpl; unfold exmatch; case_eq (VM.find y θ).
+        intros v Hv; case_eq (u =T v); intros Htv I;
           inversion_clear I in Hv.
         unfold subst_of_matching; rewrite Hv; simpl.
         by symmetry; apply (proj1 (beq_term_ok _ _)).
@@ -325,7 +325,7 @@ Section Matching.
     Lemma matches_correct : forall u t θ, matches u t = Some θ -> u ! θ = t.
     Proof.
       intros u t θ; unfold matches.
-      coq_case_eq (matches_r u t (VM.empty _)); try discr; intros Ω HΩ.
+      case_eq (matches_r u t (VM.empty _)); try discr; intros Ω HΩ.
       inversion_clear 1; apply (proj1 matches_r_correct) with (VM.empty _).
       assumption.
     Qed.
@@ -361,7 +361,7 @@ Section Matching.
         forall θ, u ! (m ⊕ θ) = t -> forall x, (m ⊕ θ) x = (m' ⊕ θ) x.
     Proof.
       intros u t m m' H θ Hθ x; unfold compose.
-      coq_case_eq (VM.find x m); coq_case_eq (VM.find x m').
+      case_eq (VM.find x m); case_eq (VM.find x m').
         (* some/some*)
         intros v₂ Hv₂ v₁ Hv₁; rewrite <- (matches_monP H) in Hv₂.
         congruence. by rwn VMF.mem_find_b Hv₁.
@@ -391,7 +391,7 @@ Section Matching.
         (* nil/nil *)
         by simpl; intros H; inversion_clear H.
         (* some/some *)
-        simpl; coq_case_eq (Vfold2 m₁ matches_r us ts); try discr.
+        simpl; case_eq (Vfold2 m₁ matches_r us ts); try discr.
         intros m H₁ H₂ θ H x; elim (proj1 (andb_true_iff _ _) H).
         intros Hu Hus; transitivity ((m ⊕ θ) x).
           by apply (IH _ _ _ _ H₁).
@@ -406,7 +406,7 @@ Section Matching.
       apply term_ind_comb.
         (* var *)
         intros x t m H; elim H; simpl; unfold compose.
-        coq_case_eq (VM.find x m);
+        case_eq (VM.find x m);
           [intros mx Hfind _ Ht | intros Hfind _ _];
           unfold exmatch; rewrite Hfind; try done.
         by rewrite (proj2 (beq_term_ok _ _) (sym_eq Ht)); discr.
@@ -429,7 +429,7 @@ Section Matching.
 
           elim H; intros θ Hθ; simpl in Hθ.
           case (proj1 (andb_true_iff _ _) Hθ); intros Hu Hus.
-          simpl; coq_case_eq (Vfold2 m matches_r us ts).
+          simpl; case_eq (Vfold2 m matches_r us ts).
             intros m' Hm'; apply IH; exists θ.
             rewrite <- (proj1 (beq_term_ok _ _) Hu).
             apply sub_eq; intros x _; symmetry.
@@ -443,7 +443,7 @@ Section Matching.
       forall u t θ, u!θ = t -> matches u t <> None.
     Proof.
       intros u t θ H; unfold matches.
-      coq_case_eq (matches_r u t (VM.empty _)).
+      case_eq (matches_r u t (VM.empty _)).
         by intros; discriminate.
         intros Habd _; eapply (proj1 matches_r_complete); [idtac|eassumption].
         exists θ; rewrite <- H; apply sub_eq; intros x _.
@@ -456,7 +456,7 @@ Section Matching.
           (  matches u t = Some Ω
           /\ forall x, VS.mem x (vars u) -> θ x = Ω x).
     Proof.
-      intros u t θ H; coq_case_eq (matches u t).
+      intros u t θ H; case_eq (matches u t).
         intros Ω HΩ; exists Ω; split; [reflexivity | idtac].
         intros x Hxu; apply subeq_inversion with u.
           by rewrite H; symmetry; apply matches_correct.
@@ -496,7 +496,7 @@ Section Matching.
     matches u t = Some s -> ~In x (ATerm.vars u) -> s x = Var x.
   Proof.
     intros u t s x. unfold matches.
-    coq_case_eq (matches_r u t (VMU.XMap.empty term)).
+    case_eq (matches_r u t (VMU.XMap.empty term)).
     intros t0 H H0 H1. inversion H0.
     ded (matches_r_dom H H1). rewrite VMF.empty_a in H2.
     unfold subst_of_matching. revert H2. rewrite VMF.mem_find_b.
