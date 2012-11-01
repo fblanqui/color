@@ -9,7 +9,7 @@ Constructing terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras.
+Require Import RelExtras ListExtras LogicUtil.
 Require TermsActiveEnv.
 
 Module TermsBuilding (Sig : TermsSig.Signature).
@@ -30,7 +30,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
     intro t; inversion t as [L R eq_env typ_arr typ_ok].
     destruct L; destruct R; simpl in *.
     rewrite eq_env in typing0.
-    destruct type0; try contradiction; simpl in *.
+    destruct type0; try contr; simpl in *.
     rewrite typ_ok in typing0.
     exact (buildT (TApp typing0 typing1)).
   Defined.

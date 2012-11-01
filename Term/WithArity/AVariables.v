@@ -110,7 +110,7 @@ intros s x u. pattern u. apply term_ind with (Q := fun n (ts : terms n) =>
   clear u.
 intro. simpl. mem. intro. subst x0. omega.
 intros f v. rewrite vars_fun. rewrite sub_fun. rewrite size_fun. intros.
-ded (H H0). omega. simpl. mem. intros. discriminate.
+ded (H H0). omega. simpl. mem. intros. discr.
 intros until v. simpl. mem. intros. destruct (orb_true_elim H1).
 ded (H e). omega. ded (H0 e). omega.
 Qed.
@@ -251,13 +251,13 @@ trans (union (union (vars v) (remove x (vars u)))
   (union (vars v) (remove x (vars_vec us)))). refl.
 trans (union (vars v) (union (remove x (vars u))
   (remove x (vars_vec us)))). apply union_idem_3.
-apply union_m. refl. symmetry. apply remove_union.
+apply union_m. refl. sym. apply remove_union.
 trans (union (union (vars v) (remove x (vars u))) (vars_vec us)).
 apply union_m; refl.
 trans (union (vars v) (union (remove x (vars u)) (vars_vec us))).
 autorewrite with Equal. refl. apply union_m. refl.
 trans (union (remove x (vars u)) (remove x (vars_vec us))).
-apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
+apply union_m. refl. sym. apply remove_equal. apply mem_4. hyp.
 sym. apply remove_union.
 revert H1. case_eq (mem x (vars_vec us)); intros H2 H1.
 trans (union (vars u) (union (vars v) (remove x (vars_vec us)))).
@@ -285,17 +285,17 @@ apply union_m. apply vars_single. exact IHus.
 case_eq (mem x (vars a)); case_eq (mem x (vars_list us)); intros; bool.
 trans
   (union (vars v) (union (remove x (vars a)) (remove x (vars_list us)))).
-apply union_idem_3. apply union_m. refl. symmetry. apply remove_union.
+apply union_idem_3. apply union_m. refl. sym. apply remove_union.
 trans (union (vars v) (union (remove x (vars a)) (vars_list us))).
 apply union_assoc. apply union_m. refl.
 trans (union (remove x (vars a)) (remove x (vars_list us))).
-apply union_m. refl. symmetry. apply remove_equal. apply mem_4. hyp.
-symmetry. apply remove_union.
+apply union_m. refl. sym. apply remove_equal. apply mem_4. hyp.
+sym. apply remove_union.
 trans (union (vars v) (union (vars a) (remove x (vars_list us)))).
 apply union_sym_2. apply union_m. refl.
 trans (union (remove x (vars a)) (remove x (vars_list us))).
-apply union_m. symmetry. apply remove_equal. apply mem_4. hyp. refl.
-symmetry. apply remove_union. refl.
+apply union_m. sym. apply remove_equal. apply mem_4. hyp. refl.
+sym. apply remove_union. refl.
 Qed.
 
 (***********************************************************************)

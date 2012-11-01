@@ -106,7 +106,7 @@ Program Definition check_compat (R : rules) (F : relation D)
   end. 
 
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   destruct_call lforall_exc...
   intros t u Rtu. destruct (lforall_in wildcard' Rtu). hyp.
 Qed.
@@ -125,7 +125,7 @@ Program Definition simplify (R : rules) :
     end.
 
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   exists l. destruct_call check_compat...
   repeat split...
   intros t u Rtu. exact (lforall_in H Rtu).
@@ -174,14 +174,14 @@ Program Definition applyMonotoneAlgebra (P : Problem) :
   end.
 
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   destruct_call simplify... 
   clear Heq_anonymous s.
   apply WF_incl with (red (H0 ++ R')). apply red_incl...
   apply rule_elimination with (rp m m0)...
 Qed.
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   destruct_call simplify... 
   clear Heq_anonymous0 s.
   apply WF_incl with (hd_red_mod T (H0 ++ R')).
@@ -189,7 +189,7 @@ Proof with try discriminate; auto.
   apply rule_elimination_hd_mod with (wrp wm)...
 Qed.
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   do 2 destruct_call simplify... 
   clear Heq_anonymous s0 Heq_anonymous0 s.
   apply WF_incl with (red_mod (H1 ++ T') (H0 ++ R')).

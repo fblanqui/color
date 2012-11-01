@@ -232,7 +232,7 @@ Section bforall_lt.
     bforall_lt_aux b n = true <-> b = true /\ forall_lt n.
 
   Proof.
-    unfold forall_lt. induction n; simpl; intros. bool. firstorder.    
+    unfold forall_lt. induction n; simpl; intros. bool. fo.    
     rewrite andb_eq. rewrite IHn. rewrite bP_ok. intuition.
     destruct (eq_nat_dec i n). subst. hyp. apply H2. omega.
   Qed.

@@ -15,14 +15,16 @@ Set Implicit Arguments.
 (** Abbreviations of some basic Coq tactics. *)
 
 Ltac hyp := assumption.
+Ltac ehyp := eassumption.
 Ltac refl := reflexivity.
 Ltac sym := symmetry.
 Ltac trans x := transitivity x.
 Ltac contr := contradiction.
 Ltac discr := intros; discriminate.
-Ltac ded t := generalize t; intro.
 Ltac fo := firstorder.
 Ltac gen t := generalize t.
+
+Ltac ded t := gen t; intro.
 
 (***********************************************************************)
 (** [geneq H x e(x)] transforms a goal [G(x)] into
@@ -58,8 +60,8 @@ the form [x <> x]. *)
 
 Ltac irrefl := intros;
   match goal with
-    | _ : ?x = ?x -> False |- _ => absurd (x=x); [assumption | refl]
-    | _ : ?x <> ?x |- _ => absurd (x=x); [assumption | refl]
+    | _ : ?x = ?x -> False |- _ => absurd (x=x); [hyp | refl]
+    | _ : ?x <> ?x |- _ => absurd (x=x); [hyp | refl]
     | _ : ?x <> ?y, _ : ?x = ?y |- _ => subst y; irrefl
     | _ : ?x <> ?y, _ : ?y = ?x |- _ => subst y; irrefl
     | _ : ?x <> ?y, _ : ?x = ?z, _ : ?z = ?y |- _ => subst y; irrefl
@@ -98,8 +100,8 @@ Ltac done :=
   trivial; hnf; intros; solve
    [ repeat progress first
        [solve [trivial | apply sym_equal; trivial]
-         | discriminate | contradiction | split]
-   | assumption
+         | discr | contr | split]
+   | hyp
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end ].
 
 Tactic Notation "by" tactic(T) := (T; done) .

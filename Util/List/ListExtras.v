@@ -72,7 +72,7 @@ Section InitialSeg.
     induction l; intros.
     destruct x; trivial.
     destruct x.
-    destruct p; discriminate.
+    destruct p; discr.
     inversion H.
     destruct p; trivial.
     rewrite H1.
@@ -204,7 +204,7 @@ Section FinalSeg.
   Lemma nth_finalSeg_nth: forall l k p,
     nth_error (finalSeg l k) p = nth_error l (k + p).
   Proof.
-    intros l k; generalize l; clear l.
+    intros l k; revert l.
     induction k; intros; simpl.
     rewrite finalSeg_full; trivial.
     destruct l.
@@ -283,8 +283,7 @@ Section FinalSeg.
     initialSeg l k ++ finalSeg l k = l.
 
   Proof.
-    intros l k; generalize k l; clear k l.
-    induction k.
+    intros l k; revert l; induction k.
     simpl; apply finalSeg_full.
     destruct l; trivial.
     unfold finalSeg; simpl.
@@ -329,7 +328,7 @@ Section Copy.
 
   Proof.
     induction n.
-    contradiction.
+    contr.
     destruct 1.
     auto.
     apply IHn; trivial.
@@ -445,11 +444,10 @@ Section DropNth.
 
   Definition drop_nth (l: list A) n := initialSeg l n ++ finalSeg l (S n).
 
-  Lemma drop_nth_in_length : forall l p,
+  Lemma drop_nth_in_length : forall p l,
     length l > p -> length (drop_nth l p) = pred (length l).
 
   Proof.
-    intros l p; generalize p l; clear p l.
     induction p; destruct l; auto; intros.
     unfold drop_nth; simpl.
     rewrite finalSeg_cons; trivial.
@@ -664,10 +662,10 @@ Section DropLast.
     destruct l; trivial.
     destruct ((a1 :: l) ++ a::nil).
     absurd (dropLast nil = a1 :: l).
-    simpl; discriminate.
-    apply IHl; discriminate.
+    simpl; discr.
+    apply IHl; discr.
     rewrite IHl; trivial.
-    discriminate.
+    discr.
   Qed.
 
   Lemma dropLast_eq : forall l1 l2, l1 = l2 -> dropLast l1 = dropLast l2.
@@ -687,7 +685,7 @@ Section DropLast.
     rewrite (IHl1 l2); trivial.
     simpl.
     cut (l1 ++ a :: l2 <> nil).
-    destruct (l1 ++ a :: l2); firstorder.
+    destruct (l1 ++ a :: l2); fo.
     auto with datatypes.
   Qed.
 
@@ -722,7 +720,7 @@ Section Last.
     replace (last ((a0 :: l1) ++ a::l2)) with (last (l1 ++ a::l2)).
     rewrite (IHl1 l2); trivial.
     cut (l1 ++ a::l2 <> nil).
-    simpl; destruct (l1 ++ a::l2); firstorder.
+    simpl; destruct (l1 ++ a::l2); fo.
     auto with datatypes.
   Qed.
 
@@ -776,7 +774,7 @@ Section Remove.
     simpl; destruct (eqA_dec a a0); trivial.
     simpl; rewrite IHl; trivial.
     destruct l; auto.
-    contradiction.
+    contr.
     exists b; split; trivial.
   Qed.
 
@@ -868,7 +866,7 @@ Defined.
     exists el; split; trivial.
     intros q q0.
     destruct q.
-    destruct (find_last l); discriminate.
+    destruct (find_last l); discr.
     destruct (IHl q) as [el [lq Pel]].
     destruct (find_last l); inversion q0; trivial.
     exists el; split; trivial.
@@ -898,9 +896,9 @@ Lemma find_first_exist : forall x l, In x l -> P x -> find_first l <> None.
 Proof.
 intros. induction l. simpl in H;tauto.
 simpl in H. destruct H. subst; simpl.
-destruct (P_dec x); auto; discriminate.
-simpl. destruct (P_dec a). discriminate.
-ded (IHl H). destruct (find_first l ). discriminate. tauto.
+destruct (P_dec x); auto; discr.
+simpl. destruct (P_dec a). discr.
+ded (IHl H). destruct (find_first l). discr. tauto.
 Qed.
 
 
@@ -913,9 +911,9 @@ induction l.
 simpl in H; tauto.
 simpl in H. destruct (P_dec a).
 exists a; split; simpl; tauto.
-destruct (find_first l); try discriminate.
+destruct (find_first l); try discr.
 assert (exists z : A, In z l /\ P z).
-apply IHl; discriminate.
+apply IHl; discr.
 destruct H0. exists x.
 simpl; tauto.
 tauto.
@@ -926,24 +924,24 @@ Lemma find_first_Some_bound : forall l x,
 
 Proof.
 induction l; intros.
-simpl in H; discriminate.
+simpl in H; discr.
 simpl in H. destruct (P_dec a).
 inversion H; subst.
 simpl; omega.
 destruct (find_first l).
 inversion H; subst.
 simpl; apply lt_n_S; apply IHl; auto.
-discriminate.
+discr.
 Qed.
 
 Lemma In_find_first2 : forall l z,
   find_first l = Some z -> exists y, l[z] = Some y /\ P y.
 
 Proof.
-induction l; intros; simpl in H. discriminate; tauto.
+induction l; intros; simpl in H. discr; tauto.
 destruct (P_dec a).
 inversion H; subst. exists a; simpl; split; auto.
-destruct (find_first l); try discriminate; try tauto.
+destruct (find_first l); try discr; try tauto.
 inversion H. ded (IHl n0 (refl_equal (Some n0))).
 destruct H0. exists x. simpl; auto.
 Qed.
@@ -952,10 +950,10 @@ Lemma find_first_exact : forall l i,
   find_first l = Some i -> exists z, l[i] = Some z /\ P z.
 
 Proof.
-induction l; intros. simpl in H. discriminate.
+induction l; intros. simpl in H. discr.
 simpl in H. destruct (P_dec a).
 inversion H. exists a; subst; simpl; tauto.
-destruct (find_first l); try discriminate.
+destruct (find_first l); try discr.
 inversion H; subst. simpl. apply IHl; auto.
 Qed.
 
@@ -1004,23 +1002,23 @@ Lemma eq_find_first_exact : forall l x z,
 
 Proof.
 intro; intro.
-induction l; intros; simpl in *. discriminate.
+induction l; intros; simpl in *. discr.
 destruct (eq_dec x a); subst.
 inversion H; subst; auto with *.
 assert (exists i, find_first (eq x) (eq_dec x) l = Some i).
-destruct (find_first (eq x) (eq_dec x) l); try discriminate.
+destruct (find_first (eq x) (eq_dec x) l); try discr.
 exists n0; auto with *.
 destruct H0.
 ded (IHl _ H0).
 rewrite H0 in H.
-destruct z; inversion H; subst; assumption.
+destruct z; inversion H; subst; hyp.
 Qed.
 
 Lemma element_at_find_first_eq : forall l x i,
   l[i] = Some x -> exists j, j <= i /\ find_first (eq x) (eq_dec x) l = Some j.
 
 Proof.
-induction l; simpl; intros. discriminate. destruct i.
+induction l; simpl; intros. discr. destruct i.
 inversion H. subst x. case (eq_dec a a); intro. exists 0. auto. irrefl.
 case (eq_dec x a); intro. exists 0. intuition.
 destruct (IHl _ _ H). destruct H0. rewrite H1. exists (S x0). intuition.

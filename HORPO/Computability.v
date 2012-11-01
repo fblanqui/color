@@ -99,7 +99,7 @@ Section Computability_def.
     intros M Mcomp Mbase.
     destruct (CompCase M Mcomp) as [[_ [Macc _]] | [Marr _]].
     trivial.
-    destruct (type M); contradiction.
+    destruct (type M); contr.
   Qed.
 
   Lemma CompCaseArrow : forall M, Computable M -> isArrowType M.(type) ->
@@ -110,7 +110,7 @@ Section Computability_def.
   Proof.
     intros M Mcomp Marr.
     destruct (CompCase M Mcomp) as [[Mbase _] | [_ [_ H]]].
-    destruct (type M); contradiction.
+    destruct (type M); contr.
     trivial.
   Qed.
 
@@ -280,7 +280,7 @@ Section Computability_theory.
     assert (envOk: env N' = env (appBodyR Mapp)).
     term_inv M.
     replace E with (env M').
-    symmetry; auto with comp.
+    sym; auto with comp.
     rewrite <- MM'; auto.
     assert (typArrow: isArrowType (type N')).
     rewrite <- (R_type_preserving M'N').
@@ -723,10 +723,10 @@ Section Computability_theory.
     intro N.
     case (isApp_dec N).
      (* N is application *)
-    destruct N as [E Pt T TypN]; induction TypN; try contradiction.
+    destruct N as [E Pt T TypN]; induction TypN; try contr.
     intros Napp Ns Ns_pflat Ns_comp.
     unfold isPartialFlattening in Ns_pflat.
-    repeat (destruct Ns; [contradiction | idtac]).
+    repeat (destruct Ns; [contr | idtac]).
     rewrite (appUnits_app (buildT (TApp TypN1 TypN2)) I) in Ns_pflat.
     simpl in Ns_pflat.
     destruct Ns.
@@ -791,7 +791,7 @@ Section Computability_theory.
     intros; inversion H.
     unfold CompTerm_eq; auto.
     intros; inversion H; inversion H0.
-    unfold CompTerm_eq; transitivity (proj1_sig y); trivial.
+    unfold CompTerm_eq; trans (proj1_sig y); trivial.
   Defined.
 
   Lemma well_founded_R_comp : well_founded (transp R_Comp).

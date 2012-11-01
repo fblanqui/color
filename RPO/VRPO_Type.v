@@ -173,7 +173,7 @@ Module Status (PT : VPrecedenceType).
     Proof.
       intros. apply lex_dec.
       intros. destruct (term_eq_dec a b); intuition.
-      assumption.
+      hyp.
     Defined.
 
     Lemma mul_status_dec : 
@@ -184,7 +184,7 @@ Module Status (PT : VPrecedenceType).
       intros.
       assert (eq_comp : forall x x' y y', x = x' -> y = y' -> 
         (transp R) x y -> (transp R) x' y').
-      intuition. rewrite <- H. rewrite <- H0. assumption.
+      intuition. rewrite <- H. rewrite <- H0. hyp.
       destruct (@mOrd_dec_aux
         (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
       assert (R_transp_dec : forall t s, In t ts -> In s ss ->
@@ -215,7 +215,7 @@ Module Status (PT : VPrecedenceType).
       unfold order_compatible. intros. split.
       destruct (proj1 (in_map_iff F ts x') H2) as [x'' [x''x' x''ts]].
       destruct (proj1 (in_map_iff F ss y') H5) as [y'' [y''y' y''ss]].
-      subst x'. subst y'. intro. apply H; try assumption. 
+      subst x'. subst y'. intro. apply H; try hyp. 
     Admitted.
 
   End Homomorphism.

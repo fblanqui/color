@@ -115,7 +115,7 @@ Lemma nat_cmp_trans : is_trans nat_cmp.
 
 Proof.
 unfold is_trans. induction x; induction y; simpl; intros; destruct z; simpl;
-  subst; auto; try discr. transitivity (nat_cmp y z). 2: hyp.
+  subst; auto; try discr. trans (nat_cmp y z). 2: hyp.
 apply (IHx y z (nat_cmp y z)); auto.
 Qed.
 

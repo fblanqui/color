@@ -13,21 +13,21 @@ Require Import LogicUtil Relations Setoid.
 
 Section defs.
 
-Variable A : Type.
+  Variable A : Type.
 
-Definition set := A -> Prop.
+  Definition set := A -> Prop.
 
-Definition incl : relation set := fun R S => forall x, R x -> S x.
+  Definition incl : relation set := fun R S => forall x, R x -> S x.
 
-Definition equiv : relation set := fun R S => forall x, R x <-> S x.
+  Definition equiv : relation set := fun R S => forall x, R x <-> S x.
 
-Definition empty : set := fun _ => False.
+  Definition empty : set := fun _ => False.
 
-Definition union (R S : set) : set := fun x : A => R x \/ S x.
+  Definition union (R S : set) : set := fun x : A => R x \/ S x.
 
-Definition single a : set := fun x : A => x = a.
+  Definition single a : set := fun x : A => x = a.
 
-Definition add a R := union (single a) R.
+  Definition add a R := union (single a) R.
 
 End defs.
 
@@ -41,31 +41,23 @@ Infix "::" := add (at level 60, right associativity).
 
 Section incl.
 
-Variable A : Type. Notation set := (set A).
+  Variable A : Type. Notation set := (set A).
 
-Lemma incl_refl : forall R : set, R [= R.
+  Lemma incl_refl : forall R : set, R [= R.
 
-Proof.
-unfold incl. auto.
-Qed.
+  Proof. unfold incl. auto. Qed.
 
-Lemma incl_trans : forall R S T : set, R [= S -> S [= T -> R [= T.
+  Lemma incl_trans : forall R S T : set, R [= S -> S [= T -> R [= T.
 
-Proof.
-unfold incl. auto.
-Qed.
+  Proof. unfold incl. auto. Qed.
 
-Lemma incl_appl : forall R S : set, R [= R ++ S.
+  Lemma incl_appl : forall R S : set, R [= R ++ S.
 
-Proof.
-unfold incl, union. auto.
-Qed.
+  Proof. unfold incl, union. auto. Qed.
 
-Lemma incl_appr : forall R S : set, R [= S ++ R.
+  Lemma incl_appr : forall R S : set, R [= S ++ R.
 
-Proof.
-unfold incl, union. auto.
-Qed.
+  Proof. unfold incl, union. auto. Qed.
 
 End incl.
 
@@ -79,31 +71,23 @@ Add Parametric Relation (A : Type) : (set A) (@incl A)
 
 Section equiv.
 
-Variable A : Type. Notation set := (set A).
+  Variable A : Type. Notation set := (set A).
 
-Lemma equiv_refl : forall R : set, R [=] R.
+  Lemma equiv_refl : forall R : set, R [=] R.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
-Lemma equiv_trans : forall R S T : set, R [=] S -> S [=] T -> R [=] T.
+  Lemma equiv_trans : forall R S T : set, R [=] S -> S [=] T -> R [=] T.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
-Lemma equiv_sym : forall R S : set, R [=] S -> S [=] R.
+  Lemma equiv_sym : forall R S : set, R [=] S -> S [=] R.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
-Lemma equiv_elim : forall R S : set, R [=] S <-> R [= S /\ S [= R.
+  Lemma equiv_elim : forall R S : set, R [=] S <-> R [= S /\ S [= R.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
 End equiv.
 
@@ -120,33 +104,25 @@ Add Parametric Morphism (A : Type) : (@union A)
   with signature (@incl A) ==> (@incl A) ==> (@incl A)
     as incl_app.
 
-Proof.
-firstorder.
-Qed.
+Proof. fo. Qed.
 
 Add Parametric Morphism (A : Type) : (@union A)
   with signature (@equiv A) ==> (@equiv A) ==> (@equiv A)
     as equiv_app.
 
-Proof.
-firstorder.
-Qed.
+Proof. fo. Qed.
 
 Section union.
 
-Variable A : Type. Notation set := (set A). Notation empty := (@empty A).
+  Variable A : Type. Notation set := (set A). Notation empty := (@empty A).
 
-Lemma empty_union_l : forall R, empty ++ R [=] R.
+  Lemma empty_union_l : forall R, empty ++ R [=] R.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
-Lemma empty_union_r : forall R, R ++ empty [=] R.
+  Lemma empty_union_r : forall R, R ++ empty [=] R.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
 End union.
 
@@ -157,39 +133,33 @@ Add Parametric Morphism (A : Type) : (@add A)
   with signature (@eq A) ==> (@incl A) ==> (@incl A)
     as add_incl.
 
-Proof.
-firstorder.
-Qed.
+Proof. fo. Qed.
 
 Add Parametric Morphism (A : Type) : (@add A)
   with signature (@eq A) ==> (@equiv A) ==> (@equiv A)
     as add_equiv.
 
-Proof.
-firstorder.
-Qed.
+Proof. fo. Qed.
 
 (***********************************************************************)
 (** image *)
 
 Section image.
 
-Variables (A B : Type) (f : A -> B).
+  Variables (A B : Type) (f : A -> B).
 
-Definition image (R : set A) : set B := fun b : B => exists a, R a /\ b = f a.
+  Definition image (R : set A) : set B := fun b : B => exists a, R a /\ b = f a.
 
-Definition image_union : forall R S, image (R ++ S) [=] image R ++ image S.
+  Definition image_union : forall R S, image (R ++ S) [=] image R ++ image S.
 
-Proof.
-firstorder.
-Qed.
+  Proof. fo. Qed.
 
-Definition image_add : forall a R, image (a :: R) [=] f a :: image R.
+  Definition image_add : forall a R, image (a :: R) [=] f a :: image R.
 
-Proof.
-intros. unfold add. rewrite image_union. apply equiv_app.
-unfold image, single. split; intro. do 2 destruct H. subst. refl.
-subst. exists a. auto. refl.
-Qed.
+  Proof.
+    intros. unfold add. rewrite image_union. apply equiv_app.
+    unfold image, single. split; intro. do 2 destruct H. subst. refl.
+    subst. exists a. auto. refl.
+  Qed.
 
 End image.

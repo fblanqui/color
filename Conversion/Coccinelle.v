@@ -259,7 +259,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Proof.
     intros t u. unfold bsucc.
-    generalize (rpo_eval_is_sound (term_of_aterm t) (term_of_aterm u)).
+    gen (rpo_eval_is_sound (term_of_aterm t) (term_of_aterm u)).
     case (rpo_eval (term_of_aterm t) (term_of_aterm u)); try discr.
     destruct c; try discr. unfold succ, transp, Rof. auto.
   Qed.
@@ -332,7 +332,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Proof.
     intros t u. unfold bsucceq.
-    generalize (rpo_eval_is_sound (term_of_aterm t) (term_of_aterm u)).
+    gen (rpo_eval_is_sound (term_of_aterm t) (term_of_aterm u)).
     case (rpo_eval (term_of_aterm t) (term_of_aterm u)); try discr.
     destruct c; try discr; unfold succeq, Relation_Operators.union,
       equiv_aterm, succ, transp, Rof; auto.
@@ -397,7 +397,7 @@ Section prec_eq_status.
     prec_eq_bool prec_nat f g = true <-> prec_eq prec_nat f g.
 
   Proof.
-    intros f g. generalize (prec_eq_bool_ok prec_nat f g). intuition.
+    intros f g. gen (prec_eq_bool_ok prec_nat f g). intuition.
     rewrite H1 in H. hyp. case_eq (prec_eq_bool prec_nat f g); intros.
     refl. rewrite H2 in H. absurd (prec_eq prec_nat f g); hyp.
   Qed.
@@ -442,7 +442,7 @@ Section prec_eq_status.
       forall g, In g gs -> prec_eq prec_nat f g -> status f = status g.
 
     Proof.
-      induction gs; simpl; intros. contradiction. destruct H0.
+      induction gs; simpl; intros. contr. destruct H0.
       subst g. ded (bprec_eq_status_aux1_true H). rewrite andb_eq in H0.
       destruct H0. rewrite bprec_eq_status_symb_ok in H2. intuition.
       eapply IHgs. apply H. hyp. hyp.
@@ -473,13 +473,13 @@ Section prec_eq_status.
       prec_eq prec_nat f g -> status f = status g.
 
   Proof.
-    induction fs; simpl; intros. contradiction. destruct H0; destruct H1.
+    induction fs; simpl; intros. contr. destruct H0; destruct H1.
     subst f. subst g. refl.
     subst f. ded (bprec_eq_status_aux2_true H).
     apply (bprec_eq_status_aux1_ok H0); hyp.
     subst g. ded (bprec_eq_status_aux2_true H).
-    symmetry. apply (bprec_eq_status_aux1_ok H1). hyp. apply prec_eq_sym. hyp.
-    eapply IHfs; eassumption.
+    sym. apply (bprec_eq_status_aux1_ok H1). hyp. apply prec_eq_sym. hyp.
+    eapply IHfs; ehyp.
   Qed.
   
   Definition bprec_eq_status := bprec_eq_status_aux2 true.
@@ -490,7 +490,7 @@ Section prec_eq_status.
     forall f g, prec_eq prec_nat f g -> status f = status g.
 
   Proof.
-    intros. eapply bprec_eq_status_aux2_ok. eassumption.
+    intros. eapply bprec_eq_status_aux2_ok. ehyp.
     apply Fs_ok. apply Fs_ok. hyp.
   Qed.
 

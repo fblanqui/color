@@ -76,14 +76,14 @@ Lemma Vtrue_Sn_true : forall n (bs : bools (S n)),
   Vhead bs = true -> S (Vtrue (Vtail bs)) = Vtrue bs.
 
 Proof.
-intros. VSntac bs. apply Vtrue_cons_true. assumption.
+intros. VSntac bs. apply Vtrue_cons_true. hyp.
 Qed.
 
 Lemma Vtrue_Sn_false : forall n (bs : bools (S n)),
   Vhead bs = false -> Vtrue (Vtail bs) = Vtrue bs.
 
 Proof.
-intros. VSntac bs. apply Vtrue_cons_false. assumption.
+intros. VSntac bs. apply Vtrue_cons_false. hyp.
 Qed.
 
 Lemma Vtrue_Sn : forall n (bs : bools (S n)),

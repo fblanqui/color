@@ -67,7 +67,7 @@ Lemma s_SCC's_spec_bound i : In i s_SCC's -> i < dim.
 
 Proof.
 intros. unfold s_SCC's in H. destruct (sorted_SCC' hyps).
-unfold proj1_sig2 in *. generalize p; intros. unfold permutation, meq in p.
+unfold proj1_sig2 in *. gen p; intros. unfold permutation, meq in p.
 ded (p i). rewrite nfirst_multiplicity in H0.
 destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 assert (dim = length (hyp_Dom hyps)). auto. rewrite H1 in *; auto.
@@ -162,7 +162,7 @@ ded (@Rquo_restricted hyps M HM j i).
 split; try split; try tauto; destruct H2; try tauto.
 
 unfold irreflexive in *. intuition. destruct H3; intuition. apply (H7 i).
-eapply H5; eassumption.
+eapply H5; ehyp.
 
 assert (ODPGquo' j i). unfold Rquo'. intuition.
 unfold Rquo in *. unfold hd_red_Mod_SCC' in *.
@@ -211,7 +211,7 @@ assert (exists b, In b L /\ r = hd_red_Mod_SCC' b).
 apply in_map_elim; auto. destruct H7 as [b]. destruct H7; subst r.
 cut (RT_ODPG a b). intro. eapply (compose_empty H8). exists z; eauto.
 eapply sort_transitive. unfold RT; destruct topo_sortable_Rquo'. simpl in *. 
-ded (l (nfirst dim)). destruct H8. intuition. eassumption. auto.
+ded (l (nfirst dim)). destruct H8. intuition. ehyp. auto.
 
 apply IHL. intros. apply H. right; auto.
 destruct H0; auto. apply H. left; auto.
@@ -396,7 +396,7 @@ destruct L. apply WF_chain_SCC_trivial. auto.
 destruct L. destruct (ODPG_dec h h).
 assert (R [i] =Some h).
 assert (In h (SCC'_list i)). rewrite <- H0; simpl; auto.
-rewrite SCC'_list_exact in H1. generalize H1; intro.
+rewrite SCC'_list_exact in H1. gen H1; intro.
 unfold SCCTopoOrdering.SCC'_tag in H1. simpl in *.
 ded (find_first_exact _ _ _ H1). do 2 destruct H3.
 rewrite (SCC'_tag_exact hyps  HM) in H4. intuition.
@@ -405,7 +405,7 @@ rewrite H5 in H2. rewrite <- SCC'_list_exact in H2.
 rewrite <- H0 in H2; simpl in *. intuition.
 
 cut (M[[i,i]] = true). intros. unfold mat_unbound in H2.
-destruct (le_gt_dec dim i); try discriminate.
+destruct (le_gt_dec dim i); try discr.
 unfold Peano.gt in *; assert (g=Hi). apply lt_unique. subst g.
 ded (incl_SCC_list_fast Hi H2). rewrite H in *. rewrite <- H0 in *.
 unfold incl in H3. ded (H3 h). simpl in *. tauto.

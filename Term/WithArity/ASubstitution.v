@@ -40,16 +40,14 @@ Definition sub : substitution -> term -> term := @term_int Sig I0.
 (*REMOVE?*)
 Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (Vmap (sub s) v).
 
-Proof.
-refl.
-Qed.
+Proof. refl. Qed.
 
 Lemma sub_id : forall t, sub id t = t.
 
 Proof.
 set (P := fun t => sub id t = t). change (forall t, P t).
 apply term_ind_forall; intros; unfold P. refl.
-simpl. apply f_equal with (f := Fun f). apply Vmap_eq_id. assumption.
+simpl. apply f_equal with (f := Fun f). apply Vmap_eq_id. hyp.
 Qed.
 
 Lemma fun_eq_sub : forall f ts s u, Fun f ts = sub s u ->
@@ -60,14 +58,12 @@ intros f ts s u H. destruct u.
 right. exists n. refl.
 left. case (eq_symb_dec f f0).
 intro E. rewrite E. exists t. refl.
-intro E. simpl in H. simplify_eq H. contradiction.
+intro E. simpl in H. simplify_eq H. contr.
 Qed.
 
 Lemma vars_eq_sub : forall n s u, Var n = sub s u -> exists m, u = Var m.
 
-Proof.
-intros. destruct u. exists n0. refl. simpl in H. discriminate H.
-Qed.
+Proof. intros. destruct u. exists n0. refl. simpl in H. discr. Qed.
 
 Lemma sub_eq : forall s1 s2 t,
   (forall x, In x (vars t) -> s1 x = s2 x) -> sub s1 t = sub s2 t.
@@ -80,7 +76,7 @@ Lemma sub_eq_id : forall s t,
   (forall x, In x (vars t) -> s x = Var x) -> sub s t = t.
 
 Proof.
-intros. transitivity (sub id t). apply sub_eq. hyp. apply sub_id.
+intros. trans (sub id t). apply sub_eq. hyp. apply sub_id.
 Qed.
 
 Lemma Vmap_sub_eq : forall s1 s2 n (ts : terms n),
@@ -144,7 +140,7 @@ Proof.
 intros. set (P := fun t => sub s1 (sub s2 t) = sub (sub_comp s1 s2) t).
 change (P t). apply term_ind_forall with (P := P); intros; unfold P.
 refl. simpl. apply f_equal with (f := Fun f).
-rewrite Vmap_map. apply Vmap_eq. assumption.
+rewrite Vmap_map. apply Vmap_eq. hyp.
 Qed.
 
 Lemma sub_comp_assoc : forall (s1 s2 s3 : substitution) x,
@@ -238,7 +234,7 @@ Lemma in_svars_intro : forall x y l,
   In x (vars (s y)) -> In y l -> In x (svars l).
 
 Proof.
-induction l; simpl; intros. contradiction. destruct H0.
+induction l; simpl; intros. contr. destruct H0.
 subst a. apply in_appl. exact H.
 ded (IHl H H0). apply in_appr. exact H1.
 Qed.
@@ -247,7 +243,7 @@ Lemma in_svars_elim : forall x l,
   In x (svars l) -> exists y, In y l /\ In x (vars (s y)).
 
 Proof.
-induction l; simpl; intros. contradiction. ded (in_app_or H). destruct H0.
+induction l; simpl; intros. contr. ded (in_app_or H). destruct H0.
 exists a. auto. ded (IHl H0). do 2 destruct H1. exists x0. auto.
 Qed.
 
@@ -365,7 +361,7 @@ Lemma union_correct2 : sub_eq_dom union s2 l2.
 Proof.
 unfold sub_eq_dom, union. intros. case (eq_term_dec (s1 x) (Var x)); intros.
 refl. case (In_dec eq_nat_dec x l1); intro. auto.
-ded (hyp1 _ n0). contradiction.
+ded (hyp1 _ n0). contr.
 Qed.
 
 Lemma sub_union1 : forall t, incl (vars t) l1 -> sub union t = sub s1 t.
@@ -410,7 +406,7 @@ Lemma restrict_var : forall s l x, In x l -> restrict s l x = s x.
 
 Proof.
 intros. unfold restrict. assert (Inb x l = true).
-apply Inb_intro. assumption. rewrite H0. refl.
+apply Inb_intro. hyp. rewrite H0. refl.
 Qed.
 
 Lemma dom_incl_restrict : forall s l, dom_incl (restrict s l) l.
@@ -423,7 +419,7 @@ Qed.
 Lemma sub_eq_restrict : forall s l, sub_eq_dom (restrict s l) s l.
 
 Proof.
-unfold sub_eq_dom, restrict. induction l; simpl. intros. contradiction.
+unfold sub_eq_dom, restrict. induction l; simpl. intros. contr.
 intro. case (eq_nat_dec x a); intuition.
 Qed.
 
@@ -500,7 +496,7 @@ destruct (subterm_fun_elim H) as [v [hv1 hv2]].
 change (Vin v (Vmap (sub s) ts)) in hv1.
 destruct (Vin_map hv1) as [w [hw1 hw2]]. subst.
 destruct (Vforall_in IH hw1 t s hv2) as [x [hx1 hx2]]. exists x. split.
-transitivity w. hyp. apply subterm_strict. apply subterm_fun. hyp. hyp.
+trans w. hyp. apply subterm_strict. apply subterm_fun. hyp. hyp.
 Qed.
 
 (***********************************************************************)
@@ -669,7 +665,7 @@ intro. case (le_lt_dec v (m+n)). intro. absurd (v <= m); omega. auto.
 (* fun *)
 intros. unfold P. intro. simpl sub. apply f_equal with (f := Fun f).
 apply Vmap_eq_id. eapply Vforall_imp. apply H. intros. apply H2.
-eapply maxvar_le_arg with (f := f). apply H0. assumption.
+eapply maxvar_le_arg with (f := f). apply H0. hyp.
 Qed.
 
 Lemma Vmap_fsub_fresh : forall x0 n (ts : terms n),

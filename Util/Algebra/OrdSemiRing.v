@@ -63,10 +63,10 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
 
   Proof.
     intros x y H x0 y0 H0. intuition.
-    transitivity x. apply eq_ge_compat. symmetry. hyp.
-    transitivity x0. hyp. apply eq_ge_compat. hyp.
-    transitivity y. apply eq_ge_compat. hyp.
-    transitivity y0. hyp. apply eq_ge_compat. symmetry. hyp.
+    trans x. apply eq_ge_compat. sym. hyp.
+    trans x0. hyp. apply eq_ge_compat. hyp.
+    trans y. apply eq_ge_compat. hyp.
+    trans y0. hyp. apply eq_ge_compat. sym. hyp.
   Qed.
 
   Add Relation A gt
@@ -78,8 +78,8 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
   Proof.
     intros x y H x0 y0 H0.
     intuition. apply ge_gt_compat2 with x0. 2: apply eq_ge_compat; hyp.
-    apply ge_gt_compat with x. apply eq_ge_compat. symmetry. hyp. hyp.
-    apply ge_gt_compat2 with y0. 2: apply eq_ge_compat; symmetry; hyp.
+    apply ge_gt_compat with x. apply eq_ge_compat. sym. hyp. hyp.
+    apply ge_gt_compat2 with y0. 2: apply eq_ge_compat; sym; hyp.
     apply ge_gt_compat with y. apply eq_ge_compat. hyp. hyp.
   Qed.
 
@@ -137,13 +137,13 @@ Module NOrdSemiRingT <: OrdSemiRingType.
   Lemma ge_gt_compat : forall x y z, x >= y -> y > z -> x > z.
 
   Proof.
-    intros. apply le_gt_trans with y; assumption.
+    intros. apply le_gt_trans with y; hyp.
   Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x > y -> y >= z -> x > z.
 
   Proof.
-    intros. apply gt_le_trans with y; assumption.
+    intros. apply gt_le_trans with y; hyp.
   Qed.
 
   Lemma plus_gt_compat : forall m n m' n',
@@ -172,7 +172,7 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. unfold Peano.ge.
-    apply plus_le_compat; assumption.
+    apply plus_le_compat; hyp.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
@@ -180,7 +180,7 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. unfold Peano.ge.
-    apply mult_le_compat; assumption.
+    apply mult_le_compat; hyp.
   Qed.
 
 End NOrdSemiRingT.
@@ -330,7 +330,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros x y z xy yz. 
-    destruct x; destruct y; destruct z; try solve [ auto | contradiction ].
+    destruct x; destruct y; destruct z; try solve [ auto | contr ].
     apply gt_trans with n0; auto.
   Qed.
 
@@ -373,26 +373,26 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros x y z xy yz. destruct xy. destruct yz.
-    left. apply (gt_trans x y z); assumption.
-    subst y. left. assumption.
-    subst x. assumption.
+    left. apply (gt_trans x y z); hyp.
+    subst y. left. hyp.
+    subst x. hyp.
   Qed.
 
   Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros x y xy yx. destruct xy. destruct yx.
-    absurd (gt y x). apply gt_asym. assumption. assumption.
-    auto. assumption.
+    absurd (gt y x). apply gt_asym. hyp. hyp.
+    auto. hyp.
   Qed.
 
   Lemma ge_dec : rel_dec ge.
 
   Proof.
     intros x y. destruct (gt_dec x y).
-    left. left. assumption.
+    left. left. hyp.
     destruct (eqA_dec x y).
-    left. right. assumption.
+    left. right. hyp.
     right. intro xy. destruct xy; auto.
   Defined.
 
@@ -413,9 +413,9 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     intros. destruct y. destruct x. destruct z.
     unfold gt, ge in *. destruct H. 
     simpl in H. omega.
-    injection H. intro. subst n0. assumption.
+    injection H. intro. subst n0. hyp.
     auto.
-    elimtype False. destruct H. auto. discriminate.
+    elimtype False. destruct H. auto. discr.
     elimtype False. destruct H. auto. subst x.  auto.
   Qed.
 
@@ -480,17 +480,17 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Ltac arctic_ord :=
     match goal with
     | H: MinusInf >> Pos _ |- _ =>
-        contradiction
+        contr
     | H: MinusInf >>= Pos _ |- _ =>
-        destruct H; [ contradiction | discriminate ]
+        destruct H; [ contr | discr ]
     | H: Pos ?m >>= Pos ?n |- _ =>
         assert ((m >= n)%nat); 
-          [ apply pos_ge_impl_ge; assumption 
+          [ apply pos_ge_impl_ge; hyp 
           | clear H; arctic_ord
           ]
     | |- Pos _ >>= MinusInf => left; simpl; trivial
     | |- Pos ?m >>= Pos ?n => apply ge_impl_pos_ge
-    | _ => try solve [contradiction | discriminate]
+    | _ => try solve [contr | discr]
     end.
 
   Lemma plus_gt_compat : forall m n m' n',
@@ -500,9 +500,9 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
-    apply max_gt_compat; assumption.
-    unfold Peano.gt. apply lt_max_intro_l. assumption.
-    unfold Peano.gt. apply lt_max_intro_r. assumption.
+    apply max_gt_compat; hyp.
+    unfold Peano.gt. apply lt_max_intro_l. hyp.
+    unfold Peano.gt. apply lt_max_intro_r. hyp.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
@@ -512,9 +512,9 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
-    apply max_ge_compat; assumption.
-    unfold Peano.ge. apply le_max_intro_l. assumption.
-    unfold Peano.ge. apply le_max_intro_r. assumption.
+    apply max_ge_compat; hyp.
+    unfold Peano.ge. apply le_max_intro_l. hyp.
+    unfold Peano.ge. apply le_max_intro_r. hyp.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
@@ -540,8 +540,8 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct a. 
-    discriminate.
-    destruct H. contradiction. discriminate.
+    discr.
+    destruct H. contr. discr.
   Qed.
 
 End ArcticOrdSemiRingT.
@@ -580,7 +580,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct z. right. refl. left. simpl. auto with zarith. discr.
     rewrite is_not_neg_ok. destruct H. simpl in H. auto with zarith.
     inversion H. auto with zarith.
-    destruct H. simpl in H. contradiction. discr.
+    destruct H. simpl in H. contr. discr.
   Qed.
 
   Lemma eq_ge_compat : forall x y, x = y -> ge x y.
@@ -627,7 +627,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     intros m n p mn np. 
     destruct mn. 
     destruct np.
-    left. apply (gt_trans m n p); assumption.
+    left. apply (gt_trans m n p); hyp.
     rewrite <- H0. left. trivial.
     rewrite H. trivial.
   Qed.
@@ -636,7 +636,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros m n mn nm. destruct mn; auto. destruct nm; auto.
-    absurd (gt n m). apply gt_asym. assumption. assumption.
+    absurd (gt n m). apply gt_asym. hyp. hyp.
   Qed.
 
   Lemma gt_dec : rel_dec gt.
@@ -675,9 +675,9 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     intros. destruct y. destruct x. destruct z.
     unfold gt, ge in *. destruct H. 
     simpl in H. omega.
-    injection H. intro. subst z0. assumption.
+    injection H. intro. subst z0. hyp.
     auto.
-    elimtype False. destruct H. auto. discriminate.
+    elimtype False. destruct H. auto. discr.
     elimtype False. destruct H. auto. subst x.  auto.
   Qed.
 
@@ -749,17 +749,17 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Ltac arctic_ord :=
     match goal with
     | H: MinusInfBZ >> Fin _ |- _ =>
-        contradiction
+        contr
     | H: MinusInfBZ >>= Fin _ |- _ =>
-        destruct H; [ contradiction | discriminate ]
+        destruct H; [ contr | discr ]
     | H: Fin ?m >>= Fin ?n |- _ =>
         assert ((m >= n)%Z); 
-          [ apply fin_ge_impl_ge; assumption 
+          [ apply fin_ge_impl_ge; hyp 
           | clear H; arctic_ord
           ]
     | |- Fin _ >>= MinusInfBZ => left; simpl; trivial
     | |- Fin ?m >>= Fin ?n => apply ge_impl_fin_ge
-    | _ => try solve [contradiction | discriminate]
+    | _ => try solve [contr | discr]
     end.
 
   Lemma plus_gt_compat : forall m n m' n',
@@ -769,7 +769,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord; simpl in *.
-    apply Zmax_gt_compat; assumption.
+    apply Zmax_gt_compat; hyp.
     apply Zlt_gt. apply elim_lt_Zmax_l. omega.
     apply Zlt_gt. apply elim_lt_Zmax_r. omega.
   Qed.
@@ -781,7 +781,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
-    apply Zmax_ge_compat; assumption.
+    apply Zmax_ge_compat; hyp.
     apply Zle_ge. apply elim_Zmax_l. omega.
     apply Zle_ge. apply elim_Zmax_r. omega.
   Qed.
@@ -812,8 +812,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct a. 
-    discriminate.
-    destruct H. contradiction. discriminate.
+    discr.
+    destruct H. contr. discr.
   Qed.
 
 End ArcticBZOrdSemiRingT.
@@ -855,7 +855,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros x y z xy yz. 
-    destruct x; destruct y; destruct z; try solve [ auto | contradiction ].
+    destruct x; destruct y; destruct z; try solve [ auto | contr ].
     apply gt_trans with n0; auto.
   Qed.
 
@@ -877,14 +877,14 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Lemma gt_Fin_WF x : Acc (transp gt) (TPos x).
   Proof.
     induction x using lt_wf_ind; apply Acc_intro; destruct y;
-      auto || contradiction.
+      auto || contr.
   Qed.
 
   Hint Resolve gt_Fin_WF.
 
   Lemma gt_WF : WF gt.
 
-  Proof with auto; try contradiction.
+  Proof with auto; try contr.
     apply wf_transp_WF. intro x.
     destruct x...
     apply Acc_intro. intros. destruct y...
@@ -900,26 +900,26 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros x y z xy yz. destruct xy. destruct yz.
-    left. apply (gt_trans x y z); assumption.
-    subst y. left. assumption.
-    subst x. assumption.
+    left. apply (gt_trans x y z); hyp.
+    subst y. left. hyp.
+    subst x. hyp.
   Qed.
 
   Lemma ge_antisym : antisymmetric ge.
 
   Proof.
     intros x y xy yx. destruct xy. destruct yx.
-    absurd (gt y x). apply gt_asym. assumption. assumption.
-    auto. assumption.
+    absurd (gt y x). apply gt_asym. hyp. hyp.
+    auto. hyp.
   Qed.
 
   Lemma ge_dec : rel_dec ge.
 
   Proof.
     intros x y. destruct (gt_dec x y).
-    left. left. assumption.
+    left. left. hyp.
     destruct (eqA_dec x y).
-    left. right. assumption.
+    left. right. hyp.
     right. intro xy. destruct xy; auto.
   Defined.
 
@@ -940,7 +940,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     intros. 
     destruct y; destruct x; destruct z; auto...
     destruct H. simpl in *. omega. injection H. intros. subst...
-    destruct H. contradiction. discr.
+    destruct H. contr. discr.
   Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
@@ -1004,17 +1004,17 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Ltac tropical_ord :=
     match goal with
-    | H: _ >> PlusInf |- _ => contradiction
+    | H: _ >> PlusInf |- _ => contr
     | H: TPos _ >>= PlusInf |- _ =>
-        destruct H; [ contradiction | discriminate ]
+        destruct H; [ contr | discr ]
     | H: TPos ?m >>= TPos ?n |- _ =>
         assert ((m >= n)%nat); 
-          [ apply pos_ge_impl_ge; assumption 
+          [ apply pos_ge_impl_ge; hyp 
           | clear H; tropical_ord
           ]
     | |- PlusInf >>= TPos _ => left; simpl; trivial
     | |- TPos ?m >>= TPos ?n => apply ge_impl_pos_ge
-    | _ => try solve [contradiction | discriminate]
+    | _ => try solve [contr | discr]
     end.
 
 
@@ -1025,9 +1025,9 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; tropical_ord.
-    apply min_gt_compat; assumption.
-    unfold Peano.gt. apply lt_min_intro_l. assumption.
-    unfold Peano.gt. apply lt_min_intro_r. assumption.
+    apply min_gt_compat; hyp.
+    unfold Peano.gt. apply lt_min_intro_l. hyp.
+    unfold Peano.gt. apply lt_min_intro_r. hyp.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
@@ -1037,9 +1037,9 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; tropical_ord.
-    apply min_ge_compat; assumption.
-    unfold Peano.ge. apply le_min_intro_l. assumption.
-    unfold Peano.ge. apply le_min_intro_r. assumption.
+    apply min_ge_compat; hyp.
+    unfold Peano.ge. apply le_min_intro_l. hyp.
+    unfold Peano.ge. apply le_min_intro_r. hyp.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',

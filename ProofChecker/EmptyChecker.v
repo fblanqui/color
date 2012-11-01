@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A termination solver that knows how to deal with empty problems.
 *)
 
-Require Import ListUtil Problem ATrs SN.
+Require Import ListUtil Problem ATrs SN LogicUtil.
 
 Set Implicit Arguments.
 
@@ -25,7 +25,7 @@ Section EmptySolver.
   Lemma empty_solver Pb : is_problem_empty Pb = true -> Prob_WF Pb.
   Proof.
     unfold Prob_WF; destruct Pb; simpl; intros; destruct R;
-      try solve [termination_trivial | discriminate].
+      try solve [termination_trivial | discr].
   Qed.
 
 End EmptySolver.

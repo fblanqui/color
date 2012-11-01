@@ -42,12 +42,12 @@ relation eq *)
     Global Instance Equiv_m' :
       Proper (@inclusion A ==> @inclusion (XMap.t A)) (@Equiv A).
 
-    Proof. firstorder. Qed.
+    Proof. fo. Qed.
 
     Global Instance Equiv_m A :
       Proper (@same_relation A ==> @same_relation (XMap.t A)) (@Equiv A).
 
-    Proof. firstorder. Qed.
+    Proof. fo. Qed.
 
     Lemma Equal_Equiv : Reflexive eq -> Equal << Equiv eq.
 
@@ -59,14 +59,14 @@ relation eq *)
     Global Instance Equiv_Refl : Reflexive eq -> Reflexive (Equiv eq).
 
     Proof.
-      intros heq m. unfold Equiv. firstorder. rewrite find_mapsto_iff in H, H0.
+      intros heq m. unfold Equiv. fo. rewrite find_mapsto_iff in H, H0.
       rewrite H in H0. inversion H0. subst e'. refl.
     Qed.
 
     Global Instance Equiv_Sym : Symmetric eq -> Symmetric (Equiv eq).
 
     Proof.
-      firstorder.
+      fo.
     Qed.
 
     Global Instance Equiv_Trans : Transitive eq -> Transitive (Equiv eq).
@@ -78,7 +78,7 @@ relation eq *)
       unfold In, Raw.In0 in H1, H.
       assert (exists e, Raw.MapsTo k e m). exists e. hyp.
       rewrite H1 in H5. destruct H5 as [f].
-      transitivity f. apply H2 with k; hyp. apply H3 with k; hyp.
+      trans f. apply H2 with k; hyp. apply H3 with k; hyp.
     Qed.
 
 (***********************************************************************)
@@ -108,7 +108,7 @@ relation eq *)
       unfold transpose_neqkey. intros k l x y m n. unfold Equal.
       intro k'. repeat rewrite add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
-      absurd (X.eq k l). hyp. transitivity k'. hyp. symmetry. hyp.
+      absurd (X.eq k l). hyp. trans k'. hyp. sym. hyp.
     Qed.
 
     Definition add_add_neq := add_transp.
@@ -119,7 +119,7 @@ relation eq *)
     Proof.
       intros k l kl x y m. unfold Equal. intro k'. repeat rewrite add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
-      absurd (X.eq k k'). hyp. transitivity l; hyp.
+      absurd (X.eq k k'). hyp. trans l; hyp.
     Qed.
 
     Lemma add_add : forall k l (x y : A) m,
@@ -168,7 +168,7 @@ relation eq *)
       intros k1 k2 Hk e1 e2 He m1 m2 Hm.
       split.
        intro k.
-       generalize (proj1 Hm k); clear -Hm Hk.
+       gen (proj1 Hm k); clear -Hm Hk.
        intros [Hm1 Hm2]; split; intros [a_ Ha_].
         destruct (eq_dec k2 k).
          split with e2.
@@ -194,18 +194,18 @@ relation eq *)
       destruct (eq_dec k2 k).
        intros e_ e_' H H'.
        revert He.
-       generalize (find_1 H').
+       gen (find_1 H').
        rewrite (find_1 (add_1 _ _ e)).
-       generalize (find_1 H).
+       gen (find_1 H).
        rewrite (find_1 (add_1 _ _ (X.eq_trans Hk e))).
        clear.
        intro H; inversion_clear H.
        intro H; inversion_clear H.
        now auto.
       intros e_ e_' H H'.
-      generalize (add_3 n H').
+      gen (add_3 n H').
       cut (not (X.eq k1 k)).
-       intro n'; generalize (add_3 n' H).
+       intro n'; gen (add_3 n' H).
        exact (proj2 Hm k e_ e_').
       clear -n Hk.
       intro H; destruct n.
@@ -222,7 +222,7 @@ relation eq *)
       intros k m. split.
       intros h x. rewrite find_mapsto_iff. rewrite h. intro. discr.
       intro h. case_eq (find k m); intros.
-      rewrite <- find_mapsto_iff in H. ded (h a). contradiction. refl.
+      rewrite <- find_mapsto_iff in H. ded (h a). contr. refl.
     Qed.
 
     Lemma Equiv_MapsTo : forall m m', Equiv eq m m' -> forall k x,
@@ -300,8 +300,8 @@ relation eq *)
 
     Proof.
       intros m m' mm'. unfold Empty, Raw.Proofs.Empty. split; intros h k x kx.
-      destruct (Equiv_MapsTo' mm' kx) as [x' [h1 h2]]. firstorder.
-      destruct (Equiv_MapsTo mm' kx) as [x' [h1 h2]]. firstorder.
+      destruct (Equiv_MapsTo' mm' kx) as [x' [h1 h2]]. fo.
+      destruct (Equiv_MapsTo mm' kx) as [x' [h1 h2]]. fo.
     Qed.
 
     Global Instance is_empty_Equiv :
@@ -321,10 +321,10 @@ relation eq *)
       intro m. unfold Equiv, Empty, Raw.Proofs.Empty. intuition.
       assert (In a m). exists e. hyp.
       rewrite <- H0 in H2. rewrite empty_in_iff in H2. hyp.
-      rewrite empty_in_iff in H0. contradiction.
+      rewrite empty_in_iff in H0. contr.
       rewrite empty_in_iff. destruct H0. eapply H. apply H0.
       assert (In k (empty A)). exists e. hyp.
-      rewrite empty_in_iff in H2. contradiction.
+      rewrite empty_in_iff in H2. contr.
     Qed.
 
     Lemma Equiv_add_remove : forall n k x m', ~In k n ->
@@ -375,8 +375,8 @@ and satisfies some commutation property *)
         pattern m; apply map_induction_bis; clear m.
         (* Equal *)
         intros m n mn hm n' nn' b b' bb'. apply Equal_Equiv in mn.
-        2: intuition. transitivity (fold f m b).
-        symmetry. apply hm. hyp. refl. apply hm. transitivity n; hyp. hyp.
+        2: intuition. trans (fold f m b).
+        sym. apply hm. hyp. refl. apply hm. trans n; hyp. hyp.
         (* Empty *)
         intros m hm b b' bb'. rewrite Equiv_empty in hm.
         rewrite fold_Empty; auto. 2: apply empty_1.
@@ -404,7 +404,7 @@ and satisfies some commutation property *)
         intros f f_m hf f' ff' m m' mm' b b' bb'. repeat rewrite fold_1.
         set (F := fun a (p:key*A) => f (fst p) (snd p) a).
         set (F' := fun a (p:key*A) => f' (fst p) (snd p) a).
-        transitivity (fold_left F (elements m') b').
+        trans (fold_left F (elements m') b').
         unfold F. repeat rewrite <- fold_1. apply fold_Equiv; auto||refl.
         apply fold_left_m_ext with (eqB:=@eq_key_elt A); try refl.
         intros a a' aa' [k x] [k' x'] e. inversion e. unfold F, F'. simpl in *.

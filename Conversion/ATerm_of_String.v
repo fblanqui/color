@@ -256,7 +256,7 @@ Proof.
 unfold WF. intro H.
 cut (forall t s, t = term_of_string s -> SN (Srs.red_mod E R) s).
 intros. apply H0 with (term_of_string x). refl.
-intro t. generalize (H t). induction 1. intros. apply SN_intro. intros.
+intro t. gen (H t). induction 1. intros. apply SN_intro. intros.
 apply H1 with (term_of_string y). 2: refl. subst x. apply red_mod_of_sred_mod.
 exact H3.
 Qed.

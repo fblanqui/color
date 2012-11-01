@@ -110,7 +110,7 @@ Section incl.
   Lemma WF_empty_rel : WF (@empty_rel A).
 
   Proof.
-    intro x. apply SN_intro. intros. contradiction.
+    intro x. apply SN_intro. intros. contr.
   Qed.
 
   Lemma Acc_incl : R << S -> forall x, Acc S x -> Acc R x.

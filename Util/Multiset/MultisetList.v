@@ -10,8 +10,8 @@ representation.
 
 Set Implicit Arguments.
 
-Require Import RelExtras MultisetCore Permutation Multiset List ListExtras
-  PermutSetoid.
+Require Import LogicUtil RelExtras MultisetCore Permutation Multiset List
+  ListExtras PermutSetoid.
 
 Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
 
@@ -132,7 +132,8 @@ Section SpecConformation.
     induction M; auto.
   Qed.
 
-  Lemma mult_remove_in : forall x a M, x =A= a -> x / (rem a M) = (x / M - 1)%nat.
+  Lemma mult_remove_in : forall x a M,
+    x =A= a -> x / (rem a M) = (x / M - 1)%nat.
 
   Proof.
     induction M.
@@ -142,7 +143,7 @@ Section SpecConformation.
       simpl; intros; try solve [absurd (x =A= a); eauto with sets].
     auto with arith.
     destruct (eqA_dec x a0).
-    contradiction.
+    contr.
     auto.
   Qed.
 
@@ -212,7 +213,7 @@ Section SpecConformation.
     x / ((rem a M) - N) = x / (rem a (M - N)).
 
   Proof.
-    intros M N; generalize M; clear M.
+    intros M N; gen M; clear M.
     induction N.
     auto.
     intros M b x.
@@ -265,14 +266,14 @@ Section SpecConformation.
 
   Proof.
     intros; compute.
-    case (eqA_dec x y); [trivial | contradiction].
+    case (eqA_dec x y); [trivial | contr].
   Qed.
   
   Lemma singleton_mult_notin : forall x y, ~x =A= y -> x / {{y}} = 0.
 
   Proof.
     intros; compute.
-    case (eqA_dec x y); [contradiction | trivial].
+    case (eqA_dec x y); [contr | trivial].
   Qed.
 
   Lemma rev_list_ind_type : forall P : Multiset -> Type,
@@ -287,7 +288,7 @@ Section SpecConformation.
 
   Proof.
     intros.
-    generalize (rev_involutive l).
+    gen (rev_involutive l).
     intros E; rewrite <- E.
     apply (rev_list_ind_type P).
     auto.

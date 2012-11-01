@@ -10,7 +10,8 @@ lambda-calculus is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListPermutation Arith TermsConv ListUtil ListExtras.
+Require Import RelExtras ListPermutation Arith TermsConv ListUtil ListExtras
+  LogicUtil.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 
@@ -162,8 +163,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     unfold subst_envs_comp; intros.
     destruct i; destruct j; try solve [
-      inversion H; destruct i; simpl in *; discriminate |
-      inversion H0; destruct j; simpl in *; discriminate
+      inversion H; destruct i; simpl in *; discr |
+      inversion H0; destruct j; simpl in *; discr
     ].
     inversion H; inversion H0; rewrite <- H2; rewrite <- H3; apply env_comp_refl.
   Qed.
@@ -201,8 +202,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intros Nx Mx.
     unfold VarD in Nx.
     inversion Nx.
-    symmetry; apply M_x; trivial.
-    unfold VarD; destruct p; simpl; intros; discriminate.
+    sym; apply M_x; trivial.
+    unfold VarD; destruct p; simpl; intros; discr.
     rewrite subst_ran_single.
     apply env_comp_sub.
     apply env_comp_sym; trivial.
@@ -217,7 +218,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct x.
     unfold varIsNotSubst in xUD; simpl in *.
     destruct a.
-    destruct xUD; discriminate.
+    destruct xUD; discr.
     unfold VarUD; auto.
     unfold VarUD; simpl.
     apply IHG; trivial.
@@ -232,8 +233,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct x.
     unfold varIsNotSubst in xUD; simpl in * .
     destruct a.
-    destruct xUD; discriminate.
-    firstorder.
+    destruct xUD; discr.
+    fo.
     unfold VarUD in xUD; simpl in xUD.
     unfold varIsNotSubst; simpl.
     apply IHG; trivial.
@@ -263,11 +264,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct x.
     destruct a.
     inversion Gx.
-    exists t; firstorder.
+    exists t; fo.
     try_solve.
     inversion Gx.
     destruct (IHG x A H0).
-    exists x0; firstorder.
+    exists x0; fo.
   Qed.
 
   Lemma subst_dom_lifted : forall G n, subst_dom (lift_subst G n) = subst_dom G.
@@ -419,7 +420,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct a.
     right; unfold isEmptySubst; intro f.
     absurd ((Some t::G) |-> 0/-); auto.
-    compute; intro f'; destruct f'; discriminate.
+    compute; intro f'; destruct f'; discr.
     destruct IHG.
     left; apply subst_cons_empty; trivial.
     right.
@@ -447,7 +448,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     induction G; auto.
     destruct a.
-    intro f; destruct (f 0); discriminate.
+    intro f; destruct (f 0); discr.
     intro Ge.
     rewrite subst_ran_cons_none.
     apply IHG.
@@ -528,7 +529,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro aG_empty.
     destruct a.
     absurd ((Some t::G) |-> 0/-); auto.
-    compute; intro f; destruct f; discriminate.
+    compute; intro f; destruct f; discr.
     unfold subst_ran; simpl.
     apply IHG.
     apply subst_tail_empty; trivial.
@@ -883,7 +884,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct C; simpl in * .
     destruct (isVarDecl_dec (subst_ran G) x) as [[B GxB] | Gxn].
     assert (eAB: A = B).
-    symmetry; apply (ran_c0 x B A); trivial.
+    sym; apply (ran_c0 x B A); trivial.
     apply env_sub_ly_rn; trivial.
     apply subst_dom_varNotSubst; trivial.
     rewrite eAB; apply env_sum_ry; trivial.
@@ -905,8 +906,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     split; intros; destruct C.
      (*    - environments in substitution are ok *)
     unfold subst_envs_comp; intros.
-    destruct i; simpl in *; try discriminate.
-    destruct j; simpl in *; try discriminate.
+    destruct i; simpl in *; try discr.
+    destruct j; simpl in *; try discr.
     set (lc := lifted_subst_envs_comp 1 envs_c0).
     apply (lc i j); trivial.
      (*    - substitution domain compatibile with term *)
@@ -1099,14 +1100,16 @@ Module TermsSubst (Sig : TermsSig.Signature).
     congruence.
   Qed.
 
-  Lemma empty_presubst_neutral : forall Pt G, (forall x, In x G -> x = None) -> presubst Pt G = Pt. 
+  Lemma empty_presubst_neutral : forall Pt G,
+    (forall x, In x G -> x = None) -> presubst Pt G = Pt. 
 
   Proof.
     intro Pt; unfold presubst.
-    symmetry; apply empty_presubst_neutral_aux; trivial.
+    sym; apply empty_presubst_neutral_aux; trivial.
   Qed.
 
-  Lemma emptySubst_neutral : forall M S (CS: correct_subst M S), isEmptySubst S -> subst CS = M.
+  Lemma emptySubst_neutral : forall M S (CS: correct_subst M S),
+    isEmptySubst S -> subst CS = M.
 
   Proof.
     intros; apply term_eq.
@@ -1168,7 +1171,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof.
     destruct M as [E Pt A M].
-    simpl; generalize E.
+    simpl; gen E.
     induction M; intros E0 n; try_solve.
      (* variable *)
     destruct (lt_eq_lt_dec x n) as [[x_lt_n | x_eq_n] | x_gt_n].
@@ -1810,7 +1813,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof.
     destruct M as [E Pt A TypM].
-    simpl; induction TypM; try contradiction.
+    simpl; induction TypM; try contr.
      (* function symbol *)
     intros; apply funS_is_funS with f.
     unfold subst; destruct (subst_aux MG) as [N [Nenv [Nterm Ntype]]].
@@ -2277,7 +2280,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply env_sum_ly.
     intros B C D1 D2.
     destruct (env_sum_varDecl El E D1) as [[D1l _] | D1r].
-    apply (H3 j B C); firstorder.
+    apply (H3 j B C); fo.
     apply (H0 j H6); trivial.
     apply env_sum_ly.
     apply env_comp_on_sym.

@@ -9,7 +9,7 @@ multisets, along with some properties of this order.
 *)
 
 Require Import List MultisetOrder RelExtras MultisetCore MultisetList
-  Permutation MultisetTheory Arith AccUtil RelUtil.
+  Permutation MultisetTheory Arith AccUtil RelUtil LogicUtil.
 
 Module MultisetListOrder (ES : Eqset_dec).
 
@@ -51,7 +51,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim (member_multiset_list ts) with s; trivial.
       apply In_eqA_compat.
       setoid_rewrite H0.
-      apply member_member_union; assumption.
+      apply member_member_union; hyp.
       left; auto with multisets.
       auto with sets.
         (* case s in Y : *)
@@ -61,11 +61,11 @@ Module MultisetListOrder (ES : Eqset_dec).
       apply In_eqA_compat.
       setoid_rewrite H0.
       setoid_rewrite (union_comm Z X).
-      apply member_member_union; assumption.
-      right; assumption.
+      apply member_member_union; hyp.
+      right; hyp.
       apply member_union.
-      setoid_rewrite <- H1; apply member_list_multiset; assumption.
-      apply member_list_multiset; assumption.
+      setoid_rewrite <- H1; apply member_list_multiset; hyp.
+      apply member_list_multiset; hyp.
     Qed.
 
     Lemma transp_trans_to_mult_trans : forall us, 
@@ -81,7 +81,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim (member_multiset_list us p_in_us); intros p' p'_in_us p'eq.
       apply r_eqA_compat with y p'; auto with multisets.
       auto with sets. auto with sets.
-      generalize (Hsub p' p'_in_us x y); unfold transp; simpl; intro Hsub';
+      gen (Hsub p' p'_in_us x y); unfold transp; simpl; intro Hsub';
         apply Hsub'; trivial.
       apply r_eqA_compat with x p; auto with multisets.
       auto with sets.
@@ -104,7 +104,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       apply Ha.
       setoid_rewrite case_M; solve_meq.
         (* case M not empty : *)
-      apply HMa; apply IHM; assumption.
+      apply HMa; apply IHM; hyp.
     Qed.
 
     Lemma self_dom : transitive r -> forall X, X <>mul empty ->
@@ -133,7 +133,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx';
         intros Hx'1 Hx'2.
       apply (r_eqA_compat x' a a a).
-      apply member_singleton. assumption. auto with sets. assumption.
+      apply member_singleton. hyp. auto with sets. hyp.
         (* Property preserved by adding an element : *)
       intros a M HM H.
       assert (H' : a in (M + {{a}})); auto with multisets.
@@ -248,7 +248,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       intros m m_in_ss Hm; apply (Hsub m); trivial.
       elim (member_multiset_list ss m_in_ss).
       apply In_eqA_compat. 
-      generalize H; unfold MultisetLT; simpl; trivial.
+      gen H; unfold MultisetLT; simpl; trivial.
     Qed.
 
     Lemma transp_SPO_to_mult_SPO : forall us,
@@ -268,7 +268,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim (member_multiset_list us p_in_us); intros p' p'_in_us p'eq.
       apply r_eqA_compat with y p'; auto with multisets.
       auto with sets. auto with sets.
-      elim (Hsub p' p'_in_us); intros Hsub' Hsub''; generalize (Hsub' x y);
+      elim (Hsub p' p'_in_us); intros Hsub' Hsub''; gen (Hsub' x y);
         unfold transp; simpl; clear Hsub'; intro Hsub'; apply Hsub'; trivial.
       apply r_eqA_compat with x p; auto with multisets.
       auto with sets.
@@ -320,7 +320,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       intros r_trans ss Hacc.
       unfold mult; apply (Acc_inverse_image (list A) Multiset
         (MultisetLT r) list2multiset ss).
-      generalize Hacc; apply Acc_eq_rel.
+      gen Hacc; apply Acc_eq_rel.
       unfold MultisetLt,MultisetLT,transp; simpl; intros a b;
         apply red_eq_direct; trivial.
     Qed.
@@ -338,14 +338,14 @@ Module MultisetListOrder (ES : Eqset_dec).
       (* proof of iso_comp : *)
       intros ts M N Hts HMN. 
       exists (multiset2list M).
-      generalize HMN; unfold MultisetLt,transp; simpl. 
+      gen HMN; unfold MultisetLt,transp; simpl. 
       apply MultisetGt_morph.
       rewrite Hts; auto with multisets.
       rewrite (double_convertion M); auto with multisets.
       exact (double_convertion M).
       auto with multisets.
       (* *)
-      generalize Hacc; unfold mult; apply Acc_eq_rel; trivial.
+      gen Hacc; unfold mult; apply Acc_eq_rel; trivial.
       intros a b; elim (red_eq_direct r_trans r_eqA_compat
         (list2multiset b) (list2multiset a));
         split; trivial.
@@ -376,9 +376,9 @@ Module MultisetListOrder (ES : Eqset_dec).
     Proof.
       intros r_trans ss acc_ss.
       intros s s_in_ss; apply acc_mord 
-        with (gtA := r) (M := list2multiset ss); try assumption.
+        with (gtA := r) (M := list2multiset ss); try hyp.
       apply Acc_list_multiset; trivial.
-      generalize s_in_ss; apply member_list_multiset.
+      gen s_in_ss; apply member_list_multiset.
     Qed.
 
   End MultisetListOrderFacts.

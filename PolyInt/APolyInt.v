@@ -76,7 +76,7 @@ Section S.
         apply (PI_WM f).
         unfold P in H. apply Vforall_map_intro. auto.
         unfold Q. simpl. trivial.
-        intros t' n' s' H1. unfold Q. intro H2. simpl. split; assumption.
+        intros t' n' s' H1. unfold Q. intro H2. simpl. split; hyp.
       Qed.
 
     End coef_pos.
@@ -187,16 +187,16 @@ Section S.
       rewrite meval_xi. rewrite Vnth_map.
       pattern (xint v) at 1.
       rewrite <- (Vnth_vec_of_val xint (gt_le_S (le_lt_n_Sm Hv))).
-      reflexivity.
+      refl.
 
       intros f ts. unfold Q. intro H. unfold P, f1, f2.
       simpl bterm_int. rewrite val_peval_D. simpl.
       unfold P in H.
-      generalize (Vmap_eq H). intro H'.
+      gen (Vmap_eq H). intro H'.
       rewrite peval_comp.
       apply (f_equal (peval (PI f))).
       rewrite Vmap_map. rewrite Vmap_map.
-      unfold f1 in H'. unfold f2 in H'. assumption.
+      unfold f1 in H'. unfold f2 in H'. hyp.
 
       unfold Q, P. simpl. trivial.
 
@@ -212,7 +212,7 @@ Section S.
 
     Proof.
       intros xint t k H. rewrite <- (term_int_eq_bterm_int xint H).
-      generalize (PI_bterm_int_eq xint (inject_term H)). intuition.
+      gen (PI_bterm_int_eq xint (inject_term H)). intuition.
     Qed.
 
     Implicit Arguments PI_term_int_eq [t k].

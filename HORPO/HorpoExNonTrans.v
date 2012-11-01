@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-Require Import TermsSig Horpo HorpoWf RelExtras Wf_nat List Terms.
+Require Import TermsSig Horpo HorpoWf RelExtras Wf_nat List Terms LogicUtil.
 
 Module BT <: BaseTypes.
 
@@ -180,15 +180,15 @@ Section HorpoNotTrans.
     inversion H12.
     absurd (term (lower (subst (beta_subst (buildT t1) Mapp0 MLabs))
       (beta_lowering (buildT t1) Mapp0 MLabs)) = term (buildT t3)).
-    rewrite lower_term. rewrite subst_term. discriminate. 
+    rewrite lower_term. rewrite subst_term. discr. 
     rewrite <- H17. trivial.
     apply (Htr (buildT t1) (buildT t2) (buildT t3)).
     assert (@appBodyR (buildT t1) I >> @appBodyR (buildT t2) I).
     constructor; try solve [try_solve | apply AlgFunApp; compute; tauto].
     apply HFun with a b; compute; trivial. apply HArgsNil.
-    apply horpo_app_inv with I I. repeat split; intuition. assumption.
-    intuition. assumption.
-    repeat split. right. left. assumption. right. assumption.
+    apply horpo_app_inv with I I. repeat split; intuition. hyp.
+    intuition. hyp.
+    repeat split. right. left. hyp. right. hyp.
     constructor; try_solve.
     apply HBeta. apply RedStep.  replace (buildT t3) with 
       (lower (subst (beta_subst (buildT t2) I I)) 

@@ -60,8 +60,8 @@ Lemma try_add_arc_sym :  forall x y z t,
   try_add_arc x y z t -> try_add_arc x y t z -> R z t.
 
 Proof.
-intros. inversion H. hyp. inversion H0. contradiction. 
-rewrite H3 in H7. contradiction. 
+intros. inversion H. hyp. inversion H0. contr. 
+rewrite H3 in H7. contr. 
 Qed.
 
 Lemma not_try_add_arc : rel_midex R -> forall x y, x<>y ->
@@ -85,12 +85,12 @@ Lemma try_add_arc_dec : eq_dec A -> forall x y,  rel_dec R ->
 
 Proof.
 repeat intro. destruct (X0 x0 y0). do 2 constructor. hyp. 
-destruct (X x0 y0). constructor 2. intro. inversion H; contradiction. 
-destruct (X0 y0 x0). constructor 2. intro. inversion H; contradiction. 
+destruct (X x0 y0). constructor 2. intro. inversion H; contr. 
+destruct (X0 y0 x0). constructor 2. intro. inversion H; contr. 
 destruct (X x x0). destruct (X y y0). rewrite e. rewrite e0. 
 constructor. constructor 2; hyp. 
-constructor 2. intro. inversion H; contradiction. 
-constructor 2. intro. inversion H; contradiction. 
+constructor 2. intro. inversion H; contr. 
+constructor 2. intro. inversion H; contr. 
 Qed.
 
 Lemma try_add_arc_midex : eq_midex A -> forall x y, rel_midex R ->
@@ -98,12 +98,12 @@ Lemma try_add_arc_midex : eq_midex A -> forall x y, rel_midex R ->
 
 Proof.
 do 6 intro. destruct (H0 x0 y0). do 2 constructor. hyp. 
-destruct (H x0 y0). constructor 2. intro. inversion H3; contradiction. 
-destruct (H0 y0 x0). constructor 2. intro. inversion H4; contradiction. 
+destruct (H x0 y0). constructor 2. intro. inversion H3; contr. 
+destruct (H0 y0 x0). constructor 2. intro. inversion H4; contr. 
 destruct (H x x0). destruct (H y y0). rewrite H4. rewrite H5. 
 constructor. constructor 2; hyp. 
-constructor 2. intro. inversion H6; contradiction. 
-constructor 2. intro. inversion H5; contradiction. 
+constructor 2. intro. inversion H6; contr. 
+constructor 2. intro. inversion H5; contr. 
 Qed.
 
 Lemma try_add_arc_trichotomy : eq_midex A -> rel_midex R ->
@@ -147,7 +147,7 @@ Lemma trans_bpath_try_add_arc : eq_midex A -> forall x y z n,
 Proof.
 intros. induction n. inversion H1. destruct l. simpl in H2. 
 apply trans_try_add_arc_sym with x y z; hyp. 
-simpl in H1. pose (le_Sn_O (length l) H2). contradiction. apply IHn.
+simpl in H1. pose (le_Sn_O (length l) H2). contr. apply IHn.
 inversion H1. clear IHn H1 H4 H5 x0 y0. 
 (* repeat_free *)
 destruct (path_repeat_free_length (try_add_arc x y) H z l z H3).
@@ -208,8 +208,8 @@ Lemma sub_rel_try_add_arc_one_to_many : forall x l,
 
 Proof.
 induction l; simpl; intros. refl.
-transitivity (try_add_arc_one_to_many x l). hyp. 
-transitivity (try_add_arc (try_add_arc_one_to_many x l) x a).
+trans (try_add_arc_one_to_many x l). hyp. 
+trans (try_add_arc (try_add_arc_one_to_many x l) x a).
 apply sub_rel_try_add_arc. apply incl_tc. refl. 
 Qed. 
 
@@ -252,7 +252,7 @@ Lemma try_add_arc_one_to_many_trichotomy : eq_midex A -> rel_midex R ->
     trichotomy (try_add_arc_one_to_many x l') x y.
 
 Proof.
-induction l';  simpl; intros. contradiction. pose (incl_cons_l_incl H3). 
+induction l';  simpl; intros. contr. pose (incl_cons_l_incl H3). 
 apply trichotomy_preserved
   with (try_add_arc (try_add_arc_one_to_many x l') x a). 
 apply incl_tc. refl. destruct H1. rewrite H1. 
@@ -292,7 +292,7 @@ Lemma sub_rel_try_add_arc_many_to_many : forall l l',
 
 Proof. 
 induction l'; simpl; intros. refl.
-transitivity (try_add_arc_many_to_many l' l). hyp. 
+trans (try_add_arc_many_to_many l' l). hyp. 
 apply sub_rel_try_add_arc_one_to_many. 
 Qed.
 
@@ -333,7 +333,7 @@ Lemma try_add_arc_many_to_many_trichotomy : eq_midex A -> rel_midex R ->
     trichotomy (try_add_arc_many_to_many l' l) x y.
 
 Proof.
-induction l';  simpl; intros. contradiction. pose (incl_cons_l_incl H2). 
+induction l';  simpl; intros. contr. pose (incl_cons_l_incl H2). 
 destruct H4. rewrite H4. 
 apply try_add_arc_one_to_many_trichotomy with l; try hyp. 
 apply try_add_arc_many_to_many_midex; hyp. 
@@ -377,7 +377,7 @@ Lemma LETS_sub_rel : restriction R l << LETS.
 
 Proof.
 intros. unfold LETS.
-transitivity (clos_trans (restriction R l)). 
+trans (clos_trans (restriction R l)). 
 apply incl_tc. refl. apply  LETS_restriction_clos_trans. 
 Qed.
 
@@ -467,8 +467,8 @@ Proof.
 do 3 intro. destruct (H (x::y::nil)). decompose [and] H0.
 destruct (H5 x y); destruct (H5 y x). 
 absurd (x0 x x). apply H3. apply H1 with y; hyp. 
-constructor 2. intro. rewrite H7 in H4. rewrite H7 in H6. contradiction.
-constructor 2. intro. rewrite H7 in H4. rewrite H7 in H6. contradiction. 
+constructor 2. intro. rewrite H7 in H4. rewrite H7 in H6. contr.
+constructor 2. intro. rewrite H7 in H4. rewrite H7 in H6. contr. 
 destruct (H2 x y); simpl; try tauto. 
 Qed.
 
@@ -588,7 +588,7 @@ do 3 intro. destruct (X1 l x y). trivial. absurd (LETS R l x y). hyp.
 apply LETS_restriction_clos_trans. eapply incl_tc. refl. hyp. split. 
 do 5 intro. destruct (X1 l x y). destruct (X1 l y z).
 pose (LETS_transitive R l x y z l0 l1). 
-destruct (X1 l x z). trivial. contradiction. inversion H1. inversion H0. split. 
+destruct (X1 l x z). trivial. contr. inversion H1. inversion H0. split. 
 do 2 intro. destruct (X1 l x x). absurd (LETS R l x x).
 destruct (LETS_irrefl R l). 
 hyp. apply H1. apply irreflexive_m' with (clos_trans R). 

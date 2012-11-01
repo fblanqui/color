@@ -26,9 +26,9 @@ Lemma Acc_rtc : forall x y, clos_refl_trans R x y -> Acc R y -> Acc R x.
 
 Proof.
 induction 1.
-intro. eapply Acc_inv. apply H0. assumption.
+intro. eapply Acc_inv. apply H0. hyp.
 auto.
-intro. apply IHclos_refl_trans1. apply IHclos_refl_trans2. assumption.
+intro. apply IHclos_refl_trans1. apply IHclos_refl_trans2. hyp.
 Qed.
 
 Lemma Acc_tc_ind : forall P : A->Prop,
@@ -37,8 +37,8 @@ Lemma Acc_tc_ind : forall P : A->Prop,
 
 Proof.
 intros. eapply Acc_ind with (R := clos_trans R). clear x H0. intros.
-apply H. intros. apply H1. assumption.
-apply Acc_clos_trans. assumption.
+apply H. intros. apply H1. hyp.
+apply Acc_clos_trans. hyp.
 Qed.
 
 End rtc.
@@ -59,26 +59,26 @@ Lemma Acc_symprod_fst : forall x, Acc Symprod x -> Acc leA (fst x).
 
 Proof.
 induction 1. destruct x. simpl. apply Acc_intro. intros. ded (H0 (y,b)).
-apply H2. apply left_sym. assumption.
+apply H2. apply left_sym. hyp.
 Qed.
 
 Lemma Acc_symprod_snd : forall x, Acc Symprod x -> Acc leB (snd x).
 
 Proof.
 induction 1. destruct x. simpl. apply Acc_intro. intros. ded (H0 (a,y)).
-apply H2. apply right_sym. assumption.
+apply H2. apply right_sym. hyp.
 Qed.
 
 Lemma Acc_symprod_invl : forall x y, Acc Symprod (x,y) -> Acc leA x.
 
 Proof.
-intros. ded (Acc_symprod_fst H). assumption.
+intros. ded (Acc_symprod_fst H). hyp.
 Qed.
 
 Lemma Acc_symprod_invr : forall x y, Acc Symprod (x,y) -> Acc leB y.
 
 Proof.
-intros. ded (Acc_symprod_snd H). assumption.
+intros. ded (Acc_symprod_snd H). hyp.
 Qed.
 
 Lemma Acc_symprod_inv : forall x y, Acc Symprod (x,y) -> Acc leA x /\ Acc leB y.
@@ -195,7 +195,7 @@ Section Accessibility.
       intros z' T_z'_z.
       elim (iso_comp iso_x_z T_z'_z).
       intros x' Rx' iso_x'_z'.
-      apply Hind with x'; assumption.
+      apply Hind with x'; hyp.
     Qed.
 
   End AccIso.

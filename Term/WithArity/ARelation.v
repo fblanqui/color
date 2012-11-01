@@ -212,7 +212,7 @@ Section S.
     Proof.
       unfold absorb, inclusion, RelUtil.compose, strict_part.
       intros; split; decomp H. eapply E_trans. apply H1. hyp.
-      unfold not; intro. ded (E_trans H H1). contradiction.
+      unfold not; intro. ded (E_trans H H1). contr.
     Qed.
 
   End strict.

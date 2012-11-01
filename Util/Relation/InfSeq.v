@@ -224,7 +224,7 @@ such that [f i = a] *)
       (* i < i0 *)
       ded (indices_complete l e). destruct (In_nth d H0) as [j [h1 h2]].
       exists j. unfold prefix. fold is. fold n. destruct (lt_dec j n).
-      symmetry. hyp. contradiction.
+      sym. hyp. contr.
       (* i >= i0 *)
       destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold is.
       fold n. destruct (lt_dec (n+j) n). absurd_arith.
@@ -309,8 +309,8 @@ Section TransIS.
 
     assert (HPeq : forall i j k, P k i /\ P k j -> i = j).
     intros i j k H; unfold P in H. destruct H as [H H0]. destruct H0 as [H1 H2].
-    destruct H as [H H0]. generalize (le_lt_trans _ _ _ H H2). intros H3.
-    generalize (le_lt_trans _ _ _ H1 H0). intros H4.
+    destruct H as [H H0]. gen (le_lt_trans _ _ _ H H2). intros H3.
+    gen (le_lt_trans _ _ _ H1 H0). intros H4.
     destruct (le_or_lt i j) as [H5 | H5]. case (le_lt_or_eq _ _ H5); try auto.
     clear H5 H1 H2 H3; intros H5. induction j. omega. simpl in H4.
     case (le_lt_or_eq _ _ (lt_n_Sm_le _ _ H5)); intros H1.
@@ -332,7 +332,7 @@ Section TransIS.
     assert (HT : forall i, F1 i <= F1 (S i) <= S (F1 i)). intros.
 
     assert (HSi : S i <= snd (F0 (F1 i))).
-    generalize (ch_minP _ (exP_F0 i)). unfold P. intuition.
+    gen (ch_minP _ (exP_F0 i)). unfold P. intuition.
     destruct (le_lt_or_eq _ _ HSi) as [H0 | H0]. Focus 2.
 
     assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
@@ -371,11 +371,11 @@ Section TransIS.
     intro i; destruct (DecFSi i) as [Hi | Hi]; rewrite Hi.
 
     assert (S (i - fst (F0 (F1 i))) < length (h (F1 i) :: li (F1 i))).
-    generalize (H (S i)). rewrite Hi. rewrite <- minus_Sn_m. auto.
+    gen (H (S i)). rewrite Hi. rewrite <- minus_Sn_m. auto.
     destruct (ch_minP _ (exP_F0 i)). auto.
 
     rewrite <- minus_Sn_m. Focus 2. apply (proj1 (ch_minP _ (exP_F0 i))).
-    generalize H0. set (k := i - fst (F0 (F1 i))). destruct k. simpl.
+    gen H0. set (k := i - fst (F0 (F1 i))). destruct k. simpl.
     intros. apply path_headP.
     apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
     simpl. intros. apply path_nth_inP with (x := (h (F1 i))); try omega.
@@ -398,7 +398,7 @@ Section TransIS.
     cut (S i - fst (F0 (F1 (S i))) = 0). intros. rewrite H1. simpl; auto.
 
     rewrite Hi, H0. simpl. omega.
-    rewrite H1. clear H1. generalize (HF0 (F1 i)). unfold F. intros.
+    rewrite H1. clear H1. gen (HF0 (F1 i)). unfold F. intros.
 
     cut (i - fst (F0 (F1 i)) = length (li (F1 i))).
     Focus 2. rewrite <- H0 in H1. rewrite <- minus_Sn_m in H1. simpl in H1.
@@ -409,7 +409,7 @@ Section TransIS.
     assert (path E (h (F1 i)) (h (S (F1 i))) (li (F1 i))).
     apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
 
-    destruct k. intros.  symmetry in H3.
+    destruct k. intros. symmetry in H3.
     destruct (li (F1 i)). simpl. simpl in H3. rewrite Hi. auto.
     simpl in H3. absurd_arith. simpl. intros. 
     apply path_lastP with (x := (h (F1 i)));  auto. rewrite Hi. hyp.
@@ -418,7 +418,7 @@ Section TransIS.
     cut ((F1 0) = 0). intro H0; rewrite H0; refl.
     assert (P00 : P 0 0). unfold P. simpl. split; try omega.
     destruct (HFi 0) as [k Hk]. rewrite Hk; omega.
-    symmetry. apply le_n_O_eq. apply (is_min_ch (P 0) (exP_F0 0) 0 P00).
+    sym. apply le_n_O_eq. apply (is_min_ch (P 0) (exP_F0 0) 0 P00).
   Qed.
 
 End TransIS.
@@ -465,7 +465,7 @@ Section absorb.
 
   Proof.
     repeat rewrite WF_notIS. intros wf f hf.
-    destruct (IS_absorb hf) as [g hg]. firstorder.
+    destruct (IS_absorb hf) as [g hg]. fo.
   Qed.
 
 End absorb.
@@ -523,13 +523,13 @@ Section ISModUnion.
 
     assert (E_gfi : forall i j, S (reid i) <= j -> j < (reid (S i)) ->
       E (g j) (f (S j))). intros i j le_Sij lt_jx.
-    generalize (is_min_ch (P (S (reid i))) (hyp2 (S (reid i)))). unfold P.
-    intros Hproj. generalize (Hproj j). intros HT. destruct (hyp1 j) as [_ ERj].
+    gen (is_min_ch (P (S (reid i))) (hyp2 (S (reid i)))). unfold P.
+    intros Hproj. gen (Hproj j). intros HT. destruct (hyp1 j) as [_ ERj].
     destruct ERj; auto. destruct (lt_not_le _ _ lt_jx). apply HT. auto.
 
     assert (E_gf0 : forall j, j < (reid 0) -> E (g j) (f (S j))).
-    intros j lt_jx. generalize (is_min_ch (P 0) (hyp2 0)). unfold P. intro HP.
-    generalize (HP j). intro HPj. destruct (hyp1 j) as [_ ERj].
+    intros j lt_jx. gen (is_min_ch (P 0) (hyp2 0)). unfold P. intro HP.
+    gen (HP j). intro HPj. destruct (hyp1 j) as [_ ERj].
     destruct ERj; auto.
     destruct (lt_not_le _ _ lt_jx). apply HPj. split; auto. omega.
 
@@ -634,21 +634,21 @@ Section ISModTrans.
 
   Proof.
     intro i. apply not_all_not_ex. intro HTF. induction i.
-    assert (HT : IS R g). intro k. generalize (hyp1 (S k)).
-    generalize (HTF (S k)). rewrite not_and_eq. intro HT.
+    assert (HT : IS R g). intro k. gen (hyp1 (S k)).
+    gen (HTF (S k)). rewrite not_and_eq. intro HT.
     destruct HT as [HT | HT]. destruct (HT (le_O_n (S k))). intro HT0.
     destruct (rtc_split (proj1 HT0)) as [HT1 | HT1]. rewrite <- HT1.
     apply (proj2 (hyp1 k)). tauto. apply (@NISR g). hyp.
     assert (HT : forall j, ~ ((E !) (f (S i + j)) (g (S i + j)))).
-    intro j. generalize (HTF (S i + j)). apply contraposee_inv. intro HT.
+    intro j. gen (HTF (S i + j)). apply contraposee_inv. intro HT.
     split; try omega. hyp.
     assert (HT0 : forall j, (f (S i + j)) = (g (S i + j))).
     intro j. destruct (rtc_split (proj1 (hyp1 (S i + j)))); auto.
     destruct (HT j); auto.
     pose (h := fun j => g (S i + j)).
     assert (IS R h). intro j. unfold h. rewrite <- (HT0 (S j)).
-    generalize (proj2 (hyp1 (S i + j))). rewrite <- plus_Snm_nSm. simpl. auto.
-    generalize H. apply NISR.
+    gen (proj2 (hyp1 (S i + j))). rewrite <- plus_Snm_nSm. simpl. auto.
+    gen H. apply NISR.
   Qed.
 
   Lemma trc_ISMod : exists f', exists g', ISMod (E!) R f' g' /\
@@ -659,8 +659,8 @@ Section ISModTrans.
     pose (f0 := fun i => f (reid i)). pose (g0 := fun i => g (reid i)).
 
     assert (eq_fg0 : forall j, j < reid 0 -> (f j) = (g j)).
-    intros j lt_j0. generalize (is_min_ch _ (HexP 0)). intros Hproj.
-    generalize (Hproj j). intros HT. cut (E # (f j) (g j)).
+    intros j lt_j0. gen (is_min_ch _ (HexP 0)). intros Hproj.
+    gen (Hproj j). intros HT. cut (E # (f j) (g j)).
     intros HT0. destruct (rtc_split HT0) as [| HT1]; auto.
     destruct (le_not_lt _ _ (HT (conj (le_O_n j) HT1))). hyp.
     apply (proj1 (hyp1 j)).
@@ -668,8 +668,8 @@ Section ISModTrans.
     assert (eq_fgi : forall i j,
       S (reid i) <= j -> j < (reid (S i)) -> (f j) = (g j)).
     intros i j. simpl. intros le_Sij lt_jx.
-    generalize (is_min_ch _ (HexP (S (reid i)))). intros Hproj.
-    generalize (Hproj j). intros HT. cut (E # (f j) (g j)).
+    gen (is_min_ch _ (HexP (S (reid i)))). intros Hproj.
+    gen (Hproj j). intros HT. cut (E # (f j) (g j)).
     intros HT0. destruct (rtc_split HT0) as [| HT1]; auto.
     destruct (le_not_lt _ _ (HT (conj le_Sij HT1))). hyp.
     apply (proj1 (hyp1 j)).

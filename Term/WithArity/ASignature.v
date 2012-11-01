@@ -41,8 +41,8 @@ Implicit Arguments eq_symb_dec [Sig].
 (** Tactic for proving beq_symb_ok *)
 
 Ltac beq_symb_ok := intros f g; split;
-  [destruct f; destruct g; simpl; intro; (discriminate || reflexivity)
-    | intro; subst g; destruct f; reflexivity].
+  [destruct f; destruct g; simpl; intro; (discr || refl)
+    | intro; subst g; destruct f; refl].
 
 (***********************************************************************)
 (** Modules and module types for signatures *)

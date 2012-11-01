@@ -104,7 +104,7 @@ Section S.
     intro. pattern t. apply term_ind_forall; clear t; intros.
     ded (H0 v). apply H1. simpl. auto.
     rewrite sub_fun. pattern (defined f R). apply bool_eq_ind; intro.
-    simpl in H0. rewrite H2 in H0. discriminate.
+    simpl in H0. rewrite H2 in H0. discr.
     apply sn_args_sn_fun. hyp. apply Vforall_map_intro. apply Vforall_intro.
     intros. ded (Vforall_in H H3). apply H4.
     simpl in H0. rewrite H2 in H0. change (vcalls R v = nil) in H0.

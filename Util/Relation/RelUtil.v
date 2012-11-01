@@ -361,7 +361,7 @@ Section compose.
 
   Proof.
     intro. unfold inclusion, compose. intros. do 2 destruct H0.
-    generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+    gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
   Qed.
 
   Lemma incl_comp_rtc : S @ R << S -> S @ R# << S.
@@ -481,7 +481,7 @@ Section clos_trans.
 
   Proof.
     intro. unfold inclusion, compose. intros. do 2 destruct H0.
-    generalize H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+    gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
   Qed.
 
   Lemma comp_incl_tc R S : R @ S << S -> R @ S! << S!.
@@ -529,7 +529,7 @@ Section clos_trans.
 
   Proof.
     intros SR RSt. split; apply tc_min. hyp. apply tc_trans.
-    transitivity R. hyp. apply incl_tc. refl. apply tc_trans.
+    trans R. hyp. apply incl_tc. refl. apply tc_trans.
   Qed.
 
 End clos_trans.
@@ -694,9 +694,9 @@ Section clos_refl_trans.
   Proof.
     unfold inclusion, union. intros. elim H.
     intros. right. apply t_step. hyp.
-    intro. left. reflexivity.
+    intro. left. refl.
     intros. destruct H1; destruct H3.
-    left. transitivity y0; hyp.
+    left. trans y0; hyp.
     subst y0. right. hyp.
     subst y0. right. hyp.
     right. apply t_trans with (y := y0); hyp.
@@ -736,7 +736,7 @@ Section clos_refl_trans.
     ded (rtc_split H0). destruct H1; subst.
     apply t_step;hyp.
     eapply t_trans. apply t_step.
-    eassumption. hyp.
+    ehyp. hyp.
   Qed.
 
   Lemma rtc_transp : transp (R#) << (transp R)#.
@@ -1253,7 +1253,7 @@ Section option_setoid.
   Global Instance eq_opt_Refl : Reflexive eq -> Reflexive eq_opt.
 
   Proof.
-    intros heq x. unfold eq_opt. destruct x. reflexivity. auto.
+    intros heq x. unfold eq_opt. destruct x. refl. auto.
   Qed.
 
   Global Instance eq_opt_Sym : Symmetric eq -> Symmetric eq_opt.
@@ -1267,7 +1267,7 @@ Section option_setoid.
   Proof.
     intros heq x y z. unfold eq_opt.
     destruct x; destruct y; destruct z; intros; auto.
-    transitivity a0; auto. contradiction.
+    trans a0; auto. contr.
   Qed.
 
   (*REMOVE:
@@ -1277,21 +1277,17 @@ Section option_setoid.
     intro E. split.
     intro x. unfold eq_opt. destruct x. refl. auto.
     intros x y. unfold eq_opt. destruct x; destruct y; auto.
-    intro h. symmetry. hyp.
+    intro h. sym. hyp.
     intros x y z. unfold eq_opt. destruct x; destruct y; destruct z; try tauto.
-    intros xy yz. transitivity a0; hyp.
+    intros xy yz. trans a0; hyp.
   Qed.*)
 
   Global Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
 
-  Proof.
-    intros x y xy. unfold eq_opt. auto.
-  Qed.
+  Proof. intros x y xy. unfold eq_opt. auto. Qed.
 
   Lemma eq_opt_None : forall o, o = None <-> eq_opt o None.
 
-  Proof.
-    intro o. unfold eq_opt. destruct o. intuition. discriminate. tauto.
-  Qed.
+  Proof. intro o. unfold eq_opt. destruct o. intuition. discr. tauto. Qed.
 
 End option_setoid.

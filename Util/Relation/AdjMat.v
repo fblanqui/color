@@ -48,7 +48,7 @@ Lemma GoM_true_bounds : forall x y, GoM M x y -> x < dim /\ y < dim.
 Proof.
 intros. split; unfold GoM, mat_unbound in H;
 destruct (le_gt_dec dim x);
-destruct (le_gt_dec dim y); try discriminate; auto with *.
+destruct (le_gt_dec dim y); try discr; auto with *.
 Qed.
 
 Lemma GoM_dec : forall x y, {GoM M x y} + {~GoM M x y}.
@@ -62,8 +62,8 @@ Lemma GoM_restricted : is_restricted (GoM M) (nfirst dim).
 Proof.
 unfold is_restricted; intros x y. repeat rewrite nfirst_exact.
 intro. unfold GoM in H. unfold mat_unbound in *.
-destruct (le_gt_dec dim x); auto. discriminate.
-destruct (le_gt_dec dim y); auto. discriminate.
+destruct (le_gt_dec dim x); auto. discr.
+destruct (le_gt_dec dim y); auto. discr.
 Qed.
 
 End basic.
@@ -108,7 +108,7 @@ Lemma existandb_dotprod : forall n (v w : vec n),
 Proof.
 induction n; intros; unfold dot_product in *; unfold Vfold_left.
 simpl; unfold A0; split; intro.
-discriminate.
+discr.
 destruct H; destruct H; auto with *.
 
 assert (v = Vcons (Vhead v) (Vtail v)) as Hv.
@@ -160,17 +160,17 @@ intuition.
 destruct H.
 destruct (le_gt_dec dim x0).
 trivial.
-destruct H; symmetry; apply andb_false_r.
+destruct H; sym; apply andb_false_r.
 unfold mat_mult; rewrite mat_build_nth; unfold get_row; unfold get_col.
 split; intros.
 rewrite existandb_dotprod in H; repeat destruct H; exists x0.
 
 destruct (le_gt_dec dim x0); auto with *.
-apply Is_true_eq_true; unfold gt in g1; generalize (lt_unique x1 g1);
+apply Is_true_eq_true; unfold gt in g1; gen (lt_unique x1 g1);
 intro; subst.
 rewrite Vnth_map in H; auto.
 destruct H; destruct (le_gt_dec dim x0).
-simpl in *; discriminate.
+simpl in *; discr.
 rewrite existandb_dotprod.
 exists x0; exists g1; rewrite Vnth_map; auto with *.
 Qed.
@@ -203,12 +203,12 @@ Lemma mat_id_spec : forall x y,
 
 Proof.
 intros. split; intro. unfold mat_unbound in H.
-destruct (le_gt_dec dim x). discriminate.
-destruct (le_gt_dec dim y). discriminate.
+destruct (le_gt_dec dim x). discr.
+destruct (le_gt_dec dim y). discr.
 unfold id_matrix in H; rewrite Vbuild_nth in H.
 destruct (eq_nat_dec x y). auto.
 unfold id_vec, zero_vec in H. rewrite Vnth_replace_neq in H.
-rewrite Vnth_const in H. discriminate. assumption.
+rewrite Vnth_const in H. discr. hyp.
 destruct H; destruct H0; unfold mat_unbound.
 destruct (le_gt_dec dim x); auto with *.
 destruct (le_gt_dec dim y); auto with *.
@@ -244,7 +244,7 @@ destruct H as [z]; exists z; destruct H.
 rewrite Gmorph_plus; split;
 try left; auto; rewrite IHn; auto.
 exists x; split; rewrite <- IHn in H; auto.
-generalize (GoM_true_bounds H); intros.
+gen (GoM_true_bounds H); intros.
 rewrite Gmorph_plus; right; unfold GoM; rewrite mat_id_spec;
 intuition; auto with *.
 Qed.
@@ -377,9 +377,9 @@ Proof.
 intros. unfold GoM, mat_unbound. split; intros;
 destruct (le_gt_dec dim x); destruct (le_gt_dec dim y);
 try ded (hyp H);
-auto; intuition; try omega; try tauto; try discriminate.
+auto; intuition; try omega; try tauto; try discr.
 unfold MoG in H; rewrite mat_build_nth in H.
-destruct (R_dec x y); auto; try discriminate.
+destruct (R_dec x y); auto; try discr.
 unfold MoG; rewrite mat_build_nth.
 destruct (R_dec x y); auto with *.
 Qed.

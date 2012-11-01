@@ -10,7 +10,7 @@ is introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsRed TermsConv Setoid.
+Require Import RelExtras ListExtras TermsRed TermsConv Setoid LogicUtil.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 
@@ -29,7 +29,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     intros A' eqT.
     inversion eqT.
     destruct M as [EM PtM TM TypM].
-    destruct TypM; try contradiction.
+    destruct TypM; try contr.
     rewrite (@abs_type (appBodyL Mapp) MLabs A B); trivial.
     rewrite lift_env.
     rewrite absBody_env.
@@ -82,7 +82,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Proof.
     intros.
     destruct M.
-    destruct typing0; try contradiction.
+    destruct typing0; try contr.
     assert (type (appBodyL Mapp) = A --> B).
     trivial.
     rewrite (abs_type (appBodyL Mapp) MLabs H); trivial.
@@ -123,7 +123,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     unfold Tr; auto with terms.
      (* application *)
     intros N f MbN Mhead.
-    inversion MbN; try solve [contradiction | trivial].
+    inversion MbN; try solve [contr | trivial].
      (* direct beta step *)
     elimtype False.
     inversion H.
@@ -135,9 +135,9 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
   Proof.
     destruct M as [E Pt T TypM].
-    induction TypM; simpl; intros N f' Nbeta Mhead; try discriminate;
-      inversion Nbeta; try contradiction.
-    inversion H; contradiction.
+    induction TypM; simpl; intros N f' Nbeta Mhead; try discr;
+      inversion Nbeta; try contr.
+    inversion H; contr.
      (* 1) direct beta reduction (left applicant - abstraction) *)
     inversion H.
     elimtype False.
@@ -178,7 +178,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     destruct M as [E Pt T TypM].
     induction TypM; try solve [intros; inversion H].
     intros N f Mapp MbetaN Mhead.
-    inversion MbetaN; try contradiction.
+    inversion MbetaN; try contr.
     inversion H.
     elimtype False.
     apply beta_direct_funApp with (buildT (TApp TypM1 TypM2)) Mapp1;
@@ -284,7 +284,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite lower_type.
     rewrite subst_type.
     destruct M as [ME MPt MT M].
-    destruct M; try contradiction.
+    destruct M; try contr.
     assert (MlT: type (appBodyL Mapp0) = A --> B); [simpl; trivial | idtac].
     rewrite (absBody_type (appBodyL Mapp0) MLabs MlT); simpl; trivial.
   Qed.
@@ -315,7 +315,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     assert (M'Labs: isAbs (appBodyL M'app)).
     setoid_replace (appBodyL M'app) with (appBodyL Mapp0); trivial.
     apply app_conv_app_left.
-    symmetry; exists Q; trivial.
+    sym; exists Q; trivial.
     replace N' with (lower (subst (beta_subst M' M'app M'Labs)) 
       (beta_lowering M' M'app M'Labs)).
     constructor.
@@ -838,8 +838,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     left; inversion H.
     exists MLabs.
     rewrite (app_proof_irr Tr Mapp Mapp1); trivial.
-    right; exists Napp; firstorder.
-    right; exists Napp; firstorder.
+    right; exists Napp; fo.
+    right; exists Napp; fo.
   Qed.
 
   Lemma beta_var_consistent : forall M N,

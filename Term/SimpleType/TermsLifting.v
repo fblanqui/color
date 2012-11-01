@@ -13,7 +13,7 @@ de Bruijn indices) is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Compare_dec Arith.
+Require Import RelExtras ListExtras Compare_dec Arith LogicUtil.
 Require TermsManip Omega.
 
 Module TermsLifting (Sig : TermsSig.Signature).
@@ -36,7 +36,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
   Definition liftedEnv (n: nat) (E: Env) (k: nat) : Env :=
     initialSeg E k ++ copy n None ++ finalSeg E k.
 
-  Lemma liftedEnv_next : forall A E n k, liftedEnv n (decl A E) (S k) = decl A (liftedEnv n E k).
+  Lemma liftedEnv_next : forall A E n k,
+    liftedEnv n (decl A E) (S k) = decl A (liftedEnv n E k).
 
   Proof.
     intros A E n k.
@@ -59,7 +60,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     intros E_x x_k.
     assert (x_E: x < length E).
     rewrite_lr (nth_in E x).
-    destruct (nth_error E x); discriminate.
+    destruct (nth_error E x); discr.
     assert (k_E: Min.min k (length E) = k).
     apply Min.min_l.
     omega.
@@ -72,7 +73,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Lemma liftedEnv_var_notLifted : forall E x A k n, E |= x := A -> x < k -> liftedEnv n E k |= x := A.
+  Lemma liftedEnv_var_notLifted : forall E x A k n,
+    E |= x := A -> x < k -> liftedEnv n E k |= x := A.
 
   Proof.
     unfold VarD, liftedEnv.
@@ -82,11 +84,11 @@ Module TermsLifting (Sig : TermsSig.Signature).
     autorewrite with datatypes.
     apply (Min.min_case2 k (length E)); trivial.
     rewrite_lr (nth_in E x).
-    destruct (nth_error E x); discriminate.    
+    destruct (nth_error E x); discr.    
   Qed.
 
-  Lemma var_liftedEnv_var_lifted : forall E x A k n, liftedEnv n E k |= x + n := A -> x >= k ->
-    E |= x := A.
+  Lemma var_liftedEnv_var_lifted : forall E x A k n,
+    liftedEnv n E k |= x + n := A -> x >= k -> E |= x := A.
 
   Proof.
     unfold VarD, liftedEnv.
@@ -124,8 +126,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Lemma var_liftedEnv_var_notLifted : forall E x A k n, liftedEnv n E k |= x := A -> x < k ->
-    E |= x := A.
+  Lemma var_liftedEnv_var_notLifted : forall E x A k n,
+    liftedEnv n E k |= x := A -> x < k -> E |= x := A.
 
   Proof.
     unfold VarD, liftedEnv.
@@ -158,15 +160,16 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite Min.min_r; omega.
   Qed.
 
-  Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted var_liftedEnv_var_lifted 
-    var_liftedEnv_var_notLifted using solve [omega | auto] : terms.
+  Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted
+    var_liftedEnv_var_lifted var_liftedEnv_var_notLifted
+    using solve [omega | auto] : terms.
 
   Definition lift_aux : forall (n: nat) (M: Term) (k: nat),
    {N: Term | env N = liftedEnv n (env M) k
               /\ term N = prelift_aux n (term M) k /\ type N = type M }.
 
   Proof.
-    intros n M; generalize n; clear n.
+    intros n M; gen n; clear n.
     destruct M as [E Pt T TypM].
     induction TypM; intros n k.
      (* variable *)
@@ -262,7 +265,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     intros i Q_G.
     unfold lift_subst_comp in Q_G; simpl in Q_G.
     destruct Q_G.
-    destruct a; try discriminate.
+    destruct a; try discr.
     exists t.
     auto with datatypes.
     unfold lift_subst_comp in H; simpl in H.
@@ -271,7 +274,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     exists x; auto with datatypes.
   Qed.
 
-  Lemma lift_subst_distr : forall G H i, lift_subst (G ++ H) i = lift_subst G i ++ lift_subst H i.
+  Lemma lift_subst_distr : forall G H i,
+    lift_subst (G ++ H) i = lift_subst G i ++ lift_subst H i.
 
   Proof.
     induction G; trivial.
@@ -360,7 +364,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Lemma prelift_fold : forall Pt m n, prelift Pt (m + n) = prelift (prelift Pt n) m.
+  Lemma prelift_fold : forall Pt m n,
+    prelift Pt (m + n) = prelift (prelift Pt n) m.
 
   Proof.
     intros Pt m n.
@@ -417,7 +422,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Lemma lift_subst_fold : forall G m n, lift_subst G (m+n) = lift_subst (lift_subst G m) n.
+  Lemma lift_subst_fold : forall G m n,
+    lift_subst G (m+n) = lift_subst (lift_subst G m) n.
 
   Proof.
     induction G.
@@ -431,7 +437,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
 
   Hint Rewrite lift_fold lift_subst_fold : terms.
 
-  Lemma lift_empty_subst : forall m i, lift_subst (copy m None) i = copy m None.
+  Lemma lift_empty_subst : forall m i,
+    lift_subst (copy m None) i = copy m None.
 
   Proof.
     induction m; intro i.
@@ -459,8 +466,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite nth_map_none; trivial.
   Qed.
 
-  Lemma nth_lift_subst_n_rev : forall (G: Subst) i x, nth_error (lift_subst G i) x = None ->
-    nth_error G x = None.
+  Lemma nth_lift_subst_n_rev : forall (G: Subst) i x,
+    nth_error (lift_subst G i) x = None -> nth_error G x = None.
 
   Proof.
     unfold lift_subst; intros.
@@ -476,12 +483,13 @@ Module TermsLifting (Sig : TermsSig.Signature).
     simpl; trivial.
   Qed.
 
-  Lemma nth_lift_subst_sn_rev : forall G i x, nth_error (lift_subst G i) x = Some None ->
-    nth_error G x = Some None.
+  Lemma nth_lift_subst_sn_rev : forall G i x,
+    nth_error (lift_subst G i) x = Some None -> nth_error G x = Some None.
 
   Proof.
     unfold lift_subst; intros.
-    destruct (nth_map_some_rev G x (fun T => lift_subst_comp T i) H) as [T [GT LT]].
+    destruct (nth_map_some_rev G x (fun T => lift_subst_comp T i) H)
+      as [T [GT LT]].
     destruct T; trivial.
     try_solve.
   Qed.
@@ -495,21 +503,25 @@ Module TermsLifting (Sig : TermsSig.Signature).
     simpl; trivial.
   Qed.
 
-  Hint Rewrite nth_lift_subst_n nth_lift_subst_n_rev nth_lift_subst_sn nth_lift_subst_sn_rev 
+  Hint Rewrite nth_lift_subst_n nth_lift_subst_n_rev nth_lift_subst_sn
+    nth_lift_subst_sn_rev 
     using solve [auto with terms] : terms.
 
-  Lemma nth_lift_subst_s_rev : forall G i x T, nth_error (lift_subst G i) x = Some (Some T) ->
+  Lemma nth_lift_subst_s_rev : forall G i x T,
+    nth_error (lift_subst G i) x = Some (Some T) ->
     exists T', nth_error G x = Some (Some T') /\ T = lift T' i.
 
   Proof.
     unfold lift_subst; intros.
-    destruct (nth_map_some_rev G x (fun T => lift_subst_comp T i) H) as [W [GW LW]].
+    destruct (nth_map_some_rev G x (fun T => lift_subst_comp T i) H)
+      as [W [GW LW]].
     destruct W.
     exists t; split; try_solve.
     try_solve.
   Qed.
 
-  Lemma nth_lift_normal : forall G i x T, nth_error (lift_subst G i) x = Some (Some T) ->
+  Lemma nth_lift_normal : forall G i x T,
+    nth_error (lift_subst G i) x = Some (Some T) ->
     exists2 Tg, T = lift Tg i & nth_error G x = Some (Some Tg).
 
   Proof.
@@ -519,11 +531,12 @@ Module TermsLifting (Sig : TermsSig.Signature).
     inversion H; trivial.
   Qed.
 
-  Lemma app_lift_app_aux : forall M (Mapp: isApp M) n k, isApp (proj1_sig (lift_aux n M k)).
+  Lemma app_lift_app_aux : forall M (Mapp: isApp M) n k,
+    isApp (proj1_sig (lift_aux n M k)).
 
   Proof.
     intros.
-    destruct M as [E Pt T M]; destruct M; try contradiction.
+    destruct M as [E Pt T M]; destruct M; try contr.
     destruct (lift_aux n (buildT (TApp M1 M2))) as [W [WE [WPt WT]]].
     apply app_isApp with (prelift_aux n PtL k) (prelift_aux n PtR k); trivial.
   Qed.
@@ -557,7 +570,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     simpl; rewrite Qterm; rewrite Pterm; trivial.
   Qed.
 
-  Lemma lift_appBodyL : forall E PtL PtR A B n k (Ml: E |- PtL := A --> B) (Mr: E |- PtR := A)
+  Lemma lift_appBodyL : forall E PtL PtR A B n k (Ml: E |- PtL := A --> B)
+    (Mr: E |- PtR := A)
     (MLapp: isApp (proj1_sig (lift_aux n (buildT (TApp Ml Mr)) k))),
     appBodyL MLapp = proj1_sig (lift_aux n (buildT Ml) k).
 
@@ -575,7 +589,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite PPt; trivial.
   Qed.
 
-  Lemma lift_appBodyR : forall E PtL PtR A B n k (Ml: E |- PtL := A --> B) (Mr: E |- PtR := A)
+  Lemma lift_appBodyR : forall E PtL PtR A B n k (Ml: E |- PtL := A --> B)
+    (Mr: E |- PtR := A)
     (MLapp: isApp (proj1_sig (lift_aux n (buildT (TApp Ml Mr)) k))),
     appBodyR MLapp = proj1_sig (lift_aux n (buildT Mr) k).
 
@@ -593,7 +608,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite PPt; trivial.
   Qed.
 
-  Lemma term_prelift_eq : forall M N i j, prelift_aux i M j = prelift_aux i N j -> M = N .
+  Lemma term_prelift_eq : forall M N i j,
+    prelift_aux i M j = prelift_aux i N j -> M = N .
 
   Proof.
     induction M; destruct N; intros; try_solve; try solve
@@ -638,10 +654,11 @@ Module TermsLifting (Sig : TermsSig.Signature).
     end.
   Definition prelower P := prelower_aux P 0.
 
-  Definition loweredEnv (E: Env) (k: nat) : Env := initialSeg E k ++ finalSeg E (S k).
+  Definition loweredEnv (E: Env) (k: nat) : Env :=
+    initialSeg E k ++ finalSeg E (S k).
 
-  Lemma loweredEnv_var_lowered : forall E x A k, E |= k :! -> E |= x := A -> k <= x ->
-    loweredEnv E k |= pred x := A.
+  Lemma loweredEnv_var_lowered : forall E x A k,
+    E |= k :! -> E |= x := A -> k <= x -> loweredEnv E k |= pred x := A.
 
   Proof.
     intros E x A k Ek0 Ex k_x.
@@ -668,8 +685,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     unfold VarD in Ex; destruct Ek0; try_solve.
   Qed.
 
-  Lemma loweredEnv_var_notLowered : forall E x A k, E |= k :! -> E |= x := A -> k > x ->
-    loweredEnv E k |= x := A.
+  Lemma loweredEnv_var_notLowered : forall E x A k,
+    E |= k :! -> E |= x := A -> k > x -> loweredEnv E k |= x := A.
 
   Proof.
     intros E x A k Ek0 Ex kx.
@@ -681,8 +698,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite_lr (nth_in E x); unfold VarD in Ex; try_solve.
   Qed.
 
-  Lemma var_loweredEnv_var_lowered : forall E x A k, E |= k :! -> loweredEnv E k |= x := A -> 
-    k <= x -> E |= S x := A.
+  Lemma var_loweredEnv_var_lowered : forall E x A k,
+    E |= k :! -> loweredEnv E k |= x := A -> k <= x -> E |= S x := A.
 
   Proof.
     unfold VarD, loweredEnv.
@@ -707,8 +724,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     omega.
   Qed.
 
-  Lemma var_loweredEnv_var_notLowered : forall E x A k, E |= k :! -> loweredEnv E k |= x := A ->
-    k > x -> E |= x := A.
+  Lemma var_loweredEnv_var_notLowered : forall E x A k,
+    E |= k :! -> loweredEnv E k |= x := A -> k > x -> E |= x := A.
 
   Proof.
     unfold VarD, loweredEnv.
@@ -752,7 +769,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Lemma prelower_prelift : forall Pt i, prelift Pt i = prelower_aux (prelift Pt (i + 1)) i.
+  Lemma prelower_prelift : forall Pt i,
+    prelift Pt i = prelower_aux (prelift Pt (i + 1)) i.
 
   Proof.
     intros; unfold prelift.
@@ -799,7 +817,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     simpl in * .
     destruct (IHTypM1 k) as [L [LE [LPt LT]]]; trivial.
     destruct (IHTypM2 k) as [R [RE [RPt RT]]]; trivial.
-    assert (res: loweredEnv E k |- prelower_aux PtL k [prelower_aux PtR k] := B).
+    assert
+      (res: loweredEnv E k |- prelower_aux PtL k [prelower_aux PtR k] := B).
     constructor 4 with A.
     rewrite <- LE.
     rewrite <- LPt.
@@ -812,8 +831,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     exists (buildT res); repeat split; try_solve.
   Defined.
 
-  Definition lower (M: Term) (ME: env M |= 0 :!) : Term :=  proj1_sig (lower_aux M ME).
-
+  Definition lower (M: Term) (ME: env M |= 0 :!) : Term :=
+    proj1_sig (lower_aux M ME).
 
   Lemma lower_env : forall M ME, env (lower M ME) = loweredEnv (env M) 0.
 

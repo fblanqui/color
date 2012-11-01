@@ -8,7 +8,7 @@ Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
 Require Import VPrecedence LexicographicOrder VRPO_Type Relations VTerm
-  ListUtil AccUtil.
+  ListUtil AccUtil LogicUtil.
 
 Module LPO (PT : VPrecedenceType).
 
@@ -46,7 +46,7 @@ Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     {tau f R ts ss} + {~tau f R ts ss}.
 
   Proof.
-    unfold tau, mytau. intros. apply lex_status_dec. assumption.
+    unfold tau, mytau. intros. apply lex_status_dec. hyp.
   Defined.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.

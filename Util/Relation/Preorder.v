@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Various properties of preorders
 *)
 
-Require Import Relations.
+Require Import Relations LogicUtil.
 
 Section PreOrderFacts.
   Variable A : Type.
@@ -29,11 +29,11 @@ Section PreOrderFacts.
     elim H1; clear H1; intros a_le_g b_le_a.
     elim H2; clear H2; intros b_le_c c_le_b.
     split.
-    apply preord_trans with b; assumption.
-    apply preord_trans with b; assumption.
+    apply preord_trans with b; hyp.
+    apply preord_trans with b; hyp.
     (* symmetric : *)
     intros a b H.
-    elim H; split; assumption.
+    elim H; split; hyp.
   Qed.
     
   Lemma ltA_antisym : forall (a b : A), ltA a b -> ltA b a -> False.
@@ -41,7 +41,7 @@ Section PreOrderFacts.
     intros a b H1 H2.
     elim H1; clear H1; intros a_le_b b_neq_a.
     elim H2; clear H2; intros b_le_a a_neq_b.
-    apply a_neq_b; split; assumption.
+    apply a_neq_b; split; hyp.
   Qed.
     
   Lemma ltA_trans : transitive A ltA.
@@ -51,12 +51,12 @@ Section PreOrderFacts.
     elim H1; clear H1; intros a_le_b a_neq_b.
     elim H2; clear H2; intros b_le_c b_neq_c.
     split.
-    apply preord_trans with b; assumption.
+    apply preord_trans with b; hyp.
     intro H.
     elim H; clear H; intros a_le_c c_le_a.
     apply a_neq_b; split.
-    assumption.
-    apply preord_trans with c; assumption.
+    hyp.
+    apply preord_trans with c; hyp.
   Qed.
 
   Lemma leA_dec_to_eqA_dec : (forall (a b : A), leA a b \/ ~ leA a b) ->
@@ -78,7 +78,7 @@ Section PreOrderFacts.
     elim a_lt_b; clear a_lt_b; intros a_le_b a_neq_b.
     split.
     elim b_eq; clear b_eq; intros b_le_b' b'_le_b.
-    apply preord_trans with b; assumption.
+    apply preord_trans with b; hyp.
     elim (eqA_equivalence); intros eqA_refl eqA_trans eqA_sym.
     intro; apply a_neq_b; apply eqA_trans with b'; trivial.
     elim b_eq; split; trivial.
@@ -91,7 +91,7 @@ Section PreOrderFacts.
     elim b_lt_a; clear b_lt_a; intros b_le_a b_neq_a.
     split.
     elim b_eq; clear b_eq; intros b_le_b' b'_le_b.
-    apply preord_trans with b; assumption.
+    apply preord_trans with b; hyp.
     elim (eqA_equivalence); intros eqA_refl eqA_trans eqA_sym.
     intro; apply b_neq_a; apply eqA_trans with b'; trivial.
   Qed.

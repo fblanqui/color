@@ -54,7 +54,7 @@ Section S.
     exists i, exists p : i < n, In v (subterm_lst (Vnth ts p)).
 
   Proof.
-    induction ts. contradiction.
+    induction ts. contr.
     intros In_v; simpl in In_v. rewrite in_app in In_v. intuition.
     exists 0. exists (lt_O_Sn n). simpl. hyp.
     destruct H0 as [i H0]. destruct H0 as [p H0].
@@ -83,7 +83,7 @@ Section S.
     simpl. intros v y. split; try tauto. intro HS; destruct HS as [c Hc].
     destruct (var_eq_fill (proj2 Hc)) as [Hc' _]; intuition.
     intros f ts Hts y. split; rewrite subterm_lst_fun, in_app. Focus 2.
-    intuition. generalize (in_list_of_vec H0). apply subterm_fun.
+    intuition. gen (in_list_of_vec H0). apply subterm_fun.
     ded (In_subterm_lst_vec_elim _ _ H0). decomp H.
     ded (Vforall_nth x0 Hts y). apply (@subterm_trans _ _ (Vnth ts x0)).
     apply H. hyp. apply subterm_fun. apply Vnth_in.
@@ -99,7 +99,7 @@ Section S.
     destruct (le_gt_dec i i). 2: absurd_arith.
     set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
     rewrite (Vnth_eq _ q (lt_O_Sn j)); try omega. simpl.
-    exists (Cont f0 e t c0 t0). simpl. intuition. discriminate H0.
+    exists (Cont f0 e t c0 t0). simpl. intuition. discr.
     ded (Vforall_nth p Hts y). apply (In_subterm_lst_vec_intro _ _ p).
     apply (proj1 H0). auto.
   Qed.

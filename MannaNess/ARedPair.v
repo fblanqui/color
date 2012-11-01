@@ -74,7 +74,7 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
     (* Rgt << succ *)
     intros l r h. unfold Rgt in h. rewrite In_removes in h. destruct h.
     unfold Rge in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
-    destruct H3. contradiction. destruct H3. clear H3.
+    destruct H3. contr. destruct H3. clear H3.
     apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
     rewrite negb_lr in H4. hyp.
     (* WF (hd_red_mod E Rge) *)
@@ -101,7 +101,7 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
     (* Rgt << succ *)
     intros l r h. unfold Rgt in h. rewrite In_removes in h. destruct h.
     unfold Rge in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
-    destruct H3. contradiction. destruct H3. clear H3.
+    destruct H3. contr. destruct H3. clear H3.
     apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
     rewrite negb_lr in H4. hyp.
     (* Rge << succeq *)
@@ -112,7 +112,7 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
     (* Egt << succ *)
     intros l r h. unfold Egt in h. rewrite In_removes in h. destruct h.
     unfold Ege in H3. rewrite (notIn_filter _ (@eq_rule_dec Sig)) in H3.
-    destruct H3. contradiction. destruct H3. clear H3.
+    destruct H3. contr. destruct H3. clear H3.
     apply bsucc_sub. unfold rel. unfold brule, neg in H4. simpl in H4.
     rewrite negb_lr in H4. hyp.
     (* Ege << succeq *)

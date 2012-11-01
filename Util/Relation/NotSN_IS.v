@@ -33,7 +33,7 @@ Section S.
   Lemma notNT_SN : forall a, ~NT R a -> SN R a.
 
   Proof.
-    intros a ha. apply NNPP. intro h. ded (notSN_NT h). contradiction.
+    intros a ha. apply NNPP. intro h. ded (notSN_NT h). contr.
   Qed.
 
   Lemma notWF_EIS : ~WF R -> EIS R.

@@ -8,7 +8,7 @@ Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
 Require Import VPrecedence MultisetListOrder VRPO_Type Relations VTerm ListUtil
-  AccUtil.
+  AccUtil LogicUtil.
 
 Module MPO (PT : VPrecedenceType).
 
@@ -47,7 +47,7 @@ Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Proof.
     intros. unfold tau, mytau.
-    apply mul_status_dec. assumption.
+    apply mul_status_dec. hyp.
   Defined.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.

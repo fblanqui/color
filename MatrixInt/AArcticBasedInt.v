@@ -73,10 +73,10 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
     Proof.
       unfold gtx. intuition. left. rewrite <- H. rewrite <- H0. hyp. right.
-      split. transitivity x. symmetry. hyp. hyp. transitivity x0. symmetry.
+      split. trans x. sym. hyp. hyp. trans x0. sym.
       hyp. hyp.
       left. rewrite H. rewrite H0. hyp. right. split.
-      transitivity y; hyp. transitivity y0; hyp.
+      trans y; hyp. trans y0; hyp.
     Qed.
 
     Lemma gtx_trans : transitive gtx.
@@ -120,15 +120,15 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       intros x z xz. destruct xz as [y [xy yz] ].
       unfold succ, succ_vec. apply Vforall2n_intro. intros.
       apply ge_gtx_compat with (Vnth (dom2vec y) ip).
-      apply Vforall2n_nth. assumption.
-      apply Vforall2n_nth. assumption.
+      apply Vforall2n_nth. hyp.
+      apply Vforall2n_nth. hyp.
     Qed.
 
     Lemma gtx_dec : rel_dec gtx.
 
     Proof.
       intros x y. destruct (gt_dec x y).
-      left. left. assumption.
+      left. left. hyp.
       destruct (eqA_dec x MinusInf).
       destruct (eqA_dec y MinusInf).
       left. right. auto.
@@ -188,7 +188,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       VSntac v'. simpl. apply gtx_plus_compat.
       apply IHv. intros. 
       apply Vforall2n_nth. change v with (Vtail (Vcons h v)). 
-      apply Vforall2n_tail. apply Vforall2n_intro. assumption.
+      apply Vforall2n_tail. apply Vforall2n_intro. hyp.
       change h with (Vhead (Vcons h v)). do 2 rewrite Vhead_nth.
       apply (H _ (Lt.lt_O_Sn n)).
     Qed.
@@ -210,11 +210,11 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
         right. intuition.
         apply gtx_plus_compat.
         apply IHv.
-        change v with (Vtail (Vcons h v)). apply Vforall2n_tail. assumption.
-        apply vec_tail_ge. assumption.
+        change v with (Vtail (Vcons h v)). apply Vforall2n_tail. hyp.
+        apply vec_tail_ge. hyp.
         apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
-        do 2 rewrite Vhead_nth. apply Vforall2n_nth. assumption.
-        do 2 rewrite Vhead_nth. apply Vforall2n_nth. assumption.
+        do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
+        do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
       Qed.
 
       Lemma mat_arctic_mult_mon :
@@ -238,9 +238,9 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Proof.
       intros. unfold mat_vec_prod, vec_gt. apply Vforall2n_intro. 
       intros. do 2 rewrite Vnth_col_mat. 
-      apply mat_arctic_mult_mon. assumption.
+      apply mat_arctic_mult_mon. hyp.
       intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
-      apply Vforall2n_nth. assumption.
+      apply Vforall2n_nth. hyp.
     Qed.
 
     Lemma mint_eval_mon_succ : forall (val : valuation I) k 
@@ -253,13 +253,13 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       apply (Vnth_mor eqA). rewrite mint_eval_split. refl.
       do 2 rewrite vector_plus_nth.
       apply gtx_plus_compat. 
-      apply Vforall2n_nth. assumption.
+      apply Vforall2n_nth. hyp.
       do 2 rewrite add_vectors_nth.
       apply Vfold_left_gtx_compat. intros.
       do 2 rewrite Vnth_map. do 2 rewrite Vnth_map2.
       set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
       apply Vforall2n_nth. apply mat_vec_prod_gt_compat.
-      apply Vforall2n_nth. assumption.
+      apply Vforall2n_nth. hyp.
       apply vec_ge_refl.
     Qed.
 
@@ -269,7 +269,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in *.
       unfold succ. unfold succ_vec. symmetry in H. symmetry in H0.
       rewrite (Vforall2n_mor sid_theoryA gtx_mor H H0).
-      apply mint_eval_mon_succ. assumption.
+      apply mint_eval_mon_succ. hyp.
     Qed.
 
     Definition succ' := term_gt.

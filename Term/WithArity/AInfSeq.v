@@ -63,9 +63,9 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
     Proof.
       rewrite forallb_forall in hyp1, hyp2.
       intro wf. unfold hd_red_mod. apply WF_mod_rev2. apply WF_mod_rev in wf.
-      intro t. generalize (wf t). induction 1.
+      intro t. gen (wf t). induction 1.
       apply SN_intro. intros z [y [xy yz]]. apply H0. exists y. intuition.
-      assert (hy : undefined R y = true). redtac. generalize (hyp2 _ lr).
+      assert (hy : undefined R y = true). redtac. gen (hyp2 _ lr).
       unfold undefined_rhs. simpl. unfold undefined. subst. destruct r.
       discr. simpl. auto.
       destruct (undef_rtc_red_is_rtc_int_red yz hy). hyp.
@@ -180,7 +180,7 @@ R-sequence *)
     simpl in xl. clear yr lr cne r.
     (* forall i, exists v, f i = Fun f1 v *)
     assert (h : forall i, exists v, f i = Fun f0 v).
-    induction i0. firstorder. clear xl s t0 c t e j i l.
+    induction i0. fo. clear xl s t0 c t e j i l.
     destruct IHi0 as [w hw]. ded (hf i0). redtac. destruct c. irrefl.
     simpl in xl, yr. rewrite hw in xl. Funeqtac. rewrite yr.
     exists (Vcast (Vapp t (Vcons (fill c (sub s r)) t0)) e). refl.
@@ -236,12 +236,12 @@ R-sequence *)
     exists (Vnth (v 0) ha). split.
     rewrite hv. apply subterm_fun. apply Vnth_in.
     (* [Vnth (v 0) ha] is non-terminating *)
-    exists (fun i => Vnth (v (g i)) ha). split. symmetry. hyp.
+    exists (fun i => Vnth (v (g i)) ha). split. sym. hyp.
     intro i. rewrite <- h. destruct (hk (g i)) as [_ r].
     destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
     rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H, H0.
     rewrite Vreplace_pi with (h2:=ha). 2: apply h2. rewrite Vnth_replace.
-    rewrite Vnth_eq with (h2:=hi). 2: symmetry; apply h2. hyp.
+    rewrite Vnth_eq with (h2:=hi). 2: sym; apply h2. hyp.
   Qed.
 
 (*****************************************************************************)
@@ -269,7 +269,7 @@ minimal infinite R-sequence *)
       rewrite forallb_forall in hyp1. ded (hyp1 _ lr). rewrite hx in H. discr.
       exists (Cont f e t c t0). intuition. discr.
       ded (subterm_sub s hx). destruct ht as [ht1 ht2].
-      ded (ht2 _ H). contradiction.
+      ded (ht2 _ H). contr.
       destruct (subterm_eq_sub_elim vu) as [w [hw1 hw2]]. destruct w.
       (* w = Var n *)
       assert (hn : In n (vars l)). eapply hyp2. apply lr.

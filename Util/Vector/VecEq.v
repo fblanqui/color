@@ -35,7 +35,7 @@ Qed.
 Lemma eq_vec_sym : forall n (x y : vec n), x =v y -> y =v x.
 
 Proof.
-unfold eq_vec. intros. apply Vforall2n_intro. intros. symmetry.
+unfold eq_vec. intros. apply Vforall2n_intro. intros. sym.
 apply Vforall2n_nth with (R:=eqA). hyp.
 Qed.
 
@@ -43,7 +43,7 @@ Lemma eq_vec_trans : forall n (x y z : vec n), x =v y -> y =v z -> x =v z.
 
 Proof.
 unfold eq_vec. intros. apply Vforall2n_intro. intros.
-transitivity (Vnth y ip); apply Vforall2n_nth with (R:=eqA); hyp.
+trans (Vnth y ip); apply Vforall2n_nth with (R:=eqA); hyp.
 Qed.
 
 Definition eq_vec_st : forall n, Setoid_Theory (vec n) (@eq_vec n).
@@ -142,7 +142,7 @@ Implicit Arguments Vforall2n_mor [A eqA f n v1 v1' v2 v2'].
 Implicit Arguments Vnth_mor [A n v v' i].
 
 (***********************************************************************)
-(** assumptions for more morphisms *)
+(** hyps for more morphisms *)
 
 Section S.
 

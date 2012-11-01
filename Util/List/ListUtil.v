@@ -50,7 +50,7 @@ Section In.
   Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
   Proof.
-    induction l1; simpl; intros. contradiction. destruct H. subst x. auto.
+    induction l1; simpl; intros. contr. destruct H. subst x. auto.
     right. apply IHl1. hyp.
   Qed.
 
@@ -71,7 +71,7 @@ Section In.
     In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
 
   Proof.
-    induction l; simpl; intros. contradiction. destruct H. subst x.
+    induction l; simpl; intros. contr. destruct H. subst x.
     exists (@nil A). exists l. refl. ded (IHl H). do 2 destruct H0. rewrite H0.
     exists (a :: x0). exists x1. refl.
   Qed.
@@ -82,7 +82,7 @@ Section In.
     In x l -> exists m, exists p, l = m ++ x :: p /\ ~In x m.
 
   Proof.
-    induction l; simpl; intros. contradiction. destruct H. subst x.
+    induction l; simpl; intros. contr. destruct H. subst x.
     exists (@nil A). exists l. intuition. ded (IHl H). do 3 destruct H0.
     subst l. case (eqA_dec a x); intro.
     subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
@@ -99,12 +99,12 @@ Section In.
     In x l -> exists l', exists l'', l = l'++x::l'' /\ ~In x l''. 
 
   Proof.
-    induction l; simpl; intros. contradiction. 
+    induction l; simpl; intros. contr. 
     destruct (In_midex H x l). destruct IHl. hyp. destruct H2. 
     exists (a::x0). exists x1. rewrite (proj1 H2).
     rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
     destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
-    contradiction.
+    contr.
   Qed.
 
   Lemma In_cons : forall (x a : A) l, In x (a::l) <-> a=x \/ In x l. 
@@ -116,7 +116,7 @@ Section In.
   Lemma In_InA_eq : forall (x : A) l, In x l <-> InA eq x l.
 
   Proof.
-    induction l; simpl. symmetry. apply InA_nil. rewrite IHl, InA_cons.
+    induction l; simpl. sym. apply InA_nil. rewrite IHl, InA_cons.
     intuition.
   Qed.
 
@@ -156,7 +156,7 @@ Section incl.
 
   Proof.
     unfold incl. destruct l; intuition. assert (In a (a::l)). left. refl.
-    ded (H _ H0). contradiction. discr.
+    ded (H _ H0). contr. discr.
   Qed.
 
   Lemma incl_nil : forall l : list A, nil [= l.
@@ -244,7 +244,7 @@ Section incl.
     induction l; simpl; intros.
     (* nil *)
     intuition. absurd (nil[=m). hyp. apply incl_nil.
-    do 2 destruct H. contradiction.
+    do 2 destruct H. contr.
     (* cons *)
     split; intro.
     Focus 2. do 3 destruct H.
@@ -270,8 +270,8 @@ Infix "[" := strict_incl (at level 70).
 Lemma strict_incl_tran : forall A (l m n : list A), l [ m -> m [ n -> l [ n.
 
 Proof.
-unfold strict_incl. intuition. transitivity m; hyp.
-apply H2. transitivity n; hyp.
+unfold strict_incl. intuition. trans m; hyp.
+apply H2. trans n; hyp.
 Qed.
 
 Add Parametric Relation (A : Type) : (list A) (@strict_incl A)
@@ -354,7 +354,7 @@ Add Parametric Morphism (A : Type) : (@cons A)
     as incl_double_cons.
 
 Proof.
-firstorder.
+fo.
 Qed.
 
 Add Parametric Morphism (A : Type) : (@cons A)
@@ -362,7 +362,7 @@ Add Parametric Morphism (A : Type) : (@cons A)
     as cons_lequiv.
 
 Proof.
-firstorder.
+fo.
 Qed.
 
 Section cons.
@@ -443,8 +443,7 @@ Section app.
     l ++ m = n ++ a::nil -> m <> nil -> In a m.
 
   Proof.
-    intros l m n; generalize n l m; clear l m n.
-    induction n; simpl; intros.
+    intros l m n; revert l m; induction n; simpl; intros.
     (* induction base *)
     destruct l.
     simpl in H; rewrite H; auto with datatypes.
@@ -470,10 +469,10 @@ Section app.
     auto.
     (* induction case *)
     destruct n.
-    (* n = nil -> contradiction *)
+    (* n = nil -> contr *)
     simpl in H.
     destruct (app_eq_unit (a::l) m H) as 
-      [[l_nil r_unit] | [l_unit r_nil]]; try contradiction.
+      [[l_nil r_unit] | [l_unit r_nil]]; try contr.
     discr.
     (* n <> nil *)    
     inversion H.
@@ -679,14 +678,14 @@ Section Inb.
   Lemma Inb_false : forall x l, Inb x l = false -> In x l -> False.
 
   Proof.
-    induction l; simpl. intros. contradiction. case (eq_dec x a).
+    induction l; simpl. intros. contr. case (eq_dec x a).
     intros. discr. intros. destruct H0; auto.
   Qed.
 
   Lemma Inb_intro : forall x l, In x l -> Inb x l = true.
 
   Proof.
-    induction l; simpl; intros. contradiction. case (eq_dec x a). auto.
+    induction l; simpl; intros. contr. case (eq_dec x a). auto.
     destruct H. intro. absurd (x = a); auto. auto.
   Qed.
 
@@ -725,10 +724,10 @@ Section Inb.
   Proof.
     intros. induction l2. unfold Inclb. simpl. case l1. simpl; split; auto.
     intro; apply incl_refl.
-    intros. simpl; split; intro. discriminate H.
-    rewrite incl_nil_elim in H. discriminate H.
+    intros. simpl; split; intro. discr.
+    rewrite incl_nil_elim in H. discr.
     split; unfold Inclb; simpl; rewrite forallb_forall; intro.
-    intros x Hx. generalize (H _ Hx). case (eq_dec x a); intros.
+    intros x Hx. gen (H _ Hx). case (eq_dec x a); intros.
     rewrite e; apply in_eq. apply in_cons. apply Inb_true; auto.
     intros. case (eq_dec x a); auto; intros.
     destruct (in_inv (H _ H0)); auto. apply Inb_intro; auto.
@@ -772,7 +771,7 @@ Section remove.
     In x l -> length (remove x l) < length l.
 
   Proof.
-    induction l; simpl; intros. contradiction. destruct (eq_dec a x).
+    induction l; simpl; intros. contr. destruct (eq_dec a x).
     apply le_lt_n_Sm.
     apply length_remove. destruct H. rewrite H in n. tauto. simpl. apply lt_n_S.
     apply IHl. hyp.
@@ -841,7 +840,7 @@ Section removes.
   Lemma incl_removes : forall l m, removes l m [= m.
 
   Proof.
-    unfold incl. induction m; simpl. contradiction.
+    unfold incl. induction m; simpl. contr.
     case (In_dec a l). intros. right. apply IHm. hyp.
     simpl. intuition.
   Qed.
@@ -849,7 +848,7 @@ Section removes.
   Lemma incl_removes_app : forall l m, m [= removes l m ++ l.
 
   Proof.
-    unfold incl. induction m; simpl. contradiction. intros. destruct H.
+    unfold incl. induction m; simpl. contr. intros. destruct H.
     subst a0. case (In_dec a l); intro. apply in_appr. hyp. simpl. auto.
     case (In_dec a l); intro. apply IHm. hyp. simpl.
     case (eqdec a a0); intro. subst a0. auto. right. apply IHm. hyp.
@@ -859,7 +858,7 @@ Section removes.
 
   Proof.
     induction m; simpl; intros. tauto. case (In_dec a l); intro. rewrite IHm.
-    firstorder. subst. contradiction. simpl. rewrite IHm. firstorder. subst.
+    fo. subst. contr. simpl. rewrite IHm. fo. subst.
     hyp.
   Qed.
 
@@ -881,7 +880,7 @@ Section map.
   Lemma in_map_elim : forall x l, In x (map f l) -> exists y, In y l /\ x = f y.
 
   Proof.
-    induction l; simpl; intros. contradiction. destruct H.
+    induction l; simpl; intros. contr. destruct H.
     exists a. auto. ded (IHl H). do 2 destruct H0. exists x0. auto.
   Qed.
 
@@ -952,7 +951,7 @@ Section flat.
   Lemma In_incl_flat : forall x l, In x l -> x [= flat l.
 
   Proof.
-    induction l; simpl; intros. contradiction. intuition. subst.
+    induction l; simpl; intros. contr. intuition. subst.
     apply incl_appl. apply incl_refl.
   Qed.
 
@@ -1009,13 +1008,13 @@ Section Element_At_List.
     intro Hp; destruct p as [ | p].
     exists h; trivial.
     assert (Hp' : p < length t).
-    generalize Hp; auto with arith.
+    gen Hp; auto with arith.
     elim (IHl p); intros H1 H2.
     elim (H1 Hp'); intros a Ha; exists a; trivial.
     destruct p as [ | p]; intro H.
     auto with arith.
     elim (IHl p); intros H1 H2.
-    generalize (H2 H); auto with arith.
+    gen (H2 H); auto with arith.
   Qed.
 
   Lemma element_at_replaced : forall l p a, p < length l -> l[p:=a][p] = Some a.
@@ -1025,7 +1024,7 @@ Section Element_At_List.
     inversion Hlength.
     destruct p as [ | p]; simpl.
     trivial.
-    apply IHl; generalize Hlength; auto with arith.
+    apply IHl; gen Hlength; auto with arith.
   Qed.
 
   Lemma element_at_not_replaced : forall l p q a, p <> q -> l[p] = l[q:=a][p].
@@ -1191,7 +1190,7 @@ Section reverse_tail_recursive.
   Lemma rev_append_rev : forall l l', rev_append l' l = rev l ++ l'.
 
   Proof.
-    induction l; simpl; auto; intros. rewrite <- ass_app; firstorder.
+    induction l; simpl; auto; intros. rewrite <- ass_app; fo.
   Qed.
 
   Lemma rev_append_app : forall l l' acc : list A,
@@ -1443,7 +1442,7 @@ Section ListsNth.
     In x l -> exists i, i < length l /\ nth i l d = x.
 
   Proof.
-    induction l; simpl; intros. contradiction. destruct H.
+    induction l; simpl; intros. contr. destruct H.
     subst. exists 0. intuition.
     destruct (IHl H) as [i hi]. exists (S i). intuition.
   Qed.
@@ -1479,7 +1478,7 @@ Section ListsNth.
 
   Proof.
     induction l.
-    contradiction.
+    contr.
     intros; destruct H.
     exists 0.
     rewrite H; trivial.
@@ -2161,6 +2160,4 @@ Definition nats_incr_lt n := rev' (nats_decr_lt n).
 
 Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
 
-Proof.
-induction n; simpl; intros. omega. rewrite <- IHn. omega.
-Qed.
+Proof. induction n; simpl; intros. omega. rewrite <- IHn. omega. Qed.

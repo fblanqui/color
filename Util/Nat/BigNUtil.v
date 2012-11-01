@@ -28,7 +28,7 @@ Proof.
 decide equality; apply eq_digits_dec.
 Defined.
 
-Ltac bad_case := right; intro; inversion H; contradiction.
+Ltac bad_case := right; intro; inversion H; contr.
 Ltac case_tac x y := case (eq_digits_dec x y); [idtac|bad_case].
 
 Require Import BigN. Import BigN.
@@ -120,7 +120,7 @@ case (eq_BigN_w5_dec w w7); intro. subst. auto. bad_case.
 case (eq_BigN_w6_dec w w7); intro. subst. auto. bad_case.
 case (eq_nat_dec n n0); [idtac|bad_case]. intro. subst n0.
 case (eq_word_dec eq_BigN_w6_dec _ w w7); intro. subst. auto.
-right. intro. inversion H. ded (inj_pairT2 eq_nat_dec H1). contradiction.
+right. intro. inversion H. ded (inj_pairT2 eq_nat_dec H1). contr.
 Defined.
 
 (***********************************************************************)

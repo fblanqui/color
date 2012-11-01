@@ -7,13 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 Definition of log2 (floor) and exp2, and some equalities
 *)
 
-Require Import Div2 Le.
+Require Import Div2 Le LogicUtil.
 
 Lemma div2_le_n : forall n, div2 n <= n.
 
 Proof.
 cut (forall n, div2 n <= n /\ div2 (S n) <= S n).
-intros H n; generalize (H n); tauto.
+intros H n; gen (H n); tauto.
 induction n; auto.
 inversion IHn; split; auto.
 simpl. apply le_n_S. auto with arith.
@@ -53,20 +53,18 @@ destruct n.
  simpl; auto.
 simpl.
 apply log2_prop_p.
- intro; discriminate.
- intro H; discriminate.
+ intro; discr.
+ intro H; discr.
 apply IHcount; eapply le_trans.
 apply le_n_S; apply div2_le_n.
-apply le_S_n; assumption.
+apply le_S_n; hyp.
 Qed.
 
 Definition log2 n := log2_aux n n.
 
 Lemma log2_matches : forall n, log2_prop n (log2 n).
 
-Proof.
-unfold log2. intros. apply log2_aux_matches. auto with arith.
-Qed.
+Proof. unfold log2. intros. apply log2_aux_matches. auto with arith. Qed.
 
 Lemma log2_prop_func : forall p q,
   log2_prop p q -> forall q', log2_prop p q' -> q = q'.
@@ -89,9 +87,7 @@ Qed.
 
 Lemma log2_matches_log2_prop : forall n p, log2_prop n p -> p = log2 n.
 
-Proof.
-intros. eapply log2_prop_func. eassumption. apply log2_matches.
-Qed.
+Proof. intros. eapply log2_prop_func. ehyp. apply log2_matches. Qed.
 
 Fixpoint exp2 n :=
   match n with
@@ -111,15 +107,13 @@ Qed.
 
 Lemma exp2_pos : forall n, exp2 n >0.
 
-Proof.
-intro; induction n; simpl; auto with *.
-Qed.
+Proof. intro; induction n; simpl; auto with *. Qed.
 
 Lemma exp2_log2_prop : forall n p, log2_prop n p -> exp2 (S p) > n.
 
 Proof.
 cut(forall n n' p, n'<=n -> log2_prop n' p -> exp2 (S p) > n').
-intros. eapply H. assert (n<=n). omega. eassumption. assumption.
+intros. eapply H. assert (n<=n). omega. ehyp. hyp.
 intro; induction n; intros. assert (n'=0). omega. subst. apply exp2_pos.
 inversion H; auto.
 subst; inversion H0. simpl; auto.
@@ -128,13 +122,11 @@ assert (exp2 (S q) > div2 (S n)).
 apply IHn.
 simpl; destruct n; auto with *.
 assert (div2 n <= n); auto with *. apply div2_le_n.
-assumption.
+hyp.
 change (2*exp2 (S q) > S n).
-generalize(double_div2 (S n)); intro; omega.
+gen(double_div2 (S n)); intro; omega.
 Qed.
 
 Lemma exp2_log2 : forall n, exp2(S (log2 n)) > n.
 
-Proof.
-intro; apply exp2_log2_prop. apply log2_matches.
-Qed.
+Proof. intro; apply exp2_log2_prop. apply log2_matches. Qed.

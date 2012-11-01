@@ -101,7 +101,7 @@ Section Velementary.
 End Velementary.
 
 Ltac VSntac y := let h := fresh in
-  generalize (VSn_eq y); intro h; try rewrite h.
+  gen (VSn_eq y); intro h; try rewrite h.
 
 Lemma VSn_inv : forall A n (v : vector A (S n)),
   exists x, exists w, v = Vcons x w.
@@ -603,10 +603,10 @@ Section Vapp.
     destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h0)). revert H.
     case (le_gt_dec n i); simpl; intros.
     (* case 1 *)
-    transitivity (Vnth v2 (Vnth_app_aux (lt_S_n h0) l)). hyp.
+    trans (Vnth v2 (Vnth_app_aux (lt_S_n h0) l)). hyp.
     apply Vnth_eq. omega.
     (* case 2 *)
-    transitivity (Vnth v1 g). hyp. apply Vnth_eq. refl.
+    trans (Vnth v1 g). hyp. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vnth_app_cons : forall n1 (v1 : vec n1) n2 (v2 : vec n2)
@@ -664,7 +664,7 @@ Section Vbreak.
 
   Proof.
     induction n1; simpl; intros. VOtac. refl. VSntac v1. simpl.
-    generalize (IHn1 (Vtail v1) n2 v2). intro. rewrite H0. refl.
+    gen (IHn1 (Vtail v1) n2 v2). intro. rewrite H0. refl.
   Qed.
 
   Lemma Vbreak_eq_app : forall n1 n2 (v : vec (n1+n2)),
@@ -675,8 +675,8 @@ Section Vbreak.
     auto.
     clear n1. intros n1 Hrec. simpl.
     intro v.
-    generalize (Hrec (Vtail v)).
-    intro H. transitivity (Vcons (Vhead v) (Vtail v)).
+    gen (Hrec (Vtail v)).
+    intro H. trans (Vcons (Vhead v) (Vtail v)).
     apply VSn_eq. rewrite H. auto.
   Qed.
 
@@ -763,7 +763,7 @@ Section Vin.
     Vin x v1 -> Vin x (Vapp v1 v2).
 
   Proof.
-    induction v1; simpl; intros. contradiction. destruct H. auto.
+    induction v1; simpl; intros. contr. destruct H. auto.
     right. apply IHv1. hyp.
   Qed.
 
@@ -794,7 +794,7 @@ Section Vin.
       exists H : n1 + S n2 = n, v = Vcast (Vapp v1 (Vcons x v2)) H.
 
   Proof.
-    induction v; simpl. contradiction.
+    induction v; simpl. contr.
     intro H. destruct H. clear IHv. subst x.
     exists 0. exists (@Vnil A). exists n. exists v. exists (refl_equal (S n)).
     rewrite Vcast_refl. refl.
@@ -1066,7 +1066,7 @@ Section Vsub.
     Vsub v (Veq_app_aux2 h) = Vsub v' (Veq_app_aux2 h) -> v = v'.
 
   Proof.
-    intros. eapply Veq_sub_aux; eassumption.
+    intros. eapply Veq_sub_aux; ehyp.
   Qed.
 
   Lemma Veq_sub_cons_aux : forall n (v v' : vec n) i (h1 : 0+i<=n)
@@ -1086,7 +1086,7 @@ Section Vsub.
     Vsub v (Veq_app_cons_aux2 h) = Vsub v' (Veq_app_cons_aux2 h) -> v = v'.
 
   Proof.
-    intros. eapply Veq_sub_cons_aux; eassumption.
+    intros. eapply Veq_sub_cons_aux; ehyp.
   Qed.
 
   Lemma Vsub_replace_l : forall n (v : vec n) i (h : i<n) x j k (p : j+k<=n),
@@ -1167,7 +1167,7 @@ Section Vforall.
   Lemma Vforall_in : forall x n (v : vec n), Vforall v -> Vin x v -> P x.
 
   Proof.
-    induction v; simpl. contradiction. intros Ha Hv. destruct Ha. destruct Hv.
+    induction v; simpl. contr. intros Ha Hv. destruct Ha. destruct Hv.
     rewrite <- H1. exact H. auto.
   Qed.
 
@@ -1217,8 +1217,8 @@ Section Vforall.
     VSntac v. destruct (P_dec (Vhead v)).
     destruct (IHn (Vtail v)).
     left. simpl. split; hyp.
-    right. intro V. destruct V. contradiction.
-    right. intro V. destruct V. contradiction.
+    right. intro V. destruct V. contr.
+    right. intro V. destruct V. contr.
   Defined.
 
 End Vforall.
@@ -1735,7 +1735,7 @@ Section map.
     Vin x (Vmap v) -> exists y, Vin y v /\ x = f y.
 
   Proof.
-    induction v; simpl; intros. contradiction. destruct H. subst x. exists h.
+    induction v; simpl; intros. contr. destruct H. subst x. exists h.
     auto.
     assert (exists y, Vin y v /\ x = f y). apply IHv. hyp.
     destruct H0 as [y]. exists y. intuition.
@@ -1745,7 +1745,7 @@ Section map.
     Vin x v -> Vin (f x) (Vmap v).
 
   Proof.
-    induction v; simpl; intros. contradiction. destruct H. subst x. auto.
+    induction v; simpl; intros. contr. destruct H. subst x. auto.
     intuition.
   Qed.
 
@@ -1887,7 +1887,7 @@ intros A P n v. elim v.
  simpl. intro. refl.
  intros a p w. intro Hrec.
  simpl. intro Hv. case Hv. intros H1 H2. simpl Vmap.
- generalize (Hrec H2). intro H. apply Vcons_eq_intro; auto.
+ gen (Hrec H2). intro H. apply Vcons_eq_intro; auto.
 Qed.
 
 Implicit Arguments Vmap_proj1 [A P n v].
@@ -1942,7 +1942,7 @@ Lemma lforall_Vforall : forall (A : Type) (l : list A) (p : A -> Prop),
   lforall p l -> Vforall p (vec_of_list l).
 
 Proof.
-  intros. generalize H. induction l. trivial. 
+  intros. gen H. induction l. trivial. 
   intros lforall. red in lforall. destruct lforall as [pa lforall].
   red. simpl. split. trivial. 
   unfold Vforall in IHl. apply IHl; trivial.
@@ -1952,7 +1952,7 @@ Lemma Vforall_lforall : forall (A : Type) n (v : vector A n)
   (p : A -> Prop), Vforall p v -> lforall p (list_of_vec v).
 
 Proof.
-  intros. generalize H. induction v. trivial. 
+  intros. gen H. induction v. trivial. 
   intros lforall. red in lforall. destruct lforall as [pa vforall].
   red. simpl. split. trivial. 
   unfold lforall in IHv. apply IHv; trivial.

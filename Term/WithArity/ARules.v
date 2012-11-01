@@ -27,8 +27,8 @@ Definition Rules R : rules := fun x => In x R.
 Lemma Rules_cons : forall a R, Rules (a :: R) [=] a :: Rules R.
 
 Proof.
-unfold Rules. simpl. split. intuition. subst. firstorder. firstorder.
-firstorder.
+unfold Rules. simpl. split. intuition. subst. fo. fo.
+fo.
 Qed.
 
 Lemma Rules_app : forall R S, Rules (R ++ S) [=] Rules R ++ Rules S.
@@ -252,8 +252,8 @@ Qed.
 Lemma rt_red_empty : red empty # == @eq (@term Sig).
 
 Proof.
-split; intros t u h. elim h; intros. redtac. contradiction. refl.
-transitivity y; hyp. subst. apply rt_refl.
+split; intros t u h. elim h; intros. redtac. contr. refl.
+trans y; hyp. subst. apply rt_refl.
 Qed.
 
 (***********************************************************************)

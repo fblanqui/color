@@ -48,7 +48,7 @@ Lemma mkdp_elim : forall l t S, In (mkRule l t) (mkdp S) -> exists r,
   In (mkRule l r) S /\ In t (calls R r) /\ negb_subterm l t = true.
 
 Proof.
-induction S; simpl; intros. contradiction. destruct a.
+induction S; simpl; intros. contr. destruct a.
 rewrite in_app in H. destruct H. destruct (in_map_elim H). destruct H0.
 injection H1. intros. subst x. subst lhs. clear H1.
 rewrite filter_In in H0. destruct H0.
@@ -160,7 +160,7 @@ split. simpl. apply Vforall_lforall in sn_ts. trivial. trivial.
 Qed.
 
 (***********************************************************************)
-(** assumptions on rules *)
+(** hyps on rules *)
 
 Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
 
@@ -213,7 +213,7 @@ intros t H. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
 assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
 apply Vforall_SN_gt_prod. hyp.
 (* induction on ts with red as well-founded ordering (ts is SN) *)
-generalize IH. rewrite H1. elim H2. clear IH ts H1 Hsnts H2.
+gen IH. rewrite H1. elim H2. clear IH ts H1 Hsnts H2.
 intros ts H1 IH1 IH2.
 assert (Hsnts : Vforall SNR ts). apply SN_gt_prod_forall. apply SN_intro.
 hyp. clear H1.

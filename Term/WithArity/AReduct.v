@@ -43,7 +43,7 @@ Section S.
     In u (top_reducts R t) -> hd_red R t u.
 
   Proof.
-    induction R; simpl. contradiction.
+    induction R; simpl. contr.
     assert (h : List.incl R (a::R)). unfold List.incl. simpl. auto.
     case_eq (top_reduct t a); intros t0 H.
     intro H0. simpl in H0. intuition. subst. 
@@ -169,7 +169,7 @@ Section S.
   Proof.
     induction us.
     (* Vnil *)
-    contradiction.
+    contr.
     (* Vcons *)
     intros E g H. simpl in H. rewrite in_app in H. intuition.
     (* case 1 *)
@@ -274,7 +274,7 @@ Section S.
   Proof.
     induction ts; intros.
     (* Vnil *)
-    contradiction.
+    contr.
     (* Vcons *)
     simpl in H. rewrite in_app in H. intuition.
     (* case 1 *)
@@ -328,8 +328,8 @@ Section S.
     destruct (eq_nat_dec x i).
     (* a) x = i *)
     set (q := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0).
-    generalize q. assert (i - x = 0). omega. rewrite H. intro. simpl.
-    transitivity (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
+    gen q. assert (i - x = 0). omega. rewrite H. intro. simpl.
+    trans (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
     rewrite Vnth_replace. hyp.
     (* b) x <> i *)
     rewrite Vnth_replace_neq. 2: hyp. rewrite (Veq_app_cons ts x0).

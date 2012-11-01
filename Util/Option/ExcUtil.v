@@ -9,13 +9,11 @@ Utility results about the option/exception type.
 
 Set Implicit Arguments.
 
-Require Import Bool ListForall ListUtil Program.
+Require Import Bool ListForall ListUtil Program LogicUtil.
 
 Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
 
-Proof.
-intros. inversion H. auto.
-Qed.
+Proof. intros. inversion H. auto. Qed.
 
 Section dec.
 
@@ -23,9 +21,7 @@ Section dec.
 
   Lemma eq_opt_dec : forall x y : option A, {x=y}+{~x=y}.
 
-  Proof.
-    decide equality.
-  Qed.
+  Proof. decide equality. Qed.
 
 End dec.
 
@@ -53,7 +49,7 @@ Section ExcUtil.
   Next Obligation.
   Proof with auto.
     apply forallb_imp_lforall with (fun x => exc_to_bool (f x))...
-    intros. destruct (f x). exists p... discriminate.
+    intros. destruct (f x). exists p... discr.
   Qed.
 
   Program Definition partition_exc (l : list A) :
@@ -73,9 +69,9 @@ Section ExcUtil.
     unfold pred_exc_to_bool in *.
     repeat split...
     apply lforall_intro. intros x xl.
-    assert (ll := left x xl). destruct (f x); try discriminate...
+    assert (ll := left x xl). destruct (f x); try discr...
     apply lforall_intro. intros x xl.
-    assert (rr := right x xl). destruct (f x); try discriminate...
+    assert (rr := right x xl). destruct (f x); try discr...
   Qed.
 
 End ExcUtil.

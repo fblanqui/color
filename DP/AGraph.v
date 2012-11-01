@@ -83,21 +83,21 @@ set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
 ded (vars_max H3). ded (in_vars_shift_min H4). unfold p in H6.
-absurd (x <= maxvar l0). omega. assumption.
+absurd (x <= maxvar l0). omega. hyp.
 (* domains of substitutions *)
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
 assert (dom_incl s1' (vars (shift p l1))). unfold s1'. apply dom_incl_restrict.
 (* inclusion in the dp_graph *)
 assert (sub s r0 = sub s0' r0). unfold s. eapply sub_union1. apply H5.
-apply H3. apply hyp. assumption. rewrite H6.
-assert (sub s0' r0 = sub s0 r0). unfold s0'. symmetry.
-apply sub_restrict_incl. apply hyp. assumption. rewrite H7.
+apply H3. apply hyp. hyp. rewrite H6.
+assert (sub s0' r0 = sub s0 r0). unfold s0'. sym.
+apply sub_restrict_incl. apply hyp. hyp. rewrite H7.
 assert (sub s (shift p l1) = sub s1' (shift p l1)).
 unfold s. eapply sub_union2. apply H4. apply H3. apply List.incl_refl.
 rewrite H8.
 assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
 rewrite <- sub_restrict. rewrite <- sub_shift.
-refl. rewrite H9. assumption.
+refl. rewrite H9. hyp.
 Qed.
 
 Lemma hd_red_Mod2_hd_rules_graph : forall t u v,

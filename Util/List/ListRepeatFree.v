@@ -29,7 +29,7 @@ Lemma repeat_free_app_elim_right : forall l l',
   repeat_free (l++l') -> repeat_free l'.
 
 Proof.
-induction l; simpl; intros. assumption. apply IHl. tauto. 
+induction l; simpl; intros. hyp. apply IHl. tauto. 
 Qed.
 
 Lemma repeat_free_incl_length : eq_midex A -> forall l l',
@@ -55,7 +55,7 @@ Lemma repeat_free_unique : forall l (x:A),
   repeat_free l -> forall n m, l[n] = Some x -> l[m] = Some x -> n=m.
 
 Proof.
-intro;intro;induction l;intros;simpl in H; try discriminate.
+intro;intro;induction l;intros;simpl in H; try discr.
 destruct n;destruct m;auto with *;simpl in *.
 rewrite <- H0 in H1; ded (element_at_in2 H1); tauto.
 rewrite <- H1 in H0; ded (element_at_in2 H0); tauto.
@@ -69,8 +69,8 @@ Proof.
 induction l; simpl; intros. apply le_O_n.
 apply le_trans with (S (length (remove eq_dec a l'))).
 apply le_n_S. apply IHl. tauto. apply incl_remove. tauto.
-apply incl_cons_l_incl with a. assumption.
-apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. assumption.
+apply incl_cons_l_incl with a. hyp.
+apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. hyp.
 Qed.
 
 Lemma repeat_free_last : forall (a : A) l,
@@ -94,7 +94,7 @@ Lemma repeat_free_app_elim : forall l m : list A, repeat_free (l ++ m) ->
 Proof.
 induction l; simpl; intros. intuition. destruct H. ded (IHl m H0).
 decomp H1. intuition. subst a. apply H. apply in_appr. exact H3.
-apply (H5 x); assumption.
+apply (H5 x); hyp.
 Qed.
 
 Implicit Arguments repeat_free_app_elim [l m].
@@ -240,7 +240,7 @@ rewrite distr_rev. simpl. rewrite rev_involutive. exists (x0++x1). refl.
 absurd (In a (rev x++a::nil)). exact n. apply in_appr. simpl. auto.
 (* ~In a (greatest_repeat_free_prefix l) *)
 destruct IHl.
-left. symmetry. apply repeat_free_greatest_repeat_free_prefix. simpl.
+left. sym. apply repeat_free_greatest_repeat_free_prefix. simpl.
 rewrite H0. intuition.
 right. decomp H0. exists x.
 assert (repeat_free (a::greatest_repeat_free_prefix l)). simpl. intuition.

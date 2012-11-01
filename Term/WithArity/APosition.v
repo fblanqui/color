@@ -145,7 +145,7 @@ discr.
 revert H. simpl. destruct (lt_ge_dec a (arity f)); intro.
 destruct (replace_pos (Vnth t l) p u); inversion H. discr.
 (* Fun, Fun *)
-generalize H. simpl. destruct (lt_ge_dec a (arity f)); intro. 2: discr.
+gen H. simpl. destruct (lt_ge_dec a (arity f)); intro. 2: discr.
 destruct (replace_pos (Vnth t l) p u). 2: discr.
 apply Some_eq in H0. Funeqtac. subst t0.
 destruct (IHp (Vnth t l) u t1). revert H. simpl.

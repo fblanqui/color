@@ -94,7 +94,7 @@ Lemma compat_lforall : forall R, lforall compat_rule R -> compat R.
 
 Proof.
 induction R; unfold compat; simpl; intros.
-contradiction. intuition. subst a. exact H1.
+contr. intuition. subst a. exact H1.
 Qed.
 
 (***********************************************************************)

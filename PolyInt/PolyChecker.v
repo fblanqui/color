@@ -104,7 +104,7 @@ Program Definition poly_sm (fi : symPI) := pstrong_monotone (projT2 fi).
 Lemma sm_imp_wm (fi : symPI) : poly_sm fi -> poly_wm fi.
 
 Proof.
-  firstorder.
+  fo.
 Qed.
 
 Program Definition check_wm (fi : symPI) : Exc (poly_wm fi) := 
@@ -112,7 +112,7 @@ Program Definition check_wm (fi : symPI) : Exc (poly_wm fi) :=
 
 Next Obligation.
 Proof.
-  firstorder.
+  fo.
 Qed.
 
 Lemma wm_ok : forall fi, poly_wm fi -> Vmonotone1 (interpret (projT2 fi)) Dge.
@@ -162,7 +162,7 @@ Program Definition check_succ (r : rule Sig) : Exc (succ (lhs r) (rhs r)) :=
   end.
 
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   destruct_call coef_pos_check...
   apply pi_compat_rule...
 Qed.
@@ -174,7 +174,7 @@ Program Definition check_succeq (r : rule Sig) : Exc (succeq (lhs r) (rhs r)) :=
   end.
 
 Next Obligation.
-Proof with try discriminate; auto.
+Proof with try discr; auto.
   destruct_call coef_pos_check...
   apply pi_compat_rule_weak...
 Qed.

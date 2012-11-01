@@ -32,7 +32,7 @@ Module LexOrder (ES : Eqset).
       inversion Hlex; trivial.
       destruct ts as [ | t ts]; inversion Hlex; subst.
       simpl; auto with arith.
-      simpl; generalize (IHss ts H0); auto with arith.
+      simpl; gen (IHss ts H0); auto with arith.
     Qed.
     
     Lemma SPO_to_lex_SPO : forall (ss : list ES.A), 
@@ -67,7 +67,7 @@ Module LexOrder (ES : Eqset).
       elim (Hss s); try right; trivial.
       intro H; inversion H; subst.
       elim (Hss s); try left; trivial; intros H1 H2.
-      apply H2; assumption.
+      apply H2; hyp.
       elim IHss. 
       intros H2 H3; apply H3; trivial.
       intros s' s'_in_ss; apply (Hss s'); try right; trivial.
@@ -98,7 +98,7 @@ Module LexOrder (ES : Eqset).
       intros s s_in_l; apply Haccs; right; trivial.
       assert (Hl2 : length l = n).
       inversion Hl; trivial.
-      generalize (IHn l Hl2 accs_l).
+      gen (IHn l Hl2 accs_l).
       clear Hl Haccs.
       generalize dependent l.
       induction acc_h as [h acc_h IHh].
@@ -117,7 +117,7 @@ Module LexOrder (ES : Eqset).
       apply IHl; trivial.
       cut (length (h :: l') = length ( h :: l)).
       simpl; auto with arith.
-      generalize Hlex; apply lex_length.
+      gen Hlex; apply lex_length.
     Qed.
     
     Section Lex_and_one_less.
@@ -165,10 +165,10 @@ Module LexOrder (ES : Eqset).
       destruct (eq_nat_dec (length l) (length l')).
       left. constructor; trivial.
       right. intro al_nil. inversion al_nil; intuition.
-      apply n. apply lex_length with R. assumption.
+      apply n. apply lex_length with R. hyp.
       destruct (eqA_dec a a0).
       rewrite e. destruct (IHl l'). intuition.
-      left. constructor 2. assumption.
+      left. constructor 2. hyp.
       right. intro ll'. inversion ll'; intuition.
       apply n. congruence.
       right. intro ll'. inversion ll'; intuition.
@@ -191,9 +191,9 @@ Module LexOrder (ES : Eqset).
       destruct l'. inversion H0.
       simpl. inversion H0.
       constructor 1. apply H; auto with datatypes.
-      do 2 rewrite map_length. assumption.
+      do 2 rewrite map_length. hyp.
       constructor 2. apply IHl.
-      intros. apply H; intuition. assumption.
+      intros. apply H; intuition. hyp.
     Qed.
 
   End Homomorphism.

@@ -45,19 +45,19 @@ Module Make (X : OrderedType).
   Instance pred_geq :
     Proper (eq ==> XSet.Equal ==> geq ==> @same_relation X.t) pred.
 
-  Proof. split; apply pred_geq'; hyp||(symmetry;hyp). Qed.
+  Proof. split; apply pred_geq'; hyp||(sym;hyp). Qed.
 
   Instance pred_geq_ext :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> iff) pred.
 
-  Proof. split; apply pred_geq_ext'; hyp||(symmetry;hyp). Qed.
+  Proof. split; apply pred_geq_ext'; hyp||(sym;hyp). Qed.
 
   Lemma pred_empty : forall x s, pred x s empty == @empty_rel X.t.
 
   Proof.
     split; intros a b; unfold pred, empty_rel; intros.
     destruct H. destruct H as [t [t1 t2]]. rewrite empty_o in t1. discr.
-    contradiction.
+    contr.
   Qed.
 
   Lemma pred_succ_prod : forall x y g,
@@ -73,7 +73,7 @@ Module Make (X : OrderedType).
     (* pred *)
     unfold xpx. rewrite add_iff. right. rewrite In_preds_rel. hyp. hyp.
     (* succ *)
-    unfold xpx. rewrite add_iff. left. symmetry. hyp. hyp.
+    unfold xpx. rewrite add_iff. left. sym. hyp. hyp.
     (* >> *)
     intros a b [h1 h2]. unfold Relation_Operators.union, pred, succ.
     subst xpx ysy. rewrite add_iff in h1, h2. repeat rewrite add_iff.
@@ -128,7 +128,7 @@ Module Make (X : OrderedType).
     unfold rel. rewrite add_o. destruct (eq_dec z a). 2: hyp.
     rewrite e in n. destruct H1 as [u [u1 u2]]. rewrite n in u1. discr.
     unfold rel in H1. rewrite add_o in H1. destruct (eq_dec z a). 2: hyp.
-    destruct H1 as [u [u1 u2]]. inversion u1. subst t. contradiction.
+    destruct H1 as [u [u1 u2]]. inversion u1. subst t. contr.
   Qed.
 
   (*COQ: can we remove this lemma? *)
@@ -245,7 +245,7 @@ the transitive closure of [id x y U g] *)
     (* y not in sx *)
     split.
     rewrite union_incl. split. apply prod_add_incl_tc_id.
-    transitivity (g U id x y). apply incl_union_l. refl. apply incl_tc. refl.
+    trans (g U id x y). apply incl_union_l. refl. apply incl_tc. refl.
     apply tc_min. 2: hyp. rewrite union_commut. apply union_m'. 2: refl.
     intros a b [xa yb]. split; rewrite add_iff; intuition.
   Qed.
@@ -388,11 +388,11 @@ using the function [trans_add_edge] now *)
     Proof.
       intros g a tg. unfold trans_add_edge_list, add_edge_list. destruct (f a).
       (* f a = None *)
-      2: symmetry; apply trans_tc; hyp.
+      2: sym; apply trans_tc; hyp.
       (* f a = Some (x, l) *)
       destruct p as [x l]. revert g tg. induction l; simpl; intros g tg.
       (* nil *)
-      symmetry. apply trans_tc. hyp.
+      sym. apply trans_tc. hyp.
       (* cons *)
       rename a0 into y. rewrite IHl. 2: apply transitive_trans_add_edge; hyp.
       unfold add_edge' at 3, trans_add_edge'.
@@ -429,7 +429,7 @@ using the function [trans_add_edge] now *)
       fold_left trans_add_edge_list l g == fold_left add_edge_list l g!.
 
     Proof.
-      induction l; simpl. intros. symmetry. apply trans_tc. hyp.
+      induction l; simpl. intros. sym. apply trans_tc. hyp.
       intros g tg. rewrite IHl. 2: apply transitive_trans_add_edge_list; hyp.
       rewrite rel_list_fold_left_add_edge_list.
       rewrite rel_list_fold_left_add_edge_list with (g:=add_edge_list g a).
@@ -450,7 +450,7 @@ using the function [trans_add_edge] now *)
     Lemma transitive_trans_clos_list : forall l, Transitive (trans_clos_list l).
 
     Proof.
-      intro l. apply transitive_list_fold_left_trans_add_edge_list. firstorder.
+      intro l. apply transitive_list_fold_left_trans_add_edge_list. fo.
     Qed.
 
     Lemma rel_trans_clos_list : forall l,
@@ -458,7 +458,7 @@ using the function [trans_add_edge] now *)
 
     Proof.
       intro l. unfold trans_clos_list.
-      rewrite rel_list_fold_left_trans_add_edge_list. refl. firstorder.
+      rewrite rel_list_fold_left_trans_add_edge_list. refl. fo.
     Qed.
 
   End list.

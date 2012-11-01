@@ -9,7 +9,7 @@ converting terms with arities to varyadic terms).
 *)
 
 Require Import ATrs VPrecedence VRPO_Status VRPO_Results VTerm_of_ATerm
-  ListUtil Preorder SN RelUtil ARelation Arith VSignature.
+  ListUtil Preorder SN RelUtil ARelation Arith VSignature LogicUtil.
 
 Set Implicit Arguments.
 
@@ -95,9 +95,9 @@ Module RPO_Prover (Export R : TRPO).
     intros t u s tu. do 2 rewrite vterm_subs.
     apply VRPO_Results.lt_subst_closed. 
     unfold VRPO.tau, VRPO.RPO.mytau. intros. destruct (VRPO.RPO.status f). 
-    apply VRPO.RPO.S.LO.lex_homomorphic. assumption. assumption.
-    apply VRPO.RPO.S.mul_status_homomorphic. assumption. assumption.
-    assumption.
+    apply VRPO.RPO.S.LO.lex_homomorphic. hyp. hyp.
+    apply VRPO.RPO.S.mul_status_homomorphic. hyp. hyp.
+    hyp.
   Qed.
       
   Lemma arpo_context_closed : context_closed arpo.
@@ -105,12 +105,12 @@ Module RPO_Prover (Export R : TRPO).
   Proof.
     unfold context_closed, arpo, Rof, transp. 
     intros. induction c.
-    simpl. assumption. 
+    simpl. hyp. 
     simpl AContext.fill. do 2 rewrite vterm_fun.
     apply VRPO_Results.monotonic_lt.
     do 2 rewrite vterms_cast. do 2 rewrite vterms_app. simpl.
     apply one_less_cons with i (vterm_of_aterm (AContext.fill c t2))
-      (vterm_of_aterm (AContext.fill c t1)). assumption.
+      (vterm_of_aterm (AContext.fill c t1)). hyp.
     rewrite element_at_app_r; rewrite vterms_length; auto.
     rewrite <- minus_n_n; trivial.
     rewrite replace_at_app_r; rewrite vterms_length; auto.
@@ -135,7 +135,7 @@ Module RPO_Prover (Export R : TRPO).
   Proof.
     intros. apply WF_incl with arpo.
     apply compat_red. apply arpo_rewrite_ordering.
-    apply rule_partition_compat with arpo_dec. assumption.
+    apply rule_partition_compat with arpo_dec. hyp.
     apply arpo_wf.
   Qed.
 
@@ -144,7 +144,7 @@ Module RPO_Prover (Export R : TRPO).
   Proof.
     unfold absorb, arpo, Rof, transp. intros t u tu.
     destruct tu as [s [ts su]]. 
-    apply VRPO_Results.lt_trans with (vterm_of_aterm s); assumption.
+    apply VRPO_Results.lt_trans with (vterm_of_aterm s); hyp.
   Qed.
 
   Lemma rpo_rel_termination : forall R E,
@@ -159,8 +159,8 @@ Module RPO_Prover (Export R : TRPO).
     apply compat_red_mod with arpo. 
     apply arpo_rewrite_ordering.
     apply arpo_rewrite_ordering.
-    apply rule_partition_compat with arpo_dec. assumption.
-    apply rule_partition_compat with arpo_dec. assumption.
+    apply rule_partition_compat with arpo_dec. hyp.
+    apply rule_partition_compat with arpo_dec. hyp.
     apply arpo_self_absorb.
     apply arpo_wf.
   Qed.
@@ -175,7 +175,7 @@ Module RPO_Prover (Export R : TRPO).
   Proof.
     intros. apply WF_incl with (ATrs.red_mod E R).
     apply hd_red_mod_incl_red_mod.
-    apply rpo_rel_termination; assumption.
+    apply rpo_rel_termination; hyp.
   Qed.
 
   Ltac prove_termination :=

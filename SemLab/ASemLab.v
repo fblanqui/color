@@ -235,7 +235,7 @@ Qed.
 Lemma rt_red_Frs_Decr : red (unlab_rules Decr) # << @eq term.
 
 Proof.
-intros t u. induction 1. apply red_Frs_Decr. hyp. refl. transitivity y; hyp.
+intros t u. induction 1. apply red_Frs_Decr. hyp. refl. trans y; hyp.
 Qed.
 
 Lemma red_mod_Frs_Decr : forall E,
@@ -252,7 +252,7 @@ Lemma rt_red_mod_Frs_Decr : forall E,
   red (unlab_rules (Decr ++ lab_rules E)) # << red E #.
 
 Proof.
-intro E. transitivity (red E % #). rewrite red_mod_Frs_Decr. refl.
+intro E. trans (red E % #). rewrite red_mod_Frs_Decr. refl.
 rewrite rc_incl_rtc. rewrite rtc_invol. refl.
 Qed.
 
@@ -711,7 +711,7 @@ Module Ord (SL : SemLab) <: OrdSemLab.
   Lemma Lge_is_eq : forall f a b, (@Lgt f%) a b <-> a = b.
 
   Proof.
-    firstorder.
+    fo.
   Qed.
 
   Lemma pi_mon : forall f, Vmonotone (pi f) Dge (@Lgt f%).
@@ -728,7 +728,7 @@ Module Ord (SL : SemLab) <: OrdSemLab.
   Lemma Decr_empty : Decr beq_ok Lgt [=] @empty (@ATrs.rule Sig').
 
   Proof.
-    firstorder.
+    fo.
   Qed.
 
 End Ord.
@@ -793,7 +793,7 @@ Module FinOrd (Import FSL : FinSemLab) <: FinOrdSemLab.
   Lemma L2s_ok : forall f (x y : L f), Lgt x y <-> In (x,y) (L2s f).
 
   Proof.
-    firstorder.
+    fo.
   Qed.
 
   Lemma enum_Decr_empty : enum_Decr beq_ok Fs L2s = nil.
@@ -892,7 +892,7 @@ Module SemLabProps (SL : SemLab).
       (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty. rewrite red_mod_empty. refl.*)
       apply WF_m.
       assert (a : forall x y, red Decr # x y -> x = y).
-      induction 1. redtac. firstorder. refl. transitivity y; hyp.
+      induction 1. redtac. fo. refl. trans y; hyp.
       unfold red_mod. split; intros t u h.
       destruct h. intuition. apply a in H0. subst. hyp. exists t. split.
       apply rt_refl. hyp.

@@ -166,23 +166,23 @@ Lemma term_int_eq_bterm_int : forall t, P t.
 
 Proof.
 intro t. apply (term_ind P Q).
- intro x. unfold P. simpl. intros. reflexivity.
+ intro x. unfold P. simpl. intros. refl.
 
  intros f ts. unfold Q. intro H. unfold P.
  intros n Hn.
  rewrite inject_term_eq. simpl.
  apply (f_equal (fint I f)).
- generalize (maxvar_le_fun Hn). intro H0.
- generalize (H _ H0). intro H1. assumption.
+ gen (maxvar_le_fun Hn). intro H0.
+ gen (H _ H0). intro H1. hyp.
 
  unfold Q, P. simpl. auto.
 
  intros t' n' v'. unfold P, Q. intros H1 H2. intros n H3.
- simpl in H3. generalize H3. clear H3.
+ simpl in H3. gen H3. clear H3.
  intro H3.
- generalize (H1 _ (proj1 H3)). clear H1. intro H1.
- generalize (H2 _ (proj2 H3)). clear H2. intro H2.
- simpl. unfold Vforall in H1, H2. rewrite H1. rewrite H2. reflexivity.
+ gen (H1 _ (proj1 H3)). clear H1. intro H1.
+ gen (H2 _ (proj2 H3)). clear H2. intro H2.
+ simpl. unfold Vforall in H1, H2. rewrite H1. rewrite H2. refl.
 Qed.
  
 End term_int.

@@ -34,7 +34,7 @@ Section occur.
   Lemma neq_delta : forall x y, x <> y -> delta x y = 0.
 
   Proof.
-    intros. unfold delta. case (eq_dec x y); intro. contradiction. refl.
+    intros. unfold delta. case (eq_dec x y); intro. contr. refl.
   Qed.
 
   Fixpoint occur x (l : list A) : nat :=
@@ -53,7 +53,7 @@ Section occur.
   Lemma in_occur : forall x l, In x l -> occur x l > 0.
 
   Proof.
-    induction l; simpl; intros. contradiction. unfold delta.
+    induction l; simpl; intros. contr. unfold delta.
     case (eq_dec x a); intro. omega. destruct H. subst a. irrefl. auto.
   Qed.
 
@@ -78,9 +78,9 @@ Section occur.
   Lemma occur_notin : forall x l, occur x l = 0 -> ~In x l.
 
   Proof.
-    induction l; simpl. do 2 intro. contradiction. unfold delta.
+    induction l; simpl. do 2 intro. contr. unfold delta.
     case (eq_dec x a); intros.
-    discriminate. intro. destruct H0. subst a. irrefl. intuition.
+    discr. intro. destruct H0. subst a. irrefl. intuition.
   Qed.
 
   Lemma occur_S : forall x l n, occur x l = S n ->
@@ -128,16 +128,16 @@ Section pigeon_hole.
     ded (incl_cons_l H). clear H. destruct H1.
     ded (incl_cons_r H1). destruct H2.
     (* case In a l *)
-    simpl in H. destruct H. subst a0. contradiction.
+    simpl in H. destruct H. subst a0. contr.
     ded (in_elim_dec eq_dec H2). do 3 destruct H3.
     (* ~In a x0 *)
     assert (~In a x0). apply (occur_notin eq_dec). rewrite H3 in l0.
     rewrite occur_app in l0. simpl in l0. rewrite eq_delta in l0. omega.
     (* x and x0 included in s *)
     rewrite H3 in H1. ded (incl_app_elim H1). clear H1. destruct H6.
-    ded (incl_cons_r H1). clear H1. destruct H7. contradiction.
+    ded (incl_cons_r H1). clear H1. destruct H7. contr.
     ded (incl_cons_l H6). clear H6. destruct H7. clear H6.
-    ded (incl_cons_r H7). clear H7. destruct H6. contradiction.
+    ded (incl_cons_r H7). clear H7. destruct H6. contr.
     (* l' = l - a + a0 *)
     set (l' := x ++ a0 :: x0).
     assert (incl l' s). unfold l'. apply incl_app. exact H1.

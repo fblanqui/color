@@ -10,7 +10,7 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras List Eqdep_dec.
+Require Import RelExtras ListExtras List Eqdep_dec LogicUtil.
 Require TermsDef.
 
 Module TermsTyping (Sig : TermsSig.Signature).
@@ -19,21 +19,19 @@ Module TermsTyping (Sig : TermsSig.Signature).
 
   Lemma baseType_dec : forall A, {isBaseType A} + {isArrowType A}.
 
-  Proof.
-    destruct A; firstorder.
-  Qed.
+  Proof. destruct A; fo. Qed.
 
   Lemma type_discr : forall A B, ~A = A --> B.
 
   Proof.
-    induction A; unfold not; simpl; intros. discriminate.
+    induction A; unfold not; simpl; intros. discr.
     unfold not in *. inversion H. eapply IHA1. apply H1.
   Qed.
 
   Lemma type_discr2 : forall A B C, ~A = (A --> B) --> C.
 
   Proof.
-    induction A; unfold not; simpl; intros. discriminate.
+    induction A; unfold not; simpl; intros. discr.
     unfold not in *. inversion H. eapply IHA1. apply H1.
   Qed.
 
@@ -43,33 +41,27 @@ Section Equality_Decidable.
 Resolve, otherwise it does not work! *)
   Lemma eq_nat_dec : forall (m n: nat), {m=n}+{m<>n}.
 
-  Proof.
-    decide equality.
-  Qed.
+  Proof. decide equality. Qed.
 
   Hint Resolve eq_nat_dec : terms.
 
   Lemma eq_SimpleType_dec : forall (A B: SimpleType), {A=B} + {A<>B}.
 
-  Proof. 
-    decide equality; auto with terms. 
-  Defined.
+  Proof. decide equality; auto with terms. Defined.
 
   Hint Resolve eq_SimpleType_dec : terms.
 
   Lemma eq_Env_dec : forall (E1 E2 : Env), {E1=E2} + {E1<>E2}.
+
   Proof.
-    decide equality; generalize a o; decide equality; 
-      apply eq_SimpleType_dec.
+    decide equality; generalize a o; decide equality; apply eq_SimpleType_dec.
   Defined.
 
   Hint Resolve eq_Env_dec : terms.
 
   Lemma eq_Preterm_dec : forall (F G: Preterm), {F=G}+{F<>G}.
 
-  Proof. 
-    decide equality; auto with terms. 
-  Defined.
+  Proof. decide equality; auto with terms. Defined.
 
   Hint Resolve eq_Preterm_dec : terms.
 
@@ -118,7 +110,7 @@ Section Typing.
       inversion d2; trivial.
     unfold  VarD in * .
     assert(Some (Some T1) = Some (Some T2)).
-    transitivity (nth_error E x); auto.
+    trans (nth_error E x); auto.
     injection H7; trivial.
     rewrite(@IHPt _ _ _ X X0); auto.
     set(e0 := IHPt1 _ _ _ X X1); injection e0; auto.
@@ -148,11 +140,11 @@ Section Typing.
       | TApp _ _ _ _ _ _ _, TApp _ _ _ _ _ _ _ => _
       | _, _ => _
       end (refl_equal _) (refl_equal _));
-    intros; destruct t; try discriminate;
-    try discriminate cast; try discriminate dis;
-    injection cast; intros; generalize cast; clear cast.
+    intros; destruct t; try discr;
+    try discr cast; try discr dis;
+    injection cast; intros; gen cast; clear cast.
 
-    generalize v v0; clear v v0.
+    revert v v0.
     rewrite H0; rewrite H1; rewrite H2.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec).
     rewrite (VarD_unique v v0); apply refl_equal.
@@ -161,17 +153,17 @@ Section Typing.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec); 
       apply refl_equal.
 
-    generalize t1; clear t1.
+    revert t1.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H4.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec).
     rewrite(Deriv_unique _ _ _ t0 t1); apply refl_equal.
 
-    generalize t2 t3; clear t2 t3.
+    revert t2 t3.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H3.
     intros t2 t3.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec).
     set(e0 := Type_unique t0 t2); injection e0; intro H7.
-    generalize t2 t3; clear e0 t2 t3; rewrite <- H7.
+    clear e0. revert t2 t3. rewrite <- H7.
     intros; rewrite(Deriv_unique _ _ _ t0 t2); 
       rewrite(Deriv_unique _ _ _ t1 t3);
     apply refl_equal.
@@ -182,7 +174,7 @@ Section Typing.
 
   Proof.
     intros; destruct M; destruct N; simpl in *.
-    generalize typing0; clear typing0.
+    revert typing0.
     rewrite H; rewrite H0; rewrite H1.
     intros.
     rewrite(typing_unique typing0 typing1).
@@ -194,7 +186,7 @@ Section Typing.
 
   Proof.
     intros; destruct M; destruct N; simpl in *.
-    generalize typing0; clear typing0.
+    revert typing0.
     rewrite H; rewrite H0; intros.
     apply (Type_unique typing0 typing1).
   Qed.
@@ -227,8 +219,7 @@ Section Auto_Typing.
     {~exists N: Term, env N = E /\ term N = Pt}.
 
   Proof.
-    intros E Pt; generalize Pt E; clear E Pt.
-    induction Pt; intro E.
+    intros E Pt. revert Pt E. induction Pt; intro E.
      (* -) variable *)
     destruct (isVarDecl_dec E x) as [[A xt] | xut].
      (*   - variable declared *)
@@ -280,9 +271,9 @@ Section Auto_Typing.
     assert (buildT X = buildT TypL).
     apply term_eq; simpl; congruence.
     absurd (A --> AL = #T).
-    discriminate.
+    discr.
     eapply Type_unique. apply X.
-    rewrite envL; rewrite <- Tl_env; rewrite <- Tl_term; assumption.
+    rewrite envL; rewrite <- Tl_env; rewrite <- Tl_term; hyp.
     destruct (eq_SimpleType_dec AL1 AR) as [AL1_AR | AL1_ne_AR].
      (*   - all ok *)
     left.

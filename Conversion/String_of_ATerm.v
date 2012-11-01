@@ -283,7 +283,7 @@ Section S.
       unfold WF. intro H.
       cut (forall s t, s = string_of_term t -> SN (red_mod E R) t).
       intros. apply H0 with (string_of_term x). refl.
-      intro s. generalize (H s). induction 1. intros. apply SN_intro. intros.
+      intro s. gen (H s). induction 1. intros. apply SN_intro. intros.
       apply H1 with (string_of_term y). 2: refl. subst x.
       apply sred_mod_of_red_mod. hyp.
     Qed.

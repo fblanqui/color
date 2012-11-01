@@ -72,7 +72,7 @@ edge from b to c *)
 
   Proof.
     intros. intros x y h. redtac. ded (hyp1 _ lr). revert H0.
-    elim cs; simpl; intros. contradiction. destruct (in_app_or H1).
+    elim cs; simpl; intros. contr. destruct (in_app_or H1).
     left. exists t. intuition. subst. apply hd_red_rule. hyp.
     right. apply H0. hyp.
   Qed.
@@ -81,7 +81,7 @@ edge from b to c *)
     exists ci, In ci cs /\ hd_red_Mod S ci x y.
 
   Proof.
-    induction cs; simpl; intros. contradiction. destruct H.
+    induction cs; simpl; intros. contr. destruct H.
     exists a. intuition. destruct (IHcs _ _ H). exists x0. intuition.
   Qed.
 
