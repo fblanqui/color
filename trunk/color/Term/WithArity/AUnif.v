@@ -204,7 +204,7 @@ Lemma lforall_notin_solved_eqn_1 : forall n t, mem n (vars t) = false ->
 Proof.
 induction l; simpl. auto. destruct a. simpl. unfold notin_eqn. simpl.
 mem. intros. unfold notin_solved_eqn. simpl. intuition.
-subst n0. rewrite (beq_refl beq_nat_ok) in H4. discriminate.
+subst n0. rewrite (beq_refl beq_nat_ok) in H4. discr.
 apply mem_vars_sub_single'; hyp.
 Qed.
 
@@ -215,7 +215,7 @@ Lemma lforall_notin_solved_eqn_1' : forall n t, mem n (vars t) = false ->
 Proof.
 induction l; simpl. auto. destruct a. simpl. unfold notin_eqn. simpl.
 mem. intros. unfold notin_solved_eqn. simpl. intuition.
-subst n0. rewrite (beq_refl beq_nat_ok) in H1. discriminate.
+subst n0. rewrite (beq_refl beq_nat_ok) in H1. discr.
 apply mem_vars_sub_single'; hyp.
 Qed.
 
@@ -497,8 +497,8 @@ case_eq (mem x (vars_eqns l)); intro H0; Subset_tac. set_iff. tauto.
 unfold not. intro.
 rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
 case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
-contradiction. absurd (E.eq x x). hyp. refl.
-ded (mem_4 _ _ H0). contradiction.
+contr. absurd (E.eq x x). hyp. refl.
+ded (mem_4 _ _ H0). contr.
 Qed.
 
 Lemma lt_card_vars_eqns_subs_r : forall x v l, mem x (vars v) = false ->
@@ -514,8 +514,8 @@ case_eq (mem x (vars_eqns l)); intro H0; Subset_tac. set_iff. tauto.
 unfold not. intro.
 rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
 case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
-contradiction. absurd (E.eq x x). hyp. refl.
-ded (mem_4 _ _ H0). contradiction.
+contr. absurd (E.eq x x). hyp. refl.
+ded (mem_4 _ _ H0). contr.
 Qed.
 
 (***********************************************************************)
@@ -615,8 +615,8 @@ Proof.
 intro. destruct a. destruct p. revert s. ded (wf_Lt e).
 elim H; clear H e; intros.
 apply Acc_intro. destruct y. destruct p. intro. apply H0. hyp.
-intro. apply Acc_intro. destruct y. destruct p; contradiction. contradiction.
-apply Acc_intro. destruct y. destruct p; contradiction. contradiction.
+intro. apply Acc_intro. destruct y. destruct p; contr. contr.
+apply Acc_intro. destruct y. destruct p; contr. contr.
 Qed.
 
 (***********************************************************************)
@@ -816,16 +816,16 @@ rewrite is_sol_eqns_map in H2; auto.
 (* var-fun *)
 Opaque vars. simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst.
 simpl snd.
-simpl sub at 1. case_eq (mem n (vars u)). intuition; try contradiction.
-ded (wf_term_var H0 H). discriminate. unfold is_sol, is_sol_solved_eqns.
+simpl sub at 1. case_eq (mem n (vars u)). intuition; try contr.
+ded (wf_term_var H0 H). discr. unfold is_sol, is_sol_solved_eqns.
 simpl lforall. unfold is_sol_solved_eqn at 2. simpl fst. simpl snd. intuition.
 rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
 rewrite lforall_is_sol_solved_eqn in H3; hyp.
 rewrite is_sol_eqns_map in H2; hyp.
 (* fun-var *) (* same proof *)
 simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst. simpl snd.
-simpl sub at 2. case_eq (mem n (vars u)). intuition; try contradiction.
-symmetry in H0. ded (wf_term_var H0 H). discriminate.
+simpl sub at 2. case_eq (mem n (vars u)). intuition; try contr.
+symmetry in H0. ded (wf_term_var H0 H). discr.
 unfold is_sol, is_sol_solved_eqns.
 simpl lforall. unfold is_sol_solved_eqn at 2. simpl fst. simpl snd. intuition.
 rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
@@ -835,8 +835,8 @@ rewrite is_sol_eqns_map in H2; hyp.
 simpl. unfold is_sol_eqn. unfold fst, snd. repeat rewrite sub_fun.
 case_beq_symb f f0. simpl. unfold is_sol_eqns at 2. rewrite lforall_app.
 rewrite lforall_is_sol_eqn_combine. intuition. Funeqtac. hyp.
-apply args_eq. hyp. intuition; try contradiction. Funeqtac.
-rewrite (beq_refl (@beq_symb_ok Sig)) in H. discriminate. Transparent vars.
+apply args_eq. hyp. intuition; try contr. Funeqtac.
+rewrite (beq_refl (@beq_symb_ok Sig)) in H. discr. Transparent vars.
 Qed.
 
 Lemma iter_step_correct : forall s p k,
@@ -915,7 +915,7 @@ Lemma lforall_notin_vars_solved_eqn_dom : forall x u l,
 Proof.
 induction l; simpl. mem. refl. destruct a.
 unfold notin_vars_solved_eqn at 1. simpl. mem. intuition.
-case_beq_nat n x; simpl. rewrite H1 in H0. discriminate. hyp.
+case_beq_nat n x; simpl. rewrite H1 in H0. discr. hyp.
 Qed.
 
 Implicit Arguments lforall_notin_vars_solved_eqn_dom [x u l].
@@ -925,7 +925,7 @@ Lemma lforall_notin_vars_solved_eqn_mem : forall x u l,
   mem x (dom l) = true -> mem x (vars u) = false.
 
 Proof.
-induction l. simpl. mem. intros. discriminate. destruct a. simpl. mem.
+induction l. simpl. mem. intros. discr. destruct a. simpl. mem.
 unfold notin_vars_solved_eqn at 1. simpl. intuition.
 destruct (orb_true_elim H0). rewrite beq_nat_ok in e. subst n. hyp. auto.
 Qed.
@@ -1006,12 +1006,12 @@ Proof.
 induction l. refl. destruct a. unfold is_sol_solved_eqns. simpl.
 unfold is_sol_solved_eqn at 1. simpl. intuition. unfold extend.
 case_beq_nat x n. rewrite H. apply sub_eq'. intros. unfold theta. simpl. mem.
-case_beq_nat x x0; simpl. rewrite H1 in H4. discriminate.
+case_beq_nat x x0; simpl. rewrite H1 in H4. discr.
 case_eq (mem x0 (dom l)); intro H8.
 ded (lforall_notin_vars_solved_eqn_mem H5 H8).
-rewrite H4 in H9. discriminate. refl. rewrite H6. apply sub_eq'. intros.
+rewrite H4 in H9. discr. refl. rewrite H6. apply sub_eq'. intros.
 unfold theta. simpl. mem. case_beq_nat n x0. simpl.
-ded (lforall_notin_solved_eqn_mem H0 H4). rewrite H7 in H8. discriminate.
+ded (lforall_notin_solved_eqn_mem H0 H4). rewrite H7 in H8. discr.
 simpl. refl.
 Qed.
 
@@ -1036,7 +1036,7 @@ Lemma iter_step_Some : forall p l k, problem_wf p ->
 Proof.
 intros. rewrite (iter_step_correct (subst_of_solved_eqns l) p k).
 rewrite H0. simpl. intuition. apply subst_of_solved_eqns_correct.
-eapply iter_step_solved_eqn_wf; eassumption.
+eapply iter_step_solved_eqn_wf; ehyp.
 Qed.
 
 Implicit Arguments iter_step_Some [p l k].
@@ -1047,7 +1047,7 @@ Lemma iter_step_most_general : forall p l k, problem_wf p ->
 
 Proof.
 intros. apply subst_of_solved_eqns_most_general.
-eapply iter_step_solved_eqn_wf; eassumption.
+eapply iter_step_solved_eqn_wf; ehyp.
 cut (is_sol s (Some (l, nil))). simpl. intuition.
 rewrite <- H0. rewrite <- iter_step_correct. hyp.
 Qed.
@@ -1058,7 +1058,7 @@ Lemma iter_step_complete : forall p, problem_wf p ->
 Proof.
 intros. destruct H0 as [s]. destruct (wf_iter_step p) as [k]. exists k.
 rewrite (iter_step_correct s p k) in H0. destruct (iter_step k p).
-destruct p0. destruct e. refl. discr. contradiction.
+destruct p0. destruct e. refl. discr. contr.
 Qed.
 
 Lemma iter_step_complete2 : forall p, problem_wf p ->
@@ -1068,7 +1068,7 @@ Proof.
 intros. destruct (wf_iter_step p) as [k]. exists k.
 case_eq (iter_step k p). 2: refl. intros p0 H2. rewrite H2 in H1.
 destruct p0. destruct e. ded (iter_step_Some H H2).
-ded (H0 (subst_of_solved_eqns s)). contradiction. discr.
+ded (H0 (subst_of_solved_eqns s)). contr. discr.
 Qed.
 
 (***********************************************************************)
@@ -1097,7 +1097,7 @@ intros. set (s := fun x => match In_dec x (vars t1) with
   | left _ => s1 x | right _ => s2 x end). exists s.
 unfold is_sol, mk_problem. simpl. intuition. unfold is_sol_eqn. simpl.
 trans (sub s1 t1). apply sub_eq. intros. unfold s.
-case (In_dec x (vars t1)). refl. contradiction.
+case (In_dec x (vars t1)). refl. contr.
 rewrite H0. apply sub_eq. intros. unfold s. case (In_dec x (vars t1)).
 intro. apply False_rec. exact (H x i H1). refl.
 Qed.

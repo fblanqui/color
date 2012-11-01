@@ -180,7 +180,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
       cut (ge (vec_at0 x) A1). 2: hyp.
       cut (ge (vec_at0 x0) A1). 2: hyp.
       cut (gtx (vec_at0 x0) (vec_at0 x)).
-      generalize (vec_at0 x0). generalize (vec_at0 x).
+      gen (vec_at0 x0). gen (vec_at0 x).
       clear x x0 v v0 xy. intros x y xy x_lb y_lb.
       destruct x; destruct y; arctic_ord.
 (*FIXME: this should be solved by arctic_ord *)
@@ -192,9 +192,9 @@ apply fin_ge_impl_ge; hyp.
       destruct xy. simpl in H1.
       apply Zabs_nat_lt. omega.
       destruct H1; discr.
-destruct x_lb; [ contradiction | discr ].
-destruct y_lb; [ contradiction | discr ].
-destruct y_lb; [ contradiction | discr ].
+destruct x_lb; [ contr | discr ].
+destruct y_lb; [ contr | discr ].
+destruct y_lb; [ contr | discr ].
       unfold vec_at0. apply Vforall2n_nth. hyp.
     Qed.
   

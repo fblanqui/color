@@ -37,18 +37,18 @@ Lemma pmonotone_imp_pmonotone' : forall n (p : poly n),
 Proof.
 intros n p (H1, H2).
 split. auto.
-intros i Hi. generalize (H2 i Hi). clear H2.
+intros i Hi. gen (H2 i Hi). clear H2.
 generalize dependent p. intro p. elim p.
  intros H1 H2.
- absurd (coef (mxi Hi) nil = 0). omega. simpl. reflexivity.
- intros (c, m) p' Hrec H1. simpl in H1. generalize H1. clear H1.
+ absurd (coef (mxi Hi) nil = 0). omega. simpl. refl.
+ intros (c, m) p' Hrec H1. simpl in H1. gen H1. clear H1.
  intros (H1, H2). simpl.
  case (monom_eq_dec (mxi Hi) m); intro Hm; simpl.
   elim (Z_le_lt_eq_dec _ _ H1); clear H1. intro H1.
 
    (* If 0<c, it's easy to build the required elements *)
    intro H'. exists (pzero n). exists c. exists p'.
-   split. assumption. simpl. subst m. reflexivity.
+   split. hyp. simpl. subst m. refl.
 
    (* if c=0, we must use the induction hypothesis *)
    intro Hc. subst c. subst m. simpl. intro H3.
@@ -56,15 +56,15 @@ generalize dependent p. intro p. elim p.
    elim H. clear H. intros p'2 (Hc', Hp').
    exists ((0, mxi Hi) :: p'1).
    exists c'. exists p'2.
-   split. assumption.
-   rewrite Hp'. reflexivity.
+   split. hyp.
+   rewrite Hp'. refl.
 
   intro H3. elim (Hrec H2 H3). clear H2. clear H3.
   intros p'1 H. elim H. clear H. intros c' H. elim H. clear H.
   intros p'2 (Hc', Hp').
   exists ((c, m) :: p'1). exists c'. exists p'2.
-  split. assumption.
-  subst p'. simpl. reflexivity.
+  split. hyp.
+  subst p'. simpl. refl.
 Qed.
 
 (***********************************************************************)
@@ -78,7 +78,7 @@ Lemma meval_monotone_D : forall i (vi : vec i) (mi : monom i)
 Proof.
 intros. do 2 rewrite Vmap_app. simpl Vmap. do 2 rewrite meval_app.
 apply Zmult_le_compat_l. simpl meval. apply Zmult_le_compat_r.
-apply power_le_compat; assumption. apply pos_meval. apply pos_meval.
+apply power_le_compat; hyp. apply pos_meval. apply pos_meval.
 Qed.
 
 Lemma coef_pos_monotone_peval_Dle : forall n (p : poly n) (H : coef_pos p),
@@ -91,22 +91,22 @@ destruct y as (y, Hy). simpl. intro Hxy.
 generalize dependent p. intro p. elim p.
  intro. simpl. omega.
  unfold coef_pos. intros (c, m) p' Hrec H_coef_pos.
- simpl in H_coef_pos. generalize H_coef_pos. clear H_coef_pos.
+ simpl in H_coef_pos. gen H_coef_pos. clear H_coef_pos.
  intros (H_pos_c, H_coef_pos_p').
- generalize (Hrec H_coef_pos_p'). clear Hrec. clear H_coef_pos_p'. intro H.
+ gen (Hrec H_coef_pos_p'). clear Hrec. clear H_coef_pos_p'. intro H.
  lazy beta iota delta [peval]. fold peval.
  apply Zplus_le_compat.
   2: apply H.
   clear H.
   apply Zmult_le_compat_l.
-   2: assumption.
+   2: hyp.
    rewrite (Vbreak_eq_app_cast Hij m).
    set (mi := (fst (Vbreak (n1:=i) (n2:=S j) (Vcast m (sym_equal Hij))))).
    set (mj := (snd (Vbreak (n1:=i) (n2:=S j) (Vcast m (sym_equal Hij))))).
    rewrite (VSn_eq mj).
    case Hij. simpl. repeat rewrite Vcast_refl.
    apply meval_monotone_D.
-   assumption.
+   hyp.
 Qed.
 
 Implicit Arguments coef_pos_monotone_peval_Dle [n p i j x y].
@@ -117,39 +117,39 @@ Lemma pmonotone'_imp_monotone_peval_Dlt :
 
 Proof.
 intros n p (H_coef_pos_p, H_pmonotone_p) i j Hij.
-generalize (H_pmonotone_p _ (i_lt_n (sym_equal Hij))).
+gen (H_pmonotone_p _ (i_lt_n (sym_equal Hij))).
 intro H. elim H. clear H. intros p1 H. elim H. clear H. intros c H. elim H.
 clear H. intros p2 (H, H'). subst p.
-generalize (coef_pos_app H_coef_pos_p).
+gen (coef_pos_app H_coef_pos_p).
 intros (H_coef_pos_p1, H').
-generalize (coef_pos_cons H'). clear H'. intros (H', H_coef_pos_p2). clear H'.
+gen (coef_pos_cons H'). clear H'. intros (H', H_coef_pos_p2). clear H'.
 unfold Vmonotone_i, Dlt, peval_D. unfold monotone, restrict.
 intros vi vj. destruct x as (x, Hx). destruct y as (y, Hy). simpl.
 intro Hxy. clear H_coef_pos_p.
 do 2 rewrite peval_app.
 apply Zplus_le_lt_compat.
- generalize (coef_pos_monotone_peval_Dle H_coef_pos_p1).
+ gen (coef_pos_monotone_peval_Dle H_coef_pos_p1).
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
  intro H'.
- generalize (H' _ _ Hij vi vj (exist pos x Hx) (exist pos y Hy)).
+ gen (H' _ _ Hij vi vj (exist pos x Hx) (exist pos y Hy)).
  simpl. clear H'. intro H'. apply H'. omega.
  lazy beta iota delta [peval]. fold peval.
  apply Zplus_lt_le_compat.
-  apply Zmult_lt_compat_l. assumption.
+  apply Zmult_lt_compat_l. hyp.
   do 2 rewrite meval_xi.
   do 2 rewrite Vmap_cast. case Hij. simpl.
   clear H_pmonotone_p. clear Hij. generalize dependent i. intro i. elim i.
-   intro vi. rewrite (VO_eq vi). simpl. assumption.
+   intro vi. rewrite (VO_eq vi). simpl. hyp.
    intros i' Hrec vi. rewrite (VSn_eq vi). simpl Vapp.
-   simpl Vmap. simpl Vnth. generalize (Hrec (Vtail vi)). clear Hrec. intro H'.
+   simpl Vmap. simpl Vnth. gen (Hrec (Vtail vi)). clear Hrec. intro H'.
    assert (H'' : i_lt_n (refl_equal (i' + S j)%nat) = lt_S_n
      (@i_lt_n (S (i' + S j)) (S i') _ (refl_equal (S (i' + S j))))).
    apply lt_unique.
-   rewrite <- H''. assumption.
- generalize (coef_pos_monotone_peval_Dle H_coef_pos_p2).
+   rewrite <- H''. hyp.
+ gen (coef_pos_monotone_peval_Dle H_coef_pos_p2).
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
  intro H'.
- generalize (H' _ _ Hij vi vj (exist pos x Hx) (exist pos y Hy)).
+ gen (H' _ _ Hij vi vj (exist pos x Hx) (exist pos y Hy)).
  simpl. clear H'. intro H'. apply H'. omega.
 Qed.
 
@@ -159,11 +159,11 @@ Lemma pmonotone_imp_monotone_peval_Dlt : forall n (p : poly n)
 
 Proof.
 intros n p wm sm.
-generalize (pmonotone'_imp_monotone_peval_Dlt (pmonotone_imp_pmonotone' sm)).
+gen (pmonotone'_imp_monotone_peval_Dlt (pmonotone_imp_pmonotone' sm)).
 unfold Vmonotone1, Vmonotone, Dlt, Vmonotone_i, peval_D, restrict, monotone.
 intros H0 i j Hij vi vj. destruct x as (x, Hx). destruct y as (y, Hy).
 simpl. intro Hxy.
-generalize (H0 i j Hij vi vj (exist _ x Hx) (exist _ y Hy) Hxy). clear H0.
+gen (H0 i j Hij vi vj (exist _ x Hx) (exist _ y Hy) Hxy). clear H0.
 simpl. intuition.
 Qed.
 
@@ -228,7 +228,7 @@ Next Obligation.
   unfold pweak_monotone, coef_pos.
   apply forallb_imp_lforall with (@is_pos_monom n); auto.
   destruct x. unfold is_pos_monom. 
-  destruct z; compute; intros; discriminate.
+  destruct z; compute; intros; discr.
 Qed.
 
 Program Definition pweak_monotone_check n (p : poly n) : Exc (pweak_monotone p)
@@ -254,7 +254,7 @@ Program Definition pstrong_monotone_check n (p : poly n) :
   end.
 
 Next Obligation.
-Proof with auto; try congruence || discriminate.
+Proof with auto; try congruence || discr.
   split. 
   destruct pweak_monotone_check...
   destruct (check_seq (check_coef_gt0 p))...

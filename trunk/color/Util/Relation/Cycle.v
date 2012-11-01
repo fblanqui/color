@@ -51,7 +51,7 @@ exists x3. exists x1. exists x4. exists (x1::x2). rewrite app_ass. simpl.
 rewrite H5 in H2. ded (repeat_free_app_elim H2). simpl in H0. decomp H0.
 intuition.
 (* cycle x1 x4 *)
-destruct x0. contradiction. injection H1; intros. subst a.
+destruct x0. contr. injection H1; intros. subst a.
 unfold cycle in H. destruct x3; injection H5; intros.
 (* x3=nil *)
 subst x1. subst x4. rewrite H0 in H. ded (path_app_elim H). intuition.

@@ -34,7 +34,7 @@ Fixpoint fill (c : context) (t : term) : term :=
 Lemma var_eq_fill : forall x c t, Var x = fill c t -> c = Hole /\ t = Var x.
 
 Proof.
-intros. destruct c; simpl in H. auto. discriminate.
+intros. destruct c; simpl in H. auto. discr.
 Qed.
 
 (***********************************************************************)
@@ -74,7 +74,7 @@ Proof.
 unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
 subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
 split. destruct x. absurd (Hole = Hole); auto.
-destruct x0; simpl; discriminate. refl.
+destruct x0; simpl; discr. refl.
 Qed.
 
 Lemma subterm_fun_elim : forall u f ts,
@@ -91,8 +91,8 @@ Qed.
 Lemma subterm_immediate : forall f v a, In a v -> subterm a (Fun f v).
 
 Proof.
-  intros. destruct (In_split a v) as [l1 [l2 dec]]. assumption.
-  exists (Cont f l1 Hole l2). split. discriminate. simpl. congruence.
+  intros. destruct (In_split a v) as [l1 [l2 dec]]. hyp.
+  exists (Cont f l1 Hole l2). split. discr. simpl. congruence.
 Qed.
 
 (***********************************************************************)
@@ -115,17 +115,17 @@ Proof.
 intros P IH. set (P' := fun t => forall u, subterm_eq u t -> P u).
 change (forall t, P' t). apply term_ind_forall.
 (* var *)
-unfold P'. intros. assert (u = Var x). apply subterm_eq_var. assumption.
+unfold P'. intros. assert (u = Var x). apply subterm_eq_var. hyp.
 subst u. apply IH. unfold subterm. intros. destruct H0. destruct H0.
-destruct x0. absurd (Hole = Hole); auto. discriminate.
+destruct x0. absurd (Hole = Hole); auto. discr.
 (* fun *)
 intros. unfold P'. intros. apply IH. intros.
-assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. assumption.
+assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. hyp.
 assert (exists t, In t v /\ subterm_eq u0 t). apply subterm_fun_elim with f.
-assumption.
+hyp.
 destruct H3. destruct H3.
-assert (P' x). apply lforall_in with term v. assumption. assumption.
-apply H5. assumption.
+assert (P' x). apply lforall_in with term v. hyp. hyp.
+apply H5. hyp.
 Qed.
 
 Lemma subterm_ind : forall (P : term -> Prop)
@@ -133,14 +133,14 @@ Lemma subterm_ind : forall (P : term -> Prop)
   forall t, P t.
 
 Proof.
-  intros. apply subterm_eq_rect. apply subterm_sub_ind. assumption.
+  intros. apply subterm_eq_rect. apply subterm_sub_ind. hyp.
 Qed.
 
 Lemma subterm_wf : well_founded subterm.
 
 Proof.
   intro t. induction t using subterm_ind. constructor. intros.
-  apply H. assumption.
+  apply H. hyp.
 Qed.
 
 End S.

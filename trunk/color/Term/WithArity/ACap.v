@@ -62,10 +62,10 @@ Lemma in_conc : forall u n (cs : Caps n), Vin u (conc cs) ->
   exists c, Vin c cs /\ Vin u (aliens c).
 
 Proof.
-induction cs; simpl; intros. contradiction.
-assert (Vin u (aliens h) \/ Vin u (conc cs)). apply Vin_app. assumption.
+induction cs; simpl; intros. contr.
+assert (Vin u (aliens h) \/ Vin u (conc cs)). apply Vin_app. hyp.
 destruct H0. exists h. auto.
-assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. assumption.
+assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. hyp.
 destruct H1 as [c]. exists c. intuition.
 Qed.
 
@@ -112,17 +112,17 @@ Lemma Vmap_sum_conc_forall : forall n (ts : terms n),
   -> Vmap_sum (Vmap capa ts) (conc (Vmap capa ts)) = ts.
 
 Proof.
-induction ts; simpl; intros. reflexivity. destruct H. rewrite Vbreak_app.
-unfold fcap_aliens in H. rewrite H. apply Vtail_eq. apply IHts. assumption.
+induction ts; simpl; intros. refl. destruct H. rewrite Vbreak_app.
+unfold fcap_aliens in H. rewrite H. apply Vtail_eq. apply IHts. hyp.
 Qed.
 
 Lemma sub_capa : forall t, fcap_aliens (capa t) = t.
 
 Proof.
-intro. pattern t. apply term_ind_forall; intros. reflexivity.
+intro. pattern t. apply term_ind_forall; intros. refl.
 unfold fcap_aliens, fcap, aliens. simpl. case (defined f R); simpl. refl.
 apply args_eq. change (Vmap_sum (Vmap capa v) (conc (Vmap capa v)) = v).
-rewrite Vmap_sum_conc_forall. reflexivity. assumption.
+rewrite Vmap_sum_conc_forall. refl. hyp.
 Qed.
 
 Lemma Vmap_sum_conc : forall n (ts : terms n),
@@ -141,18 +141,18 @@ Lemma in_aliens_subterm : forall u t,
 
 Proof.
 intros u t. pattern t. apply term_ind_forall.
-simpl. intros. contradiction.
+simpl. intros. contr.
 intros f ts H. simpl. case (defined f R).
-simpl. intro. destruct H0. subst u. refl. contradiction.
+simpl. intro. destruct H0. subst u. refl. contr.
 change (Vin u (conc (Vmap capa ts)) -> subterm_eq u (Fun f ts)). intro.
 assert (exists c, Vin c (Vmap capa ts) /\ Vin u (aliens c)). apply in_conc.
-assumption. destruct H1 as [c]. destruct H1.
-assert (exists t, Vin t ts /\ c = capa t). apply Vin_map. assumption.
+hyp. destruct H1 as [c]. destruct H1.
+assert (exists t, Vin t ts /\ c = capa t). apply Vin_map. hyp.
 destruct H3 as [t']. destruct H3. subst c.
 assert (Vin u (aliens (capa t')) -> subterm_eq u t').
-pattern t'. eapply Vforall_in with (n := arity f). apply H. assumption.
+pattern t'. eapply Vforall_in with (n := arity f). apply H. hyp.
 apply subterm_strict. eapply subterm_trans_eq1 with (u := t').
-apply H4. assumption. apply subterm_fun. assumption.
+apply H4. hyp. apply subterm_fun. hyp.
 Qed.
 
 (***********************************************************************)
@@ -173,7 +173,7 @@ Lemma cap_eq : forall t,
 
 Proof.
 intro. unfold cap, fcap, fresh_for, nb_aliens. destruct (capa t). destruct p.
-reflexivity.
+refl.
 Qed.
 
 (***********************************************************************)
@@ -190,13 +190,13 @@ intro. set (Q := fun n (ts : terms n) =>
   -> x <= m -> In x (vars_vec ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
 (* var *)
-assumption.
+hyp.
 (* fun *)
 rewrite vars_fun. unfold nb_aliens in H1. simpl in H1.
 destruct (defined f R); simpl in H1. destruct H1.
-absurd (x<=m); omega. contradiction. apply H with (m := m); assumption.
+absurd (x<=m); omega. contr. apply H with (m := m); hyp.
 (* nil *)
-unfold Q. simpl. intros. contradiction.
+unfold Q. simpl. intros. contr.
 (* cons *)
 unfold Q. simpl. set (m := max (maxvar t) (maxvars v)).
 intros m0 H1.
@@ -205,11 +205,11 @@ destruct H4.
 (* head *)
 apply in_appl. apply H with (m := m0).
 eapply le_max_elim_l. unfold m in H1. rewrite maxvars_cons in H1. apply H1.
-unfold nb_aliens. assumption. assumption.
+unfold nb_aliens. hyp. hyp.
 (* tail *)
 apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projS1 (capa t)).
 assert (maxvars v <= m0). eapply le_max_elim_r. unfold m in H1.
-rewrite maxvars_cons in H1. apply H1. omega. assumption. omega.
+rewrite maxvars_cons in H1. apply H1. omega. hyp. omega.
 Qed.
 
 Lemma vars_cap_inf : forall x t,
@@ -217,7 +217,7 @@ Lemma vars_cap_inf : forall x t,
 
 Proof.
 intros. apply vars_fcap_fresh_inf with (m := maxvar t). apply le_refl.
-rewrite cap_eq in H. assumption. assumption.
+rewrite cap_eq in H. hyp. hyp.
 Qed.
 
 Lemma vars_cap_sup : forall x t,
@@ -242,20 +242,20 @@ intro. set (Q := fun n (ts : terms n) =>
   -> x <= m + sum (Vmap capa ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t.
 (* var *)
-simpl. intros. destruct H0. subst x0. omega. contradiction.
+simpl. intros. destruct H0. subst x0. omega. contr.
 (* fun *)
 intros f ts H m H0. unfold nb_aliens. simpl.
-case (defined f R); simpl; intros. destruct H1. omega. contradiction.
-apply H; assumption.
+case (defined f R); simpl; intros. destruct H1. omega. contr.
+apply H; hyp.
 (* nil *)
-unfold Q. simpl. intros. contradiction.
+unfold Q. simpl. intros. contr.
 (* cons *)
 intros. unfold Q. simpl. intros m H1. rewrite fresh_plus. rewrite Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
 assert (x <= m + projS1 (capa t)). apply H. eapply le_max_elim_l.
-rewrite maxvars_cons in H1. apply H1. assumption. omega.
+rewrite maxvars_cons in H1. apply H1. hyp. omega.
 rewrite plus_assoc. apply H0. assert (maxvars v <= m).
-eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. omega. assumption.
+eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. omega. hyp.
 Qed.
 
 Lemma vars_cap : forall x t,
@@ -263,7 +263,7 @@ Lemma vars_cap : forall x t,
 
 Proof.
 intros. apply vars_fcap_fresh. apply le_refl. rewrite cap_eq in H.
-assumption.
+hyp.
 Qed.
 
 (***********************************************************************)
@@ -282,13 +282,13 @@ set (Q := fun n (ts : terms n) => forall m, vcalls (Vmap_sum (Vmap capa ts)
   (fresh m (sum (Vmap capa ts)))) = nil).
 intro. pattern t. apply term_ind with (Q := Q); clear t; intros.
 (* var *)
-reflexivity.
+refl.
 (* fun *)
 unfold nb_aliens. simpl.
-pattern (defined f R). apply bool_eq_ind; intros; simpl. reflexivity.
+pattern (defined f R). apply bool_eq_ind; intros; simpl. refl.
 rewrite H0. apply H.
 (* nil *)
-unfold Q. reflexivity.
+unfold Q. refl.
 (* cons *)
 unfold Q. simpl. intro. rewrite fresh_plus. rewrite Vbreak_app. simpl.
 apply app_nil. apply H. apply H0.
@@ -308,7 +308,7 @@ intros u t. pattern t. apply term_ind_forall; clear t. simpl. auto.
 intros f ts H. rewrite calls_fun. simpl. case (defined f R); simpl.
 intuition. unfold aliens. simpl. intro. ded (in_conc H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x. ded (Vforall_in H H3).
-eapply in_vcalls. apply H4. assumption. assumption.
+eapply in_vcalls. apply H4. hyp. hyp.
 Qed.
 
 (***********************************************************************)
@@ -321,7 +321,7 @@ Lemma alien_sub_var : forall x, alien_sub (Var x) x = Var x.
 
 Proof.
 intro. unfold alien_sub, fsub. simpl. case (le_lt_dec x x). auto.
-intro. absurd (x < x). apply lt_irrefl. assumption.
+intro. absurd (x < x). apply lt_irrefl. hyp.
 Qed.
 
 Lemma app_fcap : forall m s, (forall x, x <= m -> s x = Var x)
@@ -334,14 +334,14 @@ set (Q := fun n (ts : terms n) => maxvars ts <= m
   -> forall v, Vmap (sub s) (Vmap_sum (Vmap capa ts) v)
                = Vmap_sum (Vmap capa ts) (Vmap (sub s) v)).
 apply term_ind with (Q := Q); clear t.
-intros. unfold fcap. simpl. apply H. assumption.
+intros. unfold fcap. simpl. apply H. hyp.
 intros f ts IH H0. simpl. unfold fcap.
 case (defined f R); simpl; intros.
-VSntac v. reflexivity.
-apply args_eq. apply IH. assumption.
+VSntac v. refl.
+apply args_eq. apply IH. hyp.
 unfold Q. auto.
 intros. unfold Q. simpl. intros.
-generalize (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.
+gen (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.
 do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H2.
 apply Vcons_eq_intro.
 apply H0. eapply le_max_elim_l. apply H2.
@@ -354,8 +354,8 @@ Lemma Vmap_map_sum : forall m s, (forall x, x <= m -> s x = Var x)
                = Vmap_sum (Vmap capa ts) (Vmap (sub s) v).
 
 Proof.
-induction ts; simpl; intros. reflexivity.
-generalize (Vbreak_eq_app v). intro. rewrite H1. rewrite Vmap_app.
+induction ts; simpl; intros. refl.
+gen (Vbreak_eq_app v). intro. rewrite H1. rewrite Vmap_app.
 do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H0.
 apply Vcons_eq_intro.
 eapply app_fcap. apply H. eapply le_max_elim_l. apply H0.
@@ -382,16 +382,16 @@ set (s := mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs)).
 assert (s = mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs)). refl.
 destruct s. destruct p as [f0 v0]. injection H0. intros. subst x.
 assert (v0 = conc cs).
-apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x)). assumption.
+apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x)). hyp.
 assert (f0 = fun ts => Fun f (Vmap_sum cs ts)).
-apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x -> term)). assumption.
+apply (@inj_pairT2 _ eq_nat_dec (fun x => terms x -> term)). hyp.
 subst f0. rewrite sub_fun. apply f_equal with (f := Fun f).
 set (s := fsub m v0). set (v1 := fresh (S m) (sum cs)).
 assert (Vmap (sub s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (sub s) v1)).
 unfold cs. eapply Vmap_map_sum with (m := m).
 unfold s. apply fsub_inf. apply le_refl. rewrite H4.
 assert (Vmap (sub s) v1 = conc cs). unfold s, v1. rewrite H3.
-rewrite Vmap_fsub_fresh. reflexivity.
+rewrite Vmap_fsub_fresh. refl.
 rewrite H5. unfold cs. apply Vmap_sum_conc.
 Qed.
 

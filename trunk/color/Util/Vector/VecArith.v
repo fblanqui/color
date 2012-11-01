@@ -331,10 +331,10 @@ Qed.*)
 
   Proof.
     unfold vec_ge. intros. apply (Vforall2n_mor sid_theoryA). intuition.
-    transitivity a1. apply eq_ge_compat. symmetry. hyp.
-    transitivity a2. hyp. apply eq_ge_compat. hyp.
-    transitivity a1'. apply eq_ge_compat. hyp.
-    transitivity a2'. hyp. apply eq_ge_compat. symmetry. hyp.
+    trans a1. apply eq_ge_compat. sym. hyp.
+    trans a2. hyp. apply eq_ge_compat. hyp.
+    trans a1'. apply eq_ge_compat. hyp.
+    trans a2'. hyp. apply eq_ge_compat. sym. hyp.
     hyp. hyp.
   Qed.
 

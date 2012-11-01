@@ -125,7 +125,7 @@ Qed.
 Lemma red_nil_rtc : forall x y : string, red nil # x y -> x = y.
 
 Proof.
-induction 1. apply red_nil. exact H. refl. transitivity y; hyp.
+induction 1. apply red_nil. exact H. refl. trans y; hyp.
 Qed.
 
 Lemma red_mod_empty_incl_red : red_mod nil R << red R.

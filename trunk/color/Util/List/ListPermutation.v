@@ -132,7 +132,7 @@ Section Permutation.
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 1 in w.
     omega.
-    clear w; destruct (eqA_dec a el); [trivial | contradiction].
+    clear w; destruct (eqA_dec a el); [trivial | contr].
     assert (~eqA el b).
     intro elb.
     absurd (eqA a el); trivial.
@@ -141,7 +141,7 @@ Section Permutation.
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 0 in w.
     omega.
-    clear w; destruct (eqA_dec a el); [contradiction | trivial].
+    clear w; destruct (eqA_dec a el); [contr | trivial].
   Qed.
 
   Lemma permutation_cons: forall l l' a,
@@ -253,12 +253,12 @@ Section ListSim.
     induction p.
     intros.
     inversion H.
-    rewrite <- H1 in H0; discriminate.
+    rewrite <- H1 in H0; discr.
     exists y; split; auto.
     replace a with x; trivial.
     rewrite <- H3 in H0; inversion H0; trivial.
     intros.
-    destruct l; destruct l'; try discriminate.
+    destruct l; destruct l'; try discr.
     inversion H.
     inversion H.
     destruct (IHp l l' a); trivial.
@@ -274,12 +274,12 @@ Section ListSim.
     induction p.
     intros.
     inversion H.
-    rewrite <- H2 in H0; discriminate.
+    rewrite <- H2 in H0; discr.
     exists x; split; auto.
     replace b with y; trivial.
     rewrite <- H4 in H0; inversion H0; trivial.
     intros.
-    destruct l; destruct l'; try discriminate.
+    destruct l; destruct l'; try discr.
     inversion H.
     inversion H.
     destruct (IHp l l' b); trivial.
@@ -320,26 +320,25 @@ Section ListSim.
     rewrite H2; trivial.
   Qed.
 
-  Lemma list_sim_insert_nth : forall l l' p a a', nth_error l p = Some a ->
+  Lemma list_sim_insert_nth : forall p l l' a a', nth_error l p = Some a ->
     nth_error l' p = Some a' -> R a a' ->
     list_sim (drop_nth l p) (drop_nth l' p) -> list_sim l l'.
 
   Proof.
-    intros l l' p; generalize p l l'; clear l l' p.
     induction p; intros.
      (* induction base *)
     destruct l; destruct l'.
     constructor.
-    inversion H2; discriminate.
-    inversion H2; discriminate.
+    inversion H2; discr.
+    inversion H2; discr.
     constructor.
     inversion H; inversion H0; trivial.
     repeat rewrite drop_nth_cons in H2; trivial.
      (* induction step *)
     destruct l; destruct l'.
     constructor.
-    inversion H2; discriminate.
-    inversion H2; discriminate.
+    inversion H2; discr.
+    inversion H2; discr.
     repeat rewrite drop_nth_succ in H2.
     inversion H2.
     constructor; trivial.

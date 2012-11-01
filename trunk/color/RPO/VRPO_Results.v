@@ -55,7 +55,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     subst t.
     assert (H' : forall s, In s ss -> forall t, s = t \/ s <> t).
     intros s' s'_in_ss; apply Hss; try right; trivial.
-    generalize (IHss H'); clear IHss; intro IHss.
+    gen (IHss H'); clear IHss; intro IHss.
     elim (IHss ts); intro case_ts.
     subst ss; left; trivial.
     right; injection; trivial.
@@ -124,7 +124,7 @@ Module RPO_Results (Export RPO : RPO_Model).
           (* case t < t' *)
     constructor.
     exists t'.
-    split; [assumption | apply (HInd2 t' t'_in_ts Ht' x x_in_t)].
+    split; [hyp | apply (HInd2 t' t'_in_ts Ht' x x_in_t)].
   Qed.
 
   Lemma lt_eq_f : forall t s, lt s t -> forall f ts, t = Fun f ts ->
@@ -228,7 +228,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     elim (HInd1 u u_in_us); clear HInd1; intros HInd1 HInd1'.
     apply (HInd1 (Fun f1 ss1) (Fun g ts)).
     apply (Hsub u u_in_us).
-    assumption.
+    hyp.
               (* case t < s via status : *)
     apply lt_roots.
                       (* f < h : *)
@@ -239,18 +239,18 @@ Module RPO_Results (Export RPO : RPO_Model).
     elim (HInd1 u u_in_us); clear HInd1; intros HInd1 HInd1'.
     apply (HInd1 (Fun f1 ss1)).
     apply (Hsub u u_in_us).
-    assumption.
+    hyp.
               (* case t < s via subterm : *)
-    generalize (HInd3 t' t'_in_ts H1); intro HInd3'.
+    gen (HInd3 t' t'_in_ts H1); intro HInd3'.
     apply (lt_subterm  f1 ts (Fun f0 ss0)).
     exists t'.
     split; trivial.
     right.
     elim Ht'; clear Ht'; intro Ht'.
                       (* case s = g ts : *)
-    subst t'; assumption.
+    subst t'; hyp.
                       (* case g ts < s : *)
-    apply HInd3'; assumption.
+    apply HInd3'; hyp.
               (* case u < t via status : *)
     lt_inversion H2; try inversion s_is0; try inversion t_is0; subst.
               (* case t < s via roots : *)
@@ -282,16 +282,16 @@ Module RPO_Results (Export RPO : RPO_Model).
     apply trans_to_status_trans with ss1; trivial.
     rewrite <- Hs2; trivial.
               (* case t < s via subterm : *)
-    generalize (HInd3 t' t'_in_ts H1); intro HInd3'.
+    gen (HInd3 t' t'_in_ts H1); intro HInd3'.
     apply (lt_subterm f1 ts (Fun f0 ss0)).
     exists t'.
     split; trivial.
     right.
     elim Ht'; clear Ht'; intro Ht'.
                       (* case s = g ts : *)
-    subst t'; assumption.
+    subst t'; hyp.
                       (* case g ts < s : *)
-    apply HInd3'; assumption.
+    apply HInd3'; hyp.
               (* case u < t via subterm : *)
     lt_inversion H2; try inversion s_is; try inversion t_is0; subst.
               (* case t < s via root : *)
@@ -310,7 +310,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     exists t'0.
     split; trivial.
     elim Ht'0; clear Ht'0; intro Ht'0.
-    subst t'0; right; assumption.
+    subst t'0; right; hyp.
     right; apply (HInd3 t'0 t'_in_ts0); trivial.
     intro H.
     lt_inversion H; try inversion t_is; subst; try inversion s_is; subst.
@@ -352,7 +352,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     exists p; apply element_at_replaced.
     elim (@element_at_exists _ ss p); intros H1 H2.
     apply H2; exists s; trivial.
-    right; assumption.
+    right; hyp.
 	(* p <> p' : *)
     apply lt_subterm.
     exists s; split.
@@ -360,7 +360,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     exists p'; rewrite <- (@element_at_not_replaced _ ss p' p); trivial.
     intro; elim case_p_p'; subst; trivial.
     left; trivial.
-    apply mono_axiom; assumption.
+    apply mono_axiom; hyp.
   Qed.
 
 (***********************************************************************)
@@ -369,7 +369,7 @@ Module RPO_Results (Export RPO : RPO_Model).
   Lemma lt_trans : transitive lt.
 
   Proof.
-    intros s t u st tu. destruct (SPO_lt s). apply H with t; assumption.
+    intros s t u st tu. destruct (SPO_lt s). apply H with t; hyp.
   Qed.
 
   Lemma lt_irrefl : irreflexive lt.
@@ -418,10 +418,10 @@ Module RPO_Results (Export RPO : RPO_Model).
   Lemma lt_subst_closed : substitution_closed lt.
 
   Proof.
-    intros p q. generalize p. clear p.
+    intros p q. gen p. clear p.
     pattern q. apply well_founded_ind with term (@subterm Sig).
     apply subterm_wf. clear q.
-    intros q IH p. generalize IH. clear IH.
+    intros q IH p. gen IH. clear IH.
     pattern p. apply well_founded_ind with term (@subterm Sig).
     apply subterm_wf. clear p. intros p IH IH'.
     destruct q.
@@ -431,30 +431,30 @@ Module RPO_Results (Export RPO : RPO_Model).
      (* lt_roots *)
     intros. lt_inversion H.
     subst p. simpl.
-    apply lt_roots. replace f with g. assumption. congruence.
+    apply lt_roots. replace f with g. hyp. congruence.
     intros. rewrite <- sub_fun.
-    destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. assumption.
-    subst t. apply IH. apply subterm_immediate. assumption. assumption.
-    rewrite t_is. apply Hsub. assumption.
+    destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. hyp.
+    subst t. apply IH. apply subterm_immediate. hyp. hyp.
+    rewrite t_is. apply Hsub. hyp.
      (* lt_status *)
     subst p. do 2 rewrite sub_fun.
-    apply lt_status. apply eqF_sym. replace f with g. assumption. congruence.
+    apply lt_status. apply eqF_sym. replace f with g. hyp. congruence.
     intros. rewrite <- sub_fun.
-    destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. assumption.
-    subst t. apply IH. apply subterm_immediate. assumption. assumption.
-    rewrite t_is. apply Hsub. assumption.
+    destruct (proj1 (in_map_iff (sub s) ss t)) as [t' [t't t'ss]]. hyp.
+    subst t. apply IH. apply subterm_immediate. hyp. hyp.
+    rewrite t_is. apply Hsub. hyp.
     replace f with g; [rewrite <- (status_eq f0 g eqFfg) | congruence].
     apply status_homomorphic. intros.
-    apply IH'. apply subterm_immediate. assumption. assumption. congruence.    
+    apply IH'. apply subterm_immediate. hyp. hyp. congruence.    
      (* lt_subterm *)
     rewrite sub_fun. apply lt_subterm.
     exists (sub s t'). split.
     apply (proj2 (in_map_iff (sub s) l (sub s t'))).
-    exists t'. split. refl. replace l with ts. assumption. congruence.
+    exists t'. split. refl. replace l with ts. hyp. congruence.
     destruct Ht'.
     left. congruence.
     right. apply IH'. apply subterm_immediate. replace l with ts.
-    assumption. congruence. assumption.
+    hyp. congruence. hyp.
   Qed.
    
   End subst_closed. 
@@ -466,10 +466,10 @@ Module RPO_Results (Export RPO : RPO_Model).
 	      (* case s variable : *)
     apply Acc_lt_var.
 	      (* case s = f ss : *)
-    generalize ss HInd1; clear HInd1 ss.
+    revert ss HInd1.
     induction (wf_ltF f) as [f acc_f HInd2].
     intros ss Hss; cut (Restricted_acc (accs lt) (tau f lt) ss).
-    intro Acc_ss; generalize Hss; clear Hss.
+    intro Acc_ss; gen Hss; clear Hss.
     induction Acc_ss as [ss Acc_ss HInd3].
     intro Hss; constructor; intro t;
       induction t as [ | g ts HInd4] using term_ind_forall2; intro H.
@@ -495,9 +495,9 @@ Module RPO_Results (Export RPO : RPO_Model).
     apply acc_eq_f with f; trivial; elim eqFfg; split; trivial.
 	      (* case t < s via subterm : *)
     subst f0 ts0.
-    generalize (Hss t' t'_in_ts); intro acc_t'.
-    elim Ht'; [intro; subst t'; trivial | generalize (Fun g ts)].
-    inversion acc_t'; assumption.
+    gen (Hss t' t'_in_ts); intro acc_t'.
+    elim Ht'; [intro; subst t'; trivial | gen (Fun g ts)].
+    inversion acc_t'; hyp.
     apply (status_lifting f).
     intros s s_in_ss; apply Hss; trivial.
   Qed.
@@ -529,7 +529,7 @@ Module RPO_Results (Export RPO : RPO_Model).
 
   Proof.
     intros. unfold term_eq in H. 
-    destruct (term_eq_dec t u). assumption. discriminate.
+    destruct (term_eq_dec t u). hyp. discr.
   Qed.
 
   Notation term_eq_dec := (@term_eq_dec Sig).
@@ -544,13 +544,13 @@ Module RPO_Results (Export RPO : RPO_Model).
   Proof.
     intros. destruct (many_one_dec ge v p).
     intros. destruct (IH x (Inb_intro term_eq_dec x v H) p).
-    left. left. assumption.
+    left. left. hyp.
     destruct (term_eq_dec x p).
-    left. right. assumption.
-    right. intro abs. destruct abs; contradiction.
+    left. right. hyp.
+    right. intro abs. destruct abs; contr.
     left. exact s.
     right. intro abs. destruct abs as [a [av ap]]. 
-    apply (n a); assumption.
+    apply (n a); hyp.
   Defined.
 
   Lemma rpo_lt_dec : rel_dec lt.
@@ -561,22 +561,22 @@ Module RPO_Results (Export RPO : RPO_Model).
       *   Still seems to be easier than to instantiate one of 
       * lexicographic order definitions.
       *)
-    intros p q. generalize p. clear p. pattern q. 
+    intros p q. gen p. clear p. pattern q. 
     apply term_rect_forall with Sig term_eq_dec.
      (* Compare: lt p (Var x) *)
-    right. intro F. apply var_are_min with x p. assumption.
+    right. intro F. apply var_are_min with x p. hyp.
     clear q. intros q v IH p.
-    generalize IH. clear IH. pattern p.
+    gen IH. clear IH. pattern p.
     apply term_rect_forall with Sig term_eq_dec; clear p.
      (* Compare: lt (Var x) (Fun q v) *)
-    intros x IH. destruct (rpo_lt_subterm_dec (Var x) v). assumption.
+    intros x IH. destruct (rpo_lt_subterm_dec (Var x) v). hyp.
     left. apply lt_subterm. destruct s as [a [av ax]].
     exists a. unfold ge in ax. intuition.
-    right. intro H. lt_inversion H; try discriminate.
+    right. intro H. lt_inversion H; try discr.
     apply n. exists t'. replace v with ts. unfold ge. intuition. congruence.
      (* Compare: lt (Fun f vf) (Fun g v) *)
     intros f vf IH IH'.
-    destruct (rpo_lt_subterm_dec (Fun f vf) v). assumption.
+    destruct (rpo_lt_subterm_dec (Fun f vf) v). hyp.
     left. apply lt_subterm. destruct s as [a [av ax]].
     exists a. unfold ge in ax. intuition.
     assert (all_lt_dec : 
@@ -584,23 +584,23 @@ Module RPO_Results (Export RPO : RPO_Model).
       { exists t, In t vf /\ ~lt t (Fun q v) }).
     destruct (list_dec_all (fun vs => lt vs (Fun q v)) vf);
       try solve [intuition].
-    intros. apply IH. apply Inb_intro. assumption. assumption. 
+    intros. apply IH. apply Inb_intro. hyp. hyp. 
      (* RPO clause: lt_roots *)
     assert (lt_roots_dec : {lt (Fun f vf) (Fun q v)} + 
       {~(f <F q) \/ exists t, In t vf /\ ~lt t (Fun q v)}).
     destruct (ltF_dec f q); try solve [intuition].
     destruct all_lt_dec; intuition.
-    left. apply lt_roots; assumption.
+    left. apply lt_roots; hyp.
     destruct lt_roots_dec. intuition.
      (* RPO clause: lt_status *)
     assert (lt_status_dec : {lt (Fun f vf) (Fun q v)} + 
       {~f =F= q \/ ~tau q lt vf v \/ exists t, In t vf /\ ~lt t (Fun q v)}).
     destruct (eqF_dec f q); try solve [intuition].
     destruct (tau_dec q lt vf v); try solve [intuition].
-    intros. apply (IH' s). apply Inb_intro. assumption. 
+    intros. apply (IH' s). apply Inb_intro. hyp. 
     destruct all_lt_dec; try solve [intuition].
     left. apply lt_status; try solve [intuition].
-    apply eqF_sym. assumption.
+    apply eqF_sym. hyp.
     destruct lt_status_dec. intuition.
      (* proof that order does not hold *)
     right. intro ord. lt_inversion ord.

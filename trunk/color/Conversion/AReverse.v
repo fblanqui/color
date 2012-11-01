@@ -190,8 +190,9 @@ Lemma WF_red_mod_rev_eq :
   WF (red_mod (reverse_trs E) (reverse_trs R)) <-> WF (red_mod E R).
 
 Proof.
-intros. symmetry. rewrite red_mod_reset_eq; try hyp.
-rewrite String_of_ATerm.WF_red_mod; try apply rules_preserve_vars_reset; try hyp.
+intros. sym. rewrite red_mod_reset_eq; try hyp.
+rewrite String_of_ATerm.WF_red_mod; try apply rules_preserve_vars_reset;
+  try hyp.
 rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_red_mod; try hyp.
 repeat rewrite trs_of_srs_reverse_trs. repeat rewrite reverse_trs_reset_rules.
 rewrite <- red_mod_reset_eq. refl. apply is_unary_sig'.

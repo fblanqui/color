@@ -69,10 +69,10 @@ Lemma term_ind_forall : forall (P : term -> Prop)
 
 Proof.
   intros. apply term_ind with (Q := fun v => lforall P v).
-  assumption. assumption. constructor.
+  hyp. hyp. constructor.
   intros. apply lforall_intro. intros.
-  destruct H3. subst t0. assumption.
-  apply lforall_in with term v; assumption. 
+  destruct H3. subst t0. hyp.
+  apply lforall_in with term v; hyp. 
 Qed.
 
 Lemma term_ind_forall2 : forall (P : term -> Prop)
@@ -82,8 +82,8 @@ Lemma term_ind_forall2 : forall (P : term -> Prop)
 
 Proof.
 intros. apply term_ind with (Q := fun v => forall t, In t v -> P t); simpl.
-assumption. assumption. intros. contradiction.
-intros. destruct H3. subst. assumption. apply H0. assumption.
+hyp. hyp. intros. contr.
+intros. destruct H3. subst. hyp. apply H0. hyp.
 Qed.
 
 Section term_rec_forall.
@@ -99,9 +99,9 @@ Lemma term_rect_forall : forall (P : term -> Type)
 Proof.
 intros. apply term_rect with 
   (Q := fun v => forall t, Inb term_eq_dec t v = true -> P t); simpl.
-assumption. assumption. intros. discriminate.
-intros. destruct (term_eq_dec t1 t0). subst t1. assumption. 
-apply X0. assumption.
+hyp. hyp. intros. discr.
+intros. destruct (term_eq_dec t1 t0). subst t1. hyp. 
+apply X0. hyp.
 Qed.
 
 End term_rec_forall.
@@ -135,18 +135,18 @@ Proof.
   destruct u. 
   destruct (eq_nat_dec x n). 
   intuition. right. congruence.
-  right. discriminate.
+  right. discr.
   destruct u. 
-  right. discriminate.
+  right. discr.
   destruct (eq_symbol_dec f f0). destruct (X l).
   left. congruence.
   right. intro diff. apply n. congruence.
   right. intro diff. apply n. congruence.
   destruct us. 
   left. trivial.
-  right. discriminate.
+  right. discr.
   destruct us. 
-  right. discriminate.
+  right. discr.
   destruct (X t0).
   destruct (X0 us).
   left. congruence.
@@ -216,7 +216,7 @@ Lemma beq_ok : forall t u, beq t u = true <-> t = u.
 Proof.
 intro t. pattern t. apply term_ind_forall2; destruct u.
 simpl. rewrite beq_nat_ok. intuition. inversion H. refl.
-intuition; discriminate. intuition; discriminate.
+intuition; discr. intuition; discr.
 rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0.
 rewrite beq_list_ok_in in H2. subst l. refl. exact H.

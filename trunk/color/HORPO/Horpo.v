@@ -11,7 +11,7 @@ recursive path ordering due to Jouannaud and Rubio.
 Set Implicit Arguments.
 
 Require Import RelExtras ListExtras Relations Terms MultisetOrder LexOrder
-  MultisetList MultisetTheory AccUtil.
+  MultisetList MultisetTheory AccUtil LogicUtil.
 
 Module Type Precedence.
 
@@ -143,13 +143,13 @@ Module Horpo (S : TermsSig.Signature)
   Lemma horpo_algebraic_left : forall M N, M >> N -> algebraic M.
 
   Proof.
-    intros. destruct H. assumption.
+    intros. destruct H. hyp.
   Qed.
 
   Lemma horpo_algebraic_right : forall M N, M >> N -> algebraic N.
 
   Proof.
-    intros. destruct H. assumption.
+    intros. destruct H. hyp.
   Qed.
 
   Lemma horpo_RC_env_preserving : forall M N, M >>= N -> env M = env N.
@@ -199,7 +199,7 @@ Module Horpo (S : TermsSig.Signature)
   Lemma horpo_RC : forall M N, M >>= N -> M >> N \/ M = N.
 
   Proof.
-    intros; inversion H; firstorder.
+    intros; inversion H; fo.
   Qed.
 
   Lemma horpo_algebraic_preserving : forall M N, algebraic M -> 
@@ -212,11 +212,11 @@ Module Horpo (S : TermsSig.Signature)
   Lemma beta_imp_horpo : forall M N, algebraic M -> M -b-> N -> M >> N.
 
   Proof.
-    intros. constructor; try assumption.
-    apply subject_reduction. assumption.
-    apply beta_env_preserving. assumption.
-    apply beta_algebraic_preserving with M; assumption.
-    apply HBeta. assumption.
+    intros. constructor; try hyp.
+    apply subject_reduction. hyp.
+    apply beta_env_preserving. hyp.
+    apply beta_algebraic_preserving with M; hyp.
+    apply HBeta. hyp.
   Qed.
 
   Lemma horpo_app_inv : forall M N (Mapp: isApp M) (Napp: isApp N),
@@ -231,11 +231,11 @@ Module Horpo (S : TermsSig.Signature)
     intros. destruct H3 as [Leq [Req LRgt]].
     constructor; trivial.
     apply app_type_eq with Mapp Napp; trivial.
-    apply horpo_RC_type_preserving. assumption.
-    apply horpo_RC_type_preserving. assumption.
+    apply horpo_RC_type_preserving. hyp.
+    apply horpo_RC_type_preserving. hyp.
     rewrite <- appBodyL_env with M Mapp.
     rewrite <- appBodyL_env with N Napp.
-    apply horpo_RC_env_preserving. assumption.
+    apply horpo_RC_env_preserving. hyp.
     apply HApp with Mapp Napp; trivial.
     constructor. destruct LRgt.
     apply pair_mOrd_left; try_solve.
@@ -305,7 +305,7 @@ Module Horpo (S : TermsSig.Signature)
     apply Htyp; try_solve.
     fold (type (buildT T1)).
     fold (type (buildT T4)).
-    symmetry.
+    sym.
     apply Htyp; try_solve.
   Qed.
 
@@ -346,7 +346,7 @@ Module Horpo (S : TermsSig.Signature)
     apply beta_imp_horpo. apply algebraic_appBodyL; try_solve.
     assert (appBodyR Mapp -b-> appBodyR Napp -> appBodyR Mapp >> appBodyR Napp).
     apply beta_imp_horpo. apply algebraic_appBodyR; try_solve.
-    right; exists Napp; firstorder.
+    right; exists Napp; fo.
   Qed.
 
   Lemma horpo_abs_reduct : forall M (Mabs: isAbs M) N, M >> N ->
@@ -365,7 +365,7 @@ Module Horpo (S : TermsSig.Signature)
     rewrite (abs_proof_irr M Mabs MAbs); destruct H3; trivial.
     destruct (beta_abs_reduct Mabs H3); try_solve.
     exists x. apply beta_imp_horpo; try_solve.
-    apply algebraic_absBody. assumption.
+    apply algebraic_absBody. hyp.
   Qed.
 
   Lemma horpo_args_conv : forall M N Ms Ns Q, M ~(Q) N ->
@@ -409,13 +409,13 @@ Module Horpo (S : TermsSig.Signature)
     apply IH with M1 N1; auto with datatypes.
     left; apply arg_subterm; trivial.
     rewrite (appUnit_env W N); auto with terms.
-    symmetry; apply Ns_env; rewrite <- H2; auto with datatypes.
+    sym; apply Ns_env; rewrite <- H2; auto with datatypes.
     replace W with y.
     constructor 2.
     apply term_eq.
     rewrite (appUnit_env W N); auto with terms.
     apply Ns_env; rewrite <- H2; auto with datatypes.
-    apply conv_term_unique with (term M1) Q; firstorder.
+    apply conv_term_unique with (term M1) Q; fo.
     apply IHMs with Q; auto with datatypes.
     intros; apply Ns_env; rewrite <- H2; auto with datatypes.
   Qed.
@@ -458,7 +458,7 @@ Module Horpo (S : TermsSig.Signature)
     constructor 2.
     apply term_eq.
     rewrite (appUnit_env Nsub M'); auto with terms.
-    apply conv_term_unique with (term Msub) Q; firstorder.
+    apply conv_term_unique with (term Msub) Q; fo.
 
      (* case HFun *)
     constructor 2 with f g; trivial.
@@ -858,7 +858,7 @@ Module Horpo (S : TermsSig.Signature)
     left; apply absBody_subterm.
 
      (* HBeta *)
-    apply HBeta. apply beta_subst_stable. assumption.
+    apply HBeta. apply beta_subst_stable. hyp.
   Qed.
 
   Lemma horpo_subst_stable : forall M N G (MS: correct_subst M G)
@@ -1022,7 +1022,7 @@ Module Horpo (S : TermsSig.Signature)
     left; apply absBody_subterm.
 
      (* HBeta *)
-    apply beta_var_consistent. assumption.
+    apply beta_var_consistent. hyp.
   Qed.
 
   Lemma horpo_var_consistent : forall M N,
@@ -1222,7 +1222,7 @@ Module Horpo (S : TermsSig.Signature)
     destruct (eq_Term_dec L R).
     rewrite e; left; constructor 2.
     right; intro LR; destruct LR; auto.
-    destruct (beta_dec M N). left. apply HBeta. assumption.
+    destruct (beta_dec M N). left. apply HBeta. hyp.
     destruct (isFunApp_dec M).
      (* fun. app *)
     destruct (@HSub_dec M N); trivial.

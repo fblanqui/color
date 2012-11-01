@@ -10,7 +10,7 @@ typed lambda-calculus are defined.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsTyping.
+Require Import RelExtras ListExtras TermsTyping LogicUtil.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
@@ -40,16 +40,11 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma funS_is_funS : forall M f, term M = ^f -> isFunS M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma funS_fun : forall M, isFunS M -> exists f, term M = ^f.
 
-  Proof.
-    intro M; term_inv M.
-    intro; exists f; trivial.
-  Qed.
+  Proof. intro M; term_inv M. intro; exists f; trivial. Qed.
 
   Definition isAbs M : Prop :=
   let (_, _, _, typ) := M in
@@ -88,66 +83,53 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma abs_isAbs : forall M A Pt, term M = \A => Pt -> isAbs M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma absBody_eq_env : forall M N (MAbs: isAbs M) (NAbs: isAbs N),
     env M = env N -> type M = type N -> env (absBody MAbs) = env (absBody NAbs).
 
-  Proof.
-    intros M N; term_inv M; term_inv N.
-  Qed.
+  Proof. intros M N; term_inv M; term_inv N. Qed.
 
   Lemma absBody_equiv_type : forall M N (MAbs: isAbs M) (NAbs: isAbs N),
     type M == type N -> type (absBody MAbs) == type (absBody NAbs).
 
-  Proof.  
-    intros M N; term_inv M; term_inv N.
-  Qed.
+  Proof. intros M N; term_inv M; term_inv N. Qed.
 
   Lemma absBody_eq_type : forall M N (MAbs: isAbs M) (NAbs: isAbs N),
     type M = type N -> type (absBody MAbs) = type (absBody NAbs).
 
-  Proof.
-    intros M N; term_inv M; term_inv N.
-  Qed.
+  Proof. intros M N; term_inv M; term_inv N. Qed.
 
-  Lemma absBody_term : forall M (Mabs: isAbs M) A Pt, term M = \A => Pt -> term (absBody Mabs) = Pt.
+  Lemma absBody_term : forall M (Mabs: isAbs M) A Pt,
+    term M = \A => Pt -> term (absBody Mabs) = Pt.
 
-  Proof.
-    intro M; term_inv M; congruence.
-  Qed.
+  Proof. intro M; term_inv M; congruence. Qed.
 
-  Lemma absBody_env : forall M (Mabs: isAbs M), env (absBody Mabs) = decl (absType Mabs) (env M).
+  Lemma absBody_env : forall M (Mabs: isAbs M),
+    env (absBody Mabs) = decl (absType Mabs) (env M).
 
-  Proof.
-    intro M; term_inv M; congruence.
-  Qed.
+  Proof. intro M; term_inv M; congruence. Qed.
 
-  Lemma abs_type : forall M (Mabs: isAbs M) A B, type M = A --> B -> absType Mabs = A.
+  Lemma abs_type : forall M (Mabs: isAbs M) A B,
+    type M = A --> B -> absType Mabs = A.
 
-  Proof.
-    intro M; term_inv M; congruence.
-  Qed.
+  Proof. intro M; term_inv M; congruence. Qed.
 
-  Hint Rewrite absBody_term absBody_env abs_type using solve [auto with terms] : terms.
+  Hint Rewrite absBody_term absBody_env abs_type
+    using solve [auto with terms] : terms.
 
-  Lemma type_eq_absType_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N), type M = type N ->
-    absType Mabs = absType Nabs.
+  Lemma type_eq_absType_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N),
+    type M = type N -> absType Mabs = absType Nabs.
 
-  Proof.
-    intros M N; term_inv M; term_inv N.
-  Qed.
+  Proof. intros M N; term_inv M; term_inv N. Qed.
 
-  Lemma absBody_type : forall M (Mabs: isAbs M) A B, type M = A --> B -> type (absBody Mabs) = B.
+  Lemma absBody_type : forall M (Mabs: isAbs M) A B,
+    type M = A --> B -> type (absBody Mabs) = B.
 
-  Proof.
-    intros M Mabs A B MAB.
-    term_inv M; congruence.
-  Qed.
+  Proof. intros M Mabs A B MAB. term_inv M; congruence. Qed.
 
-  Lemma abs_type_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N), absType Mabs = absType Nabs ->
+  Lemma abs_type_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N),
+    absType Mabs = absType Nabs ->
     type (absBody Mabs) = type (absBody Nabs) -> type M = type N.
 
   Proof.
@@ -162,7 +144,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     dependent inversion Mabs; dependent inversion Mabs'; trivial.
   Qed.
 
-  Lemma absBody_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N), M = N -> absBody Mabs = absBody Nabs.
+  Lemma absBody_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N),
+    M = N -> absBody Mabs = absBody Nabs.
 
   Proof.
     intros; term_inv M; term_inv N.
@@ -170,11 +153,10 @@ Module TermsManip (Sig : TermsSig.Signature).
     apply term_eq; try_solve.
   Qed.
 
-  Lemma abs_term : forall M (Mabs: isAbs M), term M = \ (absType Mabs) => (term (absBody Mabs)).
+  Lemma abs_term : forall M (Mabs: isAbs M),
+    term M = \ (absType Mabs) => (term (absBody Mabs)).
 
-  Proof.
-    intros; term_inv M.
-  Qed.
+  Proof. intros; term_inv M. Qed.
 
   Hint Resolve absBody absType abs_isAbs absBody_eq_env funS_is_funS
     absBody_equiv_type absBody_eq_type : terms.
@@ -201,6 +183,7 @@ Module TermsManip (Sig : TermsSig.Signature).
       | _ => fun notApp: False => False_rect Term notApp
       end
   end.
+
   Implicit Arguments appBodyL [M].
 
   Definition appBodyR M : isApp M -> Term :=
@@ -211,13 +194,12 @@ Module TermsManip (Sig : TermsSig.Signature).
       | _ => fun notApp: False => False_rect Term notApp
       end
   end.
+
   Implicit Arguments appBodyR [M].
 
   Lemma app_isApp : forall M Pt0 Pt1, term M = Pt0 @@ Pt1 -> isApp M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma app_eq : forall M N (Mapp: isApp M) (Napp: isApp N),
     appBodyL Mapp = appBodyL Napp -> appBodyR Mapp = appBodyR Napp -> M = N.
@@ -232,8 +214,8 @@ Module TermsManip (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_Req_LtypeEq : forall M N (Mapp: isApp M) (Napp: isApp N),
-    term (appBodyR Mapp) = term (appBodyR Napp) -> env M = env N -> type M = type N ->
-    type (appBodyL Mapp) = type (appBodyL Napp).
+    term (appBodyR Mapp) = term (appBodyR Napp) -> env M = env N ->
+    type M = type N -> type (appBodyL Mapp) = type (appBodyL Napp).
 
   Proof.
     intros M N; term_inv M; term_inv N; intros; simpl in * |-.
@@ -243,8 +225,8 @@ Module TermsManip (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_Leq_RtypeEq : forall M N (Mapp: isApp M) (Napp: isApp N),
-    term (appBodyL Mapp) = term (appBodyL Napp) -> env M = env N -> type M = type N ->
-    type (appBodyR Mapp) = type (appBodyR Napp).
+    term (appBodyL Mapp) = term (appBodyL Napp) -> env M = env N ->
+    type M = type N -> type (appBodyR Mapp) = type (appBodyR Napp).
 
   Proof.
     intros M N; term_inv M; term_inv N; intros; simpl in * |-.
@@ -255,73 +237,54 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma appBodyL_env : forall M (Mapp: isApp M), env (appBodyL Mapp) = env M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma appBodyR_env : forall M (Mapp: isApp M), env (appBodyR Mapp) = env M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Hint Rewrite appBodyL_env appBodyR_env : terms.
 
-  Lemma appBodyL_term : forall M PtL PtR (Mterm: term M = PtL @@ PtR) (Mapp: isApp M),
-    term (appBodyL Mapp) = PtL.
+  Lemma appBodyL_term : forall M PtL PtR (Mterm: term M = PtL @@ PtR)
+    (Mapp: isApp M), term (appBodyL Mapp) = PtL.
 
-  Proof.
-    intros; term_inv M.
-  Qed.
+  Proof. intros; term_inv M. Qed.
 
-  Lemma appBodyR_term : forall M PtL PtR (Mterm: term M = PtL @@ PtR) (Mapp: isApp M),
-    term (appBodyR Mapp) = PtR.
+  Lemma appBodyR_term : forall M PtL PtR (Mterm: term M = PtL @@ PtR)
+    (Mapp: isApp M), term (appBodyR Mapp) = PtR.
 
-  Proof.
-    intros; term_inv M.
-  Qed.
+  Proof. intros; term_inv M. Qed.
 
   Lemma term_appBodyL_eq : forall M N (Mapp: isApp M) (Napp: isApp N),
     term M = term N -> term (appBodyL Mapp) = term (appBodyL Napp).
 
-  Proof.
-    intros M N; term_inv M; term_inv N.
-  Qed.
+  Proof. intros M N; term_inv M; term_inv N. Qed.
 
   Lemma term_appBodyR_eq : forall M N (Mapp: isApp M) (Napp: isApp N),
     term M = term N -> term (appBodyR Mapp) = term (appBodyR Napp).
 
-  Proof.
-    intros M N; term_inv M; term_inv N.
-  Qed.
+  Proof. intros M N; term_inv M; term_inv N. Qed.
 
-  Hint Rewrite appBodyL_term appBodyR_term using solve [auto with terms] : terms.
+  Hint Rewrite appBodyL_term appBodyR_term
+    using solve [auto with terms] : terms.
 
-  Lemma app_typeL_type : forall M A B (Mapp: isApp M), type (appBodyL Mapp) = A --> B -> type M = B.
+  Lemma app_typeL_type : forall M A B (Mapp: isApp M),
+    type (appBodyL Mapp) = A --> B -> type M = B.
 
-  Proof.
-    intros M A B Mapp Ml.
-    term_inv M.
-  Qed.
+  Proof. intros M A B Mapp Ml. term_inv M. Qed.
 
-  Lemma app_typeR : forall M A B (Mapp: isApp M), type (appBodyL Mapp) = A --> B ->
-    type (appBodyR Mapp) = A.
+  Lemma app_typeR : forall M A B (Mapp: isApp M),
+    type (appBodyL Mapp) = A --> B -> type (appBodyR Mapp) = A.
 
-  Proof.
-    intros.
-    term_inv M.
-  Qed.
+  Proof. intros. term_inv M. Qed.
 
   Hint Rewrite app_typeL_type app_typeR using solve [auto with terms] : terms.
 
   Lemma app_type_eq : forall M N (Mapp: isApp M) (Napp: isApp N),
     type (appBodyL Mapp) = type (appBodyL Napp) ->
-    type (appBodyR Mapp) = type (appBodyR Napp) ->
-    type M = type N.
+    type (appBodyR Mapp) = type (appBodyR Napp) -> type M = type N.
 
-  Proof.
-    intros; term_inv M; term_inv N.
-  Qed.
+  Proof. intros; term_inv M; term_inv N. Qed.
 
   Lemma app_proof_irr : forall M (Mapp Mapp': isApp M), Mapp = Mapp'.
 
@@ -330,39 +293,31 @@ Module TermsManip (Sig : TermsSig.Signature).
     dependent inversion Mapp; dependent inversion Mapp'; trivial.
   Qed.
 
-  Lemma app_term : forall M (Mapp: isApp M),term M = term (appBodyL Mapp) @@ term (appBodyR Mapp).
+  Lemma app_term : forall M (Mapp: isApp M),
+    term M = term (appBodyL Mapp) @@ term (appBodyR Mapp).
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
-  Hint Resolve appBodyL appBodyR app_isApp app_proof_irr app_Req_LtypeEq app_Leq_RtypeEq : terms.
+  Hint Resolve appBodyL appBodyR app_isApp app_proof_irr app_Req_LtypeEq
+    app_Leq_RtypeEq : terms.
   Hint Unfold isApp : terms.
   Hint Rewrite appBodyL_env appBodyR_env : terms.
 
   Lemma isVar_dec : forall M, {isVar M} + {~isVar M}.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma isAbs_dec : forall M, {isAbs M} + {~isAbs M}.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma isFunS_dec : forall M, {isFunS M} + {~isFunS M}.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma isApp_dec : forall M, {isApp M} + {~isApp M}.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Definition appUnits M : list Term :=
   let
@@ -406,9 +361,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma appUnits_notApp : forall M, ~isApp M -> appUnits M = M::nil.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma appUnit_notApp : forall M Mu, isAppUnit Mu M -> ~isApp M -> Mu = M.
 
@@ -419,12 +372,13 @@ Module TermsManip (Sig : TermsSig.Signature).
     inversion H; try_solve.
   Qed.
 
-  Lemma appUnit_head_or_arg : forall M M', In M' (appUnits M) -> M' = appHead M \/ In M' (appArgs M).
+  Lemma appUnit_head_or_arg : forall M M', In M' (appUnits M) ->
+    M' = appHead M \/ In M' (appArgs M).
 
   Proof.
     intros.
     destruct (in_head_tail M' (appUnits M) H).
-    left; symmetry.
+    left; sym.
     unfold appHead; apply head_of_notNil; auto.
     right; trivial.
   Qed.
@@ -432,9 +386,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   Lemma appUnits_app : forall M (Mapp: isApp M),
     appUnits M = appUnits (appBodyL Mapp) ++ (appBodyR Mapp)::nil.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma appUnit_app : forall Mu M (Mapp: isApp M), isAppUnit Mu M ->
     (Mu = appBodyR Mapp \/ isAppUnit Mu (appBodyL Mapp)).
@@ -450,9 +402,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma appHead_notApp : forall M, ~isApp M -> appHead M = M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma appHead_app_aux : forall M (Mapp: isApp M),
     head (appUnits M) = head (appUnits (appBodyL Mapp)).
@@ -466,7 +416,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     apply appUnits_not_nil.
   Qed.
 
-  Lemma appHead_app : forall M (Mapp: isApp M), appHead M = appHead (appBodyL Mapp).
+  Lemma appHead_app : forall M (Mapp: isApp M),
+    appHead M = appHead (appBodyL Mapp).
 
   Proof.
     intro M; term_inv M.
@@ -480,20 +431,14 @@ Module TermsManip (Sig : TermsSig.Signature).
     congruence.
   Qed.
 
-  Lemma appHead_app_explicit : forall E PtL PtR A B (L: E |- PtL := A --> B) (R: E |- PtR := A),
-    appHead (buildT (TApp L R)) = appHead (buildT L).
+  Lemma appHead_app_explicit : forall E PtL PtR A B (L: E |- PtL := A --> B)
+    (R: E |- PtR := A), appHead (buildT (TApp L R)) = appHead (buildT L).
 
-  Proof.
-    intros.
-    rewrite (appHead_app (buildT (TApp L R)) I).
-    trivial.
-  Qed.
+  Proof. intros. rewrite (appHead_app (buildT (TApp L R)) I). trivial. Qed.
 
   Lemma appArgs_notApp : forall M, ~isApp M -> appArgs M = nil.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma appArgs_app : forall M (Mapp: isApp M),
     appArgs M = appArgs (appBodyL Mapp) ++ (appBodyR Mapp)::nil.
@@ -501,7 +446,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   Proof.
     intros M Mapp; unfold appArgs.
     rewrite (appUnits_app M Mapp).
-    symmetry; auto with terms datatypes.
+    sym; auto with terms datatypes.
   Qed.
 
   Lemma app_units_app : forall M (Mapp: isApp M),
@@ -525,26 +470,24 @@ Module TermsManip (Sig : TermsSig.Signature).
   Hint Rewrite appUnits_notApp appUnits_app appHead_notApp appHead_app 
     appArgs_notApp appArgs_app : terms.
 
-
   Lemma appArg_inv : forall M N (Mapp: isApp M), isArg N M ->
     (isArg N (appBodyL Mapp) \/ N = (appBodyR Mapp)).
 
   Proof.
     destruct M as [E Pt A typM].
-    induction typM; simpl; intros; try contradiction.
+    induction typM; simpl; intros; try contr.
     unfold isArg in H.
     rewrite (appArgs_app (buildT (TApp typM1 typM2)) Mapp) in H.
     case (@in_app_or _ (appArgs (buildT typM1)) (buildT typM2::nil) N); auto.
-    destruct 1; solve [auto | contradiction].
+    destruct 1; solve [auto | contr].
   Qed.
 
   Lemma appArg_is_appUnit : forall M N, isArg M N -> isAppUnit M N.
 
-  Proof.
-    unfold isArg, isAppUnit; auto with datatypes terms.
-  Qed.
+  Proof. unfold isArg, isAppUnit; auto with datatypes terms. Qed.
 
-  Lemma appUnit_left : forall M N (Mapp: isApp M), isAppUnit N (appBodyL Mapp) -> isAppUnit N M.
+  Lemma appUnit_left : forall M N (Mapp: isApp M),
+    isAppUnit N (appBodyL Mapp) -> isAppUnit N M.
 
   Proof.
     intro M; term_inv M.
@@ -555,7 +498,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     auto with datatypes.
   Qed.
 
-  Lemma appUnit_right : forall M N (Mapp: isApp M), N = appBodyR Mapp -> isAppUnit N M.
+  Lemma appUnit_right : forall M N (Mapp: isApp M),
+    N = appBodyR Mapp -> isAppUnit N M.
 
   Proof.
     intros.
@@ -565,7 +509,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     auto with datatypes.
   Qed.
 
-  Lemma appArg_left : forall M N (Mapp: isApp M), isArg N (appBodyL Mapp) -> isArg N M.
+  Lemma appArg_left : forall M N (Mapp: isApp M),
+    isArg N (appBodyL Mapp) -> isArg N M.
 
   Proof.
     intros M N Mapp Narg.
@@ -574,7 +519,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     auto with datatypes.
   Qed.
 
-  Lemma appArg_right : forall M N (Mapp: isApp M), N = appBodyR Mapp -> isArg N M.
+  Lemma appArg_right : forall M N (Mapp: isApp M),
+    N = appBodyR Mapp -> isArg N M.
 
   Proof.
     intros M N Mapp Narg.
@@ -594,45 +540,31 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma funS_neutral : forall M, isFunS M -> isNeutral M.
 
-  Proof.
-    intros; term_inv M.
-  Qed.
+  Proof. intros; term_inv M. Qed.
 
   Lemma app_neutral : forall M, isApp M -> isNeutral M.
 
-  Proof.
-    intros; term_inv M.
-  Qed.
+  Proof. intros; term_inv M. Qed.
 
   Lemma var_neutral : forall M, isVar M -> isNeutral M.
 
-  Proof.
-    intros; term_inv M.
-  Qed.
+  Proof. intros; term_inv M. Qed.
 
   Lemma abs_not_neutral : forall M, isAbs M -> isNeutral M -> False.
 
-  Proof.
-    intros M; term_inv M.
-  Qed.
+  Proof. intros M; term_inv M. Qed.
 
   Lemma abs_isnot_app : forall M, isAbs M -> ~isApp M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma app_isnot_abs : forall M, isApp M -> ~isAbs M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma term_case : forall M, {isVar M} + {isFunS M} + {isAbs M} + {isApp M}.
 
-  Proof.
-    intro M; term_inv M.
-  Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Hint Resolve appArg_inv appArg_is_appUnit abs_isnot_app app_isnot_abs 
                appUnits_notApp appHead_notApp appHead_app appArgs_notApp 
@@ -676,7 +608,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   Proof.
     intros M; destruct M as [E Pt A TypM].
     induction TypM; constructor; inversion 1; simpl in *; 
-      try contradiction.
+      try contr.
      (* abstraction *)
     inversion H0; trivial.
     apply Acc_inv with (buildT TypM); trivial.
@@ -690,30 +622,21 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma appBodyL_subterm : forall M (Mapp: isApp M), subterm (appBodyL Mapp) M.
 
-  Proof.
-    intros.
-    constructor 1 with Mapp; constructor 2.
-  Qed.
+  Proof. intros. constructor 1 with Mapp; constructor 2. Qed.
 
   Lemma appBodyR_subterm : forall M (Mapp: isApp M), subterm (appBodyR Mapp) M.
 
-  Proof.
-    intros.
-    constructor 2 with Mapp; constructor 2.
-  Qed.
+  Proof. intros. constructor 2 with Mapp; constructor 2. Qed.
 
   Lemma absBody_subterm : forall M (Mabs: isAbs M), subterm (absBody Mabs) M.
 
-  Proof.
-    intros.
-    constructor 3 with Mabs; constructor 2.
-  Qed.
+  Proof. intros. constructor 3 with Mabs; constructor 2. Qed.
 
   Lemma appUnit_subterm : forall M N, isApp M -> isAppUnit N M -> subterm N M.
 
   Proof.
     destruct M as [E Pt A TypM].
-    induction TypM; try contradiction.
+    induction TypM; try contr.
     intros N M1M2app Narg.
      (* left argument application again *)
     case (isApp_dec (buildT TypM1)).
@@ -729,7 +652,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     constructor 2 with M1M2app.
     inversion N_M2.
     rewrite <- H; constructor 2.
-    contradiction.
+    contr.
      (* left argument is not application *)
     intro M1notApp.
     unfold isAppUnit, appUnits in Narg.
@@ -760,22 +683,24 @@ Module TermsManip (Sig : TermsSig.Signature).
     rewrite appUnits_notApp in H; try_solve.
   Qed.
 
-  Lemma appUnits_notEmpty : forall M hd tl el, appUnits M ++ hd::tl = el::nil -> False.
+  Lemma appUnits_notEmpty : forall M hd tl el,
+    appUnits M ++ hd::tl = el::nil -> False.
 
   Proof.
     intros M hd tl el Eq.
     destruct (app_eq_unit (appUnits M) (hd::tl) Eq)
       as [[unitsL argR] | [unitsL argR]].
     absurd (appUnits M = nil); auto with terms.
-    discriminate.
+    discr.
   Qed.
 
-  Lemma partialFlattening_app : forall M Ms, isPartialFlattening Ms M -> isApp M.
+  Lemma partialFlattening_app : forall M Ms,
+    isPartialFlattening Ms M -> isApp M.
 
   Proof.
     intros M Ms Ms_pflat_M.
     unfold isPartialFlattening in *.
-    repeat (destruct Ms; [contradiction | idtac]).
+    repeat (destruct Ms; [contr | idtac]).
     case (isApp_dec M).
     auto.
     intro Mnapp.
@@ -785,7 +710,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Lemma app_notApp_diffUnits : forall M N, isApp M -> ~isApp N -> appUnits M = appUnits N -> False.
+  Lemma app_notApp_diffUnits : forall M N,
+    isApp M -> ~isApp N -> appUnits M = appUnits N -> False.
 
   Proof.
     intros M N Mapp Nnapp eqUnits.
@@ -794,13 +720,12 @@ Module TermsManip (Sig : TermsSig.Signature).
     eapply appUnits_notEmpty; eexact eqUnits.
   Qed.
 
-  Lemma eq_unitTypes_eq_types : forall M N, length (appUnits M) = length (appUnits N) ->
+  Lemma eq_unitTypes_eq_types : forall M N,
+    length (appUnits M) = length (appUnits N) ->
     (forall p Ma Na, 
       nth_error (appUnits M) p = Some Ma -> 
       nth_error (appUnits N) p = Some Na ->
-      type Ma = type Na
-    ) ->
-    type M = type N.
+      type Ma = type Na) -> type M = type N.
 
   Proof.
     intro M.
@@ -891,12 +816,11 @@ Module TermsManip (Sig : TermsSig.Signature).
     congruence.
   Qed.
 
-  Lemma partialFlattening_subterm_aux : forall L M N, L <> nil -> appUnits M ++ L = appUnits N ->
-    subterm M N.
+  Lemma partialFlattening_subterm_aux : forall N L M,
+    L <> nil -> appUnits M ++ L = appUnits N -> subterm M N.
 
   Proof.
-    intros L M N; generalize L M; clear L M.
-    apply well_founded_ind with
+    intro N. apply well_founded_ind with
       (R := subterm)
       (P := fun N =>
          forall L M,
@@ -934,14 +858,15 @@ Module TermsManip (Sig : TermsSig.Signature).
     elimtype False; eapply appUnits_notEmpty; eexact units.
   Qed.
 
-  Lemma partialFlattening_subterm : forall M Ms m, isPartialFlattening Ms M -> In m Ms -> subterm m M.
+  Lemma partialFlattening_subterm : forall M Ms m,
+    isPartialFlattening Ms M -> In m Ms -> subterm m M.
 
   Proof.
     intros M Ms m Ms_pflat m_Ms.
     assert (Mapp: isApp M).
     apply partialFlattening_app with Ms; trivial.
     unfold isPartialFlattening in *.
-    repeat (destruct Ms; [contradiction | idtac]).
+    repeat (destruct Ms; [contr | idtac]).
     destruct m_Ms as [m_t | [m_t0 | m_Ms]].
     apply partialFlattening_subterm_aux with (t0::Ms).
     auto with datatypes.
@@ -953,7 +878,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     unfold isAppUnit; rewrite <- Ms_pflat; auto with datatypes.
   Qed.
  
-  Lemma funApp_head : forall M, isFunApp M -> { f: FunctionSymbol | term (appHead M) = ^f }.
+  Lemma funApp_head : forall M, isFunApp M ->
+    { f: FunctionSymbol | term (appHead M) = ^f }.
 
   Proof.
     unfold isFunApp; intros M MfunApp.
@@ -963,19 +889,14 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma funApp : forall M f, term (appHead M) = ^f -> isApp M -> isFunApp M.
 
-  Proof.
-    unfold isFunApp; intros M f Mhead Mapp.
-    term_inv (appHead M).
-  Qed.
+  Proof. unfold isFunApp; intros M f Mhead Mapp. term_inv (appHead M). Qed.
 
   Lemma funS_funApp : forall M, isFunS M -> isFunApp M.
 
-  Proof.
-    intros.
-    term_inv M.
-  Qed.
+  Proof. intros. term_inv M. Qed.
 
-  Lemma appHead_term : forall (M N: Term), term M = term N -> term (appHead M) = term (appHead N).
+  Lemma appHead_term : forall (M N: Term),
+    term M = term N -> term (appHead M) = term (appHead N).
 
   Proof.
     intros M.
@@ -1008,31 +929,33 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof.
     destruct M as [E Pt A M]; induction M.
-    firstorder.
-    firstorder.
-    firstorder.
+    fo.
+    fo.
+    fo.
     rewrite (appHead_app (buildT (TApp M1 M2)) I).
-    destruct IHM1; firstorder.
+    destruct IHM1; fo.
   Qed.
 
   Lemma isFunApp_dec : forall M, {isFunApp M} + {~isFunApp M}.
 
   Proof.
     destruct M as [E Pt A M]; destruct M.
-    firstorder.
-    firstorder.
-    firstorder.
-    destruct (headFunS_dec (buildT (TApp M1 M2))) as [headF | headNF]; firstorder.
+    fo.
+    fo.
+    fo.
+    destruct (headFunS_dec (buildT (TApp M1 M2))) as [headF | headNF]; fo.
   Qed.
 
-  Lemma isFunApp_left : forall M (Mapp: isApp M), isFunApp M -> isFunApp (appBodyL Mapp).
+  Lemma isFunApp_left : forall M (Mapp: isApp M),
+    isFunApp M -> isFunApp (appBodyL Mapp).
 
   Proof.
     unfold isFunApp; intros.
     rewrite (appHead_app M Mapp) in H; trivial.
   Qed.
     
-  Lemma notFunApp_left: forall M (Mapp: isApp M), ~isFunApp (appBodyL Mapp) -> ~isFunApp M.
+  Lemma notFunApp_left: forall M (Mapp: isApp M),
+    ~isFunApp (appBodyL Mapp) -> ~isFunApp M.
 
   Proof.
     intros.
@@ -1041,7 +964,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     apply isFunApp_left; trivial.
   Qed.
 
-  Lemma notFunApp_left_inv : forall M (Mapp: isApp M), ~isFunApp M -> ~isFunApp (appBodyL Mapp).
+  Lemma notFunApp_left_inv : forall M (Mapp: isApp M),
+    ~isFunApp M -> ~isFunApp (appBodyL Mapp).
 
   Proof.
     unfold isFunApp; intros; intro MLfa.
@@ -1050,8 +974,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     unfold isFunApp; rewrite (appHead_app Tr I); trivial.
   Qed.
 
-  Lemma notFunApp_left_eq : forall M (Mapp: isApp M) N (Napp: isApp N), ~isFunApp M ->
-    appBodyL Mapp = appBodyL Napp -> ~isFunApp N.
+  Lemma notFunApp_left_eq : forall M (Mapp: isApp M) N (Napp: isApp N),
+    ~isFunApp M -> appBodyL Mapp = appBodyL Napp -> ~isFunApp N.
 
   Proof.
     intro M; term_inv M.
@@ -1074,16 +998,14 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Lemma notFunApp_notFunS : forall M, ~isFunApp M -> ~isFunS M.
 
-  Proof.
-    intro M; term_inv M.
-  Qed. 
+  Proof. intro M; term_inv M. Qed. 
 
   Lemma appUnit_env : forall Mu M, isAppUnit Mu M -> env Mu = env M.
 
   Proof.
     destruct M as [E Pt T M].
     induction M; intros; 
-      try solve [inversion H; try contradiction; rewrite <- H0; trivial].
+      try solve [inversion H; try contr; rewrite <- H0; trivial].
     unfold isAppUnit in H.
     rewrite (appUnits_app (buildT (TApp M1 M2)) I) in H.
     simpl in H.
@@ -1114,13 +1036,15 @@ Module TermsManip (Sig : TermsSig.Signature).
     apply appUnit_env.
     unfold isAppUnit; rewrite <- H.
     destruct H0.
-    rewrite <- H0; firstorder.
-    firstorder.
+    rewrite <- H0; fo.
+    fo.
   Qed.
 
-  Lemma partialFlattening_inv : forall M (Mapp: isApp M) Ms, isPartialFlattening Ms M ->
-    Ms = appBodyL Mapp :: appBodyR Mapp :: nil \/
-    exists Ns, isPartialFlattening Ns (appBodyL Mapp) /\ Ms = Ns ++ appBodyR Mapp :: nil.
+  Lemma partialFlattening_inv : forall M (Mapp: isApp M) Ms,
+    isPartialFlattening Ms M ->
+    Ms = appBodyL Mapp :: appBodyR Mapp :: nil
+    \/ exists Ns, isPartialFlattening Ns (appBodyL Mapp)
+      /\ Ms = Ns ++ appBodyR Mapp :: nil.
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros.
@@ -1142,7 +1066,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     right.
     assert (MLapp: isApp (appBodyL Mapp)).
     destruct (isApp_dec (appBodyL Mapp)); trivial.
-    rewrite (appUnits_notApp (appBodyL (M:=buildT (TApp M1 M2)) I)) in H; trivial.
+    rewrite (appUnits_notApp (appBodyL (M:=buildT (TApp M1 M2)) I)) in H;
+      trivial.
     simpl in H.
     elimtype False; cut (appUnits t <> nil).
     destruct (appUnits t); auto.
@@ -1168,7 +1093,8 @@ Module TermsManip (Sig : TermsSig.Signature).
   Qed.
 
   Lemma partialFlattening_desc : forall M (Mapp: isApp M) ML,
-    isPartialFlattening ML (appBodyL Mapp) -> isPartialFlattening (ML ++ appBodyR Mapp :: nil) M.
+    isPartialFlattening ML (appBodyL Mapp) ->
+    isPartialFlattening (ML ++ appBodyR Mapp :: nil) M.
 
   Proof.
     unfold isPartialFlattening.
@@ -1182,7 +1108,8 @@ Module TermsManip (Sig : TermsSig.Signature).
   Qed.
 
   Lemma allPartialFlattenings : forall M, isApp M ->
-    { MF: list (list Term) | forall Mpf, isPartialFlattening Mpf M <-> In Mpf MF }.
+    { MF: list (list Term)
+      | forall Mpf, isPartialFlattening Mpf M <-> In Mpf MF }.
 
   Proof.
     destruct M as [E Pt T M]; induction M; try_solve.

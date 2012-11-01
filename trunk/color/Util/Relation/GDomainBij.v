@@ -70,7 +70,7 @@ Lemma rel_on_nat_elim  : forall a b, rel_on_nat R a b ->
 
 Proof.
 intros. unfold rel_on_nat in H.
-destruct (Dom[a]); destruct (Dom[b]); try discriminate; try tauto.
+destruct (Dom[a]); destruct (Dom[b]); try discr; try tauto.
 exists a0; exists a1; intuition; auto.
 Qed.
 
@@ -245,15 +245,15 @@ unfold compose in *.
 destruct H as [z]; destruct H; exists z.
 rewrite dom_change in H; rewrite IHn in H0; auto with *.
 apply rel_on_nat_is_restricted.
-assumption.
+hyp.
 
 unfold compose in H; destruct H as [z]; destruct H.
 rewrite dom_change_compose.
 unfold compose; exists z; split.
-rewrite dom_change;  assumption.
-rewrite IHn; assumption.
+rewrite dom_change;  hyp.
+rewrite IHn; hyp.
 apply rel_on_nat_is_restricted.
-assumption.
+hyp.
 Qed. 
 
 Lemma dom_change_tc: forall x y, 

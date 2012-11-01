@@ -8,7 +8,7 @@ Model of RPO with status
 *)
 
 Require Import VPrecedence MultisetListOrder LexicographicOrder VRPO_Type
-  Relations VTerm ListUtil AccUtil.
+  Relations VTerm ListUtil AccUtil LogicUtil.
 
 Inductive status_name : Set := 
 | lexicographic : status_name 
@@ -70,8 +70,8 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
   Proof.
     intros. unfold tau, mytau.
     destruct (status_dec f); rewrite e.
-    apply lex_status_dec. assumption.
-    apply mul_status_dec. assumption.
+    apply lex_status_dec. hyp.
+    apply mul_status_dec. hyp.
   Defined.
 
   Lemma status_eq : forall f g, f =F= g -> tau f = tau g.
@@ -101,7 +101,7 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Proof.
     unfold lt, tau, mytau.
-    intros f g feqg ss ts Hsub; generalize (refl_equal (status f));
+    intros f g feqg ss ts Hsub; gen (refl_equal (status f));
       pattern (status f) at -1;
       case (status f); intros statusf Hstatusf.
     apply rpo2_lex; trivial.

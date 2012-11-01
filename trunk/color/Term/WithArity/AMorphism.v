@@ -70,12 +70,12 @@ Section Morphism.
     with signature (@SetUtil.equiv (rule S1)) ==> (@SetUtil.equiv (rule S2))
       as Frs_equiv.
 
-  Proof. firstorder. Qed.
+  Proof. fo. Qed.
 
   Lemma Rules_Fl : forall R, Rules (Fl R) [=] Frs (Rules R).
 
   Proof.
-    induction R; simpl; intros. firstorder. repeat rewrite Rules_cons.
+    induction R; simpl; intros. fo. repeat rewrite Rules_cons.
     rewrite IHR. unfold Frs. rewrite image_add. refl.
   Qed.
 
@@ -275,7 +275,7 @@ Section Epi.
   Lemma HG_epi : forall f, arity f = arity (G f).
 
   Proof.
-    intro. rewrite <- (FG f) at 1. symmetry. apply HF.
+    intro. rewrite <- (FG f) at 1. sym. apply HF.
   Qed.
 
   Lemma Ft_epi : forall t, Ft HF (Ft HG t) = t.
@@ -289,7 +289,7 @@ Section Epi.
     (* Fun *)
     intros. simpl. eapply fun_eq_intro with (h:=FG f).
     rewrite Vmap_cast. repeat rewrite Vcast_cast. rewrite H.
-    symmetry. apply Vcast_refl.
+    sym. apply Vcast_refl.
     (* Vnil *)
     refl.
     (* Vcons *)

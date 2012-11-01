@@ -142,21 +142,21 @@ set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
 ded (vars_max H3). ded (in_vars_shift_min H4). unfold p in H6.
-absurd (x <= maxvar l0). omega. assumption.
+absurd (x <= maxvar l0). omega. hyp.
 (* domains of substitutions *)
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
 assert (dom_incl s1' (vars (shift p l1))). unfold s1'. apply dom_incl_restrict.
 (* inclusion in the dp_graph *)
 assert (sub s r0 = sub s0' r0). unfold s. eapply sub_union1. apply H5.
-apply H3. apply hyp'. assumption. rewrite H6.
-assert (sub s0' r0 = sub s0 r0). unfold s0'. symmetry.
-apply sub_restrict_incl. apply hyp'. assumption. rewrite H7.
+apply H3. apply hyp'. hyp. rewrite H6.
+assert (sub s0' r0 = sub s0 r0). unfold s0'. sym.
+apply sub_restrict_incl. apply hyp'. hyp. rewrite H7.
 assert (sub s (shift p l1) = sub s1' (shift p l1)).
 unfold s. eapply sub_union2. apply H4. apply H3. apply List.incl_refl.
 rewrite H8.
 assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
 rewrite <- sub_restrict. rewrite <- sub_shift.
-refl. rewrite H9. assumption.
+refl. rewrite H9. hyp.
 Qed.
 
 Lemma chain_dps_path_dp_graph : forall l a b t u,
@@ -210,7 +210,7 @@ Proof.
 intros. incl_trans (red_mod R DP). incl_trans (Chain). apply chain_dp_chain.
 incl_trans (hd_red_mod R DP). apply chain_hd_red_mod.
 apply hd_red_mod_incl_red_mod. incl_trans (succ_eq!).
-apply compat_red_mod_tc; assumption. apply tc_incl_rtc.
+apply compat_red_mod_tc; hyp. apply tc_incl_rtc.
 Qed.
 
 Lemma compat_chain_dps : forall l a, chain_dps a l << succ_eq#.
@@ -229,7 +229,7 @@ unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
 apply (incl_rtc_comp Habsorb). exists (sub x0 (lhs a)). split.
 apply inclusion_elim with (R := int_red R #). 2: exact H1.
 apply clos_refl_trans_m'.
-incl_trans (red R). apply int_red_incl_red. apply compat_red; assumption.
+incl_trans (red R). apply int_red_incl_red. apply compat_red; hyp.
 destruct Hredord. apply H2. exact H.
 Qed.
 
@@ -242,8 +242,8 @@ Proof.
 (* we prove it by looking at paths of length n+3, where n = length DP *)
 set (n := length DP). apply WF_iter with (S n). intro.
 (* we proceed by induction on succ @ succ_eq# *)
-assert (Hwf' : WF (succ @ succ_eq#)). apply absorb_WF_modulo_r; assumption.
-generalize (Hwf' x). induction 1. apply SN_intro; intros. apply H0.
+assert (Hwf' : WF (succ @ succ_eq#)). apply absorb_WF_modulo_r; hyp.
+gen (Hwf' x). induction 1. apply SN_intro; intros. apply H0.
 (* path in the dp_graph corresponding to the chains *)
 ded (iter_chain_chain_dps H1). do 3 destruct H2.
 assert (length x1 > 0). omega. ded (last_intro H4). do 3 destruct H5.
@@ -275,8 +275,8 @@ apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
 (* end of the proof of (A) *)
 ded (Hcycle h H14). do 2 destruct H10. ded (in_elim H10).
 do 2 destruct H15. exists (x5++x9++x14). exists x13. exists (x15++x12++x4::x8).
-intuition. repeat rewrite app_ass. transitivity (x5++(x4::x7)++x4::x8). refl.
-rewrite H11. rewrite app_ass. transitivity (x5++x9++(x10::x11)++x12++x4::x8).
+intuition. repeat rewrite app_ass. trans (x5++(x4::x7)++x4::x8). refl.
+rewrite H11. rewrite app_ass. trans (x5++x9++(x10::x11)++x12++x4::x8).
 simpl. rewrite app_ass. refl. rewrite H15. rewrite app_ass. refl.
 (* consequence of (A) *)
 do 4 destruct H8. unfold l' in H8. ded (chain_dps_app' H8 H3).

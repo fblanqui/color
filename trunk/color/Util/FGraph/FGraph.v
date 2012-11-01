@@ -625,7 +625,7 @@ successors of g' *)
     rewrite gle_succs. intro z. rewrite !succs_add.
     destruct (eq_dec x z); destruct (eq_dec x' z).
     rewrite xx', yy', gg'. refl.
-    rewrite xx' in e. contradiction. rewrite xx' in n. contradiction.
+    rewrite xx' in e. contr. rewrite xx' in n. contr.
     rewrite gg'. refl.
   Qed.
 

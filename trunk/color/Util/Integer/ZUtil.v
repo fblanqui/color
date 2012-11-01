@@ -145,22 +145,22 @@ Qed.
 Lemma pos_power : forall x n, 0 <= x -> 0 <= power x n.
 
 Proof.
-induction n; intros; simpl. omega. apply Zmult_le_0_compat. assumption.
-apply IHn. assumption.
+induction n; intros; simpl. omega. apply Zmult_le_0_compat. hyp.
+apply IHn. hyp.
 Qed.
 
 Lemma spos_power : forall x n, 0 < x -> 0 < power x n.
 
 Proof.
-induction n; intros; simpl. omega. apply Zmult_lt_O_compat. assumption.
-apply IHn. assumption.
+induction n; intros; simpl. omega. apply Zmult_lt_O_compat. hyp.
+apply IHn. hyp.
 Qed.
 
 Lemma power_le_compat : forall x y n, 0<=x -> x<=y -> power x n <= power y n.
 
 Proof.
-induction n; intros; simpl. omega. apply Zmult_le_compat. assumption.
-apply IHn; assumption. assumption. apply pos_power. assumption.
+induction n; intros; simpl. omega. apply Zmult_le_compat. hyp.
+apply IHn; hyp. hyp. apply pos_power. hyp.
 Qed.
 
 (***********************************************************************)
@@ -209,7 +209,7 @@ Notation D0 := (inj Zero_in_D).
 Lemma pos_power_val : forall x n, pos (power (val x) n).
 
 Proof.
-intros. destruct x. apply pos_power. assumption.
+intros. destruct x. apply pos_power. hyp.
 Qed.
 
 Definition Dlt x y := Zlt (val x) (val y).
@@ -246,8 +246,8 @@ Proof.
 intros x y. destruct x. destruct y. unfold Dlt. simpl.
 induction n; simpl; intros. omega. ded (IHn H).
 apply Zle_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
-omega. assumption. apply Zmult_gt_0_lt_compat_r. apply Zlt_gt.
-apply Zmult_lt_O_compat. omega. apply spos_power. omega. assumption.
+omega. hyp. apply Zmult_gt_0_lt_compat_r. apply Zlt_gt.
+apply Zmult_lt_O_compat. omega. apply spos_power. omega. hyp.
 Qed.
 
 Lemma trans_Dgt : transitive Dgt.
@@ -274,7 +274,7 @@ Qed.
 Lemma Zmax_gub : forall m n k, m >= k -> n >= k -> Zmax m n >= k.
 
 Proof.
-intros. apply Zmax_case; assumption.
+intros. apply Zmax_case; hyp.
 Qed.
 
 Lemma elim_Zmax_l : forall x y z, x <= y -> x <= Zmax y z.
@@ -298,7 +298,7 @@ Qed.
 Lemma elim_lt_Zmax_r : forall x y z, x < z -> x < Zmax y z.
 
 Proof.
-intros. rewrite Zmax_comm. apply elim_lt_Zmax_l. assumption.
+intros. rewrite Zmax_comm. apply elim_lt_Zmax_l. hyp.
 Qed.
 
 Lemma Zmax_l : forall x y, x >= y -> Zmax x y = x.
@@ -306,13 +306,13 @@ Lemma Zmax_l : forall x y, x >= y -> Zmax x y = x.
 Proof.
 intros. unfold Zmax. 
 destruct (Dcompare_inf (x ?= y)) as [[xy | xy] | xy]; rewrite xy; try refl.
-assert (x < y). assumption. omega.
+assert (x < y). hyp. omega.
 Qed.
 
 Lemma Zmax_r : forall x y, y >= x -> Zmax x y = y.
 
 Proof.
-intros. rewrite Zmax_comm. apply Zmax_l. assumption.
+intros. rewrite Zmax_comm. apply Zmax_l. hyp.
 Qed.
 
 Lemma Zmax_ge_compat : forall x y x' y',

@@ -235,7 +235,7 @@ Module MatrixInt (MI : TMatrixInt).
         dot_product v w > dot_product v' w'.
 
       Proof.
-        intros i j. generalize i. clear i.
+        intros i j. gen i. clear i.
         induction j; intros.
         destruct i. absurd_arith.
         VSntac v. VSntac w. VSntac v'. VSntac w'.

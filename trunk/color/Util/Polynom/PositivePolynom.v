@@ -21,7 +21,7 @@ Lemma pos_meval : forall n (m : monom n) (v : vec n), 0 <= meval m (vals v).
 
 Proof.
 induction n; intros; simpl. omega. VSntac m. VSntac v. simpl.
-apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). assumption.
+apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). hyp.
 apply IHn.
 Qed.
 
@@ -47,8 +47,8 @@ Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
 Proof.
 induction p; intros; simpl. omega. destruct a. simpl in H. destruct H.
-case (monom_eq_dec m t); intro. assert (0 <= coef m p). apply IHp. assumption.
-omega. apply IHp. assumption.
+case (monom_eq_dec m t); intro. assert (0 <= coef m p). apply IHp. hyp.
+omega. apply IHp. hyp.
 Qed.
 
 Lemma coef_pos_cons : forall n c (m : monom n) (p : poly n),
@@ -72,16 +72,16 @@ Lemma coef_pos_mpmult : forall n c (m : monom n) (p : poly n),
 
 Proof.
 induction p; intros; simpl. exact I. destruct a. simpl.
-simpl in H0. destruct H0. split. apply Zmult_le_0_compat; assumption.
-apply IHp; assumption.
+simpl in H0. destruct H0. split. apply Zmult_le_0_compat; hyp.
+apply IHp; hyp.
 Qed.
 
 Lemma pos_peval : forall n (p : poly n) v, coef_pos p -> 0 <= peval p (vals v).
 
 Proof.
 induction p; intros; simpl. omega. destruct a. simpl in H. destruct H.
-apply Zplus_le_0_compat. apply Zmult_le_0_compat. assumption.
-apply pos_meval. apply IHp. assumption.
+apply Zplus_le_0_compat. apply Zmult_le_0_compat. hyp.
+apply pos_meval. apply IHp. hyp.
 Qed.
 
 Lemma preserve_pos_peval : forall n (p : poly n),
@@ -89,7 +89,7 @@ Lemma preserve_pos_peval : forall n (p : poly n),
 
 Proof.
 intros. unfold preserv. intros v Hv.
-rewrite (Vmap_proj1 Hv). apply pos_peval. assumption.
+rewrite (Vmap_proj1 Hv). apply pos_peval. hyp.
 Qed.
 
 Definition peval_D n (p : poly n) (H : coef_pos p) :=
@@ -116,8 +116,8 @@ Lemma coef_pos_plus : forall n (p1 p2 : poly n),
   coef_pos p1 -> coef_pos p2 -> coef_pos (p1 + p2).
 
 Proof.
-induction p1; intros; simpl. assumption. destruct a. simpl in H. destruct H.
-apply coef_pos_mpplus. assumption. apply IHp1; assumption.
+induction p1; intros; simpl. hyp. destruct a. simpl in H. destruct H.
+apply coef_pos_mpplus. hyp. apply IHp1; hyp.
 Qed.
 
 Lemma coef_pos_mult : forall n (p1 p2 : poly n),
@@ -125,15 +125,15 @@ Lemma coef_pos_mult : forall n (p1 p2 : poly n),
 
 Proof.
 induction p1; intros; simpl. exact I. destruct a. simpl in H. destruct H.
-apply coef_pos_plus. apply coef_pos_mpmult; assumption. apply IHp1; assumption.
+apply coef_pos_plus. apply coef_pos_mpmult; hyp. apply IHp1; hyp.
 Qed.
 
 Lemma coef_pos_power : forall k n (p : poly n),
   coef_pos p -> coef_pos (ppower p k).
 
 Proof.
-induction k; intros; simpl. intuition. apply coef_pos_mult. assumption.
-apply IHk. assumption.
+induction k; intros; simpl. intuition. apply coef_pos_mult. hyp.
+apply IHk. hyp.
 Qed.
 
 Lemma coef_pos_mcomp : forall k n (m : monom n) (ps : vector (poly k) n),
@@ -142,7 +142,7 @@ Lemma coef_pos_mcomp : forall k n (m : monom n) (ps : vector (poly k) n),
 Proof.
 induction n; intros; simpl. intuition. VSntac ps. simpl. rewrite H0 in H.
 simpl in H. destruct H. apply coef_pos_mult. apply coef_pos_power.
-assumption. apply IHn. assumption.
+hyp. apply IHn. hyp.
 Qed.
 
 Lemma coef_pos_cpmult : forall n c (p : poly n),
@@ -157,8 +157,8 @@ Lemma coef_pos_pcomp : forall n k (p : poly n) (ps : vector (poly k) n),
 
 Proof.
 induction p; intros; simpl. exact I. destruct a. simpl. simpl in H. destruct H.
-apply coef_pos_plus. apply coef_pos_cpmult. assumption. apply coef_pos_mcomp.
-assumption. apply IHp; assumption.
+apply coef_pos_plus. apply coef_pos_cpmult. hyp. apply coef_pos_mcomp.
+hyp. apply IHp; hyp.
 Qed.
 
 Lemma coefPos_ge0 : forall n (p : poly n) (m : monom n),

@@ -27,7 +27,7 @@ Lemma notvar_elim : forall t,
   notvar t -> exists f : Sig, exists ts, t = Fun f ts.
 
 Proof.
-intro t. case t; simpl; intros. contradiction. exists f. exists t0. refl.
+intro t. case t; simpl; intros. contr. exists f. exists t0. refl.
 Qed.
 
 Lemma notvar_var : forall v, ~ notvar (Var v).
@@ -41,7 +41,7 @@ Require Import ASubstitution.
 Lemma notvar_sub : forall s t, notvar t -> notvar (sub s t).
 
 Proof.
-intros s t. case t; simpl; intros. contradiction. exact I.
+intros s t. case t; simpl; intros. contr. exact I.
 Qed.
 
 
@@ -54,7 +54,7 @@ Qed.
 Lemma notvar_fillsub : forall c s t, notvar t -> notvar (fill c (sub s t)).
 
 Proof.
-intros. apply notvar_fill. apply notvar_sub. assumption. 
+intros. apply notvar_fill. apply notvar_sub. hyp. 
 Qed.
 
 End S.

@@ -144,7 +144,7 @@ Section BinSignatureTheory.
     -> red proj_cons # (Fun f v1) (Fun f v2).
 
   Proof.
-    intros. generalize (proj_cons_fun_aux2 f (plus_0_r (arity f)) Vnil v1 v2 H).
+    intros. gen (proj_cons_fun_aux2 f (plus_0_r (arity f)) Vnil v1 v2 H).
     rewrite !Vapp_nil, !Vcast_cast, !Vcast_refl; auto.
   Qed.
 

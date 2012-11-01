@@ -148,8 +148,8 @@ Module BigNat_Eqset <: Eqset.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
-    unfold Symmetric. symmetry. hyp.
-    unfold Transitive. intros. transitivity y; hyp.
+    unfold Symmetric. sym. hyp.
+    unfold Transitive. intros. trans y; hyp.
   Qed.
 End BigNat_Eqset.
 
@@ -259,8 +259,8 @@ Module BigInt_Eqset <: Eqset.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
-    unfold Symmetric. symmetry. hyp.
-    unfold Transitive. intros. transitivity y; hyp.
+    unfold Symmetric. sym. hyp.
+    unfold Transitive. intros. trans y; hyp.
   Qed.
 End BigInt_Eqset.
 
@@ -344,7 +344,7 @@ Definition is_finite v :=
 Lemma is_finite_ok : forall v, is_finite v = true <-> v <> MinusInf.
 
 Proof.
-  intro. destruct v; simpl; intuition. discriminate.
+  intro. destruct v; simpl; intuition. discr.
 Qed.
 
 Module Arctic <: SetA.
@@ -464,7 +464,7 @@ Module ArcticSemiRingT <: SemiRingType.
 
   Proof.
     intros. destruct a. 
-    destruct b; simpl; discriminate.
+    destruct b; simpl; discr.
     auto. 
   Qed.
 
@@ -475,7 +475,7 @@ Module ArcticSemiRingT <: SemiRingType.
     intros. 
     destruct a; auto. 
     destruct b; auto. 
-    simpl. discriminate.
+    simpl. discr.
   Qed.
 
 End ArcticSemiRingT.
@@ -620,7 +620,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
 
   Proof.
     intros. destruct a. 
-    destruct b; simpl; discriminate.
+    destruct b; simpl; discr.
     auto. 
   Qed.
 
@@ -631,7 +631,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
     intros. 
     destruct a; auto. 
     destruct b; auto.
-    simpl. discriminate.
+    simpl. discr.
   Qed.
 
 End ArcticBZSemiRingT.
@@ -655,7 +655,7 @@ Definition tropical_is_finite v :=
 Lemma tropical_is_finite_ok : forall v, tropical_is_finite v = true <-> v <> PlusInf.
 
 Proof.
-  intro. destruct v; simpl; intuition. discriminate.
+  intro. destruct v; simpl; intuition. discr.
 Qed.
 
 Definition beq_TropicalDom x y :=
@@ -780,7 +780,7 @@ Module TropicalSemiRingT <: SemiRingType.
 
   Proof.
     intros. destruct a. 
-    destruct b; simpl; discriminate.
+    destruct b; simpl; discr.
     auto. 
   Qed.
 
@@ -791,7 +791,7 @@ Module TropicalSemiRingT <: SemiRingType.
     intros. 
     destruct a; auto. 
     destruct b; auto. 
-    simpl. discriminate.
+    simpl. discr.
   Qed.
 
 End TropicalSemiRingT.

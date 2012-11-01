@@ -23,7 +23,7 @@ Variable pi : forall f : Sig, nat_lts (arity f).
 (***********************************************************************)
 (** Assumption: pi does not duplicate arguments.
 
-This assumption is not really necessary but it makes the proof of weak
+This hyp is not really necessary but it makes the proof of weak
 monotony simpler. Otherwise, we also need to assume that the ordering
 is transitive. *)
 
@@ -166,9 +166,9 @@ simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
 
 assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contradiction. rewrite e1.
+intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
 assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contradiction. rewrite e2.
+intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
 apply hcc. unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
 destruct (le_gt_dec i (val x)). 2: absurd_arith.
@@ -177,7 +177,7 @@ repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 (* i not in (pi f) *)
 apply eq_Refl_rel. hyp. apply args_eq. unfold vt, vu.
 apply Vfilter_eq_notin with (l:=pi f). intros hi h.
-ded (in_map (@val (arity f)) h). contradiction.
+ded (in_map (@val (arity f)) h). contr.
 Qed.
 
 (***********************************************************************)
@@ -216,16 +216,16 @@ simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
 
 assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contradiction. rewrite e1.
+intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
 assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contradiction. rewrite e2.
+intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
 apply hcc. unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
 destruct (le_gt_dec i (val x)). 2: absurd_arith.
 repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
 (* i not in (pi f) *)
-assert (hi : i<arity f). omega. ded (hp f i hi). contradiction.
+assert (hi : i<arity f). omega. ded (hp f i hi). contr.
 Qed.
 
 End filter_ordering.
@@ -286,9 +286,9 @@ simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
 rewrite <- vx in h1. rewrite <- vx in h2.
 
 assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contradiction. rewrite e1.
+intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
 assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contradiction. rewrite e2.
+intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
 unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
 destruct (le_gt_dec i (val x)). 2: absurd_arith.
@@ -297,7 +297,7 @@ change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
 
 (* i not in (pi f) *)
 left. apply args_eq. apply Vfilter_eq_notin with (l:=pi f). intros hi h.
-ded (in_map (@val (arity f)) h). contradiction.
+ded (in_map (@val (arity f)) h). contr.
 Qed.
 
 Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).

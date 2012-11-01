@@ -43,9 +43,9 @@ Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1)
 
 Proof.
   induction bs; intros.
-  destruct n1; destruct n2; solve [discriminate | refl].
+  destruct n1; destruct n2; solve [discr | refl].
   destruct n1; try VOtac; repeat rewrite Vcast_refl;
-    try solve [discriminate | refl].
+    try solve [discr | refl].
   VSntac v1. destruct h; simpl; try apply Vtail_eq; apply IHbs.
 Qed.
 
@@ -93,7 +93,7 @@ Lemma Vfilter_cons_true : forall n b (bs : bools n) x (v : vec n)
   = Vcast (Vcons x (Vfilter bs v)) (Vtrue_cons_true bs h).
 
 Proof.
-intros. apply Vfilter_cons_true_eq. assumption.
+intros. apply Vfilter_cons_true_eq. hyp.
 Qed.
 
 Lemma Vfilter_head_true_eq : forall n (bs : bools (S n)) x (v : vec n),
@@ -110,7 +110,7 @@ Lemma Vfilter_head_true : forall n (bs : bools (S n)) x (v : vec n)
   = Vcast (Vcons x (Vfilter (Vtail bs) v)) (Vtrue_Sn_true bs h).
 
 Proof.
-intros. apply Vfilter_head_true_eq. assumption.
+intros. apply Vfilter_head_true_eq. hyp.
 Qed.
 
 Lemma Vfilter_cons_false_eq : forall n b (bs : bools n) x (v : vec n),
@@ -126,7 +126,7 @@ Lemma Vfilter_cons_false : forall n b (bs : bools n) x (v : vec n)
   = Vcast (Vfilter bs v) (Vtrue_cons_false bs h).
 
 Proof.
-intros. apply Vfilter_cons_false_eq. assumption.
+intros. apply Vfilter_cons_false_eq. hyp.
 Qed.
 
 Lemma Vfilter_head_false_eq : forall n (bs : bools (S n)) x (v : vec n),
@@ -143,7 +143,7 @@ Lemma Vfilter_head_false : forall n (bs : bools (S n)) x (v : vec n)
   = Vcast (Vfilter (Vtail bs) v) (Vtrue_Sn_false bs h).
 
 Proof.
-intros. apply Vfilter_head_false_eq. assumption.
+intros. apply Vfilter_head_false_eq. hyp.
 Qed.
 
 Lemma Vfilter_app2_eq : forall n1 (bs1 : bools n1) (v1 : vec n1)
@@ -191,8 +191,8 @@ Lemma Vfilter_cast_eq : forall n (bs : bools n) p (v : vec p)
   Vfilter bs (Vcast v hpn) = Vcast (Vfilter (Vcast bs hnp) v) h'.
 
 Proof.
-induction bs; induction p; simpl; intros. refl. discriminate. discriminate.
-VSntac v. simpl. generalize h'. clear h'. case h; simpl; intro.
+induction bs; induction p; simpl; intros. refl. discr. discr.
+VSntac v. simpl. gen h'. clear h'. case h; simpl; intro.
 apply Vtail_eq. apply IHbs. apply IHbs.
 Qed.
 

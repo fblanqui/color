@@ -123,7 +123,7 @@ Section LexPair.
     forall x3 x4 : lp_pair, lp_eqPair x3 x4 -> x1 >lex x3 -> x2 >lex x4.
 
   Proof.
-    intros. apply (proj1 (lp_LexProdGt_morph_equiv H H0)). assumption.
+    intros. apply (proj1 (lp_LexProdGt_morph_equiv H H0)). hyp.
   Qed.
 
   Add Morphism lp_LexProd_Lt
@@ -190,9 +190,9 @@ Section LexPair.
     constructor 1; apply (sord_trans lp_gtL_so la la' ra'); 
       solve [trivial | rewrite eq1; trivial].
      (* case 2 *)
-    constructor 1. setoid_rewrite <- eq_ra. setoid_rewrite <- eq1. assumption.
+    constructor 1. setoid_rewrite <- eq_ra. setoid_rewrite <- eq1. hyp.
      (* case 3 *)
-    constructor 1. setoid_rewrite eq_la. setoid_rewrite eq1. assumption.
+    constructor 1. setoid_rewrite eq_la. setoid_rewrite eq1. hyp.
      (* case 4 *)
     constructor 2. setoid_rewrite eq_la. setoid_rewrite <- eq_ra. rewrite eq1.
     auto with sets.
@@ -223,7 +223,7 @@ Section LexPair.
 
   Proof.
     unfold well_founded; intro x.
-    destruct x as [a b]; generalize b.
+    destruct x as [a b]; gen b.
     apply well_founded_ind with 
       (R := lp_ltL)
       (P := fun A => forall B, lp_Acc_LexProd (A, B)); 
@@ -240,7 +240,7 @@ Section LexPair.
 (* #NN#, Coq error!, following does not work: *)
 (*    setoid_replace (a', b') with (l, b'). *)
     cut (lp_eqPair (a',b') (l,b')).
-    intro. apply (proj2 (lp_AccLexProd_morph H4)). apply wf_r. assumption.
+    intro. apply (proj2 (lp_AccLexProd_morph H4)). apply wf_r. hyp.
     auto with sets.
   Qed.
 
@@ -280,8 +280,8 @@ Module LexicographicOrder (A_ord B_ord : Ord).
       destruct (eqA_dec (fst x) (fst y)).
       destruct (eqB_dec (snd x) (snd y)).
       left. split; trivial.
-      right. intro. destruct H. contradiction.
-      right. intro. destruct H. contradiction.
+      right. intro. destruct H. contr.
+      right. intro. destruct H. contr.
     Defined.
 
   End Eq_dec.

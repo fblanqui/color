@@ -421,7 +421,7 @@ Section S.
     Lemma red_empty : forall t u : term, red empty_trs # t u -> t = u.
 
     Proof.
-      intros. induction H. redtac. contradiction. refl. congruence.
+      intros. induction H. redtac. contr. refl. congruence.
     Qed.
 
     Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
@@ -515,7 +515,7 @@ Section S.
     Lemma WF_red_empty : WF (red empty_trs).
 
     Proof.
-      intro x. apply SN_intro. intros y Exy. redtac. contradiction.
+      intro x. apply SN_intro. intros y Exy. redtac. contr.
     Qed.
 
     Lemma hd_red_mod_incl_red_mod : forall E, hd_red_mod E R << red_mod E R.
@@ -699,7 +699,7 @@ Section S.
     Lemma red_mod_maxvar : forall t u, red_mod E R t u -> maxvar u <= maxvar t.
 
     Proof.
-      intros. do 2 destruct H. transitivity (maxvar x).
+      intros. do 2 destruct H. trans (maxvar x).
       apply (red_maxvar hR H0). apply (rtc_red_maxvar hE H).
     Qed.
 
@@ -716,7 +716,7 @@ Section S.
   Lemma rules_preserve_vars_incl : forall R S : rules,
     R [= S -> rules_preserve_vars S -> rules_preserve_vars R.
 
-  Proof. firstorder. Qed.
+  Proof. fo. Qed.
 
 (***********************************************************************)
 (** biggest variable in a list of rules *)
@@ -752,7 +752,7 @@ Section S.
 
   Proof.
     induction R; simpl; intros. hyp. case (rule_dec a0 a); intro. subst a0.
-    apply IHR. transitivity x. apply le_max_l. hyp.
+    apply IHR. trans x. apply le_max_l. hyp.
     simpl. apply IHR. apply max_ge_compat. hyp. refl.
   Qed.
 
@@ -901,7 +901,7 @@ Section S.
 
     Proof.
       intro x. apply SN_intro. intros y Exy. destruct Exy as [z [xz zy]].
-      redtac. contradiction.
+      redtac. contr.
     Qed.
 
     Lemma WF_hd_red_mod_empty : WF (hd_red_mod E empty_trs).
@@ -914,7 +914,7 @@ Section S.
     Lemma WF_hd_red_Mod_empty : WF (hd_red_Mod S empty_trs).
 
     Proof.
-      apply WF_incl with (@empty_rel term). intros x y h. redtac. contradiction.
+      apply WF_incl with (@empty_rel term). intros x y h. redtac. contr.
       apply WF_empty_rel.
     Qed.
 
@@ -1178,10 +1178,10 @@ Implicit Arguments int_red_fun [Sig R f ts v].
 (** tactics *)
 
 Ltac is_var_lhs := cut False;
-  [tauto | eapply is_notvar_lhs_false; eassumption].
+  [tauto | eapply is_notvar_lhs_false; ehyp].
 
 Ltac is_var_rhs := cut False;
-  [tauto | eapply is_notvar_rhs_false; eassumption].
+  [tauto | eapply is_notvar_rhs_false; ehyp].
 
 Ltac incl_rule Sig := incl (@beq_rule_ok Sig).
 

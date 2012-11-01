@@ -88,7 +88,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof.
     rewrite false_not_true. unfold not. rewrite <- is_empty_iff, <- mem_iff.
-    firstorder.
+    fo.
   Qed.
 
   Lemma subset_empty : forall s, s [<=] empty -> s [=] empty.
@@ -201,7 +201,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof.
     intros a b. repeat rewrite empty_subset. split; intro h.
-    split; transitivity (union a b).
+    split; trans (union a b).
     apply union_subset_1. hyp. apply union_subset_2. hyp.
     apply union_subset_3; tauto.
   Qed.
@@ -290,28 +290,26 @@ Module Make (Export XSet : FSetInterface.S).
 
     Global Instance feq_Sym : Symmetric eqA -> Symmetric feq.
 
-    Proof. firstorder. Qed.
+    Proof. fo. Qed.
 
     Global Instance Proper_m' :
       Proper (feq ==> impl) (Proper (E.eq ==> eqA ==> eqA)).
 
     Proof.
-      intros f f' ff' fm x x' xx' a a' aa'. transitivity (f x a).
-      symmetry. apply ff'; refl. apply ff'; hyp.
+      intros f f' ff' fm x x' xx' a a' aa'. trans (f x a).
+      sym. apply ff'; refl. apply ff'; hyp.
     Qed.
 
     Global Instance Proper_m :
       Proper (feq ==> iff) (Proper (E.eq ==> eqA ==> eqA)).
 
-    Proof.
-      split; apply Proper_m'; auto. symmetry. hyp.
-    Qed.
+    Proof. split; apply Proper_m'; auto. sym. hyp. Qed.
 
     Global Instance transpose_m : Proper (feq ==> impl) (transpose eqA).
 
     Proof.
-      intros f f' ff' hf x y z. transitivity (f x (f y z)).
-      symmetry. apply ff'. refl. apply ff'; refl.
+      intros f f' ff' hf x y z. trans (f x (f y z)).
+      sym. apply ff'. refl. apply ff'; refl.
       rewrite hf. apply ff'. refl. apply ff'; refl.
     Qed.
 
@@ -319,7 +317,7 @@ Module Make (Export XSet : FSetInterface.S).
       Proper (Equal ==> eqA ==> eqA) (fold f).
 
     Proof.
-      intros f f_m s s' ss' a a' aa'. transitivity (fold f s' a).
+      intros f f_m s s' ss' a a' aa'. trans (fold f s' a).
       apply fold_equal; hyp. apply fold_init; hyp.
     Qed.
 
@@ -332,14 +330,14 @@ Module Make (Export XSet : FSetInterface.S).
       intros f fm ft f' ff' s s' ss' a a' aa'; revert s' ss' a a' aa'.
       pattern s; apply set_induction_bis; clear s.
       (* Equal *)
-      intros s s' ss' h t s't a a' aa'. transitivity (fold f s a).
-      apply fold_equal; auto. symmetry. hyp. apply h. transitivity s'; hyp. hyp.
+      intros s s' ss' h t s't a a' aa'. trans (fold f s a).
+      apply fold_equal; auto. sym. hyp. apply h. trans s'; hyp. hyp.
       (* empty *)
-      intros s' e a a' aa'. transitivity (fold f' empty a').
+      intros s' e a a' aa'. trans (fold f' empty a').
       rewrite 2!fold_empty. hyp.
       apply fold_m; try hyp||refl. rewrite <- ff'. hyp.
       (* add *)
-      intros x s nxs h s' e a a' aa'. transitivity (fold f' (add x s) a').
+      intros x s nxs h s' e a a' aa'. trans (fold f' (add x s) a').
       repeat rewrite fold_add; unfold compat_op; try rewrite <- ff'; auto.
       apply ff'. refl. apply h. refl. hyp.
       apply fold_m; auto. rewrite <- ff'. hyp. refl.
@@ -362,7 +360,7 @@ Module Make (Export XSet : FSetInterface.S).
       | H : In ?x (singleton _) |- _ => ded (singleton_1 H); subst x; clear H
       | H : In _ (union _ _) |- _ => destruct (union_1 H); clear H
       | H : In _ (remove _ _) |- _ => destruct (remove_3 H); clear H
-      | H : In _ empty |- _ => rewrite empty_iff in H; contradiction
+      | H : In _ empty |- _ => rewrite empty_iff in H; contr
     end.
 
   Ltac In_intro :=

@@ -13,7 +13,8 @@ Set Implicit Arguments.
 
 Require RelUtil.
 Require Import RelExtras MultisetTheory Transitive_Closure Compare_dec
-  Relations Permutation ListPermutation MultisetCore Setoid ListExtras AccUtil.
+  Relations Permutation ListPermutation MultisetCore Setoid ListExtras AccUtil
+  LogicUtil.
 
 Module MultisetOrder (MC: MultisetCore).
 
@@ -128,9 +129,9 @@ Section OrderDefinition.
     exact (trans_clos_mirror meq m' n' meq_mm' meq_nn' R_mn).
     cut (m' =mul= m). intro. cut (n' =mul= n). intro.
     eapply trans_clos_mirror with (R := MultisetRedGt).
-    apply H. apply H0. assumption.
-    apply Seq_sym. exact MultisetSetoidTheory. assumption.
-    apply Seq_sym. exact MultisetSetoidTheory. assumption.
+    apply H. apply H0. hyp.
+    apply Seq_sym. exact MultisetSetoidTheory. hyp.
+    apply Seq_sym. exact MultisetSetoidTheory. hyp.
   Qed.
 
   Add Morphism clos_transM_RedLt
@@ -142,9 +143,9 @@ Section OrderDefinition.
     exact (trans_clos_mirror meq m' n' meq_mm' meq_nn' R_mn).
     cut (m' =mul= m). intro. cut (n' =mul= n). intro.
     eapply trans_clos_mirror with (R := fun x y => y >mul_1 x).
-    apply H. apply H0. assumption.
-    apply Seq_sym. exact MultisetSetoidTheory. assumption.
-    apply Seq_sym. exact MultisetSetoidTheory. assumption.
+    apply H. apply H0. hyp.
+    apply Seq_sym. exact MultisetSetoidTheory. hyp.
+    apply Seq_sym. exact MultisetSetoidTheory. hyp.
   Qed.
 
   Add Morphism MultisetGt
@@ -155,10 +156,10 @@ Section OrderDefinition.
     intros x1 x2 H x0 x3 H0; split; intro; inversion H1.
     constructor 1; rewrite <- H; rewrite <- H0; trivial.
     constructor 2 with y; fold clos_transM_RedGt.
-    rewrite <- H; assumption. rewrite <- H0; assumption.
+    rewrite <- H; hyp. rewrite <- H0; hyp.
     constructor 1; rewrite H; rewrite H0; trivial.
     constructor 2 with y; fold clos_transM_RedGt.
-    rewrite H; assumption. rewrite H0; assumption.
+    rewrite H; hyp. rewrite H0; hyp.
   Qed.
 
   Add Morphism MultisetGT
@@ -167,21 +168,21 @@ Section OrderDefinition.
 
   Proof.
     intros xL xR H yL yR H0; split; intro; inversion H1.
-    constructor 1 with X Y Z. assumption.
-    rewrite <- H. assumption.
-    rewrite <- H0. assumption.
-    assumption.
-    constructor 1 with X Y Z. assumption.
-    rewrite H. assumption.
-    rewrite H0. assumption.
-    assumption.
+    constructor 1 with X Y Z. hyp.
+    rewrite <- H. hyp.
+    rewrite <- H0. hyp.
+    hyp.
+    constructor 1 with X Y Z. hyp.
+    rewrite H. hyp.
+    rewrite H0. hyp.
+    hyp.
   Qed.
 
   Lemma MultisetGt_morph : forall x1 x2 : Multiset, x1 =mul= x2 ->
     forall x3 x4 : Multiset, x3 =mul= x4 -> x1 >mul x3 -> x2 >mul x4.
 
   Proof.
-    intros. apply (proj1 (MultisetGt_morph_equiv H H0)). assumption.
+    intros. apply (proj1 (MultisetGt_morph_equiv H H0)). hyp.
   Qed.
 
   Add Morphism AccM
@@ -237,7 +238,7 @@ Section OrderDefinition.
   Proof.
     intros x1 x2. split. eauto with sets.
     cut (x2 =A= x1). intro. eauto with sets.
-    apply Seq_sym. exact sid_theoryA. assumption.
+    apply Seq_sym. exact sid_theoryA. hyp.
   Qed.
 
   Add Morphism gtA_trans
@@ -248,9 +249,9 @@ Section OrderDefinition.
     compute. intros a a' a_a' b b' b_b'. split; intro a_gtAt_b.
     exact (trans_clos_mirror eqA a' b' a_a' b_b' a_gtAt_b).
     cut (a' =A= a). intro. cut (b' =A= b). intro.
-    eapply trans_clos_mirror with (R := gtA). apply H. apply H0. assumption.
-    apply Seq_sym. exact sid_theoryA. assumption.
-    apply Seq_sym. exact sid_theoryA. assumption.
+    eapply trans_clos_mirror with (R := gtA). apply H. apply H0. hyp.
+    apply Seq_sym. exact sid_theoryA. hyp.
+    apply Seq_sym. exact sid_theoryA. hyp.
   Qed.
 
   Add Morphism geA
@@ -372,7 +373,7 @@ Section OrderCharacterization.
     apply MSetRed with (X := M - {{x}}) (a := x) (Y := {{y}});
       auto with multisets.
     intros y0 Hy0.
-    generalize (member_singleton Hy0); clear Hy0; intro Hy0.
+    gen (member_singleton Hy0); clear Hy0; intro Hy0.
     apply gtA_eqA_compat with (x' := x) (x := x) (y := y); auto with multisets.
     setoid_rewrite Hy0; auto with multisets.
   Qed.
@@ -459,7 +460,7 @@ Section OrderCharacterization.
     setoid_rewrite HY.
     auto with multisets.
     split.
-    assumption.
+    hyp.
     intros y Hy.
     elim (member_union Hy); intro case_y.
     apply HYx; trivial.
@@ -475,10 +476,10 @@ Section OrderCharacterization.
     intros y Hy.
     elim (member_union Hy); intro case_y.
     apply HYa; trivial.
-    generalize Hx'2; apply gtA_eqA_compat.
+    gen Hx'2; apply gtA_eqA_compat.
     apply (member_singleton case_x').
     setoid_rewrite (member_singleton case_y); auto with multisets.
-    assumption.
+    hyp.
     setoid_rewrite (union_comm Y {{a}}).
     apply member_member_union.
     apply singleton_member.
@@ -1186,8 +1187,8 @@ Section OrderSim.
     set (h := drop_nth_length (multiset2list (insert a M)) p).
     set (h' := nth_some (multiset2list (insert a M)) p Mp).
     omega.
-    apply (@list_sim_insert_nth A A P (multiset2list (insert a M)) 
-      (insert_nth M'' p b) p a' b); trivial.
+    apply (@list_sim_insert_nth A A P p (multiset2list (insert a M)) 
+      (insert_nth M'' p b) a' b); trivial.
     apply nth_insert_nth; trivial.
     replace a' with a; trivial.    
     rewrite <- eqA_eq; trivial.
@@ -1344,21 +1345,21 @@ Section OrderSim.
     apply in_multiset2list_in_multiset; trivial.
     destruct (member_multiset_list xs H4).
     replace x with x0; trivial.
-    symmetry; rewrite <- eqA_eq; trivial.
+    sym; rewrite <- eqA_eq; trivial.
     assert (y in (list2multiset xs')).
     rewrite xs'_split.
     apply member_member_union.
     apply member_list_multiset; trivial.
     destruct (member_multiset_list xs' H4).
     replace y with x0; trivial.
-    symmetry; rewrite <- eqA_eq; trivial.
+    sym; rewrite <- eqA_eq; trivial.
     assert (y' in (list2multiset ys')).
     rewrite ys'_split.
     apply member_member_union.
     apply member_list_multiset; trivial.
     destruct (member_multiset_list ys' H4).
     replace y' with x0; trivial.
-    symmetry; rewrite <- eqA_eq; trivial.
+    sym; rewrite <- eqA_eq; trivial.
     rewrite (list_sim_unique uniqCond Z_sim Z'_sim); trivial.
     intros y' y'Y'.
     destruct (member_multiset_list Y' y'Y') as [y'' y''Y' y'y''].
@@ -1600,7 +1601,7 @@ Section OrderDec.
     {Ord M N} + {~Ord M N}.
 
   Proof.
-    intros M N; generalize M; clear M.
+    intros M N; gen M; clear M.
     apply mset_ind_type with (P := fun N =>
       forall M,
         (forall m n, m in M -> n in N -> {m >A n} + {~m >A n}) ->

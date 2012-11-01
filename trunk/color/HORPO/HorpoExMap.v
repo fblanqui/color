@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-Require Import TermsSig Horpo HorpoWf RelExtras Wf_nat List Terms.
+Require Import TermsSig Horpo HorpoWf RelExtras Wf_nat List Terms LogicUtil.
 
 Module BT <: BaseTypes.
 
@@ -257,10 +257,10 @@ Section HorpoMap.
     apply HMul with map; try_solve.
     constructor.
     set (w := pair_mOrd_fromList). unfold MSet.list2multiset in w. apply w.
-    intros. compute in H0, H1. subst x. subst y. assumption.    
-    left. assumption.
+    intros. compute in H0, H1. subst x. subst y. hyp.    
+    left. hyp.
     right. compute. trivial.
-    left. assumption.
+    left. hyp.
     apply HArgsNil.
   Qed.
 

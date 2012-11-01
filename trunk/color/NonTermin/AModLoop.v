@@ -107,7 +107,7 @@ Section S.
   Qed.
 
 (***********************************************************************)
-(** assumptions for non-termination *)
+(** hyps for non-termination *)
 
   Section loop.
 

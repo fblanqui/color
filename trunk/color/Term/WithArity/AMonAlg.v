@@ -102,7 +102,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     split.
     apply IR_substitution_closed.
     apply IR_context_closed.
-    assumption.
+    hyp.
   Qed.
 
   Lemma ma_succeq_rewrite_ordering : rewrite_ordering IR_succeq.
@@ -121,7 +121,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
   Proof.
     intros R l r lr.
     apply succ'_sub. apply partition_by_rel_true with MA.term succ'_dec.
-    apply rule_partition_left with R. assumption.
+    apply rule_partition_left with R. hyp.
   Qed.
 
 (**********************************************************)
@@ -190,8 +190,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       apply rule_partition_left with R. fold part_succeq.
       ded (partition_complete part_succeq (mkRule l r) R).
       simpl in H. rewrite Rpart in H. destruct H.
-      apply partition_inright with part_succ. assumption.
-      assumption. destruct H.
+      apply partition_inright with part_succ. hyp.
+      hyp. destruct H.
     Qed.
 
     Lemma ma_relative_termination : 
@@ -212,7 +212,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       apply WF_incl with ((red Egt U red Ege)# @ (red Rgt U red Rge)).
       comp. apply clos_refl_trans_m'. apply rule_partition_complete. 
       apply rule_partition_complete.
-      apply wf_rel_mod. fold (red_mod Ege Rge). assumption.
+      apply wf_rel_mod. fold (red_mod Ege Rge). hyp.
       apply WF_incl with (red_mod (Rge ++ Ege) (Rgt ++ Egt)).
       unfold red_mod. comp. 
       apply clos_refl_trans_m'. apply red_union_inv. apply red_union_inv.
@@ -221,8 +221,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       unfold Rgt, R_gt, part_succ. apply partition_succ_compat.
       unfold Egt, E_gt, part_succ. apply partition_succ_compat.
       apply compat_app.
-      unfold Rge, R_gt. apply partition_succeq_compat. assumption.
-      unfold Ege, E_gt. apply partition_succeq_compat. assumption.
+      unfold Rge, R_gt. apply partition_succeq_compat. hyp.
+      unfold Ege, E_gt. apply partition_succeq_compat. hyp.
     Qed.
 
   End RelativeTerminationCriterion.
@@ -245,9 +245,9 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 
     Proof.
       intros. apply WF_incl with (red_mod nil R). apply red_incl_red_mod.
-      apply ma_relative_termination. assumption. assumption. trivial.
+      apply ma_relative_termination. hyp. hyp. trivial.
       simpl. apply WF_incl with (red (snd (partition part_succ R))).
-      apply red_mod_empty_incl_red. assumption.
+      apply red_mod_empty_incl_red. hyp.
     Qed.
 
   End TerminationCriterion.
@@ -266,7 +266,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     Proof.
       clear R. intros R l r lr.
       apply succeq'_sub. apply partition_by_rel_true with MA.term succeq'_dec.
-      apply rule_partition_left with R. assumption.
+      apply rule_partition_left with R. hyp.
     Qed.
 
     Lemma partition_succeq_compat_snd : forall R,
@@ -279,8 +279,8 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       apply rule_partition_left with R. fold part_succeq.
       ded (partition_complete part_succeq (mkRule l r) R).
       simpl in H. rewrite Rpart in H. destruct H.
-      apply partition_inright with part_succ. assumption.
-      assumption. destruct H.
+      apply partition_inright with part_succ. hyp.
+      hyp. destruct H.
     Qed.
 
     Lemma ma_relative_top_termination :
@@ -298,7 +298,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       apply WF_incl with (red E # @ (hd_red Rgt U hd_red Rge)).
       comp. incl_trans (hd_red Rgt U hd_red Rge).
       apply hd_rule_partition_complete.
-      apply wf_rel_mod_simpl. fold (red_mod E Rge). assumption.
+      apply wf_rel_mod_simpl. fold (red_mod E Rge). hyp.
       apply WF_incl with (hd_red_mod (Rge ++ E) Rgt).
       unfold hd_red_mod. comp.
       apply clos_refl_trans_m'.
@@ -307,7 +307,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       apply ma_compat_hd_red_mod; trivial.
       unfold Rgt, R_gt, part_succ. apply partition_succ_compat.
       apply compat_app.
-      unfold Rge, R_gt. apply partition_succeq_compat_snd. assumption.
+      unfold Rge, R_gt. apply partition_succeq_compat_snd. hyp.
       apply incl_compat with (fst E_ge ++ snd E_ge). unfold incl. intros.
       apply in_or_app. unfold E_ge. apply partition_complete. exact H2.
       rewrite H0. rewrite <- app_nil_end.
@@ -326,7 +326,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       match goal with
       | |- monotone _ _ => prove_int_monotonicity
       | |- WF _ => partition R
-      | |- _ = _ => reflexivity
+      | |- _ = _ => refl
       | _ => first
         [ solve [vm_compute; trivial]
 	| idtac

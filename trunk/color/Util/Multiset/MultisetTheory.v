@@ -12,7 +12,7 @@ multisets.
 Set Implicit Arguments.
 
 Require Import RelExtras MultisetCore Min List Multiset Permutation
-  ListPermutation NatUtil Setoid ListExtras PermutSetoid.
+  ListPermutation NatUtil Setoid ListExtras PermutSetoid LogicUtil.
 
 Module Multiset (MC : MultisetCore).
 
@@ -364,7 +364,7 @@ Section MultisetLemmas.
     replace (a/(M + {{a}})) with (a/M + a/{{a}})%nat.
     replace (a/{{a}}) with 1.
     omega.
-    symmetry; auto with multisets sets.
+    sym; auto with multisets sets.
     auto with multisets.
   Qed.
 
@@ -1125,8 +1125,8 @@ Section Multiset2List. (* William Delobel *)
     unfold multiset2list.
     elim (mult_to_list empty).
     intros x Hx; destruct x as [ | a x]; trivial.
-    generalize (meq_sym Hx); clear Hx; intro Hx.
-    generalize (union_isempty Hx); clear Hx; intro Hx.
+    gen (meq_sym Hx); clear Hx; intro Hx.
+    gen (union_isempty Hx); clear Hx; intro Hx.
     elim (singleton_notempty Hx).
   Qed.
   

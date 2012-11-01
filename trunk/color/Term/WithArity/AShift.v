@@ -45,7 +45,7 @@ Lemma in_vars_shift_min : forall x t, In x (vars (shift t)) -> p <= x.
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t.
-simpl. intros. destruct H. omega. contradiction.
+simpl. intros. destruct H. omega. contr.
 intros. unfold shift in H0. rewrite sub_fun in H0. rewrite vars_fun in H0.
 ded (in_vars_vec_elim H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x0.
@@ -57,7 +57,7 @@ Lemma in_vars_shift_max : forall x t,
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t.
-simpl. intros. destruct H. omega. contradiction.
+simpl. intros. destruct H. omega. contr.
 intros. unfold shift in H0. rewrite sub_fun in H0. rewrite vars_fun in H0.
 ded (in_vars_vec_elim H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x0.
@@ -194,7 +194,7 @@ Qed.
 Lemma disjoint_vars_com : forall t u, disjoint_vars t u -> disjoint_vars u t.
 
 Proof.
-unfold disjoint_vars. intros. apply sym_eq. apply (H x); assumption.
+unfold disjoint_vars. intros. apply sym_eq. apply (H x); hyp.
 Qed.
 
 Definition pw_disjoint_vars l :=
@@ -208,7 +208,7 @@ intros. unfold pw_disjoint_vars. simpl. intros. destruct H1; destruct H2.
 subst t0. subst u. apply disjoint_vars_refl.
 subst t0. auto.
 subst u. apply disjoint_vars_com. apply H0. exact H1.
-apply H; assumption.
+apply H; hyp.
 Qed.
 
 (***********************************************************************)
@@ -224,7 +224,7 @@ Lemma in_vars_shift_terms : forall t l p, In t (shift_terms p l) ->
   exists u, exists q, In u l /\ t = shift q u /\ p <= q.
 
 Proof.
-induction l; simpl; intros. contradiction. destruct H.
+induction l; simpl; intros. contr. destruct H.
 exists a. exists p. auto.
 ded (IHl _ H). do 3 destruct H0. destruct H1. subst t. exists x. exists x0.
 intuition.
@@ -245,7 +245,7 @@ Implicit Arguments in_vars_shift_terms_min [p t l x].
 Lemma shift_terms_correct : forall l p, pw_disjoint_vars (shift_terms p l).
 
 Proof.
-induction l. unfold pw_disjoint_vars. intros. contradiction.
+induction l. unfold pw_disjoint_vars. intros. contr.
 intro. simpl. apply pw_disjoint_vars_cons. apply IHl.
 unfold disjoint_vars. intros. ded (in_vars_shift_max H0).
 ded (in_vars_shift_terms_min H H1). absurd (x <= maxvar a + p); omega.

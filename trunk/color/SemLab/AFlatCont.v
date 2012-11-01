@@ -125,15 +125,15 @@ Section S.
       unfold l, r. rewrite H. rewrite in_map_iff. assert (h : i < arity g).
       omega.
       exists (flat_cont_symb (S n) h). intuition. simpl.
-      generalize (flat_cont_aux h). assert (arity g - S i = j). omega.
+      gen (flat_cont_aux h). assert (arity g - S i = j). omega.
       rewrite H1.
       intro. assert (e0=e). apply eq_unique. subst. refl.
       unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
       unfold flat_conts_symb. rewrite in_map_iff. exists (mk_nat_lt h).
       intuition.
       apply mk_nat_lts_complete.
-      transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_r.
-      transitivity (maxvar_rule (mkRule l r)). omega. apply le_max_l.
+      trans (maxvar_rule (mkRule l r)). omega. apply le_max_r.
+      trans (maxvar_rule (mkRule l r)). omega. apply le_max_l.
     Qed.
 
     Lemma rtc_red_one_flat_cont_intro : forall t u, red R # t u ->
@@ -149,7 +149,7 @@ Section S.
     Proof.
       split; intro.
       (* -> *)
-      intro t. generalize (H t). induction 1. apply SN_intro; intros. apply H1.
+      intro t. gen (H t). induction 1. apply SN_intro; intros. apply H1.
       apply red_flat. hyp.
       (* <- *)
       intro t. geneq H t (fill one_flat_cont t). induction 1. intros. subst.
@@ -174,7 +174,7 @@ Section S.
     Proof.
       split; intro.
       (* -> *)
-      intro t. generalize (H t). induction 1. apply SN_intro; intros. apply H1.
+      intro t. gen (H t). induction 1. apply SN_intro; intros. apply H1.
       do 2 destruct H2. exists x0. split. rewrite red_flat in H2. hyp.
       apply red_flat. hyp.
       (* <- *)

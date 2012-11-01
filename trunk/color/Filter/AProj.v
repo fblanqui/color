@@ -209,7 +209,7 @@ Section proj.
       repeat rewrite Vnth_app. case (le_gt_dec i k); intro.
       case (eq_nat_dec i k); intro. subst.
       repeat (rewrite Vnth_cons_head; [idtac|omega]). hyp.
-      generalize (Vnth_app_aux (S j) (Vnth_cast_aux e h) l0).
+      gen (Vnth_app_aux (S j) (Vnth_cast_aux e h) l0).
       assert (k-i=S(k-i-1)). omega. rewrite H0. intro. repeat rewrite Vnth_cons.
       left. refl. left. refl.
       (* None *)

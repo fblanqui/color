@@ -10,7 +10,7 @@ that it preserves various properties
 
 Require Import AccUtil List MultisetOrder ListExtras RelExtras MultisetCore
   MultisetList Permutation MultisetTheory Arith MultisetListOrder VTerm Setoid
-  RelUtil.
+  RelUtil LogicUtil.
 
 (*FIXME: define a functor instead!*)
 Variable Sig : Signature.
@@ -126,7 +126,7 @@ Proof.
   elim H2; clear H2; intros s Hs; elim Hs; clear Hs; intros s_in_ss Hs.
   right; constructor 3; exists s; split; trivial.
   elim (IHt s s_in_ss Hs); intro caseIHt;
-    [left; subst; trivial | right; assumption].
+    [left; subst; trivial | right; hyp].
 Qed.
 
 Lemma strict_subterm_less : forall s f ss, In s ss -> lt_mpo s (Fun f ss).
@@ -141,7 +141,7 @@ Lemma var_in_s_in_terms_greater_than_s : forall t s, le_mpo t s ->
 Proof.
   intros t s H; elim H; clear H; intro H.
   subst t; trivial.
-  generalize s H; clear H s. 
+  revert s H.
   induction t as [x | g ts HInd1] using term_ind_forall2.
   (* case t  = var x *)
   intros s Hts x0 Hx0.
@@ -185,7 +185,7 @@ Proof.
     (* case t < sx *)
   constructor.
   exists sx.
-  split; [assumption | apply (HInd2 sx sx_in_ss Hsx x x_in_t)].
+  split; [hyp | apply (HInd2 sx sx_in_ss Hsx x x_in_t)].
 Qed.
 
 Lemma var_cant_be_greater_than_another_term : forall x t,
@@ -236,35 +236,35 @@ Proof.
   (* case t < s via mpo1 : *)
   apply mpo1.	
     (* f < h : *) 
-  apply ltF_trans with g; assumption.
+  apply ltF_trans with g; hyp.
     (* ui < s : *)
   intros u u_in_us.
   apply (HInd1 u u_in_us (Fun g ts)).
   apply (Hsi u u_in_us).
-  assumption.
+  hyp.
     (* case t < s via mpo2 : *)
   apply mpo1.		
     (* f < h : *)
-  assumption.
+  hyp.
     (* u < s  : *)
   intros u u_in_us.
   apply (HInd1 u u_in_us (Fun f ts)).
   apply (Hsi u u_in_us).
-  assumption.
+  hyp.
     (* case t < s via mpo3 : *)
   elim Hex; intros s Hs2; elim Hs2; clear Hs2; intros s_in_ss Hs2.
-  generalize (HInd3 s s_in_ss); intro HInd3'.
+  gen (HInd3 s s_in_ss); intro HInd3'.
   apply (mpo3 (Fun h us) f ss).
   exists s.
   split; trivial.
   right.
   elim Hs2; clear Hs2; intro Hs2.
     (* case s = g ts : *)
-  subst s; assumption.
+  subst s; hyp.
     (* case g ts < s : *)
-  apply HInd3'; assumption.
+  apply HInd3'; hyp.
     (* case u < t via mpo2 : *)
-  generalize (mult2element (transp lt_mpo) IN_eqA_compat us ts Hss'ts');
+  gen (mult2element (transp lt_mpo) IN_eqA_compat us ts Hss'ts');
     intro Hss.
   inversion H2 as [g' h' ts' us' ltFgh Hti
     | g' ts' us' Hts'us' Hti
@@ -272,7 +272,7 @@ Proof.
     (* case t < s via mpo1 : *)
   apply mpo1.	
     (* g < h : *)
-  assumption.
+  hyp.
     (* u < s : *)
   intros u u_in_us.
   apply (HInd1 u u_in_us (Fun g ts)); trivial.
@@ -288,16 +288,16 @@ Proof.
   apply tlt_mpo_eqA_compat.
     (* case t < s via mpo3 : *)
   elim Hex; clear Hex; intros s Hs2; elim Hs2; clear Hs2; intros s_in_ss Hs2.
-  generalize (HInd3 s s_in_ss H1); intro HInd3'.
+  gen (HInd3 s s_in_ss H1); intro HInd3'.
   apply (mpo3 (Fun g us) f ss).
   exists s.
   split; trivial.
   right.
   elim Hs2; clear Hs2; intro Hs2.
     (* case s = g ts : *)
-  subst s; assumption.
+  subst s; hyp.
     (* case g ts < s : *)
-  apply HInd3'; assumption.
+  apply HInd3'; hyp.
     (* case u < t via mpo3 : *)
   elim Hex; clear Hex; intros ti Hti; elim Hti; clear Hti; intros ti_in_ts Hti.
   inversion H2 as [g' h' ts' us' ltFgh Hti'
@@ -326,7 +326,7 @@ Proof.
   exists s.
   split; trivial.
   elim Hs2; clear Hs2; intro Hs2.
-  subst s; right; assumption.
+  subst s; right; hyp.
   right; apply (HInd3 s s_in_ss); trivial.
 Qed.
 
@@ -334,10 +334,10 @@ Lemma transitive_le_mpo : transitive le_mpo.
 
 Proof.
   intros s t u MPOst MPOtu; elim MPOst; clear MPOst; intro MPOst.
-  subst t; assumption.
+  subst t; hyp.
   elim MPOtu; clear MPOtu; intro MPOtu.
-  subst t; right; assumption.
-  right; apply transitive_lt_mpo with t; assumption.
+  subst t; right; hyp.
+  right; apply transitive_lt_mpo with t; hyp.
 Qed.
 
 (***********************************************************************)
@@ -352,7 +352,7 @@ Proof.
   (* case mpo1 : *)
   apply (ltF_irrefl f); trivial.
   (* case mpo2 : *)
-  generalize H1; apply irrefl_to_mult_irrefl.
+  gen H1; apply irrefl_to_mult_irrefl.
   unfold eqA,Term.eqA; intros; subst; trivial.
   unfold eqA,Term.eqA; intros; subst; trivial.
   intros x y z; unfold transp; simpl; intros; apply
@@ -374,7 +374,7 @@ Lemma Acc_lt_mpo_var : forall x, Acc lt_mpo (Var x).
 
 Proof.
   intro x; constructor; intros t lt_mpo_t_var_x.
-  elim (var_cant_be_greater_than_another_term x t); assumption.
+  elim (var_cant_be_greater_than_another_term x t); hyp.
 Qed.
 
 Lemma wf_lt_mpo : well_founded lt_mpo.
@@ -384,10 +384,10 @@ Proof.
 	  (* case s variable : *)
   apply Acc_lt_mpo_var.
 	  (* case s = f ss : *)
-  generalize ss HInd1; clear HInd1 ss.
+  revert ss HInd1.
   induction (wf_ltF f) as [f acc_f HInd2].
   intros ss HInd3; cut (Acc (mult (transp lt_mpo)) ss).
-  intro Acc_ss; generalize HInd3; clear HInd3.
+  intro Acc_ss; gen HInd3; clear HInd3.
   induction Acc_ss as [ss Acc_ss HInd3]. 
   constructor; intro t;
     induction t as [ | g ts HInd4] using term_ind_forall2; intro H.
@@ -406,18 +406,18 @@ Proof.
 	  (* case t < s via mpo2 : *)
   cut (forall t : term, In t ts -> Acc lt_mpo t);
     [intro acc_t | intros t t_in_ts].
-  apply (HInd3 ts); try assumption. (*Hind3*)
+  apply (HInd3 ts); try hyp. (*Hind3*)
 		  (* all terms in ts are accesible : *)
   apply (HInd4 t t_in_ts). (*Hind4*)
   apply transitive_lt_mpo with (Fun f ts); trivial.
-  apply strict_subterm_less; assumption.
+  apply strict_subterm_less; hyp.
 	  (* case t < s via mpo3 : *)
   elim Hex; clear Hex; intros s Hs; elim Hs; clear Hs; intros s_in_ss MPO_s_t.
-  generalize (HInd0 s s_in_ss); intro Acc_s.
-  elim MPO_s_t; [intro; subst s; trivial | generalize (Fun g ts)].
-  inversion Acc_s; assumption.
+  gen (HInd0 s s_in_ss); intro Acc_s.
+  elim MPO_s_t; [intro; subst s; trivial | gen (Fun g ts)].
+  inversion Acc_s; hyp.
   apply (HAccTermsToTermlist (transp lt_mpo) tlt_mpo_eqA_compat IN_eqA_compat).
-  intros s s_in_ss; generalize (HInd3 s s_in_ss).
+  intros s s_in_ss; gen (HInd3 s s_in_ss).
   apply Acc_eq_rel.
   apply transp_transp_R_eq_R.
   Qed.

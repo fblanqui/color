@@ -60,10 +60,10 @@ Lemma in_conc : forall u n (cs : Caps n), Vin u (conc cs) ->
   exists c, Vin c cs /\ Vin u (aliens c).
 
 Proof.
-induction cs; simpl; intros. contradiction.
-assert (Vin u (aliens h) \/ Vin u (conc cs)). apply Vin_app. assumption.
+induction cs; simpl; intros. contr.
+assert (Vin u (aliens h) \/ Vin u (conc cs)). apply Vin_app. hyp.
 destruct H0. exists h. auto.
-assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. assumption.
+assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. hyp.
 destruct H1 as [c]. exists c. intuition.
 Qed.
 
@@ -413,7 +413,7 @@ set (s' := fun x => match In_dec x (vars_vec (ren_caps k t)) with
   | left _ => s2 x | right _ => s3 x end end). exists s'.
 rewrite sub_fun. apply args_eq. rewrite Vmap_cast. rewrite Vmap_app. simpl.
 apply Vcast_eq_intro. apply Vapp_eq_intro.
-transitivity (Vmap (sub s1) (ren_caps k t)).
+trans (Vmap (sub s1) (ren_caps k t)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k t))); intro. refl. intuition.
 apply Vcons_eq_intro. rewrite H1. apply sub_eq. intros. ded (vars_ren_cap H3).
@@ -421,7 +421,7 @@ unfold s'. case (In_dec x (vars_vec (ren_caps k t))); intro.
 ded (vars_ren_caps i0). absurd_arith. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec t) (fill c (sub s l)))));
   intro. refl. intuition.
-transitivity (Vmap (sub s3)
+trans (Vmap (sub s3)
   (ren_caps (k + nb_aliens_vec t + nb_aliens (fill c (sub s l))) t0)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k t))); intro.

@@ -9,7 +9,7 @@ rewriting
 
 Set Implicit Arguments.
 
-Require Export VContext VSubstitution.
+Require Export VContext VSubstitution LogicUtil.
 Require Import RelUtil.
 
 (***********************************************************************)
@@ -17,25 +17,25 @@ Require Import RelUtil.
 
 Section def.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Notation term := (term Sig).
+  Notation term := (term Sig).
 
-Record rule : Type := mkRule { lhs : term; rhs : term }.
+  Record rule : Type := mkRule { lhs : term; rhs : term }.
 
-Definition rules := list rule.
+  Definition rules := list rule.
 
-Definition red R t1 t2 := exists l, exists r, exists c, exists s,
-  In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
+  Definition red R t1 t2 := exists l, exists r, exists c, exists s,
+    In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
-Definition hd_red R t1 t2 := exists l, exists r, exists s,
-  In (mkRule l r) R /\ t1 = sub s l /\ t2 = sub s r.
+  Definition hd_red R t1 t2 := exists l, exists r, exists s,
+    In (mkRule l r) R /\ t1 = sub s l /\ t2 = sub s r.
 
-Definition int_red R t1 t2 := exists l, exists r, exists c, exists s,
-  c <> Hole
-  /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
+  Definition int_red R t1 t2 := exists l, exists r, exists c, exists s,
+    c <> Hole
+    /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
-Definition red_mod E R := red E # @ red R.
+  Definition red_mod E R := red E # @ red R.
 
 End def.
 
@@ -71,32 +71,32 @@ Ltac redtac := repeat
 
 Section S.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Notation rule := (rule Sig).
+  Notation rule := (rule Sig).
 
-Variable R : list rule.
+  Variable R : list rule.
 
-Lemma red_rule : forall l r c s,
-  In (mkRule l r) R -> red R (fill c (sub s l)) (fill c (sub s r)).
+  Lemma red_rule : forall l r c s,
+    In (mkRule l r) R -> red R (fill c (sub s l)) (fill c (sub s r)).
 
-Proof.
-intros. unfold red. exists l. exists r. exists c. exists s. auto.
-Qed.
+  Proof.
+    intros. unfold red. exists l. exists r. exists c. exists s. auto.
+  Qed.
 
-Lemma red_rule_top : forall l r s,
-  In (mkRule l r) R -> red R (sub s l) (sub s r).
+  Lemma red_rule_top : forall l r s,
+    In (mkRule l r) R -> red R (sub s l) (sub s r).
 
-Proof.
-intros. unfold red. exists l . exists r. exists (@Hole Sig). exists s. auto.
-Qed.
+  Proof.
+    intros. unfold red. exists l. exists r. exists (@Hole Sig). exists s. auto.
+  Qed.
 
-Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
+  Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 
-Proof.
-intros. redtac. unfold red.
-exists l. exists r. exists (comp c c0). exists s. split. assumption.
-subst t. subst u. do 2 rewrite fill_fill. auto.
-Qed.
+  Proof.
+    intros. redtac. unfold red.
+    exists l. exists r. exists (comp c c0). exists s. split. hyp.
+    subst t. subst u. do 2 rewrite fill_fill. auto.
+  Qed.
 
 End S.

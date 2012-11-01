@@ -53,7 +53,7 @@ Lemma SCC'_trans : forall x y z, SCC' x y -> SCC' y z -> SCC' x z.
 Proof.
 intros. unfold SCC' in *. destruct H; destruct H0.
 split; try split; try tauto. destruct H; destruct H0; subst; auto.
-left; auto. right; auto. right; auto. right; eapply SCC_trans. eauto. assumption.
+left; auto. right; auto. right; auto. right; eapply SCC_trans. eauto. hyp.
 Qed.
 
 Lemma SCC'_sym : forall x y ,SCC' x y -> SCC' y x.
@@ -78,15 +78,15 @@ apply find_first_indep. intros.
 split; intros; eapply SCC'_trans; auto; eauto.
 apply SCC'_sym; auto.
 
-eapply find_first_exist; unfold SCC' in *. 2: eassumption. tauto.
+eapply find_first_exist; unfold SCC' in *. 2: ehyp. tauto.
 
 destruct H. assert (exists n, SCC'_tag x = Some n).
 destruct (SCC'_tag x); try tauto. exists n; tauto.
-destruct H1. generalize H1; intro. rewrite H in H2.
+destruct H1. gen H1; intro. rewrite H in H2.
 unfold SCC'_tag in H1. unfold SCC'_tag in H2.
 ded (In_find_first2 H1). ded (In_find_first2 H2).
 do 2 (destruct H3; destruct H4). rewrite H3 in H4. inversion H4.
-subst x1. eapply SCC'_trans. eassumption. apply SCC'_sym. auto.
+subst x1. eapply SCC'_trans. ehyp. apply SCC'_sym. auto.
 Qed.
 
 (***********************************************************************)
@@ -195,7 +195,7 @@ do 2 destruct H5; exists x3. intuition. eapply t_trans; eauto.
 destruct (eq_dec x1 x2). subst x1. apply t_step. auto.
 eapply t_trans. apply t_step. eauto. cut (SCC' x1 x2).
 intros. do 2 destruct H7; try tauto. destruct H7; auto.
-rewrite SCC'_tag_exact. intuition. congruence. rewrite H in H7. discriminate.
+rewrite SCC'_tag_exact. intuition. congruence. rewrite H in H7. discr.
 Qed.
 
 Lemma irrefl_tc_Rquo' : irreflexive (Rquo'!).
@@ -215,12 +215,12 @@ intro. ded (rtc_split H8). destruct H9; try tauto. subst x3; congruence.
 assert (R# x3 x0). cut (SCC' x3 x0).
 intro. do 2 destruct H8. subst x3; intuition.
 destruct H8. apply tc_incl_rtc. intuition.
-rewrite SCC'_tag_exact. split. congruence. rewrite H6. discriminate.
+rewrite SCC'_tag_exact. split. congruence. rewrite H6. discr.
 eapply rt_trans; eauto. assert (R# x0 x1). apply tc_incl_rtc. intuition.
 eapply rt_trans; eauto. cut (SCC' x1 x2).
 intro. do 2 destruct H10. subst x1; intuition. destruct H10.
 apply tc_incl_rtc. intuition.
-rewrite SCC'_tag_exact. split. congruence. rewrite H3. discriminate.
+rewrite SCC'_tag_exact. split. congruence. rewrite H3. discr.
 Qed.
 
 Require Import Total.
@@ -243,7 +243,7 @@ Lemma Rquo'_incl_RT : Rquo' << RT.
 
 Proof.
 unfold inclusion; intros. unfold RT. destruct topo_sortable_Rquo'. simpl.
-ded (l (nfirst dim)). destruct H0. intuition. apply H2. generalize H; intro.
+ded (l (nfirst dim)). destruct H0. intuition. apply H2. gen H; intro.
 unfold Rquo', Rquo, SCC'_tag in H; auto; do 3 destruct H; do 2 destruct H7.
 split; try split; try tauto; rewrite nfirst_exact;
   eapply find_first_Some_bound; eauto.

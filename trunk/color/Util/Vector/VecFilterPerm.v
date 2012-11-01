@@ -33,8 +33,8 @@ induction l; simpl; intros. refl. apply Vcons_eq. split.
 repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
 destruct a as [k h]. simpl val. simpl prf. case (le_gt_dec i k); intro.
 repeat rewrite Vnth_cons. case (lt_ge_dec 0 (k-i)); intro. refl.
-assert (k=i). omega. subst k. ded (H h). firstorder.
-refl. apply IHl. firstorder.
+assert (k=i). omega. subst k. ded (H h). fo.
+refl. apply IHl. fo.
 Qed.
 
 Lemma Vfilter_app : forall A n (l1 l2 : nat_lts n) (v : vector A n),
@@ -86,7 +86,7 @@ Lemma Vin_filter_elim_in : forall A n (l : nat_lts n) (v : vector A n) x,
   Vin x (Vfilter l v) -> Vin x v.
 
 Proof.
-induction l; simpl; intros. contradiction. destruct H. subst. apply Vnth_in.
+induction l; simpl; intros. contr. destruct H. subst. apply Vnth_in.
 apply IHl. hyp.
 Qed.
 
@@ -95,7 +95,7 @@ Lemma Vin_filter_elim_nth : forall A n (l : nat_lts n) (v : vector A n) x,
     In (mk_nat_lt hi) l /\ Vnth v hi = x.
 
 Proof.
-induction l; simpl; intros. contradiction. destruct a as [i hi].
+induction l; simpl; intros. contr. destruct a as [i hi].
 simpl prf in H. destruct H.
 exists i. exists hi. auto.
 destruct (IHl _ _ H) as [j h]. destruct h as [hj h].

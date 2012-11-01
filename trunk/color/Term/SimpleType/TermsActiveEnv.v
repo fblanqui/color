@@ -10,7 +10,7 @@ environments with declarations that are really used in a term.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsEnv Arith.
+Require Import RelExtras ListExtras TermsEnv Arith LogicUtil.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 
@@ -541,7 +541,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     envSubset (activeEnv N) (activeEnv M).
 
   Proof.
-    intros M N; generalize M; clear M.
+    intros M N; gen M; clear M.
     apply well_founded_ind with (R := subterm)
       (P := fun N =>
 	forall M,
@@ -574,7 +574,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     envSubset (activeEnv N) (activeEnv M).
 
   Proof.
-    intros M N; generalize M; clear M.
+    intros M N; gen M; clear M.
     apply well_founded_ind with (R := subterm)
       (P := fun N =>
 	forall M Ns,

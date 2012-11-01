@@ -157,7 +157,7 @@ subst; auto with *.
 split; intros; simpl in *.
 unfold compose in H; destruct H.
 destruct H as [z]; exists (S n); split; auto with *.
-simpl; unfold compose; exists z; assumption.
+simpl; unfold compose; exists z; hyp.
 
 rewrite IHn in H; destruct H as [p]; exists p; intuition; auto with *.
 
@@ -276,7 +276,7 @@ Lemma bpath_iter_le : forall n x y, bpath R n x y -> iter_le n x y.
 Proof.
 intro; induction n; intros; simpl in *.
 inversion H; subst; destruct l; simpl in *; auto with *; inversion H0.
-generalize (bpath_Sn_n_or_Rn H); intros; destruct H0.
+gen (bpath_Sn_n_or_Rn H); intros; destruct H0.
 simpl in *; right; apply IHn; auto with *.
 destruct H0 as [z]; destruct H0; ded (IHn _ _ H1).
 simpl; rewrite iter_le_spec in *; destruct H2 as [p]; destruct H2.
@@ -292,7 +292,7 @@ Proof.
 intros.
 rewrite iter_le_spec in H; destruct H as [j]; destruct H.
 ded (iter_path _ _ _ H0); destruct H1 as [l]; destruct H1.
-eapply bp_intro; try eassumption; auto; subst; assumption.
+eapply bp_intro; try ehyp; auto; subst; hyp.
 Qed.
 
 End S.

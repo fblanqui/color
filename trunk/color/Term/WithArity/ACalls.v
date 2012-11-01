@@ -54,7 +54,7 @@ Lemma defined_equiv : forall f R,
 Proof.
 intros. split. Focus 2.
 intro. destruct H as [v [r H]]. apply (lhs_fun_defined f v r). auto.
-intros. induction R. simpl in H. discriminate H.
+intros. induction R. simpl in H. discr.
 simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
 destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
 destruct (orb_prop _ _ H). Focus 2. destruct (IHR H0) as [v' H1].
@@ -76,7 +76,7 @@ Lemma defined_list_ok :
  forall R f, defined f R = true <-> In f (list_defined R).
 
 Proof.
-induction R. simpl. intro; split; auto. intro H; discriminate H.
+induction R. simpl. intro; split; auto. intro H; discr.
 intro; destruct a as [l r]; simpl. destruct l. auto.
 rewrite In_cons, orb_eq, (IHR f), beq_symb_ok; tauto.
 Qed.
@@ -114,7 +114,7 @@ Lemma calls_fun : forall f ts, calls (Fun f ts) =
   end.
 
 Proof.
-intros. reflexivity.
+intros. refl.
 Qed.
 
 Definition undefined t :=
@@ -133,17 +133,17 @@ Lemma in_vcalls : forall x t n (ts : terms n),
   In x (calls t) -> Vin t ts -> In x (vcalls ts).
 
 Proof.
-induction ts; simpl; intros. contradiction. destruct H0.
-subst t. apply in_appl. assumption. apply in_appr. apply IHts; assumption.
+induction ts; simpl; intros. contr. destruct H0.
+subst t. apply in_appl. hyp. apply in_appr. apply IHts; hyp.
 Qed.
 
 Lemma in_vcalls_nil : forall x n (v : terms n),
   Vin x v -> vcalls v = nil -> calls x = nil.
 
 Proof.
-induction v; simpl; intros. contradiction.
+induction v; simpl; intros. contr.
 ded (app_eq_nil _ _ H0). destruct H1.
-destruct H. subst x. assumption. apply IHv; assumption.
+destruct H. subst x. hyp. apply IHv; hyp.
 Qed.
 
 Require Import Sumbool.
@@ -155,11 +155,11 @@ Proof.
 intros x t. pattern t. set (Q := fun n (ts : terms n) =>
   In x (vcalls ts) -> exists g, exists vs, x = Fun g vs /\ defined g R = true).
 apply term_ind with (Q := Q); clear t.
-simpl. intros. contradiction. intros f ts IH. rewrite calls_fun.
+simpl. intros. contr. intros f ts IH. rewrite calls_fun.
 pattern (defined f R). apply bool_eq_ind; simpl; intros.
-destruct H0. exists f. exists ts. auto. apply IH. assumption.
-apply IH. assumption.
-unfold Q. simpl. intro. contradiction.
+destruct H0. exists f. exists ts. auto. apply IH. hyp.
+apply IH. hyp.
+unfold Q. simpl. intro. contr.
 unfold Q. simpl. intros. ded (in_app_or H1). intuition.
 Qed.
 
@@ -170,7 +170,7 @@ Lemma in_calls_defined : forall t g vs,
 
 Proof.
 intros. ded (in_calls H). do 3 destruct H0. injection H0. intros. subst x.
-assumption.
+hyp.
 Qed.
 
 Lemma in_calls_subterm : forall u t, In u (calls t) -> subterm_eq u t.
@@ -180,18 +180,18 @@ intros u t. pattern t. set (Q := fun n (ts : terms n) =>
   In u (vcalls ts) -> exists t, Vin t ts /\ subterm_eq u t).
 apply term_ind with (Q := Q); clear t.
 (* var *)
-simpl. intros. contradiction.
+simpl. intros. contr.
 (* fun *)
 intros f ts IH. rewrite calls_fun. case (defined f R); simpl; intro.
 (* f defined *)
 destruct H. rewrite H. refl.
 ded (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
-eapply subterm_trans_eq1. apply H1. apply subterm_fun. assumption.
+eapply subterm_trans_eq1. apply H1. apply subterm_fun. hyp.
 (* f undefined *)
 ded (IH H). destruct H0 as [t]. destruct H0. apply subterm_strict.
-eapply subterm_trans_eq1. apply H1. apply subterm_fun. assumption.
+eapply subterm_trans_eq1. apply H1. apply subterm_fun. hyp.
 (* nil *)
-unfold Q. simpl. intros. contradiction.
+unfold Q. simpl. intros. contr.
 (* cons *)
 unfold Q. simpl. intros. ded (in_app_or H1). destruct H2.
 ded (H H2). exists t. auto.
@@ -207,7 +207,7 @@ intros g us H t. pattern t. set (Q := fun n (ts : terms n) =>
 apply term_ind with (Q := Q); clear t.
 (* var *)
 unfold subterm_eq. simpl. intros. destruct H0 as [C].
-destruct C; simpl in H0; discriminate.
+destruct C; simpl in H0; discr.
 (* fun *)
 intros f ts IH H0. unfold subterm_eq in H0. destruct H0 as [C].
 rewrite calls_fun.
@@ -220,7 +220,7 @@ Funeqtac. subst ts. apply in_cons. apply IH. exists (fill C (Fun g us)). split.
 apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
 (* undefined f *)
 (* C = Hole *)
-injection H0. intros. subst f. rewrite H in H1. discriminate.
+injection H0. intros. subst f. rewrite H in H1. discr.
 (* C <> Hole *)
 Funeqtac. subst ts. apply IH. exists (fill C (Fun g us)). split.
 apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
@@ -228,7 +228,7 @@ apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
 unfold Q. simpl. intro. destruct H0 as [t]. intuition.
 (* cons *)
 intros t n ts H0 IH. unfold Q. simpl. intro H1. destruct H1 as [u].
-do 2 destruct H1. subst u. apply in_appl. apply H0. assumption.
+do 2 destruct H1. subst u. apply in_appl. apply H0. hyp.
 apply in_appr. apply IH. exists u. auto.
 Qed.
 

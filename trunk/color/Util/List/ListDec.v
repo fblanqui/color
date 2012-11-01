@@ -40,7 +40,7 @@ Qed.
 Lemma beq_list_ok : forall l m, beq_list l m = true <-> l = m.
 
 Proof.
-induction l; destruct m; simpl; split; intro; try (refl || discriminate).
+induction l; destruct m; simpl; split; intro; try (refl || discr).
 destruct (andb_elim H). rewrite beq_ok in H0. subst a0.
 rewrite IHl in H1. subst m. refl.
 inversion H. subst a0. subst m. apply andb_intro.
@@ -53,7 +53,7 @@ Lemma beq_list_ok_in : forall l,
     forall m, beq_list l m = true <-> l = m.
 
 Proof.
-induction l; destruct m; split; intro; try (refl || discriminate).
+induction l; destruct m; split; intro; try (refl || discr).
 inversion H. destruct (andb_elim H1).
 assert (h : In a (a::l)). simpl. auto.
 ded (hyp _ h a0). rewrite H3 in H0. subst a0.

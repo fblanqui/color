@@ -89,10 +89,10 @@ Section Matching.
   Proof.
     intros x y; unfold VMF.eqb; unfold VMF.eq_dec.
     case_eq (eq_nat_dec x y); intros Hxy Hxydep.
-      by symmetry; apply (proj2 (beq_nat_ok x y)).
+      by sym; apply (proj2 (beq_nat_ok x y)).
       case_eq (x =X y); intros Hxyb.
         by elim (Hxy (proj1 (beq_nat_ok x y) Hxyb)).
-        reflexivity.
+        refl.
   Qed.
 
   (********************************************************************)
@@ -133,7 +133,7 @@ Section Matching.
     Proof.
       apply term_ind_comb.
       (* var *)
-      assumption.
+      hyp.
       (* fun *)
       intros g us Hus t θ θ' Hθθ'; destruct t as [y|f ts]; try discr.
       simpl in Hθθ'; case_eq (f =S g); intros Hfg; rewrite Hfg in Hθθ';
@@ -220,9 +220,9 @@ Section Matching.
         by intros u H; case (t =T u); intros I; inversion_clear I.
 
         intros H I; inversion_clear I; intros y Hyθ.
-        symmetry; apply VMF.add_neq_o; intros Hxy; subst y.
+        sym; apply VMF.add_neq_o; intros Hxy; subst y.
         rewrite VMF.mem_find_b in Hyθ; rewrite H in Hyθ.
-        discriminate.
+        discr.
     Qed.
 
     Notation "\matches_mon" :=
@@ -240,7 +240,7 @@ Section Matching.
         by intros x t θ θ'; apply exmatch_mon.
 
         intros _ _ _ _ _ _ θ θ' Ω _ HΩθ' _ HθΩ x Hx.
-        transitivity (VM.find x Ω); [by apply HθΩ | idtac].
+        trans (VM.find x Ω); [by apply HθΩ | idtac].
         apply HΩθ'; unfold is_true; rewrite <- Hx;
           repeat rewrite VMF.mem_find_b.
         by rewrite (HθΩ x Hx).
@@ -262,7 +262,7 @@ Section Matching.
   Proof.
     intros u t θ Hsub Hdom u' t' θ' Hθθ'; subst t.
     apply sub_eq; intros x Hx; unfold subst_of_matching.
-    rewrite (matches_monP Hθθ'); try reflexivity.
+    rewrite (matches_monP Hθθ'); try refl.
     by apply Hdom; unfold is_true; apply (proj1 (AVariables.in_vars_mem _ _)).
   Qed.
 
@@ -275,7 +275,7 @@ Section Matching.
   Proof.
     induction us as [|u nu us IH]; destruct ts as [|t nt ts]; try discr.
     (* nil *)
-    intros; reflexivity.
+    intros; refl.
     (* cons *)
     intros θ Heq Hmem u' t' θ' Hθθ'; simpl in Heq |- *.
     elim (proj1 (andb_true_iff _ _) Heq); intros Htu Hts_uts.
@@ -283,9 +283,9 @@ Section Matching.
       apply (proj2 (beq_term_ok _ _)); apply matches_submon with θ u' t'.
         by apply (proj1 (beq_term_ok _ _)).
         by intros x Hx; apply Hmem; simpl; rwn VSF.union_b Hx orb_true_l.
-        assumption.
+        hyp.
 
-      apply IH with θ u' t'; try assumption.
+      apply IH with θ u' t'; try hyp.
         by intros x Hx; apply Hmem; simpl; rwn VSF.union_b Hx orb_true_r.
   Qed.
 
@@ -306,7 +306,7 @@ Section Matching.
         intros v Hv; case_eq (u =T v); intros Htv I;
           inversion_clear I in Hv.
         unfold subst_of_matching; rewrite Hv; simpl.
-        by symmetry; apply (proj1 (beq_term_ok _ _)).
+        by sym; apply (proj1 (beq_term_ok _ _)).
         intros _ I; inversion I as [Hadd]; clear I.
         by unfold subst_of_matching; rewrite VMF.add_eq_o.
       (* fun *)
@@ -314,11 +314,11 @@ Section Matching.
       apply (proj1 (beq_term_ok _ _)); rwn sub_fun beq_fun.
       by rwn Hveq andb_true_r; apply (proj2 beq_symb_ok).
       (* nil *)
-      intros θ; simpl; reflexivity.
+      intros θ; simpl; refl.
       (* cons *)
       intros t nt ts u nu us θ θ' Ω HΩθ IHΩθ HθΩ IHθΩ; simpl.
       rewrite <- IHΩθ; rwn (beq_refl (@beq_term_ok Sig)) andb_true_l.
-      eapply nmatches_submon with Ω t u; try assumption; intros x Hx.
+      eapply nmatches_submon with Ω t u; try hyp; intros x Hx.
       by unfold is_true; rwn (nmatches_var_minP HθΩ) Hx orb_true_r.
     Qed.
 
@@ -327,7 +327,7 @@ Section Matching.
       intros u t θ; unfold matches.
       case_eq (matches_r u t (VM.empty _)); try discr; intros Ω HΩ.
       inversion_clear 1; apply (proj1 matches_r_correct) with (VM.empty _).
-      assumption.
+      hyp.
     Qed.
   End MatchCorrectness.
 
@@ -377,7 +377,7 @@ Section Matching.
           apply (matches_var_minadded H); rewrite VMF.mem_find_b.
           by rewrite Hm. by rewrite Hv.
         (* none/none *)
-        reflexivity.
+        refl.
     Qed.
 
     Lemma nmatches_extend_compatP :
@@ -393,12 +393,12 @@ Section Matching.
         (* some/some *)
         simpl; case_eq (Vfold2 m₁ matches_r us ts); try discr.
         intros m H₁ H₂ θ H x; elim (proj1 (andb_true_iff _ _) H).
-        intros Hu Hus; transitivity ((m ⊕ θ) x).
+        intros Hu Hus; trans ((m ⊕ θ) x).
           by apply (IH _ _ _ _ H₁).
 
           apply (matches_extend_compatP H₂).
           rewrite <- (proj1 (beq_term_ok _ _) Hu).
-          by apply sub_eq; intros y _; symmetry; apply (IH _ _ _ _ H₁).
+          by apply sub_eq; intros y _; sym; apply (IH _ _ _ _ H₁).
     Qed.
 
     Lemma matches_r_complete : \matches_complete /\ \nmatches_complete.
@@ -420,7 +420,7 @@ Section Matching.
 
         (* nil *)
         destruct ts as [|t nt ts]; intros m H; simpl.
-          by discriminate.
+          by discr.
           by elim H; intros θ Hθ; simpl in Hθ.
 
         (* cons *)
@@ -432,10 +432,10 @@ Section Matching.
           simpl; case_eq (Vfold2 m matches_r us ts).
             intros m' Hm'; apply IH; exists θ.
             rewrite <- (proj1 (beq_term_ok _ _) Hu).
-            apply sub_eq; intros x _; symmetry.
+            apply sub_eq; intros x _; sym.
             by apply nmatches_extend_compatP with _ us _ ts.
 
-            intros Hfold _; eapply IHs; [idtac | eassumption].
+            intros Hfold _; eapply IHs; [idtac | ehyp].
             by exists θ.
     Qed.
 
@@ -444,8 +444,8 @@ Section Matching.
     Proof.
       intros u t θ H; unfold matches.
       case_eq (matches_r u t (VM.empty _)).
-        by intros; discriminate.
-        intros Habd _; eapply (proj1 matches_r_complete); [idtac|eassumption].
+        by intros; discr.
+        intros Habd _; eapply (proj1 matches_r_complete); [idtac|ehyp].
         exists θ; rewrite <- H; apply sub_eq; intros x _.
         by unfold compose; rewrite VMF.empty_o.
     Qed.
@@ -457,9 +457,9 @@ Section Matching.
           /\ forall x, VS.mem x (vars u) -> θ x = Ω x).
     Proof.
       intros u t θ H; case_eq (matches u t).
-        intros Ω HΩ; exists Ω; split; [reflexivity | idtac].
+        intros Ω HΩ; exists Ω; split; [refl | idtac].
         intros x Hxu; apply subeq_inversion with u.
-          by rewrite H; symmetry; apply matches_correct.
+          by rewrite H; sym; apply matches_correct.
           by apply (proj2 (AVariables.in_vars_mem _ _)).
         intros Habs; elim (matches_complete H Habs).
     Qed.
@@ -489,7 +489,7 @@ Section Matching.
     refl.
     (* Vcons *)
     simpl. intros. rewrite notin_app in H3. destruct H3.
-    transitivity (VMU.XMap.mem (elt:=term) x Ω). apply H0. hyp. apply H2. hyp.
+    trans (VMU.XMap.mem (elt:=term) x Ω). apply H0. hyp. apply H2. hyp.
   Qed.
 
   Lemma matches_dom : forall u t s x,

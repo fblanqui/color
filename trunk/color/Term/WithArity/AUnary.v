@@ -230,7 +230,7 @@ Proof.
 split. Focus 2. intro. subst. refl.
 revert d. revert c. induction c.
 (* c=Hole *)
-simpl. intro. symmetry. apply (wf_term H).
+simpl. intro. sym. apply (wf_term H).
 (* c=Cont *)
 destruct d; simpl.
 (* d=Hole *)

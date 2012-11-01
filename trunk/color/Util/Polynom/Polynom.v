@@ -193,7 +193,7 @@ Lemma meval_xi : forall n i (H : lt i n) (v : vec n),
   meval (mxi H) v = Vnth v H.
 
 Proof.
-induction n. intros. absurd (lt i 0). omega. assumption.
+induction n. intros. absurd (lt i 0). omega. hyp.
 intro. destruct i; intros; VSntac v.
 simpl. rewrite meval_one. ring. simpl. rewrite IHn. apply zeql.
 Qed.

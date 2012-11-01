@@ -80,7 +80,7 @@ Fixpoint beq_nat (x y : nat) :=
 Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
 
 Proof.
-induction x; destruct y; simpl; split; intro; try (refl || discriminate).
+induction x; destruct y; simpl; split; intro; try (refl || discr).
 apply (f_equal S). exact (proj1 (IHx _) H).
 apply (proj2 (IHx y)). inversion H. refl.
 Defined.
@@ -92,7 +92,7 @@ Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
 Proof.
-intro. generalize (eq_nat_dec n n). destruct s.
+intro. gen (eq_nat_dec n n). destruct s.
 rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
@@ -226,8 +226,8 @@ case (le_dec b c); intro H.
  rewrite (max_r H).
  case (le_dec a b); intro H'.
   rewrite (max_r (le_trans H' H)).
-  rewrite (max_r H'). rewrite (max_r H). reflexivity.
-  case (le_dec a c); intro H''; rewrite (max_l H'); reflexivity.
+  rewrite (max_r H'). rewrite (max_r H). refl.
+  case (le_dec a c); intro H''; rewrite (max_l H'); refl.
   rewrite (max_l H).
   case (le_dec a b); intro H'.
    rewrite (max_r H').
@@ -565,7 +565,7 @@ Qed.
 Lemma S_add_S : forall n1 n2 n, n1 + S n2 = n -> S n1 + S n2 = S n.
 
 Proof.
-intros. subst n. reflexivity.
+intros. subst n. refl.
 Qed.
 
 Implicit Arguments S_add_S [n1 n2 n].

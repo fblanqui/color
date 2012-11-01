@@ -166,7 +166,7 @@ Module OrdLemmas (P : Ord).
   Proof.
     split. eauto with sets.
     cut (y0 =A= x0). intro. eauto with sets.
-    apply (Seq_sym _ _ sid_theoryA). assumption.
+    apply (Seq_sym _ _ sid_theoryA). hyp.
   Qed.
 
   Add Morphism AccA
@@ -176,9 +176,9 @@ Module OrdLemmas (P : Ord).
   Proof.
     intros a b eq_ab. split.
     intro acc_a. inversion acc_a. constructor. intros.
-    apply H. rewrite eq_ab. assumption.
+    apply H. rewrite eq_ab. hyp.
     intros acc_b. inversion acc_b. constructor. intros.
-    apply H. rewrite <- eq_ab. assumption.
+    apply H. rewrite <- eq_ab. hyp.
   Qed.
 
 End OrdLemmas.
@@ -340,15 +340,15 @@ End option.
 Ltac pair_destruct t0 t1 :=
   first [destruct t0 | intros until t0; destruct t0];
   first [destruct t1 | intros until t1; destruct t1];
-  try contradiction; simpl.
+  try contr; simpl.
 
 Ltac rewrite_lr term := apply (proj1 term).
 Ltac rewrite_rl term := apply (proj2 term).
 
 Ltac try_solve := 
    simpl in *; try (intros; solve 
-     [ contradiction 
-     | discriminate 
+     [ contr 
+     | discr 
      | auto with terms
      | tauto
      | congruence

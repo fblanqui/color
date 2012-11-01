@@ -120,7 +120,7 @@ Section S.
   Proof.
     intros. apply term_ind
     with (Q := fun n (ts : terms n) => forall t, Vin t ts -> P t).
-    exact H1. exact H2. contradiction. simpl. intuition. subst t1. exact H.
+    exact H1. exact H2. contr. simpl. intuition. subst t1. exact H.
   Qed.
 
 (***********************************************************************)
@@ -181,8 +181,8 @@ Section S.
     assert (q' : arity f = arity g). rewrite h; auto.
     assert (H1 : (Vcast us q') = (Vcast us (f_equal (@arity Sig) h))).
     apply Vcast_pi.
-    generalize (fun_eq_intro us h H1). intro. rewrite H0 in H.
-    generalize (fun_eq H). intro T; rewrite <- T. apply Vcast_pi.
+    gen (fun_eq_intro us h H1). intro. rewrite H0 in H.
+    gen (fun_eq H). intro T; rewrite <- T. apply Vcast_pi.
   Qed.
 
 (***********************************************************************)
@@ -298,8 +298,8 @@ Defined.*)
     maxvar (Fun f ts) <= m -> Vforall (maxvar_le m) ts.
 
   Proof.
-    intros until ts. rewrite maxvar_fun. intro. generalize (Vmax_forall H).
-    clear H. intro H. generalize (Vforall_map_elim H). intuition.
+    intros until ts. rewrite maxvar_fun. intro. gen (Vmax_forall H).
+    clear H. intro H. gen (Vforall_map_elim H). intuition.
   Qed.
 
   Lemma maxvar_le_arg : forall f ts m t,
@@ -371,8 +371,8 @@ a variable occurs in the list as much as it has occurrences in t *)
     In x (vars_vec ts) -> exists t, Vin t ts /\ In x (vars t).
 
   Proof.
-    induction ts; simpl; intros. contradiction. generalize (in_app_or H). intro.
-    destruct H0. exists h. intuition. generalize (IHts H0). intro.
+    induction ts; simpl; intros. contr. gen (in_app_or H). intro.
+    destruct H0. exists h. intuition. gen (IHts H0). intro.
     destruct H1 as [t].
     exists t. intuition.
   Qed.
@@ -381,7 +381,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     In x (vars t) -> Vin t ts -> In x (vars_vec ts).
 
   Proof.
-    induction ts; simpl; intros. contradiction. destruct H0. subst t.
+    induction ts; simpl; intros. contr. destruct H0. subst t.
     apply in_appl. hyp. apply in_appr. apply IHts; hyp.
   Qed.
 
@@ -391,7 +391,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     intros x t. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
     In x (vars_vec ts) -> x <= maxvars ts); clear t; intros.
     simpl in *. intuition. rewrite maxvar_fun. rewrite vars_fun in H0. auto.
-    contradiction. simpl in *.
+    contr. simpl in *.
     destruct (in_app_or H1); unfold maxvars; simpl. apply le_max_intro_l. auto.
     apply le_max_intro_r. auto.
   Qed.
@@ -400,7 +400,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     x <= maxvar t -> Vin t v -> x <= maxvars v.
 
   Proof.
-    induction v; unfold maxvars; simpl; intros. contradiction. destruct H0.
+    induction v; unfold maxvars; simpl; intros. contr. destruct H0.
     subst t. apply le_max_intro_l. hyp. apply le_max_intro_r. apply IHv; hyp.
   Qed.
 
@@ -505,7 +505,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> nb_symb_occs_terms ts >= nb_symb_occs t.
 
   Proof.
-    induction ts; simpl; intros. contradiction. destruct H. subst h. omega.
+    induction ts; simpl; intros. contr. destruct H. subst h. omega.
     ded (IHts _ H). omega.
   Qed.
 
@@ -559,8 +559,8 @@ a variable occurs in the list as much as it has occurrences in t *)
     In x (symbs_vec ts) -> exists t, Vin t ts /\ In x (symbs t).
 
   Proof.
-    induction ts; simpl; intros. contradiction. generalize (in_app_or H). intro.
-    destruct H0. exists h. intuition. generalize (IHts H0). intro.
+    induction ts; simpl; intros. contr. gen (in_app_or H). intro.
+    destruct H0. exists h. intuition. gen (IHts H0). intro.
     destruct H1 as [t]. exists t. intuition.
   Qed.
 
@@ -568,7 +568,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     In x (symbs t) -> Vin t ts -> In x (symbs_vec ts).
 
   Proof.
-    induction ts; simpl; intros. contradiction. destruct H0. subst t.
+    induction ts; simpl; intros. contr. destruct H0. subst t.
     apply in_appl. hyp. apply in_appr. apply IHts; hyp.
   Qed.
 
@@ -625,7 +625,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> size_terms ts >= size t.
 
   Proof.
-    induction ts; simpl; intros. contradiction. destruct H. subst h. omega.
+    induction ts; simpl; intros. contr. destruct H. subst h. omega.
     ded (IHts _ H). omega.
   Qed.
 

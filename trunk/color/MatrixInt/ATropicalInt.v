@@ -171,7 +171,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       VSntac v. simpl. destruct (Vhead v). 
       unfold vec_invariant, Conf.vec_at0 in v0. simpl in *.
        (* TODO... change - specific to tropical... *)
-      intuition. clear H1. rewrite H2 in v0. contradiction.
+      intuition. clear H1. rewrite H2 in v0. contr.
       apply tropical_plus_notInf_left. 
       rewrite <- Vmap_tail.
       apply (IHn (mkMatrixInt const (Vtail args))). hyp.

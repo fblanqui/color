@@ -88,7 +88,7 @@ Module Make (Export L : L_Struct).
   Instance App_aeq : Proper (aeq ==> aeq ==> aeq) App.
 
   Proof.
-    intros u1 v1 u1v1 u2 v2 u2v2. transitivity (App u1 v2).
+    intros u1 v1 u1v1 u2 v2 u2v2. trans (App u1 v2).
     apply aeq_app_r. hyp. apply aeq_app_l. hyp.
   Qed.
 
@@ -220,7 +220,7 @@ Module Make (Export L : L_Struct).
   Proof.
     intro x. cut (forall u v, u ~~ v -> (u = Var x \/ v = Var x) -> u = v). fo.
     induction 1; intro h; try (destruct h; discr). refl. fo.
-    transitivity v. apply IHaeq1. intuition. subst. auto.
+    trans v. apply IHaeq1. intuition. subst. auto.
     apply IHaeq2. intuition. subst. auto.
   Qed.
 
@@ -233,7 +233,7 @@ Module Make (Export L : L_Struct).
   Proof.
     intro f. cut (forall u v, u ~~ v -> (u = Fun f \/ v = Fun f) -> u = v). fo.
     induction 1; intro h; try (destruct h; discr). refl. fo.
-    transitivity v. apply IHaeq1. intuition. subst. auto.
+    trans v. apply IHaeq1. intuition. subst. auto.
     apply IHaeq2. intuition. subst. auto.
   Qed.
 
@@ -303,7 +303,7 @@ Module Make (Export L : L_Struct).
     intro u; revert u; induction 1; simpl.
     refl.
     auto.
-    transitivity (size v); hyp.
+    trans (size v); hyp.
     rewrite IHaeq. refl.
     rewrite IHaeq. refl.
     rewrite IHaeq. refl.
@@ -325,14 +325,14 @@ Module Make (Export L : L_Struct).
     (* app *)
     destruct IHu1 as [v1 [h1 i1]]. destruct IHu2 as [v2 [h2 i2]].
     exists (App v1 v2). split.
-    transitivity (App v1 u2). apply aeq_app_l. hyp. apply aeq_app_r. hyp.
+    trans (App v1 u2). apply aeq_app_l. hyp. apply aeq_app_r. hyp.
     simpl. rewrite union_inter_1, i1, i2, union_empty_l. refl.
     (* lam *)
     destruct IHu as [v [h i]].
     set (uxs := union (fv v) (union (bv v) xs)).
     set (x' := var_notin uxs). exists (Lam x' (rename x x' v)).
     gen (var_notin_ok uxs). fold x'. unfold uxs. set_iff. intro n. split.
-    transitivity (Lam x v). apply aeq_lam. hyp. apply aeq_alpha. tauto.
+    trans (Lam x v). apply aeq_lam. hyp. apply aeq_alpha. tauto.
     simpl. rewrite bv_rename. 2: tauto. revert i. rewrite inter_sym at 1.
     repeat rewrite inter_empty. unfold not. intros i z. set_iff. intros [j|j].
     subst z. tauto. intro hz. eapply i. apply hz. hyp.
@@ -611,7 +611,7 @@ variables. *)
     sym. apply IHuu'. intros w hw w' ww' s'. apply IH.
     unfold ltof. rewrite <- uu'. hyp. hyp.
     (* trans *)
-    transitivity (subs s v).
+    trans (subs s v).
     apply IHuu'1. intros a ha a' aa' s'. apply IH. hyp. hyp.
     apply IHuu'2. intros a ha a' aa' s'. apply IH.
     unfold ltof. rewrite uu'1. hyp. hyp.
@@ -662,9 +662,9 @@ variables. *)
     intros hs1 hs2 hs3.
     set (xx's := update x (Var x') s). set (yy's := update y (Var y') s).
 
-    transitivity (Lam x' (subs xx's v)). apply aeq_lam. apply IH.
+    trans (Lam x' (subs xx's v)). apply aeq_lam. apply IH.
     unfold ltof. simpl. omega. hyp.
-    unfold u'. transitivity (Lam y' (subs yy's (rename x y v))).
+    unfold u'. trans (Lam y' (subs yy's (rename x y v))).
 
     Focus 2. apply aeq_lam. apply IH.
     unfold ltof. rewrite h1, size_rename. simpl. omega.
@@ -754,7 +754,7 @@ variables. *)
     set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
 
     (* ~In y' (fv (subs1 xx's v)) *)
-    transitivity (Lam y' (rename x' y' (subs1 xx's v))). apply aeq_alpha. hyp.
+    trans (Lam y' (rename x' y' (subs1 xx's v))). apply aeq_alpha. hyp.
     apply aeq_lam. unfold rename. rewrite subs1_no_alpha.
 
     Focus 2. rewrite fvcodom_single, beq_term_var.

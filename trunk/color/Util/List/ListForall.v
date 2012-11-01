@@ -50,10 +50,10 @@ Lemma lforall_in : forall a l, lforall l -> In a l -> P a.
 
 Proof.
 intros a l. elim l.
- intros H1 H2. absurd (In a nil); [apply in_nil | assumption].
+ intros H1 H2. absurd (In a nil); [apply in_nil | hyp].
  intros b l' Hrec H1 H2. elim (in_inv H2).
   intro H3. subst a. unfold lforall in H1. intuition.
-  clear H2. intro H2. generalize (lforall_cons H1).
+  clear H2. intro H2. gen (lforall_cons H1).
   intros (H3, H4). apply (Hrec H4 H2).
 Qed.
 
@@ -68,7 +68,7 @@ Lemma lforall_incl : forall l1 l2, incl l1 l2 -> lforall l2 -> lforall l1.
 
 Proof.
 intros. apply lforall_intro. intros. eapply lforall_in. apply H0.
-apply H. assumption.
+apply H. hyp.
 Qed.
 
 Lemma forallb_imp_lforall : forall f l,
@@ -78,7 +78,7 @@ Proof with auto.
 induction l; simpl; intros...
 split.
 apply H. destruct (f a)...
-destruct (f a)... discriminate.
+destruct (f a)... discr.
 Qed.
 
 Require Import BoolUtil.
@@ -117,6 +117,6 @@ Proof.
 intros A P1 P2 H l. elim l.
  intuition.
  intros a' l' Hrec. simpl. intros (H1, H2). split.
-  apply H. assumption.
-  apply Hrec. assumption.
+  apply H. hyp.
+  apply Hrec. hyp.
 Qed.

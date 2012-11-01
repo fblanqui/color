@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Export AInterpretation.
 Require Import ATerm RelUtil ASubstitution NaryFunction AContext VecUtil SN
-  Max ARelation.
+  Max ARelation LogicUtil.
 
 Section S.
 
@@ -57,7 +57,7 @@ Section S.
 
     Proof.
       unfold transp, context_closed, IR. intros.
-      generalize (H0 xint). clear H0. intro. induction c.
+      gen (H0 xint). clear H0. intro. induction c.
       simpl. exact H0.
       simpl fill. simpl.
       do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.

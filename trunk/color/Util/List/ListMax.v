@@ -26,7 +26,7 @@ Fixpoint lmax (l : nats) : nat :=
 Lemma in_lmax : forall x l, In x l -> x <= lmax l.
 
 Proof.
-induction l; simpl; intro. contradiction.
+induction l; simpl; intro. contr.
 destruct H. subst a. apply le_max_l.
 ded (IHl H). apply le_max_intro_r. exact H0.
 Qed.
@@ -38,10 +38,10 @@ Lemma incl_lmax : forall l1 l2, incl l1 l2 -> lmax l1 <= lmax l2.
 Proof.
 intros l1 l2. induction l1 as [| a' l' Hrec].
  auto with arith.
- intro H. generalize (incl_cons_l H). clear H. intros (H1, H2). simpl.
+ intro H. gen (incl_cons_l H). clear H. intros (H1, H2). simpl.
  apply (max_case2 a' (lmax l') (fun n : nat => n <= lmax l2)).
-  apply in_lmax. assumption.
-  apply Hrec. assumption.
+  apply in_lmax. hyp.
+  apply Hrec. hyp.
 Qed.
 
 Lemma lmax_app : forall l m, lmax (l ++ m) = max (lmax l) (lmax m).
@@ -49,7 +49,7 @@ Lemma lmax_app : forall l m, lmax (l ++ m) = max (lmax l) (lmax m).
 Proof.
 intros. induction l as [| a l Hrec].
  auto.
- simpl. rewrite Hrec. rewrite max_assoc. reflexivity.
+ simpl. rewrite Hrec. rewrite max_assoc. refl.
 Qed.
 
 Lemma lmax_in : forall l, length l > 0 -> exists x, In x l /\ lmax l = x.
@@ -73,7 +73,7 @@ Fixpoint lmin (l : nats) : nat :=
 Lemma in_lmin : forall x l, In x l -> lmin l <= x.
 
 Proof.
-induction l; simpl; intro. contradiction.
+induction l; simpl; intro. contr.
 destruct H. subst a. apply le_min_l.
 ded (IHl H). apply elim_min_r. exact H0.
 Qed.

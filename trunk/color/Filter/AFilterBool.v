@@ -67,7 +67,7 @@ intro. apply term_ind_forall with
 refl. simpl.
 apply args_eq. repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
 apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
-eapply Vfilter_in. apply H0. assumption.
+eapply Vfilter_in. apply H0. hyp.
 Qed.
 
 (***********************************************************************)
@@ -87,7 +87,7 @@ Notation fsucc := filter_ord.
 Lemma filter_trans : transitive succ -> transitive fsucc.
 
 Proof.
-intro. unfold transitive, filter_ord. intros. eapply H. apply H0. assumption.
+intro. unfold transitive, filter_ord. intros. eapply H. apply H0. hyp.
 Qed.
 
 (***********************************************************************)
@@ -109,7 +109,7 @@ Lemma filter_subs_closed :
 
 Proof.
 unfold substitution_closed. intros. unfold filter_ord.
-repeat rewrite filter_sub. apply H. assumption.
+repeat rewrite filter_sub. apply H. hyp.
 Qed.
 
 (***********************************************************************)
@@ -123,7 +123,7 @@ Lemma filter_comp : forall R : rules,
 Proof.
 unfold compat. intros. unfold filter_ord. apply H.
 change (In (filter_rule (mkRule l r)) (filter_rules R)).
-apply in_map. assumption.
+apply in_map. hyp.
 Qed.
 
 (***********************************************************************)
@@ -196,11 +196,11 @@ Lemma filter_cont_closed :
 
 Proof.
 intros Hrefl H. unfold context_closed, filter_ord. induction c; intros.
-simpl. assumption.
+simpl. hyp.
 set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
 case_eq (Vhead (snd bs)); intro H1.
 rewrite (filter_cont_true e t c t0 t1 H1).
-rewrite (filter_cont_true e t c t0 t2 H1). apply H. apply IHc. assumption.
+rewrite (filter_cont_true e t c t0 t2 H1). apply H. apply IHc. hyp.
 rewrite (filter_cont_false e t c t0 t1 H1).
 rewrite (filter_cont_false e t c t0 t2 H1). apply Hrefl.
 Qed.
@@ -247,7 +247,7 @@ intro. unfold weak_context_closed. intros.
 assert (clos_refl fsucc t1 t2). unfold clos_refl, union. auto.
 ded (rc_filter_ord H1).
 assert (context_closed fsucc_eq). apply filter_cont_closed. apply rc_refl.
-apply rc_context_closed. assumption. apply H3. assumption.
+apply rc_context_closed. hyp. apply H3. hyp.
 Qed.
 
 (***********************************************************************)
@@ -257,9 +257,9 @@ Lemma filter_weak_red_ord : weak_reduction_ordering succ succ_eq
   -> weak_reduction_ordering fsucc fsucc_eq.
 
 Proof.
-intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply WF_filter. assumption.
-split. apply filter_subs_closed. assumption.
-apply filter_weak_cont_closed. assumption.
+intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply WF_filter. hyp.
+split. apply filter_subs_closed. hyp.
+apply filter_weak_cont_closed. hyp.
 Qed.
 
 End weak_cont_closed.

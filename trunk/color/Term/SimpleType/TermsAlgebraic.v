@@ -10,7 +10,7 @@ assumed) encoded via lambda-terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsEta Setoid.
+Require Import RelExtras ListExtras TermsEta Setoid LogicUtil.
 
 Module TermsAlgebraic (Sig : TermsSig.Signature).
 
@@ -97,7 +97,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     assert (forall T, isBaseType T -> isArrowType T -> False).
     destruct T; try_solve.
     unfold isFunApp.
-    inversion H; try_solve; firstorder; term_inv M.
+    inversion H; try_solve; fo; term_inv M.
   Qed.
 
   Lemma algebraic_absBody : forall M (Mabs: isAbs M), algebraic M -> algebraic (absBody Mabs).
@@ -294,7 +294,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply IHG.
     apply algebraicSubstitution_cons_rev with (Some t); trivial.
     apply algebraic_lift.
-    apply (aG 0); firstorder.
+    apply (aG 0); fo.
     apply algebraicSubstitution_cons_none.
     apply IHG; trivial.
     apply algebraicSubstitution_cons_rev with (None (A:=Term)); trivial.
@@ -927,7 +927,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     Lemma algebraic_monotonicity_criterion : appMonCond -> absMonCond -> algebraic_monotonicity.
 
     Proof.
-       intros CApp CAbs T; generalize CApp CAbs; clear CApp CAbs.
+       intros CApp CAbs T; revert CApp CAbs.
        apply well_founded_ind with (R := subterm) (P := fun T =>
          appMonCond ->
          absMonCond ->

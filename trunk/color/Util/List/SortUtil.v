@@ -29,7 +29,7 @@ Lemma sort_incl : forall (B : Type) (T S : relation B) l,
 Proof.
 intros; induction l. intuition.
 inversion H0. apply cons_sort; intuition. subst.
-eapply sort_incl_aux; eassumption.
+eapply sort_incl_aux; ehyp.
 Qed.
 
 Lemma sort_transitive : forall (B : Type) (a : B) L rel,
@@ -59,7 +59,7 @@ Lemma rp_free_sort_strict : forall (B : Type) S (mb : list B)
 
 Proof.
 intros. induction mb. apply nil_sort.
-generalize HL; intro. simpl in HL0. inversion H; subst.
+gen HL; intro. simpl in HL0. inversion H; subst.
 assert (sort S mb). tauto.
 clear IHmb. apply cons_sort; auto. apply rp_free_lelistA_strict; auto.
 Qed.
