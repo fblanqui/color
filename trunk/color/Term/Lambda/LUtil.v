@@ -13,4 +13,4 @@ See the COPYRIGHTS and LICENSE files.
 
 Require Export LogicUtil.
 
-Ltac case_eq := coq_case_eq.
+(*REMOVE:Ltac case_eq := coq_case_eq.*)

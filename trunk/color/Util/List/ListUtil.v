@@ -712,7 +712,8 @@ Section Inb.
   Lemma Inb_equiv : forall x l l', lequiv l l' -> Inb x l = Inb x l'.
 
   Proof.
-    intros. destruct H. case_eq (Inb x l'); case_eq (Inb x l); try refl.
+    intros. destruct H.
+    coq_case_eq (Inb x l'); intros; coq_case_eq (Inb x l); intros; try refl.
     ded (Inb_incl _ H0 H1). rewrite H2 in H3. discr.
     ded (Inb_incl _ H H2). rewrite H1 in H3. discr.
   Qed.

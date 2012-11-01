@@ -699,7 +699,7 @@ Section ISModTrans.
     apply (HRfg i); auto. destruct (rec_ch_minP _ HexP i) as [HT _].
     apply (lt_le_trans (reid i) (S (reid i)) (reid (S i))); auto.
     split. exists (reid 0). simpl. auto.
-    unfold f0. case_eq (reid 0). left; refl. right.
+    unfold f0. coq_case_eq (reid 0); intros. left; refl. right.
     rewrite eq_fg0; try omega. apply HRfg0; omega.
   Qed.
 

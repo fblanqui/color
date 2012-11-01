@@ -116,7 +116,7 @@ induction p; simpl; intros.
 destruct t; exists v; simpl; refl.
 (* cons *)
 destruct t. discr. simpl.
-case_eq (lt_ge_dec a (arity f)); rewrite H0 in H; clear H0.
+coq_case_eq (lt_ge_dec a (arity f)); intros l H0; rewrite H0 in H; clear H0.
 destruct (IHp _ v _ H). rewrite e. exists (Fun f (Vreplace t l x)). refl.
 discr.
 Defined.

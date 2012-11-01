@@ -163,8 +163,8 @@ Section dec.
   Lemma dec : forall x, {P x}+{~P x}.
 
   Proof.
-    intro x. case_eq (f x). left. rewrite <- f_ok. hyp. right. rewrite <- ko.
-    hyp.
+    intro x. coq_case_eq (f x); intros.
+    left. rewrite <- f_ok. hyp. right. rewrite <- ko. hyp.
   Defined.
 
 End dec.
