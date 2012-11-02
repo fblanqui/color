@@ -438,7 +438,7 @@ Section S.
   Lemma vars_fill_elim : forall t c, vars (fill c t) [= cvars c ++ vars t.
 
   Proof.
-    induction c. simpl. apply incl_refl. simpl fill. rewrite vars_fun. simpl.
+    induction c. simpl. refl. simpl fill. rewrite vars_fun. simpl.
     unfold incl. intros. ded (in_vars_vec_elim H). do 2 destruct H0.
     ded (Vin_cast_elim H0). ded (Vin_app H2). destruct H3.
     repeat apply in_appl. apply (vars_vec_in H1 H3).
@@ -450,7 +450,7 @@ Section S.
   Lemma vars_fill_intro : forall t c, cvars c ++ vars t [= vars (fill c t).
 
   Proof.
-    induction c. simpl. apply incl_refl.
+    induction c. simpl. refl.
     simpl cvars. simpl fill. rewrite vars_fun.
     rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
     rewrite app_ass. apply appl_incl. apply app_com_incl. apply appr_incl.
@@ -470,7 +470,7 @@ Section S.
   Lemma symbs_fill_elim : forall t c, symbs (fill c t) [= csymbs c ++ symbs t.
 
   Proof.
-    induction c. simpl. apply incl_refl. simpl fill. rewrite symbs_fun. simpl.
+    induction c. simpl. refl. simpl fill. rewrite symbs_fun. simpl.
     intro x. simpl; intro H. destruct H. subst. left. refl. right.
     ded (in_symbs_vec_elim H). do 2 destruct H0. ded (Vin_cast_elim H0).
     ded (Vin_app H2). destruct H3. repeat apply in_appl.
@@ -483,7 +483,7 @@ Section S.
   Lemma symbs_fill_intro : forall t c, csymbs c ++ symbs t [= symbs (fill c t).
 
   Proof.
-    induction c. simpl. apply incl_refl. simpl csymbs. simpl fill.
+    induction c. simpl. refl. simpl csymbs. simpl fill.
     rewrite symbs_fun, symbs_vec_cast, symbs_vec_app, symbs_vec_cons.
     rewrite <- app_comm_cons, app_ass. intro x. simpl. intro H. destruct H.
     subst. left. refl. right. revert x H. apply appl_incl.

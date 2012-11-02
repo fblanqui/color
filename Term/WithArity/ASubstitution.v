@@ -322,9 +322,7 @@ Qed.
 Lemma sub_eq_vars_sub : forall s1 s2 t,
   sub_eq_dom s1 s2 (vars t) -> sub s1 t = sub s2 t.
 
-Proof.
-intros. eapply sub_eq_dom_incl_sub. apply H. apply incl_refl.
-Qed.
+Proof. intros. eapply sub_eq_dom_incl_sub. apply H. refl. Qed.
 
 (***********************************************************************)
 (** union of 2 substitutions ordered by the domain of the first:

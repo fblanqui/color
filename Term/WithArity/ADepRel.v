@@ -92,8 +92,7 @@ by a function testing whether a symbol occurs in a term
     symb_ord_img_rec R Rc f [= symb_ord_img_rec (a :: R) Rc f.
 
   Proof.
-    intro Rc; elim Rc; simpl; intros.
-    apply incl_refl.
+    intro Rc; elim Rc; simpl; intros. refl.
     destruct (eq_rule_dec a a0).
     case_eq (root_eq f (lhs a)); intro H0; simpl.
     case_eq (Inb (@eq_rule_dec _) a R); intro H1.

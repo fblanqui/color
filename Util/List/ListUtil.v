@@ -161,71 +161,55 @@ Section incl.
 
   Lemma incl_nil : forall l : list A, nil [= l.
 
-  Proof.
-    induction l. apply incl_refl. apply incl_tl. hyp.
-  Qed.
+  Proof. induction l. refl. apply incl_tl. hyp. Qed.
 
   Lemma incl_cons_l : forall (a : A) l m, a :: l [= m -> In a m /\ l [= m.
 
-  Proof.
-    intros a l m. unfold incl. simpl. intuition.
-  Qed.
+  Proof. intros a l m. unfold incl. simpl. intuition. Qed.
 
   Lemma incl_cons_l_in : forall (x : A) l m, x :: l [= m -> In x m.
 
-  Proof.
-    unfold incl. simpl. intros. apply H. left. refl.
-  Qed.
+  Proof. unfold incl. simpl. intros. apply H. left. refl. Qed.
 
   Lemma incl_cons_l_incl : forall (x : A) l m, x :: l [= m -> l [= m.
 
-  Proof.
-    unfold incl. simpl. intros. apply H. tauto.
-  Qed.
+  Proof. unfold incl. simpl. intros. apply H. tauto. Qed.
 
   Lemma incl_app_elim : forall l1 l2 l3 : list A,
     l1 ++ l2 [= l3 -> l1 [= l3 /\ l2 [= l3.
 
   Proof.
     intuition.
-    apply incl_tran with (l1 ++ l2). apply incl_appl. apply incl_refl. exact H.
-    apply incl_tran with (l1 ++ l2). apply incl_appr. apply incl_refl. exact H.
+    trans (l1 ++ l2). apply incl_appl. refl. hyp.
+    trans (l1 ++ l2). apply incl_appr. refl. hyp.
   Qed.
 
   Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l1 [= l3.
 
   Proof.
-    induction l1; simpl; intros. apply incl_nil.
-    eapply incl_tran with (m := a :: l1 ++ l2). 2: hyp.
-    apply (incl_appl l2 (incl_refl (a :: l1))).
+    induction l1; intros. apply incl_nil.
+    trans ((a::l1) ++ l2). 2: hyp. apply incl_appl. refl.
   Qed.
 
   Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l2 [= l3.
 
   Proof.
-    induction l1; simpl; intros. hyp.
-    eapply incl_tran with (m := a :: l1 ++ l2). 2: hyp.
-    apply (incl_appr (a :: l1) (incl_refl l2)).
+    induction l1; intros. hyp.
+    trans ((a::l1) ++ l2). 2: hyp. apply incl_appr. refl.
   Qed.
 
   Lemma appl_incl : forall l l2 l2' : list A, l2 [= l2' -> l ++ l2 [= l ++ l2'.
 
-  Proof.
-    intros. apply app_incl. apply incl_refl. exact H.
-  Qed.
+  Proof. intros. apply app_incl. refl. hyp. Qed.
 
   Lemma appr_incl : forall l l1 l1' : list A, l1 [= l1' -> l1 ++ l [= l1' ++ l.
 
-  Proof.
-    intros. apply app_incl. exact H. apply incl_refl.
-  Qed.
+  Proof. intros. apply app_incl. hyp. refl. Qed.
 
   Lemma app_com_incl : forall l1 l2 l3 l4 : list A,
     (l1 ++ l3) ++ l2 [= l4 -> (l1 ++ l2) ++ l3 [= l4.
 
-  Proof.
-    unfold incl. intros. apply H. apply in_app_com. exact H0.
-  Qed.
+  Proof. unfold incl. intros. apply H. apply in_app_com. hyp. Qed.
 
   Lemma incl_cons_r : forall x : A, forall m l, l [= x :: m -> In x l \/ l [= m.
 
@@ -289,15 +273,11 @@ Section equiv.
 
   Lemma lequiv_refl : forall l, lequiv l l.
 
-  Proof.
-    intro. split; apply incl_refl.
-  Qed.
+  Proof. intro. split; refl. Qed.
 
   Lemma lequiv_sym : forall l1 l2, lequiv l1 l2 -> lequiv l2 l1.
 
-  Proof.
-    intros. destruct H. split; hyp.
-  Qed.
+  Proof. intros. destruct H. split; hyp. Qed.
 
   Lemma lequiv_trans :
     forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
@@ -723,7 +703,7 @@ Section Inb.
 
   Proof.
     intros. induction l2. unfold Inclb. simpl. case l1. simpl; split; auto.
-    intro; apply incl_refl.
+    intro. refl.
     intros. simpl; split; intro. discr.
     rewrite incl_nil_elim in H. discr.
     split; unfold Inclb; simpl; rewrite forallb_forall; intro.
@@ -951,16 +931,13 @@ Section flat.
   Lemma In_incl_flat : forall x l, In x l -> x [= flat l.
 
   Proof.
-    induction l; simpl; intros. contr. intuition. subst.
-    apply incl_appl. apply incl_refl.
+    induction l; simpl; intros. contr. intuition. subst. apply incl_appl. refl.
   Qed.
 
   Lemma incl_flat_In : forall x c cs l,
     In x c -> In c cs -> flat cs [= l -> In x l.
 
-  Proof.
-    intros. apply H1. apply (In_incl_flat _ _ H0). hyp.
-  Qed.
+  Proof. intros. apply H1. apply (In_incl_flat _ _ H0). hyp. Qed.
 
 End flat.
 
@@ -1169,8 +1146,7 @@ Section reverse.
   Lemma incl_rev_intro : forall l l' : list A, rev l [= rev l' -> l [= l'.
 
   Proof.
-    intros. apply incl_tran with (rev l). apply incl_rev.
-    apply incl_tran with (rev l'). hyp. apply rev_incl.
+    intros. trans (rev l). apply incl_rev. trans (rev l'). hyp. apply rev_incl.
   Qed.
 
 End reverse.

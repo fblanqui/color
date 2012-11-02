@@ -640,8 +640,8 @@ Section S.
 
     Proof.
       unfold preserve_vars. intros. redtac. subst t. subst u.
-      apply incl_tran with (cvars c ++ vars (sub s r)). apply vars_fill_elim.
-      apply incl_tran with (cvars c ++ vars (sub s l)). apply appl_incl.
+      trans (cvars c ++ vars (sub s r)). apply vars_fill_elim.
+      trans (cvars c ++ vars (sub s l)). apply appl_incl.
       apply incl_vars_sub. apply hyp. hyp.
       apply vars_fill_intro.
     Qed.
@@ -650,14 +650,14 @@ Section S.
 
     Proof.
       unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
-      apply incl_tran with (vars y); hyp.
+      trans (vars y); hyp.
     Qed.
 
     Lemma rtred_preserve_vars : preserve_vars (red R #).
 
     Proof.
       unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
-      apply List.incl_refl. apply incl_tran with (vars y); hyp.
+      refl. trans (vars y); hyp.
     Qed.
 
     Require Import ListMax.
@@ -850,13 +850,12 @@ Section S.
     Proof.
       unfold hd_red_Mod, hd_red_mod.
       apply compose_m'. assert (int_red E # << red E #).
-      apply clos_refl_trans_m'. apply int_red_incl_red. eauto.
-      incl_refl.
+      apply clos_refl_trans_m'. apply int_red_incl_red. eauto. refl.
     Qed.
 
     Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
 
-    Proof. unfold hd_red_Mod, hd_red_mod. incl_refl. Qed.
+    Proof. unfold hd_red_Mod, hd_red_mod. refl. Qed.
 
     Lemma hd_red_Mod_make_repeat_free :
       hd_red_Mod S R << hd_red_Mod S (make_repeat_free (@eq_rule_dec Sig) R).
