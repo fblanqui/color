@@ -81,9 +81,7 @@ Fixpoint chain_dps (a : rule) (l : rules) : relation term :=
 Lemma chain_dps_app : forall l a b m,
   chain_dps a (l ++ b :: m) << chain_dps a l @ chain_dps b m.
 
-Proof.
-induction l; simpl; intros. incl_refl. assoc. comp. apply IHl.
-Qed.
+Proof. induction l; simpl; intros. refl. assoc. comp. apply IHl. Qed.
 
 Implicit Arguments chain_dps_app [l a b m].
 
@@ -152,7 +150,7 @@ apply H3. apply hyp'. hyp. rewrite H6.
 assert (sub s0' r0 = sub s0 r0). unfold s0'. sym.
 apply sub_restrict_incl. apply hyp'. hyp. rewrite H7.
 assert (sub s (shift p l1) = sub s1' (shift p l1)).
-unfold s. eapply sub_union2. apply H4. apply H3. apply List.incl_refl.
+unfold s. eapply sub_union2. apply H4. apply H3. refl.
 rewrite H8.
 assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
 rewrite <- sub_restrict. rewrite <- sub_shift.

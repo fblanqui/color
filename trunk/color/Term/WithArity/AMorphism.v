@@ -350,7 +350,7 @@ Section Iso.
 
   Proof.
     split; intro. apply WF_Fred with (G:=G) (HG:=HG) (R':=Frs HF R).
-    apply Frs_epi. apply incl_refl. hyp.
+    apply Frs_epi. refl. hyp.
     apply Fred_WF with (S2:=S2) (F:=F) (HF:=HF). hyp.
   Qed.
 
@@ -360,7 +360,7 @@ Section Iso.
   Proof.
     split; intro.
     apply WF_Fred_mod with (G:=G) (HG:=HG) (R':=Frs HF R) (E':=Frs HF E).
-    apply Frs_epi. apply incl_refl. apply Frs_epi. apply incl_refl. hyp.
+    apply Frs_epi. refl. apply Frs_epi. refl. hyp.
     apply Fred_mod_WF with (S2:=S2) (F:=F) (HF:=HF). hyp.
   Qed.
 
@@ -370,7 +370,7 @@ Section Iso.
   Proof.
     split; intro.
     apply WF_Fhd_red_mod with (G:=G) (HG:=HG) (R':=Frs HF R) (E':=Frs HF E).
-    apply Frs_epi. apply incl_refl. apply Frs_epi. apply incl_refl. hyp.
+    apply Frs_epi. refl. apply Frs_epi. refl. hyp.
     apply Fhd_red_mod_WF with (S2:=S2) (F:=F) (HF:=HF). hyp.
   Qed.
 

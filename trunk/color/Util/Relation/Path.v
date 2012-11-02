@@ -77,10 +77,10 @@ Section S.
     split.
     destruct (repeat_free_app_elim_right x1 (x::x2)). tauto. tauto.   
     split. rewrite (length_app x1 (x::x2)) in H1. simpl in H1|-* . omega. split.
-    apply incl_tran with (x::x2). apply incl_tl. apply incl_refl.
-    apply incl_tran with (x1++(x::x2)). apply incl_appr. apply incl_refl.
-    apply incl_tran with l.
-    tauto. apply incl_tl. apply incl_refl. apply path_app_elim_right with x1 a.
+    trans (x::x2). apply incl_tl. refl.
+    trans (x1++(x::x2)). apply incl_appr. refl.
+    trans l.
+    tauto. apply incl_tl. refl. apply path_app_elim_right with x1 a.
     tauto.
     destruct (H x a). exists x0. rewrite H4. simpl.
     assert (length x0 <= S (length l)). omega. 

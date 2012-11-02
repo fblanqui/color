@@ -302,7 +302,7 @@ Lemma restricted_try_add_arc_many_to_many : forall l l', incl l' l ->
 Proof.
 induction l'; simpl; intros. hyp. 
 apply restricted_try_add_arc_one_to_many. apply H. simpl. tauto.
-apply incl_refl. 
+refl. 
 apply IHl'. exact (incl_cons_l_incl H). hyp. 
 Qed.
 
@@ -313,7 +313,7 @@ Lemma try_add_arc_many_to_many_dec : eq_dec A ->  forall l l',
 Proof.
 induction l'; simpl; intros. hyp. pose (incl_cons_l_incl H). 
 apply try_add_arc_one_to_many_dec with l. hyp. apply H. simpl. tauto.
-apply incl_refl. 
+refl. 
 apply  restricted_try_add_arc_many_to_many; hyp. tauto. 
 Qed.
 
@@ -324,7 +324,7 @@ Lemma try_add_arc_many_to_many_midex : eq_midex A ->  forall l l',
 Proof.
 induction l'; simpl; intros. hyp. pose (incl_cons_l_incl H0). 
 apply try_add_arc_one_to_many_midex with l. hyp. apply H0. simpl. tauto.
-apply incl_refl. 
+refl. 
 apply  restricted_try_add_arc_many_to_many; hyp. tauto. 
 Qed.
 
@@ -337,7 +337,7 @@ induction l';  simpl; intros. contr. pose (incl_cons_l_incl H2).
 destruct H4. rewrite H4. 
 apply try_add_arc_one_to_many_trichotomy with l; try hyp. 
 apply try_add_arc_many_to_many_midex; hyp. 
-rewrite <- H4. apply H2. simpl. tauto. apply incl_refl. 
+rewrite <- H4. apply H2. simpl. tauto. refl. 
 apply restricted_try_add_arc_many_to_many; hyp. 
 apply trichotomy_preserved with  (try_add_arc_many_to_many l' l). 
 apply sub_rel_try_add_arc_one_to_many. tauto. 
@@ -385,7 +385,7 @@ Lemma LETS_restricted : is_restricted LETS l.
 
 Proof.
 unfold LETS. intros. apply restricted_try_add_arc_many_to_many.
-apply incl_refl. 
+refl. 
 apply restricted_clos_trans. apply restricted_restriction.  
 Qed.
 
@@ -400,7 +400,7 @@ Lemma LETS_irrefl : eq_midex A ->
 
 Proof.
 split;intros. unfold LETS.
-apply try_add_arc_many_to_many_irrefl; try hyp. apply incl_refl. 
+apply try_add_arc_many_to_many_irrefl; try hyp. refl. 
 apply restricted_clos_trans. apply restricted_restriction.
 apply tc_trans.  
 apply irreflexive_m' with LETS. apply LETS_restriction_clos_trans.
@@ -413,14 +413,14 @@ Proof.
 unfold LETS, total. intros. pose (R_midex_clos_trans_restriction_midex H H0 l). 
 apply try_add_arc_many_to_many_trichotomy; try hyp.
 apply restricted_clos_trans. 
-apply restricted_restriction. apply incl_refl. 
+apply restricted_restriction. refl. 
 Qed.
 
 Lemma LETS_dec : eq_dec A -> rel_dec R -> rel_dec LETS.
 
 Proof.
 intros. unfold LETS. apply try_add_arc_many_to_many_dec. hyp.
-apply incl_refl. 
+refl. 
 apply restricted_clos_trans. apply restricted_restriction.  
 apply R_dec_clos_trans_restriction_dec; hyp.  
 Qed.
@@ -429,7 +429,7 @@ Lemma LETS_midex : eq_midex A -> rel_midex R -> rel_midex LETS.
 
 Proof.
 intros. unfold LETS. apply try_add_arc_many_to_many_midex. hyp.
-apply incl_refl. 
+refl. 
 apply restricted_clos_trans. apply restricted_restriction.  
 apply R_midex_clos_trans_restriction_midex; hyp.  
 Qed.

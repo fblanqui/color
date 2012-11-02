@@ -179,7 +179,7 @@ Section shrink.
   Proof.
     induction l; simpl; intros. apply incl_nil.
     destruct (In_dec eq_dec a (shrink l)).
-    apply incl_tran with (shrink l). apply incl_cut. apply incl_tl. hyp.
+    trans (shrink l). apply incl_cut. apply incl_tl. hyp.
     unfold incl. intros. simpl in H. simpl. case (eq_dec a a0); intro.
     subst a0. auto. right. apply IHl. destruct H. contr. exact H.
   Qed.
@@ -192,7 +192,7 @@ Section shrink.
   Proof.
     intros. apply repeat_free_incl_length. exact (eq_dec_midex eq_dec).
     apply repeat_free_shrink.
-    apply incl_tran with l. apply incl_shrink. hyp.
+    trans l. apply incl_shrink. hyp.
   Qed.
 
 End shrink.

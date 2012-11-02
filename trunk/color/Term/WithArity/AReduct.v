@@ -68,7 +68,7 @@ Section S.
   Proof.
     induction R; intros; redtac. hyp. simpl in lr.
     assert (h0 : rules_preserve_vars R). eapply rules_preserve_vars_incl.
-    2: apply H. apply incl_tl. apply incl_refl. intuition.
+    2: apply H. apply incl_tl. refl. intuition.
     (* In (mkRule l r) R *)
     Focus 2. simpl.  assert (h1 : hd_red R t u). subst. apply hd_red_rule. hyp.
     case (top_reduct t a). right. apply H1; hyp. apply H1; hyp.

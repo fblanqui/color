@@ -177,7 +177,7 @@ Lemma dp_elim_vars : forall l t, In (mkRule l t) dp -> exists r,
 
 Proof.
 intros. destruct (dp_elim H). decomp H0. exists x. intuition.
-apply incl_tran with (m := vars x). unfold incl. intros.
+trans (vars x). unfold incl. intros.
 eapply subterm_eq_vars. eapply in_calls_subterm. apply H3. hyp.
 apply hyp2. hyp.
 Qed.

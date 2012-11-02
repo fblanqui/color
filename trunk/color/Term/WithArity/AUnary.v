@@ -582,7 +582,7 @@ Lemma rules_preserve_vars_reset : rules_preserve_vars (reset_rules R).
 Proof.
 intros l0 r0 h. destruct (in_map_elim h). destruct H. destruct x as [l r].
 unfold reset_rule in H0. simpl in H0. inversion H0. repeat rewrite vars_var.
-repeat rewrite var_reset. apply incl_refl.
+repeat rewrite var_reset. refl.
 Qed.
 
 Lemma red_reset : forall t u, red R t u <-> red (reset_rules R) t u.
