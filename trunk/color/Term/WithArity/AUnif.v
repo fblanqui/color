@@ -83,9 +83,8 @@ Proof.
 induction us; simpl; intros. VOtac. simpl. sym. apply union_empty_l.
 VSntac vs. clear H. set (x := Vhead vs). set (ts := Vtail vs). simpl.
 unfold vars_eqn. simpl.
-trans
-  (union (union (vars x) (vars h)) (union (vars_vec ts) (vars_vec us))).
-apply union_m. refl. apply IHus. Equal_tac; RelUtil.union.
+trans (union (union (vars x) (vars h)) (union (vars_vec ts) (vars_vec us))).
+apply union_m. refl. apply IHus. split; set_iff; tauto.
 Qed.
 
 Lemma mem_vars_sub_single : forall n (u : term) x v,
@@ -490,15 +489,13 @@ Lemma lt_card_vars_eqns_subs_l : forall x v l, mem x (vars v) = false ->
 
 Proof.
 intros. simpl. unfold vars_eqn. simpl. apply subset_cardinal_lt with x.
-apply subset_trans with
-  (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
-    else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
-case_eq (mem x (vars_eqns l)); intro H0; Subset_tac. set_iff. tauto.
-unfold not. intro.
-rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
-case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
-contr. absurd (E.eq x x). hyp. refl.
-ded (mem_4 _ _ H0). contr.
+trans (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
+  else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
+case_eq (mem x (vars_eqns l)); intros H0 z; set_iff; tauto.
+set_iff; intuition.
+intro H0. rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0.
+revert H0. case_eq (mem x (vars_eqns l)); intro e; set_iff.
+ded (mem_4 _ _ H). tauto. ded (mem_4 _ _ e). tauto.
 Qed.
 
 Lemma lt_card_vars_eqns_subs_r : forall x v l, mem x (vars v) = false ->
@@ -507,15 +504,13 @@ Lemma lt_card_vars_eqns_subs_r : forall x v l, mem x (vars v) = false ->
 
 Proof.
 intros. simpl. unfold vars_eqn. simpl. apply subset_cardinal_lt with x.
-apply subset_trans with
-  (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
-    else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
-case_eq (mem x (vars_eqns l)); intro H0; Subset_tac. set_iff. tauto.
-unfold not. intro.
-rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0. revert H0.
-case_eq (mem x (vars_eqns l)); intros; In_elim; ded (mem_4 _ _ H).
-contr. absurd (E.eq x x). hyp. refl.
-ded (mem_4 _ _ H0). contr.
+trans (if mem x (vars_eqns l) then union (vars v) (remove x (vars_eqns l))
+  else vars_eqns l). apply subset_equal. apply vars_eqns_subs.
+case_eq (mem x (vars_eqns l)); intros H0 z; set_iff; tauto.
+set_iff; intuition.
+intro H0. rewrite (In_m (refl_equal x) (vars_eqns_subs x v l)) in H0.
+revert H0. case_eq (mem x (vars_eqns l)); intro e; set_iff.
+ded (mem_4 _ _ H). tauto. ded (mem_4 _ _ e). tauto.
 Qed.
 
 (***********************************************************************)
@@ -570,7 +565,7 @@ intros. unfold Lt, lex_lt, transp. apply lexp_intro.
 unfold nb_vars_eq, nb_vars_lt. simpl.
 set (X := vars_eqns l). set (Y := vars_eqn x).
 assert (cardinal X <= cardinal (XSet.union Y X)).
-apply subset_cardinal. Subset_tac.
+apply subset_cardinal. intro; set_iff; tauto.
 case (eq_nat_dec (cardinal X) (cardinal (XSet.union Y X))); intro. right.
 intuition. unfold sizes_lt. unfold sizes. simpl.
 unfold MultisetLt, transp. apply t_step. set (M := list2multiset (map size l)).
