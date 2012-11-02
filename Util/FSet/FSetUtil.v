@@ -345,34 +345,4 @@ Module Make (Export XSet : FSetInterface.S).
 
   End fold.
 
-(*FIXME: remove*)
-(***********************************************************************)
-(** tactics for In, Equal and Subset *)
-
-  Ltac lft := apply union_2; try hyp.
-  Ltac rgt := apply union_3; try hyp.
-
-  Ltac Equal_intro := unfold Equal; intuition.
-  Ltac Subset_intro := unfold Subset; intuition.
-
-  Ltac In_elim := repeat
-    match goal with
-      | H : In ?x (singleton _) |- _ => ded (singleton_1 H); subst x; clear H
-      | H : In _ (union _ _) |- _ => destruct (union_1 H); clear H
-      | H : In _ (remove _ _) |- _ => destruct (remove_3 H); clear H
-      | H : In _ empty |- _ => rewrite empty_iff in H; contr
-    end.
-
-  Ltac In_intro :=
-    match goal with
-      | |- In _ (singleton _) => apply singleton_2; refl
-      | |- In _ (union _ _) =>
-        (apply union_2; In_intro) || (apply union_3; In_intro)
-      | |- In _ (remove _ _) => apply remove_2; [hyp | In_intro]
-      | _ => hyp
-    end.
-
-  Ltac Equal_tac := Equal_intro; In_elim; try In_intro.
-  Ltac Subset_tac := Subset_intro; In_elim; try In_intro.
- 
 End Make.

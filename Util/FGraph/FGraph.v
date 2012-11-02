@@ -115,7 +115,7 @@ they define the same relation. See below for more details. *)
 
   Proof.
     intro x. rewrite rel_eq; intros a b. unfold succ, empty_rel. intuition.
-    In_elim.
+    revert H1. set_iff. auto.
   Qed.
 
   Lemma succ_add : forall x y s, succ x (XSet.add y s) == id x y U succ x s.
@@ -338,7 +338,7 @@ same relation *)
 
   Proof.
     intros. unfold succs, rel. destruct (find x g); fo.
-    inversion H. hyp. In_elim. discr.
+    inversion H. hyp. revert H. set_iff. tauto. discr.
   Qed.
 
   Lemma mem_succs_rel : forall g x y,
@@ -377,7 +377,7 @@ same relation *)
     destruct (find_Some_rel H H1) as [y hy]. rewrite gg' in hy.
     destruct hy as [s [s1 s2]]. rewrite H0 in s1. discr.
     (* find x g = None, find x g' = Some t0 *)
-    Subset_tac.
+    intro; set_iff; intuition.
     (* find x g = None, find x g' = None *)
     refl.
   Qed.
@@ -574,7 +574,7 @@ successors of g' *)
     (* Equal *)
     intros m m' mm' h. rewrite <- mm'. hyp.
     (* empty *)
-    rewrite preds_empty. split. intro h. In_elim.
+    rewrite preds_empty. split. intro h. revert h. set_iff. tauto.
     intros [s [s1 s2]]. rewrite empty_o in s1. discr.
     (* add *)
     intros z s g n h. rewrite preds_add. 2: hyp.
