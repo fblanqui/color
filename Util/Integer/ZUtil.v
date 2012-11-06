@@ -75,9 +75,7 @@ Lemma zeql : forall x,
     | Zneg y' => Zneg y'
   end = x.
 
-Proof.
-intro. destruct x; refl.
-Qed.
+Proof. intro. destruct x; refl. Qed.
 
 Lemma zeqr : forall x,
   x = match x with
@@ -86,24 +84,18 @@ Lemma zeqr : forall x,
         | Zneg y' => Zneg y'
       end.
 
-Proof.
-intro. destruct x; refl.
-Qed.
+Proof. intro. destruct x; refl. Qed.
 
 (***********************************************************************)
 (** inequalities *)
 
 Lemma pos_lt : forall x y : Z, 0 <= y-x-1 -> x < y.
 
-Proof.
-intros. omega.
-Qed.
+Proof. intros. omega. Qed.
 
 Lemma pos_le : forall x y : Z, 0 <= y-x -> x <= y.
 
-Proof.
-intros. omega.
-Qed.
+Proof. intros. omega. Qed.
 
 (***********************************************************************)
 (** power *)
@@ -118,21 +110,15 @@ Infix "^" := power.
 
 Lemma power_plus : forall x n1 n2, power x (n1+n2) = power x n1 * power x n2.
 
-Proof.
-induction n1; intros; simpl. apply zeqr. rewrite IHn1. ring.
-Qed.
+Proof. induction n1; intros; simpl. apply zeqr. rewrite IHn1. ring. Qed.
 
 Lemma power_one : forall n, power 1 n = 1.
 
-Proof.
-induction n; simpl. refl. rewrite IHn. refl.
-Qed.
+Proof. induction n; simpl. refl. rewrite IHn. refl. Qed.
 
 Lemma power_succ : forall x n, power x (S n) = x * power x n.
 
-Proof.
-refl.
-Qed.
+Proof. refl. Qed.
 
 Lemma power_mult : forall x n1 n2, power x (n1*n2) = power (power x n1) n2.
 
@@ -174,9 +160,7 @@ Definition is_pos z :=
 
 Lemma is_pos_ok : forall z, is_pos z = true <-> z > 0.
 
-Proof.
-destruct z; simpl; intuition; discr.
-Qed.
+Proof. destruct z; simpl; intuition; discr. Qed.
 
 (***********************************************************************)
 (** non-negative integers *)
@@ -189,9 +173,7 @@ Definition is_not_neg z :=
 
 Lemma is_not_neg_ok : forall z, is_not_neg z = true <-> 0 <= z.
 
-Proof.
-destruct z; simpl; intuition; discr.
-Qed.
+Proof. destruct z; simpl; intuition; discr. Qed.
 
 Notation pos := (fun z => 0 <= z).
 Notation D := (sig pos).
@@ -200,17 +182,13 @@ Notation inj := (@exist Z pos _).
 
 Lemma Zero_in_D : pos 0.
 
-Proof.
-simpl. omega.
-Qed.
+Proof. simpl. omega. Qed.
 
 Notation D0 := (inj Zero_in_D).
 
 Lemma pos_power_val : forall x n, pos (power (val x) n).
 
-Proof.
-intros. destruct x. apply pos_power. hyp.
-Qed.
+Proof. intros. destruct x. apply pos_power. hyp. Qed.
 
 Definition Dlt x y := Zlt (val x) (val y).
 Definition Dle x y := Zle (val x) (val y).
@@ -235,9 +213,7 @@ Require Import SN.
 
 Lemma WF_Dgt : WF Dgt.
 
-Proof.
-apply wf_transp_WF. apply well_founded_Dlt.
-Qed.
+Proof. apply wf_transp_WF. apply well_founded_Dlt. Qed.
 
 Lemma power_Dlt_compat : forall x y n,
   Dlt x y -> Dlt (inj (pos_power_val x (S n))) (inj (pos_power_val y (S n))).
@@ -252,54 +228,38 @@ Qed.
 
 Lemma trans_Dgt : transitive Dgt.
 
-Proof.
-intros [x hx] [y hy] [z hz]. unfold Dgt, Dlt, transp. simpl. omega.
-Qed.
+Proof. intros [x hx] [y hy] [z hz]. unfold Dgt, Dlt, transp. simpl. omega. Qed.
 
 Lemma trans_Dge : transitive Dge.
 
-Proof.
-intros [x hx] [y hy] [z hz]. unfold Dge, Dle, transp. simpl. omega.
-Qed.
+Proof. intros [x hx] [y hy] [z hz]. unfold Dge, Dle, transp. simpl. omega. Qed.
 
 Lemma refl_Dge : reflexive Dge.
 
-Proof.
-intros [x hs]. unfold Dge, Dle, transp. simpl. refl.
-Qed.
+Proof. intros [x hs]. unfold Dge, Dle, transp. simpl. refl. Qed.
 
 (***********************************************************************)
 (** max *)
 
 Lemma Zmax_gub : forall m n k, m >= k -> n >= k -> Zmax m n >= k.
 
-Proof.
-intros. apply Zmax_case; hyp.
-Qed.
+Proof. intros. apply Zmax_case; hyp. Qed.
 
 Lemma elim_Zmax_l : forall x y z, x <= y -> x <= Zmax y z.
 
-Proof.
-intros. eapply Zle_trans. apply H. apply Zle_max_l.
-Qed.
+Proof. intros. eapply Zle_trans. apply H. apply Zle_max_l. Qed.
 
 Lemma elim_lt_Zmax_l : forall x y z, x < y -> x < Zmax y z.
 
-Proof.
-intros. eapply Zlt_le_trans. eexact H. apply Zle_max_l.
-Qed.
+Proof. intros. eapply Zlt_le_trans. eexact H. apply Zle_max_l. Qed.
 
 Lemma elim_Zmax_r : forall x y z, x <= z -> x <= Zmax y z.
 
-Proof.
-intros. eapply Zle_trans. apply H. apply Zle_max_r.
-Qed.
+Proof. intros. eapply Zle_trans. apply H. apply Zle_max_r. Qed.
 
 Lemma elim_lt_Zmax_r : forall x y z, x < z -> x < Zmax y z.
 
-Proof.
-intros. rewrite Zmax_comm. apply elim_lt_Zmax_l. hyp.
-Qed.
+Proof. intros. rewrite Zmax_comm. apply elim_lt_Zmax_l. hyp. Qed.
 
 Lemma Zmax_l : forall x y, x >= y -> Zmax x y = x.
 
@@ -311,9 +271,7 @@ Qed.
 
 Lemma Zmax_r : forall x y, y >= x -> Zmax x y = y.
 
-Proof.
-intros. rewrite Zmax_comm. apply Zmax_l. hyp.
-Qed.
+Proof. intros. rewrite Zmax_comm. apply Zmax_l. hyp. Qed.
 
 Lemma Zmax_ge_compat : forall x y x' y',
   x >= x' -> y >= y' -> Zmax x y >= Zmax x' y'.
@@ -340,6 +298,4 @@ Qed.
 
 Lemma Zge_refl : forall k, k >= k.
 
-Proof.
-intros. omega.
-Qed.
+Proof. intros. omega. Qed.
