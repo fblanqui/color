@@ -38,6 +38,43 @@ Proof.
 Qed.
 
 (***********************************************************************)
+(** If [x] is strongly normalizing wrt [R], then there is no infinite
+[R]-sequence starting from [x]. Proof obtained after the correction of
+Exercise 15.7 page 413 of the book Coq'Art by Yves Bertot and Pierre
+Casteran,
+http://www.labri.fr/perso/casteran/CoqArt/gen-rec/SRC/not_decreasing.v. *)
+
+Section notIS.
+
+  Variables (A : Type) (R : relation A).
+
+  Lemma SN_notNT : forall x, SN R x -> ~NT R x.
+
+  Proof.
+    intros y hy [f [h0 hf]].
+    cut (forall i, ~SN R (f i)). intro h. apply (h 0). rewrite h0. hyp.
+    cut (forall x, SN R x -> ~(exists i, x = f i)).
+    intros h i hi. eapply h. apply hi. exists i. refl.
+    induction 1. intros [i hi]. subst. eapply H0. apply hf. exists (S i). refl.
+  Qed.
+
+  Lemma NT_notSN : forall x, NT R x -> ~SN R x.
+
+  Proof. intros x h1 h2. eapply SN_notNT. apply h2. hyp. Qed.
+
+  Lemma WF_notIS : WF R -> forall f, ~IS R f.
+
+  Proof.
+    intros wf f hf. eapply SN_notNT with (x:=f 0). apply wf. exists f. auto.
+  Qed.
+
+  Lemma WF_notEIS : WF R -> ~EIS R.
+
+  Proof. intros wf [f hf]. eapply WF_notIS. hyp. apply hf. Qed.
+
+End notIS.
+
+(***********************************************************************)
 (** accessibility *)
 
 Section acc.
