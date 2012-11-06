@@ -564,17 +564,13 @@ Qed.
 
 Lemma S_add_S : forall n1 n2 n, n1 + S n2 = n -> S n1 + S n2 = S n.
 
-Proof.
-intros. subst n. refl.
-Qed.
+Proof. intros. subst n. refl. Qed.
 
 Implicit Arguments S_add_S [n1 n2 n].
 
 Lemma gt_plus : forall l k, l > k -> exists m, l = (m + 1) + k.
 
-Proof.
-induction 1. exists 0. omega. destruct IHle. exists (S x). omega.
-Qed.
+Proof. induction 1. exists 0. omega. destruct IHle. exists (S x). omega. Qed.
 
 Implicit Arguments gt_plus [l k].
 
