@@ -385,13 +385,13 @@ Module Make (Export L : L_Struct).
     Lemma WF_R_aeq_red : forall t, SN R_aeq t -> WF (R_aeq_red t).
 
     Proof.
-      (* FIXME: We prove this lemma by using the axiom
-      IS_NotSN.SN_notNT which, in classical logic, follows from the
-      axiom of dependent choice. You should try to find an
-      intuitionistic proof. *)
-      Require Import IS_NotSN.
-      intros t ht. rewrite WF_notIS. intros f hf. absurd (SN R_aeq (f 0)).
-      rewrite SN_notNT. intro h. apply h. exists f. intuition.
+      (*FIXME: We prove this lemma by using the axiom of
+      dependent choice (DepChoice) and classical logic. We should try
+      to find an intuitionistic proof. *)
+      Require NotSN_IS.
+      intros t ht. rewrite NotSN_IS.WF_notIS_eq. intros f hf.
+      absurd (SN R_aeq (f 0)).
+      rewrite NotSN_IS.SN_notNT_eq. intro h. apply h. exists f. intuition.
       intro i. destruct (hf i). hyp.
       destruct (hf 0). rewrite H in ht. hyp.
     Qed.

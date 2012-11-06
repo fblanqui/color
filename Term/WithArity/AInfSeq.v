@@ -248,7 +248,7 @@ R-sequence *)
 (** get a minimal infinite (hd_red_mod R (dp R))-sequence from a
 minimal infinite R-sequence *)
 
-  Require Import ADP IS_NotSN ASN BoolUtil.
+  Require Import ADP NotSN_IS ASN BoolUtil.
 
   Section IS_Min_dp.
 
@@ -275,7 +275,7 @@ minimal infinite R-sequence *)
       assert (hn : In n (vars l)). eapply hyp2. apply lr.
       eapply subterm_eq_vars. apply hw1. simpl. auto.
       destruct hv as [hv1 hv2]. absurd (NT (red R) v).
-      rewrite <- SN_notNT. eapply subterm_eq_sn. rewrite SN_notNT.
+      rewrite <- SN_notNT_eq. eapply subterm_eq_sn. rewrite SN_notNT_eq.
       apply hs. apply hn. hyp. hyp.
       (* w = Fun f v0 *)
       subst. exists l. exists (Fun f t). exists s. intuition.
@@ -284,8 +284,8 @@ minimal infinite R-sequence *)
       apply subterm_in_calls. 2: hyp. case_eq (defined f R); intro H. refl.
       destruct hv as [hv1 hv2].
       absurd (NT (red R) (sub s (Fun f t))). 2: hyp.
-      rewrite <- SN_notNT. apply sn_args_sn_fun. hyp. hyp.
-      apply Vforall_intro. intros a ha. rewrite SN_notNT.
+      rewrite <- SN_notNT_eq. apply sn_args_sn_fun. hyp. hyp.
+      apply Vforall_intro. intros a ha. rewrite SN_notNT_eq.
       apply hv2. apply subterm_fun. hyp.
       (* nebg_subterm l (Fun f t) = true *)
       unfold negb_subterm. rewrite negb_ok. 2: apply bsubterm_ok. intro h.
