@@ -15,31 +15,22 @@ Require Import LogicUtil Setoid.
 (***********************************************************************)
 (** basic meta-theorems *)
 
-Section meta.
-
 Lemma contraposee : forall P Q, (~Q -> ~P) -> P -> Q.
 
-Proof.
-intros. apply NNPP. intro. exact (H H1 H0).
-Qed.
+Proof. intros. apply NNPP. intro. exact (H H1 H0). Qed.
 
-Variables (A : Type) (P : A -> Prop).
-
-Lemma not_forall_imply_exists_not : ~(forall x, P x) -> exists x, ~P x.
+Lemma not_forall_imply_exists_not : forall A (P : A -> Prop),
+  ~(forall x, P x) -> exists x, ~P x.
 
 Proof.
-intros. apply NNPP. intro. apply H. intros. elim (classic (P x)). auto.
-intro. absurd (exists x, ~ P x). exact H0. exists x. exact H1.
+  intros. apply NNPP. intro. apply H. intros. elim (classic (P x)). auto.
+  intro. absurd (exists x, ~ P x). exact H0. exists x. exact H1.
 Qed.
-
-End meta.
 
 Implicit Arguments not_forall_imply_exists_not [A P].
 
 (***********************************************************************)
 (** basic equivalences *)
-
-Section equiv.
 
 Lemma not_forall_eq : forall (A : Type) (P : A -> Prop),
   ~(forall x, P x) <-> exists x, ~P x.
@@ -57,9 +48,7 @@ Qed.
 
 Lemma not_not_eq : forall P : Prop, ~~P <-> P.
 
-Proof.
-split. apply NNPP. intros h1 h2. absurd P; hyp.
-Qed.
+Proof. split. apply NNPP. intros h1 h2. absurd P; hyp. Qed.
 
 Lemma not_and_eq : forall P Q : Prop, ~(P /\ Q) <-> ~P \/ ~Q.
 
@@ -80,5 +69,3 @@ Lemma not_imply_eq : forall P Q : Prop, ~(P -> Q) <-> P /\ ~Q.
 Proof.
 intros. rewrite imply_eq. rewrite not_or_eq. rewrite not_not_eq. refl.
 Qed.
-
-End equiv.
