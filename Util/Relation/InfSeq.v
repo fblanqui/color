@@ -12,7 +12,7 @@ description, and the axiom WF_notIS for WF_absorb *)
 Set Implicit Arguments.
 
 Require Import RelUtil NatUtil List Path NatLeast LogicUtil ClassicUtil
-  IndefiniteDescription.
+  IndefiniteDescription SN NotSN_IS.
 
 Section S.
 
@@ -459,12 +459,10 @@ Section absorb.
     exists (f (S i)). intuition.
   Qed.
 
-  Require Import SN IS_NotSN.
-
   Lemma WF_absorb : WF R -> WF (E# @ R).
 
   Proof.
-    repeat rewrite WF_notIS. intros wf f hf.
+    rewrite !WF_notIS_eq. intros wf f hf.
     destruct (IS_absorb hf) as [g hg]. fo.
   Qed.
 
