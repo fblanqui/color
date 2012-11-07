@@ -9,8 +9,7 @@ Properties of the subterm relation.
 
 Set Implicit Arguments.
 
-Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil ASN
-  IS_NotSN_FB.
+Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil ASN.
 
 Section S.
 
@@ -102,15 +101,6 @@ Section S.
     exists (Cont f0 e t c0 t0). simpl. intuition. discr.
     ded (Vforall_nth p Hts y). apply (In_subterm_lst_vec_intro _ _ p).
     apply (proj1 H0). auto.
-  Qed.
-
-(***********************************************************************)
-(** there is no infinite sequence of subterms *)
-
-  Lemma NIS_supterm : forall h, ~IS supterm h.
-
-  Proof.
-    intros h IsP. apply (WF_notIS fin_branch_supterm (@WF_supterm Sig) IsP).
   Qed.
 
 End S.
