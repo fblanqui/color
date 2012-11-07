@@ -159,15 +159,15 @@ Section Matching.
       intros y t θ θ'; unfold exmatch; case_eq (VM.find y θ).
         intros v H; case (t =T v); intros Htu; try discr.
         inversion_clear Htu in H; intros x; case_eq (y =X x); intros Hxy.
-          by rewrite <- (proj1 (beq_nat_ok _ _) Hxy); rwn VMF.mem_find_b H.
+          by rewrite <- (proj1 (beq_nat_ok _ _) Hxy), VMF.mem_find_b, H.
           by rewrite orb_false_r.
 
         intros Hymem H x; inversion_clear H in Hymem; case_eq (y =X x).
-          intros Hxy; rewrite (proj1 (beq_nat_ok _ _) Hxy).
-          rwn VMF.add_b orb_comm; unfold VMF.eqb; unfold VMF.eq_dec.
+          intros Hxy; rewrite (proj1 (beq_nat_ok _ _) Hxy),
+            VMF.add_b, orb_comm; unfold VMF.eqb; unfold VMF.eq_dec.
           by rewrite (eq_nat_dec_refl x).
-          intros Hxy; rwn VMF.add_b orb_comm.
-          by rwn vmap_eqb Hxy.
+          intros Hxy; rewrite VMF.add_b.
+          by rewrite orb_comm, vmap_eqb, Hxy.
     Qed.
 
     Notation "\matches_var_min" :=
@@ -184,14 +184,14 @@ Section Matching.
       apply matches_some_ind.
       (* var *)
       simpl; intros y t θ θ' H x.
-      by rwn VSF.singleton_b vmap_eqb; eapply exmatches_var_min; eauto.
+      by rewrite VSF.singleton_b, vmap_eqb; eapply exmatches_var_min; eauto.
       (* fun *)
       by intros f _ ts _ θ θ' _ H _ x; rewrite AVariables.vars_fun.
       (* nil *)
-      by intros θ x; simpl; rwn VSF.empty_b orb_false_r.
+      by intros θ x; simpl; rewrite VSF.empty_b, orb_false_r.
       (* cons *)
       intros u nu us _ _ _ θ θ' Ω _ HΩθ' _ HθΩ x.
-      simpl; rwn VSF.union_b (HΩθ' x) (HθΩ x).
+      simpl; rewrite VSF.union_b, (HΩθ' x), (HθΩ x).
       by case (VM.mem x θ); simpl; try rewrite orb_comm.
     Qed.
 
@@ -282,11 +282,11 @@ Section Matching.
     unfold is_true; apply (proj2 (andb_true_iff _ _)); split.
       apply (proj2 (beq_term_ok _ _)); apply matches_submon with θ u' t'.
         by apply (proj1 (beq_term_ok _ _)).
-        by intros x Hx; apply Hmem; simpl; rwn VSF.union_b Hx orb_true_l.
+        by intros x Hx; apply Hmem; simpl; rewrite VSF.union_b, Hx, orb_true_l.
         hyp.
 
       apply IH with θ u' t'; try hyp.
-        by intros x Hx; apply Hmem; simpl; rwn VSF.union_b Hx orb_true_r.
+        by intros x Hx; apply Hmem; simpl; rewrite VSF.union_b, Hx, orb_true_r.
   Qed.
 
   (********************************************************************)
@@ -311,15 +311,15 @@ Section Matching.
         by unfold subst_of_matching; rewrite VMF.add_eq_o.
       (* fun *)
       intros f g ts us _ θ _ Hveq Hfg.
-      apply (proj1 (beq_term_ok _ _)); rwn sub_fun beq_fun.
-      by rwn Hveq andb_true_r; apply (proj2 beq_symb_ok).
+      apply (proj1 (beq_term_ok _ _)); rewrite sub_fun, beq_fun.
+      by rewrite Hveq, andb_true_r; apply (proj2 beq_symb_ok).
       (* nil *)
       intros θ; simpl; refl.
       (* cons *)
       intros t nt ts u nu us θ θ' Ω HΩθ IHΩθ HθΩ IHθΩ; simpl.
-      rewrite <- IHΩθ; rwn (beq_refl (@beq_term_ok Sig)) andb_true_l.
+      rewrite <- IHΩθ, (beq_refl (@beq_term_ok Sig)), andb_true_l.
       eapply nmatches_submon with Ω t u; try hyp; intros x Hx.
-      by unfold is_true; rwn (nmatches_var_minP HθΩ) Hx orb_true_r.
+      by unfold is_true; rewrite (nmatches_var_minP HθΩ), Hx, orb_true_r.
     Qed.
 
     Lemma matches_correct : forall u t θ, matches u t = Some θ -> u ! θ = t.
@@ -364,10 +364,10 @@ Section Matching.
       case_eq (VM.find x m); case_eq (VM.find x m').
         (* some/some*)
         intros v₂ Hv₂ v₁ Hv₁; rewrite <- (matches_monP H) in Hv₂.
-        congruence. by rwn VMF.mem_find_b Hv₁.
+        congruence. by rewrite VMF.mem_find_b, Hv₁.
         (* none/some *)
         intros Hm' v Hv; rewrite <- (matches_monP H) in Hm'.
-        congruence. by rwn VMF.mem_find_b Hv.
+        congruence. by rewrite VMF.mem_find_b, Hv.
         (* some/none *)
         intros v Hv Hm; rewrite <- (composeI θ Hm).
         rewrite <- (subst_of_matchingE Hv).

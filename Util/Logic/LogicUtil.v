@@ -71,7 +71,7 @@ Ltac irrefl := intros;
   end.
 
 (***********************************************************************)
-(** Normalization tactics (used in Rainbow). *)
+(** Normalization tactics used in Rainbow. *)
 
 Ltac norm e :=
   let x := fresh in set (x := e); vm_compute in x; subst x.
@@ -82,16 +82,6 @@ Ltac norm_in H e :=
 Ltac check_eq := vm_compute; refl.
 
 (*FIXME: Tactic Notation "norm" constr(e) "in" ident(H) := norm_in H e.*)
-
-(*REMOVE since it can be replaced by rewrite R1, R2, ...*)
-(***********************************************************************)
-(** Rewriting tactics. *)
-
-Tactic Notation "rwn" constr(R1) constr(R2) :=
-  rewrite R1; rewrite R2.
-
-Tactic Notation "rwn" constr(R1) constr(R2) constr(R3) :=
-  rewrite R1; rewrite R2; rewrite R3.
 
 (***********************************************************************)
 (** Other tactics. *)
