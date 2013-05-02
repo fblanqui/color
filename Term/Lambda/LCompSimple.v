@@ -86,11 +86,12 @@ predicate, and every function symbol is computable. *)
         eapply hv. apply H4. hyp.
         (* lam *)
         rename X0 into A. rename V0 into V.
-        (* First note that [A] and [B] are computability predicates. *)
+        (* First note that [A] and [V] are computability predicates. *)
         gen (cp_int A). intros [A1 A2 A3 A4].
         gen (cp_int V). intros [V1 V2 V3 V4].
-        (* We first replace [s] by its restriction on [fv (Lam x v)]. *)
+        (* We first replace [s] by its restriction [s0] on [fv (Lam x v)]. *)
         rewrite subs_seq_restrict. set (s0 := S.restrict (fv (Lam x v)) s).
+        (* We simplify. *)
         simpl. set (x' := var x v s0). set (s' := S.update x (Var x') s0).
         intros a ha.
         (* We check that [s0] is valid wrt [E]. *)
