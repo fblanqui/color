@@ -17,9 +17,10 @@ simultaneous substitution of any number of variables. *)
 
 Set Implicit Arguments.
 
-Require Import BoolUtil SetoidList Basics Morphisms LogicUtil LTerm.
+Require Import BoolUtil SetoidList Basics Morphisms LogicUtil.
+Require LTerm.
 
-Module Make (Export L : L_Struct).
+Module Make (Export L : LTerm.L_Struct).
 
   Module Export T := LTerm.Make L.
 
@@ -717,7 +718,8 @@ too, but by always renaming bound variables, i.e. [var x u s = choice
 
   Proof. intros u s. apply subs_seq. apply seq_restrict. refl. Qed.
 
-  (** Applying the identity substitution does not change the term. *)
+  (** Applying the identity substitution does not change the term
+  (extension of CF, Theorem 1a, page 95, proof given on page 97). *)
 
   Lemma subs_id : forall u, subs id u = u.
 
@@ -857,6 +859,12 @@ too, but by always renaming bound variables, i.e. [var x u s = choice
     left. revert h2. rewrite e. simpl. set_iff. intro h2. subst y. tauto.
     right. exists y. tauto.
   Qed.
+
+(****************************************************************************)
+(** ** Closure by substitution of a relation on terms. *)
+
+  Inductive clos_subs (R : relation Te) : relation Te :=
+  | s_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
 
 (****************************************************************************)
 (** ** Some equalities on [update]. *)
@@ -1308,7 +1316,9 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
   Proof. intros xs s s' ss'. apply bvcod_seq. refl. hyp. Qed.
 
 (****************************************************************************)
-(** ** Commutation properties when free variables are distinct from bound variables. *)
+(** ** Commutation properties when free variables are distinct from bound variables.
+
+In fact, these properties won't be used later. Instead, we will use similar properties but with another renaming-free substitution function [subs1] defined hereafter, which is equivalent when bound variables are distinct from free variables(Lemma [subs1_no_alpha]) but easier to work with, and whose properties are easier to established. *)
 
   (** CF, Theorem 1c, page 95, proof page 98. *)
 

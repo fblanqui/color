@@ -11,10 +11,10 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil
-  LTerm LSubs.
+Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil.
+Require LTerm LSubs.
 
-Module Make (Export L : L_Struct).
+Module Make (Export L : LTerm.L_Struct).
 
   Module Export S := LSubs.Make L.
 
