@@ -11,7 +11,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import VecUtil LogicUtil LTerm LComp.
+Require Import VecUtil LogicUtil.
+Require LTerm LComp.
 
 (****************************************************************************)
 (** ** Simple types over a set [B] of type constants. *)
@@ -33,7 +34,7 @@ Infix "~~>" := Arr (at level 55, right associativity).
 
 Module Type ST_Struct.
 
-  Declare Module Export L : L_Struct.
+  Declare Module Export L : LTerm.L_Struct.
 
   Parameter B : Type.
 
@@ -45,7 +46,7 @@ Module Type ST_Struct.
 
 End ST_Struct.
 
-Module Make (Export F : ST_Struct).
+Module Make (Export ST : ST_Struct).
 
   (*COQ: [LSimple.Make] is defined as an extension of [LComp.Make]
   instead of [LAlpha.Make] because, in Coq, functor instanciation
@@ -293,8 +294,7 @@ are finite maps from variables to types. *)
 
 Note that, for typing an abstraction [Lam x u] in [E], we do not
 assume that [x] does not occur in [E], but overrides its type in
-[E]. This is a restricted form of weakening. We did not succeed in
-proving the desire properties of typing when requiring [~In x E]. *)
+[E]. This is a restricted form of weakening. *)
 
   Inductive tr : En -> Te -> Ty -> Prop :=
   | tr_var : forall E x T, MapsTo x T E -> tr E (Var x) T
@@ -376,6 +376,8 @@ proving the desire properties of typing when requiring [~In x E]. *)
 
   Definition wt s E F := forall x T, MapsTo x T E -> F |- s x ~: T.
 
+  Notation "F |-s s ~: E" := (wt s E F) (at level 70).
+
   Instance wt_le : Proper (Logic.eq ==> le --> le ==> impl) wt.
 
   Proof.
@@ -384,11 +386,11 @@ proving the desire properties of typing when requiring [~In x E]. *)
   Qed.
 
   Lemma tr_subs : forall E v V, E |- v ~: V ->
-    forall s F, wt s E F -> F |- subs s v ~: V.
+    forall s F, F |-s s ~: E -> F |- subs s v ~: V.
 
   Proof.
     cut (forall E v V, E |- v ~: V ->
-      forall s F, wt s (restrict_dom E (fv v)) F -> F |- subs s v ~: V).
+      forall s F, F |-s s ~: restrict_dom E (fv v) -> F |- subs s v ~: V).
     intros h E v V ht s F hs. eapply h. apply ht.
     intros x T. rewrite mapsto_restrict_dom. intros [h1 h2]. apply hs. hyp.
     (* end cut *)

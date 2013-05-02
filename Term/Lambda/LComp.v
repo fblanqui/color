@@ -11,11 +11,12 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil LTerm LBeta.
+Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil.
+Require LTerm LBeta.
 
-Module Make (Export L : L_Struct).
+Module Make (Export L : LTerm.L_Struct).
 
-  Module Export S := LBeta.Make L.
+  Module Export B := LBeta.Make L.
 
 (****************************************************************************)
 (** ** Structure on which we will define computability predicates. *)
@@ -42,7 +43,7 @@ Module Make (Export L : L_Struct).
     Notation R_aeq := (clos_aeq (clos_mon Rh)).
     Infix "=>R" := (clos_aeq (clos_mon Rh)) (at level 70).
 
-    (** Properties of (non) neutral terms. *)
+    (** Properties of [neutral]. *)
 
     Parameter neutral_var : forall x, neutral (Var x).
     Parameter neutral_app : forall u v, neutral u -> neutral (App u v).
@@ -55,6 +56,7 @@ Module Make (Export L : L_Struct).
     Declare Instance fv_Rh : Proper (Rh --> Subset) fv.
     Parameter not_Rh_var : forall x u, ~ Var x ->Rh u.
     Parameter not_Rh_lam : forall x u w, ~ Lam x u ->Rh w.
+      (* FIXME: We exclude eta-reduction here. *)
     Parameter Rh_bh : forall x u v w,
       App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
     Parameter not_Rh_app_neutral : forall u v w, neutral u -> ~ App u v ->Rh w.
@@ -132,7 +134,7 @@ Module Make (Export L : L_Struct).
 
   Require Import SN.
 
-  Module Facts (Import P : CP_Struct).
+  Module Facts (Import CP : CP_Struct).
 
     (** Variables are irreducible. *)
 
@@ -424,7 +426,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Computability predicates wrt a [CP_Struct]. *)
 
-  Module CP (Import P : CP_Struct).
+  Module Props (Import CP : CP_Struct).
 
     (** A computability predicate must be compatible with alpha-equivalence. *)
 
@@ -456,7 +458,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Properties of computability predicates. *)
 
-    Module Export F := Facts P.
+    Module Export F := Facts CP.
 
     (** A computability predicate is stable by [=>R*] if it satisfies
        [cp_aeq] and [cp_R_aeq]. *)
@@ -616,6 +618,6 @@ of the form [x t1 .. tn]. *)
       apply cp_R_aeq_arr; fo. apply cp_neutral_arr; fo.
     Qed.
 
-  End CP.
+  End Props.
 
 End Make.

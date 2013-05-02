@@ -11,9 +11,10 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat Relations Basics Morphisms LogicUtil LTerm LAlpha.
+Require Import Wf_nat Relations Basics Morphisms LogicUtil.
+Require LTerm LAlpha.
 
-Module Make (Export L : L_Struct).
+Module Make (Export L : LTerm.L_Struct).
 
   Module Export A := LAlpha.Make L.
 

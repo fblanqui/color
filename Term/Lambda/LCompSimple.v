@@ -12,11 +12,12 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil LTerm LSimple.
+Require Import Morphisms Basics SN VecUtil LogicUtil LSimple.
+Require LTerm.
 
-Module Make (Export F : ST_Struct).
+Module Make (Export ST : LSimple.ST_Struct).
 
-  Module Import T := LSimple.Make F.
+  Module Export S := LSimple.Make ST.
 
 (****************************************************************************)
 (** ** Functor providing a termination proof for any CP structure
@@ -24,9 +25,9 @@ Module Make (Export F : ST_Struct).
 assuming that every type constant is interpreted by a computability
 predicate, and every function symbol is computable. *)
 
-  Module SN (Import P : CP_Struct).
+  Module SN (Import CP : CP_Struct).
 
-    Module Export M := CP P.
+    Module Export P := Props CP.
 
     Section int.
 
@@ -152,38 +153,35 @@ predicate, and every function symbol is computable. *)
 
       (** Computability of vectors of terms. *)
 
-      Fixpoint vint_aux n1 (Ts : Tys n1) n2 (ts : Tes n2) :=
+      Fixpoint vint n (Ts : Tys n) p (ts : Tes p) :=
         match Ts, ts with
-          | Vnil, Vnil => True
-          | Vcons T _ Ts', Vcons t _ ts' => int T t /\ vint_aux Ts' ts'
+          | _, Vnil => True
+          | Vcons T _ Ts', Vcons t _ ts' => int T t /\ vint Ts' ts'
           | _, _ => False
         end.
 
-      (*COQ: Functional Scheme vint_aux. does not seem to end. *)
+      (*COQ: [Functional Scheme vint] does not seem to end. *)
 
-      Definition vint n (Ts : Tys n) (ts : Tes n) := vint_aux Ts ts.
-
-      Lemma vint_sn : forall n (Ts : Tys n) (ts : Tes n),
+      Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
         vint Ts ts -> Vforall (SN R_aeq) ts.
 
       Proof.
-        induction Ts; simpl; intro ts.
-        VOtac. fo.
-        VSntac ts. unfold vint. simpl. intros [h1 h2]. split.
+        induction Ts; destruct ts; simpl; auto. fo.
+        intros [h1 h2]. split.
         eapply int_sn. apply h1.
         apply IHTs. hyp.
       Qed.
 
-      Global Instance vint_vaeq n (Ts : Tys n) :
-        Proper (@vaeq n ==> impl) (vint Ts).
+      Global Instance vint_vaeq n (Ts : Tys n) p :
+        Proper (@vaeq p ==> impl) (@vint n Ts p).
 
       Proof.
-        revert Ts. induction Ts; intros us vs.
+        revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
         (* nil *)
-        VOtac. fo.
+        destruct us. VOtac. auto. fo.
         (* cons *)
         rename h into T.
-        VSntac us. VSntac vs. rewrite vaeq_cons. unfold vint. simpl.
+        destruct us. VOtac. auto. revert usvs. VSntac vs. rewrite vaeq_cons.
         gen (cp_int T). intros [T1 _ _ _].
         intros [h1 h2] [i1 i2]. rewrite <- h1, <- h2. intuition.
       Qed.
@@ -192,7 +190,8 @@ predicate, and every function symbol is computable. *)
       the input types of [v], [apps v vs] is computable. *)
 
       Lemma int_base : forall V v,
-        (forall vs, vint (inputs V) vs -> int (Base (output V)) (apps v vs)) ->
+        (forall n (vs : Tes n),
+          vint (inputs V) vs -> int (Base (output V)) (apps v vs)) ->
         int V v.
 
       Proof.
@@ -200,7 +199,7 @@ predicate, and every function symbol is computable. *)
         (* base *)
         change (Bint b (apps v Vnil)). apply hv. fo.
         (* arrow *)
-        intros v1 h1. apply IHV2. intros vs hvs.
+        intros v1 h1. apply IHV2. intros n vs hvs.
         change (int (Base (output V2)) (apps v (Vcons v1 vs))). apply hv. fo.
       Qed.
 
@@ -208,20 +207,21 @@ predicate, and every function symbol is computable. *)
 
       Infix "==>R" := (vaeq_prod R) (at level 70).
 
-      Global Instance vint_vaeq_prod n (Ts : Tys n) :
-        Proper (@vaeq_prod R n ==> impl) (vint Ts).
+      Global Instance vint_vaeq_prod n (Ts : Tys n) p :
+        Proper (@vaeq_prod R p ==> impl) (@vint n Ts p).
 
       Proof.
-        revert Ts. induction Ts; intros us vs.
+        revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
         (* nil *)
-        VOtac. fo.
+        destruct us. VOtac. auto. fo.
         (* cons *)
         rename h into T.
-        VSntac us. VSntac vs. rewrite vaeq_prod_cons. unfold vint. simpl.
+        destruct us. VOtac. auto. revert usvs. VSntac vs.
+        rewrite vaeq_prod_cons.
         gen (cp_int T). intros [T1 _ T3 _].
         intros [[h1 h2]|[h1 h2]] [i1 i2]; split.
         eapply T3. apply h1. hyp.
-        change (vint Ts (Vtail vs)). rewrite <- h2. hyp.
+        rewrite <- h2. hyp.
         rewrite <- h1. hyp.
         eapply IHTs. apply h2. hyp.
       Qed.
@@ -253,11 +253,11 @@ predicate, and every function symbol is computable. *)
     intro f. set (n:=arity(typ f)).
     (* [f] is computable if for every vector [ts] of [n] computable terms,
     [apps (Fun f) ts] is computable. *)
-    apply int_base. intros vs hvs.
-    (* The interpretation of [output (typ f)] is a computabilitt predicate. *)
+    apply int_base. intros p vs hvs.
+    (* The interpretation of [output (typ f)] is a computability predicate. *)
     set (b := output (typ f)). gen (cp_Bint b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
-    cut (SN (@vaeq_prod beta n) vs).
+    cut (SN (@vaeq_prod beta p) vs).
     Focus 2. apply sn_vaeq_prod. eapply vint_sn. apply cp_Bint. apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
     induction 1.
