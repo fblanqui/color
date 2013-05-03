@@ -669,18 +669,26 @@ A) A] if [A] is not empty).
     rewrite <- not_mem_iff. auto.
   Qed.
 
-  Lemma var_notin_fv_subs : forall x v s y,
-    In y (fv v) -> y <> x -> ~In (var x v s) (fv (s y)).
+  Lemma var_notin_fv_subs : forall x u s y,
+    In y (fv u) -> y <> x -> ~In (var x u s) (fv (s y)).
 
   Proof.
-    intros x v s y hy n h.
-    apply var_notin_fvcodom with (x:=x) (u:=v) (s:=s).
+    intros x u s y hy n h.
+    apply var_notin_fvcodom with (x:=x) (u:=u) (s:=s).
     rewrite In_fvcodom. exists y. set_iff. intuition.
     revert h. rewrite H. simpl. set_iff. intro e.
-    set (xs := fvcodom (remove x (fv v)) s). unfold var in e. fold xs in e.
+    set (xs := fvcodom (remove x (fv u)) s). unfold var in e. fold xs in e.
     case_eq (mem x xs); intro i; rewrite i in e.
-    absurd (In y (fv v)). rewrite union_subset_1, e. apply var_notin_ok. hyp.
+    absurd (In y (fv u)). rewrite union_subset_1, e. apply var_notin_ok. hyp.
     absurd (x=y). auto. auto.
+  Qed.
+
+  Lemma var_notin_fvcod : forall x u s,
+    ~In (var x u s) (fvcod (remove x (fv u)) s).
+
+  Proof.
+    intros x u s. rewrite In_fvcod. intros [y [h1 h]]. revert h1. set_iff.
+    intros [hy n]. eapply var_notin_fv_subs. apply hy. 2: apply h. auto.
   Qed.
 
   (** Definition of substitution. *)
