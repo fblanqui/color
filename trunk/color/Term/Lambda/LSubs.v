@@ -178,7 +178,7 @@ by iteration of the function [domain_fun] on [xs]. *)
       try refl. apply add_add.
   Qed.
 
-  Definition domain xs s := XSet.fold (domain_fun s) xs empty.
+  Definition domain xs s := fold (domain_fun s) xs empty.
 
   (** [domain] is compatible with set equality. *)
 
@@ -362,7 +362,7 @@ defined by iteration of the function [fvcod_fun] on [xs]. *)
 
   Proof. intros s u v vs. unfold fvcod_fun. fset. Qed.
 
-  Definition fvcod xs s := XSet.fold (fvcod_fun s) xs empty.
+  Definition fvcod xs s := fold (fvcod_fun s) xs empty.
 
   (** [fvcod] is compatible with set equality. *)
 
@@ -633,8 +633,8 @@ In "Substitution Revisited", Theoretical Computer Science 59:317-325,
 1988, Allen Stoughton defines higher-order simultaneous substitutions
 too, but by always renaming bound variables, i.e. [var x u s = choice
 (new x u s)] where [new x u s] is the complement of [fvcodom (remove x
-(fv u)) s] and [choice:XSet.t -> X] is a choice function ([XSet.In
-(choice A) A] if [A] is not empty).
+(fv u)) s] and [choice:XSet.t -> X] is a choice function ([In (choice
+A) A] if [A] is not empty).
 *)
 
   (** Generation of a fresh variable. *)
@@ -660,13 +660,27 @@ too, but by always renaming bound variables, i.e. [var x u s = choice
   Implicit Arguments var_seq' [x u x0 y].
 
   Lemma var_notin_fvcodom : forall x u s,
-    ~In (var x u s) (fvcodom (XSet.remove x (fv u)) s).
+    ~In (var x u s) (fvcodom (remove x (fv u)) s).
 
   Proof.
-    intros x u s. unfold var. set (xs := fvcodom (XSet.remove x (fv u)) s).
-    case_eq (XSet.mem x xs).
-    gen (var_notin_ok (XSet.union (fv u) xs)). set_iff. tauto.
+    intros x u s. unfold var. set (xs := fvcodom (remove x (fv u)) s).
+    case_eq (mem x xs).
+    gen (var_notin_ok (union (fv u) xs)). set_iff. tauto.
     rewrite <- not_mem_iff. auto.
+  Qed.
+
+  Lemma var_notin_fv_subs : forall x v s y,
+    In y (fv v) -> y <> x -> ~In (var x v s) (fv (s y)).
+
+  Proof.
+    intros x v s y hy n h.
+    apply var_notin_fvcodom with (x:=x) (u:=v) (s:=s).
+    rewrite In_fvcodom. exists y. set_iff. intuition.
+    revert h. rewrite H. simpl. set_iff. intro e.
+    set (xs := fvcodom (remove x (fv v)) s). unfold var in e. fold xs in e.
+    case_eq (mem x xs); intro i; rewrite i in e.
+    absurd (In y (fv v)). rewrite union_subset_1, e. apply var_notin_ok. hyp.
+    absurd (x=y). auto. auto.
   Qed.
 
   (** Definition of substitution. *)
@@ -676,7 +690,8 @@ too, but by always renaming bound variables, i.e. [var x u s = choice
       | LTerm.Var x => s x
       | LTerm.Fun f => t
       | LTerm.App u v => App (subs s u) (subs s v)
-      | LTerm.Lam x u => let x' := var x u s in Lam x' (subs (update x (Var x') s) u)
+      | LTerm.Lam x u =>
+        let x' := var x u s in Lam x' (subs (update x (Var x') s) u)
     end.
 
   Lemma subs_lam_no_alpha : forall s x u,
@@ -1094,13 +1109,18 @@ too, but by always renaming bound variables, i.e. [var x u s = choice
 
   (** [rename] is a renaming. *)
 
-  Lemma renaming_single : forall y z, renaming (single y (Var z)).
+  Lemma renaming_update : forall s y z,
+    renaming s -> renaming (update y (Var z) s).
 
   Proof.
-    intros y z.
-    exists (fun x => match eq_dec x y with left _ => z | _ => x end).
-    intro x. unfold single, update, id. eq_dec x y; refl.
+    intros s y z [m hm].
+    exists (fun x => match eq_dec x y with left _ => z | _ => m x end).
+    intro x. unfold update. eq_dec x y. refl. apply hm.
   Qed.
+
+  Lemma renaming_single : forall y z, renaming (single y (Var z)).
+
+  Proof. intros y z. apply renaming_update. exists (fun x => x). refl. Qed.
 
   Lemma size_rename : forall x y u, size (rename x y u) = size u.
 
@@ -1169,7 +1189,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   Proof. intros s u v vs. unfold bvcod_fun. fset. Qed.
 
-  Definition bvcod xs s := XSet.fold (bvcod_fun s) xs empty.
+  Definition bvcod xs s := fold (bvcod_fun s) xs empty.
 
   (** [bvcod] is compatible with set equality. *)
 
