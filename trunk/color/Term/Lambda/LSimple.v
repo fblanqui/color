@@ -38,6 +38,8 @@ Module Type ST_Struct.
 
   Parameter B : Type.
 
+  (*Parameter B_eq_dec : forall x y : B, {x=y}+{x<>y}.*)
+
   Notation Ty := (Ty B).
  
   Parameter typ : F -> Ty.
@@ -47,6 +49,10 @@ Module Type ST_Struct.
 End ST_Struct.
 
 Module Make (Export ST : ST_Struct).
+
+  (*Lemma typ_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
+
+  Proof. decide equality. apply B_eq_dec. Qed.*)
 
   (*COQ: [LSimple.Make] is defined as an extension of [LComp.Make]
   instead of [LAlpha.Make] because, in Coq, functor instanciation
@@ -108,6 +114,20 @@ are finite maps from variables to types. *)
   Instance le_trans : Transitive le.
 
   Proof. intros E F G EF FG x T h. apply FG. apply EF. hyp. Qed.
+
+  Instance le_Equal : Proper (@Equal Ty ==> @Equal Ty ==> impl) le.
+
+  Proof.
+    intros E E' EE' F F' FF' EF x T hx.
+    rewrite <- FF'. apply EF. rewrite EE'. hyp.
+  Qed.
+
+  Lemma le_add : forall E x T, find x E = None -> E <&= add x T E.
+
+  Proof.
+    intros E x T hx y U hy. rewrite add_mapsto_iff. right. intuition.
+    subst y. rewrite find_mapsto_iff, hx in hy. discr.
+  Qed.
 
   Instance MapsTo_le : Proper (Logic.eq ==> Logic.eq ==> le ==> impl)
     (@MapsTo Ty).
