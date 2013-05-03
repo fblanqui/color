@@ -409,6 +409,13 @@ assume that [x] does not occur in [E], but overrides its type in
     forall s F, F |-s s ~: E -> F |- subs s v ~: V.
 
   Proof.
+    (* Assume that [t = Lam x v] and [T = U ~~> V]. Then, [subs s t =
+      Lam x' (subs s' v)] and it may be the case that there is [y]
+      such that [In y E] but [~In y (fv v)]. Then, it may be the case
+      that there is [U' <> U] such that [MapsTo x' U' (restrict_dom F
+      (fv (s y)))], in which case we cannot pove that [add x' U F |- s
+      y ~: T]. We therefore need to restrict [E] to [restrict_dom E
+      (fv t)] to prove the lemma. *)
     cut (forall E v V, E |- v ~: V ->
       forall s F, F |-s s ~: restrict_dom E (fv v) -> F |- subs s v ~: V).
     intros h E v V ht s F hs. eapply h. apply ht.
@@ -427,37 +434,24 @@ assume that [x] does not occur in [E], but overrides its type in
     apply hs. rewrite mapsto_restrict_dom. set_iff. tauto.
     (* lam *)
     set (x' := var x v s). set (s' := S.update x (Var x') s).
-    apply tr_lam. set (s'' := S.restrict (fv v) s').
-    rewrite subs_seq with (s':=s''). 2: apply seq_restrict; refl.
-    apply IHtr. intros y T.
-    rewrite mapsto_restrict_dom, add_mapsto_iff, mem_iff. intros [h hy].
-    unfold s'', S.restrict, s', S.update. rewrite hy.
-    destruct h as [[i1 i2]|[i1 i2]].
-    subst y T. eq_dec x x. 2: tauto. apply tr_var. apply add_1. refl.
-    eq_dec y x. subst y. tauto. rewrite <- mem_iff in hy.
-
-    assert (a : ~XSet.In x' (fv (s y))). intro h.
-    set (xs := XSet.remove x (fv v)).
-    case_eq (XSet.mem x (fvcodom xs s)); intro i.
-    (* XSet.mem x (fvcodom (xs s)) = true *)
-    assert (b : x' = var_notin (XSet.union (fv v) (fvcodom xs s))).
-    unfold x', var. fold xs. rewrite i. refl.
-    gen (var_notin_ok (XSet.union (fv v) (fvcodom xs s))). rewrite <- b.
-    set_iff. intro j. destruct (eq_term_dec (s y) (Var y)).
-    revert h. rewrite e. simpl. set_iff. intro h. subst y. tauto.
-    absurd (XSet.In x' (fvcodom xs s)). tauto.
-    rewrite In_fvcodom. exists y. unfold xs. set_iff. tauto.
-    (* XSet.mem x (fvcodom (xs s)) = false *)
-    assert (b : x' = x). unfold x', var. fold xs. rewrite i. refl.
-    destruct (eq_term_dec (s y) (Var y)).
-    revert h. rewrite e. simpl. set_iff. intro h. subst y. tauto.
-    absurd (XSet.In x (fvcodom xs s)). rewrite not_mem_iff. hyp.
-    rewrite In_fvcodom. exists y. unfold xs. set_iff. rewrite <- b in *. tauto.
-
-    eapply tr_le with (x:=remove x' F). 2: refl. 2: refl.
-    intros z A. rewrite remove_mapsto_iff, add_mapsto_iff. auto.
-    apply tr_contraction. 2: hyp. apply hs. rewrite mapsto_restrict_dom.
-    set_iff. tauto.
+    apply tr_lam. apply IHtr. intros y T.
+    rewrite mapsto_restrict_dom, add_mapsto_iff.
+    intros [[[h1 h2]|[h1 h2]] h3]; unfold s', S.update; eq_dec y x.
+    (* (y,T) = (x,U) *)
+    subst y T. apply tr_var. rewrite add_mapsto_iff. intuition. intuition.
+    (* y <> x /\ MapsTo y T E *)
+    intuition.
+    assert (h2' : MapsTo y T (restrict_dom E (XSet.remove x (fv v)))).
+    rewrite mapsto_restrict_dom. set_iff. intuition.
+    gen (hs _ _ h2'); intro h. apply tr_restrict in h.
+    set (F' := restrict_dom F (fv (s y))) in h. case_eq (find x' F').
+    (* find x' F' = Some U' *)
+    intro U'. rewrite <- find_mapsto_iff. unfold F'.
+    rewrite mapsto_restrict_dom. intros [i1 i2].
+    exfalso. eapply var_notin_fv_subs. apply h3. apply n. apply i2.
+    (* find x' F' = None *)
+    intro i. eapply tr_le with (x:=add x' X0 F') (x0:=s y) (x1:=T); try refl.
+    unfold F'. rewrite restrict_dom_le. refl. rewrite <- le_add; hyp.
   Qed. 
 
 (****************************************************************************)
