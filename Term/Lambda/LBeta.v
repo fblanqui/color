@@ -307,7 +307,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     exists u. exists (Vcons h vs). intuition. do 2 apply right_sym. hyp.
   Qed.
 
-  Implicit Arguments beta_apps_no_lam [n us u t].
+  Arguments beta_apps_no_lam [n us u t] _ _.
 
   Lemma beta_aeq_apps_no_lam : forall n (us : Tes n) u t,
     not_lam u -> apps u us =>b t ->
@@ -323,7 +323,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     exists (Vcons v vs). split. fo. exists (Vcons w ws). intuition. fo.
   Qed.
 
-  Implicit Arguments beta_aeq_apps_no_lam [n us u t].
+  Arguments beta_aeq_apps_no_lam [n us u t] _ _.
 
 (****************************************************************************)
 (** [apps (Fun f) us] is strongly normalizing wrt beta-reduction if
