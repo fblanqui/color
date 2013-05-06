@@ -67,7 +67,7 @@ Module Type L_Struct.
 
   Parameter var_notin_ok : forall xs, ~In (var_notin xs) xs.
 
-  Implicit Arguments var_notin_ok [].
+  Arguments var_notin_ok : clear implicits.
 
   Declare Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
 
