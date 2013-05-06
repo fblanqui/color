@@ -36,10 +36,6 @@ Module Make (Export L : LTerm.L_Struct).
 
   Infix "~~" := aeq (at level 70).
 
-  Lemma aeq_refl_eq : forall u v, u = v -> u ~~ v.
-
-  Proof. intros u v e. subst v. apply aeq_refl. Qed.
-
   (** Alternative definition of [aeq] as the equivalence closure of
   the monotone closure of [aeq_top]. *)
 
@@ -95,6 +91,19 @@ Module Make (Export L : LTerm.L_Struct).
   Instance Lam_aeq : Proper (Logic.eq ==> aeq ==> aeq) Lam.
 
   Proof. intros x x' xx' u u' uu'. subst x'. apply aeq_lam. hyp. Qed.
+
+  (** Basic lemmas. *)
+  
+  Lemma aeq_refl_eq : forall u v, u = v -> u ~~ v.
+
+  Proof. intros u v e. subst v. apply aeq_refl. Qed.
+
+  Lemma aeq_alpha' : forall x u y,
+    x = y \/ ~In y (fv u) -> Lam x u ~~ Lam y (rename x y u).
+
+  Proof.
+    intros x u y [h|h]. subst. rewrite rename_id. refl. apply aeq_alpha. hyp.
+  Qed.
 
   (* Experiment defining [aeq] as the equivalence closure of the
   monotone closure of [aeq_top]:
