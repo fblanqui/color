@@ -15,53 +15,15 @@ Require Import VecUtil LogicUtil.
 Require LTerm LComp.
 
 (****************************************************************************)
-(** ** Simple types over a set [B] of type constants. *)
+(** ** Simple types over a set [So] of type constants or sorts. *)
 
 Section simple.
 
-  Variable B : Type.
+  Variable So : Type.
 
   Inductive Ty : Type :=
-  | Base : B -> Ty
+  | Base : So -> Ty
   | Arr : Ty -> Ty -> Ty.
-
-End simple.
-
-Infix "~~>" := Arr (at level 55, right associativity).
-
-(****************************************************************************)
-(** ** Structure over which we will define typing. *)
-
-Module Type ST_Struct.
-
-  Declare Module Export L : LTerm.L_Struct.
-
-  Parameter B : Type.
-
-  (*Parameter B_eq_dec : forall x y : B, {x=y}+{x<>y}.*)
-
-  Notation Ty := (Ty B).
- 
-  Parameter typ : F -> Ty.
-
-  Notation Tys := (vector Ty).
-
-End ST_Struct.
-
-Module Make (Export ST : ST_Struct).
-
-  (*Lemma typ_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
-
-  Proof. decide equality. apply B_eq_dec. Qed.*)
-
-  (*COQ: [LSimple.Make] is defined as an extension of [LComp.Make]
-  instead of [LAlpha.Make] because, in Coq, functor instanciation
-  generates distinct Inductive's. *)
-
-  Module Export C := LComp.Make L.
-
-(****************************************************************************)
-(** Some basic functions on types. *)
 
   Fixpoint arity (T : Ty) :=
     match T with
@@ -76,10 +38,43 @@ Module Make (Export ST : ST_Struct).
     end.
 
   Fixpoint inputs (T : Ty) :=
-    match T as T return Tys (arity T) with
+    match T as T return vector Ty (arity T) with
       | Base _ => Vnil
       | Arr T1 T2 => Vcons T1 (inputs T2)
     end.
+
+End simple.
+
+Infix "~~>" := Arr (at level 55, right associativity).
+
+(****************************************************************************)
+(** ** Structure over which we will define typing. *)
+
+Module Type ST_Struct.
+
+  Declare Module Export L : LTerm.L_Struct.
+
+  Parameter So : Type.
+
+  (*Parameter So_eq_dec : forall x y : So, {x=y}+{x<>y}.*)
+ 
+  Parameter typ : F -> Ty So.
+
+End ST_Struct.
+
+Module Make (Export ST : ST_Struct).
+
+  Notation Ty := (Ty So). Notation Tys := (vector Ty).
+
+  (*Lemma Ty_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
+
+  Proof. decide equality. apply So_eq_dec. Qed.*)
+
+  (*COQ: [LSimple.Make] is defined as an extension of [LComp.Make]
+  instead of [LAlpha.Make] because, in Coq, functor instanciation
+  generates distinct Inductive's. *)
+
+  Module Export C := LComp.Make L.
 
 (****************************************************************************)
 (** ** Typing environments
