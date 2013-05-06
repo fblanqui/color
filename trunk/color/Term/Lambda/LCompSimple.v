@@ -126,24 +126,9 @@ predicate, and every function symbol is computable. *)
         (* ~In z (fv (Lam x v)) *)
         Focus 2. rewrite <- not_mem_iff. simpl. set_iff. intuition.
         (* In z (fv (Lam x v)) *)
-        intro k. destruct (XSetProps.In_dec x' (fv (s z))).
-        (* ~In x' (fv (s z)) *)
-        Focus 2. rewrite subs_notin_fv. refl. rewrite domain_single.
-        rewrite not_mem_iff in n0. rewrite n0. refl.
-        (* In x' (fv z) *)
-        set (xs := fvcodom (XSet.remove x (fv v)) s0).
-        (* We prove that it is absurd to have [In x' xs]. *)
-        absurd (XSet.In x' xs). apply var_notin_fvcodom.
-        unfold xs. rewrite In_fvcodom. exists z. set_iff.
-        unfold s0, S.restrict. rewrite k.
-        destruct (eq_term_dec (s z) (Var z)). 2: intuition.
-        revert i. rewrite e. simpl. set_iff. intro i. subst.
-        case_eq (XSet.mem x xs); unfold xs; intro j.
-        assert (h : x' = var_notin (union (fv v) xs)).
-        unfold x', var, xs. rewrite j. refl.
-        gen (var_notin_ok (union (fv v) xs)). revert k.
-        rewrite <- h, <- mem_iff. simpl. set_iff. tauto.
-        assert (h : x' = x). unfold x', var. rewrite j. refl. tauto.
+        intro k. gen (var_notin_fv_subs s0 hz n). fold x'.
+        unfold s0, S.restrict. rewrite k. intuition. rewrite single_notin_fv.
+        refl. hyp.
         (* We can now apply the induction hypothesis. *)
         rewrite (subs_seq k). eapply hu. refl. apply H3. intros z B.
         rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]].
@@ -235,6 +220,8 @@ predicate, and every function symbol is computable. *)
       Qed.
 
     End int.
+
+    Implicit Arguments cp_int [Bint].
 
   End SN.
 
