@@ -683,6 +683,8 @@ A) A] if [A] is not empty).
     absurd (x=y). auto. auto.
   Qed.
 
+  Implicit Arguments var_notin_fv_subs [x v y].
+
   Lemma var_notin_fvcod : forall x u s,
     ~In (var x u s) (fvcod (remove x (fv u)) s).
 
