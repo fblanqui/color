@@ -657,7 +657,7 @@ A) A] if [A] is not empty).
 
   Proof. intros x u s s' ss'. apply var_seq; auto. Qed.
 
-  Implicit Arguments var_seq' [x u x0 y].
+  Arguments var_seq' [x u x0 y] _.
 
   Lemma var_notin_fvcodom : forall x u s,
     ~In (var x u s) (fvcodom (remove x (fv u)) s).
@@ -683,7 +683,7 @@ A) A] if [A] is not empty).
     absurd (x=y). auto. auto.
   Qed.
 
-  Implicit Arguments var_notin_fv_subs [x v y].
+  Arguments var_notin_fv_subs [x u] s [y] _ _ _.
 
   Lemma var_notin_fvcod : forall x u s,
     ~In (var x u s) (fvcod (remove x (fv u)) s).
@@ -737,7 +737,7 @@ A) A] if [A] is not empty).
     apply h. set_iff. auto.
   Qed.
 
-  Implicit Arguments subs_seq [u s s'].
+  Arguments subs_seq [u s s'] _.
 
   Lemma subs_seq_restrict : forall u s, subs s u = subs (restrict (fv u) s) u.
 

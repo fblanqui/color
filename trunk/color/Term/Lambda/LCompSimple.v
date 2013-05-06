@@ -221,7 +221,7 @@ predicate, and every function symbol is computable. *)
 
     End int.
 
-    Implicit Arguments cp_int [Bint].
+    Arguments cp_int [Bint] _ T.
 
   End SN.
 

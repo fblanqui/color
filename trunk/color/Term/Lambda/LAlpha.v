@@ -32,7 +32,7 @@ Module Make (Export L : LTerm.L_Struct).
   | aeq_alpha : forall x u y,
     ~In y (fv u) -> aeq (Lam x u) (Lam y (rename x y u)).
 
-  Implicit Arguments aeq_alpha [x u].
+  Arguments aeq_alpha [x u] y _.
 
   Infix "~~" := aeq (at level 70).
 
@@ -453,7 +453,7 @@ Module Make (Export L : LTerm.L_Struct).
 
   Proof. intros x u s s' ss'. eapply var_saeq. refl. refl. hyp. Qed.
 
-  Implicit Arguments var_saeq' [x u x0 y].
+  Arguments var_saeq' [x u x0 y] _.
 
   (** Generalization of [aeq_notin_bv] (Theorem 2b in CF) to
   substitutions: every substitution [s] is alpha-equivalent on any
@@ -510,7 +510,7 @@ Module Make (Export L : LTerm.L_Struct).
     unfold update. eq_dec y x. refl. apply h. set_iff. auto.
   Qed.
 
-  Implicit Arguments subs_saeq [u s s'].
+  Arguments subs_saeq [u s s'] _.
 
   (** Given a term [u], [fun s => subs1 s u] is compatible with [saeq
   (fv u)]. *)
@@ -532,7 +532,7 @@ Module Make (Export L : LTerm.L_Struct).
     eq_dec y x. refl. apply h. set_iff. auto.
   Qed.
 
-  Implicit Arguments subs1_saeq [u s s'].
+  Arguments subs1_saeq [u s s'] _.
 
 (****************************************************************************)
 (** ** Some meta-theorems. *)
@@ -1178,14 +1178,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     unfold vaeq, vec_ge, Vforall2n. simpl. intuition.
   Qed.
 
-  Implicit Arguments apps_aeq_r [n vs v t].
+  Arguments apps_aeq_r [n vs v t] _.
 
   Lemma apps_aeq_l : forall n (vs : Tes n) v t, apps v vs ~~ t ->
     exists u us, t = apps u us /\ u ~~ v /\ vaeq us vs.
 
   Proof. intros n vs v t e. apply apps_aeq_r. sym. hyp. Qed.
 
-  Implicit Arguments apps_aeq_l [n vs v t].
+  Arguments apps_aeq_l [n vs v t] _.
 
 (****************************************************************************)
 (** ** "Alpha-transitive closure" of a relation on terms:
