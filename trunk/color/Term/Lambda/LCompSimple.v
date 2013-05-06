@@ -45,6 +45,13 @@ predicate, and every function symbol is computable. *)
 
       Proof. induction T; simpl. apply cp_Bint. apply cp_arr; hyp. Qed.
 
+      Global Instance int_aeq : Proper (Logic.eq ==> aeq ==> iff) int.
+
+      Proof.
+        intros T U TU. subst U. destruct (cp_int T) as [h _ _ _].
+        intros t u tu. split; intro i. rewrite <- tu. hyp. rewrite tu. hyp.
+      Qed.
+
       Lemma int_sn : forall T t, int T t -> SN R_aeq t.
 
       Proof. intros T t h. gen (cp_int T). intros [_ T2 _ _]. auto. Qed.
