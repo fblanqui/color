@@ -31,7 +31,7 @@ predicate, and every function symbol is computable. *)
 
     Section int.
 
-      Variables (Bint : B -> pred) (cp_Bint : forall b, cp (Bint b)).
+      Variables (Bint : So -> pred) (cp_Bint : forall b, cp (Bint b)).
 
       (** Interpretation of simple types *)
 
@@ -190,7 +190,7 @@ predicate, and every function symbol is computable. *)
       Proof.
         induction V; simpl; intros v hv.
         (* base *)
-        change (Bint b (apps v Vnil)). apply hv. fo.
+        change (Bint s (apps v Vnil)). apply hv. fo.
         (* arrow *)
         intros v1 h1. apply IHV2. intros n vs hvs.
         change (int (Base (output V2)) (apps v (Vcons v1 vs))). apply hv. fo.
@@ -240,7 +240,7 @@ predicate, and every function symbol is computable. *)
 
   Proof.
     (* The interpretation [Bint := fun (_ : B) => SN beta_aeq] is valid. *)
-    set (Bint := fun (_ : B) => SN beta_aeq).
+    set (Bint := fun (_ : So) => SN beta_aeq).
     assert (cp_Bint : forall b, cp (Bint b)). intro b. apply cp_SN.
     (* We apply [tr_sn] by using [Bint] as interpretation. *)
     apply tr_sn with (Bint:=Bint). hyp.
