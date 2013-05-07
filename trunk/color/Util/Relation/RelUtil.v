@@ -73,19 +73,6 @@ End bool.
 (***********************************************************************)
 (** Equality on relations *)
 
-(*REMOVE:
-Instance same_relation_Refl A : Reflexive (same_relation A).
-
-Proof. fo. Qed.
-
-Instance same_relation_Sym A : Symmetric (same_relation A).
-
-Proof. fo. Qed.
-
-Instance same_relation_Trans A : Transitive (same_relation A).
-
-Proof. fo. Qed.*)
-
 Instance same_relation_equiv A : Equivalence (same_relation A).
 
 Proof. fo. Qed.
@@ -243,21 +230,10 @@ Proof. fo. Qed.
 
 Ltac incl_trans S := apply inclusion_Trans with (S); try incl_refl.
 
-(*REMOVE:
-Instance inclusion_preord A : PreOrder (@inclusion A).
-
-Proof. fo. Qed.*)
-
 Instance inclusion_m' A :
   Proper (same_relation A ==> same_relation A ==> impl) (@inclusion A).
 
 Proof. fo. Qed.
-
-(*REMOVE:
-Instance inclusion_m A :
-  Proper (same_relation A ==> same_relation A ==> iff) (@inclusion A).
-
-Proof. fo. Qed.*)
 
 (***********************************************************************)
 (** Infinite sequences. *)
@@ -1269,18 +1245,6 @@ Section option_setoid.
     destruct x; destruct y; destruct z; intros; auto.
     trans a0; auto. contr.
   Qed.
-
-  (*REMOVE:
-  Global Instance eq_opt_Equiv : Equivalence eq -> Equivalence eq_opt.
-
-  Proof.
-    intro E. split.
-    intro x. unfold eq_opt. destruct x. refl. auto.
-    intros x y. unfold eq_opt. destruct x; destruct y; auto.
-    intro h. sym. hyp.
-    intros x y z. unfold eq_opt. destruct x; destruct y; destruct z; try tauto.
-    intros xy yz. trans a0; hyp.
-  Qed.*)
 
   Global Instance Some_m : Proper (eq ==> eq_opt) (@Some A).
 
