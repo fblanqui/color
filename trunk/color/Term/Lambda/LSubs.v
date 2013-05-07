@@ -886,7 +886,40 @@ A) A] if [A] is not empty).
   Qed.
 
 (****************************************************************************)
-(** ** Closure by substitution of a relation on terms. *)
+(** ** Stability by substitution. *)
+
+  Section stable.
+
+    Require Import RelUtil.
+
+    Definition stable R := Proper (Logic.eq ==> R ==> R) subs.
+
+    Instance stable_same_rel_impl : Proper (same_relation Te ==> impl) stable.
+
+    Proof.
+      intros S T e subs_S s s' ss' t u tu. subst s'. rewrite rel_eq in e.
+      rewrite <- e. apply subs_S. refl. rewrite e. hyp.
+    Qed.
+
+    Instance stable_same_rel : Proper (same_relation Te ==> iff) stable.
+
+    Proof. intros S T e. split; intro h. rewrite <- e. hyp. rewrite e. hyp. Qed.
+
+    Lemma stable_union : forall R S, stable R -> stable S -> stable (R U S).
+
+    Proof.
+      intros R S subs_R subs_S s s' ss' t u [tu|tu]; subst s'.
+      left. apply subs_R; auto. right. apply subs_S; auto.
+    Qed.
+
+  End stable.
+
+(****************************************************************************)
+(** ** Closure by substitution of a relation on terms.
+
+Note that [clos_subs R] is a priori NOT stable by substitution since
+substitution composition is correct modulo alpha-equivalence only
+(Lemma [subs_comp] in LAlpha). *)
 
   Inductive clos_subs (R : relation Te) : relation Te :=
   | s_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
