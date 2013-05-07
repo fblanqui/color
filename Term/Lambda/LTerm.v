@@ -256,6 +256,25 @@ Module Make (Export L : L_Struct).
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
+  Lemma clos_mon_union : forall R S,
+    clos_mon (R U S) == clos_mon R U clos_mon S.
+
+  Proof.
+    intros R S. split.
+    (* << *)
+    induction 1.
+    destruct H as [H|H]. left. apply m_step. hyp. right. apply m_step. hyp.
+    destruct IHclos_mon as [h|h].
+    left. apply m_app_l. hyp. right. apply m_app_l. hyp.
+    destruct IHclos_mon as [h|h].
+    left. apply m_app_r. hyp. right. apply m_app_r. hyp.
+    destruct IHclos_mon as [h|h].
+    left. apply m_lam. hyp. right. apply m_lam. hyp.
+    (* >> *)
+    intros t u [h|h]. eapply clos_mon_incl. apply incl_union_l. refl. hyp.
+    eapply clos_mon_incl. apply incl_union_r. refl. hyp.
+  Qed.
+
 (****************************************************************************)
 (** ** Size of a term *)
 
