@@ -1090,6 +1090,44 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
+  Lemma clos_aeq_union : forall R S,
+    clos_aeq (R U S) == clos_aeq R U clos_aeq S.
+
+  Proof.
+    intros R S. split.
+    (* << *)
+    induction 1.
+    destruct H1 as [h|h]; [left|right];
+      (eapply clos_aeq_intro; [apply H | apply H0 | hyp]).
+    (* >> *)
+    intros t u [h|h]. eapply clos_aeq_incl. apply incl_union_l. refl. hyp.
+    eapply clos_aeq_incl. apply incl_union_r. refl. hyp.
+  Qed.
+
+  Instance stable_clos_aeq : forall R, Proper (Logic.eq ==> R ==> R) subs ->
+    Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
+
+  Proof.
+    intros R subs_R s s' ss' t u tu. subst s'.
+    inversion tu; subst; clear tu. rewrite H, H0.
+    eapply clos_aeq_intro. refl. refl. apply subs_R. refl. hyp.
+  Qed.
+
+  (* Note that the previous lemma cannot be used to prove the
+  following one since [clos_subs R] is NOT stable by substitution
+  since substitution composition is correct modulo alpha-equivalence
+  only. *)
+
+  Instance stable_clos_aeq_subs : forall R,
+    Proper (Logic.eq ==> clos_aeq (clos_subs R) ==> clos_aeq (clos_subs R))
+    subs.
+
+  Proof.
+    intros R s s' ss' t u tu. subst s'.
+    inversion tu; inversion H1; subst; clear tu H1. rewrite H0, H, 2!subs_comp.
+    eapply clos_aeq_intro. refl. refl. eapply s_step. hyp.
+  Qed.
+
 (****************************************************************************)
 (** ** Alpha-equivalence on vectors of terms. *)
 
