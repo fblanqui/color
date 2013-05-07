@@ -40,8 +40,8 @@ Module Make (Export L : LTerm.L_Struct).
     Notation R := (clos_mon Rh).
     Infix "->R" := (clos_mon Rh) (at level 70).
 
-    Notation R_aeq := (clos_aeq (clos_mon Rh)).
-    Infix "=>R" := (clos_aeq (clos_mon Rh)) (at level 70).
+    Notation R_aeq := (clos_aeq R).
+    Infix "=>R" := (clos_aeq R) (at level 70).
 
     (** Properties of [neutral]. *)
 
@@ -83,8 +83,8 @@ Module Make (Export L : LTerm.L_Struct).
     Notation R := (clos_mon Rh).
     Infix "->R" := (clos_mon Rh) (at level 70).
 
-    Notation R_aeq := (clos_aeq (clos_mon Rh)).
-    Infix "=>R" := (clos_aeq (clos_mon Rh)) (at level 70).
+    Notation R_aeq := (clos_aeq R).
+    Infix "=>R" := (clos_aeq R) (at level 70).
 
     Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
