@@ -256,6 +256,8 @@ Module Make (Export L : L_Struct).
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
+  (** The closure by monotony distributes over union. *)
+
   Lemma clos_mon_union : forall R S,
     clos_mon (R U S) == clos_mon R U clos_mon S.
 
@@ -274,7 +276,7 @@ Module Make (Export L : L_Struct).
     intros t u [h|h]. eapply clos_mon_incl. apply incl_union_l. refl. hyp.
     eapply clos_mon_incl. apply incl_union_r. refl. hyp.
   Qed.
-
+  
 (****************************************************************************)
 (** ** Size of a term *)
 
@@ -344,6 +346,20 @@ Module Make (Export L : L_Struct).
       | LTerm.App u v => XSet.union (fv u) (fv v)
       | LTerm.Lam x u => remove x (fv u)
     end.
+
+  Lemma notin_fv_lam : forall x y u,
+    y=x \/ ~In x (fv u) <-> ~In x (fv (Lam y u)).
+ 
+  Proof. intros x y u. simpl. set_iff. eq_dec y x; fo. Qed.
+
+  (** The monotone closure preserves free variables. *)
+
+  Instance fv_clos_mon : forall R,
+    Proper (R --> Subset) fv -> Proper (clos_mon R --> Subset) fv.
+
+  Proof.
+    intros R fv_R. induction 1; simpl; (rewrite IHclos_mon || rewrite H); refl.
+  Qed.
 
 (****************************************************************************)
 (** ** Application of a term to a vector of terms. *)
