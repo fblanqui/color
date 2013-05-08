@@ -278,6 +278,10 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. intros a a' aa' b b' bb' x. set_iff. rewrite aa', bb'. auto. Qed.
 
+  Instance diff_s : Proper (Subset ==> Subset --> Subset) diff.
+
+  Proof. intros a a' aa' b b' b'b x. set_iff. rewrite aa', b'b. auto. Qed.
+
 (***********************************************************************)
 (** fold *)
 
