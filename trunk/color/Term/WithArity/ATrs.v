@@ -612,18 +612,6 @@ Section S.
     intros h [l r] hlr. rewrite incl_ok. apply h. hyp. apply beq_nat_ok.
   Qed.
 
-(*REMOVE:  Definition brules_preserve_vars := let P := eq_nat_dec in
-    fun R : rules => forallb (fun x => Inclb P (vars (rhs x)) (vars (lhs x))) R.
-
-  Lemma brules_preserve_vars_ok :
-    forall R, rules_preserve_vars R <-> brules_preserve_vars R = true.
-
-  Proof.
-    intro; unfold brules_preserve_vars. rewrite forallb_forall; split; intros.
-    destruct x as [l r]; simpl. rewrite Inclb_ok. apply H; auto.
-    intros l r Rlr. rewrite <- (Inclb_ok eq_nat_dec). apply (H _ Rlr).
-  Qed.*)
-
   Lemma rules_preserve_vars_cons : forall a R, rules_preserve_vars (a :: R)
     <-> vars (rhs a) [= vars (lhs a) /\ rules_preserve_vars R.
 
@@ -1231,17 +1219,6 @@ Ltac no_relative_rules :=
     | |- EIS (red_mod ?E _) => remove_relative_rules E
     | |- _ => idtac
   end.
-
-(* REMOVE: non-reflexive tactic used in a previous version of Rainbow
-Ltac rules_preserve_vars := solve
-  [match goal with
-    | |- rules_preserve_vars ?R =>
-      unfold rules_preserve_vars; let H := fresh in
-      assert (H :
-        lforall (fun a => incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a))) R);
-        [ unfold incl; vm_compute; intuition
-        | let H0 := fresh in do 2 intro; intro H0; apply (lforall_in H H0)]
-  end] || fail 10 "some rule does not preserve variables".*)
 
 Ltac norm_rules := match goal with |- forallb _ ?R = _ => norm R end.
 

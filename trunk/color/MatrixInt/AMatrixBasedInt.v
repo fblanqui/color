@@ -176,10 +176,6 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   Definition I := @mkInterpretation sig dom dom_zero mi_eval.
 
-(*REMOVE: unusued
-  Variable succ : relation dom.
-  Notation "x >v y" := (succ x y) (at level 70).*)
-
   Definition succeq (x y : dom) := (dom2vec x) >=v (dom2vec y).
 
   Lemma refl_succeq : reflexive succeq.
@@ -353,7 +349,6 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       end.
     Defined.
 
-    (*REMOVE: unused: Notation IR_succ := (IR I succ).*)
     Notation IR_succeq := (IR I succeq).
 
     Definition mint_eval (val : valuation I) k (mi : mint k) : vec :=

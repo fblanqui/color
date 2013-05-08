@@ -138,56 +138,6 @@ Section proj.
     intros. unfold inclusion, proj_ord. intros. apply H. exact H0.
   Qed.
 
-(*REMOVE:
-(***********************************************************************)
-(** reflexive closure *)
-
-  Section weak_cont_closed.
-
-    Variable succ : relation term.
-    Notation psucc := (proj_ord succ).
-
-    Notation succ_eq := (clos_refl succ).
-    Notation psucc_eq := (proj_ord succ_eq).
-
-    Lemma proj_ord_rc : reflexive psucc_eq.
-
-    Proof.
-      unfold reflexive, proj_ord, clos_refl, union. auto.
-    Qed.
-
-    Lemma rc_proj_ord : inclusion (clos_refl psucc) psucc_eq.
-
-    Proof.
-      unfold inclusion, clos_refl, union, proj_ord.
-      intros. decomp H. subst y. auto. auto.
-    Qed.
-
-    Lemma proj_weak_cont_closed :
-      weak_context_closed succ succ_eq -> weak_context_closed psucc psucc_eq.
-
-    Proof.
-      intro. unfold weak_context_closed. intros.
-      assert (clos_refl psucc t1 t2). unfold clos_refl, union. auto.
-      ded (rc_proj_ord H1).
-      assert (context_closed psucc_eq). apply proj_cont_closed. apply rc_refl.
-      apply rc_context_closed. hyp. apply H3. hyp.
-    Qed.
-
-(***********************************************************************)
-(** reduction ordering *)
-
-    Lemma proj_weak_red_ord : weak_reduction_ordering succ succ_eq
-      -> weak_reduction_ordering psucc psucc_eq.
-
-    Proof.
-      intro. destruct H as [Hwf (Hsubs,Hcont)]. split. apply WF_proj. hyp.
-      split. apply proj_subs_closed. hyp.
-      apply proj_weak_cont_closed. hyp.
-    Qed.
-
-  End weak_cont_closed.*)
-
 (***********************************************************************)
 (** rewriting *)
 

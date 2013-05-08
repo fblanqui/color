@@ -92,7 +92,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
       rewrite H. rewrite H2 in H1. auto.
     Qed.
 
-    Definition succ_vec := VecOrd.vec_ge gtx. (*REMOVE (x y : vec) := Vforall2n gtx x y.*)
+    Definition succ_vec := VecOrd.vec_ge gtx.
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
