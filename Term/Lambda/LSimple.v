@@ -506,7 +506,7 @@ assume that [x] does not occur in [E], but overrides its type in
     subst z B. rewrite single_eq. hyp.
     rewrite single_neq. 2: hyp. apply tr_var. hyp.
     (* lam *)
-    destruct (beta_aeq_notin_fv_lam b).
+    destruct (fv_R_notin_fv_lam _ b).
     subst. apply tr_lam. apply IHht. rewrite rename_id in h0. hyp.
     rewrite (aeq_alpha x). 2: hyp. apply tr_lam. apply IHht. hyp.
   Qed.
