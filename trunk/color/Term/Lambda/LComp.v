@@ -233,60 +233,7 @@ Module Make (Export L : LTerm.L_Struct).
 
     (** Alpha-transitive closure of [=>R]. *)
 
-    Infix "=>R*" := (R_aeq#) (at level 70).
-
-    Instance App_atc : Proper (R_aeq# ==> R_aeq# ==> R_aeq#) App.
-
-    Proof.
-      intros u u' uu' v v' vv'. trans (App u' v).
-      (* app_l *)
-      clear v' vv'. revert u u' uu'. induction 1.
-      apply at_step. mon. apply at_aeq. mon. trans (App v0 v); hyp.
-      (* app_r *)
-      clear u uu'. revert v v' vv'. induction 1.
-      apply at_step. mon. apply at_aeq. mon. trans (App u' v); hyp.
-    Qed.
-
-    Instance Lam_atc : Proper (Logic.eq ==> R_aeq# ==> R_aeq#) Lam.
-
-    Proof.
-      intros x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
-      apply at_step. mon. apply at_aeq. mon. trans (Lam x v); hyp.
-    Qed.
-
-    (** [=>R] preserves free variables. *)
-
-    Instance fv_R_aeq : Proper (R_aeq --> Subset) fv.
-
-    Proof.
-      intros u v vu. inversion_clear vu; subst. rewrite H, H0. clear H H0 u v.
-      revert u' v' H1. induction 1; simpl; try (rewrite IHclos_mon; refl).
-      apply fv_Rh. hyp.
-    Qed.
-
-    Instance fv_atc : Proper (R_aeq# --> Subset) fv.
-
-    Proof. apply fv_atc. apply fv_R_aeq. Qed.
-
-    (** Reduction of an abstraction *)
-
-    Lemma R_aeq_notin_fv_lam : forall x y u v,
-      Lam x u =>R Lam y v -> y=x \/ ~In x (fv v).
-
-    Proof.
-      intros x y u v r. eq_dec y x. auto. right. intro i.
-      absurd (In x (fv (Lam x u))). simpl. set_iff. tauto.
-      rewrite r. simpl. set_iff. auto.
-    Qed.
-
-    Lemma atc_notin_fv_lam : forall x y u v,
-      Lam x u =>R* Lam y v -> y=x \/ ~In x (fv v).
-
-    Proof.
-      intros x y u v r. eq_dec y x. auto. right. intro i.
-      absurd (In x (fv (Lam x u))). simpl. set_iff. tauto.
-      rewrite r. simpl. set_iff. auto.
-    Qed.
+    Infix "=>R*" := (R_aeq*) (at level 70).
 
     (** Extension of [R_aeq_lam] to [=>R*]. *)
 
@@ -315,7 +262,8 @@ Module Make (Export L : LTerm.L_Struct).
         as [y1 [v1 [i1 i2]]]. subst w.
       exists y1. exists v1. intuition. trans (rename y0 x' v0). hyp.
       eapply rename_atc in i2; auto. 2: apply subs_R_aeq.
-      rewrite rename2 in i2. apply i2. eapply atc_notin_fv_lam. apply H0.
+      rewrite rename2 in i2. apply i2.
+      rewrite notin_fv_lam, <- H0. simpl. set_iff. fo.
     Qed.
 
     (** Extension of [=>R*] to substitutions. *)
@@ -330,7 +278,7 @@ Module Make (Export L : LTerm.L_Struct).
       intros a b c ab bc x. trans (b x). apply ab. apply bc.
     Qed.
 
-    Lemma subs_satc_aux : Proper (satc ==> Logic.eq ==> R_aeq#) subs.
+    Lemma subs_satc_aux : Proper (satc ==> Logic.eq ==> R_aeq*) subs.
 
     Proof.
       intros s s' ss' u u' uu'. subst u'. revert u s s' ss'.
@@ -343,13 +291,14 @@ Module Make (Export L : LTerm.L_Struct).
       gen (var_notin_ok xs). set (z := var_notin xs). unfold xs. set_iff.
       intro hz. rewrite (aeq_alpha z). 2: tauto.
       do 2 (rewrite subs_lam_no_alpha; [idtac|rewrite remove_fv_rename; tauto]).
-      apply Lam_atc. refl. unfold rename. rewrite !subs_comp. apply IHu.
+      apply Lam_atc. auto with typeclass_instances. refl.
+      unfold rename. rewrite !subs_comp. apply IHu.
       intro y. unfold comp, single. unfold update at 2. unfold update at 3.
       eq_dec y x; unfold id; simpl. rewrite !update_eq. refl.
       unfold update. eq_dec y z. refl. apply ss'.
     Qed.
 
-    Instance subs_satc : Proper (satc ==> R_aeq# ==> R_aeq#) subs.
+    Instance subs_satc : Proper (satc ==> R_aeq* ==> R_aeq*) subs.
 
     Proof.
       intros s s' ss' u u' uu'. revert u u' uu'. induction 1.
@@ -373,7 +322,7 @@ Module Make (Export L : LTerm.L_Struct).
 
     (** [SN R_aeq] is stable by [=>R*]. *)
 
-    Instance SN_atc : Proper (R_aeq# ==> impl) (SN R_aeq).
+    Instance SN_atc : Proper (R_aeq* ==> impl) (SN R_aeq).
 
     Proof.
       intros t u tu ht. revert t u tu ht. induction 1; intro ht.
@@ -416,7 +365,7 @@ Module Make (Export L : LTerm.L_Struct).
     Proof.
       intro x. induction 1. rename x0 into u. apply SN_intro. intros t r.
       destruct (R_aeq_lam r) as [y [v [h1 h2]]]; subst.
-      destruct (R_aeq_notin_fv_lam r).
+      destruct (fv_R_notin_fv_lam _ r).
       subst. apply H0. rewrite rename_id in h2. hyp.
       rewrite (@aeq_alpha y v x). 2: hyp. apply H0. hyp.
     Qed.
@@ -464,7 +413,7 @@ Module Make (Export L : LTerm.L_Struct).
        [cp_aeq] and [cp_R_aeq]. *)
 
     Instance cp_atc : forall P, cp_aeq P -> cp_R_aeq P ->
-      Proper (R_aeq# ==> impl) P.
+      Proper (R_aeq* ==> impl) P.
 
     Proof.
       intros P P1 P3 u u' uu' hu. revert u u' uu' hu. induction 1.
@@ -499,7 +448,8 @@ Module Make (Export L : LTerm.L_Struct).
       trans (subs (single x0 u2) (rename x x0 u)). apply subs_satc. 2: hyp.
       intro z. unfold single, update, id. eq_dec z x0.
       rewrite i4. hyp. refl.
-      rewrite single_rename. refl. eapply atc_notin_fv_lam. apply i1.
+      rewrite single_rename. refl.
+      rewrite notin_fv_lam, <- i1. simpl. set_iff. fo.
       (* app_l *)
       destruct (R_lam H5) as [t [k1 k2]]; subst. rewrite H0, i4.
       assert (a : Lam x u =>R Lam x1 t).
