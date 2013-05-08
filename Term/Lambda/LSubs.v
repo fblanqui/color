@@ -302,6 +302,18 @@ by iteration of the function [domain_fun] on [xs]. *)
 
   Proof. intros x z xs. rewrite domain_single, beq_term_var. refl. Qed.
 
+  Lemma domain_single_empty : forall y v xs,
+    domain xs (single y v) [=] empty <-> ~In y xs \/ v = Var y.
+
+  Proof.
+    intros y v xs. rewrite domain_single.
+    case_eq (mem y xs && negb (beq_term v (Var y))).
+    rewrite andb_true_iff, <- mem_iff, negb_true_iff, beq_term_false_iff.
+    intuition. exfalso. absurd (In y empty). fo. rewrite <- H. set_iff. refl.
+    rewrite andb_false_iff, <- not_mem_iff, negb_false_iff, beq_term_true_iff.
+    fo.
+  Qed.
+
   Lemma domain_id : forall xs, domain xs id [=] empty.
 
   Proof.
