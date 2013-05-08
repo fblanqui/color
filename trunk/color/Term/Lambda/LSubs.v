@@ -924,6 +924,20 @@ substitution composition is correct modulo alpha-equivalence only
   Inductive clos_subs (R : relation Te) : relation Te :=
   | s_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
 
+  (** The closure by substitution preserves free variables. *)
+
+  Instance fv_clos_subs : forall R,
+    Proper (R --> Subset) fv -> Proper (clos_subs R --> Subset) fv.
+
+  Proof.
+    intros R fv_R t u tu. inversion tu; subst; clear tu. rewrite 2!fv_subs.
+    simpl. gen (fv_R _ _ H); intro h.
+    assert (a : diff (fv y) (domain (fv y) s)
+      [<=] diff (fv x) (domain (fv x) s)).
+    intro z. set_iff. rewrite 2!In_domain. intuition.
+    rewrite a, h. refl.
+  Qed.
+
 (****************************************************************************)
 (** ** Some equalities on [update]. *)
 
