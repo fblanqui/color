@@ -356,15 +356,6 @@ Module Arctic_Eqset := Eqset_def Arctic.
 Module Arctic_Eqset_dec <: Eqset_dec.
   Module Export Eq := Arctic_Eqset.
   Definition eqA_dec := dec_beq beq_ArcticDom_ok.
-  (*REMOVE: direct proof to be removed?
-  Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
-  Proof.
-    intros. destruct x; destruct y; try solve [right; congruence].
-    destruct (eq_nat_dec n0 n).
-    subst n. auto.
-    right. congruence.
-    left. auto.
-  Defined.*)
 End Arctic_Eqset_dec.
 
 Module ArcticSemiRingT <: SemiRingType.
@@ -515,15 +506,6 @@ Module ArcticBZ_Eqset := Eqset_def ArcticBZ.
 Module ArcticBZ_Eqset_dec <: Eqset_dec.
   Module Export Eq := ArcticBZ_Eqset.
   Definition eqA_dec := dec_beq beq_ArcticBZDom_ok.
-  (*REMOVE: direct proof to be removed?
-  Lemma eqA_dec : forall x y : A, {x=y}+{~x=y}.
-  Proof.
-    intros. destruct x; destruct y; try solve [right; congruence].
-    destruct (Z_eq_dec z0 z).
-    subst z. auto.
-    right. congruence.
-    left. auto.
-  Defined.*)
 End ArcticBZ_Eqset_dec.
 
 Module ArcticBZSemiRingT <: SemiRingType.

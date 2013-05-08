@@ -283,41 +283,6 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
 (***********************************************************************)
 (** [ge] on vectors *)
 
-(*REMOVE:
-Definition vec_ge := Vforall2n ge.
-
-Infix ">=v" := vec_ge (at level 70).
-
-Lemma vec_tail_ge : forall n (v v' : vec (S n)),
-  v >=v v' -> Vtail v >=v Vtail v'.
-
-Proof.
-  intros. unfold vec_ge. apply Vforall2n_tail. hyp.
-Qed.
-
-Lemma vec_ge_dec : forall n, rel_dec (@vec_ge n).
-
-Proof.
-  intros n P Q. destruct (Vforall2n_dec ge_dec P Q); intuition.
-Defined.
-
-Lemma vec_ge_refl : forall n, reflexive (@vec_ge n).
-
-Proof.
-  intros n x. unfold vec_ge. apply Vforall2n_intro. intros.
-  apply ge_refl.
-Qed.
-
-Lemma vec_ge_trans : forall n, transitive (@vec_ge n).
-
-Proof.
-  intros n x y z xy yz. unfold vec_ge.
-  apply Vforall2n_intro. intros.
-  apply ge_trans with (Vnth y ip).
-  apply (Vforall2n_nth ge). hyp.
-  apply (Vforall2n_nth ge). hyp.
-Qed.*)
-
   Definition vec_ge := vec_ge ge.
   Infix ">=v" := vec_ge (at level 70).
 
