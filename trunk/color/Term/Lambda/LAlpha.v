@@ -105,93 +105,6 @@ Module Make (Export L : LTerm.L_Struct).
     intros x u y [h|h]. subst. rewrite rename_id. refl. apply aeq_alpha. hyp.
   Qed.
 
-  (* Experiment defining [aeq] as the equivalence closure of the
-  monotone closure of [aeq_top]:
-
-  Definition aeq := clos_equiv (clos_mon aeq_top).
-
-  Definition aeq_refl := ec_refl aeq.
-  Definition aeq_trans := @ec_trans _ aeq.
-  Definition aeq_sim := @ec_sim _ aeq.
-
-  Lemma aeq_app_l : forall u u' v, u ~~ u' -> App u v ~~ App u' v.
-
-  Proof.
-    intros u u' v. revert u u'. induction 1.
-    apply e_step. apply m_app_l. hyp.
-    apply e_refl.
-    apply e_trans with (App y v); hyp.
-    apply e_sim. hyp.
-  Qed.
-
-  Lemma aeq_app_r : forall u v v', v ~~ v' -> App u v ~~ App u v'.
-
-  Proof.
-    intro u. induction 1.
-    apply e_step. apply m_app_r. hyp.
-    apply e_refl.
-    apply e_trans with (App u y); hyp.
-    apply e_sim. hyp.
-  Qed.
-
-  Lemma aeq_lam : forall x u u', u ~~ u' -> Lam x u ~~ Lam x u'.
-
-  Proof.
-    intro x. induction 1.
-    apply e_step. apply m_lam. hyp.
-    apply e_refl.
-    apply e_trans with (Lam x y); hyp.
-    apply e_sim. hyp.
-  Qed.
-
-  Lemma aeq_alpha : forall x u y,
-    ~In y (fv u) -> Lam x u ~~ Lam y (rename x y u).
-
-  Proof.
-    intros x u y hy. apply e_step. apply m_step. apply aeq_top_intro. hyp.
-  Qed.
-
-  (** Induction principle for [aeq]. *)
-
-  Lemma aeq_ind : forall P : relation Te,
-    (forall u, P u u) ->
-    (forall u v, u ~~ v -> forall IHaeq : P u v, P v u) ->
-    (forall u v w, u ~~ v -> forall IHaeq1 : P u v,
-                   v ~~ w -> forall IHaeq2 : P v w, P u w) ->
-    (forall u u' v, u ~~ u' -> forall IHaeq : P u u', P (App u v) (App u' v)) ->
-    (forall u v v', v ~~ v' -> forall IHaeq : P v v', P (App u v) (App u v')) ->
-    (forall x u u', u ~~ u' -> forall IHaeq : P u u', P (Lam x u) (Lam x u')) ->
-    (forall x u y, ~In y (fv u) -> P (Lam x u) (Lam y (rename x y u))) ->
-    forall t t0, t ~~ t0 -> P t t0.
-
-  Proof.
-    intros P r s t al ar l a. induction 1. revert x y H. induction 1.
-    inversion H. apply a. hyp.
-    apply al. apply e_step. hyp. hyp.
-    apply ar. apply e_step. hyp. hyp.
-    apply l. apply e_step. hyp. hyp.
-    apply r. apply t with y; hyp. apply s; hyp.
-  Qed.
-
-  Ltac aeq_ind :=
-    let u := fresh "u" in let u' := fresh "u'" in
-    let v := fresh "v" in let v' := fresh "v'" in let w := fresh "w" in
-    let uv := fresh "uv" in let vw := fresh "vw" in
-    let uu' := fresh "uu'" in let vv' := fresh "vv'" in
-    let Q := fresh "P" in let h := fresh "IHaeq" in
-    let h1 := fresh "IHaeq1" in let h2 := fresh "IHaeq2" in
-    let x := fresh "x" in let y := fresh "y" in let hy := fresh "hy" in
-    intros u v uv; pattern u, v;
-      match goal with | |- ?R _ _ => set (Q:=R) end;
-      revert u v uv; apply aeq_ind with (P:=Q);
-            [ intro u
-              | intros u v uv h
-              | intros u v w uv h1 vw h2
-              | intros u u' v uu' h
-              | intros u v v' vv' h
-              | intros x u u' uu' h
-              | intros x u y hy]; unfold Q in *; clear Q.*)
-
   (** [fv] is compatible with [aeq]. *)
 
   Instance fv_aeq : Proper (aeq ==> Equal) fv.
@@ -1051,6 +964,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       refl. refl. hyp.
     Qed.
 
+    (** Alpha-closure preserves monotony. *)
+
     Global Instance clos_aeq_impl : Proper (aeq ==> aeq ==> impl) clos_aeq.
 
     Proof.
@@ -1078,6 +993,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End clos_aeq.
 
+  (** Alpha-closure is compatible with relation inclusion/equivalence. *)
+
   Instance clos_aeq_incl : Proper (@inclusion Te ==> @inclusion Te) clos_aeq.
 
   Proof.
@@ -1089,6 +1006,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Proper (@same_relation Te ==> @same_relation Te) clos_aeq.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
+
+  (** Alpha-closure distributes overs union. *)
 
   Lemma clos_aeq_union : forall R S,
     clos_aeq (R U S) == clos_aeq R U clos_aeq S.
@@ -1104,7 +1023,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     eapply clos_aeq_incl. apply incl_union_r. refl. hyp.
   Qed.
 
-  Instance stable_clos_aeq : forall R, Proper (Logic.eq ==> R ==> R) subs ->
+  (** Alpha-closure preserves stability by substitution. *)
+
+  Instance subs_clos_aeq : forall R, Proper (Logic.eq ==> R ==> R) subs ->
     Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
 
   Proof.
@@ -1118,7 +1039,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   since substitution composition is correct modulo alpha-equivalence
   only. *)
 
-  Instance stable_clos_aeq_subs : forall R,
+  Instance subs_clos_aeq_subs : forall R,
     Proper (Logic.eq ==> clos_aeq (clos_subs R) ==> clos_aeq (clos_subs R))
     subs.
 
@@ -1127,6 +1048,25 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     inversion tu; inversion H1; subst; clear tu H1. rewrite H0, H, 2!subs_comp.
     eapply clos_aeq_intro. refl. refl. eapply s_step. hyp.
   Qed.
+
+  (** Alpha-closure preserves free variables. *)
+
+  Instance fv_clos_aeq : forall R,
+    Proper (R --> Subset) fv -> Proper (clos_aeq R --> Subset) fv.
+
+  Proof.
+    intros R fv_R t u tu. inversion tu; subst; clear tu.
+    rewrite H, H0, <- H1. refl.
+  Qed.
+
+  Lemma fv_R_notin_fv_lam : forall R x y u v, Proper (R --> Subset) fv ->
+    R (Lam x u) (Lam y v) -> y=x \/ ~In x (fv v).
+
+  Proof.
+    intros R x y u v fv_R r. rewrite notin_fv_lam, <- r. simpl. set_iff. fo.
+  Qed.
+
+  Arguments fv_R_notin_fv_lam [R x y u v] _ _.
 
 (****************************************************************************)
 (** ** Alpha-equivalence on vectors of terms. *)
@@ -1241,15 +1181,15 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End clos_aeq_trans.
 
-  Notation "S #" := (clos_aeq_trans S) (at level 35).
+  Notation "S *" := (clos_aeq_trans S) (at level 35).
 
   Section atc_props.
 
     Variable S : relation Te.
 
-    (** [S#] is a quasi-ordering. *)
+    (** [S*] is a quasi-ordering. *)
 
-    Global Instance atc_preorder : PreOrder (S #).
+    Global Instance atc_preorder : PreOrder (S*).
 
     Proof.
       split.
@@ -1257,13 +1197,13 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       intros x y z xy yz. apply at_trans with y; hyp.
     Qed.
 
-    (** [S#] is compatible with alpha-equivalence if [S] so is. *)
+    (** [S*] is compatible with alpha-equivalence if [S] so is. *)
 
     Section aeq.
 
       Variable S_aeq : Proper (aeq ==> aeq ==> iff) S.
 
-      Instance atc_aeq_impl : Proper (aeq ==> aeq ==> impl) (S#).
+      Instance atc_aeq_impl : Proper (aeq ==> aeq ==> impl) (S*).
 
       Proof.
         intros x x' xx' y y' yy' h. revert x y h x' xx' y' yy'.
@@ -1275,7 +1215,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       (*COQ: if removed, Coq is looping in LComp. Yet, it is a
       consequence of sym_iff2. *)
-      Global Instance atc_aeq : Proper (aeq ==> aeq ==> iff) (S#).
+      Global Instance atc_aeq : Proper (aeq ==> aeq ==> iff) (S*).
 
       Proof.
         intros x x' xx' y y' yy'. split; intro h.
@@ -1284,13 +1224,13 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     End aeq.
 
-    (** [S#] is stable by substitution if [S] so is. *)
+    (** [S*] is stable by substitution if [S] so is. *)
 
     Section subs.
 
       Variable subs_S : Proper (Logic.eq ==> S ==> S) subs.
 
-      Global Instance subs_atc : Proper (Logic.eq ==> S# ==> S#) subs.
+      Global Instance subs_atc : Proper (Logic.eq ==> S* ==> S*) subs.
 
       Proof.
         intros s s' ss' x y xy. subst s'. revert x y xy. induction 1.
@@ -1300,7 +1240,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       Qed.
 
       Global Instance rename_atc :
-        Proper (Logic.eq ==> Logic.eq ==> S# ==> S#) rename.
+        Proper (Logic.eq ==> Logic.eq ==> S* ==> S*) rename.
 
       Proof.
         intros x x' xx' y y' yy' u u' uu'. unfold rename.
@@ -1309,25 +1249,20 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     End subs.
 
-    (** [S#] preserves free variables if [S] so does. *)
+    (** [S*] preserves free variables if [S] so does. *)
 
-    Section fv.
+    Global Instance fv_atc :
+      Proper (S --> Subset) fv -> Proper (S* --> Subset) fv.
 
-      Variable fv_S : Proper (S --> Subset) fv.
+    Proof.
+      intros fv_S v u uv. revert u v uv. induction 1.
+      apply fv_S. hyp. rewrite H. refl. trans (fv v); hyp.
+    Qed.
 
-      Lemma fv_atc : Proper (S# --> Subset) fv.
+    (** [S*] is monotone if [S] so is. *)
 
-      Proof.
-        intros v u uv. revert u v uv. induction 1.
-        apply fv_S. hyp. rewrite H. refl. trans (fv v); hyp.
-      Qed.
-
-    End fv.
-
-    (** [S#] is monotone if [S] so is. *)
-
-    Instance atc_mon : Monotone S -> Monotone (clos_aeq_trans S).
-      (*COQ does not recognize [S#] as [clos_aeq_trans S]*)
+    Global Instance mon_atc : Monotone S -> Monotone (clos_aeq_trans S).
+      (*COQ does not recognize [S*] as [clos_aeq_trans S]*)
 
     Proof.
       intro h. split.
@@ -1339,6 +1274,25 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       apply at_step. mon. apply at_aeq. mon. trans (App u v); hyp.
       (* lam *)
       intros x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
+      apply at_step. mon. apply at_aeq. mon. trans (Lam x v); hyp.
+    Qed.
+
+    Global Instance App_atc : Monotone S -> Proper (S* ==> S* ==> S*) App.
+
+    Proof.
+      intros m u u' uu' v v' vv'. trans (App u' v).
+      (* app_l *)
+      clear v' vv'. revert u u' uu'. induction 1.
+      apply at_step. mon. apply at_aeq. mon. trans (App v0 v); hyp.
+      (* app_r *)
+      clear u uu'. revert v v' vv'. induction 1.
+      apply at_step. mon. apply at_aeq. mon. trans (App u' v); hyp.
+    Qed.
+
+    Global Instance Lam_atc : Monotone S -> Proper (Logic.eq ==> S* ==> S*) Lam.
+
+    Proof.
+      intros m x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
       apply at_step. mon. apply at_aeq. mon. trans (Lam x v); hyp.
     Qed.
 
