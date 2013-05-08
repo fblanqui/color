@@ -37,91 +37,6 @@ Module Make (Export L : LTerm.L_Struct).
 
   Infix "=>b" := (clos_aeq beta) (at level 70).
 
-  (*REMOVE? attempt to prove the commutation of [beta] and [aeq]:
-  if it works, then we could simplify [clos_aeq R] to [aeq @ R].
-
-  Lemma rename_beta : forall x y u v, rename x y u ->b v ->
-    exists v', u ->b v' /\ rename y x v' ~~ v.
-
-  Proof.
-    cut (forall t v, t ->b v -> forall x y u, t = rename x y u ->
-      exists v', u ->b v' /\ rename y x v' ~~ v).
-    intros h x y u v r. eapply h. apply r. refl.
-    induction 1; intros y z w e.
-    (* top *)
-    inversion H; subst.
-    unfold rename in H0; destruct w; simpl in H0; try discr.
-    unfold single, update, id in H0. destruct (eq_dec x0 y); discr.
-    inversion H0. destruct w1; simpl in H2; try discr.
-    unfold single, update, id in H2. destruct (eq_dec x0 y); discr.
-    inversion H2. exists (subs (single x0 w2) w1). split.
-    apply m_step. apply beta_top_intro. unfold rename. rewrite 2!subs_comp.
-    apply subs_saeq. intros a ha. rewrite <- H4 in *.
-    unfold comp. unfold single at 2. unfold update, id.
-    destruct (eq_dec a x0); simpl.
-    rewrite single_eq.
-    Focus 2.
-    unfold single at 1. unfold single at 3. unfold update, id.
-    destruct (eq_dec a z); destruct (eq_dec a y); simpl.
-    unfold single at 1. unfold update, id. destruct (eq_dec z x).
-
-    change (App (Lam x u0) v0 = App (rename y z w1) (rename y z w2)) in H0.
-    inversion H0.
-  Qed.
-
-  Lemma aeq_beta : aeq @ beta << beta @ aeq.
-
-  Proof.
-    intros t v [u [tu uv]]. revert u v uv t tu. induction 1; intros t tu.
-    (* top *)
-    inversion H; subst. inv_aeq tu; subst. inv_aeq i0; subst.
-    exists (subs (single x0 u1) u2). split. apply m_step. apply beta_top_intro.
-    rewrite j0. rewrite single_rename. 2: hyp.
-    (*COQ does not accept: rewrite i1.*) apply single_aeq; auto. refl.
-    (* app_l *)
-    inv_aeq tu; subst. destruct (IHuv _ i0) as [u0' [h1 h2]].
-    exists (App u0' u1). split. mon. rewrite h2, i1. refl.
-    (* app_r *)
-    inv_aeq tu; subst. destruct (IHuv _ i1) as [u1' [h1 h2]].
-    exists (App u0 u1'). split. mon. rewrite h2, i0. refl.
-    (* lam *)
-    inv_aeq tu; subst.
-    assert (k : rename x0 x u0 ~~ u).
-    rewrite j0, rename2, rename_id. refl. hyp.
-    destruct (IHuv _ k) as [t [h1 h2]].
-
-
-    (* induction on the size of [u] *)
-    intros t v [u [tu uv]]. revert u v uv t tu.
-    ind_size1 u; intros a ua t tu.
-    (* var *)
-    inversion ua; subst. inversion H.
-    (* fun *)
-    inversion ua; subst. inversion H.
-    (* app *)
-    inv_aeq tu; subst. inversion ua; subst.
-    (* top *)
-    inversion H; subst. inv_aeq i0; subst. exists (subs (single x0 u1) u0).
-    split. apply m_step. apply beta_top_intro.
-    rewrite j0. rewrite single_rename. 2: hyp.
-    (*COQ does not accept: rewrite i1.*) apply single_aeq; auto. refl.
-    (* app_l *)
-    destruct (hu _ H2 _ i0) as [u0' [h1 h2]].
-    exists (App u0' u1). split. mon. rewrite h2, i1. refl.
-    (* app_r *)
-    destruct (hv _ H2 _ i1) as [u1' [h1 h2]].
-    exists (App u u1'). split. mon. rewrite h2, i0. refl.
-    (* lam *)
-    inv_aeq tu; subst. inversion ua; subst. inversion H.
-    assert (k : size u0 <= size u). rewrite j0. rewrite size_rename. refl.
-    destruct (hu _ (le_refl _) _ H2 (rename x0 x u0)) as [t [h1 h2]].
-    rewrite j0, rename2, rename_id. refl. hyp.
-
-    assert (k : rename x0 x u0 ~~ u).
-    destruct (IHuv _ k) as [t [h1 h2]].
-
-  Qed.*)
-
 (****************************************************************************)
 (** Beta-reduction is stable by substitution. *)
 
@@ -255,28 +170,6 @@ Module Make (Export L : LTerm.L_Struct).
     rewrite fv_single. case_eq (mem x (fv u0)); intro hx. refl.
     intros y hy. simpl. set_iff. rewrite <- not_mem_iff in hx.
     eq_dec x y. subst. tauto. left. auto.
-  Qed.
-
-  Instance fv_beta : Proper (beta --> Subset) fv.
-
-  Proof.
-    induction 1; simpl; try (intro y; set_iff; intuition; fail).
-    apply fv_beta_top. hyp.
-  Qed.
-
-  Instance fv_beta_aeq : Proper (beta_aeq --> Subset) fv.
-
-  Proof.
-    intros u v b. inversion b; subst. rewrite H, H0. apply fv_beta. hyp.
-  Qed.
-
-  Lemma beta_aeq_notin_fv_lam : forall x y u v,
-    Lam x u =>b Lam y v -> y=x \/ ~In x (fv v).
-
-  Proof.
-    intros x y u v r. eq_dec y x. auto. right. intro i.
-    absurd (In x (fv (Lam x u))). simpl. set_iff. tauto.
-    rewrite r. simpl. set_iff. auto.
   Qed.
 
 (****************************************************************************)
