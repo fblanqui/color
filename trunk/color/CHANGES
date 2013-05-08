@@ -8,6 +8,7 @@
 -----------------------------------------------------------------------------
 12-10-23: NEW RELEASE (SVN revision 1751)
 
+12-10-23: [Blanqui]
 - Term/Lambda/LTerm: pure lambda-terms with names variables
 - Term/Lambda/LSubs: higher-order simultaneous substitutions
 - Term/Lambda/LAlpha: alpha-equivalence
@@ -43,7 +44,7 @@
 -----------------------------------------------------------------------------
 10-10-28: NEW RELEASE (SVN revision 1341)
 
-10-10-27:
+10-10-27: [Blanqui]
 - migration to Coq 8.3
 
 10-06-30: [Stratulat]
