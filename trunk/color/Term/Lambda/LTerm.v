@@ -390,6 +390,46 @@ Module Make (Export L : L_Struct).
     unfold Vremove_last. rewrite Vsub_cons. apply Vsub_pi.
   Qed.
 
+(****************************************************************************)
+(** ** Head and arguments of a term. *)
+
+  Fixpoint head (t : Te) :=
+    match t with
+      | LTerm.App u _ => head u
+      | _ => t
+    end.
+
+  Lemma head_head : forall u, head (head u) = head u.
+
+  Proof. induction u; simpl; auto. Qed.
+
+  Fixpoint nb_args (t : Te) :=
+    match t with
+      | LTerm.App u _ => S (nb_args u)
+      | _ => 0
+    end.
+
+  Fixpoint args (t : Te) :=
+    match t as t return Tes (nb_args t) with
+      | LTerm.App u v => Vadd (args u) v
+      | _ => Vnil
+    end.
+
+  Lemma head_apps : forall n (us : Tes n) t, head (apps t us) = head t.
+
+  Proof.
+    induction n; intros us t.
+    VOtac. refl.
+    VSntac us. simpl. rewrite apps_app. simpl. apply IHn.
+  Qed.
+
+  Lemma apps_head_args : forall u, u = apps (head u) (args u).
+
+  Proof.
+    induction u; simpl; auto.
+    rewrite IHu1, app_apps, head_apps, head_head, <- IHu1. refl.
+  Qed.
+
 End Make.
 
 (*COQ: We set the following Emacs file variables so that the file can
