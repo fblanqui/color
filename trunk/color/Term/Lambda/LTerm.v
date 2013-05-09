@@ -381,6 +381,15 @@ Module Make (Export L : L_Struct).
     induction us; intros u v. refl. simpl Vadd. simpl apps. apply IHus.
   Qed.
 
+  Lemma apps_app : forall n (us : Tes n) t u, apps (App t u) us
+    = App (apps t (Vremove_last (Vcons u us))) (Vlast u us).
+
+  Proof.
+    induction us; intros t u; simpl. refl. rewrite IHus.
+    apply (f_equal (fun v => App (apps (App t u) v) (Vlast h us))).
+    unfold Vremove_last. rewrite Vsub_cons. apply Vsub_pi.
+  Qed.
+
 End Make.
 
 (*COQ: We set the following Emacs file variables so that the file can
