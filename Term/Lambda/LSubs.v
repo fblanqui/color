@@ -725,6 +725,13 @@ A) A] if [A] is not empty).
     unfold var. rewrite n. refl.
   Qed.
 
+  Require Import VecUtil.
+
+  Lemma subs_apps : forall s n (us : Tes n) t,
+    subs s (apps t us) = apps (subs s t) (Vmap (subs s) us).
+
+  Proof. intro s. induction us; intro t; simpl. refl. rewrite IHus. refl. Qed.
+
   (** Composition of two substitutions. *)
 
   Definition comp s1 s2 (x : X) := subs s2 (s1 x).
