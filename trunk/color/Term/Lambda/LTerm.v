@@ -361,6 +361,12 @@ Module Make (Export L : L_Struct).
     intros R fv_R. induction 1; simpl; (rewrite IHclos_mon || rewrite H); refl.
   Qed.
 
+  Instance fv_union : forall R S,
+    Proper (R --> Subset) fv -> Proper (S --> Subset) fv ->
+    Proper (R U S --> Subset) fv.
+
+  Proof. intros R S fv_R fv_S t u [tu|tu]; rewrite <- tu; refl. Qed.
+
 (****************************************************************************)
 (** ** Application of a term to a vector of terms. *)
 
