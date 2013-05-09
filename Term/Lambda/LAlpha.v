@@ -938,12 +938,20 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     end.
 
 (****************************************************************************)
-(** [not_lam] is compatible with [aeq]. *)
+(** Compatibility with [aeq] of some basic predicates/functions. *)
 
   Instance not_lam_aeq : Proper (aeq ==> impl) not_lam.
 
   Proof.
     intros u v uv hu x a hv. subst. inv_aeq uv; subst. eapply hu. refl.
+  Qed.
+
+  Instance head_aeq : Proper (aeq ==> aeq) head.
+
+  Proof.
+    intros u v uv. revert u v uv.
+    induction u; intros v uv; inv_aeq uv; subst; simpl.
+    refl. refl. fo. fo.
   Qed.
 
 (****************************************************************************)
