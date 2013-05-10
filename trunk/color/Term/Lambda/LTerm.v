@@ -11,10 +11,19 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil BoolUtil.
+Require Import LogicUtil BoolUtil VecUtil Min Max Wf_nat Omega FSets FSetUtil
+  Structures.OrderedType RelUtil.
+
+(*FIXME: move to ZUtil? *)
+(** Tactic for proving arithmetic goals with [max]. *)
+
+Ltac max := unfold ltof; simpl;
+  match goal with
+    | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
+  end; intros; omega.
 
 (****************************************************************************)
-(** ** The set [Te] of lambda-terms
+(** * The set [Te] of lambda-terms
 given a set [F] of constants and a set [X] of variables.
 
 The type of terms is defined outside any functor because, in Coq,
@@ -30,12 +39,148 @@ Section term.
   | App (u v : Te)
   | Lam (x : X) (u : Te).
 
+(****************************************************************************)
+(** ** Size of a term *)
+
+  Fixpoint size (t : Te) :=
+    match t with
+      | Var _ => 0
+      | Fun _ => 0
+      | App u v => 1 + max (size u) (size v)
+      | Lam _ u => 1 + size u
+    end.
+
+  (** Induction principles on term size. *)
+
+  Lemma intro_size : forall P : Te -> Prop,
+    (forall n u, size u < n -> P u) -> forall u, P u.
+
+  Proof. intros P h u. eapply h with (n:=S(size u)). omega. Qed.
+
+  Lemma ind_size0 : forall P : Te -> Prop,
+    (forall u, (forall v, size v < size u -> P v) -> P u) -> forall u, P u.
+
+  Proof.
+    intros P h. apply intro_size. induction n; intro u; simpl; intro hs.
+    exfalso. omega.
+    destruct (eq_nat_dec (size u) n).
+    subst. apply h. hyp.
+    apply IHn. omega.
+  Qed.
+
+  Lemma ind_size1 : forall P : Te -> Prop,
+    (forall x, P (Var x)) -> (forall f, P (Fun f)) ->
+    (forall u v, P u -> P v -> P (App u v)) ->
+    (forall x u, (forall u', size u' <= size u -> P u') -> P (Lam x u)) ->
+    forall u, P u.
+
+  Proof.
+    intros P hv hf ha hl. apply ind_size0. intros [x|f|u v|x u] h.
+    apply hv. apply hf. apply ha; apply h; max.
+    apply hl. intros u' h'. apply h. simpl. omega.
+  Qed.
+
+(****************************************************************************)
+(** ** Application of a term to a vector of terms. *)
+
+  Notation Tes := (vector Te).
+
+  Fixpoint apps n t (us : Tes n) :=
+    match us with
+      | Vnil => t
+      | Vcons u _ us' => apps (App t u) us'
+    end.
+
+  Lemma app_apps : forall n (us : Tes n) u v,
+    App (apps u us) v = apps u (Vadd us v).
+
+  Proof.
+    induction us; intros u v. refl. simpl Vadd. simpl apps. apply IHus.
+  Qed.
+
+  Lemma apps_app : forall n (us : Tes n) t u, apps (App t u) us
+    = App (apps t (Vremove_last (Vcons u us))) (Vlast u us).
+
+  Proof.
+    induction us; intros t u; simpl. refl. rewrite IHus.
+    apply (f_equal (fun v => App (apps (App t u) v) (Vlast h us))).
+    unfold Vremove_last. rewrite Vsub_cons. apply Vsub_pi.
+  Qed.
+
+(****************************************************************************)
+(** ** Head and arguments of a term. *)
+
+  Fixpoint head (t : Te) :=
+    match t with
+      | App u _ => head u
+      | _ => t
+    end.
+
+  Lemma head_head : forall u, head (head u) = head u.
+
+  Proof. induction u; simpl; auto. Qed.
+
+  Fixpoint nb_args (t : Te) :=
+    match t with
+      | App u _ => S (nb_args u)
+      | _ => 0
+    end.
+
+  Fixpoint args (t : Te) :=
+    match t as t return Tes (nb_args t) with
+      | App u v => Vadd (args u) v
+      | _ => Vnil
+    end.
+
+  Lemma head_apps : forall n (us : Tes n) t, head (apps t us) = head t.
+
+  Proof.
+    induction n; intros us t.
+    VOtac. refl.
+    VSntac us. simpl. rewrite apps_app. simpl. apply IHn.
+  Qed.
+
+  Lemma apps_head_args : forall u, u = apps (head u) (args u).
+
+  Proof.
+    induction u; simpl; auto.
+    rewrite IHu1, app_apps, head_apps, head_head, <- IHu1. refl.
+  Qed.
+
+(****************************************************************************)
+(** ** Set of free variables of a term *)
+
+  Section fv.
+
+    Variables (XSet : Type) (empty : XSet) (singleton : X -> XSet)
+      (union : XSet -> XSet -> XSet) (remove : X -> XSet -> XSet).
+
+    Fixpoint fv (t : Te) :=
+      match t with
+        | Var x => singleton x
+        | Fun _ => empty
+        | App u v => union (fv u) (fv v)
+        | Lam x u => remove x (fv u)
+      end.
+
+  End fv.
+
 End term.
 
 (****************************************************************************)
-(** ** Structure on which we will define lambda-terms. *)
+(** Tactic for doing induction on the size of a term. *)
 
-Require Import Structures.OrderedType FSets.
+Ltac ind_size1 u :=
+  intro u; pattern u; apply ind_size1;
+    [clear u; let x := fresh "x" in intro x
+    |clear u; let f := fresh "f" in intro f
+    |clear u; let u := fresh "u" in let v := fresh "v" in
+      let hu := fresh "hu" in let hv := fresh "hv" in
+        intros u v hu hv
+    |clear u; let x := fresh "x" in let hu := fresh "hu" in intros x u hu].
+
+(****************************************************************************)
+(** ** Structure on which we will define lambda-terms. *)
 
 Module Type L_Struct.
 
@@ -72,10 +217,22 @@ Module Type L_Struct.
   Declare Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
 
   Notation Te := (Te F X).
+  Notation Tes := (vector Te).
+
   Notation Var := (@Var F X).
   Notation Fun := (@Fun F X).
   Notation App := (@App F X).
   Notation Lam := (@Lam F X).
+
+  Notation size := (@size F X).
+  Notation apps := (@apps F X).
+  Notation head := (@head F X).
+  Notation nb_args := (@nb_args F X).
+  Notation args := (@args F X).
+
+  (*COQ: When using a Notation, some tauto tactic fails in the proof
+  of LSubs.single_com. *)
+  Definition fv := (@fv F X XSet.t empty singleton union remove).
 
 End L_Struct.
 
@@ -92,7 +249,6 @@ Module Make (Export L : L_Struct).
 
   (** Properties of finite set of variables. *)
 
-  Require FSetUtil.
   Module Export XSetUtil := FSetUtil.Make XSet.
 
   (** Tactic for proving simple membership propositions. *)
@@ -108,13 +264,11 @@ Module Make (Export L : L_Struct).
 
   Lemma eqb_true_iff : forall x y, eqb x y = true <-> x = y.
 
-  Proof. intros x y. unfold eqb. eq_dec x y; intuition. discr. Qed.
+  Proof. intros x y. unfold eqb. eq_dec x y; intuition. Qed.
 
   Lemma eqb_false_iff : forall x y, eqb x y = false <-> x <> y.
 
-  Proof.
-    intros x y. unfold eqb. eq_dec x y. intuition. tauto.
-  Qed.
+  Proof. intros x y. unfold eqb. eq_dec x y. intuition. tauto. Qed.
 
 (****************************************************************************)
 (** ** Equality on [Te] is decidable. *)
@@ -136,7 +290,7 @@ Module Make (Export L : L_Struct).
   Lemma beq_term_true_iff : forall u v, beq_term u v = true <-> u = v.
 
   Proof.
-    intros u v. unfold beq_term. destruct (eq_term_dec u v); intuition. discr.
+    intros u v. unfold beq_term. destruct (eq_term_dec u v); intuition.
   Qed.
 
   Lemma beq_term_false_iff : forall u v, beq_term u v = false <-> u <> v.
@@ -202,8 +356,6 @@ Module Make (Export L : L_Struct).
   Qed.
 
   (** Closure by equivalence preserves monotony. *)
-
-  Require Import RelUtil.
 
   Instance clos_equiv_mon R : Monotone R -> Monotone (clos_equiv R).
 
@@ -276,76 +428,9 @@ Module Make (Export L : L_Struct).
     intros t u [h|h]. eapply clos_mon_incl. apply incl_union_l. refl. hyp.
     eapply clos_mon_incl. apply incl_union_r. refl. hyp.
   Qed.
-  
-(****************************************************************************)
-(** ** Size of a term *)
-
-  Require Import Min Max Wf_nat Omega.
-
-  Fixpoint size (t : Te) :=
-    match t with
-      | LTerm.Var _ => 0
-      | LTerm.Fun _ => 0
-      | LTerm.App u v => 1 + max (size u) (size v)
-      | LTerm.Lam _ u => 1 + size u
-    end.
-
-  (** Tactic for proving arithmetic goals with [max]. *)
-
-  Ltac max := unfold ltof; simpl;
-    match goal with
-      | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
-    end; intros; omega.
-
-  (** Induction principles on term size. *)
-
-  Lemma intro_size : forall P : Te -> Prop,
-    (forall n u, size u < n -> P u) -> forall u, P u.
-
-  Proof. intros P h u. eapply h with (n:=S(size u)). omega. Qed.
-
-  Lemma ind_size0 : forall P : Te -> Prop,
-    (forall u, (forall v, size v < size u -> P v) -> P u) -> forall u, P u.
-
-  Proof.
-    intros P h. apply intro_size. induction n; intro u; simpl; intro hs.
-    exfalso. omega.
-    destruct (eq_nat_dec (size u) n).
-    subst. apply h. hyp.
-    apply IHn. omega.
-  Qed.
-
-  Lemma ind_size1 : forall P : Te -> Prop,
-    (forall x, P (Var x)) -> (forall f, P (Fun f)) ->
-    (forall u v, P u -> P v -> P (App u v)) ->
-    (forall x u, (forall u', size u' <= size u -> P u') -> P (Lam x u)) ->
-    forall u, P u.
-
-  Proof.
-    intros P hv hf ha hl. apply ind_size0. intros [x|f|u v|x u] h.
-    apply hv. apply hf. apply ha; apply h; max.
-    apply hl. intros u' h'. apply h. simpl. omega.
-  Qed.
-
-  Ltac ind_size1 u :=
-    intro u; pattern u; apply ind_size1;
-      [clear u; let x := fresh "x" in intro x
-      |clear u; let f := fresh "f" in intro f
-      |clear u; let u := fresh "u" in let v := fresh "v" in
-                let hu := fresh "hu" in let hv := fresh "hv" in
-                intros u v hu hv
-      |clear u; let x := fresh "x" in let hu := fresh "hu" in intros x u hu].
 
 (****************************************************************************)
 (** ** Set of free variables of a term *)
-
-  Fixpoint fv (t : Te) :=
-    match t with
-      | LTerm.Var x => singleton x
-      | LTerm.Fun _ => empty
-      | LTerm.App u v => XSet.union (fv u) (fv v)
-      | LTerm.Lam x u => remove x (fv u)
-    end.
 
   Lemma notin_fv_lam : forall x y u,
     y=x \/ ~In x (fv u) <-> ~In x (fv (Lam y u)).
@@ -367,81 +452,4 @@ Module Make (Export L : L_Struct).
 
   Proof. intros R S fv_R fv_S t u [tu|tu]; rewrite <- tu; refl. Qed.
 
-(****************************************************************************)
-(** ** Application of a term to a vector of terms. *)
-
-  Require Import VecUtil.
-
-  Notation Tes := (vector Te).
-
-  Fixpoint apps n t (us : Tes n) :=
-    match us with
-      | Vnil => t
-      | Vcons u _ us' => apps (App t u) us'
-    end.
-
-  Lemma app_apps : forall n (us : Tes n) u v,
-    App (apps u us) v = apps u (Vadd us v).
-
-  Proof.
-    induction us; intros u v. refl. simpl Vadd. simpl apps. apply IHus.
-  Qed.
-
-  Lemma apps_app : forall n (us : Tes n) t u, apps (App t u) us
-    = App (apps t (Vremove_last (Vcons u us))) (Vlast u us).
-
-  Proof.
-    induction us; intros t u; simpl. refl. rewrite IHus.
-    apply (f_equal (fun v => App (apps (App t u) v) (Vlast h us))).
-    unfold Vremove_last. rewrite Vsub_cons. apply Vsub_pi.
-  Qed.
-
-(****************************************************************************)
-(** ** Head and arguments of a term. *)
-
-  Fixpoint head (t : Te) :=
-    match t with
-      | LTerm.App u _ => head u
-      | _ => t
-    end.
-
-  Lemma head_head : forall u, head (head u) = head u.
-
-  Proof. induction u; simpl; auto. Qed.
-
-  Fixpoint nb_args (t : Te) :=
-    match t with
-      | LTerm.App u _ => S (nb_args u)
-      | _ => 0
-    end.
-
-  Fixpoint args (t : Te) :=
-    match t as t return Tes (nb_args t) with
-      | LTerm.App u v => Vadd (args u) v
-      | _ => Vnil
-    end.
-
-  Lemma head_apps : forall n (us : Tes n) t, head (apps t us) = head t.
-
-  Proof.
-    induction n; intros us t.
-    VOtac. refl.
-    VSntac us. simpl. rewrite apps_app. simpl. apply IHn.
-  Qed.
-
-  Lemma apps_head_args : forall u, u = apps (head u) (args u).
-
-  Proof.
-    induction u; simpl; auto.
-    rewrite IHu1, app_apps, head_apps, head_head, <- IHu1. refl.
-  Qed.
-
 End Make.
-
-(*COQ: We set the following Emacs file variables so that the file can
-be run in ProofGeneral. Otherwise, the identifiers LTerm.* are not
-recognized by coqtop. *)
-
-(* Local Variables: *)
-(* coq-prog-args: ("-emacs" "-top" "LTerm") *)
-(* End: *)
