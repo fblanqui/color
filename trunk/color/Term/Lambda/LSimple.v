@@ -12,10 +12,11 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import VecUtil LogicUtil.
-Require LTerm LComp.
+Require Import LTerm.
+Require LComp.
 
 (****************************************************************************)
-(** ** Simple types over a set [So] of type constants or sorts. *)
+(** * Simple types over a set [So] of type constants or sorts. *)
 
 Section simple.
 
@@ -48,7 +49,7 @@ End simple.
 Infix "~~>" := Arr (at level 55, right associativity).
 
 (****************************************************************************)
-(** ** Structure over which we will define typing. *)
+(** * Structure over which we will define typing. *)
 
 Module Type ST_Struct.
 
@@ -57,22 +58,26 @@ Module Type ST_Struct.
   Parameter So : Type.
 
   (*Parameter So_eq_dec : forall x y : So, {x=y}+{x<>y}.*)
+
+  Notation Ty := (Ty So).
+  Notation Tys := (vector Ty).
  
-  Parameter typ : F -> Ty So.
+  Parameter typ : F -> Ty.
 
 End ST_Struct.
 
-Module Make (Export ST : ST_Struct).
+(****************************************************************************)
+(** * Typing relation over an ST structure. *)
 
-  Notation Ty := (Ty So). Notation Tys := (vector Ty).
+Module Make (Export ST : ST_Struct).
 
   (*Lemma Ty_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
 
   Proof. decide equality. apply So_eq_dec. Qed.*)
 
-  (*COQ: [LSimple.Make] is defined as an extension of [LComp.Make]
-  instead of [LAlpha.Make] because, in Coq, functor instanciation
-  generates distinct Inductive's. *)
+  (*COQ: [Make] is defined as an extension of [LComp.Make] instead of
+  [LAlpha.Make] because, in Coq, functor instanciation generates
+  distinct Inductive's. *)
 
   Module Export C := LComp.Make L.
 

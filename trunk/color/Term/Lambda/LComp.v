@@ -19,20 +19,17 @@ Module Make (Export L : LTerm.L_Struct).
   Module Export B := LBeta.Make L.
 
 (****************************************************************************)
-(** ** Structure on which we will define computability predicates. *)
+(** * Structure on which we will define computability predicates. *)
 
   Definition pred := Te -> Prop.
 
   Module Type CP_Struct.
 
-    (** We assume given a relation [->Rh] and a predicate [neutral] that is
-       compatible with alpha-equivalence. *)
+    (** We assume given a relation [->Rh] and a predicate [neutral]. *)
 
     Parameter Rh : relation Te. Infix "->Rh" := Rh (at level 70).
 
     Parameter neutral : pred.
-
-    Declare Instance neutral_aeq : Proper (aeq ==> impl) neutral.
 
     (** We then denote by [->R] the monotone closure of [->Rh] and by
     [=>R] the closure by alpha-equivalence of [->R]. *)
@@ -45,6 +42,7 @@ Module Make (Export L : LTerm.L_Struct).
 
     (** Properties of [neutral]. *)
 
+    Declare Instance neutral_aeq : Proper (aeq ==> impl) neutral.
     Parameter neutral_var : forall x, neutral (Var x).
     Parameter neutral_app : forall u v, neutral u -> neutral (App u v).
     Parameter not_neutral_lam : forall x u, ~neutral (Lam x u).
@@ -64,11 +62,18 @@ Module Make (Export L : LTerm.L_Struct).
   End CP_Struct.
 
 (****************************************************************************)
-(** ** CP structure for beta-reduction alone. *)
+(** * CP structure for beta-reduction alone. *)
 
   Module CP_beta <: CP_Struct.
 
-    Definition Rh := beta_top. Infix "->Rh" := Rh (at level 70).
+    Definition Rh := beta_top.
+    Infix "->Rh" := Rh (at level 70).
+
+    Notation R := (clos_mon Rh).
+    Infix "->R" := (clos_mon Rh) (at level 70).
+
+    Notation R_aeq := (clos_aeq R).
+    Infix "=>R" := (clos_aeq R) (at level 70).
 
     Definition neutral (u : Te) :=
       match u with
@@ -79,12 +84,6 @@ Module Make (Export L : LTerm.L_Struct).
     Instance neutral_aeq : Proper (aeq ==> impl) neutral.
 
     Proof. intros u u' uu' hu. destruct u; inv_aeq uu'; subst; simpl; auto. Qed.
-
-    Notation R := (clos_mon Rh).
-    Infix "->R" := (clos_mon Rh) (at level 70).
-
-    Notation R_aeq := (clos_aeq R).
-    Infix "=>R" := (clos_aeq R) (at level 70).
 
     Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
@@ -130,7 +129,7 @@ Module Make (Export L : LTerm.L_Struct).
   End CP_beta.
 
 (****************************************************************************)
-(** ** Basic properties of CP structures. *)
+(** * Basic properties of CP structures. *)
 
   Require Import SN.
 
