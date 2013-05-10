@@ -11,14 +11,16 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil.
-Require LTerm LSubs.
+Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
+  VecUtil VecOrd.
+Require Import LTerm.
+Require LSubs.
 
-Module Make (Export L : LTerm.L_Struct).
+Module Make (Export L : L_Struct).
 
   Module Export S := LSubs.Make L.
 
-  (** Alpha-equivalence is defined as the smallest congruence
+  (** ** Alpha-equivalence is defined as the smallest congruence
   containing the [aeq_alpha] rule. Here, we exactly follow Curry-Feys
   definition (pages 59 and 91). *)
 
@@ -915,7 +917,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof. intros t x u h. apply lam_aeq_r. sym. hyp. Qed.
 
 (****************************************************************************)
-(** ** Inversion tactic for alpha-equivalence. *)
+(** Inversion tactic for alpha-equivalence. *)
 
   Ltac inv_aeq h :=
     match type of h with
@@ -1078,8 +1080,6 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
 (****************************************************************************)
 (** ** Alpha-equivalence on vectors of terms. *)
-
-  Require Import VecUtil VecOrd.
 
   Definition vaeq := vec_ge aeq.
 
@@ -1359,8 +1359,6 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     (** A vector of terms is strongly normalizing for [vaeq_prod] if
     every component is strongly normalizing for [R_aeq]. *)
-
-    Require Import SN.
 
     Lemma sn_vaeq_prod : forall n (us : Tes n),
       Vforall (SN R_aeq) us -> SN (@vaeq_prod n) us.

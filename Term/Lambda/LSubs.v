@@ -18,9 +18,9 @@ simultaneous substitution of any number of variables. *)
 Set Implicit Arguments.
 
 Require Import BoolUtil SetoidList Basics Morphisms LogicUtil.
-Require LTerm.
+Require Import LTerm.
 
-Module Make (Export L : LTerm.L_Struct).
+Module Make (Export L : L_Struct).
 
   Module Export T := LTerm.Make L.
 

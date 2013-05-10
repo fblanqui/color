@@ -11,10 +11,11 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat Relations Basics Morphisms LogicUtil.
-Require LTerm LAlpha.
+Require Import Wf_nat Relations Basics Morphisms LogicUtil VecUtil VecOrd SN.
+Require Import LTerm.
+Require LAlpha.
 
-Module Make (Export L : LTerm.L_Struct).
+Module Make (Export L : L_Struct).
 
   Module Export A := LAlpha.Make L.
 
@@ -176,8 +177,6 @@ Module Make (Export L : LTerm.L_Struct).
 (** If [apps u us] beta-reduces to [t] and [u] is not an abstraction,
 then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
-  Require Import VecUtil VecOrd.
-
   Infix "-->b" := (Vgt_prod beta) (at level 70).
   Infix "==>b" := (vaeq_prod beta) (at level 70).
 
@@ -221,8 +220,6 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 (****************************************************************************)
 (** [apps (Fun f) us] is strongly normalizing wrt beta-reduction if
 every element of [us] is strongly normalizing wrt beta-reduction. *)
-
-  Require Import SN.
 
   Lemma sn_beta_apps_fun : forall f n (us : Tes n),
     Vforall (SN beta_aeq) us -> SN beta_aeq (apps (Fun f) us).

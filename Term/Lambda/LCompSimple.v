@@ -12,15 +12,15 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil LSimple.
-Require LTerm.
+Require Import Morphisms Basics SN VecUtil LogicUtil.
+Require Import LTerm LSimple.
 
-Module Make (Export ST : LSimple.ST_Struct).
+Module Make (Export ST : ST_Struct).
 
   Module Export S := LSimple.Make ST.
 
 (****************************************************************************)
-(** ** Functor providing a termination proof for any CP structure
+(** * Functor providing a termination proof for any CP structure
 
 assuming that every type constant is interpreted by a computability
 predicate, and every function symbol is computable. *)
@@ -226,7 +226,7 @@ predicate, and every function symbol is computable. *)
   End SN.
 
 (****************************************************************************)
-(** ** Termination of beta-reduction. *)
+(** * Termination of beta-reduction. *)
 
   Import CP_beta.
 
