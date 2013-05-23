@@ -324,9 +324,9 @@ assume that [x] does not occur in [E], but overrides its type in
 
   Notation "E '|-' v '~:' V" := (tr E v V) (at level 70).
 
-(** If a term is typable [u] in [E], then its free variable are in
-[E]. In fact, any subterm of [u] is typable in some extension of
-[restrict_dom E (fv u)]. *)
+(** If a term [v] is typable in [E], then its free variable are in
+[E]. In fact, any subterm of [v] is typable in some extension of
+[restrict_dom E (fv v)]. *)
 
   Lemma tr_fv_dom : forall E v V, E |- v ~: V -> fv v [<=] dom E.
 

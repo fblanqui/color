@@ -18,11 +18,13 @@ Require Import LogicUtil NatUtil EqUtil Setoid SetoidList RelMidex Omega
 Require Export List.
 Require Program.
 
-Implicit Arguments in_app_or [A l m a].
-Implicit Arguments in_map [A B l x].
-Implicit Arguments in_combine_l [A B l l' x y].
-Implicit Arguments in_combine_r [A B l l' x y].
-Implicit Arguments nth_In [A n l].
+Arguments nil {A}.
+Arguments incl {A} l m.
+Arguments in_app_or [A l m a] _.
+Arguments in_map [A B] f [l x] _.
+Arguments in_combine_l [A B l l' x y] _.
+Arguments in_combine_r [A B l l' x y] _.
+Arguments nth_In [A n l] d _.
 
 Ltac elt_type l := match type of l with list ?A => A end.
 
@@ -72,7 +74,7 @@ Section In.
 
   Proof.
     induction l; simpl; intros. contr. destruct H. subst x.
-    exists (@nil A). exists l. refl. ded (IHl H). do 2 destruct H0. rewrite H0.
+    exists nil. exists l. refl. ded (IHl H). do 2 destruct H0. rewrite H0.
     exists (a :: x0). exists x1. refl.
   Qed.
 
@@ -83,9 +85,9 @@ Section In.
 
   Proof.
     induction l; simpl; intros. contr. destruct H. subst x.
-    exists (@nil A). exists l. intuition. ded (IHl H). do 3 destruct H0.
+    exists nil. exists l. intuition. ded (IHl H). do 3 destruct H0.
     subst l. case (eqA_dec a x); intro.
-    subst x. exists (@nil A). exists (x0 ++ a :: x1). intuition.
+    subst x. exists nil. exists (x0 ++ a :: x1). intuition.
     exists (a :: x0). exists x1. intuition. simpl in H2. destruct H2; auto.
   Qed.
 
@@ -103,7 +105,7 @@ Section In.
     destruct (In_midex H x l). destruct IHl. hyp. destruct H2. 
     exists (a::x0). exists x1. rewrite (proj1 H2).
     rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
-    destruct H0. exists (nil : list A). exists l. simpl. rewrite H0. tauto.
+    destruct H0. exists nil. exists l. simpl. rewrite H0. tauto.
     contr.
   Qed.
 
@@ -135,18 +137,17 @@ Ltac list_ok := let x := fresh in intro x;
 (***********************************************************************)
 (** inclusion *)
 
-Add Parametric Relation (A : Type) : (list A) (@incl A)
-  reflexivity proved by (@incl_refl A)
-  transitivity proved by (@incl_tran A)
-    as incl_rel.
-
-Add Parametric Morphism (A : Type) : (@app A)
-  with signature (@incl A) ==> (@incl A) ==> (@incl A)
-    as app_incl.
+Instance incl_rel A : PreOrder (@incl A).
 
 Proof.
-intros. unfold incl. intro. repeat rewrite in_app. intuition.
+  constructor.
+  intro x. apply incl_refl.
+  intros x y z xy yz. apply incl_tran with y; hyp.
 Qed.
+
+Instance app_incl A : Proper (incl ==> incl ==> incl) (@app A).
+
+Proof. intros l l' ll' m m' mm' x. rewrite !in_app. intuition. Qed.
 
 Section incl.
 
@@ -258,9 +259,9 @@ unfold strict_incl. intuition. trans m; hyp.
 apply H2. trans n; hyp.
 Qed.
 
-Add Parametric Relation (A : Type) : (list A) (@strict_incl A)
-  transitivity proved by (@strict_incl_tran A)
-    as strict_incl_rel.
+Instance strict_incl_rel A : Transitive (@strict_incl A).
+
+Proof. intros x y z xy yz. apply strict_incl_tran with y; hyp. Qed.
 
 (***********************************************************************)
 (** equivalence *)
@@ -291,19 +292,20 @@ End equiv.
 
 Infix "[=]" := lequiv (at level 70).
 
-Add Parametric Relation (A : Type) : (list A) (@lequiv A)
-  reflexivity proved by (@lequiv_refl A)
-  symmetry proved by (@lequiv_sym A)
-    transitivity proved by (@lequiv_trans A)
-    as lequiv_rel.
+Arguments lequiv {A} l1 l2.
 
-Add Parametric Morphism (A : Type) : (@app A)
-  with signature (@lequiv A) ==> (@lequiv A) ==> (@lequiv A)
-    as app_lequiv.
+Instance lequiv_rel A : Equivalence (@lequiv A).
 
 Proof.
-unfold lequiv. intuition.
+  constructor.
+  intro x. apply lequiv_refl.
+  intros x y xy. apply lequiv_sym; hyp.
+  intros x y z xy yz. apply lequiv_trans with y; hyp.
 Qed.
+
+Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
+
+Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition. Qed.
 
 (***********************************************************************)
 (** empty list *)
@@ -314,9 +316,7 @@ Section nil.
 
   Lemma list_empty_dec : forall l : list A, {l = nil} + {l <> nil}.
 
-  Proof.
-    destruct l; auto. right; congruence.
-  Qed.
+  Proof. destruct l; auto. right; congruence. Qed.
 
   Definition is_empty (l : list A) : bool :=
     match l with
@@ -329,21 +329,13 @@ End nil.
 (***********************************************************************)
 (** cons *)
 
-Add Parametric Morphism (A : Type) : (@cons A)
-  with signature (@eq A) ==> (@incl A) ==> (@incl A)
-    as incl_double_cons.
+Instance cons_incl A : Proper (Logic.eq ==> incl ==> incl) (@cons A). 
 
-Proof.
-fo.
-Qed.
+Proof. intros x x' xx'. subst x'. fo. Qed.
 
-Add Parametric Morphism (A : Type) : (@cons A)
-  with signature (@eq A) ==> (@lequiv A) ==> (@lequiv A)
-    as cons_lequiv.
+Instance cons_lequiv A : Proper (Logic.eq ==> lequiv ==> lequiv) (@cons A).
 
-Proof.
-fo.
-Qed.
+Proof. intros x x' xx'. subst x'. fo. Qed.
 
 Section cons.
 
@@ -352,21 +344,15 @@ Section cons.
   Lemma cons_eq : forall x x' : A, forall l l',
     x = x' -> l = l' -> x :: l = x' :: l'.
 
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Proof. intros. rewrite H. rewrite H0. refl. Qed.
 
   Lemma head_eq : forall x x' : A, forall l, x = x' -> x :: l = x' :: l.
 
-  Proof.
-    intros. rewrite H. refl.
-  Qed.
+  Proof. intros. rewrite H. refl. Qed.
 
   Lemma tail_eq : forall x : A, forall l l', l = l' -> x :: l = x :: l'.
 
-  Proof.
-    intros. rewrite H. refl.
-  Qed.
+  Proof. intros. rewrite H. refl. Qed.
 
 End cons.
 
@@ -379,34 +365,24 @@ Section app.
 
   Lemma length_app : forall l m : list A, length (l ++ m) = length l + length m.
 
-  Proof.
-    induction l; simpl; intros. refl. rewrite IHl. refl.
-  Qed.
+  Proof. induction l; simpl; intros. refl. rewrite IHl. refl. Qed.
 
   Lemma app_nil : forall l1 l2 : list A, l1 = nil -> l2 = nil -> l1 ++ l2 = nil.
 
-  Proof.
-    intros. subst l1. subst l2. refl.
-  Qed.
+  Proof. intros. subst l1. subst l2. refl. Qed.
 
   Lemma app_eq : forall l1 l2 l1' l2' : list A,
     l1 = l1' -> l2 = l2' -> l1 ++ l2 = l1' ++ l2'.
 
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Proof. intros. rewrite H. rewrite H0. refl. Qed.
 
   Lemma appl_eq : forall l1 l2 l1' : list A, l1 = l1' -> l1 ++ l2 = l1' ++ l2.
 
-  Proof.
-    intros. rewrite H. refl.
-  Qed.
+  Proof. intros. rewrite H. refl. Qed.
 
   Lemma appr_eq : forall l1 l2 l2' : list A, l2 = l2' -> l1 ++ l2 = l1 ++ l2'.
 
-  Proof.
-    intros. rewrite H. refl.
-  Qed.
+  Proof. intros. rewrite H. refl. Qed.
 
   Lemma list_app_first_last : forall l m (a : A),
     (l ++ a::nil) ++ m = l ++ a::m.
@@ -467,7 +443,7 @@ Section app.
 
   Proof.
     induction l; simpl; intros. apply False_ind. omega.
-    destruct l. exists (@nil A). exists a. intuition.
+    destruct l. exists nil. exists a. intuition.
     assert (length (a0::l) > 0). simpl. omega.
     ded (IHl H0). do 3 destruct H1.
     exists (a::x). exists x0. split. rewrite H1. refl.
@@ -485,9 +461,7 @@ Section length.
 
   Lemma length_0 : forall l : list A, length l = 0 -> l = nil.
 
-  Proof.
-    intros. destruct l. refl. discr.
-  Qed.
+  Proof. intros. destruct l. refl. discr. Qed.
 
 End length.
 
@@ -503,41 +477,29 @@ Section head_tail.
   Lemma head_app : forall (l l': list A) (lne: l <> nil),
     head (l ++ l') = head l.
 
-  Proof.
-    destruct l. tauto. auto.
-  Qed.
+  Proof. destruct l. tauto. auto. Qed.
 
   Lemma length_tail : forall l : list A, length (tail l) <= length l.
 
-  Proof.
-    induction l; simpl; intros; omega.
-  Qed.
+  Proof. induction l; simpl; intros; omega. Qed.
 
   Lemma tail_in : forall (x: A) l, In x (tail l) -> In x l.
 
-  Proof.
-    intros. destruct l; auto with datatypes.
-  Qed.
+  Proof. intros. destruct l; auto with datatypes. Qed.
 
   Lemma tail_cons_tail : forall (l1 l2: list A),
     l1 <> nil -> tail l1 ++ l2 = tail (l1 ++ l2).
 
-  Proof.
-    destruct l1. tauto. auto.
-  Qed.
+  Proof. destruct l1. tauto. auto. Qed.
 
   Lemma length_tail_minus : forall (l : list A), length (tail l) = length l - 1.
 
-  Proof.
-    destruct l; simpl; omega.
-  Qed.
+  Proof. destruct l; simpl; omega. Qed.
 
   Lemma list_decompose_head : forall (l : list A) el (lne: l <> nil),
     head l = Some el -> l = el :: tail l.
 
-  Proof.
-    intros. destruct l. discr. inversion H. rewrite <- H1; trivial.
-  Qed.
+  Proof. intros. destruct l. discr. inversion H. rewrite <- H1; trivial. Qed.
 
   Lemma in_head_tail : forall a (l : list A),
     In a l -> Some a = head l \/ In a (tail l).
@@ -551,16 +513,12 @@ Section head_tail.
   Lemma head_notNil : forall (l : list A) (lne : l <> nil),
     {a : A | head l = Some a}.
 
-  Proof.
-    destruct l. tauto. exists a; auto.
-  Defined.
+  Proof. destruct l. tauto. exists a; auto. Defined.
 
   Lemma head_of_notNil : forall (l : list A) a (lne: l <> nil),
     head l = Some a -> proj1_sig (head_notNil lne) = a.
 
-  Proof.
-    intros. destruct l; try discr. simpl; inversion H; trivial.
-  Qed.
+  Proof. intros. destruct l; try discr. simpl; inversion H; trivial. Qed.
 
 End head_tail.
 
@@ -651,9 +609,7 @@ Section Inb.
  
   Lemma Inb_true : forall x l, Inb x l = true -> In x l.
 
-  Proof.
-    induction l; simpl. intro. discr. case (eq_dec x a); auto.
-  Qed.
+  Proof. induction l; simpl. intro. discr. case (eq_dec x a); auto. Qed.
 
   Lemma Inb_false : forall x l, Inb x l = false -> In x l -> False.
 
@@ -1812,14 +1768,14 @@ End first.
 (***********************************************************************)
 (** transpose *)
 
-Instance transpose_m' A B : Proper (@inclusion B ==> Logic.eq ==> impl)
+Instance transpose_m' A B : Proper (inclusion ==> Logic.eq ==> impl)
   (@transpose A B).
 
 Proof.
 intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h.
 Qed.
 
-Instance transpose_m A B : Proper (@same_relation B ==> Logic.eq ==> iff)
+Instance transpose_m A B : Proper (same_relation ==> Logic.eq ==> iff)
   (@transpose A B).
 
 Proof.

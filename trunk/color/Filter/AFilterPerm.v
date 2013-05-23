@@ -14,11 +14,11 @@ Require Import LogicUtil ATrs ListUtil NatUtil VecUtil SN BoolUtil
 
 Section S.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Section pi.
+  Section pi.
 
-Variable pi : forall f : Sig, nat_lts (arity f).
+    Variable pi : forall f : Sig, nat_lts (arity f).
 
 (***********************************************************************)
 (** Assumption: pi does not duplicate arguments.
@@ -27,418 +27,411 @@ This hyp is not really necessary but it makes the proof of weak
 monotony simpler. Otherwise, we also need to assume that the ordering
 is transitive. *)
 
-Definition non_dup := forall f, repeat_free (map (@val (arity f)) (pi f)).
+    Definition non_dup := forall f, repeat_free (map (@val (arity f)) (pi f)).
 
-Variable hyp : non_dup.
+    Variable hyp : non_dup.
 
 (***********************************************************************)
 (** filtered signature *)
 
-Definition filter_arity f := length (pi f).
+    Definition filter_arity f := length (pi f).
 
-Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
+    Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
 
-Notation Sig' := filter_sig. Notation term' := (term Sig').
-Notation term := (term Sig). Notation terms := (vector term).
+    Notation Sig' := filter_sig. Notation term' := (term Sig').
+    Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** term filtering *)
 
-Fixpoint filter (t : term) : term' :=
-  match t with
-    | Var x => Var x
-    | Fun f ts => @Fun Sig' f (Vfilter (pi f) (Vmap filter ts))
-  end.
+    Fixpoint filter (t : term) : term' :=
+      match t with
+        | Var x => Var x
+        | Fun f ts => @Fun Sig' f (Vfilter (pi f) (Vmap filter ts))
+      end.
 
 (***********************************************************************)
 (** rule filtering *)
 
-Notation rule := (ATrs.rule Sig). Notation rules := (list rule).
-Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
+    Notation rule := (ATrs.rule Sig). Notation rules := (list rule).
+    Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
 
-Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
+    Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
 
-Notation filter_rules := (map filter_rule).
+    Notation filter_rules := (map filter_rule).
 
 (***********************************************************************)
 (** properties of term filtering wrt substitutions *)
 
-Definition filter_subs s (x : variable) := filter (s x).
+    Definition filter_subs s (x : variable) := filter (s x).
 
-Lemma filter_sub : forall s t,
-  filter (sub s t) = sub (filter_subs s) (filter t).
+    Lemma filter_sub : forall s t,
+      filter (sub s t) = sub (filter_subs s) (filter t).
 
-Proof.
-intro. apply term_ind_forall with (P := fun t =>
-  filter (sub s t) = sub (filter_subs s) (filter t)); intros; simpl.
-refl. apply args_eq. repeat rewrite Vfilter_map. repeat rewrite Vmap_map.
-apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
-eapply Vin_filter_elim_in. apply H0. hyp.
-Qed.
+    Proof.
+      intro. apply term_ind_forall with (P := fun t =>
+      filter (sub s t) = sub (filter_subs s) (filter t)); intros; simpl.
+      refl. apply args_eq. repeat rewrite Vfilter_map. repeat rewrite Vmap_map.
+      apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
+      eapply Vin_filter_elim_in. apply H0. hyp.
+    Qed.
 
 (***********************************************************************)
 (** filter ordering *)
 
-Section filter_ordering.
+    Section filter_ordering.
 
-Variable succ : relation term'.
+      Variable succ : relation term'.
 
-Definition filter_ord : relation term :=
-  fun t u => succ (filter t) (filter u).
+      Definition filter_ord : relation term :=
+        fun t u => succ (filter t) (filter u).
 
-Notation fsucc := filter_ord.
+      Notation fsucc := filter_ord.
 
 (***********************************************************************)
 (** preservation of transitivity *)
 
-(*FIXME: define a meta-theorem*)
-Lemma filter_trans : transitive succ -> transitive fsucc.
+      (*FIXME: define a meta-theorem*)
+      Lemma filter_trans : transitive succ -> transitive fsucc.
 
-Proof.
-intro. unfold transitive, filter_ord. intros. eapply H. apply H0. hyp.
-Qed.
+      Proof.
+        intro. unfold transitive, filter_ord. intros. eapply H. apply H0. hyp.
+      Qed.
 
 (***********************************************************************)
 (** preservation of well-foundedness *)
 
-(*FIXME: define a meta-theorem*)
-Lemma WF_filter : WF succ -> WF fsucc.
+      (*FIXME: define a meta-theorem*)
+      Lemma WF_filter : WF succ -> WF fsucc.
 
-Proof.
-intro. unfold filter_ord. apply (WF_inverse filter H).
-Qed.
+      Proof. intro. unfold filter_ord. apply (WF_inverse filter H). Qed.
 
 (***********************************************************************)
 (** stability by substitution *)
 
-(*FIXME: define a meta-theorem*)
-Lemma filter_subs_closed :
-  substitution_closed succ -> substitution_closed fsucc.
+      (*FIXME: define a meta-theorem*)
+      Lemma filter_subs_closed :
+        substitution_closed succ -> substitution_closed fsucc.
 
-Proof.
-unfold substitution_closed. intros. unfold filter_ord.
-repeat rewrite filter_sub. apply H. hyp.
-Qed.
+      Proof.
+        unfold substitution_closed. intros. unfold filter_ord.
+        repeat rewrite filter_sub. apply H. hyp.
+      Qed.
 
 (***********************************************************************)
 (** compatibility *)
 
-(*FIXME: define a meta-theorem*)
-Lemma filter_comp : forall R : rules,
-  compat succ (filter_rules R) -> compat fsucc R.
+       (*FIXME: define a meta-theorem*)
+      Lemma filter_comp : forall R : rules,
+        compat succ (filter_rules R) -> compat fsucc R.
 
-Proof.
-unfold compat. intros. unfold filter_ord. apply H.
-change (In (filter_rule (mkRule l r)) (filter_rules R)).
-apply in_map. hyp.
-Qed.
+      Proof.
+        unfold compat. intros. unfold filter_ord. apply H.
+        change (In (filter_rule (mkRule l r)) (filter_rules R)).
+        apply in_map. hyp.
+      Qed.
 
 (***********************************************************************)
 (** weak monotony wrt contexts *)
 
-Lemma filter_weak_cont_closed :
-  reflexive succ -> context_closed succ -> context_closed fsucc.
+      Lemma filter_weak_cont_closed :
+        reflexive succ -> context_closed succ -> context_closed fsucc.
 
-Proof.
-repeat rewrite <- Vmonotone_context_closed.
-unfold Vmonotone, Vmonotone_i, RelUtil.monotone.
-intros hrefl hcc f i j e vi vj. unfold fsucc. simpl. intros t u.
-set (t' := filter t). set (u' := filter u). intro h'.
-repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl. fold t' u'.
-set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
-set (vt := Vcast (Vapp vi' (Vcons t' vj')) e).
-set (vu := Vcast (Vapp vi' (Vcons u' vj')) e).
-case (In_dec eq_nat_dec i (map (@val (arity f)) (pi f))); intro Hi.
+      Proof.
+        repeat rewrite <- Vmonotone_context_closed.
+        unfold Vmonotone, Vmonotone_i, RelUtil.monotone.
+        intros hrefl hcc f i j e vi vj. unfold fsucc. simpl. intros t u.
+        set (t' := filter t). set (u' := filter u). intro h'.
+        repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl. fold t' u'.
+        set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
+        set (vt := Vcast (Vapp vi' (Vcons t' vj')) e).
+        set (vu := Vcast (Vapp vi' (Vcons u' vj')) e).
+        case (In_dec eq_nat_dec i (map (@val (arity f)) (pi f))); intro Hi.
 
-(*REMARK: sub-proof to be extracted since it is used both in
-filter_cont_closed and in red_incl_filter_red_rc *)
+        (*REMARK: sub-proof to be extracted since it is used both in
+           filter_cont_closed and in red_incl_filter_red_rc *)
 
-(* i in (pi f) *)
-destruct (in_map_elim Hi) as [x [hx vx]]. destruct (in_elim hx) as [l1 [l2 hf]].
+        (* i in (pi f) *)
+        destruct (in_map_elim Hi) as [x [hx vx]].
+        destruct (in_elim hx) as [l1 [l2 hf]].
 
-assert (a: length l1+length(x::l2)=@arity Sig' f).
-unfold arity, filter_sig, filter_arity. rewrite hf. rewrite length_app. refl.
-rewrite (Vfilter_app_eq (v:=vt) a hf).
-rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
+        assert (a: length l1+length(x::l2)=@arity Sig' f).
+        unfold arity, filter_sig, filter_arity. rewrite hf, length_app. refl.
+        rewrite (Vfilter_app_eq (v:=vt) a hf).
+        rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
 
-ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
-simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
-rewrite <- vx in h1. rewrite <- vx in h2.
+        ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
+        simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
+        rewrite <- vx in h1. rewrite <- vx in h2.
 
-assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
-assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
+        assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
+        intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
+        assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
+        intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
-apply hcc. unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
-destruct (le_gt_dec i (val x)). 2: absurd_arith.
-repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
+        apply hcc. unfold vt, vu. rewrite !Vnth_cast. rewrite !Vnth_app.
+        destruct (le_gt_dec i (val x)). 2: absurd_arith.
+        repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
-(* i not in (pi f) *)
-apply eq_Refl_rel. hyp. apply args_eq. unfold vt, vu.
-apply Vfilter_eq_notin with (l:=pi f). intros hi h.
-ded (in_map (@val (arity f)) h). contr.
-Qed.
+        (* i not in (pi f) *)
+        apply eq_Refl_rel. hyp. apply args_eq. unfold vt, vu.
+        apply Vfilter_eq_notin with (l:=pi f). intros hi h.
+        ded (in_map (@val (arity f)) h). contr.
+      Qed.
 
 (***********************************************************************)
 (** strong monotony wrt contexts *)
 
-Definition permut := forall f i,
-  i < arity f -> In i (map (@val (arity f)) (pi f)).
+      Definition permut := forall f i,
+        i < arity f -> In i (map (@val (arity f)) (pi f)).
 
-Lemma filter_strong_cont_closed :
-  permut -> context_closed succ -> context_closed fsucc.
+      Lemma filter_strong_cont_closed :
+        permut -> context_closed succ -> context_closed fsucc.
 
-Proof.
-repeat rewrite <- Vmonotone_context_closed.
-unfold Vmonotone, Vmonotone_i, RelUtil.monotone.
-intros hp hcc f i j e vi vj. unfold fsucc. simpl. intros t u.
-set (t' := filter t). set (u' := filter u). intro h'.
-repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl. fold t' u'.
-set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
-set (vt := Vcast (Vapp vi' (Vcons t' vj')) e).
-set (vu := Vcast (Vapp vi' (Vcons u' vj')) e).
-case (In_dec eq_nat_dec i (map (@val (arity f)) (pi f))); intro Hi.
+      Proof.
+        repeat rewrite <- Vmonotone_context_closed.
+        unfold Vmonotone, Vmonotone_i, RelUtil.monotone.
+        intros hp hcc f i j e vi vj. unfold fsucc. simpl. intros t u.
+        set (t' := filter t). set (u' := filter u). intro h'.
+        repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl. fold t' u'.
+        set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
+        set (vt := Vcast (Vapp vi' (Vcons t' vj')) e).
+        set (vu := Vcast (Vapp vi' (Vcons u' vj')) e).
+        case (In_dec eq_nat_dec i (map (@val (arity f)) (pi f))); intro Hi.
 
-(*REMARK: sub-proof to be extracted since it is used both in
-filter_cont_closed and in red_incl_filter_red_rc *)
+        (*REMARK: sub-proof to be extracted since it is used both in
+           filter_cont_closed and in red_incl_filter_red_rc *)
 
-(* i in (pi f) *)
-destruct (in_map_elim Hi) as [x [hx vx]]. destruct (in_elim hx) as [l1 [l2 hf]].
+        (* i in (pi f) *)
+        destruct (in_map_elim Hi) as [x [hx vx]].
+        destruct (in_elim hx) as [l1 [l2 hf]].
 
-assert (a: length l1+length(x::l2)=@arity Sig' f).
-unfold arity, filter_sig, filter_arity. rewrite hf. rewrite length_app. refl.
-rewrite (Vfilter_app_eq (v:=vt) a hf).
-rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
+        assert (a: length l1+length(x::l2)=@arity Sig' f).
+        unfold arity, filter_sig, filter_arity. rewrite hf, length_app. refl.
+        rewrite (Vfilter_app_eq (v:=vt) a hf).
+        rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
 
-ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
-simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
-rewrite <- vx in h1. rewrite <- vx in h2.
+        ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
+        simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
+        rewrite <- vx in h1. rewrite <- vx in h2.
 
-assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
-assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
+        assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
+        intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
+        assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
+        intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
-apply hcc. unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
-destruct (le_gt_dec i (val x)). 2: absurd_arith.
-repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
+        apply hcc. unfold vt, vu. rewrite !Vnth_cast. rewrite !Vnth_app.
+        destruct (le_gt_dec i (val x)). 2: absurd_arith.
+        repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
-(* i not in (pi f) *)
-assert (hi : i<arity f). omega. ded (hp f i hi). contr.
-Qed.
+        (* i not in (pi f) *)
+        assert (hi : i<arity f). omega. ded (hp f i hi). contr.
+      Qed.
 
-End filter_ordering.
+    End filter_ordering.
 
 (***********************************************************************)
 (** monotony wrt inclusion *)
 
-(*FIXME: define a meta-theorem*)
-Lemma incl_filter : forall R S, R << S -> filter_ord R << filter_ord S.
+    (*FIXME: define a meta-theorem*)
+    Lemma incl_filter : forall R S, R << S -> filter_ord R << filter_ord S.
 
-Proof.
-intros. unfold inclusion, filter_ord. intros. apply H. exact H0.
-Qed.
+    Proof. intros. unfold inclusion, filter_ord. intros. apply H. exact H0. Qed.
 
 (***********************************************************************)
 (** rewriting *)
 
-Section red.
+    Section red.
 
-Variable R : rules. Notation R' := (filter_rules R).
+      Variable R : rules. Notation R' := (filter_rules R).
 
-(*FIXME: define a meta-theorems?*)
-Lemma red_incl_filter_red_rc : red R << filter_ord (red R'%).
+      (*FIXME: define a meta-theorems?*)
+      Lemma red_incl_filter_red_rc : red R << filter_ord (red R'%).
 
-Proof.
-unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-elim c; clear c.
+      Proof.
+        unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
+        elim c; clear c.
+        (* Hole *)
+        simpl. right. repeat rewrite filter_sub. apply red_rule_top.
+        change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
+        (* Cont *)
+        intros f i j e vi c.
+        set (t := filter (fill c (sub s l))).
+        set (u := filter (fill c (sub s r))).
+        intros htu vj. simpl. rewrite !Vmap_cast. rewrite !Vmap_app. simpl.
+        fold t u. set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
+        destruct htu as [htu|htu]. rewrite htu. left. refl.
+        case (In_dec eq_nat_dec i (map (@val (arity f)) (pi f))); intro Hi.
 
-(* Hole *)
-simpl. right. repeat rewrite filter_sub. apply red_rule_top.
-change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
+        (*REMARK: sub-proof to be extracted since it is used both in
+           filter_cont_closed and in red_incl_filter_red_rc *)
 
-(* Cont *)
-intros f i j e vi c.
-set (t := filter (fill c (sub s l))). set (u := filter (fill c (sub s r))).
-intros htu vj. simpl. repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
-fold t u. set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
-destruct htu as [htu|htu]. rewrite htu. left. refl.
-case (In_dec eq_nat_dec i (map (@val (arity f)) (pi f))); intro Hi.
+        (* i in (pi f) *)
+        right. destruct (in_map_elim Hi) as [x [hx vx]].
+        destruct (in_elim hx) as [l1 [l2 hf]].
+        set (vt := Vcast (Vapp vi' (Vcons t vj')) e).
+        set (vu := Vcast (Vapp vi' (Vcons u vj')) e).
 
-(*REMARK: sub-proof to be extracted since it is used both in
-filter_cont_closed and in red_incl_filter_red_rc *)
+        assert (a: length l1+length(x::l2)=@arity Sig' f).
+        unfold arity, filter_sig, filter_arity. rewrite hf, length_app. refl.
+        rewrite (Vfilter_app_eq a hf). rewrite (Vfilter_app_eq a hf). simpl.
+        set (v1 := Vfilter l1 vu). set (v2 := Vfilter l2 vu).
+        simpl in a. set (d := Cont (Sig:=Sig') f a v1 Hole v2).
 
-(* i in (pi f) *)
-right. destruct (in_map_elim Hi) as [x [hx vx]].
-destruct (in_elim hx) as [l1 [l2 hf]].
-set (vt := Vcast (Vapp vi' (Vcons t vj')) e).
-set (vu := Vcast (Vapp vi' (Vcons u vj')) e).
+        ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
+        simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
+        rewrite <- vx in h1. rewrite <- vx in h2.
 
-assert (a: length l1+length(x::l2)=@arity Sig' f).
-unfold arity, filter_sig, filter_arity. rewrite hf. rewrite length_app. refl.
-rewrite (Vfilter_app_eq a hf). rewrite (Vfilter_app_eq a hf). simpl.
-set (v1 := Vfilter l1 vu). set (v2 := Vfilter l2 vu).
-simpl in a. set (d := Cont (Sig:=Sig') f a v1 Hole v2).
+        assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
+        intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
+        assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
+        intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
-ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
-simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
-rewrite <- vx in h1. rewrite <- vx in h2.
+        unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
+        destruct (le_gt_dec i (val x)). 2: absurd_arith.
+        repeat (rewrite Vnth_cons_head; [idtac|omega]).
+        change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
 
-assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e1.
-assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
-intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
+        (* i not in (pi f) *)
+        left. apply args_eq. apply Vfilter_eq_notin with (l:=pi f). intros hi h.
+        ded (in_map (@val (arity f)) h). contr.
+      Qed.
 
-unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
-destruct (le_gt_dec i (val x)). 2: absurd_arith.
-repeat (rewrite Vnth_cons_head; [idtac|omega]).
-change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
+      Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
 
-(* i not in (pi f) *)
-left. apply args_eq. apply Vfilter_eq_notin with (l:=pi f). intros hi h.
-ded (in_map (@val (arity f)) h). contr.
-Qed.
+      Proof.
+        unfold inclusion. induction 1.
+        apply incl_filter with (red R'%). apply rc_incl_rtc.
+        apply red_incl_filter_red_rc. exact H.
+        unfold filter_ord. apply rt_refl.
+        unfold filter_ord. apply rt_trans with (filter y).
+        apply IHclos_refl_trans1. apply IHclos_refl_trans2.
+      Qed.
 
-Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
+      Lemma hd_red_incl_filter_hd_red : hd_red R << filter_ord (hd_red R').
 
-Proof.
-unfold inclusion. induction 1.
-apply incl_filter with (red R'%). apply rc_incl_rtc.
-apply red_incl_filter_red_rc. exact H.
-unfold filter_ord. apply rt_refl.
-unfold filter_ord. apply rt_trans with (filter y).
-apply IHclos_refl_trans1. apply IHclos_refl_trans2.
-Qed.
+      Proof.
+        unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
+        repeat rewrite filter_sub. apply hd_red_rule.
+        change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
+      Qed.
 
-Lemma hd_red_incl_filter_hd_red : hd_red R << filter_ord (hd_red R').
-
-Proof.
-unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-repeat rewrite filter_sub. apply hd_red_rule.
-change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
-Qed.
-
-End red.
+    End red.
 
 (***********************************************************************)
 (** rewriting modulo *)
 
-(*FIXME: define meta-theorems*)
-Section red_mod.
+    (*FIXME: define meta-theorems*)
+    Section red_mod.
 
-  Variable E R : rules.
+      Variable E R : rules.
 
-  Notation E' := (filter_rules E). Notation R' := (filter_rules R).
+      Notation E' := (filter_rules E). Notation R' := (filter_rules R).
 
-  Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
+      Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
 
-  Proof.
-    unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
-    apply red_rtc_incl_filter_red_rtc. exact H.
-    subst t. subst y. repeat rewrite filter_sub. apply hd_red_rule.
-    change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
-  Qed.
+      Proof.
+        unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
+        apply red_rtc_incl_filter_red_rtc. exact H.
+        subst t. subst y. repeat rewrite filter_sub. apply hd_red_rule.
+        change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
+      Qed.
 
-  Lemma WF_hd_red_mod_filter : WF (hd_red_mod E' R') -> WF (hd_red_mod E R).
+      Lemma WF_hd_red_mod_filter : WF (hd_red_mod E' R') -> WF (hd_red_mod E R).
 
-  Proof.
-    intro. eapply WF_incl. apply hd_red_mod_filter. apply WF_filter. hyp.
-  Qed.
+      Proof.
+        intro. eapply WF_incl. apply hd_red_mod_filter. apply WF_filter. hyp.
+      Qed.
 
-End red_mod.
+    End red_mod.
 
-End pi.
+  End pi.
 
 (***********************************************************************)
 (** building a filtering function *)
 
-Section build_pi.
+  Section build_pi.
 
-  Variable raw_pi : Sig -> list nat.
+    Variable raw_pi : Sig -> list nat.
 
-  Definition valid := forall f x, In x (raw_pi f) -> arity f > x.
+    Definition valid := forall f x, In x (raw_pi f) -> arity f > x.
 
-  Variable Fs : list Sig.
-  Variable Fs_ok : forall f : Sig, In f Fs.
+    Variable Fs : list Sig.
+    Variable Fs_ok : forall f : Sig, In f Fs.
 
-  Definition bvalid :=
-    forallb (fun f => forallb (bgt_nat (arity f)) (raw_pi f)) Fs.
+    Definition bvalid :=
+      forallb (fun f => forallb (bgt_nat (arity f)) (raw_pi f)) Fs.
 
-  Lemma bvalid_ok : bvalid = true <-> valid.
+    Lemma bvalid_ok : bvalid = true <-> valid.
 
-  Proof.
-    apply forallb_ok_fintype. 2: hyp. intro f. rewrite forallb_forall.
-    intuition. rewrite <- bgt_nat_ok. auto. rewrite bgt_nat_ok. auto.
-  Qed.
+    Proof.
+      apply forallb_ok_fintype. 2: hyp. intro f. rewrite forallb_forall.
+      intuition. rewrite <- bgt_nat_ok. auto. rewrite bgt_nat_ok. auto.
+    Qed.
 
-  Variable raw_pi_ok : bvalid = true.
+    Variable raw_pi_ok : bvalid = true.
 
-  Definition build_nat_lts : forall n l,
-    forallb (bgt_nat n) l = true -> nat_lts n.
+    Definition build_nat_lts : forall n l,
+      forallb (bgt_nat n) l = true -> nat_lts n.
 
-  Proof.
-    induction l; simpl; intros. exact nil.
-    eapply cons. eapply mk_nat_lt.
-    rewrite andb_eq in H. destruct H. rewrite bgt_nat_ok in H. apply H.
-    apply IHl.
-    rewrite andb_eq in H. destruct H. hyp.
-  Defined.
+    Proof.
+      induction l; simpl; intros. exact nil.
+      eapply cons. eapply mk_nat_lt.
+      rewrite andb_eq in H. destruct H. rewrite bgt_nat_ok in H. apply H.
+      apply IHl.
+      rewrite andb_eq in H. destruct H. hyp.
+    Defined.
 
-  Implicit Arguments build_nat_lts [n l].
+    Implicit Arguments build_nat_lts [n l].
 
-  Lemma build_nat_lts_ok : forall n l (h : forallb (bgt_nat n) l = true),
-    map (@val n) (build_nat_lts h) = l.
+    Lemma build_nat_lts_ok : forall n l (h : forallb (bgt_nat n) l = true),
+      map (@val n) (build_nat_lts h) = l.
 
-  Proof.
-    induction l; simpl; intros. refl. rewrite IHl. refl.
-  Qed.
+    Proof. induction l; simpl; intros. refl. rewrite IHl. refl. Qed.
 
-  Definition build_pi : forall f : Sig, nat_lts (arity f).
+    Definition build_pi : forall f : Sig, nat_lts (arity f).
 
-  Proof.
-    intro f. eapply build_nat_lts. unfold bvalid in raw_pi_ok.
-    rewrite forallb_forall in raw_pi_ok. apply raw_pi_ok. apply Fs_ok.
-  Defined.
+    Proof.
+      intro f. eapply build_nat_lts. unfold bvalid in raw_pi_ok.
+      rewrite forallb_forall in raw_pi_ok. apply raw_pi_ok. apply Fs_ok.
+    Defined.
 
-  Lemma build_pi_ok : forall f,
-    map (@val (arity f)) (build_pi f) = raw_pi f.
+    Lemma build_pi_ok : forall f,
+      map (@val (arity f)) (build_pi f) = raw_pi f.
 
-  Proof.
-    intro. apply build_nat_lts_ok.
-  Qed.
+    Proof. intro. apply build_nat_lts_ok. Qed.
 
 (***********************************************************************)
 (** verifying arguments non-duplication *)
 
-  Definition bnon_dup :=
-    forallb (fun f => brepeat_free beq_nat (raw_pi f)) Fs.
+    Definition bnon_dup :=
+      forallb (fun f => brepeat_free beq_nat (raw_pi f)) Fs.
 
-  Lemma bnon_dup_ok : bnon_dup = true <-> non_dup build_pi.
+    Lemma bnon_dup_ok : bnon_dup = true <-> non_dup build_pi.
 
-  Proof.
-    unfold bnon_dup, non_dup. apply forallb_ok_fintype. 2: apply Fs_ok.
-    intro f. rewrite build_pi_ok. apply brepeat_free_ok. apply beq_nat_ok.
-  Qed.
+    Proof.
+      unfold bnon_dup, non_dup. apply forallb_ok_fintype. 2: apply Fs_ok.
+      intro f. rewrite build_pi_ok. apply brepeat_free_ok. apply beq_nat_ok.
+    Qed.
 
 (***********************************************************************)
 (** verify if all filters are permutations *)
 
-  Require Import ListDec.
+    Require Import ListDec.
 
-  Definition bpermut :=
-    forallb (fun f =>
-      bforall_lt (fun i => mem beq_nat i (raw_pi f)) (arity f)) Fs.
+    Definition bpermut :=
+      forallb (fun f =>
+        bforall_lt (fun i => mem beq_nat i (raw_pi f)) (arity f)) Fs.
 
-  Lemma bpermut_ok : bpermut = true <-> permut build_pi.
+    Lemma bpermut_ok : bpermut = true <-> permut build_pi.
 
-  Proof.
-    unfold bpermut, permut. apply forallb_ok_fintype. 2: hyp.
-    intro f. apply bforall_lt_ok. intro x. rewrite build_pi_ok.
-    apply mem_ok. apply beq_nat_ok.
-  Qed.
+    Proof.
+      unfold bpermut, permut. apply forallb_ok_fintype. 2: hyp.
+      intro f. apply bforall_lt_ok. intro x. rewrite build_pi_ok.
+      apply mem_ok. apply beq_nat_ok.
+    Qed.
 
-End build_pi.
+  End build_pi.
 
 End S.
 

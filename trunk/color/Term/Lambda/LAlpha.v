@@ -1005,7 +1005,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure is compatible with relation inclusion/equivalence. *)
 
-  Instance clos_aeq_incl : Proper (@inclusion Te ==> @inclusion Te) clos_aeq.
+  Instance clos_aeq_incl : Proper (inclusion ==> inclusion) clos_aeq.
 
   Proof.
     intros R S RS u v uv. inversion uv; subst.
@@ -1013,7 +1013,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Qed.
 
   Instance clos_aeq_same_rel :
-    Proper (@same_relation Te ==> @same_relation Te) clos_aeq.
+    Proper (same_relation ==> same_relation) clos_aeq.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 

@@ -346,7 +346,7 @@ Module Make (Export L : L_Struct).
 
   (** Monotony is compatible with [same_relation]. *)
 
-  Instance Monotone_impl : Proper (@same_relation Te ==> impl) Monotone.
+  Instance Monotone_impl : Proper (same_relation ==> impl) Monotone.
 
   Proof.
     intros R S [RS SR] h. split.
@@ -399,12 +399,12 @@ Module Make (Export L : L_Struct).
   (** The monotone closure is compatible with relation inclusion and
   equivalence. *)
 
-  Instance clos_mon_incl : Proper (@inclusion Te ==> @inclusion Te) clos_mon.
+  Instance clos_mon_incl : Proper (inclusion ==> inclusion) clos_mon.
 
   Proof. intros R S RS. induction 1; try mon. apply m_step. apply RS. hyp. Qed.
 
   Instance clos_mon_same_rel :
-    Proper (@same_relation Te ==> @same_relation Te) clos_mon.
+    Proper (same_relation ==> same_relation) clos_mon.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 

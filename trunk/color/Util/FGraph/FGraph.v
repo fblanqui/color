@@ -90,7 +90,7 @@ they define the same relation. See below for more details. *)
 
   Definition succ x s a b := eq a x /\ XSet.In b s.
 
-  Instance succ_m' : Proper (eq ==> XSet.Equal ==> @inclusion X.t) succ.
+  Instance succ_m' : Proper (eq ==> XSet.Equal ==> inclusion) succ.
 
   Proof.
     intros x x' xx' s s' ss' a b. unfold succ. rewrite xx', ss'. tauto.
@@ -103,7 +103,7 @@ they define the same relation. See below for more details. *)
     rewrite xx', ss', aa', bb'. refl.
   Qed.
 
-  Instance succ_m : Proper (eq ==> XSet.Equal ==> @same_relation X.t) succ.
+  Instance succ_m : Proper (eq ==> XSet.Equal ==> same_relation) succ.
 
   Proof. split; apply succ_m'; (hyp||sym;hyp). Qed.
 
@@ -148,7 +148,7 @@ they define the same relation. See below for more details. *)
   Definition succ_list x s a (b : X.t) := eq a x /\ InA eq b s.
 
   Instance succ_list_m' :
-    Proper (eq ==> eqlistA eq ==> @inclusion X.t) succ_list.
+    Proper (eq ==> eqlistA eq ==> inclusion) succ_list.
 
   Proof.
     intros x x' xx' s s' ss' a b. unfold succ_list. rewrite xx', ss'. tauto.
@@ -163,7 +163,7 @@ they define the same relation. See below for more details. *)
   Qed.
 
   Instance succ_list_m :
-    Proper (eq ==> eqlistA eq ==> @same_relation X.t) succ_list.
+    Proper (eq ==> eqlistA eq ==> same_relation) succ_list.
 
   Proof. split; apply succ_list_m'; (hyp||sym;hyp). Qed.
 
@@ -192,7 +192,7 @@ they define the same relation. See below for more details. *)
 
   Definition prod s t a b := XSet.In a s /\ XSet.In b t.
 
-  Lemma prod_m : Proper (XSet.Equal ==> XSet.Equal ==> same_relation X.t) prod.
+  Lemma prod_m : Proper (XSet.Equal ==> XSet.Equal ==> same_relation) prod.
 
   Proof.
     intros s s' ss' t t' tt'. rewrite rel_eq. intros a b. unfold prod.
@@ -289,7 +289,7 @@ same relation *)
 (***********************************************************************)
 (** properties of rel *)
 
-  Instance rel_gle : Proper (gle ==> @inclusion X.t) rel.
+  Instance rel_gle : Proper (gle ==> inclusion) rel.
 
   Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.
 
@@ -300,11 +300,11 @@ same relation *)
     rewrite <- xx', <- yy'. intuition.
   Qed.
 
-  Instance rel_geq' : Proper (geq ==> @inclusion X.t) rel.
+  Instance rel_geq' : Proper (geq ==> inclusion) rel.
 
   Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.
 
-  Instance rel_geq : Proper (geq ==> same_relation X.t) rel.
+  Instance rel_geq : Proper (geq ==> same_relation) rel.
 
   Proof. split; apply rel_geq'; intuition. Qed.
 

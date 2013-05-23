@@ -913,14 +913,14 @@ A) A] if [A] is not empty).
 
     Definition stable R := Proper (Logic.eq ==> R ==> R) subs.
 
-    Instance stable_same_rel_impl : Proper (same_relation Te ==> impl) stable.
+    Instance stable_same_rel_impl : Proper (same_relation ==> impl) stable.
 
     Proof.
       intros S T e subs_S s s' ss' t u tu. subst s'. rewrite rel_eq in e.
       rewrite <- e. apply subs_S. refl. rewrite e. hyp.
     Qed.
 
-    Instance stable_same_rel : Proper (same_relation Te ==> iff) stable.
+    Instance stable_same_rel : Proper (same_relation ==> iff) stable.
 
     Proof. intros S T e. split; intro h. rewrite <- e. hyp. rewrite e. hyp. Qed.
 

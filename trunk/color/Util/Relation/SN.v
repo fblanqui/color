@@ -21,9 +21,7 @@ Section sn.
 
   Lemma SN_inv : forall x, SN x -> forall y, R x y -> SN y.
 
-  Proof.
-    destruct 1; trivial.
-  Qed.
+  Proof. destruct 1; trivial. Qed.
 
   Definition WF := forall x, SN x.
 
@@ -83,27 +81,19 @@ Section acc.
 
   Lemma SN_transp_Acc : forall x, SN (transp R) x -> Acc R x.
 
-  Proof.
-    induction 1. apply Acc_intro. intros. apply H0. hyp.
-  Qed.
+  Proof. induction 1. apply Acc_intro. intros. apply H0. hyp. Qed.
 
   Lemma Acc_transp_SN : forall x, Acc (transp R) x -> SN R x.
 
-  Proof.
-    induction 1. apply SN_intro. intros. apply H0. hyp.
-  Qed.
+  Proof. induction 1. apply SN_intro. intros. apply H0. hyp. Qed.
 
   Lemma WF_transp_wf : WF (transp R) -> well_founded R.
 
-  Proof.
-    unfold well_founded. intros. apply SN_transp_Acc. apply H.
-  Qed.
+  Proof. unfold well_founded. intros. apply SN_transp_Acc. apply H. Qed.
 
   Lemma wf_transp_WF : well_founded (transp R) -> WF R.
 
-  Proof.
-    unfold WF. intros. apply Acc_transp_SN. apply H.
-  Qed.
+  Proof. unfold WF. intros. apply Acc_transp_SN. apply H. Qed.
 
 End acc.
 
@@ -113,27 +103,19 @@ Section acc_transp.
 
   Lemma SN_Acc_transp : forall x, SN R x -> Acc (transp R) x.
 
-  Proof.
-    induction 1. apply Acc_intro. intros. apply H0. hyp.
-  Qed.
+  Proof. induction 1. apply Acc_intro. intros. apply H0. hyp. Qed.
 
   Lemma Acc_SN_transp : forall x, Acc R x -> SN (transp R) x.
 
-  Proof.
-    induction 1. apply SN_intro. intros. apply H0. hyp.
-  Qed.
+  Proof. induction 1. apply SN_intro. intros. apply H0. hyp. Qed.
 
   Lemma WF_wf_transp : WF R -> well_founded (transp R).
 
-  Proof.
-    unfold well_founded. intros. apply SN_Acc_transp. apply H.
-  Qed.
+  Proof. unfold well_founded. intros. apply SN_Acc_transp. apply H. Qed.
 
   Lemma wf_WF_transp : well_founded R -> WF (transp R).
 
-  Proof.
-    unfold WF. intros. apply Acc_SN_transp. apply H.
-  Qed.
+  Proof. unfold WF. intros. apply Acc_SN_transp. apply H. Qed.
 
 End acc_transp.
 
@@ -146,9 +128,7 @@ Section incl.
 
   Lemma WF_empty_rel : WF (@empty_rel A).
 
-  Proof.
-    intro x. apply SN_intro. intros. contr.
-  Qed.
+  Proof. intro x. apply SN_intro. intros. contr. Qed.
 
   Lemma Acc_incl : R << S -> forall x, Acc S x -> Acc R x.
   
@@ -164,20 +144,18 @@ Section incl.
 
   Lemma WF_incl : R << S -> WF S -> WF R.
 
-  Proof.
-    unfold WF. intros. apply SN_incl; auto.
-  Qed.
+  Proof. unfold WF. intros. apply SN_incl; auto. Qed.
 
 End incl.
 
-Instance WF_m A : Proper (same_relation A ==> iff) (@WF A).
+Instance WF_m A : Proper (same_relation ==> iff) (@WF A).
 
 Proof.
   intros x y x_eq_y. destruct x_eq_y. split; intro.
   apply WF_incl with x; hyp. apply WF_incl with y; hyp.
 Qed.
 
-Instance WF_m' A : Proper (@inclusion A --> impl) (@WF A).
+Instance WF_m' A : Proper (inclusion --> impl) (@WF A).
 
 Proof. intros x y x_eq_y h. apply WF_incl with x; hyp. Qed.
 
@@ -239,15 +217,11 @@ Section inverse.
 
   Lemma SN_inverse : forall a, SN R (f a) -> SN Rof a.
 
-  Proof.
-    intros. apply (SN_Rof H). refl.
-  Qed.
+  Proof. intros. apply (SN_Rof H). refl. Qed.
 
   Lemma WF_inverse : WF R -> WF Rof.
 
-  Proof.
-    unfold WF. intros. apply SN_inverse; auto.
-  Qed.
+  Proof. unfold WF. intros. apply SN_inverse; auto. Qed.
 
 End inverse.
 
@@ -316,15 +290,12 @@ Section rtc.
 
   Lemma SN_rtc : forall x, SN R x -> forall x', R# x x' -> SN R x'.
 
-  Proof.
-    intros x H. induction 1. inversion H. auto. hyp. auto.
-  Qed.
+  Proof. intros x H. induction 1. inversion H. auto. hyp. auto. Qed.
 
   Lemma SN_rtc1 : forall x, SN R x -> forall x', R#1 x x' -> SN R x'.
 
   Proof.
-    intros x snx x' xRx'. apply SN_rtc with x.
-    hyp.
+    intros x snx x' xRx'. apply SN_rtc with x. hyp.
     apply (proj1 (clos_refl_trans_equiv R x x')). hyp.
   Qed.
 
@@ -348,9 +319,7 @@ Section tc.
 
   Lemma WF_tc : WF R -> WF (R!).
 
-  Proof.
-    intros. unfold WF. intro. apply SN_tc. apply H.
-  Qed.
+  Proof. intros. unfold WF. intro. apply SN_tc. apply H. Qed.
 
   Lemma SN_tc1 : forall x, SN R x -> SN (R!1) x.
 
@@ -407,15 +376,11 @@ Section symprod.
 
   Lemma SN_symprod_invl : forall x y, SN gt (x,y) -> SN gtA x.
 
-  Proof.
-    intros. ded (SN_symprod_fst H). hyp.
-  Qed.
+  Proof. intros. ded (SN_symprod_fst H). hyp. Qed.
 
   Lemma SN_symprod_invr : forall x y, SN gt (x,y) -> SN gtB y.
 
-  Proof.
-    intros. ded (SN_symprod_snd H). hyp.
-  Qed.
+  Proof. intros. ded (SN_symprod_snd H). hyp. Qed.
 
   Lemma SN_symprod_inv : forall x y, SN gt (x,y) -> SN gtA x /\ SN gtB y.
 
@@ -515,15 +480,11 @@ Section iter.
 
   Lemma SN_iter : forall n x, SN (iter R n) x -> SN R x.
 
-  Proof.
-    induction n; intros. hyp. apply IHn. apply SN_iter_S'. hyp.
-  Qed.
+  Proof. induction n; intros. hyp. apply IHn. apply SN_iter_S'. hyp. Qed.
 
   Lemma WF_iter : forall n, WF (iter R n) -> WF R.
 
-  Proof.
-    unfold WF. intros. eapply SN_iter. apply H.
-  Qed.
+  Proof. unfold WF. intros. eapply SN_iter. apply H. Qed.
 
 End iter.
 
@@ -564,9 +525,7 @@ Section commut_modulo.
 
   Lemma WF_commut_modulo : WF S -> WF (R# @ S).
 
-  Proof.
-    unfold WF. intros. apply SN_commut_modulo. apply H.
-  Qed.
+  Proof. unfold WF. intros. apply SN_commut_modulo. apply H. Qed.
 
 End commut_modulo.
 
@@ -595,9 +554,7 @@ Section absorb.
 
   Lemma absorb_WF_modulo_r : WF T -> WF (T @ R#).
 
-  Proof.
-    unfold WF. intros. eapply absorb_SN_modulo_r. apply H.
-  Qed.
+  Proof. unfold WF. intros. eapply absorb_SN_modulo_r. apply H. Qed.
 
 End absorb.
 
@@ -642,8 +599,8 @@ Section wf_rel_mod.
 
   Variable (A : Type) (R S R' S': relation A).
 
-  Lemma wf_rel_mod : WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> 
-    WF ((S' U S)# @ (R' U R)).
+  Lemma wf_rel_mod :
+    WF (S# @ R) -> WF ((R U S)# @ (R' U S')) -> WF ((S' U S)# @ (R' U R)).
 
   Proof.
     intros. apply WF_incl with ((S' U S)# @ (R U R')).
@@ -671,11 +628,11 @@ Section wf_rel_mod_simpl.
 
   Variable (A : Type) (R R' S : relation A).
 
-  Lemma wf_rel_mod_simpl : WF (S# @ R) -> WF ((R U S)# @ R') ->
-    WF (S# @ (R' U R)).
+  Lemma wf_rel_mod_simpl :
+    WF (S# @ R) -> WF ((R U S)# @ R') -> WF (S# @ (R' U R)).
 
   Proof.
-    intros. apply WF_incl with (((@empty_rel A) U S)# @ (R' U R)).
+    intros. apply WF_incl with ((empty_rel U S)# @ (R' U R)).
     comp. apply clos_refl_trans_m'. intuition.
     apply wf_rel_mod. hyp.
     apply WF_incl with ((R U S)# @ R'); trivial.
