@@ -19,9 +19,7 @@ Notation monom := (vector nat).
 
 Lemma monom_eq_dec : forall n (m1 m2 : monom n), {m1=m2} + {~m1=m2}.
 
-Proof.
-intros. eapply eq_vec_dec. apply eq_nat_dec.
-Defined.
+Proof. intros. eapply eq_vec_dec. apply eq_nat_dec. Defined.
 
 (** polynomials with n variables *)
 

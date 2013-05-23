@@ -197,7 +197,9 @@ Ltac redtac := repeat
 (***********************************************************************)
 (** monotony properties *)
 
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
+Require Import Morphisms.
+
+(*REMOVE:Add Parametric Morphism (Sig : Signature) : (@red Sig)
   with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
     as red_incl.
 
@@ -205,34 +207,50 @@ Proof.
 intros R R' RR' u v Rst. redtac.
 exists l. exists r. exists c. exists s. repeat split; try hyp.
 apply RR'. hyp.
-Qed.
+Qed.*)
+
+Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
+
+Proof. intros R R' RR' t t' tt'. redtac. exists l r c s. intuition. Qed.
 
 (*COQ: can be removed?*)
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
+(*REMOVE:Add Parametric Morphism (Sig : Signature) : (@red Sig)
   with signature (@incl (@rule Sig)) ==>
     (@eq (term Sig)) ==> (@eq (term Sig)) ==> impl
     as red_incl_ext.
 
+Proof. unfold impl. intros. apply (red_incl H). hyp. Qed.*)
+
+Instance red_incl_ext Sig :
+  Proper (incl ==> Logic.eq ==> Logic.eq ==> impl) (@red Sig).
+
 Proof.
-unfold impl. intros. apply (red_incl H). hyp.
+  intros R R' RR' t t' tt' u u' uu' h. subst t' u'. exact (red_incl RR' h).
 Qed.
 
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
-  with signature (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+(*REMOVE:Add Parametric Morphism (Sig : Signature) : (@red Sig)
+  with signature (@lequiv (@rule Sig)) ==> (@same_relation (term Sig))
     as red_equiv.
 
-Proof.
-intros R S [h1 h2]. split; apply red_incl; hyp.
-Qed.
+Proof. intros R S [h1 h2]. split; apply red_incl; hyp. Qed.*)
+
+Instance req_equiv Sig : Proper (lequiv ==> same_relation) (@red Sig).
+
+Proof. intros R R' [RR' R'R]. split; apply red_incl; hyp. Qed.
 
 (*COQ: can be removed?*)
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
+(*REMOVE:Add Parametric Morphism (Sig : Signature) : (@red Sig)
   with signature (@lequiv (@rule Sig)) ==>
     (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
     as red_equiv_ext.
 
+Proof. intros A B [h1 h2]. split; apply red_incl; hyp. Qed.*)
+
+Instance req_equiv_ext Sig : Proper (lequiv ==> eq ==> eq ==> iff) (@red Sig).
+
 Proof.
-intros A B [h1 h2]. split; apply red_incl; hyp.
+  intros R R' [RR' R'R] t t' tt' u u' uu'. subst t' u'.
+  split; apply red_incl; hyp.
 Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
@@ -256,7 +274,7 @@ unfold impl. intros. apply (hd_red_incl H). hyp.
 Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
-  with signature (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+  with signature (@lequiv (@rule Sig)) ==> (@same_relation (term Sig))
     as hd_red_equiv.
 
 Proof.
@@ -296,7 +314,7 @@ Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
   with signature (@lequiv (@rule Sig)) ==>
-    (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    (@lequiv (@rule Sig)) ==> (@same_relation (term Sig))
     as red_mod_equiv.
 
 Proof.
@@ -337,7 +355,7 @@ Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
   with signature (@lequiv (@rule Sig)) ==>
-    (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+    (@lequiv (@rule Sig)) ==> (@same_relation (term Sig))
     as hd_red_mod_equiv.
 
 Proof.
@@ -376,8 +394,8 @@ unfold impl. intros. apply (hd_red_Mod_incl H H0). hyp.
 Qed.
 
 Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
-  with signature (same_relation (term Sig)) ==>
-    (@lequiv (@rule Sig)) ==> (same_relation (term Sig))
+  with signature (@same_relation (term Sig)) ==>
+    (@lequiv (@rule Sig)) ==> (@same_relation (term Sig))
     as hd_red_Mod_equiv.
 
 Proof.
@@ -386,7 +404,7 @@ Qed.
 
 (*COQ: can be removed?*)
 Add Parametric Morphism (Sig : Signature) : (@hd_red_Mod Sig)
-  with signature (same_relation (term Sig)) ==>
+  with signature (@same_relation (term Sig)) ==>
     (@lequiv (@rule Sig)) ==>
     (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
     as hd_red_Mod_equiv_ext.
@@ -901,7 +919,7 @@ Section S.
     Lemma WF_hd_red_Mod_empty : WF (hd_red_Mod S empty_trs).
 
     Proof.
-      apply WF_incl with (@empty_rel term). intros x y h. redtac. contr.
+      apply WF_incl with empty_rel. intros x y h. redtac. contr.
       apply WF_empty_rel.
     Qed.
 

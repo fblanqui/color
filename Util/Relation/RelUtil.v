@@ -14,22 +14,23 @@ Set Implicit Arguments.
 Require Import LogicUtil Setoid Basics Morphisms List.
 Require Export Relations RelMidex.
 
-Implicit Arguments transp [A].
-Implicit Arguments inclusion [A].
-Implicit Arguments clos_refl_trans [A].
-Implicit Arguments clos_trans [A].
-Implicit Arguments reflexive [A].
-Implicit Arguments transitive [A].
-Implicit Arguments antisymmetric [A].
-Implicit Arguments symmetric [A].
-Implicit Arguments equiv [A].
-Implicit Arguments union [A].
+Arguments inclusion {A} R1 R2.
+Arguments same_relation {A} R1 R2.
+Arguments transp {A} R x y.
+Arguments clos_refl_trans {A} R x y.
+Arguments clos_trans {A} R x y.
+Arguments reflexive {A} R.
+Arguments transitive {A} R.
+Arguments antisymmetric {A} R.
+Arguments symmetric {A} R.
+Arguments equiv {A} R.
+Arguments union {A} R1 R2 x y.
 
 (***********************************************************************)
 (** Notations for some relations and operations on relations. *)
 
 Notation "x << y" := (inclusion x y) (at level 50) : relation_scope.
-Notation "R == S" := (same_relation _ R S) (at level 70).
+Notation "R == S" := (same_relation R S) (at level 70).
 
 Notation "x 'U' y" := (union x y) (at level 45) : relation_scope.
 Notation "x #" := (clos_refl_trans x) (at level 35) : relation_scope.
@@ -73,7 +74,7 @@ End bool.
 (***********************************************************************)
 (** Equality on relations *)
 
-Instance same_relation_equiv A : Equivalence (same_relation A).
+Instance same_relation_equiv A : Equivalence (@same_relation A).
 
 Proof. fo. Qed.
 
@@ -121,6 +122,8 @@ Section basic_def2.
 
 End basic_def2.
 
+Definition empty_rel {A} : relation A := fun x y => False.
+
 Section basic_def3.
 
   Variables (A : Type) (R : relation A).
@@ -133,8 +136,6 @@ Section basic_def3.
   Definition strict_ordering := irreflexive R /\ transitive R.
 
   Definition strict_part : relation A := fun x y => R x y /\ ~R y x.
-
-  Definition empty_rel : relation A := fun x y => False.
 
   Definition intersection (S : relation A) : relation A :=
     fun x y => R x y /\ S x y.
@@ -231,22 +232,22 @@ Proof. fo. Qed.
 Ltac incl_trans S := apply inclusion_Trans with (S); try incl_refl.
 
 Instance inclusion_m' A :
-  Proper (same_relation A ==> same_relation A ==> impl) (@inclusion A).
+  Proper (same_relation ==> same_relation ==> impl) (@inclusion A).
 
 Proof. fo. Qed.
 
 (***********************************************************************)
 (** Infinite sequences. *)
 
-Instance IS_m' A : Proper (@inclusion A ==> eq ==> impl) (@IS A).
+Instance IS_m' A : Proper (inclusion ==> eq ==> impl) (@IS A).
 
 Proof. intros R S RS f g fg h i. subst. apply RS. apply h. Qed.
 
-Instance IS_m A : Proper (same_relation A ==> eq ==> impl) (@IS A).
+Instance IS_m A : Proper (same_relation ==> eq ==> impl) (@IS A).
 
 Proof. intros R S [RS SR] f g fg h. eapply IS_m'. apply RS. apply fg. hyp. Qed.
 
-Instance EIS_m A : Proper (same_relation A ==> impl) (@EIS A).
+Instance EIS_m A : Proper (same_relation ==> impl) (@EIS A).
 
 Proof. intros R S RS h. destruct h as [f h]. exists f. rewrite <- RS. hyp. Qed.
 
@@ -271,7 +272,7 @@ End IS.
 (***********************************************************************)
 (** Irreflexivivity. *)
 
-Instance irreflexive_m' A : Proper (@inclusion A --> impl) (@irreflexive A).
+Instance irreflexive_m' A : Proper (inclusion --> impl) (@irreflexive A).
 
 Proof. fo. Qed.
 
@@ -303,7 +304,7 @@ Definition compose A (R S : relation A) : relation A :=
 Notation "R @ S" := (compose R S) (at level 40) : relation_scope.
 
 Instance compose_m' A :
-  Proper (@inclusion A ==> @inclusion A ==> @inclusion A) (@compose A).
+  Proper (inclusion ==> inclusion ==> inclusion) (@compose A).
 
 Proof. fo. Qed.
 
@@ -311,7 +312,7 @@ Proof. fo. Qed.
 Ltac comp := apply compose_m'; try incl_refl.
 
 Instance compose_m A :
-  Proper (same_relation A ==> same_relation A ==> same_relation A) (@compose A).
+  Proper (same_relation ==> same_relation ==> same_relation) (@compose A).
 
 Proof. fo. Qed.
 
@@ -364,16 +365,16 @@ Definition absorb A (R S : relation A) := S @ R << R.
 (***********************************************************************)
 (** Reflexive closure. *)
 
-Definition clos_refl A (R : relation A) : relation A := @eq A U R.
+Definition clos_refl A (R : relation A) : relation A := eq U R.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
-Instance clos_refl_m' A : Proper (@inclusion A ==> @inclusion A) (@clos_refl A).
+Instance clos_refl_m' A : Proper (inclusion ==> inclusion) (@clos_refl A).
 
 Proof. fo. Qed.
 
 Instance clos_refl_m A :
-  Proper (same_relation A ==> same_relation A) (@clos_refl A).
+  Proper (same_relation ==> same_relation) (@clos_refl A).
 
 Proof. fo. Qed.
 
@@ -401,8 +402,7 @@ End clos_refl.
 (***********************************************************************)
 (** transitive closure *)
 
-Instance clos_trans_m' A :
-  Proper (@inclusion A ==> @inclusion A) (@clos_trans A).
+Instance clos_trans_m' A : Proper (inclusion ==> inclusion) (@clos_trans A).
 
 Proof.
   intros R R' H t u H0. elim H0; intros.
@@ -411,7 +411,7 @@ Proof.
 Qed.
 
 Instance clos_trans_m A :
-  Proper (same_relation A ==> same_relation A) (@clos_trans A).
+  Proper (same_relation ==> same_relation) (@clos_trans A).
 
 Proof. intros R S [RS SR]. split; apply clos_trans_m'; hyp. Qed.
 
@@ -510,7 +510,7 @@ Section clos_trans.
 
 End clos_trans.
 
-Instance Transitive_m A : Proper (same_relation A ==> impl) (@Transitive A).
+Instance Transitive_m A : Proper (same_relation ==> impl) (@Transitive A).
 
 Proof.
   intros R S e h x y z xy yz. rewrite rel_eq in e. rewrite <- e in *.
@@ -557,7 +557,7 @@ End clos_equiv.
 (** Union. *)
 
 Instance union_m' A :
-  Proper (@inclusion A ==> @inclusion A ==> @inclusion A) (@union A).
+  Proper (inclusion ==> inclusion ==> inclusion) (@union A).
 
 Proof. fo. Qed.
 
@@ -565,7 +565,7 @@ Proof. fo. Qed.
 Ltac union := apply union_m'; try incl_refl.
 
 Instance union_m A :
-  Proper (same_relation A ==> same_relation A ==> same_relation A) (@union A).
+  Proper (same_relation ==> same_relation ==> same_relation) (@union A).
 
 Proof. fo. Qed.
 
@@ -591,11 +591,11 @@ Section union.
 
   Proof. fo. Qed.
 
-  Lemma union_empty_r : forall R, R U @empty_rel A == R.
+  Lemma union_empty_r : forall R, R U empty_rel == R.
 
   Proof. fo. Qed.
 
-  Lemma union_empty_l : forall R, @empty_rel A U R == R.
+  Lemma union_empty_l : forall R, empty_rel U R == R.
 
   Proof. fo. Qed.
 
@@ -617,7 +617,7 @@ End union.
 (** Reflexive and transitive closure of a relation. *)
 
 Instance clos_refl_trans_m' A :
-  Proper (@inclusion A ==> @inclusion A) (@clos_refl_trans A).
+  Proper (inclusion ==> inclusion) (@clos_refl_trans A).
 
 Proof.
 intro. unfold inclusion. intros. elim H0; intros.
@@ -628,7 +628,7 @@ Qed.
 
 (*REMOVE?*)
 Instance clos_refl_trans_m'_ext A :
-  Proper (@inclusion A ==> eq ==> eq ==> impl) (@clos_refl_trans A).
+  Proper (inclusion ==> eq ==> eq ==> impl) (@clos_refl_trans A).
 
 Proof.
 intros R R' RR' x x' xx' y y' yy' h. subst.
@@ -636,7 +636,7 @@ apply (clos_refl_trans_m' RR'). hyp.
 Qed.
 
 Instance clos_refl_trans_m A :
-  Proper (same_relation A ==> same_relation A) (@clos_refl_trans A).
+  Proper (same_relation ==> same_relation) (@clos_refl_trans A).
 
 Proof.
 intros R S [RS SR]. split; apply clos_refl_trans_m'; hyp.
@@ -665,7 +665,7 @@ Section clos_refl_trans.
     subst y. apply rt_refl. apply rt_step. exact H.
   Qed.
 
-  Lemma rtc_split : R# << @eq A U R!.
+  Lemma rtc_split : R# << eq U R!.
 
   Proof.
     unfold inclusion, union. intros. elim H.
@@ -678,14 +678,14 @@ Section clos_refl_trans.
     right. apply t_trans with (y := y0); hyp.
   Qed.
 
-  Lemma rtc_split_eq : R# == @eq A U R!.
+  Lemma rtc_split_eq : R# == eq U R!.
 
   Proof.
     split. apply rtc_split. rewrite union_incl. split.
     intros x y h. subst. apply rt_refl. apply tc_incl_rtc.
   Qed.
 
-  Lemma rtc_split2 : R# << @eq A U R @ R#.
+  Lemma rtc_split2 : R# << eq U R @ R#.
 
   Proof.
     unfold inclusion, union. intros. elim H; clear H x y; intros.
@@ -764,11 +764,11 @@ End clos_refl_trans2.
 (***********************************************************************)
 (** Inverse (transp in Coq). *)
 
-Instance transp_m' A : Proper (@inclusion A ==> @inclusion A) (@transp A).
+Instance transp_m' A : Proper (inclusion ==> inclusion) (@transp A).
 
 Proof. fo. Qed.
 
-Instance transp_m A : Proper (same_relation A ==> same_relation A) (@transp A).
+Instance transp_m A : Proper (same_relation ==> same_relation) (@transp A).
 
 Proof. fo. Qed.
 
@@ -1162,19 +1162,19 @@ Qed.
 (***********************************************************************)
 (** Morphisms wrt inclusion and same_relation. *)
 
-Instance Reflexive_m A : Proper (@same_relation A ==> impl) (@Reflexive A).
+Instance Reflexive_m A : Proper (same_relation ==> impl) (@Reflexive A).
 
 Proof. fo. Qed.
 
-Instance Symmetric_m A : Proper (@same_relation A ==> impl) (@Symmetric A).
+Instance Symmetric_m A : Proper (same_relation ==> impl) (@Symmetric A).
 
 Proof. fo. Qed.
 
-Instance Equivalence_m A : Proper (@same_relation A ==> impl) (@Equivalence A).
+Instance Equivalence_m A : Proper (same_relation ==> impl) (@Equivalence A).
 
 Proof. intros R S RS [hr hs ht]. constructor; rewrite <- RS; hyp. Qed.
 
-Lemma eq_Refl_rel : forall A R, Reflexive R -> @eq A << R.
+Lemma eq_Refl_rel : forall A (R : relation A), Reflexive R -> eq << R.
 
 Proof. intros A R hR x y xy. subst y. apply hR. Qed.
 

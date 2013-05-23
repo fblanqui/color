@@ -27,7 +27,7 @@ Module Make (X : OrderedType).
   Definition pred x s g a b := rel g a x /\ XSet.In b s.
 
   Instance pred_geq' :
-    Proper (eq ==> XSet.Equal ==> geq ==> @inclusion X.t) pred.
+    Proper (eq ==> XSet.Equal ==> geq ==> inclusion) pred.
 
   Proof.
     intros x x' xx' s s' e g g' gg' a b. unfold pred. rewrite xx', e, gg'.
@@ -43,7 +43,7 @@ Module Make (X : OrderedType).
   Qed.
 
   Instance pred_geq :
-    Proper (eq ==> XSet.Equal ==> geq ==> @same_relation X.t) pred.
+    Proper (eq ==> XSet.Equal ==> geq ==> same_relation) pred.
 
   Proof. split; apply pred_geq'; hyp||(sym;hyp). Qed.
 

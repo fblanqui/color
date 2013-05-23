@@ -19,33 +19,35 @@ Module Make (X : OrderedType).
   Module Export XMapFacts := Facts XMap.
   Module Export XMapOrdProps := OrdProperties XMap.
 
+  Arguments empty {elt}.
+
 (***********************************************************************)
-(** in the following, we assume given a type A equipped with a
-relation eq *)
+(** In the following, we assume given a type [A] and a relation [eq] on [A]. *)
 
   Section S.
 
     Variables (A : Type) (eq : A->A->Prop).
 
 (***********************************************************************)
-(* properties of remove *)
+(* Properties of [remove]. *)
 
-    Lemma remove_empty : forall x, Equal (remove x (@empty A)) (@empty A).
+    Lemma remove_empty : forall x, Equal (remove x empty) (@empty A).
 
     Proof.
       intros x k. rewrite remove_o, empty_o. destruct (eq_dec x k); refl.
     Qed.
 
 (***********************************************************************)
-(** properties of Equiv *)
+(** Properties of [Equiv]. *)
 
-    Global Instance Equiv_m' :
-      Proper (@inclusion A ==> @inclusion (XMap.t A)) (@Equiv A).
+    Arguments inclusion {A} R1 R2.
+
+    Global Instance Equiv_m' : Proper (inclusion ==> inclusion) (@Equiv A).
 
     Proof. fo. Qed.
 
     Global Instance Equiv_m A :
-      Proper (@same_relation A ==> @same_relation (XMap.t A)) (@Equiv A).
+      Proper (same_relation ==> same_relation) (@Equiv A).
 
     Proof. fo. Qed.
 
@@ -82,10 +84,10 @@ relation eq *)
     Qed.
 
 (***********************************************************************)
-(** properties of transpose_neqkey *)
+(** Properties of [transpose_neqkey]. *)
 
     Global Instance transpose_neqkey_m' : forall B,
-      Proper (@inclusion B ==> Logic.eq ==> impl) (@transpose_neqkey A B).
+      Proper (inclusion ==> Logic.eq ==> impl) (@transpose_neqkey A B).
 
     Proof.
       intros B R R' RR' f f' ff' h. subst f'. unfold transpose_neqkey.
@@ -93,14 +95,14 @@ relation eq *)
     Qed.
 
     Global Instance transpose_neqkey_m : forall B,
-      Proper (@same_relation B ==> Logic.eq ==> iff) (@transpose_neqkey A B).
+      Proper (same_relation ==> Logic.eq ==> iff) (@transpose_neqkey A B).
 
     Proof.
       intros B R R' [h1 h2] f f' ff'. split; apply transpose_neqkey_m'; auto.
     Qed.
 
 (***********************************************************************)
-(** properties of add *)
+(** Properties of [add]. *)
 
     Lemma add_transp : transpose_neqkey Equal (@add A).
 
@@ -159,7 +161,7 @@ relation eq *)
     Qed.
 
 (***********************************************************************)
-(** add is a morphism wrt Equiv *)
+(** [add] is a morphism wrt Equiv. *)
 
     Global Instance add_Equiv :
       Proper (X.eq ==> eq ==> Equiv eq ==> Equiv eq) (@add A).
@@ -213,7 +215,7 @@ relation eq *)
     Qed.
 
 (***********************************************************************)
-(** properties of find *)
+(** Properties of [find]. *)
 
     Lemma find_None : forall k m,
       find k m = None <-> (forall x:A, ~MapsTo k x m).
@@ -294,7 +296,7 @@ relation eq *)
     Qed.
 
 (***********************************************************************)
-(** properties of Empty and is_empty *)
+(** Properties of [Empty] and [is_empty]. *)
 
     Global Instance Empty_Equiv : Proper (Equiv eq ==> iff) (@Empty A).
 
@@ -305,7 +307,7 @@ relation eq *)
     Qed.
 
     Global Instance is_empty_Equiv :
-      Proper (Equiv eq ==> @Logic.eq bool) (@is_empty A).
+      Proper (Equiv eq ==> Logic.eq) (@is_empty A).
 
     Proof.
       intros m m' mm'. apply beq_true. repeat rewrite <- is_empty_iff.
@@ -313,9 +315,9 @@ relation eq *)
     Qed.
 
 (***********************************************************************)
-(** properties of Equiv *)
+(** Other properties of [Equiv]. *)
 
-    Lemma Equiv_empty : forall m, Equiv eq (empty A) m <-> Empty m.
+    Lemma Equiv_empty : forall m, Equiv eq empty m <-> Empty m.
 
     Proof.
       intro m. unfold Equiv, Empty, Raw.Proofs.Empty. intuition.
@@ -323,7 +325,7 @@ relation eq *)
       rewrite <- H0 in H2. rewrite empty_in_iff in H2. hyp.
       rewrite empty_in_iff in H0. contr.
       rewrite empty_in_iff. destruct H0. eapply H. apply H0.
-      assert (In k (empty A)). exists e. hyp.
+      assert (In k (@empty A)). exists e. hyp.
       rewrite empty_in_iff in H2. contr.
     Qed.
 
@@ -357,8 +359,8 @@ relation eq *)
     Qed.
 
 (***********************************************************************)
-(* (fold f) is a morphism wrt (Equiv eq) if f is a morphism wrt eq
-and satisfies some commutation property *)
+(* [fold f] is a morphism wrt [Equiv eq] if [f] is a morphism wrt [eq]
+and satisfies some commutation property. *)
 
     Section fold.
 
@@ -414,7 +416,7 @@ and satisfies some commutation property *)
     End fold.
 
 (***********************************************************************)
-(* properties of In *)
+(* Properties of [In]. *)
 
     Global Instance In_Equiv' : Proper (X.eq ==> Equiv eq ==> impl) (@In A).
 
@@ -430,7 +432,7 @@ and satisfies some commutation property *)
     Qed.
 
 (***********************************************************************)
-(* properties of for_all *)
+(* Properties of [for_all]. *)
 
     Section for_all.
 
@@ -488,6 +490,71 @@ and satisfies some commutation property *)
       Qed.
 
     End for_all.
+
+(***********************************************************************)
+(* Properties of [for_all]. *)
+
+    Section filter.
+
+      Variable f : X.t -> A -> bool.
+
+      Definition filter_aux k x m := if f k x then add k x m else m.
+
+      Global Instance filter_aux_m : PreOrder eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (X.eq ==> eq ==> Equiv eq ==> Equiv eq) filter_aux.
+
+      Proof.
+        intros heq fm k k' kk' x x' xx' m m' mm'. unfold filter_aux.
+        rewrite kk', xx'. destruct (f k' x'). rewrite kk', xx', mm'. refl. hyp.
+      Qed.
+
+      Lemma filter_aux_transp : Reflexive eq ->
+        transpose_neqkey (Equiv eq) filter_aux.
+
+      Proof.
+        unfold transpose_neqkey. intros heq k k' x x' b n. unfold filter_aux.
+        destruct (f k x); destruct (f k' x'); try refl.
+        apply add_transp_Equiv; hyp.
+      Qed.
+
+      Lemma filter_eq : forall m, filter f m = fold filter_aux m empty.
+
+      Proof. refl. Qed.
+
+      (*TODO
+
+      Lemma filter_add : Reflexive eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
+          forall x, filter f (add k x m) = f k x && filter f m.
+
+      Proof.
+        intros heq fm k m n x. rewrite filter_eq. rewrite fold_add; intuition.
+        clear - heq fm. intros k k' kk' x x' xx' b b' bb'.
+        apply filter_aux_m; intuition. subst x'. refl.
+        apply filter_aux_transp.
+      Qed.
+
+      Global Instance filter_Equiv : PreOrder eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (Equiv eq ==> Logic.eq) (filter f).
+
+      Proof.
+        intros heq fm m m' mm'. repeat rewrite filter_eq.
+        apply fold_Equiv; intuition. apply filter_aux_transp.
+      Qed.
+
+      Global Instance filter_m : Reflexive eq ->
+        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (Equal ==> Logic.eq) (filter f).
+
+      Proof.
+        intros heq fm m m' mm'. repeat rewrite filter_eq.
+        apply fold_Equal; intuition. eapply Proper3_m. 5: apply filter_aux_m.
+        refl. intros x y xy. subst y. refl. refl. refl. hyp.
+      Qed.*)
+
+    End filter.
 
   End S.
 
