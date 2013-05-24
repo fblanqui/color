@@ -165,8 +165,8 @@ Lemma greatest_repeat_free_prefix_aux_elim : forall l acc,
   exists p, greatest_repeat_free_prefix_aux acc l = rev acc ++ p.
 
 Proof.
-induction l; simpl; intros. exists (@nil A). rewrite <- app_nil_end. refl.
-case (In_dec eq_dec a acc); intro. exists (@nil A). rewrite <- app_nil_end. refl.
+induction l; simpl; intros. exists nil. rewrite <- app_nil_end. refl.
+case (In_dec eq_dec a acc); intro. exists nil. rewrite <- app_nil_end. refl.
 ded (IHl (a::acc)). destruct H. rewrite H. simpl. rewrite app_ass. simpl.
 exists (a::x). refl.
 Qed.
@@ -228,7 +228,7 @@ rewrite H3.
 simpl. auto.
 (* exists p, l = greatest_repeat_free_prefix l ++ p *)
 assert (exists p, l = greatest_repeat_free_prefix l ++ p). destruct IHl.
-exists (@nil A). rewrite <- H3. apply app_nil_end.
+exists nil. rewrite <- H3. apply app_nil_end.
 decomp H3. exists (x1::x2). exact H4.
 (* greatest_repeat_free_prefix_app (x::x0++x1) H2 *)
 decomp H3. rewrite H0 in H4. rewrite H4.
@@ -262,7 +262,7 @@ Lemma greatest_repeat_free_prefix_intro' : forall l,
 
 Proof.
 intro. ded (greatest_repeat_free_prefix_intro l). destruct H.
-exists (@nil A). rewrite <- H. apply app_nil_end.
+exists nil. rewrite <- H. apply app_nil_end.
 decomp H. exists (x::x0). exact H0.
 Qed.
 
@@ -283,7 +283,7 @@ Lemma repeat_free_intro' : forall l : list A,
 
 Proof.
 intro. ded (repeat_free_intro l). destruct H.
-exists l. exists (@nil A). rewrite <- app_nil_end. auto.
+exists l. exists nil. rewrite <- app_nil_end. auto.
 decomp H. exists x. exists (x0::x1). auto.
 Qed.
 
@@ -292,7 +292,7 @@ Qed.
 
 Fixpoint make_repeat_free l :=
   match l with
-    | nil => @nil A
+    | nil => nil
     | t :: q => t :: remove eq_dec t (make_repeat_free q) 
   end.
 

@@ -730,7 +730,7 @@ Module Ord (SL : SemLab) <: OrdSemLab.
 
   Notation Sig' := (lab_sig Sig beq_ok).
 
-  Lemma Decr_empty : Decr beq_ok Lgt [=] @empty (@ATrs.rule Sig').
+  Lemma Decr_empty : Decr beq_ok Lgt [=] empty.
 
   Proof. fo. Qed.
 
