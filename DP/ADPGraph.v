@@ -198,7 +198,7 @@ Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
 destruct a. simpl. simpl in H0. exists (sub x0 lhs). split.
-apply inclusion_elim with (R := int_red R #). apply clos_refl_trans_m'.
+apply inclusion_elim with (R := int_red R #). apply clos_refl_trans_inclusion.
 apply int_red_incl_red. exact H0. apply hd_red_rule. simpl. auto.
 Qed.
 
@@ -226,7 +226,7 @@ Proof.
 unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
 apply (incl_rtc_comp Habsorb). exists (sub x0 (lhs a)). split.
 apply inclusion_elim with (R := int_red R #). 2: exact H1.
-apply clos_refl_trans_m'.
+apply clos_refl_trans_inclusion.
 incl_trans (red R). apply int_red_incl_red. apply compat_red; hyp.
 destruct Hredord. apply H2. exact H.
 Qed.

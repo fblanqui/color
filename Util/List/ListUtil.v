@@ -266,46 +266,30 @@ Proof. intros x y z xy yz. apply strict_incl_tran with y; hyp. Qed.
 (***********************************************************************)
 (** equivalence *)
 
-Section equiv.
-
-  Variable A : Type.
-
-  Definition lequiv (l1 l2 : list A) : Prop := l1 [= l2 /\ l2 [= l1.
-
-  Lemma lequiv_refl : forall l, lequiv l l.
-
-  Proof. intro. split; refl. Qed.
-
-  Lemma lequiv_sym : forall l1 l2, lequiv l1 l2 -> lequiv l2 l1.
-
-  Proof. intros. destruct H. split; hyp. Qed.
-
-  Lemma lequiv_trans :
-    forall l1 l2 l3, lequiv l1 l2 -> lequiv l2 l3 -> lequiv l1 l3.
-
-  Proof.
-    intros. destruct H. destruct H0. split. eapply incl_tran. apply H. hyp.
-    eapply incl_tran. apply H2. hyp.
-  Qed.
-
-End equiv.
+Definition lequiv {A} (l1 l2 : list A) := l1 [= l2 /\ l2 [= l1.
 
 Infix "[=]" := lequiv (at level 70).
 
-Arguments lequiv {A} l1 l2.
-
 Instance lequiv_rel A : Equivalence (@lequiv A).
 
-Proof.
-  constructor.
-  intro x. apply lequiv_refl.
-  intros x y xy. apply lequiv_sym; hyp.
-  intros x y z xy yz. apply lequiv_trans with y; hyp.
-Qed.
+Proof. fo. Qed.
 
 Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
 
 Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition. Qed.
+
+Instance incl_lequiv1 A1 B (f : list A1 -> relation B) :
+  Proper (incl ==> inclusion) f -> Proper (lequiv ==> same_relation) f.
+
+Proof. intros hf l1 l1' [l1l1' l1'l1]. split; apply hf; hyp. Qed.
+
+Instance incl_lequiv2 A1 A2 B (f : list A1 -> list A2 -> relation B) :
+  Proper (incl ==> incl ==> inclusion) f ->
+  Proper (lequiv ==> lequiv ==> same_relation) f.
+
+Proof.
+  intros hf l1 l1' [l1l1' l1'l1] l2 l2' [l2l2' l2'l2]. split; apply hf; hyp.
+Qed.
 
 (***********************************************************************)
 (** empty list *)

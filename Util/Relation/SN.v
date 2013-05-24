@@ -313,7 +313,7 @@ Section tc.
   Proof.
     induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
     apply SN_rtc with (x := x0). apply H0. hyp.
-    apply inclusion_elim with (R := R#). apply clos_refl_trans_m'.
+    apply inclusion_elim with (R := R#). apply clos_refl_trans_inclusion.
     apply incl_tc. refl. hyp.
   Qed.
 
@@ -588,7 +588,7 @@ Section wf_mod_shift.
     intro. apply WF_incl with ((T # @ (R U S)) !).
     intros x y Rxy. apply tc_split_inv. apply comp_assoc.
     destruct Rxy as [z [STxz Rzy]]. exists z. split; [idtac | intuition].
-    apply rtc_union. apply clos_refl_trans_m' with (S U T); trivial.
+    apply rtc_union. apply clos_refl_trans_inclusion with (S U T); trivial.
     intros s t STst. destruct STst as [Sst | Tst]; solve [intuition].
     apply WF_tc. hyp.
   Qed.
@@ -618,8 +618,8 @@ Section wf_rel_mod.
     apply incl_rtc_rtc with (S# @ R); [idtac | intuition].
     intros a b B. destruct B as [c [Sac Rcb]].
     constructor 3 with c; [idtac | intuition].
-    apply clos_refl_trans_m' with S; intuition.
-    apply clos_refl_trans_m' with S; intuition.
+    apply clos_refl_trans_inclusion with S; intuition.
+    apply clos_refl_trans_inclusion with S; intuition.
   Qed.
 
 End wf_rel_mod.
@@ -633,7 +633,7 @@ Section wf_rel_mod_simpl.
 
   Proof.
     intros. apply WF_incl with ((empty_rel U S)# @ (R' U R)).
-    comp. apply clos_refl_trans_m'. intuition.
+    comp. apply clos_refl_trans_inclusion. intuition.
     apply wf_rel_mod. hyp.
     apply WF_incl with ((R U S)# @ R'); trivial.
     comp. apply union_empty_r.

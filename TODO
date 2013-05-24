@@ -1,4 +1,8 @@
 
+- improve compilation speed of FGraph
+
+- in RelUtil, replace # by * and ! by +
+
 - replace Add [Parametric] Morphism by Proper
 
 - remove Implicit in Implicit Arguments

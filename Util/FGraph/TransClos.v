@@ -111,7 +111,7 @@ Module Make (X : OrderedType).
     intros z t g m n h. unfold add_pred. case_eq (XSet.mem x t); intros.
     (* x in t *)
     rewrite <- mem_iff in H. rewrite rel_set_fold_add_edge. rewrite h.
-    rewrite <- R.union_assoc. apply R.union_m. 2: refl.
+    rewrite <- R.union_assoc. apply R.union_same_relation. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
     intuition.
     rewrite H0. unfold rel. exists t. rewrite add_eq_o. intuition. refl.
@@ -122,7 +122,7 @@ Module Make (X : OrderedType).
     left. intuition.
     right. intuition.
     (* x notin t *)
-    rewrite <- not_mem_iff in H. rewrite h. apply R.union_m. 2: refl.
+    rewrite <- not_mem_iff in H. rewrite h. apply R.union_same_relation. 2: refl.
     rewrite rel_eq; intros a b. unfold pred.
     intuition; change (~In z m) in n; rewrite not_find_in_iff in n.
     unfold rel. rewrite add_o. destruct (eq_dec z a). 2: hyp.
@@ -146,7 +146,7 @@ Module Make (X : OrderedType).
     unfold transpose_neqkey. intros x s w w' sw sw' g nww'.
     unfold geq, add_pred. destruct (XSet.mem x sw); destruct (XSet.mem x sw');
     repeat rewrite rel_set_fold_add_edge; try refl.
-    repeat rewrite <- R.union_assoc. apply R.union_m.
+    repeat rewrite <- R.union_assoc. apply R.union_same_relation.
     apply union_commut. refl.
   Qed.
 
@@ -171,8 +171,8 @@ the transitive closure of [id x y U g] *)
     intros x x' xx' y y' yy' g g' gg'. unfold geq, trans_add_edge.
     rewrite xx', yy', gg'. destruct (XSet.mem y' (succs x' g')).
     hyp. repeat rewrite rel_map_fold_add_pred, rel_set_fold_add_edge.
-    apply R.union_m. rewrite xx', yy', gg'. refl.
-    apply R.union_m. rewrite xx', yy', gg'. refl.
+    apply R.union_same_relation. rewrite xx', yy', gg'. refl.
+    apply R.union_same_relation. rewrite xx', yy', gg'. refl.
     hyp.
   Qed.
 
@@ -183,7 +183,7 @@ the transitive closure of [id x y U g] *)
   Proof.
     intros x y g. unfold trans_add_edge.
     case_eq (XSet.mem y (succs x g)); intros. refl.
-    rewrite rel_map_fold_add_pred. apply R.union_m. refl.
+    rewrite rel_map_fold_add_pred. apply R.union_same_relation. refl.
     rewrite rel_set_fold_add_edge. refl.
   Qed.
 
@@ -196,7 +196,7 @@ the transitive closure of [id x y U g] *)
     destruct (XSet.mem y (succs x g)). refl.
     cbv zeta. set (ysy := XSet.add y (succs y g)).
     set (xpx := XSet.add x (preds x g)). rewrite <- R.union_assoc.
-    apply R.union_m. apply pred_succ_prod. refl.
+    apply R.union_same_relation. apply pred_succ_prod. refl.
   Qed.
 
   Lemma add_edge_incl_trans : forall x y g,
@@ -246,8 +246,8 @@ the transitive closure of [id x y U g] *)
     split.
     rewrite union_incl. split. apply prod_add_incl_tc_id.
     trans (g U id x y). apply incl_union_l. refl. apply incl_tc. refl.
-    apply tc_min. 2: hyp. rewrite union_commut. apply union_m'. 2: refl.
-    intros a b [xa yb]. split; rewrite add_iff; intuition.
+    apply tc_min. 2: hyp. rewrite union_commut. apply R.union_inclusion.
+    2: refl. intros a b [xa yb]. split; rewrite add_iff; intuition.
   Qed.
 
   Lemma succs_trans_add_edge_id : forall x y g,
@@ -404,13 +404,13 @@ using the function [trans_add_edge] now *)
       (* y not in (succs x g): R! == S! *)
       apply tc_eq.
       (* S << R *)
-      apply R.union_m'. refl. rewrite union_commut. apply R.union_m'.
+      apply R.union_inclusion. refl. rewrite union_commut. apply R.union_inclusion.
       2: refl. intros u v [xu yv]. unfold prod. rewrite xu, yv.
       repeat rewrite add_iff. intuition.
       (* R << S! *)
       rewrite union_incl. split. apply incl_tc. apply incl_union_l. refl.
       rewrite union_incl. split. rewrite prod_add_incl_tc_id.
-      apply clos_trans_m'. apply incl_union_r. refl.
+      apply clos_trans_inclusion. apply incl_union_r. refl.
       apply incl_tc. apply incl_union_r. apply incl_union_l. refl.
     Qed.
 
@@ -436,10 +436,10 @@ using the function [trans_add_edge] now *)
       set (g0 := fold_left add_edge_list l empty).
       rewrite rel_trans_add_edge_list. 2: hyp. apply tc_eq.
       (* S << R *)
-      apply R.union_m'. refl. apply incl_tc. refl.
+      apply R.union_inclusion. refl. apply incl_tc. refl.
       (* R << S! *)
       rewrite union_incl. split. apply incl_tc. apply incl_union_l. refl.
-      apply clos_trans_m'. apply incl_union_r. refl.
+      apply clos_trans_inclusion. apply incl_union_r. refl.
     Qed.
 
 (***********************************************************************)

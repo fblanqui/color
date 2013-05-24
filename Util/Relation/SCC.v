@@ -82,7 +82,7 @@ Section S.
       intros.
       destruct H0.
       assert (R1! << R2!).
-      apply clos_trans_m'; hyp.
+      apply clos_trans_inclusion; hyp.
       split; unfold inclusion in H2.
       apply (H2 x y); hyp.
       apply (H2 y x); hyp.

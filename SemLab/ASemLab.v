@@ -361,7 +361,7 @@ Section S.
       ded (red_lab ge_compatR v H0). do 2 destruct H2. exists x0. intuition.
       apply rt_trans with (lab v x).
       eapply inclusion_elim. apply rt_red_mod_union. hyp.
-      eapply inclusion_elim. apply clos_refl_trans_m'. apply red_incl.
+      eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
       apply incl_appl. hyp.
     Qed.
 
@@ -373,7 +373,7 @@ Section S.
       ded (hd_red_lab v H0). do 2 destruct H2. exists x0. intuition.
       apply rt_trans with (lab v x).
       eapply inclusion_elim. apply rt_red_mod_union. hyp.
-      eapply inclusion_elim. apply clos_refl_trans_m'. apply red_incl.
+      eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
       apply incl_appl. hyp.
     Qed.
 
@@ -871,9 +871,7 @@ Module SemLabProps (SL : SemLab).
 
     Proof.
       rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
-      (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty.*)
-      apply WF_m. apply red_mod_equiv. rewrite Decr_empty. 2: refl.
-      rewrite empty_union_l. refl.
+      rewrite Decr_empty, empty_union_l. refl.
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
@@ -881,22 +879,14 @@ Module SemLabProps (SL : SemLab).
 
     Proof.
       rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
-      (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty.*)
-      apply WF_m. apply hd_red_mod_equiv. rewrite Decr_empty. 2: refl.
-      rewrite empty_union_l. refl.
+      rewrite Decr_empty, empty_union_l. refl.
     Qed.
 
     Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).
 
     Proof.
       rewrite WF_red_lab. 2: apply ge_compatR.
-      (*COQ BUG: Anomaly: Uncaught exception Invalid_argument("List.iter2"). Please report.*)(*rewrite Decr_empty. rewrite red_mod_empty. refl.*)
-      apply WF_m.
-      assert (a : forall x y, red Decr # x y -> x = y).
-      induction 1. redtac. fo. refl. trans y; hyp.
-      unfold red_mod. split; intros t u h.
-      destruct h. intuition. apply a in H0. subst. hyp. exists t. split.
-      apply rt_refl. hyp.
+      rewrite Decr_empty, red_mod_empty. refl.
     Qed.
 
   End props.
