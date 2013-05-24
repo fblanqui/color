@@ -260,7 +260,7 @@ Lemma iter_path : forall n x y,
   iter n x y -> exists l, length l = n /\ path R x y l.
 
 Proof.
-induction n; simpl; intros. exists (@nil A). intuition.
+induction n; simpl; intros. exists nil. intuition.
 do 2 destruct H. ded (IHn _ _ H0). do 2 destruct H1. subst n.
 exists (x0 :: x1). simpl. intuition.
 Qed.

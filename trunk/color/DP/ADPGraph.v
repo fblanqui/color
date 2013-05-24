@@ -112,7 +112,7 @@ Lemma iter_chain_chain_dps : forall n t u, iter Chain n t u ->
 
 Proof.
 induction n; simpl; intros. ded (chain_chain_dp H). destruct H0.
-exists x. exists (@nil rule). intuition.
+exists x. exists nil. intuition.
 do 2 destruct H. ded (chain_chain_dp H). destruct H1. exists x0.
 ded (IHn _ _ H0). do 3 destruct H2. exists (x1 :: x2). simpl. intuition.
 exists x. intuition.

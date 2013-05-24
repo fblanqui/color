@@ -63,7 +63,7 @@ edge from b to c *)
 
   Fixpoint Union (cs : decomp) : relation term :=
     match cs with
-      | nil => @empty_rel term
+      | nil => empty_rel
       | ci :: cs' => hd_red_Mod S ci U Union cs'
     end.
 

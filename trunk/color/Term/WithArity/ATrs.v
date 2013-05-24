@@ -60,19 +60,17 @@ Section basic_definitions.
     end.
 
   Lemma is_notvar_lhs_elim : forall R, forallb is_notvar_lhs R = true ->
-    forall l r, In (mkRule l r) R -> exists f, exists ts, l = Fun f ts.
+    forall l r, In (mkRule l r) R -> exists f ts, l = Fun f ts.
 
   Proof.
     intros. rewrite forallb_forall in H. ded (H _ H0). destruct l. discr.
-    exists f. exists t. refl.
+    exists f t. refl.
   Qed.
 
   Lemma is_notvar_lhs_false : forall R, forallb is_notvar_lhs R = true ->
     forall x r, In (mkRule (Var x) r) R -> False.
 
-  Proof.
-    intros. rewrite forallb_forall in H. ded (H _ H0). discr.
-  Qed.
+  Proof. intros. rewrite forallb_forall in H. ded (H _ H0). discr. Qed.
 
   Definition is_notvar_rhs a :=
     match rhs a with
@@ -81,19 +79,17 @@ Section basic_definitions.
     end.
 
   Lemma is_notvar_rhs_elim : forall R, forallb is_notvar_rhs R = true ->
-    forall l r, In (mkRule l r) R -> exists f, exists ts, r = Fun f ts.
+    forall l r, In (mkRule l r) R -> exists f ts, r = Fun f ts.
 
   Proof.
     intros. rewrite forallb_forall in H. ded (H _ H0). destruct r. discr.
-    exists f. exists t. refl.
+    exists f t. refl.
   Qed.
 
   Lemma is_notvar_rhs_false : forall R, forallb is_notvar_rhs R = true ->
     forall x l, In (mkRule l (Var x)) R -> False.
 
-  Proof.
-    intros. rewrite forallb_forall in H. ded (H _ H0). discr.
-  Qed.
+  Proof. intros. rewrite forallb_forall in H. ded (H _ H0). discr. Qed.
 
 (***********************************************************************)
 (** standard rewriting *)
@@ -121,15 +117,14 @@ Section basic_definitions.
 
     Definition innermost u := forall f us, u = Fun f us -> Vforall NF us.
 
-    Definition inner_red u v := exists l, exists r, exists c, exists s,
+    Definition inner_red u v := exists l r c s,
       In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
       /\ innermost (sub s l).
 
-    Definition inner_hd_red u v := exists l, exists r, exists s,
+    Definition inner_hd_red u v := exists l r s,
       In (mkRule l r) R /\ u = sub s l /\ v = sub s r /\ innermost u.
 
-    Definition inner_int_red u v := exists l, exists r, exists c, exists s,
-      c <> Hole
+    Definition inner_int_red u v := exists l r c s, c <> Hole
       /\ In (mkRule l r) R /\ u = fill c (sub s l) /\ v = fill c (sub s r)
       /\ innermost (sub s l).
 
@@ -199,7 +194,6 @@ Ltac redtac := repeat
 
 Require Import Morphisms.
 
-(*TODO: include Sig in Proper*)
 Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. exists l r c s. intuition. Qed.
@@ -232,8 +226,6 @@ Section S.
   Notation term := (term Sig). Notation terms := (vector term).
   Notation rule := (rule Sig). Notation rules := (list rule).
 
-  Notation empty_trs := (@nil rule).
-
   Section rewriting.
 
     Variable R R' : rules.
@@ -241,44 +233,33 @@ Section S.
     Lemma red_rule : forall l r c s, In (mkRule l r) R ->
       red R (fill c (sub s l)) (fill c (sub s r)).
 
-    Proof.
-      intros. unfold red. exists l. exists r. exists c. exists s. auto.
-    Qed.
+    Proof. intros. unfold red. exists l r c s. auto. Qed.
 
-    Lemma red_empty : forall t u : term, red empty_trs # t u -> t = u.
+    Lemma red_empty : forall t u : term, red nil # t u -> t = u.
 
-    Proof.
-      intros. induction H. redtac. contr. refl. congruence.
-    Qed.
+    Proof. intros. induction H. redtac. contr. refl. congruence. Qed.
 
-    Lemma red_rule_top : forall l r s, In (mkRule l r) R ->
-      red R (sub s l) (sub s r).
+    Lemma red_rule_top : forall l r s,
+      In (mkRule l r) R -> red R (sub s l) (sub s r).
 
-    Proof.
-      intros. unfold red. exists l. exists r. exists (@Hole Sig). exists s.
-      auto.
-    Qed.
+    Proof. intros. unfold red. exists l r (@Hole Sig) s. auto. Qed.
 
-    Lemma hd_red_rule : forall l r s, In (mkRule l r) R ->
-      hd_red R (sub s l) (sub s r).
+    Lemma hd_red_rule : forall l r s,
+      In (mkRule l r) R -> hd_red R (sub s l) (sub s r).
 
-    Proof.
-      intros. unfold hd_red. exists l. exists r. exists s. auto.
-    Qed.
+    Proof. intros. unfold hd_red. exists l r s. auto. Qed.
 
     Lemma red_fill : forall t u c, red R t u -> red R (fill c t) (fill c u).
 
     Proof.
       intros. redtac. unfold red.
-      exists l. exists r. exists (AContext.comp c c0). exists s. split. hyp.
+      exists l r (AContext.comp c c0) s. split. hyp.
       subst t. subst u. do 2 rewrite fill_fill. auto.
     Qed.
 
     Lemma context_closed_red : context_closed (red R).
 
-    Proof.
-      intros t u c h. apply red_fill. hyp.
-    Qed.
+    Proof. intros t u c h. apply red_fill. hyp. Qed.
 
     Lemma red_sub : forall t u s, red R t u -> red R (sub s t) (sub s u).
 
@@ -293,35 +274,32 @@ Section S.
     Proof.
       unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
       subst u'. exists (fill (AContext.comp d c) (sub s r)). split.
-      exists l. exists r. exists (AContext.comp d c). exists s. split. hyp.
+      exists l r (AContext.comp d c) s. split. hyp.
       rewrite fill_fill. auto. exists d. rewrite fill_fill. refl.
     Qed.
 
     Lemma int_red_fun : forall f ts v, int_red R (Fun f ts) v
-      -> exists i, exists vi : terms i, exists t, exists j, exists vj : terms j,
-        exists h, exists t', ts = Vcast (Vapp vi (Vcons t vj)) h
-          /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red R t t'.
+      -> exists i (vi : terms i) t j (vj : terms j) h t',
+        ts = Vcast (Vapp vi (Vcons t vj)) h
+        /\ v = Fun f (Vcast (Vapp vi (Vcons t' vj)) h) /\ red R t t'.
 
     Proof.
       intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. simpl in xl.
-      Funeqtac. exists i. exists t. exists (fill c (sub s l)). exists j.
-      exists t0. exists e. exists (fill c (sub s r)). split. hyp. split. hyp.
-      unfold red. exists l. exists r. exists c. exists s. auto.
+      Funeqtac. exists i t (fill c (sub s l)). exists j t0 e (fill c (sub s r)).
+      split. hyp. split. hyp. unfold red. exists l r c s. auto.
     Qed.
 
     Lemma red_swap : red (R ++ R') << red (R' ++ R).
 
     Proof.
-      intros x y RR'xy. redtac.
-      exists l. exists r. exists c. exists s. repeat split; auto.
+      intros x y RR'xy. redtac. exists l r c s. repeat split; auto.
       destruct (in_app_or lr); apply in_or_app; auto.
     Qed.
 
     Lemma hd_red_swap : hd_red (R ++ R') << hd_red (R' ++ R).
 
     Proof.
-      intros x y RR'xy. redtac.
-      exists l. exists r. exists s. repeat split; auto.
+      intros x y RR'xy. redtac. exists l r s. repeat split; auto.
       destruct (in_app_or lr); auto with datatypes.
     Qed.
 
@@ -339,42 +317,37 @@ Section S.
       hyp.
     Qed.
 
-    Lemma WF_red_empty : WF (red empty_trs).
+    Lemma WF_red_empty : WF (red (@nil rule)).
 
-    Proof.
-      intro x. apply SN_intro. intros y Exy. redtac. contr.
-    Qed.
+    Proof. intro x. apply SN_intro. intros y Exy. redtac. contr. Qed.
 
     Lemma hd_red_mod_incl_red_mod : forall E, hd_red_mod E R << red_mod E R.
 
-    Proof.
-      intro. unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red.
-    Qed.
+    Proof. intro. unfold hd_red_mod, red_mod. comp. apply hd_red_incl_red. Qed.
 
     Lemma int_red_preserve_hd : forall u v, int_red R u v ->
-      exists f, exists us,exists vs, u = Fun f us /\ v = Fun f vs.
+      exists f us vs, u = Fun f us /\ v = Fun f vs.
 
     Proof.
       intros. do 5 destruct H. intuition. destruct x1. congruence.
-      simpl in *. exists f.
-      exists (Vcast (Vapp t (Vcons (fill x1 (sub x2 x)) t0)) e).
-      exists (Vcast (Vapp t (Vcons (fill x1 (sub x2 x0)) t0)) e).
-      tauto.
+      simpl in *. exists f
+        (Vcast (Vapp t (Vcons (fill x1 (sub x2 x)) t0)) e)
+        (Vcast (Vapp t (Vcons (fill x1 (sub x2 x0)) t0)) e). tauto.
     Qed.
 
     Lemma int_red_rtc_preserve_hd : forall u v, int_red R # u v ->
-      u=v \/ exists f, exists us, exists vs, u = Fun f us /\ v = Fun f vs.
+      u=v \/ exists f us vs, u = Fun f us /\ v = Fun f vs.
 
     Proof.
       intros. induction H; auto.
       right. apply int_red_preserve_hd. auto.
       destruct IHclos_refl_trans1; destruct IHclos_refl_trans2; subst; auto.
       right. do 3 destruct H1. do 3 destruct H2. intuition; subst; auto.
-      inversion H1. subst. exists x3; exists x1; exists x5. auto.
+      inversion H1. subst. exists x3 x1 x5. auto.
     Qed.
 
     Lemma red_case : forall t u, red R t u -> hd_red R t u
-      \/ exists f, exists ts, exists i, exists p : i < arity f, exists u',
+      \/ exists f ts i (p : i < arity f) u',
         t = Fun f ts /\ red R (Vnth ts p) u' /\ u = Fun f (Vreplace ts p u').
 
     Proof.
@@ -382,9 +355,8 @@ Section S.
       (* Hole *)
       left. subst. simpl. apply hd_red_rule. hyp.
       (* Cont *)
-      right. exists f. exists (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e).
-      exists i. assert (p : i<arity f). omega. exists p.
-      exists (fill c (sub s r)).
+      right. exists f (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e) i.
+      assert (p : i<arity f). omega. exists p (fill c (sub s r)).
       subst. simpl. intuition. rewrite Vnth_cast. rewrite Vnth_app.
       destruct (le_gt_dec i i). 2: absurd_arith. rewrite Vnth_cons_head.
       apply red_rule. hyp. omega.
@@ -411,8 +383,7 @@ Section S.
     Proof.
       intros t u tu. redtac. destruct c; subst.
       left. apply hd_red_rule. hyp.
-      right. exists l. exists r. exists (Cont f e t0 c t1). exists s.
-      intuition. discr.
+      right. exists l r (Cont f e t0 c t1) s. intuition. discr.
     Qed.
 
   End rewriting.
@@ -492,9 +463,7 @@ Section S.
 
     Lemma rtc_red_maxvar : forall t u, red R # t u -> maxvar u <= maxvar t.
 
-    Proof.
-      induction 1. apply red_maxvar. hyp. omega. omega.
-    Qed.
+    Proof. induction 1. apply red_maxvar. hyp. omega. omega. Qed.
 
     Lemma rtc_red_maxvar0 : forall t u,
       maxvar t = 0 -> red R # t u -> maxvar u = 0.
@@ -522,8 +491,7 @@ Section S.
       maxvar t = 0 -> red_mod E R t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). Omega. apply red_mod_maxvar.
-      hyp.
+      intros. cut (maxvar u <= maxvar t). Omega. apply red_mod_maxvar. hyp.
     Qed.
 
   End red_mod.
@@ -547,9 +515,7 @@ Section S.
 
   Lemma maxvar_rules_init : forall R x, fold_left fold_max R x >= x.
 
-  Proof.
-    induction R; simpl; intros. refl. rewrite IHR. apply le_max_l.
-  Qed.
+  Proof. induction R; simpl; intros. refl. rewrite IHR. apply le_max_l. Qed.
 
   Lemma maxvar_rules_init_mon : forall R x y,
     x >= y -> fold_left fold_max R x >= fold_left fold_max R y.
@@ -601,7 +567,7 @@ Section S.
     Proof.
       intros. ded (Vgt_prod_gt H). do 8 destruct H0. destruct H1. redtac.
       subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
-      exists l. exists r. exists (Cont f x4 x0 c x3). exists s. split. discr.
+      exists l r (Cont f x4 x0 c x3) s. split. discr.
       auto.
     Qed.
 
@@ -629,7 +595,7 @@ Section S.
       intros x y RR'xy.
       destruct RR'xy as [Rxy | Rxy];
         destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]]; 
-          subst x; subst y; exists rl; exists rr; exists c; exists s; intuition.
+          subst x; subst y; exists rl rr c s; intuition.
     Qed.
 
     Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
@@ -647,7 +613,7 @@ Section S.
       intros x y RR'xy.
       destruct RR'xy as [Rxy | Rxy];
         destruct Rxy as [rl [rr [s [Rr [dx dy]]]]]; 
-          subst x; subst y; exists rl; exists rr; exists s; intuition.
+          subst x; subst y; exists rl rr s; intuition.
     Qed.
 
   End union.
@@ -677,7 +643,7 @@ Section S.
 
     Proof.
       intros. unfold hd_red_Mod. comp. unfold inclusion. intros. redtac.
-      exists l; exists r; exists s. intuition. apply incl_make_repeat_free.
+      exists l r s. intuition. apply incl_make_repeat_free.
       auto.
     Qed.
 
@@ -686,11 +652,11 @@ Section S.
 
     Proof.
       intros. unfold hd_red_mod. comp. unfold inclusion. intros. redtac.
-      exists l; exists r; exists s. intuition. apply incl_make_repeat_free.
+      exists l r s. intuition. apply incl_make_repeat_free.
       auto.
     Qed.
 
-    Lemma red_mod_empty_incl_red : red_mod empty_trs R << red R.
+    Lemma red_mod_empty_incl_red : red_mod nil R << red R.
 
     Proof.
       intros u v Ruv. destruct Ruv as [s' [ss' Ruv]].
@@ -704,28 +670,28 @@ Section S.
       apply rtc_refl. hyp.
     Qed.
 
-    Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod empty_trs R << hd_red R.
+    Lemma hd_red_mod_empty_incl_hd_red : hd_red_mod nil R << hd_red R.
 
     Proof.
       unfold inclusion. intros. do 2 destruct H. ded (red_empty H). subst x0.
       exact H0.
     Qed.
 
-    Lemma WF_red_mod_empty : WF (red_mod E empty_trs).
+    Lemma WF_red_mod_empty : WF (red_mod E nil).
 
     Proof.
       intro x. apply SN_intro. intros y Exy. destruct Exy as [z [xz zy]].
       redtac. contr.
     Qed.
 
-    Lemma WF_hd_red_mod_empty : WF (hd_red_mod E empty_trs).
+    Lemma WF_hd_red_mod_empty : WF (hd_red_mod E nil).
 
     Proof.
-      apply WF_incl with (red_mod E empty_trs).
+      apply WF_incl with (red_mod E nil).
       apply hd_red_mod_incl_red_mod. apply WF_red_mod_empty.
     Qed.
 
-    Lemma WF_hd_red_Mod_empty : WF (hd_red_Mod S empty_trs).
+    Lemma WF_hd_red_Mod_empty : WF (hd_red_Mod S nil).
 
     Proof.
       apply WF_incl with empty_rel. intros x y h. redtac. contr.
@@ -743,9 +709,7 @@ Section S.
 
     Lemma context_closed_red_mod : context_closed (red_mod E R).
 
-    Proof.
-      intros t u c h. apply red_mod_fill. hyp.
-    Qed.
+    Proof. intros t u c h. apply red_mod_fill. hyp. Qed.
 
     Lemma red_mod_sub : forall t u s,
       red_mod E R t u -> red_mod E R (sub s t) (sub s u).
@@ -765,17 +729,13 @@ Section S.
 
     Variable R R' : rules.
 
-    Lemma red_incl_red_mod : red R << red_mod empty_trs R.
+    Lemma red_incl_red_mod : red R << red_mod nil R.
 
-    Proof.
-      intros u v Ruv. exists u. split. constructor 2. hyp.
-    Qed.
+    Proof. intros u v Ruv. exists u. split. constructor 2. hyp. Qed.
 
-    Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod empty_trs R.
+    Lemma hd_red_incl_hd_red_mod : hd_red R << hd_red_mod nil R.
 
-    Proof.
-      intros u v Ruv. exists u. split. constructor 2. hyp.
-    Qed.
+    Proof. intros u v Ruv. exists u. split. constructor 2. hyp. Qed.
 
   End termination_as_relative_term.
 
@@ -858,7 +818,7 @@ Section S.
 (** internal reduction in some specific subterm *)
 
   Definition int_red_pos_at (R : rules) i t u :=
-    exists f, exists h : i < arity f, exists ts, t = Fun f ts
+    exists f (h : i < arity f) ts, t = Fun f ts
       /\ exists v, red R (Vnth ts h) v /\ u = Fun f (Vreplace ts h v).
 
   Definition int_red_pos R t u := exists i, int_red_pos_at R i t u.
@@ -869,13 +829,13 @@ Section S.
     intro R. split; intros t u tu.
     (* -> *)
     destruct tu as [i [f [hi [ts [e [v [h1 h2]]]]]]].
-    redtac. subst. exists l. exists r.
+    redtac. subst. exists l r.
     (* context *)
     assert (l1 : 0 + i <= arity f). omega. set (v1 := Vsub ts l1).
     assert (l2 : S i + (arity f - S i) <= arity f). omega.
     set (v2 := Vsub ts l2).
     assert (l3 : i + S (arity f - S i) = arity f). omega.
-    exists (Cont f l3 v1 c v2). exists s. intuition. discr.
+    exists (Cont f l3 v1 c v2) s. intuition. discr.
     (* lhs *)
     simpl. apply args_eq. apply Veq_nth. intros j hj.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
@@ -893,7 +853,7 @@ Section S.
     rewrite Vnth_replace_neq. 2: omega. unfold v1. rewrite Vnth_sub.
     apply Vnth_eq. omega.
     (* <- *)
-    redtac. subst. destruct c. irrefl. exists i. exists f.
+    redtac. subst. destruct c. irrefl. exists i f.
     assert (hi : i < arity f). omega. exists hi.
     simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
     intuition. exists (fill c (sub s r)). split.

@@ -218,7 +218,7 @@ Section S.
     injection H2; intros. subst a. exact H0.
     (* case l'=a0::l' *)
     simpl. injection H2; intros. subst a0. intuition.
-    apply (IHl a y a y' l' (@nil A) p). simpl. exact H2. exact H1.
+    apply (IHl a y a y' l' nil p). simpl. exact H2. exact H1.
     (* case m=a0::m *)
     injection H; intros. subst a0. eapply IHl. apply H2. exact H1.
   Qed.

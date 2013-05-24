@@ -43,7 +43,7 @@ Lemma cycle_min_intro : forall x l, cycle x l ->
 Proof.
 intros. unfold cycle_min. ded (repeat_free_intro eq_dec (x::l)). decomp H0.
 (* repeat_free (x::l) *)
-exists (@nil A). exists x. exists l. exists (@nil A). rewrite <- app_nil_end.
+exists nil. exists x. exists l. exists nil. rewrite <- app_nil_end.
 simpl in H1. intuition.
 (* x::l = x0++x1::x2 *)
 rewrite H1. ded (in_elim H4). decomp H0. rewrite H5.
