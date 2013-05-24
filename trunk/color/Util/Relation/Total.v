@@ -403,7 +403,7 @@ split;intros. unfold LETS.
 apply try_add_arc_many_to_many_irrefl; try hyp. refl. 
 apply restricted_clos_trans. apply restricted_restriction.
 apply tc_trans.  
-apply irreflexive_m' with LETS. apply LETS_restriction_clos_trans.
+apply irreflexive_inclusion with LETS. apply LETS_restriction_clos_trans.
 hyp. 
 Qed. 
 
@@ -455,7 +455,7 @@ apply path_clos_trans with x0.
 apply path_restriction. hyp. destruct (H (x::x::x0)). destruct H3.
 destruct H4. 
 apply H5 with x. apply trans_tc_incl. hyp. 
-apply clos_trans_m' with (restriction R (x :: x :: x0)). hyp.
+apply clos_trans_inclusion with (restriction R (x :: x :: x0)). hyp.
 hyp. 
 Qed.
 
@@ -481,8 +481,8 @@ unfold linear_extension. split; intros. exists (LETS R l). split. split.
 apply LETS_restricted. split. 
 apply LETS_sub_rel. split. apply LETS_transitive. split.
 destruct (LETS_irrefl R l). 
-tauto. apply H1. apply irreflexive_m' with (clos_trans R).
-unfold inclusion. apply clos_trans_m'. apply incl_restriction. tauto.
+tauto. apply H1. apply irreflexive_inclusion with (clos_trans R).
+unfold inclusion. apply clos_trans_inclusion. apply incl_restriction. tauto.
 apply LETS_total; tauto. apply LETS_midex; tauto. 
 (**)
 split. apply total_order_eq_midex. intro. destruct (H0 l). exists x. tauto. 
@@ -591,8 +591,8 @@ pose (LETS_transitive R l x y z l0 l1).
 destruct (X1 l x z). trivial. contr. inversion H1. inversion H0. split. 
 do 2 intro. destruct (X1 l x x). absurd (LETS R l x x).
 destruct (LETS_irrefl R l). 
-hyp. apply H1. apply irreflexive_m' with (clos_trans R). 
-apply clos_trans_m'. apply incl_restriction. hyp. hyp.
+hyp. apply H1. apply irreflexive_inclusion with (clos_trans R). 
+apply clos_trans_inclusion. apply incl_restriction. hyp. hyp.
 inversion H0. 
 do 4 intro. unfold trichotomy. destruct (X1 l x y). tauto. destruct (X1 l y x).
 tauto. 

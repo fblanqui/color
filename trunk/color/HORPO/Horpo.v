@@ -10,7 +10,7 @@ recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Relations Terms MultisetOrder LexOrder
+Require Import RelExtras ListExtras RelUtil Terms MultisetOrder LexOrder
   MultisetList MultisetTheory AccUtil LogicUtil.
 
 Module Type Precedence.
@@ -632,10 +632,10 @@ Module Horpo (S : TermsSig.Signature)
 	   M' >> N').
     apply lexprod_wf.
     unfold ltL, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     unfold ltR, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     clear M N P.
     intros P IH M' N' Q MM' NN' MN M'N'.
@@ -882,10 +882,10 @@ Module Horpo (S : TermsSig.Signature)
 	   subst MS >> subst NS).
     apply lexprod_wf.
     unfold ltL, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     unfold ltR, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     clear M N P.
     intros P IH G MG NG Gnorm MN.
@@ -1041,10 +1041,10 @@ Module Horpo (S : TermsSig.Signature)
 	envSubset (activeEnv (snd P)) (activeEnv (fst P))).
     apply lexprod_wf.
     unfold ltL, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     unfold ltR, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     clear M N P.
     intros P IH MN.
@@ -1322,10 +1322,10 @@ Module Horpo (S : TermsSig.Signature)
       (P := fun P => {fst P >> snd P} + {~fst P >> snd P}).
     apply lexprod_wf.
     unfold ltL, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     unfold ltR, gtR, subterm_gt.
-    apply transp_transp_wf.
+    rewrite transp_invol.
     apply subterm_wf.
     clear M N P.
     intros P. destruct P as [M N]; simpl; intro IH.

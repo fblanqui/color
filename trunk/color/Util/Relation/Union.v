@@ -167,7 +167,7 @@ Proof.
   assert (SN (R!1 U S!1) x) as sntr.
   apply sn_comm_sntr; trivial.
   apply SN_incl with (R!1 U S!1).
-  apply union_m'.
+  apply union_inclusion.
   intros a b. apply t1_step.
   intros a b. apply t1_step.
   hyp.

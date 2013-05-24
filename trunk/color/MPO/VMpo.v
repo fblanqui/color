@@ -412,9 +412,7 @@ Module Make (Import S : VMpo_Struct).
     inversion Acc_s; hyp.
     apply
       (HAccTermsToTermlist (transp lt_mpo) tlt_mpo_eqA_compat IN_eqA_compat).
-    intros s s_in_ss; gen (HInd3 s s_in_ss).
-    apply Acc_eq_rel.
-    apply transp_transp_R_eq_R.
+    intros s s_in_ss; gen (HInd3 s s_in_ss). rewrite transp_invol. auto.
   Qed.
 
 End Make.

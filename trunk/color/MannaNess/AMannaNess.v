@@ -90,12 +90,12 @@ several steps of R1 followed by a -head- step of R2 *)
 
       Proof with auto.
         intros. apply WF_incl with ((red Egt U red Ege)# @ (red Rgt U red Rge)).
-        comp. apply clos_refl_trans_m'. incl_trans (red Egt U red Ege)...
+        comp. apply clos_refl_trans_inclusion. incl_trans (red Egt U red Ege)...
         apply red_union.
         apply red_union.
         apply wf_rel_mod...
         apply WF_incl with ((red (Rge ++ Ege)# @ (red (Rgt ++ Egt)))).
-        comp. apply clos_refl_trans_m'. apply red_union_inv.
+        comp. apply clos_refl_trans_inclusion. apply red_union_inv.
         apply red_union_inv.
         apply manna_ness_mod with rp; apply compat_app...
       Qed.
@@ -112,7 +112,7 @@ several steps of R1 followed by a -head- step of R2 *)
         comp. apply hd_red_union. 
         apply wf_rel_mod_simpl...
         apply WF_incl with (hd_red_mod (Rge ++ E) Rgt).
-        comp. apply clos_refl_trans_m'.
+        comp. apply clos_refl_trans_inclusion.
         incl_trans (red Rge U red E). union. apply hd_red_incl_red.
         apply red_union_inv.
         apply manna_ness_hd_mod with wp...

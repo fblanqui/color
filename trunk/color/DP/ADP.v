@@ -299,7 +299,7 @@ Qed.
 Lemma chain_hd_red_mod : chain << hd_red_mod R dp.
 
 Proof.
-unfold chain, hd_red_mod. comp. apply clos_refl_trans_m'.
+unfold chain, hd_red_mod. comp. apply clos_refl_trans_inclusion.
 apply int_red_incl_red.
 Qed.
 

@@ -4,32 +4,36 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2009-06-26
 
-infinite sets
+Infinite sets
 *)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Relations Setoid.
+Require Import LogicUtil RelUtil Morphisms.
 
 Section defs.
 
-  Variable A : Type.
+  Variable X : Type.
 
-  Definition set := A -> Prop.
+  Definition set := X -> Prop.
 
-  Definition incl : relation set := fun R S => forall x, R x -> S x.
+  Definition incl : relation set := fun A B => forall x, A x -> B x.
 
-  Definition equiv : relation set := fun R S => forall x, R x <-> S x.
+  Definition equiv : relation set := fun A B => forall x, A x <-> B x.
 
   Definition empty : set := fun _ => False.
 
-  Definition union (R S : set) : set := fun x : A => R x \/ S x.
+  Definition union (A B : set) : set := fun x => A x \/ B x.
 
-  Definition single a : set := fun x : A => x = a.
+  Definition singleton x0 : set := fun x => x = x0.
 
-  Definition add a R := union (single a) R.
+  Definition add x0 A := union (singleton x0) A.
 
 End defs.
+
+Arguments incl {X} A B.
+Arguments equiv {X} A B.
+Arguments empty {X} _.
 
 Infix "[=" := incl (at level 70).
 Infix "[=]" := equiv (at level 70).
@@ -37,129 +41,104 @@ Infix "++" := union (right associativity, at level 60).
 Infix "::" := add (at level 60, right associativity).
 
 (***********************************************************************)
-(** inclusion *)
+(** Inclusion. *)
 
-Section incl.
-
-  Variable A : Type. Notation set := (set A).
-
-  Lemma incl_refl : forall R : set, R [= R.
-
-  Proof. unfold incl. auto. Qed.
-
-  Lemma incl_trans : forall R S T : set, R [= S -> S [= T -> R [= T.
-
-  Proof. unfold incl. auto. Qed.
-
-  Lemma incl_appl : forall R S : set, R [= R ++ S.
-
-  Proof. unfold incl, union. auto. Qed.
-
-  Lemma incl_appr : forall R S : set, R [= S ++ R.
-
-  Proof. unfold incl, union. auto. Qed.
-
-End incl.
-
-Add Parametric Relation (A : Type) : (set A) (@incl A)
-  reflexivity proved by (@incl_refl A)
-  transitivity proved by (@incl_trans A)
-  as incl_rel.
-
-(***********************************************************************)
-(** equality *)
-
-Section equiv.
-
-  Variable A : Type. Notation set := (set A).
-
-  Lemma equiv_refl : forall R : set, R [=] R.
-
-  Proof. fo. Qed.
-
-  Lemma equiv_trans : forall R S T : set, R [=] S -> S [=] T -> R [=] T.
-
-  Proof. fo. Qed.
-
-  Lemma equiv_sym : forall R S : set, R [=] S -> S [=] R.
-
-  Proof. fo. Qed.
-
-  Lemma equiv_elim : forall R S : set, R [=] S <-> R [= S /\ S [= R.
-
-  Proof. fo. Qed.
-
-End equiv.
-
-Add Parametric Relation (A : Type) : (set A) (@equiv A)
-  reflexivity proved by (@equiv_refl A)
-  symmetry proved by (@equiv_sym A)
-  transitivity proved by (@equiv_trans A)
-  as equiv_rel.
-
-(***********************************************************************)
-(** union *)
-
-Add Parametric Morphism (A : Type) : (@union A)
-  with signature (@incl A) ==> (@incl A) ==> (@incl A)
-    as incl_app.
+Instance incl_rel A : PreOrder (@incl A).
 
 Proof. fo. Qed.
 
-Add Parametric Morphism (A : Type) : (@union A)
-  with signature (@equiv A) ==> (@equiv A) ==> (@equiv A)
-    as equiv_app.
+Lemma incl_appl : forall X (A B : set X), A [= A ++ B.
 
-Proof. fo. Qed.
+Proof. unfold incl, union. auto. Qed.
 
-Section union.
+Lemma incl_appr : forall X (A B : set X), A [= B ++ A.
 
-  Variable A : Type. Notation set := (set A). Notation empty := (@empty A).
-
-  Lemma empty_union_l : forall R, empty ++ R [=] R.
-
-  Proof. fo. Qed.
-
-  Lemma empty_union_r : forall R, R ++ empty [=] R.
-
-  Proof. fo. Qed.
-
-End union.
+Proof. unfold incl, union. auto. Qed.
 
 (***********************************************************************)
-(** add *)
+(** Equality. *)
 
-Add Parametric Morphism (A : Type) : (@add A)
-  with signature (@eq A) ==> (@incl A) ==> (@incl A)
-    as add_incl.
+Lemma equiv_elim : forall X (A B : set X), A [=] B <-> A [= B /\ B [= A.
 
 Proof. fo. Qed.
 
-Add Parametric Morphism (A : Type) : (@add A)
-  with signature (@eq A) ==> (@equiv A) ==> (@equiv A)
-    as add_equiv.
+Instance equiv_rel A : Equivalence (@equiv A).
+
+Proof. fo. Qed.
+
+(*TODO? define a meta-theorem when same_relation is defined as the
+equivalence relation associated to incl (inter R (transp R))?*)
+
+Instance incl_equiv1 A1 B (f : set A1 -> relation B) :
+  Proper (incl ==> inclusion) f -> Proper (equiv ==> same_relation) f.
+
+Proof.
+  intros hf s1 s1'. rewrite equiv_elim. intros [s1s1' s1's1].
+  split; apply hf; hyp.
+Qed.
+
+Instance incl_equiv2 A1 A2 B (f : set A1 -> set A2 -> relation B) :
+  Proper (incl ==> incl ==> inclusion) f ->
+  Proper (equiv ==> equiv ==> same_relation) f.
+
+Proof.
+  intros hf s1 s1'. rewrite equiv_elim. intros [s1s1' s1's1] s2 s2'.
+  rewrite equiv_elim. intros [s2s2' s2's2]. split; apply hf; hyp.
+Qed.
+
+(***********************************************************************)
+(** Union. *)
+
+Instance union_incl A : Proper (incl ==> incl ==> incl) (@union A).
+
+Proof. fo. Qed.
+
+Instance union_equiv A : Proper (equiv ==> equiv ==> equiv) (@union A).
+
+Proof. fo. Qed.
+
+Lemma empty_union_l : forall X (A : set X), empty ++ A [=] A.
+
+Proof. fo. Qed.
+
+Lemma empty_union_r : forall X (A : set X), A ++ empty [=] A.
 
 Proof. fo. Qed.
 
 (***********************************************************************)
-(** image *)
+(** Add. *)
+
+Instance add_incl A : Proper (eq ==> incl ==> incl) (@add A).
+
+Proof. intros x x' xx'. subst x'. fo. Qed.
+
+Instance add_equiv A : Proper (eq ==> equiv ==> equiv) (@add A).
+
+Proof. intros x x' xx'. subst x'. fo. Qed.
+
+(***********************************************************************)
+(** Image by a function. *)
 
 Section image.
 
-  Variables (A B : Type) (f : A -> B).
+  Variables (X Y : Type) (f : X -> Y).
 
-  Definition image (R : set A) : set B := fun b : B => exists a, R a /\ b = f a.
+  Definition image (A : set X) : set Y := fun y => exists x, A x /\ y = f x.
 
-  Definition image_union : forall R S, image (R ++ S) [=] image R ++ image S.
+  Lemma image_singleton x : image (singleton x) [=] singleton (f x).
+
+  Proof.
+    intro y. split.
+    intros [a [h1 h2]]. unfold singleton in *. subst. refl.
+    unfold singleton. intro h. exists x. auto.
+  Qed.
+
+  Lemma image_union A B : image (A ++ B) [=] image A ++ image B.
 
   Proof. fo. Qed.
 
-  Definition image_add : forall a R, image (a :: R) [=] f a :: image R.
+  Lemma image_add x A : image (x :: A) [=] f x :: image A.
 
-  Proof.
-    intros. unfold add. rewrite image_union. apply equiv_app.
-    unfold image, single. split; intro. do 2 destruct H. subst. refl.
-    subst. exists a. auto. refl.
-  Qed.
+  Proof. unfold add. rewrite image_union, image_singleton. refl. Qed.
 
 End image.

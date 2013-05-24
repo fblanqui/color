@@ -29,7 +29,7 @@ Module TermsDef (Sig : Signature).
   | _, _ => False
   end.
 
-  Notation "A == B" := (TypeEq A B) (at level 50).
+  Notation "A == B" := (TypeEq A B) (at level 70).
   Hint Unfold TypeEq : terms.
 
   Definition isArrowType (A: SimpleType) : Prop :=

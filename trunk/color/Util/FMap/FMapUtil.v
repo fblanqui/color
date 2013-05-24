@@ -492,7 +492,7 @@ and satisfies some commutation property. *)
     End for_all.
 
 (***********************************************************************)
-(* Properties of [for_all]. *)
+(* Properties of [filter]. *)
 
     Section filter.
 

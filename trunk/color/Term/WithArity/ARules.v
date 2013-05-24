@@ -9,7 +9,7 @@ infinite sets of rules
 
 Set Implicit Arguments.
 
-Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil.
+Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil Syntax.
 
 Section defs.
 
@@ -78,128 +78,24 @@ Ltac redtac := repeat
 (***********************************************************************)
 (** monotony properties *)
 
-Require Import Setoid.
+Require Import Morphisms.
 
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
-  with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
-    as red_incl.
+Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
-Proof.
-intros R R' RR' u v Rst. redtac.
-exists l. exists r. exists c. exists s. repeat split; try hyp.
-apply RR'. hyp.
-Qed.
+Proof. intros R R' RR' t t' tt'. redtac. exists l r c s. intuition. Qed.
 
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==> (@same_relation (term Sig))
-    as red_equiv.
+Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
 
-Proof.
-intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply red_incl; hyp.
-Qed.
+Proof. intros R R' RR' t t' tt'. redtac. exists l r s. intuition. Qed.
 
-(*COQ: can be removed?*)
-Add Parametric Morphism (Sig : Signature) : (@red Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==>
-    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
-    as red_equiv_ext.
+Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
 
-Proof.
-intros A B. rewrite equiv_elim. intros [h1 h2]. split; apply red_incl; hyp.
-Qed.
+Proof. intros E E' EE' R R' RR'. unfold red_mod. rewrite EE', RR'. refl. Qed.
 
-Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
-  with signature (@incl (@rule Sig)) ==> (@inclusion (term Sig))
-    as hd_red_incl.
+Instance hd_red_mod_incl Sig :
+  Proper (incl ==> incl ==> inclusion) (@hd_red_mod Sig).
 
-Proof.
-intros R R' RR' u v Rst. redtac.
-exists l. exists r. exists s. repeat split; try hyp.
-apply RR'. hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==> (@same_relation (term Sig))
-    as hd_red_equiv.
-
-Proof.
-intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply hd_red_incl; hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@hd_red Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==>
-    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
-    as hd_red_equiv_ext.
-
-Proof.
-intros R S. rewrite equiv_elim. intros [h1 h2]. split; apply hd_red_incl; hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
-  with signature (@incl (@rule Sig)) ==>
-    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
-    as red_mod_incl.
-
-Proof.
-intros. unfold red_mod. comp. apply clos_refl_trans_m'.
-apply red_incl. hyp. apply red_incl. hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==>
-    (@SetUtil.equiv (@rule Sig)) ==> (@same_relation (term Sig))
-    as red_mod_equiv.
-
-Proof.
-intros R R'. rewrite equiv_elim. intros [h1 h2].
-intros S S'. rewrite equiv_elim. intros [h3 h4].
-split; apply red_mod_incl; hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@red_mod Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==>
-    (@SetUtil.equiv (@rule Sig)) ==>
-    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
-    as red_mod_equiv_ext.
-
-Proof.
-intros R R'. rewrite equiv_elim. intros [h1 h2].
-intros S S'. rewrite equiv_elim. intros [h3 h4].
-split; apply red_mod_incl; hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
-  with signature (@incl (@rule Sig)) ==>
-    (@incl (@rule Sig)) ==> (@inclusion (term Sig))
-    as hd_red_mod_incl.
-
-Proof.
-intros. unfold hd_red_mod. comp. apply clos_refl_trans_m'. apply red_incl. hyp.
-apply hd_red_incl. hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==>
-    (@SetUtil.equiv (@rule Sig)) ==> (@same_relation (term Sig))
-    as hd_red_mod_equiv.
-
-Proof.
-intros R R'. rewrite equiv_elim. intros [h1 h2].
-intros S S'. rewrite equiv_elim. intros [h3 h4].
-split; apply hd_red_mod_incl; hyp.
-Qed.
-
-Add Parametric Morphism (Sig : Signature) : (@hd_red_mod Sig)
-  with signature (@SetUtil.equiv (@rule Sig)) ==>
-    (@SetUtil.equiv (@rule Sig)) ==>
-    (@eq (term Sig)) ==> (@eq (term Sig)) ==> iff
-    as hd_red_mod_equiv_ext.
-
-Proof.
-intros R R'. rewrite equiv_elim. intros [h1 h2].
-intros S S'. rewrite equiv_elim. intros [h3 h4].
-split; apply hd_red_mod_incl; hyp.
-Qed.
+Proof. intros E E' EE' R R' RR'. unfold hd_red_mod. rewrite EE', RR'. refl. Qed.
 
 (***********************************************************************)
 (** properties of rewriting *)
@@ -269,7 +165,7 @@ Section props.
     apply rt_step. apply red_incl with R. apply incl_appr. hyp.
     apply rt_step. apply red_incl with R. apply incl_appr. hyp.
     apply rt_trans with y.
-    eapply inclusion_elim. apply clos_refl_trans_m'. apply red_incl.
+    eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
     apply incl_appl. hyp.
     auto.
   Qed.

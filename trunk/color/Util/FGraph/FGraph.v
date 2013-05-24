@@ -51,7 +51,7 @@ they define the same relation. See below for more details. *)
 
   Coercion rel : graph >-> relation_on_X.
 
-  Lemma rel_empty : rel empty == @empty_rel X.t.
+  Lemma rel_empty : rel empty == empty_rel.
 
   Proof.
     rewrite rel_eq; intros a b. unfold empty_rel. intuition.
@@ -63,7 +63,7 @@ they define the same relation. See below for more details. *)
 
   Proof.
     intros g g' gg' x x' xx' y y' yy'. unfold impl, rel. intuition.
-    destruct H as [sx [hx hy]]. rewrite xx' in hx.
+    destruct H as [sx [hx hy]]. (*COQ:slow*)rewrite xx' in hx.
     destruct (Equiv_find_Some gg' hx) as [sx']. destruct H.
     exists sx'. intuition. rewrite <- yy', <- H0. hyp.
   Qed.
@@ -96,22 +96,22 @@ they define the same relation. See below for more details. *)
     intros x x' xx' s s' ss' a b. unfold succ. rewrite xx', ss'. tauto.
   Qed.
 
-  Instance succ_m_ext' : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> impl) succ.
+  (*REMOVE?Instance succ_m_ext' : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> impl) succ.
 
   Proof.
     intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ.
     rewrite xx', ss', aa', bb'. refl.
-  Qed.
+  Qed.*)
 
   Instance succ_m : Proper (eq ==> XSet.Equal ==> same_relation) succ.
 
   Proof. split; apply succ_m'; (hyp||sym;hyp). Qed.
 
-  Instance succ_m_ext : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> iff) succ.
+  (*REMOVE?Instance succ_m_ext : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> iff) succ.
 
-  Proof. split; apply succ_m_ext'; (hyp||sym;hyp). Qed.
+  Proof. split; apply succ_m_ext'; (hyp||sym;hyp). Qed.*)
 
-  Lemma succ_empty : forall x, succ x XSet.empty == @empty_rel X.t.
+  Lemma succ_empty : forall x, succ x XSet.empty == empty_rel.
 
   Proof.
     intro x. rewrite rel_eq; intros a b. unfold succ, empty_rel. intuition.
@@ -154,25 +154,25 @@ they define the same relation. See below for more details. *)
     intros x x' xx' s s' ss' a b. unfold succ_list. rewrite xx', ss'. tauto.
   Qed.
 
-  Instance succ_list_m_ext' :
+  (*REMOVE?Instance succ_list_m_ext' :
     Proper (eq ==> eqlistA eq ==> eq ==> eq ==> impl) succ_list.
 
   Proof.
     intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ_list.
     rewrite xx', ss', aa', bb'. refl.
-  Qed.
+  Qed.*)
 
   Instance succ_list_m :
     Proper (eq ==> eqlistA eq ==> same_relation) succ_list.
 
   Proof. split; apply succ_list_m'; (hyp||sym;hyp). Qed.
 
-  Instance succ_list_m_ext :
+  (*REMOVE?Instance succ_list_m_ext :
     Proper (eq ==> eqlistA eq ==> eq ==> eq ==> iff) succ_list.
 
-  Proof. split; apply succ_list_m_ext'; (hyp||sym;hyp). Qed.
+  Proof. split; apply succ_list_m_ext'; (hyp||sym;hyp). Qed.*)
 
-  Lemma succ_list_nil : forall x, succ_list x nil == @empty_rel X.t.
+  Lemma succ_list_nil : forall x, succ_list x nil == empty_rel.
 
   Proof.
     intro x. rewrite rel_eq; intros a b. unfold succ_list, empty_rel. intuition.
@@ -199,13 +199,13 @@ they define the same relation. See below for more details. *)
     rewrite ss', tt'. refl.
   Qed.
 
-  Lemma prod_m_ext :
+  (*REMOVE?Lemma prod_m_ext :
     Proper (XSet.Equal ==> XSet.Equal ==> eq ==> eq ==> iff) prod.
 
   Proof.
     intros s s' ss' t t' tt' a a' aa' b b' bb'. unfold prod.
     rewrite ss', tt', aa', bb'. refl.
-  Qed.
+  Qed.*)
 
 (***********************************************************************)
 (** ordering on graphs: g is smaller than g' if (rel g) is included in
@@ -231,7 +231,7 @@ same relation *)
 
   Definition geq g h := g == h.
 
-  Instance geq_Refl : Reflexive geq.
+  (*REMOVE?Instance geq_Refl : Reflexive geq.
 
   Proof. fo. Qed.
 
@@ -240,6 +240,10 @@ same relation *)
   Proof. fo. Qed.
 
   Instance geq_Trans : Transitive geq.
+
+  Proof. fo. Qed.*)
+
+  Instance geq_Equivalence : Equivalence geq.
 
   Proof. fo. Qed.
 
@@ -293,12 +297,12 @@ same relation *)
 
   Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.
 
-  Instance rel_gle_ext : Proper (gle ==> eq ==> eq ==> impl) rel.
+  (*REMOVE?Instance rel_gle_ext : Proper (gle ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
     rewrite <- xx', <- yy'. intuition.
-  Qed.
+  Qed.*)
 
   Instance rel_geq' : Proper (geq ==> inclusion) rel.
 
@@ -308,7 +312,7 @@ same relation *)
 
   Proof. split; apply rel_geq'; intuition. Qed.
 
-  Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
+  (*REMOVE?Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
@@ -323,7 +327,7 @@ same relation *)
 
   Proof.
     eapply Proper3_m. apply Equal_geq. refl. refl. refl. apply rel_geq_ext.
-  Qed.
+  Qed.*)
 
 (***********************************************************************)
 (** successors of a node *)
@@ -572,7 +576,7 @@ successors of g' *)
   Proof.
     intros x y g. pattern g; apply map_induction_bis; clear g.
     (* Equal *)
-    intros m m' mm' h. rewrite <- mm'. hyp.
+    intros m m' mm' h. (*COQ:very slow*)rewrite <- mm'. hyp.
     (* empty *)
     rewrite preds_empty. split. intro h. revert h. set_iff. tauto.
     intros [s [s1 s2]]. rewrite empty_o in s1. discr.
@@ -676,7 +680,7 @@ successors of g' *)
     (* add *)
     intros z g s nzs e. rewrite rel_add_edge. rewrite e.
     rewrite R.union_assoc. rewrite union_commut with (R:=rel g0).
-    rewrite <- R.union_assoc. apply R.union_m. 2: refl.
+    rewrite <- R.union_assoc. apply R.union_same_relation. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
     rewrite add_iff. fo.
   Qed.
