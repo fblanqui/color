@@ -25,7 +25,7 @@ Notation Vhead := Vector.hd.
 Notation Vtail := Vector.tl.
 Notation Vconst := Vector.const.
 
-Implicit Arguments Vnil [A].
+Arguments Vnil {A}.
 Implicit Arguments Vcons [A n].
 Implicit Arguments Vhead [A n].
 Implicit Arguments Vtail [A n].
@@ -52,7 +52,7 @@ Section Velementary.
 
   Definition Vid n : vec n -> vec n :=
     match n with
-      | O => fun _ => @Vnil A
+      | O => fun _ => Vnil
       | _ => fun v => Vcons (Vhead v) (Vtail v)
     end.
 
@@ -752,11 +752,10 @@ Section Vin.
   Proof.
     induction v; simpl. contr.
     intro H. destruct H. clear IHv. subst x.
-    exists 0. exists (@Vnil A). exists n. exists v. exists (refl_equal (S n)).
+    exists 0 (@Vnil A) n. exists v (refl_equal (S n)).
     rewrite Vcast_refl. refl.
-    assert (exists n1, exists v1 : vec n1, exists n2, exists v2 : vec n2,
-      exists H : n1 + S n2 = n, v = Vcast (Vapp v1 (Vcons x v2)) H).
-    exact (IHv H).
+    assert (exists n1 (v1 : vec n1) n2 (v2 : vec n2) (H : n1 + S n2 = n),
+      v = Vcast (Vapp v1 (Vcons x v2)) H). exact (IHv H).
     destruct H0 as [n1]. destruct H0 as [v1]. destruct H0 as [n2].
     destruct H0 as [v2].
     destruct H0 as [H1].
@@ -1224,11 +1223,11 @@ End Vforall2_sec.
 
 Implicit Arguments Vforall2n_nth [A B R n v1 v2].
 
-Require Import RelDec.
+Require Import Relations RelDec.
 
 Section Vforall2_dec.
 
-  Variables (A : Type) (R : A -> A -> Prop) (R_dec : rel_dec R).
+  Variables (A : Type) (R : relation A) (R_dec : rel_dec R).
 
   Notation vec := (vector A).
 

@@ -40,6 +40,10 @@ they define the same relation. See below for more details. *)
 
   Definition meq : relation graph := XMap.Equiv XSet.Equal.
 
+  Lemma Equal_meq : Equal << meq.
+
+  Proof. intros g h gh. apply Equal_Equiv with (eq:=XSet.Equal) in gh; fo. Qed.
+
 (***********************************************************************)
 (** relation corresponding to a graph *)
 
@@ -63,14 +67,25 @@ they define the same relation. See below for more details. *)
 
   Proof.
     intros g g' gg' x x' xx' y y' yy'. unfold impl, rel. intuition.
-    destruct H as [sx [hx hy]]. (*COQ:slow*)rewrite xx' in hx.
+    destruct H as [sx [hx hy]]. rewrite xx' in hx.
     destruct (Equiv_find_Some gg' hx) as [sx']. destruct H.
     exists sx'. intuition. rewrite <- yy', <- H0. hyp.
   Qed.
 
   Instance rel_meq_ext : Proper (meq ==> eq ==> eq ==> iff) rel.
 
-  Proof. split; apply rel_meq_ext'; hyp||(sym;hyp). Qed.
+  Proof.
+    apply sym_iff_3; auto with typeclass_instances.
+    (*COQ: why isn't done automatically?*)
+    apply Equiv_Sym. auto with typeclass_instances.
+  Qed.
+
+  Instance rel_Equal_ext : Proper (Equal ==> eq ==> eq ==> iff) rel.
+
+  Proof.
+    eapply Proper_inclusion4. 5: apply rel_meq_ext.
+    apply Equal_meq. refl. refl. refl.
+  Qed.
 
   Lemma find_Some_rel {g x s} : find x g = Some s ->
     XSet.is_empty s = false -> exists y, rel g x y.
@@ -90,26 +105,26 @@ they define the same relation. See below for more details. *)
 
   Definition succ x s a b := eq a x /\ XSet.In b s.
 
+  Instance succ_m_ext' : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> impl) succ.
+
+  Proof.
+    intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ.
+    rewrite xx', ss', aa', bb'. refl.
+  Qed.
+
+  (*REMOVE?Instance succ_m_ext : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> iff) succ.
+
+  Proof. split; apply succ_m_ext'; (hyp||sym;hyp). Qed.*)
+
   Instance succ_m' : Proper (eq ==> XSet.Equal ==> inclusion) succ.
 
   Proof.
     intros x x' xx' s s' ss' a b. unfold succ. rewrite xx', ss'. tauto.
   Qed.
 
-  (*REMOVE?Instance succ_m_ext' : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> impl) succ.
-
-  Proof.
-    intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ.
-    rewrite xx', ss', aa', bb'. refl.
-  Qed.*)
-
   Instance succ_m : Proper (eq ==> XSet.Equal ==> same_relation) succ.
 
   Proof. split; apply succ_m'; (hyp||sym;hyp). Qed.
-
-  (*REMOVE?Instance succ_m_ext : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> iff) succ.
-
-  Proof. split; apply succ_m_ext'; (hyp||sym;hyp). Qed.*)
 
   Lemma succ_empty : forall x, succ x XSet.empty == empty_rel.
 
@@ -154,18 +169,18 @@ they define the same relation. See below for more details. *)
     intros x x' xx' s s' ss' a b. unfold succ_list. rewrite xx', ss'. tauto.
   Qed.
 
-  (*REMOVE?Instance succ_list_m_ext' :
+  Instance succ_list_m_ext' :
     Proper (eq ==> eqlistA eq ==> eq ==> eq ==> impl) succ_list.
 
   Proof.
     intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ_list.
     rewrite xx', ss', aa', bb'. refl.
-  Qed.*)
+  Qed.
 
-  Instance succ_list_m :
+  (*REMOVE?Instance succ_list_m :
     Proper (eq ==> eqlistA eq ==> same_relation) succ_list.
 
-  Proof. split; apply succ_list_m'; (hyp||sym;hyp). Qed.
+  Proof. split; apply succ_list_m'; (hyp||sym;hyp). Qed.*)
 
   (*REMOVE?Instance succ_list_m_ext :
     Proper (eq ==> eqlistA eq ==> eq ==> eq ==> iff) succ_list.
@@ -192,20 +207,20 @@ they define the same relation. See below for more details. *)
 
   Definition prod s t a b := XSet.In a s /\ XSet.In b t.
 
-  Lemma prod_m : Proper (XSet.Equal ==> XSet.Equal ==> same_relation) prod.
+  (*REMOVE?Lemma prod_m : Proper (XSet.Equal ==> XSet.Equal ==> same_relation) prod.
 
   Proof.
     intros s s' ss' t t' tt'. rewrite rel_eq. intros a b. unfold prod.
     rewrite ss', tt'. refl.
-  Qed.
+  Qed.*)
 
-  (*REMOVE?Lemma prod_m_ext :
+  Lemma prod_m_ext :
     Proper (XSet.Equal ==> XSet.Equal ==> eq ==> eq ==> iff) prod.
 
   Proof.
     intros s s' ss' t t' tt' a a' aa' b b' bb'. unfold prod.
     rewrite ss', tt', aa', bb'. refl.
-  Qed.*)
+  Qed.
 
 (***********************************************************************)
 (** ordering on graphs: g is smaller than g' if (rel g) is included in
@@ -213,11 +228,7 @@ they define the same relation. See below for more details. *)
 
   Definition gle g h := g << h.
 
-  Instance gle_Refl : Reflexive gle.
-
-  Proof. fo. Qed.
-
-  Instance gle_Trans : Transitive gle.
+  Instance gle_PreOrder : PreOrder gle.
 
   Proof. fo. Qed.
 
@@ -260,16 +271,16 @@ same relation *)
     split; intro H. rewrite <- gg', <- hh'. hyp. rewrite gg', hh'. hyp.
   Qed.
 
-  Lemma Equal_geq : Equal << geq.
-
-  Proof. trans meq. apply Equal_Equiv. intuition. apply meq_geq. Qed.
-
   Instance geq_Equal : Proper (Equal ==> Equal ==> iff) geq.
 
   Proof.
-    intros g g' gg' h h' hh'. apply Equal_geq in gg'. apply Equal_geq in hh'.
-    split; intro H. rewrite <- gg', <- hh'. hyp. rewrite gg', hh'. hyp.
+    eapply Proper_inclusion3. 4: apply geq_meq.
+    apply Equal_meq. apply Equal_meq. refl.
   Qed.
+
+  Lemma Equal_geq : Equal << geq.
+
+  Proof. trans meq. apply Equal_meq. apply meq_geq. Qed.
 
 (***********************************************************************)
 (** relations between gle and geq *)
@@ -286,40 +297,40 @@ same relation *)
     trans g. hyp. trans h. hyp. hyp.
   Qed.
 
-  Instance gle_geq : Proper (geq ==> geq ==> iff) gle.
+  (*REMOVE?Instance gle_geq : Proper (geq ==> geq ==> iff) gle.
 
-  Proof. split; apply gle_geq'; (hyp||sym;hyp). Qed.
+  Proof. split; apply gle_geq'; (hyp||sym;hyp). Qed.*)
 
 (***********************************************************************)
 (** properties of rel *)
 
-  Instance rel_gle : Proper (gle ==> inclusion) rel.
+  (*REMOVE?Instance rel_gle : Proper (gle ==> inclusion) rel.
 
-  Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.
+  Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.*)
 
-  (*REMOVE?Instance rel_gle_ext : Proper (gle ==> eq ==> eq ==> impl) rel.
-
-  Proof.
-    intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
-    rewrite <- xx', <- yy'. intuition.
-  Qed.*)
-
-  Instance rel_geq' : Proper (geq ==> inclusion) rel.
-
-  Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.
-
-  Instance rel_geq : Proper (geq ==> same_relation) rel.
-
-  Proof. split; apply rel_geq'; intuition. Qed.
-
-  (*REMOVE?Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
+  Instance rel_gle_ext : Proper (gle ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
     rewrite <- xx', <- yy'. intuition.
   Qed.
 
-  Instance rel_geq_ext : Proper (geq ==> eq ==> eq ==> iff) rel.
+  (*REMOVE?Instance rel_geq' : Proper (geq ==> inclusion) rel.
+
+  Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.
+
+  Instance rel_geq : Proper (geq ==> same_relation) rel.
+
+  Proof. split; apply rel_geq'; intuition. Qed.*)
+
+  Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
+
+  Proof.
+    intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
+    rewrite <- xx', <- yy'. intuition.
+  Qed.
+
+  (*REMOVE?Instance rel_geq_ext : Proper (geq ==> eq ==> eq ==> iff) rel.
 
   Proof. split; apply rel_geq_ext'; intuition. Qed.
 
@@ -479,7 +490,7 @@ successors of g' *)
     rewrite xx', ss'. destruct (XSet.mem x' s'). rewrite yy', tt'. refl. hyp.
   Qed.
 
-  (*FIXME: remove using proper3 not working in Coq8.4?*)
+  (*FIXME: remove using Proper_inclusion4 not working in Coq8.4?*)
   Instance preds_aux_m' : forall x,
     Proper (eq ==> Logic.eq ==> XSet.Equal ==> XSet.Equal) (preds_aux x).
 
@@ -576,7 +587,7 @@ successors of g' *)
   Proof.
     intros x y g. pattern g; apply map_induction_bis; clear g.
     (* Equal *)
-    intros m m' mm' h. (*COQ:very slow*)rewrite <- mm'. hyp.
+    intros m m' mm' h. rewrite <- mm'. hyp.
     (* empty *)
     rewrite preds_empty. split. intro h. revert h. set_iff. tauto.
     intros [s [s1 s2]]. rewrite empty_o in s1. discr.

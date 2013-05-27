@@ -22,7 +22,7 @@ Module MultisetOrder (MC: MultisetCore).
 
 Section OrderDefinition. 
 
-  Variable gtA : A -> A -> Prop.
+  Variable gtA : relation A.
 
   Let ltA := transp gtA.
   Let leA x y := ~gtA x y.
@@ -1147,10 +1147,10 @@ End MOrdPair.
 
 Section OrderSim.
 
-  Variable P: A -> A -> Prop.
-  Variable eqA_eq: eqA = (eq (A:=A)).
+  Variable P : relation A.
+  Variable eqA_eq : eqA = (eq (A:=A)).
 
-  Lemma eqA_refl: forall x, x =A= x.
+  Lemma eqA_refl : forall x, x =A= x.
 
   Proof.
     rewrite eqA_eq; trivial.
@@ -1685,7 +1685,7 @@ End OrderDefinition.
 
 Section MultisetOrder_on_subrelation.
 
-  Variables R R' : A -> A -> Prop.
+  Variables R R' : relation A.
   Variable R'sub : inclusion R' R.
 
   Lemma mord_inclusion : forall M N, MultisetGt R' M N -> MultisetGt R M N.

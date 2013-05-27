@@ -287,7 +287,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Section fold.
 
-    Variables (A : Type) (eqA : A->A->Prop) (heqA : Equivalence eqA).
+    Variables (A : Type) (eqA : relation A) (heqA : Equivalence eqA).
 
     Definition feq f f' :=
       forall x x', E.eq x x' -> forall a a', eqA a a' -> eqA (f x a) (f' x' a').

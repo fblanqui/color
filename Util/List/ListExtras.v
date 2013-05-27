@@ -542,7 +542,7 @@ End DropNth.
 Section CountIn.
 
   Variable A : Type.
-  Variable eqA : A -> A -> Prop.
+  Variable eqA : relation A.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq : Setoid_Theory A eqA.
   Add Setoid A eqA eqA_eq as sidA. 
@@ -744,7 +744,7 @@ End Last.
 Section Remove.
 
   Variable A : Type.
-  Variable eqA : A -> A -> Prop.
+  Variable eqA : relation A.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
 
   Fixpoint removeElem (el: A) (l: list A) : list A :=

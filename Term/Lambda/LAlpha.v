@@ -289,20 +289,20 @@ Module Make (Export L : L_Struct).
 
   Proof. intros xs s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
 
-  (** [saeq] is compatible with set equality and inclusion. *)
-
-  Instance saeq_e : Proper (Equal ==> Logic.eq ==> Logic.eq ==> iff) saeq.
-
-  Proof.
-    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold saeq.
-    intuition. apply H. rewrite e. hyp. apply H. rewrite <- e. hyp.
-  Qed.
+  (** [saeq] is compatible with set inclusion and equality. *)
 
   Instance saeq_s : Proper (Subset --> Logic.eq ==> Logic.eq ==> impl) saeq.
 
   Proof.
     intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
     unfold flip, impl, saeq in *. intuition.
+  Qed.
+
+  Instance saeq_e : Proper (Equal ==> Logic.eq ==> Logic.eq ==> iff) saeq.
+
+  Proof.
+    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold saeq.
+    intuition. apply H. rewrite e. hyp. apply H. rewrite <- e. hyp.
   Qed.
 
   (** [domain] is compatible with [saeq]. *)
@@ -983,6 +983,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       trans u. sym; hyp. apply H. trans v. sym; hyp. apply H0. hyp.
     Qed.
 
+    Global Instance clos_aeq_iff : Proper (aeq ==> aeq ==> iff) clos_aeq.
+
+    Proof. apply sym_iff_2; auto with typeclass_instances. Qed.
+
     Global Instance clos_aeq_mon : Monotone R -> Monotone clos_aeq.
 
     Proof.
@@ -1175,7 +1179,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
 (****************************************************************************)
 (** ** "Alpha-transitive closure" of a relation on terms:
-[S#] is the (reflexive) transitive closure of [S U aeq]. *)
+[S*] is the (reflexive) transitive closure of [S U aeq]. *)
 
   Section clos_aeq_trans.
 
@@ -1221,14 +1225,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
         trans v. apply IHh1. hyp. refl. apply IHh2. refl. hyp.
       Qed.
 
-      (*COQ: if removed, Coq is looping in LComp. Yet, it is a
-      consequence of sym_iff2. *)
+      (*COQ: if removed, Coq is looping in LComp*)
       Global Instance atc_aeq : Proper (aeq ==> aeq ==> iff) (S*).
 
-      Proof.
-        intros x x' xx' y y' yy'. split; intro h.
-        rewrite <- xx', <- yy'. hyp. rewrite xx', yy'. hyp.
-      Qed.
+      Proof. apply sym_iff_2; auto with typeclass_instances. Qed.
 
     End aeq.
 
