@@ -66,7 +66,7 @@ Module Type Eqset.
 
   Parameter A : Type.
 
-  Parameter eqA : A -> A -> Prop.
+  Parameter eqA : relation A.
   Notation "X =A= Y" := (eqA X Y) (at level 70).
 
   Parameter sid_theoryA : Setoid_Theory A eqA.
@@ -106,7 +106,7 @@ End Eqset_def.
 Section Eqset_def_gtA_eqA_compat.
 
   Variable A : Type.
-  Variable gtA : A -> A -> Prop.
+  Variable gtA : relation A.
 
   Lemma Eqset_def_gtA_eqA_compat :
     forall x x' y y', x = x' -> y = y' -> gtA x y -> gtA x' y'.
@@ -124,7 +124,7 @@ Module Type Ord.
 
   Declare Module Export S : Eqset with Definition A := A.
 
-  Parameter gtA : A -> A -> Prop.
+  Parameter gtA : relation A.
   Notation "X >A Y" := (gtA X Y) (at level 70).
 
   Parameter gtA_eqA_compat : forall x x' y y',
@@ -226,7 +226,7 @@ End nat_ord.
 Section Transitive_Closure.
 
   Variable A : Type.
-  Variable R : A -> A -> Prop.
+  Variable R : relation A.
 
   Lemma trans_clos_step_l : forall x y, 
     R! x y -> R x y \/ (exists2 z, R x z & R! z y).
@@ -250,7 +250,7 @@ Section Transitive_Closure.
       [constructor 2 with y; auto | trivial]].
   Qed.
 
-  Variable eqA : A -> A -> Prop.
+  Variable eqA : relation A.
 
   Parameter sid_theoryA : Setoid_Theory A eqA.
   Parameter R_eqA_comp : forall x y x' y',

@@ -184,7 +184,7 @@ Section Accessibility.
 
   Section AccHomo.
 
-    Variable T : B -> B -> Prop.
+    Variable T : relation B.
     Variable z : B.
     Variable morphism : A -> B -> Prop.
     Variable comp : forall x y x',
@@ -206,7 +206,7 @@ Section Accessibility.
   
   Section AccIso.
 
-    Variable T : B -> B -> Prop.
+    Variable T : relation B.
     Variable z : B.
     Variable iso : A -> B -> Prop.
     Variable iso_comp : forall x y' x',

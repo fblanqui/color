@@ -15,7 +15,7 @@ Require Import Multiset Permutation ListExtras NatUtil LogicUtil Setoid
 Section Multiplicity.
 
   Variable A: Type.
-  Variable eqA: A -> A -> Prop.
+  Variable eqA: relation A.
   Variable eqA_dec: forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq: Setoid_Theory A eqA.
 
@@ -90,7 +90,7 @@ End Multiplicity.
 Section Permutation.
 
   Variable A: Type.
-  Variable eqA: A -> A -> Prop.
+  Variable eqA: relation A.
   Variable eqA_dec: forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq: Setoid_Theory A eqA.
 
@@ -371,8 +371,8 @@ End ListSim.
 Section ListSim_iso.
 
   Variable A : Type.
-  Variable P : A -> A -> Prop.
-  Variable eqA : A -> A -> Prop.
+  Variable P : relation A.
+  Variable eqA : relation A.
   Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
   Variable eqA_eq : Setoid_Theory A eqA.
   Variable P_eqA_comp : forall x x' y y',

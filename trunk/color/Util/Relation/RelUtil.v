@@ -91,6 +91,28 @@ Proof.
   revert x y. rewrite <- rel_eq. apply hf; hyp.
 Qed.
 
+Instance same_relation_ext3 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) B (f : A1 -> A2 -> A3 -> relation B) :
+  Proper (R1 ==> R2 ==> R3 ==> same_relation) f ->
+  Proper (R1 ==> R2 ==> R3 ==> eq ==> eq ==> iff) f.
+
+Proof.
+  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' x x' xx' y y' yy'.
+  subst x' y'. revert x y. rewrite <- rel_eq. apply hf; hyp.
+Qed.
+
+Instance same_relation_ext4 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) A4 (R4 : relation A4)
+  B (f : A1 -> A2 -> A3 -> A4 -> relation B) :
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> same_relation) f ->
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> eq ==> eq ==> iff) f.
+
+Proof.
+  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' a4 a4' a4a4'
+    x x' xx' y y' yy'. subst x' y'.
+  revert x y. rewrite <- rel_eq. apply hf; hyp.
+Qed.
+
 (***********************************************************************)
 (** Definition of some properties on relations. *)
 
@@ -184,26 +206,46 @@ Implicit Arguments R_in_sons [A R x y].
 (** If [E] is a symmetric relation, then relations preserving [E] are
 compatible with [E]. *)
 
-Section sym_iff.
+Lemma sym_iff_1 A1 (R1 : relation A1) f : Symmetric R1 ->
+  Proper (R1 ==> impl) f -> Proper (R1 ==> iff) f.
 
-  Variables (A : Type) (E : relation A) (hE : Symmetric E).
+Proof.
+  intros s1 hf x1 y1 e1. split; intro h; eapply hf.
+  apply e1. hyp. sym; apply e1. hyp.
+Qed.
 
-  Global Instance sym_iff_1 R : Proper (E ==> impl) R -> Proper (E ==> iff) R.
+Lemma sym_iff_2 A1 (R1 : relation A1) A2 (R2 : relation A2) f :
+  Symmetric R1 -> Symmetric R2 -> Proper (R1 ==> R2 ==> impl) f ->
+  Proper (R1 ==> R2 ==> iff) f.
 
-  Proof.
-    intros hR x1 y1 e1. split; intro h; eapply hR.
-    apply e1. hyp. sym; apply e1. hyp.
-  Qed.
+Proof.
+  intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; intro h; eapply hf.
+  apply e1. apply e2. hyp. sym; apply e1. sym; apply e2. hyp.
+Qed.
 
-  Global Instance sym_iff_2 R :
-    Proper (E ==> E ==> impl) R -> Proper (E ==> E ==> iff) R.
+Lemma sym_iff_3 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) f :
+  Symmetric R1 -> Symmetric R2 -> Symmetric R3 ->
+  Proper (R1 ==> R2 ==> R3 ==> impl) f -> Proper (R1 ==> R2 ==> R3 ==> iff) f.
 
-  Proof.
-    intros hR x1 y1 e1 x2 y2 e2. split; intro h; eapply hR.
-    apply e1. apply e2. hyp. sym; apply e1. sym; apply e2. hyp.
-  Qed.
+Proof.
+  intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3. split; intro h; eapply hf.
+  apply e1. apply e2. apply e3. hyp.
+  sym; apply e1. sym; apply e2. sym; apply e3. hyp.
+Qed.
 
-End sym_iff.
+Lemma sym_iff_4 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) A4 (R4 : relation A4) f :
+  Symmetric R1 -> Symmetric R2 -> Symmetric R3 -> Symmetric R4 ->
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> impl) f ->
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> iff) f.
+
+Proof.
+  intros s1 s2 s3 s4 hf x1 y1 e1 x2 y2 e2 x3 y3 e3 x4 y4 e4.
+  split; intro h; eapply hf.
+  apply e1. apply e2. apply e3. apply e4. hyp.
+  sym; apply e1. sym; apply e2. sym; apply e3. sym; apply e4. hyp.
+Qed.
 
 (***********************************************************************)
 (** Inclusion. *)
@@ -249,6 +291,28 @@ Instance inclusion_ext2 A1 (R1 : relation A1) A2 (R2 : relation A2)
 Proof.
   intros hf a1 a1' a1a1' a2 a2' a2a2' x x' xx' y y' yy' h. subst x' y'.
   eapply hf. apply a1a1'. apply a2a2'. hyp.
+Qed.
+
+Instance inclusion_ext3 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) B (f : A1 -> A2 -> A3 -> relation B) :
+  Proper (R1 ==> R2 ==> R3 ==> inclusion) f ->
+  Proper (R1 ==> R2 ==> R3 ==> eq ==> eq ==> impl) f.
+
+Proof.
+  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' x x' xx' y y' yy' h.
+  subst x' y'. eapply hf. apply a1a1'. apply a2a2'. apply a3a3'. hyp.
+Qed.
+
+Instance inclusion_ext4 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) A4 (R4 : relation A4)
+  B (f : A1 -> A2 -> A3 -> A4 -> relation B) :
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> inclusion) f ->
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> eq ==> eq ==> impl) f.
+
+Proof.
+  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' a4 a4' a4a4'
+    x x' xx' y y' yy' h. subst x' y'. eapply hf.
+  apply a1a1'. apply a2a2'. apply a3a3'. apply a4a4'. hyp.
 Qed.
 
 (***********************************************************************)
@@ -397,11 +461,11 @@ Section clos_refl.
 
   Variables (A : Type) (R S : relation A).
 
-  Lemma rc_refl : Reflexive (R%).
+  Global Instance rc_refl : Reflexive (R%).
 
   Proof. fo. Qed.
 
-  Lemma rc_trans : Transitive R -> Transitive (R%).
+  Global Instance rc_trans : Transitive R -> Transitive (R%).
 
   Proof.
     intro. unfold Transitive, clos_refl, union. intros. decomp H0. subst y. hyp.
@@ -441,7 +505,7 @@ Section clos_trans.
 
   Proof. fo. Qed.
 
-  Lemma tc_trans R : Transitive (R!).
+  Global Instance tc_trans R : Transitive (R!).
 
   Proof. unfold Transitive. intros. apply t_trans with y; hyp. Qed.
 
@@ -525,14 +589,6 @@ Section clos_trans.
   Qed.
 
 End clos_trans.
-
-Instance Transitive_same_relation A :
-  Proper (same_relation ==> impl) (@Transitive A).
-
-Proof.
-  intros R S e h x y z xy yz. rewrite rel_eq in e. rewrite <- e in *.
-  apply h with y; hyp.
-Qed.
 
 (***********************************************************************)
 (** Symmetric closure of a relation. *)
@@ -656,11 +712,11 @@ Section clos_refl_trans.
 
   Proof. fo. Qed.
 
-  Lemma rtc_refl : Reflexive (R#).
+  Global Instance rtc_refl : Reflexive (R#).
 
   Proof. fo. Qed.
 
-  Lemma rtc_trans : Transitive (R#).
+  Global Instance rtc_trans : Transitive (R#).
 
   Proof. unfold Transitive. intros. eapply rt_trans. apply H. hyp. Qed.
 
@@ -1165,6 +1221,10 @@ Qed.
 (***********************************************************************)
 (** Morphisms wrt inclusion and same_relation. *)
 
+Lemma eq_Refl_rel : forall A (R : relation A), Reflexive R -> eq << R.
+
+Proof. intros A R hR x y xy. subst y. apply hR. Qed.
+
 Instance Reflexive_same_relation A :
   Proper (same_relation ==> impl) (@Reflexive A).
 
@@ -1175,25 +1235,29 @@ Instance Symmetric_same_relation A :
 
 Proof. fo. Qed.
 
+Instance Transitive_same_relation A :
+  Proper (same_relation ==> impl) (@Transitive A).
+
+Proof.
+  intros R S e h x y z xy yz. rewrite rel_eq in e. rewrite <- e in *.
+  apply h with y; hyp.
+Qed.
+
 Instance Equivalence_same_relation A :
   Proper (same_relation ==> impl) (@Equivalence A).
 
 Proof. intros R S RS [hr hs ht]. constructor; rewrite <- RS; hyp. Qed.
 
-Lemma eq_Refl_rel : forall A (R : relation A), Reflexive R -> eq << R.
-
-Proof. intros A R hR x y xy. subst y. apply hR. Qed.
-
-Instance Proper_inclusion A B f :
+Lemma Proper_inclusion2 A B f :
   Proper (@inclusion A --> @inclusion B ==> impl)
   (fun R S => Proper (R ==> S) f).
 
 Proof. fo. Qed.
 
-(*REMOVE?Ltac proper l := eapply Proper_m; [idtac|idtac|apply l];
-  try (refl||apply eq_Refl_rel;intuition).
+(*REMOVE?Ltac proper2 l := eapply Proper_inclusion2; [idtac|idtac|apply l];
+  try (refl||apply eq_Refl_rel;intuition).*)
 
-Instance Proper2_m A B C f :
+Lemma Proper_inclusion3 A B C f :
   Proper (@inclusion A --> @inclusion B --> @inclusion C ==> impl)
   (fun R S Z => Proper (R ==> S ==> Z) f).
 
@@ -1202,10 +1266,10 @@ intros R R' R'R S S' S'S Z Z' ZZ' hf r r' rr' s s' ss'.
 apply R'R in rr'. apply S'S in ss'. apply ZZ'. apply hf; hyp.
 Qed.
 
-Ltac proper2 l := eapply Proper2_m; [idtac|idtac|idtac|apply l];
+(*REMOVE?Ltac proper3 l := eapply Proper_inclusion3; [idtac|idtac|idtac|apply l];
   try (refl||apply eq_Refl_rel;intuition).*)
 
-Instance Proper3_m A B C D f : Proper
+Lemma Proper_inclusion4 A B C D f : Proper
   (@inclusion A --> @inclusion B --> @inclusion C --> @inclusion D ==> impl)
   (fun R S T Z => Proper (R ==> S ==> T ==> Z) f).
 
@@ -1215,8 +1279,9 @@ Proof.
   apply ZZ'. apply hf; hyp.
 Qed.
 
+(*REMOVE?
 (*FIXME: does not work anymore in COQ8.4*)
-(*REMOVE?Ltac proper3 l := eapply Proper3_m; [idtac|idtac|idtac|idtac|apply l];
+Ltac proper3 l := eapply Proper_inclusion4; [idtac|idtac|idtac|idtac|apply l];
   try (refl||apply eq_Refl_rel;intuition).*)
 
 (***********************************************************************)
@@ -1224,7 +1289,7 @@ Qed.
 
 Section option_setoid.
 
-  Variables (A : Type) (eq : A->A->Prop).
+  Variables (A : Type) (eq : relation A).
 
   Definition eq_opt x y :=
     match x, y with

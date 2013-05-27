@@ -34,6 +34,11 @@ Module Make (X : OrderedType).
     tauto.
   Qed.
 
+  Instance pred_geq :
+    Proper (eq ==> XSet.Equal ==> geq ==> same_relation) pred.
+
+  Proof. split; apply pred_geq'; hyp||(sym;hyp). Qed.
+
   Instance pred_geq_ext' :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> impl) pred.
 
@@ -42,17 +47,12 @@ Module Make (X : OrderedType).
     rewrite xx', e, gg', aa', bb'. refl.
   Qed.
 
-  Instance pred_geq :
-    Proper (eq ==> XSet.Equal ==> geq ==> same_relation) pred.
-
-  Proof. split; apply pred_geq'; hyp||(sym;hyp). Qed.
-
   Instance pred_geq_ext :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> iff) pred.
 
   Proof. split; apply pred_geq_ext'; hyp||(sym;hyp). Qed.
 
-  Lemma pred_empty : forall x s, pred x s empty == @empty_rel X.t.
+  Lemma pred_empty : forall x s, pred x s empty == empty_rel.
 
   Proof.
     split; intros a b; unfold pred, empty_rel; intros.
@@ -337,6 +337,7 @@ of X.t. *)
     Proof.
       intros g g' gg' a a' aa'. subst a'. unfold gle.
       do 2 rewrite rel_add_edge_list. destruct (f a) as [[x l]|].
+      (*COQ:unfold needed before rewrite*)unfold gle in gg'.
       rewrite gg'. refl. hyp.
     Qed.
 
@@ -346,7 +347,9 @@ of X.t. *)
     Proof.
       intros g g' gg' a a' aa'. subst a'. rewrite gle_antisym in gg'.
       destruct gg' as [gg' g'g]. split.
-      rewrite gg'. refl. rewrite g'g. refl.
+      (*COQ:unfold needed before rewrite*)unfold gle in gg'.
+      (*COQ:rewrite gg' does not work*)apply add_edge_list_gle. hyp. refl.
+      (*COQ:rewrite g'g does not work*)apply add_edge_list_gle. hyp. refl.
     Qed.
 
 (***********************************************************************)
@@ -404,9 +407,9 @@ using the function [trans_add_edge] now *)
       (* y not in (succs x g): R! == S! *)
       apply tc_eq.
       (* S << R *)
-      apply R.union_inclusion. refl. rewrite union_commut. apply R.union_inclusion.
-      2: refl. intros u v [xu yv]. unfold prod. rewrite xu, yv.
-      repeat rewrite add_iff. intuition.
+      apply R.union_inclusion. refl. rewrite union_commut.
+      apply R.union_inclusion. 2: refl.
+      intros u v [xu yv]. unfold prod. rewrite xu, yv, !add_iff. intuition.
       (* R << S! *)
       rewrite union_incl. split. apply incl_tc. apply incl_union_l. refl.
       rewrite union_incl. split. rewrite prod_add_incl_tc_id.

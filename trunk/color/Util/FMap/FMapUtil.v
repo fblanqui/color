@@ -26,7 +26,7 @@ Module Make (X : OrderedType).
 
   Section S.
 
-    Variables (A : Type) (eq : A->A->Prop).
+    Variables (A : Type) (eq : relation A).
 
 (***********************************************************************)
 (* Properties of [remove]. *)
@@ -67,9 +67,7 @@ Module Make (X : OrderedType).
 
     Global Instance Equiv_Sym : Symmetric eq -> Symmetric (Equiv eq).
 
-    Proof.
-      fo.
-    Qed.
+    Proof. fo. Qed.
 
     Global Instance Equiv_Trans : Transitive eq -> Transitive (Equiv eq).
 
@@ -485,8 +483,9 @@ and satisfies some commutation property. *)
 
       Proof.
         intros heq fm m m' mm'. repeat rewrite for_all_eq.
-        apply fold_Equal; intuition. eapply Proper3_m. 5: apply for_all_aux_m.
-        refl. intros x y xy. subst y. refl. refl. refl. hyp.
+        apply fold_Equal; intuition. eapply Proper_inclusion4.
+        5: apply for_all_aux_m. refl. intros x y xy. subst y. refl.
+        refl. refl. hyp.
       Qed.
 
     End for_all.
@@ -550,8 +549,9 @@ and satisfies some commutation property. *)
 
       Proof.
         intros heq fm m m' mm'. repeat rewrite filter_eq.
-        apply fold_Equal; intuition. eapply Proper3_m. 5: apply filter_aux_m.
-        refl. intros x y xy. subst y. refl. refl. refl. hyp.
+        apply fold_Equal; intuition. eapply Proper_inclusion4.
+        5: apply filter_aux_m. refl. intros x y xy. subst y. refl.
+        refl. refl. hyp.
       Qed.*)
 
     End filter.

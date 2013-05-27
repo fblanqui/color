@@ -46,7 +46,7 @@ Section try_add_arc.
 
 Variable R : relation A.
 
-Inductive try_add_arc (x y : A) : A -> A -> Prop :=
+Inductive try_add_arc (x y : A) : relation A :=
 | keep : forall z t, R z t -> try_add_arc x y z t
 | try_add : x<>y -> ~R y x ->  try_add_arc x y x y.
 

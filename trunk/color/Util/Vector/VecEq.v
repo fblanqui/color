@@ -16,7 +16,7 @@ Require Import Setoid VecUtil LogicUtil NatUtil.
 
 Section eq_vec.
 
-Variables (A : Type) (eqA : A -> A -> Prop) (stA : Setoid_Theory A eqA).
+Variables (A : Type) (eqA : relation A) (stA : Setoid_Theory A eqA).
 Notation "x =A= y" := (eqA x y) (at level 70).
 Add Setoid A eqA stA as A_eqA.
 
@@ -79,7 +79,7 @@ Qed.
 
 Section Vforall.
 
-Variable f : A -> A -> Prop.
+Variable f : relation A.
 Variable f_mor : forall a1 a1', a1 =A= a1' -> forall a2 a2', a2 =A= a2' ->
   (f a1 a2 <-> f a1' a2').
 
@@ -115,7 +115,7 @@ End Vforall.
 (***********************************************************************)
 (** (Vfold_left f) is a morphism is f is a morphism *)
 
-Variables (B : Type) (eqB : B -> B -> Prop) (stB : Setoid_Theory B eqB).
+Variables (B : Type) (eqB : relation B) (stB : Setoid_Theory B eqB).
 Notation "x =B= y" := (eqB x y) (at level 70).
 Add Setoid B eqB stB as B_eqB.
 
@@ -146,7 +146,7 @@ Implicit Arguments Vnth_mor [A n v v' i].
 
 Section S.
 
-Variables (A : Type) (eqA : A -> A -> Prop) (stA : Setoid_Theory A eqA).
+Variables (A : Type) (eqA : relation A) (stA : Setoid_Theory A eqA).
 Notation "x =A= y" := (eqA x y) (at level 70).
 Add Setoid A eqA stA as A_eqA2.
 
@@ -156,7 +156,7 @@ Add Parametric Relation n : (@vector A n) (@eq_vec A eqA n)
     transitivity proved by (@eq_vec_trans A eqA stA n)
       as eq_vecA_rel.
 
-Variables (B : Type) (eqB : B -> B -> Prop) (stB : Setoid_Theory B eqB).
+Variables (B : Type) (eqB : relation B) (stB : Setoid_Theory B eqB).
 Notation "x =B= y" := (eqB x y) (at level 70).
 Add Setoid B eqB stB as B_eqB2.
 
