@@ -1,4 +1,6 @@
 
+- define a feq generalizing the ones in ListUtil and FSetUtil
+
 - improve compilation speed of FGraph
 
 - in RelUtil, replace # by * and ! by +

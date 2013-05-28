@@ -26,6 +26,8 @@ Arguments symmetric {A} R.
 Arguments equiv {A} R.
 Arguments union {A} R1 R2 x y.
 
+Ltac class := fold impl; auto with typeclass_instances.
+
 (***********************************************************************)
 (** Notations for some relations and operations on relations. *)
 
@@ -203,48 +205,63 @@ Implicit Arguments in_sons_R [A R x y].
 Implicit Arguments R_in_sons [A R x y].
 
 (***********************************************************************)
-(** If [E] is a symmetric relation, then relations preserving [E] are
-compatible with [E]. *)
+(** Equivalence relation associated to a PreOrder. *)
 
-Lemma sym_iff_1 A1 (R1 : relation A1) f : Symmetric R1 ->
-  Proper (R1 ==> impl) f -> Proper (R1 ==> iff) f.
+Definition inter_transp A (R : relation A) : relation A :=
+  fun x y => R x y /\ R y x.
 
-Proof.
-  intros s1 hf x1 y1 e1. split; intro h; eapply hf.
-  apply e1. hyp. sym; apply e1. hyp.
-Qed.
+(*COQ: declaring these Lemma's as Instance's creates problems*)
 
-Lemma sym_iff_2 A1 (R1 : relation A1) A2 (R2 : relation A2) f :
-  Symmetric R1 -> Symmetric R2 -> Proper (R1 ==> R2 ==> impl) f ->
-  Proper (R1 ==> R2 ==> iff) f.
+Lemma inter_transp__Symmetric A (R : relation A) :
+  Symmetric (inter_transp R).
 
-Proof.
-  intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; intro h; eapply hf.
-  apply e1. apply e2. hyp. sym; apply e1. sym; apply e2. hyp.
-Qed.
+Proof. fo. Qed.
 
-Lemma sym_iff_3 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) f :
+Lemma inter_transp_Reflexive A (R : relation A) :
+  Reflexive R -> Reflexive (inter_transp R).
+
+Proof. fo. Qed.
+
+Lemma inter_transp_Transitive A (R : relation A) :
+  Transitive R -> Transitive (inter_transp R).
+
+Proof. fo. Qed.
+
+Lemma inter_transp_incl A (R : relation A) : inter_transp R << R.
+
+Proof. fo. Qed.
+
+Lemma Proper_inter_transp_1 A1 (R1 : relation A1) B (S : relation B) f :
+  Symmetric R1 -> Proper (R1 ==> S) f -> Proper (R1 ==> inter_transp S) f.
+
+Proof. intros s1 hf x1 y1 e1. split; apply hf; (hyp||sym;hyp). Qed.
+
+Lemma Proper_inter_transp_2 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  B (S : relation B) f : Symmetric R1 -> Symmetric R2 ->
+  Proper (R1 ==> R2 ==> S) f -> Proper (R1 ==> R2 ==> inter_transp S) f.
+
+Proof. intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; apply hf; (hyp||sym;hyp). Qed.
+
+Lemma Proper_inter_transp_3 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) B (S : relation B) f :
   Symmetric R1 -> Symmetric R2 -> Symmetric R3 ->
-  Proper (R1 ==> R2 ==> R3 ==> impl) f -> Proper (R1 ==> R2 ==> R3 ==> iff) f.
+  Proper (R1 ==> R2 ==> R3 ==> S) f ->
+  Proper (R1 ==> R2 ==> R3 ==> inter_transp S) f.
 
 Proof.
-  intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3. split; intro h; eapply hf.
-  apply e1. apply e2. apply e3. hyp.
-  sym; apply e1. sym; apply e2. sym; apply e3. hyp.
+  intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3.
+  split; apply hf; (hyp||sym;hyp).
 Qed.
 
-Lemma sym_iff_4 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) A4 (R4 : relation A4) f :
+Lemma Proper_inter_transp_4 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  A3 (R3 : relation A3) A4 (R4 : relation A4) B (S : relation B) f :
   Symmetric R1 -> Symmetric R2 -> Symmetric R3 -> Symmetric R4 ->
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> impl) f ->
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> iff) f.
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> S) f ->
+  Proper (R1 ==> R2 ==> R3 ==> R4 ==> inter_transp S) f.
 
 Proof.
   intros s1 s2 s3 s4 hf x1 y1 e1 x2 y2 e2 x3 y3 e3 x4 y4 e4.
-  split; intro h; eapply hf.
-  apply e1. apply e2. apply e3. apply e4. hyp.
-  sym; apply e1. sym; apply e2. sym; apply e3. sym; apply e4. hyp.
+  split; apply hf; (hyp||sym;hyp).
 Qed.
 
 (***********************************************************************)
@@ -1248,41 +1265,43 @@ Instance Equivalence_same_relation A :
 
 Proof. intros R S RS [hr hs ht]. constructor; rewrite <- RS; hyp. Qed.
 
-Lemma Proper_inclusion2 A B f :
-  Proper (@inclusion A --> @inclusion B ==> impl)
-  (fun R S => Proper (R ==> S) f).
+Lemma Proper_inclusion_1 A1 B f :
+  Proper (@inclusion A1 --> @inclusion B ==> impl)
+  (fun R1 S => Proper (R1 ==> S) f).
 
 Proof. fo. Qed.
 
-(*REMOVE?Ltac proper2 l := eapply Proper_inclusion2; [idtac|idtac|apply l];
-  try (refl||apply eq_Refl_rel;intuition).*)
-
-Lemma Proper_inclusion3 A B C f :
-  Proper (@inclusion A --> @inclusion B --> @inclusion C ==> impl)
-  (fun R S Z => Proper (R ==> S ==> Z) f).
+Lemma Proper_inclusion_2 A1 A2 B f :
+  Proper (@inclusion A1 --> @inclusion A2 --> @inclusion B ==> impl)
+  (fun R1 R2 S => Proper (R1 ==> R2 ==> S) f).
 
 Proof.
-intros R R' R'R S S' S'S Z Z' ZZ' hf r r' rr' s s' ss'.
-apply R'R in rr'. apply S'S in ss'. apply ZZ'. apply hf; hyp.
+  intros R1 R1' R1'R1 R2 R2' R2'R2 S S' SS' hf x1 x1' x1x1' x2 x2' x2x2'.
+  apply R1'R1 in x1x1'. apply R2'R2 in x2x2'. apply SS'. apply hf; hyp.
 Qed.
 
-(*REMOVE?Ltac proper3 l := eapply Proper_inclusion3; [idtac|idtac|idtac|apply l];
-  try (refl||apply eq_Refl_rel;intuition).*)
-
-Lemma Proper_inclusion4 A B C D f : Proper
-  (@inclusion A --> @inclusion B --> @inclusion C --> @inclusion D ==> impl)
-  (fun R S T Z => Proper (R ==> S ==> T ==> Z) f).
+Lemma Proper_inclusion_3 A1 A2 A3 B f : Proper
+  (@inclusion A1 --> @inclusion A2 --> @inclusion A3 --> @inclusion B ==> impl)
+  (fun R1 R2 R3 S => Proper (R1 ==> R2 ==> R3 ==> S) f).
 
 Proof.
-  intros R R' R'R S S' S'S T T' T'T Z Z' ZZ' hf r r' rr' s s' ss' t t' tt'.
-  apply R'R in rr'. apply S'S in ss'. apply T'T in tt'.
-  apply ZZ'. apply hf; hyp.
+  intros R1 R1' R1'R1 R2 R2' R2'R2 R3 R3' R3'R3 S S' SS' hf
+    x1 x1' x1x1' x2 x2' x2x2' x3 x3' x3x3'.
+  apply R1'R1 in x1x1'. apply R2'R2 in x2x2'. apply R3'R3 in x3x3'.
+  apply SS'. apply hf; hyp.
 Qed.
 
-(*REMOVE?
-(*FIXME: does not work anymore in COQ8.4*)
-Ltac proper3 l := eapply Proper_inclusion4; [idtac|idtac|idtac|idtac|apply l];
-  try (refl||apply eq_Refl_rel;intuition).*)
+Lemma Proper_inclusion_4 A1 A2 A3 A4 B f : Proper
+  (@inclusion A1 --> @inclusion A2 --> @inclusion A3 --> @inclusion A4 -->
+    @inclusion B ==> impl)
+  (fun R1 R2 R3 R4 S => Proper (R1 ==> R2 ==> R3 ==> R4 ==> S) f).
+
+Proof.
+  intros R1 R1' R1'R1 R2 R2' R2'R2 R3 R3' R3'R3 R4 R4' R4'R4 S S' SS' hf
+    x1 x1' x1x1' x2 x2' x2x2' x3 x3' x3x3' x4 x4' x4x4'.
+  apply R1'R1 in x1x1'. apply R2'R2 in x2x2'. apply R3'R3 in x3x3'.
+  apply R4'R4 in x4x4'. apply SS'. apply hf; hyp.
+Qed.
 
 (***********************************************************************)
 (** Option setoid. *)

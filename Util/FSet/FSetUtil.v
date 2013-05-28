@@ -307,15 +307,20 @@ Module Make (Export XSet : FSetInterface.S).
     Global Instance Proper_m :
       Proper (feq ==> iff) (Proper (E.eq ==> eqA ==> eqA)).
 
-    Proof. split; apply Proper_m'; auto. sym. hyp. Qed.
+    Proof. apply Proper_inter_transp_1; class. Qed.
 
-    Global Instance transpose_m : Proper (feq ==> impl) (transpose eqA).
+    Global Instance transpose_feq' : Proper (feq ==> impl) (transpose eqA).
 
     Proof.
       intros f f' ff' hf x y z. trans (f x (f y z)).
       sym. apply ff'. refl. apply ff'; refl.
       rewrite hf. apply ff'. refl. apply ff'; refl.
     Qed.
+
+    (*COQ: get problems in FGraph and other files if added
+    Global Instance transpose_feq : Proper (feq ==> iff) (transpose eqA).
+
+    Proof. apply Proper_inter_transp_1; class. Qed.*)
 
     Global Instance fold_m : forall f, Proper (E.eq ==> eqA ==> eqA) f ->
       Proper (Equal ==> eqA ==> eqA) (fold f).
@@ -342,7 +347,7 @@ Module Make (Export XSet : FSetInterface.S).
       apply fold_m; try hyp||refl. rewrite <- ff'. hyp.
       (* add *)
       intros x s nxs h s' e a a' aa'. trans (fold f' (add x s) a').
-      repeat rewrite fold_add; unfold compat_op; try rewrite <- ff'; auto.
+      rewrite 2!fold_add; unfold compat_op; try rewrite <- ff'; auto.
       apply ff'. refl. apply h. refl. hyp.
       apply fold_m; auto. rewrite <- ff'. hyp. refl.
     Qed.

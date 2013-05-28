@@ -79,7 +79,7 @@ Module Make (Export L : L_Struct).
 
   Instance aeq_mon : Monotone aeq.
 
-  Proof. rewrite aeq_equiv_mon. auto with typeclass_instances. Qed.
+  Proof. rewrite aeq_equiv_mon. class. Qed.
 
   (** Term constructors are compatible with [aeq]. *)
 
@@ -985,7 +985,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     Global Instance clos_aeq_iff : Proper (aeq ==> aeq ==> iff) clos_aeq.
 
-    Proof. apply sym_iff_2; auto with typeclass_instances. Qed.
+    Proof. apply Proper_inter_transp_2; class. Qed.
 
     Global Instance clos_aeq_mon : Monotone R -> Monotone clos_aeq.
 
@@ -1228,7 +1228,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       (*COQ: if removed, Coq is looping in LComp*)
       Global Instance atc_aeq : Proper (aeq ==> aeq ==> iff) (S*).
 
-      Proof. apply sym_iff_2; auto with typeclass_instances. Qed.
+      Proof. apply Proper_inter_transp_2; class. Qed.
 
     End aeq.
 

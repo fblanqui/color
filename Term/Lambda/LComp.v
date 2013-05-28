@@ -290,7 +290,7 @@ Module Make (Export L : LTerm.L_Struct).
       gen (var_notin_ok xs). set (z := var_notin xs). unfold xs. set_iff.
       intro hz. rewrite (aeq_alpha z). 2: tauto.
       do 2 (rewrite subs_lam_no_alpha; [idtac|rewrite remove_fv_rename; tauto]).
-      apply Lam_atc. auto with typeclass_instances. refl.
+      apply Lam_atc. class. refl.
       unfold rename. rewrite !subs_comp. apply IHu.
       intro y. unfold comp, single. unfold update at 2. unfold update at 3.
       eq_dec y x; unfold id; simpl. rewrite !update_eq. refl.
@@ -355,7 +355,7 @@ Module Make (Export L : LTerm.L_Struct).
       cut (forall w, SN R_aeq w -> forall u v, w = App u v -> SN R_aeq u).
       intros h u v i. eapply h. apply i. refl.
       induction 1. intros u v e. subst. apply SN_intro. intros u' uu'.
-      eapply H0. apply mon_app_l. auto with typeclass_instances. apply uu'.
+      eapply H0. apply mon_app_l. class. apply uu'.
       refl. refl.
     Qed.
 
@@ -537,7 +537,7 @@ of the form [x t1 .. tn]. *)
 
     Proof.
       intros P Q q3 v v' vv' hv u hu. eapply q3. apply mon_app_l.
-      auto with typeclass_instances. apply vv'. refl. apply hv. hyp.
+      class. apply vv'. refl. apply hv. hyp.
     Qed.
 
     (** [arr] preserves [cp_neutral]. *)
