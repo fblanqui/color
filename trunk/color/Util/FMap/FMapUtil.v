@@ -483,7 +483,7 @@ and satisfies some commutation property. *)
 
       Proof.
         intros heq fm m m' mm'. repeat rewrite for_all_eq.
-        apply fold_Equal; intuition. eapply Proper_inclusion4.
+        apply fold_Equal; intuition. eapply Proper_inclusion_3.
         5: apply for_all_aux_m. refl. intros x y xy. subst y. refl.
         refl. refl. hyp.
       Qed.
@@ -549,7 +549,7 @@ and satisfies some commutation property. *)
 
       Proof.
         intros heq fm m m' mm'. repeat rewrite filter_eq.
-        apply fold_Equal; intuition. eapply Proper_inclusion4.
+        apply fold_Equal; intuition. eapply Proper_inclusion_3.
         5: apply filter_aux_m. refl. intros x y xy. subst y. refl.
         refl. refl. hyp.
       Qed.*)

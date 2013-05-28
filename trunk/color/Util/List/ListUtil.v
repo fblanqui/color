@@ -1752,18 +1752,17 @@ End first.
 (***********************************************************************)
 (** transpose *)
 
-Instance transpose_m' A B : Proper (inclusion ==> Logic.eq ==> impl)
+Instance transpose_inclusion A B : Proper (inclusion ==> Logic.eq ==> impl)
   (@transpose A B).
 
-Proof.
-intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h.
-Qed.
+Proof. intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h. Qed.
 
-Instance transpose_m A B : Proper (same_relation ==> Logic.eq ==> iff)
-  (@transpose A B).
+Instance transpose_same_relation A B :
+  Proper (same_relation ==> Logic.eq ==> iff) (@transpose A B).
 
 Proof.
-intros R R' [h1 h2] f f' ff'. subst f'. split; apply transpose_m'; auto.
+  intros R R' [h1 h2] f f' ff'. subst f'.
+  split; apply transpose_inclusion; auto.
 Qed.
 
 (***********************************************************************)

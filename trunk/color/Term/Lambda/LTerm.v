@@ -340,8 +340,7 @@ Module Make (Export L : L_Struct).
     match goal with
       | h : Monotone ?R |- ?R _ _ => mon_aux h
       | |- ?R _ _ => let h := fresh "h" in
-        assert (h : Monotone R); [auto with typeclass_instances|mon_aux h];
-          clear h
+        assert (h : Monotone R); [class|mon_aux h]; clear h
     end.
 
   (** Monotony is compatible with [same_relation]. *)
