@@ -68,16 +68,12 @@ Proof. intros. destruct u. exists n0. refl. simpl in H. discr. Qed.
 Lemma sub_eq : forall s1 s2 t,
   (forall x, In x (vars t) -> s1 x = s2 x) -> sub s1 t = sub s2 t.
 
-Proof.
-intros. unfold sub. rewrite (term_int_eq I0 s1 s2 t H). refl.
-Qed.
+Proof. intros. unfold sub. rewrite (term_int_eq I0 s1 s2 t H). refl. Qed.
 
 Lemma sub_eq_id : forall s t,
   (forall x, In x (vars t) -> s x = Var x) -> sub s t = t.
 
-Proof.
-intros. trans (sub id t). apply sub_eq. hyp. apply sub_id.
-Qed.
+Proof. intros. trans (sub id t). apply sub_eq. hyp. apply sub_id. Qed.
 
 Lemma Vmap_sub_eq : forall s1 s2 n (ts : terms n),
   (forall x, In x (vars_vec ts) -> s1 x = s2 x) ->
@@ -146,9 +142,7 @@ Qed.
 Lemma sub_comp_assoc : forall (s1 s2 s3 : substitution) x,
   sub_comp (sub_comp s1 s2) s3 x = sub_comp s1 (sub_comp s2 s3) x.
 
-Proof.
-intros. unfold sub_comp. rewrite sub_sub. refl.
-Qed.
+Proof. intros. unfold sub_comp. rewrite sub_sub. refl. Qed.
 
 (***********************************************************************)
 (** extension of a substitution *)
@@ -277,9 +271,7 @@ Qed.
 Lemma incl_vars_sub : forall l r,
   incl (vars r) (vars l) -> incl (vars (sub s r)) (vars (sub s l)).
 
-Proof.
-intros. repeat rewrite vars_sub. apply incl_svars. exact H.
-Qed.
+Proof. intros. repeat rewrite vars_sub. apply incl_svars. exact H. Qed.
 
 End vars.
 
@@ -295,9 +287,7 @@ Definition sub_eq_dom (s1 s2 : substitution) (l : variables) :=
 Lemma sub_eq_dom_incl : forall s1 s2 l1 l2,
   sub_eq_dom s1 s2 l2 -> incl l1 l2 -> sub_eq_dom s1 s2 l1.
 
-Proof.
-unfold sub_eq_dom. auto.
-Qed.
+Proof. unfold sub_eq_dom. auto. Qed.
 
 Lemma sub_eq_dom_incl_sub : forall s1 s2 l, sub_eq_dom s1 s2 l
   -> forall t, incl (vars t) l -> sub s1 t = sub s2 t.
@@ -506,9 +496,7 @@ Definition fresh_vars n := @vec_of_val _ I0 (@Var Sig) n.
 
 Lemma Vnth_fresh_vars : forall n i (h : i<n), Vnth (fresh_vars n) h = Var i.
 
-Proof.
-intros. unfold fresh_vars. apply Vnth_vec_of_val.
-Qed.
+Proof. intros. unfold fresh_vars. apply Vnth_vec_of_val. Qed.
 
 Definition sub_vars n (ts : terms n) : substitution := val_of_vec I0 ts.
 
@@ -540,9 +528,7 @@ Qed.
 
 Lemma fresh_tail : forall x0 n, fresh (S x0) n = Vtail (fresh x0 (S n)).
 
-Proof.
-induction n; simpl; intros; refl.
-Qed.
+Proof. induction n; simpl; intros; refl. Qed.
 
 Lemma Vnth_fresh : forall n i (h : i < n) x0, Vnth (fresh x0 n) h = Var (x0+i).
 
@@ -570,9 +556,7 @@ Fixpoint freshl (x0 n : nat) : list variable :=
 
 Lemma in_freshl : forall x n x0, ~In x (freshl x0 n) -> x < x0 \/ x >= x0 + n.
 
-Proof.
-induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega.
-Qed.
+Proof. induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega. Qed.
 
 Implicit Arguments in_freshl [x n x0].
 
@@ -640,9 +624,7 @@ Qed.
 Lemma fsub_cons_rec0 : forall x0 t n (ts : terms n) x,
  x = x0+2 -> fsub x0 (Vcons t ts) x = fsub (x0+1) ts x.
 
-Proof.
-intros. eapply fsub_cons_rec with (k := 0). omega.
-Qed.
+Proof. intros. eapply fsub_cons_rec with (k := 0). omega. Qed.
 
 Lemma fsub_nil : forall x0 x, fsub x0 Vnil x = Var x.
 
