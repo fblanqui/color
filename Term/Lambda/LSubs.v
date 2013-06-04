@@ -20,6 +20,29 @@ Set Implicit Arguments.
 Require Import BoolUtil SetoidList Basics Morphisms LogicUtil.
 Require Import LTerm.
 
+(****************************************************************************)
+(** ** Closure by substitution of a relation on terms.
+
+Note that [clos_subs R] is a priori NOT stable by substitution since
+substitution composition is correct modulo alpha-equivalence only
+(Lemma [subs_comp] in LAlpha). *)
+
+Section clos_subs.
+
+  Variables F X : Type.
+
+  Notation Te := (Te F X).
+
+  Variable subs : (X -> Te) -> Te -> Te.
+
+  Inductive clos_subs R : relation Te :=
+  | subs_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
+
+End clos_subs.
+
+(****************************************************************************)
+(** * Definition and properties of substitutions. *)
+
 Module Make (Export L : L_Struct).
 
   Module Export T := LTerm.Make L.
@@ -934,16 +957,9 @@ A) A] if [A] is not empty).
   End stable.
 
 (****************************************************************************)
-(** ** Closure by substitution of a relation on terms.
+(** ** [clos_subs] preserves free variables. *)
 
-Note that [clos_subs R] is a priori NOT stable by substitution since
-substitution composition is correct modulo alpha-equivalence only
-(Lemma [subs_comp] in LAlpha). *)
-
-  Inductive clos_subs (R : relation Te) : relation Te :=
-  | s_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
-
-  (** The closure by substitution preserves free variables. *)
+  Notation clos_subs := (@clos_subs F X subs).
 
   Instance fv_clos_subs : forall R,
     Proper (R --> Subset) fv -> Proper (clos_subs R --> Subset) fv.

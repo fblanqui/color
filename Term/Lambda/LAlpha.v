@@ -13,8 +13,7 @@ Set Implicit Arguments.
 
 Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
   VecUtil VecOrd.
-Require Import LTerm.
-Require LSubs.
+Require Import LTerm LSubs.
 
 Module Make (Export L : L_Struct).
 
@@ -1060,7 +1059,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     intros R s s' ss' t u tu. subst s'.
     inversion tu; inversion H1; subst; clear tu H1. rewrite H0, H, 2!subs_comp.
-    eapply clos_aeq_intro. refl. refl. eapply s_step. hyp.
+    eapply clos_aeq_intro. refl. refl. eapply subs_step. hyp.
   Qed.
 
   (** Alpha-closure preserves free variables. *)
