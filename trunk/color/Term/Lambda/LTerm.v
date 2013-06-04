@@ -164,9 +164,13 @@ Section term.
     Ens_type : Type;
     Ens_empty : Ens_type;
     Ens_singleton : X -> Ens_type;
+    Ens_add : X -> Ens_type -> Ens_type;
     Ens_union : Ens_type -> Ens_type -> Ens_type;
     Ens_remove : X -> Ens_type -> Ens_type;
-    Ens_In : X -> Ens_type -> Prop }.
+    Ens_diff : Ens_type -> Ens_type -> Ens_type;
+    Ens_In : X -> Ens_type -> Prop;
+    Ens_mem : X -> Ens_type -> bool;
+    Ens_fold : forall A, (X -> A -> A) -> Ens_type -> A -> A }.
 
 (****************************************************************************)
 (** ** Set of free variables of a term. *)
@@ -249,7 +253,7 @@ Module Type L_Struct.
 
   Declare Module Export XSet : FSetInterface.S with Module E := XOrd.
 
-  Notation ens_X := (mk_Ens empty singleton union remove In).
+  Notation ens_X := (mk_Ens empty singleton add union remove diff In mem fold).
 
   (** We assume that [X] is infinite. *)
 
