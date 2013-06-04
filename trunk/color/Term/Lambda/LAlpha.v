@@ -15,13 +15,18 @@ Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
   VecUtil VecOrd.
 Require Import LTerm LSubs.
 
-Module Make (Export L : L_Struct).
+(****************************************************************************)
+(** ** Alpha-equivalence is defined as the smallest congruence
+containing the [aeq_alpha] rule. Here, we exactly follow Curry-Feys
+definition (pages 59 and 91). *)
 
-  Module Export S := LSubs.Make L.
+Section aeq.
 
-  (** ** Alpha-equivalence is defined as the smallest congruence
-  containing the [aeq_alpha] rule. Here, we exactly follow Curry-Feys
-  definition (pages 59 and 91). *)
+  Variables (F X : Type) (E : Ens X).
+
+  Notation Te := (@Te F X).
+
+  Variable rename : X -> X -> Te -> Te.
 
   Inductive aeq : relation Te :=
   | aeq_refl : forall u, aeq u u
@@ -31,9 +36,7 @@ Module Make (Export L : L_Struct).
   | aeq_app_r : forall u v v', aeq v v' -> aeq (App u v) (App u v')
   | aeq_lam : forall x u u', aeq u u' -> aeq (Lam x u) (Lam x u')
   | aeq_alpha : forall x u y,
-    ~In y (fv u) -> aeq (Lam x u) (Lam y (rename x y u)).
-
-  Arguments aeq_alpha [x u] y _.
+    ~Ens_In E y (fv E u) -> aeq (Lam x u) (Lam y (rename x y u)).
 
   Infix "~~" := aeq (at level 70).
 
@@ -42,7 +45,48 @@ Module Make (Export L : L_Struct).
 
   Inductive aeq_top : relation Te :=
   | aeq_top_intro : forall x u y,
-    ~In y (fv u) -> aeq_top (Lam x u) (Lam y (rename x y u)).
+    ~Ens_In E y (fv E u) -> aeq_top (Lam x u) (Lam y (rename x y u)).
+
+  (** Closure modulo alpha-equivalence of a relation. *)
+
+  Section clos_aeq.
+
+    Variable R : relation Te.
+
+    Inductive clos_aeq : relation Te :=
+    | clos_aeq_intro : forall u u', u ~~ u' ->
+      forall v v', v ~~ v' -> R u' v' -> clos_aeq u v.
+
+  (** "Alpha-transitive closure" of a relation on terms:
+     [S*] is the (reflexive) transitive closure of [S U aeq]. *)
+
+    Inductive clos_aeq_trans : relation Te :=
+    | at_step : forall u v, R u v -> clos_aeq_trans u v
+    | at_aeq : forall u v, u ~~ v -> clos_aeq_trans u v
+    | at_trans : forall u v w, clos_aeq_trans u v ->
+      clos_aeq_trans v w -> clos_aeq_trans u w.
+
+  End clos_aeq.
+
+End aeq.
+
+Arguments aeq_alpha [F X] E rename [x u] y _.
+
+(****************************************************************************)
+(** ** Properties of alpha-equivalence. *)
+
+Module Make (Export L : L_Struct).
+
+  Module Export S := LSubs.Make L.
+
+  Notation aeq := (@aeq F X ens_X rename).
+  Notation aeq_alpha := (@aeq_alpha F X ens_X rename).
+  Notation aeq_top := (@aeq_top F X ens_X rename).
+  Notation clos_aeq := (@clos_aeq F X ens_X rename).
+  Notation clos_aeq_trans := (@clos_aeq_trans F X ens_X rename).
+
+  Infix "~~" := aeq (at level 70).
+  Notation "R *" := (clos_aeq_trans R) (at level 35).
 
   Lemma aeq_equiv_mon : aeq == clos_equiv (clos_mon aeq_top).
 
@@ -958,53 +1002,48 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Closure modulo alpha-equivalence of a relation. *)
 
-  Section clos_aeq.
+  Lemma incl_clos_aeq R : R << clos_aeq R.
 
-    Variable R : relation Te.
+  Proof.
+    intros u v uv. apply clos_aeq_intro with (u':=u) (v':=v).
+    refl. refl. hyp.
+  Qed.
 
-    Inductive clos_aeq : relation Te :=
-    | clos_aeq_intro : forall u u', u ~~ u' ->
-      forall v v', v ~~ v' -> R u' v' -> clos_aeq u v.
+  (** Alpha-closure preserves monotony. *)
 
-    Lemma incl_clos_aeq : R << clos_aeq.
+  Instance clos_aeq_impl :
+    Proper (same_relation ==> aeq ==> aeq ==> impl) clos_aeq.
 
-    Proof.
-      intros u v uv. apply clos_aeq_intro with (u':=u) (v':=v).
-      refl. refl. hyp.
-    Qed.
+  Proof.
+    intros R R' [RR' _] u u' uu' v v' vv' h. inversion h; subst.
+    eapply clos_aeq_intro.
+    trans u. sym; hyp. apply H.
+    trans v. sym; hyp. apply H0.
+    apply RR'. hyp.
+  Qed.
 
-    (** Alpha-closure preserves monotony. *)
+  Instance clos_aeq_iff :
+    Proper (same_relation ==> aeq ==> aeq ==> iff) clos_aeq.
 
-    Global Instance clos_aeq_impl : Proper (aeq ==> aeq ==> impl) clos_aeq.
+  Proof. apply Proper_inter_transp_3; class. Qed.
 
-    Proof.
-      intros u u' uu' v v' vv' h. inversion h; subst. eapply clos_aeq_intro.
-      trans u. sym; hyp. apply H. trans v. sym; hyp. apply H0. hyp.
-    Qed.
+  Instance clos_aeq_mon R : Monotone R -> Monotone (clos_aeq R).
 
-    Global Instance clos_aeq_iff : Proper (aeq ==> aeq ==> iff) clos_aeq.
-
-    Proof. apply Proper_inter_transp_2; class. Qed.
-
-    Global Instance clos_aeq_mon : Monotone R -> Monotone clos_aeq.
-
-    Proof.
-      intro h. split.
-      (* app_l *)
-      intros u v uv w w' ww'. inversion uv; subst.
-      apply clos_aeq_intro with (u':=App u' w') (v':=App v' w').
-      rewrite H. refl. rewrite H0. refl. mon.
-      (* app_r *)
-      intros w w' ww' u v uv. inversion uv; subst.
-      apply clos_aeq_intro with (u':=App w' u') (v':=App w' v').
-      rewrite H. refl. rewrite H0. refl. mon.
-      (* lam *)
-      intros x x' xx' u v uv. inversion uv; subst.
-      apply clos_aeq_intro with (u':=Lam x' u') (v':=Lam x' v').
-      rewrite H. refl. rewrite H0. refl. mon.      
-    Qed.
-
-  End clos_aeq.
+  Proof.
+    intro h. split.
+    (* app_l *)
+    intros u v uv w w' ww'. inversion uv; subst.
+    apply clos_aeq_intro with (u':=App u' w') (v':=App v' w').
+    rewrite H. refl. rewrite H0. refl. mon.
+    (* app_r *)
+    intros w w' ww' u v uv. inversion uv; subst.
+    apply clos_aeq_intro with (u':=App w' u') (v':=App w' v').
+    rewrite H. refl. rewrite H0. refl. mon.
+    (* lam *)
+    intros x x' xx' u v uv. inversion uv; subst.
+    apply clos_aeq_intro with (u':=Lam x' u') (v':=Lam x' v').
+    rewrite H. refl. rewrite H0. refl. mon.      
+  Qed.
 
   (** Alpha-closure is compatible with relation inclusion/equivalence. *)
 
@@ -1177,22 +1216,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Arguments apps_aeq_l [n vs v t] _.
 
 (****************************************************************************)
-(** ** "Alpha-transitive closure" of a relation on terms:
-[S*] is the (reflexive) transitive closure of [S U aeq]. *)
-
-  Section clos_aeq_trans.
-
-    Variable S : relation Te.
-
-    Inductive clos_aeq_trans : relation Te :=
-    | at_step : forall u v, S u v -> clos_aeq_trans u v
-    | at_aeq : forall u v, u ~~ v -> clos_aeq_trans u v
-    | at_trans : forall u v w, clos_aeq_trans u v ->
-      clos_aeq_trans v w -> clos_aeq_trans u w.
-
-  End clos_aeq_trans.
-
-  Notation "S *" := (clos_aeq_trans S) (at level 35).
+(** ** Properties of [clos_trans_aeq]. *)
 
   Section atc_props.
 
