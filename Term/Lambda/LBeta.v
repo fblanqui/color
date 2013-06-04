@@ -23,7 +23,7 @@ Section beta_top.
 
   Notation Te := (@Te F X).
 
-  Variables (subs : (X -> Te) -> Te -> Te) (single : X -> Te -> X -> Te).
+  Variables (single : X -> Te -> X -> Te) (subs : (X -> Te) -> Te -> Te).
 
   Inductive beta_top : relation Te :=
   | beta_top_intro : forall x u v,
@@ -38,7 +38,7 @@ Module Make (Export L : L_Struct).
 
   Module Export A := LAlpha.Make L.
 
-  Notation beta_top := (@beta_top F X subs single).
+  Notation beta_top := (@beta_top F X single subs).
 
   Infix "->bh" := beta_top (at level 70).
 
