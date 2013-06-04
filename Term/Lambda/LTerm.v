@@ -40,6 +40,16 @@ Section term.
   | Lam (x : X) (u : Te).
 
 (****************************************************************************)
+(** ** Equality on [Te] is decidable. *)
+
+  Variable eq_fun_dec : forall f g : F, {f=g}+{~f=g}.
+  Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
+
+  Lemma eq_term_dec : forall u v : Te, {u=v}+{~u=v}.
+
+  Proof. decide equality. Qed.
+
+(****************************************************************************)
 (** ** Size of a term *)
 
   Fixpoint size (t : Te) :=
@@ -267,6 +277,8 @@ Module Type L_Struct.
   Notation fv := (@fv F X ens_X).
   Notation Monotone := (@Monotone F X).
   Notation clos_mon := (@clos_mon F X).
+  Notation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
+  Notation beq_term := (brel eq_term_dec).
 
 End L_Struct.
 
@@ -306,38 +318,20 @@ Module Make (Export L : L_Struct).
   Proof. intros x y. unfold eqb. eq_dec x y. intuition. tauto. Qed.
 
 (****************************************************************************)
-(** ** Equality on [Te] is decidable. *)
-
-  Lemma eq_term_dec : forall u v : Te, {u=v}+{~u=v}.
-
-  Proof.
-    decide equality. apply XOrd.eq_dec. apply FOrd.eq_dec. apply XOrd.eq_dec.
-  Qed.
-
-  (** Boolean equality on terms. *)
-
-  Definition beq_term u v :=
-    match eq_term_dec u v with
-      | left _ => true
-      | _ => false
-    end.
+(** ** Equality on terms. *)
 
   Lemma beq_term_true_iff : forall u v, beq_term u v = true <-> u = v.
 
-  Proof.
-    intros u v. unfold beq_term. destruct (eq_term_dec u v); intuition.
-  Qed.
+  Proof. intros u v. unfold brel. destruct (eq_term_dec u v); intuition. Qed.
 
   Lemma beq_term_false_iff : forall u v, beq_term u v = false <-> u <> v.
 
-  Proof.
-    intros u v. unfold beq_term. destruct (eq_term_dec u v); intuition.
-  Qed.
+  Proof. intros u v. unfold brel. destruct (eq_term_dec u v); intuition. Qed.
 
   Lemma beq_term_refl : forall u, beq_term u u = true.
 
   Proof.
-    intro u. unfold beq_term. destruct (eq_term_dec u u).
+    intro u. unfold brel. destruct (eq_term_dec u u).
     refl. absurd (u=u); tauto.
   Qed.
 

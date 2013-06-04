@@ -17,7 +17,7 @@ simultaneous substitution of any number of variables. *)
 
 Set Implicit Arguments.
 
-Require Import BoolUtil SetoidList Basics Morphisms LogicUtil.
+Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil.
 Require Import LTerm.
 
 (****************************************************************************)
@@ -181,7 +181,7 @@ by iteration of the function [domain_fun] on [xs]. *)
 
   Proof.
     intros s s' ss' x x' xx' xs xs' xsxs'. subst x' s'.
-    unfold domain_fun, beq_term.
+    unfold domain_fun, brel.
     destruct (eq_term_dec (s x) (Var x)); rewrite xsxs'; refl.
   Qed.
 
@@ -190,14 +190,14 @@ by iteration of the function [domain_fun] on [xs]. *)
 
   Proof.
     intros s s' ss' x x' xx' xs xs' xsxs'. subst x' s'.
-    unfold domain_fun, beq_term.
+    unfold domain_fun, brel.
     destruct (eq_term_dec (s x) (Var x)); rewrite xsxs'; refl.
   Qed.
 
   Lemma domain_fun_transp : forall s, transpose Equal (domain_fun s).
 
   Proof.
-    intros s x y xs. unfold domain_fun, beq_term.
+    intros s x y xs. unfold domain_fun, brel.
     destruct (eq_term_dec (s x) (Var x)); destruct (eq_term_dec (s y) (Var y));
       try refl. apply add_add.
   Qed.
@@ -240,7 +240,7 @@ by iteration of the function [domain_fun] on [xs]. *)
     rewrite domain_empty. set_iff. intuition.
     (* add *)
     intros y xs n IH. rewrite domain_add. set_iff. 2: hyp.
-    unfold domain_fun, beq_term. destruct (eq_term_dec (s y) (Var y)).
+    unfold domain_fun, brel. destruct (eq_term_dec (s y) (Var y)).
     rewrite IH. intuition. subst y. tauto.
     set_iff. rewrite IH. intuition. subst y. tauto.
   Qed.
@@ -282,7 +282,7 @@ by iteration of the function [domain_fun] on [xs]. *)
     [=] if beq_term (s x) (Var x) then empty else singleton x.
 
   Proof.
-    intros s x y. unfold beq_term.
+    intros s x y. unfold brel.
     destruct (eq_term_dec (s x) (Var x)); rewrite In_domain; set_iff;
       intuition; subst; tauto.
   Qed.
@@ -305,14 +305,14 @@ by iteration of the function [domain_fun] on [xs]. *)
     rewrite domain_empty, empty_b. refl.
     (* add *)
     intros x xs n IH. rewrite domain_add, add_b, IH. 2: hyp. clear IH.
-    unfold eqb, domain_fun. unfold beq_term at 1.
+    unfold eqb, domain_fun. unfold brel at 1.
     destruct (eq_term_dec (single y v x) (Var x)).
     revert e. unfold single, update, id.
     eq_dec x y; intro h.
     subst. rewrite not_mem_iff in n.
     rewrite n, beq_term_refl. refl.
     refl.
-    unfold beq_term. revert n0. unfold single, update, id.
+    unfold brel. revert n0. unfold single, update, id.
     eq_dec x y; simpl. 2: tauto. subst.
     destruct (mem y xs); destruct (eq_term_dec v (Var y)); simpl.
     tauto.
@@ -348,7 +348,7 @@ by iteration of the function [domain_fun] on [xs]. *)
     apply domain_empty.
     (* add *)
     intros x xs n IH. rewrite domain_add. 2: hyp.
-    unfold domain_fun, id, beq_term.
+    unfold domain_fun, id, brel.
     destruct (eq_term_dec (Var x) (Var x)). hyp. absurd (Var x=Var x); tauto.
   Qed.
 
@@ -570,7 +570,7 @@ defined by iteration of the function [fvcod_fun] on [xs]. *)
     [=] if beq_term (s x) (Var x) then empty else fv (s x).
 
   Proof.
-    intros s x. unfold fvcodom. rewrite domain_singleton. unfold beq_term.
+    intros s x. unfold fvcodom. rewrite domain_singleton. unfold brel.
     destruct (eq_term_dec (s x) (Var x)). apply fvcod_empty.
     apply fvcod_singleton.
   Qed.
@@ -592,7 +592,7 @@ defined by iteration of the function [fvcod_fun] on [xs]. *)
 
   Proof.
     intros y v xs. unfold fvcodom. rewrite domain_single, fvcod_single.
-    unfold beq_term. case_eq (mem y xs); intro hy;
+    unfold brel. case_eq (mem y xs); intro hy;
       destruct (eq_term_dec v (Var y)); simpl; try rewrite empty_b.
     refl. rewrite singleton_b, eqb_refl, singleton_equal_add,
       remove_add, empty_union_2. refl. fo. set_iff. tauto. refl. refl.
@@ -809,7 +809,7 @@ A) A] if [A] is not empty). *)
     induction u; simpl; intro s.
     (* var *)
     rewrite singleton_equal_add, domain_add. 2: set_iff; auto.
-    rewrite domain_empty. unfold domain_fun, beq_term.
+    rewrite domain_empty. unfold domain_fun, brel.
     destruct (eq_term_dec (s x) (Var x)). auto.
     intro h. cut False. tauto. rewrite <- empty_iff, <- h. apply add_1. refl.
     (* fun *)
@@ -839,7 +839,7 @@ A) A] if [A] is not empty). *)
 
     (* var *)
     rewrite singleton_equal_add, domain_add, domain_empty. 2: fo.
-    unfold domain_fun, beq_term. destruct (eq_term_dec (s x) (Var x)).
+    unfold domain_fun, brel. destruct (eq_term_dec (s x) (Var x)).
     rewrite e. simpl. rewrite fvcod_empty. fset.
     rewrite fvcod_add, fvcod_empty. 2: fo. unfold fvcod_fun. fset.
 
@@ -1100,7 +1100,7 @@ A) A] if [A] is not empty). *)
   Proof.
     intros y v u. rewrite fv_subs. simpl. rewrite domain_single, fvcod_single.
     case_eq (mem y (fv u)); intro hy; simpl.
-    unfold beq_term.
+    unfold brel.
     case (eq_term_dec v (Var y)); intro hv; simpl.
     subst. simpl. rewrite <- mem_iff in hy. rewrite empty_b. fset.
     eq_dec y a; auto. subst. auto.
@@ -1643,7 +1643,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     intros x y. induction u; intros s hx hy.
     (* var *)
     rename x0 into z. simpl. rewrite fvcodom_singleton, rename_var.
-    unfold beq_term. destruct (eq_term_dec (s z) (Var z)).
+    unfold brel. destruct (eq_term_dec (s z) (Var z)).
     rewrite e, rename_var. unfold eqb. eq_dec z x; auto.
     intro h. unfold rename. rewrite single_notin_fv. 2: hyp.
     unfold eqb. eq_dec z x; simpl.
@@ -1925,7 +1925,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
   Proof.
     intros y v. induction u; intros s h1; simpl.
     (* var *)
-    rewrite fvcodom_singleton. unfold beq_term.
+    rewrite fvcodom_singleton. unfold brel.
     destruct (eq_term_dec (s x) (Var x)).
     rewrite e. simpl. unfold single, update, id. eq_dec x y; auto.
     intro h2. rewrite subs1_notin_fv. unfold update. eq_dec x y.
