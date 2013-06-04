@@ -21,7 +21,7 @@ Require Import BoolUtil SetoidList Basics Morphisms LogicUtil.
 Require Import LTerm.
 
 (****************************************************************************)
-(** ** Closure by substitution of a relation on terms.
+(** Closure by substitution of a relation on terms.
 
 Note that [clos_subs R] is a priori NOT stable by substitution since
 substitution composition is correct modulo alpha-equivalence only
@@ -122,7 +122,8 @@ a substitution is given by a total function from [X] to [Te]. *)
   Qed.
 
 (****************************************************************************)
-(** ** Syntactic equality of two substitutions on some finite set of variables *)
+(** ** Syntactic equality of two substitutions
+on some finite set of variables *)
 
   Definition seq xs (s s' : Su) := forall x, In x xs -> s x = s' x.
 
@@ -669,8 +670,7 @@ In "Substitution Revisited", Theoretical Computer Science 59:317-325,
 too, but by always renaming bound variables, i.e. [var x u s = choice
 (new x u s)] where [new x u s] is the complement of [fvcodom (remove x
 (fv u)) s] and [choice:XSet.t -> X] is a choice function ([In (choice
-A) A] if [A] is not empty).
-*)
+A) A] if [A] is not empty). *)
 
   (** Generation of a fresh variable. *)
 
@@ -1428,7 +1428,8 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
   Proof. intros xs s s' ss'. apply bvcod_seq. refl. hyp. Qed.
 
 (****************************************************************************)
-(** ** Commutation properties when free variables are distinct from bound variables.
+(** ** Commutation properties
+when free variables are distinct from bound variables.
 
 In fact, these properties won't be used later. Instead, we will use similar properties but with another renaming-free substitution function [subs1] defined hereafter, which is equivalent when bound variables are distinct from free variables(Lemma [subs1_no_alpha]) but easier to work with, and whose properties are easier to established. *)
 

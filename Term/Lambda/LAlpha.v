@@ -16,9 +16,9 @@ Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
 Require Import LTerm LSubs.
 
 (****************************************************************************)
-(** ** Alpha-equivalence is defined as the smallest congruence
-containing the [aeq_alpha] rule. Here, we exactly follow Curry-Feys
-definition (pages 59 and 91). *)
+(** ** Alpha-equivalence
+is defined as the smallest congruence containing the [aeq_alpha] rule.
+Here, we exactly follow Curry-Feys definition (pages 59 and 91). *)
 
 Section aeq.
 
@@ -555,7 +555,7 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** [subs] is compatible with alpha-equivalence
+(** ** Substitution is compatible with alpha-equivalence
 (CF, Theorem 2a, page 95, proof pages 100-103).
 
 This is the most difficult theorem when formalizing lambda-calculus
@@ -792,7 +792,7 @@ variables. *)
   Qed.
 
 (****************************************************************************)
-(** ** Correctness of [comp] modulo alpha-equivalence.
+(** ** Correctness of substitution composition modulo alpha-equivalence.
 
 Because [subs s u] may rename some bound variables of [u] depending on
 the free variables of [u] and the free variables of [s], the following

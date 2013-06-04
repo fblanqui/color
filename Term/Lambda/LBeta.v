@@ -14,13 +14,31 @@ Set Implicit Arguments.
 Require Import Wf_nat Relations Basics Morphisms LogicUtil VecUtil VecOrd SN.
 Require Import LTerm LAlpha.
 
-Module Make (Export L : L_Struct).
+(****************************************************************************)
+(** Definition of beta-top-reduction. *)
 
-  Module Export A := LAlpha.Make L.
+Section beta_top.
+
+  Variables F X : Type.
+
+  Notation Te := (@Te F X).
+
+  Variables (subs : (X -> Te) -> Te -> Te) (single : X -> Te -> X -> Te).
 
   Inductive beta_top : relation Te :=
   | beta_top_intro : forall x u v,
     beta_top (App (Lam x u) v) (subs (single x v) u).
+
+End beta_top.
+
+(****************************************************************************)
+(** * Properties of beta-reduction. *)
+
+Module Make (Export L : L_Struct).
+
+  Module Export A := LAlpha.Make L.
+
+  Notation beta_top := (@beta_top F X subs single).
 
   Infix "->bh" := beta_top (at level 70).
 
