@@ -1110,6 +1110,7 @@ A) A] if [A] is not empty). *)
 (****************************************************************************)
 (** ** Some equalities on single renamings. *)
 
+  (*TODO: replace by a notation?*)
   Definition rename y z := subs (single y (Var z)).
 
   Lemma rename_id : forall x u, rename x x u = u.
