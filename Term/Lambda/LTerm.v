@@ -165,6 +165,29 @@ Section term.
 
   End fv.
 
+(****************************************************************************)
+(** ** Predicate saying if a relation on terms is monotone. *)
+
+  Class Monotone R := {
+    mon_app_l : Proper (R ==> Logic.eq ==> R) App;
+    mon_app_r : Proper (Logic.eq ==> R ==> R) App;
+    mon_lam : Proper (Logic.eq ==> R ==> R) Lam }.
+
+(****************************************************************************)
+(** ** Monotone closure of a relation. *)
+
+  Section clos_mon.
+
+    Variable R : relation Te.
+
+    Inductive clos_mon : relation Te :=
+    | m_step : forall u v, R u v -> clos_mon u v
+    | m_app_l : forall v u u', clos_mon u u' -> clos_mon (App u v) (App u' v)
+    | m_app_r : forall u v v', clos_mon v v' -> clos_mon (App u v) (App u v')
+    | m_lam : forall x u u', clos_mon u u' -> clos_mon (Lam x u) (Lam x u').
+
+  End clos_mon.
+
 End term.
 
 (****************************************************************************)
@@ -229,6 +252,9 @@ Module Type L_Struct.
   Notation head := (@head F X).
   Notation nb_args := (@nb_args F X).
   Notation args := (@args F X).
+
+  Notation Monotone := (@Monotone F X).
+  Notation clos_mon := (@clos_mon F X).
 
   (*COQ: When using a Notation, some tauto tactic fails in the proof
   of LSubs.single_com. *)
@@ -318,29 +344,17 @@ Module Make (Export L : L_Struct).
   Definition not_lam u := forall x a, u <> Lam x a.
 
 (****************************************************************************)
-(** ** Predicate saying if a relation on terms is monotone. *)
-
-  Class Monotone R := {
-    mon_app_l : Proper (R ==> Logic.eq ==> R) App;
-    mon_app_r : Proper (Logic.eq ==> R ==> R) App;
-    mon_lam : Proper (Logic.eq ==> R ==> R) Lam }.
+(** ** Properties of [Monotone]. *)
 
   (** Tactic trying to simplify and possibly prove goals of the form
   [?R _ _] when [?R] is [Monotone]. *)
 
-  Ltac mon_aux h := repeat
+  Ltac mon := repeat
     match goal with
-      | |- ?R (App ?x _) (App ?x _) => apply (@mon_app_r _ h); [refl|idtac]
-      | |- ?R (App _ ?y) (App _ ?y) => apply (@mon_app_l _ h); [idtac|refl]
-      | |- ?R (Lam ?x _) (Lam ?x _) => apply (@mon_lam _ h); [refl|idtac]
-      | h : ?R ?x ?y |- ?R ?x ?y => exact h
-    end.
-
-  Ltac mon :=
-    match goal with
-      | h : Monotone ?R |- ?R _ _ => mon_aux h
-      | |- ?R _ _ => let h := fresh "h" in
-        assert (h : Monotone R); [class|mon_aux h]; clear h
+      | |- ?R (App ?x _) (App ?x _) => apply mon_app_r; [class|refl|idtac]
+      | |- ?R (App _ ?y) (App _ ?y) => apply mon_app_l; [class|idtac|refl]
+      | |- ?R (Lam ?x _) (Lam ?x _) => apply mon_lam; [class|refl|idtac]
+      | |- ?R ?x ?y => hyp
     end.
 
   (** Monotony is compatible with [same_relation]. *)
@@ -372,28 +386,16 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Monotone closure of a relation. *)
+(** ** Properties of [clos_mon]. *)
 
-  Section clos_mon.
+  Instance monotone_clos_mon R : Monotone (clos_mon R).
 
-    Variable R : relation Te.
-
-    Inductive clos_mon : relation Te :=
-    | m_step : forall u v, R u v -> clos_mon u v
-    | m_app_l : forall v u u', clos_mon u u' -> clos_mon (App u v) (App u' v)
-    | m_app_r : forall u v v', clos_mon v v' -> clos_mon (App u v) (App u v')
-    | m_lam : forall x u u', clos_mon u u' -> clos_mon (Lam x u) (Lam x u').
-
-    Global Instance monotone_clos_mon : Monotone clos_mon.
-
-    Proof.
-      split.
-      intros u u' uu' v v' vv'. subst v'. apply m_app_l. hyp.
-      intros u u' uu' v v' vv'. subst u'. apply m_app_r. hyp.
-      intros x x' xx' u u' uu'. subst x'. apply m_lam. hyp.
-    Qed.
-
-  End clos_mon.
+  Proof.
+    split.
+    intros u u' uu' v v' vv'. subst v'. apply m_app_l. hyp.
+    intros u u' uu' v v' vv'. subst u'. apply m_app_r. hyp.
+    intros x x' xx' u u' uu'. subst x'. apply m_lam. hyp.
+  Qed.
 
   (** The monotone closure is compatible with relation inclusion and
   equivalence. *)
