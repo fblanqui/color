@@ -201,7 +201,7 @@ Section term.
 End term.
 
 (****************************************************************************)
-(** Tactic for doing induction on the size of a term. *)
+(** ** Tactic for doing induction on the size of a term. *)
 
 Ltac ind_size1 u :=
   intro u; pattern u; apply ind_size1;
@@ -213,7 +213,7 @@ Ltac ind_size1 u :=
     |clear u; let x := fresh "x" in let hu := fresh "hu" in intros x u hu].
 
 (****************************************************************************)
-(** ** Structure on which we will define lambda-terms. *)
+(** * Structure on which we will define lambda-terms. *)
 
 Module Type L_Struct.
 
@@ -275,13 +275,14 @@ Module Type L_Struct.
 End L_Struct.
 
 (****************************************************************************)
-(** ** This development is defined as a functor [Lambda] providing the definition of lambda-terms, substitution, etc. and some of their properties.
+(** * Properties of terms.
 
 We have to use a functor instead of a section because modules cannot
 be defined inside sections (and we need [XSet] for instance). This has
 bad consequences because, in Coq, functor instanciation generates
 distinct Inductive's, i.e. if F(M) provides an Inductive t, N1:=F(M)
-and N2:=F(M), then N1.t <> N2.t. *)
+and N2:=F(M), then N1.t <> N2.t. That is why we need to define
+Inductive outside nay module. *)
 
 Module Make (Export L : L_Struct).
 
@@ -443,7 +444,7 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Set of free variables of a term *)
+(** ** Properties wrt free variables. *)
 
   Lemma notin_fv_lam : forall x y u,
     y=x \/ ~In x (fv u) <-> ~In x (fv (Lam y u)).
