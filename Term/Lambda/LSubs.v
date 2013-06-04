@@ -21,24 +21,27 @@ Require Import BoolUtil SetoidList Basics Morphisms LogicUtil.
 Require Import LTerm.
 
 (****************************************************************************)
-(** Closure by substitution of a relation on terms.
+(** ** Type for substitutions:
+a substitution is given by a total function from [X] to [Te]. *)
 
-Note that [clos_subs R] is a priori NOT stable by substitution since
-substitution composition is correct modulo alpha-equivalence only
-(Lemma [subs_comp] in LAlpha). *)
-
-Section clos_subs.
+Section subs.
 
   Variables F X : Type.
 
-  Notation Te := (Te F X).
+  Notation Te := (@Te F X).
 
   Variable subs : (X -> Te) -> Te -> Te.
+
+  (** Closure by substitution of a relation on terms.
+
+  Note that [clos_subs R] is a priori NOT stable by substitution since
+  substitution composition is correct modulo alpha-equivalence only
+  (Lemma [subs_comp] in LAlpha). *)
 
   Inductive clos_subs R : relation Te :=
   | subs_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
 
-End clos_subs.
+End subs.
 
 (****************************************************************************)
 (** * Definition and properties of substitutions. *)
@@ -48,10 +51,7 @@ Module Make (Export L : L_Struct).
   Module Export T := LTerm.Make L.
 
 (****************************************************************************)
-(** ** Type for substitutions:
-a substitution is given by a total function from [X] to [Te]. *)
-
-  Definition Su := X -> Te.
+(** ** Basic substitutions. *)
 
   (** Identity substitution. *)
 
@@ -125,7 +125,7 @@ a substitution is given by a total function from [X] to [Te]. *)
 (** ** Syntactic equality of two substitutions
 on some finite set of variables *)
 
-  Definition seq xs (s s' : Su) := forall x, In x xs -> s x = s' x.
+  Definition seq xs (s s' : X -> Te) := forall x, In x xs -> s x = s' x.
 
   (** For all [xs], [seq xs] is an equivalence relation. *)
 
