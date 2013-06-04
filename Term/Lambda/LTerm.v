@@ -148,19 +148,29 @@ Section term.
   Qed.
 
 (****************************************************************************)
-(** ** Set of free variables of a term *)
+(** ** Structure for sets of variables. *)
+
+  Record Ens := mk_Ens {
+    Ens_type : Type;
+    Ens_empty : Ens_type;
+    Ens_singleton : X -> Ens_type;
+    Ens_union : Ens_type -> Ens_type -> Ens_type;
+    Ens_remove : X -> Ens_type -> Ens_type;
+    Ens_In : X -> Ens_type -> Prop }.
+
+(****************************************************************************)
+(** ** Set of free variables of a term. *)
 
   Section fv.
 
-    Variables (XSet : Type) (empty : XSet) (singleton : X -> XSet)
-      (union : XSet -> XSet -> XSet) (remove : X -> XSet -> XSet).
+    Variable E : Ens.
 
     Fixpoint fv (t : Te) :=
       match t with
-        | Var x => singleton x
-        | Fun _ => empty
-        | App u v => union (fv u) (fv v)
-        | Lam x u => remove x (fv u)
+        | Var x => Ens_singleton E x
+        | Fun _ => Ens_empty E
+        | App u v => Ens_union E (fv u) (fv v)
+        | Lam x u => Ens_remove E x (fv u)
       end.
 
   End fv.
@@ -229,6 +239,8 @@ Module Type L_Struct.
 
   Declare Module Export XSet : FSetInterface.S with Module E := XOrd.
 
+  Definition ens_X := mk_Ens empty singleton union remove In.
+
   (** We assume that [X] is infinite. *)
 
   Parameter var_notin : XSet.t -> X.
@@ -258,7 +270,7 @@ Module Type L_Struct.
 
   (*COQ: When using a Notation, some tauto tactic fails in the proof
   of LSubs.single_com. *)
-  Definition fv := (@fv F X XSet.t empty singleton union remove).
+  Definition fv := (@fv F X ens_X).
 
 End L_Struct.
 

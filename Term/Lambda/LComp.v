@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil.
-Require Import LTerm.
+Require Import LTerm LAlpha.
 Require LBeta.
 
 Module Make (Export L : LTerm.L_Struct).
