@@ -1206,14 +1206,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     unfold vaeq, vec_ge, Vforall2n. simpl. intuition.
   Qed.
 
-  Arguments apps_aeq_r [n vs v t] _.
+  Arguments apps_aeq_r [n vs v t0] _.
 
   Lemma apps_aeq_l : forall n (vs : Tes n) v t, apps v vs ~~ t ->
     exists u us, t = apps u us /\ u ~~ v /\ vaeq us vs.
 
   Proof. intros n vs v t e. apply apps_aeq_r. sym. hyp. Qed.
 
-  Arguments apps_aeq_l [n vs v t] _.
+  Arguments apps_aeq_l [n vs v t0] _.
 
 (****************************************************************************)
 (** ** Properties of [clos_trans_aeq]. *)

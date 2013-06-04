@@ -239,7 +239,7 @@ Module Type L_Struct.
 
   Declare Module Export XSet : FSetInterface.S with Module E := XOrd.
 
-  Definition ens_X := mk_Ens empty singleton union remove In.
+  Notation ens_X := (mk_Ens empty singleton union remove In).
 
   (** We assume that [X] is infinite. *)
 
@@ -264,13 +264,9 @@ Module Type L_Struct.
   Notation head := (@head F X).
   Notation nb_args := (@nb_args F X).
   Notation args := (@args F X).
-
+  Notation fv := (@fv F X ens_X).
   Notation Monotone := (@Monotone F X).
   Notation clos_mon := (@clos_mon F X).
-
-  (*COQ: When using a Notation, some tauto tactic fails in the proof
-  of LSubs.single_com. *)
-  Definition fv := (@fv F X ens_X).
 
 End L_Struct.
 
