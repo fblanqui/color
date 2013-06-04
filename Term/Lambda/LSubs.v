@@ -713,9 +713,9 @@ A) A] if [A] is not empty). *)
     rewrite In_fvcodom. exists y. set_iff. intuition.
     revert h. rewrite H. simpl. set_iff. intro e.
     set (xs := fvcodom (remove x (fv u)) s). unfold var in e. fold xs in e.
-    case_eq (mem x xs); intro i; rewrite i in e.
-    absurd (In y (fv u)). rewrite union_subset_1, e. apply var_notin_ok. hyp.
-    absurd (x=y). auto. auto.
+    case_eq (mem x xs); intro i; rewrite i in e. 2: fo.
+    gen (var_notin_ok (union (fv u) xs)); intro h.
+    apply h. rewrite <- e, <- union_subset_1. hyp.
   Qed.
 
   Arguments var_notin_fv_subs [x u] s [y] _ _ _.
@@ -1465,7 +1465,8 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     subst. repeat rewrite update_single_eq, single_id; auto.
     repeat rewrite update_id_single; auto.
     rewrite single_notin_fv with (v:=v); auto.
-    repeat rewrite update_id_single; auto. rewrite IHu. refl. tauto.
+    repeat rewrite update_id_single; auto. rewrite IHu. refl.
+    revert h1. simpl. set_iff. tauto.
     rewrite inter_empty. intros a ha. apply h2. set_iff. auto.
 
     eq_dec x0 x. auto. eq_dec x0 y.
