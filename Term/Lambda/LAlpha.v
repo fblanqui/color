@@ -740,7 +740,7 @@ variables. *)
 (** [comp] is compatible with [saeq]. *)
 
   Lemma comp_saeq : forall xs s1 t1, saeq xs s1 t1 -> forall s2 t2,
-    saeq (fvcod xs s1) s2 t2 -> saeq xs (comp s1 s2) (comp t1 t2).
+    saeq (fvcod xs s1) s2 t2 -> saeq xs (comp s2 s1) (comp t2 t1).
 
   Proof.
     intros xs s1 t1 e1 s2 t2 e2 x hx. unfold comp. rewrite (e1 _ hx).
@@ -759,12 +759,12 @@ y (Var x)], [s1 = single x (Var y)] and [s2 = single y (Var x)]. Then,
 while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 = Var x]. And one can define [var_notin] so that [y''<>y]. *)
 
-  Lemma subs_comp : forall u s1 s2, subs s2 (subs s1 u) ~~ subs (comp s1 s2) u.
+  Lemma subs_comp : forall u s1 s2, subs s2 (subs s1 u) ~~ subs (comp s2 s1) u.
 
   Proof.
     intros u s1 s2. set (A := fvcodom (fv u) s1).
     set (B := fvcodom (fv (subs s1 u)) s2).
-    set (C := fvcodom (fv u) (comp s1 s2)).
+    set (C := fvcodom (fv u) (comp s2 s1)).
     set (D := fvcodom (fvcod (fv u) s1) s2).
     set (P := union A (union B C)). set (Q := union B D).
     destruct (aeq_notin_bv P u) as [u' [uu' hu']]. rewrite uu'.
@@ -785,7 +785,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite empty_subset, union_subset_1 with (s:=B) (s':=D),
       <- empty_subset. hyp.
 
-    assert (c : subs (comp s1 s2) u' = subs1 (comp s1 s2) u').
+    assert (c : subs (comp s2 s1) u' = subs1 (comp s2 s1) u').
     apply subs1_no_alpha. rewrite <- uu' at 2. fold C.
     rewrite empty_subset, union_subset_1 with (s:=C) (s':=union A B),
       <- empty_subset, union_sym with (s:=C), union_assoc. hyp.

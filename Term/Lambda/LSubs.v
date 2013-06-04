@@ -734,7 +734,7 @@ A) A] if [A] is not empty).
 
   (** Composition of two substitutions. *)
 
-  Definition comp s1 s2 (x : X) := subs s2 (s1 x).
+  Definition comp s2 s1 (x : X) := subs s2 (s1 x).
 
   (** [subs] is compatible with substitution equality. *)
 
@@ -1706,7 +1706,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
       | LTerm.Lam x u => Lam x (subs1 (update x (Var x) s) u)
     end.
 
-  Definition comp1 s1 s2 (x:X) := subs1 s2 (s1 x).
+  Definition comp1 s2 s1 (x:X) := subs1 s2 (s1 x).
 
   (** Bound variables of a term of the form [subs1 s u] (CF, Lemma 3,
   page 99). *)
@@ -1967,7 +1967,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   Lemma subs1_comp : forall u s1 s2,
     inter (bv u) (fvcodom (fv u) s1) [=] empty ->
-    subs1 s2 (subs1 s1 u) = subs1 (comp1 s1 s2) u.
+    subs1 s2 (subs1 s1 u) = subs1 (comp1 s2 s1) u.
 
   Proof.
     induction u; intros s1 s2 h; simpl. refl. refl.

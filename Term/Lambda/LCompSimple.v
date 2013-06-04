@@ -115,9 +115,9 @@ predicate, and every function symbol is computable. *)
         apply sn_lam. eapply int_sn. eapply hu. refl. apply H3. hyp.
         (* Proof that [int V (subs (single x' a) (subs s' v))]. *)
         rewrite subs_comp.
-        (* We first prove that [comp s' (single x' a)] is equal to
+        (* We first prove that [comp (single x' a) s'] is equal to
         [update x a s0]. *)
-        assert (k : seq (fv v) (comp s' (single x' a)) (S.update x a s0)).
+        assert (k : seq (fv v) (comp (single x' a) s') (S.update x a s0)).
         intros z hz. unfold comp, s', S.update. eq_dec z x.
         (* z = x *)
         subst. simpl. rewrite single_eq. refl.

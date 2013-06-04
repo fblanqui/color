@@ -288,7 +288,7 @@ are finite maps from variables to types. *)
 
   Proof. unfold dom. rewrite fold_Empty. refl. fo. apply empty_1. Qed.
 
-  Lemma dom_add : forall x T E,
+  Lemma dom_add_notin : forall x T E,
     ~In x E -> dom (add x T E) [=] XSet.add x (dom E).
 
   Proof.
@@ -305,8 +305,14 @@ are finite maps from variables to types. *)
     (* empty *)
     set_iff. rewrite empty_in_iff. refl.
     (* add *)
-    intros y T E hy h. rewrite dom_add. 2: hyp. set_iff. rewrite add_in_iff, h.
-    refl.
+    intros y T E hy h. rewrite dom_add_notin. 2: hyp.
+    set_iff. rewrite add_in_iff, h. refl.
+  Qed.
+
+  Lemma dom_add : forall x T E, dom (add x T E) [=] XSet.add x (dom E).
+
+  Proof.
+    intros x T E y. rewrite In_dom, add_in_iff, <- In_dom. set_iff. refl.
   Qed.
 
 (****************************************************************************)
