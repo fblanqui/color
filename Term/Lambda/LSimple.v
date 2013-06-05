@@ -79,7 +79,7 @@ Module Make (Export ST : ST_Struct).
   [LAlpha.Make] because, in Coq, functor instanciation generates
   distinct Inductive's. *)
 
-  Module Export C := LComp.Make L.
+  Module Export B := LBeta.Make L.
 
 (****************************************************************************)
 (** ** Typing environments
@@ -94,7 +94,6 @@ are finite maps from variables to types. *)
   Module Export XMapOrdProps := OrdProperties XMap.
 
   Notation En := (XMap.t Ty).
-
   Notation empty := (XMap.empty Ty).
 
   (** Equivalence on environments. *)
