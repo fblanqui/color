@@ -1,4 +1,8 @@
 
+13-06-05: [Blanqui]
+- Term/Lambda: reorganized definitions so that Inductive's and various
+functions including substitution are defined out of any module
+
 12-11-06: [Blanqui]
 - Util/Relation/SN: added proof that SN -> ~NT following
   http://www.labri.fr/perso/casteran/CoqArt/gen-rec/SRC/not_decreasing.v
