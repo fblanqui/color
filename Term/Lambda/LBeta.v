@@ -11,8 +11,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat Relations Basics Morphisms LogicUtil VecUtil VecOrd SN.
-Require Import LTerm LAlpha.
+Require Import Wf_nat RelUtil Basics Morphisms LogicUtil VecUtil VecOrd SN.
+Require Import LTerm LSubs LAlpha.
 
 (****************************************************************************)
 (** Definition of beta-top-reduction. *)
@@ -23,7 +23,20 @@ Section beta_top.
 
   Notation Te := (@Te F X).
 
-  Variables (single : X -> Te -> X -> Te) (subs : (X -> Te) -> Te -> Te).
+  Variable eq_fun_dec : forall f g : F, {f=g}+{~f=g}.
+  Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
+
+  Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
+  Notation beq_term := (brel eq_term_dec).
+
+  Variable ens_X : Ens X.
+
+  Notation fv := (@fv F X ens_X).
+
+  Variable var_notin : Ens_type ens_X -> X.
+
+  Notation single := (@single F X eq_var_dec).
+  Notation subs := (@subs F X eq_fun_dec eq_var_dec ens_X var_notin).
 
   Inductive beta_top : relation Te :=
   | beta_top_intro : forall x u v,
@@ -38,7 +51,7 @@ Module Make (Export L : L_Struct).
 
   Module Export A := LAlpha.Make L.
 
-  Notation beta_top := (@beta_top F X single subs).
+  Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
   Infix "->bh" := beta_top (at level 70).
 
@@ -72,7 +85,7 @@ Module Make (Export L : L_Struct).
     eapply clos_aeq_intro with
       (v':=subs (single x' (subs s v0)) (subs (update x (Var x') s) u0)).
     refl. do 2 rewrite subs_comp. apply subs_saeq. intros z hz. unfold comp.
-    unfold single at 1. unfold update. eq_dec z x; simpl.
+    unfold LSubs.single at 1. unfold_update. eq_dec z x; simpl.
     rewrite single_eq. refl.
     unfold x'. rewrite single_var. refl. hyp. auto.
     apply m_step. apply beta_top_intro.
@@ -144,11 +157,11 @@ Module Make (Export L : L_Struct).
     (* top *)
     inversion H2; subst.
     right. right. destruct (lam_aeq_l uu'1) as [y [u0' [i1 [i2 i3]]]]; subst.
-    exists y. exists u0'. split. refl. rewrite H0, i2. unfold rename.
+    exists y. exists u0'. split. refl. rewrite H0, i2. unfold_rename.
     rewrite subs_comp. apply subs_saeq. intros z hz.
-    unfold comp, single, update at -2. eq_dec z x; simpl.
+    unfold comp. unfold_single. unfold LSubs.update at -2. eq_dec z x; simpl.
     rewrite update_eq. hyp.
-    unfold update. eq_dec z y. destruct i3; subst; tauto. refl.
+    unfold_update. eq_dec z y. destruct i3; subst; tauto. refl.
     (* app_l *)
     left. destruct (app_aeq_r H0) as [c [d [i1 [i2 i3]]]]. subst.
     exists u'. split. rewrite <- vv'1. hyp.
@@ -216,7 +229,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     exists u. exists (Vcons h vs). intuition. do 2 apply right_sym. hyp.
   Qed.
 
-  Arguments beta_apps_no_lam [n us u t] _ _.
+  Arguments beta_apps_no_lam [n us u t0] _ _.
 
   Lemma beta_aeq_apps_no_lam : forall n (us : Tes n) u t,
     not_lam u -> apps u us =>b t ->

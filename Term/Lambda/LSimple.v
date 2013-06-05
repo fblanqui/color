@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import VecUtil LogicUtil.
-Require Import LTerm.
+Require Import LTerm LSubs.
 Require LComp.
 
 (****************************************************************************)
@@ -442,7 +442,7 @@ assume that [x] does not occur in [E], but overrides its type in
     set (x' := var x v s). set (s' := S.update x (Var x') s).
     apply tr_lam. apply IHtr. intros y T.
     rewrite mapsto_restrict_dom, add_mapsto_iff.
-    intros [[[h1 h2]|[h1 h2]] h3]; unfold s', S.update; eq_dec y x.
+    intros [[[h1 h2]|[h1 h2]] h3]; unfold s'; unfold_update; eq_dec y x.
     (* (y,T) = (x,U) *)
     subst y T. apply tr_var. rewrite add_mapsto_iff. intuition. intuition.
     (* y <> x /\ MapsTo y T E *)
@@ -478,10 +478,10 @@ assume that [x] does not occur in [E], but overrides its type in
     eapply hv. apply H4. hyp. sym. hyp.
     (* lam *)
     apply tr_lam. eapply hu with (u':=rename x x1 v) (E:=add x1 X0 E).
-    rewrite size_rename. refl. unfold rename. eapply tr_subs.
+    rewrite size_rename. refl. unfold_rename. eapply tr_subs.
     apply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: sym; hyp.
 
-    intros y V. unfold single, S.update, id.
+    intros y V. unfold_single_update.
     rewrite mapsto_restrict_dom, add_mapsto_iff. intros [h1 h2].
     eq_dec y x.
     subst y. assert (b : X0 = V). tauto. subst V.

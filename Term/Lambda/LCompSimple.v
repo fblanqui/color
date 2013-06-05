@@ -13,7 +13,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms Basics SN VecUtil LogicUtil.
-Require Import LTerm LSimple.
+Require Import LTerm LSubs LSimple.
 
 Module Make (Export ST : ST_Struct).
 
@@ -102,7 +102,7 @@ predicate, and every function symbol is computable. *)
         simpl. set (x' := var x v s0). set (s' := S.update x (Var x') s0).
         intros a ha.
         (* We check that [s0] is valid wrt [E]. *)
-        assert (hs0 : valid E s0). intros z B hz. unfold s0, S.restrict.
+        assert (hs0 : valid E s0). intros z B hz. unfold s0. unfold_restrict.
         destruct (XSet.mem z (fv (Lam x v))). apply hs. hyp. apply int_var.
         (* We check that [s'] is valid wrt [add x A E]. *)
         assert (hs' : valid (add x A E) s'). intros z B.
@@ -118,22 +118,22 @@ predicate, and every function symbol is computable. *)
         (* We first prove that [comp (single x' a) s'] is equal to
         [update x a s0]. *)
         assert (k : seq (fv v) (comp (single x' a) s') (S.update x a s0)).
-        intros z hz. unfold comp, s', S.update. eq_dec z x.
+        intros z hz. unfold comp, s'. unfold_update. eq_dec z x.
         (* z = x *)
         subst. simpl. rewrite single_eq. refl.
         (* z <> x *)
-        unfold s0, S.restrict. case_eq (XSet.mem z (fv (Lam x v))).
+        unfold s0. unfold_restrict. case_eq (XSet.mem z (fv (Lam x v))).
         (* ~In z (fv (Lam x v)) *)
         Focus 2. rewrite <- not_mem_iff. simpl. set_iff. intuition.
         (* In z (fv (Lam x v)) *)
         intro k. gen (var_notin_fv_subs s0 hz n). fold x'.
-        unfold s0, S.restrict. rewrite k. intuition. rewrite single_notin_fv.
-        refl. hyp.
+        unfold s0. unfold_restrict. rewrite k. intuition.
+        rewrite single_notin_fv. refl. hyp.
         (* We can now apply the induction hypothesis. *)
         rewrite (subs_seq k). eapply hu. refl. apply H3. intros z B.
         rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]].
         subst z B. rewrite update_eq. hyp.
-        rewrite update_neq. 2: hyp. unfold s0, S.restrict.
+        rewrite update_neq. 2: hyp. unfold s0. unfold_restrict.
         destruct (XSet.mem z (fv (Lam x v))). apply hs. hyp. apply int_var.
       Qed.
 
