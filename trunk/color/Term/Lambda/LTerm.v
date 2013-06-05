@@ -215,7 +215,13 @@ Section term.
 End term.
 
 (****************************************************************************)
-(** ** Tactic for doing induction on the size of a term. *)
+(** ** Tactics. *)
+
+(** Tactic for unfolding the projections of the type [Ens]. *)
+
+Ltac ens := unfold Ens_type, Ens_empty, Ens_singleton, Ens_add, Ens_union, Ens_remove, Ens_diff, Ens_In, Ens_mem, Ens_fold.
+
+(** Tactic for doing induction on the size of a term. *)
 
 Ltac ind_size1 u :=
   intro u; pattern u; apply ind_size1;
