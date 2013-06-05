@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil.
-Require Import LTerm LAlpha.
+Require Import LTerm LSubs LAlpha.
 Require LBeta.
 
 Module Make (Export L : LTerm.L_Struct).
@@ -292,10 +292,11 @@ Module Make (Export L : LTerm.L_Struct).
       intro hz. rewrite (aeq_alpha z). 2: tauto.
       do 2 (rewrite subs_lam_no_alpha; [idtac|rewrite remove_fv_rename; tauto]).
       apply Lam_atc. class. refl.
-      unfold rename. rewrite !subs_comp. apply IHu.
-      intro y. unfold comp, single. unfold update at 2. unfold update at 3.
-      eq_dec y x; unfold id; simpl. rewrite !update_eq. refl.
-      unfold update. eq_dec y z. refl. apply ss'.
+      unfold_rename. rewrite !subs_comp. apply IHu.
+      intro y. unfold comp. unfold_single. unfold LSubs.update at 2.
+      unfold LSubs.update at 3. eq_dec y x; simpl.
+      rewrite !update_eq. refl.
+      unfold_update. eq_dec y z. refl. apply ss'.
     Qed.
 
     Instance subs_satc : Proper (satc ==> R_aeq* ==> R_aeq*) subs.
@@ -446,7 +447,7 @@ Module Make (Export L : LTerm.L_Struct).
       apply Rh_bh in H2. inversion H2; subst. rewrite H0, j0, single_rename.
       2: hyp. eapply cp_atc; auto. 2: apply h.
       trans (subs (single x0 u2) (rename x x0 u)). apply subs_satc. 2: hyp.
-      intro z. unfold single, update, id. eq_dec z x0.
+      intro z. unfold_single_update. eq_dec z x0.
       rewrite i4. hyp. refl.
       rewrite single_rename. refl.
       rewrite notin_fv_lam, <- i1. simpl. set_iff. fo.
