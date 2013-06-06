@@ -189,8 +189,8 @@ Module Make (Export ST : ST_Struct)
       the input types of [v], [apps v vs] is computable. *)
 
     Lemma int_base : forall V v,
-      (forall n (vs : Tes n),
-        vint (inputs V) vs -> int (Base (output V)) (apps v vs)) -> int V v.
+      (forall n (vs : Tes n), vint (inputs V) vs ->
+        int (Base (output_base V)) (apps v vs)) -> int V v.
 
     Proof.
       induction V; simpl; intros v hv.
@@ -198,7 +198,7 @@ Module Make (Export ST : ST_Struct)
       change (Bint s (apps v Vnil)). apply hv. fo.
       (* arrow *)
       intros v1 h1. apply IHV2. intros n vs hvs.
-      change (int (Base (output V2)) (apps v (Vcons v1 vs))). apply hv. fo.
+      change (int (Base (output_base V2)) (apps v (Vcons v1 vs))). apply hv. fo.
     Qed.
 
     (** Computability of vectors of terms is preserved by reduction. *)
@@ -255,8 +255,9 @@ Module SN_beta (Export ST : ST_Struct).
     (* [f] is computable if for every vector [ts] of [n] computable terms,
     [apps (Fun f) ts] is computable. *)
     apply int_base. intros p vs hvs.
-    (* The interpretation of [output (typ f)] is a computability predicate. *)
-    set (b := output (typ f)). gen (cp_Bint b). intros [b1 b2 b3 b4].
+    (* The interpretation of [output_base_typ f] is a computability
+      predicate. *)
+    set (b := output_base_typ f). gen (cp_Bint b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
     cut (SN (@vaeq_prod beta p) vs).
     Focus 2. apply sn_vaeq_prod. eapply vint_sn. apply cp_Bint. apply hvs.
