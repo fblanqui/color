@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 Require Import VecUtil LogicUtil.
 Require Import LTerm LSubs.
-Require LComp.
+Require LBeta.
 
 (****************************************************************************)
 (** * Simple types over a set [So] of type constants or sorts. *)
