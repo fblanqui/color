@@ -15,6 +15,48 @@ Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil SN.
 Require Import LTerm LSubs LAlpha LBeta.
 
 (****************************************************************************)
+(** ** Computability predicates. *)
+
+Section cp.
+
+  Variables F X : Type.
+
+  Notation Te := (@Te F X).
+
+  Variables (aeq R_aeq : relation Te) (neutral : Te -> Prop).
+
+  Infix "=>R" := R_aeq (at level 70).
+
+  (** A computability predicate must be compatible with alpha-equivalence. *)
+
+  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+
+  (** A computability predicate contains strongly normalizing terms. *)
+
+  Definition cp_sn (P : Te -> Prop) := forall u, P u -> SN R_aeq u.
+
+  (** A computability predicate is stable by reduction. *)
+
+  Definition cp_R_aeq (P : Te -> Prop) := Proper (R_aeq ==> impl) P.
+
+  (** A computability predicate containing all the reducts of a
+    neutral term [u] contains [u] too. *)
+
+  Definition cp_neutral (P : Te -> Prop) :=
+    forall u, neutral u -> (forall v, u =>R v -> P v) -> P u.
+
+  (** A computability predicate is a predicate satisfying the four
+     conditions above. *)
+
+  Class cp P := {
+    cp1 : cp_aeq P;
+    cp2 : cp_sn P;
+    cp3 : cp_R_aeq P;
+    cp4 : cp_neutral P }.
+
+End cp.
+
+(****************************************************************************)
 (** * Structure on which we will define computability predicates. *)
 
 Module Type CP_Struct.
@@ -379,37 +421,13 @@ Module Make (Export CP : CP_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Computability predicates wrt a [CP_Struct]. *)
-
-  (** A computability predicate must be compatible with alpha-equivalence. *)
+(** ** Properties of computability predicates. *)
 
   Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
-
-  (** A computability predicate contains strongly normalizing terms. *)
-
-  Definition cp_sn (P : Te -> Prop) := forall u, P u -> SN R_aeq u.
-
-  (** A computability predicate is stable by reduction. *)
-
-  Definition cp_R_aeq (P : Te -> Prop) := Proper (R_aeq ==> impl) P.
-
-  (** A computability predicate containing all the reducts of a
-    neutral term [u] contains [u] too. *)
-
-  Definition cp_neutral (P : Te -> Prop) :=
-    forall u, neutral u -> (forall v, u =>R v -> P v) -> P u.
-
-  (** A computability predicate is a predicate satisfying the four
-     conditions above. *)
-
-  Class cp P := {
-    cp1 : cp_aeq P;
-    cp2 : cp_sn P;
-    cp3 : cp_R_aeq P;
-    cp4 : cp_neutral P }.
-
-(****************************************************************************)
-(** ** Properties of computability predicates. *)
+  Notation cp_sn := (@cp_sn F X R_aeq).
+  Notation cp_R_aeq := (@cp_R_aeq F X R_aeq).
+  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
+  Notation cp := (@cp F X aeq R_aeq neutral).
 
   (** A computability predicate is stable by [=>R*] if it satisfies
      [cp_aeq] and [cp_R_aeq]. *)
