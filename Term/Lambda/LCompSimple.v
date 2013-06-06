@@ -225,7 +225,7 @@ End Make.
 (****************************************************************************)
 (** * Termination of beta-reduction. *)
 
-Module SN_beta (Import ST : ST_Struct).
+Module SN_beta (Export ST : ST_Struct).
 
   Module Import CP := CP_beta ST.L.
   Module Import SN := Make ST CP.

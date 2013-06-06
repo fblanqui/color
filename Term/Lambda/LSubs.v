@@ -17,7 +17,7 @@ simultaneous substitution of any number of variables. *)
 
 Set Implicit Arguments.
 
-Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil.
+Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil VecUtil.
 Require Import LTerm.
 
 (****************************************************************************)
@@ -809,8 +809,6 @@ on some finite set of variables *)
     unfold_var. rewrite n. refl.
   Qed.
 
-  Require Import VecUtil.
-
   Lemma subs_apps : forall s n (us : Tes n) t,
     subs s (apps t us) = apps (subs s t) (Vmap (subs s) us).
 
@@ -993,8 +991,6 @@ on some finite set of variables *)
 (** ** Stability by substitution. *)
 
   Section stable.
-
-    Require Import RelUtil.
 
     Definition stable R := Proper (Logic.eq ==> R ==> R) subs.
 
