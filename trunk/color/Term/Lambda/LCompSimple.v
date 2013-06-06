@@ -153,6 +153,14 @@ Module Make (Export ST : ST_Struct)
 
     (*COQ: [Functional Scheme vint] does not seem to end. *)
 
+    Lemma int_Vnth : forall n (Ts : Tys n) p (ts : Tes p)
+      j (jn : j<n) (jp : j<p), vint Ts ts -> int (Vnth Ts jn) (Vnth ts jp).
+
+    Proof.
+      induction Ts; destruct ts; simpl vint; intros j jn jp; intuition.
+      destruct j; simpl. hyp. apply IHTs. hyp.
+    Qed.
+
     Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
       vint Ts ts -> Vforall (SN R_aeq) ts.
 
