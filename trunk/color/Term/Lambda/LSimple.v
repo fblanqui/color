@@ -49,6 +49,36 @@ End simple.
 Infix "~~>" := Arr (at level 55, right associativity).
 
 (****************************************************************************)
+(** * Typing relation
+
+Note that, for typing an abstraction [Lam x u] in [E], we do not
+assume that [x] does not occur in [E], but overrides its type in
+[E]. This is a restricted form of weakening. *)
+
+Section typing.
+
+  Variables F X So : Type.
+
+  Notation Te := (@Te F X).
+  Notation Var := (@Var F X).
+  Notation Fun := (@Fun F X).
+  Notation Ty := (@Ty So).
+
+  Variable typ : F -> Ty.
+
+  Variables (En : Type)
+    (MapsTo : X -> Ty -> En -> Prop)
+    (add : X -> Ty -> En -> En).
+
+  Inductive tr : En -> Te -> Ty -> Prop :=
+  | tr_var : forall E x T, MapsTo x T E -> tr E (Var x) T
+  | tr_fun : forall E f, tr E (Fun f) (typ f)
+  | tr_app : forall E u v V T, tr E u (V ~~> T) -> tr E v V -> tr E (App u v) T
+  | tr_lam : forall E x X v V, tr (add x X E) v V -> tr E (Lam x v) (X ~~> V).
+
+End typing.
+
+(****************************************************************************)
 (** * Structure over which we will define typing. *)
 
 Module Type ST_Struct.
@@ -311,17 +341,9 @@ are finite maps from variables to types. *)
   Qed.
 
 (****************************************************************************)
-(** ** Typing relation
+(** ** Typing.  *)
 
-Note that, for typing an abstraction [Lam x u] in [E], we do not
-assume that [x] does not occur in [E], but overrides its type in
-[E]. This is a restricted form of weakening. *)
-
-  Inductive tr : En -> Te -> Ty -> Prop :=
-  | tr_var : forall E x T, MapsTo x T E -> tr E (Var x) T
-  | tr_fun : forall E f, tr E (Fun f) (typ f)
-  | tr_app : forall E u v V T, tr E u (V ~~> T) -> tr E v V -> tr E (App u v) T
-  | tr_lam : forall E x X v V, tr (add x X E) v V -> tr E (Lam x v) (X ~~> V).
+  Notation tr := (@tr F X So typ En (@MapsTo Ty) (@add Ty)).
 
   Notation "E '|-' v '~:' V" := (tr E v V) (at level 70).
 
