@@ -188,14 +188,25 @@ Section term.
 
   Section fv.
 
-    Variable E : Ens.
+    Variable ens_X : Ens.
+
+    Notation empty := (Ens_empty ens_X).
+    Notation singleton := (Ens_singleton ens_X).
+    Notation union := (Ens_union ens_X).
+    Notation remove := (Ens_remove ens_X).
 
     Fixpoint fv (t : Te) :=
       match t with
-        | Var x => Ens_singleton E x
-        | Fun _ => Ens_empty E
-        | App u v => Ens_union E (fv u) (fv v)
-        | Lam x u => Ens_remove E x (fv u)
+        | Var x => singleton x
+        | Fun _ => empty
+        | App u v => union (fv u) (fv v)
+        | Lam x u => remove x (fv u)
+      end.
+
+    Fixpoint fvs n (ts : Tes n) :=
+      match ts with
+        | Vnil => empty
+        | Vcons t _ ts' => union (fv t) (fvs ts')
       end.
 
   End fv.
@@ -296,6 +307,7 @@ Module Type L_Struct.
   Notation nb_args := (@nb_args F X).
   Notation args := (@args F X).
   Notation fv := (@fv F X ens_X).
+  Notation fvs := (@fvs F X ens_X).
   Notation Monotone := (@Monotone F X).
   Notation clos_mon := (@clos_mon F X).
   Notation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
@@ -454,6 +466,15 @@ Module Make (Export L : L_Struct).
     y=x \/ ~In x (fv u) <-> ~In x (fv (Lam y u)).
  
   Proof. intros x y u. simpl. set_iff. eq_dec y x; fo. Qed.
+
+  Lemma In_fvs_Vnth : forall x n (ts : Tes n) i (h : i<n),
+    In x (fv (Vnth ts h)) -> In x (fvs ts).
+
+  Proof.
+    intro x. induction ts; intros i hi.
+    exfalso. omega.
+    destruct i; simpl; set_iff. auto. intro a. right. eapply IHts. apply a.
+  Qed.
 
   (** The monotone closure preserves free variables. *)
 
