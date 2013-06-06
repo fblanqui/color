@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Wf_nat RelUtil Basics Morphisms LogicUtil VecUtil VecOrd SN.
-Require Import LTerm LSubs LAlpha.
+Require Export LAlpha.
 
 (****************************************************************************)
 (** Definition of beta-top-reduction. *)

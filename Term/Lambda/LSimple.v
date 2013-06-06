@@ -12,8 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import VecUtil LogicUtil.
-Require Import LTerm LSubs.
-Require LBeta.
+Require Export LBeta.
 
 (****************************************************************************)
 (** * Simple types over a set [So] of type constants or sorts. *)
@@ -83,7 +82,7 @@ End typing.
 
 Module Type ST_Struct.
 
-  Declare Module Export L : LTerm.L_Struct.
+  Declare Module Export L : L_Struct.
 
   Parameter So : Type.
 

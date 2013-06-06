@@ -18,7 +18,7 @@ simultaneous substitution of any number of variables. *)
 Set Implicit Arguments.
 
 Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil VecUtil.
-Require Import LTerm.
+Require Export LTerm.
 
 (****************************************************************************)
 (** * Type for substitutions:

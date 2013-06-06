@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
   VecUtil VecOrd.
-Require Import LTerm LSubs.
+Require Export LSubs.
 
 (****************************************************************************)
 (** ** Alpha-equivalence

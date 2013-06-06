@@ -13,7 +13,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms Basics SN VecUtil LogicUtil.
-Require Import LTerm LSubs LSimple LComp.
+Require Export LSimple LComp.
 
 (****************************************************************************)
 (** * Functor providing a termination proof for any CP structure
