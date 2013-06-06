@@ -31,10 +31,16 @@ Section simple.
       | Arr _ T' => S (arity T')
     end.
 
-  Fixpoint output (T : Ty) :=
+  Fixpoint output (T : Ty) k :=
+    match T, k with
+      | Arr U V, S k' => output V k'
+      | _, _ => T
+    end.
+
+  Fixpoint output_base (T : Ty) :=
     match T with
       | Base b => b
-      | Arr _ T' => output T'
+      | Arr _ T' => output_base T'
     end.
 
   Fixpoint inputs (T : Ty) :=
@@ -99,6 +105,11 @@ End ST_Struct.
 (** * Typing relation over an ST structure. *)
 
 Module Make (Export ST : ST_Struct).
+
+  Definition arity_typ f := arity (typ f).
+  Definition inputs_typ f := inputs (typ f).
+  Definition output_typ f := output (typ f).
+  Definition output_base_typ f := output_base (typ f).
 
   (*Lemma Ty_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
 
