@@ -75,10 +75,6 @@ Module Make (Export ST : ST_Struct).
 
   Proof. decide equality. apply So_eq_dec. Qed.*)
 
-  (*COQ: [Make] is defined as an extension of [LComp.Make] instead of
-  [LAlpha.Make] because, in Coq, functor instanciation generates
-  distinct Inductive's. *)
-
   Module Export B := LBeta.Make L.
 
 (****************************************************************************)
