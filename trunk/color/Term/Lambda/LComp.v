@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil SN.
-Require Import LTerm LSubs LAlpha LBeta.
+Require Export LBeta.
 
 (****************************************************************************)
 (** ** Computability predicates. *)
