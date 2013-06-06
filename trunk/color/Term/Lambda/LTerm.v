@@ -7,7 +7,21 @@ See the COPYRIGHTS and LICENSE files.
 
 
 * Lambda-terms
-*)
+
+Remark on the structure of the files in this directory: In Coq,
+functor instanciation generates distinct Inductive's (or Class'es or
+Record's), i.e. if F(M) provides an Inductive t, N1:=F(M) and
+N2:=F(M), then N1.t <> N2.t. To avoid name conflicts, we therefore
+need to define Inductive's outside any module. Moreover, in order to
+define some Module Type's, we also need some functions (e.g. free
+variables, substitution, etc) to be defined outside any module
+too. Therefore, in this library, the files start by defining some
+Inductive's and some functions in a Section with the necessary
+abstract parameters. Then, a functor Make provides the properties of
+these Inductive's and functions when these abstract parameters are
+correctly set. We use a functor and not a Section because, in Coq,
+modules cannot be defined inside a Section and we rely on the FSet and
+FMap modules defined in the standard Coq library. *)
 
 Set Implicit Arguments.
 
@@ -24,10 +38,7 @@ Ltac max := unfold ltof; simpl;
 
 (****************************************************************************)
 (** * The set [Te] of lambda-terms
-given a set [F] of constants and a set [X] of variables.
-
-The type of terms is defined outside any functor because, in Coq,
-functor instanciation generates distinct inductive types. *)
+given a set [F] of constants and a set [X] of variables. *)
 
 Section term.
 
@@ -293,14 +304,7 @@ Module Type L_Struct.
 End L_Struct.
 
 (****************************************************************************)
-(** * Properties of terms.
-
-We have to use a functor instead of a section because modules cannot
-be defined inside sections (and we need [XSet] for instance). This has
-bad consequences because, in Coq, functor instanciation generates
-distinct Inductive's, i.e. if F(M) provides an Inductive t, N1:=F(M)
-and N2:=F(M), then N1.t <> N2.t. That is why we need to define
-Inductive outside nay module. *)
+(** * Properties of terms. *)
 
 Module Make (Export L : L_Struct).
 
