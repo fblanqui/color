@@ -43,6 +43,10 @@ Section simple.
       | Arr _ T' => output_base T'
     end.
 
+  Lemma output_arity : forall T, output T (arity T) = Base (output_base T).
+
+  Proof. induction T; fo. Qed.
+
   Notation Tys := (vector Ty).
 
   Fixpoint inputs (T : Ty) :=
