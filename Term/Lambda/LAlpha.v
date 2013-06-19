@@ -1353,7 +1353,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Infix "=>R" := (clos_aeq R) (at level 70).
 
     (*FIXME? make @ right associative in CoLoR *)
-    Definition vaeq_prod n := @vaeq n @ (@Vgt_prod _ R n @ @vaeq n).
+    Definition vaeq_prod {n} := @vaeq n @ (@Vgt_prod _ R n @ @vaeq n).
 
     Infix "==>R" := vaeq_prod (at level 70).
 

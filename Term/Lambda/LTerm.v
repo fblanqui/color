@@ -106,7 +106,7 @@ Section term.
 
   Notation Tes := (vector Te).
 
-  Fixpoint apps n t (us : Tes n) :=
+  Fixpoint apps {n} t (us : Tes n) :=
     match us with
       | Vnil => t
       | Vcons u _ us' => apps (App t u) us'
