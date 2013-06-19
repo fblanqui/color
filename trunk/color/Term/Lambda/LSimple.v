@@ -43,8 +43,10 @@ Section simple.
       | Arr _ T' => output_base T'
     end.
 
+  Notation Tys := (vector Ty).
+
   Fixpoint inputs (T : Ty) :=
-    match T as T return vector Ty (arity T) with
+    match T as T return Tys (arity T) with
       | Base _ => Vnil
       | Arr T1 T2 => Vcons T1 (inputs T2)
     end.
@@ -81,6 +83,11 @@ Section typing.
   | tr_app : forall E u v V T, tr E u (V ~~> T) -> tr E v V -> tr E (App u v) T
   | tr_lam : forall E x X v V, tr (add x X E) v V -> tr E (Lam x v) (X ~~> V).
 
+  Definition arity_typ f := arity (typ f).
+  Definition inputs_typ f := inputs (typ f).
+  Definition output_typ f := output (typ f).
+  Definition output_base_typ f := output_base (typ f).
+
 End typing.
 
 (****************************************************************************)
@@ -99,17 +106,17 @@ Module Type ST_Struct.
  
   Parameter typ : F -> Ty.
 
+  Notation arity_typ := (@arity_typ _ _ typ).
+  Notation inputs_typ := (@inputs_typ _ _ typ).
+  Notation output_typ := (@output_typ _ _ typ).
+  Notation output_base_typ := (@output_base_typ _ _ typ).
+
 End ST_Struct.
 
 (****************************************************************************)
 (** * Typing relation over an ST structure. *)
 
 Module Make (Export ST : ST_Struct).
-
-  Definition arity_typ f := arity (typ f).
-  Definition inputs_typ f := inputs (typ f).
-  Definition output_typ f := output (typ f).
-  Definition output_base_typ f := output_base (typ f).
 
   (*Lemma Ty_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
 
