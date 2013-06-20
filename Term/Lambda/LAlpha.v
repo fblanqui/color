@@ -1347,7 +1347,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Section vaeq_prod.
 
-    Variable R : relation Te. Infix "->R" := R (at level 70).
+    Variable R : relation Te.
+    Infix "->R" := R (at level 70).
 
     Notation R_aeq := (clos_aeq R) (only parsing).
     Infix "=>R" := (clos_aeq R) (at level 70).
