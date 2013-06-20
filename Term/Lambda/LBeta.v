@@ -52,11 +52,9 @@ Module Make (Export L : L_Struct).
   Module Export A := LAlpha.Make L.
 
   Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-
   Infix "->bh" := beta_top (at level 70).
 
   Notation beta := (clos_mon beta_top).
-
   Infix "->b" := (clos_mon beta_top) (at level 70).
 
   (** Note that, because [subs] may rename some bound variables, [->b]
@@ -65,7 +63,6 @@ Module Make (Export L : L_Struct).
   [->b]. *)
 
   Notation beta_aeq := (clos_aeq beta).
-
   Infix "=>b" := (clos_aeq beta) (at level 70).
 
 (****************************************************************************)
