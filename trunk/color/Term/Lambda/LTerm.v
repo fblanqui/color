@@ -112,6 +112,11 @@ Section term.
       | Vcons u _ us' => apps (App t u) us'
     end.
 
+  Lemma apps_app_cons : forall t u n (us : Tes n),
+    apps (App t u) us = apps t (Vcons u us).
+
+  Proof. refl. Qed.
+
   Lemma app_apps : forall n (us : Tes n) u v,
     App (apps u us) v = apps u (Vadd us v).
 
@@ -167,6 +172,55 @@ Section term.
     induction u; simpl; auto.
     rewrite IHu1, app_apps, head_apps, head_head, <- IHu1. refl.
   Qed.
+
+  Lemma eq_apps_fun_head : forall f p (ts : Tes p) g q (us : Tes q),
+    apps (Fun f) ts = apps (Fun g) us -> f = g.
+
+  Proof.
+    intros f p ts g q us e. gen (f_equal head e).
+    rewrite !head_apps. simpl. intro a. inversion a. refl.
+  Qed.
+
+  Arguments eq_apps_fun_head [f p ts g q us] _.
+
+  Lemma nb_args_apps : forall n (ts : Tes n) t,
+    nb_args (apps t ts) = nb_args t + n.
+
+  Proof. induction ts; intro t; simpl. omega. rewrite IHts. simpl. omega. Qed.
+
+  Lemma eq_apps_fun_nb_args : forall f p (ts : Tes p) g q (us : Tes q),
+    apps (Fun f) ts = apps (Fun g) us -> p = q.
+
+  Proof.
+    intros f p ts g q us e. gen (f_equal nb_args e).
+    rewrite !nb_args_apps. simpl. auto.
+  Qed.
+
+  Arguments eq_apps_fun_nb_args [f p ts g q us] _.
+
+  Lemma eq_apps_head : forall n (ts us : Tes n) t u,
+    apps t ts = apps u us -> t = u.
+
+  Proof.
+    induction ts; simpl; intros us t u.
+    VOtac. fo.
+    VSntac us. simpl. intro e. gen (IHts _ _ _ e). intro i. inversion i. refl.
+  Qed.
+
+  Arguments eq_apps_head [n ts us t u] _.
+
+  Lemma eq_apps_args : forall n (ts us : Tes n) t u,
+    apps t ts = apps u us -> ts = us.
+
+  Proof.
+    induction ts; simpl; intros us t u.
+    VOtac. refl.
+    VSntac us. simpl. intro e.
+    gen (eq_apps_head e); intro i. inversion i. subst t h; clear i.
+    apply Vtail_eq. eapply IHts. apply e.
+  Qed.
+
+  Arguments eq_apps_args [n ts us t u] _.
 
 (****************************************************************************)
 (** ** Structure for sets of variables. *)
@@ -235,6 +289,11 @@ Section term.
   End clos_mon.
 
 End term.
+
+Arguments eq_apps_fun_head [F X f p ts g q us] _.
+Arguments eq_apps_fun_nb_args [F X f p ts g q us] _.
+Arguments eq_apps_head [F X n ts us t u] _.
+Arguments eq_apps_args [F X n ts us t u] _.
 
 (****************************************************************************)
 (** ** Tactics. *)
