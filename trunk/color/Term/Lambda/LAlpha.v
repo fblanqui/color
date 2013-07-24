@@ -220,6 +220,17 @@ Module Make (Export L : L_Struct).
 
   Proof. intros x v h. sym. apply fun_aeq_l. sym. hyp. Qed.
 
+  (** Tactic for simplifying alpha-equivalence assumptions on
+  variables and function symbols. *)
+
+  Ltac simpl_aeq := repeat
+    match goal with
+      | h : Var _ ~~ _ |- _ => apply var_aeq_l in h
+      | h : _ ~~ Var _ |- _ => apply var_aeq_r in h
+      | h : Fun _ ~~ _ |- _ => apply fun_aeq_l in h
+      | h : _ ~~ Fun _ |- _ => apply fun_aeq_r in h
+    end.
+
   (** Inversion lemma for alpha-equivalence on an application. *)
 
   Lemma app_aeq_r : forall t v1 v2, t ~~ App v1 v2 ->
@@ -975,25 +986,19 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** Inversion tactic for alpha-equivalence. *)
 
-  Ltac inv_aeq h :=
-    match type of h with
-      | Var _ ~~ _ => apply var_aeq_l in h
-      | _ ~~ Var _ => apply var_aeq_r in h
-      | Fun _ ~~ _ => apply fun_aeq_l in h
-      | _ ~~ Fun _ => apply fun_aeq_r in h
-      | App _ _ ~~ _ => let u1 := fresh "u" in let u2 := fresh "u" in
-        let i1 := fresh "i" in let i2 := fresh "i" in let i3 := fresh "i" in
-          destruct (app_aeq_l h) as [u1 [u2 [i1 [i2 i3]]]]
-      | _ ~~ App _ _ => let u1 := fresh "u" in let u2 := fresh "u" in
-        let i1 := fresh "i" in let i2 := fresh "i" in let i3 := fresh "i" in
-          destruct (app_aeq_r h) as [u1 [u2 [i1 [i2 i3]]]]
-      | Lam _ _ ~~ _ => let x := fresh "x" in let u := fresh "u" in
-        let j1 := fresh "j" in let j2 := fresh "j" in let j3 := fresh "j" in
-          destruct (lam_aeq_l h) as [x [u [j1 [j2 j3]]]]
-      | _ ~~ Lam _ _ => let x := fresh "x" in let u := fresh "u" in
-        let j1 := fresh "j" in let j2 := fresh "j" in let j3 := fresh "j" in
-          destruct (lam_aeq_r h) as [x [u [j1 [j2 j3]]]]
-    end.
+  Ltac inv_aeq_0 h :=
+    let u1 := fresh "u" in let u2 := fresh "u" in let x := fresh "x" in
+      let i1 := fresh "i" in let i2 := fresh "i" in let i3 := fresh "i" in
+        match type of h with
+          | Var _ ~~ _ => apply var_aeq_l in h
+          | _ ~~ Var _ => apply var_aeq_r in h
+          | Fun _ ~~ _ => apply fun_aeq_l in h
+          | _ ~~ Fun _ => apply fun_aeq_r in h
+          | App _ _ ~~ _ => destruct (app_aeq_l h) as [u1 [u2 [i1 [i2 i3]]]]
+          | _ ~~ App _ _ => destruct (app_aeq_r h) as [u1 [u2 [i1 [i2 i3]]]]
+          | Lam _ _ ~~ _ => destruct (lam_aeq_l h) as [x [u1 [i1 [i2 i3]]]]
+          | _ ~~ Lam _ _ => destruct (lam_aeq_r h) as [x [u1 [i1 [i2 i3]]]]
+        end; simpl_aeq.
 
 (****************************************************************************)
 (** Compatibility with [aeq] of some basic predicates/functions. *)
@@ -1001,14 +1006,15 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Instance not_lam_aeq : Proper (aeq ==> impl) not_lam.
 
   Proof.
-    intros u v uv hu x a hv. subst. inv_aeq uv; subst. eapply hu. refl.
+    intros u v uv hu x a hv. subst.
+    inv_aeq_0 uv; clear uv; subst. eapply hu. refl.
   Qed.
 
   Instance head_aeq : Proper (aeq ==> aeq) head.
 
   Proof.
     intros u v uv. revert u v uv.
-    induction u; intros v uv; inv_aeq uv; subst; simpl.
+    induction u; intros v uv; inv_aeq_0 uv; subst; simpl.
     refl. refl. fo. fo.
   Qed.
 
@@ -1215,7 +1221,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     exists t. exists Vnil. simpl. intuition.
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
-    inv_aeq h2; subst. exists u0. exists (Vcons u1 us).
+    inv_aeq_0 h2; clear h2; subst. exists u0. exists (Vcons u1 us).
     unfold vaeq, vec_ge, Vforall2n. simpl. intuition.
   Qed.
 
@@ -1227,6 +1233,17 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof. intros n vs v t e. apply apps_aeq_r. sym. hyp. Qed.
 
   Arguments apps_aeq_l [n vs v t0] _.
+
+(****************************************************************************)
+(** Extended inversion tactic for alpha-equivalence. *)
+
+  Ltac inv_aeq h :=
+    let u := fresh "u" in let us := fresh "us" in
+      let i1 := fresh "i" in let i2 := fresh "i" in let i3 := fresh "i" in
+        match type of h with
+          | apps _ _ ~~ _ => destruct (apps_aeq_l h) as [u [us [i1 [i2 i3]]]]
+          | _ ~~ apps _ _ => destruct (apps_aeq_r h) as [u [us [i1 [i2 i3]]]]
+        end || inv_aeq_0 h; simpl_aeq.
 
 (****************************************************************************)
 (** ** Properties of [clos_trans_aeq]. *)

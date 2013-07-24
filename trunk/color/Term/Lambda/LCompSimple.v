@@ -272,8 +272,8 @@ Module SN_beta (Export ST : ST_Struct).
     intros y r. assert (k : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam k r) as [u [z [h1 h2]]]; subst.
     rewrite vaeq_prod_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
-    inversion i1; subst. inv_aeq H1; subst. inversion H3; subst. inversion H1.
-    inv_aeq i1; subst. apply H0. hyp. rewrite <- i2. hyp.
+    inversion i1; subst. simpl_aeq; subst. inversion H3; subst. inversion H1.
+    simpl_aeq; subst. apply H0. hyp. rewrite <- i2. hyp.
   Qed.
 
 End SN_beta.
