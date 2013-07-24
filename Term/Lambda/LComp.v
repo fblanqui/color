@@ -194,7 +194,7 @@ Module Make (Export CP : CP_Struct).
   Lemma not_R_aeq_var : forall x u, ~ Var x =>R u.
 
   Proof.
-    intros x u r. inversion r; subst. inv_aeq H; subst.
+    intros x u r. inversion r; subst. simpl_aeq; subst.
     eapply not_R_var. apply H1.
   Qed.
 
@@ -215,7 +215,7 @@ Module Make (Export CP : CP_Struct).
       \/ (exists v', w ~~ App u v' /\ v =>R v').
 
   Proof.
-    intros u v w n r. inversion r; subst. inv_aeq H; subst.
+    intros u v w n r. inversion r; subst. inv_aeq H; clear H; subst.
     rewrite <- i0 in n.
     destruct (R_app_neutral n H1) as [h|h]; destruct h as [t [a s]]; subst.
     left. exists t. rewrite <- i1, <- i0. intuition.
@@ -238,13 +238,13 @@ Module Make (Export CP : CP_Struct).
     exists y v, w = Lam y v /\ u =>R rename y x v.
 
   Proof.
-    intros x u w r. inversion r; subst. inv_aeq H; subst.
+    intros x u w r. inversion r; subst. inv_aeq H; clear H; subst.
     inversion H1; subst.
-    exfalso. eapply not_Rh_lam. apply H2.
-    inv_aeq H0; subst. exists x1. exists u1. split. refl.
-    rewrite j2, rename2. 2: hyp.
+    exfalso. eapply not_Rh_lam. apply H.
+    inv_aeq H0; clear H0; subst. exists x1. exists u1. split. refl.
+    rewrite i2, rename2. 2: hyp.
     assert (a : u ~~ rename x0 x u0).
-    rewrite j0, rename2, rename_id. refl. hyp.
+    rewrite i0, rename2, rename_id. refl. hyp.
     rewrite a. apply subs_R_aeq. refl. apply incl_clos_aeq. hyp.
   Qed.
 
@@ -301,9 +301,9 @@ Module Make (Export CP : CP_Struct).
     destruct (R_aeq_lam H) as [y0 [v0 [h1 h2]]].
     exists y0. exists v0. intuition. apply at_step. hyp.
     (* refl *)
-    inv_aeq H; subst. exists x. exists u.
+    inv_aeq H; clear H; subst. exists x. exists u.
     (*COQ does not accept: rewrite j0.*)
-    split. refl. rewrite j0, rename2, rename_id. refl. hyp.
+    split. refl. rewrite i0, rename2, rename_id. refl. hyp.
     (* trans *)
     destruct (IHclos_aeq_trans1 x' u' (refl_equal _)) as [y0 [v0 [h1 h2]]].
     subst v.
@@ -461,9 +461,9 @@ Module Make (Export CP : CP_Struct).
     apply SN_ind with (R:=gt_red x0 u0 v0). intros [[x u] v] i IH i1 i2.
     destruct (atc_lam i1) as [x1 [u1 [j1 j2]]]. inversion j1; subst x1 u1.
     clear j1. apply P4. apply neutral_beta. intros c r. inversion r; subst.
-    inv_aeq H; subst. inv_aeq i3; subst. inversion H1; subst.
+    inv_aeq H; clear H; subst. inv_aeq i3; subst. inversion H1; subst.
     (* top *)
-    apply Rh_bh in H2. inversion H2; subst. rewrite H0, j0, single_rename.
+    apply Rh_bh in H. inversion H; subst. rewrite H0, i5, single_rename.
     2: hyp. eapply cp_atc; auto. 2: apply h.
     trans (subs (single x0 u2) (rename x x0 u)). apply subs_satc. 2: hyp.
     intro z. unfold_single_update. eq_dec z x0.
@@ -471,11 +471,11 @@ Module Make (Export CP : CP_Struct).
     rewrite single_rename. refl.
     rewrite notin_fv_lam, <- i1. simpl. set_iff. fo.
     (* app_l *)
-    destruct (R_lam H5) as [t [k1 k2]]; subst. rewrite H0, i4.
+    destruct (R_lam H4) as [t [k1 k2]]; subst. rewrite H0, i4.
     assert (a : Lam x u =>R Lam x1 t).
-    apply (incl_clos_aeq R) in k2. destruct j1.
-    subst. rewrite rename_id in j0. rewrite <- j0. mon.
-    rewrite (aeq_alpha x1), <- j0. 2: hyp. mon.
+    apply (incl_clos_aeq R) in k2. destruct i6.
+    subst. rewrite rename_id in i5. rewrite <- i5. mon.
+    rewrite (aeq_alpha x1), <- i5. 2: hyp. mon.
     cut (Q ((x1,t),v)). intro q. apply q. 2: hyp.
     trans (Lam x u). hyp. apply at_step. hyp.
     apply IH. unfold gt_red, Rof. apply left_sym. split; hyp.

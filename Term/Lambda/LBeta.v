@@ -118,14 +118,14 @@ Module Make (Export L : L_Struct).
   Lemma var_beta_aeq_l : forall x u, ~Var x =>b u.
 
   Proof.
-    intros x u b. inversion b; subst. inv_aeq H; subst. inversion H1; subst.
+    intros x u b. inversion b; subst. simpl_aeq; subst. inversion H1; subst.
     inversion H.
   Qed.
 
   Lemma fun_beta_aeq_l : forall f u, ~Fun f =>b u.
 
   Proof.
-    intros x u b. inversion b; subst. inv_aeq H; subst. inversion H1; subst.
+    intros x u b. inversion b; subst. simpl_aeq; subst. inversion H1; subst.
     inversion H.
   Qed.
 
@@ -258,8 +258,8 @@ every element of [us] is strongly normalizing wrt beta-reduction. *)
     assert (k : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam k r) as [u [y [h1 h2]]]; subst.
     rewrite vaeq_prod_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
-    inversion i1; subst. inv_aeq H1; subst. inversion H3; subst. inversion H1.
-    inv_aeq i1; subst. apply H0. hyp.
+    inversion i1; subst. simpl_aeq; subst. inversion H3; subst. inversion H1.
+    simpl_aeq; subst. apply H0. hyp.
   Qed.
 
 End Make.
