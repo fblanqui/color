@@ -109,15 +109,6 @@ Definition Vfirst A default n (v : vector A n) : A :=
   end.
 
 (***********************************************************************)
-(** Last element of a vector with default value if empty. *)
-
-Fixpoint Vlast A default n (v : vector A n) : A :=
-  match v with
-    | Vnil => default
-    | Vcons x _ v' => Vlast x v'
-  end.
-
-(***********************************************************************)
 (** cast *)
 
 Section Vcast.
@@ -254,15 +245,6 @@ Ltac VOtac := repeat
   end.
 
 (***********************************************************************)
-(** add an element at the end *)
-
-Fixpoint Vadd A n (v : vector A n) (x : A) : vector A (S n) :=
-  match v with
-  | Vnil => Vcons x Vnil
-  | Vcons a _ v' => Vcons a (Vadd v' x)
-  end.
-
-(***********************************************************************)
 (** i-th element *)
 
 Section Vnth.
@@ -325,31 +307,6 @@ Section Vnth.
     apply Vnth_cons_head. omega.
   Qed.
 
-  Lemma Vnth_addl : forall k n (v : vec n) a (H1 : k < S n) (H2 : k < n),
-    Vnth (Vadd v a) H1 = Vnth v H2.
-
-  Proof.
-    intros. assert (H3 : H1 = (@le_S (S k) n H2)). apply lt_unique.
-    subst H1. generalize dependent k. generalize dependent n. intro n. elim n.
-    intros v k H. elimtype False. apply (lt_n_O _ H).
-    intros n' Hrec v k H. rewrite (VSn_eq v). destruct k.
-    simpl. refl.
-    simpl Vadd.
-    assert (H' : k < S n'). auto with arith. simpl. 
-    assert (lt_S_n (le_S H) = le_S (lt_S_n H)). apply lt_unique. rewrite H0.
-    rewrite Hrec. refl.
-  Qed.
-
-  Lemma Vnth_addr : forall k n (v : vec n) a (H1 : k < S n) (H2 : k = n),
-    Vnth (Vadd v a) H1 = a.
-
-  Proof.
-    intros. subst k. assert (H2 : H1 = lt_n_Sn n). apply lt_unique. subst H1.
-    generalize dependent v. intro v. elim v.
-    simpl. refl.
-    intros a' p' v' Hrec. simpl. rewrite <- Hrec at -1. apply Vnth_eq. refl.
-  Qed.
-
   Lemma Vnth_const : forall n (a : A) i (ip : i < n), Vnth (Vconst a n) ip = a.
 
   Proof.
@@ -386,6 +343,78 @@ Section Vnth.
 End Vnth.
 
 Notation "v '[@' p ']'" := (Vnth v p) (at level 0) : vec_scope.
+
+(***********************************************************************)
+(** add an element at the end *)
+
+Section Vadd.
+
+  Variable A : Type. Notation vec := (vector A).
+
+  Fixpoint Vadd n (v : vec n) (x : A) : vec (S n) :=
+    match v with
+      | Vnil => Vcons x Vnil
+      | Vcons a _ v' => Vcons a (Vadd v' x)
+    end.
+
+  Lemma Vnth_addl : forall k n (v : vec n) a (H1 : k < S n) (H2 : k < n),
+    Vnth (Vadd v a) H1 = Vnth v H2.
+
+  Proof.
+    intros. assert (H3 : H1 = (@le_S (S k) n H2)). apply lt_unique.
+    subst H1. generalize dependent k. generalize dependent n. intro n. elim n.
+    intros v k H. elimtype False. apply (lt_n_O _ H).
+    intros n' Hrec v k H. rewrite (VSn_eq v). destruct k.
+    simpl. refl.
+    simpl Vadd.
+    assert (H' : k < S n'). auto with arith. simpl. 
+    assert (lt_S_n (le_S H) = le_S (lt_S_n H)). apply lt_unique. rewrite H0.
+    rewrite Hrec. refl.
+  Qed.
+
+  Lemma Vnth_addr : forall k n (v : vec n) a (H1 : k < S n) (H2 : k = n),
+    Vnth (Vadd v a) H1 = a.
+
+  Proof.
+    intros. subst k. assert (H2 : H1 = lt_n_Sn n). apply lt_unique. subst H1.
+    generalize dependent v. intro v. elim v.
+    simpl. refl.
+    intros a' p' v' Hrec. simpl. rewrite <- Hrec at -1. apply Vnth_eq. refl.
+  Qed.
+
+  Lemma Vnth_add_aux : forall i n, i < S n -> i <> n -> i < n.
+
+  Proof. Omega. Qed.
+
+  Lemma Vnth_add : forall n (v : vec n) x i (h : i < S n),
+    Vnth (Vadd v x) h =
+    match eq_nat_dec i n with
+      | left _ => x
+      | right n => Vnth v (Vnth_add_aux h n)
+    end.
+
+  Proof.
+    induction v; intros x i hi; simpl Vadd.
+    (* nil *)
+    destruct (eq_nat_dec i 0). apply Vnth_cons_head. hyp. omega.
+    (* cons *)
+    destruct (eq_nat_dec i (S n)).
+    (* i = S n *)
+    subst. rewrite Vnth_cons. destruct (lt_ge_dec 0 (S n)). 2: omega.
+    rewrite IHv. destruct (eq_nat_dec (S n - 1) n). refl. omega.
+    (* i <> S n *)
+    rename h into y. rewrite Vnth_cons. destruct (lt_ge_dec 0 i).
+    rewrite IHv. destruct (eq_nat_dec (i-1) n). omega.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 i). 2: omega. apply Vnth_eq. refl.
+    sym. apply Vnth_cons_head. omega.
+  Qed.
+
+  Lemma Vadd_cons : forall x n (v : vec (S n)),
+    Vadd v x = Vcons (Vhead v) (Vadd (Vtail v) x).
+
+  Proof. intro x. destruct n; intro v; rewrite (VSn_eq v) at 1; refl. Qed.
+
+End Vadd.
 
 (***********************************************************************)
 (** replacement of i-th element *)
@@ -604,6 +633,19 @@ Section Vapp.
   Proof.
     induction v1; simpl; intros. apply Vcast_pi. apply Vtail_eq.
     rewrite IHv1. apply Vcast_pi.
+  Qed.
+
+  Lemma Vadd_app_aux : forall p q, p + S q = S (p+q).
+
+  Proof. intros p q. omega. Qed.
+
+  Lemma Vadd_app : forall p (v : vec p) q (w : vec q) x,
+    Vadd (Vapp v w) x = Vcast (Vapp v (Vadd w x)) (Vadd_app_aux p q).
+
+  Proof.
+    induction v; simpl; intros q w x.
+    rewrite Vcast_refl. refl.
+    apply Vtail_eq. rewrite IHv. apply Vcast_pi.
   Qed.
 
 End Vapp.
@@ -1073,12 +1115,90 @@ Section Vsub.
 
 End Vsub.
 
-Lemma Vremove_last_aux : forall n, 0 + n <= S n.
+(***********************************************************************)
+(** remove last element *)
 
-Proof. Omega. Qed.
+Section Vremove_last.
 
-Definition Vremove_last A n (v : vector A (S n)) : vector A n :=
-  Vsub v (Vremove_last_aux n).
+  Variable A : Type. Notation vec := (vector A).
+
+  Lemma Vremove_last_aux : forall n, 0 + n <= S n.
+
+  Proof. Omega. Qed.
+
+  Definition Vremove_last A n (v : vector A (S n)) : vector A n :=
+    Vsub v (Vremove_last_aux n).
+
+  Lemma Vnth_remove_last_aux : forall i n, i<n -> i< S n.
+
+  Proof. Omega. Qed.
+
+  Lemma Vnth_remove_last : forall n (v : vec (S n)) i
+    (h : i<n), Vnth (Vremove_last v) h = Vnth v (Vnth_remove_last_aux h).
+
+  Proof.
+    intros n v i h. unfold Vremove_last. rewrite Vnth_sub. apply Vnth_eq. refl.
+  Qed.
+
+  Lemma Vremove_last_add : forall n (v : vec n) x,
+    Vremove_last (Vadd v x) = v.
+
+  Proof.
+    intros n v x. apply Veq_nth. intros i h.
+    rewrite Vnth_remove_last, Vnth_add.
+    destruct (eq_nat_dec i n). omega. apply Vnth_eq. refl.
+  Qed.
+
+End Vremove_last.
+
+(***********************************************************************)
+(** Last element of a vector with default value if empty. *)
+
+Section Vlast.
+
+  Variable A : Type. Notation vec := (vector A).
+
+  Fixpoint Vlast default n (v : vector A n) : A :=
+    match v with
+      | Vnil => default
+      | Vcons x _ v' => Vlast x v'
+    end.
+
+  Lemma Vlast_eq : forall x y n (v : vec (S n)), Vlast x v = Vlast y v.
+
+  Proof. intros x y n v. VSntac v. simpl. refl. Qed.
+
+  Lemma Vlast_nth : forall n (v : vec (S n)) x (h : n < S n),
+    Vlast x v = Vnth v h.
+
+  Proof.
+    induction n; intros v x h.
+    VSntac v. simpl. generalize (Vtail v); intro w; VOtac. simpl. refl.
+    VSntac v. simpl. apply IHn.
+  Qed.
+
+  Lemma Vlast_tail : forall n (v : vec (S n)),
+    Vlast (Vhead v) (Vtail v) = Vlast (Vhead v) v.
+
+  Proof. intros n v. VSntac v. refl. Qed.
+
+  Lemma VSn_add_default : forall x n (v : vec (S n)),
+    v = Vadd (Vremove_last v) (Vlast x v).
+
+  Proof.
+    intros x n v. apply Veq_nth. intros i h.
+    destruct (lt_dec i n).
+    rewrite Vnth_addl with (H2:=l), Vnth_remove_last. apply Vnth_eq. refl.
+    rewrite Vnth_addr. 2: omega.
+    assert (e : i=n). omega. subst i. rewrite Vlast_nth with (h:=h). refl.
+  Qed.
+
+  Lemma VSn_add : forall n (v : vec (S n)),
+    v = Vadd (Vremove_last v) (Vlast (Vhead v) v).
+
+  Proof. intros n v. apply VSn_add_default. Qed.
+
+End Vlast.
 
 (***********************************************************************)
 (** proposition saying that every element satisfies some predicate *)
