@@ -9,7 +9,7 @@ orderings on vectors
 
 Set Implicit Arguments.
 
-Require Import LogicUtil VecUtil Relations NatUtil RelMidex Syntax.
+Require Import LogicUtil VecUtil RelUtil NatUtil RelMidex Syntax.
 
 Implicit Arguments symprod [A B].
 
@@ -69,6 +69,20 @@ Section S.
     left. auto. right. auto.
   Qed.
 
+  Lemma Vgt_prod_add : forall x1 x2 n (v1 v2 : vec n),
+    (x1 >A x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
+    -> Vadd v1 x1 >prod Vadd v2 x2.
+
+  Proof.
+    intros x1 x2. induction n; intros v1 v2.
+    VOtac. intuition. apply left_sym. hyp.
+    VSntac v1; VSntac v2. simpl Vadd. intros [[h1 h2]|[h1 h2]].
+    Veqtac. apply Vgt_prod_cons. right. fo.
+    subst x2. destruct (Vgt_prod_inv h2) as [[i1 i2]|[i1 i2]].
+    rewrite i2. apply Vgt_prod_cons. left. fo.
+    apply Vgt_prod_cons. right. fo.
+  Qed.
+
   Lemma Vgt_prod_app : forall n (v : vec n) m (v1 v2 : vec m),
     v1 >prod v2 -> Vapp v v1 >prod Vapp v v2.
 
@@ -76,6 +90,26 @@ Section S.
     induction v; intros. hyp.
     simpl. unfold Vsplit. simpl. apply right_sym. apply IHv. hyp.
   Qed.
+
+  Lemma Vgt_prod_iff : forall n (v1 v2 : vec n), v1 >prod v2 <->
+    exists i (vi : vec i) x j (vj : vec j) h y,
+      v1 = Vcast (Vapp vi (Vcons x vj)) h
+      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x >A y.
+
+  Proof.
+    intros n v1 v2. split. apply Vgt_prod_gt.
+    intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]]; subst.
+    rewrite 2!Vcast_refl. apply Vgt_prod_app. apply Vgt_prod_cons. fo.
+  Qed.
+
+  Definition Vgt_prod_alt n (v1 v2 : vec n) :=
+    exists i (vi : vec i) x j (vj : vec j) h y,
+      v1 = Vcast (Vapp vi (Vcons x vj)) h
+      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x >A y.
+
+  Lemma Vgt_prod_eq n : @Vgt_prod n == @Vgt_prod_alt n.
+
+  Proof. rewrite rel_eq. apply Vgt_prod_iff. Qed.
 
   Lemma Vgt_prod_cast : forall m n (h : m=n) (v1 v2 : vec m),
     v1 >prod v2 -> Vcast v1 h >prod Vcast v2 h.
@@ -190,3 +224,21 @@ End S.
 
 Implicit Arguments Vgt_prod_gt [A gtA n v1 v2].
 Implicit Arguments vec_ge_dec [A gtA n].
+
+Require Import Morphisms.
+
+Instance Vgt_prod_alt_same_rel A n :
+  Proper (same_relation ==> same_relation) (fun R => @Vgt_prod_alt A R n).
+
+Proof.
+  intros R R' RR'. rewrite rel_eq. intros v1 v2. unfold Vgt_prod_alt.
+  split; intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]];
+    exists i vi x; exists j vj h; exists y; fo.
+Qed.
+
+Instance Vgt_prod_same_rel A n :
+  Proper (same_relation ==> same_relation) (fun R => @Vgt_prod A R n).
+
+Proof.
+  intros R R' RR'. rewrite 2!Vgt_prod_eq. apply Vgt_prod_alt_same_rel. hyp.
+Qed.
