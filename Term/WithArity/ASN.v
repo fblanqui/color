@@ -76,7 +76,7 @@ Section S.
     forall ts, Vforall SNR ts -> SNR (Fun f ts).
 
   Proof.
-    intros. set (gt := (@Vgt_prod term Red (arity f))).
+    intros. set (gt := @Vgt_prod (arity f) _ Red).
     assert (SN gt ts). unfold gt. apply Vforall_SN_gt_prod. hyp.
     elim H1. intros.
     apply SN_intro. change (forall y, Red (Fun f x) y -> SNR y). intros.

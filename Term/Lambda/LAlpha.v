@@ -1362,6 +1362,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Stepwise product extension of a relation modulo alpha-equivalence. *)
 
+  Definition vaeq_prod {n} R := @vaeq n @ (Vgt_prod R @ @vaeq n).
+    (*FIXME? make @ right associative in CoLoR *)
+
   Section vaeq_prod.
 
     Variable R : relation Te.
@@ -1370,10 +1373,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Notation R_aeq := (clos_aeq R) (only parsing).
     Infix "=>R" := (clos_aeq R) (at level 70).
 
-    (*FIXME? make @ right associative in CoLoR *)
-    Definition vaeq_prod {n} := @vaeq n @ (@Vgt_prod _ R n @ @vaeq n).
-
-    Infix "==>R" := vaeq_prod (at level 70).
+    Infix "==>R" := (vaeq_prod R) (at level 70).
 
     Lemma vaeq_prod_cons : forall u v n (us vs : Tes n),
       Vcons u us ==>R Vcons v vs
@@ -1403,7 +1403,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     (*TODO: follows from a more general theorem on Vforall2n. *)
     Instance vaeq_prod_vaeq n :
-      Proper (@vaeq n ==> @vaeq n ==> impl) (@vaeq_prod n).
+      Proper (@vaeq n ==> @vaeq n ==> impl) (vaeq_prod R).
 
     Proof.
       intros us us' usus' ws ws' wsws' [vs [usvs [xs [bvsxs xsws]]]].
@@ -1415,15 +1415,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     every component is strongly normalizing for [R_aeq]. *)
 
     Lemma sn_vaeq_prod : forall n (us : Tes n),
-      Vforall (SN R_aeq) us -> SN (@vaeq_prod n) us.
+      Vforall (SN R_aeq) us -> SN (vaeq_prod R) us.
 
     Proof.
       intros n x hx.
-      (* We have [SN (@Vgt_prod _ R_aeq n) x]
-      since [Vforall (SN R_aeq) x]. *)
-      cut (SN (@Vgt_prod _ R_aeq n) x). 2: apply Vforall_SN_gt_prod; hyp.
+      (* We have [SN (Vgt_prod R_aeq) x] since [Vforall (SN R_aeq) x]. *)
+      cut (SN (Vgt_prod R_aeq) x). 2: apply Vforall_SN_gt_prod; hyp.
       (* We can therefore proceed by well-founded induction on
-      [@Vgt_prod _ R_aeq n]. *)
+      [Vgt_prod R_aeq]. *)
       induction 1. apply SN_intro. intros y [x' [xx' [y' [x'y' y'y]]]].
       (* We have [x' = Vcast (Vapp x'i (Vcons a' x'j)) k0],
       [y' = Vcast (Vapp x'i (Vcons b' x'j)) k0] and [a' ->b b']. *)
@@ -1487,5 +1486,12 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Qed.
 
   End vaeq_prod.
+
+  (** [vaeq_prod] is compatible with [same_relation]. *)
+
+  Instance vaeq_prod_same_rel n :
+    Proper (same_relation ==> same_relation) (@vaeq_prod n).
+
+  Proof. intros R R' RR'. unfold vaeq_prod. rewrite RR'. refl. Qed.
 
 End Make.

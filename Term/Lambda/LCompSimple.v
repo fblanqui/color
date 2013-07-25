@@ -208,7 +208,7 @@ Module Make (Export ST : ST_Struct)
     Infix "==>R" := (vaeq_prod R) (at level 70).
 
     Global Instance vint_vaeq_prod n (Ts : Tys n) p :
-      Proper (@vaeq_prod R p ==> impl) (@vint n Ts p).
+      Proper (vaeq_prod R ==> impl) (@vint n Ts p).
 
     Proof.
       revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
@@ -262,7 +262,7 @@ Module SN_beta (Export ST : ST_Struct).
     rewrite output_arity. simpl. set (b := output_base (typ f)).
     gen (cp_Bint b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
-    cut (SN (@vaeq_prod beta n) vs).
+    cut (SN (vaeq_prod beta) vs).
     Focus 2. apply sn_vaeq_prod. eapply vint_sn. apply cp_Bint. apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
     induction 1.

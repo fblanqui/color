@@ -13,29 +13,32 @@ Require Import LogicUtil VecUtil RelUtil NatUtil RelMidex Syntax.
 
 Implicit Arguments symprod [A B].
 
+(***********************************************************************)
+(** Component-wise extension to vectors on [A] of a relation on [A]. *)
+
+Fixpoint Vgt_prod n A (R : relation A) : relation (vector A n) :=
+  match n with
+    | O => fun _ _ => False
+    | S n => fun v1 v2 => symprod R (Vgt_prod R) (Vsplit v1) (Vsplit v2)
+  end.
+
+Definition Vgt_prod_alt n A (R : relation A) (v1 v2 : vector A n) :=
+  exists i (vi : vector A i) x j (vj : vector A j) h y,
+    v1 = Vcast (Vapp vi (Vcons x vj)) h
+    /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ R x y.
+
 Section S.
 
-  Variables (A : Type) (gtA : relation A).
+  Variable A : Type. Notation vec := (vector A).
 
-  Notation vec := (vector A).
+  Variable R : relation A. Infix ">" := R (at level 70).
 
-  Infix ">A" := gtA (at level 70).
-
-(***********************************************************************)
-(** step-wise product order *)
-
-  Fixpoint Vgt_prod n : vec n -> vec n -> Prop :=
-    match n with
-      | O => fun _ _ => False
-      | S n => fun v1 v2 => symprod gtA (@Vgt_prod n) (Vsplit v1) (Vsplit v2)
-    end.
-
-  Infix ">prod" := Vgt_prod (at level 70).
+  Notation prod := (Vgt_prod R). Infix ">prod" := (Vgt_prod R) (at level 70).
 
   Lemma Vgt_prod_gt : forall n (v1 v2 : vec n), v1 >prod v2 ->
     exists i (vi : vec i) x j (vj : vec j) h y,
       v1 = Vcast (Vapp vi (Vcons x vj)) h
-      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x >A y.
+      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x > y.
 
   Proof.
     induction v1; simpl. intros. contr. intro. VSntac v2.
@@ -51,7 +54,7 @@ Section S.
   Qed.
 
   Lemma Vgt_prod_cons : forall x1 x2 n (v1 v2 : vec n),
-    (x1 >A x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
+    (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
     -> Vcons x1 v1 >prod Vcons x2 v2.
 
   Proof.
@@ -62,7 +65,7 @@ Section S.
 
   Lemma Vgt_prod_inv : forall x1 x2 n (v1 v2 : vec n),
     Vcons x1 v1 >prod Vcons x2 v2 ->
-    (x1 >A x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2).
+    (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2).
 
   Proof.
     intros. simpl in H. unfold Vsplit in H. simpl in H. inversion H.
@@ -70,7 +73,7 @@ Section S.
   Qed.
 
   Lemma Vgt_prod_add : forall x1 x2 n (v1 v2 : vec n),
-    (x1 >A x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
+    (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
     -> Vadd v1 x1 >prod Vadd v2 x2.
 
   Proof.
@@ -94,7 +97,7 @@ Section S.
   Lemma Vgt_prod_iff : forall n (v1 v2 : vec n), v1 >prod v2 <->
     exists i (vi : vec i) x j (vj : vec j) h y,
       v1 = Vcast (Vapp vi (Vcons x vj)) h
-      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x >A y.
+      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x > y.
 
   Proof.
     intros n v1 v2. split. apply Vgt_prod_gt.
@@ -102,12 +105,7 @@ Section S.
     rewrite 2!Vcast_refl. apply Vgt_prod_app. apply Vgt_prod_cons. fo.
   Qed.
 
-  Definition Vgt_prod_alt n (v1 v2 : vec n) :=
-    exists i (vi : vec i) x j (vj : vec j) h y,
-      v1 = Vcast (Vapp vi (Vcons x vj)) h
-      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x >A y.
-
-  Lemma Vgt_prod_eq n : @Vgt_prod n == @Vgt_prod_alt n.
+  Lemma Vgt_prod_eq n : @Vgt_prod n _ R == @Vgt_prod_alt n _ R.
 
   Proof. rewrite rel_eq. apply Vgt_prod_iff. Qed.
 
@@ -140,11 +138,11 @@ Section S.
   Require Import SN.
 
   Lemma Vforall_SN_gt_prod : forall n (v : vec n),
-    Vforall (SN gtA) v -> SN (@Vgt_prod n) v.
+    Vforall (SN R) v -> SN (Vgt_prod R) v.
 
   Proof.
     induction v; intros; apply SN_intro; intros. contr. simpl.
-    eapply SN_inverse with (f := @Vsplit A n) (R := symprod gtA (@Vgt_prod n)).
+    eapply SN_inverse with (f := @Vsplit A n) (R := symprod R (Vgt_prod R)).
     VSntac y. unfold Vsplit. simpl. simpl in H. destruct H.
     rewrite H1 in H0. inversion H0.
     apply SN_symprod. eapply SN_inv. apply H. hyp.
@@ -154,7 +152,7 @@ Section S.
   Qed.
 
   Lemma SN_gt_prod_Sn_head : forall n (v : vec (S n)),
-    SN (@Vgt_prod (S n)) v -> SN gtA (Vhead v).
+    SN (Vgt_prod R) v -> SN R (Vhead v).
 
   Proof.
     induction 1. VSntac x. apply SN_intro. intros.
@@ -163,12 +161,12 @@ Section S.
   Qed.
 
   Lemma SN_gt_prod_head : forall a n (v : vec n),
-    SN (@Vgt_prod (S n)) (Vcons a v) -> SN gtA a.
+    SN (Vgt_prod R) (Vcons a v) -> SN R a.
 
   Proof. intros. ded (SN_gt_prod_Sn_head H). hyp. Qed.
 
   Lemma SN_gt_prod_Sn_tail : forall n (v : vec (S n)),
-    SN (@Vgt_prod (S n)) v -> SN (@Vgt_prod n) (Vtail v).
+    SN (Vgt_prod R) v -> SN (Vgt_prod R) (Vtail v).
 
   Proof.
     induction 1. VSntac x. apply SN_intro. intros.
@@ -177,12 +175,12 @@ Section S.
   Qed.
 
   Lemma SN_gt_prod_tail : forall a n (v : vec n),
-    SN (@Vgt_prod (S n)) (Vcons a v) -> SN (@Vgt_prod n) v.
+    SN (Vgt_prod R) (Vcons a v) -> SN (Vgt_prod R) v.
 
   Proof. intros. ded (SN_gt_prod_Sn_tail H). hyp. Qed.
 
   Lemma SN_gt_prod_forall : forall n (v : vec n),
-    SN (@Vgt_prod n) v -> Vforall (SN gtA) v.
+    SN (Vgt_prod R) v -> Vforall (SN R) v.
 
   Proof.
     induction v; intros; simpl. exact I. split.
@@ -190,9 +188,9 @@ Section S.
   Qed.
 
 (***********************************************************************)
-(** product ordering on vectors *)
+(** Product ordering on vectors. *)
 
-  Notation ge := @gtA.
+  Notation ge := @R.
 
   Definition vec_ge := Vforall2n ge.
 
@@ -222,13 +220,16 @@ Section S.
 
 End S.
 
-Implicit Arguments Vgt_prod_gt [A gtA n v1 v2].
-Implicit Arguments vec_ge_dec [A gtA n].
+Implicit Arguments Vgt_prod_gt [A R n v1 v2].
+Implicit Arguments vec_ge_dec [A R n].
+
+(***********************************************************************)
+(** Compatibility of [Vgt_prod] with [same_relation]. *)
 
 Require Import Morphisms.
 
-Instance Vgt_prod_alt_same_rel A n :
-  Proper (same_relation ==> same_relation) (fun R => @Vgt_prod_alt A R n).
+Instance Vgt_prod_alt_same_rel n A :
+  Proper (same_relation ==> same_relation) (@Vgt_prod_alt n A).
 
 Proof.
   intros R R' RR'. rewrite rel_eq. intros v1 v2. unfold Vgt_prod_alt.
@@ -236,8 +237,8 @@ Proof.
     exists i vi x; exists j vj h; exists y; fo.
 Qed.
 
-Instance Vgt_prod_same_rel A n :
-  Proper (same_relation ==> same_relation) (fun R => @Vgt_prod A R n).
+Instance Vgt_prod_same_rel n A :
+  Proper (same_relation ==> same_relation) (@Vgt_prod n A).
 
 Proof.
   intros R R' RR'. rewrite 2!Vgt_prod_eq. apply Vgt_prod_alt_same_rel. hyp.
