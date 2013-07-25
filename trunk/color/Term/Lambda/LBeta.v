@@ -244,6 +244,19 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
   Arguments beta_aeq_apps_no_lam [n us u t0] _ _.
 
+  Lemma beta_aeq_apps_fun : forall f n (us : Tes n) t,
+    apps (Fun f) us =>b t ->
+    exists vs, t = apps (Fun f) vs /\ vaeq_prod beta us vs.
+
+  Proof.
+    intros f n us t r. assert (h : not_lam (Fun f)). discr.
+    destruct (beta_aeq_apps_no_lam h r) as [v [vs [h1 h2]]]; clear h r; subst.
+    exists vs. rewrite vaeq_prod_cons in h2. destruct h2 as [[h1 h2]|[h1 h2]].
+    inv_beta_aeq h1. simpl_aeq. subst. auto.
+  Qed.
+
+  Arguments beta_aeq_apps_fun [f n us t0] _.
+
 (****************************************************************************)
 (** [apps (Fun f) us] is strongly normalizing wrt beta-reduction if
 every element of [us] is strongly normalizing wrt beta-reduction. *)
