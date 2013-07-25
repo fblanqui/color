@@ -252,7 +252,7 @@ every element of [us] is strongly normalizing wrt beta-reduction. *)
     Vforall (SN beta_aeq) us -> SN beta_aeq (apps (Fun f) us).
 
   Proof.
-    intros f n us h. cut (SN (@vaeq_prod beta n) us).
+    intros f n us h. cut (SN (vaeq_prod beta) us).
     2: apply sn_vaeq_prod; hyp.
     clear h. revert us. induction 1. apply SN_intro. intros v r.
     assert (k : not_lam (Fun f)). discr.

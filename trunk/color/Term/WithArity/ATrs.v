@@ -559,7 +559,7 @@ Section S.
 
     Variable R : rules.
 
-    Definition terms_gt := Vgt_prod (red R).
+    Definition terms_gt {n} := @Vgt_prod n _ (red R).
 
     Lemma Vgt_prod_fun : forall f ts ts',
       Vgt_prod (red R) ts ts' -> int_red R (Fun f ts) (Fun f ts').

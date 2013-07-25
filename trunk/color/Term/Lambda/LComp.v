@@ -516,7 +516,7 @@ Module Make (Export CP : CP_Struct).
 
   Proof.
     intros P p1 p4 x n us h.
-    cut (SN (@Vgt_prod _ R_aeq n) us). clear h. revert us. induction 1.
+    cut (SN (Vgt_prod R_aeq) us). clear h. revert us. induction 1.
     rename x0 into us. apply p4. apply neutral_apps_var. intros v r.
     destruct (R_aeq_apps_neutral _ (neutral_var x) r).
     destruct H1 as [x' [h1 h2]]. apply not_R_aeq_var in h2. tauto.
