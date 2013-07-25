@@ -55,6 +55,12 @@ Section simple.
       | Arr T1 T2 => Vcons T1 (inputs T2)
     end.
 
+  Fixpoint arrow n (Ts : Tys n) U :=
+    match Ts with
+      | Vnil => U
+      | Vcons T _ Ts' => Arr T (arrow Ts' U)
+    end.
+
 End simple.
 
 Infix "~~>" := Arr (at level 55, right associativity).
