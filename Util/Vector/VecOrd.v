@@ -243,3 +243,20 @@ Instance Vgt_prod_same_rel n A :
 Proof.
   intros R R' RR'. rewrite 2!Vgt_prod_eq. apply Vgt_prod_alt_same_rel. hyp.
 Qed.
+
+Lemma Vgt_prod_alt_union n A (R S : relation A) :
+  @Vgt_prod_alt n _ (R U S) == @Vgt_prod_alt n _ R U @Vgt_prod_alt n _ S.
+
+Proof.
+  rewrite rel_eq; intros v1 v2. split.
+  intros [i [vi [x [j [vj [h [y [h1 [h2 [h3|h3]]]]]]]]]].
+  left. exists i vi x. exists j vj h. exists y. intuition.
+  right. exists i vi x. exists j vj h. exists y. intuition.
+  intros [h|h]; destruct h as [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]];
+    exists i vi x; exists j vj h; exists y; intuition.
+Qed.
+
+Lemma Vgt_prod_union n A (R S : relation A) :
+  @Vgt_prod n _ (R U S) == @Vgt_prod n _ R U @Vgt_prod n _ S.
+
+Proof. rewrite !Vgt_prod_eq. apply Vgt_prod_alt_union. Qed.
