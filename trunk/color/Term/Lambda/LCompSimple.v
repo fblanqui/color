@@ -39,6 +39,10 @@ Module Make (Export ST : ST_Struct)
         | Arr A B => arr (int A) (int B)
       end.
 
+    Lemma int_base b t : Bint b t <-> int (Base b) t.
+
+    Proof. refl. Qed.
+
     Lemma cp_int : forall T, cp (int T).
 
     Proof. induction T; simpl. apply cp_Bint. apply cp_arr; hyp. Qed.
@@ -201,6 +205,18 @@ Module Make (Export ST : ST_Struct)
       destruct n. gen (hv Vnil). fo.
       intros v1 h1. apply IHV2 with (n:=n). omega. intros vs hvs.
       change (int (output V2 n) (apps v (Vcons v1 vs))). apply hv. fo.
+    Qed.
+
+    (** [apps v vs] is computable if [v] and [vs] so are. *)
+
+    Lemma int_apps : forall n (vs : Tes n) v (Vs : Tys n) U,
+      vint Vs vs -> int (arrow Vs U) v -> int U (apps v vs).
+
+    Proof.
+      induction vs; simpl; intros v Vs U.
+      VOtac. simpl. auto.
+      VSntac Vs. simpl. intros [h1 h2] h3.
+      eapply IHvs. apply h2. apply h3. hyp.
     Qed.
 
     (** Computability of vectors of terms is preserved by reduction. *)
