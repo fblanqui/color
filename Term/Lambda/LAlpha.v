@@ -1140,7 +1140,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Arguments fv_R_notin_fv_lam [R x y u v] _ _.
 
 (****************************************************************************)
-(** ** Alpha-equivalence on vectors of terms. *)
+(** ** Alpha-equivalence on vectors of terms: product extension of [aeq]. *)
 
   Definition vaeq := vec_ge aeq.
 
@@ -1360,7 +1360,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   End atc_props.
 
 (****************************************************************************)
-(** ** Stepwise product extension of a relation modulo alpha-equivalence. *)
+(** ** Component-wise extension to vectors of a relation on terms, modulo [vaeq]. *)
 
   Definition vaeq_prod {n} R := @vaeq n @ (Vgt_prod R @ @vaeq n).
     (*FIXME? make @ right associative in CoLoR *)
@@ -1493,5 +1493,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Proper (same_relation ==> same_relation) (@vaeq_prod n).
 
   Proof. intros R R' RR'. unfold vaeq_prod. rewrite RR'. refl. Qed.
+
+  (** [vaeq_prod] distributes over [union]. *)
+
+  Lemma vaeq_prod_union n R S :
+    @vaeq_prod n (R U S) == @vaeq_prod n R U @vaeq_prod n S.
+
+  Proof.
+    unfold vaeq_prod. rewrite Vgt_prod_union, comp_union_l, comp_union_r. refl.
+  Qed.
 
 End Make.
