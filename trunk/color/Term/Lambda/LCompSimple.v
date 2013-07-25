@@ -146,7 +146,12 @@ Module Make (Export ST : ST_Struct)
       apply ht. apply valid_id.
     Qed.
 
-    (** Computability of vectors of terms. *)
+    (** Computability of vectors of terms.
+
+It is defined in such a way that [Ts] can contain more types than
+necessary (i.e. the length [n] of [Ts] can be bigger than or equal to
+the length [p] of [ts]), but the result does not depend on these
+extras types. *)
 
     Fixpoint vint n (Ts : Tys n) p (ts : Tes p) :=
       match Ts, ts with
@@ -164,6 +169,25 @@ Module Make (Export ST : ST_Struct)
       induction Ts; destruct ts; simpl vint; intros j jn jp; intuition.
       destruct j; simpl. hyp. apply IHTs. hyp.
     Qed.
+
+    Lemma vint_typ_cast : forall n (Ts : Tys n) n' (h : n=n') p (ts : Tes p),
+      vint (Vcast Ts h) ts <-> vint Ts ts.
+
+    Proof.
+      induction Ts; intros n' e p ts.
+      subst. rewrite Vcast_refl. refl.
+      destruct n'. discr. simpl. destruct ts. refl. rewrite IHTs. refl.
+    Qed.
+
+    Lemma vint_term_cast : forall n (Ts : Tys n) p (ts : Tes p) p' (h : p=p'),
+      vint Ts (Vcast ts h) <-> vint Ts ts.
+
+    Proof. intros n Ts p ts p' e. subst. rewrite Vcast_refl. refl. Qed.
+
+    Lemma vint_term_app_l : forall p (ts : Tes p) q (us : Tes q) n (Ts : Tys n),
+      vint Ts (Vapp ts us) -> vint Ts ts.
+
+    Proof. induction ts; intros q us m Ts; simpl; destruct Ts; fo. Qed.
 
     Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
       vint Ts ts -> Vforall (SN R_aeq) ts.
