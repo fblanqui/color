@@ -31,9 +31,9 @@ Section simple.
       | Arr _ T' => S (arity T')
     end.
 
-  Fixpoint output (T : Ty) k :=
-    match T, k with
-      | Arr U V, S k' => output V k'
+  Fixpoint output (T : Ty) k {struct k} :=
+    match k, T with
+      | S k', Arr U V => output V k'
       | _, _ => T
     end.
 
@@ -60,6 +60,22 @@ Section simple.
       | Vnil => U
       | Vcons T _ Ts' => Arr T (arrow Ts' U)
     end.
+
+  Lemma arrow_cast : forall n (Ts : Tys n) U n' (h:n=n'),
+    arrow (Vcast Ts h) U = arrow Ts U.
+
+  Proof. induction Ts; intros U n' e; subst; rewrite Vcast_refl; refl. Qed.
+
+  Lemma arrow_output : forall T p q (h : p+q<=arity T),
+    arrow (Vsub (inputs T) h) (output T (p+q)) = output T p.
+
+  Proof.
+    induction T; simpl; intros p q h.
+    assert (p=0). omega. assert (q=0). omega. subst. refl.
+    destruct p; simpl.
+    destruct q; simpl. refl. rewrite Vsub_cons, IHT2. refl.
+    rewrite Vsub_cons, IHT2. refl.
+  Qed.
 
 End simple.
 
@@ -93,11 +109,6 @@ Section typing.
   | tr_app : forall E u v V T, tr E u (V ~~> T) -> tr E v V -> tr E (App u v) T
   | tr_lam : forall E x X v V, tr (add x X E) v V -> tr E (Lam x v) (X ~~> V).
 
-  Definition arity_typ f := arity (typ f).
-  Definition inputs_typ f := inputs (typ f).
-  Definition output_typ f := output (typ f).
-  Definition output_base_typ f := output_base (typ f).
-
 End typing.
 
 (****************************************************************************)
@@ -115,11 +126,6 @@ Module Type ST_Struct.
   Notation Tys := (vector Ty).
  
   Parameter typ : F -> Ty.
-
-  Notation arity_typ := (@arity_typ _ _ typ).
-  Notation inputs_typ := (@inputs_typ _ _ typ).
-  Notation output_typ := (@output_typ _ _ typ).
-  Notation output_base_typ := (@output_base_typ _ _ typ).
 
 End ST_Struct.
 
