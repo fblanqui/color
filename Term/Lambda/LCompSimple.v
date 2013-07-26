@@ -148,10 +148,11 @@ Module Make (Export ST : ST_Struct)
 
     (** Computability of vectors of terms.
 
-It is defined in such a way that [Ts] can contain more types than
-necessary (i.e. the length [n] of [Ts] can be bigger than or equal to
-the length [p] of [ts]), but the result does not depend on these
-extras types. *)
+[vint] is defined in such a way that as much types [Ts] as there are
+terms [ts] must be given, but [Ts] can contain more types than
+necessary (i.e. the length [n] of [Ts] can be bigger than the length
+[p] of [ts]). However, the result does not depend on these extras
+types. *)
 
     Fixpoint vint n (Ts : Tys n) p (ts : Tes p) :=
       match Ts, ts with
@@ -162,12 +163,48 @@ extras types. *)
 
     (*COQ: [Functional Scheme vint] does not seem to end. *)
 
-    Lemma int_Vnth : forall n (Ts : Tys n) p (ts : Tes p)
-      j (jn : j<n) (jp : j<p), vint Ts ts -> int (Vnth Ts jn) (Vnth ts jp).
+    Lemma vint_le : forall n (Ts : Tys n) p (ts : Tes p),
+      vint Ts ts -> p <= n.
 
     Proof.
-      induction Ts; destruct ts; simpl vint; intros j jn jp; intuition.
+      induction Ts; destruct ts; simpl; try omega.
+      intros [h1 h2]. gen (IHTs _ _ h2). omega.
+    Qed.
+
+    Arguments vint_le [n Ts p ts] _.
+
+    Lemma vint_int_Vnth : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
+      forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp).
+
+    Proof.
+      induction Ts; destruct ts; simpl vint; intros i j jn jp; intuition.
       destruct j; simpl. hyp. apply IHTs. hyp.
+    Qed.
+
+    Lemma int_Vnth_vint : forall n (Ts : Tys n) p (ts : Tes p), p <= n ->
+      (forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp))
+      -> vint Ts ts.
+
+    Proof.
+      induction Ts; destruct ts; intros a b; simpl; auto. omega. split.
+      assert (p: 0<S n). omega. assert (q:0<S n0). omega. gen (b _ p q). auto.
+      apply IHTs. omega. intros j p q.
+      assert (p': S j<S n). omega. assert (q':S j<S n0). omega. gen (b _ p' q').
+      rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (S j)). 2: omega.
+      assert (c : Vnth Ts (Vnth_cons_tail_aux p' l) = Vnth Ts p).
+      apply Vnth_eq. omega.
+      assert (d : Vnth ts (Vnth_cons_tail_aux q' l) = Vnth ts q).
+      apply Vnth_eq. omega.
+      rewrite c, d. auto.
+    Qed.
+
+    Lemma vint_sub : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
+      forall i k (h : i+k<=n) k' (h' : i+k'<= p), k'<=k ->
+        vint (Vsub Ts h) (Vsub ts h').
+
+    Proof.
+      intros n Ts p ts a i k h k' h' b. apply int_Vnth_vint. hyp.
+      intros j jk jk'. rewrite 2!Vnth_sub. apply vint_int_Vnth. hyp.
     Qed.
 
     Lemma vint_typ_cast : forall n (Ts : Tys n) n' (h : n=n') p (ts : Tes p),
@@ -184,10 +221,22 @@ extras types. *)
 
     Proof. intros n Ts p ts p' e. subst. rewrite Vcast_refl. refl. Qed.
 
-    Lemma vint_term_app_l : forall p (ts : Tes p) q (us : Tes q) n (Ts : Tys n),
+    Lemma vint_term_app_l : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q),
       vint Ts (Vapp ts us) -> vint Ts ts.
 
-    Proof. induction ts; intros q us m Ts; simpl; destruct Ts; fo. Qed.
+    Proof.
+      intros n Ts p ts q us; revert p ts q us n Ts.
+      induction ts; intros q us m Ts; simpl; destruct Ts; fo.
+    Qed.
+
+    Lemma vint_term_app_r : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q)
+      (h : vint Ts (Vapp ts us)), vint (Vsub Ts (vint_le h)) us.
+
+    Proof.
+      intros n Ts p ts q us h.
+      assert (a : p+q<=p+q). omega. rewrite <- Vsub_app_r with (v1:=ts) (h:=a).
+      apply vint_sub. hyp. refl.
+    Qed.
 
     Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
       vint Ts ts -> Vforall (SN R_aeq) ts.
@@ -269,6 +318,7 @@ extras types. *)
   End int.
 
   Arguments cp_int [Bint] _ T.
+  Arguments vint_term_app_r [Bint n Ts p ts q us] _.
 
 End Make.
 
