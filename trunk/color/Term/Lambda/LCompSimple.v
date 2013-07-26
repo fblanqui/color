@@ -198,13 +198,21 @@ types. *)
       rewrite c, d. auto.
     Qed.
 
-    Lemma vint_sub : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
+    Lemma vint_sub_intro : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
       forall i k (h : i+k<=n) k' (h' : i+k'<= p), k'<=k ->
         vint (Vsub Ts h) (Vsub ts h').
 
     Proof.
       intros n Ts p ts a i k h k' h' b. apply int_Vnth_vint. hyp.
       intros j jk jk'. rewrite 2!Vnth_sub. apply vint_int_Vnth. hyp.
+    Qed.
+
+    Lemma vint_sub_elim : forall n (Ts : Tys n) p (ts : Tes p) (h : 0+p<=n),
+      vint Ts ts -> vint (Vsub Ts h) ts.
+
+    Proof.
+      intros n Ts p ts h i. apply int_Vnth_vint. refl.
+      intros j j1 j2. rewrite Vnth_sub. apply vint_int_Vnth. hyp.
     Qed.
 
     Lemma vint_typ_cast : forall n (Ts : Tys n) n' (h : n=n') p (ts : Tes p),
@@ -235,7 +243,7 @@ types. *)
     Proof.
       intros n Ts p ts q us h.
       assert (a : p+q<=p+q). omega. rewrite <- Vsub_app_r with (v1:=ts) (h:=a).
-      apply vint_sub. hyp. refl.
+      apply vint_sub_intro. hyp. refl.
     Qed.
 
     Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
@@ -318,6 +326,7 @@ types. *)
   End int.
 
   Arguments cp_int [Bint] _ T.
+  Arguments vint_term_app_l [Bint n Ts p ts q us] _.
   Arguments vint_term_app_r [Bint n Ts p ts q us] _.
 
 End Make.
@@ -343,7 +352,7 @@ Module SN_beta (Export ST : ST_Struct).
     (* We apply [tr_sn] by using [Bint] as interpretation. *)
     apply tr_sn with (Bint:=Bint). hyp.
     (* We now prove that every symbol [f] is computable. *)
-    intro f. set (n := arity_typ f).
+    intro f. set (n := arity (typ f)).
     (* [f] is computable if for every vector [ts] of [n] computable terms,
     [apps (Fun f) ts] is computable. *)
     apply int_arrow with (n:=n). refl. intros vs hvs.
