@@ -173,6 +173,69 @@ Section term.
     rewrite IHu1, app_apps, head_apps, head_head, <- IHu1. refl.
   Qed.
 
+  Lemma nb_args_apps : forall n (ts : Tes n) t,
+    nb_args (apps t ts) = nb_args t + n.
+
+  Proof. induction ts; intro t; simpl. omega. rewrite IHts. simpl. omega. Qed.
+
+  Lemma eq_apps_head : forall p (ts : Tes p) q (us : Tes q) a b,
+    apps a ts = apps b us -> nb_args a = nb_args b -> a = b.
+
+  Proof.
+    induction ts; destruct us; intros a b e1 e2; simpl in *.
+    hyp.
+    gen (f_equal nb_args e1).
+      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+    gen (f_equal nb_args e1).
+      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
+    gen (IHts _ us (App a h) (App b h0) e1 i); intro j. inversion j. refl.
+  Qed.
+
+  Arguments eq_apps_head [p ts q us a b] _ _.
+
+  Lemma eq_apps_nb_args : forall p (ts : Tes p) q (us : Tes q) a b,
+    apps a ts = apps b us -> nb_args a = nb_args b -> p = q.
+
+  Proof.
+    induction ts; destruct us; intros a b e1 e2; simpl in *.
+    refl.
+    gen (f_equal nb_args e1).
+      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+    gen (f_equal nb_args e1).
+      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
+    gen (IHts _ us (App a h) (App b h0) e1 i); intro j. omega.
+  Qed.
+
+  Arguments eq_apps_nb_args [p ts q us a b] _ _.
+
+  Lemma eq_apps_nb_args_sym : forall p (ts : Tes p) q (us : Tes q) a b,
+    apps a ts = apps b us -> nb_args a = nb_args b -> q = p.
+
+  Proof. intros p ts q us a b e. sym. eapply eq_apps_nb_args. apply e. hyp. Qed.
+
+  Arguments eq_apps_nb_args_sym [p ts q us a b] _ _.
+
+  Lemma eq_apps_args : forall p (ts : Tes p) q (us : Tes q) a b
+    (h1 : apps a ts = apps b us) (h2 : nb_args a = nb_args b),
+    ts = Vcast us (eq_apps_nb_args_sym h1 h2).
+
+  Proof.
+    induction ts; destruct us; intros a b e1 e2; simpl in *.
+    refl.
+    gen (f_equal nb_args e1).
+      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+    gen (f_equal nb_args e1).
+      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
+    gen (eq_apps_head e1 i); intro j. inversion j; subst. apply Vtail_eq.
+    gen (IHts _ us (App b h0) (App b h0) e1 i); intro k. rewrite k at 1.
+    apply Vcast_pi.
+  Qed.
+
+  Arguments eq_apps_args [p ts q us a b] _ _.
+
   Lemma eq_apps_fun_head : forall f p (ts : Tes p) g q (us : Tes q),
     apps (Fun f) ts = apps (Fun g) us -> f = g.
 
@@ -182,11 +245,6 @@ Section term.
   Qed.
 
   Arguments eq_apps_fun_head [f p ts g q us] _.
-
-  Lemma nb_args_apps : forall n (ts : Tes n) t,
-    nb_args (apps t ts) = nb_args t + n.
-
-  Proof. induction ts; intro t; simpl. omega. rewrite IHts. simpl. omega. Qed.
 
   Lemma eq_apps_fun_nb_args : forall f p (ts : Tes p) g q (us : Tes q),
     apps (Fun f) ts = apps (Fun g) us -> p = q.
@@ -198,7 +256,24 @@ Section term.
 
   Arguments eq_apps_fun_nb_args [f p ts g q us] _.
 
-  Lemma eq_apps_head : forall n (ts us : Tes n) t u,
+  Lemma eq_apps_fun_nb_args_sym : forall f p (ts : Tes p) g q (us : Tes q),
+    apps (Fun f) ts = apps (Fun g) us -> q = p.
+
+  Proof. intros f p ts g q us e. sym. eapply eq_apps_fun_nb_args. apply e. Qed.
+
+  Arguments eq_apps_fun_nb_args_sym [f p ts g q us] _.
+
+  Lemma eq_apps_fun_args : forall f p (ts : Tes p) g q (us : Tes q)
+    (h : apps (Fun f) ts = apps (Fun g) us),
+    ts = Vcast us (eq_apps_fun_nb_args_sym h).
+
+  Proof.
+    intros f p ts g q us h.
+    assert (i : nb_args (Fun f) = nb_args (Fun g)). refl.
+    gen (eq_apps_args h i); intro j. rewrite j at 1. apply Vcast_pi.
+  Qed.
+
+  Lemma eq_apps_nb_args_head : forall n (ts us : Tes n) t u,
     apps t ts = apps u us -> t = u.
 
   Proof.
@@ -207,20 +282,20 @@ Section term.
     VSntac us. simpl. intro e. gen (IHts _ _ _ e). intro i. inversion i. refl.
   Qed.
 
-  Arguments eq_apps_head [n ts us t u] _.
+  Arguments eq_apps_nb_args_head [n ts us t u] _.
 
-  Lemma eq_apps_args : forall n (ts us : Tes n) t u,
+  Lemma eq_apps_nb_args_args : forall n (ts us : Tes n) t u,
     apps t ts = apps u us -> ts = us.
 
   Proof.
     induction ts; simpl; intros us t u.
     VOtac. refl.
     VSntac us. simpl. intro e.
-    gen (eq_apps_head e); intro i. inversion i. subst t h; clear i.
+    gen (eq_apps_nb_args_head e); intro i. inversion i. subst t h; clear i.
     apply Vtail_eq. eapply IHts. apply e.
   Qed.
 
-  Arguments eq_apps_args [n ts us t u] _.
+  Arguments eq_apps_nb_args_args [n ts us t u] _.
 
 (****************************************************************************)
 (** ** Structure for sets of variables. *)
@@ -292,8 +367,9 @@ End term.
 
 Arguments eq_apps_fun_head [F X f p ts g q us] _.
 Arguments eq_apps_fun_nb_args [F X f p ts g q us] _.
-Arguments eq_apps_head [F X n ts us t u] _.
-Arguments eq_apps_args [F X n ts us t u] _.
+Arguments eq_apps_fun_args [F X f p ts g q us] _.
+Arguments eq_apps_nb_args_head [F X n ts us t u] _.
+Arguments eq_apps_nb_args_args [F X n ts us t u] _.
 
 (****************************************************************************)
 (** ** Tactics. *)
@@ -534,6 +610,8 @@ Module Make (Export L : L_Struct).
     exfalso. omega.
     destruct i; simpl; set_iff. auto. intro a. right. eapply IHts. apply a.
   Qed.
+
+  Arguments In_fvs_Vnth [x n ts i h] _.
 
   (** The monotone closure preserves free variables. *)
 
