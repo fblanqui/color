@@ -146,9 +146,9 @@ A) A] if [A] is not empty). *)
   Fixpoint subs s (t : Te) :=
     match t with
       | LTerm.Var x => s x
-      | LTerm.Fun f => t
-      | LTerm.App u v => App (subs s u) (subs s v)
-      | LTerm.Lam x u =>
+      | Fun f => t
+      | App u v => App (subs s u) (subs s v)
+      | Lam x u =>
         let x' := var x u s in Lam x' (subs (update x (Var x') s) u)
     end.
 
