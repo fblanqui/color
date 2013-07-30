@@ -588,4 +588,14 @@ Module Make (Export CP : CP_Struct).
     apply cp_R_aeq_arr; fo. apply cp_neutral_arr; fo.
   Qed.
 
+  (** Monotony properties of [arr]. *)
+
+  Require Import SetUtil.
+
+  Instance arr_incl : Proper (incl --> incl ==> incl) arr.
+
+  Proof.
+    intros X X' X'X Y Y' YY' t ht u hu. apply YY'. apply ht. apply X'X. hyp.
+  Qed.
+
 End Make.
