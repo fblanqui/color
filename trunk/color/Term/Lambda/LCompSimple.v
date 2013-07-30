@@ -29,23 +29,25 @@ Module Make (Export ST : ST_Struct)
 
   Section int.
 
-    Variables (Bint : So -> Te -> Prop) (cp_Bint : forall b, cp (Bint b)).
+    Variables (I : So -> Te -> Prop) (cp_I : forall b, cp (I b)).
 
-    (** Interpretation of simple types *)
+    (** ** Interpretation of simple types *)
 
     Fixpoint int T :=
       match T with
-        | Base b => Bint b
+        | Base b => I b
         | Arr A B => arr (int A) (int B)
       end.
 
-    Lemma int_base b t : Bint b t <-> int (Base b) t.
+    Lemma int_base b t : I b t <-> int (Base b) t.
 
     Proof. refl. Qed.
 
+    (** The interpretation of a type is a computability predicate. *)
+
     Lemma cp_int : forall T, cp (int T).
 
-    Proof. induction T; simpl. apply cp_Bint. apply cp_arr; hyp. Qed.
+    Proof. induction T; simpl. apply cp_I. apply cp_arr; hyp. Qed.
 
     Global Instance int_aeq : Proper (Logic.eq ==> aeq ==> iff) int.
 
@@ -75,8 +77,8 @@ Module Make (Export ST : ST_Struct)
       intros E x T hx. gen (cp_int T). intros [T1 _ _ T4]. apply cp_var; hyp.
     Qed.
 
-    (** Termination proof assuming that function symbols are
-      computable. *)
+(****************************************************************************)
+(** Termination proof assuming that function symbols are computable. *)
 
     Variable comp_fun : forall f, int (typ f) (Fun f).
 
@@ -146,7 +148,8 @@ Module Make (Export ST : ST_Struct)
       apply ht. apply valid_id.
     Qed.
 
-    (** Computability of vectors of terms.
+(****************************************************************************)
+(** ** Computability of vectors of terms.
 
 [vint] is defined in such a way that as much types [Ts] as there are
 terms [ts] must be given, but [Ts] can contain more types than
@@ -162,6 +165,8 @@ types. *)
       end.
 
     (*COQ: [Functional Scheme vint] does not seem to end. *)
+
+   (** Basic properties of [vint]. *)
 
     Lemma vint_le : forall n (Ts : Tys n) p (ts : Tes p),
       vint Ts ts -> p <= n.
@@ -281,7 +286,7 @@ types. *)
       induction V; simpl; intros v n hn hv.
       (* base *)
       assert (n=0). omega. subst n.
-      change (Bint s (apps v Vnil)). apply hv. auto.
+      change (I s (apps v Vnil)). apply hv. auto.
       (* arrow *)
       destruct n. gen (hv Vnil). fo.
       intros v1 h1. apply IHV2 with (n:=n). omega. intros vs hvs.
@@ -325,9 +330,61 @@ types. *)
 
   End int.
 
-  Arguments cp_int [Bint] _ T.
-  Arguments vint_term_app_l [Bint n Ts p ts q us] _.
-  Arguments vint_term_app_r [Bint n Ts p ts q us] _.
+  Arguments cp_int [I] _ T.
+  Arguments vint_term_app_l [I n Ts p ts q us] _.
+  Arguments vint_term_app_r [I n Ts p ts q us] _.
+
+(****************************************************************************)
+(** * Monotony properties of [int] and [vint]. *)
+
+  Require Import SetUtil.
+
+  Section mon.
+
+    Variables (eq_dec : forall x y : So, {x=y}+{~x=y})
+      (I J : So -> set Te) (a : So) (IJa : I a [= J a)
+      (IJ : forall b, b <> a -> I b [=] J b).
+
+    Lemma int_mon : forall T,
+      (pos a T -> int I T [= int J T) /\ (neg a T -> int J T [= int I T).
+
+    Proof.
+      induction T; simpl_pos.
+      destruct (eq_dec s a). subst s. fo. fo.
+      destruct IHT1 as [i1 i2]. destruct IHT2 as [j1 j2].
+      split; intros [h1 h2]; apply arr_incl; fo.
+    Qed.
+
+    Lemma int_pos : forall T, pos a T -> int I T [= int J T.
+
+    Proof. intros T h. destruct (int_mon T) as [i _]. fo. Qed.
+
+    Lemma int_neg : forall T, neg a T -> int J T [= int I T.
+
+    Proof. intros T h. destruct (int_mon T) as [_ i]. fo. Qed.
+
+    Lemma vint_mon : forall n (Ts : Tys n) p (ts : Tes p),
+      (Vforall (pos a) Ts -> vint I Ts ts -> vint J Ts ts)
+      /\ (Vforall (neg a) Ts -> vint J Ts ts -> vint I Ts ts).
+
+    Proof.
+      induction Ts; intro p; destruct ts; simpl. fo. fo. fo.
+      destruct (IHTs _ ts) as [a1 a2]. split; intros [h1 h2] [i1 i2].
+      split. apply int_pos; hyp. apply a1; hyp.
+      split. apply int_neg; hyp. apply a2; hyp.
+    Qed.
+
+    Lemma vint_pos : forall n (Ts : Tys n) p (ts : Tes p),
+      Vforall (pos a) Ts -> vint I Ts ts -> vint J Ts ts.
+
+    Proof. intros n Ts p ts h. destruct (vint_mon Ts ts) as [i _]. fo. Qed.
+
+    Lemma vint_neg : forall n (Ts : Tys n) p (ts : Tes p),
+      Vforall (neg a) Ts -> vint J Ts ts -> vint I Ts ts.
+
+    Proof. intros n Ts p ts h. destruct (vint_mon Ts ts) as [_ i]. fo. Qed.
+
+  End mon.
 
 End Make.
 
@@ -346,11 +403,11 @@ Module SN_beta (Export ST : ST_Struct).
   Lemma tr_sn_beta_aeq : forall E v V, E |- v ~: V -> SN beta_aeq v.
 
   Proof.
-    (* The interpretation [Bint := fun (_ : B) => SN beta_aeq] is valid. *)
-    set (Bint := fun (_ : So) => SN beta_aeq).
-    assert (cp_Bint : forall b, cp (Bint b)). intro b. apply cp_SN.
-    (* We apply [tr_sn] by using [Bint] as interpretation. *)
-    apply tr_sn with (Bint:=Bint). hyp.
+    (* The interpretation [I := fun (_ : B) => SN beta_aeq] is valid. *)
+    set (I := fun (_ : So) => SN beta_aeq).
+    assert (cp_I : forall b, cp (I b)). intro b. apply cp_SN.
+    (* We apply [tr_sn] by using [I] as interpretation. *)
+    apply tr_sn with (I:=I). hyp.
     (* We now prove that every symbol [f] is computable. *)
     intro f. set (n := arity (typ f)).
     (* [f] is computable if for every vector [ts] of [n] computable terms,
@@ -359,10 +416,10 @@ Module SN_beta (Export ST : ST_Struct).
     (* The interpretation of [output_base (typ f)] is a computability
       predicate. *)
     rewrite output_arity. simpl. set (b := output_base (typ f)).
-    gen (cp_Bint b). intros [b1 b2 b3 b4].
+    gen (cp_I b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
     cut (SN (vaeq_prod beta) vs).
-    Focus 2. apply sn_vaeq_prod. eapply vint_sn. apply cp_Bint. apply hvs.
+    Focus 2. apply sn_vaeq_prod. eapply vint_sn. apply cp_I. apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
     induction 1.
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
