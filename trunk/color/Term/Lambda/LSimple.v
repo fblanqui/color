@@ -143,10 +143,6 @@ positively/negatively in a simple type. *)
 
     Proof. refl. Qed.
 
-    Hint Rewrite pos_base pos_arrow neg_base neg_arrow : pos.
-
-    Ltac simpl_pos := autorewrite with pos.
-
 (** Some properties of [occurs], [pos] and [neg]. *)
 
     Lemma not_occurs_pos_neg : forall {T}, ~occurs a T -> pos T /\ neg T.
@@ -166,6 +162,10 @@ positively/negatively in a simple type. *)
 End simple.
 
 Infix "~~>" := Arr (at level 55, right associativity).
+
+Hint Rewrite pos_base pos_arrow neg_base neg_arrow : pos.
+
+Ltac simpl_pos := autorewrite with pos; simpl.
 
 (****************************************************************************)
 (** * Typing relation
