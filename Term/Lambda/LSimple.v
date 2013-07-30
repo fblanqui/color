@@ -25,6 +25,8 @@ Section simple.
   | Base : So -> Ty
   | Arr : Ty -> Ty -> Ty.
 
+  Infix "~~>" := Arr (at level 55, right associativity).
+
 (** Basic functions on simple types. *)
 
   Fixpoint arity (T : Ty) :=
@@ -63,7 +65,7 @@ Section simple.
   Fixpoint arrow n (Ts : Tys n) U :=
     match Ts with
       | Vnil => U
-      | Vcons T _ Ts' => Arr T (arrow Ts' U)
+      | Vcons T _ Ts' => T ~~> arrow Ts' U
     end.
 
   Lemma arrow_cast : forall n (Ts : Tys n) U n' (h:n=n'),
@@ -102,6 +104,64 @@ Section simple.
     Qed.
 
   End occurs.
+
+(** Predicate saying that a type constant occurs only
+positively/negatively in a simple type. *)
+
+  Section pos.
+
+    Variable a : So.
+
+    Fixpoint pos T :=
+      match T with
+        | Base _ => True
+        | Arr A B => neg A /\ pos B
+      end
+
+    with neg T :=
+      match T with
+        | Base b => b <> a
+        | Arr A B => pos A /\ neg B
+      end.
+
+    (*COQ: [pos] and [neg] not [simpl]ified outside the section. See bug
+    report https://coq.inria.fr/bugs/show_bug.cgi?id=3097 *)
+
+    Lemma pos_base : forall b, pos (Base b) <-> True.
+
+    Proof. refl. Qed.
+
+    Lemma pos_arrow : forall A B, pos (A ~~> B) <-> neg A /\ pos B.
+
+    Proof. refl. Qed.
+
+    Lemma neg_base : forall b, neg (Base b) <-> b <> a.
+
+    Proof. refl. Qed.
+
+    Lemma neg_arrow : forall A B, neg (A ~~> B) <-> pos A /\ neg B.
+
+    Proof. refl. Qed.
+
+    Hint Rewrite pos_base pos_arrow neg_base neg_arrow : pos.
+
+    Ltac simpl_pos := autorewrite with pos.
+
+(** Some properties of [occurs], [pos] and [neg]. *)
+
+    Lemma not_occurs_pos_neg : forall {T}, ~occurs a T -> pos T /\ neg T.
+
+    Proof. induction T; simpl; fo. Qed.
+
+    Lemma not_occurs_pos : forall {T}, ~occurs a T -> pos T.
+
+    Proof. intros T h. gen (not_occurs_pos_neg h). fo. Qed.
+
+    Lemma not_occurs_neg : forall {T}, ~occurs a T -> neg T.
+
+    Proof. intros T h. gen (not_occurs_pos_neg h). fo. Qed.
+
+  End pos.
 
 End simple.
 
