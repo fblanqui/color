@@ -35,7 +35,7 @@ Arguments incl {X} A B.
 Arguments equiv {X} A B.
 Arguments empty {X} _.
 
-Infix "[=" := incl (at level 70).
+Infix "[= " := incl (at level 70).
 Infix "[=]" := equiv (at level 70).
 Infix "++" := union (right associativity, at level 60).
 Infix "::" := add (at level 60, right associativity).
@@ -63,6 +63,10 @@ Lemma equiv_elim : forall X (A B : set X), A [=] B <-> A [= B /\ B [= A.
 Proof. fo. Qed.
 
 Instance equiv_rel A : Equivalence (@equiv A).
+
+Proof. fo. Qed.
+
+Instance incl_equiv A : Proper (equiv ==> equiv ==> iff) (@incl A).
 
 Proof. fo. Qed.
 
