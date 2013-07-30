@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import VecUtil LogicUtil.
+Require Import VecUtil LogicUtil Relations.
 Require Export LBeta.
 
 (****************************************************************************)
@@ -24,6 +24,8 @@ Section simple.
   Inductive Ty : Type :=
   | Base : So -> Ty
   | Arr : Ty -> Ty -> Ty.
+
+(** Basic functions on simple types. *)
 
   Fixpoint arity (T : Ty) :=
     match T with
@@ -55,6 +57,9 @@ Section simple.
       | Arr T1 T2 => Vcons T1 (inputs T2)
     end.
 
+(** Building the type [T1 ~~> .. ~~> Tn -> U] from the type vector
+[Ts] and the type [U]. *)
+
   Fixpoint arrow n (Ts : Tys n) U :=
     match Ts with
       | Vnil => U
@@ -76,6 +81,27 @@ Section simple.
     destruct q; simpl. refl. rewrite Vsub_cons, IHT2. refl.
     rewrite Vsub_cons, IHT2. refl.
   Qed.
+
+(** [occurs a T] says if [T] contains some [a]. *)
+
+  Section occurs.
+
+    Fixpoint occurs a T :=
+      match T with
+        | Base b => a = b
+        | Arr A B => occurs a A \/ occurs a B
+      end.
+ 
+    Variable eq_dec : forall x y : So, {x = y}+{~x = y}.
+
+    Lemma occurs_dec : forall a T, {occurs a T}+{~occurs a T}.
+
+    Proof.
+      intro a. induction T; simpl. apply eq_dec.
+      destruct IHT1. fo. destruct IHT2. fo. right. fo.
+    Qed.
+
+  End occurs.
 
 End simple.
 
