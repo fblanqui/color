@@ -40,7 +40,7 @@ they define the same relation. See below for more details. *)
 
   Definition meq : relation graph := XMap.Equiv XSet.Equal.
 
-  Lemma Equal_meq : Equal << meq.
+  Instance Equal_meq : subrelation Equal meq.
 
   Proof. intros g h gh. apply Equal_Equiv with (eq:=XSet.Equal) in gh; fo. Qed.
 
@@ -74,17 +74,11 @@ they define the same relation. See below for more details. *)
     erewrite XMapFacts.find_m. apply h1. sym. hyp. refl.
   Qed.
 
+  (*COQ: can be removed? Coq stuck in In_preds_rel *)
   Instance rel_meq_ext : Proper (meq ==> eq ==> eq ==> iff) rel.
 
   Proof. apply Proper_inter_transp_3; class.
     (*COQ: why isn't done automatically?*) apply Equiv_Sym. class.
-  Qed.
-
-  Instance rel_Equal_ext : Proper (Equal ==> eq ==> eq ==> iff) rel.
-
-  Proof.
-    eapply Proper_inclusion_3. 5: apply rel_meq_ext.
-    apply Equal_meq. refl. refl. refl.
   Qed.
 
   Lemma find_Some_rel {g x s} : find x g = Some s ->
@@ -112,17 +106,14 @@ they define the same relation. See below for more details. *)
     rewrite xx', ss', aa', bb'. refl.
   Qed.
 
-  (*REMOVE?
-  Instance succ_m_ext : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> iff) succ.
-
-  Proof. apply Proper_inter_transp_4; class. Qed.*)
-
+  (*COQ: can be removed? used in rel_set_fold_add_edge *)
   Instance succ_m' : Proper (eq ==> XSet.Equal ==> inclusion) succ.
 
   Proof.
     intros x x' xx' s s' ss' a b. unfold succ. rewrite xx', ss'. tauto.
   Qed.
 
+  (*COQ: can be removed? used in rel_set_fold_add_edge *)
   Instance succ_m : Proper (eq ==> XSet.Equal ==> same_relation) succ.
 
   Proof. apply Proper_inter_transp_2; class. Qed.
@@ -163,19 +154,6 @@ they define the same relation. See below for more details. *)
 
   Definition succ_list x s a (b : X.t) := eq a x /\ InA eq b s.
 
-  Instance succ_list_m' :
-    Proper (eq ==> eqlistA eq ==> inclusion) succ_list.
-
-  Proof.
-    intros x x' xx' s s' ss' a b. unfold succ_list. rewrite xx', ss'. tauto.
-  Qed.
-
-  (*REMOVE?
-  Instance succ_list_m :
-    Proper (eq ==> eqlistA eq ==> same_relation) succ_list.
-
-  Proof. apply Proper_inter_transp_2; class. Qed.*)
-
   Instance succ_list_m_ext' :
     Proper (eq ==> eqlistA eq ==> eq ==> eq ==> impl) succ_list.
 
@@ -183,12 +161,6 @@ they define the same relation. See below for more details. *)
     intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ_list.
     rewrite xx', ss', aa', bb'. refl.
   Qed.
-
-  (*REMOVE?
-  Instance succ_list_m_ext :
-    Proper (eq ==> eqlistA eq ==> eq ==> eq ==> iff) succ_list.
-
-  Proof. apply Proper_inter_transp_4; class. Qed.*)
 
   Lemma succ_list_nil : forall x, succ_list x nil == empty_rel.
 
@@ -209,14 +181,6 @@ they define the same relation. See below for more details. *)
 (** product relation *)
 
   Definition prod s t a b := XSet.In a s /\ XSet.In b t.
-
-  (*REMOVE?
-  Lemma prod_m : Proper (XSet.Equal ==> XSet.Equal ==> same_relation) prod.
-
-  Proof.
-    intros s s' ss' t t' tt'. rewrite rel_eq. intros a b. unfold prod.
-    rewrite ss', tt'. refl.
-  Qed.*)
 
   Lemma prod_m_ext :
     Proper (XSet.Equal ==> XSet.Equal ==> eq ==> eq ==> iff) prod.
@@ -289,10 +253,6 @@ same relation *)
     trans g. hyp. trans h. hyp. hyp.
   Qed.
 
-  (*REMOVE?Instance gle_geq : Proper (geq ==> geq ==> iff) gle.
-
-  Proof. apply Proper_inter_transp_2; class. Qed.*)
-
 (***********************************************************************)
 (** properties of rel *)
 
@@ -303,32 +263,13 @@ same relation *)
     rewrite <- xx', <- yy'. intuition.
   Qed.
 
-  (*REMOVE?Instance rel_gle : Proper (gle ==> inclusion) rel.
-
-  Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.*)
-
-  (*REMOVE?
-  (*TODO: follows from a more general theorem on Proper and subrelations*)
-  Instance rel_geq' : Proper (geq ==> inclusion) rel.
-
-  Proof. intros g g' gg' x y [s [s1 s2]]. apply gg'. exists s. intuition. Qed.*)
-
-  (*REMOVE?
-  Instance rel_geq : Proper (geq ==> same_relation) rel.
-
-  Proof. apply Proper_inter_transp_1; class. Qed.*)
-
+  (*COQ: can be removed? used in TransClos *)
   Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
     rewrite <- xx', <- yy'. intuition.
   Qed.
-
-  (*REMOVE?
-  Instance rel_geq_ext : Proper (geq ==> eq ==> eq ==> iff) rel.
-
-  Proof. apply Proper_inter_transp_3; class. Qed.*)
 
 (***********************************************************************)
 (** successors of a node *)
@@ -387,6 +328,7 @@ same relation *)
     refl.
   Qed.
 
+  (*COQ: can be removed? used in geq_add_remove *)
   Instance succs_geq : Proper (eq ==> geq ==> XSet.Equal) succs.
 
   Proof.
@@ -480,6 +422,7 @@ successors of g' *)
     rewrite xx', ss'. destruct (XSet.mem x' s'). rewrite yy', tt'. refl. hyp.
   Qed.
 
+  (*COQ: can be removed? apply preds_aux_m doesn't work in some cases *)
   Instance preds_aux_m' :
     Proper (Logic.eq ==> eq ==> Logic.eq ==> XSet.Equal ==> XSet.Equal)
     preds_aux.
@@ -639,6 +582,7 @@ successors of g' *)
     rewrite gg'. refl.
   Qed.
 
+  (*COQ: can be removed? used in TransClos*)
   Instance add_edge_geq : Proper (eq ==> eq ==> geq ==> geq) add_edge.
 
   Proof.
