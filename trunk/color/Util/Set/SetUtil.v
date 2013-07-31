@@ -9,7 +9,7 @@ Infinite sets
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil Morphisms.
+Require Import LogicUtil RelUtil Morphisms Basics.
 
 Section defs.
 
@@ -17,9 +17,9 @@ Section defs.
 
   Definition set := X -> Prop.
 
-  Definition incl : relation set := fun A B => forall x, A x -> B x.
+  Definition incl := pointwise_relation X impl.
 
-  Definition equiv : relation set := fun A B => forall x, A x <-> B x.
+  Definition equiv := pointwise_relation X iff.
 
   Definition empty : set := fun _ => False.
 
@@ -49,37 +49,27 @@ Proof. fo. Qed.
 
 Lemma incl_appl : forall X (A B : set X), A [= A ++ B.
 
-Proof. unfold incl, union. auto. Qed.
+Proof. fo. Qed.
 
 Lemma incl_appr : forall X (A B : set X), A [= B ++ A.
 
-Proof. unfold incl, union. auto. Qed.
+Proof. fo. Qed.
 
 (***********************************************************************)
 (** Equality. *)
+
+Lemma equiv_inter_transp : forall X, @equiv X == inter_transp (@incl X).
+
+Proof. fo. Qed.
 
 Lemma equiv_elim : forall X (A B : set X), A [=] B <-> A [= B /\ B [= A.
 
 Proof. fo. Qed.
 
-Instance equiv_rel A : Equivalence (@equiv A).
-
-Proof. fo. Qed.
-
-Instance incl_equiv A : Proper (equiv ==> equiv ==> iff) (@incl A).
-
-Proof. fo. Qed.
-
-(*TODO? define a meta-theorem when same_relation is defined as the
-equivalence relation associated to incl (inter R (transp R))?*)
-
 Instance incl_equiv1 A1 B (f : set A1 -> relation B) :
   Proper (incl ==> inclusion) f -> Proper (equiv ==> same_relation) f.
 
-Proof.
-  intros hf s1 s1'. rewrite equiv_elim. intros [s1s1' s1's1].
-  split; apply hf; hyp.
-Qed.
+Proof. intros hf s1 s1'. rewrite equiv_elim. fo. Qed.
 
 Instance incl_equiv2 A1 A2 B (f : set A1 -> set A2 -> relation B) :
   Proper (incl ==> incl ==> inclusion) f ->
