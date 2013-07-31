@@ -304,11 +304,6 @@ Module Make (Export XSet : FSetInterface.S).
       sym. apply ff'; refl. apply ff'; hyp.
     Qed.
 
-    Global Instance Proper_m :
-      Proper (feq ==> iff) (Proper (E.eq ==> eqA ==> eqA)).
-
-    Proof. apply Proper_inter_transp_1; class. Qed.
-
     Global Instance transpose_feq' : Proper (feq ==> impl) (transpose eqA).
 
     Proof.
@@ -316,11 +311,6 @@ Module Make (Export XSet : FSetInterface.S).
       sym. apply ff'. refl. apply ff'; refl.
       rewrite hf. apply ff'. refl. apply ff'; refl.
     Qed.
-
-    (*COQ: get problems in FGraph and other files if added
-    Global Instance transpose_feq : Proper (feq ==> iff) (transpose eqA).
-
-    Proof. apply Proper_inter_transp_1; class. Qed.*)
 
     Global Instance fold_m : forall f, Proper (E.eq ==> eqA ==> eqA) f ->
       Proper (Equal ==> eqA ==> eqA) (fold f).
