@@ -25,6 +25,7 @@ Ltac fo := firstorder.
 Ltac gen t := generalize t.
 
 Ltac ded t := gen t; intro.
+Ltac decomp h := decompose [and or ex] h; clear h.
 
 (***********************************************************************)
 (** [geneq H x e(x)] transforms a goal [G(x)] into
@@ -33,26 +34,6 @@ Ltac ded t := gen t; intro.
 Ltac geneq H x e := gen (refl_equal e); gen (H e);
   clear H; generalize e at -2; let t := fresh "t" in let h := fresh "h" in
     intros t h; revert t h x.
-
-(***********************************************************************)
-(** Tactics for decomposing disjunctions and conjonctions. *)
-
-Ltac decomp h := decompose [and or ex] h; clear h.
-
-(*REMOVE? can be replaced by decomp?*)
-Ltac decomp_hyp H := 
-  match type of H with
-  | _ /\ _ => decompose [and] H
-  | _ \/ _ => decompose [or] H
-  | ex _ => decompose [ex] H
-  | sig _ => decompose record H
-  end;
-  clear H.
-
-Ltac decomp_hyps := repeat
-  match goal with
-    | H: _ |- _ => decomp_hyp H
-  end.
 
 (***********************************************************************)
 (** Tactic that can be used to conclude when there is an assumption of
@@ -79,9 +60,9 @@ Ltac norm e :=
 Ltac norm_in H e :=
   let x := fresh in set (x := e) in H; vm_compute in x; subst x.
 
-Ltac check_eq := vm_compute; refl.
-
 (*FIXME: Tactic Notation "norm" constr(e) "in" ident(H) := norm_in H e.*)
+
+Ltac check_eq := vm_compute; refl.
 
 (***********************************************************************)
 (** Other tactics. *)
@@ -94,7 +75,7 @@ Ltac done :=
    | hyp
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end ].
 
-Tactic Notation "by" tactic(T) := (T; done) .
+Tactic Notation "by" tactic(T) := (T; done).
 
 (***********************************************************************)
 (** Basic theorems on (intuitionist) propositional calculus. *)

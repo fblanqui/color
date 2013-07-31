@@ -66,7 +66,7 @@ Proof with simpl; auto with zarith.
   apply lforall_intro. intros.
   ded (in_list_of_vec H).
   ded (Vbuild_in (fun i ip => (1%Z, mxi ip)) x H0).
-  decomp_hyps. subst...
+  decomp H1. subst...
 Qed.
 
 Lemma defaultPoly_sm n : pstrong_monotone (defaultPoly n).
