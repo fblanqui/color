@@ -78,43 +78,6 @@ Lemma rel_eq : forall A (R S : relation A),
 
 Proof. fo. Qed.
 
-Instance same_relation_ext1 A1 (R1 : relation A1) B (f : A1 -> relation B) :
-  Proper (R1 ==> same_relation) f -> Proper (R1 ==> eq ==> eq ==> iff) f.
-
-Proof. intros hf a1 a1' a1a1' x x' xx' y y' yy'. subst x' y'. fo. Qed.
-
-Instance same_relation_ext2 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  B (f : A1 -> A2 -> relation B) :
-  Proper (R1 ==> R2 ==> same_relation) f ->
-  Proper (R1 ==> R2 ==> eq ==> eq ==> iff) f.
-
-Proof.
-  intros hf a1 a1' a1a1' a2 a2' a2a2' x x' xx' y y' yy'. subst x' y'.
-  revert x y. rewrite <- rel_eq. apply hf; hyp.
-Qed.
-
-Instance same_relation_ext3 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) B (f : A1 -> A2 -> A3 -> relation B) :
-  Proper (R1 ==> R2 ==> R3 ==> same_relation) f ->
-  Proper (R1 ==> R2 ==> R3 ==> eq ==> eq ==> iff) f.
-
-Proof.
-  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' x x' xx' y y' yy'.
-  subst x' y'. revert x y. rewrite <- rel_eq. apply hf; hyp.
-Qed.
-
-Instance same_relation_ext4 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) A4 (R4 : relation A4)
-  B (f : A1 -> A2 -> A3 -> A4 -> relation B) :
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> same_relation) f ->
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> eq ==> eq ==> iff) f.
-
-Proof.
-  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' a4 a4' a4a4'
-    x x' xx' y y' yy'. subst x' y'.
-  revert x y. rewrite <- rel_eq. apply hf; hyp.
-Qed.
-
 (***********************************************************************)
 (** Definition of some properties on relations. *)
 
@@ -210,15 +173,16 @@ Implicit Arguments R_in_sons [A R x y].
 Definition inter_transp A (R : relation A) : relation A :=
   fun x y => R x y /\ R y x.
 
-(*COQ: declaring these Lemma's as Instance's creates problems*)
-
-Lemma inter_transp__Symmetric A (R : relation A) :
-  Symmetric (inter_transp R).
-
-Proof. fo. Qed.
+(*COQ: declaring these Lemma's as Instance's creates problems in
+FSetUtil and FGraph *)
 
 Lemma inter_transp_Reflexive A (R : relation A) :
   Reflexive R -> Reflexive (inter_transp R).
+
+Proof. fo. Qed.
+
+Lemma inter_transp__Symmetric A (R : relation A) :
+  Symmetric (inter_transp R).
 
 Proof. fo. Qed.
 
@@ -227,8 +191,10 @@ Lemma inter_transp_Transitive A (R : relation A) :
 
 Proof. fo. Qed.
 
+(*WARNING: do not declare following Lemmas as Instances *)
+
 Lemma R_inter_transp A (R : relation A) :
-  Transitive R -> Proper (inter_transp R ==> inter_transp R ==> iff) R.
+  Transitive R -> Proper (inter_transp R ==> inter_transp R ==> impl) R.
 
 Proof. fo. Qed.
 
@@ -272,14 +238,6 @@ Qed.
 (***********************************************************************)
 (** Inclusion. *)
 
-(*FIXME: try to remove*)
-Lemma inclusion_elim : forall A (R S : relation A),
-  R << S -> forall x y, R x y -> S x y.
-
-Proof. auto. Qed.
-
-Implicit Arguments inclusion_elim [A R S x y].
-
 Instance inclusion_Refl A : Reflexive (@inclusion A).
 
 Proof. fo. Qed.
@@ -297,45 +255,13 @@ Instance inclusion_same_relation A :
 
 Proof. fo. Qed.
 
-Instance inclusion_ext1 A1 (R1 : relation A1) B (f : A1 -> relation B) :
-  Proper (R1 ==> inclusion) f -> Proper (R1 ==> eq ==> eq ==> impl) f.
+(*FIXME: try to remove*)
+Lemma inclusion_elim : forall A (R S : relation A),
+  R << S -> forall x y, R x y -> S x y.
 
-Proof.
-  intros hf a1 a1' a1a1' x x' xx' y y' yy' h. subst x' y'.
-  eapply hf. apply a1a1'. hyp.
-Qed.
+Proof. auto. Qed.
 
-Instance inclusion_ext2 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  B (f : A1 -> A2 -> relation B) :
-  Proper (R1 ==> R2 ==> inclusion) f ->
-  Proper (R1 ==> R2 ==> eq ==> eq ==> impl) f.
-
-Proof.
-  intros hf a1 a1' a1a1' a2 a2' a2a2' x x' xx' y y' yy' h. subst x' y'.
-  eapply hf. apply a1a1'. apply a2a2'. hyp.
-Qed.
-
-Instance inclusion_ext3 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) B (f : A1 -> A2 -> A3 -> relation B) :
-  Proper (R1 ==> R2 ==> R3 ==> inclusion) f ->
-  Proper (R1 ==> R2 ==> R3 ==> eq ==> eq ==> impl) f.
-
-Proof.
-  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' x x' xx' y y' yy' h.
-  subst x' y'. eapply hf. apply a1a1'. apply a2a2'. apply a3a3'. hyp.
-Qed.
-
-Instance inclusion_ext4 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) A4 (R4 : relation A4)
-  B (f : A1 -> A2 -> A3 -> A4 -> relation B) :
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> inclusion) f ->
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> eq ==> eq ==> impl) f.
-
-Proof.
-  intros hf a1 a1' a1a1' a2 a2' a2a2' a3 a3' a3a3' a4 a4' a4a4'
-    x x' xx' y y' yy' h. subst x' y'. eapply hf.
-  apply a1a1'. apply a2a2'. apply a3a3'. apply a4a4'. hyp.
-Qed.
+Implicit Arguments inclusion_elim [A R S x y].
 
 (***********************************************************************)
 (** Infinite sequences. *)
