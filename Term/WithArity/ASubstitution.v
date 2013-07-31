@@ -37,7 +37,6 @@ Definition single x t : substitution :=
 
 Definition sub : substitution -> term -> term := @term_int Sig I0.
 
-(*REMOVE?*)
 Lemma sub_fun : forall s f v, sub s (Fun f v) = Fun f (Vmap (sub s) v).
 
 Proof. refl. Qed.
