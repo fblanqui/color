@@ -9,7 +9,8 @@ algebra morphisms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs VecUtil List RelUtil SN ARules SetUtil NatUtil.
+Require Import LogicUtil ATrs VecUtil List RelUtil SN ARules SetUtil NatUtil
+  Morphisms.
 
 Section Morphism.
 
@@ -66,9 +67,7 @@ Section Morphism.
 
   Require Import Setoid.
 
-  Add Morphism Frs
-    with signature (@SetUtil.equiv (rule S1)) ==> (@SetUtil.equiv (rule S2))
-      as Frs_equiv.
+  Instance Frs_equiv : Proper (equiv ==> equiv) Frs.
 
   Proof. fo. Qed.
 
@@ -81,9 +80,7 @@ Section Morphism.
 
   Lemma incl_Frs : forall R S, R [= S -> Frs R [= Frs S.
 
-  Proof.
-    intros. intros a' H0. do 2 destruct H0. subst. exists x. intuition.
-  Qed.
+  Proof. intros. intros a' H0. do 2 destruct H0. subst. exists x. fo. Qed.
 
   Lemma Frs_app : forall R S a, Frs (R ++ S) a <-> Frs R a \/ Frs S a.
 
