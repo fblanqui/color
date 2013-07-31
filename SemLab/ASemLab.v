@@ -384,8 +384,10 @@ Section S.
       (* -> *)
       apply Fred_mod_WF with (S2:=Sig) (F:=F) (HF:=HF).
       apply WF_incl with (red_mod E R). 2: hyp. intros t u h. destruct h.
-      destruct H0. apply rt_red_mod_Frs_Decr in H0. rewrite Frs_iso in H1.
-      exists x. auto.
+      destruct H0. apply rt_red_mod_Frs_Decr in H0. exists x.
+      (*rewrite Frs_iso in H1. auto. *)
+      intuition. apply inclusion_elim with (R:=red (Frs HF R')).
+      rewrite Frs_iso. refl. hyp.
       (* <- *)
       set (v := fun x : variable => some_elt I).
       apply WF_incl with (Rof (red_mod (Decr ++ E') R') (lab v)).
@@ -401,8 +403,10 @@ Section S.
       (* -> *)
       apply Fhd_red_mod_WF with (S2:=Sig) (F:=F) (HF:=HF).
       apply WF_incl with (hd_red_mod E R). 2: hyp. intros t u h. destruct h.
-      destruct H0. apply rt_red_mod_Frs_Decr in H0. rewrite Frs_iso in H1.
-      exists x. auto.
+      destruct H0. apply rt_red_mod_Frs_Decr in H0. exists x.
+      (*rewrite Frs_iso in H1. auto. *)
+      intuition. apply inclusion_elim with (R:=hd_red (Frs HF R')).
+      rewrite Frs_iso. refl. hyp.
       (* <- *)
       set (v := fun x : variable => some_elt I).
       apply WF_incl with (Rof (hd_red_mod (Decr ++ E') R') (lab v)).
