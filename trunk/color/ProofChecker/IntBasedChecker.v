@@ -65,7 +65,7 @@ Program Fixpoint checkProp (i : list symInt) :
 Next Obligation.
   apply (lookup_dep_prop (P := fun f fi => P (buildSymInt fi))); intros.
   destruct_call lforall_exc; try discr.
-  ded (lforall_in l H). decomp_hyp H0. destruct x. hyp.
+  ded (lforall_in l H). decomp H0. destruct x. hyp.
   apply default_P.
 Qed.
 

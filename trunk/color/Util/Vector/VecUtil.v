@@ -1466,8 +1466,8 @@ Section Vbuild.
     exists i, exists ip : i < n, x = gen i ip.
 
   Proof.
-    intros. set (w := Vin_nth H).
-    decomp_hyps. exists x0. exists x1. rewrite Vbuild_nth in H1. auto.
+    intros n gen x H. set (w := Vin_nth H). decomp w.
+    exists x0 x1. rewrite Vbuild_nth in H1. auto.
   Qed.
 
   Lemma Vbuild_head : forall n (gen : forall i, i < S n -> A),
