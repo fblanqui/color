@@ -227,6 +227,11 @@ Lemma inter_transp_Transitive A (R : relation A) :
 
 Proof. fo. Qed.
 
+Lemma R_inter_transp A (R : relation A) :
+  Transitive R -> Proper (inter_transp R ==> inter_transp R ==> iff) R.
+
+Proof. fo. Qed.
+
 Lemma inter_transp_incl A (R : relation A) : inter_transp R << R.
 
 Proof. fo. Qed.
@@ -267,7 +272,7 @@ Qed.
 (***********************************************************************)
 (** Inclusion. *)
 
-(*REMOVE?*)
+(*FIXME: try to remove*)
 Lemma inclusion_elim : forall A (R S : relation A),
   R << S -> forall x y, R x y -> S x y.
 
@@ -404,7 +409,7 @@ Instance compose_inclusion A :
 
 Proof. fo. Qed.
 
-(*REMOVE?*)
+(*FIXME: try to remove*)
 Ltac comp := apply compose_inclusion; try incl_refl.
 
 Instance compose_m A :
@@ -651,7 +656,7 @@ Instance union_inclusion A :
 
 Proof. fo. Qed.
 
-(*REMOVE?*)
+(*FIXME: try to remove*)
 Ltac union := apply union_inclusion; try incl_refl.
 
 Instance union_same_relation A :
