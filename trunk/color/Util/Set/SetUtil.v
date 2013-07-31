@@ -43,7 +43,7 @@ Infix "::" := add (at level 60, right associativity).
 (***********************************************************************)
 (** Inclusion. *)
 
-Instance incl_rel A : PreOrder (@incl A).
+Instance incl_preorder A : PreOrder (@incl A).
 
 Proof. fo. Qed.
 
