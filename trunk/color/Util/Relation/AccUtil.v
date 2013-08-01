@@ -228,3 +228,47 @@ Section Accessibility.
   End AccIso.
 
 End Accessibility.
+
+(***********************************************************************)
+(** Wellfounded fixpoints: we extend [Fix_F_inv] to any relation [eq]. *)
+
+Arguments Fix [A R] _ [P] _ _.
+Arguments Fix_eq [A R] _ [P F] _ _.
+Arguments Fix_F [A R P] _ [x] _.
+Arguments Fix_F_eq [A R P] _ [x] _.
+Arguments Fix_F_inv [A R] _ [P] _ _ [x] _ _.
+
+Section Fix.
+
+  Variables (A : Type) (R : A -> A -> Prop) (Rwf : well_founded R)
+    (P : A -> Type) (F : forall x : A, (forall y : A, R y x -> P y) -> P x)
+    (eq : forall x, relation (P x))
+    (F_ext : forall x (f g : forall y, R y x -> P y),
+      (forall y (p : R y x), eq (f y p) (g y p)) -> eq (F f) (F g)).
+
+  Notation Fix_F := (Fix_F F).
+  Notation Fix_F_eq := (Fix_F_eq F).
+  Notation Fix := (Fix Rwf F).
+  Infix "==" := eq (at level 70).
+
+  Lemma Fix_F_inv : forall x (r s : Acc R x), Fix_F r == Fix_F s.
+
+  Proof.
+    intro x; induction (Rwf x); intros.
+    rewrite <- (Fix_F_eq r); rewrite <- (Fix_F_eq s); intros.
+    apply F_ext; auto.
+  Qed.
+
+  Lemma Fix_eq : forall x, Fix x == F (fun y (p : R y x) => Fix y).
+
+  Proof.
+    intro x; unfold Wf.Fix.
+    rewrite <- Fix_F_eq.
+    apply F_ext; intros.
+    apply Fix_F_inv.
+  Qed.
+
+End Fix.
+
+Arguments Fix_F_inv [A R] _ [P] _ _ _ [x] _ _.
+Arguments Fix_eq [A R] _ [P F eq] _ _.
