@@ -594,8 +594,10 @@ Module Make (Export CP : CP_Struct).
 
   Instance arr_incl : Proper (incl --> incl ==> incl) arr.
 
-  Proof.
-    intros X X' X'X Y Y' YY' t ht u hu. apply YY'. apply ht. apply X'X. hyp.
-  Qed.
+  Proof. fo. Qed.
+
+  Instance arr_equiv : Proper (equiv ==> equiv ==> equiv) arr.
+
+  Proof. fo. Qed.
 
 End Make.
