@@ -202,16 +202,28 @@ Lemma inter_transp_incl A (R : relation A) : inter_transp R << R.
 
 Proof. fo. Qed.
 
+Lemma inter_transp_1 A1 (R1 : relation A1) B (S : relation B) f :
+  Proper (R1 ==> S) f ->
+  Proper (inter_transp R1 ==> inter_transp S) f.
+
+Proof. fo. Qed.
+
+Lemma inter_transp_2 A1 (R1 : relation A1) A2 (R2 : relation A2)
+  B (S : relation B) f : Proper (R1 ==> R2 ==> S) f ->
+  Proper (inter_transp R1 ==> inter_transp R2 ==> inter_transp S) f.
+
+Proof. fo. Qed.
+
 Lemma Proper_inter_transp_1 A1 (R1 : relation A1) B (S : relation B) f :
   Symmetric R1 -> Proper (R1 ==> S) f -> Proper (R1 ==> inter_transp S) f.
 
-Proof. intros s1 hf x1 y1 e1. split; apply hf; (hyp||sym;hyp). Qed.
+Proof. fo. Qed.
 
 Lemma Proper_inter_transp_2 A1 (R1 : relation A1) A2 (R2 : relation A2)
   B (S : relation B) f : Symmetric R1 -> Symmetric R2 ->
   Proper (R1 ==> R2 ==> S) f -> Proper (R1 ==> R2 ==> inter_transp S) f.
 
-Proof. intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; apply hf; (hyp||sym;hyp). Qed.
+Proof. intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; apply hf; fo. Qed.
 
 Lemma Proper_inter_transp_3 A1 (R1 : relation A1) A2 (R2 : relation A2)
   A3 (R3 : relation A3) B (S : relation B) f :
@@ -219,10 +231,7 @@ Lemma Proper_inter_transp_3 A1 (R1 : relation A1) A2 (R2 : relation A2)
   Proper (R1 ==> R2 ==> R3 ==> S) f ->
   Proper (R1 ==> R2 ==> R3 ==> inter_transp S) f.
 
-Proof.
-  intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3.
-  split; apply hf; (hyp||sym;hyp).
-Qed.
+Proof. intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3. split; apply hf; fo. Qed.
 
 Lemma Proper_inter_transp_4 A1 (R1 : relation A1) A2 (R2 : relation A2)
   A3 (R3 : relation A3) A4 (R4 : relation A4) B (S : relation B) f :
@@ -232,7 +241,7 @@ Lemma Proper_inter_transp_4 A1 (R1 : relation A1) A2 (R2 : relation A2)
 
 Proof.
   intros s1 s2 s3 s4 hf x1 y1 e1 x2 y2 e2 x3 y3 e3 x4 y4 e4.
-  split; apply hf; (hyp||sym;hyp).
+  split; apply hf; fo.
 Qed.
 
 (***********************************************************************)
