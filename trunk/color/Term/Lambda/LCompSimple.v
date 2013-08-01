@@ -339,11 +339,24 @@ types. *)
 
   Require Import SetUtil.
 
+  Lemma int_equiv : forall I J T,
+    (forall a, occurs a T -> I a [=] J a) -> int I T [=] int J T.
+
+  Proof.
+    intros I J. induction T; simpl. fo. intro h.
+    rewrite IHT1, IHT2. refl. intuition. intuition.
+  Qed.
+
+  Lemma int_equiv' : forall I J T,
+    (forall a, occurs a T -> I a [=] J a) -> int I T [= int J T.
+
+  Proof. intros I J T IJ. rewrite (int_equiv _ _ T IJ). refl. Qed.
+
   Section mon.
 
     Variables (eq_dec : forall x y : So, {x=y}+{~x=y})
       (I J : So -> set Te) (a : So) (IJa : I a [= J a)
-      (IJ : forall b, b <> a -> I b [=] J b).
+      (IJna : forall b, b <> a -> I b [=] J b).
 
     Lemma int_mon : forall T,
       (pos a T -> int I T [= int J T) /\ (neg a T -> int J T [= int I T).
