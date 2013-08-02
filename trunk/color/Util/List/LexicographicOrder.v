@@ -85,30 +85,30 @@ Module LexOrder (ES : Eqset).
     Qed.
 
     Lemma lex_lifting_aux : forall n (l : list ES.A), 
-      length l = n -> accs r l -> Restricted_acc (accs r) lex l.
+      length l = n -> Accs r l -> Restricted_acc (Accs r) lex l.
 
     Proof.
-      intro n; induction n as [ | n IHn]; intros l Hl Haccs.
+      intro n; induction n as [ | n IHn]; intros l Hl HAccs.
       destruct l; [constructor | inversion Hl].
       intros l' Hl' Hlex; inversion Hlex.
       destruct l as [ | h l]; [inversion Hl | idtac].
       assert (acc_h : Acc r h).
-      apply Haccs; left; trivial.
-      assert (accs_l : forall (a : ES.A), In a l -> Acc r a).
-      intros s s_in_l; apply Haccs; right; trivial.
+      apply HAccs; left; trivial.
+      assert (Accs_l : forall (a : ES.A), In a l -> Acc r a).
+      intros s s_in_l; apply HAccs; right; trivial.
       assert (Hl2 : length l = n).
       inversion Hl; trivial.
-      gen (IHn l Hl2 accs_l).
-      clear Hl Haccs.
+      gen (IHn l Hl2 Accs_l).
+      clear Hl HAccs.
       generalize dependent l.
       induction acc_h as [h acc_h IHh].
-      intros l accs_l Hl Hacc.
+      intros l Accs_l Hl Hacc.
       induction Hacc as [l Hacc IHl].
       constructor.
       intros l' Hl' Hlex.
       destruct l' as [ | h' l'].
       inversion Hlex.
-      assert (accs_l' : forall (a : ES.A), In a l' -> Acc r a).
+      assert (Accs_l' : forall (a : ES.A), In a l' -> Acc r a).
       intros t Ht; apply Hl'; right; trivial.
       clear Hl'.
       inversion Hlex; subst.
@@ -140,7 +140,7 @@ Module LexOrder (ES : Eqset).
   End Lex.
 
   Lemma lex_lifting : forall (r : relation ES.A) (l : list ES.A), 
-    accs r l -> Restricted_acc (accs r) (lex r) l.
+    Accs r l -> Restricted_acc (Accs r) (lex r) l.
 
   Proof.
     intros r l; apply (lex_lifting_aux r (length l) l); trivial.

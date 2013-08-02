@@ -65,7 +65,7 @@ Module Type RPO_Model.
   Require Import AccUtil.
   Require Import ListUtil.
 
-  Definition lifting R := forall l, accs lt l -> Restricted_acc (accs lt) R l.
+  Definition lifting R := forall l, Accs lt l -> Restricted_acc (Accs lt) R l.
 
   Parameter leF_dec : rel_dec leF.
 

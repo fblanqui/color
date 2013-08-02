@@ -143,7 +143,7 @@ Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
   Definition wf_ltF := ltF_wf.
   Definition leF_dec := leF_dec.
 
-  Definition lifting R := forall l, accs lt l ->  Restricted_acc (accs lt) R l.
+  Definition lifting R := forall l, Accs lt l ->  Restricted_acc (Accs lt) R l.
 
   Lemma status_lifting : forall f, lifting (tau f lt).
 
