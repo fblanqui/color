@@ -52,7 +52,7 @@ Module Make (Export ST : ST_Struct)
     Global Instance int_aeq : Proper (Logic.eq ==> aeq ==> iff) int.
 
     Proof.
-      intros T U TU. subst U. destruct (cp_int T) as [h _ _ _].
+      intros T V TV. subst V. destruct (cp_int T) as [h _ _ _].
       intros t u tu. split; intro i. rewrite <- tu. hyp. rewrite tu. hyp.
     Qed.
 
@@ -295,11 +295,11 @@ types. *)
 
     (** [apps v vs] is computable if [v] and [vs] so are. *)
 
-    Lemma int_apps : forall n (vs : Tes n) v (Vs : Tys n) U,
-      vint Vs vs -> int (arrow Vs U) v -> int U (apps v vs).
+    Lemma int_apps : forall n (vs : Tes n) v (Vs : Tys n) A,
+      vint Vs vs -> int (arrow Vs A) v -> int A (apps v vs).
 
     Proof.
-      induction vs; simpl; intros v Vs U.
+      induction vs; simpl; intros v Vs V.
       VOtac. simpl. auto.
       VSntac Vs. simpl. intros [h1 h2] h3.
       eapply IHvs. apply h2. apply h3. hyp.
