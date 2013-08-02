@@ -1283,6 +1283,19 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       Proof. apply Proper_inter_transp_2; class. Qed.
 
+      (** Inversion lemma for [clos_aeq_trans]. *)
+
+      Lemma clos_aeq_trans_inv : forall t u,
+        S* t u -> t ~~ u \/ exists v, S t v /\ S* v u.
+
+      Proof.
+        induction 1. fo. fo. destruct IHclos_aeq_trans1 as [h|[t [h1 h2]]].
+        destruct IHclos_aeq_trans2 as [i|[t' [i1 i2]]].
+        left. trans v; hyp.
+        right. exists t'. rewrite h. auto.
+        right. exists t. split. hyp. trans v; hyp.
+      Qed.
+
     End aeq.
 
     (** [S*] is stable by substitution if [S] so is. *)
