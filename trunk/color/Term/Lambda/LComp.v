@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil SN.
+Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil SN SetUtil.
 Require Export LBeta.
 
 (****************************************************************************)
@@ -23,7 +23,7 @@ Section cp.
 
   Notation Te := (@Te F X).
 
-  Variables (aeq R_aeq : relation Te) (neutral : Te -> Prop).
+  Variables (aeq R_aeq : relation Te) (neutral : set Te).
 
   Infix "=>R" := R_aeq (at level 70).
 
@@ -33,16 +33,16 @@ Section cp.
 
   (** A computability predicate contains strongly normalizing terms. *)
 
-  Definition cp_sn (P : Te -> Prop) := forall u, P u -> SN R_aeq u.
+  Definition cp_sn (P : set Te) := forall u, P u -> SN R_aeq u.
 
   (** A computability predicate is stable by reduction. *)
 
-  Definition cp_R_aeq (P : Te -> Prop) := Proper (R_aeq ==> impl) P.
+  Definition cp_red (P : set Te) := Proper (R_aeq ==> impl) P.
 
   (** A computability predicate containing all the reducts of a
     neutral term [u] contains [u] too. *)
 
-  Definition cp_neutral (P : Te -> Prop) :=
+  Definition cp_neutral (P : set Te) :=
     forall u, neutral u -> (forall v, u =>R v -> P v) -> P u.
 
   (** A computability predicate is a predicate satisfying the four
@@ -51,8 +51,30 @@ Section cp.
   Class cp P := {
     cp1 : cp_aeq P;
     cp2 : cp_sn P;
-    cp3 : cp_R_aeq P;
+    cp3 : cp_red P;
     cp4 : cp_neutral P }.
+
+  (** We check that computability properties are invariant wrt [=]. *)
+
+  Global Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
+
+  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
+
+  Global Instance cp_sn_equiv : Proper (equiv ==> impl) cp_sn.
+
+  Proof. fo. Qed.
+
+  Global Instance cp_red_equiv : Proper (equiv ==> impl) cp_red.
+
+  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
+
+  Global Instance cp_neutral_equiv : Proper (equiv ==> impl) cp_neutral.
+
+  Proof. fo. Qed.
+
+  Global Instance cp_equiv : Proper (equiv ==> impl) cp.
+
+  Proof. intros P Q PQ [P1 P2 P3 P4]. rewrite PQ in *. fo. Qed.
 
 End cp.
 
@@ -75,7 +97,7 @@ Module Type CP_Struct.
   Parameter Rh : relation Te.
   Infix "->Rh" := Rh (at level 70).
 
-  Parameter neutral : Te -> Prop.
+  Parameter neutral : set Te.
 
   (** We then denote by [->R] the monotone closure of [->Rh] and by
      [=>R] the closure by alpha-equivalence of [->R]. *)
@@ -425,14 +447,14 @@ Module Make (Export CP : CP_Struct).
 
   Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
   Notation cp_sn := (@cp_sn F X R_aeq).
-  Notation cp_R_aeq := (@cp_R_aeq F X R_aeq).
+  Notation cp_red := (@cp_red F X R_aeq).
   Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
   Notation cp := (@cp F X aeq R_aeq neutral).
 
   (** A computability predicate is stable by [=>R*] if it satisfies
-     [cp_aeq] and [cp_R_aeq]. *)
+     [cp_aeq] and [cp_red]. *)
 
-  Instance cp_atc : forall P, cp_aeq P -> cp_R_aeq P ->
+  Instance cp_atc : forall P, cp_aeq P -> cp_red P ->
     Proper (R_aeq* ==> impl) P.
 
   Proof.
@@ -442,7 +464,7 @@ Module Make (Export CP : CP_Struct).
 
   (** Computability of a beta-redex. *)
 
-  Lemma cp_beta : forall P, cp_aeq P -> cp_R_aeq P -> cp_neutral P ->
+  Lemma cp_beta : forall P, cp_aeq P -> cp_red P -> cp_neutral P ->
     forall x u v, SN R_aeq (Lam x u) -> SN R_aeq v ->
       P (subs (single x v) u) -> P (App (Lam x u) v).
 
@@ -493,7 +515,7 @@ Module Make (Export CP : CP_Struct).
 
   Proof. fo. Qed.
 
-  Lemma cp_R_aeq_SN : cp_R_aeq (SN R_aeq).
+  Lemma cp_red_SN : cp_red (SN R_aeq).
 
   Proof. intros u u' b h. inversion h. apply H. hyp. Qed.
 
@@ -504,7 +526,7 @@ Module Make (Export CP : CP_Struct).
   Lemma cp_SN : cp (SN R_aeq).
 
   Proof.
-    constructor. apply SN_R_aeq_impl. apply cp_sn_SN. apply cp_R_aeq_SN.
+    constructor. apply SN_R_aeq_impl. apply cp_sn_SN. apply cp_red_SN.
     apply cp_neutral_SN.
   Qed.
 
@@ -533,7 +555,7 @@ Module Make (Export CP : CP_Struct).
 (****************************************************************************)
 (** ** Interpretation of arrow types. *)
 
-  Definition arr (P Q : Te -> Prop) u := forall v, P v -> Q (App u v).
+  Definition arr (P Q : set Te) u := forall v, P v -> Q (App u v).
 
   (** [arr] preserves [cp_aeq]. *)
 
@@ -554,7 +576,7 @@ Module Make (Export CP : CP_Struct).
 
   (** [arr] preserves [cp_red]. *)
 
-  Lemma cp_R_aeq_arr : forall P Q, cp_R_aeq Q -> cp_R_aeq (arr P Q).
+  Lemma cp_red_arr : forall P Q, cp_red Q -> cp_red (arr P Q).
 
   Proof.
     intros P Q q3 v v' vv' hv u hu. eapply q3. apply mon_app_l.
@@ -563,7 +585,7 @@ Module Make (Export CP : CP_Struct).
 
   (** [arr] preserves [cp_neutral]. *)
 
-  Lemma cp_neutral_arr : forall P Q, cp_sn P -> cp_R_aeq P ->
+  Lemma cp_neutral_arr : forall P Q, cp_sn P -> cp_red P ->
     cp_aeq Q -> cp_neutral Q -> cp_neutral (arr P Q).
 
   Proof.
@@ -585,7 +607,7 @@ Module Make (Export CP : CP_Struct).
   Proof.
     intros P Q [p1 p2 p3 p4] [q1 q2 q3 q4]. constructor.
     apply cp_aeq_arr; fo. apply cp_sn_arr; fo.
-    apply cp_R_aeq_arr; fo. apply cp_neutral_arr; fo.
+    apply cp_red_arr; fo. apply cp_neutral_arr; fo.
   Qed.
 
   (** Monotony properties of [arr]. *)
