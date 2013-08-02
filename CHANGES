@@ -1,4 +1,7 @@
 
+13-07-13: [Blanqui]
+- Term/Lambda: various small additions
+
 13-06-05: [Blanqui]
 - Term/Lambda: reorganized definitions so that Inductive's and various
 functions including substitution are defined out of any module
