@@ -108,7 +108,7 @@ Module Type CP_Struct.
   Notation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
-  (** Properties of [neutral]. *)
+  (** Properties not involving reduction. *)
 
   Declare Instance neutral_aeq : Proper (aeq ==> impl) neutral.
   Parameter neutral_var : forall x, neutral (Var x).
@@ -116,7 +116,7 @@ Module Type CP_Struct.
   Parameter not_neutral_lam : forall x u, ~neutral (Lam x u).
   Parameter neutral_beta : forall x u v, neutral (App (Lam x u) v).
 
-  (** Properties of [=>R]. *)
+  (** Properties involving reduction. *)
 
   Declare Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
   Declare Instance fv_Rh : Proper (Rh --> Subset) fv.
@@ -147,19 +147,19 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
   Notation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
+  (** A term is neutral if it is not a [Lam]. *)
+
   Definition neutral (u : Te) :=
     match u with
       | LTerm.Lam _ _ => False
       | _ => True
     end.
 
+  (** CP structure properties not involving reduction. *)
+
   Instance neutral_aeq : Proper (aeq ==> impl) neutral.
 
   Proof. intros u u' uu' hu. destruct u; inv_aeq uu'; subst; simpl; auto. Qed.
-
-  Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
-
-  Proof. exact subs_beta_aeq. Qed.
 
   Lemma neutral_var : forall x, neutral (Var x).
 
@@ -176,6 +176,12 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
   Lemma neutral_beta : forall x u v, neutral (App (Lam x u) v).
 
   Proof. fo. Qed.
+
+  (** CP structure properties involving reduction. *)
+
+  Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
+
+  Proof. exact subs_beta_aeq. Qed.
 
   Lemma not_Rh_var : forall x u, ~ Var x ->Rh u.
 
