@@ -468,7 +468,7 @@ Module RPO_Results (Export RPO : RPO_Model).
 	      (* case s = f ss : *)
     revert ss HInd1.
     induction (wf_ltF f) as [f acc_f HInd2].
-    intros ss Hss; cut (Restricted_acc (accs lt) (tau f lt) ss).
+    intros ss Hss; cut (Restricted_acc (Accs lt) (tau f lt) ss).
     intro Acc_ss; gen Hss; clear Hss.
     induction Acc_ss as [ss Acc_ss HInd3].
     intro Hss; constructor; intro t;
@@ -485,7 +485,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     apply (HInd4 t t_in_ts).
     apply (Hsub t t_in_ts).
 	      (* case t < s via status : *)
-    assert (Haccs : accs lt ts).
+    assert (HAccs : Accs lt ts).
     intros ti ti_in_ts.
     apply HInd4; trivial.
     apply Hsub; trivial.

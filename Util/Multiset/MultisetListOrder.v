@@ -389,11 +389,11 @@ Module MultisetListOrder (ES : Eqset_dec).
   Lemma mult_lifting : forall (r : relation A),
     (forall x x' y y', x =A= x' -> y =A= y' -> r x y -> r x' y') ->
     (forall l x x', In x' l -> x =A= x' -> In x l) ->
-    forall l, accs r l -> Restricted_acc (accs r) (mult (transp r)) l.
+    forall l, Accs r l -> Restricted_acc (Accs r) (mult (transp r)) l.
 
   Proof.
-    intros r C1 C2 l accs_l.
-    elim (Restricted_acc_eq_acc (accs r) (mult (transp r)) l); intros H1 H2.
+    intros r C1 C2 l Accs_l.
+    elim (Restricted_acc_eq_acc (Accs r) (mult (transp r)) l); intros H1 H2.
     apply H1; clear H1 H2.
     apply Acc_incl with (mult (transp r)).
     intros a b H; elim H; trivial.

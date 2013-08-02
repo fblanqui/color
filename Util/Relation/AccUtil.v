@@ -155,7 +155,7 @@ End RestrictedAcc.
 
 Require Import List.
 
-Definition accs (A : Type) R l := forall a : A, In a l -> Acc R a.
+Definition Accs (A : Type) R l := forall a : A, In a l -> Acc R a.
 
 (***********************************************************************)
 (** Simulation and morphisms. *)
