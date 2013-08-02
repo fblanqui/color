@@ -272,3 +272,10 @@ End Fix.
 
 Arguments Fix_F_inv [A R] _ [P] _ _ _ [x] _ _.
 Arguments Fix_eq [A R] _ [P F eq] _ _.
+
+(***********************************************************************)
+(** A well-founded relation is irreflexive. *)
+
+Lemma wf_irrefl : forall A (R : relation A), well_founded R -> Irreflexive R.
+
+Proof. intros A R wf x. induction (wf x). intro n. eapply H0. apply n. hyp. Qed.
