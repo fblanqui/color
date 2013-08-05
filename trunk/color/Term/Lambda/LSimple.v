@@ -27,12 +27,20 @@ Section simple.
 
   Infix "~~>" := Arr (at level 55, right associativity).
 
+  Notation Tys := (vector Ty).
+
 (** Basic functions on simple types. *)
 
   Fixpoint arity (T : Ty) :=
     match T with
       | Base _ => 0
       | Arr _ T' => S (arity T')
+    end.
+
+  Fixpoint inputs (T : Ty) :=
+    match T as T return Tys (arity T) with
+      | Base _ => Vnil
+      | Arr T1 T2 => Vcons T1 (inputs T2)
     end.
 
   Fixpoint output (T : Ty) k {struct k} :=
@@ -51,13 +59,34 @@ Section simple.
 
   Proof. induction T; fo. Qed.
 
-  Notation Tys := (vector Ty).
+  Lemma arity_output : forall p T, arity (output T p) = arity T - p.
 
-  Fixpoint inputs (T : Ty) :=
-    match T as T return Tys (arity T) with
-      | Base _ => Vnil
-      | Arr T1 T2 => Vcons T1 (inputs T2)
-    end.
+  Proof. induction p; destruct T; simpl; try refl. rewrite IHp. refl. Qed.
+
+  Lemma output_output : forall p q T, output (output T p) q = output T (p+q).
+
+  Proof.
+    induction p; destruct T; simpl; try refl.
+    destruct q; refl. rewrite IHp. refl.
+  Qed.
+
+  Lemma inputs_output_aux : forall p T,
+    p <= arity T -> p + arity (output T p) <= arity T.
+
+  Proof. intros p T. rewrite arity_output. omega. Qed.
+
+  Arguments inputs_output_aux [p T] _.
+
+  Lemma inputs_output : forall p T (h : p <= arity T),
+    inputs (output T p) = Vsub (inputs T) (inputs_output_aux h).
+
+  Proof.
+    induction p; destruct T; simpl; intro h. refl.
+    apply Vtail_eq. rewrite Vsub_cons, Vsub_id. refl.
+    omega.
+    assert (h' : p <= arity T2). omega.
+    rewrite IHp with (h:=h'), Vsub_cons. apply Vsub_pi.
+  Qed.
 
 (** Building the type [T1 ~~> .. ~~> Tn -> U] from the type vector
 [Ts] and the type [U]. *)
