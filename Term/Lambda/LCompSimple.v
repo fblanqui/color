@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil.
+Require Import Morphisms Basics SN VecUtil LogicUtil. 
 Require Export LSimple LComp.
 
 (****************************************************************************)
@@ -65,6 +65,10 @@ Module Make (Export ST : ST_Struct)
     Proof.
       intros T x. gen (cp_int T). intros [T1 _ _ T4]. apply cp_var; auto.
     Qed.
+
+    Lemma int_typ_eq : forall T U t, int U t -> T = U -> int T t.
+
+    Proof. intros T U t h e. subst. hyp. Qed.
 
     (** A substitution is valid wrt an environment [E] if, for every
        mapping [(x,T) in E], [s x] is in the interpretation of [T]. *)
@@ -178,6 +182,18 @@ types. *)
 
     Arguments vint_le [n Ts p ts] _.
 
+    Lemma vint_typs_eq : forall n (Ts Us : Tys n) p (ts : Tes p),
+      vint Us ts -> Us = Ts -> vint Ts ts.
+
+    Proof. intros n Ts Us p ts h e. subst. hyp. Qed.
+
+    Lemma vint_typs_eq_cast : forall n (Ts : Tys n) m (Us : Tys m) (h : n=m)
+      p (ts : Tes p), vint Us ts -> Us = Vcast Ts h -> vint Ts ts.
+
+    Proof.
+      intros n Ts m Us h p ts i. subst. rewrite Vcast_refl. intro; subst. hyp.
+    Qed.
+
     Lemma vint_int_Vnth : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
       forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp).
 
@@ -203,8 +219,16 @@ types. *)
       rewrite c, d. auto.
     Qed.
 
-    Lemma vint_sub_intro : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
-      forall i k (h : i+k<=n) k' (h' : i+k'<= p), k'<=k ->
+    Lemma vint_Vnth : forall n (Ts : Tys n) p (ts : Tes p), p <= n ->
+      (vint Ts ts
+        <-> (forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp))).
+
+    Proof.
+      intros n Ts p ts pn. split. apply vint_int_Vnth. apply int_Vnth_vint. hyp.
+    Qed.
+
+    Lemma vint_sub_sub_intro : forall n (Ts : Tys n) p (ts : Tes p),
+      vint Ts ts -> forall i k (h : i+k<=n) k' (h' : i+k'<= p), k'<=k ->
         vint (Vsub Ts h) (Vsub ts h').
 
     Proof.
@@ -213,6 +237,15 @@ types. *)
     Qed.
 
     Lemma vint_sub_elim : forall n (Ts : Tys n) p (ts : Tes p) (h : 0+p<=n),
+      vint (Vsub Ts h) ts -> vint Ts ts.
+
+    Proof.
+      intros n Ts p ts h. rewrite 2!vint_Vnth; try omega. intuition.
+      gen (H _ jp jp). rewrite Vnth_sub. erewrite Vnth_eq. intro i; apply i.
+      refl.
+    Qed.
+
+    Lemma vint_sub_intro : forall n (Ts : Tys n) p (ts : Tes p) (h : 0+p<=n),
       vint Ts ts -> vint (Vsub Ts h) ts.
 
     Proof.
@@ -220,7 +253,7 @@ types. *)
       intros j j1 j2. rewrite Vnth_sub. apply vint_int_Vnth. hyp.
     Qed.
 
-    Lemma vint_typ_cast : forall n (Ts : Tys n) n' (h : n=n') p (ts : Tes p),
+    Lemma vint_cast_typ : forall n (Ts : Tys n) n' (h : n=n') p (ts : Tes p),
       vint (Vcast Ts h) ts <-> vint Ts ts.
 
     Proof.
@@ -229,12 +262,12 @@ types. *)
       destruct n'. discr. simpl. destruct ts. refl. rewrite IHTs. refl.
     Qed.
 
-    Lemma vint_term_cast : forall n (Ts : Tys n) p (ts : Tes p) p' (h : p=p'),
+    Lemma vint_cast_term : forall n (Ts : Tys n) p (ts : Tes p) p' (h : p=p'),
       vint Ts (Vcast ts h) <-> vint Ts ts.
 
     Proof. intros n Ts p ts p' e. subst. rewrite Vcast_refl. refl. Qed.
 
-    Lemma vint_term_app_l : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q),
+    Lemma vint_app_term_l : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q),
       vint Ts (Vapp ts us) -> vint Ts ts.
 
     Proof.
@@ -242,13 +275,27 @@ types. *)
       induction ts; intros q us m Ts; simpl; destruct Ts; fo.
     Qed.
 
-    Lemma vint_term_app_r : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q)
+    Lemma vint_app_term_r : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q)
       (h : vint Ts (Vapp ts us)), vint (Vsub Ts (vint_le h)) us.
 
     Proof.
       intros n Ts p ts q us h.
       assert (a : p+q<=p+q). omega. rewrite <- Vsub_app_r with (v1:=ts) (h:=a).
-      apply vint_sub_intro. hyp. refl.
+      apply vint_sub_sub_intro. hyp. refl.
+    Qed.
+
+    Lemma vint_app_term : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q)
+      (h : p+q <= n), vint Ts ts -> vint (Vsub Ts h) us -> vint Ts (Vapp ts us).
+
+    Proof.
+      induction Ts; simpl.
+      destruct ts; simpl; intros q us i.
+      assert (q=0). omega. subst. VOtac. fo.
+      omega.
+      destruct ts; simpl; intros q us i.
+      destruct us; simpl. fo. rewrite Vsub_cons. intuition.
+      eapply vint_sub_elim. apply H2.
+      rewrite Vsub_cons. intuition. eapply IHTs. hyp. apply H0.
     Qed.
 
     Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
@@ -331,8 +378,10 @@ types. *)
   End int.
 
   Arguments cp_int [I] _ T.
-  Arguments vint_term_app_l [I n Ts p ts q us] _.
-  Arguments vint_term_app_r [I n Ts p ts q us] _.
+  Arguments vint_app_term_l [I n Ts p ts q us] _.
+  Arguments vint_app_term_r [I n Ts p ts q us] _.
+  Arguments vint_le [I n Ts p ts] _.
+  Arguments vint_int_Vnth [I n Ts p ts] _ [j] _ _.
 
 (****************************************************************************)
 (** * Monotony properties of [int] and [vint]. *)
