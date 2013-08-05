@@ -200,18 +200,22 @@ End typing.
 (****************************************************************************)
 (** * Structure over which we will define typing. *)
 
+Require FMapInterface.
+
 Module Type ST_Struct.
 
   Declare Module Export L : L_Struct.
 
   Parameter So : Type.
 
-  (*Parameter So_eq_dec : forall x y : So, {x=y}+{x<>y}.*)
-
   Notation Ty := (Ty So).
   Notation Tys := (vector Ty).
  
   Parameter typ : F -> Ty.
+
+  (* Module providing finite maps on variables. *)
+
+  Declare Module Export XMap : FMapInterface.S with Module E := XOrd.
 
 End ST_Struct.
 
@@ -220,10 +224,6 @@ End ST_Struct.
 
 Module Make (Export ST : ST_Struct).
 
-  (*Lemma Ty_eq_dec : forall x y : Ty, {x=y}+{x<>y}.
-
-  Proof. decide equality. apply So_eq_dec. Qed.*)
-
   Module Export B := LBeta.Make L.
 
 (****************************************************************************)
@@ -231,12 +231,13 @@ Module Make (Export ST : ST_Struct).
 
 are finite maps from variables to types. *)
 
-  Require Import FMaps FMapFacts FMapAVL.
+  Require Import FMapFacts.
 
-  Module Export XMap := FMapAVL.Make XOrd.
   Module Export XMapFacts := Facts XMap.
   Module Export XMapProps := Properties XMap.
   Module Export XMapOrdProps := OrdProperties XMap.
+
+  Export XMap.
 
   Notation En := (XMap.t Ty).
   Notation empty := (XMap.empty Ty).
@@ -447,7 +448,7 @@ are finite maps from variables to types. *)
     (* Equal *)
     intros E F EF h. rewrite <- EF. hyp.
     (* empty *)
-    set_iff. rewrite empty_in_iff. refl.
+    rewrite dom_empty, empty_in_iff. set_iff. refl.
     (* add *)
     intros y T E hy h. rewrite dom_add_notin. 2: hyp.
     set_iff. rewrite add_in_iff, h. refl.
