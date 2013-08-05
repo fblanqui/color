@@ -133,6 +133,19 @@ Section term.
     unfold Vremove_last. rewrite Vsub_cons. apply Vsub_pi.
   Qed.
 
+  Lemma apps_apps : forall p (ts : Tes p) t q (us : Tes q),
+    apps (apps t ts) us = apps t (Vapp ts us).
+
+  Proof. induction ts; fo. Qed.
+
+  Lemma apps_cast : forall n (ts : Tes n) p (h : n=p) t,
+    apps t (Vcast ts h) = apps t ts.
+
+  Proof.
+    induction ts; destruct p; simpl; intros e t.
+    refl. discr. discr. apply IHts.
+  Qed.
+
 (****************************************************************************)
 (** ** Head and arguments of a term. *)
 
