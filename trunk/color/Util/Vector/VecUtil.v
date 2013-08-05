@@ -1257,11 +1257,13 @@ Section Vforall.
     hyp. apply H. hyp.
   Qed.
 
-  Lemma Vforall_cast : forall n v p (h : n=p), Vforall v -> Vforall (Vcast v h).
+  Lemma Vforall_cast : forall n v p (h : n=p),
+    Vforall (Vcast v h) <-> Vforall v.
 
   Proof.
-    intros. apply Vforall_intro. intros.
-    eapply Vforall_in with (n := n). apply H. eapply Vin_cast_elim. eexact H0. 
+    intros n v p h. rewrite 2!Vforall_eq. intuition.
+    apply H. rewrite Vin_cast. hyp.
+    apply H. rewrite Vin_cast in H0. hyp.
   Qed.
 
   Fixpoint Vsig_of_v n (v : vec n) : Vforall v -> vector (sig P) n :=
@@ -1270,6 +1272,11 @@ Section Vforall.
       | Vcons a _ w => fun H =>
         Vcons (exist P a (proj1 H)) (Vsig_of_v w (proj2 H))
     end.
+
+  Lemma Vforall_app : forall p (v : vec p) q (w : vec q),
+    Vforall (Vapp v w) <-> Vforall v /\ Vforall w.
+
+  Proof. induction v; fo. Qed.
 
   Variable P_dec : forall x, {P x}+{~P x}.
 
