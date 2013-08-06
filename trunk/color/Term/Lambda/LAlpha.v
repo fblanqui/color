@@ -1443,6 +1443,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       exists (Vsub vs' h). split. hyp. apply Vsub_vaeq. sym. hyp.
     Qed.
 
+    Arguments vaeq_prod_sub [n us vs p q] _ _.
+
     (** A vector of terms is strongly normalizing for [vaeq_prod] if
     every component is strongly normalizing for [R_aeq]. *)
 
