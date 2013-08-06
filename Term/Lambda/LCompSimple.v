@@ -182,6 +182,11 @@ types. *)
 
     Arguments vint_le [n Ts p ts] _.
 
+    Lemma vint_le' : forall n (Ts : Tys n) p (ts : Tes p),
+      vint Ts ts -> 0+p <= n.
+
+    Proof. simpl. apply vint_le. Qed.
+
     Lemma vint_typs_eq : forall n (Ts Us : Tys n) p (ts : Tes p),
       vint Us ts -> Us = Ts -> vint Ts ts.
 
@@ -381,6 +386,7 @@ types. *)
   Arguments vint_app_term_l [I n Ts p ts q us] _.
   Arguments vint_app_term_r [I n Ts p ts q us] _.
   Arguments vint_le [I n Ts p ts] _.
+  Arguments vint_le' [I n Ts p ts] _.
   Arguments vint_int_Vnth [I n Ts p ts] _ [j] _ _.
 
 (****************************************************************************)
