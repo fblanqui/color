@@ -565,7 +565,7 @@ Section S.
       Vgt_prod (red R) ts ts' -> int_red R (Fun f ts) (Fun f ts').
 
     Proof.
-      intros. ded (Vgt_prod_gt H). do 8 destruct H0. destruct H1. redtac.
+      intros. ded (Vgt_prod_impl1 H). do 8 destruct H0. destruct H1. redtac.
       subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
       exists l r (Cont f x4 x0 c x3) s. split. discr.
       auto.

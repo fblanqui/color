@@ -1142,18 +1142,15 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Alpha-equivalence on vectors of terms: product extension of [aeq]. *)
 
-  Definition vaeq := vec_ge aeq.
+  Definition vaeq := vec_prod aeq.
 
   Infix "~~~" := vaeq (at level 35).
 
   Instance vaeq_equiv n : Equivalence (@vaeq n).
 
-  Proof.
-    constructor.
-    apply vec_ge_refl. intro t. refl.
-    intros ts us. unfold vaeq, vec_ge. intro h. apply Vforall2n_intro.
-    intros i hi. sym. apply Vforall2n_nth with (ip:=hi) in h. hyp.
-    apply vec_ge_trans. intros t u v tu uv. trans u; hyp.
+  Proof. (*FIXME: prove in VecOrd*)
+    constructor. apply vec_prod_refl; class. apply vec_prod_sym; class.
+    apply vec_prod_trans; class.
   Qed.
 
   Lemma vaeq_cons : forall u v n (us vs : Tes n),
@@ -1207,7 +1204,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     intros n t t' tt' us us' usus'. revert n us us' usus' t t' tt'.
     induction us; simpl; intros us' usus' t t' tt'.
     VOtac. simpl. hyp.
-    VSntac us'. simpl. unfold vaeq, vec_ge, Vforall2n in usus'.
+    VSntac us'. simpl. unfold vaeq, vec_prod, Vforall2n in usus'.
     rewrite H in usus'. simpl in usus'. destruct usus' as [h1 h2].
     apply IHus. hyp. rewrite tt', h1. refl.
   Qed.
@@ -1222,7 +1219,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
     inv_aeq_0 h2; clear h2; subst. exists u0. exists (Vcons u1 us).
-    unfold vaeq, vec_ge, Vforall2n. simpl. intuition.
+    unfold vaeq, vec_prod, Vforall2n. simpl. intuition.
   Qed.
 
   Arguments apps_aeq_r [n vs v t0] _.
@@ -1415,7 +1412,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (** [vaeq_prod] is compatible with [vaeq]. *)
 
     (*TODO: follows from a more general theorem on Vforall2n. *)
-    Instance vaeq_prod_vaeq n :
+    Global Instance vaeq_prod_vaeq' n :
       Proper (@vaeq n ==> @vaeq n ==> impl) (vaeq_prod R).
 
     Proof.
@@ -1439,7 +1436,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       induction 1. apply SN_intro. intros y [x' [xx' [y' [x'y' y'y]]]].
       (* We have [x' = Vcast (Vapp x'i (Vcons a' x'j)) k0],
       [y' = Vcast (Vapp x'i (Vcons b' x'j)) k0] and [a' ->b b']. *)
-      destruct (Vgt_prod_gt x'y')
+      destruct (Vgt_prod_impl1 x'y')
         as [i [x'i [a' [j [x'j [k0 [b' [ex' [ey' a'b']]]]]]]]].
       (* Since [x ~~~ x'], we have [x = Vast (Vapp xi (Vcons a xj)) k0]. *)
       gen (Vbreak_eq_app_cast k0 x). set (k0' := Logic.eq_sym k0).
