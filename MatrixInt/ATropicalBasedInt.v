@@ -92,7 +92,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
       rewrite H. rewrite H2 in H1. auto.
     Qed.
 
-    Definition succ_vec := VecOrd.vec_ge gtx.
+    Definition succ_vec := vec_prod gtx.
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
@@ -100,7 +100,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
 
     Proof.
       unfold succ. apply Rof_trans with (f:=dom2vec). unfold succ_vec.
-      apply VecOrd.vec_ge_trans. apply gtx_trans.      
+      apply vec_prod_trans. apply gtx_trans.      
     Qed.
 
     Lemma ge_gtx_compat : forall x y z, x >>= y -> y >_0 z -> x >_0 z.
@@ -215,7 +215,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
         apply gtx_plus_compat.
         apply IHv.
         change v with (Vtail (Vcons h v)). apply Vforall2n_tail. hyp.
-        apply vec_tail_ge. hyp.
+        apply vec_prod_tail. hyp.
         apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
         do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
         do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.

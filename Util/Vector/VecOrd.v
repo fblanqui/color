@@ -4,17 +4,18 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2005-01-24
 
-orderings on vectors
+
+* Component-wise extension of a relation to vectors and product ordering
 *)
 
 Set Implicit Arguments.
 
 Require Import LogicUtil VecUtil RelUtil NatUtil RelMidex Syntax.
 
-Implicit Arguments symprod [A B].
+Arguments symprod [A B] _ _ _ _.
 
 (***********************************************************************)
-(** Component-wise extension to vectors on [A] of a relation on [A]. *)
+(** * Component-wise extension to vectors on [A] of a relation on [A]. *)
 
 Fixpoint Vgt_prod n A (R : relation A) : relation (vector A n) :=
   match n with
@@ -22,10 +23,19 @@ Fixpoint Vgt_prod n A (R : relation A) : relation (vector A n) :=
     | S n => fun v1 v2 => symprod R (Vgt_prod R) (Vsplit v1) (Vsplit v2)
   end.
 
-Definition Vgt_prod_alt n A (R : relation A) (v1 v2 : vector A n) :=
-  exists i (vi : vector A i) x j (vj : vector A j) h y,
-    v1 = Vcast (Vapp vi (Vcons x vj)) h
-    /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ R x y.
+Definition Vgt_prod1 n A (R : relation A) : relation (vector A n) :=
+  fun v1 v2 : vector A n =>
+    exists i (vi : vector A i) x j (vj : vector A j) h y,
+      v1 = Vcast (Vapp vi (Vcons x vj)) h
+      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ R x y.
+
+Definition Vgt_prod2 n A (R : relation A) : relation (vector A n) :=
+  fun v1 v2 : vector A n =>
+    exists i (hi : i<n), R (Vnth v1 hi) (Vnth v2 hi)
+      /\ forall j (hj : j<n), j <> i -> Vnth v1 hj = Vnth v2 hj.
+
+(***********************************************************************)
+(** Properties of [Vgt_prod]. *)
 
 Section S.
 
@@ -33,25 +43,7 @@ Section S.
 
   Variable R : relation A. Infix ">" := R (at level 70).
 
-  Notation prod := (Vgt_prod R). Infix ">prod" := (Vgt_prod R) (at level 70).
-
-  Lemma Vgt_prod_gt : forall n (v1 v2 : vec n), v1 >prod v2 ->
-    exists i (vi : vec i) x j (vj : vec j) h y,
-      v1 = Vcast (Vapp vi (Vcons x vj)) h
-      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x > y.
-
-  Proof.
-    induction v1; simpl. intros. contr. intro. VSntac v2.
-    unfold Vsplit. simpl. intro. inversion H0.
-    exists 0 (@Vnil A) h. exists n (Vtail v2) (refl_equal (S n)) (Vhead v2).
-    split. rewrite Vcast_refl. refl.
-    split. rewrite Vcast_refl. refl. hyp.
-    ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6, H7.
-    exists (S x0) (Vcons (Vhead v2) x1) x2. exists x3 x4.
-    assert (S x0 + S x3 = S n). omega. exists H9 x6.
-    simpl. intuition. apply Vtail_eq. apply Vcast_pi.
-    apply Vtail_eq. apply Vcast_pi.
-  Qed.
+  Infix ">prod" := (Vgt_prod R) (at level 70).
 
   Lemma Vgt_prod_cons : forall x1 x2 n (v1 v2 : vec n),
     (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
@@ -94,21 +86,6 @@ Section S.
     simpl. unfold Vsplit. simpl. apply right_sym. apply IHv. hyp.
   Qed.
 
-  Lemma Vgt_prod_iff : forall n (v1 v2 : vec n), v1 >prod v2 <->
-    exists i (vi : vec i) x j (vj : vec j) h y,
-      v1 = Vcast (Vapp vi (Vcons x vj)) h
-      /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ x > y.
-
-  Proof.
-    intros n v1 v2. split. apply Vgt_prod_gt.
-    intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]]; subst.
-    rewrite 2!Vcast_refl. apply Vgt_prod_app. apply Vgt_prod_cons. fo.
-  Qed.
-
-  Lemma Vgt_prod_eq n : @Vgt_prod n _ R == @Vgt_prod_alt n _ R.
-
-  Proof. rewrite rel_eq. apply Vgt_prod_iff. Qed.
-
   Lemma Vgt_prod_cast : forall m n (h : m=n) (v1 v2 : vec m),
     v1 >prod v2 -> Vcast v1 h >prod Vcast v2 h.
 
@@ -134,6 +111,95 @@ Section S.
     eapply Vcast_eq_elim with (m := n). apply H6.
     right. split. refl. eapply IHm with (n := n). apply H3.
   Qed.
+
+(***********************************************************************)
+(** Equivalence between [Vgt_prod] and [Vgt_prod1]. *)
+
+  Lemma Vgt_prod_impl1 : forall n (v1 v2 : vec n),
+    v1 >prod v2 -> Vgt_prod1 R v1 v2.
+
+  Proof.
+    induction v1; simpl. intros. contr. intro. VSntac v2.
+    unfold Vsplit. simpl. intro. inversion H0.
+    exists 0 (@Vnil A) h. exists n (Vtail v2) (refl_equal (S n)) (Vhead v2).
+    split. rewrite Vcast_refl. refl.
+    split. rewrite Vcast_refl. refl. hyp.
+    ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6, H7.
+    exists (S x0) (Vcons (Vhead v2) x1) x2. exists x3 x4.
+    assert (S x0 + S x3 = S n). omega. exists H9 x6.
+    simpl. intuition. apply Vtail_eq. apply Vcast_pi.
+    apply Vtail_eq. apply Vcast_pi.
+  Qed.
+
+  Lemma Vgt_prod_iff1 : forall n (v1 v2 : vec n),
+    v1 >prod v2 <-> Vgt_prod1 R v1 v2.
+
+  Proof.
+    intros n v1 v2. split. apply Vgt_prod_impl1.
+    intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]]; subst.
+    rewrite 2!Vcast_refl. apply Vgt_prod_app. apply Vgt_prod_cons. fo.
+  Qed.
+
+  Lemma Vgt_prod_eq1 n : @Vgt_prod n _ R == @Vgt_prod1 n _ R.
+
+  Proof. rewrite rel_eq. apply Vgt_prod_iff1. Qed.
+
+(***********************************************************************)
+(** Equivalence between [Vgt_prod] and [Vgt_prod2]. *)
+
+  Lemma Vgt_prod_iff2 : forall n (v1 v2 : vec n),
+    v1 >prod v2 <-> Vgt_prod2 R v1 v2.
+
+  Proof.
+    intros n v1 v2. rewrite Vgt_prod_iff1. split.
+
+    intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]];
+      subst; rewrite !Vcast_refl.
+    exists i. assert (hi : i<i+S j). omega. exists hi.
+    rewrite !Vnth_app_cons. intuition.
+    rewrite !Vnth_app. destruct (le_gt_dec i j0). 2: refl.
+    rewrite !Vnth_cons. destruct (lt_ge_dec 0 (j0-i)). 2: omega.
+    apply Vnth_eq. refl.
+
+    intros [i [hi [i1 i2]]].
+    assert (ki : 0+i<=n). omega. exists i (Vsub v1 ki) (Vnth v1 hi).
+    assert (kj : S i+(n-i-1)<=n). omega. exists (n-i-1) (Vsub v1 kj).
+    assert (k : i+S(n-i-1)=n). omega. exists k (Vnth v2 hi).
+    split; [idtac|split;[idtac|hyp]].
+
+    apply Veq_nth. intros j hj. rewrite Vnth_cast, Vnth_app.
+    destruct (le_gt_dec i j). rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+    rewrite Vnth_sub. apply Vnth_eq. omega.
+    apply Vnth_eq. omega.
+    rewrite Vnth_sub. apply Vnth_eq. refl.
+
+    apply Veq_nth. intros j hj. rewrite Vnth_cast, Vnth_app.
+    destruct (le_gt_dec i j). rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
+    rewrite Vnth_sub.
+    trans (Vnth v1 hj). sym. apply i2. omega. apply Vnth_eq. omega.
+    apply Vnth_eq. omega.
+    rewrite Vnth_sub.
+    trans (Vnth v1 hj). sym. apply i2. omega. apply Vnth_eq. refl.
+  Qed.
+
+  Lemma Vgt_prod_sub : forall n (v1 v2 : vec n) p q (h : p+q<=n),
+    v1 >prod v2 -> (Vgt_prod R)% (Vsub v1 h) (Vsub v2 h).
+
+  Proof.
+    intros n v1 v2 p q k. rewrite Vgt_prod_iff2.
+    intros [i [hi [i1 i2]]]. destruct (lt_dec i p).
+    left. apply Veq_nth. intros j hj. rewrite !Vnth_sub. apply i2. omega.
+    destruct (ge_dec i (p+q)).
+    left. apply Veq_nth. intros j hj. rewrite !Vnth_sub. apply i2. omega.
+    right. rewrite Vgt_prod_iff2.
+    exists (i-p). assert (l : i-p<q). omega. exists l. split.
+    rewrite !Vnth_sub. erewrite Vnth_eq, Vnth_eq with (v:=v2). apply i1.
+    omega. omega.
+    intros j hj m. rewrite !Vnth_sub. apply i2. omega.
+  Qed.
+
+(***********************************************************************)
+(** Properties of [Vgt_prod] wrt termination. *)
 
   Require Import SN.
 
@@ -187,52 +253,21 @@ Section S.
     apply (SN_gt_prod_head H). apply IHv. apply (SN_gt_prod_tail H).
   Qed.
 
-(***********************************************************************)
-(** Product ordering on vectors. *)
-
-  Notation ge := @R.
-
-  Definition vec_ge := Vforall2n ge.
-
-  Infix ">=v" := vec_ge (at level 70).
-
-  Lemma vec_tail_ge : forall n (v v' : vec (S n)),
-    v >=v v' -> Vtail v >=v Vtail v'.
-
-  Proof. intros. unfold vec_ge. apply Vforall2n_tail. hyp. Qed.
-
-  Lemma vec_ge_refl : reflexive ge -> forall n, reflexive (@vec_ge n).
-
-  Proof. intros ge_refl n x. unfold vec_ge. apply Vforall2n_intro. auto. Qed.
-
-  Lemma vec_ge_trans : transitive ge -> forall n, transitive (@vec_ge n).
-
-  Proof.
-    intros ge_trans n x y z xy yz. unfold vec_ge. apply Vforall2n_intro. intros.
-    apply ge_trans with (Vnth y ip); apply Vforall2n_nth; hyp.
-  Qed.
-
-  Variable ge_dec : forall x y, {ge x y}+{~ge x y}.
-
-  Lemma vec_ge_dec : forall n, rel_dec (@vec_ge n).
-
-  Proof. intros n P Q. destruct (Vforall2n_dec ge_dec P Q); intuition. Defined.
-
 End S.
 
-Implicit Arguments Vgt_prod_gt [A R n v1 v2].
-Implicit Arguments vec_ge_dec [A R n].
+Arguments Vgt_prod_impl1 [A R n v1 v2] _.
+Arguments Vgt_prod_sub [A R n v1 v2 p q] h _.
 
 (***********************************************************************)
 (** Compatibility of [Vgt_prod] with [same_relation]. *)
 
 Require Import Morphisms.
 
-Instance Vgt_prod_alt_same_rel n A :
-  Proper (same_relation ==> same_relation) (@Vgt_prod_alt n A).
+Instance Vgt_prod1_same_rel n A :
+  Proper (same_relation ==> same_relation) (@Vgt_prod1 n A).
 
 Proof.
-  intros R R' RR'. rewrite rel_eq. intros v1 v2. unfold Vgt_prod_alt.
+  intros R R' RR'. rewrite rel_eq. intros v1 v2. unfold Vgt_prod.
   split; intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]];
     exists i vi x; exists j vj h; exists y; fo.
 Qed.
@@ -241,11 +276,14 @@ Instance Vgt_prod_same_rel n A :
   Proper (same_relation ==> same_relation) (@Vgt_prod n A).
 
 Proof.
-  intros R R' RR'. rewrite 2!Vgt_prod_eq. apply Vgt_prod_alt_same_rel. hyp.
+  intros R R' RR'. rewrite 2!Vgt_prod_eq1. apply Vgt_prod1_same_rel. hyp.
 Qed.
 
-Lemma Vgt_prod_alt_union n A (R S : relation A) :
-  @Vgt_prod_alt n _ (R U S) == @Vgt_prod_alt n _ R U @Vgt_prod_alt n _ S.
+(***********************************************************************)
+(** Distributivity of [Vgt_prod] wrt [union]. *)
+
+Lemma Vgt_prod1_union n A (R S : relation A) :
+  @Vgt_prod1 n _ (R U S) == @Vgt_prod1 n _ R U @Vgt_prod1 n _ S.
 
 Proof.
   rewrite rel_eq; intros v1 v2. split.
@@ -259,4 +297,51 @@ Qed.
 Lemma Vgt_prod_union n A (R S : relation A) :
   @Vgt_prod n _ (R U S) == @Vgt_prod n _ R U @Vgt_prod n _ S.
 
-Proof. rewrite !Vgt_prod_eq. apply Vgt_prod_alt_union. Qed.
+Proof. rewrite !Vgt_prod_eq1. apply Vgt_prod1_union. Qed.
+
+(***********************************************************************)
+(** * Product ordering on vectors. *)
+
+Section vec_prod.
+
+  Variable A : Type. Notation vec := (vector A).
+
+  Variable R : relation A.
+
+  Definition vec_prod := Vforall2n R.
+
+  Lemma vec_prod_tail : forall n (v v' : vec (S n)),
+    vec_prod v v' -> vec_prod (Vtail v) (Vtail v').
+
+  Proof. intros. unfold vec_prod. apply Vforall2n_tail. hyp. Qed.
+
+  Global Instance vec_prod_refl n : Reflexive R -> Reflexive (@vec_prod n).
+
+  Proof. intros h x. apply Vforall2n_intro. refl. Qed.
+
+  Global Instance vec_prod_trans n : Transitive R -> Transitive (@vec_prod n).
+
+  Proof.
+    intros h x y z xy yz. apply Vforall2n_intro. intros i ip.
+    trans (Vnth y ip); apply Vforall2n_nth; hyp.
+  Qed.
+
+  Global Instance vec_prod_sym n : Symmetric R -> Symmetric (@vec_prod n).
+
+  Proof.
+    intros h x y xy. apply Vforall2n_intro. intros i ip. sym.
+    apply Vforall2n_nth. hyp.
+  Qed.
+
+  Lemma vec_prod_dec n : rel_dec R -> rel_dec (@vec_prod n).
+
+  Proof.
+    intros R_dec P Q. destruct (Vforall2n_dec R_dec P Q); intuition.
+  Defined.
+
+End vec_prod.
+
+Arguments vec_prod_refl [A R] _ _ _.
+Arguments vec_prod_trans [A R] _ _ _ _ _ _ _.
+Arguments vec_prod_sym [A R] _ _ _ _ _.
+Arguments vec_prod_dec [A R] {n} _ _ _.

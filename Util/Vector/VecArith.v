@@ -8,10 +8,12 @@ See the COPYRIGHTS and LICENSE files.
 Arithmetic over vectors on some semiring.
 *)
 
+(*FIXME: move orders and morphisms based on vec_prod to VecOrd*)
+
 Set Implicit Arguments.
 
 Require Import VecUtil RelUtil SemiRing OrdSemiRing NatUtil LogicUtil VecEq
-  Setoid VecOrd.
+  Setoid VecOrd Morphisms.
 
 Module VectorArith (SRT : SemiRingType).
 
@@ -40,7 +42,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Infix "[+]" := vector_plus (at level 50).
 
-  Add Parametric Morphism n : (@vector_plus n)
+  (*FIXME*)Add Parametric Morphism n : (@vector_plus n)
     with signature (@eq_vec n) ==> (@eq_vec n) ==> (@eq_vec n)
       as vector_plus_mor.
 
@@ -90,7 +92,7 @@ Module VectorArith (SRT : SemiRingType).
   Definition add_vectors n k (v : vector (vec n) k) := 
     Vfold_left (@vector_plus n) (zero_vec n) v.
 
-  Add Parametric Morphism n k : (@add_vectors n k)
+  (*FXIME*)Add Parametric Morphism n k : (@add_vectors n k)
     with signature (@VecEq.eq_vec _ (@eq_vec n) k) ==> (@eq_vec n)
       as add_vectors_mor.
 
@@ -160,7 +162,7 @@ Module VectorArith (SRT : SemiRingType).
   Definition dot_product n (l r : vec n) :=
     Vfold_left Aplus A0 (Vmap2 Amult l r).
 
-  Add Parametric Morphism n : (@dot_product n)
+  (*FIXME*)Add Parametric Morphism n : (@dot_product n)
     with signature (@eq_vec n) ==> (@eq_vec n) ==> eqA
       as dot_product_mor.
 
@@ -283,27 +285,25 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
 (***********************************************************************)
 (** [ge] on vectors *)
 
-  Definition vec_ge := vec_ge ge.
+  Definition vec_ge := vec_prod ge.
   Infix ">=v" := vec_ge (at level 70).
 
-  Definition vec_ge_refl := vec_ge_refl ge_refl.
-  Definition vec_ge_trans := vec_ge_trans ge_trans.
-  Definition vec_ge_dec := vec_ge_dec ge_dec.
+  Definition vec_ge_refl n := vec_prod_refl n ge_refl.
+  Definition vec_ge_trans n := vec_prod_trans n ge_trans.
+  Definition vec_ge_dec n := @vec_prod_dec _ _ n ge_dec.
 
-  Add Parametric Morphism n : (@vec_ge n)
-    with signature (@eq_vec n) ==> (@eq_vec n) ==> iff
-      as vec_ge_mor.
+  Instance vec_ge_mor n : Proper (@eq_vec n ==> @eq_vec n ==> iff) (@vec_ge n).
 
   Proof.
-    unfold vec_ge. intros. apply (Vforall2n_mor sid_theoryA). intuition.
+    intros a1 a1' a1a1' a2 a2' a2a2'; revert a1 a1' a1a1' a2 a2' a2a2'.
+    apply (Vforall2n_mor sid_theoryA). intuition.
     trans a1. apply eq_ge_compat. sym. hyp.
     trans a2. hyp. apply eq_ge_compat. hyp.
     trans a1'. apply eq_ge_compat. hyp.
     trans a2'. hyp. apply eq_ge_compat. sym. hyp.
-    hyp. hyp.
   Qed.
 
-  Implicit Arguments vec_ge_mor [n x y x0 y0].
+  Arguments vec_ge_mor [n x y] _ [x0 y0] _.
 
   Lemma vec_plus_ge_compat : forall n (vl vl' vr vr' : vec n), 
     vl >=v vl' -> vr >=v vr' -> vl [+] vr >=v vl' [+] vr'.
