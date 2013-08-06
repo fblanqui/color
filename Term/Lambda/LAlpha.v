@@ -1421,6 +1421,28 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       trans ws; hyp.
     Qed.
 
+    (*MOVE to VecOrd*)
+    Lemma Vsub_vaeq : forall n (v1 v2 : Tes n) p q (h : p+q<=n),
+      v1 ~~~ v2 -> Vsub v1 h ~~~ Vsub v2 h.
+
+    Proof.
+      intros n v1 v2 p q h e. apply Vforall2n_intro; intros i hi.
+      rewrite !Vnth_sub. apply Vforall2n_nth. hyp.
+    Qed.
+
+    Arguments Vsub_vaeq [n v1 v2 p q] _ _.
+
+    Lemma vaeq_prod_sub : forall n (us vs : Tes n) p q (h : p+q<=n),
+      us ==>R vs -> Vsub us h ~~~ Vsub vs h \/ Vsub us h ==>R Vsub vs h.
+
+    Proof.
+      intros n us vs p q h [us' [usus' [vs' [r vsvs']]]]; symmetry in vsvs'.
+      destruct (Vgt_prod_sub h r).
+      left. rewrite (Vsub_vaeq h usus'), (Vsub_vaeq h vsvs'), H. refl.
+      right. exists (Vsub us' h). split. apply Vsub_vaeq. hyp.
+      exists (Vsub vs' h). split. hyp. apply Vsub_vaeq. sym. hyp.
+    Qed.
+
     (** A vector of terms is strongly normalizing for [vaeq_prod] if
     every component is strongly normalizing for [R_aeq]. *)
 
