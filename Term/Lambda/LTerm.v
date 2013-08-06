@@ -345,7 +345,7 @@ Section term.
         | Lam x u => remove x (fv u)
       end.
 
-    Fixpoint fvs n (ts : Tes n) :=
+    Fixpoint fvs {n} (ts : Tes n) :=
       match ts with
         | Vnil => empty
         | Vcons t _ ts' => union (fv t) (fvs ts')
