@@ -25,16 +25,8 @@ FMap modules defined in the standard Coq library. *)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil BoolUtil VecUtil Min Max Wf_nat Omega FSets FSetUtil
+Require Import LogicUtil BoolUtil VecUtil Wf_nat Omega FSets FSetUtil NatUtil
   Structures.OrderedType RelUtil.
-
-(*FIXME: move to ZUtil? *)
-(** Tactic for proving arithmetic goals with [max]. *)
-
-Ltac max := unfold ltof; simpl;
-  match goal with
-    | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
-  end; intros; omega.
 
 (****************************************************************************)
 (** * The set [Te] of lambda-terms
@@ -107,7 +99,7 @@ Section term.
 
   Proof.
     intros P hv hf ha hl. apply ind_size0. intros [x|f|u v|x u] h.
-    apply hv. apply hf. apply ha; apply h; max.
+    apply hv. apply hf. apply ha; apply h; simpl; max.
     apply hl. intros u' h'. apply h. simpl. omega.
   Qed.
 

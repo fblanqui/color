@@ -11,7 +11,7 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil Min Max.
 Require Export Arith Omega.
 
 (***********************************************************************)
@@ -32,6 +32,11 @@ Implicit Arguments le_plus_minus_r [n m].
 Ltac Omega := intros; omega.
 
 Ltac absurd_arith := elimtype False; Omega.
+
+Ltac max :=
+  match goal with
+    | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
+  end; intros; omega.
 
 (***********************************************************************)
 (** natural numbers strictly smaller than some n *)

@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
-  VecUtil VecOrd.
+  VecUtil VecOrd NatUtil.
 Require Export LSubs.
 
 (****************************************************************************)
@@ -646,10 +646,10 @@ variables. *)
     unfold ltof. rewrite uu'1. hyp. hyp.
     (* app_l *)
     simpl. apply aeq_app_l. apply IHuu'. intros a ha a' aa' s'. apply IH.
-    revert ha. max. hyp.
+    revert ha. unfold ltof. simpl. max. hyp.
     (* app_r *)
     simpl. apply aeq_app_r. apply IHuu'. intros a ha a' aa' s'. apply IH.
-    revert ha. max. hyp.
+    revert ha. unfold ltof. simpl. max. hyp.
     (* lam *)
     simpl.
     rewrite (@var_aeq _ _ (Logic.eq_refl x) _ _ uu' _ _ (Logic.eq_refl s)).
