@@ -16,71 +16,98 @@ Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
 Require Export LSubs.
 
 (****************************************************************************)
-(** ** Alpha-equivalence
-is defined as the smallest congruence containing the [aeq_alpha] rule.
-Here, we exactly follow Curry-Feys definition (pages 59 and 91). *)
+(** ** Definition of alpha-equivalence
 
-Section aeq.
+We exactly follow Curry-Feys definition (pages 59 and 91):
+alpha-equivalence is defined as the smallest congruence containing the
+rule [aeq_alpha] below. *)
 
-  Variables (F X : Type) (E : Ens X).
+Module Export Def.
 
-  Notation Te := (@Te F X).
+  Section aeq.
 
-  Variable eq_fun_dec : forall f g : F, {f=g}+{~f=g}.
-  Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
+    (** We assume given decidable sets [F] and [X] for function
+    symbols and variables respectively. *)
 
-  Variable ens_X : Ens X.
+    Variables (F X : Type)
+      (eq_fun_dec : forall f g : F, {f=g}+{~f=g})
+      (eq_var_dec : forall x y : X, {x=y}+{~x=y}).
 
-  Notation In := (Ens_In ens_X).
-  Notation fv := (@fv F X ens_X).
+    Notation Te := (@Te F X).
 
-  Variable var_notin : Ens_type ens_X -> X.
+    (** We assume given a structure for finite sets on [X]. *)
 
-  Notation rename := (@rename F X eq_fun_dec eq_var_dec ens_X var_notin).
+    Variable ens_X : Ens X.
 
-  Inductive aeq : relation Te :=
-  | aeq_refl : forall u, aeq u u
-  | aeq_sym : forall u v, aeq u v -> aeq v u
-  | aeq_trans : forall u v w, aeq u v -> aeq v w -> aeq u w
-  | aeq_app_l : forall u u' v, aeq u u' -> aeq (App u v) (App u' v)
-  | aeq_app_r : forall u v v', aeq v v' -> aeq (App u v) (App u v')
-  | aeq_lam : forall x u u', aeq u u' -> aeq (Lam x u) (Lam x u')
-  | aeq_alpha : forall x u y,
-    ~In y (fv u) -> aeq (Lam x u) (Lam y (rename x y u)).
+    Notation In := (Ens_In ens_X).
+    Notation fv := (@fv F X ens_X).
 
-  Infix "~~" := aeq (at level 70).
+    (** We assume that [X] is infinite. *)
 
-  (** Alternative definition of [aeq] as the equivalence closure of
-  the monotone closure of [aeq_top]. *)
+    Variable var_notin : Ens_type ens_X -> X.
 
-  Inductive aeq_top : relation Te :=
-  | aeq_top_intro : forall x u y,
-    ~In y (fv u) -> aeq_top (Lam x u) (Lam y (rename x y u)).
+    Notation rename := (@rename F X eq_fun_dec eq_var_dec ens_X var_notin).
 
-  (** Closure modulo alpha-equivalence of a relation. *)
+    (** Definition of alpha-equivalence. *)
 
-  Section clos_aeq.
+    Inductive aeq : relation Te :=
+    | aeq_refl : forall u, aeq u u
+    | aeq_sym : forall u v, aeq u v -> aeq v u
+    | aeq_trans : forall u v w, aeq u v -> aeq v w -> aeq u w
+    | aeq_app_l : forall u u' v, aeq u u' -> aeq (App u v) (App u' v)
+    | aeq_app_r : forall u v v', aeq v v' -> aeq (App u v) (App u v')
+    | aeq_lam : forall x u u', aeq u u' -> aeq (Lam x u) (Lam x u')
+    | aeq_alpha : forall x u y,
+      ~In y (fv u) -> aeq (Lam x u) (Lam y (rename x y u)).
 
-    Variable R : relation Te.
+    Infix "~~" := aeq (at level 70).
 
-    Inductive clos_aeq : relation Te :=
-    | clos_aeq_intro : forall u u', u ~~ u' ->
-      forall v v', v ~~ v' -> R u' v' -> clos_aeq u v.
+    (** Alternative definition of [aeq] as the equivalence closure of
+       the monotone closure of [aeq_top]. *)
 
-  (** "Alpha-transitive closure" of a relation on terms:
-     [S*] is the (reflexive) transitive closure of [S U aeq]. *)
+    Inductive aeq_top : relation Te :=
+    | aeq_top_intro : forall x u y,
+      ~In y (fv u) -> aeq_top (Lam x u) (Lam y (rename x y u)).
 
-    Inductive clos_aeq_trans : relation Te :=
-    | at_step : forall u v, R u v -> clos_aeq_trans u v
-    | at_aeq : forall u v, u ~~ v -> clos_aeq_trans u v
-    | at_trans : forall u v w, clos_aeq_trans u v ->
-      clos_aeq_trans v w -> clos_aeq_trans u w.
+    (** Closure modulo alpha-equivalence of a relation. *)
 
-  End clos_aeq.
+    Section clos_aeq.
 
-End aeq.
+      Variable R : relation Te.
 
-Arguments aeq_alpha [F X] eq_fun_dec eq_var_dec ens_X var_notin [x u] y _.
+      Inductive clos_aeq : relation Te :=
+      | clos_aeq_intro : forall u u', u ~~ u' ->
+        forall v v', v ~~ v' -> R u' v' -> clos_aeq u v.
+
+      (** "Alpha-transitive closure" of a relation on terms:
+         [S*] is the (reflexive) transitive closure of [S U aeq]. *)
+
+      Inductive clos_aeq_trans : relation Te :=
+      | at_step : forall u v, R u v -> clos_aeq_trans u v
+      | at_aeq : forall u v, u ~~ v -> clos_aeq_trans u v
+      | at_trans : forall u v w, clos_aeq_trans u v ->
+        clos_aeq_trans v w -> clos_aeq_trans u w.
+
+    End clos_aeq.
+
+    (** Alpha-equivalence on substitutions. *)
+
+    Definition saeq xs s s' := forall x, In x xs -> s x ~~ s' x.
+
+    (** Alpha-equivalence on vectors of terms. *)
+
+    Definition vaeq := vec_prod aeq.
+
+    (** Component-wise extension to vectors of a relation on terms,
+       modulo [vaeq]. *)
+
+    Definition vaeq_prod {n} R := @vaeq n @ (Vgt_prod R @ @vaeq n).
+
+  End aeq.
+
+  Arguments aeq_alpha [F X] eq_fun_dec eq_var_dec ens_X var_notin [x u] y _.
+
+End Def.
 
 (****************************************************************************)
 (** ** Properties of alpha-equivalence. *)
@@ -89,6 +116,8 @@ Module Make (Export L : L_Struct).
 
   Module Export S := LSubs.Make L.
 
+  (** Notations for alpha-equivalence and related definitions. *)
+
   Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation aeq_alpha :=
     (@aeq_alpha F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
@@ -96,9 +125,17 @@ Module Make (Export L : L_Struct).
   Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_aeq_trans :=
     (@clos_aeq_trans F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation saeq := (@saeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation vaeq := (@vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation vaeq_prod :=
+    (@vaeq_prod F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
   Infix "~~" := aeq (at level 70).
+  Infix "~~~" := vaeq (at level 70).
   Notation "R *" := (clos_aeq_trans R) (at level 35).
+
+  (** [aeq] is the smallest equivalence containing the monotone
+  closure of [aeq_top]. *)
 
   Lemma aeq_equiv_mon : aeq == clos_equiv (clos_mon aeq_top).
 
@@ -128,9 +165,13 @@ Module Make (Export L : L_Struct).
     apply aeq_sym. hyp.
   Qed.
 
+  (** [aeq] is an equivalence relation. *)
+
   Instance aeq_equiv : Equivalence aeq.
 
   Proof. rewrite aeq_equiv_mon. apply ec_equiv. Qed.
+
+  (** [aeq] is monotone. *)
 
   Instance aeq_mon : Monotone aeq.
 
@@ -329,9 +370,7 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Alpha-equivalence on substitutions. *)
-
-  Definition saeq xs s s' := forall x, In x xs -> s x ~~ s' x.
+(** ** Properties of [saeq]. *)
 
   Lemma saeq_update : forall xs x u u' s s', u ~~ u' ->
     saeq (remove x xs) s s' -> saeq xs (update x u s) (update x u' s').
@@ -361,13 +400,13 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
-    unfold flip, impl, saeq in *. intuition.
+    unfold flip, impl, Def.saeq in *. fo.
   Qed.
 
   Instance saeq_e : Proper (Equal ==> Logic.eq ==> Logic.eq ==> iff) saeq.
 
   Proof.
-    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold saeq.
+    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold Def.saeq.
     intuition. apply H. rewrite e. hyp. apply H. rewrite <- e. hyp.
   Qed.
 
@@ -703,7 +742,7 @@ variables. *)
     assert (p0 : ~In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y'. unfold_var. rewrite h. apply var_notin_ok.
     destruct (eq_term_dec (xx's y') (Var y')). 2: tauto.
-    revert e0. unfold xx's at 1. unfold LSubs.update at 1. eq_dec y' x.
+    revert e0. unfold xx's at 1. unfold LSubs.Def.update at 1. eq_dec y' x.
 
     (* y' = x *)
     intro e3. inversion e3. rewrite H3, e0. apply aeq_lam. apply aeq_refl_eq.
@@ -718,8 +757,8 @@ variables. *)
 
     (* 2 *)
     change (In y' (fvcodom (fv v) xx's)) in H1. revert H1. rewrite In_fvcodom.
-    intros [a [i1 [i2 i3]]]. unfold xx's, LSubs.update in i2, i3. revert i2 i3.
-    eq_dec a x.
+    intros [a [i1 [i2 i3]]]. unfold xx's, LSubs.Def.update in i2, i3.
+    revert i2 i3. eq_dec a x.
 
     (* a = x *)
     subst a. simpl. set_iff. intros i2 i3. rewrite <- i3. apply aeq_lam.
@@ -879,7 +918,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros x y u v hy. unfold_rename. rewrite subs_comp. apply subs_saeq.
-    intros d hd. unfold comp. unfold_single. unfold LSubs.update at -1.
+    intros d hd. unfold comp. unfold_single. unfold LSubs.Def.update at -1.
     eq_dec d x; simpl.
     rewrite update_eq. refl.
     unfold_update. eq_dec d y. 2: refl.
@@ -896,7 +935,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros x y s u h. unfold_rename. rewrite subs_comp. apply subs_saeq.
-    intros z hz. unfold comp. unfold_single. unfold LSubs.update at -2.
+    intros z hz. unfold comp. unfold_single. unfold LSubs.Def.update at -2.
     eq_dec z x; simpl.
     subst. unfold_update. eq_dec y x.
     subst. refl.
@@ -1140,11 +1179,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Arguments fv_R_notin_fv_lam [R x y u v] _ _.
 
 (****************************************************************************)
-(** ** Alpha-equivalence on vectors of terms: product extension of [aeq]. *)
-
-  Definition vaeq := vec_prod aeq.
-
-  Infix "~~~" := vaeq (at level 35).
+(** ** Properties of [vaeq]. *)
 
   Instance vaeq_equiv n : Equivalence (@vaeq n).
 
@@ -1204,7 +1239,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     intros n t t' tt' us us' usus'. revert n us us' usus' t t' tt'.
     induction us; simpl; intros us' usus' t t' tt'.
     VOtac. simpl. hyp.
-    VSntac us'. simpl. unfold vaeq, vec_prod, Vforall2n in usus'.
+    VSntac us'. simpl. unfold Def.vaeq, vec_prod, Vforall2n in usus'.
     rewrite H in usus'. simpl in usus'. destruct usus' as [h1 h2].
     apply IHus. hyp. rewrite tt', h1. refl.
   Qed.
@@ -1219,7 +1254,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
     inv_aeq_0 h2; clear h2; subst. exists u0. exists (Vcons u1 us).
-    unfold vaeq, vec_prod, Vforall2n. simpl. intuition.
+    unfold Def.vaeq, vec_prod, Vforall2n. simpl. intuition.
   Qed.
 
   Arguments apps_aeq_r [n vs v t0] _.
@@ -1370,10 +1405,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   End atc_props.
 
 (****************************************************************************)
-(** ** Component-wise extension to vectors of a relation on terms, modulo [vaeq]. *)
-
-  Definition vaeq_prod {n} R := @vaeq n @ (Vgt_prod R @ @vaeq n).
-    (*FIXME? make @ right associative in CoLoR *)
+(** ** Properties of [vaeq_prod]. *)
 
   Section vaeq_prod.
 
@@ -1526,7 +1558,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Instance vaeq_prod_same_rel n :
     Proper (same_relation ==> same_relation) (@vaeq_prod n).
 
-  Proof. intros R R' RR'. unfold vaeq_prod. rewrite RR'. refl. Qed.
+  Proof. intros R R' RR'. unfold Def.vaeq_prod. rewrite RR'. refl. Qed.
 
   (** [vaeq_prod] distributes over [union]. *)
 
@@ -1534,7 +1566,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     @vaeq_prod n (R U S) == @vaeq_prod n R U @vaeq_prod n S.
 
   Proof.
-    unfold vaeq_prod. rewrite Vgt_prod_union, comp_union_l, comp_union_r. refl.
+    unfold Def.vaeq_prod. rewrite Vgt_prod_union, comp_union_l, comp_union_r.
+    refl.
   Qed.
 
 End Make.

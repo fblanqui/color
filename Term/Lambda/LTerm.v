@@ -51,14 +51,24 @@ Section term.
   | Lam (x : X) (u : Te).
 
 (****************************************************************************)
+(** Predicate saying that a term is not of the form [Lam x a]. *)
+
+  Definition not_lam u := forall x a, u <> Lam x a.
+
+(****************************************************************************)
 (** ** Equality on [Te] is decidable. *)
 
-  Variable eq_fun_dec : forall f g : F, {f=g}+{~f=g}.
-  Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
+  Section dec.
 
-  Lemma eq_term_dec : forall u v : Te, {u=v}+{~u=v}.
+    Variables
+      (eq_fun_dec : forall f g : F, {f=g}+{~f=g})
+      (eq_var_dec : forall x y : X, {x=y}+{~x=y}).
 
-  Proof. decide equality. Qed.
+    Lemma eq_term_dec : forall u v : Te, {u=v}+{~u=v}.
+
+    Proof. decide equality. Qed.
+
+  End dec.
 
 (****************************************************************************)
 (** ** Size of a term *)
@@ -326,7 +336,7 @@ Section term.
     Ens_fold : forall A, (X -> A -> A) -> Ens_type -> A -> A }.
 
 (****************************************************************************)
-(** ** Set of free variables of a term. *)
+(** ** Sets of free and bound variables of a term. *)
 
   Section fv.
 
@@ -336,6 +346,7 @@ Section term.
     Notation singleton := (Ens_singleton ens_X).
     Notation union := (Ens_union ens_X).
     Notation remove := (Ens_remove ens_X).
+    Notation add := (Ens_add ens_X).
 
     Fixpoint fv (t : Te) :=
       match t with
@@ -349,6 +360,14 @@ Section term.
       match ts with
         | Vnil => empty
         | Vcons t _ ts' => union (fv t) (fvs ts')
+      end.
+
+    Fixpoint bv (t : Te) :=
+      match t with
+        | Var _ => empty
+        | Fun _ => empty
+        | App u v => union (bv u) (bv v)
+        | Lam x u => add x (bv u)
       end.
 
   End fv.
@@ -429,7 +448,8 @@ Module Type L_Struct.
 
   Declare Module Export XSet : FSetInterface.S with Module E := XOrd.
 
-  Notation ens_X := (mk_Ens empty singleton add union remove diff In mem fold).
+  Notation ens_X :=
+    (@mk_Ens X XSet.t empty singleton add union remove diff In mem fold).
 
   (** We assume that [X] is infinite. *)
 
@@ -441,6 +461,8 @@ Module Type L_Struct.
 
   Declare Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
 
+  (** Notations. *)
+
   Notation Te := (Te F X).
   Notation Tes := (vector Te).
 
@@ -449,12 +471,14 @@ Module Type L_Struct.
   Notation App := (@App F X).
   Notation Lam := (@Lam F X).
 
+  Notation not_lam := (@not_lam F X).
   Notation size := (@size F X).
   Notation apps := (@apps F X).
   Notation head := (@head F X).
   Notation nb_args := (@nb_args F X).
   Notation args := (@args F X).
   Notation fv := (@fv F X ens_X).
+  Notation bv := (@bv F X ens_X).
   Notation fvs := (@fvs F X ens_X).
   Notation Monotone := (@Monotone F X).
   Notation clos_mon := (@clos_mon F X).
@@ -515,10 +539,6 @@ Module Make (Export L : L_Struct).
     intros x y. rewrite eqb_equiv, beq_term_true_iff, eqb_true_iff.
     intuition. inversion H. refl. subst. refl.
   Qed.
-
-  (** Predicate saying that a term is not of the form [Lam x a]. *)
-
-  Definition not_lam u := forall x a, u <> Lam x a.
 
 (****************************************************************************)
 (** ** Properties of [Monotone]. *)

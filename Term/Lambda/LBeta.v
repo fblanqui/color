@@ -82,7 +82,7 @@ Module Make (Export L : L_Struct).
     eapply clos_aeq_intro with
       (v':=subs (single x' (subs s v0)) (subs (update x (Var x') s) u0)).
     refl. do 2 rewrite subs_comp. apply subs_saeq. intros z hz. unfold comp.
-    unfold LSubs.single at 1. unfold_update. eq_dec z x; simpl.
+    unfold LSubs.Def.single at 1. unfold_update. eq_dec z x; simpl.
     rewrite single_eq. refl.
     unfold x'. rewrite single_var. refl. hyp. auto.
     apply m_step. apply beta_top_intro.
@@ -156,7 +156,8 @@ Module Make (Export L : L_Struct).
     right. right. destruct (lam_aeq_l uu'1) as [y [u0' [i1 [i2 i3]]]]; subst.
     exists y. exists u0'. split. refl. rewrite H0, i2. unfold_rename.
     rewrite subs_comp. apply subs_saeq. intros z hz.
-    unfold comp. unfold_single. unfold LSubs.update at -2. eq_dec z x; simpl.
+    unfold comp. unfold_single. unfold LSubs.Def.update at -2.
+    eq_dec z x; simpl.
     rewrite update_eq. hyp.
     unfold_update. eq_dec z y. destruct i3; subst; tauto. refl.
     (* app_l *)
