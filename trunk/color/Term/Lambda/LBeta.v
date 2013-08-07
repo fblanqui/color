@@ -11,7 +11,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat RelUtil Basics Morphisms LogicUtil VecUtil VecOrd SN.
+Require Import Wf_nat RelUtil Basics Morphisms LogicUtil VecUtil VecOrd SN
+  NatUtil.
 Require Export LAlpha.
 
 (****************************************************************************)
@@ -87,9 +88,11 @@ Module Make (Export L : L_Struct).
     unfold x'. rewrite single_var. refl. hyp. auto.
     apply m_step. apply beta_top_intro.
     (* app_l *)
-    simpl. mon. apply IH. unfold ltof. rewrite H. max. apply incl_clos_aeq. hyp.
+    simpl. mon. apply IH. unfold ltof. rewrite H. simpl. max.
+    apply incl_clos_aeq. hyp.
     (* app_r *)
-    simpl. mon. apply IH. unfold ltof. rewrite H. max. apply incl_clos_aeq. hyp.
+    simpl. mon. apply IH. unfold ltof. rewrite H. simpl. max.
+    apply incl_clos_aeq. hyp.
     (* lam *)
     (* We rename [x] into some variable [k] not in [xs] so that [subs s]
        makes no alpha-conversion. *)
