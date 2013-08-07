@@ -21,87 +21,98 @@ Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil VecUtil.
 Require Export LTerm.
 
 (****************************************************************************)
-(** * Type for substitutions:
-a substitution is given by a total function from [X] to [Te]. *)
+(** * Definition of substitution. *)
 
-Section subs.
+Module Export Def.
 
-  Variables F X : Type.
+  (** Parameters. *)
 
-  Notation Te := (@Te F X).
-  Notation Var := (@Var F X).
+  Section subs.
 
-  Variable eq_fun_dec : forall f g : F, {f=g}+{~f=g}.
-  Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
+    (** We assume given decidable sets [F] and [X] for function
+    symbols and variables respectively. *)
 
-  Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
-  Notation beq_term := (brel eq_term_dec).
+    Variables (F X : Type)
+      (eq_fun_dec : forall f g : F, {f=g}+{~f=g})
+      (eq_var_dec : forall x y : X, {x=y}+{~x=y}).
 
-  Variable ens_X : Ens X.
+    Notation Te := (@Te F X).
+    Notation Var := (@Var F X).
+    Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
+    Notation beq_term := (brel eq_term_dec).
 
-  Notation empty := (Ens_empty ens_X).
-  Notation mem := (Ens_mem ens_X).
-  Notation add := (Ens_add ens_X).
-  Notation union := (Ens_union ens_X).
-  Notation remove := (Ens_remove ens_X).
-  Notation fold := (Ens_fold ens_X).
-  Notation fv := (@fv F X ens_X).
+    (** We assume given a structure for finite sets on [X]. *)
 
-  Variable var_notin : Ens_type ens_X -> X.
+    Variable ens_X : Ens X.
 
-  (** Identity substitution. *)
+    Notation empty := (Ens_empty ens_X).
+    Notation mem := (Ens_mem ens_X).
+    Notation add := (Ens_add ens_X).
+    Notation union := (Ens_union ens_X).
+    Notation remove := (Ens_remove ens_X).
+    Notation fold := (Ens_fold ens_X).
+    Notation fv := (@fv F X ens_X).
 
-  Definition id := fun y => Var y.
+    (** We assume that [X] is infinite. *)
 
-  (** [update x t s] is the substitution mapping [x] to [t] and any
-  other variable [y] to [s y]. *)
+    Variable var_notin : Ens_type ens_X -> X.
 
-  Definition update x (t : Te) s := fun y =>
-    match eq_var_dec y x with
-      | left _ => t
-      | _ => s y
-    end.
+  (** ** Type for substitutions:
+     a substitution is given by a total function from [X] to [Te]. *)
 
-  (** [single x t] is the substitution mapping [x] to [t] and leaving
-  any other variable unchanged. *)
+    (** Identity substitution. *)
 
-  Definition single x t := update x t id.
+    Definition id := fun y => Var y.
 
-  (** [restrict xs s] is the substitution mapping any variable [z] of
-  [xs] to [s z] and leaving any other variable unchanged. *)
+    (** [update x t s] is the substitution mapping [x] to [t] and any
+       other variable [y] to [s y]. *)
+
+    Definition update x (t : Te) s := fun y =>
+      match eq_var_dec y x with
+        | left _ => t
+        | _ => s y
+      end.
+
+    (** [single x t] is the substitution mapping [x] to [t] and leaving
+       any other variable unchanged. *)
+
+    Definition single x t := update x t id.
+
+    (** [restrict xs s] is the substitution mapping any variable [z] of
+       [xs] to [s z] and leaving any other variable unchanged. *)
  
-  Definition restrict xs s z := if mem z xs then s z else Var z.
+    Definition restrict xs s z := if mem z xs then s z else Var z.
 
-  (** "Domain" of a substitution: given a substitution [s] and a
-finite set [xs], [domain s xs] is the set of variables [x] in [xs]
-such that [s x <> Var x]. It is defined by iteration of the function
-[domain_fun] on [xs]. *)
+    (** "Domain" of a substitution: given a substitution [s] and a
+       finite set [xs], [domain s xs] is the set of variables [x] in [xs]
+       such that [s x <> Var x]. It is defined by iteration of the function
+       [domain_fun] on [xs]. *)
 
-  Definition domain_fun s x xs :=
-    if beq_term (s x) (Var x) then xs else add x xs.
+    Definition domain_fun s x xs :=
+      if beq_term (s x) (Var x) then xs else add x xs.
 
-  Definition domain xs s := fold (domain_fun s) xs empty.
+    Definition domain xs s := fold (domain_fun s) xs empty.
 
-  (** Free variables of the "codomain" of a substitution: given a
-substitution [s] and a finite set [xs], [fvcod s xs] is the union of
-the free variables of [s x] for every [x] in [xs]. It is defined by
-iteration of the function [fvcod_fun] on [xs]. *)
+    (** Free variables of the "codomain" of a substitution: given a
+       substitution [s] and a finite set [xs], [fvcod s xs] is the union of
+       the free variables of [s x] for every [x] in [xs]. It is defined by
+       iteration of the function [fvcod_fun] on [xs]. *)
 
-  Definition fvcod_fun s (x : X) xs := union (fv (s x)) xs.
+    Definition fvcod_fun s (x : X) xs := union (fv (s x)) xs.
 
-  Definition fvcod xs s := fold (fvcod_fun s) xs empty.
+    Definition fvcod xs s := fold (fvcod_fun s) xs empty.
 
-  (** Let [fvcodom] be the composition of [fvcod] and [domain]. *)
+    (** Let [fvcodom] be the composition of [fvcod] and [domain]. *)
 
-  Definition fvcodom xs s := fvcod (domain xs s) s.
+    Definition fvcodom xs s := fvcod (domain xs s) s.
 
-  (** Generation of a fresh variable. *)
+    (** Generation of a fresh variable. *)
 
-  Definition var x u s :=
-    let xs := fvcodom (remove x (fv u)) s in
-      if mem x xs then var_notin (union (fv u) xs) else x.
+    Definition var x u s :=
+      let xs := fvcodom (remove x (fv u)) s in
+        if mem x xs then var_notin (union (fv u) xs) else x.
 
-  (** [subs]: Effect of a substitution on a term.
+    (** [subs]: Effect of a substitution on a term.
 When applying [s] on [Lam x u], if [x] belongs to the set [xs] of the
 free variables of the codomain of [s] w.r.t. the free variables of
 [Lam x u], then [x] is renamed into a variable [var s x u] not
@@ -143,32 +154,34 @@ too, but by always renaming bound variables, i.e. [var x u s = choice
 (fv u)) s] and [choice:XSet.t -> X] is a choice function ([In (choice
 A) A] if [A] is not empty). *)
 
-  Fixpoint subs s (t : Te) :=
-    match t with
-      | LTerm.Var x => s x
-      | Fun f => t
-      | App u v => App (subs s u) (subs s v)
-      | Lam x u =>
-        let x' := var x u s in Lam x' (subs (update x (Var x') s) u)
-    end.
+    Fixpoint subs s (t : Te) :=
+      match t with
+        | LTerm.Var x => s x
+        | Fun f => t
+        | App u v => App (subs s u) (subs s v)
+        | Lam x u =>
+          let x' := var x u s in Lam x' (subs (update x (Var x') s) u)
+      end.
 
-  (*TODO: replace by a notation?*)
-  Definition rename y z := subs (single y (Var z)).
+    (*TODO: replace by a notation?*)
+    Definition rename y z := subs (single y (Var z)).
 
-  (** Closure by substitution of a relation on terms.
+    (** Closure by substitution of a relation on terms.
 
-  Note that [clos_subs R] is a priori NOT stable by substitution since
-  substitution composition is correct modulo alpha-equivalence only
-  (Lemma [subs_comp] in LAlpha). *)
+       Note that [clos_subs R] is a priori NOT stable by substitution
+       since substitution composition is correct modulo alpha-equivalence
+       only (Lemma [subs_comp] in LAlpha). *)
 
-  Inductive clos_subs R : relation Te :=
-  | subs_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
+    Inductive clos_subs R : relation Te :=
+    | subs_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
 
-End subs.
+  End subs.
 
-Arguments domain [F X] eq_fun_dec eq_var_dec ens_X xs s : simpl never.
-Arguments fvcod [F X] ens_X xs s : simpl never.
-Arguments fvcodom [F X] eq_fun_dec eq_var_dec ens_X xs s : simpl never.
+  Arguments domain [F X] eq_fun_dec eq_var_dec ens_X xs s : simpl never.
+  Arguments fvcod [F X] ens_X xs s : simpl never.
+  Arguments fvcodom [F X] eq_fun_dec eq_var_dec ens_X xs s : simpl never.
+
+End Def.
 
 Ltac unfold_update := unfold update.
 Ltac unfold_single := unfold single.
@@ -186,6 +199,8 @@ Ltac unfold_var := unfold var; ens.
 (** * Properties of substitution. *)
 
 Module Make (Export L : L_Struct).
+
+  (** Notations for substitutions and related definitions. *)
 
   Notation id := (@id F X).
   Notation update := (@update F X XOrd.eq_dec).
@@ -927,7 +942,7 @@ on some finite set of variables *)
     gen hx. unfold xs at 1. rewrite In_fvcod. intros [z hz]. revert hz.
     rewrite In_domain. set_iff. intuition.
     intro y. set_iff. rewrite !In_domain, In_fvcod.
-    unfold LSubs.update at 1. eq_dec y x.
+    unfold Def.update at 1. eq_dec y x.
 
     (* y = x *)
     subst y. set_iff. intuition.
@@ -1052,7 +1067,7 @@ on some finite set of variables *)
     subs (update y w (single y v)) u = subs (single y w) u.
 
   Proof.
-    intros y v w u. unfold LSubs.single at 1. rewrite update2_eq. refl.
+    intros y v w u. unfold Def.single at 1. rewrite update2_eq. refl.
   Qed.
 
   Lemma update2_single_eq : forall y w x v v' u,
@@ -1061,7 +1076,7 @@ on some finite set of variables *)
 
   Proof.
     intros y w x v v' u. apply subs_seq. intros z hz.
-    unfold LSubs.update at -2. eq_dec z y. refl.
+    unfold Def.update at -2. eq_dec z y. refl.
     match goal with |- ?x _ = ?y _ => set (s1:=x); set (s2:=y) end.
     change (subs s1 (Var z) = subs s2 (Var z)). unfold s1, s2.
     rewrite update_single_eq. refl.
@@ -1278,15 +1293,7 @@ on some finite set of variables *)
   Qed.
 
 (****************************************************************************)
-(** ** Bound variables. *)
-
-  Fixpoint bv (t : Te) :=
-    match t with
-      | LTerm.Var _ => empty
-      | LTerm.Fun _ => empty
-      | LTerm.App u v => union (bv u) (bv v)
-      | LTerm.Lam x u => add x (bv u)
-    end.
+(** ** Preservation of bound variables by some renaming. *)
 
   Lemma bv_rename : forall x y u, ~In y (bv u) -> bv (rename x y u) [=] bv u.
 
@@ -1301,7 +1308,7 @@ on some finite set of variables *)
     rewrite rename_app. simpl. set_iff. intro n.
     rewrite IHu1, IHu2. refl. tauto. tauto.
     (* lam *)
-    unfold LSubs.rename in *. simpl. set_iff. intro n. rewrite var_rename.
+    unfold Def.rename in *. simpl. set_iff. intro n. rewrite var_rename.
     case_eq (mem x (fv u) && negb (eqb x0 x) && eqb x0 y).
     rewrite andb_true_iff, eqb_true_iff. tauto.
     repeat rewrite andb_false_iff. eq_dec x0 x.
@@ -1457,7 +1464,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   Proof.
     intros x u s xs y. set_iff. do 2 rewrite In_bvcod. intuition.
-    destruct H as [z [h1 h2]]. unfold LSubs.update in h2. eq_dec z x.
+    destruct H as [z [h1 h2]]. unfold Def.update in h2. eq_dec z x.
     subst z. rewrite mem_iff in h1. rewrite h1. auto.
     right. exists z. set_iff. auto.
     revert H0. case_eq (mem x xs); intros hx H0. exists x.
@@ -1500,11 +1507,11 @@ In fact, these properties won't be used later. Instead, we will use similar prop
   Proof.
     intros x y v w n. induction u.
     (* var *)
-    simpl. set_iff. intros h _. unfold LSubs.single at 5.
+    simpl. set_iff. intros h _. unfold Def.single at 5.
     unfold_update. eq_dec x0 y.
     subst x0. rewrite single_notin_fv with (v:=w). 2: tauto.
     rewrite single_neq. 2: hyp. simpl. apply single_eq.
-    simpl. unfold LSubs.single at 2. unfold LSubs.single at 2.
+    simpl. unfold Def.single at 2. unfold Def.single at 2.
     unfold_update. eq_dec x0 x. refl. simpl. apply single_neq. auto.
     (* fun *)
     refl.
@@ -1512,7 +1519,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     simpl. set_iff. intro h. rewrite union_inter_1, union_empty. intros [a b].
     rewrite IHu1, IHu2; tauto.
     (* lam *)
-    simpl fv. simpl bv. set_iff. rewrite inter_empty. intros h1 h2.
+    simpl LTerm.fv. simpl LTerm.bv. set_iff. rewrite inter_empty. intros h1 h2.
     assert (h3 : ~In x0 (union (fv v) (fv w))). apply h2. set_iff. auto.
     revert h3. set_iff. intro h3.
     repeat rewrite single_lam_no_alpha. apply (f_equal (Lam x0)).
@@ -1548,7 +1555,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* var *)
     simpl. unfold_update. eq_dec x y.
     subst y. rewrite single_neq. 2: auto. simpl. sym. apply single_eq.
-    unfold LSubs.single at -2. unfold_update. sym. eq_dec x x'.
+    unfold Def.single at -2. unfold_update. sym. eq_dec x x'.
     apply single_notin_fv. hyp. simpl. apply single_neq. auto.
     (* fun *)
     refl.
@@ -1556,7 +1563,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     revert h. simpl. rewrite union_inter_1, union_empty. intros [a b].
     rewrite IHu1, IHu2; tauto.
     (* lam *)
-    revert h. simpl bv. rewrite inter_empty. intro h.
+    revert h. simpl LTerm.bv. rewrite inter_empty. intro h.
     assert (hx : ~In x (union (fv v) (fv w))). apply h. set_iff. auto.
     revert hx; set_iff; intro hx.
     assert (~In x (fv v) /\ ~In x (fv w)). tauto. clear hx.
@@ -1597,7 +1604,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
   Proof.
     induction u; intros x' y v w n hy h.
     (* var *)
-    simpl. unfold LSubs.single at 3. unfold_update. sym. eq_dec x y.
+    simpl. unfold Def.single at 3. unfold_update. sym. eq_dec x y.
     apply single_notin_fv. hyp. refl.
     (* fun *)
     refl.
@@ -1605,7 +1612,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     revert h. simpl. rewrite union_inter_1, union_empty. intros [a b].
     rewrite IHu1, IHu2; tauto.
     (* lam *)
-    revert h. simpl bv. rewrite inter_empty. intro h.
+    revert h. simpl LTerm.bv. rewrite inter_empty. intro h.
     assert (hx : ~In x (union (fv v) (fv w))). apply h. set_iff. auto.
     revert hx; set_iff; intro hx.
     assert (~In x (fv v) /\ ~In x (fv w)). tauto. clear hx.
@@ -1667,7 +1674,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
         else if eqb z x then Lam z u else Lam z (rename x y u).
 
   Proof.
-    intros x y z u. unfold LSubs.rename at 1. simpl.
+    intros x y z u. unfold Def.rename at 1. simpl.
     rewrite var_single, beq_term_var. simpl. rewrite singleton_b.
     case_eq (mem x (fv u) && negb (eqb z x) && negb (eqb y x) && eqb y z).
     repeat rewrite andb_true_iff. intros [[[h1 h2] h3] h4].
@@ -1715,7 +1722,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite union_subset_1 with (s':=fvcodom (fv u2) s) (s:=fvcodom (fv u1) s).
     rewrite <- empty_subset. hyp.
     (* lam *)
-    rename x0 into z. simpl bv. intros h1 h2.
+    rename x0 into z. simpl LTerm.bv. intros h1 h2.
     rewrite rename_lam. case_eq (mem x (fv u) && negb (eqb y x) && eqb y z).
     (* In x (fv u) /\ y <> x /\ y = z *)
     repeat rewrite andb_true_iff. rewrite eqb_true_iff. intros [[i1 i2] i3].
@@ -1731,7 +1738,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* z <> x *)
     rewrite rename_notin_fv with (u:=u). 2: rewrite not_mem_iff; hyp.
     apply rename_notin_fv. rewrite fv_subs. simpl in *. set_iff.
-    unfold LSubs.fvcodom in h1. rewrite <- not_mem_iff in i. intuition.
+    unfold Def.fvcodom in h1. rewrite <- not_mem_iff in i. intuition.
     (* 2. y = x *)
     revert i. rewrite negb_false_iff, eqb_true_iff. intro i. subst y.
     repeat rewrite rename_id. unfold eqb. eq_dec z x; refl.
@@ -1898,7 +1905,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   Proof.
     intros y w x v v' u. apply subs1_seq. intros z hz.
-    unfold LSubs.update at -2. eq_dec z y. refl.
+    unfold Def.update at -2. eq_dec z y. refl.
     match goal with |- ?x _ = ?y _ => set (s1:=x); set (s2:=y) end.
     change (subs s1 (Var z) = subs s2 (Var z)). unfold s1, s2.
     rewrite update_single_eq. refl.
@@ -1941,7 +1948,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   Proof.
     intros y v x u. apply subs1_seq. intros z hz.
-    unfold_single. unfold LSubs.update at -2.
+    unfold_single. unfold Def.update at -2.
     eq_dec z y. refl. unfold_update. eq_dec z x.
     subst z. refl. refl.
   Qed.
@@ -1955,7 +1962,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
   Proof.
     intros x y y'. induction u; intro s; simpl; set_iff; intro hy.
     (* var *)
-    rename x0 into z. unfold_single. unfold LSubs.update at -1.
+    rename x0 into z. unfold_single. unfold Def.update at -1.
     eq_dec z x; simpl.
     rewrite update_eq. refl.
     unfold_update. eq_dec z y; refl.
@@ -2058,7 +2065,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite inter_sym. tauto.
     (* lam *)
     apply (f_equal (Lam x)). rewrite IHu. apply subs1_seq.
-    intros y hy. unfold comp1 at 1. unfold LSubs.update at -1.
+    intros y hy. unfold comp1 at 1. unfold Def.update at -1.
     eq_dec y x; simpl. apply update_eq.
     unfold comp1. apply subs1_seq. intros z hz. unfold_update.
     eq_dec z x. 2: refl. subst z. sym.
@@ -2076,11 +2083,3 @@ In fact, these properties won't be used later. Instead, we will use similar prop
   Qed.
 
 End Make.
-
-(*COQ: We set the following Emacs file variables so that the file can
-be run in ProofGeneral. Otherwise, the identifiers LTerm.* are not
-recognized by coqtop. *)
-
-(* Local Variables: *)
-(* coq-prog-args: ("-emacs" "-top" "LSubs") *)
-(* End: *)
