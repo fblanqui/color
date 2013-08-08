@@ -54,27 +54,10 @@ Section cp.
     cp3 : cp_red P;
     cp4 : cp_neutral P }.
 
-  (** We check that computability properties are invariant wrt [=]. *)
+  (** Interpretation of arrow types. *)
 
-  Global Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
-
-  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
-
-  Global Instance cp_sn_equiv : Proper (equiv ==> impl) cp_sn.
-
-  Proof. fo. Qed.
-
-  Global Instance cp_red_equiv : Proper (equiv ==> impl) cp_red.
-
-  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
-
-  Global Instance cp_neutral_equiv : Proper (equiv ==> impl) cp_neutral.
-
-  Proof. fo. Qed.
-
-  Global Instance cp_equiv : Proper (equiv ==> impl) cp.
-
-  Proof. intros P Q PQ [P1 P2 P3 P4]. rewrite PQ in *. fo. Qed.
+  Definition arr (P Q : set Te) : set Te :=
+    fun u => forall v, P v -> Q (App u v).
 
 End cp.
 
@@ -88,9 +71,12 @@ Module Type CP_Struct.
   Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation vaeq := (@vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation vaeq_prod :=
+    (@vaeq_prod F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
-  Infix "->bh" := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin)
-    (at level 70).
+  Infix "->bh" := beta_top (at level 70).
 
   (** We assume given a relation [->Rh] and a predicate [neutral]. *)
 
@@ -107,6 +93,8 @@ Module Type CP_Struct.
 
   Notation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
+
+  Infix "==>R" := (vaeq_prod R) (at level 70).
 
   (** Properties not involving reduction. *)
 
@@ -126,6 +114,14 @@ Module Type CP_Struct.
   Parameter Rh_bh : forall x u v w,
     App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
   Parameter not_Rh_app_neutral : forall u v w, neutral u -> ~ App u v ->Rh w.
+
+  (** Some notations. *)
+
+  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+  Notation cp_sn := (@cp_sn F X R_aeq).
+  Notation cp_red := (@cp_red F X R_aeq).
+  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
+  Notation cp := (@cp F X aeq R_aeq neutral).
 
 End CP_Struct.
 
@@ -203,6 +199,15 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
   Instance fv_Rh : Proper (Rh --> Subset) fv.
 
   Proof. exact fv_beta_top. Qed.
+
+  (** Some notations. *)
+  (*COQ: can we avoid to repeat these notations already declared in CP_Struct?*)
+
+  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+  Notation cp_sn := (@cp_sn F X R_aeq).
+  Notation cp_red := (@cp_red F X R_aeq).
+  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
+  Notation cp := (@cp F X aeq R_aeq neutral).
 
 End CP_beta.
 
@@ -451,11 +456,27 @@ Module Make (Export CP : CP_Struct).
 (****************************************************************************)
 (** ** Properties of computability predicates. *)
 
-  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
-  Notation cp_sn := (@cp_sn F X R_aeq).
-  Notation cp_red := (@cp_red F X R_aeq).
-  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
-  Notation cp := (@cp F X aeq R_aeq neutral).
+  (** We check that computability properties are invariant wrt [=]. *)
+
+  Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
+
+  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
+
+  Instance cp_sn_equiv : Proper (equiv ==> impl) cp_sn.
+
+  Proof. fo. Qed.
+
+  Instance cp_red_equiv : Proper (equiv ==> impl) cp_red.
+
+  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
+
+  Instance cp_neutral_equiv : Proper (equiv ==> impl) cp_neutral.
+
+  Proof. fo. Qed.
+
+  Instance cp_equiv : Proper (equiv ==> impl) cp.
+
+  Proof. intros P Q PQ [P1 P2 P3 P4]. rewrite PQ in *. fo. Qed.
 
   (** A computability predicate is stable by [=>R*] if it satisfies
      [cp_aeq] and [cp_red]. *)
@@ -559,9 +580,9 @@ Module Make (Export CP : CP_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Interpretation of arrow types. *)
+(** ** Properties of the interpretation of arrow types. *)
 
-  Definition arr (P Q : set Te) u := forall v, P v -> Q (App u v).
+  Notation arr := (@arr F X).
 
   (** [arr] preserves [cp_aeq]. *)
 
@@ -617,8 +638,6 @@ Module Make (Export CP : CP_Struct).
   Qed.
 
   (** Monotony properties of [arr]. *)
-
-  Require Import SetUtil.
 
   Instance arr_incl : Proper (incl --> incl ==> incl) arr.
 

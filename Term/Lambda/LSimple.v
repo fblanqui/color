@@ -246,6 +246,13 @@ Module Type ST_Struct.
 
   Declare Module Export XMap : FMapInterface.S with Module E := XOrd.
 
+  Notation En := (XMap.t Ty).
+  Notation empty := (XMap.empty Ty).
+
+  (** Equivalence on environments. *)
+
+  Infix "=&=" := (@Equal Ty) (at level 30).
+
 End ST_Struct.
 
 (****************************************************************************)
@@ -253,7 +260,7 @@ End ST_Struct.
 
 Module Make (Export ST : ST_Struct).
 
-  Module Export B := LBeta.Make L.
+  Module Export B := LBeta.Make ST.L.
 
 (****************************************************************************)
 (** ** Typing environments
@@ -266,14 +273,7 @@ are finite maps from variables to types. *)
   Module Export XMapProps := Properties XMap.
   Module Export XMapOrdProps := OrdProperties XMap.
 
-  Export XMap.
-
-  Notation En := (XMap.t Ty).
-  Notation empty := (XMap.empty Ty).
-
-  (** Equivalence on environments. *)
-
-  Infix "=&=" := (@Equal Ty) (at level 30).
+  Export XMap ST.
 
   (** Inclusion ordering on environments. *)
 
