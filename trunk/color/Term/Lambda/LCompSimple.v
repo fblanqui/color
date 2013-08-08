@@ -12,8 +12,52 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil. 
+Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil. 
 Require Export LSimple LComp.
+
+(****************************************************************************)
+(** ** Interpretation of simple types as computability predicates. *)
+
+Module Export Def.
+
+  Section int.
+
+    Variables F X So : Type.
+
+    Notation Te := (@Te F X).
+
+    Variable I : So -> set Te.
+
+    Fixpoint int T :=
+      match T with
+        | Base b => I b
+        | Arr A B => arr (int A) (int B)
+      end.
+
+    (** Computability of vectors of terms.
+
+[vint] is defined in such a way that as much types [Ts] as there are
+terms [ts] must be given, but [Ts] can contain more types than
+necessary (i.e. the length [n] of [Ts] can be bigger than the length
+[p] of [ts]). However, the result does not depend on these extras
+types. *)
+
+    Notation Tes := (vector Te).
+    Notation Ty := (@Ty So).
+    Notation Tys := (vector Ty).
+
+    Fixpoint vint n (Ts : Tys n) p (ts : Tes p) :=
+      match Ts, ts with
+        | _, Vnil => True
+        | Vcons T _ Ts', Vcons t _ ts' => int T t /\ vint Ts' ts'
+        | _, _ => False
+      end.
+
+    (*COQ: [Functional Scheme vint] does not seem to end. *)
+
+  End int.
+
+End Def.
 
 (****************************************************************************)
 (** * Functor providing a termination proof for any CP structure
@@ -27,17 +71,17 @@ Module Make (Export ST : ST_Struct)
   Module Export C := LComp.Make CP.
   Module Export T := LSimple.Make ST.
 
+  Notation int := (@int F X So).
+  Notation vint := (@vint F X So).
+
   Section int.
 
     Variables (I : So -> Te -> Prop) (cp_I : forall b, cp (I b)).
 
-    (** ** Interpretation of simple types *)
+(****************************************************************************)
+(** ** Properties of the interpretation of simple types *)
 
-    Fixpoint int T :=
-      match T with
-        | Base b => I b
-        | Arr A B => arr (int A) (int B)
-      end.
+    Notation int := (int I).
 
     Lemma int_base b t : I b t <-> int (Base b) t.
 
@@ -82,7 +126,7 @@ Module Make (Export ST : ST_Struct)
     Qed.
 
 (****************************************************************************)
-(** Termination proof assuming that function symbols are computable. *)
+(** ** Termination proof assuming that function symbols are computable. *)
 
     Variable comp_fun : forall f, int (typ f) (Fun f).
 
@@ -153,22 +197,9 @@ Module Make (Export ST : ST_Struct)
     Qed.
 
 (****************************************************************************)
-(** ** Computability of vectors of terms.
+(** ** Properties of [vint]. *)
 
-[vint] is defined in such a way that as much types [Ts] as there are
-terms [ts] must be given, but [Ts] can contain more types than
-necessary (i.e. the length [n] of [Ts] can be bigger than the length
-[p] of [ts]). However, the result does not depend on these extras
-types. *)
-
-    Fixpoint vint n (Ts : Tys n) p (ts : Tes p) :=
-      match Ts, ts with
-        | _, Vnil => True
-        | Vcons T _ Ts', Vcons t _ ts' => int T t /\ vint Ts' ts'
-        | _, _ => False
-      end.
-
-    (*COQ: [Functional Scheme vint] does not seem to end. *)
+    Notation vint := (vint I).
 
    (** Basic properties of [vint]. *)
 
@@ -203,7 +234,7 @@ types. *)
       forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp).
 
     Proof.
-      induction Ts; destruct ts; simpl vint; intros i j jn jp; intuition.
+      induction Ts; destruct ts; simpl Def.vint; intros i j jn jp; intuition.
       destruct j; simpl. hyp. apply IHTs. hyp.
     Qed.
 
@@ -359,8 +390,6 @@ types. *)
 
     (** Computability of vectors of terms is preserved by reduction. *)
 
-    Infix "==>R" := (vaeq_prod R) (at level 70).
-
     Global Instance vint_vaeq_prod n (Ts : Tys n) p :
       Proper (vaeq_prod R ==> impl) (@vint n Ts p).
 
@@ -372,7 +401,7 @@ types. *)
       rename h into T.
       destruct us. VOtac. auto. revert usvs. VSntac vs.
       rewrite vaeq_prod_cons.
-      gen (cp_int T). intros [T1 _ T3 _].
+      gen (cp_int T); intros [T1 _ T3 _].
       intros [[h1 h2]|[h1 h2]] [i1 i2]; split.
       eapply T3. apply h1. hyp.
       rewrite <- h2. hyp.
@@ -390,7 +419,7 @@ types. *)
   Arguments vint_int_Vnth [I n Ts p ts] _ [j] _ _.
 
 (****************************************************************************)
-(** * Monotony properties of [int] and [vint]. *)
+(** ** Monotony properties of [int] and [vint]. *)
 
   Require Import SetUtil.
 
