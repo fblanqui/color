@@ -387,6 +387,14 @@ Section term.
 
   End clos_mon.
 
+(****************************************************************************)
+(** ** Supterm relation. *)
+
+  Inductive supterm : relation Te :=
+  | st_app_l : forall u v, supterm (App u v) u
+  | st_app_r : forall u v, supterm (App u v) v
+  | st_lam : forall x u, supterm (Lam x u) u.
+
 End term.
 
 Arguments eq_apps_fun_head [F X f p ts g q us] _.
@@ -476,6 +484,7 @@ Module Type L_Struct.
   Notation clos_mon := (@clos_mon F X).
   Notation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
   Notation beq_term := (brel eq_term_dec).
+  Notation supterm := (@supterm F X).
 
 End L_Struct.
 
@@ -652,5 +661,37 @@ Module Make (Export L : L_Struct).
     Proper (R U S --> Subset) fv.
 
   Proof. intros R S fv_R fv_S t u [tu|tu]; rewrite <- tu; refl. Qed.
+
+(****************************************************************************)
+(** ** Properties of [supterm]. *)
+
+  Require Import SN.
+
+  Lemma supterm_wf : WF supterm.
+
+  Proof.
+    eapply WF_incl with (S:=Rof Peano.gt size).
+    induction 1; unfold Rof; simpl; try max; omega.
+    apply WF_inverse. apply WF_gt.
+  Qed.
+
+  Section union.
+
+    Variable R : relation Te. Infix "=>R" := R (at level 70).
+
+    Variable R_mon : Monotone R.
+
+    Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
+
+    Proof.
+      Require Union. apply Union.WF_union. apply commut_tc.
+      intros t v [u [tu uv]]; revert t u tu v uv; induction 1.
+      intros u' uu'. exists (App u' v). split. mon. apply st_app_l.
+      intros v' vv'. exists (App u v'). split. mon. apply st_app_r.
+      intros u' uu'. exists (Lam x u'). split. mon. apply st_lam.
+      apply WF_tc. apply supterm_wf.
+    Qed.
+
+  End union.
 
 End Make.
