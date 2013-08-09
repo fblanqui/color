@@ -27,6 +27,8 @@ Section sn.
 
 End sn.
 
+Arguments SN_inv [A R x] _ [y] _.
+
 Global Instance SN_proper A (R E : relation A) : Equivalence E ->
   Proper (E ==> E ==> impl) R -> Proper (E ==> impl) (SN R).
 
@@ -657,3 +659,23 @@ Section wf_nat.
   Qed.
 
 End wf_nat.
+
+(***********************************************************************)
+(** Restriction of a relation to some set. *)
+
+Require Import SetUtil.
+
+Section restrict.
+
+  Variables (A : Type) (P : set A) (R : relation A).
+
+  Definition restrict : relation A := fun x y => P x /\ R x y.
+
+  Lemma restrict_wf : P [= SN R -> WF restrict.
+
+  Proof.
+    intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
+    clear x hx xy. revert y; induction 1. apply SN_intro. fo.
+  Qed.
+
+End restrict.
