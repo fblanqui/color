@@ -677,9 +677,7 @@ Module Make (Export L : L_Struct).
 
   Section union.
 
-    Variable R : relation Te. Infix "=>R" := R (at level 70).
-
-    Variable R_mon : Monotone R.
+    Variables (R : relation Te) (R_mon : Monotone R).
 
     Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
 
@@ -690,6 +688,45 @@ Module Make (Export L : L_Struct).
       intros v' vv'. exists (App u v'). split. mon. apply st_app_r.
       intros u' uu'. exists (Lam x u'). split. mon. apply st_lam.
       apply WF_tc. apply supterm_wf.
+    Qed.
+
+    Require Import SetUtil.
+
+    Section restrict.
+
+      Variables (P : set Te)
+        (P_app_l : forall u u' v, P (App u v) -> R u u' -> P (App u' v))
+        (P_app_r : forall u v v', P (App u v) -> R v v' -> P (App u v'))
+        (P_lam : forall x u u', P (Lam x u) -> R u u' -> P (Lam x u'))
+        (P_SN : P [= SN R).
+
+      Lemma supterm_restrict_mon_wf :
+        WF (restrict P R) -> WF (restrict P supterm! U restrict P R).
+
+      Proof.
+        Require Union. apply Union.WF_union. apply commut_tc.
+        intros t v [u [[ht tu] [hu uv]]]. revert t u tu ht hu v uv.
+        induction 1; intros ht hu.
+        intros u' uu'. exists (App u' v). split. split. hyp. mon. split. fo.
+        apply st_app_l.
+        intros v' vv'. exists (App u v'). split. split. hyp. mon. split. fo.
+        apply st_app_r.
+        intros u' uu'. exists (Lam x u'). split. split. hyp. mon. split. fo.
+        apply st_lam.
+        apply WF_tc. apply restrict_wf. intros x hx. apply supterm_wf.
+      Qed.
+
+    End restrict.
+
+    Lemma supterm_restrict_SN_mon_wf :
+      WF (restrict (SN R) supterm! U restrict (SN R) R).
+
+    Proof.
+      apply supterm_restrict_mon_wf.
+      intros u u' v h uu'. eapply SN_inv. apply h. mon.
+      intros u v v' h vv'. eapply SN_inv. apply h. mon.
+      intros x u u' h uu'. eapply SN_inv. apply h. mon.
+      apply restrict_wf. refl.
     Qed.
 
   End union.
