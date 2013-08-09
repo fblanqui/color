@@ -518,35 +518,35 @@ Qed.
 
 Require Import Lexico.
 
-Definition lex_lt : relation (eqns * eqns) :=
-  transp (lexp (transp nb_vars_lt) nb_vars_eq (transp sizes_lt)).
+Definition lt : relation (eqns * eqns) :=
+  transp (lex (transp nb_vars_lt) nb_vars_eq (transp sizes_lt)).
 
-Lemma wf_lex_lt : well_founded lex_lt.
+Lemma wf_lt : well_founded lt.
 
 Proof.
-unfold lex_lt. apply WF_wf_transp. apply WF_lexp.
+unfold lt. apply WF_wf_transp. apply WF_lex.
 unfold inclusion, transp, nb_vars_eq, nb_vars_lt. intros. do 2 destruct H.
 rewrite H. hyp.
 apply wf_WF_transp. exact wf_sizes_lt.
-unfold Relation_Definitions.transitive, nb_vars_eq. intros.
+unfold RelationClasses.Transitive, nb_vars_eq. intros.
 trans (cardinal (vars_eqns y)); hyp.
 apply wf_WF_transp. exact wf_nb_vars_lt.
 Qed.
 
-Definition Lt l1 l2 := lex_lt (l1, l1) (l2, l2).
+Definition Lt l1 l2 := lt (l1, l1) (l2, l2).
 
 Lemma wf_Lt : well_founded Lt.
 
 Proof.
 unfold Lt. apply wf_inverse_image with (f := fun l : eqns => (l, l)).
-exact wf_lex_lt.
+exact wf_lt.
 Qed.
 
 Lemma Lt_eqns_subs_l : forall x v l, mem x (vars v) = false ->
   Lt (map (eqn_sub (single x v)) l) ((Var x, v) :: l).
 
 Proof.
-intros. unfold Lt, lex_lt, transp. apply lexp_intro. left.
+intros. unfold Lt, lt, transp. apply lex_intro. left.
 unfold nb_vars_lt. apply lt_card_vars_eqns_subs_l. hyp.
 Qed.
 
@@ -554,14 +554,14 @@ Lemma Lt_eqns_subs_r : forall x v l, mem x (vars v) = false ->
   Lt (map (eqn_sub (single x v)) l) ((v, Var x) :: l).
 
 Proof.
-intros. unfold Lt, lex_lt, transp. apply lexp_intro. left.
+intros. unfold Lt, lt, transp. apply lex_intro. left.
 unfold nb_vars_lt. apply lt_card_vars_eqns_subs_r. hyp.
 Qed.
 
 Lemma Lt_cons : forall x l, Lt l (x :: l).
 
 Proof.
-intros. unfold Lt, lex_lt, transp. apply lexp_intro.
+intros. unfold Lt, lt, transp. apply lex_intro.
 unfold nb_vars_eq, nb_vars_lt. simpl.
 set (X := vars_eqns l). set (Y := vars_eqn x).
 assert (cardinal X <= cardinal (XSet.union Y X)).
@@ -579,7 +579,7 @@ Lemma Lt_combine : forall f vs g us l, beq_symb f g = true ->
      ((Fun f vs, Fun g us) :: l).
 
 Proof.
-intros. unfold Lt, lex_lt, transp. apply lexp_intro. right. split.
+intros. unfold Lt, lt, transp. apply lex_intro. right. split.
 unfold nb_vars_eq, nb_vars_lt. simpl. unfold vars_eqn. simpl fst. simpl snd.
 repeat rewrite vars_fun. rewrite vars_eqns_app. rewrite beq_symb_ok in H.
 subst. rewrite vars_eqns_combine. refl.
