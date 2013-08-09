@@ -29,7 +29,7 @@ Definition symInt := { f : Sig & funInt f }.
 
 Definition defaultIntForSymbol f := @defaultInt (@arity Sig f).
 
-Definition buildSymInt f fi : symInt := existT _ f fi.
+Definition buildSymInt f fi : symInt := existT f fi.
 
 Variable checkInt : Sig -> rawSymInt -> Exc symInt.
 

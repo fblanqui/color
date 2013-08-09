@@ -1808,7 +1808,7 @@ Section fold_left_list.
     In a (fold_left f bs l) <-> (In a l \/ exists b, In b bs /\ In a (g b)).
 
   Proof.
-    intros. rewrite fold_left_flat_map. rewrite in_app. rewrite in_flat_map.
+    intros. rewrite fold_left_flat_map, in_app, in_flat_map.
     intuition. destruct H0. right. exists x. rewrite In_rev. hyp.
     destruct H0. left. exists x. rewrite <- In_rev. hyp.
   Qed.
@@ -1938,7 +1938,7 @@ Section lookup_dep.
     set (w := eq_ind_r (fun el => x = el) refl_equal e).
     dependent inversion w.
 
-    apply (H (existT (fun x:A => B x) x b))...
+    apply (H (existT x b))...
     apply IHl...
   Qed.
 
