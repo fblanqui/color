@@ -32,6 +32,8 @@ Require Import LogicUtil BoolUtil VecUtil Wf_nat Omega FSets FSetUtil NatUtil
 (** * The set [Te] of lambda-terms
 given a set [F] of constants and a set [X] of variables. *)
 
+Module Export Def.
+
 Section term.
 
   Variables F X : Type.
@@ -421,6 +423,8 @@ Ltac ind_size1 u :=
         intros u v hu hv
     |clear u; let x := fresh "x" in let hu := fresh "hu" in intros x u hu].
 
+End Def.
+
 (****************************************************************************)
 (** * Structure on which we will define lambda-terms. *)
 
@@ -664,6 +668,18 @@ Module Make (Export L : L_Struct).
 
 (****************************************************************************)
 (** ** Properties of [supterm]. *)
+
+  Lemma supterm_nth : forall f n (ts : Tes n) i (hi : i<n),
+    supterm! (apps (Fun f) ts) (Vnth ts hi).
+
+  Proof.
+    intro f. induction n; intros ts i hi. omega.
+    rewrite (VSn_add ts). rewrite <- app_apps.
+    set (us := Vremove_last ts). set (t0 := Vhead ts). set (tn := Vlast t0 ts).
+    rewrite Vnth_add. destruct (eq_nat_dec i n).
+    subst i. apply t_step. apply st_app_r.
+    trans (apps (Fun f) us). apply t_step. apply st_app_l. apply IHn.
+  Qed.
 
   Require Import SN.
 
