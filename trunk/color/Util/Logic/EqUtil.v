@@ -42,7 +42,8 @@ Section eq_dep.
 
   Proof. exact (K_dec_type eq_dec). Qed.
 
-  Lemma inj_pairT2 : forall P (p : U) x y, existT P p x = existT P p y -> x = y.
+  Lemma inj_pairT2 : forall P (x : U) (p q : P x),
+    existT x p = existT x q -> p = q.
 
   Proof. exact (eq_dep_eq__inj_pairT2 U eq_dep_eq). Qed.
 

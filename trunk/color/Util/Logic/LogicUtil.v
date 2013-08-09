@@ -11,6 +11,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
+Arguments existT [A P] _ _.
+
 (***********************************************************************)
 (** Abbreviations of some basic Coq tactics. *)
 
