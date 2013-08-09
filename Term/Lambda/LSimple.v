@@ -214,6 +214,8 @@ Section typing.
 
   Variable typ : F -> Ty.
 
+  Definition Args f := vector Te (arity (typ f)).
+
   Variables (En : Type)
     (MapsTo : X -> Ty -> En -> Prop)
     (add : X -> Ty -> En -> En).
@@ -242,12 +244,15 @@ Module Type ST_Struct.
  
   Parameter typ : F -> Ty.
 
-  (* Module providing finite maps on variables. *)
+  (** Module providing finite maps on variables. *)
 
   Declare Module Export XMap : FMapInterface.S with Module E := XOrd.
 
+  (** Notations. *)
+
   Notation En := (XMap.t Ty).
   Notation empty := (XMap.empty Ty).
+  Notation Args := (@Args F X So typ).
 
   (** Equivalence on environments. *)
 
