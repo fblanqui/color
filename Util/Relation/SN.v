@@ -679,3 +679,24 @@ Section restrict.
   Qed.
 
 End restrict.
+
+(****************************************************************************)
+(** * Extension of a relation on [A] to [option A]. *)
+
+Section opt.
+
+  Variables (A : Type) (R : relation A).
+
+  Inductive opt : relation (option A) :=
+  | opt_intro : forall x y, R x y -> opt (Some x) (Some y).
+
+  Lemma opt_wf : WF R -> WF opt.
+
+  Proof.
+    intros h p. destruct p.
+    gen (h a); revert a; induction 1.
+    apply SN_intro; intros [y|] hy; inversion hy; clear hy; subst. fo.
+    apply SN_intro; intros [y|] hy; inversion hy.
+  Qed.
+
+End opt.
