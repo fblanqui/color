@@ -742,7 +742,7 @@ variables. *)
     assert (p0 : ~In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y'. unfold_var. rewrite h. apply var_notin_ok.
     destruct (eq_term_dec (xx's y') (Var y')). 2: tauto.
-    revert e0. unfold xx's at 1. unfold LSubs.Def.update at 1. eq_dec y' x.
+    revert e0. unfold xx's at 1. unfold Def.update at 1. eq_dec y' x.
 
     (* y' = x *)
     intro e3. inversion e3. rewrite H3, e0. apply aeq_lam. apply aeq_refl_eq.
@@ -757,7 +757,7 @@ variables. *)
 
     (* 2 *)
     change (In y' (fvcodom (fv v) xx's)) in H1. revert H1. rewrite In_fvcodom.
-    intros [a [i1 [i2 i3]]]. unfold xx's, LSubs.Def.update in i2, i3.
+    intros [a [i1 [i2 i3]]]. unfold xx's, Def.update in i2, i3.
     revert i2 i3. eq_dec a x.
 
     (* a = x *)
@@ -918,7 +918,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros x y u v hy. unfold_rename. rewrite subs_comp. apply subs_saeq.
-    intros d hd. unfold comp. unfold_single. unfold LSubs.Def.update at -1.
+    intros d hd. unfold comp. unfold_single. unfold Def.update at -1.
     eq_dec d x; simpl.
     rewrite update_eq. refl.
     unfold_update. eq_dec d y. 2: refl.
@@ -935,7 +935,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros x y s u h. unfold_rename. rewrite subs_comp. apply subs_saeq.
-    intros z hz. unfold comp. unfold_single. unfold LSubs.Def.update at -2.
+    intros z hz. unfold comp. unfold_single. unfold Def.update at -2.
     eq_dec z x; simpl.
     subst. unfold_update. eq_dec y x.
     subst. refl.

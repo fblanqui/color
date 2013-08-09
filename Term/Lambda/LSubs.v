@@ -156,7 +156,7 @@ A) A] if [A] is not empty). *)
 
     Fixpoint subs s (t : Te) :=
       match t with
-        | LTerm.Var x => s x
+        | Def.Var x => s x
         | Fun f => t
         | App u v => App (subs s u) (subs s v)
         | Lam x u =>
@@ -1519,7 +1519,8 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     simpl. set_iff. intro h. rewrite union_inter_1, union_empty. intros [a b].
     rewrite IHu1, IHu2; tauto.
     (* lam *)
-    simpl LTerm.fv. simpl LTerm.bv. set_iff. rewrite inter_empty. intros h1 h2.
+    simpl Def.fv. simpl Def.bv. set_iff. rewrite inter_empty.
+    intros h1 h2.
     assert (h3 : ~In x0 (union (fv v) (fv w))). apply h2. set_iff. auto.
     revert h3. set_iff. intro h3.
     repeat rewrite single_lam_no_alpha. apply (f_equal (Lam x0)).
@@ -1563,7 +1564,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     revert h. simpl. rewrite union_inter_1, union_empty. intros [a b].
     rewrite IHu1, IHu2; tauto.
     (* lam *)
-    revert h. simpl LTerm.bv. rewrite inter_empty. intro h.
+    revert h. simpl Def.bv. rewrite inter_empty. intro h.
     assert (hx : ~In x (union (fv v) (fv w))). apply h. set_iff. auto.
     revert hx; set_iff; intro hx.
     assert (~In x (fv v) /\ ~In x (fv w)). tauto. clear hx.
@@ -1612,7 +1613,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     revert h. simpl. rewrite union_inter_1, union_empty. intros [a b].
     rewrite IHu1, IHu2; tauto.
     (* lam *)
-    revert h. simpl LTerm.bv. rewrite inter_empty. intro h.
+    revert h. simpl Def.bv. rewrite inter_empty. intro h.
     assert (hx : ~In x (union (fv v) (fv w))). apply h. set_iff. auto.
     revert hx; set_iff; intro hx.
     assert (~In x (fv v) /\ ~In x (fv w)). tauto. clear hx.
@@ -1722,7 +1723,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite union_subset_1 with (s':=fvcodom (fv u2) s) (s:=fvcodom (fv u1) s).
     rewrite <- empty_subset. hyp.
     (* lam *)
-    rename x0 into z. simpl LTerm.bv. intros h1 h2.
+    rename x0 into z. simpl Def.bv. intros h1 h2.
     rewrite rename_lam. case_eq (mem x (fv u) && negb (eqb y x) && eqb y z).
     (* In x (fv u) /\ y <> x /\ y = z *)
     repeat rewrite andb_true_iff. rewrite eqb_true_iff. intros [[i1 i2] i3].
@@ -1783,10 +1784,10 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   Fixpoint subs1 s (t : Te) :=
     match t with
-      | LTerm.Var x => s x
-      | LTerm.Fun f => t
-      | LTerm.App u v => App (subs1 s u) (subs1 s v)
-      | LTerm.Lam x u => Lam x (subs1 (update x (Var x) s) u)
+      | Def.Var x => s x
+      | Def.Fun f => t
+      | Def.App u v => App (subs1 s u) (subs1 s v)
+      | Def.Lam x u => Lam x (subs1 (update x (Var x) s) u)
     end.
 
   Definition comp1 s2 s1 (x:X) := subs1 s2 (s1 x).
