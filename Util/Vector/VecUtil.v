@@ -2046,3 +2046,22 @@ Section bVforall2_sec.
     bVforall2n_aux v1 v2.
 
 End bVforall2_sec.
+
+(****************************************************************************)
+(** * Build a vector of [option A] of size [n] from the elements (if
+they exist) of an arbitrary vector [xs] of size [p] whose positions
+are given by a vector [ks] of natural numbers of size [n]. *)
+
+Section filter.
+
+  Variable (A : Type).
+
+  Fixpoint vec_opt_filter n (ks : vector nat n) p (xs : vector A p) :=
+    match ks in vector _ n return vector (option A) n with
+      | Vnil => Vnil
+      | Vcons k _ ks' =>
+        Vcons (match lt_dec k p with left h => Some (Vnth xs h) | _ => None end)
+          (vec_opt_filter ks' xs)
+    end.
+
+End filter.
