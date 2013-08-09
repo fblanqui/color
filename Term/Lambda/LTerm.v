@@ -633,6 +633,44 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
+(** Properties of monotone relations. **)
+
+  Section mon_apps.
+
+    Variables (R : relation Te) (R_mon : Monotone R).
+
+    Lemma mon_apps_l : forall n (ts : Tes n) u u',
+      R u u' -> R (apps u ts) (apps u' ts).
+
+    Proof.
+      induction ts; intros u u' uu'; simpl. hyp.
+      apply IHts. apply mon_app_l; auto.
+    Qed.
+
+    Lemma mon_apps_app_cons : forall u u', R u u' ->
+      forall p (ts : Tes p) q (vs : Tes q) t,
+        R (apps t (Vapp ts (Vcons u vs))) (apps t (Vapp ts (Vcons u' vs))).
+
+    Proof.
+      intros u u' uu'. induction ts; intros q vs t; simpl.
+      apply mon_apps_l. apply mon_app_r; auto.
+      apply IHts.
+    Qed.
+
+    Lemma mon_apps_replace : forall u u', R u u' ->
+      forall n (ts : Tes n) t i (h1 h2 : i<n),
+        R (apps t (Vreplace ts h1 u)) (apps t (Vreplace ts h2 u')).
+
+    Proof.
+      intros u u' uu'. induction ts; intros t i h1 h2. omega.
+      rename h into t0. simpl. destruct i; simpl.
+      apply mon_apps_l. apply mon_app_r; auto.
+      apply IHts.
+    Qed.
+
+  End mon_apps.
+
+(****************************************************************************)
 (** ** Properties wrt free variables. *)
 
   Lemma notin_fv_lam : forall x y u,
