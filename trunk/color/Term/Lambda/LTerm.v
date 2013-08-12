@@ -546,7 +546,42 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Properties of [Monotone]. *)
+(** Properties of monotone relations. **)
+
+  Section mon_apps.
+
+    Variables (R : relation Te) (R_mon : Monotone R).
+
+    Global Instance mon_apps_l n : Proper (R ==> Logic.eq ==> R) (@apps n).
+
+    Proof.
+      intros u u' uu' ts ts' tsts'. subst ts'.
+      revert n ts u u' uu'; induction ts; intros u u' uu'; simpl. hyp.
+      apply IHts. apply mon_app_l; auto.
+    Qed.
+
+    Lemma mon_apps_app_cons : forall u u', R u u' ->
+      forall p (ts : Tes p) q (vs : Tes q) t,
+        R (apps t (Vapp ts (Vcons u vs))) (apps t (Vapp ts (Vcons u' vs))).
+
+    Proof.
+      intros u u' uu'. induction ts; intros q vs t; simpl.
+      apply mon_apps_l. apply mon_app_r; auto. refl.
+      apply IHts.
+    Qed.
+
+    Lemma mon_apps_replace : forall u u', R u u' ->
+      forall n (ts : Tes n) t i (h1 h2 : i<n),
+        R (apps t (Vreplace ts h1 u)) (apps t (Vreplace ts h2 u')).
+
+    Proof.
+      intros u u' uu'. induction ts; intros t i h1 h2. omega.
+      rename h into t0. simpl. destruct i; simpl.
+      apply mon_apps_l. apply mon_app_r; auto. refl.
+      apply IHts.
+    Qed.
+
+  End mon_apps.
 
   (** Tactic trying to simplify and possibly prove goals of the form
   [?R _ _] when [?R] is [Monotone]. *)
@@ -554,10 +589,19 @@ Module Make (Export L : L_Struct).
   Ltac mon := repeat
     match goal with
       | |- ?R (App ?x _) (App ?x _) => apply mon_app_r; [class|refl|idtac]
-      | |- ?R (App _ ?y) (App _ ?y) => apply mon_app_l; [class|idtac|refl]
+      | |- ?R (App _ ?x) (App _ ?x) => apply mon_app_l; [class|idtac|refl]
       | |- ?R (Lam ?x _) (Lam ?x _) => apply mon_lam; [class|refl|idtac]
+      | |- ?R (apps _ ?ts) (apps _ ?ts) => apply mon_apps_l; [class|idtac|refl]
+      | |- ?R (apps ?t (Vapp ?ts (Vcons _ ?vs)))
+              (apps ?t (Vapp ?ts (Vcons _ ?vs))) =>
+        apply mon_apps_app_cons; [class|idtac]
+      | |- ?R (apps ?t (Vreplace ?ts _ _)) (apps ?t (Vreplace ?ts _ _)) =>
+        apply mon_apps_replace; [class|idtac]
       | |- ?R ?x ?y => hyp
     end.
+
+(****************************************************************************)
+(** ** Properties of [Monotone]. *)
 
   (** Monotony is compatible with [same_relation]. *)
 
@@ -631,44 +675,6 @@ Module Make (Export L : L_Struct).
     intros t u [h|h]. eapply clos_mon_incl. apply incl_union_l. refl. hyp.
     eapply clos_mon_incl. apply incl_union_r. refl. hyp.
   Qed.
-
-(****************************************************************************)
-(** Properties of monotone relations. **)
-
-  Section mon_apps.
-
-    Variables (R : relation Te) (R_mon : Monotone R).
-
-    Lemma mon_apps_l : forall n (ts : Tes n) u u',
-      R u u' -> R (apps u ts) (apps u' ts).
-
-    Proof.
-      induction ts; intros u u' uu'; simpl. hyp.
-      apply IHts. apply mon_app_l; auto.
-    Qed.
-
-    Lemma mon_apps_app_cons : forall u u', R u u' ->
-      forall p (ts : Tes p) q (vs : Tes q) t,
-        R (apps t (Vapp ts (Vcons u vs))) (apps t (Vapp ts (Vcons u' vs))).
-
-    Proof.
-      intros u u' uu'. induction ts; intros q vs t; simpl.
-      apply mon_apps_l. apply mon_app_r; auto.
-      apply IHts.
-    Qed.
-
-    Lemma mon_apps_replace : forall u u', R u u' ->
-      forall n (ts : Tes n) t i (h1 h2 : i<n),
-        R (apps t (Vreplace ts h1 u)) (apps t (Vreplace ts h2 u')).
-
-    Proof.
-      intros u u' uu'. induction ts; intros t i h1 h2. omega.
-      rename h into t0. simpl. destruct i; simpl.
-      apply mon_apps_l. apply mon_app_r; auto.
-      apply IHts.
-    Qed.
-
-  End mon_apps.
 
 (****************************************************************************)
 (** ** Properties wrt free variables. *)
@@ -748,11 +754,7 @@ Module Make (Export L : L_Struct).
 
     Section restrict.
 
-      Variables (P : set Te)
-        (P_app_l : forall u u' v, P (App u v) -> R u u' -> P (App u' v))
-        (P_app_r : forall u v v', P (App u v) -> R v v' -> P (App u v'))
-        (P_lam : forall x u u', P (Lam x u) -> R u u' -> P (Lam x u'))
-        (P_SN : P [= SN R).
+      Variables (P : set Te) (P_R : Proper (R ==> impl) P) (P_SN : P [= SN R).
 
       Lemma supterm_restrict_mon_wf :
         WF (restrict P R) -> WF (restrict P supterm! U restrict P R).
@@ -761,13 +763,13 @@ Module Make (Export L : L_Struct).
         Require Union. apply Union.WF_union. apply commut_tc.
         intros t v [u [[ht tu] [hu uv]]]. revert t u tu ht hu v uv.
         induction 1; intros ht hu.
-        intros u' uu'. exists (App u' v). split. split. hyp. mon. split. fo.
-        apply st_app_l.
-        intros v' vv'. exists (App u v'). split. split. hyp. mon. split. fo.
-        apply st_app_r.
-        intros u' uu'. exists (Lam x u'). split. split. hyp. mon. split. fo.
-        apply st_lam.
-        apply WF_tc. apply restrict_wf. intros x hx. apply supterm_wf.
+        Focus 4. apply WF_tc. apply restrict_wf. intros x hx. apply supterm_wf.
+        intros u' uu'. exists (App u' v). split. split. hyp. mon. split.
+        apply P_R with (x:=App u v). mon. hyp. apply st_app_l.
+        intros v' vv'. exists (App u v'). split. split. hyp. mon. split.
+        apply P_R with (x:=App u v). mon. hyp. apply st_app_r.
+        intros u' uu'. exists (Lam x u'). split. split. hyp. mon. split.
+        apply P_R with (x:=Lam x u). mon. hyp. apply st_lam.
       Qed.
 
     End restrict.
@@ -777,9 +779,7 @@ Module Make (Export L : L_Struct).
 
     Proof.
       apply supterm_restrict_mon_wf.
-      intros u u' v h uu'. eapply SN_inv. apply h. mon.
-      intros u v v' h vv'. eapply SN_inv. apply h. mon.
-      intros x u u' h uu'. eapply SN_inv. apply h. mon.
+      intros u u' uu' h. eapply SN_inv. apply h. hyp.
       apply restrict_wf. refl.
     Qed.
 
