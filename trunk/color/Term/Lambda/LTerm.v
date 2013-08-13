@@ -150,6 +150,28 @@ Section term.
     refl. discr. discr. apply IHts.
   Qed.
 
+  Lemma size_apps_l : forall n (ts : Tes n) t, size t <= size (apps t ts).
+
+  Proof.
+    induction n; intros ts t. VOtac; simpl. refl. VSntac ts; simpl.
+    rewrite <- IHn. simpl. max.
+  Qed.
+
+  Lemma size_apps_r_in : forall n (ts : Tes n) t ti,
+    Vin ti ts -> size ti < size (apps t ts).
+
+  Proof.
+    induction n; intros ts t ti. VOtac; simpl. fo.
+    VSntac ts; simpl. intros [h|h].
+    rewrite h. eapply lt_le_trans. 2: apply size_apps_l. simpl. max.
+    apply IHn. hyp.
+  Qed.
+
+  Lemma size_apps_r_nth : forall n (ts : Tes n) t i (hi : i<n),
+    size (Vnth ts hi) < size (apps t ts).
+
+  Proof. intros n ts t i hi. apply size_apps_r_in. apply Vnth_in. Qed.
+
 (****************************************************************************)
 (** ** Head and arguments of a term. *)
 
