@@ -288,9 +288,11 @@ Module Make (X : OrderedType).
 
     Proof.
       intros k k' kk' m m' [h1 h2]. rewrite <- kk'. clear k' kk'.
-      unfold eq_opt. case_eq (find k m); intros.
-      destruct (Equiv_find_Some (conj h1 h2) H). destruct H0. rewrite H0. hyp.
-      rewrite (Equiv_find_None (conj h1 h2) k) in H. rewrite H. auto.
+      case_eq (find k m); intros.
+      destruct (Equiv_find_Some (conj h1 h2) H). destruct H0. rewrite H0.
+      apply eq_opt_Some. hyp.
+      rewrite (Equiv_find_None (conj h1 h2) k) in H. rewrite H.
+      apply eq_opt_None.
     Qed.
 
 (***********************************************************************)

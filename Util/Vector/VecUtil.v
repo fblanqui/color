@@ -1319,7 +1319,7 @@ Section Vforall2_sec.
       | _, _ => False
     end.
 
-  Definition Vforall2n n (v1 : vecA n) (v2 : vecB n) := Vforall2n_aux v1 v2.
+  Definition Vforall2n {n} (v1 : vecA n) (v2 : vecB n) := Vforall2n_aux v1 v2.
 
   Lemma Vforall2n_tail : forall n (v1 : vecA (S n)) (v2 : vecB (S n)),
     Vforall2n v1 v2 -> Vforall2n (Vtail v1) (Vtail v2).

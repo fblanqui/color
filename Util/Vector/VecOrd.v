@@ -308,7 +308,7 @@ Section vec_prod.
 
   Variable R : relation A.
 
-  Definition vec_prod := Vforall2n R.
+  Definition vec_prod {n} := Vforall2n R (n:=n).
 
   Lemma vec_prod_tail : forall n (v v' : vec (S n)),
     vec_prod v v' -> vec_prod (Vtail v) (Vtail v').
