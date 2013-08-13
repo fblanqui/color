@@ -1251,39 +1251,29 @@ Section option_setoid.
 
   Variables (A : Type) (eq : relation A).
 
-  Definition eq_opt x y :=
-    match x, y with
-      | Some a, Some b => eq a b
-      | None, None => True
-      | _, _ => False
-    end.
+  Inductive eq_opt : relation (option A) :=
+  | eq_opt_None : eq_opt None None
+  | eq_opt_Some : forall a b, eq a b -> eq_opt (Some a) (Some b).
 
   Global Instance eq_opt_Refl : Reflexive eq -> Reflexive eq_opt.
 
-  Proof.
-    intros heq x. unfold eq_opt. destruct x. refl. auto.
-  Qed.
+  Proof. intros h [x|]. apply eq_opt_Some. refl. apply eq_opt_None. Qed.
 
   Global Instance eq_opt_Sym : Symmetric eq -> Symmetric eq_opt.
 
   Proof.
-    intros heq x y. unfold eq_opt. destruct x; destruct y; auto.
+    intros h x y xy. inversion xy; subst. hyp. apply eq_opt_Some. sym. hyp.
   Qed.
 
   Global Instance eq_opt_Trans : Transitive eq -> Transitive eq_opt.
 
   Proof.
-    intros heq x y z. unfold eq_opt.
-    destruct x; destruct y; destruct z; intros; auto.
-    trans a0; auto. contr.
+    intros h x y z xy yz. inversion xy; inversion yz; subst; try discr.
+    apply eq_opt_None. inversion H3; subst. apply eq_opt_Some. trans b; hyp.
   Qed.
 
   Global Instance Some_Proper : Proper (eq ==> eq_opt) (@Some A).
 
-  Proof. intros x y xy. unfold eq_opt. auto. Qed.
-
-  Lemma eq_opt_None : forall o, o = None <-> eq_opt o None.
-
-  Proof. intro o. unfold eq_opt. destruct o. intuition. discr. tauto. Qed.
+  Proof. intros x y xy. apply eq_opt_Some. hyp. Qed.
 
 End option_setoid.

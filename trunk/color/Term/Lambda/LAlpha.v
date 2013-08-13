@@ -96,12 +96,12 @@ Module Export Def.
 
     (** Alpha-equivalence on vectors of terms. *)
 
-    Definition vaeq := vec_prod aeq.
+    Definition vaeq {n} := vec_prod aeq (n:=n).
 
     (** Component-wise extension to vectors of a relation on terms,
        modulo [vaeq]. *)
 
-    Definition vaeq_prod {n} R := @vaeq n @ (Vgt_prod R @ @vaeq n).
+    Definition vaeq_prod {n} R := vaeq (n:=n) @ (Vgt_prod R @ vaeq).
 
   End aeq.
 

@@ -88,7 +88,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       rewrite H. rewrite H2 in H1. auto.
     Qed.
 
-    Definition succ_vec := vec_prod gtx.
+    Definition succ_vec {n} := vec_prod gtx (n:=n).
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
