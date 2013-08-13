@@ -1569,7 +1569,7 @@ Section ith.
 
   Fixpoint ith (l : list A) : forall i, i < length l -> A :=
     match l as l return forall i, i < length l -> A with
-      | nil => fun i H => False_rect A (lt_n_O i H)
+      | nil => fun i H => False_rect A (lt_n_O H)
       | cons x m => fun i =>
         match i return i < S (length m) -> A with
 	  | O => fun _ => x

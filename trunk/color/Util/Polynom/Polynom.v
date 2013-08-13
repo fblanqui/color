@@ -53,7 +53,7 @@ Notation mone := (Vconst O).
 
 Fixpoint mxi (n : nat) : forall i, lt i n -> monom n :=
   match n as n return forall i, lt i n -> monom n with
-    | O => fun i h => False_rec (monom O) (lt_n_O i h)
+    | O => fun i h => False_rec (monom O) (lt_n_O h)
     | S n' => fun i =>
       match i as i return lt i (S n') -> monom (S n') with
 	| O => fun _ => Vcons (S O) (mone n')

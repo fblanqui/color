@@ -91,9 +91,9 @@ Section S.
 
     Proof.
       intro n. elim n.
-      intros x Hx. elimtype False. apply (lt_n_O _ Hx).
+      intros x Hx. elimtype False. apply (lt_n_O Hx).
       intros p Hrec x H0. simpl vec_of_val.
-      case (le_lt_eq_dec _ _ (le_S_n _ _ H0)); intro H1.
+      case (le_lt_eq_dec (le_S_n H0)); intro H1.
       rewrite (Vnth_addl (vec_of_val p) (xint p) H0 H1). apply Hrec.
       rewrite Vnth_addr. 2: hyp. rewrite H1. refl.
     Qed.

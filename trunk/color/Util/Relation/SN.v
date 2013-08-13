@@ -648,6 +648,14 @@ End wf_rel_mod_simpl.
 
 Require Import Wf_nat.
 
+Arguments ltof [A] _ _ _.
+Arguments induction_ltof1 [A] _ _ _ _.
+Arguments well_founded_ltof [A] _ _.
+
+Lemma transp_ltof_wf : forall A (f : A -> nat), WF (transp (ltof f)).
+
+Proof. intros A f. apply wf_WF_transp. apply well_founded_ltof. Qed.
+
 Section wf_nat.
 
   Lemma WF_gt : WF gt.

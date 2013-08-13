@@ -632,7 +632,7 @@ variables. *)
     intros s s' ss'. subst s'. intros u u' uu'; revert u u' uu' s.
     (* As CF, we proceed first by induction on the size of [u],
        and second by induction on [u ~~ u']. *)
-    intro u; pattern u; apply (induction_ltof1 _ size); clear u.
+    intro u; pattern u; apply (induction_ltof1 size); clear u.
     intros u IH u' uu'; revert u u' uu' IH. induction 1; intros IH s.
     (* refl *)
     refl.

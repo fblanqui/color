@@ -664,7 +664,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     intros E x A k Ek0 Ex k_x.
     assert (x_E: x < length E).
     rewrite_lr (nth_in E x); unfold VarD in Ex; try_solve.
-    destruct (le_lt_or_eq k x k_x) as [k_lt_x | k_eq_x].
+    destruct (le_lt_or_eq k_x) as [k_lt_x | k_eq_x].
     destruct x.
     elimtype False; omega.
     unfold VarD, loweredEnv.

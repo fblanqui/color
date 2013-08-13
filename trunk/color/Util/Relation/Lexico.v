@@ -137,7 +137,7 @@ Section lexn.
 
   Fixpoint projn n :=
     match n as n return prodn n -> forall i, i<n -> A with
-      | 0 => fun xs i (hi : i<0) => False_rect _ (lt_n_0 _ hi)
+      | 0 => fun xs i (hi : i<0) => False_rect _ (lt_n_0 hi)
       | S n' => fun xs i =>
         match i as i return i<S n' -> A with
           | 0 => fun _ => fst xs
