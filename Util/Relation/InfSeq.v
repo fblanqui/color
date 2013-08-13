@@ -309,16 +309,16 @@ Section TransIS.
 
     assert (HPeq : forall i j k, P k i /\ P k j -> i = j).
     intros i j k H; unfold P in H. destruct H as [H H0]. destruct H0 as [H1 H2].
-    destruct H as [H H0]. gen (le_lt_trans _ _ _ H H2). intros H3.
-    gen (le_lt_trans _ _ _ H1 H0). intros H4.
-    destruct (le_or_lt i j) as [H5 | H5]. case (le_lt_or_eq _ _ H5); try auto.
+    destruct H as [H H0]. gen (le_lt_trans H H2). intros H3.
+    gen (le_lt_trans H1 H0). intros H4.
+    destruct (le_or_lt i j) as [H5 | H5]. case (le_lt_or_eq H5); try auto.
     clear H5 H1 H2 H3; intros H5. induction j. omega. simpl in H4.
-    case (le_lt_or_eq _ _ (lt_n_Sm_le _ _ H5)); intros H1.
-    rewrite (IHj (lt_trans _ _ _ (HinT j) H4) H1) in H1. omega.
+    case (le_lt_or_eq (lt_n_Sm_le H5)); intros H1.
+    rewrite (IHj (lt_trans (HinT j) H4) H1) in H1. omega.
     rewrite H1 in H4. omega.
     clear H1 H2 H4 H H0. induction i. omega. simpl in H3.
-    case (le_lt_or_eq _ _ (lt_n_Sm_le _ _ H5)); intros H1.
-    rewrite (IHi (lt_trans _ _ _ (HinT i) H3) H1) in H1. omega.
+    case (le_lt_or_eq (lt_n_Sm_le H5)); intros H1.
+    rewrite (IHi (lt_trans (HinT i) H3) H1) in H1. omega.
     rewrite H1 in H3; omega.
 
     assert (exP_F0 : forall i, exists j, P i j). intros i. apply int_exPi. auto.
@@ -333,7 +333,7 @@ Section TransIS.
 
     assert (HSi : S i <= snd (F0 (F1 i))).
     gen (ch_minP _ (exP_F0 i)). unfold P. intuition.
-    destruct (le_lt_or_eq _ _ HSi) as [H0 | H0]. Focus 2.
+    destruct (le_lt_or_eq HSi) as [H0 | H0]. Focus 2.
 
     assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
     split; try omega. destruct (HFi (S (F1 i))) as [y Hy]. rewrite Hy; omega.
@@ -362,8 +362,8 @@ Section TransIS.
     apply plus_lt_reg_l with (p := fst (F0 (F1 i))).
     rewrite le_plus_minus_r; auto.
     rewrite le_plus_minus_r; auto.
-    apply (@le_trans _ _ _ H1 (@lt_le_weak _ _ H2)).
-    apply (lt_le_trans _ _ _ H0). rewrite (HF0 (F1 i)). auto.
+    apply (le_trans H1 (@lt_le_weak _ _ H2)).
+    apply (lt_le_trans H0). rewrite (HF0 (F1 i)). auto.
 
     exists h'; split; unfold h'.
 
@@ -382,7 +382,7 @@ Section TransIS.
     apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
     rewrite <- Hi. assert (S i = snd (F0 (F1 i))).
     destruct (ch_minP _ (exP_F0 i)) as [_ HT0].
-    destruct (le_lt_or_eq _ _ (lt_le_S _ _ HT0)); try auto.
+    destruct (le_lt_or_eq (lt_le_S HT0)); try auto.
 
     cut (F1 (S i) = F1 i). rewrite Hi. intros. symmetry in H1. omega.
 
@@ -523,27 +523,27 @@ Section ISModUnion.
       E (g j) (f (S j))). intros i j le_Sij lt_jx.
     gen (is_min_ch (P (S (reid i))) (hyp2 (S (reid i)))). unfold P.
     intros Hproj. gen (Hproj j). intros HT. destruct (hyp1 j) as [_ ERj].
-    destruct ERj; auto. destruct (lt_not_le _ _ lt_jx). apply HT. auto.
+    destruct ERj; auto. destruct (lt_not_le lt_jx). apply HT. auto.
 
     assert (E_gf0 : forall j, j < (reid 0) -> E (g j) (f (S j))).
     intros j lt_jx. gen (is_min_ch (P 0) (hyp2 0)). unfold P. intro HP.
     gen (HP j). intro HPj. destruct (hyp1 j) as [_ ERj].
     destruct ERj; auto.
-    destruct (lt_not_le _ _ lt_jx). apply HPj. split; auto. omega.
+    destruct (lt_not_le lt_jx). apply HPj. split; auto. omega.
 
     assert (HEfgi : forall i j k,
       S (reid i) <= j -> j <= k  -> k <= reid (S i) -> E (f j) (g k)).
     intros i j k le_ij le_jk le_ki. induction k.
     rewrite <- (le_n_O_eq _ le_jk) in le_ij. destruct (le_Sn_O _ le_ij).
-    destruct (le_lt_or_eq _ _ le_jk) as [HT | HT]. Focus 2. rewrite HT.
+    destruct (le_lt_or_eq le_jk) as [HT | HT]. Focus 2. rewrite HT.
     apply (proj1 (hyp1 (S k))). apply TE with (g k).
-    exact (IHk (lt_n_Sm_le _ _ HT) (@le_trans _ _ _ (le_n_Sn k) le_ki)).
+    exact (IHk (lt_n_Sm_le HT) (le_trans (le_n_Sn k) le_ki)).
     apply TE with (f (S k)). apply (E_gfi i k); try omega.
     apply (proj1 (hyp1 (S k))).
 
     assert (HEfg0 : forall j k, j <= k -> k <= reid 0 -> E (f j) (g k)).
     intros j k le_jk le_k0. induction k. rewrite <- (le_n_O_eq _ le_jk).
-    apply (proj1 (hyp1 0)). destruct (le_lt_or_eq _ _ le_jk) as [HT | HT].
+    apply (proj1 (hyp1 0)). destruct (le_lt_or_eq le_jk) as [HT | HT].
     Focus 2. rewrite HT. apply (proj1 (hyp1 (S k))).
     apply TE with (g k). apply IHk; omega. apply TE with (f (S k)).
     apply (E_gf0 k); try omega. apply (proj1 (hyp1 (S k))).
@@ -660,7 +660,7 @@ Section ISModTrans.
     intros j lt_j0. gen (is_min_ch _ (HexP 0)). intros Hproj.
     gen (Hproj j). intros HT. cut (E # (f j) (g j)).
     intros HT0. destruct (rtc_split HT0) as [| HT1]; auto.
-    destruct (le_not_lt _ _ (HT (conj (le_O_n j) HT1))). hyp.
+    destruct (le_not_lt (HT (conj (@le_0_n j) HT1))). hyp.
     apply (proj1 (hyp1 j)).
 
     assert (eq_fgi : forall i j,
@@ -669,7 +669,7 @@ Section ISModTrans.
     gen (is_min_ch _ (HexP (S (reid i)))). intros Hproj.
     gen (Hproj j). intros HT. cut (E # (f j) (g j)).
     intros HT0. destruct (rtc_split HT0) as [| HT1]; auto.
-    destruct (le_not_lt _ _ (HT (conj le_Sij HT1))). hyp.
+    destruct (le_not_lt (HT (conj le_Sij HT1))). hyp.
     apply (proj1 (hyp1 j)).
 
     assert (HEfg : forall i, (E !) (f (reid i)) (g (reid i))).
@@ -678,16 +678,16 @@ Section ISModTrans.
 
     assert (HRfg : forall i j k, (reid i) <= j -> j < k  -> k <= reid (S i) ->
       R (g j) (f k)).
-    intros i j k le_ij lt_jk le_ki. induction k. destruct (lt_n_O _ lt_jk).
-    destruct (le_lt_or_eq _ _ (lt_n_Sm_le _ _ lt_jk)) as [HT | HT]. Focus 2.
+    intros i j k le_ij lt_jk le_ki. induction k. destruct (lt_n_O lt_jk).
+    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT]. Focus 2.
     rewrite HT. apply (proj2 (hyp1 k)).
     apply (@TrsR _ (f k)). apply IHk; try omega.
     rewrite (eq_fgi i k); try omega.
     apply (proj2 (hyp1 k)).
 
     assert (HRfg0 : forall j k, j < k  -> k <= reid 0 -> R (g j) (f k)).
-    intros j k lt_jk le_k0. induction k. destruct (lt_n_O _ lt_jk).
-    destruct (le_lt_or_eq _ _ (lt_n_Sm_le _ _ lt_jk)) as [HT | HT]. Focus 2.
+    intros j k lt_jk le_k0. induction k. destruct (lt_n_O lt_jk).
+    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT]. Focus 2.
     rewrite HT. apply (proj2 (hyp1 k)).
     apply (@TrsR _ (f k)). apply IHk; try omega. rewrite (eq_fg0 k); try omega.
     apply (proj2 (hyp1 k)).
@@ -695,7 +695,7 @@ Section ISModTrans.
     exists f0; exists g0. split. intro i. simpl. unfold f0, g0. split.
     apply HEfg.
     apply (HRfg i); auto. destruct (rec_ch_minP _ HexP i) as [HT _].
-    apply (lt_le_trans (reid i) (S (reid i)) (reid (S i))); auto.
+    apply (@lt_le_trans (reid i) (S (reid i)) (reid (S i))); auto.
     split. exists (reid 0). simpl. auto.
     unfold f0. case_eq (reid 0); intros. left; refl. right.
     rewrite eq_fg0; try omega. apply HRfg0; omega.

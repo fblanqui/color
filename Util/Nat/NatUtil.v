@@ -25,6 +25,19 @@ Implicit Arguments le_lt_n_Sm [n m].
 Implicit Arguments lt_le_weak [n m].
 Implicit Arguments le_plus_minus [n m].
 Implicit Arguments le_plus_minus_r [n m].
+Implicit Arguments lt_n_0 [n].
+Implicit Arguments le_lt_trans [n m p].
+Implicit Arguments lt_le_trans [n m p].
+Implicit Arguments le_lt_or_eq [n m].
+Implicit Arguments lt_n_Sm_le [n m].
+Implicit Arguments lt_trans [n m p].
+Implicit Arguments le_trans [n m p].
+Implicit Arguments lt_le_weak [n m].
+Implicit Arguments lt_le_S [n m].
+Implicit Arguments lt_not_le [n m].
+Implicit Arguments le_lt_eq_dec [n m].
+Implicit Arguments le_S_n [n m].
+Implicit Arguments le_not_lt [n m].
 
 (***********************************************************************)
 (** tactics *)
@@ -600,7 +613,7 @@ Section Interval_list.
   Proof.
     intros i. induction i. exists 0. simpl. destruct (HFi 0); rewrite H. omega.
     destruct IHi as [k Hk]. assert (HSi : S i <= snd (F' k)). omega.
-    destruct (le_lt_or_eq _ _ HSi). exists k. intuition.
+    destruct (le_lt_or_eq HSi). exists k. intuition.
     exists (S k). simpl. rewrite H. split. omega.
     destruct (HFi (S k)). rewrite H0. omega.
   Qed.

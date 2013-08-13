@@ -74,7 +74,7 @@ Module Make (Export L : L_Struct).
   Proof.
     intros s s' ss' u v uv. subst s'. revert u v uv s.
     (* We proceed by induction on the size of [u]. *)
-    intro u; pattern u; apply (induction_ltof1 _ size); clear u.
+    intro u; pattern u; apply (induction_ltof1 size); clear u.
     intros u IH v uv s. inversion uv; subst. rewrite H, H0.
     (* We now proceed by case on [->b]. *)
     inversion H1; subst.

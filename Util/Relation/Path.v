@@ -106,7 +106,7 @@ Section S.
   Proof.
     induction l.
     intros. simpl in H0. absurd_arith.
-    intros. simpl in H. simpl in H0. gen (lt_n_Sm_le _ _ H0); intro.
+    intros. simpl in H. simpl in H0. gen (lt_n_Sm_le H0); intro.
     simpl. induction k. induction l. simpl. simpl in H. intuition.
     simpl. simpl in H. intuition.
     clear IHk. apply (IHl a y k). intuition. omega.

@@ -161,7 +161,7 @@ simpl; unfold compose; exists z; hyp.
 
 rewrite IHn in H; destruct H as [p]; exists p; intuition; auto with *.
 
-destruct H as [p]; destruct H. destruct (le_lt_eq_dec p (S n) H).
+destruct H as [p]; destruct H. destruct (le_lt_eq_dec H).
 right; apply lt_n_Sm_le in l; rewrite IHn; exists p; auto with *.
 subst; left; unfold compose in H0; auto with *.
 Qed.
@@ -184,7 +184,7 @@ split; auto with *. simpl; unfold compose; exists z; intuition; auto with *.
 rewrite IHn in H; destruct H as [p]; exists p; intuition; auto with *.
 
 destruct H as [p]; destruct H.
-destruct (le_lt_eq_dec p (S n) H).
+destruct (le_lt_eq_dec H).
 right; apply lt_n_Sm_le in l; rewrite IHn; exists p; auto with *.
 subst; left; unfold compose in H0; auto with *.
 simpl in H0; unfold compose in *; destruct H0 as [z]; exists z.
@@ -280,7 +280,7 @@ gen (bpath_Sn_n_or_Rn H); intros; destruct H0.
 simpl in *; right; apply IHn; auto with *.
 destruct H0 as [z]; destruct H0; ded (IHn _ _ H1).
 simpl; rewrite iter_le_spec in *; destruct H2 as [p]; destruct H2.
-destruct (le_lt_eq_dec p n H2).
+destruct (le_lt_eq_dec H2).
 right; rewrite iter_le_spec; exists (S p); intuition.
 simpl; unfold compose; exists z; intuition.
 left; subst; unfold compose; exists z; intuition.
