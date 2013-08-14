@@ -1067,7 +1067,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     refl. refl. hyp.
   Qed.
 
-  (** Alpha-closure preserves monotony. *)
+  (** Alpha-closure is compatible with alpha-equivalence. *)
 
   Instance clos_aeq_impl :
     Proper (same_relation ==> aeq ==> aeq ==> impl) clos_aeq.
@@ -1084,6 +1084,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Proper (same_relation ==> aeq ==> aeq ==> iff) clos_aeq.
 
   Proof. apply Proper_inter_transp_3; class. Qed.
+
+  (** Alpha-closure preserves monotony. *)
 
   Instance clos_aeq_mon R : Monotone R -> Monotone (clos_aeq R).
 
@@ -1178,6 +1180,17 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Arguments fv_R_notin_fv_lam [R x y u v] _ _.
 
+  (** Alpha-closure preserves termination of size-decreasing relations. *)
+
+  Lemma clos_aeq_wf_size : forall R, R << transp (ltof size) -> WF (clos_aeq R).
+
+  Proof.
+    intros R h. apply WF_incl with (S := transp (ltof size)).
+    2: apply transp_ltof_wf.
+    intros t u tu. inversion tu; clear tu; subst. unfold transp, ltof.
+    rewrite H, H0. apply h. hyp.
+  Qed.
+
 (****************************************************************************)
 (** ** Properties of [vaeq]. *)
 
@@ -1232,6 +1245,19 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Vcast u h ~~~ Vcast v h <-> u ~~~ v.
 
   Proof. intros n u v n' h. subst n'. rewrite 2!Vcast_refl. refl. Qed.
+
+  Lemma Vnth_vaeq : forall n (ts us : Tes n) i (hi : i<n),
+    ts ~~~ us -> Vnth ts hi ~~ Vnth us hi.
+
+  Proof.
+    induction ts; intros us i hi e. omega. VSntac us; simpl.
+    rewrite H, vaeq_cons in e. destruct e as [e1 e2]. destruct i as [|i]; fo.
+  Qed.
+
+  Arguments Vnth_vaeq [n ts us i hi] _.
+
+(****************************************************************************)
+(** ** Compatibility of [apps] with [vaeq]. *)
 
   Instance apps_aeq : forall n, Proper (aeq ==> @vaeq n ==> aeq) (@apps n).
 
