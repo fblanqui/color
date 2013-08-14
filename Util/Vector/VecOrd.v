@@ -12,8 +12,6 @@ Set Implicit Arguments.
 
 Require Import LogicUtil VecUtil RelUtil NatUtil RelMidex Syntax.
 
-Arguments symprod [A B] _ _ _ _.
-
 (***********************************************************************)
 (** * Component-wise extension to vectors on [A] of a relation on [A]. *)
 
@@ -300,48 +298,58 @@ Lemma Vgt_prod_union n A (R S : relation A) :
 Proof. rewrite !Vgt_prod_eq1. apply Vgt_prod1_union. Qed.
 
 (***********************************************************************)
+(** [Vgt_pord] is included in [lex]. *)
+
+Require Import Lexico.
+
+Lemma Vgt_prod_lexv n A (R : relation A) :
+  @Vgt_prod n _ R << lexv (n:=n) Logic.eq R.
+
+Proof.
+  intros t u. rewrite Vgt_prod_iff2, lexv_eq. intros [i [hi [h1 h2]]].
+  exists i hi. fo.
+Qed.
+
+(***********************************************************************)
 (** * Product ordering on vectors. *)
+
+Definition vec_prod {n A} (R : relation A) : relation (vector A n) :=
+  Vforall2n R (n:=n).
 
 Section vec_prod.
 
-  Variable A : Type. Notation vec := (vector A).
+  Variables (A : Type) (R : relation A).
 
-  Variable R : relation A.
-
-  Definition vec_prod {n} := Vforall2n R (n:=n).
-
-  Lemma vec_prod_tail : forall n (v v' : vec (S n)),
-    vec_prod v v' -> vec_prod (Vtail v) (Vtail v').
+  Lemma vec_prod_tail : forall n (v v' : vector A (S n)),
+    vec_prod R v v' -> vec_prod R (Vtail v) (Vtail v').
 
   Proof. intros. unfold vec_prod. apply Vforall2n_tail. hyp. Qed.
 
-  Global Instance vec_prod_refl n : Reflexive R -> Reflexive (@vec_prod n).
-
-  Proof. intros h x. apply Vforall2n_intro. refl. Qed.
-
-  Global Instance vec_prod_trans n : Transitive R -> Transitive (@vec_prod n).
+  Lemma vec_prod_dec : rel_dec R -> forall n, rel_dec (vec_prod (n:=n) R).
 
   Proof.
-    intros h x y z xy yz. apply Vforall2n_intro. intros i ip.
+    intros R_dec n P Q. destruct (Vforall2n_dec R_dec P Q); intuition.
+  Defined.
+
+  Global Instance vec_prod_refl :
+    Reflexive R -> forall n, Reflexive (vec_prod (n:=n) R).
+
+  Proof. intros h n x. apply Vforall2n_intro. refl. Qed.
+
+  Global Instance vec_prod_trans :
+    Transitive R -> forall n, Transitive (vec_prod (n:=n) R).
+
+  Proof.
+    intros h n x y z xy yz. apply Vforall2n_intro. intros i ip.
     trans (Vnth y ip); apply Vforall2n_nth; hyp.
   Qed.
 
-  Global Instance vec_prod_sym n : Symmetric R -> Symmetric (@vec_prod n).
+  Global Instance vec_prod_sym :
+    Symmetric R -> forall n, Symmetric (vec_prod (n:=n) R).
 
   Proof.
-    intros h x y xy. apply Vforall2n_intro. intros i ip. sym.
+    intros h n x y xy. apply Vforall2n_intro. intros i ip. sym.
     apply Vforall2n_nth. hyp.
   Qed.
 
-  Lemma vec_prod_dec n : rel_dec R -> rel_dec (@vec_prod n).
-
-  Proof.
-    intros R_dec P Q. destruct (Vforall2n_dec R_dec P Q); intuition.
-  Defined.
-
 End vec_prod.
-
-Arguments vec_prod_refl [A R] _ _ _.
-Arguments vec_prod_trans [A R] _ _ _ _ _ _ _.
-Arguments vec_prod_sym [A R] _ _ _ _ _.
-Arguments vec_prod_dec [A R] {n} _ _ _.

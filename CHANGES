@@ -1,9 +1,9 @@
 
+13-08-14: [Blanqui]
+- Term/Lambda and Util: various additions
+
 13-08-02: [Blanqui]
 - Util/Relation/Tarski: Knaster-Tarski theorem
-
-13-07-13: [Blanqui]
-- Term/Lambda: various additions
 
 13-06-05: [Blanqui]
 - Term/Lambda: reorganized definitions so that Inductive's and various

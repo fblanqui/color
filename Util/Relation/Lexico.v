@@ -9,7 +9,7 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil Morphisms.
+Require Import SN RelUtil LogicUtil Morphisms Syntax NatUtil VecUtil.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)
@@ -17,20 +17,10 @@ Require Import SN RelUtil LogicUtil Morphisms.
 Section lex.
 
   (** We assume given a set [A] equipped with two relations [gtA] and
-  [eqA] satisfying the following compatibility condition: *)
+  [eqA] satisfying some compatibility condition, and a set [B]
+  equipped with a relation [gtB]. *)
 
-  Variable (A : Type) (gtA eqA : relation A) (Hcomp : eqA @ gtA << gtA).
-
-  Lemma SN_compat : forall a, SN gtA a -> forall a', eqA a a' -> SN gtA a'.
-
-  Proof.
-    intros a SN_a a' eqaa'. apply SN_intro. intros a'' gta'a''.
-    inversion SN_a. apply H. apply (inclusion_elim Hcomp). exists a'. auto.
-  Qed.
-
-  (** We assime given a set [B] equipped with a relation [gtB]. *)
-
-  Variable (B : Type) (gtB : relation B).
+  Variables (A B : Type) (gtA eqA : relation A) (gtB : relation B).
 
   (** Definition of the lexicographic relation. *)
 
@@ -47,9 +37,17 @@ Section lex.
   Qed.
 
   (** We now prove that [lex] is wellfounded if both [gtA] and [gtB]
-  are wellfounded, and if [eqA] is transitive. *)
+  are wellfounded, [eqA] is transitive and [gtA] absorbs [eqA]. *)
 
-  Variable (WF_gtB : WF gtB) (eqA_trans : Transitive eqA).
+  Variables (WF_gtA : WF gtA) (WF_gtB : WF gtB)
+    (eqA_trans : Transitive eqA) (Hcomp : eqA @ gtA << gtA).
+
+  Lemma SN_compat : forall a, SN gtA a -> forall a', eqA a a' -> SN gtA a'.
+
+  Proof.
+    intros a SN_a a' eqaa'. apply SN_intro. intros a'' gta'a''.
+    inversion SN_a. apply H. apply (inclusion_elim Hcomp). exists a'. auto.
+  Qed.
 
   Lemma lex_SN_eq : forall a b,
     SN lex (a,b) -> forall a', eqA a a' -> SN lex (a',b).
@@ -74,8 +72,6 @@ Section lex.
     apply (@lex_SN_eq a). 2: exact H3. apply Hb2. exact H5.
   Qed.
 
-  Variable WF_gtA : WF gtA.
-
   Lemma WF_lex : WF lex.
 
   Proof.
@@ -84,78 +80,71 @@ Section lex.
 
 End lex.
 
+(** [symprod] is included in [lex]. *)
+
+Lemma symprod_lex A (gtA : relation A) :
+  symprod gtA gtA << lex gtA Logic.eq gtA.
+
+Proof.
+  intros t u tu. inversion tu; clear tu; subst.
+  apply lex1. hyp. apply lex2. refl. hyp.
+Qed.
+
+(** [lex] is monotone wrt inclusion. *)
+
+Instance lex_incl A B :
+  Proper (inclusion ==> inclusion ==> inclusion ==> inclusion) (@lex A B).
+
+Proof.
+  intros gtA gtA' gtAgtA' eqA eqA' eqAeqA' gtB gtB' gtBgtB' t u tu.
+  inversion tu; clear tu; subst. apply lex1. fo. apply lex2; fo.
+Qed.
+
+Instance lex_same_rel A B :
+  Proper (same_relation ==> same_relation ==> same_relation ==> same_relation)
+  (@lex A B).
+
+Proof.
+  intros gtA1 gtA' [gtAgtA' gtA'gtA] eqA eqA' [eqAeqA' eqA'eqA]
+    gtB gtB' [gtBgtB' gtB'gtB]. split; apply lex_incl; fo.
+Qed.
+
 (****************************************************************************)
-(** ** Lexicographic order on tuples and vectors. *)
+(** ** Type of n-tuples of elements of [A]. *)
+
+Fixpoint prodn n A : Type :=
+  match n with
+    | 0 => unit
+    | S n' => prod A (prodn n' A)
+  end.
+
+Fixpoint projn n {A} :=
+  match n as n return prodn n A -> forall i, i<n -> A with
+    | 0 => fun xs i (hi : i<0) => False_rect _ (lt_n_0 hi)
+    | S n' => fun xs i =>
+      match i as i return i<S n' -> A with
+        | 0 => fun _ => fst xs
+        | S i' => fun hi => projn _ (snd xs) _ (lt_S_n hi)
+      end
+  end.
+
+(****************************************************************************)
+(** ** Lexicographic order on tuples. *)
+
+Fixpoint lexn {n A} (eqA gtA : relation A) :=
+  match n as n return relation (prodn n A) with
+    | 0 => empty_rel
+    | S n' => lex gtA eqA (lexn eqA gtA)
+  end.
 
 Section lexn.
 
-  Variables (A : Type) (gtA eqA : relation A) (Hcomp : eqA @ gtA << gtA)
-    (eqA_trans : Transitive eqA) (gtA_wf : WF gtA).
+  Variables (A : Type) (eqA gtA : relation A).
 
-  (** Type of n-tuples of elements of [A]. *)
-
-  Fixpoint prodn n : Type :=
-    match n with
-      | 0 => unit
-      | S n' => prod A (prodn n')
-    end.
-
-  (** Lexicographic relation on n-tuples. *)
-
-  Fixpoint lexn n :=
-    match n as n return relation (prodn n) with
-      | 0 => empty_rel
-      | S n' => lex gtA eqA (lexn n')
-    end.
-
-  Lemma lexn_wf n : WF (lexn n).
-
-  Proof. induction n; simpl. apply WF_empty_rel. apply WF_lex; hyp. Qed.
-
-  Require Import VecUtil.
-
-  (** Convert of vector of size [n] into an [n]-tuple. *)
-
-  Fixpoint prod_of_vec n (v : vector A n) :=
-    match v in vector _ n return prodn n with
-      | Vnil => tt
-      | Vcons x _ v' => (x, prod_of_vec v')
-    end.
-
-  (** Lexicographic relation on vectors. *)
-
-  Definition lexv n (v w : vector A n) :=
-    lexn n (prod_of_vec v) (prod_of_vec w).
-
-  Lemma lexv_wf n : WF (@lexv n).
-
-  Proof. apply WF_inverse. apply lexn_wf. Qed.
-
-  Require Import NatUtil.
-
-  (** Nth projection for n-tuples. *)
-
-  Fixpoint projn n :=
-    match n as n return prodn n -> forall i, i<n -> A with
-      | 0 => fun xs i (hi : i<0) => False_rect _ (lt_n_0 hi)
-      | S n' => fun xs i =>
-        match i as i return i<S n' -> A with
-          | 0 => fun _ => fst xs
-          | S i' => fun hi => projn _ (snd xs) _ (lt_S_n hi)
-        end
-    end.
-
-  Lemma projn_prod_of_vec : forall n (xs : vector A n) i (hi : i<n),
-    projn (prod_of_vec xs) hi = Vnth xs hi.
-
-  Proof. induction xs; intros i hi. omega. simpl. destruct i as [|i]; fo. Qed.
-
-  Require Import Syntax.
-
-  (** Equivalence definition of [lexn]. *)
+  (** Equivalent definition. *)
  
-  Lemma lexn_eq : forall n (xs ys : prodn n),
-    lexn _ xs ys <-> (exists i (hi : i<n), gtA (projn xs hi) (projn ys hi)
+  Lemma lexn_eq : forall n (xs ys : prodn n A), lexn eqA gtA xs ys <->
+    (exists i (hi : i<n), gtA (projn xs hi) (projn ys hi)
       /\ forall j, j<i -> forall hj : j<n, eqA (projn xs hj) (projn ys hj)).
 
   Proof.
@@ -165,7 +154,7 @@ Section lexn.
     (* S *)
     intros [x xs] [y ys]. simpl lexn. split; intro h.
     (* -> *)
-    inversion h; subst.
+    inversion h; clear h; subst.
     exists 0 (lt_0_Sn n). split. simpl projn. hyp. intros. omega.
     rewrite IHn in H4. destruct H4 as [i [hi [h1 h2]]].
     exists (S i) (lt_n_S hi). split.
@@ -180,10 +169,58 @@ Section lexn.
     rewrite lt_unique with (h1 := lt_S_n (lt_n_S jn)) (h2:=jn). auto.
   Qed.
 
-  (** Equivalence definition of [lexv]. *)
+  (** Wellfoundedness. *)
 
-  Lemma lexv_eq : forall n (xs ys : vector A n),
-    lexv xs ys <-> (exists i (hi : i<n), gtA (Vnth xs hi) (Vnth ys hi)
+  Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
+    (Hcomp : eqA @ gtA << gtA).
+
+  Lemma lexn_wf n : WF (lexn (n:=n) eqA gtA).
+
+  Proof. induction n; simpl. apply WF_empty_rel. apply WF_lex; hyp. Qed.
+
+End lexn.
+
+(** Monotony wrt inclusion. *)
+
+Instance lexn_incl : forall A n,
+  Proper (inclusion ==> inclusion ==> inclusion) (@lexn n A). 
+
+Proof.
+  intro A. induction n; simpl. fo.
+  intros eqA eqA' eqAeqA' gtA gtA' gtAgtA'. apply lex_incl; auto.
+  apply IHn; hyp.
+Qed.
+
+(****************************************************************************)
+(** ** Convert of vector of size [n] into an [n]-tuple. *)
+
+Fixpoint prod_of_vec n A (v : vector A n) :=
+  match v in vector _ n return prodn n A with
+    | Vnil => tt
+    | Vcons x _ v' => (x, prod_of_vec v')
+  end.
+
+Lemma projn_prod_of_vec : forall A n (xs : vector A n) i (hi : i<n),
+  projn (prod_of_vec xs) hi = Vnth xs hi.
+
+Proof.
+  intro A. induction xs; intros i hi. omega. simpl. destruct i as [|i]; fo.
+Qed.
+
+(****************************************************************************)
+(** ** Lexicographic order on vectors. *)
+
+Definition lexv {n A} (eqA gtA : relation A) : relation (vector A n) :=
+  fun v w => lexn eqA gtA (prod_of_vec v) (prod_of_vec w).
+
+Section lexv.
+
+  Variables (A : Type) (eqA gtA : relation A).
+
+  (** Equivalent definition. *)
+
+  Lemma lexv_eq : forall n (xs ys : vector A n), lexv eqA gtA xs ys <->
+    (exists i (hi : i<n), gtA (Vnth xs hi) (Vnth ys hi)
       /\ forall j, j<i -> forall hj : j<n, eqA (Vnth xs hj) (Vnth ys hj)).
 
   Proof.
@@ -195,4 +232,22 @@ Section lexn.
     intros j ji hj. rewrite !projn_prod_of_vec. fo.
   Qed.
 
-End lexn.
+  (** Wellfoundedness. *)
+
+  Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
+    (Hcomp : eqA @ gtA << gtA).
+
+  Lemma lexv_wf n : WF (lexv (n:=n) eqA gtA).
+
+  Proof. apply WF_inverse. apply lexn_wf; hyp. Qed.
+
+End lexv.
+
+(** Monotony wrt inclusion. *)
+
+Instance lexv_incl : forall A n,
+  Proper (inclusion ==> inclusion ==> inclusion) (@lexv n A). 
+
+Proof.
+  intros A n eqA eqA' eqAeqA' gtA gtA' gtAgtA' t u. apply lexn_incl; hyp.
+Qed.
