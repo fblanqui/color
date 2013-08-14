@@ -86,7 +86,7 @@ Section symprod.
 
   Variables (A B : Type) (leA : relation A) (leB : relation B).
 
-  Notation Symprod := (symprod A B leA leB).
+  Notation Symprod := (symprod leA leB).
 
   Lemma Acc_symprod_fst x : Acc Symprod x -> Acc leA (fst x).
 

@@ -341,7 +341,7 @@ Section symprod.
 
   Variable (A B : Type) (gtA : relation A) (gtB : relation B).
 
-  Notation gt := (symprod A B gtA gtB).
+  Notation gt := (symprod gtA gtB).
 
   Require Import Wellfounded.
 
