@@ -285,12 +285,12 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
 (***********************************************************************)
 (** [ge] on vectors *)
 
-  Definition vec_ge {n} := vec_prod ge (n:=n).
+  Definition vec_ge {n} := vec_prod (n:=n) ge.
   Infix ">=v" := vec_ge (at level 70).
 
-  Definition vec_ge_refl n := vec_prod_refl n ge_refl.
-  Definition vec_ge_trans n := vec_prod_trans n ge_trans.
-  Definition vec_ge_dec n := @vec_prod_dec _ _ n ge_dec.
+  Definition vec_ge_refl := vec_prod_refl ge_refl.
+  Definition vec_ge_trans := vec_prod_trans ge_trans.
+  Definition vec_ge_dec := vec_prod_dec ge_dec.
 
   Instance vec_ge_mor n : Proper (@eq_vec n ==> @eq_vec n ==> iff) (@vec_ge n).
 

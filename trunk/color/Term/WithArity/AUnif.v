@@ -525,12 +525,12 @@ Lemma wf_lt : well_founded lt.
 
 Proof.
 unfold lt. apply WF_wf_transp. apply WF_lex.
-unfold inclusion, transp, nb_vars_eq, nb_vars_lt. intros. do 2 destruct H.
-rewrite H. hyp.
+apply wf_WF_transp. exact wf_nb_vars_lt.
 apply wf_WF_transp. exact wf_sizes_lt.
 unfold RelationClasses.Transitive, nb_vars_eq. intros.
 trans (cardinal (vars_eqns y)); hyp.
-apply wf_WF_transp. exact wf_nb_vars_lt.
+unfold inclusion, transp, nb_vars_eq, nb_vars_lt. intros. do 2 destruct H.
+rewrite H. hyp.
 Qed.
 
 Definition Lt l1 l2 := lt (l1, l1) (l2, l2).
