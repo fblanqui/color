@@ -807,6 +807,15 @@ Section Vin.
     apply Vtail_eq. apply Vcast_pi. 
   Qed.
 
+  Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
+
+  Lemma Vin_dec : forall x n (xs : vec n), {Vin x xs}+{~Vin x xs}.
+
+  Proof.
+    intro x. induction xs; simpl. right. fo. destruct (eq_dec h x).
+    left. fo. destruct IHxs. left. fo. right. fo.
+  Qed.
+
 End Vin.
 
 Implicit Arguments Vin_nth [A n v a].
@@ -2063,5 +2072,39 @@ Section filter.
         Vcons (match lt_dec k p with left h => Some (Vnth xs h) | _ => None end)
           (vec_opt_filter ks' xs)
     end.
+
+  Lemma Vnth_vec_opt_filter :
+    forall p (xs : vector A p) n (ks : vector nat n) i (hi : i<n),
+      Vnth (vec_opt_filter ks xs) hi =
+      match lt_dec (Vnth ks hi) p with
+        | left h => Some (Vnth xs h)
+        | _ => None
+      end.
+
+  Proof.
+    intros p xs. induction ks; intros i hi. omega. simpl. destruct i as [|i].
+    destruct (lt_dec h p); refl. apply IHks.
+  Qed.
+
+  Lemma Vnth_vec_opt_filter_Some_elim :
+    forall p (xs : vector A p) n (ks : vector nat n) i (hi : i<n) x,
+      Vnth (vec_opt_filter ks xs) hi = Some x ->
+      exists h : Vnth ks hi < p, x = Vnth xs h.
+
+  Proof.
+    intros p xs. induction ks; intros i hi x. omega. rename h into k.
+    simpl. destruct i as [|i]. 2: fo.
+    destruct (lt_dec k p). 2: discr. intro hx; inversion hx. exists l. refl.
+  Qed.
+
+  Lemma Vnth_vec_opt_filter_Some_intro : forall p (xs : vector A p)
+    n (ks : vector nat n) i (hi : i<n) (h : Vnth ks hi < p),
+    Vnth (vec_opt_filter ks xs) hi = Some (Vnth xs h).
+
+  Proof.
+    intros p xs. induction ks; intros i hi. exfalso. omega. rename h into k.
+    simpl. destruct i as [|i]; intro hj. 2: fo.
+    destruct (lt_dec k p). 2: omega. apply (f_equal Some). apply Vnth_eq. refl.
+  Qed.
 
 End filter.
