@@ -546,6 +546,10 @@ Section clos_trans.
     trans R. hyp. apply incl_tc. refl. apply tc_trans.
   Qed.
 
+  Lemma tc_incl_trans R S : Transitive S -> R << S -> R! << S.
+
+  Proof. intros S_trans RS. intros t u tu; revert t u tu. induction 1; fo. Qed.
+
 End clos_trans.
 
 (***********************************************************************)
