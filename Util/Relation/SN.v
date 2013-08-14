@@ -646,27 +646,31 @@ End wf_rel_mod_simpl.
 (***********************************************************************)
 (** WF of relations on nat. *)
 
-Require Import Wf_nat.
+Require Export Wf_nat.
 
 Arguments ltof [A] _ _ _.
 Arguments induction_ltof1 [A] _ _ _ _.
 Arguments well_founded_ltof [A] _ _.
 
-Lemma transp_ltof_wf : forall A (f : A -> nat), WF (transp (ltof f)).
+Section ltof.
 
-Proof. intros A f. apply wf_WF_transp. apply well_founded_ltof. Qed.
+  Variables (A : Type) (f : A -> nat).
 
-Section wf_nat.
+  Global Instance ltof_trans : Transitive (ltof f).
 
-  Lemma WF_gt : WF gt.
+  Proof. intros x y z. unfold ltof. omega. Qed.
 
-  Proof.
-    apply wf_transp_WF. intro n. apply Acc_incl with lt. 
-    intros x y. auto.
-    apply lt_wf.
-  Qed.
+  Lemma transp_ltof_wf : WF (transp (ltof f)).
 
-End wf_nat.
+  Proof. apply wf_WF_transp. apply well_founded_ltof. Qed.
+
+End ltof.
+
+Lemma WF_gt : WF gt.
+
+Proof.
+  apply wf_transp_WF. intro n. apply Acc_incl with lt. fo. apply lt_wf.
+Qed.
 
 (***********************************************************************)
 (** Restriction of a relation to some set. *)
@@ -684,6 +688,17 @@ Section restrict.
   Proof.
     intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
     clear x hx xy. revert y; induction 1. apply SN_intro. fo.
+  Qed.
+
+  Global Instance restrict_proper E :
+    Proper (E ==> impl) P -> Proper (E ==> E ==> impl) R ->
+    Proper (E ==> E ==> impl) restrict.
+
+  Proof.
+    intros PE RE x x' xx' y y' yy' [hxy xy]. split.
+    rewrite <- xx'. hyp.
+    (*COQ:rewrite <- xx', <- yy'.*)
+    eapply RE. apply xx'. apply yy'. hyp.
   Qed.
 
 End restrict.
