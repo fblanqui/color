@@ -1080,6 +1080,12 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     apply RR'. hyp.
   Qed.
 
+  (*COQ: can be removed?*)
+  Instance clos_aeq_impl' (R : relation Te) :
+    Proper (aeq ==> aeq ==> impl) (clos_aeq R).
+
+  Proof. apply clos_aeq_impl. refl. Qed.
+
   Instance clos_aeq_iff :
     Proper (same_relation ==> aeq ==> aeq ==> iff) clos_aeq.
 
