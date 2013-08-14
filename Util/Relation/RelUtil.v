@@ -26,6 +26,7 @@ Arguments symmetric {A} R.
 Arguments equiv {A} R.
 Arguments union {A} R1 R2 x y.
 Arguments lexprod [A B] _ _ _ _.
+Arguments symprod [A B] _ _ _ _.
 
 Ltac class := fold impl; auto with typeclass_instances.
 
