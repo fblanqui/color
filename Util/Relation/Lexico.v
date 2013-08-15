@@ -9,7 +9,7 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil Morphisms Syntax NatUtil VecUtil.
+Require Import SN RelUtil LogicUtil Morphisms Syntax NatUtil VecUtil VecOrd.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)
@@ -241,13 +241,32 @@ Section lexv.
 
   Proof. apply WF_inverse. apply lexn_wf; hyp. Qed.
 
+  (** [lexv eqA gtA] absorbs [vec_prod eqA]. *)
+
+  Lemma vec_prod_lexv n : vec_prod (n:=n) eqA @ lexv eqA gtA << lexv eqA gtA.
+
+  Proof.
+    intros ts vs [us [tsus usvs]]. revert usvs. rewrite !lexv_eq.
+    intros [i [hi [h1 h2]]]. exists i hi. split.
+    apply Hcomp. exists (Vnth us hi). split. apply Vforall2n_nth. hyp. hyp.
+    intros j ji jn. trans (Vnth us jn). apply Vforall2n_nth. hyp. fo.
+  Qed.
+
 End lexv.
 
 (** Monotony wrt inclusion. *)
 
-Instance lexv_incl : forall A n,
+Instance lexv_incl n A :
   Proper (inclusion ==> inclusion ==> inclusion) (@lexv n A). 
 
+Proof. intros eqA eqA' eqAeqA' gtA gtA' gtAgtA' t u. apply lexn_incl; hyp. Qed.
+
+(** [Vgt_pord] is included in [lex]. *)
+
+Lemma Vgt_prod_lexv n A (gtA : relation A) :
+  Vgt_prod (n:=n) gtA << lexv Logic.eq gtA.
+
 Proof.
-  intros A n eqA eqA' eqAeqA' gtA gtA' gtAgtA' t u. apply lexn_incl; hyp.
+  intros t u. rewrite Vgt_prod_iff2, lexv_eq. intros [i [hi [h1 h2]]].
+  exists i hi. fo.
 Qed.
