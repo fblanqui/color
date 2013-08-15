@@ -298,19 +298,6 @@ Lemma Vgt_prod_union n A (R S : relation A) :
 Proof. rewrite !Vgt_prod_eq1. apply Vgt_prod1_union. Qed.
 
 (***********************************************************************)
-(** [Vgt_pord] is included in [lex]. *)
-
-Require Import Lexico.
-
-Lemma Vgt_prod_lexv n A (R : relation A) :
-  @Vgt_prod n _ R << lexv (n:=n) Logic.eq R.
-
-Proof.
-  intros t u. rewrite Vgt_prod_iff2, lexv_eq. intros [i [hi [h1 h2]]].
-  exists i hi. fo.
-Qed.
-
-(***********************************************************************)
 (** * Product ordering on vectors. *)
 
 Definition vec_prod {n A} (R : relation A) : relation (vector A n) :=
