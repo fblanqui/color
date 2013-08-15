@@ -703,6 +703,11 @@ Section restrict.
 
 End restrict.
 
+Lemma restrict_union A (P : set A) R S :
+  restrict P (R U S) == restrict P R U restrict P S.
+
+Proof. fo. Qed.
+
 (****************************************************************************)
 (** * Extension of a relation on [A] to [option A]. *)
 
