@@ -25,8 +25,9 @@ FMap modules defined in the standard Coq library. *)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil BoolUtil VecUtil Wf_nat Omega FSets FSetUtil NatUtil
-  Structures.OrderedType RelUtil.
+Require Import LogicUtil BoolUtil VecUtil Omega FSets FSetUtil NatUtil
+  Structures.OrderedType RelUtil SN SetUtil.
+Require Union.
 
 (****************************************************************************)
 (** * The set [Te] of lambda-terms
@@ -747,8 +748,6 @@ Module Make (Export L : L_Struct).
     trans (apps (Fun f) us). apply t_step. apply st_app_l. apply IHn.
   Qed.
 
-  Require Import SN.
-
   Lemma supterm_wf : WF supterm.
 
   Proof.
@@ -761,43 +760,45 @@ Module Make (Export L : L_Struct).
 
     Variables (R : relation Te) (R_mon : Monotone R).
 
-    Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
+    Lemma supterm_commut : supterm @ R << R @ supterm.
 
     Proof.
-      Require Union. apply Union.WF_union. apply commut_tc.
       intros t v [u [tu uv]]; revert t u tu v uv; induction 1.
       intros u' uu'. exists (App u' v). split. mon. apply st_app_l.
       intros v' vv'. exists (App u v'). split. mon. apply st_app_r.
       intros u' uu'. exists (Lam x u'). split. mon. apply st_lam.
+    Qed.
+
+    Lemma tc_supterm_commut : supterm! @ R << R @ supterm!.
+
+    Proof. apply commut_tc. apply supterm_commut. Qed.
+
+    Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
+
+    Proof.
+      apply Union.WF_union. apply commut_tc. apply supterm_commut.
       apply WF_tc. apply supterm_wf.
     Qed.
 
-    Require Import SetUtil.
-
     Section restrict.
 
-      Variables (P : set Te) (P_R : Proper (R ==> impl) P) (P_SN : P [= SN R).
+      Variables (P : set Te) (P_R : Proper (R ==> impl) P).
 
       Lemma supterm_restrict_mon_wf :
-        WF (restrict P R) -> WF (restrict P supterm! U restrict P R).
+        WF (restrict P R) -> WF (restrict P (supterm! U R)).
 
       Proof.
-        Require Union. apply Union.WF_union. apply commut_tc.
-        intros t v [u [[ht tu] [hu uv]]]. revert t u tu ht hu v uv.
-        induction 1; intros ht hu.
-        Focus 4. apply WF_tc. apply restrict_wf. intros x hx. apply supterm_wf.
-        intros u' uu'. exists (App u' v). split. split. hyp. mon. split.
-        apply P_R with (x:=App u v). mon. hyp. apply st_app_l.
-        intros v' vv'. exists (App u v'). split. split. hyp. mon. split.
-        apply P_R with (x:=App u v). mon. hyp. apply st_app_r.
-        intros u' uu'. exists (Lam x u'). split. split. hyp. mon. split.
-        apply P_R with (x:=Lam x u). mon. hyp. apply st_lam.
+        rewrite restrict_union. apply Union.WF_union.
+        intros t v [u [[ht tu] [hu uv]]].
+        assert (a : (supterm! @ R) t v). exists u. fo.
+        destruct (tc_supterm_commut a) as [u' [tu' u'v]]. exists u'.
+        split; split; auto. eapply P_R. apply tu'. hyp.
+        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_wf.
       Qed.
 
     End restrict.
 
-    Lemma supterm_restrict_SN_mon_wf :
-      WF (restrict (SN R) supterm! U restrict (SN R) R).
+    Lemma supterm_restrict_SN_mon_wf : WF (restrict (SN R) (supterm! U R)).
 
     Proof.
       apply supterm_restrict_mon_wf.
