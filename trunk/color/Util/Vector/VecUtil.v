@@ -9,13 +9,14 @@ See the COPYRIGHTS and LICENSE files.
 - Pierre-Yves Strub, 2009-04-09
 - Wang Qian & Zhang Lianyi, 2009-05-06
 
-extension of the Coq library Vector
+
+* Extension of the Coq library Vector
 *)
 
 Set Implicit Arguments.
 
 Require Import Vector Program LogicUtil NatUtil EqUtil RelMidex ListUtil
-  BoolUtil.
+  BoolUtil Relations RelDec ListForall.
 Require Omega.
 
 Notation vector := Vector.t.
@@ -31,6 +32,9 @@ Implicit Arguments Vhead [A n].
 Implicit Arguments Vtail [A n].
 Implicit Arguments Vconst [A].
 
+(***********************************************************************)
+(** Tactic for destructuring equalities on vectors. *)
+
 Ltac Veqtac := repeat
   match goal with
     | H : Vcons ?x ?v = Vcons ?x ?w |- _ =>
@@ -44,7 +48,7 @@ Ltac Veqtac := repeat
   end.
 
 (***********************************************************************)
-(** elementary identities *)
+(** ** Elementary identities. *)
 
 Section Velementary.
 
@@ -92,15 +96,15 @@ Section Velementary.
 
 End Velementary.
 
-Ltac VSntac y := let h := fresh in gen (VSn_eq y); intro h; try rewrite h.
-
-Lemma VSn_inv : forall A n (v : vector A (S n)),
-  exists x, exists w, v = Vcons x w.
-
-Proof. intros. VSntac v. exists (Vhead v). exists (Vtail v). refl. Qed.
+Implicit Arguments VSn_eq [A n].
 
 (***********************************************************************)
-(** First element of a vector with default value if empty. *)
+(** Tactic for destructing non empty vectors. *)
+
+Ltac VSntac y := let h := fresh in gen (VSn_eq y); intro h; try rewrite h.
+
+(***********************************************************************)
+(** ** First element of a vector with default value if empty. *)
 
 Definition Vfirst A default n (v : vector A n) : A :=
   match v with
@@ -109,7 +113,7 @@ Definition Vfirst A default n (v : vector A n) : A :=
   end.
 
 (***********************************************************************)
-(** cast *)
+(** ** Type casting function on vectors. *)
 
 Section Vcast.
 
@@ -222,22 +226,18 @@ Section Vcast.
 
 End Vcast.
 
+Implicit Arguments Vcast_eq_elim [A n v1 v2 m h].
+
 (***********************************************************************)
-(** null vector *)
+(** ** Lemma and tactic for replacing an empty vector by Vnil. *)
 
-Section Vnull.
+Lemma VO_eq : forall A (v : vector A O), v = Vnil.
 
-  Variable A : Type. Notation vec := (vector A).
-
-  Lemma VO_eq : forall v : vec O, v = Vnil.
-
-  Proof.
-    cut (forall n (v : vec n) (h: n=0), Vcast v h = Vnil).
-    intros. ded (H 0 v (refl_equal 0)). rewrite Vcast_refl in H0. hyp.
-    destruct v. auto. intro. discr.
-  Defined.
-
-End Vnull.
+Proof.
+  intro A. cut (forall n (v : vector A n) (h: n=0), Vcast v h = Vnil).
+  intros. ded (H 0 v (refl_equal 0)). rewrite Vcast_refl in H0. hyp.
+  destruct v. auto. intro. discr.
+Defined.
 
 Ltac VOtac := repeat
   match goal with
@@ -245,7 +245,7 @@ Ltac VOtac := repeat
   end.
 
 (***********************************************************************)
-(** i-th element *)
+(** ** N-th element of a vector. *)
 
 Section Vnth.
 
@@ -345,7 +345,7 @@ End Vnth.
 Notation "v '[@' p ']'" := (Vnth v p) (at level 0) : vec_scope.
 
 (***********************************************************************)
-(** add an element at the end *)
+(** ** Add an element at the end of a vector. *)
 
 Section Vadd.
 
@@ -417,7 +417,7 @@ Section Vadd.
 End Vadd.
 
 (***********************************************************************)
-(** replacement of i-th element *)
+(** ** Replace the i-th element of a vector by some value. *)
 
 Section Vreplace.
 
@@ -491,7 +491,7 @@ Section Vreplace.
 End Vreplace.
 
 (***********************************************************************)
-(** concatenation *)
+(** ** Concatenation of two vectors. *)
 
 Section Vapp.
 
@@ -651,7 +651,7 @@ Section Vapp.
 End Vapp.
 
 (***********************************************************************)
-(** breaking a vector in various pieces *)
+(** ** Breaking a vector into two sub-vectors. *)
 
 Section Vbreak.
 
@@ -701,8 +701,12 @@ Section Vbreak.
 
 End Vbreak.
 
+Implicit Arguments Vbreak [A n1 n2].
+Implicit Arguments Vbreak_eq_app [A n1 n2].
+Implicit Arguments Vbreak_eq_app_cast [A n n1 n2].
+
 (***********************************************************************)
-(** membership *)
+(** ** Membership predicate on vectors. *)
 
 Section Vin.
 
@@ -819,9 +823,17 @@ Section Vin.
 End Vin.
 
 Implicit Arguments Vin_nth [A n v a].
+Implicit Arguments Vin_cast_elim [A m n H v x].
+Implicit Arguments Vin_elim [A x n v].
+Implicit Arguments Vin_app [A x n1 v1 n2 v2].
+Implicit Arguments Vin_cast [A m n H v x].
 
 (***********************************************************************)
-(** sub-vector: Vsub v (h:i+k<=n) = [v_i, .., v_{i+k-1}] *)
+(** ** Sub-vector.
+
+Given a vector [v] of size [n], two natural numbers [i] and [k] and a
+proof [h] that [i+k<=n], then [Vsub v h] is the sub-vector of [v] of
+size [k] made of the elements [v_i], ..., [v_{i+k-1}]. *)
 
 Section Vsub.
 
@@ -1124,8 +1136,10 @@ Section Vsub.
 
 End Vsub.
 
+Implicit Arguments Vsub [A n i k].
+
 (***********************************************************************)
-(** remove last element *)
+(** ** Function removing the last element of a non-empty vector. *)
 
 Section Vremove_last.
 
@@ -1161,7 +1175,7 @@ Section Vremove_last.
 End Vremove_last.
 
 (***********************************************************************)
-(** Last element of a vector with default value if empty. *)
+(** ** Last element of a vector with default value if empty. *)
 
 Section Vlast.
 
@@ -1210,7 +1224,8 @@ Section Vlast.
 End Vlast.
 
 (***********************************************************************)
-(** proposition saying that every element satisfies some predicate *)
+(** ** Predicate saying that every element of a vector satisfies some
+predicate [P]. *)
 
 Section Vforall.
 
@@ -1275,13 +1290,6 @@ Section Vforall.
     apply H. rewrite Vin_cast in H0. hyp.
   Qed.
 
-  Fixpoint Vsig_of_v n (v : vec n) : Vforall v -> vector (sig P) n :=
-    match v in vector _ n return Vforall v -> vector (sig P) n with
-      | Vnil => fun _ => Vnil
-      | Vcons a _ w => fun H =>
-        Vcons (exist P a (proj1 H)) (Vsig_of_v w (proj2 H))
-    end.
-
   Lemma Vforall_app : forall p (v : vec p) q (w : vec q),
     Vforall (Vapp v w) <-> Vforall v /\ Vforall w.
 
@@ -1301,7 +1309,18 @@ Section Vforall.
     right. intro V. destruct V. contr.
   Defined.
 
+  Fixpoint Vsig_of_v n (v : vec n) : Vforall v -> vector (sig P) n :=
+    match v in vector _ n return Vforall v -> vector (sig P) n with
+      | Vnil => fun _ => Vnil
+      | Vcons a _ w => fun H =>
+        Vcons (exist P a (proj1 H)) (Vsig_of_v w (proj2 H))
+    end.
+
 End Vforall.
+
+Implicit Arguments Vforall_in [A P x n v].
+Implicit Arguments Vsig_of_v [A P n v].
+Implicit Arguments Vforall_nth [A P n v i].
 
 Lemma Vforall_imp : forall A (P Q : A -> Prop) n (v : vector A n),
   Vforall P v -> (forall x, Vin x v -> P x -> Q x) -> Vforall Q v.
@@ -1312,8 +1331,29 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** proposition saying that the elements of two vectors are pair-wise
-in relation *)
+(** Boolean function decidaing [Vforall]. *)
+
+Section bVforall_sec.
+
+  Variables (A : Type) (P : A -> Prop) (f : A -> bool)
+    (f_ok : forall x, f x = true <-> P x).
+
+  Fixpoint bVforall n (v : vector A n) : bool :=
+    match v with
+      | Vnil => true
+      | Vcons a _ w => f a && bVforall w
+    end.
+
+  Lemma bVforall_ok : forall n (v : vector A n),
+    bVforall v = true <-> Vforall P v.
+
+  Proof. induction v; simpl. tauto. rewrite andb_eq. rewrite f_ok. tauto. Qed.
+
+End bVforall_sec.
+
+(***********************************************************************)
+(** ** Predicate saying that the elements of two vectors are pairwise
+in relation. *)
 
 Section Vforall2_sec.
 
@@ -1359,7 +1399,9 @@ End Vforall2_sec.
 
 Implicit Arguments Vforall2n_nth [A B R n v1 v2 i].
 
-Require Import Relations RelDec.
+(*REMOVE?Require Import Relations RelDec.*)
+
+(** Decidability of [Vforall2n]. *)
 
 Section Vforall2_dec.
 
@@ -1382,8 +1424,27 @@ Section Vforall2_dec.
 
 End Vforall2_dec.
 
+(** Boolean function deciding [Vforall2]. *)
+
+Section bVforall2_sec.
+
+  Variables (A B : Type) (P : A -> B -> bool).
+
+  Fixpoint bVforall2n_aux n1 (v1 : vector A n1) n2 (v2 : vector B n2) : bool :=
+    match v1, v2 with
+      | Vnil, Vnil => true
+      | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2n_aux xs ys
+      | _, _ => false
+    end.
+
+  Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) :=
+    bVforall2n_aux v1 v2.
+
+End bVforall2_sec.
+
 (***********************************************************************)
-(** to say that some element of a vector satisfies some predicate *)
+(** ** Predicate saying that some element of a vector satisfies some
+predicate [P]. *)
 
 Section Vexists.
 
@@ -1438,7 +1499,7 @@ Section Vexists.
 End Vexists.
 
 (***********************************************************************)
-(** vector construction *)
+(** ** Build a vector of size [n] from a function [gen: forall i, i<n -> A].*)
 
 Section Vbuild.
 
@@ -1513,13 +1574,13 @@ Section Vbuild.
 End Vbuild.
 
 (***********************************************************************)
-(** iteration *)
+(** ** Iterators on vectors. *)
 
 Section Vfolds.
 
   Variable A : Type. Notation vec := (vector A).
 
-  (* Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an *)
+  (** Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an. *)
 
   Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vec n) : B :=
     match v with
@@ -1527,7 +1588,7 @@ Section Vfolds.
       | Vcons a _ w => f (Vfold_left f b w) a
     end.
 
-  (* Vfold_right f [a1 .. an] b = f a1 (f a2 .. (f an b) .. ) *)
+  (** Vfold_right f [a1 .. an] b = f a1 (f a2 .. (f an b) .. ). *)
 
   Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vec n) (b:B) : B :=
     match v with
@@ -1564,9 +1625,9 @@ Section Vfolds.
 End Vfolds.
 
 (***********************************************************************)
-(** conversion to lists *)
+(** ** Convert a vector into a list. *)
 
-Require Import List.
+(*REMOVE?Require Import List.*)
 
 Section vec_of_list.
 
@@ -1633,8 +1694,35 @@ Section vec_of_list.
 
 End vec_of_list.
 
+Implicit Arguments in_list_of_vec [A n v x].
+
+(** Equivalence between [Vforall] and [lforall]. *)
+
+(*REMOVE?Require Import ListForall.*)
+
+Lemma lforall_Vforall : forall (A : Type) (l : list A) (p : A -> Prop),
+  lforall p l -> Vforall p (vec_of_list l).
+
+Proof.
+  intros. gen H. induction l. trivial. 
+  intros lforall. red in lforall. destruct lforall as [pa lforall].
+  red. simpl. split. trivial. 
+  unfold Vforall in IHl. apply IHl; trivial.
+Qed.
+
+Lemma Vforall_lforall : forall (A : Type) n (v : vector A n)
+  (p : A -> Prop), Vforall p v -> lforall p (list_of_vec v).
+
+Proof.
+  intros. gen H. induction v. trivial. 
+  intros lforall. red in lforall. destruct lforall as [pa vforall].
+  red. simpl. split. trivial. 
+  unfold lforall in IHv. apply IHv; trivial.
+Qed.
+
 (***********************************************************************)
-(** decidability of equality *)
+(** ** Leibniz equality on [vector A n] is decidable if Leibniz
+equality on [A] is decidable. *)
 
 Section eq_dec.
 
@@ -1655,7 +1743,7 @@ Section eq_dec.
 End eq_dec.
 
 (***********************************************************************)
-(** boolean function testing equality *)
+(** ** Boolean function for testing the equality of two vectors. *)
 
 Section beq.
 
@@ -1756,28 +1844,11 @@ Section beq_in.
 
 End beq_in.
 
-(***********************************************************************)
-(** declaration of implicit arguments *)
-
-Implicit Arguments VSn_eq [A n].
-Implicit Arguments Vsig_of_v [A P n v].
-Implicit Arguments Vbreak [A n1 n2].
-Implicit Arguments Vbreak_eq_app [A n1 n2].
-Implicit Arguments Vbreak_eq_app_cast [A n n1 n2].
-Implicit Arguments Vforall_in [A P x n v].
-Implicit Arguments Vin_cast_elim [A m n H v x].
-Implicit Arguments Vin_elim [A x n v].
-Implicit Arguments Vin_app [A x n1 v1 n2 v2].
 Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
 Implicit Arguments beq_vec_ok_in2 [A beq n v w].
-Implicit Arguments in_list_of_vec [A n v x].
-Implicit Arguments Vforall_nth [A P n v i].
-Implicit Arguments Vin_cast [A m n H v x].
-Implicit Arguments Vsub [A n i k].
-Implicit Arguments Vcast_eq_elim [A n v1 v2 m h].
 
 (***********************************************************************)
-(** map *)
+(** ** Function applying a function [f] on every element of a vector. *)
 
 Section map.
 
@@ -1869,7 +1940,8 @@ Implicit Arguments Vforall_map_elim [A B f P n v].
 Implicit Arguments Vin_map_intro [A B x n v].
 
 (***********************************************************************)
-(** map first element *)
+(** ** Function applying a function [f] on the first element of a
+non-empty vector, or some default value if the vector is empty. *)
 
 Section map_first.
 
@@ -1895,7 +1967,7 @@ Section map_first.
 End map_first.
 
 (***********************************************************************)
-(** map with a binary function *)
+(** ** Binary map function on vectors. *)
 
 Section Vmap2.
 
@@ -1908,7 +1980,7 @@ Section Vmap2.
         Vcons (f (Vhead v1) (Vhead v2)) (Vmap2 f (Vtail v1) (Vtail v2))
     end.
 
-  (* map composition *)
+  (* Map composition. *)
 
   Lemma Vmap_map : forall (f:A->B) (g:B->C) n
     (v : vector A n), Vmap g (Vmap f v) = Vmap (fun x : A => g (f x)) v.
@@ -1920,7 +1992,7 @@ Section Vmap2.
     rewrite IHv. refl.
   Qed.
 
-  (* nth element in a map *)
+  (* Nth element of [Vmap2]. *)
 
   Lemma Vnth_map2 : forall (f : A -> B -> C) n 
     (vl : vector A n) (vr : vector B n) i (ip : i < n),
@@ -1936,7 +2008,9 @@ Section Vmap2.
 End Vmap2.
 
 (***********************************************************************)
-(** vforall and specifications *)
+(** ** Given a vector of pairs [exists P x_i h_i] such that [h_i] is a
+proof of [P x_i], build a proof that every element of the vector [x_1,
+..., x_n] satisfies [P]. *)
 
 Fixpoint Vforall_of_vsig (A : Type) (P : A -> Prop) n (v : vector (sig P) n)
   : Vforall P (Vmap (@proj1_sig A P) v) :=
@@ -1959,7 +2033,7 @@ Qed.
 Implicit Arguments Vmap_proj1 [A P n v].
 
 (***********************************************************************)
-(** equality of vmap's *)
+(** ** Equality of [Vmap]'s. *)
 
 Lemma Vmap_eq : forall (A B : Type) (f g : A->B) n (v : vector A n),
   Vforall (fun a => f a = g a) v -> Vmap f v = Vmap g v.
@@ -1991,73 +2065,8 @@ Lemma Vmap_eq_ext_id : forall (A : Type) (f : A->A), (forall a, f a = a) ->
 
 Proof. intros. rewrite <- Vmap_id. apply Vmap_eq_ext. hyp. Qed.
 
-(***********************************************************************)
-(** Vforall <-> lforall  *)
-
-Require Import ListForall.
-
-Lemma lforall_Vforall : forall (A : Type) (l : list A) (p : A -> Prop),
-  lforall p l -> Vforall p (vec_of_list l).
-
-Proof.
-  intros. gen H. induction l. trivial. 
-  intros lforall. red in lforall. destruct lforall as [pa lforall].
-  red. simpl. split. trivial. 
-  unfold Vforall in IHl. apply IHl; trivial.
-Qed.
-
-Lemma Vforall_lforall : forall (A : Type) n (v : vector A n)
-  (p : A -> Prop), Vforall p v -> lforall p (list_of_vec v).
-
-Proof.
-  intros. gen H. induction v. trivial. 
-  intros lforall. red in lforall. destruct lforall as [pa vforall].
-  red. simpl. split. trivial. 
-  unfold lforall in IHv. apply IHv; trivial.
-Qed.
-
-(***********************************************************************)
-(** bVforall *)
-
-Section bVforall_sec.
-
-  Variables (A : Type) (P : A -> Prop) (f : A -> bool)
-    (f_ok : forall x, f x = true <-> P x).
-
-  Fixpoint bVforall n (v : vector A n) : bool :=
-    match v with
-      | Vnil => true
-      | Vcons a _ w => f a && bVforall w
-    end.
-
-  Lemma bVforall_ok : forall n (v : vector A n),
-    bVforall v = true <-> Vforall P v.
-
-  Proof. induction v; simpl. tauto. rewrite andb_eq. rewrite f_ok. tauto. Qed.
-
-End bVforall_sec.
-
-(***********************************************************************)
-(** bVforall2 *)
-
-Section bVforall2_sec.
-
-  Variables (A B : Type) (P : A -> B -> bool).
-
-  Fixpoint bVforall2n_aux n1 (v1 : vector A n1) n2 (v2 : vector B n2) : bool :=
-    match v1, v2 with
-      | Vnil, Vnil => true
-      | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2n_aux xs ys
-      | _, _ => false
-    end.
-
-  Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) :=
-    bVforall2n_aux v1 v2.
-
-End bVforall2_sec.
-
 (****************************************************************************)
-(** * Build a vector of [option A] of size [n] from the elements (if
+(** ** Build a vector of [option A] of size [n] from the elements (if
 they exist) of an arbitrary vector [xs] of size [p] whose positions
 are given by a vector [ks] of natural numbers of size [n]. *)
 
@@ -2108,3 +2117,122 @@ Section filter.
   Qed.
 
 End filter.
+
+(****************************************************************************)
+(** ** First position of an element in a vector. *)
+
+Section first_position.
+
+  Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}) (x : A).
+
+  Fixpoint Vfirst_position_aux k n (ys : vector A n) :=
+    match ys with
+      | Vnil => None
+      | Vcons y _ ys' =>
+        match eq_dec x y with
+          | left _ => Some k
+          | _ => Vfirst_position_aux (S k) ys'
+        end
+    end.
+
+  Definition Vfirst_position := Vfirst_position_aux 0.
+
+  Lemma Vfirst_position_aux_in : forall n (ys : vector A n) k i,
+    Vfirst_position_aux k ys = Some i -> Vin x ys.
+
+  Proof.
+    induction ys as [|y ys]; intros k i; simpl. discr.
+    destruct (eq_dec x y); fo.
+  Qed.
+
+  Lemma Vfirst_position_in : forall n (ys : vector A n) i,
+    Vfirst_position ys = Some i -> Vin x ys.
+
+  Proof. intros n ys i. apply Vfirst_position_aux_in. Qed.
+
+  Lemma Vfirst_position_aux_lt : forall n (ys : vector A n) k i,
+    Vfirst_position_aux k ys = Some i -> i < k+n.
+
+  Proof.
+    induction ys as [|y ys]; intros k i; simpl. discr.
+    destruct (eq_dec x y).
+    subst y. intro h; inversion h; clear h; subst. omega.
+    intro h. gen (IHys _ _ h). omega.
+  Qed.
+
+  Lemma Vfirst_position_lt : forall n (ys : vector A n) i,
+    Vfirst_position ys = Some i -> i < n.
+
+  Proof. intros n ys i. apply Vfirst_position_aux_lt. Qed.
+
+  Lemma Vfirst_position_aux_ge : forall n (ys : vector A n) k i,
+    Vfirst_position_aux k ys = Some i -> i >= k.
+
+  Proof.
+    induction ys as [|y ys]; intros k i; simpl. discr.
+    destruct (eq_dec x y). 2: fo.
+    subst y. intro h; inversion h; clear h; subst. refl.
+  Qed.
+ 
+  Lemma Vin_first_position_aux : forall n (ys : vector A n) k,
+    Vin x ys -> exists i, Vfirst_position_aux k ys = Some i.
+
+  Proof.
+    induction ys as [|y ys]; intro k; simpl. fo.
+    intros [h|h]; destruct (eq_dec x y); subst.
+    exists k. refl. irrefl. exists k. refl. fo.
+  Qed.
+
+  Lemma Vin_first_position : forall n (ys : vector A n),
+    Vin x ys -> exists i, Vfirst_position ys = Some i.
+
+  Proof. intros n ys. apply Vin_first_position_aux. Qed.
+
+  Lemma Vfirst_position_aux_nth : forall n (ys : vector A n) k i j (hj : j<n),
+    Vfirst_position_aux k ys = Some i -> Vnth ys hj = x -> i <= k+j.
+
+  Proof.
+    induction ys as [|y ys]; intros k i j hj; simpl. discr.
+    destruct (eq_dec x y).
+    subst y. intro h; inversion h; clear h; subst i. destruct j as [|j]; omega.
+    intro h1. destruct j as [|j]; intro h2.
+    subst y. irrefl.
+    gen (IHys _ _ _ _ h1 h2). omega.
+  Qed.
+
+  Lemma Vfirst_position_nth : forall n (ys : vector A n) i j (hj : j<n),
+    Vfirst_position ys = Some i -> Vnth ys hj = x -> i <= j.
+
+  Proof. intros n ys i j hj. apply Vfirst_position_aux_nth. Qed.
+
+
+  Lemma Vnth_first_position_aux : forall n (ys : vector A n) k i (hi : i-k < n),
+    Vfirst_position_aux k ys = Some i -> Vnth ys hi = x.
+
+  Proof.
+    induction ys as [|y n ys IH]; intros k i hi; simpl Vfirst_position_aux.
+    discr.
+    destruct (eq_dec x y).
+    subst y. intro h; inversion h; clear h; subst.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega. refl.
+    intro h. rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-k)).
+    assert (hi' : i - S k < n). omega. gen (IH _ _ hi' h); intro hx.
+    rewrite <- hx. apply Vnth_eq. omega.
+    gen (Vfirst_position_aux_ge _ _ h). omega.
+  Qed.
+
+  Lemma Vnth_first_position : forall n (ys : vector A n) i (hi : i<n),
+    Vfirst_position ys = Some i -> Vnth ys hi = x.
+
+  Proof.
+    intros n ys i hi h. assert (hi' : i-0 < n). omega. trans (Vnth ys hi').
+    apply Vnth_eq. omega. apply Vnth_first_position_aux. hyp.
+  Qed.
+
+End first_position.
+
+Arguments Vfirst_position_in [A] _ [x n ys i] _.
+Arguments Vfirst_position_lt [A] _ [x n ys i] _.
+Arguments Vin_first_position [A] _ [x n ys] _.
+Arguments Vnth_first_position [A] _ [x n ys i hi] _.
+Arguments Vfirst_position_nth [A] _ [x n ys i j hj] _ _.
