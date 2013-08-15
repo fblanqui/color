@@ -1252,6 +1252,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof. intros n u v n' h. subst n'. rewrite 2!Vcast_refl. refl. Qed.
 
+  (*FIXME: change arguments order of Vnth to declare Vnth_vaeq as
+  Proper Instance?*)
   Lemma Vnth_vaeq : forall n (ts us : Tes n) i (hi : i<n),
     ts ~~~ us -> Vnth ts hi ~~ Vnth us hi.
 
