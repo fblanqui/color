@@ -307,16 +307,7 @@ Section Vreln.
 
   Variables (A : Type) (R : relation A).
 
-  Lemma Vreln_tail : forall n (v v' : vector A (S n)),
-    Vreln R v v' -> Vreln R (Vtail v) (Vtail v').
-
-  Proof. intros. unfold Vreln. apply Vforall2n_tail. hyp. Qed.
-
-  Lemma Vreln_dec : rel_dec R -> forall n, rel_dec (Vreln (n:=n) R).
-
-  Proof.
-    intros R_dec n P Q. destruct (Vforall2n_dec R_dec P Q); intuition.
-  Defined.
+  (** [Vreln] preserves reflexivity, symmetry and transitivity. *)
 
   Global Instance Vreln_refl :
     Reflexive R -> forall n, Reflexive (Vreln (n:=n) R).
@@ -339,4 +330,93 @@ Section Vreln.
     apply Vforall2n_nth. hyp.
   Qed.
 
+  Global Instance Vreln_equiv :
+    Equivalence R -> forall n, Equivalence (Vreln (n:=n) R).
+
+  Proof.
+    constructor. apply Vreln_refl; class. apply Vreln_sym; class.
+    apply Vreln_trans; class.
+  Qed.
+
+  (** Decidability of [Vreln]. *)
+
+  Lemma Vreln_dec : rel_dec R -> forall n, rel_dec (Vreln (n:=n) R).
+
+  Proof.
+    intros R_dec n P Q. destruct (Vforall2n_dec R_dec P Q); intuition.
+  Defined.
+
+  (** Syntactic properties of [Vreln]. *)
+
+  Lemma Vreln_tail : forall n (v v' : vector A (S n)),
+    Vreln R v v' -> Vreln R (Vtail v) (Vtail v').
+
+  Proof. intros. unfold Vreln. apply Vforall2n_tail. hyp. Qed.
+
+  Lemma Vreln_cons : forall u v n (us vs : vector A n),
+    Vreln R (Vcons u us) (Vcons v vs) <-> R u v /\ Vreln R us vs.
+
+  Proof. fo. Qed.
+
+  Lemma Vreln_cons_r : forall n (u v : vector A n) x y,
+    Vreln R (Vcons x u) (Vcons y v) -> Vreln R u v.
+
+  Proof. fo. Qed.
+
+  Lemma Vreln_app_l n1 (v1 v1' : vector A n1) n2 (v2 v2' : vector A n2) :
+    Vreln R (Vapp v1 v2) (Vapp v1' v2') -> Vreln R v1 v1'.
+
+  Proof.
+    intro h. apply Vforall2n_intro. intros i hi.
+    assert (hi' : i < n1+n2). omega.
+    assert (a1 : Vnth v1 hi = Vnth (Vapp v1 v2) hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
+    omega. apply Vnth_eq. refl.
+    assert (a2 : Vnth v1' hi = Vnth (Vapp v1' v2') hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
+    omega. apply Vnth_eq. refl.
+    rewrite a1, a2. apply Vforall2n_nth. hyp.
+  Qed.
+
+  Lemma Vreln_app_r n1 (v1 v1' : vector A n1) n2 (v2 v2' : vector A n2) :
+    Vreln R (Vapp v1 v2) (Vapp v1' v2') -> Vreln R v2 v2'.
+
+  Proof.
+    intro h. apply Vforall2n_intro. intros i hi.
+    assert (hi' : n1+i < n1+n2). omega.
+    assert (a1 : Vnth v2 hi = Vnth (Vapp v1 v2) hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
+    apply Vnth_eq. omega. omega.
+    assert (a2 : Vnth v2' hi = Vnth (Vapp v1' v2') hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
+    apply Vnth_eq. omega. omega.
+    rewrite a1, a2. apply Vforall2n_nth. hyp.
+  Qed.
+
+  Lemma Vreln_cast n (u v : vector A n) n' (h : n=n') :
+    Vreln R (Vcast u h) (Vcast v h) <-> Vreln R u v.
+
+  Proof. subst n'. rewrite 2!Vcast_refl. refl. Qed.
+
+  (*FIXME: change arguments order of Vnth to declare Vnth_Vreln as
+  Proper Instance?*)
+  Lemma Vreln_nth : forall n (ts us : vector A n) i (hi : i<n),
+    Vreln R ts us -> R (Vnth ts hi) (Vnth us hi).
+
+  Proof.
+    induction ts; intros us i hi e. omega. VSntac us; simpl.
+    rewrite H, Vreln_cons in e. destruct e as [e1 e2]. destruct i as [|i]; fo.
+  Qed.
+
+  Lemma Vreln_sub : forall n (v1 v2 : vector A n) p q (h : p+q<=n),
+    Vreln R v1 v2 -> Vreln R (Vsub v1 h) (Vsub v2 h).
+
+  Proof.
+    intros n v1 v2 p q h e. apply Vforall2n_intro; intros i hi.
+    rewrite !Vnth_sub. apply Vforall2n_nth. hyp.
+  Qed.
+
 End Vreln.
+
+Arguments Vreln_sub [A R n v1 v2 p q] _ _.
+Arguments Vreln_nth [A R n ts us i hi] _.

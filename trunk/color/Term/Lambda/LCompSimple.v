@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil. 
+Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil VecOrd. 
 Require Export LSimple LComp.
 
 (****************************************************************************)
@@ -345,7 +345,7 @@ Module Make (Export ST : ST_Struct)
     Qed.
 
     Global Instance vint_vaeq n (Ts : Tys n) p :
-      Proper (@vaeq p ==> impl) (@vint n Ts p).
+      Proper (vaeq ==> impl) (@vint n Ts p).
 
     Proof.
       revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
@@ -353,7 +353,7 @@ Module Make (Export ST : ST_Struct)
       destruct us. VOtac. auto. fo.
       (* cons *)
       rename h into T.
-      destruct us. VOtac. auto. revert usvs. VSntac vs. rewrite vaeq_cons.
+      destruct us. VOtac. auto. revert usvs. VSntac vs. rewrite Vreln_cons.
       gen (cp_int T). intros [T1 _ _ _].
       intros [h1 h2] [i1 i2]. rewrite <- h1, <- h2. intuition.
     Qed.
@@ -390,8 +390,8 @@ Module Make (Export ST : ST_Struct)
 
     (** Computability of vectors of terms is preserved by reduction. *)
 
-    Global Instance vint_vaeq_prod n (Ts : Tys n) p :
-      Proper (vaeq_prod R ==> impl) (@vint n Ts p).
+    Global Instance vint_clos_vaeq n (Ts : Tys n) p :
+      Proper (clos_vaeq R ==> impl) (@vint n Ts p).
 
     Proof.
       revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
@@ -400,7 +400,7 @@ Module Make (Export ST : ST_Struct)
       (* cons *)
       rename h into T.
       destruct us. VOtac. auto. revert usvs. VSntac vs.
-      rewrite vaeq_prod_cons.
+      rewrite clos_vaeq_cons.
       gen (cp_int T); intros [T1 _ T3 _].
       intros [[h1 h2]|[h1 h2]] [i1 i2]; split.
       eapply T3. apply h1. hyp.
@@ -515,8 +515,8 @@ Module SN_beta (Export ST : ST_Struct).
     rewrite output_arity. simpl. set (b := output_base (typ f)).
     gen (cp_I b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
-    cut (SN (vaeq_prod beta) vs).
-    Focus 2. apply sn_vaeq_prod. eapply vint_sn. apply cp_I. apply hvs.
+    cut (SN (clos_vaeq beta) vs).
+    Focus 2. apply sn_clos_vaeq. eapply vint_sn. apply cp_I. apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
     induction 1.
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
@@ -524,7 +524,7 @@ Module SN_beta (Export ST : ST_Struct).
     apply b4. apply neutral_apps_fun.
     intros y r. assert (k : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam k r) as [u [z [h1 h2]]]; subst.
-    rewrite vaeq_prod_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
+    rewrite clos_vaeq_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
     inversion i1; subst. simpl_aeq; subst. inversion H3; subst. inversion H1.
     simpl_aeq; subst. apply H0. hyp. rewrite <- i2. hyp.
   Qed.

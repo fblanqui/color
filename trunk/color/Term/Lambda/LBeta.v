@@ -209,7 +209,7 @@ Module Make (Export L : L_Struct).
 then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
   Infix "-->b" := (Vrel1 beta) (at level 70).
-  Infix "==>b" := (vaeq_prod beta) (at level 70).
+  Infix "==>b" := (clos_vaeq beta) (at level 70).
 
   Lemma beta_apps_no_lam : forall n (us : Tes n) u t,
     not_lam u -> apps u us ->b t ->
@@ -234,7 +234,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
   Lemma beta_aeq_apps_no_lam : forall n (us : Tes n) u t,
     not_lam u -> apps u us =>b t ->
-    exists v vs, t = apps v vs /\ vaeq_prod beta (Vcons u us) (Vcons v vs).
+    exists v vs, t = apps v vs /\ clos_vaeq beta (Vcons u us) (Vcons v vs).
 
   Proof.
     intros n us u t hu b. inversion b; subst.
@@ -250,12 +250,12 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
   Lemma beta_aeq_apps_fun : forall f n (us : Tes n) t,
     apps (Fun f) us =>b t ->
-    exists vs, t = apps (Fun f) vs /\ vaeq_prod beta us vs.
+    exists vs, t = apps (Fun f) vs /\ clos_vaeq beta us vs.
 
   Proof.
     intros f n us t r. assert (h : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam h r) as [v [vs [h1 h2]]]; clear h r; subst.
-    exists vs. rewrite vaeq_prod_cons in h2. destruct h2 as [[h1 h2]|[h1 h2]].
+    exists vs. rewrite clos_vaeq_cons in h2. destruct h2 as [[h1 h2]|[h1 h2]].
     inv_beta_aeq h1. simpl_aeq. subst. auto.
   Qed.
 
@@ -269,12 +269,12 @@ every element of [us] is strongly normalizing wrt beta-reduction. *)
     Vforall (SN beta_aeq) us -> SN beta_aeq (apps (Fun f) us).
 
   Proof.
-    intros f n us h. cut (SN (vaeq_prod beta) us).
-    2: apply sn_vaeq_prod; hyp.
+    intros f n us h. cut (SN (clos_vaeq beta) us).
+    2: apply sn_clos_vaeq; hyp.
     clear h. revert us. induction 1. apply SN_intro. intros v r.
     assert (k : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam k r) as [u [y [h1 h2]]]; subst.
-    rewrite vaeq_prod_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
+    rewrite clos_vaeq_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
     inversion i1; subst. simpl_aeq; subst. inversion H3; subst. inversion H1.
     simpl_aeq; subst. apply H0. hyp.
   Qed.
