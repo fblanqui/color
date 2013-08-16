@@ -381,9 +381,7 @@ Section compose.
 
   Lemma incl_comp_rtc : S @ R << S -> S @ R# << S.
 
-  Proof.
-    intros h t v [u [tu uv]]. induction uv; fo.
-  Qed.
+  Proof. intros h t v [u [tu uv]]. induction uv; fo. Qed.
 
 End compose.
 
@@ -491,6 +489,10 @@ Section clos_trans.
     unfold transitive, inclusion. intros. induction H0. hyp. 
     apply H with y; hyp.
   Qed.
+
+  Lemma trans_comp_incl R : Transitive R -> R @ R << R.
+
+  Proof. fo. Qed.
 
   Lemma comp_tc_incl R S : R @ S << S -> R! @ S << S.
 
@@ -987,6 +989,14 @@ Section commut.
     destruct SE as [x' Sx']. exists x'. split; try intuition.
     apply tc_merge. exists y'. intuition.
   Qed.
+
+  Lemma commut_comp T : R @ (S @ T) << (S @ R) @ T.
+
+  Proof. rewrite comp_assoc', commut. refl. Qed.
+
+  Lemma absorb_comp T V (absorb : R @ S << T) : R @ (S @ V) << T @ V.
+
+  Proof. rewrite comp_assoc', absorb. refl. Qed.
 
 End commut.
 
