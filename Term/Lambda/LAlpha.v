@@ -96,12 +96,12 @@ Module Export Def.
 
     (** Alpha-equivalence on vectors of terms. *)
 
-    Definition vaeq {n} := Vreln aeq (n:=n).
+    Notation vaeq := (Vreln aeq).
 
     (** Component-wise extension to vectors of a relation on terms,
        modulo [vaeq]. *)
 
-    Definition vaeq_prod {n} R := vaeq (n:=n) @ (Vrel1 R @ vaeq).
+    Definition clos_vaeq {n} R := vaeq @ (Vrel1 (n:=n) R @ vaeq).
 
   End aeq.
 
@@ -126,10 +126,10 @@ Module Make (Export L : L_Struct).
   Notation clos_aeq_trans :=
     (@clos_aeq_trans F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation saeq := (@saeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation vaeq := (@vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation vaeq_prod :=
-    (@vaeq_prod F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+    Notation clos_vaeq :=
+    (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
+  Notation vaeq := (Vreln aeq).
   Infix "~~" := aeq (at level 70).
   Infix "~~~" := vaeq (at level 70).
   Notation "R *" := (clos_aeq_trans R) (at level 35).
@@ -1226,82 +1226,15 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Qed.
 
 (****************************************************************************)
-(** ** Properties of [vaeq]. *)
+(** ** Compatibility of [apps] with [aeq] and [vaeq]. *)
 
-  Instance vaeq_equiv n : Equivalence (@vaeq n).
-
-  Proof. (*FIXME: prove in VecOrd*)
-    constructor. apply Vreln_refl; class. apply Vreln_sym; class.
-    apply Vreln_trans; class.
-  Qed.
-
-  Lemma vaeq_cons : forall u v n (us vs : Tes n),
-    Vcons u us ~~~ Vcons v vs <-> u ~~ v /\ us ~~~ vs.
-
-  Proof. fo. Qed.
-
-  Lemma vaeq_cons_r : forall n (u v : Tes n) x y,
-    Vcons x u ~~~ Vcons y v -> u ~~~ v.
-
-  Proof. fo. Qed.
-
-  Lemma vaeq_app_l : forall n1 (v1 v1' : Tes n1) n2 (v2 v2' : Tes n2),
-    Vapp v1 v2 ~~~ Vapp v1' v2' -> v1 ~~~ v1'.
-
-  Proof.
-    intros n1 v1 v1' n2 v2 v2' h. apply Vforall2n_intro. intros i hi.
-    assert (hi' : i < n1+n2). omega.
-    assert (a1 : Vnth v1 hi = Vnth (Vapp v1 v2) hi').
-    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
-    omega. apply Vnth_eq. refl.
-    assert (a2 : Vnth v1' hi = Vnth (Vapp v1' v2') hi').
-    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
-    omega. apply Vnth_eq. refl.
-    rewrite a1, a2. apply Vforall2n_nth. hyp.
-  Qed.
-
-  Lemma vaeq_app_r : forall n1 (v1 v1' : Tes n1) n2 (v2 v2' : Tes n2),
-    Vapp v1 v2 ~~~ Vapp v1' v2' -> v2 ~~~ v2'.
-
-  Proof.
-    intros n1 v1 v1' n2 v2 v2' h. apply Vforall2n_intro. intros i hi.
-    assert (hi' : n1+i < n1+n2). omega.
-    assert (a1 : Vnth v2 hi = Vnth (Vapp v1 v2) hi').
-    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
-    apply Vnth_eq. omega. omega.
-    assert (a2 : Vnth v2' hi = Vnth (Vapp v1' v2') hi').
-    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
-    apply Vnth_eq. omega. omega.
-    rewrite a1, a2. apply Vforall2n_nth. hyp.
-  Qed.
-
-  Lemma vaeq_cast : forall n (u v : Tes n) n' (h : n=n'),
-    Vcast u h ~~~ Vcast v h <-> u ~~~ v.
-
-  Proof. intros n u v n' h. subst n'. rewrite 2!Vcast_refl. refl. Qed.
-
-  (*FIXME: change arguments order of Vnth to declare Vnth_vaeq as
-  Proper Instance?*)
-  Lemma Vnth_vaeq : forall n (ts us : Tes n) i (hi : i<n),
-    ts ~~~ us -> Vnth ts hi ~~ Vnth us hi.
-
-  Proof.
-    induction ts; intros us i hi e. omega. VSntac us; simpl.
-    rewrite H, vaeq_cons in e. destruct e as [e1 e2]. destruct i as [|i]; fo.
-  Qed.
-
-  Arguments Vnth_vaeq [n ts us i hi] _.
-
-(****************************************************************************)
-(** ** Compatibility of [apps] with [vaeq]. *)
-
-  Instance apps_aeq : forall n, Proper (aeq ==> @vaeq n ==> aeq) (@apps n).
+  Instance apps_aeq : forall n, Proper (aeq ==> vaeq ==> aeq) (@apps n).
 
   Proof.
     intros n t t' tt' us us' usus'. revert n us us' usus' t t' tt'.
     induction us; simpl; intros us' usus' t t' tt'.
     VOtac. simpl. hyp.
-    VSntac us'. simpl. unfold Def.vaeq, Vreln, Vforall2n in usus'.
+    VSntac us'. simpl. unfold Vreln, Vforall2n in usus'.
     rewrite H in usus'. simpl in usus'. destruct usus' as [h1 h2].
     apply IHus. hyp. rewrite tt', h1. refl.
   Qed.
@@ -1316,7 +1249,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
     inv_aeq_0 h2; clear h2; subst. ex u0 (Vcons u1 us).
-    unfold Def.vaeq, Vreln, Vforall2n. simpl. intuition.
+    unfold Vreln, Vforall2n. simpl. intuition.
   Qed.
 
   Arguments apps_aeq_r [n vs v t0] _.
@@ -1466,11 +1399,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End atc_props.
 
-(*FIXME: move to VecOrd*)
+(*FIXME: some properties are similar to clos_aeq => factorize?*)
 (****************************************************************************)
-(** ** Properties of [vaeq_prod]. *)
+(** ** Properties of [clos_vaeq]. *)
 
-  Section vaeq_prod.
+  Section clos_vaeq.
 
     Variable R : relation Te.
     Infix "->R" := R (at level 70).
@@ -1478,9 +1411,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Notation R_aeq := (clos_aeq R) (only parsing).
     Infix "=>R" := (clos_aeq R) (at level 70).
 
-    Infix "==>R" := (vaeq_prod R) (at level 70).
+    Infix "==>R" := (clos_vaeq R) (at level 70).
 
-    Lemma vaeq_prod_cons : forall u v n (us vs : Tes n),
+    Lemma clos_vaeq_cons : forall u v n (us vs : Tes n),
       Vcons u us ==>R Vcons v vs
       <-> (u =>R v /\ us ~~~ vs) \/ (u ~~ v /\ us ==>R vs).
 
@@ -1488,7 +1421,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       intros u v n us vs. split.
 
       intros [x [uusx [y [xy yvvs]]]]. revert uusx yvvs xy. VSntac x. VSntac y.
-      rewrite 2!vaeq_cons. intros [h1 h2] [i1 i2] h. inversion h.
+      rewrite 2!Vreln_cons. intros [h1 h2] [i1 i2] h. inversion h.
       left. subst x0 y0 x'. rewrite h1, <- i1, h2, H5, i2. split.
       apply incl_clos_aeq. hyp. refl.
       right. subst x0 y0 y'. rewrite h1, H4, i1. split. refl. 
@@ -1496,18 +1429,18 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       intros [[h1 h2]|[h1 h2]].
       inversion h1; subst. exists (Vcons u' us). split.
-      rewrite vaeq_cons. intuition. exists (Vcons v' us). split.
-      apply Vrel1_cons. auto. rewrite vaeq_cons. intuition.
+      rewrite Vreln_cons. intuition. exists (Vcons v' us). split.
+      apply Vrel1_cons. auto. rewrite Vreln_cons. intuition.
 
       destruct h2 as [us' [usus' [vs' [us'vs' vs'vs]]]].
-      exists (Vcons v us'). rewrite vaeq_cons. intuition. exists (Vcons v vs').
-      rewrite vaeq_cons. intuition. apply Vrel1_cons. right. intuition.
+      exists (Vcons v us'). rewrite Vreln_cons. intuition. exists (Vcons v vs').
+      rewrite Vreln_cons. intuition. apply Vrel1_cons. right. intuition.
     Qed.
 
-    (** [vaeq_prod] is compatible with [vaeq]. *)
+    (** [clos_vaeq] is compatible with [vaeq]. *)
 
-    Global Instance vaeq_prod_vaeq' n :
-      Proper (@vaeq n ==> @vaeq n ==> impl) (vaeq_prod R).
+    Global Instance clos_vaeq_vaeq n :
+      Proper (vaeq ==> vaeq ==> impl) (clos_vaeq (n:=n) R).
 
     Proof.
       intros us us' usus' ws ws' wsws' [vs [usvs [xs [bvsxs xsws]]]].
@@ -1515,34 +1448,24 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       trans ws; hyp.
     Qed.
 
-    Lemma Vsub_vaeq : forall n (v1 v2 : Tes n) p q (h : p+q<=n),
-      v1 ~~~ v2 -> Vsub v1 h ~~~ Vsub v2 h.
-
-    Proof.
-      intros n v1 v2 p q h e. apply Vforall2n_intro; intros i hi.
-      rewrite !Vnth_sub. apply Vforall2n_nth. hyp.
-    Qed.
-
-    Arguments Vsub_vaeq [n v1 v2 p q] _ _.
-
-    Lemma vaeq_prod_sub : forall n (us vs : Tes n) p q (h : p+q<=n),
+    Lemma clos_vaeq_sub : forall n (us vs : Tes n) p q (h : p+q<=n),
       us ==>R vs -> Vsub us h ~~~ Vsub vs h \/ Vsub us h ==>R Vsub vs h.
 
     Proof.
       intros n us vs p q h [us' [usus' [vs' [r vsvs']]]]; symmetry in vsvs'.
       destruct (Vrel1_sub h r).
-      left. rewrite (Vsub_vaeq h usus'), (Vsub_vaeq h vsvs'), H. refl.
-      right. exists (Vsub us' h). split. apply Vsub_vaeq. hyp.
-      exists (Vsub vs' h). split. hyp. apply Vsub_vaeq. sym. hyp.
+      left. rewrite (Vreln_sub h usus'), (Vreln_sub h vsvs'), H. refl.
+      right. exists (Vsub us' h). split. apply Vreln_sub. hyp.
+      exists (Vsub vs' h). split. hyp. apply Vreln_sub. sym. hyp.
     Qed.
 
-    Arguments vaeq_prod_sub [n us vs p q] _ _.
+    Arguments clos_vaeq_sub [n us vs p q] _ _.
 
-    (** A vector of terms is strongly normalizing for [vaeq_prod] if
+    (** A vector of terms is strongly normalizing for [clos_vaeq] if
     every component is strongly normalizing for [R_aeq]. *)
 
-    Lemma sn_vaeq_prod : forall n (us : Tes n),
-      Vforall (SN R_aeq) us -> SN (vaeq_prod R) us.
+    Lemma sn_clos_vaeq : forall n (us : Tes n),
+      Vforall (SN R_aeq) us -> SN (clos_vaeq R) us.
 
     Proof.
       intros n x hx.
@@ -1587,22 +1510,22 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       rewrite t1, t2. apply Vforall2n_nth. sym. hyp.
       (* We now prove that [y ~~~ Vcast (Vapp xi (Vcons b xj)) k0]. *)
       assert (h :  y ~~~ Vcast (Vapp xi (Vcons b xj)) k0).
-      rewrite ex, ex', vaeq_cast in xx'. rewrite ey, ey', vaeq_cast in y'y.
+      rewrite ex, ex', Vreln_cast in xx'. rewrite ey, ey', Vreln_cast in y'y.
       trans (Vcast (Vapp x'i (Vcons b x'j)) k0).
       (* left *)
       apply Vforall2n_intro. intros k hk. rewrite ey, 2!Vnth_cast, 2!Vnth_app.
       destruct (Compare_dec.le_gt_dec i k).
       rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (k-i)). 2: refl.
-      apply Vforall2n_nth. eapply vaeq_cons_r. eapply vaeq_app_r. sym.
+      apply Vforall2n_nth. eapply Vreln_cons_r. eapply Vreln_app_r. sym.
       apply y'y.
-      apply Vforall2n_nth. eapply vaeq_app_l. sym. apply y'y.
+      apply Vforall2n_nth. eapply Vreln_app_l. sym. apply y'y.
       (* right *)
       apply Vforall2n_intro. intros k hk. rewrite 2!Vnth_cast, 2!Vnth_app.
       destruct (Compare_dec.le_gt_dec i k).
       rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (k-i)). 2: refl.
-      apply Vforall2n_nth. eapply vaeq_cons_r. eapply vaeq_app_r. sym.
+      apply Vforall2n_nth. eapply Vreln_cons_r. eapply Vreln_app_r. sym.
       apply xx'.
-      apply Vforall2n_nth. eapply vaeq_app_l. sym. apply xx'.
+      apply Vforall2n_nth. eapply Vreln_app_l. sym. apply xx'.
       (* We now prove that
       [Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)]. *)
       assert (r : Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)).
@@ -1612,22 +1535,22 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       rewrite h. apply H0. hyp. apply SN_rel1_forall. apply H. hyp.
     Qed.
 
-  End vaeq_prod.
+  End clos_vaeq.
 
-  (** [vaeq_prod] is compatible with [same_relation]. *)
+  (** [clos_vaeq] is compatible with [same_relation]. *)
 
-  Instance vaeq_prod_same_rel n :
-    Proper (same_relation ==> same_relation) (@vaeq_prod n).
+  Instance clos_vaeq_same_rel n :
+    Proper (same_relation ==> same_relation) (@clos_vaeq n).
 
-  Proof. intros R R' RR'. unfold Def.vaeq_prod. rewrite RR'. refl. Qed.
+  Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 
-  (** [vaeq_prod] distributes over [union]. *)
+  (** [clos_vaeq] distributes over [union]. *)
 
-  Lemma vaeq_prod_union n R S :
-    @vaeq_prod n (R U S) == @vaeq_prod n R U @vaeq_prod n S.
+  Lemma clos_vaeq_union n R S :
+    @clos_vaeq n (R U S) == @clos_vaeq n R U @clos_vaeq n S.
 
   Proof.
-    unfold Def.vaeq_prod. rewrite Vrel1_union, comp_union_l, comp_union_r. refl.
+    unfold Def.clos_vaeq. rewrite Vrel1_union, comp_union_l, comp_union_r. refl.
   Qed.
 
 End Make.

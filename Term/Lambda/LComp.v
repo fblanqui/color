@@ -71,9 +71,8 @@ Module Type CP_Struct.
   Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation vaeq := (@vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation vaeq_prod :=
-    (@vaeq_prod F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation clos_vaeq :=
+    (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
   Infix "->bh" := beta_top (at level 70).
@@ -94,7 +93,7 @@ Module Type CP_Struct.
   Notation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
-  Infix "==>R" := (vaeq_prod R) (at level 70).
+  Infix "==>R" := (clos_vaeq R) (at level 70).
 
   (** Properties not involving reduction. *)
 
