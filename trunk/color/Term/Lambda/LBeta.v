@@ -208,7 +208,7 @@ Module Make (Export L : L_Struct).
 (** If [apps u us] beta-reduces to [t] and [u] is not an abstraction,
 then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
-  Infix "-->b" := (Vgt_prod beta) (at level 70).
+  Infix "-->b" := (Vrel1 beta) (at level 70).
   Infix "==>b" := (vaeq_prod beta) (at level 70).
 
   Lemma beta_apps_no_lam : forall n (us : Tes n) u t,

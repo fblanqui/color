@@ -9,7 +9,7 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil Morphisms Syntax NatUtil VecUtil VecOrd.
+Require Import SN RelUtil LogicUtil Morphisms NatUtil VecUtil VecOrd.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)
@@ -155,16 +155,16 @@ Section lexn.
     intros [x xs] [y ys]. simpl lexn. split; intro h.
     (* -> *)
     inversion h; clear h; subst.
-    exists 0 (lt_0_Sn n). split. simpl projn. hyp. intros. omega.
+    ex 0 (lt_0_Sn n). split. simpl projn. hyp. intros. omega.
     rewrite IHn in H4. destruct H4 as [i [hi [h1 h2]]].
-    exists (S i) (lt_n_S hi). split.
+    ex (S i) (lt_n_S hi). split.
     simpl. rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2:=hi). hyp.
     intros [|j] k hj; simpl. hyp. apply h2. omega.
     (* <- *)
     destruct h as [i [hi [h1 h2]]]. destruct i as [|i].
     apply lex1. hyp. 
     apply lex2. gen (h2 _ (lt_0_Sn i) (lt_0_Sn n)). simpl. auto.
-    rewrite IHn. exists i (lt_S_n hi). split. fo.
+    rewrite IHn. ex i (lt_S_n hi). split. fo.
     intros j ji jn. gen (h2 _ (lt_n_S ji) (lt_n_S jn)). simpl.
     rewrite lt_unique with (h1 := lt_S_n (lt_n_S jn)) (h2:=jn). auto.
   Qed.
@@ -225,7 +225,7 @@ Section lexv.
 
   Proof.
     intros n xs ys. unfold lexv. rewrite lexn_eq.
-    split; intros [i [hi [h1 h2]]]; exists i hi; split.
+    split; intros [i [hi [h1 h2]]]; ex i hi; split.
     rewrite !projn_prod_of_vec in h1. hyp.
     intros j ji hj. gen (h2 _ ji hj). rewrite !projn_prod_of_vec. auto.
     rewrite !projn_prod_of_vec. hyp.
@@ -243,11 +243,11 @@ Section lexv.
 
   (** [lexv eqA gtA] absorbs [vec_prod eqA]. *)
 
-  Lemma vec_prod_lexv n : vec_prod (n:=n) eqA @ lexv eqA gtA << lexv eqA gtA.
+  Lemma Vreln_lexv n : Vreln (n:=n) eqA @ lexv eqA gtA << lexv eqA gtA.
 
   Proof.
     intros ts vs [us [tsus usvs]]. revert usvs. rewrite !lexv_eq.
-    intros [i [hi [h1 h2]]]. exists i hi. split.
+    intros [i [hi [h1 h2]]]. ex i hi. split.
     apply Hcomp. exists (Vnth us hi). split. apply Vforall2n_nth. hyp. hyp.
     intros j ji jn. trans (Vnth us jn). apply Vforall2n_nth. hyp. fo.
   Qed.
@@ -263,10 +263,10 @@ Proof. intros eqA eqA' eqAeqA' gtA gtA' gtAgtA' t u. apply lexn_incl; hyp. Qed.
 
 (** [Vgt_pord] is included in [lex]. *)
 
-Lemma Vgt_prod_lexv n A (gtA : relation A) :
-  Vgt_prod (n:=n) gtA << lexv Logic.eq gtA.
+Lemma Vrel1_lexv n A (gtA : relation A) :
+  Vrel1 (n:=n) gtA << lexv Logic.eq gtA.
 
 Proof.
-  intros t u. rewrite Vgt_prod_iff2, lexv_eq. intros [i [hi [h1 h2]]].
-  exists i hi. fo.
+  intros t u. rewrite Vrel1_nth_iff, lexv_eq. intros [i [hi [h1 h2]]].
+  ex i hi. fo.
 Qed.

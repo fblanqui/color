@@ -297,7 +297,7 @@ Module Make (Export CP : CP_Struct).
 
   Lemma R_aeq_apps_neutral : forall n (us : Tes n) u v, neutral u ->
     apps u us =>R v -> (exists u', v ~~ apps u' us /\ u =>R u')
-    \/ (exists us', v ~~ apps u us' /\ Vgt_prod R_aeq us us').
+    \/ (exists us', v ~~ apps u us' /\ Vrel1 R_aeq us us').
 
   Proof.
     induction us as [|a n us IHus]; simpl; intros u v nu r.
@@ -565,12 +565,12 @@ Module Make (Export CP : CP_Struct).
 
   Proof.
     intros P p1 p4 x n us h.
-    cut (SN (Vgt_prod R_aeq) us). clear h. revert us. induction 1.
+    cut (SN (Vrel1 R_aeq) us). clear h. revert us. induction 1.
     rename x0 into us. apply p4. apply neutral_apps_var. intros v r.
     destruct (R_aeq_apps_neutral _ (neutral_var x) r).
     destruct H1 as [x' [h1 h2]]. apply not_R_aeq_var in h2. tauto.
     destruct H1 as [us' [h1 h2]]. rewrite h1. apply H0. hyp.
-    apply Vforall_SN_gt_prod. hyp.
+    apply Vforall_SN_rel1. hyp.
   Qed.
 
   Lemma cp_var : forall P, cp_aeq P -> cp_neutral P -> forall x, P (Var x).

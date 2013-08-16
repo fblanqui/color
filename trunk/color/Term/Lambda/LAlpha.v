@@ -96,12 +96,12 @@ Module Export Def.
 
     (** Alpha-equivalence on vectors of terms. *)
 
-    Definition vaeq {n} := vec_prod aeq (n:=n).
+    Definition vaeq {n} := Vreln aeq (n:=n).
 
     (** Component-wise extension to vectors of a relation on terms,
        modulo [vaeq]. *)
 
-    Definition vaeq_prod {n} R := vaeq (n:=n) @ (Vgt_prod R @ vaeq).
+    Definition vaeq_prod {n} R := vaeq (n:=n) @ (Vrel1 R @ vaeq).
 
   End aeq.
 
@@ -275,46 +275,44 @@ Module Make (Export L : L_Struct).
   (** Inversion lemma for alpha-equivalence on an application. *)
 
   Lemma app_aeq_r : forall t v1 v2, t ~~ App v1 v2 ->
-    exists u1, exists u2, t = App u1 u2 /\ u1 ~~ v1 /\ u2 ~~ v2.
+    exists u1 u2, t = App u1 u2 /\ u1 ~~ v1 /\ u2 ~~ v2.
 
   Proof.
     cut (forall t u, t ~~ u -> forall v1 v2, (t = App v1 v2 \/ u = App v1 v2) ->
-      exists u1, exists u2, u1 ~~ v1 /\ u2 ~~ v2
+      exists u1 u2, u1 ~~ v1 /\ u2 ~~ v2
         /\ (t = App v1 v2 -> u = App u1 u2)
         /\ (u = App v1 v2 -> t = App u1 u2)).
     intros h v u1 u2 e. assert (p : v = App u1 u2 \/ App u1 u2 = App u1 u2).
     tauto. destruct (h _ _ e _ _ p) as [a [b [h1 [h2 [h3 h4]]]]].
-    exists a. exists b. intuition.
+    ex a b. intuition.
     induction 1; intros u1 u2 e.
     (* refl *)
-    exists u1. exists u2. fo.
+    ex u1 u2. fo.
     (* sym *)
     rewrite or_sym in e. destruct (IHaeq _ _ e) as [a [b [h1 [h2 [h3 h4]]]]].
-    exists a. exists b. fo.
+    ex a b. fo.
     (* trans *)
     destruct e.
     assert (p1 : u = App u1 u2 \/ v = App u1 u2). tauto.
     destruct (IHaeq1 _ _ p1) as [a [b [h1 [h2 [h3 h4]]]]].
     assert (p2 : v = App a b \/ w = App a b). tauto.
     destruct (IHaeq2 _ _ p2) as [c [d [i1 [i2 [i3 i4]]]]].
-    exists c. exists d. intuition; subst; try inversion H4; try inversion H5;
+    ex c d. intuition; subst; try inversion H4; try inversion H5;
     try inversion H6; subst; auto.
     trans a; hyp. trans b; hyp.
     assert (p2 : v = App u1 u2 \/ w = App u1 u2). tauto.
     destruct (IHaeq2 _ _ p2) as [a [b [h1 [h2 [h3 h4]]]]].
     assert (p1 : u = App a b \/ v = App a b). tauto.
     destruct (IHaeq1 _ _ p1) as [c [d [i1 [i2 [i3 i4]]]]].
-    exists c. exists d. intuition; subst; try inversion H2; try inversion H4;
+    ex c d. intuition; subst; try inversion H2; try inversion H4;
       try inversion H5; subst; auto.
     trans a; hyp. trans b; hyp.
     (* app_l *)
     destruct e as [h|h]; inversion h; subst; clear h.
-    exists u'. exists u2. fo.
-    exists u. exists u2. fo.
+    ex u' u2. fo. ex u u2. fo.
     (* app_r *)
     destruct e as [h|h]; inversion h; subst; clear h.
-    exists u1. exists v'. fo.
-    exists u1. exists v. fo.
+    ex u1 v'. fo. ex u1 v. fo.
     (* lam *)
     destruct e; discr.
     (* alpha *)
@@ -322,7 +320,7 @@ Module Make (Export L : L_Struct).
   Qed.
 
   Lemma app_aeq_l : forall v1 v2 t, App v1 v2 ~~ t ->
-    exists u1, exists u2, t = App u1 u2 /\ u1 ~~ v1 /\ u2 ~~ v2.
+    exists u1 u2, t = App u1 u2 /\ u1 ~~ v1 /\ u2 ~~ v2.
 
   Proof. intros v1 v2 t e. apply app_aeq_r. sym. hyp. Qed.
 
@@ -959,21 +957,20 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Inversion lemma for alpha-equivalence on a lambda. *)
 
-  Lemma lam_aeq_r : forall t x u, t ~~ Lam x u -> exists y, exists v,
+  Lemma lam_aeq_r : forall t x u, t ~~ Lam x u -> exists y v,
     t = Lam y v /\ v ~~ rename x y u /\ (x = y \/ ~In y (fv u)).
 
   Proof.
     cut (forall t t', t ~~ t' -> forall x u, t = Lam x u \/ t' = Lam x u ->
-      exists y, exists v, v ~~ rename x y u /\ (x=y \/ ~In y (fv u))
+      exists y v, v ~~ rename x y u /\ (x=y \/ ~In y (fv u))
         /\ (t = Lam x u -> t' = Lam y v) /\ (t' = Lam x u -> t = Lam y v)).
     intros h t x u e. assert (p : t = Lam x u \/  Lam x u = Lam x u).
-    auto. destruct (h _ _ e _ _ p) as [y [v i]]. exists y. exists v. tauto.
+    auto. destruct (h _ _ e _ _ p) as [y [v i]]. ex y v. tauto.
     induction 1; intros z a e.
     (* refl *)
-    exists z. exists a. split. rewrite rename_id. refl. tauto.
+    ex z a. split. rewrite rename_id. refl. tauto.
     (* sym *)
-    rewrite or_sym in e. destruct (IHaeq _ _ e) as [y [w i]].
-    exists y. exists w. tauto.
+    rewrite or_sym in e. destruct (IHaeq _ _ e) as [y [w i]]. ex y w. tauto.
     (* trans *)
     destruct e as [e|e].
 
@@ -981,7 +978,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     destruct (IHaeq1 _ _ p) as [x [b [i1 [i2 [i3 i4]]]]].
     assert (q : v = Lam x b \/ w = Lam x b). tauto.
     destruct (IHaeq2 _ _ q) as [y [c [j1 [j2 [j3 j4]]]]].
-    exists y. exists c. repeat split.
+    ex y c. repeat split.
 
     rewrite j1, i1. apply rename2. hyp.
 
@@ -998,7 +995,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     destruct (IHaeq2 _ _ p) as [x [b [i1 [i2 [i3 i4]]]]].
     assert (q : u = Lam x b \/ v = Lam x b). tauto.
     destruct (IHaeq1 _ _ q) as [y [c [j1 [j2 [j3 j4]]]]].
-    exists y. exists c. repeat split.
+    ex y c. repeat split.
 
     rewrite j1, i1. apply rename2. hyp.
 
@@ -1016,19 +1013,19 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     destruct e; discr.
     (* lam *)
     destruct e as [e|e]; inversion e; subst.
-    exists z. exists u'. rewrite rename_id. intuition.
-    exists z. exists u. rewrite rename_id. intuition.
+    ex z u'. rewrite rename_id. intuition.
+    ex z u. rewrite rename_id. intuition.
     (* alpha *)
     destruct e as [e|e].
-    inversion e. subst. exists y. exists (rename z y a). intuition.
-    inversion e. subst. exists x. exists u. rewrite rename2, rename_id. 2: auto.
+    inversion e. subst. ex y (rename z y a). intuition.
+    inversion e. subst. ex x u. rewrite rename2, rename_id. 2: auto.
     intuition. rewrite fv_rename. case_eq (mem x (fv u));
       [rewrite <- mem_iff|rewrite <- not_mem_iff]; intro hx.
     right. set_iff. intros [h|h]. subst z. tauto. tauto.
     auto.
   Qed.
 
-  Lemma lam_aeq_l : forall t x u, Lam x u ~~ t -> exists y, exists v,
+  Lemma lam_aeq_l : forall t x u, Lam x u ~~ t -> exists y v,
     t = Lam y v /\ v ~~ rename x y u /\ (x = y \/ ~In y (fv u)).
 
   Proof. intros t x u h. apply lam_aeq_r. sym. hyp. Qed.
@@ -1214,8 +1211,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Instance vaeq_equiv n : Equivalence (@vaeq n).
 
   Proof. (*FIXME: prove in VecOrd*)
-    constructor. apply vec_prod_refl; class. apply vec_prod_sym; class.
-    apply vec_prod_trans; class.
+    constructor. apply Vreln_refl; class. apply Vreln_sym; class.
+    apply Vreln_trans; class.
   Qed.
 
   Lemma vaeq_cons : forall u v n (us vs : Tes n),
@@ -1284,7 +1281,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     intros n t t' tt' us us' usus'. revert n us us' usus' t t' tt'.
     induction us; simpl; intros us' usus' t t' tt'.
     VOtac. simpl. hyp.
-    VSntac us'. simpl. unfold Def.vaeq, vec_prod, Vforall2n in usus'.
+    VSntac us'. simpl. unfold Def.vaeq, Vreln, Vforall2n in usus'.
     rewrite H in usus'. simpl in usus'. destruct usus' as [h1 h2].
     apply IHus. hyp. rewrite tt', h1. refl.
   Qed.
@@ -1295,11 +1292,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     induction vs; simpl; intros v t a.
     (* nil *)
-    exists t. exists Vnil. simpl. intuition.
+    ex t (@Vnil Te). simpl. intuition.
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
-    inv_aeq_0 h2; clear h2; subst. exists u0. exists (Vcons u1 us).
-    unfold Def.vaeq, vec_prod, Vforall2n. simpl. intuition.
+    inv_aeq_0 h2; clear h2; subst. ex u0 (Vcons u1 us).
+    unfold Def.vaeq, Vreln, Vforall2n. simpl. intuition.
   Qed.
 
   Arguments apps_aeq_r [n vs v t0] _.
@@ -1479,11 +1476,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       intros [[h1 h2]|[h1 h2]].
       inversion h1; subst. exists (Vcons u' us). split.
       rewrite vaeq_cons. intuition. exists (Vcons v' us). split.
-      apply Vgt_prod_cons. auto. rewrite vaeq_cons. intuition.
+      apply Vrel1_cons. auto. rewrite vaeq_cons. intuition.
 
       destruct h2 as [us' [usus' [vs' [us'vs' vs'vs]]]].
       exists (Vcons v us'). rewrite vaeq_cons. intuition. exists (Vcons v vs').
-      rewrite vaeq_cons. intuition. apply Vgt_prod_cons. right. intuition.
+      rewrite vaeq_cons. intuition. apply Vrel1_cons. right. intuition.
     Qed.
 
     (** [vaeq_prod] is compatible with [vaeq]. *)
@@ -1514,7 +1511,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     Proof.
       intros n us vs p q h [us' [usus' [vs' [r vsvs']]]]; symmetry in vsvs'.
-      destruct (Vgt_prod_sub h r).
+      destruct (Vrel1_sub h r).
       left. rewrite (Vsub_vaeq h usus'), (Vsub_vaeq h vsvs'), H. refl.
       right. exists (Vsub us' h). split. apply Vsub_vaeq. hyp.
       exists (Vsub vs' h). split. hyp. apply Vsub_vaeq. sym. hyp.
@@ -1530,14 +1527,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     Proof.
       intros n x hx.
-      (* We have [SN (Vgt_prod R_aeq) x] since [Vforall (SN R_aeq) x]. *)
-      cut (SN (Vgt_prod R_aeq) x). 2: apply Vforall_SN_gt_prod; hyp.
+      (* We have [SN (Vrel1 R_aeq) x] since [Vforall (SN R_aeq) x]. *)
+      cut (SN (Vrel1 R_aeq) x). 2: apply Vforall_SN_rel1; hyp.
       (* We can therefore proceed by well-founded induction on
-      [Vgt_prod R_aeq]. *)
+      [Vrel1 R_aeq]. *)
       induction 1. apply SN_intro. intros y [x' [xx' [y' [x'y' y'y]]]].
       (* We have [x' = Vcast (Vapp x'i (Vcons a' x'j)) k0],
       [y' = Vcast (Vapp x'i (Vcons b' x'j)) k0] and [a' ->b b']. *)
-      destruct (Vgt_prod_impl1 x'y')
+      destruct (Vrel1_app_impl x'y')
         as [i [x'i [a' [j [x'j [k0 [b' [ex' [ey' a'b']]]]]]]]].
       (* Since [x ~~~ x'], we have [x = Vast (Vapp xi (Vcons a xj)) k0]. *)
       gen (Vbreak_eq_app_cast k0 x). set (k0' := Logic.eq_sym k0).
@@ -1588,12 +1585,12 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       apply xx'.
       apply Vforall2n_nth. eapply vaeq_app_l. sym. apply xx'.
       (* We now prove that
-      [Vgt_prod R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)]. *)
-      assert (r : Vgt_prod R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)).
-      rewrite ex. apply Vgt_prod_cast. apply Vgt_prod_app. apply Vgt_prod_cons.
+      [Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)]. *)
+      assert (r : Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)).
+      rewrite ex. apply Vrel1_cast. apply Vrel1_app. apply Vrel1_cons.
       left. rewrite aa', bb'. intuition. apply incl_clos_aeq. hyp.
       (* We can now end the proof. *)
-      rewrite h. apply H0. hyp. apply SN_gt_prod_forall. apply H. hyp.
+      rewrite h. apply H0. hyp. apply SN_rel1_forall. apply H. hyp.
     Qed.
 
   End vaeq_prod.
@@ -1611,8 +1608,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     @vaeq_prod n (R U S) == @vaeq_prod n R U @vaeq_prod n S.
 
   Proof.
-    unfold Def.vaeq_prod. rewrite Vgt_prod_union, comp_union_l, comp_union_r.
-    refl.
+    unfold Def.vaeq_prod. rewrite Vrel1_union, comp_union_l, comp_union_r. refl.
   Qed.
 
 End Make.

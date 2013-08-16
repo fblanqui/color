@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Require Export AContext ASubstitution.
 
 Require Import ARelation ListUtil ListRepeatFree LogicUtil VecUtil RelUtil
-  ListForall SN BoolUtil EqUtil NatUtil Syntax.
+  ListForall SN BoolUtil EqUtil NatUtil.
 
 Section basic_definitions.
 
@@ -64,7 +64,7 @@ Section basic_definitions.
 
   Proof.
     intros. rewrite forallb_forall in H. ded (H _ H0). destruct l. discr.
-    exists f t. refl.
+    ex f t. refl.
   Qed.
 
   Lemma is_notvar_lhs_false : forall R, forallb is_notvar_lhs R = true ->
@@ -83,7 +83,7 @@ Section basic_definitions.
 
   Proof.
     intros. rewrite forallb_forall in H. ded (H _ H0). destruct r. discr.
-    exists f t. refl.
+    ex f t. refl.
   Qed.
 
   Lemma is_notvar_rhs_false : forall R, forallb is_notvar_rhs R = true ->
@@ -196,11 +196,11 @@ Require Import Morphisms.
 
 Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
-Proof. intros R R' RR' t t' tt'. redtac. exists l r c s. intuition. Qed.
+Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. intuition. Qed.
 
 Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
 
-Proof. intros R R' RR' t t' tt'. redtac. exists l r s. intuition. Qed.
+Proof. intros R R' RR' t t' tt'. redtac. ex l r s. intuition. Qed.
 
 Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
 
@@ -233,7 +233,7 @@ Section S.
     Lemma red_rule : forall l r c s, In (mkRule l r) R ->
       red R (fill c (sub s l)) (fill c (sub s r)).
 
-    Proof. intros. unfold red. exists l r c s. auto. Qed.
+    Proof. intros. unfold red. ex l r c s. auto. Qed.
 
     Lemma red_empty : forall t u : term, red nil # t u -> t = u.
 
@@ -242,18 +242,18 @@ Section S.
     Lemma red_rule_top : forall l r s,
       In (mkRule l r) R -> red R (sub s l) (sub s r).
 
-    Proof. intros. unfold red. exists l r (@Hole Sig) s. auto. Qed.
+    Proof. intros. unfold red. ex l r (@Hole Sig) s. auto. Qed.
 
     Lemma hd_red_rule : forall l r s,
       In (mkRule l r) R -> hd_red R (sub s l) (sub s r).
 
-    Proof. intros. unfold hd_red. exists l r s. auto. Qed.
+    Proof. intros. unfold hd_red. ex l r s. auto. Qed.
 
     Lemma red_fill : forall t u c, red R t u -> red R (fill c t) (fill c u).
 
     Proof.
       intros. redtac. unfold red.
-      exists l r (AContext.comp c c0) s. split. hyp.
+      ex l r (AContext.comp c c0) s. split. hyp.
       subst t. subst u. do 2 rewrite fill_fill. auto.
     Qed.
 
@@ -274,7 +274,7 @@ Section S.
     Proof.
       unfold subterm_eq. intros. destruct H0 as [d]. subst t. redtac. subst u.
       subst u'. exists (fill (AContext.comp d c) (sub s r)). split.
-      exists l r (AContext.comp d c) s. split. hyp.
+      ex l r (AContext.comp d c) s. split. hyp.
       rewrite fill_fill. auto. exists d. rewrite fill_fill. refl.
     Qed.
 
@@ -285,21 +285,21 @@ Section S.
 
     Proof.
       intros. redtac. destruct c. absurd (@Hole Sig = Hole); auto. simpl in xl.
-      Funeqtac. exists i t (fill c (sub s l)). exists j t0 e (fill c (sub s r)).
-      split. hyp. split. hyp. unfold red. exists l r c s. auto.
+      Funeqtac. ex i t (fill c (sub s l)) j t0 e (fill c (sub s r)).
+      split. hyp. split. hyp. unfold red. ex l r c s. auto.
     Qed.
 
     Lemma red_swap : red (R ++ R') << red (R' ++ R).
 
     Proof.
-      intros x y RR'xy. redtac. exists l r c s. repeat split; auto.
+      intros x y RR'xy. redtac. ex l r c s. repeat split; auto.
       destruct (in_app_or lr); apply in_or_app; auto.
     Qed.
 
     Lemma hd_red_swap : hd_red (R ++ R') << hd_red (R' ++ R).
 
     Proof.
-      intros x y RR'xy. redtac. exists l r s. repeat split; auto.
+      intros x y RR'xy. redtac. ex l r s. repeat split; auto.
       destruct (in_app_or lr); auto with datatypes.
     Qed.
 
@@ -330,7 +330,7 @@ Section S.
 
     Proof.
       intros. do 5 destruct H. intuition. destruct x1. congruence.
-      simpl in *. exists f
+      simpl in *. ex f
         (Vcast (Vapp t (Vcons (fill x1 (sub x2 x)) t0)) e)
         (Vcast (Vapp t (Vcons (fill x1 (sub x2 x0)) t0)) e). tauto.
     Qed.
@@ -343,7 +343,7 @@ Section S.
       right. apply int_red_preserve_hd. auto.
       destruct IHclos_refl_trans1; destruct IHclos_refl_trans2; subst; auto.
       right. do 3 destruct H1. do 3 destruct H2. intuition; subst; auto.
-      inversion H1. subst. exists x3 x1 x5. auto.
+      inversion H1. subst. ex x3 x1 x5. auto.
     Qed.
 
     Lemma red_case : forall t u, red R t u -> hd_red R t u
@@ -355,8 +355,8 @@ Section S.
       (* Hole *)
       left. subst. simpl. apply hd_red_rule. hyp.
       (* Cont *)
-      right. exists f (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e) i.
-      assert (p : i<arity f). omega. exists p (fill c (sub s r)).
+      right. ex f (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e) i.
+      assert (p : i<arity f). omega. ex p (fill c (sub s r)).
       subst. simpl. intuition. rewrite Vnth_cast. rewrite Vnth_app.
       destruct (le_gt_dec i i). 2: absurd_arith. rewrite Vnth_cons_head.
       apply red_rule. hyp. omega.
@@ -383,7 +383,7 @@ Section S.
     Proof.
       intros t u tu. redtac. destruct c; subst.
       left. apply hd_red_rule. hyp.
-      right. exists l r (Cont f e t0 c t1) s. intuition. discr.
+      right. ex l r (Cont f e t0 c t1) s. intuition. discr.
     Qed.
 
   End rewriting.
@@ -559,15 +559,13 @@ Section S.
 
     Variable R : rules.
 
-    Definition terms_gt {n} := @Vgt_prod n _ (red R).
-
     Lemma Vgt_prod_fun : forall f ts ts',
-      Vgt_prod (red R) ts ts' -> int_red R (Fun f ts) (Fun f ts').
+      Vrel1 (red R) ts ts' -> int_red R (Fun f ts) (Fun f ts').
 
     Proof.
-      intros. ded (Vgt_prod_impl1 H). do 8 destruct H0. destruct H1. redtac.
+      intros. ded (Vrel1_app_impl H). do 8 destruct H0. destruct H1. redtac.
       subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
-      exists l r (Cont f x4 x0 c x3) s. split. discr.
+      ex l r (Cont f x4 x0 c x3) s. split. discr.
       auto.
     Qed.
 
@@ -595,7 +593,7 @@ Section S.
       intros x y RR'xy.
       destruct RR'xy as [Rxy | Rxy];
         destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]]; 
-          subst x; subst y; exists rl rr c s; intuition.
+          subst x; subst y; ex rl rr c s; intuition.
     Qed.
 
     Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
@@ -613,7 +611,7 @@ Section S.
       intros x y RR'xy.
       destruct RR'xy as [Rxy | Rxy];
         destruct Rxy as [rl [rr [s [Rr [dx dy]]]]]; 
-          subst x; subst y; exists rl rr s; intuition.
+          subst x; subst y; ex rl rr s; intuition.
     Qed.
 
   End union.
@@ -643,8 +641,7 @@ Section S.
 
     Proof.
       intros. unfold hd_red_Mod. comp. unfold inclusion. intros. redtac.
-      exists l r s. intuition. apply incl_make_repeat_free.
-      auto.
+      ex l r s. intuition. apply incl_make_repeat_free. auto.
     Qed.
 
     Lemma hd_red_mod_make_repeat_free :
@@ -652,8 +649,7 @@ Section S.
 
     Proof.
       intros. unfold hd_red_mod. comp. unfold inclusion. intros. redtac.
-      exists l r s. intuition. apply incl_make_repeat_free.
-      auto.
+      ex l r s. intuition. apply incl_make_repeat_free. auto.
     Qed.
 
     Lemma red_mod_empty_incl_red : red_mod nil R << red R.
@@ -829,13 +825,13 @@ Section S.
     intro R. split; intros t u tu.
     (* -> *)
     destruct tu as [i [f [hi [ts [e [v [h1 h2]]]]]]].
-    redtac. subst. exists l r.
+    redtac. subst. ex l r.
     (* context *)
     assert (l1 : 0 + i <= arity f). omega. set (v1 := Vsub ts l1).
     assert (l2 : S i + (arity f - S i) <= arity f). omega.
     set (v2 := Vsub ts l2).
     assert (l3 : i + S (arity f - S i) = arity f). omega.
-    exists (Cont f l3 v1 c v2) s. intuition. discr.
+    ex (Cont f l3 v1 c v2) s. intuition. discr.
     (* lhs *)
     simpl. apply args_eq. apply Veq_nth. intros j hj.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
@@ -853,7 +849,7 @@ Section S.
     rewrite Vnth_replace_neq. 2: omega. unfold v1. rewrite Vnth_sub.
     apply Vnth_eq. omega.
     (* <- *)
-    redtac. subst. destruct c. irrefl. exists i f.
+    redtac. subst. destruct c. irrefl. ex i f.
     assert (hi : i < arity f). omega. exists hi.
     simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
     intuition. exists (fill c (sub s r)). split.
