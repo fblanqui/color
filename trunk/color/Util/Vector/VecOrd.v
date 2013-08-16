@@ -416,6 +416,17 @@ Section Vreln.
     rewrite !Vnth_sub. apply Vforall2n_nth. hyp.
   Qed.
 
+  (** Morphisms. *)
+
+  Global Instance vec_opt_filter_reln n (ks : vector nat n) p :
+    Proper (Vreln R ==> Vreln (eq_opt R)) (vec_opt_filter ks (p:=p)).
+
+  Proof.
+    intros ts ts' tsts'. apply Vforall2n_intro. intros i hi.
+    rewrite !Vnth_vec_opt_filter. destruct (lt_dec (Vnth ks hi)).
+    apply eq_opt_Some. apply Vreln_nth. hyp. apply eq_opt_None.
+  Qed.
+
 End Vreln.
 
 Arguments Vreln_sub [A R n v1 v2 p q] _ _.
