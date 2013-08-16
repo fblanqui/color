@@ -29,6 +29,24 @@ Ltac gen t := generalize t.
 Ltac ded t := gen t; intro.
 Ltac decomp h := decompose [and or ex] h; clear h.
 
+Tactic Notation "ex" constr(x1) := exists x1.
+Tactic Notation "ex" constr(x1) constr(x2) := exists x1; exists x2.
+Tactic Notation "ex" constr(x1) constr(x2) constr(x3) :=
+  exists x1; exists x2; exists x3.
+Tactic Notation "ex" constr(x1) constr(x2) constr(x3) constr(x4) :=
+  exists x1; exists x2; exists x3; exists x4.
+Tactic Notation "ex" constr(x1) constr(x2) constr(x3) constr(x4) constr(x5) :=
+  exists x1; exists x2; exists x3; exists x4; exists x5.
+Tactic Notation "ex" constr(x1) constr(x2) constr(x3) constr(x4) constr(x5)
+  constr(x6) := exists x1; exists x2; exists x3; exists x4; exists x5;
+    exists x6.
+Tactic Notation "ex" constr(x1) constr(x2) constr(x3) constr(x4) constr(x5)
+  constr(x6) constr(x7) := exists x1; exists x2; exists x3; exists x4;
+    exists x5; exists x6; exists x7.
+Tactic Notation "ex" constr(x1) constr(x2) constr(x3) constr(x4) constr(x5)
+  constr(x6) constr(x7) constr(x8) := exists x1; exists x2; exists x3;
+    exists x4; exists x5; exists x6; exists x7; exists x8.
+
 (***********************************************************************)
 (** [geneq H x e(x)] transforms a goal [G(x)] into
 [forall t, H t -> forall x, e(x) = t -> G(x)] *)

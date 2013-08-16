@@ -125,7 +125,7 @@ eapply in_calls_hd_red_dp. apply H. hyp. hyp.
 Qed.
 
 Lemma gt_chain : forall f ts us v,
-  terms_gt R ts us -> chain (Fun f us) v -> chain (Fun f ts) v.
+  Vrel1 (red R) ts us -> chain (Fun f us) v -> chain (Fun f ts) v.
 
 Proof.
 unfold chain, compose. intros. do 2 destruct H0. exists x. split.
@@ -146,7 +146,7 @@ Proof.
 red. intros x y cmin. elim cmin. auto.
 Qed.
 
-Lemma gt_chain_min : forall f ts us v, terms_gt R ts us ->
+Lemma gt_chain_min : forall f ts us v, Vrel1 (red R) ts us ->
   Vforall (SN (red R)) ts -> chain_min (Fun f us) v -> chain_min (Fun f ts) v.
 
 Proof.
@@ -210,14 +210,13 @@ cut (forall t, SN chain_min t -> forall f, defined f R = true
 intros. apply H with (t0 := Fun f ts) (f := f) (ts := ts); (hyp || refl).
 (* induction on t with chain_min as well-founded ordering *)
 intros t H. elim H. clear t H. intros t H IH f H0 ts H1 Hsnts.
-assert (SN (@terms_gt Sig R (arity f)) ts). unfold terms_gt.
-apply Vforall_SN_gt_prod. hyp.
+assert (SN (Vrel1 (red R)) ts). apply Vforall_SN_rel1. hyp.
 (* induction on ts with red as well-founded ordering (ts is SN) *)
 gen IH. rewrite H1. elim H2. clear IH ts H1 Hsnts H2.
 intros ts H1 IH1 IH2.
-assert (Hsnts : Vforall SNR ts). apply SN_gt_prod_forall. apply SN_intro.
+assert (Hsnts : Vforall SNR ts). apply SN_rel1_forall. apply SN_intro.
 hyp. clear H1.
-assert (H1 : forall y, terms_gt R ts y -> SNR (Fun f y)). intros. apply IH1.
+assert (H1 : forall y, Vrel1 (red R) ts y -> SNR (Fun f y)). intros. apply IH1.
 hyp. intros. eapply IH2. eapply gt_chain_min. apply H1.
 trivial. apply H2. apply H3. apply H4. hyp. clear IH1.
 (* we prove that every reduct of (Fun f ts) is SN *)
@@ -268,8 +267,8 @@ hyp.
 (* lhs = Var x *)
 decomp e. subst l. is_var_lhs.
 (* c <> Hole *)
-Funeqtac. subst u. apply H1. rewrite H2. unfold terms_gt. apply Vgt_prod_cast.
-apply Vgt_prod_app. apply Vgt_prod_cons. left. split.
+Funeqtac. subst u. apply H1. rewrite H2. apply Vrel1_cast.
+apply Vrel1_app. apply Vrel1_cons. left. split.
 eapply red_rule. hyp. refl.
 Qed.
 

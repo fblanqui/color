@@ -243,7 +243,7 @@ Module MatrixInt (MI : TMatrixInt).
         fold (dot_product (Vtail v') (Vtail w')). 
         fold (dot_product (Vtail v) (Vtail w)).
         unfold Aplus, Peano.gt. apply plus_gt_compat_r.
-        apply dot_product_mon; apply vec_prod_tail; hyp.
+        apply dot_product_mon; apply Vreln_tail; hyp.
         do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
         apply (Vforall2n_nth (R:=ge)). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
@@ -255,8 +255,8 @@ Module MatrixInt (MI : TMatrixInt).
         fold (dot_product (Vtail v) (Vtail w)).
         unfold Aplus, Peano.gt. apply plus_gt_compat_l.
         apply IHj with (lt_S_n jp).
-        apply vec_prod_tail. hyp.
-        apply vec_prod_tail. hyp.
+        apply Vreln_tail. hyp.
+        apply Vreln_tail. hyp.
         rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
         do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
         apply mult_le_compat.

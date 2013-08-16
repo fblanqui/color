@@ -76,8 +76,8 @@ Section S.
     forall ts, Vforall SNR ts -> SNR (Fun f ts).
 
   Proof.
-    intros. set (gt := @Vgt_prod (arity f) _ Red).
-    assert (SN gt ts). unfold gt. apply Vforall_SN_gt_prod. hyp.
+    intros. set (gt := @Vrel1 (arity f) _ Red).
+    assert (SN gt ts). unfold gt. apply Vforall_SN_rel1. hyp.
     elim H1. intros.
     apply SN_intro. change (forall y, Red (Fun f x) y -> SNR y). intros.
     redtac. subst y. destruct c; simpl in xl; simpl.
@@ -89,9 +89,9 @@ Section S.
     (* lhs is Var *)
     subst l. is_var_lhs.
     (* C <> Hole *)
-    Funeqtac. subst x. apply H3. unfold gt. eapply Vgt_prod_cast.
-    apply Vgt_prod_app.
-    apply Vgt_prod_cons. left. split. 2: refl. apply red_rule. hyp.
+    Funeqtac. subst x. apply H3. unfold gt. eapply Vrel1_cast.
+    apply Vrel1_app.
+    apply Vrel1_cons. left. split. 2: refl. apply red_rule. hyp.
   Qed.
 
 (***********************************************************************)

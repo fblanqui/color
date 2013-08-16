@@ -9,7 +9,7 @@ infinite sets of rules
 
 Set Implicit Arguments.
 
-Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil Syntax.
+Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil.
 
 Section defs.
 
@@ -82,11 +82,11 @@ Require Import Morphisms.
 
 Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
-Proof. intros R R' RR' t t' tt'. redtac. exists l r c s. fo. Qed.
+Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. fo. Qed.
 
 Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
 
-Proof. intros R R' RR' t t' tt'. redtac. exists l r s. fo. Qed.
+Proof. intros R R' RR' t t' tt'. redtac. ex l r s. fo. Qed.
 
 Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
 

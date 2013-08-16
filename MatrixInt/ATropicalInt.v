@@ -240,7 +240,7 @@ Module TropicalInt (Import AI : TTropicalInt).
 
     Proof.
       unfold succ, AIBase.succ. apply Rof_trans with (f:=dom2vec).
-      unfold succ_vec. apply vec_prod_trans. apply gtx_trans.
+      unfold succ_vec. apply Vreln_trans. apply gtx_trans.
     Qed.
   
   End MonotoneAlgebra.

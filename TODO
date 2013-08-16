@@ -1,7 +1,9 @@
 
-- define a feq generalizing the ones in ListUtil and FSetUtil
+- move VecEq into VecOrd
 
-- improve compilation speed of FGraph
+- replace LexOrder by Lexico?
+
+- define a feq generalizing the ones in ListUtil and FSetUtil
 
 - in RelUtil, replace # by * and ! by +
 
