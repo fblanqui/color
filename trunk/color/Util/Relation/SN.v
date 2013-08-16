@@ -727,4 +727,14 @@ Section opt.
     apply SN_intro; intros [y|] hy; inversion hy.
   Qed.
 
+  Global Instance opt_eq_opt S : Proper (S ==> S ==> impl) R ->
+    Proper (eq_opt S ==> eq_opt S ==> impl) opt.
+
+  Proof.
+    intros R_S x x' xx' y y' yy' xy.
+    inversion xy; inversion xx'; inversion yy'; clear xy xx' yy'; subst;
+      try discr. inversion H6; inversion H3; clear H6 H3; subst.
+    apply opt_intro. eapply R_S. apply H2. apply H5. hyp.
+  Qed.
+
 End opt.
