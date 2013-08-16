@@ -369,6 +369,17 @@ Module Make (Export L : L_Struct).
     subst z. tauto. intro hz. eapply i. apply hz. hyp.
   Qed.
 
+  (** Compatibility with [aeq] is preserved by [clos_trans]. *)
+
+  Lemma clos_trans_aeq R :
+    Proper (aeq ==> aeq ==> impl) R -> Proper (aeq ==> aeq ==> impl) (R!).
+
+  Proof.
+    intros R_aeq t t' tt' u u' uu' tu.
+    revert t u tu t' tt' u' uu'; induction 1; intros t' tt' u' uu'.
+    apply t_step. rewrite <- tt', <- uu'. hyp. trans y; fo.
+  Qed.
+
 (****************************************************************************)
 (** ** Properties of [saeq]. *)
 
