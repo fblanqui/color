@@ -760,7 +760,7 @@ Module Make (Export L : L_Struct).
 
     Variables (R : relation Te) (R_mon : Monotone R).
 
-    Lemma supterm_commut : supterm @ R << R @ supterm.
+    Lemma supterm_R_mon_commut : supterm @ R << R @ supterm.
 
     Proof.
       intros t v [u [tu uv]]; revert t u tu v uv; induction 1.
@@ -769,14 +769,14 @@ Module Make (Export L : L_Struct).
       intros u' uu'. exists (Lam x u'). split. mon. apply st_lam.
     Qed.
 
-    Lemma tc_supterm_commut : supterm! @ R << R @ supterm!.
+    Lemma tc_supterm_R_mon_commut : supterm! @ R << R @ supterm!.
 
-    Proof. apply commut_tc. apply supterm_commut. Qed.
+    Proof. apply commut_tc. apply supterm_R_mon_commut. Qed.
 
     Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
 
     Proof.
-      apply Union.WF_union. apply commut_tc. apply supterm_commut.
+      apply Union.WF_union. apply commut_tc. apply supterm_R_mon_commut.
       apply WF_tc. apply supterm_wf.
     Qed.
 
@@ -784,24 +784,24 @@ Module Make (Export L : L_Struct).
 
       Variables (P : set Te) (P_R : Proper (R ==> impl) P).
 
-      Lemma supterm_restrict_mon_wf :
+      Lemma restrict_tc_supterm_R_mon_wf :
         WF (restrict P R) -> WF (restrict P (supterm! U R)).
 
       Proof.
         rewrite restrict_union. apply Union.WF_union.
+        Focus 2. apply restrict_wf. intros t ht. apply WF_tc. apply supterm_wf.
         intros t v [u [[ht tu] [hu uv]]].
         assert (a : (supterm! @ R) t v). exists u. fo.
-        destruct (tc_supterm_commut a) as [u' [tu' u'v]]. exists u'.
+        destruct (tc_supterm_R_mon_commut a) as [u' [tu' u'v]]. exists u'.
         split; split; auto. eapply P_R. apply tu'. hyp.
-        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_wf.
       Qed.
 
     End restrict.
 
-    Lemma supterm_restrict_SN_mon_wf : WF (restrict (SN R) (supterm! U R)).
+    Lemma restrict_SN_tc_supterm_R_mon_wf : WF (restrict (SN R) (supterm! U R)).
 
     Proof.
-      apply supterm_restrict_mon_wf.
+      apply restrict_tc_supterm_R_mon_wf.
       intros u u' uu' h. eapply SN_inv. apply h. hyp.
       apply restrict_wf. refl.
     Qed.
