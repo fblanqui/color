@@ -76,8 +76,8 @@ Module Export Def.
       Variable R : relation Te.
 
       Inductive clos_aeq : relation Te :=
-      | clos_aeq_intro : forall u u', u ~~ u' ->
-        forall v v', v ~~ v' -> R u' v' -> clos_aeq u v.
+      | clos_aeq_intro :
+        forall u u' v v', u ~~ u' -> v ~~ v' -> R u' v' -> clos_aeq u v.
 
       (** "Alpha-transitive closure" of a relation on terms:
          [S*] is the (reflexive) transitive closure of [S U aeq]. *)
@@ -1068,6 +1068,26 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Closure modulo alpha-equivalence of a relation. *)
 
+  Lemma clos_aeq_inv R : forall t u, clos_aeq R t u ->
+    exists t' u', t ~~ t' /\ u ~~ u' /\ R t' u'.
+
+  Proof.
+    intros t u tu. inversion tu; clear tu; subst. ex u' v'. intuition.
+  Qed.
+
+  Lemma clos_aeq_eq R : clos_aeq R == aeq @ (R @ aeq).
+
+  Proof.
+    split.
+    (* << *)
+    intros t u tu.
+    destruct (clos_aeq_inv tu) as [t' [u' [tt' [uu' t'u']]]]; clear tu.
+    exists t'. intuition. exists u'. intuition.
+    (* >> *)
+    intros t u [t' [tt' [u' [t'u' u'u]]]]. eapply clos_aeq_intro.
+    apply tt'. sym. apply u'u. hyp.
+  Qed.
+
   Lemma incl_clos_aeq R : R << clos_aeq R.
 
   Proof.
@@ -1446,6 +1466,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End atc_props.
 
+(*FIXME: move to VecOrd*)
 (****************************************************************************)
 (** ** Properties of [vaeq_prod]. *)
 
@@ -1485,7 +1506,6 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     (** [vaeq_prod] is compatible with [vaeq]. *)
 
-    (*TODO: follows from a more general theorem on Vforall2n. *)
     Global Instance vaeq_prod_vaeq' n :
       Proper (@vaeq n ==> @vaeq n ==> impl) (vaeq_prod R).
 
@@ -1495,7 +1515,6 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       trans ws; hyp.
     Qed.
 
-    (*MOVE to VecOrd*)
     Lemma Vsub_vaeq : forall n (v1 v2 : Tes n) p q (h : p+q<=n),
       v1 ~~~ v2 -> Vsub v1 h ~~~ Vsub v2 h.
 
