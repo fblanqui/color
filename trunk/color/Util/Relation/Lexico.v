@@ -9,7 +9,7 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil Morphisms NatUtil VecUtil VecOrd.
+Require Import SN RelUtil LogicUtil Morphisms NatUtil VecUtil VecOrd Basics.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)
@@ -250,6 +250,20 @@ Section lexv.
     intros [i [hi [h1 h2]]]. ex i hi. split.
     apply Hcomp. exists (Vnth us hi). split. apply Vforall2n_nth. hyp. hyp.
     intros j ji jn. trans (Vnth us jn). apply Vforall2n_nth. hyp. fo.
+  Qed.
+
+  (** [lexv eqA gtA] is invariant by [Vreln eqA]. *)
+
+  Global Instance lexv_reln n : Symmetric eqA ->
+    Proper (eqA ==> eqA ==> impl) gtA ->
+    Proper (Vreln eqA ==> Vreln eqA ==> impl) (lexv (n:=n) eqA gtA).
+
+  Proof.
+    intros eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
+    rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
+    eapply gtA_eqA. apply Vreln_nth. apply tsts'. apply Vreln_nth. apply usus'.
+    hyp.
+    intros j ji jn. rewrite <- (Vreln_nth tsts'), <- (Vreln_nth usus'). fo.
   Qed.
 
 End lexv.
