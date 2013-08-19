@@ -709,7 +709,7 @@ Lemma restrict_union A (P : set A) R S :
 Proof. fo. Qed.
 
 (****************************************************************************)
-(** * Extension of a relation on [A] to [option A]. *)
+(** Extension of a relation on [A] to [option A]. *)
 
 Section opt.
 
@@ -727,14 +727,43 @@ Section opt.
     apply SN_intro; intros [y|] hy; inversion hy.
   Qed.
 
-  Global Instance opt_eq_opt S : Proper (S ==> S ==> impl) R ->
-    Proper (eq_opt S ==> eq_opt S ==> impl) opt.
+  Global Instance opt_eq_opt E : Proper (E ==> E ==> impl) R ->
+    Proper (eq_opt E ==> eq_opt E ==> impl) opt.
 
   Proof.
-    intros R_S x x' xx' y y' yy' xy.
+    intros R_E x x' xx' y y' yy' xy.
     inversion xy; inversion xx'; inversion yy'; clear xy xx' yy'; subst;
       try discr. inversion H6; inversion H3; clear H6 H3; subst.
-    apply opt_intro. eapply R_S. apply H2. apply H5. hyp.
+    apply opt_intro. eapply R_E. apply H2. apply H5. hyp.
+  Qed.
+
+  Lemma opt_eq_opt_r E : R @ E << R -> opt @ eq_opt E << opt.
+
+  Proof.
+    intros RE x z [y [xy yz]].
+    inversion xy; clear xy; subst. inversion yz; clear yz; subst.
+    apply opt_intro. apply RE. exists y0. fo.
+  Qed.
+
+  Lemma opt_eq_opt_l E : E @ R << R -> eq_opt E @ opt << opt.
+
+  Proof.
+    intros ER x z [y [xy yz]].
+    inversion yz; clear yz; subst. inversion xy; clear xy; subst.
+    apply opt_intro. apply ER. exists x0. fo.
+  Qed.
+
+  Global Instance opt_trans : Transitive R -> Transitive opt.
+
+  Proof.
+    intros R_trans x y z xy yz. inversion xy; inversion yz; clear xy yz; subst.
+    inversion H3; clear H3; subst. apply opt_intro. trans y0; hyp.
   Qed.
 
 End opt.
+
+Instance opt_incl A : Proper (inclusion ==> inclusion) (@opt A).
+
+Proof.
+  intros R S RS x y xy. inversion xy; clear xy; subst. apply opt_intro. fo.
+Qed.
