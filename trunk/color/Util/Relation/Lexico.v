@@ -234,36 +234,73 @@ Section lexv.
 
   (** Wellfoundedness. *)
 
-  Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
-    (Hcomp : eqA @ gtA << gtA).
+  Section wf.
 
-  Lemma lexv_wf n : WF (lexv (n:=n) eqA gtA).
+    Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
+      (Hcomp : eqA @ gtA << gtA).
 
-  Proof. apply WF_inverse. apply lexn_wf; hyp. Qed.
+    Lemma lexv_wf n : WF (lexv (n:=n) eqA gtA).
 
-  (** [lexv eqA gtA] absorbs [vec_prod eqA]. *)
+    Proof. apply WF_inverse. apply lexn_wf; hyp. Qed.
 
-  Lemma Vreln_lexv n : Vreln (n:=n) eqA @ lexv eqA gtA << lexv eqA gtA.
+  End wf.
+
+  (** [lexv eqA gtA] absorbs [Vreln eqA]. *)
+
+  Lemma lexv_reln_l : eqA @ gtA << gtA -> Transitive eqA ->
+    forall n, Vreln (n:=n) eqA @ lexv eqA gtA << lexv eqA gtA.
 
   Proof.
-    intros ts vs [us [tsus usvs]]. revert usvs. rewrite !lexv_eq.
-    intros [i [hi [h1 h2]]]. ex i hi. split.
-    apply Hcomp. exists (Vnth us hi). split. apply Vforall2n_nth. hyp. hyp.
+    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    revert usvs. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi. split.
+    apply gtA_eqA. exists (Vnth us hi). split. apply Vforall2n_nth. hyp. hyp.
     intros j ji jn. trans (Vnth us jn). apply Vforall2n_nth. hyp. fo.
+  Qed.
+
+  Lemma lexv_reln_r : gtA @ eqA << gtA -> Transitive eqA ->
+    forall n, lexv eqA gtA @ Vreln (n:=n) eqA << lexv eqA gtA.
+
+  Proof.
+    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    revert tsus. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi. split.
+    apply gtA_eqA. exists (Vnth us hi). split. hyp. apply Vforall2n_nth. hyp.
+    intros j ji jn. trans (Vnth us jn). fo. apply Vforall2n_nth. hyp.
   Qed.
 
   (** [lexv eqA gtA] is invariant by [Vreln eqA]. *)
 
-  Global Instance lexv_reln n : Symmetric eqA ->
+  Global Instance lexv_reln n : Transitive eqA -> Symmetric eqA ->
     Proper (eqA ==> eqA ==> impl) gtA ->
     Proper (Vreln eqA ==> Vreln eqA ==> impl) (lexv (n:=n) eqA gtA).
 
   Proof.
-    intros eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
+    intros eqA_trans eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
     rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
     eapply gtA_eqA. apply Vreln_nth. apply tsts'. apply Vreln_nth. apply usus'.
     hyp.
     intros j ji jn. rewrite <- (Vreln_nth tsts'), <- (Vreln_nth usus'). fo.
+  Qed.
+
+  (** Transitivity. *)
+
+  Lemma lexv_trans n : Transitive eqA -> Transitive gtA ->
+    gtA @ eqA << gtA -> eqA @ gtA << gtA ->
+    Transitive (lexv (n:=n) eqA gtA).
+
+  Proof.
+    intros eqA_trans gtA_trans gtA_eqA_r gtA_eqA_l ts us vs. rewrite !lexv_eq.
+    intros [i [i1 [i2 i3]]] [j [j1 [j2 j3]]]. destruct (lt_dec i j).
+    (* i < j *)
+    ex i i1. split. apply gtA_eqA_r. exists (Vnth us i1). fo.
+    intros k ki kn. trans (Vnth us kn). fo. apply j3. omega.
+    destruct (eq_nat_dec i j).
+    (* i = j *)
+    subst j. ex i i1. split.
+    trans (Vnth us i1). hyp. rewrite !(Vnth_eq _ i1 j1); auto.
+    intros k ki kn. trans (Vnth us kn); fo.
+    (* i > j *)
+    ex j j1. split. apply gtA_eqA_l. exists (Vnth us j1). split. fo. hyp.
+    intros k kj kn. trans (Vnth us kn). apply i3. omega. fo.
   Qed.
 
 End lexv.
@@ -275,7 +312,7 @@ Instance lexv_incl n A :
 
 Proof. intros eqA eqA' eqAeqA' gtA gtA' gtAgtA' t u. apply lexn_incl; hyp. Qed.
 
-(** [Vgt_pord] is included in [lex]. *)
+(** [Vrel1] is included in [lexv]. *)
 
 Lemma Vrel1_lexv n A (gtA : relation A) :
   Vrel1 (n:=n) gtA << lexv Logic.eq gtA.
