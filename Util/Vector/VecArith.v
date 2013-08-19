@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 Arithmetic over vectors on some semiring.
 *)
 
-(*FIXME: move orders and morphisms based on vec_prod to VecOrd*)
+(*FIXME: move orders and morphisms based on Vreln to VecOrd*)
 
 Set Implicit Arguments.
 
