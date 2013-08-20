@@ -193,7 +193,7 @@ Lemma inter_transp_Transitive A (R : relation A) :
 
 Proof. fo. Qed.
 
-(*WARNING: do not declare following Lemmas as Instances *)
+(*WARNING: Do not declare following Lemmas as Instances. *)
 
 Lemma R_inter_transp A (R : relation A) :
   Transitive R -> Proper (inter_transp R ==> inter_transp R ==> impl) R.
@@ -456,7 +456,7 @@ Section clos_trans.
 
   Variable A : Type.
 
-  Implicit Type R S : relation A.
+  Implicit Type R S E : relation A.
 
   Lemma incl_tc R S : R << S -> R << S!.
 
@@ -552,6 +552,16 @@ Section clos_trans.
   Lemma tc_incl_trans R S : Transitive S -> R << S -> R! << S.
 
   Proof. intros S_trans RS. intros t u tu; revert t u tu. induction 1; fo. Qed.
+
+  Global Instance tc_proper E R : Reflexive E ->
+    Proper (E ==> E ==> impl) R -> Proper (E ==> E ==> impl) (R!).
+
+  Proof.
+    intros E_refl RE x x' xx' y y' yy' xy. revert x y xy x' xx' y' yy'.
+    induction 1; intros x' xx' y' yy'.
+    apply t_step. eapply RE. apply xx'. apply yy'. hyp.
+    apply t_trans with y. apply IHxy1. hyp. refl. apply IHxy2. refl. hyp.
+  Qed.
 
 End clos_trans.
 
@@ -1261,6 +1271,14 @@ Proof.
     x1 x1' x1x1' x2 x2' x2x2' x3 x3' x3x3' x4 x4' x4x4'.
   apply R1'R1 in x1x1'. apply R2'R2 in x2x2'. apply R3'R3 in x3x3'.
   apply R4'R4 in x4x4'. apply SS'. apply hf; hyp.
+Qed.
+
+Instance Proper2_proper A (E : relation A) :
+  Proper (same_relation ==> impl) (Proper (E ==> E ==> impl)).
+
+Proof.
+  intros R S [RS SR] h x x' xx' y y' yy' xy.
+  apply RS. eapply h. apply xx'. apply yy'. apply SR. hyp.
 Qed.
 
 (***********************************************************************)
