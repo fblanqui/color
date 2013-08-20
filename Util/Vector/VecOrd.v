@@ -21,13 +21,13 @@ Fixpoint Vrel1 n A (R : relation A) : relation (vector A n) :=
     | S n => fun v1 v2 => symprod R (Vrel1 R) (Vsplit v1) (Vsplit v2)
   end.
 
-Definition Vrel_app n A (R : relation A) : relation (vector A n) :=
+Definition Vrel1_app n A (R : relation A) : relation (vector A n) :=
   fun v1 v2 : vector A n =>
     exists i (vi : vector A i) x j (vj : vector A j) h y,
       v1 = Vcast (Vapp vi (Vcons x vj)) h
       /\ v2 = Vcast (Vapp vi (Vcons y vj)) h /\ R x y.
 
-Definition Vrel_nth n A (R : relation A) : relation (vector A n) :=
+Definition Vrel1_nth n A (R : relation A) : relation (vector A n) :=
   fun v1 v2 : vector A n =>
     exists i (hi : i<n), R (Vnth v1 hi) (Vnth v2 hi)
       /\ forall j (hj : j<n), j <> i -> Vnth v1 hj = Vnth v2 hj.
@@ -37,15 +37,11 @@ Definition Vrel_nth n A (R : relation A) : relation (vector A n) :=
 
 Section S.
 
-  Variable A : Type. Notation vec := (vector A).
+  Variables (A : Type) (R : relation A).
 
-  Variable R : relation A. Infix ">" := R (at level 70).
-
-  Infix ">prod" := (Vrel1 R) (at level 70).
-
-  Lemma Vrel1_cons : forall x1 x2 n (v1 v2 : vec n),
-    (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
-    -> Vcons x1 v1 >prod Vcons x2 v2.
+  Lemma Vrel1_cons_intro : forall x1 x2 n (v1 v2 : vector A n),
+    (R x1 x2 /\ v1 = v2) \/ (x1 = x2 /\ Vrel1 R v1 v2)
+    -> Vrel1 R (Vcons x1 v1) (Vcons x2 v2).
 
   Proof.
     intros. simpl. unfold Vsplit. simpl. destruct H; destruct H.
@@ -53,39 +49,39 @@ Section S.
     subst x2. apply right_sym. hyp.
   Qed.
 
-  Lemma Vrel1_inv : forall x1 x2 n (v1 v2 : vec n),
-    Vcons x1 v1 >prod Vcons x2 v2 ->
-    (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2).
+  Lemma Vrel1_cons_elim : forall x1 x2 n (v1 v2 : vector A n),
+    Vrel1 R (Vcons x1 v1) (Vcons x2 v2) ->
+    (R x1 x2 /\ v1 = v2) \/ (x1 = x2 /\ Vrel1 R v1 v2).
 
   Proof.
     intros. simpl in H. unfold Vsplit in H. simpl in H. inversion H.
     left. auto. right. auto.
   Qed.
 
-  Lemma Vrel1_add : forall x1 x2 n (v1 v2 : vec n),
-    (x1 > x2 /\ v1 = v2) \/ (x1 = x2 /\ v1 >prod v2)
-    -> Vadd v1 x1 >prod Vadd v2 x2.
+  Lemma Vrel1_add_intro : forall x1 x2 n (v1 v2 : vector A n),
+    (R x1 x2 /\ v1 = v2) \/ (x1 = x2 /\ Vrel1 R v1 v2)
+    -> Vrel1 R (Vadd v1 x1) (Vadd v2 x2).
 
   Proof.
     intros x1 x2. induction n; intros v1 v2.
     VOtac. intuition. apply left_sym. hyp.
     VSntac v1; VSntac v2. simpl Vadd. intros [[h1 h2]|[h1 h2]].
-    Veqtac. apply Vrel1_cons. right. fo.
-    subst x2. destruct (Vrel1_inv h2) as [[i1 i2]|[i1 i2]].
-    rewrite i2. apply Vrel1_cons. left. fo.
-    apply Vrel1_cons. right. fo.
+    Veqtac. apply Vrel1_cons_intro. right. fo.
+    subst x2. destruct (Vrel1_cons_elim h2) as [[i1 i2]|[i1 i2]].
+    rewrite i2. apply Vrel1_cons_intro. left. fo.
+    apply Vrel1_cons_intro. right. fo.
   Qed.
 
-  Lemma Vrel1_app : forall n (v : vec n) m (v1 v2 : vec m),
-    v1 >prod v2 -> Vapp v v1 >prod Vapp v v2.
+  Lemma Vrel1_app_intro_l : forall n (v : vector A n) m (v1 v2 : vector A m),
+    Vrel1 R v1 v2 -> Vrel1 R (Vapp v v1) (Vapp v v2).
 
   Proof.
     induction v; intros. hyp.
     simpl. unfold Vsplit. simpl. apply right_sym. apply IHv. hyp.
   Qed.
 
-  Lemma Vrel1_cast : forall m n (h : m=n) (v1 v2 : vec m),
-    v1 >prod v2 -> Vcast v1 h >prod Vcast v2 h.
+  Lemma Vrel1_cast_intro : forall m n (h : m=n) (v1 v2 : vector A m),
+    Vrel1 R v1 v2 -> Vrel1 R (Vcast v1 h) (Vcast v2 h).
 
   Proof.
     induction v1; intros; destruct n; intros.
@@ -95,8 +91,8 @@ Section S.
     rewrite (Vcast_refl (Vcons h0 v1)). rewrite (Vcast_refl v2). hyp.
   Qed.
 
-  Lemma Vrel1_cast_inv : forall m n (h : m=n) (v1 v2 : vec m),
-    Vcast v1 h >prod Vcast v2 h -> v1 >prod v2.
+  Lemma Vrel1_cast_elim : forall m n (h : m=n) (v1 v2 : vector A m),
+    Vrel1 R (Vcast v1 h) (Vcast v2 h) -> Vrel1 R v1 v2.
 
   Proof.
     induction m; destruct n; intros.
@@ -105,16 +101,16 @@ Section S.
     assert (v1 = Vcons (Vhead v1) (Vtail v1)). apply VSn_eq. rewrite H0.
     assert (v2 = Vcons (Vhead v2) (Vtail v2)). apply VSn_eq. rewrite H1.
     rewrite H0, H1 in H. simpl in H. unfold Vsplit in H. simpl in H.
-    apply Vrel1_cons. inversion H. left. split. hyp.
+    apply Vrel1_cons_intro. inversion H. left. split. hyp.
     eapply Vcast_eq_elim with (m := n). apply H6.
     right. split. refl. eapply IHm with (n := n). apply H3.
   Qed.
 
 (***********************************************************************)
-(** Equivalence between [Vrel1] and [Vrel_app]. *)
+(** Equivalence between [Vrel1] and [Vrel1_app]. *)
 
-  Lemma Vrel1_app_impl : forall n (v1 v2 : vec n),
-    v1 >prod v2 -> Vrel_app R v1 v2.
+  Lemma Vrel1_app_impl : forall n (v1 v2 : vector A n),
+    Vrel1 R v1 v2 -> Vrel1_app R v1 v2.
 
   Proof.
     induction v1; simpl. intros. contr. intro. VSntac v2.
@@ -129,24 +125,24 @@ Section S.
     apply Vtail_eq. apply Vcast_pi.
   Qed.
 
-  Lemma Vrel1_app_iff : forall n (v1 v2 : vec n),
-    v1 >prod v2 <-> Vrel_app R v1 v2.
+  Lemma Vrel1_app_iff : forall n (v1 v2 : vector A n),
+    Vrel1 R v1 v2 <-> Vrel1_app R v1 v2.
 
   Proof.
     intros n v1 v2. split. apply Vrel1_app_impl.
     intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]]; subst.
-    rewrite 2!Vcast_refl. apply Vrel1_app. apply Vrel1_cons. fo.
+    rewrite 2!Vcast_refl. apply Vrel1_app_intro_l. apply Vrel1_cons_intro. fo.
   Qed.
 
-  Lemma Vrel1_app_eq n : @Vrel1 n _ R == @Vrel_app n _ R.
+  Lemma Vrel1_app_eq n : @Vrel1 n _ R == @Vrel1_app n _ R.
 
   Proof. rewrite rel_eq. apply Vrel1_app_iff. Qed.
 
 (***********************************************************************)
-(** Equivalence between [Vrel1] and [Vrel_nth]. *)
+(** Equivalence between [Vrel1] and [Vrel1_nth]. *)
 
-  Lemma Vrel1_nth_iff : forall n (v1 v2 : vec n),
-    v1 >prod v2 <-> Vrel_nth R v1 v2.
+  Lemma Vrel1_nth_iff : forall n (v1 v2 : vector A n),
+    Vrel1 R v1 v2 <-> Vrel1_nth R v1 v2.
 
   Proof.
     intros n v1 v2. rewrite Vrel1_app_iff. split.
@@ -180,8 +176,8 @@ Section S.
     trans (Vnth v1 hj). sym. apply i2. omega. apply Vnth_eq. refl.
   Qed.
 
-  Lemma Vrel1_sub : forall n (v1 v2 : vec n) p q (h : p+q<=n),
-    v1 >prod v2 -> (Vrel1 R)% (Vsub v1 h) (Vsub v2 h).
+  Lemma Vrel1_sub : forall n (v1 v2 : vector A n) p q (h : p+q<=n),
+    Vrel1 R v1 v2 -> (Vrel1 R)% (Vsub v1 h) (Vsub v2 h).
 
   Proof.
     intros n v1 v2 p q k. rewrite Vrel1_nth_iff.
@@ -201,7 +197,7 @@ Section S.
 
   Require Import SN.
 
-  Lemma Vforall_SN_rel1 : forall n (v : vec n),
+  Lemma Vforall_SN_rel1 : forall n (v : vector A n),
     Vforall (SN R) v -> SN (Vrel1 R) v.
 
   Proof.
@@ -215,7 +211,7 @@ Section S.
     eapply SN_inv. apply IHv. apply H2. hyp.
   Qed.
 
-  Lemma SN_rel1_Sn_head : forall n (v : vec (S n)),
+  Lemma SN_rel1_head : forall n (v : vector A (S n)),
     SN (Vrel1 R) v -> SN R (Vhead v).
 
   Proof.
@@ -224,12 +220,12 @@ Section S.
     unfold Vsplit. simpl. apply left_sym. hyp.
   Qed.
 
-  Lemma SN_rel1_head : forall a n (v : vec n),
+  Lemma SN_rel1_cons_head : forall a n (v : vector A n),
     SN (Vrel1 R) (Vcons a v) -> SN R a.
 
-  Proof. intros. ded (SN_rel1_Sn_head H). hyp. Qed.
+  Proof. intros. ded (SN_rel1_head H). hyp. Qed.
 
-  Lemma SN_rel1_Sn_tail : forall n (v : vec (S n)),
+  Lemma SN_rel1_tail : forall n (v : vector A (S n)),
     SN (Vrel1 R) v -> SN (Vrel1 R) (Vtail v).
 
   Proof.
@@ -238,12 +234,12 @@ Section S.
     simpl. unfold Vsplit. simpl. apply right_sym. hyp.
   Qed.
 
-  Lemma SN_rel1_tail : forall a n (v : vec n),
+  Lemma SN_rel1_cons_tail : forall a n (v : vector A n),
     SN (Vrel1 R) (Vcons a v) -> SN (Vrel1 R) v.
 
-  Proof. intros. ded (SN_rel1_Sn_tail H). hyp. Qed.
+  Proof. intros. ded (SN_rel1_tail H). hyp. Qed.
 
-  Lemma SN_rel1_forall : forall n (v : vec n),
+  Lemma SN_rel1_forall : forall n (v : vector A n),
     SN (Vrel1 R) v -> Vforall (SN R) v.
 
   Proof.
@@ -261,8 +257,8 @@ Arguments Vrel1_sub [A R n v1 v2 p q] h _.
 
 Require Import Morphisms.
 
-Instance Vrel_app_same_rel n A :
-  Proper (same_relation ==> same_relation) (@Vrel_app n A).
+Instance Vrel1_app_same_rel n A :
+  Proper (same_relation ==> same_relation) (@Vrel1_app n A).
 
 Proof.
   intros R R' RR'. rewrite rel_eq. intros v1 v2. unfold Vrel1.
@@ -274,14 +270,14 @@ Instance Vrel1_same_rel n A :
   Proper (same_relation ==> same_relation) (@Vrel1 n A).
 
 Proof.
-  intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel_app_same_rel. hyp.
+  intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel1_app_same_rel. hyp.
 Qed.
 
 (***********************************************************************)
 (** Distributivity of [Vrel1] wrt [union]. *)
 
-Lemma Vrel_app_union n A (R S : relation A) :
-  @Vrel_app n _ (R U S) == @Vrel_app n _ R U @Vrel_app n _ S.
+Lemma Vrel1_app_union n A (R S : relation A) :
+  @Vrel1_app n _ (R U S) == @Vrel1_app n _ R U @Vrel1_app n _ S.
 
 Proof.
   rewrite rel_eq; intros v1 v2. split.
@@ -295,7 +291,7 @@ Qed.
 Lemma Vrel1_union n A (R S : relation A) :
   @Vrel1 n _ (R U S) == @Vrel1 n _ R U @Vrel1 n _ S.
 
-Proof. rewrite !Vrel1_app_eq. apply Vrel_app_union. Qed.
+Proof. rewrite !Vrel1_app_eq. apply Vrel1_app_union. Qed.
 
 (***********************************************************************)
 (** * Product ordering on vectors. *)
@@ -348,7 +344,7 @@ Section Vreln.
 
   (** Syntactic properties of [Vreln]. *)
 
-  Lemma Vreln_tail : forall n (v v' : vector A (S n)),
+  Lemma Vreln_tail_intro : forall n (v v' : vector A (S n)),
     Vreln R v v' -> Vreln R (Vtail v) (Vtail v').
 
   Proof. intros. unfold Vreln. apply Vforall2n_tail. hyp. Qed.
@@ -358,12 +354,12 @@ Section Vreln.
 
   Proof. fo. Qed.
 
-  Lemma Vreln_cons_r : forall n (u v : vector A n) x y,
+  Lemma Vreln_cons_elim : forall n (u v : vector A n) x y,
     Vreln R (Vcons x u) (Vcons y v) -> Vreln R u v.
 
   Proof. fo. Qed.
 
-  Lemma Vreln_app_l n1 (v1 v1' : vector A n1) n2 (v2 v2' : vector A n2) :
+  Lemma Vreln_app_elim_l n1 (v1 v1' : vector A n1) n2 (v2 v2' : vector A n2) :
     Vreln R (Vapp v1 v2) (Vapp v1' v2') -> Vreln R v1 v1'.
 
   Proof.
@@ -378,7 +374,7 @@ Section Vreln.
     rewrite a1, a2. apply Vforall2n_nth. hyp.
   Qed.
 
-  Lemma Vreln_app_r n1 (v1 v1' : vector A n1) n2 (v2 v2' : vector A n2) :
+  Lemma Vreln_app_elim_r n1 (v1 v1' : vector A n1) n2 (v2 v2' : vector A n2) :
     Vreln R (Vapp v1 v2) (Vapp v1' v2') -> Vreln R v2 v2'.
 
   Proof.
@@ -400,7 +396,7 @@ Section Vreln.
 
   (*FIXME: change arguments order of Vnth to declare Vnth_Vreln as
   Proper Instance?*)
-  Lemma Vreln_nth : forall n (ts us : vector A n) i (hi : i<n),
+  Lemma Vreln_nth_intro : forall n (ts us : vector A n) i (hi : i<n),
     Vreln R ts us -> R (Vnth ts hi) (Vnth us hi).
 
   Proof.
@@ -408,7 +404,7 @@ Section Vreln.
     rewrite H, Vreln_cons in e. destruct e as [e1 e2]. destruct i as [|i]; fo.
   Qed.
 
-  Lemma Vreln_sub : forall n (v1 v2 : vector A n) p q (h : p+q<=n),
+  Lemma Vreln_sub_intro : forall n (v1 v2 : vector A n) p q (h : p+q<=n),
     Vreln R v1 v2 -> Vreln R (Vsub v1 h) (Vsub v2 h).
 
   Proof.
@@ -424,10 +420,10 @@ Section Vreln.
   Proof.
     intros ts ts' tsts'. apply Vforall2n_intro. intros i hi.
     rewrite !Vnth_vec_opt_filter. destruct (lt_dec (Vnth ks hi)).
-    apply eq_opt_Some. apply Vreln_nth. hyp. apply eq_opt_None.
+    apply eq_opt_Some. apply Vreln_nth_intro. hyp. apply eq_opt_None.
   Qed.
 
 End Vreln.
 
-Arguments Vreln_sub [A R n v1 v2 p q] _ _.
-Arguments Vreln_nth [A R n ts us i hi] _.
+Arguments Vreln_sub_intro [A R n v1 v2 p q] _ _.
+Arguments Vreln_nth_intro [A R n ts us i hi] _.

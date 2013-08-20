@@ -270,7 +270,7 @@ every element of [us] is strongly normalizing wrt beta-reduction. *)
 
   Proof.
     intros f n us h. cut (SN (clos_vaeq beta) us).
-    2: apply sn_clos_vaeq; hyp.
+    2: apply sn_clos_vaeq_intro; hyp.
     clear h. revert us. induction 1. apply SN_intro. intros v r.
     assert (k : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam k r) as [u [y [h1 h2]]]; subst.

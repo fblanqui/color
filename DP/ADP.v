@@ -267,8 +267,8 @@ hyp.
 (* lhs = Var x *)
 decomp e. subst l. is_var_lhs.
 (* c <> Hole *)
-Funeqtac. subst u. apply H1. rewrite H2. apply Vrel1_cast.
-apply Vrel1_app. apply Vrel1_cons. left. split.
+Funeqtac. subst u. apply H1. rewrite H2. apply Vrel1_cast_intro.
+apply Vrel1_app_intro_l. apply Vrel1_cons_intro. left. split.
 eapply red_rule. hyp. refl.
 Qed.
 

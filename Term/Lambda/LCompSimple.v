@@ -516,7 +516,7 @@ Module SN_beta (Export ST : ST_Struct).
     gen (cp_I b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
     cut (SN (clos_vaeq beta) vs).
-    Focus 2. apply sn_clos_vaeq. eapply vint_sn. apply cp_I. apply hvs.
+    Focus 2. apply sn_clos_vaeq_intro. eapply vint_sn. apply cp_I. apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
     induction 1.
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
