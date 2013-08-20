@@ -2056,7 +2056,7 @@ Proof. intros. rewrite <- Vmap_id. apply Vmap_eq_ext. hyp. Qed.
 they exist) of an arbitrary vector [xs] of size [p] whose positions
 are given by a vector [ks] of natural numbers of size [n]. *)
 
-Section filter.
+Section vec_opt_filter.
 
   Variable (A : Type).
 
@@ -2102,7 +2102,27 @@ Section filter.
     destruct (lt_dec k p). 2: omega. apply (f_equal Some). apply Vnth_eq. refl.
   Qed.
 
-End filter.
+End vec_opt_filter.
+
+Section vec_opt_filter_map.
+
+  Variables (A B : Type) (f : A -> B).
+
+  Definition opt x :=
+    match x with
+      | Some v => Some (f v)
+      | None => None
+    end.
+
+  Lemma vec_opt_filter_map : forall p (xs : vector A p) n (ks : vector nat n),
+    vec_opt_filter ks (Vmap f xs) = Vmap opt (vec_opt_filter ks xs).
+
+  Proof.
+    intros p xs. induction ks as [|k ks]; simpl. refl.
+    rewrite IHks. destruct (lt_dec k p). rewrite Vnth_map. refl. refl.
+  Qed.
+
+End vec_opt_filter_map.
 
 (****************************************************************************)
 (** ** First position of an element in a vector. *)
