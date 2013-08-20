@@ -15,68 +15,17 @@ Require Import SN RelUtil LogicUtil.
 (***********************************************************************)
 (** R @ S [<<] S @ R -> WF R -> WF S -> WF (R U S) *)
 
-Require Import Lexico.
-
-Module commut_prf.
-
-  Section R1.
-
-    Variable (A : Type) (gtA eqA gtA' : relation A)
-      (eqA_trans : transitive eqA) (Hcomp : eqA @ gtA << gtA)
-      (WF_gtA : WF gtA) (WF_gtA' : WF gtA').
-
-    Definition R1 : relation A := fun x y => lex gtA eqA gtA' (x,x) (y,y).
-
-    Lemma WF_R1 : WF R1.
-
-    Proof. apply WF_inverse. apply WF_lex; hyp. Qed.
-
-  End R1.
-
-  Section R1'.
-
-    Variable (A : Type) (gt1 gt2 : relation A)
-      (WF_gt1 : WF gt1) (WF_gt2 : WF gt2)
-      (trans_gt2 : transitive gt2) (Hcomp : gt2 @ gt1 << gt1).
-
-    Definition R1' := R1 gt1 gt2 gt2.
-
-    Lemma WF_R1' : WF R1'.
-
-    Proof. unfold R1'. apply WF_R1; hyp. Qed.
-
-    Lemma R1'_intro : gt1 U gt2 << R1'.
-
-    Proof.
-      unfold R1', R1, inclusion. intros. apply lex_intro. destruct H; auto.
-    Qed.
-
-  End R1'.
-
-End commut_prf.
-
 Section commut.
 
 Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
 
 Lemma WF_union : WF R -> WF S -> WF (R U S).
 
-Proof. Import commut_prf.
-intros. eapply WF_incl. apply incl_tc. refl. eapply WF_incl. apply tc_union.
-set (T := R# @ S). set (gt1 := T! @ R#). set (gt2 := R!).
-eapply WF_incl. apply union_commut.
-eapply WF_incl. apply R1'_intro. apply WF_R1'.
-(* WF gt1 *)
-unfold gt1. apply absorb_WF_modulo_r. incl_trans (R# @ T!). comp.
-apply rtc_incl. unfold T. apply rtc_comp_modulo.
-apply WF_tc. unfold T. apply WF_commut_modulo. exact commut. exact H0.
-(* WF gt2 *)
-unfold gt2. apply WF_tc. exact H.
-(* transitive gt2 *)
-apply trans_intro. unfold gt2. apply comp_tc_idem.
-(* gt2 @ gt1 << gt1 *)
-unfold gt1, gt2. assoc. comp. incl_trans (R# @ T!). comp. apply tc_incl_rtc.
-unfold T. apply rtc_comp_modulo.
+Proof. Require Import AccUtil Wellfounded.Union.
+  intros R_wf S_wf. apply wf_transp_WF. rewrite transp_union. apply wf_union.
+  intros x y. unfold transp. intros xy z yz.
+  assert (a : (R@S) x z). exists y. fo.
+  apply commut in a. fo. apply WF_wf_transp. hyp. apply WF_wf_transp. hyp.
 Qed.
 
 End commut.
