@@ -827,6 +827,10 @@ Section transp.
 
   Proof. fo. Qed.
 
+  Lemma transp_union : transp (R U S) == transp R U transp S.
+
+  Proof. fo. Qed.
+
 End transp.
 
 (***********************************************************************)
