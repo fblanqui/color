@@ -276,9 +276,10 @@ Section lexv.
   Proof.
     intros eqA_trans eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
     rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
-    eapply gtA_eqA. apply Vreln_nth. apply tsts'. apply Vreln_nth. apply usus'.
-    hyp.
-    intros j ji jn. rewrite <- (Vreln_nth tsts'), <- (Vreln_nth usus'). fo.
+    eapply gtA_eqA. apply Vreln_nth_intro. apply tsts'.
+    apply Vreln_nth_intro. apply usus'. hyp.
+    intros j ji jn.
+    rewrite <- (Vreln_nth_intro tsts'), <- (Vreln_nth_intro usus'). fo.
   Qed.
 
   (** Transitivity. *)

@@ -89,9 +89,9 @@ Section S.
     (* lhs is Var *)
     subst l. is_var_lhs.
     (* C <> Hole *)
-    Funeqtac. subst x. apply H3. unfold gt. eapply Vrel1_cast.
-    apply Vrel1_app.
-    apply Vrel1_cons. left. split. 2: refl. apply red_rule. hyp.
+    Funeqtac. subst x. apply H3. unfold gt. eapply Vrel1_cast_intro.
+    apply Vrel1_app_intro_l. apply Vrel1_cons_intro. left. split. 2: refl.
+    apply red_rule. hyp.
   Qed.
 
 (***********************************************************************)

@@ -215,7 +215,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
         apply gtx_plus_compat.
         apply IHv.
         change v with (Vtail (Vcons h v)). apply Vforall2n_tail. hyp.
-        apply Vreln_tail. hyp.
+        apply Vreln_tail_intro. hyp.
         apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
         do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
         do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.

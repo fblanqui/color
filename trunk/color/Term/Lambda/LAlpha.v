@@ -1430,11 +1430,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       intros [[h1 h2]|[h1 h2]].
       inversion h1; subst. exists (Vcons u' us). split.
       rewrite Vreln_cons. intuition. exists (Vcons v' us). split.
-      apply Vrel1_cons. auto. rewrite Vreln_cons. intuition.
+      apply Vrel1_cons_intro. auto. rewrite Vreln_cons. intuition.
 
       destruct h2 as [us' [usus' [vs' [us'vs' vs'vs]]]].
       exists (Vcons v us'). rewrite Vreln_cons. intuition. exists (Vcons v vs').
-      rewrite Vreln_cons. intuition. apply Vrel1_cons. right. intuition.
+      rewrite Vreln_cons. intuition. apply Vrel1_cons_intro. right. intuition.
     Qed.
 
     (** [clos_vaeq] is compatible with [vaeq]. *)
@@ -1454,9 +1454,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Proof.
       intros n us vs p q h [us' [usus' [vs' [r vsvs']]]]; symmetry in vsvs'.
       destruct (Vrel1_sub h r).
-      left. rewrite (Vreln_sub h usus'), (Vreln_sub h vsvs'), H. refl.
-      right. exists (Vsub us' h). split. apply Vreln_sub. hyp.
-      exists (Vsub vs' h). split. hyp. apply Vreln_sub. sym. hyp.
+      left. rewrite (Vreln_sub_intro h usus'), (Vreln_sub_intro h vsvs'), H.
+      refl.
+      right. exists (Vsub us' h). split. apply Vreln_sub_intro. hyp.
+      exists (Vsub vs' h). split. hyp. apply Vreln_sub_intro. sym. hyp.
     Qed.
 
     Arguments clos_vaeq_sub [n us vs p q] _ _.
@@ -1464,7 +1465,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (** A vector of terms is strongly normalizing for [clos_vaeq] if
     every component is strongly normalizing for [R_aeq]. *)
 
-    Lemma sn_clos_vaeq : forall n (us : Tes n),
+    Lemma sn_clos_vaeq_intro : forall n (us : Tes n),
       Vforall (SN R_aeq) us -> SN (clos_vaeq R) us.
 
     Proof.
@@ -1516,23 +1517,48 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       apply Vforall2n_intro. intros k hk. rewrite ey, 2!Vnth_cast, 2!Vnth_app.
       destruct (Compare_dec.le_gt_dec i k).
       rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (k-i)). 2: refl.
-      apply Vforall2n_nth. eapply Vreln_cons_r. eapply Vreln_app_r. sym.
-      apply y'y.
-      apply Vforall2n_nth. eapply Vreln_app_l. sym. apply y'y.
+      apply Vforall2n_nth. eapply Vreln_cons_elim. eapply Vreln_app_elim_r.
+      sym. apply y'y.
+      apply Vforall2n_nth. eapply Vreln_app_elim_l. sym. apply y'y.
       (* right *)
       apply Vforall2n_intro. intros k hk. rewrite 2!Vnth_cast, 2!Vnth_app.
       destruct (Compare_dec.le_gt_dec i k).
       rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (k-i)). 2: refl.
-      apply Vforall2n_nth. eapply Vreln_cons_r. eapply Vreln_app_r. sym.
-      apply xx'.
-      apply Vforall2n_nth. eapply Vreln_app_l. sym. apply xx'.
+      apply Vforall2n_nth. eapply Vreln_cons_elim. eapply Vreln_app_elim_r.
+      sym. apply xx'.
+      apply Vforall2n_nth. eapply Vreln_app_elim_l. sym. apply xx'.
       (* We now prove that
       [Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)]. *)
       assert (r : Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)).
-      rewrite ex. apply Vrel1_cast. apply Vrel1_app. apply Vrel1_cons.
+      rewrite ex. apply Vrel1_cast_intro. apply Vrel1_app_intro_l.
+      apply Vrel1_cons_intro.
       left. rewrite aa', bb'. intuition. apply incl_clos_aeq. hyp.
       (* We can now end the proof. *)
       rewrite h. apply H0. hyp. apply SN_rel1_forall. apply H. hyp.
+    Qed.
+
+    Lemma sn_clos_vaeq_elim : forall n i (hi : i<n) (us : Tes n),
+      SN (clos_vaeq R) us -> SN R_aeq (Vnth us hi).
+
+    Proof.
+      intros n i hi us hus. elim hus; clear us hus. intros us h1 h2.
+      apply SN_intro. intros ui' uiui'.
+      destruct (clos_aeq_inv uiui') as [vi [vi' [uivi [ui'vi' vivi']]]];
+        clear uiui'. rewrite <- (Vnth_replace hi hi us). apply h2.
+
+      exists (Vreplace us hi vi). split.
+      apply Vforall2n_intro. intros j jn. destruct (eq_nat_dec j i).
+      subst j. rewrite Vnth_replace. rewrite (Vnth_eq _ jn hi); auto.
+      rewrite Vnth_replace_neq. refl. omega.
+
+      exists (Vreplace us hi vi'). split.
+      rewrite Vrel1_nth_iff. ex i hi. split.
+      rewrite !Vnth_replace. hyp.
+      intros j jn jni. rewrite !Vnth_replace_neq; auto.
+
+      apply Vforall2n_intro. intros j jn. destruct (eq_nat_dec j i).
+      subst j. rewrite !Vnth_replace. sym. hyp.
+      rewrite !Vnth_replace_neq; auto. refl.
     Qed.
 
   End clos_vaeq.
