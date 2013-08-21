@@ -389,8 +389,8 @@ Section Vreln.
     rewrite a1, a2. apply Vforall2n_nth. hyp.
   Qed.
 
-  Lemma Vreln_cast n (u v : vector A n) n' (h : n=n') :
-    Vreln R (Vcast u h) (Vcast v h) <-> Vreln R u v.
+  Lemma Vreln_cast n (u v : vector A n) n' (h h' : n=n') :
+    Vreln R (Vcast u h) (Vcast v h') <-> Vreln R u v.
 
   Proof. subst n'. rewrite 2!Vcast_refl. refl. Qed.
 
