@@ -909,9 +909,7 @@ Section Vsub.
   Lemma Vsub_pi : forall n (v : vector A n) i k (h h' : i+k<=n),
     Vsub v h = Vsub v h'.
 
-  Proof.
-    intros. assert (h = h'). apply le_unique. subst. refl.
-  Qed.
+  Proof. intros. assert (h = h'). apply le_unique. subst. refl. Qed.
 
   Lemma Vsub_cast_aux : forall n (v : vector A n) n' (e : n=n') i k
     (h : i+k<=n') (h' : i+k<=n), Vsub (Vcast v e) h = Vsub v h'.
@@ -1143,6 +1141,7 @@ Section Vsub.
 End Vsub.
 
 Implicit Arguments Vsub [A n i k].
+Arguments Vsub_pi [A n v i k h] _.
 
 (***********************************************************************)
 (** ** Function removing the last element of a non-empty vector. *)
@@ -2103,6 +2102,8 @@ Section vec_opt_filter.
   Qed.
 
 End vec_opt_filter.
+
+Arguments Vnth_vec_opt_filter_Some_elim [A p xs n ks i hi x] _.
 
 Section vec_opt_filter_map.
 
