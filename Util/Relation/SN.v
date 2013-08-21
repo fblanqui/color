@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 - Adam Koprowski & Hans Zantema, 2007-03
 - Joerg Endrullis, 2008-07
 
-inductive definition of strong normalization (inverse of accessibility)
+Inductive definition of strong normalization (inverse of accessibility)
 *)
 
 Set Implicit Arguments.
@@ -38,7 +38,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** If [x] is strongly normalizing wrt [R], then there is no infinite
+(** ** If [x] is strongly normalizing wrt [R], then there is no infinite
 [R]-sequence starting from [x]. Proof obtained after the correction of
 Exercise 15.7 page 413 of the book Coq'Art by Yves Bertot and Pierre
 Casteran,
@@ -75,7 +75,7 @@ Section notIS.
 End notIS.
 
 (***********************************************************************)
-(** accessibility *)
+(** ** Relation with accessibility. *)
 
 Section acc.
 
@@ -122,7 +122,7 @@ Section acc_transp.
 End acc_transp.
 
 (***********************************************************************)
-(** inclusion *)
+(** ** Relation with inclusion. *)
 
 Section incl.
 
@@ -150,19 +150,22 @@ Section incl.
 
 End incl.
 
-Instance WF_m A : Proper (same_relation ==> iff) (@WF A).
+Instance WF_incl' A : Proper (inclusion --> impl) (@WF A).
+
+Proof.
+  intros S R RS S_wf x. gen (S_wf x). revert x. induction 1.
+  apply SN_intro. fo.
+Qed.
+
+Instance WF_same_rel A : Proper (same_relation ==> iff) (@WF A).
 
 Proof.
   intros x y x_eq_y. destruct x_eq_y. split; intro.
   apply WF_incl with x; hyp. apply WF_incl with y; hyp.
 Qed.
 
-Instance WF_m' A : Proper (inclusion --> impl) (@WF A).
-
-Proof. intros x y x_eq_y h. apply WF_incl with x; hyp. Qed.
-
 (***********************************************************************)
-(** inverse relation *)
+(** ** Inverse relation [transp]. *)
 
 Section transp.
 
@@ -170,39 +173,12 @@ Section transp.
 
   Lemma WF_transp : WF R -> WF (transp (transp R)).
 
-  Proof.
-    intro. apply WF_incl with (S := R). unfold inclusion, transp. auto. hyp.
-  Qed.
+  Proof. intro. apply WF_incl with R. unfold inclusion, transp. auto. hyp. Qed.
 
 End transp.
 
 (***********************************************************************)
-(** compatibility *)
-
-Section compat.
-
-  Variable (A : Type) (E R : relation A) (Hcomp : E @ R << R).
-
-  Lemma SN_compat_inv : forall x,
-    SN (R @ E) x -> forall x', E x x' -> SN (R @ E) x'.
-
-  Proof.
-    intros. apply SN_intro. intros. do 2 destruct H1. assert (h : (R @ E) x y).
-    exists x0; split. apply (inclusion_elim Hcomp). exists x'; split; hyp.
-    hyp. apply (SN_inv H). exact h.
-  Qed.
-
-  Lemma WF_compat_inv : WF R -> WF (R @ E).
-
-  Proof.
-    unfold WF. intros. ded (H x). elim H0. intros. apply SN_intro. intros.
-    do 2 destruct H3. ded (H2 _ H3). apply (SN_compat_inv H5 H4).
-  Qed.
-
-End compat.
-
-(***********************************************************************)
-(** functional inverse image *)
+(** ** Functional inverse image [Rof]. *)
 
 Section inverse.
 
@@ -228,7 +204,7 @@ Section inverse.
 End inverse.
 
 (***********************************************************************)
-(** relational inverse image *)
+(** ** Relational inverse image [RoF]. *)
 
 Section rel_inverse.
 
@@ -259,32 +235,7 @@ Section rel_inverse.
 End rel_inverse.
 
 (***********************************************************************)
-(** relation composition *)
-
-Section compose.
-
-  Variable (A : Type) (R S : relation A).
-
-  Lemma WF_compose_swap : WF (R @ S) -> WF (S @ R).
-
-  Proof.
-    intro WF_RS.
-    assert (forall p q, R p q -> SN (S @ R) q).
-    intro p. pattern p.
-    apply SN_ind with A (R @ S); auto.
-    intros. apply SN_intro. intros.
-    destruct H2. apply H0 with x0.
-    exists q; intuition.
-    intuition.
-    unfold WF. intro. apply SN_intro. intros.
-    destruct H0 as [z [Sxz Rzy]].
-    apply H with z. hyp.
-  Qed.
-
-End compose.
-
-(***********************************************************************)
-(** reflexive transitive closure *)
+(** ** Reflexive transitive closure. *)
 
 Section rtc.
 
@@ -304,7 +255,7 @@ Section rtc.
 End rtc.
 
 (***********************************************************************)
-(** transitive closure *)
+(** ** Transitive closure. *)
 
 Section tc.
 
@@ -335,7 +286,7 @@ Section tc.
 End tc.
 
 (***********************************************************************)
-(** symmetric product *)
+(** ** Component-wise binary product (symmetric product in Coq std lib) *)
 
 Section symprod.
 
@@ -394,145 +345,54 @@ Section symprod.
 End symprod.
 
 (***********************************************************************)
-(** reduction modulo *)
+(** ** Composition of two relations. *)
 
-Section modulo.
+Section compose.
 
-  Variables (A : Type) (E R : relation A).
+  Variable (A : Type) (R S : relation A).
 
-  Lemma SN_modulo : forall x x', SN (E# @ R) x -> E# x x' -> SN (E# @ R) x'.
-
-  Proof.
-    intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
-    exists x0. intuition. apply rt_trans with x'; hyp.
-  Qed.
-
-  Lemma WF_union_mod : WF E -> WF (E# @ R) -> WF (R U E).
+  Lemma WF_compose_swap : WF (R @ S) -> WF (S @ R).
 
   Proof.
-    intros WF_E WF_ER x.
-    apply SN_ind with A (E# @ R); auto. 
-    clear x. intros x _ IH.
-    apply SN_intro. intros y RExy.
-    destruct RExy as [Rxy | Exy].
-    apply IH. exists x. 
-    split; [apply rt_refl | hyp].
-    cut (forall y, (E# @ R) x y -> SN (R U E) y); [idtac | hyp].
-    cut (E! x y). pattern y. apply SN_ind with A E; auto.
-    clear y IH Exy. intros y _ IH_out Exy IH_in.
-    apply SN_intro. intros z REyz.
-    destruct REyz.
-    apply IH_in. exists y. split; trivial.
-    apply tc_incl_rtc. hyp.
-    apply IH_out; trivial.
-    constructor 2 with y. trivial.
-    constructor. hyp.
-    constructor. hyp.
+    intro WF_RS.
+    assert (forall p q, R p q -> SN (S @ R) q).
+    intro p. pattern p.
+    apply SN_ind with A (R @ S); auto.
+    intros. apply SN_intro. intros.
+    destruct H2. apply H0 with x0.
+    exists q; intuition.
+    intuition.
+    unfold WF. intro. apply SN_intro. intros.
+    destruct H0 as [z [Sxz Rzy]].
+    apply H with z. hyp.
   Qed.
 
-End modulo.
+End compose.
 
 (***********************************************************************)
-(** S @ R << R @ S -> SN R x -> S x x' -> SN R x' *)
+(** ** Absorbing relations. *)
 
-Section commut.
+Section compat.
 
-  Variables (A : Type) (R S : relation A) (commut : S @ R << R @ S).
+  Variable (A : Type) (E R : relation A) (Hcomp : E @ R << R).
 
-  Lemma SN_commut : forall x, SN R x -> forall x', S x x' -> SN R x'.
-
-  Proof.
-    induction 1; intros. apply SN_intro. intros.
-    assert ((S @ R) x y). exists x'. intuition. ded (commut H3).
-    do 2 destruct H4. apply (H0 _ H4 _ H5).
-  Qed.
-
-End commut.
-
-(***********************************************************************)
-(** WF (iter R n) -> WF R *)
-
-Require Import Iter.
-
-Section iter.
-
-  Variables (A : Type) (R : relation A).
-
-  Lemma SN_iter_S : forall n x, SN (iter R n) x -> SN (iter R (S n)) x.
+  Lemma SN_compat_inv : forall x,
+    SN (R @ E) x -> forall x', E x x' -> SN (R @ E) x'.
 
   Proof.
-    intros. elim H. intros. apply SN_intro. intros.
-    assert ((iter R n @ iter R 0) x0 y). apply iter_commut. hyp.
-    do 2 destruct H3. ded (H1 _ H3).
-    eapply SN_commut with (S := iter R 0). apply iter_commut. apply H5. hyp.
+    intros. apply SN_intro. intros. do 2 destruct H1. assert (h : (R @ E) x y).
+    exists x0; split. apply (inclusion_elim Hcomp). exists x'; split; hyp.
+    hyp. apply (SN_inv H). exact h.
   Qed.
 
-  Lemma SN_iter_S' : forall n x, SN (iter R (S n)) x -> SN (iter R n) x.
+  Lemma WF_compat_inv : WF R -> WF (R @ E).
 
   Proof.
-    intros. elim H; intros. do 2 (apply SN_intro; intros). destruct n.
-    simpl in *. apply H1. exists y. intuition.
-    assert ((iter R (S (S n)) @ iter R n) x0 y0).
-    apply inclusion_elim with (R := iter R (S n) @ iter R (S n)).
-    incl_trans (iter R (S n+S n+1)). apply iter_iter.
-    assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
-    exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
-    eapply SN_commut with (S := iter R n). apply iter_commut. apply H6. hyp.
+    unfold WF. intros. ded (H x). elim H0. intros. apply SN_intro. intros.
+    do 2 destruct H3. ded (H2 _ H3). apply (SN_compat_inv H5 H4).
   Qed.
 
-  Lemma SN_iter : forall n x, SN (iter R n) x -> SN R x.
-
-  Proof. induction n; intros. hyp. apply IHn. apply SN_iter_S'. hyp. Qed.
-
-  Lemma WF_iter : forall n, WF (iter R n) -> WF R.
-
-  Proof. unfold WF. intros. eapply SN_iter. apply H. Qed.
-
-End iter.
-
-(***********************************************************************)
-(** extension of SN_intro to paths of fixed length *)
-
-Require Import Path.
-
-Section path.
-
-  Variables (A : Type) (R : relation A).
-
-  Lemma SN_path : forall n x,
-    (forall y l, length l = n -> path R x y l -> SN R y) -> SN R x.
-
-  Proof.
-    intros. apply SN_iter with n. apply SN_intro. intros.
-    apply SN_incl with (R!). apply iter_tc. apply SN_tc.
-    ded (iter_path H0). do 2 destruct H1. subst n.
-    apply H with x0. refl. hyp.
-  Qed.
-
-End path.
-
-(***********************************************************************)
-(** R @ S << S @ R -> WF S -> WF (R## @ S) *)
-
-Section commut_modulo.
-
-  Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
-
-  Lemma SN_commut_modulo : forall x, SN S x -> SN (R# @ S) x.
-
-  Proof.
-    induction 1. apply SN_intro. intros. ded (commut_rtc commut H1).
-    do 2 destruct H2. eapply SN_modulo. apply H0. apply H2. hyp.
-  Qed.
-
-  Lemma WF_commut_modulo : WF S -> WF (R# @ S).
-
-  Proof. unfold WF. intros. apply SN_commut_modulo. apply H. Qed.
-
-End commut_modulo.
-
-(***********************************************************************)
-(** R @ T << T -> WF T -> WF (T @ R##) *)
+End compat.
 
 Section absorb.
 
@@ -578,7 +438,142 @@ Section WF_mod_rev.
 End WF_mod_rev.
 
 (***********************************************************************)
-(** Modular removal of rules for relative termination *)
+(** ** Reduction modulo. *)
+
+Section modulo.
+
+  Variables (A : Type) (E R : relation A).
+
+  Lemma SN_modulo : forall x x', SN (E# @ R) x -> E# x x' -> SN (E# @ R) x'.
+
+  Proof.
+    intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
+    exists x0. intuition. apply rt_trans with x'; hyp.
+  Qed.
+
+  Lemma WF_union_mod : WF E -> WF (E# @ R) -> WF (R U E).
+
+  Proof.
+    intros WF_E WF_ER x.
+    apply SN_ind with A (E# @ R); auto. 
+    clear x. intros x _ IH.
+    apply SN_intro. intros y RExy.
+    destruct RExy as [Rxy | Exy].
+    apply IH. exists x. 
+    split; [apply rt_refl | hyp].
+    cut (forall y, (E# @ R) x y -> SN (R U E) y); [idtac | hyp].
+    cut (E! x y). pattern y. apply SN_ind with A E; auto.
+    clear y IH Exy. intros y _ IH_out Exy IH_in.
+    apply SN_intro. intros z REyz.
+    destruct REyz.
+    apply IH_in. exists y. split; trivial.
+    apply tc_incl_rtc. hyp.
+    apply IH_out; trivial.
+    constructor 2 with y. trivial.
+    constructor. hyp.
+    constructor. hyp.
+  Qed.
+
+End modulo.
+
+(***********************************************************************)
+(** ** Commuting relations. *)
+
+Section commut.
+
+  Variables (A : Type) (R S : relation A) (commut : S @ R << R @ S).
+
+  Lemma SN_commut : forall x, SN R x -> forall x', S x x' -> SN R x'.
+
+  Proof.
+    induction 1; intros. apply SN_intro. intros.
+    assert ((S @ R) x y). exists x'. intuition. ded (commut H3).
+    do 2 destruct H4. apply (H0 _ H4 _ H5).
+  Qed.
+
+End commut.
+
+Section commut_modulo.
+
+  Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
+
+  Lemma SN_commut_modulo : forall x, SN S x -> SN (R# @ S) x.
+
+  Proof.
+    induction 1. apply SN_intro. intros. ded (commut_rtc commut H1).
+    do 2 destruct H2. eapply SN_modulo. apply H0. apply H2. hyp.
+  Qed.
+
+  Lemma WF_commut_modulo : WF S -> WF (R# @ S).
+
+  Proof. unfold WF. intros. apply SN_commut_modulo. apply H. Qed.
+
+End commut_modulo.
+
+(***********************************************************************)
+(** ** Iteration of a relation [Iter]. *)
+
+Require Import Iter.
+
+Section iter.
+
+  Variables (A : Type) (R : relation A).
+
+  Lemma SN_iter_S : forall n x, SN (iter R n) x -> SN (iter R (S n)) x.
+
+  Proof.
+    intros. elim H. intros. apply SN_intro. intros.
+    assert ((iter R n @ iter R 0) x0 y). apply iter_commut. hyp.
+    do 2 destruct H3. ded (H1 _ H3).
+    eapply SN_commut with (S := iter R 0). apply iter_commut. apply H5. hyp.
+  Qed.
+
+  Lemma SN_iter_S' : forall n x, SN (iter R (S n)) x -> SN (iter R n) x.
+
+  Proof.
+    intros. elim H; intros. do 2 (apply SN_intro; intros). destruct n.
+    simpl in *. apply H1. exists y. intuition.
+    assert ((iter R (S (S n)) @ iter R n) x0 y0).
+    apply inclusion_elim with (R := iter R (S n) @ iter R (S n)).
+    incl_trans (iter R (S n+S n+1)). apply iter_iter.
+    assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
+    exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
+    eapply SN_commut with (S := iter R n). apply iter_commut. apply H6. hyp.
+  Qed.
+
+  Lemma SN_iter : forall n x, SN (iter R n) x -> SN R x.
+
+  Proof. induction n; intros. hyp. apply IHn. apply SN_iter_S'. hyp. Qed.
+
+  Lemma WF_iter : forall n, WF (iter R n) -> WF R.
+
+  Proof. unfold WF. intros. eapply SN_iter. apply H. Qed.
+
+End iter.
+
+(***********************************************************************)
+(** ** Extension of SN_intro to paths of fixed length. *)
+
+Require Import Path.
+
+Section path.
+
+  Variables (A : Type) (R : relation A).
+
+  Lemma SN_path : forall n x,
+    (forall y l, length l = n -> path R x y l -> SN R y) -> SN R x.
+
+  Proof.
+    intros. apply SN_iter with n. apply SN_intro. intros.
+    apply SN_incl with (R!). apply iter_tc. apply SN_tc.
+    ded (iter_path H0). do 2 destruct H1. subst n.
+    apply H with x0. refl. hyp.
+  Qed.
+
+End path.
+
+(***********************************************************************)
+(** ** Modular removal of rules for relative termination. *)
 
 Section wf_mod_shift.
     
@@ -644,7 +639,7 @@ Section wf_rel_mod_simpl.
 End wf_rel_mod_simpl.
 
 (***********************************************************************)
-(** WF of relations on nat. *)
+(** ** Termination of the ordering on natural numbers. *)
 
 Require Export Wf_nat.
 
@@ -673,7 +668,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Restriction of a relation to some set. *)
+(** ** Restriction of a relation to some set. *)
 
 Require Import SetUtil.
 
@@ -709,7 +704,7 @@ Lemma restrict_union A (P : set A) R S :
 Proof. fo. Qed.
 
 (****************************************************************************)
-(** Extension of a relation on [A] to [option A]. *)
+(** ** Extension of a relation on [A] to [option A]. *)
 
 Section opt.
 
@@ -727,6 +722,20 @@ Section opt.
     apply SN_intro; intros [y|] hy; inversion hy.
   Qed.
 
+  Global Instance opt_trans : Transitive R -> Transitive opt.
+
+  Proof.
+    intros R_trans x y z xy yz. inversion xy; inversion yz; clear xy yz; subst.
+    inversion H3; clear H3; subst. apply opt_intro. trans y0; hyp.
+  Qed.
+
+  Global Instance opt_sym : Symmetric R -> Symmetric opt.
+
+  Proof.
+    intros R_sym x y xy. inversion xy; clear xy; subst.
+    apply opt_intro. sym. hyp.
+  Qed.
+
   Global Instance opt_eq_opt E : Proper (E ==> E ==> impl) R ->
     Proper (eq_opt E ==> eq_opt E ==> impl) opt.
 
@@ -736,6 +745,8 @@ Section opt.
       try discr. inversion H6; inversion H3; clear H6 H3; subst.
     apply opt_intro. eapply R_E. apply H2. apply H5. hyp.
   Qed.
+
+  (** Relation with [eq_opt]. *)
 
   Lemma opt_eq_opt_r E : R @ E << R -> opt @ eq_opt E << opt.
 
@@ -753,17 +764,21 @@ Section opt.
     apply opt_intro. apply ER. exists x0. fo.
   Qed.
 
-  Global Instance opt_trans : Transitive R -> Transitive opt.
-
-  Proof.
-    intros R_trans x y z xy yz. inversion xy; inversion yz; clear xy yz; subst.
-    inversion H3; clear H3; subst. apply opt_intro. trans y0; hyp.
-  Qed.
-
 End opt.
+
+(** Monotony properties. *)
 
 Instance opt_incl A : Proper (inclusion ==> inclusion) (@opt A).
 
 Proof.
   intros R S RS x y xy. inversion xy; clear xy; subst. apply opt_intro. fo.
+Qed.
+
+Instance opt_proper A (E1 E2 R : relation A) :
+  Proper (E1 ==> E2 ==> impl) R -> Proper (opt E1 ==> opt E2 ==> impl) (opt R).
+
+Proof.
+  intros h x x' xx' y y' yy' xy. inversion xx'; clear xx'; subst.
+  inversion yy'; clear yy'; subst. inversion xy; clear xy; subst.
+  apply opt_intro. eapply h. apply H. apply H0. hyp.
 Qed.
