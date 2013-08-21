@@ -46,7 +46,7 @@ types. *)
     Notation Ty := (@Ty So).
     Notation Tys := (vector Ty).
 
-    Fixpoint vint n (Ts : Tys n) p (ts : Tes p) :=
+    Fixpoint vint {n} (Ts : Tys n) {p} (ts : Tes p) :=
       match Ts, ts with
         | _, Vnil => True
         | Vcons T _ Ts', Vcons t _ ts' => int T t /\ vint Ts' ts'
@@ -110,9 +110,9 @@ Module Make (Export ST : ST_Struct)
       intros T x. gen (cp_int T). intros [T1 _ _ T4]. apply cp_var; auto.
     Qed.
 
-    Lemma int_typ_eq : forall T U t, int U t -> T = U -> int T t.
+    Lemma int_typ_eq : forall T V t, int V t -> T = V -> int T t.
 
-    Proof. intros T U t h e. subst. hyp. Qed.
+    Proof. intros T V t h e. subst. hyp. Qed.
 
     (** A substitution is valid wrt an environment [E] if, for every
        mapping [(x,T) in E], [s x] is in the interpretation of [T]. *)
@@ -218,27 +218,28 @@ Module Make (Export ST : ST_Struct)
 
     Proof. simpl. apply vint_le. Qed.
 
-    Lemma vint_typs_eq : forall n (Ts Us : Tys n) p (ts : Tes p),
+    Lemma vint_intro_typs_eq : forall n (Ts Us : Tys n) p (ts : Tes p),
       vint Us ts -> Us = Ts -> vint Ts ts.
 
     Proof. intros n Ts Us p ts h e. subst. hyp. Qed.
 
-    Lemma vint_typs_eq_cast : forall n (Ts : Tys n) m (Us : Tys m) (h : n=m)
-      p (ts : Tes p), vint Us ts -> Us = Vcast Ts h -> vint Ts ts.
+    Lemma vint_intro_typs_eq_cast : forall n (Ts : Tys n) m (Us : Tys m)
+      (h : n=m) p (ts : Tes p), vint Us ts -> Us = Vcast Ts h -> vint Ts ts.
 
     Proof.
       intros n Ts m Us h p ts i. subst. rewrite Vcast_refl. intro; subst. hyp.
     Qed.
 
-    Lemma vint_int_Vnth : forall n (Ts : Tys n) p (ts : Tes p), vint Ts ts ->
+    Lemma vint_elim_nth : forall n (Ts : Tys n) p (ts : Tes p),
+      vint Ts ts ->
       forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp).
 
     Proof.
-      induction Ts; destruct ts; simpl Def.vint; intros i j jn jp; intuition.
+      induction Ts; destruct ts; simpl Def.vint; intros hts j jn jp; intuition.
       destruct j; simpl. hyp. apply IHTs. hyp.
     Qed.
 
-    Lemma int_Vnth_vint : forall n (Ts : Tys n) p (ts : Tes p), p <= n ->
+    Lemma vint_intro_nth : forall n (Ts : Tys n) p (ts : Tes p), p <= n ->
       (forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp))
       -> vint Ts ts.
 
@@ -255,38 +256,47 @@ Module Make (Export ST : ST_Struct)
       rewrite c, d. auto.
     Qed.
 
-    Lemma vint_Vnth : forall n (Ts : Tys n) p (ts : Tes p), p <= n ->
+    Lemma vint_eq : forall n (Ts : Tys n) p (ts : Tes p), p <= n ->
       (vint Ts ts
         <-> (forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp))).
 
     Proof.
-      intros n Ts p ts pn. split. apply vint_int_Vnth. apply int_Vnth_vint. hyp.
+      intros n Ts p ts pn. split. apply vint_elim_nth.
+      apply vint_intro_nth. hyp.
     Qed.
 
-    Lemma vint_sub_sub_intro : forall n (Ts : Tys n) p (ts : Tes p),
+    Lemma vint_sub_intro : forall n (Ts : Tys n) p (ts : Tes p),
       vint Ts ts -> forall i k (h : i+k<=n) k' (h' : i+k'<= p), k'<=k ->
         vint (Vsub Ts h) (Vsub ts h').
 
     Proof.
-      intros n Ts p ts a i k h k' h' b. apply int_Vnth_vint. hyp.
-      intros j jk jk'. rewrite 2!Vnth_sub. apply vint_int_Vnth. hyp.
+      intros n Ts p ts a i k h k' h' b. apply vint_intro_nth. hyp.
+      intros j jk jk'. rewrite 2!Vnth_sub. apply vint_elim_nth. hyp.
     Qed.
 
-    Lemma vint_sub_elim : forall n (Ts : Tys n) p (ts : Tes p) (h : 0+p<=n),
+    Lemma vint_sub_typ_elim : forall n (Ts : Tys n) p (ts : Tes p) (h : 0+p<=n),
       vint (Vsub Ts h) ts -> vint Ts ts.
 
     Proof.
-      intros n Ts p ts h. rewrite 2!vint_Vnth; try omega. intuition.
+      intros n Ts p ts h. rewrite 2!vint_eq; try omega. intuition.
       gen (H _ jp jp). rewrite Vnth_sub. erewrite Vnth_eq. intro i; apply i.
       refl.
     Qed.
 
-    Lemma vint_sub_intro : forall n (Ts : Tys n) p (ts : Tes p) (h : 0+p<=n),
-      vint Ts ts -> vint (Vsub Ts h) ts.
+    Lemma vint_sub_typ_intro : forall n (Ts : Tys n) p (ts : Tes p)
+      (h : 0+p<=n), vint Ts ts -> vint (Vsub Ts h) ts.
 
     Proof.
-      intros n Ts p ts h i. apply int_Vnth_vint. refl.
-      intros j j1 j2. rewrite Vnth_sub. apply vint_int_Vnth. hyp.
+      intros n Ts p ts h i. apply vint_intro_nth. refl.
+      intros j j1 j2. rewrite Vnth_sub. apply vint_elim_nth. hyp.
+    Qed.
+
+    Lemma vint_sub_term_intro : forall n (Ts : Tys n) p (ts : Tes p)
+      q (h : 0+q<=p), vint Ts ts -> vint Ts (Vsub ts h).
+
+    Proof.
+      intros n Ts p ts q h hts. apply vint_intro_nth. gen (vint_le hts). omega.
+      intros j jn jq. rewrite Vnth_sub. apply vint_elim_nth. hyp.
     Qed.
 
     Lemma vint_cast_typ : forall n (Ts : Tys n) n' (h : n=n') p (ts : Tes p),
@@ -303,25 +313,26 @@ Module Make (Export ST : ST_Struct)
 
     Proof. intros n Ts p ts p' e. subst. rewrite Vcast_refl. refl. Qed.
 
-    Lemma vint_app_term_l : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q),
-      vint Ts (Vapp ts us) -> vint Ts ts.
+    Lemma vint_app_term_elim_l : forall n (Ts : Tys n) p (ts : Tes p)
+      q (us : Tes q), vint Ts (Vapp ts us) -> vint Ts ts.
 
     Proof.
       intros n Ts p ts q us; revert p ts q us n Ts.
       induction ts; intros q us m Ts; simpl; destruct Ts; fo.
     Qed.
 
-    Lemma vint_app_term_r : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q)
-      (h : vint Ts (Vapp ts us)), vint (Vsub Ts (vint_le h)) us.
+    Lemma vint_app_term_elim_r : forall n (Ts : Tys n) p (ts : Tes p)
+      q (us : Tes q) (h : vint Ts (Vapp ts us)), vint (Vsub Ts (vint_le h)) us.
 
     Proof.
       intros n Ts p ts q us h.
       assert (a : p+q<=p+q). omega. rewrite <- Vsub_app_r with (v1:=ts) (h:=a).
-      apply vint_sub_sub_intro. hyp. refl.
+      apply vint_sub_intro. hyp. refl.
     Qed.
 
-    Lemma vint_app_term : forall n (Ts : Tys n) p (ts : Tes p) q (us : Tes q)
-      (h : p+q <= n), vint Ts ts -> vint (Vsub Ts h) us -> vint Ts (Vapp ts us).
+    Lemma vint_app_intro : forall n (Ts : Tys n) p (ts : Tes p)
+      q (us : Tes q) (h : p+q <= n), vint Ts ts -> vint (Vsub Ts h) us ->
+      vint Ts (Vapp ts us).
 
     Proof.
       induction Ts; simpl.
@@ -330,11 +341,11 @@ Module Make (Export ST : ST_Struct)
       omega.
       destruct ts; simpl; intros q us i.
       destruct us; simpl. fo. rewrite Vsub_cons. intuition.
-      eapply vint_sub_elim. apply H2.
+      eapply vint_sub_typ_elim. apply H2.
       rewrite Vsub_cons. intuition. eapply IHTs. hyp. apply H0.
     Qed.
 
-    Lemma vint_sn : forall n (Ts : Tys n) p (ts : Tes p),
+    Lemma vint_forall_sn : forall n (Ts : Tys n) p (ts : Tes p),
       vint Ts ts -> Vforall (SN R_aeq) ts.
 
     Proof.
@@ -345,7 +356,7 @@ Module Make (Export ST : ST_Struct)
     Qed.
 
     Global Instance vint_vaeq n (Ts : Tys n) p :
-      Proper (vaeq ==> impl) (@vint n Ts p).
+      Proper (vaeq ==> impl) (vint Ts (p:=p)).
 
     Proof.
       revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
@@ -391,7 +402,7 @@ Module Make (Export ST : ST_Struct)
     (** Computability of vectors of terms is preserved by reduction. *)
 
     Global Instance vint_clos_vaeq n (Ts : Tys n) p :
-      Proper (clos_vaeq R ==> impl) (@vint n Ts p).
+      Proper (clos_vaeq R ==> impl) (vint Ts (p:=p)).
 
     Proof.
       revert n Ts p. induction Ts; intros p us vs usvs; unfold impl; simpl.
@@ -412,11 +423,11 @@ Module Make (Export ST : ST_Struct)
   End int.
 
   Arguments cp_int [I] _ T.
-  Arguments vint_app_term_l [I n Ts p ts q us] _.
-  Arguments vint_app_term_r [I n Ts p ts q us] _.
+  Arguments vint_app_term_elim_l [I n Ts p ts q us] _.
+  Arguments vint_app_term_elim_r [I n Ts p ts q us] _.
   Arguments vint_le [I n Ts p ts] _.
   Arguments vint_le' [I n Ts p ts] _.
-  Arguments vint_int_Vnth [I n Ts p ts] _ [j] _ _.
+  Arguments vint_elim_nth [I n Ts p ts] _ [j] _ _.
 
 (****************************************************************************)
 (** ** Monotony properties of [int] and [vint]. *)
@@ -516,7 +527,8 @@ Module SN_beta (Export ST : ST_Struct).
     gen (cp_I b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
     cut (SN (clos_vaeq beta) vs).
-    Focus 2. apply sn_clos_vaeq_intro. eapply vint_sn. apply cp_I. apply hvs.
+    Focus 2. apply sn_clos_vaeq_intro. eapply vint_forall_sn. apply cp_I.
+    apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
     induction 1.
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
