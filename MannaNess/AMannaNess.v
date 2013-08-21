@@ -29,9 +29,7 @@ Section S.
 
     Lemma manna_ness : reduction_ordering succ -> compat succ R -> WF (red R).
 
-    Proof.
-      intros. WF_incl succ. incl_red.
-    Qed.
+    Proof. intros. WF_incl succ. incl_red. Qed.
 
   End manna_ness.
 
@@ -46,9 +44,7 @@ several steps of R1 followed by a step of R2 *)
     Lemma manna_ness_mod : forall rp : Reduction_pair Sig,
       compat (rp_succ_eq rp) E -> compat (rp_succ rp) R -> WF (red_mod E R).
 
-    Proof.
-      intros. WF_incl (rp_succ rp). incl_red.
-    Qed.
+    Proof. intros. WF_incl (rp_succ rp). incl_red. Qed.
 
   End manna_ness_mod.
 
@@ -63,9 +59,7 @@ several steps of R1 followed by a -head- step of R2 *)
     Lemma manna_ness_hd_mod : forall wp : Weak_reduction_pair Sig,
       compat (wp_succ_eq wp) E -> compat (wp_succ wp) R -> WF (hd_red_mod E R).
 
-    Proof.
-      intros. WF_incl (wp_succ wp). incl_red.
-    Qed.
+    Proof. intros. WF_incl (wp_succ wp). incl_red. Qed.
 
   End manna_ness_hd_mod.
 
