@@ -100,6 +100,10 @@ Tactic Notation "by" tactic(T) := (T; done).
 (***********************************************************************)
 (** Basic theorems on (intuitionist) propositional calculus. *)
 
+Lemma impl_refl : forall P, P -> P.
+
+Proof. fo. Qed.
+
 Lemma contraposee_inv : forall P Q : Prop, (P -> Q) -> ~Q -> ~P.
 
 Proof. fo. Qed.
