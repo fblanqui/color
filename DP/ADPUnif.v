@@ -42,7 +42,7 @@ Section S.
       unfold connectable. set (k := S (maxvar l2)).
       destruct (rtc_red_sub_ren_cap hypR k H2).
       destruct (ren_cap_sub R x1 r1 k).
-      destruct H3. revert H0. rewrite H3. unfold shift. repeat rewrite sub_sub.
+      destruct H3. revert H0. rewrite H3. unfold shift. rewrite !sub_sub.
       intro. assert (forall x, In x (vars (ren_cap R k r1))
         -> In x (vars l2) -> False).
       intros. ded (vars_ren_cap H5). ded (vars_max H6). subst k. omega.
@@ -89,7 +89,7 @@ Section S.
       destruct l2. refl. set (k := S (maxvar (Fun f0 t0))). rewrite ren_cap_fun.
       revert H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl.
       intro. rewrite H1. unfold is_sol_eqn. unfold fst, snd.
-      repeat rewrite sub_fun. intro. Funeqtac. rewrite H6.
+      rewrite !sub_fun. intro. Funeqtac. rewrite H6.
       rewrite (beq_refl (@beq_symb_ok Sig)). refl.
     Qed.
 

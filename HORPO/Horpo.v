@@ -1391,7 +1391,7 @@ Module Horpo (S : TermsSig.Signature)
     rewrite (app_units_app M Mapp).
     rewrite (app_units_app M' M'app).
     simpl; rewrite Margs; rewrite M'args.
-    repeat rewrite length_app; trivial.
+    rewrite !length_app; trivial.
     intros.
     rewrite (app_units_app M Mapp) in H1.
     rewrite (app_units_app M' M'app) in H2.
@@ -1432,7 +1432,7 @@ Module Horpo (S : TermsSig.Signature)
     apply abs_type_eq with Nabs N'abs; trivial.
     apply horpo_type_preserving; trivial.
     set (w := horpo_env_preserving H2).
-    repeat rewrite absBody_env in w.
+    rewrite !absBody_env in w.
     inversion w; trivial.
     apply AlgAbs with Nabs; trivial.
     apply AlgAbs with N'abs; trivial.

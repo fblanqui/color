@@ -74,8 +74,8 @@ Section Morphism.
   Lemma Rules_Fl : forall R, Rules (Fl R) [=] Frs (Rules R).
 
   Proof.
-    induction R; simpl; intros. fo. repeat rewrite Rules_cons.
-    rewrite IHR. unfold Frs. rewrite image_add. refl.
+    induction R; simpl; intros. fo. rewrite !Rules_cons, IHR.
+    unfold Frs. rewrite image_add. refl.
   Qed.
 
   Lemma incl_Frs : forall R S, R [= S -> Frs R [= Frs S.
@@ -189,24 +189,20 @@ Section Morphism.
 
   Lemma Fred_WF_fin : forall R, WF (red (Fl R)) -> WF (red R).
 
-  Proof.
-    intro. repeat rewrite <- red_Rules. rewrite Rules_Fl. apply Fred_WF.
-  Qed.
+  Proof. intro. rewrite <- !red_Rules, Rules_Fl. apply Fred_WF. Qed.
 
   Lemma Fred_mod_WF_fin : forall E R,
     WF (red_mod (Fl E) (Fl R)) -> WF (red_mod E R).
 
   Proof.
-    intros E R. repeat rewrite <- red_mod_Rules. repeat rewrite Rules_Fl.
-    apply Fred_mod_WF.
+    intros E R. rewrite <- !red_mod_Rules, !Rules_Fl. apply Fred_mod_WF.
   Qed.
 
   Lemma Fhd_red_mod_WF_fin : forall E R,
     WF (hd_red_mod (Fl E) (Fl R)) -> WF (hd_red_mod E R).
 
   Proof.
-    intros E R. repeat rewrite <- hd_red_mod_Rules. repeat rewrite Rules_Fl.
-    apply Fhd_red_mod_WF.
+    intros E R. rewrite <- !hd_red_mod_Rules, !Rules_Fl. apply Fhd_red_mod_WF.
   Qed.
 
 End Morphism.
@@ -285,8 +281,7 @@ Section Epi.
     refl.
     (* Fun *)
     intros. simpl. eapply fun_eq_intro with (h:=FG f).
-    rewrite Vmap_cast. repeat rewrite Vcast_cast. rewrite H.
-    sym. apply Vcast_refl.
+    rewrite Vmap_cast, !Vcast_cast, H. sym. apply Vcast_refl.
     (* Vnil *)
     refl.
     (* Vcons *)
@@ -310,9 +305,7 @@ Section Epi.
 
   Lemma Fr_epi : forall a, Fr HF (Fr HG a) = a.
 
-  Proof.
-    destruct a as [l r]. simpl. repeat rewrite Ft_epi. refl.
-  Qed.
+  Proof. destruct a as [l r]. simpl. rewrite !Ft_epi. refl. Qed.
 
   Lemma Fl_epi : forall l, Fl HF (Fl HG l) = l.
 

@@ -97,7 +97,7 @@ Proof.
 induction v1; simpl; intros. VOtac. simpl.
 destruct v2. VOtac. tauto. VSntac v2'. tauto.
 revert H. VSntac v1'. simpl. destruct v2. VOtac. tauto.
-revert H0. VSntac v2'. repeat rewrite eq_vec_cons.
+revert H0. VSntac v2'. rewrite !eq_vec_cons.
 intros [h1 h2] [h3 h4]. rewrite <- h1. rewrite <- h3.
 rewrite (IHv1 _ h4 _ _ _ h2). tauto.
 Qed.
@@ -189,7 +189,7 @@ Lemma Vmap_mor : forall n (v v': vector A n), eq_vec eqA v v' ->
 
 Proof.
 induction v; simpl; intros. VOtac. refl. revert H. VSntac v'. simpl.
-repeat rewrite eq_vec_cons. intuition.
+rewrite !eq_vec_cons. intuition.
 Qed.
 
 (***********************************************************************)
@@ -221,7 +221,7 @@ Lemma Vmap2_mor : forall n (va va': vector A n), eq_vec eqA va va' ->
 
 Proof.
 induction va; simpl; intros. refl. revert H. VSntac va'. revert H0. VSntac vb.
-VSntac vb'. repeat rewrite eq_vec_cons. intuition.
+VSntac vb'. rewrite !eq_vec_cons. intuition.
 Qed.
 
 End Vmap2.

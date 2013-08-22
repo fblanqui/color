@@ -136,7 +136,7 @@ Proof. fo. Qed.
 
 (** Tactic removing identical propositions in a conjunction. *)
 
-Ltac and_idem := repeat rewrite and_assoc;
+Ltac and_idem := rewrite !and_assoc;
   repeat (rewrite and_idem_and_l || rewrite and_idem_and_r || rewrite and_idem).
 
 (***********************************************************************)

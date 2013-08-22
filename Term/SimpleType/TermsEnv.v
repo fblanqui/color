@@ -84,8 +84,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     elimtype False; apply varD_UD_absurd with 
       (initialSeg E k ++ copy n None ++ finalSeg E k) p A; trivial.
     left; apply nth_beyond; trivial.
-    unfold VarD, VarUD; repeat rewrite nth_app_left.
-    rewrite initialSeg_nth; fo.
+    unfold VarD, VarUD. rewrite !nth_app_left, initialSeg_nth; fo.
     autorewrite with datatypes.
     apply Min.min_case2; trivial.
   Qed.
@@ -127,7 +126,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof.
     intros; unfold equiv, VarD, VarUD; rewrite H0.
-    repeat rewrite nth_app_right; autorewrite with datatypes.
+    rewrite !nth_app_right; autorewrite with datatypes.
     destruct (le_gt_dec k (length E)).
     replace (p + n - Min.min k (length E) - n) with (p - k).
     split; split; intro; solve
@@ -190,8 +189,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     elimtype False; apply varD_UD_absurd with 
       (initialSeg E k ++ finalSeg E (S k)) p A; trivial.
     left; apply nth_beyond; trivial.
-    unfold VarD, VarUD; repeat rewrite nth_app_left.
-    rewrite initialSeg_nth; fo.
+    unfold VarD, VarUD. rewrite !nth_app_left, initialSeg_nth; fo.
     autorewrite with datatypes.
     apply Min.min_case2; trivial.
   Qed.
@@ -931,10 +929,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     induction E1; intros F G H.
     rewrite env_sub_disjoint; trivial.
     rewrite env_sum_empty_l; trivial.
-    destruct F; destruct G; destruct a; 
-      repeat rewrite env_sum_empty_r;
-      repeat rewrite env_sub_empty; 
-	simpl; trivial.
+    destruct F; destruct G; destruct a; repeat rewrite env_sum_empty_r;
+      repeat rewrite env_sub_empty; simpl; trivial.
     destruct o; destruct o0; try_solve;
       try solve
 	[ rewrite (IHE1 F G); [trivial | intro p; exact (H (S p))]
@@ -1935,7 +1931,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply liftedEnv_distr_sum_equiv.
     unfold liftedEnv.
     autorewrite with datatypes.
-    repeat rewrite env_sum_length.
+    rewrite !env_sum_length.
     autorewrite with datatypes.
     destruct (le_gt_dec (length El) (length Er)).
 
@@ -2058,7 +2054,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply loweredEnv_distr_sum_equiv.
     unfold loweredEnv.
     autorewrite with datatypes.
-    repeat rewrite env_sum_length.
+    rewrite !env_sum_length.
     autorewrite with datatypes.
     destruct (le_gt_dec (length El) (length Er)).
 
@@ -2101,8 +2097,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof.
     induction E; intros.
-    unfold liftedEnv, finalSeg; destruct k; simpl;
-      repeat rewrite <- app_nil_end.
+    unfold liftedEnv, finalSeg; destruct k; simpl; rewrite <- 1app_nil_end.
     apply env_eq_empty_empty.
     apply emptyEnv_copyNone.
     apply tail_emptyEnv.

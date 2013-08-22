@@ -71,7 +71,7 @@ is transitive. *)
     Proof.
       intro. apply term_ind_forall with (P := fun t =>
       filter (sub s t) = sub (filter_subs s) (filter t)); intros; simpl.
-      refl. apply args_eq. repeat rewrite Vfilter_map. repeat rewrite Vmap_map.
+      refl. apply args_eq. rewrite !Vfilter_map, !Vmap_map.
       apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
       eapply Vin_filter_elim_in. apply H0. hyp.
     Qed.
@@ -115,7 +115,7 @@ is transitive. *)
 
       Proof.
         unfold substitution_closed. intros. unfold filter_ord.
-        repeat rewrite filter_sub. apply H. hyp.
+        rewrite !filter_sub. apply H. hyp.
       Qed.
 
 (***********************************************************************)
@@ -138,11 +138,11 @@ is transitive. *)
         reflexive succ -> context_closed succ -> context_closed fsucc.
 
       Proof.
-        repeat rewrite <- Vmonotone_context_closed.
+        rewrite <- !Vmonotone_context_closed.
         unfold Vmonotone, Vmonotone_i, RelUtil.monotone.
         intros hrefl hcc f i j e vi vj. unfold fsucc. simpl. intros t u.
         set (t' := filter t). set (u' := filter u). intro h'.
-        repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl. fold t' u'.
+        rewrite !Vmap_cast, !Vmap_app. simpl. fold t' u'.
         set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
         set (vt := Vcast (Vapp vi' (Vcons t' vj')) e).
         set (vu := Vcast (Vapp vi' (Vcons u' vj')) e).
@@ -189,11 +189,11 @@ is transitive. *)
         permut -> context_closed succ -> context_closed fsucc.
 
       Proof.
-        repeat rewrite <- Vmonotone_context_closed.
+        rewrite <- !Vmonotone_context_closed.
         unfold Vmonotone, Vmonotone_i, RelUtil.monotone.
         intros hp hcc f i j e vi vj. unfold fsucc. simpl. intros t u.
         set (t' := filter t). set (u' := filter u). intro h'.
-        repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl. fold t' u'.
+        rewrite !Vmap_cast, !Vmap_app. simpl. fold t' u'.
         set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
         set (vt := Vcast (Vapp vi' (Vcons t' vj')) e).
         set (vu := Vcast (Vapp vi' (Vcons u' vj')) e).
@@ -252,7 +252,7 @@ is transitive. *)
         unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
         elim c; clear c.
         (* Hole *)
-        simpl. right. repeat rewrite filter_sub. apply red_rule_top.
+        simpl. right. rewrite !filter_sub. apply red_rule_top.
         change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
         (* Cont *)
         intros f i j e vi c.
@@ -287,7 +287,7 @@ is transitive. *)
         assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
         intros hi h. ded (in_map (@val (arity f)) h). contr. rewrite e2.
 
-        unfold vt, vu. repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
+        unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
         destruct (le_gt_dec i (val x)). 2: absurd_arith.
         repeat (rewrite Vnth_cons_head; [idtac|omega]).
         change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
@@ -312,7 +312,7 @@ is transitive. *)
 
       Proof.
         unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-        repeat rewrite filter_sub. apply hd_red_rule.
+        rewrite !filter_sub. apply hd_red_rule.
         change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
       Qed.
 
@@ -333,7 +333,7 @@ is transitive. *)
       Proof.
         unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
         apply red_rtc_incl_filter_red_rtc. exact H.
-        subst t. subst y. repeat rewrite filter_sub. apply hd_red_rule.
+        subst t. subst y. rewrite !filter_sub. apply hd_red_rule.
         change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
       Qed.
 

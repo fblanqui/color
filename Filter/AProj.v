@@ -51,7 +51,7 @@ Section proj.
   Proof.
     intro. apply term_ind_forall; intros. refl. simpl. case (pi f).
     intros [k h]. rewrite Vnth_map. apply Vforall_nth. hyp.
-    simpl. apply args_eq. repeat rewrite Vmap_map. apply Vmap_eq. hyp.
+    simpl. apply args_eq. rewrite !Vmap_map. apply Vmap_eq. hyp.
   Qed.
 
 (***********************************************************************)
@@ -91,7 +91,7 @@ Section proj.
 
     Proof.
       unfold substitution_closed. intros. unfold proj_ord.
-      repeat rewrite proj_sub. apply H. hyp.
+      rewrite !proj_sub. apply H. hyp.
     Qed.
 
 (***********************************************************************)
@@ -150,20 +150,19 @@ Section proj.
     Proof.
       unfold inclusion, proj_ord. intros. redtac. subst. elim c.
       (* Hole *)
-      simpl. right. repeat rewrite proj_sub. apply red_rule_top.
+      simpl. right. rewrite !proj_sub. apply red_rule_top.
       change (In (proj_rule (mkRule l r)) R'). apply in_map. hyp.
       (* Cont *)
       intros. simpl. case (pi f).
       (* Some *)
-      intros [k h]. repeat rewrite Vnth_cast.
-      repeat rewrite Vnth_app. case (le_gt_dec i k); intro.
+      intros [k h]. rewrite !Vnth_cast, !Vnth_app. case (le_gt_dec i k); intro.
       case (eq_nat_dec i k); intro. subst.
       repeat (rewrite Vnth_cons_head; [idtac|omega]). hyp.
       gen (Vnth_app_aux (S j) (Vnth_cast_aux e h) l0).
-      assert (k-i=S(k-i-1)). omega. rewrite H0. intro. repeat rewrite Vnth_cons.
+      assert (k-i=S(k-i-1)). omega. rewrite H0. intro. rewrite !Vnth_cons.
       left. refl. left. refl.
       (* None *)
-      repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
+      rewrite !Vmap_cast, !Vmap_app. simpl.
       destruct H. rewrite H. left. refl. right.
       set (d := Cont f e (Vmap proj t) Hole (Vmap proj t0)).
       set (t1 := proj (fill c0 (sub s l))). set (u := proj (fill c0 (sub s r))).
@@ -185,7 +184,7 @@ Section proj.
 
     Proof.
       unfold inclusion, proj_ord. intros. redtac. subst x. subst y.
-      repeat rewrite proj_sub. apply hd_red_rule.
+      rewrite !proj_sub. apply hd_red_rule.
       change (In (proj_rule (mkRule l r)) R'). apply in_map. hyp.
     Qed.
 
@@ -206,7 +205,7 @@ Section proj.
     Proof.
       unfold inclusion, proj_ord. intros. redtac. exists (proj t). split.
       apply red_rtc_incl_proj_red_rtc. exact H.
-      subst t. subst y. repeat rewrite proj_sub. apply hd_red_rule.
+      subst t. subst y. rewrite !proj_sub. apply hd_red_rule.
       change (In (proj_rule (mkRule l r)) R'). apply in_map. hyp.
     Qed.
 

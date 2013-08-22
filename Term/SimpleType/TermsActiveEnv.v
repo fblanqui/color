@@ -401,7 +401,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes using simpl; trivial.
      (* abstraction *)
     fold (activeEnv (buildT M)) in *; fold (activeEnv (buildT T)).
-    repeat rewrite length_tail_minus.
+    rewrite !length_tail_minus.
     inversion H0.
     rewrite (IHM (buildT T)); simpl; trivial.
     unfold decl; apply env_comp_cons; trivial.
@@ -409,7 +409,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
      (* application *)
     fold (activeEnv (buildT M1)) in *; fold (activeEnv (buildT T1)).
     fold (activeEnv (buildT M2)) in *; fold (activeEnv (buildT T2)).
-    repeat rewrite env_sum_length.
+    rewrite !env_sum_length.
     inversion H0.
     rewrite (IHM1 (buildT T1)); trivial.
     rewrite (IHM2 (buildT T2)); trivial.

@@ -176,7 +176,7 @@ Lemma rules_preserve_vars_trs_of_srs :
 Proof.
 unfold rules_preserve_vars. induction R; simpl; intuition.
 unfold rule_of_srule in H0. destruct a. simpl in H0. inversion H0.
-repeat rewrite vars_var; is_unary. repeat rewrite var_term_of_string.
+rewrite !vars_var; is_unary. rewrite !var_term_of_string.
 unfold incl; simpl; intuition.
 Qed.
 
@@ -194,7 +194,7 @@ Lemma red_of_sred : forall x y,
 
 Proof.
 intros. do 3 destruct H. decomp H. subst x. subst y.
-repeat rewrite term_of_string_fill.
+rewrite !term_of_string_fill.
 apply red_rule.
 change (List.In (rule_of_srule (Srs.mkRule x0 x1)) (trs_of_srs R)).
 unfold trs_of_srs. apply in_map. exact H0.
@@ -212,14 +212,13 @@ Lemma sred_of_red : forall t u,
   red (trs_of_srs R) t u -> Srs.red R (string_of_term t) (string_of_term u).
 
 Proof.
-intros. redtac. subst. repeat rewrite string_of_term_fill.
-repeat rewrite string_of_term_sub. rewrite (rules_preserve_vars_var
-  is_unary_sig (rules_preserve_vars_trs_of_srs R) lr).
+intros. redtac. subst. rewrite !string_of_term_fill, !string_of_term_sub,
+  (rules_preserve_vars_var is_unary_sig (rules_preserve_vars_trs_of_srs R) lr).
 set (c' := mkContext (string_of_cont c) (string_of_term (s (var l)))).
 change (Srs.red R (SContext.fill c' (string_of_term l))
   (SContext.fill c' (string_of_term r))). apply Srs.red_rule. clear c'.
 destruct (in_map_elim lr). destruct H. destruct x. unfold rule_of_srule in H0.
-simpl in H0. inversion H0. repeat rewrite string_of_term_epi. hyp.
+simpl in H0. inversion H0. rewrite !string_of_term_epi. hyp.
 Qed.
 
 Lemma rtc_sred_of_red : forall t u, red (trs_of_srs R) # t u ->

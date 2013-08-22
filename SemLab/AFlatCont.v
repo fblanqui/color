@@ -90,14 +90,13 @@ Section S.
       clear h3. subst. unfold flat_conts in h4. rewrite in_flat_map in h4.
       destruct h4 as [g [h5 h6]]. unfold flat_conts_symb in h6.
       rewrite in_map_iff in h6. destruct h6 as [x [h3 h4]]. subst.
-      unfold flat_cont_symb. simpl. repeat rewrite Vmap_cast.
-      repeat rewrite Vmap_app. simpl.
+      unfold flat_cont_symb. simpl. rewrite !Vmap_cast, !Vmap_app. simpl.
       set (v1 := Vmap (sub s) (fresh (S n) (val x))).
       set (v2 := Vmap (sub s) (fresh (S(n+val x)) (arity g - S (val x)))).
       set (e := flat_cont_aux (prf x)). set (d' := Cont g e v1 Hole v2).
       set (v' := Vmap (sub s) t0). set (v0' := Vmap (sub s) t1).
       change (red R (fill c (fill d' (sub s (Fun f t0))))
-        (fill c (fill d' (sub s (Fun f0 t1))))). repeat rewrite fill_fill.
+        (fill c (fill d' (sub s (Fun f0 t1))))). rewrite !fill_fill.
       apply red_rule. hyp.
     Qed.
 
@@ -107,18 +106,18 @@ Section S.
 
     Proof.
       intros t u h. redtac. subst. unfold red_flat_cont, Rof.
-      repeat rewrite fill_fill.
+      rewrite !fill_fill.
       case_eq (is_root_preserving (mkRule l r)); intros.
       apply red_rule. unfold flat_rules. rewrite in_flat_map.
       exists (mkRule l r). intuition. unfold flat_rule. rewrite H. simpl. auto.
       destruct l. discr. destruct r. discr.
       destruct (cont_case (comp one_flat_cont c)). discr.
-      destruct H0 as [d [g [i [vi [j [vj [e]]]]]]]. repeat rewrite H0.
-      repeat rewrite <- fill_fill. set (l := Fun f t). set (r := Fun f0 t0).
+      destruct H0 as [d [g [i [vi [j [vj [e]]]]]]]. rewrite !H0, <- !fill_fill.
+      set (l := Fun f t). set (r := Fun f0 t0).
       apply context_closed_red.
       assert (m : maxvar_rule (mkRule l r) < S n). eapply maxvar_rules_elim.
       apply lr. omega.
-      repeat rewrite fill_sub with (n:=n).
+      rewrite !fill_sub with (n:=n).
       set (s' := maxvar_union (S n) s (fsub n (Vapp vi vj))).
       apply hd_red_incl_red. apply hd_red_rule. unfold flat_rules.
       rewrite in_flat_map. exists (mkRule l r). intuition. unfold flat_rule.

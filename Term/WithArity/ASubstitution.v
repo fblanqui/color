@@ -181,7 +181,7 @@ intros. set (s' := sub_comp s (single x u)). pattern t.
 apply term_ind with (Q := fun n (ts : terms n) =>
   Vmap (sub s') ts = Vmap (sub s) ts); clear t.
 intro. unfold s', sub_comp, single. simpl. case_beq_nat x x0; auto.
-intros f v IH. repeat rewrite sub_fun. apply (f_equal (Fun f)). hyp.
+intros f v IH. rewrite !sub_fun. apply (f_equal (Fun f)). hyp.
 refl. intros. simpl. apply Vcons_eq_intro; hyp.
 Qed.
 
@@ -261,7 +261,7 @@ Proof.
 apply term_ind with (Q := fun n (v : terms n) =>
   vars_vec (Vmap (sub s) v) = svars (vars_vec v)).
 simpl. intro. rewrite <- app_nil_end. refl.
-intros. simpl sub. repeat rewrite vars_fun. exact H.
+intros. simpl sub. rewrite !vars_fun. exact H.
 simpl. refl.
 intros. simpl. rewrite H. rewrite svars_app.
 apply (f_equal (app (svars (vars t)))). exact H0.
@@ -270,7 +270,7 @@ Qed.
 Lemma incl_vars_sub : forall l r,
   incl (vars r) (vars l) -> incl (vars (sub s r)) (vars (sub s l)).
 
-Proof. intros. repeat rewrite vars_sub. apply incl_svars. exact H. Qed.
+Proof. intros. rewrite !vars_sub. apply incl_svars. exact H. Qed.
 
 End vars.
 
@@ -299,7 +299,7 @@ intros until t. unfold sub_eq_dom in H. apply term_ind with
 (* var *)
 unfold incl. simpl. intuition.
 (* fun *)
-intros. repeat rewrite sub_fun. apply (f_equal (Fun f)).
+intros. rewrite !sub_fun. apply (f_equal (Fun f)).
 apply H0. rewrite vars_fun in H1. exact H1.
 (* nil *)
 refl.
@@ -725,7 +725,7 @@ intros s x y t. pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
   (Vmap (sub (swap x y)) ts)); clear t; intros.
 simpl. unfold swap, single, sub_comp. case_beq_nat x x0. simpl.
 rewrite (beq_refl beq_nat_ok). refl. simpl. case_beq_nat y x0.
-simpl in H. tauto. refl. repeat rewrite sub_fun. rewrite H. refl.
+simpl in H. tauto. refl. rewrite !sub_fun. rewrite H. refl.
 rewrite vars_fun in H0. hyp. refl. simpl in *. rewrite in_app in H1.
 rewrite H0. rewrite H. refl. tauto. tauto.
 Qed.

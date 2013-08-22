@@ -106,7 +106,7 @@ Module Make (X : OrderedType).
 
     Proof.
       unfold transpose_neqkey. intros k l x y m n. unfold Equal.
-      intro k'. repeat rewrite add_o.
+      intro k'. rewrite !add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
       absurd (X.eq k l). hyp. trans k'. hyp. sym. hyp.
     Qed.
@@ -117,7 +117,7 @@ Module Make (X : OrderedType).
       forall (x y : A) m, Equal (add k x (add l y m)) (add k x m).
 
     Proof.
-      intros k l kl x y m. unfold Equal. intro k'. repeat rewrite add_o.
+      intros k l kl x y m. unfold Equal. intro k'. rewrite !add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
       absurd (X.eq k k'). hyp. trans l; hyp.
     Qed.
@@ -310,7 +310,7 @@ Module Make (X : OrderedType).
       Proper (Equiv eq ==> Logic.eq) (@is_empty A).
 
     Proof.
-      intros m m' mm'. apply beq_true. repeat rewrite <- is_empty_iff.
+      intros m m' mm'. apply beq_true. rewrite <- !is_empty_iff.
       apply Empty_Equiv. hyp.
     Qed.
 
@@ -403,11 +403,11 @@ and satisfies some commutation property. *)
           eqB (fold f m b) (fold f' m' b').
 
       Proof.
-        intros f f_m hf f' ff' m m' mm' b b' bb'. repeat rewrite fold_1.
+        intros f f_m hf f' ff' m m' mm' b b' bb'. rewrite !fold_1.
         set (F := fun a (p:key*A) => f (fst p) (snd p) a).
         set (F' := fun a (p:key*A) => f' (fst p) (snd p) a).
         trans (fold_left F (elements m') b').
-        unfold F. repeat rewrite <- fold_1. apply fold_Equiv; auto||refl.
+        unfold F. rewrite <- !fold_1. apply fold_Equiv; auto||refl.
         apply fold_left_m_ext with (eqB:=@eq_key_elt A); try refl.
         intros a a' aa' [k x] [k' x'] e. inversion e. unfold F, F'. simpl in *.
         subst x'. apply ff'; auto||refl.
@@ -475,7 +475,7 @@ and satisfies some commutation property. *)
         Proper (Equiv eq ==> Logic.eq) (for_all f).
 
       Proof.
-        intros heq fm m m' mm'. repeat rewrite for_all_eq.
+        intros heq fm m m' mm'. rewrite !for_all_eq.
         apply fold_Equiv; intuition. apply for_all_aux_transp.
       Qed.
 
@@ -484,7 +484,7 @@ and satisfies some commutation property. *)
         Proper (Equal ==> Logic.eq) (for_all f).
 
       Proof.
-        intros heq fm m m' mm'. repeat rewrite for_all_eq.
+        intros heq fm m m' mm'. rewrite !for_all_eq.
         apply fold_Equal; intuition. eapply Proper_inclusion_3.
         5: apply for_all_aux_m. refl. intros x y xy. subst y. refl.
         refl. refl. hyp.
@@ -523,7 +523,7 @@ and satisfies some commutation property. *)
 
       Proof. refl. Qed.
 
-      (*TODO
+      (*TODO?
 
       Lemma filter_add : Reflexive eq ->
         Proper (X.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
@@ -541,7 +541,7 @@ and satisfies some commutation property. *)
         Proper (Equiv eq ==> Logic.eq) (filter f).
 
       Proof.
-        intros heq fm m m' mm'. repeat rewrite filter_eq.
+        intros heq fm m m' mm'. rewrite !filter_eq.
         apply fold_Equiv; intuition. apply filter_aux_transp.
       Qed.
 
@@ -550,7 +550,7 @@ and satisfies some commutation property. *)
         Proper (Equal ==> Logic.eq) (filter f).
 
       Proof.
-        intros heq fm m m' mm'. repeat rewrite filter_eq.
+        intros heq fm m m' mm'. rewrite !filter_eq.
         apply fold_Equal; intuition. eapply Proper_inclusion_3.
         5: apply filter_aux_m. refl. intros x y xy. subst y. refl.
         refl. refl. hyp.

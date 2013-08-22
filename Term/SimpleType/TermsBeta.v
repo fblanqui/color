@@ -154,7 +154,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     term_inv N.
     rewrite <- Mhead.
     unfold Tr.
-    repeat rewrite appHead_app_explicit.
+    rewrite !appHead_app_explicit.
     congruence.
   Qed.
 
@@ -458,10 +458,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     simpl.
     repeat rewrite nth_app_right; rewrite copy_length; try omega.
     destruct (varSubst_dec G (x - i)) as [[T GT] | Gn].
-    rewrite GT.
-    rewrite (nth_lift_subst_s G 1 (x - i) GT).
-    repeat rewrite lift_term.
-    rewrite <- prelift_fold.
+    rewrite GT, (nth_lift_subst_s G 1 (x - i) GT), !lift_term, <- prelift_fold.
     apply prelower_prelift.
     set (w := var_notSubst_lift 1 Gn).
     inversion Gn; inversion w; rewrite H; rewrite H0; simpl;
@@ -471,8 +468,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite <- copy_add; trivial.
     rewrite <- app_nil_end; trivial.
      (*   - x < i *)
-    repeat rewrite nth_app_left.
-    rewrite nth_copy_in.
+    rewrite !nth_app_left, nth_copy_in.
     simpl.
     destruct (Compare_dec.le_gt_dec i x); trivial.
     elimtype False; omega.
@@ -522,8 +518,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Proof.
     intros.
     apply term_eq.
-    repeat rewrite lower_env; rewrite H; trivial.
-    repeat rewrite lower_term; rewrite H; trivial.
+    rewrite !lower_env; rewrite H; trivial.
+    rewrite !lower_term; rewrite H; trivial.
   Qed.
 
   Lemma subst_single_eq : forall M M' P P' (MP: correct_subst M {x/P})
@@ -532,10 +528,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Proof.
     intros.
     apply term_eq.
-    repeat rewrite subst_env.
-    rewrite H; rewrite H0; trivial.
-    repeat rewrite subst_term.
-    rewrite H; rewrite H0; trivial.
+    rewrite !subst_env, H, H0; trivial.
+    rewrite !subst_term, H, H0; trivial.
   Qed.
 
   Lemma double_subst_aux : forall M P G i
@@ -554,9 +548,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
       (copy (S i) None ++ lift_subst G 1); trivial.
     rewrite nth_app_right; autorewrite with terms datatypes; try omega.
     destruct (varSubst_dec G (x - S i)) as [[T GT] | Gn].
-    rewrite (var_subst_lift 1 GT).
-    repeat rewrite lift_term; rewrite <- prelift_fold.
-    rewrite presubst_beyond; trivial.
+    rewrite (var_subst_lift 1 GT), !lift_term, <- prelift_fold,
+      presubst_beyond; trivial.
     autorewrite with datatypes using simpl; try omega.
     destruct (var_notSubst_lift 1 Gn); rewrite H; 
       replace (%x) with (prelift (%0) x); trivial;
@@ -584,13 +577,13 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
     replace (None :: copy i None ++ lift_subst G 1) with 
       (copy (S i) None ++ lift_subst G 1); trivial.
-    repeat rewrite nth_app_left; autorewrite with terms datatypes using simpl;
+    rewrite !nth_app_left; autorewrite with terms datatypes using simpl;
       try omega.
     replace (None :: copy i None ++ lift_subst G 1) with 
       (copy (S i) None ++ lift_subst G 1); trivial.
     replace (None :: copy i (None (A:=Term)))
       with (copy (S i) (None (A:=Term))); trivial.
-    repeat rewrite nth_app_left; autorewrite with terms datatypes using simpl;
+    rewrite !nth_app_left; autorewrite with terms datatypes using simpl;
       try omega.
     rewrite nth_app_left; autorewrite with terms datatypes using trivial.
 
@@ -797,8 +790,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite Ml; rewrite Nl; apply IHM1; trivial.
     rewrite Mr; rewrite Nr; trivial.
     apply term_eq.
-    repeat rewrite subst_env; rewrite <- H1; trivial.
-    repeat rewrite subst_term; rewrite <- H1; trivial.
+    rewrite !subst_env, <- H1; trivial.
+    rewrite !subst_term, <- H1; trivial.
 
      (*  - reduction in right argument *)
     clear Mapp; assert (Mapp: isApp (buildT (TApp M1 M2))); simpl; trivial.
@@ -808,8 +801,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite Mr; rewrite Nr; apply IHM2; trivial.
     rewrite Ml; rewrite Nl; trivial.
     apply term_eq.
-    repeat rewrite subst_env; rewrite <- H1; trivial.
-    repeat rewrite subst_term; rewrite <- H1; trivial.
+    rewrite !subst_env, <- H1; trivial.
+    rewrite !subst_term, <- H1; trivial.
   Qed.
 
   Lemma beta_abs_reduct : forall M (Mabs: isAbs M) N, M -b-> N ->

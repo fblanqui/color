@@ -79,7 +79,7 @@ Lemma rel_on_nat_is_restricted :
 
 Proof.
 unfold is_restricted; intros.
-repeat rewrite nfirst_exact; ded (rel_on_nat_elim x y H).
+rewrite !nfirst_exact; ded (rel_on_nat_elim x y H).
 repeat destruct H0; destruct H1.
 ded (element_at_in2 H1).
 ded (element_at_in2 H2).

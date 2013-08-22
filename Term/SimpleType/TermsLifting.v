@@ -385,23 +385,12 @@ Module TermsLifting (Sig : TermsSig.Signature).
     apply term_eq; simpl in * .
 
      (* equality of environments *)
-    rewrite envL.
-    rewrite envRn.
-    rewrite envRm.
-    unfold liftedEnv; simpl.    
-    repeat rewrite finalSeg_full.
-    rewrite plus_comm.
-    rewrite copy_split.
-    rewrite app_ass; trivial.
+    rewrite envL, envRn, envRm. unfold liftedEnv; simpl.    
+    rewrite !finalSeg_full, plus_comm, copy_split, app_ass; trivial.
 
      (* equality of preterms *)
-    rewrite termL.
-    rewrite termRn.
-    rewrite termRm.
-    rewrite plus_comm.
-    fold (prelift (term Pt) (n+m)).
-    rewrite prelift_fold.
-    trivial.
+    rewrite termL, termRn, termRm, plus_comm. fold (prelift (term Pt) (n+m)).
+    rewrite prelift_fold. trivial.
   Qed.
 
   Lemma lift_fold_1out : forall M n, lift (lift M n) 1 = lift M (S n).

@@ -60,7 +60,7 @@ Qed.
 Lemma GoM_restricted : is_restricted (GoM M) (nfirst dim).
 
 Proof.
-unfold is_restricted; intros x y. repeat rewrite nfirst_exact.
+unfold is_restricted; intros x y. rewrite !nfirst_exact.
 intro. unfold GoM in H. unfold mat_unbound in *.
 destruct (le_gt_dec dim x); auto. discr.
 destruct (le_gt_dec dim y); auto. discr.
@@ -126,8 +126,7 @@ exists (S x); exists (lt_n_S x0); clear IHn.
 rewrite Hv. rewrite Hw. simpl.
 assert (lt_S_n (lt_n_S x0) = x0). apply lt_unique. rewrite H0. hyp.
 
-exists 0; exists (lt_O_Sn n); rewrite Hv; rewrite Hw;
-  repeat rewrite Vnth_head; auto.
+exists 0; exists (lt_O_Sn n); rewrite Hv, Hw; auto.
 unfold Amult in *; auto with *.
 
 repeat destruct H; unfold Amult; apply Is_true_eq_true; apply orb_prop_intro.
@@ -313,7 +312,7 @@ Proof.
 intros; unfold mat_unbound.
 destruct (le_gt_dec dim x); auto with *.
 destruct (le_gt_dec dim y); auto with *.
-unfold mat_andb; repeat rewrite Vnth_map2; auto.
+unfold mat_andb; rewrite !Vnth_map2; auto.
 Qed.
 
 Lemma Gmorph_intersect : forall x y,
@@ -343,8 +342,7 @@ Lemma GoM_SCC : forall x y, GoM (SCC_mat M) x y <-> SCC (GoM M) x y.
 Proof.
 unfold SCC_mat in *; split; intros; rewrite Gmorph_intersect in *; 
 try rewrite Gmorph_transpose in *; unfold transp in *;
-repeat rewrite Gmorph_clos_trans in *; unfold SCC in *;
-trivial.
+rewrite !Gmorph_clos_trans in *; unfold SCC in *; trivial.
 Qed.
 
 End GoM_SCC.

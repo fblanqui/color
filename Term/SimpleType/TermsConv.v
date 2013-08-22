@@ -1120,7 +1120,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Proof.
     intros.
     intros x y Qxy A.
-    repeat rewrite activeEnv_lower.
+    rewrite !activeEnv_lower.
     unfold loweredEnv; autorewrite with datatypes terms using simpl.
     destruct x; try_solve.
     destruct (eq_nat_dec 0 0); try_solve.
@@ -1528,7 +1528,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros; constructor.
-    repeat rewrite lift_term.
+    rewrite !lift_term.
     apply conv_term_lifted.
     destruct H; trivial.
     apply conv_env_lifted; destruct  H; trivial.
@@ -2318,7 +2318,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     constructor.
     apply app_conv_app_right_aux; trivial.
     constructor.
-    repeat rewrite appUnits_notApp; trivial.
+    rewrite !appUnits_notApp; trivial.
     constructor; trivial.
     constructor.
     rewrite <- (conv_by MN); trivial.

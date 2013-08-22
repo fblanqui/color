@@ -327,17 +327,18 @@ Module TermsPos (Sig : TermsSig.Signature).
     apply IHpos; trivial.
     rewrite (@appHead_app (buildT (TApp AppL AppR)) I) in H; trivial.
     apply term_eq.
-    rewrite appBodyL_env.
-    repeat rewrite swap_env_eq; trivial.
-    rewrite (@appBodyL_term (swap Mpos) (swap_term pos (proj1_sig2 Mpos)) PtR); trivial.
-    rewrite swap_term_is; rewrite e; trivial.
+    rewrite appBodyL_env, !swap_env_eq; trivial.
+    rewrite (@appBodyL_term (swap Mpos) (swap_term pos (proj1_sig2 Mpos)) PtR);
+      trivial.
+    rewrite swap_term_is, e; trivial.
     rewrite swap_term_is; trivial.
 
     set (MPapp := swap_right_app Mpos).
     unfold isFunApp in * .
     rewrite (appHead_app (swap Mpos) MPapp).
     destruct (placeHolder_appR Mpos).
-    rewrite (@appBodyL_swap_in_appR E PtL PtR A B AppL AppR pos Mpos Mpos); trivial.
+    rewrite (@appBodyL_swap_in_appR E PtL PtR A B AppL AppR pos Mpos Mpos);
+      trivial.
     rewrite (@appHead_app (buildT (TApp AppL AppR)) I) in H; trivial.
   Qed. 
 

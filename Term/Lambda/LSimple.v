@@ -347,9 +347,7 @@ are finite maps from variables to types. *)
   Proof.
     intros xs x x' T T' E h z. unfold restrict_fun.
     destruct (XSet.mem x xs); destruct (XSet.mem x' xs); try refl.
-    repeat rewrite add_o.
-    eq_dec x z; eq_dec x' z; try refl.
-    subst. tauto.
+    rewrite !add_o. eq_dec x z; eq_dec x' z; try refl. subst. tauto.
   Qed.
 
   Definition restrict_dom E xs := fold (restrict_fun xs) E empty.

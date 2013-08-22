@@ -270,7 +270,7 @@ intros s t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 simpl. single_tac l (ren_cap k (s x)).
 (* Fun *)
-rewrite sub_fun. repeat rewrite ren_cap_fun. rewrite nb_aliens_fun.
+rewrite sub_fun, !ren_cap_fun, nb_aliens_fun.
 case (defined f R). simpl. single_tac l (@Var Sig k).
 destruct (H k l) as [s']. destruct H0. exists s'. rewrite H0. rewrite sub_fun.
 intuition.
@@ -348,7 +348,7 @@ intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
 rewrite ren_cap_fun, nb_aliens_fun. case_eq (defined f R); intro H0. refl.
 rewrite nb_aliens_fun. rewrite H0. auto.
 (* Vcons *)
-simpl. repeat rewrite nb_aliens_cons. auto.
+simpl. rewrite !nb_aliens_cons. auto.
 Qed.
 
 Lemma ren_cap_idem : forall t k l, ren_cap k (ren_cap l t) = ren_cap k t.

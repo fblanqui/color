@@ -37,8 +37,8 @@ Lemma beq_rule_ok : forall a1 a2, beq_rule a1 a2 = true <-> a1 = a2.
 
 Proof.
 destruct a1 as [l1 r1]. destruct a2 as [l2 r2]. simpl. intuition.
-rewrite andb_eq in H. repeat rewrite beq_string_ok in H. destruct H. subst.
-refl. inversion H. subst. repeat rewrite (beq_refl beq_string_ok). refl.
+rewrite andb_eq in H. rewrite !beq_string_ok in H. destruct H. subst.
+refl. inversion H. subst. rewrite !(beq_refl beq_string_ok). refl.
 Qed.
 
 Definition rules := list rule.

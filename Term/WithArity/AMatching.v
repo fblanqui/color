@@ -242,7 +242,7 @@ Section Matching.
         intros _ _ _ _ _ _ θ θ' Ω _ HΩθ' _ HθΩ x Hx.
         trans (VM.find x Ω); [by apply HθΩ | idtac].
         apply HΩθ'; unfold is_true; rewrite <- Hx;
-          repeat rewrite VMF.mem_find_b.
+          rewrite !VMF.mem_find_b.
         by rewrite (HθΩ x Hx).
     Qed.
 

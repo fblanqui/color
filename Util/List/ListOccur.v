@@ -146,7 +146,7 @@ Section pigeon_hole.
     simpl in H0. rewrite H3 in H0. rewrite length_app in H0. simpl in H0. omega.
     ded (IHs l' H7 H8). destruct H9. exists x1.
     assert (occur x1 (a0::l) = occur x1 l' + delta x1 a). unfold l'. rewrite H3.
-    simpl. repeat rewrite occur_app. simpl. omega. omega.
+    simpl. rewrite !occur_app. simpl. omega. omega.
     (* incl l s *)
     assert (length l > length s). simpl in H0. omega.
     ded (IHs l H2 H3). destruct H4. exists x. simpl. omega.

@@ -317,7 +317,7 @@ Defined.*)
   Proof.
     induction ts; destruct p; intros; try absurd_arith.
     rewrite Vcast_refl. refl.
-    simpl. repeat rewrite maxvars_cons. rewrite IHts. refl.
+    simpl. rewrite !maxvars_cons, IHts. refl.
   Qed.
 
 (***********************************************************************)
