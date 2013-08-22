@@ -294,7 +294,7 @@ Lemma Vrel1_union n A (R S : relation A) :
 Proof. rewrite !Vrel1_app_eq. apply Vrel1_app_union. Qed.
 
 (***********************************************************************)
-(** * Product ordering on vectors. *)
+(** * Product relation on vectors. *)
 
 Definition Vreln {n A} (R : relation A) : relation (vector A n) :=
   Vforall2n R (n:=n).
@@ -396,7 +396,7 @@ Section Vreln.
 
   (*FIXME: change arguments order of Vnth to declare Vnth_Vreln as
   Proper Instance?*)
-  Lemma Vreln_nth_intro : forall n (ts us : vector A n) i (hi : i<n),
+  Lemma Vreln_elim_nth : forall n (ts us : vector A n) i (hi : i<n),
     Vreln R ts us -> R (Vnth ts hi) (Vnth us hi).
 
   Proof.
@@ -420,10 +420,23 @@ Section Vreln.
   Proof.
     intros ts ts' tsts'. apply Vforall2n_intro. intros i hi.
     rewrite !Vnth_vec_opt_filter. destruct (lt_dec (Vnth ks hi)).
-    apply eq_opt_Some. apply Vreln_nth_intro. hyp. apply eq_opt_None.
+    apply eq_opt_Some. apply Vreln_elim_nth. hyp. apply eq_opt_None.
   Qed.
 
 End Vreln.
 
 Arguments Vreln_sub_intro [A R n v1 v2 p q] _ _.
-Arguments Vreln_nth_intro [A R n ts us i hi] _.
+Arguments Vreln_elim_nth [A R n ts us i hi] _.
+
+(***********************************************************************)
+(** ** Extension of a relation on vectors of [option A]
+
+so that [Vreln_opt (n:=n) R us vs] if there are [k <= n], [xs, ys :
+vector A k] such that [us = Vapp (Vmap Some xs) (Vconst None (n-k))],
+[vs = Vapp (Vmap Some ys) (Vconst None (n-k))] and [Reln R xs ys]. *)
+
+Definition Vreln_opt {n A} (R : relation A) : relation (vector (option A) n) :=
+  fun us vs => exists i (h : i <= n),
+    Vreln (opt R) (Vsub us (Veq_app_aux1 h)) (Vsub vs (Veq_app_aux1 h))
+    /\ Vreln (eq_opt empty_rel) (Vsub us (Veq_app_aux2 h))
+                                (Vsub vs (Veq_app_aux2 h)).
