@@ -276,10 +276,10 @@ Section lexv.
   Proof.
     intros eqA_trans eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
     rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
-    eapply gtA_eqA. apply Vreln_nth_intro. apply tsts'.
-    apply Vreln_nth_intro. apply usus'. hyp.
+    eapply gtA_eqA. apply Vreln_elim_nth. apply tsts'.
+    apply Vreln_elim_nth. apply usus'. hyp.
     intros j ji jn.
-    rewrite <- (Vreln_nth_intro tsts'), <- (Vreln_nth_intro usus'). fo.
+    rewrite <- (Vreln_elim_nth tsts'), <- (Vreln_elim_nth usus'). fo.
   Qed.
 
   (** Transitivity. *)
@@ -322,3 +322,73 @@ Proof.
   intros t u. rewrite Vrel1_nth_iff, lexv_eq. intros [i [hi [h1 h2]]].
   ex i hi. fo.
 Qed.
+
+(** [lexv (opt eqA) (opt gtA)] absorbs [Vreln_opt eqA]. *)
+
+Section Vreln_opt.
+
+  Variables (A : Type) (eqA gtA : relation A).
+
+  Import SN.
+
+  Lemma lexv_reln_opt_l : eqA @ gtA << gtA -> Transitive eqA -> forall n,
+    Vreln_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA) << lexv (opt eqA) (opt gtA).
+
+  Proof.
+    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    revert usvs. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi.
+    destruct tsus as [k [k1 [k2 k3]]]. inversion h1; clear h1; subst.
+    destruct (le_dec k i).
+    (* k <= i *)
+    exfalso. assert (a : i - k < n - k). omega.
+    gen (Vreln_elim_nth (hi:=a) k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+      Vnth_eq with (v:=us) (h2:=hi), <- H; try omega.
+    intro e; inversion e; clear e; subst. fo.
+    (* k >= i *)
+    split.
+    (* i-th argument is decreasing *)
+    assert (a : i < k). omega.
+    gen (Vreln_elim_nth (hi:=a) k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+      Vnth_eq with (v:=us) (h2:=hi), <- H; auto.
+    intro e; inversion e; clear e; subst.
+    apply opt_intro. apply gtA_eqA. exists x. fo.
+    (* forall j<i, j-th arguments are equivalent *)
+    intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
+    assert (a : j < k). omega.
+    gen (Vreln_elim_nth (hi:=a) k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
+      Vnth_eq with (v:=us) (h2:=jn), <- H2; auto.
+    intro e; inversion e; clear e; subst.
+    apply opt_intro. trans x0; hyp.
+  Qed.
+
+  Lemma lexv_reln_opt_r : gtA @ eqA << gtA -> Transitive eqA -> forall n,
+    lexv (opt eqA) (opt gtA) @ Vreln_opt (n:=n) eqA << lexv (opt eqA) (opt gtA).
+
+  Proof.
+    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    revert tsus. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi.
+    destruct usvs as [k [k1 [k2 k3]]]. inversion h1; clear h1; subst.
+    destruct (le_dec k i).
+    (* k <= i *)
+    exfalso. assert (a : i - k < n - k). omega.
+    gen (Vreln_elim_nth (hi:=a) k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+      Vnth_eq with (v:=vs) (h2:=hi), <- H0; try omega.
+    intro e; inversion e; clear e; subst. fo.
+    (* k >= i *)
+    split.
+    (* i-th argument is decreasing *)
+    assert (a : i < k). omega.
+    gen (Vreln_elim_nth (hi:=a) k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+      Vnth_eq with (v:=vs) (h2:=hi), <- H0; auto.
+    intro e; inversion e; clear e; subst.
+    apply opt_intro. apply gtA_eqA. exists y. fo.
+    (* forall j<i, j-th arguments are equivalent *)
+    intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
+    assert (a : j < k). omega.
+    gen (Vreln_elim_nth (hi:=a) k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
+      Vnth_eq with (v:=vs) (h2:=jn), <- H3; auto.
+    intro e; inversion e; clear e; subst.
+    apply opt_intro. trans y0; hyp.
+  Qed.
+
+End Vreln_opt.
