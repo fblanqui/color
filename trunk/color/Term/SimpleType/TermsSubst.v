@@ -296,12 +296,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     unfold liftedEnv, env_comp_on, VarD; simpl.
     case (le_lt_dec n p).
     intro n_le_p.
-    repeat rewrite nth_app_right; autorewrite with datatypes using trivial.
+    rewrite !nth_app_right; autorewrite with datatypes using trivial.
     unfold finalSeg; simpl.
     repeat rewrite initialSeg_full; try solve [auto with datatypes | omega].
     exact (G_comp i j T_i T_j TiG TjG (p-n)).
     intro p_lt_n.
-    repeat rewrite nth_app_left; autorewrite with datatypes using try_solve.
+    rewrite !nth_app_left; autorewrite with datatypes using try_solve.
   Qed.
 
   Lemma subst_ran_cons_none : forall G, subst_ran (None::G) = subst_ran G.
@@ -553,12 +553,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; unfold lift_subst_comp.
     destruct a.
      (* -) hd G = Some t *)
-    repeat rewrite subst_ran_cons_some.
-    rewrite lift_env.
+    rewrite !subst_ran_cons_some, lift_env.
     destruct (subst_empty_dec G) as [Ge | G_ne].
     rewrite subst_ran_lifted_empty; trivial.
     rewrite subst_ran_empty; trivial.
-    repeat rewrite env_sum_empty_r.
+    rewrite !env_sum_empty_r.
     unfold liftedEnv; simpl.
     unfold finalSeg; simpl.
     rewrite initialSeg_full; solve [auto with datatypes | omega].
@@ -567,7 +566,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     unfold finalSeg; simpl.
     rewrite initialSeg_full; solve [auto with datatypes | omega].
      (* -) hd G = None *)
-    repeat rewrite subst_ran_cons_none.
+    rewrite !subst_ran_cons_none.
     apply IHG.
     intro Ge.
     absurd (isEmptySubst (None::G)); trivial.
@@ -816,7 +815,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     induction M; simpl; intros.
     destruct (Compare_dec.le_gt_dec i x); simpl.
-    repeat rewrite nth_app_right; autorewrite with datatypes using trivial; try omega.
+    rewrite !nth_app_right; autorewrite with datatypes using trivial; try omega.
     replace (x + j - (i + j)) with (x - i); [idtac | omega].
     destruct (varSubst_dec G (x-i)) as [[W GW] | Gn].
     rewrite GW.
@@ -830,7 +829,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 	[ elimtype False; omega
 	| assert (S x = (x + 1)%nat); [omega | try_solve]
         ].
-    repeat rewrite nth_app_left; autorewrite with datatypes using trivial; try omega.
+    rewrite !nth_app_left; autorewrite with datatypes using trivial; try omega.
     simpl.
     destruct (Compare_dec.le_gt_dec i x).
     elimtype False; omega.
@@ -940,9 +939,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl.
     apply subst_cons_empty.
     apply subst_lift_empty; trivial.
-    repeat rewrite subst_ran_empty; trivial.
-    repeat rewrite env_sub_Empty.
-    repeat rewrite env_sum_empty_r; trivial.
+    rewrite !subst_ran_empty; trivial.
+    rewrite !env_sub_Empty, !env_sum_empty_r; trivial.
     apply subst_dom_Empty; trivial.
     apply subst_dom_Empty; trivial.
     apply subst_cons_empty; trivial.
@@ -1017,8 +1015,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     intros M G C1 C2.
     apply term_eq.
-    repeat rewrite subst_env; trivial.
-    repeat rewrite subst_term; trivial.
+    rewrite !subst_env; trivial.
+    rewrite !subst_term; trivial.
   Qed.
                          
   Lemma subst_eq : forall M M' G (MG: correct_subst M G) (MG': correct_subst M' G),
@@ -1027,8 +1025,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     intros M M' G MG MG' M_M'.
     apply term_eq.
-    repeat rewrite subst_env; rewrite M_M'; trivial.
-    repeat rewrite subst_term; rewrite M_M'; trivial.
+    rewrite !subst_env, M_M'; trivial.
+    rewrite !subst_term, M_M'; trivial.
   Qed.
 
   Lemma subst_env_compat : forall M G x T (MG: correct_subst M G), G |-> x / T ->
@@ -1342,12 +1340,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (* abstraction *)
     unfold EL, ER, EC, shift; simpl.
     replace (S i) with (i + 1); [idtac | omega].
-    repeat rewrite subst_lift_subst_aux; simpl.
-    repeat rewrite lift_subst_distr; simpl.
+    rewrite !subst_lift_subst_aux; simpl.
+    rewrite !lift_subst_distr; simpl.
     rewrite <- lift_subst_fold.
-    rewrite lift_empty_subst.
-    repeat rewrite app_comm_cons.
-    rewrite copy_cons.
+    rewrite lift_empty_subst, !app_comm_cons, copy_cons.
     replace (S k + 1) with (S (S k)); [idtac | omega].
     rewrite <- (IHPt (lift Pt_x 1) G i (S k)); auto.
     simpl; trivial.
@@ -1477,17 +1473,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intros M G P S S' Sj.
     apply term_eq.
      (* environments equal *)
-    repeat rewrite subst_env.
-    rewrite subst_ran_cons_none.
-    rewrite subst_ran_single.
-    simpl.
-    rewrite env_sum_sub.
-    rewrite env_sub_sub_sum.
-    simpl.
-    rewrite env_sum_empty_r.
-    rewrite env_sum_assoc.
-    rewrite (@env_comp_sum_comm (subst_ran (lift_subst G 1)) (env P)).
-    rewrite subst_ran_cons_some; trivial.
+    rewrite !subst_env, subst_ran_cons_none, subst_ran_single. simpl.
+    rewrite env_sum_sub, env_sub_sub_sum. simpl.
+    rewrite env_sum_empty_r, env_sum_assoc,
+      (@env_comp_sum_comm (subst_ran (lift_subst G 1)) (env P)),
+      subst_ran_cons_some; trivial.
     apply env_comp_sym.
     apply env_comp_sum_comp_right with (env P).
     rewrite <- subst_ran_cons_some.
@@ -1503,7 +1493,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     right; left; destruct p; trivial.
 
      (* preterms equal *)
-    repeat rewrite subst_term.
+    rewrite !subst_term.
     change (None :: lift_subst G 1) with (lift_subst (None::G) 1).
     apply presubst_disjoint.
   Qed.
@@ -1549,15 +1539,15 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     destruct M as [E Pt T M]; induction M; intros; unfold presubst; simpl in * .
     destruct (lt_eq_lt_dec x i) as [[x_i | x_i] | x_i].
-    repeat rewrite nth_app_left; autorewrite with datatypes; solve [omega | trivial].
+    rewrite !nth_app_left; autorewrite with datatypes; solve [omega | trivial].
     rewrite x_i.
-    repeat rewrite nth_app_right; autorewrite with datatypes; try omega.
+    rewrite !nth_app_right; autorewrite with datatypes; try omega.
     replace (i - i) with 0; [simpl | omega].
     destruct G.
     inversion H; inversion H0.
     destruct o; inversion H; inversion H0.
     rewrite <- H3; trivial.
-    repeat rewrite nth_app_right; autorewrite with datatypes; try omega.
+    rewrite !nth_app_right; autorewrite with datatypes; try omega.
     assert (x - i > 0); [omega | destruct (x - i)].
     elimtype False; omega.
     destruct G.
@@ -1569,7 +1559,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct n; trivial.
     inversion H; inversion H1.
     trivial.
-    repeat rewrite app_comm_cons.
+    rewrite !app_comm_cons.
     change ((None (A:=Term)) :: copy i None) with 
       (copy (S i) (None (A:=Term))).
     rewrite (IHM P G (S i) (S j)); trivial.
@@ -1645,9 +1635,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (nth_lift_normal G 1 j Gj) as [T_j Tjl Tjn].
     rewrite Til.
     rewrite Tjl.
-    repeat rewrite lift_env.
+    rewrite !lift_env.
     unfold liftedEnv, finalSeg; simpl.
-    repeat rewrite initialSeg_full; try solve [auto | omega].
+    rewrite !initialSeg_full; try solve [auto | omega].
     apply env_comp_cons; auto.
     apply (envs_c0 i j); trivial.
      (* domain of G ok *)
@@ -1764,15 +1754,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     term_inv M.
     apply abs_type with B.
     rewrite subst_type; trivial.
-    rewrite absBody_env.
-    repeat rewrite subst_env.
-    rewrite subst_ran_cons_none.
-    rewrite absBody_env.
+    rewrite absBody_env, !subst_env, subst_ran_cons_none, absBody_env.
     destruct (subst_empty_dec G) as [Ge | Gne].
     rewrite subst_ran_lifted_empty; trivial.
     rewrite subst_ran_empty; simpl; trivial.
-    repeat rewrite env_sub_Empty.
-    repeat rewrite env_sum_empty_r; trivial.
+    rewrite !env_sub_Empty, !env_sum_empty_r; trivial.
     unfold decl; congruence.
     apply subst_dom_lifted_Empty; trivial.
     apply subst_dom_Empty; trivial.
@@ -2131,9 +2117,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply IHM.
     apply varUD_tail_rev; trivial.
     apply term_eq.
-    repeat rewrite subst_env.
-    repeat rewrite lift_subst_app.
-    repeat rewrite lift_empty_subst.
+    rewrite !subst_env, !lift_subst_app, !lift_empty_subst.
     autorewrite with terms datatypes using simpl; trivial.
     autorewrite with datatypes terms.
     rewrite lift_subst_app.

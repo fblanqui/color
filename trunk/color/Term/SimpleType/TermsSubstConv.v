@@ -215,7 +215,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     rewrite GxT.
     destruct (sc_lr H0 y H2 GxT) as [T' [G'yT' TT']].
     rewrite G'yT'.
-    repeat rewrite lift_0.
+    rewrite !lift_0.
     destruct TT'; trivial.
     inversion GxN; rewrite H5;
       destruct (conv_subst_udecl y H0 H2 GxN); rewrite H6; constructor; trivial.
@@ -541,7 +541,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     apply presubst_singleton_conv_sim_aux with M T Q R; trivial.
     intros; destruct j; trivial.
     elimtype False; omega.
-    repeat rewrite lift_0; trivial.
+    rewrite !lift_0; trivial.
   Qed.
 
 End TermsSubstConv.

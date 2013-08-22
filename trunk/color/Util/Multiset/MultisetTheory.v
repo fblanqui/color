@@ -277,20 +277,17 @@ Section MultisetLemmas.
     destruct (eqA_dec a a').
     destruct (eqA_dec a a0).
     absurd (a/{{a}} = a/({{a'}} + {{a0}} + M)).
-    repeat rewrite union_mult.
-    repeat rewrite singleton_mult_in; auto with sets.
+    rewrite !union_mult, !singleton_mult_in; auto with sets.
     omega.
     apply meq_multeq; trivial.
     absurd (a0/({{a'}} + {{a0}} + M) > 0).
     rewrite <- (meq_multeq H0 a0).
     rewrite singleton_mult_notin; auto with sets arith.
-    repeat rewrite union_mult.
-    rewrite singleton_mult_in with a0 a0; auto with sets arith.
+    rewrite !union_mult, singleton_mult_in with a0 a0; auto with sets arith.
     absurd (a'/({{a'}} + {{a0}} + M) > 0).
     rewrite <- (meq_multeq H0 a').
     rewrite singleton_mult_notin; auto with sets arith.
-    repeat rewrite union_mult.
-    rewrite singleton_mult_in with a' a'; auto with sets arith.
+    rewrite !union_mult, singleton_mult_in with a' a'; auto with sets arith.
   Qed.
 
   Lemma member_pair : forall x y z, x in {{y,z}} -> x =A= y \/ x =A= z.
@@ -302,7 +299,7 @@ Section MultisetLemmas.
     assert (x/{{y, z}} = 0).
     mset_unfold.
     rewrite union_mult.
-    repeat rewrite singleton_mult_notin; trivial.
+    rewrite !singleton_mult_notin; trivial.
     unfold member in H.
     rewrite H0 in H; absurd_arith.
   Qed.
@@ -417,13 +414,12 @@ Section MultisetLemmas.
     unfold member; intros.
     mset_unfold.
     apply multeq_meq; intro x.
-    repeat rewrite diff_mult.
+    rewrite !diff_mult.
     destruct (eqA_dec x a).
-    repeat rewrite singleton_mult_in; trivial.
-    rewrite (mult_eqA_compat M e).
-    rewrite (mult_eqA_compat N e).
+    rewrite !singleton_mult_in; trivial.
+    rewrite (mult_eqA_compat M e), (mult_eqA_compat N e).
     omega.
-    repeat rewrite singleton_mult_notin; trivial.
+    rewrite !singleton_mult_notin; trivial.
     omega.
   Qed.
 
@@ -441,7 +437,7 @@ Section MultisetLemmas.
   Proof.
     mset_unfold; intros.
     assert ((a/M + a/N)%nat = (a/M' + a/N')%nat).
-    repeat rewrite <- union_mult.
+    rewrite <- !union_mult.
     apply meq_multeq; trivial.
     omega.
   Qed.
@@ -451,7 +447,7 @@ Section MultisetLemmas.
   Proof.
     intros; try_solve_meq.
     assert ((x/M + x/P)%nat = (x/N + x/P)%nat).
-    repeat rewrite <- union_mult.
+    rewrite <- !union_mult.
     apply meq_multeq; trivial.
     omega.
   Qed.
@@ -479,7 +475,7 @@ Section MultisetLemmas.
     intros.
     try_solve_meq.
     assert ((x/M + x/{{a}})%nat = (x/M' + x/{{a'}})%nat).
-    repeat rewrite <- union_mult.
+    rewrite <- !union_mult.
     apply meq_multeq; trivial.
     omega.
   Qed.
@@ -490,9 +486,8 @@ Section MultisetLemmas.
   Proof.
     intros.
     assert ((a/M + 1)%nat = (a/M' + 0)%nat).
-    rewrite <- (singleton_mult_in ((Seq_refl A eqA sid_theoryA) a)).
-    rewrite <- (singleton_mult_notin H0).
-    repeat rewrite <- union_mult.
+    rewrite <- (singleton_mult_in ((Seq_refl A eqA sid_theoryA) a)),
+      <- (singleton_mult_notin H0), <- !union_mult.
     apply meq_multeq; trivial.
     mset_unfold; omega.
   Qed.
@@ -511,7 +506,7 @@ Section MultisetLemmas.
     apply mult_eqA_compat; trivial.
     omega.
      (* ~ x =A= a *)
-    repeat rewrite singleton_mult_notin.
+    rewrite !singleton_mult_notin.
     omega.
     trivial.
   Qed.
@@ -537,7 +532,7 @@ Section MultisetLemmas.
     intros; apply multeq_meq; intro.
     set (w := (meq_multeq H) x).
     unfold insert in w.
-    repeat rewrite union_mult in w.
+    rewrite !union_mult in w.
     omega.
   Qed.
 
@@ -551,9 +546,9 @@ Section MultisetLemmas.
     rewrite diff_mult.
     rewrite union_mult.
     destruct (eqA_dec x a).
-    repeat rewrite singleton_mult_in; eauto with sets.
+    rewrite !singleton_mult_in; eauto with sets.
     omega.
-    repeat rewrite singleton_mult_notin; eauto with sets.
+    rewrite !singleton_mult_notin; eauto with sets.
     omega.
   Qed.
 
@@ -584,8 +579,7 @@ Section MultisetLemmas.
     intro x; mset_unfold.
     repeat progress (try rewrite union_mult; try rewrite diff_mult).
     destruct (eqA_dec x a).
-    repeat rewrite (singleton_mult_in e).
-    rewrite (@singleton_mult_notin x a').
+    rewrite !(singleton_mult_in e), (@singleton_mult_notin x a').
     omega.
     rewrite e; auto with sets.
     rewrite (@singleton_mult_notin x a); trivial.
@@ -683,7 +677,7 @@ End Decidability.
   Proof.
     mset_unfold; try_solve_meq.
     assert ((x/M + x/{{a}})%nat = (x/N + x/P)%nat).
-    repeat rewrite <- union_mult.
+    rewrite <- !union_mult.
     apply meq_multeq; trivial.
     case (eqA_dec x a); intro x_a.
      (* x =A= a *)
@@ -939,9 +933,7 @@ Section List2Multiset.
     permutation eqA eqA_dec l l'.
     
   Proof.
-    intros; intro a.
-    repeat rewrite <- list2multiset_mult.
-    apply meq_multeq; trivial.
+    intros; intro a. rewrite <- !list2multiset_mult. apply meq_multeq; trivial.
   Qed.
 
   Lemma permutation_meq : forall l l',
@@ -949,11 +941,7 @@ Section List2Multiset.
     list2multiset l =mul= list2multiset l'.
     
   Proof.
-    intros.
-    apply multeq_meq.
-    intro x.
-    repeat rewrite list2multiset_mult. 
-    apply H.
+    intros. apply multeq_meq. intro x. rewrite !list2multiset_mult. apply H.
   Qed.
 
   Lemma list2multiset_eq_length : forall l l',
@@ -1430,7 +1418,7 @@ Section Pair.
     destruct (eqA_dec a d).
     absurd (mult b {{a, b}} = mult b {{c, d}}).
     unfold pair, insert.
-    repeat rewrite union_mult.
+    rewrite !union_mult.
     rewrite (@singleton_mult_in b b); auto with sets.
     rewrite (@singleton_mult_notin b a); eauto with sets.
     rewrite (@singleton_mult_notin b c); eauto with sets.
@@ -1440,7 +1428,7 @@ Section Pair.
     apply meq_multeq; trivial.
     absurd (mult d {{a, b}} = mult d {{c, d}}).
     unfold pair, insert.
-    repeat rewrite union_mult.
+    rewrite !union_mult.
     rewrite (@singleton_mult_notin d a); auto with sets.
     rewrite (@singleton_mult_notin d b); auto with sets.
     rewrite (@singleton_mult_in d d); auto with sets.
@@ -1451,7 +1439,7 @@ Section Pair.
     right; split; trivial.
     absurd (mult c {{a, b}} = mult c {{c, d}}).
     unfold pair, insert.
-    repeat rewrite union_mult.
+    rewrite !union_mult.
     rewrite (@singleton_mult_notin c a); auto with sets.
     rewrite (@singleton_mult_notin c b); auto with sets.
     rewrite (@singleton_mult_in c c); auto with sets.
@@ -1459,7 +1447,7 @@ Section Pair.
     apply meq_multeq; trivial.
     absurd (mult a {{a, b}} = mult a {{c, d}}).
     unfold pair, insert.
-    repeat rewrite union_mult.
+    rewrite !union_mult.
     rewrite (@singleton_mult_notin a c); auto with sets.
     rewrite (@singleton_mult_notin a d); auto with sets.
     rewrite (@singleton_mult_in a a); auto with sets.
@@ -1485,7 +1473,7 @@ Section Pair.
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph X1c); 
       try rewrite (card_morph X2d); try rewrite (card_morph X3e)).
-    rewrite pair_card; repeat rewrite singleton_card; omega.
+    rewrite pair_card, !singleton_card; omega.
     apply (card_morph H).
     assert (Y =mul= empty).
     destruct (empty_decomp_dec Y) as [[[Y1 e] Y1e] | Yempty]; trivial.
@@ -1493,7 +1481,7 @@ Section Pair.
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph X1c); 
       try rewrite (card_morph X2d); try rewrite (card_morph Y1e)).
-    rewrite pair_card; repeat rewrite singleton_card; omega.
+    rewrite pair_card, !singleton_card; omega.
     apply (card_morph H).
     left; split; trivial.
     rewrite H; rewrite X1c; rewrite X2d; rewrite X2empty; rewrite H0; solve_meq.    
@@ -1504,7 +1492,7 @@ Section Pair.
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph X1c); 
       try rewrite (card_morph Y1d); try rewrite (card_morph Y2e)).
-    rewrite pair_card; repeat rewrite singleton_card; omega.
+    rewrite pair_card, !singleton_card; omega.
     apply (card_morph H).
     destruct (@pair_eq a b c d) as [[ac bd] | [ad bc]].
     rewrite H; rewrite X1c; rewrite Y1d; rewrite X1empty; rewrite Y1empty; solve_meq.
@@ -1517,7 +1505,7 @@ Section Pair.
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph X1c); 
       try rewrite (card_morph X1empty); try rewrite (card_morph Yempty)).
-    rewrite pair_card; repeat rewrite singleton_card; omega.
+    rewrite pair_card, !singleton_card; omega.
     apply (card_morph H).
     destruct (empty_decomp_dec Y) as [[[Y1 c] Y1c] | Yempty]; trivial.
     simpl in Y1c.
@@ -1528,14 +1516,14 @@ Section Pair.
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph Y1c); 
       try rewrite (card_morph Y2d); try rewrite (card_morph Y3e)).
-    rewrite pair_card; repeat rewrite singleton_card; omega.
+    rewrite pair_card, !singleton_card; omega.
     apply (card_morph H).
     right; left; split; trivial.
     rewrite H; rewrite Y1c; rewrite Y2d; rewrite Y2empty; rewrite Xempty; solve_meq.
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph Xempty); 
       try rewrite (card_morph Y1c); try rewrite (card_morph Y1empty)).
-    rewrite pair_card; repeat rewrite singleton_card; omega.
+    rewrite pair_card, !singleton_card; omega.
     apply (card_morph H).
     absurd (card {{a, b}} = card (X + Y)).
     repeat (rewrite union_card; try rewrite (card_morph Xempty); 

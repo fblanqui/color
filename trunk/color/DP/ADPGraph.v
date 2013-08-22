@@ -273,7 +273,7 @@ apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
 (* end of the proof of (A) *)
 ded (Hcycle h H14). do 2 destruct H10. ded (in_elim H10).
 do 2 destruct H15. exists (x5++x9++x14). exists x13. exists (x15++x12++x4::x8).
-intuition. repeat rewrite app_ass. trans (x5++(x4::x7)++x4::x8). refl.
+intuition. rewrite !app_ass. trans (x5++(x4::x7)++x4::x8). refl.
 rewrite H11. rewrite app_ass. trans (x5++x9++(x10::x11)++x12++x4::x8).
 simpl. rewrite app_ass. refl. rewrite H15. rewrite app_ass. refl.
 (* consequence of (A) *)

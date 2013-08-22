@@ -40,7 +40,7 @@ Section basic_definitions.
 
   Proof.
     destruct a as [a1 a2]. destruct b as [b1 b2]. unfold beq_rule. simpl.
-    rewrite andb_eq. repeat rewrite beq_term_ok. split.
+    rewrite andb_eq. rewrite !beq_term_ok. split.
     intuition. subst. refl. intro. inversion H. auto.
   Qed.
 
@@ -264,8 +264,7 @@ Section S.
     Lemma red_sub : forall t u s, red R t u -> red R (sub s t) (sub s u).
 
     Proof.
-      intros. redtac. subst. repeat rewrite sub_fill. repeat rewrite sub_sub.
-      apply red_rule. hyp.
+      intros. redtac. subst. rewrite !sub_fill, !sub_sub. apply red_rule. hyp.
     Qed.
 
     Lemma red_subterm : forall u u' t, red R u u' -> subterm_eq u t
@@ -370,7 +369,7 @@ Section S.
       rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast. rewrite Vnth_app.
       destruct (le_gt_dec i i0). 2: absurd_arith. assert (l0=l1).
       apply le_unique.
-      subst l1. repeat rewrite Vnth_cons. destruct (lt_ge_dec 0 (i0-i)).
+      subst l1. rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i0-i)).
       apply Vnth_eq. refl. absurd_arith.
       (* 2) i > i0 *)
       rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast.
@@ -451,7 +450,7 @@ Section S.
     Lemma red_maxvar : forall t u, red R t u -> maxvar u <= maxvar t.
 
     Proof.
-      intros. repeat rewrite maxvar_lmax. apply incl_lmax.
+      intros. rewrite !maxvar_lmax. apply incl_lmax.
       apply red_preserve_vars. hyp.
     Qed.
 
@@ -788,8 +787,7 @@ Section S.
     Lemma sub_rule_inv : forall x, sub_rule s1 (sub_rule s2 x) = x.
 
     Proof.
-      intros [l r]. unfold sub_rule. simpl. repeat rewrite sub_inv. refl. hyp.
-      hyp.
+      intros [l r]. unfold sub_rule. simpl. rewrite !sub_inv. refl. hyp. hyp.
     Qed.
 
     Lemma sub_rules_inv : forall x, sub_rules s1 (sub_rules s2 x) = x.

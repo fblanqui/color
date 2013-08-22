@@ -749,7 +749,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     apply appBodyL_subterm.
     rewrite (appUnits_app M Mapp) in MNunits.
     rewrite (appUnits_app N Napp) in MNunits.
-    repeat rewrite length_app in MNunits.
+    rewrite !length_app in MNunits.
     simpl in MNunits; omega.
     intros; apply (H p Ma Na).
     rewrite (appUnits_app M Mapp).
@@ -911,7 +911,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     clear M; intros M IH N M_N.
     term_inv M; term_inv N.
     unfold Tr, Tr0.
-    repeat rewrite appHead_app_explicit.
+    rewrite !appHead_app_explicit.
     apply IH.
     constructor 1 with I; constructor 2.
     simpl; congruence.

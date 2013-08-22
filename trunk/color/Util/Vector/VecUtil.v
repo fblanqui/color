@@ -474,7 +474,7 @@ Section Vreplace.
 
   Proof.
     intros. ded (f_equal (fun v => @Vnth A n v i h) H).
-    repeat rewrite Vnth_replace in H0. hyp.
+    rewrite !Vnth_replace in H0. hyp.
   Qed.
 
   Lemma Vreplace_nth_eq : forall n (v : vector A n) i (h : i < n),
@@ -623,7 +623,7 @@ Section Vapp.
   Proof.
     induction v1; intros.
     simpl. destruct k. irrefl. refl.
-    repeat rewrite Vapp_cons. destruct k. refl. apply IHv1. omega.
+    rewrite !Vapp_cons. destruct k. refl. apply IHv1. omega.
   Qed.
 
   Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
@@ -902,7 +902,7 @@ Section Vsub.
     Vsub (Vcons x v) h = Vsub v (Vsub_cons_aux h).
 
   Proof.
-    intros. apply Veq_nth; intros. repeat rewrite Vnth_sub. simpl.
+    intros. apply Veq_nth; intros. rewrite !Vnth_sub. simpl.
     apply Vnth_eq. omega.
   Qed.
 
@@ -965,7 +965,7 @@ Section Vsub.
 
   Proof.
     intros. apply Veq_nth; intros. rewrite Vnth_cast.
-    destruct i0; simpl; repeat rewrite Vnth_sub; apply Vnth_eq; omega.
+    destruct i0; simpl; rewrite !Vnth_sub; apply Vnth_eq; omega.
   Qed.
 
   Lemma Vsub_cons_intro_aux1 : forall n i k, i+k<=n -> k>0 -> i<n.
@@ -999,7 +999,7 @@ Section Vsub.
     (* Vnil *)
     apply Veq_nth; intros. absurd_arith.
     (* Vcons *)
-    destruct i; simpl; apply Vtail_eq; repeat rewrite Vsub_cons.
+    destruct i; simpl; apply Vtail_eq; rewrite !Vsub_cons.
     (* i = 0 *)
     apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_sub.
     apply Vnth_eq. omega.
@@ -1034,7 +1034,7 @@ Section Vsub.
     (* Vnil *)
     apply Veq_nth; intros. absurd_arith.
     (* Vcons *)
-    destruct i; simpl; apply Vtail_eq; repeat rewrite Vsub_cons.
+    destruct i; simpl; apply Vtail_eq; rewrite !Vsub_cons.
     (* i = 0 *)
     apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_sub.
     apply Vnth_eq. omega.
@@ -1099,16 +1099,16 @@ Section Vsub.
     (p : j+k<=n), j+k <= i -> Vsub (Vreplace v h x) p = Vsub v p.
 
   Proof.
-    intros. apply Veq_nth; intros. repeat rewrite Vnth_sub.
-    rewrite Vnth_replace_neq. 2: omega. apply Vnth_eq. refl.
+    intros. apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_replace_neq.
+    2: omega. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vsub_replace_r : forall n (v : vector A n) i (h : i<n) x j k
     (p : j+k<=n), j > i -> Vsub (Vreplace v h x) p = Vsub v p.
 
   Proof.
-    intros. apply Veq_nth; intros. repeat rewrite Vnth_sub.
-    rewrite Vnth_replace_neq. 2: omega. apply Vnth_eq. refl.
+    intros. apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_replace_neq.
+    2: omega. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vsub_app_l_aux : forall n1 n2 i, i <= n1 -> 0 + i <= n1 + n2.
@@ -1901,9 +1901,7 @@ Section map.
   Lemma Vmap_cast : forall m n (H : m=n) (v : vector A m),
     Vmap (Vcast v H) = Vcast (Vmap v) H.
 
-  Proof.
-    intros until H. case H. intro v. repeat rewrite Vcast_refl. refl.
-  Qed.
+  Proof. intros until H. case H. intro v. rewrite !Vcast_refl. refl. Qed.
 
   Lemma Vmap_tail : forall n (v : vector A (S n)),
     Vmap (Vtail v) = Vtail (Vmap v).

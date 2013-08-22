@@ -219,7 +219,7 @@ Module Make (Export L : L_Struct).
     case_eq (mem x (fv u)); [rewrite <- mem_iff|rewrite <- not_mem_iff];
       intro hx.
     rewrite remove_add. refl. set_iff. tauto.
-    repeat rewrite remove_equal; auto. refl.
+    rewrite !remove_equal; auto. refl.
   Qed.
 
   (** [var] is compatible with [aeq]. *)
@@ -363,7 +363,7 @@ Module Make (Export L : L_Struct).
     gen (var_notin_ok uxs). fold x'. unfold uxs. set_iff. intro n. split.
     trans (Lam x v). apply aeq_lam. hyp. apply aeq_alpha. tauto.
     simpl. rewrite bv_rename. 2: tauto. revert i. rewrite inter_sym at 1.
-    repeat rewrite inter_empty. unfold not. intros i z. set_iff. intros [j|j].
+    rewrite !inter_empty. unfold not. intros i z. set_iff. intros [j|j].
     subst z. tauto. intro hz. eapply i. apply hz. hyp.
   Qed.
 
@@ -425,7 +425,7 @@ Module Make (Export L : L_Struct).
     forall s s', saeq xs s s' -> domain xs s [=] domain xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e. repeat rewrite In_domain.
+    intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_domain.
     intuition.
     apply H1. apply var_aeq_r. rewrite <- H. apply ss'. hyp.
     apply H1. apply var_aeq_r. rewrite <- H. sym. apply ss'. hyp.
@@ -443,7 +443,7 @@ Module Make (Export L : L_Struct).
     forall s s', saeq xs s s' -> fvcod xs s [=] fvcod xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e. repeat rewrite In_fvcod.
+    intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_fvcod.
     split; intros [y [h1 h2]]; exists y; intuition.
     rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
   Qed.
@@ -676,7 +676,7 @@ variables. *)
     unfold u'. rewrite fv_rename.
     case_eq (mem x (fv u)); [rewrite <- mem_iff|rewrite <- not_mem_iff];
       intro h. rewrite remove_add. refl. set_iff. intuition.
-    repeat rewrite remove_equal; auto. refl.
+    rewrite !remove_equal; auto. refl.
 
     destruct (aeq_notin_bv (add (var y u' s) (add (var x u s)
       (add x (add y (union (fv u) (fvcodom (remove x (fv u)) s)))))) u)

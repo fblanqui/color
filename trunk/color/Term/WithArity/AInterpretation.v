@@ -125,7 +125,7 @@ Section S.
   Proof.
     intros xint1 xint2 t. pattern t; apply term_ind_forall; clear t; intros.
     simpl. apply H. simpl. intuition.
-    repeat rewrite term_int_fun. apply (f_equal (fint I f)). apply Vmap_eq.
+    apply (f_equal (fint I f)). apply Vmap_eq.
     apply Vforall_intro. intros. apply (Vforall_in H H1). intros. apply H0.
     rewrite vars_fun. apply (vars_vec_in H2 H1).
   Qed.

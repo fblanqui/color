@@ -580,21 +580,20 @@ Lemma Lt_combine : forall f vs g us l, beq_symb f g = true ->
 
 Proof.
 intros. unfold Lt, lt, transp. apply lex_intro. right. split.
-unfold nb_vars_eq, nb_vars_lt. simpl. unfold vars_eqn. simpl fst. simpl snd.
-repeat rewrite vars_fun. rewrite vars_eqns_app. rewrite beq_symb_ok in H.
+unfold nb_vars_eq, nb_vars_lt. simpl. unfold vars_eqn, fst, snd.
+rewrite !vars_fun, vars_eqns_app. rewrite beq_symb_ok in H.
 subst. rewrite vars_eqns_combine. refl.
 unfold sizes_lt, MultisetLt, transp. apply t_step. unfold sizes. simpl.
 rewrite map_app. set (M := list2multiset (map size l)).
 apply MSetRed with (X := M) (a := size (Fun f vs, Fun g us))
   (Y := list2multiset (map size (combine (list_of_vec vs) (list_of_vec us)))).
 solve_meq. rewrite list2multiset_app. unfold M. solve_meq.
-intros. unfold size. simpl fst. simpl snd. repeat rewrite nb_symb_occs_fun.
+intros. unfold size, fst, snd. rewrite !nb_symb_occs_fun.
 destruct (member_multiset_list _ H0). destruct (in_map_elim H1). destruct H3.
 subst. destruct x0. ded (in_combine_l H3). ded (in_combine_r H3).
 ded (in_list_of_vec H4). ded (in_list_of_vec H5).
 ded (Vin_nb_symb_occs_terms_ge H6). ded (Vin_nb_symb_occs_terms_ge H7).
-rewrite H2. unfold size. unfold fst, snd. repeat rewrite nb_symb_occs_fun.
-omega.
+rewrite H2. unfold size, fst, snd. omega.
 Qed.
 
 Definition Lt' (p1 p2 : problem) :=
@@ -827,7 +826,7 @@ rewrite lforall_is_sol_solved_eqn; auto. rewrite is_sol_eqns_map; auto.
 rewrite lforall_is_sol_solved_eqn in H3; hyp.
 rewrite is_sol_eqns_map in H2; hyp.
 (* fun-fun *)
-simpl. unfold is_sol_eqn. unfold fst, snd. repeat rewrite sub_fun.
+simpl. unfold is_sol_eqn. unfold fst, snd. rewrite !sub_fun.
 case_beq_symb f f0. simpl. unfold is_sol_eqns at 2. rewrite lforall_app.
 rewrite lforall_is_sol_eqn_combine. intuition. Funeqtac. hyp.
 apply args_eq. hyp. intuition; try contr. Funeqtac.
@@ -861,8 +860,8 @@ Lemma is_sol_eqn_extend : forall s x (v : term) e,
    is_sol_eqn (extend s x (sub s v)) e.
 
 Proof.
-destruct e. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
-repeat rewrite sub_comp_single_extend. tauto.
+destruct e. unfold is_sol_eqn. simpl.
+rewrite !sub_sub, !sub_comp_single_extend. tauto.
 Qed.
 
 Lemma is_sol_eqns_extend : forall s x (v : term) l,
@@ -871,10 +870,10 @@ Lemma is_sol_eqns_extend : forall s x (v : term) l,
 
 Proof.
 induction l; simpl; intuition.
-clear H H1 H3. revert H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
-repeat rewrite sub_comp_single_extend. auto.
-clear H3 H0 H1. revert H2. unfold is_sol_eqn. simpl. repeat rewrite sub_sub.
-repeat rewrite sub_comp_single_extend. auto.
+clear H H1 H3. revert H2. unfold is_sol_eqn. simpl.
+rewrite !sub_sub, !sub_comp_single_extend. auto.
+clear H3 H0 H1. revert H2. unfold is_sol_eqn. simpl.
+rewrite !sub_sub, !sub_comp_single_extend. auto.
 Qed.
 
 (***********************************************************************)

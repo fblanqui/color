@@ -71,7 +71,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma eqb_sym : forall x y, eqb x y = eqb y x.
 
-  Proof. intros x y. apply eqb_equiv. repeat rewrite eqb_ok. fo. Qed.
+  Proof. intros x y. apply eqb_equiv. rewrite !eqb_ok. fo. Qed.
 
 (***********************************************************************)
 (** empty *)
@@ -200,7 +200,7 @@ Module Make (Export XSet : FSetInterface.S).
     union a b [=] empty <-> a [=] empty /\ b [=] empty.
 
   Proof.
-    intros a b. repeat rewrite empty_subset. split; intro h.
+    intros a b. rewrite !empty_subset. split; intro h.
     split; trans (union a b).
     apply union_subset_1. hyp. apply union_subset_2. hyp.
     apply union_subset_3; tauto.
@@ -209,7 +209,7 @@ Module Make (Export XSet : FSetInterface.S).
   Lemma union_empty_subset : forall a b,
     union a b [<=] empty <-> (a [<=] empty /\ b [<=] empty).
 
-  Proof. intros a b. repeat rewrite <- empty_subset. apply union_empty. Qed.
+  Proof. intros a b. rewrite <- !empty_subset. apply union_empty. Qed.
 
 (***********************************************************************)
 (** difference *)

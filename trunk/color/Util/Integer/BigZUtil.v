@@ -26,7 +26,7 @@ Open Scope bigZ_scope.
 Lemma compare_antisym : forall x y, CompOpp (x?=y) = (y?=x).
 
 Proof.
-intros x y. repeat rewrite BigZ.spec_compare. apply Zcompare_antisym.
+intros x y. rewrite !BigZ.spec_compare. apply Zcompare_antisym.
 Qed.
 
 Require Import EqUtil.

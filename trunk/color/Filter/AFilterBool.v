@@ -65,7 +65,7 @@ Section S.
     intro. apply term_ind_forall with
     (P := fun t => filter (sub s t) = sub (filter_subs s) (filter t)); intros.
     refl. simpl.
-    apply args_eq. repeat rewrite <- Vmap_filter. repeat rewrite Vmap_map.
+    apply args_eq. rewrite <- !Vmap_filter, !Vmap_map.
     apply Vmap_eq. eapply Vforall_incl with (v2 := v). intros.
     eapply Vfilter_in. apply H0. hyp.
   Qed.
@@ -108,7 +108,7 @@ Section S.
 
     Proof.
       unfold substitution_closed. intros. unfold filter_ord.
-      repeat rewrite filter_sub. apply H. hyp.
+      rewrite !filter_sub. apply H. hyp.
     Qed.
 
 (***********************************************************************)
@@ -272,7 +272,7 @@ Section S.
 
     Proof.
       unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-      elim c. simpl. right. repeat rewrite filter_sub. apply red_rule_top.
+      elim c. simpl. right. rewrite !filter_sub. apply red_rule_top.
       change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
       intros. set (bs := Vbreak (n1:=i) (n2:=S j) (Vcast (pi f) (sym_eq e))).
       case_eq (Vhead (snd bs)); intro H0.
@@ -298,7 +298,7 @@ Section S.
 
     Proof.
       unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
-      repeat rewrite filter_sub. apply hd_red_rule.
+      rewrite !filter_sub. apply hd_red_rule.
       change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
     Qed.
 
@@ -318,7 +318,7 @@ Section S.
     Proof.
       unfold inclusion, filter_ord. intros. redtac. exists (filter t). split.
       apply red_rtc_incl_filter_red_rtc. exact H.
-      subst t. subst y. repeat rewrite filter_sub. apply hd_red_rule.
+      subst t. subst y. rewrite !filter_sub. apply hd_red_rule.
       change (In (filter_rule (mkRule l r)) R'). apply in_map. hyp.
     Qed.
 

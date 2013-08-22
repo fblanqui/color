@@ -1030,8 +1030,7 @@ Section MOrdPair.
     right; trivial.
     left; trivial.
     absurd (mult aL {{aR, bR}} = mult aL (Z + Y)).
-    mset_unfold; repeat rewrite union_mult.
-    repeat rewrite singleton_mult_notin; trivial.
+    mset_unfold; rewrite !union_mult, !singleton_mult_notin; trivial.
     assert (aL in Z).
     rewrite ZaL; auto with multisets.
     unfold member in H4; omega.
@@ -1074,8 +1073,7 @@ Section MOrdPair.
     right; trivial.
     left; trivial.
     absurd (mult bL {{aR, bR}} = mult bL (Z + Y)).
-    mset_unfold; repeat rewrite union_mult.
-    repeat rewrite singleton_mult_notin; trivial.
+    mset_unfold; rewrite !union_mult, !singleton_mult_notin; trivial.
     assert (bL in Z).
     rewrite ZbL; auto with multisets.
     unfold member in H4; omega.
@@ -1212,10 +1210,10 @@ Section OrderSim.
     apply multeq_meq; intro x.
     mset_unfold; unfold member in aM.
     destruct (eqA_dec x a); autorewrite with multisets.
-    repeat rewrite singleton_mult_in; trivial.
+    rewrite !singleton_mult_in; trivial.
     rewrite <- (mult_eqA_compat M e) in aM.
     omega.
-    repeat rewrite singleton_mult_notin; trivial.
+    rewrite !singleton_mult_notin; trivial.
     omega.
     exists C'; split; trivial.
     rewrite <- (permutation_meq C'perm); trivial.

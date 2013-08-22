@@ -104,7 +104,7 @@ generalize dependent p. intro p. elim p.
    set (mi := (fst (Vbreak (n1:=i) (n2:=S j) (Vcast m (sym_equal Hij))))).
    set (mj := (snd (Vbreak (n1:=i) (n2:=S j) (Vcast m (sym_equal Hij))))).
    rewrite (VSn_eq mj).
-   case Hij. simpl. repeat rewrite Vcast_refl.
+   case Hij. simpl. rewrite !Vcast_refl.
    apply meval_monotone_D.
    hyp.
 Qed.
@@ -198,7 +198,7 @@ destruct a. intuition.
 (* -> *)
 unfold pstrong_monotone, pweak_monotone.
 unfold bpstrong_monotone, bcoef_pos in H1. Opaque coef. simpl in *. 
-repeat rewrite andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
+rewrite !andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
 rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
 assert (In (mk_nat_lt H2) (mk_nat_lts n)). apply mk_nat_lts_complete.
 rewrite forallb_forall in H3. ded (H3 _ H5).
@@ -206,7 +206,7 @@ rewrite is_pos_ok in H6. simpl in H6. omega.
 (* <- *)
 unfold pstrong_monotone, pweak_monotone in H1.
 unfold bpstrong_monotone, bcoef_pos. simpl in *.
-repeat rewrite andb_eq. intuition. rewrite is_not_neg_ok. hyp.
+rewrite !andb_eq. intuition. rewrite is_not_neg_ok. hyp.
 change (bcoef_pos p = true). rewrite bcoef_pos_ok. hyp.
 rewrite forallb_forall. intros [i hi Hi]. simpl. rewrite is_pos_ok.
 ded (H3 _ hi). omega. Transparent coef.

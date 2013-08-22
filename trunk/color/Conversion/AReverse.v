@@ -87,7 +87,7 @@ Lemma rule_of_srule_epi : forall a, maxvar (lhs a) = 0 -> maxvar (rhs a) = 0 ->
 
 Proof.
 intros [l r] hl hr. unfold rule_of_srule, srule_of_rule. simpl.
-repeat rewrite term_of_string_epi; try hyp. refl.
+rewrite !term_of_string_epi; try hyp. refl.
 Qed.
 
 Lemma trs_of_srs_epi : forall R,
@@ -133,9 +133,9 @@ Lemma rules_preserve_vars_reverse_trs :
 
 Proof.
 induction R; intros. unfold rules_preserve_vars. simpl. tauto.
-simpl. revert H. repeat rewrite rules_preserve_vars_cons. destruct a as [l r].
-simpl. intuition. repeat rewrite vars_var; try (hyp||apply is_unary_sig').
-repeat rewrite var_reverse_term. intuition.
+simpl. revert H. rewrite !rules_preserve_vars_cons. destruct a as [l r].
+simpl. intuition. rewrite !vars_var; try (hyp||apply is_unary_sig').
+rewrite !var_reverse_term. intuition.
 Qed.
 
 Lemma trs_of_srs_reverse_trs : forall R,
@@ -154,16 +154,16 @@ Lemma reverse_term_reset : forall t, reverse_term (reset t) = reverse_term t.
 Proof.
 intro t; pattern t; apply (term_ind_forall is_unary_sig); clear t; intros.
 unfold reset, swap, single. simpl. rewrite (beq_refl beq_nat_ok). refl.
-rewrite reset_fun1. unfold reverse_term. repeat rewrite string_of_term_fun1.
-rewrite string_of_term_reset. refl. hyp.
+rewrite reset_fun1. unfold reverse_term.
+rewrite !string_of_term_fun1, string_of_term_reset. refl. hyp.
 Qed.
 
 Lemma reset_reverse_term : forall t, reset (reverse_term t) = reverse_term t.
 
 Proof.
 intro t; pattern t; apply (term_ind_forall is_unary_sig); clear t; intros.
-refl. unfold reverse_term. repeat rewrite string_of_term_fun1.
-rewrite reset_term_of_string. refl.
+refl. unfold reverse_term. rewrite !string_of_term_fun1, reset_term_of_string.
+refl.
 Qed.
 
 Lemma reverse_trs_reset_rules : forall R,
@@ -171,8 +171,8 @@ Lemma reverse_trs_reset_rules : forall R,
 
 Proof.
 induction R. refl. simpl. destruct a as [l r]. simpl.
-repeat rewrite reverse_term_reset. rewrite IHR. unfold reset_rule. simpl.
-repeat rewrite reset_reverse_term. refl.
+rewrite !reverse_term_reset, IHR. unfold reset_rule. simpl.
+rewrite !reset_reverse_term. refl.
 Qed.
 
 (***********************************************************************)
@@ -194,8 +194,8 @@ intros. sym. rewrite red_mod_reset_eq; try hyp.
 rewrite String_of_ATerm.WF_red_mod; try apply rules_preserve_vars_reset;
   try hyp.
 rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_red_mod; try hyp.
-repeat rewrite trs_of_srs_reverse_trs. repeat rewrite reverse_trs_reset_rules.
-rewrite <- red_mod_reset_eq. refl. apply is_unary_sig'.
+rewrite !trs_of_srs_reverse_trs, !reverse_trs_reset_rules, <- red_mod_reset_eq.
+refl. apply is_unary_sig'.
 apply rules_preserve_vars_reverse_trs; hyp.
 apply rules_preserve_vars_reverse_trs; hyp.
 Qed.
@@ -205,7 +205,7 @@ End red_mod.
 Lemma WF_red_rev_eq : WF (red (reverse_trs R)) <-> WF (red R).
 
 Proof.
-repeat rewrite <- red_mod_empty.
+rewrite <- !red_mod_empty.
 assert (nil = reverse_trs nil). refl. rewrite H. apply WF_red_mod_rev_eq.
 unfold rules_preserve_vars. simpl. tauto.
 Qed.

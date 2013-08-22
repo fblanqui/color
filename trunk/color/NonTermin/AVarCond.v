@@ -34,15 +34,12 @@ Section S.
     apply rt_refl. exists l. exists r. exists Hole. simpl. exists s.
     repeat split. hyp. unfold s. rewrite sub_single_not_var. refl. hyp.
     rewrite H3. rewrite sub_fill. unfold s, single. simpl.
-    rewrite (beq_refl beq_nat_ok). refl.
-    unfold f. simpl. repeat rewrite iter_com. apply red_mod_fill. hyp.
+    rewrite (beq_refl beq_nat_ok). refl. unfold f. apply red_mod_fill. hyp.
   Qed.
 
   Lemma var_cond : forall R : rules, ~rules_preserve_vars R -> EIS (red R).
 
-  Proof.
-    intros. rewrite <- red_mod_empty. apply var_cond_mod. hyp.
-  Qed.
+  Proof. intros. rewrite <- red_mod_empty. apply var_cond_mod. hyp. Qed.
 
 End S.
 

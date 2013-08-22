@@ -152,7 +152,7 @@ Notation find := (@find _ eq_var_bool _).
         map (apply_subst (sub_of_asub s k)) (terms_of_aterms ts)); clear t.
     simpl. intros. rewrite find_sub_of_asub. case_eq (bgt_nat k x); intros.
     refl. rewrite bgt_nat_ko in H0. absurd_arith.
-    intros. simpl sub. repeat rewrite term_of_aterm_fun. simpl.
+    intros. simpl sub. rewrite !term_of_aterm_fun. simpl.
     apply (f_equal (Term f)). apply H. hyp.
     refl. intros t n ts. simpl. rewrite maxvars_cons. rewrite gt_max.
     intros. destruct H1. rewrite H. 2: hyp. rewrite H0. 2: hyp. refl.
@@ -166,10 +166,10 @@ Notation find := (@find _ eq_var_bool _).
 
   Proof.
     induction c; intros. refl. simpl fill. simpl pos_context.
-    repeat rewrite term_of_aterm_fun. rewrite replace_at_pos_unfold.
-    apply (f_equal (Term f)). repeat rewrite terms_of_aterms_cast.
-    repeat rewrite terms_of_aterms_app. simpl.
-    rewrite replace_at_pos_list_replace_at_pos_in_subterm. rewrite <- IHc. refl.
+    rewrite !term_of_aterm_fun, replace_at_pos_unfold.
+    apply (f_equal (Term f)).
+    rewrite !terms_of_aterms_cast, !terms_of_aterms_app. simpl.
+    rewrite replace_at_pos_list_replace_at_pos_in_subterm, <- IHc. refl.
     rewrite length_terms_of_aterms. refl.
   Qed.
 

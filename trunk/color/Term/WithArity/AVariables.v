@@ -153,7 +153,7 @@ intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 simpl. intros. exists x0. mem. intuition.
 (* Fun *)
-intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. intro.
+intros f ts IH. rewrite sub_fun, !vars_fun. intro.
 destruct (IH H). exists x0. hyp.
 (* Vnil *)
 simpl. mem. discr.
@@ -173,7 +173,7 @@ intros s x y H v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 intro. simpl. mem. intro. subst. hyp.
 (* Fun *)
-intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. hyp.
+intros f ts IH. rewrite sub_fun, !vars_fun. hyp.
 (* Vnil *)
 simpl. auto.
 (* Vcons *)
@@ -192,7 +192,7 @@ intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 simpl. intros x0 H y. mem. intro. subst. hyp.
 (* Fun *)
-intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. hyp.
+intros f ts IH. rewrite sub_fun, !vars_fun. hyp.
 (* Vnil *)
 simpl. intros H y. mem. discr.
 (* Vcons *)
@@ -212,7 +212,7 @@ intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 simpl. intros. apply H. mem. refl.
 (* Fun *)
-intros f ts IH. rewrite sub_fun. repeat rewrite vars_fun. hyp.
+intros f ts IH. rewrite sub_fun, !vars_fun. hyp.
 (* Vnil *)
 simpl. mem. refl.
 (* Vcons *)
@@ -239,7 +239,7 @@ autorewrite with mem Equal. refl.
 simpl. mem. rewrite (beq_com beq_nat_ok). rewrite H. refl.
 (* Fun *)
 intros. rewrite sub_fun.
-case_eq (mem x (vars (Fun f v0))); repeat rewrite vars_fun; intro;
+case_eq (mem x (vars (Fun f v0))); rewrite !vars_fun; intro;
   rewrite H0 in H; exact H.
 (* Vnil *)
 refl.
@@ -328,17 +328,15 @@ Lemma brule_preserve_vars_ok' : forall l r,
 
 Proof.
 unfold brule_preserve_vars. intros l r. rewrite subset_Subset.
-split; intros h x; simpl. repeat rewrite vars_equiv. intuition.
-repeat rewrite <- vars_equiv. intuition.
+split; intros h x; simpl. rewrite !vars_equiv. intuition.
+rewrite <- !vars_equiv. intuition.
 Qed.
 
 Lemma brule_preserve_vars_ok : forall a : rule,
   brule_preserve_vars a = true <->
   incl (ATerm.vars (rhs a)) (ATerm.vars (lhs a)).
 
-Proof.
-intro. destruct a. rewrite brule_preserve_vars_ok'. tauto.
-Qed.
+Proof. intro. destruct a. rewrite brule_preserve_vars_ok'. tauto. Qed.
 
 Lemma brules_preserve_vars_ok : forall R : rules,
   brules_preserve_vars R = true <-> rules_preserve_vars R.

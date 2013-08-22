@@ -335,8 +335,8 @@ Section S.
     rewrite Vnth_replace_neq. 2: hyp. rewrite (Veq_app_cons ts x0).
     rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).
     2: absurd_arith.
-    repeat rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-x)). unfold v2.
-    repeat rewrite Vnth_sub. apply Vnth_eq. omega. absurd_arith.
+    rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i-x)). unfold v2.
+    rewrite !Vnth_sub. apply Vnth_eq. omega. absurd_arith.
     (* 2) x > i *)
     rewrite Vnth_replace_neq. 2: omega. rewrite (Veq_app_cons ts x0).
     rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).

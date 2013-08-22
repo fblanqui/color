@@ -111,7 +111,7 @@ Section Multiset_IntersectionAsDifference.
   Proof.
     intros M N x.
     unfold inter_as_diff.
-    repeat rewrite diff_mult.
+    rewrite !diff_mult.
     set (m := mult x M) in *.
     set (n := mult x N) in *.
     case (Compare_dec.le_lt_dec n m); intro n_m.

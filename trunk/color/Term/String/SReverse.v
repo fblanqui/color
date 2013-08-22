@@ -25,9 +25,8 @@ Notation reverses := (List.map reverse).
 Lemma red_rev : forall R t u, red R t u -> red (reverses R) (rev' t) (rev' u).
 
 Proof.
-intros. redtac. unfold fill. repeat rewrite rev'_app.
-repeat rewrite app_ass. exists (rev' l). exists (rev' r).
-exists (mkContext (rev' (rgt c)) (rev' (lft c))). intuition.
+intros. redtac. unfold fill. rewrite !rev'_app, !app_ass.
+ex (rev' l) (rev' r) (mkContext (rev' (rgt c)) (rev' (lft c))). intuition.
 change (In (reverse (mkRule l r)) (reverses R)). apply in_map. exact H.
 Qed.
 
@@ -63,7 +62,7 @@ Qed.
 Lemma reverse_reverse : forall a, reverse (reverse a) = a.
 
 Proof.
-intros [l r]. unfold reverse. repeat rewrite rev'_rev'. refl.
+intros [l r]. unfold reverse. rewrite !rev'_rev'. refl.
 Qed.
 
 Lemma reverses_reverses : forall R, reverses (reverses R) = R.
@@ -77,13 +76,13 @@ Lemma WF_red_mod_rev_eq : forall E R,
 
 Proof.
 split; intro. apply WF_red_mod_rev. hyp. apply WF_red_mod_rev.
-repeat rewrite reverses_reverses. hyp.
+rewrite !reverses_reverses. hyp.
 Qed.
 
 Lemma WF_red_rev_eq : forall R, WF (red (reverses R)) <-> WF (red R).
 
 Proof.
-intro. repeat rewrite <- red_mod_empty.
+intro. rewrite <- !red_mod_empty.
 assert (nil = reverses nil). refl. rewrite H. apply WF_red_mod_rev_eq.
 Qed.
 

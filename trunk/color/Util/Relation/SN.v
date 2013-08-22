@@ -736,6 +736,8 @@ Section opt.
     apply opt_intro. sym. hyp.
   Qed.
 
+  (** Relation with [eq_opt]. *)
+
   Global Instance opt_eq_opt E : Proper (E ==> E ==> impl) R ->
     Proper (eq_opt E ==> eq_opt E ==> impl) opt.
 
@@ -745,8 +747,6 @@ Section opt.
       try discr. inversion H6; inversion H3; clear H6 H3; subst.
     apply opt_intro. eapply R_E. apply H2. apply H5. hyp.
   Qed.
-
-  (** Relation with [eq_opt]. *)
 
   Lemma opt_eq_opt_r E : R @ E << R -> opt @ eq_opt E << opt.
 
@@ -781,4 +781,20 @@ Proof.
   intros h x x' xx' y y' yy' xy. inversion xx'; clear xx'; subst.
   inversion yy'; clear yy'; subst. inversion xy; clear xy; subst.
   apply opt_intro. eapply h. apply H. apply H0. hyp.
+Qed.
+
+Lemma opt_absorb_r A (R E : relation A) : R @ E << R -> opt R @ opt E << opt R.
+
+Proof.
+  intros RE x z [y [xy yz]].
+  inversion xy; clear xy; subst. inversion yz; clear yz; subst.
+  apply opt_intro. apply RE. exists y0. fo.
+Qed.
+
+Lemma opt_absord_l A (R E : relation A) : E @ R << R -> opt E @ opt R << opt R.
+
+Proof.
+  intros ER x z [y [xy yz]].
+  inversion yz; clear yz; subst. inversion xy; clear xy; subst.
+  apply opt_intro. apply ER. exists x0. fo.
 Qed.

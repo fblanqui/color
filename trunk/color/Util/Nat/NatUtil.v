@@ -429,8 +429,8 @@ Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
 
 Proof.
 induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
-rewrite mult_succ_r in H. omega. repeat rewrite mult_0_r in H. omega.
-simpl in *. repeat rewrite mult_succ_r in H. omega.
+rewrite mult_succ_r in H. omega. rewrite !mult_0_r in H. omega.
+simpl in *. rewrite !mult_succ_r in H. omega.
 Qed.
 
 Implicit Arguments mult_lt_r_elim [x x' y].

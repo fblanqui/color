@@ -90,26 +90,19 @@ Section SpecConformation.
   Lemma multeq_meq : forall M N, (forall x, x / M = x / N) -> M =mul= N.
 
   Proof.
-    unfold meq.
-    intros M N mult_MN x.
-    repeat rewrite <- mult_comp.
-    exact (mult_MN x).
+    unfold meq. intros M N mult_MN x. rewrite <- !mult_comp. exact (mult_MN x).
   Qed.
 
   Lemma meq_multeq : forall M N, M =mul= N -> (forall x, x / M = x / N).
 
   Proof.
     unfold meq, permutation, Multiset.meq.
-    intros M N eqMN x.
-    repeat rewrite mult_comp.
-    exact (eqMN x).
+    intros M N eqMN x. rewrite !mult_comp. exact (eqMN x).
   Qed.
 
   Lemma empty_mult : forall x, mult x empty = 0.
 
-  Proof.
-    auto.
-  Qed.
+  Proof. auto. Qed.
 
   Lemma union_mult : forall M N x, x / (M + N) = (x / M + x / N)%nat.
 
@@ -168,7 +161,7 @@ Section SpecConformation.
     intros x a b M.
     case (eqA_dec x a); case (eqA_dec x b); intros x_b x_a.
      (* x=b,  x=a *)
-    repeat rewrite mult_remove_in; trivial.
+    rewrite !mult_remove_in; trivial.
      (* x<>b, x=a *)
     rewrite mult_remove_in; trivial.
     do 2 (rewrite mult_remove_not_in; trivial).
@@ -178,7 +171,7 @@ Section SpecConformation.
     do 2 (rewrite mult_remove_in; trivial).
     rewrite mult_remove_not_in; trivial.
      (* x<>b, x<>a *)
-    repeat rewrite mult_remove_not_in; trivial.
+    rewrite !mult_remove_not_in; trivial.
   Qed.
 
   Lemma diff_mult_comp : forall x N M M',
@@ -193,9 +186,9 @@ Section SpecConformation.
     apply multeq_meq.
     intro x'.
     case (eqA_dec x' a).
-    intro xa; repeat rewrite mult_remove_in; trivial.
+    intro xa; rewrite !mult_remove_in; trivial.
     rewrite (meq_multeq MM'); trivial.
-    intro xna; repeat rewrite mult_remove_not_in; trivial.
+    intro xna; rewrite !mult_remove_not_in; trivial.
     apply meq_multeq; trivial.
   Qed.
 

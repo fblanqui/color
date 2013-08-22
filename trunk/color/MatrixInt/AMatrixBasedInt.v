@@ -144,7 +144,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
   Proof.
     unfold mi_eval_aux. intuition. apply vector_plus_mor.
     apply add_vectors_mor.
-    apply Vforall2n_intro. intros. repeat rewrite Vnth_map2.
+    apply Vforall2n_intro. intros. rewrite !Vnth_map2.
     apply mat_vec_prod_mor.
     apply (Vnth_mor mat_eqA). rewrite H. refl. apply (Vnth_mor eq_vec). hyp.
     rewrite H. refl.
@@ -458,12 +458,11 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       intros. unfold mint_eval. simpl.
       set (vali := Vbuild (A := vec) (fun i (_ : i < k) => dom2vec (val i))).
       rewrite combine_matrices_cons.
-      autorewrite with arith. repeat rewrite <- vector_plus_assoc.
+      autorewrite with arith. rewrite <- !vector_plus_assoc.
       apply vector_plus_mor. refl. rewrite vector_plus_assoc.
       rewrite (vector_plus_comm _ c_tl). rewrite <- vector_plus_assoc.
       apply vector_plus_mor. refl. apply add_vectors_split. intros.
-      repeat rewrite Vnth_map2. rewrite vector_plus_comm.
-      apply mat_vec_prod_distr_mat.
+      rewrite !Vnth_map2, vector_plus_comm. apply mat_vec_prod_distr_mat.
     Qed.
 
     Lemma mint_eval_mult_factor : forall k val M (mi : mint k),
@@ -477,7 +476,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       rewrite (mat_vec_prod_distr_add_vectors M 
         (Vmap2 mat_vec_prod (args mi) gen)
         (Vmap2 mat_vec_prod (Vmap (mat_mult M) (args mi)) gen)).
-      refl. intros. repeat rewrite Vnth_map2. rewrite Vnth_map.
+      refl. intros. rewrite !Vnth_map2, Vnth_map.
       unfold M.mat_vec_prod. rewrite vec_to_col_mat_idem.
       apply get_col_mor. rewrite mat_mult_assoc. refl.
     Qed.

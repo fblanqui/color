@@ -105,7 +105,7 @@ Section S.
     (* Var *)
     unfold lab_sub. refl.
     (* Fun *)
-    repeat rewrite Vmap_map. rewrite Vmap_eq_ext with (g := int (beta v s)).
+    rewrite !Vmap_map, Vmap_eq_ext with (g := int (beta v s)).
     2: apply substitution_lemma. apply args_eq. hyp.
     (* Vnil *)
     refl.
@@ -215,12 +215,12 @@ Section S.
     intros R [l r]. split.
     (* [= *)
     intros [[l' r'] [h1 h2]]. destruct h1 as [[x y] [v [h h']]]. inversion h'.
-    inversion h2. subst. repeat rewrite Ft_epi. hyp.
+    inversion h2. subst. rewrite !Ft_epi. hyp.
     (* =] *)
     unfold Frs. intro. set (v := fun x : variable => some_elt I).
     exists (mkRule (lab v l) (lab v r)). split.
     unfold lab_rules. exists (mkRule l r). exists v. intuition.
-    simpl. repeat rewrite Ft_epi. refl.
+    simpl. rewrite !Ft_epi. refl.
   Qed.
 
   Lemma red_Frs_Decr : red (unlab_rules Decr) << @eq term.
@@ -246,7 +246,7 @@ Section S.
     left. eapply rt_red_Frs_Decr. apply rt_step. apply red_rule. hyp.
     right. apply red_rule. do 2 destruct H. rewrite H0. clear H0.
     do 3 destruct H.
-    subst. destruct x0. simpl. repeat rewrite Ft_epi. hyp.
+    subst. destruct x0. simpl. rewrite !Ft_epi. hyp.
   Qed.
 
   Lemma rt_red_mod_Frs_Decr : forall E,
@@ -278,7 +278,7 @@ Section S.
 
     Proof.
       intros. redtac. subst. exists (lab v (sub s l)). split. apply rt_refl.
-      repeat rewrite lab_sub_eq. exists (lab (beta v s) l).
+      rewrite !lab_sub_eq. exists (lab (beta v s) l).
       exists (lab (beta v s) r). exists (lab_sub v s). intuition.
       exists (mkRule l r). exists (beta v s). intuition.
     Qed.
@@ -290,11 +290,11 @@ Section S.
       intros. redtac. subst. elim c; clear c.
       (* Hole *)
       simpl. exists (lab v (sub s l)). split. apply rt_refl.
-      repeat rewrite lab_sub_eq. exists (lab (beta v s) l).
+      rewrite !lab_sub_eq. exists (lab (beta v s) l).
       exists (lab (beta v s) r). exists Hole. exists (lab_sub v s). intuition.
       exists (mkRule l r). exists (beta v s). intuition.
       (* Cont *)
-      intros. simpl. repeat rewrite Vmap_cast. repeat rewrite Vmap_app. simpl.
+      intros. simpl. rewrite !Vmap_cast, !Vmap_app. simpl.
       set (v0' := Vmap (int v) t). set (l1 := fill c (sub s l)). fold l1 in H.
       set (v1' := Vmap (int v) t0). set (r1 := fill c (sub s r)). fold r1 in H.
       assert (int v l1 >=D int v r1). assert (IR I Dge l1 r1).
@@ -584,7 +584,7 @@ Definition enum2 R :=
 
       Proof.
         rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab.
-        2: apply ge_compatR. apply WF_m. rewrite Rules_enum_Decr.
+        2: apply ge_compatR. apply WF_same_rel. rewrite Rules_enum_Decr.
         rewrite lab_rules_enum. refl.
       Qed.
 
@@ -594,19 +594,18 @@ Definition enum2 R :=
         WF (red_mod E R) <-> WF (red_mod (D' ++ E') R').
 
       Proof.
-        repeat rewrite <- red_mod_Rules. rewrite WF_red_mod_lab.
-        2: apply ge_compatE. 2: apply ge_compatR.
-        apply WF_m. rewrite Rules_app. rewrite Rules_enum_Decr.
-        repeat rewrite lab_rules_enum. refl.
+        rewrite <- !red_mod_Rules, WF_red_mod_lab.
+        2: apply ge_compatE. 2: apply ge_compatR. apply WF_same_rel.
+        rewrite Rules_app, Rules_enum_Decr, !lab_rules_enum. refl.
       Qed.
 
       Lemma WF_hd_red_mod_lab_fin :
         WF (hd_red_mod E R) <-> WF (hd_red_mod (D' ++ E') R').
 
       Proof.
-        repeat rewrite <- hd_red_mod_Rules. rewrite WF_hd_red_mod_lab.
-        2: apply ge_compatE. apply WF_m. rewrite Rules_app, Rules_enum_Decr.
-        repeat rewrite lab_rules_enum. refl.
+        rewrite <- !hd_red_mod_Rules, WF_hd_red_mod_lab.
+        2: apply ge_compatE. apply WF_same_rel.
+        rewrite Rules_app, Rules_enum_Decr, !lab_rules_enum. refl.
       Qed.
 
     End red_mod.

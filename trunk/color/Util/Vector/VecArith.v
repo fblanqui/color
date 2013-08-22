@@ -48,7 +48,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Proof.
     intros. apply Vforall2n_intro. intros. unfold vector_plus.
-    repeat rewrite Vnth_map2.
+    rewrite !Vnth_map2.
     (*FIXME: rewrite H does not work even if Vnth is declared as morphism *)
     apply Aplus_mor; apply (Vnth_mor eqA); hyp.
   Qed.
@@ -123,8 +123,9 @@ Module VectorArith (SRT : SemiRingType).
     add_vectors (Vcons v (Vcons v' vs)) =v add_vectors (Vcons v' (Vcons v vs)).
 
   Proof.
-    intros. repeat rewrite add_vectors_cons. repeat rewrite vector_plus_assoc.
-    rewrite (vector_plus_comm v v'). refl.
+    intros.
+    rewrite !add_vectors_cons, !vector_plus_assoc, (vector_plus_comm v v').
+    refl.
   Qed.
 
   Lemma add_vectors_nth : forall n k (vs : vector (vec n) k) i (ip : i < n),

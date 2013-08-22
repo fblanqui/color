@@ -480,7 +480,7 @@ Section Computability_theory.
     unfold N', N''.
     apply equiv_term_activeEnv.
     apply term_appBodyL_eq; trivial.
-    repeat rewrite appBodyL_env.
+    rewrite !appBodyL_env.
     apply env_comp_sym; apply env_subset_comp; trivial.
     unfold N''; rewrite appBodyL_env; trivial.
     rewrite NS_conv.
@@ -897,8 +897,8 @@ Section Computability_theory.
     replace (subst cs) with (subst cs').
     apply WL_Hyp with T; trivial.
     apply term_eq.
-    repeat rewrite subst_env; rewrite (absBody_eq WLabs W'Labs); trivial.
-    repeat rewrite subst_term; rewrite (absBody_eq WLabs W'Labs); trivial.
+    rewrite !subst_env, (absBody_eq WLabs W'Labs); trivial.
+    rewrite !subst_term; rewrite (absBody_eq WLabs W'Labs); trivial.
     apply algebraic_app with W'app.
     rewrite <- W'L_eq; trivial.
     apply R_algebraic_preserving with (appBodyR Wapp); trivial.
@@ -994,9 +994,9 @@ Section Computability_theory.
     apply singletonSubst_cond.
     apply var_comp; simpl; trivial.
     apply term_eq.
-    repeat rewrite subst_env.
+    rewrite !subst_env.
     rewrite S1eqS2; trivial.
-    repeat rewrite subst_term.
+    rewrite !subst_term.
     rewrite S1eqS2; trivial.
     unfold idS1; rewrite (idSubst_neutral (absBody (M:=M) Mabs)).
     apply abs_conv_absBody; trivial.

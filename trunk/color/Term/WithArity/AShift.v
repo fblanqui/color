@@ -71,7 +71,7 @@ Lemma vars_shift : forall t, vars (shift t) = map shift_var (vars t).
 Proof.
 apply term_ind with (Q := fun n (v : terms n) =>
   vars_vec (Vmap shift v) = map shift_var (vars_vec v)); intros. refl.
-unfold shift. rewrite sub_fun. repeat rewrite vars_fun. exact H.
+unfold shift. rewrite sub_fun. rewrite !vars_fun. exact H.
 refl. simpl. rewrite map_app. rewrite H. apply appr_eq. exact H0.
 Qed.
 
@@ -174,7 +174,7 @@ Proof.
 unfold inclusion. intros. redtac. rename l into l'. rename r into r'.
 subst x. subst y. ded (hyp lr). do 3 destruct H. destruct x0 as [l r].
 simpl in H0. inversion H0. subst l'. subst r'. unfold shift.
-repeat rewrite sub_sub. apply red_rule. hyp.
+rewrite !sub_sub. apply red_rule. hyp.
 Qed.
 
 End shift_red_incl_red.

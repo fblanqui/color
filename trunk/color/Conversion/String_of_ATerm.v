@@ -88,7 +88,7 @@ Section S.
 
   Proof.
     intro s. apply term_ind_forall. refl. intros f t IH. rewrite sub_fun1.
-    repeat rewrite string_of_term_fun1. rewrite IH. rewrite var_fun1. refl.
+    rewrite !string_of_term_fun1. rewrite IH. rewrite var_fun1. refl.
   Qed.
 
 (***********************************************************************)
@@ -167,8 +167,8 @@ Section S.
   Proof.
     intro t; pattern t; apply term_ind_forall; clear t; intros; unfold reset.
     simpl. unfold swap, single. rewrite (beq_refl beq_nat_ok). refl.
-    rewrite sub_fun1. repeat rewrite string_of_term_fun1.
-    rewrite var_fun1. fold (reset t). rewrite H. refl.
+    rewrite sub_fun1, !string_of_term_fun1, var_fun1. fold (reset t).
+    rewrite H. refl.
   Qed.
 
   Lemma srule_of_rule_reset :
@@ -176,7 +176,7 @@ Section S.
 
   Proof.
     intros [l r]. unfold srule_of_rule, reset_rule. simpl.
-    repeat rewrite string_of_term_reset. refl.
+    rewrite !string_of_term_reset. refl.
   Qed.
 
   Lemma srs_of_trs_reset : forall R, srs_of_trs (reset_rules R) = srs_of_trs R.
@@ -197,12 +197,12 @@ Section S.
       Srs.red (srs_of_trs R) t u -> red R (term_of_string t) (term_of_string u).
 
     Proof.
-      intros. Srs.redtac. subst. repeat rewrite term_of_string_fill.
+      intros. Srs.redtac. subst. rewrite !term_of_string_fill.
       destruct (in_map_elim H). destruct H0. destruct x as [l' r'].
       unfold srule_of_rule in H1. simpl in H1. inversion H1.
-      repeat rewrite term_of_string_epi. Focus 3. eapply h2. apply H0.
+      rewrite !term_of_string_epi. Focus 3. eapply h2. apply H0.
       Focus 2. ded (h2 _ _ H0). cut (maxvar r' <= maxvar l'). Omega.
-      repeat rewrite maxvar_lmax. apply incl_lmax. apply h1. hyp.
+      rewrite !maxvar_lmax. apply incl_lmax. apply h1. hyp.
       apply red_rule. hyp.
     Qed.
 
@@ -221,8 +221,8 @@ Section S.
     Proof.
       intros. rewrite (red1_ok is_unary_sig hR) in H. destruct H. decomp H.
       rewrite H0; clear H0. rewrite H3; clear H3.
-      repeat rewrite string_of_term_fill. repeat rewrite string_of_cont_comp.
-      repeat rewrite string_of_cont_cont. simpl. repeat rewrite <- app_nil_end.
+      rewrite !string_of_term_fill, !string_of_cont_comp, !string_of_cont_cont.
+      simpl. rewrite <- !app_nil_end.
       set (c := SContext.mkContext (string_of_cont x1) (string_of_cont x2)).
       change (Srs.red (srs_of_trs R) (SContext.fill c (string_of_term x))
         (SContext.fill c (string_of_term x0))). apply Srs.red_rule. clear c.

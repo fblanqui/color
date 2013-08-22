@@ -34,7 +34,7 @@ Lemma fill_fill : forall c d u, fill c (fill d u) = fill (comp c d) u.
 
 Proof.
 intros. destruct c. destruct d.
-unfold fill. simpl. repeat rewrite app_ass. refl.
+unfold fill. simpl. rewrite !app_ass. refl.
 Qed.
 
 End S.

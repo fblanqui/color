@@ -125,14 +125,13 @@ Qed.
 Lemma var_sub : forall s t, var (sub s t) = var (s (var t)).
 
 Proof.
-intro s. apply term_ind_forall. refl. intros. rewrite sub_fun1.
-repeat rewrite var_fun1. hyp.
+intro s. apply term_ind_forall. refl. intros. rewrite sub_fun1, !var_fun1. hyp.
 Qed.
 
 Lemma vars_var : forall t, vars t = var t :: nil.
 
 Proof.
-apply term_ind_forall. refl. intros. rewrite vars_fun1. rewrite var_fun1. hyp.
+apply term_ind_forall. refl. intros. rewrite vars_fun1, var_fun1. hyp.
 Qed.
 
 Lemma maxvar_var : forall t, maxvar t = var t.
@@ -262,7 +261,7 @@ Variables (R : rules) (hR : rules_preserve_vars R).
 Lemma rules_preserve_vars_var : forall l r, In (mkRule l r) R -> var r = var l.
 
 Proof.
-intros. ded (hR _ _ H). repeat rewrite vars_var in H0. unfold incl in H0.
+intros. ded (hR _ _ H). rewrite !vars_var in H0. unfold incl in H0.
 ded (H0 (var r)). simpl in H1. intuition.
 Qed.
 
@@ -280,8 +279,7 @@ Proof.
 intros t u; split; intro H.
 (* red -> red1 *)
 redtac. exists l. exists r. exists c. exists (cont (s (var l))).
-subst. repeat rewrite sub_cont. repeat rewrite fill_fill.
-repeat rewrite var_fill. intuition.
+subst. rewrite !sub_cont, !fill_fill, !var_fill. intuition.
 rewrite (term_cont_var (s (var l))) at 1. rewrite fill_fill.
 rewrite comp_comp. refl.
 rewrite (term_cont_var (s (var r))) at 1. rewrite fill_fill.
@@ -290,9 +288,9 @@ rewrite comp_comp. rewrite (rules_preserve_vars_var lr). refl.
 destruct H as [l]. destruct H as [r]. destruct H as [c]. destruct H as [d].
 decomp H. exists l. exists r. exists c.
 set (s := fun x => if beq_nat x (var l) then fill d (Var (var t)) else Var x).
-exists s. rewrite H2. rewrite H3. repeat rewrite sub_cont. unfold s.
-rewrite (rules_preserve_vars_var H0). rewrite (beq_refl beq_nat_ok).
-repeat rewrite fill_fill. repeat rewrite comp_comp. intuition.
+exists s. rewrite H2, H3, !sub_cont. unfold s.
+rewrite (rules_preserve_vars_var H0), (beq_refl beq_nat_ok),
+  !fill_fill, !comp_comp. intuition.
 Qed.
 
 Require Import RelUtil.
@@ -351,11 +349,11 @@ intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 simpl. intro. destruct (hs x). rewrite H. refl.
 (* Fun *)
-intros. rewrite sub_fun. repeat rewrite size_fun. rewrite H. refl.
+intros. rewrite sub_fun, !size_fun, H. refl.
 (* Vnil *)
 refl.
 (* Vcons *)
-intros. simpl. rewrite H. rewrite H0. refl.
+intros. simpl. rewrite H, H0. refl.
 Qed.
 
 Section red.
@@ -373,13 +371,12 @@ exists (fill (comp c (comp (cont r) d)) (Var (var t))). rewrite red1_ok.
 2: hyp. split.
 (* left *)
 exists l. exists r. exists c. exists d. intuition.
-revert H2. rewrite (term_cont_var t). rewrite sub_fill. repeat rewrite var_fill.
+revert H2. rewrite (term_cont_var t). rewrite sub_fill. rewrite !var_fill.
 simpl. rewrite subc_cont. destruct (hs (var t)). rewrite H. simpl. intro.
-destruct (fill_var_elim H2) as [e]. revert H2. rewrite H1.
-repeat rewrite comp_comp. intro. rewrite fill_eq_cont in H2.
-repeat rewrite comp_eq in H2. rewrite H2. refl.
+destruct (fill_var_elim H2) as [e]. revert H2. rewrite H1, !comp_comp.
+intro. rewrite fill_eq_cont, !comp_eq in H2. rewrite H2. refl.
 (* right *)
-rewrite sub_fill. rewrite subc_cont. rewrite H3. rewrite fill_eq.
+rewrite sub_fill, subc_cont, H3, fill_eq.
 simpl. rewrite var_sub. destruct (hs (var t)). rewrite H. refl.
 Qed.
 
@@ -554,7 +551,7 @@ Lemma var_reset : forall t, var (reset t) = 0.
 Proof.
 intro t; pattern t; apply term_ind_forall; clear t; intros.
 unfold reset, swap, single. simpl. rewrite (beq_refl beq_nat_ok). refl.
-unfold reset. rewrite sub_fun1. repeat rewrite var_fun1. fold (reset t). hyp.
+unfold reset. rewrite sub_fun1, !var_fun1. fold (reset t). hyp.
 Qed.
 
 Lemma maxvar_reset : forall t, maxvar (reset t) = 0.
@@ -568,8 +565,7 @@ Lemma maxvar_reset_rules : forall R a, In a (reset_rules R) ->
 
 Proof.
 intros. unfold reset_rules in H. destruct (in_map_elim H). destruct H0. subst.
-destruct x as [l r]. unfold reset_rule. simpl. repeat rewrite maxvar_reset.
-auto.
+destruct x as [l r]. unfold reset_rule. simpl. rewrite !maxvar_reset. auto.
 Qed.
 
 Section red.
@@ -581,8 +577,8 @@ Lemma rules_preserve_vars_reset : rules_preserve_vars (reset_rules R).
 
 Proof.
 intros l0 r0 h. destruct (in_map_elim h). destruct H. destruct x as [l r].
-unfold reset_rule in H0. simpl in H0. inversion H0. repeat rewrite vars_var.
-repeat rewrite var_reset. refl.
+unfold reset_rule in H0. simpl in H0. inversion H0.
+rewrite !vars_var, !var_reset. refl.
 Qed.
 
 Lemma red_reset : forall t u, red R t u <-> red (reset_rules R) t u.
@@ -595,8 +591,8 @@ case (In_dec eq_nat_dec 0 (vars l)); intro.
 (* In 0 (vars l) *)
 rewrite vars_var in i. simpl in i. intuition.
 apply red_rule. assert (mkRule l r = reset_rule (mkRule l r)).
-unfold reset_rule. simpl. unfold reset. rewrite H. repeat rewrite H0.
-repeat rewrite swap_id. refl. rewrite H1. apply in_map. hyp.
+unfold reset_rule. simpl. unfold reset. rewrite H, !H0, !swap_id. refl.
+rewrite H1. apply in_map. hyp.
 (* ~In 0 (vars l) *)
 rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
 rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
@@ -606,7 +602,7 @@ change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 (* <- *)
 redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
 destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
-inversion H0. unfold reset. repeat rewrite sub_sub.
+inversion H0. unfold reset. rewrite !sub_sub.
 ded (rules_preserve_vars_var hR H). rewrite H1. apply red_rule. hyp.
 Qed.
 
@@ -626,8 +622,8 @@ case (In_dec eq_nat_dec 0 (vars l)); intro.
 (* In 0 (vars l) *)
 rewrite vars_var in i. simpl in i. intuition.
 apply hd_red_rule. assert (mkRule l r = reset_rule (mkRule l r)).
-unfold reset_rule. simpl. unfold reset. rewrite H. repeat rewrite H0.
-repeat rewrite swap_id. refl. rewrite H1. apply in_map. hyp.
+unfold reset_rule. simpl. unfold reset. rewrite H, !H0, !swap_id. refl.
+rewrite H1. apply in_map. hyp.
 (* ~In 0 (vars l) *)
 rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
 rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
@@ -637,7 +633,7 @@ change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 (* <- *)
 redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
 destruct H. destruct x as [l r]. unfold reset_rule in H0. simpl in H0.
-inversion H0. unfold reset. repeat rewrite sub_sub.
+inversion H0. unfold reset. rewrite !sub_sub.
 ded (rules_preserve_vars_var hR H). rewrite H1. apply hd_red_rule. hyp.
 Qed.
 
@@ -655,9 +651,7 @@ Variable hR : rules_preserve_vars R.
 
 Lemma red_mod_reset_eq : red_mod E R == red_mod (reset_rules E) (reset_rules R).
 
-Proof.
-unfold red_mod. repeat rewrite <- red_reset_eq; try hyp. refl.
-Qed.
+Proof. unfold red_mod. rewrite <- !red_reset_eq; try hyp. refl. Qed.
 
 Lemma hd_red_mod_reset_eq :
   hd_red_mod E R == hd_red_mod (reset_rules E) (reset_rules R).

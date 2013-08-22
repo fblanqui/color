@@ -44,8 +44,7 @@ Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1)
 Proof.
   induction bs; intros.
   destruct n1; destruct n2; solve [discr | refl].
-  destruct n1; try VOtac; repeat rewrite Vcast_refl;
-    try solve [discr | refl].
+  destruct n1; try VOtac; repeat rewrite Vcast_refl; try solve [discr | refl].
   VSntac v1. destruct h; simpl; try apply Vtail_eq; apply IHbs.
 Qed.
 

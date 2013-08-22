@@ -120,7 +120,7 @@ Section props.
   Lemma context_closed_red : forall R : rules, context_closed (red R).
 
   Proof.
-    intros R t u c h. redtac. subst. repeat rewrite fill_fill.
+    intros R t u c h. redtac. subst. rewrite !fill_fill.
     exists l. exists r. exists (comp c c0). exists s. intuition.
   Qed.
 
@@ -181,15 +181,15 @@ Section props.
     red_mod (Rules E) (Rules R) == ATrs.red_mod E R.
 
   Proof.
-    intros. unfold red_mod, ATrs.red_mod. repeat rewrite red_Rules. refl.
+    intros. unfold red_mod, ATrs.red_mod. rewrite !red_Rules. refl.
   Qed.
 
   Lemma hd_red_mod_Rules : forall E R,
     hd_red_mod (Rules E) (Rules R) == ATrs.hd_red_mod E R.
 
   Proof.
-    intros. unfold hd_red_mod, ATrs.hd_red_mod. repeat rewrite red_Rules.
-    repeat rewrite hd_red_Rules. refl.
+    intros. unfold hd_red_mod, ATrs.hd_red_mod.
+    rewrite !red_Rules, !hd_red_Rules. refl.
   Qed.
 
   Lemma red_mod_empty : forall R : rules, red_mod (@empty rule) R == red R.

@@ -69,7 +69,7 @@ Section Multiplicity.
 
   Proof.
     intros.
-    repeat rewrite multiplicity_countIn.
+    rewrite !multiplicity_countIn.
     apply countIn_dropNth_eq with el'; trivial.
   Qed.
 
@@ -81,7 +81,7 @@ Section Multiplicity.
 
   Proof.
     intros.
-    repeat rewrite multiplicity_countIn.
+    rewrite !multiplicity_countIn.
     apply countIn_dropNth_neq with el'; trivial.
   Qed.
 
@@ -213,7 +213,7 @@ Section Permutation.
     unfold insert_nth.
     change (el :: finalSeg l n) with ((el :: nil) ++ finalSeg l n).
     change (el :: l') with ((el :: nil) ++ l').
-    repeat rewrite list_contents_app.
+    rewrite !list_contents_app.
     simpl.
     rewrite plus_0_r.
     match goal with
@@ -333,13 +333,13 @@ Section ListSim.
     inversion H2; discr.
     constructor.
     inversion H; inversion H0; trivial.
-    repeat rewrite drop_nth_cons in H2; trivial.
+    rewrite !drop_nth_cons in H2; trivial.
      (* induction step *)
     destruct l; destruct l'.
     constructor.
     inversion H2; discr.
     inversion H2; discr.
-    repeat rewrite drop_nth_succ in H2.
+    rewrite !drop_nth_succ in H2.
     inversion H2.
     constructor; trivial.
     apply IHp with a a'; trivial.

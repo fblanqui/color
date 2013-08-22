@@ -39,15 +39,11 @@ Section In.
 
   Lemma in_app : forall l m (x : A), In x (l ++ m) <-> In x l \/ In x m.
 
-  Proof.
-    intuition.
-  Qed.
+  Proof. intuition. Qed.
 
   Lemma notin_app : forall l m (x : A), ~In x (l ++ m) <-> ~In x l /\ ~In x m.
 
-  Proof.
-    intuition. rewrite in_app in H0. intuition.
-  Qed.
+  Proof. intuition. rewrite in_app in H0. intuition. Qed.
 
   Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
@@ -58,16 +54,12 @@ Section In.
 
   Lemma in_appr : forall (x : A) l1 l2, In x l2 -> In x (l1 ++ l2).
 
-  Proof.
-    induction l1; simpl; intros. hyp. right. apply IHl1. hyp.
-  Qed.
+  Proof. induction l1; simpl; intros. hyp. right. apply IHl1. hyp. Qed.
 
   Lemma in_app_com : forall (x : A) l1 l2 l3,
     In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
 
-  Proof.
-    intros. repeat rewrite in_app in H. intuition.
-  Qed.
+  Proof. intros. rewrite !in_app in H. intuition. Qed.
 
   Lemma in_elim : forall (x : A) l,
     In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
@@ -372,11 +364,8 @@ Section app.
     (l ++ a::nil) ++ m = l ++ a::m.
 
   Proof.
-    induction l.
-    auto.
-    intros m a'.
-    repeat rewrite <- app_comm_cons.
-    destruct (IHl m a'); trivial.
+    induction l. auto.
+    intros m a'. rewrite <- !app_comm_cons. destruct (IHl m a'); trivial.
   Qed.
 
   Lemma list_app_last : forall l m n (a : A),
@@ -1105,35 +1094,26 @@ Section reverse_tail_recursive.
 
   Lemma rev_append_rev : forall l l', rev_append l' l = rev l ++ l'.
 
-  Proof.
-    induction l; simpl; auto; intros. rewrite <- ass_app; fo.
-  Qed.
+  Proof. induction l; simpl; auto; intros. rewrite <- ass_app; fo. Qed.
 
   Lemma rev_append_app : forall l l' acc : list A,
     rev_append acc (l ++ l') = rev_append (rev_append acc l) l'.
 
-  Proof.
-    induction l; simpl; intros. refl. rewrite IHl. refl.
-  Qed.
+  Proof. induction l; simpl; intros. refl. rewrite IHl. refl. Qed.
 
   Lemma rev'_app : forall l l' : list A, rev' (l ++ l') = rev' l' ++ rev' l.
 
   Proof.
-    intros. rewrite rev_append_app. repeat rewrite rev_append_rev.
-    repeat rewrite <- app_nil_end. refl.
+    intros. rewrite rev_append_app, !rev_append_rev, <- !app_nil_end. refl.
   Qed.
 
   Lemma rev'_rev : forall l : list A, rev' l = rev l.
 
-  Proof.
-    intro. rewrite rev_append_rev. rewrite <- app_nil_end. refl.
-  Qed.
+  Proof. intro. rewrite rev_append_rev, <- app_nil_end. refl. Qed.
 
   Lemma rev'_rev' : forall l : list A, rev' (rev' l) = l.
 
-  Proof.
-    intro. repeat rewrite rev'_rev. apply rev_involutive.
-  Qed.
+  Proof. intro. rewrite !rev'_rev. apply rev_involutive. Qed.
 
   Lemma rev'_cons : forall a (l : list A), rev' (a::l) = rev' l ++ (a::nil).
 

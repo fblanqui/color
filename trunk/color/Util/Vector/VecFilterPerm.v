@@ -30,9 +30,9 @@ Lemma Vfilter_eq_notin : forall A n (l : nat_lts n) i (vi : vector A i) t u
 
 Proof.
 induction l; simpl; intros. refl. apply Vcons_eq. split.
-repeat rewrite Vnth_cast. repeat rewrite Vnth_app.
+rewrite !Vnth_cast, !Vnth_app.
 destruct a as [k h]. simpl val. simpl prf. case (le_gt_dec i k); intro.
-repeat rewrite Vnth_cons. case (lt_ge_dec 0 (k-i)); intro. refl.
+rewrite !Vnth_cons. case (lt_ge_dec 0 (k-i)); intro. refl.
 assert (k=i). omega. subst k. ded (H h). fo.
 refl. apply IHl. fo.
 Qed.

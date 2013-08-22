@@ -132,9 +132,7 @@ Open Scope bigN_scope.
 
 Lemma compare_antisym : forall x y, CompOpp (x?=y) = (y?=x).
 
-Proof.
-intros x y. repeat rewrite spec_compare. apply Zcompare_antisym.
-Qed.
+Proof. intros x y. rewrite !spec_compare. apply Zcompare_antisym. Qed.
 
 Lemma compare_antisym_eq : forall x y c, (x?=y = CompOpp c) <-> (y?=x = c).
 
