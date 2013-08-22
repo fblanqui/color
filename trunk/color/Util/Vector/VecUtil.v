@@ -2128,13 +2128,13 @@ End vec_opt_filter_map.
 
 Section first_position.
 
-  Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}) (x : A).
+  Variables (A : Type) (P : A -> Prop) (P_dec : forall y : A, {P y}+{~P y}).
 
   Fixpoint Vfirst_position_aux k n (ys : vector A n) :=
     match ys with
       | Vnil => None
       | Vcons y _ ys' =>
-        match eq_dec x y with
+        match P_dec y with
           | left _ => Some k
           | _ => Vfirst_position_aux (S k) ys'
         end
@@ -2142,26 +2142,12 @@ Section first_position.
 
   Definition Vfirst_position := Vfirst_position_aux 0.
 
-  Lemma Vfirst_position_aux_in : forall n (ys : vector A n) k i,
-    Vfirst_position_aux k ys = Some i -> Vin x ys.
-
-  Proof.
-    induction ys as [|y ys]; intros k i; simpl. discr.
-    destruct (eq_dec x y); fo.
-  Qed.
-
-  Lemma Vfirst_position_in : forall n (ys : vector A n) i,
-    Vfirst_position ys = Some i -> Vin x ys.
-
-  Proof. intros n ys i. apply Vfirst_position_aux_in. Qed.
-
   Lemma Vfirst_position_aux_lt : forall n (ys : vector A n) k i,
     Vfirst_position_aux k ys = Some i -> i < k+n.
 
   Proof.
-    induction ys as [|y ys]; intros k i; simpl. discr.
-    destruct (eq_dec x y).
-    subst y. intro h; inversion h; clear h; subst. omega.
+    induction ys as [|y n ys]; intros k i; simpl. discr. destruct (P_dec y).
+    intro h; inversion h; clear h; subst. omega.
     intro h. gen (IHys _ _ h). omega.
   Qed.
 
@@ -2174,70 +2160,90 @@ Section first_position.
     Vfirst_position_aux k ys = Some i -> i >= k.
 
   Proof.
-    induction ys as [|y ys]; intros k i; simpl. discr.
-    destruct (eq_dec x y). 2: fo.
-    subst y. intro h; inversion h; clear h; subst. refl.
+    induction ys as [|y n ys]; intros k i; simpl. discr.
+    destruct (P_dec y). 2: fo.
+    intro h; inversion h; clear h; subst. refl.
   Qed.
- 
-  Lemma Vin_first_position_aux : forall n (ys : vector A n) k,
-    Vin x ys -> exists i, Vfirst_position_aux k ys = Some i.
-
-  Proof.
-    induction ys as [|y ys]; intro k; simpl. fo.
-    intros [h|h]; destruct (eq_dec x y); subst.
-    exists k. refl. irrefl. exists k. refl. fo.
-  Qed.
-
-  Lemma Vin_first_position : forall n (ys : vector A n),
-    Vin x ys -> exists i, Vfirst_position ys = Some i.
-
-  Proof. intros n ys. apply Vin_first_position_aux. Qed.
 
   Lemma Vfirst_position_aux_nth : forall n (ys : vector A n) k i j (hj : j<n),
-    Vfirst_position_aux k ys = Some i -> Vnth ys hj = x -> i <= k+j.
+    Vfirst_position_aux k ys = Some i -> P (Vnth ys hj) -> i <= k+j.
 
   Proof.
-    induction ys as [|y ys]; intros k i j hj; simpl. discr.
-    destruct (eq_dec x y).
-    subst y. intro h; inversion h; clear h; subst i. destruct j as [|j]; omega.
-    intro h1. destruct j as [|j]; intro h2.
-    subst y. irrefl.
+    induction ys as [|y n ys]; intros k i j hj; simpl. discr.
+    destruct (P_dec y).
+    intro h; inversion h; clear h; subst. destruct j as [|j]; omega.
+    intro h1. destruct j as [|j]; intro h2. fo.
     gen (IHys _ _ _ _ h1 h2). omega.
   Qed.
 
   Lemma Vfirst_position_nth : forall n (ys : vector A n) i j (hj : j<n),
-    Vfirst_position ys = Some i -> Vnth ys hj = x -> i <= j.
+    Vfirst_position ys = Some i -> P (Vnth ys hj) -> i <= j.
 
   Proof. intros n ys i j hj. apply Vfirst_position_aux_nth. Qed.
 
-
   Lemma Vnth_first_position_aux : forall n (ys : vector A n) k i (hi : i-k < n),
-    Vfirst_position_aux k ys = Some i -> Vnth ys hi = x.
+    Vfirst_position_aux k ys = Some i -> P (Vnth ys hi).
 
   Proof.
     induction ys as [|y n ys IH]; intros k i hi; simpl Vfirst_position_aux.
     discr.
-    destruct (eq_dec x y).
-    subst y. intro h; inversion h; clear h; subst.
-    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega. refl.
+    destruct (P_dec y).
+    intro h; inversion h; clear h; subst.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega. hyp.
     intro h. rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-k)).
     assert (hi' : i - S k < n). omega. gen (IH _ _ hi' h); intro hx.
-    rewrite <- hx. apply Vnth_eq. omega.
+    rewrite Vnth_eq with (h2:=hi'). hyp. omega.
     gen (Vfirst_position_aux_ge _ _ h). omega.
   Qed.
 
   Lemma Vnth_first_position : forall n (ys : vector A n) i (hi : i<n),
-    Vfirst_position ys = Some i -> Vnth ys hi = x.
+    Vfirst_position ys = Some i -> P (Vnth ys hi).
 
   Proof.
-    intros n ys i hi h. assert (hi' : i-0 < n). omega. trans (Vnth ys hi').
-    apply Vnth_eq. omega. apply Vnth_first_position_aux. hyp.
+    intros n ys i hi h. assert (hi' : i-0 < n). omega.
+    rewrite Vnth_eq with (h2:=hi'). apply Vnth_first_position_aux. hyp. omega.
   Qed.
 
 End first_position.
 
+Arguments Vfirst_position_aux [A P] _ _ [n] _.
+Arguments Vfirst_position [A P] _ [n] _.
+Arguments Vfirst_position_lt [A P] _ [n ys i] _.
+Arguments Vnth_first_position [A P] _ [n ys i hi] _.
+Arguments Vfirst_position_nth [A P] _ [n ys i j hj] _ _.
+
+Section first_position_eq.
+
+  Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}) (x : A).
+
+  Lemma Vfirst_position_aux_in : forall n (ys : vector A n) k i,
+    Vfirst_position_aux (eq_dec x) k ys = Some i -> Vin x ys.
+
+  Proof.
+    induction ys as [|y n ys]; intros k i; simpl. discr.
+    destruct (eq_dec x y); fo.
+  Qed.
+
+  Lemma Vfirst_position_in : forall n (ys : vector A n) i,
+    Vfirst_position (eq_dec x) ys = Some i -> Vin x ys.
+
+  Proof. intros n ys i. apply Vfirst_position_aux_in. Qed.
+ 
+  Lemma Vin_first_position_aux : forall n (ys : vector A n) k,
+    Vin x ys -> exists i, Vfirst_position_aux (eq_dec x) k ys = Some i.
+
+  Proof.
+    induction ys as [|y ys]; intro k; simpl. fo.
+    intros [h|h]; destruct (eq_dec x y). subst y.
+    exists k. refl. irrefl. exists k. refl. fo.
+  Qed.
+
+  Lemma Vin_first_position : forall n (ys : vector A n),
+    Vin x ys -> exists i, Vfirst_position (eq_dec x) ys = Some i.
+
+  Proof. intros n ys. apply Vin_first_position_aux. Qed.
+
+End first_position_eq.
+
 Arguments Vfirst_position_in [A] _ [x n ys i] _.
-Arguments Vfirst_position_lt [A] _ [x n ys i] _.
 Arguments Vin_first_position [A] _ [x n ys] _.
-Arguments Vnth_first_position [A] _ [x n ys i hi] _.
-Arguments Vfirst_position_nth [A] _ [x n ys i j hj] _ _.
