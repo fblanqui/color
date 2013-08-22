@@ -791,7 +791,7 @@ Proof.
   apply opt_intro. apply RE. exists y0. fo.
 Qed.
 
-Lemma opt_absord_l A (R E : relation A) : E @ R << R -> opt E @ opt R << opt R.
+Lemma opt_absorb_l A (R E : relation A) : E @ R << R -> opt E @ opt R << opt R.
 
 Proof.
   intros ER x z [y [xy yz]].
