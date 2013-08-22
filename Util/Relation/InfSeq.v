@@ -206,7 +206,7 @@ such that [f i = a] *)
     Proof.
       intros hg i. unfold prefix. set (is := indices i0).
       set (n := length is). destruct (lt_dec (S i) n); destruct (lt_dec i n).
-      apply Sorted_nth. apply indices_Sorted. hyp. hyp. omega.
+      apply Sorted_nth. class. apply indices_Sorted. hyp. hyp. omega.
       absurd_arith. assert (n=S i). omega. subst. rewrite H, minus_diag.
       ded (nth_In d l). destruct (In_indices_aux_elim H0). inversion H1.
       omega. assert (e : S i - n = S (i-n)). omega. rewrite e.

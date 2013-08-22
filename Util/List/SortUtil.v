@@ -16,14 +16,12 @@ Require Import RelUtil List LogicUtil.
 (***********************************************************************)
 (** lelistA and sort *)
 
-Lemma sort_incl_aux : forall (B : Type) (T S : relation B) a l,
+Lemma sort_incl_aux : forall B (T S : relation B) a l,
   T << S -> lelistA T a l  -> lelistA S a l.
 
-Proof.
-induction l; intros. intuition. destruct H0; intuition.
-Qed.
+Proof. induction l; intros. intuition. destruct H0; intuition. Qed.
 
-Lemma sort_incl : forall (B : Type) (T S : relation B) l,
+Lemma sort_incl : forall B (T S : relation B) l,
   T << S -> sort T l -> sort S l.
 
 Proof.
@@ -32,8 +30,8 @@ inversion H0. apply cons_sort; intuition. subst.
 eapply sort_incl_aux; ehyp.
 Qed.
 
-Lemma sort_transitive : forall (B : Type) (a : B) L rel,
-  transitive rel -> sort rel (a::L) -> forall x, In x L  -> rel a x.
+Lemma sort_transitive : forall B (a : B) L rel,
+  transitive rel -> sort rel (a::L) -> forall x, In x L -> rel a x.
 
 Proof.
 intros. induction L. destruct H1.
@@ -45,7 +43,7 @@ Qed.
 
 Require Import ListRepeatFree.
 
-Lemma rp_free_lelistA_strict : forall (B : Type) a S (mb : list B)
+Lemma rp_free_lelistA_strict : forall B a S (mb : list B)
   (HL : repeat_free (a::mb)), lelistA (S%) a mb -> lelistA S a mb.
 
 Proof.
@@ -54,7 +52,7 @@ simpl in *. inversion H; subst. apply cons_leA.
 destruct H1; subst; try tauto.
 Qed.
 
-Lemma rp_free_sort_strict : forall (B : Type) S (mb : list B)
+Lemma rp_free_sort_strict : forall B S (mb : list B)
   (HL : repeat_free mb), sort (S%) mb -> sort S mb.
 
 Proof.
@@ -99,16 +97,14 @@ End multiplicity.
 (***********************************************************************)
 (** Sorted *)
 
-Require Import NatUtil.
+Require Import NatUtil Morphisms.
 
 Section Sorted.
 
-  Variables (A : Type).
-
-  Let d := 0.
+  Variables (A : Type) (lt : relation A) (lt_trans : Transitive lt) (d : A).
 
   Lemma Sorted_nth_S : forall l i, Sorted lt l ->
-    i < length l -> S i < length l -> nth i l d < nth (S i) l d.
+    i < length l -> S i < length l -> lt (nth i l d) (nth (S i) l d).
 
   Proof.
     induction l; destruct i; simpl; intros. omega. omega.
@@ -118,19 +114,18 @@ Section Sorted.
   Qed.
 
   Lemma HdRel_nth : forall l i n, Sorted lt l ->
-    HdRel lt n l -> i < length l -> n < nth i l d.
+    HdRel lt n l -> i < length l -> lt n (nth i l d).
 
   Proof.
     induction l; destruct i; simpl; intros.
     absurd_arith. absurd_arith. inversion H0. hyp.
     apply IHl. inversion H. hyp.
     destruct l. apply HdRel_nil. apply HdRel_cons.
-    inversion H0. inversion H. inversion H8. subst. omega.
-    omega.
+    inversion H0. inversion H. inversion H8. subst. trans a; hyp. omega.
   Qed.
 
   Lemma Sorted_nth : forall j l i, Sorted lt l ->
-    i < length l -> j < length l -> i < j -> nth i l d < nth j l d.
+    i < length l -> j < length l -> i < j -> lt (nth i l d) (nth j l d).
 
   Proof.
     induction j; intros. absurd_arith.
