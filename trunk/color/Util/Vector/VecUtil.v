@@ -70,6 +70,8 @@ Section Velementary.
     intros. change (Vcons (Vhead v) (Vtail v)) with (Vid v). apply Vid_eq.
   Defined.
 
+  Definition Vhead_tail n (v : vector A (S n)) := (Vhead v, Vtail v).
+
   Lemma Vcons_eq_intro : forall a1 a2 n (v1 v2 : vector A n),
     a1 = a2 -> v1 = v2 -> Vcons a1 v1 = Vcons a2 v2.
 
@@ -661,14 +663,11 @@ Section Vbreak.
 
   Variable A : Type.
 
-  Definition Vsplit n (v : vector A (S n)) := (Vhead v, Vtail v).
-
   Fixpoint Vbreak n1 n2 : vector A (n1+n2) -> vector A n1 * vector A n2 :=
     match n1 with
       | O => fun v => (Vnil, v)
       | S p1 => fun v =>
-        let w := Vbreak p1 n2 (Vtail v) in 
-          (Vcons (Vhead v) (fst w), snd w)
+        let w := Vbreak p1 n2 (Vtail v) in (Vcons (Vhead v) (fst w), snd w)
     end.
 
   Implicit Arguments Vbreak [n1 n2].
@@ -2053,21 +2052,21 @@ Proof. intros. rewrite <- Vmap_id. apply Vmap_eq_ext. hyp. Qed.
 they exist) of an arbitrary vector [xs] of size [p] whose positions
 are given by a vector [ks] of natural numbers of size [n]. *)
 
-Section vec_opt_filter.
+Section Vopt_filter.
 
   Variable (A : Type).
 
-  Fixpoint vec_opt_filter n (ks : vector nat n) p (xs : vector A p) :=
+  Fixpoint Vopt_filter n (ks : vector nat n) p (xs : vector A p) :=
     match ks in vector _ n return vector (option A) n with
       | Vnil => Vnil
       | Vcons k _ ks' =>
         Vcons (match lt_dec k p with left h => Some (Vnth xs h) | _ => None end)
-          (vec_opt_filter ks' xs)
+          (Vopt_filter ks' xs)
     end.
 
-  Lemma Vnth_vec_opt_filter :
+  Lemma Vnth_opt_filter :
     forall p (xs : vector A p) n (ks : vector nat n) i (hi : i<n),
-      Vnth (vec_opt_filter ks xs) hi =
+      Vnth (Vopt_filter ks xs) hi =
       match lt_dec (Vnth ks hi) p with
         | left h => Some (Vnth xs h)
         | _ => None
@@ -2078,9 +2077,9 @@ Section vec_opt_filter.
     destruct (lt_dec h p); refl. apply IHks.
   Qed.
 
-  Lemma Vnth_vec_opt_filter_Some_elim :
+  Lemma Vnth_opt_filter_Some_elim :
     forall p (xs : vector A p) n (ks : vector nat n) i (hi : i<n) x,
-      Vnth (vec_opt_filter ks xs) hi = Some x ->
+      Vnth (Vopt_filter ks xs) hi = Some x ->
       exists h : Vnth ks hi < p, x = Vnth xs h.
 
   Proof.
@@ -2089,9 +2088,9 @@ Section vec_opt_filter.
     destruct (lt_dec k p). 2: discr. intro hx; inversion hx. exists l. refl.
   Qed.
 
-  Lemma Vnth_vec_opt_filter_Some_intro : forall p (xs : vector A p)
+  Lemma Vnth_opt_filter_Some_intro : forall p (xs : vector A p)
     n (ks : vector nat n) i (hi : i<n) (h : Vnth ks hi < p),
-    Vnth (vec_opt_filter ks xs) hi = Some (Vnth xs h).
+    Vnth (Vopt_filter ks xs) hi = Some (Vnth xs h).
 
   Proof.
     intros p xs. induction ks; intros i hi. exfalso. omega. rename h into k.
@@ -2099,11 +2098,13 @@ Section vec_opt_filter.
     destruct (lt_dec k p). 2: omega. apply (f_equal Some). apply Vnth_eq. refl.
   Qed.
 
-End vec_opt_filter.
+End Vopt_filter.
 
-Arguments Vnth_vec_opt_filter_Some_elim [A p xs n ks i hi x] _.
+Arguments Vnth_opt_filter_Some_elim [A p xs n ks i hi x] _.
 
-Section vec_opt_filter_map.
+(** Relation between [Vopt_filter] and [Vmap]. *)
+
+Section Vopt_filter_map.
 
   Variables (A B : Type) (f : A -> B).
 
@@ -2113,15 +2114,52 @@ Section vec_opt_filter_map.
       | None => None
     end.
 
-  Lemma vec_opt_filter_map : forall p (xs : vector A p) n (ks : vector nat n),
-    vec_opt_filter ks (Vmap f xs) = Vmap opt (vec_opt_filter ks xs).
+  Lemma Vopt_filter_map : forall p (xs : vector A p) n (ks : vector nat n),
+    Vopt_filter ks (Vmap f xs) = Vmap opt (Vopt_filter ks xs).
 
   Proof.
     intros p xs. induction ks as [|k ks]; simpl. refl.
     rewrite IHks. destruct (lt_dec k p). rewrite Vnth_map. refl. refl.
   Qed.
 
-End vec_opt_filter_map.
+End Vopt_filter_map.
+
+(** Properties of sorted filters. *)
+
+Definition sorted n (ks : vector nat n) :=
+  forall i (hi : i < n) j (hj : j < n), i < j -> Vnth ks hi < Vnth ks hj.
+
+Lemma sorted_cons_elim n k (ks : vector nat n) :
+  sorted (Vcons k ks) -> sorted ks.
+
+Proof.
+  intros h i hi j hj ij. gen (h _ (lt_n_S hi) _ (lt_n_S hj) (lt_n_S ij)).
+  rewrite !Vnth_cons.
+  destruct (lt_ge_dec 0 (S i)); destruct (lt_ge_dec 0 (S j)); try omega.
+  rewrite Vnth_eq with (h2:=hi),
+    Vnth_eq with (h1 := Vnth_cons_tail_aux (lt_n_S hj) l0) (h2:=hj); omega.
+Qed.
+
+Lemma Vnth_opt_filter_sorted_None A p (ts : vector A p) :
+  forall n (ks : vector nat n), sorted ks ->
+    forall i (hi : i < n), Vnth (Vopt_filter ks ts) hi = None ->
+      forall j (hj : j < n), i < j -> Vnth (Vopt_filter ks ts) hj = None.
+
+Proof.
+  induction ks as [|k n ks]; intros hks i i1 i2 j j1 ij. omega.
+  gen (sorted_cons_elim hks); intro ks_sorted.
+  gen (hks _ i1 _ j1 ij). revert i2. simpl Vopt_filter. rewrite !Vnth_cons.
+  destruct (lt_ge_dec 0 i).
+  (* 0 < i *)
+  intro ai. destruct (lt_ge_dec 0 j). 2: omega.
+  intros _. eapply IHks. hyp. apply ai. omega.
+  (* 0 >= i *)
+  assert (i = 0). omega. subst i. clear g.
+  destruct (lt_dec k p). discr. intros _.
+  destruct (lt_ge_dec 0 j). 2: refl.
+  rewrite Vnth_opt_filter.
+  destruct (lt_dec (Vnth ks (Vnth_cons_tail_aux j1 l)) p). omega. refl.
+Qed.
 
 (****************************************************************************)
 (** ** First position of an element in a vector. *)
