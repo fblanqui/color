@@ -218,12 +218,12 @@ Module Make (Export ST : ST_Struct)
 
     Proof. simpl. apply vint_le. Qed.
 
-    Lemma vint_intro_typs_eq : forall n (Ts Us : Tys n) p (ts : Tes p),
+    Lemma vint_typs_eq : forall n (Ts Us : Tys n) p (ts : Tes p),
       vint Us ts -> Us = Ts -> vint Ts ts.
 
     Proof. intros n Ts Us p ts h e. subst. hyp. Qed.
 
-    Lemma vint_intro_typs_eq_cast : forall n (Ts : Tys n) m (Us : Tys m)
+    Lemma vint_typs_eq_cast : forall n (Ts : Tys n) m (Us : Tys m)
       (h : n=m) p (ts : Tes p), vint Us ts -> Us = Vcast Ts h -> vint Ts ts.
 
     Proof.
