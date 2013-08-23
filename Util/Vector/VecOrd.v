@@ -18,7 +18,7 @@ Require Import LogicUtil VecUtil RelUtil NatUtil RelMidex.
 Fixpoint Vrel1 n A (R : relation A) : relation (vector A n) :=
   match n with
     | O => fun _ _ => False
-    | S n => fun v1 v2 => symprod R (Vrel1 R) (Vsplit v1) (Vsplit v2)
+    | S n => fun v1 v2 => symprod R (Vrel1 R) (Vhead_tail v1) (Vhead_tail v2)
   end.
 
 Definition Vrel1_app n A (R : relation A) : relation (vector A n) :=
@@ -44,7 +44,7 @@ Section S.
     -> Vrel1 R (Vcons x1 v1) (Vcons x2 v2).
 
   Proof.
-    intros. simpl. unfold Vsplit. simpl. destruct H; destruct H.
+    intros. simpl. unfold Vhead_tail. simpl. destruct H; destruct H.
     subst v2. apply left_sym. hyp.
     subst x2. apply right_sym. hyp.
   Qed.
@@ -54,7 +54,7 @@ Section S.
     (R x1 x2 /\ v1 = v2) \/ (x1 = x2 /\ Vrel1 R v1 v2).
 
   Proof.
-    intros. simpl in H. unfold Vsplit in H. simpl in H. inversion H.
+    intros. simpl in H. unfold Vhead_tail in H. simpl in H. inversion H.
     left. auto. right. auto.
   Qed.
 
@@ -77,7 +77,7 @@ Section S.
 
   Proof.
     induction v; intros. hyp.
-    simpl. unfold Vsplit. simpl. apply right_sym. apply IHv. hyp.
+    simpl. unfold Vhead_tail. simpl. apply right_sym. apply IHv. hyp.
   Qed.
 
   Lemma Vrel1_cast_intro : forall m n (h : m=n) (v1 v2 : vector A m),
@@ -100,7 +100,7 @@ Section S.
     discr. discr.
     assert (v1 = Vcons (Vhead v1) (Vtail v1)). apply VSn_eq. rewrite H0.
     assert (v2 = Vcons (Vhead v2) (Vtail v2)). apply VSn_eq. rewrite H1.
-    rewrite H0, H1 in H. simpl in H. unfold Vsplit in H. simpl in H.
+    rewrite H0, H1 in H. simpl in H. unfold Vhead_tail in H. simpl in H.
     apply Vrel1_cons_intro. inversion H. left. split. hyp.
     eapply Vcast_eq_elim with (m := n). apply H6.
     right. split. refl. eapply IHm with (n := n). apply H3.
@@ -114,7 +114,7 @@ Section S.
 
   Proof.
     induction v1; simpl. intros. contr. intro. VSntac v2.
-    unfold Vsplit. simpl. intro. inversion H0.
+    unfold Vhead_tail. simpl. intro. inversion H0.
     ex 0 (@Vnil A) h n (Vtail v2) (refl_equal (S n)) (Vhead v2).
     split. rewrite Vcast_refl. refl.
     split. rewrite Vcast_refl. refl. hyp.
@@ -202,8 +202,8 @@ Section S.
 
   Proof.
     induction v; intros; apply SN_intro; intros. contr. simpl.
-    eapply SN_inverse with (f := @Vsplit A n) (R := symprod R (Vrel1 R)).
-    VSntac y. unfold Vsplit. simpl. simpl in H. destruct H.
+    eapply SN_inverse with (f := @Vhead_tail A n) (R := symprod R (Vrel1 R)).
+    VSntac y. unfold Vhead_tail. simpl. simpl in H. destruct H.
     rewrite H1 in H0. inversion H0.
     apply SN_symprod. eapply SN_inv. apply H. hyp.
     rewrite <- H7. apply IHv. hyp.
@@ -217,7 +217,7 @@ Section S.
   Proof.
     induction 1. VSntac x. apply SN_intro. intros.
     ded (H0 (Vcons y (Vtail x))). apply H3. rewrite H1. simpl.
-    unfold Vsplit. simpl. apply left_sym. hyp.
+    unfold Vhead_tail. simpl. apply left_sym. hyp.
   Qed.
 
   Lemma SN_rel1_cons_head : forall a n (v : vector A n),
@@ -231,7 +231,7 @@ Section S.
   Proof.
     induction 1. VSntac x. apply SN_intro. intros.
     ded (H0 (Vcons (Vhead x) y)). rewrite H1 in H3. apply H3.
-    simpl. unfold Vsplit. simpl. apply right_sym. hyp.
+    simpl. unfold Vhead_tail. simpl. apply right_sym. hyp.
   Qed.
 
   Lemma SN_rel1_cons_tail : forall a n (v : vector A n),
@@ -414,19 +414,19 @@ Section Vreln.
 
   (** Morphisms. *)
 
-  Global Instance vec_opt_filter_reln n (ks : vector nat n) p :
-    Proper (Vreln R ==> Vreln (eq_opt R)) (vec_opt_filter ks (p:=p)).
+  Global Instance Vopt_filter_reln n (ks : vector nat n) p :
+    Proper (Vreln R ==> Vreln (eq_opt R)) (Vopt_filter ks (p:=p)).
 
   Proof.
     intros ts ts' tsts'. apply Vforall2n_intro. intros i hi.
-    rewrite !Vnth_vec_opt_filter. destruct (lt_dec (Vnth ks hi)).
+    rewrite !Vnth_opt_filter. destruct (lt_dec (Vnth ks hi)).
     apply eq_opt_Some. apply Vreln_elim_nth. hyp. apply eq_opt_None.
   Qed.
 
 End Vreln.
 
 Arguments Vreln_sub_intro [A R n v1 v2 p q] _ _.
-Arguments Vreln_elim_nth [A R n ts us i hi] _.
+Arguments Vreln_elim_nth [A R n ts us i] _ _.
 
 (***********************************************************************)
 (** ** Extension of a relation on vectors of [option A]
@@ -440,3 +440,47 @@ Definition Vreln_opt {n A} (R : relation A) : relation (vector (option A) n) :=
     Vreln (opt R) (Vsub us (Veq_app_aux1 h)) (Vsub vs (Veq_app_aux1 h))
     /\ Vreln (eq_opt empty_rel) (Vsub us (Veq_app_aux2 h))
                                 (Vsub vs (Veq_app_aux2 h)).
+
+Lemma Vreln_opt_filter A p (ts us : vector A p) (R : relation A) :
+  forall n (ks : vector nat n), sorted ks ->
+    (forall i (ip : i < p), Vin i ks -> R (Vnth ts ip) (Vnth us ip)) ->
+    Vreln_opt R (Vopt_filter ks ts) (Vopt_filter ks us).
+
+Proof.
+  induction ks as [|k n ks IH]; intros kks_sorted tsus; simpl.
+  (* Vnil *)
+  assert (a : 0<=0). omega. ex 0 a. rewrite !Vsub_nil, !Vreln_cast. split; refl.
+  (* Vcons *)
+  destruct (lt_dec k p).
+  (* k < p *)
+  gen (sorted_cons_elim kks_sorted); intro ks_sorted.
+  assert (tsus' : forall i (ip:i<p), Vin i ks -> R (Vnth ts ip) (Vnth us ip)).
+  intros i ip hi. apply tsus. simpl. auto.
+  gen (IH ks_sorted tsus'). intros [i [i1 [i2 i3]]].
+  assert (a : S i <= S n). omega. ex (S i) a. split.
+
+  apply Vforall2n_intro. intros j jSi. rewrite !Vnth_sub, !Vnth_cons. simpl.
+  destruct (lt_ge_dec 0 j).
+  assert (b : j - 1 < i). omega. gen (Vreln_elim_nth b i2). rewrite !Vnth_sub.
+  erewrite Vnth_eq. erewrite Vnth_eq with (v := Vopt_filter ks us).
+  apply impl_refl. omega. omega.
+  apply opt_intro. apply tsus. fo.
+
+  apply Vforall2n_intro. intros j hj. rewrite !Vnth_sub, !Vnth_cons.
+  destruct (lt_ge_dec 0 (S i + j)). 2: omega.
+  assert (b : j < n - i). omega. gen (Vreln_elim_nth b i3). rewrite !Vnth_sub.
+  erewrite Vnth_eq. erewrite Vnth_eq with (v := Vopt_filter ks us).
+  apply impl_refl. omega. omega.
+  (* k >= p *)
+  assert (a : 0 <= S n). omega. ex 0 a. split.
+  apply Vforall2n_intro. intros j hj. omega.
+  apply Vforall2n_intro. intros j hj. rewrite !Vnth_sub, !Vnth_cons. simpl.
+  destruct (lt_ge_dec 0 j). 2: apply eq_opt_None. rewrite !Vnth_opt_filter.
+  match goal with |- context C [lt_dec (Vnth ks ?x) p] => set (h := x) end.
+  destruct (lt_dec (Vnth ks h) p). 2: apply eq_opt_None. exfalso.
+  unfold sorted in kks_sorted.
+  assert (ai : 0 < S n). omega. assert (aj : j < S n). omega.
+  gen (kks_sorted _ ai _ aj l). rewrite !Vnth_cons.
+  destruct (lt_ge_dec 0 0). omega. destruct (lt_ge_dec 0 j). 2: omega.
+  rewrite Vnth_eq with (h2:=h). omega. omega.
+Qed.
