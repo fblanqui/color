@@ -879,6 +879,11 @@ Section Vsub.
 
   Proof. intros. apply Vsub_nil_aux. Qed.
 
+  Lemma Vsub_eq_nil k n (v : vector A n) i (h : i+k <= n) (hk : k = 0) :
+    Vsub v h = Vcast Vnil (eq_sym hk).
+
+  Proof. subst k. refl. Qed.
+
   Lemma Vnth_sub_aux : forall n i k j, i+k<=n -> j<k -> i+j<n.
 
   Proof. Omega. Qed.
