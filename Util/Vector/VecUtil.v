@@ -2103,6 +2103,25 @@ Section Vopt_filter.
     destruct (lt_dec k p). 2: omega. apply (f_equal Some). apply Vnth_eq. refl.
   Qed.
 
+  Lemma Vopt_filter_cast p (xs : vector A p) p' (h : p = p') :
+    forall n (ks : vector nat n),
+      Vopt_filter ks (Vcast xs h) = Vopt_filter ks xs.
+
+  Proof. subst p'. rewrite Vcast_refl. refl. Qed.
+
+  Lemma Vopt_filter_app p (xs : vector A p) q (ys : vector A q) x :
+    forall n (ks : vector nat n) i (hi : i < n),
+      Vnth (Vopt_filter ks xs) hi = Some x ->
+      Vnth (Vopt_filter ks (Vapp xs ys)) hi = Some x.
+
+  Proof.
+    induction ks; simpl; intros i hi. fo. destruct i.
+    destruct (lt_dec h p); destruct (lt_dec h (p+q)); try (discr||omega).
+    rewrite Vnth_app. destruct (le_gt_dec p h). omega.
+    rewrite Vnth_eq with (h2:=g); auto.
+    apply IHks.
+  Qed.
+
 End Vopt_filter.
 
 Arguments Vnth_opt_filter_Some_elim [A p xs n ks i hi x] _.
