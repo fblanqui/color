@@ -1,4 +1,16 @@
 
+-----------------------------------------------------------------------------
+13-09-13: NEW RELEASE (SVN revision 1969)
+
+13-09-13: [Blanqui]
+- Term/Lambda/LCompClos: computability closure and proof that its ensures
+  termination of higher-order rewrite systems
+- Term/Lambda/LCompRewrite: higher-order rewriting
+  and its associated CP structure
+- Term/Lambda/LCall: lexicographic ordering on partial function calls
+- Term/Lambda/LCompInt: interpretation of positive inductive types
+  as computability predicates
+
 13-08-14: [Blanqui]
 - Term/Lambda and Util: various additions
 
