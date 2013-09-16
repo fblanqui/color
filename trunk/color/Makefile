@@ -47,9 +47,9 @@ dist:
 	./createDist
 
 install-dist:
-	cp CHANGES $(LOCAL)/CHANGES.CoLoR
 	cp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
 	cp CHANGES $(ADR)/CHANGES.CoLoR
+#	cp CHANGES $(LOCAL)/CHANGES.CoLoR
 
 %.vo: %.v
 	$(MAKECOQ) $@
