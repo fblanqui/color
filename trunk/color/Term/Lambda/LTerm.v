@@ -776,8 +776,9 @@ Module Make (Export L : L_Struct).
     Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
 
     Proof.
-      apply Union.WF_union. apply commut_tc. apply supterm_R_mon_commut.
-      apply WF_tc. apply supterm_wf.
+      intro R_wf. apply Union.WF_union_commut.
+      apply WF_tc. apply supterm_wf. hyp.
+      apply commut_tc. apply supterm_R_mon_commut.
     Qed.
 
     Section restrict.
@@ -788,8 +789,8 @@ Module Make (Export L : L_Struct).
         WF (restrict P R) -> WF (restrict P (supterm! U R)).
 
       Proof.
-        rewrite restrict_union. apply Union.WF_union.
-        Focus 2. apply restrict_wf. intros t ht. apply WF_tc. apply supterm_wf.
+        intro h. rewrite restrict_union. apply Union.WF_union_commut.
+        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_wf. hyp.
         intros t v [u [[ht tu] [hu uv]]].
         assert (a : (supterm! @ R) t v). exists u. fo.
         destruct (tc_supterm_R_mon_commut a) as [u' [tu' u'v]]. exists u'.

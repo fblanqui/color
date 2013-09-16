@@ -186,8 +186,9 @@ Module Make (Export ST : ST_Struct)
     Lemma tc_supterm_acc_R_mon_wf : WF R -> WF (supterm_acc! U R).
 
     Proof.
-      apply Union.WF_union. apply tc_supterm_acc_R_mon_commut.
-      apply WF_tc. apply supterm_acc_wf.
+      intro R_wf. apply Union.WF_union_commut.
+      apply WF_tc. apply supterm_acc_wf. hyp.
+      apply tc_supterm_acc_R_mon_commut.
     Qed.
 
     Import SN.
@@ -200,12 +201,12 @@ Module Make (Export ST : ST_Struct)
         WF (restrict P R) -> WF (restrict P (supterm_acc! U R)).
 
       Proof.
-        rewrite restrict_union. apply Union.WF_union.
-        intros t v [u [[ht tu] [hu uv]]].
+        intro R_wf. rewrite restrict_union. apply Union.WF_union_commut.
+        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_acc_wf.
+        hyp. intros t v [u [[ht tu] [hu uv]]].
         assert (a : (supterm_acc! @ R) t v). exists u. fo.
         destruct (tc_supterm_acc_R_mon_commut a) as [u' [tu' u'v]]. exists u'.
         split; split; auto. eapply P_R. apply tu'. hyp.
-        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_acc_wf.
       Qed.
 
     End restrict.
@@ -234,7 +235,7 @@ Module Make (Export ST : ST_Struct)
     rewrite <- trans_intro. rewrite clos_aeq_eq, !comp_assoc.
     rewrite (commut_comp (tc_supterm_acc_R_mon_commut (R:=aeq) _)), !comp_assoc.
     rewrite (commut_comp (tc_supterm_acc_R_mon_commut (R:=aeq) _)), !comp_assoc.
-    rewrite !(absorb_comp (trans_comp_incl _)). refl.
+    rewrite !(comp_incl_assoc (trans_comp_incl _)). refl.
   Qed.
 
   Lemma clos_aeq_tc_supterm_acc_eq :
@@ -297,8 +298,9 @@ Module Make (Export ST : ST_Struct)
       WF R -> WF (clos_aeq (supterm_acc!) U R).
 
     Proof.
-      apply Union.WF_union. apply clos_aeq_tc_supterm_acc_R_mon_commut.
-      apply clos_aeq_tc_supterm_acc_wf.
+      intro R_wf. apply Union.WF_union_commut.
+      apply clos_aeq_tc_supterm_acc_wf. hyp.
+      apply clos_aeq_tc_supterm_acc_R_mon_commut.
     Qed.
 
     Require Import SetUtil SN.
@@ -311,10 +313,9 @@ Module Make (Export ST : ST_Struct)
         WF (restrict P R) -> WF (restrict P (clos_aeq (supterm_acc!) U R)).
 
       Proof.
-        rewrite restrict_union. apply Union.WF_union.
-        Focus 2. apply restrict_wf.
-        intros t ht. apply clos_aeq_tc_supterm_acc_wf.
-        intros t v [u [[ht tu] [hu uv]]].
+        intro R_wf. rewrite restrict_union. apply Union.WF_union_commut.
+        apply restrict_wf. intros t ht. apply clos_aeq_tc_supterm_acc_wf.
+        hyp. intros t v [u [[ht tu] [hu uv]]].
         assert (a : (clos_aeq (supterm_acc!) @ R) t v). exists u. fo.
         destruct (clos_aeq_tc_supterm_acc_R_mon_commut a) as [u' [tu' u'v]].
         exists u'. split; split; auto. eapply P_R. apply tu'. hyp.
@@ -334,7 +335,9 @@ Module Make (Export ST : ST_Struct)
   End clos_aeq_tc_supterm_acc_R_mon_wf.
 
 (****************************************************************************)
-(** The interpretation [I] will be defined by well-founded induction
+(** ** Interpretation of types
+
+The interpretation [I] will be defined by well-founded induction
 on [ltB] using Coq's corresponding combinator [Wf.Fix], which requires
 a function [F] computing the interpretation of a base type [a] from
 the interpretation [I_lt_a] for each base type strictly smaller than

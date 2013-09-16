@@ -405,7 +405,7 @@ Module Lex (Export CO : DLQO_Struct).
 
     Proof.
       intros gt_wf r. apply WF_inverse. apply lexv_wf. apply opt_wf; hyp. class.
-      apply opt_absorb_l. intros t u [t' [tt' t'u]]. rewrite tt'. hyp.
+      apply opt_absorbs_left. intros t u [t' [tt' t'u]]. rewrite tt'. hyp.
     Qed.
 
     (** [gt_args_lex] preserves compatibility with [caeq]. *)
