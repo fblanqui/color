@@ -33,7 +33,7 @@ Module Type WeakRedPair.
   Parameter cc_succeq : context_closed succeq.
   Parameter refl_succeq : reflexive succeq.
 
-  Parameter succ_succeq_compat : absorb succ succeq.
+  Parameter succ_succeq_compat : absorbs_left succ succeq.
 
   Parameter bsucceq : term -> term -> bool.
   Parameter bsucceq_sub : rel bsucceq << succeq.
@@ -186,7 +186,7 @@ Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
   Definition cc_succeq := @IR_context_closed _ _ _ monotone_succeq.
   Definition refl_succeq := @IR_reflexive _ _ _ refl_succeq.
 
-  Lemma succ_succeq_compat : absorb succ succeq.
+  Lemma succ_succeq_compat : absorbs_left succ succeq.
 
   Proof.
     intros x z xz val. apply succ_succeq_compat.
@@ -248,10 +248,10 @@ Module WP_Filter (Import F : Filter) <: WeakRedPair.
     intro x. unfold succeq. apply refl_succeq.
   Qed.
 
-  Lemma succ_succeq_compat : absorb succ succeq.
+  Lemma succ_succeq_compat : absorbs_left succ succeq.
 
   Proof.
-    unfold absorb, succ, succeq. intros t v [u [h1 h2]].
+    unfold absorbs_left, succ, succeq. intros t v [u [h1 h2]].
     unfold filter_ord in *. apply succ_succeq_compat. exists (filter pi u).
     auto.
   Qed.
@@ -321,10 +321,10 @@ Module WP_Perm (Import F : Perm) <: WeakRedPair.
     intro x. unfold succeq. apply refl_succeq.
   Qed.
 
-  Lemma succ_succeq_compat : absorb succ succeq.
+  Lemma succ_succeq_compat : absorbs_left succ succeq.
 
   Proof.
-    unfold absorb, succ, succeq. intros t v [u [h1 h2]].
+    unfold absorbs_left, succ, succeq. intros t v [u [h1 h2]].
     unfold filter_ord in *. apply succ_succeq_compat. exists (filter pi u).
     auto.
   Qed.
@@ -392,10 +392,10 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
     intro x. unfold succeq. apply refl_succeq.
   Qed.
 
-  Lemma succ_succeq_compat : absorb succ succeq.
+  Lemma succ_succeq_compat : absorbs_left succ succeq.
 
   Proof.
-    unfold absorb, succ, succeq. intros t v [u [h1 h2]].
+    unfold absorbs_left, succ, succeq. intros t v [u [h1 h2]].
     unfold proj_ord in *. apply succ_succeq_compat. exists (proj pi u).
     auto.
   Qed.
@@ -463,7 +463,7 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
 
   Definition refl_succeq := rc_refl succ.
 
-  Lemma succ_succeq_compat : absorb succ succeq.
+  Lemma succ_succeq_compat : absorbs_left succ succeq.
 
   Proof.
     intros t u [v [h1 h2]]. destruct h1. subst. hyp.

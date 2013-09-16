@@ -30,7 +30,7 @@ Variable domain_elt : D.
 Variable succ : relation D.
 Variable succeq : relation D.
 Variable succ_wf : WF succ.
-Variable succ_succeq_compat : absorb succ succeq.
+Variable succ_succeq_compat : absorbs_left succ succeq.
 
 Variable arSymInt : nat -> Set.
 Notation symInt := (symInt Sig arSymInt).
@@ -64,7 +64,7 @@ Proof.
   intros. apply IR_WF. apply succ_wf.
 Qed.
 
-Lemma absorb_succ_succeq : absorb IR_succ IR_succeq.
+Lemma absorb_succ_succeq : absorbs_left IR_succ IR_succeq.
 
 Proof.
   intros x z xz val.

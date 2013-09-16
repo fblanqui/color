@@ -190,7 +190,7 @@ Variable int : rawTrsInt Sig polynomial.
 
 Definition succ_WF := WF_Dgt.
 
-Lemma succ_succeq_compat : absorb Dgt Dge.
+Lemma succ_succeq_compat : absorbs_left Dgt Dge.
 
 Proof.
   intros p q pq. destruct pq as [r [pr rq]].

@@ -117,7 +117,7 @@ Section S.
     Variables R E : relation term.
 
     Definition reduction_pair :=
-      reduction_ordering R /\ absorb R E /\ rewrite_ordering E.
+      reduction_ordering R /\ absorbs_left R E /\ rewrite_ordering E.
 
   End reduction_pair.
 
@@ -129,7 +129,7 @@ Section S.
     rp_subs_eq : substitution_closed rp_succ_eq;
     rp_cont : context_closed rp_succ;
     rp_cont_eq : context_closed rp_succ_eq;
-    rp_absorb : absorb rp_succ rp_succ_eq;
+    rp_absorb : absorbs_left rp_succ rp_succ_eq;
     rp_succ_wf : WF rp_succ
   }.
 
@@ -149,7 +149,7 @@ Section S.
     Definition weak_reduction_ordering := WF R /\ weak_rewrite_ordering.
 
     Definition weak_reduction_pair :=
-      weak_reduction_ordering /\ absorb R E /\ rewrite_ordering E.
+      weak_reduction_ordering /\ absorbs_left R E /\ rewrite_ordering E.
 
   End weak_reduction_pair.
 
@@ -159,7 +159,7 @@ Section S.
     wp_subs : substitution_closed wp_succ;
     wp_subs_eq : substitution_closed wp_succ_eq;
     wp_cont_eq : context_closed wp_succ_eq;
-    wp_absorb : absorb wp_succ wp_succ_eq;
+    wp_absorb : absorbs_left wp_succ wp_succ_eq;
     wp_succ_wf : WF wp_succ
   }.
 
@@ -207,10 +207,10 @@ Section S.
 
     Notation R := (strict_part E).
 
-    Lemma absorb_strict : absorb R E.
+    Lemma absorb_strict : absorbs_left R E.
 
     Proof.
-      unfold absorb, inclusion, RelUtil.compose, strict_part.
+      unfold absorbs_left, inclusion, RelUtil.compose, strict_part.
       intros; split; decomp H. eapply E_trans. apply H1. hyp.
       unfold not; intro. ded (E_trans H H1). contr.
     Qed.

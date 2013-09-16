@@ -124,10 +124,10 @@ Section S.
 
     Let succ_eq := IR I Dge.
 
-    Lemma pi_absorb : absorb succ succ_eq.
+    Lemma pi_absorb : absorbs_left succ succ_eq.
 
     Proof.
-      unfold absorb, inclusion. intros. do 2 destruct H.
+      unfold absorbs_left, inclusion. intros. do 2 destruct H.
       unfold succ_eq, succ, IR, Dge, Dgt, transp, Dle, Dlt in *. intro.
       eapply Zlt_le_trans. apply H0. apply H.
     Qed.
@@ -145,7 +145,7 @@ Section S.
       (@IR_context_closed _ _ _ pi_monotone)
     (*rp_cont_eq : context_closed rp_succ_eq;*)
       (@IR_context_closed _ _ _ pi_monotone_eq)
-    (*rp_absorb : absorb rp_succ rp_succ_eq;*)
+    (*rp_absorb : absorbs_left rp_succ rp_succ_eq;*)
       pi_absorb
     (*rp_succ_wf : WF rp_succ*)
       (@IR_WF _ I _ WF_Dgt).

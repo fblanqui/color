@@ -180,7 +180,7 @@ Require Import ACompat Cycle.
 Variables (succ succ_eq : relation term)
   (Hredord : weak_rewrite_ordering succ succ_eq)
   (Hreword : rewrite_ordering succ_eq)
-  (Habsorb : absorb succ succ_eq)
+  (Habsorb : absorbs_left succ succ_eq)
   (HcompR : compat succ_eq R)
   (HcompDP : compat succ_eq (dp R))
   (Hwf : WF succ)
@@ -224,7 +224,7 @@ Lemma compat_chain_dp_strict : forall a,
 
 Proof.
 unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
-apply (incl_rtc_comp Habsorb). exists (sub x0 (lhs a)). split.
+apply (absorbs_left_rtc Habsorb). exists (sub x0 (lhs a)). split.
 apply inclusion_elim with (R := int_red R #). 2: exact H1.
 apply clos_refl_trans_inclusion.
 incl_trans (red R). apply int_red_incl_red. apply compat_red; hyp.
@@ -290,7 +290,7 @@ apply (compat_chain_dp_strict H9). exact H11.
 eapply inclusion_elim. apply compat_chain_dps. apply H13.
 (* (succ @ succ_eq#) x y *)
 do 2 destruct H13. exists x8. intuition.
-eapply inclusion_elim with (R := succ_eq# @ succ). apply incl_rtc_comp.
+eapply inclusion_elim with (R := succ_eq# @ succ). apply absorbs_left_rtc.
 intuition. exists x7. intuition.
 Qed.
 

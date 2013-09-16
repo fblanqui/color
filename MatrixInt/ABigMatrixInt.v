@@ -105,7 +105,7 @@ Module MatrixInt (Export MI : TMatrixInt).
       apply WF_inverse. apply gt_WF.
     Qed.
 
-    Lemma succ_succeq_compat : absorb succ succeq.
+    Lemma succ_succeq_compat : absorbs_left succ succeq.
 
     Proof.
       intros x z xz. destruct xz as [y [xy yz]]. split.

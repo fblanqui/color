@@ -152,13 +152,13 @@ Variables succ succ_eq : relation term.
 Lemma compat_red_mod : forall R E,
   rewrite_ordering succ -> rewrite_ordering succ_eq ->
   compat succ_eq E -> compat succ R ->
-  absorb succ succ_eq -> red_mod E R << succ.
+  absorbs_left succ succ_eq -> red_mod E R << succ.
 
 Proof.
 intros. unfold red_mod. incl_trans (succ_eq# @ succ). comp.
 apply clos_refl_trans_inclusion.
 apply compat_red; hyp. destruct H0. apply compat_red; hyp.
-apply incl_rtc_comp. exact H3.
+apply absorbs_left_rtc. exact H3.
 Qed.
 
 End reduction_pair.
@@ -173,13 +173,13 @@ Variables succ succ_eq : relation term.
 Lemma compat_hd_red_mod : forall R E,
   substitution_closed succ -> rewrite_ordering succ_eq ->
   compat succ_eq E -> compat succ R ->
-  absorb succ succ_eq -> hd_red_mod E R << succ.
+  absorbs_left succ succ_eq -> hd_red_mod E R << succ.
 
 Proof.
 intros. unfold hd_red_mod. incl_trans (succ_eq# @ succ). comp.
 apply clos_refl_trans_inclusion.
 apply compat_red; hyp. apply compat_hd_red; hyp.
-apply incl_rtc_comp. exact H3.
+apply absorbs_left_rtc. exact H3.
 Qed.
 
 End weak_reduction_pair.

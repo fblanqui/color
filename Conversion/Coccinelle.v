@@ -315,7 +315,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     intro t. right. apply Eq.
   Qed.
 
-  Lemma succ_succeq_compat : absorb succ succeq.
+  Lemma succ_succeq_compat : absorbs_left succ succeq.
 
   Proof.
     intros t v [u [[h1|h1] h2]]. apply rpo_trans with (term_of_aterm u); hyp.

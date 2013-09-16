@@ -203,7 +203,12 @@ Proof.
 intros. induction L; simpl in *.
 intro. apply SN_intro. intros; tauto.
 inversion H0. subst a0; subst l. eapply WF_incl. apply union_commut.
-apply WF_union. unfold inclusion. intros. cut False; try tauto.
+apply WF_union_commut.
+
+apply IHL. intros. apply H. right; auto.
+destruct H0; auto. apply H. left; auto.
+
+unfold inclusion. intros. cut False; try tauto.
 destruct H1 as [z]. destruct H1. ded (union_list_spec2 _ _ _ H1).
 destruct H5 as [r]. destruct H5.
 
@@ -212,9 +217,6 @@ apply in_map_elim; auto. destruct H7 as [b]. destruct H7; subst r.
 cut (RT_ODPG a b). intro. eapply (compose_empty H8). exists z; eauto.
 eapply sort_transitive. unfold RT; destruct topo_sortable_Rquo'. simpl in *. 
 ded (l (nfirst dim)). destruct H8. intuition. ehyp. auto.
-
-apply IHL. intros. apply H. right; auto.
-destruct H0; auto. apply H. left; auto.
 Qed.
 
 Lemma WF_SCC'_union :

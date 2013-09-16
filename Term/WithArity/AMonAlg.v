@@ -55,7 +55,7 @@ Module Type MonotoneAlgebraType.
 
   Parameter succ_wf : WF succ.
 
-  Parameter succ_succeq_compat : absorb succ succeq.
+  Parameter succ_succeq_compat : absorbs_left succ succeq.
 
   (** For certification of concrete examples we need some subrelations of 
       [succ] and [succeq] that are decidable *)
@@ -86,7 +86,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
   Notation rule := (@rule Sig).
   Notation rules := (@list rule).
 
-  Lemma absorb_succ_succeq : absorb IR_succ IR_succeq.
+  Lemma absorb_succ_succeq : absorbs_left IR_succ IR_succeq.
 
   Proof.
     intros x z xz val.
