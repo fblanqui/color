@@ -114,7 +114,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Variable gtx_mult_compat : forall m m' n n',
       m >_0 m' -> n >>= n' -> m * n >_0 m' * n'.
 
-    Lemma succ_succeq_compat : absorb succ succeq.
+    Lemma succ_succeq_compat : absorbs_left succ succeq.
 
     Proof.
       intros x z xz. destruct xz as [y [xy yz] ].

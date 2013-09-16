@@ -106,7 +106,7 @@ Module MatrixInt (MI : TMatrixInt).
       intros v1 v2 v3 h12 h23. intuition. apply vec_ge_trans with v2; hyp.
     Qed.
 
-    Lemma succ_succeq_compat : absorb succ succeq.
+    Lemma succ_succeq_compat : absorbs_left succ succeq.
 
     Proof.
       intros x z xz. destruct xz as [y [xy yz]]. split.

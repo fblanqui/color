@@ -139,10 +139,10 @@ Module RPO_Prover (Export R : TRPO).
     apply arpo_wf.
   Qed.
 
-  Lemma arpo_self_absorb : absorb arpo arpo.
+  Lemma arpo_self_absorb : absorbs_left arpo arpo.
 
   Proof.
-    unfold absorb, arpo, Rof, transp. intros t u tu.
+    unfold absorbs_left, arpo, Rof, transp. intros t u tu.
     destruct tu as [s [ts su]]. 
     apply VRPO_Results.lt_trans with (vterm_of_aterm s); hyp.
   Qed.

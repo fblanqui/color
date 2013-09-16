@@ -40,7 +40,7 @@ Module PolyInt (Export PI : TPolyInt).
 
     Definition succ_wf := WF_Dgt.
 
-    Lemma succ_succeq_compat : absorb succ succeq.
+    Lemma succ_succeq_compat : absorbs_left succ succeq.
 
     Proof.
       unfold succ, succeq. intros p q pq. destruct pq as [r [pr rq]].

@@ -100,8 +100,9 @@ edge from b to c *)
 
   Proof.
     induction cs; simpl; intros. apply WF_empty_rel.
-    ded (andb_elim hyp2). clear hyp2. destruct H. destruct hyp3. apply WF_union.
-    2: hyp. Focus 2. apply IHcs; try hyp. apply incl_appl_incl with a. hyp.
+    ded (andb_elim hyp2). clear hyp2. destruct H. destruct hyp3.
+    apply WF_union_commut. hyp.
+    apply IHcs; try hyp. apply incl_appl_incl with a. hyp.
     clear IHcs H H1 H2. intros t v h. destruct h. destruct H. redtac.
     rewrite forallb_forall in H0. ded (H0 _ lr). clear H0.
     destruct (In_Union_elim H1). destruct H0. redtac.
