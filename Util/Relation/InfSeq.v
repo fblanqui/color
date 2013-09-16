@@ -455,7 +455,7 @@ Section absorb.
 
   Proof.
     intros f hf. destruct (ISComp_split hf) as [g H]. exists g.
-    intro i. ded (H i). ded (H (S i)). eapply incl_comp_rtc. apply ab.
+    intro i. ded (H i). ded (H (S i)). eapply absorbs_right_rtc. apply ab.
     exists (f (S i)). intuition.
   Qed.
 
