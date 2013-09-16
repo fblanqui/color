@@ -83,61 +83,58 @@ Proof. fo. Qed.
 (***********************************************************************)
 (** Definition of some properties on relations. *)
 
-Section basic_def1.
+Section basic_def.
 
-  Variables (A B : Type) (R : A -> B -> Prop).
+  Variables A B : Type.
 
-  Definition classic_left_total := forall x, exists y, R x y.
+  Definition classic_left_total (R : A -> B -> Prop) :=
+    forall x, exists y, R x y.
 
-  Definition left_total := forall x, {y | R x y}.
+  Definition left_total (R : A -> B -> Prop) := forall x, {y | R x y}.
 
-  Definition functional := forall x y z, R x y -> R x z -> y = z.
+  Definition functional (R : A -> B -> Prop) :=
+    forall x y z, R x y -> R x z -> y = z.
 
-  Definition finitely_branching := forall x, {l | forall y, R x y <-> In y l}.
+  Definition finitely_branching (R : A -> B -> Prop) :=
+    forall x, {l | forall y, R x y <-> In y l}.
 
-End basic_def1.
+  Definition irreflexive (R : relation A) := forall x, ~R x x.
 
-Section basic_def2.
-
-  Variables (A : Type) (E R : relation A).
-
-  Definition irreflexive := forall x, ~R x x.
-
-  Definition asymmetric := forall x y, R x y -> ~R y x.
+  Definition asymmetric (R : relation A):= forall x y, R x y -> ~R y x.
 
   (* Predicate saying that [f] is an infinite sequence of [R]-steps. *)
-  Definition IS f := forall i, R (f i) (f (S i)).
+  Definition IS (R : relation A) f := forall i, R (f i) (f (S i)).
 
-  Definition EIS := exists f, IS f.
+  Definition EIS (R : relation A) := exists f, IS R f.
 
-  Definition NT x := exists f, f 0 = x /\ IS f.
+  Definition NT (R : relation A) x := exists f, f 0 = x /\ IS R f.
 
   (* Predicate saying that [f] and [g] describe an infinite sequence
   of R-steps modulo E: for all i, f(i) E g(i) R f(i+1). *)
-  Definition ISMod (f g : nat -> A) :=
+  Definition ISMod (E R : relation A) (f g : nat -> A) :=
     forall i, E (f i) (g i) /\ R (g i) (f (S i)).
 
-End basic_def2.
-
-Section basic_def3.
-
-  Variables (A : Type) (R S : relation A).
-
   (* Called PreOrder in Coq. *)
-  Definition quasi_ordering := reflexive R /\ transitive R.
+  Definition quasi_ordering (R : relation A) := reflexive R /\ transitive R.
 
-  Definition ordering := reflexive R /\ transitive R /\ antisymmetric R.
+  Definition ordering (R : relation A) :=
+    reflexive R /\ transitive R /\ antisymmetric R.
 
-  Definition strict_ordering := irreflexive R /\ transitive R.
+  Definition strict_ordering (R : relation A) := irreflexive R /\ transitive R.
 
-  Definition strict_part : relation A := fun x y => R x y /\ ~R y x.
+End basic_def.
 
-  Definition intersection : relation A := fun x y => R x y /\ S x y.
+(***********************************************************************)
+(** Strict part. *)
 
-End basic_def3.
+Definition strict_part A (R : relation A) : relation A :=
+  fun x y => R x y /\ ~R y x.
 
 (***********************************************************************)
 (** Intersection. *)
+
+Definition intersection A (R S : relation A) : relation A
+  := fun x y => R x y /\ S x y.
 
 Lemma intersection_dec A (R S : relation A)
   (Rdec : rel_dec R) (Sdec : rel_dec S) : rel_dec (intersection R S).
@@ -354,6 +351,10 @@ Instance compose_m A :
 
 Proof. fo. Qed.
 
+Definition absorbs_right A (R S : relation A) := R @ S << R.
+
+Definition absorbs_left A (R S : relation A) := S @ R << R.
+
 Section compose.
 
   Variables (A : Type) (R R' S S' : relation A).
@@ -372,14 +373,14 @@ Section compose.
     exists x1; split. exists x0; split; hyp. exact H1.
   Qed.
 
-  Lemma incl_rtc_comp : R @ S << S -> R# @ S << S.
+  Lemma absorbs_left_rtc : R @ S << S -> R# @ S << S.
 
   Proof.
     intro. unfold inclusion, compose. intros. do 2 destruct H0.
     gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
   Qed.
 
-  Lemma incl_comp_rtc : S @ R << S -> S @ R# << S.
+  Lemma absorbs_right_rtc : S @ R << S -> S @ R# << S.
 
   Proof. intros h t v [u [tu uv]]. induction uv; fo. Qed.
 
@@ -392,11 +393,6 @@ Ltac assoc :=
     | |- _ << (?s @ ?t) @ ?u => incl_trans (s @ (t @ u)); try apply comp_assoc'
     | |- _ << ?s @ (?t @ ?u) => incl_trans ((s @ t) @ u); try apply comp_assoc
   end.
-
-(***********************************************************************)
-(** Absorbtion. *)
-
-Definition absorb A (R S : relation A) := S @ R << R.
 
 (***********************************************************************)
 (** Reflexive closure. *)
@@ -494,14 +490,14 @@ Section clos_trans.
 
   Proof. fo. Qed.
 
-  Lemma comp_tc_incl R S : R @ S << S -> R! @ S << S.
+  Lemma absorbs_left_tc R S : R @ S << S -> R! @ S << S.
 
   Proof.
     intro. unfold inclusion, compose. intros. do 2 destruct H0.
     gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
   Qed.
 
-  Lemma comp_incl_tc R S : R @ S << S -> R @ S! << S!.
+  Lemma tc_absorbs_left R S : R @ S << S -> R @ S! << S!.
 
   Proof.
     intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
@@ -798,6 +794,20 @@ Section clos_refl_trans2.
 
 End clos_refl_trans2.
 
+Lemma rtc_intro_seq A (R : relation A) f i : forall j, i <= j ->
+  (forall k, i <= k < j -> R (f k) (f (1+k))) -> R# (f i) (f j).
+
+Proof.
+  cut (forall n, (forall k, i <= k < i + n -> R (f k) (f (1+k))) ->
+    R# (f i) (f (n+i))).
+  intros h j ij hij. assert (j = (j-i) + i). Require Omega. omega.
+  rewrite H. apply h.
+  intros k hk. apply hij. omega.
+  induction n; intro h. refl. trans (f (n+i)).
+  apply IHn. intros k hk. apply h. omega.
+  apply rt_step. apply h. omega.
+Qed.
+
 (***********************************************************************)
 (** Inverse (transp in Coq). *)
 
@@ -1008,9 +1018,9 @@ Section commut.
 
   Proof. rewrite comp_assoc', commut. refl. Qed.
 
-  Lemma absorb_comp T V (absorb : R @ S << T) : R @ (S @ V) << T @ V.
+  Lemma comp_incl_assoc T V : R @ S << T -> R @ (S @ V) << T @ V.
 
-  Proof. rewrite comp_assoc', absorb. refl. Qed.
+  Proof. intro h. rewrite comp_assoc', h. refl. Qed.
 
 End commut.
 
