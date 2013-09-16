@@ -7,6 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 
 
 * Computability closure
+
+and proof that it enforces termination of higher-order rewrite systems.
+
+References:
+
+- "Inductive-data-type Systems", by F. Blanqui, J.-P. Jouannaud and
+  M. Okada, in Theoretical Computer Science 272, p. 41-68, 2002.
+  http://dx.doi.org/10.1016/S0304-3975(00)00347-9
+  http://hal.inria.fr/inria-00105578
 *)
 
 Set Implicit Arguments.
@@ -313,7 +322,7 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       subst z T. rewrite update_eq. hyp.
       rewrite update_neq. 2: hyp. apply hs2; hyp.
 
-      (** cc_acc *)
+      (* cc_acc *)
       rewrite <- Vnth_map with (f:=subs s). apply comp_acc.
       replace (Fun g) with (subs s (Fun g)). 2: refl.
       rewrite <- subs_apps. apply IHcc; hyp.
@@ -587,10 +596,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We prove that [gt2] is wellfounded. *)
 
-  Axiom wf_union_absorb : forall A (R S : relation A),
-    WF R -> WF S -> R @ S << R -> WF (R U S).
-
-  Require Import Lexicographic_Product.
+  Require Import Lexicographic_Product Union.
 
   Lemma gt2_wf : WF gt2.
 
