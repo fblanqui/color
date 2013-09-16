@@ -9,7 +9,7 @@ with Cygwin on Windows):
 - GNU make version 3.81 http://www.gnu.org/software/make/
 - GNU find version 4.4.2 http://www.gnu.org/software/findutils/findutils.html
 
-For compiling CoLoR, do: 'make' (it takes about 9'44" on my computer).
+For compiling CoLoR, do: 'make' (it takes about 9' on my computer).
 
 If you use the development version of CoLoR under SVN
 (http://gforge.inria.fr/projects/color/), after an update, before
