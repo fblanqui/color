@@ -402,7 +402,7 @@ Section absorb.
 
   Proof.
     intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
-    exists x0. intuition. apply (incl_rtc_comp absorb). exists x'. intuition.
+    exists x0. intuition. apply (absorbs_left_rtc absorb). exists x'. intuition.
   Qed.
 
   Lemma absorb_SN_modulo_r : forall x, SN T x -> SN (T @ R#) x.
@@ -410,7 +410,7 @@ Section absorb.
   Proof.
     induction 1. apply SN_intro. intros. apply SN_intro. intros.
     do 2 destruct H1. do 2 destruct H2.
-    assert (T x0 x1). apply (incl_rtc_comp absorb). exists y. intuition.
+    assert (T x0 x1). apply (absorbs_left_rtc absorb). exists y. intuition.
     ded (H0 _ H1). apply (SN_inv H6). exists x1. intuition.
   Qed.
 
@@ -783,7 +783,8 @@ Proof.
   apply opt_intro. eapply h. apply H. apply H0. hyp.
 Qed.
 
-Lemma opt_absorb_r A (R E : relation A) : R @ E << R -> opt R @ opt E << opt R.
+Lemma opt_absorbs_right A (R E : relation A) :
+  R @ E << R -> opt R @ opt E << opt R.
 
 Proof.
   intros RE x z [y [xy yz]].
@@ -791,7 +792,8 @@ Proof.
   apply opt_intro. apply RE. exists y0. fo.
 Qed.
 
-Lemma opt_absorb_l A (R E : relation A) : E @ R << R -> opt E @ opt R << opt R.
+Lemma opt_absorbs_left A (R E : relation A) :
+  E @ R << R -> opt E @ opt R << opt R.
 
 Proof.
   intros ER x z [y [xy yz]].
