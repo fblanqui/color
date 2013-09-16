@@ -36,11 +36,12 @@ doc:
 	./createIndex
 
 ADR := ~/rewriting-svn/web/inria/color
-LOCAL := ~/rewriting-svn/web/color/site
+#LOCAL := ~/rewriting-svn/web/color/site
 
 install-doc:
-	cp doc/coqdoc.css doc/*.html $(LOCAL)/doc
+	rm -f $(ADR)/doc/coqdoc.css $(ADR)/doc/*.html
 	cp doc/coqdoc.css doc/*.html $(ADR)/doc
+#	cp doc/coqdoc.css doc/*.html $(LOCAL)/doc
 
 dist:
 	./createDist
