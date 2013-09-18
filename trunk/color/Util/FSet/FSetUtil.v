@@ -283,6 +283,48 @@ Module Make (Export XSet : FSetInterface.S).
   Proof. intros a a' aa' b b' b'b x. set_iff. rewrite aa', b'b. auto. Qed.
 
 (***********************************************************************)
+(** Monotony properties of [max_elt]. *)
+
+  Inductive le_opt : relation (option E.t) :=
+  | le_opt_1 : le_opt None None
+  | le_opt_2 : forall x, le_opt None (Some x)
+  | le_opt_3 : forall x y, E.lt x y \/ E.eq x y -> le_opt (Some x) (Some y).
+
+  Instance max_elt_s : Proper (Subset ==> le_opt) max_elt.
+
+  Proof.
+    intros A B AB. case_eq (max_elt A).
+    intros a amA. gen (max_elt_1 amA). intro aA. apply AB in aA.
+    case_eq (max_elt B).
+    intros b bmB. apply le_opt_3. gen (max_elt_2 bmB aA).
+    intro n. destruct (E.compare a b); fo.
+    intro Be. exfalso. gen (max_elt_3 Be). fo.
+    intro Ae. case_eq (max_elt B).
+    intros b bmB. apply le_opt_2.
+    intro Be. apply le_opt_1.
+  Qed.
+
+  Instance max_elt_e : Proper (Equal ==> opt_r E.eq) max_elt.
+
+  Proof.
+    intros A B e. assert (AB : Subset A B). rewrite e. refl.
+    assert (BA : Subset B A). rewrite e. refl.
+    gen (max_elt_s AB); intro h; inversion h; clear h.
+    apply opt_r_None.
+    gen (max_elt_s BA); intro h; inversion h; clear h.
+    rewrite <- H in H2. discr. rewrite <- H in H2. discr.
+    rewrite <- H0 in H2. discr. apply opt_r_Some.
+    gen (max_elt_s BA); intro h; inversion h; clear h.
+    rewrite <- H in H4. discr. rewrite <- H0 in H3. discr.
+    rewrite <- H in H3. inversion H3; clear H3.
+    rewrite <- H0 in H2. inversion H2; clear H2. subst.
+    symmetry in H. symmetry in H0.
+    gen (max_elt_1 H). rewrite e. intro xB. gen (max_elt_2 H0 xB).
+    gen (max_elt_1 H0). rewrite <- e. intro yA. gen (max_elt_2 H yA).
+    intuition.
+  Qed.
+
+(***********************************************************************)
 (** fold *)
 
   Section fold.
