@@ -312,9 +312,11 @@ Module Make (Export ST : ST_Struct).
 
   (** Inversion lemma and tactic for [gt_red]. *)
 
+  Import RelUtil.
+
   Lemma gt_red_inv : forall R f n (ts : Tes n) g p (us : Tes p),
     gt_red R (mk_call f ts) (mk_call g us) -> exists f0 n0 ts1 us1,
-      SN.restrict (SN (clos_vaeq R)) (clos_vaeq R) ts1 us1
+      restrict (SN (clos_vaeq R)) (clos_vaeq R) ts1 us1
       /\ f0 = f /\ n0 = n /\ existT n ts1 = existT n ts
       /\ f = g /\ n = p /\ existT n us1 = existT p us.
 
@@ -434,9 +436,11 @@ Module Lex (Export CO : DLQO_Struct).
     compatible with [aeq] and contains [restrict (SN (clos_aeq R))
     (clos_aeq R)]. **)
 
+    Import RelUtil.
+
     Lemma gt_args_lex_absorbs_gt_red R S r :
       Proper (aeq ==> aeq ==> impl) S -> Transitive S ->
-      SN.restrict (SN (clos_aeq R)) (clos_aeq R) << S ->
+      restrict (SN (clos_aeq R)) (clos_aeq R) << S ->
       gt_args_lex S r @ gt_red R << gt_args_lex S r.
 
     Proof.

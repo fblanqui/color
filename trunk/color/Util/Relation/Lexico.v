@@ -329,8 +329,6 @@ Section Vreln_opt.
 
   Variables (A : Type) (eqA gtA : relation A).
 
-  Import SN.
-
   Lemma lexv_reln_opt_l : eqA @ gtA << gtA -> Transitive eqA -> forall n,
     Vreln_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA) << lexv (opt eqA) (opt gtA).
 
@@ -410,8 +408,6 @@ Proof.
 Qed.
 
 (** Monotony of [Rof lexv (Vopt_filter M)] when [M] is sorted. *)
-
-Import SN.
 
 Lemma lexv_opt_filter_sorted_mon_arg A (eqA gtA : relation A)
   n (ks : vector nat n) (ks_sorted : sorted ks) p (ts : vector A p)

@@ -191,7 +191,7 @@ Module Make (Export ST : ST_Struct)
       apply tc_supterm_acc_R_mon_commut.
     Qed.
 
-    Import SN.
+    Import RelUtil.
 
     Section restrict.
 
@@ -303,7 +303,7 @@ Module Make (Export ST : ST_Struct)
       apply clos_aeq_tc_supterm_acc_R_mon_commut.
     Qed.
 
-    Require Import SetUtil SN.
+    Require Import SetUtil RelUtil.
 
     Section restrict.
 

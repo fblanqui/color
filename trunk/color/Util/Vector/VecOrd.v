@@ -415,12 +415,12 @@ Section Vreln.
   (** Morphisms. *)
 
   Global Instance Vopt_filter_reln n (ks : vector nat n) p :
-    Proper (Vreln R ==> Vreln (eq_opt R)) (Vopt_filter ks (p:=p)).
+    Proper (Vreln R ==> Vreln (opt_r R)) (Vopt_filter ks (p:=p)).
 
   Proof.
     intros ts ts' tsts'. apply Vforall2n_intro. intros i hi.
     rewrite !Vnth_opt_filter. destruct (lt_dec (Vnth ks hi)).
-    apply eq_opt_Some. apply Vreln_elim_nth. hyp. apply eq_opt_None.
+    apply opt_r_Some. apply Vreln_elim_nth. hyp. apply opt_r_None.
   Qed.
 
 End Vreln.
@@ -438,7 +438,7 @@ vector A k] such that [us = Vapp (Vmap Some xs) (Vconst None (n-k))],
 Definition Vreln_opt {n A} (R : relation A) : relation (vector (option A) n) :=
   fun us vs => exists i (h : i <= n),
     Vreln (opt R) (Vsub us (Veq_app_aux1 h)) (Vsub vs (Veq_app_aux1 h))
-    /\ Vreln (eq_opt empty_rel) (Vsub us (Veq_app_aux2 h))
+    /\ Vreln (opt_r empty_rel) (Vsub us (Veq_app_aux2 h))
                                 (Vsub vs (Veq_app_aux2 h)).
 
 Lemma Vreln_opt_filter A p (ts us : vector A p) (R : relation A) :
@@ -475,9 +475,9 @@ Proof.
   assert (a : 0 <= S n). omega. ex 0 a. split.
   apply Vforall2n_intro. intros j hj. omega.
   apply Vforall2n_intro. intros j hj. rewrite !Vnth_sub, !Vnth_cons. simpl.
-  destruct (lt_ge_dec 0 j). 2: apply eq_opt_None. rewrite !Vnth_opt_filter.
+  destruct (lt_ge_dec 0 j). 2: apply opt_r_None. rewrite !Vnth_opt_filter.
   match goal with |- context C [lt_dec (Vnth ks ?x) p] => set (h := x) end.
-  destruct (lt_dec (Vnth ks h) p). 2: apply eq_opt_None. exfalso.
+  destruct (lt_dec (Vnth ks h) p). 2: apply opt_r_None. exfalso.
   unfold sorted in kks_sorted.
   assert (ai : 0 < S n). omega. assert (aj : j < S n). omega.
   gen (kks_sorted _ ai _ aj l). rewrite !Vnth_cons.

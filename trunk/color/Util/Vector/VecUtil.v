@@ -2132,14 +2132,14 @@ Section Vopt_filter_map.
 
   Variables (A B : Type) (f : A -> B).
 
-  Definition opt x :=
+  Definition fopt x :=
     match x with
       | Some v => Some (f v)
       | None => None
     end.
 
   Lemma Vopt_filter_map : forall p (xs : vector A p) n (ks : vector nat n),
-    Vopt_filter ks (Vmap f xs) = Vmap opt (Vopt_filter ks xs).
+    Vopt_filter ks (Vmap f xs) = Vmap fopt (Vopt_filter ks xs).
 
   Proof.
     intros p xs. induction ks as [|k ks]; simpl. refl.
