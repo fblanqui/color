@@ -22,7 +22,7 @@ Section Operations.
 
   Parameter mult : A -> Multiset -> nat.
 
-  Parameter meq : Multiset -> Multiset -> Prop.
+  Parameter meq : relation Multiset.
 
   Parameter empty : Multiset.
 
@@ -98,7 +98,7 @@ Section Multiset_IntersectionAsDifference.
 
   Variable A : Type.
   Variable Multiset : Type.
-  Variable meq : Multiset -> Multiset -> Prop.
+  Variable meq : relation Multiset.
   Variable mult : A -> Multiset -> nat.
   Variable diff : Multiset -> Multiset -> Multiset.
   Variable diff_mult : forall M N x, mult x (diff M N) = mult x M - mult x N.

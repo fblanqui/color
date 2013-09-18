@@ -8,7 +8,7 @@ Definitions and proofs about the min of a non empty set of natural
 numbers, using classical logic and the axiom of indefinite
 description. *)
 
-Require Import Classical_Prop IndefiniteDescription Wf_nat.
+Require Import Classical_Prop IndefiniteDescription Wf_nat Relations.
 
 Set Implicit Arguments.
 
@@ -52,7 +52,7 @@ Implicit Arguments ch_min [P].
 
 Section P2.
 
-  Variable P2 : nat -> nat -> Prop.
+  Variable P2 : relation nat.
 
   Hypothesis exP2 : forall m, exists n, P2 m n.
 

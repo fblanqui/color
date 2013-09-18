@@ -58,7 +58,7 @@ Module Horpo (S : TermsSig.Signature)
     (exists2 M', isArg M' M & M' >>= N) -> M [>>] TL -> M [>>] (N :: TL)
     where "M [>>] N" := (horpoArgs M N)
 
-  with prehorpo : Term -> Term -> Prop :=
+  with prehorpo : relation Term :=
 
   | HSub: forall M N,
     isFunApp M -> (exists2 M', isArg M' M & M' >>= N) -> M >-> N
@@ -87,20 +87,20 @@ Module Horpo (S : TermsSig.Signature)
 
     where "M >-> N" := (prehorpo M N)
 
-  with horpo : Term -> Term -> Prop :=
+  with horpo : relation Term :=
 
   | Horpo: forall M N,
     type M = type N -> env M = env N -> algebraic M -> algebraic N ->
     M >-> N -> M >> N 
     where "M >> N" := (horpo M N)
 
-  with horpoMul : TermMul -> TermMul -> Prop :=
+  with horpoMul : relation TermMul :=
 
   | HMulOrd: forall (M N: TermMul),
     MSetOrd.MultisetGT horpo M N -> M {>>} N
     where "M {>>} N" := (horpoMul M N)
 
-  with horpoRC : Term -> Term -> Prop :=
+  with horpoRC : relation Term :=
 
   | horpoRC_step: forall M N, M >> N -> M >>= N
 

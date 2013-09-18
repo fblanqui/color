@@ -14,7 +14,7 @@ Require Import AccUtil List MultisetOrder ListExtras RelExtras MultisetCore
 
 Module Type VMpo_Struct.
   Parameter Sig : Signature.
-  Parameter ltF : Sig -> Sig -> Prop.
+  Parameter ltF : relation Sig.
   Parameter wf_ltF : well_founded ltF.
   Parameter ltF_trans : transitive ltF.  
 End VMpo_Struct.

@@ -571,7 +571,7 @@ Module TermsManip (Sig : TermsSig.Signature).
                appArgs_app appUnit_left: terms.
 
 
-  Inductive subterm : Term -> Term -> Prop :=
+  Inductive subterm : relation Term :=
   | AppLsub: forall M N (Mapp: isApp M), 
       subterm_le N (appBodyL Mapp) -> 
       subterm N M
@@ -581,7 +581,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | Abs_sub: forall M N (Mabs: isAbs M), 
       subterm_le N (absBody Mabs) -> 
       subterm N M
-   with subterm_le: Term -> Term -> Prop :=
+   with subterm_le: relation Term :=
   | subterm_lt: forall M N, 
       subterm N M -> 
       subterm_le N M

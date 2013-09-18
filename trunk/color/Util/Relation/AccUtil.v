@@ -240,7 +240,7 @@ Arguments Fix_F_inv [A R] _ [P] _ _ [x] _ _.
 
 Section Fix.
 
-  Variables (A : Type) (R : A -> A -> Prop) (Rwf : well_founded R)
+  Variables (A : Type) (R : relation A) (Rwf : well_founded R)
     (P : A -> Type) (F : forall x : A, (forall y : A, R y x -> P y) -> P x)
     (eq : forall x, relation (P x))
     (F_ext : forall x (f g : forall y, R y x -> P y),
