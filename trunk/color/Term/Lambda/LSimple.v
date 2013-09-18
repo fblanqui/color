@@ -493,7 +493,7 @@ are finite maps from variables to types. *)
   Qed.
 
 (****************************************************************************)
-(** ** Typing.  *)
+(** ** Typing. *)
 
   Notation tr := (@tr F X So typ En (@MapsTo Ty) (@add Ty)).
 
