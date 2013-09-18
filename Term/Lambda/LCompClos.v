@@ -557,7 +557,7 @@ Module SN_rewrite (Export CC : CC_Struct)
   of [gt_args_lex (gt0)!] and [gt_red R], where [gt0] is the
   restriction on wellfounded terms of [gt U R_aeq]. *)
 
-  Definition gt0 := SN.restrict (SN R_aeq) (gt U R_aeq).
+  Definition gt0 := RelUtil.restrict (SN R_aeq) (gt U R_aeq).
 
   Definition gt2c := gt_call (fun r => gt_args_lex (gt0!) r U gt_red R).
 
@@ -652,7 +652,7 @@ Module SN_rewrite (Export CC : CC_Struct)
     rewrite !lexv_eq. simpl. intros [i [i1 [i2 i3]]]. ex i i1. split.
     (* decrease in i-th argument *)
     eapply opt_incl
-      with (x := SN.restrict (SN R_aeq) (clos_aeq (supterm_acc!))).
+      with (x := RelUtil.restrict (SN R_aeq) (clos_aeq (supterm_acc!))).
     apply incl_tc. unfold gt0. rewrite restrict_union. fo.
     inversion i2; clear i2. rewrite !Vopt_filter_cast,
       Vopt_filter_app with (x:=subs s x), Vopt_filter_app with (x:=subs s y).

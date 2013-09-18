@@ -244,7 +244,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Inclusion. *)
+(** Properties of [inclusion]. *)
 
 Instance inclusion_Refl A : Reflexive (@inclusion A).
 
@@ -272,7 +272,7 @@ Proof. auto. Qed.
 Implicit Arguments inclusion_elim [A R S x y].
 
 (***********************************************************************)
-(** Infinite sequences. *)
+(** Properties of [IS]. *)
 
 Instance IS_inclusion A : Proper (inclusion ==> eq ==> impl) (@IS A).
 
@@ -307,7 +307,7 @@ Section IS.
 End IS.
 
 (***********************************************************************)
-(** Irreflexivivity. *)
+(** Properties of [irreflexive]. *)
 
 Instance irreflexive_inclusion A : Proper (inclusion --> impl) (@irreflexive A).
 
@@ -432,7 +432,7 @@ Section clos_refl.
 End clos_refl.
 
 (***********************************************************************)
-(** transitive closure *)
+(** Properties of [clos_trans]. *)
 
 Instance clos_trans_inclusion A :
   Proper (inclusion ==> inclusion) (@clos_trans A).
@@ -598,7 +598,7 @@ Section clos_equiv.
 End clos_equiv.
 
 (***********************************************************************)
-(** Union. *)
+(** Properties of [union]. *)
 
 Instance union_inclusion A :
   Proper (inclusion ==> inclusion ==> inclusion) (@union A).
@@ -658,7 +658,7 @@ Section union.
 End union.
 
 (***********************************************************************)
-(** Reflexive and transitive closure of a relation. *)
+(** Properties of [clos_refl_trans]. *)
 
 Instance clos_refl_trans_inclusion A :
   Proper (inclusion ==> inclusion) (@clos_refl_trans A).
@@ -809,7 +809,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Inverse (transp in Coq). *)
+(** Properties of [transp]. *)
 
 Instance transp_inclusion A : Proper (inclusion ==> inclusion) (@transp A).
 
@@ -1055,8 +1055,8 @@ Section inverse_image.
 End inverse_image.
 
 (***********************************************************************)
-(** Alternative Definition of the Transitive Closure
-(more convenient for some inductive proofs. *)
+(** Alternative definition of the transitive closure, more convenient
+for some inductive proofs. *)
 
 Inductive clos_trans1 (A : Type) (R : relation A) : relation A :=
 | t1_step : forall x y, R x y -> clos_trans1 R x y
@@ -1091,7 +1091,7 @@ Section alternative_definition_clos_trans.
 End alternative_definition_clos_trans.
 
 (***********************************************************************)
-(** Alternative definition of the reflexive and transitive closure
+(** Alternative definition of the reflexive and transitive closure,
 more convenient for some inductive proofs. *)
 
 Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
@@ -1216,7 +1216,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Morphisms wrt inclusion and same_relation. *)
+(** Morphisms wrt [inclusion] and [same_relation] *)
 
 Lemma eq_Refl_rel : forall A (R : relation A), Reflexive R -> eq << R.
 
@@ -1292,35 +1292,149 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Option setoid. *)
+(** Extension to [option A] of a relation on [A] so that it is
+reflexive on [None]. *)
 
-Section option_setoid.
+Section opt_r.
 
-  Variables (A : Type) (eq : relation A).
+  Variables (A : Type) (R : relation A).
 
-  Inductive eq_opt : relation (option A) :=
-  | eq_opt_None : eq_opt None None
-  | eq_opt_Some : forall a b, eq a b -> eq_opt (Some a) (Some b).
+  Inductive opt_r : relation (option A) :=
+  | opt_r_None : opt_r None None
+  | opt_r_Some : forall a b, R a b -> opt_r (Some a) (Some b).
 
-  Global Instance eq_opt_Refl : Reflexive eq -> Reflexive eq_opt.
+  Global Instance opt_r_Refl : Reflexive R -> Reflexive opt_r.
 
-  Proof. intros h [x|]. apply eq_opt_Some. refl. apply eq_opt_None. Qed.
+  Proof. intros h [x|]. apply opt_r_Some. refl. apply opt_r_None. Qed.
 
-  Global Instance eq_opt_Sym : Symmetric eq -> Symmetric eq_opt.
+  Global Instance opt_r_Sym : Symmetric R -> Symmetric opt_r.
 
   Proof.
-    intros h x y xy. inversion xy; subst. hyp. apply eq_opt_Some. sym. hyp.
+    intros h x y xy. inversion xy; subst. hyp. apply opt_r_Some. sym. hyp.
   Qed.
 
-  Global Instance eq_opt_Trans : Transitive eq -> Transitive eq_opt.
+  Global Instance opt_r_Trans : Transitive R -> Transitive opt_r.
 
   Proof.
     intros h x y z xy yz. inversion xy; inversion yz; subst; try discr.
-    apply eq_opt_None. inversion H3; subst. apply eq_opt_Some. trans b; hyp.
+    apply opt_r_None. inversion H3; subst. apply opt_r_Some. trans b; hyp.
   Qed.
 
-  Global Instance Some_Proper : Proper (eq ==> eq_opt) (@Some A).
+  Global Instance Some_Proper : Proper (R ==> opt_r) (@Some A).
 
-  Proof. intros x y xy. apply eq_opt_Some. hyp. Qed.
+  Proof. intros x y xy. apply opt_r_Some. hyp. Qed.
 
-End option_setoid.
+End opt_r.
+
+(****************************************************************************)
+(** Extension of a relation on [A] to [option A] so that it is
+irreflexive on [None]. *)
+
+Section opt.
+
+  Variables (A : Type) (R : relation A).
+
+  Inductive opt : relation (option A) :=
+  | opt_intro : forall x y, R x y -> opt (Some x) (Some y).
+
+  Global Instance opt_trans : Transitive R -> Transitive opt.
+
+  Proof.
+    intros R_trans x y z xy yz. inversion xy; inversion yz; clear xy yz; subst.
+    inversion H3; clear H3; subst. apply opt_intro. trans y0; hyp.
+  Qed.
+
+  Global Instance opt_sym : Symmetric R -> Symmetric opt.
+
+  Proof.
+    intros R_sym x y xy. inversion xy; clear xy; subst.
+    apply opt_intro. sym. hyp.
+  Qed.
+
+  Global Instance opt_opt_r E : Proper (E ==> E ==> impl) R ->
+    Proper (opt_r E ==> opt_r E ==> impl) opt.
+
+  Proof.
+    intros R_E x x' xx' y y' yy' xy.
+    inversion xy; inversion xx'; inversion yy'; clear xy xx' yy'; subst;
+      try discr. inversion H6; inversion H3; clear H6 H3; subst.
+    apply opt_intro. eapply R_E. apply H2. apply H5. hyp.
+  Qed.
+
+  Lemma opt_absorbs_right_opt_r E : R @ E << R -> opt @ opt_r E << opt.
+
+  Proof.
+    intros RE x z [y [xy yz]].
+    inversion xy; clear xy; subst. inversion yz; clear yz; subst.
+    apply opt_intro. apply RE. exists y0. fo.
+  Qed.
+
+  Lemma opt_absorbs_left_opt_r E : E @ R << R -> opt_r E @ opt << opt.
+
+  Proof.
+    intros ER x z [y [xy yz]].
+    inversion yz; clear yz; subst. inversion xy; clear xy; subst.
+    apply opt_intro. apply ER. exists x0. fo.
+  Qed.
+
+End opt.
+
+Instance opt_incl A : Proper (inclusion ==> inclusion) (@opt A).
+
+Proof.
+  intros R S RS x y xy. inversion xy; clear xy; subst. apply opt_intro. fo.
+Qed.
+
+Instance opt_proper A (E1 E2 R : relation A) :
+  Proper (E1 ==> E2 ==> impl) R -> Proper (opt E1 ==> opt E2 ==> impl) (opt R).
+
+Proof.
+  intros h x x' xx' y y' yy' xy. inversion xx'; clear xx'; subst.
+  inversion yy'; clear yy'; subst. inversion xy; clear xy; subst.
+  apply opt_intro. eapply h. apply H. apply H0. hyp.
+Qed.
+
+Lemma opt_absorbs_right A (R E : relation A) :
+  R @ E << R -> opt R @ opt E << opt R.
+
+Proof.
+  intros RE x z [y [xy yz]].
+  inversion xy; clear xy; subst. inversion yz; clear yz; subst.
+  apply opt_intro. apply RE. exists y0. fo.
+Qed.
+
+Lemma opt_absorbs_left A (R E : relation A) :
+  E @ R << R -> opt E @ opt R << opt R.
+
+Proof.
+  intros ER x z [y [xy yz]].
+  inversion yz; clear yz; subst. inversion xy; clear xy; subst.
+  apply opt_intro. apply ER. exists x0. fo.
+Qed.
+
+(***********************************************************************)
+(** Restriction of a relation to some set. *)
+
+Section restrict.
+
+  Variables (A : Type) (P : A -> Prop) (R : relation A).
+
+  Definition restrict : relation A := fun x y => P x /\ R x y.
+
+  Global Instance restrict_proper E :
+    Proper (E ==> impl) P -> Proper (E ==> E ==> impl) R ->
+    Proper (E ==> E ==> impl) restrict.
+
+  Proof.
+    intros PE RE x x' xx' y y' yy' [hxy xy]. split.
+    rewrite <- xx'. hyp.
+    (*COQ:rewrite <- xx', <- yy'.*)
+    eapply RE. apply xx'. apply yy'. hyp.
+  Qed.
+
+End restrict.
+
+Lemma restrict_union A (P : A -> Prop) R S :
+  restrict P (R U S) == restrict P R U restrict P S.
+
+Proof. fo. Qed.

@@ -13,6 +13,12 @@ Set Implicit Arguments.
 
 Require Import RelUtil Morphisms LogicUtil List Basics.
 
+(***********************************************************************)
+(** ** Definition of strong normalization.
+
+It is defined as accessibility but by orienting the relation the
+opposite way. *)
+
 Section sn.
 
   Variable (A : Type) (R : relation A).
@@ -75,7 +81,7 @@ Section notIS.
 End notIS.
 
 (***********************************************************************)
-(** ** Relation with accessibility. *)
+(** ** Relation between [SN] and [Acc]. *)
 
 Section acc.
 
@@ -122,7 +128,7 @@ Section acc_transp.
 End acc_transp.
 
 (***********************************************************************)
-(** ** Relation with inclusion. *)
+(** ** SN properties of [inclusion]. *)
 
 Section incl.
 
@@ -165,7 +171,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** ** Inverse relation [transp]. *)
+(** ** SN properties of [transp]. *)
 
 Section transp.
 
@@ -178,7 +184,7 @@ Section transp.
 End transp.
 
 (***********************************************************************)
-(** ** Functional inverse image [Rof]. *)
+(** ** SN properties of [Rof]. *)
 
 Section inverse.
 
@@ -204,7 +210,7 @@ Section inverse.
 End inverse.
 
 (***********************************************************************)
-(** ** Relational inverse image [RoF]. *)
+(** ** SN properties of [RoF]. *)
 
 Section rel_inverse.
 
@@ -235,7 +241,7 @@ Section rel_inverse.
 End rel_inverse.
 
 (***********************************************************************)
-(** ** Reflexive transitive closure. *)
+(** ** SN properties of [clos_refl_trans]. *)
 
 Section rtc.
 
@@ -255,7 +261,7 @@ Section rtc.
 End rtc.
 
 (***********************************************************************)
-(** ** Transitive closure. *)
+(** ** SN properties of [clos_trans]. *)
 
 Section tc.
 
@@ -286,7 +292,7 @@ Section tc.
 End tc.
 
 (***********************************************************************)
-(** ** Component-wise binary product (symmetric product in Coq std lib) *)
+(** ** SN properties of [symprod] (component-wise binary product). *)
 
 Section symprod.
 
@@ -345,7 +351,7 @@ Section symprod.
 End symprod.
 
 (***********************************************************************)
-(** ** Composition of two relations. *)
+(** ** SN properties of [compose]. *)
 
 Section compose.
 
@@ -370,7 +376,7 @@ Section compose.
 End compose.
 
 (***********************************************************************)
-(** ** Absorbing relations. *)
+(** ** SN properties of absorbing relations. *)
 
 Section compat.
 
@@ -438,7 +444,7 @@ Section WF_mod_rev.
 End WF_mod_rev.
 
 (***********************************************************************)
-(** ** Reduction modulo. *)
+(** ** Properties of termination modulo. *)
 
 Section modulo.
 
@@ -477,7 +483,7 @@ Section modulo.
 End modulo.
 
 (***********************************************************************)
-(** ** Commuting relations. *)
+(** ** SN properties of commuting relations. *)
 
 Section commut.
 
@@ -511,7 +517,7 @@ Section commut_modulo.
 End commut_modulo.
 
 (***********************************************************************)
-(** ** Iteration of a relation [Iter]. *)
+(** ** SN properties of [Iter]. *)
 
 Require Import Iter.
 
@@ -552,7 +558,7 @@ Section iter.
 End iter.
 
 (***********************************************************************)
-(** ** Extension of SN_intro to paths of fixed length. *)
+(** ** Extension of [SN_intro] to paths of fixed length. *)
 
 Require Import Path.
 
@@ -573,7 +579,7 @@ Section path.
 End path.
 
 (***********************************************************************)
-(** ** Modular removal of rules for relative termination. *)
+(** ** Modularity properties of relative termination. *)
 
 Section wf_mod_shift.
     
@@ -639,7 +645,7 @@ Section wf_rel_mod_simpl.
 End wf_rel_mod_simpl.
 
 (***********************************************************************)
-(** ** Termination of the ordering on natural numbers. *)
+(** ** Termination of the standard ordering on natural numbers. *)
 
 Require Export Wf_nat.
 
@@ -668,135 +674,26 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** ** Restriction of a relation to some set. *)
+(** ** [restrict P R] terminates if [P <= SN R]. *)
 
 Require Import SetUtil.
 
-Section restrict.
+Lemma restrict_wf A (P : set A) (R : relation A) :
+  P [= SN R -> WF (restrict P R).
 
-  Variables (A : Type) (P : set A) (R : relation A).
-
-  Definition restrict : relation A := fun x y => P x /\ R x y.
-
-  Lemma restrict_wf : P [= SN R -> WF restrict.
-
-  Proof.
-    intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
-    clear x hx xy. revert y; induction 1. apply SN_intro. fo.
-  Qed.
-
-  Global Instance restrict_proper E :
-    Proper (E ==> impl) P -> Proper (E ==> E ==> impl) R ->
-    Proper (E ==> E ==> impl) restrict.
-
-  Proof.
-    intros PE RE x x' xx' y y' yy' [hxy xy]. split.
-    rewrite <- xx'. hyp.
-    (*COQ:rewrite <- xx', <- yy'.*)
-    eapply RE. apply xx'. apply yy'. hyp.
-  Qed.
-
-End restrict.
-
-Lemma restrict_union A (P : set A) R S :
-  restrict P (R U S) == restrict P R U restrict P S.
-
-Proof. fo. Qed.
+Proof.
+  intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
+  clear x hx xy. revert y; induction 1. apply SN_intro. fo.
+Qed.
 
 (****************************************************************************)
-(** ** Extension of a relation on [A] to [option A]. *)
+(** ** [opt] preserves wellfoundedness. *)
 
-Section opt.
-
-  Variables (A : Type) (R : relation A).
-
-  Inductive opt : relation (option A) :=
-  | opt_intro : forall x y, R x y -> opt (Some x) (Some y).
-
-  Lemma opt_wf : WF R -> WF opt.
-
-  Proof.
-    intros h p. destruct p.
-    gen (h a); revert a; induction 1.
-    apply SN_intro; intros [y|] hy; inversion hy; clear hy; subst. fo.
-    apply SN_intro; intros [y|] hy; inversion hy.
-  Qed.
-
-  Global Instance opt_trans : Transitive R -> Transitive opt.
-
-  Proof.
-    intros R_trans x y z xy yz. inversion xy; inversion yz; clear xy yz; subst.
-    inversion H3; clear H3; subst. apply opt_intro. trans y0; hyp.
-  Qed.
-
-  Global Instance opt_sym : Symmetric R -> Symmetric opt.
-
-  Proof.
-    intros R_sym x y xy. inversion xy; clear xy; subst.
-    apply opt_intro. sym. hyp.
-  Qed.
-
-  (** Relation with [eq_opt]. *)
-
-  Global Instance opt_eq_opt E : Proper (E ==> E ==> impl) R ->
-    Proper (eq_opt E ==> eq_opt E ==> impl) opt.
-
-  Proof.
-    intros R_E x x' xx' y y' yy' xy.
-    inversion xy; inversion xx'; inversion yy'; clear xy xx' yy'; subst;
-      try discr. inversion H6; inversion H3; clear H6 H3; subst.
-    apply opt_intro. eapply R_E. apply H2. apply H5. hyp.
-  Qed.
-
-  Lemma opt_eq_opt_r E : R @ E << R -> opt @ eq_opt E << opt.
-
-  Proof.
-    intros RE x z [y [xy yz]].
-    inversion xy; clear xy; subst. inversion yz; clear yz; subst.
-    apply opt_intro. apply RE. exists y0. fo.
-  Qed.
-
-  Lemma opt_eq_opt_l E : E @ R << R -> eq_opt E @ opt << opt.
-
-  Proof.
-    intros ER x z [y [xy yz]].
-    inversion yz; clear yz; subst. inversion xy; clear xy; subst.
-    apply opt_intro. apply ER. exists x0. fo.
-  Qed.
-
-End opt.
-
-(** Monotony properties. *)
-
-Instance opt_incl A : Proper (inclusion ==> inclusion) (@opt A).
+Lemma opt_wf A (R : relation A) : WF R -> WF (opt R).
 
 Proof.
-  intros R S RS x y xy. inversion xy; clear xy; subst. apply opt_intro. fo.
-Qed.
-
-Instance opt_proper A (E1 E2 R : relation A) :
-  Proper (E1 ==> E2 ==> impl) R -> Proper (opt E1 ==> opt E2 ==> impl) (opt R).
-
-Proof.
-  intros h x x' xx' y y' yy' xy. inversion xx'; clear xx'; subst.
-  inversion yy'; clear yy'; subst. inversion xy; clear xy; subst.
-  apply opt_intro. eapply h. apply H. apply H0. hyp.
-Qed.
-
-Lemma opt_absorbs_right A (R E : relation A) :
-  R @ E << R -> opt R @ opt E << opt R.
-
-Proof.
-  intros RE x z [y [xy yz]].
-  inversion xy; clear xy; subst. inversion yz; clear yz; subst.
-  apply opt_intro. apply RE. exists y0. fo.
-Qed.
-
-Lemma opt_absorbs_left A (R E : relation A) :
-  E @ R << R -> opt E @ opt R << opt R.
-
-Proof.
-  intros ER x z [y [xy yz]].
-  inversion yz; clear yz; subst. inversion xy; clear xy; subst.
-  apply opt_intro. apply ER. exists x0. fo.
+  intros h p. destruct p.
+  gen (h a); revert a; induction 1.
+  apply SN_intro; intros [y|] hy; inversion hy; clear hy; subst. fo.
+  apply SN_intro; intros [y|] hy; inversion hy.
 Qed.

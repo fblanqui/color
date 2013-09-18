@@ -284,15 +284,15 @@ Module Make (X : OrderedType).
       rewrite hk in H0. discr.
     Qed.
 
-    Global Instance find_m : Proper (X.eq ==> Equiv eq ==> eq_opt eq) (@find A).
+    Global Instance find_m : Proper (X.eq ==> Equiv eq ==> opt_r eq) (@find A).
 
     Proof.
       intros k k' kk' m m' [h1 h2]. rewrite <- kk'. clear k' kk'.
       case_eq (find k m); intros.
       destruct (Equiv_find_Some (conj h1 h2) H). destruct H0. rewrite H0.
-      apply eq_opt_Some. hyp.
+      apply opt_r_Some. hyp.
       rewrite (Equiv_find_None (conj h1 h2) k) in H. rewrite H.
-      apply eq_opt_None.
+      apply opt_r_None.
     Qed.
 
 (***********************************************************************)
