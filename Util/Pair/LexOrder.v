@@ -31,7 +31,7 @@ Section LexPair.
   Hint Resolve (Seq_trans lp_R lp_eqR lp_sid_theoryR) : sets.
   Hint Resolve (Seq_sym   lp_R lp_eqR lp_sid_theoryR) : sets.
  
-  Variable lp_gtL : lp_L -> lp_L -> Prop.
+  Variable lp_gtL : relation lp_L.
 
   Definition lp_ltL := transp lp_gtL.
 
@@ -50,7 +50,7 @@ Section LexPair.
     split; eauto with sets.
   Qed.
 
-  Variable lp_gtR : lp_R -> lp_R -> Prop.
+  Variable lp_gtR : relation lp_R.
 
   Definition lp_ltR := transp lp_gtR.
 
@@ -77,7 +77,7 @@ Section LexPair.
   (* --- Definition of an order *)
   Reserved Notation "a >lex b" (at level 40).
 
-  Inductive lp_LexProd_Gt : lp_pair -> lp_pair -> Prop :=
+  Inductive lp_LexProd_Gt : relation lp_pair :=
   | GtL: forall a a' b b', lp_gtL a a' ->                (a, b) >lex (a', b')
   | GtR: forall a a' b b', lp_eqL a a' -> lp_gtR b b' -> (a, b) >lex (a', b')
     where "a >lex b" := (lp_LexProd_Gt a b).
@@ -456,8 +456,8 @@ Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
   Module LR_ord := LexicographicOrder A_ord B_ord.
   Module Lex3 := LexicographicOrder LR_ord.Rel C_ord.
 
-  Definition LexProd3_Gt : triple -> triple -> Prop := Lex3.LexProd_Gt.
-  Definition LexProd3_Lt : triple -> triple -> Prop := Lex3.LexProd_Lt.
+  Definition LexProd3_Gt : relation triple := Lex3.LexProd_Gt.
+  Definition LexProd3_Lt : relation triple := Lex3.LexProd_Lt.
 
   Notation "a >lex3 b" := (LexProd3_Gt a b) (at level 40).
   Notation "a <lex3 b" := (LexProd3_Lt a b) (at level 40).

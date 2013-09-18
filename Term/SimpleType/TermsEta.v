@@ -66,13 +66,13 @@ Module TermsEta (Sig : TermsSig.Signature).
     rewrite H; trivial.
   Qed.
 
-  Inductive EtaExpansionStep : Term -> Term -> Prop :=
+  Inductive EtaExpansionStep : relation Term :=
   | EtaExp: forall M A B (Mtyp: type M = A --> B), EtaExpansionStep M (proj1_sig (EtaApp M Mtyp)).
     
   Definition EtaExpansion := Reduction EtaExpansionStep.
   Notation "M -e+-> N" := (EtaExpansion M N) (at level 30).
 
-  Inductive EtaReductionStep : Term -> Term -> Prop :=
+  Inductive EtaReductionStep : relation Term :=
   | EtaRed: forall M A B (Mtyp: type M = A --> B), EtaReductionStep (proj1_sig (EtaApp M Mtyp)) M.
     
   Definition EtaReduction := Reduction EtaReductionStep.

@@ -68,7 +68,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     right; trivial.
   Qed.
 
-  Inductive BetaStep : Term -> Term -> Prop :=
+  Inductive BetaStep : relation Term :=
   | Beta: forall M (Mapp: isApp M) (MLabs: isAbs (appBodyL Mapp)),
       BetaStep M
       (lower (subst (beta_subst M Mapp MLabs)) (beta_lowering M Mapp MLabs)).

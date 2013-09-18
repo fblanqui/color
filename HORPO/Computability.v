@@ -19,7 +19,7 @@ Module Computability (S : TermsSig.Signature)
 
 Section Computability_def.
   
-  Variable R : Term -> Term -> Prop.
+  Variable R : relation Term.
   Notation "X <-R- Y" := (R Y X) (at level 50).
   Notation "X -R-> Y" := (R X Y) (at level 50).
   Let Rtrans := clos_trans R.

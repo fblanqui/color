@@ -166,7 +166,7 @@ Add Parametric Relation n : (@vector B n) (@eq_vec B eqB n)
     transitivity proved by (@eq_vec_trans B eqB stB n)
       as eq_vecB_rel.
 
-Variables (C : Type) (eqC : C -> C -> Prop) (stC : Setoid_Theory C eqC).
+Variables (C : Type) (eqC : relation C) (stC : Setoid_Theory C eqC).
 Notation "x =C= y" := (eqC x y) (at level 70).
 Add Setoid C eqC stC as C_eqC2.
 
