@@ -43,6 +43,11 @@ Module Export Def.
     | stacc_intro : forall f (ts : Args f) i (hi : Acc f i),
       supterm_acc (apps (Fun f) ts) (Vnth ts (Acc_arity hi)).
 
+    Lemma stacc_intro' f (ts : Args f) i (hi : Acc f i) t u :
+      t = apps (Fun f) ts -> u = Vnth ts (Acc_arity hi) -> supterm_acc t u.
+
+    Proof. intros e1 e2. subst. apply stacc_intro. Qed.
+
   End supterm_acc.
 
 End Def.
