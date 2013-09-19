@@ -82,8 +82,7 @@ Module Export Def.
     Definition mcaeq : relation max_call := caeq.
 
 (****************************************************************************)
-(** * Relation on calls with the same symbol and same number of
-terminating arguments consisting in reducing one argument. *)
+(** * Argument reduction relation on terminating calls. *)
 
 (*FIXME: gt_red is similar to caeq: factorize?*)
     Inductive gt_red R : relation call :=
