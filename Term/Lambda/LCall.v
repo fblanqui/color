@@ -140,8 +140,9 @@ relation [>C] on [C]. *)
     Variables (C : Type) (code : F -> C) (gtC : relation C).
 
     (** For each code, we assume given a filter, that is, a vector of
-       natural numbers indicating which arguments have to be taken into
-       account when comparing two function calls. *)
+       natural numbers indicating which arguments (the 1st argument is
+       denoted by 0, etc.) have to be taken into account when
+       comparing two function calls. *)
 
     Variables (filter_arity : C -> nat)
       (filter : forall r, vector nat (filter_arity r)).
@@ -153,9 +154,9 @@ relation [>C] on [C]. *)
        relations using [transp] (because, for wellfoundedness, CoLoR
        and Coq relations are oriented differently). *)
 
-    Definition gt_call (gt_args : C -> relation call) : relation call := Rof
-      (transp (lexprod (transp gtC) (fun r => transp (gt_args r))))
-      (fun c => existT (code (call_fun c)) c).
+    Definition gt_call (gt_args : C -> relation call) : relation call :=
+      Rof (transp (lexprod (transp gtC) (fun r => transp (gt_args r))))
+          (fun c => existT (code (call_fun c)) c).
 
     (** Finally, we define a lexicographic ordering on arguments.
 
