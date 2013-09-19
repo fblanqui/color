@@ -529,7 +529,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   Module Import T := Termin CC RS.
 
-  Module Import CI := LCompInt.Make CC.BI.ST CP BI.
+  Module Export CI := LCompInt.Make CC.BI.ST CP BI.
 
   Module Import L := LCall.Lex CO.
 
