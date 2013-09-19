@@ -11,30 +11,17 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Structures.OrderedType RelUtil SN.
+Require Import LogicUtil RelUtil SN EqUtil.
+Require Export Structures.OrderedType.
 
-(** Functor providing properties of Leibniz equality. *)
+(***********************************************************************)
+(** Properties of [CompOpp]. *)
 
-Require Import Structures.Equalities.
+Lemma CompOpp_eq : forall c d, CompOpp c = CompOpp d <-> c = d.
 
-Module LeibnizFacts (Import T : Typ).
+Proof. destruct c; destruct d; simpl; intuition; discr. Qed.
 
-  Definition eq : relation t := @Logic.eq t.
-
-  Instance eq_refl : Reflexive eq.
-
-  Proof. fo. Qed.
-
-  Instance eq_sym : Symmetric eq.
-
-  Proof. fo. Qed.
-
-  Instance eq_trans : Transitive eq.
-
-  Proof. unfold eq; class. Qed.
-
-End LeibnizFacts.
-
+(***********************************************************************)
 (** Structure for a type equipped with a comparison function. *)
 
 Module Type Cmp.
@@ -83,6 +70,7 @@ Module CmpFacts (Import C : Cmp).
 
 End CmpFacts.
 
+(***********************************************************************)
 (** Structure for a type equipped with a comparison function that is
 transitive. The type is therefore totally ordered. This structure is
 equivalent to [Structures.OrderedTypeAlt]. *)
@@ -116,7 +104,9 @@ Module CmpTransFacts (Import CT : CmpTrans).
 
 End CmpTransFacts.
 
-(** Functor buiding a MiniOrderedType structure from a CmpTrans structure. *)
+(***********************************************************************)
+(** Functor buiding a MiniOrderedType structure from a CmpTrans
+structure. *)
 
 Module MOT_of_CmpTrans (Import CT : CmpTrans) <: MiniOrderedType.
 
@@ -126,6 +116,7 @@ Module MOT_of_CmpTrans (Import CT : CmpTrans) <: MiniOrderedType.
 
 End MOT_of_CmpTrans.
 
+(***********************************************************************)
 (** Structure for a type equipped with a transitive comparison
 function whose equivalence is Leibniz equality. *)
 
