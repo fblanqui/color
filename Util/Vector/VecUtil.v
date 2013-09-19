@@ -33,6 +33,16 @@ Implicit Arguments Vtail [A n].
 Implicit Arguments Vconst [A].
 
 (***********************************************************************)
+(** Notations for vectors. *)
+
+Module VectorNotations.
+  Notation " [ ] " := Vnil : vector_scope.
+  Notation " [ x ] " := (Vcons x Vnil) : vector_scope.
+  Notation " [ x ; .. ; y ] " := (Vcons x .. (Vcons y Vnil) ..)
+    : vector_scope.
+End VectorNotations.
+
+(***********************************************************************)
 (** Tactic for destructuring equalities on vectors. *)
 
 Ltac Veqtac := repeat
