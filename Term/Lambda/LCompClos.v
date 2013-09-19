@@ -110,6 +110,29 @@ Module Export Def.
         cc E (apps (Fun g) us) (output (typ g) p).
 
 (****************************************************************************)
+(** Variants of [cc] constructors for proving that some term is in [cc]. *)
+
+     Lemma cc_arg' E v V i (i1 : i < n) (i2 : i < arity (typ f)) :
+        v = Vnth ls i1 -> V = Vnth (inputs (typ f)) i2 -> cc E v V.
+
+     Proof. intros hv hV. subst. apply cc_arg. Qed.
+
+     Lemma cc_acc' E v V g (us : Args g) i (hi : Acc g i) :
+        cc E (apps (Fun g) us) (Base (output_base (typ g))) ->
+        v = Vnth us (Acc_arity hi) ->
+        V = Vnth (inputs (typ g)) (Acc_arity hi) -> cc E v V.
+
+     Proof. intros h hv hV. subst. apply cc_acc. hyp. Qed.
+
+     Lemma cc_call' E v V g p (us : Tes p) :
+        0+p <= arity (typ g) -> gt1 E (mk_call f ls) (mk_call g us) ->
+        (forall i (i1 : i < p) (i2 : i < arity (typ g)),
+          cc E (Vnth us i1) (Vnth (inputs (typ g)) i2)) ->
+        v = apps (Fun g) us -> V = output (typ g) p -> cc E v V.
+
+     Proof. intros h1 h2 h3 hv hV. subst. apply cc_call; hyp. Qed.
+
+(****************************************************************************)
 (** Inversion lemma and tactic for [cc]. *)
 
       Lemma inv_cc : forall E t T, cc E t T ->
