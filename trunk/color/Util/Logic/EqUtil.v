@@ -9,56 +9,84 @@ general lemmas and tactics
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil Structures.Equalities RelUtil BoolUtil.
+Require Export EqdepFacts Eqdep_dec.
 Require Setoid.
+
+(***********************************************************************)
+(** Functor providing properties of Leibniz equality. *)
+
+Module LeibnizFacts (Import T : Typ).
+
+  Definition eq : relation t := @Logic.eq t.
+
+  Instance eq_refl : Reflexive eq.
+
+  Proof. fo. Qed.
+
+  Instance eq_sym : Symmetric eq.
+
+  Proof. fo. Qed.
+
+  Instance eq_trans : Transitive eq.
+
+  Proof. unfold eq; class. Qed.
+
+End LeibnizFacts.
+
+(***********************************************************************)
+(** type equipped with a boolean equility *)
+
+Record Bool_eq_type : Type := mkBool_eq_type {
+  bet_type :> Type;
+  bet_eq : bet_type -> bet_type -> bool;
+  bet_ok : forall x y, bet_eq x y = true <-> x = y }.
 
 (***********************************************************************)
 (** dependent equality on decidable types *)
 
-Require Export EqdepFacts Eqdep_dec.
-
 Section eq_dep.
 
-  Variables (U : Type) (eq_dec : forall x y : U, {x=y}+{~x=y}).
+  Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}).
 
-  Lemma eq_rect_eq : forall (p : U) Q x h, x = eq_rect p Q x p h.
+  Lemma eq_rect_eq : forall (p : A) Q x h, x = eq_rect p Q x p h.
   
   Proof. exact (eq_rect_eq_dec eq_dec). Qed.
 
-  Lemma eq_dep_eq : forall P (p : U) x y, eq_dep U P p x p y -> x = y.
+  Lemma eq_dep_eq : forall P (p : A) x y, eq_dep A P p x p y -> x = y.
 
-  Proof. exact (eq_rect_eq__eq_dep_eq U eq_rect_eq). Qed.
+  Proof. exact (eq_rect_eq__eq_dep_eq A eq_rect_eq). Qed.
 
-  Lemma UIP : forall (x y : U) (p1 p2 : x = y), p1 = p2.
+  Lemma UIP : forall (x y : A) (p1 p2 : x = y), p1 = p2.
 
-  Proof. exact (eq_dep_eq__UIP U eq_dep_eq). Qed.
+  Proof. exact (eq_dep_eq__UIP A eq_dep_eq). Qed.
 
-  Lemma UIP_refl : forall (x : U) (p : x = x), p = refl_equal x.
+  Lemma UIP_refl : forall (x : A) (p : x = x), p = refl_equal x.
 
-  Proof. exact (UIP__UIP_refl U UIP). Qed.
+  Proof. exact (UIP__UIP_refl A UIP). Qed.
 
   Lemma Streicher_K :
-    forall (x : U) (P : x = x -> Prop), P (refl_equal x) -> forall p, P p.
+    forall (x : A) (P : x = x -> Prop), P (refl_equal x) -> forall p, P p.
 
   Proof. exact (K_dec_type eq_dec). Qed.
 
-  Lemma inj_pairT2 : forall P (x : U) (p q : P x),
+  Lemma inj_pairT2 : forall P (x : A) (p q : P x),
     existT x p = existT x q -> p = q.
 
-  Proof. exact (eq_dep_eq__inj_pairT2 U eq_dep_eq). Qed.
+  Proof. exact (eq_dep_eq__inj_pairT2 A eq_dep_eq). Qed.
 
   Lemma inj_pairP2 :
-    forall P (x : U) p q, ex_intro P x p = ex_intro P x q -> p = q.
+    forall P (x : A) p q, ex_intro P x p = ex_intro P x q -> p = q.
 
   Proof.
-    intros. apply inj_right_pair with (A:=U).
+    intros. apply inj_right_pair with (A:=A).
     intros x0 y0; case (eq_dec x0 y0); [left|right]; hyp.
     hyp.
   Qed.
 
 End eq_dep.
 
-Implicit Arguments UIP_refl [U x].
+Implicit Arguments UIP_refl [A x].
 
 (***********************************************************************)
 (** boolean function testing equality *)
@@ -72,8 +100,6 @@ Section beq.
   Lemma beq_refl : forall x, beq x x = true.
 
   Proof. intro. ded (beq_ok x x). rewrite H. refl. Qed.
-
-  Require Import BoolUtil.
 
   Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 
@@ -170,19 +196,3 @@ Section eq_dec.
   Qed.
 
 End eq_dec.
-
-(***********************************************************************)
-(** type equipped with a boolean equility *)
-
-Record Bool_eq_type : Type := mkBool_eq_type {
-  bet_type :> Type;
-  bet_eq : bet_type -> bet_type -> bool;
-  bet_ok : forall x y, bet_eq x y = true <-> x = y
-}.
-
-(***********************************************************************)
-(** properties of type comparison *)
-
-Lemma CompOpp_eq : forall c d, CompOpp c = CompOpp d <-> c = d.
-
-Proof. destruct c; destruct d; simpl; intuition; discr. Qed.
