@@ -34,69 +34,70 @@ Require Import ATrs ListDec ListSort NatUtil List VecUtil.
 
 Section S.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
+  Notation term := (term Sig). Notation terms := (vector term).
 
 (***********************************************************************)
 (** canonical representation of a rule *)
 
-Section norm.
+  Section norm.
 
-Variable xs : variables.
+    Variable xs : variables.
 
-Fixpoint norm (t : term) : term :=
-  match t with
-    | Var x =>
-      match position beq_nat x xs with
-        | Some y => Var y
-        | None => Var (length xs)
-      end
-    | Fun f ts => Fun f (Vmap norm ts)
-  end.
+    Fixpoint norm (t : term) : term :=
+      match t with
+        | Var x =>
+            match position beq_nat x xs with
+              | Some y => Var y
+              | None => Var (length xs)
+            end
+        | Fun f ts => Fun f (Vmap norm ts)
+      end.
 
-End norm.
+  End norm.
 
 (* ASSUME: incl (vars r) (vars l) *)
-Definition mkNormRule l r :=
-  let xs := ATerm.vars l in mkRule (norm xs l) (norm xs r).
+  Definition mkNormRule l r :=
+    let xs := ATerm.vars l in mkRule (norm xs l) (norm xs r).
 
 (***********************************************************************)
 (** canonical representation of a list of rules *)
 
-Section term_ordering.
+  Section term_ordering.
 
-Variable symb_cmp : Sig -> Sig -> comparison.
+    Variable symb_cmp : Sig -> Sig -> comparison.
 
-Require Import OrdDec.
+    Require Import Compare_dec.
 
-Fixpoint cmp (t u : term) : comparison :=
-  match t, u with
-    | Var x, Var y => nat_cmp x y
-    | Var x, _ => Lt
-    | _, Var x => Gt
-    | Fun f ts, Fun g us =>
-      match symb_cmp f g with
-        | Eq =>
-          let fix cmp_terms n (ts : terms n) p (us : terms p) : comparison :=
-            match ts, us with
-              | Vnil, Vnil => Eq
-              | Vnil, _ => Lt
-              | _, Vnil => Gt
-              | Vcons t _ ts, Vcons u _ us =>
-                match cmp t u with
-                  | Eq => cmp_terms _ ts _ us
-                  | c => c
-                end
+    Fixpoint cmp (t u : term) : comparison :=
+      match t, u with
+        | Var x, Var y => nat_compare x y
+        | Var x, _ => Lt
+        | _, Var x => Gt
+        | Fun f ts, Fun g us =>
+            match symb_cmp f g with
+              | Eq =>
+                  let fix cmp_terms n (ts : terms n) p (us : terms p)
+                      : comparison :=
+                      match ts, us with
+                        | Vnil, Vnil => Eq
+                        | Vnil, _ => Lt
+                        | _, Vnil => Gt
+                        | Vcons t _ ts, Vcons u _ us =>
+                            match cmp t u with
+                              | Eq => cmp_terms _ ts _ us
+                              | c => c
+                            end
+                      end
+                  in cmp_terms (arity f) ts (arity g) us
+              | c => c
             end
-            in cmp_terms (arity f) ts (arity g) us
-        | c => c
-      end
-  end.
+      end.
 
-(* ASSUME: rules are in normal form with mkNormRule *)
-Definition mkNormRules := sort cmp.
+   (* ASSUME: rules are in normal form with mkNormRule *)
+    Definition mkNormRules := sort cmp.
 
-End term_ordering.
+  End term_ordering.
 
 End S.
