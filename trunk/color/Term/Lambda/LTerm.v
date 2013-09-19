@@ -449,18 +449,9 @@ Ltac ind_size1 u :=
 End Def.
 
 (****************************************************************************)
-(** * Structure on which we will define lambda-terms. *)
+(** * Structure for infinite sets of variables. *)
 
-Module Type L_Struct.
-
-  (** We assume given a set [F] for constants and a module [FOrd]
-  providing a structure of decidable ordered set to [F]. *)
-
-  Parameter F : Type.
-
-  Declare Module Export FOrd : OrderedType
-  with Definition t := F
-  with Definition eq := @Logic.eq F.
+Module Type Var.
 
   (** We assume given a set [X] for variables and a module [XOrd]
   providing a structure of decidable ordered set to [X]. *)
@@ -487,6 +478,68 @@ Module Type L_Struct.
   Arguments var_notin_ok : clear implicits.
 
   Declare Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
+
+End Var.
+
+(** Example of [Var] structure using natural numbers. *)
+
+Require OrderedTypeEx FSetAVL.
+
+Module NatVar <: Var.
+
+  Definition X := nat.
+
+  Module XOrd := OrderedTypeEx.Nat_as_OT.
+
+  Module Export XSet := FSetAVL.Make XOrd.
+
+  Notation ens_X :=
+    (@mk_Ens X XSet.t empty singleton add union remove diff In mem fold).
+
+  Definition var_notin xs :=
+    match max_elt xs with
+      | Some k => S k
+      | None => 0
+    end.
+
+  Lemma var_notin_ok xs : ~In (var_notin xs) xs.
+
+  Proof.
+    unfold var_notin. case_eq (max_elt xs).
+    intros k e h. gen (max_elt_2 e h). omega.
+    intro h. apply max_elt_3 in h. fo.
+  Qed.
+
+  Require FSetUtil.
+
+  Module Export XSetUtil := FSetUtil.Make XSet.
+
+  Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
+
+  Proof.
+    intros xs xs' xsxs'. unfold var_notin.
+    gen (XSetUtil.max_elt_e xsxs'). intro h. inversion h; subst; refl.
+  Qed.
+
+End NatVar.
+
+(****************************************************************************)
+(** * Structure on which we will define lambda-terms. *)
+
+Module Type L_Struct.
+
+  (** We assume given a set [F] for constants and a module [FOrd]
+  providing a structure of decidable ordered set to [F]. *)
+
+  Parameter F : Type.
+
+  Declare Module Export FOrd : OrderedType
+  with Definition t := F
+  with Definition eq := @Logic.eq F.
+
+  (** We assume given a [Var] structure. *)
+
+  Declare Module Export V : Var.
 
   (** Notations. *)
 
