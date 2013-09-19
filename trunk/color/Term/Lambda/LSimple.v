@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import VecUtil LogicUtil Relations.
+Require Import VecUtil LogicUtil Relations OrdUtil.
 Require Export LBeta.
 
 (****************************************************************************)
@@ -207,6 +207,81 @@ Infix "~~>" := Arr (at level 55, right associativity).
 Hint Rewrite pos_base pos_arrow neg_base neg_arrow : pos.
 
 Ltac simpl_pos := autorewrite with pos; simpl.
+
+(****************************************************************************)
+(** ** Functor building a Cmp structure for simple types from a Cmp
+structure for type constants. *)
+
+Module ST_Cmp (Export BCmp : Cmp) <: Cmp.
+
+  Definition t := Ty BCmp.t.
+
+  Fixpoint cmp A B :=
+    match A, B with
+      | Base a, Base b => BCmp.cmp a b
+      | Base _, Arr _ _ => Lt
+      | Arr _ _, Base _ => Gt
+      | Arr A1 A2, Arr B1 B2 =>
+          match cmp A1 B1 with
+            | Eq => cmp A2 B2
+            | c => c
+          end
+    end.
+
+  Lemma cmp_opp : forall x y, cmp x y = CompOpp (cmp y x).
+
+  Proof.
+    induction x; destruct y; simpl; auto.
+    apply BCmp.cmp_opp.
+    rewrite IHx1. destruct (cmp y1 x1); simpl; auto.
+  Qed.
+
+End ST_Cmp.
+
+(****************************************************************************)
+(** ** Functor building a CmpTransLeibniz structure for simple types
+from a CmpTransLeibniz structure for type constants. *)
+
+Module ST_CmpTransLeibniz (Export BCmpTransLeibniz : CmpTransLeibniz)
+  <: CmpTransLeibniz.
+
+  Module C := ST_Cmp BCmpTransLeibniz.
+
+  Include C.
+
+  Lemma cmp_eq : forall x y, cmp x y = Eq -> x = y.
+
+  Proof.
+    induction x; destruct y; simpl; try discr.
+    intro e. apply BCmpTransLeibniz.cmp_eq in e. subst. refl.
+    case_eq (cmp x1 y1); intros e1 e2; apply (f_equal2 _); 
+      try apply IHx1 in e1; try apply IHx2 in e2; subst; (refl||discr).
+  Qed.
+
+  Lemma cmp_lt_trans :
+    forall x y z, cmp x y = Lt -> cmp y z = Lt -> cmp x z = Lt.
+
+  Proof.
+    induction x; destruct y; destruct z; simpl; try (refl||discr).
+    apply BCmpTransLeibniz.cmp_lt_trans.
+    case_eq (cmp x1 y1); intro e1; try (refl||discr).
+    apply cmp_eq in e1. subst.
+    case_eq (cmp y1 z1); intro e2; try (refl||discr).   
+    apply cmp_eq in e2. subst. fo.
+    intros _. case_eq (cmp y1 z1); intro e2; try (refl||discr).
+    apply cmp_eq in e2. subst.
+    case_eq (cmp y2 z2); intro e2; try (refl||discr).
+    intros _. case_eq (cmp x1 z1); intro e3; try (refl||discr).
+    apply cmp_eq in e3. subst.
+    Module CF := CmpFacts C. rewrite CF.eq_refl in e1. discr.
+    rewrite e1 in e3. auto.
+    intros _. case_eq (cmp x1 z1); intro e3; try (refl||discr).
+    apply cmp_eq in e3. subst.
+    rewrite C.cmp_opp, e2 in e1. discr.
+    rewrite (IHx1 _ _ e1 e2) in e3. discr.
+  Qed.
+
+End ST_CmpTransLeibniz.
 
 (****************************************************************************)
 (** * Typing relation
