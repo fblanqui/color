@@ -67,15 +67,15 @@ Module Type BI_Struct.
   Notation gtB := (transp lt) (only parsing).
   Infix ">B" := gtB (at level 70).
 
-  (** We assume that [gtB] is well-founded. *)
+  (** We assume that [ltB] is well-founded (in Coq sense). *)
 
   Parameter ltB_wf : well_founded lt.
-  Parameter gtB_wf : WF gtB.
 
-  (** For each symbol [f:T1~~>..~~>Tn->A], we assume given a set [Acc
-     f] of accessible argument positions [i] such that, for every base
-     type [B] occurring in [Ti], either [B] is smaller than [A], or
-     [B] is equivalent to [A] and occurs only positively in [Ti]. *)
+  (** For each symbol [f : T_0 ~~> .. ~~> T_{n-1} -> A], we assume
+     given a set [Acc f] of accessible argument positions [i] between
+     [0] and [n-1] such that, for every base type [B] occurring in
+     [T_i], either [B] is smaller than [A], or [B] is equivalent to
+     [A] and occurs only positively in [T_i]. *)
 
   Parameter Acc : F -> set nat.
   Parameter Acc_arity : forall f i, Acc f i -> i < arity (typ f).
