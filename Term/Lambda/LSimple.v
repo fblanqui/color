@@ -113,6 +113,18 @@ Section simple.
     rewrite Vsub_cons, IHT2. refl.
   Qed.
 
+(** Decidability of equality on types. *)
+
+  Section dec.
+
+    Variable eq_so_dec : forall a b : So, {a=b}+{~a=b}.
+
+    Lemma eq_typ_dec : forall A B : Ty, {A=B}+{~A=B}.
+
+    Proof. decide equality. Qed.
+
+  End dec.
+
 (** [occurs a T] says if [T] contains some [a]. *)
 
   Section occurs.
