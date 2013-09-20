@@ -1,9 +1,9 @@
 
 -----------------------------------------------------------------------------
-13-09-20: NEW RELEASE (SVN revision 2002)
+13-09-20: NEW RELEASE (SVN revision 2003)
 
 13-09_20: [Blanqui]
-- Term/lambda/LSystemT: definition and termination proof of Gödel System T
+- Term/lambda/LSystemT: definition and termination proof of Goedel System T
 - Util/Relation/OrdDec replaced by Util/Relation/OrdUtil
 
 -----------------------------------------------------------------------------

@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2013-09-17
 
 
-* Termination proof of Gödel System T
+* Termination proof of Goedel System T
 *)
 
 Set Implicit Arguments.
@@ -258,7 +258,7 @@ Module ST_SystemT <: ST_Struct.
 End ST_SystemT.
 
 (****************************************************************************)
-(** [DLQO] structure for the termination proof of System T.
+(** ** [DLQO] structure for the termination proof of System T.
 
 We use [prec] to quasi-order function symbols in a wellfounded way. *)
 
@@ -291,7 +291,7 @@ Module DLQO_SystemT <: DLQO_Struct.
 End DLQO_SystemT.
 
 (****************************************************************************)
-(** Wellfounded [OrderedType] structure on type constants.
+(** ** Wellfounded [OrderedType] structure on type constants.
 
 We use the empty relation to quasi-order type constants in a
 wellfounded way. *)
@@ -323,7 +323,7 @@ End BOrdWF_MOT.
 Module BOrdWF := MOT_to_OT BOrdWF_MOT.
 
 (****************************************************************************)
-(** [BI] structure (accessible arguments) of System T. *)
+(** ** [BI] structure (accessible arguments) of System T. *)
 
 Require Import LCompInt.
 
@@ -364,7 +364,7 @@ Module BI_SystemT <: BI_Struct.
 End BI_SystemT.
 
 (****************************************************************************)
-(** [CC] structure for the termination proof of System T. *)
+(** ** [CC] structure for the termination proof of System T. *)
 
 Require Import LCompClos.
 
@@ -377,7 +377,7 @@ Module CC_SystemT <: CC_Struct.
 End CC_SystemT.
 
 (****************************************************************************)
-(** Termination proof of System T. *)
+(** ** Termination proof of System T. *)
 
 Module Export SN := SN_rewrite CC_SystemT RS_SystemT DLQO_SystemT.
 
