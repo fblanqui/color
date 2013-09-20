@@ -1031,7 +1031,7 @@ Section inverse_image.
 
   Variables (A B : Type) (R : relation B) (f : A->B).
 
-  Definition Rof a a' := R (f a) (f a').
+  Definition Rof : relation A := fun a a' => R (f a) (f a').
 
   (*COQ: declaring these lemmas as Global Instance makes Coq loop
   later in some other files *)
@@ -1050,7 +1050,8 @@ Section inverse_image.
 
   Variable F : A -> B -> Prop.
 
-  Definition RoF a a' := exists b', F a' b' /\ forall b, F a b -> R b b'.
+  Definition RoF : relation A :=
+    fun a a' => exists b', F a' b' /\ forall b, F a b -> R b b'.
 
 End inverse_image.
 

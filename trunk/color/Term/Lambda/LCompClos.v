@@ -584,7 +584,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   Definition gt2c := gt_call (fun r => gt_args_lex (gt0!) r U gt_red R).
 
-  Definition gt2 : relation max_call := Rof gt2c max_call_call.
+  Definition gt2 := Rof gt2c max_call_call.
 
   (** Properties of [gt0]. *)
 
