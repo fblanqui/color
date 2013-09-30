@@ -858,7 +858,7 @@ variables. *)
     saeq (fvcod xs s1) s2 t2 -> saeq xs (comp s2 s1) (comp t2 t1).
 
   Proof.
-    intros xs s1 t1 e1 s2 t2 e2 x hx. unfold comp. rewrite (e1 _ hx).
+    intros xs s1 t1 e1 s2 t2 e2 x hx. unfold Def.comp. rewrite (e1 _ hx).
     apply subs_saeq. intros y hy. apply e2. rewrite In_fvcod. exists x.
     rewrite (e1 _ hx). auto.
   Qed.
@@ -911,8 +911,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite empty_subset, union_subset_1 with (s:=A) (s':=union B C),
       <- empty_subset. hyp. Focus 1.
 
-    apply subs1_saeq. intros x hx. unfold comp1, comp. rewrite (e1 _ hx).
-    sym. apply aeq_refl_eq. apply subs1_no_alpha.
+    apply subs1_saeq. intros x hx. unfold Def.comp1, Def.comp.
+    rewrite (e1 _ hx). sym. apply aeq_refl_eq. apply subs1_no_alpha.
     assert (d : bv (s1' x) [<=] bvcod (fv u') s1').
     intros y hy. rewrite In_bvcod. exists x. auto.
     assert (e : fv (s1' x) [<=] fvcod (fv u') s1').
@@ -927,7 +927,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros x y u v hy. unfold_rename. rewrite subs_comp. apply subs_saeq.
-    intros d hd. unfold comp. unfold_single. unfold Def.update at -1.
+    intros d hd. unfold Def.comp. unfold_single. unfold Def.update at -1.
     eq_dec d x; simpl.
     rewrite update_eq. refl.
     unfold_update. eq_dec d y. 2: refl.
@@ -944,7 +944,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros x y s u h. unfold_rename. rewrite subs_comp. apply subs_saeq.
-    intros z hz. unfold comp. unfold_single. unfold Def.update at -2.
+    intros z hz. unfold Def.comp, Def.single. unfold Def.update at -2.
     eq_dec z x; simpl.
     subst. unfold_update. eq_dec y x.
     subst. refl.
@@ -1048,7 +1048,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
         end; simpl_aeq.
 
 (****************************************************************************)
-(** Compatibility with [aeq] of some basic predicates/functions. *)
+(** Compatibility of some basic predicates/functions with [aeq]. *)
 
   Instance not_lam_aeq : Proper (aeq ==> impl) not_lam.
 
@@ -1066,7 +1066,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Qed.
 
 (****************************************************************************)
-(** ** Closure modulo alpha-equivalence of a relation. *)
+(** ** Properties of [clos_aeq]. *)
 
   Lemma clos_aeq_inv R : forall t u, clos_aeq R t u ->
     exists t' u', t ~~ t' /\ u ~~ u' /\ R t' u'.

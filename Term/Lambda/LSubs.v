@@ -106,6 +106,21 @@ Module Export Def.
 
     Definition fvcodom xs s := fvcod (domain xs s) s.
 
+    (** Substitution with variable capture. *)
+
+    Fixpoint subs1 s (t : Te) :=
+      match t with
+        | Def.Var x => s x
+        | Def.Fun f => t
+        | Def.App u v => App (subs1 s u) (subs1 s v)
+        | Def.Lam x u => Lam x (subs1 (update x (Var x) s) u)
+      end.
+
+    (*TODO: replace by a notation?*)
+    Definition rename1 y z := subs1 (single y (Var z)).
+
+    Definition comp1 s2 s1 (x:X) := subs1 s2 (s1 x).
+
     (** Generation of a fresh variable. *)
 
     Definition var x u s :=
@@ -166,6 +181,10 @@ A) A] if [A] is not empty). *)
     (*TODO: replace by a notation?*)
     Definition rename y z := subs (single y (Var z)).
 
+    (** Composition of two substitutions. *)
+
+    Definition comp s2 s1 (x : X) := subs s2 (s1 x).
+
     (** Closure by substitution of a relation on terms.
 
        Note that [clos_subs R] is a priori NOT stable by substitution
@@ -212,7 +231,10 @@ Module Make (Export L : L_Struct).
   Notation fvcod := (@fvcod F X ens_X).
   Notation fvcodom := (@fvcodom F X FOrd.eq_dec XOrd.eq_dec ens_X).
   Notation var := (@var F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation subs1 := (@subs1 F X XOrd.eq_dec).
+  Notation comp1 := (@comp1 F X XOrd.eq_dec).
   Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation comp := (@comp F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin). 
   Notation rename := (@rename F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_subs :=
     (@clos_subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
@@ -828,10 +850,6 @@ on some finite set of variables *)
     subs s (apps t us) = apps (subs s t) (Vmap (subs s) us).
 
   Proof. intro s. induction us; intro t; simpl. refl. rewrite IHus. refl. Qed.
-
-  (** Composition of two substitutions. *)
-
-  Definition comp s2 s1 (x : X) := subs s2 (s1 x).
 
   (** [subs] is compatible with substitution equality. *)
 
@@ -1779,17 +1797,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
   Qed.
 
 (****************************************************************************)
-(** ** [subs1]: substitution with variable capture. *)
-
-  Fixpoint subs1 s (t : Te) :=
-    match t with
-      | Def.Var x => s x
-      | Def.Fun f => t
-      | Def.App u v => App (subs1 s u) (subs1 s v)
-      | Def.Lam x u => Lam x (subs1 (update x (Var x) s) u)
-    end.
-
-  Definition comp1 s2 s1 (x:X) := subs1 s2 (s1 x).
+(** ** Properties of [subs1]. *)
 
   (** Bound variables of a term of the form [subs1 s u] (CF, Lemma 3,
   page 99). *)
@@ -2064,9 +2072,9 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite inter_sym. tauto.
     (* lam *)
     apply (f_equal (Lam x)). rewrite IHu. apply subs1_seq.
-    intros y hy. unfold comp1 at 1. unfold Def.update at -1.
+    intros y hy. unfold Def.comp1 at 1. unfold Def.update at -1.
     eq_dec y x; simpl. apply update_eq.
-    unfold comp1. apply subs1_seq. intros z hz. unfold_update.
+    unfold Def.comp1. apply subs1_seq. intros z hz. unfold_update.
     eq_dec z x. 2: refl. subst z. sym.
 
     rewrite inter_empty in h. simpl in h.
