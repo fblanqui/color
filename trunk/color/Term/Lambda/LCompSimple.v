@@ -170,7 +170,7 @@ Module Make (Export ST : ST_Struct)
       (* We first prove that [comp (single x' a) s'] is equal to
         [update x a s0]. *)
       assert (k : seq (fv v) (comp (single x' a) s') (S.update x a s0)).
-      intros z hz. unfold comp, s'. unfold_update. eq_dec z x.
+      intros z hz. unfold Def.comp, s', Def.update. eq_dec z x.
       (* z = x *)
       subst. simpl. rewrite single_eq. refl.
       (* z <> x *)

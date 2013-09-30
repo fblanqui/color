@@ -136,7 +136,7 @@ Module Make (Export RS : RS_Struct).
     identical on [fv u']. *)
     assert (i : seq (fv u') (comp (single x2 (Var z)) s2)
                     (comp (single x1 (Var z)) s1)).
-    intros y hy. unfold comp, s1, s2. unfold_update. eq_dec y x.
+    intros y hy. unfold Def.comp, s1, s2, Def.update. eq_dec y x.
     subst. simpl. rewrite 2!single_eq. refl.
     rewrite 2!subs_notin_fv. refl.
     rewrite domain_single_empty.

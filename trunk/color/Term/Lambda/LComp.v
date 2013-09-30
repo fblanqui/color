@@ -374,7 +374,7 @@ Module Make (Export CP : CP_Struct).
     do 2 (rewrite subs_lam_no_alpha; [idtac|rewrite remove_fv_rename; tauto]).
     apply Lam_atc. class. refl.
     unfold_rename. rewrite !subs_comp. apply IHu.
-    intro y. unfold comp. unfold_single. unfold Def.update at 2.
+    intro y. unfold Def.comp, Def.single. unfold Def.update at 2.
     unfold Def.update at 3. eq_dec y x; simpl.
     rewrite !update_eq. refl.
     unfold_update. eq_dec y z. refl. apply ss'.

@@ -324,7 +324,7 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       (* We prove that [comp (single x' u) s'] is equal to
          [update x u s] on [fv v]. *)
       assert (k : seq (fv v) (comp (single x' u) s') (S.update x u s)).
-      intros z hz. unfold comp, s'. unfold_update. eq_dec z x.
+      intros z hz. unfold Def.comp, s', Def.update. eq_dec z x.
       (* z=x *)
       subst. simpl. rewrite single_eq. refl.
       (* z<>x *)
