@@ -129,7 +129,7 @@ Module Make (Export RS : RS_Struct).
     rewrite aeq_alpha with (x:=x1). 2: unfold not; apply H0.
     rewrite aeq_alpha with (x:=x2). 2: unfold not; apply H2.
     (* We can now apply [mon_lam]. *)
-    unfold_rename. rewrite 2!subs_comp. apply mon_lam. class. refl.
+    unfold Def.rename. rewrite 2!subs_comp. apply mon_lam. class. refl.
     (* First remark that [fv u' [<=] fv u]. *)
     assert (h : fv u' [<=] fv u). rewrite <- H1. refl.
     (* We prove that the substitutions applied to [u] and [u'] are

@@ -311,7 +311,7 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
          we prove that [subs s' v] is computable. *)
       apply sn_lam. eapply int_sn. apply I_cp. apply IHcc.
       (* Proof that [s'] is equal to [s0] on [fvs ls]. *)
-      intros y hy. unfold s'. unfold_update. eq_dec y x.
+      intros y hy. unfold s'. unfold Def.update. eq_dec y x.
       subst y. contradiction. apply hs1. hyp.
       (* Proof that [s'] is valid wrt the variables of [add x A E] not in
          [fvs ls] are computable. *)
@@ -337,7 +337,7 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       (* We can now apply the induction hypothesis. *)
       rewrite (subs_seq k). apply IHcc.
       (* Proof that [update x u s] is equal to [s0] on [fvs ls]. *)
-      intros y hy. unfold_update. eq_dec y x.
+      intros y hy. unfold Def.update. eq_dec y x.
       subst y. contradiction. apply hs1. hyp.
       (* Proof that [update x u s] is valid wrt the variables of [add x U E]
          not in [fvs ls]. *)
