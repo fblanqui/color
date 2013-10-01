@@ -30,15 +30,13 @@ Ltac bool := autorewrite with bool.
 
 Lemma false_not_true : forall b, b = false <-> ~(b = true).
 
-Proof.
-destruct b; intuition.
-Qed.
+Proof. destruct b; intuition. Qed.
 
 Lemma beq_true : forall b c, b = c <-> (b = true <-> c = true).
 
 Proof.
-split; intro h. subst. tauto. destruct c.
-tauto. rewrite false_not_true. intuition.
+  split; intro h. subst. tauto. destruct c.
+  tauto. rewrite false_not_true. intuition.
 Qed.
 
 (***********************************************************************)
@@ -46,60 +44,44 @@ Qed.
 
 Lemma implb1 : forall b, implb b b = true.
 
-Proof.
-induction b; refl.
-Qed.
+Proof. induction b; refl. Qed.
 
 Lemma implb2 : forall b, implb b true = true.
 
-Proof.
-induction b; refl.
-Qed.
+Proof. induction b; refl. Qed.
 
 (***********************************************************************)
 (** conjunction *)
 
 Lemma andb_elim : forall b c, b && c = true -> b = true /\ c = true.
 
-Proof.
-destruct b; destruct c; intuition.
-Qed.
+Proof. destruct b; destruct c; intuition. Qed.
 
 Implicit Arguments andb_elim [b c].
 
 Lemma andb_eliml : forall b c, b && c = true -> b = true.
 
-Proof.
-destruct b; destruct c; intuition.
-Qed.
+Proof. destruct b; destruct c; intuition. Qed.
 
 Implicit Arguments andb_eliml [b c].
 
 Lemma andb_elimr : forall b c, b && c = true -> c = true.
 
-Proof.
-destruct b; destruct c; intuition.
-Qed.
+Proof. destruct b; destruct c; intuition. Qed.
 
 Implicit Arguments andb_elimr [b c].
 
 Lemma andb_intro : forall b c, b = true -> c = true -> b && c = true.
 
-Proof.
-intros. subst b. subst c. refl.
-Qed.
+Proof. intros. subst b. subst c. refl. Qed.
 
 Lemma andb_eq : forall b c, b && c = true <-> b = true /\ c = true.
 
-Proof.
-split. intro. apply andb_elim. hyp. intuition.
-Qed.
+Proof. split. intro. apply andb_elim. hyp. intuition. Qed.
 
 Lemma andb_eq_false : forall b c, b && c = false <-> b = false \/ c = false.
 
-Proof.
-destruct b; destruct c; bool; intuition.
-Qed.
+Proof. destruct b; destruct c; bool; intuition. Qed.
 
 (***********************************************************************)
 (** negation *)
@@ -108,30 +90,22 @@ Definition neg (A : Type) (f : A->A->bool) x y := negb (f x y).
 
 Lemma negb_lr : forall b c, negb b = c <-> b = negb c.
 
-Proof.
-destruct b; destruct c; intuition.
-Qed.
+Proof. destruct b; destruct c; intuition. Qed.
 
 (***********************************************************************)
 (** disjonction *)
 
 Lemma orb_intror : forall b c, c = true -> b || c = true.
 
-Proof.
-intros. subst. bool. refl.
-Qed.
+Proof. intros. subst. bool. refl. Qed.
 
 Lemma orb_introl : forall b c, c = true -> b || c = true.
 
-Proof.
-intros. subst. bool. refl.
-Qed.
+Proof. intros. subst. bool. refl. Qed.
 
 Lemma orb_eq : forall b c, b || c = true <-> b = true \/ c = true.
 
-Proof.
-intuition. destruct b; auto.
-Qed.
+Proof. intuition. destruct b; auto. Qed.
 
 (***********************************************************************)
 (** equality *)
@@ -156,9 +130,7 @@ Section dec.
 
   Lemma ko : forall x, f x = false <-> ~P x.
 
-  Proof.
-    intro x. rewrite <- f_ok. destruct (f x); intuition; discr.
-  Qed.
+  Proof. intro x. rewrite <- f_ok. destruct (f x); intuition; discr. Qed.
 
   Lemma dec : forall x, {P x}+{~P x}.
 
@@ -183,21 +155,15 @@ Section bool_ok.
 
   Lemma negb_ok : forall x, negb (bP x) = true <-> ~P x.
 
-  Proof.
-    intro. rewrite <- (ko bP_ok). destruct (bP x); simpl; intuition.
-  Qed.
+  Proof. intro. rewrite <- (ko bP_ok). destruct (bP x); simpl; intuition. Qed.
 
   Lemma andb_ok : forall x, bP x && bQ x = true <-> P x /\ Q x.
 
-  Proof.
-    intro. rewrite andb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
-  Qed.
+  Proof. intro. rewrite andb_eq. rewrite bP_ok. rewrite bQ_ok. refl. Qed.
 
   Lemma orb_ok : forall x, bP x || bQ x = true <-> P x \/ Q x.
 
-  Proof.
-    intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl.
-  Qed.
+  Proof. intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl. Qed.
 
   Lemma implb_ok : forall x, implb (bP x) (bQ x) = true <-> (P x -> Q x).
 
@@ -241,8 +207,6 @@ Section bforall_lt.
 
   Lemma bforall_lt_ok : forall n, bforall_lt n = true <-> forall_lt n.
 
-  Proof.
-    intro. unfold bforall_lt. rewrite bforall_lt_aux_ok. tauto.
-  Qed.
+  Proof. intro. unfold bforall_lt. rewrite bforall_lt_aux_ok. tauto. Qed.
 
 End bforall_lt.
