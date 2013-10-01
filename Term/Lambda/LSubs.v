@@ -220,9 +220,10 @@ Module Make (Export L : L_Struct).
   Notation fvcodom := (@fvcodom F X FOrd.eq_dec XOrd.eq_dec ens_X).
   Notation var := (@var F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation subs1 := (@subs1 F X XOrd.eq_dec).
+  Notation rename1 := (@rename1 F X XOrd.eq_dec).
   Notation comp1 := (@comp1 F X XOrd.eq_dec).
   Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation comp := (@comp F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin). 
+  Notation comp := (@comp F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation rename := (@rename F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_subs :=
     (@clos_subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
@@ -1264,6 +1265,15 @@ on some finite set of variables *)
 
   (** Applying a renaming preserves the size. *)
 
+  Lemma size_renaming1 : forall u s, renaming s -> size (subs1 s u) = size u.
+
+  Proof.
+    induction u; intros s hs; gen hs; intros [m hm]; simpl; auto.
+    rewrite hm. refl. rewrite IHu. refl.
+    exists (fun y => match eq_dec y x with left _ => x | _ => m y end).
+    intro y. unfold Def.update. eq_dec y x. refl. apply hm.
+  Qed.
+
   Lemma size_renaming : forall u s, renaming s -> size (subs s u) = size u.
 
   Proof.
@@ -1280,24 +1290,28 @@ on some finite set of variables *)
 
   (** [rename] is a renaming. *)
 
-  Lemma renaming_update : forall s y z,
-    renaming s -> renaming (update y (Var z) s).
+  Lemma renaming_update s y z : renaming s -> renaming (update y (Var z) s).
 
   Proof.
-    intros s y z [m hm].
+    intros [m hm].
     exists (fun x => match eq_dec x y with left _ => z | _ => m x end).
     intro x. unfold Def.update. eq_dec x y. refl. apply hm.
   Qed.
 
-  Lemma renaming_single : forall y z, renaming (single y (Var z)).
+  Lemma renaming_single y z : renaming (single y (Var z)).
 
-  Proof. intros y z. apply renaming_update. exists (fun x => x). refl. Qed.
+  Proof. apply renaming_update. exists (fun x => x). refl. Qed.
 
-  Lemma size_rename : forall x y u, size (rename x y u) = size u.
+  Lemma size_rename1 x y u : size (rename1 x y u) = size u.
 
   Proof.
-    intros x y u. unfold Def.rename. rewrite size_renaming. refl.
-    apply renaming_single.
+    unfold Def.rename1. rewrite size_renaming1. refl. apply renaming_single.
+  Qed.
+
+  Lemma size_rename x y u : size (rename x y u) = size u.
+
+  Proof.
+    unfold Def.rename. rewrite size_renaming. refl. apply renaming_single.
   Qed.
 
 (****************************************************************************)
