@@ -157,12 +157,12 @@ Module Make (Export L : L_Struct).
     (* top *)
     inversion H2; subst.
     right. right. destruct (lam_aeq_l uu'1) as [y [u0' [i1 [i2 i3]]]]; subst.
-    exists y. exists u0'. split. refl. rewrite H0, i2. unfold_rename.
+    exists y. exists u0'. split. refl. rewrite H0, i2. unfold Def.rename.
     rewrite subs_comp. apply subs_saeq. intros z hz.
     unfold Def.comp, Def.single. unfold Def.update at -2.
     eq_dec z x; simpl.
     rewrite update_eq. hyp.
-    unfold_update. eq_dec z y. destruct i3; subst; tauto. refl.
+    unfold Def.update. eq_dec z y. destruct i3; subst; tauto. refl.
     (* app_l *)
     left. destruct (app_aeq_r H0) as [c [d [i1 [i2 i3]]]]. subst.
     exists u'. split. rewrite <- vv'1. hyp.
