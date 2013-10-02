@@ -580,10 +580,6 @@ Module Make (Export L : L_Struct).
 
   Module Export XSetUtil := FSetUtil.Make XSet.
 
-  (** Tactic for proving simple membership propositions. *)
-
-  Ltac fset := intro; set_iff; intuition.
-
   (** Tactic doing [destruct (eq_dec x y)] and unfolding
   [XOrd.eq]. Otherwise, Coq's tactic [subst] does not work. *)
 
