@@ -55,6 +55,11 @@ Module Make (Export XSet : FSetInterface.S).
     end.
 
 (***********************************************************************)
+(** Tactic for proving simple membership propositions. *)
+
+  Ltac fset := intro; set_iff; intuition.
+
+(***********************************************************************)
 (** boolean equality on [X] *)
 
   Lemma eqb_ok : forall x y, eqb x y = true <-> E.eq x y.
@@ -126,6 +131,17 @@ Module Make (Export XSet : FSetInterface.S).
   Lemma remove_empty : forall x, remove x empty [=] empty.
 
   Proof. intros x y. set_iff. tauto. Qed.
+
+  Lemma remove_com x y s : remove x (remove y s) [=] remove y (remove x s).
+
+  Proof. fset. Qed.
+
+  Lemma remove_add_com x y s : ~E.eq x y ->
+    add x (remove y s) [=] remove y (add x s).
+
+  Proof.
+    intros n z. set_iff. fo. intro n'. apply n. trans z. hyp. sym. hyp.
+  Qed.
 
 (***********************************************************************)
 (** Subset *)
