@@ -1864,6 +1864,17 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite <- fvcodom_update_id. hyp.
   Qed.
 
+  Lemma rename1_no_alpha u x y :
+    x=y \/ ~In x (fv u) \/ ~In y (bv u) -> rename x y u = rename1 x y u.
+
+  Proof.
+    intro h. unfold Def.rename, Def.rename1. apply subs1_no_alpha.
+    apply inter_empty. intros z hz. rewrite fvcodom_single.
+    case_eq (mem x (fv u) && negb (beq_term (Var y) (Var x))); simpl; set_iff.
+    2: fo. rewrite andb_eq, <- mem_iff, beq_term_var, negb_lr; simpl.
+    unfold XSetFacts.eqb. eq_dec y x; intuition. subst z. fo.
+  Qed.
+
   (** [subs1 s1 u] equals [subs1 s2 u] if [s1] and [s2] are equal on
   the free variables of [u]. *)
 
