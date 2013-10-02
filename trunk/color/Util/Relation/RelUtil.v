@@ -597,6 +597,13 @@ Section clos_equiv.
 
 End clos_equiv.
 
+Instance clos_equiv_incl A : Proper (inclusion ==> inclusion) (@clos_equiv A).
+
+Proof.
+  intros R S RS x y; revert x y; induction 1.
+  apply e_step. fo. refl. trans y; fo. sym. fo.
+Qed.
+
 (***********************************************************************)
 (** Properties of [union]. *)
 
