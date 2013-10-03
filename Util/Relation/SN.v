@@ -163,7 +163,7 @@ Proof.
   apply SN_intro. fo.
 Qed.
 
-Instance WF_same_rel A : Proper (same_relation ==> iff) (@WF A).
+Instance WF_same_rel A : Proper (same_rel ==> iff) (@WF A).
 
 Proof.
   intros x y x_eq_y. destruct x_eq_y. split; intro.

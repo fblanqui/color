@@ -26,7 +26,7 @@ Module Type WeakRedPair.
   Parameter sc_succ : substitution_closed succ.
 
   Parameter bsucc : term -> term -> bool.
-  Parameter bsucc_sub : rel bsucc << succ.
+  Parameter bsucc_sub : rel_of_bool bsucc << succ.
 
   Parameter succeq : relation term.
   Parameter sc_succeq : substitution_closed succeq.
@@ -36,7 +36,7 @@ Module Type WeakRedPair.
   Parameter succ_succeq_compat : absorbs_left succ succeq.
 
   Parameter bsucceq : term -> term -> bool.
-  Parameter bsucceq_sub : rel bsucceq << succeq.
+  Parameter bsucceq_sub : rel_of_bool bsucceq << succeq.
 
   Parameter trans_succ : transitive succ.
   Parameter trans_succeq : transitive succeq.
@@ -172,13 +172,13 @@ Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
   Definition wf_succ := IR_WF I succ_wf.
   Definition sc_succ := @IR_substitution_closed _ _ MA.succ.
 
-  Definition bsucc := brel succ'_dec.
+  Definition bsucc := bool_of_rel succ'_dec.
 
-  Lemma bsucc_sub : rel bsucc << succ.
+  Lemma bsucc_sub : rel_of_bool bsucc << succ.
 
   Proof.
-    intros t u. unfold rel, bsucc, brel. case (succ'_dec t u); intros.
-    apply succ'_sub. hyp. discr.
+    intros t u. unfold rel_of_bool, bsucc, bool_of_rel.
+    case (succ'_dec t u); intros. apply succ'_sub. hyp. discr.
   Qed.
 
   Definition succeq := IR I succeq.
@@ -193,13 +193,13 @@ Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
     destruct xz as [y [ge_xy gt_yz]]. exists (term_int val y). split; auto.
   Qed.
 
-  Definition bsucceq := brel succeq'_dec.
+  Definition bsucceq := bool_of_rel succeq'_dec.
 
-  Lemma bsucceq_sub : rel bsucceq << succeq.
+  Lemma bsucceq_sub : rel_of_bool bsucceq << succeq.
 
   Proof.
-    intros t u. unfold rel, bsucceq, brel. case (succeq'_dec t u); intros.
-    apply succeq'_sub. hyp. discr.
+    intros t u. unfold rel_of_bool, bsucceq, bool_of_rel.
+    case (succeq'_dec t u); intros. apply succeq'_sub. hyp. discr.
   Qed.
 
   Definition trans_succ := IR_transitive trans_succ.
@@ -233,20 +233,17 @@ Module WP_Filter (Import F : Filter) <: WeakRedPair.
 
   Definition bsucc t u := bsucc (filter pi t) (filter pi u).
 
-  Lemma bsucc_sub : rel bsucc << succ.
+  Lemma bsucc_sub : rel_of_bool bsucc << succ.
 
-  Proof.
-    intros t u h. apply bsucc_sub. hyp.
-  Qed.
+  Proof. intros t u h. apply bsucc_sub. hyp. Qed.
 
   Definition succeq := filter_ord succeq.
   Definition sc_succeq := filter_subs_closed sc_succeq.
   Definition cc_succeq := filter_cont_closed refl_succeq cc_succeq.
   
   Lemma refl_succeq : reflexive succeq.
-  Proof.
-    intro x. unfold succeq. apply refl_succeq.
-  Qed.
+
+  Proof. intro x. unfold succeq. apply refl_succeq. Qed.
 
   Lemma succ_succeq_compat : absorbs_left succ succeq.
 
@@ -258,23 +255,17 @@ Module WP_Filter (Import F : Filter) <: WeakRedPair.
 
   Definition bsucceq t u := bsucceq (filter pi t) (filter pi u).
 
-  Lemma bsucceq_sub : rel bsucceq << succeq.
+  Lemma bsucceq_sub : rel_of_bool bsucceq << succeq.
 
-  Proof.
-    intros t u h. apply bsucceq_sub. hyp.
-  Qed.
+  Proof. intros t u h. apply bsucceq_sub. hyp. Qed.
 
   Lemma trans_succ : transitive succ.
 
-  Proof.
-    apply filter_trans. apply trans_succ.
-  Qed.
+  Proof. apply filter_trans. apply trans_succ. Qed.
 
   Lemma trans_succeq : transitive succeq.
 
-  Proof.
-    apply filter_trans. apply trans_succeq.
-  Qed.
+  Proof. apply filter_trans. apply trans_succeq. Qed.
 
 End WP_Filter.
 
@@ -305,11 +296,9 @@ Module WP_Perm (Import F : Perm) <: WeakRedPair.
 
   Definition bsucc t u := bsucc (filter pi t) (filter pi u).
 
-  Lemma bsucc_sub : rel bsucc << succ.
+  Lemma bsucc_sub : rel_of_bool bsucc << succ.
 
-  Proof.
-    intros t u h. apply bsucc_sub. hyp.
-  Qed.
+  Proof. intros t u h. apply bsucc_sub. hyp. Qed.
 
   Definition succeq := filter_ord succeq.
   Definition sc_succeq := filter_subs_closed sc_succeq.
@@ -317,9 +306,7 @@ Module WP_Perm (Import F : Perm) <: WeakRedPair.
   
   Lemma refl_succeq : reflexive succeq.
 
-  Proof.
-    intro x. unfold succeq. apply refl_succeq.
-  Qed.
+  Proof. intro x. unfold succeq. apply refl_succeq. Qed.
 
   Lemma succ_succeq_compat : absorbs_left succ succeq.
 
@@ -331,23 +318,17 @@ Module WP_Perm (Import F : Perm) <: WeakRedPair.
 
   Definition bsucceq t u := bsucceq (filter pi t) (filter pi u).
 
-  Lemma bsucceq_sub : rel bsucceq << succeq.
+  Lemma bsucceq_sub : rel_of_bool bsucceq << succeq.
 
-  Proof.
-    intros t u h. apply bsucceq_sub. hyp.
-  Qed.
+  Proof. intros t u h. apply bsucceq_sub. hyp. Qed.
 
   Lemma trans_succ : transitive succ.
 
-  Proof.
-    apply filter_trans. apply trans_succ.
-  Qed.
+  Proof. apply filter_trans. apply trans_succ. Qed.
 
   Lemma trans_succeq : transitive succeq.
 
-  Proof.
-    apply filter_trans. apply trans_succeq.
-  Qed.
+  Proof. apply filter_trans. apply trans_succeq. Qed.
 
 End WP_Perm.
 
@@ -376,11 +357,9 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
 
   Definition bsucc t u := bsucc (proj pi t) (proj pi u).
 
-  Lemma bsucc_sub : rel bsucc << succ.
+  Lemma bsucc_sub : rel_of_bool bsucc << succ.
 
-  Proof.
-    intros t u h. apply bsucc_sub. hyp.
-  Qed.
+  Proof. intros t u h. apply bsucc_sub. hyp. Qed.
 
   Definition succeq := proj_ord pi succeq.
   Definition sc_succeq := proj_subs_closed pi sc_succeq.
@@ -388,9 +367,7 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
   
   Lemma refl_succeq : reflexive succeq.
 
-  Proof.
-    intro x. unfold succeq. apply refl_succeq.
-  Qed.
+  Proof. intro x. unfold succeq. apply refl_succeq. Qed.
 
   Lemma succ_succeq_compat : absorbs_left succ succeq.
 
@@ -402,23 +379,17 @@ Module WP_Proj (Import P : Proj) <: WeakRedPair.
 
   Definition bsucceq t u := bsucceq (proj pi t) (proj pi u).
 
-  Lemma bsucceq_sub : rel bsucceq << succeq.
+  Lemma bsucceq_sub : rel_of_bool bsucceq << succeq.
 
-  Proof.
-    intros t u h. apply bsucceq_sub. hyp.
-  Qed.
+  Proof. intros t u h. apply bsucceq_sub. hyp. Qed.
 
   Lemma trans_succ : transitive succ.
 
-  Proof.
-    apply proj_trans. apply trans_succ.
-  Qed.
+  Proof. apply proj_trans. apply trans_succ. Qed.
 
   Lemma trans_succeq : transitive succeq.
 
-  Proof.
-    apply proj_trans. apply trans_succeq.
-  Qed.
+  Proof. apply proj_trans. apply trans_succeq. Qed.
 
 End WP_Proj.
 
@@ -437,19 +408,17 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
   Definition wf_succ := arpo_wf.
   Definition sc_succ := arpo_subst_closed.
 
-  Definition bsucc := brel arpo_dec.
+  Definition bsucc := bool_of_rel arpo_dec.
 
-  Lemma bsucc_ok : forall t u, bsucc t u = true <-> succ t u.
-
-  Proof.
-    intros t u. unfold bsucc, succ, brel. destruct (arpo_dec t u); intuition.
-  Qed.
-
-  Lemma bsucc_sub : rel bsucc << succ.
+  Lemma bsucc_ok t u : bsucc t u = true <-> succ t u.
 
   Proof.
-    intros t u. unfold rel. rewrite bsucc_ok. auto.
+    unfold bsucc, succ, bool_of_rel. destruct (arpo_dec t u); intuition.
   Qed.
+
+  Lemma bsucc_sub : rel_of_bool bsucc << succ.
+
+  Proof. intros t u. unfold rel_of_bool. rewrite bsucc_ok. auto. Qed.
 
   Definition succeq := succ%.
   Definition sc_succeq := rc_substitution_closed sc_succ.
@@ -472,11 +441,11 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
 
   Definition bsucceq t u := beq_term t u || bsucc t u.
 
-  Lemma bsucceq_sub : rel bsucceq << succeq.
+  Lemma bsucceq_sub : rel_of_bool bsucceq << succeq.
 
   Proof.
-    intros t u. unfold rel, bsucceq. rewrite orb_eq. rewrite beq_term_ok.
-    rewrite bsucc_ok. auto.
+    intros t u. unfold rel_of_bool, bsucceq.
+    rewrite orb_eq, beq_term_ok, bsucc_ok. auto.
   Qed.
 
   Lemma trans_succ : transitive succ.
@@ -488,8 +457,6 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
 
   Lemma trans_succeq : transitive succeq.
 
-  Proof.
-    unfold succeq. apply rc_trans. apply trans_succ.
-  Qed.
+  Proof. unfold succeq. apply rc_trans. apply trans_succ. Qed.
 
 End WP_RPO.

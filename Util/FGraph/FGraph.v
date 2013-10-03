@@ -114,7 +114,7 @@ they define the same relation. See below for more details. *)
   Qed.
 
   (*COQ: can be removed? used in rel_set_fold_add_edge *)
-  Instance succ_m : Proper (eq ==> XSet.Equal ==> same_relation) succ.
+  Instance succ_m : Proper (eq ==> XSet.Equal ==> same_rel) succ.
 
   Proof. apply Proper_inter_transp_2; class. Qed.
 
@@ -630,7 +630,7 @@ successors of g' *)
     (* add *)
     intros z g s nzs e. rewrite rel_add_edge. rewrite e.
     rewrite R.union_assoc. rewrite union_commut with (R:=rel g0).
-    rewrite <- R.union_assoc. apply R.union_same_relation. 2: refl.
+    rewrite <- R.union_assoc. apply R.union_same_rel. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
     rewrite add_iff. fo.
   Qed.

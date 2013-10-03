@@ -1098,7 +1098,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   (** Alpha-closure is compatible with alpha-equivalence. *)
 
   Instance clos_aeq_impl :
-    Proper (same_relation ==> aeq ==> aeq ==> impl) clos_aeq.
+    Proper (same_rel ==> aeq ==> aeq ==> impl) clos_aeq.
 
   Proof.
     intros R R' [RR' _] u u' uu' v v' vv' h. inversion h; subst.
@@ -1115,7 +1115,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof. apply clos_aeq_impl. refl. Qed.
 
   Instance clos_aeq_iff :
-    Proper (same_relation ==> aeq ==> aeq ==> iff) clos_aeq.
+    Proper (same_rel ==> aeq ==> aeq ==> iff) clos_aeq.
 
   Proof. apply Proper_inter_transp_3; class. Qed.
 
@@ -1148,8 +1148,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     apply clos_aeq_intro with (u':=u') (v':=v'); fo.
   Qed.
 
-  Instance clos_aeq_same_rel :
-    Proper (same_relation ==> same_relation) clos_aeq.
+  Instance clos_aeq_same_rel : Proper (same_rel ==> same_rel) clos_aeq.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
@@ -1563,10 +1562,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End clos_vaeq.
 
-  (** [clos_vaeq] is compatible with [same_relation]. *)
+  (** [clos_vaeq] is compatible with [same_rel]. *)
 
   Instance clos_vaeq_same_rel n :
-    Proper (same_relation ==> same_relation) (@clos_vaeq n).
+    Proper (same_rel ==> same_rel) (@clos_vaeq n).
 
   Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 

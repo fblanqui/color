@@ -101,8 +101,7 @@ Proof.
 Qed.
 
 Instance lex_same_rel A B :
-  Proper (same_relation ==> same_relation ==> same_relation ==> same_relation)
-  (@lex A B).
+  Proper (same_rel ==> same_rel ==> same_rel ==> same_rel) (@lex A B).
 
 Proof.
   intros gtA1 gtA' [gtAgtA' gtA'gtA] eqA eqA' [eqAeqA' eqA'eqA]

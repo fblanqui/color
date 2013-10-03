@@ -28,7 +28,7 @@ Section beta_top.
   Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
 
   Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
-  Notation beq_term := (brel eq_term_dec).
+  Notation beq_term := (bool_of_rel eq_term_dec).
 
   Variable ens_X : Ens X.
 
