@@ -46,8 +46,7 @@ Module Make (X : OrderedType).
 
     Proof. fo. Qed.
 
-    Global Instance Equiv_m A :
-      Proper (same_relation ==> same_relation) (@Equiv A).
+    Global Instance Equiv_m A : Proper (same_rel ==> same_rel) (@Equiv A).
 
     Proof. fo. Qed.
 
@@ -93,7 +92,7 @@ Module Make (X : OrderedType).
     Qed.
 
     Global Instance transpose_neqkey_m : forall B,
-      Proper (same_relation ==> Logic.eq ==> iff) (@transpose_neqkey A B).
+      Proper (same_rel ==> Logic.eq ==> iff) (@transpose_neqkey A B).
 
     Proof.
       intros B R R' [h1 h2] f f' ff'. split; apply transpose_neqkey_m'; auto.

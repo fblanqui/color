@@ -14,7 +14,7 @@ extension of the Coq library on lists
 Set Implicit Arguments.
 
 Require Import LogicUtil NatUtil EqUtil Setoid SetoidList RelMidex Omega
-  Relations BoolUtil.
+  RelUtil BoolUtil.
 Require Export List.
 Require Program.
 
@@ -271,13 +271,13 @@ Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
 Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition. Qed.
 
 Instance incl_lequiv1 A1 B (f : list A1 -> relation B) :
-  Proper (incl ==> inclusion) f -> Proper (lequiv ==> same_relation) f.
+  Proper (incl ==> inclusion) f -> Proper (lequiv ==> same_rel) f.
 
 Proof. intros hf l1 l1' [l1l1' l1'l1]. split; apply hf; hyp. Qed.
 
 Instance incl_lequiv2 A1 A2 B (f : list A1 -> list A2 -> relation B) :
   Proper (incl ==> incl ==> inclusion) f ->
-  Proper (lequiv ==> lequiv ==> same_relation) f.
+  Proper (lequiv ==> lequiv ==> same_rel) f.
 
 Proof.
   intros hf l1 l1' [l1l1' l1'l1] l2 l2' [l2l2' l2'l2]. split; apply hf; hyp.
@@ -1737,8 +1737,8 @@ Instance transpose_inclusion A B : Proper (inclusion ==> Logic.eq ==> impl)
 
 Proof. intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h. Qed.
 
-Instance transpose_same_relation A B :
-  Proper (same_relation ==> Logic.eq ==> iff) (@transpose A B).
+Instance transpose_same_rel A B :
+  Proper (same_rel ==> Logic.eq ==> iff) (@transpose A B).
 
 Proof.
   intros R R' [h1 h2] f f' ff'. subst f'.

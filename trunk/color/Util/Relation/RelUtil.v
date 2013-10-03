@@ -49,95 +49,91 @@ Arguments Scope union [type_scope relation_scope relation_scope].
 
 Open Scope relation_scope.
 
+Notation rel := relation.
+Notation same_rel := same_relation.
+
 (***********************************************************************)
 (** Empty relation. *)
 
-Definition empty_rel {A} : relation A := fun x y => False.
+Definition empty_rel {A} : rel A := fun x y => False.
 
 (***********************************************************************)
 (** Relation associated to a boolean function. *)
 
-Definition rel A (f : A->A->bool) : relation A := fun x y => f x y = true.
+Definition rel_of_bool A (f : A->A->bool) : rel A :=
+  fun x y => f x y = true.
 
 (***********************************************************************)
 (** Boolean function associated to a decidable relation. *)
 
-Definition brel A (R : relation A) (R_dec : rel_dec R) t u :=
+Definition bool_of_rel A (R : rel A) (R_dec : rel_dec R) t u :=
   match R_dec t u with
     | left _ => true
     | _ => false
   end.
 
 (***********************************************************************)
-(** Equivalence on relations *)
+(** Properties of [same_rel]. *)
 
-Instance same_relation_equiv A : Equivalence (@same_relation A).
+Global Instance same_rel_equiv A : Equivalence (@same_rel A).
 
 Proof. fo. Qed.
 
-Lemma rel_eq : forall A (R S : relation A),
-  R == S <-> forall x y, R x y <-> S x y.
+Lemma rel_eq A (R S : rel A) : R == S <-> forall x y, R x y <-> S x y.
 
 Proof. fo. Qed.
 
 (***********************************************************************)
 (** Definition of some properties on relations. *)
 
-Section basic_def.
+Definition classic_left_total A B (R : A -> B -> Prop) :=
+  forall x, exists y, R x y.
 
-  Variables A B : Type.
+Definition left_total A B (R : A -> B -> Prop) :=
+  forall x, {y | R x y}.
 
-  Definition classic_left_total (R : A -> B -> Prop) :=
-    forall x, exists y, R x y.
+Definition functional A B (R : A -> B -> Prop) :=
+  forall x y z, R x y -> R x z -> y = z.
 
-  Definition left_total (R : A -> B -> Prop) := forall x, {y | R x y}.
+Definition finitely_branching A B (R : A -> B -> Prop) :=
+  forall x, {l | forall y, R x y <-> In y l}.
 
-  Definition functional (R : A -> B -> Prop) :=
-    forall x y z, R x y -> R x z -> y = z.
+Definition irreflexive A (R : rel A) := forall x, ~R x x.
 
-  Definition finitely_branching (R : A -> B -> Prop) :=
-    forall x, {l | forall y, R x y <-> In y l}.
+Definition asymmetric A (R : rel A) := forall x y, R x y -> ~R y x.
 
-  Definition irreflexive (R : relation A) := forall x, ~R x x.
+(** Predicate saying that [f] is an infinite sequence of [R]-steps. *)
+Definition IS A (R : rel A) f := forall i, R (f i) (f (S i)).
 
-  Definition asymmetric (R : relation A):= forall x y, R x y -> ~R y x.
+Definition EIS A (R : rel A) := exists f, IS R f.
 
-  (* Predicate saying that [f] is an infinite sequence of [R]-steps. *)
-  Definition IS (R : relation A) f := forall i, R (f i) (f (S i)).
+Definition NT A (R : rel A) x := exists f, f 0 = x /\ IS R f.
 
-  Definition EIS (R : relation A) := exists f, IS R f.
-
-  Definition NT (R : relation A) x := exists f, f 0 = x /\ IS R f.
-
-  (* Predicate saying that [f] and [g] describe an infinite sequence
+(** Predicate saying that [f] and [g] describe an infinite sequence
   of R-steps modulo E: for all i, f(i) E g(i) R f(i+1). *)
-  Definition ISMod (E R : relation A) (f g : nat -> A) :=
-    forall i, E (f i) (g i) /\ R (g i) (f (S i)).
+Definition ISMod A (E R : rel A) (f g : nat -> A) :=
+  forall i, E (f i) (g i) /\ R (g i) (f (S i)).
 
-  (* Called PreOrder in Coq. *)
-  Definition quasi_ordering (R : relation A) := reflexive R /\ transitive R.
+(* Called PreOrder in Coq. *)
+Definition quasi_ordering A (R : rel A) := reflexive R /\ transitive R.
 
-  Definition ordering (R : relation A) :=
-    reflexive R /\ transitive R /\ antisymmetric R.
+Definition ordering A (R : rel A) :=
+  reflexive R /\ transitive R /\ antisymmetric R.
 
-  Definition strict_ordering (R : relation A) := irreflexive R /\ transitive R.
-
-End basic_def.
+Definition strict_ordering A (R : rel A) := irreflexive R /\ transitive R.
 
 (***********************************************************************)
 (** Strict part. *)
 
-Definition strict_part A (R : relation A) : relation A :=
-  fun x y => R x y /\ ~R y x.
+Definition strict_part A (R : rel A) : rel A := fun x y => R x y /\ ~R y x.
 
 (***********************************************************************)
 (** Intersection. *)
 
-Definition intersection A (R S : relation A) : relation A
-  := fun x y => R x y /\ S x y.
+Definition intersection A (R S : rel A) : rel A := fun x y => R x y /\ S x y.
 
-Lemma intersection_dec A (R S : relation A)
-  (Rdec : rel_dec R) (Sdec : rel_dec S) : rel_dec (intersection R S).
+Lemma intersection_dec A (R S : rel A) (Rdec : rel_dec R) (Sdec : rel_dec S) :
+  rel_dec (intersection R S).
 
 Proof.
   intros x y. unfold intersection. case (Rdec x y); case (Sdec x y); intuition.
@@ -148,7 +144,7 @@ Defined.
 
 Section finitely_branching.
 
-  Variables (A : Type) (R : relation A) (FB : finitely_branching R).
+  Variables (A : Type) (R : rel A) (FB : finitely_branching R).
 
   Definition sons x := proj1_sig (FB x).
 
@@ -162,78 +158,77 @@ Section finitely_branching.
 
 End finitely_branching.
 
-Implicit Arguments sons [A R].
 Implicit Arguments in_sons_R [A R x y].
 Implicit Arguments R_in_sons [A R x y].
 
 (***********************************************************************)
 (** Equivalence relation associated to a PreOrder. *)
 
-Definition inter_transp A (R : relation A) : relation A :=
-  fun x y => R x y /\ R y x.
+Definition inter_transp A (R : rel A) : rel A := fun x y => R x y /\ R y x.
 
 (*COQ: declaring these Lemma's as Instance's creates problems in
 FSetUtil and FGraph *)
 
-Lemma inter_transp_Reflexive A (R : relation A) :
+Lemma inter_transp_Reflexive A (R : rel A) :
   Reflexive R -> Reflexive (inter_transp R).
 
 Proof. fo. Qed.
 
-Lemma inter_transp__Symmetric A (R : relation A) :
-  Symmetric (inter_transp R).
+Lemma inter_transp__Symmetric A (R : rel A) : Symmetric (inter_transp R).
 
 Proof. fo. Qed.
 
-Lemma inter_transp_Transitive A (R : relation A) :
+Lemma inter_transp_Transitive A (R : rel A) :
   Transitive R -> Transitive (inter_transp R).
 
 Proof. fo. Qed.
 
 (*WARNING: Do not declare following Lemmas as Instances. *)
 
-Lemma R_inter_transp A (R : relation A) :
+Lemma R_inter_transp A (R : rel A) :
   Transitive R -> Proper (inter_transp R ==> inter_transp R ==> impl) R.
 
 Proof. fo. Qed.
 
-Lemma inter_transp_incl A (R : relation A) : inter_transp R << R.
+Lemma inter_transp_incl A (R : rel A) : inter_transp R << R.
 
 Proof. fo. Qed.
 
-Lemma inter_transp_1 A1 (R1 : relation A1) B (S : relation B) f :
-  Proper (R1 ==> S) f ->
-  Proper (inter_transp R1 ==> inter_transp S) f.
+(***********************************************************************)
+(** Morphisms wrt [inter_transp]. *)
+
+Lemma inter_transp_1 A1 (R1 : rel A1) B (S : rel B) f :
+  Proper (R1 ==> S) f -> Proper (inter_transp R1 ==> inter_transp S) f.
 
 Proof. fo. Qed.
 
-Lemma inter_transp_2 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  B (S : relation B) f : Proper (R1 ==> R2 ==> S) f ->
+Lemma inter_transp_2 A1 (R1 : rel A1) A2 (R2 : rel A2)
+  B (S : rel B) f : Proper (R1 ==> R2 ==> S) f ->
   Proper (inter_transp R1 ==> inter_transp R2 ==> inter_transp S) f.
 
 Proof. fo. Qed.
 
-Lemma Proper_inter_transp_1 A1 (R1 : relation A1) B (S : relation B) f :
+Lemma Proper_inter_transp_1 A1 (R1 : rel A1) B (S : rel B) f :
   Symmetric R1 -> Proper (R1 ==> S) f -> Proper (R1 ==> inter_transp S) f.
 
 Proof. fo. Qed.
 
-Lemma Proper_inter_transp_2 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  B (S : relation B) f : Symmetric R1 -> Symmetric R2 ->
+Lemma Proper_inter_transp_2 A1 (R1 : rel A1) A2 (R2 : rel A2)
+  B (S : rel B) f : Symmetric R1 -> Symmetric R2 ->
   Proper (R1 ==> R2 ==> S) f -> Proper (R1 ==> R2 ==> inter_transp S) f.
 
 Proof. intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; apply hf; fo. Qed.
 
-Lemma Proper_inter_transp_3 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) B (S : relation B) f :
+Lemma Proper_inter_transp_3 A1 (R1 : rel A1) A2 (R2 : rel A2)
+  A3 (R3 : rel A3) B (S : rel B) f :
   Symmetric R1 -> Symmetric R2 -> Symmetric R3 ->
   Proper (R1 ==> R2 ==> R3 ==> S) f ->
   Proper (R1 ==> R2 ==> R3 ==> inter_transp S) f.
 
 Proof. intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3. split; apply hf; fo. Qed.
 
-Lemma Proper_inter_transp_4 A1 (R1 : relation A1) A2 (R2 : relation A2)
-  A3 (R3 : relation A3) A4 (R4 : relation A4) B (S : relation B) f :
+Lemma Proper_inter_transp_4 A1 (R1 : rel A1) A2 (R2 : rel A2)
+  A3 (R3 : rel A3) A4 (R4 : rel A4) B (S : rel B) f :
   Symmetric R1 -> Symmetric R2 -> Symmetric R3 -> Symmetric R4 ->
   Proper (R1 ==> R2 ==> R3 ==> R4 ==> S) f ->
   Proper (R1 ==> R2 ==> R3 ==> R4 ==> inter_transp S) f.
@@ -256,16 +251,15 @@ Instance inclusion_Trans A : Transitive (@inclusion A).
 
 Proof. fo. Qed.
 
-Ltac incl_trans S := apply inclusion_Trans with (S); try incl_refl.
+Ltac incl_trans S := apply inclusion_Trans with S; try incl_refl.
 
-Instance inclusion_same_relation A :
-  Proper (same_relation ==> same_relation ==> impl) (@inclusion A).
+Instance inclusion_same_rel A :
+  Proper (same_rel ==> same_rel ==> impl) (@inclusion A).
 
 Proof. fo. Qed.
 
 (*FIXME: try to remove*)
-Lemma inclusion_elim : forall A (R S : relation A),
-  R << S -> forall x y, R x y -> S x y.
+Lemma inclusion_elim A (R S : rel A) : R << S -> forall x y, R x y -> S x y.
 
 Proof. auto. Qed.
 
@@ -278,33 +272,27 @@ Instance IS_inclusion A : Proper (inclusion ==> eq ==> impl) (@IS A).
 
 Proof. intros R S RS f g fg h i. subst. apply RS. apply h. Qed.
 
-Instance IS_same_relation A : Proper (same_relation ==> eq ==> impl) (@IS A).
+Instance IS_same_rel A : Proper (same_rel ==> eq ==> impl) (@IS A).
 
 Proof.
   intros R S [RS SR] f g fg h. eapply IS_inclusion. apply RS. apply fg. hyp.
 Qed.
 
-Instance EIS_same_relation A : Proper (same_relation ==> impl) (@EIS A).
+Instance EIS_same_rel A : Proper (same_rel ==> impl) (@EIS A).
 
 Proof. intros R S RS h. destruct h as [f h]. exists f. rewrite <- RS. hyp. Qed.
 
-Section IS.
+Lemma NT_IS_elt A (R : rel A) : forall f k, IS R f -> NT R (f k).
 
-  Variables (A : Type) (R : relation A).
+Proof. intros f k hf. exists (fun i => f (i+k)). fo. Qed.
 
-  Lemma NT_IS_elt : forall f k, IS R f -> NT R (f k).
+Lemma red_NT A (R : rel A) : forall t u, R t u -> NT R u -> NT R t.
 
-  Proof. intros f k hf. exists (fun i => f (i+k)). fo. Qed.
-
-  Lemma red_NT : forall t u, R t u -> NT R u -> NT R t.
-
-  Proof.
-    intros t u tu [f [f0 hf]]. subst.
-    exists (fun k => match k with 0 => t | S k' => f k' end).
-    intuition. intro k. destruct k. hyp. apply hf.
-  Qed.
-
-End IS.
+Proof.
+  intros t u tu [f [f0 hf]]. subst.
+  exists (fun k => match k with 0 => t | S k' => f k' end).
+  intuition. intro k. destruct k. hyp. apply hf.
+Qed.
 
 (***********************************************************************)
 (** Properties of [irreflexive]. *)
@@ -316,24 +304,18 @@ Proof. fo. Qed.
 (***********************************************************************)
 (** Monotony. *)
 
-Section monotone.
+Definition monotone A B (R : rel A) (S : rel B) f :=
+  forall x y, R x y -> S (f x) (f y).
 
-  Variables (A B : Type).
+Lemma monotone_transp A B (R : rel A) (S : rel B) f :
+  monotone R S f -> monotone (transp R) (transp S) f.
 
-  Definition monotone (R : relation A) (S : relation B) f :=
-    forall x y, R x y -> S (f x) (f y).
-
-  Lemma monotone_transp : forall R S f,
-    monotone R S f -> monotone (transp R) (transp S) f.
-
-  Proof. unfold monotone, transp. auto. Qed.
-
-End monotone.
+Proof. unfold monotone, transp. auto. Qed.
 
 (***********************************************************************)
 (** Composition. *)
 
-Definition compose A (R S : relation A) : relation A :=
+Definition compose A (R S : rel A) : rel A :=
   fun x y => exists z, R x z /\ S z y.
 
 Notation "R @ S" := (compose R S) (at level 40) : relation_scope.
@@ -347,44 +329,27 @@ Proof. fo. Qed.
 Ltac comp := apply compose_inclusion; try incl_refl.
 
 Instance compose_m A :
-  Proper (same_relation ==> same_relation ==> same_relation) (@compose A).
+  Proper (same_rel ==> same_rel ==> same_rel) (@compose A).
 
 Proof. fo. Qed.
 
-Definition absorbs_right A (R S : relation A) := R @ S << R.
+Definition absorbs_right A (R S : rel A) := R @ S << R.
 
-Definition absorbs_left A (R S : relation A) := S @ R << R.
+Definition absorbs_left A (R S : rel A) := S @ R << R.
 
-Section compose.
+Lemma comp_assoc A (R S T : rel A) : (R @ S) @ T << R @ (S @ T).
 
-  Variables (A : Type) (R R' S S' : relation A).
+Proof.
+  unfold inclusion. intros. do 4 destruct H. exists x1; split. hyp.
+  exists x0; split; hyp.
+Qed.
 
-  Lemma comp_assoc : forall T, (R @ S) @ T << R @ (S @ T).
+Lemma comp_assoc' A (R S T : rel A) : R @ (S @ T) << (R @ S) @ T.
 
-  Proof.
-    unfold inclusion. intros. do 4 destruct H. exists x1; split. hyp.
-    exists x0; split; hyp.
-  Qed.
-
-  Lemma comp_assoc' : forall T, R @ (S @ T) << (R @ S) @ T.
-
-  Proof.
-    unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
-    exists x1; split. exists x0; split; hyp. exact H1.
-  Qed.
-
-  Lemma absorbs_left_rtc : R @ S << S -> R# @ S << S.
-
-  Proof.
-    intro. unfold inclusion, compose. intros. do 2 destruct H0.
-    gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
-  Qed.
-
-  Lemma absorbs_right_rtc : S @ R << S -> S @ R# << S.
-
-  Proof. intros h t v [u [tu uv]]. induction uv; fo. Qed.
-
-End compose.
+Proof.
+  unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
+  exists x1; split. exists x0; split; hyp. exact H1.
+Qed.
 
 Ltac assoc :=
   match goal with
@@ -394,10 +359,21 @@ Ltac assoc :=
     | |- _ << ?s @ (?t @ ?u) => incl_trans ((s @ t) @ u); try apply comp_assoc
   end.
 
+Lemma absorbs_left_rtc A (R S : rel A) : R @ S << S -> R# @ S << S.
+
+Proof.
+  intro. unfold inclusion, compose. intros. do 2 destruct H0.
+  gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+Qed.
+
+Lemma absorbs_right_rtc A (R S : rel A) : S @ R << S -> S @ R# << S.
+
+Proof. intros h t v [u [tu uv]]. induction uv; fo. Qed.
+
 (***********************************************************************)
 (** Reflexive closure. *)
 
-Definition clos_refl A (R : relation A) : relation A := eq U R.
+Definition clos_refl A (R : rel A) : rel A := eq U R.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
@@ -405,31 +381,24 @@ Instance clos_refl_m' A : Proper (inclusion ==> inclusion) (@clos_refl A).
 
 Proof. fo. Qed.
 
-Instance clos_refl_m A :
-  Proper (same_relation ==> same_relation) (@clos_refl A).
+Instance clos_refl_m A : Proper (same_rel ==> same_rel) (@clos_refl A).
 
 Proof. fo. Qed.
 
-Section clos_refl.
+Instance rc_refl A (R : rel A) : Reflexive (R%).
 
-  Variables (A : Type) (R S : relation A).
+Proof. fo. Qed.
 
-  Global Instance rc_refl : Reflexive (R%).
+Instance rc_trans A (R : rel A) : Transitive R -> Transitive (R%).
 
-  Proof. fo. Qed.
+Proof.
+  intro. unfold Transitive, clos_refl, union. intros. decomp H0. subst y. hyp.
+  decomp H1. subst z. auto. right. apply H with (y := y); hyp.
+Qed.
 
-  Global Instance rc_trans : Transitive R -> Transitive (R%).
+Lemma rc_incl A (R : rel A) : R << R%.
 
-  Proof.
-    intro. unfold Transitive, clos_refl, union. intros. decomp H0. subst y. hyp.
-    decomp H1. subst z. auto. right. apply H with (y := y); hyp.
-  Qed.
-
-  Lemma rc_incl : R << R%.
-
-  Proof. fo. Qed.
-
-End clos_refl.
+Proof. fo. Qed.
 
 (***********************************************************************)
 (** Properties of [clos_trans]. *)
@@ -443,132 +412,121 @@ Proof.
   apply t_trans with y; hyp.
 Qed.
 
-Instance clos_trans_same_relation A :
-  Proper (same_relation ==> same_relation) (@clos_trans A).
+Instance clos_trans_same_rel A :
+  Proper (same_rel ==> same_rel) (@clos_trans A).
 
 Proof. intros R S [RS SR]. split; apply clos_trans_inclusion; hyp. Qed.
 
-Section clos_trans.
+Lemma incl_tc A (R S : rel A) : R << S -> R << S!.
 
-  Variable A : Type.
+Proof. fo. Qed.
 
-  Implicit Type R S E : relation A.
+Instance tc_trans A (R : rel A) : Transitive (R!).
 
-  Lemma incl_tc R S : R << S -> R << S!.
+Proof. unfold Transitive. intros. apply t_trans with y; hyp. Qed.
 
-  Proof. fo. Qed.
+Lemma tc_incl_rtc A (R : rel A) : R! << R#.
 
-  Global Instance tc_trans R : Transitive (R!).
+Proof.
+  unfold inclusion. intros. elim H; intros.
+  apply rt_step. hyp.
+  apply rt_trans with y0; hyp.
+Qed.
 
-  Proof. unfold Transitive. intros. apply t_trans with y; hyp. Qed.
+Lemma tc_split A (R : rel A) : R! << R @ R#.
 
-  Lemma tc_incl_rtc R : R! << R#.
+Proof.
+  unfold inclusion. induction 1. exists y. split. hyp. apply rt_refl.
+  destruct IHclos_trans1. destruct H1. exists x0. split. hyp.
+  apply rt_trans with y. hyp.
+  apply inclusion_elim with (R:=R!). apply tc_incl_rtc. hyp.
+Qed.
 
-  Proof.
-    unfold inclusion. intros. elim H; intros.
-    apply rt_step. hyp.
-    apply rt_trans with y0; hyp.
-  Qed.
+Lemma trans_tc_incl A (R : rel A) : Transitive R -> R! << R.
 
-  Lemma tc_split R : R! << R @ R#.
+Proof.
+  unfold transitive, inclusion. intros. induction H0. hyp. 
+  apply H with y; hyp.
+Qed.
 
-  Proof.
-    unfold inclusion. induction 1. exists y. split. hyp. apply rt_refl.
-    destruct IHclos_trans1. destruct H1. exists x0. split. hyp.
-    apply rt_trans with y. hyp.
-    apply inclusion_elim with (R:=R!). apply tc_incl_rtc. hyp.
-  Qed.
+Lemma trans_comp_incl A (R : rel A) : Transitive R -> R @ R << R.
 
-  Lemma trans_tc_incl R : Transitive R -> R! << R.
+Proof. fo. Qed.
 
-  Proof.
-    unfold transitive, inclusion. intros. induction H0. hyp. 
-    apply H with y; hyp.
-  Qed.
+Lemma absorbs_left_tc A (R S : rel A) : R @ S << S -> R! @ S << S.
 
-  Lemma trans_comp_incl R : Transitive R -> R @ R << R.
+Proof.
+  intro. unfold inclusion, compose. intros. do 2 destruct H0.
+  gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
+Qed.
 
-  Proof. fo. Qed.
+Lemma tc_absorbs_left A (R S : rel A) : R @ S << S -> R @ S! << S!.
 
-  Lemma absorbs_left_tc R S : R @ S << S -> R! @ S << S.
+Proof.
+  intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
+  induction 1; intros. apply t_step. apply H. exists x1; split; hyp.
+  apply t_trans with (y := y0); auto.
+Qed.
 
-  Proof.
-    intro. unfold inclusion, compose. intros. do 2 destruct H0.
-    gen H1. clear H1. elim H0; intros; auto. apply H. exists y0. auto.
-  Qed.
+Lemma trans_intro A (R : rel A) : R @ R << R <-> Transitive R.
 
-  Lemma tc_absorbs_left R S : R @ S << S -> R @ S! << S!.
+Proof.
+  split. unfold Transitive. intros. apply H. exists y. intuition.
+  intros h x z [y [xy yz]]. apply (h _ _ _ xy yz).
+Qed.
 
-  Proof.
-    intro. unfold inclusion. intros. do 2 destruct H0. generalize x0 y H1 H0.
-    induction 1; intros. apply t_step. apply H. exists x1; split; hyp.
-    apply t_trans with (y := y0); auto.
-  Qed.
+Lemma comp_tc_idem A (R : rel A) : R! @ R! << R!.
 
-  Lemma trans_intro R : R @ R << R <-> Transitive R.
+Proof.
+  unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; hyp.
+Qed.
 
-  Proof.
-    split. unfold Transitive. intros. apply H. exists y. intuition.
-    intros h x z [y [xy yz]]. apply (h _ _ _ xy yz).
-  Qed.
+Lemma tc_min A (R S : rel A) : R << S -> Transitive S -> R! << S.
 
-  Lemma comp_tc_idem R : R! @ R! << R!.
+Proof.
+  intros RS Strans. intros x y. induction 1. apply RS. hyp. trans y; hyp.
+Qed.
 
-  Proof.
-    unfold inclusion. intros. do 2 destruct H. apply t_trans with x0; hyp.
-  Qed.
+Lemma trans_tc A (R : rel A) : Transitive R -> R! == R.
 
-  Lemma tc_min R S : R << S -> Transitive S -> R! << S.
+Proof. intro t. split. apply tc_min. refl. hyp. apply incl_tc. refl. Qed.
 
-  Proof.
-    intros RS Strans. intros x y. induction 1. apply RS. hyp.
-    apply Strans with y; hyp.
-  Qed.
+Lemma tc_idem A (R : rel A) : R!! == R!.
 
-  Lemma trans_tc R : Transitive R -> R! == R.
+Proof.
+  split. intros x y. induction 1. hyp. apply t_trans with y; hyp.
+  apply incl_tc. refl.
+Qed.
 
-  Proof.
-    intro t. split. apply tc_min. refl. hyp. apply incl_tc. refl.
-  Qed.
+Lemma tc_eq A (R S : rel A) : S << R -> R << S! -> R! == S!.
 
-  Lemma tc_idem R : R!! == R!.
+Proof.
+  intros SR RSt. split; apply tc_min. hyp. apply tc_trans.
+  trans R. hyp. apply incl_tc. refl. apply tc_trans.
+Qed.
 
-  Proof.
-    split. intros x y. induction 1. hyp. apply t_trans with y; hyp.
-    apply incl_tc. refl.
-  Qed.
+Lemma tc_incl_trans A (R S : rel A) : Transitive S -> R << S -> R! << S.
 
-  Lemma tc_eq R S : S << R -> R << S! -> R! == S!.
+Proof. intros S_trans RS. intros t u tu; revert t u tu. induction 1; fo. Qed.
 
-  Proof.
-    intros SR RSt. split; apply tc_min. hyp. apply tc_trans.
-    trans R. hyp. apply incl_tc. refl. apply tc_trans.
-  Qed.
+Instance tc_proper A (E R : rel A) : Reflexive E ->
+  Proper (E ==> E ==> impl) R -> Proper (E ==> E ==> impl) (R!).
 
-  Lemma tc_incl_trans R S : Transitive S -> R << S -> R! << S.
-
-  Proof. intros S_trans RS. intros t u tu; revert t u tu. induction 1; fo. Qed.
-
-  Global Instance tc_proper E R : Reflexive E ->
-    Proper (E ==> E ==> impl) R -> Proper (E ==> E ==> impl) (R!).
-
-  Proof.
-    intros E_refl RE x x' xx' y y' yy' xy. revert x y xy x' xx' y' yy'.
-    induction 1; intros x' xx' y' yy'.
-    apply t_step. eapply RE. apply xx'. apply yy'. hyp.
-    apply t_trans with y. apply IHxy1. hyp. refl. apply IHxy2. refl. hyp.
-  Qed.
-
-End clos_trans.
+Proof.
+  intros E_refl RE x x' xx' y y' yy' xy. revert x y xy x' xx' y' yy'.
+  induction 1; intros x' xx' y' yy'.
+  apply t_step. eapply RE. apply xx'. apply yy'. hyp.
+  apply t_trans with y. apply IHxy1. hyp. refl. apply IHxy2. refl. hyp.
+Qed.
 
 (***********************************************************************)
 (** Symmetric closure of a relation. *)
 
 Section clos_sym.
 
-  Variable (A : Type) (R : relation A).
+  Variable (A : Type) (R : rel A).
 
-  Inductive clos_sym : relation A :=
+  Inductive clos_sym : rel A :=
   | s_step : forall x y, R x y -> clos_sym x y
   | s_sym : forall x y, clos_sym y x -> clos_sym x y.
 
@@ -583,9 +541,9 @@ End clos_sym.
 
 Section clos_equiv.
 
-  Variable (A : Type) (R : relation A).
+  Variable (A : Type) (R : rel A).
 
-  Inductive clos_equiv : relation A :=
+  Inductive clos_equiv : rel A :=
   | e_step : forall x y, R x y -> clos_equiv x y
   | e_refl : forall x, clos_equiv x x
   | e_trans : forall x y z, clos_equiv x y -> clos_equiv y z -> clos_equiv x z
@@ -615,54 +573,46 @@ Proof. fo. Qed.
 (*FIXME: try to remove*)
 Ltac union := apply union_inclusion; try incl_refl.
 
-Instance union_same_relation A :
-  Proper (same_relation ==> same_relation ==> same_relation) (@union A).
+Instance union_same_rel A :
+  Proper (same_rel ==> same_rel ==> same_rel) (@union A).
 
 Proof. fo. Qed.
 
-Section union.
+Lemma union_commut : forall A (R S : rel A), R U S == S U R.
 
-  Variable A : Type.
+Proof. fo. Qed.
 
-  Implicit Type R S T : relation A.
+Lemma union_assoc : forall A (R S T : rel A), (R U S) U T == R U (S U T).
 
-  Lemma union_commut : forall R S, R U S == S U R.
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma comp_union_l : forall A (R S T : rel A), (R U S) @ T == (R @ T) U (S @ T).
 
-  Lemma union_assoc : forall R S T, (R U S) U T == R U (S U T).
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma comp_union_r : forall A (R S T : rel A), T @ (R U S) == (T @ R) U (T @ S).
 
-  Lemma comp_union_l : forall R S T, (R U S) @ T == (R @ T) U (S @ T).
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma union_empty_r : forall A (R : rel A), R U empty_rel == R.
 
-  Lemma comp_union_r : forall R S T, T @ (R U S) == (T @ R) U (T @ S).
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma union_empty_l : forall A (R : rel A), empty_rel U R == R.
 
-  Lemma union_empty_r : forall R, R U empty_rel == R.
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma incl_union_l : forall A (R S T : rel A), R << S -> R << S U T.
 
-  Lemma union_empty_l : forall R, empty_rel U R == R.
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma incl_union_r : forall A (R S T : rel A), R << T -> R << S U T.
 
-  Lemma incl_union_l : forall R S T, R << S -> R << S U T.
+Proof. fo. Qed.
 
-  Proof. fo. Qed.
+Lemma union_incl : forall A (R R' S : rel A), R U R' << S <-> R << S /\ R' << S.
 
-  Lemma incl_union_r : forall R S T, R << T -> R << S U T.
-
-  Proof. fo. Qed.
-
-  Lemma union_incl : forall R R' S, R U R' << S <-> R << S /\ R' << S.
-
-  Proof. fo. Qed.
-
-End union.
+Proof. fo. Qed.
 
 (***********************************************************************)
 (** Properties of [clos_refl_trans]. *)
@@ -671,137 +621,125 @@ Instance clos_refl_trans_inclusion A :
   Proper (inclusion ==> inclusion) (@clos_refl_trans A).
 
 Proof.
-intro. unfold inclusion. intros. elim H0; intros.
-apply rt_step. apply H. hyp.
-apply rt_refl.
-eapply rt_trans. apply H2. hyp.
+  intro. unfold inclusion. intros. elim H0; intros.
+  apply rt_step. apply H. hyp.
+  apply rt_refl.
+  eapply rt_trans. apply H2. hyp.
 Qed.
 
-Instance clos_refl_trans_same_relation A :
-  Proper (same_relation ==> same_relation) (@clos_refl_trans A).
+Instance clos_refl_trans_same_rel A :
+  Proper (same_rel ==> same_rel) (@clos_refl_trans A).
 
 Proof. intros R S [RS SR]. split; apply clos_refl_trans_inclusion; hyp. Qed.
 
-Section clos_refl_trans.
+Lemma rtc_incl A (R : rel A) : R << R#.
 
-  Variables (A : Type) (R S : relation A).
+Proof. fo. Qed.
 
-  Lemma rtc_incl : R << R#.
+Instance rtc_refl A (R : rel A) : Reflexive (R#).
 
-  Proof. fo. Qed.
+Proof. fo. Qed.
 
-  Global Instance rtc_refl : Reflexive (R#).
+Instance rtc_trans A (R : rel A) : Transitive (R#).
 
-  Proof. fo. Qed.
+Proof. unfold Transitive. intros. eapply rt_trans. apply H. hyp. Qed.
 
-  Global Instance rtc_trans : Transitive (R#).
+Lemma rc_incl_rtc A (R : rel A) : R% << R#.
 
-  Proof. unfold Transitive. intros. eapply rt_trans. apply H. hyp. Qed.
+Proof.
+  unfold inclusion, clos_refl. intros. destruct H.
+  subst y. apply rt_refl. apply rt_step. exact H.
+Qed.
 
-  Lemma rc_incl_rtc : R% << R#.
+Lemma rtc_split A (R : rel A) : R# << eq U R!.
 
-  Proof.
-    unfold inclusion, clos_refl. intros. destruct H.
-    subst y. apply rt_refl. apply rt_step. exact H.
-  Qed.
+Proof.
+  unfold inclusion, union. intros. elim H.
+  intros. right. apply t_step. hyp.
+  intro. left. refl.
+  intros. destruct H1; destruct H3.
+  left. trans y0; hyp.
+  subst y0. right. hyp.
+  subst y0. right. hyp.
+  right. apply t_trans with (y := y0); hyp.
+Qed.
 
-  Lemma rtc_split : R# << eq U R!.
+Lemma rtc_split_eq A (R : rel A) : R# == eq U R!.
 
-  Proof.
-    unfold inclusion, union. intros. elim H.
-    intros. right. apply t_step. hyp.
-    intro. left. refl.
-    intros. destruct H1; destruct H3.
-    left. trans y0; hyp.
-    subst y0. right. hyp.
-    subst y0. right. hyp.
-    right. apply t_trans with (y := y0); hyp.
-  Qed.
+Proof.
+  split. apply rtc_split. rewrite union_incl. split.
+  intros x y h. subst. apply rt_refl. apply tc_incl_rtc.
+Qed.
 
-  Lemma rtc_split_eq : R# == eq U R!.
+Lemma rtc_split2 A (R : rel A) : R# << eq U R @ R#.
 
-  Proof.
-    split. apply rtc_split. rewrite union_incl. split.
-    intros x y h. subst. apply rt_refl. apply tc_incl_rtc.
-  Qed.
+Proof.
+  unfold inclusion, union. intros. elim H; clear H x y; intros.
+  right. exists y; split. exact H. apply rt_refl. auto. destruct H0.
+  subst y. destruct H2. auto. destruct H0. right. exists x0. auto.
+  do 2 destruct H0. right. exists x0. split. exact H0.
+  apply rt_trans with (y := y); auto.
+Qed.
 
-  Lemma rtc_split2 : R# << eq U R @ R#.
+Lemma tc_split_inv A (R : rel A) : R# @ R << R!.
 
-  Proof.
-    unfold inclusion, union. intros. elim H; clear H x y; intros.
-    right. exists y; split. exact H. apply rt_refl. auto. destruct H0.
-    subst y. destruct H2. auto. destruct H0. right. exists x0. auto.
-    do 2 destruct H0. right. exists x0. split. exact H0.
-    apply rt_trans with (y := y); auto.
-  Qed.
+Proof.
+  intros x y RRxy. destruct RRxy as [z [Rxz Rzy]].
+  destruct (rtc_split Rxz).
+  rewrite H. intuition.
+  constructor 2 with z. hyp.
+  constructor 1. hyp.
+Qed.
 
-  Lemma tc_split_inv : R# @ R << R!.
+Lemma tc_merge A (R : rel A) : R @ R# << R!.
 
-  Proof.
-    intros x y RRxy. destruct RRxy as [z [Rxz Rzy]].
-    destruct (rtc_split Rxz).
-    rewrite H. intuition.
-    constructor 2 with z. hyp.
-    constructor 1. hyp.
-  Qed.
+Proof.
+  unfold inclusion. intros. destruct H. destruct H.
+  ded (rtc_split H0). destruct H1; subst.
+  apply t_step;hyp.
+  eapply t_trans. apply t_step.
+  ehyp. hyp.
+Qed.
 
-  Lemma tc_merge : R @ R# << R!.
+Lemma rtc_transp A (R : rel A) : transp (R#) << (transp R)#.
 
-  Proof.
-    unfold inclusion. intros. destruct H. destruct H.
-    ded (rtc_split H0). destruct H1; subst.
-    apply t_step;hyp.
-    eapply t_trans. apply t_step.
-    ehyp. hyp.
-  Qed.
+Proof.
+  unfold inclusion. induction 1.
+  apply rt_step. hyp.
+  apply rt_refl.
+  eapply rt_trans. apply IHclos_refl_trans2. apply IHclos_refl_trans1.
+Qed.
 
-  Lemma rtc_transp : transp (R#) << (transp R)#.
+Lemma incl_rtc_rtc A (R S : rel A) : R << S# -> R# << S#.
 
-  Proof.
-    unfold inclusion. induction 1.
-    apply rt_step. hyp.
-    apply rt_refl.
-    eapply rt_trans. apply IHclos_refl_trans2. apply IHclos_refl_trans1.
-  Qed.
+Proof.
+  unfold inclusion. induction 2.
+  apply H. hyp.
+  constructor 2.
+  constructor 3 with y; hyp.
+Qed.
 
-  Lemma incl_rtc_rtc : R << S# -> R# << S#.
+Lemma comp_rtc_idem A (R : rel A) : R# @ R# << R#.
 
-  Proof.
-    unfold inclusion. induction 2.
-    apply H. hyp.
-    constructor 2.
-    constructor 3 with y; hyp.
-  Qed.
+Proof.
+  unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; hyp.
+Qed.
 
-  Lemma comp_rtc_idem : R# @ R# << R#.
+Lemma trans_rtc_incl A (R : rel A) : transitive R -> reflexive R -> R# << R.
 
-  Proof.
-    unfold inclusion. intros. do 2 destruct H. apply rt_trans with x0; hyp.
-  Qed.
+Proof.
+  unfold transitive, inclusion, reflexive. intros. induction H1. hyp. 
+  apply H0. apply H with y; hyp.
+Qed.
 
-  Lemma trans_rtc_incl : transitive R -> reflexive R -> R# << R.
+Lemma rtc_invol A (R : rel A) : R # # == R #.
 
-  Proof.
-    unfold transitive, inclusion, reflexive. intros. induction H1. hyp. 
-    apply H0. apply H with y; hyp.
-  Qed.
+Proof.
+  split. intros x y. induction 1. hyp. apply rt_refl.
+  apply rt_trans with y; hyp. apply rtc_incl.
+Qed.
 
-End clos_refl_trans.
-
-Section clos_refl_trans2.
-
-  Variables (A : Type) (R S : relation A).
-
-  Lemma rtc_invol : R # # == R #.
-
-  Proof.
-    split. intros x y. induction 1. hyp. apply rt_refl.
-    apply rt_trans with y; hyp. apply rtc_incl.
-  Qed.
-
-End clos_refl_trans2.
-
-Lemma rtc_intro_seq A (R : relation A) f i : forall j, i <= j ->
+Lemma rtc_intro_seq A (R : rel A) f i : forall j, i <= j ->
   (forall k, i <= k < j -> R (f k) (f (1+k))) -> R# (f i) (f j).
 
 Proof.
@@ -815,6 +753,13 @@ Proof.
   apply rt_step. apply h. omega.
 Qed.
 
+Lemma rtc_min A (R S : rel A) : PreOrder S -> R << S -> R# << S.
+
+Proof.
+  intros S_PO RS. intros u v; revert u v; induction 1.
+  fo. refl. trans y; hyp.
+Qed.
+
 (***********************************************************************)
 (** Properties of [transp]. *)
 
@@ -822,154 +767,135 @@ Instance transp_inclusion A : Proper (inclusion ==> inclusion) (@transp A).
 
 Proof. fo. Qed.
 
-Instance transp_same_relation A :
-  Proper (same_relation ==> same_relation) (@transp A).
+Instance transp_same_rel A : Proper (same_rel ==> same_rel) (@transp A).
 
 Proof. fo. Qed.
 
-Section transp.
-
-  Variables (A : Type) (R S : relation A).
-
-  (*COQ: declaring these lemmas as Global Instance makes Coq loop
+(*COQ: declaring these lemmas as Global Instance makes Coq loop
   later in some other files *)
 
-  Lemma transp_refl : Reflexive R -> Reflexive (transp R).
+Lemma transp_refl A (R : rel A) : Reflexive R -> Reflexive (transp R).
 
-  Proof. auto. Qed.
+Proof. auto. Qed.
 
-  Lemma transp_trans : Transitive R -> Transitive (transp R).
+Lemma transp_trans A (R : rel A) : Transitive R -> Transitive (transp R).
 
-  Proof. fo. Qed.
+Proof. fo. Qed.
 
-  Lemma transp_sym : Symmetric R -> Symmetric (transp R).
+Lemma transp_sym A (R : rel A) : Symmetric R -> Symmetric (transp R).
 
-  Proof. fo. Qed.
+Proof. fo. Qed.
 
-  Lemma transp_transp : transp (transp R) << R.
+Lemma transp_transp A (R : rel A) : transp (transp R) << R.
 
-  Proof. fo. Qed.
+Proof. fo. Qed.
 
-  Lemma transp_invol : transp (transp R) == R.
+Lemma transp_invol A (R : rel A) : transp (transp R) == R.
 
-  Proof. fo. Qed.
+Proof. fo. Qed.
 
-  Lemma transp_union : transp (R U S) == transp R U transp S.
+Lemma transp_union A (R S : rel A) : transp (R U S) == transp R U transp S.
 
-  Proof. fo. Qed.
-
-End transp.
+Proof. fo. Qed.
 
 (***********************************************************************)
 (** Relations between closures, union and composition. *)
 
-Section properties.
+Lemma rtc_comp_permut A (R S : rel A) : R# @ (R# @ S)# << (R# @ S)# @ R#.
 
-  Variables (A : Type) (R S : relation A).
+Proof.
+  unfold inclusion. intros. do 2 destruct H. ded (rtc_split2 H0). destruct H1.
+  subst x0. exists x; split. apply rt_refl. exact H.
+  do 4 destruct H1. exists y; split. apply rt_trans with (y := x1).
+  apply rt_step. exists x2; split. apply rt_trans with (y := x0); hyp.
+  hyp. hyp. apply rt_refl.
+Qed.
 
-  Lemma rtc_comp_permut : R# @ (R# @ S)# << (R# @ S)# @ R#.
+Lemma rtc_union A (R S : rel A) : (R U S)# << (R# @ S)# @ R#.
 
-  Proof.
-    unfold inclusion. intros. do 2 destruct H. ded (rtc_split2 H0). destruct H1.
-    subst x0. exists x; split. apply rt_refl. exact H.
-    do 4 destruct H1. exists y; split. apply rt_trans with (y := x1).
-    apply rt_step. exists x2; split. apply rt_trans with (y := x0); hyp.
-    hyp. hyp. apply rt_refl.
-  Qed.
+Proof.
+  unfold inclusion. intros. elim H; intros.
+  (* step *)
+  destruct H0. exists x0; split. apply rt_refl. apply rt_step. exact H0.
+  exists y0; split. apply rt_step. exists x0; split. apply rt_refl. exact H0.
+  apply rt_refl.
+  (* refl *)
+  exists x0; split; apply rt_refl.
+  (* trans *)
+  do 2 destruct H1. do 2 destruct H3.
+  assert (h : ((R# @ S)# @ clos_refl_trans R) x1 x2).
+  apply inclusion_elim with (R := (R# @ clos_refl_trans (R# @ S))).
+  apply rtc_comp_permut. exists y0; split; hyp.
+  destruct h. destruct H6. exists x3; split.
+  apply rt_trans with (y := x1); hyp.
+  apply rt_trans with (y := x2); hyp.
+Qed.
 
-  Lemma rtc_union : (R U S)# << (R# @ S)# @ R#.
+Lemma rtc_comp A (R S : rel A) : R# @ S << S U R! @ S.
 
-  Proof.
-    unfold inclusion. intros. elim H; intros.
-    (* step *)
-    destruct H0. exists x0; split. apply rt_refl. apply rt_step. exact H0.
-    exists y0; split. apply rt_step. exists x0; split. apply rt_refl. exact H0.
-    apply rt_refl.
-    (* refl *)
-    exists x0; split; apply rt_refl.
-    (* trans *)
-    do 2 destruct H1. do 2 destruct H3.
-    assert (h : ((R# @ S)# @ clos_refl_trans R) x1 x2).
-    apply inclusion_elim with (R := (R# @ clos_refl_trans (R# @ S))).
-    apply rtc_comp_permut. exists y0; split; hyp.
-    destruct h. destruct H6. exists x3; split.
-    apply rt_trans with (y := x1); hyp.
-    apply rt_trans with (y := x2); hyp.
-  Qed.
+Proof.
+  unfold inclusion. intros. do 2 destruct H. ded (rtc_split H). destruct H1.
+  subst x0. left. exact H0. right. exists x0; split; hyp.
+Qed.
 
-  Lemma rtc_comp : R# @ S << S U R! @ S.
+Lemma union_fact A (R S : rel A) : R U R @ S << R @ S%.
 
-  Proof.
-    unfold inclusion. intros. do 2 destruct H. ded (rtc_split H). destruct H1.
-    subst x0. left. exact H0. right. exists x0; split; hyp.
-  Qed.
+Proof.
+  unfold inclusion. intros. destruct H.
+  exists y; split; unfold clos_refl, union; auto.
+  do 2 destruct H. exists x0; split; unfold clos_refl, union; auto.
+Qed.
 
-  Lemma union_fact : R U R @ S << R @ S%.
+Lemma union_fact2 A (R S : rel A) : R @ S U R << R @ S%.
 
-  Proof.
-    unfold inclusion. intros. destruct H.
-    exists y; split; unfold clos_refl, union; auto.
-    do 2 destruct H. exists x0; split; unfold clos_refl, union; auto.
-  Qed.
+Proof. incl_trans (R U R @ S). apply union_commut. apply union_fact. Qed.
 
-  Lemma union_fact2 : R @ S U R << R @ S%.
+Lemma incl_rc_rtc A (R S : rel A) : R << S! -> R% << S#.
 
-  Proof. incl_trans (R U R @ S). apply union_commut. apply union_fact. Qed.
+Proof.
+  intro. unfold inclusion. intros. destruct H0. subst y. apply rt_refl.
+  apply inclusion_elim with (R := S!). apply tc_incl_rtc. apply H. exact H0.
+Qed.
 
-  Lemma incl_rc_rtc : R << S! -> R% << S#.
+Lemma incl_tc_rtc A (R S : rel A) : R << S# -> R! << S#.
 
-  Proof.
-    intro. unfold inclusion. intros. destruct H0. subst y. apply rt_refl.
-    apply inclusion_elim with (R := S!). apply tc_incl_rtc. apply H. exact H0.
-  Qed.
+Proof.
+  intro. unfold inclusion. induction 1. apply H. exact H0.
+  apply rt_trans with (y := y); hyp.
+Qed.
 
-  Lemma incl_tc_rtc : R << S# -> R! << S#.
+Lemma rtc_comp_modulo A (R S : rel A) : R# @ (R# @ S)! << (R# @ S)!.
 
-  Proof.
-    intro. unfold inclusion. induction 1. apply H. exact H0.
-    apply rt_trans with (y := y); hyp.
-  Qed.
+Proof.
+  unfold inclusion. intros. do 2 destruct H.
+  ded (tc_split H0). do 2 destruct H1. do 2 destruct H1.
+  ded (rtc_split H2). destruct H4. subst x1.
+  apply t_step. exists x2. intuition. apply rt_trans with x0; hyp.
+  apply t_trans with x1. apply t_step. exists x2. intuition.
+  apply rt_trans with x0; hyp. exact H4.
+Qed.
 
-End properties.
+Lemma tc_union A (R S : rel A) : (R U S)! << R! U (R# @ S)! @ R#.
 
-Section properties2.
-
-  Variables (A : Type) (R S : relation A).
-
-  Lemma rtc_comp_modulo : R# @ (R# @ S)! << (R# @ S)!.
-
-  Proof.
-    unfold inclusion. intros. do 2 destruct H.
-    ded (tc_split H0). do 2 destruct H1. do 2 destruct H1.
-    ded (rtc_split H2). destruct H4. subst x1.
-    apply t_step. exists x2. intuition. apply rt_trans with x0; hyp.
-    apply t_trans with x1. apply t_step. exists x2. intuition.
-    apply rt_trans with x0; hyp. exact H4.
-  Qed.
-
-  Lemma tc_union : (R U S)! << R! U (R# @ S)! @ R#.
-
-  Proof.
-    unfold inclusion. induction 1. destruct H. left. apply t_step. exact H.
-    right. exists y. intuition. apply t_step. exists x. intuition.
-    destruct IHclos_trans1. destruct IHclos_trans2.
-    left. apply t_trans with y; hyp.
-    right. do 2 destruct H2. exists x0. intuition.
-    apply rtc_comp_modulo. exists y. intuition. apply tc_incl_rtc. exact H1.
-    right. do 2 destruct H1. destruct IHclos_trans2. exists x0.
-    intuition. apply rt_trans with y. exact H2. apply tc_incl_rtc. exact H3.
-    do 2 destruct H3. exists x1. intuition. apply t_trans with x0. exact H1.
-    apply rtc_comp_modulo. exists y. intuition.
-  Qed.
-
-End properties2.
+Proof.
+  unfold inclusion. induction 1. destruct H. left. apply t_step. exact H.
+  right. exists y. intuition. apply t_step. exists x. intuition.
+  destruct IHclos_trans1. destruct IHclos_trans2.
+  left. apply t_trans with y; hyp.
+  right. do 2 destruct H2. exists x0. intuition.
+  apply rtc_comp_modulo. exists y. intuition. apply tc_incl_rtc. exact H1.
+  right. do 2 destruct H1. destruct IHclos_trans2. exists x0.
+  intuition. apply rt_trans with y. exact H2. apply tc_incl_rtc. exact H3.
+  do 2 destruct H3. exists x1. intuition. apply t_trans with x0. exact H1.
+  apply rtc_comp_modulo. exists y. intuition.
+Qed.
 
 (***********************************************************************)
 (** Commutation properties. *)
 
 Section commut.
 
-  Variables (A : Type) (R S : relation A) (commut : R @ S << S @ R).
+  Variables (A : Type) (R S : rel A) (commut : R @ S << S @ R).
 
   Lemma commut_rtc : R# @ S << S @ R#.
 
@@ -1036,9 +962,9 @@ End commut.
 
 Section inverse_image.
 
-  Variables (A B : Type) (R : relation B) (f : A->B).
+  Variables (A B : Type) (R : rel B) (f : A->B).
 
-  Definition Rof : relation A := fun a a' => R (f a) (f a').
+  Definition Rof : rel A := fun a a' => R (f a) (f a').
 
   (*COQ: declaring these lemmas as Global Instance makes Coq loop
   later in some other files *)
@@ -1057,7 +983,7 @@ Section inverse_image.
 
   Variable F : A -> B -> Prop.
 
-  Definition RoF : relation A :=
+  Definition RoF : rel A :=
     fun a a' => exists b', F a' b' /\ forall b, F a b -> R b b'.
 
 End inverse_image.
@@ -1066,155 +992,131 @@ End inverse_image.
 (** Alternative definition of the transitive closure, more convenient
 for some inductive proofs. *)
 
-Inductive clos_trans1 (A : Type) (R : relation A) : relation A :=
+Inductive clos_trans1 A (R : rel A) : rel A :=
 | t1_step : forall x y, R x y -> clos_trans1 R x y
 | t1_trans : forall x y z, R x y -> clos_trans1 R y z -> clos_trans1 R x z.
 
 Notation "x !1" := (clos_trans1 x) (at level 35) : relation_scope.
 
-Section alternative_definition_clos_trans.
+Lemma clos_trans1_trans A (R : rel A) x y z : R!1 x y -> R!1 y z -> R!1 x z.
 
-  Variables (A : Type) (R : relation A).
+Proof.
+  induction 1; intro H1.
+  exact (t1_trans x H H1).
+  exact (t1_trans x H (IHclos_trans1 H1)).
+Qed.
 
-  Lemma clos_trans1_trans : forall x y z, R!1 x y -> R!1 y z -> R!1 x z.
+Lemma clos_trans_equiv A (R : rel A) x y : R!1 x y <-> R! x y.
 
-  Proof.
-    intros x y z. induction 1; intro H1.
-    exact (t1_trans x H H1).
-    exact (t1_trans x H (IHclos_trans1 H1)).
-  Qed.
-
-  Lemma clos_trans_equiv : forall x y, R!1 x y <-> R! x y.
-
-  Proof.
-    intros x y. split; intro H.
-    induction H.
-    constructor; exact H.
-    exact (t_trans A R x y z (t_step A R x y H) IHclos_trans1).
-    induction H.
-    constructor; exact H.
-    exact (clos_trans1_trans IHclos_trans1 IHclos_trans2).
-  Qed.
-
-End alternative_definition_clos_trans.
+Proof.
+  split; intro H.
+  induction H.
+  constructor; exact H.
+  exact (t_trans A R x y z (t_step A R x y H) IHclos_trans1).
+  induction H.
+  constructor; exact H.
+  exact (clos_trans1_trans IHclos_trans1 IHclos_trans2).
+Qed.
 
 (***********************************************************************)
 (** Alternative definition of the reflexive and transitive closure,
 more convenient for some inductive proofs. *)
 
-Inductive clos_refl_trans1 (A : Type) (R : relation A) : relation A :=
+Inductive clos_refl_trans1 A (R : rel A) : rel A :=
 | rt1_refl : forall x, clos_refl_trans1 R x x
 | rt1_trans : forall x y z,
   R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
 
 Notation "x #1" := (clos_refl_trans1 x) (at level 9) : relation_scope.
 
-Section alternative_definition_clos_refl_trans.
-
-  Variables (A : Type) (R : relation A).
-
-  Lemma clos_refl_trans1_trans : forall x y z, R#1 x y -> R#1 y z -> R#1 x z.
-
-  Proof.
-    intros x y z. induction 1; intro H1.
-    hyp.
-    exact (rt1_trans x H (IHclos_refl_trans1 H1)).
-  Qed.
-
-  Lemma clos_refl_trans_equiv : forall x y, R#1 x y <-> R# x y.
-
-  Proof.
-    intros x y. split; intro H.
-    induction H.
-    apply rt_refl.
-    exact (rt_trans A R x y z (rt_step A R x y H) IHclos_refl_trans1).
-    induction H.
-    exact (rt1_trans x H (rt1_refl R y)).
-    apply rt1_refl.
-    exact (clos_refl_trans1_trans IHclos_refl_trans1 IHclos_refl_trans2).
-  Qed.
-
-  Lemma incl_t_rt : R!1 << R#1.
-
-  Proof.
-    intros x y xRy. induction xRy.
-    apply rt1_trans with y. hyp. apply rt1_refl.
-    apply rt1_trans with y; hyp.
-  Qed.
-
-  Lemma incl_rt_rt_rt : R#1 @ R#1 << R#1.
-
-  Proof.
-    intros x y [z [xRz zRy]]. induction xRz.
-    trivial.
-    apply rt1_trans with y0. hyp. 
-    apply IHxRz. hyp.
-  Qed.
-
-End alternative_definition_clos_refl_trans.
-
-Section alternative_inclusion.
-
-  Variables (A : Type) (R S : relation A).
-
-  Lemma rtc1_union : (R U S)#1 << (S#1 @ R)#1 @ S#1.
-
-  Proof.
-    intros x y xRSy.
-    induction xRSy as [ | x y z xRSy yRSz]. 
-    exists x. split; apply rt1_refl.
-    destruct IHyRSz as [m [ym mz]].
-    destruct ym as [m | m n o mn no oz].
-    induction xRSy as [xRy | xSy].
-    exists m. split; trivial. apply rt1_trans with m.
-    exists x. split; trivial. apply rt1_refl. apply rt1_refl.
-    exists x. split. apply rt1_refl. apply rt1_trans with m; trivial.
-    exists o. split; trivial.
-    induction xRSy as [xRy | xSy].
-    apply rt1_trans with m.
-    exists x. split. apply rt1_refl. hyp.
-    apply clos_refl_trans1_trans with n; trivial.
-    apply rt1_trans with n; trivial. apply rt1_refl.
-    apply rt1_trans with n.
-    destruct mn as [q [mq qn]]. exists q. split; trivial.
-    apply rt1_trans with m; hyp. hyp.
-  Qed.
-
-  Lemma union_rel_rt_left : R#1 << (R U S)#1.
-
-  Proof.
-    intros x y xRy.
-    induction xRy. apply rt1_refl.
-    apply rt1_trans with y. left. hyp. hyp.
-  Qed.
-
-  Lemma union_rel_rt_right : S#1 << (R U S)#1.
-
-  Proof.
-    intros x y xRy.
-    induction xRy. apply rt1_refl.
-    apply rt1_trans with y. right. hyp. hyp.
-  Qed.
-
-  Lemma incl_rtunion_union : (R!1 U S!1)#1 << (R U S)#1.
-
-  Proof.
-    intros x y xRy.
-    induction xRy. apply rt1_refl.
-    apply clos_refl_trans1_trans with y; trivial.
-    destruct H.
-    apply union_rel_rt_left. apply incl_t_rt. hyp.
-    apply union_rel_rt_right. apply incl_t_rt. hyp.
-  Qed.
-
-End alternative_inclusion.
-
-Lemma incl_union_rtunion : forall A (R S : relation A),
-  (R U S)#1 << (R!1 U S!1)#1.
+Lemma clos_refl_trans1_trans A (R : rel A) x y z :
+  R#1 x y -> R#1 y z -> R#1 x z.
 
 Proof.
-  intros A R S x y xRy.
-  induction xRy. apply rt1_refl.
+  induction 1; intro H1. hyp.
+  exact (rt1_trans x H (IHclos_refl_trans1 H1)).
+Qed.
+
+Lemma clos_refl_trans_equiv A (R : rel A) x y : R#1 x y <-> R# x y.
+
+Proof.
+  split; intro H.
+  induction H.
+  apply rt_refl.
+  exact (rt_trans A R x y z (rt_step A R x y H) IHclos_refl_trans1).
+  induction H.
+  exact (rt1_trans x H (rt1_refl R y)).
+  apply rt1_refl.
+  exact (clos_refl_trans1_trans IHclos_refl_trans1 IHclos_refl_trans2).
+Qed.
+
+Lemma incl_t_rt A (R : rel A) : R!1 << R#1.
+
+Proof.
+  intros x y xRy. induction xRy.
+  apply rt1_trans with y. hyp. apply rt1_refl.
+  apply rt1_trans with y; hyp.
+Qed.
+
+Lemma incl_rt_rt_rt A (R : rel A) : R#1 @ R#1 << R#1.
+
+Proof.
+  intros x y [z [xRz zRy]]. induction xRz.
+  trivial.
+  apply rt1_trans with y0. hyp. 
+  apply IHxRz. hyp.
+Qed.
+
+Lemma rtc1_union A (R S : rel A) : (R U S)#1 << (S#1 @ R)#1 @ S#1.
+
+Proof.
+  intros x y xRSy. induction xRSy as [ | x y z xRSy yRSz]. 
+  exists x. split; apply rt1_refl.
+  destruct IHyRSz as [m [ym mz]].
+  destruct ym as [m | m n o mn no oz].
+  induction xRSy as [xRy | xSy].
+  exists m. split; trivial. apply rt1_trans with m.
+  exists x. split; trivial. apply rt1_refl. apply rt1_refl.
+  exists x. split. apply rt1_refl. apply rt1_trans with m; trivial.
+  exists o. split; trivial.
+  induction xRSy as [xRy | xSy].
+  apply rt1_trans with m.
+  exists x. split. apply rt1_refl. hyp.
+  apply clos_refl_trans1_trans with n; trivial.
+  apply rt1_trans with n; trivial. apply rt1_refl.
+  apply rt1_trans with n.
+  destruct mn as [q [mq qn]]. exists q. split; trivial.
+  apply rt1_trans with m; hyp. hyp.
+Qed.
+
+Lemma union_rel_rt_left A (R S : rel A) : R#1 << (R U S)#1.
+
+Proof.
+  intros x y xRy. induction xRy. apply rt1_refl.
+  apply rt1_trans with y. left. hyp. hyp.
+Qed.
+
+Lemma union_rel_rt_right A (R S : rel A) : S#1 << (R U S)#1.
+
+Proof.
+  intros x y xRy. induction xRy. apply rt1_refl.
+  apply rt1_trans with y. right. hyp. hyp.
+Qed.
+
+Lemma incl_rtunion_union A (R S : rel A) : (R!1 U S!1)#1 << (R U S)#1.
+
+Proof.
+  intros x y xRy. induction xRy. apply rt1_refl.
+  apply clos_refl_trans1_trans with y; trivial.
+  destruct H.
+  apply union_rel_rt_left. apply incl_t_rt. hyp.
+  apply union_rel_rt_right. apply incl_t_rt. hyp.
+Qed.
+
+Lemma incl_union_rtunion A (R S : rel A) : (R U S)#1 << (R!1 U S!1)#1.
+
+Proof.
+  intros x y xRy. induction xRy. apply rt1_refl.
   apply clos_refl_trans1_trans with y; trivial.
   destruct H.
   apply union_rel_rt_left. apply rt1_trans with y.
@@ -1224,32 +1126,28 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Morphisms wrt [inclusion] and [same_relation] *)
+(** Morphisms wrt [inclusion] and [same_rel] *)
 
-Lemma eq_Refl_rel : forall A (R : relation A), Reflexive R -> eq << R.
+Lemma eq_Refl_rel A (R : rel A) : Reflexive R -> eq << R.
 
-Proof. intros A R hR x y xy. subst y. apply hR. Qed.
+Proof. intros hR x y xy. subst y. apply hR. Qed.
 
-Instance Reflexive_same_relation A :
-  Proper (same_relation ==> impl) (@Reflexive A).
-
-Proof. fo. Qed.
-
-Instance Symmetric_same_relation A :
-  Proper (same_relation ==> impl) (@Symmetric A).
+Instance Reflexive_same_rel A : Proper (same_rel ==> impl) (@Reflexive A).
 
 Proof. fo. Qed.
 
-Instance Transitive_same_relation A :
-  Proper (same_relation ==> impl) (@Transitive A).
+Instance Symmetric_same_rel A : Proper (same_rel ==> impl) (@Symmetric A).
+
+Proof. fo. Qed.
+
+Instance Transitive_same_rel A : Proper (same_rel ==> impl) (@Transitive A).
 
 Proof.
   intros R S e h x y z xy yz. rewrite rel_eq in e. rewrite <- e in *.
   apply h with y; hyp.
 Qed.
 
-Instance Equivalence_same_relation A :
-  Proper (same_relation ==> impl) (@Equivalence A).
+Instance Equivalence_same_rel A : Proper (same_rel ==> impl) (@Equivalence A).
 
 Proof. intros R S RS [hr hs ht]. constructor; rewrite <- RS; hyp. Qed.
 
@@ -1291,8 +1189,8 @@ Proof.
   apply R4'R4 in x4x4'. apply SS'. apply hf; hyp.
 Qed.
 
-Instance Proper2_proper A (E : relation A) :
-  Proper (same_relation ==> impl) (Proper (E ==> E ==> impl)).
+Instance Proper2_proper A (E : rel A) :
+  Proper (same_rel ==> impl) (Proper (E ==> E ==> impl)).
 
 Proof.
   intros R S [RS SR] h x x' xx' y y' yy' xy.
@@ -1305,9 +1203,9 @@ reflexive on [None]. *)
 
 Section opt_r.
 
-  Variables (A : Type) (R : relation A).
+  Variables (A : Type) (R : rel A).
 
-  Inductive opt_r : relation (option A) :=
+  Inductive opt_r : rel (option A) :=
   | opt_r_None : opt_r None None
   | opt_r_Some : forall a b, R a b -> opt_r (Some a) (Some b).
 
@@ -1340,9 +1238,9 @@ irreflexive on [None]. *)
 
 Section opt.
 
-  Variables (A : Type) (R : relation A).
+  Variables (A : Type) (R : rel A).
 
-  Inductive opt : relation (option A) :=
+  Inductive opt : rel (option A) :=
   | opt_intro : forall x y, R x y -> opt (Some x) (Some y).
 
   Global Instance opt_trans : Transitive R -> Transitive opt.
@@ -1393,7 +1291,7 @@ Proof.
   intros R S RS x y xy. inversion xy; clear xy; subst. apply opt_intro. fo.
 Qed.
 
-Instance opt_proper A (E1 E2 R : relation A) :
+Instance opt_proper A (E1 E2 R : rel A) :
   Proper (E1 ==> E2 ==> impl) R -> Proper (opt E1 ==> opt E2 ==> impl) (opt R).
 
 Proof.
@@ -1402,7 +1300,7 @@ Proof.
   apply opt_intro. eapply h. apply H. apply H0. hyp.
 Qed.
 
-Lemma opt_absorbs_right A (R E : relation A) :
+Lemma opt_absorbs_right A (R E : rel A) :
   R @ E << R -> opt R @ opt E << opt R.
 
 Proof.
@@ -1411,7 +1309,7 @@ Proof.
   apply opt_intro. apply RE. exists y0. fo.
 Qed.
 
-Lemma opt_absorbs_left A (R E : relation A) :
+Lemma opt_absorbs_left A (R E : rel A) :
   E @ R << R -> opt E @ opt R << opt R.
 
 Proof.
@@ -1425,9 +1323,9 @@ Qed.
 
 Section restrict.
 
-  Variables (A : Type) (P : A -> Prop) (R : relation A).
+  Variables (A : Type) (P : A -> Prop) (R : rel A).
 
-  Definition restrict : relation A := fun x y => P x /\ R x y.
+  Definition restrict : rel A := fun x y => P x /\ R x y.
 
   Global Instance restrict_proper E :
     Proper (E ==> impl) P -> Proper (E ==> E ==> impl) R ->

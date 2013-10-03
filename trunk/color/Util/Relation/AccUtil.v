@@ -24,7 +24,7 @@ Proof.
   intros R R' R'R x x' xx'. subst x'. induction 1. apply Acc_intro. fo.
 Qed.
 
-Instance Acc_same_relation A : Proper (same_relation ==> eq ==> iff) (@Acc A).
+Instance Acc_same_rel A : Proper (same_rel ==> eq ==> iff) (@Acc A).
 
 Proof.
   intros R R' [RR' R'R] x x' xx'. subst x'. split; intro h.
@@ -44,8 +44,7 @@ Instance well_founded_inclusion A :
 
 Proof. intros R R' R'R h. intro x. rewrite <- R'R. fo. Qed.
 
-Instance well_founded_same_relation A :
-  Proper (same_relation ==> iff) (@well_founded A).
+Instance well_founded_same_rel A : Proper (same_rel ==> iff) (@well_founded A).
 
 Proof.
   intros R R' [RR' R'R]. split; intro h. rewrite R'R. hyp. rewrite RR'. hyp.

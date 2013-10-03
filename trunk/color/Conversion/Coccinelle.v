@@ -264,11 +264,9 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     destruct c; try discr. unfold succ, transp, Rof. auto.
   Qed.
 
-  Lemma bsucc_sub : rel bsucc << succ.
+  Lemma bsucc_sub : rel_of_bool bsucc << succ.
 
-  Proof.
-    intros t u. unfold rel. intro h. apply bsucc_ok. hyp.
-  Qed.
+  Proof. intros t u. unfold rel. intro h. apply bsucc_ok. hyp. Qed.
 
   Definition equiv_aterm := Rof (equiv Prec) term_of_aterm.
 
@@ -338,11 +336,9 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
       equiv_aterm, succ, transp, Rof; auto.
   Qed.
 
-  Definition bsucceq_sub : rel bsucceq << succeq.
+  Definition bsucceq_sub : rel_of_bool bsucceq << succeq.
 
-  Proof.
-    intros t u. unfold rel. intro h. apply bsucceq_ok. hyp.
-  Qed.
+  Proof. intros t u. unfold rel. intro h. apply bsucceq_ok. hyp. Qed.
 
   Lemma trans_succ : transitive succ.
 

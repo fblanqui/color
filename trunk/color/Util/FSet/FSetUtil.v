@@ -270,7 +270,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. intuition. Qed.
 
-  Lemma rel_equal_Equal : rel equal == Equal.
+  Lemma rel_equal_Equal : rel_of_bool equal == Equal.
 
   Proof. apply rel_eq. apply equal_Equal. Qed.
 

@@ -190,7 +190,7 @@ Section S.
 
   Proof.
     intros. unfold subterm in H. destruct H as [C]. destruct H.
-    destruct C. absurd (Hole = Hole); auto.
+    destruct C. irrefl.
     clear H. simpl in H0. Funeqtac. subst ts. exists (fill C u). split.
     apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
   Qed.
@@ -226,7 +226,7 @@ Section S.
 
   Proof.
     unfold subterm_eq, subterm. intros. destruct H as [C]. destruct C.
-    subst t. simpl in H0. absurd (u<>u); auto.
+    subst t. simpl in H0. irrefl.
     exists (Cont e t0 C t1). split. discr. subst t. refl.
   Qed.
 
@@ -291,7 +291,7 @@ Section S.
   Proof.
     unfold subterm, subterm_eq. intros. destruct H. destruct H0. destruct H0.
     subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-    split. destruct x0. absurd (Hole = Hole); auto. simpl. discr. refl.
+    split. destruct x0. irrefl. simpl. discr. refl.
   Qed.
 
   Lemma subterm_trans_eq2 : forall t u v,
@@ -300,7 +300,7 @@ Section S.
   Proof.
     unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
     subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-    split. destruct x. absurd (Hole = Hole); auto.
+    split. destruct x. irrefl.
     destruct x0; simpl; discr. refl.
   Qed.
 
@@ -322,7 +322,7 @@ Section S.
     (* var *)
     unfold P'. intros. assert (u = Var v). apply subterm_eq_var. hyp.
     subst u. apply IH. unfold subterm. intros. destruct H0. destruct H0.
-    destruct x. absurd (Hole = Hole); auto. discr.
+    destruct x. irrefl. discr.
     (* fun *)
     intros. unfold P'. intros. apply IH. intros.
     assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. hyp.

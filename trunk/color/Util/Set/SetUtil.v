@@ -67,13 +67,13 @@ Lemma equiv_elim : forall X (A B : set X), A [=] B <-> A [= B /\ B [= A.
 Proof. fo. Qed.
 
 Instance incl_equiv1 A1 B (f : set A1 -> relation B) :
-  Proper (incl ==> inclusion) f -> Proper (equiv ==> same_relation) f.
+  Proper (incl ==> inclusion) f -> Proper (equiv ==> same_rel) f.
 
 Proof. intros hf s1 s1'. rewrite equiv_elim. fo. Qed.
 
 Instance incl_equiv2 A1 A2 B (f : set A1 -> set A2 -> relation B) :
   Proper (incl ==> incl ==> inclusion) f ->
-  Proper (equiv ==> equiv ==> same_relation) f.
+  Proper (equiv ==> equiv ==> same_rel) f.
 
 Proof.
   intros hf s1 s1'. rewrite equiv_elim. intros [s1s1' s1's1] s2 s2'.

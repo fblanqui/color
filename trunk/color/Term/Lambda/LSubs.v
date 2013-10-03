@@ -39,7 +39,7 @@ Module Export Def.
     Notation Te := (@Te F X).
     Notation Var := (@Var F X).
     Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
-    Notation beq_term := (brel eq_term_dec).
+    Notation beq_term := (bool_of_rel eq_term_dec).
 
     (** We assume given a structure for finite sets on [X]. *)
 
@@ -232,25 +232,22 @@ Module Make (Export L : L_Struct).
 
   (** Basic properties. *)
 
-  Lemma update_eq : forall x u s, update x u s x = u.
+  Lemma update_eq x u s : update x u s x = u.
 
-  Proof. intros x u s. unfold Def.update. eq_dec x x. refl. fo. Qed.
+  Proof. unfold Def.update. eq_dec x x. refl. fo. Qed.
 
-  Lemma update_neq : forall x u s y, x <> y -> update x u s y = s y.
+  Lemma update_neq x u s y : x <> y -> update x u s y = s y.
 
-  Proof.
-    intros x u s y n. unfold Def.update. eq_dec y x. subst y. tauto. refl.
-  Qed.
+  Proof. intro n. unfold Def.update. eq_dec y x. subst y. tauto. refl. Qed.
 
-  Lemma single_eq : forall y v, single y v y = v.
+  Lemma single_eq y v : single y v y = v.
 
-  Proof. intros y v. unfold Def.single. apply update_eq. Qed.
+  Proof. unfold Def.single. apply update_eq. Qed.
 
-  Lemma single_neq : forall y v z, y <> z -> single y v z = Var z.
+  Lemma single_neq y v z : y <> z -> single y v z = Var z.
 
   Proof.
-    intros y v z n. unfold Def.single, Def.update. eq_dec z y.
-    subst. tauto. refl.
+    intro n. unfold Def.single, Def.update. eq_dec z y. subst. tauto. refl.
   Qed.
 
   (** Predicate saying that the domain of a substitution is included
@@ -271,10 +268,10 @@ Module Make (Export L : L_Struct).
     intros xs xs' xsxs' s s' ss' h x hx. subst s'. apply h. rewrite xsxs'. hyp.
   Qed.
 
-  Lemma dom_incl_restrict : forall s xs, dom_incl xs (restrict xs s).
+  Lemma dom_incl_restrict s xs : dom_incl xs (restrict xs s).
 
   Proof.
-    intros s xs x. rewrite not_mem_iff. intro hx. unfold Def.restrict; ens.
+    intro x. rewrite not_mem_iff. intro hx. unfold Def.restrict; ens.
     rewrite hx. refl.
   Qed.
 
@@ -286,17 +283,17 @@ on some finite set of variables *)
 
   (** For all [xs], [seq xs] is an equivalence relation. *)
 
-  Instance seq_refl : forall xs, Reflexive (seq xs).
+  Instance seq_refl xs : Reflexive (seq xs).
 
   Proof. fo. Qed.
 
-  Instance seq_sym : forall xs, Symmetric (seq xs).
+  Instance seq_sym xs : Symmetric (seq xs).
 
   Proof. fo. Qed.
 
-  Instance seq_trans : forall xs, Transitive (seq xs).
+  Instance seq_trans xs : Transitive (seq xs).
 
-  Proof. intros xs s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
+  Proof. intros s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
 
   (** [seq] is compatible with set equality and inclusion. *)
 
@@ -314,10 +311,10 @@ on some finite set of variables *)
     unfold flip, impl, seq in *. intuition.
   Qed.
 
-  Lemma seq_restrict : forall xs ys s, xs [<=] ys -> seq xs s (restrict ys s).
+  Lemma seq_restrict xs ys s : xs [<=] ys -> seq xs s (restrict ys s).
 
   Proof.
-    intros xs ys s i x. rewrite i, mem_iff. intro h. unfold Def.restrict; ens.
+    intros i x. rewrite i, mem_iff. intro h. unfold Def.restrict; ens.
     rewrite h. refl.
   Qed.
 
@@ -332,7 +329,7 @@ on some finite set of variables *)
 
   Proof.
     intros s s' ss' x x' xx' xs xs' xsxs'. subst x' s'.
-    unfold Def.domain_fun, brel.
+    unfold Def.domain_fun, bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)); rewrite xsxs'; refl.
   Qed.
 
@@ -341,14 +338,14 @@ on some finite set of variables *)
 
   Proof.
     intros s s' ss' x x' xx' xs xs' xsxs'. subst x' s'.
-    unfold Def.domain_fun, brel.
+    unfold Def.domain_fun, bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)); rewrite xsxs'; refl.
   Qed.
 
-  Lemma domain_fun_transp : forall s, transpose Equal (domain_fun s).
+  Lemma domain_fun_transp s : transpose Equal (domain_fun s).
 
   Proof.
-    intros s x y xs. unfold Def.domain_fun, brel.
+    intros x y xs. unfold Def.domain_fun, bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)); destruct (eq_term_dec (s y) (Var y));
       try refl. apply add_add.
   Qed.
@@ -364,50 +361,49 @@ on some finite set of variables *)
 
   (** Set equalities on [domain]. *)
 
-  Lemma domain_empty : forall s, domain empty s [=] empty.
+  Lemma domain_empty s : domain empty s [=] empty.
 
-  Proof. intro s. unfold Def.domain. rewrite fold_empty. refl. Qed.
+  Proof. unfold Def.domain. rewrite fold_empty. refl. Qed.
 
-  Lemma domain_add : forall s x xs, ~In x xs ->
+  Lemma domain_add s x xs : ~In x xs ->
     domain (add x xs) s [=] domain_fun s x (domain xs s).
 
   Proof.
-    intros s x xs n. unfold Def.domain. rewrite fold_add. refl.
+    intro n. unfold Def.domain. rewrite fold_add. refl.
     apply Equal_ST. apply domain_fun_e. refl. apply domain_fun_transp. hyp.
   Qed.
 
   (** Correctness proof of the definition of [domain]. *)
 
-  Lemma In_domain : forall x s xs,
+  Lemma In_domain x s : forall xs,
     In x (domain xs s) <-> In x xs /\ s x <> Var x.
 
   Proof.
-    intros x s. apply set_induction_bis.
+    apply set_induction_bis.
     (* Equal *)
     intros xs xs' xsxs' h. rewrite <- xsxs', h. refl.
     (* empty *)
     rewrite domain_empty. set_iff. intuition.
     (* add *)
     intros y xs n IH. rewrite domain_add. set_iff. 2: hyp.
-    unfold Def.domain_fun, brel. destruct (eq_term_dec (s y) (Var y)).
+    unfold Def.domain_fun, bool_of_rel. destruct (eq_term_dec (s y) (Var y)).
     rewrite IH. intuition. subst y. tauto.
     set_iff. rewrite IH. intuition. subst y. tauto.
   Qed.
 
-  Lemma mem_domain : forall x s xs,
+  Lemma mem_domain x s xs :
     mem x (domain xs s) = mem x xs && negb (beq_term (s x) (Var x)).
 
   Proof.
-    intros x s xs.
     rewrite eqb_equiv, andb_true_iff, negb_true_iff, beq_term_false_iff.
     rewrite <- !mem_iff. apply In_domain.
   Qed.
 
-  Lemma notin_domain : forall s xs x,
+  Lemma notin_domain s xs x :
     domain xs s [=] empty -> In x xs -> s x = Var x.
 
   Proof.
-    intros s xs x h1 h2. destruct (eq_term_dec (s x) (Var x)). hyp.
+    intros h1 h2. destruct (eq_term_dec (s x) (Var x)). hyp.
     absurd (In x (domain xs s)). rewrite h1. set_iff. tauto.
     rewrite In_domain. tauto.
   Qed.
@@ -421,47 +417,45 @@ on some finite set of variables *)
     rewrite xsxs'. auto.
   Qed.
 
-  Lemma domain_subset : forall s xs, domain xs s [<=] xs.
+  Lemma domain_subset s xs : domain xs s [<=] xs.
 
-  Proof. intros s xs x. rewrite In_domain. intuition. Qed.
+  Proof. intro x. rewrite In_domain. intuition. Qed.
 
   (** More set equalities on [domain]. *)
 
-  Lemma domain_singleton : forall s x, domain (singleton x) s
+  Lemma domain_singleton s x : domain (singleton x) s
     [=] if beq_term (s x) (Var x) then empty else singleton x.
 
   Proof.
-    intros s x y. unfold brel.
+    intro y. unfold bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)); rewrite In_domain; set_iff;
       intuition; subst; tauto.
   Qed.
 
-  Lemma domain_union : forall s p q,
+  Lemma domain_union s p q :
     domain (union p q) s [=] union (domain p s) (domain q s).
 
-  Proof.
-    intros s p q x. set_iff. rewrite !In_domain. set_iff. tauto.
-  Qed.
+  Proof. intro x. set_iff. rewrite !In_domain. set_iff. tauto. Qed.
 
-  Lemma domain_single : forall y v xs, domain xs (single y v)
+  Lemma domain_single y v : forall xs, domain xs (single y v)
     [=] if mem y xs && negb (beq_term v (Var y)) then singleton y else empty.
 
   Proof.
-    intros y v. apply set_induction_bis.
+    apply set_induction_bis.
     (* Equal *)
     intros xs xs' xsxs'. rewrite xsxs'. auto.
     (* empty *)
     rewrite domain_empty, empty_b. refl.
     (* add *)
     intros x xs n IH. rewrite domain_add, add_b, IH. 2: hyp. clear IH.
-    unfold eqb. unfold Def.domain_fun. unfold brel at 1.
+    unfold eqb. unfold Def.domain_fun. unfold bool_of_rel at 1.
     destruct (eq_term_dec (single y v x) (Var x)).
     revert e. unfold Def.single, Def.update.
     eq_dec x y; intro h.
     subst. rewrite not_mem_iff in n.
     rewrite n, beq_term_refl. refl.
     refl.
-    unfold brel. revert n0. unfold Def.single, Def.update.
+    unfold bool_of_rel. revert n0. unfold Def.single, Def.update.
     eq_dec x y; simpl. 2: tauto. subst.
     destruct (mem y xs); destruct (eq_term_dec v (Var y)); simpl.
     tauto.
@@ -470,17 +464,16 @@ on some finite set of variables *)
     rewrite singleton_equal_add. refl.
   Qed.
 
-  Lemma domain_rename : forall y z xs, domain xs (single y (Var z))
+  Lemma domain_rename y z xs : domain xs (single y (Var z))
     [=] if mem y xs && negb (eqb z y) then singleton y else empty.
 
-  Proof. intros x z xs. rewrite domain_single, beq_term_var. refl. Qed.
+  Proof. rewrite domain_single, beq_term_var. refl. Qed.
 
-  Lemma domain_single_empty : forall y v xs,
+  Lemma domain_single_empty y v xs :
     domain xs (single y v) [=] empty <-> ~In y xs \/ v = Var y.
 
   Proof.
-    intros y v xs. rewrite domain_single.
-    case_eq (mem y xs && negb (beq_term v (Var y))).
+    rewrite domain_single. case_eq (mem y xs && negb (beq_term v (Var y))).
     rewrite andb_true_iff, <- mem_iff, negb_true_iff, beq_term_false_iff.
     intuition. exfalso. absurd (In y empty). fo. rewrite <- H. set_iff. refl.
     rewrite andb_false_iff, <- not_mem_iff, negb_false_iff, beq_term_true_iff.
@@ -497,33 +490,33 @@ on some finite set of variables *)
     apply domain_empty.
     (* add *)
     intros x xs n IH. rewrite domain_add. 2: hyp.
-    unfold Def.domain_fun, brel.
+    unfold Def.domain_fun, bool_of_rel.
     destruct (eq_term_dec (id x) (Var x)). hyp. absurd (id x=Var x); tauto.
   Qed.
 
-  Lemma domain_update_id : forall x s xs,
+  Lemma domain_update_id x s xs :
     domain xs (update x (Var x) s) [=] domain (remove x xs) s.
 
   Proof.
-    intros x s xs. intro y. rewrite !In_domain. set_iff. unfold Def.update.
+    intro y. rewrite !In_domain. set_iff. unfold Def.update.
     eq_dec y x. subst. intuition. intuition.
   Qed.
 
   (** [domain] is compatible with substitution equality. *)
 
-  Lemma domain_seq : forall xs xs', xs [=] xs' ->
+  Lemma domain_seq xs xs' : xs [=] xs' ->
     forall s s', seq xs s s' -> domain xs s [=] domain xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_domain.
+    intros e s s' ss' x. rewrite <- e, !In_domain.
     intuition.
     apply H1. rewrite <- H. apply ss'. hyp.
     apply H1. rewrite <- H. sym. apply ss'. hyp.
   Qed.
 
-  Instance domain_seq' : forall xs, Proper (seq xs ==> Equal) (domain xs).
+  Instance domain_seq' xs : Proper (seq xs ==> Equal) (domain xs).
 
-  Proof. intros xs s s' ss'. apply domain_seq. refl. hyp. Qed.
+  Proof. intros s s' ss'. apply domain_seq. refl. hyp. Qed.
 
 (****************************************************************************)
 (** ** Properties of [fvcod]. *)
@@ -538,9 +531,9 @@ on some finite set of variables *)
     rewrite vsvs'. refl.
   Qed.
 
-  Lemma fvcod_fun_transp : forall s, transpose Equal (fvcod_fun s).
+  Lemma fvcod_fun_transp s : transpose Equal (fvcod_fun s).
 
-  Proof. intros s u v vs. unfold Def.fvcod_fun. fset. Qed.
+  Proof. intros u v vs. unfold Def.fvcod_fun. fset. Qed.
 
   (** [fvcod] is compatible with set equality. *)
 
@@ -553,25 +546,25 @@ on some finite set of variables *)
 
   (** Set equalities on [fvcod]. *)
 
-  Lemma fvcod_empty : forall s, fvcod empty s [=] empty.
+  Lemma fvcod_empty s : fvcod empty s [=] empty.
 
-  Proof. intro s. unfold Def.fvcod. rewrite fold_empty. refl. Qed.
+  Proof. unfold Def.fvcod. rewrite fold_empty. refl. Qed.
 
-  Lemma fvcod_add : forall s x xs, ~In x xs ->
+  Lemma fvcod_add s x xs : ~In x xs ->
     fvcod (add x xs) s [=] fvcod_fun s x (fvcod xs s).
 
   Proof.
-    intros s x xs n. unfold Def.fvcod. rewrite fold_add. refl.
+    intro n. unfold Def.fvcod. rewrite fold_add. refl.
     apply Equal_ST. apply fvcod_fun_e. refl. apply fvcod_fun_transp. hyp.
   Qed.
 
   (** Correctness proof of [fvcod]. *)
 
-  Lemma In_fvcod : forall y s xs,
+  Lemma In_fvcod y s : forall xs,
     In y (fvcod xs s) <-> exists x, In x xs /\ In y (fv (s x)).
 
   Proof.
-    intros y s. apply set_induction_bis.
+    apply set_induction_bis.
     (* Equal *)
     intros xs xs' xsxs' h. rewrite <- xsxs', h. clear h.
     intuition; destruct H as [x]; exists x; [rewrite <- xsxs'|rewrite xsxs'];
@@ -599,30 +592,30 @@ on some finite set of variables *)
 
   (** More equalities on [fvcod]. *)
 
-  Lemma fvcod_singleton : forall s x, fvcod (singleton x) s [=] fv (s x).
+  Lemma fvcod_singleton s x : fvcod (singleton x) s [=] fv (s x).
 
   Proof.
-    intros s x y. split; rewrite In_fvcod.
+    intro y. split; rewrite In_fvcod.
     intros [z [h1 h2]]. revert h1. set_iff. intro e. subst z. hyp.
     intro h. exists x. set_iff. intuition.
   Qed.
 
-  Lemma fvcod_union : forall s p q,
+  Lemma fvcod_union s p q :
     fvcod (union p q) s [=] union (fvcod p s) (fvcod q s).
 
   Proof.
-    intros s p q x. rewrite In_fvcod. set_iff. split.
+    intro x. rewrite In_fvcod. set_iff. split.
     intros [y [h1 h2]]. revert h1. set_iff. rewrite !In_fvcod.
     intros [h1|h1]. left. exists y. intuition. right. exists y. intuition.
     rewrite !In_fvcod. intros [[y [h1 h2]]|[y [h1 h2]]].
     exists y. set_iff. intuition. exists y. set_iff. intuition.
   Qed.
  
-  Lemma fvcod_single : forall y v xs, fvcod xs (single y v)
+  Lemma fvcod_single y v : forall xs, fvcod xs (single y v)
     [=] if mem y xs then union (fv v) (remove y xs) else xs.
 
   Proof.
-    intros y v. apply set_induction_bis.
+    apply set_induction_bis.
     (* Equal *)
     intros s s' ss'. rewrite ss'. intro h. rewrite h.
     destruct (mem y s'); rewrite ss'; refl.
@@ -641,12 +634,10 @@ on some finite set of variables *)
     sym. apply add_union_singleton.
   Qed.
 
-  Lemma fvcod_rename : forall y z xs, fvcod xs (single y (Var z))
+  Lemma fvcod_rename y z xs : fvcod xs (single y (Var z))
     [=] if mem y xs then add z (remove y xs) else xs.
 
-  Proof.
-    intros y z xs. rewrite fvcod_single. simpl. destruct (mem y xs); fset.
-  Qed.
+  Proof. rewrite fvcod_single. simpl. destruct (mem y xs); fset. Qed.
 
   Lemma fvcod_id : forall xs, fvcod xs id [=] xs.
 
@@ -663,18 +654,18 @@ on some finite set of variables *)
 
   (** [fvcod] is compatible with substitution equality. *)
 
-  Lemma fvcod_seq : forall xs xs', xs [=] xs' ->
+  Lemma fvcod_seq xs xs' : xs [=] xs' ->
     forall s s', seq xs s s' -> fvcod xs s [=] fvcod xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e, !In_fvcod.
+    intros e s s' ss' x. rewrite <- e, !In_fvcod.
     split; intros [y [h1 h2]]; exists y; intuition.
     rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
   Qed.
 
-  Instance fvcod_seq' : forall xs, Proper (seq xs ==> Equal) (fvcod xs).
+  Instance fvcod_seq' xs : Proper (seq xs ==> Equal) (fvcod xs).
 
-  Proof. intros xs s s' ss'. apply fvcod_seq. refl. hyp. Qed.
+  Proof. intros s s' ss'. apply fvcod_seq. refl. hyp. Qed.
 
 (****************************************************************************)
 (** ** Properties of [fvcodom]. *)
@@ -697,58 +688,58 @@ on some finite set of variables *)
 
   (** Correctness of [fvcodom]. *)
 
-  Lemma In_fvcodom : forall s xs y, In y (fvcodom xs s)
+  Lemma In_fvcodom s xs y : In y (fvcodom xs s)
     <-> (exists x, In x xs /\ s x <> Var x /\ In y (fv (s x))).
 
   Proof.
-    intros s xs y. unfold Def.fvcodom. rewrite In_fvcod. intuition;
+    unfold Def.fvcodom. rewrite In_fvcod. intuition;
       destruct H as [x hx]; exists x; rewrite In_domain in *; tauto.
   Qed.
 
   (* Set equalities on [fvcodom]. *)
 
-  Lemma fvcodom_singleton : forall s x, fvcodom (singleton x) s
+  Lemma fvcodom_singleton s x : fvcodom (singleton x) s
     [=] if beq_term (s x) (Var x) then empty else fv (s x).
 
   Proof.
-    intros s x. unfold Def.fvcodom. rewrite domain_singleton. unfold brel.
+    unfold Def.fvcodom. rewrite domain_singleton. unfold bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)). apply fvcod_empty.
     apply fvcod_singleton.
   Qed.
 
-  Lemma fvcodom_union : forall s p q,
+  Lemma fvcodom_union s p q :
     fvcodom (union p q) s [=] union (fvcodom p s) (fvcodom q s).
 
   Proof.
-    intros s p q x. set_iff. unfold Def.fvcodom.
+    intro x. set_iff. unfold Def.fvcodom.
     rewrite domain_union, fvcod_union. set_iff. refl.
   Qed.
 
-  Lemma fvcodom_id : forall xs, fvcodom xs id [=] empty.
+  Lemma fvcodom_id xs : fvcodom xs id [=] empty.
 
-  Proof. intros xs. unfold Def.fvcodom. rewrite fvcod_id, domain_id. refl. Qed.
+  Proof. unfold Def.fvcodom. rewrite fvcod_id, domain_id. refl. Qed.
 
-  Lemma fvcodom_single : forall y v xs, fvcodom xs (single y v)
+  Lemma fvcodom_single y v xs : fvcodom xs (single y v)
     [=] if mem y xs && negb (beq_term v (Var y)) then fv v else empty.
 
   Proof.
-    intros y v xs. unfold Def.fvcodom. rewrite domain_single, fvcod_single.
-    unfold brel. case_eq (mem y xs); intro hy;
+    unfold Def.fvcodom. rewrite domain_single, fvcod_single.
+    unfold bool_of_rel. case_eq (mem y xs); intro hy;
       destruct (eq_term_dec v (Var y)); simpl; try rewrite empty_b.
     refl. rewrite singleton_b, eqb_refl, singleton_equal_add,
       remove_add, empty_union_2. refl. fo. set_iff. tauto. refl. refl.
   Qed.
 
-  Lemma fvcodom_rename : forall y z xs, fvcodom xs (single y (Var z))
+  Lemma fvcodom_rename y z xs : fvcodom xs (single y (Var z))
     [=] if mem y xs && negb (eqb z y) then singleton z else empty.
 
-  Proof. intros y z xs. rewrite fvcodom_single, beq_term_var. refl. Qed.
+  Proof. rewrite fvcodom_single, beq_term_var. refl. Qed.
 
-  Lemma fvcodom_update_id : forall x s xs,
+  Lemma fvcodom_update_id x s xs :
     fvcodom xs (update x (Var x) s) [=] fvcodom (remove x xs) s.
 
   Proof.
-    intros x s xs. unfold Def.fvcodom. rewrite domain_update_id.
+    unfold Def.fvcodom. rewrite domain_update_id.
     set (d := domain (remove x xs) s). intro y. rewrite !In_fvcod.
     assert (h : ~In x d). unfold d. rewrite In_domain. set_iff. tauto.
     unfold Def.update; split; intros [a [h1 h2]]; exists a; intuition;
@@ -758,53 +749,51 @@ on some finite set of variables *)
 
   (** [fvcodom] is compatible with substitution equality. *)
 
-  Lemma fvcodom_seq : forall xs xs', xs [=] xs' ->
+  Lemma fvcodom_seq xs xs' : xs [=] xs' ->
     forall s s', seq xs s s' -> fvcodom xs s [=] fvcodom xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss'. unfold Def.fvcodom. rewrite <- e. apply fvcod_seq.
+    intros e s s' ss'. unfold Def.fvcodom. rewrite <- e. apply fvcod_seq.
     apply domain_seq. refl. hyp. rewrite domain_subset. hyp.
   Qed.
 
-  Instance fvcodom_seq' : forall xs, Proper (seq xs ==> Equal) (fvcodom xs).
+  Instance fvcodom_seq' xs : Proper (seq xs ==> Equal) (fvcodom xs).
 
-  Proof. intros xs s s' ss'. apply fvcodom_seq. refl. hyp. Qed.
+  Proof. intros s s' ss'. apply fvcodom_seq. refl. hyp. Qed.
 
 (****************************************************************************)
 (** ** Properties of [var]. *)
 
-  Lemma var_seq : forall x x', x=x' -> forall u u', u=u' -> forall s s',
+  Lemma var_seq x x' : x=x' -> forall u u', u=u' -> forall s s',
     seq (remove x (fv u)) s s' -> var x u s = var x' u' s'.
 
   Proof.
-    intros x x' xx' u u' uu' s s' ss'. subst x' u'. unfold Def.var; ens.
+    intros xx' u u' uu' s s' ss'. subst x' u'. unfold Def.var; ens.
     rewrite ss'. destruct (mem x (fvcodom (remove x (fv u)) s')).
     rewrite ss'. refl. refl.
   Qed.
 
-  Instance var_seq' : forall x u, Proper (seq (remove x (fv u)) ==> Logic.eq)
-    (var x u).
+  Instance var_seq' x u : Proper (seq (remove x (fv u)) ==> Logic.eq) (var x u).
 
-  Proof. intros x u s s' ss'. apply var_seq; auto. Qed.
+  Proof. intros s s' ss'. apply var_seq; auto. Qed.
 
   Arguments var_seq' [x u x0 y] _.
 
-  Lemma var_notin_fvcodom : forall x u s,
+  Lemma var_notin_fvcodom x u s :
     ~In (var x u s) (fvcodom (remove x (fv u)) s).
 
   Proof.
-    intros x u s. unfold Def.var; ens. set (xs := fvcodom (remove x (fv u)) s).
+    unfold Def.var; ens. set (xs := fvcodom (remove x (fv u)) s).
     case_eq (mem x xs).
     gen (var_notin_ok (union (fv u) xs)). set_iff. tauto.
     rewrite <- not_mem_iff. auto.
   Qed.
 
-  Lemma var_notin_fv_subs : forall x u s y,
+  Lemma var_notin_fv_subs x u s y :
     In y (fv u) -> y <> x -> ~In (var x u s) (fv (s y)).
 
   Proof.
-    intros x u s y hy n h.
-    apply var_notin_fvcodom with (x:=x) (u:=u) (s:=s).
+    intros hy n h. apply var_notin_fvcodom with (x:=x) (u:=u) (s:=s).
     rewrite In_fvcodom. exists y. set_iff. intuition.
     revert h. rewrite H. simpl. set_iff. intro e.
     set (xs := fvcodom (remove x (fv u)) s).
@@ -816,29 +805,27 @@ on some finite set of variables *)
 
   Arguments var_notin_fv_subs [x u] s [y] _ _ _.
 
-  Lemma var_notin_fvcod : forall x u s,
-    ~In (var x u s) (fvcod (remove x (fv u)) s).
+  Lemma var_notin_fvcod x u s : ~In (var x u s) (fvcod (remove x (fv u)) s).
 
   Proof.
-    intros x u s. rewrite In_fvcod. intros [y [h1 h]]. revert h1. set_iff.
+    rewrite In_fvcod. intros [y [h1 h]]. revert h1. set_iff.
     intros [hy n]. eapply var_notin_fv_subs. apply hy. 2: apply h. auto.
   Qed.
 
   (** Basic properties of substitution. *)
 
-  Lemma subs_lam_no_alpha : forall s x u,
+  Lemma subs_lam_no_alpha s x u :
     ~In x (fvcodom (remove x (fv u)) s) ->
     subs s (Lam x u) = Lam x (subs (update x (Var x) s) u).
 
   Proof.
-    intros s x u. rewrite not_mem_iff. intro n. simpl.
-    unfold Def.var; ens. rewrite n. refl.
+    rewrite not_mem_iff. intro n. simpl. unfold Def.var; ens. rewrite n. refl.
   Qed.
 
-  Lemma subs_apps : forall s n (us : Tes n) t,
+  Lemma subs_apps s : forall n (us : Tes n) t,
     subs s (apps t us) = apps (subs s t) (Vmap (subs s) us).
 
-  Proof. intro s. induction us; intro t; simpl. refl. rewrite IHus. refl. Qed.
+  Proof. induction us; intro t; simpl. refl. rewrite IHus. refl. Qed.
 
   (** [subs] is compatible with substitution equality. *)
 
@@ -862,9 +849,9 @@ on some finite set of variables *)
 
   Arguments subs_seq [u s s'] _.
 
-  Lemma subs_seq_restrict : forall u s, subs s u = subs (restrict (fv u) s) u.
+  Lemma subs_seq_restrict u s : subs s u = subs (restrict (fv u) s) u.
 
-  Proof. intros u s. apply subs_seq. apply seq_restrict. refl. Qed.
+  Proof. apply subs_seq. apply seq_restrict. refl. Qed.
 
   (** Applying the identity substitution does not change the term
   (extension of CF, Theorem 1a, page 95, proof given on page 97). *)
@@ -882,15 +869,13 @@ on some finite set of variables *)
   is empty does not change the term (CF, Theorem 1b, page 95, proof
   given on page 98). *)
 
-  Lemma subs_notin_fv : forall u s,
-    domain (fv u) s [=] empty -> subs s u = u.
+  Lemma subs_notin_fv u s : domain (fv u) s [=] empty -> subs s u = u.
 
   Proof.
-    intros u s; rewrite empty_subset; revert u s.
-    induction u; simpl; intro s.
+    rewrite empty_subset. revert u s. induction u; simpl; intro s.
     (* var *)
     rewrite singleton_equal_add, domain_add. 2: set_iff; auto.
-    rewrite domain_empty. unfold Def.domain_fun, brel.
+    rewrite domain_empty. unfold Def.domain_fun, bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)). auto.
     intro h. cut False. tauto. rewrite <- empty_iff, <- h. apply add_1. refl.
     (* fun *)
@@ -920,7 +905,7 @@ on some finite set of variables *)
 
     (* var *)
     rewrite singleton_equal_add, domain_add, domain_empty. 2: fo.
-    unfold Def.domain_fun, brel. destruct (eq_term_dec (s x) (Var x)).
+    unfold Def.domain_fun, bool_of_rel. destruct (eq_term_dec (s x) (Var x)).
     rewrite e. simpl. rewrite fvcod_empty. fset.
     rewrite fvcod_add, fvcod_empty. 2: fo. unfold Def.fvcod_fun. fset.
 
@@ -998,10 +983,10 @@ on some finite set of variables *)
     eq_dec z x. subst z. tauto. intuition.
   Qed.
 
-  Lemma fvcod_subset_fv_subs : forall s u, fvcod (fv u) s [<=] fv (subs s u).
+  Lemma fvcod_subset_fv_subs s u : fvcod (fv u) s [<=] fv (subs s u).
 
   Proof.
-    intros s u. rewrite fv_subs. simpl. intro x. rewrite In_fvcod.
+    rewrite fv_subs. simpl. intro x. rewrite In_fvcod.
     intros [y [h1 h2]]. set_iff. rewrite In_domain.
     fold (fvcodom (fv u) s). rewrite In_fvcodom.
     destruct (eq_term_dec (s y) (Var y)).
@@ -1016,21 +1001,21 @@ on some finite set of variables *)
 
     Definition stable R := Proper (Logic.eq ==> R ==> R) subs.
 
-    Instance stable_same_rel_impl : Proper (same_relation ==> impl) stable.
+    Instance stable_same_rel_impl : Proper (same_rel ==> impl) stable.
 
     Proof.
       intros S T e subs_S s s' ss' t u tu. subst s'. rewrite rel_eq in e.
       rewrite <- e. apply subs_S. refl. rewrite e. hyp.
     Qed.
 
-    Instance stable_same_rel : Proper (same_relation ==> iff) stable.
+    Instance stable_same_rel : Proper (same_rel ==> iff) stable.
 
     Proof. intros S T e. split; intro h. rewrite <- e. hyp. rewrite e. hyp. Qed.
 
-    Lemma stable_union : forall R S, stable R -> stable S -> stable (R U S).
+    Lemma stable_union R S : stable R -> stable S -> stable (R U S).
 
     Proof.
-      intros R S subs_R subs_S s s' ss' t u [tu|tu]; subst s'.
+      intros subs_R subs_S s s' ss' t u [tu|tu]; subst s'.
       left. apply subs_R; auto. right. apply subs_S; auto.
     Qed.
 
@@ -1039,11 +1024,11 @@ on some finite set of variables *)
 (****************************************************************************)
 (** ** [clos_subs] preserves free variables. *)
 
-  Instance fv_clos_subs : forall R,
+  Instance fv_clos_subs R :
     Proper (R --> Subset) fv -> Proper (clos_subs R --> Subset) fv.
 
   Proof.
-    intros R fv_R t u tu. inversion tu; subst; clear tu. rewrite 2!fv_subs.
+    intros fv_R t u tu. inversion tu; subst; clear tu. rewrite 2!fv_subs.
     simpl. gen (fv_R _ _ H); intro h.
     assert (a : diff (fv y) (domain (fv y) s)
       [<=] diff (fv x) (domain (fv x) s)).
@@ -1054,54 +1039,49 @@ on some finite set of variables *)
 (****************************************************************************)
 (** ** Some equalities on [update]. *)
 
-  Lemma update2_eq : forall x u v w s,
+  Lemma update2_eq x u v w s :
     subs (update x v (update x w s)) u = subs (update x v s) u.
 
-  Proof.
-    intros x u v w s. apply subs_seq. intros z hz. unfold Def.update.
-    eq_dec z x; refl.
-  Qed.
+  Proof. apply subs_seq. intros z hz. unfold Def.update. eq_dec z x; refl. Qed.
 
-  Lemma update2_neq_com : forall s x u y v w, x <> y ->
+  Lemma update2_neq_com s x u y v w : x <> y ->
     subs (update x u (update y v s)) w = subs (update y v (update x u s)) w.
 
   Proof.
-    intros s x u y v w n. apply subs_seq. intros z hz. unfold Def.update.
+    intro n. apply subs_seq. intros z hz. unfold Def.update.
     eq_dec z x; eq_dec z y; try refl. subst. tauto.
   Qed.
 
-  Lemma update_single_eq : forall y v w u,
+  Lemma update_single_eq y v w u :
     subs (update y w (single y v)) u = subs (single y w) u.
 
-  Proof.
-    intros y v w u. unfold Def.single at 1. rewrite update2_eq. refl.
-  Qed.
+  Proof. unfold Def.single at 1. rewrite update2_eq. refl. Qed.
 
-  Lemma update2_single_eq : forall y w x v v' u,
+  Lemma update2_single_eq y w x v v' u :
     subs (update y w (update x v' (single x v))) u
     = subs (update y w (single x v')) u.
 
   Proof.
-    intros y w x v v' u. apply subs_seq. intros z hz.
+    apply subs_seq. intros z hz.
     unfold Def.update at -2. eq_dec z y. refl.
     match goal with |- ?x _ = ?y _ => set (s1:=x); set (s2:=y) end.
     change (subs s1 (Var z) = subs s2 (Var z)). unfold s1, s2.
     rewrite update_single_eq. refl.
   Qed.
 
-  Lemma update_id : forall x s u, s x = Var x ->
-    subs (update x (Var x) s) u = subs s u.
+  Lemma update_id x s u :
+    s x = Var x -> subs (update x (Var x) s) u = subs s u.
 
   Proof.
-    intros x s u h. apply subs_seq. intros z hz. unfold Def.update.
+    intro h. apply subs_seq. intros z hz. unfold Def.update.
     eq_dec z x. subst. auto. refl.
   Qed.
 
-  Lemma update_id_single : forall y v x u, x<>y \/ v=Var x ->
+  Lemma update_id_single y v x u : x<>y \/ v=Var x ->
     subs (update x (Var x) (single y v)) u = subs (single y v) u.
 
   Proof.
-    intros y v x u h. apply subs_seq. intros b hb.
+    intro h. apply subs_seq. intros b hb.
     unfold Def.single, Def.update. eq_dec b x; eq_dec b y.
     subst. destruct h. tauto. subst. refl.
     subst. refl. refl. refl.
@@ -1112,30 +1092,30 @@ on some finite set of variables *)
 
   (** CF, Theorem 1a, page 95, proof page 97. *)
 
-  Lemma single_id : forall y u, subs (single y (Var y)) u = u.
+  Lemma single_id y u : subs (single y (Var y)) u = u.
 
   Proof.
-    intros y u. rewrite <- subs_id. apply subs_seq. intros x hx.
+    rewrite <- subs_id. apply subs_seq. intros x hx.
     unfold Def.single, Def.update. eq_dec x y. subst. refl. refl.
   Qed.
 
   (** CF, Theorem 1b, page 95, proof page 98. *)
 
-  Lemma single_notin_fv : forall y u v, ~In y (fv v) -> subs (single y u) v = v.
+  Lemma single_notin_fv y u v : ~In y (fv v) -> subs (single y u) v = v.
 
   Proof.
-    intros y u v n. rewrite subs_notin_fv. refl. intro x.
+    intro n. rewrite subs_notin_fv. refl. intro x.
     rewrite In_domain. set_iff. unfold Def.single, Def.update.
     eq_dec x y. subst x. intuition. intuition.
   Qed.
 
   (** Other equalities on [single]. *)
 
-  Lemma single_var : forall x u s v z, In z (fv u) -> x <> z ->
+  Lemma single_var x u s v z : In z (fv u) -> x <> z ->
     subs (single (var x u s) v) (s z) = s z.
 
   Proof.
-    intros x u s v z h1 h2. rewrite single_notin_fv. refl. unfold Def.var; ens.
+    intros h1 h2. rewrite single_notin_fv. refl. unfold Def.var; ens.
     case_eq (mem x (fvcodom (remove x (fv u)) s)).
 
     rewrite <- mem_iff. set (xs := union (fv u) (fvcodom (remove x (fv u)) s)).
@@ -1149,12 +1129,12 @@ on some finite set of variables *)
     revert h4. rewrite e. simpl. set_iff. intro h4. subst z. tauto.
   Qed.
 
-  Lemma var_single : forall y v x u, var x u (single y v) =
+  Lemma var_single y v x u : var x u (single y v) =
     if mem y (fv u) && negb (eqb x y) && negb (beq_term v (Var y))
       && mem x (fv v) then var_notin (union (fv u) (fv v)) else x.
 
   Proof.
-    intros y v x u. unfold Def.var; ens.
+    unfold Def.var; ens.
     rewrite fvcodom_single, remove_b, mem_if.
     case_eq (mem y (fv u) && negb (eqb x y) && negb (beq_term v (Var y)) &&
        mem x (fv v)). rewrite !andb_true_iff. intros [[[h1 h2] h3] h4].
@@ -1163,25 +1143,24 @@ on some finite set of variables *)
     rewrite e. refl. refl.
   Qed.
 
-  Lemma single_lam_no_alpha : forall y v x u,
+  Lemma single_lam_no_alpha y v x u :
     ~In y (fv u) \/ x=y \/ v=Var y \/ ~In x (fv v) ->
     subs (single y v) (Lam x u)
     = Lam x (subs (update x (Var x) (single y v)) u).
 
   Proof.
-    intros y v x u. rewrite !not_mem_iff.
-    rewrite <- eqb_true_iff, <- beq_term_true_iff.
-    rewrite <- !negb_false_iff. simpl. rewrite var_single.
-    intros [h|[h|[h|h]]]; rewrite h; repeat rewrite andb_false_r; refl.
+    rewrite !not_mem_iff, <- eqb_true_iff, <- beq_term_true_iff,
+      <- !negb_false_iff. simpl. rewrite var_single.
+    intros [h|[h|[h|h]]]; rewrite h; repeat rewrite !andb_false_r; refl.
   Qed.
 
-  Lemma fv_single : forall y v u, fv (subs (single y v) u) [=]
+  Lemma fv_single y v u : fv (subs (single y v) u) [=]
     if mem y (fv u) then union (remove y (fv u)) (fv v) else fv u.
 
   Proof.
-    intros y v u. rewrite fv_subs. simpl. rewrite domain_single, fvcod_single.
+    rewrite fv_subs. simpl. rewrite domain_single, fvcod_single.
     case_eq (mem y (fv u)); intro hy; simpl.
-    unfold brel.
+    unfold bool_of_rel.
     case (eq_term_dec v (Var y)); intro hv; simpl.
     subst. simpl. rewrite <- mem_iff in hy. rewrite empty_b. fset.
     eq_dec y a; auto. subst. auto.
@@ -1191,38 +1170,35 @@ on some finite set of variables *)
 (****************************************************************************)
 (** ** Some equalities on single renamings. *)
 
-  Lemma rename_id : forall x u, rename x x u = u.
+  Lemma rename_id x u : rename x x u = u.
 
   Proof. apply single_id. Qed.
 
-  Lemma rename_notin_fv : forall x y u, ~In x (fv u) -> rename x y u = u.
+  Lemma rename_notin_fv x y u : ~In x (fv u) -> rename x y u = u.
 
-  Proof. intros x y u. unfold Def.rename. apply single_notin_fv. Qed.
+  Proof. unfold Def.rename. apply single_notin_fv. Qed.
 
-  Lemma rename_var : forall y z x,
-    rename y z (Var x) = Var (if eqb x y then z else x).
+  Lemma rename_var y z x : rename y z (Var x) = Var (if eqb x y then z else x).
 
   Proof.
-    intros y z x. unfold Def.rename, Def.single, Def.update, eqb; simpl.
-    eq_dec x y; refl.
+    unfold Def.rename, Def.single, Def.update, eqb; simpl. eq_dec x y; refl.
   Qed.
 
-  Lemma rename_fun : forall x y f, rename x y (Fun f) = Fun f.
+  Lemma rename_fun x y f : rename x y (Fun f) = Fun f.
 
   Proof. refl. Qed.
 
-  Lemma rename_app : forall y z u v,
+  Lemma rename_app y z u v :
     rename y z (App u v) = App (rename y z u) (rename y z v).
 
   Proof. refl. Qed.
 
-  Lemma var_rename : forall y z x u, var x u (single y (Var z))
+  Lemma var_rename y z x u : var x u (single y (Var z))
     = if mem y (fv u) && negb (eqb x y) && eqb z x
       then var_notin (add z (fv u)) else x.
 
   Proof.
-    intros y z x u. rewrite var_single, beq_term_var. simpl.
-    rewrite singleton_b.
+    rewrite var_single, beq_term_var. simpl. rewrite singleton_b.
     case_eq (mem y (fv u) && negb (eqb x y) && eqb z x).
     rewrite !andb_true_iff. intros [[h1 h2] h3]. rewrite h1, h2, h3.
     simpl. rewrite eqb_true_iff in h3. subst z. rewrite h2. simpl.
@@ -1231,28 +1207,28 @@ on some finite set of variables *)
     intros [[h|h]|h]; rewrite h; repeat rewrite andb_false_r; refl.
   Qed.
 
-  Lemma fv_rename : forall y z u, fv (rename y z u)
+  Lemma fv_rename y z u : fv (rename y z u)
     [=] if mem y (fv u) then add z (remove y (fv u)) else fv u.
 
   Proof.
-    intros y z u. unfold Def.rename. rewrite fv_single. simpl.
+    unfold Def.rename. rewrite fv_single. simpl.
     destruct (mem y (fv u)). fset. refl.
   Qed.
 
-  Lemma rename_lam_no_alpha : forall y z x u,
+  Lemma rename_lam_no_alpha y z x u :
     ~In y (fv u) \/ x=y \/ x<>z -> rename y z (Lam x u)
     = Lam x (subs (update x (Var x) (single y (Var z))) u).
 
   Proof.
-    intros y z x u h. unfold Def.rename. rewrite single_lam_no_alpha. refl.
+    intro h. unfold Def.rename. rewrite single_lam_no_alpha. refl.
     simpl. set_iff. intuition.
   Qed.
 
-  Lemma remove_fv_rename : forall x y u, ~In y (fv u) ->
+  Lemma remove_fv_rename x y u : ~In y (fv u) ->
     remove y (fv (rename x y u)) [=] remove x (fv u).
 
   Proof.
-    intros x y u hy. rewrite fv_rename. case_eq (mem x (fv u)); intro hx.
+    intro hy. rewrite fv_rename. case_eq (mem x (fv u)); intro hx.
     apply remove_add. set_iff. tauto.
     rewrite remove_equal. 2: hyp. rewrite remove_equal. refl.
     rewrite mem_iff. rewrite hx. discr.
@@ -1317,10 +1293,10 @@ on some finite set of variables *)
 (****************************************************************************)
 (** ** Preservation of bound variables by some renaming. *)
 
-  Lemma bv_rename : forall x y u, ~In y (bv u) -> bv (rename x y u) [=] bv u.
+  Lemma bv_rename x y : forall u, ~In y (bv u) -> bv (rename x y u) [=] bv u.
 
   Proof.
-    intros x y. induction u.
+    induction u.
     (* var *)
     simpl. intros _. unfold Def.rename. simpl.
     unfold Def.single, Def.update. eq_dec x0 x; refl.
@@ -1362,9 +1338,9 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     rewrite vsvs'. refl.
   Qed.
 
-  Lemma bvcod_fun_transp : forall s, transpose Equal (bvcod_fun s).
+  Lemma bvcod_fun_transp s : transpose Equal (bvcod_fun s).
 
-  Proof. intros s u v vs. unfold bvcod_fun. fset. Qed.
+  Proof. intros u v vs. unfold bvcod_fun. fset. Qed.
 
   Definition bvcod xs s := fold (bvcod_fun s) xs empty.
 
@@ -1379,25 +1355,25 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** Set equalities on [bvcod]. *)
 
-  Lemma bvcod_empty : forall s, bvcod empty s [=] empty.
+  Lemma bvcod_empty s : bvcod empty s [=] empty.
 
-  Proof. intro s. unfold bvcod. rewrite fold_empty. refl. Qed.
+  Proof. unfold bvcod. rewrite fold_empty. refl. Qed.
 
-  Lemma bvcod_add : forall s x xs, ~In x xs ->
+  Lemma bvcod_add s x xs : ~In x xs ->
     bvcod (add x xs) s [=] bvcod_fun s x (bvcod xs s).
 
   Proof.
-    intros s x xs n. unfold bvcod. rewrite fold_add. refl.
+    intro n. unfold bvcod. rewrite fold_add. refl.
     apply Equal_ST. apply bvcod_fun_e. refl. apply bvcod_fun_transp. hyp.
   Qed.
 
   (** Correctness proof of [bvcod]. *)
 
-  Lemma In_bvcod : forall y s xs,
+  Lemma In_bvcod y s : forall xs,
     In y (bvcod xs s) <-> exists x, In x xs /\ In y (bv (s x)).
 
   Proof.
-    intros y s. apply set_induction_bis.
+    apply set_induction_bis.
     (* Equal *)
     intros xs xs' xsxs' h. rewrite <- xsxs', h. clear h.
     intuition; destruct H as [x]; exists x; [rewrite <- xsxs'|rewrite xsxs'];
@@ -1425,30 +1401,30 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** More equalities on [bvcod]. *)
 
-  Lemma bvcod_singleton : forall s x, bvcod (singleton x) s [=] bv (s x).
+  Lemma bvcod_singleton s x : bvcod (singleton x) s [=] bv (s x).
 
   Proof.
-    intros s x y. split; rewrite In_bvcod.
+    intro y. split; rewrite In_bvcod.
     intros [z [h1 h2]]. revert h1. set_iff. intro e. subst z. hyp.
     intro h. exists x. set_iff. intuition.
   Qed.
 
-  Lemma bvcod_union : forall s p q,
+  Lemma bvcod_union s p q :
     bvcod (union p q) s [=] union (bvcod p s) (bvcod q s).
 
   Proof.
-    intros s p q x. rewrite In_bvcod. set_iff. split.
+    intro x. rewrite In_bvcod. set_iff. split.
     intros [y [h1 h2]]. revert h1. set_iff. rewrite !In_bvcod.
     intros [h1|h1]. left. exists y. intuition. right. exists y. intuition.
     rewrite !In_bvcod. intros [[y [h1 h2]]|[y [h1 h2]]].
     exists y. set_iff. intuition. exists y. set_iff. intuition.
   Qed.
  
-  Lemma bvcod_single : forall y v xs, bvcod xs (single y v)
-    [=] if mem y xs then bv v else empty.
+  Lemma bvcod_single y v : forall xs,
+    bvcod xs (single y v) [=] if mem y xs then bv v else empty.
 
   Proof.
-    intros y v. apply set_induction_bis.
+    apply set_induction_bis.
     (* Equal *)
     intros s s' ss'. rewrite ss'. auto.
     (* empty *)
@@ -1461,11 +1437,9 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     rewrite <- eqb_false_iff in n0. rewrite n0. simpl. fset.
   Qed.
 
-  Lemma bvcod_rename : forall y z xs, bvcod xs (single y (Var z)) [=] empty.
+  Lemma bvcod_rename y z xs : bvcod xs (single y (Var z)) [=] empty.
 
-  Proof.
-    intros y z xs. rewrite bvcod_single. simpl. destruct (mem y xs); fset.
-  Qed.
+  Proof. rewrite bvcod_single. simpl. destruct (mem y xs); fset. Qed.
 
   Lemma bvcod_id : forall xs, bvcod xs id [=] empty.
 
@@ -1480,12 +1454,12 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     unfold bvcod_fun. simpl. rewrite IH. fset.
   Qed.
 
-  Lemma bvcod_update : forall x u s xs,
+  Lemma bvcod_update x u s xs :
     bvcod xs (update x u s) [=]
     union (if mem x xs then bv u else empty) (bvcod (remove x xs) s).
 
   Proof.
-    intros x u s xs y. set_iff. do 2 rewrite In_bvcod. intuition.
+    intro y. set_iff. do 2 rewrite In_bvcod. intuition.
     destruct H as [z [h1 h2]]. unfold Def.update in h2. eq_dec z x.
     subst z. rewrite mem_iff in h1. rewrite h1. auto.
     right. exists z. set_iff. auto.
@@ -1499,18 +1473,18 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** [bvcod] is compatible with substitution equality. *)
 
-  Lemma bvcod_seq : forall xs xs', xs [=] xs' ->
+  Lemma bvcod_seq xs xs' : xs [=] xs' ->
     forall s s', seq xs s s' -> bvcod xs s [=] bvcod xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_bvcod.
+    intros e s s' ss' x. rewrite <- e. rewrite !In_bvcod.
     split; intros [y [h1 h2]]; exists y; intuition.
     rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
   Qed.
 
-  Instance bvcod_seq' : forall xs, Proper (seq xs ==> Equal) (bvcod xs).
+  Instance bvcod_seq' xs : Proper (seq xs ==> Equal) (bvcod xs).
 
-  Proof. intros xs s s' ss'. apply bvcod_seq. refl. hyp. Qed.
+  Proof. intros s s' ss'. apply bvcod_seq. refl. hyp. Qed.
 
 (****************************************************************************)
 (** ** Commutation properties
@@ -1520,14 +1494,14 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   (** CF, Theorem 1c, page 95, proof page 98. *)
 
-  Lemma single_com : forall x y v w, x<>y -> forall u,
+  Lemma single_com x y v w : x<>y -> forall u,
     ~In x (fv w) \/ ~In y (fv u) ->
     inter (bv u) (union (fv v) (fv w)) [=] empty ->
     subs (single y w) (subs (single x v) u)
     = subs (single x (subs (single y w) v)) (subs (single y w) u).
 
   Proof.
-    intros x y v w n. induction u.
+    intro n. induction u.
     (* var *)
     simpl. set_iff. intros h _. unfold Def.single at 5.
     unfold Def.update. eq_dec x0 y.
@@ -1669,12 +1643,11 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     Focus 1. apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
   Qed.
 
-  Lemma subs_lam : forall s x u,
+  Lemma subs_lam s x u :
     subs s (Lam x u) = subs (update x (Var x) s) (Lam x u).
 
   Proof.
-    intros s x u. set (s' := update x (Var x) s). simpl.
-    set (p := remove x (fv u)).
+    set (s' := update x (Var x) s). simpl. set (p := remove x (fv u)).
 
     assert (h : fvcodom p s [=] fvcodom p s'). intro y.
     rewrite !In_fvcodom. split; intros [z [h1 [h2 h3]]].
@@ -1689,15 +1662,14 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite e. set (x' := var x u s'). unfold s'. rewrite update2_eq. refl.
   Qed.
 
-  Lemma rename_lam : forall x y z u,
-    rename x y (Lam z u) =
-      if mem x (fv u) && negb (eqb y x) && eqb y z then
-        let z' := var_notin (add y (fv u)) in
-          Lam z' (subs (update z (Var z') (single x (Var y))) u)
-        else if eqb z x then Lam z u else Lam z (rename x y u).
+  Lemma rename_lam x y z u : rename x y (Lam z u) =
+    if mem x (fv u) && negb (eqb y x) && eqb y z then
+      let z' := var_notin (add y (fv u)) in
+        Lam z' (subs (update z (Var z') (single x (Var y))) u)
+    else if eqb z x then Lam z u else Lam z (rename x y u).
 
   Proof.
-    intros x y z u. unfold Def.rename at 1. simpl.
+    unfold Def.rename at 1. simpl.
     rewrite var_single, beq_term_var. simpl. rewrite singleton_b.
     case_eq (mem x (fv u) && negb (eqb z x) && negb (eqb y x) && eqb y z).
     rewrite !andb_true_iff. intros [[[h1 h2] h3] h4].
@@ -1720,16 +1692,16 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite update_id_single. 2: auto. refl.
   Qed.
 
-  Lemma rename_subs_com : forall x y,
+  Lemma rename_subs_com x y :
     forall u s, s x = Var x -> s y = Var y -> ~In x (fvcodom (fv u) s) ->
       inter (bv u) (add y (fvcodom (fv u) s)) [=] empty ->
       rename x y (subs s u) = subs s (rename x y u).
 
   Proof.
-    intros x y. induction u; intros s hx hy.
+    induction u; intros s hx hy.
     (* var *)
     rename x0 into z. simpl. rewrite fvcodom_singleton, rename_var.
-    unfold brel. destruct (eq_term_dec (s z) (Var z)).
+    unfold bool_of_rel. destruct (eq_term_dec (s z) (Var z)).
     rewrite e, rename_var. unfold eqb. eq_dec z x; auto.
     intro h. unfold Def.rename. rewrite single_notin_fv. 2: hyp.
     unfold eqb. eq_dec z x; simpl.
@@ -1898,47 +1870,44 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   (** Other properties of [subs1]. *)
 
-  Lemma subs1_update2_eq : forall x u v w s,
+  Lemma subs1_update2_eq x u v w s :
     subs1 (update x v (update x w s)) u = subs1 (update x v s) u.
 
-  Proof.
-    intros x u v w s. apply subs1_seq. intros z hz. unfold Def.update.
-    eq_dec z x; refl.
-  Qed.
+  Proof. apply subs1_seq. intros z hz. unfold Def.update. eq_dec z x; refl. Qed.
 
-  Lemma subs1_update2_neq_com : forall s x u y v w, x <> y ->
+  Lemma subs1_update2_neq_com s x u y v w : x <> y ->
     subs1 (update x u (update y v s)) w = subs1 (update y v (update x u s)) w.
 
   Proof.
-    intros s x u y v w n. apply subs1_seq. intros z hz. unfold Def.update.
+    intro n. apply subs1_seq. intros z hz. unfold Def.update.
     eq_dec z x; eq_dec z y; try refl. subst. tauto.
   Qed.
 
-  Lemma subs1_update_single_eq : forall y v w u,
+  Lemma subs1_update_single_eq y v w u :
     subs1 (update y w (single y v)) u = subs1 (single y w) u.
 
   Proof.
-    intros y v w u. apply subs1_seq. intros b hb.
-    unfold Def.single, Def.update. eq_dec b y; refl.
+    apply subs1_seq. intros b hb. unfold Def.single, Def.update.
+    eq_dec b y; refl.
   Qed.
 
-  Lemma subs1_update2_single_eq : forall y w x v v' u,
+  Lemma subs1_update2_single_eq y w x v v' u :
     subs1 (update y w (update x v' (single x v))) u
     = subs1 (update y w (single x v')) u.
 
   Proof.
-    intros y w x v v' u. apply subs1_seq. intros z hz.
+    apply subs1_seq. intros z hz.
     unfold Def.update at -2. eq_dec z y. refl.
     match goal with |- ?x _ = ?y _ => set (s1:=x); set (s2:=y) end.
     change (subs s1 (Var z) = subs s2 (Var z)). unfold s1, s2.
     rewrite update_single_eq. refl.
   Qed.
 
-  Lemma subs1_update_id : forall x s u, s x = Var x ->
+  Lemma subs1_update_id x s u : s x = Var x ->
     subs1 (update x (Var x) s) u = subs1 s u.
 
   Proof.
-    intros x s u h. apply subs1_seq. intros z hz. unfold Def.update.
+    intro h. apply subs1_seq. intros z hz. unfold Def.update.
     eq_dec z x. subst. auto. refl.
   Qed.
 
@@ -1949,28 +1918,28 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     apply (f_equal (Lam x)). rewrite subs1_update_id. hyp. refl.
   Qed.
 
-  Lemma subs1_single_id : forall y u, subs1 (single y (Var y)) u = u.
+  Lemma subs1_single_id y u : subs1 (single y (Var y)) u = u.
 
   Proof.
-    intros y u. rewrite <- subs1_id. apply subs1_seq. intros x hx.
+    rewrite <- subs1_id. apply subs1_seq. intros x hx.
     unfold Def.single, Def.update. eq_dec x y. subst. refl. refl.
   Qed.
  
-  Lemma subs1_update_id_single : forall y v x u, x<>y \/ v=Var x ->
+  Lemma subs1_update_id_single y v x u : x<>y \/ v=Var x ->
     subs1 (update x (Var x) (single y v)) u = subs1 (single y v) u.
 
   Proof.
-    intros y v x u h. apply subs1_seq. intros b hb.
+    intro h. apply subs1_seq. intros b hb.
     unfold Def.single, Def.update. eq_dec b x; eq_dec b y.
     subst. destruct h. tauto. subst. refl.
     subst. refl. refl. refl.
   Qed.
 
-  Lemma subs1_update_single_id : forall y v x u,
+  Lemma subs1_update_single_id y v x u :
     subs1 (update y v (single x (Var x))) u = subs1 (single y v) u.
 
   Proof.
-    intros y v x u. apply subs1_seq. intros z hz.
+    apply subs1_seq. intros z hz.
     unfold Def.single. unfold Def.update at -2.
     eq_dec z y. refl. unfold Def.update. eq_dec z x.
     subst z. refl. refl.
@@ -1978,12 +1947,12 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   (** Composition properties of [subs1]. *)
 
-  Lemma subs1_update_single : forall x y y' u s, ~In y (bv u) ->
+  Lemma subs1_update_single x y y' : forall u s, ~In y (bv u) ->
     subs1 (update y (Var y') s) (subs1 (single x (Var y)) u)
     = subs1 (update x (Var y') (update y (Var y') s)) u.
 
   Proof.
-    intros x y y'. induction u; intro s; simpl; set_iff; intro hy.
+    induction u; intro s; simpl; set_iff; intro hy.
     (* var *)
     rename x0 into z. unfold Def.single. unfold Def.update at -1.
     eq_dec z x; simpl.
@@ -2006,14 +1975,14 @@ In fact, these properties won't be used later. Instead, we will use similar prop
       try subst a; try subst x; try subst y; tauto.
   Qed.
 
-  Lemma subs1_single_subs1 : forall y v u s, s y = Var y ->
+  Lemma subs1_single_subs1 y v : forall u s, s y = Var y ->
     ~In y (fvcodom (fv u) s) ->
     subs1 (single y v) (subs1 s u) = subs1 (update y v s) u.
 
   Proof.
-    intros y v. induction u; intros s h1; simpl.
+    induction u; intros s h1; simpl.
     (* var *)
-    rewrite fvcodom_singleton. unfold brel.
+    rewrite fvcodom_singleton. unfold bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)).
     rewrite e. simpl. unfold Def.single, Def.update. eq_dec x y; auto.
     intro h2. rewrite subs1_notin_fv. unfold Def.update. eq_dec x y.
@@ -2033,13 +2002,13 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite fvcodom_update_id. hyp.
   Qed.
 
-  Lemma subs1_single_update : forall x x' y' u s, ~In x' (fv u) ->
+  Lemma subs1_single_update x x' y' : forall u s, ~In x' (fv u) ->
     ~In x' (fvcodom (remove x (fv u)) s) -> ~In x' (bv u) -> ~In x (bv u) ->
     subs1 (single x' (Var y')) (subs1 (update x (Var x') s) u)
     = subs1 (update x' (Var y') (update x (Var y') s)) u.
 
   Proof.
-    intros x x' y'. induction u; intro s; simpl; set_iff; intros h1 h2 h3 h4.
+    induction u; intro s; simpl; set_iff; intros h1 h2 h3 h4.
     (* var *)
     rename x0 into z. unfold Def.update.
     eq_dec z x; eq_dec z x'; simpl.

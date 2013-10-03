@@ -35,7 +35,7 @@ Module Make (X : OrderedType).
   Qed.
 
   Instance pred_geq :
-    Proper (eq ==> XSet.Equal ==> geq ==> same_relation) pred.
+    Proper (eq ==> XSet.Equal ==> geq ==> same_rel) pred.
 
   Proof. split; apply pred_geq'; hyp||(sym;hyp). Qed.
 
@@ -111,7 +111,7 @@ Module Make (X : OrderedType).
     intros z t g m n h. unfold add_pred. case_eq (XSet.mem x t); intros.
     (* x in t *)
     rewrite <- mem_iff in H. rewrite rel_set_fold_add_edge. rewrite h.
-    rewrite <- R.union_assoc. apply R.union_same_relation. 2: refl.
+    rewrite <- R.union_assoc. apply R.union_same_rel. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
     intuition.
     rewrite H0. unfold rel. exists t. rewrite add_eq_o. intuition. refl.
@@ -122,7 +122,7 @@ Module Make (X : OrderedType).
     left. intuition.
     right. intuition.
     (* x notin t *)
-    rewrite <- not_mem_iff in H. rewrite h. apply R.union_same_relation. 2: refl.
+    rewrite <- not_mem_iff in H. rewrite h. apply R.union_same_rel. 2: refl.
     rewrite rel_eq; intros a b. unfold pred.
     intuition; change (~In z m) in n; rewrite not_find_in_iff in n.
     unfold rel. rewrite add_o. destruct (eq_dec z a). 2: hyp.
@@ -146,7 +146,7 @@ Module Make (X : OrderedType).
     unfold transpose_neqkey. intros x s w w' sw sw' g nww'.
     unfold geq, add_pred. destruct (XSet.mem x sw); destruct (XSet.mem x sw');
     repeat rewrite rel_set_fold_add_edge; try refl.
-    rewrite <- !R.union_assoc. apply R.union_same_relation.
+    rewrite <- !R.union_assoc. apply R.union_same_rel.
     apply union_commut. refl.
   Qed.
 
@@ -171,8 +171,8 @@ the transitive closure of [id x y U g] *)
     intros x x' xx' y y' yy' g g' gg'. unfold geq, trans_add_edge.
     rewrite xx', yy', gg'. destruct (XSet.mem y' (succs x' g')).
     hyp. repeat rewrite rel_map_fold_add_pred, rel_set_fold_add_edge.
-    apply R.union_same_relation. rewrite xx', yy', gg'. refl.
-    apply R.union_same_relation. rewrite xx', yy', gg'. refl.
+    apply R.union_same_rel. rewrite xx', yy', gg'. refl.
+    apply R.union_same_rel. rewrite xx', yy', gg'. refl.
     hyp.
   Qed.
 
@@ -183,7 +183,7 @@ the transitive closure of [id x y U g] *)
   Proof.
     intros x y g. unfold trans_add_edge.
     case_eq (XSet.mem y (succs x g)); intros. refl.
-    rewrite rel_map_fold_add_pred. apply R.union_same_relation. refl.
+    rewrite rel_map_fold_add_pred. apply R.union_same_rel. refl.
     rewrite rel_set_fold_add_edge. refl.
   Qed.
 
@@ -196,7 +196,7 @@ the transitive closure of [id x y U g] *)
     destruct (XSet.mem y (succs x g)). refl.
     cbv zeta. set (ysy := XSet.add y (succs y g)).
     set (xpx := XSet.add x (preds x g)). rewrite <- R.union_assoc.
-    apply R.union_same_relation. apply pred_succ_prod. refl.
+    apply R.union_same_rel. apply pred_succ_prod. refl.
   Qed.
 
   Lemma add_edge_incl_trans : forall x y g,

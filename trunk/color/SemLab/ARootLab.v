@@ -59,10 +59,11 @@ Module RootSemLab (Import R : RootLab) <: FinSemLab.
       | _, _ => false
     end.
 
-  Lemma beqI_ok : rel beqI << IR I (@eq I).
+  Lemma beqI_ok : rel_of_bool beqI << IR I (@eq I).
 
   Proof.
-    intros t u. unfold rel. destruct t; destruct u; simpl; intros; try discr.
+    intros t u. unfold rel_of_bool.
+    destruct t; destruct u; simpl; intros; try discr.
     rewrite beq_nat_ok in H. subst. intro. refl.
     rewrite beq_symb_ok in H. subst. intro. refl.
   Qed.

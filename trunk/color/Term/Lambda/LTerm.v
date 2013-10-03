@@ -120,7 +120,7 @@ Section term.
       | Vcons u _ us' => apps (App t u) us'
     end.
 
-  Lemma apps_app_cons : forall t u n (us : Tes n),
+  Lemma apps_app_cons t u n (us : Tes n) :
     apps (App t u) us = apps t (Vcons u us).
 
   Proof. refl. Qed.
@@ -566,7 +566,7 @@ Module Type L_Struct.
   Notation Monotone := (@Monotone F X).
   Notation clos_mon := (@clos_mon F X).
   Notation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
-  Notation beq_term := (brel eq_term_dec).
+  Notation beq_term := (bool_of_rel eq_term_dec).
   Notation supterm := (@supterm F X).
 
 End L_Struct.
@@ -598,20 +598,17 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Equality on terms. *)
 
-  Lemma beq_term_true_iff : forall u v, beq_term u v = true <-> u = v.
+  Lemma beq_term_true_iff u v : beq_term u v = true <-> u = v.
 
-  Proof. intros u v. unfold brel. destruct (eq_term_dec u v); intuition. Qed.
+  Proof. unfold bool_of_rel. destruct (eq_term_dec u v); intuition. Qed.
 
-  Lemma beq_term_false_iff : forall u v, beq_term u v = false <-> u <> v.
+  Lemma beq_term_false_iff u v : beq_term u v = false <-> u <> v.
 
-  Proof. intros u v. unfold brel. destruct (eq_term_dec u v); intuition. Qed.
+  Proof. unfold bool_of_rel. destruct (eq_term_dec u v); intuition. Qed.
 
-  Lemma beq_term_refl : forall u, beq_term u u = true.
+  Lemma beq_term_refl u : beq_term u u = true.
 
-  Proof.
-    intro u. unfold brel. destruct (eq_term_dec u u).
-    refl. absurd (u=u); tauto.
-  Qed.
+  Proof. unfold bool_of_rel. destruct (eq_term_dec u u). refl. irrefl. Qed.
 
   Lemma beq_term_var : forall x y, beq_term (Var x) (Var y) = eqb x y.
 
@@ -678,9 +675,9 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Properties of [Monotone]. *)
 
-  (** Monotony is compatible with [same_relation]. *)
+  (** Monotony is compatible with [same_rel]. *)
 
-  Instance Monotone_impl : Proper (same_relation ==> impl) Monotone.
+  Instance Monotone_impl : Proper (same_rel ==> impl) Monotone.
 
   Proof.
     intros R S [RS SR] h. split.
@@ -718,6 +715,10 @@ Module Make (Export L : L_Struct).
     intros x x' xx' u u' uu'. subst x'. apply m_lam. hyp.
   Qed.
 
+  Lemma clos_mon_min R S : Monotone S -> R << S -> clos_mon R << S.
+
+  Proof. intros S_mon RS. intros u v; revert u v; induction 1; mon. fo. Qed.
+
   (** The monotone closure is compatible with relation inclusion and
   equivalence. *)
 
@@ -725,18 +726,16 @@ Module Make (Export L : L_Struct).
 
   Proof. intros R S RS. induction 1; try mon. apply m_step. apply RS. hyp. Qed.
 
-  Instance clos_mon_same_rel :
-    Proper (same_relation ==> same_relation) clos_mon.
+  Instance clos_mon_same_rel : Proper (same_rel ==> same_rel) clos_mon.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
   (** The closure by monotony distributes over union. *)
 
-  Lemma clos_mon_union : forall R S,
-    clos_mon (R U S) == clos_mon R U clos_mon S.
+  Lemma clos_mon_union R S : clos_mon (R U S) == clos_mon R U clos_mon S.
 
   Proof.
-    intros R S. split.
+    split.
     (* << *)
     induction 1.
     destruct H as [H|H]. left. apply m_step. hyp. right. apply m_step. hyp.
@@ -754,10 +753,9 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Properties wrt free variables. *)
 
-  Lemma notin_fv_lam : forall x y u,
-    y=x \/ ~In x (fv u) <-> ~In x (fv (Lam y u)).
+  Lemma notin_fv_lam x y u : y=x \/ ~In x (fv u) <-> ~In x (fv (Lam y u)).
  
-  Proof. intros x y u. simpl. set_iff. eq_dec y x; fo. Qed.
+  Proof. simpl. set_iff. eq_dec y x; fo. Qed.
 
   Lemma In_fvs_Vnth : forall x n (ts : Tes n) i (h : i<n),
     In x (fv (Vnth ts h)) -> In x (fvs ts).
@@ -788,11 +786,11 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Properties of [supterm]. *)
 
-  Lemma supterm_nth : forall f n (ts : Tes n) i (hi : i<n),
+  Lemma supterm_nth f : forall n (ts : Tes n) i (hi : i<n),
     supterm! (apps (Fun f) ts) (Vnth ts hi).
 
   Proof.
-    intro f. induction n; intros ts i hi. omega.
+    induction n; intros ts i hi. omega.
     rewrite (VSn_add ts). rewrite <- app_apps.
     set (us := Vremove_last ts). set (t0 := Vhead ts). set (tn := Vlast t0 ts).
     rewrite Vnth_add. destruct (eq_nat_dec i n).

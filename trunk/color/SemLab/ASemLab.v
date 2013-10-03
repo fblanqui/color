@@ -549,7 +549,7 @@ Definition enum2 R :=
     Import ATrs. Notation rules := (rules Sig).
 
     Variable bge : term -> term -> bool.
-    Variable bge_ok : rel bge << Ige.
+    Variable bge_ok : rel_of_bool bge << Ige.
 
     Section bge.
 
@@ -672,7 +672,7 @@ Module Type SemLab.
   Include Base.
 
   Parameter beqI : term Sig -> term Sig -> bool.
-  Parameter beqI_ok : rel beqI << IR I (@eq I).
+  Parameter beqI_ok : rel_of_bool beqI << IR I (@eq I).
 
 End SemLab.
 
@@ -685,7 +685,7 @@ Module Type OrdSemLab.
 
   Parameter Dge : relation I.
   Parameter bge : term Sig -> term Sig -> bool.
-  Parameter bge_ok : rel bge << IR I Dge.
+  Parameter bge_ok : rel_of_bool bge << IR I Dge.
   Parameter I_mon : forall f, Vmonotone1 (fint I f) Dge.
 
   Notation "t '>=I' u" := (IR I Dge t u) (at level 70).
