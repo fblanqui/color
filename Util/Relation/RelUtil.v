@@ -562,6 +562,13 @@ Proof.
   apply e_step. fo. refl. trans y; fo. sym. fo.
 Qed.
 
+Lemma ec_min A (R S : rel A) : Equivalence S -> R << S -> clos_equiv R << S.
+
+Proof.
+  intros S_eq RS. intros u v; revert u v; induction 1.
+  fo. refl. trans y; hyp. sym; hyp.
+Qed.
+
 (***********************************************************************)
 (** Properties of [union]. *)
 
