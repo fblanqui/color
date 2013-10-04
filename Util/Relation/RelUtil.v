@@ -767,6 +767,13 @@ Proof.
   fo. refl. trans y; hyp.
 Qed.
 
+Instance rtc_sym A (R : rel A) : Symmetric R -> Symmetric (R#).
+
+Proof.
+  intros R_sym x; revert x; induction 1.
+  apply rt_step. sym. hyp. refl. trans y; hyp.
+Qed.
+
 (***********************************************************************)
 (** Properties of [transp]. *)
 
