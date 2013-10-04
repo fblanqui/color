@@ -750,6 +750,23 @@ Module Make (Export L : L_Struct).
     eapply clos_mon_incl. apply incl_union_r. refl. hyp.
   Qed.
 
+  (** Preservation of some properties by [clos_mon]. *)
+
+  (*COQ: creates problem in the proof of LSubs.subs_id when declared
+  as Instance. *)
+
+  Lemma clos_mon_refl R : Reflexive R -> Reflexive (clos_mon R).
+
+  Proof. intros R_refl u. apply m_step. refl. Qed.
+
+  Lemma clos_mon_sym R : Symmetric R -> Symmetric (clos_mon R).
+
+  Proof.
+    intros R_sym u v; revert u v; induction 1.
+    apply m_step. sym. hyp.
+    apply m_app_l. hyp. apply m_app_r. hyp. apply m_lam. hyp.
+  Qed.
+
 (****************************************************************************)
 (** ** Properties wrt free variables. *)
 
