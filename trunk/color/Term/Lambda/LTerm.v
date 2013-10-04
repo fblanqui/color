@@ -686,12 +686,46 @@ Module Make (Export L : L_Struct).
     intros x x' xx' u u' uu'. subst x'. apply RS. apply SR in uu'. mon.
   Qed.
 
-  (** Closure by equivalence preserves monotony. *)
+  (** [clos_trans] preserves [Monotone]. *)
+
+  Instance clos_trans_mon R : Monotone R -> Monotone (R!).
+
+  Proof.
+    intro R_mon. split.
+    (* app_l *)
+    intros u u' uu' v v' vv'. subst v'. revert u u' uu'. induction 1.
+    apply t_step. mon. trans (App y v); hyp.
+    (* app_r *)
+    intros u u' uu' v v' vv'. subst u'. revert v v' vv'. induction 1.
+    apply t_step. mon. trans (App u y); hyp.
+    (* lam *)
+    intros x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
+    apply t_step. mon. trans (Lam x y); hyp.
+  Qed.
+
+  (** [clos_refl_trans] preserves [Monotone]. *)
+
+  Instance clos_refl_trans_mon R : Monotone R -> Monotone (R#).
+
+  Proof.
+    intro R_mon. split.
+    (* app_l *)
+    intros u u' uu' v v' vv'. subst v'. revert u u' uu'. induction 1.
+    apply rt_step. mon. refl. trans (App y v); hyp.
+    (* app_r *)
+    intros u u' uu' v v' vv'. subst u'. revert v v' vv'. induction 1.
+    apply rt_step. mon. refl. trans (App u y); hyp.
+    (* lam *)
+    intros x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
+    apply rt_step. mon. refl. trans (Lam x y); hyp.
+  Qed.
+
+  (** [clos_equiv] preserves [Monotone]. *)
 
   Instance clos_equiv_mon R : Monotone R -> Monotone (clos_equiv R).
 
   Proof.
-    intro h. split.
+    intro R_mon. split.
     (* app_l *)
     intros u u' uu' v v' vv'. subst v'. revert u u' uu'. induction 1.
     apply e_step. mon. refl. trans (App y v); hyp. sym. hyp.
