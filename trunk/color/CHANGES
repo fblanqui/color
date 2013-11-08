@@ -1,8 +1,12 @@
 
+13-10-04: [Blanqui]
+- Term/Lambda/LAlphaAlt: definitions of alpha-equivalence by Church and
+  Krivine, and proof that they are equivalent to the one of Curry and Feys
+
 -----------------------------------------------------------------------------
 13-09-20: NEW RELEASE (SVN revision 2003)
 
-13-09_20: [Blanqui]
+13-09-20: [Blanqui]
 - Term/lambda/LSystemT: definition and termination proof of Goedel System T
 - Util/Relation/OrdDec replaced by Util/Relation/OrdUtil
 
