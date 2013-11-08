@@ -99,7 +99,7 @@ http://cel.archives-ouvertes.fr/cel-00574575/fr/ . *)
 End Def.
 
 (***********************************************************************)
-(** * Properties and relations between these different definitions. *)
+(** * Properties of and relations between these different definitions. *)
 
 Module Make (Export L : L_Struct).
 
@@ -226,6 +226,8 @@ Module Make (Export L : L_Struct).
 (***********************************************************************)
 (** ** Properties of Church's definition. *)
 
+  (** [aeq_ch] is a congruence relation. *)
+
   Instance aeq_ch_refl : Reflexive aeq_ch.
 
   Proof. unfold Def.aeq_ch. class. Qed.
@@ -254,6 +256,8 @@ Module Make (Export L : L_Struct).
   Instance aeq_ch_mon : Monotone aeq_ch.
 
   Proof. unfold Def.aeq_ch. class. Qed.
+
+  (** [aeq_ch] is equivalent to [aeq]. *)
 
   Lemma aeq_ch_le_aeq : aeq_ch << aeq.
 
