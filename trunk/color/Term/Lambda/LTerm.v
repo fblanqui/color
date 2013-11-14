@@ -583,17 +583,18 @@ Module Make (Export L : L_Struct).
   (** Tactic doing [destruct (eq_dec x y)] and unfolding
   [XOrd.eq]. Otherwise, Coq's tactic [subst] does not work. *)
 
-  Ltac eq_dec x y := destruct (XOrd.eq_dec x y); unfold XOrd.eq in *.
+  Ltac eq_dec x y :=
+    unfold eqb; destruct (XOrd.eq_dec x y); unfold XOrd.eq in *.
 
   (** Equivalence between boolean and propositional equality on variables. *)
 
-  Lemma eqb_true_iff : forall x y, eqb x y = true <-> x = y.
+  Lemma eqb_true_iff x y : eqb x y = true <-> x = y.
 
-  Proof. intros x y. unfold eqb. eq_dec x y; intuition. Qed.
+  Proof. eq_dec x y; intuition. Qed.
 
-  Lemma eqb_false_iff : forall x y, eqb x y = false <-> x <> y.
+  Lemma eqb_false_iff x y : eqb x y = false <-> x <> y.
 
-  Proof. intros x y. unfold eqb. eq_dec x y. intuition. tauto. Qed.
+  Proof. eq_dec x y. intuition. tauto. Qed.
 
 (****************************************************************************)
 (** ** Equality on terms. *)
@@ -610,10 +611,10 @@ Module Make (Export L : L_Struct).
 
   Proof. unfold bool_of_rel. destruct (eq_term_dec u u). refl. irrefl. Qed.
 
-  Lemma beq_term_var : forall x y, beq_term (Var x) (Var y) = eqb x y.
+  Lemma beq_term_var x y : beq_term (Var x) (Var y) = eqb x y.
 
   Proof.
-    intros x y. rewrite eqb_equiv, beq_term_true_iff, eqb_true_iff.
+    rewrite eqb_equiv, beq_term_true_iff, eqb_true_iff.
     intuition. inversion H. refl. subst. refl.
   Qed.
 

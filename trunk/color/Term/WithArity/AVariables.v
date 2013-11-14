@@ -19,13 +19,11 @@ Require FSetAVL.
 Module XSet := FSetAVL.Make Nat_as_OT.
 Module Export VarSetUtil := FSetUtil.Make XSet.
 
-Lemma eqb_beq_nat : forall x y, eqb x y = beq_nat x y.
+Lemma eqb_beq_nat x y : eqb x y = beq_nat x y.
 
 Proof.
-intros. unfold eqb. case (eq_dec x y); intro.
-change (x=y) in e. rewrite <- beq_nat_ok in e. rewrite e. refl.
-change (x<>y) in n. rewrite <- beq_nat_ok in n.
-ded (not_true_is_false _ n). rewrite H. refl.
+  eq_dec x y. rewrite <- beq_nat_ok in e. rewrite e. refl.
+  rewrite <- beq_nat_ok in n. ded (not_true_is_false _ n). rewrite H. refl.
 Qed.
 
 Hint Rewrite eqb_beq_nat : mem.

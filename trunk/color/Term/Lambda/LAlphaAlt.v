@@ -177,7 +177,7 @@ Module Make (Export L : L_Struct).
   Proof.
     induction u; simpl; set_iff; intros h1 h2; mem.
     (* var *)
-    unfold Def.replace_var, eqb. eq_dec x0 x. subst. fset. refl.
+    unfold Def.replace_var. eq_dec x0 x. subst. fset. refl.
     (* fun *)
     refl.
     (* app *)
@@ -192,7 +192,7 @@ Module Make (Export L : L_Struct).
       union_sym, union_add, union_sym; fo.
     refl.
     (* lam *)
-    rewrite IHu; [idtac|fo|fo]. unfold Def.replace_var, eqb.
+    rewrite IHu; [idtac|fo|fo]. unfold Def.replace_var.
     eq_dec x0 x; simpl; bool.
     subst. case_eq (mem x (fv u)); try (rewrite <- mem_iff);
       try (rewrite <- not_mem_iff); intro h.
@@ -210,7 +210,7 @@ Module Make (Export L : L_Struct).
   Proof.
     induction u; simpl; set_iff; intros h1 h2.
     (* var *)
-    rewrite rename_var. unfold Def.replace_var, eqb. eq_dec x0 x; refl.
+    rewrite rename_var. unfold Def.replace_var. eq_dec x0 x; refl.
     (* fun *)
     refl.
     (* app *)
@@ -219,8 +219,7 @@ Module Make (Export L : L_Struct).
     rewrite IHu; [idtac|fo|fo]. unfold Def.replace_var. eq_dec x0 x.
     subst x0. rewrite rename_notin_fv with (u:=Lam x u). 2: simpl; set_iff; fo.
     sym. apply aeq_alpha. fo.
-    rewrite rename_lam. unfold eqb at 2. eq_dec y x0. fo. bool.
-    unfold eqb. eq_dec x0 x. fo. refl.
+    rewrite rename_lam. eq_dec y x0. fo. bool. eq_dec x0 x. fo. refl.
   Qed.
 
 (***********************************************************************)

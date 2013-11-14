@@ -27,6 +27,8 @@ Module Make (Export XSet : FSetInterface.S).
   Implicit Arguments singleton_1 [x y].
   Implicit Arguments union_1 [s s' x].
 
+  Ltac eq_dec x y := unfold eqb; destruct (P.FM.eq_dec x y).
+
 (***********************************************************************)
 (** database of Equal-ity lemmas. *)
 
@@ -62,15 +64,13 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** boolean equality on [X] *)
 
-  Lemma eqb_ok : forall x y, eqb x y = true <-> E.eq x y.
+  Lemma eqb_ok x y : eqb x y = true <-> E.eq x y.
 
-  Proof. intros x y. unfold eqb. destruct (eq_dec x y); intuition. discr. Qed.
+  Proof. eq_dec x y; intuition. discr. Qed.
 
-  Lemma eqb_refl : forall x, eqb x x = true.
+  Lemma eqb_refl x : eqb x x = true.
 
-  Proof.
-    intro x. unfold eqb. destruct (eq_dec x x). refl. absurd (x=x); auto.
-  Qed.
+  Proof. eq_dec x x. refl. absurd (x=x); auto. Qed.
 
   Hint Rewrite eqb_refl : mem.
 
@@ -132,6 +132,8 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. intros x y. set_iff. tauto. Qed.
 
+  Hint Rewrite remove_empty : Equal.
+
   Lemma remove_com x y s : remove x (remove y s) [=] remove y (remove x s).
 
   Proof. fset. Qed.
@@ -142,6 +144,31 @@ Module Make (Export XSet : FSetInterface.S).
   Proof.
     intros n z. set_iff. fo. intro n'. apply n. trans z. hyp. sym. hyp.
   Qed.
+
+  Lemma remove_add_eq x xs : remove x (add x xs) [=] remove x xs.
+
+  Proof. fset. Qed.
+
+  Hint Rewrite remove_add_eq : Equal.
+
+  Lemma remove_idem x xs : remove x (remove x xs) [=] remove x xs.
+
+  Proof. fset. Qed.
+
+  Hint Rewrite remove_idem : Equal.
+
+  Lemma remove_add_if x y xs : remove y (add x xs)
+    [=] if eqb y x then remove y xs else add x (remove y xs).
+
+  Proof.
+    eq_dec y x. rewrite e at 1. rewrite remove_add_eq. rewrite e. refl.
+    fset. apply n. rewrite H, H0. refl.
+  Qed.
+
+  Lemma remove_inter x ys zs :
+    remove x (inter ys zs) [=] inter (remove x ys) (remove x zs).
+
+  Proof. fset. Qed.
 
 (***********************************************************************)
 (** Subset *)
