@@ -448,7 +448,7 @@ on some finite set of variables *)
     rewrite domain_empty, empty_b. refl.
     (* add *)
     intros x xs n IH. rewrite domain_add, add_b, IH. 2: hyp. clear IH.
-    unfold eqb. unfold Def.domain_fun. unfold bool_of_rel at 1.
+    unfold eqb, Def.domain_fun. unfold bool_of_rel at 1.
     destruct (eq_term_dec (single y v x) (Var x)).
     revert e. unfold Def.single, Def.update.
     eq_dec x y; intro h.
@@ -1311,13 +1311,10 @@ on some finite set of variables *)
     rewrite andb_true_iff, eqb_true_iff. tauto.
     rewrite !andb_false_iff. eq_dec x0 x.
     (* x0 = x *)
-    subst x0. rewrite eqb_refl. simpl. rewrite andb_false_r. simpl.
-    rewrite update_single_eq, single_id. refl.
+    subst x0. simpl. bool. rewrite update_single_eq, single_id. refl.
     (* x0 <> x *)
-    rewrite <- eqb_false_iff in n0. rewrite n0. simpl. rewrite andb_true_r.
-    assert (e : eqb y x0 = false). rewrite eqb_sym, eqb_false_iff. tauto.
-    rewrite e, andb_false_r, update_id, IHu. refl. tauto.
-    rewrite single_neq. refl. rewrite <- eqb_false_iff, eqb_sym. hyp.
+    simpl. bool. eq_dec y x0. fo. bool. rewrite update_id, IHu. refl. tauto.
+    rewrite single_neq. refl. fo.
   Qed.
 
 (****************************************************************************)
@@ -1675,19 +1672,19 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite !andb_true_iff. intros [[[h1 h2] h3] h4].
     rewrite h1, h3, h4. simpl. rewrite union_sym, <- add_union_singleton. refl.
     rewrite !andb_false_iff. intros [[[h|h]|h]|h].
-    rewrite h. simpl. unfold eqb. eq_dec z x.
+    rewrite h. simpl. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
     rewrite update_id_single. 2: auto. refl.
     revert h. rewrite negb_false_iff, eqb_true_iff. intro h. subst z.
     rewrite update_single_eq, single_id.
     rewrite <- andb_assoc, andb_comm with (b2:=eqb y x), andb_negb_r,
       andb_false_r, eqb_refl. refl.
-    rewrite h. rewrite andb_false_r. simpl. unfold eqb. eq_dec z x.
+    rewrite h. rewrite andb_false_r. simpl. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
     rewrite update_id_single. 2: auto.
     revert h. rewrite negb_false_iff, eqb_true_iff. intro h. subst y.
     rewrite single_id, rename_id. refl.
-    rewrite h. rewrite !andb_false_r. unfold eqb. eq_dec z x.
+    rewrite h. rewrite !andb_false_r. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
     rewrite update_id_single. 2: auto. refl.
   Qed.
@@ -1702,9 +1699,9 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* var *)
     rename x0 into z. simpl. rewrite fvcodom_singleton, rename_var.
     unfold bool_of_rel. destruct (eq_term_dec (s z) (Var z)).
-    rewrite e, rename_var. unfold eqb. eq_dec z x; auto.
+    rewrite e, rename_var. eq_dec z x; auto.
     intro h. unfold Def.rename. rewrite single_notin_fv. 2: hyp.
-    unfold eqb. eq_dec z x; simpl.
+    eq_dec z x; simpl.
     subst z. tauto. refl.
     (* fun *)
     refl.
@@ -1727,7 +1724,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* ~In x (fv u) \/ y = x \/ y <> z *)
     rewrite !andb_false_iff. intros [[i|i]|i].
     (* 1. ~In x (fv u) *)
-    unfold eqb. eq_dec z x.
+    eq_dec z x.
     (* z = x *)
     subst. apply rename_notin_fv. rewrite fv_subs. simpl in *. set_iff. tauto.
     (* z <> x *)
@@ -1736,9 +1733,9 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     unfold Def.fvcodom in h1. rewrite <- not_mem_iff in i. intuition.
     (* 2. y = x *)
     revert i. rewrite negb_false_iff, eqb_true_iff. intro i. subst y.
-    rewrite !rename_id. unfold eqb. eq_dec z x; refl.
+    rewrite !rename_id. eq_dec z x; refl.
     (* 3. y <> z *)
-    unfold eqb. eq_dec z x.
+    eq_dec z x.
     subst. apply rename_notin_fv. rewrite fv_subs. simpl in *. set_iff. tauto.
     rewrite !subs_lam_no_alpha. set (s' := update z (Var z) s).
     rewrite <- IHu, rename_lam, i, !andb_false_r.
