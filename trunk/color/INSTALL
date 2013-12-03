@@ -1,5 +1,5 @@
-Compilation procedure
----------------------
+Compilation and installation procedure
+--------------------------------------
 
 The compilation procedure that is provided hereafter requires a
 UNIX-like operating system with the following commands (it also works
@@ -11,23 +11,28 @@ with Cygwin on Windows):
 
 For compiling CoLoR, do: 'make' (it takes about 9'20" on my computer).
 
-If you use the development version of CoLoR under SVN
-(http://gforge.inria.fr/projects/color/), after an update, before
-doing 'make', you need to do 'make config' to recompile dependencies
-when new files are added in the archive.
+(If you use the development version of CoLoR under SVN
+(http://gforge.inria.fr/projects/color/), before doing 'make', you
+need to do 'make config' to recompile dependencies when new files are
+added in the archive.)
 
-For compiling the html documentation, use the command 'make doc'. The
-starting file is doc/main.html.
+For installing CoLoR in the default Coq user-contrib directory, do:
+'make install'.
 
-For compiling the TAGS file, use the command 'make tags'. This
-requires 'coqtags' from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
+For installing CoLoR in $dir, do: 'INSTALL_DIR=$dir make install'.
 
-For using the library, type the following command in Coq (you can also
-add it in your ~/.coqrc file):
+For using CoLoR without installing it, you need to type the following
+command in Coq or add it in your ~/.coqrc file:
 
-	Add Rec LoadPath "<dir>" as CoLoR.
+    Add Rec LoadPath "$dir" as CoLoR
 
-where <dir> is the directory where the library is installed.
+where $dir is the CoLoR directory.
+
+For compiling the html documentation, do: 'make doc'. The starting
+file is doc/main.html.
+
+For compiling the TAGS file, do 'make tags'. This requires 'coqtags'
+from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
 
 If you encounter any problem, send a mail to Frederic Blanqui
 (firstname.name@inria.fr).

@@ -7,7 +7,7 @@
 
 .PHONY: clean clean-all clean-doc default config dist doc install-dist install-doc tags all
 
-MAKECOQ := $(MAKE) -r -f Makefile.coq OTHERFLAGS="-dont-load-proofs" -j 3
+MAKECOQ := $(MAKE) -r -f Makefile.coq OTHERFLAGS="-dont-load-proofs" -j 2
 
 VFILES := $(shell find . -name \*.v)
 
@@ -30,6 +30,14 @@ clean-doc:
 
 tags:
 	coqtags `find . -name \*.v`
+
+INSTALL_DIR ?= `coqtop -where`/user-contrib
+
+install:
+	for i in `find . -name \*.vo`; do \
+	 install -d $(INSTALL_DIR)/CoLoR/$$i; \
+	 install -m 0644 $$i $(INSTALL_DIR)/CoLoR/$$i; \
+	done
 
 doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -path ./Coccinelle -prune -o -name \*.v -print`
