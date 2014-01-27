@@ -128,6 +128,10 @@ Lemma and_idem_and_r : forall P Q, Q /\ P /\ P <-> Q /\ P.
 
 Proof. fo. Qed.
 
+Lemma not_or P Q : ~(P \/ Q) <-> ~P /\ ~Q.
+
+Proof. fo. Qed.
+
 Lemma iff_and : forall P Q P' Q',
   ((P <-> P') /\ (Q <-> Q')) -> ((P /\ Q) <-> (P' /\ Q')).
 
