@@ -35,6 +35,8 @@ Module Export Def.
     Variable ens_X : Ens X.
 
     Notation In := (@Ens_In X ens_X).
+    Notation add := (@Ens_add X ens_X).
+    Notation union := (@Ens_union X ens_X).
     Notation fv := (@fv F X ens_X).
     Notation bv := (@bv F X ens_X).
 
@@ -67,6 +69,28 @@ binding occurrences. *)
     Qed.
 
 (***********************************************************************)
+(** Action of a function on variables, including binding occurrences. *)
+
+  Fixpoint action (f : X -> X) u :=
+    match u with
+      | Def.Var x => Var (f x)
+      | Def.Fun f => Fun f
+      | Def.App u1 u2 => App (action f u1) (action f u2)
+      | Def.Lam x v => Lam (f x) (action f v)
+    end.
+
+(***********************************************************************)
+(** Permutation of x and y. *)
+
+    Definition transpose_var x y z :=
+      match eq_var_dec z x with
+        | left _ => y
+        | _ => match eq_var_dec z y with left _ => x | _ => z end
+      end.
+
+    Definition transpose x y := action (transpose_var x y).
+
+(***********************************************************************)
 (** ** Church's definition (1932)
 
 in his first paper on lambda-calculus, "A set of postulates for the
@@ -94,6 +118,24 @@ http://cel.archives-ouvertes.fr/cel-00574575/fr/ . *)
       (forall y, ~In y xs -> aeq_kr (rename1 x y u) (rename1 x' y u')) ->
       aeq_kr (Lam x u) (Lam x' u').
 
+(***********************************************************************)
+(** ** Gabbay and Pitts's definition (1999)
+
+in their paper "A New Approach to Abstract Syntax Involving Binders",
+Proceedings of the 14th IEEE Symposium on Logic in Computer Science
+(LICS), 1999. *)
+
+    Inductive aeq_gp : relation Te :=
+    | aeq_gp_refl_fun : forall f, aeq_gp (Fun f) (Fun f)
+    | aeq_gp_refl_var : forall x, aeq_gp (Var x) (Var x)
+    | aeq_gp_app : forall u v u' v',
+      aeq_gp u u' -> aeq_gp v v' -> aeq_gp (App u v) (App u' v')
+    | aeq_gp_lam : forall x u x' u' z,
+      ~In z (union (add x (union (fv u) (bv u)))
+                   (add x' (union (fv u') (bv u')))) ->
+      aeq_gp (transpose z x u) (transpose z x' u') ->
+      aeq_gp (Lam x u) (Lam x' u').
+
   End aeq.
 
 End Def.
@@ -107,9 +149,13 @@ Module Make (Export L : L_Struct).
 
   Notation replace_var := (@replace_var X XOrd.eq_dec).
   Notation replace_all := (@replace_all F X XOrd.eq_dec).
+  Notation transpose_var := (@transpose_var X XOrd.eq_dec).
+  Notation transpose := (@transpose F X XOrd.eq_dec).
   Notation aeq_ch_top := (@aeq_ch_top F X XOrd.eq_dec ens_X).
   Notation aeq_ch := (@aeq_ch F X XOrd.eq_dec ens_X).
   Notation aeq_kr := (@aeq_kr F X XOrd.eq_dec ens_X).
+  Notation aeq_gp := (@aeq_gp F X XOrd.eq_dec ens_X).
+  Notation action := (@action F X).
 
 (***********************************************************************)
 (** ** Properties of [replace_var]. *)
@@ -220,6 +266,289 @@ Module Make (Export L : L_Struct).
     subst x0. rewrite rename_notin_fv with (u:=Lam x u). 2: simpl; set_iff; fo.
     sym. apply aeq_alpha. fo.
     rewrite rename_lam. eq_dec y x0. fo. bool. eq_dec x0 x. fo. refl.
+  Qed.
+
+(***********************************************************************)
+(** ** Properties of [action]. *)
+
+  Lemma action_eq f g : forall u,
+    (forall x, In x (fv u) \/ In x (bv u) -> f x = g x) ->
+    action f u = action g u.
+
+  Proof.
+    induction u; intro h; simpl.
+    apply (f_equal Var). apply h. left. simpl. set_iff. refl.
+    refl.
+    apply (f_equal2 App).
+    apply IHu1. intros x hx. apply h. simpl. set_iff. destruct hx; tauto.
+    apply IHu2. intros x hx. apply h. simpl. set_iff. destruct hx; tauto.
+    apply (f_equal2 Lam).
+    apply h. simpl. set_iff. tauto.
+    apply IHu. intros y hy. apply h. simpl. set_iff. destruct hy; tauto.
+  Qed.
+
+  Lemma size_action f : forall u, size (action f u) = size u.
+
+  Proof.
+    induction u; simpl. refl. refl. rewrite IHu1, IHu2. refl. rewrite IHu. refl.
+  Qed.
+
+  Lemma action_comp f g :
+    forall u, action f (action g u) = action (fun x => f (g x)) u.
+
+  Proof.
+    induction u; simpl. refl. refl. rewrite IHu1, IHu2. refl. rewrite IHu. refl.
+  Qed.
+
+(***********************************************************************)
+(** ** Properties of [transpose_var]. *)
+
+  Lemma transpose_var_id x z : transpose_var x x z = z.
+
+  Proof. unfold Def.transpose_var. eq_dec z x; subst; refl. Qed.
+
+  Lemma transpose_var_sym x y z : transpose_var x y z = transpose_var y x z.
+
+  Proof. unfold Def.transpose_var. eq_dec z x; eq_dec z y; subst; auto. Qed.
+
+  Lemma transpose_var_com a b c d z : a <> c -> a <> d -> b <> c -> b <> d ->
+    transpose_var a b (transpose_var c d z)
+    = transpose_var c d (transpose_var a b z).
+
+  Proof.
+    intros nac nad nbc nbd. unfold Def.transpose_var.
+    eq_dec z c; subst. eq_dec d a; subst. irrefl. eq_dec d b; subst. irrefl.
+    eq_dec c a; subst. irrefl. eq_dec c b; subst. irrefl. eq_dec c c; subst.
+    refl. irrefl. eq_dec z d; subst. eq_dec c a; subst. irrefl.
+    eq_dec c b; subst. irrefl. eq_dec d a; subst. irrefl. eq_dec d b; subst.
+    irrefl. eq_dec d c; subst. refl. eq_dec d d; subst. refl. irrefl.
+    eq_dec z a; subst. eq_dec b c; subst. irrefl. eq_dec b d; subst. irrefl.
+    refl. eq_dec z b; subst. eq_dec a c; subst. irrefl. eq_dec a d; subst.
+    irrefl. refl. eq_dec z c; subst. irrefl. eq_dec z d; subst. irrefl. refl.
+  Qed.
+
+  Lemma transpose_var_idem x y z : transpose_var x y (transpose_var x y z) = z.
+
+  Proof.
+    unfold Def.transpose_var. eq_dec z x; subst.
+    eq_dec y x; subst. refl. eq_dec y y; subst. refl. irrefl.
+    eq_dec z y; subst. eq_dec x x; subst. refl. irrefl.
+    eq_dec z x; subst. irrefl. eq_dec z y; subst. irrefl. refl.
+  Qed.
+
+  Lemma transpose_var_comp a b c z : b <> z -> c <> z ->
+    transpose_var b c (transpose_var a b z) = transpose_var a c z.
+
+  Proof.
+    intros nbz ncz. unfold Def.transpose_var. eq_dec z a; subst.
+    eq_dec b b; subst. refl. irrefl. eq_dec z b; subst. irrefl.
+    eq_dec z b; subst. irrefl. eq_dec z c; subst. irrefl. refl.
+  Qed.
+
+(***********************************************************************)
+(** ** Properties of [transpose]. *)
+
+  Lemma transpose_id x : forall u, transpose x x u = u.
+
+  Proof.
+    unfold Def.transpose. induction u; simpl; repeat rewrite transpose_var_id.
+    refl. refl. rewrite IHu1, IHu2. refl. rewrite IHu. refl.
+  Qed.
+
+  Lemma transpose_sym x y : forall u, transpose x y u = transpose y x u.
+
+  Proof.
+    unfold Def.transpose. induction u; simpl.
+    rewrite transpose_var_sym. refl.
+    refl.
+    rewrite IHu1, IHu2. refl.
+    rewrite IHu, transpose_var_sym, transpose_var_sym with (x:=y). refl.
+  Qed.
+
+  Lemma transpose_comp a b c : forall u, ~In b (fv u) -> ~In b (bv u) ->
+                                         ~In c (fv u) -> ~In c (bv u) ->
+    transpose b c (transpose a b u) = transpose a c u.
+
+  Proof.
+    unfold Def.transpose. induction u; simpl; set_iff; intros h1 h2 h3 h4.
+    apply (f_equal Var). apply transpose_var_comp; fo.
+    refl.
+    apply (f_equal2 App); fo.
+    apply (f_equal2 Lam); fo. apply transpose_var_comp; fo.
+  Qed.
+
+(***********************************************************************)
+(** ** Substitution corresponding to [transpose_var]. *)
+
+  Definition subs_transpose a b x := Var (transpose_var a b x).
+
+  Lemma domain_subs_transpose a b : forall xs, domain xs (subs_transpose a b)
+    [=] if eqb a b then empty else inter xs (add a (singleton b)).
+
+  Proof.
+    apply set_induction_bis.
+    (* Equal *)
+    intros xs xs' xsxs'. destruct (eqb a b); rewrite xsxs'; auto.
+    (* empty *)
+    rewrite domain_empty. destruct (eqb a b). refl. rewrite inter_empty_l. refl.
+    (* add *)
+    intros x xs n IH. rewrite domain_add, IH. 2: hyp. unfold Def.domain_fun.
+    ens. unfold subs_transpose, Def.transpose_var. rewrite beq_term_var.
+    eq_dec x a. subst. eq_dec a b; eq_dec b a. refl. fo. fo. fset.
+    eq_dec x b. subst. eq_dec a b. refl. fset. eq_dec x x. 2: irrefl.
+    eq_dec a b. refl. fset; subst; irrefl.
+  Qed.
+
+  Lemma fvcod_subs_transpose a b : forall xs, fvcod xs (subs_transpose a b)
+    [=] union (remove a (remove b xs))
+              (union (if mem a xs then singleton b else empty)
+                     (if mem b xs then singleton a else empty)).
+
+  Proof.
+    apply set_induction_bis.
+    (* Equal *)
+    intros xs xs' xsxs'. rewrite xsxs'. auto.
+    (* empty *)
+    mem. rewrite fvcod_empty. fset.
+    (* add *)
+    intros x xs n IH. rewrite fvcod_add, IH. 2: hyp. mem. unfold Def.fvcod_fun.
+    ens. rewrite remove_add_if, eqb_sym.
+    unfold subs_transpose, Def.transpose_var, eqb.
+    eq_dec x a; eq_dec x b; do 2 subst; simpl.
+    rewrite !union_idem, !remove_idem. destruct (mem b xs); fset.
+    rewrite not_mem_iff in n.
+    rewrite n, remove_add_eq, union_empty_l, union_sym_2. refl.
+    rewrite not_mem_iff in n. rewrite n. destruct (mem a xs); fset.
+    rewrite remove_add_if. eq_dec a x. subst. irrefl.
+    rewrite add_union_singleton, union_assoc. refl.
+  Qed.
+
+  Lemma fvcodom_subs_transpose a b xs :
+    fvcodom xs (subs_transpose a b) [=] if eqb a b then empty
+      else union (if mem a xs then singleton b else empty)
+                 (if mem b xs then singleton a else empty).
+
+  Proof.
+    unfold Def.fvcodom. rewrite domain_subs_transpose.
+    eq_dec a b. rewrite fvcod_empty. refl.
+    rewrite fvcod_subs_transpose. mem. bool.
+    rewrite !remove_inter, <- remove_add_com. 2: hyp.
+    rewrite remove_singleton, remove_add_eq, remove_empty, inter_empty_r,
+      union_empty_l. refl.
+  Qed.
+
+  Lemma transpose_subs a b : forall u, ~In a (bv u) -> ~In b (bv u) ->
+    transpose a b u = subs (subs_transpose a b) u.
+
+  Proof.
+    unfold Def.transpose. induction u; simpl Def.bv; simpl Def.fv;
+      simpl Def.action; set_iff; intros h1 h2.
+    simpl. unfold subs_transpose, Def.transpose_var.
+    eq_dec x a; eq_dec x b; do 2 subst; refl.
+    refl.
+    rewrite IHu1, IHu2; fo.
+    (* Lam *)
+    rewrite IHu; [idtac|fo|fo].
+
+    assert (h : transpose_var a b x = x).
+    unfold Def.transpose_var. eq_dec x a. fo. eq_dec x b. fo. refl.
+
+    rewrite h, subs_lam_no_alpha.
+    Focus 2. rewrite fvcodom_subs_transpose. eq_dec a b. set_iff. fo.
+    mem. eq_dec x a. fo. eq_dec x b. fo. bool.
+    destruct (mem a (fv u)); destruct (mem b (fv u)); set_iff; fo.
+
+    apply (f_equal (Lam x)). rewrite update_id. refl.
+    unfold subs_transpose. rewrite h. refl.
+  Qed.
+
+  Lemma transpose_rename x y :
+    forall u, ~In y (fv u) -> ~In y (bv u) -> transpose x y u ~~ rename x y u.
+
+  Proof.
+    unfold Def.transpose.
+    induction u; simpl; set_iff; intros h1 h2; unfold Def.rename.
+    unfold Def.transpose_var, Def.single, Def.update; simpl.
+    eq_dec x0 x. refl. eq_dec x0 y. subst. irrefl. refl.
+    refl.
+    rewrite IHu1; [idtac|fo|fo]. rewrite IHu2; [idtac|fo|fo]. refl.
+    rewrite IHu; [idtac|fo|fo]. rewrite subs_lam_no_alpha.
+    Focus 2. rewrite fvcodom_single.
+    destruct (mem x (remove x0 (fv u)) && negb (beq_term (Var y) (Var x))).
+    simpl. set_iff. fo. set_iff. fo.
+    unfold Def.transpose_var. eq_dec x0 x. subst.
+    rewrite <- aeq_alpha. 2: fo. rewrite update_single_eq, single_id. refl.
+    eq_dec x0 y. fo. rewrite update_id_single. 2: fo. refl.
+  Qed.
+
+  (** [transpose] is invariant by [aeq]. *)
+
+  Instance transpose_aeq a b : Proper (aeq ==> aeq) (transpose a b).
+
+  Proof.
+    unfold Def.transpose.
+    intro u; revert u. ind_size1 u; intros u' uu'; inv_aeq uu'; subst; simpl.
+    refl. refl.
+    rewrite hu with (y:=u), hv with (y:=u1). refl. sym; hyp. sym; hyp.
+    (* Lam *)
+    rename x0 into y. rename u0 into v.
+    rewrite hu with (u':=v) (y:=rename x y u).
+    2: rewrite i0, size_rename; refl. 2: hyp.
+    eq_dec x y. subst. rewrite rename_id. refl.
+    eq_dec a b. subst.
+    fold (transpose b b u). fold (transpose b b (rename x y u)).
+    rewrite !transpose_var_id, !transpose_id. apply aeq_alpha. fo.
+
+    destruct (aeq_notin_bv (add y (add a (singleton b))) u) as [u' [h1 h2]].
+    rewrite inter_sym, inter_empty in h2.
+    assert (ha : ~In a (bv u')). apply h2. set_iff. auto.
+    assert (hb : ~In b (bv u')). apply h2. set_iff. auto.
+    assert (hy : ~In y (bv u')). apply h2. set_iff. auto.
+
+    rewrite hu with (u':=u) (y:=u'). 2: refl. 2: hyp.
+    rewrite hu with (u':=rename x y u) (y:=rename x y u').
+    2: rewrite size_rename; refl. 2: rewrite h1; refl.
+    fold (transpose a b u'). fold (transpose a b (rename x y u')).
+    rewrite transpose_subs; auto. rewrite transpose_subs.
+    2: rewrite bv_rename; auto. 2: rewrite bv_rename; auto.
+    rewrite <- h1, <- i0.
+
+    clear u' h1 h2 ha hb hy.
+    set (x' := transpose_var a b x). set (y' := transpose_var a b y).
+    set (u' := subs (subs_transpose a b) u).
+    set (v' := subs (subs_transpose a b) v).
+    set (xs := union (fv u') (fv v')). gen (var_notin_ok xs).
+    set (z := var_notin xs). unfold xs. set_iff. intuition.
+    rewrite aeq_alpha with (y:=z). 2: hyp.
+    rewrite aeq_alpha with (x:=y') (y:=z). 2: hyp.
+    unfold u', v'. rewrite i0. unfold Def.rename. rewrite !subs_comp.
+    apply aeq_refl_eq. apply (f_equal (Lam z)). apply subs_seq.
+    intros c hc. do 2 (unfold Def.comp at 1). unfold subs_transpose at 1.
+    unfold x', y'. unfold Def.transpose_var. simpl. unfold Def.single.
+    unfold Def.update at 3. eq_dec c x.
+    (* c = x *)
+    subst. rewrite update_eq. unfold Def.comp, subs_transpose. simpl.
+    unfold Def.transpose_var. rewrite update_eq. refl.
+    (* c <> x *)
+    unfold Def.id at 3. unfold Def.comp, subs_transpose. simpl.
+    unfold Def.transpose_var. eq_dec c y. subst. fo.
+    eq_dec c a. subst. eq_dec x a. subst. irrefl.
+    eq_dec y a. subst. irrefl. eq_dec x b. subst. rewrite update_neq. 2: hyp.
+    eq_dec y b. subst. irrefl. rewrite update_neq; auto.
+    rewrite update_neq. 2: hyp. eq_dec y b. subst.
+    rewrite update_neq; auto. rewrite update_neq; auto.
+    eq_dec x a. subst. eq_dec c b. subst. eq_dec y b. subst. irrefl.
+    rewrite update_neq. 2: hyp. eq_dec y a. rewrite update_neq; auto.
+    rewrite update_neq; auto. rewrite update_neq. 2: auto.
+    eq_dec y a. subst. irrefl. eq_dec y b. rewrite update_neq; auto.
+    unfold Def.update. eq_dec c y. subst. irrefl. refl.
+    eq_dec x b. subst. eq_dec c b. subst. irrefl. rewrite update_neq. 2: auto.
+    eq_dec y a. subst. rewrite update_neq; auto. eq_dec y b.
+    rewrite update_neq; auto. unfold Def.update. eq_dec c y.
+    subst. irrefl. refl. eq_dec c b. subst. rewrite update_neq. 2: hyp.
+    eq_dec y a. subst. rewrite update_neq; auto. eq_dec y b. subst. irrefl.
+    rewrite update_neq; auto. eq_dec y a. subst. rewrite !update_neq; auto.
+    eq_dec y b. subst. rewrite !update_neq; auto. rewrite !update_neq; auto.
   Qed.
 
 (***********************************************************************)
@@ -334,7 +663,8 @@ Module Make (Export L : L_Struct).
     apply aeq_kr_lam with (xs := xs); ens. intro y.
     unfold xs. set_iff. intro hy.
     apply hu. rewrite size_rename1. refl.
-    rewrite <- !rename1_no_alpha, i0, rename2. refl. hyp. fo. fo.
+    rewrite <- !rename1_no_alpha, i0, rename2. refl. hyp.
+    right. right. fo. right. right. fo.
   Qed.
 
   Lemma aeq_kr_le_aeq : aeq_kr << aeq.
@@ -348,6 +678,178 @@ Module Make (Export L : L_Struct).
     rewrite aeq_alpha with (y:=y), aeq_alpha with (x:=x') (y:=y). 2: fo. 2: fo.
     apply Lam_aeq. refl. rewrite !rename1_no_alpha. fo.
     right. right. fo. right. right. fo.
+  Qed.
+
+(***********************************************************************)
+(** ** Properties of Gabbay and Pitts's definition. *)
+
+  (** [aeq_gp] is reflexive. *)
+
+  Instance aeq_gp_refl : Reflexive aeq_gp.
+
+  Proof.
+    intro u; revert u. ind_size1 u.
+    apply aeq_gp_refl_var.
+    apply aeq_gp_refl_fun.
+    apply aeq_gp_app; hyp.
+    set (xs := union (add x (union (fv u) (bv u)))
+                     (add x (union (fv u) (bv u)))).
+    gen (var_notin_ok xs). set (z := var_notin xs). intro hz.
+    apply aeq_gp_lam with z. hyp. apply hu.
+    unfold Def.transpose. rewrite size_action. refl.
+  Qed.
+
+  (** [aeq_gp] is symmetric. *)
+
+  Instance aeq_gp_sym : Symmetric aeq_gp.
+
+  Proof.
+    intro u; revert u. ind_size1 u; intros t' h; inversion h; clear h; subst.
+    refl. refl. apply aeq_gp_app; fo. ens.
+    apply aeq_gp_lam with z. ens. rewrite union_sym. hyp.
+    apply hu. unfold Def.transpose. rewrite size_action. refl. hyp.
+  Qed.
+
+  (** [aeq_gp] is included in [aeq]. *)
+
+  Lemma aeq_gp_incl_aeq : aeq_gp << aeq.
+
+  Proof.
+    intros u v; revert u v; induction 1.
+    refl. refl. rewrite IHaeq_gp1, IHaeq_gp2. refl. ens. revert IHaeq_gp.
+    rewrite transpose_sym, transpose_sym with (x:=z).
+    rewrite transpose_rename; [idtac|fo|fo].
+    rewrite transpose_rename; [idtac|fo|fo]. intro IH.
+    rewrite aeq_alpha with (y:=z). 2: fo. rewrite IH, <- aeq_alpha; fo.
+  Qed.
+
+  (** [transpose] is invariant by [aeq_gp]. *)
+
+  Instance transpose_aeq_gp a b : Proper (aeq_gp ==> aeq_gp) (transpose a b).
+
+  Proof.
+    unfold Def.transpose. intros u v uv; revert u v uv a b.
+    ind_size1 u; intros u' uu' a b; inversion uu'; subst.
+    refl. refl. apply aeq_gp_app; fo.
+
+    ens. revert H1; set_iff; intro H1.
+    rename x' into y. rename u'0 into v. simpl.
+    set (x' := transpose_var a b x). set (u' := transpose a b u).
+    set (y' := transpose_var a b y). set (v' := transpose a b v).
+    set (xs := add z (add a (add b (union
+              (union (add x (union (fv u) (bv u)))
+                     (add y (union (fv v) (bv v))))
+              (union (add x' (union (fv u') (bv u')))
+                     (add y' (union (fv v') (bv v')))))))).
+    gen (var_notin_ok xs). set (z' := var_notin xs).
+    unfold xs. set_iff. intro hz'.
+
+    apply aeq_gp_lam with (z:=z'). ens. set_iff. fo. unfold Def.transpose.
+    do 2 rewrite action_comp.
+    rewrite action_eq with
+      (g := fun x0 => transpose_var a b (transpose_var z' x x0)).
+    rewrite action_eq with (u := v)
+      (g := fun x0 => transpose_var a b (transpose_var z' y x0)).
+    rewrite <- action_comp, <- action_comp with (u:=v).
+    apply hu. rewrite size_action. refl.
+
+    rewrite action_eq with
+      (g := fun x0 => transpose_var z' z (transpose_var z x x0)).
+    rewrite action_eq with (u := v)
+      (g := fun x0 => transpose_var z' z (transpose_var z y x0)).
+    rewrite <- action_comp, <- action_comp with (u:=v).
+    apply hu. rewrite size_action. refl. hyp.
+
+    intros x0 h0. unfold Def.transpose_var. eq_dec x0 z. subst. fo.
+    eq_dec x0 y. subst. eq_dec z z. 2: irrefl. eq_dec y z'. fo.
+    eq_dec z z'. fo. refl. eq_dec x0 z'. subst. fo. eq_dec x0 z. subst.
+    irrefl. refl.
+
+    intros x0 h0. unfold Def.transpose_var. eq_dec x0 z. subst. fo.
+    eq_dec x0 x. subst. eq_dec z z. 2: irrefl. eq_dec x z'. fo.
+    eq_dec z z'. fo. refl. eq_dec x0 z'. subst. fo. eq_dec x0 z. subst.
+    irrefl. refl.
+
+    intros x0 h0. rewrite !not_or in hz', H1. decomp hz'. decomp H1.
+    unfold y', x', Def.transpose_var. eq_dec x0 z'. subst.
+    eq_dec z' a. fo. eq_dec z' b. fo. eq_dec z' z'. 2: irrefl. eq_dec y a.
+    refl. eq_dec y b. refl. refl. eq_dec x0 y. subst. eq_dec z' a. fo.
+    eq_dec z' b. fo. eq_dec y a. eq_dec b z'. hyp. eq_dec b b. 2: irrefl. refl.
+    eq_dec y b. eq_dec a z'. fo. eq_dec a a. 2: irrefl. refl.
+    eq_dec y z'. fo. eq_dec y y. 2: irrefl. refl.
+    eq_dec x0 a. subst. eq_dec b z'. fo. eq_dec y b. eq_dec y a. eq_dec b b.
+    fo. refl. eq_dec b a. absurd (y=a). hyp. trans b; hyp. refl.
+    eq_dec y a. eq_dec b b. 2: irrefl. fo. eq_dec b y. fo. refl.
+    eq_dec x0 b. subst. eq_dec a z'. fo. eq_dec y a. eq_dec a b. fo. refl.
+    eq_dec y b. eq_dec a a. 2: irrefl. fo. eq_dec a y. fo. refl.
+    eq_dec x0 z'. fo. eq_dec y a. eq_dec x0 b. fo. refl.
+    eq_dec y b. eq_dec x0 a. fo. refl. eq_dec x0 y. fo. refl.
+
+    intros x0 h0. unfold x', Def.transpose_var. eq_dec x0 z'. subst. fo.
+    eq_dec x0 x. subst. eq_dec x a. eq_dec b z'. fo. eq_dec b b. 2: irrefl.
+    eq_dec z' a. fo. eq_dec z' b. fo. refl.
+    eq_dec x b. eq_dec a a. 2: irrefl. eq_dec a z'. fo. eq_dec z' a. fo.
+    eq_dec z' b. fo. refl. eq_dec x x. 2: irrefl. eq_dec z' a. fo.
+    eq_dec x z'. fo. eq_dec z' b. fo. refl.
+    eq_dec x0 a. subst. eq_dec b z'. fo. eq_dec x a. fo. eq_dec x b.
+    eq_dec b a. absurd (x=a). hyp. trans b; hyp. refl. eq_dec b x. fo. refl.
+    eq_dec x0 b. subst. eq_dec a z'. fo. eq_dec x a. eq_dec a b. fo. refl.
+    eq_dec x b. eq_dec a a. 2: irrefl. fo. eq_dec a x. fo. refl.
+    eq_dec x0 z'. fo. eq_dec x a. eq_dec x0 b. fo. refl. eq_dec x b.
+    eq_dec x0 a. fo. refl. eq_dec x0 x. fo. refl.
+  Qed.
+
+  (** [aeq_gp] is transitive. *)
+
+  Instance aeq_gp_trans : Transitive aeq_gp.
+
+  Proof.
+    intro u; revert u. ind_size1 u; intros b c tb bc;
+      inversion tb; clear tb; subst; inversion bc; clear bc; subst.
+    refl. refl. apply aeq_gp_app; fo. ens.
+    rename x' into y. rename u' into v. rename z into a.
+    rename x'0 into z. rename u'0 into w. rename z0 into b.
+    set (xs := union (union (add x (union (fv u) (bv u)))
+                            (add y (union (fv v) (bv v))))
+                            (add z (union (fv w) (bv w)))).
+    gen (var_notin_ok xs). set (c := var_notin xs).
+    unfold xs. revert H1 H2. set_iff. intros ha hb hc.
+    apply aeq_gp_lam with (z:=c). ens. set_iff. fo.
+    apply hu with (y := transpose c y v).
+    unfold Def.transpose. rewrite size_action. refl.
+
+    rewrite transpose_sym.
+    erewrite <- transpose_comp with (b:=a); [idtac|fo|fo|fo|fo].
+    rewrite transpose_sym with (x:=c).
+    erewrite <- transpose_comp with (u:=v) (b:=a); [idtac|fo|fo|fo|fo].
+    rewrite transpose_sym with (x:=x), transpose_sym with (x:=y).
+    apply transpose_aeq_gp. hyp.
+
+    rewrite transpose_sym.
+    erewrite <- transpose_comp with (b:=b); [idtac|fo|fo|fo|fo].
+    rewrite transpose_sym with (x:=c).
+    erewrite <- transpose_comp with (u:=w) (b:=b); [idtac|fo|fo|fo|fo].
+    rewrite transpose_sym with (x:=y), transpose_sym with (x:=z).
+    apply transpose_aeq_gp. hyp.
+  Qed.
+
+  (** [aeq] is included in [aeq_gp]. *)
+
+  Lemma aeq_incl_aeq_gp : aeq << aeq_gp.
+
+  Proof.
+    intro u; revert u. ind_size1 u; intros u' uu'; inv_aeq uu'; subst.
+    refl. refl. apply aeq_gp_app; fo.
+    set (xs := union (union (add x (union (fv u) (bv u)))
+                            (add x0 (union (fv u0) (bv u0))))
+                     (union (fv (rename x x0 u)) (bv (rename x x0 u)))).
+    gen (var_notin_ok xs). set (z := var_notin xs).
+    unfold xs. set_iff. intro hz.
+    apply aeq_gp_lam with (z:=z). ens. set_iff. fo. apply hu.
+    unfold Def.transpose. rewrite size_action. refl.
+    rewrite i0, transpose_sym. rewrite transpose_rename; [idtac|fo|fo].
+    rewrite transpose_sym. rewrite transpose_rename; [idtac|fo|fo].
+    rewrite rename2. refl. hyp.
   Qed.
 
 End Make.
