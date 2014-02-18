@@ -14,6 +14,29 @@ Require Export EqdepFacts Eqdep_dec.
 Require Setoid.
 
 (***********************************************************************)
+(** Leibniz equality is an Equivalence. *)
+
+Section Leibniz.
+
+  Variable t : Type.
+
+  Notation eq := (@Logic.eq t).
+
+  Global Instance eq_refl : Reflexive eq.
+
+  Proof. fo. Qed.
+
+  Global Instance eq_sym : Symmetric eq.
+
+  Proof. fo. Qed.
+
+  Global Instance eq_trans : Transitive eq.
+
+  Proof. class. Qed.
+
+End Leibniz.
+
+(***********************************************************************)
 (** Functor providing properties of Leibniz equality. *)
 
 Module LeibnizFacts (Import T : Typ).
