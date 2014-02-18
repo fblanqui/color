@@ -7,13 +7,15 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil LogicUtil Setoid
-  VecEq VecOrd AMatrixBasedInt.
+Require Import Morphisms AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil
+  LogicUtil Setoid VecOrd AMatrixBasedInt.
 
 (** Module type for proving termination with matrix interpretations *)
+
 Module Type TTropicalBasedInt.
 
   Declare Module Export OSR : OrdSemiRingType.
+
   Module Export M := Matrix OSR.
 
   Parameter sig : Signature.
@@ -23,9 +25,7 @@ Module Type TTropicalBasedInt.
 
 End TTropicalBasedInt.
 
-Module TropicalBasedInt (TBI : TTropicalBasedInt).
-
-  Export TBI.
+Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
   Module Conf <: MatrixMethodConf.
 
@@ -73,17 +73,17 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
     Definition gtx x y := x >> y \/ (x =A= PlusInf /\ y =A= PlusInf).
     Notation "x >_0 y" := (gtx x y) (at level 70).
 
-    Add Morphism gtx with signature eqA ==> eqA ==> iff as gtx_mor.
+    Global Instance gtx_mor : Proper (eqA ==> eqA ==> iff) gtx.
 
     Proof.
-      unfold gtx. intuition. left. rewrite <- H. rewrite <- H0. hyp. right.
-      split. trans x. sym. hyp. hyp. trans x0. sym.
-      hyp. hyp.
-      left. rewrite H. rewrite H0. hyp. right. split.
-      trans y; hyp. trans y0; hyp.
+      intros x x' xx' y y' yy'. unfold gtx. intuition.
+      left. rewrite <- xx', <- yy'. hyp. right.
+      split. trans x. sym. hyp. hyp. trans y. sym. hyp. hyp.
+      left. rewrite xx', yy'. hyp. right. split.
+      trans x'; hyp. trans y'; hyp.
     Qed.
 
-    Lemma gtx_trans : transitive gtx.
+    Global Instance gtx_trans : Transitive gtx.
 
     Proof.
       unfold gtx. intros x y z. intuition.
@@ -96,13 +96,14 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
-    Lemma trans_succ : transitive succ.
+    Global Instance succ_trans : Transitive succ.
 
     Proof.
-      unfold succ. apply Rof_trans with (f:=dom2vec). unfold succ_vec.
-      apply Vreln_trans. apply gtx_trans.      
+      change (Transitive (Rof succ_vec dom2vec)). apply Rof_trans.
+      unfold succ_vec. class.
     Qed.
 
+    (*FIXME: Proper*)
     Lemma ge_gtx_compat : forall x y z, x >>= y -> y >_0 z -> x >_0 z.
 
     Proof.
@@ -253,8 +254,8 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
 
     Proof.
       intros. unfold succ_vec. apply Vforall2n_intro. intros. destruct H.
-      eapply gtx_mor. apply (Vnth_mor eqA); rewrite mint_eval_split; refl.
-      apply (Vnth_mor eqA). rewrite mint_eval_split. refl.
+      eapply gtx_mor. apply Vreln_elim_nth; rewrite mint_eval_split; refl.
+      apply Vreln_elim_nth. rewrite mint_eval_split. refl.
       do 2 rewrite vector_plus_nth.
       apply gtx_plus_compat. 
       apply Vforall2n_nth. hyp.
@@ -272,7 +273,7 @@ Module TropicalBasedInt (TBI : TTropicalBasedInt).
     Proof.
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in *.
       unfold succ. unfold succ_vec. symmetry in H. symmetry in H0.
-      rewrite (Vforall2n_mor sid_theoryA gtx_mor H H0).
+      rewrite (Vforall2n_reln gtx_mor _ _ H _ _ H0).
       apply mint_eval_mon_succ. hyp.
     Qed.
 

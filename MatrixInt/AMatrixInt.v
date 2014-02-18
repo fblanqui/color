@@ -17,7 +17,7 @@ References:
 Set Implicit Arguments.
 
 Require Import LogicUtil Setoid Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  AWFMInterpretation VecEq NatUtil VecOrd AMatrixBasedInt.
+  AWFMInterpretation NatUtil VecOrd AMatrixBasedInt.
 
 Import NMatrix.
 
@@ -157,7 +157,7 @@ Module MatrixInt (MI : TMatrixInt).
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in * .
       unfold succ, I, succ_vec. symmetry in H. symmetry in H0.
       rewrite (vec_ge_mor H H0).
-      rewrite (Vnth_mor _ H dim_pos). rewrite (Vnth_mor _ H0 dim_pos).
+      rewrite (Vreln_elim_nth dim_pos H), (Vreln_elim_nth dim_pos H0).
       change (succ_vec (mint_eval v
         (mi_of_term (ABterm.inject_term (Max.le_max_l (maxvar l) (maxvar r)))))
       (mint_eval v (mi_of_term

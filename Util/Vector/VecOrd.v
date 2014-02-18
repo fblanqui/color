@@ -410,7 +410,30 @@ Section Vreln.
     rewrite !Vnth_sub. apply Vforall2n_nth. hyp.
   Qed.
 
-  (** Morphisms. *)
+End Vreln.
+
+Arguments Vreln_sub_intro [A R n v1 v2 p q] _ _.
+Arguments Vreln_elim_nth [A R n ts us i] _ _.
+
+Section map.
+
+  Variables (A : Type) (R : relation A) (B : Type) (S : relation B)
+            (f g : A -> B).
+
+  Lemma Vreln_map_intro : forall n (v : vector A n),
+    Vforall (fun x => S (f x) (g x)) v -> Vreln S (Vmap f v) (Vmap g v).
+
+  Proof.
+    induction v; simpl; intros. refl. rewrite Vreln_cons. intuition.
+  Qed.
+
+End map.
+
+(** Morphisms. *)
+
+Section opt_filter.
+
+  Variables (A : Type) (R : relation A).
 
   Global Instance Vopt_filter_reln n (ks : vector nat n) p :
     Proper (Vreln R ==> Vreln (opt_r R)) (Vopt_filter ks (p:=p)).
@@ -421,10 +444,72 @@ Section Vreln.
     apply opt_r_Some. apply Vreln_elim_nth. hyp. apply opt_r_None.
   Qed.
 
-End Vreln.
+End opt_filter.
 
-Arguments Vreln_sub_intro [A R n v1 v2 p q] _ _.
-Arguments Vreln_elim_nth [A R n ts us i] _ _.
+Section forall2.
+
+  Variables (A : Type) (R : relation A) (B : Type) (S : relation B)
+            (f : A -> B -> Prop) (f_R : Proper (R ==> S ==> iff) f).
+
+  Global Instance Vforall2_reln n1 n2 :
+    Proper (Vreln R ==> Vreln S ==> iff) (Vforall2 f (n1:=n1) (n2:=n2)).
+
+  Proof.
+    intros u u' uu' v v' vv'; revert n1 u u' uu' n2 v v' vv'.
+    induction u; simpl; intros. VOtac. simpl.
+    destruct v. VOtac. tauto. VSntac v'. tauto.
+    revert uu'. VSntac u'. simpl. destruct v'. VOtac. tauto.
+    revert vv'. VSntac v. rewrite !Vreln_cons.
+    intros [h1 h2] [h3 h4]. rewrite <- (f_R h3 h1), (IHu _ h4 _ _ _ h2). tauto.
+  Qed.
+
+End forall2.
+
+Section forall2n.
+
+  Variables (A : Type) (R : relation A)
+            (f : A -> A -> Prop) (f_R : Proper (R ==> R ==> iff) f).
+
+  Global Instance Vforall2n_reln n :
+    Proper (Vreln R ==> Vreln R ==> iff) (Vforall2n f (n:=n)).
+
+  Proof. intros. unfold Vforall2n. apply Vforall2_reln. hyp. Qed.
+
+End forall2n.
+
+Section fold_left.
+
+  Variables (A : Type) (R : relation A) (B : Type) (S : relation B)
+            (f : B -> A -> B) (f_S : Proper (S ==> R ==> S) f).
+
+  Global Instance Vfold_left_reln n :
+    Proper (S ==> Vreln R ==> S) (Vfold_left f (n:=n)).
+
+  Proof.
+    intros b b' bb' v v' vv'. induction v; simpl; intros. VOtac. simpl. hyp.
+    revert vv'. VSntac v'. rewrite Vreln_cons. intuition. simpl.
+    apply f_S; try hyp. apply IHv; hyp.
+  Qed.
+
+End fold_left.
+
+Section map2.
+
+  Variables (A : Type) (R : relation A) (B : Type) (S : relation B)
+            (C : Type) (T : relation C)
+            (f : A -> B -> C) (f_mor : Proper (R ==> S ==> T) f).
+
+  Global Instance Vmap2_reln n :
+    Proper (Vreln R ==> Vreln S ==> Vreln T) (Vmap2 f (n:=n)).
+
+  Proof.
+    intros u u' uu' v v' vv'; revert u u' uu' v v' vv'.
+    induction u; simpl; intros. refl.
+    revert uu'. VSntac u'. revert vv'. VSntac v. VSntac v'. simpl.
+    rewrite !Vreln_cons. fo.
+  Qed.
+
+End map2.
 
 (***********************************************************************)
 (** ** Extension of a relation on vectors of [option A]
