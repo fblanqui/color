@@ -393,8 +393,7 @@ Section Vreln.
 
   Proof. subst n'. rewrite 2!Vcast_refl. refl. Qed.
 
-  (*FIXME: change arguments order of Vnth to declare Vnth_Vreln as
-  Proper Instance?*)
+  (*FIXME: change arguments order of Vnth to declare it as Proper?*)
   Lemma Vreln_elim_nth : forall n (ts us : vector A n) i (hi : i<n),
     Vreln R ts us -> R (Vnth ts hi) (Vnth us hi).
 
