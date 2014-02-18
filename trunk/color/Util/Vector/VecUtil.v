@@ -1378,15 +1378,15 @@ Section Vforall2_sec.
 
   Variables (A B : Type) (R : A -> B -> Prop).
 
-  Fixpoint Vforall2n_aux n1 (v1 : vector A n1) n2 (v2 : vector B n2) : Prop :=
+  Fixpoint Vforall2 n1 n2 (v1 : vector A n1) (v2 : vector B n2) : Prop :=
     match v1, v2 with
       | Vnil, Vnil => True
-      | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2n_aux v w
+      | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2 v w
       | _, _ => False
     end.
 
   Definition Vforall2n {n} (v1 : vector A n) (v2 : vector B n) :=
-    Vforall2n_aux v1 v2.
+    Vforall2 v1 v2.
 
   Lemma Vforall2n_tail : forall n (v1 : vector A (S n)) (v2 : vector B (S n)),
     Vforall2n v1 v2 -> Vforall2n (Vtail v1) (Vtail v2).
@@ -1423,8 +1423,8 @@ Section Vforall2_dec.
 
   Variables (A : Type) (R : relation A) (R_dec : rel_dec R).
 
-  Lemma Vforall2n_aux_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2), 
-    {Vforall2n_aux R v1 v2} + {~Vforall2n_aux R v1 v2}.
+  Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2), 
+    {Vforall2 R v1 v2} + {~Vforall2 R v1 v2}.
 
   Proof.
     induction v1; destruct v2; simpl; auto.
@@ -1434,27 +1434,27 @@ Section Vforall2_dec.
 
   Lemma Vforall2n_dec : forall n, rel_dec (@Vforall2n A A R n).
 
-  Proof. intros n v1 v2. unfold Vforall2n. apply Vforall2n_aux_dec. Defined.
+  Proof. intros n v1 v2. unfold Vforall2n. apply Vforall2_dec. Defined.
 
 End Vforall2_dec.
 
 (** Boolean function deciding [Vforall2]. *)
 
-Section bVforall2_sec.
+Section bVforall2.
 
   Variables (A B : Type) (P : A -> B -> bool).
 
-  Fixpoint bVforall2n_aux n1 (v1 : vector A n1) n2 (v2 : vector B n2) : bool :=
+  Fixpoint bVforall2 n1 n2 (v1 : vector A n1) (v2 : vector B n2) : bool :=
     match v1, v2 with
       | Vnil, Vnil => true
-      | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2n_aux xs ys
+      | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2 xs ys
       | _, _ => false
     end.
 
   Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) :=
-    bVforall2n_aux v1 v2.
+    bVforall2 v1 v2.
 
-End bVforall2_sec.
+End bVforall2.
 
 (***********************************************************************)
 (** ** Predicate saying that some element of a vector satisfies some
@@ -1595,7 +1595,7 @@ Section Vfolds.
 
   (** Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an. *)
 
-  Fixpoint Vfold_left (B : Type) (f : B->A->B) (b:B) n (v : vector A n) : B :=
+  Fixpoint Vfold_left (B : Type) (f : B->A->B) n (b:B) (v : vector A n) : B :=
     match v with
       | Vnil => b
       | Vcons a _ w => f (Vfold_left f b w) a

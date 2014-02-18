@@ -8,7 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import ATropicalBasedInt Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool VecOrd.
+  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool VecOrd
+  Structures.Equalities.
 
 (* TODO: this should be moved to Matrix.v *)
 Module Import TropicalMatrix := Matrix TropicalOrdSemiRingT.
@@ -236,11 +237,11 @@ Module TropicalInt (Import AI : TTropicalInt).
       apply WF_inverse. apply gt_WF.
     Qed.
 
-    Lemma trans_succ : transitive succ.
+    Instance trans_succ : Transitive succ.
 
     Proof.
-      unfold succ, AIBase.succ. apply Rof_trans with (f:=dom2vec).
-      unfold succ_vec. apply Vreln_trans. apply gtx_trans.
+      change (transitive (Rof succ_vec dom2vec)). apply Rof_trans.
+      apply Vreln_trans. class.
     Qed.
   
   End MonotoneAlgebra.

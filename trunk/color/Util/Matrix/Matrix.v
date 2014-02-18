@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 *)
 
 Require Import VecArith OrdSemiRing VecUtil NatUtil LogicUtil Relations List
-  Setoid VecEq VecOrd.
+  Setoid VecOrd Morphisms RelUtil.
 
 Set Implicit Arguments.
 
@@ -56,34 +56,24 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Notation "M =m N" := (mat_eqA M N) (at level 70).
 
-  Lemma mat_eqA_refl : forall m n (M : matrix m n), M =m M.
-  Proof.
-    unfold mat_eqA. refl.
-  Qed.
+  Instance mat_eqA_refl m n : Reflexive (@mat_eqA m n).
 
-  Lemma mat_eqA_sym : forall m n (M N : matrix m n), M =m N -> N =m M.
-  Proof.
-    unfold mat_eqA. intros. sym. apply H.
-  Qed.
+  Proof. fo. Qed.
 
-  Lemma mat_eqA_trans : forall m n (M N P : matrix m n),
-    M =m N -> N =m P -> M =m P.
-  Proof.
-    unfold mat_eqA. intros. trans (get_elem N ip jp); auto.
-  Qed.
+  Instance mat_eqA_sym m n : Symmetric (@mat_eqA m n).
 
-  Definition mat_eqA_st : forall m n, Setoid_Theory (matrix m n) (@mat_eqA m n).
+  Proof. fo. Qed.
+
+  Instance mat_eqA_trans m n : Transitive (@mat_eqA m n).
 
   Proof.
-    constructor. unfold Reflexive. apply mat_eqA_refl.
-    unfold Symmetric. apply mat_eqA_sym. unfold Transitive. apply mat_eqA_trans.
+    unfold mat_eqA, Transitive. intros. trans (get_elem y ip jp); auto.
   Qed.
 
-  Add Parametric Relation m n : (matrix m n) (@mat_eqA m n)
-    reflexivity proved by (@mat_eqA_refl m n)
-    symmetry proved by (@mat_eqA_sym m n)
-    transitivity proved by (@mat_eqA_trans m n)
-   as mat_eqA_rel.
+  (*REMOVE?*)
+  Instance mat_eqA_equiv m n : Equivalence (@mat_eqA m n).
+
+  Proof. constructor; class. Qed.
 
   Lemma mat_eq : forall m n (M N : matrix m n), 
     (forall i j (ip : i < m) (jp : j < n), 
@@ -100,27 +90,23 @@ Module Matrix (OSRT : OrdSemiRingType).
     unfold get_elem, get_row. do 2 rewrite Vnth_tail. apply H.
   Qed.
 
-  Add Parametric Morphism m n i (h:i<m) : (fun M => @get_row m n M i h)
-    with signature (@mat_eqA m n) ==> (@eq_vec n)
-      as get_row_mor.
+  Instance get_row_mor m n i (h:i<m) :
+    Proper (@mat_eqA m n ==> Vreln eqA) (fun M => @get_row m n M i h).
 
-  Proof. intros. apply Vforall2n_intro. intros. apply H. Qed.
+  Proof. intros M N MN. apply Vforall2n_intro. intros. apply MN. Qed.
 
-  Add Parametric Morphism m n i (h:i<n) : (fun M => @get_col m n M i h)
-    with signature (@mat_eqA m n) ==> (@eq_vec m)
-      as get_col_mor.
+  Instance get_col_mor m n i (h:i<n) :
+    Proper (@mat_eqA m n ==> Vreln eqA) (fun M => @get_col m n M i h).
 
   Proof.
-    intros. unfold eq_vec. apply Vforall2n_intro. intros.
-    rewrite <- !get_elem_swap. apply H.
+    intros M N MN. apply Vforall2n_intro. intros. rewrite <- !get_elem_swap.
+    apply MN.
   Qed.
 
-  Add Parametric Morphism m n i j (ip:i<m) (jp:j<n) :
-    (fun M => @get_elem m n M i j ip jp)
-    with signature (@mat_eqA m n) ==> eqA
-      as get_elem_mor.
+  Instance get_elem_mor m n i j (ip:i<m) (jp:j<n) :
+    Proper (@mat_eqA m n ==> eqA) (fun M => @get_elem m n M i j ip jp).
 
-  Proof. unfold get_elem. intros. apply H. Qed.
+  Proof. fo. Qed.
 
 (***********************************************************************)
 (** matrix construction *)
@@ -184,15 +170,14 @@ Module Matrix (OSRT : OrdSemiRingType).
   Definition vec_to_col_mat n (v : vec n) : col_mat n := 
     Vmap (fun i => Vcons i Vnil) v.
 
-  Add Parametric Morphism n : (@vec_to_col_mat n)
-    with signature (@eq_vec n) ==> (@mat_eqA n 1)
-    as vec_to_col_mat_mor.
+  Instance vec_to_col_mat_mor n :
+    Proper (Vreln eqA ==> @mat_eqA n 1) (@vec_to_col_mat n).
 
   Proof.
-    unfold vec_to_col_mat, mat_eqA, get_elem. intros.
+    unfold vec_to_col_mat, mat_eqA, get_elem. intros u u' uu' i j ip jp.
     rewrite !get_elem_swap. unfold get_col. rewrite !Vnth_map.
-    apply (Vnth_mor eqA). rewrite (eq_vec_cons eqA). intuition.
-    apply (Vnth_mor eqA). hyp.
+    apply Vreln_elim_nth. rewrite Vreln_cons. intuition.
+    apply Vreln_elim_nth. hyp.
   Qed.
 
   Definition access_0 : 0 < 1 := le_n 1.
@@ -339,12 +324,11 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Infix "<*>" := mat_mult (at level 40).
 
-  Add Parametric Morphism m n p : (@mat_mult m n p)
-    with signature (@mat_eqA m n) ==> (@mat_eqA n p) ==> (@mat_eqA m p)
-      as mat_mult_mor.
+  Instance mat_mult_mor m n p :
+    Proper (@mat_eqA m n ==> @mat_eqA n p ==> @mat_eqA m p) (@mat_mult m n p).
 
   Proof.
-    unfold mat_mult. intros. unfold mat_eqA. intros.
+    intros M M' MM' N N' NN'. unfold mat_mult. intros. unfold mat_eqA. intros.
     rewrite !mat_build_elem. apply dot_product_mor.
     apply get_row_mor. hyp. apply get_col_mor. hyp.
   Qed.
@@ -462,13 +446,12 @@ Module Matrix (OSRT : OrdSemiRingType).
   Definition mat_vec_prod m n (m : matrix m n) (v : vec n) :=
     col_mat_to_vec (m <*> (vec_to_col_mat v)).
 
-  Add Parametric Morphism m n : (@mat_vec_prod m n)
-    with signature (@mat_eqA m n) ==> (@eq_vec n) ==> (@eq_vec m)
-    as mat_vec_prod_mor.
+  Instance mat_vec_prod_mor m n :
+    Proper (@mat_eqA m n ==> Vreln eqA ==> Vreln eqA) (@mat_vec_prod m n).
 
   Proof.
-    unfold mat_vec_prod. intros. apply get_col_mor. rewrite H. rewrite H0.
-    refl.
+    intros M M' MM' v v' vv'. unfold mat_vec_prod. apply get_col_mor.
+    rewrite MM', vv'. refl.
   Qed.
 
   Lemma mat_vec_prod_distr_vec : forall m n (M : matrix m n) v1 v2,
@@ -480,7 +463,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     rewrite vector_plus_nth. mat_get_simpl.
     rewrite !mat_mult_elem, <- dot_product_distr_r.
     apply dot_product_mor. refl.
-    unfold eq_vec. apply Vforall2n_intro. intros. unfold get_col.
+    apply Vforall2n_intro. intros. unfold get_col.
     rewrite !Vnth_map. simpl. rewrite vector_plus_nth.
     unfold vector_plus. rewrite Vnth_map2, !Vnth_map. refl.
   Qed.
@@ -490,7 +473,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     mat_vec_prod Ml v [+] mat_vec_prod Mr v.
 
   Proof.
-    intros. unfold mat_vec_prod, eq_vec. apply Vforall2n_intro. intros.
+    intros. unfold mat_vec_prod. apply Vforall2n_intro. intros.
     rewrite vector_plus_nth. mat_get_simpl. rewrite !mat_mult_elem.
     set (a := get_col (Vmap (fun i0 : A => Vcons i0 Vnil) v) access_0).
     rewrite (dot_product_comm (get_row Ml ip)),
@@ -507,7 +490,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     induction k; intros.
      (* induction base *)
     VOtac. unfold add_vectors. simpl.
-    unfold eq_vec. apply Vforall2n_intro. intros.
+    apply Vforall2n_intro. intros.
     unfold mat_vec_prod. rewrite Vnth_col_mat.
     unfold zero_vec. rewrite Vnth_const.
     rewrite mat_mult_spec. 
@@ -605,6 +588,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
     Definition mat_ge := mat_forall2 ge.
+
     Infix ">=m" := mat_ge (at level 70).
 
     Lemma mat_ge_refl : M >=m M.
@@ -648,6 +632,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   End MatMultMonotonicity.
 
+  (*FIXME: Proper*)
   Lemma mat_vec_prod_ge_compat : forall i j (M M' : matrix i j) m m', 
     mat_ge M M' -> m >=v m' -> mat_vec_prod M m >=v mat_vec_prod M' m'.
 
