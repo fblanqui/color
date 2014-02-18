@@ -337,11 +337,6 @@ End option.
 (***********************************************************************)
 (** tactics *)
 
-Ltac pair_destruct t0 t1 :=
-  first [destruct t0 | intros until t0; destruct t0];
-  first [destruct t1 | intros until t1; destruct t1];
-  try contr; simpl.
-
 Ltac rewrite_lr term := apply (proj1 term).
 Ltac rewrite_rl term := apply (proj2 term).
 
