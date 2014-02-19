@@ -11,7 +11,7 @@ Arithmetic over vectors on some semiring.
 Set Implicit Arguments.
 
 Require Import VecUtil RelUtil SemiRing OrdSemiRing NatUtil LogicUtil
-  Setoid VecOrd Morphisms.
+  Setoid Morphisms.
 
 Module VectorArith (SRT : SemiRingType).
 
@@ -23,7 +23,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Definition id_vec n i (ip : i < n) := Vreplace (zero_vec n) ip A1.
 
-  Notation "v1 =v v2" := (Vreln eqA v1 v2) (at level 70).
+  Notation "v1 =v v2" := (Vforall2 eqA v1 v2) (at level 70).
 
   (***********************************************************************)
   (** addition *)
@@ -33,13 +33,13 @@ Module VectorArith (SRT : SemiRingType).
   Infix "[+]" := vector_plus (at level 50).
 
   Instance vector_plus_mor n :
-    Proper (Vreln eqA ==> Vreln eqA ==> Vreln eqA) (@vector_plus n).
+    Proper (Vforall2 eqA ==> Vforall2 eqA ==> Vforall2 eqA) (@vector_plus n).
 
   Proof.
-    intros u u' uu' v v' vv'. apply Vforall2n_intro. intros. unfold vector_plus.
-    rewrite !Vnth_map2.
+    intros u u' uu' v v' vv'. apply Vforall2_intro_nth. intros.
+    unfold vector_plus. rewrite !Vnth_map2.
     (*FIXME: rewrite H does not work even if Vnth is declared as morphism *)
-    apply Aplus_mor; apply Vreln_elim_nth; hyp.
+    apply Aplus_mor; apply Vforall2_elim_nth; hyp.
   Qed.
 
   Lemma vector_plus_nth : forall n (vl vr : vec n) i (ip : i < n),
@@ -50,20 +50,20 @@ Module VectorArith (SRT : SemiRingType).
   Lemma vector_plus_comm : forall n (v1 v2 : vec n), v1 [+] v2 =v v2 [+] v1.
 
   Proof.
-    intros. apply Vforall2n_intro. intros. do 2 rewrite vector_plus_nth. ring.
+    intros. apply Vforall2_intro_nth. intros. do 2 rewrite vector_plus_nth. ring.
   Qed.
 
   Lemma vector_plus_assoc : forall n (v1 v2 v3 : vec n),
     v1 [+] (v2 [+] v3) =v v1 [+] v2 [+] v3.
 
   Proof.
-    intros. apply Vforall2n_intro. intros. do 4 rewrite vector_plus_nth. ring.
+    intros. apply Vforall2_intro_nth. intros. do 4 rewrite vector_plus_nth. ring.
   Qed.
 
   Lemma vector_plus_zero_r : forall n (v : vec n), v [+] zero_vec n =v v.
 
   Proof.
-    intros. apply Vforall2n_intro. intros. rewrite vector_plus_nth.
+    intros. apply Vforall2_intro_nth. intros. rewrite vector_plus_nth.
     set (w := Vnth_const A0 ip). fold zero_vec in w. rewrite w. ring.
   Qed.
 
@@ -80,13 +80,13 @@ Module VectorArith (SRT : SemiRingType).
     Vfold_left (@vector_plus n) (zero_vec n) v.
 
   Instance add_vectors_mor n k :
-    Proper (Vreln (Vreln eqA) ==> Vreln eqA) (@add_vectors n k).
+    Proper (Vforall2 (Vforall2 eqA) ==> Vforall2 eqA) (@add_vectors n k).
 
   Proof.
     induction x; simpl; intros. VOtac. refl. revert H. VSntac y.
-    unfold add_vectors. simpl. rewrite Vreln_cons. intuition.
+    unfold add_vectors. simpl. rewrite Vforall2_cons_eq. intuition.
     rewrite H1. apply vector_plus_mor. 2: refl.
-    eapply Vfold_left_reln. apply vector_plus_mor. refl. hyp.
+    eapply Vfold_left_proper. apply vector_plus_mor. refl. hyp.
   Qed.
 
   Lemma add_vectors_cons : forall n i (a : vec n) (v : vector (vec n) i),
@@ -118,7 +118,7 @@ Module VectorArith (SRT : SemiRingType).
   Proof.
     induction vs; simpl; intros.
     unfold add_vectors, zero_vec; simpl. rewrite Vnth_const. refl.
-    rewrite Vreln_elim_nth. 2: rewrite add_vectors_cons; refl.
+    rewrite (Vforall2_elim_nth (R:=eqA)). 2: rewrite add_vectors_cons; refl.
     rewrite vector_plus_nth. rewrite IHvs. rewrite Aplus_comm. refl.
   Qed.
 
@@ -147,13 +147,13 @@ Module VectorArith (SRT : SemiRingType).
     Vfold_left Aplus A0 (Vmap2 Amult l r).
 
   Instance dot_product_mor n :
-    Proper (Vreln eqA ==> Vreln eqA ==> eqA) (@dot_product n).
+    Proper (Vforall2 eqA ==> Vforall2 eqA ==> eqA) (@dot_product n).
 
   Proof.
     intros u u' uu' v v' vv'; revert u u' uu' v v' vv'.
     induction n; intros. VOtac. refl.
     revert uu' vv'. VSntac u. VSntac v. VSntac u'. VSntac v'. intros H3 H4.
-    rewrite Vreln_cons in H3. rewrite Vreln_cons in H4. intuition.
+    rewrite Vforall2_cons_eq in H3. rewrite Vforall2_cons_eq in H4. intuition.
     unfold dot_product. simpl. unfold dot_product in IHn.
     rewrite (IHn _ _ H6 _ _ H7), H5, H3. refl.
   Qed.
@@ -261,19 +261,12 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
 (***********************************************************************)
 (** [ge] on vectors *)
 
-  Definition vec_ge {n} := Vreln (n:=n) ge.
-  Infix ">=v" := vec_ge (at level 70).
+  Infix ">=v" := (Vforall2 ge) (at level 70).
 
-  Definition vec_ge_refl := Vreln_refl ge_refl.
-  Definition vec_ge_trans := Vreln_trans ge_trans.
-  Definition vec_ge_dec := Vreln_dec ge_dec.
+  Instance vec_ge_mor n :
+    Proper (Vforall2 eqA ==> Vforall2 eqA ==> iff) (Vforall2 ge (n:=n)).
 
-  Instance vec_ge_mor n : Proper (Vreln eqA ==> Vreln eqA ==> iff) (@vec_ge n).
-
-  Proof.
-    intros a1 a1' a1a1' a2 a2' a2a2'; revert a1 a1' a1a1' a2 a2' a2a2'.
-    apply Vforall2n_reln. intuition.
-  Qed.
+  Proof. apply Vforall2_aux_Proper. class. Qed.
 
   Arguments vec_ge_mor [n x y] _ [x0 y0] _.
 
@@ -281,25 +274,21 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
     vl >=v vl' -> vr >=v vr' -> vl [+] vr >=v vl' [+] vr'.
 
   Proof.
-    unfold vector_plus, vec_ge. intros. apply Vforall2n_intro.
+    unfold vector_plus. intros. apply Vforall2_intro_nth.
     intros. simpl. do 2 rewrite Vnth_map2.
     apply plus_ge_compat.
-    apply Vforall2n_nth. hyp.
-    apply Vforall2n_nth. hyp.
+    apply Vforall2_elim_nth. hyp.
+    apply Vforall2_elim_nth. hyp.
   Qed.
 
   Lemma vec_plus_ge_compat_r : forall n (vl vl' vr : vec n), 
     vl >=v vl' -> vl [+] vr >=v vl' [+] vr.
 
-  Proof.
-    intros. apply vec_plus_ge_compat. hyp. exact (vec_ge_refl vr).
-  Qed.
+  Proof. intros. apply vec_plus_ge_compat. hyp. refl. Qed.
 
   Lemma vec_plus_ge_compat_l : forall n (vl vr vr' : vec n), 
     vr >=v vr' -> vl [+] vr >=v vl [+] vr'.
 
-  Proof.
-    intros. apply vec_plus_ge_compat. exact (vec_ge_refl vl). hyp.
-  Qed.
+  Proof. intros. apply vec_plus_ge_compat. refl. hyp. Qed.
 
 End OrdVectorArith.

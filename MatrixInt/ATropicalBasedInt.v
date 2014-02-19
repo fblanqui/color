@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil
-  LogicUtil Setoid VecOrd AMatrixBasedInt.
+  LogicUtil Setoid AMatrixBasedInt.
 
 (** Module type for proving termination with matrix interpretations *)
 
@@ -92,7 +92,7 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       rewrite H. rewrite H2 in H1. auto.
     Qed.
 
-    Definition succ_vec {n} := Vreln gtx (n:=n).
+    Definition succ_vec {n} := Vforall2 gtx (n:=n).
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
@@ -123,10 +123,10 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
     Proof.
       intros x z xz. destruct xz as [y [xy yz] ].
-      unfold succ, succ_vec. apply Vforall2n_intro. intros.
+      unfold succ, succ_vec. apply Vforall2_intro_nth. intros.
       apply ge_gtx_compat with (Vnth (dom2vec y) ip).
-      apply Vforall2n_nth. hyp.
-      apply Vforall2n_nth. hyp.
+      apply Vforall2_elim_nth. hyp.
+      apply Vforall2_elim_nth. hyp.
     Qed.
 
     Lemma gtx_dec : rel_dec gtx.
@@ -145,7 +145,7 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
   
     Proof.
       intros x y. unfold succ.
-      apply (Vforall2n_dec gtx_dec (dom2vec x) (dom2vec y)).
+      apply (Vforall2_dec gtx_dec (dom2vec x) (dom2vec y)).
     Defined.
 
     Variable mi_eval_ok : forall f v,
@@ -155,10 +155,10 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
     Notation IR_succ := (IR I succ).
 
     Definition mat_gt := mat_forall2 gtx (m:=dim) (n:=dim).
-    Definition vec_gt := Vforall2n gtx (n:=dim).
+    Definition vec_gt := Vforall2 gtx (n:=dim).
 
     Definition mint_gt n (l r : mint n) := 
-      Vforall2n mat_gt (args l) (args r) /\ vec_gt (const l) (const r).
+      Vforall2 mat_gt (args l) (args r) /\ vec_gt (const l) (const r).
 
     Definition term_gt := MBI.term_gt mint_gt.
 
@@ -171,14 +171,14 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
     Lemma vec_gt_dec : rel_dec vec_gt.
       
     Proof.
-      unfold vec_gt. apply Vforall2n_dec. exact gtx_dec.
+      unfold vec_gt, rel_dec. apply Vforall2_dec. exact gtx_dec.
     Defined.
 
     Lemma mint_gt_dec : forall n, rel_dec (@mint_gt n).
       
     Proof.
       intros n x y. unfold mint_gt.
-      destruct (Vforall2n_dec mat_gt_dec (args x) (args y)); 
+      destruct (Vforall2_dec mat_gt_dec (args x) (args y)); 
         intuition.
       destruct (vec_gt_dec (const x) (const y)); intuition.      
     Defined.
@@ -192,8 +192,8 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       VOtac. simpl. right. intuition.
       VSntac v'. simpl. apply gtx_plus_compat.
       apply IHv. intros. 
-      apply Vforall2n_nth. change v with (Vtail (Vcons h v)). 
-      apply Vforall2n_tail. apply Vforall2n_intro. hyp.
+      apply Vforall2_elim_nth. change v with (Vtail (Vcons h v)). 
+      apply Vforall2_tail. apply Vforall2_intro_nth. hyp.
       change h with (Vhead (Vcons h v)). do 2 rewrite Vhead_nth.
       apply (H _ (Lt.lt_O_Sn n)).
     Qed.
@@ -202,8 +202,8 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
       Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
-      Notation vge := vec_ge.
-      Notation vgt := (Vforall2n gtx).
+      Notation vge := (Vforall2 ge).
+      Notation vgt := (Vforall2 gtx).
       Notation mge := mat_ge.
       Notation mgt := (mat_forall2 gtx).
 
@@ -215,11 +215,11 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
         right. intuition.
         apply gtx_plus_compat.
         apply IHv.
-        change v with (Vtail (Vcons h v)). apply Vforall2n_tail. hyp.
-        apply Vreln_tail_intro. hyp.
+        change v with (Vtail (Vcons h v)). apply Vforall2_tail. hyp.
+        apply Vforall2_tail. hyp.
         apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
-        do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
-        do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
+        do 2 rewrite Vhead_nth. apply Vforall2_elim_nth. hyp.
+        do 2 rewrite Vhead_nth. apply Vforall2_elim_nth. hyp.
       Qed.
 
       Lemma mat_arctic_mult_mon : mgt M M' -> mge N N' -> 
@@ -228,9 +228,9 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       Proof.
         intros. unfold mat_forall2. intros.
         do 2 rewrite mat_mult_spec. apply arctic_dot_product_mon.
-        apply Vforall2n_intro. intros. 
+        apply Vforall2_intro_nth. intros. 
         exact (H i i0 ip ip0).
-        unfold vge. apply Vforall2n_intro. intros.
+        apply Vforall2_intro_nth. intros.
         do 2 rewrite <- get_elem_swap. exact (H0 i0 j ip0 jp).
       Qed.
 
@@ -241,11 +241,11 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       vec_gt (mat_vec_prod M m) (mat_vec_prod M' m').
 
     Proof.
-      intros. unfold mat_vec_prod, vec_gt. apply Vforall2n_intro. 
+      intros. unfold mat_vec_prod, vec_gt. apply Vforall2_intro_nth. 
       intros. do 2 rewrite Vnth_col_mat. 
       apply mat_arctic_mult_mon. hyp.
       intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
-      apply Vforall2n_nth. hyp.
+      apply Vforall2_elim_nth. hyp.
     Qed.
 
     Lemma mint_eval_mon_succ : forall (val : valuation I) k 
@@ -253,19 +253,18 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       succ_vec (mint_eval val mi) (mint_eval val mi').
 
     Proof.
-      intros. unfold succ_vec. apply Vforall2n_intro. intros. destruct H.
-      eapply gtx_mor. apply Vreln_elim_nth; rewrite mint_eval_split; refl.
-      apply Vreln_elim_nth. rewrite mint_eval_split. refl.
+      intros. unfold succ_vec. apply Vforall2_intro_nth. intros. destruct H.
+      eapply gtx_mor. apply Vforall2_elim_nth; rewrite mint_eval_split; refl.
+      apply Vforall2_elim_nth. rewrite mint_eval_split. refl.
       do 2 rewrite vector_plus_nth.
       apply gtx_plus_compat. 
-      apply Vforall2n_nth. hyp.
+      apply Vforall2_elim_nth. hyp.
       do 2 rewrite add_vectors_nth.
       apply Vfold_left_gtx_compat. intros.
       do 2 rewrite Vnth_map. do 2 rewrite Vnth_map2.
       set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
-      apply Vforall2n_nth. apply mat_vec_prod_gt_compat.
-      apply Vforall2n_nth. hyp.
-      apply vec_ge_refl.
+      apply Vforall2_elim_nth. apply mat_vec_prod_gt_compat.
+      apply Vforall2_elim_nth. hyp. refl.
     Qed.
 
     Lemma term_gt_incl_succ : term_gt << IR_succ.
@@ -273,7 +272,7 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
     Proof.
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in *.
       unfold succ. unfold succ_vec. symmetry in H. symmetry in H0.
-      rewrite (Vforall2n_reln gtx_mor _ _ H _ _ H0).
+      rewrite (Vforall2_aux_Proper gtx_mor _ _ H _ _ H0).
       apply mint_eval_mon_succ. hyp.
     Qed.
 

@@ -643,7 +643,7 @@ unfold P, fsub. simpl. intros. case (le_lt_dec v m). auto.
 intro. case (le_lt_dec v (m+n)). intro. absurd (v <= m); omega. auto.
 (* fun *)
 intros. unfold P. intro. simpl sub. apply f_equal with (f := Fun f).
-apply Vmap_eq_id. eapply Vforall_imp. apply H. intros. apply H2.
+apply Vmap_eq_id. eapply Vforall_impl. apply H. intros. apply H2.
 eapply maxvar_le_arg with (f := f). apply H0. hyp.
 Qed.
 

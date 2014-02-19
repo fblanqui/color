@@ -17,7 +17,7 @@ References:
 Set Implicit Arguments.
 
 Require Import LogicUtil Setoid Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  AWFMInterpretation NatUtil VecOrd AMatrixBasedInt.
+  AWFMInterpretation NatUtil AMatrixBasedInt.
 
 Import NMatrix.
 
@@ -89,7 +89,7 @@ Module MatrixInt (MI : TMatrixInt).
     Definition Sig := sig.
     
     Definition succ_vec v1 v2 := v1 >=v v2 /\ vec_at0 v1 > vec_at0 v2.
-    Definition succ v1 v2 := succ_vec (dom2vec v1) (dom2vec v2).
+    Definition succ := Rof succ_vec dom2vec.
 
     Lemma succ_wf : WF succ.
 
@@ -99,11 +99,11 @@ Module MatrixInt (MI : TMatrixInt).
       apply WF_inverse. apply gt_WF.
     Qed.
 
-    Lemma trans_succ : transitive succ.
+    Instance trans_succ : Transitive succ.
 
     Proof.
-      unfold succ. apply Rof_trans with (f:=dom2vec). unfold succ_vec.
-      intros v1 v2 v3 h12 h23. intuition. apply vec_ge_trans with v2; hyp.
+      apply Rof_trans. unfold succ_vec. intros v1 v2 v3 h12 h23. intuition.
+      trans v2; hyp.
     Qed.
 
     Lemma succ_succeq_compat : absorbs_left succ succeq.
@@ -112,7 +112,7 @@ Module MatrixInt (MI : TMatrixInt).
       intros x z xz. destruct xz as [y [xy yz]]. split.
       apply trans_succeq with y. hyp. destruct yz. hyp.
       apply ge_gt_compat with (Vnth (dom2vec y) dim_pos). unfold MBI.vec_at0.
-      apply Vforall2n_nth. hyp. 
+      apply Vforall2_elim_nth. hyp. 
       destruct yz. hyp.
     Qed.
 
@@ -147,7 +147,7 @@ Module MatrixInt (MI : TMatrixInt).
       apply mint_eval_mon_succeq. hyp.
       unfold mint_eval, add_vectors. simpl.
       apply vec_plus_gt_compat_l. 
-      unfold MBI.vec_at0. apply Vforall2n_nth. 
+      unfold MBI.vec_at0. apply Vforall2_elim_nth. 
       exact (mint_eval_mon_succeq_args _ H). hyp.
     Qed.
 
@@ -155,9 +155,9 @@ Module MatrixInt (MI : TMatrixInt).
 
     Proof.
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in * .
-      unfold succ, I, succ_vec. symmetry in H. symmetry in H0.
+      unfold succ, Rof, I, succ_vec. symmetry in H. symmetry in H0.
       rewrite (vec_ge_mor H H0).
-      rewrite (Vreln_elim_nth dim_pos H), (Vreln_elim_nth dim_pos H0).
+      rewrite (Vforall2_elim_nth dim_pos H), (Vforall2_elim_nth dim_pos H0).
       change (succ_vec (mint_eval v
         (mi_of_term (ABterm.inject_term (Max.le_max_l (maxvar l) (maxvar r)))))
       (mint_eval v (mi_of_term
@@ -243,9 +243,9 @@ Module MatrixInt (MI : TMatrixInt).
         fold (dot_product (Vtail v') (Vtail w')). 
         fold (dot_product (Vtail v) (Vtail w)).
         unfold Aplus, Peano.gt. apply plus_gt_compat_r.
-        apply dot_product_mon; apply Vreln_tail_intro; hyp.
+        apply dot_product_mon; apply Vforall2_tail; hyp.
         do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
-        apply (Vforall2n_nth (R:=ge)). hyp.
+        apply (Vforall2_elim_nth (R:=ge)). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
         destruct i. absurd_arith.
@@ -255,13 +255,13 @@ Module MatrixInt (MI : TMatrixInt).
         fold (dot_product (Vtail v) (Vtail w)).
         unfold Aplus, Peano.gt. apply plus_gt_compat_l.
         apply IHj with (lt_S_n jp).
-        apply Vreln_tail_intro. hyp.
-        apply Vreln_tail_intro. hyp.
+        apply Vforall2_tail. hyp.
+        apply Vforall2_tail. hyp.
         rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
         do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
         apply mult_le_compat.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth (R:=ge)). hyp.
-        do 2 rewrite Vhead_nth. apply (Vforall2n_nth (R:=ge)). hyp.
+        do 2 rewrite Vhead_nth. apply (Vforall2_elim_nth (R:=ge)). hyp.
+        do 2 rewrite Vhead_nth. apply (Vforall2_elim_nth (R:=ge)). hyp.
       Qed.
 
       (* additional property of interpretation required to ensure strict
@@ -294,10 +294,10 @@ Module MatrixInt (MI : TMatrixInt).
         do 2 rewrite Vnth_col_mat.
         do 2 rewrite mat_mult_spec.
         apply dot_product_mon_r with 0%nat dim_pos.
-        unfold vec_ge, ge. apply Vforall2n_intro. intros. apply le_refl.
-        unfold vec_ge, ge. apply Vforall2n_intro. intros.
+        unfold ge. apply Vforall2_intro_nth. intros. apply le_refl.
+        unfold ge. apply Vforall2_intro_nth. intros.
         do 2 rewrite get_col_col_mat. destruct ab.
-        apply Vforall2n_nth. hyp.
+        apply Vforall2_elim_nth. hyp.
         hyp.
         do 2 rewrite get_col_col_mat. hyp.
         apply H. apply le_refl.

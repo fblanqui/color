@@ -28,8 +28,6 @@ Arguments union {A} R1 R2 x y.
 Arguments lexprod [A B] _ _ _ _.
 Arguments symprod [A B] _ _ _ _.
 
-Ltac class := fold impl; auto with typeclass_instances.
-
 (***********************************************************************)
 (** Notations for some relations and operations on relations. *)
 

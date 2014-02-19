@@ -6,10 +6,12 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-17
 - Pierre-Yves Strub, 2009-04-09
 
-* Basic lemmas and tactics
+* Basic logical lemmas and tactics
 *)
 
 Set Implicit Arguments.
+
+Require Import Basics.
 
 Arguments existT [A P] _ _.
 
@@ -28,6 +30,8 @@ Ltac gen t := generalize t.
 
 Ltac ded t := gen t; intro.
 Ltac decomp h := decompose [and or ex] h; clear h.
+
+Ltac class := fold impl; auto with typeclass_instances.
 
 Tactic Notation "ex" constr(x1) := exists x1.
 Tactic Notation "ex" constr(x1) constr(x2) := exists x1; exists x2.

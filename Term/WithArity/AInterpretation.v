@@ -138,7 +138,8 @@ Section S.
     simpl. unfold restrict. case (le_lt_dec k v); intro.
     simpl in H. absurd (v<k); omega. refl. simpl. apply (f_equal (fint I f)).
     apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
-    rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
+    rewrite maxvar_fun in H0.
+    ded (Vin_map_intro (f:=@maxvar Sig) H1).
     ded (Vmax_in H2). unfold maxvars in H0. omega.
   Qed.
 
@@ -158,7 +159,8 @@ Section S.
     absurd (v<k); omega. rewrite Vnth_vec_of_val. refl.
     simpl. apply (f_equal (fint I f)).
     apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
-    rewrite maxvar_fun in H0. ded (Vin_map_intro (maxvar (Sig:=Sig)) H1).
+    rewrite maxvar_fun in H0.
+    ded (Vin_map_intro (B:=nat) (f:=maxvar (Sig:=Sig)) H1).
     ded (Vmax_in H2). unfold maxvars in H0. omega.
   Qed.
 

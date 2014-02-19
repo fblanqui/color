@@ -16,7 +16,7 @@ term are computable.
 Set Implicit Arguments.
 
 Require Import IndefiniteDescription LogicUtil Relations SN LCompSimple Tarski
-  Structures.OrderedType VecUtil SetUtil RelUtil VecOrd.
+  Structures.OrderedType VecUtil SetUtil RelUtil.
 Require Union.
 
 (****************************************************************************)
@@ -95,7 +95,7 @@ Module Type BI_Struct.
   (** Notations. *)
 
   Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation vaeq := (Vreln aeq).
+  Notation vaeq := (Vforall2 aeq).
   Notation supterm_acc := (@supterm_acc F X So typ Acc Acc_arity).
 
 End BI_Struct.
@@ -143,7 +143,7 @@ Module Make (Export ST : ST_Struct)
   Proof.
     intros t u [t' [tt' t'u]]. inversion t'u; clear t'u; subst.
     inv_aeq tt'; subst. exists (Vnth us (Acc_arity hi)). split.
-    apply stacc_intro. apply Vreln_elim_nth. hyp.
+    apply stacc_intro. apply Vforall2_elim_nth. hyp.
   Qed.
 
   Lemma aeq_tc_supterm_acc_commut :

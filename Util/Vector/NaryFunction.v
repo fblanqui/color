@@ -13,36 +13,30 @@ Require Import RelUtil VecUtil.
 
 Section S.
 
-Variables (A B : Type).
+  Variables A B : Type.
 
-Definition naryFunction n := vector A n -> B.
+  Definition naryFunction n := vector A n -> B.
 
-Variables (n : nat) (f : naryFunction n).
+  Variables (n : nat) (f : naryFunction n).
 
-Definition Vmonotone_i (Ra : relation A) (Rb : relation B)
-  i j (H : i + S j = n) :=
-  forall vi vj, monotone Ra Rb (fun z => f (Vcast (Vapp vi (Vcons z vj)) H)).
+  Definition Vmonotone_i (Ra : relation A) (Rb : relation B)
+    i j (H : i + S j = n) :=
+    forall vi vj, monotone Ra Rb (fun z => f (Vcast (Vapp vi (Vcons z vj)) H)).
 
-Implicit Arguments Vmonotone_i [i j].
+  Arguments Vmonotone_i Ra Rb [i j] _.
 
-Lemma Vmonotone_i_transp : forall (Ra : relation A) (Rb : relation B)
-  i j (H : i + S j = n),
-  Vmonotone_i Ra Rb H -> Vmonotone_i (transp Ra) (transp Rb) H.
+  Lemma Vmonotone_i_transp Ra Rb i j (H : i + S j = n) :
+    Vmonotone_i Ra Rb H -> Vmonotone_i (transp Ra) (transp Rb) H.
 
-Proof.
-unfold Vmonotone_i. intros Ra Rb i j H H' vi vj. apply monotone_transp.
-apply H'.
-Qed.
+  Proof. intros H' vi vj. apply monotone_transp. apply H'. Qed.
 
-Definition Vmonotone (Ra : relation A) (Rb : relation B) :=
-  forall i j (H : i + S j = n), Vmonotone_i Ra Rb H.
+  Definition Vmonotone Ra Rb :=
+    forall i j (H : i + S j = n), Vmonotone_i Ra Rb H.
 
-Lemma Vmonotone_transp : forall (Ra : relation A) (Rb : relation B),
-  Vmonotone Ra Rb -> Vmonotone (transp Ra) (transp Rb).
+  Lemma Vmonotone_transp Ra Rb :
+    Vmonotone Ra Rb -> Vmonotone (transp Ra) (transp Rb).
 
-Proof.
-unfold Vmonotone. intros Ra Rb H i j H'. apply Vmonotone_i_transp. apply H.
-Qed.
+  Proof. intros H i j H'. apply Vmonotone_i_transp. apply H. Qed.
 
 End S.
 
@@ -54,11 +48,11 @@ Implicit Arguments Vmonotone_i [A B n i j].
 
 Section preserv.
 
-Variables (A : Type) (P : A->Prop) (n : nat) (f : naryFunction A A n).
+  Variables (A : Type) (P : A->Prop) (n : nat) (f : naryFunction A A n).
 
-Definition preserv := forall v, Vforall P v -> P (f v).
+  Definition preserv := forall v, Vforall P v -> P (f v).
 
-Definition restrict (H : preserv) : naryFunction (sig P) (sig P) n :=
-  fun v => exist P (f (Vmap (@proj1_sig _ _) v)) (H _ (Vforall_of_vsig v)).
+  Definition restrict (H : preserv) : naryFunction (sig P) (sig P) n :=
+    fun v => exist P (f (Vmap (@proj1_sig _ _) v)) (H _ (Vforall_of_sig v)).
 
 End preserv.

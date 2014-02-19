@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import ATropicalBasedInt Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool VecOrd
+  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool
   Structures.Equalities.
 
 (* TODO: this should be moved to Matrix.v *)
@@ -225,7 +225,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       apply WF_incl with 
         (fun x y => vec_at0 (dom2vec x) >> vec_at0 (dom2vec y)).
       intros x y xy.
-      destruct (@Vforall2n_nth _ _ gtx _ (dom2vec x) (dom2vec y) _ dim_pos xy). 
+      destruct (@Vforall2_elim_nth _ _ gtx _ (dom2vec x) (dom2vec y) _ dim_pos xy). 
       hyp.
       destruct H. destruct x.
        (* TODO: change, specific for tropical *)
@@ -241,7 +241,7 @@ Module TropicalInt (Import AI : TTropicalInt).
 
     Proof.
       change (transitive (Rof succ_vec dom2vec)). apply Rof_trans.
-      apply Vreln_trans. class.
+      apply Vforall2_trans. class.
     Qed.
   
   End MonotoneAlgebra.
