@@ -25,11 +25,9 @@ apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). hyp.
 apply IHn.
 Qed.
 
-Lemma preserve_pos_meval : forall n (m : monom n), preserv pos (meval m).
+Lemma preserve_pos_meval n (m : monom n) : preserv pos (meval m).
 
-Proof.
-intros n m v Hv. rewrite (Vmap_proj1 Hv). apply pos_meval.
-Qed.
+Proof. intros v Hv. rewrite (Vmap_proj1_sig Hv). apply pos_meval. Qed.
 
 Definition meval_D n (m : monom n) := restrict (preserve_pos_meval m).
 
@@ -37,11 +35,9 @@ Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
 
 Definition bcoef_pos n (p : poly n) := forallb (fun x => is_not_neg (fst x)) p.
 
-Lemma bcoef_pos_ok : forall n (p : poly n), bcoef_pos p = true <-> coef_pos p.
+Lemma bcoef_pos_ok n (p : poly n) : bcoef_pos p = true <-> coef_pos p.
 
-Proof.
-intros n p. apply forallb_lforall. intros [z m]. apply is_not_neg_ok.
-Qed.
+Proof. apply forallb_lforall. intros [z m]. apply is_not_neg_ok. Qed.
 
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
@@ -89,7 +85,7 @@ Lemma preserve_pos_peval : forall n (p : poly n),
 
 Proof.
 intros. unfold preserv. intros v Hv.
-rewrite (Vmap_proj1 Hv). apply pos_peval. hyp.
+rewrite (Vmap_proj1_sig Hv). apply pos_peval. hyp.
 Qed.
 
 Definition peval_D n (p : poly n) (H : coef_pos p) :=

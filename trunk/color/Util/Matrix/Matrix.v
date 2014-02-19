@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 *)
 
 Require Import VecArith OrdSemiRing VecUtil NatUtil LogicUtil Relations List
-  Setoid VecOrd Morphisms RelUtil.
+  Setoid Morphisms RelUtil.
 
 Set Implicit Arguments.
 
@@ -91,15 +91,15 @@ Module Matrix (OSRT : OrdSemiRingType).
   Qed.
 
   Instance get_row_mor m n i (h:i<m) :
-    Proper (@mat_eqA m n ==> Vreln eqA) (fun M => @get_row m n M i h).
+    Proper (@mat_eqA m n ==> Vforall2 eqA) (fun M => @get_row m n M i h).
 
-  Proof. intros M N MN. apply Vforall2n_intro. intros. apply MN. Qed.
+  Proof. intros M N MN. apply Vforall2_intro_nth. intros. apply MN. Qed.
 
   Instance get_col_mor m n i (h:i<n) :
-    Proper (@mat_eqA m n ==> Vreln eqA) (fun M => @get_col m n M i h).
+    Proper (@mat_eqA m n ==> Vforall2 eqA) (fun M => @get_col m n M i h).
 
   Proof.
-    intros M N MN. apply Vforall2n_intro. intros. rewrite <- !get_elem_swap.
+    intros M N MN. apply Vforall2_intro_nth. intros. rewrite <- !get_elem_swap.
     apply MN.
   Qed.
 
@@ -171,13 +171,13 @@ Module Matrix (OSRT : OrdSemiRingType).
     Vmap (fun i => Vcons i Vnil) v.
 
   Instance vec_to_col_mat_mor n :
-    Proper (Vreln eqA ==> @mat_eqA n 1) (@vec_to_col_mat n).
+    Proper (Vforall2 eqA ==> @mat_eqA n 1) (@vec_to_col_mat n).
 
   Proof.
     unfold vec_to_col_mat, mat_eqA, get_elem. intros u u' uu' i j ip jp.
     rewrite !get_elem_swap. unfold get_col. rewrite !Vnth_map.
-    apply Vreln_elim_nth. rewrite Vreln_cons. intuition.
-    apply Vreln_elim_nth. hyp.
+    apply Vforall2_elim_nth. rewrite Vforall2_cons_eq. intuition.
+    apply Vforall2_elim_nth. hyp.
   Qed.
 
   Definition access_0 : 0 < 1 := le_n 1.
@@ -422,7 +422,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     set (c := Vbuild (fun j jp => Vnth v (lt_O_Sn m) * (Vnth (Vhead M) jp))).
     set (d := Vbuild (fun j jp =>
       dot_product (Vtail v) (get_col (Vtail M) jp))).
-    assert (b =v c [+] d). apply Vforall2n_intro. intros.
+    assert (b =v c [+] d). apply Vforall2_intro_nth. intros.
     rewrite vector_plus_nth. unfold b, c, d. do 3 rewrite Vbuild_nth.
     rewrite dot_product_cons. refl. trans (dot_product (c[+]d) v').
     rewrite dot_product_distr_l. rewrite dot_product_distr_mult. refl.
@@ -447,7 +447,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     col_mat_to_vec (m <*> (vec_to_col_mat v)).
 
   Instance mat_vec_prod_mor m n :
-    Proper (@mat_eqA m n ==> Vreln eqA ==> Vreln eqA) (@mat_vec_prod m n).
+    Proper (@mat_eqA m n ==> Vforall2 eqA ==> Vforall2 eqA) (@mat_vec_prod m n).
 
   Proof.
     intros M M' MM' v v' vv'. unfold mat_vec_prod. apply get_col_mor.
@@ -459,11 +459,11 @@ Module Matrix (OSRT : OrdSemiRingType).
     mat_vec_prod M v1 [+] mat_vec_prod M v2.
 
   Proof.
-    intros. unfold mat_vec_prod. apply Vforall2n_intro. intros.
+    intros. unfold mat_vec_prod. apply Vforall2_intro_nth. intros.
     rewrite vector_plus_nth. mat_get_simpl.
     rewrite !mat_mult_elem, <- dot_product_distr_r.
     apply dot_product_mor. refl.
-    apply Vforall2n_intro. intros. unfold get_col.
+    apply Vforall2_intro_nth. intros. unfold get_col.
     rewrite !Vnth_map. simpl. rewrite vector_plus_nth.
     unfold vector_plus. rewrite Vnth_map2, !Vnth_map. refl.
   Qed.
@@ -473,7 +473,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     mat_vec_prod Ml v [+] mat_vec_prod Mr v.
 
   Proof.
-    intros. unfold mat_vec_prod. apply Vforall2n_intro. intros.
+    intros. unfold mat_vec_prod. apply Vforall2_intro_nth. intros.
     rewrite vector_plus_nth. mat_get_simpl. rewrite !mat_mult_elem.
     set (a := get_col (Vmap (fun i0 : A => Vcons i0 Vnil) v) access_0).
     rewrite (dot_product_comm (get_row Ml ip)),
@@ -490,7 +490,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     induction k; intros.
      (* induction base *)
     VOtac. unfold add_vectors. simpl.
-    apply Vforall2n_intro. intros.
+    apply Vforall2_intro_nth. intros.
     unfold mat_vec_prod. rewrite Vnth_col_mat.
     unfold zero_vec. rewrite Vnth_const.
     rewrite mat_mult_spec. 
@@ -538,7 +538,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
      (* alternative definition *)
     Definition mat_forall2' (M N : matrix m n) := 
-      Vforall2n (@Vforall2n A A P n) M N.
+      Vforall2 (@Vforall2 A A P n) M N.
 
     Require Import RelMidex.
 
@@ -547,14 +547,14 @@ Module Matrix (OSRT : OrdSemiRingType).
     Lemma mat_forall2'_dec : rel_dec mat_forall2'.
 
     Proof.
-      intros M N. unfold mat_forall2'. do 2 apply Vforall2n_dec. hyp.
+      intros M N. unfold mat_forall2'. do 2 apply Vforall2_dec. hyp.
     Defined.
 
     Lemma mat_forall2_equiv1 : forall M N, 
       mat_forall2 M N -> mat_forall2' M N.
 
     Proof.
-      intros. unfold mat_forall2'. do 2 (apply Vforall2n_intro; intros). 
+      intros. unfold mat_forall2'. do 2 (apply Vforall2_intro_nth; intros). 
       exact (H i i0 ip ip0).
     Qed.
 
@@ -563,7 +563,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
     Proof.
       intros. unfold mat_forall2, get_elem, get_row. intros.
-      apply Vforall2n_nth. apply Vforall2n_nth. hyp.
+      apply Vforall2_elim_nth. apply Vforall2_elim_nth. hyp.
     Qed.
 
     Lemma mat_forall2_dec : rel_dec mat_forall2.
@@ -611,12 +611,12 @@ Module Matrix (OSRT : OrdSemiRingType).
       unfold dot_product. induction v. auto with arith. 
       intros. simpl. apply plus_ge_compat.
       apply IHv.
-      change v with (Vtail (Vcons h v)). apply Vreln_tail_intro. hyp.
-      apply Vreln_tail_intro. hyp.
+      change v with (Vtail (Vcons h v)). apply Vforall2_tail. hyp.
+      apply Vforall2_tail. hyp.
       set (p0 := lt_O_Sn n0). apply mult_ge_compat.
       change h with (Vnth (Vcons h v) p0). rewrite Vhead_nth.
-      apply Vforall2n_nth. hyp.
-      do 2 rewrite Vhead_nth. apply Vforall2n_nth. hyp.
+      apply Vforall2_elim_nth. hyp.
+      do 2 rewrite Vhead_nth. apply Vforall2_elim_nth. hyp.
     Qed.
 
     Lemma mat_mult_mon : M >=m M' -> N >=m N' -> M <*> N >=m M' <*> N'.
@@ -624,9 +624,9 @@ Module Matrix (OSRT : OrdSemiRingType).
     Proof.
       intros. unfold mat_ge, mat_forall2. intros.
       do 2 rewrite mat_mult_spec. apply dot_product_mon.
-      unfold vec_ge. apply Vforall2n_intro. intros.
+      apply Vforall2_intro_nth. intros.
       exact (H i i0 ip ip0).
-      unfold vec_ge. apply Vforall2n_intro. intros.
+      apply Vforall2_intro_nth. intros.
       do 2 rewrite <- get_elem_swap. exact (H0 i0 j ip0 jp).
     Qed.
 
@@ -637,10 +637,10 @@ Module Matrix (OSRT : OrdSemiRingType).
     mat_ge M M' -> m >=v m' -> mat_vec_prod M m >=v mat_vec_prod M' m'.
 
   Proof.
-    intros. unfold mat_vec_prod, vec_ge. apply Vforall2n_intro. 
+    intros. unfold mat_vec_prod. apply Vforall2_intro_nth. 
     intros. do 2 rewrite Vnth_col_mat. apply mat_mult_mon. hyp.
     unfold mat_ge. intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
-    apply Vforall2n_nth. hyp.
+    apply Vforall2_elim_nth. hyp.
   Qed.
 
   Infix ">=m" := mat_ge (at level 70).

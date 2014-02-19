@@ -9,14 +9,13 @@ See the COPYRIGHTS and LICENSE files.
 - Pierre-Yves Strub, 2009-04-09
 - Wang Qian & Zhang Lianyi, 2009-05-06
 
-
 * Extension of the Coq library Vector
 *)
 
 Set Implicit Arguments.
 
 Require Import Vector Program LogicUtil NatUtil EqUtil RelMidex ListUtil
-  BoolUtil Relations RelDec ListForall.
+  BoolUtil RelUtil ListForall Structures.Equalities Morphisms.
 Require Omega.
 
 Notation vector := Vector.t.
@@ -1243,6 +1242,93 @@ Section Vlast.
 End Vlast.
 
 (***********************************************************************)
+(** ** Function applying a function [f] on every element of a vector. *)
+
+Section Vmap.
+
+  Variables (A B : Type) (f : A->B).
+
+  Fixpoint Vmap n (v : vector A n) : vector B n :=
+    match v with
+      | Vnil => Vnil
+      | Vcons a _ v' => Vcons (f a) (Vmap v')
+    end.
+
+  Lemma Vnth_map : forall n (v : vector A n) i (H : i < n),
+    Vnth (Vmap v) H = f (Vnth v H).
+
+  Proof.
+    intros n. elim n.
+    intros v i H. elimtype False. apply (lt_n_O H).
+    clear n. intros n Hrec v i. case i.
+    intro. rewrite (VSn_eq v). simpl. refl.
+    clear i. intros i Hi. rewrite (VSn_eq v). simpl.
+    apply (Hrec (Vtail v) i (lt_S_n Hi)).
+  Qed.
+
+  Lemma Vin_map : forall x n (v : vector A n),
+    Vin x (Vmap v) -> exists y, Vin y v /\ x = f y.
+
+  Proof.
+    induction v; simpl; intros. contr. destruct H. subst x. exists h.
+    auto.
+    assert (exists y, Vin y v /\ x = f y). apply IHv. hyp.
+    destruct H0 as [y]. exists y. intuition.
+  Qed.
+
+  Lemma Vin_map_intro : forall x n (v : vector A n),
+    Vin x v -> Vin (f x) (Vmap v).
+
+  Proof.
+    induction v; simpl; intros. contr. destruct H. subst x. auto.
+    intuition.
+  Qed.
+
+  Lemma Vmap_app : forall n1 n2 (v1 : vector A n1) (v2 : vector A n2),
+    Vmap (Vapp v1 v2) = Vapp (Vmap v1) (Vmap v2).
+
+  Proof.
+    intros; induction v1.
+    simpl; auto.
+    simpl. rewrite IHv1. refl.
+  Qed.
+
+  Lemma Vmap_cast : forall m n (H : m=n) (v : vector A m),
+    Vmap (Vcast v H) = Vcast (Vmap v) H.
+
+  Proof. intros until H. case H. intro v. rewrite !Vcast_refl. refl. Qed.
+
+  Lemma Vmap_tail : forall n (v : vector A (S n)),
+    Vmap (Vtail v) = Vtail (Vmap v).
+
+  Proof. intros. VSntac v. refl. Qed.
+
+  Lemma Vmap_eq_nth : forall n (v1 : vector A n) (v2 : vector B n),
+    (forall i (h : i<n), f (Vnth v1 h) = Vnth v2 h) -> Vmap v1 = v2.
+
+  Proof.
+    induction n; simpl; intros. VOtac. refl.
+    VSntac v1. VSntac v2. simpl. apply Vcons_eq_intro.
+    do 2 rewrite Vhead_nth. apply H.
+    apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
+  Qed.
+
+End Vmap.
+
+Arguments Vin_map [A B f x n v] _.
+Arguments Vin_map_intro [A B f x n v] _.
+
+Lemma Vmap_map : forall A B C (f:A->B) (g:B->C) n
+  (v : vector A n), Vmap g (Vmap f v) = Vmap (fun x : A => g (f x)) v.
+
+Proof.
+  intros; induction v.
+  simpl; refl.
+  simpl Vmap at 2. simpl Vmap at 1.
+  rewrite IHv. refl.
+Qed.
+
+(***********************************************************************)
 (** ** Predicate saying that every element of a vector satisfies some
 predicate [P]. *)
 
@@ -1314,6 +1400,8 @@ Section Vforall.
 
   Proof. induction v; fo. Qed.
 
+  (** Decidability of [Vforall]. *)
+
   Variable P_dec : forall x, {P x}+{~P x}.
 
   Lemma Vforall_dec : forall n (v : vector A n), {Vforall v}+{~Vforall v}.
@@ -1328,34 +1416,7 @@ Section Vforall.
     right. intro V. destruct V. contr.
   Defined.
 
-  Fixpoint Vsig_of_v n (v : vector A n) : Vforall v -> vector (sig P) n :=
-    match v in vector _ n return Vforall v -> vector (sig P) n with
-      | Vnil => fun _ => Vnil
-      | Vcons a _ w => fun H =>
-        Vcons (exist P a (proj1 H)) (Vsig_of_v w (proj2 H))
-    end.
-
-End Vforall.
-
-Implicit Arguments Vforall_in [A P x n v].
-Implicit Arguments Vsig_of_v [A P n v].
-Implicit Arguments Vforall_nth [A P n v i].
-
-Lemma Vforall_imp : forall A (P Q : A -> Prop) n (v : vector A n),
-  Vforall P v -> (forall x, Vin x v -> P x -> Q x) -> Vforall Q v.
-
-Proof.
-  intros. apply Vforall_intro. intros. apply H0. hyp.
-  eapply Vforall_in with (n := n). apply H. apply H1.
-Qed.
-
-(***********************************************************************)
-(** Boolean function decidaing [Vforall]. *)
-
-Section bVforall_sec.
-
-  Variables (A : Type) (P : A -> Prop) (f : A -> bool)
-    (f_ok : forall x, f x = true <-> P x).
+  Variables (f : A -> bool) (f_ok : forall x, f x = true <-> P x).
 
   Fixpoint bVforall n (v : vector A n) : bool :=
     match v with
@@ -1364,67 +1425,172 @@ Section bVforall_sec.
     end.
 
   Lemma bVforall_ok : forall n (v : vector A n),
-    bVforall v = true <-> Vforall P v.
+    bVforall v = true <-> Vforall v.
 
   Proof. induction v; simpl. tauto. rewrite andb_eq. rewrite f_ok. tauto. Qed.
 
-End bVforall_sec.
+End Vforall.
+
+Arguments Vforall_in [A P x n v] _ _.
+Arguments Vforall_nth [A P n v i] _ _.
+
+Lemma Vforall_impl : forall A (P Q : A -> Prop) n (v : vector A n),
+  Vforall P v -> (forall x, Vin x v -> P x -> Q x) -> Vforall Q v.
+
+Proof.
+  intros. apply Vforall_intro. intros. apply H0. hyp.
+  eapply Vforall_in with (n := n). apply H. apply H1.
+Qed.
+
+Lemma Vforall_map_elim : forall A B (f: A->B) (P : B->Prop) n (v : vector A n),
+    Vforall P (Vmap f v) -> Vforall (fun a : A => P (f a)) v.
+
+Proof. induction v; simpl; intuition. Qed.
+
+Implicit Arguments Vforall_map_elim [A B f P n v].
+
+Lemma Vforall_map_intro : forall A B (f: A->B) (P : B->Prop) n (v : vector A n),
+  Vforall (fun a : A => P (f a)) v -> Vforall P (Vmap f v).
+
+Proof. induction v; simpl; intuition. Qed.
+
+(***********************************************************************)
+(** ** Equality of [Vmap]'s. *)
+
+Lemma Vmap_eq : forall (A B : Type) (f g : A->B) n (v : vector A n),
+  Vforall (fun a => f a = g a) v -> Vmap f v = Vmap g v.
+
+Proof.
+  induction v; simpl; intros. refl. destruct H. apply Vcons_eq_intro; auto.
+Qed.
+
+Implicit Arguments Vmap_eq [A B f g n v].
+
+Lemma Vmap_eq_ext : forall (A B : Type) (f g : A->B),
+  (forall a, f a = g a) ->
+  forall n (v : vector A n), Vmap f v = Vmap g v.
+
+Proof. induction v; intros; simpl. refl. apply Vcons_eq_intro; auto. Qed.
+
+Lemma Vmap_id : forall (A : Type) n (v : vector A n),
+  Vmap (fun x => x) v = v.
+
+Proof. induction v. refl. simpl. apply Vcons_eq_intro; auto. Qed.
+
+Lemma Vmap_eq_id : forall (A : Type) (f : A->A) n (v : vector A n),
+  Vforall (fun a => f a = a) v -> Vmap f v = v.
+
+Proof. intros. rewrite <- Vmap_id. apply Vmap_eq. hyp. Qed.
+
+Lemma Vmap_eq_ext_id : forall (A : Type) (f : A->A), (forall a, f a = a) ->
+  forall n (v : vector A n), Vmap f v = v.
+
+Proof. intros. rewrite <- Vmap_id. apply Vmap_eq_ext. hyp. Qed.
 
 (***********************************************************************)
 (** ** Predicate saying that the elements of two vectors are pairwise
 in relation. *)
 
-Section Vforall2_sec.
+Section Vforall2.
 
   Variables (A B : Type) (R : A -> B -> Prop).
 
-  Fixpoint Vforall2 n1 n2 (v1 : vector A n1) (v2 : vector B n2) : Prop :=
+  Fixpoint Vforall2_aux n1 n2 (v1 : vector A n1) (v2 : vector B n2) : Prop :=
     match v1, v2 with
       | Vnil, Vnil => True
-      | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2 v w
+      | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2_aux v w
       | _, _ => False
     end.
 
-  Definition Vforall2n {n} (v1 : vector A n) (v2 : vector B n) :=
-    Vforall2 v1 v2.
+  Definition Vforall2 n (v1 : vector A n) (v2 : vector B n) :=
+    Vforall2_aux v1 v2.
 
-  Lemma Vforall2n_tail : forall n (v1 : vector A (S n)) (v2 : vector B (S n)),
-    Vforall2n v1 v2 -> Vforall2n (Vtail v1) (Vtail v2).
+  Lemma Vforall2_tail : forall n (v1 : vector A (S n)) (v2 : vector B (S n)),
+    Vforall2 v1 v2 -> Vforall2 (Vtail v1) (Vtail v2).
 
   Proof.
-    intros. revert H. VSntac v1. VSntac v2. unfold Vforall2n. simpl. tauto.
+    intros. revert H. VSntac v1. VSntac v2. unfold Vforall2. simpl. tauto.
   Qed.
 
-  Lemma Vforall2n_nth : forall n (v1 : vector A n) (v2 : vector B n) i 
-    (ip : i < n), Vforall2n v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
+  Lemma Vforall2_elim_nth : forall n (v1 : vector A n) (v2 : vector B n) i 
+    (ip : i < n), Vforall2 v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
   Proof.
     induction v1; intros. absurd (i<0); omega. revert H. VSntac v2.
-    unfold Vforall2n. destruct i; simpl. tauto. intuition.
+    unfold Vforall2. destruct i; simpl. tauto. intuition.
   Qed.
 
-  Lemma Vforall2n_intro : forall n (v1 : vector A n) (v2 : vector B n),
-    (forall i (ip : i < n), R (Vnth v1 ip) (Vnth v2 ip)) -> Vforall2n v1 v2.
+  Lemma Vforall2_intro_nth : forall n (v1 : vector A n) (v2 : vector B n),
+    (forall i (ip : i < n), R (Vnth v1 ip) (Vnth v2 ip)) -> Vforall2 v1 v2.
 
   Proof.
-    unfold Vforall2n. induction v1; intros. VOtac. simpl. auto.
+    unfold Vforall2. induction v1; intros. VOtac. simpl. auto.
     revert H. VSntac v2. intro. split. apply (H0 0 (lt_O_Sn _)).
     apply IHv1. intros. assert (S i< S n). omega. ded (H0 _ H1). simpl in H2.
     assert (ip = lt_S_n H1). apply lt_unique. rewrite H3. hyp.
   Qed.
 
-End Vforall2_sec.
+  Lemma Vforall2_cons_eq : forall u v n (us : vector A n) (vs : vector B n),
+    Vforall2 (Vcons u us) (Vcons v vs) <-> R u v /\ Vforall2 us vs.
 
-Implicit Arguments Vforall2n_nth [A B R n v1 v2 i].
+  Proof. fo. Qed.
 
-(** Decidability of [Vforall2n]. *)
+  Lemma Vforall2_cons_elim : forall n (u : vector A n) (v : vector B n) x y,
+    Vforall2 (Vcons x u) (Vcons y v) -> Vforall2 u v.
 
-Section Vforall2_dec.
+  Proof. fo. Qed.
 
-  Variables (A : Type) (R : relation A) (R_dec : rel_dec R).
+  Lemma Vforall2_app_elim_l n1 (v1 : vector A n1) (v1' : vector B n1)
+    n2 (v2 : vector A n2) (v2' : vector B n2) :
+    Vforall2 (Vapp v1 v2) (Vapp v1' v2') -> Vforall2 v1 v1'.
 
-  Lemma Vforall2_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2), 
-    {Vforall2 R v1 v2} + {~Vforall2 R v1 v2}.
+  Proof.
+    intro h. apply Vforall2_intro_nth. intros i hi.
+    assert (hi' : i < n1+n2). omega.
+    assert (a1 : Vnth v1 hi = Vnth (Vapp v1 v2) hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
+    omega. apply Vnth_eq. refl.
+    assert (a2 : Vnth v1' hi = Vnth (Vapp v1' v2') hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
+    omega. apply Vnth_eq. refl.
+    rewrite a1, a2. apply Vforall2_elim_nth. hyp.
+  Qed.
+
+  Lemma Vforall2_app_elim_r n1 (v1 : vector A n1) (v1' : vector B n1)
+    n2 (v2 : vector A n2) (v2' : vector B n2) :
+    Vforall2 (Vapp v1 v2) (Vapp v1' v2') -> Vforall2 v2 v2'.
+
+  Proof.
+    intro h. apply Vforall2_intro_nth. intros i hi.
+    assert (hi' : n1+i < n1+n2). omega.
+    assert (a1 : Vnth v2 hi = Vnth (Vapp v1 v2) hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
+    apply Vnth_eq. omega. omega.
+    assert (a2 : Vnth v2' hi = Vnth (Vapp v1' v2') hi').
+    rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
+    apply Vnth_eq. omega. omega.
+    rewrite a1, a2. apply Vforall2_elim_nth. hyp.
+  Qed.
+
+  Lemma Vforall2_cast n (u : vector A n) (v : vector B n) n' (h h' : n=n') :
+    Vforall2 (Vcast u h) (Vcast v h') <-> Vforall2 u v.
+
+  Proof. subst n'. rewrite 2!Vcast_refl. refl. Qed.
+
+  Lemma Vforall2_sub : forall n (v1 : vector A n) (v2 : vector B n)
+    p q (h : p+q<=n), Vforall2 v1 v2 -> Vforall2 (Vsub v1 h) (Vsub v2 h).
+
+  Proof.
+    intros n v1 v2 p q h e. apply Vforall2_intro_nth; intros i hi.
+    rewrite !Vnth_sub. apply Vforall2_elim_nth. hyp.
+  Qed.
+
+(** Decidability of [Vforall2]. *)
+
+  Variable R_dec : forall x y, {R x y}+{~R x y}.
+
+  Lemma Vforall2_aux_dec : forall n1 (v1 : vector A n1) n2 (v2 : vector B n2), 
+    {Vforall2_aux v1 v2} + {~Vforall2_aux v1 v2}.
 
   Proof.
     induction v1; destruct v2; simpl; auto.
@@ -1432,29 +1598,102 @@ Section Vforall2_dec.
     destruct (R_dec h h0); intuition.
   Defined.
 
-  Lemma Vforall2n_dec : forall n, rel_dec (@Vforall2n A A R n).
+  Lemma Vforall2_dec n (v : vector A n) (w : vector B n) :
+   {Vforall2 v w}+{~Vforall2 v w}.
 
-  Proof. intros n v1 v2. unfold Vforall2n. apply Vforall2_dec. Defined.
+  Proof. unfold Vforall2. apply Vforall2_aux_dec. Defined.
 
-End Vforall2_dec.
+  Variable (f : A -> B -> bool).
 
-(** Boolean function deciding [Vforall2]. *)
-
-Section bVforall2.
-
-  Variables (A B : Type) (P : A -> B -> bool).
-
-  Fixpoint bVforall2 n1 n2 (v1 : vector A n1) (v2 : vector B n2) : bool :=
+  Fixpoint bVforall2_aux n1 n2 (v1 : vector A n1) (v2 : vector B n2) : bool :=
     match v1, v2 with
       | Vnil, Vnil => true
-      | Vcons x _ xs, Vcons y _ ys => P x y && bVforall2 xs ys
+      | Vcons x _ xs, Vcons y _ ys => f x y && bVforall2_aux xs ys
       | _, _ => false
     end.
 
-  Definition bVforall2n n (v1 : vector A n) (v2 : vector B n) :=
-    bVforall2 v1 v2.
+  Definition bVforall2 n (v1 : vector A n) (v2 : vector B n) :=
+    bVforall2_aux v1 v2.
 
-End bVforall2.
+End Vforall2.
+
+Arguments Vforall2 [A B] R {n} _ _.
+Arguments Vforall2_sub [A B R n v1 v2 p q] _ _.
+Arguments Vforall2_elim_nth [A B R n v1 v2 i] _ _.
+Arguments Vforall2_dec [A B R] _ [n] _ _.
+
+(** Properties of [Vforall2] wrt relations. *)
+
+Section Vforall2_rel.
+
+  Variables (A : Type) (R : relation A).
+
+  Global Instance Vforall2_refl :
+    Reflexive R -> forall n, Reflexive (Vforall2 (n:=n) R).
+
+  Proof. intros h n x. apply Vforall2_intro_nth. refl. Qed.
+
+  Global Instance Vforall2_trans :
+    Transitive R -> forall n, Transitive (Vforall2 (n:=n) R).
+
+  Proof.
+    intros h n x y z xy yz. apply Vforall2_intro_nth. intros i ip.
+    trans (Vnth y ip); apply Vforall2_elim_nth; hyp.
+  Qed.
+
+  Global Instance Vforall2_sym :
+    Symmetric R -> forall n, Symmetric (Vforall2 (n:=n) R).
+
+  Proof.
+    intros h n x y xy. apply Vforall2_intro_nth. intros i ip. sym.
+    apply Vforall2_elim_nth. hyp.
+  Qed.
+
+  Global Instance Vforall2_equiv :
+    Equivalence R -> forall n, Equivalence (Vforall2 (n:=n) R).
+
+  Proof.
+    constructor. apply Vforall2_refl; class. apply Vforall2_sym; class.
+    apply Vforall2_trans; class.
+  Qed.
+
+End Vforall2_rel.
+
+Section Vforall2_aux_Proper.
+
+  Variables (A : Type) (R : relation A) (B : Type) (S : relation B)
+            (F : A -> B -> Prop) (F_R : Proper (R ==> S ==> iff) F).
+
+  Global Instance Vforall2_aux_Proper n1 n2 :
+    Proper (Vforall2 R ==> Vforall2 S ==> iff)
+           (Vforall2_aux F (n1:=n1) (n2:=n2)).
+
+  Proof.
+    intros u u' uu' v v' vv'; revert n1 u u' uu' n2 v v' vv'.
+    induction u; simpl; intros. VOtac. simpl.
+    destruct v. VOtac. tauto. VSntac v'. tauto.
+    revert uu'. VSntac u'. simpl. destruct v'. VOtac. tauto.
+    revert vv'. VSntac v. rewrite !Vforall2_cons_eq.
+    intros [h1 h2] [h3 h4]. rewrite <- (F_R h3 h1), (IHu _ h4 _ _ _ h2). tauto.
+  Qed.
+
+End Vforall2_aux_Proper.
+
+(** Properties of [Vforall2] wrt [Vmap]. *)
+
+Section Vforall2_map.
+
+  Variables (A : Type) (R : relation A) (B : Type) (S : relation B)
+            (f g : A -> B).
+
+  Lemma Vforall2_map_intro : forall n (v : vector A n),
+    Vforall (fun x => S (f x) (g x)) v -> Vforall2 S (Vmap f v) (Vmap g v).
+
+  Proof.
+    induction v; simpl; intros. refl. rewrite Vforall2_cons_eq. intuition.
+  Qed.
+
+End Vforall2_map.
 
 (***********************************************************************)
 (** ** Predicate saying that some element of a vector satisfies some
@@ -1589,53 +1828,64 @@ End Vbuild.
 (***********************************************************************)
 (** ** Iterators on vectors. *)
 
-Section Vfolds.
+(** Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an. *)
 
-  Variable A : Type.
+Section Vfold_left.
 
-  (** Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an. *)
+  Variables (A B : Type) (f : B->A->B).
 
-  Fixpoint Vfold_left (B : Type) (f : B->A->B) n (b:B) (v : vector A n) : B :=
+  Fixpoint Vfold_left n (b:B) (v : vector A n) : B :=
     match v with
       | Vnil => b
-      | Vcons a _ w => f (Vfold_left f b w) a
+      | Vcons a _ w => f (Vfold_left b w) a
     end.
 
-  (** Vfold_right f [a1 .. an] b = f a1 (f a2 .. (f an b) .. ). *)
+  Variables (R : relation A) (S : relation B) (f_S : Proper (S ==> R ==> S) f).
 
-  Fixpoint Vfold_right (B : Type) (f : A->B->B) n (v : vector A n) (b:B) : B :=
-    match v with
-      | Vnil => b
-      | Vcons a _ w => f a (Vfold_right f w b)
+  Global Instance Vfold_left_proper n :
+    Proper (S ==> Vforall2 R ==> S) (Vfold_left (n:=n)).
+
+  Proof.
+    intros b b' bb' v v' vv'. induction v; simpl; intros. VOtac. simpl. hyp.
+    revert vv'. VSntac v'. rewrite Vforall2_cons_eq. intuition. simpl.
+    apply f_S; try hyp. apply IHv; hyp.
+  Qed.
+
+End Vfold_left.
+
+(** Vfold_right f [a1 .. an] b = f a1 (f a2 .. (f an b) .. ). *)
+
+Fixpoint Vfold_right (A B : Type) (f : A->B->B) n (v : vector A n) (b:B) : B :=
+  match v with
+    | Vnil => b
+    | Vcons a _ w => f a (Vfold_right f w b)
+  end.
+
+(* Vfold2 f x a{1..n} b{1..n} = f* a1 b1 (f* a2 b2 .. (f* an bn x) ..)
+   Vfold2 f x a{1..n} b{1..p} = ⊥ if n ≠ p
+
+   where f is partial
+   and f* x y z = if z is Some v then f x y v else None *)
+
+Section FoldOpt2.
+
+  Variable aT bT cT : Type.
+  Variable x        : cT.
+  Variable F        : aT -> bT -> cT -> option cT.
+
+  Fixpoint Vfold2 nA nB (vA : vector aT nA) (vB : vector bT nB) :=
+    match vA, vB with
+      | Vnil, Vnil => Some x
+      | Vcons xA nA sA, Vcons xB nB sB =>
+        match Vfold2 sA sB with
+          | Some v => F xA xB v
+          | None   => None
+        end
+      | Vnil, Vcons _ _ _ => None
+      | Vcons _ _ _, Vnil => None
     end.
 
-  (* Vfold2 f x a{1..n} b{1..n} = f* a1 b1 (f* a2 b2 .. (f* an bn x) ..)
-     Vfold2 f x a{1..n} b{1..p} = ⊥ if n ≠ p
-
-     where f is partial
-     and f* x y z = if z is Some v then f x y v else None *)
-
-  Section FoldOpt2.
-
-    Variable aT bT cT : Type.
-    Variable x        : cT.
-    Variable F        : aT -> bT -> cT -> option cT.
-
-    Fixpoint Vfold2 nA nB (vA : vector aT nA) (vB : vector bT nB) :=
-      match vA, vB with
-        | Vnil, Vnil => Some x
-        | Vcons xA nA sA, Vcons xB nB sB =>
-          match Vfold2 sA sB with
-            | Some v => F xA xB v
-            | None   => None
-          end
-        | Vnil, Vcons _ _ _ => None
-        | Vcons _ _ _, Vnil => None
-      end .
-
-  End FoldOpt2 .
-
-End Vfolds.
+End FoldOpt2.
 
 (***********************************************************************)
 (** ** Convert a vector into a list. *)
@@ -1851,94 +2101,6 @@ Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
 Implicit Arguments beq_vec_ok_in2 [A beq n v w].
 
 (***********************************************************************)
-(** ** Function applying a function [f] on every element of a vector. *)
-
-Section map.
-
-  Variables (A B : Type) (f : A->B).
-
-  Fixpoint Vmap n (v : vector A n) : vector B n :=
-    match v with
-      | Vnil => Vnil
-      | Vcons a _ v' => Vcons (f a) (Vmap v')
-    end.
-
-  Lemma Vnth_map : forall n (v : vector A n) i (H : i < n),
-    Vnth (Vmap v) H = f (Vnth v H).
-
-  Proof.
-    intros n. elim n.
-    intros v i H. elimtype False. apply (lt_n_O H).
-    clear n. intros n Hrec v i. case i.
-    intro. rewrite (VSn_eq v). simpl. refl.
-    clear i. intros i Hi. rewrite (VSn_eq v). simpl.
-    apply (Hrec (Vtail v) i (lt_S_n Hi)).
-  Qed.
-
-  Lemma Vin_map : forall x n (v : vector A n),
-    Vin x (Vmap v) -> exists y, Vin y v /\ x = f y.
-
-  Proof.
-    induction v; simpl; intros. contr. destruct H. subst x. exists h.
-    auto.
-    assert (exists y, Vin y v /\ x = f y). apply IHv. hyp.
-    destruct H0 as [y]. exists y. intuition.
-  Qed.
-
-  Lemma Vin_map_intro : forall x n (v : vector A n),
-    Vin x v -> Vin (f x) (Vmap v).
-
-  Proof.
-    induction v; simpl; intros. contr. destruct H. subst x. auto.
-    intuition.
-  Qed.
-
-  Lemma Vforall_map_elim : forall (P : B->Prop) n (v : vector A n),
-    Vforall P (Vmap v) -> Vforall (fun a : A => P (f a)) v.
-
-  Proof. induction v; simpl; intuition. Qed.
-
-  Lemma Vforall_map_intro : forall (P : B->Prop) n (v : vector A n),
-    Vforall (fun a : A => P (f a)) v -> Vforall P (Vmap v).
-
-  Proof. induction v; simpl; intuition. Qed.
-
-  Lemma Vmap_app : forall n1 n2 (v1 : vector A n1) (v2 : vector A n2),
-    Vmap (Vapp v1 v2) = Vapp (Vmap v1) (Vmap v2).
-
-  Proof.
-    intros; induction v1.
-    simpl; auto.
-    simpl. rewrite IHv1. refl.
-  Qed.
-
-  Lemma Vmap_cast : forall m n (H : m=n) (v : vector A m),
-    Vmap (Vcast v H) = Vcast (Vmap v) H.
-
-  Proof. intros until H. case H. intro v. rewrite !Vcast_refl. refl. Qed.
-
-  Lemma Vmap_tail : forall n (v : vector A (S n)),
-    Vmap (Vtail v) = Vtail (Vmap v).
-
-  Proof. intros. VSntac v. refl. Qed.
-
-  Lemma Vmap_eq_nth : forall n (v1 : vector A n) (v2 : vector B n),
-    (forall i (h : i<n), f (Vnth v1 h) = Vnth v2 h) -> Vmap v1 = v2.
-
-  Proof.
-    induction n; simpl; intros. VOtac. refl.
-    VSntac v1. VSntac v2. simpl. apply Vcons_eq_intro.
-    do 2 rewrite Vhead_nth. apply H.
-    apply IHn. intros. do 2 rewrite Vnth_tail. apply H.
-  Qed.
-
-End map.
-
-Implicit Arguments Vin_map [A B f x n v].
-Implicit Arguments Vforall_map_elim [A B f P n v].
-Implicit Arguments Vin_map_intro [A B x n v].
-
-(***********************************************************************)
 (** ** Function applying a function [f] on the first element of a
 non-empty vector, or some default value if the vector is empty. *)
 
@@ -1968,32 +2130,17 @@ End map_first.
 
 Section Vmap2.
 
-  Variables A B C : Type.
+  Variables (A B C : Type) (f: A->B->C).
 
-  Fixpoint Vmap2 (f : A->B->C) n : vector A n -> vector B n -> vector C n :=
+  Fixpoint Vmap2 n : vector A n -> vector B n -> vector C n :=
     match n with
       | O => fun _ _ => Vnil
       | _ => fun v1 v2 =>
-        Vcons (f (Vhead v1) (Vhead v2)) (Vmap2 f (Vtail v1) (Vtail v2))
+        Vcons (f (Vhead v1) (Vhead v2)) (Vmap2 (Vtail v1) (Vtail v2))
     end.
 
-  (* Map composition. *)
-
-  Lemma Vmap_map : forall (f:A->B) (g:B->C) n
-    (v : vector A n), Vmap g (Vmap f v) = Vmap (fun x : A => g (f x)) v.
-
-  Proof.
-    intros; induction v.
-    simpl; refl.
-    simpl Vmap at 2. simpl Vmap at 1.
-    rewrite IHv. refl.
-  Qed.
-
-  (* Nth element of [Vmap2]. *)
-
-  Lemma Vnth_map2 : forall (f : A -> B -> C) n 
-    (vl : vector A n) (vr : vector B n) i (ip : i < n),
-    Vnth (Vmap2 f vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
+  Lemma Vnth_map2 : forall n (vl : vector A n) (vr : vector B n) i (ip : i < n),
+    Vnth (Vmap2 vl vr) ip = f (Vnth vl ip) (Vnth vr ip).
 
   Proof.
     induction n; intros.
@@ -2002,65 +2149,58 @@ Section Vmap2.
     simpl. apply IHn.
   Qed.
 
+  Variables (R : relation A) (S : relation B) (T : relation C)
+            (f_mor : Proper (R ==> S ==> T) f).
+
+  Global Instance Vmap2_proper n :
+    Proper (Vforall2 R ==> Vforall2 S ==> Vforall2 T) (Vmap2 (n:=n)).
+
+  Proof.
+    intros u u' uu' v v' vv'; revert u u' uu' v v' vv'.
+    induction u; simpl; intros. refl.
+    revert uu'. VSntac u'. revert vv'. VSntac v. VSntac v'. simpl.
+    rewrite !Vforall2_cons_eq. fo.
+  Qed.
+
 End Vmap2.
 
 (***********************************************************************)
-(** ** Given a vector of pairs [exists P x_i h_i] such that [h_i] is a
-proof of [P x_i], build a proof that every element of the vector [x_1,
-..., x_n] satisfies [P]. *)
+(** ** Vectors of [sig P]. *)
 
-Fixpoint Vforall_of_vsig (A : Type) (P : A -> Prop) n (v : vector (sig P) n)
-  : Vforall P (Vmap (@proj1_sig A P) v) :=
-  match v in vector _ n return Vforall P (Vmap (@proj1_sig A P) v) with
-  | Vnil => I
-  | Vcons a _ w => conj (@proj2_sig A P a) (Vforall_of_vsig w)
-  end.
+Section Vsig.
 
-Lemma Vmap_proj1 : forall (A : Type) (P : A->Prop) n (v : vector A n)
-  (Hv : Vforall P v), v = Vmap (@proj1_sig A P) (Vsig_of_v Hv).
+  Variables (A : Type) (P : A -> Prop).
 
-Proof.
-  intros A P n v. elim v.
-  simpl. intro. refl.
-  intros a p w. intro Hrec.
-  simpl. intro Hv. case Hv. intros H1 H2. simpl Vmap.
-  gen (Hrec H2). intro H. apply Vcons_eq_intro; auto.
-Qed.
+  Fixpoint Vsig_of_forall n (v : vector A n) :
+    Vforall P v -> vector (sig P) n :=
+    match v in vector _ n return Vforall P v -> vector (sig P) n with
+      | Vnil => fun _ => Vnil
+      | Vcons a _ w => fun H =>
+        Vcons (exist P a (proj1 H)) (Vsig_of_forall w (proj2 H))
+    end.
 
-Implicit Arguments Vmap_proj1 [A P n v].
+  Fixpoint Vforall_of_sig (A : Type) (P : A -> Prop) n (v : vector (sig P) n) :
+    Vforall P (Vmap (@proj1_sig A P) v) :=
+    match v in vector _ n return Vforall P (Vmap (@proj1_sig A P) v) with
+      | Vnil => I
+      | Vcons a _ w => conj (@proj2_sig A P a) (Vforall_of_sig w)
+    end.
 
-(***********************************************************************)
-(** ** Equality of [Vmap]'s. *)
+  Lemma Vmap_proj1_sig : forall n (v : vector A n)
+    (Hv : Vforall P v), v = Vmap (@proj1_sig A P) (Vsig_of_forall _ Hv).
 
-Lemma Vmap_eq : forall (A B : Type) (f g : A->B) n (v : vector A n),
-  Vforall (fun a => f a = g a) v -> Vmap f v = Vmap g v.
+  Proof.
+    intros n v. elim v.
+    simpl. intro. refl.
+    intros a p w. intro Hrec.
+    simpl. intro Hv. case Hv. intros H1 H2. simpl Vmap.
+    gen (Hrec H2). intro H. apply Vcons_eq_intro; auto.
+  Qed.
 
-Proof.
-  induction v; simpl; intros. refl. destruct H. apply Vcons_eq_intro; auto.
-Qed.
+End Vsig.
 
-Implicit Arguments Vmap_eq [A B f g n v].
-
-Lemma Vmap_eq_ext : forall (A B : Type) (f g : A->B),
-  (forall a, f a = g a) ->
-  forall n (v : vector A n), Vmap f v = Vmap g v.
-
-Proof. induction v; intros; simpl. refl. apply Vcons_eq_intro; auto. Qed.
-
-Lemma Vmap_id : forall (A : Type) n (v : vector A n),
-  Vmap (fun x => x) v = v.
-
-Proof. induction v. refl. simpl. apply Vcons_eq_intro; auto. Qed.
-
-Lemma Vmap_eq_id : forall (A : Type) (f : A->A) n (v : vector A n),
-  Vforall (fun a => f a = a) v -> Vmap f v = v.
-
-Proof. intros. rewrite <- Vmap_id. apply Vmap_eq. hyp. Qed.
-
-Lemma Vmap_eq_ext_id : forall (A : Type) (f : A->A), (forall a, f a = a) ->
-  forall n (v : vector A n), Vmap f v = v.
-
-Proof. intros. rewrite <- Vmap_id. apply Vmap_eq_ext. hyp. Qed.
+Arguments Vsig_of_forall [A P n v] _.
+Arguments Vmap_proj1_sig [A P n v] _.
 
 (****************************************************************************)
 (** ** Build a vector of [option A] of size [n] from the elements (if
@@ -2132,6 +2272,15 @@ Section Vopt_filter.
     apply IHks.
   Qed.
 
+  Global Instance Vopt_filter_proper R n (ks : vector nat n) p :
+    Proper (Vforall2 R ==> Vforall2 (opt_r R)) (Vopt_filter ks (p:=p)).
+
+  Proof.
+    intros ts ts' tsts'. apply Vforall2_intro_nth. intros i hi.
+    rewrite !Vnth_opt_filter. destruct (lt_dec (Vnth ks hi)).
+    apply opt_r_Some. apply Vforall2_elim_nth. hyp. apply opt_r_None.
+  Qed.
+
 End Vopt_filter.
 
 Arguments Vnth_opt_filter_Some_elim [A p xs n ks i hi x] _.
@@ -2193,6 +2342,66 @@ Proof.
   destruct (lt_ge_dec 0 j). 2: refl.
   rewrite Vnth_opt_filter.
   destruct (lt_dec (Vnth ks (Vnth_cons_tail_aux j1 l)) p). omega. refl.
+Qed.
+
+(***********************************************************************)
+(** ** Extension of a relation on [A] to a relation on [vector (option A)]
+
+so that [Vforall2_opt (n:=n) R us vs] if there are [k <= n], [xs, ys :
+vector A k] such that [us = Vapp (Vmap Some xs) (Vconst None (n-k))],
+[vs = Vapp (Vmap Some ys) (Vconst None (n-k))] and [Vforall2 R xs ys]. *)
+
+Definition Vforall2_opt {n A} (R : relation A) :
+  relation (vector (option A) n) :=
+  fun us vs => exists i (h : i <= n),
+    Vforall2 (opt R) (Vsub us (Veq_app_aux1 h)) (Vsub vs (Veq_app_aux1 h))
+    /\ Vforall2 (opt_r empty_rel) (Vsub us (Veq_app_aux2 h))
+                                (Vsub vs (Veq_app_aux2 h)).
+
+Lemma Vforall2_opt_filter A p (ts us : vector A p) (R : relation A) :
+  forall n (ks : vector nat n), sorted ks ->
+    (forall i (ip : i < p), Vin i ks -> R (Vnth ts ip) (Vnth us ip)) ->
+    Vforall2_opt R (Vopt_filter ks ts) (Vopt_filter ks us).
+
+Proof.
+  induction ks as [|k n ks IH]; intros kks_sorted tsus; simpl.
+  (* Vnil *)
+  assert (a : 0<=0). omega. ex 0 a. rewrite !Vsub_nil, !Vforall2_cast. split; refl.
+  (* Vcons *)
+  destruct (lt_dec k p).
+  (* k < p *)
+  gen (sorted_cons_elim kks_sorted); intro ks_sorted.
+  assert (tsus' : forall i (ip:i<p), Vin i ks -> R (Vnth ts ip) (Vnth us ip)).
+  intros i ip hi. apply tsus. simpl. auto.
+  gen (IH ks_sorted tsus'). intros [i [i1 [i2 i3]]].
+  assert (a : S i <= S n). omega. ex (S i) a. split.
+
+  apply Vforall2_intro_nth. intros j jSi. rewrite !Vnth_sub, !Vnth_cons. simpl.
+  destruct (lt_ge_dec 0 j).
+  assert (b : j - 1 < i). omega. gen (Vforall2_elim_nth b i2).
+  rewrite !Vnth_sub. erewrite Vnth_eq.
+  erewrite Vnth_eq with (v := Vopt_filter ks us).
+  apply impl_refl. omega. omega.
+  apply opt_intro. apply tsus. fo.
+
+  apply Vforall2_intro_nth. intros j hj. rewrite !Vnth_sub, !Vnth_cons.
+  destruct (lt_ge_dec 0 (S i + j)). 2: omega.
+  assert (b : j < n - i). omega. gen (Vforall2_elim_nth b i3).
+  rewrite !Vnth_sub. erewrite Vnth_eq.
+  erewrite Vnth_eq with (v := Vopt_filter ks us).
+  apply impl_refl. omega. omega.
+  (* k >= p *)
+  assert (a : 0 <= S n). omega. ex 0 a. split.
+  apply Vforall2_intro_nth. intros j hj. omega.
+  apply Vforall2_intro_nth. intros j hj. rewrite !Vnth_sub, !Vnth_cons. simpl.
+  destruct (lt_ge_dec 0 j). 2: apply opt_r_None. rewrite !Vnth_opt_filter.
+  match goal with |- context C [lt_dec (Vnth ks ?x) p] => set (h := x) end.
+  destruct (lt_dec (Vnth ks h) p). 2: apply opt_r_None. exfalso.
+  unfold sorted in kks_sorted.
+  assert (ai : 0 < S n). omega. assert (aj : j < S n). omega.
+  gen (kks_sorted _ ai _ aj l). rewrite !Vnth_cons.
+  destruct (lt_ge_dec 0 0). omega. destruct (lt_ge_dec 0 j). 2: omega.
+  rewrite Vnth_eq with (h2:=h). omega. omega.
 Qed.
 
 (****************************************************************************)

@@ -20,7 +20,7 @@ References:
 
 Set Implicit Arguments.
 
-Require Import LogicUtil LCompSimple VecUtil RelUtil LCall LCompInt VecOrd
+Require Import LogicUtil LCompSimple VecUtil RelUtil LCall LCompInt
   Morphisms SetUtil SN Basics NatUtil LCompRewrite EqUtil.
 
 Module Export Def.
@@ -371,9 +371,10 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       assert (nf : n + (arity (typ f) - (0 + n)) = arity (typ f)). omega.
       eapply gt2_mcaeq with (x := mk_max_call f
         (Vcast (Vapp (Vmap (subs s) ls) (Vsub ts (Veq_app_aux2 h))) nf)).
-      2: refl. apply caeq_intro. rewrite Vreln_cast. apply Vforall2n_intro.
+      2: refl. apply caeq_intro. rewrite Vforall2_cast.
+      apply Vforall2_intro_nth.
       intros i hi. rewrite !Vnth_app. simpl. destruct (le_gt_dec n i). refl.
-      apply Vreln_elim_nth. rewrite <- e, (Vsub_pi h). hyp.
+      apply Vforall2_elim_nth. rewrite <- e, (Vsub_pi h). hyp.
       eapply gt2_gt1; auto. apply H0.
       apply vint_app_intro with (h := Veq_app_aux2 h).
       rewrite <- e, hls. apply vint_sub_term_intro. hyp.
@@ -526,7 +527,7 @@ Module Termin (Export CC : CC_Struct)
       (* Proof that calls smaller than [mk_call f ts] are computable. *)
       intros g us h. apply (H0 _ h).
       (* Proof that [Vmap (subs s) ls ~~~ Vsubs ts hm]. *)
-      sym. gen (Vreln_sub_intro hm h3). rewrite Vsub_cast, Vsub_app_l. auto.
+      sym. gen (Vforall2_sub hm h3). rewrite Vsub_cast, Vsub_app_l. auto.
       omega.
       (* Proof that [r] is in the computability closure of [mk_call f ls]. *)
       rewrite <- output_arity. rewrite <- h1 at 3. rewrite arrow_output. hyp.

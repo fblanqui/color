@@ -244,41 +244,43 @@ Section lexv.
 
   End wf.
 
-  (** [lexv eqA gtA] absorbs [Vreln eqA]. *)
+  (** [lexv eqA gtA] absorbs [Vforall2 eqA]. *)
 
-  Lemma lexv_reln_l : eqA @ gtA << gtA -> Transitive eqA ->
-    forall n, Vreln (n:=n) eqA @ lexv eqA gtA << lexv eqA gtA.
+  Lemma lexv_forall2_l : eqA @ gtA << gtA -> Transitive eqA ->
+    forall n, Vforall2 eqA (n:=n) @ lexv eqA gtA << lexv eqA gtA.
 
   Proof.
     intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
     revert usvs. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi. split.
-    apply gtA_eqA. exists (Vnth us hi). split. apply Vforall2n_nth. hyp. hyp.
-    intros j ji jn. trans (Vnth us jn). apply Vforall2n_nth. hyp. fo.
+    apply gtA_eqA. exists (Vnth us hi). split.
+    apply Vforall2_elim_nth. hyp. hyp.
+    intros j ji jn. trans (Vnth us jn). apply Vforall2_elim_nth. hyp. fo.
   Qed.
 
-  Lemma lexv_reln_r : gtA @ eqA << gtA -> Transitive eqA ->
-    forall n, lexv eqA gtA @ Vreln (n:=n) eqA << lexv eqA gtA.
+  Lemma lexv_forall2_r : gtA @ eqA << gtA -> Transitive eqA ->
+    forall n, lexv eqA gtA @ Vforall2 eqA (n:=n) << lexv eqA gtA.
 
   Proof.
     intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
     revert tsus. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi. split.
-    apply gtA_eqA. exists (Vnth us hi). split. hyp. apply Vforall2n_nth. hyp.
-    intros j ji jn. trans (Vnth us jn). fo. apply Vforall2n_nth. hyp.
+    apply gtA_eqA. exists (Vnth us hi). split.
+    hyp. apply Vforall2_elim_nth. hyp.
+    intros j ji jn. trans (Vnth us jn). fo. apply Vforall2_elim_nth. hyp.
   Qed.
 
-  (** [lexv eqA gtA] is invariant by [Vreln eqA]. *)
+  (** [lexv eqA gtA] is invariant by [Vforall2 eqA]. *)
 
-  Global Instance lexv_reln n : Transitive eqA -> Symmetric eqA ->
+  Global Instance lexv_forall2 n : Transitive eqA -> Symmetric eqA ->
     Proper (eqA ==> eqA ==> impl) gtA ->
-    Proper (Vreln eqA ==> Vreln eqA ==> impl) (lexv (n:=n) eqA gtA).
+    Proper (Vforall2 eqA ==> Vforall2 eqA ==> impl) (lexv (n:=n) eqA gtA).
 
   Proof.
     intros eqA_trans eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
     rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
-    eapply gtA_eqA. apply Vreln_elim_nth. apply tsts'.
-    apply Vreln_elim_nth. apply usus'. hyp.
+    eapply gtA_eqA. apply Vforall2_elim_nth. apply tsts'.
+    apply Vforall2_elim_nth. apply usus'. hyp.
     intros j ji jn.
-    rewrite <- (Vreln_elim_nth _ tsts'), <- (Vreln_elim_nth _ usus'). fo.
+    rewrite <- (Vforall2_elim_nth _ tsts'), <- (Vforall2_elim_nth _ usus'). fo.
   Qed.
 
   (** Transitivity. *)
@@ -322,14 +324,14 @@ Proof.
   ex i hi. fo.
 Qed.
 
-(** [lexv (opt eqA) (opt gtA)] absorbs [Vreln_opt eqA]. *)
+(** [lexv (opt eqA) (opt gtA)] absorbs [Vforall2_opt eqA]. *)
 
-Section Vreln_opt.
+Section Vforall2_opt.
 
   Variables (A : Type) (eqA gtA : relation A).
 
-  Lemma lexv_reln_opt_l : eqA @ gtA << gtA -> Transitive eqA -> forall n,
-    Vreln_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA) << lexv (opt eqA) (opt gtA).
+  Lemma lexv_forall2_opt_l : eqA @ gtA << gtA -> Transitive eqA -> forall n,
+    Vforall2_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA) << lexv (opt eqA) (opt gtA).
 
   Proof.
     intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
@@ -338,28 +340,28 @@ Section Vreln_opt.
     destruct (le_dec k i).
     (* k <= i *)
     exfalso. assert (a : i - k < n - k). omega.
-    gen (Vreln_elim_nth a k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+    gen (Vforall2_elim_nth a k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=us) (h2:=hi), <- H; try omega.
     intro e; inversion e; clear e; subst. fo.
     (* k >= i *)
     split.
     (* i-th argument is decreasing *)
     assert (a : i < k). omega.
-    gen (Vreln_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+    gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=us) (h2:=hi), <- H; auto.
     intro e; inversion e; clear e; subst.
     apply opt_intro. apply gtA_eqA. exists x. fo.
     (* forall j<i, j-th arguments are equivalent *)
     intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
     assert (a : j < k). omega.
-    gen (Vreln_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
+    gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
       Vnth_eq with (v:=us) (h2:=jn), <- H2; auto.
     intro e; inversion e; clear e; subst.
     apply opt_intro. trans x0; hyp.
   Qed.
 
-  Lemma lexv_reln_opt_r : gtA @ eqA << gtA -> Transitive eqA -> forall n,
-    lexv (opt eqA) (opt gtA) @ Vreln_opt (n:=n) eqA << lexv (opt eqA) (opt gtA).
+  Lemma lexv_forall2_opt_r : gtA @ eqA << gtA -> Transitive eqA -> forall n,
+    lexv (opt eqA) (opt gtA) @ Vforall2_opt (n:=n) eqA << lexv (opt eqA) (opt gtA).
 
   Proof.
     intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
@@ -368,27 +370,27 @@ Section Vreln_opt.
     destruct (le_dec k i).
     (* k <= i *)
     exfalso. assert (a : i - k < n - k). omega.
-    gen (Vreln_elim_nth a k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+    gen (Vforall2_elim_nth a k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=vs) (h2:=hi), <- H0; try omega.
     intro e; inversion e; clear e; subst. fo.
     (* k >= i *)
     split.
     (* i-th argument is decreasing *)
     assert (a : i < k). omega.
-    gen (Vreln_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
+    gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=vs) (h2:=hi), <- H0; auto.
     intro e; inversion e; clear e; subst.
     apply opt_intro. apply gtA_eqA. exists y. fo.
     (* forall j<i, j-th arguments are equivalent *)
     intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
     assert (a : j < k). omega.
-    gen (Vreln_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
+    gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
       Vnth_eq with (v:=vs) (h2:=jn), <- H3; auto.
     intro e; inversion e; clear e; subst.
     apply opt_intro. trans y0; hyp.
   Qed.
 
-End Vreln_opt.
+End Vforall2_opt.
 
 (** Monotony of [lexv] wrt arguments. *)
 

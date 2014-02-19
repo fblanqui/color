@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
-  VecUtil VecOrd NatUtil.
+  VecUtil NatUtil.
 Require Export LSubs.
 
 (****************************************************************************)
@@ -96,7 +96,7 @@ Module Export Def.
 
     (** Alpha-equivalence on vectors of terms. *)
 
-    Notation vaeq := (Vreln aeq).
+    Notation vaeq := (Vforall2 aeq).
 
     (** Component-wise extension to vectors of a relation on terms,
        modulo [vaeq]. *)
@@ -129,7 +129,7 @@ Module Make (Export L : L_Struct).
     Notation clos_vaeq :=
     (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
-  Notation vaeq := (Vreln aeq).
+  Notation vaeq := (Vforall2 aeq).
   Infix "~~" := aeq (at level 70).
   Infix "~~~" := vaeq (at level 70).
   Notation "R *" := (clos_aeq_trans R) (at level 35).
@@ -348,18 +348,18 @@ Module Make (Export L : L_Struct).
   Proof.
     intro xs. induction u.
     (* var *)
-    exists (Var x). split. refl. simpl. rewrite inter_empty_l. refl.
+    ex (Var x). split. refl. simpl. rewrite inter_empty_l. refl.
     (* fun *)
-    exists (Fun f). split. refl. simpl. rewrite inter_empty_l. refl.
+    ex (Fun f). split. refl. simpl. rewrite inter_empty_l. refl.
     (* app *)
     destruct IHu1 as [v1 [h1 i1]]. destruct IHu2 as [v2 [h2 i2]].
-    exists (App v1 v2). split.
+    ex (App v1 v2). split.
     trans (App v1 u2). apply aeq_app_l. hyp. apply aeq_app_r. hyp.
     simpl. rewrite union_inter_1, i1, i2, union_empty_l. refl.
     (* lam *)
     destruct IHu as [v [h i]].
     set (uxs := union (fv v) (union (bv v) xs)).
-    set (x' := var_notin uxs). exists (Lam x' (rename x x' v)).
+    set (x' := var_notin uxs). ex (Lam x' (rename x x' v)).
     gen (var_notin_ok uxs). fold x'. unfold uxs. set_iff. intro n. split.
     trans (Lam x v). apply aeq_lam. hyp. apply aeq_alpha. tauto.
     simpl. rewrite bv_rename. 2: tauto. revert i. rewrite inter_sym at 1.
@@ -444,7 +444,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_fvcod.
-    split; intros [y [h1 h2]]; exists y; intuition.
+    split; intros [y [h1 h2]]; ex y; intuition.
     rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
   Qed.
 
@@ -496,13 +496,13 @@ Module Make (Export L : L_Struct).
   Proof.
     intros ys s. apply set_induction_bis.
     (* Equal *)
-    intros xs xs' e [s' [ss' [h1 h2]]]. exists s'. rewrite <- e. auto.
+    intros xs xs' e [s' [ss' [h1 h2]]]. ex s'. rewrite <- e. auto.
     (* empty *)
-    exists id.
+    ex id.
     split; try split; intro x; try rewrite bvcod_empty; set_iff; tauto.
     (* add *)
     intros x xs n [s' [ss' [h1 h2]]].
-    destruct (aeq_notin_bv ys (s x)) as [u [i1 i2]]. exists (update x u s').
+    destruct (aeq_notin_bv ys (s x)) as [u [i1 i2]]. ex (update x u s').
 
     split. intro y. set_iff. unfold Def.update. eq_dec y x.
     subst y. intros. hyp. intros [i|i]. subst y. tauto. apply ss'. hyp.
@@ -513,7 +513,7 @@ Module Make (Export L : L_Struct).
     subst z. intros _ h'. rewrite inter_empty in i2. eapply i2. apply h'. hyp.
     intros [h3|h3] h4. subst z. tauto. rewrite inter_sym, inter_empty in h1.
     absurd (In y (bvcod xs s')). apply h1. hyp.
-    rewrite In_bvcod. exists z. tauto.
+    rewrite In_bvcod. ex z. tauto.
 
     intro y. set_iff. intro hy. unfold Def.update. eq_dec y x.
     subst y. tauto. apply h2. tauto.
@@ -721,7 +721,7 @@ variables. *)
     assert (e1 : subs xx's v = subs1 xx's v). apply subs1_no_alpha.
     rewrite inter_empty. intros a ha. rewrite In_fvcodom.
     intros [b [i1 [i2 i3]]]. gen (hs3 _ ha). set_iff. intuition. apply H6.
-    rewrite In_fvcodom. exists b. set_iff. rewrite h1.
+    rewrite In_fvcodom. ex b. set_iff. rewrite h1.
     revert i3. unfold xx's. unfold Def.update. eq_dec b x.
     subst b. simpl. set_iff. tauto. intuition. revert i3. rewrite H5. simpl.
     set_iff. intro h. subst b. rewrite h1 in H4. tauto.
@@ -732,7 +732,7 @@ variables. *)
     rewrite inter_empty. intros a ha. gen (hs3 _ ha). set_iff. intuition.
     revert H1. rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
-    intros i2 i3. apply H7. rewrite In_fvcodom. exists b. revert i1.
+    intros i2 i3. apply H7. rewrite In_fvcodom. ex b. revert i1.
     rewrite h1 in *. rewrite fv_rename.
     destruct (mem x (fv v)); set_iff; intuition.
 
@@ -782,13 +782,13 @@ variables. *)
 
     absurd (In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y', Def.var; ens. rewrite hy. apply var_notin_ok.
-    set_iff. right. rewrite In_fvcodom. exists a. set_iff. intuition.
+    set_iff. right. rewrite In_fvcodom. ex a. set_iff. intuition.
     unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
     set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
 
     assert (p0 : y' = y). unfold y', Def.var; ens. rewrite hy. refl.
     absurd (In y (fvcodom (remove y (fv u')) s)). rewrite not_mem_iff. hyp.
-    rewrite In_fvcodom. exists a. set_iff. rewrite p0 in i3. intuition.
+    rewrite In_fvcodom. ex a. set_iff. rewrite p0 in i3. intuition.
     unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
     set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
 
@@ -809,7 +809,7 @@ variables. *)
     rewrite update_neq. 2: auto.
     assert (h : In z (remove x (fv u))). rewrite h1. set_iff. auto.
     intro i. rewrite inter_sym, inter_empty in hs2. eapply hs2. set_iff. refl.
-    rewrite In_bvcod. exists z. auto.
+    rewrite In_bvcod. ex z. auto.
 
     Focus 1. unfold xx's. apply aeq_refl_eq.
 
@@ -859,7 +859,7 @@ variables. *)
 
   Proof.
     intros xs s1 t1 e1 s2 t2 e2 x hx. unfold Def.comp. rewrite (e1 _ hx).
-    apply subs_saeq. intros y hy. apply e2. rewrite In_fvcod. exists x.
+    apply subs_saeq. intros y hy. apply e2. rewrite In_fvcod. ex x.
     rewrite (e1 _ hx). auto.
   Qed.
 
@@ -914,9 +914,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     apply subs1_saeq. intros x hx. unfold Def.comp1, Def.comp.
     rewrite (e1 _ hx). sym. apply aeq_refl_eq. apply subs1_no_alpha.
     assert (d : bv (s1' x) [<=] bvcod (fv u') s1').
-    intros y hy. rewrite In_bvcod. exists x. auto.
+    intros y hy. rewrite In_bvcod. ex x. auto.
     assert (e : fv (s1' x) [<=] fvcod (fv u') s1').
-    intros y hy. rewrite In_fvcod. exists x. auto.
+    intros y hy. rewrite In_fvcod. ex x. auto.
     rewrite empty_subset, d, e. rewrite <- e1 at 2. rewrite <- uu' at 2.
     fold D. rewrite union_subset_1 with (s:=D) (s':=B), union_sym,
       <- empty_subset. hyp.
@@ -1082,7 +1082,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (* << *)
     intros t u tu.
     destruct (clos_aeq_inv tu) as [t' [u' [tt' [uu' t'u']]]]; clear tu.
-    exists t'. intuition. exists u'. intuition.
+    ex t'. intuition. ex u'. intuition.
     (* >> *)
     intros t u [t' [tt' [u' [t'u' u'u]]]]. eapply clos_aeq_intro.
     apply tt'. sym. apply u'u. hyp.
@@ -1233,8 +1233,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     intros n t t' tt' us us' usus'. revert n us us' usus' t t' tt'.
     induction us; simpl; intros us' usus' t t' tt'.
     VOtac. simpl. hyp.
-    VSntac us'. simpl. unfold Vreln, Vforall2n in usus'.
-    rewrite H in usus'. simpl in usus'. destruct usus' as [h1 h2].
+    VSntac us'. simpl. rewrite H in usus'. destruct usus' as [h1 h2].
     apply IHus. hyp. rewrite tt', h1. refl.
   Qed.
 
@@ -1247,8 +1246,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     ex t (@Vnil Te). simpl. intuition.
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
-    inv_aeq_0 h2; clear h2; subst. ex u0 (Vcons u1 us).
-    unfold Vreln, Vforall2n. simpl. intuition.
+    inv_aeq_0 h2; clear h2; subst. ex u0 (Vcons u1 us). simpl.
+    rewrite Vforall2_cons_eq. intuition.
   Qed.
 
   Arguments apps_aeq_r [n vs v t0] _.
@@ -1318,8 +1317,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
         induction 1. fo. fo. destruct IHclos_aeq_trans1 as [h|[t [h1 h2]]].
         destruct IHclos_aeq_trans2 as [i|[t' [i1 i2]]].
         left. trans v; hyp.
-        right. exists t'. rewrite h. auto.
-        right. exists t. split. hyp. trans v; hyp.
+        right. ex t'. rewrite h. auto.
+        right. ex t. split. hyp. trans v; hyp.
       Qed.
 
     End aeq.
@@ -1420,20 +1419,21 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       intros u v n us vs. split.
 
       intros [x [uusx [y [xy yvvs]]]]. revert uusx yvvs xy. VSntac x. VSntac y.
-      rewrite 2!Vreln_cons. intros [h1 h2] [i1 i2] h. inversion h.
+      rewrite !Vforall2_cons_eq. intros [h1 h2] [i1 i2] h. inversion h.
       left. subst x0 y0 x'. rewrite h1, <- i1, h2, H5, i2. split.
       apply incl_clos_aeq. hyp. refl.
       right. subst x0 y0 y'. rewrite h1, H4, i1. split. refl. 
-      exists (Vtail x). intuition. exists (Vtail y). intuition.
+      ex (Vtail x). intuition. ex (Vtail y). intuition.
 
       intros [[h1 h2]|[h1 h2]].
-      inversion h1; subst. exists (Vcons u' us). split.
-      rewrite Vreln_cons. intuition. exists (Vcons v' us). split.
-      apply Vrel1_cons_intro. auto. rewrite Vreln_cons. intuition.
+      inversion h1; subst. ex (Vcons u' us). split.
+      rewrite Vforall2_cons_eq. intuition. ex (Vcons v' us). split.
+      apply Vrel1_cons_intro. auto. rewrite Vforall2_cons_eq. intuition.
 
       destruct h2 as [us' [usus' [vs' [us'vs' vs'vs]]]].
-      exists (Vcons v us'). rewrite Vreln_cons. intuition. exists (Vcons v vs').
-      rewrite Vreln_cons. intuition. apply Vrel1_cons_intro. right. intuition.
+      ex (Vcons v us'). rewrite Vforall2_cons_eq. intuition.
+      ex (Vcons v vs'). rewrite Vforall2_cons_eq. intuition.
+      apply Vrel1_cons_intro. right. intuition.
     Qed.
 
     (** [clos_vaeq] is compatible with [vaeq]. *)
@@ -1443,7 +1443,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     Proof.
       intros us us' usus' ws ws' wsws' [vs [usvs [xs [bvsxs xsws]]]].
-      exists vs. split. trans us. sym. hyp. hyp. exists xs. intuition.
+      ex vs. split. trans us. sym. hyp. hyp. ex xs. intuition.
       trans ws; hyp.
     Qed.
 
@@ -1453,10 +1453,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Proof.
       intros n us vs p q h [us' [usus' [vs' [r vsvs']]]]; symmetry in vsvs'.
       destruct (Vrel1_sub h r).
-      left. rewrite (Vreln_sub_intro h usus'), (Vreln_sub_intro h vsvs'), H.
+      left. rewrite (Vforall2_sub h usus'), (Vforall2_sub h vsvs'), H.
       refl.
-      right. exists (Vsub us' h). split. apply Vreln_sub_intro. hyp.
-      exists (Vsub vs' h). split. hyp. apply Vreln_sub_intro. sym. hyp.
+      right. ex (Vsub us' h). split. apply Vforall2_sub. hyp.
+      ex (Vsub vs' h). split. hyp. apply Vforall2_sub. sym. hyp.
     Qed.
 
     Arguments clos_vaeq_sub [n us vs p q] _ _.
@@ -1498,7 +1498,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       assert (s2 : a' = Vnth x' l). rewrite ex', Vnth_cast, Vnth_app.
       destruct (Compare_dec.le_gt_dec i i). 2: omega.
       rewrite Vnth_cons_head. refl. omega.
-      rewrite s1, s2. apply Vforall2n_nth. hyp.
+      rewrite s1, s2. apply Vforall2_elim_nth. hyp.
       (* We now prove that [b ~~ b']. *)
       assert (bb' : b ~~ b').
       assert (t1 : b = Vnth y l). rewrite ey, Vnth_cast, Vnth_app.
@@ -1507,25 +1507,27 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       assert (t2 : b' = Vnth y' l). rewrite ey', Vnth_cast, Vnth_app.
       destruct (Compare_dec.le_gt_dec i i). 2: omega.
       rewrite Vnth_cons_head. refl. omega.
-      rewrite t1, t2. apply Vforall2n_nth. sym. hyp.
+      rewrite t1, t2. apply Vforall2_elim_nth. sym. hyp.
       (* We now prove that [y ~~~ Vcast (Vapp xi (Vcons b xj)) k0]. *)
       assert (h :  y ~~~ Vcast (Vapp xi (Vcons b xj)) k0).
-      rewrite ex, ex', Vreln_cast in xx'. rewrite ey, ey', Vreln_cast in y'y.
+      rewrite ex, ex', Vforall2_cast in xx'.
+      rewrite ey, ey', Vforall2_cast in y'y.
       trans (Vcast (Vapp x'i (Vcons b x'j)) k0).
       (* left *)
-      apply Vforall2n_intro. intros k hk. rewrite ey, 2!Vnth_cast, 2!Vnth_app.
+      apply Vforall2_intro_nth. intros k hk.
+      rewrite ey, 2!Vnth_cast, 2!Vnth_app.
       destruct (Compare_dec.le_gt_dec i k).
       rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (k-i)). 2: refl.
-      apply Vforall2n_nth. eapply Vreln_cons_elim. eapply Vreln_app_elim_r.
-      sym. apply y'y.
-      apply Vforall2n_nth. eapply Vreln_app_elim_l. sym. apply y'y.
+      apply Vforall2_elim_nth. eapply Vforall2_cons_elim.
+      eapply Vforall2_app_elim_r. sym. apply y'y.
+      apply Vforall2_elim_nth. eapply Vforall2_app_elim_l. sym. apply y'y.
       (* right *)
-      apply Vforall2n_intro. intros k hk. rewrite 2!Vnth_cast, 2!Vnth_app.
+      apply Vforall2_intro_nth. intros k hk. rewrite 2!Vnth_cast, 2!Vnth_app.
       destruct (Compare_dec.le_gt_dec i k).
       rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (k-i)). 2: refl.
-      apply Vforall2n_nth. eapply Vreln_cons_elim. eapply Vreln_app_elim_r.
-      sym. apply xx'.
-      apply Vforall2n_nth. eapply Vreln_app_elim_l. sym. apply xx'.
+      apply Vforall2_elim_nth. eapply Vforall2_cons_elim.
+      eapply Vforall2_app_elim_r. sym. apply xx'.
+      apply Vforall2_elim_nth. eapply Vforall2_app_elim_l. sym. apply xx'.
       (* We now prove that
       [Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)]. *)
       assert (r : Vrel1 R_aeq x (Vcast (Vapp xi (Vcons b xj)) k0)).
@@ -1545,17 +1547,17 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       destruct (clos_aeq_inv uiui') as [vi [vi' [uivi [ui'vi' vivi']]]];
         clear uiui'. rewrite <- (Vnth_replace hi hi us). apply h2.
 
-      exists (Vreplace us hi vi). split.
-      apply Vforall2n_intro. intros j jn. destruct (eq_nat_dec j i).
+      ex (Vreplace us hi vi). split.
+      apply Vforall2_intro_nth. intros j jn. destruct (eq_nat_dec j i).
       subst j. rewrite Vnth_replace. rewrite (Vnth_eq _ jn hi); auto.
       rewrite Vnth_replace_neq. refl. omega.
 
-      exists (Vreplace us hi vi'). split.
+      ex (Vreplace us hi vi'). split.
       rewrite Vrel1_nth_iff. ex i hi. split.
       rewrite !Vnth_replace. hyp.
       intros j jn jni. rewrite !Vnth_replace_neq; auto.
 
-      apply Vforall2n_intro. intros j jn. destruct (eq_nat_dec j i).
+      apply Vforall2_intro_nth. intros j jn. destruct (eq_nat_dec j i).
       subst j. rewrite !Vnth_replace. sym. hyp.
       rewrite !Vnth_replace_neq; auto. refl.
     Qed.

@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil VecOrd. 
+Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil. 
 Require Export LSimple LComp.
 
 (****************************************************************************)
@@ -364,8 +364,8 @@ Module Make (Export ST : ST_Struct)
       destruct us. VOtac. auto. fo.
       (* cons *)
       rename h into T.
-      destruct us. VOtac. auto. revert usvs. VSntac vs. rewrite Vreln_cons.
-      gen (cp_int T). intros [T1 _ _ _].
+      destruct us. VOtac. auto. revert usvs. VSntac vs.
+      rewrite Vforall2_cons_eq. gen (cp_int T). intros [T1 _ _ _].
       intros [h1 h2] [i1 i2]. rewrite <- h1, <- h2. intuition.
     Qed.
 

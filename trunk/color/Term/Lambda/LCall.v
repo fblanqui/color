@@ -77,7 +77,7 @@ Module Export Def.
 
     Inductive caeq : relation call :=
     | caeq_intro : forall f n (ts us : Tes n),
-      Vreln aeq ts us -> caeq (mk_call f ts) (mk_call f us).
+      Vforall2 aeq ts us -> caeq (mk_call f ts) (mk_call f us).
 
     Definition mcaeq : relation max_call := caeq.
 
@@ -424,12 +424,12 @@ Module Lex (Export CO : DLQO_Struct).
       revert i2. rewrite !Vnth_opt_filter.
       destruct (lt_dec (Vnth M i1) n); destruct (lt_dec (Vnth M i1) p);
         intro i2; inversion i2; clear i2; subst. apply opt_intro.
-      rewrite <- (Vreln_elim_nth _ h), <- (Vreln_elim_nth _ h0). hyp.
+      rewrite <- (Vforall2_elim_nth _ h), <- (Vforall2_elim_nth _ h0). hyp.
       (* for j < i, j-th argument is equivalent. *)
       intros j ji jr. gen (i3 _ ji jr). rewrite !Vnth_opt_filter.
       destruct (lt_dec (Vnth M jr) n); destruct (lt_dec (Vnth M jr) p);
         intro j2; inversion j2; clear j2; subst. apply opt_intro.
-      rewrite <- (Vreln_elim_nth _ h), <- (Vreln_elim_nth _ h0). hyp.
+      rewrite <- (Vforall2_elim_nth _ h), <- (Vforall2_elim_nth _ h0). hyp.
     Qed.
 
     (** [gt_args_lex S r] absorbs [gt_red R] if [S] is transitive,
@@ -453,7 +453,7 @@ Module Lex (Export CO : DLQO_Struct).
       assert (a : S (Vnth us j1) (Vnth vs j1)). apply RS.
       split. apply sn_clos_vaeq_elim. hyp.
       eapply clos_aeq_intro. 3: apply j2.
-      apply Vreln_elim_nth. hyp. apply Vreln_elim_nth. sym. hyp.
+      apply Vforall2_elim_nth. hyp. apply Vforall2_elim_nth. sym. hyp.
       (* We simplify [h1]. Let [i] be the position in [M:= CO.filter r]
       at which the decrease occurs. *)
       revert h1. unfold Def.gt_args_lex, Rof. simpl. set (M := CO.filter r).
@@ -478,7 +478,7 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
       destruct (lt_dec q n); destruct (lt_dec q p); try omega;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
-      rewrite H1, (Vreln_elim_nth _ usus'), <- (Vreln_elim_nth _ vs'vs), j3.
+      rewrite H1, (Vforall2_elim_nth _ usus'), <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
       omega.
@@ -494,7 +494,7 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_eq with (h1:=j1) (h2:=l0) in a; auto.
       apply S_trans with (Vnth us l0); hyp.
       (* k > i *)
-      rewrite <- (Vreln_elim_nth _ vs'vs), <- j3, <- (Vreln_elim_nth _ usus').
+      rewrite <- (Vforall2_elim_nth _ vs'vs), <- j3, <- (Vforall2_elim_nth _ usus').
       hyp.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
       omega.
@@ -503,7 +503,7 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
       destruct (lt_dec q n); destruct (lt_dec q p); try omega;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
-      rewrite H1, (Vreln_elim_nth _ usus'), <- (Vreln_elim_nth _ vs'vs), j3.
+      rewrite H1, (Vforall2_elim_nth _ usus'), <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
       omega.
@@ -513,7 +513,7 @@ Module Lex (Export CO : DLQO_Struct).
       revert i2. rewrite !Vnth_opt_filter. set (q := Vnth M i1).
       destruct (lt_dec q n); destruct (lt_dec q p);
         intro i2; inversion i2; clear i2; subst; apply opt_intro.
-      rewrite <- (Vreln_elim_nth _ vs'vs), <- j3, <- (Vreln_elim_nth _ usus').
+      rewrite <- (Vforall2_elim_nth _ vs'vs), <- j3, <- (Vforall2_elim_nth _ usus').
       hyp.
       intro. subst j. assert (b : Vin q M). apply Vnth_in.
       destruct (Vin_first_position eq_nat_dec b) as [i0 hi0].
@@ -523,7 +523,7 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
       destruct (lt_dec q n); destruct (lt_dec q p); try omega;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
-      rewrite H2, (Vreln_elim_nth _ usus'), <- (Vreln_elim_nth _ vs'vs), j3.
+      rewrite H2, (Vforall2_elim_nth _ usus'), <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro. subst j. assert (b : Vin q M). apply Vnth_in.
       destruct (Vin_first_position eq_nat_dec b) as [i0 hi0].
