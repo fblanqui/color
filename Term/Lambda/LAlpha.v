@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Wf_nat Bool Morphisms Basics Equivalence RelUtil LogicUtil SN
-  VecUtil NatUtil.
+  VecUtil NatUtil VecOrd.
 Require Export LSubs.
 
 (****************************************************************************)
