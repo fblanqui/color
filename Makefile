@@ -43,7 +43,7 @@ doc:
 	coqdoc --html -g -d doc -R . CoLoR `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./createIndex
 
-ADR := ~/rewriting-svn/web/inria/color
+ADR := ~/rewriting-svn/web/wdfs/color
 #LOCAL := ~/rewriting-svn/web/color/site
 
 install-doc:
