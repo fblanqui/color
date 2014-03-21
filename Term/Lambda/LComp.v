@@ -334,7 +334,6 @@ Module Make (Export CP : CP_Struct).
     exists y0. exists v0. intuition. apply at_step. hyp.
     (* refl *)
     inv_aeq H; clear H; subst. exists x. exists u.
-    (*COQ does not accept: rewrite j0.*)
     split. refl. rewrite i0, rename2, rename_id. refl. hyp.
     (* trans *)
     destruct (IHclos_aeq_trans1 x' u' (refl_equal _)) as [y0 [v0 [h1 h2]]].
