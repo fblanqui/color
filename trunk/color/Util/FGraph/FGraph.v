@@ -70,16 +70,13 @@ they define the same relation. See below for more details. *)
     destruct h as [sx [hx hy]].
     destruct (Equiv_find_Some gg' hx) as [sx' [h1 h2]].
     exists sx'. rewrite <- yy'. rewrite <- h2 at 2. intuition.
-    (*COQ: does not work: rewrite <- xx'. hyp.*)
-    erewrite XMapFacts.find_m. apply h1. sym. hyp. refl.
+    rewrite <- xx'. hyp.
   Qed.
 
   (*COQ: can be removed? Coq stuck in In_preds_rel *)
   Instance rel_meq_ext : Proper (meq ==> eq ==> eq ==> iff) rel.
 
-  Proof. apply Proper_inter_transp_3; class.
-    (*COQ: why isn't done automatically?*) apply Equiv_Sym. class.
-  Qed.
+  Proof. apply Proper_inter_transp_3; class. typeclasses eauto. Qed.
 
   Lemma find_Some_rel {g x s} : find x g = Some s ->
     XSet.is_empty s = false -> exists y, rel g x y.
