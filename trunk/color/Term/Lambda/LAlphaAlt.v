@@ -205,7 +205,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro n.
-    induction u; simpl; set_iff; unfold Def.replace_var; eq_dec x0 x; fo.
+    induction u; simpl; set_iff; unfold Def.replace_var; try (eq_dec x0 x); fo.
   Qed.
 
   Lemma notin_bv_replace_all x y : x <> y ->
@@ -213,7 +213,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro n.
-    induction u; simpl; set_iff; unfold Def.replace_var; eq_dec x0 x; fo.
+    induction u; simpl; set_iff; unfold Def.replace_var; try (eq_dec x0 x); fo.
   Qed.
 
   Lemma fv_replace_all x y : forall u,
