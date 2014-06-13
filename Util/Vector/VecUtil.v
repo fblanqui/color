@@ -1603,7 +1603,7 @@ Section Vforall2.
 
   Proof. unfold Vforall2. apply Vforall2_aux_dec. Defined.
 
-  Variable (f : A -> B -> bool).
+  Variables (f : A -> B -> bool) (f_ok : forall x y, f x y = true <-> R x y).
 
   Fixpoint bVforall2_aux n1 n2 (v1 : vector A n1) (v2 : vector B n2) : bool :=
     match v1, v2 with
@@ -1612,8 +1612,33 @@ Section Vforall2.
       | _, _ => false
     end.
 
+  Lemma bVforall2_aux_ok : forall n1 (v1 : vector A n1) n2 (v2 : vector B n2),
+    bVforall2_aux v1 v2 = true <-> Vforall2_aux v1 v2.
+
+  Proof.
+    induction v1; simpl; intros.
+    destruct v2. intuition. intuition.
+    destruct v2. intuition.
+    rewrite andb_eq.
+    rewrite f_ok. rewrite IHv1. tauto.
+  Qed.
+
   Definition bVforall2 n (v1 : vector A n) (v2 : vector B n) :=
     bVforall2_aux v1 v2.
+
+  Lemma bVforall2_ok : forall n (v1 : vector A n) (v2 : vector B n),
+    bVforall2 v1 v2 = true <-> Vforall2 v1 v2.
+
+  Proof.
+    intros n v1 v2. intuition.
+    (* <- *)
+    unfold Vforall2. apply bVforall2_aux_ok.
+    unfold bVforall2 in H. hyp.
+    (* -> *)
+    unfold bVforall2. apply bVforall2_aux_ok.
+    unfold Vforall2 in H.
+    hyp.
+  Qed.
 
 End Vforall2.
 
