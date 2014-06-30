@@ -444,8 +444,8 @@ Section ISCompSplit.
 End ISCompSplit.
 
 (***********************************************************************)
-(** building an infinite R-sequence from an infinite E#R-sequence if
-R@E<<R *)
+(** building an infinite R-sequence from an infinite [E#@R]-sequence if
+[R@E<<R] *)
 
 Section absorb.
 
@@ -564,7 +564,7 @@ End ISModUnion.
 
 (***********************************************************************)
 (** building an infinite E-sequence from an infinite R-sequence modulo
-E if R@E << E *)
+E if [R@E<<E] *)
 
 Section ISModCommute.
 
