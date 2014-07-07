@@ -620,7 +620,7 @@ End ISModCommute.
 
 (***********************************************************************)
 (** building an infinite R-sequence modulo E! from an infinite
-R-sequence modulo E# *)
+R-sequence modulo [E#] *)
 
 Section ISModTrans.
 
