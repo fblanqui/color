@@ -1,6 +1,6 @@
 14-02-19: [Blanqui]
-- Util/Vector/VecOrd: Vreln removed into VecUtil
-- Util/Vector/VecEq: removed into VecOrd
+- Util/Vector/VecOrd: Vreln moved into VecUtil
+- Util/Vector/VecEq: moved into VecOrd
 
 14-01-28: [Blanqui]
 - Term/Lambda/LAlphaAlt: added Gabbay and Pitts definition of alpha-equivalence

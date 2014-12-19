@@ -5,7 +5,7 @@ The compilation procedure that is provided hereafter requires a
 UNIX-like operating system with the following commands (it also works
 with Cygwin on Windows):
 
-- Coq version 8.4pl4 http://coq.inria.fr/
+- Coq version 8.4pl5 http://coq.inria.fr/
 - GNU make version 3.81 http://www.gnu.org/software/make/
 - GNU find version 4.4.2 http://www.gnu.org/software/findutils/findutils.html
 
@@ -19,12 +19,12 @@ added in the archive.)
 For installing CoLoR in the default Coq user-contrib directory, do:
 'make install'.
 
-For installing CoLoR in $dir, do: 'INSTALL_DIR=$dir make install'.
+For installing CoLoR in $dir, do: 'DSTROOT=$dir make install'.
 
 For using CoLoR without installing it, you need to type the following
 command in Coq or add it in your ~/.coqrc file:
 
-    Add Rec LoadPath "$dir" as CoLoR
+    Add Rec LoadPath "$dir" as CoLoR.
 
 where $dir is the CoLoR directory.
 
