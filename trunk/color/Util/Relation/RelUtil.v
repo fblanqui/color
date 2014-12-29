@@ -517,6 +517,28 @@ Proof.
   apply t_trans with y. apply IHxy1. hyp. refl. apply IHxy2. refl. hyp.
 Qed.
 
+Instance clos_trans_morph A (R : relation A) (eqA : relation A) :
+  Equivalence eqA ->
+  Morphisms.Proper (eqA ==> eqA ==> iff) R ->
+  Morphisms.Proper (eqA ==> eqA ==> iff) (clos_trans R).
+
+Proof.
+  intros.
+  reduce. split; intros.
+  revert y y0 H1 H2.
+  induction H3; intros.
+  rewrite H2, H3 in H1. now constructor.
+  apply t_trans with y. apply IHclos_trans1; eauto. reflexivity.
+  apply IHclos_trans2; eauto. reflexivity.
+
+  revert x x0 H1 H2.
+  induction H3; intros.
+  rewrite <- H2, <- H3 in H1. now constructor.
+  apply t_trans with y.
+  apply IHclos_trans1; eauto. reflexivity.
+  apply IHclos_trans2; eauto. reflexivity.
+Qed.
+
 (***********************************************************************)
 (** Symmetric closure of a relation. *)
 
