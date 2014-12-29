@@ -151,7 +151,8 @@ Section term.
 
   Proof.
     induction ts; destruct p; simpl; intros e t.
-    refl. discr. discr. apply IHts.
+    rewrite Vcast_refl. refl. discr. discr.
+    rewrite Vcast_cons. apply IHts.
   Qed.
 
   Lemma size_apps_l : forall n (ts : Tes n) t, size t <= size (apps t ts).
@@ -266,13 +267,15 @@ Section term.
 
   Proof.
     induction ts; destruct us; intros a b e1 e2; simpl in *.
-    refl.
+    rewrite Vcast_refl. refl.
     gen (f_equal nb_args e1).
       rewrite apps_app. simpl. rewrite nb_args_apps. omega.
     gen (f_equal nb_args e1).
       rewrite apps_app. simpl. rewrite nb_args_apps. omega.
     assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
-    gen (eq_apps_head e1 i); intro j. inversion j; subst. apply Vtail_eq.
+    gen (eq_apps_head e1 i); intro j. inversion j; subst.
+    match goal with |- _ = Vcast _ ?p => set (h:=p) end.
+    rewrite Vcast_cons. apply Vtail_eq.
     gen (IHts _ us (App b h0) (App b h0) e1 i); intro k. rewrite k at 1.
     apply Vcast_pi.
   Qed.

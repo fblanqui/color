@@ -101,8 +101,10 @@ Module Make_Term (Import S : SIG) <: Term.
     terms_of_aterms (Vcast ts e) = terms_of_aterms ts.
 
   Proof.
-    induction ts; destruct p; simpl; intros; try discr. refl.
-    inversion e. subst p. rewrite IHts. refl.
+    induction ts; destruct p; simpl; intros; try discr.
+    rewrite Vcast_refl. refl.
+    inversion e. subst p. rewrite Vcast_cons. simpl.
+    rewrite IHts. refl.
   Qed.
 
   Lemma terms_of_aterms_app : forall n (ts : aterms n) p (us : aterms p),

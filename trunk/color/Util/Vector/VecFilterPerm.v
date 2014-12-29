@@ -43,7 +43,7 @@ Lemma Vfilter_app : forall A n (l1 l2 : nat_lts n) (v : vector A n),
 
 Proof.
 induction l1; simpl; intros. rewrite Vcast_refl. refl.
-apply Vtail_eq. rewrite (IHl1 l2 v). apply Vcast_pi.
+rewrite Vcast_cons. f_equal. rewrite (IHl1 l2 v). apply Vcast_pi.
 Qed.
 
 Lemma Vfilter_app_eq : forall A n (l l1 l2 : nat_lts n) (v : vector A n)

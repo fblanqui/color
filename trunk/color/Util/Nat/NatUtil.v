@@ -38,6 +38,7 @@ Implicit Arguments lt_not_le [n m].
 Implicit Arguments le_lt_eq_dec [n m].
 Implicit Arguments le_S_n [n m].
 Implicit Arguments le_not_lt [n m].
+Implicit Arguments eq_add_S [n m].
 
 (***********************************************************************)
 (** tactics *)

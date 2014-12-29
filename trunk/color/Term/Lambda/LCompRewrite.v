@@ -172,7 +172,7 @@ Module Make (Export RS : RS_Struct).
     2: rewrite apps_app in H0; discr.
     inversion H0. subst g. clear H0.
     ex 0 (@Vnil Te) y s 0 (@Vnil Te).
-    assert (a : 0+0=0). refl. exists a. simpl. intuition.
+    assert (a : 0+0=0). refl. ex a. simpl. rewrite Vcast_refl. intuition.
     (* S *)
     inversion ht; subst; clear ht.
     (* m_step *)

@@ -1,3 +1,7 @@
+14-12-29: [Strub]
+- Util/Vector/VecUtil: Vcast defined by matching on the equality proof argument
+  (like eq_rect) instead of on the vector argument
+
 14-02-19: [Blanqui]
 - Util/Vector/VecOrd: Vreln moved into VecUtil
 - Util/Vector/VecEq: moved into VecOrd

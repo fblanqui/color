@@ -315,9 +315,9 @@ Defined.*)
     maxvars (Vcast ts e) = maxvars ts.
 
   Proof.
-    induction ts; destruct p; intros; try absurd_arith.
+    induction ts; destruct p; intros; try omega.
     rewrite Vcast_refl. refl.
-    simpl. rewrite !maxvars_cons, IHts. refl.
+    rewrite Vcast_cons, !maxvars_cons, IHts. refl.
   Qed.
 
 (***********************************************************************)
@@ -350,8 +350,9 @@ a variable occurs in the list as much as it has occurrences in t *)
     vars_vec (Vcast ts h) = vars_vec ts.
 
   Proof.
-    induction ts; intros; destruct m; simpl; try (refl || discr).
-    apply (f_equal (fun l => vars h ++ l)). apply IHts.
+    induction ts; intros; destruct m; simpl; try discr.
+    rewrite Vcast_refl. refl.
+    rewrite Vcast_cons. apply (f_equal (fun l => vars h ++ l)). apply IHts.
   Qed.
 
   Lemma vars_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
@@ -538,8 +539,9 @@ a variable occurs in the list as much as it has occurrences in t *)
     symbs_vec (Vcast ts h) = symbs_vec ts.
 
   Proof.
-    induction ts; intros; destruct m; simpl; try (refl || discr).
-    apply (f_equal (fun l => symbs h ++ l)). apply IHts.
+    induction ts; intros; destruct m; simpl; try discr.
+    rewrite Vcast_refl. refl.
+    rewrite Vcast_cons. apply (f_equal (fun l => symbs h ++ l)). apply IHts.
   Qed.
 
   Lemma symbs_vec_app : forall n1 (ts1 : terms n1) n2 (ts2 : terms n2),
@@ -654,7 +656,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     (* Vcons *)
     destruct m; intro h0.
     discr.
-    inversion h0. simpl. rewrite IHts. refl.
+    rewrite Vcast_cons. simpl. rewrite IHts. refl.
   Qed.
 
   Lemma size_terms_app : forall n (ts : terms n) m (us : terms m),

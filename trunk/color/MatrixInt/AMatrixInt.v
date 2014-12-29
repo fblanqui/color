@@ -209,12 +209,15 @@ Module MatrixInt (MI : TMatrixInt).
         Proof.
           induction v1; intros; simpl.
           destruct n; [absurd_arith | idtac].
+          rewrite !Vcast_cons.
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
           do 2 rewrite Vnth_map2.
           unfold Aplus. apply plus_gt_compat_r. apply eq_ge_compat. refl.
           unfold MBI.vec_at0 in f_mon. apply f_mon; try hyp.
           apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
+
           destruct n0; [absurd_arith | idtac].
+          rewrite !Vcast_cons.
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
           do 2 rewrite Vnth_map2.
           unfold Aplus. apply plus_gt_compat_l. 2: apply eq_ge_compat; refl.

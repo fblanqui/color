@@ -371,8 +371,9 @@ Lemma ren_caps_cast : forall n1 (ts : terms n1) n2 (e : n1=n2) k,
   ren_caps k (Vcast ts e) = Vcast (ren_caps k ts) e.
 
 Proof.
-induction ts; intros; destruct n2; try (refl || discr).
-simpl. rewrite IHts. refl.
+  induction ts; intros; destruct n2; try discr.
+  rewrite !Vcast_refl. refl.
+  simpl. rewrite !Vcast_cons. simpl. rewrite IHts. refl.
 Qed.
 
 Lemma ren_caps_app : forall n2 (v2 : terms n2) n1 (v1 : terms n1) k,

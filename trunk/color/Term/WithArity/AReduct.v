@@ -152,8 +152,8 @@ Section S.
     reducts_vec f ts (Vcast us e) h' = reducts_vec f ts us h.
 
   Proof.
-    induction us; intros; destruct k'. refl. discr. discr. simpl.
-    inversion e. subst k'.
+    induction us; intros; destruct k'; try discr. rewrite Vcast_refl. refl.
+    rewrite Vcast_cons. simpl. inversion e. subst k'.
     apply app_eq. apply map_eq. intros. apply args_eq. apply Vreplace_pi.
     omega. apply IHus.
   Qed.

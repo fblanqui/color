@@ -43,8 +43,8 @@ Lemma Vtrue_cast : forall n (bs : bools n) p (h:n=p),
 
 Proof.
 induction bs; induction p; intros. rewrite Vcast_refl. refl.
-discr. discr. simpl. case h. apply (f_equal S). apply IHbs.
-apply IHbs.
+discr. discr. rewrite Vcast_cons. simpl. case h.
+f_equal. apply IHbs. apply IHbs.
 Qed.
 
 Definition Vtrue_cons_if (b : bool) n (bs : bools (S n)) :=
