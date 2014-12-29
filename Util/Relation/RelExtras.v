@@ -252,10 +252,10 @@ Section Transitive_Closure.
 
   Variable eqA : relation A.
 
-  Parameter sid_theoryA : Setoid_Theory A eqA.
-  Parameter R_eqA_comp : forall x y x' y',
+  Variable sid_theoryA : Setoid_Theory A eqA.
+  Variable R_eqA_comp : forall x y x' y',
     eqA x x' -> eqA y y' -> R x y -> R x' y'.
-  Parameter R_so : strict_order R.
+  Variable R_so : strict_order R.
 
   Hint Resolve R_eqA_comp.
 

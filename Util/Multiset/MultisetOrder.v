@@ -125,13 +125,9 @@ Section OrderDefinition.
       as clos_trans_redgt_morph.
 
   Proof.
-    compute; intros m m' meq_mm' n n' meq_nn'. split; intro R_mn.
-    exact (trans_clos_mirror meq m' n' meq_mm' meq_nn' R_mn).
-    cut (m' =mul= m). intro. cut (n' =mul= n). intro.
-    eapply trans_clos_mirror with (R := MultisetRedGt).
-    apply H. apply H0. hyp.
-    apply Seq_sym. exact MultisetSetoidTheory. hyp.
-    apply Seq_sym. exact MultisetSetoidTheory. hyp.
+    intros. unfold clos_transM_RedGt.
+    refine (RelUtil.clos_trans_morph
+              MultisetSetoidTheory MultisetRed_morph x y H x0 y0 H0).
   Qed.
 
   Add Morphism clos_transM_RedLt
@@ -139,13 +135,9 @@ Section OrderDefinition.
       as clos_trans_redlt_morph.
 
   Proof.
-    compute; intros m m' meq_mm' n n' meq_nn'. split; intro R_mn.
-    exact (trans_clos_mirror meq m' n' meq_mm' meq_nn' R_mn).
-    cut (m' =mul= m). intro. cut (n' =mul= n). intro.
-    eapply trans_clos_mirror with (R := fun x y => y >mul_1 x).
-    apply H. apply H0. hyp.
-    apply Seq_sym. exact MultisetSetoidTheory. hyp.
-    apply Seq_sym. exact MultisetSetoidTheory. hyp.
+    intros. unfold clos_transM_RedLt.
+    refine (RelUtil.clos_trans_morph MultisetSetoidTheory _ x y H x0 y0 H0).
+    reduce. unfold MultisetRedLt. unfold transp. rewrite H1, H2. reflexivity.
   Qed.
 
   Add Morphism MultisetGt
@@ -246,12 +238,9 @@ Section OrderDefinition.
       as gtA_trans_morph.
 
   Proof.
-    compute. intros a a' a_a' b b' b_b'. split; intro a_gtAt_b.
-    exact (trans_clos_mirror eqA a' b' a_a' b_b' a_gtAt_b).
-    cut (a' =A= a). intro. cut (b' =A= b). intro.
-    eapply trans_clos_mirror with (R := gtA). apply H. apply H0. hyp.
-    apply Seq_sym. exact sid_theoryA. hyp.
-    apply Seq_sym. exact sid_theoryA. hyp.
+    compute. intros a a' a_a' b b' b_b'.
+    refine (RelUtil.clos_trans_morph
+              sid_theoryA gtA_morph_Proper a a' a_a' b b' b_b').
   Qed.
 
   Add Morphism geA
