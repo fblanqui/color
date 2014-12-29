@@ -183,12 +183,15 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       Proof.
         induction v1; intros; simpl.
         destruct n; try solve [absurd_arith].
+        rewrite !Vcast_cons. simpl.
         unfold add_vectors, succeq. simpl. apply Vforall2_intro_nth. 
         intros. unfold vector_plus. do 2 rewrite Vnth_map2.
         assert (Vnth (f (Vhead M) a) ip >>= Vnth (f (Vhead M) b) ip).
         apply Vforall2_elim_nth. apply f_mon. hyp.
         apply plus_ge_compat. apply ge_refl. hyp.
+
         destruct n0; try solve [absurd_arith].
+        rewrite !Vcast_cons. simpl.
         unfold add_vectors, succeq. simpl. apply Vforall2_intro_nth. 
         intros. unfold vector_plus. do 2 rewrite Vnth_map2.
         apply plus_ge_compat. 

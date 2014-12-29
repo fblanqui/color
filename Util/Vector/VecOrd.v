@@ -100,10 +100,16 @@ Section S.
     discr. discr.
     assert (v1 = Vcons (Vhead v1) (Vtail v1)). apply VSn_eq. rewrite H0.
     assert (v2 = Vcons (Vhead v2) (Vtail v2)). apply VSn_eq. rewrite H1.
-    rewrite H0, H1 in H. simpl in H. unfold Vhead_tail in H. simpl in H.
+    rewrite H0, H1 in H. rewrite !Vcast_cons in H. simpl in H.
+    unfold Vhead_tail in H. simpl in H.
     apply Vrel1_cons_intro. inversion H. left. split. hyp.
     eapply Vcast_eq_elim with (m := n). apply H6.
     right. split. refl. eapply IHm with (n := n). apply H3.
+    (*REMOVE:
+    rewrite H0, H1 in H. simpl in H. unfold Vhead_tail in H. simpl in H.
+    apply Vrel1_cons_intro. inversion H. left. split. hyp.
+    eapply Vcast_eq_elim with (m := n). apply H6.
+    right. split. refl. eapply IHm with (n := n). apply H3.*)
   Qed.
 
 (***********************************************************************)
@@ -116,13 +122,18 @@ Section S.
     induction v1; simpl. intros. contr. intro. VSntac v2.
     unfold Vhead_tail. simpl. intro. inversion H0.
     ex 0 (@Vnil A) h n (Vtail v2) (refl_equal (S n)) (Vhead v2).
-    split. rewrite Vcast_refl. refl.
+    split. refl. split. refl. hyp.
+    ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6, H7.
+    ex (S x0) (Vcons (Vhead v2) x1) x2 x3 x4.
+    assert (S x0 + S x3 = S n). omega. ex H9 x6.
+    simpl. rewrite !Vcast_cons, (eq_unique (eq_add_S H9) x5). intuition.
+    (*REMOVE:split. rewrite Vcast_refl. refl.
     split. rewrite Vcast_refl. refl. hyp.
     ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6, H7.
     ex (S x0) (Vcons (Vhead v2) x1) x2 x3 x4.
     assert (S x0 + S x3 = S n). omega. ex H9 x6.
     simpl. intuition. apply Vtail_eq. apply Vcast_pi.
-    apply Vtail_eq. apply Vcast_pi.
+    apply Vtail_eq. apply Vcast_pi.*)
   Qed.
 
   Lemma Vrel1_app_iff : forall n (v1 v2 : vector A n),

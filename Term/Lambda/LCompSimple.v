@@ -305,7 +305,8 @@ Module Make (Export ST : ST_Struct)
     Proof.
       induction Ts; intros n' e p ts.
       subst. rewrite Vcast_refl. refl.
-      destruct n'. discr. simpl. destruct ts. refl. rewrite IHTs. refl.
+      destruct n'. discr. rewrite Vcast_cons. simpl. destruct ts.
+      refl. rewrite IHTs. refl.
     Qed.
 
     Lemma vint_cast_term : forall n (Ts : Tys n) p (ts : Tes p) p' (h : p=p'),

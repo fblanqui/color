@@ -68,8 +68,8 @@ Section S.
     vterms_of_aterms (Vcast ts h) = vterms_of_aterms ts.
 
   Proof.
-    induction ts; intros; destruct m; try (refl || discr). simpl.
-    apply tail_eq. apply IHts.
+    induction ts; intros; destruct m; try discr. rewrite Vcast_refl. refl.
+    rewrite Vcast_cons. simpl. apply tail_eq. apply IHts.
   Qed.
 
   Lemma vterms_app : forall n1 (ts1 : aterms n1) n2 (ts2 : aterms n2),

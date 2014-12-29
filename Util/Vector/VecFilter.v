@@ -43,9 +43,11 @@ Lemma Vfilter_app_eq : forall n (bs : bools n) n1 (v1 : vec n1)
 
 Proof.
   induction bs; intros.
-  destruct n1; destruct n2; solve [discr | refl].
+  destruct n1; destruct n2; repeat rewrite Vcast_refl; solve [discr | refl].
   destruct n1; try VOtac; repeat rewrite Vcast_refl; try solve [discr | refl].
-  VSntac v1. destruct h; simpl; try apply Vtail_eq; apply IHbs.
+  revert h'; rewrite (Vcast_cons (hS:=h0)); simpl; intro h'.
+  VSntac v1. destruct h; simpl; try apply IHbs.
+  rewrite Vcast_cons; f_equal; apply IHbs.
 Qed.
 
 Lemma Vfilter_app : forall n (bs : bools n) n1 (v1 : vec n1) n2 (v2 : vec n2)
@@ -153,8 +155,8 @@ Lemma Vfilter_app2_eq : forall n1 (bs1 : bools n1) (v1 : vec n1)
 
 Proof.
 induction bs1; simpl. intros. VOtac. simpl. rewrite Vcast_refl. refl.
-case h; simpl; intros; VSntac v1; simpl. apply Vtail_eq. apply IHbs1.
-apply IHbs1.
+case h; simpl; intros; VSntac v1; simpl. rewrite Vcast_cons. f_equal.
+apply IHbs1. apply IHbs1.
 Qed.
 
 Lemma Vfilter_app2 : forall n1 (bs1 : bools n1) (v1 : vec n1)
@@ -174,7 +176,7 @@ Lemma Vfilter_break_eq : forall n1 n2 (bs : bools (n1+n2)) (v : vec (n1+n2))
 Proof.
 induction n1; simpl. intros. rewrite Vcast_refl. refl.
 intros n2 bs v. VSntac bs. VSntac v. simpl. case (Vhead bs); simpl; intros.
-apply Vtail_eq. apply IHn1. apply IHn1.
+rewrite Vcast_cons. f_equal. apply IHn1. apply IHn1.
 Qed.
 
 Lemma Vfilter_break : forall n1 n2 (bs : bools (n1+n2)) (v : vec (n1+n2)),
@@ -190,9 +192,12 @@ Lemma Vfilter_cast_eq : forall n (bs : bools n) p (v : vec p)
   Vfilter bs (Vcast v hpn) = Vcast (Vfilter (Vcast bs hnp) v) h'.
 
 Proof.
-induction bs; induction p; simpl; intros. refl. discr. discr.
-VSntac v. simpl. gen h'. clear h'. case h; simpl; intro.
-apply Vtail_eq. apply IHbs. apply IHbs.
+induction bs; induction p; simpl; intros; try discr;
+  revert h'; [rewrite Vcast_refl | rewrite Vcast_cons]; intros.
+rewrite Vcast_refl; refl.
+VSntac v. simpl. generalize h'. clear h'.
+case h; simpl; intro; rewrite Vcast_cons; simpl.
+rewrite Vcast_cons; f_equal; apply IHbs. apply IHbs.
 Qed.
 
 Lemma Vfilter_cast : forall n (bs : bools n) p (v : vec p) (h : p=n),

@@ -130,39 +130,26 @@ Section Vcast.
 
   Variable A : Type.
 
-  Program Fixpoint Vcast m (v : vector A m) n (mn : m = n) : vector A n :=
-    match v with
-      | Vnil =>
-        match n with
-          | 0 => Vnil
-          | _ => !
-        end
-      | Vcons x m' v' =>
-        match n with
-          | 0 => !
-          | S n' => Vcons x (Vcast v' _)
-        end
+  Definition Vcast m (v : vector A m) n (mn : m = n) : vector A n :=
+    match mn in _ = p return vector A p with
+      | refl_equal => v
     end.
-
-  Lemma Vcast_refl : forall n (v : vector A n) (H : n=n), Vcast v H = v.
+ 
+  Lemma Vcast_cons n (v : vector A n) x p (hS : S n = S p) :
+    Vcast (Vcons x v) hS = Vcons x (Vcast v (eq_add_S hS)).
 
   Proof.
-    induction v; simpl; intros. refl.
-    match goal with |- Vcons _ ?v' = _ => assert (E : v' = v) end. apply IHv.
-    simpl in E. rewrite E. refl.
-  Defined.
+    inversion hS. rewrite (eq_unique hS (f_equal S H0)). case H0. refl.
+  Qed.
+
+  Lemma Vcast_refl n (v : vector A n) : forall H : n=n, Vcast v H = v.
+
+  Proof. apply K_dec_type; auto with arith. Defined.
 
   Lemma Vcast_eq_elim : forall n (v1 v2 : vector A n) m (h : n = m),
     Vcast v1 h = Vcast v2 h -> v1 = v2.
 
-  Proof.
-    intros until v1. destruct v1; intros; destruct m.
-    simpl in H. rewrite <- (Vcast_refl v2 h). hyp.
-    discr. discr.
-    assert (n = m). apply eq_add_S. hyp. subst n.
-    assert (h0 = refl_equal (S m)). apply eq_unique. subst h0.
-    simpl in H. do 2 rewrite Vcast_refl in H. hyp.
-  Qed.
+  Proof. intros until h; case h; trivial. Qed.
 
   Implicit Arguments Vcast_eq_elim [n v1 v2 m h].
 
@@ -170,11 +157,7 @@ Section Vcast.
     forall n (v : vector A n) m (h1 : n=m) p (h2 : m=p) (h3 : n=p),
       Vcast (Vcast v h1) h2 = Vcast v h3.
 
-  Proof.
-    induction v; intro m; case m; intros until p; case p; simpl; intros;
-      (discr || auto).
-    apply Vtail_eq. apply IHv.
-  Qed.
+  Proof. intros ? ? ? [] ? []; auto using Vcast_refl. Qed.
 
   Lemma Vcast_cast : forall n (v : vector A n) m (h1 : n=m) p (h2 : m=p),
     Vcast (Vcast v h1) h2 = Vcast v (trans_eq h1 h2).
@@ -186,9 +169,8 @@ Section Vcast.
     Vcast v1 h = v2 -> Vcast v1 h1 = Vcast v2 h2.
 
   Proof.
-    induction v1; intros until n0; case n0; intros until v2; case v2; simpl; 
-      intros; (discr || auto). Veqtac. subst h0. apply Vtail_eq.
-    eapply IHv1. apply H2.
+    intros until h1; case h1; intros; simpl; subst v2.
+    rewrite Vcast_cast; rewrite Vcast_refl; refl.
   Qed.
 
   Lemma Vcast_eq_intro : forall n (v1 v2 : vector A n) p (e : n=p),
@@ -205,25 +187,19 @@ Section Vcast.
     Vcast v h1 = Vcast v h2.
 
   Proof.
-    induction v; intros until p; case p; intros; simpl; (discr || auto).
-    apply Vtail_eq. apply IHv.
+    intros; f_equal; apply eq_proofs_unicity.
+    intros x y; case (eq_nat_dec x y); tauto.
   Qed.
 
   Lemma Vcast_lr : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h12 : n1=n2) (h21 : n2=n1), Vcast v1 h12 = v2 -> v1 = Vcast v2 h21.
 
-  Proof.
-    induction v1; induction v2; simpl; intros. refl. discr. discr.
-    Veqtac. subst h0. apply Vtail_eq. eapply IHv1. apply H2.
-  Qed.
+  Proof. intros; subst v2; rewrite Vcast_cast, Vcast_refl; refl. Qed.
 
   Lemma Vcast_rl : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h12 : n1=n2) (h21 : n2=n1), v1 = Vcast v2 h21 -> Vcast v1 h12 = v2.
 
-  Proof.
-    induction v1; induction v2; simpl; intros. refl. discr. discr.
-    Veqtac. subst h0. apply Vtail_eq. eapply IHv1. apply H2.
-  Qed.
+  Proof. intros; sym; apply Vcast_lr with h21; sym; hyp. Qed.
 
   Lemma Vcast_introrl : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h21 : n2=n1), Vcast v1 (sym_eq h21) = v2 -> v1 = Vcast v2 h21.
@@ -238,6 +214,7 @@ Section Vcast.
 End Vcast.
 
 Implicit Arguments Vcast_eq_elim [A n v1 v2 m h].
+Implicit Arguments Vcast_cons [A n v x p hS].
 
 (***********************************************************************)
 (** ** Lemma and tactic for replacing an empty vector by Vnil. *)
@@ -247,7 +224,7 @@ Lemma VO_eq : forall A (v : vector A O), v = Vnil.
 Proof.
   intro A. cut (forall n (v : vector A n) (h: n=0), Vcast v h = Vnil).
   intros. ded (H 0 v (refl_equal 0)). rewrite Vcast_refl in H0. hyp.
-  destruct v. auto. intro. discr.
+  destruct v; intros. rewrite Vcast_refl; auto. discr.
 Defined.
 
 Ltac VOtac := repeat
@@ -334,10 +311,9 @@ Section Vnth.
     Vnth (Vcast v e) h = Vnth v (Vnth_cast_aux e h).
 
   Proof.
-    induction v; simpl. destruct n'. intros. absurd_arith. discr.
-    destruct n'. discr. intro e. inversion e. subst n'.
-    destruct k. simpl. refl. intro h0. simpl. rewrite IHv. apply Vnth_eq.
-    refl.
+    induction v as [|x p v IHv]. intros; absurd_arith. intros [|n']; try discr.
+    inversion e; subst p; intros [|k] h; rewrite Vcast_refl; simpl.
+    refl. rewrite (IHv n' (refl_equal n') k); apply Vnth_eq; refl.
   Qed.
 
   Lemma Veq_nth : forall n (v v' : vector A n), 
@@ -523,8 +499,9 @@ Section Vapp.
     Vapp v w = Vcast v h.
 
   Proof.
-    induction v; intros. VOtac. refl.
-    simpl. apply Vtail_eq. apply IHv.
+    induction v; intros.
+    VOtac; rewrite Vcast_refl; refl.
+    rewrite (Vcast_cons (hS:=h0)), <- (IHv w); refl.
   Qed.
 
   Lemma Vapp_nil : forall n (v : vector A n) (w : vector A 0), 
@@ -538,8 +515,8 @@ Section Vapp.
 
   Proof.
     induction v1; simpl; intros.
-    assert (h1=h2). apply eq_unique. rewrite H. refl.
-    apply Vtail_eq. apply IHv1.
+    f_equal. apply eq_unique.
+    rewrite Vcast_cons. f_equal. apply IHv1.
   Qed.
 
   Lemma Vapp_rcast : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2) p2
@@ -553,9 +530,9 @@ Section Vapp.
     Vapp (Vcast v1 h1) v2 = Vcast (Vapp v1 v2) h2.
 
   Proof.
-    induction v1; intros until p1; case p1; simpl; intros.
-    rewrite Vcast_refl. refl. discr. discr.
-    apply Vtail_eq. apply IHv1.
+    induction v1; intros until p1; case p1; simpl; intros; try discr.
+    repeat rewrite Vcast_refl; refl.
+    rewrite !Vcast_cons. simpl. f_equal. apply IHv1.
   Qed.
 
   Lemma Vapp_lcast :  forall n1 (v1 : vector A n1) n2 (v2 : vector A n2) p1
@@ -573,7 +550,7 @@ Section Vapp.
   Proof.
     induction v1; intros; simpl.
     rewrite Vcast_refl. refl.
-    apply Vtail_eq. apply IHv1.
+    rewrite Vcast_cons. f_equal. apply IHv1.
   Qed.
 
   Lemma Vapp_assoc : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
@@ -646,8 +623,9 @@ Section Vapp.
     Vapp v1 (Vcast v2 e) = Vcast (Vapp v1 v2) (Vapp_cast_aux n1 e).
 
   Proof.
-    induction v1; simpl; intros. apply Vcast_pi. apply Vtail_eq.
-    rewrite IHv1. apply Vcast_pi.
+    induction v1; simpl; intros.
+    apply Vcast_pi.
+    rewrite Vcast_cons, IHv1. f_equal. apply Vcast_pi.
   Qed.
 
   Lemma Vadd_app_aux : forall p q, p + S q = S (p+q).
@@ -660,7 +638,7 @@ Section Vapp.
   Proof.
     induction v; simpl; intros q w x.
     rewrite Vcast_refl. refl.
-    apply Vtail_eq. rewrite IHv. apply Vcast_pi.
+    rewrite Vcast_cons, IHv. f_equal. apply Vcast_pi.
   Qed.
 
 End Vapp.
@@ -707,8 +685,7 @@ Section Vbreak.
       (snd (Vbreak (Vcast v (sym_equal H))))) H.
 
   Proof.
-    intros until H. case H. simpl. intro v.
-    rewrite <- Vbreak_eq_app. do 2 rewrite Vcast_refl. refl.
+    intros until H; case H; simpl; intro v. rewrite <- Vbreak_eq_app; refl.
   Qed.
 
 End Vbreak.
@@ -818,9 +795,9 @@ Section Vin.
     destruct H0 as [v2].
     destruct H0 as [H1].
     exists (S n1). exists (Vcons h v1). exists n2. exists v2.
-    exists (S_add_S H1).
-    rewrite H0. clear H0. simpl.
-    apply Vtail_eq. apply Vcast_pi. 
+    exists (S_add_S H1). rewrite H0. clear H0. simpl.
+    generalize (S_add_S H1); intros i; inversion i as [j].
+    rewrite Vcast_cons. f_equal. apply Vcast_pi.
   Qed.
 
   Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
@@ -875,7 +852,7 @@ Section Vsub.
   Lemma Vsub_nil_aux : forall i k (h:i+k<=0) (e : 0=k),
     Vsub Vnil h = Vcast Vnil e.
 
-  Proof. destruct k; intros. refl. discr. Qed.
+  Proof. destruct k; intros. rewrite Vcast_refl; refl. discr. Qed.
 
   Lemma Vsub_nil_aux1 : forall i k, i+k <= 0 -> 0=k.
 
@@ -891,7 +868,7 @@ Section Vsub.
   Lemma Vsub_eq_nil k n (v : vector A n) i (h : i+k <= n) (hk : k = 0) :
     Vsub v h = Vcast Vnil (eq_sym hk).
 
-  Proof. subst k. refl. Qed.
+  Proof. subst k. rewrite Vcast_refl; refl. Qed.
 
   Lemma Vnth_sub_aux : forall n i k j, i+k<=n -> j<k -> i+j<n.
 
@@ -928,10 +905,9 @@ Section Vsub.
     (h : i+k<=n') (h' : i+k<=n), Vsub (Vcast v e) h = Vsub v h'.
 
   Proof.
-    destruct v; destruct n'; simpl; intros. apply Vsub_pi. discr. discr.
-    inversion e. subst n'. assert (Vcast v
-    (Vcast_obligation_4 e refl_equal (JMeq_refl (Vcons h v)) refl_equal) = v).
-    apply Vcast_refl. rewrite H. apply Vsub_pi.
+    destruct v; destruct n'; simpl; intros; try discr.
+    rewrite Vcast_refl; apply Vsub_pi.
+    inversion e; subst n'; rewrite Vcast_refl; apply Vsub_pi.
   Qed.
 
   Lemma Vsub_cast_aux1 : forall n n' i k, n=n' -> i+k<=n' -> i+k<=n.
@@ -1012,10 +988,10 @@ Section Vsub.
     (* Vnil *)
     apply Veq_nth; intros. absurd_arith.
     (* Vcons *)
-    destruct i; simpl; apply Vtail_eq; rewrite !Vsub_cons.
+    destruct i; simpl in *; [rewrite Vcast_refl | rewrite Vcast_cons];
+      f_equal; repeat rewrite Vsub_cons.
     (* i = 0 *)
-    apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_sub.
-    apply Vnth_eq. omega.
+    apply Veq_nth; intros; rewrite Vnth_sub; apply Vnth_eq. refl.
     (* i > 0 *)
     apply IHv.
   Qed.
@@ -1047,7 +1023,7 @@ Section Vsub.
     (* Vnil *)
     apply Veq_nth; intros. absurd_arith.
     (* Vcons *)
-    destruct i; simpl; apply Vtail_eq; rewrite !Vsub_cons.
+    destruct i; simpl; rewrite Vcast_cons; f_equal; repeat rewrite Vsub_cons.
     (* i = 0 *)
     apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_sub.
     apply Vnth_eq. omega.
@@ -2060,9 +2036,10 @@ Section beq.
     (leq : n = p), beq_vec v w = true -> Vcast v leq = w.
 
   Proof.
-    induction v; destruct w; simpl; intros; try (refl || discr).
-    destruct (andb_elim H). rewrite beq_ok in H0. subst h0. apply Vtail_eq.
-    apply IHv. hyp.
+    induction v; destruct w; simpl; intros; try discr.
+    rewrite Vcast_refl; refl.
+    destruct (andb_elim H). rewrite beq_ok in H0. subst h0.
+    rewrite Vcast_cons; simpl. f_equal; apply IHv. hyp.
   Qed.
 
   Lemma beq_vec_ok1 : forall n (v w : vector A n), beq_vec v w = true -> v = w.
@@ -2098,14 +2075,16 @@ Section beq_in.
     Vcast v (beq_vec_ok_length A beq h) = w.
 
   Proof.
-    induction v; destruct w; simpl; intro; try (refl || discr).
-    destruct (andb_elim h1).
+    induction v; destruct w; intro; try discr.
+    rewrite Vcast_refl; refl.
+    generalize (beq_vec_ok_length A beq h1); intros e.
+    simpl in h1; destruct (andb_elim h1).
     assert (ha : Vin h (Vcons h v)). simpl. auto.
-    ded (hyp _ ha h0). rewrite H1 in H. subst h0. apply Vtail_eq.
+    ded (hyp _ ha h0). rewrite H1 in H. subst h0. rewrite Vcast_cons.
     assert (hyp' : forall x, Vin x v -> forall y, beq x y = true <-> x=y).
     intros x hx. apply hyp. simpl. auto.
     destruct (andb_elim h1). ded (IHv hyp' _ w H2). rewrite <- H3.
-    apply Vcast_pi.
+    f_equal; apply Vcast_pi.
   Qed.
 
   Lemma beq_vec_ok_in2 : forall n (v : vector A n)

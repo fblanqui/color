@@ -70,7 +70,7 @@ Lemma Vmax_cast : forall n (v : nats n) p (e : n=p), Vmax (Vcast v e) = Vmax v.
 
 Proof.
 induction v; destruct p; intros; try absurd_arith.
-rewrite Vcast_refl. refl. simpl. rewrite IHv. refl.
+rewrite Vcast_refl. refl. rewrite Vcast_cons. simpl. rewrite IHv. refl.
 Qed.
 
 (***********************************************************************)

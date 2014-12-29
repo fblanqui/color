@@ -104,7 +104,7 @@ generalize dependent p. intro p. elim p.
    set (mi := (fst (Vbreak (n1:=i) (n2:=S j) (Vcast m (sym_equal Hij))))).
    set (mj := (snd (Vbreak (n1:=i) (n2:=S j) (Vcast m (sym_equal Hij))))).
    rewrite (VSn_eq mj).
-   case Hij. simpl. rewrite !Vcast_refl.
+   case Hij. simpl.
    apply meval_monotone_D.
    hyp.
 Qed.
