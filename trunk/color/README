@@ -1,36 +1,48 @@
 CoLoR, a Coq library on rewriting and termination
 -------------------------------------------------
 
-The aim of this Coq library (Coq is a proof assistant developed at
-INRIA available at http://coq.inria.fr/) is to provide the necessary
-formal basis for certifying the termination proof candidates searched
-and built by tools like AProVE, TTT2, CiME, etc.
+CoLoR is a library for the Coq proof assistant/checker
+(http://coq.inria.fr/) providing definitions and theorems about the
+termination/well-foundedness of arbitrary relations and rewrite
+relations on various term structures.
 
 Among other things, it includes:
 
-* libraries on mathematical structures in Util directory:
-	- Relation: binary relations/graphs
+* libraries on logic in the Util/ subdirectory:
+  	- Logic: meta-theorems, tactics, possible axioms
+
+* libraries on mathematical structures in the Util/ directory:
+  	- Set: (infinite) sets
+	- Relation: (infinite) binary relations/graphs
 	- Algebra: (ordered) semi-rings
 
-* libraries on data structures in Util directory:
+* libraries on data structures in the Util/ subdirectory:
+  	- Bool: booleans
+	- Option: option type
+	- Nat: natural numbers
+	- Integer: integers
+	- Pair: type of pairs
 	- List: lists
 	- Vector: vectors
+	- FSet: finite sets
+	- FMap: finite maps
 	- Multiset: finite multisets
 	- Polynom: integer polynomials with multiple variables
 	- Matrix: matrices over an (ordered) semi-ring
 	- FGraph: finite graphs
 
-* libraries on term structures in Term directory:
+* libraries on term structures in the Term/ subdirectory:
+	- String: words
 	- Varyadic: varyadic terms
 	- WithArity: algebraic terms with symbols of fixed arity
 	- SimpleType: simply typed lambda-terms with de Bruijn indices
-	- String: words
 	- Lambda: lambda-terms with explicit alpha-equivalence
 
 * transformation techniques:
+	- Conversion: conversions between term structures
 	- DP: dependency pairs transformation and graph decomposition
 	- Filter: arguments filterings
-	- Conversion: conversions between term structures
+	- SemLab: semantic labeling
 
 * (non-)termination criteria:
 	- MannaNess: inclusion in some reduction ordering
@@ -40,6 +52,8 @@ Among other things, it includes:
 	- RPO: recursive path ordering
 	- HORPO: higher-order recursive path ordering
 	- NonTermin: loop certification
+	- SubtermCrit: subterm criterion (unfinished)
+	- Term/Lambda: computability closure
 
 The library is likely to evolve and include more developments quickly.
 For more recent informations, see http://color.inria.fr/.
