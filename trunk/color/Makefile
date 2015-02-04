@@ -7,12 +7,12 @@
 
 .PHONY: clean clean-all clean-doc default config dist doc install-dist install-doc tags all
 
-MAKECOQ := $(MAKE) -r -f Makefile.coq OTHERFLAGS="-dont-load-proofs" -j 3
+MAKECOQ := $(MAKE) -r -f Makefile.coq OTHERFLAGS="-dont-load-proofs"
 
-VFILES := $(shell find . -name \*.v)
+VFILES := $(shell find . -name \*.v | grep -v .\#)
 
 default: Makefile.coq
-	$(MAKECOQ)
+	+$(MAKECOQ)
 
 config Makefile.coq:
 	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
@@ -34,7 +34,7 @@ tags:
 INSTALL_DIR ?= `coqtop -where`/user-contrib
 
 install:
-	for i in `find . -name \*.vo`; do \
+	+for i in `find . -name \*.vo`; do \
 	 install -d $(INSTALL_DIR)/CoLoR/$$i; \
 	 install -m 0644 $$i $(INSTALL_DIR)/CoLoR/$$i; \
 	done
