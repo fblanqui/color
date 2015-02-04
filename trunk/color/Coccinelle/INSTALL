@@ -1,0 +1,38 @@
+Compilation and installation procedure
+--------------------------------------
+
+The compilation procedure that is provided hereafter requires a
+UNIX-like operating system with the following commands (it also works
+with Cygwin on Windows):
+
+- Coq version 8.4pl5 http://coq.inria.fr/
+- GNU make version 3.81 http://www.gnu.org/software/make/
+- GNU find version 4.4.2 http://www.gnu.org/software/findutils/findutils.html
+
+For compiling the library, do 'make [-j N]'
+(it takes 6'37" on my computer with N=10).
+
+If you use the development version under SVN, before doing 'make', you
+need to do 'make config' to recompile dependencies when new files are
+added in the archive.
+
+For installing the library in the default Coq user-contrib directory, do:
+'make install'.
+
+For installing the library in $dir, do: 'DSTROOT=$dir make install'.
+
+For using the library without installing it, you need to type the following
+command in Coq or add it in your ~/.coqrc file:
+
+    Add Rec LoadPath "$dir" as Coccinelle_for_CoLoR.
+
+where $dir is the installation directory.
+
+For compiling the html documentation, do 'make doc'. The starting
+file is doc/main.html.
+
+For compiling the TAGS file, do 'make tags'. This requires 'coqtags'
+from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
+
+If you encounter any problem, send a mail to Frédéric Blanqui
+(firstname.name@inria.fr).
