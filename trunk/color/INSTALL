@@ -10,7 +10,7 @@ with Cygwin on Windows):
 - GNU find version 4.4.2 http://www.gnu.org/software/findutils/findutils.html
 
 For compiling CoLoR, do: 'make [-j N]'
-(it takes 6'37" on my computer with N=10).
+(it takes 6'22" on my computer with N=10).
 
 (If you use the development version of CoLoR under SVN
 (http://gforge.inria.fr/projects/color/), before doing 'make', you
@@ -22,8 +22,8 @@ For installing CoLoR in the default Coq user-contrib directory, do:
 
 For installing CoLoR in $dir, do: 'DSTROOT=$dir make install'.
 
-For using CoLoR without installing it, you need to type the following
-command in Coq or add it in your ~/.coqrc file:
+For using CoLoR without installing it in user-contrib, you need to
+type the following command in Coq or add it in your ~/.coqrc file:
 
     Add Rec LoadPath "$dir" as CoLoR.
 
