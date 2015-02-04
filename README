@@ -71,14 +71,12 @@ http://gforge.inria.fr/projects/color/.
 
 The following scripts provide some statistics:
 
-- color_stat: provides the number of Coq lines (including newlines and
-comments) for the various kinds of formalizations (mathematical
-structures, data structures, etc.)
-
 - coq_stat [<directory>] (default is .): provides the number of
 definitions, lemmas, etc.
 
-- coq_contribs <directory>: run coq_stat on every Coq contrib
+- color_stat: provides the number of Coq lines (including newlines and
+comments) for the various kinds of formalizations (mathematical
+structures, data structures, etc.)
 
 The directory Coccinelle is not part of CoLoR. It contains an
 adaptation of the Coccinelle library which is used in
