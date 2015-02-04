@@ -6,7 +6,7 @@ The files have been slightly modified by:
   examples and its subdirectory cime_trace)
 - removing all "Add LoadPath" instructions,
 - defining every thing in Type instead of Set,
-- adapting a few proof scripts.
+- adapting a few proof scripts to new Coq versions.
 
 This also includes Sorin Stratulat's patch on the files
 term_orderings/rpo.v and examples/cime_trace/rpo_extension.v for
