@@ -31,27 +31,24 @@ clean-doc:
 	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html
 
 tags:
-	coqtags `find . -name \*.v`
+	coqtags $(VFILES)
 
 doc:
 	coqdoc --html -g -d doc -R . $(LIBNAME) `find . -path ./Coccinelle -prune -o -name \*.v -print`
-	./createIndex
+	./create_index
 
-dist:
-	./createDist
-
-ADR := ~/rewriting-svn/web/wdfs/color
+WEB := ~/rewriting-svn/web/wdfs/color
 #LOCAL := ~/rewriting-svn/web/color/site
 
 install-doc:
-	rm -f $(ADR)/doc/coqdoc.css $(ADR)/doc/*.html
-	cp doc/coqdoc.css doc/*.html $(ADR)/doc
-#	cp doc/coqdoc.css doc/*.html $(LOCAL)/doc
+	rm -f $(WEB)/doc/coqdoc.css $(WEB)/doc/*.html
+	cp -f doc/coqdoc.css doc/*.html $(WEB)/doc
+#	cp -f doc/coqdoc.css doc/*.html $(LOCAL)/doc
 
 install-dist:
-	cp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
-	cp CHANGES $(ADR)/CHANGES.CoLoR
-#	cp CHANGES $(LOCAL)/CHANGES.CoLoR
+#	cp -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
+	cp -f CHANGES $(WEB)/CHANGES.CoLoR
+#	cp -f CHANGES $(LOCAL)/CHANGES.CoLoR
 
 %.vo: %.v
 	$(MAKECOQ) $@
