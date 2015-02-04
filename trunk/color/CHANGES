@@ -1,3 +1,6 @@
+-----------------------------------------------------------------------------
+15-02-04: RELEASE 1.0.0 for OPAM (SVN revision 2104)
+
 14-12-29: [Strub]
 - Util/Vector/VecUtil: Vcast defined by matching on the equality proof argument
   (like eq_rect) instead of on the vector argument
