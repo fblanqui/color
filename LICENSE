@@ -3,16 +3,15 @@ CoLoR, a Coq library on rewriting and termination
 
 This software is a Coq library (Coq is a proof assistant developped at
 INRIA available at http://coq.inria.fr/) providing a formalization of
-concepts and proofs of theorems from rewriting theory in order to
-certify termination proofs.
+concepts and proofs of theorems on rewriting theory and termination.
 
 This software is governed by the CeCILL license under French law and
 abiding by the rules of distribution of free software. You can use,
 modify and/or redistribute the software under the terms of the CeCILL
 license as circulated by CEA, CNRS and INRIA at the following URL
 "http://www.cecill.info". A copy is provided with CoLoR in the files
-Licence_CeCILL_V2-en.txt (english) and Licence_CeCILL_V2-fr.txt
-(french).
+Licence_CeCILL_V2.1-en.txt (English) and Licence_CeCILL_V2.1-fr.txt
+(French).
 
 As a counterpart to the access to the source code and rights to copy,
 modify and redistribute granted by the license, users are provided only
