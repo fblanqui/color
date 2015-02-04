@@ -1,3 +1,6 @@
+This is the Coccinelle_for_CoLoR library version 1.0.0.
+Check http://color.inria.fr/ for more recent versions.
+
 This is a modified version of Coccinelle-v8.2-bool obtained from
 http://a3pat.ensiie.fr/pub/coccinelle-8.2.tar.gz on 26 October 2009.
 
