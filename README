@@ -1,5 +1,5 @@
-CoLoR, a Coq library on rewriting and termination
--------------------------------------------------
+This is the CoLoR library version 1.0.0.
+Check http://color.inria.fr/ for more recent versions.
 
 CoLoR is a library for the Coq proof assistant/checker
 (http://coq.inria.fr/) providing definitions and theorems about the
@@ -54,9 +54,6 @@ Among other things, it includes:
 	- NonTermin: loop certification
 	- SubtermCrit: subterm criterion (unfinished)
 	- Term/Lambda: computability closure
-
-The library is likely to evolve and include more developments quickly.
-For more recent informations, see http://color.inria.fr/.
 
 Contributions to this project are very welcome!
 

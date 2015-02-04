@@ -32,20 +32,7 @@ cd /tmp
 
 rm -rf color
 svn co svn://scm.gforge.inria.fr/svn/color/trunk/color
-svn=`svn info | grep vision | cut -d " " -f 2`
 rm -rf `find color -name .svn`
-
-echo "This is the CoLoR library version $version (SVN revision $svn)." > newREADME
-echo "Check http://color.inria.fr/ for more recent versions." >> newREADME
-echo >> newREADME
-cat color/README >> newREADME
-mv -f newREADME color/README
-
-echo "This is the Coccinelle_for_CoLoR library version $version (SVN revision $svn)." > newREADME
-echo "Check http://color.inria.fr/ for more recent versions." >> newREADME
-echo >> newREADME
-cat color/Coccinelle/README >> newREADME
-mv -f newREADME color/Coccinelle/README
 
 create_tar_gz () {
     echo create $dir.tar.gz ...
@@ -62,12 +49,13 @@ rm -rf $dir
 cp -r color/Coccinelle $dir
 create_tar_gz
 
-# CoLoR_without_Coccinelle
+# CoLoR (without Coccinelle)
 
-dir=color_without_coccinelle.$version
+dir=color.$version
 rm -rf $dir
 cp -r color $dir
 rm -rf $dir/Coccinelle $dir/Conversion/Coccinelle.v
+head -n -3 color/README > $dir/README
 create_tar_gz
 
 # CoLoR_with_Coccinelle
