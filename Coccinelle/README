@@ -1,5 +1,6 @@
-This is Coccinelle-v8.2-bool obtained from
+This is a modified version of Coccinelle-v8.2-bool obtained from
 http://a3pat.ensiie.fr/pub/coccinelle-8.2.tar.gz on 26 October 2009.
+
 The files have been slightly modified by:
 - removing the directory ordinals,
 - removing the files in the directory examples (but not the directory
@@ -9,5 +10,5 @@ The files have been slightly modified by:
 - adapting a few proof scripts to new Coq versions.
 
 This also includes Sorin Stratulat's patch on the files
-term_orderings/rpo.v and examples/cime_trace/rpo_extension.v for
+term_orderings/rpo.v and examples/cime_trace/rpo_extension.v
 extending RPO precedence from an ordering to a quasi-ordering.
