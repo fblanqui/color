@@ -33,7 +33,7 @@ do
   for e in `dir=$root/$d; subdirs`
   do
     echo $e
-    coq_stat $root/$d/$e
+    ./coq_stat $root/$d/$e
     echo ""
   done
 done
