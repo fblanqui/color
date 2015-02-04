@@ -7,7 +7,7 @@ LIBNAME := CoLoR
 
 .SUFFIXES:
 
-.PHONY: default config clean clean-all clean-doc tags doc dist install-doc install-dist
+.PHONY: default config clean clean-all clean-doc tags doc install-doc install-dist
 
 MAKECOQ := +$(MAKE) -r -f Makefile.coq
 
@@ -36,9 +36,6 @@ tags:
 doc:
 	coqdoc --html -g -d doc -R . $(LIBNAME) `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./create_index
-
-dist:
-	./create_dist
 
 WEB := ~/rewriting-svn/web/wdfs/color
 #LOCAL := ~/rewriting-svn/web/color/site
