@@ -3,19 +3,21 @@
 #
 # - Frederic Blanqui, 2005-02-03
 
+LIBNAME := CoLoR
+
 .SUFFIXES:
 
-.PHONY: clean clean-all clean-doc default config dist doc install-dist install-doc tags all
+.PHONY: default config clean clean-all clean-doc tags doc dist install-doc install-dist
 
-MAKECOQ := $(MAKE) -r -f Makefile.coq OTHERFLAGS="-dont-load-proofs"
+MAKECOQ := +$(MAKE) -r -f Makefile.coq
 
 VFILES := $(shell find . -name \*.v | grep -v .\#)
 
 default: Makefile.coq
-	+$(MAKECOQ)
+	$(MAKECOQ)
 
 config Makefile.coq:
-	coq_makefile -R . CoLoR $(VFILES) > Makefile.coq
+	coq_makefile -R . $(LIBNAME) $(VFILES) > Makefile.coq
 	$(MAKECOQ) depend
 
 clean:
@@ -26,22 +28,17 @@ clean-all: clean
 	rm -f Makefile.coq
 
 clean-doc:
-	rm -f doc/CoLoR.*.html doc/index.html doc/main.html
+	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html
 
 tags:
 	coqtags `find . -name \*.v`
 
-INSTALL_DIR ?= `coqtop -where`/user-contrib
-
-install:
-	+for i in `find . -name \*.vo`; do \
-	 install -d $(INSTALL_DIR)/CoLoR/$$i; \
-	 install -m 0644 $$i $(INSTALL_DIR)/CoLoR/$$i; \
-	done
-
 doc:
-	coqdoc --html -g -d doc -R . CoLoR `find . -path ./Coccinelle -prune -o -name \*.v -print`
+	coqdoc --html -g -d doc -R . $(LIBNAME) `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./createIndex
+
+dist:
+	./createDist
 
 ADR := ~/rewriting-svn/web/wdfs/color
 #LOCAL := ~/rewriting-svn/web/color/site
@@ -50,9 +47,6 @@ install-doc:
 	rm -f $(ADR)/doc/coqdoc.css $(ADR)/doc/*.html
 	cp doc/coqdoc.css doc/*.html $(ADR)/doc
 #	cp doc/coqdoc.css doc/*.html $(LOCAL)/doc
-
-dist:
-	./createDist
 
 install-dist:
 	cp CoLoR_`date +%y%m%d`.tar.gz $(ADR)/CoLoR.tar.gz
