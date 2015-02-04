@@ -37,6 +37,9 @@ doc:
 	coqdoc --html -g -d doc -R . $(LIBNAME) `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./create_index
 
+dist:
+	./create_dist
+
 WEB := ~/rewriting-svn/web/wdfs/color
 #LOCAL := ~/rewriting-svn/web/color/site
 
