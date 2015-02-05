@@ -1,39 +1,46 @@
-Compilation and installation procedure
---------------------------------------
+Compilation and installation procedure using OPAM
+-------------------------------------------------
 
-The compilation procedure that is provided hereafter requires a
-UNIX-like operating system with the following commands (it also works
-with Cygwin on Windows):
+Requirements:
+- OPAM version 1.2 or later (https://opam.ocaml.org/)
 
-- Coq version 8.4pl5 http://coq.inria.fr/
-- GNU make version 3.81 http://www.gnu.org/software/make/
-- GNU find version 4.4.2 http://www.gnu.org/software/findutils/findutils.html
+Procedure:
+- step 1/3: opam repo add coq-stable https://github.com/coq/repo-stable.git
+- step 2/3: opam install --jobs=N coq:color
+            (it takes 6'22" on my computer with N=10)
+- step 3/3: add in your ~/.coqrc file the following line:
+            Add Rec LoadPath "$dir/system/lib/coq/user-contrib/CoLoR" as CoLoR.
+	    where $dir is the directory where opam installs libraries
+	    (~/.opam by default unless you used the opam option --root=$dir)
 
-For compiling CoLoR, do: 'make [-j N]'
-(it takes 6'22" on my computer with N=10).
+Enjoy!
 
-(If you use the development version of CoLoR under SVN
-(http://gforge.inria.fr/projects/color/), before doing 'make', you
-need to do 'make config' to recompile dependencies when new files are
-added in the archive.)
+Self compilation and installation
+---------------------------------
 
-For installing CoLoR in the default Coq user-contrib directory, do:
-'make install'.
+Requirements:
+- UNIX-like operating system (including Cygwin on Windows)
+- GNU find version 4.4.2 (http://www.gnu.org/software/findutils/findutils.html)
+- GNU make version 3.81 (http://www.gnu.org/software/make/)
+- Coq version 8.4pl5 (http://coq.inria.fr/)
 
-For installing CoLoR in $dir, do: 'DSTROOT=$dir make install'.
+Procedure for installing CoLoR in Coq default directory for user contributions:
+- step 1/2: make [-j N]
+- step 2/2: make install
 
-For using CoLoR without installing it in user-contrib, you need to
-type the following command in Coq or add it in your ~/.coqrc file:
+Procedure for installing CoLoR in $dir:
+- step 1/3: make [-j N]
+- step 2/3: DSTROOT=$dir make install
+- step 3/3: add in your ~/.coqrc file the following line:
+            Add Rec LoadPath "$dir" as CoLoR.
 
-    Add Rec LoadPath "$dir" as CoLoR.
+Procedure for compiling the html documentation:
+- step 1/1: make doc
+            (the starting file is doc/main.html)
 
-where $dir is the CoLoR directory.
+Procedure for compiling the TAGS file:
+- step 1/1: make tags
+This requires 'coqtags' from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
 
-For compiling the html documentation, do: 'make doc'. The starting
-file is doc/main.html.
-
-For compiling the TAGS file, do 'make tags'. This requires 'coqtags'
-from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
-
-If you encounter any problem, send a mail to Frederic Blanqui
+If you encounter any problem, send a mail to Frédéric Blanqui
 (firstname.name@inria.fr).
