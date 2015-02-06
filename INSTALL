@@ -38,5 +38,5 @@ Procedure for compiling the TAGS file:
 - step 1/1: make tags
 This requires 'coqtags' from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
 
-If you encounter any problem, send a mail to Frédéric Blanqui
+If you encounter any problem, send a mail to Frederic Blanqui
 (firstname.name@inria.fr).
