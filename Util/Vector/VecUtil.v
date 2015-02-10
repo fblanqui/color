@@ -219,13 +219,8 @@ Implicit Arguments Vcast_cons [A n v x p hS].
 (***********************************************************************)
 (** ** Lemma and tactic for replacing an empty vector by Vnil. *)
 
-Lemma VO_eq : forall A (v : vector A O), v = Vnil.
-
-Proof.
-  intro A. cut (forall n (v : vector A n) (h: n=0), Vcast v h = Vnil).
-  intros. ded (H 0 v (refl_equal 0)). rewrite Vcast_refl in H0. hyp.
-  destruct v; intros. rewrite Vcast_refl; auto. discr.
-Defined.
+Definition VO_eq A (v : vector A O) : v = Vnil
+  := match v with Vnil => eq_refl _ end.
 
 Ltac VOtac := repeat
   match goal with
