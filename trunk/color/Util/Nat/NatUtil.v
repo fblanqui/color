@@ -53,11 +53,6 @@ Ltac max :=
   end; intros; omega.
 
 (***********************************************************************)
-(** Type of natural numbers strictly smaller than some n. *)
-
-Record nat_lt (n : nat) : Type := mk_nat_lt { val :> nat; prf : val < n }.
-
-(***********************************************************************)
 (** Properties of ordering relations on nat. *)
 
 Instance le_PreOrder : PreOrder le.
@@ -67,14 +62,6 @@ Proof. split. intro x. refl. intros x y z xy yz. omega. Qed.
 Instance lt_Transitive : Transitive lt. 
 
 Proof. intros x y z xy yz. omega. Qed.
-
-(*REMOVE:Instance ge_refl : Reflexive ge.
-
-Proof. intro x. omega. Qed.
-
-Instance ge_trans : Transitive ge.
-
-Proof. intros x y z xy yz. omega. Qed.*)
 
 Instance ge_PreOrder : PreOrder ge.
 
@@ -634,3 +621,120 @@ Section mon.
 End mon.
 
 Implicit Arguments monS [A ltA f x y].
+
+(****************************************************************************)
+(** Smallest natural number satisfying some satisfiable property. *)
+
+Section smallest.
+
+  Variables (P : nat -> Prop) (P_dec : forall x, {P x}+{~P x}).
+
+  Section smallest_aux.
+
+    Variables (n : nat) (h : P n).
+
+    Fixpoint smallest_aux acc k :=
+      match k with
+        | 0 => if P_dec k then 0 else acc
+        | S k' => smallest_aux (if P_dec k then k else acc) k'
+      end.
+
+    Definition smallest := smallest_aux n n.
+
+    Lemma smallest_aux_ok : forall k acc, P acc -> P (smallest_aux acc k).
+
+    Proof.
+      induction k; intros acc Pacc; simpl.
+      destruct (P_dec 0); hyp.
+      destruct (P_dec (S k)); fo.
+    Qed.
+
+    Lemma smallest_ok : P smallest.
+
+    Proof. unfold smallest. apply smallest_aux_ok. hyp. Qed.
+
+    Lemma smallest_aux_le_max_args l :
+      forall k acc, acc <= l -> k <= l -> smallest_aux acc k <= l.
+
+    Proof.
+      induction k; intros acc accl kl; simpl.
+      destruct (P_dec 0); omega.
+      destruct (P_dec (S k)); apply IHk; omega.
+    Qed.
+
+    Lemma smallest_le_arg : smallest <= n.
+
+    Proof. apply smallest_aux_le_max_args; refl. Qed.
+
+    Lemma smallest_aux_plus_exists m :
+      forall k acc, exists acc', smallest_aux acc (k + m) = smallest_aux acc' m.
+
+    Proof.
+      induction k; intro acc; simpl.
+      ex acc. refl.
+      set (a := if P_dec (S (k + m)) then S (k + m) else acc).
+      destruct (IHk a) as [acc' hacc']. ex acc'. hyp.
+    Qed.
+
+    Lemma smallest_aux_plus m : P (S m) ->
+      forall k acc acc', smallest_aux acc (k + S m) = smallest_aux acc' (S m).
+
+    Proof.
+      intro PSm. induction k; intros acc acc'; simpl.
+      destruct (P_dec (S m)). refl. contr. erewrite IHk. refl.
+    Qed.
+
+    Lemma smallest_aux_le_exists k l acc :
+      k <= l -> exists acc', smallest_aux acc l = smallest_aux acc' k.
+
+    Proof.
+      intro kl. destruct (le_plus kl) as [m e]; subst.
+      apply smallest_aux_plus_exists.
+    Qed.
+
+    Lemma smallest_aux_le k l acc acc' :
+      k <= l -> P (S k) -> smallest_aux acc (S l) = smallest_aux acc' (S k).
+
+    Proof.
+      intros kl Pk. destruct (le_plus kl) as [m e]; subst.
+      assert (e : S (m + k) = m + S k). omega. rewrite e.
+      apply smallest_aux_plus. hyp.
+    Qed.
+
+  End smallest_aux.
+
+  Lemma smallest_inv_le k l : k <= l -> P k -> smallest l = smallest k.
+
+  Proof.
+    unfold smallest. destruct k; simpl.
+    (* k=0 *)
+    intros _ P0. destruct (P_dec 0). 2: contr. clear p. revert l.
+    cut (forall l acc, smallest_aux acc l = 0). fo.
+    induction l; intro acc; simpl. destruct (P_dec 0). refl. contr. fo.
+    (* k > 0 *)
+    destruct l; simpl. omega. intro kl. apply smallest_aux_le. omega.
+  Qed.
+
+  Lemma smallest_inv m n : P m -> P n -> smallest m = smallest n.
+
+  Proof.
+    intros Pm Pn. destruct (le_dec n m). apply smallest_inv_le; hyp.
+    sym. apply smallest_inv_le. omega. hyp.
+  Qed.
+
+  Lemma smallest_comp m n : P m -> P n -> smallest m <= n.
+
+  Proof.
+    intros Pm Pn. destruct (le_dec m n). rewrite smallest_le_arg. hyp.
+    rewrite smallest_inv with (n:=n); auto. apply smallest_le_arg.
+  Qed.
+
+End smallest.
+
+Arguments smallest_ok [P] _ [n] _.
+
+(***********************************************************************)
+(** Type of natural numbers strictly smaller than some n. *)
+
+Record nat_lt (n : nat) : Type := mk_nat_lt { val :> nat; prf : val < n }.
+
