@@ -93,7 +93,7 @@ apply IHp; trivial.
 discriminate.
 destruct (CD g) as [Cg | Dg].
 simpl; apply P_acc_subterms; trivial.
-intros t t_in_map_h; setoid_rewrite in_map_iff in t_in_map_h.
+intros t t_in_map_h; rewrite in_map_iff in t_in_map_h.
 destruct t_in_map_h as [t' [H''' t'_in_h]]; subst; apply Acc_h; trivial.
 
 destruct (subterm_at_pos_dec_alt (Term f k) (Term g h)) as [[q Sub] | not_Sub].
@@ -104,7 +104,7 @@ left.
 replace (Term f (map (apply_subst sigma) k)) with (apply_subst sigma (Term f k)); trivial.
 apply Idp; trivial.
 apply instance; apply Dp with t1 p; trivial.
-simpl; intros t t_in_map_h; setoid_rewrite in_map_iff in t_in_map_h.
+simpl; intros t t_in_map_h; rewrite in_map_iff in t_in_map_h.
 destruct t_in_map_h as [t' [H''' t'_in_h]]; subst; apply Acc_h; trivial.
 simpl in Sub.
 generalize (nth_error_ok_in i k); destruct (nth_error k i) as [ti | ].

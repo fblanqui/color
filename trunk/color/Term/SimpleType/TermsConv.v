@@ -627,7 +627,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     assert (EE0: decl A E [<->] decl A0 E0).
     unfold decl; apply env_comp_cons; trivial.
     left; try_solve.
-    setoid_rewrite (envSubst_eq_abs (buildT (TAbs M)) (buildT (TAbs typing0)) 
+    rewrite (envSubst_eq_abs (buildT (TAbs M)) (buildT (TAbs typing0)) 
       I I MN EE0).
     set (w := IHM (buildT typing0) EE0); simpl in w.
     rewrite <- H1 in w.
@@ -648,7 +648,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     constructor 1; destruct S; trivial.
     constructor 2.
     constructor 3.
-    setoid_rewrite <- (envSubst_transp_lift S); trivial.
+    rewrite <- (envSubst_transp_lift S); trivial.
     constructor 4; trivial.
   Qed.
 
