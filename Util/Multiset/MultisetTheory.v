@@ -192,7 +192,7 @@ End meq_equivalence.
       as member_morph.
 
   Proof.
-    mset_unfold; intros a a0 h m m0 H. setoid_rewrite h. setoid_rewrite H. intuition.
+    mset_unfold; intros a a0 h m m0 H. rewrite h. rewrite H. intuition.
   Qed.
 
   Add Morphism remove
@@ -1102,7 +1102,7 @@ Section Multiset2List. (* William Delobel *)
     (* induction step *)
     elim IHM; clear IHM; intros l IHM.
     exists (a::l).
-    simpl; unfold insert; setoid_rewrite <- IHM; apply union_comm.
+    simpl; unfold insert; rewrite <- IHM; apply union_comm.
   Defined.
   
   Definition multiset2list M := match mult_to_list M with exist l _ => l end.
@@ -1127,7 +1127,7 @@ Section Multiset2List. (* William Delobel *)
     (* induction step *)
     unfold multiset2list; elim (mult_to_list (M + {{a}})).
     intros l Hl.
-    setoid_rewrite Hl; auto with multisets.
+    rewrite Hl; auto with multisets.
   Qed.
 
 End Multiset2List.

@@ -190,11 +190,11 @@ Section LexPair.
     constructor 1; apply (sord_trans lp_gtL_so la la' ra'); 
       solve [trivial | rewrite eq1; trivial].
      (* case 2 *)
-    constructor 1. setoid_rewrite <- eq_ra. setoid_rewrite <- eq1. hyp.
+    constructor 1. rewrite <- eq_ra. rewrite <- eq1. hyp.
      (* case 3 *)
-    constructor 1. setoid_rewrite eq_la. setoid_rewrite eq1. hyp.
+    constructor 1. rewrite eq_la. rewrite eq1. hyp.
      (* case 4 *)
-    constructor 2. setoid_rewrite eq_la. setoid_rewrite <- eq_ra. rewrite eq1.
+    constructor 2. rewrite eq_la. rewrite <- eq_ra. rewrite eq1.
     auto with sets.
     apply (sord_trans lp_gtR_so lb lb' rb'); 
       [ trivial 

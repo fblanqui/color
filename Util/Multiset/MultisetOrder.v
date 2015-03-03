@@ -364,7 +364,7 @@ Section OrderCharacterization.
     intros y0 Hy0.
     gen (member_singleton Hy0); clear Hy0; intro Hy0.
     apply gtA_eqA_compat with (x' := x) (x := x) (y := y); auto with multisets.
-    setoid_rewrite Hy0; auto with multisets.
+    rewrite Hy0; auto with multisets.
   Qed.
 
   Lemma sub_transp_trans_2_mOrd_trans: forall P,
@@ -446,7 +446,7 @@ Section OrderCharacterization.
     elim (member_union Hx'); intro case_x'.    
       (* x' in X : *)
     exists Ya; exists (Yx + {{a}}).
-    setoid_rewrite HY.
+    rewrite HY.
     auto with multisets.
     split.
     hyp.
@@ -456,10 +456,10 @@ Section OrderCharacterization.
     exists x'; trivial.
     generalize (member_singleton case_y) Hx'2; intro y_is_a.
     apply gtA_eqA_compat; auto with multisets.
-    setoid_rewrite y_is_a; auto with multisets.
+    rewrite y_is_a; auto with multisets.
       (* x' = a' : *)
     exists (Ya + {{a}}); exists Yx.
-    setoid_rewrite HY.
+    rewrite HY.
     solve_meq.
     split.
     intros y Hy.
@@ -467,9 +467,9 @@ Section OrderCharacterization.
     apply HYa; trivial.
     gen Hx'2; apply gtA_eqA_compat.
     apply (member_singleton case_x').
-    setoid_rewrite (member_singleton case_y); auto with multisets.
+    rewrite (member_singleton case_y); auto with multisets.
     hyp.
-    setoid_rewrite (union_comm Y {{a}}).
+    rewrite (union_comm Y {{a}}).
     apply member_member_union.
     apply singleton_member.
     intros y HY; apply H.
@@ -541,7 +541,7 @@ Section OrderCharacterization.
      (* a = a0, order proved using inserted element *)
     exists Y; right; split.
     rewrite H1; setoid_replace X with M. auto with multisets.
-    apply meq_union_meq with {{a}}. setoid_rewrite <- a_a0 in H0.
+    apply meq_union_meq with {{a}}. rewrite <- a_a0 in H0.
     auto with multisets.
     intros; rewrite a_a0; apply (H2 x); trivial.
      (* a <> a0, order proved with other element that inserted one *)

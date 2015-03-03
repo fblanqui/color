@@ -50,7 +50,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       exists s; split.
       elim (member_multiset_list ts) with s; trivial.
       apply In_eqA_compat.
-      setoid_rewrite H0.
+      rewrite H0.
       apply member_member_union; hyp.
       left; auto with multisets.
       auto with sets.
@@ -59,12 +59,12 @@ Module MultisetListOrder (ES : Eqset_dec).
       exists t'; split.
       elim (member_multiset_list ts) with t'; trivial.
       apply In_eqA_compat.
-      setoid_rewrite H0.
-      setoid_rewrite (union_comm Z X).
+      rewrite H0.
+      rewrite (union_comm Z X).
       apply member_member_union; hyp.
       right; hyp.
       apply member_union.
-      setoid_rewrite <- H1; apply member_list_multiset; hyp.
+      rewrite <- H1; apply member_list_multiset; hyp.
       apply member_list_multiset; hyp.
     Qed.
 
@@ -102,7 +102,7 @@ Module MultisetListOrder (ES : Eqset_dec).
         (* case M empty : *)
       apply (P_morph {{a}}).
       apply Ha.
-      setoid_rewrite case_M; solve_meq.
+      rewrite case_M; solve_meq.
         (* case M not empty : *)
       apply HMa; apply IHM; hyp.
     Qed.
@@ -121,13 +121,13 @@ Module MultisetListOrder (ES : Eqset_dec).
       assert (H : exists x : A, x in M /\ r x x).
       apply HM.
       intros x x_in_M; assert (H : x in N).
-      setoid_rewrite <- Heq; auto with multisets.
+      rewrite <- Heq; auto with multisets.
       elim (H1 x H); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2;
 	exists x'; split; trivial.  
-      setoid_rewrite Heq; auto with multisets.
+      rewrite Heq; auto with multisets.
       elim H; clear H; intros x H; elim H; clear H; intros H H'; exists x;
         split; trivial.
-      setoid_rewrite <- Heq; auto with multisets.
+      rewrite <- Heq; auto with multisets.
         (* Property true on singletons : *)
       intros a Ha; exists a; split; auto with multisets.
       elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx';
@@ -173,17 +173,17 @@ Module MultisetListOrder (ES : Eqset_dec).
           (* Proof of H : *)
       apply HM.
       intros x x_in_M; assert (H : x in N).
-      setoid_rewrite <- Heq; auto with multisets.
+      rewrite <- Heq; auto with multisets.
       apply Htrans; trivial.
       intros x x_in_M; assert (H : x in N).
-      setoid_rewrite <- Heq; auto with multisets.
+      rewrite <- Heq; auto with multisets.
       elim (H1 x H); intros x' Hx'; elim Hx'; clear Hx'; intros Hx'1 Hx'2;
         exists x'; split; trivial.
-      setoid_rewrite Heq; auto with multisets.
+      rewrite Heq; auto with multisets.
           (* H proved *)
       elim H; clear H; intros x H; elim H; clear H; intros H H'; exists x;
         split; trivial.
-      setoid_rewrite <- Heq; auto with multisets.
+      rewrite <- Heq; auto with multisets.
         (* Property true on singletons : *)
       intros a H Ha; exists a; split; auto with multisets.
       elim (Ha a (singleton_member a)); intros x' Hx'; elim Hx'; clear Hx';
@@ -230,13 +230,13 @@ Module MultisetListOrder (ES : Eqset_dec).
       assert (H'' : forall (x : A), x in X ->
         ex (fun (x' : A) => x' in X /\ r x' x)).
       intros x x_in_X; assert (x_in_Y : x in Y). 
-      setoid_rewrite <- H'; trivial.
+      rewrite <- H'; trivial.
       elim (H2 x x_in_Y); intros x' Hx'1 Hx'2.
       exists x'; split; trivial.
       elim (self_dom Htrans X H H''); intros x Hx.
       elim Hx; clear Hx; intros Hx1 Hx2.
       apply (Hsub x); trivial.
-      setoid_rewrite H0; rewrite (union_comm Z X); auto with multisets.
+      rewrite H0; rewrite (union_comm Z X); auto with multisets.
     Qed.
 
     Lemma irrefl_to_mult_irrefl : transitive r -> 
@@ -286,7 +286,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       assert (H'' : forall (x : A), x in X ->
         ex (fun (x' : A) => x' in X /\ r x' x)).
       intros x x_in_X; assert (x_in_Y : x in Y).
-      setoid_rewrite <- H'; trivial.
+      rewrite <- H'; trivial.
       elim (H2 x x_in_Y); intros x' Hx'1 Hx'2.
       exists x'; split; trivial.
       (* H'' proved *)
