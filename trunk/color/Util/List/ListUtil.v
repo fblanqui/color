@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-03, 2009-07-06
 - Sebastien Hinderer, 2004-05-25
 
-extension of the Coq library on lists
+Extension of the Coq library on lists.
 *)
 
 Set Implicit Arguments.
@@ -31,7 +31,7 @@ Ltac elt_type l := match type of l with list ?A => A end.
 Infix "[=" := incl (at level 70).
 
 (***********************************************************************)
-(** membership *)
+(** Properties of [In] (membership predicate on lists). *)
 
 Section In.
 
@@ -127,9 +127,10 @@ Ltac list_ok := let x := fresh in intro x;
   end.
 
 (***********************************************************************)
-(** inclusion *)
+(** Properties of [incl]
+  (non-order-preserving inclusion predicate on lists). *)
 
-Instance incl_rel A : PreOrder (@incl A).
+Instance incl_PreOrder A : PreOrder (@incl A).
 
 Proof.
   constructor.
@@ -238,7 +239,7 @@ End incl.
 Implicit Arguments incl_app_elim [A l1 l2 l3].
 
 (***********************************************************************)
-(** strict inclusion *)
+(** Strict inclusion. *)
 
 Definition strict_incl A (l m : list A) := l [= m /\ ~m [= l.
 
@@ -256,7 +257,7 @@ Instance strict_incl_rel A : Transitive (@strict_incl A).
 Proof. intros x y z xy yz. apply strict_incl_tran with y; hyp. Qed.
 
 (***********************************************************************)
-(** equivalence *)
+(** Equivalence (i.e. having the same elements). *)
 
 Definition lequiv {A} (l1 l2 : list A) := l1 [= l2 /\ l2 [= l1.
 
@@ -284,7 +285,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** empty list *)
+(** Properties of the empty list. *)
 
 Section nil.
 
@@ -303,13 +304,13 @@ Section nil.
 End nil.
 
 (***********************************************************************)
-(** cons *)
+(** Properties of [cons]. *)
 
-Instance cons_incl A : Proper (Logic.eq ==> incl ==> incl) (@cons A). 
+Instance cons_incl A : Proper (eq ==> incl ==> incl) (@cons A). 
 
 Proof. intros x x' xx'. subst x'. fo. Qed.
 
-Instance cons_lequiv A : Proper (Logic.eq ==> lequiv ==> lequiv) (@cons A).
+Instance cons_lequiv A : Proper (eq ==> lequiv ==> lequiv) (@cons A).
 
 Proof. intros x x' xx'. subst x'. fo. Qed.
 
@@ -333,7 +334,7 @@ Section cons.
 End cons.
 
 (***********************************************************************)
-(** append *)
+(** Properties of [app] (concatenation). *)
 
 Section app.
 
@@ -426,7 +427,7 @@ Section app.
 End app.
 
 (***********************************************************************)
-(** length *)
+(** Properties of [length]. *)
 
 Section length.
 
@@ -441,7 +442,7 @@ End length.
 Implicit Arguments length_0 [A l].
 
 (***********************************************************************)
-(** head & tail *)
+(** Properties of [head] and [tail]. *)
 
 Section head_tail.
 
@@ -499,7 +500,7 @@ Hint Resolve tail_in tail_cons_tail head_app : datatypes.
 Hint Rewrite head_app length_app : datatypes.
 
 (***********************************************************************)
-(** tail_nth *)
+(** Iteration of [tail]. *)
 
 Section tail_nth.
 
@@ -514,8 +515,50 @@ Section tail_nth.
 
 End tail_nth.
 
+(****************************************************************************)
+(** Function selecting the elements that satisfy some predicate. *)
+
+Section select.
+
+  Context {A: Type} {f : A->Prop}.
+
+  Variable (f_dec : forall x, {f x}+{~f x}).
+
+  Fixpoint select (l : list A) :=
+    match l with
+      | nil => nil
+      | cons a l' =>
+        match f_dec a with
+          | left _ => a :: select  l'
+          | right _ => select l'
+        end
+    end.
+
+  Lemma incl_select : forall l, select l [= l.
+
+  Proof.
+    induction l; simpl. fo. destruct (f_dec a).
+    apply cons_incl. refl. hyp. apply incl_tl. hyp.
+  Qed.
+
+  Lemma select_correct : forall l x, In x (select l) -> In x l /\ f x.
+
+  Proof.
+    induction l; intro x; simpl. fo.
+    destruct (f_dec a); fo. subst. hyp.
+  Qed.
+
+  Lemma select_complete : forall l x, In x l -> f x -> In x (select l).
+
+  Proof.
+    induction l; intro x; simpl. fo.
+    intros [h|h]; destruct (f_dec a); subst; fo.
+  Qed.
+
+End select.
+
 (***********************************************************************)
-(** list filtering *)
+(** Select the elements of a list wrt a boolean function. *)
 
 Section filter.
 
@@ -564,7 +607,7 @@ Section filter_opt.
 End filter_opt.
 
 (***********************************************************************)
-(** boolean membership when the equality on A is decidable *)
+(** Boolean function testing membership. *)
 
 Section Inb.
 
@@ -652,7 +695,7 @@ Ltac inbtac :=
   end.
 
 (***********************************************************************)
-(** remove *)
+(** Remove an element from a list. *)
 
 Section remove.
 
@@ -703,6 +746,13 @@ Section remove.
     apply IHl. auto. apply incl_cons_l_incl with (x := a). exact H0. exact H2.
   Qed.
 
+  Lemma incl_remove2 (x : A) : forall l, remove x l [= l.
+
+  Proof.
+    induction l; simpl. refl. destruct (eq_dec a x).
+    apply incl_tl. hyp. apply cons_incl. refl. hyp.
+  Qed.
+
   Lemma notin_remove : forall x l, In x (remove x l) -> False.
 
   Proof.
@@ -725,10 +775,17 @@ Section remove.
     apply In_remove; auto.
   Qed.
 
+  Lemma remove_notin (x : A) : forall l, ~In x l -> remove x l = l.
+
+  Proof.
+    induction l; intro nxl; simpl. refl. destruct (eq_dec a x).
+    subst. fo. f_equal. fo.
+  Qed.
+
 End remove.
 
 (***********************************************************************)
-(** removes *)
+(** Removes a list of elements from a list. *)
 
 Section removes.
 
@@ -774,7 +831,7 @@ Section removes.
 End removes.
 
 (***********************************************************************)
-(** map *)
+(** Properties of [map]. *)
 
 Section map.
 
@@ -814,7 +871,7 @@ apply IHl. intro. ded (H x). intuition.
 Qed.
 
 (***********************************************************************)
-(** flat_map *)
+(** Properties of [flat_map]. *)
 
 Section flat_map.
 
@@ -845,7 +902,7 @@ Section flat_map.
 End flat_map.
 
 (***********************************************************************)
-(** flattening *)
+(** Concatenation of a list of lists. *)
 
 Section flat.
 
@@ -872,8 +929,55 @@ End flat.
 
 Implicit Arguments In_incl_flat [A x l].
 
+(****************************************************************************)
+(** Position of an element in a list (the result is meaningful only if
+the element occurs in the list). *)
+
+Section pos.
+
+  Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}).
+
+  Section def.
+
+    Variable x : A.
+
+    Fixpoint pos l :=
+      match l with
+        | nil => 0
+        | a :: l' => if eq_dec a x then 0 else S (pos l')
+      end.
+
+    Lemma nth_pos d : forall l, In x l -> nth (pos l) l d = x.
+
+    Proof.
+      induction l; intro h; simpl. fo. destruct (eq_dec a x). hyp.
+      apply IHl. fo.
+    Qed.
+
+    Lemma pos_lt_length : forall l, In x l -> pos l < length l.
+
+    Proof.
+      induction l; intro h; simpl. fo. destruct (eq_dec a x). omega.
+      apply lt_n_S. fo.
+    Qed.
+
+  End def.
+
+  Lemma inj_pos x y : forall l, In x l -> pos x l = pos y l -> x = y.
+
+  Proof.
+    induction l; intro h; simpl. fo.
+    destruct (eq_dec a x); destruct (eq_dec a y); subst;
+      intro e; try (hyp||discr).
+    inversion e. fo.
+  Qed.
+
+End pos.
+
+Arguments pos_lt_length [A] _ [x l] _.
+
 (***********************************************************************)
-(** element & replacement at a position *)
+(** Element at a position (starting from 0) and its replacement. *)
 
 Section Element_At_List.
   
@@ -1019,7 +1123,8 @@ Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
 Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
 
 (***********************************************************************)
-(** one_less *)
+(** Precidate saying that an element [a] in a list has been replaced
+by an element [a'] such that [r a a'] where [r] is a relation. *)
 
 Section one_less.
 
@@ -1048,7 +1153,7 @@ Implicit Arguments one_less [A].
 Implicit Arguments one_less_cons [A].
 
 (***********************************************************************)
-(** reverse *)
+(** Properties of [rev]. *)
 
 Section reverse.
 
@@ -1079,6 +1184,9 @@ Section reverse.
   Qed.
 
 End reverse.
+
+(***********************************************************************)
+(** Tail-recursive reserve function. *)
 
 Section reverse_tail_recursive.
 
@@ -1127,7 +1235,8 @@ End reverse_tail_recursive.
 Notation rev' := (rev_append nil).
 
 (***********************************************************************)
-(** split *)
+(** Given a list [l] and a position [n] in [l], return the pair of
+lists [l1] and [l2] such that [l = l1 ++ l2]. *)
 
 Section split.
 
@@ -1167,7 +1276,7 @@ Notation split := (split_aux nil).
 Implicit Arguments split_correct [A l n l1 l2].
 
 (***********************************************************************)
-(** last element *)
+(** Last element of a list. *)
 
 Section last.
 
@@ -1191,7 +1300,7 @@ End last.
 Implicit Arguments last_intro [A l].
 
 (***********************************************************************)
-(** partition *)
+(** Properties of [partition]. *)
 
 Section partition.
 
@@ -1286,7 +1395,7 @@ Section partition_by_rel.
 End partition_by_rel.
 
 (***********************************************************************)
-(** listfilter *)
+(** Select the elements of a list according to a list of booleans. *)
 
 Section ListFilter.
 
@@ -1328,7 +1437,7 @@ Section ListFilter.
 End ListFilter.
 
 (****************************************************************************)
-(** nth/nth_error *)
+(** Properties of [nth] and [nth_error]. *)
 
 Section ListsNth.
 
@@ -1538,7 +1647,8 @@ End ListsNth.
 Implicit Arguments In_nth [A x l].
 
 (****************************************************************************)
-(** ith *)
+(** Total function returning the [i]th element of a list [ŀ]
+if [i < length l]. *)
 
 Unset Strict Implicit.
 Set Contextual Implicit.
@@ -1583,7 +1693,9 @@ End ith.
 Implicit Arguments ith_In [A l i].
 
 (****************************************************************************)
-(** list of values of a function *)
+(** Given a function [f:nat->A] and [j:nat], [values f j] returns the
+list [f (j-1); ..; f 0] of the [j] first values of [f] starting from
+0 in reverse order. *)
 
 Section values.
 
@@ -1598,7 +1710,9 @@ Section values.
 End values.
 
 (****************************************************************************)
-(** list of values of a partial function *)
+(** Given a function [n:nat] and [f:forall i, i<n -> A], [pvalues n f]
+returns the list [f 0; ..; f (n-1)] of the [n] first values of [f]
+starting from 0. *)
 
 Section pvalues.
 
@@ -1637,8 +1751,24 @@ Section pvalues_map.
 
 End pvalues_map.
 
+(****************************************************************************)
+(** List of natural numbers from n-1 to 0. *)
+
+Fixpoint nats_decr_lt n :=
+  match n with
+    | 0 => nil
+    | S n' => n' :: nats_decr_lt n'
+  end.
+
+Definition nats_incr_lt n := rev' (nats_decr_lt n).
+
+Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
+
+Proof. induction n; simpl; intros. omega. rewrite <- IHn. omega. Qed.
+
 (***********************************************************************)
-(** lists of bounded natural numbers *)
+(** Properties of lists of natural numbers strictly smaller than some
+fixed [n]. *)
 
 Definition nat_lts n := list (nat_lt n).
 
@@ -1649,6 +1779,11 @@ intros. destruct (in_map_elim H). destruct H0. subst. destruct x. simpl. hyp.
 Qed.
 
 Implicit Arguments in_map_val [n l i].
+
+(***********************************************************************)
+(** Given [n:nat], [mk_nat_lts n] returns the list [n-1; ..; 0] of the
+[n] first natural numbers strictly smaller than [n] in reverse order,
+together with their proofs that they are strictly smaller than [n]. *)
 
 Section mk_nat_lts.
 
@@ -1715,7 +1850,7 @@ apply mk_nat_lts_aux_complete. omega.
 Qed.
 
 (***********************************************************************)
-(** first element satisfying some boolean predicate *)
+(** First element satisfying some boolean function. *)
 
 Section first.
 
@@ -1730,23 +1865,20 @@ Section first.
 End first.
 
 (***********************************************************************)
-(** transpose *)
+(** Properties of [fold_left]. *)
 
-Instance transpose_inclusion A B : Proper (inclusion ==> Logic.eq ==> impl)
-  (@transpose A B).
+Instance transpose_inclusion A B :
+  Proper (inclusion ==> eq ==> impl) (@transpose A B).
 
 Proof. intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h. Qed.
 
 Instance transpose_same_rel A B :
-  Proper (same_rel ==> Logic.eq ==> iff) (@transpose A B).
+  Proper (same_rel ==> eq ==> iff) (@transpose A B).
 
 Proof.
   intros R R' [h1 h2] f f' ff'. subst f'.
   split; apply transpose_inclusion; auto.
 Qed.
-
-(***********************************************************************)
-(** fold_left *)
 
 Section fold_left.
 
@@ -1799,8 +1931,9 @@ Implicit Arguments fold_left_flat_map [A B f].
 Implicit Arguments In_fold_left [A B f].
 
 (****************************************************************************)
-(** checking a boolean property [P 0 && ... && P (n-1)], where the domain of
-    the predicate P is restricted to numbers smaller than [n]. *)
+(** Given [n:nat], a predicate [Pr : nat_lt n -> Prop] and a function
+[P] that can check whether [Pr i] is true, [check_seq Pr P] checks
+whether [Pr i] is true for all [i] strictly smaller than [n]. *)
 
 Section Check_seq_aux.
 
@@ -1847,9 +1980,9 @@ Proof.
 Qed.
 
 (****************************************************************************)
-(** [lookup el default l] takes an association list of pairs of keys, values
-    and returns [v] such that [(el, v)] belongs to the list, or [default]
-    if there is no element with key equal to [el]. *)
+(** [lookup el default l] takes an association list of pairs of keys
+and values, and returns [v] such that [(el, v)] belongs to the list,
+or [default] if there is no element with key equal to [el]. *)
 
 Section lookup.
 
@@ -1883,7 +2016,7 @@ End lookup.
 
 (****************************************************************************)
 (** [lookup_dep] is equivalent to [lookup] above but works on lists of
-    dependent pairs instead. *)
+dependent pairs instead. *)
 
 Section lookup_dep.
 
@@ -1925,7 +2058,7 @@ Section lookup_dep.
 End lookup_dep.
 
 (****************************************************************************)
-(** forallb *)
+(** Properties of [forallb]. *)
 
 Section forallb.
 
@@ -1964,7 +2097,8 @@ Section forallb.
 End forallb.
 
 (****************************************************************************)
-(** sub_list *)
+(** [sub_list l k n] is the sublist of [l] of length [n] starting at
+position [k]. *)
 
 Section sub_list.
 
@@ -2041,18 +2175,3 @@ End sub_list.
 
 Implicit Arguments eq_app_elim_l [A l1 l l2].
 Implicit Arguments eq_app_elim_r [A l1 l l2].
-
-(****************************************************************************)
-(** natural numbers from n-1 to 0 *)
-
-Fixpoint nats_decr_lt n :=
-  match n with
-    | 0 => nil
-    | S n' => n' :: nats_decr_lt n'
-  end.
-
-Definition nats_incr_lt n := rev' (nats_decr_lt n).
-
-Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
-
-Proof. induction n; simpl; intros. omega. rewrite <- IHn. omega. Qed.
