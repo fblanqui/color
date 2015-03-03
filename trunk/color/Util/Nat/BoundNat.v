@@ -39,6 +39,8 @@ Section S.
     exists (mkbnat H). simpl. refl.
   Qed.
 
+(*MOVE to List directory*)
+
   Require Import ListExtras.
 
   Fixpoint bnats_of_nats l :=
