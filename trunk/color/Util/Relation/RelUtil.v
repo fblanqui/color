@@ -519,8 +519,8 @@ Qed.
 
 Instance clos_trans_morph A (R : relation A) (eqA : relation A) :
   Equivalence eqA ->
-  Morphisms.Proper (eqA ==> eqA ==> iff) R ->
-  Morphisms.Proper (eqA ==> eqA ==> iff) (clos_trans R).
+  Proper (eqA ==> eqA ==> iff) R ->
+  Proper (eqA ==> eqA ==> iff) (clos_trans R).
 
 Proof.
   intros.
