@@ -148,7 +148,7 @@ Section S.
   Proof.
     do 6 intro. destruct (clos_trans_path H1).
     destruct (path_repeat_free_length H y x0 x H2). apply bp_intro with x1. 
-    apply repeat_free_incl_length. hyp. tauto. 
+    apply repeat_free_midex_incl_length. hyp. tauto. 
     apply path_restricted_incl with y x;tauto. tauto. 
   Qed.
 

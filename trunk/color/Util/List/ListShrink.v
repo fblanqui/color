@@ -190,7 +190,7 @@ Section shrink.
     incl l l' -> length (shrink l) <= length l'.
 
   Proof.
-    intros. apply repeat_free_incl_length. exact (eq_dec_midex eq_dec).
+    intros. apply repeat_free_midex_incl_length. exact (eq_dec_midex eq_dec).
     apply repeat_free_shrink.
     trans l. apply incl_shrink. hyp.
   Qed.
