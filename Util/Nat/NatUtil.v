@@ -731,7 +731,9 @@ Section smallest.
 
 End smallest.
 
+Arguments smallest [P] _ _.
 Arguments smallest_ok [P] _ [n] _.
+Arguments smallest_comp [P] _ [m n] _ _.
 
 (***********************************************************************)
 (** Type of natural numbers strictly smaller than some n. *)
