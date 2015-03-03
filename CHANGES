@@ -1,3 +1,8 @@
+15-03-03: [Blanqui]
+- ListUtil: added select, pos and new lemmas on remove
+- ListRepeatFree: new lemmas added
+- NatUtil: added smallest natural satisying some property
+
 -----------------------------------------------------------------------------
 15-02-04: RELEASE 1.0.0 for OPAM (SVN revision 2104)
 
