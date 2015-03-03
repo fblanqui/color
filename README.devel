@@ -77,6 +77,6 @@ instead. This reduces the compilation time.
 - Use (*COQ:...*) for indicating problems with Coq,
       (*FIXME:...*) for indicating something to be fixed,
       (*REMARK:...*) for adding some important remark
-                     (e.g. something can could be improved), 
+                     (e.g. something that could be improved), 
       (*REMOVE:...*) for indicating something to be removed,
       (*MOVE:...*) for indicating something to be moved.
