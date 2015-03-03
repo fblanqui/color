@@ -11,21 +11,21 @@ LIBNAME := CoLoR
 
 MAKECOQ := +$(MAKE) -r -f Makefile.coq
 
-VFILES := $(shell find . -name \*.v | grep -v .\#)
+VFILES := $(shell find . -name \*.v | grep -v .\# | sed -e 's|^./||g')
 
 default: Makefile.coq
 	$(MAKECOQ)
 
 config Makefile.coq:
-	coq_makefile -R . $(LIBNAME) $(VFILES) > Makefile.coq
-	$(MAKECOQ) depend
+	echo -R . $(LIBNAME) $(VFILES) > _CoqProject
+	coq_makefile -f _CoqProject > Makefile.coq
 
 clean:
 	rm -f `find . -name \*~`
 	$(MAKECOQ) clean
 
 clean-all: clean
-	rm -f Makefile.coq
+	rm -f Makefile.coq _CoqProject
 
 clean-doc:
 	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html
