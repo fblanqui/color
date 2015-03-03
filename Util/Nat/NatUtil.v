@@ -11,11 +11,11 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Min Max.
+Require Import LogicUtil Min Max Morphisms.
 Require Export Arith Omega.
 
 (***********************************************************************)
-(** implicit arguments *)
+(** Declare implicit arguments. *)
 
 Implicit Arguments lt_S_n [n m].
 Implicit Arguments lt_n_S [n m].
@@ -41,7 +41,7 @@ Implicit Arguments le_not_lt [n m].
 Implicit Arguments eq_add_S [n m].
 
 (***********************************************************************)
-(** tactics *)
+(** Tactics. *)
 
 Ltac Omega := intros; omega.
 
@@ -53,41 +53,39 @@ Ltac max :=
   end; intros; omega.
 
 (***********************************************************************)
-(** natural numbers strictly smaller than some n *)
+(** Type of natural numbers strictly smaller than some n. *)
 
 Record nat_lt (n : nat) : Type := mk_nat_lt { val :> nat; prf : val < n }.
 
 (***********************************************************************)
-(** relations and morphisms *)
+(** Properties of ordering relations on nat. *)
 
-Add Relation nat le
-  reflexivity proved by le_refl
-  transitivity proved by le_trans
-    as le_rel.
+Instance le_PreOrder : PreOrder le.
 
-Add Relation nat lt
-  transitivity proved by lt_trans
-    as lt_rel.
+Proof. split. intro x. refl. intros x y z xy yz. omega. Qed.
 
-Lemma ge_refl : forall x, x >= x.
+Instance lt_Transitive : Transitive lt. 
 
-Proof. Omega. Qed.
+Proof. intros x y z xy yz. omega. Qed.
 
-Lemma ge_trans : forall x y z, x >= y -> y >= z -> x >= z.
+(*REMOVE:Instance ge_refl : Reflexive ge.
 
-Proof. Omega. Qed.
+Proof. intro x. omega. Qed.
 
-Add Relation nat ge
-  reflexivity proved by ge_refl
-  transitivity proved by ge_trans
-    as ge_rel.
+Instance ge_trans : Transitive ge.
 
-Add Relation nat gt
-  transitivity proved by gt_trans
-    as gt_rel.
+Proof. intros x y z xy yz. omega. Qed.*)
+
+Instance ge_PreOrder : PreOrder ge.
+
+Proof. split. intro x. omega. intros x y z xy yz. omega. Qed.
+
+Instance gt_Transitive : Transitive gt.
+
+Proof. intros x y z xy yz. omega. Qed.
 
 (***********************************************************************)
-(** boolean function for equality *)
+(** Boolean function for equality. *)
 
 Fixpoint beq_nat (x y : nat) :=
   match x, y with
@@ -116,7 +114,7 @@ rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
 (***********************************************************************)
-(** boolean functions for ordering *)
+(** Boolean functions for orderings. *)
 
 Fixpoint bgt_nat (x y : nat) :=
   match x, y with
@@ -179,13 +177,11 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** unicity of eq, le and lt proofs *)
+(** Unicity of equality and ordering proofs on nat. *)
 
 Lemma eq_unique : forall (n m : nat) (h1 h2 : n = m), h1 = h2.
 
-Proof.
-intros. apply UIP. apply eq_nat_dec.
-Qed.
+Proof. intros. apply UIP. apply eq_nat_dec. Qed.
 
 Scheme le_ind_dep := Induction for le Sort Prop.
 
@@ -210,24 +206,18 @@ Qed.
 
 Lemma lt_unique : forall n m (h1 h2 : n < m), h1 = h2.
 
-Proof.
-intros n m. unfold lt. intros. apply le_unique.
-Qed.
+Proof. intros n m. unfold lt. intros. apply le_unique. Qed.
 
 Lemma lt_Sn_nS : forall m n (H : m < n), lt_S_n (lt_n_S H) = H.
 
-Proof.
-  intros. apply lt_unique.
-Qed.
+Proof. intros. apply lt_unique. Qed.
 
 Lemma lt_nS_Sn : forall m n (H : S m < S n), lt_n_S (lt_S_n H) = H.
 
-Proof.
-  intros. apply lt_unique.
-Qed.
+Proof. intros. apply lt_unique. Qed.
 
 (***********************************************************************)
-(** max *)
+(** Lemmas on the maximum of two numbers. *)
 
 Require Import Max.
 
@@ -340,7 +330,7 @@ destruct x; refl.
 Qed.
 
 (***********************************************************************)
-(** min *)
+(** Lemmas on the minimum of two numbers. *)
 
 Require Import Min.
 
@@ -392,30 +382,26 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** decidability results on orderings *)
+(** Decidability of ordering relations on nat. *)
 
 Require Import RelMidex.
 
 Lemma ge_dec : rel_dec ge.
 
-Proof.
-intros i j. destruct (le_lt_dec j i); intuition.
-Defined. 
+Proof. intros i j. destruct (le_lt_dec j i); intuition. Defined. 
 
 Lemma gt_dec : rel_dec gt.
 
-Proof.
-intros i j. destruct (le_gt_dec i j); auto with arith.
-Defined.
+Proof. intros i j. destruct (le_gt_dec i j); auto with arith. Defined.
 
 Lemma lt_ge_dec : forall x y, {x < y} + {x >= y}.
 
 Proof.
-intros. destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
+  intros. destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
 Defined.
 
 (***********************************************************************)
-(** Euclidian division *)
+(** Euclidian division. *)
 
 Require Import Euclid.
 
@@ -462,7 +448,7 @@ Qed.
 Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
 
 (***********************************************************************)
-(** iteration of a function *)
+(** Iteration of a function. *)
 
 Section iter.
 
@@ -499,7 +485,13 @@ Section iter_prop.
 End iter_prop.
 
 (***********************************************************************)
-(** arithmetical lemmas *)
+(** Arithmetical lemmas. *)
+
+Lemma le_plus : forall x y, x <= y -> exists k, y = k + x.
+
+Proof.
+  induction 1; simpl. ex 0. refl. destruct IHle as [k e]. ex (S k). omega.
+Qed.
 
 Lemma le_lt_S : forall i k, i <= k -> i < S k.
 
@@ -551,7 +543,7 @@ Proof. Omega. Qed.
 
 Implicit Arguments lt_pm [n k x].
 
-Lemma le_plus : forall k l, k <= k+l.
+Lemma le_plus_r : forall k l, k <= k+l.
 
 Proof. Omega. Qed.
 
@@ -594,8 +586,8 @@ Proof. induction 1. exists 0. omega. destruct IHle. exists (S x). omega. Qed.
 Implicit Arguments gt_plus [l k].
 
 (***********************************************************************)
-(** given a non-null function [F], [Interval_list F i] is the pair
-[(S(i),S(i+1)] where S(0)=0 and S(i+1)=S(i)+F(i) *)
+(** Given a non-null function [F], [Interval_list F i] is the pair
+[(S(i),S(i+1)] where S(0)=0 and S(i+1)=S(i)+F(i). *)
 
 Section Interval_list.
 
@@ -622,7 +614,7 @@ Section Interval_list.
 End Interval_list.
 
 (***********************************************************************)
-(** monotonic functions on nat *)
+(** Monotone functions on nat. *)
 
 Require Import RelUtil.
 
