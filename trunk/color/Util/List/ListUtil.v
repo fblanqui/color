@@ -13,8 +13,8 @@ Extension of the Coq library on lists.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil NatUtil EqUtil Setoid SetoidList RelMidex Omega
-  RelUtil BoolUtil.
+Require Import LogicUtil EqUtil Setoid SetoidList RelMidex Omega
+  RelUtil BoolUtil NatUtil.
 Require Export List.
 Require Program.
 
@@ -1752,7 +1752,8 @@ Section pvalues_map.
 End pvalues_map.
 
 (****************************************************************************)
-(** List of natural numbers from n-1 to 0. *)
+(** List [n-1; ..; 0] of the n first natural numbers starting from 0
+in reverse order. *)
 
 Fixpoint nats_decr_lt n :=
   match n with
@@ -1766,88 +1767,90 @@ Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
 
 Proof. induction n; simpl; intros. omega. rewrite <- IHn. omega. Qed.
 
-(***********************************************************************)
-(** Properties of lists of natural numbers strictly smaller than some
-fixed [n]. *)
+(****************************************************************************)
+(** List [@N_ n (n-1) _; ..; @N_ n 0 _] of all the elements of [N n] in
+reverse order. *)
 
-Definition nat_lts n := list (nat_lt n).
-
-Lemma in_map_val : forall n (l : nat_lts n) i, In i (map (@val n) l) -> i<n.
-
-Proof.
-intros. destruct (in_map_elim H). destruct H0. subst. destruct x. simpl. hyp.
-Qed.
-
-Implicit Arguments in_map_val [n l i].
-
-(***********************************************************************)
-(** Given [n:nat], [mk_nat_lts n] returns the list [n-1; ..; 0] of the
-[n] first natural numbers strictly smaller than [n] in reverse order,
-together with their proofs that they are strictly smaller than [n]. *)
-
-Section mk_nat_lts.
+Section list_N.
 
   Variable n : nat.
 
-  Lemma mk_nat_lts_aux1 : forall k', S k' < n -> k' < n.
+  Lemma L_ k' : S k' < n -> k' < n. Proof. omega. Qed.
 
-  Proof. Omega. Qed.
-
-  (* mk_nat_lts_aux hk = k :: ... :: 0 *)
-
-  Fixpoint mk_nat_lts_aux k :=
-    match k as k return k<n -> list (nat_lt n) with
-      | 0 => fun h => mk_nat_lt h :: nil
-      | S k' => fun h => mk_nat_lt h :: mk_nat_lts_aux k' (mk_nat_lts_aux1 h)
+  (* Given k<n, returns the list [@N_ n k _; ..; @N_ n 0 _]. *)
+  Fixpoint L_aux k :=
+    match k as k return k<n -> list (N n) with
+      | 0 => fun h => N_ h :: nil
+      | S k' => fun h => N_ h :: L_aux k' (L_ h)
     end.
 
-  Lemma mk_nat_lts_aux_correct : forall x k (h : k<n) i,
-    i <= k -> val (nth i (mk_nat_lts_aux h) x) = k - i.
+  Lemma length_L_aux : forall k (hk : k<n), length (L_aux hk) = S k.
+
+  Proof. induction k; intro hk; simpl. omega. rewrite IHk. omega. Qed.
+
+  Lemma nth_L_aux x :
+    forall k (h : k<n) i, i <= k -> N_val (nth i (L_aux h) x) = k - i.
 
   Proof.
-    induction k; simpl; intros; destruct i. auto. absurd_arith.
-    auto. rewrite IHk. auto. omega.
+    induction k; simpl; intros; destruct i; simpl. refl. omega. refl.
+    rewrite IHk. refl. omega.
   Qed.
 
-  Lemma mk_nat_lts_aux_complete : forall k (h : k<n) i (p : i<n),
-    i <= k -> In (mk_nat_lt p) (mk_nat_lts_aux h).
+  Lemma In_L_aux_elim x k (h : k<n) :
+    In x (L_aux h) -> exists i, N_val x = k - i.
+
+  Proof.
+    intro xL. destruct (In_nth x xL) as [i [i1 i2]].
+    apply N_eq in i2. rewrite nth_L_aux in i2. ex i. sym. hyp.
+    rewrite length_L_aux in i1. omega.
+  Qed.
+
+  Arguments In_L_aux_elim [x k h] _.
+
+  Lemma In_L_aux :
+    forall k (h : k<n) i (p : i<n), i <= k -> In (N_ p) (L_aux h).
 
   Proof.
     induction k; simpl; intros.
-    assert (i=0). omega. subst. assert (h=p). apply lt_unique. subst. auto.
-    destruct (lt_ge_dec i (S k)). right. apply IHk. omega.
-    assert (i=S k). omega. subst. assert (h=p). apply lt_unique. subst. auto.
+    left. apply N_eq; simpl. omega.
+    destruct (eq_nat_dec (S k) i).
+    left. apply N_eq; simpl. hyp.
+    right. apply IHk. omega.
   Qed.
 
-End mk_nat_lts.
+End list_N.
 
-Implicit Arguments mk_nat_lts_aux [].
+Arguments In_L_aux_elim [n x k h] _.
 
-(* mk_nat_lts n = n-1 :: ... :: 0 *)
-
-Definition mk_nat_lts n :=
-  match n return list (nat_lt n) with
+(* Returns the list [@N_ n (n-1) _; ..; @N_ n 0 _]. *)
+Definition L n :=
+  match n return list (N n) with
     | 0 => nil
-    | S p => mk_nat_lts_aux (S p) p (le_n (S p))
+    | S n' => L_aux (le_n (S n'))
   end.
 
-Implicit Arguments mk_nat_lts [].
+Arguments L : clear implicits.
 
-Lemma mk_nat_lts_correct : forall n x i,
-  i < n -> val (nth i (mk_nat_lts n) x) = pred n - i.
+Lemma nth_L n x i : i < n -> N_val (nth i (L n) x) = pred n - i.
+
+Proof. intros. unfold L. destruct n. omega. apply nth_L_aux. omega. Qed.
+
+Lemma In_L n i (p : i<n) : In (N_ p) (L n).
+
+Proof. unfold L. destruct n. omega. apply In_L_aux. omega. Qed.
+
+Lemma In_L_elim n x : In x (L n) -> exists i, N_val x = n - i.
 
 Proof.
-intros. unfold mk_nat_lts. destruct n. absurd_arith.
-apply mk_nat_lts_aux_correct. omega.
+  destruct n; simpl. fo.
+  intro xl. destruct (In_L_aux_elim xl) as [i e]. ex (S i). hyp.
 Qed.
 
-Lemma mk_nat_lts_complete : forall n i (p : i<n),
-  In (mk_nat_lt p) (mk_nat_lts n).
+Arguments In_L_elim [n x] _.
 
-Proof.
-intros. unfold mk_nat_lts. destruct n. absurd_arith.
-apply mk_nat_lts_aux_complete. omega.
-Qed.
+Lemma length_L n : length (L n) = n.
+
+Proof. destruct n; simpl. refl. rewrite length_L_aux. refl. Qed.
 
 (***********************************************************************)
 (** First element satisfying some boolean function. *)
@@ -1931,21 +1934,21 @@ Implicit Arguments fold_left_flat_map [A B f].
 Implicit Arguments In_fold_left [A B f].
 
 (****************************************************************************)
-(** Given [n:nat], a predicate [Pr : nat_lt n -> Prop] and a function
+(** Given [n:nat], a predicate [Pr : N n -> Prop] and a function
 [P] that can check whether [Pr i] is true, [check_seq Pr P] checks
 whether [Pr i] is true for all [i] strictly smaller than [n]. *)
 
 Section Check_seq_aux.
 
-  Variables (n : nat) (Pr : nat_lt n -> Prop)
-    (P : forall i : nat_lt n, Exc (Pr i)).
+  Variables (n : nat) (Pr : N n -> Prop)
+    (P : forall i : N n, Exc (Pr i)).
 
-  Program Fixpoint check_seq_aux p (H : forall i : nat_lt n, val i < p -> Pr i)
-    {measure (n - p)} : Exc (forall i : nat_lt n, Pr i) :=
+  Program Fixpoint check_seq_aux p (H : forall i : N n, N_val i < p -> Pr i)
+    {measure (n - p)} : Exc (forall i : N n, Pr i) :=
     match le_lt_dec n p with
       | left _ => value _
       | right cmp =>
-        match @P (mk_nat_lt cmp) with
+        match @P (N_ cmp) with
           | error => error
           | value _ => @check_seq_aux (S p) _ _
         end
@@ -1969,9 +1972,9 @@ Section Check_seq_aux.
 
 End Check_seq_aux.
 
-Program Definition check_seq (n : nat) (Pr : nat_lt n -> Prop)
-  (P : forall (i : nat_lt n), Exc (Pr i)) :
-  Exc (forall (i : nat_lt n), Pr i) :=
+Program Definition check_seq (n : nat) (Pr : N n -> Prop)
+  (P : forall (i : N n), Exc (Pr i)) :
+  Exc (forall (i : N n), Pr i) :=
   check_seq_aux P (p:=0) _.
 
 Next Obligation.

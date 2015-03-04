@@ -10,7 +10,7 @@ rule elimination with reduction pairs
 Set Implicit Arguments.
 
 Require Import ATrs LogicUtil ARelation RelUtil SN ListUtil AMannaNess ACompat
-  BoolUtil.
+  BoolUtil NatUtil.
 
 (***********************************************************************)
 (** module type for reduction pairs *)
@@ -277,7 +277,7 @@ Require Import AFilterPerm.
 
 Module Type Perm.
   Variable Sig : Signature.
-  Variable pi : forall f : Sig, nat_lts (arity f).
+  Variable pi : forall f : Sig, list (N (arity f)).
   Variable pi_ok : non_dup pi.
   Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
 End Perm.

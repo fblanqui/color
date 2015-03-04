@@ -738,5 +738,31 @@ Arguments smallest_comp [P] _ [m n] _ _.
 (***********************************************************************)
 (** Type of natural numbers strictly smaller than some n. *)
 
-Record nat_lt (n : nat) : Type := mk_nat_lt { val :> nat; prf : val < n }.
+Definition N n := sig (gt n).
 
+Definition N_ n := @exist _ (gt n).
+
+Definition N_val {n} (x : N n) : nat := proj1_sig x.
+
+Coercion N_val : N >-> nat.
+
+Definition N_prf {n} (x : N n) : x < n := proj2_sig x.
+
+Coercion N_prf : N >-> lt.
+
+Definition zero {n} : N (S n).
+
+Proof. apply (@N_ _ 0). omega. Defined.
+
+(* One can define anything from [N 0] since [N 0] is empty. *)
+Definition any_of_N0 {B : Type} : N 0 -> B.
+
+Proof. intros [k_val k]. omega. Qed.
+
+Lemma N_eq {n} : forall x y : N n, N_val x = N_val y <-> x = y.
+
+Proof.
+  intros [x_val xn] [y_val yn]; simpl. split; intro e.
+  subst y_val. rewrite (lt_unique xn yn). refl.
+  gen (f_equal (@N_val _) e). tauto.
+Qed.
