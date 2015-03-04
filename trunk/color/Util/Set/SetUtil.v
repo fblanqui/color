@@ -281,9 +281,11 @@ Section S.
 
   Definition elts (P : set) := sig (fun x => mem x P).
 
+  Definition elt {P x} (h : mem x P) : elts P := @exist _ P _ h.
+
   Definition elt_val {P} (x : elts P) := proj1_sig x.
 
-  Coercion elt_val : elts >-> A.
+  Global Coercion elt_val : elts >-> A.
 
   Definition elts_subset P Q : P [<=] Q -> elts P -> elts Q.
 
@@ -308,11 +310,6 @@ Section S.
     split. fo. fo.
     intros x y z xy yz. unfold elts_eq in *. trans (elt_val y); hyp.
   Qed.
-
-(****************************************************************************)
-(** Element belonging to a set. *)
-
-  Definition elt {P x} (h : mem x P) : elts P := @exist _ P _ h.
 
 (****************************************************************************)
 (** Fiber. *)
@@ -359,7 +356,9 @@ Section S.
 
 End S.
 
-Arguments set: clear implicits.
+Arguments set : clear implicits.
+Arguments rem_add [A a P] _ _.
+Arguments add_rem [A] _ [a P] _ _.
 
 Infix "[<=]" := subset (at level 70).
 Infix "[=]" := equiv (at level 70).
