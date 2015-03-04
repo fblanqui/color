@@ -147,6 +147,7 @@ Lemma iff_forall : forall A (P Q : A->Prop),
 
 Proof. fo. Qed.
 
+(***********************************************************************)
 (** Tactic removing identical propositions in a conjunction. *)
 
 Ltac and_idem := rewrite !and_assoc;
