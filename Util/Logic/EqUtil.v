@@ -37,7 +37,8 @@ Section Leibniz.
 End Leibniz.
 
 (***********************************************************************)
-(** Functor providing properties of Leibniz equality. *)
+(** Functor providing properties the basic properties of Leibniz
+equality on some type. *)
 
 Module LeibnizFacts (Import T : Typ).
 
@@ -58,7 +59,7 @@ Module LeibnizFacts (Import T : Typ).
 End LeibnizFacts.
 
 (***********************************************************************)
-(** type equipped with a boolean equility *)
+(** Type equipped with a boolean equility. *)
 
 Record Bool_eq_type : Type := mkBool_eq_type {
   bet_type :> Type;
@@ -66,7 +67,7 @@ Record Bool_eq_type : Type := mkBool_eq_type {
   bet_ok : forall x y, bet_eq x y = true <-> x = y }.
 
 (***********************************************************************)
-(** dependent equality on decidable types *)
+(** Properties of Leibniz equality on decidable types. *)
 
 Section eq_dep.
 
@@ -93,12 +94,12 @@ Section eq_dep.
 
   Proof. exact (K_dec_type eq_dec). Qed.
 
-  Lemma inj_pairT2 : forall P (x : A) (p q : P x),
-    existT x p = existT x q -> p = q.
+  Lemma inj_existT2 :
+    forall P (x : A) (p q : P x), existT p = existT q -> p = q.
 
   Proof. exact (eq_dep_eq__inj_pairT2 A eq_dep_eq). Qed.
 
-  Lemma inj_pairP2 :
+  Lemma inj_ex_intro2 :
     forall P (x : A) p q, ex_intro P x p = ex_intro P x q -> p = q.
 
   Proof.
@@ -112,7 +113,7 @@ End eq_dep.
 Implicit Arguments UIP_refl [A x].
 
 (***********************************************************************)
-(** boolean function testing equality *)
+(** Properties of a boolean function testing Leibniz equality. *)
 
 Section beq.
 
@@ -173,7 +174,7 @@ Ltac case_beq beq beq_ok x y := case_eq (beq x y);
     | intro].
 
 (***********************************************************************)
-(** boolean function testing equality from decidability predicate *)
+(** Boolean function testing Leibniz equality when it is decidable. *)
 
 Section eq_dec.
 

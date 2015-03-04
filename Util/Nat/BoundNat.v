@@ -19,7 +19,7 @@ Section S.
 
   Definition bnat := {x : nat | x < dim}. 
 
-  Definition mkbnat x (h : x<dim) := exist (fun x => x<dim) x h.
+  Definition mkbnat x (h : x<dim) := @exist _ (fun x => x<dim) _ h.
 
   Lemma eq_bnat_dec : forall x y : bnat, {x = y} + {x <> y}.
 

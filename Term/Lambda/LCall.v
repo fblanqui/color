@@ -156,7 +156,7 @@ relation [>C] on [C]. *)
 
     Definition gt_call (gt_args : C -> relation call) : relation call :=
       Rof (transp (lexprod (transp gtC) (fun r => transp (gt_args r))))
-          (fun c => existT (code (call_fun c)) c).
+          (fun c => @existT _ _ (code (call_fun c)) c).
 
     (** Finally, we define a lexicographic ordering on arguments.
 
@@ -254,9 +254,9 @@ Module Make (Export ST : ST_Struct).
   (** Inversion lemmas and tactics for [caeq]. *)
 
   Lemma caeq_inv : forall f n (ts : Tes n) g p (us : Tes p),
-    caeq (mk_call f ts) (mk_call g us) -> exists f0 n0 ts1 us1,
-      ts1 ~~~ us1 /\ f0 = f /\ n0 = n /\ existT n ts1 = existT n ts
-                  /\ f = g /\ n = p /\ existT n us1 = existT p us.
+    caeq (mk_call f ts) (mk_call g us) -> exists f0 n0 (ts1 us1 : Tes n0),
+      ts1 ~~~ us1 /\ f0 = f /\ n0 = n /\ existT ts1 = existT ts
+                  /\ f = g /\ n = p /\ existT us1 = existT us.
 
   Proof.
     intros f n ts g p us e. inversion e; clear e; subst. ex g p ts1 us1. fo.
@@ -270,8 +270,8 @@ Module Make (Export ST : ST_Struct).
             destruct (caeq_inv r)
               as [f0 [n0 [ts1 [us1 [h1 [h2 [h3 [h4 [h5 [h6 h7]]]]]]]]]];
                 subst f0 n0 g p;
-                  (apply inj_pairT2 in h4; [subst ts1|exact eq_nat_dec]);
-                  (apply inj_pairT2 in h7; [subst us1|exact eq_nat_dec]).
+                  (apply inj_existT2 in h4; [subst ts1|exact eq_nat_dec]);
+                  (apply inj_existT2 in h7; [subst us1|exact eq_nat_dec]).
 
   (** [caeq] and [mcaeq] are equivalence relations. *)
 
@@ -315,10 +315,10 @@ Module Make (Export ST : ST_Struct).
   Import RelUtil.
 
   Lemma gt_red_inv : forall R f n (ts : Tes n) g p (us : Tes p),
-    gt_red R (mk_call f ts) (mk_call g us) -> exists f0 n0 ts1 us1,
+    gt_red R (mk_call f ts) (mk_call g us) -> exists f0 n0 (ts1 us1 : Tes n0),
       restrict (SN (clos_vaeq R)) (clos_vaeq R) ts1 us1
-      /\ f0 = f /\ n0 = n /\ existT n ts1 = existT n ts
-      /\ f = g /\ n = p /\ existT n us1 = existT p us.
+      /\ f0 = f /\ n0 = n /\ existT ts1 = existT ts
+      /\ f = g /\ n = p /\ existT us1 = existT us.
 
   Proof.
     intros R f n ts g p us e. inversion e; clear e; subst. ex g p ts1 us1. fo.
@@ -332,8 +332,8 @@ Module Make (Export ST : ST_Struct).
             destruct (gt_red_inv r)
               as [f0 [n0 [ts1 [us1 [[h1 h2] [h3 [h4 [h5 [h6 [h7 h8]]]]]]]]]];
                 subst f0 n0 g p;
-                  (apply inj_pairT2 in h5; [subst ts1|exact eq_nat_dec]);
-                  (apply inj_pairT2 in h8; [subst us1|exact eq_nat_dec]).
+                  (apply inj_existT2 in h5; [subst ts1|exact eq_nat_dec]);
+                  (apply inj_existT2 in h8; [subst us1|exact eq_nat_dec]).
 
   (** [gt_red] is wellfounded. *)
 
@@ -523,7 +523,8 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
       destruct (lt_dec q n); destruct (lt_dec q p); try omega;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
-      rewrite H2, (Vforall2_elim_nth _ usus'), <- (Vforall2_elim_nth _ vs'vs), j3.
+      rewrite H2, (Vforall2_elim_nth _ usus'),
+        <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro. subst j. assert (b : Vin q M). apply Vnth_in.
       destruct (Vin_first_position eq_nat_dec b) as [i0 hi0].

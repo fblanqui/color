@@ -230,7 +230,7 @@ Section pi.
 
   Variable hyp : valid.
 
-  Definition mk_proj (f : Sig) k := exist (fun k => k < arity f) k.
+  Definition mk_proj (f : Sig) k := @exist _ (fun k => k < arity f) k.
 
   Implicit Arguments mk_proj [f k].
 

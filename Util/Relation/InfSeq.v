@@ -585,8 +585,8 @@ Section ISModCommute.
         | S n' => let (t, Pt) := ISOfISMod_rec n' in
           let H := existEdom_proof Pt in 
             let s := constructive_indefinite_description _ H in 
-              let (t', Pt') := s in (exist P (t', (S (snd t))) (proj2 Pt'))
-        | 0 => (exist P (g 0, 0) (proj2 (hyp1 0)))
+              let (t', Pt') := s in (@exist _ P (t', (S (snd t))) (proj2 Pt'))
+        | 0 => @exist _ P (g 0, 0) (proj2 (hyp1 0))
       end.
 
   Lemma ISOfISMod_rec_spec : forall i,

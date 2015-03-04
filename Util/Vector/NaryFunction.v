@@ -53,6 +53,6 @@ Section preserv.
   Definition preserv := forall v, Vforall P v -> P (f v).
 
   Definition restrict (H : preserv) : naryFunction (sig P) (sig P) n :=
-    fun v => exist P (f (Vmap (@proj1_sig _ _) v)) (H _ (Vforall_of_sig v)).
+    fun v => exist (H _ (Vforall_of_sig v)).
 
 End preserv.

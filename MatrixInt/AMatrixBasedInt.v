@@ -135,8 +135,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       vec_invariant (mi_eval_aux (trsInt f) (Vmap dom2vec v)).
 
     Definition mi_eval f (v : vector dom (arity f)) : dom :=
-      exist (fun v => vec_invariant v) (mi_eval_aux (trsInt f) (Vmap dom2vec v))
-            (mi_eval_ok f v).
+      exist (mi_eval_ok f v).
 
     Lemma mi_eval_cons : forall n (mi : mint (S n)) v vs,
       mi_eval_aux mi (Vcons v vs) =v

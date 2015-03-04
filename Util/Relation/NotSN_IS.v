@@ -21,8 +21,8 @@ Section S.
     intros a h. set (P := fun x => ~SN R x). set (B := sig P).
     set (T := Rof R (@proj1_sig A P)). assert (forall x, exists y, T x y).
     intro. destruct x. unfold T. simpl. ded (notSN_succ p). decomp H.
-    exists (exist P x0 H2). hyp.
-    set (b := exist P a h). ded (@dep_choice _ b _ H). destruct H0 as [g Hg].
+    exists (@exist _ P _ H2). hyp.
+    set (b := @exist _ P _ h). ded (@dep_choice _ b _ H). destruct H0 as [g Hg].
     set (f := fun x => proj1_sig (g x)). exists f. split; unfold f; auto.
     rewrite (proj2 Hg). refl.
     intro. ded (proj1 Hg i). destruct (g i). destruct (g (S i)). hyp.
