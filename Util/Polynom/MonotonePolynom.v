@@ -173,10 +173,6 @@ Qed.
 Definition bpweak_monotone n (p : poly n) := bcoef_pos p.
 Definition bpweak_monotone_ok n (p : poly n) := bcoef_pos_ok p.
 
-(*REMOVE:
-Implicit Arguments mk_nat_lts [].
-Implicit Arguments mk_nat_lts_aux [].*)
-
 Require Import Bool.
 
 Definition bpstrong_monotone n (p : poly n) :=
