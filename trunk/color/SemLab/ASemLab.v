@@ -239,7 +239,7 @@ Section S.
   Qed.
 
   Lemma red_mod_Frs_Decr : forall E,
-    red (unlab_rules (Decr ++ lab_rules E)) << red E %.
+    red (unlab_rules (union Decr (lab_rules E))) << red E %.
 
   Proof.
     intros E t u h. redtac. subst. apply Frs_app in lr. destruct lr.
@@ -250,7 +250,7 @@ Section S.
   Qed.
 
   Lemma rt_red_mod_Frs_Decr : forall E,
-    red (unlab_rules (Decr ++ lab_rules E)) # << red E #.
+    red (unlab_rules (union Decr (lab_rules E))) # << red E #.
 
   Proof.
     intro E. trans (red E % #). rewrite red_mod_Frs_Decr. refl.
@@ -269,7 +269,7 @@ Section S.
 
   Section red.
 
-    Variable R : rules. Notation R' := (lab_rules R).
+    Variable R : set rule. Notation R' := (lab_rules R).
 
     Variable ge_compat : forall l r, R (mkRule l r) -> l >=I r.
 
@@ -346,7 +346,7 @@ Section S.
 
   Section red_mod.
 
-    Variables E R : rules.
+    Variables E R : set rule.
 
     Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
     Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
@@ -354,7 +354,7 @@ Section S.
     Notation E' := (lab_rules E). Notation R' := (lab_rules R).
 
     Lemma red_mod_lab : forall v t u,
-      red_mod E R t u -> red_mod (Decr ++ E') R' (lab v t) (lab v u).
+      red_mod E R t u -> red_mod (union Decr E') R' (lab v t) (lab v u).
 
     Proof.
       intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
@@ -362,11 +362,11 @@ Section S.
       apply rt_trans with (lab v x).
       eapply inclusion_elim. apply rt_red_mod_union. hyp.
       eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
-      apply incl_appl. hyp.
+      apply subset_union_l. hyp.
     Qed.
 
     Lemma hd_red_mod_lab : forall v t u,
-      hd_red_mod E R t u -> hd_red_mod (Decr ++ E') R' (lab v t) (lab v u).
+      hd_red_mod E R t u -> hd_red_mod (union Decr E') R' (lab v t) (lab v u).
 
     Proof.
       intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
@@ -374,10 +374,10 @@ Section S.
       apply rt_trans with (lab v x).
       eapply inclusion_elim. apply rt_red_mod_union. hyp.
       eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
-      apply incl_appl. hyp.
+      apply subset_union_l. hyp.
     Qed.
 
-    Lemma WF_red_mod_lab : WF (red_mod E R) <-> WF (red_mod (Decr ++ E') R').
+    Lemma WF_red_mod_lab : WF (red_mod E R) <-> WF (red_mod (union Decr E') R').
 
     Proof.
       split; intro.
@@ -390,13 +390,13 @@ Section S.
       rewrite Frs_iso. refl. hyp.
       (* <- *)
       set (v := fun x : variable => some_elt I).
-      apply WF_incl with (Rof (red_mod (Decr ++ E') R') (lab v)).
+      apply WF_incl with (Rof (red_mod (union Decr E') R') (lab v)).
       intros t u h. unfold Rof. apply red_mod_lab. hyp.
       apply WF_inverse. hyp.
     Qed.
 
     Lemma WF_hd_red_mod_lab :
-      WF (hd_red_mod E R) <-> WF (hd_red_mod (Decr ++ E') R').
+      WF (hd_red_mod E R) <-> WF (hd_red_mod (union Decr E') R').
 
     Proof.
       split; intro.
@@ -409,7 +409,7 @@ Section S.
       rewrite Frs_iso. refl. hyp.
       (* <- *)
       set (v := fun x : variable => some_elt I).
-      apply WF_incl with (Rof (hd_red_mod (Decr ++ E') R') (lab v)).
+      apply WF_incl with (Rof (hd_red_mod (union Decr E') R') (lab v)).
       intros t u h. unfold Rof. apply hd_red_mod_lab. hyp.
       apply WF_inverse. hyp.
     Qed.
@@ -455,7 +455,7 @@ Fixpoint enum_tuple2 n : list (vector I n) :=
       flat_map (fun ds => map (lab_rule (val_of_vec I ds)) R)
       (enum_tuple (S (maxvar_rules R))).
 
-    Lemma enum_correct : forall R a, In a (enum R) -> lab_rules (Rules R) a.
+    Lemma enum_correct : forall R a, In a (enum R) -> lab_rules (of_list R) a.
 
     Proof.
       intros. unfold enum in H. rewrite in_flat_map in H. do 2 destruct H.
@@ -463,7 +463,7 @@ Fixpoint enum_tuple2 n : list (vector I n) :=
       exists (val_of_vec I x). intuition.
     Qed.
 
-    Lemma enum_complete : forall R a, lab_rules (Rules R) a -> In a (enum R).
+    Lemma enum_complete : forall R a, lab_rules (of_list R) a -> In a (enum R).
 
     Proof.
       intros. do 3 destruct H. set (n := maxvar_rules R).
@@ -475,7 +475,7 @@ Fixpoint enum_tuple2 n : list (vector I n) :=
 
     Infix "[=]" := equiv.
 
-    Lemma lab_rules_enum : forall R, lab_rules (Rules R) [=] Rules (enum R).
+    Lemma lab_rules_enum : forall R, lab_rules (of_list R) [=] of_list (enum R).
 
     Proof. split. apply enum_complete. apply enum_correct. Qed.
 
@@ -536,7 +536,7 @@ Definition enum2 R :=
       rewrite <- L2s_ok. auto.
     Qed.
 
-    Lemma Rules_enum_Decr : Rules D' [=] Decr.
+    Lemma Rules_enum_Decr : of_list D' [=] Decr.
 
     Proof.
       unfold equiv. split; intro. apply enum_Decr_correct. hyp.
@@ -596,7 +596,7 @@ Definition enum2 R :=
       Proof.
         rewrite <- !red_mod_Rules, WF_red_mod_lab.
         2: apply ge_compatE. 2: apply ge_compatR. apply WF_same_rel.
-        rewrite Rules_app, Rules_enum_Decr, !lab_rules_enum. refl.
+        rewrite of_app, Rules_enum_Decr, !lab_rules_enum. refl.
       Qed.
 
       Lemma WF_hd_red_mod_lab_fin :
@@ -605,7 +605,7 @@ Definition enum2 R :=
       Proof.
         rewrite <- !hd_red_mod_Rules, WF_hd_red_mod_lab.
         2: apply ge_compatE. apply WF_same_rel.
-        rewrite Rules_app, Rules_enum_Decr, !lab_rules_enum. refl.
+        rewrite of_app, Rules_enum_Decr, !lab_rules_enum. refl.
       Qed.
 
     End red_mod.
@@ -821,13 +821,13 @@ Module OrdSemLabProps (Import OSL : OrdSemLab).
  
   Section props.
 
-    Variables E R : rules Sig.
+    Variables E R : set (rule Sig).
 
     Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
     Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
 
     Lemma WF_red_mod_lab : WF (red_mod E R)
-      <-> WF (red_mod (Decr ++ lab_rules E) (lab_rules R)).
+      <-> WF (red_mod (union Decr (lab_rules E)) (lab_rules R)).
 
     Proof.
       rewrite WF_red_mod_lab. refl. apply pi_mon. apply I_mon.
@@ -835,7 +835,7 @@ Module OrdSemLabProps (Import OSL : OrdSemLab).
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
-      <-> WF (hd_red_mod (Decr ++ lab_rules E) (lab_rules R)).
+      <-> WF (hd_red_mod (union Decr (lab_rules E)) (lab_rules R)).
 
     Proof.
       rewrite WF_hd_red_mod_lab. refl. apply pi_mon. apply I_mon.
@@ -864,7 +864,7 @@ Module SemLabProps (SL : SemLab).
 
   Section props.
 
-    Variables E R : rules Sig.
+    Variables E R : set (rule Sig).
 
     Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
     Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
@@ -874,7 +874,7 @@ Module SemLabProps (SL : SemLab).
 
     Proof.
       rewrite WF_red_mod_lab. 2: apply ge_compatE. 2: apply ge_compatR.
-      rewrite Decr_empty, empty_union_l. refl.
+      rewrite Decr_empty, union_empty_l. refl.
     Qed.
 
     Lemma WF_hd_red_mod_lab : WF (hd_red_mod E R)
@@ -882,7 +882,7 @@ Module SemLabProps (SL : SemLab).
 
     Proof.
       rewrite WF_hd_red_mod_lab. 2: apply ge_compatE.
-      rewrite Decr_empty, empty_union_l. refl.
+      rewrite Decr_empty, union_empty_l. refl.
     Qed.
 
     Lemma WF_red_lab : WF (red R) <-> WF (red (lab_rules R)).

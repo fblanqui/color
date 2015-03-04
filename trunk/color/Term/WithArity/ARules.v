@@ -16,24 +16,7 @@ Section defs.
   Variable Sig : Signature.
 
   Notation term := (term Sig). Notation rule := (rule Sig).
-
-  Definition rules := set rule.
-
-(***********************************************************************)
-(** finite rewriting *)
-
-  Definition Rules R : rules := fun x => In x R.
-
-  Lemma Rules_cons : forall a R, Rules (a :: R) [=] a :: Rules R.
-
-  Proof. unfold Rules. simpl. split. intuition. subst. fo. fo. fo. Qed.
-
-  Lemma Rules_app : forall R S, Rules (R ++ S) [=] Rules R ++ Rules S.
-
-  Proof.
-    split; unfold Rules, union; intro. rewrite in_app in H. hyp. destruct H.
-    apply in_appl. hyp. apply in_appr. hyp.
-  Qed.
+  Notation rules := (set rule).
 
 (***********************************************************************)
 (** rewriting *)
@@ -80,20 +63,21 @@ Ltac redtac := repeat
 
 Require Import Morphisms.
 
-Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
+Instance red_incl Sig : Proper (subset ==> inclusion) (@red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. fo. Qed.
 
-Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
+Instance hd_red_incl Sig : Proper (subset ==> inclusion) (@hd_red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. ex l r s. fo. Qed.
 
-Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
+Instance red_mod_incl Sig :
+  Proper (subset ==> subset ==> inclusion) (@red_mod Sig).
 
 Proof. intros E E' EE' R R' RR'. unfold red_mod. rewrite EE', RR'. refl. Qed.
 
 Instance hd_red_mod_incl Sig :
-  Proper (incl ==> incl ==> inclusion) (@hd_red_mod Sig).
+  Proper (subset ==> subset ==> inclusion) (@hd_red_mod Sig).
 
 Proof. intros E E' EE' R R' RR'. unfold hd_red_mod. rewrite EE', RR'. refl. Qed.
 
@@ -105,33 +89,32 @@ Section props.
   Variable Sig : Signature.
 
   Notation rule := (rule Sig). Notation rules := (set rule).
-  Notation Rules := (@Rules Sig).
 
-  Lemma red_rule : forall (R : rules) l r c s, R (mkRule l r) ->
-    red R (fill c (sub s l)) (fill c (sub s r)).
+  Lemma red_rule (R : rules) l r c s :
+    R (mkRule l r) -> red R (fill c (sub s l)) (fill c (sub s r)).
 
-  Proof. intros. unfold red. exists l. exists r. exists c. exists s. auto. Qed.
+  Proof. intro. unfold red. ex l r c s. auto. Qed.
 
-  Lemma hd_red_rule : forall (R : rules) l r s, R (mkRule l r) ->
-    hd_red R (sub s l) (sub s r).
+  Lemma hd_red_rule (R : rules) l r s :
+    R (mkRule l r) -> hd_red R (sub s l) (sub s r).
 
-  Proof. intros. unfold hd_red. exists l. exists r. exists s. auto. Qed.
+  Proof. intro. unfold hd_red. ex l r s. auto. Qed.
 
-  Lemma context_closed_red : forall R : rules, context_closed (red R).
+  Lemma context_closed_red (R : rules) : context_closed (red R).
 
   Proof.
-    intros R t u c h. redtac. subst. rewrite !fill_fill.
-    exists l. exists r. exists (comp c c0). exists s. intuition.
+    intros t u c h. redtac. subst. rewrite !fill_fill. ex l r (comp c c0) s.
+    intuition.
   Qed.
 
-  Lemma red_Rules : forall R, red (Rules R) == ATrs.red R.
+  Lemma red_Rules (R : list rule) : red (of_list R) == ATrs.red R.
 
   Proof.
     split; intros t u H. redtac. subst. apply ATrs.red_rule. hyp.
     ATrs.redtac. subst. apply red_rule. hyp.
   Qed.
 
-  Lemma hd_red_Rules : forall R, hd_red (Rules R) == ATrs.hd_red R.
+  Lemma hd_red_Rules (R : list rule) : hd_red (of_list R) == ATrs.hd_red R.
 
   Proof.
     split; intros t u H. redtac. subst. apply ATrs.hd_red_rule. hyp.
@@ -148,54 +131,51 @@ Section props.
 (***********************************************************************)
 (** properties of rewriting modulo *)
 
-  Lemma context_closed_red_mod : forall E R : rules,
-    context_closed (red_mod E R).
+  Lemma context_closed_red_mod (E R : rules) : context_closed (red_mod E R).
 
   Proof.
-    intros. apply context_closed_comp. apply context_closed_rtc.
+    apply context_closed_comp. apply context_closed_rtc.
     apply context_closed_red. apply context_closed_red.
   Qed.
 
-  Lemma red_mod_union : forall E R : rules, red_mod E R << red (E ++ R) #.
+  Lemma red_mod_union (E R : rules) : red_mod E R << red (union E R) #.
 
   Proof.
-    intros E R t u [h [h1 h2]]. revert h1 h2. induction 1; intro.
+    intros t u [h [h1 h2]]. revert h1 h2. induction 1; intro.
     apply rt_trans with y.
-    apply rt_step. apply red_incl with E. apply incl_appl. hyp.
-    apply rt_step. apply red_incl with R. apply incl_appr. hyp.
-    apply rt_step. apply red_incl with R. apply incl_appr. hyp.
+    apply rt_step. apply red_incl with E. apply subset_union_l. hyp.
+    apply rt_step. apply red_incl with R. apply subset_union_r. hyp.
+    apply rt_step. apply red_incl with R. apply subset_union_r. hyp.
     apply rt_trans with y.
     eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
-    apply incl_appl. hyp.
+    apply subset_union_l. hyp.
     auto.
   Qed.
 
-  Lemma rt_red_mod_union : forall E R : rules, red_mod E R # << red (E ++ R) #.
+  Lemma rt_red_mod_union (E R : rules) : red_mod E R # << red (union E R) #.
 
   Proof.
-    intros. incl_trans (red(E++R)##). rewrite red_mod_union. refl.
+    intros. incl_trans (red(union E R)##). rewrite red_mod_union. refl.
     rewrite rtc_invol. refl.
   Qed.
 
-  Lemma red_mod_Rules : forall E R,
-    red_mod (Rules E) (Rules R) == ATrs.red_mod E R.
+  Lemma red_mod_Rules (E R : list rule) :
+    red_mod (of_list E) (of_list R) == ATrs.red_mod E R.
 
-  Proof.
-    intros. unfold red_mod, ATrs.red_mod. rewrite !red_Rules. refl.
-  Qed.
+  Proof. unfold red_mod, ATrs.red_mod. rewrite !red_Rules. refl. Qed.
 
-  Lemma hd_red_mod_Rules : forall E R,
-    hd_red_mod (Rules E) (Rules R) == ATrs.hd_red_mod E R.
+  Lemma hd_red_mod_Rules (E R : list rule) :
+    hd_red_mod (of_list E) (of_list R) == ATrs.hd_red_mod E R.
 
   Proof.
     intros. unfold hd_red_mod, ATrs.hd_red_mod.
     rewrite !red_Rules, !hd_red_Rules. refl.
   Qed.
 
-  Lemma red_mod_empty : forall R : rules, red_mod (@empty rule) R == red R.
+  Lemma red_mod_empty (R : rules) : red_mod empty R == red R.
 
   Proof.
-    intro. unfold red_mod. rewrite rt_red_empty. split; intros t u h.
+    unfold red_mod. rewrite rt_red_empty. split; intros t u h.
     destruct h. intuition. subst. hyp. exists t. auto.
   Qed.
 
