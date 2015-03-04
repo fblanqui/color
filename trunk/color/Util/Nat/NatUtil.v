@@ -762,7 +762,15 @@ Proof. intros [k_val k]. omega. Qed.
 Lemma N_eq {n} : forall x y : N n, N_val x = N_val y <-> x = y.
 
 Proof.
-  intros [x_val xn] [y_val yn]; simpl. split; intro e.
-  subst y_val. rewrite (lt_unique xn yn). refl.
+  intros [x xn] [y yn]; simpl. split; intro e.
+  subst y. rewrite (lt_unique xn yn). refl.
   gen (f_equal (@N_val _) e). tauto.
 Qed.
+
+Lemma N_eq_dec {n} : forall x y : N n, {x=y}+{~x=y}.
+
+Proof.
+  intros [x xn] [y yn]. destruct (eq_nat_dec x y).
+  left. apply N_eq. hyp.
+  right. intro e. apply n0. apply N_eq in e. hyp.
+Defined.
