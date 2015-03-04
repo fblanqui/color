@@ -37,7 +37,7 @@ Section S.
   Definition one_flat_cont := flat_cont_symb n arity_some_symbol.
 
   Definition flat_conts_symb n f :=
-    map (fun x => flat_cont_symb n (prf x)) (@mk_nat_lts (arity f)).
+    map (fun x => flat_cont_symb n (N_prf x)) (L (arity f)).
 
   Variable Fs : list Sig.
   Variable Fs_ok : forall x : Sig, In x Fs.
@@ -91,9 +91,9 @@ Section S.
       destruct h4 as [g [h5 h6]]. unfold flat_conts_symb in h6.
       rewrite in_map_iff in h6. destruct h6 as [x [h3 h4]]. subst.
       unfold flat_cont_symb. simpl. rewrite !Vmap_cast, !Vmap_app. simpl.
-      set (v1 := Vmap (sub s) (fresh (S n) (val x))).
-      set (v2 := Vmap (sub s) (fresh (S(n+val x)) (arity g - S (val x)))).
-      set (e := flat_cont_aux (prf x)). set (d' := Cont g e v1 Hole v2).
+      set (v1 := Vmap (sub s) (fresh (S n) x)).
+      set (v2 := Vmap (sub s) (fresh (S(n+x)) (arity g - S x))).
+      set (e := flat_cont_aux x). set (d' := Cont g e v1 Hole v2).
       set (v' := Vmap (sub s) t0). set (v0' := Vmap (sub s) t1).
       change (red R (fill c (fill d' (sub s (Fun f t0))))
         (fill c (fill d' (sub s (Fun f0 t1))))). rewrite !fill_fill.
@@ -128,9 +128,9 @@ Section S.
       rewrite H1.
       intro. assert (e0=e). apply eq_unique. subst. refl.
       unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
-      unfold flat_conts_symb. rewrite in_map_iff. exists (mk_nat_lt h).
+      unfold flat_conts_symb. rewrite in_map_iff. exists (N_ h).
       intuition.
-      apply mk_nat_lts_complete.
+      apply In_L.
       trans (maxvar_rule (mkRule l r)). omega. apply le_max_r.
       trans (maxvar_rule (mkRule l r)). omega. apply le_max_l.
     Qed.

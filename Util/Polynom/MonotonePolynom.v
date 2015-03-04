@@ -173,14 +173,14 @@ Qed.
 Definition bpweak_monotone n (p : poly n) := bcoef_pos p.
 Definition bpweak_monotone_ok n (p : poly n) := bcoef_pos_ok p.
 
+(*REMOVE:
 Implicit Arguments mk_nat_lts [].
-Implicit Arguments mk_nat_lts_aux [].
+Implicit Arguments mk_nat_lts_aux [].*)
 
 Require Import Bool.
 
 Definition bpstrong_monotone n (p : poly n) :=
-  bcoef_pos p
-  && forallb (fun x => is_pos (coef (mxi (prf x)) p)) (mk_nat_lts n).
+  bcoef_pos p && forallb (fun x => is_pos (coef (mxi (N_prf x)) p)) (L n).
 
 Require Import BoolUtil.
 
@@ -191,7 +191,7 @@ Proof.
 induction p.
 (* nil *)
 unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
-intuition. unfold mk_nat_lts in H. destruct n. absurd_arith. destruct n; discr.
+intuition. unfold L in H. destruct n. absurd_arith. destruct n; discr.
 destruct n. refl. ded (H1 n (le_n (S n))). absurd_arith.
 (* cons *)
 destruct a. intuition.
@@ -200,7 +200,7 @@ unfold pstrong_monotone, pweak_monotone.
 unfold bpstrong_monotone, bcoef_pos in H1. Opaque coef. simpl in *. 
 rewrite !andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
 rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
-assert (In (mk_nat_lt H2) (mk_nat_lts n)). apply mk_nat_lts_complete.
+assert (In (N_ H2) (L n)). apply In_L.
 rewrite forallb_forall in H3. ded (H3 _ H5).
 rewrite is_pos_ok in H6. simpl in H6. omega.
 (* <- *)
@@ -234,9 +234,9 @@ Qed.
 Program Definition pweak_monotone_check n (p : poly n) : Exc (pweak_monotone p)
   := coef_pos_check p.
 
-Program Definition check_coef_gt0 n (p : poly n) (i : nat_lt n) :
-  Exc (0 < coef (mxi (prf i)) p)%Z :=
-  let c := coef (mxi (prf i)) p in
+Program Definition check_coef_gt0 n (p : poly n) (i : N n) :
+  Exc (0 < coef (mxi i) p)%Z :=
+  let c := coef (mxi i) p in
     match Z_lt_dec 0 c with
     | left _ => value _
     | _ => error
@@ -258,5 +258,5 @@ Proof with auto; try congruence || discr.
   split. 
   destruct pweak_monotone_check...
   destruct (check_seq (check_coef_gt0 p))...
-  intros. exact (l (mk_nat_lt H1)).
+  intros. exact (l (N_ H1)).
 Qed.

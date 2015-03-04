@@ -307,14 +307,7 @@ Section S.
 (** default polynomial interpretation *)
 
   Definition default_poly n :=
-    List.map (fun x => (1%Z, mxi (prf x))) (mk_nat_lts n).
-
-  Lemma coef_default_poly : forall n i (h : i<n),
-    coef (mxi h) (default_poly n) = 1%Z.
-
-  Proof.
-  (*TODO*)
-  Abort.
+    List.map (fun x => (1%Z, mxi (N_prf x))) (L n).
 
   Definition default_pi (f : Sig) := default_poly (arity f).
 
@@ -324,13 +317,6 @@ Section S.
     intro f. unfold pweak_monotone, coef_pos, default_pi. rewrite lforall_eq.
     intros. destruct (in_map_elim H). destruct H0. subst. simpl. omega.
   Qed.
-
-  Lemma pstrong_monotone_default : PolyStrongMonotone default_pi.
-
-  Proof.
-    intro f. unfold pstrong_monotone. split. apply pweak_monotone_default.
-    intros. (*TODO*)
-  Abort.
 
 End S.
 
