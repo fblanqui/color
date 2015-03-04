@@ -160,8 +160,7 @@ Module HorpoWf (S : TermsSig.Signature)
     rewrite Margs; exact (proj2_sig fArgs).
     intros; apply appUnit_subterm; auto with terms.
     term_inv N.
-    set (Nmul := exist (fun Ts: Terms => CompTerms Ts) 
-         (appArgs N) argsNcomp).
+    set (Nmul := exist argsNcomp).
      (*    so we can use outer induction hypothesis *)
     apply IH_out with (Py := (g, Nmul)); auto with terms.
     assert (ff': f = f'); [congruence | idtac].
@@ -187,8 +186,7 @@ Module HorpoWf (S : TermsSig.Signature)
     apply (proj2_sig fArgs); rewrite <- Margs.
     apply arg_mul_arg; trivial.
      (*   now we prove the goal by outer induction hypothesis *)
-    set (Nmul := exist (fun Ts: Terms => CompTerms Ts) 
-          (appArgs N) argsNcomp).
+    set (Nmul := exist argsNcomp).
     assert (NfApp: isFunApp N).
     unfold isFunApp;  apply funS_is_funS with f'; trivial.
     apply IH_out with (Py := (f', Nmul)); auto with terms.
@@ -232,8 +230,7 @@ Module HorpoWf (S : TermsSig.Signature)
     apply beta_imp_horpo; trivial.
     apply algebraic_arg with M; trivial.
      (* Finally we show that N' Computable using induction hypothesis *)
-    set (Nmul := exist (fun Ts: Terms => CompTerms Ts) 
-           (appArgs N) NargsComp).
+    set (Nmul := exist NargsComp).
     fold CompH; 
       apply IH_out with (Py := (f, Nmul))(M := N); 
       auto with terms.
@@ -293,8 +290,7 @@ Module HorpoWf (S : TermsSig.Signature)
 
   Proof.
     intros M Mnorm Mhead argsComp.
-    set (Args := exist (fun Ts: Terms => CompTerms Ts) 
-      (appArgs M) argsComp).
+    set (Args := @exist _ (fun Ts: Terms => CompTerms Ts) _ argsComp).
     assert (Mf: exists f, term (appHead M) = ^f).
     set (MH := appHead M) in *.
     term_inv MH.

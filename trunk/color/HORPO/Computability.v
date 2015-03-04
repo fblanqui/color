@@ -881,8 +881,8 @@ Section Computability_theory.
     assert (W'Rcomp: Computable (appBodyR W'app)).
     apply comp_step_comp with (appBodyR Wapp); trivial.
     rewrite PR; trivial.
-    set (P'L := exist (fun (W: Term) => Computable W) (absBody W'Labs) W'Lcomp).
-    set (P'R := exist (fun (W: Term) => Computable W) (appBodyR W'app) W'Rcomp).
+    set (P'L := exist W'Lcomp).
+    set (P'R := exist W'Rcomp).
     apply (IH (P'L, P'R)) with W'app W'Labs; trivial.
     constructor 2.
     unfold CompTerm_eq; simpl.
@@ -910,8 +910,8 @@ Section Computability_theory.
     rewrite PL; trivial.
     assert (W'Rcomp: Computable (appBodyR W'app)).
     rewrite <- W'R_eq; rewrite PR; trivial.
-    set (P'L := exist (fun (W: Term) => Computable W) (absBody W'Labs) W'Lcomp).
-    set (P'R := exist (fun (W: Term) => Computable W) (appBodyR W'app) W'Rcomp).
+    set (P'L := exist W'Lcomp).
+    set (P'R := exist W'Rcomp).
     apply (IH (P'L, P'R)) with W'app W'Labs; trivial.
     constructor 1.
     unfold R_Comp; simpl; rewrite <- PL; trivial.
@@ -937,8 +937,8 @@ Section Computability_theory.
     assert (W'Rcomp: Computable (appBodyR W'app)).
     apply comp_step_comp with (appBodyR Wapp); trivial.
     rewrite PR; trivial.
-    set (P'L := exist (fun (W: Term) => Computable W) (absBody W'Labs) W'Lcomp).
-    set (P'R := exist (fun (W: Term) => Computable W) (appBodyR W'app) W'Rcomp).
+    set (P'L := exist W'Lcomp).
+    set (P'R := exist W'Rcomp).
     apply (IH (P'L, P'R)) with W'app W'Labs; trivial.
     constructor 1.
     unfold R_Comp; simpl; rewrite <- PL; trivial.
@@ -1000,8 +1000,8 @@ Section Computability_theory.
     rewrite S1eqS2; trivial.
     unfold idS1; rewrite (idSubst_neutral (absBody (M:=M) Mabs)).
     apply abs_conv_absBody; trivial.
-    set (PL := (exist (fun T => Computable T) TL TLC)).
-    set (PR := (exist (fun T => Computable T) TR WR)).
+    set (PL := exist TLC).
+    set (PR := exist WR).
     apply comp_abs_ind with (Wapp := Wapp) (WLabs := WLabs) (P := (PL, PR));
       trivial.
     intros.

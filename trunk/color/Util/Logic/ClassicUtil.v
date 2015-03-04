@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2007-08-08
 
-general lemmas in classical logic
+basic classical meta-theorems
 *)
 
 Set Implicit Arguments.
@@ -13,7 +13,7 @@ Require Export Classical.
 Require Import LogicUtil Setoid.
 
 (***********************************************************************)
-(** basic meta-theorems *)
+(** Basic meta-theorems. *)
 
 Lemma contraposee : forall P Q, (~Q -> ~P) -> P -> Q.
 
@@ -28,9 +28,6 @@ Proof.
 Qed.
 
 Implicit Arguments not_forall_imply_exists_not [A P].
-
-(***********************************************************************)
-(** basic equivalences *)
 
 Lemma not_forall_eq : forall (A : Type) (P : A -> Prop),
   ~(forall x, P x) <-> exists x, ~P x.
@@ -69,3 +66,26 @@ Lemma not_imply_eq : forall P Q : Prop, ~(P -> Q) <-> P /\ ~Q.
 Proof.
 intros. rewrite imply_eq. rewrite not_or_eq. rewrite not_not_eq. refl.
 Qed.
+
+(****************************************************************************)
+(** Properties of Leibniz equality on [sig]. *)
+
+Require Import FunUtil.
+
+Section sig.
+
+  Variables (A : Type) (P : A -> Prop).
+
+  Lemma sig_eq : forall x y : sig P, proj1_sig x = proj1_sig y <-> x = y.
+
+  Proof.
+    intros [x_val x] [y_val y]; simpl. split; intro e.
+    subst y_val. rewrite (proof_irrelevance _ x y). refl.
+    gen (f_equal (@proj1_sig _ _) e). tauto.
+  Qed.
+
+  Lemma inj_proj1_sig : injective (proj1_sig (P:=P)).
+
+  Proof. intros x y e. apply sig_eq. hyp. Qed.
+
+End sig.

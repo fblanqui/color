@@ -131,7 +131,7 @@ apply Zplus_le_lt_compat.
  gen (coef_pos_monotone_peval_Dle H_coef_pos_p1).
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
  intro H'.
- gen (H' _ _ Hij vi vj (exist pos x Hx) (exist pos y Hy)).
+ gen (H' _ _ Hij vi vj (exist Hx) (exist Hy)).
  simpl. clear H'. intro H'. apply H'. omega.
  lazy beta iota delta [peval]. fold peval.
  apply Zplus_lt_le_compat.
@@ -149,7 +149,7 @@ apply Zplus_le_lt_compat.
  gen (coef_pos_monotone_peval_Dle H_coef_pos_p2).
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
  intro H'.
- gen (H' _ _ Hij vi vj (exist pos x Hx) (exist pos y Hy)).
+ gen (H' _ _ Hij vi vj (exist Hx) (exist Hy)).
  simpl. clear H'. intro H'. apply H'. omega.
 Qed.
 
@@ -163,7 +163,7 @@ gen (pmonotone'_imp_monotone_peval_Dlt (pmonotone_imp_pmonotone' sm)).
 unfold Vmonotone1, Vmonotone, Dlt, Vmonotone_i, peval_D, restrict, monotone.
 intros H0 i j Hij vi vj. destruct x as (x, Hx). destruct y as (y, Hy).
 simpl. intro Hxy.
-gen (H0 i j Hij vi vj (exist _ x Hx) (exist _ y Hy) Hxy). clear H0.
+gen (H0 i j Hij vi vj (exist Hx) (exist Hy) Hxy). clear H0.
 simpl. intuition.
 Qed.
 

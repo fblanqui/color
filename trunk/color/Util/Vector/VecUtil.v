@@ -48,11 +48,11 @@ Ltac Veqtac := repeat
   match goal with
     | H : Vcons ?x ?v = Vcons ?x ?w |- _ =>
       let h := fresh in
-      (injection H; intro h; ded (inj_pairT2 eq_nat_dec h);
+      (injection H; intro h; ded (inj_existT2 eq_nat_dec h);
         clear h; clear H)
     | H : Vcons ?x ?v = Vcons ?y ?w |- _ =>
       let h1 := fresh in let h2 := fresh in
-      (injection H; intros h1 h2; ded (inj_pairT2 eq_nat_dec h1);
+      (injection H; intros h1 h2; ded (inj_existT2 eq_nat_dec h1);
         clear h1; clear H)
   end.
 
@@ -2175,7 +2175,7 @@ Section Vsig.
     match v in vector _ n return Vforall P v -> vector (sig P) n with
       | Vnil => fun _ => Vnil
       | Vcons a _ w => fun H =>
-        Vcons (exist P a (proj1 H)) (Vsig_of_forall w (proj2 H))
+        Vcons (exist (proj1 H)) (Vsig_of_forall w (proj2 H))
     end.
 
   Fixpoint Vforall_of_sig (A : Type) (P : A -> Prop) n (v : vector (sig P) n) :

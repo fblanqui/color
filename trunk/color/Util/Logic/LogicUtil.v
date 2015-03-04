@@ -13,7 +13,8 @@ Set Implicit Arguments.
 
 Require Import Basics.
 
-Arguments existT [A P] _ _.
+Arguments exist [A P x] _.
+Arguments existT [A P x] _.
 
 (***********************************************************************)
 (** Abbreviations of some basic Coq tactics. *)
