@@ -444,18 +444,18 @@ Module Make (Export ST : ST_Struct)
   Qed.
 
   Lemma int_equiv' : forall I J T,
-    (forall a, occurs a T -> I a [=] J a) -> int I T [= int J T.
+    (forall a, occurs a T -> I a [=] J a) -> int I T [<=] int J T.
 
   Proof. intros I J T IJ. rewrite (int_equiv _ _ T IJ). refl. Qed.
 
   Section mon.
 
     Variables (eq_dec : forall x y : So, {x=y}+{~x=y})
-      (I J : So -> set Te) (a : So) (IJa : I a [= J a)
+      (I J : So -> set Te) (a : So) (IJa : I a [<=] J a)
       (IJna : forall b, b <> a -> I b [=] J b).
 
     Lemma int_mon : forall T,
-      (pos a T -> int I T [= int J T) /\ (neg a T -> int J T [= int I T).
+      (pos a T -> int I T [<=] int J T) /\ (neg a T -> int J T [<=] int I T).
 
     Proof.
       induction T; simpl_pos.
@@ -464,11 +464,11 @@ Module Make (Export ST : ST_Struct)
       split; intros [h1 h2]; apply arr_incl; fo.
     Qed.
 
-    Lemma int_pos : forall T, pos a T -> int I T [= int J T.
+    Lemma int_pos : forall T, pos a T -> int I T [<=] int J T.
 
     Proof. intros T h. destruct (int_mon T) as [i _]. fo. Qed.
 
-    Lemma int_neg : forall T, neg a T -> int J T [= int I T.
+    Lemma int_neg : forall T, neg a T -> int J T [<=] int I T.
 
     Proof. intros T h. destruct (int_mon T) as [_ i]. fo. Qed.
 

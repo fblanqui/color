@@ -679,7 +679,7 @@ Qed.
 Require Import SetUtil.
 
 Lemma restrict_wf A (P : set A) (R : relation A) :
-  P [= SN R -> WF (restrict P R).
+  P [<=] SN R -> WF (restrict P R).
 
 Proof.
   intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).

@@ -458,7 +458,7 @@ Module Make (Export CP : CP_Struct).
 
   Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
 
-  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
+  Proof. intros P Q PQ hP t u tu Qt. apply PQ. rewrite <- tu. fo. Qed.
 
   Instance cp_sn_equiv : Proper (equiv ==> impl) cp_sn.
 
@@ -466,7 +466,9 @@ Module Make (Export CP : CP_Struct).
 
   Instance cp_red_equiv : Proper (equiv ==> impl) cp_red.
 
-  Proof. intros P Q PQ hP t u tu Qt. rewrite <- PQ in *. fo. Qed.
+  Proof.
+    intros P Q PQ hP t u tu Qt. apply PQ. apply PQ in Qt. clear PQ; fo.
+  Qed.
 
   Instance cp_neutral_equiv : Proper (equiv ==> impl) cp_neutral.
 
@@ -637,7 +639,9 @@ Module Make (Export CP : CP_Struct).
 
   (** Monotony properties of [arr]. *)
 
-  Instance arr_incl : Proper (incl --> incl ==> incl) arr.
+  Import SetUtil.
+
+  Instance arr_incl : Proper (subset --> subset ==> subset) arr.
 
   Proof. fo. Qed.
 

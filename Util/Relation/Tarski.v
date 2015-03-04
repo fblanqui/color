@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-05-10
 
-
 * Knaster-Tarski theorem
 *)
 
@@ -118,13 +117,15 @@ are equivalent modulo [==] if their arguments are equivalent modulo
   Lemma lfp_ext : forall f g, (forall x, f x == g x) -> lfp f == lfp g.
 
   Proof.
-    intros f g fg. unfold lfp. apply glb_equiv. intro x. rewrite fg. refl.
+    intros f g fg. unfold lfp. apply glb_equiv. intro x.
+    unfold mem. rewrite fg. refl.
   Qed.
 
   Lemma gfp_ext : forall f g, (forall x, f x == g x) -> gfp f == gfp g.
 
   Proof.
-    intros f g fg. unfold lfp. apply lub_equiv. intro x. rewrite fg. refl.
+    intros f g fg. unfold lfp. apply lub_equiv. intro x.
+    unfold mem. rewrite fg. refl.
   Qed.
 
 End tarski.
@@ -142,14 +143,14 @@ Section powerset.
   Variable X : Type.
 
   Notation A := (set X).
-  Notation set_le := (@incl X).
+  Notation set_le := (@subset X).
   Notation set_eq := (@equiv X).
 
   Lemma set_le_trans : Transitive set_le.
 
   Proof. fo. Qed.
 
-  Lemma set_eq_compat : forall x y : A, x [= y -> y [= x -> x [=] y.
+  Lemma set_eq_compat : forall x y : A, x [<=] y -> y [<=] x -> x [=] y.
 
   Proof. fo. Qed.
 

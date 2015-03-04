@@ -373,7 +373,7 @@ of some variant of the following monotone function [G]. *)
 
     Definition G' X := G (update X).
 
-    Definition F := lfp incl set_glb G'.
+    Definition F := lfp subset set_glb G'.
 
   End fixpoint.
 
@@ -385,7 +385,7 @@ of some variant of the following monotone function [G]. *)
 
     Variables (a : So) (I_lt_a : forall b, b <B a -> set Te).
 
-    Global Instance G'_mon : Proper (incl ==> incl) (G' I_lt_a).
+    Global Instance G'_mon : Proper (subset ==> subset) (G' I_lt_a).
 
     Proof.
       intros X Y XY t [snt ht]. split. hyp. intros f hf ts h i hi.

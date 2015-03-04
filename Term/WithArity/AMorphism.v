@@ -71,18 +71,18 @@ Section Morphism.
 
   Proof. fo. Qed.
 
-  Lemma Rules_Fl : forall R, Rules (Fl R) [=] Frs (Rules R).
+  Lemma Rules_Fl : forall R, of_list (Fl R) [=] Frs (of_list R).
 
   Proof.
-    induction R; simpl; intros. fo. rewrite !Rules_cons, IHR.
+    induction R; simpl; intros. fo. rewrite !of_cons, IHR.
     unfold Frs. rewrite image_add. refl.
   Qed.
 
-  Lemma incl_Frs : forall R S, R [= S -> Frs R [= Frs S.
+  Lemma incl_Frs : forall R S, R [<=] S -> Frs R [<=] Frs S.
 
   Proof. intros. intros a' H0. do 2 destruct H0. subst. exists x. fo. Qed.
 
-  Lemma Frs_app : forall R S a, Frs (R ++ S) a <-> Frs R a \/ Frs S a.
+  Lemma Frs_app : forall R S a, Frs (union R S) a <-> Frs R a \/ Frs S a.
 
   Proof.
     intuition. do 3 destruct H; subst. left. exists x. auto. right.
@@ -225,9 +225,9 @@ Section Preserv.
   Variables S1 S2 : Signature.
   Variables (F : S1 -> S2) (HF : forall f, arity f = arity (F f)).
   Variables (G : S2 -> S1) (HG : forall f, arity f = arity (G f)).
-  Variables (E R : rules S1) (E' R' : rules S2).
-  Variables (hyp1 : Frs HG E' [= E) (hyp2 : Frs HF E [= E').
-  Variables (hyp3 : Frs HG R' [= R) (hyp4 : Frs HF R [= R').
+  Variables (E R : set (rule S1)) (E' R' : set (rule S2)).
+  Variables (hyp1 : Frs HG E' [<=] E) (hyp2 : Frs HF E [<=] E').
+  Variables (hyp3 : Frs HG R' [<=] R) (hyp4 : Frs HF R [<=] R').
 
   Lemma WF_Fred : WF (red R) -> WF (red (Frs HF R)).
 
@@ -327,14 +327,14 @@ Section Iso.
   Variables (G : S2 -> S1) (HG : forall f, arity f = arity (G f)).
   Variables (FG : forall f, F (G f) = f) (GF : forall f, G (F f) = f).
 
-  Lemma Frs_epi : forall R, incl (Frs HG (Frs HF R)) R.
+  Lemma Frs_epi : forall R, Frs HG (Frs HF R) [<=] R.
 
   Proof.
     intros R x H. do 2 destruct H. subst. do 2 destruct H. subst.
     rewrite Fr_epi. hyp. hyp.
   Qed.
 
-  Variables E R : rules S1.
+  Variables E R : set (rule S1).
 
   Lemma WF_Fred_iso : WF (red R) <-> WF (red (Frs HF R)).
 
