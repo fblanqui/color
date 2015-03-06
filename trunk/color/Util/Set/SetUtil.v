@@ -285,7 +285,7 @@ Section S.
 
   Definition elt_val {P} (x : elts P) := proj1_sig x.
 
-  Global Coercion elt_val : elts >-> A.
+  Coercion elt_val : elts >-> A.
 
   Definition elts_subset P Q : P [<=] Q -> elts P -> elts Q.
 
