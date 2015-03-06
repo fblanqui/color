@@ -1,7 +1,15 @@
 15-03-03: [Blanqui]
-- ListUtil: added select, pos, new lemmas on remove; renamed mk_nat_lts into L
-- ListRepeatFree: added new lemmas
-- NatUtil: added smallest natural satisying some property; renamed nat_lt in N
+- Util/List/ListUtil: added select, pos, new lemmas on remove,
+  and renamed mk_nat_lts into L
+- Util/List/ListRepeatFree: added new lemmas
+- Util/Nat/NatUtil: added smallest natural satisying some property,
+  and renamed nat_lt into N
+- Util/Set/SetUtil: added new definitions and lemmas
+- Util/Nat/NatLt: new file gathering all results about natural numbers smaller
+  than some fixed bound
+- Util/Set/FinSet: new file defining finiteness and providing finiteness lemmas
+- Util/Set/InfSet: new file defining infiniteness and providing infiniteness
+  lemmas
 
 -----------------------------------------------------------------------------
 15-02-04: RELEASE 1.0.0 for OPAM (SVN revision 2104)

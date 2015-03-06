@@ -339,6 +339,8 @@ Section S.
     apply in_appl. hyp. apply in_appr. hyp.
   Qed.
 
+  Require Import NatLt.
+
   Lemma of_map_L P n (f : N n -> elts P) :
     surjective f -> P [=] of_list (map (elt_val o f) (L n)).
 

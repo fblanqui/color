@@ -446,38 +446,6 @@ Proof.
   apply f_inj in x2. subst. contr.
 Qed.
 
-(****************************************************************************)
-(** The list of the first natural numbers has no duplicate. *)
-
-Lemma nodup_L_aux {n} : forall k (hk : k < n), repeat_free (L_aux hk).
-
-Proof.
-  induction k; intro hk; simpl. tauto. split. 2: apply IHk.
-  intro h. destruct (In_L_aux_elim h) as [i e]. simpl in e. omega.
-Qed.
-
-Lemma nodup_L n : repeat_free (L n).
-
-Proof. destruct n; simpl. auto. apply nodup_L_aux. Qed.
-
-Lemma N_inj_le m n (f : N m -> N n) : injective f -> m <= n.
-
-Proof.
-  intro f_inj.
-  assert (e : length (map f (L m)) = m). rewrite map_length, length_L. refl.
-  rewrite <- e, <- (@length_L n). apply nodup_incl_length_le.
-  apply nodup_map_inj. hyp. apply nodup_L.
-  intros y hy. destruct y as [y_val y]. apply In_L.
-Qed.
-
-Lemma N_bij_eq m n (f : N m -> N n) : bijective f -> m = n.
-
-Proof.
-  intros [f_inj f_surj]. apply le_antisym.
-  apply N_inj_le with (f := f). hyp.
-  apply N_inj_le with (f := inverse f_surj). inj. 
-Qed.
-
 (***********************************************************************)
 (** Tactics. *)
 
