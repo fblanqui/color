@@ -5,8 +5,8 @@
 - Util/Nat/NatUtil: added smallest natural satisying some property,
   and renamed nat_lt into N
 - Util/Set/SetUtil: added new definitions and lemmas
-- Util/Nat/NatLt: new file gathering all results about natural numbers smaller
-  than some fixed bound
+- Util/Nat/NatLt: new file gathering old and new results about natural numbers
+  smaller than some fixed bound (type N and function L)
 - Util/Set/FinSet: new file defining finiteness and providing finiteness lemmas
 - Util/Set/InfSet: new file defining infiniteness and providing infiniteness
   lemmas
