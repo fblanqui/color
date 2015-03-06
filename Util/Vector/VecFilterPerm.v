@@ -9,7 +9,7 @@ vector filtering with permutations
 
 Set Implicit Arguments.
 
-Require Import VecUtil ListUtil NatUtil LogicUtil ListRepeatFree.
+Require Import VecUtil ListUtil NatUtil LogicUtil ListRepeatFree NatLt.
 
 (***********************************************************************)
 (** filtering function *)

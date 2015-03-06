@@ -9,7 +9,8 @@ flat context closure (Sternagel & Middeldorp, RTA'08)
 
 Set Implicit Arguments.
 
-Require Import ATrs NatUtil LogicUtil ListUtil SN EqUtil VecUtil Max RelUtil.
+Require Import ATrs NatUtil LogicUtil ListUtil SN EqUtil VecUtil Max RelUtil
+  NatLt.
 
 (***********************************************************************)
 (** flat context closure of a rule *)

@@ -12,7 +12,7 @@ monotone polynomials
 Set Implicit Arguments.
 
 Require Import Polynom PositivePolynom NaryFunction VecUtil LogicUtil ListUtil
-  ListForall ZUtil RelUtil NatUtil.
+  ListForall ZUtil RelUtil NatUtil NatLt.
 
 Open Local Scope Z_scope.
 

@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 Require Import Basics Morphisms Setoid.
 Require Import LogicUtil ClassicUtil IotaUtil EpsilonUtil
-  NatUtil FunUtil ListUtil ListRepeatFree SetUtil.
+  NatUtil FunUtil ListUtil ListRepeatFree SetUtil NatLt.
 
 Section S.
 
@@ -285,7 +285,8 @@ Section S.
 
   Proof. unfold Pf_equiv. auto. Qed.
 
-  (*COQ outputs some warning here. Check what it means.*)
+  (*FIXME?Coq warning:
+  witness does not respect the uniform inheritance condition*)
   Coercion Pf_equiv_of : equiv >-> Pf_equiv.
 
   Lemma Pf_equiv_of_gen (P Q : Pf) P_val Q_val :
