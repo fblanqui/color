@@ -6,7 +6,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2005-02-17
 - Pierre-Yves Strub, 2009-04-09
 
-* Basic logical lemmas and tactics
+* Basic meta-theorems and tactics
 *)
 
 Set Implicit Arguments.
@@ -26,7 +26,7 @@ Ltac sym := symmetry.
 Ltac trans x := transitivity x.
 Ltac contr := contradiction.
 Ltac discr := intros; discriminate.
-Ltac fo := firstorder.
+Ltac fo := unfold flip, impl; firstorder.
 Ltac gen t := generalize t.
 
 Ltac ded t := gen t; intro.
