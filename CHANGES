@@ -1,15 +1,16 @@
-15-03-03: [Blanqui]
+15-03-10: [Blanqui]
 - Util/List/ListUtil: added select, pos, new lemmas on remove,
   and renamed mk_nat_lts into L
 - Util/List/ListRepeatFree: added new lemmas
-- Util/Nat/NatUtil: added smallest natural satisying some property,
+- Util/Nat/NatUtil: added smallest natural satisfying some property,
   and renamed nat_lt into N
 - Util/Set/SetUtil: added new definitions and lemmas
 - Util/Nat/NatLt: new file gathering old and new results about natural numbers
   smaller than some fixed bound (type N and function L)
 - Util/Set/FinSet: new file defining finiteness and providing finiteness lemmas
-- Util/Set/InfSet: new file defining infiniteness and providing infiniteness
-  lemmas
+- Util/Set/InfSet: new file defining infiniteness
+  and providing infiniteness lemmas
+- Util/Set/Ramsey: classical infinite Ramsey theorem
 
 -----------------------------------------------------------------------------
 15-02-04: RELEASE 1.0.0 for OPAM (SVN revision 2104)
