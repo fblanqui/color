@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2014-12-11
 
-basic consequences of Description.constructive_definite_description
+* Basic consequences of Description.constructive_definite_description
 *)
 
 Set Implicit Arguments.

@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2014-12-11
 
-Infinite sets.
+Infinite sets
 *)
 
 Set Implicit Arguments.
@@ -17,7 +17,11 @@ Section S.
 
   Variable A : Type.
 
+(** * Definition of infinite sets *)
+
   Definition infinite (P : set A) := ~finite P.
+
+(** * Properties of [infinite]. *)
 
   Global Instance infinite_subset : Proper (subset ==> impl) infinite.
 
@@ -31,6 +35,8 @@ Section S.
     intros Q_inf P_fin. apply Q_inf. rewrite <- PQ. hyp.
   Qed.
 
+(** A set [P] is infinite if there is an injection from [nat] to [P]. *)
+
   Lemma infinite_inj P : (exists f : nat -> elts P, injective f) -> infinite P.
 
   Proof.
@@ -39,6 +45,8 @@ Section S.
     apply N_inj_le with (f := inverse g_surj o f o (@N_val _)).
     inj. apply inj_N_val.
   Qed.
+
+(** * Set constructors preserve infiniteness. *)
 
   Lemma infinite_rem a P : infinite (rem a P) <-> infinite P.
 
@@ -69,7 +77,7 @@ Section S.
   Qed.
 
 (****************************************************************************)
-(** Type of infinite subsets. *)
+(** * Type for infinite subsets of some set [P] *)
 
   Definition Pinf P := {Q | Q [<=] P /\ infinite Q}.
 
@@ -102,7 +110,7 @@ Section S.
   Proof. ex Q. split. refl. destruct Q as [Q [QP Qinf]]; hyp. Defined.
 
 (****************************************************************************)
-(** An infinite set contains finite subsets of any cardinality. *)
+(** An infinite set contains finite subsets of every cardinality. *)
 
   Require Import IotaUtil.
 
