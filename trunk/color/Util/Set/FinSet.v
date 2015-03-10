@@ -4,8 +4,11 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2014-12-11
 
-Set finiteness and cardinal of finite sets.
-*)
+* Finite sets and their cardinal
+
+Standard definition of set finiteness (existence of a bijection to
+some prefix of nat) and definition of the cardinal of a finite set
+(using Church's iota). *)
 
 Set Implicit Arguments.
 
@@ -24,9 +27,14 @@ Section S.
   Notation remdup := (make_repeat_free eq_dec).
 
 (****************************************************************************)
-(** Finiteness. *)
+(** * Definition of finiteness *)
 
   Definition finite (P : set) := exists n (f : N n -> elts P), bijective f.
+
+(****************************************************************************)
+(** * Properties of [finite] *)
+
+(** Finiteness is invariant by set equivalence. *)
 
   Global Instance finite_equiv : Proper (equiv ==> impl) finite.
 
@@ -44,6 +52,8 @@ Section S.
     ex x. unfold g. rewrite <- hx. apply sig_eq. destruct y as [y_val y].
     refl.
   Qed.
+
+(** Finiteness of sets defined by a list of elements. *)
 
   Lemma finite_of_list_nodup l : nodup l -> finite (of_list l).
 
@@ -76,11 +86,15 @@ Section S.
     rewrite e. apply finite_of_list_nodup. apply nodup_remdup.
   Qed.
 
+(** A set [P] is finite if there is a surjection from [N n] to [P]. *)
+
   Lemma finite_surj P n (f : N n -> elts P) : surjective f -> finite P.
 
   Proof.
     intro f_surj. rewrite (of_map_L f_surj). apply finite_of_list.
   Qed.
+
+(** A set [P] is finite iff it can be defined by a list of elements. *)
 
   Lemma finite_eq P : finite P <-> exists l, P [=] of_list l.
 
@@ -93,12 +107,17 @@ Section S.
     ex (map (elt_val o f) (L n)). apply of_map_L. hyp.
   Qed.
 
+(** Finiteness is contravariant wrt inclusion. *)
+
   Global Instance finite_subset : Proper (subset --> impl) finite.
 
   Proof.
     intros P Q QP. rewrite !finite_eq. intros [l e]. ex (select (dec1 Q) l).
     gen (select_correct (dec1 Q) l). gen (select_complete (dec1 Q) l). fo.
   Qed.
+
+(** A set [P] is finite iff it can be defined by a non-duplicating
+list of elements. *)
 
   Lemma finite_eq_nodup P : finite P <-> exists l, P [=] of_list l /\ nodup l.
 
@@ -107,6 +126,9 @@ Section S.
     rewrite e. intro x. sym. apply In_remdup. apply nodup_remdup.
     intros [l [e _]]. rewrite e. apply finite_of_list.
   Qed.
+
+(****************************************************************************)
+(** * List of the elements of a finite set. *)
 
   Definition list_of_finite P : finite P -> list A.
 
@@ -243,7 +265,7 @@ Section S.
   Qed.
 
 (****************************************************************************)
-(** Type of finite sets. *)
+(** * Type of finite sets. *)
 
   Definition Pf := sig finite.
 
@@ -258,6 +280,9 @@ Section S.
   Definition Pf_prf (P : Pf) : finite (Pf_val P) := proj2_sig P.
 
   Coercion Pf_prf : Pf >-> finite.
+
+(****************************************************************************)
+(** Inclusion and equivalence of finite sets. *)
 
   Definition Pf_subset (P Q : Pf) := P [<=] Q.
 
@@ -296,6 +321,9 @@ Section S.
 
   Definition Pf_equiv_of2 {P Q : Pf} :=
     Pf_equiv_of_gen P Q (reflexivity _) (reflexivity _).
+
+(****************************************************************************)
+(** Constructors of finite sets. *)
 
   Definition Pf_of_list l : Pf := finite_of_list l.
 
@@ -374,6 +402,9 @@ Section S.
 
   Proof. unfold Pf_equiv; simpl. rewrite <- of_cons. refl. Qed.
 
+(****************************************************************************)
+(** Induction principle on finite sets. *)
+
   Lemma Pf_ind (P : Pf -> Prop) (P_equiv : Proper (Pf_equiv ==> impl) P)
     (P0 : P Pf_empty)
     (PS : forall a (X : Pf), ~mem a X -> P X -> P (Pf_add a X)) :
@@ -387,7 +418,7 @@ Section S.
   Qed.
  
 (****************************************************************************)
-(** Cardinal of finite sets. *)
+(** * Cardinal of a finite set *)
 
   Lemma card_uniq P :
     finite P -> exists! n, exists (f : N n -> elts P), bijective f.
@@ -404,11 +435,6 @@ Section S.
   Proof.
     intros [P P_fin]. destruct (cdd (card_uniq P_fin)) as [n _]. exact n.
   Defined.
-
-  Lemma card_ind (P : Pf -> Prop) (H : forall n X, card X = n -> P X) :
-    forall X, P X.
-
-  Proof. intro X. eapply H. refl. Qed.
 
   Global Instance card_subset : Proper (Pf_subset ==> le) card.
 
@@ -427,6 +453,19 @@ Section S.
     rewrite equiv_subset2 in PQ. destruct PQ as [PQ QP].
     gen (card_subset PQ). gen (card_subset QP). omega.
   Qed.
+
+(****************************************************************************)
+(** Induction on finite sets through their cardinals. *)
+
+  Lemma card_ind (P : Pf -> Prop) (H : forall n X, card X = n -> P X) :
+    forall X, P X.
+
+  Proof. intro X. eapply H. refl. Qed.
+
+(****************************************************************************)
+(** * Cardinal of some finite set constructors. *)
+
+(** Cardinal of a set defined by a list of elements. *)
 
   Lemma card_of_list_le_length_gen l (h : finite (of_list l)) :
     card h <= length l.
@@ -448,6 +487,8 @@ Section S.
 
   Proof. apply card_of_list_le_length_gen. Qed.
 
+(** Cardinal of the empty set. *)
+
   Lemma card_empty_gen (h : finite empty) : card h = 0.
 
   Proof.
@@ -460,6 +501,8 @@ Section S.
 
   Proof. apply card_empty_gen. Qed.
 
+(** A set of null cardinality is empty. *)
+
   Lemma card_0 {P} : card P = 0 -> P =f= Pf_empty.
 
   Proof.
@@ -468,6 +511,8 @@ Section S.
     unfold Pf_equiv; simpl. intro x. split. 2: fo.
     intro hx. destruct (f_surj (elt hx)) as [k _]. destruct k. omega.
   Qed.
+
+(** Cardinal of a set defined by a non-duplcating list of elements. *)
 
   Lemma card_of_list_eq_length_gen l (h : finite (of_list l)) :
     nodup l -> card h = length l.
@@ -502,6 +547,8 @@ Section S.
     apply nodup_list_of_finite.
   Qed.
 
+(** Cardinal of [add]. *)
+
   Lemma card_add a P :
     card (Pf_add a P) = card P + if dec (mem a P) then 0 else 1.
 
@@ -521,12 +568,16 @@ Section S.
     simpl. sym. apply of_cons.
   Qed.
 
+(** Cardinal of [singleton]. *)
+
   Lemma card_singleton a : card (Pf_singleton a) = 1.
 
   Proof.
     rewrite Pf_singleton_eq, card_add, card_empty.
     destruct (dec (mem a Pf_empty)). fo. refl.
   Qed.
+
+(** Cardinal of [rem]. *)
 
   Lemma card_rem a P :
     card (Pf_rem a P) = card P - if dec (mem a P) then 1 else 0.
@@ -546,6 +597,8 @@ Section S.
     apply rem_notin. hyp.
   Qed.
 
+(** A set of non-null cardinality has at least one element. *)
+
   Lemma card_S {P n} : card P = S n ->
     exists a Q, P =f= Pf_add a Q /\ ~mem a Q /\ card Q = n.
  
@@ -560,7 +613,7 @@ Section S.
   Qed.
 
 (****************************************************************************)
-(** Type of subsets of some cardinality. *)
+(** * Type of subsets of some cardinality. *)
 
   Section Pcard.
 
@@ -605,3 +658,6 @@ Section S.
   Proof. intros [X [XP Xn]] xR. hyp. Qed.
 
 End S.
+
+Arguments Pcard_equiv {A P n} _ _.
+Arguments mk_Pcard [A P n Q] _ _.
