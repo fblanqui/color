@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-09-17
 
-
 * Termination proof of Goedel System T
 *)
 

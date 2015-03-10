@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2012-04-05
 
-
 * Higher-order simultaneous substitutions
 
 This formalization is inspired by the definition of a substitution of

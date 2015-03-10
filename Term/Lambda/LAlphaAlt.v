@@ -4,7 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-09-24
 
-* Other definitions of alpha-equivalence
+* Alternative definitions of alpha-equivalence
 *)
 
 Set Implicit Arguments.
