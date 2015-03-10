@@ -1,4 +1,4 @@
-15-03-10: RELEASE OPAM 1.1.0 (SVN revision 2154)
+15-03-10: RELEASE OPAM 1.1.0 (SVN revision 2156)
 
 15-03-10: [Blanqui]
 - Util/List/ListUtil: added select, pos, new lemmas on remove,
