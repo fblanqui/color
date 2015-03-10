@@ -4,13 +4,13 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2009-06-26
 
-Type for representing potentially infinite sets of elements of some type.
+* Potentially infinite sets
 *)
 
 Set Implicit Arguments.
 
 Require Import RelUtil LogicUtil Basics Morphisms Setoid FunUtil
-  ListUtil NatUtil ClassicUtil.
+  ListUtil NatUtil.
 
 (****************************************************************************)
 (** We assume given a type A for elements. *)
@@ -22,12 +22,12 @@ Section S.
   Notation eq_dec_type := (forall x y : A, {x=y}+{~x=y}).
 
 (****************************************************************************)
-(** Type of sets of elements of [A]. *)
+(** * Type for sets of elements of type [A] *)
 
   Definition set := A -> Prop.
 
 (****************************************************************************)
-(** Definitions. *)
+(** * Definition of basic predicates and operations on sets *)
 
   Definition mem a (P : set) := P a.
 
@@ -64,14 +64,14 @@ Section S.
   Ltac stac := intro; unfold add, rem, diff, union, of_list, mem; simpl; tauto.
 
 (****************************************************************************)
-(** Properties of inclusion. *)
+(** Properties of [subset]. *)
 
   Global Instance subset_PreOrder : PreOrder subset.
 
   Proof. fo. Qed.
 
 (****************************************************************************)
-(** Properties of equality. *)
+(** Properties of [equiv]. *)
 
   Lemma equiv_subset2 P Q : P [=] Q <-> P [<=] Q /\ Q [<=] P.
 
@@ -109,7 +109,7 @@ Section S.
   Proof. intros x y xy P Q PQ. subst. fo. Qed.
 
 (****************************************************************************)
-(** Properties of strict inclusion. *)
+(** Properties of [strict_subset]. *)
 
   Global Instance strict_subset_incl_subset : subrelation strict_subset subset.
 
@@ -277,7 +277,7 @@ Section S.
   Proof. split. fo. unfold union, diff, mem. destruct (Q_dec a); tauto. Qed.
 
 (****************************************************************************)
-(** Type of elements of a set. *)
+(** * Type for the elements of a set. *)
 
   Definition elts (P : set) := sig (fun x => mem x P).
 
@@ -294,7 +294,8 @@ Section S.
   Lemma inj_elts_subset P Q (h : P [<=] Q) : injective (elts_subset h).
 
   Proof.
-    intros [x_val x] [y_val y] e. apply sig_eq in e. apply sig_eq. hyp.
+    intros [x_val x] [y_val y] e.
+    Require Import ClassicUtil. apply sig_eq in e. apply sig_eq. hyp.
   Qed.
 
   Definition elts_equiv P Q : P [=] Q -> elts P -> elts Q.
@@ -312,13 +313,13 @@ Section S.
   Qed.
 
 (****************************************************************************)
-(** Fiber. *)
+(** * Fiber (inverse image of a singleton) *)
 
   Definition fiber (P : set) B (f : elts P -> B) b : set :=
     fun x => exists h : mem x P, f (elt h) = b.
 
 (****************************************************************************)
-(** Properties of [of_list]. *)
+(** * Properties of [of_list]. *)
 
   Lemma of_cons a l : of_list (a :: l) [=] add a (of_list l). 
 
@@ -367,7 +368,7 @@ Infix "[=]" := equiv (at level 70).
 Infix "[<]" := strict_subset (at level 70).
 
 (***********************************************************************)
-(** Compatibility with [inclusion] and [same_rel]. *)
+(** * Compatibility of [subset] and [equiv] with [inclusion] and [same_rel]. *)
 
 Instance subset_equiv1 A1 B (f : set A1 -> relation B) :
   Proper (subset ==> inclusion) f -> Proper (equiv ==> same_rel) f.
@@ -384,7 +385,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** Image of a set by a function. *)
+(** * Image of a set by a function. *)
 
 Section image.
 
