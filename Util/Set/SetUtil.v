@@ -9,8 +9,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import RelUtil LogicUtil Basics Morphisms Setoid FunUtil
-  ListUtil NatUtil.
+Require Import Basics Morphisms Setoid
+        LogicUtil RelUtil FunUtil ListUtil NatUtil.
 
 (****************************************************************************)
 (** We assume given a type A for elements. *)

@@ -9,9 +9,9 @@ Infinite sets
 
 Set Implicit Arguments.
 
-Require Import Basics Morphisms Setoid.
 Require Import ClassicUtil IotaUtil EpsilonUtil
-  LogicUtil SetUtil FinSet FunUtil NatLt.
+        Basics Morphisms Setoid
+        LogicUtil SetUtil FinSet FunUtil NatLt.
 
 Section S.
 
