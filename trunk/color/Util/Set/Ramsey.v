@@ -57,6 +57,7 @@ Section S.
 
     (* Case n=0. *)
 
+(* begin hide *)
 (* Let [g] be the function that, given a function f from [Pcard P 1]
   to bool, maps every element of [P] to [f (singleton x)]. *)
 Definition g (P : Pinf W) (f : Pcard P 1 -> bool) : elts P -> bool.
@@ -65,6 +66,7 @@ Proof.
   intros [x_val x]. apply f. ex (Pf_singleton x_val). split.
   intro y. simpl. unfold impl. fo. subst. hyp. apply card_singleton.
 Defined.
+(* end hide *)
 
     (* We apply the infinite pigeon hole principle. *) 
     destruct (IPHP_with_2_holes P (g P f)) as [b [Q h]].
@@ -77,6 +79,7 @@ Defined.
     (* Case n>0. *)
     revert IHn P f f_eq. generalize (S n); clear n; intros n IH P f f_eq.
 
+(* begin hide *)
 (* Let [i] be the function which maps [X] in [Pcard V m] to [add a X]
   in [Pcard P (S m)] provided that [a] is in [P] but not in [V]. *)
 Definition i n P (Q : Pinf P) (U : Pinf Q) V (a : A)
@@ -98,6 +101,7 @@ Lemma i_eq n P (Q : Pinf P) (U : Pinf Q) V (a : A)
   i aU VU_a X [=] add a X.
 
 Proof. refl. Qed.
+(* end hide *)
 
     (* Given Q in [Pinf P] and c, we consider the following relation
     on [Pinf Q]. *)
@@ -246,6 +250,7 @@ Proof. refl. Qed.
     assert (Tinf : infinite T). unfold T. rewrite infinite_rem. hyp.
     set (T' := mk_Pinf TW Tinf).
 
+(* begin hide *)
 (* Let j be the function mapping every X in [Pcard T' n] to (add a X)
 in [Pcard P (S n)]. *) 
 Definition j n (P : Pinf W) a (T' : Pinf W) :
@@ -263,6 +268,7 @@ Lemma j_eq n (P : Pinf W) a (T' : Pinf W) (aP : mem a P) (naT : ~mem a T')
   (TP : T' [<=] P) X : j n aP naT TP X [=] add a X.
 
 Proof. destruct X as [X [XT cXn]]. refl. Qed.
+(* end hide *)
 
     (* Properties of a and T. *)
     assert (aP : mem a P). rewrite UE, EP in aU. hyp.
