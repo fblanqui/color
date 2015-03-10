@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-08-16
 
-
 * Function calls
 *)
 

@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2012-04-05
 
-
 * Lambda-terms
 
 Remark on the structure of the files in this directory: In Coq,

@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-05-06
 
-
 * Higher-order rewriting and its associated CP structure
 *)
 

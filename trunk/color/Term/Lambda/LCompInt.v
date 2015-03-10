@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-07-30
 
-
 * Interpretation of positive inductive data type systems
 
 as computability predicates so that the accessible arguments (that

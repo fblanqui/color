@@ -6,7 +6,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2012-04-05
 
-
 * Termination of beta-reduction for simply-typed lambda-terms
 *)
 

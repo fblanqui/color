@@ -5,18 +5,13 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2013-05-02
 
-
 * Computability closure
 
 and proof that it enforces termination of higher-order rewrite systems.
 
-References:
-
-- "Inductive-data-type Systems", by F. Blanqui, J.-P. Jouannaud and
-  M. Okada, in Theoretical Computer Science 272, p. 41-68, 2002.
-  http://dx.doi.org/10.1016/S0304-3975(00)00347-9
-  http://hal.inria.fr/inria-00105578
-*)
+After "Inductive-data-type Systems", F. Blanqui, J.-P. Jouannaud and
+  M. Okada, Theoretical Computer Science 272, p. 41-68, 2002,
+  http://dx.doi.org/10.1016/S0304-3975(00)00347-9. *)
 
 Set Implicit Arguments.
 

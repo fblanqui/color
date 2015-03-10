@@ -5,7 +5,6 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2012-04-05
 
-
 * Beta-reduction
 *)
 
