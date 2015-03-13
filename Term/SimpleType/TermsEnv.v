@@ -10,7 +10,8 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsLifting Arith Setoid LogicUtil.
+Require Import RelExtras ListExtras TermsLifting Arith Setoid LogicUtil
+  Morphisms ExcUtil.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 
@@ -1625,46 +1626,39 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Hint Immediate env_eq_refl env_eq_sym env_eq_empty_none_empty : terms.
 
-  Definition EnvEqSetoidTheory :=
-    Build_Setoid_Theory _ env_eq env_eq_refl env_eq_sym env_eq_trans.
+  Instance env_eq_Equivalence : Equivalence env_eq.
 
-  Add Setoid Env env_eq EnvEqSetoidTheory as EnvSetoid.
+  Proof.
+    split.
+    intro x. apply env_eq_refl.
+    intros x y. apply env_eq_sym.
+    intros x y z. apply env_eq_trans.
+  Qed.
 
-  Add Morphism envSubset
-    with signature env_eq ==> env_eq ==> iff
-      as envSubset_morph.
+  Instance envSubset_morph : Proper (env_eq ==> env_eq ==> iff) envSubset.
 
   Proof. fo. Qed.
 
-  Add Morphism loweredEnv
-    with signature env_eq ==> eq ==> env_eq
-      as loweredEnv_morph.
+  Instance loweredEnv_morph : Proper (env_eq ==> eq ==> env_eq) loweredEnv.
 
   Proof.
-    intros.
-    destruct H; split.
+    intros E F [EF FE] x y xy. subst y. split.
     apply env_subset_lowered; trivial.
     apply env_subset_lowered; trivial.
   Qed.
 
-  Add Morphism env_comp
-    with signature env_eq ==> env_eq ==> iff
-      as env_comp_morph.
+  Instance env_comp_morph : Proper (env_eq ==> env_eq ==> iff) env_comp.
 
   Proof. fo. Qed.
 
-  Add Morphism VarD
-    with signature env_eq ==> eq ==> eq ==> iff
-      as VarD_morph.
+  Instance VarD_morph : Proper (env_eq ==> eq ==> eq ==> iff) VarD.
 
-  Proof. fo. Qed.
+  Proof. intros E F EF x y xy t u tu. subst y u. fo. Qed.
 
-  Add Morphism VarUD
-    with signature env_eq ==> eq ==> iff
-      as VarUD_morph.
+  Instance VarUD_morph : Proper (env_eq ==> eq ==> iff) VarUD.
 
   Proof.
-    intros e e0 H n; split; intros.
+    intros e e0 H n m nm. subst m. split; intro H0.
     destruct (isVarDecl_dec e0 n) as [[A e0n] | e0n]; trivial.
     set (en := proj2 H n A e0n).
     elimtype False; apply varD_UD_absurd with e n A; trivial.
@@ -1766,9 +1760,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_compose_morph_aux0; trivial.
   Qed.
 
-  Add Morphism env_compose
-    with signature env_eq ==> env_eq ==> env_eq
-      as env_compose_morph.
+  Instance env_compose_morph :
+    Proper (env_eq ==> env_eq ==> env_eq) env_compose.
 
   Proof.
     intros; split.

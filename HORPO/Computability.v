@@ -10,7 +10,8 @@ and introduces, as Variable, some computability properties.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras LexOrder Horpo LogicUtil Setoid AccUtil.
+Require Import Relations RelExtras ListExtras LexOrder Horpo LogicUtil Setoid
+  AccUtil Morphisms Basics.
 
 Module Computability (S : TermsSig.Signature) 
                      (Prec : Horpo.Precedence with Module S := S).
@@ -781,7 +782,14 @@ Section Computability_theory.
   Definition CompTerm := { T: Term | Computable T }.
   Definition R_Comp (T1 T2: CompTerm) := proj1_sig T1 -R-> proj1_sig T2.
   Definition CompTerm_eq (T1 T2: CompTerm) := proj1_sig T1 = proj1_sig T2.
-  Definition TermsPairLex := lp_LexProd_Lt CompTerm_eq R_Comp R_Comp.
+  Definition TermsPairLex := LexProd_Lt CompTerm_eq R_Comp R_Comp.
+
+  Instance R_Comp_morph : Proper (CompTerm_eq ==> CompTerm_eq ==> impl) R_Comp.
+
+  Proof.
+    intros [a ac] [b bc] ab [c cc] [d dc] cd;
+    unfold R_Comp, CompTerm_eq in *; simpl in *; intro h; subst. hyp.
+  Qed.
 
   Definition SetTheory_Comp : Setoid_Theory CompTerm CompTerm_eq.
 
@@ -835,12 +843,12 @@ Section Computability_theory.
 	  Computable W
     ).
     unfold TermsPairLex.
-    eapply lp_lexprod_wf; try solve
+    eapply lexprod_wf; try solve
       [ eexact SetTheory_Comp
       | unfold R_Comp; intros x x' y y' xx' yy' xy; 
 	  inversion xx'; inversion yy'; trivial
       | apply well_founded_R_comp
-      ].
+      ]; try apply R_Comp_morph.
     clear P; intros P IH W Wapp WLabs WL_Hyp Wnorm PL PR.
     assert (WLnorm: algebraic (appBodyL Wapp)).
     apply algebraic_appBodyL; trivial.
