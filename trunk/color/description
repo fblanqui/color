@@ -42,4 +42,5 @@ flat context closure, loop, finitely branching, reducts, dependent choice,
 finite graph, alpha-equivalence, transitive closure, Tait, Girard,
 reductibility, computability predicate, inductive type, fixpoint, Tarski,
 de Bruijn indices, strongly connected component, topological ordering,
-infinite sequence, cycle, path, set, finite map, finite set, path ordering
+infinite sequence, cycle, path, set, finite map, finite set, path ordering,
+pigeon-hole principle, Ramsey theorem
