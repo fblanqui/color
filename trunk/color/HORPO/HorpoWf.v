@@ -10,8 +10,8 @@ higher-order recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Horpo Computability LexOrder HorpoComp
-  LogicUtil.
+Require Import Relations RelExtras ListExtras Horpo Computability LexOrder
+  HorpoComp LogicUtil.
 
 Module HorpoWf (S : TermsSig.Signature) 
                (Prec : Horpo.Precedence with Module S := S).
@@ -53,7 +53,7 @@ Module HorpoWf (S : TermsSig.Signature)
     destruct W as [Ts CompTs].
     apply acc_mul_acc_wfterms.
     unfold horpo_mul_lt; apply mOrd_acc.
-    apply (Eqset_def_gtA_eqA_compat horpo).
+    gen (Eqset_def_gtA_eqA_compat horpo); fo. (*FIXME*)
     intros x x_comp.
     assert (xComp: CompH x).
     apply CompTs.
@@ -247,6 +247,7 @@ Module HorpoWf (S : TermsSig.Signature)
     intros x x' y y' xx' yy'.
     unfold eqA in xx', yy'. unfold TermsEqset.eqA in xx', yy'.
     rewrite <- xx'; rewrite <- yy'; trivial.
+    (*REMOVE*) refl.
     apply beta_imp_horpo; trivial. apply algebraic_arg with M; trivial.
     apply app_beta_headSymbol with M; trivial.
   Qed.

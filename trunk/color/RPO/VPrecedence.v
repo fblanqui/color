@@ -50,7 +50,8 @@ Module VPrecedence (P : VPrecedenceType).
     Definition eqA := eq (A := term).
     Notation "X =A= Y" := (eqA X Y) (at level 70).
 
-    Lemma sid_theoryA : Setoid_Theory A eqA.
+    Instance eqA_Equivalence : Equivalence eqA.
+
     Proof.
       constructor; unfold Reflexive, Symmetric, Transitive.
       unfold eqA; simpl; trivial.

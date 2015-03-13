@@ -14,7 +14,7 @@ Set Implicit Arguments.
 Require RelUtil.
 Require Import RelExtras MultisetTheory Transitive_Closure Compare_dec
   Relations Permutation ListPermutation MultisetCore Setoid ListExtras AccUtil
-  LogicUtil.
+  LogicUtil Morphisms Basics.
 
 Module MultisetOrder (MC: MultisetCore).
 
@@ -127,7 +127,7 @@ Section OrderDefinition.
   Proof.
     intros. unfold clos_transM_RedGt.
     refine (RelUtil.clos_trans_morph
-              MultisetSetoidTheory MultisetRed_morph x y H x0 y0 H0).
+              meq_Equivalence MultisetRed_morph x y H x0 y0 H0).
   Qed.
 
   Add Morphism clos_transM_RedLt
@@ -136,7 +136,7 @@ Section OrderDefinition.
 
   Proof.
     intros. unfold clos_transM_RedLt.
-    refine (RelUtil.clos_trans_morph MultisetSetoidTheory _ x y H x0 y0 H0).
+    refine (RelUtil.clos_trans_morph meq_Equivalence _ x y H x0 y0 H0).
     reduce. unfold MultisetRedLt. unfold transp. rewrite H1, H2. reflexivity.
   Qed.
 
@@ -219,8 +219,8 @@ Section OrderDefinition.
   Proof.
     (*split; eauto with sets.*)
     intuition. eapply gtA_eqA_compat. apply H. apply H0. exact H1.
-    eapply gtA_eqA_compat. apply Seq_sym. exact sid_theoryA. apply H.
-    apply Seq_sym. exact sid_theoryA. apply H0. exact H1.
+    eapply gtA_eqA_compat. apply Seq_sym. exact eqA_Equivalence. apply H.
+    apply Seq_sym. exact eqA_Equivalence. apply H0. exact H1.
   Qed.
 
   Add Morphism ltA
@@ -230,7 +230,7 @@ Section OrderDefinition.
   Proof.
     intros x1 x2. split. eauto with sets.
     cut (x2 =A= x1). intro. eauto with sets.
-    apply Seq_sym. exact sid_theoryA. hyp.
+    apply Seq_sym. exact eqA_Equivalence. hyp.
   Qed.
 
   Add Morphism gtA_trans
@@ -240,7 +240,7 @@ Section OrderDefinition.
   Proof.
     compute. intros a a' a_a' b b' b_b'.
     refine (RelUtil.clos_trans_morph
-              sid_theoryA gtA_morph_Proper a a' a_a' b b' b_b').
+              eqA_Equivalence gtA_morph_Proper a a' a_a' b b' b_b').
   Qed.
 
   Add Morphism geA
@@ -261,11 +261,9 @@ Section OrderDefinition.
 
 Section OrderCharacterization.
 
-  Lemma lt_as_red: forall a b, MultisetLt a b <-> clos_transM_RedLt a b.
+  Lemma lt_as_red: same_relation MultisetLt clos_transM_RedLt.
 
-  Proof.
-    exact (trans_clos_transp MultisetRedGt).
-  Qed.
+  Proof. exact (RelUtil.tc_transp MultisetRedGt). Qed.
 
   Lemma empty_min_red: forall M, ~(empty >mul_1 M).
 
@@ -279,7 +277,7 @@ Section OrderCharacterization.
   Lemma empty_min: forall M, ~(empty >mul M).
 
   Proof.
-    intros M empty_lt_M; case (trans_clos_step_l empty_lt_M).
+    intros M empty_lt_M; case (RelUtil.tc_step_l empty_lt_M).
     intro M_red_empty; apply empty_min_red with M; trivial.
     intro step; destruct step; apply empty_min_red with x; trivial.
   Qed.
@@ -786,8 +784,8 @@ Section MultisetOrder_Wf.
     intros; unfold AccM.
     apply Acc_eq_rel with clos_transM_RedLt.
     split.
-    apply (proj2 (lt_as_red a b)).
-    apply (proj1 (lt_as_red a b)).
+    apply (proj2 lt_as_red a b).
+    apply (proj1 lt_as_red a b).
     unfold clos_transM_RedLt; apply Transitive_Closure.Acc_clos_trans.
     apply mred_acc; trivial.
   Qed.
@@ -994,7 +992,7 @@ Section MOrdPair.
     rewrite H4; auto with multisets.
     assert (bL >A bR).
     setoid_replace bL with x; trivial.
-    apply Seq_sym. exact sid_theoryA. apply member_singleton.
+    apply Seq_sym. exact eqA_Equivalence. apply member_singleton.
     rewrite <- XbL; trivial.
     right; right; left; repeat split.
     right; trivial.
@@ -1012,7 +1010,7 @@ Section MOrdPair.
     rewrite H4; auto with multisets.
     assert (bL >A aR).
     setoid_replace bL with x; trivial.
-    apply Seq_sym. exact sid_theoryA. apply member_singleton.
+    apply Seq_sym. exact eqA_Equivalence. apply member_singleton.
     rewrite <- XbL; trivial.
     right; right; right; repeat split.
     left; trivial.
@@ -1037,7 +1035,7 @@ Section MOrdPair.
     rewrite H4; auto with multisets.
     assert (aL >A bR).
     setoid_replace aL with x; trivial.
-    apply Seq_sym. exact sid_theoryA. apply member_singleton.
+    apply Seq_sym. exact eqA_Equivalence. apply member_singleton.
     rewrite <- XaL; trivial.
     right; right; right; repeat split.
     right; trivial.
@@ -1055,7 +1053,7 @@ Section MOrdPair.
     rewrite H4; auto with multisets.
     assert (aL >A aR).
     setoid_replace aL with x; trivial.
-    apply Seq_sym. exact sid_theoryA. apply member_singleton.
+    apply Seq_sym. exact eqA_Equivalence. apply member_singleton.
     rewrite <- XaL; trivial.
     right; right; left; repeat split.
     left; trivial.
@@ -1134,27 +1132,22 @@ End MOrdPair.
 
 Section OrderSim.
 
-  Variable P : relation A.
-  Variable eqA_eq : eqA = (eq (A:=A)).
+  Variables (P : relation A) (eqA_eq : eqA = eq (A:=A)). (*FIXME*)
 
   Lemma eqA_refl : forall x, x =A= x.
 
-  Proof.
-    rewrite eqA_eq; trivial.
-  Qed.
+  Proof. rewrite eqA_eq; trivial. Qed.
  
-  Lemma P_eqA_comp : forall x x' y y', x =A= x' -> y =A= y' -> P x y -> P x' y'.
+  Instance P_eqA_comp : Proper (eqA ==> eqA ==> impl) P.
 
   Proof.
-    rewrite eqA_eq; intros.
-    rewrite <- H; rewrite <- H0; trivial.
+    intros a b ab c d cd h. rewrite eqA_eq in *.
+    rewrite <- ab, <- cd; trivial.
   Qed.
 
-  Lemma STA : Setoid_Theory A eqA.
+  Instance eqA_Equivalence : Equivalence eqA.
 
-  Proof.
-    rewrite eqA_eq; constructor; try_solve.
-  Qed.
+  Proof. rewrite eqA_eq; constructor; try_solve. Qed.
 
   Lemma list_sim_insert : forall M M' a b,
     P a b -> list_sim P (multiset2list M) M' ->
@@ -1164,7 +1157,7 @@ Section OrderSim.
   Proof.
     intros M M' a b Pab MM'.
     destruct (multiset2list_insert a M) as [a' [p [a'a [Mperm Mp]]]].
-    destruct (list_sim_permutation STA P_eqA_comp MM' Mperm)
+    destruct (list_sim_permutation eqA_Equivalence P_eqA_comp MM' Mperm)
       as [M'' [M''sim M'M'']].
     exists (insert_nth M'' p b); split.
     rewrite (list2multiset_insert_nth b M'' p).
@@ -1190,7 +1183,7 @@ Section OrderSim.
   Proof.
     intros M M' a b Pab aM MM'_sim.
     destruct (list_sim_insert (remove a M) Pab MM'_sim) as [C [CbM' Csim]].
-    destruct (@list_sim_permutation A P eqA eqA_dec STA P_eqA_comp
+    destruct (@list_sim_permutation A P eqA eqA_dec eqA_Equivalence P_eqA_comp
      (multiset2list (insert a (remove a M))) C (multiset2list M)) 
      as [C' [C'sim C'perm]]; trivial.
     apply meq_permutation.
@@ -1706,4 +1699,3 @@ Section MultisetOrder_on_subrelation.
 End MultisetOrder_on_subrelation.
 
 End MultisetOrder.
-

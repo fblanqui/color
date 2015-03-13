@@ -13,8 +13,8 @@ environment are identified.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListPermutation Compare_dec TermsPos Max Setoid
-  ListUtil ListExtras LogicUtil.
+Require Import Relations RelExtras ListPermutation Compare_dec TermsPos Max
+  Setoid ListUtil ListExtras LogicUtil Morphisms.
 
 Module TermsConv (Sig : TermsSig.Signature).
 
@@ -76,48 +76,39 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Lemma envSubst_extends_refl : forall S, S |=> S.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma envSubst_extends_trans : forall S1 S2 S3,
     S1 |=> S2 -> S2 |=> S3 -> S1 |=> S3.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma envSubst_eq_refl : forall S, S <=> S.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma envSubst_eq_sym : forall S1 S2, S1 <=> S2 -> S2 <=> S1.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma envSubst_eq_trans : forall S1 S2 S3,
     S1 <=> S2 -> S2 <=> S3 -> S1 <=> S3.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
-  Definition envSubst_setoid := Build_Setoid_Theory _ envSubst_eq
-    envSubst_eq_refl envSubst_eq_sym envSubst_eq_trans.
-  
-  Add Setoid EnvSubst envSubst_eq envSubst_setoid as EnvSubstSetoid.
-
-  Add Morphism envSubst_extends
-    with signature envSubst_eq ==> envSubst_eq ==> iff
-      as envSubst_extends_morph.
+  Instance envSubst_eq_Equivalence : Equivalence envSubst_eq.
 
   Proof.
-    fo.
+    split.
+    intro x. apply envSubst_eq_refl.
+    intros x y. apply envSubst_eq_sym.
+    intros x y z. apply envSubst_eq_trans.
   Qed.
+
+  Instance envSubst_extends_morph :
+    Proper (envSubst_eq ==> envSubst_eq ==> iff) envSubst_extends.
+
+  Proof. fo. Qed.
 
   Definition emptyEnvSubst: EnvSubst.
 
@@ -384,7 +375,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     destruct Q; simpl; trivial.
   Qed.
 
-  Definition envSubst_transp : forall (E: EnvSubst), EnvSubst.
+  Definition envSubst_transp : forall E : EnvSubst, EnvSubst.
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
@@ -583,14 +574,13 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply IHx2 with E; trivial.   
   Qed.
 
-  Add Parametric Morphism (t1 t2 : Preterm) : (conv_term t1 t2)
-    with signature envSubst_eq ==> iff
-      as conv_term_morph.
+  Instance conv_term_morph :
+    Proper (eq ==> eq ==> envSubst_eq ==> iff) conv_term.
 
   Proof.
-    intuition.
-    eapply conv_term_morph_aux. apply H. trivial.
-    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply H. trivial.
+    intros a b ab c d cd E F EF. subst b d. intuition.
+    eapply conv_term_morph_aux. apply EF. trivial.
+    eapply conv_term_morph_aux. apply envSubst_eq_sym. apply EF. trivial.
   Qed.
 
   Lemma conv_term_refl : forall M,
@@ -798,32 +788,27 @@ Module TermsConv (Sig : TermsSig.Signature).
     eapply IHM2; eauto.
   Qed.
 
-  Definition activeEnv_compSubst_on M N x y := forall A,
-    activeEnv M |= x := A <-> activeEnv N |= y := A.
+  Definition activeEnv_compSubst_on M N x y :=
+    forall A, activeEnv M |= x := A <-> activeEnv N |= y := A.
 
-  Definition conv_env (M N: Term) (S: EnvSubst) : Prop := forall x y,
-    S.(envSub) x y -> activeEnv_compSubst_on M N x y.
+  Definition conv_env (M N: Term) (S: EnvSubst) :=
+    forall x y, S.(envSub) x y -> activeEnv_compSubst_on M N x y.
 
-  Add Parametric Morphism (t1 t2 : Term) : (conv_env t1 t2)
-    with signature envSubst_eq ==> iff
-      as conv_env_morph.
+  Instance conv_env_morph :
+    Proper (eq ==> eq ==> envSubst_eq ==> iff) conv_env.
 
   Proof.
-    Set Firstorder Depth 5. fo.
+    intros a b ab c d cd E F EF. subst b d. Set Firstorder Depth 5. fo.
   Qed.
 
   Lemma conv_env_refl : forall M, conv_env M M (idEnvSubst (length (env M))).
 
-  Proof.
-    intros E x y xy A; split; inversion xy; rewrite H; trivial.
-  Qed.
+  Proof. intros E x y xy A; split; inversion xy; rewrite H; trivial. Qed.
 
   Lemma conv_env_sym : forall M N mn,
     conv_env M N mn -> conv_env N M (envSubst_transp mn).
 
-  Proof.
-    intros i j; intros; destruct mn; fo.
-  Qed.
+  Proof. intros i j; intros; destruct mn; fo. Qed.
 
   Lemma conv_env_trans : forall M N P mn np,
     conv_env M N mn -> conv_env N P np -> conv_env M P (envSubst_compose mn np).
@@ -1241,18 +1226,15 @@ Module TermsConv (Sig : TermsSig.Signature).
     forall x1 x2 : EnvSubst,
     x1 <=> x2 -> forall x x0 : Term, x ~ (x1)x0 -> x ~ (x2)x0.
 
-  Proof.
-    intros; inversion H0. constructor; rewrite <- H; trivial.
-  Qed.
+  Proof. intros; inversion H0. constructor; rewrite <- H; trivial. Qed.
 
-  Add Morphism terms_conv_with
-    with signature envSubst_eq ==> eq ==> eq ==> iff
-      as terms_conv_with_morph.
+  Instance terms_conv_with_morph :
+    Proper (envSubst_eq ==> eq ==> eq ==> iff) terms_conv_with.
 
   Proof.
-    intuition.
-    eapply terms_conv_with_morph_aux. apply H. exact H0.
-    eapply terms_conv_with_morph_aux. apply envSubst_eq_sym. apply H. exact H0.
+    intros E F EF a b ab c d cd. subst b d. intuition.
+    eapply terms_conv_with_morph_aux. apply EF. hyp.
+    eapply terms_conv_with_morph_aux. apply envSubst_eq_sym. apply EF. hyp.
   Qed.
 
   Definition terms_conv M N := exists S, M ~(S) N.
@@ -1365,50 +1347,44 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_refl.
   Qed.
 
-  Definition sid_theoryConv := Build_Setoid_Theory _ terms_conv
-    terms_conv_refl terms_conv_sym terms_conv_trans.
+  Instance terms_conv_Equivalence : Equivalence terms_conv.
 
-  Add Setoid Term terms_conv sid_theoryConv as terms_conv_Setoid.
+  Proof.
+    split.
+    intro x. apply terms_conv_refl.
+    intros x y. apply terms_conv_sym.
+    intros x y z. apply terms_conv_trans.
+  Qed.
 
-  Add Morphism isApp 
-    with signature terms_conv ==> iff
-    as isApp_morph.
+  Instance isApp_morph : Proper (terms_conv ==> iff) isApp.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1; 
       term_inv t; term_inv t'.
   Qed.
 
-  Add Morphism isVar
-    with signature terms_conv ==> iff 
-    as isVar_morph.
+  Instance isVar_morph : Proper (terms_conv ==> iff) isVar.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
       term_inv t; term_inv t'.
   Qed.
 
-  Add Morphism isAbs
-    with signature terms_conv ==> iff 
-    as isAbs_morph.
+  Instance isAbs_morph : Proper (terms_conv ==> iff) isAbs.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
       term_inv t; term_inv t'.
   Qed.
 
-  Add Morphism isNeutral
-    with signature terms_conv ==> iff 
-    as isNeutral_morph.
+  Instance isNeutral_morph : Proper (terms_conv ==> iff) isNeutral.
 
   Proof.
      intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
       term_inv t; term_inv t'.
   Qed.
 
-  Add Morphism isFunS
-    with signature terms_conv ==> iff 
-    as isFunS_morph.
+  Instance isFunS_morph : Proper (terms_conv ==> iff) isFunS.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
@@ -1580,9 +1556,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     inversion MN; inversion H; term_inv M.
   Qed.
 
-  Add Morphism appHead
-    with signature terms_conv ==> terms_conv
-    as appHead_morph.
+  Instance appHead_morph : Proper (terms_conv ==> terms_conv) appHead.
 
   Proof.
     intros t t' teqt'.
@@ -1591,9 +1565,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply appHead_conv; trivial.
   Qed.
 
-  Add Morphism isFunApp
-    with signature terms_conv ==> iff
-    as isFunApp_morph.
+  Instance isFunApp_morph : Proper (terms_conv ==> iff) isFunApp.
 
   Proof.
     unfold isFunApp; intros t t' H.

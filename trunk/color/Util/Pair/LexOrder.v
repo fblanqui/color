@@ -10,88 +10,79 @@ concerning it are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil RelExtras Setoid.
+Require Import LogicUtil RelUtil RelExtras Setoid Morphisms Basics.
 
 Section LexPair.
 
-  Variable lp_L : Type.
-  Variable lp_R : Type.
+  Variables (L : Type) (R : Type)
+            (eqL : relation L) (eqL_Equivalence : Equivalence eqL).
 
-  Variable lp_eqL : relation lp_L.
-  Variable lp_sid_theoryL : Setoid_Theory lp_L lp_eqL.
+  Existing Instance eqL_Equivalence.
 
-  Hint Resolve (Seq_refl  lp_L lp_eqL lp_sid_theoryL) : sets.
-  Hint Resolve (Seq_trans lp_L lp_eqL lp_sid_theoryL) : sets.
-  Hint Resolve (Seq_sym   lp_L lp_eqL lp_sid_theoryL) : sets.
+  Hint Resolve (Seq_refl  L eqL eqL_Equivalence) : sets.
+  Hint Resolve (Seq_trans L eqL eqL_Equivalence) : sets.
+  Hint Resolve (Seq_sym   L eqL eqL_Equivalence) : sets.
 
-  Variable lp_eqR : relation lp_R.
-  Variable lp_sid_theoryR : Setoid_Theory lp_R lp_eqR.
+  Variables (eqR : relation R) (eqR_Equivalence : Equivalence eqR).
 
-  Hint Resolve (Seq_refl  lp_R lp_eqR lp_sid_theoryR) : sets.
-  Hint Resolve (Seq_trans lp_R lp_eqR lp_sid_theoryR) : sets.
-  Hint Resolve (Seq_sym   lp_R lp_eqR lp_sid_theoryR) : sets.
+  Existing Instance eqR_Equivalence.
+
+  Hint Resolve (Seq_refl  R eqR eqR_Equivalence) : sets.
+  Hint Resolve (Seq_trans R eqR eqR_Equivalence) : sets.
+  Hint Resolve (Seq_sym   R eqR eqR_Equivalence) : sets.
  
-  Variable lp_gtL : relation lp_L.
+  Variable gtL : relation L.
 
-  Definition lp_ltL := transp lp_gtL.
+  Definition ltL := transp gtL.
 
-  Variable lp_gtL_eqL_compat: forall (x x' y y': lp_L), 
-    lp_eqL x x' -> lp_eqL y y' -> lp_gtL x y -> lp_gtL x' y'.
+  Variable gtL_eqL_compat : Proper (eqL ==> eqL ==> impl) gtL.
 
-  Definition lp_AccL := Acc lp_ltL.
+  Existing Instance gtL_eqL_compat.
 
-  Add Setoid lp_L lp_eqL lp_sid_theoryL as lp_L_Setoid. 
+  Definition AccL := Acc ltL.
 
-  Add Morphism lp_gtL
-    with signature lp_eqL ==> lp_eqL ==> iff
-    as lp_gtL_morph.
+(*REMOVE?*)
+  Instance gtL_morph : Proper (eqL ==> eqL ==> iff) gtL.
 
-  Proof.
-    split; eauto with sets.
-  Qed.
+  Proof. intros a b ab c d cd. split; apply gtL_eqL_compat; (hyp||sym;hyp). Qed.
 
-  Variable lp_gtR : relation lp_R.
+  Variable gtR : relation R.
 
-  Definition lp_ltR := transp lp_gtR.
+  Definition ltR := transp gtR.
 
-  Variable lp_gtR_eqR_compat: forall (x x' y y': lp_R), 
-    lp_eqR x x' -> lp_eqR y y' -> lp_gtR x y -> lp_gtR x' y'.
+  Variable gtR_eqR_compat: Proper (eqR ==> eqR ==> impl) gtR.
 
-  Definition AccR := Acc lp_ltR.
+  Existing Instance gtR_eqR_compat.
 
-  Add Setoid lp_R lp_eqR lp_sid_theoryR as lp_R_Setoid. 
+  Definition AccR := Acc ltR.
 
-  Add Morphism lp_gtR
-    with signature lp_eqR ==> lp_eqR ==> iff
-      as lp_gtR_morph.
+(*REMOVE?*)
+  Instance gtR_morph : Proper (eqR ==> eqR ==> iff) gtR.
 
-  Proof.
-    split; eauto with sets.
-  Qed.
+  Proof. intros a b ab c d cd. split; apply gtR_eqR_compat; (hyp||sym;hyp). Qed.
 
-  Definition lp_pair := (lp_L * lp_R)%type.
+  Definition pair := (L * R)%type.
 
-  Definition lp_eqPair (x y: lp_pair) :=
-    lp_eqL (fst x) (fst y) /\ lp_eqR (snd x) (snd y).
+  Definition eqPair (x y : pair) := eqL (fst x) (fst y) /\ eqR (snd x) (snd y).
 
   (* --- Definition of an order *)
   Reserved Notation "a >lex b" (at level 40).
 
-  Inductive lp_LexProd_Gt : relation lp_pair :=
-  | GtL: forall a a' b b', lp_gtL a a' ->                (a, b) >lex (a', b')
-  | GtR: forall a a' b b', lp_eqL a a' -> lp_gtR b b' -> (a, b) >lex (a', b')
-    where "a >lex b" := (lp_LexProd_Gt a b).
+  Inductive LexProd_Gt : relation pair :=
+  | GtL: forall a a' b b', gtL a a' ->             (a, b) >lex (a', b')
+  | GtR: forall a a' b b', eqL a a' -> gtR b b' -> (a, b) >lex (a', b')
+    where "a >lex b" := (LexProd_Gt a b).
 
-  Definition lp_LexProd_Lt := transp lp_LexProd_Gt.
+  Definition LexProd_Lt := transp LexProd_Gt.
 
-  Notation "a <lex b" := (lp_LexProd_Lt a b) (at level 40).
+  Notation "a <lex b" := (LexProd_Lt a b) (at level 40).
 
-  Definition lp_Acc_LexProd := Acc lp_LexProd_Lt.
+  Definition Acc_LexProd := Acc LexProd_Lt.
 
-  Hint Unfold lp_eqPair : sets.
+  Hint Unfold eqPair : sets.
 
   (* --- Extension of setoids on components to setoid on pair *)
-  Lemma lp_sid_theory_pair : Setoid_Theory lp_pair lp_eqPair.
+  Instance eqPair_Equivalence : Equivalence eqPair.
 
   Proof.
     constructor.
@@ -100,11 +91,8 @@ Section LexPair.
     intros x y z xy yz; inversion xy; inversion yz; eauto with sets.
   Qed.
 
-  Add Setoid lp_pair lp_eqPair lp_sid_theory_pair as lp_pair_Setoid.
-
-  Add Morphism lp_LexProd_Gt
-    with signature lp_eqPair ==> lp_eqPair ==> iff
-      as lp_LexProdGt_morph_equiv.
+  Instance LexProd_Gt_morph_equiv :
+    Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
 
   Proof.
     intros p p' pp' q q' qq'. split; intro p_q;
@@ -119,26 +107,20 @@ Section LexPair.
     rewrite H0; rewrite H2; trivial.
   Qed.
 
-  Lemma lp_LexProdGt_morph : forall x1 x2 : lp_pair, lp_eqPair x1 x2 ->
-    forall x3 x4 : lp_pair, lp_eqPair x3 x4 -> x1 >lex x3 -> x2 >lex x4.
+  Lemma LexProd_Gt_morph : forall x1 x2 : pair, eqPair x1 x2 ->
+    forall x3 x4 : pair, eqPair x3 x4 -> x1 >lex x3 -> x2 >lex x4.
+
+  Proof. intros. apply (proj1 (LexProd_Gt_morph_equiv H H0)). hyp. Qed.
+
+  Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
 
   Proof.
-    intros. apply (proj1 (lp_LexProdGt_morph_equiv H H0)). hyp.
-  Qed.
-
-  Add Morphism lp_LexProd_Lt
-    with signature lp_eqPair ==> lp_eqPair ==> iff
-      as lp_LexProdLt_morph.
-
-  Proof.
-    unfold lp_LexProd_Lt, transp. intros p p' pp' q q' qq'. split; intro p_q.
+    unfold LexProd_Lt, transp. intros p p' pp' q q' qq'. split; intro p_q.
     rewrite <- pp'; rewrite <- qq'; trivial.
     rewrite pp'; rewrite qq'; trivial.
   Qed.
 
-  Add Morphism lp_Acc_LexProd
-    with signature lp_eqPair ==> iff
-      as lp_AccLexProd_morph.
+  Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
 
   Proof.
     intros p p' p_p'. split.
@@ -154,58 +136,58 @@ Section LexPair.
 
   Section LexProd_StrictOrder.
 
-  Variable lp_gtL_so: strict_order lp_gtL.
+    Variable gtL_so: strict_order gtL.
 
-  Hint Resolve (sord_trans lp_gtL_so) : sets.
-  Hint Resolve (sord_irrefl lp_gtL_so) : sets.
-  Hint Resolve (so_not_symmetric lp_gtL_so) : sets.
-  Hint Resolve (so_strict lp_gtL_so lp_gtL_eqL_compat lp_sid_theoryL) : sets.
+    Hint Resolve (sord_trans gtL_so) : sets.
+    Hint Resolve (sord_irrefl gtL_so) : sets.
+    Hint Resolve (so_not_symmetric gtL_so) : sets.
+    Hint Resolve (so_strict gtL_so gtL_eqL_compat eqL_Equivalence) : sets.
 
-  Variable lp_gtR_so: strict_order lp_gtR.
+    Variable gtR_so: strict_order gtR.
 
-  Hint Resolve (sord_trans lp_gtR_so) : sets.
-  Hint Resolve (sord_irrefl lp_gtR_so) : sets.
-  Hint Resolve (so_not_symmetric lp_gtR_so) : sets.
-  Hint Resolve (so_strict lp_gtR_so lp_gtR_eqR_compat lp_sid_theoryR) : sets.
+    Hint Resolve (sord_trans gtR_so) : sets.
+    Hint Resolve (sord_irrefl gtR_so) : sets.
+    Hint Resolve (so_not_symmetric gtR_so) : sets.
+    Hint Resolve (so_strict gtR_so gtR_eqR_compat eqR_Equivalence) : sets.
 
-  Lemma lp_lexprod_irreflex  : forall a, a >lex a -> False.
+    Lemma lexprod_irreflex  : forall a, a >lex a -> False.
 
-  Proof.
-    intros a gt_aa; inversion gt_aa.
-    absurd (lp_gtL a0 a0); auto with sets.
-    absurd (lp_gtR b b); auto with sets.
-  Qed.
+    Proof.
+      intros a gt_aa; inversion gt_aa.
+      absurd (gtL a0 a0); auto with sets.
+      absurd (gtR b b); auto with sets.
+    Qed.
 
-  Lemma lp_lexprod_trans : forall a b c, a >lex b -> b >lex c -> a >lex c.
+    Lemma lexprod_trans : forall a b c, a >lex b -> b >lex c -> a >lex c.
 
-  Proof.
-    intros a b c ab bc;
-      inversion ab as [ la la' lb lb' gt_la lL lR 
-                      | la la' lb lb' eq_la gt_lb lL lR ];
-      inversion bc as [ ra ra' rb rb' gt_ra rL rR 
-                      | ra ra' rb rb' eq_ra gt_rb rL rR ];
-      assert (eq1: la' = ra); try solve [congruence];
-      assert (eq2: lb' = rb); try solve [congruence].
-     (* case 1 *)
-    constructor 1; apply (sord_trans lp_gtL_so la la' ra'); 
-      solve [trivial | rewrite eq1; trivial].
-     (* case 2 *)
-    constructor 1. rewrite <- eq_ra. rewrite <- eq1. hyp.
-     (* case 3 *)
-    constructor 1. rewrite eq_la. rewrite eq1. hyp.
-     (* case 4 *)
-    constructor 2. rewrite eq_la. rewrite <- eq_ra. rewrite eq1.
-    auto with sets.
-    apply (sord_trans lp_gtR_so lb lb' rb'); 
-      [ trivial 
-      | rewrite eq2; trivial ].
-  Qed.
+    Proof.
+      intros a b c ab bc;
+        inversion ab as [ la la' lb lb' gt_la lL lR 
+                        | la la' lb lb' eq_la gt_lb lL lR ];
+        inversion bc as [ ra ra' rb rb' gt_ra rL rR 
+                        | ra ra' rb rb' eq_ra gt_rb rL rR ];
+        assert (eq1: la' = ra); try solve [congruence];
+        assert (eq2: lb' = rb); try solve [congruence].
+      (* case 1 *)
+      constructor 1; apply (sord_trans gtL_so la la' ra'); 
+        solve [trivial | rewrite eq1; trivial].
+      (* case 2 *)
+      constructor 1. rewrite <- eq_ra. rewrite <- eq1. hyp.
+       (* case 3 *)
+      constructor 1. rewrite eq_la. rewrite eq1. hyp.
+       (* case 4 *)
+      constructor 2. rewrite eq_la. rewrite <- eq_ra. rewrite eq1.
+      auto with sets.
+      apply (sord_trans gtR_so lb lb' rb'); 
+        [ trivial 
+        | rewrite eq2; trivial ].
+    Qed.
 
-  Lemma lp_lexprod_so : strict_order lp_LexProd_Gt.
+    Lemma lexprod_so : strict_order LexProd_Gt.
 
-  Proof.
-    exact (Build_strict_order lp_lexprod_trans lp_lexprod_irreflex).
-  Qed.
+    Proof.
+      exact (Build_strict_order lexprod_trans lexprod_irreflex).
+    Qed.
 
   End LexProd_StrictOrder.
 
@@ -216,40 +198,33 @@ Section LexPair.
 
   Section LexProd_WellFounded.
 
-  Variable lp_wf_ltL : well_founded lp_ltL.
-  Variable lp_wf_ltR : well_founded lp_ltR.
+    Variables (wf_ltL : well_founded ltL) (wf_ltR : well_founded ltR).
 
-  Lemma lp_lexprod_wf : well_founded lp_LexProd_Lt.
+    Lemma lexprod_wf : well_founded LexProd_Lt.
 
-  Proof.
-    unfold well_founded; intro x.
-    destruct x as [a b]; gen b.
-    apply well_founded_ind with 
-      (R := lp_ltL)
-      (P := fun A => forall B, lp_Acc_LexProd (A, B)); 
-      trivial.
-    intros l wf_l.
-    apply well_founded_ind with 
-      (R := lp_ltR)
-      (P := fun B => lp_Acc_LexProd (l, B)); 
-      trivial.
-    intros r wf_r.
-    constructor; intros p p_lt; inversion p_lt.
-    apply wf_l; auto with sets.
-    fold lp_Acc_LexProd.
-(* #NN#, Coq error!, following does not work: *)
-(*    setoid_replace (a', b') with (l, b'). *)
-    cut (lp_eqPair (a',b') (l,b')).
-    intro. apply (proj2 (lp_AccLexProd_morph H4)). apply wf_r. hyp.
-    auto with sets.
-  Qed.
+    Proof.
+      unfold well_founded; intro x.
+      destruct x as [a b]; gen b.
+      apply well_founded_ind with 
+        (R := ltL) (P := fun A => forall B, Acc_LexProd (A, B)); trivial.
+      intros l wf_l.
+      apply well_founded_ind with 
+      (R := ltR) (P := fun B => Acc_LexProd (l, B)); trivial.
+      intros r wf_r.
+      constructor; intros p p_lt; inversion p_lt.
+      apply wf_l; auto with sets.
+      fold Acc_LexProd.
+      (*COQ: following does not work: setoid_replace (a', b') with (l, b'). *)
+      cut (eqPair (a',b') (l,b')).
+      intro. apply (proj2 (Acc_LexProd_morph H4)). apply wf_r. hyp.
+      auto with sets.
+    Qed.
 
   End LexProd_WellFounded.
 
 End LexPair.
 
-
-Module LexicographicOrder (A_ord B_ord : Ord).
+Module LexicographicOrder (Import A_ord B_ord : Ord).
 
   Module Import A_ext := OrdLemmas A_ord.
   Module Import B_ext := OrdLemmas B_ord.
@@ -264,16 +239,16 @@ Module LexicographicOrder (A_ord B_ord : Ord).
   Notation ltL := A_ext.ltA.
   Notation ltR := B_ext.ltA.
 
-  Definition pair := lp_pair L R.
+  Definition pair := pair L R.
 
-  Definition eqPair (x y: pair) := lp_eqPair eqL eqR x y.
+  Definition eqPair (x y : pair) := eqPair eqL eqR x y.
 
   Section Eq_dec.
 
-    Variable eqA_dec : forall x y : L, {eqL x y} + {~eqL x y}.
-    Variable eqB_dec : forall x y : R, {eqR x y} + {~eqR x y}.
+    Variables (eqA_dec : forall x y : L, {eqL x y} + {~eqL x y})
+              (eqB_dec : forall x y : R, {eqR x y} + {~eqR x y}).
 
-    Lemma eqPair_dec : forall (x y : pair), {eqPair x y} + {~eqPair x y}.
+    Lemma eqPair_dec : forall x y : pair, {eqPair x y} + {~eqPair x y}.
   
     Proof.
       intros.
@@ -286,7 +261,7 @@ Module LexicographicOrder (A_ord B_ord : Ord).
 
   End Eq_dec.
 
-  Definition LexProd_Gt (x y: pair) := lp_LexProd_Gt eqL gtL gtR x y.
+  Definition LexProd_Gt x y := LexProd_Gt eqL gtL gtR x y.
 
   Notation "a >lex b" := (LexProd_Gt a b) (at level 40).
 
@@ -299,31 +274,22 @@ Module LexicographicOrder (A_ord B_ord : Ord).
 (* --- Extension of setoids on components to setoid on pair *)
   Hint Unfold eqPair : sets.
 
-  Definition sid_theory_pair : Setoid_Theory pair eqPair := 
-    lp_sid_theory_pair A_ord.S.sid_theoryA B_ord.S.sid_theoryA.
+  Instance eqPair_Equivalence : Equivalence eqPair := 
+    eqPair_Equivalence A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence.
 
-  Add Setoid pair eqPair sid_theory_pair as pair_Setoid.
+  Hint Resolve A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence : sets.
 
-  Hint Resolve A_ord.S.sid_theoryA B_ord.S.sid_theoryA : sets.
-
-  Add Morphism LexProd_Gt
-    with signature eqPair ==> eqPair ==> iff
-      as LexProdGt_morph.
+  Instance LexProd_Gt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
 
   Proof.
     intros p p' pp' q q' qq'. split.
-    intro pq. unfold LexProd_Gt.
-    eapply lp_LexProdGt_morph with (lp_eqR := eqR); eauto with sets.
+    intro pq. eapply LexProd_Gt_morph with (eqR := eqR); eauto with sets.
     cut (eqPair p' p). intro. cut (eqPair q' q). intro.
-    intro p'q'. unfold LexProd_Gt.
-    eapply lp_LexProdGt_morph with (lp_eqR := eqR); eauto with sets.
-    apply Seq_sym; auto with sets. exact sid_theory_pair.
-    apply Seq_sym; auto with sets. exact sid_theory_pair.
+    intro p'q'. eapply LexProd_Gt_morph with (eqR := eqR); eauto with sets.
+    sym. hyp. sym. hyp.
   Qed.
 
-  Add Morphism LexProd_Lt
-    with signature eqPair ==> eqPair ==> iff
-      as LexProdLt_morph.
+  Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
 
   Proof.
     unfold LexProd_Lt; unfold transp.
@@ -332,101 +298,80 @@ Module LexicographicOrder (A_ord B_ord : Ord).
     rewrite pp'; rewrite qq'; trivial.
   Qed.
 
-  Add Morphism Acc_LexProd
-    with signature eqPair ==> iff
-      as AccLexProd_morph.
+  Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
 
   Proof.
-    compute; intros.
-    set (w := lp_AccLexProd_morph); compute in w.
-    eapply w; eauto with sets.  
-    exact A_ord.S.sid_theoryA.
-    exact B_ord.S.sid_theoryA.
+    intros p q pq.
+    compute; intros. set (w := Acc_LexProd_morph); compute in w.
+    eapply w; eauto with sets.
+    apply A_ord.gtA_eqA_compat. apply B_ord.gtA_eqA_compat.
   Qed.
 
 (* =============================================================== *)
 (** Proof of the fact that lexicographic order is a strict order.  *)
 (* =============================================================== *)
 
-Module LexProd_StrictOrder 
-  (pA: Poset with Definition A := A_ord.S.A with Module O := A_ord)
-  (pB: Poset with Definition A := B_ord.S.A with Module O := B_ord).
+  Module LexProd_StrictOrder 
+         (pA: Poset with Definition A := A_ord.S.A with Module O := A_ord)
+         (pB: Poset with Definition A := B_ord.S.A with Module O := B_ord).
 
-  Hint Resolve pA.gtA_so pB.gtA_so : sets.
+    Hint Resolve pA.gtA_so pB.gtA_so : sets.
 
-  Lemma lexprod_irreflex : forall a, a >lex a -> False.
+    Lemma lexprod_irreflex : forall a, a >lex a -> False.
 
-  Proof.
-    intros.
-    exact (lp_lexprod_irreflex pA.gtA_so pB.gtA_so H).
-  Qed.
+    Proof. intros. exact (lexprod_irreflex pA.gtA_so pB.gtA_so H). Qed.
 
-  Lemma lexprod_trans : forall a b c, a >lex b -> b >lex c -> a >lex c.
+    Lemma lexprod_trans : forall a b c, a >lex b -> b >lex c -> a >lex c.
 
-  Proof.
-    unfold LexProd_Gt; intros.
-    eapply lp_lexprod_trans; eauto with sets.
-  Qed.
+    Proof.
+      unfold LexProd_Gt; intros. eapply lexprod_trans; eauto with sets.
+    Qed.
 
-  Lemma lexprod_so : strict_order LexProd_Gt.
+    Lemma lexprod_so : strict_order LexProd_Gt.
 
-  Proof.
-    exact (Build_strict_order lexprod_trans lexprod_irreflex).
-  Qed.
+    Proof. exact (Build_strict_order lexprod_trans lexprod_irreflex). Qed.
 
-End LexProd_StrictOrder.
+  End LexProd_StrictOrder.
 
 (* ================================================================= *)
 (**     Proof of the fact that lexicographic order is well-founded
   (if so are the underlaying orders) *)
 (* ================================================================= *)
 
-Section LexProd_WellFounded.
+  Section LexProd_WellFounded.
 
-  Variable wf_ltL : well_founded ltL.
-  Variable wf_ltR : well_founded ltR.
+    Variables (wf_ltL : well_founded ltL) (wf_ltR : well_founded ltR).
 
-  Lemma lexprod_wf : well_founded LexProd_Lt.
+    Lemma lexprod_wf : well_founded LexProd_Lt.
 
-  Proof.
-    change LexProd_Lt with (lp_LexProd_Lt eqL gtL gtR).
-    unfold pair.
-    eapply lp_lexprod_wf; eauto with sets.
-  Qed.
+    Proof. eapply lexprod_wf; eauto with sets. Qed.
 
-End LexProd_WellFounded.
+  End LexProd_WellFounded.
 
-Module Rel <: Ord.
+  Module Rel <: Ord.
 
-  Module S <: Eqset.
+    Module S <: Eqset.
+      Definition A := pair.
+      Definition eqA := eqPair.
+      Definition eqA_dec := eqPair_dec.
+      Definition eqA_Equivalence := eqPair_Equivalence.
+    End S.
 
     Definition A := pair.
-    Definition eqA := eqPair.
-    Definition eqA_dec := eqPair_dec.
-    Definition sid_theoryA := sid_theory_pair.
 
-  End S.
+    Definition gtA := LexProd_Gt.
 
-  Definition A := pair.
+    Instance gtA_eqA_compat : Proper (S.eqA ==> S.eqA ==> impl) gtA.
 
-  Definition gtA := LexProd_Gt.
+    Proof. intros x x' xx' y y' yy' x_y. rewrite <- xx', <- yy'; trivial. Qed.
 
-  Lemma gtA_eqA_compat : forall (x x' y y': pair), 
-    eqPair x x' -> eqPair y y' -> x >lex  y -> x' >lex y'.
-
-  Proof.
-    intros x x' y y' xx' yy' x_y.
-    rewrite <- xx'; rewrite <- yy'; trivial.
-  Qed.
-
-End Rel.
+  End Rel.
 
 End LexicographicOrder.
 
 Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
 
-  Require Import Notations.
-  Require Import Relation_Operators.
+  Require Import Notations Relation_Operators.
 
   Module Import A_ext := OrdLemmas A_ord.
   Module Import B_ext := OrdLemmas B_ord.
@@ -462,88 +407,57 @@ Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
   Notation "a >lex3 b" := (LexProd3_Gt a b) (at level 40).
   Notation "a <lex3 b" := (LexProd3_Lt a b) (at level 40).
 
-Section Well_foundedness.
+  Section Well_foundedness.
 
-   Variable WF_L : well_founded ltL.
-   Variable WF_M : well_founded ltM.
-   Variable WF_R : well_founded ltR.
+    Variables (WF_L : well_founded ltL) (WF_M : well_founded ltM)
+              (WF_R : well_founded ltR).
 
-   Lemma lexprod_wf : well_founded LexProd3_Lt.
+    Lemma lexprod_wf : well_founded LexProd3_Lt.
 
-   Proof.
-     apply Lex3.lexprod_wf; trivial.
-     apply LR_ord.lexprod_wf; trivial.
-   Qed.
+    Proof.
+      apply Lex3.lexprod_wf; trivial. apply LR_ord.lexprod_wf; trivial.
+    Qed.
 
-End Well_foundedness.
+  End Well_foundedness.
 
-  Lemma LexProd3_Gt_inv : forall a b c a' b' c', (a, b, c) >lex3 (a', b', c') ->
+  Lemma LexProd3_Gt_inv a b c a' b' c' : (a, b, c) >lex3 (a', b', c') ->
      gtL a a' \/ (eqL a a' /\ gtM b b') \/ (eqL a a' /\ eqM b b' /\ gtR c c').
 
-  Proof.
-    intros a b c a' b' c' ord.
-    inversion_clear ord; inversion_clear H; auto.
-  Qed.
+  Proof. intro ord. inversion_clear ord; inversion_clear H; auto. Qed.
 
-  Lemma LexProd3_1 : forall a a' b b' c c',
-    gtL a a' -> (a, b, c) >lex3 (a', b', c').
+  Lemma LexProd3_1 a a' b b' c c' : gtL a a' -> (a, b, c) >lex3 (a', b', c').
 
-  Proof.
-    intros a a' b b' c c' a_a'.
-    constructor 1; constructor 1; trivial.
-  Qed.
+  Proof. intro a_a'. constructor 1; constructor 1; trivial. Qed.
 
-  Lemma LexProd3_2 : forall a a' b b' c c',
+  Lemma LexProd3_2 a a' b b' c c' :
     eqL a a' -> gtM b b' -> (a, b, c) >lex3 (a', b', c').
 
-  Proof.
-    intros a a' b b' c c' a_a' b_b'.
-    constructor 1; constructor 2; trivial.
-  Qed.
+  Proof. intros a_a' b_b'. constructor 1; constructor 2; trivial. Qed.
 
-  Lemma LexProd3_3 : forall a a' b b' c c', eqL a a' -> eqM b b' -> gtR c c' ->
-    (a, b, c) >lex3 (a', b', c').
+  Lemma LexProd3_3 a a' b b' c c' :
+    eqL a a' -> eqM b b' -> gtR c c' -> (a, b, c) >lex3 (a', b', c').
 
-  Proof.
-    intros a a' b b' c c' a_a' b_b' c_c'.
-    constructor 2; trivial.
-    compute; auto.
-  Qed.
+  Proof. intros a_a' b_b' c_c'. constructor 2; trivial. compute; auto. Qed.
 
-  Lemma LexProd3_lt : forall a a' b b' c c', (a, b, c) >lex3 (a', b', c') ->
-    (a', b', c') <lex3 (a, b, c).
+  Lemma LexProd3_lt a a' b b' c c' :
+    (a, b, c) >lex3 (a', b', c') -> (a', b', c') <lex3 (a, b, c).
 
-  Proof.
-    intros a a' b b' c c' ord.
-    unfold LexProd3_Lt, Lex3.LexProd_Lt, transp.
-    trivial.
-  Qed.
+  Proof. fo. Qed.
 
-  Lemma LexProd3_lt_1 : forall a a' b b' c c',
-    gtL a' a -> (a, b, c) <lex3 (a', b', c').
+  Lemma LexProd3_lt_1 a a' b b' c c' : gtL a' a -> (a, b, c) <lex3 (a', b', c').
 
-  Proof.
-    intros a a' b b' c c' a_a'.
-    apply LexProd3_lt.
-    apply LexProd3_1; trivial.
-  Qed.
+  Proof. intro a_a'. apply LexProd3_lt. apply LexProd3_1; trivial. Qed.
 
-  Lemma LexProd3_lt_2 : forall a a' b b' c c',
+  Lemma LexProd3_lt_2 a a' b b' c c' :
     eqL a' a -> gtM b' b -> (a, b, c) <lex3 (a', b', c').
 
-  Proof.
-    intros a a' b b' c c' a_a' b_b'.
-    apply LexProd3_lt.
-    apply LexProd3_2; trivial.
-  Qed.
+  Proof. intros a_a' b_b'. apply LexProd3_lt. apply LexProd3_2; trivial. Qed.
 
-  Lemma LexProd3_lt_3 : forall a a' b b' c c',
+  Lemma LexProd3_lt_3 a a' b b' c c' :
     eqL a' a -> eqM b' b -> gtR c' c -> (a, b, c) <lex3 (a', b', c').
 
   Proof.
-    intros a a' b b' c c' a_a' b_b' c_c'.
-    apply LexProd3_lt.
-    apply LexProd3_3; trivial.
+    intros a_a' b_b' c_c'. apply LexProd3_lt. apply LexProd3_3; trivial.
   Qed.
 
 End LexicographicOrderTriple.

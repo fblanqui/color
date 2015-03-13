@@ -10,31 +10,31 @@ with specification of operations on multisets.
 
 Set Implicit Arguments.
 
-Require Import RelExtras Omega Min.
+Require Import Relations RelExtras Omega Min.
 
 Module Type MultisetCore.
 
   Declare Module Export Sid : Eqset_dec.
 
-Section Operations.  
+  Section Operations.  
 
-  Parameter Multiset : Type.
+    Parameter Multiset : Type.
 
-  Parameter mult : A -> Multiset -> nat.
+    Parameter mult : A -> Multiset -> nat.
 
-  Parameter meq : relation Multiset.
+    Parameter meq : relation Multiset.
 
-  Parameter empty : Multiset.
+    Parameter empty : Multiset.
 
-  Parameter singleton : A -> Multiset.
+    Parameter singleton : A -> Multiset.
 
-  Parameter union : Multiset -> Multiset -> Multiset.
+    Parameter union : Multiset -> Multiset -> Multiset.
 
-  Parameter intersection : Multiset -> Multiset -> Multiset.
+    Parameter intersection : Multiset -> Multiset -> Multiset.
 
-  Parameter diff : Multiset -> Multiset -> Multiset.
+    Parameter diff : Multiset -> Multiset -> Multiset.
 
-End Operations.
+  End Operations.
 
   Notation "X =mul= Y" := (meq X Y) (at level 70) : msets_scope.
   Notation "X <>mul Y" := (~meq X Y) (at level 50) : msets_scope.
@@ -48,34 +48,32 @@ End Operations.
   Open Scope msets_scope.
   Bind Scope msets_scope with Multiset.
 
-Section Specification.
+  Section Specification.
 
-  Variables M N P : Multiset.
-  Variables x y z : A.
-  Variable n : nat.
+    Variables (M N P : Multiset) (x y z : A) (n : nat).
 
-  Parameter mult_eqA_compat: x =A= y -> x/M = y/M.
+    Parameter mult_eqA_compat: x =A= y -> x/M = y/M.
 
-  Parameter meq_multeq: M =mul= N -> (forall x, x/M = x/N).
+    Parameter meq_multeq: M =mul= N -> (forall x, x/M = x/N).
 
-  Parameter multeq_meq: (forall x, x/M = x/N) -> M =mul= N.
+    Parameter multeq_meq: (forall x, x/M = x/N) -> M =mul= N.
 
-  Parameter empty_mult: x/empty = 0.
+    Parameter empty_mult: x/empty = 0.
 
-  Parameter union_mult: x/(M+N) = (x/M + x/N)%nat.
+    Parameter union_mult: x/(M+N) = (x/M + x/N)%nat.
 
-  Parameter diff_mult: x/(M-N) = (x/M - x/N)%nat.
+    Parameter diff_mult: x/(M-N) = (x/M - x/N)%nat.
 
-  Parameter intersection_mult: x/(M#N) = Min.min (x/M) (x/N).
+    Parameter intersection_mult: x/(M#N) = Min.min (x/M) (x/N).
 
-  Parameter singleton_mult_in: x =A= y -> x/{{y}} = 1.
+    Parameter singleton_mult_in: x =A= y -> x/{{y}} = 1.
 
-  Parameter singleton_mult_notin: ~x =A= y -> x/{{y}} = 0.
+    Parameter singleton_mult_notin: ~x =A= y -> x/{{y}} = 0.
 
-  Parameter mset_ind_type: forall P : Multiset -> Type,
-    P empty -> (forall M a, P M -> P (M + {{a}})) -> forall M, P M.
+    Parameter mset_ind_type: forall P : Multiset -> Type,
+        P empty -> (forall M a, P M -> P (M + {{a}})) -> forall M, P M.
 
-End Specification.
+  End Specification.
 
   Hint Resolve mult_eqA_compat 
                meq_multeq
@@ -96,12 +94,11 @@ End MultisetCore.
 
 Section Multiset_IntersectionAsDifference.
 
-  Variable A : Type.
-  Variable Multiset : Type.
-  Variable meq : relation Multiset.
-  Variable mult : A -> Multiset -> nat.
-  Variable diff : Multiset -> Multiset -> Multiset.
-  Variable diff_mult : forall M N x, mult x (diff M N) = mult x M - mult x N.
+  Variables
+    (A : Type) (Multiset : Type) (meq : relation Multiset)
+    (mult : A -> Multiset -> nat)
+    (diff : Multiset -> Multiset -> Multiset)
+    (diff_mult : forall M N x, mult x (diff M N) = mult x M - mult x N).
 
   Definition inter_as_diff x y := diff x (diff x y).
 

@@ -43,7 +43,7 @@ Module Type MatrixMethodConf.
   Notation matrixInt := (matrixInt A matrix).
   Notation mint := (matrixInt dim).
   Notation mat := (matrix dim dim).
-  Notation eq_vec_st := (Vforall2_equiv sid_theoryA dim).
+  Notation eq_vec_st := (Vforall2_equiv eqA_Equivalence dim).
   Notation eq_vec_mat_eqA_st := (Vforall2_equiv mat_eqA_st).
 
   Parameter trsInt : forall f : sig, mint (arity f).

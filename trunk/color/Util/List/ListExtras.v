@@ -541,11 +541,10 @@ End DropNth.
 
 Section CountIn.
 
-  Variable A : Type.
-  Variable eqA : relation A.
-  Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
-  Variable eqA_eq : Setoid_Theory A eqA.
-  Add Setoid A eqA eqA_eq as sidA. 
+  Variables
+    (A : Type) (eqA : relation A)
+    (eqA_dec : forall x y, {eqA x y} + {~eqA x y})
+    (eqA_Equivalence : Equivalence eqA).
 
   Fixpoint countIn (a: A) (l: list A) : nat :=
     match l with
@@ -642,9 +641,6 @@ End CountIn.
 Section DropLast.
 
   Variable A : Type.
-
-  (*Definition dropLast (l: list A) : list A
-    := drop_nth l (pred (length l)).*)
 
   Fixpoint dropLast (l: list A) : list A :=
     match l with

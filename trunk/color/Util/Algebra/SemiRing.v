@@ -19,9 +19,6 @@ Module Type SemiRingType.
 
   Declare Module Export ES : Eqset_dec.
 
-  (*FIXME: move to Eqset ? *)
-  Add Setoid A eqA sid_theoryA as A_Setoid.
-
   Parameter A0 : A.
   Parameter A1 : A.
 
@@ -111,8 +108,6 @@ Module NSemiRingT <: SemiRingType.
 
   Module Export ES := Nat_Eqset_dec.
 
-  Add Setoid A eqA sid_theoryA as A_Setoid.
-
   Definition A0 := 0.
   Definition A1 := 1.
 
@@ -144,7 +139,7 @@ Require Import BigN.
 Module BigNat_Eqset <: Eqset.
   Definition A := bigN.
   Definition eqA := BigN.eq.
-  Definition sid_theoryA : Setoid_Theory A eqA.
+  Instance eqA_Equivalence : Equivalence eqA.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
@@ -164,8 +159,6 @@ End BigNat_Eqset_dec.
 Module BigNSemiRingT <: SemiRingType.
 
   Module Export ES := BigNat_Eqset_dec.
-
-  Add Setoid A eqA sid_theoryA as A_Setoid.
 
   Definition A0 := BigN.zero.
   Definition A1 := BigN.one.
@@ -210,8 +203,6 @@ Module ZSemiRingT <: SemiRingType.
 
   Module Export ES := Int_Eqset_dec.
 
-  Add Setoid A eqA sid_theoryA as A_Setoid.
-
   Definition A0 := 0%Z.
   Definition A1 := 1%Z.
 
@@ -255,7 +246,7 @@ Require Import BigZ.
 Module BigInt_Eqset <: Eqset.
   Definition A := bigZ.
   Definition eqA := BigZ.eq.
-  Definition sid_theoryA : Setoid_Theory A eqA.
+  Instance eqA_Equivalence : Equivalence eqA.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
@@ -275,8 +266,6 @@ End BigInt_Eqset_dec.
 Module BigZSemiRingT <: SemiRingType.
 
   Module Export ES := BigInt_Eqset_dec.
-
-  Add Setoid A eqA sid_theoryA as A_Setoid.
 
   Definition A0 := BigZ.zero.
   Definition A1 := BigZ.one.
@@ -361,8 +350,6 @@ End Arctic_Eqset_dec.
 Module ArcticSemiRingT <: SemiRingType.
 
   Module Export ES := Arctic_Eqset_dec.
-
-  Add Setoid A eqA sid_theoryA as A_Setoid.
 
   Definition A0 := MinusInf.
   Definition A1 := Pos 0.
@@ -511,8 +498,6 @@ End ArcticBZ_Eqset_dec.
 Module ArcticBZSemiRingT <: SemiRingType.
 
   Module Export ES := ArcticBZ_Eqset_dec.
-
-  Add Setoid A eqA sid_theoryA as A_Setoid.
 
   Definition A0 := MinusInfBZ.
   Definition A1 := Fin 0.
@@ -669,8 +654,6 @@ Module TropicalSemiRingT <: SemiRingType.
 
   Module Export ES := Tropical_Eqset_dec.
 
-  Add Setoid A eqA sid_theoryA as A_Setoid.
-
   Definition A0 := PlusInf.
   Definition A1 := TPos 0.
 
@@ -797,8 +780,6 @@ End Bool_Eqset_dec.
 Module BSemiRingT <: SemiRingType.
 
   Module Export ES := Bool_Eqset_dec.
-
-  Add Setoid A eqA sid_theoryA as A_Setoid.
 
   Definition A0 := false.
   Definition A1 := true.

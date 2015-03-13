@@ -10,16 +10,14 @@ Some results concerning permutations of lists.
 Set Implicit Arguments.
 
 Require Import Multiset Permutation ListExtras NatUtil LogicUtil Setoid
-  PermutSetoid.
+  PermutSetoid Morphisms Basics.
 
 Section Multiplicity.
 
-  Variable A: Type.
-  Variable eqA: relation A.
-  Variable eqA_dec: forall x y, {eqA x y} + {~eqA x y}.
-  Variable eqA_eq: Setoid_Theory A eqA.
-
-  Add Setoid A eqA eqA_eq as smA. 
+  Variables
+    (A : Type) (eqA : relation A)
+    (eqA_dec : forall x y, {eqA x y} + {~eqA x y})
+    (eqA_Equivalence : Equivalence eqA).
 
   Lemma multiplicity_in: forall l x,
     multiplicity (list_contents eqA eqA_dec l) x > 0 ->
@@ -89,12 +87,10 @@ End Multiplicity.
 
 Section Permutation.
 
-  Variable A: Type.
-  Variable eqA: relation A.
-  Variable eqA_dec: forall x y, {eqA x y} + {~eqA x y}.
-  Variable eqA_eq: Setoid_Theory A eqA.
-
-  Add Setoid A eqA eqA_eq as spA.
+  Variables
+    (A : Type) (eqA : relation A)
+    (eqA_dec : forall x y, {eqA x y} + {~eqA x y})
+    (eqA_Equivalence : Equivalence eqA).
 
   Lemma permutation_sym: forall l l',
     permutation eqA eqA_dec l l' ->
@@ -127,8 +123,8 @@ Section Permutation.
     intros; intro el.
     destruct (eqA_dec a el).
     assert (eqA el b).
-    apply (Seq_trans A eqA eqA_eq) with a; intuition.
-    rewrite (multiplicity_dropNth_eq eqA_dec eqA_eq l' p el H0 H2).
+    apply (Seq_trans A eqA eqA_Equivalence) with a; intuition.
+    rewrite (multiplicity_dropNth_eq eqA_dec eqA_Equivalence l' p el H0 H2).
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 1 in w.
     omega.
@@ -136,8 +132,8 @@ Section Permutation.
     assert (~eqA el b).
     intro elb.
     absurd (eqA a el); trivial.
-    apply (Seq_trans A eqA eqA_eq) with b; intuition.
-    rewrite (multiplicity_dropNth_neq eqA_dec eqA_eq l' p el H0 H2).
+    apply (Seq_trans A eqA eqA_Equivalence) with b; intuition.
+    rewrite (multiplicity_dropNth_neq eqA_dec eqA_Equivalence l' p el H0 H2).
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 0 in w.
     omega.
@@ -370,13 +366,11 @@ End ListSim.
 
 Section ListSim_iso.
 
-  Variable A : Type.
-  Variable P : relation A.
-  Variable eqA : relation A.
-  Variable eqA_dec : forall x y, {eqA x y} + {~eqA x y}.
-  Variable eqA_eq : Setoid_Theory A eqA.
-  Variable P_eqA_comp : forall x x' y y',
-    eqA x x' -> eqA y y' -> P x y -> P x' y'.
+  Variables
+    (A : Type) (P eqA : relation A)
+    (eqA_dec : forall x y, {eqA x y} + {~eqA x y})
+    (eqA_Equivalence : Equivalence eqA)
+    (P_eqA_comp : Proper (eqA ==> eqA ==> impl) P).
 
   Definition list_simA := @list_sim A A P.
 
@@ -385,7 +379,7 @@ Section ListSim_iso.
     exists m', list_simA m m' /\ permutation eqA eqA_dec l' m'.
 
   Proof.
-    unfold Setoid_Theory in eqA_eq.
+    unfold Setoid_Theory in eqA_Equivalence.
     induction l; intros.
      (* induction base *)
     exists (nil (A:=A)); split.
@@ -400,7 +394,7 @@ Section ListSim_iso.
      (* induction step *)
     destruct l'.
     inversion H.
-    destruct (permutation_cons eqA_eq H0) as [p [a' [mp [aa' lm]]]].
+    destruct (permutation_cons eqA_Equivalence H0) as [p [a' [mp [aa' lm]]]].
     destruct (IHl l' (drop_nth m p)) as [m' [mm' l'm']]; trivial.
     inversion H; trivial.
     assert (length m' >= p).
