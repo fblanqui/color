@@ -41,9 +41,9 @@ subst. apply cons_sort. subst; auto. inversion H5. subst. inversion H9.
 apply nil_leA. subst. apply cons_leA. eapply H; eauto.
 Qed.
 
-Require Import ListRepeatFree.
+Require Import ListNodup.
 
-Lemma rp_free_lelistA_strict : forall B a S (mb : list B)
+Lemma nodup_lelistA_strict : forall B a S (mb : list B)
   (HL : nodup (a::mb)), lelistA (S%) a mb -> lelistA S a mb.
 
 Proof.
@@ -52,14 +52,14 @@ simpl in *. inversion H; subst. apply cons_leA.
 destruct H1; subst; try tauto.
 Qed.
 
-Lemma rp_free_sort_strict : forall B S (mb : list B)
+Lemma nodup_sort_strict : forall B S (mb : list B)
   (HL : nodup mb), sort (S%) mb -> sort S mb.
 
 Proof.
 intros. induction mb. apply nil_sort.
 gen HL; intro. simpl in HL0. inversion H; subst.
 assert (sort S mb). tauto.
-clear IHmb. apply cons_sort; auto. apply rp_free_lelistA_strict; auto.
+clear IHmb. apply cons_sort; auto. apply nodup_lelistA_strict; auto.
 Qed.
 
 (***********************************************************************)

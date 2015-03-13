@@ -11,7 +11,7 @@ paths
 
 Set Implicit Arguments.
 
-Require Import RelSub ListUtil ListRepeatFree Arith RelUtil LogicUtil
+Require Import RelSub ListUtil ListNodup Arith RelUtil LogicUtil
   ListShrink NatUtil ListOccur.
 
 (***********************************************************************)

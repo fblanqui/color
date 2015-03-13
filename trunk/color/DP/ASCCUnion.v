@@ -9,7 +9,7 @@ Modular termination proof through SCC of an over DPGraph
 
 Set Implicit Arguments.
 
-Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListRepeatFree
+Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup
   AdjMat Permutation Multiset LogicUtil BoundNat NatUtil ListPermutation
   ListExtras Setoid SN VecUtil GDomainBij ExcUtil PermutSetoid Union SortUtil.
 
@@ -30,10 +30,10 @@ Notation dim := (length R).
 Variable ODPG : relation rule.
 Variable over_DPG : DPG << ODPG.
 Variable restriction : is_restricted ODPG R.
-Variable rp_free: nodup R.
+Variable R_nodup : nodup R.
 Variable ODPG_dec : forall x y, {ODPG x y} + {~ODPG x y}.
 
-Definition hyps := mkSCC_dec_hyps rule_eq_dec restriction rp_free ODPG_dec.
+Definition hyps := mkSCC_dec_hyps rule_eq_dec restriction R_nodup ODPG_dec.
 
 Variables (M : matrix dim dim) (HM : M = SCC_mat_effective hyps) .
 
@@ -415,7 +415,7 @@ assert (SCC ODPG h h). split; apply t_step; auto.
 rewrite (SCC_effective_exact hyps HM) in H2.
 unfold SCC_effective in H2. simpl in *. unfold rel_on_dom in H2.
 ded (restriction o); intuition. ded (eq_In_find_first rule_eq_dec H4).
-do 2 destruct H3. ded(@nodup_unique rule R h rp_free _ _ H1 H6).
+do 2 destruct H3. ded(@nodup_unique rule R h R_nodup _ _ H1 H6).
 subst x. rewrite H3 in H2. intuition.
 
 eapply red_Mod_SCC_trivial_singl; eauto.
@@ -446,7 +446,7 @@ rewrite (SCC_effective_exact hyps HM) in H10.
 unfold SCC_effective in H10. simpl in *. unfold rel_on_dom in H10.
 assert (In x R). eapply exists_element_at_in. exists i; auto.
 ded (eq_In_find_first rule_eq_dec H11). do 2 destruct H12.
-ded (nodup_unique rp_free H13 H6). subst x0.
+ded (nodup_unique R_nodup H13 H6). subst x0.
 rewrite H12 in H10. intuition.
 Qed.
 

@@ -9,7 +9,7 @@ cycles
 
 Set Implicit Arguments.
 
-Require Import Path ListRepeatFree Relations ListUtil LogicUtil.
+Require Import Path ListNodup Relations ListUtil LogicUtil.
 
 Section S.
 
