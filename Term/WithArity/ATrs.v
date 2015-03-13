@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Export AContext ASubstitution.
 
-Require Import ARelation ListUtil ListRepeatFree LogicUtil VecUtil RelUtil
+Require Import ARelation ListUtil ListNodup LogicUtil VecUtil RelUtil
   ListForall SN BoolUtil EqUtil NatUtil.
 
 Section basic_definitions.

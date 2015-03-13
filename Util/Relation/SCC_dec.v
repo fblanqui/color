@@ -9,7 +9,7 @@ We give a way to decide the SCC relation using the adjacency matrix.
 
 Set Implicit Arguments.
 
-Require Import GDomainBij AdjMat List RelSub ListRepeatFree ListExtras RelUtil
+Require Import GDomainBij AdjMat List RelSub ListNodup ListExtras RelUtil
   LogicUtil.
 Require Export SCC.
 
@@ -21,7 +21,7 @@ Record SCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_Dom : list hyp_A;
   hyp_R : relation hyp_A;
   hyp_restriction : is_restricted hyp_R hyp_Dom;
-  hyp_rp_free: nodup hyp_Dom;
+  hyp_nodup: nodup hyp_Dom;
   hyp_R_dec : forall x y, {hyp_R x y} + {~hyp_R x y}
 }.
 
@@ -32,7 +32,7 @@ Notation eq_dec := (hyp_eq_dec hyps).
 Notation Dom := (hyp_Dom hyps).
 Notation R := (hyp_R hyps).
 Notation restriction := (hyp_restriction hyps).
-Notation rp_free := (hyp_rp_free hyps).
+Notation Dom_nodup := (hyp_nodup hyps).
 Notation R_dec := (hyp_R_dec hyps).
 Notation dim := (length Dom).
 
@@ -51,7 +51,7 @@ Lemma SCC_effective_exact : forall M (H : M = SCC_mat_effective) x y,
 
 Proof.
 split; intros; unfold SCC_effective in *; unfold SCC_mat_effective in *;
-rewrite <- (dom_change_SCC eq_dec restriction rp_free x y) in *;
+rewrite <- (dom_change_SCC eq_dec restriction Dom_nodup x y) in *;
 unfold rel_on_dom in *;
 destruct (find_first (eq x) (eq_dec x) Dom); auto with *;
 destruct (find_first (eq y) (eq_dec y) Dom); auto with *;

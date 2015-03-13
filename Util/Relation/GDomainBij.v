@@ -11,7 +11,7 @@ and relation restricted to Dom with relation restricted to [[1,n]].
 Set Implicit Arguments.
 
 Require Import ListUtil SCC ListExtras Path Iter AdjMat RelSub LogicUtil
-  ListRepeatFree RelUtil.
+  ListNodup RelUtil.
 
 Section S.
 
@@ -175,7 +175,7 @@ Section compose.
 Variable R S : relation nat.
 Variable restriction : is_restricted R (nfirst (length Dom)).
 Variable restriction' : is_restricted S (nfirst (length Dom)).
-Variable rp_free : nodup Dom.
+Variable Dom_nodup : nodup Dom.
 
 Lemma dom_change_compose: forall x y,
   rel_on_dom (R @ S) x y <-> (rel_on_dom R @ rel_on_dom S) x y.
@@ -197,9 +197,9 @@ destruct H8; clear H9.
 ded (eq_In_find_first eq_dec H6); destruct H9; destruct H9.
 ded (eq_In_find_first eq_dec H7); destruct H11; destruct H11.
 ded (eq_In_find_first eq_dec H8); destruct H13; destruct H13.
-ded (nodup_unique rp_free H1 H10).
-ded (nodup_unique rp_free H3 H12).
-ded (nodup_unique rp_free H5 H14).
+ded (nodup_unique Dom_nodup H1 H10).
+ded (nodup_unique Dom_nodup H3 H12).
+ded (nodup_unique Dom_nodup H5 H14).
 subst; rewrite H9; rewrite H11; rewrite H13; auto.
 
 unfold compose in H; destruct H as [z]; destruct H.
@@ -220,7 +220,7 @@ Section iter.
 
 Variable R : relation A.
 Variable restriction : is_restricted R Dom.
-Variable rp_free : nodup Dom.
+Variable Dom_nodup : nodup Dom.
 
 Lemma iter_preserve_restriction : forall n, is_restricted (iter R n) Dom.
 
@@ -324,7 +324,7 @@ Section domSCC.
 
 Variable R : relation A.
 Variable restriction : is_restricted R Dom.
-Variable rp_free : nodup Dom.
+Variable Dom_nodup : nodup Dom.
 
 Lemma dom_change_SCC : forall x y,
   rel_on_dom (SCC (rel_on_nat R)) x y <-> SCC  R x y.

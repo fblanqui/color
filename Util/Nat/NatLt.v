@@ -10,7 +10,7 @@ Type of natural numbers strictly smaller that some bound.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil NatUtil ListUtil ListRepeatFree FunUtil.
+Require Import LogicUtil NatUtil ListUtil ListNodup FunUtil.
 
 Definition N n := sig (gt n).
 

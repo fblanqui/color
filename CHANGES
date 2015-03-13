@@ -1,3 +1,8 @@
+15-03-15: [Blanqui]
+- Util/List/ListRepeatFree: renamed into ListNodup,
+  make_repeat_free renamed into remdup, repeat_free renamed into nodup
+
+-----------------------------------------------------------------------------
 15-03-10: RELEASE OPAM 1.1.0 (SVN revision 2156)
 
 15-03-10: [Blanqui]

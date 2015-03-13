@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Export SCC_dec.
 Require Import List AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil RelSub
-  Path SortUtil Permutation Multiset ListRepeatFree ExcUtil.
+  Path SortUtil Permutation Multiset ListNodup ExcUtil.
 
 Section SCC_quotient.
 
@@ -23,7 +23,7 @@ Notation eq_dec := (hyp_eq_dec hyps).
 Notation Dom := (hyp_Dom hyps).
 Notation R := (hyp_R hyps).
 Notation restriction := (hyp_restriction hyps).
-Notation rp_free := (hyp_rp_free hyps).
+Notation Dom_nodup := (hyp_nodup hyps).
 Notation R_dec := (hyp_R_dec hyps).
 Notation dim := (length Dom).
 
@@ -277,7 +277,7 @@ rewrite map_multiplicity in H; auto. rewrite (@lemme_foo dim); auto.
 
 cut( {m : list bnat | sort (RTb %) m & 
   permutation (eq (A:=bnat)) (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
-intro. destruct H as [mb]. exists mb; auto. apply rp_free_sort_strict; auto.
+intro. destruct H as [mb]. exists mb; auto. apply nodup_sort_strict; auto.
 eapply multiplicity_nodup. intros. unfold permutation in *.
 unfold meq in *. rewrite <- p. unfold nfirst_bnats.
 rewrite bnfirst_multiplicity. destruct (lt_ge_dec (proj1_sig a) dim); omega.
