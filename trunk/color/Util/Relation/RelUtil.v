@@ -539,6 +539,40 @@ Proof.
   apply IHclos_trans2; eauto. reflexivity.
 Qed.
 
+Lemma tc_step_l A (R : rel A) x y :
+  R! x y -> R x y \/ (exists2 z, R x z & R! z y).
+
+Proof.
+  compute; intro xy; induction xy.
+  left; trivial.
+  inversion IHxy1; inversion IHxy2; right; solve [eauto |
+    inversion H; try inversion H0; exists x0; 
+    [trivial | constructor 2 with y; auto]].
+Qed.
+
+Lemma tc_step_r A (R : rel A) x y :
+  R! x y -> R x y \/ (exists2 z, R! x z & R z y).
+
+Proof.
+  compute; intro xy; induction xy.
+  left; trivial.
+  inversion_clear IHxy1; inversion_clear IHxy2; right;
+    solve [eauto | inversion H0; exists x0; 
+    [constructor 2 with y; auto | trivial]].
+Qed.
+
+Lemma tc_transp A (R : rel A) : transp (R!) == (transp R)!.
+
+Proof.
+  intros; split; compute.
+  induction 1.
+  constructor; trivial.
+  constructor 2 with y; auto.
+  induction 1.
+  constructor; trivial.
+  constructor 2 with y; auto.
+Qed.
+
 (***********************************************************************)
 (** Symmetric closure of a relation. *)
 

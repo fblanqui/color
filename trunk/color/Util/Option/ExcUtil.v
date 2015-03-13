@@ -15,6 +15,14 @@ Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
 
 Proof. intros. inversion H. auto. Qed.
 
+Lemma option_dec A (el : option A) : el = None \/ exists w, el = Some w.
+
+Proof.
+  intros. destruct el.
+  right; exists a; trivial.
+  left; trivial.
+Qed.
+
 Section dec.
 
   Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}).
