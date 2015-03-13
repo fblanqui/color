@@ -278,7 +278,7 @@ rewrite map_multiplicity in H; auto. rewrite (@lemme_foo dim); auto.
 cut( {m : list bnat | sort (RTb %) m & 
   permutation (eq (A:=bnat)) (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
 intro. destruct H as [mb]. exists mb; auto. apply rp_free_sort_strict; auto.
-eapply multiplicity_repeat_free. intros. unfold permutation in *.
+eapply multiplicity_nodup. intros. unfold permutation in *.
 unfold meq in *. rewrite <- p. unfold nfirst_bnats.
 rewrite bnfirst_multiplicity. destruct (lt_ge_dec (proj1_sig a) dim); omega.
 

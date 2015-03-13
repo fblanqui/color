@@ -57,7 +57,7 @@ Qed.
 Implicit Arguments Vfilter_app_eq [A n l l1 l2 v].
 
 Lemma Vfilter_eq_in : forall A n (v : vector A n) (l : list (N n))
-  (rf : repeat_free (map (@N_val n) l)) i, In i (map (@N_val n) l) ->
+  (rf : nodup (map (@N_val n) l)) i, In i (map (@N_val n) l) ->
   exists hi : i<n, exists l1, exists l2,
     exists e : length l1+S(length l2)=length l,
       Vfilter l v
@@ -67,7 +67,7 @@ Proof.
 intros A n v l rf i i_in_map_l. destruct (in_map_elim i_in_map_l) as [x hx].
 destruct hx as [i_in_l i_val]. destruct (in_elim i_in_l) as [l1 [l2 hl]].
 subst. destruct x as [i hi]. rewrite map_app in rf.
-simpl in *. destruct (repeat_free_app_cons rf) as [h1 h2].
+simpl in *. destruct (nodup_app_cons rf) as [h1 h2].
 assert (e : length l1+S(length l2)=length(l1++N_ hi::l2)).
 rewrite length_app. refl. exists hi. exists l1. exists l2. exists e.
 rewrite Vfilter_app. simpl. apply Vcast_pi.

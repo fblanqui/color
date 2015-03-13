@@ -138,8 +138,8 @@ Section cut.
     apply length_cut. 
   Qed.
 
-  Lemma repeat_free_cut : forall (x : A) l,
-    repeat_free l -> repeat_free (cut x l).
+  Lemma nodup_cut : forall (x : A) l,
+    nodup l -> nodup (cut x l).
 
   Proof.
     induction l; simpl; intros. trivial. destruct (eq_dec x a).
@@ -167,11 +167,11 @@ Section shrink.
         else x::(shrink l)
     end.
 
-  Lemma repeat_free_shrink : forall l : list A, repeat_free (shrink l).
+  Lemma nodup_shrink : forall l : list A, nodup (shrink l).
 
   Proof.
     induction l; simpl; intros. trivial. destruct (In_dec eq_dec a (shrink l)).
-    apply repeat_free_cut. hyp. simpl. tauto.
+    apply nodup_cut. hyp. simpl. tauto.
   Qed.
 
   Lemma incl_shrink : forall l : list A, incl (shrink l) l.
@@ -190,8 +190,8 @@ Section shrink.
     incl l l' -> length (shrink l) <= length l'.
 
   Proof.
-    intros. apply repeat_free_midex_incl_length. exact (eq_dec_midex eq_dec).
-    apply repeat_free_shrink.
+    intros. apply nodup_midex_incl_length. exact (eq_dec_midex eq_dec).
+    apply nodup_shrink.
     trans l. apply incl_shrink. hyp.
   Qed.
 

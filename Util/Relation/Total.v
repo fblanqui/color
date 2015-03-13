@@ -149,8 +149,8 @@ intros. induction n. inversion H1. destruct l. simpl in H2.
 apply trans_try_add_arc_sym with x y z; hyp. 
 simpl in H1. pose (le_Sn_O (length l) H2). contr. apply IHn.
 inversion H1. clear IHn H1 H4 H5 x0 y0. 
-(* repeat_free *)
-destruct (path_repeat_free_length (try_add_arc x y) H z l z H3).
+(* nodup *)
+destruct (path_nodup_length (try_add_arc x y) H z l z H3).
 decompose [and] H1.
 assert (length x0 <= S n). apply le_trans with (length l); hyp.
 clear H1 H2 H3 H6 H7 H8. 

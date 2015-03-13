@@ -157,14 +157,14 @@ Lemma length_L n : length (L n) = n.
 
 Proof. destruct n; simpl. refl. rewrite length_L_aux. refl. Qed.
 
-Lemma nodup_L_aux {n} : forall k (hk : k < n), repeat_free (L_aux hk).
+Lemma nodup_L_aux {n} : forall k (hk : k < n), nodup (L_aux hk).
 
 Proof.
   induction k; intro hk; simpl. tauto. split. 2: apply IHk.
   intro h. destruct (In_L_aux_elim h) as [i e]. simpl in e. omega.
 Qed.
 
-Lemma nodup_L n : repeat_free (L n).
+Lemma nodup_L n : nodup (L n).
 
 Proof. destruct n; simpl. auto. apply nodup_L_aux. Qed.
 

@@ -34,21 +34,21 @@ Implicit Arguments path_cycle [x y l].
 (***********************************************************************)
 (** cycles of minimum length *)
 
-Definition cycle_min x l := cycle x l /\ ~In x l /\ repeat_free l.
+Definition cycle_min x l := cycle x l /\ ~In x l /\ nodup l.
 
 Lemma cycle_min_intro : forall x l, cycle x l ->
   exists m, exists y, exists p, exists q,
     x :: l = m ++ y :: p ++ q /\ cycle_min y p.
 
 Proof.
-intros. unfold cycle_min. ded (repeat_free_intro eq_dec (x::l)). decomp H0.
-(* repeat_free (x::l) *)
+intros. unfold cycle_min. ded (nodup_intro eq_dec (x::l)). decomp H0.
+(* nodup (x::l) *)
 exists nil. exists x. exists l. exists nil. rewrite <- app_nil_end.
 simpl in H1. intuition.
 (* x::l = x0++x1::x2 *)
 rewrite H1. ded (in_elim H4). decomp H0. rewrite H5.
 exists x3. exists x1. exists x4. exists (x1::x2). rewrite app_ass. simpl.
-rewrite H5 in H2. ded (repeat_free_app_elim H2). simpl in H0. decomp H0.
+rewrite H5 in H2. ded (nodup_app_elim H2). simpl in H0. decomp H0.
 intuition.
 (* cycle x1 x4 *)
 destruct x0. contr. injection H1; intros. subst a.

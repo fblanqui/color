@@ -21,7 +21,7 @@ Record SCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_Dom : list hyp_A;
   hyp_R : relation hyp_A;
   hyp_restriction : is_restricted hyp_R hyp_Dom;
-  hyp_rp_free: repeat_free hyp_Dom;
+  hyp_rp_free: nodup hyp_Dom;
   hyp_R_dec : forall x y, {hyp_R x y} + {~hyp_R x y}
 }.
 
