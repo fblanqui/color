@@ -10,7 +10,7 @@ typed lambda-calculus are defined.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsTyping LogicUtil.
+Require Import Relations RelExtras ListExtras TermsTyping LogicUtil.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
@@ -569,7 +569,6 @@ Module TermsManip (Sig : TermsSig.Signature).
   Hint Resolve appArg_inv appArg_is_appUnit abs_isnot_app app_isnot_abs 
                appUnits_notApp appHead_notApp appHead_app appArgs_notApp 
                appArgs_app appUnit_left: terms.
-
 
   Inductive subterm : relation Term :=
   | AppLsub: forall M N (Mapp: isApp M), 

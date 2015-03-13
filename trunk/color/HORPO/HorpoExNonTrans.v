@@ -6,7 +6,8 @@ See the COPYRIGHTS and LICENSE files.
 
 *)
 
-Require Import TermsSig Horpo HorpoWf RelExtras Wf_nat List Terms LogicUtil.
+Require Import TermsSig Horpo HorpoWf Relations RelExtras Wf_nat List Terms
+  LogicUtil.
 
 Module BT <: BaseTypes.
 
