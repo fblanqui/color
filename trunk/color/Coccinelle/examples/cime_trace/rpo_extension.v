@@ -601,10 +601,3 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
        | apply wfl ]
     end.
 End MakeRpoSdpMarkedAFS.
-
-(*
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../../list_extensions/" "-I" "../../basis/" "-I" "../../term_algebra/" "-I" "../../term_orderings/") ***
-*** End: ***
- *)

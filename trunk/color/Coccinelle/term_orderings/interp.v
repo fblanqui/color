@@ -436,10 +436,3 @@ Qed.
  End S.
 
 End Interp.
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../basis/" "-I" "../term_algebra/" "-I" "../list_extensions/") ***
-*** End: ***
- *)

@@ -670,12 +670,3 @@ Parameter matching_complete :
   end.
 
 End Term.
-
-
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop -emacs -I . -I ../basis -I ../term_orderings -I ../list_extensions -I ../term_algebra" ***
-*** coq-prog-args: nil ***
-*** End: ***
- *)

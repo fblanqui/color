@@ -115,13 +115,3 @@ Proof.
   intros Hneq abs;elim Hneq;injection abs;intro H;exact H.
 Defined.
 End IntVars.
-
-
-
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../../term_algebra/" "-I" "../../basis/" "-I" "../../list_extensions/") ***
-*** End: ***
- *)

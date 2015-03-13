@@ -16,16 +16,8 @@ Section Newman.
 Variable A : Type. 
 Variable R : A -> A -> Prop.
 
-(* Local Notation Rstar := star A R.  *)
-(* Let Rstar_reflexive := Rstar_reflexive A R. *)
-(* Let Rstar_transitive := Rstar_transitive A R. *)
-(* Let Rstar_Rstar' := Rstar_Rstar' A R. *)
-
 Definition coherence (x y:A) := 
   exists z, star _ R z x/\ star _ R z y.
-
-
-
 
 Theorem coherence_intro :
   forall x y z:A, star _ R z x -> star _ R z y -> coherence x y.
@@ -113,38 +105,6 @@ Section Newman_section.
         assumption.
       Qed.
 
-(*       Lemma star_ind2 :  *)
-(*         forall (A : Type) (R P : A -> A -> Prop), *)
-(*           (forall x : A, P x x) -> *)
-(*           (forall x y : A,  *)
-(*             R x y ->  *)
-(*             forall z : A,  *)
-(*               star A R y z ->  *)
-(*               P y z ->  *)
-(*               P x z) -> *)
-(*           forall x y : A, star A R x y -> P x y *)
-(*         .     *)
-(*       Proof. *)
-(*         clear . *)
-(*         intros A R P H H0 a x H1. *)
-(*         assert (x = a \/ exists y, R a y /\ star _ R y x). *)
-(*         clear -H1; induction H1. *)
-(*         auto. *)
-(*         inversion IHstar;clear IHstar. *)
-(*         subst. *)
-(*         right;exists z;auto using star_refl. *)
-(*         destruct H0 as [u [h1 h2]]. *)
-(*         right;exists u;split;auto. *)
-(*         apply star_trans with y;auto using star_R. *)
-
-
-(*         destruct H2. *)
-(*         subst;auto. *)
-(*         destruct H2 as [z [h1 h2]]. *)
-(*         eapply H0 with z; try assumption. *)
-(*         apply H0 with x. *)
-
-        
       Theorem caseRxy : coherence y z.
       Proof.
         inversion h2.
@@ -350,10 +310,3 @@ match goal with
 end.
 
 End Confluence.
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "." "-I" "../../term_algebra" "-I" "../../basis" "-I" "../../list_extensions") ***
-*** End: ***
- *)

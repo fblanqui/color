@@ -3,11 +3,15 @@ Require Import decidable_set.
 Require Import list_set.
 Require Import List.
 Require Omega.
+
 Module Type S.
   Parameter A : Type.
 End S.
+
 Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_A:=@eq AX.A).
+
   Module XSet :=  list_set.Make(X).
+
   Import XSet.
   Import X.
   Import AX.
@@ -23,7 +27,6 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
     simpl.
     intros l2;rewrite IHb0. auto with bool. 
   Qed.
-
 
   Section S.
     Hypothesis order : A -> A -> bool.
@@ -114,25 +117,3 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
      exact H.
    Qed.
 End Make.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../../basis/" "-I" "../../list_extensions/") ***
-*** End: ***
- *)
