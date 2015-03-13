@@ -5,7 +5,7 @@ See the COPYRIGHTS and LICENSE files.
 - Frederic Blanqui, 2007-02-16
 - Stephane Le Roux, 2006-10-17
 
-lists without duplicated elements
+Lists without duplicated elements
 *)
 
 Set Implicit Arguments.
@@ -19,19 +19,19 @@ Section S.
 (***********************************************************************)
 (** Predicate saying if a list has no duplicated element. *)
 
-  Fixpoint repeat_free (l : list A) : Prop :=
+  Fixpoint nodup (l : list A) : Prop :=
     match l with
       | nil => True
-      | a :: l' => ~In a l' /\ repeat_free l'
+      | a :: l' => ~In a l' /\ nodup l'
     end.
 
-  Lemma repeat_free_app_elim_right :
-    forall l l', repeat_free (l++l') -> repeat_free l'.
+  Lemma nodup_app_elim_right :
+    forall l l', nodup (l++l') -> nodup l'.
 
   Proof. induction l; simpl; intros. hyp. apply IHl. tauto. Qed.
 
-  Lemma repeat_free_midex_incl_length : eq_midex A ->
-    forall l l', repeat_free l -> incl l l' -> length l <= length l'.
+  Lemma nodup_midex_incl_length : eq_midex A ->
+    forall l l', nodup l -> incl l l' -> length l <= length l'.
 
   Proof.
     intro em. induction l; simpl; intros. apply le_O_n.
@@ -45,12 +45,12 @@ Section S.
   Qed.
 
 (***********************************************************************)
-(** Properties of repeat_free. *)
+(** Properties of nodup. *)
 
   Variable eq_dec : forall x y : A, {x=y}+{~x=y}.
 
-  Lemma repeat_free_unique : forall l (x:A),
-    repeat_free l -> forall n m, l[n] = Some x -> l[m] = Some x -> n=m.
+  Lemma nodup_unique : forall l (x:A),
+    nodup l -> forall n m, l[n] = Some x -> l[m] = Some x -> n=m.
 
   Proof.
     intro; intro; induction l; intros; simpl in H; try discr.
@@ -60,8 +60,8 @@ Section S.
     destruct H; ded (IHl H2 n m H0 H1); auto.
   Qed.
 
-  Lemma repeat_free_incl_length : forall l l' : list A,
-    repeat_free l -> incl l l' -> length l <= length l'.
+  Lemma nodup_incl_length : forall l l' : list A,
+    nodup l -> incl l l' -> length l <= length l'.
 
   Proof.
     induction l; simpl; intros. apply le_O_n.
@@ -71,24 +71,24 @@ Section S.
     apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. hyp.
   Qed.
 
-  Lemma repeat_free_last : forall (a : A) l,
-    repeat_free l -> ~In a l -> repeat_free (l ++ a :: nil).
+  Lemma nodup_last : forall (a : A) l,
+    nodup l -> ~In a l -> nodup (l ++ a :: nil).
 
   Proof.
     induction l; simpl; intros. auto. intuition. ded (in_app_or H). destruct H5.
     auto. simpl in H5. intuition.
   Qed.
 
-  Lemma repeat_free_rev : forall l : list A,
-    repeat_free l -> repeat_free (rev l).
+  Lemma nodup_rev : forall l : list A,
+    nodup l -> nodup (rev l).
 
   Proof.
-    induction l; simpl; intros. exact H. destruct H. apply repeat_free_last.
+    induction l; simpl; intros. exact H. destruct H. apply nodup_last.
     apply IHl. exact H0. intro. apply H. apply rev_incl. exact H1.
   Qed.
 
-  Lemma repeat_free_app_elim : forall l m : list A, repeat_free (l ++ m) ->
-    repeat_free l /\ repeat_free m /\ forall x, In x l -> ~In x m.
+  Lemma nodup_app_elim : forall l m : list A, nodup (l ++ m) ->
+    nodup l /\ nodup m /\ forall x, In x l -> ~In x m.
 
   Proof.
     induction l; simpl; intros. intuition. destruct H. ded (IHl m H0).
@@ -96,28 +96,19 @@ Section S.
     apply (H5 x); hyp.
   Qed.
 
-  Implicit Arguments repeat_free_app_elim [l m].
+  Implicit Arguments nodup_app_elim [l m].
 
-  Lemma repeat_free_app_cons : forall l (x : A) m,
-    repeat_free (l ++ x :: m) -> ~In x l /\ ~In x m.
+  Lemma nodup_app_cons : forall l (x : A) m,
+    nodup (l ++ x :: m) -> ~In x l /\ ~In x m.
 
   Proof.
-    split. apply repeat_free_rev in H. rewrite rev_app_distr in H.
-    apply repeat_free_app_elim in H. decomp H. rewrite List.in_rev.
+    split. apply nodup_rev in H. rewrite rev_app_distr in H.
+    apply nodup_app_elim in H. decomp H. rewrite List.in_rev.
     apply H3. rewrite <- List.in_rev. simpl. auto.
-    apply repeat_free_app_elim in H. simpl in H. tauto.
+    apply nodup_app_elim in H. simpl in H. tauto.
   Qed.
 
-  Lemma repeat_free_remove : forall x l,
-    repeat_free l -> repeat_free (remove eq_dec x l).
-
-  Proof.
-    intro x. induction l. fo. simpl. intros [nal lnd]. destruct (eq_dec a x).
-    subst a. fo. simpl. split. 2: fo.
-    intro al_x. apply nal. eapply remove_In. apply al_x.
-  Qed.
-
-  Lemma length_remove_nodup (x : A) : forall l, repeat_free l ->
+  Lemma length_remove_nodup (x : A) : forall l, nodup l ->
     In x l -> length (remove eq_dec x l) = length l - 1.
 
   Proof.
@@ -127,7 +118,7 @@ Section S.
   Qed.
 
   Lemma nodup_incl_length_le :
-    forall l m : list A, repeat_free l -> l [= m -> length l <= length m.
+    forall l m : list A, nodup l -> l [= m -> length l <= length m.
 
   Proof.
     induction l; simpl; intros m l_nodup lm. omega.
@@ -142,14 +133,14 @@ Section S.
   Qed.
 
   Lemma nodup_remove (x : A) :
-    forall l, repeat_free l -> repeat_free (remove eq_dec x l).
+    forall l, nodup l -> nodup (remove eq_dec x l).
 
   Proof.
     induction l; simpl. auto. destruct (eq_dec a x). fo. simpl. fo.
     intro h. apply H. eapply incl_remove2. apply h.
   Qed.
 
-  Lemma In_nodup_elim (x : A) : forall l, In x l -> repeat_free l ->
+  Lemma In_nodup_elim (x : A) : forall l, In x l -> nodup l ->
     exists l1 l2, l = l1 ++ x :: l2 /\ ~In x l1 /\ ~In x l2.
 
   Proof.
@@ -162,7 +153,7 @@ Section S.
 
   Arguments In_nodup_elim [x l] _ _.
 
-  Lemma inj_nth_nodup (x : A) l i j : repeat_free l ->
+  Lemma inj_nth_nodup (x : A) l i j : nodup l ->
     i < length l -> j < length l -> nth i l x = nth j l x -> i = j.
 
   Proof.
@@ -195,7 +186,7 @@ Section S.
   Qed.
 
   Lemma nodup_select (f : A->Prop) (f_dec : forall x, {f x}+{~f x}) :
-    forall l, repeat_free l -> repeat_free (select f_dec l).
+    forall l, nodup l -> nodup (select f_dec l).
 
   Proof.
     induction l; simpl. fo. destruct (f_dec a); simpl; intuition.
@@ -205,37 +196,37 @@ Section S.
 (***********************************************************************)
 (** Least prefix with no duplicated element. *)
 
-  Fixpoint greatest_repeat_free_prefix_aux (acc l : list A) : list A :=
+  Fixpoint greatest_nodup_prefix_aux (acc l : list A) : list A :=
     match l with
       | nil => rev acc
       | cons x l =>
         match In_dec eq_dec x acc with
           | left _ => rev acc
-          | right _ => greatest_repeat_free_prefix_aux (x :: acc) l
+          | right _ => greatest_nodup_prefix_aux (x :: acc) l
         end
     end.
 
-  Notation greatest_repeat_free_prefix := (greatest_repeat_free_prefix_aux nil).
+  Notation greatest_nodup_prefix := (greatest_nodup_prefix_aux nil).
 
 (***********************************************************************)
-(** greatest_repeat_free_prefix properties *)
+(** greatest_nodup_prefix properties *)
 
-  Lemma greatest_repeat_free_prefix_aux_correct : forall l acc,
-    repeat_free acc -> repeat_free (greatest_repeat_free_prefix_aux acc l).
+  Lemma greatest_nodup_prefix_aux_correct : forall l acc,
+    nodup acc -> nodup (greatest_nodup_prefix_aux acc l).
 
   Proof.
-    induction l; simpl; intros. apply repeat_free_rev. exact H.
-    case (In_dec eq_dec a acc); intro. apply repeat_free_rev. exact H.
+    induction l; simpl; intros. apply nodup_rev. exact H.
+    case (In_dec eq_dec a acc); intro. apply nodup_rev. exact H.
     apply IHl. simpl. auto.
   Qed.
 
-  Lemma greatest_repeat_free_prefix_correct : forall l,
-    repeat_free (greatest_repeat_free_prefix l).
+  Lemma greatest_nodup_prefix_correct : forall l,
+    nodup (greatest_nodup_prefix l).
 
-  Proof. intro. apply greatest_repeat_free_prefix_aux_correct. fo. Qed.
+  Proof. intro. apply greatest_nodup_prefix_aux_correct. fo. Qed.
 
-  Lemma greatest_repeat_free_prefix_aux_elim : forall l acc,
-    exists p, greatest_repeat_free_prefix_aux acc l = rev acc ++ p.
+  Lemma greatest_nodup_prefix_aux_elim : forall l acc,
+    exists p, greatest_nodup_prefix_aux acc l = rev acc ++ p.
 
   Proof.
     induction l; simpl; intros. exists nil. rewrite <- app_nil_end. refl.
@@ -244,10 +235,10 @@ Section S.
     exists (a::x). refl.
   Qed.
 
-  Lemma greatest_repeat_free_prefix_aux_app : forall m l acc,
-    repeat_free l -> (forall x, In x l -> ~In x acc) ->
-    greatest_repeat_free_prefix_aux acc (l ++ m)
-    = greatest_repeat_free_prefix_aux (rev l ++ acc) m.
+  Lemma greatest_nodup_prefix_aux_app : forall m l acc,
+    nodup l -> (forall x, In x l -> ~In x acc) ->
+    greatest_nodup_prefix_aux acc (l ++ m)
+    = greatest_nodup_prefix_aux (rev l ++ acc) m.
 
   Proof.
     induction l; simpl; intros. refl. destruct H.
@@ -258,106 +249,106 @@ Section S.
     rewrite (IHl (a::acc) H1 H2). rewrite app_ass. refl.
   Qed.
 
-  Implicit Arguments greatest_repeat_free_prefix_aux_app [l acc].
+  Implicit Arguments greatest_nodup_prefix_aux_app [l acc].
 
-  Lemma greatest_repeat_free_prefix_app : forall m l, repeat_free l ->
-    greatest_repeat_free_prefix (l ++ m)
-    = greatest_repeat_free_prefix_aux (rev l) m.
+  Lemma greatest_nodup_prefix_app : forall m l, nodup l ->
+    greatest_nodup_prefix (l ++ m)
+    = greatest_nodup_prefix_aux (rev l) m.
 
   Proof.
     intros. assert (rev l = rev l ++ nil). apply app_nil_end. rewrite H0.
-    apply greatest_repeat_free_prefix_aux_app. exact H. simpl. auto.
+    apply greatest_nodup_prefix_aux_app. exact H. simpl. auto.
   Qed.
 
-  Implicit Arguments greatest_repeat_free_prefix_app [l].
+  Implicit Arguments greatest_nodup_prefix_app [l].
 
-  Lemma repeat_free_greatest_repeat_free_prefix : forall l,
-    repeat_free l -> greatest_repeat_free_prefix l = l.
+  Lemma nodup_greatest_nodup_prefix : forall l,
+    nodup l -> greatest_nodup_prefix l = l.
 
   Proof.
     induction l; simpl; intros. refl. destruct H.
     assert (l = l++nil). apply app_nil_end. rewrite H1.
     assert (forall x, In x l -> ~In x (a::nil)). simpl. intuition.
     subst a. auto.
-    rewrite (greatest_repeat_free_prefix_aux_app nil H0 H2). simpl.
+    rewrite (greatest_nodup_prefix_aux_app nil H0 H2). simpl.
     rewrite rev_unit, rev_involutive, <- app_nil_end. refl.
   Qed.
 
-  Lemma greatest_repeat_free_prefix_intro: forall l,
-    l = greatest_repeat_free_prefix l
-    \/ exists x, In x (greatest_repeat_free_prefix l)
-                 /\ exists p, l = greatest_repeat_free_prefix l ++ x :: p.
+  Lemma greatest_nodup_prefix_intro: forall l,
+    l = greatest_nodup_prefix l
+    \/ exists x, In x (greatest_nodup_prefix l)
+                 /\ exists p, l = greatest_nodup_prefix l ++ x :: p.
 
   Proof.
     induction l; intros. simpl. intuition.
-    assert (repeat_free (greatest_repeat_free_prefix l)).
-    apply greatest_repeat_free_prefix_correct.
-    case (In_dec eq_dec a (greatest_repeat_free_prefix l)); intro.
-    (* In a (greatest_repeat_free_prefix l) *)
+    assert (nodup (greatest_nodup_prefix l)).
+    apply greatest_nodup_prefix_correct.
+    case (In_dec eq_dec a (greatest_nodup_prefix l)); intro.
+    (* In a (greatest_nodup_prefix l) *)
     right. ded (in_elim_dec eq_dec i). do 3 destruct H0. exists a.
-    (* repeat_free (a::x) *)
-    assert (repeat_free (a::x)). simpl. split. exact H1.
-    rewrite H0 in H. ded (repeat_free_app_elim H). intuition. split.
-    simpl. ded (greatest_repeat_free_prefix_aux_elim l (a::nil)). destruct H3.
+    (* nodup (a::x) *)
+    assert (nodup (a::x)). simpl. split. exact H1.
+    rewrite H0 in H. ded (nodup_app_elim H). intuition. split.
+    simpl. ded (greatest_nodup_prefix_aux_elim l (a::nil)). destruct H3.
     rewrite H3.
     simpl. auto.
-    (* exists p, l = greatest_repeat_free_prefix l ++ p *)
-    assert (exists p, l = greatest_repeat_free_prefix l ++ p). destruct IHl.
+    (* exists p, l = greatest_nodup_prefix l ++ p *)
+    assert (exists p, l = greatest_nodup_prefix l ++ p). destruct IHl.
     exists nil. rewrite <- H3. apply app_nil_end.
     decomp H3. exists (x1::x2). exact H4.
-    (* greatest_repeat_free_prefix_app (x::x0++x1) H2 *)
+    (* greatest_nodup_prefix_app (x::x0++x1) H2 *)
     decomp H3. rewrite H0 in H4. rewrite H4.
     assert (a::(x++a::x0)++x1 = (a::x)++a::x0++x1). rewrite app_ass. refl.
     rewrite H3. clear H3.
-    rewrite (greatest_repeat_free_prefix_app (a::x0++x1) H2). simpl.
+    rewrite (greatest_nodup_prefix_app (a::x0++x1) H2). simpl.
     case (In_dec eq_dec a (rev x ++ a :: nil)); intros.
     rewrite distr_rev. simpl. rewrite rev_involutive. exists (x0++x1). refl.
     absurd (In a (rev x++a::nil)). exact n. apply in_appr. simpl. auto.
-    (* ~In a (greatest_repeat_free_prefix l) *)
+    (* ~In a (greatest_nodup_prefix l) *)
     destruct IHl.
-    left. sym. apply repeat_free_greatest_repeat_free_prefix. simpl.
+    left. sym. apply nodup_greatest_nodup_prefix. simpl.
     rewrite H0. intuition.
     right. decomp H0. exists x.
-    assert (repeat_free (a::greatest_repeat_free_prefix l)). simpl. intuition.
-    (* greatest_repeat_free_prefix_app (x::x0) H0 *)
-    assert (a::l = (a::greatest_repeat_free_prefix l)++x::x0). simpl.
+    assert (nodup (a::greatest_nodup_prefix l)). simpl. intuition.
+    (* greatest_nodup_prefix_app (x::x0) H0 *)
+    assert (a::l = (a::greatest_nodup_prefix l)++x::x0). simpl.
     rewrite <- H1. refl.
-    rewrite H3. clear H3. rewrite (greatest_repeat_free_prefix_app (x::x0) H0).
+    rewrite H3. clear H3. rewrite (greatest_nodup_prefix_app (x::x0) H0).
     simpl.
     rewrite rev_unit, rev_involutive.
-    case (In_dec eq_dec x (rev (greatest_repeat_free_prefix l) ++ a :: nil));
+    case (In_dec eq_dec x (rev (greatest_nodup_prefix l) ++ a :: nil));
       intro. split.
     apply in_cons. exact H2. exists x0. refl.
-    absurd (In x (rev (greatest_repeat_free_prefix l) ++ a :: nil)). exact n0.
+    absurd (In x (rev (greatest_nodup_prefix l) ++ a :: nil)). exact n0.
     apply in_appl. apply in_rev. exact H2.
   Qed.
 
-  Lemma greatest_repeat_free_prefix_intro' : forall l,
-    exists m, l = greatest_repeat_free_prefix l ++ m.
+  Lemma greatest_nodup_prefix_intro' : forall l,
+    exists m, l = greatest_nodup_prefix l ++ m.
 
   Proof.
-    intro. ded (greatest_repeat_free_prefix_intro l). destruct H.
+    intro. ded (greatest_nodup_prefix_intro l). destruct H.
     exists nil. rewrite <- H. apply app_nil_end.
     decomp H. exists (x::x0). exact H0.
   Qed.
 
-  Lemma repeat_free_intro: forall l : list A, repeat_free l
-    \/ exists m x p, l = m ++ x :: p /\ repeat_free m /\ In x m.
+  Lemma nodup_intro: forall l : list A, nodup l
+    \/ exists m x p, l = m ++ x :: p /\ nodup m /\ In x m.
 
   Proof.
-    intro. ded (greatest_repeat_free_prefix_intro l).
-    assert (repeat_free (greatest_repeat_free_prefix l)).
-    apply greatest_repeat_free_prefix_correct. destruct H.
+    intro. ded (greatest_nodup_prefix_intro l).
+    assert (nodup (greatest_nodup_prefix l)).
+    apply greatest_nodup_prefix_correct. destruct H.
     left. rewrite H. exact H0.
-    right. decomp H. ex (greatest_repeat_free_prefix l) x x0.
+    right. decomp H. ex (greatest_nodup_prefix l) x x0.
     intuition.
   Qed.
 
-  Lemma repeat_free_intro' : forall l : list A,
-    exists m p, l = m ++ p /\ repeat_free m.
+  Lemma nodup_intro' : forall l : list A,
+    exists m p, l = m ++ p /\ nodup m.
 
   Proof.
-    intro. ded (repeat_free_intro l). destruct H.
+    intro. ded (nodup_intro l). destruct H.
     exists l. exists nil. rewrite <- app_nil_end. auto.
     decomp H. exists x. exists (x0::x1). auto.
   Qed.
@@ -365,20 +356,20 @@ Section S.
 (***********************************************************************)
 (** Remove duplicated elements of a list. *)
 
-  Fixpoint make_repeat_free l :=
+  Fixpoint remdup l :=
     match l with
       | nil => nil
-      | t :: q => t :: remove eq_dec t (make_repeat_free q) 
+      | t :: q => t :: remove eq_dec t (remdup q) 
     end.
 
-  Lemma nodup_remdup : forall l, repeat_free (make_repeat_free l).
+  Lemma nodup_remdup : forall l, nodup (remdup l).
 
   Proof.
     induction l. simpl; auto. simpl. split. unfold not. apply notin_remove.
-    eapply repeat_free_remove; eauto.
+    eapply nodup_remove; eauto.
   Qed.
 
-  Lemma make_repeat_free_incl : forall l, make_repeat_free l [= l.
+  Lemma remdup_incl : forall l, remdup l [= l.
 
   Proof.
     induction l. simpl; unfold incl; auto.
@@ -387,7 +378,7 @@ Section S.
     right; apply IHl. eapply remove_In. eauto.
   Qed.
 
-  Lemma incl_make_repeat_free : forall l, l [= make_repeat_free l.
+  Lemma incl_remdup : forall l, l [= remdup l.
 
   Proof.
     induction l. simpl; unfold incl; auto.
@@ -395,28 +386,28 @@ Section S.
     auto. destruct H. auto. right. apply In_remove; auto.
   Qed.
 
-  Lemma In_remdup x : forall l, In x (make_repeat_free l) <-> In x l.
+  Lemma In_remdup x : forall l, In x (remdup l) <-> In x l.
 
   Proof.
-    intro l. split; intro h. apply make_repeat_free_incl. hyp.
-    apply incl_make_repeat_free. hyp.
+    intro l. split; intro h. apply remdup_incl. hyp.
+    apply incl_remdup. hyp.
   Qed.
 
 (***********************************************************************)
-(** Boolean function deciding repeat_free. *)
+(** Boolean function deciding nodup. *)
 
   Require Import ListDec BoolUtil.
 
   Variables (beq : A -> A -> bool)
             (beq_ok : forall x y, beq x y = true <-> x = y).
 
-  Fixpoint brepeat_free (l : list A) : bool :=
+  Fixpoint bnodup (l : list A) : bool :=
     match l with
       | nil => true
-      | a :: l' => negb (mem beq a l') && brepeat_free l'
+      | a :: l' => negb (mem beq a l') && bnodup l'
     end.
 
-  Lemma brepeat_free_ok : forall l, brepeat_free l = true <-> repeat_free l.
+  Lemma bnodup_ok : forall l, bnodup l = true <-> nodup l.
 
   Proof.
     induction l; simpl; intros. tauto.
@@ -426,10 +417,10 @@ Section S.
 
 End S.
 
-Implicit Arguments repeat_free_app_elim [A l m].
-Implicit Arguments repeat_free_unique [A l x n m].
-Implicit Arguments repeat_free_app_cons [A l x m].
-Implicit Arguments brepeat_free_ok [A beq].
+Implicit Arguments nodup_app_elim [A l m].
+Implicit Arguments nodup_unique [A l x n m].
+Implicit Arguments nodup_app_cons [A l x m].
+Implicit Arguments bnodup_ok [A beq].
 
 (***********************************************************************)
 (** Properties of [nodup] involving more than one type. *)
@@ -437,7 +428,7 @@ Implicit Arguments brepeat_free_ok [A beq].
 Require Import FunUtil.
 
 Lemma nodup_map_inj A B (f : A -> B) :
-  injective f -> forall l, repeat_free l -> repeat_free (map f l).
+  injective f -> forall l, nodup l -> nodup (map f l).
 
 Proof.
   intro f_inj. induction l; simpl. auto.
@@ -449,4 +440,4 @@ Qed.
 (***********************************************************************)
 (** Tactics. *)
 
-Ltac repeat_free beq_ok := rewrite <- (brepeat_free_ok beq_ok); check_eq.
+Ltac nodup beq_ok := rewrite <- (bnodup_ok beq_ok); check_eq.

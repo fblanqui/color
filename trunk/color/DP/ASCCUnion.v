@@ -30,7 +30,7 @@ Notation dim := (length R).
 Variable ODPG : relation rule.
 Variable over_DPG : DPG << ODPG.
 Variable restriction : is_restricted ODPG R.
-Variable rp_free: repeat_free R.
+Variable rp_free: nodup R.
 Variable ODPG_dec : forall x y, {ODPG x y} + {~ODPG x y}.
 
 Definition hyps := mkSCC_dec_hyps rule_eq_dec restriction rp_free ODPG_dec.
@@ -253,8 +253,8 @@ destruct (eq_opt_dec eq_nat_dec (SCC'_tag HM a) (Some i));
 destruct H; simpl in *; try subst a; tauto.
 Qed.
 
-Lemma repeat_free_SCC'_list_aux : forall i L, 
-  repeat_free L -> repeat_free (SCC'_list_aux i L).
+Lemma nodup_SCC'_list_aux : forall i L, 
+  nodup L -> nodup (SCC'_list_aux i L).
 
 Proof.
 induction L; intros; simpl. tauto.
@@ -276,10 +276,10 @@ assert (SCC' r r). rewrite (SCC'_tag_exact hyps HM).
 intuition. congruence. unfold SCCTopoOrdering.SCC' in H0. tauto.
 Qed.
 
-Lemma repeat_free_SCC'_list : forall i, repeat_free (SCC'_list i).
+Lemma nodup_SCC'_list : forall i, nodup (SCC'_list i).
 
 Proof.
-unfold SCC'_list; intros. apply repeat_free_SCC'_list_aux. auto.
+unfold SCC'_list; intros. apply nodup_SCC'_list_aux. auto.
 Qed.
  
 Lemma chain_SCC'_red_Mod : forall i,
@@ -325,7 +325,7 @@ unfold rel_on_dom in H3. simpl in *. rewrite H6 in H3.
 ded (eq_In_find_first rule_eq_dec H5).
 do 2 destruct H9. rewrite H9 in H3.
 
-assert (i=x0). eapply repeat_free_unique; eauto. subst x0.
+assert (i=x0). eapply nodup_unique; eauto. subst x0.
 unfold GoM in H3. rewrite HM in H3. auto.
 
 unfold mat_unbound in H9; destruct (le_gt_dec dim i).
@@ -415,12 +415,12 @@ assert (SCC ODPG h h). split; apply t_step; auto.
 rewrite (SCC_effective_exact hyps HM) in H2.
 unfold SCC_effective in H2. simpl in *. unfold rel_on_dom in H2.
 ded (restriction o); intuition. ded (eq_In_find_first rule_eq_dec H4).
-do 2 destruct H3. ded(@repeat_free_unique rule R h rp_free _ _ H1 H6).
+do 2 destruct H3. ded(@nodup_unique rule R h rp_free _ _ H1 H6).
 subst x. rewrite H3 in H2. intuition.
 
 eapply red_Mod_SCC_trivial_singl; eauto.
 
-ded (repeat_free_SCC'_list i).
+ded (nodup_SCC'_list i).
 rewrite <-H0 in H1; simpl in H1; intuition. clear H1 H4 H5.
 assert(In h (SCC'_list i)); assert(In h0 (SCC'_list i)); try rewrite <- H0;
   simpl;auto.
@@ -446,7 +446,7 @@ rewrite (SCC_effective_exact hyps HM) in H10.
 unfold SCC_effective in H10. simpl in *. unfold rel_on_dom in H10.
 assert (In x R). eapply exists_element_at_in. exists i; auto.
 ded (eq_In_find_first rule_eq_dec H11). do 2 destruct H12.
-ded (repeat_free_unique rp_free H13 H6). subst x0.
+ded (nodup_unique rp_free H13 H6). subst x0.
 rewrite H12 in H10. intuition.
 Qed.
 

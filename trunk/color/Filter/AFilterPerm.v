@@ -27,7 +27,7 @@ This hyp is not really necessary but it makes the proof of weak
 monotony simpler. Otherwise, we also need to assume that the ordering
 is transitive. *)
 
-    Definition non_dup := forall f, repeat_free (map N_val (pi f)).
+    Definition non_dup := forall f, nodup (map N_val (pi f)).
 
     Variable hyp : non_dup.
 
@@ -161,7 +161,7 @@ is transitive. *)
         rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
 
         ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
-        simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
+        simpl in H. destruct (nodup_app_cons H) as [h1 h2].
         rewrite <- vx in h1. rewrite <- vx in h2.
 
         assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
@@ -212,7 +212,7 @@ is transitive. *)
         rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
 
         ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
-        simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
+        simpl in H. destruct (nodup_app_cons H) as [h1 h2].
         rewrite <- vx in h1. rewrite <- vx in h2.
 
         assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
@@ -279,7 +279,7 @@ is transitive. *)
         simpl in a. set (d := Cont (Sig:=Sig') f a v1 Hole v2).
 
         ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
-        simpl in H. destruct (repeat_free_app_cons H) as [h1 h2].
+        simpl in H. destruct (nodup_app_cons H) as [h1 h2].
         rewrite <- vx in h1. rewrite <- vx in h2.
 
         assert (e1 : Vfilter l1 vt = Vfilter l1 vu). apply Vfilter_eq_notin.
@@ -404,13 +404,13 @@ is transitive. *)
 (** verifying arguments non-duplication *)
 
     Definition bnon_dup :=
-      forallb (fun f => brepeat_free beq_nat (raw_pi f)) Fs.
+      forallb (fun f => bnodup beq_nat (raw_pi f)) Fs.
 
     Lemma bnon_dup_ok : bnon_dup = true <-> non_dup build_pi.
 
     Proof.
       unfold bnon_dup, non_dup. apply forallb_ok_fintype. 2: apply Fs_ok.
-      intro f. rewrite build_pi_ok. apply brepeat_free_ok. apply beq_nat_ok.
+      intro f. rewrite build_pi_ok. apply bnodup_ok. apply beq_nat_ok.
     Qed.
 
 (***********************************************************************)

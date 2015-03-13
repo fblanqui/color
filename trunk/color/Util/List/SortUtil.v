@@ -44,7 +44,7 @@ Qed.
 Require Import ListRepeatFree.
 
 Lemma rp_free_lelistA_strict : forall B a S (mb : list B)
-  (HL : repeat_free (a::mb)), lelistA (S%) a mb -> lelistA S a mb.
+  (HL : nodup (a::mb)), lelistA (S%) a mb -> lelistA S a mb.
 
 Proof.
 intros. induction mb; intuition.
@@ -53,7 +53,7 @@ destruct H1; subst; try tauto.
 Qed.
 
 Lemma rp_free_sort_strict : forall B S (mb : list B)
-  (HL : repeat_free mb), sort (S%) mb -> sort S mb.
+  (HL : nodup mb), sort (S%) mb -> sort S mb.
 
 Proof.
 intros. induction mb. apply nil_sort.
@@ -81,9 +81,9 @@ Section multiplicity.
     tauto.
   Qed.
 
-  Lemma multiplicity_repeat_free : forall mb,
+  Lemma multiplicity_nodup : forall mb,
     (forall a, multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a <= 1)
-    -> repeat_free mb.
+    -> nodup mb.
 
   Proof.
     intros. induction mb; simpl; auto. simpl in H. split.

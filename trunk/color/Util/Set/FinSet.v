@@ -22,10 +22,6 @@ Section S.
 
   Notation set := (set A).
 
-(*REMOVE:*)
-  Notation nodup := repeat_free.
-  Notation remdup := (make_repeat_free eq_dec).
-
 (****************************************************************************)
 (** * Definition of finiteness *)
 
@@ -81,7 +77,7 @@ Section S.
   Lemma finite_of_list l : finite (of_list l).
 
   Proof.
-    assert (e : of_list l [=] of_list (remdup l)).
+    assert (e : of_list l [=] of_list (remdup eq_dec l)).
     intro x. unfold mem, of_list. sym. apply In_remdup.
     rewrite e. apply finite_of_list_nodup. apply nodup_remdup.
   Qed.
@@ -122,7 +118,7 @@ list of elements. *)
   Lemma finite_eq_nodup P : finite P <-> exists l, P [=] of_list l /\ nodup l.
 
   Proof.
-    split. rewrite finite_eq. intros [l e]. ex (remdup l). split.
+    split. rewrite finite_eq. intros [l e]. ex (remdup eq_dec l). split.
     rewrite e. intro x. sym. apply In_remdup. apply nodup_remdup.
     intros [l [e _]]. rewrite e. apply finite_of_list.
   Qed.

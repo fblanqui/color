@@ -59,9 +59,9 @@ Section S.
 
   Proof. induction l; simpl; intros. tauto. apply IHl with a. tauto. Qed.
 
-  Lemma path_repeat_free_length : 
+  Lemma path_nodup_length : 
     eq_midex A -> forall y l x,  path x y l -> 
-      exists l', ~In x l' /\ ~In y l' /\ repeat_free l'
+      exists l', ~In x l' /\ ~In y l' /\ nodup l'
         /\ length l'<= length l /\ l' [= l /\ path x y l'.
 
   Proof.
@@ -75,7 +75,7 @@ Section S.
     intro. absurd (In y x0). tauto. 
     rewrite (proj1 H4). apply in_or_app. simpl. tauto. rewrite (proj1 H4) in H1.
     split.
-    destruct (repeat_free_app_elim_right x1 (x::x2)). tauto. tauto.   
+    destruct (nodup_app_elim_right x1 (x::x2)). tauto. tauto.   
     split. rewrite (length_app x1 (x::x2)) in H1. simpl in H1|-* . omega. split.
     trans (x::x2). apply incl_tl. refl.
     trans (x1++(x::x2)). apply incl_appr. refl.
@@ -147,8 +147,8 @@ Section S.
 
   Proof.
     do 6 intro. destruct (clos_trans_path H1).
-    destruct (path_repeat_free_length H y x0 x H2). apply bp_intro with x1. 
-    apply repeat_free_midex_incl_length. hyp. tauto. 
+    destruct (path_nodup_length H y x0 x H2). apply bp_intro with x1. 
+    apply nodup_midex_incl_length. hyp. tauto. 
     apply path_restricted_incl with y x;tauto. tauto. 
   Qed.
 
