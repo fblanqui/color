@@ -32,8 +32,8 @@ Proof.
   apply Empty_R_neutral_union_r.
 Qed.
 
-
 Section S. 
+
 Variable R1 R2 R3 R4: relation term.
 Hypothesis R1_equiv_R2 : forall l r, R1 r l <-> R2 r l.
 Hypothesis R3_equiv_R4 : forall l r, R3 r l <-> R4 r l.
@@ -143,9 +143,6 @@ Proof.
   apply dp_step_equiv_aux_2.
 Qed.
 
-
-
-
 Lemma Empty_R_equiv_list : forall l r : term, Empty_R r l <-> In (l,r) nil.
 Proof.
   split.
@@ -153,12 +150,12 @@ Proof.
   inversion 1.
 Qed.
 
-
-
 End S.
+
 Section S'.
 
 Variable R1 R2 R3 : relation term.
+
 Lemma rdp_step_equiv_strong : 
   forall R1 R2 R3 R4 
     (R1_dp_equiv_R2: forall l r, dp R1 r l <-> dp R2 r l)
@@ -193,8 +190,6 @@ intros f2 s t def_f2 s_t.
 inversion def_f2;subst.
 inversion H.
 Qed.
-
-
   
 Lemma one_step_union_sym : 
   forall l r, one_step  (union _ R1 R2) r l <-> 
@@ -205,7 +200,6 @@ Proof.
   intros.
   apply (union_sym R1 R2).
 Qed.
-
 
 Lemma one_step_list_union_sym : 
   forall l1 l2, one_step_list  (one_step (union _ R1 R2)) l1 l2 <-> 
@@ -243,7 +237,6 @@ Proof.
   reflexivity.
 Qed.
 
-
 Lemma one_step_union_assoc : 
   forall l r, one_step (union _ (union _ R1 R2) R3) r l <-> one_step (union _  R1 (union _ R2 R3)) r l.
 Proof.
@@ -270,7 +263,6 @@ Proof.
   apply union_sym.
 Qed.
 
-
 Lemma one_step_list_union_insert : 
   forall R1 R2 l r,
      (one_step_list (one_step (union _ R1 R2)) r l <-> 
@@ -283,7 +275,6 @@ Proof.
   rewrite Empty_R_neutral_union_l.
   apply union_sym.
 Qed.
-
 
 Lemma star_equiv : forall (A:Type) (R1 R2: A -> A -> Prop), (forall l r, R1 r l <-> R2 r l) -> 
   forall l r, star _ R1 r l <-> star _ R2 r l.
@@ -346,8 +337,6 @@ Proof.
   rewrite (IHl0 a');trivial.
   auto with *.
   rewrite H in H2;discriminate.
-
-
 Qed.
 
 
@@ -549,16 +538,3 @@ Qed.
   
 
 End Make.
-
-
-
-
-
-
-
-(* 
-*** Local Variables: *** 
-*** coq-prog-name: "coqtop -emacs -I . -I ../../basis -I ../../term_orderings -I ../../list_extensions -I ../../term_algebra" *** 
-*** coq-prog-args: nil *** 
-*** End: *** 
-*) 

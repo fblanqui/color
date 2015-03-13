@@ -1334,10 +1334,3 @@ End Mult.
 End Make.
 
 Module NatMul := Make (ordered_set.Nat).
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../basis/") ***
-*** End: ***
- *)

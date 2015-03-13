@@ -2985,10 +2985,3 @@ Qed.
 
 
 End MakeModDP.
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs" "-I" "../basis/" "-I" "../list_extensions/" "-I" "../term_algebra/") ***
-*** End: ***
- *)

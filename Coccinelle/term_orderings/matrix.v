@@ -4433,10 +4433,3 @@ End ZRing.
 
 
 Module ZMatrix := Make_Ordered(ZRing).
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../basis/" "-I" "../term_algebra/" "-I" "../list_extensions/") ***
-*** End: ***
- *)

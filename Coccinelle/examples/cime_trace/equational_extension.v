@@ -32,10 +32,7 @@ Lemma one_step_list_star_decompose_cons :
 Proof.
   intros R x l l''. 
   set (l1 := x::l) in *.
-(*   set (l1' := x'::l') in *. *)
-  generalize (refl_equal l1);
-(*   generalize (refl_equal l1'). *)
-  (* unfold l1' at 1; *)unfold l1 at 1;clearbody l1(* ;clearbody l1' *).
+  generalize (refl_equal l1); unfold l1 at 1;clearbody l1.
   intros H H0  .
   revert x l  H.
   induction H0. 
@@ -303,10 +300,3 @@ Section is_def.
 End is_def.
 
 End Make.
-
-(* 
-*** Local Variables: *** 
-*** coq-prog-name: "coqtop"  *** 
-*** coq-prog-args: ("-emacs-U" "-I" "../../basis/" "-I" "../../term_orderings/" "-I" "../../list_extensions/" "-I" "../../term_algebra/")  *** 
-*** End: *** 
-*) 

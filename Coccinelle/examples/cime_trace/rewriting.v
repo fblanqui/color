@@ -1,39 +1,12 @@
 Require Import Omega.
 Require Import term. 
-(* Require Import List.  *)
 Require Import Relations.
 Require Inclusion.
 Require equational_theory. (* mainly for one_step...*)
 Require Import Wellfounded.
 
-
 Notation "'SN'" := Acc.
 Notation "'termine'" := well_founded.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Section Inclusion.
   Variable A : Type.
@@ -53,12 +26,6 @@ Section Inclusion.
   Qed.
 
 End Inclusion.
-
-
-(* Module Make (RR : REW_RULES). *)
-(* Module Make (eqth:equational_theory.EqTh). *)
-
-(*     Module EqTh := equational_theory.Make(RR.T). *)
 
 Section Terminaison.
   Variable T:Type.
@@ -138,18 +105,3 @@ Section Terminaison.
   Qed.
 
 End Terminaison.
-
-
-
-
-
-
-(* End Make. *)
-
-
-(* 
-   *** Local Variables: ***
-   *** coq-prog-name: "coqtop -emacs -I . -I ../../basis -I ../../term_orderings -I ../../list_extensions -I ../../term_algebra" ***
-   *** coq-prog-args: nil ***
-   *** End: ***
-   *)

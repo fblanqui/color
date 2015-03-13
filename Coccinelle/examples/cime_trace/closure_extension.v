@@ -62,10 +62,3 @@ Section S.
   Qed.
 
 End S.
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../../basis/") ***
-*** End: ***
- *)

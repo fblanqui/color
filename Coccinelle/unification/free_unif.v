@@ -3140,12 +3140,3 @@ symmetry; apply Sol_tau.
 Qed.
 
 End Make.
-
-
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../basis/" "-I" "../list_extensions/" "-I" "../term_algebra/" "-I" "../ac_matching/" "-I" "../term_orderings/") ***
-*** End: ***
- *)

@@ -226,10 +226,3 @@ Parameter are_constructors_of_R :
   exists l', t' = Term f l' /\ refl_trans_clos (one_step_list (one_step R)) l' l.
 
 End EqTh.
-
-(* 
-*** Local Variables: *** 
-*** coq-prog-name: "coqtop -emacs -I . -I ../basis -I ../term_orderings -I ../list_extensions -I ../term_algebra" *** 
-*** coq-prog-args: nil *** 
-*** End: *** 
-*) 

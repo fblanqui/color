@@ -932,10 +932,3 @@ right; exists q; exists q'; exists v; split; trivial.
 Qed.
 
 End Make.
-
-(* 
-*** Local Variables: ***
-*** coq-prog-name: "coqtop" ***
-*** coq-prog-args: ("-emacs-U" "-I" "../basis/" "-I" "../list_extensions/" "-I" "../term_algebra/") ***
-*** End: ***
- *)
