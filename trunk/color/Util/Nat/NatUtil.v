@@ -586,7 +586,7 @@ Section Interval_list.
       | S i' => let x := snd (Interval_list i') in (x, x + F i)
     end.
 
-  Notation Local F' := Interval_list.
+  Local Notation F' := Interval_list.
 
   Lemma int_exPi : forall i, exists j, fst (F' j) <= i /\ i < snd (F' j).
 
