@@ -72,6 +72,10 @@ Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
 
 Proof. induction n; simpl; intros. omega. rewrite <- IHn. omega. Qed.
 
+Lemma length_nats_decr_lt n : length (nats_decr_lt n) = n.
+
+Proof. induction n; simpl. refl. rewrite IHn. refl. Qed.
+
 (****************************************************************************)
 (** List [@N_ n (n-1) _; ..; @N_ n 0 _] of all the elements of [N n] in
 reverse order. *)
