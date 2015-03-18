@@ -9,7 +9,7 @@ type of natural numbers smaller than some constant
 
 Set Implicit Arguments.
 
-Require Import NatUtil LogicUtil Multiset Permutation PermutSetoid.
+Require Import NatUtil LogicUtil Multiset Permutation PermutSetoid NatLt.
 
 Section S.
 
@@ -65,13 +65,13 @@ Section S.
     tauto.
   Qed.
 
-  Definition nfirst_bnats := bnats_of_nats (nfirst dim).
+  Definition nfirst_bnats := bnats_of_nats (nats_decr_lt dim).
 
   Lemma bnatlist_exact : forall x, In x nfirst_bnats.
 
   Proof.
     intros. unfold nfirst_bnats. destruct x. fold (mkbnat l).
-    apply bnats_of_nats_spec. rewrite nfirst_exact. auto.
+    apply bnats_of_nats_spec. rewrite <- In_nats_decr_lt. auto.
   Qed.
 
   Require Import SortUtil.
@@ -96,7 +96,7 @@ Section S.
   Qed.
 
   Lemma nfirst_multiplicity : forall n i,
-    multiplicity (list_contents (@eq nat) eq_nat_dec (nfirst n)) i
+    multiplicity (list_contents eq_nat_dec (nats_decr_lt n)) i
     = if lt_ge_dec i n then 1 else 0.
 
   Proof. 
@@ -107,7 +107,7 @@ Section S.
 
   Lemma bnfirst_multiplicity n (i : bnat) :
     multiplicity
-    (list_contents (@eq bnat) eq_bnat_dec (bnats_of_nats (nfirst n))) i
+    (list_contents eq_bnat_dec (bnats_of_nats (nats_decr_lt n))) i
     = if lt_ge_dec (proj1_sig i) n then 1 else 0.
 
   Proof.
@@ -126,8 +126,8 @@ Section S.
   Qed.
 
   Lemma map_multiplicity : forall a (h : a<dim) mb,
-    multiplicity (list_contents (@eq bnat) eq_bnat_dec mb) (mkbnat h)
-    = multiplicity (list_contents (@eq nat) eq_nat_dec
+    multiplicity (list_contents eq_bnat_dec mb) (mkbnat h)
+    = multiplicity (list_contents eq_nat_dec
       (map (fun y : bnat => proj1_sig y) mb)) a.
 
   Proof.
@@ -140,7 +140,7 @@ Section S.
   Qed.
 
   Lemma lemme_foo : forall a (H:a>=dim) mb, 
-    multiplicity (list_contents (eq (A:=nat)) eq_nat_dec
+    multiplicity (list_contents eq_nat_dec
       (map (fun y : bnat => proj1_sig y) mb)) a = 0.
 
   Proof.
