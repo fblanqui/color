@@ -11,9 +11,8 @@ multisets.
 
 Set Implicit Arguments.
 
-Require Import RelExtras MultisetCore Min List Multiset Permutation
-  ListPermutation NatUtil Setoid ListExtras PermutSetoid LogicUtil
-  Morphisms.
+Require Import RelExtras MultisetCore Min List
+  ListPermutation NatUtil Setoid ListExtras LogicUtil Morphisms.
 
 Module Multiset (MC : MultisetCore).
 
@@ -807,7 +806,7 @@ Module Multiset (MC : MultisetCore).
     Qed.
 
     Lemma list2multiset_mult : forall l a,
-        a / (list2multiset l) = multiplicity (list_contents eqA eqA_dec l) a.
+        a / (list2multiset l) = multiplicity (list_contents eqA_dec l) a.
 
     Proof.
       induction l; intros.
@@ -820,7 +819,7 @@ Module Multiset (MC : MultisetCore).
     Qed.
 
     Lemma meq_permutation l l' :
-        list2multiset l =mul= list2multiset l' -> permutation eqA eqA_dec l l'.
+        list2multiset l =mul= list2multiset l' -> permutation eqA_dec l l'.
     
     Proof.
       intros; intro a. rewrite <- !list2multiset_mult.
@@ -828,7 +827,7 @@ Module Multiset (MC : MultisetCore).
     Qed.
 
     Lemma permutation_meq l l' :
-      permutation eqA eqA_dec l l' -> list2multiset l =mul= list2multiset l'.
+      permutation eqA_dec l l' -> list2multiset l =mul= list2multiset l'.
     
     Proof.
       intros. apply multeq_meq. intro x. rewrite !list2multiset_mult. apply H.
@@ -1087,7 +1086,7 @@ Module Multiset (MC : MultisetCore).
 
     Lemma multiset2list_insert a M :
     exists a' p, a =A= a' /\
-                 permutation eqA eqA_dec (multiset2list M)
+                 permutation eqA_dec (multiset2list M)
                              (drop_nth (multiset2list (insert a M)) p)
                  /\ nth_error (multiset2list (insert a M)) p = Some a'.
       
