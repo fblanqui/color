@@ -8,7 +8,8 @@ Axiomatic definition of RPO, and Hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-Require Import VPrecedence Relations ListUtil VTerm RelMidex LogicUtil.
+Require Import VPrecedence Relations ListUtil VTerm RelMidex LogicUtil
+  Morphisms Basics.
 
 Module Type RPO_Model.
 
@@ -182,9 +183,8 @@ Module Status (PT : VPrecedenceType).
 
     Proof.    
       intros.
-      assert (eq_comp : forall x x' y y', x = x' -> y = y' -> 
-        (transp R) x y -> (transp R) x' y').
-      intuition. rewrite <- H. rewrite <- H0. hyp.
+      assert (eq_comp : Proper (eq ==> eq ==> impl) (transp R)).
+      intros a b ab c d cd. subst. fo.
       destruct (@mOrd_dec_aux
         (transp R) eq_comp (list2multiset ss) (list2multiset ts)).
       assert (R_transp_dec : forall t s, In t ts -> In s ss ->
@@ -204,6 +204,8 @@ Module Status (PT : VPrecedenceType).
     Variable F : Term.A -> Term.A.
     Variables ts ss : terms.
 
+    (*FIXME: unfinished proof
+
     Lemma mul_status_homomorphic : 
       (forall s t, In s ss -> In t ts -> R s t -> R (F s) (F t)) ->
       mult (transp R) ss ts -> mult (transp R) (map F ss) (map F ts).
@@ -216,7 +218,7 @@ Module Status (PT : VPrecedenceType).
       destruct (proj1 (in_map_iff F ts x') H2) as [x'' [x''x' x''ts]].
       destruct (proj1 (in_map_iff F ss y') H5) as [y'' [y''y' y''ss]].
       subst x'. subst y'. intro. apply H; try hyp. 
-    Admitted.
+    Abort.*)
 
   End Homomorphism.
 
