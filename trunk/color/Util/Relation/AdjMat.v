@@ -11,7 +11,7 @@ and the corresponding boolean adjacency matrix of size n*n.
 Set Implicit Arguments.
 
 Require Import Matrix Bool Path Iter SCC ListExtras OrdSemiRing VecUtil RelSub
-  RelUtil NatUtil Log2 LogicUtil.
+  RelUtil NatUtil Log2 LogicUtil NatLt.
 
 Module Export BMatrix := Matrix BOrdSemiRingT.
 
@@ -57,10 +57,10 @@ Proof.
 intros; unfold GoM; apply (bool_dec (M[[x,y]]) true).
 Qed.
 
-Lemma GoM_restricted : is_restricted (GoM M) (nfirst dim).
+Lemma GoM_restricted : is_restricted (GoM M) (nats_decr_lt dim).
 
 Proof.
-unfold is_restricted; intros x y. rewrite !nfirst_exact.
+unfold is_restricted; intros x y. rewrite <- !In_nats_decr_lt.
 intro. unfold GoM in H. unfold mat_unbound in *.
 destruct (le_gt_dec dim x); auto. discr.
 destruct (le_gt_dec dim y); auto. discr.
@@ -261,7 +261,7 @@ rewrite iter_le_spec in H; destruct H as [p]; destruct H.
 ded (iter_tc _ _ _ _ H0); trivial.
 ded (eq_dec_midex eq_nat_dec).
 ded (clos_trans_bpath H0 (@GoM_restricted M)).
-rewrite nfirst_length in H1; unfold inclusion in H1.
+rewrite length_nats_decr_lt in H1; unfold inclusion in H1.
 ded (H1 _ _ H); ded (bpath_iter_le H2).
 rewrite Gmorph_iter_le_fast; rewrite iter_le_fast_spec.
 rewrite iter_le_spec in H3.

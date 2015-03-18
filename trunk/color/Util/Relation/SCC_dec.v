@@ -10,7 +10,7 @@ We give a way to decide the SCC relation using the adjacency matrix.
 Set Implicit Arguments.
 
 Require Import GDomainBij AdjMat List RelSub ListNodup ListExtras RelUtil
-  LogicUtil.
+  LogicUtil NatLt.
 Require Export SCC.
 
 Section SCC_effectif.
@@ -62,14 +62,14 @@ assert (rel_on_nat Dom R
 unfold inclusion; intros;
 rewrite GoM_MoG; intros. trivial.
 ded (rel_on_nat_is_restricted _ _ _ _ H1).
-do 2 rewrite nfirst_exact in H2; trivial.
+do 2 rewrite <- In_nats_decr_lt in H2; trivial.
 ded (SCC_incl H); auto.
 assert (GoM (MoG dim (rel_on_nat Dom R) (rel_on_nat_dec Dom R R_dec))
   << rel_on_nat Dom R).
 unfold inclusion; intros.
 rewrite GoM_MoG in H; intros; auto.
 ded (rel_on_nat_is_restricted _ _ _ _ H1). 
-do 2 rewrite nfirst_exact in H2; trivial. ded (SCC_incl H). auto.
+do 2 rewrite <- In_nats_decr_lt in H2; trivial. ded (SCC_incl H). auto.
 Qed.
 
 Lemma SCC_effective_dec : forall M (H : M = SCC_mat_effective) x y,
@@ -82,17 +82,5 @@ destruct (find_first (eq x) (eq_dec x)); auto with *.
 destruct (find_first (eq y) (eq_dec y)); auto with *.
 apply GoM_dec.
 Defined.
-
-(*
-Lemma SCC_dec : forall x y, {SCC _ R x y} + {~SCC _ R x y}.
-
-Proof.
-intros.
-set (M:= SCC_mat_effective).
-assert (M = SCC_mat_effective); auto.
-ded (SCC_effective_dec M H x y).
-destruct H0; rewrite <- SCC_effectif_exact in *; tauto.
-Qed.
-*)
 
 End SCC_effectif.
