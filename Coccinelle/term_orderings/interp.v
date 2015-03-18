@@ -119,8 +119,8 @@ Module Interp(EQT:equational_theory_spec.EqTh).
            end
      end.
 
-   Notation Local "a <= b" := (Ale a b).
-   Notation Local "a < b" := (Alt a b).
+   Local Notation "a <= b" := (Ale a b).
+   Local Notation "a < b" := (Alt a b).
      
 
    Fixpoint monotonic_aux n : Pol_type n -> Pol_type n -> Prop:=
