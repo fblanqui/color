@@ -258,7 +258,7 @@ Section HorpoMap.
     apply HMul with map; try_solve.
     constructor.
     set (w := pair_mOrd_fromList). unfold MSet.list2multiset in w. apply w.
-    intros. compute in H0, H1. subst x. subst y. hyp.    
+    apply horpo_eq_compat'.
     left. hyp.
     right. compute. trivial.
     left. hyp.

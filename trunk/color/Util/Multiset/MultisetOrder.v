@@ -98,9 +98,7 @@ Section OrderDefinition.
      Some morphisms
    ------------------------------------------------------------------ *)
 
-  Add Morphism MultisetRedGt
-    with signature meq ==> meq ==> iff
-      as MultisetRed_morph.
+  Instance MultisetRedGt_morph : Proper (meq ==> meq ==> iff) MultisetRedGt.
 
   Proof.
     intros x1 x2 H x3 x4 H0. split; intros H1; inversion H1.
@@ -110,9 +108,7 @@ Section OrderDefinition.
     rewrite H0; trivial.
   Qed.
 
-  Add Morphism AccM_1
-    with signature meq ==> iff
-      as AccM_1_morph.
+  Instance AccM_1_morph : Proper (meq ==> iff) AccM_1.
 
   Proof.
     intros; split; intro H0; inversion H0.
@@ -120,29 +116,25 @@ Section OrderDefinition.
     constructor; intros. apply H1; compute in *; rewrite <- H; trivial.
   Qed.
 
-  Add Morphism clos_transM_RedGt
-    with signature meq ==> meq ==> iff
-      as clos_trans_redgt_morph.
+  Instance clos_transM_RedGt_morph :
+    Proper (meq ==> meq ==> iff) clos_transM_RedGt.
 
   Proof.
-    intros. unfold clos_transM_RedGt.
+    intros a b ab c d cd. unfold clos_transM_RedGt.
     refine (RelUtil.clos_trans_morph
-              meq_Equivalence MultisetRed_morph x y H x0 y0 H0).
+              meq_Equivalence MultisetRedGt_morph a b ab c d cd).
   Qed.
 
-  Add Morphism clos_transM_RedLt
-    with signature meq ==> meq ==> iff
-      as clos_trans_redlt_morph.
+  Instance clos_transM_RedLt_morph :
+    Proper (meq ==> meq ==> iff) clos_transM_RedLt.
 
   Proof.
-    intros. unfold clos_transM_RedLt.
-    refine (RelUtil.clos_trans_morph meq_Equivalence _ x y H x0 y0 H0).
-    reduce. unfold MultisetRedLt. unfold transp. rewrite H1, H2. reflexivity.
+    intros a b ab c d cd. unfold clos_transM_RedLt.
+    refine (RelUtil.clos_trans_morph meq_Equivalence _ a b ab c d cd).
+    reduce. unfold MultisetRedLt. unfold transp. rewrite H, H0. reflexivity.
   Qed.
 
-  Add Morphism MultisetGt
-    with signature meq ==> meq ==> iff
-      as MultisetGt_morph_equiv.
+  Instance MultisetGt_morph_equiv : Proper (meq ==> meq ==> iff) MultisetGt.
 
   Proof.
     intros x1 x2 H x0 x3 H0; split; intro; inversion H1.
@@ -154,9 +146,7 @@ Section OrderDefinition.
     rewrite H; hyp. rewrite H0; hyp.
   Qed.
 
-  Add Morphism MultisetGT
-    with signature meq ==> meq ==> iff
-      as MultisetGT_morph_equiv.
+  Instance MultisetGT_morph : Proper (meq ==> meq ==> iff) MultisetGT.
 
   Proof.
     intros xL xR H yL yR H0; split; intro; inversion H1.
@@ -177,9 +167,7 @@ Section OrderDefinition.
     intros. apply (proj1 (MultisetGt_morph_equiv H H0)). hyp.
   Qed.
 
-  Add Morphism AccM
-    with signature meq ==> iff
-      as Access_morph.
+  Instance AccM_morph : Proper (meq ==> iff) AccM.
 
   Proof.
     intros; split; intro; inversion H0.
@@ -195,57 +183,46 @@ Section OrderDefinition.
      Some additional properties needed for some lemmas
    ----------------------------------------------------------------- *)
 
-  (* Variable gtA_dec: forall (a b: A), {a >A b}+{a <=A b}. *)
-  (* Variable gtA_so: strict_order gtA. *)
-  Variable gtA_transitive: transitive gtA.
+  Variable gtA_transitive : Transitive gtA.
+  Existing Instance gtA_transitive.
   Variable gtA_irreflexive : RelUtil.irreflexive gtA.
-  Variable gtA_eqA_compat: forall x x' y y',
-    x =A= x' -> y =A= y' -> x >A y -> x' >A y'.
+  Variable gtA_eqA_compat : Proper (eqA ==> eqA ==> impl) gtA.
+  Existing Instance gtA_eqA_compat.
 
-  (*Hint Resolve (sord_trans gtA_so) : sets.
-  Hint Resolve (sord_irrefl gtA_so) : sets.
-  Hint Resolve (so_not_symmetric gtA_so) : sets.
-  Hint Resolve gtA_eqA_compat : sets. *)
   Hint Resolve (gtA_transitive) : sets.
   Hint Resolve (gtA_irreflexive) : sets.
   Hint Resolve (so_not_symmetric
     (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
-  Hint Resolve gtA_eqA_compat : sets.
 
-  Add Morphism gtA
-    with signature eqA ==> eqA ==> iff
-      as gtA_morph.
+  Lemma gtA_eqA_compat' :
+    forall a b, eqA a b -> forall c d, eqA c d -> gtA a c -> gtA b d.
 
-  Proof.
-    (*split; eauto with sets.*)
-    intuition. eapply gtA_eqA_compat. apply H. apply H0. exact H1.
-    eapply gtA_eqA_compat. apply Seq_sym. exact eqA_Equivalence. apply H.
-    apply Seq_sym. exact eqA_Equivalence. apply H0. exact H1.
-  Qed.
+  Proof. apply gtA_eqA_compat. Qed.
 
-  Add Morphism ltA
-    with signature eqA ==> eqA ==> iff
-      as ltA_morph.
+  Hint Resolve gtA_eqA_compat' : sets.
+
+  Instance gtA_morph : Proper (eqA ==> eqA ==> iff) gtA.
 
   Proof.
-    intros x1 x2. split. eauto with sets.
-    cut (x2 =A= x1). intro. eauto with sets.
-    apply Seq_sym. exact eqA_Equivalence. hyp.
+    intros a b ab c d cd.
+    intuition. eapply gtA_eqA_compat. apply ab. apply cd. hyp.
+    eapply gtA_eqA_compat. apply Seq_sym. exact eqA_Equivalence. apply ab.
+    apply Seq_sym. exact eqA_Equivalence. apply cd. hyp.
   Qed.
 
-  Add Morphism gtA_trans
-    with signature eqA ==> eqA ==> iff
-      as gtA_trans_morph.
+  Instance ltA_morph : Proper (eqA ==> eqA ==> iff) ltA.
+
+  Proof. intros a b ab c d cd. unfold ltA, transp. apply gtA_morph; hyp. Qed.
+
+  Instance gtA_trans_morph : Proper (eqA ==> eqA ==> iff) gtA_trans.
 
   Proof.
     compute. intros a a' a_a' b b' b_b'.
     refine (RelUtil.clos_trans_morph
-              eqA_Equivalence gtA_morph_Proper a a' a_a' b b' b_b').
+              eqA_Equivalence gtA_morph a a' a_a' b b' b_b').
   Qed.
 
-  Add Morphism geA
-    with signature eqA ==> eqA ==> iff
-      as geA_morph.
+  Instance geA_morph : Proper (eqA ==> eqA ==> iff) geA.
   
   Proof.
     intros; split; intro; destruct H1.
@@ -333,16 +310,12 @@ Section OrderCharacterization.
 
   Lemma gtA_comp: forall a, comp_eqA (gtA a).
 
-  Proof.
-    compute.
-    eauto with sets.
-  Qed.
+  Proof. intros a b c bc. apply gtA_morph. refl. sym. hyp. Qed.
 
   Lemma leA_comp: forall a, comp_eqA (leA a).
 
   Proof.
-    compute.
-    eauto with sets.
+    intros a b c bc ab ca. apply ab. eapply gtA_morph. refl. apply bc. hyp.
   Qed.
 
 (* Begin addition by Solange Coupet-Grimal and William Delobel *)
@@ -361,8 +334,7 @@ Section OrderCharacterization.
       auto with multisets.
     intros y0 Hy0.
     gen (member_singleton Hy0); clear Hy0; intro Hy0.
-    apply gtA_eqA_compat with (x' := x) (x := x) (y := y); auto with multisets.
-    rewrite Hy0; auto with multisets.
+    eapply gtA_eqA_compat. refl. sym. apply Hy0. hyp.
   Qed.
 
   Lemma sub_transp_trans_2_mOrd_trans: forall P,

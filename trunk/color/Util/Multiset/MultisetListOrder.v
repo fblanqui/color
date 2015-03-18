@@ -9,7 +9,7 @@ multisets, along with some properties of this order.
 *)
 
 Require Import List MultisetOrder RelExtras MultisetCore MultisetList
-  Permutation MultisetTheory Arith AccUtil RelUtil LogicUtil.
+  Permutation MultisetTheory Arith AccUtil RelUtil LogicUtil Morphisms Basics.
 
 Module MultisetListOrder (ES : Eqset_dec).
 
@@ -28,8 +28,14 @@ Module MultisetListOrder (ES : Eqset_dec).
 
     Variable r : relation A.
 
-    Variable r_eqA_compat : forall x x' y y',
-      x =A=x' -> y=A=y' -> r x y -> r x' y'.
+    Variable r_eqA_compat :
+      forall x x' y y', x =A=x' -> y=A=y' -> r x y -> r x' y'.
+
+    Lemma r_eqA : Proper (eqA ==> eqA ==> impl) r.
+
+    Proof.
+      intros a b ab c d cd ac. eapply r_eqA_compat. apply ab. apply cd. hyp.
+    Qed.
 
     Variable In_eqA_compat : forall ss x x',
       In x' ss -> x =A= x' -> In x ss.
@@ -323,6 +329,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       gen Hacc; apply Acc_eq_rel.
       unfold MultisetLt,MultisetLT,transp; simpl; intros a b;
         apply red_eq_direct; trivial.
+      intros x y xy u v uv xu. eapply r_eqA_compat. apply xy. apply uv. hyp.
     Qed.
 
      Lemma Acc_list_multiset : transitive r -> forall ss, 
@@ -346,7 +353,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       auto with multisets.
       (* *)
       gen Hacc; unfold mult; apply Acc_eq_rel; trivial.
-      intros a b; elim (red_eq_direct r_trans r_eqA_compat
+      intros a b; elim (red_eq_direct r_trans r_eqA
         (list2multiset b) (list2multiset a));
         split; trivial.
     Qed.  
@@ -364,7 +371,9 @@ Module MultisetListOrder (ES : Eqset_dec).
       cut (Acc (MultisetLt r) (list2multiset ss)).
       apply Acc_incl; intros M N; unfold MultisetLT,MultisetLt,transp;
         simpl; apply direct_subset_red; trivial.
+      apply r_eqA.
       apply mord_acc with (gtA := r) (M := list2multiset ss); trivial.
+      apply r_eqA.
       intros x Hx; apply (Hsub x).
       elim (member_multiset_list ss Hx).
       apply In_eqA_compat. 
@@ -377,7 +386,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       intros r_trans ss acc_ss.
       intros s s_in_ss; apply acc_mord 
         with (gtA := r) (M := list2multiset ss); try hyp.
-      apply Acc_list_multiset; trivial.
+      apply r_eqA. apply Acc_list_multiset; trivial.
       gen s_in_ss; apply member_list_multiset.
     Qed.
 
