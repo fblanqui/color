@@ -11,7 +11,7 @@ and relation restricted to Dom with relation restricted to [[1,n]].
 Set Implicit Arguments.
 
 Require Import ListUtil SCC ListExtras Path Iter AdjMat RelSub LogicUtil
-  ListNodup RelUtil.
+  ListNodup RelUtil NatLt.
 
 Section S.
 
@@ -75,11 +75,11 @@ exists a0; exists a1; intuition; auto.
 Qed.
 
 Lemma rel_on_nat_is_restricted :
-  is_restricted (rel_on_nat R) (nfirst (length Dom)).
+  is_restricted (rel_on_nat R) (nats_decr_lt (length Dom)).
 
 Proof.
 unfold is_restricted; intros.
-rewrite !nfirst_exact; ded (rel_on_nat_elim x y H).
+rewrite <- !In_nats_decr_lt; ded (rel_on_nat_elim x y H).
 repeat destruct H0; destruct H1.
 ded (element_at_in2 H1).
 ded (element_at_in2 H2).
@@ -173,8 +173,8 @@ End bijection.
 Section compose.
 
 Variable R S : relation nat.
-Variable restriction : is_restricted R (nfirst (length Dom)).
-Variable restriction' : is_restricted S (nfirst (length Dom)).
+Variable restriction : is_restricted R (nats_decr_lt (length Dom)).
+Variable restriction' : is_restricted S (nats_decr_lt (length Dom)).
 Variable Dom_nodup : nodup Dom.
 
 Lemma dom_change_compose: forall x y,
@@ -185,7 +185,7 @@ intros; split; intro.
 ded (rel_on_dom_elim H).
 repeat destruct H0; destruct H1.
 unfold compose; ded (restriction H0); destruct H4.
-rewrite nfirst_exact in H5. rewrite (@element_at_exists A) in H5.
+rewrite <- In_nats_decr_lt in H5. rewrite (@element_at_exists A) in H5.
 destruct H5 as [z]. exists z.
 ded (element_at_in2 H1).
 ded (element_at_in2 H3).

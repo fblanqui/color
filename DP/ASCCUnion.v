@@ -9,7 +9,7 @@ Modular termination proof through SCC of an over DPGraph
 
 Set Implicit Arguments.
 
-Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup
+Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup NatLt
   AdjMat Permutation Multiset LogicUtil BoundNat NatUtil ListPermutation
   ListExtras Setoid SN VecUtil GDomainBij ExcUtil PermutSetoid Union SortUtil.
 
@@ -71,8 +71,8 @@ unfold proj1_sig2 in *. gen p; intros. unfold permutation, meq in p.
 ded (p i). rewrite nfirst_multiplicity in H0.
 destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 assert (dim = length (hyp_Dom hyps)). auto. rewrite H1 in *; auto.
-cut (exists j, j=i /\ In j (nfirst dim)). intros; destruct H1. destruct H1. 
-rewrite nfirst_exact in H2. subst i; auto.
+cut (exists j, j=i /\ In j (nats_decr_lt dim)). intros; destruct H1. destruct H1. 
+rewrite <- In_nats_decr_lt in H2. subst i; auto.
 eapply permutation_in. auto using gen_st. apply permutation_sym. eauto. auto.
 Qed.
 
@@ -153,8 +153,8 @@ Proof.
 intros. unfold inclusion. intros x y H0. destruct H0 as [z]. destruct H0.
 
 assert (~ODPGquo' j i). unfold RT in  *. destruct topo_sortable_Rquo'.
-simpl in *. intuition. ded (l (nfirst dim)). clear l.
-set (RTbis := fun x y : nat => x0 (nfirst dim) x y = true) in *.
+simpl in *. intuition. ded (l (nats_decr_lt dim)). clear l.
+set (RTbis := fun x y : nat => x0 (nats_decr_lt dim) x y = true) in *.
 change (RTbis i j) in H.
 
 assert (RTbis j i). destruct H3. intuition. apply H5.
@@ -188,7 +188,7 @@ destruct H7; tauto.
 exists s2. subst z. split; simpl; auto; eauto. congruence.
 
 subst j. unfold RT in *. destruct topo_sortable_Rquo'. simpl in *.
-ded (l (nfirst dim)). clear l. destruct H3. intuition.
+ded (l (nats_decr_lt dim)). clear l. destruct H3. intuition.
 unfold irreflexive in H6. ded (H6 i). auto. tauto.
 Qed.
 
@@ -216,7 +216,7 @@ assert (exists b, In b L /\ r = hd_red_Mod_SCC' b).
 apply in_map_elim; auto. destruct H7 as [b]. destruct H7; subst r.
 cut (RT_ODPG a b). intro. eapply (compose_empty H8). exists z; eauto.
 eapply sort_transitive. unfold RT; destruct topo_sortable_Rquo'. simpl in *. 
-ded (l (nfirst dim)). destruct H8. intuition. ehyp. auto.
+ded (l (nats_decr_lt dim)). destruct H8. intuition. ehyp. auto.
 Qed.
 
 Lemma WF_SCC'_union :
