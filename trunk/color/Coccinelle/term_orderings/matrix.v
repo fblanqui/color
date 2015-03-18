@@ -8,7 +8,7 @@ Require Import Eqdep_dec.
 Require Import Ring. 
 Require Import Zwf.
 Require Import interp.
-
+Require Import Morphisms.
 
 Lemma exist_pi:  forall (A:Type) (P: A -> Prop), (forall a (H1 H2:P a), H1=H2) ->
   forall a H1 H2,
@@ -94,9 +94,9 @@ Section Definitions.
   Variable A:Type.
 
   Variable eq: A -> A -> Prop.
-  Notation Local "x == y" := (eq x y) (at level 70, no associativity).
-  Variable Rsth : Setoid_Theory A eq.
-  Add Setoid _ eq Rsth as R_set1.
+  Local Notation "x == y" := (eq x y) (at level 70, no associativity).
+  Variable eq_Equivalence : Equivalence eq.
+  Existing Instance eq_Equivalence.
 
   Hypothesis plus : A -> A -> A.
   Hypothesis plus_comm: forall a b, plus a b == plus b a.
@@ -114,23 +114,9 @@ Section Definitions.
     forall a b c, 
       mult a (plus b  c) == plus (mult a b) (mult a c).
 
+  Hypothesis plus_morph : Proper (eq ==> eq ==> eq) plus.
 
-  Hypothesis plus_m : 
-    forall a b, a == b -> forall c d, c == d -> 
-      plus a c == plus b d.
-
-  Hypothesis mult_m : 
-    forall a b, a == b -> forall c d, c == d -> 
-      mult a c == mult b d.
-
-  Add Morphism plus with signature eq ==> eq ==> eq as
-    plus_morph.
-    exact plus_m.
-  Qed.
-  Add Morphism mult with signature eq ==> eq ==> eq as
-    mult_morph.
-    exact mult_m.
-  Qed.
+  Hypothesis mult_morph : Proper (eq ==> eq ==> eq) mult.
 
   (** a vector of size n is simply a (n+1)-tuple of elements 
      of A*)
@@ -177,8 +163,9 @@ Section Definitions.
   Qed.
 
 
-  Definition eq_vec : forall dim, vector dim -> vector dim -> Prop.
+  Definition eq_vec {dim} : vector dim -> vector dim -> Prop.
   Proof.
+    revert dim.
     fix 1.
     intros [|dim].
     simpl; exact eq.
@@ -189,9 +176,9 @@ Section Definitions.
     exact (eq_vec _ v1 v2).
   Defined.
 
-  Notation Local "x ==v y" := (eq_vec _ x y) (at level 70, no associativity).
+  Local Notation "x ==v y" := (eq_vec x y) (at level 70, no associativity).
 
-  Lemma eq_vec_refl dim : forall (v:vector dim), eq_vec _ v v. 
+  Lemma eq_vec_refl dim : forall (v:vector dim), eq_vec v v. 
   Proof.
     induction v as [a | dim a v] using vector_ind.
     reflexivity.
@@ -222,11 +209,14 @@ Section Definitions.
     intuition.
   Qed.
 
-  Add Parametric Relation (dim:nat): (vector dim) (eq_vec dim)
-    reflexivity proved by (@eq_vec_refl dim)
-     symmetry proved by (@eq_vec_sym dim)
-     transitivity proved by (@eq_vec_trans dim)
-     as eq_vec_rel. 
+  Global Instance eq_vec_Equivalence dim : Equivalence (@eq_vec dim).
+
+  Proof.
+    split; intro x.
+    apply eq_vec_refl.
+    apply eq_vec_sym.
+    apply eq_vec_trans.
+  Qed.
 
   (** 
      [create_vec a n] 
@@ -239,11 +229,9 @@ Section Definitions.
       | S n' => (a,@create_vec n' a)
     end.
 
-  Add Parametric Morphism (dim:nat) : (create_vec dim) with 
-    signature (@eq) ==> (@eq_vec dim)
-    as create_vec_morph.
+  Global Instance create_vec_morph dim : Proper (eq ==> eq_vec) (create_vec dim).
   Proof.
-    induction dim.
+    intros a b ab; revert dim a b ab; induction dim.
     simpl;tauto.
     simpl;intros;split;auto.
   Qed.
@@ -264,11 +252,10 @@ Section Definitions.
     exact (sum_vector dim v1 v2).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : (sum_vector dim) with 
-    signature (@eq_vec dim) ==> (@eq_vec dim) ==> (@eq_vec dim) 
-    as sum_vector_morph.
+  Global Instance sum_vector_morph dim :
+    Proper (eq_vec ==> eq_vec ==> eq_vec) (sum_vector dim).
   Proof.
-    induction dim.
+    revert dim. induction dim.
     simpl.
     intros x y H x0 y0 H0.
     rewrite H;rewrite H0;reflexivity.
@@ -280,7 +267,6 @@ Section Definitions.
     apply IHdim.
     exact h2. exact h4. 
   Qed. 
-
 
   Lemma sum_vector_comm: 
     forall (dim:nat) (v1 v2: vector dim), 
@@ -336,14 +322,12 @@ Section Definitions.
     exact (mult c a1).
     apply (prod_scal_vec dim c v1).
   Defined.
-  
-  Add Parametric Morphism (dim:nat) : 
-    (prod_scal_vec dim) with signature 
-    eq ==> (@eq_vec dim) ==> (@eq_vec dim)
-    as psv_morph.
+
+  Global Instance psv_morph dim :
+    Proper (eq ==> eq_vec ==> eq_vec) (prod_scal_vec dim).
   Proof.
-    induction dim.
-    simpl; apply mult_m.
+    revert dim; induction dim.
+    simpl; apply mult_morph.
     simpl.
     intros a b h1 [a1 v1] [a2 v2] [h2 h3].
     split.
@@ -451,14 +435,10 @@ Section Definitions.
     apply (prod_row_col dim v1 v2).
   Defined.
 
-
-  Add Parametric Morphism (dim:nat) : 
-    (prod_row_col dim) with signature 
-    (@eq_vec dim) ==> (@eq_vec dim) ==> eq
-    as prc_morph.
+  Global Instance prc_morph dim : Proper (eq_vec ==> eq_vec ==> eq) (prod_row_col dim).
   Proof.
-    induction dim.
-    simpl; apply mult_m.
+    revert dim. induction dim.
+    simpl; apply mult_morph.
     simpl.
     intros [a1 v1] [a2 v2] [h1 h2] [a3 v3] [a4 v4] [h3 h4].
     rewrite (IHdim _ _ h2 _ _ h4). 
@@ -630,21 +610,21 @@ Section Definitions.
     apply matrix_rect;assumption.
   Qed.
 
-  Definition eq_mat : forall dim, matrix dim -> matrix dim -> Prop.
+  Definition eq_mat {dim} : matrix dim -> matrix dim -> Prop.
   Proof.
-    fix 1.
+    revert dim. fix 1.
     intros [|dim].
     simpl; exact eq.
     simpl.
     intros [a1 [r1 [c1 m1]]] [a2 [r2 [c2 m2]]].
     refine (and _ (and _ (and _ _))).
     exact (eq a1 a2).
-    exact (eq_vec _ r1 r2).
-    exact (eq_vec _ c1 c2).
+    exact (eq_vec r1 r2).
+    exact (eq_vec c1 c2).
     exact (eq_mat _ m1 m2).
   Defined.
 
-  Notation Local "x ==m y" := (eq_mat _ x y) (at level 70, no associativity).
+  Local Notation "x ==m y" := (eq_mat x y) (at level 70, no associativity).
 
   Lemma eq_mat_refl dim : forall (v:matrix dim), v ==m v. 
   Proof.
@@ -678,13 +658,11 @@ Section Definitions.
     intuition try symmetry;auto.
   Qed.
 
-  Add Parametric Relation (dim:nat): (matrix dim) (eq_mat dim)
-    reflexivity proved by (@eq_mat_refl dim)
-     symmetry proved by (@eq_mat_sym dim)
-     transitivity proved by (@eq_mat_trans dim)
-     as eq_mat_rel. 
+  Global Instance eq_mat_Equivalence dim : Equivalence (@eq_mat dim).
 
-
+  Proof.
+    split; intro x. apply eq_mat_refl. apply eq_mat_sym. apply eq_mat_trans.
+  Qed.
 
   (** sum of two matrix *)
   Ltac full_rewrite := 
@@ -706,17 +684,14 @@ Section Definitions.
       | S n' => (a,(@create_vec n' a, (create_vec n' a,create_mat n' a)))
     end.
 
-  Add Parametric Morphism (dim:nat) : (create_mat dim) with 
-    signature (@eq) ==> (@eq_mat dim)
-    as create_mat_morph.
+  Global Instance create_mat_morph dim : Proper (eq ==> eq_mat) (create_mat dim).
   Proof.
-    induction dim.
+    intro x; revert dim x; induction dim.
     simpl;tauto.
     simpl;intros;repeat split;auto.
     apply create_vec_morph;assumption.
     apply create_vec_morph;assumption.
   Qed.
-
 
   Definition sum_matrix : forall dim (m1 m2:matrix dim), matrix dim.
   Proof.
@@ -734,23 +709,21 @@ Section Definitions.
     exact (sum_matrix _ m1 m2).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (sum_matrix dim) with signature 
-    (@eq_mat dim) ==> (@eq_mat dim) ==> (@eq_mat dim)
-    as sum_matrix_morph.
+  Global Instance sum_matrix_morph dim :
+    Proper (eq_mat ==> eq_mat ==> eq_mat) (sum_matrix dim).
   Proof.
-    induction dim.
+    revert dim; induction dim.
     simpl. apply plus_morph.
 
     simpl.
     intros [a1 [r1 [c1 m1]]] [a2 [r2 [c2 m2]]] Heq 
       [a3 [r3 [c3 m3]]]  [a4 [r4 [c4 m4]]] Heq'.
     intuition.
+    apply plus_morph;assumption.
     apply sum_vector_morph;assumption.
     apply sum_vector_morph;assumption.
+    apply IHdim; assumption.
   Qed.
-
-  
 
   (* sum of matrix is commutative *)
   Lemma sum_matrix_comm : 
@@ -814,24 +787,20 @@ Section Definitions.
     apply (prod_scal_mat _ c m1).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_scal_mat dim) with signature 
-    eq ==> (@eq_mat dim) ==> (@eq_mat dim)
-    as psm_morph.
+  Global Instance psm_morph dim :
+    Proper (eq ==> eq_mat ==> eq_mat) (prod_scal_mat dim).
   Proof.
-    induction dim.
+    revert dim; induction dim.
     simpl. apply mult_morph.
 
     simpl.
     intros a1 a2 Heq [a3 [r3 [c3 m3]]]  [a4 [r4 [c4 m4]]] Heq'.
     intuition.
+    apply mult_morph;assumption.
     apply psv_morph;assumption.
     apply psv_morph;assumption.
+    apply IHdim;assumption.
   Qed.
-
-
-
-  
   
   (** prod_scal_mat is distributive w.r.t sum of vectors *) 
   
@@ -941,20 +910,20 @@ Section Definitions.
     exact (prod_col_row _ c1 r2).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_col_row dim) with signature 
-    (@eq_vec dim) ==> (@eq_vec dim) ==> (@eq_mat dim)
-    as pcr_morph.
+  Global Instance pcr_morph dim :
+    Proper (eq_vec ==> eq_vec ==> eq_mat) (prod_col_row dim).
   Proof.
-    induction dim.
+    revert dim; induction dim.
     simpl. apply mult_morph.
 
     simpl.
     intros [a1 v1] [a2 v2] Heq 
       [a3 v3]  [a4 v4] Heq'.
     intuition.
+    apply mult_morph;assumption.
     apply psv_morph;assumption.
     apply psv_morph;assumption.
+    apply IHdim;assumption.
   Qed.
 
   Lemma pcr_comm_sv_right : 
@@ -1072,23 +1041,19 @@ Section Definitions.
     apply (prod_row_mat _ r1 m2).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_row_mat dim) with signature 
-    (@eq_vec dim) ==> (@eq_mat dim) ==>  (@eq_vec dim)
-    as prm_morph.
+  Global Instance prm_morph dim :
+    Proper (eq_vec ==> eq_mat ==> eq_vec) (prod_row_mat dim).
   Proof.
-    induction dim.
+    revert dim; induction dim.
     simpl. apply mult_morph.
 
     simpl.
     intros [a1 v1] [a2 v2] Heq 
       [a3 [r3 [c3 m3]]]  [a4 [r4 [c4 m4]]] Heq'.
     intuition.
+    apply plus_morph. apply mult_morph;assumption. apply prc_morph;assumption.
     full_rewrite;reflexivity.
-    full_rewrite;rewrite (IHdim _ _ H0 _ _ H5); reflexivity.
   Qed.
-
-
 
   Lemma prm_comm_sv_right : 
     forall dim (r : vector dim) (m:matrix dim) (a:A), 
@@ -1232,22 +1197,19 @@ Section Definitions.
     apply (prod_mat_col _ m1 c2).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_mat_col dim) with signature 
-    (@eq_mat dim) ==> (@eq_vec dim) ==>  (@eq_vec dim)
-    as pmc_morph.
+  Global Instance pmc_morph dim :
+    Proper (eq_mat ==> eq_vec ==> eq_vec) (prod_mat_col dim).
   Proof.
-    induction dim.
+    revert dim; induction dim.
     simpl. apply mult_morph.
 
     simpl.
     intros  
       [a3 [r3 [c3 m3]]]  [a4 [r4 [c4 m4]]] Heq' [a1 v1] [a2 v2] Heq.
     intuition.
+    apply plus_morph. apply mult_morph;assumption. apply prc_morph;assumption.
     full_rewrite;reflexivity.
-    full_rewrite;rewrite (IHdim _ _ H5 _ _ H2); reflexivity.
   Qed.
-
 
   Lemma pmc_comm_sv_right : 
     forall dim (m:matrix dim) (c : vector dim) (a:A), 
@@ -1386,12 +1348,10 @@ Section Definitions.
     exact (prod_matrix _ m1 m2).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_matrix dim) with signature 
-    (@eq_mat dim) ==> (@eq_mat dim) ==> (@eq_mat dim)
-    as pm_morph.
+  Global Instance pm_morph dim :
+    Proper (eq_mat ==> eq_mat ==> eq_mat) (prod_matrix dim).
   Proof.
-    induction dim.
+    revert dim; induction dim.
     simpl. apply mult_morph.
 
     simpl.
@@ -1400,9 +1360,8 @@ Section Definitions.
     full_rewrite. reflexivity.
     full_rewrite;reflexivity.
     full_rewrite;reflexivity.
-    full_rewrite;rewrite (IHdim _ _ H6 _ _ H7);reflexivity.
+    apply sum_matrix_morph. apply pcr_morph;assumption. apply IHdim;assumption.
   Qed.
-
 
   Lemma pm_comm_sv_right : 
     forall dim (m1 m2:matrix dim) (a:A), 
@@ -1712,6 +1671,8 @@ Section Definitions.
 
 End Definitions.
 
+Arguments eq_vec [A] _ {dim} _ _.
+Arguments eq_mat [A] _ {dim} _ _.
 
 Definition split_vector : 
   forall A B dim,  vector (A * B) dim -> vector A dim * vector B dim.
@@ -1808,42 +1769,26 @@ Parameter eq : A -> A -> Prop.
 Parameter  rO rI : A. 
 Parameter plus mult sub : A -> A -> A.
 Parameter opp : A -> A. 
-Parameter reqTh : Setoid_Theory A eq.
+Declare Instance eq_Equivalence : Equivalence eq.
 Parameter Ath : ring_theory rO rI plus mult sub opp eq.
 Variable Aeqe : ring_eq_ext plus mult opp eq.
 End TRing.
 
-
 Module Make(R:TRing).
   Import R.
+  Local Notation "x == y" := (eq x y) (at level 70, no associativity).
 
+  Instance plus_morph : Proper (eq ==> eq ==> eq) plus.
+  Proof. exact (Radd_ext Aeqe). Qed.
 
-
-  Add Relation  A eq
-    reflexivity proved by (@Equivalence_Reflexive _ _ reqTh) 
-    symmetry proved by (@Equivalence_Symmetric _ _ reqTh)
-      transitivity proved by (@Equivalence_Transitive _ _ reqTh)
-        as eq_rel. 
-  Notation Local "x == y" := (eq x y) (at level 70, no associativity).
-
-  Add Morphism plus with signature eq ==> eq ==> eq as
-    plus_morph.
-    exact (Radd_ext Aeqe). 
-  Qed.
-
-  Add Morphism mult with signature eq ==> eq ==> eq as
-    mult_morph.
-    exact (Rmul_ext Aeqe). 
-  Qed.
+  Instance mult_morph : Proper (eq ==> eq ==> eq) mult.
+  Proof. exact (Rmul_ext Aeqe). Qed.
  
-  Add Morphism opp with signature eq ==> eq as
-    opp_morph.
-    exact (Ropp_ext Aeqe). 
-  Qed.
-
+  Instance opp_morph : Proper (eq ==> eq) opp.
+  Proof. exact (Ropp_ext Aeqe). Qed.
 
   Add Ring Rring : Ath.
-  
+
   (** a vector of size n is simply a (n+1)-tuple of elements 
      of A*)
 
@@ -1851,35 +1796,33 @@ Module Make(R:TRing).
   apply (vector A).
   Defined.
 
-  Definition eq_vec : forall (dim:nat), vector dim -> vector dim -> Prop.
+  Definition eq_vec {dim} : vector dim -> vector dim -> Prop.
   Proof.
-    exact (@eq_vec A eq).
+    apply (@eq_vec A eq).
   Defined.
 
-  Notation Local "x ==v y" := (eq_vec _ x y) (at level 70, no associativity).
+  Local Notation "x ==v y" := (eq_vec x y) (at level 70, no associativity).
 
-  Lemma eq_vec_refl : forall dim (v:vector dim), eq_vec _ v v. 
+  Lemma eq_vec_refl : forall dim (v:vector dim), eq_vec v v. 
   Proof.
-    exact (@eq_vec_refl _ eq reqTh).
+    exact (@eq_vec_refl _ eq eq_Equivalence).
   Qed.
 
   Lemma eq_vec_trans : forall dim (v1 v2 v3:vector dim),
     v1 ==v v2 -> v2 ==v v3 -> v1 ==v v3.
   Proof.
-    exact (eq_vec_trans reqTh).
+    exact (eq_vec_trans eq_Equivalence).
  Qed.
 
   Lemma eq_vec_sym : forall dim (v1 v2:vector dim),
     v1 ==v v2 -> v2 ==v v1.
   Proof.
-    exact (eq_vec_sym reqTh).
+    exact (eq_vec_sym eq_Equivalence).
   Qed.
 
-  Add Parametric Relation (dim:nat): (vector dim) (eq_vec dim)
-    reflexivity proved by (@eq_vec_refl dim)
-     symmetry proved by (@eq_vec_sym dim)
-     transitivity proved by (@eq_vec_trans dim)
-     as eq_vec_rel. 
+  Instance eq_vec_Equivalence dim : Equivalence (@eq_vec dim).
+
+  Proof. apply eq_vec_Equivalence. apply eq_Equivalence. Qed.
 
   (** 
      [create a n] 
@@ -1892,11 +1835,9 @@ Module Make(R:TRing).
     apply create_vec.
   Defined.
 
-  Add Parametric Morphism (dim:nat) : (create_vec dim) with 
-    signature (@eq) ==> (@eq_vec dim)
-    as create_vec_morph.
+  Instance create_vec_morph dim : Proper (eq ==> eq_vec) (create_vec dim).
   Proof.
-    apply create_vec_morph.
+    apply create_vec_morph. apply eq_Equivalence.
   Qed.
 
   (** Sum of vectors and its properties *)
@@ -1906,15 +1847,13 @@ Module Make(R:TRing).
     apply (sum_vector plus).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : (sum_vector dim) with 
-    signature (@eq_vec dim) ==> (@eq_vec dim) ==> (@eq_vec dim) 
-    as sum_vector_morph.
+  Instance sum_vector_morph dim :
+    Proper (eq_vec ==> eq_vec ==> eq_vec) (sum_vector dim).
   Proof.
     apply sum_vector_morph with (eq:=eq) (plus:=plus).
-    exact reqTh.
+    exact eq_Equivalence.
     apply plus_morph.
   Qed. 
-
 
   Lemma sum_vector_comm: 
     forall (dim:nat) (v1 v2: vector dim), 
@@ -1941,12 +1880,10 @@ Module Make(R:TRing).
     apply (prod_scal_vec mult).
   Defined.
   
-  Add Parametric Morphism (dim:nat) : 
-    (prod_scal_vec dim) with signature 
-    eq ==> (@eq_vec dim) ==> (@eq_vec dim)
-    as psv_morph.
+  Instance psv_morph dim :
+    Proper (eq ==> eq_vec ==> eq_vec) (prod_scal_vec dim).
   Proof.
-    apply (psv_morph reqTh) with (mult:=mult);intros. apply mult_morph;assumption.
+    apply (psv_morph eq_Equivalence) with (mult:=mult);intros. apply mult_morph;assumption.
   Qed.
   
       (** prod_scal_vec is distributive w.r.t sum of vectors *) 
@@ -1972,7 +1909,7 @@ Module Make(R:TRing).
       prod_scal_vec _ c1  (prod_scal_vec _  c2 r) ==v 
       prod_scal_vec _ (mult c1 c2) r .
   Proof.
-    apply (psv_assoc reqTh) with (mult:=mult); intros; ring.
+    apply (psv_assoc eq_Equivalence) with (mult:=mult); intros; ring.
   Qed.
   
   Lemma psv_comm : 
@@ -1980,7 +1917,7 @@ Module Make(R:TRing).
       prod_scal_vec _ a1 (prod_scal_vec _ a2 v) ==v
       prod_scal_vec _ a2 (prod_scal_vec _ a1 v).
   Proof.
-    apply (psv_comm reqTh) with (mult:=mult);try (intros;ring).
+    apply (psv_comm eq_Equivalence) with (mult:=mult);try (intros;ring).
     apply mult_morph. 
   Qed.
 
@@ -1993,13 +1930,10 @@ Module Make(R:TRing).
   Defined.
 
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_row_col dim) with signature 
-    (@eq_vec dim) ==> (@eq_vec dim) ==> eq
-    as prc_morph.
+  Instance prc_morph dim : Proper (eq_vec ==> eq_vec ==> eq) (prod_row_col dim).
   Proof.
     apply prc_morph with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     apply plus_morph.
     apply mult_morph.
   Qed.
@@ -2011,7 +1945,7 @@ Module Make(R:TRing).
       mult a  (prod_row_col _ r c).
   Proof.
     apply prc_comm_sv_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2025,7 +1959,7 @@ Module Make(R:TRing).
       mult a  (prod_row_col _ r c).
   Proof.
     apply prc_comm_sv_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     apply plus_morph.
@@ -2038,7 +1972,7 @@ Module Make(R:TRing).
       plus (prod_row_col  dim c1 r) (prod_row_col _ c2 r).
   Proof.
     apply prc_distrib_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2051,7 +1985,7 @@ Module Make(R:TRing).
       plus (prod_row_col  dim c r1) (prod_row_col _ c r2).
   Proof.
     apply prc_distrib_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2077,38 +2011,34 @@ Module Make(R:TRing).
     apply (matrix A).
   Defined.
 
-  Definition eq_mat (dim:nat) : matrix dim -> matrix dim -> Prop.
+  Definition eq_mat {dim} : matrix dim -> matrix dim -> Prop.
   Proof.
     apply (@eq_mat _ eq).
   Defined.
 
-  Notation Local "x ==m y" := (eq_mat _ x y) (at level 70, no associativity).
+  Local Notation "x ==m y" := (eq_mat x y) (at level 70, no associativity).
 
   Lemma eq_mat_refl dim : forall (v:matrix dim), v ==m v. 
   Proof.
     apply eq_mat_refl with (eq:=eq).
-    apply reqTh.
+    apply eq_Equivalence.
   Qed.
 
   Lemma eq_mat_trans dim : forall (v1 v2 v3:matrix dim),
     v1 ==m v2 -> v2 ==m v3 -> v1 ==m v3.
   Proof.
-    apply eq_mat_trans with (eq:=eq). apply reqTh.
+    apply eq_mat_trans with (eq:=eq). apply eq_Equivalence.
   Qed.
 
   Lemma eq_mat_sym dim : forall (v1 v2:matrix dim),
     v1 ==m v2 -> v2 ==m v1.
   Proof.
-    apply eq_mat_sym with (eq:=eq). apply reqTh.
+    apply eq_mat_sym with (eq:=eq). apply eq_Equivalence.
   Qed.
 
-  Add Parametric Relation (dim:nat): (matrix dim) (eq_mat dim)
-    reflexivity proved by (@eq_mat_refl dim)
-     symmetry proved by (@eq_mat_sym dim)
-     transitivity proved by (@eq_mat_trans dim)
-     as eq_mat_rel. 
+  Instance eq_mat_Equivalence dim : Equivalence (@eq_mat dim).
 
-
+  Proof. apply eq_mat_Equivalence. apply eq_Equivalence. Qed.
 
   (** sum of two matrix *)
   Ltac full_rewrite := 
@@ -2124,13 +2054,11 @@ Module Make(R:TRing).
     apply (sum_matrix plus). 
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (sum_matrix dim) with signature 
-    (@eq_mat dim) ==> (@eq_mat dim) ==> (@eq_mat dim)
-    as sum_matrix_morph.
+  Instance sum_matrix_morph dim :
+    Proper (eq_mat ==> eq_mat ==> eq_mat) (sum_matrix dim).
   Proof.
     apply sum_matrix_morph with (eq:=eq) (plus:=plus).
-    apply reqTh.
+    apply eq_Equivalence.
     apply plus_morph.
   Qed.
 
@@ -2145,11 +2073,9 @@ Module Make(R:TRing).
     apply create_mat.
   Defined.
 
-  Add Parametric Morphism (dim:nat) : (create_mat dim) with 
-    signature (@eq) ==> (@eq_mat dim)
-    as create_mat_morph.
+  Instance create_mat_morph dim : Proper (eq ==> eq_mat) (create_mat dim).
   Proof.
-    apply create_mat_morph.
+    apply create_mat_morph. apply eq_Equivalence.
   Qed.
 
 
@@ -2179,19 +2105,13 @@ Module Make(R:TRing).
     apply mult.
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_scal_mat dim) with signature 
-    eq ==> (@eq_mat dim) ==> (@eq_mat dim)
-    as psm_morph.
+  Instance psm_morph dim :
+    Proper (eq ==> eq_mat ==> eq_mat) (prod_scal_mat dim).
   Proof.
     apply psm_morph with (eq:=eq) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     apply mult_morph.
   Qed.
-
-
-
-  
   
   (** prod_scal_mat is distributive w.r.t sum of vectors *) 
   
@@ -2221,7 +2141,7 @@ Module Make(R:TRing).
       prod_scal_mat _ (mult c1 c2) r .
   Proof.
     apply psm_assoc with (eq:=eq) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
   Qed.
   
@@ -2231,7 +2151,7 @@ Module Make(R:TRing).
       prod_scal_mat _ a2 (prod_scal_mat _ a1 v).
   Proof.
     apply psm_comm with (eq:=eq) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     apply mult_morph.
@@ -2243,13 +2163,11 @@ Module Make(R:TRing).
     apply (prod_col_row mult).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_col_row dim) with signature 
-    (@eq_vec dim) ==> (@eq_vec dim) ==> (@eq_mat dim)
-    as pcr_morph.
+  Instance pcr_morph dim :
+    Proper (eq_vec ==> eq_vec ==> eq_mat) (prod_col_row dim).
   Proof.
     apply pcr_morph with (eq:=eq) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     apply mult_morph.
   Qed.
 
@@ -2259,7 +2177,7 @@ Module Make(R:TRing).
       prod_scal_mat _ a  (prod_col_row _ c r).
   Proof.
     apply pcr_comm_sv_right with (eq:=eq) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     apply mult_morph.
@@ -2271,7 +2189,7 @@ Module Make(R:TRing).
       prod_scal_mat _ a  (prod_col_row _ r c).
   Proof.
     apply pcr_comm_sv_left with (eq:=eq) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     apply mult_morph.
@@ -2306,13 +2224,11 @@ Module Make(R:TRing).
     apply (prod_row_mat plus mult).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_row_mat dim) with signature 
-    (@eq_vec dim) ==> (@eq_mat dim) ==>  (@eq_vec dim)
-    as prm_morph.
+  Instance prm_morph dim :
+    Proper (eq_vec ==> eq_mat ==> eq_vec) (prod_row_mat dim).
   Proof.
     apply prm_morph with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     apply plus_morph.
     apply mult_morph.
   Qed.
@@ -2323,7 +2239,7 @@ Module Make(R:TRing).
       prod_scal_vec _ a  (prod_row_mat _ r m).
   Proof.
     apply prm_comm_sv_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2337,7 +2253,7 @@ Module Make(R:TRing).
       prod_scal_vec _ a  (prod_row_mat _ r m).
   Proof.
     apply prm_comm_sv_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     apply plus_morph.
@@ -2351,7 +2267,7 @@ Module Make(R:TRing).
       (prod_row_mat dim r1 m) (prod_row_mat _ r2 m).
   Proof.
     apply prm_distrib_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2364,7 +2280,7 @@ Module Make(R:TRing).
       sum_vector _ (prod_row_mat  dim r m1) (prod_row_mat _ r m2).
   Proof.
     apply prm_distrib_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2378,17 +2294,14 @@ Module Make(R:TRing).
     apply (prod_mat_col plus mult).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_mat_col dim) with signature 
-    (@eq_mat dim) ==> (@eq_vec dim) ==>  (@eq_vec dim)
-    as pmc_morph.
+  Instance pmc_morph dim :
+    Proper (eq_mat ==> eq_vec ==> eq_vec) (prod_mat_col dim).
   Proof.
     apply pmc_morph with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     apply plus_morph.
     apply mult_morph.
   Qed.
-
 
   Lemma pmc_comm_sv_right : 
     forall dim (m:matrix dim) (c : vector dim) (a:A), 
@@ -2396,7 +2309,7 @@ Module Make(R:TRing).
       prod_scal_vec _ a  (prod_mat_col _ m c).
   Proof.
     apply pmc_comm_sv_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2410,7 +2323,7 @@ Module Make(R:TRing).
       prod_scal_vec _ a  (prod_mat_col _ m c).
   Proof.
     apply pmc_comm_sv_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2426,7 +2339,7 @@ Module Make(R:TRing).
       (prod_mat_col dim m1 c) (prod_mat_col _ m2 c).
   Proof.
     apply pmc_distrib_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2440,7 +2353,7 @@ Module Make(R:TRing).
       sum_vector _ (prod_mat_col  dim m c1) (prod_mat_col _ m c2).
   Proof.
     apply pmc_distrib_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2457,17 +2370,14 @@ Module Make(R:TRing).
     apply (prod_matrix plus mult).
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (prod_matrix dim) with signature 
-    (@eq_mat dim) ==> (@eq_mat dim) ==> (@eq_mat dim)
-    as pm_morph.
+  Instance pm_morph dim :
+    Proper (eq_mat ==> eq_mat ==> eq_mat) (prod_matrix dim).
   Proof.
     apply pm_morph with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     apply plus_morph.
     apply mult_morph.
   Qed.
-
 
   Lemma pm_comm_sv_right : 
     forall dim (m1 m2:matrix dim) (a:A), 
@@ -2475,7 +2385,7 @@ Module Make(R:TRing).
       prod_scal_mat _ a  (prod_matrix _ m1 m2).
   Proof.
     apply pm_comm_sv_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2489,7 +2399,7 @@ Module Make(R:TRing).
       prod_scal_mat _ a  (prod_matrix _ m1 m2).
   Proof.
     apply pm_comm_sv_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2505,7 +2415,7 @@ Module Make(R:TRing).
       (prod_matrix dim m1 m3) (prod_matrix _ m2 m3).
   Proof.
     apply pm_distrib_left with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2521,7 +2431,7 @@ Module Make(R:TRing).
       (prod_matrix dim m1 m2) (prod_matrix _ m1 m3).
   Proof.
     apply pm_distrib_right with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2535,7 +2445,7 @@ Module Make(R:TRing).
       prod_row_col dim r (prod_mat_col _ m c).
   Proof.
     apply prm_pmc_comm with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2552,7 +2462,7 @@ Module Make(R:TRing).
       prod_scal_vec _ (prod_row_col _ r c2) c1.
   Proof.
     apply pcr_prc_comm with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2567,7 +2477,7 @@ Module Make(R:TRing).
     prod_mat_col _ (prod_matrix _ m1 m2) c. 
   Proof.
     apply pm_assoc_pmc with (eq:=eq) (plus:=plus) (mult:=mult).
-    apply reqTh.
+    apply eq_Equivalence.
     intros;ring.
     intros;ring.
     intros;ring.
@@ -2906,11 +2816,11 @@ Module Make_Ordered(R:Ordered_Ring).
   Import R.
   Include Make(R). 
 
-  Add Morphism lt with signature eq ==> eq ==> iff as lt_morph.
+  Instance lt_morph : Proper (eq ==> eq ==> iff) lt.
   Proof.
     exact o.(lt_morph).
   Qed.
-  Add Morphism le with signature eq ==> eq ==> iff as le_morph.
+  Instance le_morph : Proper (eq ==> eq ==> iff) le.
   Proof.
     exact o.(le_morph).
   Qed.
@@ -2936,8 +2846,8 @@ Module Make_Ordered(R:Ordered_Ring).
   Defined.
 
 
-  Lemma vec_order_large_morph dim  : 
-    forall x x', eq_vec dim x x' -> forall y y', eq_vec dim y y' -> 
+  Lemma vec_order_large_morph dim : 
+    forall x x' : vector dim, eq_vec x x' -> forall y y', eq_vec y y' -> 
       (vec_order_large _ x y <-> vec_order_large _ x' y').
   Proof.
     induction dim.
@@ -2951,17 +2861,14 @@ Module Make_Ordered(R:Ordered_Ring).
     intuition.
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (vec_order_large dim) with signature 
-    (@eq_vec dim) ==> (@eq_vec dim) ==> iff
-    as vol_morph.
+  Instance vol_morph dim :
+    Proper (eq_vec ==> eq_vec ==> iff) (vec_order_large dim).
   Proof.
-    apply vec_order_large_morph.
+    intros a b ab c d cd. apply vec_order_large_morph; assumption.
   Qed.
 
-
-  Lemma vec_order_strict_morph dim  : 
-    forall x x', eq_vec dim x x' -> forall y y', eq_vec dim y y' -> 
+  Lemma vec_order_strict_morph dim : 
+    forall x x' : vector dim, eq_vec x x' -> forall y y', eq_vec y y' -> 
       (vec_order_strict _ x y <-> vec_order_strict _ x' y').
   Proof.
     induction dim.
@@ -2977,15 +2884,12 @@ Module Make_Ordered(R:Ordered_Ring).
     intuition.
   Defined.
 
-
-  Add Parametric Morphism (dim:nat) : 
-    (vec_order_strict dim) with signature 
-    (@eq_vec dim) ==> (@eq_vec dim) ==> iff
-    as vos_morph.
+  Instance vos_morph dim :
+    Proper (eq_vec ==> eq_vec ==> iff) (vec_order_strict dim).
   Proof.
-    apply vec_order_strict_morph.
+    intros a b ab c d cd. apply vec_order_strict_morph; assumption.
   Qed.
-    
+
   Lemma vec_order_large_refl dim: 
     forall x, vec_order_large dim x x.
   Proof.
@@ -3007,7 +2911,7 @@ Module Make_Ordered(R:Ordered_Ring).
   Defined.
     
 
-  Definition o_vec : forall dim, ordering_pair (eq_vec dim) (vec_order_strict dim) (vec_order_large dim).
+  Definition o_vec : forall dim, ordering_pair eq_vec (vec_order_strict dim) (vec_order_large dim).
   Proof.
     intros.
     apply mk_ordering_pair.
@@ -3113,7 +3017,7 @@ Module Make_Ordered(R:Ordered_Ring).
 
 
   Lemma mat_order_large_morph dim  : 
-    forall x x', eq_mat dim x x' -> forall y y', eq_mat dim y y' -> 
+    forall x x' : matrix dim, eq_mat x x' -> forall y y', eq_mat y y' -> 
       (mat_order_large _ x y <-> mat_order_large _ x' y').
   Proof.
     induction dim.
@@ -3129,20 +3033,16 @@ Module Make_Ordered(R:Ordered_Ring).
     intuition.
   Defined.
 
-  Add Parametric Morphism (dim:nat) : 
-    (mat_order_large dim) with signature 
-    (@eq_mat dim) ==> (@eq_mat dim) ==> iff
-    as mol_morph.
+  Instance mol_morph dim :
+    Proper (eq_mat ==> eq_mat ==> iff) (mat_order_large dim).
   Proof.
-    apply mat_order_large_morph.
+    intros a b ab c d cd. apply mat_order_large_morph; assumption.
   Qed.
 
-
-  Lemma mat_order_strict_morph dim  : 
-    forall x x', eq_mat dim x x' -> forall y y', eq_mat dim y y' -> 
+  Lemma mat_order_strict_morph dim : 
+    forall x x' : matrix dim, eq_mat x x' -> forall y y', eq_mat y y' -> 
       (mat_order_strict _ x y <-> mat_order_strict _ x' y').
   Proof.
-
     induction dim.
     simpl. 
     intros.
@@ -3158,15 +3058,12 @@ Module Make_Ordered(R:Ordered_Ring).
     rewrite  Heq8;rewrite Heq4;assumption.
   Defined.
 
-
-  Add Parametric Morphism (dim:nat) : 
-    (mat_order_strict dim) with signature 
-    (@eq_mat dim) ==> (@eq_mat dim) ==> iff
-    as mos_morph.
+  Instance mos_morph dim :
+    Proper (eq_mat ==> eq_mat ==> iff) (mat_order_strict dim).
   Proof.
-    apply mat_order_strict_morph.
+    intros a b ab c d cd. apply mat_order_strict_morph; assumption.
   Qed.
-    
+
   Lemma mat_order_large_refl dim: 
     forall x, mat_order_large dim x x.
   Proof.
@@ -3194,7 +3091,7 @@ Module Make_Ordered(R:Ordered_Ring).
   Defined.
     
 
-  Definition o_mat : forall dim, ordering_pair (eq_mat dim) (mat_order_strict dim) (mat_order_large dim).
+  Definition o_mat : forall dim, ordering_pair eq_mat (mat_order_strict dim) (mat_order_large dim).
   Proof.
     intros.
     apply mk_ordering_pair.
@@ -4404,7 +4301,7 @@ Definition  plus := Zplus.
 Definition mult := Zmult.
 Definition sub := Zminus.
 Definition opp := Zopp. 
-Definition reqTh := Zsth. 
+Definition eq_Equivalence := Zsth. 
 Definition Ath := Zth. 
 Definition Aeqe := Zeqe.
 Definition lt := (Zwf.Zwf 0).
