@@ -1082,44 +1082,6 @@ Section List_Rel_Dec.
 End List_Rel_Dec.
 
 (***********************************************************************)
-(** list [n-1,..,0] *)
-
-Section nfirst.
-
-Fixpoint nfirst n :=
-  match n with
-    | 0 => nil
-    | S k => k :: nfirst k
-  end.
-
-Lemma nfirst_exact : forall x dim, In x (nfirst dim) <-> lt x dim.
-
-Proof.
-intros.
-induction dim.
-unfold nfirst; simpl.
-split; omega.
-unfold nfirst; fold nfirst.
-destruct (gt_eq_gt_dec x dim).
-intuition.
-subst; apply in_eq.
-intuition.
-apply lt_S; apply H.
-inversion H1.
-auto with *.
-simpl in *; clear H2.
-inversion H1; auto with *.
-Qed.
-
-Lemma nfirst_length : forall n, length (nfirst n) = n.
-
-Proof.
-induction n; simpl; auto with *.
-Qed.
-
-End nfirst.
-
-(***********************************************************************)
 (** hints *)
 
 Hint Rewrite initialSeg_full initialSeg_nth seg_nth seg_tillEnd seg_exceeded
