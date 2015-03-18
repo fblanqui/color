@@ -257,15 +257,14 @@ Require Import Heap BoundNat PermutSetoid.
 Notation bnat := (bnat dim).
 
 Lemma sorted_SCC' : {m : list nat | sort RT m &
-  permutation (@eq nat) eq_nat_dec (nats_decr_lt dim) m}.
+  permutation eq_nat_dec (nats_decr_lt dim) m}.
 
 Proof.
 unfold RT. destruct topo_sortable_Rquo' as [F HF]; simpl.
 set (RTb := fun x y : bnat =>
   F (nats_decr_lt dim)  (proj1_sig x) (proj1_sig y) = true) in *.
 
-cut ({m : list bnat | sort RTb m & permutation (eq (A:=bnat))
-  (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
+cut ({m : list bnat | sort RTb m & permutation (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
 intro. destruct H as [mb]. exists (map (fun y => proj1_sig y) mb).
 apply (@map_sort_bnat_to_nat dim). intuition.
 
@@ -276,7 +275,7 @@ simpl in H. destruct (lt_ge_dec a dim); try omega.
 rewrite map_multiplicity in H; auto. rewrite (@lemme_foo dim); auto.
 
 cut( {m : list bnat | sort (RTb %) m & 
-  permutation (eq (A:=bnat)) (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
+  permutation (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
 intro. destruct H as [mb]. exists mb; auto. apply nodup_sort_strict; auto.
 eapply multiplicity_nodup. intros. unfold permutation in *.
 unfold meq in *. rewrite <- p. unfold nfirst_bnats.
