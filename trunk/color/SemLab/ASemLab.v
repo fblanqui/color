@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil VecUtil SN
   RelUtil AWFMInterpretation NaryFunction NatUtil ARelation ARules List
-  SetUtil.
+  SetUtil FunUtil.
 
 Section S.
 
@@ -92,8 +92,6 @@ Section S.
   Definition lab_rules R a := exists b, exists v, R b /\ a = lab_rule v b.
 
   Definition lab_sub v s (x : variable) := lab v (s x).
-
-  Notation "f 'o' g" := (fun x => f (g x)) (at level 70).
 
   Lemma lab_sub_eq : forall v s t,
     lab v (sub s t) = sub (lab_sub v s) (lab (beta v s) t).
@@ -203,10 +201,12 @@ Section S.
   Lemma Ft_epi : forall v t, unlab (lab v t) = t.
 
   Proof.
-    intros v t. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
-    Vmap (unlab o lab v) ts = ts); clear t; intros; simpl.
-    refl. apply args_eq. rewrite Vmap_map. rewrite H. apply Vcast_refl.
-    refl. rewrite H. rewrite H0. refl.
+    intros v t; pattern t; apply term_ind
+      with (Q := fun n (ts : terms n) => Vmap (unlab o lab v) ts = ts);
+      clear t; intros; simpl. refl.
+    apply args_eq. unfold comp in H. rewrite Vmap_map, H.
+    apply Vcast_refl. refl.
+    rewrite H0. unfold comp. rewrite H. refl.
   Qed.
 
   Lemma Frs_iso : forall R, unlab_rules (lab_rules R) [=] R.
