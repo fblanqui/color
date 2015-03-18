@@ -9,8 +9,11 @@ Some results concerning permutations of lists.
 
 Set Implicit Arguments.
 
-Require Import Multiset Permutation ListExtras NatUtil LogicUtil Setoid
-  PermutSetoid Morphisms Basics.
+Require Import ListExtras NatUtil LogicUtil Setoid Morphisms Basics.
+Require Export Permutation PermutSetoid Multiset.
+
+Arguments list_contents [A eqA] _ _.
+Arguments permutation [A eqA] _ _ _.
 
 Section Multiplicity.
 
@@ -20,7 +23,7 @@ Section Multiplicity.
     (eqA_Equivalence : Equivalence eqA).
 
   Lemma multiplicity_in: forall l x,
-    multiplicity (list_contents eqA eqA_dec l) x > 0 ->
+    multiplicity (list_contents eqA_dec l) x > 0 ->
     exists x', eqA x' x /\ In x' l.
 
   Proof.
@@ -34,7 +37,7 @@ Section Multiplicity.
 
   Lemma in_multiplicity: forall l a,
     In a l ->
-    multiplicity (list_contents eqA eqA_dec l) a > 0.
+    multiplicity (list_contents eqA_dec l) a > 0.
 
   Proof.
     induction l; simpl; intros.
@@ -48,7 +51,7 @@ Section Multiplicity.
   Qed.
 
   Lemma multiplicity_countIn: forall l el,
-    multiplicity (list_contents eqA eqA_dec l) el = countIn eqA eqA_dec el l.
+    multiplicity (list_contents eqA_dec l) el = countIn eqA eqA_dec el l.
 
   Proof.
     induction l; simpl; intros; trivial.
@@ -62,8 +65,8 @@ Section Multiplicity.
   Lemma multiplicity_dropNth_eq: forall l p el el',
     nth_error l p = Some el' ->
     eqA el el' ->
-    multiplicity (list_contents eqA eqA_dec (drop_nth l p)) el = 
-    multiplicity (list_contents eqA eqA_dec l) el - 1. 
+    multiplicity (list_contents eqA_dec (drop_nth l p)) el = 
+    multiplicity (list_contents eqA_dec l) el - 1. 
 
   Proof.
     intros.
@@ -74,8 +77,8 @@ Section Multiplicity.
   Lemma multiplicity_dropNth_neq: forall l p el el',
     nth_error l p = Some el' ->
     ~eqA el el' ->
-    multiplicity (list_contents eqA eqA_dec (drop_nth l p)) el = 
-    multiplicity (list_contents eqA eqA_dec l) el. 
+    multiplicity (list_contents eqA_dec (drop_nth l p)) el = 
+    multiplicity (list_contents eqA_dec l) el. 
 
   Proof.
     intros.
@@ -93,17 +96,12 @@ Section Permutation.
     (eqA_Equivalence : Equivalence eqA).
 
   Lemma permutation_sym: forall l l',
-    permutation eqA eqA_dec l l' ->
-    permutation eqA eqA_dec l' l.
+    permutation eqA_dec l l' -> permutation eqA_dec l' l.
 
-  Proof.
-    intros; intro el; auto.
-  Qed.
+  Proof. intros; intro; auto. Qed.
 
-  Lemma permutation_in: forall l l' a,
-    permutation eqA eqA_dec l l' ->
-    In a l ->
-    exists a', eqA a' a /\ In a' l'.
+  Lemma permutation_in: forall l l' a, permutation eqA_dec l l' ->
+    In a l -> exists a', eqA a' a /\ In a' l'.
 
   Proof.
     intros.
@@ -114,10 +112,8 @@ Section Permutation.
   Qed.
 
   Lemma permutation_drop: forall (l l': list A) a b p,
-    eqA a b ->
-    nth_error l' p = Some b ->
-    permutation eqA eqA_dec (a :: l) l' ->
-    permutation eqA eqA_dec l (drop_nth l' p).
+    eqA a b -> nth_error l' p = Some b ->
+    permutation eqA_dec (a :: l) l' -> permutation eqA_dec l (drop_nth l' p).
 
   Proof.
     intros; intro el.
@@ -141,11 +137,11 @@ Section Permutation.
   Qed.
 
   Lemma permutation_cons: forall l l' a,
-    permutation eqA eqA_dec (a :: l) l' ->
-    exists p, exists a',
+    permutation eqA_dec (a :: l) l' ->
+    exists p a',
       nth_error l' p = Some a' /\
       eqA a a' /\
-      permutation eqA eqA_dec l (drop_nth l' p).
+      permutation eqA_dec l (drop_nth l' p).
 
   Proof.
     intros.
@@ -159,7 +155,7 @@ Section Permutation.
   Qed.
 
   Lemma permutation_length: forall (l l': list A),
-    permutation eqA eqA_dec l l' ->
+    permutation eqA_dec l l' ->
     length l = length l'.
 
   Proof.
@@ -183,7 +179,7 @@ Section Permutation.
   Qed.
 
   Lemma insert_nth_permut: forall (l: list A) el n,
-    permutation eqA eqA_dec (insert_nth l n el) (el::l). 
+    permutation eqA_dec (insert_nth l n el) (el::l). 
 
   Proof.
     induction l; intros.
@@ -201,8 +197,8 @@ Section Permutation.
   Qed.
 
   Lemma insert_nth_permut': forall (l l': list A) el n,
-    permutation eqA eqA_dec l l' ->
-    permutation eqA eqA_dec (insert_nth l n el) (el::l'). 
+    permutation eqA_dec l l' ->
+    permutation eqA_dec (insert_nth l n el) (el::l'). 
 
   Proof.
     intros; intro w.
@@ -215,10 +211,10 @@ Section Permutation.
     match goal with
     | |- ?a + (?b + ?c) = ?d => replace (a + (b + c)) with (a + c + b)
     end.
-    replace (multiplicity (list_contents eqA eqA_dec (initialSeg l n)) w + 
-      multiplicity (list_contents eqA eqA_dec (finalSeg l n)) w) 
+    replace (multiplicity (list_contents eqA_dec (initialSeg l n)) w + 
+      multiplicity (list_contents eqA_dec (finalSeg l n)) w) 
     with (multiplicity
-      (list_contents eqA eqA_dec (initialSeg l n ++ finalSeg l n)) w).
+      (list_contents eqA_dec (initialSeg l n ++ finalSeg l n)) w).
     rewrite initialSeg_finalSeg_full; trivial.
     rewrite (H w); auto with arith.
     rewrite list_contents_app; trivial.
@@ -375,8 +371,8 @@ Section ListSim_iso.
   Definition list_simA := @list_sim A A P.
 
   Lemma list_sim_permutation : forall l l' m,
-    list_simA l l' -> permutation eqA eqA_dec l m ->
-    exists m', list_simA m m' /\ permutation eqA eqA_dec l' m'.
+    list_simA l l' -> permutation eqA_dec l m ->
+    exists m', list_simA m m' /\ permutation eqA_dec l' m'.
 
   Proof.
     unfold Setoid_Theory in eqA_Equivalence.
