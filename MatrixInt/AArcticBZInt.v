@@ -8,8 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Matrix AMonAlg AArcticBasedInt VecUtil OrdSemiRing SN RelUtil
-  ZArith AMatrixBasedInt LogicUtil.
+Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil OrdSemiRing SN
+  RelUtil ZArith AMatrixBasedInt.
 Import ArcticBZMatrix.
 
 Local Open Scope Z_scope.
