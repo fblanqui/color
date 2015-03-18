@@ -463,7 +463,8 @@ Lemma wf_sizes_lt : well_founded sizes_lt.
 
 Proof.
 unfold sizes_lt. apply wf_inverse_image with (B := Multiset).
-apply mord_wf. unfold eqA. intros. subst. hyp. exact lt_wf.
+apply mord_wf. unfold eqA. intros. subst.
+compute; intros; omega. exact lt_wf.
 Qed.
 
 (***********************************************************************)

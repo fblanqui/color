@@ -244,9 +244,7 @@ Module HorpoWf (S : TermsSig.Signature)
     rewrite <- Margs.
     rewrite Mb_args; rewrite Nb_args.
     apply mulOrd_oneElemDiff.
-    intros x x' y y' xx' yy'.
-    unfold eqA in xx', yy'. unfold TermsEqset.eqA in xx', yy'.
-    rewrite <- xx'; rewrite <- yy'; trivial.
+    apply horpo_eq_compat'.
     (*REMOVE*) refl.
     apply beta_imp_horpo; trivial. apply algebraic_arg with M; trivial.
     apply app_beta_headSymbol with M; trivial.

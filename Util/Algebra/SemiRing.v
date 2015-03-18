@@ -10,7 +10,7 @@ Semi-ring structure.
 
 Require Export Ring Ring_theory.
 Require Import RelDec Relations Max Arith Compare LogicUtil Bool RelExtras
-  Setoid EqUtil NatUtil ZUtil.
+  Setoid EqUtil NatUtil ZUtil Morphisms.
 
 (***********************************************************************)
 (** Semi-ring structure type *)
@@ -113,17 +113,15 @@ Module NSemiRingT <: SemiRingType.
 
   Definition Aplus := plus.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := mult.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition A_semi_ring := natSRth.
 
@@ -165,17 +163,15 @@ Module BigNSemiRingT <: SemiRingType.
 
   Definition Aplus := BigN.add.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := BigN.mul.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition A_semi_ring := BigNring.
 
@@ -208,17 +204,15 @@ Module ZSemiRingT <: SemiRingType.
 
   Definition Aplus := Zplus.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := Zmult.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
@@ -272,30 +266,28 @@ Module BigZSemiRingT <: SemiRingType.
 
   Definition Aplus := BigZ.add.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := BigZ.mul.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
   Proof.
-  constructor.
-  exact (Radd_0_l BigZring).
-  exact (Radd_comm BigZring).
-  exact (Radd_assoc BigZring).
-  exact (Rmul_1_l BigZring).
-  exact BigZ.mul_0_l.
-  exact (Rmul_comm BigZring).
-  exact (Rmul_assoc BigZring).
-  exact BigZ.mul_add_distr_r.
+    constructor.
+    exact (Radd_0_l BigZring).
+    exact (Radd_comm BigZring).
+    exact (Radd_assoc BigZring).
+    exact (Rmul_1_l BigZring).
+    exact BigZ.mul_0_l.
+    exact (Rmul_comm BigZring).
+    exact (Rmul_assoc BigZring).
+    exact BigZ.mul_add_distr_r.
   Qed.
 
 End BigZSemiRingT.
@@ -362,10 +354,9 @@ Module ArcticSemiRingT <: SemiRingType.
     | Pos m, Pos n => Pos (max m n)
     end.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   (* plus is a <*> operation in the semi-ring *)
   Definition Amult m n := 
@@ -375,10 +366,9 @@ Module ArcticSemiRingT <: SemiRingType.
     | Pos m, Pos n => Pos (m + n)
     end.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
 
@@ -510,10 +500,9 @@ Module ArcticBZSemiRingT <: SemiRingType.
     | Fin m, Fin n => Fin (Zmax m n)
     end.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   (* plus is a <*> operation in the semi-ring *)
   Definition Amult m n := 
@@ -523,10 +512,9 @@ Module ArcticBZSemiRingT <: SemiRingType.
     | Fin m, Fin n => Fin (m + n)
     end.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
 
@@ -619,11 +607,9 @@ Definition tropical_is_finite v :=
   | _ => true
   end.
 
-Lemma tropical_is_finite_ok : forall v, tropical_is_finite v = true <-> v <> PlusInf.
+Lemma tropical_is_finite_ok v : tropical_is_finite v = true <-> v <> PlusInf.
 
-Proof.
-  intro. destruct v; simpl; intuition. discr.
-Qed.
+Proof. destruct v; simpl; intuition. discr. Qed.
 
 Definition beq_TropicalDom x y :=
   match x, y with
@@ -665,10 +651,9 @@ Module TropicalSemiRingT <: SemiRingType.
     | TPos m, TPos n => TPos (min m n)
     end.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   (* plus is a <*> operation in the semi-ring *)
   Definition Amult m n := 
@@ -678,10 +663,9 @@ Module TropicalSemiRingT <: SemiRingType.
     | TPos m, TPos n => TPos (m + n)
     end.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
 
@@ -786,17 +770,15 @@ Module BSemiRingT <: SemiRingType.
 
   Definition Aplus := orb.
 
-  Add Morphism Aplus with signature eqA ==> eqA ==> eqA as Aplus_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := andb.
 
-  Add Morphism Amult with signature eqA ==> eqA ==> eqA as Amult_mor.
-  Proof.
-    intros. rewrite H. rewrite H0. refl.
-  Qed.
+  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+
+  Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 

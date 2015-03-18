@@ -11,7 +11,7 @@ recursive path ordering due to Jouannaud and Rubio.
 Set Implicit Arguments.
 
 Require Import RelExtras ListExtras RelUtil Terms MultisetOrder LexOrder
-  MultisetList MultisetTheory AccUtil LogicUtil.
+  MultisetList MultisetTheory AccUtil LogicUtil Morphisms Basics.
 
 Module Type Precedence.
 
@@ -161,8 +161,12 @@ Module Horpo (S : TermsSig.Signature)
   Lemma horpo_eq_compat : forall M M' N N',
     M = M' -> N = N' -> M >> N -> M' >> N'.
 
+  Proof. intros; rewrite <- H; rewrite <- H0; trivial. Qed.
+
+  Instance horpo_eq_compat' : Proper (eq ==> eq ==> impl) horpo.
+
   Proof.
-    intros; rewrite <- H; rewrite <- H0; trivial.
+    intros a b ab c d cd ac. eapply horpo_eq_compat. apply ab. apply cd. hyp.
   Qed.
 
   Lemma prehorpo_var_normal : forall N M, isVar M -> ~ (M >-> N).
@@ -260,7 +264,7 @@ Module Horpo (S : TermsSig.Signature)
     intros.
     inversion H0.
     term_inv M; term_inv N.
-    destruct (pair_mOrd horpo_eq_compat H1) as 
+    destruct (pair_mOrd horpo_eq_compat' H1) as 
       [o1 | [o2 | [o3 | o4]]].
      (* Ml:Nl Ml:Nr *)
     absurd (A1 = A1 --> B0).
@@ -490,9 +494,7 @@ Module Horpo (S : TermsSig.Signature)
     apply appArg_is_appUnit; trivial.
     apply appArg_is_appUnit; trivial.
     apply mord_list_sim with (fun L R => L ~(Q) R) (appArgs M) (appArgs N); auto.
-    intros x x' y y' xeqx' yeqy'.
-    unfold eqA in xeqx', yeqy'; unfold TermsEqset.eqA in xeqx', yeqy'.
-    rewrite xeqx'; rewrite yeqy'; trivial.
+    apply horpo_eq_compat'.
     unfold order_compatible.
     intros; split; intro.
     apply IH with x y Q; try_solve.
@@ -561,6 +563,7 @@ Module Horpo (S : TermsSig.Signature)
     set (w := horpo_eq_compat).
     destruct (horpo_app M N Mapp Napp MNtype LL) as [left [right [Lred | Rred]]].
     constructor; apply pair_mOrd_left; trivial.
+    apply horpo_eq_compat'.
     apply L_L; trivial.
     apply horpo_RC.
     inversion right.
@@ -574,6 +577,7 @@ Module Horpo (S : TermsSig.Signature)
     rewrite H1.
     destruct (app_conv_app_right_aux Napp N'app NN'); trivial.
     constructor; apply pair_mOrd_right; trivial.
+    apply horpo_eq_compat'.
     apply horpo_RC.
     inversion left.
     left; apply L_L; trivial.
@@ -762,8 +766,7 @@ Module Horpo (S : TermsSig.Signature)
     constructor.
     set (P := fun L R => exists LG: correct_subst L G, R = subst LG).
     apply mord_list_sim with P (appArgs M) (appArgs N); auto.
-    intros; unfold eqA in H, H0; unfold TermsEqset.eqA in H, H0.
-    rewrite <- H; rewrite <- H0; trivial.
+    apply horpo_eq_compat'.
     unfold order_compatible; intros.
     inversion H1; inversion H4.
     rewrite H5; rewrite H6.
@@ -818,6 +821,7 @@ Module Horpo (S : TermsSig.Signature)
     set (w := horpo_eq_compat).
     destruct (horpo_app M N Mapp Napp MNtype LL) as [LrL [RrR [Ls | Rs]]].
     constructor; apply pair_mOrd_left; trivial.
+    apply horpo_eq_compat'.
     apply L_L; trivial.
     inversion RrR.
     left; trivial.
@@ -832,6 +836,7 @@ Module Horpo (S : TermsSig.Signature)
     rewrite H4.
     autorewrite with terms; rewrite H1; trivial.
     constructor; apply pair_mOrd_right; trivial.
+    apply horpo_eq_compat'.
     inversion LrL.
     left; trivial.
     apply L_L; trivial.
@@ -1160,8 +1165,9 @@ Module Horpo (S : TermsSig.Signature)
       destruct (isFunApp_dec N) as [Nfa | Nnfa].
       destruct (funApp_head N Nfa).
       destruct (eq_FunctionSymbol_dec x x0).
-      destruct (@mOrd_dec_aux horpo horpo_eq_compat (list2multiset (appArgs M)) 
-	(list2multiset (appArgs N))); trivial.
+      destruct (@mOrd_dec_aux horpo horpo_eq_compat'
+                              (list2multiset (appArgs M)) 
+	                      (list2multiset (appArgs N))); trivial.
       intros.
       apply IH.
       left; apply arg_subterm.
@@ -1278,13 +1284,13 @@ Module Horpo (S : TermsSig.Signature)
     left; apply appBodyL_subterm.
     left; apply HApp with Mapp Napp; trivial.
     constructor; apply pair_mOrd_left; trivial.
-    apply horpo_eq_compat.
+    apply horpo_eq_compat'.
     destruct h0; [left | right]; auto with sets.
     destruct (IH (appBodyR Mapp) (appBodyR Napp)).
     left; apply appBodyR_subterm.
     left; apply HApp with Mapp Napp; trivial.
     constructor; apply pair_mOrd_right; trivial.
-    apply horpo_eq_compat.
+    apply horpo_eq_compat'.
     destruct h; [left | right]; auto with sets.
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
@@ -1368,7 +1374,7 @@ Module Horpo (S : TermsSig.Signature)
     try_solve.
     apply HApp with Mapp M'app; trivial.
     constructor; apply pair_mOrd_left; trivial.
-    apply horpo_eq_compat.
+    apply horpo_eq_compat'.
     right; trivial.
 
      (* not fun app. R *)
@@ -1381,7 +1387,7 @@ Module Horpo (S : TermsSig.Signature)
     apply horpo_env_preserving; trivial.
     apply HApp with Mapp M'app; trivial.
     constructor; apply pair_mOrd_right; trivial.
-    apply horpo_eq_compat.
+    apply horpo_eq_compat'.
     right; trivial.
 
      (* fun app. *)
@@ -1424,7 +1430,7 @@ Module Horpo (S : TermsSig.Signature)
     rewrite <- MM'head; trivial.
     rewrite Margs; rewrite M'args.
     constructor; apply mulOrd_oneElemDiff; trivial.
-    apply horpo_eq_compat.
+    apply horpo_eq_compat'.
 
      (* Abs *)
     unfold absMonCond; intros.
