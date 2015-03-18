@@ -88,6 +88,8 @@ Module RPO_Prover (Export R : TRPO).
     apply VRPO_Results.wf_lt.
   Qed.
 
+  (*FIXME: mul_status_homomorphic is not proved yet
+
   Lemma arpo_subst_closed : substitution_closed arpo.
 
   Proof.
@@ -188,5 +190,6 @@ Module RPO_Prover (Export R : TRPO).
       apply rpo_rel_top_termination; vm_compute; trivial
     | _ => fail 10 "Unsupported problem for RPO"
    end.
+*)
 
 End RPO_Prover.
