@@ -396,6 +396,8 @@ End WP_Proj.
 (***********************************************************************)
 (** reduction pair associated to VRPO_Prover *)
 
+(*FIXME: arpo_subst_closed not proved yet
+
 Require Import VRPO_Prover.
 
 Module WP_RPO (Import R : TRPO) <: WeakRedPair.
@@ -460,3 +462,4 @@ Module WP_RPO (Import R : TRPO) <: WeakRedPair.
   Proof. unfold succeq. apply rc_trans. apply trans_succ. Qed.
 
 End WP_RPO.
+*)
