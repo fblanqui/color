@@ -21,6 +21,7 @@ Require Import list_permut.
 Require Import Arith.
 Require Import ordered_set.
 Require Import Recdef.
+Require Import Morphisms.
 
 Ltac dummy a b a_eq_b :=
 assert (Dummy : a = b); [exact a_eq_b | clear a_eq_b; rename Dummy into a_eq_b].
@@ -117,28 +118,17 @@ Module Import LPermut   <:
                       with Definition EDS.eq_A := @eq DOS.A :=
 list_permut.Make EDS.
 
- Add Morphism (mem EDS.eq_A) 
-	with signature (@eq A) ==> permut ==> iff
-	as mem_morph.
-   Proof.
-    intros. 
-   apply mem_permut_mem; trivial.
-  Qed.
+  Instance mem_morph : Proper (eq ==> permut ==> iff) (mem EDS.eq_A).
 
-  Add Morphism (List.cons (A:=A)) 
-	with signature (@eq A) ==> permut ==> permut
-	as add_A_morph.
-  Proof.
-    intros e l1 l2 P; rewrite <- permut_cons; trivial.
-    reflexivity.
-  Qed.
+  Proof. intros a b ab c d cd. subst. apply mem_permut_mem; trivial. Qed.
 
-Add Morphism (length (A:=A)) 
-	with signature permut ==> (@eq nat)
-	as length_morph.
-Proof.
-apply permut_length.
-Qed.
+  Instance add_A_morph : Proper (eq ==> permut ==> permut) (List.cons (A:=A)).
+
+  Proof. intros a b e l1 l2 P. rewrite <- permut_cons; trivial. Qed.
+
+Instance length_morph : Proper (permut ==> eq) (length (A:=A)).
+
+Proof. intros a b ab. eapply permut_length. apply ab. Qed.
 
 (** *** Decomposition of the list wrt a pivot. *)
 Function partition (pivot : A) (l : list A) {struct l} : (list A) * (list A) :=

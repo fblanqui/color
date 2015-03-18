@@ -22,6 +22,7 @@ Require Import equiv_list.
 Require Import Relations.
 Require Import Arith.
 Require Import Setoid.
+Require Import Morphisms.
 
 Inductive permut0 (A B : Type) (R : A -> B -> Prop) : (list A -> list B -> Prop) :=
   | Pnil : permut0 R nil nil
@@ -682,40 +683,38 @@ Qed.
 
 End Srel.
 
+Instance LP (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A) :
+  Equivalence (permut0 eq_A).
 
-
-  Add Parametric Relation (A:Type) (eq_A:relation A) (eq_proof:  equivalence _ eq_A) : (list A) (permut0 eq_A)
-  reflexivity proved by (permut0_refl eq_proof)
-    symmetry proved by (permut0_sym eq_proof)
-      transitivity proved by (permut0_trans eq_proof) as LP.
-
-
-
-Add Parametric Morphism  (A:Type) (eq_A:relation A) (eq_proof:  equivalence _ eq_A) : (mem eq_A)
-	with signature eq_A ==> permut0 eq_A ==> iff
-	as mem_morph2. 
-  exact (mem_morph0 eq_proof).
+Proof.
+  split; intro x.
+  apply permut0_refl; assumption.
+  apply permut0_sym; assumption.
+  apply permut0_trans; assumption.
 Qed.
 
-  Add Parametric Morphism (A:Type) (eq_A:relation A) (eq_proof:  equivalence _ eq_A) : (List.cons (A:=A)) 
-	with signature eq_A ==> permut0 eq_A ==> permut0 eq_A
-	as add_A_morph.
-  Proof.
-    intros e1 e2 e1_eq_e2 l1 l2 P; rewrite <- (@permut0_cons _ _ eq_proof e1 e2 l1 l2); trivial.
-  Qed.
-  
+Instance mem_morph2 (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A) :
+  Proper (eq_A ==> permut0 eq_A ==> iff) (mem eq_A).
 
-Add Parametric Morphism (A:Type) (eq_A:relation A) (eq_proof:  equivalence _ eq_A) : (List.app (A:=A)) 
-	with signature permut0 eq_A ==> permut0 eq_A ==> permut0 eq_A
-	as app_morph.
+Proof. exact (mem_morph0 eq_proof). Qed.
+
+Instance add_A_morph (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A):
+  Proper (eq_A ==> permut0 eq_A ==> permut0 eq_A) (List.cons (A:=A)).
+
+Proof.
+  intros e1 e2 e1_eq_e2 l1 l2 P;
+  rewrite <- (@permut0_cons _ _ eq_proof e1 e2 l1 l2); trivial.
+Qed.
+
+Instance app_morph (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A) :
+  Proper (permut0 eq_A ==> permut0 eq_A ==> permut0 eq_A) (List.app (A:=A)).
+
 Proof.
 intros l1 l2 P l1' l2' P'.
 apply (permut0_trans eq_proof) with (l1 ++ l2').
 rewrite <- permut_app1; trivial.
 rewrite <- permut_app2; trivial.
 Qed.
-
-
 
 Section SRel2.
   Variable A : Type.
@@ -910,10 +909,11 @@ Parameter remove_equiv_permut:
       permut (fst (remove_equiv eq_bool l1 l2))  (fst (remove_equiv eq_bool l1' l2')) /\
           permut (snd (remove_equiv eq_bool l1 l2)) (snd (remove_equiv eq_bool l1' l2')).
 
-  Add Relation (list A) permut
-  reflexivity proved by permut_refl
-    symmetry proved by permut_sym
-      transitivity proved by permut_trans as LP.
+Instance LP : Equivalence permut.
+
+Proof.
+  split; intro x. apply permut_refl. apply permut_sym. apply permut_trans.
+Qed.
 
 Require Import Morphisms.
 
@@ -959,11 +959,11 @@ Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1.
   intros a b c _ _ _ a_eq_b b_eq_c; apply (equiv_trans _ _ eq_proof) with b; trivial.
   Qed.
 
-  Add Relation (list A) permut 
-  reflexivity proved by permut_refl
-    symmetry proved by permut_sym
-      transitivity proved by permut_trans as LP.
+  Instance LP : Equivalence permut.
 
+  Proof.
+    split; intro x. apply permut_refl. apply permut_sym. apply permut_trans.
+  Qed.
 
   (** ** Compatibility Properties. 
       Permutation is compatible with mem. *)
@@ -1000,11 +1000,9 @@ Lemma mem_morph :
   Qed.
 
 
-Add Morphism (mem eq_A)
-	with signature eq_A ==> permut ==> iff
-	as mem_morph2. 
-exact mem_morph.
-Qed.
+Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
+
+Proof. exact mem_morph. Qed.
 
   Lemma cons_permut_mem :
     forall l1 l2 e1 e2, eq_A e1 e2 -> permut (e1 :: l1) l2 -> mem eq_A e2 l2.
@@ -1030,13 +1028,13 @@ Qed.
     apply (equiv_sym _ _ eq_proof); trivial.
      Qed.
 
-  Add Morphism (List.cons (A:=A)) 
-	with signature eq_A ==> permut ==> permut
-	as add_A_morph.
+  Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (List.cons (A:=A)).
+
   Proof.
-    intros e1 e2 e1_eq_e2 l1 l2 P; rewrite <- (@permut_cons e1 e2 l1 l2); trivial.
+    intros e1 e2 e1_eq_e2 l1 l2 P;
+      rewrite <- (@permut_cons e1 e2 l1 l2); trivial.
   Qed.
-  
+
  Lemma permut_add_inside :
     forall e1 e2 l1 l2 l3 l4,  eq_A e1 e2 -> 
       (permut (l1 ++ l2) (l3 ++ l4) <->
@@ -1074,9 +1072,8 @@ intros l l1 l2; apply permut_app2.
 apply EDS.eq_proof.
 Qed.
 
-Add Morphism (List.app (A:=A)) 
-	with signature permut ==> permut ==> permut
-	as app_morph.
+Instance app_morph : Proper (permut ==> permut ==> permut) (List.app (A:=A)).
+
 Proof.
 intros l1 l2 P l1' l2' P'.
 apply permut_trans with (l1 ++ l2').

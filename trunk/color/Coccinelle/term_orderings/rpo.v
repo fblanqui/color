@@ -29,6 +29,8 @@ Require Import decidable_set.
 Require Import ordered_set.
 Require Import Recdef.
 Require Import Program.
+Require Import Morphisms.
+
 Set Implicit Arguments.
 
 (** A non-dependant version of lexicographic extension. *)
@@ -628,11 +630,9 @@ apply permut_sym; trivial.
 intros a b a_in_l1 _; apply IHl; trivial.
 Qed.
 
-  Add Relation term equiv 
-  reflexivity proved by (Relation_Definitions.equiv_refl _ _ equiv_equiv)
-    symmetry proved by (Relation_Definitions.equiv_sym _ _ equiv_equiv)
-      transitivity proved by (Relation_Definitions.equiv_trans _ _ equiv_equiv) as EQUIV_RPO.
+Instance equiv_Equivalence : Equivalence equiv.
 
+Proof. generalize equiv_equiv. firstorder. Qed.
 
 Definition equiv_bool_F := 
 (fun (equiv_bool : term -> term -> bool) (t1 t2 : term) =>
@@ -1091,29 +1091,6 @@ left; assumption.
 right; assumption.
 Defined.
 
-(*
-Module Term_equiv_dec : 
-   decidable_set.ES with Definition A:= term 
-                             with Definition eq_A := equiv
-                             with Definition eq_bool := equiv_bool
-                             with Definition eq_bool_ok := equiv_bool_ok.
-                             
-Definition A := term.
-Definition eq_A := equiv.
-Definition eq_proof := equiv_equiv.
-Definition eq_bool := equiv_bool.
-Definition eq_bool_ok := equiv_bool_ok.
-
-  Add Relation A eq_A 
-  reflexivity proved by (Relation_Definitions.equiv_refl _ _ eq_proof)
-    symmetry proved by (Relation_Definitions.equiv_sym _ _ eq_proof)
-      transitivity proved by (Relation_Definitions.equiv_trans _ _ eq_proof) as EQA.
-
-End Term_equiv_dec.
-
-Module Import LP := list_permut.Make (Term_equiv_dec).
-*)
-
 Lemma term_rec3_mem : 
    forall P : term -> Type,
        (forall v : variable, P (Var v)) ->
@@ -1555,38 +1532,35 @@ apply rpo_subterm with (Term f l); trivial.
 subst l; simpl; apply in_or_app; right; left; trivial.
 Qed.
 
-Add Relation term equiv 
-  reflexivity proved by (Relation_Definitions.equiv_refl _ _ equiv_equiv)
-    symmetry proved by (Relation_Definitions.equiv_sym _ _ equiv_equiv)
-      transitivity proved by (Relation_Definitions.equiv_trans _ _ equiv_equiv) as EQA.
+Instance EQA : Equivalence equiv.
 
-Add Relation (list term) (permut0 equiv) 
-  reflexivity proved by (permut0_refl equiv_equiv) 
-  symmetry proved by (permut0_sym equiv_equiv) 
-    transitivity proved by (permut0_trans equiv_equiv)
-  as LP.
+Proof. generalize equiv_equiv. firstorder. Qed.
 
-Add Morphism (mem equiv)
-  with signature equiv ==> permut0 equiv ==> iff
-    as mem_morph2.
-  exact (mem_morph2 equiv_equiv).
-Qed.
-  
- Add Morphism (List.app (A:=term)) 
-with signature permut0 equiv ==> permut0 equiv ==> permut0 equiv
-as app_morph.
-   exact (app_morph equiv_equiv).
+Instance LP : Equivalence (permut0 equiv).
+
+Proof.
+  split; intro x.
+  apply permut0_refl. apply equiv_equiv.
+  apply permut0_sym. apply equiv_equiv.
+  apply permut0_trans. apply equiv_equiv.
 Qed.
 
- Add Morphism (List.cons (A:=term)) 
-with signature equiv ==> permut0 equiv ==> permut0 equiv
-as add_A_morph.
-   exact (add_A_morph equiv_equiv).
-Qed.
- 
+Instance mem_morph2 : Proper (equiv ==> permut0 equiv ==> iff) (mem equiv).
 
+Proof. exact (mem_morph2 equiv_equiv). Qed.
+
+Instance app_morph :
+  Proper (permut0 equiv ==> permut0 equiv ==> permut0 equiv) (@List.app term).
+
+Proof. exact (app_morph equiv_equiv). Qed.
+
+Instance add_A_morph :
+  Proper (equiv ==> permut0 equiv ==> permut0 equiv) (@List.cons term).
+
+Proof. exact (add_A_morph equiv_equiv). Qed.
 
 Lemma rpo_trans : forall bb u t s, rpo bb u t -> rpo bb t s ->  rpo bb u s.
+
 Proof.
 intros bb u t s;
 cut (forall triple : term * (term * term),
