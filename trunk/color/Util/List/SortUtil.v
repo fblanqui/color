@@ -11,7 +11,7 @@ and on Coq's multiplicity function
 Set Implicit Arguments.
 
 Require Export Sorting.
-Require Import RelUtil List LogicUtil.
+Require Import RelUtil List LogicUtil Morphisms.
 
 (***********************************************************************)
 (** lelistA and sort *)
@@ -41,6 +41,28 @@ subst. apply cons_sort. subst; auto. inversion H5. subst. inversion H9.
 apply nil_leA. subst. apply cons_leA. eapply H; eauto.
 Qed.
 
+Lemma lelistA_map A (R : relation A) B (S : relation B) (f : A->B)
+      (f_mon : Proper (R ==> S) f) a :
+  forall l, lelistA R a l -> lelistA S (f a) (map f l).
+
+Proof.
+  induction l; intro h; simpl.
+  apply nil_leA.
+  inversion h; subst. apply cons_leA. apply f_mon. hyp.
+Qed.
+
+Lemma sort_map A (R : relation A) B (S : relation B) (f : A->B)
+      (f_mon : Proper (R ==> S) f) :
+  forall l, sort R l -> sort S (map f l).
+
+Proof.
+  induction l; intro h; simpl.
+  apply nil_sort.
+  inversion h; subst. apply cons_sort.
+  apply IHl. hyp.
+  eapply lelistA_map. apply f_mon. hyp.
+Qed.
+
 Require Import ListNodup.
 
 Lemma nodup_lelistA_strict : forall B a S (mb : list B)
@@ -65,14 +87,14 @@ Qed.
 (***********************************************************************)
 (** multiplicity *)
 
-Require Import Multiset Permutation PermutSetoid.
+Require Import ListPermutation.
 
 Section multiplicity.
 
   Variables (B : Type) (B_eq_dec : forall x y : B, {x=y}+{x<>y}).
 
   Lemma In_multiplicity : forall mb a, In a mb ->
-    multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a >= 1.
+    multiplicity (list_contents B_eq_dec mb) a >= 1.
 
   Proof.
     intros; induction mb; simpl in *; try tauto.
@@ -82,8 +104,7 @@ Section multiplicity.
   Qed.
 
   Lemma multiplicity_nodup : forall mb,
-    (forall a, multiplicity (list_contents (eq (A:=B)) B_eq_dec mb) a <= 1)
-    -> nodup mb.
+    (forall a, multiplicity (list_contents B_eq_dec mb) a <= 1) -> nodup mb.
 
   Proof.
     intros. induction mb; simpl; auto. simpl in H. split.
