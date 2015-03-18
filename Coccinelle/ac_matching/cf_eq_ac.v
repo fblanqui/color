@@ -19,6 +19,8 @@ Require Import weaved_relation.
 Require Import list_sort.
 Require Import term_spec.
 Require Import ac.
+Require Import Morphisms.
+
 Set Implicit Arguments.
 
 Module Type S.
@@ -491,12 +493,9 @@ generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro
 rewrite Af; rewrite <- app_nil_end; apply quick_permut.
 Qed.
 
-Add Morphism (length (A:=term))
-	with signature permut ==> (@eq nat)
-	as length_morph.
-Proof.
-apply list_permut.permut_length.
-Qed.
+Instance length_morph : Proper (permut ==> eq) (length (A:=term)).
+
+Proof. intros a b ab. eapply list_permut.permut_length. apply ab. Qed.
 
 Theorem cf_eq_ac :
   forall t1 t2, well_formed t1 -> well_formed t2 -> 

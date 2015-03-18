@@ -20,6 +20,7 @@ Require Import term_spec.
 Require Import term_o.
 Require Import equational_theory_spec.
 Require Import equational_theory.
+Require Import Morphisms.
 
 Set Implicit Arguments.
 

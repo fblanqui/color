@@ -5,12 +5,14 @@ This is a modified version of Coccinelle-v8.2-bool obtained from
 http://a3pat.ensiie.fr/pub/coccinelle-8.2.tar.gz on 26 October 2009.
 
 The files have been slightly modified by:
-- removing the directory ordinals,
+- removing the directory ordinals
 - removing the files in the directory examples (but not the directory
   examples and its subdirectory cime_trace)
-- removing all "Add LoadPath" instructions,
-- defining every thing in Type instead of Set,
-- adapting a few proof scripts to new Coq versions.
+- removing all "Add LoadPath" instructions
+- defining every thing in Type instead of Set
+- replaced Add Relation/Morphism by Instance
+- removed Emacs local variables
+- adapting proof scripts to new Coq versions
 
 This also includes Sorin Stratulat's patch on the files
 term_orderings/rpo.v and examples/cime_trace/rpo_extension.v

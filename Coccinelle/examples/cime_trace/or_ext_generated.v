@@ -1,7 +1,12 @@
-Require Import Setoid.
+Require Import Setoid Morphisms.
 Set Implicit Arguments.
 
+Opaque iff.
 
+Ltac morph eq :=
+  compute; intros; rewrite !eq;
+  repeat match goal with H: _ <-> _ |- _ => rewrite H;clear H end;
+  reflexivity.
  
 Inductive or2 ( A1  A2 :Prop) : Prop :=
 | or2_1 : A1 -> or2  A1  A2  
@@ -46,15 +51,10 @@ constructor 3. exact H.
 Qed.
 
 
-Add Morphism or3 : or3_morph.
-Proof.
-intros.
-do 2 rewrite or3_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Instance or3_morph : Proper (iff ==> iff ==> iff ==> iff) or3.
+
+Proof. morph or3_equiv. Qed.
+
 Inductive or4 ( A1  A2  A3  A4 :Prop) : Prop :=
 | or4_1 : A1 -> or4  A1  A2  A3  A4 
 | or4_2 : A2 -> or4  A1  A2  A3  A4 
@@ -85,15 +85,10 @@ constructor 4. exact H.
 Qed.
 
 
-Add Morphism or4 : or4_morph.
-Proof.
-intros.
-do 2 rewrite or4_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Instance or4_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff) or4.
+
+Proof. morph or4_equiv. Qed.
+
 Inductive or5 ( A1  A2  A3  A4  A5 :Prop) : Prop :=
 | or5_1 : A1 -> or5  A1  A2  A3  A4  A5 
 | or5_2 : A2 -> or5  A1  A2  A3  A4  A5 
@@ -126,16 +121,10 @@ constructor 5. exact H.
 
 Qed.
 
+Instance or5_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) or5.
 
-Add Morphism or5 : or5_morph.
-Proof.
-intros.
-do 2 rewrite or5_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or5_equiv. Qed.
+
 Inductive or6 ( A1  A2  A3  A4  A5  A6 :Prop) : Prop :=
 | or6_1 : A1 -> or6  A1  A2  A3  A4  A5  A6 
 | or6_2 : A2 -> or6  A1  A2  A3  A4  A5  A6 
@@ -171,16 +160,10 @@ constructor 6. exact H.
 
 Qed.
 
+Instance or6_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or6.
 
-Add Morphism or6 : or6_morph.
-Proof.
-intros.
-do 2 rewrite or6_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or6_equiv. Qed.
+
 Inductive or7 ( A1  A2  A3  A4  A5  A6  A7 :Prop) : Prop :=
 | or7_1 : A1 -> or7  A1  A2  A3  A4  A5  A6  A7 
 | or7_2 : A2 -> or7  A1  A2  A3  A4  A5  A6  A7 
@@ -219,16 +202,10 @@ constructor 7. exact H.
 
 Qed.
 
+Instance or7_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or7.
 
-Add Morphism or7 : or7_morph.
-Proof.
-intros.
-do 2 rewrite or7_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or7_equiv. Qed.
+
 Inductive or8 ( A1  A2  A3  A4  A5  A6  A7  A8 :Prop) : Prop :=
 | or8_1 : A1 -> or8  A1  A2  A3  A4  A5  A6  A7  A8 
 | or8_2 : A2 -> or8  A1  A2  A3  A4  A5  A6  A7  A8 
@@ -270,16 +247,10 @@ constructor 8. exact H.
 
 Qed.
 
+Instance or8_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or8.
 
-Add Morphism or8 : or8_morph.
-Proof.
-intros.
-do 2 rewrite or8_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or8_equiv. Qed.
+
 Inductive or9 ( A1  A2  A3  A4  A5  A6  A7  A8  A9 :Prop) : Prop :=
 | or9_1 : A1 -> or9  A1  A2  A3  A4  A5  A6  A7  A8  A9 
 | or9_2 : A2 -> or9  A1  A2  A3  A4  A5  A6  A7  A8  A9 
@@ -324,16 +295,10 @@ constructor 9. exact H.
 
 Qed.
 
+Instance or9_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or9.
 
-Add Morphism or9 : or9_morph.
-Proof.
-intros.
-do 2 rewrite or9_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or9_equiv. Qed.
+
 Inductive or10 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10 :Prop) : Prop :=
 | or10_1 : A1 -> or10  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10 
 | or10_2 : A2 -> or10  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10 
@@ -381,16 +346,10 @@ constructor 10. exact H.
 
 Qed.
 
+Instance or10_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or10.
 
-Add Morphism or10 : or10_morph.
-Proof.
-intros.
-do 2 rewrite or10_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or10_equiv. Qed.
+
 Inductive or11 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11 :Prop) : Prop :=
 | or11_1 : A1 -> or11  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11 
 | or11_2 : A2 -> or11  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11 
@@ -441,16 +400,10 @@ constructor 11. exact H.
 
 Qed.
 
+Instance or11_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or11.
 
-Add Morphism or11 : or11_morph.
-Proof.
-intros.
-do 2 rewrite or11_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or11_equiv. Qed.
+
 Inductive or12 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12 :Prop) : Prop :=
 | or12_1 : A1 -> or12  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12 
 | or12_2 : A2 -> or12  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12 
@@ -504,16 +457,10 @@ constructor 12. exact H.
 
 Qed.
 
+Instance or12_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or12.
 
-Add Morphism or12 : or12_morph.
-Proof.
-intros.
-do 2 rewrite or12_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or12_equiv. Qed.
+
 Inductive or13 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13 :Prop) : Prop :=
 | or13_1 : A1 -> or13  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13 
 | or13_2 : A2 -> or13  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13 
@@ -570,16 +517,10 @@ constructor 13. exact H.
 
 Qed.
 
+Instance or13_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or13.
 
-Add Morphism or13 : or13_morph.
-Proof.
-intros.
-do 2 rewrite or13_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or13_equiv. Qed.
+
 Inductive or14 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14 :Prop) : Prop :=
 | or14_1 : A1 -> or14  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14 
 | or14_2 : A2 -> or14  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14 
@@ -639,16 +580,10 @@ constructor 14. exact H.
 
 Qed.
 
+Instance or14_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or14.
 
-Add Morphism or14 : or14_morph.
-Proof.
-intros.
-do 2 rewrite or14_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or14_equiv. Qed.
+
 Inductive or15 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15 :Prop) : Prop :=
 | or15_1 : A1 -> or15  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15 
 | or15_2 : A2 -> or15  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15 
@@ -711,16 +646,10 @@ constructor 15. exact H.
 
 Qed.
 
+Instance or15_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or15.
 
-Add Morphism or15 : or15_morph.
-Proof.
-intros.
-do 2 rewrite or15_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or15_equiv. Qed.
+
 Inductive or16 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16 :Prop) : Prop :=
 | or16_1 : A1 -> or16  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16 
 | or16_2 : A2 -> or16  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16 
@@ -786,16 +715,10 @@ constructor 16. exact H.
 
 Qed.
 
+Instance or16_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or16.
 
-Add Morphism or16 : or16_morph.
-Proof.
-intros.
-do 2 rewrite or16_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or16_equiv. Qed.
+
 Inductive or17 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17 :Prop) : Prop :=
 | or17_1 : A1 -> or17  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17 
 | or17_2 : A2 -> or17  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17 
@@ -864,16 +787,10 @@ constructor 17. exact H.
 
 Qed.
 
+Instance or17_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or17.
 
-Add Morphism or17 : or17_morph.
-Proof.
-intros.
-do 2 rewrite or17_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or17_equiv. Qed.
+
 Inductive or18 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18 :Prop) : Prop :=
 | or18_1 : A1 -> or18  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18 
 | or18_2 : A2 -> or18  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18 
@@ -945,16 +862,10 @@ constructor 18. exact H.
 
 Qed.
 
+Instance or18_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or18.
 
-Add Morphism or18 : or18_morph.
-Proof.
-intros.
-do 2 rewrite or18_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or18_equiv. Qed.
+
 Inductive or19 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19 :Prop) : Prop :=
 | or19_1 : A1 -> or19  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19 
 | or19_2 : A2 -> or19  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19 
@@ -1029,16 +940,10 @@ constructor 19. exact H.
 
 Qed.
 
+Instance or19_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or19.
 
-Add Morphism or19 : or19_morph.
-Proof.
-intros.
-do 2 rewrite or19_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or19_equiv. Qed.
+
 Inductive or20 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20 :Prop) : Prop :=
 | or20_1 : A1 -> or20  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20 
 | or20_2 : A2 -> or20  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20 
@@ -1116,16 +1021,10 @@ constructor 20. exact H.
 
 Qed.
 
+Instance or20_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or20.
 
-Add Morphism or20 : or20_morph.
-Proof.
-intros.
-do 2 rewrite or20_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or20_equiv. Qed.
+
 Inductive or21 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21 :Prop) : Prop :=
 | or21_1 : A1 -> or21  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21 
 | or21_2 : A2 -> or21  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21 
@@ -1206,16 +1105,10 @@ constructor 21. exact H.
 
 Qed.
 
+Instance or21_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or21.
 
-Add Morphism or21 : or21_morph.
-Proof.
-intros.
-do 2 rewrite or21_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or21_equiv. Qed.
+
 Inductive or22 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22 :Prop) : Prop :=
 | or22_1 : A1 -> or22  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22 
 | or22_2 : A2 -> or22  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22 
@@ -1299,16 +1192,10 @@ constructor 22. exact H.
 
 Qed.
 
+Instance or22_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or22.
 
-Add Morphism or22 : or22_morph.
-Proof.
-intros.
-do 2 rewrite or22_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or22_equiv. Qed.
+
 Inductive or23 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23 :Prop) : Prop :=
 | or23_1 : A1 -> or23  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23 
 | or23_2 : A2 -> or23  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23 
@@ -1395,16 +1282,10 @@ constructor 23. exact H.
 
 Qed.
 
+Instance or23_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or23.
 
-Add Morphism or23 : or23_morph.
-Proof.
-intros.
-do 2 rewrite or23_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or23_equiv. Qed.
+
 Inductive or24 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23  A24 :Prop) : Prop :=
 | or24_1 : A1 -> or24  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23  A24 
 | or24_2 : A2 -> or24  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23  A24 
@@ -1494,16 +1375,10 @@ constructor 24. exact H.
 
 Qed.
 
+Instance or24_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or24.
 
-Add Morphism or24 : or24_morph.
-Proof.
-intros.
-do 2 rewrite or24_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or24_equiv. Qed.
+
 Inductive or25 ( A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23  A24  A25 :Prop) : Prop :=
 | or25_1 : A1 -> or25  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23  A24  A25 
 | or25_2 : A2 -> or25  A1  A2  A3  A4  A5  A6  A7  A8  A9  A10  A11  A12  A13  A14  A15  A16  A17  A18  A19  A20  A21  A22  A23  A24  A25 
@@ -1596,13 +1471,6 @@ constructor 25. exact H.
 
 Qed.
 
+Instance or25_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or25.
 
-Add Morphism or25 : or25_morph.
-Proof.
-intros.
-do 2 rewrite or25_equiv.
-repeat match goal with
-H: _ <-> _ |- _ => rewrite H;clear H
-end.
-reflexivity.
-Qed.
+Proof. morph or25_equiv. Qed.

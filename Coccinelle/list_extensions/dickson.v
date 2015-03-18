@@ -15,7 +15,6 @@
 
 Set Implicit Arguments. 
 
-Require Export Setoid.
 Require Import Relations.
 Require Import List.
 Require Import closure.
@@ -24,6 +23,7 @@ Require Import Multiset.
 Require Import list_permut.
 Require Import ordered_set.
 Require Import Arith.
+Require Import Morphisms.
 
 Ltac dummy a b a_eq_b :=
 assert (Dummy : a = b); [exact a_eq_b | clear a_eq_b; rename Dummy into a_eq_b].
@@ -49,8 +49,6 @@ Parameter list_permut_multiset_extension_step_1 :
 Parameter list_permut_multiset_extension_step_2 :
   forall R l1 l2 l, permut l1 l2 -> 
   multiset_extension_step R l l1 -> multiset_extension_step R l l2.
-
-Require Import Morphisms.
 
 Declare Instance mult_morph (R : relation A) :
   Proper (permut ==> permut ==> iff) (multiset_extension_step R).
@@ -133,9 +131,9 @@ apply permut_sym; assumption.
 assumption.
 Defined.
 
-Add Parametric Morphism (R : relation A) : (multiset_extension_step R)
-  with signature  permut ==> permut ==> iff 
-  as mult_morph.
+Instance mult_morph (R : relation A) :
+  Proper (permut ==> permut ==> iff) (multiset_extension_step R).
+
 Proof.
 intros l1 l2 P12 l3 l4 P34; split; [intro R13 | intro R24].
 apply list_permut_multiset_extension_step_2 with l3; trivial.
@@ -200,16 +198,6 @@ intros R l1 l2 Meq A1; apply Acc_intro; intros l M2;
 inversion A1; apply H; subst.
 apply list_permut_multiset_extension_step_2 with l2; assumption.
 Defined.
-
-(*
-Add Parametric Morphism (R : relation A) : 
-             Acc (multiset_extension_step R)) : acc_morph.
-Proof.
-intros R l1 l2 P; split; [intro A1 | intro A2].
-apply list_permut_acc with l1; trivial; rewrite <- P; auto.
-apply list_permut_acc with l2; trivial.
-Qed.
-*)
 
 Lemma dickson_aux1 :
 forall (R : relation A) a,

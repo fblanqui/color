@@ -10,7 +10,7 @@ assumed) encoded via lambda-terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsEta Setoid LogicUtil.
+Require Import Relations RelExtras ListExtras TermsEta Morphisms LogicUtil.
 
 Module TermsAlgebraic (Sig : TermsSig.Signature).
 
@@ -73,24 +73,21 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply H1; trivial.
   Qed.
 
-  Add Morphism algebraic
-    with signature terms_conv ==> iff
-      as algebraic_morph.
+  Instance algebraic_morph : Proper (terms_conv ==> iff) algebraic.
 
   Proof.
-    intuition.
-    eapply algebraic_morph_aux. apply H. exact H0.
-    eapply algebraic_morph_aux. apply (terms_conv_sym H). exact H0. 
+    intros a b ab. intuition.
+    eapply algebraic_morph_aux. apply ab. hyp.
+    eapply algebraic_morph_aux. apply (terms_conv_sym ab). hyp.
   Qed.
 
-  Lemma algebraic_funApp_datatype : forall M, algebraic M -> isFunApp M -> isBaseType (type M).
+  Lemma algebraic_funApp_datatype :
+    forall M, algebraic M -> isFunApp M -> isBaseType (type M).
 
-  Proof.
-    unfold isFunApp; intros.
-    inversion H; term_inv M.
-  Qed.
+  Proof. unfold isFunApp; intros. inversion H; term_inv M. Qed.
 
-  Lemma algebraic_arrowType : forall M, algebraic M -> isArrowType (type M) -> ~isFunApp M.
+  Lemma algebraic_arrowType :
+    forall M, algebraic M -> isArrowType (type M) -> ~isFunApp M.
 
   Proof.
     intros.
@@ -100,21 +97,20 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     inversion H; try_solve; fo; term_inv M.
   Qed.
 
-  Lemma algebraic_absBody : forall M (Mabs: isAbs M), algebraic M -> algebraic (absBody Mabs).
+  Lemma algebraic_absBody : forall M (Mabs: isAbs M),
+      algebraic M -> algebraic (absBody Mabs).
+
+  Proof. intros; inversion H; term_inv M. Qed.
+
+  Lemma algebraic_arg : forall M Marg (Mapp: isApp M),
+      algebraic M -> isArg Marg M -> algebraic Marg.
 
   Proof.
-    intros; inversion H; term_inv M.
+    intros; destruct (isApp_dec M); try_solve. inversion H; term_inv M.
   Qed.
 
-  Lemma algebraic_arg : forall M Marg (Mapp: isApp M), algebraic M -> isArg Marg M -> algebraic Marg.
-
-  Proof.
-    intros; destruct (isApp_dec M); try_solve.
-    inversion H; term_inv M.
-  Qed.
-
-  Lemma algebraic_appBodyL : forall M (Mapp: isApp M), ~isFunApp M -> algebraic M ->
-    algebraic (appBodyL Mapp).
+  Lemma algebraic_appBodyL : forall M (Mapp: isApp M),
+      ~isFunApp M -> algebraic M -> algebraic (appBodyL Mapp).
 
   Proof.
     intros M Mapp Mhead Malg.
@@ -131,7 +127,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     unfold isAppUnit; rewrite appUnits_notApp; auto with datatypes.
   Qed.
 
-  Lemma algebraic_appBodyR : forall M (Mapp: isApp M), algebraic M -> algebraic (appBodyR Mapp). 
+  Lemma algebraic_appBodyR : forall M (Mapp: isApp M),
+      algebraic M -> algebraic (appBodyR Mapp). 
 
   Proof.
     intros; inversion H; term_inv M.
@@ -192,25 +189,18 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
 
   Lemma algebraic_var : forall M (Mvar: isVar M), algebraic M.
 
-  Proof.
-    intros; apply AlgVar; trivial.
-  Qed.
+  Proof. intros; apply AlgVar; trivial. Qed.
 
   Lemma algebraic_lift : forall M i, algebraic M -> algebraic (lift M i).
 
-  Proof.
-    intros.
-    rewrite <- (terms_lift_conv M i); trivial.
-  Qed.
+  Proof. intros. rewrite <- (terms_lift_conv M i); trivial. Qed.
 
   Lemma algebraic_lower : forall M Me, algebraic M -> algebraic (lower M Me).
-  Proof.
-    intros.
-    rewrite <- (terms_lower_conv M Me); trivial.
-  Qed.
 
-  Lemma algebraic_app_notFunApp : forall M (Mapp: isApp M), algebraic (appBodyL Mapp) ->
-    algebraic (appBodyR Mapp) -> ~isFunApp M.
+  Proof. intros. rewrite <- (terms_lower_conv M Me); trivial. Qed.
+
+  Lemma algebraic_app_notFunApp : forall M (Mapp: isApp M),
+      algebraic (appBodyL Mapp) -> algebraic (appBodyR Mapp) -> ~isFunApp M.
 
   Proof.
     intros; intro i.
@@ -225,24 +215,19 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     rewrite (appHead_app M Mapp) in i; trivial.
   Qed.
 
-  Lemma algebraic_funS : forall M, algebraic M -> isFunS M -> isBaseType (type M).
+  Lemma algebraic_funS M : algebraic M -> isFunS M -> isBaseType (type M).
 
-  Proof.
-    intros; inversion H; term_inv M.
-  Qed.
+  Proof. intros; inversion H; term_inv M. Qed.
 
   Lemma funS_algebraic: forall M,
-    isBaseType (type M) ->
-    isFunS M ->
-    algebraic M.
-  Proof.
-    intros; apply AlgFunApp; term_inv M.
-  Qed.
+      isBaseType (type M) -> isFunS M -> algebraic M.
+  
+  Proof. intros; apply AlgFunApp; term_inv M. Qed.
 
   Definition algebraicSubstitution G := forall p T, G |-> p/T -> algebraic T.
 
-  Lemma singletonSubst_algebraic : forall G T, isSingletonSubst T G -> algebraic T ->
-    algebraicSubstitution G.
+  Lemma singletonSubst_algebraic : forall G T,
+      isSingletonSubst T G -> algebraic T -> algebraicSubstitution G.
 
   Proof.
     intros; intros p M D.
@@ -254,8 +239,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     inversion D; inversion hint; try_solve.
   Qed.
 
-  Lemma algebraicSubstitution_cons_none : forall G, algebraicSubstitution G ->
-    algebraicSubstitution (None :: G).
+  Lemma algebraicSubstitution_cons_none : forall G,
+      algebraicSubstitution G -> algebraicSubstitution (None :: G).
 
   Proof.
     intros; intros p M D.
@@ -275,16 +260,13 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply (H p); trivial.
   Qed.
 
-  Lemma algebraicSubstitution_cons_rev : forall G T, algebraicSubstitution (T :: G) ->
-    algebraicSubstitution G.
+  Lemma algebraicSubstitution_cons_rev : forall G T,
+      algebraicSubstitution (T :: G) -> algebraicSubstitution G.
 
-  Proof.
-    intros; intros p M D.
-    apply (H (S p)); trivial.
-  Qed.
+  Proof. intros; intros p M D. apply (H (S p)); trivial. Qed.
 
-  Lemma algebraicSubstitution_lifted : forall G i, algebraicSubstitution G ->
-    algebraicSubstitution (lift_subst G i).
+  Lemma algebraicSubstitution_lifted : forall G i,
+      algebraicSubstitution G -> algebraicSubstitution (lift_subst G i).
 
   Proof.
     induction G; trivial.
@@ -300,8 +282,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply algebraicSubstitution_cons_rev with (None (A:=Term)); trivial.
   Qed.
 
-  Lemma notFunApp_subst : forall M G (MG: correct_subst M G), isApp M -> algebraicSubstitution G ->
-    ~isFunApp M -> ~isFunApp (subst MG).
+  Lemma notFunApp_subst : forall M G (MG: correct_subst M G),
+      isApp M -> algebraicSubstitution G -> ~isFunApp M -> ~isFunApp (subst MG).
 
   Proof.
     intro M.
@@ -381,8 +363,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply isFunApp_left; trivial.
   Qed.
 
-  Lemma algebraic_subst : forall M G (MG: correct_subst M G), algebraic M ->
-    algebraicSubstitution G -> algebraic (subst MG).
+  Lemma algebraic_subst : forall M G (MG: correct_subst M G),
+      algebraic M -> algebraicSubstitution G -> algebraic (subst MG).
 
   Proof.
     intro M.
@@ -459,7 +441,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply algebraic_appBodyR; trivial.
   Qed.
 
-  Lemma betaStep_algebraic_preserving : forall M N, algebraic M -> BetaStep M N -> algebraic N.
+  Lemma betaStep_algebraic_preserving :
+    forall M N, algebraic M -> BetaStep M N -> algebraic N.
 
   Proof.
     intros.
@@ -480,7 +463,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply algebraic_appBodyR; trivial.
   Qed.
 
-  Lemma beta_algebraic_preserving : forall M N, algebraic M -> M -b-> N -> algebraic N.
+  Lemma beta_algebraic_preserving :
+    forall M N, algebraic M -> M -b-> N -> algebraic N.
 
   Proof.
     intro M.
@@ -608,14 +592,14 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     Definition algebraic_monotonicity := 
       forall T (pos: Pos T) (Mpos: PlaceHolder pos) (Npos: PlaceHolder pos)
 	(M := proj1_sig2 Mpos) (N := proj1_sig2 Npos),
-	algebraic T -> algebraic M -> algebraic N -> ~isFunApp (T // pos) -> M -R-> N -> 
-	swap Mpos -R-> swap Npos.
+	algebraic T -> algebraic M -> algebraic N -> ~isFunApp (T // pos) ->
+        M -R-> N -> swap Mpos -R-> swap Npos.
 
-    Lemma monotonicity_algebraicMonotonicity : monotonous R -> algebraic_monotonicity.
+    Lemma monotonicity_algebraicMonotonicity :
+      monotonous R -> algebraic_monotonicity.
 
     Proof.
-      unfold monotonous, algebraic_monotonicity; intros.
-      apply H; trivial.
+      unfold monotonous, algebraic_monotonicity; intros. apply H; trivial.
     Qed.
 
     Lemma algebraic_swap_this : forall M (pos: Pos M) (MP: PlaceHolder pos)
@@ -630,14 +614,13 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       rewrite swap_term_is; try_solve.
     Qed.
 
-    Lemma algebraic_swap_abs : forall M (pos: Pos M) (MP: PlaceHolder pos)
-      (P := proj1_sig2 MP),
-      (forall Min (pos: Pos Min) (MP: PlaceHolder pos) (P := proj1_sig2 MP), 
-	subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min -> algebraic P ->
-        algebraic (swap MP)
-      ) ->
-      pos <> PThis M -> isAbs M -> ~isFunApp (M // pos) -> algebraic M -> algebraic P ->
-      algebraic (swap MP).
+    Lemma algebraic_swap_abs :
+      forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+        (forall Min (pos: Pos Min) (MP: PlaceHolder pos) (P := proj1_sig2 MP), 
+	    subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min ->
+            algebraic P -> algebraic (swap MP)) ->
+        pos <> PThis M -> isAbs M -> ~isFunApp (M // pos) -> algebraic M ->
+        algebraic P -> algebraic (swap MP).
 
     Proof.
       intros.
@@ -654,17 +637,18 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       rewrite MPeq; trivial.
     Qed.
 
-    Lemma algebraic_swap_notFunApp : forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
-      (forall Min (pos: Pos Min) (MP: PlaceHolder pos)
-        (P := proj1_sig2 MP), subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min ->
-        algebraic P -> algebraic (swap MP)
-      ) ->
-      pos <> PThis M -> ~isFunApp M -> ~isFunApp (M // pos) ->
-      (forall M', isAppUnit M' M -> algebraic M') -> algebraic P ->
-      (forall M', isAppUnit M' (swap MP) -> algebraic M').
+    Lemma algebraic_swap_notFunApp :
+      forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+        (forall Min (pos: Pos Min) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+            subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min ->
+            algebraic P -> algebraic (swap MP)) ->
+        pos <> PThis M -> ~isFunApp M -> ~isFunApp (M // pos) ->
+        (forall M', isAppUnit M' M -> algebraic M') -> algebraic P ->
+        (forall M', isAppUnit M' (swap MP) -> algebraic M').
 
     Proof.
-      induction pos; intros MP P IH Pthis Mnfa Mpnfa Mualg Palg M' M'unit; try_solve.
+      induction pos; intros MP P IH Pthis Mnfa Mpnfa Mualg Palg M' M'unit;
+        try_solve.
 
       assert (MPabs: isAbs (swap MP)).
       apply swap_abs.
@@ -733,13 +717,14 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       rewrite MR; trivial.
     Qed.
 
-    Lemma algebraic_swap_isFunApp : forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
-      (forall Min (pos: Pos Min) (MP: PlaceHolder pos)
-        (P := proj1_sig2 MP), subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min ->
-        algebraic P -> algebraic (swap MP)
-      ) ->
-      isFunApp M -> ~isFunApp (M // pos) -> (forall M', isArg M' M -> algebraic M') ->
-      algebraic P -> (forall M', isArg M' (swap MP) -> algebraic M').
+    Lemma algebraic_swap_isFunApp :
+      forall M (pos: Pos M) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+        (forall Min (pos: Pos Min) (MP: PlaceHolder pos) (P := proj1_sig2 MP),
+            subterm Min M -> ~isFunApp (Min // pos) -> algebraic Min ->
+            algebraic P -> algebraic (swap MP)) ->
+        isFunApp M -> ~isFunApp (M // pos) ->
+        (forall M', isArg M' M -> algebraic M') ->
+        algebraic P -> (forall M', isArg M' (swap MP) -> algebraic M').
 
     Proof.
       induction pos; intros MP P IH Mnfa Mpnfa Mualg Palg M' M'arg; try_solve.
@@ -837,7 +822,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
         (Mpos: PlaceHolder pos) (Npos: PlaceHolder pos) 
 	(M := proj1_sig2 Mpos) (N := proj1_sig2 Npos),
 	~isFunApp (T // pos) -> isFunApp T ->
-	exists l, exists t, exists tp: Pos t, exists ph: PlaceHolder tp * PlaceHolder tp,
+	exists l t (tp: Pos t) (ph: PlaceHolder tp * PlaceHolder tp),
           isArg t T /\ ~isFunApp (t // tp) /\
           proj1_sig2 (fst ph) = M /\ proj1_sig2 (snd ph) = N /\
 	  appHead (swap Mpos) = appHead (swap Npos) /\
@@ -851,8 +836,9 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       set (Rapp := swap_left_app Npos).
       destruct (placeHolder_appL Mpos) as [MLpos ML].
       destruct (placeHolder_appL Npos) as [NLpos NL].
-      destruct (IHpos MLpos NLpos) 
-        as [[l r] [T [TP [[PHL PHR] [Targ [Tnfa [TM [TN [MNhead [Margs Nargs]]]]]]]]]]; trivial.
+      destruct (IHpos MLpos NLpos) as [[l r]
+        [T [TP [[PHL PHR] [Targ [Tnfa [TM [TN [MNhead [Margs Nargs]]]]]]]]]];
+        trivial.
       change (buildT AppL) with (appBodyL (M:=buildT (TApp AppL AppR)) I).
       apply isFunApp_left; trivial.
       set (SL := swap_in_appL MLpos Mpos Lapp ML).
@@ -924,7 +910,8 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
 	absBody Nabs -R-> absBody N'abs ->
 	N -R-> N'.
 
-    Lemma algebraic_monotonicity_criterion : appMonCond -> absMonCond -> algebraic_monotonicity.
+    Lemma algebraic_monotonicity_criterion :
+      appMonCond -> absMonCond -> algebraic_monotonicity.
 
     Proof.
        intros CApp CAbs T; revert CApp CAbs.
@@ -991,10 +978,11 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
        destruct (isFunS_dec (appHead (buildT (TApp AppL AppR)))).
        right; right; split.
        apply swap_isFunApp; trivial.
-       destruct (algebraic_swap_funApp Mpos Npos) 
-         as [[l r] [T [TP [[PHL PHR] [Targ [Tnfa [TM [TN [MNhead [Margs Nargs]]]]]]]]]]; trivial.
+       destruct (algebraic_swap_funApp Mpos Npos) as [[l r]
+         [T [TP [[PHL PHR] [Targ [Tnfa [TM [TN [MNhead [Margs Nargs]]]]]]]]]];
+         trivial.
        split; simpl in *; trivial.
-       exists (l, r); exists (swap PHL); exists (swap PHR); repeat split; trivial.
+       ex (l, r) (swap PHL) (swap PHR); repeat split; trivial.
        apply IH; trivial.
        apply arg_subterm; trivial.
        apply algebraic_arg with (buildT (TApp AppL AppR)); simpl; trivial.
@@ -1031,10 +1019,11 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
        destruct (isFunS_dec (appHead (buildT (TApp AppL AppR)))).
        right; right; split.
        apply swap_isFunApp; trivial.
-       destruct (algebraic_swap_funApp Mpos Npos) 
-         as [[l r] [T [TP [[PHL PHR] [Targ [Tnfa [TM [TN [MNhead [Margs Nargs]]]]]]]]]]; trivial.
+       destruct (algebraic_swap_funApp Mpos Npos) as [[l r]
+         [T [TP [[PHL PHR] [Targ [Tnfa [TM [TN [MNhead [Margs Nargs]]]]]]]]]];
+         trivial.
        repeat split; simpl in *; trivial.
-       exists (l, r); exists (swap PHL); exists (swap PHR); repeat split; trivial.
+       ex (l, r) (swap PHL) (swap PHR); repeat split; trivial.
        apply IH; trivial.
        apply arg_subterm; trivial.
        apply algebraic_arg with (buildT (TApp AppL AppR)); simpl; trivial.
