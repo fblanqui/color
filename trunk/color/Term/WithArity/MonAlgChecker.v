@@ -43,8 +43,8 @@ Variable interpret : forall n, arSymInt n -> naryFunction1 domain n.
 Program Definition makeI (int : forall f, funInt f) :=
   mkInterpretation (Sig:=Sig) domain_elt (fun f => interpret (int f)).
 
-Variable check_succ : forall i r, Exc (IR (makeI i) succ (lhs r) (rhs r)).
-Variable check_succeq : forall i r, Exc (IR (makeI i) succeq (lhs r) (rhs r)).
+Variable check_succ : forall i r, option (IR (makeI i) succ (lhs r) (rhs r)).
+Variable check_succeq : forall i r, option (IR (makeI i) succeq (lhs r) (rhs r)).
 
 Section given_int.
 
@@ -94,34 +94,34 @@ End reduction_pairs.
 
 Section prover.
 
-Variable check_int_wm : Exc (monotone I succeq).
-Variable check_int_sm : Exc (monotone I succeq /\ monotone I succ).
+Variable check_int_wm : option (monotone I succeq).
+Variable check_int_sm : option (monotone I succeq /\ monotone I succ).
 
 Program Definition check_compat (R : rules) (F : relation D)
-  (check_compat : forall i r, Exc (IR (makeI i) F (lhs r) (rhs r))) :
-  Exc (compat (IR (makeI i) F) R) :=
-  match lforall_exc _ (check_compat i) R with
-  | value _ => value _
-  | error => error
+  (check_compat : forall i r, option (IR (makeI i) F (lhs r) (rhs r))) :
+  option (compat (IR (makeI i) F) R) :=
+  match lforall_opt _ (check_compat i) R with
+  | Some _ => Some _
+  | None => None
   end. 
 
 Next Obligation.
 Proof with try discr; auto.
-  destruct_call lforall_exc...
+  destruct_call lforall_opt...
   intros t u Rtu. destruct (lforall_in wildcard' Rtu). hyp.
 Qed.
 
 Program Definition simplify (R : rules) : 
-  Exc { Rge : rules  | 
+  option { Rge : rules  | 
           exists Rgt : rules,
             compat IR_succ Rgt /\ 
             compat IR_succeq Rge /\
             incl R (Rgt ++ Rge)
       } := 
-  let (Rp, obl) := partition_exc _ (check_succ i) R in
+  let (Rp, obl) := partition_opt _ (check_succ i) R in
     match check_compat (snd Rp) check_succeq with
-    | error => error
-    | value _ => value (snd Rp)
+    | None => None
+    | Some _ => Some (snd Rp)
     end.
 
 Next Obligation.
@@ -133,41 +133,41 @@ Proof with try discr; auto.
 Qed.
 
 Program Definition applyMonotoneAlgebra (P : Problem) : 
-  Exc { P' : Problem | Prob_WF P' -> Prob_WF P } :=
+  option { P' : Problem | Prob_WF P' -> Prob_WF P } :=
 
   match P with
   | FullTerm R =>
       match check_int_sm with
-      | error => error
-      | value sm =>
+      | None => None
+      | Some sm =>
           match simplify R with
-          | error => error
-          | value R' => value (FullTerm R')
+          | None => None
+          | Some R' => Some (FullTerm R')
           end
       end
   | RelTopTerm T R =>
       match check_int_wm with
-      | error => error
-      | value wm =>
+      | None => None
+      | Some wm =>
         match check_compat T check_succeq with
-        | error => error
-        | value _ => 
+        | None => None
+        | Some _ => 
             match simplify R with
-            | error => error
-            | value R' => value (RelTopTerm T R')
+            | None => None
+            | Some R' => Some (RelTopTerm T R')
             end
         end
       end
   | RelTerm T R =>
       match check_int_sm with
-      | error => error
-      | value sm =>
+      | None => None
+      | Some sm =>
           match simplify T with
-          | error => error
-          | value T' =>
+          | None => None
+          | Some T' =>
               match simplify R with
-              | error => error
-              | value R' => value (RelTerm T' R')
+              | None => None
+              | Some R' => Some (RelTerm T' R')
               end
           end
       end
@@ -183,7 +183,6 @@ Qed.
 Next Obligation.
 Proof with try discr; auto.
   destruct_call simplify... 
-  clear Heq_anonymous0 s.
   apply WF_incl with (hd_red_mod T (H0 ++ R')).
   comp. apply hd_red_incl...
   apply rule_elimination_hd_mod with (wrp wm)...
@@ -203,7 +202,7 @@ End given_int.
 
 Record monSpec monR := 
   { monP : symInt -> Prop
-  ; mon_check : forall (i : symInt), Exc (monP i)
+  ; mon_check : forall (i : symInt), option (monP i)
   ; mon_ok : forall (i : symInt), 
       monP i -> Vmonotone1 (interpret (projT2 i)) monR
   }.
@@ -231,11 +230,11 @@ Let I := (makeI (buildInt defaultInt i)).
 
 Let buildInt := (buildInt defaultInt i).
 
-Program Definition check_wm : Exc (monotone I succeq) :=
+Program Definition check_wm : option (monotone I succeq) :=
   match @checkProp Sig arSymInt defaultInt
     (monP wm) (mon_check wm) wm_default i with
-  | error => error
-  | value _ => value _
+  | None => None
+  | Some _ => Some _
   end.
 
 Next Obligation.
@@ -245,11 +244,11 @@ Proof with auto.
 Qed.
 
 Program Definition check_sm : 
-  Exc (monotone I succeq /\ monotone I succ) :=
+  option (monotone I succeq /\ monotone I succ) :=
   match @checkProp Sig arSymInt defaultInt
     (monP sm) (mon_check sm) sm_default i with
-  | error => error
-  | value _ => value _
+  | None => None
+  | Some _ => Some _
   end.
 
 Next Obligation.
@@ -268,14 +267,14 @@ Section solver.
 
 Variable rawSymInt : Type.
 Variable rti : rawTrsInt Sig rawSymInt.
-Variable check_ri : Sig -> rawSymInt -> Exc symInt.
+Variable check_ri : Sig -> rawSymInt -> option symInt.
 
 Program Definition monotoneAlgebraSolver (P : Problem) :
-  Exc { P' : Problem | Prob_WF P' -> Prob_WF P } :=
+  option { P' : Problem | Prob_WF P' -> Prob_WF P } :=
 
   match processInt check_ri rti with
-  | error => error
-  | value fis =>
+  | None => None
+  | Some fis =>
       applyMonotoneAlgebra (check_wm fis) (check_sm fis) P
   end.
 

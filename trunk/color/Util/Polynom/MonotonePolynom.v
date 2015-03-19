@@ -214,10 +214,10 @@ Qed.
 Definition is_pos_monom n (cm : Z * monom n) :=
   let (c, _) := cm in is_not_neg c.
 
-Program Definition coef_pos_check n (p : poly n) : Exc (coef_pos p) :=
+Program Definition coef_pos_check n (p : poly n) : option (coef_pos p) :=
   match forallb (@is_pos_monom n) p with
-  | true => value _
-  | false => error
+  | true => Some _
+  | false => None
   end.
 
 Next Obligation.
@@ -227,25 +227,25 @@ Next Obligation.
   destruct z; compute; intros; discr.
 Qed.
 
-Program Definition pweak_monotone_check n (p : poly n) : Exc (pweak_monotone p)
-  := coef_pos_check p.
+Program Definition pweak_monotone_check n (p : poly n)
+  : option (pweak_monotone p) := coef_pos_check p.
 
 Program Definition check_coef_gt0 n (p : poly n) (i : N n) :
-  Exc (0 < coef (mxi i) p)%Z :=
+  option (0 < coef (mxi i) p)%Z :=
   let c := coef (mxi i) p in
     match Z_lt_dec 0 c with
-    | left _ => value _
-    | _ => error
+    | left _ => Some _
+    | _ => None
     end.
 
 Program Definition pstrong_monotone_check n (p : poly n) :
-  Exc (pstrong_monotone p) :=
+  option (pstrong_monotone p) :=
   match pweak_monotone_check p with
-  | error => error
+  | None => None
   | _ =>    
     match check_seq (check_coef_gt0 p) with
-    | error => error
-    | _ => value _
+    | None => None
+    | _ => Some _
     end
   end.
 
