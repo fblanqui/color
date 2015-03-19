@@ -29,8 +29,8 @@ Program Fixpoint check_proof (Pb : Problem Sig) (Prf : TerminationProof Sig)
   match Prf with
   | TP_PolyInt PI Prf' =>
       match PolyChecker.polySolver PI Pb with
-      | error => Error
-      | value Pb' => 
+      | None => Error
+      | Some Pb' => 
           match check_proof Pb' Prf' with
           | Error => Error
           | TerminationEstablished _ => TerminationEstablished _

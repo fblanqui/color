@@ -33,48 +33,48 @@ Section dec.
 
 End dec.
 
-Section ExcUtil.
+Section OptUtil.
 
   Variable A : Type.
   Variable P : A -> Prop.
-  Variable f : forall a : A, Exc (P a).
+  Variable f : forall a : A, option (P a).
 
-  Definition exc_to_bool (P : Prop) (e : Exc P) :=
+  Definition opt_to_bool (P : Prop) (e : option P) :=
     match e with
-      | value _ => true
-      | error => false
+      | Some _ => true
+      | None => false
     end.
 
-  Definition pred_exc_to_bool x := exc_to_bool (f x).
+  Definition pred_opt_to_bool x := opt_to_bool (f x).
 
-  Program Definition lforall_exc (l : list A) : 
-    Exc (lforall (fun x : A => exists p, f x = value p) l) :=
-    match forallb pred_exc_to_bool l with
-      | true => value _
-      | false => error
+  Program Definition lforall_opt (l : list A) : 
+    option (lforall (fun x : A => exists p, f x = Some p) l) :=
+    match forallb pred_opt_to_bool l with
+      | true => Some _
+      | false => None
     end.
 
   Next Obligation.
   Proof with auto.
-    apply forallb_imp_lforall with (fun x => exc_to_bool (f x))...
+    apply forallb_imp_lforall with (fun x => opt_to_bool (f x))...
     intros. destruct (f x). exists p... discr.
   Qed.
 
-  Program Definition partition_exc (l : list A) :
+  Program Definition partition_opt (l : list A) :
     { ll : list A * list A |
       let (l1, l2) := ll in
         lforall P l1 /\
         (lforall (fun x => f x = error) l2) /\
         (forall x, In x l -> In x l1 \/ In x l2)
-    } := partition pred_exc_to_bool l.
+    } := partition pred_opt_to_bool l.
 
   Next Obligation.
   Proof with auto.
-    assert (left := fun x => partition_left pred_exc_to_bool x l).
-    assert (right := fun x => partition_right pred_exc_to_bool x l).
-    assert (complete := fun x => partition_complete pred_exc_to_bool x l).
-    destruct (partition pred_exc_to_bool l).
-    unfold pred_exc_to_bool in *.
+    assert (left := fun x => partition_left pred_opt_to_bool x l).
+    assert (right := fun x => partition_right pred_opt_to_bool x l).
+    assert (complete := fun x => partition_complete pred_opt_to_bool x l).
+    destruct (partition pred_opt_to_bool l).
+    unfold pred_opt_to_bool in *.
     repeat split...
     apply lforall_intro. intros x xl.
     assert (ll := left x xl). destruct (f x); try discr...
@@ -82,27 +82,27 @@ Section ExcUtil.
     assert (rr := right x xl). destruct (f x); try discr...
   Qed.
 
-End ExcUtil.
+End OptUtil.
 
-Section MapExc.
+Section Map_option.
 
   Variable A B : Type.
-  Variable f : A -> Exc B.
+  Variable f : A -> option B.
 
-  Program Fixpoint map_exc (l : list A) : Exc (list B) :=
+  Program Fixpoint map_opt (l : list A) : option (list B) :=
     match l with
-      | [] => value []
+      | [] => Some []
       | cons x xs => 
         match f x with
-          | error => error
-          | value v =>
-            match map_exc xs with
-              | error => error
-              | value vs => value (v :: vs)
+          | None => None
+          | Some v =>
+            match map_opt xs with
+              | None => None
+              | Some vs => Some (v :: vs)
             end
         end
     end.
 
-End MapExc.
+End Map_option.
 
-Implicit Arguments exc_to_bool [P].
+Implicit Arguments opt_to_bool [P].

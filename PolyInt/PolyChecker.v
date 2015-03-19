@@ -21,29 +21,29 @@ Variable Sig : Signature.
 (** checking polynomial interpretation and converting it to dependently
     typed interpretation with constraints *)
 
-Program Definition check_mono (n : nat) (m : monomial) : Exc (Z * monom n) :=
+Program Definition check_mono (n : nat) (m : monomial) : option (Z * monom n) :=
   match m with
   | (coef, vars) =>
       match eq_nat_dec n (List.length vars) with
-      | left _ => value (coef, vec_of_list vars)
-      | right _ => error
+      | left _ => Some (coef, vec_of_list vars)
+      | right _ => None
       end
   end.
 
-Definition check_poly (n : nat) (p : polynomial) : Exc (poly n) :=
-  map_exc (@check_mono n) p.
+Definition check_poly (n : nat) (p : polynomial) : option (poly n) :=
+  map_opt (@check_mono n) p.
 
 Definition polyInt n := { p : poly n | pweak_monotone p }.
 
 Notation symPI := (symInt Sig polyInt).
 
-Program Definition symbol_poly_int (f : Sig) (p : polynomial) : Exc symPI :=
+Program Definition symbol_poly_int (f : Sig) (p : polynomial) : option symPI :=
   match check_poly (arity f) p with
-  | error => error
-  | value fi => 
+  | None => None
+  | Some fi => 
       match pweak_monotone_check fi with
-      | error => error
-      | value _ => value (buildSymInt Sig polyInt f fi)
+      | None => None
+      | Some _ => Some (buildSymInt Sig polyInt f fi)
       end
   end.
 
@@ -107,8 +107,8 @@ Proof.
   fo.
 Qed.
 
-Program Definition check_wm (fi : symPI) : Exc (poly_wm fi) := 
-  value _.
+Program Definition check_wm (fi : symPI) : option (poly_wm fi) := 
+  Some _.
 
 Next Obligation.
 Proof.
@@ -121,7 +121,7 @@ Proof.
   intros. apply Vmonotone_transp. apply coef_pos_monotone_peval_Dle.
 Qed.
 
-Program Definition check_sm (fi : symPI) : Exc (poly_sm fi) :=
+Program Definition check_sm (fi : symPI) : option (poly_sm fi) :=
   pstrong_monotone_check (projT2 fi).
 
 Lemma sm_ok : forall fi, poly_sm fi -> Vmonotone1 (interpret (projT2 fi)) Dgt.
@@ -155,10 +155,10 @@ Definition I := makeI Sig D0 polyInt interpret i.
 Let succ := IR I Dgt.
 Let succeq := IR I Dge.
 
-Program Definition check_succ (r : rule Sig) : Exc (succ (lhs r) (rhs r)) :=
+Program Definition check_succ (r : rule Sig) : option (succ (lhs r) (rhs r)) :=
   match coef_pos_check (rulePoly_gt i r) with
-  | error => error
-  | value _ => value _
+  | None => None
+  | Some _ => Some _
   end.
 
 Next Obligation.
@@ -167,10 +167,10 @@ Proof with try discr; auto.
   apply pi_compat_rule...
 Qed.
 
-Program Definition check_succeq (r : rule Sig) : Exc (succeq (lhs r) (rhs r)) :=
+Program Definition check_succeq (r : rule Sig) : option (succeq (lhs r) (rhs r)) :=
   match coef_pos_check (rulePoly_ge i r) with
-  | error => error
-  | value _ => value _
+  | None => None
+  | Some _ => Some _
   end.
 
 Next Obligation.

@@ -284,16 +284,16 @@ whether [Pr i] is true for all [i] strictly smaller than [n]. *)
 
 Section Check_seq_aux.
 
-  Variables (n : nat) (Pr : N n -> Prop) (P : forall i : N n, Exc (Pr i)).
+  Variables (n : nat) (Pr : N n -> Prop) (P : forall i : N n, option (Pr i)).
 
   Program Fixpoint check_seq_aux p (H : forall i : N n, N_val i < p -> Pr i)
-    {measure (n - p)} : Exc (forall i : N n, Pr i) :=
+    {measure (n - p)} : option (forall i : N n, Pr i) :=
     match le_lt_dec n p with
-      | left _ => value _
+      | left _ => Some _
       | right cmp =>
-        match @P (N_ cmp) with
-          | error => error
-          | value _ => @check_seq_aux (S p) _ _
+        match P (N_ cmp) with
+          | None => None
+          | Some _ => @check_seq_aux (S p) _ _
         end
     end.
 
@@ -309,7 +309,7 @@ Section Check_seq_aux.
 End Check_seq_aux.
 
 Program Definition check_seq (n : nat) (Pr : N n -> Prop)
-  (P : forall (i : N n), Exc (Pr i)) : Exc (forall (i : N n), Pr i)
+  (P : forall (i : N n), option (Pr i)) : option (forall (i : N n), Pr i)
   := check_seq_aux _ P (p:=0) _.
 
 Next Obligation. elimtype False. omega. Qed.
