@@ -237,7 +237,8 @@ Qed.
 (***********************************************************************)
 (* total ordering on SCCs *)
 
-Definition RT x y := proj1_sig topo_sortable_Rquo' (nats_decr_lt dim) x y = true.
+Definition RT x y :=
+  proj1_sig topo_sortable_Rquo' (nats_decr_lt dim) x y = true.
 
 Lemma Rquo'_incl_RT : Rquo' << RT.
 
@@ -254,44 +255,43 @@ Qed.
 
 Require Import Heap BoundNat PermutSetoid.
 
-Notation bnat := (bnat dim).
-
 Lemma sorted_SCC' : {m : list nat | sort RT m &
   permutation eq_nat_dec (nats_decr_lt dim) m}.
 
 Proof.
 unfold RT. destruct topo_sortable_Rquo' as [F HF]; simpl.
-set (RTb := fun x y : bnat =>
-  F (nats_decr_lt dim)  (proj1_sig x) (proj1_sig y) = true) in *.
+set (RTb := fun x y : N dim => F (nats_decr_lt dim) x y = true) in *.
 
-cut ({m : list bnat | sort RTb m & permutation (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
-intro. destruct H as [mb]. exists (map (fun y => proj1_sig y) mb).
-apply (@map_sort_bnat_to_nat dim). intuition.
+cut ({m : list (N dim) |
+      sort RTb m & permutation N_eq_dec (nfirst_bnats dim) m}).
+intro. destruct H as [mb]. exists (map N_val mb).
+apply map_sort_bnat_to_nat. intuition.
 
 unfold permutation in *. unfold meq in *. intros.
 rewrite nfirst_multiplicity in *. destruct (lt_ge_dec a dim).
-ded (p (mkbnat l)). rewrite (@bnfirst_multiplicity dim dim) in *.
+ded (p (N_ l)). rewrite (@bnfirst_multiplicity dim dim) in *.
 simpl in H. destruct (lt_ge_dec a dim); try omega.
 rewrite map_multiplicity in H; auto. rewrite (@lemme_foo dim); auto.
 
-cut( {m : list bnat | sort (RTb %) m & 
-  permutation (@eq_bnat_dec dim) (nfirst_bnats dim) m}).
+cut({m : list (N dim) |
+      sort (RTb %) m & permutation N_eq_dec (nfirst_bnats dim) m}).
 intro. destruct H as [mb]. exists mb; auto. apply nodup_sort_strict; auto.
 eapply multiplicity_nodup. intros. unfold permutation in *.
 unfold meq in *. rewrite <- p. unfold nfirst_bnats.
-rewrite bnfirst_multiplicity. destruct (lt_ge_dec (proj1_sig a) dim); omega.
+rewrite bnfirst_multiplicity. destruct (lt_ge_dec a dim); omega.
 
 apply treesort. ded (HF (nats_decr_lt dim)). destruct H; intuition.
 intros. unfold total in H4. destruct x; destruct y.
-assert (trichotomy (fun x0 y0 : nat => F (nats_decr_lt dim) x0 y0 = true) x x0).
+assert (trichotomy (fun x0 y0 => F (nats_decr_lt dim) x0 y0 = true) x x0).
 apply H4; rewrite <- In_nats_decr_lt; auto.
 unfold trichotomy in H3. destruct (eq_nat_dec x x0). left; left; subst x; auto.
-assert (l=l0). apply lt_unique. subst l; auto.
+f_equal. apply lt_unique.
 assert ({F (nats_decr_lt dim) x x0 = true}+{~F (nats_decr_lt dim) x x0 = true}).
 destruct (F (nats_decr_lt dim) x x0); auto.
 destruct H5. left; auto. right; auto. right; auto. right; tauto.
 
-apply rc_trans. intros x y z xy yz. unfold RTb in *. ded (HF (nats_decr_lt dim)).
+apply rc_trans. intros x y z xy yz. unfold RTb in *.
+ded (HF (nats_decr_lt dim)).
 destruct H. intuition. unfold transitive in *. eapply H0; eauto.
 Qed.
 
