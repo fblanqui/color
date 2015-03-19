@@ -1,13 +1,12 @@
 #!/bin/sh
 
-f=time.log
+output=time.log
 
-echo generate $f ...
+echo generate $output ...
 
-echo > $f
+echo > $output
 
 for f in `find . -name .\*.time`
 do
-  echo `echo ${f%.time}.v|sed -e 's|/\.|/|'` `cat $f` >> $f
+  echo `echo ${f%.time}.v|sed -e 's|/\.|/|'` `cat $f` >> $output
 done
-
