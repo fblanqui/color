@@ -10,10 +10,7 @@ We give a way to decide the SCC relation using the adjacency matrix.
 Set Implicit Arguments.
 
 Require Import GDomainBij AdjMat List RelSub ListNodup ListExtras RelUtil
-  LogicUtil NatLt.
-Require Export SCC.
-
-Section SCC_effectif.
+  LogicUtil NatLt SCC.
 
 Record SCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_A : Type;
@@ -24,6 +21,8 @@ Record SCC_dec_hyps : Type := mkSCC_dec_hyps {
   hyp_nodup: nodup hyp_Dom;
   hyp_R_dec : forall x y, {hyp_R x y} + {~hyp_R x y}
 }.
+
+Section SCC_effectif.
 
 Variable hyps : SCC_dec_hyps.
 

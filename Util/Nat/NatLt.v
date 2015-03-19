@@ -4,6 +4,7 @@ See the COPYRIGHTS and LICENSE files.
 
 - Frederic Blanqui, 2014-12-11
 - Adam Koprowski, 2009-04-24
+- Leo Ducas, 2007-08-06
 
 Type of natural numbers strictly smaller that some bound.
 *)
@@ -33,6 +34,12 @@ Definition any_of_N0 {B : Type} : N 0 -> B.
 
 Proof. intros [k_val k]. omega. Qed.
 
+Lemma inj_N_val n : injective (@N_val n).
+
+Proof.
+  intros [x xn] [y yn]; simpl. intro e. subst y. f_equal. apply lt_unique.
+Qed.
+
 Lemma N_eq {n} : forall x y : N n, N_val x = N_val y <-> x = y.
 
 Proof.
@@ -48,13 +55,6 @@ Proof.
   left. apply N_eq. hyp.
   right. intro e. apply n0. apply N_eq in e. hyp.
 Defined.
-
-Lemma inj_N_val n : injective (@N_val n).
-
-Proof.
-  intros [x xn] [y yn]; simpl. intro e. subst y.
-  apply (f_equal (@exist _ _ x)). apply lt_unique.
-Qed.
 
 (****************************************************************************)
 (** List [n-1; ..; 0] of the n first natural numbers starting from 0
@@ -191,14 +191,100 @@ Proof.
 Qed.
 
 (****************************************************************************)
+(* Multiplicity and sorting properties. *)
+
+Lemma map_N_val_L_aux n :
+  forall k (hk : k<n), map N_val (L_aux hk) = nats_decr_lt (S k).
+
+Proof. induction k; intro hk; simpl. refl. rewrite IHk. refl. Qed.
+
+Lemma map_N_val_L n : map N_val (L n) = nats_decr_lt n.
+
+Proof. destruct n; simpl. refl. apply map_N_val_L_aux. Qed.
+
+Require Import SortUtil RelUtil.
+
+Lemma lelistA_map_N_val n R (a : N n) :
+  forall l, lelistA (Rof R N_val) a l -> lelistA R a (map N_val l).
+
+Proof.
+  induction l; intro h; simpl.
+  apply nil_leA.
+  inversion h; subst. apply cons_leA; auto.
+Qed.
+
+Lemma sort_map_N_val n R :
+  forall l : list (N n), sort (Rof R N_val) l -> sort R (map N_val l).
+
+Proof.
+  induction l; intro h; simpl.
+  apply nil_sort.
+  inversion h; subst. apply cons_sort. tauto. apply lelistA_map_N_val. hyp.
+Qed.
+
+Require Import ListPermutation.
+
+Lemma multiplicity_nats_decr_lt i :
+  forall n, multiplicity (list_contents eq_nat_dec (nats_decr_lt n)) i
+            = if lt_ge_dec i n then 1 else 0.
+
+Proof.
+  induction n; simpl.
+  destruct (lt_ge_dec i 0); omega.
+  rewrite IHn. destruct (lt_ge_dec i n); destruct (eq_nat_dec n i);
+    destruct (lt_ge_dec i (S n)); omega.
+Qed.
+
+Lemma multiplicity_L_aux n (i : N n) : forall k (kn : k < n),
+    multiplicity (list_contents N_eq_dec (L_aux kn)) i
+    = if le_dec i k then 1 else 0.
+
+Proof.
+  destruct i as [i hi]; fold (N_ hi); simpl.
+  induction k; intro hk.
+  simpl. destruct i.
+  destruct (le_dec 0 0); omega.
+  destruct (le_dec (S i) 0); omega.
+  simpl. destruct i; rewrite IHk.
+  destruct (le_dec 0 k); destruct (le_dec 0 (S k)); omega.
+  destruct (eq_nat_dec k i); simpl;
+    destruct (le_dec (S i) k); destruct (le_dec (S i) (S k)); omega.
+Qed.
+
+Lemma multiplicity_L n (i : N n) :
+  multiplicity (list_contents N_eq_dec (L n)) i = 1.
+
+Proof.
+  destruct n as [|n]. apply any_of_N0. hyp.
+  unfold L. rewrite multiplicity_L_aux. destruct (le_dec i n). refl.
+  destruct i as [i hi]. simpl in n0. omega.
+Qed.
+
+Lemma multiplicity_map_N_val n i (hi : i<n) :
+  forall l, multiplicity (list_contents eq_nat_dec (map N_val l)) i
+            = multiplicity (list_contents N_eq_dec l) (N_ hi).
+
+Proof.
+  induction l; simpl. refl. rewrite IHl. destruct a as [j hj]; simpl.
+  destruct (eq_nat_dec j i); refl.
+Qed.
+
+Lemma multiplicity_map_N_val_notin n i (hi : i>=n) : forall l : list (N n),
+    multiplicity (list_contents eq_nat_dec (map N_val l)) i = 0.
+
+Proof.
+  induction l; simpl. refl. rewrite IHl. destruct (eq_nat_dec a i).
+  subst. destruct a as [a ha]. simpl in hi. omega. refl.
+Qed.
+
+(****************************************************************************)
 (** Given [n:nat], a predicate [Pr : N n -> Prop] and a function
 [P] that can check whether [Pr i] is true, [check_seq Pr P] checks
 whether [Pr i] is true for all [i] strictly smaller than [n]. *)
 
 Section Check_seq_aux.
 
-  Variables (n : nat) (Pr : N n -> Prop)
-    (P : forall i : N n, Exc (Pr i)).
+  Variables (n : nat) (Pr : N n -> Prop) (P : forall i : N n, Exc (Pr i)).
 
   Program Fixpoint check_seq_aux p (H : forall i : N n, N_val i < p -> Pr i)
     {measure (n - p)} : Exc (forall i : N n, Pr i) :=
@@ -211,32 +297,21 @@ Section Check_seq_aux.
         end
     end.
 
+  Next Obligation. apply H. destruct i. simpl. omega. Qed.
   Next Obligation.
-  Proof.
-    apply H. destruct i. simpl. omega.
-  Qed.
-  Next Obligation.
-  Proof.
     destruct i as [x l]. simpl in *.
     destruct (eq_nat_dec x p).
     subst. rewrite (lt_unique l cmp). hyp.
     apply H. simpl. omega.
   Qed.
-  Next Obligation.
-  Proof.
-    omega.
-  Qed.
+  Next Obligation. omega. Qed.
 
 End Check_seq_aux.
 
 Program Definition check_seq (n : nat) (Pr : N n -> Prop)
-  (P : forall (i : N n), Exc (Pr i)) :
-  Exc (forall (i : N n), Pr i) :=
-  check_seq_aux _ P (p:=0) _.
+  (P : forall (i : N n), Exc (Pr i)) : Exc (forall (i : N n), Pr i)
+  := check_seq_aux _ P (p:=0) _.
 
-Next Obligation.
-Proof.
-  elimtype False. omega.
-Qed.
+Next Obligation. elimtype False. omega. Qed.
 
 Arguments check_seq [n Pr] _.
