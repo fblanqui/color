@@ -9,59 +9,32 @@ type of natural numbers smaller than some constant
 
 Set Implicit Arguments.
 
-Require Import NatUtil LogicUtil Multiset Permutation PermutSetoid NatLt.
+Require Import NatUtil LogicUtil ListPermutation NatLt List.
 
 Section S.
 
   Variable dim : nat.
 
-  (*FIXME: use NatUtil.nat_lt instead*)
-
-  Definition bnat := {x : nat | x < dim}. 
-
-  Definition mkbnat x (h : x<dim) := @exist _ (fun x => x<dim) _ h.
-
-  Lemma eq_bnat_dec : forall x y : bnat, {x = y} + {x <> y}.
-
-  Proof.
-    intros.
-    destruct (eq_nat_dec (proj1_sig x) (proj1_sig y)); unfold proj1_sig in *.
-    destruct x. destruct y. subst; simpl. left.
-    cut (l=l0). intro; subst. intuition. apply lt_unique.
-    destruct x. destruct y. right; intuition; inversion H; tauto.
-  Defined.
-
-  Lemma bnat_spec : forall x, x < dim <-> exists y : bnat, proj1_sig y = x.
-
-  Proof.
-    split; intro.
-    Focus 2. destruct H. destruct x0. simpl in *. intuition.
-    exists (mkbnat H). simpl. refl.
-  Qed.
-
-(*MOVE to List directory*)
-
-  Require Import ListExtras.
-
+  (*FIXME: replace by NatLt.L ?*)
   Fixpoint bnats_of_nats l :=
     match l with
       | nil => nil
       | x::q =>
         match lt_ge_dec x dim with 
-          | left H => mkbnat H :: bnats_of_nats q
+          | left h => N_ h :: bnats_of_nats q
           | right _ => bnats_of_nats q
         end
     end.
 
-  Lemma bnats_of_nats_spec : forall x l (H : x<dim),
-    In x l -> In (mkbnat H) (bnats_of_nats l).
+  Lemma bnats_of_nats_spec : forall x l (h : x<dim),
+    In x l -> In (N_ h) (bnats_of_nats l).
 
   Proof.
-    intros. induction l. simpl in H0; tauto.
-    simpl. destruct(lt_ge_dec a dim). simpl. simpl in H0; destruct H0. subst.
-    left. ded (lt_unique l0 H); subst; auto.
+    intros. induction l. simpl in H; tauto.
+    simpl. destruct(lt_ge_dec a dim). simpl. simpl in H; destruct H. subst.
+    left. f_equal. apply lt_unique.
     right; tauto.
-    simpl in H0; destruct H0. subst. cut False; try tauto; try omega.
+    simpl in H; destruct H. subst. omega.
     tauto.
   Qed.
 
@@ -70,24 +43,22 @@ Section S.
   Lemma bnatlist_exact : forall x, In x nfirst_bnats.
 
   Proof.
-    intros. unfold nfirst_bnats. destruct x. fold (mkbnat l).
-    apply bnats_of_nats_spec. rewrite <- In_nats_decr_lt. auto.
+    intros. unfold nfirst_bnats. destruct x. fold (N_ g).
+    apply bnats_of_nats_spec. apply In_nats_decr_lt. hyp.
   Qed.
 
-  Require Import SortUtil.
+  Require Import SortUtil RelUtil.
 
-  Lemma map_lelistA_bnat_to_nat : forall R (a : bnat) l,
-    lelistA (fun x y => R (proj1_sig x) (proj1_sig y)) a l ->
-    lelistA R (proj1_sig a) (map (fun y => proj1_sig y) l).
+  Lemma map_lelistA_bnat_to_nat : forall R (a : N dim) l,
+    lelistA (Rof R N_val) a l -> lelistA R a (map N_val l).
 
   Proof.
     induction l; intros. simpl; apply nil_leA.
     simpl. inversion H; subst. apply cons_leA; auto.
   Qed.
 
-  Lemma map_sort_bnat_to_nat : forall R l,
-    sort (fun x y : bnat => R (proj1_sig x) (proj1_sig y)) l ->
-    sort R (map (fun y : bnat => proj1_sig y) l).
+  Lemma map_sort_bnat_to_nat : forall R (l : list (N dim)),
+    sort (Rof R N_val) l -> sort R (map N_val l).
 
   Proof.
     induction l; intros. simpl; apply nil_sort.
@@ -105,47 +76,38 @@ Section S.
     destruct (lt_ge_dec i (S n)); try omega.
   Qed.
 
-  Lemma bnfirst_multiplicity n (i : bnat) :
-    multiplicity
-    (list_contents eq_bnat_dec (bnats_of_nats (nats_decr_lt n))) i
-    = if lt_ge_dec (proj1_sig i) n then 1 else 0.
+  Lemma bnfirst_multiplicity n (i : N dim) :
+    multiplicity (list_contents N_eq_dec (bnats_of_nats (nats_decr_lt n))) i
+    = if lt_ge_dec (N_val i) n then 1 else 0.
 
   Proof.
-    destruct i as [i hi]. fold (mkbnat hi). simpl. induction n.
+    destruct i as [i hi]. fold (N_ hi). simpl. induction n.
     simpl. destruct (lt_ge_dec i 0); omega.
     simpl. destruct (lt_ge_dec n dim); simpl; rewrite IHn;
     destruct(eq_nat_dec n i); destruct(lt_ge_dec i n);
       destruct(lt_ge_dec i (S n)); subst; simpl; try omega;
         try congruence.
-    destruct (eq_bnat_dec (mkbnat l) (mkbnat hi)); try omega.
-    ded (lt_unique l hi); subst; congruence.
-    destruct (eq_bnat_dec (mkbnat l) (mkbnat hi)); try omega.
-    unfold mkbnat in * |-; congruence.
-    destruct (eq_bnat_dec (mkbnat l) (mkbnat hi)); try omega.
-    unfold mkbnat in * |-; congruence.
   Qed.
 
   Lemma map_multiplicity : forall a (h : a<dim) mb,
-    multiplicity (list_contents eq_bnat_dec mb) (mkbnat h)
-    = multiplicity (list_contents eq_nat_dec
-      (map (fun y : bnat => proj1_sig y) mb)) a.
+    multiplicity (list_contents N_eq_dec mb) (N_ h)
+    = multiplicity (list_contents eq_nat_dec (map N_val mb)) a.
 
   Proof.
     induction mb. simpl; auto.
-    simpl. rewrite IHmb. destruct (eq_nat_dec (proj1_sig a0) a);
-    destruct (eq_bnat_dec a0 (mkbnat h)); try omega; try congruence.
-    destruct a0. simpl in *. subst. ded (lt_unique h l).
-    unfold mkbnat in n. congruence.
-    destruct a0. simpl in *. unfold mkbnat in e. congruence.
+    simpl. rewrite IHmb. destruct (eq_nat_dec a0 a);
+    destruct (N_eq_dec a0 (N_ h)); try omega; try congruence.
+    destruct a0. simpl in *. subst. ded (lt_unique g h).
+    unfold N_ in n. congruence.
+    destruct a0. simpl in *. unfold N_ in e. congruence.
   Qed.
 
-  Lemma lemme_foo : forall a (H:a>=dim) mb, 
-    multiplicity (list_contents eq_nat_dec
-      (map (fun y : bnat => proj1_sig y) mb)) a = 0.
+  Lemma lemme_foo : forall a (H:a>=dim) (mb : list (N dim)), 
+    multiplicity (list_contents eq_nat_dec (map N_val mb)) a = 0.
 
   Proof.
     induction mb. simpl; auto.
-    simpl. destruct(eq_nat_dec (proj1_sig a0) a).
+    simpl. destruct (eq_nat_dec a0 a).
     destruct a0; simpl in *; subst; omega. simpl. apply IHmb.
   Qed.
 
