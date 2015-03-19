@@ -26,26 +26,7 @@ Section S.
         end
     end.
 
-  Lemma bnats_of_nats_spec : forall x l (h : x<dim),
-    In x l -> In (N_ h) (bnats_of_nats l).
-
-  Proof.
-    intros. induction l. simpl in H; tauto.
-    simpl. destruct(lt_ge_dec a dim). simpl. simpl in H; destruct H. subst.
-    left. f_equal. apply lt_unique.
-    right; tauto.
-    simpl in H; destruct H. subst. omega.
-    tauto.
-  Qed.
-
   Definition nfirst_bnats := bnats_of_nats (nats_decr_lt dim).
-
-  Lemma bnatlist_exact : forall x, In x nfirst_bnats.
-
-  Proof.
-    intros. unfold nfirst_bnats. destruct x. fold (N_ g).
-    apply bnats_of_nats_spec. apply In_nats_decr_lt. hyp.
-  Qed.
 
   Require Import SortUtil RelUtil.
 
