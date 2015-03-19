@@ -1,3 +1,10 @@
+15-03-19: [Blanqui]
+- replaced Add Relation/Morphism by Instance everywhere
+- removed Emacs local variables in Coccinelle
+- Util/Nat/BoundNat:
+  . replaced bnat by N and nfirst_nats by L 
+  . renamed and moved everything into NatLt
+
 15-03-15: [Blanqui]
 - Util/List/ListRepeatFree: renamed into ListNodup,
   make_repeat_free renamed into remdup, repeat_free renamed into nodup

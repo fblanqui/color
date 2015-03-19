@@ -10,9 +10,8 @@ We represent the quotient of the Domain by SCC with a function to nat.
 
 Set Implicit Arguments.
 
-Require Export SCC_dec.
 Require Import List AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil RelSub
-  Path SortUtil Permutation Multiset ListNodup ExcUtil NatLt.
+  Path SortUtil Permutation Multiset ListNodup ExcUtil NatLt SCC SCC_dec.
 
 Section SCC_quotient.
 
@@ -253,7 +252,7 @@ Qed.
 (***********************************************************************)
 (* SCCs sorting *)
 
-Require Import Heap BoundNat PermutSetoid.
+Require Import Heap PermutSetoid.
 
 Lemma sorted_SCC' : {m : list nat | sort RT m &
   permutation eq_nat_dec (nats_decr_lt dim) m}.
@@ -262,23 +261,22 @@ Proof.
 unfold RT. destruct topo_sortable_Rquo' as [F HF]; simpl.
 set (RTb := fun x y : N dim => F (nats_decr_lt dim) x y = true) in *.
 
-cut ({m : list (N dim) |
-      sort RTb m & permutation N_eq_dec (nfirst_bnats dim) m}).
+cut ({m : list (N dim) | sort RTb m & permutation N_eq_dec (L dim) m}).
 intro. destruct H as [mb]. exists (map N_val mb).
-apply map_sort_bnat_to_nat. intuition.
+apply sort_map_N_val. intuition.
 
 unfold permutation in *. unfold meq in *. intros.
-rewrite nfirst_multiplicity in *. destruct (lt_ge_dec a dim).
-ded (p (N_ l)). rewrite (@bnfirst_multiplicity dim dim) in *.
-simpl in H. destruct (lt_ge_dec a dim); try omega.
-rewrite map_multiplicity in H; auto. rewrite (@lemme_foo dim); auto.
+rewrite multiplicity_nats_decr_lt in *. destruct (lt_ge_dec a dim).
+ded (p (N_ l)).
+rewrite <- multiplicity_map_N_val, map_N_val_L, multiplicity_nats_decr_lt in H.
+destruct (lt_ge_dec a dim); try omega.
+rewrite <- multiplicity_map_N_val in H; auto.
+erewrite <- multiplicity_map_N_val_notin; auto.
 
-cut({m : list (N dim) |
-      sort (RTb %) m & permutation N_eq_dec (nfirst_bnats dim) m}).
+cut({m : list (N dim) | sort (RTb %) m & permutation N_eq_dec (L dim) m}).
 intro. destruct H as [mb]. exists mb; auto. apply nodup_sort_strict; auto.
 eapply multiplicity_nodup. intros. unfold permutation in *.
-unfold meq in *. rewrite <- p. unfold nfirst_bnats.
-rewrite bnfirst_multiplicity. destruct (lt_ge_dec a dim); omega.
+unfold meq in *. rewrite <- p, multiplicity_L. refl.
 
 apply treesort. ded (HF (nats_decr_lt dim)). destruct H; intuition.
 intros. unfold total in H4. destruct x; destruct y.

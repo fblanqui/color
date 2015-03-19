@@ -10,7 +10,7 @@ Modular termination proof through SCC of an over DPGraph
 Set Implicit Arguments.
 
 Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup NatLt
-  AdjMat Permutation Multiset LogicUtil BoundNat NatUtil ListPermutation
+  AdjMat Permutation Multiset LogicUtil NatUtil ListPermutation SCC SCC_dec
   ListExtras Setoid SN VecUtil GDomainBij ExcUtil PermutSetoid Union SortUtil.
 
 Section S.
@@ -55,7 +55,8 @@ Lemma s_SCC's_spec_cover i : i < dim -> In i s_SCC's.
 
 Proof.
 intros. unfold s_SCC's. destruct (sorted_SCC' hyps). unfold proj1_sig2.
-unfold permutation, meq in *. ded (p i). rewrite nfirst_multiplicity in H0.
+unfold permutation, meq in *. ded (p i).
+rewrite multiplicity_nats_decr_lt in H0.
 destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 cut (exists j, j=i /\ In j x). intros; destruct H1. destruct H1.
 rewrite <- H1; auto.
@@ -68,7 +69,7 @@ Lemma s_SCC's_spec_bound i : In i s_SCC's -> i < dim.
 Proof.
 intros. unfold s_SCC's in H. destruct (sorted_SCC' hyps).
 unfold proj1_sig2 in *. gen p; intros. unfold permutation, meq in p.
-ded (p i). rewrite nfirst_multiplicity in H0.
+ded (p i). rewrite multiplicity_nats_decr_lt in H0.
 destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
 assert (dim = length (hyp_Dom hyps)). auto. rewrite H1 in *; auto.
 cut (exists j, j=i /\ In j (nats_decr_lt dim)). intros; destruct H1. destruct H1. 
