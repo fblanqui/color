@@ -238,9 +238,9 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro x. cut (forall u v, u ~~ v -> (u = Var x \/ v = Var x) -> u = v). fo.
-    induction 1; intro h; try (destruct h; discr). refl. fo.
-    trans v. apply IHaeq1. intuition. subst. auto.
-    apply IHaeq2. intuition. subst. auto.
+    induction 1; intro h; try (destruct h; discr). refl. fo. trans v.
+    apply IHaeq1. destruct h as [h|h]. auto. subst. right. fo.
+    apply IHaeq2. destruct h as [h|h]. subst. left. fo. auto.
   Qed.
 
   Lemma var_aeq_r : forall x v, v ~~ Var x -> v = Var x.
@@ -251,9 +251,9 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro f. cut (forall u v, u ~~ v -> (u = Fun f \/ v = Fun f) -> u = v). fo.
-    induction 1; intro h; try (destruct h; discr). refl. fo.
-    trans v. apply IHaeq1. intuition. subst. auto.
-    apply IHaeq2. intuition. subst. auto.
+    induction 1; intro h; try (destruct h; discr). refl. fo. trans v.
+    apply IHaeq1. destruct h as [h|h]. auto. subst. right. fo.
+    apply IHaeq2. destruct h as [h|h]. subst. left. fo. auto.
   Qed.
 
   Lemma fun_aeq_r : forall f v, v ~~ Fun f -> v = Fun f.
@@ -296,14 +296,14 @@ Module Make (Export L : L_Struct).
     destruct (IHaeq1 _ _ p1) as [a [b [h1 [h2 [h3 h4]]]]].
     assert (p2 : v = App a b \/ w = App a b). tauto.
     destruct (IHaeq2 _ _ p2) as [c [d [i1 [i2 [i3 i4]]]]].
-    ex c d. intuition; subst; try inversion H4; try inversion H5;
+    ex c d. (*SLOW*)intuition; subst; try inversion H4; try inversion H5;
     try inversion H6; subst; auto.
     trans a; hyp. trans b; hyp.
     assert (p2 : v = App u1 u2 \/ w = App u1 u2). tauto.
     destruct (IHaeq2 _ _ p2) as [a [b [h1 [h2 [h3 h4]]]]].
     assert (p1 : u = App a b \/ v = App a b). tauto.
     destruct (IHaeq1 _ _ p1) as [c [d [i1 [i2 [i3 i4]]]]].
-    ex c d. intuition; subst; try inversion H2; try inversion H4;
+    ex c d. (*SLOW*)intuition; subst; try inversion H2; try inversion H4;
       try inversion H5; subst; auto.
     trans a; hyp. trans b; hyp.
     (* app_l *)
@@ -415,7 +415,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold Def.saeq.
-    intuition. apply H. rewrite e. hyp. apply H. rewrite <- e. hyp.
+    split; intros H x hx; apply H. rewrite e. hyp. rewrite <- e. hyp.
   Qed.
 
   (** [domain] is compatible with [saeq]. *)
@@ -425,9 +425,8 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_domain.
-    intuition.
-    apply H1. apply var_aeq_r. rewrite <- H. apply ss'. hyp.
-    apply H1. apply var_aeq_r. rewrite <- H. sym. apply ss'. hyp.
+    split_all; intro h; apply H1; apply var_aeq_r; rewrite <- h.
+    apply ss'. hyp. sym. apply ss'. hyp.
   Qed.
 
   (*FIXME: change order of arguments in fvcod, domain and fvcodom? *)
@@ -443,8 +442,8 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_fvcod.
-    split; intros [y [h1 h2]]; ex y; intuition.
-    rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
+    split_all; ex x0; split; auto.
+    rewrite <- (ss' _ H1). hyp. rewrite (ss' _ H1). hyp.
   Qed.
 
   Instance fvcod_saeq' : forall xs, Proper (saeq xs ==> Equal) (fvcod xs).
@@ -457,8 +456,8 @@ Module Make (Export L : L_Struct).
     forall s s', saeq xs s s' -> fvcodom xs s [=] fvcodom xs' s'.
 
   Proof.
-    intros xs xs' e s s' ss'. unfold Def.fvcodom. rewrite <- e. apply fvcod_saeq.
-    apply domain_saeq. refl. hyp. rewrite domain_subset. hyp.
+    intros xs xs' e s s' ss'. unfold Def.fvcodom. rewrite <- e.
+    apply fvcod_saeq. apply domain_saeq. refl. hyp. rewrite domain_subset. hyp.
   Qed.
 
   Instance fvcodom_saeq' : forall xs, Proper (saeq xs ==> Equal) (fvcodom xs).
@@ -719,7 +718,7 @@ variables. *)
 
     assert (e1 : subs xx's v = subs1 xx's v). apply subs1_no_alpha.
     rewrite inter_empty. intros a ha. rewrite In_fvcodom.
-    intros [b [i1 [i2 i3]]]. gen (hs3 _ ha). set_iff. intuition. apply H6.
+    intros [b [i1 [i2 i3]]]. gen (hs3 _ ha). set_iff. (*SLOW*)intuition. apply H6.
     rewrite In_fvcodom. ex b. set_iff. rewrite h1.
     revert i3. unfold xx's. unfold Def.update. eq_dec b x.
     subst b. simpl. set_iff. tauto. intuition. revert i3. rewrite H5. simpl.
