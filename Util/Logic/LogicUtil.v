@@ -28,11 +28,17 @@ Ltac contr := contradiction.
 Ltac discr := intros; discriminate.
 Ltac fo := unfold flip, impl; firstorder.
 Ltac gen t := generalize t.
-
 Ltac ded t := gen t; intro.
+Ltac class := fold impl; auto with typeclass_instances.
 Ltac decomp h := decompose [and or ex] h; clear h.
 
-Ltac class := fold impl; auto with typeclass_instances.
+Ltac split_all :=
+  match goal with
+  | |- _ <-> _ => split; split_all
+  | |- _ /\ _ => split; split_all
+  | |- _ -> _ => let h := fresh in intro h; decomp h; split_all
+  | |- _ => auto
+  end.
 
 Tactic Notation "ex" constr(x1) := exists x1.
 Tactic Notation "ex" constr(x1) constr(x2) := exists x1; exists x2.
