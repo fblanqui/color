@@ -10,3 +10,5 @@ for f in `find . -name .\*.time`
 do
   echo `echo ${f%.time}.v|sed -e 's|/\.|/|'` `cat $f` >> $output
 done
+
+awk -f time.awk time.log
