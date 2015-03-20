@@ -32,11 +32,19 @@ Ltac ded t := gen t; intro.
 Ltac class := fold impl; auto with typeclass_instances.
 Ltac decomp h := decompose [and or ex] h; clear h.
 
+Ltac split_hyp h :=
+  match goal with
+  | h : _ \/ _ |- _ => decomp h
+  | h : _ /\ _ |- _ => decomp h
+  | h : @ex _ _ |- _ => decomp h
+  | |- _ => idtac
+  end.
+
 Ltac split_all :=
   match goal with
   | |- _ <-> _ => split; split_all
   | |- _ /\ _ => split; split_all
-  | |- _ -> _ => let h := fresh in intro h; decomp h; split_all
+  | |- _ -> _ => let h := fresh in intro h; split_hyp h; split_all
   | |- _ => auto
   end.
 
