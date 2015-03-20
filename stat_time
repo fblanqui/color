@@ -1,6 +1,6 @@
 #!/bin/sh
 
-output=time.log
+output=stat_time.log
 
 echo generate $output ...
 
@@ -11,4 +11,4 @@ do
   echo `echo ${f%.time}.v|sed -e 's|/\.|/|'` `cat $f` >> $output
 done
 
-awk -f time.awk time.log
+awk -f stat_time.awk $output
