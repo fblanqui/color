@@ -256,10 +256,7 @@ Module Make (Export L : L_Struct).
 
   Instance dom_incl_e : Proper (Equal ==> Logic.eq ==> iff) dom_incl.
 
-  Proof.
-    intros xs xs' e s s' ss'. subst s'. unfold dom_incl. intuition.
-    apply H. rewrite e. hyp. apply H. rewrite <- e. hyp.
-  Qed.
+  Proof. intros xs xs' e s s' ss'. subst s'. fo. Qed.
 
   Instance dom_incl_s : Proper (Subset ==> Logic.eq ==> impl) dom_incl.
 
@@ -298,17 +295,11 @@ on some finite set of variables *)
 
   Instance seq_e : Proper (Equal ==> Logic.eq ==> Logic.eq ==> iff) seq.
 
-  Proof.
-    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold seq.
-    intuition. apply H. rewrite e. hyp. apply H. rewrite <- e. hyp.
-  Qed.
+  Proof. intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
 
   Instance seq_s : Proper (Subset --> Logic.eq ==> Logic.eq ==> impl) seq.
 
-  Proof.
-    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
-    unfold flip, impl, seq in *. intuition.
-  Qed.
+  Proof. intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
 
   Lemma seq_restrict xs ys s : xs [<=] ys -> seq xs s (restrict ys s).
 
@@ -323,8 +314,8 @@ on some finite set of variables *)
   (** [domain_fun] is compatible with set inclusion and equality and
   commutes with [add]. *)
 
-  Instance domain_fun_s : Proper (Logic.eq ==> Logic.eq ==> Subset ==> Subset)
-    domain_fun.
+  Instance domain_fun_s :
+    Proper (Logic.eq ==> Logic.eq ==> Subset ==> Subset) domain_fun.
 
   Proof.
     intros s s' ss' x x' xx' xs xs' xsxs'. subst x' s'.
@@ -332,8 +323,8 @@ on some finite set of variables *)
     destruct (eq_term_dec (s x) (Var x)); rewrite xsxs'; refl.
   Qed.
 
-  Instance domain_fun_e : Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal)
-    domain_fun.
+  Instance domain_fun_e :
+    Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) domain_fun.
 
   Proof.
     intros s s' ss' x x' xx' xs xs' xsxs'. subst x' s'.
@@ -382,12 +373,13 @@ on some finite set of variables *)
     (* Equal *)
     intros xs xs' xsxs' h. rewrite <- xsxs', h. refl.
     (* empty *)
-    rewrite domain_empty. set_iff. intuition.
+    rewrite domain_empty. set_iff. tauto.
     (* add *)
     intros y xs n IH. rewrite domain_add. set_iff. 2: hyp.
-    unfold Def.domain_fun, bool_of_rel. destruct (eq_term_dec (s y) (Var y)).
-    rewrite IH. intuition. subst y. tauto.
-    set_iff. rewrite IH. intuition. subst y. tauto.
+    unfold Def.domain_fun, bool_of_rel.
+    destruct (eq_term_dec (s y) (Var y)); set_iff; rewrite IH; split.
+    tauto. intros [[h1|h1] h2]; subst; tauto.
+    intros [h1|h1]; subst; tauto. tauto.
   Qed.
 
   Lemma mem_domain x s xs :
@@ -418,7 +410,7 @@ on some finite set of variables *)
 
   Lemma domain_subset s xs : domain xs s [<=] xs.
 
-  Proof. intro x. rewrite In_domain. intuition. Qed.
+  Proof. intro x. rewrite In_domain. tauto. Qed.
 
   (** More set equalities on [domain]. *)
 
@@ -427,8 +419,8 @@ on some finite set of variables *)
 
   Proof.
     intro y. unfold bool_of_rel.
-    destruct (eq_term_dec (s x) (Var x)); rewrite In_domain; set_iff;
-      intuition; subst; tauto.
+    destruct (eq_term_dec (s x) (Var x)); rewrite In_domain; set_iff; split.
+    intros [h1 h2]. subst. fo. fo. fo. intro e. subst. fo.
   Qed.
 
   Lemma domain_union s p q :
@@ -474,9 +466,10 @@ on some finite set of variables *)
   Proof.
     rewrite domain_single. case_eq (mem y xs && negb (beq_term v (Var y))).
     rewrite andb_true_iff, <- mem_iff, negb_true_iff, beq_term_false_iff.
-    intuition. exfalso. absurd (In y empty). fo. rewrite <- H. set_iff. refl.
+    intros [h1 h2]. split. 2: fo.
+    intro e. absurd (In y empty). set_iff. fo. rewrite <- e. set_iff. refl.
     rewrite andb_false_iff, <- not_mem_iff, negb_false_iff, beq_term_true_iff.
-    fo.
+    intros [h1|h2]; split. fo. refl. right. hyp. refl.
   Qed.
 
   Lemma domain_id : forall xs, domain xs id [=] empty.
@@ -498,7 +491,7 @@ on some finite set of variables *)
 
   Proof.
     intro y. rewrite !In_domain. set_iff. unfold Def.update.
-    eq_dec y x. subst. intuition. intuition.
+    eq_dec y x. subst. tauto. fo.
   Qed.
 
   (** [domain] is compatible with substitution equality. *)
@@ -508,9 +501,7 @@ on some finite set of variables *)
 
   Proof.
     intros e s s' ss' x. rewrite <- e, !In_domain.
-    intuition.
-    apply H1. rewrite <- H. apply ss'. hyp.
-    apply H1. rewrite <- H. sym. apply ss'. hyp.
+    split; intros [h1 h2]; split; auto. rewrite <- ss'; hyp. rewrite ss'; hyp.
   Qed.
 
   Instance domain_seq' xs : Proper (seq xs ==> Equal) (domain xs).
@@ -532,7 +523,7 @@ on some finite set of variables *)
 
   Lemma fvcod_fun_transp s : transpose Equal (fvcod_fun s).
 
-  Proof. intros u v vs. unfold Def.fvcod_fun. fset. Qed.
+  Proof. intros u v vs. unfold Def.fvcod_fun. intro x. set_iff. tauto. Qed.
 
   (** [fvcod] is compatible with set equality. *)
 
@@ -566,18 +557,17 @@ on some finite set of variables *)
     apply set_induction_bis.
     (* Equal *)
     intros xs xs' xsxs' h. rewrite <- xsxs', h. clear h.
-    intuition; destruct H as [x]; exists x; [rewrite <- xsxs'|rewrite xsxs'];
-      hyp.
+    split; intros [x [x1 x2]]; ex x; split; auto.
+    rewrite <- xsxs'. hyp. rewrite xsxs'. hyp.
     (* empty *)
     rewrite fvcod_empty. set_iff. intuition. destruct H as [x].
-    revert H. set_iff. intuition.
+    revert H. set_iff. tauto.
     (* add *)
     intros x xs n IH. rewrite fvcod_add. 2: hyp. unfold Def.fvcod_fun.
-    set_iff. rewrite IH. clear IH. intuition.
-    exists x. set_iff. auto.
-    destruct H0 as [z]. exists z. set_iff. intuition.
-    destruct H as [z]. revert H. set_iff. intuition. subst z. auto.
-    right. exists z. auto.
+    set_iff. rewrite IH. clear IH. split.
+    intros [h|[a [a1 a2]]]. ex x. set_iff. fo. ex a. set_iff. fo.
+    intros [a [a1 a2]]. revert a1. set_iff. intros [a1|a1].
+    subst. left. hyp. right. ex a. fo.
   Qed.
 
   (** [fvcod] is compatible with inclusion. *)
@@ -586,7 +576,7 @@ on some finite set of variables *)
 
   Proof.
     intros xs xs' xsxs' s s' ss' x. subst s'. rewrite !In_fvcod.
-    intros [a [h1 h2]]. exists a. intuition.
+    intros [a [h1 h2]]. ex a. fo.
   Qed.
 
   (** More equalities on [fvcod]. *)
@@ -596,7 +586,7 @@ on some finite set of variables *)
   Proof.
     intro y. split; rewrite In_fvcod.
     intros [z [h1 h2]]. revert h1. set_iff. intro e. subst z. hyp.
-    intro h. exists x. set_iff. intuition.
+    intro h. ex x. set_iff. fo.
   Qed.
 
   Lemma fvcod_union s p q :
@@ -605,9 +595,9 @@ on some finite set of variables *)
   Proof.
     intro x. rewrite In_fvcod. set_iff. split.
     intros [y [h1 h2]]. revert h1. set_iff. rewrite !In_fvcod.
-    intros [h1|h1]. left. exists y. intuition. right. exists y. intuition.
+    intros [h1|h1]. left. ex y. fo. right. ex y. fo.
     rewrite !In_fvcod. intros [[y [h1 h2]]|[y [h1 h2]]].
-    exists y. set_iff. intuition. exists y. set_iff. intuition.
+    ex y. set_iff. fo. ex y. set_iff. fo.
   Qed.
  
   Lemma fvcod_single y v : forall xs, fvcod xs (single y v)
@@ -626,17 +616,25 @@ on some finite set of variables *)
     eq_dec x y; simpl.
     subst y. rewrite add_b, eqb_refl. simpl. rewrite not_mem_iff in n.
     rewrite n. rewrite <- not_mem_iff in n.
-    fset. right. intuition. subst x. auto.
+    intro a. set_iff. split.
+    intros [a1|a1]. auto. right. split. auto. intro e. subst. fo.
+    intros [a1|[[a1|a1] a2]]; auto. subst. irrefl. 
     rewrite <- eqb_false_iff in n0. rewrite add_b, n0. simpl.
     case_eq (mem y u); [rewrite <- mem_iff|rewrite <- not_mem_iff]; intro hy.
-    fset. subst a. rewrite eqb_false_iff in n0. intuition.
+    intro a. set_iff. split.
+    intros [a1|[a1|[a1 a2]]]; auto. right. split. auto.
+    intro e. subst. rewrite eqb_false_iff in n0. irrefl.
+    intros [a1|[[a1|a1] a2]]; auto.
     sym. apply add_union_singleton.
   Qed.
 
   Lemma fvcod_rename y z xs : fvcod xs (single y (Var z))
     [=] if mem y xs then add z (remove y xs) else xs.
 
-  Proof. rewrite fvcod_single. simpl. destruct (mem y xs); fset. Qed.
+  Proof.
+    rewrite fvcod_single. simpl. destruct (mem y xs).
+    intro a. set_iff. tauto. refl.
+  Qed.
 
   Lemma fvcod_id : forall xs, fvcod xs id [=] xs.
 
@@ -648,7 +646,7 @@ on some finite set of variables *)
     apply fvcod_empty.
     (* add *)
     intros x xs n IH. rewrite fvcod_add. 2: hyp. unfold Def.fvcod_fun.
-    simpl. rewrite IH. fset.
+    simpl. rewrite IH. intro a. set_iff. tauto.
   Qed.
 
   (** [fvcod] is compatible with substitution equality. *)
@@ -658,7 +656,7 @@ on some finite set of variables *)
 
   Proof.
     intros e s s' ss' x. rewrite <- e, !In_fvcod.
-    split; intros [y [h1 h2]]; exists y; intuition.
+    split; intros [y [h1 h2]]; ex y; split; auto.
     rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
   Qed.
 
@@ -741,9 +739,7 @@ on some finite set of variables *)
     unfold Def.fvcodom. rewrite domain_update_id.
     set (d := domain (remove x xs) s). intro y. rewrite !In_fvcod.
     assert (h : ~In x d). unfold d. rewrite In_domain. set_iff. tauto.
-    unfold Def.update; split; intros [a [h1 h2]]; exists a; intuition;
-      eq_dec a x; revert h1 h2; simpl; set_iff; intros h1 h2;
-        auto; subst a; tauto.
+    unfold Def.update; split; intros [a [h1 h2]]; ex a; eq_dec a x; subst; fo.
   Qed.
 
   (** [fvcodom] is compatible with substitution equality. *)
@@ -859,9 +855,9 @@ on some finite set of variables *)
 
   Proof.
     induction u; simpl. refl. refl. rewrite IHu1, IHu2. refl.
-    unfold Def.var; ens. rewrite fvcodom_id, empty_b. apply (f_equal (Lam x)).
-    rewrite <- IHu at 2. apply subs_seq. intros y hy. unfold Def.update.
-    eq_dec y x. rewrite e. refl. refl.
+    unfold Def.var; ens. (*SLOW*)rewrite fvcodom_id, empty_b.
+    apply (f_equal (Lam x)). rewrite <- IHu at 2. apply subs_seq.
+    intros y hy. unfold Def.update. eq_dec y x. rewrite e. refl. refl.
   Qed.
 
   (** Applying on a term [u] a substitution which domain w.r.t. [fv u]
@@ -906,21 +902,23 @@ on some finite set of variables *)
     rewrite singleton_equal_add, domain_add, domain_empty. 2: fo.
     unfold Def.domain_fun, bool_of_rel. destruct (eq_term_dec (s x) (Var x)).
     rewrite e. simpl. rewrite fvcod_empty. fset.
-    rewrite fvcod_add, fvcod_empty. 2: fo. unfold Def.fvcod_fun. fset.
+    rewrite fvcod_add, fvcod_empty. 2: set_iff; fo.
+    unfold Def.fvcod_fun. intro a. set_iff. split. intro h. auto.
+    intros [[h1 h2]|[h1|h1]]; fo.
 
     (* fun *)
     intro y. rewrite domain_empty, fvcod_empty. set_iff. tauto.
 
     (* app *)
-    rewrite IHu1, IHu2. simpl. intro y. set_iff. rewrite !In_fvcod, !In_domain.
-    set_iff. intuition.
-    destruct H as [z hz]. revert hz. rewrite In_domain. intuition.
+    rewrite IHu1, IHu2. simpl. intro y. (*SLOW*)set_iff.
+    (*SLOW*)rewrite !In_fvcod, !In_domain. set_iff. (*SLOW*)intuition.
+    destruct H as [z hz]. revert hz. rewrite In_domain. (*SLOW*)intuition.
     right. exists z. rewrite In_domain. set_iff. intuition.
-    destruct H as [z hz]. revert hz. rewrite In_domain. intuition.
-    right. exists z. rewrite In_domain. set_iff. intuition.
-    destruct H0 as [z hz]. revert hz. rewrite In_domain. set_iff. intuition.
-    left. right. exists z. rewrite In_domain. intuition.
-    right. right. exists z. rewrite In_domain. intuition.
+    destruct H as [z hz]. revert hz. rewrite In_domain. (*SLOW*)intuition.
+    right. exists z. rewrite In_domain. set_iff. tauto.
+    destruct H0 as [z hz]. revert hz. rewrite In_domain. set_iff. (*SLOW*)intuition.
+    left. right. exists z. rewrite In_domain. tauto.
+    right. right. exists z. rewrite In_domain. tauto.
 
     (* lam *)
     unfold Def.var; ens. unfold Def.fvcodom.
@@ -931,33 +929,33 @@ on some finite set of variables *)
     (* In x xs *)
     set (x' := var_notin (union (fv u) xs)).
     gen hx. unfold xs at 1. rewrite In_fvcod. intros [z hz]. revert hz.
-    rewrite In_domain. set_iff. intuition.
+    rewrite In_domain. set_iff. (*SLOW*)intuition.
     intro y. set_iff. rewrite !In_domain, In_fvcod.
     unfold Def.update at 1. eq_dec y x.
 
     (* y = x *)
-    subst y. set_iff. intuition.
+    subst y. set_iff. (*SLOW*)intuition.
     right. exists z. rewrite In_domain. unfold Def.update.
     eq_dec z x. subst z. tauto. tauto.
     apply var_notin_ok with (xs := union (fv u) xs). fold x'. rewrite H.
     apply union_subset_2. hyp.
 
     (* y <> x *)
-    set_iff. intuition.
+    set_iff. (*SLOW*)intuition.
 
     destruct H as [a ha]. revert ha. rewrite In_domain. unfold Def.update.
     eq_dec a x; simpl; set_iff. subst a. intuition.
     destruct (In_dec y xs). auto. left.
     absurd (In y xs). hyp. unfold xs. rewrite In_fvcod. exists a.
-    rewrite In_domain. set_iff. intuition.
+    rewrite In_domain. set_iff. fo.
 
     subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
     apply union_subset_1. hyp.
 
     revert H4. unfold xs. rewrite In_fvcod. intros [a ha]. revert ha.
-    rewrite In_domain. set_iff. intuition. right. exists a. rewrite In_domain.
-    unfold Def.update. eq_dec a x. subst a. absurd (x=x); tauto.
-    intuition.
+    rewrite In_domain. set_iff. (*SLOW*)intuition. right. exists a.
+    rewrite In_domain. unfold Def.update. eq_dec a x. subst a.
+    absurd (x=x); tauto. tauto.
 
     subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
     apply union_subset_2. hyp.
@@ -967,19 +965,19 @@ on some finite set of variables *)
     rewrite In_fvcod. unfold Def.update. eq_dec y x.
 
     (* y = x *)
-    subst y. intuition.
+    subst y. tauto.
 
     (* y <> x *)
-    intuition.
+    (*SLOW*)intuition.
 
     destruct H as [z hz]. revert hz. rewrite In_domain. eq_dec z x.
-    subst z. intuition.
-    intuition. right. unfold xs. rewrite In_fvcod. exists z.
-    rewrite In_domain. set_iff. intuition.
+    subst z. tauto.
+    (*SLOW*)intuition. right. unfold xs. rewrite In_fvcod. exists z.
+    rewrite In_domain. set_iff. fo.
 
     revert H0. unfold xs. rewrite In_fvcod. intros [z hz]. revert hz.
-    rewrite In_domain. set_iff. intuition. right. exists z. rewrite In_domain.
-    eq_dec z x. subst z. tauto. intuition.
+    rewrite In_domain. set_iff. (*SLOW*)intuition. right. exists z.
+    rewrite In_domain. eq_dec z x. subst z. tauto. tauto.
   Qed.
 
   Lemma fvcod_subset_fv_subs s u : fvcod (fv u) s [<=] fv (subs s u).
@@ -1161,9 +1159,11 @@ on some finite set of variables *)
     case_eq (mem y (fv u)); intro hy; simpl.
     unfold bool_of_rel.
     case (eq_term_dec v (Var y)); intro hv; simpl.
-    subst. simpl. rewrite <- mem_iff in hy. rewrite empty_b. fset.
-    eq_dec y a; auto. subst. auto.
-    rewrite singleton_b, eqb_refl. fset. rewrite empty_b. fset.
+    subst. simpl. rewrite <- mem_iff in hy. rewrite empty_b.
+    intro a. set_iff. split. intros [[a1 _]|a1]. eq_dec y a; subst; auto. contr.
+    intros [[a1 a2]|a1]; subst; auto.
+    rewrite singleton_b, eqb_refl. intro a. set_iff. tauto.
+    rewrite empty_b. intro a. set_iff. tauto.
   Qed.
 
 (****************************************************************************)
@@ -1201,7 +1201,7 @@ on some finite set of variables *)
     case_eq (mem y (fv u) && negb (eqb x y) && eqb z x).
     rewrite !andb_true_iff. intros [[h1 h2] h3]. rewrite h1, h2, h3.
     simpl. rewrite eqb_true_iff in h3. subst z. rewrite h2. simpl.
-    apply var_notin_e. fset.
+    apply var_notin_e. intro a. set_iff. tauto.
     rewrite !andb_false_iff.
     intros [[h|h]|h]; rewrite h; repeat rewrite andb_false_r; refl.
   Qed.
@@ -1211,7 +1211,7 @@ on some finite set of variables *)
 
   Proof.
     unfold Def.rename. rewrite fv_single. simpl.
-    destruct (mem y (fv u)). fset. refl.
+    destruct (mem y (fv u)). intro a. set_iff. tauto. refl.
   Qed.
 
   Lemma rename_lam_no_alpha y z x u :
@@ -1220,7 +1220,7 @@ on some finite set of variables *)
 
   Proof.
     intro h. unfold Def.rename. rewrite single_lam_no_alpha. refl.
-    simpl. set_iff. intuition.
+    simpl. set_iff. destruct h as [h|[h|h]]; auto.
   Qed.
 
   Lemma remove_fv_rename x y u : ~In y (fv u) ->
@@ -1230,7 +1230,7 @@ on some finite set of variables *)
     intro hy. rewrite fv_rename. case_eq (mem x (fv u)); intro hx.
     apply remove_add. set_iff. tauto.
     rewrite remove_equal. 2: hyp. rewrite remove_equal. refl.
-    rewrite mem_iff. rewrite hx. discr.
+    rewrite mem_iff, hx. discr.
   Qed.
 
 (****************************************************************************)
@@ -1336,7 +1336,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   Lemma bvcod_fun_transp s : transpose Equal (bvcod_fun s).
 
-  Proof. intros u v vs. unfold bvcod_fun. fset. Qed.
+  Proof. intros u v vs. unfold bvcod_fun. intro a. set_iff. tauto. Qed.
 
   Definition bvcod xs s := fold (bvcod_fun s) xs empty.
 
@@ -1376,14 +1376,14 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
       hyp.
     (* empty *)
     rewrite bvcod_empty. set_iff. intuition. destruct H as [x].
-    revert H. set_iff. intuition.
+    revert H. set_iff. tauto.
     (* add *)
     intros x xs n IH. rewrite bvcod_add. 2: hyp. unfold bvcod_fun.
-    set_iff. rewrite IH. clear IH. intuition.
-    exists x. set_iff. auto.
-    destruct H0 as [z]. exists z. set_iff. intuition.
-    destruct H as [z]. revert H. set_iff. intuition. subst z. auto.
-    right. exists z. auto.
+    set_iff. rewrite IH. clear IH. split.
+    intros [h|[a [a1 a2]]].
+    ex x. split; set_iff; auto. ex a. split; set_iff; auto.
+    intros [a [a1 a2]]. eq_dec a x. subst. auto. right. ex a. split.
+    revert a1. set_iff. fo. hyp.
   Qed.
 
   (** [bvcod] is compatible with inclusion. *)
@@ -1413,7 +1413,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     intros [y [h1 h2]]. revert h1. set_iff. rewrite !In_bvcod.
     intros [h1|h1]. left. exists y. intuition. right. exists y. intuition.
     rewrite !In_bvcod. intros [[y [h1 h2]]|[y [h1 h2]]].
-    exists y. set_iff. intuition. exists y. set_iff. intuition.
+    exists y. set_iff. tauto. exists y. set_iff. tauto.
   Qed.
  
   Lemma bvcod_single y v : forall xs,
@@ -1429,8 +1429,10 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     intros x u n IH. rewrite bvcod_add, IH. 2: hyp. clear IH.
     unfold bvcod_fun. unfold Def.single, Def.update, eqb.
     eq_dec x y; rewrite add_b.
-    subst y. rewrite eqb_refl. simpl. rewrite not_mem_iff in n. rewrite n. fset.
-    rewrite <- eqb_false_iff in n0. rewrite n0. simpl. fset.
+    subst y. rewrite eqb_refl. simpl. rewrite not_mem_iff in n. rewrite n.
+    intro a; set_iff; tauto.
+    rewrite <- eqb_false_iff in n0. rewrite n0. simpl.
+    intro a; set_iff; tauto.
   Qed.
 
   Lemma bvcod_rename y z xs : bvcod xs (single y (Var z)) [=] empty.
@@ -1455,7 +1457,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     union (if mem x xs then bv u else empty) (bvcod (remove x xs) s).
 
   Proof.
-    intro y. set_iff. do 2 rewrite In_bvcod. intuition.
+    intro y. set_iff. do 2 rewrite In_bvcod. (*SLOW*)intuition.
     destruct H as [z [h1 h2]]. unfold Def.update in h2. eq_dec z x.
     subst z. rewrite mem_iff in h1. rewrite h1. auto.
     right. exists z. set_iff. auto.
@@ -1474,8 +1476,8 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   Proof.
     intros e s s' ss' x. rewrite <- e. rewrite !In_bvcod.
-    split; intros [y [h1 h2]]; exists y; intuition.
-    rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
+    split; intros [y [h1 h2]]; exists y.
+    rewrite <- (ss' _ h1). tauto. rewrite (ss' _ h1). tauto.
   Qed.
 
   Instance bvcod_seq' xs : Proper (seq xs ==> Equal) (bvcod xs).
@@ -1509,7 +1511,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     refl.
     (* app *)
     simpl. set_iff. intro h. rewrite union_inter_1, union_empty. intros [a b].
-    rewrite IHu1, IHu2; tauto.
+    rewrite IHu1, IHu2; (*SLOW*)tauto.
     (* lam *)
     simpl Def.fv. simpl Def.bv. set_iff. rewrite inter_empty.
     intros h1 h2.
@@ -1669,7 +1671,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite var_single, beq_term_var. simpl. rewrite singleton_b.
     case_eq (mem x (fv u) && negb (eqb z x) && negb (eqb y x) && eqb y z).
     rewrite !andb_true_iff. intros [[[h1 h2] h3] h4].
-    rewrite h1, h3, h4. simpl. rewrite union_sym, <- add_union_singleton. refl.
+    rewrite h1, h3, h4. simpl. (*SLOW*)rewrite union_sym, <- add_union_singleton. refl.
     rewrite !andb_false_iff. intros [[[h|h]|h]|h].
     rewrite h. simpl. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
@@ -1760,9 +1762,9 @@ In fact, these properties won't be used later. Instead, we will use similar prop
       [=] fvcodom (fv (Lam z u)) s). intro a.
     rewrite !In_fvcodom. split; intros [b [j1 [j2 j3]]]; exists b;
       revert j1 j2 j3; set_iff; rewrite fv_rename; case_eq (mem x (fv u));
-        simpl; set_iff; intuition.
+        simpl; set_iff; (*SLOW*)intuition.
     subst b. revert H2. rewrite hy. simpl. set_iff. intro e. subst a. tauto.
-    right. intuition. subst b. tauto.
+    right. split. hyp. intro h. subst b. tauto.
 
     rewrite e. rewrite inter_empty in h2. gen (h2 z). set_iff. tauto.
     rewrite inter_empty in h2. gen (h2 z). set_iff. tauto.
@@ -1820,7 +1822,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* app *)
     rewrite fvcodom_union, union_inter_1, union_empty, inter_sym,
       inter_sym with (s:=bv u2).
-    rewrite !union_inter_1, !union_empty. intuition.
+    rewrite !union_inter_1, !union_empty. (*SLOW*)intuition.
     rewrite IHu1, IHu2; try rewrite inter_sym; auto.
     (* lam *)
     rewrite inter_empty. intro h1.
@@ -1840,7 +1842,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     apply inter_empty. intros z hz. rewrite fvcodom_single.
     case_eq (mem x (fv u) && negb (beq_term (Var y) (Var x))); simpl; set_iff.
     2: fo. rewrite andb_eq, <- mem_iff, beq_term_var, negb_lr; simpl.
-    unfold XSetFacts.eqb. eq_dec y x; intuition. subst z. fo.
+    unfold XSetFacts.eqb. eq_dec y x; (*SLOW*)intuition. subst z. fo.
   Qed.
 
   (** [subs1 s1 u] equals [subs1 s2 u] if [s1] and [s2] are equal on
@@ -2004,7 +2006,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     = subs1 (update x' (Var y') (update x (Var y') s)) u.
 
   Proof.
-    induction u; intro s; simpl; set_iff; intros h1 h2 h3 h4.
+    induction u; intro s; simpl; (*SLOW*)set_iff; intros h1 h2 h3 h4.
     (* var *)
     rename x0 into z. unfold Def.update.
     eq_dec z x; eq_dec z x'; simpl.
@@ -2015,7 +2017,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     case_eq (mem x' (fv (s z)) && negb (eqb y' x')). 2: refl.
     rewrite andb_true_iff, negb_true_iff, eqb_false_iff, <- mem_iff.
     intros [i1 i2]. absurd (In x' (fvcodom (remove x (singleton z)) s)). hyp.
-    rewrite In_fvcodom. exists z. set_iff. intuition.
+    rewrite In_fvcodom. exists z. set_iff. (*SLOW*)intuition.
     revert i1. rewrite H. simpl. set_iff. hyp.
     (* fun *)
     refl.
