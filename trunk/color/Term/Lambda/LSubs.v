@@ -912,9 +912,9 @@ on some finite set of variables *)
     (* app *)
     rewrite IHu1, IHu2. simpl. intro y. (*SLOW*)set_iff.
     (*SLOW*)rewrite !In_fvcod, !In_domain. set_iff. split_all; try tauto.
-    right. ex x. revert H1. rewrite !In_domain. set_iff. tauto.
-    right. ex x. revert H1. rewrite !In_domain. set_iff. tauto.
-    revert H0. rewrite In_domain. set_iff. split_all.
+    right. ex x. revert H. rewrite !In_domain. set_iff. tauto.
+    right. ex x. revert H. rewrite !In_domain. set_iff. tauto.
+    revert H. rewrite In_domain. set_iff. split_all.
     left. right. ex x. rewrite In_domain. tauto.
     right. right. ex x. rewrite In_domain. tauto.
 
@@ -943,7 +943,7 @@ on some finite set of variables *)
 
     left. split_all. fo.
 
-    revert H6 H7. rewrite In_domain. unfold Def.update.
+    revert H3 H5. rewrite In_domain. unfold Def.update.
     eq_dec x0 x; simpl; set_iff. subst x0. intuition.
     destruct (In_dec y xs). auto. left.
     absurd (In y xs). hyp. unfold xs. rewrite In_fvcod. exists x0.
@@ -951,13 +951,13 @@ on some finite set of variables *)
 
     tauto.
 
-    intro e. subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
-    apply union_subset_1. hyp.
-
-    revert H2. unfold xs. rewrite In_fvcod. intros [a ha]. revert ha.
+    revert H3. unfold xs. rewrite In_fvcod. intros [a ha]. revert ha.
     rewrite In_domain. set_iff. split_all. right. exists a.
     rewrite In_domain. unfold Def.update. eq_dec a x. subst a.
     irrefl. tauto.
+
+    intro e. subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
+    apply union_subset_1. hyp.
 
     intro e. subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
     apply union_subset_2. hyp.
@@ -971,12 +971,12 @@ on some finite set of variables *)
 
     (* y <> x *)
     split_all; try tauto.
-    revert H2. rewrite In_domain. eq_dec x0 x.
+    revert H. rewrite In_domain. eq_dec x0 x.
     subst x0. tauto.
     split_all. right. unfold xs. rewrite In_fvcod. exists x0.
     rewrite In_domain. set_iff. fo.
 
-    revert H0. unfold xs. rewrite In_fvcod. intros [z hz]. revert hz.
+    revert H. unfold xs. rewrite In_fvcod. intros [z hz]. revert hz.
     rewrite In_domain. set_iff. split_all. right. exists z.
     rewrite In_domain. eq_dec z x. subst z. tauto. tauto.
   Qed.
@@ -1459,13 +1459,13 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   Proof.
     intro y. set_iff. do 2 rewrite In_bvcod. split_all.
-    unfold Def.update in H2. eq_dec x0 x.
-    subst x0. rewrite mem_iff in H1. rewrite H1. auto.
+    unfold Def.update in H0. eq_dec x0 x.
+    subst x0. rewrite mem_iff in H. rewrite H. auto.
     right. exists x0. set_iff. auto.
-    revert H0. case_eq (mem x xs); intros hx H0. exists x.
+    revert H. case_eq (mem x xs); intros hx H. exists x.
     rewrite <- mem_iff in hx. rewrite update_eq. auto.
-    revert H0. set_iff. tauto.
-    revert H0. set_iff. intro H0.
+    revert H. set_iff. tauto.
+    revert H. set_iff. intro H.
     exists x0. unfold Def.update. eq_dec x0 x.
     subst x0. tauto. tauto.
   Qed.
