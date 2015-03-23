@@ -58,8 +58,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply Qn; trivial.
   Qed.
 
-  Definition envSubst_extends S1 S2 := forall i j,
-    envSub S2 i j -> envSub S1 i j.
+  Definition envSubst_extends S1 S2 :=
+    forall i j, envSub S2 i j -> envSub S1 i j.
 
   Notation "S1 |=> S2" := (envSubst_extends S1 S2) (at level 70).
 
@@ -112,16 +112,13 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Definition emptyEnvSubst: EnvSubst.
 
-  Proof.    
-    apply (@build_envSub (fun (x y: nat) => False) 0); fo.
-  Defined.
+  Proof. apply (@build_envSub (fun (x y: nat) => False) 0); fo. Defined.
 
   Definition singletonEnvSubst : nat -> nat -> EnvSubst.
 
   Proof.
     intros i j.
-    apply (@build_envSub (fun x y : nat => x = i /\ y = j) (S (Max.max i j)));
-      fo.
+    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Max.max i j))); fo.
     destruct (eq_nat_dec i0 i); destruct (eq_nat_dec j0 j); fo.
     rewrite H; auto with arith.
     rewrite H0; auto with arith.
@@ -130,8 +127,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Definition idEnvSubst : nat -> EnvSubst.
 
   Proof.
-    intro s.
-    apply (@build_envSub (fun x y => x = y /\ x < s) s); fo.
+    intro s. apply (@build_envSub (fun x y => x = y /\ x < s) s); fo.
     destruct (eq_nat_dec i j).
     destruct (le_gt_dec s i).
     right; omega.
@@ -143,11 +139,11 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros E1 E2 E1E2.
-    apply (@build_envSub (fun (x y: nat) => 
+    apply (@build_envSub (fun x y => 
       x = y /\ 
       (exists A: SimpleType, E1 |= x := A) /\ 
       (exists A: SimpleType, E2 |= x := A)
-    ) (max (length E1) (length E2))); fo.
+    ) (max (length E1) (length E2))); split_all.
     destruct (eq_nat_dec i j).
     destruct (isVarDecl_dec E1 i).
     destruct (isVarDecl_dec E2 i).
@@ -155,6 +151,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     right; intros [_ [_ [A E2i]]]; inversion v; inversion E2i; try_solve.
     right; intros [_ [[A E1i] _]]; inversion v; inversion E1i; try_solve.
     right; intros [ij _]; omega.
+    omega. omega.
     apply max_case2; [apply (nth_some E1 i H0) | apply (nth_some E2 i H1)].
     rewrite <- H.
     apply max_case2; [apply (nth_some E1 i H0) | apply (nth_some E2 i H1)].
@@ -190,30 +187,22 @@ Module TermsConv (Sig : TermsSig.Signature).
   Lemma sumEnvSubst_or : forall Q Ql Qr (QQl: Q |=> Ql) (QQr: Q |=> Qr) p q,
     envSub (sumEnvSubst QQl QQr) p q -> envSub Ql p q \/ envSub Qr p q.
 
-  Proof.
-    intros; destruct H; auto.
-  Qed.
+  Proof. intros; destruct H; auto. Qed.
 
   Lemma sumEnvSubst_ext_l : forall Q Ql Qr (QQl: Q |=> Ql) (QQr: Q |=> Qr),
     sumEnvSubst QQl QQr |=> Ql.
 
-  Proof.
-    intros; intros p q pq; simpl; auto.
-  Qed.
+  Proof. intros; intros p q pq; simpl; auto. Qed.
 
   Lemma sumEnvSubst_ext_r : forall Q Ql Qr (QQl: Q |=> Ql) (QQr: Q |=> Qr),
     sumEnvSubst QQl QQr |=> Qr.
 
-  Proof.
-    intros; intros p q pq; simpl; auto.
-  Qed.
+  Proof. intros; intros p q pq; simpl; auto. Qed.
 
   Lemma sumEnvSubst_ext : forall Q Ql Qr (QQl: Q |=> Ql) (QQr: Q |=> Qr),
     Q |=> sumEnvSubst QQl QQr.
 
-  Proof.
-    intros; intros p q pq; destruct pq; auto.
-  Qed.
+  Proof. intros; intros p q pq; destruct pq; auto. Qed.
 
   Definition addEnvSubst : forall (Q: EnvSubst) (i: nat) (j: nat) 
     (ok: envSub Q i j \/ (forall x, ~envSub Q i x /\ ~envSub Q x j)), EnvSubst.
@@ -225,7 +214,7 @@ Module TermsConv (Sig : TermsSig.Signature).
         envSub Q x y \/ (x = i /\ y = j)) s).
     intros.
     destruct (eq_nat_dec i0 i); destruct (eq_nat_dec j0 j); 
-      destruct (envSub_dec Q i0 j0); fo.
+      destruct (envSub_dec Q i0 j0); (*SLOW*)fo.
     intros; destruct H; destruct H0; try_solve; try solve [fo].
     apply envSub_Lok with Q i0; trivial.
     apply envSub_Lok with Q i0; trivial.
@@ -261,7 +250,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros n k s.
-    apply (@build_envSub (fun (x y: nat) => 
+    apply (@build_envSub (fun x y => 
         x < s /\
         match (le_gt_dec k x) with
 	| left _ =>  (* x >= k *) x + n = y
@@ -281,7 +270,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros k s.
-    apply (@build_envSub (fun (x y: nat) =>
+    apply (@build_envSub (fun x y =>
       x < s /\
       match (eq_nat_dec k x) with
       | left _ => False
@@ -306,18 +295,18 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
-    apply (@build_envSub (fun (x y: nat) => es (S x) (S y)) (pred s)).
+    apply (@build_envSub (fun x y => es (S x) (S y)) (pred s)).
     intros; destruct (es_dec (S i) (S j)); trivial.
-    fo.
-    fo.
-    fo.
+    intros. apply eq_add_S. eapply esL. apply H. hyp.
+    intros. apply eq_add_S. eapply esR. apply H. hyp.
+    intros. gen (sOk (S i) (S j) H). omega.
   Defined.
 
   Definition envSubst_lift1 : EnvSubst -> EnvSubst.
 
   Proof.
     intros S; destruct S as [es s es_dec esL esR sOk].
-    apply (@build_envSub (fun (x y: nat) => 
+    apply (@build_envSub (fun x y => 
       match x, y with
       | 0, 0 => True
       | S x, S y => es x y
@@ -325,9 +314,15 @@ Module TermsConv (Sig : TermsSig.Signature).
       end
     ) (S s)).
     destruct i; destruct j; auto.
-    destruct i; destruct j; destruct j'; fo.
-    destruct i; destruct i'; destruct j; fo.
-    destruct i; destruct j; fo.
+    destruct i; destruct j; destruct j'; try contr.
+    refl.
+    intros. f_equal. eapply esL. apply H. hyp.
+    destruct i; destruct i'; destruct j; try contr.
+    refl.
+    intros. f_equal. eapply esR. apply H. hyp.
+    destruct i; destruct j; try contr.
+    omega.
+    intro h. gen (sOk i j h). omega.
   Defined.
 
   Fixpoint envSubst_lift (Q: EnvSubst) (n: nat) : EnvSubst :=
@@ -381,9 +376,9 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros S; destruct S as [es s es_dec esL esR sOk].
     apply (@build_envSub (transp es) s).
     intros; destruct (es_dec j i); auto.
-    fo.
-    fo.
-    fo.
+    intros. eapply esR. apply H. hyp.
+    intros. eapply esL. apply H. hyp.
+    intros. gen (sOk j i H). omega.
   Defined.
 
   Definition envSubst_compose : forall (E1 E2 : EnvSubst), EnvSubst.
@@ -419,45 +414,38 @@ Module TermsConv (Sig : TermsSig.Signature).
   Lemma envSubst_transp_def : forall p q Q,
     envSub Q p q -> envSub (envSubst_transp Q) q p.
 
-  Proof.
-    intros; destruct Q; trivial.
-  Qed.
+  Proof. intros; destruct Q; trivial. Qed.
 
   Lemma envSubst_transp_lower : forall S,
     envSubst_transp (envSubst_lower S) <=> envSubst_lower (envSubst_transp S).
 
-  Proof.
-    intros; constructor; destruct S; fo.
-  Qed.
+  Proof. intros; constructor; destruct S; fo. Qed.
 
   Lemma envSubst_transp_lift : forall S,
     envSubst_transp (envSubst_lift1 S) <=> envSubst_lift1 (envSubst_transp S).
 
   Proof.
-    intros; constructor; intros i j; destruct S; destruct i; destruct j;
-      fo.
-  Qed.   
+    intros; constructor; intros i j; destruct S; destruct i; destruct j; fo.
+  Qed.
 
   Lemma envSubst_transp_twice : forall S,
     envSubst_transp (envSubst_transp S) <=> S.
 
-  Proof.
-    intro S; constructor; intros i j; destruct S; trivial.
-  Qed.
+  Proof. intro S; constructor; intros i j; destruct S; trivial. Qed.
 
   Lemma envSubst_lift_lower : forall Q,
     envSub Q 0 0 -> envSubst_lift1 (envSubst_lower Q) <=> Q.
 
   Proof.
     intros; constructor; intros x y;
-      destruct Q; destruct x; destruct y; try_solve; fo.
+      destruct Q; destruct x; destruct y; try_solve.
+    intro h. assert (0 = S y). eapply envSub_Lok0. apply H. hyp. discr.
+    intro h. assert (S x = 0). eapply envSub_Rok0. apply h. hyp. discr.
   Qed.
 
   Lemma envSubst_lower_lift : forall Q, envSubst_lower (envSubst_lift1 Q) <=> Q.
 
-  Proof.
-    intros; destruct Q; fo.
-  Qed.
+  Proof. intros; destruct Q; fo. Qed.
 
   Lemma envSubst_eq_cons : forall S1 S2,
     envSubst_lower S1 <=> envSubst_lower S2 ->
@@ -466,12 +454,15 @@ Module TermsConv (Sig : TermsSig.Signature).
   Proof.
     intros S1 S2 S1S2 S10 S20; constructor; intros i j ij; destruct S1;
       destruct S2.
-    destruct i; destruct j; fo.
+    destruct i; destruct j. auto.
     set (hint := envSub_Lok1 0 0 (S j)); fo; try_solve.
     set (hint := envSub_Rok1 0 (S i) 0); fo; try_solve.
-    destruct i; destruct j; fo.
+    fo.
+    destruct i; destruct j.
+    fo.
     set (hint := envSub_Lok0 0 0 (S j)); fo; try_solve.
     set (hint := envSub_Rok0 0 (S i) 0); fo; try_solve.
+    fo.
   Qed.
 
   Lemma envSubst_eq_abs : forall M N (Mabs: isAbs M) (Nabs: isAbs N) 
@@ -484,9 +475,9 @@ Module TermsConv (Sig : TermsSig.Signature).
     set (hint := MNin 0 A A0).
     destruct i; destruct j; fo.
     set (hint := MNin 0 A A0).
-    destruct i; destruct j; fo.
-    exists A; constructor.
-    exists A0; constructor.
+    destruct i; destruct j; try contr.
+    split_all. ex A. fo. ex A0. fo.
+    split_all. subst j. ex x0. fo. ex x. fo.
   Qed.
 
   Lemma envSubst_lift_eq : forall S1 S2,
