@@ -32,22 +32,6 @@ Ltac ded t := gen t; intro.
 Ltac class := fold impl; auto with typeclass_instances.
 Ltac decomp h := decompose [and or ex] h; clear h.
 
-Ltac split_hyp h :=
-  match goal with
-  | h : _ \/ _ |- _ => decomp h
-  | h : _ /\ _ |- _ => decomp h
-  | h : @ex _ _ |- _ => decomp h
-  | |- _ => idtac
-  end.
-
-Ltac split_all :=
-  match goal with
-  | |- _ <-> _ => split; split_all
-  | |- _ /\ _ => split; split_all
-  | |- _ -> _ => let h := fresh in intro h; split_hyp h; split_all
-  | |- _ => auto
-  end.
-
 Tactic Notation "ex" constr(x1) := exists x1.
 Tactic Notation "ex" constr(x1) constr(x2) := exists x1; exists x2.
 Tactic Notation "ex" constr(x1) constr(x2) constr(x3) :=
@@ -117,7 +101,7 @@ Ltac done :=
 Tactic Notation "by" tactic(T) := (T; done).
 
 (***********************************************************************)
-(** Basic theorems on (intuitionist) propositional calculus. *)
+(** Basic theorems on intuitionist propositional calculus. *)
 
 Lemma impl_refl : forall P, P -> P.
 
@@ -168,7 +152,7 @@ Ltac and_idem := rewrite !and_assoc;
   repeat (rewrite and_idem_and_l || rewrite and_idem_and_r || rewrite and_idem).
 
 (***********************************************************************)
-(** Basic theorems on (intuitionist) predicate calculus. *)
+(** Basic theorems on intuitionist predicate calculus. *)
 
 Section pred.
 
@@ -191,3 +175,24 @@ Section pred.
   Proof. fo. Qed.
 
 End pred.
+
+(***********************************************************************)
+(** Tactic for decomposing a goal. *)
+
+Ltac split_hyp h :=
+  match goal with
+  | h : _ \/ _ |- _ => decomp h
+  | h : _ /\ _ |- _ => decomp h
+  | h : @ex _ _ |- _ => decomp h
+  | h : ~(_ \/ _) |- _ => rewrite !not_or in h; decomp h
+  | |- _ => idtac
+  end.
+
+Ltac split_all :=
+  match goal with
+  | |- _ <-> _ => split; split_all
+  | |- _ /\ _ => split; split_all
+  | |- ~(_ \/ _) => rewrite !not_or; split_all
+  | |- _ -> _ => let h := fresh in intro h; split_hyp h; split_all
+  | |- _ => auto
+  end.
