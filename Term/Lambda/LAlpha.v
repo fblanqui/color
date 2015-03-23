@@ -425,7 +425,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_domain.
-    split_all; intro h; apply H1; apply var_aeq_r; rewrite <- h.
+    split_all; intro h; apply H0; apply var_aeq_r; rewrite <- h.
     apply ss'. hyp. sym. apply ss'. hyp.
   Qed.
 
@@ -443,7 +443,7 @@ Module Make (Export L : L_Struct).
   Proof.
     intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_fvcod.
     split_all; ex x0; split; auto.
-    rewrite <- (ss' _ H1). hyp. rewrite (ss' _ H1). hyp.
+    rewrite <- (ss' _ H). hyp. rewrite (ss' _ H). hyp.
   Qed.
 
   Instance fvcod_saeq' : forall xs, Proper (saeq xs ==> Equal) (fvcod xs).
@@ -719,11 +719,11 @@ variables. *)
     assert (e1 : subs xx's v = subs1 xx's v). apply subs1_no_alpha.
     rewrite inter_empty. intros a ha. rewrite In_fvcodom.
     intros [b [i1 [i2 i3]]]. gen (hs3 _ ha). set_iff. split_all.
-    apply H7. rewrite In_fvcodom. ex b. set_iff. rewrite h1.
+    apply H5. rewrite In_fvcodom. ex b. set_iff. rewrite h1.
     revert i3. unfold xx's. unfold Def.update. eq_dec b x.
     subst b. simpl. set_iff. tauto.
-    split_all. intro H6. revert H0. rewrite H6. simpl.
-    set_iff. intro h. subst b. rewrite h1 in H5. tauto.
+    split_all. intro H6. revert i3. rewrite H6. simpl.
+    set_iff. intro h. subst b. rewrite h1 in H4. tauto.
 
     assert (e2 : subs yy's (rename x y v) = subs1 yy's (rename x y v)).
     apply subs1_no_alpha. rewrite bv_rename.
@@ -731,7 +731,7 @@ variables. *)
     rewrite inter_empty. intros a ha. gen (hs3 _ ha). set_iff. split_all.
     rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
-    intros i2 i3. apply H7. rewrite In_fvcodom. ex b. revert i1.
+    intros i2 i3. apply H5. rewrite In_fvcodom. ex b. revert i1.
     rewrite h1 in *. rewrite fv_rename.
     destruct (mem x (fv v)); set_iff; split_all. subst b. irrefl. (*SLOW*)fo.
 
@@ -745,7 +745,7 @@ variables. *)
 
     (* 1 *)
     case_eq (mem y (fvcodom (remove y (fv u')) s)); intro h.
-    Focus 2. revert H2. unfold y', Def.var; ens. rewrite h. rewrite h1 in H.
+    Focus 2. revert H0. unfold y', Def.var; ens. rewrite h. rewrite h1 in H.
     tauto.
     assert (p0 : ~In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y', Def.var; ens. rewrite h. apply var_notin_ok.
@@ -753,18 +753,18 @@ variables. *)
     revert e0. unfold xx's at 1. unfold Def.update at 1. eq_dec y' x.
 
     (* y' = x *)
-    intro e3. inversion e3. rewrite H1, e0. apply aeq_lam. apply aeq_refl_eq.
+    intro e3. inversion e3. rewrite H3, e0. apply aeq_lam. apply aeq_refl_eq.
     apply subs1_seq. intros a ha. unfold xx's, Def.single, Def.update.
     eq_dec a x. rewrite e3, e0. refl.
     eq_dec a y. subst a. rewrite <- h1 in ha. tauto. refl.
 
     (* y' <> x *)
     absurd (In y' (fv u')). intro h'. apply p0. set_iff. auto.
-    unfold u'. rewrite fv_rename. rewrite <- h1 in H2. destruct (mem x (fv u)).
+    unfold u'. rewrite fv_rename. rewrite <- h1 in H0. destruct (mem x (fv u)).
     set_iff. split_all. hyp.
 
     (* 2 *)
-    change (In y' (fvcodom (fv v) xx's)) in H1. revert H1. rewrite In_fvcodom.
+    change (In y' (fvcodom (fv v) xx's)) in H0. revert H0. rewrite In_fvcodom.
     intros [a [i1 [i2 i3]]]. unfold xx's, Def.update in i2, i3.
     revert i2 i3. eq_dec a x.
 
