@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup NatLt
   AdjMat Permutation Multiset LogicUtil NatUtil ListPermutation SCC SCC_dec
-  ListExtras Setoid SN VecUtil GDomainBij ExcUtil PermutSetoid Union SortUtil.
+  ListExtras Setoid SN VecUtil GDomainBij OptUtil PermutSetoid Union SortUtil.
 
 Section S.
 
