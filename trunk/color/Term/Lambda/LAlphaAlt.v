@@ -394,9 +394,11 @@ Module Make (Export L : L_Struct).
     (* add *)
     intros x xs n IH. rewrite domain_add, IH. 2: hyp. unfold Def.domain_fun.
     ens. unfold subs_transpose, Def.transpose_var. rewrite beq_term_var.
-    eq_dec x a. subst. eq_dec a b; eq_dec b a. refl. fo. fo. fset.
-    eq_dec x b. subst. eq_dec a b. refl. fset. eq_dec x x. 2: irrefl.
-    eq_dec a b. refl. fset; subst; irrefl.
+    eq_dec x a. subst. eq_dec a b; eq_dec b a. refl. fo. fo.
+    intro; set_iff; tauto.
+    eq_dec x b. subst. eq_dec a b. refl. intro; set_iff; tauto.
+    eq_dec x x. 2: irrefl. eq_dec a b. refl.
+    intro y. set_iff. split_all; subst; irrefl.
   Qed.
 
   Lemma fvcod_subs_transpose a b : forall xs, fvcod xs (subs_transpose a b)
@@ -407,18 +409,20 @@ Module Make (Export L : L_Struct).
   Proof.
     apply set_induction_bis.
     (* Equal *)
-    intros xs xs' xsxs'. rewrite xsxs'. auto.
+    intros xs xs' xsxs'. (*SLOW*)rewrite xsxs'. auto.
     (* empty *)
-    mem. rewrite fvcod_empty. fset.
+    mem. rewrite fvcod_empty. intro; set_iff; tauto.
     (* add *)
     intros x xs n IH. rewrite fvcod_add, IH. 2: hyp. mem. unfold Def.fvcod_fun.
     ens. rewrite remove_add_if, eqb_sym.
     unfold subs_transpose, Def.transpose_var, eqb.
     eq_dec x a; eq_dec x b; do 2 subst; simpl.
-    rewrite !union_idem, !remove_idem. destruct (mem b xs); fset.
+    rewrite !union_idem, !remove_idem.
+    destruct (mem b xs); intro; set_iff; tauto.
     rewrite not_mem_iff in n.
     rewrite n, remove_add_eq, union_empty_l, union_sym_2. refl.
-    rewrite not_mem_iff in n. rewrite n. destruct (mem a xs); fset.
+    rewrite not_mem_iff in n. rewrite n.
+    destruct (mem a xs); intro; set_iff; tauto.
     rewrite remove_add_if. eq_dec a x. subst. irrefl.
     rewrite add_union_singleton, union_assoc. refl.
   Qed.
@@ -518,7 +522,7 @@ Module Make (Export L : L_Struct).
     set (u' := subs (subs_transpose a b) u).
     set (v' := subs (subs_transpose a b) v).
     set (xs := union (fv u') (fv v')). gen (var_notin_ok xs).
-    set (z := var_notin xs). unfold xs. set_iff. intuition.
+    set (z := var_notin xs). unfold xs. set_iff. split_all. irrefl.
     rewrite aeq_alpha with (y:=z). 2: hyp.
     rewrite aeq_alpha with (x:=y') (y:=z). 2: hyp.
     unfold u', v'. rewrite i0. unfold Def.rename. rewrite !subs_comp.
@@ -614,7 +618,7 @@ Module Make (Export L : L_Struct).
     apply aeq_ch_top_intro; simpl; set_iff; fo.
     simpl. rewrite !replace_var_eq. apply mon_lam. class. refl.
     apply hu. rewrite size_replace_all. refl.
-    rewrite !replace_all_aeq_rename, i0, rename2; fo.
+    (*SLOW*)rewrite !replace_all_aeq_rename, i0, rename2; fo.
   Qed.
 
 (***********************************************************************)
@@ -727,7 +731,7 @@ Module Make (Export L : L_Struct).
 
   Instance transpose_aeq_gp a b : Proper (aeq_gp ==> aeq_gp) (transpose a b).
 
-  Proof.
+  Proof. (*SLOW:many fo's*)
     unfold Def.transpose. intros u v uv; revert u v uv a b.
     ind_size1 u; intros u' uu' a b; inversion uu'; subst.
     refl. refl. apply aeq_gp_app; fo.
@@ -742,7 +746,7 @@ Module Make (Export L : L_Struct).
               (union (add x' (union (fv u') (bv u')))
                      (add y' (union (fv v') (bv v')))))))).
     gen (var_notin_ok xs). set (z' := var_notin xs).
-    unfold xs. set_iff. intro hz'.
+    unfold xs. (*SLOW*)set_iff. intro hz'. split_hyps.
 
     apply aeq_gp_lam with (z:=z'). ens. set_iff. fo. unfold Def.transpose.
     do 2 rewrite action_comp.
@@ -770,7 +774,7 @@ Module Make (Export L : L_Struct).
     eq_dec z z'. fo. refl. eq_dec x0 z'. subst. fo. eq_dec x0 z. subst.
     irrefl. refl.
 
-    intros x0 h0. rewrite !not_or in hz', H1. decomp hz'. decomp H1.
+    intros x0 h0.
     unfold y', x', Def.transpose_var. eq_dec x0 z'. subst.
     eq_dec z' a. fo. eq_dec z' b. fo. eq_dec z' z'. 2: irrefl. eq_dec y a.
     refl. eq_dec y b. refl. refl. eq_dec x0 y. subst. eq_dec z' a. fo.
@@ -797,7 +801,7 @@ Module Make (Export L : L_Struct).
     eq_dec x b. eq_dec a a. 2: irrefl. fo. eq_dec a x. fo. refl.
     eq_dec x0 z'. fo. eq_dec x a. eq_dec x0 b. fo. refl. eq_dec x b.
     eq_dec x0 a. fo. refl. eq_dec x0 x. fo. refl.
-  Qed.
+  (*SLOW*)Qed.
 
   (** [aeq_gp] is transitive. *)
 
@@ -813,7 +817,7 @@ Module Make (Export L : L_Struct).
                             (add y (union (fv v) (bv v))))
                             (add z (union (fv w) (bv w)))).
     gen (var_notin_ok xs). set (c := var_notin xs).
-    unfold xs. revert H1 H2. set_iff. intros ha hb hc.
+    unfold xs. revert H1 H2. (*SLOW*)set_iff. intros ha hb hc.
     apply aeq_gp_lam with (z:=c). ens. set_iff. fo.
     apply hu with (y := transpose c y v).
     unfold Def.transpose. rewrite size_action. refl.
@@ -831,7 +835,7 @@ Module Make (Export L : L_Struct).
     erewrite <- transpose_comp with (u:=w) (b:=b); [idtac|fo|fo|fo|fo].
     rewrite transpose_sym with (x:=y), transpose_sym with (x:=z).
     apply transpose_aeq_gp. hyp.
-  Qed.
+  (*SLOW*)Qed.
 
   (** [aeq] is included in [aeq_gp]. *)
 
