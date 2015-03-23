@@ -21,43 +21,26 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Lemma varD_tail : forall E A i, E |= S i := A -> tail E |= i := A.
 
-  Proof.
-    intros; destruct E; trivial.
-    inversion H.
-  Qed.
+  Proof. intros; destruct E; trivial. inversion H. Qed.
 
   Lemma varD_tail_rev : forall E A i, tail E |= i := A -> E |= S i := A.
 
-  Proof.
-    intros; destruct E; trivial.
-    destruct i; trivial.
-  Qed.
+  Proof. intros; destruct E; trivial. destruct i; trivial. Qed.
 
   Lemma varUD_tail : forall E i, E |= S i :! -> tail E |= i :! .
 
-  Proof.
-    intros; destruct E; trivial.
-    inversion H; destruct i; trivial.
-  Qed.
+  Proof. intros; destruct E; trivial. inversion H; destruct i; trivial. Qed.
 
   Lemma varUD_tail_rev : forall E i, tail E |= i :! -> E |= S i :! .
 
-  Proof.
-    intros; destruct E; trivial.
-    destruct i; trivial.
-  Qed.
+  Proof. intros; destruct E; trivial. destruct i; trivial. Qed.
 
-  Lemma varD_UD_absurd : forall E p A, E |= p := A -> E |= p :! ->
+  Lemma varD_UD_absurd : forall E p A, E |= p := A -> E |= p :! -> False.
 
-    False.
-  Proof.
-    intros E p A EpA Ep.
-    destruct Ep; unfold VarD in *; try_solve.
-  Qed.
+  Proof. intros E p A EpA Ep. destruct Ep; unfold VarD in *; try_solve. Qed.
 
-  Definition equiv E x E' x' := (forall A, E |= x := A <-> E' |= x' := A) /\
-    (E |= x :! <-> E' |= x' :!).
-
+  Definition equiv E x E' x' :=
+    (forall A, E |= x := A <-> E' |= x' := A) /\ (E |= x :! <-> E' |= x' :!).
 
   Lemma split_beyond : forall E k n p, p < k -> length E <= p ->
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p :! .
@@ -94,32 +77,28 @@ Module TermsEnv (Sig : TermsSig.Signature).
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p := A.
 
   Proof.
-    intros.
-    apply (proj1 (proj1 (equiv_copy_split_l E n H) A)); trivial.
+    intros. apply (proj1 (proj1 (equiv_copy_split_l E n H) A)); trivial.
   Qed.
 
   Lemma copy_split_l_varUD : forall E k p n, p < k -> E |= p :! ->
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p :! .
 
   Proof.
-    intros.
-    apply (proj1 (proj2 (equiv_copy_split_l E n H))); trivial.
+    intros. apply (proj1 (proj2 (equiv_copy_split_l E n H))); trivial.
   Qed.
 
   Lemma copy_split_l_rev_varD : forall E k p n A, p < k ->
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p := A -> E |= p := A.
 
   Proof.
-    intros.
-    apply (proj2 (proj1 (equiv_copy_split_l E n H) A)); trivial.
+    intros. apply (proj2 (proj1 (equiv_copy_split_l E n H) A)); trivial.
   Qed.
 
   Lemma copy_split_l_rev_varUD : forall E k p n, p < k ->
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p :! -> E |= p :! .
 
   Proof.
-    intros.
-    apply (proj2 (proj2 (equiv_copy_split_l E n H))); trivial.
+    intros. apply (proj2 (proj2 (equiv_copy_split_l E n H))); trivial.
   Qed.
 
   Lemma equiv_copy_split_r : forall E k n p p', p >= k -> p' = p + n ->
@@ -148,32 +127,28 @@ Module TermsEnv (Sig : TermsSig.Signature).
     E |= p := A -> (initialSeg E k ++ copy n None ++ finalSeg E k) |= p' := A.
 
   Proof.
-    intros.
-    apply (proj1 (proj1 (equiv_copy_split_r E n H H0) A)); trivial.
+    intros. apply (proj1 (proj1 (equiv_copy_split_r E n H H0) A)); trivial.
   Qed.
 
   Lemma copy_split_r_varUD : forall E k n p p', p >= k -> p' = p + n ->
     E |= p :! -> (initialSeg E k ++ copy n None ++ finalSeg E k) |= p' :! .
 
   Proof.
-    intros.
-    apply (proj1 (proj2 (equiv_copy_split_r E n H H0))); trivial.
+    intros. apply (proj1 (proj2 (equiv_copy_split_r E n H H0))); trivial.
   Qed.
 
   Lemma copy_split_r_rev_varD : forall E k n p p' A, p >= k -> p' = p + n ->
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p' := A -> E |= p := A.
 
   Proof.
-    intros.
-    apply (proj2 (proj1 (equiv_copy_split_r E n H H0) A)); trivial.
+    intros. apply (proj2 (proj1 (equiv_copy_split_r E n H H0) A)); trivial.
   Qed.
 
   Lemma copy_split_r_rev_varUD : forall E k n p p', p >= k -> p' = p + n ->
     (initialSeg E k ++ copy n None ++ finalSeg E k) |= p' :! -> E |= p :! .
 
   Proof.
-    intros.
-    apply (proj2 (proj2 (equiv_copy_split_r E n H H0))); trivial.
+    intros. apply (proj2 (proj2 (equiv_copy_split_r E n H H0))); trivial.
   Qed.
 
   Lemma equiv_hole_l : forall E k p, p < k ->
@@ -198,34 +173,22 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma hole_l_varD : forall E k p A, p < k -> E |= p := A ->
     (initialSeg E k ++ finalSeg E (S k)) |= p := A.
 
-  Proof.
-    intros.
-    apply (proj1 (proj1 (equiv_hole_l E H) A)); trivial.
-  Qed.
+  Proof. intros. apply (proj1 (proj1 (equiv_hole_l E H) A)); trivial. Qed.
 
   Lemma hole_l_varUD : forall E k p, p < k -> E |= p :! ->
     (initialSeg E k ++ finalSeg E (S k)) |= p :! .
 
-  Proof.
-    intros.
-    apply (proj1 (proj2 (equiv_hole_l E H))); trivial.
-  Qed.
+  Proof. intros. apply (proj1 (proj2 (equiv_hole_l E H))); trivial. Qed.
 
   Lemma hole_l_rev_varD : forall E k p A, p < k ->
     (initialSeg E k ++ finalSeg E (S k)) |= p := A -> E |= p := A.
 
-  Proof.
-    intros.
-    apply (proj2 (proj1 (equiv_hole_l E H) A)); trivial.
-  Qed.
+  Proof. intros. apply (proj2 (proj1 (equiv_hole_l E H) A)); trivial. Qed.
 
   Lemma hole_l_rev_varUD : forall E k p, p < k ->
     (initialSeg E k ++ finalSeg E (S k)) |= p :! -> E |= p :! .
 
-  Proof.
-    intros.
-    apply (proj2 (proj2 (equiv_hole_l E H))); trivial.
-  Qed.
+  Proof. intros. apply (proj2 (proj2 (equiv_hole_l E H))); trivial. Qed.
 
   Lemma equiv_hole_r : forall E k p p', p > k -> p = S p' ->
     equiv E p (initialSeg E k ++ finalSeg E (S k)) p'.
@@ -252,68 +215,43 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma hole_r_varD : forall E k p p' A, p > k -> p = S p' -> E |= p := A ->
     (initialSeg E k ++ finalSeg E (S k)) |= p' := A.
 
-  Proof.
-    intros.
-    apply (proj1 (proj1 (equiv_hole_r E H H0) A)); trivial.  
-  Qed.
+  Proof. intros. apply (proj1 (proj1 (equiv_hole_r E H H0) A)); trivial. Qed.
 
   Lemma hole_r_varUD : forall E k p p', p > k -> p = S p' -> E |= p :! ->
     (initialSeg E k ++ finalSeg E (S k)) |= p' :! .
 
-  Proof.
-    intros.
-    apply (proj1 (proj2 (equiv_hole_r E H H0))); trivial.  
-  Qed.
+  Proof. intros. apply (proj1 (proj2 (equiv_hole_r E H H0))); trivial. Qed.
 
   Lemma hole_r_rev_varD : forall E k p p' A, p > k -> p = S p' ->
     (initialSeg E k ++ finalSeg E (S k)) |= p' := A -> E |= p := A.
 
-  Proof.
-    intros.
-    apply (proj2 (proj1 (equiv_hole_r E H H0) A)); trivial.  
-  Qed.
+  Proof. intros. apply (proj2 (proj1 (equiv_hole_r E H H0) A)); trivial. Qed.
 
   Lemma hole_r_rev_varUD : forall E k p p', p > k -> p = S p' ->
     (initialSeg E k ++ finalSeg E (S k)) |= p' :! -> E |= p :! .
 
-  Proof.
-    intros.
-    apply (proj2 (proj2 (equiv_hole_r E H H0))); trivial.  
-  Qed.
+  Proof. intros. apply (proj2 (proj2 (equiv_hole_r E H H0))); trivial. Qed.
 
   Lemma emptyEnv_empty : emptyEnv EmptyEnv.
-  Proof.
-    intro p; destruct p; try_solve.
-  Qed.
+
+  Proof. intro p; destruct p; try_solve. Qed.
 
   Lemma emptyEnv_tail : forall E, emptyEnv (None :: E) -> emptyEnv E.
 
-  Proof.
-    intros; intro p.
-    apply (H (S p)).
-  Qed.
+  Proof. intros; intro p. apply (H (S p)). Qed.
 
   Lemma tail_emptyEnv : forall E, emptyEnv E -> emptyEnv (tail E).
 
-  Proof.
-    intros; intro p.
-    destruct (H (S p)); destruct E; try_solve.
-  Qed.
+  Proof. intros; intro p. destruct (H (S p)); destruct E; try_solve. Qed.
 
   Lemma emptyEnv_cons : forall E, emptyEnv E -> emptyEnv (None :: E).
 
-  Proof.
-    intros.
-    intro p; destruct p.
-    right; try_solve.
-    apply (H p).
-  Qed.
+  Proof. intros. intro p; destruct p. right; try_solve. apply (H p). Qed.
 
   Lemma emptyEnv_copyNone : forall k, emptyEnv (copy k None).
 
   Proof.
-    intros; intro p.
-    destruct (le_gt_dec k p).
+    intros; intro p. destruct (le_gt_dec k p).
     left; apply nth_beyond; autorewrite with datatypes using trivial.
     right; apply nth_copy_in; trivial.
   Qed.
@@ -321,10 +259,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma emptyEnv_absurd : forall a E P, emptyEnv (Some a :: E) -> P.
 
   Proof.
-    intros.
-    elimtype False.
-    assert ((Some a :: E) |= 0 := a).
-    auto with terms.
+    intros. elimtype False.
+    assert ((Some a :: E) |= 0 := a). auto with terms.
     destruct (H 0); try_solve.
   Qed.
 
@@ -332,11 +268,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Lemma isNotEmpty_dec : forall e, {isNotEmpty e} + {~isNotEmpty e}.
 
-  Proof.
-    intro e; destruct e.
-    left; try_solve.
-    right; try_solve.
-  Qed.
+  Proof. intro e; destruct e. left; try_solve. right; try_solve. Qed.
 
   Definition dropEmptySuffix (E: Env) : Env :=
     match find_last isNotEmpty isNotEmpty_dec E with
@@ -348,35 +280,29 @@ Module TermsEnv (Sig : TermsSig.Signature).
     E |= x := A -> dropEmptySuffix E |= x := A.
 
   Proof.
-    intros.
-    destruct (find_last_last isNotEmpty isNotEmpty_dec E x H)
+    intros. destruct (find_last_last isNotEmpty isNotEmpty_dec E x H)
       as [q [Eq qx]]; try_solve.
-    unfold dropEmptySuffix.
-    rewrite Eq.
-    unfold VarD; rewrite initialSeg_nth; trivial.
-    omega.
+    unfold dropEmptySuffix. rewrite Eq.
+    unfold VarD; rewrite initialSeg_nth; trivial. omega.
   Qed.
 
   Lemma dropSuffix_decl_rev : forall E x A,
     dropEmptySuffix E |= x := A -> E |= x := A.
 
   Proof.
-    intros.
-    unfold dropEmptySuffix in H.
+    intros. unfold dropEmptySuffix in H.
     destruct (option_dec (find_last isNotEmpty isNotEmpty_dec E))
       as [Ee | [p Ep]].
     rewrite Ee in H.
     destruct x; try_solve.
-    rewrite Ep in H.
-    unfold VarD; apply initialSeg_prefix with (S p); trivial.
+    rewrite Ep in H. unfold VarD; apply initialSeg_prefix with (S p); trivial.
   Qed.
 
   Lemma dropSuffix_last : forall E (E' := dropEmptySuffix E), 
     length E' = 0 \/ exists A, E' |= pred (length E') := A.
 
   Proof.
-    intro E.
-    unfold dropEmptySuffix.
+    intro E. unfold dropEmptySuffix.
     destruct (option_dec (find_last isNotEmpty isNotEmpty_dec E))
       as [Ee | [p Ep]].
     rewrite Ee; left; trivial.
@@ -403,19 +329,16 @@ Module TermsEnv (Sig : TermsSig.Signature).
     | _::E', Some a::F' => Some a :: env_compose E' F'
     | e1::E', None::F' => e1 :: env_compose E' F'
     end.
-  Notation "E [+] F" := (env_compose E F) 
-    (at level 50, left associativity).
+
+  Notation "E [+] F" := (env_compose E F) (at level 50, left associativity).
 
   Lemma env_sum_empty_l : forall E, EmptyEnv [+] E = E.
 
-  Proof.
-    induction E; auto.
-  Qed.
+  Proof. induction E; auto. Qed.
 
   Lemma env_sum_empty_r : forall E, E [+] EmptyEnv = E.
-  Proof.
-    induction E; auto.
-  Qed.
+
+  Proof. induction E; auto. Qed.
 
   Hint Rewrite env_sum_empty_l env_sum_empty_r : terms.
 
@@ -454,7 +377,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     induction x.
     destruct E1; destruct E2; try destruct o0; try_solve.
     inversion 1; try_solve.
-    destruct E1; destruct E2; try destruct o0; try_solve; fo.
+    destruct E1; destruct E2; try destruct o0; try_solve;
+      revert IHx; unfold VarUD; simpl; intro IHx; gen (IHx E1 E2); tauto.
   Qed.
 
   Lemma env_sumn_rn : forall x E1 E2, E1 [+] E2 |= x :! -> E2 |= x :! .
@@ -462,7 +386,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     induction x.
     destruct E1; destruct E2; try destruct o0; try_solve.
-    destruct E1; destruct E2; try destruct o0; try_solve; fo.
+    destruct E1; destruct E2; try destruct o0; try_solve;
+      revert IHx; unfold VarUD; simpl; intro IHx; gen (IHx E1 E2); tauto.
   Qed.
 
   Lemma env_sum_ry : forall E1 E2 x A, E2 |= x := A -> E1 [+] E2 |= x := A.
@@ -517,6 +442,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof. fo. Qed.
 
   Definition env_comp E F : Prop := forall x, env_comp_on E F x.
+
   Notation "E [<->] F" := (env_comp E F) (at level 70).
 
   Lemma env_comp_refl : forall E, E [<->] E.
@@ -525,30 +451,21 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Lemma env_comp_sym : forall E1 E2, E1 [<->] E2 -> E2 [<->] E1.
 
-  Proof.
-    intros E1 E2 E1E2 x A B E2x E1x.
-    sym; apply (E1E2 x); trivial.
-  Qed.
+  Proof. intros E1 E2 E1E2 x A B E2x E1x. sym; apply (E1E2 x); trivial. Qed.
 
   Lemma env_comp_empty : forall E, E [<->] EmptyEnv.
 
-  Proof.
-    intros E x A B.
-    destruct x; try_solve.
-  Qed.
+  Proof. intros E x A B. destruct x; try_solve. Qed.
 
   Lemma env_comp_empty_r : forall E, EmptyEnv [<->] E.
 
-  Proof.
-    intros; apply env_comp_sym; apply env_comp_empty.
-  Qed.
+  Proof. intros; apply env_comp_sym; apply env_comp_empty. Qed.
 
   Lemma env_comp_dropSuffix : forall E1 E2,
     E1 [<->] dropEmptySuffix E2 -> E1 [<->] E2.
 
   Proof.
-    intros; intros p A B Dl Dr.
-    apply (H p); trivial.
+    intros; intros p A B Dl Dr. apply (H p); trivial.
     apply dropSuffix_decl; trivial.
   Qed.
 
@@ -558,8 +475,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     (e1::E1) [<->] (e2::E2) -> E1 [<->] E2.
 
   Proof.
-    unfold env_comp.
-    intros e1 e2 E1 E2 E_comp x A B E1_x E2_x.
+    unfold env_comp. intros e1 e2 E1 E2 E_comp x A B E1_x E2_x.
     apply (E_comp (S x) A B); trivial.
   Qed.
 
@@ -680,14 +596,12 @@ Module TermsEnv (Sig : TermsSig.Signature).
   | Some e :: E', None :: F' => Some e :: env_subtract E' F'
   | Some e :: E', Some f :: F' => None :: env_subtract E' F'
   end.
+
   Notation "E [-] F" := (env_subtract E F) (at level 50, left associativity).
 
   Lemma env_sub_empty : forall E, E [-] EmptyEnv = E.
 
-  Proof.
-    destruct E; trivial.
-    destruct o; trivial.
-  Qed.
+  Proof. destruct E; trivial. destruct o; trivial. Qed.
 
   Hint Rewrite env_sub_empty : terms.
 
@@ -767,10 +681,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Lemma env_sum_double : forall E, E [+] E = E.
 
-  Proof.
-    induction E; auto.
-    destruct a; simpl; congruence.
-  Qed.
+  Proof. induction E; auto. destruct a; simpl; congruence. Qed.
 
   Hint Rewrite env_sum_double : terms.
 
@@ -948,18 +859,14 @@ Module TermsEnv (Sig : TermsSig.Signature).
     (copy (length M) None ++ A [#] EmptyEnv) [+] M = M ++ A [#] EmptyEnv.
 
   Proof.
-    induction M; trivial.
-    intro A.
-    destruct a; simpl; rewrite IHM; trivial.
+    induction M; trivial. intro A. destruct a; simpl; rewrite IHM; trivial.
   Qed.
 
 (* x-man reduntant, check env_comp_ext_l *)
   Lemma env_comp_sum_l : forall M N, M [<->] N [+] M.
 
   Proof.
-    intros.
-    intros p A B Mp NMp.
-    set (w := env_sum_ry N Mp).
+    intros. intros p A B Mp NMp. set (w := env_sum_ry N Mp).
     inversion NMp; inversion w; try_solve.
   Qed.
 
@@ -987,55 +894,37 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Lemma env_subset_empty : forall E, envSubset EmptyEnv E.
 
-  Proof.
-    intros; intros p A D.
-    inversion D; destruct p; try_solve.
-  Qed.
+  Proof. intros; intros p A D. inversion D; destruct p; try_solve. Qed.
 
   Lemma env_subset_refl : forall E, envSubset E E.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_subset_trans : forall E1 E2 E3,
     envSubset E1 E2 -> envSubset E2 E3 -> envSubset E1 E3.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_subset_cons : forall a E E',
     envSubset E' E -> envSubset (a [#] E') (a [#] E).
 
-  Proof.
-    intros; intros p A.
-    destruct p; fo.
-  Qed.
+  Proof. intros; intros p A. destruct p; fo. Qed.
 
   Lemma env_subset_cons_none : forall E E',
     envSubset E' E -> envSubset (None :: E') (None :: E).
 
-  Proof.
-    intros; intros p A.
-    destruct p; fo.
-  Qed.
+  Proof. intros; intros p A. destruct p; fo. Qed.
 
   Lemma env_subset_cons_rev : forall a b E E',
     envSubset (a :: E') (b :: E) -> envSubset E' E.
 
-  Proof.
-    intros; intros p A D.
-    set (w := H (S p) A D); trivial.
-  Qed.
+  Proof. intros; intros p A D. set (w := H (S p) A D); trivial. Qed.
 
   Lemma env_subset_tail : forall E' E,
     envSubset E' E -> envSubset (tail E') (tail E).
 
   Proof.
-    intros; intros p A D.
-    apply varD_tail.
-    apply H.
+    intros; intros p A D. apply varD_tail. apply H.
     apply varD_tail_rev; trivial.
   Qed.
 
@@ -1082,8 +971,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_subset_comp : forall E E', envSubset E E' -> E [<->] E'.
 
   Proof.
-    intros; intros x A B D1 D2.
-    set (w := H x A D1).
+    intros; intros x A B D1 D2. set (w := H x A D1).
     inversion D2; inversion w; try_solve.
   Qed.
 
@@ -1136,35 +1024,24 @@ Module TermsEnv (Sig : TermsSig.Signature).
     env_comp_on El Er i -> envSubset El' El ->
     envSubset Er' Er -> env_comp_on El' Er' i.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_comp_subset : forall El Er El' Er', El [<->] Er ->
     envSubset El' El -> envSubset Er' Er -> El' [<->] Er'.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_subset_sum_l : forall E El Er, El [<->] Er ->
     envSubset E El -> envSubset E (El [+] Er).
 
   Proof.
-    intros; intros x A D.
-    apply env_sum_ly.
-    exact (H x).
-    apply H0; trivial.
+    intros; intros x A D. apply env_sum_ly. exact (H x). apply H0; trivial.
   Qed.
 
   Lemma env_subset_sum_r : forall E El Er,
     envSubset E Er -> envSubset E (El [+] Er).
 
-  Proof.
-    intros; intros x A D.
-    apply env_sum_ry.
-    apply H; trivial.
-  Qed.
+  Proof. intros; intros x A D. apply env_sum_ry. apply H; trivial. Qed.
 
   Lemma env_subset_sum : forall El El' Er Er', El' [<->] Er' ->
     envSubset El El' -> envSubset Er Er' ->
@@ -1204,11 +1081,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_subset_sum_leq : forall El Er Er', El [<->] Er' ->
     envSubset Er Er' -> envSubset (El [+] Er) (El [+] Er').
 
-  Proof.
-    intros.
-    apply env_subset_sum; trivial.
-    apply env_subset_refl.
-  Qed.
+  Proof. intros. apply env_subset_sum; trivial. apply env_subset_refl. Qed.
 
   Lemma varDecl_single : forall x A B w,
     (copy x None ++ A[#]EmptyEnv) |= w := B -> A = B /\ x = w.
@@ -1234,8 +1107,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     E |= x := A -> envSubset (copy x None ++ A [#] EmptyEnv) E.
 
   Proof.
-    intros; intros w B D.
-    destruct (varDecl_single x A D).
+    intros; intros w B D. destruct (varDecl_single x A D).
     rewrite <- H0; rewrite <- H1; trivial.
   Qed.
 
@@ -1347,9 +1219,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma varD_hole_env_length_j_ge_i : forall E i j A, j >= i ->
     (initialSeg E i ++ None :: finalSeg E (S i)) |= j := A -> length E > i.
 
-  Proof.
-    intros; set (w := varD_hole_env_length E i H0); omega.
-  Qed.
+  Proof. intros; set (w := varD_hole_env_length E i H0); omega. Qed.
 
   Lemma varD_hole_rev : forall E i j A, i <> j ->
     (initialSeg E i ++ None :: finalSeg E (S i)) |= j := A -> E |= j := A.
@@ -1406,32 +1276,26 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Qed.
 
   Definition env_eq E1 E2 := envSubset E1 E2 /\ envSubset E2 E1.
+
   Notation "E1 [=] E2" := (env_eq E1 E2) (at level 70).
 
   Lemma env_eq_refl : forall E, E [=] E.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_eq_sym : forall E E', E [=] E' -> E' [=] E.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_eq_trans : forall E1 E2 E3, E1 [=] E2 -> E2 [=] E3 -> E1 [=] E3.
 
-  Proof.
-    fo.
-  Qed.
+  Proof. fo. Qed.
 
   Lemma env_eq_some_none_absurd : forall E1 E2 A,
     Some A :: E1 [=] None :: E2 -> False.
 
   Proof.
-    intros.
-    set (w := (proj1 H) 0 A); compute in w.
+    intros. set (w := (proj1 H) 0 A); compute in w.
     set (p := w (refl_equal (Some (Some A)))); inversion p.
   Qed.
 
@@ -1439,19 +1303,13 @@ Module TermsEnv (Sig : TermsSig.Signature).
     Some A :: E1 [=] EmptyEnv -> False.
 
   Proof.
-    intros.
-    set (w := (proj1 H) 0 A); compute in w.
+    intros. set (w := (proj1 H) 0 A); compute in w.
     set (p := w (refl_equal (Some (Some A)))); inversion p.
   Qed.
 
   Lemma env_eq_tail : forall E1 E2, E1 [=] E2 -> tail E1 [=] tail E2.
 
-  Proof.
-    intros.
-    split; destruct H.
-    apply env_subset_tail; trivial.
-    apply env_subset_tail; trivial.
-  Qed.
+  Proof. intros. split; destruct H; apply env_subset_tail; trivial. Qed.
 
   Lemma env_eq_cons : forall a b E E', a = b -> E [=] E' -> a :: E [=] b :: E'.
 
@@ -1470,17 +1328,14 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_eq_cons_inv : forall a b E E', (a :: E) [=] (b :: E') -> E [=] E'.
 
   Proof.
-    intros.
-    change E with (tail (a :: E)).
-    change E' with (tail (b :: E')).
+    intros. change E with (tail (a :: E)). change E' with (tail (b :: E')).
     apply env_eq_tail; trivial.
   Qed.
 
   Lemma env_eq_cons_inv_hd : forall a b E E', (a :: E) [=] (b :: E') -> a = b.
 
   Proof.
-    intros.
-    destruct a; destruct b; trivial.
+    intros. destruct a; destruct b; trivial.
     set (hint := (proj1 H) 0 s).
     fo; inversion H0; trivial.
     set (hint := (proj1 H) 0 s).
@@ -1492,9 +1347,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_eq_comp : forall E1 E2, E1 [=] E2 -> E1 [<->] E2.
 
   Proof.
-    intros.
-    intros p A B D1 D2.
-    set (D2' := proj1 H p A D1).
+    intros. intros p A B D1 D2. set (D2' := proj1 H p A D1).
     inversion D2; inversion D2'; try_solve.
   Qed.
 
@@ -1511,8 +1364,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_eq_empty_cons : forall E, None :: E [=] EmptyEnv -> E [=] EmptyEnv.
 
   Proof.
-    intros.
-    split.
+    intros. split.
     intros p A Ep.
     set (w := proj1 H (S p) A).
     unfold VarD in w; simpl in w.
@@ -1524,10 +1376,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     E [=] EmptyEnv -> None :: E [=] EmptyEnv.
 
   Proof.
-    intros.
-    split.
-    intros p A Ep.
-    destruct p; try_solve.
+    intros. split.
+    intros p A Ep. destruct p; try_solve.
     set (w := proj1 H p A Ep); destruct p; try_solve.
     apply env_subset_empty.
   Qed.
@@ -1570,10 +1420,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_eq_empty_subset : forall E E', E [=] EmptyEnv -> envSubset E E'.
 
   Proof.
-    intros.
-    intros w A wA.
-    set (x := (proj1 H) w A wA).
-    destruct w; try_solve.
+    intros. intros w A wA. set (x := (proj1 H) w A wA). destruct w; try_solve.
   Qed.
 
   Lemma env_eq_def : forall E1 E2,
@@ -1751,7 +1598,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_subset_sum_r; destruct (env_eq_cons_inv H0); trivial.
     replace Er' with (nil [+] Er').
     apply IHEr; trivial.
-    change (nil (A:=option SimpleType)) with (tail (None (A:=SimpleType) :: nil)) in H.
+    change (nil (A:=option SimpleType))
+      with (tail (None (A:=SimpleType) :: nil)) in H.
     set (w := env_eq_tail H); trivial.
     fo.
     rewrite env_sum_empty_l; trivial.
@@ -1772,11 +1620,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma env_eq_sum : forall El El' Er Er',
     El [=] El' -> Er [=] Er' -> El [+] Er [=] El' [+] Er'.
 
-  Proof.
-    intros.
-    rewrite H; rewrite H0.
-    apply env_eq_refl.
-  Qed.
+  Proof. intros. rewrite H; rewrite H0. apply env_eq_refl. Qed.
 
   Lemma env_eq_subset_sum_l : forall E E', envSubset E' E -> E [=] E' [+] E.
 
@@ -1800,8 +1644,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     E |- Pt := A -> dropEmptySuffix E |- Pt := A.
 
   Proof.
-    intros.
-    apply typing_ext_env with E; trivial.
+    intros. apply typing_ext_env with E; trivial.
     apply (proj2 (env_subset_dropSuffix_eq E)).
   Qed.
 
@@ -1913,14 +1756,13 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply copy_split_r_varD with (k + (p - length (initialSeg Er k) - n));
       trivial; try omega.
     apply env_sum_ry; trivial.
-  Qed.
+  (*SLOW*)Qed.
 
   Lemma liftedEnv_distr_sum : forall El Er n k,
     liftedEnv n (El [+] Er) k = liftedEnv n El k [+] liftedEnv n Er k.
 
   Proof.
-    intros.
-    apply env_equiv_eq.
+    intros. apply env_equiv_eq.
     apply liftedEnv_distr_sum_equiv.
     unfold liftedEnv.
     autorewrite with datatypes.
