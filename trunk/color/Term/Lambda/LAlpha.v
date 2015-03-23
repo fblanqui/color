@@ -718,21 +718,22 @@ variables. *)
 
     assert (e1 : subs xx's v = subs1 xx's v). apply subs1_no_alpha.
     rewrite inter_empty. intros a ha. rewrite In_fvcodom.
-    intros [b [i1 [i2 i3]]]. gen (hs3 _ ha). set_iff. (*SLOW*)intuition. apply H6.
-    rewrite In_fvcodom. ex b. set_iff. rewrite h1.
+    intros [b [i1 [i2 i3]]]. gen (hs3 _ ha). set_iff. split_all.
+    apply H7. rewrite In_fvcodom. ex b. set_iff. rewrite h1.
     revert i3. unfold xx's. unfold Def.update. eq_dec b x.
-    subst b. simpl. set_iff. tauto. intuition. revert i3. rewrite H5. simpl.
-    set_iff. intro h. subst b. rewrite h1 in H4. tauto.
+    subst b. simpl. set_iff. tauto.
+    split_all. intro H6. revert H0. rewrite H6. simpl.
+    set_iff. intro h. subst b. rewrite h1 in H5. tauto.
 
     assert (e2 : subs yy's (rename x y v) = subs1 yy's (rename x y v)).
     apply subs1_no_alpha. rewrite bv_rename.
     Focus 2. intro h. gen (hs3 _ h). set_iff. tauto. Focus 1.
-    rewrite inter_empty. intros a ha. gen (hs3 _ ha). set_iff. intuition.
-    revert H1. rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
+    rewrite inter_empty. intros a ha. gen (hs3 _ ha). set_iff. split_all.
+    rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
     intros i2 i3. apply H7. rewrite In_fvcodom. ex b. revert i1.
     rewrite h1 in *. rewrite fv_rename.
-    destruct (mem x (fv v)); set_iff; intuition.
+    destruct (mem x (fv v)); set_iff; split_all. subst b. irrefl. (*SLOW*)fo.
 
     rewrite e1, e2, e. unfold yy's. rewrite subs1_update_single.
     Focus 2. intro h. gen (hs3 _ h). set_iff. tauto.
@@ -740,11 +741,11 @@ variables. *)
 
     (* In y' (fv (subs1 xx's v)) *)
     rewrite <- e1, fv_subs in i. revert i. simpl. set_iff. rewrite In_domain.
-    intuition.
+    split_all.
 
     (* 1 *)
     case_eq (mem y (fvcodom (remove y (fv u')) s)); intro h.
-    Focus 2. revert H0. unfold y', Def.var; ens. rewrite h. rewrite h1 in H.
+    Focus 2. revert H2. unfold y', Def.var; ens. rewrite h. rewrite h1 in H.
     tauto.
     assert (p0 : ~In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y', Def.var; ens. rewrite h. apply var_notin_ok.
@@ -752,15 +753,15 @@ variables. *)
     revert e0. unfold xx's at 1. unfold Def.update at 1. eq_dec y' x.
 
     (* y' = x *)
-    intro e3. inversion e3. rewrite H3, e0. apply aeq_lam. apply aeq_refl_eq.
+    intro e3. inversion e3. rewrite H1, e0. apply aeq_lam. apply aeq_refl_eq.
     apply subs1_seq. intros a ha. unfold xx's, Def.single, Def.update.
     eq_dec a x. rewrite e3, e0. refl.
     eq_dec a y. subst a. rewrite <- h1 in ha. tauto. refl.
 
     (* y' <> x *)
     absurd (In y' (fv u')). intro h'. apply p0. set_iff. auto.
-    unfold u'. rewrite fv_rename. rewrite <- h1 in H0. destruct (mem x (fv u)).
-    set_iff. intuition. hyp.
+    unfold u'. rewrite fv_rename. rewrite <- h1 in H2. destruct (mem x (fv u)).
+    set_iff. split_all. hyp.
 
     (* 2 *)
     change (In y' (fvcodom (fv v) xx's)) in H1. revert H1. rewrite In_fvcodom.
@@ -780,15 +781,15 @@ variables. *)
 
     absurd (In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y', Def.var; ens. rewrite hy. apply var_notin_ok.
-    set_iff. right. rewrite In_fvcodom. ex a. set_iff. intuition.
+    set_iff. right. rewrite In_fvcodom. ex a. set_iff. split_all.
     unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
-    set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
+    set_iff. split_all. hyp. intro ya; subst a. rewrite <- h1 in i1. tauto.
 
     assert (p0 : y' = y). unfold y', Def.var; ens. rewrite hy. refl.
     absurd (In y (fvcodom (remove y (fv u')) s)). rewrite not_mem_iff. hyp.
-    rewrite In_fvcodom. ex a. set_iff. rewrite p0 in i3. intuition.
+    rewrite In_fvcodom. ex a. set_iff. rewrite p0 in i3. split_all.
     unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
-    set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
+    set_iff. intuition. hyp. intro ya; subst a. rewrite <- h1 in i1. tauto.
 
     (* ~In y' (fv (subs1 xx's v)) *)
     trans (Lam y' (rename x' y' (subs1 xx's v))). apply aeq_alpha. hyp.
@@ -827,8 +828,8 @@ variables. *)
     eq_dec a x. refl. eq_dec a y.
     subst a. rewrite <- h1 in ha. tauto. refl.
 
-    rewrite subs1_single_update. apply subs1_seq. intros a ha. unfold Def.update.
-    eq_dec a x'; eq_dec a x; eq_dec a y;
+    rewrite subs1_single_update. apply subs1_seq. intros a ha.
+    unfold Def.update. eq_dec a x'; eq_dec a x; eq_dec a y;
       try subst a; try subst x; try subst y; auto.
     tauto. rewrite <- h1 in ha. tauto. hyp.
     intro h. case_eq (mem x (fvcodom (remove x (fv u)) s)); intro hx.
@@ -840,7 +841,7 @@ variables. *)
     rewrite p, not_mem_iff. hyp. rewrite h1. hyp.
     intro h. gen (hs3 _ h). set_iff. tauto.
     intro h. gen (hs3 _ h). set_iff. tauto.
-  Qed.
+  (*SLOW*)Qed.
 
   Instance rename_aeq : Proper (Logic.eq ==> Logic.eq ==> aeq ==> aeq) rename.
 
@@ -1015,9 +1016,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     ex z u. rewrite rename_id. intuition.
     (* alpha *)
     destruct e as [e|e].
-    inversion e. subst. ex y (rename z y a). intuition.
+    inversion e. subst. ex y (rename z y a). split_all. refl.
     inversion e. subst. ex x u. rewrite rename2, rename_id. 2: auto.
-    intuition. rewrite fv_rename. case_eq (mem x (fv u));
+    split_all. refl. rewrite fv_rename. case_eq (mem x (fv u));
       [rewrite <- mem_iff|rewrite <- not_mem_iff]; intro hx.
     right. set_iff. intros [h|h]. subst z. tauto. tauto.
     auto.
@@ -1188,7 +1189,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros R s s' ss' t u tu. subst s'.
-    inversion tu; inversion H1; subst; clear tu H1. rewrite H0, H, 2!subs_comp.
+    inversion tu; inversion H1; subst; clear tu H1.
+    (*SLOW*)rewrite H0, H, 2!subs_comp.
     eapply clos_aeq_intro. refl. refl. eapply subs_step. hyp.
   Qed.
 
@@ -1418,7 +1420,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       intros [x [uusx [y [xy yvvs]]]]. revert uusx yvvs xy. VSntac x. VSntac y.
       rewrite !Vforall2_cons_eq. intros [h1 h2] [i1 i2] h. inversion h.
-      left. subst x0 y0 x'. rewrite h1, <- i1, h2, H5, i2. split.
+      left. subst x0 y0 x'. (*SLOW*)rewrite h1, <- i1, h2, H5, i2. split.
       apply incl_clos_aeq. hyp. refl.
       right. subst x0 y0 y'. rewrite h1, H4, i1. split. refl. 
       ex (Vtail x). intuition. ex (Vtail y). intuition.
