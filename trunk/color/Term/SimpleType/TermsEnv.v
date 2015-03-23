@@ -11,7 +11,7 @@ lambda-calculus are introduced in this file.
 Set Implicit Arguments.
 
 Require Import RelExtras ListExtras TermsLifting Arith Setoid LogicUtil
-  Morphisms ExcUtil.
+  Morphisms OptUtil.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 

@@ -11,7 +11,7 @@ We represent the quotient of the Domain by SCC with a function to nat.
 Set Implicit Arguments.
 
 Require Import List AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil RelSub
-  Path SortUtil Permutation Multiset ListNodup ExcUtil NatLt SCC SCC_dec.
+  Path SortUtil Permutation Multiset ListNodup OptUtil NatLt SCC SCC_dec.
 
 Section SCC_quotient.
 

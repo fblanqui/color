@@ -1,8 +1,13 @@
+15-03-23: [Blanqui]
+- Util/Logic/LogicUtil: added split_all tactic
+- greatly improved compilation time by replacing slow intuition/fo
+- Util/Option/ExcUtil: renamed into OptUtil
+
 15-03-19: [Blanqui]
-- replaced Add Relation/Morphism by Instance everywhere
 - removed Emacs local variables in Coccinelle
+- replaced Add Relation/Morphism by Instance everywhere
 - Util/Nat/BoundNat:
-  . replaced bnat by N and nfirst_nats by L 
+  . replaced bnat by N and nfirst_nats by L
   . renamed and moved everything into NatLt
 
 15-03-15: [Blanqui]

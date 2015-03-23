@@ -9,7 +9,7 @@ on (extended) weakly monotone algebra.
 *)
 
 Require Import ATrs RelUtil SN AWFMInterpretation AMannaNess ACompat ListUtil
-  ListForall ARelation LogicUtil ExcUtil IntBasedChecker Problem Program
+  ListForall ARelation LogicUtil OptUtil IntBasedChecker Problem Program
   NaryFunction Proof.
 
 Set Implicit Arguments.

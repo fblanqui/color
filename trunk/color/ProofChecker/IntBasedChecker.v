@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
   A module with results for solvers using interpretations.
 *)
 
-Require Import Program LogicUtil ExcUtil ListForall ATrs NaryFunction
+Require Import Program LogicUtil OptUtil ListForall ATrs NaryFunction
   AInterpretation Proof ListUtil.
 
 Set Implicit Arguments.

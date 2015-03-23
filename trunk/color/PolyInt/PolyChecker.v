@@ -9,7 +9,7 @@ A termination solver using the polynomial interpretations method.
 
 Require Import Program ListUtil ListForall LogicUtil ZUtil VecUtil Problem ATrs
   SN APolyInt Polynom RelUtil MonotonePolynom PositivePolynom NaryFunction
-  MonAlgChecker IntBasedChecker Proof ExcUtil AWFMInterpretation.
+  MonAlgChecker IntBasedChecker Proof OptUtil AWFMInterpretation.
 
 Set Implicit Arguments.
 
