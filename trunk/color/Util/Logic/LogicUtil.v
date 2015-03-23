@@ -66,12 +66,16 @@ Ltac irrefl := intros;
   match goal with
     | _ : ?x = ?x -> False |- _ => absurd (x=x); [hyp | refl]
     | _ : ?x <> ?x |- _ => absurd (x=x); [hyp | refl]
-    | _ : ?x <> ?y, _ : ?x = ?y |- _ => subst y; irrefl
-    | _ : ?x <> ?y, _ : ?y = ?x |- _ => subst y; irrefl
-    | _ : ?x <> ?y, _ : ?x = ?z, _ : ?z = ?y |- _ => subst y; irrefl
-    | _ : ?x <> ?y, _ : ?x = ?z, _ : ?y = ?z |- _ => subst y; irrefl
-    | _ : ?x <> ?y, _ : ?z = ?x, _ : ?z = ?y |- _ => subst y; irrefl
-    | _ : ?x <> ?y, _ : ?z = ?x, _ : ?y = ?z |- _ => subst y; irrefl
+    | h1 : ?x <> ?y, h2 : ?x = ?y |- _ => rewrite h2 in h1; irrefl
+    | h1 : ?x <> ?y, h2 : ?y = ?x |- _ => rewrite h2 in h1; irrefl
+    | h1 : ?x <> ?y, h2 : ?x = ?z, h3 : ?z = ?y |- _ =>
+      rewrite h2, <- h3 in h1; irrefl
+    | h1 : ?x <> ?y, h2 : ?x = ?z, h3 : ?y = ?z |- _ =>
+      rewrite h2, h3 in h1; irrefl
+    | h1 : ?x <> ?y, h2 : ?z = ?x, h3 : ?z = ?y |- _ =>
+      rewrite <- h2, <- h3 in h1; irrefl
+    | h1 : ?x <> ?y, h2 : ?z = ?x, h3 : ?y = ?z |- _ =>
+      rewrite <- h2, h3 in h1; irrefl
   end.
 
 (***********************************************************************)
@@ -179,20 +183,22 @@ End pred.
 (***********************************************************************)
 (** Tactic for decomposing a goal. *)
 
-Ltac split_hyp h :=
+Ltac split_hyps :=
   match goal with
-  | h : _ \/ _ |- _ => decomp h
-  | h : _ /\ _ |- _ => decomp h
-  | h : @ex _ _ |- _ => decomp h
-  | h : ~(_ \/ _) |- _ => rewrite !not_or in h; decomp h
+  | h : ~(_ \/ _) |- _ => rewrite not_or in h; split_hyps
+  | h : _ /\ _ |- _ => destruct h; split_hyps
+  | h : @ex _ _ |- _ => destruct h; split_hyps
+  | h : _ \/ _ |- _ => destruct h; split_hyps
   | |- _ => idtac
   end.
 
-Ltac split_all :=
+Ltac split_goal :=
   match goal with
-  | |- _ <-> _ => split; split_all
-  | |- _ /\ _ => split; split_all
-  | |- ~(_ \/ _) => rewrite !not_or; split_all
-  | |- _ -> _ => let h := fresh in intro h; split_hyp h; split_all
-  | |- _ => auto
+  | |- ~(_ \/ _) => rewrite not_or; split_goal
+  | |- _ <-> _ => split; split_goal
+  | |- _ /\ _ => split; split_goal
+  | |- _ -> _ => intro; split_goal
+  | |- _ => idtac
   end.
+
+Ltac split_all := split_goal; split_hyps; auto.
