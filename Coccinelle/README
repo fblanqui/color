@@ -12,6 +12,7 @@ The files have been slightly modified by:
 - defining every thing in Type instead of Set
 - replaced Add Relation/Morphism by Instance
 - removed Emacs local variables
+- removed commented code
 - adapting proof scripts to new Coq versions
 
 This also includes Sorin Stratulat's patch on the files
