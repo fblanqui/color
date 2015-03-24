@@ -25,6 +25,7 @@ Ltac refl := reflexivity.
 Ltac sym := symmetry.
 Ltac trans x := transitivity x.
 Ltac contr := contradiction.
+Ltac cong := congruence.
 Ltac discr := intros; discriminate.
 Ltac fo := unfold flip, impl; firstorder.
 Ltac gen t := generalize t.
