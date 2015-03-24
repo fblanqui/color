@@ -4295,7 +4295,7 @@ intros u u_in_t2l2; right; apply H'; assumption.
 split; apply refl_equal.
 (* 1/1 p t1 t2 = Some Uncomparable *)
 trivial.
-Qed.
+(*SLOW*)Qed.
 
 Lemma list_gt_list_is_sound :
   forall p lg ls,
@@ -4914,55 +4914,7 @@ simpl; trivial.
 simpl; trivial.
 simpl; trivial.
 trivial.
-Qed.
-
-(* deleted, otherwise it is supposed that prec_eq Prec f1 f2 implies F.arity f1 = F.arity f2 *)
-(* Lemma well_formed_equiv : *)
-(*   forall t1 t2, well_formed t1 -> equiv t1 t2 -> well_formed t2. *)
-(* Proof. *)
-(* intro t1; pattern t1; apply term_rec3; clear t1. *)
-(* intros v t2 _ v_eq_t2; inversion v_eq_t2; subst; unfold well_formed; simpl; trivial. *)
-(* intros f l IH t2 Wfl fl_eq_t2. *)
-(* inversion fl_eq_t2 as [| f1 f2 l1 l2 f1_lex f2_lex equiv_f1_f2 | f1 f2 l1 l2 f1_lex f2_lex equiv_f1_f2]; subst; trivial. *)
-(* assert (L' := equiv_same_length  fl_eq_t2). *)
-(* destruct (well_formed_unfold Wfl) as [Wl L]. *)
-(* apply well_formed_fold; split. *)
-(* assert (IH' : forall t t2, In t l -> equiv t t2 -> well_formed t2). *)
-(* intros t t2 t_in_l; apply IH; trivial. *)
-(* apply Wl; trivial. *)
-(* generalize l2 H2. clear l2 IH H2 L' L fl_eq_t2 Wfl;  *)
-(* induction l as [ | t l]; intros l2 l_eq_l2; inversion l_eq_l2; subst. *)
-(* contradiction. *)
-(* intros u [u_eq_t2 | u_in_l2]; subst. *)
-(* apply IH' with t; trivial. *)
-(* left; trivial. *)
-(* apply IHl with l0; trivial. *)
-(* intros; apply Wl; right; trivial. *)
-(* intros u1 u2 u1_in_l; apply IH'; right; trivial. *)
-(* rewrite <- L'; trivial. trivial. *)
-(* assert (H3: well_formed (Term f2 l2)). apply IH with (Term f l). *)
-(* assert (L' := equiv_same_length fl_eq_t2). *)
-(* destruct (well_formed_unfold Wfl) as [Wl L]. *)
-(* apply well_formed_fold; split. *)
-(* assert (IH' : forall t t2, In t l -> equiv t t2 -> well_formed t2). *)
-(* intros t t2 t_in_l; apply IH; trivial. *)
-(* apply Wl; trivial. *)
-(* generalize l2 H3; clear l2 IH H3 H1 L' L fl_eq_t2 Wfl;  *)
-(* induction l as [ | t l]; intros l2 l_eq_l2; inversion l_eq_l2; subst. *)
-(* contradiction. *)
-(* intros u u_in_l2;  *)
-(* destruct (in_app_or _ _ _ u_in_l2) as [u_in_l1 | [u_eq_b | u_in_l3]]. *)
-(* apply IHl with (l1 ++ l3); trivial. *)
-(* intros; apply Wl; right; trivial. *)
-(* intros u1 u2 u1_in_l; apply IH'; right; trivial. *)
-(* apply in_or_app; left; trivial. *)
-(* subst u; apply IH' with t; trivial; left; trivial. *)
-(* apply IHl with (l1 ++ l3); trivial. *)
-(* intros; apply Wl; right; trivial. *)
-(* intros u1 u2 u1_in_l; apply IH'; right; trivial. *)
-(* apply in_or_app; right; trivial. *)
-(* rewrite <- L'; trivial. *)
-(* Qed. *)
+(*SLOW*)Qed.
 
 Lemma lexico_eval_fully_evaluates :
   forall p s1 s2 l1 l2, 
@@ -5466,7 +5418,7 @@ rewrite rpo_eval_equation in T;
 rewrite rpo_eval_equation in R'; 
 rewrite rpo_eval_equation in T'.
 revert R T R' T'.
-case_eq (mem_bool eq_tt_bool (t1, t2) (rpo_l rpo_infos)); intro Heq_1;
+(*SLOW*)case_eq (mem_bool eq_tt_bool (t1, t2) (rpo_l rpo_infos)); intro Heq_1;
 case_eq (mem_bool eq_tt_bool (t2, t1) (rpo_l rpo_infos)); intro Heq_2;
 case_eq (mem_bool eq_tt_bool (t1, t2) (equiv_l rpo_infos)); intro Heq_3;
 case_eq (mem_bool eq_tt_bool (t2, t1) (equiv_l rpo_infos)); intro Heq_4; intros R T R' T'; try
@@ -5477,7 +5429,7 @@ try (absurd (rpo rpo_infos.(bb) t1 t1);
 [intro; apply (@rpo_antirefl rpo_infos.(bb) t1); trivial |
 rewrite (@equiv_rpo_equiv_1 _ _ _ R') in t1_lt_t2; trivial]).
 clear Heq_1 Heq_2 Heq_3 Heq_4.
-destruct (equiv_eval rpo_infos (S n) t1 t2) as [ [ | ] | ];
+(*SLOW*)destruct (equiv_eval rpo_infos (S n) t1 t2) as [ [ | ] | ];
 destruct (equiv_eval rpo_infos (S n) t2 t1) as [ [ | ] | ];
 try (absurd (rpo rpo_infos.(bb) t1 t1); [
 intro; apply (@rpo_antirefl rpo_infos.(bb) t1); trivial |
@@ -6150,7 +6102,7 @@ contradict f2_diff_f2. apply prec_eq_sym; trivial.
 apply False_rect; apply T'; apply refl_equal.
 (* 1/1 *)
 apply False_rect; apply T'; apply refl_equal.
-Qed.
+(*SLOW*)Qed.
 
 Lemma rpo_eval_is_complete :
   forall rpo_infos n t1 t2, size t1 + size t2 <= n -> 
@@ -8212,7 +8164,7 @@ Lemma exists_not_impl: forall l2 a1 l1 n rpo_infos, (exists x,  (In x l2) /\
       exists g : term,
         In g (a1 :: l1) /\ rpo_eval rpo_infos n g x = Some Greater_than)).
 Proof.
-firstorder.
+(*SLOW*)firstorder.
 Qed.
 
 Lemma exists_exists_not :  forall l2 a1 l1 n rpo_infos, 
@@ -8223,7 +8175,7 @@ Lemma exists_exists_not :  forall l2 a1 l1 n rpo_infos,
       ~ (exists g : term,
         In g (a1 :: l1) /\ rpo_eval rpo_infos n g x = Some Greater_than)).
 Proof.
-firstorder.
+(*SLOW*)firstorder.
 Qed.
  
  
