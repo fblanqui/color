@@ -26,100 +26,77 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Definition varIsSubst (G: Subst) x : Type := {T: Term | G |-> x/T}.
   Notation "G |-> x /*" := (varIsSubst G x) (at level 50, x at level 0).
 
-  Definition varIsNotSubst (G: Subst) x : Prop := nth_error G x = None \/ nth_error G x = Some None.
+  Definition varIsNotSubst (G: Subst) x : Prop :=
+    nth_error G x = None \/ nth_error G x = Some None.
   Notation "G |-> x /-" := (varIsNotSubst G x) (at level 50, x at level 0).
  
   Definition isEmptySubst G : Prop := forall x, G |-> x/- .
 
-  Definition isSingletonSubst M G : Prop := G |-> 0 / M /\ forall i, G |-> (S i)/- .
+  Definition isSingletonSubst M G : Prop :=
+    G |-> 0 / M /\ forall i, G |-> (S i)/- .
 
-  Lemma singletonSubst_cond : forall M, isSingletonSubst M {x/M}.
+  Lemma singletonSubst_cond M : isSingletonSubst M {x/M}.
 
-  Proof.
-    intros.
-    constructor.
-    constructor.
-    constructor.
-    destruct i; trivial.
-  Qed.
+  Proof. constructor; constructor. destruct i; trivial. Qed.
 
   Hint Unfold varSubstTo varIsSubst varIsNotSubst : terms.
 
-  Lemma varSubst_dec : forall G x, {T: Term | G |-> x/T} + { G |-> x/- }.
+  Lemma varSubst_dec G x : {T: Term | G |-> x/T} + { G |-> x/- }.
 
   Proof.
-    intros G x; destruct (nth_error_In G x) as [[T Gx] | Gnx].
+    destruct (nth_error_In G x) as [[T Gx] | Gnx].
     destruct T as [T | Gnx].
     left; exists T; auto.
     right; auto with terms.
     right; auto with terms.
   Qed.
 
-  Lemma var_notSubst_lift : forall G x i, G |-> x/- -> (lift_subst G i) |-> x/-.
+  Lemma var_notSubst_lift G x i : G |-> x/- -> (lift_subst G i) |-> x/-.
 
   Proof.
-    intros G x i Gx_n.
-    destruct Gx_n.
+    destruct 1.
     left; apply (nth_lift_subst_n G i x H).
     right; apply (nth_lift_subst_sn G i x H).
   Qed.
 
-  Lemma var_notSubst_lift_rev : forall G x i, (lift_subst G i) |-> x/- -> G |-> x/- .
+  Lemma var_notSubst_lift_rev G x i : (lift_subst G i) |-> x/- -> G |-> x/- .
 
   Proof.
-    intros G x i Gxn.
-    destruct Gxn.
+    intros Gxn. destruct Gxn.
     left; apply nth_lift_subst_n_rev with i; trivial.
     right; apply nth_lift_subst_sn_rev with i; trivial.
   Qed.
 
-  Lemma var_subst_lift : forall G x i T, G |-> x/T  -> (lift_subst G i) |-> x/(lift T i).
+  Lemma var_subst_lift G x i T :
+    G |-> x/T  -> (lift_subst G i) |-> x/(lift T i).
+
+  Proof. intros Gx_T. unfold varSubstTo; apply nth_lift_subst_s; trivial. Qed.
+
+  Lemma var_subst_lift_rev G x i T :
+    (lift_subst G i) |-> x/T -> exists T', G |-> x/T' /\ T = lift T' i.
 
   Proof.
-    intros G x i T Gx_T.
-    unfold varSubstTo; apply nth_lift_subst_s; trivial.
-  Qed.
-
-  Lemma var_subst_lift_rev : forall G x i T, (lift_subst G i) |-> x/T ->
-    exists T', G |-> x/T' /\ T = lift T' i.
-
-  Proof.
-    intros G x i T Gx_T.
-    unfold varSubstTo.
+    intros Gx_T. unfold varSubstTo.
     destruct (nth_lift_subst_s_rev G i x Gx_T) as [W [GW LW]].
     exists W; split; try_solve.
   Qed.
 
-  Lemma var_notSubst_cons : forall G x, G |-> x/- -> (None::G) |-> (S x)/- .
+  Lemma var_notSubst_cons G x : G |-> x/- -> (None::G) |-> (S x)/- .
 
-  Proof.
-    intros G x Gx; destruct Gx.
-    constructor; trivial.
-    constructor 2; trivial.
-  Qed.
+  Proof. destruct 1. constructor; trivial. constructor 2; trivial. Qed.
 
-  Lemma var_cons_notSubst : forall G x, (None::G) |-> (S x)/- -> G |-> x/- .
+  Lemma var_cons_notSubst G x : (None::G) |-> (S x)/- -> G |-> x/- .
 
-  Proof.
-    intros G x Gx; destruct Gx.
-    constructor; trivial.
-    constructor 2; trivial.
-  Qed.
+  Proof. destruct 1. constructor; trivial. constructor 2; trivial. Qed.
 
-  Lemma var_subst_cons : forall G x T, G |-> x / T -> (None :: G) |-> (S x) / T.
+  Lemma var_subst_cons G x T : G |-> x / T -> (None :: G) |-> (S x) / T.
 
-  Proof.
-    intros G x T GxT.
-    unfold varSubstTo in *; trivial.
-  Qed.
+  Proof. intro GxT. unfold varSubstTo in *; trivial. Qed.
 
-  Lemma lift_subst_app : forall G1 G2 i, lift_subst (G1 ++ G2) i = lift_subst G1 i ++ lift_subst G2 i.
+  Lemma lift_subst_app : forall G1 G2 i,
+      lift_subst (G1 ++ G2) i = lift_subst G1 i ++ lift_subst G2 i.
 
-  Proof.
-    induction G1; trivial.
-    intros; simpl.
-    rewrite IHG1; trivial.
-  Qed.
+  Proof. induction G1; trivial. intros; simpl. rewrite IHG1; trivial. Qed.
 
   Definition subst_dom (G: Subst) : Env :=
     map (fun T => 
@@ -142,20 +119,15 @@ Module TermsSubst (Sig : TermsSig.Signature).
       G |-> j/Tj ->
       env Ti [<->] env Tj.
 
-  Lemma subst_ran_single : forall T, subst_ran {x/T} = env T.
+  Lemma subst_ran_single T : subst_ran {x/T} = env T.
+
+  Proof. unfold subst_ran; simpl. destruct (env T); trivial. Qed.
+
+  Lemma subst_ran_single_after_empty T :
+    forall i, subst_ran (copy i None ++ {x/T}) = env T.
 
   Proof.
-    intro T.
-    unfold subst_ran; simpl.
-    destruct (env T); trivial.
-  Qed.
-
-  Lemma subst_ran_single_after_empty : forall T i, subst_ran (copy i None ++ {x/T}) = env T.
-
-  Proof.
-    induction i.
-    simpl; apply subst_ran_single.
-    unfold subst_ran; trivial.
+    induction i. simpl; apply subst_ran_single. unfold subst_ran; trivial.
   Qed.
 
   Lemma subst_envs_comp_single : forall T, subst_envs_comp {x/T}.
@@ -166,10 +138,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
       inversion H; destruct i; simpl in *; discr |
       inversion H0; destruct j; simpl in *; discr
     ].
-    inversion H; inversion H0; rewrite <- H2; rewrite <- H3; apply env_comp_refl.
+    inversion H; inversion H0; rewrite <- H2; rewrite <- H3;
+      apply env_comp_refl.
   Qed.
 
-  Lemma subst_envs_comp_singleton : forall G T, isSingletonSubst T G -> subst_envs_comp G.
+  Lemma subst_envs_comp_singleton :
+    forall G T, isSingletonSubst T G -> subst_envs_comp G.
 
   Proof.
     intros; intros i j Ti Tj Gi Gj.
@@ -184,19 +158,17 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Qed.
 
   Record correct_subst (M: Term) (G: Subst) : Prop := {
-    envs_c: 
-      subst_envs_comp G;
-    dom_c:
-      subst_dom G [<->] env M;
-    ran_c:
-      subst_ran G [-] subst_dom G [<->] env M
+    envs_c: subst_envs_comp G;
+    dom_c: subst_dom G [<->] env M;
+    ran_c: subst_ran G [-] subst_dom G [<->] env M
   }.
 
-  Lemma one_var_subst_correct : forall M N, (forall A, env M |= 0 := A -> A = type N) ->
+  Lemma one_var_subst_correct M N :
+    (forall A, env M |= 0 := A -> A = type N) ->
     env M [<->] env N -> correct_subst M {x/N}.
 
   Proof.
-    intros M N M_x MN_comp; split.
+    intros M_x MN_comp; split.
     apply subst_envs_comp_single.
     simpl; intro p; destruct p; intros A B.
     intros Nx Mx.
@@ -224,7 +196,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply IHG; trivial.
   Qed.
 
-  Lemma subst_dom_varNotSubst_rev : forall G x, subst_dom G |= x :! -> G |-> x/- .
+  Lemma subst_dom_varNotSubst_rev :
+    forall G x, subst_dom G |= x :! -> G |-> x/- .
 
   Proof.
     induction G.
@@ -234,13 +207,14 @@ Module TermsSubst (Sig : TermsSig.Signature).
     unfold varIsNotSubst in xUD; simpl in * .
     destruct a.
     destruct xUD; discr.
-    fo.
+    compute; auto.
     unfold VarUD in xUD; simpl in xUD.
     unfold varIsNotSubst; simpl.
     apply IHG; trivial.
   Qed.
 
-  Lemma subst_dom_varSubst : forall G x T, G |-> x/T -> subst_dom G |= x := type T.
+  Lemma subst_dom_varSubst :
+    forall G x T, G |-> x/T -> subst_dom G |= x := type T.
 
   Proof.
     induction G.
@@ -254,8 +228,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply IHG; trivial.
   Qed.
 
-  Lemma subst_dom_varSubst_rev : forall G x A, subst_dom G |= x := A ->
-    exists T, G |-> x/T /\ type T = A.
+  Lemma subst_dom_varSubst_rev : forall G x A,
+      subst_dom G |= x := A -> exists T, G |-> x/T /\ type T = A.
 
   Proof.
     induction G.
@@ -271,7 +245,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     exists x0; fo.
   Qed.
 
-  Lemma subst_dom_lifted : forall G n, subst_dom (lift_subst G n) = subst_dom G.
+  Lemma subst_dom_lifted :
+    forall G n, subst_dom (lift_subst G n) = subst_dom G.
 
   Proof.
     induction G.
@@ -282,10 +257,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite lift_type; trivial.
   Qed.
 
-  Lemma lifted_subst_envs_comp : forall G n, subst_envs_comp G -> subst_envs_comp (lift_subst G n).
+  Lemma lifted_subst_envs_comp G n :
+    subst_envs_comp G -> subst_envs_comp (lift_subst G n).
 
   Proof.
-    intros G n.
     unfold subst_envs_comp.
     intros G_comp i j Ti Tj Gi Gj p.
     destruct (nth_lift_normal G n i Gi) as [T_i TiL TiG].
@@ -304,11 +279,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite !nth_app_left; autorewrite with datatypes using try_solve.
   Qed.
 
-  Lemma subst_ran_cons_none : forall G, subst_ran (None::G) = subst_ran G.
+  Lemma subst_ran_cons_none G : subst_ran (None::G) = subst_ran G.
 
-  Proof.
-    unfold subst_ran; trivial.
-  Qed.
+  Proof. unfold subst_ran; trivial. Qed.
 
   Lemma fold_subst_ran : forall G l 
     (f :=  fun E S => match S with Some T => E[+]env T | None => E end),
@@ -329,10 +302,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; apply IHG.
   Qed.
 
-  Lemma subst_ran_cons_some : forall t G, subst_ran (Some t::G) = env t [+] subst_ran G.
+  Lemma subst_ran_cons_some t G :
+    subst_ran (Some t::G) = env t [+] subst_ran G.
 
   Proof.
-    intros t G.
     unfold subst_ran.
     simpl.
     destruct (env t).
@@ -347,8 +320,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct o0; trivial.
   Qed.
 
-  Lemma subst_ran_decl : forall G x A, subst_ran G |= x := A ->
-    exists T, exists p, G |-> p/T /\ env T |= x := A.
+  Lemma subst_ran_decl : forall G x A,
+      subst_ran G |= x := A -> exists T p, G |-> p/T /\ env T |= x := A.
 
   Proof.
     induction G.
@@ -367,45 +340,35 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Hint Rewrite subst_ran_single subst_ran_cons_none subst_ran_cons_some : terms.
 
-  Lemma subst_cons_empty : forall G, isEmptySubst G -> isEmptySubst (None::G).
+  Lemma subst_cons_empty G : isEmptySubst G -> isEmptySubst (None::G).
 
   Proof.
-    intros G Ge.
-    intro x; destruct x; unfold varIsNotSubst.
-    auto.
-    apply (Ge x).
+    intros Ge x; destruct x; unfold varIsNotSubst. auto. apply (Ge x).
   Qed.
 
-  Lemma subst_tail_empty : forall G, isEmptySubst (None::G) -> isEmptySubst G.
+  Lemma subst_tail_empty G : isEmptySubst (None::G) -> isEmptySubst G.
 
-  Proof.
-    intros G NGe x.
-    apply (NGe (S x)).
-  Qed.
+  Proof. intros NGe x. apply (NGe (S x)). Qed.
 
   Hint Resolve subst_cons_empty subst_tail_empty : terms.
 
   Lemma subst_nil_empty : isEmptySubst nil.
 
-  Proof.
-    unfold isEmptySubst, varIsNotSubst.
-    destruct x; auto.
-  Qed.
+  Proof. unfold isEmptySubst, varIsNotSubst. destruct x; auto. Qed.
 
-  Lemma subst_lift_empty : forall G i, isEmptySubst G -> isEmptySubst (lift_subst G i).
+  Lemma subst_lift_empty G i : isEmptySubst G -> isEmptySubst (lift_subst G i).
 
   Proof.
-    intros G i Ge x.
-    destruct (Ge x); unfold varIsNotSubst.
+    intros Ge x. destruct (Ge x); unfold varIsNotSubst.
     left; apply nth_lift_subst_n; trivial.
     right; apply nth_lift_subst_sn; trivial.
   Qed.
 
-  Lemma subst_lift_empty_rev : forall G i, isEmptySubst (lift_subst G i) -> isEmptySubst G.
+  Lemma subst_lift_empty_rev G i :
+    isEmptySubst (lift_subst G i) -> isEmptySubst G.
 
   Proof.
-    intros G i Ge x.
-    destruct (Ge x); unfold varIsNotSubst.
+    intros Ge x. destruct (Ge x); unfold varIsNotSubst.
     left; apply nth_lift_subst_n_rev with i; trivial.
     right; apply nth_lift_subst_sn_rev with i; trivial.
   Qed.
@@ -471,10 +434,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply subst_tail_empty; trivial.
   Qed.
 
-  Lemma subst_ran_singleton : forall G T, isSingletonSubst T G -> subst_ran G = env T.
+  Lemma subst_ran_singleton G T : isSingletonSubst T G -> subst_ran G = env T.
 
   Proof.
-    intros.
+    intro.
     inversion H.
     destruct G; try_solve.
     destruct o; try_solve.
@@ -485,11 +448,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro p; apply (H1 p).
   Qed.
 
-  Lemma subst_dom_singleton : forall G T, isSingletonSubst T G ->
+  Lemma subst_dom_singleton G T : isSingletonSubst T G ->
     exists E, subst_dom G = Some (type T) :: E /\ emptyEnv E.
 
   Proof.
-    intros.
+    intro.
     inversion H.
     destruct G; try_solve.
     destruct o; try_solve.
@@ -502,11 +465,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Lemma subst_dom_singleton_after_none_decl : forall i T,
     subst_dom (copy i None ++ {x/T}) |= i := type T.
 
-  Proof.
-    induction i.
-    simpl; constructor.
-    trivial.
-  Qed.
+  Proof. induction i. simpl; constructor. trivial. Qed.
 
   Lemma subst_dom_singleton_after_none_nodecl : forall i j T, i <> j ->
     subst_dom (copy i None ++ {x/T}) |= j :! .
@@ -522,7 +481,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (IHi j T); try_solve.
   Qed.
 
-  Lemma subst_ran_lifted_empty : forall G, isEmptySubst G -> subst_ran (lift_subst G 1) = EmptyEnv.
+  Lemma subst_ran_lifted_empty : forall G,
+      isEmptySubst G -> subst_ran (lift_subst G 1) = EmptyEnv.
 
   Proof.
     induction G; auto.
@@ -535,13 +495,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply subst_tail_empty; trivial.
   Qed.
 
-  Lemma subst_dom_lifted_Empty : forall G, isEmptySubst G -> emptyEnv (subst_dom (lift_subst G 1)).
+  Lemma subst_dom_lifted_Empty G :
+    isEmptySubst G -> emptyEnv (subst_dom (lift_subst G 1)).
 
-  Proof.
-    intros.
-    apply subst_dom_Empty.
-    apply subst_lift_empty; trivial.
-  Qed.
+  Proof. intro. apply subst_dom_Empty. apply subst_lift_empty; trivial. Qed.
 
   Lemma subst_ran_lifted_ne : forall G, ~isEmptySubst G ->
     subst_ran (lift_subst G 1) = None :: subst_ran G.
@@ -576,16 +533,16 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Hint Rewrite subst_ran_empty subst_ran_lifted_empty subst_ran_lifted_ne 
     using solve [auto with terms] : terms.
 
-  Lemma subst_ran_lifted_noDecl : forall G, subst_ran (lift_subst G 1) |= 0 :! .
+  Lemma subst_ran_lifted_noDecl G : subst_ran (lift_subst G 1) |= 0 :! .
 
   Proof.
-    intro G.
     destruct (subst_empty_dec G).
     rewrite subst_ran_lifted_empty; auto with terms.
     rewrite subst_ran_lifted_ne; auto with terms.
   Qed.
 
-  Hint Rewrite subst_ran_single subst_dom_lifted subst_ran_cons_none subst_ran_cons_some : terms.
+  Hint Rewrite subst_ran_single subst_dom_lifted subst_ran_cons_none
+       subst_ran_cons_some : terms.
 
   Fixpoint presubst_aux (P: Preterm) (l: nat) (G: Subst) : Preterm :=
     match P with
@@ -633,21 +590,19 @@ Module TermsSubst (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Lemma subst_lift_subst : forall Pt G i, presubst_aux Pt i G = presubst Pt (lift_subst G i).
+  Lemma subst_lift_subst Pt G i :
+    presubst_aux Pt i G = presubst Pt (lift_subst G i).
 
   Proof.
-    intros Pt G i.
-    replace i with (0 + i).
-    rewrite (subst_lift_subst_aux Pt G 0 i).
-    unfold presubst; trivial.
-    auto.
+    replace i with (0 + i). rewrite (subst_lift_subst_aux Pt G 0 i).
+    unfold presubst; trivial. auto.
   Qed.
 
-  Lemma subst_type_comp : forall M G x T, correct_subst M G -> G |-> x/T ->
-    env M |= x := type T \/ env M |= x :!.
+  Lemma subst_type_comp M G x T :
+    correct_subst M G -> G |-> x/T -> env M |= x := type T \/ env M |= x :!.
 
   Proof.
-    intros M G x T MG Gx.
+    intros MG Gx.
     destruct MG.
     inversion Gx.
     destruct (isVarDecl_dec (env M) x) as [[A MxA] | MxN].
@@ -657,15 +612,15 @@ Module TermsSubst (Sig : TermsSig.Signature).
     auto.
   Qed.
 
-  Lemma subst_envs_comp_tail : forall a G, subst_envs_comp (a::G) -> subst_envs_comp G.
+  Lemma subst_envs_comp_tail a G : subst_envs_comp (a::G) -> subst_envs_comp G.
 
   Proof.
-    intros a G envc_aG.
-    intros p q Ti Tj p_neq_q Gp Gq.
+    intros envc_aG p q Ti Tj p_neq_q Gp Gq.
     apply (envc_aG (S p) (S q)); trivial.
   Qed.
 
-  Lemma subst_envs_comp_head : forall a G, subst_envs_comp (Some a::G) -> env a [<->] subst_ran G.
+  Lemma subst_envs_comp_head a :
+    forall G, subst_envs_comp (Some a::G) -> env a [<->] subst_ran G.
 
   Proof.
     induction G.
@@ -689,8 +644,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply IHG; trivial.
   Qed.
 
-  Lemma subst_ran_component_comp : forall G x T, G |-> x/T -> subst_envs_comp G ->
-    forall p A, env T |= p := A -> subst_ran G |= p := A.
+  Lemma subst_ran_component_comp : forall G x T,
+      G |-> x/T -> subst_envs_comp G ->
+      forall p A, env T |= p := A -> subst_ran G |= p := A.
 
   Proof.
     induction G.
@@ -718,17 +674,16 @@ Module TermsSubst (Sig : TermsSig.Signature).
     eapply subst_envs_comp_tail; eauto.
   Qed.
 
-  Lemma subst_comp_comp_ran : forall G x T, G |-> x/T -> subst_envs_comp G -> env T [<->] subst_ran G.
+  Lemma subst_comp_comp_ran G x T :
+    G |-> x/T -> subst_envs_comp G -> env T [<->] subst_ran G.
 
   Proof.
-    intros G x T GxT Gc.
-    intros p A B Tp Gp.
-    set (w := subst_ran_component_comp GxT Gc Tp).
+    intros GxT Gc p A B Tp Gp. set (w := subst_ran_component_comp GxT Gc Tp).
     unfold VarD in *; congruence.
   Qed.
 
-  Lemma subst_comp_env : forall G x T, G |-> x/T -> subst_envs_comp G ->
-    subst_ran G = subst_ran G [+] env T.
+  Lemma subst_comp_env : forall G x T,
+      G |-> x/T -> subst_envs_comp G -> subst_ran G = subst_ran G [+] env T.
 
   Proof.
     induction G.
@@ -761,19 +716,17 @@ Module TermsSubst (Sig : TermsSig.Signature).
     eapply subst_envs_comp_tail; eauto.
   Qed.
 
-  Lemma typing_in_subst_env : forall M G (C: correct_subst M G) x T, G |-> x/T ->
-    subst_ran G |- term T := type T.
+  Lemma typing_in_subst_env M G (C: correct_subst M G) x T :
+    G |-> x/T -> subst_ran G |- term T := type T.
 
   Proof.
-    intros.
-    destruct C.
-    rewrite (subst_comp_env H envs_c0).
-    apply typing_ext_env_l.
-    exact (typing T).
+    intros. destruct C. rewrite (subst_comp_env H envs_c0).
+    apply typing_ext_env_l. exact (typing T).
   Qed.
 
-  Lemma presubst_beyond_aux : forall Pt i j k G, j + k >= length G ->
-    (forall p, p < k -> G |-> p/-) -> presubst_aux (prelift_aux j Pt k) i G = prelift_aux j Pt k.
+  Lemma presubst_beyond_aux : forall Pt i j k G,
+      j + k >= length G -> (forall p, p < k -> G |-> p/-) ->
+      presubst_aux (prelift_aux j Pt k) i G = prelift_aux j Pt k.
 
   Proof.
     induction Pt; unfold prelift; intros; simpl.
@@ -785,7 +738,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite H1; trivial.
     rewrite H1; trivial.
     trivial.
-    assert (presubst_aux (prelift_aux j Pt (S k)) (S i) (None :: G) = prelift_aux j Pt (S k)).
+    assert (presubst_aux (prelift_aux j Pt (S k)) (S i) (None :: G)
+            = prelift_aux j Pt (S k)).
     apply IHPt.
     simpl; omega.
     intros.
@@ -797,20 +751,17 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite IHPt2; trivial.
   Qed.
 
-  Lemma presubst_beyond : forall Pt i j G, j >= length G ->
-    presubst_aux (prelift Pt j) i G = prelift Pt j.
+  Lemma presubst_beyond Pt i j G :
+    j >= length G -> presubst_aux (prelift Pt j) i G = prelift Pt j.
 
   Proof.
-    intros.
-    unfold prelift.
-    apply presubst_beyond_aux.
-    omega.
+    intro. unfold prelift. apply presubst_beyond_aux. omega.
     intros; elimtype False; omega.
   Qed.
 
   Lemma presubst_prelift_aux : forall M G i j,
-    presubst_aux (prelift_aux j M i) i (copy (i + j) None ++ lift_subst G j) =
-    prelift_aux j (presubst_aux M i (copy i None ++ G)) i.
+    presubst_aux (prelift_aux j M i) i (copy (i + j) None ++ lift_subst G j)
+    = prelift_aux j (presubst_aux M i (copy i None ++ G)) i.
 
   Proof.
     induction M; simpl; intros.
@@ -843,13 +794,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Lemma presubst_prelift_comm : forall Pt i G,
-    presubst (prelift Pt i) (copy i None ++ lift_subst G i) = prelift (presubst Pt G) i.
+  Lemma presubst_prelift_comm Pt i G :
+    presubst (prelift Pt i) (copy i None ++ lift_subst G i)
+    = prelift (presubst Pt G) i.
 
   Proof.
-    intros.
-    unfold presubst, prelift.
-    replace i with (0 + i); trivial.
+    unfold presubst, prelift. replace i with (0 + i); trivial.
     rewrite presubst_prelift_aux; trivial.
   Qed.
 
@@ -927,11 +877,13 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; unfold decl.
     apply env_comp_cons; auto.
      (*  - substitution on abstraction *)
-    assert (t: (E [-] subst_dom G) [+] subst_ran (None::G) |- \A => term AB := A --> B).
+    assert (t: (E [-] subst_dom G) [+] subst_ran (None::G)
+            |- \A => term AB := A --> B).
     constructor.
     change (None :: lift_subst G 1) with 
       (lift_subst (None::G) 1) in AB_env.
-    assert (ABenv: decl A ((E [-] subst_dom G) [+] subst_ran (None::G)) = env AB).
+    assert (ABenv: decl A ((E [-] subst_dom G) [+] subst_ran (None::G))
+                   = env AB).
     rewrite AB_env.
     destruct (subst_empty_dec G) as [Ge | Gne].
      (*  - G empty *)
@@ -972,69 +924,53 @@ Module TermsSubst (Sig : TermsSig.Signature).
     unfold presubst in *; congruence.
   Qed.
 
-  Definition subst (M: Term) (G: Subst) (C: correct_subst M G) : Term := proj1_sig (subst_aux C).
+  Definition subst (M: Term) (G: Subst) (C: correct_subst M G) : Term :=
+    proj1_sig (subst_aux C).
 
-  Lemma subst_env : forall M G (C: correct_subst M G),
+  Lemma subst_env M G (C: correct_subst M G) :
     env (subst C) = env M [-] subst_dom G [+] subst_ran G.
 
-  Proof.
-    unfold subst; intros.
-    destruct (subst_aux C); simpl; tauto.
-  Qed.
+  Proof. unfold subst; intros. destruct (subst_aux C); simpl; tauto. Qed.
 
-  Lemma subst_term : forall M G (C: correct_subst M G), term (subst C) = presubst (term M) G.
+  Lemma subst_term M G (C: correct_subst M G) :
+    term (subst C) = presubst (term M) G.
 
-  Proof.
-    unfold subst; intros.
-    destruct (subst_aux C); simpl; tauto.
-  Qed.
+  Proof. unfold subst; intros. destruct (subst_aux C); simpl; tauto. Qed.
 
-  Lemma subst_type : forall M G (C: correct_subst M G), type (subst C) = type M.
+  Lemma subst_type M G (C: correct_subst M G) : type (subst C) = type M.
 
-  Proof.
-    unfold subst; intros.
-    destruct (subst_aux C); simpl; tauto.
-  Qed.
+  Proof. unfold subst. destruct (subst_aux C); simpl; tauto. Qed.
 
   Hint Rewrite subst_env subst_term subst_type : terms.
 
-  Lemma subst_env_cont_subst_comp : forall M G x (MG: correct_subst M G) T, G |-> x/T ->
-      env (subst MG) = env (subst MG) [+] env T.
+  Lemma subst_env_cont_subst_comp M G x (MG: correct_subst M G) T :
+    G |-> x/T -> env (subst MG) = env (subst MG) [+] env T.
 
   Proof.
-    intros M G x MG T GT.
-    rewrite subst_env.
-    destruct MG.
-    set (q := subst_comp_env GT envs_c0).
-    rewrite env_sum_assoc.
-    congruence.
+    intro GT. rewrite subst_env. destruct MG.
+    set (q := subst_comp_env GT envs_c0). rewrite env_sum_assoc. congruence.
   Qed.
 
-  Lemma subst_proof_irr : forall M G (C1 C2: correct_subst M G), subst C1 = subst C2.
+  Lemma subst_proof_irr M G (C1 C2: correct_subst M G) : subst C1 = subst C2.
 
   Proof.
-    intros M G C1 C2.
-    apply term_eq.
-    rewrite !subst_env; trivial.
-    rewrite !subst_term; trivial.
+    apply term_eq. rewrite !subst_env; trivial. rewrite !subst_term; trivial.
   Qed.
-                         
-  Lemma subst_eq : forall M M' G (MG: correct_subst M G) (MG': correct_subst M' G),
+
+  Lemma subst_eq M M' G (MG: correct_subst M G) (MG': correct_subst M' G) :
     M = M' -> subst MG = subst MG'.
 
   Proof.
-    intros M M' G MG MG' M_M'.
-    apply term_eq.
+    intro M_M'. apply term_eq.
     rewrite !subst_env, M_M'; trivial.
     rewrite !subst_term, M_M'; trivial.
   Qed.
 
-  Lemma subst_env_compat : forall M G x T (MG: correct_subst M G), G |-> x / T ->
-    env (subst MG) [<->] env T.
+  Lemma subst_env_compat M G x T (MG: correct_subst M G) :
+    G |-> x / T -> env (subst MG) [<->] env T.
 
   Proof.
-    intros M G x T MG GxT.
-    inversion MG.
+    intro GxT. inversion MG.
     assert (TG: env T [<->] subst_ran G).
     apply subst_comp_comp_ran with x; trivial.
 
@@ -1045,7 +981,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     set (w' := env_sum_ry (env M [-] subst_dom G) w).
     unfold VarD in *; congruence.
   Qed.
-                                              
+
   Hint Resolve presubst_aux : terms.
   Hint Unfold subst presubst : terms.
 
@@ -1062,12 +998,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Lemma emptySubst_empty : isEmptySubst (emptySubst).
 
-  Proof.
-    exact subst_nil_empty.
-  Qed.
+  Proof. exact subst_nil_empty. Qed.
 
-  Lemma empty_presubst_neutral_aux : forall Pt i G, (forall x, In x G -> x = None) ->
-    Pt = presubst_aux Pt i G.
+  Lemma empty_presubst_neutral_aux : forall Pt i G,
+      (forall x, In x G -> x = None) -> Pt = presubst_aux Pt i G.
 
   Proof.
     induction Pt.
@@ -1102,8 +1036,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     (forall x, In x G -> x = None) -> presubst Pt G = Pt. 
 
   Proof.
-    intro Pt; unfold presubst.
-    sym; apply empty_presubst_neutral_aux; trivial.
+    intro Pt; unfold presubst. sym; apply empty_presubst_neutral_aux; trivial.
   Qed.
 
   Lemma emptySubst_neutral : forall M S (CS: correct_subst M S),
@@ -1124,7 +1057,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (H x); try_solve.
   Qed.
 
-  Definition idSubst : forall (M: Term), Subst.
+  Definition idSubst : forall M : Term, Subst.
 
   Proof.
     intros M; destruct M.
@@ -1136,20 +1069,21 @@ Module TermsSubst (Sig : TermsSig.Signature).
     exact ({x/buildT (TVar var)}).
   Defined.
 
-  Lemma idSubst_decl0 : forall M A (M0: env M |= 0 := A), idSubst M = {x/buildT (TVar M0)}.
+  Lemma idSubst_decl0 M A (M0: env M |= 0 := A) :
+    idSubst M = {x/buildT (TVar M0)}.
 
   Proof.
-    intros; destruct M; simpl.
+    destruct M; simpl.
     destruct (isVarDecl_dec env0 0) as [[B EB] | En].
     replace (buildT (TVar EB)) with (buildT (TVar M0)); trivial.
     apply term_eq; trivial.
     elimtype False; apply varD_UD_absurd with env0 0 A; trivial.
   Qed.
 
-  Lemma idSubst_correct : forall M, correct_subst M (idSubst M).
+  Lemma idSubst_correct M : correct_subst M (idSubst M).
 
   Proof.
-    intro M; destruct M.
+    destruct M.
     unfold idSubst; simpl.
     destruct (isVarDecl_dec env0 0) as [[A EA] | En].
     simpl; apply one_var_subst_correct; simpl.
@@ -1165,7 +1099,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply env_comp_empty.
   Qed.
 
-  Lemma idSubst_neutral_aux : forall M n, presubst_aux (term M) n (copy n None ++ idSubst M) = term M.
+  Lemma idSubst_neutral_aux :
+    forall M n, presubst_aux (term M) n (copy n None ++ idSubst M) = term M.
 
   Proof.
     destruct M as [E Pt A M].
@@ -1200,10 +1135,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (isVarDecl_dec E n) as [[C EC] | en]; trivial.
   Qed.
 
-  Lemma idSubst_neutral : forall M, (subst (idSubst_correct M)) ~ M.
+  Lemma idSubst_neutral M : (subst (idSubst_correct M)) ~ M.
 
   Proof.
-    intros.
     apply terms_conv_criterion.
      (* env *)
     rewrite subst_env.
@@ -1227,8 +1161,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply idSubst_neutral_aux.
   Qed.
 
-  Lemma presubst_lift_beyond : forall Pt G m n i (W := prelift_aux n Pt m), m <= i ->
-    m + n >= i + length G -> presubst W (copy i None ++ G) = W.
+  Lemma presubst_lift_beyond : forall Pt G m n i (W := prelift_aux n Pt m),
+      m <= i -> m + n >= i + length G -> presubst W (copy i None ++ G) = W.
 
   Proof.
     induction Pt; intros G m n i W m_c mn_c; unfold W, presubst; simpl.
@@ -1264,21 +1198,22 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite IHPt2; trivial.
   Qed.
 
-  Lemma presubst_var_beyond : forall G i x, x >= length G -> presubst_aux (%x) i G = %x.
+  Lemma presubst_var_beyond G i x :
+    x >= length G -> presubst_aux (%x) i G = %x.
 
   Proof.
-    intros G i x x_G.
-    rewrite subst_lift_subst.
+    intro x_G. rewrite subst_lift_subst.
     change (%x) at 1 with (prelift_aux x (%0) 0).
     change (lift_subst G i) with (copy 0 None ++ lift_subst G i).
     rewrite presubst_lift_beyond; trivial.
     rewrite length_lift_subst; trivial.
   Qed.
 
-  Lemma presubst_aux_disjoint : forall Pt Pt_x G i k (shift := fun k G => copy k None ++ G)
-    (EL := shift k (lift_subst (None::G) (S k))) (ER := shift k {x/Pt_x})
-    (EC := shift k (Some Pt_x :: lift_subst G (S k))),
-    presubst_aux (presubst_aux Pt i EL) i ER = presubst_aux Pt i EC.
+  Lemma presubst_aux_disjoint :
+    forall Pt Pt_x G i k (shift := fun k G => copy k None ++ G)
+           (EL := shift k (lift_subst (None::G) (S k))) (ER := shift k {x/Pt_x})
+           (EC := shift k (Some Pt_x :: lift_subst G (S k))),
+      presubst_aux (presubst_aux Pt i EL) i ER = presubst_aux Pt i EC.
 
   Proof.
     induction Pt; intros.
@@ -1368,11 +1303,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; trivial.
   Qed.
 
-  Lemma subst_disjoint_c : forall M G P (S: correct_subst M (lift_subst (None::G) 1))
-    (S': correct_subst (subst S) {x/P}), correct_subst M (Some P::lift_subst G 1).
+  Lemma subst_disjoint_c M G P
+        (S: correct_subst M (lift_subst (None::G) 1))
+        (S': correct_subst (subst S) {x/P}) :
+    correct_subst M (Some P::lift_subst G 1).
 
   Proof.
-    intros.
     inversion S; inversion S'.
     simpl in * .
     rewrite subst_env in dom_c1.
@@ -1465,12 +1401,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply (IHl a' init); trivial.
   Qed.
 
-  Lemma subst_disjoint : forall M G P (S: correct_subst M (None :: lift_subst G 1))
-    (S': correct_subst (subst S) {x/P}) (Sj: correct_subst M (Some P :: lift_subst G 1)),
-    subst S' = subst Sj.
+  Lemma subst_disjoint M G P
+        (S: correct_subst M (None :: lift_subst G 1))
+        (S': correct_subst (subst S) {x/P})
+        (Sj: correct_subst M (Some P :: lift_subst G 1)) : subst S' = subst Sj.
 
   Proof.
-    intros M G P S S' Sj.
     apply term_eq.
      (* environments equal *)
     rewrite !subst_env, subst_ran_cons_none, subst_ran_single. simpl.
@@ -1498,8 +1434,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply presubst_disjoint.
   Qed.
 
-  Lemma singleton_correct_single : forall M P G, correct_subst M G -> isSingletonSubst P G ->
-    correct_subst M {x/P}.
+  Lemma singleton_correct_single M P G :
+    correct_subst M G -> isSingletonSubst P G -> correct_subst M {x/P}.
 
   Proof.
     intros.
@@ -1534,7 +1470,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Qed.
 
   Lemma singleton_presubst : forall M P G i j, isSingletonSubst P G ->
-    presubst_aux (term M) j (copy i None ++ {x/P}) = presubst_aux (term M) j (copy i None ++ G).
+    presubst_aux (term M) j (copy i None ++ {x/P})
+    = presubst_aux (term M) j (copy i None ++ G).
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros; unfold presubst; simpl in * .
@@ -1567,17 +1504,18 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite (IHM2 P G i j); trivial.
   Qed.
 
-  Lemma singleton_subst : forall M P G (CS: correct_subst M {x/P}) (CS': correct_subst M G),
+  Lemma singleton_subst M P G
+        (CS: correct_subst M {x/P}) (CS': correct_subst M G) :
     isSingletonSubst P G -> subst CS = subst CS'.
 
   Proof.
-    intros.
-    apply term_eq.
+    intro. apply term_eq.
     autorewrite with terms using simpl.
     rewrite (subst_ran_singleton H).
     destruct (subst_dom_singleton H) as [E [DomG Eempty]].
     rewrite DomG.
-    destruct (env M); destruct (env P); try destruct o; try destruct o0; try_solve;
+    destruct (env M); destruct (env P); try destruct o; try destruct o0;
+      try_solve;
       autorewrite with terms using simpl; try rewrite (env_sub_Empty e Eempty); 
 	try_solve.
     autorewrite with terms.
@@ -1585,44 +1523,40 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply (singleton_presubst M 0 0 H).
   Qed.
 
-  Lemma app_subst_app : forall (M: Term) (Mapp: isApp M) G (CS: correct_subst M G), isApp (subst CS).
+  Lemma app_subst_app (M: Term) (Mapp: isApp M) G (CS: correct_subst M G) :
+    isApp (subst CS).
 
   Proof.
-    intros M Mapp G CS.
     term_inv M.
     unfold subst; destruct (subst_aux CS) as [T [Tenv [Tterm Ttype]]].
     unfold presubst in Tterm; simpl in *.
     eapply app_isApp; eauto.
   Qed.
 
-  Lemma abs_subst_abs : forall M (Mabs: isAbs M) G (CS: correct_subst M G), isAbs (subst CS).
+  Lemma abs_subst_abs M (Mabs: isAbs M) G (CS: correct_subst M G) :
+    isAbs (subst CS).
 
   Proof.
-    intros M Mabs G CS.
     term_inv M.
     apply abs_isAbs with A (presubst_aux Pt 1 (None::G)).
     rewrite subst_term; auto.
   Qed.
 
-  Lemma subst_appL_c : forall (M: Term) (Mapp: isApp M) G, correct_subst M G ->
-    correct_subst (appBodyL Mapp) G.
+  Lemma subst_appL_c : forall (M: Term) (Mapp: isApp M) G,
+      correct_subst M G -> correct_subst (appBodyL Mapp) G.
+
+  Proof. intro M; term_inv M. Qed.
+
+  Lemma subst_appR_c M (Mapp: isApp M) G :
+      correct_subst M G -> correct_subst (appBodyR Mapp) G.
+
+  Proof. term_inv M. Qed.
+
+  Lemma subst_abs_c M (Mabs: isAbs M) G :
+    correct_subst M G -> correct_subst (absBody Mabs) (None :: lift_subst G 1).
 
   Proof.
-    intro M; term_inv M.
-  Qed.
-
-  Lemma subst_appR_c : forall M (Mapp: isApp M) G, correct_subst M G ->
-    correct_subst (appBodyR Mapp) G.
-
-  Proof.
-    intro M; term_inv M.
-  Qed.
-
-  Lemma subst_abs_c : forall M (Mabs: isAbs M) G, correct_subst M G ->
-    correct_subst (absBody Mabs) (None :: lift_subst G 1).
-
-  Proof.
-    intros M Mabs G MG.
+    intro MG.
     term_inv M.
     destruct MG.
     split.
@@ -1657,11 +1591,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; unfold decl; apply env_comp_cons; try_solve.
   Qed.
 
-  Lemma var_subst : forall M G (MG: correct_subst M G), isVar M ->
-    { T:Term & { x:nat | G |-> x/T & term (subst MG) = term T }} + { term (subst MG) = term M }.
+  Lemma var_subst M G (MG: correct_subst M G) : isVar M ->
+    { T:Term & { x:nat | G |-> x/T & term (subst MG) = term T }}
+    + { term (subst MG) = term M }.
 
   Proof.
-    intros.
+    intro.
     term_inv M.
     autorewrite with terms.
     unfold presubst; simpl.
@@ -1672,20 +1607,15 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct Gxn; rewrite H0; trivial.
   Qed.
 
-  Lemma funS_presubst : forall M G (MG: correct_subst M G), isFunS M -> term (subst MG) = term M.
+  Lemma funS_presubst M G (MG: correct_subst M G) :
+    isFunS M -> term (subst MG) = term M.
+
+  Proof. intros. term_inv M. rewrite subst_term. compute; trivial. Qed.
+
+  Lemma funS_subst M G (MG: correct_subst M G) : isFunS M -> (subst MG) ~ M.
 
   Proof.
-    intros.
-    term_inv M.
-    rewrite subst_term.
-    compute; trivial.
-  Qed.
-
-  Lemma funS_subst : forall M G (MG: correct_subst M G),
-    isFunS M -> (subst MG) ~ M.
-
-  Proof.
-    intros.
+    intro.
     exists emptyEnvSubst.
     constructor.
     term_inv M.
@@ -1694,24 +1624,25 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply conv_env_empty.
   Qed.
 
-  Lemma funS_subst_funS : forall M G (MG: correct_subst M G), isFunS M -> isFunS (subst MG).
+  Lemma funS_subst_funS M G (MG: correct_subst M G) :
+    isFunS M -> isFunS (subst MG).
 
   Proof.
-    intros.
+    intro.
     term_inv M.
     apply funS_is_funS with f.
     change (^f) with (term Tr).
     apply funS_presubst; trivial.
   Qed.
 
-  Lemma app_subst: forall M (Mapp: isApp M) G (S: correct_subst M G)
+  Lemma app_subst M (Mapp: isApp M) G (S: correct_subst M G)
     (SL : correct_subst (appBodyL Mapp) G := subst_appL_c Mapp S)
     (SR : correct_subst (appBodyR Mapp) G := subst_appR_c Mapp S)
-    (Sapp : isApp (subst S) := app_subst_app Mapp S),
+    (Sapp : isApp (subst S) := app_subst_app Mapp S) :
     appBodyL Sapp = subst SL /\ appBodyR Sapp = subst SR.
 
   Proof.
-    intros; split; apply term_eq.
+    split; apply term_eq.
     autorewrite with terms; trivial.
     term_inv M.
     rewrite subst_term; simpl.
@@ -1726,23 +1657,23 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite (appBodyR_term (subst S) Mterm); trivial.    
   Qed.
 
-  Lemma type_appBodyL_subst : forall M G (MG: correct_subst M G) (Mapp: isApp M) 
-    (MGapp: isApp (subst MG) := app_subst_app Mapp MG), type (appBodyL Mapp) = type (appBodyL MGapp).
+  Lemma type_appBodyL_subst M G (MG: correct_subst M G) (Mapp: isApp M) 
+    (MGapp: isApp (subst MG) := app_subst_app Mapp MG) :
+    type (appBodyL Mapp) = type (appBodyL MGapp).
 
   Proof.
-    intros.
-    destruct (app_subst Mapp MG).
-    unfold MGapp; rewrite H.
+    destruct (app_subst Mapp MG). unfold MGapp; rewrite H.
     autorewrite with terms; trivial.
   Qed.
 
-  Lemma abs_subst : forall M (Mabs: isAbs M) G (S: correct_subst M G)
-    (Sabs : isAbs (subst S) := abs_subst_abs Mabs S)
-    (S' : correct_subst (absBody Mabs) (None :: lift_subst G 1) := subst_abs_c Mabs S),
+  Lemma abs_subst M (Mabs: isAbs M) G (S: correct_subst M G)
+        (Sabs : isAbs (subst S) := abs_subst_abs Mabs S)
+        (S' : correct_subst (absBody Mabs) (None :: lift_subst G 1)
+         := subst_abs_c Mabs S) :
     absType Sabs = absType Mabs /\ absBody Sabs = subst S'.
 
   Proof.
-    intros; split.
+    split.
      (* absType *)
     term_inv M.
     apply abs_type with B.
@@ -1775,8 +1706,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite subst_lift_subst; trivial.
   Qed.
 
-  Lemma funS_headS_subst : forall M f G (MG: correct_subst M G), term (appHead M) = ^f ->
-    term (appHead (subst MG)) = ^f.
+  Lemma funS_headS_subst : forall M f G (MG: correct_subst M G),
+      term (appHead M) = ^f -> term (appHead (subst MG)) = ^f.
 
   Proof.
     destruct M as [E Pt A TypM].
@@ -1794,8 +1725,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite (appHead_app (buildT (TApp TypM1 TypM2)) I) in H; trivial.
   Qed.
 
-  Lemma funS_head_subst : forall M G (MG: correct_subst M G), isFunS (appHead M) ->
-    isFunS (appHead (subst MG)).
+  Lemma funS_head_subst : forall M G (MG: correct_subst M G),
+      isFunS (appHead M) -> isFunS (appHead (subst MG)).
 
   Proof.
     destruct M as [E Pt A TypM].
@@ -1815,17 +1746,16 @@ Module TermsSubst (Sig : TermsSig.Signature).
       trivial.
   Qed.
 
-  Lemma funApp_subst_funApp : forall M G (MG: correct_subst M G), isFunApp M -> isFunApp (subst MG).
+  Lemma funApp_subst_funApp :
+    forall M G (MG: correct_subst M G), isFunApp M -> isFunApp (subst MG).
 
-  Proof.
-    apply funS_head_subst; trivial.
-  Qed.
+  Proof. apply funS_head_subst; trivial. Qed.
 
-  Lemma appUnits_subst_c : forall M G W i (MG: correct_subst M G),
+  Lemma appUnits_subst_c M G W i (MG: correct_subst M G) :
     nth_error (appUnits M) i = Some W -> correct_subst W G.
 
   Proof.
-    intros.
+    intro.
     destruct MG.
     assert (isAppUnit W M).
     unfold isAppUnit.
@@ -1835,8 +1765,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite (appUnit_env W M H0); trivial.
   Qed.
 
-  Lemma appUnits_subst_length : forall M G (MG: correct_subst M G), isFunS (appHead M) ->
-    length (appUnits (subst MG)) = length (appUnits M).
+  Lemma appUnits_subst_length : forall M G (MG: correct_subst M G),
+      isFunS (appHead M) -> length (appUnits (subst MG)) = length (appUnits M).
 
   Proof.
     intro M; destruct M as [E Pt T M]; induction M; try_solve; intros.
@@ -1847,7 +1777,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply H0 with (subst MG); trivial.
     apply funS_subst_funS; trivial.
     rewrite (appUnits_app (buildT (TApp M1 M2)) I).
-    rewrite (appUnits_app (subst MG) (app_subst_app (M:=buildT (TApp M1 M2)) I MG)).
+    rewrite (appUnits_app (subst MG)
+                          (app_subst_app (M:=buildT (TApp M1 M2)) I MG)).
     autorewrite with datatypes using simpl.
     destruct (app_subst (M:=buildT (TApp M1 M2)) I MG).
     rewrite H0.
@@ -1855,9 +1786,10 @@ Module TermsSubst (Sig : TermsSig.Signature).
     set (w := @appHead_left (buildT (TApp M1 M2)) I); auto.
   Qed.
 
-  Lemma appUnits_subst_rev : forall M G i W' (MG: correct_subst M G), isFunS (appHead M) ->
-    nth_error (appUnits (subst MG)) i = Some W' ->
-    exists W, exists Mi: nth_error (appUnits M) i = Some W, W' = subst (appUnits_subst_c i MG Mi).
+  Lemma appUnits_subst_rev : forall M G i W' (MG: correct_subst M G),
+      isFunS (appHead M) -> nth_error (appUnits (subst MG)) i = Some W' ->
+      exists W, exists Mi: nth_error (appUnits M) i = Some W,
+          W' = subst (appUnits_subst_c i MG Mi).
 
   Proof.
     intro M.
@@ -1929,7 +1861,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Qed.
 
   Lemma subst_arg : forall M Marg G (MG: correct_subst M G), isArg Marg M ->
-    exists MGarg, isArg MGarg (subst MG) /\ exists MargG: correct_subst Marg G, MGarg = subst MargG.
+    exists MGarg, isArg MGarg (subst MG)
+                  /\ exists MargG: correct_subst Marg G, MGarg = subst MargG.
 
   Proof.
     intro M.
@@ -2002,9 +1935,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Lemma subst_arg_rev : forall M G MGarg (MG: correct_subst M G),
     isArg MGarg (subst MG) ->
-    (exists Marg, isArg Marg M /\ exists MGin: correct_subst Marg G, MGarg = subst MGin)
-    \/
-    (exists p, exists T, exists Targ, isArg Targ T /\ G |-> p / T /\ term MGarg = term Targ).
+    (exists Marg, isArg Marg M
+                  /\ exists MGin: correct_subst Marg G, MGarg = subst MGin)
+    \/ (exists p T Targ, isArg Targ T /\ G |-> p / T /\ term MGarg = term Targ).
 
   Proof.
     intro M.
@@ -2127,7 +2060,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite <- eqin; trivial.
      (* application *)
     rewrite (activeEnv_app (buildT (TApp M1 M2)) I).
-    rewrite (activeEnv_app (subst MG) (app_subst_app (M:=buildT (TApp M1 M2)) I MG)).
+    rewrite (activeEnv_app (subst MG)
+                           (app_subst_app (M:=buildT (TApp M1 M2)) I MG)).
     destruct (app_subst (M := buildT (TApp M1 M2)) I MG).
     rewrite H0; rewrite H1.
     unfold appBodyL; cbv beta.
@@ -2139,8 +2073,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply env_sumn_ln with (activeEnv (buildT M2)); trivial.
   Qed.
 
-  Lemma singleton_subst_activeEnv_noSubst : forall M G T (MG: correct_subst M G),  
-    activeEnv M |= 0 :! -> isSingletonSubst T G -> activeEnv M = activeEnv (subst MG).
+  Lemma singleton_subst_activeEnv_noSubst M G T (MG: correct_subst M G) :  
+    activeEnv M |= 0 :! -> isSingletonSubst T G ->
+    activeEnv M = activeEnv (subst MG).
 
   Proof.
     intros.
@@ -2150,8 +2085,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply (singleton_subst_activeEnv_noSubst_aux T MT); trivial.
   Qed.
 
-  Lemma singleton_subst_term_noSubst_aux : forall M T i (MG: correct_subst M (copy i None ++ {x/T})),
-    activeEnv M |= i :! -> term M = term (subst MG).
+  Lemma singleton_subst_term_noSubst_aux :
+    forall M T i (MG: correct_subst M (copy i None ++ {x/T})),
+      activeEnv M |= i :! -> term M = term (subst MG).
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros;
@@ -2219,7 +2155,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     (forall j A, j <> i -> (El |= j := A <-> El' |= j := A)) ->
     (forall j A, j <> i -> (Er |= j := A <-> Er' |= j := A)) ->
     El' [<->] Er' -> El |= i :! -> Er |= i :! -> 
-    El [+] E [+] Er [=] (initialSeg (El' [+] Er') i ++ None :: finalSeg (El' [+] Er') (S i)) [+] E.
+    El [+] E [+] Er
+       [=] (initialSeg (El' [+] Er') i ++ None :: finalSeg (El' [+] Er') (S i))
+           [+] E.
 
   Proof.
     intros.
@@ -2264,7 +2202,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply env_sum_ly.
     intros B C D1 D2.
     destruct (env_sum_varDecl El E D1) as [[D1l _] | D1r].
-    apply (H3 j B C); fo.
+    apply (H3 j B C). apply H1; hyp. apply H2; hyp.
     apply (H0 j H6); trivial.
     apply env_sum_ly.
     apply env_comp_on_sym.
@@ -2280,11 +2218,13 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Qed.
 
   Opaque activeEnv.
-  Lemma singleton_subst_activeEnv_subst_aux : forall M T i A
-    (MG: correct_subst M (copy i None ++ Some T :: nil)),  
-    (activeEnv M |= i := A) -> 
-    activeEnv (subst MG) [=] 
-    (initialSeg (activeEnv M) i ++ None :: finalSeg (activeEnv M) (S i)) [+] activeEnv T.
+
+  Lemma singleton_subst_activeEnv_subst_aux :
+    forall M T i A (MG: correct_subst M (copy i None ++ Some T :: nil)),
+      (activeEnv M |= i := A) -> 
+      activeEnv (subst MG)
+      [=] (initialSeg (activeEnv M) i ++ None :: finalSeg (activeEnv M) (S i))
+          [+] activeEnv T.
 
   Proof.
     destruct M as [E Pt T M]; induction M; intros.
@@ -2292,7 +2232,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (* variable *)
     simpl in H.
     destruct (lt_eq_lt_dec x i) as [[x_i | xi] | i_x].
-    elimtype False; apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
+    elimtype False;
+      apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
     constructor; apply nth_beyond.
     autorewrite with datatypes using simpl; try omega.
     rewrite (@activeEnv_var (buildT (TVar v)) x); trivial.
@@ -2302,7 +2243,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
       None :: finalSeg (copy x None ++ A[#]EmptyEnv) (S i)) (activeEnv T)).
     rewrite xi.
     apply env_eq_empty_subset.
-    rewrite (@initialSeg_app (option SimpleType) (copy i None) (A[#]EmptyEnv) i).
+    rewrite
+      (@initialSeg_app (option SimpleType) (copy i None) (A[#]EmptyEnv) i).
     rewrite finalSeg_app_right; autorewrite with datatypes using auto.
     replace (S i - i) with 1; [idtac | omega].
     unfold finalSeg; simpl.
@@ -2325,7 +2267,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; rewrite lift_0; trivial.
     apply subst_env_compat with i.
     unfold varSubstTo; apply nth_after_copy.
-    elimtype False; apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
+    elimtype False;
+      apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
     unfold VarUD; rewrite nth_app_left; autorewrite with datatypes using auto.
 
      (* function symbol *)
@@ -2343,12 +2286,15 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl.
     set (w := IHyp (subst_abs_c (M:=buildT (TAbs M)) I MG)).
     apply env_eq_trans with (tail ((initialSeg (activeEnv (buildT M)) (S i) ++
-      None :: finalSeg (activeEnv (buildT M)) (S (S i))) [+] activeEnv (lift T 1))).
+      None :: finalSeg (activeEnv (buildT M)) (S (S i)))
+                                     [+] activeEnv (lift T 1))).
     apply env_eq_tail.
     apply IHyp.
     apply varD_tail_rev; trivial.
-    apply env_eq_trans with (tail ((initialSeg (activeEnv (buildT M)) (S i) ++ None :: 
-     finalSeg (activeEnv (buildT M)) (S (S i))) [+] liftedEnv 1 (activeEnv T) 0)).
+    apply env_eq_trans
+      with (tail ((initialSeg (activeEnv (buildT M)) (S i) ++ None :: 
+                              finalSeg (activeEnv (buildT M)) (S (S i)))
+                    [+] liftedEnv 1 (activeEnv T) 0)).
     apply env_eq_tail.
     rewrite (activeEnv_lift T 1); apply env_eq_refl.
     set (envM := activeEnv (buildT M)).
@@ -2356,7 +2302,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite tail_distr_sum.
     simpl; autorewrite with datatypes using simpl.
     destruct envM; simpl.
-    destruct envT; destruct i; simpl; autorewrite with datatypes; unfold finalSeg; simpl.
+    destruct envT; destruct i; simpl; autorewrite with datatypes;
+      unfold finalSeg; simpl.
     apply env_eq_empty_none_empty.
     apply env_eq_empty_none_empty.
     destruct o; destruct envT; auto with terms.
@@ -2367,7 +2314,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
      (* application *)
     rewrite (activeEnv_app (buildT (TApp M1 M2)) I).
-    rewrite (activeEnv_app (subst MG) (app_subst_app (M:=buildT (TApp M1 M2)) I MG)).
+    rewrite (activeEnv_app
+               (subst MG) (app_subst_app (M:=buildT (TApp M1 M2)) I MG)).
     destruct (app_subst (M := buildT (TApp M1 M2)) I MG).
     simpl; rewrite (@activeEnv_app (buildT (TApp M1 M2)) I) in H.
     unfold appBodyL, appBodyR in H; cbv beta in H.
@@ -2400,8 +2348,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro p.
     destruct (eq_nat_dec p i).
     intros C D _ F.
-    elimtype False; apply varD_UD_absurd with (initialSeg AE1 i ++ None :: finalSeg AE1 (S i))
-      p D; trivial.
+    elimtype False; apply varD_UD_absurd
+        with (initialSeg AE1 i ++ None :: finalSeg AE1 (S i)) p D; trivial.
     rewrite e; apply varUD_hole.
     apply env_comp_on_subset with (activeEnv T) AE1.
     apply H3; trivial.
@@ -2411,8 +2359,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro p.
     destruct (eq_nat_dec p i).
     intros C D _ F.
-    elimtype False; apply varD_UD_absurd with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i))
-      p D; trivial.
+    elimtype False; apply varD_UD_absurd
+         with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) p D; trivial.
     rewrite e; apply varUD_hole.
     apply env_comp_on_subset with (activeEnv T) AE2.
     apply H4; trivial.
@@ -2423,15 +2371,15 @@ Module TermsSubst (Sig : TermsSig.Signature).
     change (buildT M1) with (appBodyL (M:=buildT (TApp M1 M2)) I).
     change (buildT M2) with (appBodyR (M:=buildT (TApp M1 M2)) I).
     apply activeEnv_app_comp.
-    assert (forall (j : nat) (A : SimpleType),
-      j <> i ->
-      ((initialSeg AE1 i ++ None :: finalSeg AE1 (S i)) |= j := A <-> AE1 |= j := A)).
+    assert (forall (j : nat) (A : SimpleType), j <> i ->
+      ((initialSeg AE1 i ++ None :: finalSeg AE1 (S i)) |= j := A
+      <-> AE1 |= j := A)).
     intros; split; intro.
     apply varD_hole_rev with i; [omega | trivial].
     apply varD_hole; [omega | trivial].
-    assert (forall (j : nat) (A : SimpleType),
-      j <> i ->
-      ((initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) |= j := A <-> AE2 |= j := A)).
+    assert (forall (j : nat) (A : SimpleType), j <> i ->
+      ((initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) |= j := A
+      <-> AE2 |= j := A)).
     intros; split; intro.
     apply varD_hole_rev with i; [omega | trivial].
     apply varD_hole; [omega | trivial].
@@ -2439,7 +2387,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (*   - case 1 *)
     destruct (env_sum_varDecl AE1 AE2 H) as [[MLi MRi] | MRi]. 
     rewrite H0.
-    simpl; rewrite (IHM1 T i A0 (subst_appL_c (M:=buildT (TApp M1 M2)) I MG) MLi).
+    simpl;
+      rewrite (IHM1 T i A0 (subst_appL_c (M:=buildT (TApp M1 M2)) I MG) MLi).
     rewrite H1.
     rewrite <- (singleton_subst_activeEnv_noSubst_aux T
       (subst_appR_c (M:=buildT (TApp M1 M2)) I MG) MRi).
@@ -2449,15 +2398,17 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
      (*   - case 2 *)
     rewrite H1.
-    simpl; rewrite (IHM2 T i A0 (subst_appR_c (M:=buildT (TApp M1 M2)) I MG) MRi).
+    simpl;
+      rewrite (IHM2 T i A0 (subst_appR_c (M:=buildT (TApp M1 M2)) I MG) MRi).
     rewrite H0.
     destruct (isVarDecl_dec AE1 i) as [[A1 MLi] | MLn].
     assert (A01: A1 = A0).
     apply (@activeEnv_app_comp (buildT (TApp M1 M2)) I i); trivial.
     rewrite A01 in MLi.
-    simpl; rewrite (IHM1 T i A0 (subst_appL_c (M:=buildT (TApp M1 M2)) I MG) MLi).
-    rewrite env_comp_sum_comm with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i))
-      (activeEnv T).
+    simpl;
+      rewrite (IHM1 T i A0 (subst_appL_c (M:=buildT (TApp M1 M2)) I MG) MLi).
+    rewrite env_comp_sum_comm
+      with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) (activeEnv T).
     rewrite env_sum_assoc.
     rewrite <- env_sum_assoc with (activeEnv T) (activeEnv T) 
       (initialSeg AE2 i ++ None :: finalSeg AE2 (S i)).
@@ -2471,8 +2422,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (*   - case 3 *)
     rewrite <- (singleton_subst_activeEnv_noSubst_aux T
       (subst_appL_c (M:=buildT (TApp M1 M2)) I MG) MLn).
-    rewrite env_comp_sum_comm with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) 
-      (activeEnv T).
+    rewrite env_comp_sum_comm
+      with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) (activeEnv T).
     rewrite <- env_sum_assoc.
     apply singleton_subst_active_aux; trivial.
     simpl; unfold AE1; split; auto.
@@ -2543,9 +2494,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     isFunS (appHead M) -> subst_list (appArgs M) (appArgs (subst MG)) G.
 
   Proof.
-    intros.
-    unfold appArgs, subst_list.
-    apply list_sim_tail.
+    intros. unfold appArgs, subst_list. apply list_sim_tail.
     apply subst_list_units; trivial.
   Qed.
 
@@ -2571,7 +2520,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (* trivial flattening *)
     exists (appBodyL MGapp :: appBodyR MGapp :: nil).
     split.
-    unfold isPartialFlattening; rewrite (appUnits_app (subst MG) MGapp); trivial.
+    unfold isPartialFlattening;
+      rewrite (appUnits_app (subst MG) MGapp); trivial.
     rewrite H1; constructor.
     exists (subst_appL_c Mapp MG); trivial.
     constructor.
