@@ -731,7 +731,7 @@ Module Make (Export L : L_Struct).
 
   Instance transpose_aeq_gp a b : Proper (aeq_gp ==> aeq_gp) (transpose a b).
 
-  Proof. (*SLOW:many fo's*)
+  Proof.
     unfold Def.transpose. intros u v uv; revert u v uv a b.
     ind_size1 u; intros u' uu' a b; inversion uu'; subst.
     refl. refl. apply aeq_gp_app; fo.
@@ -748,8 +748,8 @@ Module Make (Export L : L_Struct).
     gen (var_notin_ok xs). set (z' := var_notin xs).
     unfold xs. (*SLOW*)set_iff. intro hz'. split_hyps.
 
-    apply aeq_gp_lam with (z:=z'). ens. set_iff. fo. unfold Def.transpose.
-    do 2 rewrite action_comp.
+    apply aeq_gp_lam with (z:=z'). ens. set_iff. split_all.
+    unfold Def.transpose. do 2 rewrite action_comp.
     rewrite action_eq with
       (g := fun x0 => transpose_var a b (transpose_var z' x x0)).
     rewrite action_eq with (u := v)
@@ -765,42 +765,40 @@ Module Make (Export L : L_Struct).
     apply hu. rewrite size_action. refl. hyp.
 
     intros x0 h0. unfold Def.transpose_var. eq_dec x0 z. subst. fo.
-    eq_dec x0 y. subst. eq_dec z z. 2: irrefl. eq_dec y z'. fo.
-    eq_dec z z'. fo. refl. eq_dec x0 z'. subst. fo. eq_dec x0 z. subst.
-    irrefl. refl.
+    eq_dec x0 y. subst. eq_dec z z. 2: congruence. eq_dec y z'. congruence.
+    eq_dec z z'; congruence. eq_dec x0 z'. subst. fo. eq_dec x0 z; congruence.
 
     intros x0 h0. unfold Def.transpose_var. eq_dec x0 z. subst. fo.
-    eq_dec x0 x. subst. eq_dec z z. 2: irrefl. eq_dec x z'. fo.
-    eq_dec z z'. fo. refl. eq_dec x0 z'. subst. fo. eq_dec x0 z. subst.
-    irrefl. refl.
+    eq_dec x0 x. subst. eq_dec z z. 2: congruence. eq_dec x z'. congruence.
+    eq_dec z z'; congruence. eq_dec x0 z'. subst. fo. eq_dec x0 z; congruence.
 
-    intros x0 h0.
-    unfold y', x', Def.transpose_var. eq_dec x0 z'. subst.
-    eq_dec z' a. fo. eq_dec z' b. fo. eq_dec z' z'. 2: irrefl. eq_dec y a.
-    refl. eq_dec y b. refl. refl. eq_dec x0 y. subst. eq_dec z' a. fo.
-    eq_dec z' b. fo. eq_dec y a. eq_dec b z'. hyp. eq_dec b b. 2: irrefl. refl.
-    eq_dec y b. eq_dec a z'. fo. eq_dec a a. 2: irrefl. refl.
-    eq_dec y z'. fo. eq_dec y y. 2: irrefl. refl.
-    eq_dec x0 a. subst. eq_dec b z'. fo. eq_dec y b. eq_dec y a. eq_dec b b.
-    fo. refl. eq_dec b a. absurd (y=a). hyp. trans b; hyp. refl.
-    eq_dec y a. eq_dec b b. 2: irrefl. fo. eq_dec b y. fo. refl.
-    eq_dec x0 b. subst. eq_dec a z'. fo. eq_dec y a. eq_dec a b. fo. refl.
-    eq_dec y b. eq_dec a a. 2: irrefl. fo. eq_dec a y. fo. refl.
-    eq_dec x0 z'. fo. eq_dec y a. eq_dec x0 b. fo. refl.
-    eq_dec y b. eq_dec x0 a. fo. refl. eq_dec x0 y. fo. refl.
+    intros x0 h0. unfold y', x', Def.transpose_var. eq_dec x0 z'. subst.
+    eq_dec z' a. congruence. eq_dec z' b. congruence. eq_dec z' z'.
+    2: congruence. eq_dec y a. refl. eq_dec y b; refl. eq_dec x0 y. subst.
+    eq_dec z' a. congruence. eq_dec z' b. congruence. eq_dec y a. eq_dec b z'.
+    hyp. eq_dec b b; congruence. eq_dec y b. eq_dec a z'. hyp.
+    eq_dec a a; congruence. eq_dec y z'. hyp. eq_dec y y; congruence.
+    eq_dec x0 a. subst. eq_dec b z'. congruence. eq_dec y b. eq_dec y a.
+    eq_dec b b; congruence. eq_dec b a; congruence. eq_dec y a.
+    eq_dec b b; congruence. eq_dec b y; congruence. eq_dec x0 b. subst.
+    eq_dec a z'. congruence. eq_dec y a. eq_dec a b; congruence. eq_dec y b.
+    eq_dec a a; congruence. eq_dec a y; congruence. eq_dec x0 z'. congruence.
+    eq_dec y a. eq_dec x0 b; congruence. eq_dec y b. eq_dec x0 a; congruence.
+    eq_dec x0 y; congruence.
 
     intros x0 h0. unfold x', Def.transpose_var. eq_dec x0 z'. subst. fo.
-    eq_dec x0 x. subst. eq_dec x a. eq_dec b z'. fo. eq_dec b b. 2: irrefl.
-    eq_dec z' a. fo. eq_dec z' b. fo. refl.
-    eq_dec x b. eq_dec a a. 2: irrefl. eq_dec a z'. fo. eq_dec z' a. fo.
-    eq_dec z' b. fo. refl. eq_dec x x. 2: irrefl. eq_dec z' a. fo.
-    eq_dec x z'. fo. eq_dec z' b. fo. refl.
-    eq_dec x0 a. subst. eq_dec b z'. fo. eq_dec x a. fo. eq_dec x b.
-    eq_dec b a. absurd (x=a). hyp. trans b; hyp. refl. eq_dec b x. fo. refl.
-    eq_dec x0 b. subst. eq_dec a z'. fo. eq_dec x a. eq_dec a b. fo. refl.
-    eq_dec x b. eq_dec a a. 2: irrefl. fo. eq_dec a x. fo. refl.
-    eq_dec x0 z'. fo. eq_dec x a. eq_dec x0 b. fo. refl. eq_dec x b.
-    eq_dec x0 a. fo. refl. eq_dec x0 x. fo. refl.
+    eq_dec x0 x. subst. eq_dec x a. eq_dec b z'. congruence. eq_dec b b.
+    2: congruence. eq_dec z' a. congruence. eq_dec z' b; congruence.
+    eq_dec x b. eq_dec a a. 2: congruence. eq_dec a z'. congruence.
+    eq_dec z' a. congruence. eq_dec z' b; congruence. eq_dec x x.
+    2: congruence. eq_dec z' a. congruence. eq_dec x z'. congruence.
+    eq_dec z' b; congruence. eq_dec x0 a. subst. eq_dec b z'. congruence.
+    eq_dec x a. congruence. eq_dec x b. eq_dec b a; congruence.
+    eq_dec b x; congruence. eq_dec x0 b. subst. eq_dec a z'. congruence.
+    eq_dec x a. eq_dec a b; congruence. eq_dec x b. eq_dec a a; congruence.
+    eq_dec a x; congruence. eq_dec x0 z'. congruence. eq_dec x a.
+    eq_dec x0 b; congruence. eq_dec x b. eq_dec x0 a; congruence.
+    eq_dec x0 x; congruence.
   (*SLOW*)Qed.
 
   (** [aeq_gp] is transitive. *)
@@ -817,22 +815,22 @@ Module Make (Export L : L_Struct).
                             (add y (union (fv v) (bv v))))
                             (add z (union (fv w) (bv w)))).
     gen (var_notin_ok xs). set (c := var_notin xs).
-    unfold xs. revert H1 H2. (*SLOW*)set_iff. intros ha hb hc.
-    apply aeq_gp_lam with (z:=c). ens. set_iff. fo.
+    unfold xs. revert H1 H2. (*SLOW*)set_iff. split_all.
+    apply aeq_gp_lam with (z:=c). ens. set_iff. split_all.
     apply hu with (y := transpose c y v).
     unfold Def.transpose. rewrite size_action. refl.
 
     rewrite transpose_sym.
-    erewrite <- transpose_comp with (b:=a); [idtac|fo|fo|fo|fo].
+    erewrite <- transpose_comp with (b:=a); auto.
     rewrite transpose_sym with (x:=c).
-    erewrite <- transpose_comp with (u:=v) (b:=a); [idtac|fo|fo|fo|fo].
+    erewrite <- transpose_comp with (u:=v) (b:=a); auto.
     rewrite transpose_sym with (x:=x), transpose_sym with (x:=y).
     apply transpose_aeq_gp. hyp.
 
     rewrite transpose_sym.
-    erewrite <- transpose_comp with (b:=b); [idtac|fo|fo|fo|fo].
+    erewrite <- transpose_comp with (b:=b); auto.
     rewrite transpose_sym with (x:=c).
-    erewrite <- transpose_comp with (u:=w) (b:=b); [idtac|fo|fo|fo|fo].
+    erewrite <- transpose_comp with (u:=w) (b:=b); auto.
     rewrite transpose_sym with (x:=y), transpose_sym with (x:=z).
     apply transpose_aeq_gp. hyp.
   (*SLOW*)Qed.
@@ -848,12 +846,19 @@ Module Make (Export L : L_Struct).
                             (add x0 (union (fv u0) (bv u0))))
                      (union (fv (rename x x0 u)) (bv (rename x x0 u)))).
     gen (var_notin_ok xs). set (z := var_notin xs).
-    unfold xs. set_iff. intro hz.
-    apply aeq_gp_lam with (z:=z). ens. set_iff. fo. apply hu.
+    unfold xs. (*SLOW*)set_iff. split_all.
+
+    apply aeq_gp_lam with (z:=z). ens. set_iff. split_all. apply hu.
     unfold Def.transpose. rewrite size_action. refl.
-    rewrite i0, transpose_sym. rewrite transpose_rename; [idtac|fo|fo].
-    rewrite transpose_sym. rewrite transpose_rename; [idtac|fo|fo].
-    rewrite rename2. refl. hyp.
+    rewrite i0, transpose_sym. rewrite transpose_rename; auto.
+    rewrite transpose_sym. rewrite transpose_rename; auto.
+    rewrite rename2. refl. auto.
+
+    apply aeq_gp_lam with (z:=z). ens. set_iff. split_all. apply hu.
+    unfold Def.transpose. rewrite size_action. refl.
+    rewrite i0, transpose_sym. rewrite transpose_rename; auto.
+    rewrite transpose_sym. rewrite transpose_rename; auto.
+    rewrite rename2. refl. auto.
   Qed.
 
 End Make.
