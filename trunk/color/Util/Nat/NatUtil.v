@@ -84,9 +84,9 @@ Fixpoint beq_nat (x y : nat) :=
 Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
 
 Proof.
-induction x; destruct y; simpl; split; intro; try (refl || discr).
-apply (f_equal S). exact (proj1 (IHx _) H).
-apply (proj2 (IHx y)). inversion H. refl.
+  induction x; destruct y; simpl; split; intro; try (refl || discr).
+  apply (f_equal S). exact (proj1 (IHx _) H).
+  apply (proj2 (IHx y)). inversion H. refl.
 Defined.
 
 Require Import EqUtil.
@@ -96,8 +96,8 @@ Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
 Proof.
-intro. gen (eq_nat_dec n n). destruct s.
-rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
+  intro. gen (eq_nat_dec n n). destruct s.
+  rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
 Qed.
 
 (***********************************************************************)
@@ -113,9 +113,8 @@ Fixpoint bgt_nat (x y : nat) :=
 Lemma bgt_nat_ok : forall x y, bgt_nat x y = true <-> x > y.
 
 Proof.
-induction x; destruct y; simpl; split; intro;
-  try (refl || discr || absurd_arith || omega).
-rewrite IHx in H. omega. apply lt_S_n in H. rewrite IHx. hyp.
+  induction x; destruct y; simpl; split; intro; try (refl || discr || omega).
+  rewrite IHx in H. omega. apply lt_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
@@ -123,9 +122,8 @@ Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
 Lemma bgt_nat_ko : forall x y, bgt_nat x y = false <-> x <= y.
 
 Proof.
-induction x; destruct y; simpl; split; intro;
-  try (refl || discr || absurd_arith || omega).
-rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
+  induction x; destruct y; simpl; split; intro; try (refl || discr || omega).
+  rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Fixpoint bge_nat (x y : nat) :=
@@ -139,9 +137,8 @@ Fixpoint bge_nat (x y : nat) :=
 Lemma bge_nat_ok : forall x y, bge_nat x y = true <-> x >= y.
 
 Proof.
-induction x; destruct y; simpl; split; intro;
-  try (refl || discr || absurd_arith || omega).
-rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
+  induction x; destruct y; simpl; split; intro; try (refl || discr || omega).
+  rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Ltac check_ge := rewrite <- bge_nat_ok; check_eq.
@@ -176,8 +173,8 @@ Lemma le_unique : forall n m (h1 h2 : n <= m), h1 = h2.
 
 Proof.
 intro n.
-assert (forall m : nat, forall h1 : le n m, forall p : nat, forall h2 : le n p,
-  m=p -> eq_dep nat (le n) m h1 p h2).
+assert (forall m (h1 : n <= m) p (h2 : n <= p),
+           m=p -> eq_dep nat (le n) m h1 p h2).
  intros m h1; elim h1 using le_ind_dep.
   intros p h2; case h2; intros.
    auto.
@@ -232,53 +229,39 @@ case (le_dec b c); intro H.
    apply (sym_equal (max_l H'')).
 Qed.
 
-Lemma le_max_intro_l : forall x y z, x <= y -> x <= max y z.
+Lemma le_max_intro_l x y z : x <= y -> x <= max y z.
+
+Proof. intro. eapply le_trans. apply H. apply le_max_l. Qed.
+
+Lemma lt_max_intro_l x y z : x < y -> x < max y z.
+
+Proof. intro. eapply lt_le_trans. eexact H. apply le_max_l. Qed.
+
+Lemma le_max_intro_r x y z : x <= z -> x <= max y z.
+
+Proof. intro. eapply le_trans. apply H. apply le_max_r. Qed.
+
+Lemma lt_max_intro_r x y z : x < z -> x < max y z.
+
+Proof. intro. rewrite max_comm. apply lt_max_intro_l. hyp. Qed.
+
+Lemma le_max_elim_l x y z : max x y <= z -> x <= z.
+
+Proof. intro. eapply le_trans. 2: apply H. apply le_max_l. Qed.
+
+Lemma le_max_elim_r x y z : max x y <= z -> y <= z.
+
+Proof. intro. eapply le_trans. 2: apply H. apply le_max_r. Qed.
+
+Lemma max_ge_compat x y x' y' : x >= x' -> y >= y' -> max x y >= max x' y'.
 
 Proof.
-intros. eapply le_trans. apply H. apply le_max_l.
+  intros. destruct (max_dec x' y'); rewrite e; unfold ge.
+  rewrite max_comm. apply le_max_intro_r. hyp.
+  apply le_max_intro_r. hyp.
 Qed.
 
-Lemma lt_max_intro_l : forall x y z, x < y -> x < max y z.
-
-Proof.
-intros. eapply lt_le_trans. eexact H. apply le_max_l.
-Qed.
-
-Lemma le_max_intro_r : forall x y z, x <= z -> x <= max y z.
-
-Proof.
-intros. eapply le_trans. apply H. apply le_max_r.
-Qed.
-
-Lemma lt_max_intro_r : forall x y z, x < z -> x < max y z.
-
-Proof.
-intros. rewrite max_comm. apply lt_max_intro_l. hyp.
-Qed.
-
-Lemma le_max_elim_l : forall x y z, max x y <= z -> x <= z.
-
-Proof.
-intros. eapply le_trans. 2: apply H. apply le_max_l.
-Qed.
-
-Lemma le_max_elim_r : forall x y z, max x y <= z -> y <= z.
-
-Proof.
-intros. eapply le_trans. 2: apply H. apply le_max_r.
-Qed.
-
-Lemma max_ge_compat : forall x y x' y',
-  x >= x' -> y >= y' -> max x y >= max x' y'.
-
-Proof.
-intros. destruct (max_dec x' y'); rewrite e; unfold ge.
-rewrite max_comm. apply le_max_intro_r. hyp.
-apply le_max_intro_r. hyp.
-Qed.
-
-Lemma max_gt_compat : forall x y x' y',
-  x > x' -> y > y' -> max x y > max x' y'.
+Lemma max_gt_compat x y x' y' : x > x' -> y > y' -> max x y > max x' y'.
 
 Proof.
 intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
@@ -288,8 +271,7 @@ intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
     ]; omega.
 Qed.
 
-Lemma min_gt_compat : forall x y x' y',
-  x > x' -> y > y' -> min x y > min x' y'.
+Lemma min_gt_compat x y x' y' : x > x' -> y > y' -> min x y > min x' y'.
 
 Proof.
 intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
@@ -299,11 +281,11 @@ intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
     ]; omega.
 Qed.
  
-Lemma max_lt : forall x y z, max y z < x <-> y < x /\ z < x.
+Lemma max_lt x y z : max y z < x <-> y < x /\ z < x.
 
 Proof.
-intuition. eapply le_lt_trans. apply le_max_l. apply H.
-eapply le_lt_trans. apply le_max_r. apply H. apply max_case; hyp.
+  split_all. eapply le_lt_trans. apply le_max_l. apply H.
+  eapply le_lt_trans. apply le_max_r. apply H. apply max_case; hyp.
 Qed.
 
 Lemma gt_max : forall x y z, x > max y z <-> x > y /\ x > z.
@@ -312,9 +294,7 @@ Proof. exact max_lt. Qed.
 
 Lemma max_0_r : forall x, max x 0 = x.
 
-Proof.
-destruct x; refl.
-Qed.
+Proof. destruct x; refl. Qed.
 
 (***********************************************************************)
 (** Lemmas on the minimum of two numbers. *)
@@ -323,45 +303,38 @@ Require Import Min.
 
 Lemma elim_min_l : forall x y z, x <= z -> min x y <= z.
 
-Proof.
-intros. eapply le_trans. apply le_min_l. exact H.
-Qed.
+Proof. intros. eapply le_trans. apply le_min_l. hyp. Qed.
 
 Lemma elim_min_r : forall x y z, y <= z -> min x y <= z.
 
-Proof.
-intros. eapply le_trans. apply le_min_r. exact H.
-Qed.
+Proof. intros. eapply le_trans. apply le_min_r. hyp. Qed.
 
 (* setting up some hints for the following lemmas *)
 Hint Resolve le_lt_trans le_min_l le_min_r le_trans.
 
-Lemma lt_min_intro_l : forall x y z, x < z -> min x y < z.
+Lemma lt_min_intro_l x y z : x < z -> min x y < z.
 
 Proof. eauto. Qed.
 
-Lemma lt_min_intro_r : forall x y z, y < z -> min x y < z.
+Lemma lt_min_intro_r x y z : y < z -> min x y < z.
 
 Proof. eauto. Qed.
 
-Lemma le_min_intro_l : forall x y z, x <= z -> min x y <= z.
+Lemma le_min_intro_l x y z : x <= z -> min x y <= z.
 
 Proof. eauto. Qed.
 
-Lemma le_min_intro_r : forall x y z, y <= z -> min x y <= z.
+Lemma le_min_intro_r x y z : y <= z -> min x y <= z.
 
 Proof. eauto. Qed.
 
 Ltac min_simpl :=
   match goal with
-  | H : ?x <= ?y |- context [min ?x ?y] => 
-      rewrite (min_l x y H)
-  | H : ?y < ?x |- context [min ?x ?y] =>
-      rewrite (min_r x y (lt_le_weak H))
+  | H : ?x <= ?y |- context [min ?x ?y] => rewrite (min_l x y H)
+  | H : ?y < ?x |- context [min ?x ?y] => rewrite (min_r x y (lt_le_weak H))
   end.
 
-Lemma min_ge_compat : forall x y x' y',
-  x >= x' -> y >= y' -> min x y >= min x' y'.
+Lemma min_ge_compat x y x' y' : x >= x' -> y >= y' -> min x y >= min x' y'.
 
 Proof.
   intros. destruct (le_lt_dec x y); destruct (le_lt_dec x' y');
@@ -392,44 +365,44 @@ Defined.
 
 Require Import Euclid.
 
-Lemma mult_is_not_O : forall m n, m * n <> 0 <-> m <> 0 /\ n <> 0.
+Lemma mult_is_not_O m n : m * n <> 0 <-> m <> 0 /\ n <> 0.
 
 Proof.
-intuition. subst. apply H. refl. subst. apply H. apply mult_0_r.
-destruct (mult_is_O _ _ H0); auto.
+  intuition. subst. apply H. refl. subst. apply H. apply mult_0_r.
+  destruct (mult_is_O _ _ H0); auto.
 Qed.
 
 Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
 
 Proof.
-induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
-rewrite mult_succ_r in H. omega. rewrite !mult_0_r in H. omega.
-simpl in *. rewrite !mult_succ_r in H. omega.
+  induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
+  rewrite mult_succ_r in H. omega. rewrite !mult_0_r in H. omega.
+  simpl in *. rewrite !mult_succ_r in H. omega.
 Qed.
 
 Implicit Arguments mult_lt_r_elim [x x' y].
 
-Lemma eucl_div_unique : forall b q1 r1 q2 r2,
+Lemma eucl_div_unique b q1 r1 q2 r2 :
   b > r1 -> b > r2 -> q1 * b + r1 = q2 * b + r2 -> q1 = q2 /\ r1 = r2.
 
 Proof.
 intros.
 assert ((q1-q2)*b=r2-r1). rewrite mult_minus_distr_r. omega.
-assert ((q2-q1)*b=r1-r2). rewrite mult_minus_distr_r. omega.
+assert ((q2-q1)*b=r1-r2). rewrite mult_minus_distr_r. clear H2; omega.
 destruct (le_gt_dec r1 r2).
 (* r1 <= r2 *)
 destruct (eq_nat_dec r1 r2).
 (* r1 = r2 *)
 subst. rewrite minus_diag in H2. rewrite minus_diag in H3.
-destruct (mult_is_O _ _ H2); destruct (mult_is_O _ _ H3); intuition; omega.
+destruct (mult_is_O _ _ H2); destruct (mult_is_O _ _ H3); split_all; omega.
 (* r1 < r2 *)
-assert (r2 - r1 < b). omega. rewrite <- H2 in H4.
+assert (r2 - r1 < b). clear -H H0 l; omega. rewrite <- H2 in H4.
 rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
-assert (q1=q2). omega. intuition. subst q2. omega.
+assert (q1=q2). clear H H0 H1 H3 H4; omega. subst q2; clear H2 H3 H4 H5. omega.
 (* r1 > r2 *)
-assert (r1 - r2 < b). omega. rewrite <- H3 in H4.
+assert (r1 - r2 < b). clear -H H0; omega. rewrite <- H3 in H4.
 rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
-assert (q1=q2). omega. intuition. subst q2. omega.
+assert (q1=q2). clear H H0 H1 H2 H4; omega. subst q2; clear H2 H3 H4 H5. omega.
 Qed.
 
 Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
@@ -455,9 +428,7 @@ Section iter_prop.
 
   Lemma iter_com : forall a i, iter (f a) f i = f (iter a f i).
 
-  Proof.
-    induction i; simpl; intros. refl. rewrite IHi. refl.
-  Qed.
+  Proof. induction i; simpl; intros. refl. rewrite IHi. refl. Qed.
 
   Require Import Relations.
 
@@ -465,9 +436,7 @@ Section iter_prop.
     (forall x y, R x y -> R (f x) (f y)) ->
     forall i x y, R x y -> R (iter x f i) (iter y f i).
 
-  Proof.
-    induction i; simpl; intros. hyp. apply H. apply IHi. hyp.
-  Qed.
+  Proof. induction i; simpl; intros. hyp. apply H. apply IHi. hyp. Qed.
 
 End iter_prop.
 
