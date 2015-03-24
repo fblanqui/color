@@ -54,8 +54,7 @@ Section S.
     (R x1 x2 /\ v1 = v2) \/ (x1 = x2 /\ Vrel1 R v1 v2).
 
   Proof.
-    intros. simpl in H. unfold Vhead_tail in H. simpl in H. inversion H.
-    left. auto. right. auto.
+    intros. simpl in H. unfold Vhead_tail in H. simpl in H. inversion H; auto.
   Qed.
 
   Lemma Vrel1_add_intro : forall x1 x2 n (v1 v2 : vector A n),
@@ -105,11 +104,6 @@ Section S.
     apply Vrel1_cons_intro. inversion H. left. split. hyp.
     eapply Vcast_eq_elim with (m := n). apply H6.
     right. split. refl. eapply IHm with (n := n). apply H3.
-    (*REMOVE:
-    rewrite H0, H1 in H. simpl in H. unfold Vhead_tail in H. simpl in H.
-    apply Vrel1_cons_intro. inversion H. left. split. hyp.
-    eapply Vcast_eq_elim with (m := n). apply H6.
-    right. split. refl. eapply IHm with (n := n). apply H3.*)
   Qed.
 
 (***********************************************************************)
@@ -127,13 +121,6 @@ Section S.
     ex (S x0) (Vcons (Vhead v2) x1) x2 x3 x4.
     assert (S x0 + S x3 = S n). omega. ex H9 x6.
     simpl. rewrite !Vcast_cons, (eq_unique (eq_add_S H9) x5). intuition.
-    (*REMOVE:split. rewrite Vcast_refl. refl.
-    split. rewrite Vcast_refl. refl. hyp.
-    ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6, H7.
-    ex (S x0) (Vcons (Vhead v2) x1) x2 x3 x4.
-    assert (S x0 + S x3 = S n). omega. ex H9 x6.
-    simpl. intuition. apply Vtail_eq. apply Vcast_pi.
-    apply Vtail_eq. apply Vcast_pi.*)
   Qed.
 
   Lemma Vrel1_app_iff : forall n (v1 v2 : vector A n),
@@ -174,17 +161,16 @@ Section S.
 
     apply Veq_nth. intros j hj. rewrite Vnth_cast, Vnth_app.
     destruct (le_gt_dec i j). rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    rewrite Vnth_sub. apply Vnth_eq. omega.
-    apply Vnth_eq. omega.
+    rewrite Vnth_sub. apply Vnth_eq. clear -l0; omega.
+    apply Vnth_eq. clear -l g; omega.
     rewrite Vnth_sub. apply Vnth_eq. refl.
 
     apply Veq_nth. intros j hj. rewrite Vnth_cast, Vnth_app.
     destruct (le_gt_dec i j). rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
     rewrite Vnth_sub.
-    trans (Vnth v1 hj). sym. apply i2. omega. apply Vnth_eq. omega.
-    apply Vnth_eq. omega.
-    rewrite Vnth_sub.
-    trans (Vnth v1 hj). sym. apply i2. omega. apply Vnth_eq. refl.
+    trans (Vnth v1 hj). sym. apply i2. clear -l0; omega. apply Vnth_eq.
+    clear -l0; omega. apply Vnth_eq. clear -l g; omega. rewrite Vnth_sub.
+    trans (Vnth v1 hj). sym. apply i2. clear -g; omega. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vrel1_sub : forall n (v1 v2 : vector A n) p q (h : p+q<=n),
