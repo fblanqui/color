@@ -22,7 +22,7 @@ Proof. decide equality. Defined.
 
 Lemma eq_int31_dec : forall x y : int31, {x=y}+{~x=y}.
 
-Proof. decide equality; apply eq_digits_dec. Defined.
+Proof. (*SLOW*)decide equality; apply eq_digits_dec. Defined.
 
 Ltac bad_case := right; intro; inversion H; contr.
 Ltac case_tac x y := case (eq_digits_dec x y); [idtac|bad_case].
@@ -43,7 +43,7 @@ Proof.
   case_tac d19 d50. case_tac d20 d51. case_tac d21 d52. case_tac d22 d53.
   case_tac d23 d54. case_tac d24 d55. case_tac d25 d56. case_tac d26 d57.
   case_tac d27 d58. case_tac d28 d59. case_tac d29 d60. intros. subst. auto.
-Defined.
+(*SLOW*)Defined.
 
 Lemma eq_BigN_w1_dec : forall x y : w1, {x=y}+{~x=y}.
 
