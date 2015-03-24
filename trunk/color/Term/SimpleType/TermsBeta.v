@@ -62,11 +62,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Lemma beta_lowering : forall M (Mapp: isApp M) (MLabs: isAbs (appBodyL Mapp)),
     env (subst (beta_subst M Mapp MLabs)) |= 0 :! .
 
-  Proof.
-    intros.
-    rewrite beta_env.
-    right; trivial.
-  Qed.
+  Proof. intros. rewrite beta_env. right; trivial. Qed.
 
   Inductive BetaStep : relation Term :=
   | Beta: forall M (Mapp: isApp M) (MLabs: isAbs (appBodyL Mapp)),
@@ -74,6 +70,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
       (lower (subst (beta_subst M Mapp MLabs)) (beta_lowering M Mapp MLabs)).
 
   Definition BetaReduction := Reduction BetaStep.
+
   Notation "M -b-> N" := (BetaReduction M N) (at level 30).
 
   Lemma beta_type: forall M (Mapp: isApp M) (MLabs: isAbs (appBodyL Mapp)),
@@ -244,17 +241,11 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
   Lemma beta_funS_normal : forall M N, isFunS M -> ~(M -b-> N).
 
-  Proof.
-    intros M N Mf MN.
-    inversion MN; inversion H; term_inv M.
-  Qed.
+  Proof. intros M N Mf MN. inversion MN; inversion H; term_inv M. Qed.
 
   Lemma beta_var_normal : forall M N, isVar M -> ~(M -b-> N).
 
-  Proof.
-    intros M N Mvar MN.
-    inversion MN; inversion H; term_inv M.
-  Qed.
+  Proof. intros M N Mvar MN. inversion MN; inversion H; term_inv M. Qed.
 
   Lemma betaStep_env_preserving : forall M N, BetaStep M N -> env M = env N.
 
@@ -299,9 +290,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
   Lemma beta_monotonous : monotonous BetaReduction.
 
-  Proof.
-    unfold BetaReduction; apply red_monotonous.
-  Qed.
+  Proof. unfold BetaReduction; apply red_monotonous. Qed.
 
   Lemma betaStep_conv_comp_aux : forall M M' N N' Q, M ~(Q) M' -> N ~(Q) N' ->
     BetaStep M N -> env M' = env N' -> BetaStep M' N'.
@@ -612,29 +601,28 @@ Module TermsBeta (Sig : TermsSig.Signature).
     intros.
     apply term_eq.
 
-    autorewrite with terms.
+    (*SLOW*)autorewrite with terms.
     cut (tail (env M) [+] tail (env P) [-] subst_dom G [+] subst_ran G =
       tail (env M) [-] subst_dom G [+] subst_ran G [+] 
       (tail (env P) [-] subst_dom G [+] subst_ran G)).
     destruct (subst_empty_dec G).
-    destruct (env M); destruct (env P); try destruct o; try destruct o0; simpl;
-      (autorewrite with terms using simpl); try_solve.
-    destruct (env M); destruct (env P); try destruct o; try destruct o0; simpl;
-      (autorewrite with terms using simpl); 
+    (*SLOW*)destruct (env M); destruct (env P); try destruct o;
+      try destruct o0; simpl; (autorewrite with terms using simpl); try_solve.
+    (*SLOW*)destruct (env M); destruct (env P); try destruct o;
+      try destruct o0; simpl; (autorewrite with terms using simpl); 
       try destruct (subst_ran G); try destruct (subst_dom G);
-	try destruct e; try destruct o; try destruct o0; 
-	  try_solve.
+      try destruct e; try destruct o; try destruct o0; try_solve.
     rewrite env_sum_assoc.
     rewrite <- (env_sum_assoc (subst_ran G)).
     rewrite env_sum_remove_double.
     rewrite <- env_sum_assoc.
     rewrite env_sub_move; trivial.
 
-    autorewrite with terms datatypes.
+    (*SLOW*)autorewrite with terms datatypes.
     unfold presubst.
     set (w := double_subst_aux (term M) G 0 PG).
     simpl in w; trivial.
-  Qed.
+  (*SLOW*)Qed.
 
   Lemma double_lift : forall M G
     (CS: correct_subst (lift M 1) (None :: lift_subst G 1))
@@ -643,7 +631,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Proof.
     intros.
     apply term_eq.
-    destruct (subst_empty_dec G); 
+    (*SLOW*)destruct (subst_empty_dec G); 
       autorewrite with terms datatypes using unfold liftedEnv; simpl; trivial.
     autorewrite with terms.
     replace (None :: lift_subst G 1) with (copy (S 0) None ++ lift_subst G 1);
@@ -669,7 +657,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
     autorewrite with terms datatypes using simpl.
     rewrite (absBody_term (appBodyL CSapp) CSLabs (A := absType MLabs)
-      (Pt := presubst (term (absBody MLabs)) (None :: lift_subst G 1))); trivial.
+      (Pt := presubst (term (absBody MLabs)) (None :: lift_subst G 1)));
+      trivial.
     rewrite (appBodyL_term (subst CS) (PtL := \absType MLabs => 
       presubst (term (absBody MLabs)) (None::lift_subst G 1)) 
       (PtR := presubst (term (appBodyR Mapp)) G)); trivial.
@@ -697,7 +686,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     apply lower_eq.
     assert (s1: correct_subst (absBody MLabs) (None :: lift_subst G 1)).
     inversion MN; inversion NS; inversion s0; prove_correct_subst.
-    assert (s2: correct_subst (lift (appBodyR Mapp) 1) (None :: lift_subst G 1)).
+    assert
+      (s2: correct_subst (lift (appBodyR Mapp) 1) (None :: lift_subst G 1)).
     inversion MN; inversion NS; inversion s0; prove_correct_subst.
     assert (s3: correct_subst (subst s1) {x/subst s2}).
     constructor.
@@ -707,13 +697,13 @@ Module TermsBeta (Sig : TermsSig.Signature).
     auto with terms.
     left; rewrite beta_type; trivial.
     destruct (subst_empty_dec G); autorewrite with terms using simpl; auto.
-    destruct (subst_empty_dec G); autorewrite with terms datatypes using simpl;
-      auto with terms.
+    (*SLOW*)destruct (subst_empty_dec G);
+      autorewrite with terms datatypes using simpl; auto with terms.
     rewrite (double_subst G (beta_subst M Mapp MLabs) s0 s1 s2 s3).
     apply term_eq.
-    destruct (subst_empty_dec G); autorewrite with datatypes terms using simpl;
-      trivial.
-    autorewrite with datatypes terms using simpl.
+    (*SLOW*)destruct (subst_empty_dec G);
+      autorewrite with datatypes terms using simpl; trivial.
+    (*SLOW*)autorewrite with datatypes terms using simpl.
     assert (Leq: presubst (term (absBody MLabs)) (None :: lift_subst G 1) = 
       term (absBody MNS_Labs)).
     cut (term (subst s1) = term (absBody MNS_Labs)).
@@ -818,12 +808,10 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Lemma beta_app_reduct : forall M N (Mapp: isApp M),
     M -b-> N ->
     (exists MLabs: isAbs (appBodyL Mapp),
-      N = lower (subst (beta_subst M Mapp MLabs)) (beta_lowering M Mapp MLabs)
-    )
-    \/
-    exists Napp: isApp N, 
-      (appBodyL Mapp  =   appBodyL Napp /\ appBodyR Mapp -b-> appBodyR Napp) \/
-      (appBodyL Mapp -b-> appBodyL Napp /\ appBodyR Mapp  =   appBodyR Napp).
+      N = lower (subst (beta_subst M Mapp MLabs)) (beta_lowering M Mapp MLabs))
+    \/ exists Napp: isApp N, 
+      (appBodyL Mapp  =   appBodyL Napp /\ appBodyR Mapp -b-> appBodyR Napp)
+      \/ (appBodyL Mapp -b-> appBodyL Napp /\ appBodyR Mapp  =   appBodyR Napp).
 
   Proof.
     intros M N Mapp MN.
@@ -880,8 +868,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     right; intro MN; inversion MN.
     apply n; rewrite <- H0.
     apply term_eq.
-    autorewrite with terms using trivial.
-    autorewrite with terms using trivial.
+    (*SLOW*)autorewrite with terms using trivial.
+    (*SLOW*)autorewrite with terms using trivial.
     replace (absBody MLabs0) with (absBody MLabs).
     replace (appBodyR Mapp1) with (appBodyR Mapp); trivial.
     term_inv M.
