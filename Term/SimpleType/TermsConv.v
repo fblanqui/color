@@ -585,8 +585,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     constructor 3; trivial.
     setoid_replace (envSubst_lift1 (idEnvSubst (length E))) with 
       (idEnvSubst (S (length E))); trivial.
-    constructor; intros i j; intros; destruct i; destruct j; simpl; fo;
-      try_solve.
+    constructor; intros i j; intros; destruct i; destruct j;
+      simpl in *; split_all; try omega.
     constructor 4; trivial.
   Qed.
 
@@ -745,9 +745,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     conv_term (prelift M 1) (prelift N 1) (envSubst_lift1 Q).
 
   Proof.
-    intros.
-    unfold prelift.
-    apply conv_term_lifted_aux; trivial.
+    intros. unfold prelift. apply conv_term_lifted_aux; trivial.
     intros; elimtype False; omega.
   Qed.
 
@@ -814,9 +812,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Lemma conv_env_empty : forall M N, conv_env M N emptyEnvSubst.
 
-  Proof.
-    intros M N x y F; try_solve.
-  Qed.
+  Proof. intros M N x y F; try_solve. Qed.
 
   Lemma terms_conv_var_usage : forall M N Q x y,
     (forall A B, activeEnv M |= x := A -> activeEnv N |= y := B -> A = B) ->
@@ -1013,15 +1009,15 @@ Module TermsConv (Sig : TermsSig.Signature).
     rewrite (activeEnv_app (buildT (TApp T1 T2)) I).
     rewrite (activeEnv_app (buildT (TApp T3 T4)) I).
     split; intro D.
-    destruct (env_sum_varDecl (activeEnv (buildT T1)) (activeEnv (buildT T2)) D) 
-      as [[Lc Rn] | Rc].
+    destruct (env_sum_varDecl (activeEnv (buildT T1))
+                              (activeEnv (buildT T2)) D) as [[Lc Rn] | Rc].
     apply env_sum_ly.
     apply activeEnv_app_comp.
     apply (proj1 (H0 p q Qpq C)); trivial.
     apply env_sum_ry.
     apply (proj1 (H1 p q Qpq C)); trivial.
-    destruct (env_sum_varDecl (activeEnv (buildT T3)) (activeEnv (buildT T4)) D) 
-      as [[Lc Rn] | Rc].
+    destruct (env_sum_varDecl (activeEnv (buildT T3))
+                              (activeEnv (buildT T4)) D) as [[Lc Rn] | Rc].
     apply env_sum_ly.
     apply activeEnv_app_comp.
     apply (proj2 (H0 p q Qpq C)); trivial.
@@ -1230,7 +1226,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Definition terms_conv M N := exists S, M ~(S) N.
 
-  Notation "M ~ N" := (terms_conv M N) (at level 7).
+  Notation "M ~ N" := (terms_conv M N) (at level 8).
 
   Lemma terms_conv_criterion : forall M N,
     env M [<->] env N -> term M = term N -> M ~ N.
@@ -1295,19 +1291,14 @@ Module TermsConv (Sig : TermsSig.Signature).
   Lemma terms_conv_refl : forall M, M ~ M.
 
   Proof.
-    intro M.
-    exists (idEnvSubst (length (env M))); constructor.
-    apply conv_term_refl.
-    apply conv_env_refl.
+    intro M. exists (idEnvSubst (length (env M))); constructor.
+    apply conv_term_refl. apply conv_env_refl.
   Qed.
 
   Lemma terms_conv_sym_aux : forall M N Q, M ~(Q) N -> N ~(envSubst_transp Q) M.
 
   Proof.
-    intros.
-    constructor.
-    apply conv_term_sym; fo.
-    apply conv_env_sym; fo.
+    intros. constructor. apply conv_term_sym; fo. apply conv_env_sym; fo.
   Qed.
 
   Lemma terms_conv_sym : forall M N, M ~ N -> N ~ M.
@@ -1384,10 +1375,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Lemma conv_by : forall M N Q, M ~(Q) N -> M ~ N.
 
-  Proof.
-    intros.
-    exists Q; trivial.
-  Qed.
+  Proof. intros. exists Q; trivial. Qed.
 
   Lemma abs_conv_absBody_aux : forall M N Q (Mabs: isAbs M) (Nabs: isAbs N),
     M ~(Q) N -> (absBody Mabs) ~(envSubst_lift1 Q) (absBody Nabs).
@@ -1452,8 +1440,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     terms_conv (appBodyL Mapp) (appBodyL Napp).
 
   Proof.
-    intros; destruct H.
-    exists x; apply app_conv_app_left_aux; trivial.
+    intros; destruct H. exists x; apply app_conv_app_left_aux; trivial.
   Qed.
 
   Lemma app_conv_app_right_aux : forall M N (Mapp: isApp M) (Napp: isApp N) Q,
@@ -1477,8 +1464,8 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma app_conv : forall M N (Mapp: isApp M) (Napp: isApp N) Q,
-    (appBodyL Mapp) ~(Q) (appBodyL Napp) -> (appBodyR Mapp) ~(Q) (appBodyR Napp) ->
-    M ~(Q) N.
+    (appBodyL Mapp) ~(Q) (appBodyL Napp)
+    -> (appBodyR Mapp) ~(Q) (appBodyR Napp) -> M ~(Q) N.
 
   Proof.
     intros.
@@ -1502,6 +1489,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Qed.
 
   Lemma terms_lift_conv : forall M n, terms_conv M (lift M n).
+
   Proof.
     intros M n.
     exists (liftEnvSubst n 0 (length (env M))); constructor; simpl.
@@ -1510,7 +1498,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_lift.
   Qed.
 
-  Lemma terms_lower_conv : forall M (Menv: env M |= 0 :!), terms_conv M (lower M Menv).
+  Lemma terms_lower_conv :
+    forall M (Menv: env M |= 0 :!), terms_conv M (lower M Menv).
 
   Proof.
     intros M Menv.
@@ -1558,10 +1547,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Instance isFunApp_morph : Proper (terms_conv ==> iff) isFunApp.
 
-  Proof.
-    unfold isFunApp; intros t t' H.
-    rewrite H; split; trivial. 
-  Qed.
+  Proof. unfold isFunApp; intros t t' H. rewrite H; split; trivial. Qed.
 
   Lemma terms_conv_activeEnv: forall M N Q, M ~(Q) N ->
     forall p A, activeEnv M |= p := A -> exists q, envSub Q p q.
@@ -1586,8 +1572,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     rewrite (activeEnv_app (buildT (TApp M1 M2)) I) in H0.
     assert (Napp: isApp N).
     term_inv N; inversion H1.
-    destruct (env_sum_varDecl (activeEnv (buildT M1)) (activeEnv (buildT M2)) H0)
-      as [[l _] | r]. 
+    destruct (env_sum_varDecl (activeEnv (buildT M1))
+                              (activeEnv (buildT M2)) H0) as [[l _] | r].
     set (Conv := app_conv_app_left_aux (M := buildT (TApp M1 M2)) I Napp H).
     exact (IHM1 (appBodyL Napp) Q Conv p A0 l).
     set (Conv := app_conv_app_right_aux (M := buildT (TApp M1 M2)) I Napp H).
@@ -1720,8 +1706,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply terms_conv_sym_aux; trivial.
   Qed.
 
-  Definition envSub_minimal Q M := forall x y, envSub Q x y ->
-    exists A, activeEnv M |= x := A.
+  Definition envSub_minimal Q M :=
+    forall x y, envSub Q x y -> exists A, activeEnv M |= x := A.
 
   Lemma envSub_minimal_rev : forall Q M M' x y, envSub_minimal Q M ->
     M ~(Q) M' -> envSub Q x y -> exists A, activeEnv M' |= y := A.
@@ -1738,10 +1724,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     exists Q', Q' |=> Q /\ envSub Q' i j /\
       (forall p q, envSub Q' p q -> (envSub Q p q \/ (p = i /\ q = j))).
 
-  Proof.
-    intros.
-    exists (addEnvSubst Q i j H); fo.
-  Qed.
+  Proof. intros. exists (addEnvSubst Q i j H); fo. Qed.
 
   Lemma envSub_min_ex : forall M N Q, M ~(Q) N -> exists Q', 
     M ~(Q') N /\ envSub_minimal Q' M /\ Q |=> Q'.
@@ -1849,17 +1832,17 @@ Module TermsConv (Sig : TermsSig.Signature).
   Proof.
     intros.
     set (v := max (size Q) (max i (length E))).
-    set (f := fun (x y: nat) =>
-      (x = i /\ y = v) \/ (envSub Q x y)).
+    set (f := fun x y => (x = i /\ y = v) \/ (envSub Q x y)).
     assert (f_dec: forall i j, {f i j} + {~f i j}).
     intros p q.
     destruct (envSub_dec Q p q).
     fo.
-    destruct (eq_nat_dec p i); destruct (eq_nat_dec q v); fo.
+    destruct (eq_nat_dec p i); destruct (eq_nat_dec q v);
+      subst; unfold f; tauto.
     assert (f_Lok: forall i j j', f i j -> f i j' -> j = j').
     unfold f; intros.
     destruct H0; destruct H1.
-    fo.
+    omega.
     absurd (envSub Q i0 j'); trivial.
     destruct H0; rewrite H0; fo.
     absurd (envSub Q i0 j); trivial.
@@ -1868,7 +1851,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     assert (f_Rok: forall i i' j, f i j -> f i' j -> i = i').
     unfold f; intros.
     destruct H0; destruct H1.
-    fo.
+    omega.
     absurd (j < size Q).
     destruct H0; rewrite H2.
     unfold v; intro w.
@@ -1884,7 +1867,10 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros.
     destruct H0 as [[i0_i jv] | x]; unfold v.
     rewrite jv; rewrite i0_i; split; auto.
-    eauto with arith.
+
+    Require NatUtil. apply Lt.le_lt_n_Sm.
+    apply NatUtil.le_max_intro_r. apply NatUtil.le_max_intro_l. refl.
+
     destruct (sizeOk Q i0 j x).
     split; eauto with arith.
     exists (build_envSub f f_dec f_Lok f_Rok s_ok).
@@ -2017,7 +2003,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     split.   
     apply envMinimal_abs with M'b (buildAbs_isAbs M''cond); trivial.
     destruct (env M'b); try destruct o.
-    fo.
+    compute. auto.
     right; simpl.
     rewrite (M'E0 0 s A); unfold VarD; simpl; trivial.
     left; right; trivial.
