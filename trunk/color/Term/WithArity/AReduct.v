@@ -134,9 +134,7 @@ Section S.
   Lemma reducts_fun : forall f ts, reducts (Fun f ts)
     = top_reducts R (Fun f ts) ++ reducts_vec f ts ts (le_refl (arity f)).
 
-  Proof.
-    intros. simpl. rewrite <- fix_reducts_vec. refl.
-  Qed.
+  Proof. intros. simpl. rewrite <- fix_reducts_vec. refl. Qed.
 
 (***********************************************************************)
 (** properties *)
@@ -144,9 +142,7 @@ Section S.
   Lemma reducts_vec_pi : forall f ts k (us : terms k) h h',
     reducts_vec f ts us h = reducts_vec f ts us h'.
 
-  Proof.
-    intros. assert (h=h'). apply le_unique. subst h'. refl.
-  Qed.
+  Proof. intros. assert (h=h'). apply le_unique. subst h'. refl. Qed.
 
   Lemma reducts_vec_cast : forall f ts k (us : terms k) h k' (e : k = k') h',
     reducts_vec f ts (Vcast us e) h' = reducts_vec f ts us h.
@@ -174,7 +170,7 @@ Section S.
     intros E g H. simpl in H. rewrite in_app in H. intuition.
     (* case 1 *)
     ded (in_map_elim H0). decomp H. destruct (E 0 (lt_O_Sn n)). simpl in H.
-    exists (arity f - S n + 0). exists x0. exists x. rewrite <- H. intuition.
+    exists (arity f - S n + 0). exists x0. exists x. rewrite <- H. split_all.
     rewrite H3. apply args_eq. apply Vreplace_pi. omega.
     (* case 2 *)
     assert (E' : forall (i : nat) (p : i < n),
@@ -319,7 +315,7 @@ Section S.
     assert (h1 : 0+x<=arity f). omega. set (v1 := Vsub ts h1).
     assert (h2 : S x+(arity f-S x)<=arity f). omega. set (v2 := Vsub ts h2).
     assert (e : x+S(arity f-S x)=arity f). omega.
-    exists (Cont f e v1 c v2). exists s. intuition. simpl. apply args_eq.
+    exists (Cont f e v1 c v2). exists s. split_all. simpl. apply args_eq.
     rewrite <- xl. unfold v2. rewrite Vcons_nth. unfold v1.
     apply Veq_app_cons_aux.
     simpl. rewrite H2. apply args_eq. apply Veq_nth; intros.
@@ -328,7 +324,7 @@ Section S.
     destruct (eq_nat_dec x i).
     (* a) x = i *)
     set (q := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0).
-    gen q. assert (i - x = 0). omega. rewrite H. intro. simpl.
+    gen q. assert (i - x = 0). subst; clear; omega. rewrite H. intro. simpl.
     trans (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
     rewrite Vnth_replace. hyp.
     (* b) x <> i *)
@@ -336,7 +332,7 @@ Section S.
     rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).
     2: absurd_arith.
     rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i-x)). unfold v2.
-    rewrite !Vnth_sub. apply Vnth_eq. omega. absurd_arith.
+    rewrite !Vnth_sub. apply Vnth_eq. refl. absurd_arith.
     (* 2) x > i *)
     rewrite Vnth_replace_neq. 2: omega. rewrite (Veq_app_cons ts x0).
     rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).
@@ -359,10 +355,10 @@ Section S.
     simpl. apply top_reducts_complete; hyp.
     decomp H2. discr.
     (* Fun *)
-    rewrite reducts_fun. rewrite in_app. ded (red_case H1). intuition.
+    rewrite reducts_fun. rewrite in_app. ded (red_case H1). split_all.
     left. apply top_reducts_complete; hyp.
-    right. decomp H3. Funeqtac. subst x0.
-    ded (Vforall_nth x2 H0 _ H2). subst u. apply In_reducts_vec_intro. hyp.
+    right. Funeqtac. subst x0. ded (Vforall_nth x2 H0). subst u.
+    apply In_reducts_vec_intro. apply H2. hyp.
   Qed.
 
 (***********************************************************************)
