@@ -1,6 +1,7 @@
 15-03-23: [Blanqui]
+- greatly improved compilation time by improving some scripts
+  CoLoR now compiles with -j20 in 4'20 instead of 6'30
 - Util/Logic/LogicUtil: added split_all tactic
-- greatly improved compilation time by replacing slow intuition/fo
 - Util/Option/ExcUtil: renamed into OptUtil
 
 15-03-19: [Blanqui]
