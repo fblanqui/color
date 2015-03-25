@@ -6,9 +6,9 @@ echo generate $output ...
 
 echo > $output
 
-for f in `find . -name .\*.time`
+for f in `find . -name \*.time`
 do
-  echo `echo ${f%.time}.v|sed -e 's|/\.|/|'` `cat $f` >> $output
+  echo `echo ${f%.time}.v` `cat $f` >> $output
 done
 
 awk -f stat_time.awk $output
