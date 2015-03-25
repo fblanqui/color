@@ -607,8 +607,8 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
     destruct (le_lt_dec (x0+2+k) (x0+S n));
       destruct (le_lt_dec (x0+2+k) (x0+1+n)); try omega.
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (x0+2+k-x0-1)).
-    apply Vnth_eq. clear. (*SLOW*)omega. omega. refl.
-  (*SLOW*)Qed.
+    apply Vnth_eq. clear. lia. omega. refl.
+  Qed.
 
   Lemma fsub_cons_rec0 x0 t n (ts : terms n) x :
     x = x0+2 -> fsub x0 (Vcons t ts) x = fsub (x0+1) ts x.
@@ -681,7 +681,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
     omega. unfold fsub. case (le_lt_dec (S(n+i+i0)) n); intro. omega.
     case (le_lt_dec (S(n+i+i0)) (n+(i+j))); intro. rewrite Vnth_app.
     case (le_gt_dec i (S(n+i+i0)-n-1)); intro. apply Vnth_eq.
-    clear; omega. omega. omega.
+    clear; lia. omega. omega.
   Qed.
 
 (***********************************************************************)
@@ -719,7 +719,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
       rewrite (beq_refl beq_nat_ok). refl. simpl. case_beq_nat y x0.
       simpl in H. tauto. refl. rewrite !sub_fun. rewrite H. refl.
       rewrite vars_fun in H0. hyp. refl. simpl in *. rewrite in_app in H1.
-      rewrite H0. rewrite H. refl. tauto. tauto.
+      rewrite H0, H. refl. tauto. tauto.
     Qed.
 
     Lemma swap_id x t : sub (swap x x) t = t.
