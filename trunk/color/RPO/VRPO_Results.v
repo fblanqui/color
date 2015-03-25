@@ -20,9 +20,7 @@ Module RPO_Results (Export RPO : RPO_Model).
 
   Lemma var_are_min : forall x t, lt t (Var x) -> False.
 
-  Proof.
-    intros x t H. lt_inversion H; try inversion t_is.
-  Qed.
+  Proof. intros x t H. lt_inversion H; try inversion t_is. Qed.
 
   Inductive in_term_vars : variable -> term -> Prop :=
     | is_var : forall x, in_term_vars x (Var x)
@@ -172,8 +170,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     g =F= f -> lt s (Fun f ts) -> lt s (Fun g ts).
 
   Proof.
-    intros s f g ts f_eq H.
-    eapply lt_eq_f; trivial. eexact H. trivial.
+    intros s f g ts f_eq H. eapply lt_eq_f; trivial. eexact H. trivial.
   Qed.
 
 (***********************************************************************)
@@ -368,15 +365,11 @@ Module RPO_Results (Export RPO : RPO_Model).
 
   Lemma lt_trans : transitive lt.
 
-  Proof.
-    intros s t u st tu. destruct (SPO_lt s). apply H with t; hyp.
-  Qed.
+  Proof. intros s t u st tu. destruct (SPO_lt s). apply H with t; hyp. Qed.
 
   Lemma lt_irrefl : irreflexive lt.
 
-  Proof.
-    intros s. destruct (SPO_lt s). trivial.
-  Qed.
+  Proof. intros s. destruct (SPO_lt s). trivial. Qed.
 
   Lemma acc_eq_f : forall f g ss,
     f =F= g -> Acc lt (Fun f ss) -> Acc lt (Fun g ss).
@@ -393,8 +386,7 @@ Module RPO_Results (Export RPO : RPO_Model).
   Lemma Acc_lt_var : forall x, Acc lt (Var x).
 
   Proof.
-    intro x; constructor; intros t lt_t_var_x.
-    elim (var_are_min lt_t_var_x).
+    intro x; constructor; intros t lt_t_var_x. elim (var_are_min lt_t_var_x).
   Qed.
 
   Require Import ListExtras.
@@ -506,30 +498,25 @@ Module RPO_Results (Export RPO : RPO_Model).
 
   Proof.
     intros. unfold eqF, eqA.
-    destruct (leF_dec f g); intuition.
-    destruct (leF_dec g f); intuition.
+    destruct (leF_dec f g). destruct (leF_dec g f).
+    auto. right. tauto. right. tauto.
   Defined.
 
   Lemma ltF_dec : forall f g, {f <F g} + {~f <F g}.
 
   Proof.
     intros. unfold ltF, ltA, eqA.
-    destruct (leF_dec f g); intuition.
-    destruct (leF_dec g f); intuition.    
+    destruct (leF_dec f g). destruct (leF_dec g f).
+    right. tauto. left. tauto. right. tauto.
   Defined.
 
   Definition term_eq (tu : term * term) :=
-    let (t, u) := tu in
-    if term_eq_dec t u then
-      true
-    else
-      false.
+    let (t, u) := tu in if term_eq_dec t u then true else false.
 
   Lemma term_eq_correct : forall t u, term_eq (t, u) = true -> t = u.
 
   Proof.
-    intros. unfold term_eq in H. 
-    destruct (term_eq_dec t u). hyp. discr.
+    intros. unfold term_eq in H. destruct (term_eq_dec t u). hyp. discr.
   Qed.
 
   Notation term_eq_dec := (@term_eq_dec Sig).
@@ -571,37 +558,37 @@ Module RPO_Results (Export RPO : RPO_Model).
      (* Compare: lt (Var x) (Fun q v) *)
     intros x IH. destruct (rpo_lt_subterm_dec (Var x) v). hyp.
     left. apply lt_subterm. destruct s as [a [av ax]].
-    exists a. unfold ge in ax. intuition.
+    exists a. unfold ge in ax. split_all.
     right. intro H. lt_inversion H; try discr.
-    apply n. exists t'. replace v with ts. unfold ge. intuition. congruence.
+    apply n. exists t'. replace v with ts. unfold ge. split_all. congruence.
      (* Compare: lt (Fun f vf) (Fun g v) *)
     intros f vf IH IH'.
     destruct (rpo_lt_subterm_dec (Fun f vf) v). hyp.
     left. apply lt_subterm. destruct s as [a [av ax]].
-    exists a. unfold ge in ax. intuition.
+    exists a. unfold ge in ax. split_all.
     assert (all_lt_dec : 
       { forall t, In t vf -> lt t (Fun q v) } + 
       { exists t, In t vf /\ ~lt t (Fun q v) }).
     destruct (list_dec_all (fun vs => lt vs (Fun q v)) vf);
-      try solve [intuition].
+      try solve [split_all].
     intros. apply IH. apply Inb_intro. hyp. hyp. 
      (* RPO clause: lt_roots *)
     assert (lt_roots_dec : {lt (Fun f vf) (Fun q v)} + 
       {~(f <F q) \/ exists t, In t vf /\ ~lt t (Fun q v)}).
-    destruct (ltF_dec f q); try solve [intuition].
-    destruct all_lt_dec; intuition.
+    destruct (ltF_dec f q); try solve [split_all].
+    destruct all_lt_dec; split_all.
     left. apply lt_roots; hyp.
-    destruct lt_roots_dec. intuition.
+    destruct lt_roots_dec. split_all.
      (* RPO clause: lt_status *)
     assert (lt_status_dec : {lt (Fun f vf) (Fun q v)} + 
       {~f =F= q \/ ~tau q lt vf v \/ exists t, In t vf /\ ~lt t (Fun q v)}).
-    destruct (eqF_dec f q); try solve [intuition].
-    destruct (tau_dec q lt vf v); try solve [intuition].
+    destruct (eqF_dec f q); try solve [split_all].
+    destruct (tau_dec q lt vf v); try solve [split_all].
     intros. apply (IH' s). apply Inb_intro. hyp. 
-    destruct all_lt_dec; try solve [intuition].
-    left. apply lt_status; try solve [intuition].
+    destruct all_lt_dec; try solve [split_all].
+    left. apply lt_status; try solve [split_all].
     apply eqF_sym. hyp.
-    destruct lt_status_dec. intuition.
+    destruct lt_status_dec. split_all.
      (* proof that order does not hold *)
     right. intro ord. lt_inversion ord.
     destruct o as [f_q | [t [t_vf t_qv]]].
@@ -615,7 +602,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     apply t_qv. replace q with g; replace v with ts; try solve [congruence].
     apply Hsub. congruence.
     apply n. exists t'. split. congruence.
-    unfold ge. intuition.
+    unfold ge. split_all.
   Defined.
 
 End RPO_Results.
