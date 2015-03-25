@@ -4,4 +4,5 @@ args=$*
 n=$#
 shift `expr $n - 1`
 f=${1%.v}
-/usr/bin/time -f "%e" -o `dirname $f`/.`basename $f`.time coqc $args
+/usr/bin/time -f "%e" -o $f.time coqc $args
+cat $f.time
