@@ -46,10 +46,10 @@ Section S.
     induction R; simpl. contr.
     assert (h : List.incl R (a::R)). unfold List.incl. simpl. auto.
     case_eq (top_reduct t a); intros t0 H.
-    intro H0. simpl in H0. intuition. subst. 
+    intro H0. simpl in H0. split_all. subst.
     eapply top_reduct_correct with (lr := a). simpl. auto. hyp.
-    eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. hyp.
-    eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. apply IHR. hyp.
+    eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. tauto.
+    eapply inclusion_elim. apply hd_red_incl with (x := R). hyp. tauto.
   Qed.
 
   Implicit Arguments top_reducts_correct [t u R].
@@ -68,19 +68,18 @@ Section S.
   Proof.
     induction R; intros; redtac. hyp. simpl in lr.
     assert (h0 : rules_preserve_vars R). eapply rules_preserve_vars_incl.
-    2: apply H. apply incl_tl. refl. intuition.
+    2: apply H. apply incl_tl. refl. split_all.
     (* In (mkRule l r) R *)
     Focus 2. simpl.  assert (h1 : hd_red R t u). subst. apply hd_red_rule. hyp.
-    case (top_reduct t a). right. apply H1; hyp. apply H1; hyp.
+    case (top_reduct t a). right. apply IHR; hyp. apply IHR; hyp.
     (* a = mkRule l r *)
     subst a. simpl. unfold top_reduct. simpl.
     case_eq (matches l t).
     intros t0 H0. ded (matches_correct H0). left. subst u. apply sub_eq. intros.
-    eapply subeq_inversion. rewrite xl in H2. apply H2.
+    eapply subeq_inversion. rewrite xl in H1. apply H1.
     unfold rules_preserve_vars in H. unfold List.incl in H. eapply H. simpl.
     auto. hyp.
-    intro H0. symmetry in xl. ded (matches_complete xl). rewrite H0 in H2.
-    irrefl.
+    intro H0. symmetry in xl. ded (matches_complete xl). congruence.
   Qed.
 
 (***********************************************************************)
@@ -167,20 +166,21 @@ Section S.
     (* Vnil *)
     contr.
     (* Vcons *)
-    intros E g H. simpl in H. rewrite in_app in H. intuition.
+    intros E g H. simpl in H. rewrite in_app in H. split_all.
     (* case 1 *)
-    ded (in_map_elim H0). decomp H. destruct (E 0 (lt_O_Sn n)). simpl in H.
-    exists (arity f - S n + 0). exists x0. exists x. rewrite <- H. split_all.
+    ded (in_map_elim H). decomp H0. destruct (E 0 (lt_O_Sn n)). simpl in H0.
+    ex (arity f - S n + 0) x0 x. rewrite <- H0. split_all.
     rewrite H3. apply args_eq. apply Vreplace_pi. omega.
     (* case 2 *)
     assert (E' : forall (i : nat) (p : i < n),
       exists r : arity f - n + i < arity f, Vnth us p = Vnth ts r). intros.
     assert (p' : S i < S n). omega. destruct (E (S i) p'). simpl in H.
-    assert (lt_S_n p' = p). apply lt_unique. rewrite H1 in H. rewrite H.
+    assert (lt_S_n p' = p). apply lt_unique. simpl in H0. rewrite H1 in H0.
+    rewrite H0.
     assert (r : arity f - n + i < arity f). omega. exists r. apply Vnth_eq.
     omega.
     assert (h' : n <= arity f). omega.
-    rewrite reducts_vec_pi with (h':=h') in H0.
+    rewrite reducts_vec_pi with (h':=h') in H.
     apply IHus with (h:=h'); hyp.
   Qed.
 
@@ -272,15 +272,14 @@ Section S.
     (* Vnil *)
     contr.
     (* Vcons *)
-    simpl in H. rewrite in_app in H. intuition.
+    simpl in H. rewrite in_app in H.
+    split_all; ded (in_map_elim H); clear H; decomp H0.
     (* case 1 *)
-    ded (in_map_elim H0); clear H0. decomp H.
-    exists 0. set (p := lt_O_Sn n). exists p. exists x. simpl. auto.
+    set (p := lt_O_Sn n). ex 0 p x. simpl. auto.
     (* case 2 *)
-    ded (in_map_elim H0); clear H0. decomp H.
-    ded (IHts x H1); clear IHts. decomp H.
-    exists (S x0). assert (p : S x0<S n). omega. exists p. exists x2. simpl.
-    assert (lt_S_n p = x1). apply lt_unique. rewrite H. subst x. auto. 
+    ded (IHts x H1); clear IHts. decomp H. assert (p : S x0<S n). omega.
+    ex (S x0) p x2. simpl. assert (lt_S_n p = x1). apply lt_unique.
+    rewrite H. subst x. auto. 
   Qed.
 
   Implicit Arguments In_reducts2_vec_elim [n vs ts].
@@ -308,10 +307,10 @@ Section S.
     (* Var *)
     intros. apply top_reducts_correct_red. hyp.
     (* Fun *)
-    intros f ts IH u. rewrite reducts_fun. rewrite in_app. intuition.
+    intros f ts IH u. rewrite reducts_fun, in_app. split_all.
     apply hd_red_incl_red. apply top_reducts_correct. hyp.
-    rename H0 into h. ded (In_reducts_vec_elim h). decomp H.
-    ded (Vforall_nth x0 IH _ H1). redtac. unfold red. exists l. exists r.
+    rename H into h. ded (In_reducts_vec_elim h). decomp H.
+    ded (Vforall_nth x0 IH _ H1). redtac. unfold red. ex l r.
     assert (h1 : 0+x<=arity f). omega. set (v1 := Vsub ts h1).
     assert (h2 : S x+(arity f-S x)<=arity f). omega. set (v2 := Vsub ts h2).
     assert (e : x+S(arity f-S x)=arity f). omega.
@@ -351,7 +350,7 @@ Section S.
   Proof.
     intros H t; pattern t; apply term_ind_forall; clear t; intros.
     (* Var *)
-    ded (red_case H0). intuition.
+    ded (red_case H0). split_all.
     simpl. apply top_reducts_complete; hyp.
     decomp H2. discr.
     (* Fun *)
@@ -367,7 +366,7 @@ Section S.
   Lemma fin_branch : rules_preserve_vars R -> finitely_branching (red R).
 
   Proof.
-    unfold finitely_branching. intros. exists (reducts x). intuition.
+    unfold finitely_branching. intros. exists (reducts x). split_all.
     apply reducts_complete; hyp. apply reducts_correct. hyp.
   Qed.
 
