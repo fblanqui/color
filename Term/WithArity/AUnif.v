@@ -727,7 +727,7 @@ Lemma is_sol_eqn_sub : forall s s' e,
 
 Proof.
 intros s s' e. destruct e. unfold is_sol_eqn. simpl. intro.
-do 2 rewrite <- sub_sub. apply (f_equal (sub s')). hyp.
+do 2 rewrite <- sub_sub. f_equal. hyp.
 Qed.
 
 Lemma is_sol_solved_eqns_sub : forall s s' l,

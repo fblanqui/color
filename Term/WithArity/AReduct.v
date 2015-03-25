@@ -339,7 +339,7 @@ Section S.
     absurd_arith.
     assert (g0 = g). apply lt_unique. subst g0.
     assert (Vsub ts (Veq_app_cons_aux1 x0) = v1). unfold v1.
-    apply (f_equal (@Vsub _ _ ts _ _)). apply le_unique. rewrite H. refl.
+    f_equal. apply le_unique. rewrite H. refl.
   Qed.
 
 (***********************************************************************)

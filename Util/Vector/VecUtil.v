@@ -1774,8 +1774,8 @@ Section Vbuild.
     omega.
   Qed.
   Next Obligation.
-    simpl. destruct i. apply (f_equal (gen 0)). apply lt_unique.
-    rewrite e. apply (f_equal (gen (S i))). apply lt_unique.
+    simpl. destruct i. f_equal. apply lt_unique.
+    rewrite e. f_equal. apply lt_unique.
   Defined.
 
   Definition Vbuild n gen : vector A n := proj1_sig (Vbuild_spec gen).
@@ -2249,7 +2249,7 @@ Section Vopt_filter.
   Proof.
     intros p xs. induction ks; intros i hi. exfalso. omega. rename h into k.
     simpl. destruct i as [|i]; intro hj. 2: fo.
-    destruct (lt_dec k p). 2: omega. apply (f_equal Some). apply Vnth_eq. refl.
+    destruct (lt_dec k p). 2: omega. f_equal. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vopt_filter_cast p (xs : vector A p) p' (h : p = p') :

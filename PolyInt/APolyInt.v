@@ -194,7 +194,7 @@ Section S.
       unfold P in H.
       gen (Vmap_eq H). intro H'.
       rewrite peval_comp.
-      apply (f_equal (peval (PI f))).
+      f_equal.
       rewrite Vmap_map. rewrite Vmap_map.
       unfold f1 in H'. unfold f2 in H'. hyp.
 

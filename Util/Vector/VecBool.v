@@ -33,7 +33,7 @@ Lemma Vtrue_break : forall n1 n2 (bs : bools (n1+n2)),
 
 Proof.
 induction n1; simpl; intros. refl. VSntac bs. simpl. case (Vhead bs); simpl.
-apply (f_equal S). apply IHn1. apply IHn1.
+f_equal. apply IHn1. apply IHn1.
 Qed.
 
 Implicit Arguments Vtrue_break [n1 n2].

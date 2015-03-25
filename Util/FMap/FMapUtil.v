@@ -444,7 +444,7 @@ and satisfies some commutation property. *)
 
       Proof.
         intros fm k k' kk' x x' xx' b b' bb'. subst b'. unfold for_all_aux.
-        apply (f_equal (fun c => c && b)). apply fm; hyp.
+        f_equal. apply fm; hyp.
       Qed.
 
       Lemma for_all_aux_transp : transpose_neqkey Logic.eq for_all_aux.
