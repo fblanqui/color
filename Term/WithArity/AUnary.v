@@ -92,10 +92,10 @@ Lemma term_ind_forall : forall t, P t.
 
 Proof.
 apply term_ind_forall_cast. hyp. intro f. ded (is_unary_sig f). destruct ts.
-intro. absurd_arith. destruct ts.
+intro. omega. destruct ts.
 simpl Vforall. intuition. assert (h0 = is_unary_sig f). apply eq_unique.
 subst h0. apply Hfun. hyp.
-intro. absurd_arith.
+intro. omega.
 Qed.
 
 End term_ind.

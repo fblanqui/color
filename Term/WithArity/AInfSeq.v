@@ -206,7 +206,7 @@ R-sequence *)
     (* forall j, j < g 0 -> k j <> a *)
     assert (hg0 : forall j, j < g 0 -> k j <> a).
     intros j hj e. destruct (h3 _ e) as [l hl]. subst.
-    destruct (le_dec 0 l). ded (me _ _ l0). absurd_arith. absurd_arith.
+    destruct (le_dec 0 l). ded (me _ _ l0). omega. omega.
     (* forall i j, g i < j < g (S i) -> k j <> a *)
     assert (hg : forall i j, g i < j < g (S i) -> k j <> a).
     intros i j hj e. destruct (h3 _ e) as [l hl]. subst.
@@ -312,7 +312,7 @@ minimal infinite R-sequence *)
       intro h. apply h. refl.
       induction i; intro hi. apply rt_refl. apply rt_trans with (f i).
       apply IHi. omega. apply rt_step. apply NNPP. intro h.
-      assert (k <= i). apply is_min_ch. hyp. absurd_arith.
+      assert (k <= i). apply is_min_ch. hyp. omega.
       (* (f k) is minimal *)
       assert (NT_min (red R) (f k)). split.
       exists (fun i => f (i+k)). intuition. intro i. apply hf.

@@ -181,7 +181,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Proof.
         induction v1; intros; simpl.
-        destruct n; try solve [absurd_arith].
+        destruct n; try solve [omega].
         rewrite !Vcast_cons. simpl.
         unfold add_vectors, succeq. simpl. apply Vforall2_intro_nth. 
         intros. unfold vector_plus. do 2 rewrite Vnth_map2.
@@ -189,7 +189,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         apply Vforall2_elim_nth. apply f_mon. hyp.
         apply plus_ge_compat. apply ge_refl. hyp.
 
-        destruct n0; try solve [absurd_arith].
+        destruct n0; try solve [omega].
         rewrite !Vcast_cons. simpl.
         unfold add_vectors, succeq. simpl. apply Vforall2_intro_nth. 
         intros. unfold vector_plus. do 2 rewrite Vnth_map2.
@@ -365,7 +365,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Proof.
         induction i; intros.
-        destruct k. absurd_arith.
+        destruct k. omega.
         unfold add_vectors. simpl.
         fold (add_vectors (Vmap2 mat_vec_prod 
                                  (Vconst (zero_matrix dim dim) k) (Vtail v))).
@@ -381,7 +381,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         apply Vforall2_intro_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix, zero_vec.
         rewrite mat_build_elem. rewrite Vnth_const. refl.
-        destruct k. absurd_arith.
+        destruct k. omega.
         rewrite Vreplace_tail. simpl. rewrite add_vectors_cons.
         unfold M.mat_vec_prod at 1. rewrite zero_matrix_mult_l.
         assert (col_mat_to_vec (zero_matrix dim 1) =v zero_vec dim).

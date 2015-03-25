@@ -28,7 +28,7 @@ Section Multiplicity.
 
   Proof.
     induction l; simpl; intros.
-    absurd_arith.
+    omega.
     destruct (eqA_dec a x).
     exists a; auto.
     destruct (IHl x) as [x' [x'x x'l]]; trivial.
@@ -383,7 +383,7 @@ Section ListSim_iso.
     constructor.
     set (w := H0 a); inversion w.
     destruct (eqA_dec a a).
-    absurd_arith.
+    omega.
     absurd (eqA a a); intuition.
     inversion H.
     apply permut_refl.

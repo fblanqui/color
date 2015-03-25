@@ -170,7 +170,7 @@ is transitive. *)
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
         apply hcc. unfold vt, vu. rewrite !Vnth_cast. rewrite !Vnth_app.
-        destruct (le_gt_dec i x). 2: absurd_arith.
+        destruct (le_gt_dec i x). 2: omega.
         repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
         (* i not in (pi f) *)
@@ -221,7 +221,7 @@ is transitive. *)
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
         apply hcc. unfold vt, vu. rewrite !Vnth_cast. rewrite !Vnth_app.
-        destruct (le_gt_dec i x). 2: absurd_arith.
+        destruct (le_gt_dec i x). 2: omega.
         repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
         (* i not in (pi f) *)
@@ -288,7 +288,7 @@ is transitive. *)
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
         unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
-        destruct (le_gt_dec i x). 2: absurd_arith.
+        destruct (le_gt_dec i x). 2: omega.
         repeat (rewrite Vnth_cons_head; [idtac|omega]).
         change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
 

@@ -187,8 +187,8 @@ Proof.
 induction p.
 (* nil *)
 unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
-intuition. unfold L in H. destruct n. absurd_arith. destruct n; discr.
-destruct n. refl. ded (H1 n (le_n (S n))). absurd_arith.
+intuition. unfold L in H. destruct n. omega. destruct n; discr.
+destruct n. refl. ded (H1 n (le_n (S n))). omega.
 (* cons *)
 destruct a. intuition.
 (* -> *)

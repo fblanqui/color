@@ -155,7 +155,7 @@ Section S.
     intros. destruct c. refl. assert (size (fill (Cont e t0 c t1) t) > size t).
     simpl fill. rewrite size_fun. rewrite size_terms_cast.
     rewrite size_terms_app. simpl. ded (size_fill t c). omega.
-    rewrite <- H in H0. absurd_arith.
+    rewrite <- H in H0. omega.
   Qed.
 
 (***********************************************************************)

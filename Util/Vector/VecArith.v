@@ -177,7 +177,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Proof.
     induction i. intros. 
-    destruct n. absurd_arith.
+    destruct n. omega.
 
     (* induction base *)
     VSntac v. unfold id_vec, dot_product. simpl.
@@ -187,7 +187,7 @@ Module VectorArith (SRT : SemiRingType).
     rewrite Vnth_const. refl.
 
     (* induction step *)
-    intros. destruct n. absurd_arith.
+    intros. destruct n. omega.
     VSntac v. unfold dot_product. simpl.
     rewrite <- (IHi n (lt_S_n ip) (Vtail v)).
     ring_simplify. unfold dot_product. refl.

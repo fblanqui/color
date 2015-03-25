@@ -204,7 +204,7 @@ Module Multiset (MC : MultisetCore).
       mset_unfold; intros.
       case (eqA_dec x y); [trivial | intro x_neq_y].
       assert (x/{{y}} = 0); [auto with multisets | idtac].
-      rewrite H0 in H; absurd_arith.
+      rewrite H0 in H; omega.
     Qed.
 
     Lemma singleton_member_eqA a b : a in {{b}} -> a =A= b.
@@ -251,7 +251,7 @@ Module Multiset (MC : MultisetCore).
       rewrite union_mult.
       rewrite !singleton_mult_notin; trivial.
       unfold member in H.
-      rewrite H0 in H; absurd_arith.
+      rewrite H0 in H; omega.
     Qed.
 
     Lemma union_perm M N P : M + N + P =mul= M + P + N.

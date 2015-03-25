@@ -110,7 +110,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       Vnth (mat_vec_prod m v) dim_pos <> PlusInf.
 
     Proof.
-      destruct n; intros. absurd_arith.
+      destruct n; intros. omega.
       VSntac v. unfold matrix in m. VSntac m. 
       unfold mat_vec_prod, col_mat_to_vec, get_col. rewrite Vnth_map. 
       set (w := mat_mult_spec). unfold get_elem, get_row in w. rewrite w.

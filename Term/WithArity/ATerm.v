@@ -672,7 +672,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     intro P. set (Q := fun n => forall t, size t <= n -> P t).
     change ((forall n, Q n -> Q (S n)) -> forall t, P t). intro IH.
     cut (forall t, Q t). intros. unfold Q in H. eapply H. apply le_refl.
-    induction t. unfold Q. destruct t; simpl; intros; absurd_arith.
+    induction t. unfold Q. destruct t; simpl; intros; omega.
     apply IH. hyp.
   Qed.
 

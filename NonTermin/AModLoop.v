@@ -102,7 +102,7 @@ Section S.
     red_mod E R (nth i (t::ts) default) (nth (S i) (t::ts) default).
 
   Proof.
-    induction ts; simpl; intros. absurd_arith. destruct H. destruct i. hyp.
+    induction ts; simpl; intros. omega. destruct H. destruct i. hyp.
     ded (IHts _ H1 i (lt_S_n H0)). hyp.
   Qed.
 

@@ -65,7 +65,7 @@ Section S.
     In v (subterm_lst (Vnth ts p)) -> In v (subterm_lst_vec ts).
 
   Proof.
-    induction ts. intros. absurd_arith.
+    induction ts. intros. omega.
     destruct i; simpl; intros; rewrite in_app.
     left; hyp. right. apply (IHts _ _ (lt_S_n p)); auto.
   Qed.
@@ -95,7 +95,7 @@ Section S.
     right. assert (p : i < arity f). rewrite <- r. omega.
     assert (Hs : supterm (Vnth ts p) y).
     rewrite H. rewrite Vnth_cast, Vnth_app.
-    destruct (le_gt_dec i i). 2: absurd_arith.
+    destruct (le_gt_dec i i). 2: omega.
     set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
     rewrite (Vnth_eq _ q (lt_O_Sn j)); try omega. simpl.
     exists (Cont f0 e t c0 t0). simpl. intuition. discr.

@@ -277,7 +277,7 @@ Section Vnth.
   Lemma Vnth_cons_tail : forall x n (v : vector A n) i (h1:i<S n) (h2:i>0),
     Vnth (Vcons x v) h1 = Vnth v (Vnth_cons_tail_aux h1 h2).
 
-  Proof. intros. simpl. destruct i. absurd_arith. apply Vnth_eq. omega. Qed.
+  Proof. intros. simpl. destruct i. omega. apply Vnth_eq. omega. Qed.
 
   Lemma Vnth_cons : forall x n (v : vector A n) i (h1:i<S n),
     Vnth (Vcons x v) h1 = match lt_ge_dec 0 i with
@@ -293,9 +293,7 @@ Section Vnth.
   Lemma Vnth_const : forall n (a : A) i (ip : i < n), Vnth (Vconst a n) ip = a.
 
   Proof.
-    induction n; intros. absurd_arith.
-    destruct i. trivial.
-    simpl. rewrite IHn. refl.
+    induction n; intros. omega. destruct i. trivial. simpl. rewrite IHn. refl.
   Qed.
 
   Lemma Vnth_cast_aux : forall n n' k, n = n' -> k < n' -> k < n.
@@ -306,7 +304,7 @@ Section Vnth.
     Vnth (Vcast v e) h = Vnth v (Vnth_cast_aux e h).
 
   Proof.
-    induction v as [|x p v IHv]. intros; absurd_arith. intros [|n']; try discr.
+    induction v as [|x p v IHv]. intros; omega. intros [|n']; try discr.
     inversion e; subst p; intros [|k] h; rewrite Vcast_refl; simpl.
     refl. rewrite (IHv n' (refl_equal n') k); apply Vnth_eq; refl.
   Qed.
@@ -420,7 +418,7 @@ Section Vreplace.
   Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vector A (S n)) a,
     Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
 
-  Proof. destruct n; intros. absurd_arith. VSntac v. refl. Qed.
+  Proof. destruct n; intros. omega. VSntac v. refl. Qed.
 
   Lemma Vnth_replace : forall n i (ip ip' : i < n) (v : vector A n) (a : A),
     Vnth (Vreplace v ip a) ip' = a.
@@ -448,7 +446,7 @@ Section Vreplace.
 
   Proof.
     intros. subst i2. revert i1 h1 h2. elim v; clear v; simpl; intros.
-    absurd_arith. destruct i1. refl. apply Vtail_eq. apply H.
+    omega. destruct i1. refl. apply Vtail_eq. apply H.
   Qed.
 
   Lemma Vreplace_eq_elim : forall n (v : vector A n) i (h : i < n) x x',
@@ -875,7 +873,7 @@ Section Vsub.
     Vnth (Vsub v h) p = Vnth v (Vnth_sub_aux h p).
 
   Proof.
-    induction k; intros. absurd_arith. simpl. destruct j. apply Vnth_eq. omega.
+    induction k; intros. omega. simpl. destruct j. apply Vnth_eq. omega.
     rewrite IHk. apply Vnth_eq. omega.
   Qed.
 
@@ -981,7 +979,7 @@ Section Vsub.
   Proof.
     induction v; intros.
     (* Vnil *)
-    apply Veq_nth; intros. absurd_arith.
+    apply Veq_nth; intros. omega.
     (* Vcons *)
     destruct i; simpl in *; [rewrite Vcast_refl | rewrite Vcast_cons];
       f_equal; repeat rewrite Vsub_cons.
@@ -1016,7 +1014,7 @@ Section Vsub.
   Proof.
     induction v; intros.
     (* Vnil *)
-    apply Veq_nth; intros. absurd_arith.
+    apply Veq_nth; intros. omega.
     (* Vcons *)
     destruct i; simpl; rewrite Vcast_cons; f_equal; repeat rewrite Vsub_cons.
     (* i = 0 *)
@@ -1927,7 +1925,7 @@ Section vec_of_list.
     Vnth (vec_of_list l) Hi = nth i l d.
 
   Proof.
-    induction l. simpl. intros. absurd_arith.
+    induction l. simpl. intros. omega.
     intros. rewrite vec_of_list_cons. destruct i; simpl; auto.
   Qed.
 
@@ -2143,7 +2141,7 @@ Section Vmap2.
 
   Proof.
     induction n; intros.
-    VOtac. absurd_arith.
+    VOtac. omega.
     VSntac vl. VSntac vr. destruct i. refl. 
     simpl. apply IHn.
   Qed.
