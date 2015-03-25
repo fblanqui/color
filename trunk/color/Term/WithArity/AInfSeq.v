@@ -98,7 +98,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       assert (exP : exists n, P n). ex (size t) t. split_all. refl.
       destruct (ch_min exP) as [n [[Pn nleP] nmin]].
       destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold NT_min, min.
-      split_all. intro h. rename u0 into v.
+      split_all. rename u0 into v.
       assert (size u <= size v). apply nleP. exists v. split_all.
       eapply subterm_eq_trans. apply subterm_strict. apply H. hyp.
       ded (subterm_size H). omega.

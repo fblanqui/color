@@ -425,7 +425,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_domain.
-    split_all; intro h; apply H0; apply var_aeq_r; rewrite <- h.
+    split_all; apply H1; apply var_aeq_r; rewrite <- H0.
     apply ss'. hyp. sym. apply ss'. hyp.
   Qed.
 
@@ -722,16 +722,16 @@ variables. *)
     apply H5. rewrite In_fvcodom. ex b. set_iff. rewrite h1.
     revert i3. unfold xx's. unfold Def.update. eq_dec b x.
     subst b. simpl. set_iff. tauto.
-    split_all. intro H6. revert i3. rewrite H6. simpl.
+    split_all. revert i3. rewrite H6. simpl.
     set_iff. intro h. subst b. rewrite h1 in H4. tauto.
 
     assert (e2 : subs yy's (rename x y v) = subs1 yy's (rename x y v)).
     apply subs1_no_alpha. rewrite bv_rename.
     Focus 2. intro h. gen (hs3 _ h). set_iff. tauto. Focus 1.
     rewrite inter_empty. intros a ha. gen (hs3 _ ha). set_iff. split_all.
-    rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
+    revert H1. rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
-    intros i2 i3. apply H5. rewrite In_fvcodom. ex b. revert i1.
+    intros i2 i3. apply H6. rewrite In_fvcodom. ex b. revert i1.
     rewrite h1 in *. rewrite fv_rename.
     destruct (mem x (fv v)); set_iff; split_all. subst b. irrefl. (*SLOW*)fo.
 
@@ -783,13 +783,13 @@ variables. *)
     unfold y', Def.var; ens. rewrite hy. apply var_notin_ok.
     set_iff. right. rewrite In_fvcodom. ex a. set_iff. split_all.
     unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
-    set_iff. split_all. hyp. intro ya; subst a. rewrite <- h1 in i1. tauto.
+    set_iff. split_all. hyp. subst a. rewrite <- h1 in i1. tauto.
 
     assert (p0 : y' = y). unfold y', Def.var; ens. rewrite hy. refl.
     absurd (In y (fvcodom (remove y (fv u')) s)). rewrite not_mem_iff. hyp.
     rewrite In_fvcodom. ex a. set_iff. rewrite p0 in i3. split_all.
     unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
-    set_iff. intuition. hyp. intro ya; subst a. rewrite <- h1 in i1. tauto.
+    set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
 
     (* ~In y' (fv (subs1 xx's v)) *)
     trans (Lam y' (rename x' y' (subs1 xx's v))). apply aeq_alpha. hyp.

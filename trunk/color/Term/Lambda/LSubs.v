@@ -935,13 +935,13 @@ on some finite set of variables *)
     subst y. set_iff. split_all.
     right. exists z. rewrite In_domain. unfold Def.update.
     eq_dec z x. subst z. tauto. tauto.
-    intro e. subst x'. apply var_notin_ok with (xs := union (fv u) xs).
-    rewrite e. apply union_subset_2. hyp.
+    subst x'. apply var_notin_ok with (xs := union (fv u) xs).
+    rewrite H4. apply union_subset_2. hyp.
 
     (* y <> x *)
     set_iff. split_all.
 
-    left. split_all. fo.
+    left. split_all.
 
     revert H3 H5. rewrite In_domain. unfold Def.update.
     eq_dec x0 x; simpl; set_iff. subst x0. intuition.
@@ -956,10 +956,10 @@ on some finite set of variables *)
     rewrite In_domain. unfold Def.update. eq_dec a x. subst a.
     irrefl. tauto.
 
-    intro e. subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
+    subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
     apply union_subset_1. hyp.
 
-    intro e. subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
+    subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
     apply union_subset_2. hyp.
 
     (* ~In x xs *)
@@ -1843,7 +1843,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     apply inter_empty. intros z hz. rewrite fvcodom_single.
     case_eq (mem x (fv u) && negb (beq_term (Var y) (Var x))); simpl; set_iff.
     2: fo. rewrite andb_eq, <- mem_iff, beq_term_var, negb_lr; simpl.
-    unfold XSetFacts.eqb. eq_dec y x; split_all; intro i; subst; fo.
+    unfold XSetFacts.eqb. eq_dec y x; split_all; subst; fo.
   Qed.
 
   (** [subs1 s1 u] equals [subs1 s2 u] if [s1] and [s2] are equal on
@@ -2018,8 +2018,8 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     case_eq (mem x' (fv (s z)) && negb (eqb y' x')). 2: refl.
     rewrite andb_true_iff, negb_true_iff, eqb_false_iff, <- mem_iff.
     intros [i1 i2]. absurd (In x' (fvcodom (remove x (singleton z)) s)). hyp.
-    rewrite In_fvcodom. exists z. set_iff. split_all. intro e.
-    revert i1. rewrite e. simpl. set_iff. hyp.
+    rewrite In_fvcodom. exists z. set_iff. split_all.
+    revert i1. rewrite H. simpl. set_iff. hyp.
     (* fun *)
     refl.
     (* app *)
