@@ -253,7 +253,7 @@ Module ST_CmpTransLeibniz (Export BCmpTransLeibniz : CmpTransLeibniz)
   Proof.
     induction x; destruct y; simpl; try discr.
     intro e. apply BCmpTransLeibniz.cmp_eq in e. subst. refl.
-    case_eq (cmp x1 y1); intros e1 e2; apply (f_equal2 _); 
+    case_eq (cmp x1 y1); intros e1 e2; f_equal;
       try apply IHx1 in e1; try apply IHx2 in e2; subst; (refl||discr).
   Qed.
 
