@@ -7,7 +7,14 @@ Requirements:
 Procedure:
 - step 1/2: opam repo add coq-stable https://github.com/coq/repo-stable.git
 - step 2/2: opam install --jobs=N coq:color
-            (it takes 6'32" on my computer with N=20)
+
+Compilation time on my computer:
+
+N  | without Coccinelle | with Coccinelle
+-----------------------------------------
+1  | 22'16"             | 27'00"
+3  |  9'21"		| 10'47"
+20 |  6'28"             |  6'45"
 
 Enjoy!
 
