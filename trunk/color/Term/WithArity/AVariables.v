@@ -9,8 +9,8 @@ set of variables occuring in a term
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ASubstitution FSetUtil OrderedTypeEx NatUtil BoolUtil
-  EqUtil ATrs ListUtil VecUtil.
+(*SLOW*)Require Import LogicUtil ASubstitution FSetUtil OrderedTypeEx NatUtil
+  BoolUtil EqUtil ATrs ListUtil VecUtil.
 Require FSetAVL.
 
 (***********************************************************************)
@@ -61,9 +61,7 @@ Definition vars_vec :=
 
 Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_vec ts.
 
-Proof.
-refl.
-Qed.
+Proof. refl. Qed.
 
 Fixpoint vars_list ts :=
   match ts with
@@ -77,22 +75,22 @@ Lemma in_vars_mem : forall x (u : term),
 Proof.
 intros. pattern u. apply term_ind with (Q := fun n (us : terms n) =>
   List.In x (ATerm.vars_vec us) <-> mem x (vars_vec us) = true); clear u.
-intro. simpl. mem. intuition.
-intros f us H. rewrite ATerm.vars_fun. rewrite vars_fun. hyp.
-simpl. mem. intuition.
-intros. simpl. mem. intuition. destruct (in_app_or H0).
-ded (H1 H4). rewrite H5. refl. ded (H H4). rewrite H5. bool.
-refl. case (orb_true_elim H0); intro.
-ded (H2 e). apply in_appl. hyp. ded (H3 e). apply in_appr. hyp.
+intro. simpl. mem. tauto.
+intros f us H. rewrite ATerm.vars_fun, vars_fun. hyp.
+simpl. mem. fo.
+intros. simpl. mem. split_all. destruct (in_app_or H1).
+rewrite (H H4). refl. rewrite (H0 H4). bool. refl.
+case (orb_true_elim H1); intro e.
+ded (H3 e). apply in_appl. hyp. ded (H2 e). apply in_appr. hyp.
 Qed.
 
 Lemma mem_vars_vec : forall x n (ts : terms n),
   mem x (vars_vec ts) = true -> exists t, Vin t ts /\ mem x (vars t) = true.
 
 Proof.
-induction ts; simpl; mem; intuition.
+induction ts; simpl; mem; split_all. discr.
 destruct (orb_true_elim H). exists h. auto.
-destruct (IHts e). exists x0. intuition.
+destruct (IHts e). exists x0. tauto.
 Qed.
 
 Implicit Arguments mem_vars_vec [x n ts].
@@ -121,10 +119,10 @@ Lemma mem_vars_size_sub_gt : forall s x u,
 Proof.
 intros. destruct u.
 simpl in H. autorewrite with mem in H. subst n. irrefl.
-clear H0. rewrite sub_fun. rewrite size_fun. rewrite vars_fun in H.
+clear H0. rewrite sub_fun, size_fun. rewrite vars_fun in H.
 destruct (mem_vars_vec H). destruct H0. ded (Vin_elim H0). decomp H2.
-rewrite H3. rewrite Vmap_cast. rewrite size_terms_cast. rewrite Vmap_app.
-rewrite size_terms_app. simpl. ded (mem_vars_size_sub_ge s H1). omega.
+rewrite H3, Vmap_cast, size_terms_cast, Vmap_app, size_terms_app. simpl.
+ded (mem_vars_size_sub_ge s H1). omega.
 Qed.
 
 Implicit Arguments mem_vars_size_sub_gt [x u].
@@ -134,8 +132,7 @@ Lemma wf_term_var : forall s x u,
 
 Proof.
 intros. ded (mem_vars_size_sub_gt s H0). rewrite H in H1.
-case (eq_term_dec u (Var x)). auto. intro. ded (H1 n).
-contradict H2; omega.
+case (eq_term_dec u (Var x)). auto. intro. ded (H1 n). omega.
 Qed.
 
 (***********************************************************************)
@@ -149,7 +146,7 @@ intros s x v. pattern v; apply term_ind with (Q := fun n (ts : terms n) =>
   mem x (vars_vec (Vmap (sub s) ts)) = true ->
   exists y, mem y (vars_vec ts) = true /\ mem x (vars (s y)) = true); clear v.
 (* Var *)
-simpl. intros. exists x0. mem. intuition.
+simpl. intros. exists x0. mem. tauto.
 (* Fun *)
 intros f ts IH. rewrite sub_fun, !vars_fun. intro.
 destruct (IH H). exists x0. hyp.
@@ -314,10 +311,10 @@ Lemma vars_equiv : forall x (t : term),
 Proof.
 intros x t0. pattern t0. apply term_ind with (Q := fun n (ts : terms n) =>
   List.In x (ATerm.vars_vec ts) <-> In x (vars_vec ts)).
-intro. simpl. set_iff. intuition.
-intros. rewrite ATerm.vars_fun. rewrite vars_fun. hyp.
-simpl. set_iff. intuition.
-intros. simpl. set_iff. rewrite in_app. intuition.
+intro. simpl. set_iff. tauto.
+intros. rewrite ATerm.vars_fun, vars_fun. hyp.
+simpl. set_iff. refl.
+intros. simpl. set_iff. rewrite in_app. tauto.
 Qed.
 
 Lemma brule_preserve_vars_ok' : forall l r,
@@ -341,7 +338,7 @@ Lemma brules_preserve_vars_ok : forall R : rules,
 
 Proof.
 intro. unfold brules_preserve_vars, rules_preserve_vars.
-rewrite forallb_forall. intuition.
+rewrite forallb_forall. split_all.
 rewrite <- brule_preserve_vars_ok'. auto.
 rewrite brule_preserve_vars_ok. destruct x. auto.
 Qed.
