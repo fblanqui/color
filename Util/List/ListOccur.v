@@ -69,9 +69,7 @@ Section occur.
 
   Lemma occur_in : forall x l, occur x l > 0 -> In x l.
 
-  Proof.
-    induction l; simpl. Omega. unfold delta. case (eq_dec x a); auto.
-  Qed.
+  Proof. induction l; simpl. omega. unfold delta. case (eq_dec x a); auto. Qed.
 
   Implicit Arguments occur_in [x l].
 

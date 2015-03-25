@@ -9,9 +9,9 @@ general results on booleans
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+Require Import LogicUtil Arith.
 Require Export Bool.
-Require Setoid.
+Require Setoid Omega.
 
 Implicit Arguments orb_false_elim [b1 b2].
 Implicit Arguments orb_true_elim [b1 b2].
@@ -121,8 +121,6 @@ Qed.
 (***********************************************************************)
 (** decidability *)
 
-Require Setoid.
-
 Section dec.
 
   Variables (A : Type) (P : A -> Prop)
@@ -177,9 +175,6 @@ End bool_ok.
 
 (***********************************************************************)
 (** checking a property (P i) for all i<n *)
-
-Require Import Arith.
-Require Omega.
 
 Section bforall_lt.
 

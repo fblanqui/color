@@ -64,7 +64,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length E) p).
     set (w := split_beyond E n H l).
     split; split; intro; trivial.
-    set (ww := nth_some E p H0); elimtype False; omega.
+    set (ww := nth_some E p H0); omega.
     elimtype False; apply varD_UD_absurd with 
       (initialSeg E k ++ copy n None ++ finalSeg E k) p A; trivial.
     left; apply nth_beyond; trivial.
@@ -117,7 +117,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     replace (p + n - Min.min k (length E) - n) with (p - length E).
     split; split; intro; try solve 
       [ left; apply nth_beyond; omega
-      | set (w := nth_some E _ H1); elimtype False; omega ].
+      | set (w := nth_some E _ H1); omega ].
     rewrite Min.min_r; omega.
     set (w := Min.le_min_l k (length E)); omega.
     set (w := Min.le_min_l k (length E)); omega.
@@ -161,7 +161,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes using simpl.
     omega.
     split; split; intro; try solve [left; apply nth_beyond; trivial].
-    set (ww := nth_some E p H1); elimtype False; omega.
+    set (ww := nth_some E p H1); omega.
     elimtype False; apply varD_UD_absurd with 
       (initialSeg E k ++ finalSeg E (S k)) p A; trivial.
     left; apply nth_beyond; trivial.
@@ -206,7 +206,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     replace (p' - Min.min k (length E)) with (p' - (length E)).
     split; split; intro; solve
       [ left; apply nth_beyond; omega
-      | set (w := nth_some E _ H1); elimtype False; omega
+      | set (w := nth_some E _ H1); omega
       ].
     rewrite Min.min_r; omega.
     set (w := Min.le_min_l k (length E)); omega.
@@ -518,7 +518,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     left; unfold VarUD.
     rewrite nth_app_right; autorewrite with datatypes.
     cut (p - x > 0); try omega.
-    destruct (p - x); intro; try solve [elimtype False; omega].
+    destruct (p - x); intro; try solve [omega].
     destruct n; trivial.
     omega.
   Qed.
@@ -1183,7 +1183,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     replace (j - i) with (S (j - S i)); try omega.
     simpl; rewrite nth_finalSeg_nth.
     replace (S i + (j - S i)) with j; [trivial | omega].
-    elimtype False; omega.
+    omega.
     rewrite nth_app_left; autorewrite with datatypes; trivial.
     apply Min.min_case2; trivial.
   Qed.
@@ -1205,7 +1205,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (forall (A : Type) l (a: A) i,
       i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
     intros; destruct i0; try_solve.
-    elimtype False; omega.
+    omega.
     rewrite H0 in H.
     set (w := finalSeg_nth_idx E (S i) (pred (j - Min.min i (length E))) H).
     rewrite Min.min_l in w; omega.
@@ -1234,7 +1234,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (forall (A : Type) l (a: A) i,
       i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
     intros; destruct i0; try_solve.
-    elimtype False; omega.
+    omega.
     rewrite (H2 (option SimpleType) (finalSeg E (S i)) None (j - i)) in H0.
     replace j with (S i + pred (j - i)).
     rewrite <- nth_finalSeg_nth; trivial.
@@ -1242,7 +1242,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     omega.
     autorewrite with datatypes; rewrite Min.min_l; trivial; omega.
     rewrite Min.min_l; trivial; omega.
-    elimtype False; omega.
+    omega.
     rewrite nth_app_left in H0; autorewrite with datatypes.
     apply initialSeg_prefix with i; trivial.
     assert (Min.min i (length E) > j).
@@ -1781,7 +1781,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Max.max_r; omega.
     rewrite (Min.min_r k (length Er)); try omega.
     destruct (le_gt_dec k (length El)).
-    elimtype False; omega.
+    omega.
     rewrite (Min.min_r k (length El)); try omega.
     rewrite Max.max_r; trivial.
     omega.
@@ -1797,7 +1797,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Max.max_l; omega.
     rewrite (Min.min_r k (length El)); try omega.
     destruct (le_gt_dec k (length Er)).
-    elimtype False; omega.
+    omega.
     rewrite (Min.min_r k (length Er)); try omega.
     rewrite Max.max_l; trivial.
     omega.
@@ -1904,7 +1904,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Max.max_r; omega.
     rewrite (Min.min_r n (length Er)); try omega.
     destruct (le_gt_dec n (length El)).
-    elimtype False; omega.
+    omega.
     rewrite (Min.min_r n (length El)); try omega.
     rewrite Max.max_r; trivial.
     omega.
@@ -1920,7 +1920,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Max.max_l; omega.
     rewrite (Min.min_r n (length El)); try omega.
     destruct (le_gt_dec n (length Er)).
-    elimtype False; omega.
+    omega.
     rewrite (Min.min_r n (length Er)); try omega.
     rewrite Max.max_l; trivial.
     omega.

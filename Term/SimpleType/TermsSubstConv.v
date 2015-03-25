@@ -540,7 +540,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     change {x/T'} with (copy 0 None ++ {x/T'}).
     apply presubst_singleton_conv_sim_aux with M T Q R; trivial.
     intros; destruct j; trivial.
-    elimtype False; omega.
+    omega.
     rewrite !lift_0; trivial.
   Qed.
 

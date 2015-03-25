@@ -14,7 +14,7 @@ de Bruijn indices) is defined in this file.
 Set Implicit Arguments.
 
 Require Import RelExtras ListExtras Compare_dec Arith LogicUtil.
-Require TermsManip Omega.
+Require TermsManip.
 
 Module TermsLifting (Sig : TermsSig.Signature).
 
@@ -119,7 +119,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     autorewrite with datatypes.
     rewrite Min.min_l; trivial.
     omega.
-    elimtype False; omega.
+    omega.
     autorewrite with datatypes.
     destruct (le_gt_dec k (length E)).
     rewrite Min.min_l; solve [trivial | omega].
@@ -343,9 +343,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
     assert (x + (m + n) = x + n + m).
     omega.
     try_solve.
-    elimtype False; omega.
+    omega.
     destruct (le_gt_dec j x); simpl.
-    elimtype False; omega.
+    omega.
     try_solve.
     trivial.
     rewrite <- (IHPt m n (S i) (S j)); trivial.
@@ -606,8 +606,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_gt_dec j x); destruct (le_gt_dec j x0); try_solve.
     inversion H.
     cut (x = x0); [auto | omega].
-    inversion H; elimtype False; omega.
-    inversion H; elimtype False; omega.
+    inversion H; omega.
+    inversion H; omega.
     rewrite (IHM N i (S j)); inversion H; trivial.
     rewrite (IHM1 N1 i j).
     rewrite (IHM2 N2 i j).
@@ -655,7 +655,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite_lr (nth_in E x); unfold VarD in Ex; try_solve.
     destruct (le_lt_or_eq k_x) as [k_lt_x | k_eq_x].
     destruct x.
-    elimtype False; omega.
+    omega.
     unfold VarD, loweredEnv.
     rewrite nth_app_right.
     unfold finalSeg; simpl.
@@ -748,9 +748,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
     assert (x + i = pred (x + (i + 1))).
     omega.
     try_solve.
-    elimtype False; omega.
+    omega.
     destruct (le_gt_dec k x); trivial.
-    elimtype False; omega.
+    omega.
     trivial.
     rewrite (IHPt i (S j) (S k)); solve [trivial | omega].
     rewrite (IHPt1 i j k); try omega.

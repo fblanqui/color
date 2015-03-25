@@ -465,7 +465,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct (lt_eq_lt_dec m n) as [[m_n | m_n] | m_n].
-    elimtype False. omega.
+    omega.
     subst m. right. refl.
     left. trivial.
   Qed.
@@ -990,7 +990,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct (lt_eq_lt_dec m n) as [[m_n | m_n] | m_n].
-    elimtype False. omega.
+    omega.
     subst m. right. refl.
     left. trivial.
   Qed.

@@ -27,7 +27,7 @@ therefore put in a module [Def] in order to be refered later
 
 Set Implicit Arguments.
 
-Require Import LogicUtil BoolUtil VecUtil Omega FSets FSetUtil NatUtil
+Require Import LogicUtil BoolUtil VecUtil FSets FSetUtil NatUtil
   Structures.OrderedType RelUtil SN SetUtil.
 Require Union.
 

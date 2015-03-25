@@ -90,11 +90,11 @@ Section S.
 
   Lemma reducts_aux1 : forall k n, S k <= n -> k <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma reducts_aux2 : forall k n, S k <= n -> n - S k < n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Fixpoint reducts t :=
     match t with
