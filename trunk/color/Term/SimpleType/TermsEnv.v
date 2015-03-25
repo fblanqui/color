@@ -65,7 +65,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     set (w := split_beyond E n H l).
     split; split; intro; trivial.
     set (ww := nth_some E p H0); omega.
-    elimtype False; apply varD_UD_absurd with 
+    exfalso; apply varD_UD_absurd with 
       (initialSeg E k ++ copy n None ++ finalSeg E k) p A; trivial.
     left; apply nth_beyond; trivial.
     unfold VarD, VarUD. rewrite !nth_app_left, initialSeg_nth; fo.
@@ -162,7 +162,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     omega.
     split; split; intro; try solve [left; apply nth_beyond; trivial].
     set (ww := nth_some E p H1); omega.
-    elimtype False; apply varD_UD_absurd with 
+    exfalso; apply varD_UD_absurd with 
       (initialSeg E k ++ finalSeg E (S k)) p A; trivial.
     left; apply nth_beyond; trivial.
     unfold VarD, VarUD. rewrite !nth_app_left, initialSeg_nth; fo.
@@ -259,7 +259,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Lemma emptyEnv_absurd : forall a E P, emptyEnv (Some a :: E) -> P.
 
   Proof.
-    intros. elimtype False.
+    intros. exfalso.
     assert ((Some a :: E) |= 0 := a). auto with terms.
     destruct (H 0); try_solve.
   Qed.
@@ -497,13 +497,13 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     intros; intros p B C Dl Dr.
     destruct (lt_eq_lt_dec p x) as [[p_x | p_x] | p_x].
-    elimtype False; apply (varD_UD_absurd Dl).
+    exfalso; apply (varD_UD_absurd Dl).
     right; unfold VarUD.
     rewrite nth_app_left.
     apply nth_copy_in; trivial.
     autorewrite with datatypes using trivial.
     inversion H.
-    elimtype False; apply (varD_UD_absurd Dr).
+    exfalso; apply (varD_UD_absurd Dr).
     rewrite p_x; trivial.
     rewrite <- p_x in H0.
     inversion Dl.
@@ -514,7 +514,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite p_x; rewrite <- minus_n_n.
     intro D; inversion D; trivial.
     inversion Dr; inversion H0; try_solve.
-    elimtype False; apply (varD_UD_absurd Dl).
+    exfalso; apply (varD_UD_absurd Dl).
     left; unfold VarUD.
     rewrite nth_app_right; autorewrite with datatypes.
     cut (p - x > 0); try omega.
@@ -661,7 +661,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     intros E E' x A EE'x.
     destruct (isVarDecl_dec E' x) as [[C E'x] | E'n]; trivial.
-    elimtype False; apply varD_UD_absurd with (E [-] E') x A; trivial.
+    exfalso; apply varD_UD_absurd with (E [-] E') x A; trivial.
     apply env_sub_ry with C; trivial.
   Qed.
 
@@ -990,7 +990,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (forall E E', E = E' -> a :: E = a :: E').
     intros; replace E0 with E'0; trivial.
     destruct a; destruct o; simpl; try solve [apply H2; trivial].
-    elimtype False; apply varD_UD_absurd with (None::E) 0 s.
+    exfalso; apply varD_UD_absurd with (None::E) 0 s.
     apply H0; constructor.
     right; trivial.
   Qed.
@@ -1015,7 +1015,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert ((Some s0 :: E') |= 0 := s0).
     constructor.
     set (w := H0 0 s0 H3); inversion w; trivial.
-    elimtype False; apply varD_UD_absurd with (None::E) 0 s.
+    exfalso; apply varD_UD_absurd with (None::E) 0 s.
     apply H0; constructor.
     right; trivial.
   Qed.
@@ -1089,7 +1089,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     intros.
     destruct (lt_eq_lt_dec x w) as [[xw | xw] | xw].
-    elimtype False; apply (varD_UD_absurd H).
+    exfalso; apply (varD_UD_absurd H).
     left; apply nth_beyond; autorewrite with datatypes using simpl; try omega.
     rewrite xw; split; trivial.
     rewrite xw in H.
@@ -1099,7 +1099,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
       autorewrite with datatypes using auto.
     rewrite copy_length in H.
     replace (w - w) with 0 in H; [inversion H; trivial | omega].
-    elimtype False; apply (varD_UD_absurd H).
+    exfalso; apply (varD_UD_absurd H).
     right; rewrite nth_app_left; autorewrite with datatypes using trivial.
   Qed.
 
@@ -1404,7 +1404,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     intros; split.
     intros w A wA.
-    elimtype False; apply (varD_UD_absurd wA).
+    exfalso; apply (varD_UD_absurd wA).
     apply H.
     apply env_subset_empty.
   Qed.
@@ -1508,10 +1508,10 @@ Module TermsEnv (Sig : TermsSig.Signature).
     intros e e0 H n m nm. subst m. split; intro H0.
     destruct (isVarDecl_dec e0 n) as [[A e0n] | e0n]; trivial.
     set (en := proj2 H n A e0n).
-    elimtype False; apply varD_UD_absurd with e n A; trivial.
+    exfalso; apply varD_UD_absurd with e n A; trivial.
     destruct (isVarDecl_dec e n) as [[A e0n] | e0n]; trivial.
     set (en := proj1 H n A e0n).
-    elimtype False; apply varD_UD_absurd with e0 n A; trivial.
+    exfalso; apply varD_UD_absurd with e0 n A; trivial.
   Qed.
 
   Lemma env_compose_morph_aux0 : forall El Er El' Er',
@@ -1526,8 +1526,8 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct Er'; destruct El; destruct El'; 
       try destruct o; try destruct o0; try destruct o1; 
       simpl; try solve
-      [ elimtype False; eapply env_eq_some_nil_absurd; eauto with terms
-      | elimtype False; eapply env_eq_some_none_absurd; eauto with terms 
+      [ exfalso; eapply env_eq_some_nil_absurd; eauto with terms
+      | exfalso; eapply env_eq_some_none_absurd; eauto with terms 
       | destruct H1; trivial
       ]; try apply env_subset_cons_none; trivial.
     rewrite (env_eq_empty_cons H1).
@@ -1584,15 +1584,15 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct H; trivial.
 
     intros; destruct a; destruct Er'.
-    elimtype False; eapply env_eq_some_nil_absurd; eauto.
+    exfalso; eapply env_eq_some_nil_absurd; eauto.
     destruct o.
     rewrite (env_eq_cons_inv_hd H0); rewrite (env_eq_cons_inv_hd H0) in H0.
     destruct (env_eq_cons_inv H0).
     destruct El; destruct El'; try destruct o; try destruct o0;
       simpl; apply env_subset_cons'; try solve 
-	[ elimtype False; eapply env_eq_some_nil_absurd; eauto with terms
+	[ exfalso; eapply env_eq_some_nil_absurd; eauto with terms
 	| apply IHEr; eapply env_eq_cons_inv; eauto
-	| elimtype False; eapply env_eq_some_none_absurd; eauto with terms
+	| exfalso; eapply env_eq_some_none_absurd; eauto with terms
 	| trivial
 	].
     apply env_subset_sum_r; destruct (env_eq_cons_inv H0); trivial.
@@ -1603,7 +1603,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     set (w := env_eq_tail H); trivial.
     fo.
     rewrite env_sum_empty_l; trivial.
-    elimtype False; eapply env_eq_some_none_absurd; eauto with terms.
+    exfalso; eapply env_eq_some_none_absurd; eauto with terms.
     apply env_compose_morph_aux0; trivial.
     apply env_compose_morph_aux0; trivial.
   Qed.

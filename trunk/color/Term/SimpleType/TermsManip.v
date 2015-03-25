@@ -704,7 +704,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     auto.
     intro Mnapp.
     rewrite (appUnits_notApp M) in Ms_pflat_M.
-    elimtype False.
+    exfalso.
     eapply appUnits_notEmpty; eexact Ms_pflat_M.
     trivial.
   Qed.
@@ -804,10 +804,10 @@ Module TermsManip (Sig : TermsSig.Signature).
     constructor 1 with Mapp; constructor 2.
     trivial.
      (* M application, N not *)
-    intros; elimtype False.
+    intros; exfalso.
     apply app_notApp_diffUnits with M N; trivial.
      (* N application, M not *)
-    intros; elimtype False.
+    intros; exfalso.
     apply app_notApp_diffUnits with N M; auto.
      (* M and N both not applications *)
     intros Nnapp Mnapp.
@@ -854,7 +854,7 @@ Module TermsManip (Sig : TermsSig.Signature).
      (* -) N not application *)
     intro Nnapp.
     rewrite (appUnits_notApp N) in units; trivial.
-    elimtype False; eapply appUnits_notEmpty; eexact units.
+    exfalso; eapply appUnits_notEmpty; eexact units.
   Qed.
 
   Lemma partialFlattening_subterm : forall M Ms m,
@@ -1068,7 +1068,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     rewrite (appUnits_notApp (appBodyL (M:=buildT (TApp M1 M2)) I)) in H;
       trivial.
     simpl in H.
-    elimtype False; cut (appUnits t <> nil).
+    exfalso; cut (appUnits t <> nil).
     destruct (appUnits t); auto.
     inversion H.
     cut (length (l ++ t0 :: t1 :: Ms) = length (buildT M2 :: nil)).

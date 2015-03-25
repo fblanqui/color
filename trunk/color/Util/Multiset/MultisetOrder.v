@@ -1531,7 +1531,7 @@ Section OrderDec.
         (forall m, m in M -> {m >A n} + {~m >A n}) ->
         {m: A | m in M /\ m >A n} + {forall m, m in M -> ~m >A n}).
     right; intros.
-    elimtype False; apply not_empty with empty m; auto with multisets.
+    exfalso; apply not_empty with empty m; auto with multisets.
     intros.
     destruct (X n) as [[m [mM0 mn]] | nm].
     intros; apply X0; auto with multisets.
@@ -1561,7 +1561,7 @@ Section OrderDec.
     destruct (empty_dec M).
     right; intro MN; inversion MN; try_solve.
     left; split; trivial.
-    intros; elimtype False.
+    intros; exfalso.
     apply not_empty with empty r; auto with multisets.
     clear N.
     destruct (X M0).

@@ -125,7 +125,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
       destruct m; destruct m'; destruct n; destruct n';
         destruct H; destruct H0; simpl;
         try solve
-          [ elimtype False; auto
+          [ exfalso; auto
           | intuition; discr
           | left; simpl; auto
           | left; simpl in *; omega

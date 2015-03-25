@@ -342,7 +342,7 @@ Section Vadd.
   Proof.
     intros. assert (H3 : H1 = (@le_S (S k) n H2)). apply lt_unique.
     subst H1. generalize dependent k. generalize dependent n. intro n. elim n.
-    intros v k H. elimtype False. apply (lt_n_O H).
+    intros v k H. exfalso. apply (lt_n_O H).
     intros n' Hrec v k H. rewrite (VSn_eq v). destruct k.
     simpl. refl.
     simpl Vadd.
@@ -1223,7 +1223,7 @@ Section Vmap.
 
   Proof.
     intros n. elim n.
-    intros v i H. elimtype False. apply (lt_n_O H).
+    intros v i H. exfalso. apply (lt_n_O H).
     clear n. intros n Hrec v i. case i.
     intro. rewrite (VSn_eq v). simpl. refl.
     clear i. intros i Hi. rewrite (VSn_eq v). simpl.

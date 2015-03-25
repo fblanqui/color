@@ -821,7 +821,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (subst_type_comp C G_xT).
     unfold VarD in *; simpl in *; congruence.
     unfold VarD, VarUD in *; destruct H; 
-      elimtype False; simpl in *; congruence.
+      exfalso; simpl in *; congruence.
     rewrite <- TA.
     apply typing_in_subst_env with (buildT (TVar v)) x; trivial.
     exists (buildT (typing_ext_env_l (E [-] subst_dom G) Vc));
@@ -1077,7 +1077,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (isVarDecl_dec env0 0) as [[B EB] | En].
     replace (buildT (TVar EB)) with (buildT (TVar M0)); trivial.
     apply term_eq; trivial.
-    elimtype False; apply varD_UD_absurd with env0 0 A; trivial.
+    exfalso; apply varD_UD_absurd with env0 0 A; trivial.
   Qed.
 
   Lemma idSubst_correct M : correct_subst M (idSubst M).
@@ -1458,7 +1458,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite GE in ran_c0.
     intros p A B Pp.
     destruct p.
-    elimtype False.
+    exfalso.
     apply (varD_UD_absurd Pp).
     apply env_sub_ry with (type P); constructor.
     intros Mp.
@@ -1967,7 +1967,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     split; auto.
     assert (forall W, isVar W -> isApp W -> False).
     intro W; term_inv W.
-    elimtype False.
+    exfalso.
     apply H with (subst MG).
     term_inv M.
     apply var_is_var with x; rewrite MGvar; trivial.
@@ -1975,14 +1975,14 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (* function symbol *)
     assert (forall W, isFunS W -> isApp W -> False).
     intro W; term_inv W.
-    elimtype False.
+    exfalso.
     apply H with (subst MG); trivial.
     apply funS_subst_funS; trivial.
     apply appArg_app with MGarg; trivial.
      (* abstraction *)
     assert (forall W, isApp W -> isAbs W -> False).
     intro W; term_inv W.
-    elimtype False.
+    exfalso.
     apply H with (subst MG); trivial.
     apply appArg_app with MGarg; trivial.
     apply abs_subst_abs; trivial.
@@ -2017,7 +2017,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     autorewrite with terms using unfold presubst; simpl.
     destruct (lt_eq_lt_dec x i) as [[x_i | x_i] | x_i].
     rewrite nth_app_left; autorewrite with datatypes using trivial.
-    elimtype False; apply (@varD_UD_absurd (copy i None ++ A [#] EmptyEnv) x A).
+    exfalso; apply (@varD_UD_absurd (copy i None ++ A [#] EmptyEnv) x A).
     unfold VarD, EmptyEnv, decl.
     rewrite x_i; apply nth_after_copy.
     simpl in H.
@@ -2100,7 +2100,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (x - i).
     omega.
     destruct n; simpl; trivial.
-    elimtype False; apply varD_UD_absurd with 
+    exfalso; apply varD_UD_absurd with 
       (activeEnv (buildT (TVar v))) x A.
     apply activeEnv_var_decl; trivial.
     rewrite <- i_x; trivial.
@@ -2167,14 +2167,14 @@ Module TermsSubst (Sig : TermsSig.Signature).
     split; intro D.
     destruct (env_sum_varDecl (El[+]E) Er D) as [[D' _] | D'].
     destruct (env_sum_varDecl El E D') as [[D'' _] | D''].
-    elimtype False; apply varD_UD_absurd with El i A; trivial.
+    exfalso; apply varD_UD_absurd with El i A; trivial.
     apply env_sum_ry; trivial.
-    elimtype False; apply varD_UD_absurd with Er i A; trivial.
+    exfalso; apply varD_UD_absurd with Er i A; trivial.
     apply env_sum_ly_rn; trivial.
     apply env_sum_ry.    
     destruct (env_sum_varDecl (initialSeg (El'[+]Er') i ++ None :: 
       finalSeg (El'[+]Er') (S i)) E D) as [[D' _] | D']; trivial.
-    elimtype False; apply (varD_UD_absurd D').
+    exfalso; apply (varD_UD_absurd D').
     apply varUD_hole.
 
     assert (j <> i); [omega | idtac].
@@ -2191,7 +2191,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite <- (H0 j H6 B); trivial.    
     apply env_sum_ly.
     intros B C D1 D2.
-    elimtype False; apply varD_UD_absurd with E j C; trivial.
+    exfalso; apply varD_UD_absurd with E j C; trivial.
     apply varD_hole; trivial.
     apply env_sum_ry.
     apply (proj1 (H2 j A H6)); trivial.
@@ -2232,7 +2232,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (* variable *)
     simpl in H.
     destruct (lt_eq_lt_dec x i) as [[x_i | xi] | i_x].
-    elimtype False;
+    exfalso;
       apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
     constructor; apply nth_beyond.
     autorewrite with datatypes using simpl; try omega.
@@ -2267,7 +2267,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     simpl; rewrite lift_0; trivial.
     apply subst_env_compat with i.
     unfold varSubstTo; apply nth_after_copy.
-    elimtype False;
+    exfalso;
       apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
     unfold VarUD; rewrite nth_app_left; autorewrite with datatypes using auto.
 
@@ -2348,7 +2348,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro p.
     destruct (eq_nat_dec p i).
     intros C D _ F.
-    elimtype False; apply varD_UD_absurd
+    exfalso; apply varD_UD_absurd
         with (initialSeg AE1 i ++ None :: finalSeg AE1 (S i)) p D; trivial.
     rewrite e; apply varUD_hole.
     apply env_comp_on_subset with (activeEnv T) AE1.
@@ -2359,7 +2359,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro p.
     destruct (eq_nat_dec p i).
     intros C D _ F.
-    elimtype False; apply varD_UD_absurd
+    exfalso; apply varD_UD_absurd
          with (initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) p D; trivial.
     rewrite e; apply varUD_hole.
     apply env_comp_on_subset with (activeEnv T) AE2.

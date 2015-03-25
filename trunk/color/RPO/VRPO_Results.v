@@ -426,7 +426,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     apply subterm_wf. clear p. intros p IH IH'.
     destruct q.
      (* variable *)
-    intros. elimtype False. eapply var_are_min. eexact H.
+    intros. exfalso. eapply var_are_min. eexact H.
      (* fun. *)
      (* lt_roots *)
     intros. lt_inversion H.

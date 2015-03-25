@@ -360,7 +360,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
         | MinusInf => 0
         end).
     intros. destruct x; destruct y; 
-      solve [auto with arith | elimtype False; auto].
+      solve [auto with arith | exfalso; auto].
   Qed.
 
   Lemma ge_refl : reflexive ge.
@@ -415,8 +415,8 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     simpl in H. omega.
     injection H. intro. subst n0. hyp.
     auto.
-    elimtype False. destruct H. auto. discr.
-    elimtype False. destruct H. auto. subst x.  auto.
+    exfalso. destruct H. auto. discr.
+    exfalso. destruct H. auto. subst x.  auto.
   Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
@@ -677,8 +677,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     simpl in H. omega.
     injection H. intro. subst z0. hyp.
     auto.
-    elimtype False. destruct H. auto. discr.
-    elimtype False. destruct H. auto. subst x.  auto.
+    exfalso. destruct H. auto. discr.
+    exfalso. destruct H. auto. subst x.  auto.
   Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
@@ -1064,7 +1064,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Lemma tropical_plus_inf_max : forall x, x <> PlusInf -> PlusInf >> x.
   Proof.
     intros. destruct x. simpl. auto.
-    elimtype False. apply H. trivial.
+    exfalso. apply H. trivial.
   Qed.
 
 End TropicalOrdSemiRingT.
