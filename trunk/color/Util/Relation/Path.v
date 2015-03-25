@@ -105,7 +105,7 @@ Section S.
 
   Proof.
     induction l.
-    intros. simpl in H0. absurd_arith.
+    intros. simpl in H0. omega.
     intros. simpl in H. simpl in H0. gen (lt_n_Sm_le H0); intro.
     simpl. induction k. induction l. simpl. simpl in H. intuition.
     simpl. simpl in H. intuition.
@@ -117,10 +117,10 @@ Section S.
 
   Proof.
     induction k.
-    intros. destruct l. simpl in H0. absurd_arith.
+    intros. destruct l. simpl in H0. omega.
     destruct l. simpl. simpl in H. intuition.
-    simpl in H0. absurd_arith.
-    intros. destruct l. simpl in H0. absurd_arith.
+    simpl in H0. omega.
+    intros. destruct l. simpl in H0. omega.
     simpl. simpl in H. simpl in H0. apply (IHk a y l); intuition.
   Qed.
 

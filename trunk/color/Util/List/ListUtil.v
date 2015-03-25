@@ -1496,7 +1496,7 @@ Section ListsNth.
 
   Proof.
     induction l; simpl; intros m i i_l.
-    absurd_arith.
+    omega.
     destruct i; simpl.
     trivial.
     apply (IHl m i).
@@ -1510,7 +1510,7 @@ Section ListsNth.
     induction l; simpl; intros m i i_l.
     auto with arith.
     destruct i; simpl.
-    absurd_arith.
+    omega.
     apply IHl.
     auto with arith.
   Qed.
@@ -1536,7 +1536,7 @@ Section ListsNth.
     destruct i; trivial.
     destruct i; simpl.
     intros.
-    absurd_arith.
+    omega.
     intro.
     rewrite (IHl i); trivial.
     auto with arith.
@@ -1564,7 +1564,7 @@ Section ListsNth.
     induction l; simpl; intro i.
     split.
     destruct i; intro; elimtype False; auto.
-    intro; absurd_arith.
+    intro; omega.
     destruct i; simpl.
     split; intro.
     auto with arith.
@@ -1972,7 +1972,7 @@ Section sub_list.
 
   Proof.
     intros l k n. functional induction (sub_list l k n); simpl; intros.
-    refl. absurd_arith. destruct i. refl. apply IHl0; try omega.
+    refl. omega. destruct i. refl. apply IHl0; try omega.
     apply IHl0; omega.
   Qed.
 

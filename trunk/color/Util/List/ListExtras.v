@@ -34,7 +34,7 @@ Section InitialSeg.
     simpl.
     intros n n_l.
     destruct n.
-    absurd_arith.
+    omega.
     simpl.
     rewrite IHl; trivial.
     auto with arith.
@@ -58,7 +58,7 @@ Section InitialSeg.
     induction l; intros size x x_size.
     destruct size; trivial.
     destruct size; simpl.
-    absurd_arith.
+    omega.
     destruct x; simpl.
     trivial.
     apply IHl.
@@ -85,7 +85,7 @@ Section InitialSeg.
   Proof.
     induction l; intros.
     destruct n; simpl; trivial.
-    simpl in H; absurd_arith.
+    simpl in H; omega.
     destruct n; simpl; trivial.
     rewrite (IHl l' n); trivial.
     simpl in H; omega.
@@ -114,7 +114,7 @@ Section Seg.
     induction l.
     destruct m; destruct n; trivial.
     destruct m; destruct n; simpl; try solve
-      [intro x; absurd_arith].
+      [intro x; omega].
     intro n_l; do 2 (rewrite initialSeg_full; [idtac | omega]); trivial.
     apply IHl.
     intro n_m; rewrite (IHl m (S n)); trivial.
@@ -128,8 +128,7 @@ Section Seg.
     destruct i; destruct j; destruct x; trivial.
     intros i j x x_j.
     destruct i; simpl.
-    destruct j; destruct x; simpl; try solve
-      [absurd_arith; omega | trivial].
+    destruct j; destruct x; simpl; try solve [omega | trivial].
     change x at 2 with (0 + x).
     assert (xj: x < j).
     auto with arith.
@@ -184,7 +183,7 @@ Section FinalSeg.
     intros k k_al.
     destruct k.
     simpl in k_al.
-    absurd_arith.
+    omega.
     unfold finalSeg; simpl.
     fold (finalSeg l k).
     apply IHl.
@@ -243,7 +242,7 @@ Section FinalSeg.
     induction l; intros.    
     simpl; replace (n - 0) with n; [trivial | omega].
     destruct n.
-    absurd_arith.
+    omega.
     unfold finalSeg; simpl.
     fold (finalSeg (l ++ k) n).
     rewrite (IHl k n).
@@ -392,7 +391,7 @@ Section Copy.
     rewrite finalSeg_full.
     replace (n - 0) with n; [trivial | omega].
     destruct n.
-    absurd_arith.
+    omega.
     unfold finalSeg; simpl.
     fold (finalSeg (copy n el ++ l) k).
     rewrite IHk; trivial.
@@ -424,7 +423,7 @@ Section InsertNth.
   Proof.
     induction l; simpl; intros.
     destruct p; trivial.
-    absurd_arith.
+    omega.
     destruct p; trivial.
     simpl.
     unfold finalSeg; simpl.
@@ -454,7 +453,7 @@ Section DropNth.
     change (drop_nth (a :: l) (S p)) with (a :: drop_nth l p).
     simpl in *; rewrite IHp.
     destruct l; trivial.
-    simpl in H; absurd_arith.
+    simpl in H; omega.
     omega.
   Qed.
 
@@ -464,7 +463,7 @@ Section DropNth.
     induction l; intros.
     destruct p; trivial.
     destruct p.
-    simpl in H; absurd_arith.
+    simpl in H; omega.
     change (drop_nth (a::l) (S p)) with (a :: drop_nth l p).
     rewrite IHl; trivial.
     simpl in H; omega.
@@ -502,7 +501,7 @@ Section DropNth.
   Proof.
     induction l; simpl; intros.
     destruct p; trivial.
-    absurd_arith.
+    omega.
     destruct p.
     unfold insert_nth; simpl.
     rewrite finalSeg_full.
@@ -573,7 +572,7 @@ Section CountIn.
 
   Proof.
     induction l; simpl.
-    intro w; absurd_arith.
+    intro w; omega.
     destruct (eqA_dec a a0).
     intros _.
     exists a0; auto.
@@ -587,7 +586,7 @@ Section CountIn.
 
   Proof.
     induction l.
-    simpl; intros; absurd_arith.
+    simpl; intros; omega.
     simpl; intros.
     destruct (eqA_dec a a0).
     exists 0; exists a0.

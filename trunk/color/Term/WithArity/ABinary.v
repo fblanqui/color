@@ -60,7 +60,7 @@ Section BinSignatureTheory.
     split. Focus 2. simpl; auto. rewrite cons_term_cons. unfold Vxy.
     apply args_eq. apply Veq_nth. intros i Hi. rewrite Vnth_map, !Vnth_cast.
     destruct i. simpl; refl. rewrite !Vnth_cons. destruct i. simpl; refl.
-    cut (S (S i) < 2). intro; absurd_arith. rewrite cons_arity; auto.
+    cut (S (S i) < 2). intro; omega. rewrite cons_arity; auto.
   Qed.
 
   Lemma proj_cons_r : forall n (v : terms n) t a,
@@ -75,7 +75,7 @@ Section BinSignatureTheory.
     split. Focus 2. simpl; auto. rewrite cons_term_cons. unfold Vxy.
     apply args_eq. apply Veq_nth. intros i Hi. rewrite Vnth_map, !Vnth_cast.
     destruct i. simpl; refl. rewrite !Vnth_cons. destruct i. simpl; refl.
-    cut (S (S i) < 2). intro; absurd_arith. rewrite cons_arity; auto.
+    cut (S (S i) < 2). intro; omega. rewrite cons_arity; auto.
   Qed.
 
   Lemma proj_cons_rtc_l : forall t n (v : terms n),
@@ -127,9 +127,9 @@ Section BinSignatureTheory.
     assert (Ve2 : forall x, Vsub (Vapp x v) (Veq_app_cons_aux1 H0) =
       (Vsub x (Veq_app_aux1 (le_n_Sn n)))). intro x.
     apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_app.
-    case (le_gt_dec (S n) (0 + i)); intro. absurd_arith. apply Vnth_eq; auto.
+    case (le_gt_dec (S n) (0 + i)); intro. omega. apply Vnth_eq; auto.
     rewrite (Ve1 v1), (Ve1 v2), (Ve2 v1), (Ve2 v2), !Vnth_app.
-    rewrite !Vcast_cast. case (le_gt_dec (S n) n); intro H2. absurd_arith.
+    rewrite !Vcast_cast. case (le_gt_dec (S n) n); intro H2. omega.
     set (v' := Vcast v H1); set (x := Vnth v1 H2); set (y := Vnth v2 H2).
     set (v1' := Vsub v1 (Veq_app_aux1 (le_n_Sn n))).
     set (v2' := Vsub v2 (Veq_app_aux1 (le_n_Sn n))).

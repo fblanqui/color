@@ -357,7 +357,7 @@ Section S.
       right. ex f (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e) i.
       assert (p : i<arity f). omega. ex p (fill c (sub s r)).
       subst. simpl. intuition. rewrite Vnth_cast. rewrite Vnth_app.
-      destruct (le_gt_dec i i). 2: absurd_arith. rewrite Vnth_cons_head.
+      destruct (le_gt_dec i i). 2: omega. rewrite Vnth_cons_head.
       apply red_rule. hyp. omega.
       apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_app.
       destruct (le_gt_dec i i0).
@@ -367,13 +367,13 @@ Section S.
       subst i0. rewrite Vnth_cons_head. rewrite Vnth_replace. refl. omega.
       (* b) i <> i0 *)
       rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast. rewrite Vnth_app.
-      destruct (le_gt_dec i i0). 2: absurd_arith. assert (l0=l1).
+      destruct (le_gt_dec i i0). 2: omega. assert (l0=l1).
       apply le_unique.
       subst l1. rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i0-i)).
-      apply Vnth_eq. refl. absurd_arith.
+      apply Vnth_eq. refl. omega.
       (* 2) i > i0 *)
       rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast.
-      rewrite Vnth_app. destruct (le_gt_dec i i0). absurd_arith.
+      rewrite Vnth_app. destruct (le_gt_dec i i0). omega.
       apply Vnth_eq. refl.
     Qed.
 
@@ -852,8 +852,8 @@ Section S.
     simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
     intuition. exists (fill c (sub s r)). split.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i i).
-    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). absurd_arith.
-    apply red_rule. hyp. absurd_arith.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega.
+    apply red_rule. hyp. omega.
     apply args_eq. apply Veq_nth. intros k hk.
     rewrite Vnth_cast, Vnth_app. case_eq (le_gt_dec i k); intros l0 H.
     rewrite Vnth_cons. case_eq (lt_ge_dec 0 (k-i)); intros l1 H0.

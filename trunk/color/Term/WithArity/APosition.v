@@ -182,7 +182,7 @@ Lemma subterm_fill_pos_context : forall c u,
 Proof.
 induction c; intros; simpl.
 destruct u; auto.
-case (lt_ge_dec i (arity f)); intro. 2: absurd_arith.
+case (lt_ge_dec i (arity f)); intro. 2: omega.
 rewrite Vnth_cast. rewrite Vnth_app_cons. apply IHc.
 Qed.
 
@@ -195,7 +195,7 @@ induction c; intros; simpl.
 destruct u; auto.
 (* cons *)
 case (lt_ge_dec i (arity f)); intro. rewrite Vnth_cast. rewrite Vnth_app_cons.
-2: absurd_arith. rewrite (IHc u v). f_equal. apply args_eq.
+2: omega. rewrite (IHc u v). f_equal. apply args_eq.
 apply Veq_nth; intros. rewrite Vnth_cast.
 destruct (eq_nat_dec i i0).
 subst i0. rewrite Vnth_replace. rewrite Vnth_app_cons. refl.
@@ -239,7 +239,7 @@ intros x t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
 intro y. simpl. intuition. subst. exists nil. refl.
 intros f ts IH h. rewrite vars_fun in h. destruct (IH h). do 2 destruct H.
 exists (x0::x2). simpl. case (lt_ge_dec x0 (arity f)); intro.
-rewrite (lt_unique l x1). hyp. absurd_arith.
+rewrite (lt_unique l x1). hyp. omega.
 simpl. tauto.
 intros t n ts ht hts. simpl vars_vec. rewrite in_app. intros [h|h].
 destruct (ht h). exists 0. exists (lt_O_Sn n). exists x0. simpl. hyp.

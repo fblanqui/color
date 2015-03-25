@@ -45,8 +45,6 @@ Implicit Arguments eq_add_S [n m].
 
 Ltac Omega := intros; omega.
 
-Ltac absurd_arith := elimtype False; Omega.
-
 Ltac max :=
   match goal with
     | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
@@ -513,7 +511,7 @@ Proof. Omega. Qed.
 Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
 
 Proof.
-destruct i; destruct j; intros; solve [absurd_arith | simpl; auto with arith].
+  destruct i; destruct j; intros; solve [omega | simpl; auto with arith].
 Qed.
 
 Lemma mult_lt_compat_lr : forall i j k l,
@@ -522,8 +520,8 @@ Lemma mult_lt_compat_lr : forall i j k l,
 Proof.
   destruct i; intros.
   rewrite mult_0_l. apply mult_gt_0. hyp.
-  destruct l. absurd_arith. auto with arith.
-  simpl. destruct j. absurd_arith.
+  destruct l. omega. auto with arith.
+  simpl. destruct j. omega.
   simpl. apply plus_lt_le_compat. hyp.
   apply mult_le_compat; omega. 
 Qed.

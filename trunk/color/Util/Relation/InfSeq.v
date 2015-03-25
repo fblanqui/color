@@ -207,7 +207,7 @@ such that [f i = a] *)
       intros hg i. unfold prefix. set (is := indices i0).
       set (n := length is). destruct (lt_dec (S i) n); destruct (lt_dec i n).
       apply Sorted_nth. class. apply indices_Sorted. hyp. hyp. omega.
-      absurd_arith. assert (n=S i). omega. subst. rewrite H, minus_diag.
+      omega. assert (n=S i). omega. subst. rewrite H, minus_diag.
       ded (nth_In d l). destruct (In_indices_aux_elim H0). inversion H1.
       omega. assert (e : S i - n = S (i-n)). omega. rewrite e.
       apply plus_lt_compat_l. apply hg.
@@ -227,7 +227,7 @@ such that [f i = a] *)
       sym. hyp. contr.
       (* i >= i0 *)
       destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold is.
-      fold n. destruct (lt_dec (n+j) n). absurd_arith.
+      fold n. destruct (lt_dec (n+j) n). omega.
       assert (s : n+j-n=j). omega. rewrite s. hyp.
     Qed.
 
@@ -411,7 +411,7 @@ Section TransIS.
 
     destruct k. intros. symmetry in H3.
     destruct (li (F1 i)). simpl. simpl in H3. rewrite Hi. auto.
-    simpl in H3. absurd_arith. simpl. intros. 
+    simpl in H3. omega. simpl. intros. 
     apply path_lastP with (x := (h (F1 i)));  auto. rewrite Hi. hyp.
 
     (* 2 *)

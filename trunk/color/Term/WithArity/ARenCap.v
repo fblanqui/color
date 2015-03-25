@@ -195,7 +195,7 @@ Ltac single_tac x t :=
   exists (single x t); split; [single
   | unfold single, nb_aliens; simpl;
     let y := fresh "y" in intro y; intro;
-    case_beq_nat x y; [absurd_arith | refl]].
+    case_beq_nat x y; [omega | refl]].
 
 Notation In_dec := (In_dec eq_nat_dec).
 
@@ -226,10 +226,10 @@ intuition. rewrite H3. rewrite <- H1.
 assert (Vmap (sub s) (ren_caps (k + nb_aliens t) v)
   = Vmap (sub s2) (ren_caps (k + nb_aliens t) v)). apply Vmap_sub_eq. intros.
 ded (vars_ren_caps H4). unfold s. case (In_dec x (vars (ren_cap k t))); intro.
-ded (vars_ren_cap i). absurd_arith. refl. rewrite H4. rewrite <- H2.
+ded (vars_ren_cap i). omega. refl. rewrite H4. rewrite <- H2.
 split. refl. rewrite nb_aliens_cons. intros. unfold s.
 case (In_dec x (vars (ren_cap k t))); intro. ded (vars_ren_cap i).
-absurd_arith. apply H2'. omega.
+omega. apply H2'. omega.
 Qed.
 
 Lemma ren_caps_intro : forall n (ts : terms n) k,
@@ -251,10 +251,10 @@ intuition. rewrite H. rewrite <- H1.
 assert (Vmap (sub s) (ren_caps (k + nb_aliens h) ts)
   = Vmap (sub s2) (ren_caps (k + nb_aliens h) ts)). apply Vmap_sub_eq. intros.
 ded (vars_ren_caps H0). unfold s. case (In_dec x (vars (ren_cap k h))); intro.
-ded (vars_ren_cap i). absurd_arith. refl. rewrite H0. rewrite <- H2.
+ded (vars_ren_cap i). omega. refl. rewrite H0. rewrite <- H2.
 split. refl. rewrite nb_aliens_cons. intros. unfold s.
 case (In_dec x (vars (ren_cap k h))); intro. ded (vars_ren_cap i).
-absurd_arith. apply H2'. omega.
+omega. apply H2'. omega.
 Qed.
 
 Lemma ren_cap_sub_aux : forall s t k l,
@@ -286,11 +286,11 @@ apply Vcons_eq_intro. apply sub_eq. intros. unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. refl. intuition.
 apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. ded (vars_ren_cap i).
-absurd_arith. refl.
+omega. refl.
 (* domain *)
 rewrite nb_aliens_cons. intros. unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. ded (vars_ren_cap i).
-absurd_arith. apply H2'. omega.
+omega. apply H2'. omega.
 Qed.
 
 Lemma ren_cap_sub : forall s t k,
@@ -320,11 +320,11 @@ apply Vcons_eq_intro. apply sub_eq. intros. unfold s'.
 case (In_dec x (vars (ren_cap l h))); intro. refl. intuition.
 apply Vmap_sub_eq. intros. ded (vars_ren_caps H). unfold s'.
 case (In_dec x (vars (ren_cap l h))); intro. ded (vars_ren_cap i).
-absurd_arith. refl.
+omega. refl.
 (* domain *)
 rewrite nb_aliens_cons. intros. unfold s'.
 case (In_dec x (vars (ren_cap l h))); intro. ded (vars_ren_cap i).
-absurd_arith. apply H2'. omega.
+omega. apply H2'. omega.
 Qed.
 
 Lemma ren_caps_sub : forall s n (ts : terms n) k,
@@ -419,16 +419,16 @@ hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k t))); intro. refl. intuition.
 apply Vcons_eq_intro. rewrite H1. apply sub_eq. intros. ded (vars_ren_cap H3).
 unfold s'. case (In_dec x (vars_vec (ren_caps k t))); intro.
-ded (vars_ren_caps i0). absurd_arith. case
+ded (vars_ren_caps i0). omega. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec t) (fill c (sub s l)))));
   intro. refl. intuition.
 trans (Vmap (sub s3)
   (ren_caps (k + nb_aliens_vec t + nb_aliens (fill c (sub s l))) t0)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k t))); intro.
-ded (vars_ren_caps i0). absurd_arith. case
+ded (vars_ren_caps i0). omega. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec t) (fill c (sub s l)))));
-  intro. ded (vars_ren_cap i0). absurd_arith. refl.
+  intro. ded (vars_ren_cap i0). omega. refl.
 Qed.
 
 Lemma rtc_red_sub_ren_cap : forall k u v,

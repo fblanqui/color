@@ -129,7 +129,7 @@ Section Sorted.
 
   Proof.
     induction l; destruct i; simpl; intros. omega. omega.
-    inversion H. subst. destruct l. simpl in H1. absurd_arith.
+    inversion H. subst. destruct l. simpl in H1. omega.
     inversion H5. hyp.
     inversion H. apply IHl. hyp. omega. omega.
   Qed.
@@ -139,7 +139,7 @@ Section Sorted.
 
   Proof.
     induction l; destruct i; simpl; intros.
-    absurd_arith. absurd_arith. inversion H0. hyp.
+    omega. omega. inversion H0. hyp.
     apply IHl. inversion H. hyp.
     destruct l. apply HdRel_nil. apply HdRel_cons.
     inversion H0. inversion H. inversion H8. subst. trans a; hyp. omega.
@@ -149,8 +149,8 @@ Section Sorted.
     i < length l -> j < length l -> i < j -> lt (nth i l d) (nth j l d).
 
   Proof.
-    induction j; intros. absurd_arith.
-    destruct l; simpl in *. absurd_arith.
+    induction j; intros. omega.
+    destruct l; simpl in *. omega.
     inversion H. subst. destruct i; simpl.
     apply HdRel_nth. hyp. hyp. omega.
     apply IHj. hyp. omega. omega. omega.
