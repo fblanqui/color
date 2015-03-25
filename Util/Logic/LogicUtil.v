@@ -190,6 +190,8 @@ Ltac split_hyps :=
   | h : _ /\ _ |- _ => destruct h; split_hyps
   | h : @ex _ _ |- _ => destruct h; split_hyps
   | h : _ \/ _ |- _ => destruct h; split_hyps
+  | h : True |- _ => clear h; split_hyps
+  | h : False |- _ => contr
   | |- _ => idtac
   end.
 
