@@ -85,9 +85,8 @@ Lemma beq_nat_ok : forall x y, beq_nat x y = true <-> x = y.
 
 Proof.
   induction x; destruct y; simpl; split; intro; try (refl || discr).
-  apply (f_equal S). exact (proj1 (IHx _) H).
-  apply (proj2 (IHx y)). inversion H. refl.
-Defined.
+  f_equal. fo. fo.
+Qed.
 
 Require Import EqUtil.
 

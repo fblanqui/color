@@ -196,8 +196,7 @@ Module Make (Export L : L_Struct).
   Proof.
     induction u; simpl; set_iff; intros h1 h2.
     rewrite replace_var2. refl. fo.
-    refl. apply (f_equal2 App); fo. apply (f_equal2 Lam).
-    rewrite replace_var2. refl. fo. fo.
+    refl. f_equal; fo. f_equal. rewrite replace_var2. refl. fo. fo.
   Qed.
 
   Lemma notin_fv_replace_all x y : x <> y ->
@@ -276,13 +275,10 @@ Module Make (Export L : L_Struct).
     action f u = action g u.
 
   Proof.
-    induction u; intro h; simpl.
-    apply (f_equal Var). apply h. left. simpl. set_iff. refl.
-    refl.
-    apply (f_equal2 App).
+    induction u; intro h; simpl; f_equal.
+    apply h. left. simpl. set_iff. refl.
     apply IHu1. intros x hx. apply h. simpl. set_iff. destruct hx; tauto.
     apply IHu2. intros x hx. apply h. simpl. set_iff. destruct hx; tauto.
-    apply (f_equal2 Lam).
     apply h. simpl. set_iff. tauto.
     apply IHu. intros y hy. apply h. simpl. set_iff. destruct hy; tauto.
   Qed.
@@ -370,11 +366,9 @@ Module Make (Export L : L_Struct).
     transpose b c (transpose a b u) = transpose a c u.
 
   Proof.
-    unfold Def.transpose. induction u; simpl; set_iff; intros h1 h2 h3 h4.
-    apply (f_equal Var). apply transpose_var_comp; fo.
-    refl.
-    apply (f_equal2 App); fo.
-    apply (f_equal2 Lam); fo. apply transpose_var_comp; fo.
+    unfold Def.transpose.
+    induction u; simpl; set_iff; intros h1 h2 h3 h4; f_equal;
+      try apply transpose_var_comp; fo.
   Qed.
 
 (***********************************************************************)
@@ -462,8 +456,7 @@ Module Make (Export L : L_Struct).
     mem. eq_dec x a. fo. eq_dec x b. fo. bool.
     destruct (mem a (fv u)); destruct (mem b (fv u)); set_iff; fo.
 
-    apply (f_equal (Lam x)). rewrite update_id. refl.
-    unfold subs_transpose. rewrite h. refl.
+    f_equal. rewrite update_id. refl. unfold subs_transpose. rewrite h. refl.
   Qed.
 
   Lemma transpose_rename x y :
@@ -526,7 +519,7 @@ Module Make (Export L : L_Struct).
     rewrite aeq_alpha with (y:=z). 2: hyp.
     rewrite aeq_alpha with (x:=y') (y:=z). 2: hyp.
     unfold u', v'. rewrite i0. unfold Def.rename. rewrite !subs_comp.
-    apply aeq_refl_eq. apply (f_equal (Lam z)). apply subs_seq.
+    apply aeq_refl_eq. f_equal. apply subs_seq.
     intros c hc. do 2 (unfold Def.comp at 1). unfold subs_transpose at 1.
     unfold x', y'. unfold Def.transpose_var. simpl. unfold Def.single.
     unfold Def.update at 3. eq_dec c x.

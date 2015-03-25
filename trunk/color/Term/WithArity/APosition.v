@@ -152,7 +152,7 @@ destruct (IHp (Vnth t l) u t1). revert H. simpl.
 destruct (lt_ge_dec a (arity f)); intro. 2: discr.
 assert (l0 = l). apply lt_unique. subst l0.
 destruct (replace_pos (Vnth t l) p u). 2: discr.
-apply (f_equal Some). apply Some_eq in H. Funeqtac.
+f_equal. apply Some_eq in H. Funeqtac.
 apply Vreplace_eq_elim in H0. hyp. destruct a0. rewrite H0.
 exists (Cont f (Veq_app_cons_aux3 l) (Vsub t (Veq_app_cons_aux1 l)) x
   (Vsub t (Veq_app_cons_aux2 l))). intuition. simpl. apply args_eq.
@@ -195,7 +195,7 @@ induction c; intros; simpl.
 destruct u; auto.
 (* cons *)
 case (lt_ge_dec i (arity f)); intro. rewrite Vnth_cast. rewrite Vnth_app_cons.
-2: absurd_arith. rewrite (IHc u v). apply (f_equal Some). apply args_eq.
+2: absurd_arith. rewrite (IHc u v). f_equal. apply args_eq.
 apply Veq_nth; intros. rewrite Vnth_cast.
 destruct (eq_nat_dec i i0).
 subst i0. rewrite Vnth_replace. rewrite Vnth_app_cons. refl.

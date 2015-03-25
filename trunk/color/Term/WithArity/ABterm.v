@@ -171,7 +171,7 @@ intro t. apply (term_ind P Q).
  intros f ts. unfold Q. intro H. unfold P.
  intros n Hn.
  rewrite inject_term_eq. simpl.
- apply (f_equal (fint I f)).
+ f_equal.
  gen (maxvar_le_fun Hn). intro H0.
  gen (H _ H0). intro H1. hyp.
 

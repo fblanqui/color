@@ -837,7 +837,7 @@ on some finite set of variables *)
     intros x hx. apply h. apply union_subset_2. hyp.
     intros x hx. apply h. apply union_subset_1. hyp.
     (* lam *)
-    rewrite (var_seq' h). apply (f_equal (Lam (var x u s'))).
+    rewrite (var_seq' h). f_equal.
     apply IHu. intros y hy. unfold Def.update. eq_dec y x. refl.
     apply h. set_iff. auto.
   Qed.
@@ -856,7 +856,7 @@ on some finite set of variables *)
   Proof.
     induction u; simpl. refl. refl. rewrite IHu1, IHu2. refl.
     unfold Def.var; ens. (*SLOW*)rewrite fvcodom_id, empty_b.
-    apply (f_equal (Lam x)). rewrite <- IHu at 2. apply subs_seq.
+    f_equal. rewrite <- IHu at 2. apply subs_seq.
     intros y hy. unfold Def.update. eq_dec y x. rewrite e. refl. refl.
   Qed.
 
@@ -885,7 +885,7 @@ on some finite set of variables *)
     rewrite In_fvcodom in hx. destruct hx as [z hz]. gen (h z).
     set_iff. intro a. cut False. tauto. apply a. revert hz.
     repeat (rewrite In_domain; set_iff). intuition.
-    apply (f_equal (Lam x)). apply IHu. intro y. gen (h y).
+    f_equal. apply IHu. intro y. gen (h y).
     do 2 rewrite In_domain. set_iff. unfold Def.update. eq_dec y x.
     subst y. intuition. intuition.
   Qed.
@@ -1518,7 +1518,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     intros h1 h2.
     assert (h3 : ~In x0 (union (fv v) (fv w))). apply h2. set_iff. auto.
     revert h3. set_iff. intro h3.
-    rewrite !single_lam_no_alpha. apply (f_equal (Lam x0)).
+    rewrite !single_lam_no_alpha. f_equal.
     eq_dec x0 x.
     subst. repeat rewrite update_single_eq, single_id; auto.
     eq_dec x0 y.
@@ -1571,7 +1571,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     subst. subst. tauto. subst. intuition. subst. intuition. intuition.
 
     Focus 1. rewrite !single_lam_no_alpha. 2: tauto. 2: tauto.
-    apply (f_equal (Lam x)). eq_dec x' x.
+    f_equal. eq_dec x' x.
     (* x' = x *)
     subst x'. rewrite update2_neq_com. 2: hyp.
     rewrite update2_single_eq, update_single_eq, single_id.
@@ -1620,7 +1620,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     subst. subst. tauto. subst. intuition. subst. intuition. intuition.
 
     Focus 1. rewrite !single_lam_no_alpha. 2: tauto. 2: tauto.
-    apply (f_equal (Lam x)). eq_dec x' x.
+    f_equal. eq_dec x' x.
     (* x' = x *)
     subst x'. rewrite update2_neq_com. 2: hyp.
     rewrite update2_single_eq, update_single_eq, single_id.
@@ -1914,7 +1914,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
   Proof.
     induction u; simpl; auto. rewrite IHu1, IHu2. refl.
-    apply (f_equal (Lam x)). rewrite subs1_update_id. hyp. refl.
+    f_equal. rewrite subs1_update_id. hyp. refl.
   Qed.
 
   Lemma subs1_single_id y u : subs1 (single y (Var y)) u = u.
@@ -1962,7 +1962,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* app *)
     rewrite IHu1, IHu2; auto.
     (* lam *)
-    rename x0 into z. apply (f_equal (Lam z)). eq_dec z x.
+    rename x0 into z. f_equal. eq_dec z x.
     (* z = x *)
     subst z. rewrite subs1_update2_eq, subs1_update_single_eq, subs1_single_id.
     refl.
@@ -1993,7 +1993,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* app *)
     rewrite fvcodom_union. set_iff. intro h2. rewrite IHu1, IHu2; auto.
     (* lam *)
-    intro h2. apply (f_equal (Lam x)). unfold Def.single. eq_dec x y.
+    intro h2. f_equal. unfold Def.single. eq_dec x y.
     subst y. rewrite !subs1_update2_eq, !subs1_update_id; auto. apply subs1_id.
     rewrite subs1_update_id. 2: unfold Def.update; eq_dec x y; tauto.
     fold (single y v). rewrite IHu, subs1_update2_neq_com. refl. auto.
@@ -2026,7 +2026,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     revert h2. rewrite remove_union, fvcodom_union. set_iff. intro h2.
     rewrite IHu1, IHu2; auto.
     (* lam *)
-    rename x0 into z. apply (f_equal (Lam z)). eq_dec z x'. tauto.
+    rename x0 into z. f_equal. eq_dec z x'. tauto.
     rewrite subs1_update2_neq_com with (y:=x'). 2: tauto.
     rewrite subs1_update_id_single. 2: tauto. eq_dec z x. tauto.
     rewrite subs1_update2_neq_com. 2: tauto. rewrite IHu; auto.
@@ -2054,7 +2054,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite inter_sym, union_inter_1, union_empty in h1, h2.
     rewrite inter_sym. tauto.
     (* lam *)
-    apply (f_equal (Lam x)). rewrite IHu. apply subs1_seq.
+    f_equal. rewrite IHu. apply subs1_seq.
     intros y hy. unfold Def.comp1 at 1. unfold Def.update at -1.
     eq_dec y x; simpl. apply update_eq.
     unfold Def.comp1. apply subs1_seq. intros z hz. unfold Def.update.

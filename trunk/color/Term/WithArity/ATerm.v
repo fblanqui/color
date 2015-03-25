@@ -359,8 +359,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     vars_vec (Vapp ts1 ts2) = vars_vec ts1 ++ vars_vec ts2.
 
   Proof.
-    induction ts1; intros; simpl. refl. rewrite app_ass.
-    apply (f_equal (fun l => vars h ++ l)). apply IHts1.
+    induction ts1; intros; simpl. refl. rewrite app_ass. f_equal. apply IHts1.
   Qed.
 
   Lemma vars_vec_cons : forall t n (ts : terms n),
@@ -548,8 +547,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     symbs_vec (Vapp ts1 ts2) = symbs_vec ts1 ++ symbs_vec ts2.
 
   Proof.
-    induction ts1; intros; simpl. refl. rewrite app_ass.
-    apply (f_equal (fun l => symbs h ++ l)). apply IHts1.
+    induction ts1; intros; simpl. refl. rewrite app_ass. f_equal. apply IHts1.
   Qed.
 
   Lemma symbs_vec_cons : forall t n (ts : terms n),

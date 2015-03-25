@@ -1745,7 +1745,7 @@ Section pvalues_map.
 
   Proof.
     induction l; intros; unfold f_ith; simpl. refl. apply tail_eq.
-    rewrite <- IHl. apply pvalues_eq. intros. unfold f_ith. apply (f_equal f).
+    rewrite <- IHl. apply pvalues_eq. intros. unfold f_ith. f_equal.
     apply ith_eq. refl.
   Qed.
 
