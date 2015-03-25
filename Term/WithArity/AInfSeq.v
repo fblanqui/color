@@ -40,9 +40,8 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       rewrite forallb_forall in hyp1. ded (hyp1 _ lr). discr.
       ded (fun_eq_fill xl). decomp H.
       subst. simpl in xl. Funeqtac. rewrite (lhs_fun_defined lr) in ht. discr.
-      split. rewrite xl, yr. exists (Fun f0 t0). exists r. exists c. exists s.
-      intuition. subst. discr.
-      subst. simpl. hyp.
+      split. rewrite xl, yr. ex (Fun f0 t0) r c s. split_all. congruence.
+      subst. hyp.
     Qed.
 
     Lemma undef_rtc_red_is_rtc_int_red : forall t u, red R # t u ->
@@ -50,8 +49,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
     Proof.
       induction 1.
-      intro hx. ded (undef_red_is_int_red H hx). intuition.
-      intuition.
+      intro hx. ded (undef_red_is_int_red H hx). intuition. split_all. refl.
       intuition. apply rt_trans with y; auto.
     Qed.
 
@@ -64,7 +62,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       rewrite forallb_forall in hyp1, hyp2.
       intro wf. unfold hd_red_mod. apply WF_mod_rev2. apply WF_mod_rev in wf.
       intro t. gen (wf t). induction 1.
-      apply SN_intro. intros z [y [xy yz]]. apply H0. exists y. intuition.
+      apply SN_intro. intros z [y [xy yz]]. apply H0. exists y. split_all.
       assert (hy : undefined R y = true). redtac. gen (hyp2 _ lr).
       unfold undefined_rhs. simpl. unfold undefined. subst. destruct r.
       discr. simpl. auto.
@@ -97,11 +95,11 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
     Proof.
       set (P := fun n => exists u, subterm_eq u t /\ size u = n /\ NT R u).
-      assert (exP : exists n, P n). exists (size t). exists t. intuition.
+      assert (exP : exists n, P n). ex (size t) t. split_all. refl.
       destruct (ch_min exP) as [n [[Pn nleP] nmin]].
       destruct Pn as [u [ut [un hu]]]. subst n. exists u. unfold NT_min, min.
-      intuition. rename u0 into v.
-      assert (size u <= size v). apply nleP. exists v. intuition.
+      split_all. intro h. rename u0 into v.
+      assert (size u <= size v). apply nleP. exists v. split_all.
       eapply subterm_eq_trans. apply subterm_strict. apply H. hyp.
       ded (subterm_size H). omega.
     Qed.
@@ -114,7 +112,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
     Proof.
       unfold min_term. destruct (constructive_indefinite_description
       (fun u : term => subterm_eq u t /\ NT_min R u) NT_min_intro) as [u hu].
-      simpl. intuition.
+      simpl. tauto.
     Qed.
 
     Lemma subterm_eq_min_term : subterm_eq min_term t.
@@ -122,7 +120,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
     Proof.
       unfold min_term. destruct (constructive_indefinite_description
       (fun u : term => subterm_eq u t /\ NT_min R u) NT_min_intro) as [u hu].
-      simpl. intuition.
+      simpl. tauto.
     Qed.
 
     Definition min_NTM := mkNTM NT_min_term.
@@ -145,7 +143,7 @@ R-sequence *)
 
     Proof.
       intros [t [[f [h0 hf]] ht]]. exists (min_NTM (NT_IS_elt 1 hf)).
-      unfold Rsup. simpl. exists (f 1). subst t. intuition.
+      unfold Rsup. simpl. exists (f 1). subst t. split_all.
       apply subterm_eq_min_term.
     Qed.
 
@@ -156,12 +154,12 @@ R-sequence *)
       intros f hf. set (Min' := fun f : nat -> NTM R =>
         forall i x, subterm x (f i) -> forall g, g 0 = x -> ~IS R g).
       cut (exists g : nat -> NTM R, IS Rsup g /\ Min' g).
-      intros [g [h1 h2]]. exists (fun i => g i). intuition.
+      intros [g [h1 h2]]. exists (fun i => g i). split_all.
       destruct (choice _ Rsup_left_total) as [next hnext].
       set (a := min_NTM (NT_IS_elt 0 hf)). exists (iter a next). split.
       apply IS_iter. hyp.
       intros i x hx g g0 hg. destruct (iter a next i) as [t [[h [h0 hh]] ht]].
-      simpl in hx. ded (ht _ hx). absurd (NT R x). hyp. exists g. intuition.
+      simpl in hx. ded (ht _ hx). absurd (NT R x). hyp. exists g. tauto.
     Qed.
 
   End IS_Min_supterm.
@@ -225,13 +223,13 @@ R-sequence *)
     intro i. ded (h1 i). cut (forall l, l < g (S i) - g i ->
       Vnth (v (S (g i))) ha = Vnth (v (S (g i) + l)) ha).
     intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). omega.
-    rewrite e. apply hi. clear e. omega.
+    rewrite e. apply hi. clear e. clear -H; omega.
     induction l; intro. rewrite plus_0_r. refl.
-    assert (hl : l < g (S i) - g i). omega. rewrite (IHl hl).
+    assert (hl : l < g (S i) - g i). clear -H0; omega. rewrite (IHl hl).
     rewrite <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
     destruct (hk x) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
     rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2.
-    rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. omega.
+    rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. clear -H0; omega.
     (* [Vnth (v 0) ha] is a subterm of [f 0] *)
     exists (Vnth (v 0) ha). split.
     rewrite hv. apply subterm_fun. apply Vnth_in.
@@ -267,7 +265,7 @@ minimal infinite R-sequence *)
       intros x vx nx. assert (hx : subterm (Var x) l).
       destruct (in_vars_subterm_eq vx) as [c hx]. destruct c.
       rewrite forallb_forall in hyp1. ded (hyp1 _ lr). rewrite hx in H. discr.
-      exists (Cont f e t c t0). intuition. discr.
+      exists (Cont f e t c t0). split_all. discr.
       ded (subterm_sub s hx). destruct ht as [ht1 ht2].
       ded (ht2 _ H). contr.
       destruct (subterm_eq_sub_elim vu) as [w [hw1 hw2]]. destruct w.
@@ -278,8 +276,7 @@ minimal infinite R-sequence *)
       rewrite <- SN_notNT_eq. eapply subterm_eq_sn. rewrite SN_notNT_eq.
       apply hs. apply hn. hyp. hyp.
       (* w = Fun f v0 *)
-      subst. exists l. exists (Fun f t). exists s. intuition.
-      eapply dp_intro. apply lr.
+      subst. ex l (Fun f t) s. split_all. eapply dp_intro. apply lr.
       (* In (Fun f v0) (calls R r) *)
       apply subterm_in_calls. 2: hyp. case_eq (defined f R); intro H. refl.
       destruct hv as [hv1 hv2].
