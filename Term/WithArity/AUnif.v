@@ -864,7 +864,7 @@ Lemma is_sol_eqns_extend : forall s x (v : term) l,
 
 Proof.
 induction l; simpl; split_all; try tauto;
-  clear IHl H0; revert H; unfold is_sol_eqn; simpl;
+  revert H; unfold is_sol_eqn; simpl;
   rewrite !sub_sub, !sub_comp_single_extend; auto.
 Qed.
 
