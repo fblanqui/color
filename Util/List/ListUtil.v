@@ -1563,7 +1563,7 @@ Section ListsNth.
   Proof.
     induction l; simpl; intro i.
     split.
-    destruct i; intro; elimtype False; auto.
+    destruct i; intro; exfalso; auto.
     intro; omega.
     destruct i; simpl.
     split; intro.

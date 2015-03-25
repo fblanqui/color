@@ -336,7 +336,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     unfold loweredEnv; simpl.
     destruct (le_gt_dec n x); simpl.
     destruct (le_gt_dec x n).
-    elimtype False; apply varD_UD_absurd with E x A; trivial.
+    exfalso; apply varD_UD_absurd with E x A; trivial.
     replace x with n; [trivial | omega].
     rewrite initialSeg_app; autorewrite with datatypes using trivial.
     rewrite initialSeg_copy.

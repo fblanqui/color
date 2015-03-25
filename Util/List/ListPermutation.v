@@ -164,7 +164,7 @@ Section Permutation.
     simpl.
     destruct l'; trivial.
     unfold permutation in H.
-    elimtype False.
+    exfalso.
     assert (w := H a); simpl in w; clear H.
     destruct (eqA_dec a a).
     omega.

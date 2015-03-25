@@ -1057,8 +1057,8 @@ Module TermsConv (Sig : TermsSig.Signature).
     unfold liftedEnv; autorewrite with datatypes terms using simpl.
     destruct x; destruct y.
     split; intro; inversion H0.
-    elimtype False; apply envSubst_lift1_absurdR with y Q; trivial.
-    elimtype False; apply envSubst_lift1_absurdL with x Q; trivial.
+    exfalso; apply envSubst_lift1_absurdR with y Q; trivial.
+    exfalso; apply envSubst_lift1_absurdL with x Q; trivial.
     assert (Q_xy: envSub Q x y).
     destruct Q; trivial.
     set (w := H x y Q_xy A).

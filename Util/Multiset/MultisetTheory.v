@@ -557,7 +557,7 @@ Module Multiset (MC : MultisetCore).
       intros.
       assert (a in N).
       destruct (member_dec a N); trivial.
-      elimtype False.
+      exfalso.
       apply not_empty with empty a; auto with multisets.
       fold (member a empty).
       rewrite <- H.
@@ -850,7 +850,7 @@ Module Multiset (MC : MultisetCore).
     Proof.
       destruct l'.
       simpl; intros.
-      elimtype False.
+      exfalso.
       apply not_empty with (list2multiset l + {{a}}) a; trivial.
       apply member_union_r; auto with multisets.    
       intros.
@@ -909,10 +909,10 @@ Module Multiset (MC : MultisetCore).
       induction l; simpl; intros.
       destruct m.
       destruct n; trivial.
-      elimtype False; apply not_empty with (list2multiset (a::n)) a.
+      exfalso; apply not_empty with (list2multiset (a::n)) a.
       simpl; unfold insert; auto with multisets.
       rewrite H; solve_meq.
-      elimtype False; apply not_empty with
+      exfalso; apply not_empty with
                       (list2multiset (a::m) + list2multiset n) a.
       simpl; unfold insert; auto with multisets.
       rewrite H; solve_meq.    
@@ -922,7 +922,7 @@ Module Multiset (MC : MultisetCore).
       rewrite (IHl (removeElem eqA eqA_dec a m) n).
       rewrite (removeElem_length_in).
       destruct m; simpl; trivial.
-      elimtype False; apply not_empty with (list2multiset nil) a; trivial.
+      exfalso; apply not_empty with (list2multiset nil) a; trivial.
       simpl; auto with multisets.
       destruct (member_multiset_list m H0).
       exists x; split; trivial.
@@ -935,7 +935,7 @@ Module Multiset (MC : MultisetCore).
       rewrite (IHl m (removeElem eqA eqA_dec a n)).
       rewrite (removeElem_length_in).
       destruct n; simpl; trivial.
-      elimtype False; apply not_empty with (list2multiset nil) a; trivial.
+      exfalso; apply not_empty with (list2multiset nil) a; trivial.
       simpl; auto with multisets.
       destruct (member_multiset_list n H0).
       exists x; split; trivial.
@@ -1179,19 +1179,19 @@ Module Multiset (MC : MultisetCore).
       unfold multiset2list.
       destruct (mult_to_list {{a}}).
       destruct x; simpl in m.
-      elimtype False; apply not_empty with {{a}} a; trivial.
+      exfalso; apply not_empty with {{a}} a; trivial.
       unfold member; rewrite singleton_mult_in; auto with sets.
       destruct x; simpl in m.
       unfold insert in m.
       destruct (eqA_dec a a0).
       exists a0; split; trivial.
-      elimtype False.
+      exfalso.
       absurd (a/{{a}} = a/{{a0}}).
       rewrite singleton_mult_in with a a; auto with sets.
       rewrite singleton_mult_notin with a a0; auto with sets.
       apply meq_multeq.
       rewrite m; auto with multisets.
-      elimtype False.
+      exfalso.
       apply cons_eq_cons_cons_absurd with a a0 a1 (list2multiset x).
       rewrite m; solve_meq.
     Qed.
