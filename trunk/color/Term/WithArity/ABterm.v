@@ -119,10 +119,10 @@ Lemma inject_terms_nth : forall i n (ts : terms n) (H : Vforall max_le ts)
 
 Proof.
   induction i; intros.
-  destruct ts. elimtype False. omega. simpl. 
+  destruct ts. omega. simpl. 
   match goal with |- inject_term ?Hl = inject_term ?Hr =>
     rewrite (le_unique Hl Hr) end. refl.
-  destruct ts. elimtype False. omega.
+  destruct ts. omega.
   simpl. rewrite IHi.
   match goal with |- inject_term ?Hl = inject_term ?Hr =>
     rewrite (le_unique Hl Hr) end. refl.

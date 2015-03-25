@@ -635,7 +635,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> n > 1 -> size_terms ts > size t.
 
   Proof.
-    intro. destruct n. Omega. destruct n. Omega. intros.
+    intro. destruct n. omega. destruct n. omega. intros.
     VSntac ts. rewrite H1 in H. VSntac (Vtail ts). rewrite H2 in H. simpl in *.
     ded (size_non_zero (Vhead ts)). ded (size_non_zero (Vhead (Vtail ts))).
     destruct H. subst t. omega. destruct H. subst t. omega.

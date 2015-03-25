@@ -24,7 +24,7 @@ Section S.
 
   Lemma flat_cont_aux : forall n i, i < n -> i + S (n - S i) = n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Definition flat_cont_symb n (f : Sig) i (h : i < arity f) :=
     Cont f (flat_cont_aux h) (fresh n i) Hole (fresh (n+i) (arity f - S i)).

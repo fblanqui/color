@@ -486,7 +486,7 @@ Ltac use_SCC_hyp M l :=
 Ltac use_SCC_all_hyps M i Hi Hj :=
   let rec aux x :=
     match x with
-      | 0 => elimtype False; omega
+      | 0 => omega
       | S ?y => destruct i; [use_SCC_hyp M Hi | aux y]
     end in	
     match type of Hj with

@@ -473,7 +473,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     induction i; intros.
     destruct j; simpl.
-    elimtype False; omega.
+    omega.
     constructor; destruct j; trivial.
     destruct j.
     constructor 2; trivial.
@@ -756,7 +756,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof.
     intro. unfold prelift. apply presubst_beyond_aux. omega.
-    intros; elimtype False; omega.
+    intros; omega.
   Qed.
 
   Lemma presubst_prelift_aux : forall M G i j,
@@ -777,13 +777,13 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite plus_comm; trivial.
     destruct (var_notSubst_lift j Gn); destruct Gn;
       rewrite H; rewrite H0; simpl; destruct (Compare_dec.le_gt_dec i x); solve
-	[ elimtype False; omega
+	[ omega
 	| assert (S x = (x + 1)%nat); [omega | try_solve]
         ].
     rewrite !nth_app_left; autorewrite with datatypes using trivial; try omega.
     simpl.
     destruct (Compare_dec.le_gt_dec i x).
-    elimtype False; omega.
+    omega.
     rewrite nth_app_left; autorewrite with datatypes using trivial; try omega.
     trivial.
     replace (None :: copy (i + j) None ++ lift_subst G 1) with 
@@ -1486,7 +1486,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite <- H3; trivial.
     rewrite !nth_app_right; autorewrite with datatypes; try omega.
     assert (x - i > 0); [omega | destruct (x - i)].
-    elimtype False; omega.
+    omega.
     destruct G.
     inversion H; inversion H1.
     destruct o; simpl.
@@ -2025,7 +2025,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite nth_app_right; autorewrite with datatypes using (try omega).
     cut (x - i > 0).
     destruct (x - i).
-    intros; elimtype False; omega.
+    intros; omega.
     destruct n; trivial.
     omega.
     rewrite (activeEnv_var (subst MG) MGterm).
@@ -2098,7 +2098,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     assert (x - i > 0).
     omega.
     destruct (x - i).
-    elimtype False; omega.
+    omega.
     destruct n; simpl; trivial.
     elimtype False; apply varD_UD_absurd with 
       (activeEnv (buildT (TVar v))) x A.

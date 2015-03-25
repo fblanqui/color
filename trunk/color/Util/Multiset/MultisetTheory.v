@@ -192,7 +192,7 @@ Module Multiset (MC : MultisetCore).
 
     Lemma intersection_comm M N : M # N =mul= N # M.
 
-    Proof. try_solve_meq. apply Min.min_comm. Qed.
+    Proof. try_solve_meq. lia. Qed.
 
     Lemma union_assoc M N P : M + (N + P) =mul= (M + N) + P.
 

@@ -16,7 +16,6 @@ Set Implicit Arguments.
 
 Require Import Vector Program LogicUtil NatUtil EqUtil RelMidex ListUtil
   BoolUtil RelUtil ListForall Structures.Equalities Morphisms.
-Require Omega.
 
 Notation vector := Vector.t.
 Notation Vnil := Vector.nil.
@@ -272,7 +271,7 @@ Section Vnth.
 
   Lemma Vnth_cons_tail_aux : forall n i, i < S n -> i > 0 -> i-1 < n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vnth_cons_tail : forall x n (v : vector A n) i (h1:i<S n) (h2:i>0),
     Vnth (Vcons x v) h1 = Vnth v (Vnth_cons_tail_aux h1 h2).
@@ -298,7 +297,7 @@ Section Vnth.
 
   Lemma Vnth_cast_aux : forall n n' k, n = n' -> k < n' -> k < n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vnth_cast : forall n (v : vector A n) n' (e : n = n') k (h : k < n'),
     Vnth (Vcast v e) h = Vnth v (Vnth_cast_aux e h).
@@ -364,7 +363,7 @@ Section Vadd.
 
   Lemma Vnth_add_aux : forall i n, i < S n -> i <> n -> i < n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vnth_add : forall n (v : vector A n) x i (h : i < S n),
     Vnth (Vadd v x) h =
@@ -424,21 +423,17 @@ Section Vreplace.
     Vnth (Vreplace v ip a) ip' = a.
 
   Proof.
-    induction n; intros.
-    elimtype False. omega.
-    VSntac v. destruct i. trivial.
-    simpl. apply IHn.
+    induction n; intros. omega.
+    VSntac v. destruct i. trivial. simpl. apply IHn.
   Qed.
 
   Lemma Vnth_replace_neq : forall n i (ip : i < n) j (jp : j < n) 
     (v : vector A n) (a : A), i <> j -> Vnth (Vreplace v ip a) jp = Vnth v jp.
 
   Proof.
-    induction n; intros.
-    elimtype False. omega.
+    induction n; intros. omega.
     VSntac v. destruct i; destruct j; trivial.
-    elimtype False. omega.
-    simpl. rewrite IHn. trivial. omega.
+    omega. simpl. rewrite IHn. trivial. omega.
   Qed.
 
   Lemma Vreplace_pi : forall n (v : vector A n) i1 i2 (h1 : i1 < n)
@@ -570,7 +565,7 @@ Section Vapp.
 
   Lemma Vnth_app_aux : forall n1 n2 i, i < n1+n2 -> n1 <= i -> i - n1 < n2.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vnth_app_aux [n1 n2 i].
 
@@ -609,7 +604,7 @@ Section Vapp.
 
   Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vapp_cast : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     n2' (e : n2 = n2'),
@@ -823,13 +818,13 @@ Section Vsub.
 
   Lemma Vsub_aux1 : forall i k' n : nat, i + S k' <= n -> i < n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vsub_aux1 [i k' n].
 
   Lemma Vsub_aux2: forall i k' n : nat, i + S k' <= n -> S i + k' <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vsub_aux2 [i k' n].
 
@@ -849,7 +844,7 @@ Section Vsub.
 
   Lemma Vsub_nil_aux1 : forall i k, i+k <= 0 -> 0=k.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vsub_nil_aux1 [i k].
 
@@ -865,7 +860,7 @@ Section Vsub.
 
   Lemma Vnth_sub_aux : forall n i k j, i+k<=n -> j<k -> i+j<n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vnth_sub_aux [n i k j].
 
@@ -879,7 +874,7 @@ Section Vsub.
 
   Lemma Vsub_cons_aux : forall n i k, S i + k <= S n -> i + k <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vsub_cons : forall x i k n (v : vector A n) (h : S i + k <= S n),
     Vsub (Vcons x v) h = Vsub v (Vsub_cons_aux h).
@@ -905,7 +900,7 @@ Section Vsub.
 
   Lemma Vsub_cast_aux1 : forall n n' i k, n=n' -> i+k<=n' -> i+k<=n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vsub_cast_aux1 [n n' i k].
 
@@ -916,7 +911,7 @@ Section Vsub.
 
   Lemma Vcast_sub_aux1 : forall n i k j, i + k <= n -> k = j -> i + j <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vcast_sub_aux1 [n i k j].
 
@@ -930,7 +925,7 @@ Section Vsub.
 
   Lemma Vcons_nth_aux1 : forall n i k, i < n -> S i+k <= n -> i+S k <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vcons_nth : forall n (v : vector A n) i k (h1 : i<n)
     (h2 : S i + k <= n),
@@ -952,19 +947,19 @@ Section Vsub.
 
   Lemma Vsub_cons_intro_aux1 : forall n i k, i+k<=n -> k>0 -> i<n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vsub_cons_intro_aux1 [n i k].
 
   Lemma Vsub_cons_intro_aux2 : forall n i k, i+k<=n -> k>0 -> S i+pred k <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Implicit Arguments Vsub_cons_intro_aux2 [n i k].
 
   Lemma Vsub_cons_intro_aux3 : forall k, k>0 -> S(pred k) = k.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vsub_cons_intro :  forall n (v : vector A n) i k (h : i+k<=n) (p : k>0),
     Vsub v h = Vcast (Vcons (Vnth v (Vsub_cons_intro_aux1 h p))
@@ -991,15 +986,15 @@ Section Vsub.
 
   Lemma Veq_app_aux1 : forall n i, i <= n -> 0 + i <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Veq_app_aux2 : forall n i, i <= n -> i + (n - i) <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Veq_app_aux3 : forall n i, i <= n -> i + (n - i) = n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Veq_app : forall n (v : vector A n) i (h : i<=n),
     v = Vcast (Vapp (Vsub v (Veq_app_aux1 h)) (Vsub v (Veq_app_aux2 h)))
@@ -1026,15 +1021,15 @@ Section Vsub.
 
   Lemma Veq_app_cons_aux1 : forall n i, i < n -> 0 + i <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Veq_app_cons_aux2 : forall n i, i < n -> S i + (n - S i) <= n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Veq_app_cons_aux3 : forall n i, i < n -> i + S (n - S i) = n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Veq_app_cons : forall n (v : vector A n) i (h : i<n),
     v = Vcast (Vapp (Vsub v (Veq_app_cons_aux1 h))
@@ -1095,7 +1090,7 @@ Section Vsub.
 
   Lemma Vsub_app_l_aux : forall n1 n2 i, i <= n1 -> 0 + i <= n1 + n2.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vsub_app_l : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h : 0+n1<=n1+n2), Vsub (Vapp v1 v2) h = v1.
@@ -1134,14 +1129,14 @@ Section Vremove_last.
 
   Lemma Vremove_last_aux : forall n, 0 + n <= S n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Definition Vremove_last A n (v : vector A (S n)) : vector A n :=
     Vsub v (Vremove_last_aux n).
 
   Lemma Vnth_remove_last_aux : forall i n, i<n -> i< S n.
 
-  Proof. Omega. Qed.
+  Proof. omega. Qed.
 
   Lemma Vnth_remove_last : forall n (v : vector A (S n)) i
     (h : i<n), Vnth (Vremove_last v) h = Vnth v (Vnth_remove_last_aux h).
@@ -1760,17 +1755,11 @@ Section Vbuild.
           Vcons (gen 0 _) (@Vbuild_spec p gen')
     end.
 
-  Solve Obligations using omega.
-  Next Obligation.
-  Proof.
-    elimtype False. omega.
-  Qed.
-  Next Obligation.
-    omega.
-  Qed.
-  Next Obligation.
-    omega.
-  Qed.
+  Solve Obligations using coq_omega.
+  (*COQ: why these obligations are not solved?*)
+  Next Obligation. coq_omega. Qed.
+  Next Obligation. coq_omega. Qed.
+  Next Obligation. coq_omega. Qed.
   Next Obligation.
     simpl. destruct i. f_equal. apply lt_unique.
     rewrite e. f_equal. apply lt_unique.

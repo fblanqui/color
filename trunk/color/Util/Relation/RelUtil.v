@@ -13,6 +13,7 @@ Set Implicit Arguments.
 
 Require Import LogicUtil Setoid Basics Morphisms List.
 Require Export Relations RelMidex.
+Require Omega.
 
 Arguments inclusion {A} R1 R2.
 Arguments same_relation {A} R1 R2.
@@ -806,7 +807,7 @@ Lemma rtc_intro_seq A (R : rel A) f i : forall j, i <= j ->
 Proof.
   cut (forall n, (forall k, i <= k < i + n -> R (f k) (f (1+k))) ->
     R# (f i) (f (n+i))).
-  intros h j ij hij. assert (j = (j-i) + i). Require Omega. omega.
+  intros h j ij hij. assert (j = (j-i) + i). omega.
   rewrite H. apply h.
   intros k hk. apply hij. omega.
   induction n; intro h. refl. trans (f (n+i)).

@@ -11,8 +11,8 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Min Max Morphisms.
-Require Export Arith Omega.
+Require Import LogicUtil Min Max Morphisms Psatz.
+Require Export Arith.
 
 (***********************************************************************)
 (** Declare implicit arguments. *)
@@ -43,31 +43,34 @@ Implicit Arguments eq_add_S [n m].
 (***********************************************************************)
 (** Tactics. *)
 
-Ltac Omega := intros; omega.
+Ltac coq_omega := omega.
+Tactic Notation "omega" := intros; omega.
+Tactic Notation "lia" := intros; lia.
+Tactic Notation "nia" := intros; nia.
 
 Ltac max :=
   match goal with
     | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
-  end; intros; omega.
+  end; omega.
 
 (***********************************************************************)
 (** Properties of ordering relations on nat. *)
 
 Instance le_PreOrder : PreOrder le.
 
-Proof. split. intro x. refl. intros x y z xy yz. omega. Qed.
+Proof. split; intro; omega. Qed.
 
 Instance lt_Transitive : Transitive lt. 
 
-Proof. intros x y z xy yz. omega. Qed.
+Proof. intro; omega. Qed.
 
 Instance ge_PreOrder : PreOrder ge.
 
-Proof. split. intro x. omega. intros x y z xy yz. omega. Qed.
+Proof. split; intro; omega. Qed.
 
 Instance gt_Transitive : Transitive gt.
 
-Proof. intros x y z xy yz. omega. Qed.
+Proof. intro; omega. Qed.
 
 (***********************************************************************)
 (** Boolean function for equality. *)
@@ -228,68 +231,49 @@ Qed.
 
 Lemma le_max_intro_l x y z : x <= y -> x <= max y z.
 
-Proof. intro. eapply le_trans. apply H. apply le_max_l. Qed.
+Proof. lia. Qed.
 
 Lemma lt_max_intro_l x y z : x < y -> x < max y z.
 
-Proof. intro. eapply lt_le_trans. eexact H. apply le_max_l. Qed.
+Proof. lia. Qed.
 
 Lemma le_max_intro_r x y z : x <= z -> x <= max y z.
 
-Proof. intro. eapply le_trans. apply H. apply le_max_r. Qed.
+Proof. lia. Qed.
 
 Lemma lt_max_intro_r x y z : x < z -> x < max y z.
 
-Proof. intro. rewrite max_comm. apply lt_max_intro_l. hyp. Qed.
+Proof. lia. Qed.
 
 Lemma le_max_elim_l x y z : max x y <= z -> x <= z.
 
-Proof. intro. eapply le_trans. 2: apply H. apply le_max_l. Qed.
+Proof. lia. Qed.
 
 Lemma le_max_elim_r x y z : max x y <= z -> y <= z.
 
-Proof. intro. eapply le_trans. 2: apply H. apply le_max_r. Qed.
+Proof. lia. Qed.
 
 Lemma max_ge_compat x y x' y' : x >= x' -> y >= y' -> max x y >= max x' y'.
 
-Proof.
-  intros. destruct (max_dec x' y'); rewrite e; unfold ge.
-  rewrite max_comm. apply le_max_intro_r. hyp.
-  apply le_max_intro_r. hyp.
-Qed.
+Proof. lia. Qed.
 
 Lemma max_gt_compat x y x' y' : x > x' -> y > y' -> max x y > max x' y'.
 
-Proof.
-intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
-  do 2 first
-    [ rewrite max_r; [idtac | hyp] 
-    | rewrite max_l; [idtac | hyp]
-    ]; omega.
-Qed.
+Proof. lia. Qed.
 
 Lemma min_gt_compat x y x' y' : x > x' -> y > y' -> min x y > min x' y'.
 
-Proof.
-intros. destruct (le_ge_dec x y); destruct (le_ge_dec x' y');
-  do 2 first
-    [ rewrite min_r; [idtac | hyp] 
-    | rewrite min_l; [idtac | hyp]
-    ]; omega.
-Qed.
+Proof. lia. Qed.
  
 Lemma max_lt x y z : max y z < x <-> y < x /\ z < x.
 
-Proof.
-  split_all. eapply le_lt_trans. apply le_max_l. apply H.
-  eapply le_lt_trans. apply le_max_r. apply H. apply max_case; hyp.
-Qed.
+Proof. lia. Qed.
 
-Lemma gt_max : forall x y z, x > max y z <-> x > y /\ x > z.
+Lemma gt_max x y z : x > max y z <-> x > y /\ x > z.
 
-Proof. exact max_lt. Qed.
+Proof. apply max_lt. Qed.
 
-Lemma max_0_r : forall x, max x 0 = x.
+Lemma max_0_r x : max x 0 = x.
 
 Proof. destruct x; refl. Qed.
 
@@ -298,45 +282,33 @@ Proof. destruct x; refl. Qed.
 
 Require Import Min.
 
-Lemma elim_min_l : forall x y z, x <= z -> min x y <= z.
+Lemma elim_min_l x y z : x <= z -> min x y <= z.
 
-Proof. intros. eapply le_trans. apply le_min_l. hyp. Qed.
+Proof. lia. Qed.
 
 Lemma elim_min_r : forall x y z, y <= z -> min x y <= z.
 
-Proof. intros. eapply le_trans. apply le_min_r. hyp. Qed.
-
-(* setting up some hints for the following lemmas *)
-Hint Resolve le_lt_trans le_min_l le_min_r le_trans.
+Proof. lia. Qed.
 
 Lemma lt_min_intro_l x y z : x < z -> min x y < z.
 
-Proof. eauto. Qed.
+Proof. lia. Qed.
 
 Lemma lt_min_intro_r x y z : y < z -> min x y < z.
 
-Proof. eauto. Qed.
+Proof. lia. Qed.
 
 Lemma le_min_intro_l x y z : x <= z -> min x y <= z.
 
-Proof. eauto. Qed.
+Proof. lia. Qed.
 
 Lemma le_min_intro_r x y z : y <= z -> min x y <= z.
 
-Proof. eauto. Qed.
-
-Ltac min_simpl :=
-  match goal with
-  | H : ?x <= ?y |- context [min ?x ?y] => rewrite (min_l x y H)
-  | H : ?y < ?x |- context [min ?x ?y] => rewrite (min_r x y (lt_le_weak H))
-  end.
+Proof. lia. Qed.
 
 Lemma min_ge_compat x y x' y' : x >= x' -> y >= y' -> min x y >= min x' y'.
 
-Proof.
-  intros. destruct (le_lt_dec x y); destruct (le_lt_dec x' y');
-    repeat min_simpl; omega.
-Qed.
+Proof. lia. Qed.
 
 (***********************************************************************)
 (** Decidability of ordering relations on nat. *)
@@ -351,10 +323,10 @@ Lemma gt_dec : rel_dec gt.
 
 Proof. intros i j. destruct (le_gt_dec i j); auto with arith. Defined.
 
-Lemma lt_ge_dec : forall x y, {x < y} + {x >= y}.
+Lemma lt_ge_dec x y : {x < y} + {x >= y}.
 
 Proof.
-  intros. destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
+  destruct (lt_eq_lt_dec x y); auto; try destruct s; auto with *.
 Defined.
 
 (***********************************************************************)
@@ -364,18 +336,11 @@ Require Import Euclid.
 
 Lemma mult_is_not_O m n : m * n <> 0 <-> m <> 0 /\ n <> 0.
 
-Proof.
-  intuition. subst. apply H. refl. subst. apply H. apply mult_0_r.
-  destruct (mult_is_O _ _ H0); auto.
-Qed.
+Proof. nia. Qed.
 
 Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
 
-Proof.
-  induction x; induction y; simpl; intros. rewrite mult_0_r in H. omega.
-  rewrite mult_succ_r in H. omega. rewrite !mult_0_r in H. omega.
-  simpl in *. rewrite !mult_succ_r in H. omega.
-Qed.
+Proof. induction x; induction y; simpl; nia. Qed.
 
 Implicit Arguments mult_lt_r_elim [x x' y].
 
@@ -384,22 +349,27 @@ Lemma eucl_div_unique b q1 r1 q2 r2 :
 
 Proof.
 intros.
-assert ((q1-q2)*b=r2-r1). rewrite mult_minus_distr_r. omega.
-assert ((q2-q1)*b=r1-r2). rewrite mult_minus_distr_r. clear H2; omega.
+assert ((q1-q2)*b=r2-r1). nia.
+assert ((q2-q1)*b=r1-r2). (*nia works but is slow*)
+rewrite mult_minus_distr_r. clear H2; omega.
+(*nia works but is slow*)
 destruct (le_gt_dec r1 r2).
 (* r1 <= r2 *)
 destruct (eq_nat_dec r1 r2).
 (* r1 = r2 *)
-subst. rewrite minus_diag in H2. rewrite minus_diag in H3.
-destruct (mult_is_O _ _ H2); destruct (mult_is_O _ _ H3); split_all; omega.
+subst. rewrite minus_diag in *. nia.
 (* r1 < r2 *)
-assert (r2 - r1 < b). clear -H H0 l; omega. rewrite <- H2 in H4.
-rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
-assert (q1=q2). clear H H0 H1 H3 H4; omega. subst q2; clear H2 H3 H4 H5. omega.
+assert (r2 - r1 < b). clear -H H0; omega.
+rewrite <- H2 in H4. rewrite <- (mult_1_l b) in H4 at -1.
+ded (mult_lt_r_elim H4).
+assert (q1=q2). clear H H0 H1 H3 H4; omega.
+subst q2; clear H2 H3 H4 H5. omega.
 (* r1 > r2 *)
-assert (r1 - r2 < b). clear -H H0; omega. rewrite <- H3 in H4.
-rewrite <- (mult_1_l b) in H4 at -1. ded (mult_lt_r_elim H4).
-assert (q1=q2). clear H H0 H1 H2 H4; omega. subst q2; clear H2 H3 H4 H5. omega.
+assert (r1 - r2 < b). clear -H H0; omega.
+rewrite <- H3 in H4. rewrite <- (mult_1_l b) in H4 at -1.
+ded (mult_lt_r_elim H4).
+assert (q1=q2). clear H H0 H1 H2 H4; omega.
+subst q2; clear H2 H3 H4 H5. omega.
 Qed.
 
 Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
@@ -452,7 +422,7 @@ Proof. auto with arith. Qed.
 
 Lemma i_lt_n : forall n i j : nat, n = i + S j -> i < n.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Implicit Arguments i_lt_n [n i j].
 
@@ -462,73 +432,64 @@ Proof. discr. Qed.
 
 Lemma plus_reg_l_inv : forall n1 n2 p2, n2=p2 -> n1+n2=n1+p2.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma plus_reg_r_inv : forall n1 p1 n2, n1=p1 -> n1+n2=p1+n2.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma plus_minus_eq : forall v p, v+p-p=v.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma le_minus_plus : forall v p, p<=v -> v-p+p=v.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Implicit Arguments le_minus_plus [v p].
 
 Lemma plus_1_S : forall n, n+1 = S n.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma lt_from_le : forall x y, 0 < y -> x <= y-1 -> x < y.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma le_from_lt : forall x y, x < y+1 -> x <= y.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Implicit Arguments lt_pm [n k x].
 
 Lemma le_plus_r : forall k l, k <= k+l.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma misc1 : forall x k, S k = x+2+k-x-1.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma misc2 : forall x k, k = x+2+k-(x+1)-1.
 
-Proof. Omega. Qed.
+Proof. omega. Qed.
 
 Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
 
-Proof.
-  destruct i; destruct j; intros; solve [omega | simpl; auto with arith].
-Qed.
+Proof. nia. Qed.
 
 Lemma mult_lt_compat_lr : forall i j k l,
   i <= j -> j > 0 -> k < l -> i * k < j * l.
 
-Proof.
-  destruct i; intros.
-  rewrite mult_0_l. apply mult_gt_0. hyp.
-  destruct l. omega. auto with arith.
-  simpl. destruct j. omega.
-  simpl. apply plus_lt_le_compat. hyp.
-  apply mult_le_compat; omega. 
-Qed.
+Proof. nia. Qed.
 
 Lemma S_add_S : forall n1 n2 n, n1 + S n2 = n -> S n1 + S n2 = S n.
 
-Proof. intros. subst n. refl. Qed.
+Proof. intros. subst. refl. Qed.
 
 Implicit Arguments S_add_S [n1 n2 n].
 

@@ -105,8 +105,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     assert (MLnotApp: ~isApp (appBodyL Mapp)).
     apply abs_isnot_app; trivial.
     rewrite (appHead_notApp (appBodyL Mapp) MLnotApp) in Mhead.
-    elimtype False.
-    term_inv (appBodyL Mapp).
+    elimtype False. term_inv (appBodyL Mapp).
   Qed.
 
   Lemma app_beta_isapp : forall M N f,
@@ -122,8 +121,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     intros N f MbN Mhead.
     inversion MbN; try solve [contr | trivial].
      (* direct beta step *)
-    elimtype False.
-    inversion H.
+    elimtype False. inversion H.
     apply beta_direct_funApp with Tr I; eauto with terms.
   Qed.
 
@@ -136,8 +134,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
       inversion Nbeta; try contr.
     inversion H; contr.
      (* 1) direct beta reduction (left applicant - abstraction) *)
-    inversion H.
-    elimtype False.
+    inversion H. elimtype False.
     apply beta_direct_funApp with (buildT (TApp TypM1 TypM2)) Mapp0;
       eauto with terms.
      (* 2) beta reduction in left part of application *)
@@ -176,8 +173,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     induction TypM; try solve [intros; inversion H].
     intros N f Mapp MbetaN Mhead.
     inversion MbetaN; try contr.
-    inversion H.
-    elimtype False.
+    inversion H. elimtype False.
     apply beta_direct_funApp with (buildT (TApp TypM1 TypM2)) Mapp1;
       eauto with terms.
      (* -) beta in left argument *)
@@ -202,8 +198,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite <- ass_app; auto with datatypes.
      (*   - M = @(_, _) *)
     intro M1nApp; simpl in *.
-    rewrite appHead_notApp in Mhead; simpl in Mhead.
-    elimtype False.
+    rewrite appHead_notApp in Mhead; simpl in Mhead. elimtype False.
     apply beta_notFunS with (buildT TypM1) (appBodyL Napp); 
       eauto with terms.
     trivial.
@@ -440,8 +435,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite e in Mi.
     elimtype False; eapply varD_UD_absurd; eauto.
      (*   - x > i *)
-    destruct x; simpl.
-    elimtype False; omega.
+    destruct x; simpl. omega.
     replace (copy i None ++ None :: lift_subst G 1) with 
       ((None :: copy i None) ++ lift_subst G 1).
     simpl.
@@ -452,7 +446,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     set (w := var_notSubst_lift 1 Gn).
     inversion Gn; inversion w; rewrite H; rewrite H0; simpl;
       destruct (Compare_dec.le_gt_dec i (S x)); 
-	solve [trivial | elimtype False; omega].
+	solve [trivial | omega].
     rewrite <- list_app_first_last.
     rewrite <- copy_add; trivial.
     rewrite <- app_nil_end; trivial.
@@ -460,7 +454,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite !nth_app_left, nth_copy_in.
     simpl.
     destruct (Compare_dec.le_gt_dec i x); trivial.
-    elimtype False; omega.
+    omega.
     omega.
     rewrite copy_length; omega.
     rewrite copy_length; omega.

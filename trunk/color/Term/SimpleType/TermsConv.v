@@ -746,7 +746,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros. unfold prelift. apply conv_term_lifted_aux; trivial.
-    intros; elimtype False; omega.
+    intros; omega.
   Qed.
 
   Lemma conv_term_unique : forall M N N' Q,
@@ -1074,7 +1074,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     rewrite (activeEnv_lift M n).
     unfold liftedEnv; autorewrite with datatypes terms using simpl.
     inversion Qxy; unfold VarD.
-    destruct (le_gt_dec 0 x); try solve [elimtype False; omega].
+    destruct (le_gt_dec 0 x); try solve [omega].
     split; intro D.
     rewrite <- H0.
     rewrite nth_app_right; autorewrite with datatypes using try omega.

@@ -312,6 +312,6 @@ Program Definition check_seq (n : nat) (Pr : N n -> Prop)
   (P : forall (i : N n), option (Pr i)) : option (forall (i : N n), Pr i)
   := check_seq_aux _ P (p:=0) _.
 
-Next Obligation. elimtype False. omega. Qed.
+Next Obligation. omega. Qed.
 
 Arguments check_seq [n Pr] _.
