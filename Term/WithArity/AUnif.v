@@ -201,7 +201,7 @@ Lemma lforall_notin_solved_eqn_1 : forall n t, mem n (vars t) = false ->
 Proof.
 induction l; simpl. auto. destruct a. simpl. unfold notin_eqn. simpl.
 mem. intros. unfold notin_solved_eqn. simpl. split_all.
-intro e. subst n0. rewrite (beq_refl beq_nat_ok) in H3. discr.
+subst n0. rewrite (beq_refl beq_nat_ok) in H4. discr.
 apply mem_vars_sub_single'; hyp.
 Qed.
 
@@ -212,7 +212,7 @@ Lemma lforall_notin_solved_eqn_1' : forall n t, mem n (vars t) = false ->
 Proof.
 induction l; simpl. auto. destruct a. simpl. unfold notin_eqn. simpl.
 mem. intros. unfold notin_solved_eqn. simpl. split_all.
-intro e. subst n0. rewrite (beq_refl beq_nat_ok) in H0. discr.
+subst n0. rewrite (beq_refl beq_nat_ok) in H0. discr.
 apply mem_vars_sub_single'; hyp.
 Qed.
 

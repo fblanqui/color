@@ -199,6 +199,7 @@ Ltac split_hyps :=
 Ltac split_goal :=
   match goal with
   | |- ~(_ \/ _) => rewrite not_or; split_goal
+  | |- ~ _ => intro; split_goal
   | |- _ <-> _ => split; split_goal
   | |- _ /\ _ => split; split_goal
   | |- _ -> _ => intro; split_goal
