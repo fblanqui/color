@@ -31,17 +31,15 @@ Section S.
 
   Implicit Arguments flat_cont_symb [f i].
 
-  Variable some_symbol : Sig.
-  Variable arity_some_symbol : arity some_symbol > 0.
-  Variable n : nat.
+  Variables (some_symbol : Sig) (arity_some_symbol : arity some_symbol > 0)
+            (n : nat).
 
   Definition one_flat_cont := flat_cont_symb n arity_some_symbol.
 
   Definition flat_conts_symb n f :=
     map (fun x => flat_cont_symb n (N_prf x)) (L (arity f)).
 
-  Variable Fs : list Sig.
-  Variable Fs_ok : forall x : Sig, In x Fs.
+  Variables (Fs : list Sig) (Fs_ok : forall x : Sig, In x Fs).
 
   Definition flat_conts n := flat_map (flat_conts_symb n) Fs.
 
@@ -64,7 +62,7 @@ Section S.
     is_root_preserving a = true -> In a R -> In a (flat_rules R).
 
   Proof.
-    intros. unfold flat_rules. rewrite in_flat_map. exists a. intuition.
+    intros. unfold flat_rules. rewrite in_flat_map. exists a. split_all.
     unfold flat_rule. rewrite H. simpl. auto.
   Qed.
 
@@ -80,13 +78,13 @@ Section S.
     Proof.
       intros t u h. redtac. unfold flat_rules in lr. rewrite in_flat_map in lr.
       destruct lr as [[a b] [h1 h2]]. unfold flat_rule in h2. simpl in h2.
-      destruct a. simpl in h2. intuition. inversion H. subst. apply red_rule.
+      destruct a. simpl in h2. split_all. inversion H. subst. apply red_rule.
       hyp.
-      destruct b. simpl in h2. intuition. inversion H. subst. apply red_rule.
+      destruct b. simpl in h2. split_all. inversion H. subst. apply red_rule.
       hyp.
-      revert h2. case_beq_symb Sig f f0; intro. simpl in h2. intuition.
-      inversion H.
-      subst. apply red_rule. hyp. rewrite in_map_iff in h2.
+      revert h2. case_beq_symb Sig f f0; intro. simpl in h2. split_all.
+      inversion H. subst. apply red_rule. hyp.
+      rewrite in_map_iff in h2.
       destruct h2 as [d [h3 h4]]. unfold flat_cont_rule in h3. inversion h3.
       clear h3. subst. unfold flat_conts in h4. rewrite in_flat_map in h4.
       destruct h4 as [g [h5 h6]]. unfold flat_conts_symb in h6.
@@ -110,7 +108,7 @@ Section S.
       rewrite !fill_fill.
       case_eq (is_root_preserving (mkRule l r)); intros.
       apply red_rule. unfold flat_rules. rewrite in_flat_map.
-      exists (mkRule l r). intuition. unfold flat_rule. rewrite H. simpl. auto.
+      exists (mkRule l r). split_all. unfold flat_rule. rewrite H. simpl. auto.
       destruct l. discr. destruct r. discr.
       destruct (cont_case (comp one_flat_cont c)). discr.
       destruct H0 as [d [g [i [vi [j [vj [e]]]]]]]. rewrite !H0, <- !fill_fill.
@@ -121,16 +119,14 @@ Section S.
       rewrite !fill_sub with (n:=n).
       set (s' := maxvar_union (S n) s (fsub n (Vapp vi vj))).
       apply hd_red_incl_red. apply hd_red_rule. unfold flat_rules.
-      rewrite in_flat_map. exists (mkRule l r). intuition. unfold flat_rule.
-      unfold l, r. rewrite H. rewrite in_map_iff. assert (h : i < arity g).
-      omega.
-      exists (flat_cont_symb (S n) h). intuition. simpl.
+      rewrite in_flat_map. exists (mkRule l r). split_all. unfold flat_rule.
+      unfold l, r. rewrite H, in_map_iff. assert (h : i < arity g). omega.
+      exists (flat_cont_symb (S n) h). split_all. simpl.
       gen (flat_cont_aux h). assert (arity g - S i = j). omega.
       rewrite H1.
       intro. assert (e0=e). apply eq_unique. subst. refl.
       unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
-      unfold flat_conts_symb. rewrite in_map_iff. exists (N_ h).
-      intuition.
+      unfold flat_conts_symb. rewrite in_map_iff. exists (N_ h). split_all.
       apply In_L.
       trans (maxvar_rule (mkRule l r)). omega. apply le_max_r.
       trans (maxvar_rule (mkRule l r)). omega. apply le_max_l.
