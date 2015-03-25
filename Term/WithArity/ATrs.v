@@ -40,8 +40,8 @@ Section basic_definitions.
 
   Proof.
     destruct a as [a1 a2]. destruct b as [b1 b2]. unfold beq_rule. simpl.
-    rewrite andb_eq. rewrite !beq_term_ok. split.
-    intuition. subst. refl. intro. inversion H. auto.
+    rewrite andb_eq. rewrite !beq_term_ok. split_all.
+    subst. refl. inversion H. auto. inversion H. auto.
   Qed.
 
   Definition eq_rule_dec := dec_beq beq_rule_ok.
@@ -196,11 +196,11 @@ Require Import Morphisms.
 
 Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
-Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. intuition. Qed.
+Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. split_all. Qed.
 
 Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
 
-Proof. intros R R' RR' t t' tt'. redtac. ex l r s. intuition. Qed.
+Proof. intros R R' RR' t t' tt'. redtac. ex l r s. split_all. Qed.
 
 Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
 
@@ -341,8 +341,8 @@ Section S.
       intros. induction H; auto.
       right. apply int_red_preserve_hd. auto.
       destruct IHclos_refl_trans1; destruct IHclos_refl_trans2; subst; auto.
-      right. do 3 destruct H1. do 3 destruct H2. intuition; subst; auto.
-      inversion H1. subst. ex x3 x1 x5. auto.
+      right. do 3 destruct H1. do 3 destruct H2. split_all. subst.
+      Funeqtac. subst. ex x0 x1 x5. auto.
     Qed.
 
     Lemma red_case : forall t u, red R t u -> hd_red R t u
@@ -356,7 +356,7 @@ Section S.
       (* Cont *)
       right. ex f (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e) i.
       assert (p : i<arity f). omega. ex p (fill c (sub s r)).
-      subst. simpl. intuition. rewrite Vnth_cast. rewrite Vnth_app.
+      subst. simpl. split_all. rewrite Vnth_cast, Vnth_app.
       destruct (le_gt_dec i i). 2: omega. rewrite Vnth_cons_head.
       apply red_rule. hyp. omega.
       apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_app.
@@ -382,7 +382,7 @@ Section S.
     Proof.
       intros t u tu. redtac. destruct c; subst.
       left. apply hd_red_rule. hyp.
-      right. ex l r (Cont f e t0 c t1) s. intuition. discr.
+      right. ex l r (Cont f e t0 c t1) s. split_all. discr.
     Qed.
 
   End rewriting.
@@ -413,8 +413,8 @@ Section S.
     <-> vars (rhs a) [= vars (lhs a) /\ rules_preserve_vars R.
 
   Proof.
-    unfold rules_preserve_vars. intuition. apply H. left. destruct a. refl.
-    simpl in H. destruct H. subst. hyp. apply H1. hyp.
+    unfold rules_preserve_vars. split_all. apply H. left. destruct a. refl. fo.
+    simpl in H0. destruct H0. subst. hyp. apply H1. hyp.
   Qed.
 
   Section vars.
@@ -468,8 +468,7 @@ Section S.
       maxvar t = 0 -> red R # t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). omega. apply rtc_red_maxvar.
-      hyp.
+      intros. cut (maxvar u <= maxvar t). omega. apply rtc_red_maxvar. hyp.
     Qed.
 
   End vars.
@@ -540,7 +539,7 @@ Section S.
     In a R -> n > maxvar_rules R -> n > maxvar_rule a.
 
   Proof.
-    unfold maxvar_rules. induction R; simpl; intuition. subst.
+    unfold maxvar_rules. induction R; simpl; split_all. contr. subst.
     unfold fold_max in H0. simpl in H0. fold fold_max in H0.
     apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
     apply maxvar_rules_init. hyp.
@@ -564,8 +563,7 @@ Section S.
     Proof.
       intros. ded (Vrel1_app_impl H). do 8 destruct H0. destruct H1. redtac.
       subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
-      ex l r (Cont f x4 x0 c x3) s. split. discr.
-      auto.
+      ex l r (Cont f x4 x0 c x3) s. split. discr. auto.
     Qed.
 
   End vector.
@@ -640,7 +638,7 @@ Section S.
 
     Proof.
       intros. unfold hd_red_Mod. comp. unfold inclusion. intros. redtac.
-      ex l r s. intuition. apply incl_remdup. auto.
+      ex l r s. split_all. apply incl_remdup. auto.
     Qed.
 
     Lemma hd_red_mod_remdup :
@@ -648,7 +646,7 @@ Section S.
 
     Proof.
       intros. unfold hd_red_mod. comp. unfold inclusion. intros. redtac.
-      ex l r s. intuition. apply incl_remdup. auto.
+      ex l r s. split_all. apply incl_remdup. auto.
     Qed.
 
     Lemma red_mod_empty_incl_red : red_mod nil R << red R.
@@ -829,28 +827,28 @@ Section S.
     assert (l2 : S i + (arity f - S i) <= arity f). omega.
     set (v2 := Vsub ts l2).
     assert (l3 : i + S (arity f - S i) = arity f). omega.
-    ex (Cont f l3 v1 c v2) s. intuition. discr.
+    ex (Cont f l3 v1 c v2) s. split_all. discr.
     (* lhs *)
     simpl. apply args_eq. apply Veq_nth. intros j hj.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
-    assert (j=i). omega. subst. rewrite (lt_unique _ hi). hyp.
+    unfold v2. rewrite Vnth_sub. apply Vnth_eq. clear -l4; omega.
+    assert (j=i). clear -l0 g; omega. subst. rewrite (lt_unique _ hi). hyp.
     unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.
     (* rhs *)
     simpl. apply args_eq. apply Veq_nth. intros j hj.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    rewrite Vnth_replace_neq. 2: omega. unfold v2. rewrite Vnth_sub.
-    apply Vnth_eq. omega.
-    assert (j=i). omega. subst. apply Vnth_replace.
-    rewrite Vnth_replace_neq. 2: omega. unfold v1. rewrite Vnth_sub.
-    apply Vnth_eq. omega.
+    rewrite Vnth_replace_neq. 2: clear -l4; omega. unfold v2. rewrite Vnth_sub.
+    apply Vnth_eq. clear -l4; omega.
+    assert (j=i). clear -l0 g; omega. subst. apply Vnth_replace.
+    rewrite Vnth_replace_neq. 2: clear -g; omega. unfold v1. rewrite Vnth_sub.
+    apply Vnth_eq. refl.
     (* <- *)
     redtac. subst. destruct c. irrefl. ex i f.
     assert (hi : i < arity f). omega. exists hi.
     simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
-    intuition. exists (fill c (sub s r)). split.
+    split_all. exists (fill c (sub s r)). split.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i i).
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega.
     apply red_rule. hyp. omega.
@@ -886,7 +884,7 @@ Section S.
     assert (Vin (fill c u) ts). unfold ts. rewrite Vin_cast.
     apply Vin_app_cons.
     assert (NT (red R) (fill c u)). destruct hu as [g [g0 hg]].
-    exists (fun k => fill c (g k)). rewrite g0. intuition.
+    exists (fun k => fill c (g k)). rewrite g0. split_all.
     intro k. apply red_fill. apply hg.
     ded (Vforall_in H H0). contr.
   Qed.
