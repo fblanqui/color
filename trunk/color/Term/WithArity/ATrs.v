@@ -539,7 +539,7 @@ Section S.
     In a R -> n > maxvar_rules R -> n > maxvar_rule a.
 
   Proof.
-    unfold maxvar_rules. induction R; simpl; split_all. contr. subst.
+    unfold maxvar_rules. induction R; simpl; split_all. subst.
     unfold fold_max in H0. simpl in H0. fold fold_max in H0.
     apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
     apply maxvar_rules_init. hyp.
