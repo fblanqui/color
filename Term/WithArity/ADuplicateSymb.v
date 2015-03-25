@@ -40,7 +40,7 @@ Definition beq_dup_symb (f g : dup_symb) : bool :=
 Lemma beq_dup_symb_ok : forall f g, beq_dup_symb f g = true <-> f = g.
 
 Proof.
-destruct f; destruct g; simpl; try rewrite beq_symb_ok; intuition; try subst;
+destruct f; destruct g; simpl; try rewrite beq_symb_ok; split_all; subst;
   refl || discr || inversion H; refl.
 Qed.
 
@@ -60,9 +60,7 @@ Fixpoint dup_int_term t :=
 Lemma dup_int_term_fun : forall f v,
   dup_int_term (Fun f v) = Fun' (int_symb f) (Vmap dup_int_term v).
 
-Proof.
-intros. trivial.
-Qed.
+Proof. trivial. Qed.
 
 (***********************************************************************)
 (** function marking all symbols as internal except the head symbol *)
@@ -76,9 +74,7 @@ Definition dup_hd_term t :=
 Lemma dup_hd_term_fun : forall f v,
   dup_hd_term (Fun f v) = Fun' (hd_symb f) (Vmap dup_int_term v).
 
-Proof.
-intros. trivial.
-Qed.
+Proof. trivial. Qed.
 
 (***********************************************************************)
 (** function marking substitutions *)
@@ -192,10 +188,10 @@ Lemma hd_red_dup_hd_red : forall  t u, hd_red R t u ->
 
 Proof.
 intros. redtac. subst. unfold hd_red.
-exists (dup_hd_term l). exists (dup_hd_term r). exists (dup_int_subst s).
+ex (dup_hd_term l) (dup_hd_term r) (dup_int_subst s).
 ded (is_notvar_lhs_elim hyp lr). decomp H.
 ded (is_notvar_rhs_elim hyp' lr). decomp H. subst.
-do 2 rewrite dup_int_subst_hd_dup. intuition. unfold dup_hd_rules.
+do 2 rewrite dup_int_subst_hd_dup. split_all. unfold dup_hd_rules.
 change (In (dup_hd_rule (mkRule (Fun x x0) (Fun x1 x2))) (map dup_hd_rule R)).
 apply in_map. hyp.
 Qed.
@@ -219,8 +215,7 @@ Lemma int_red_dup_int_red : forall t u,
 
 Proof.
 intros. redtac.
-exists (dup_int_term l). exists (dup_int_term r).
-exists (dup_hd_context c). exists (dup_int_subst s).
+ex (dup_int_term l) (dup_int_term r) (dup_hd_context c) (dup_int_subst s).
 destruct c. tauto.
 split.
 change (In (dup_int_rule (mkRule l r)) (map dup_int_rule R)).
@@ -320,7 +315,7 @@ Lemma dup_int_rules_int_red : forall f v t,
   red R (Fun' (hd_symb f) v) t -> int_red R (Fun' (hd_symb f) v) t.
 
 Proof.
-intros. redtac. exists l. exists r. exists c. exists s. split.
+intros. redtac. ex l r c s. split.
 destruct c. simpl in *. rewrite forallb_forall in int_hyp. ded (int_hyp _ lr).
 revert H. compute. case_eq l. discr. intro f0. case_eq f0. discr.
 intros. subst l. simpl in xl. discr. congruence. tauto.
@@ -405,9 +400,7 @@ Qed.
 Lemma rtc_red_dup_int_hd_symb : forall f us v,
   red R' # (Fun' (hd_symb f) us) v -> exists vs, v = Fun' (hd_symb f) vs.
 
-Proof.
-intros. eapply rtc_red_dup_int_hd_symb_aux. apply H. refl.
-Qed.
+Proof. intros. eapply rtc_red_dup_int_hd_symb_aux. apply H. refl. Qed.
 
 End red_dup.
 
@@ -435,7 +428,7 @@ Module Make (S : FSIG) <: FSIG.
   Proof.
     intro. unfold Fs. rewrite (@In_fold_left _ _ _
       (fun f => hd_symb S.Sig f :: int_symb S.Sig f :: nil)). simpl.
-    right. destruct f; exists s; intuition; apply S.Fs_ok. refl.
+    right. destruct f; exists s; split_all; apply S.Fs_ok. refl.
   Qed.
 
 End Make.
