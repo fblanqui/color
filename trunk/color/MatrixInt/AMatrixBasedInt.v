@@ -19,8 +19,7 @@ Section MatrixLinearFunction.
      one vector of dimension [dim] for a constant factor *)
   Record matrixInt : Type := mkMatrixInt {
     const : vector A dim;
-    args : vector (matrix dim dim) argCnt
-  }.
+    args : vector (matrix dim dim) argCnt }.
 
 End MatrixLinearFunction.
 
@@ -126,7 +125,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
     Proof.
       intros I I' II' v v' vv'. unfold mi_eval_aux. apply vector_plus_mor.
-      apply add_vectors_mor. apply Vforall2_intro_nth. intros. rewrite !Vnth_map2.
+      apply add_vectors_mor. apply Vforall2_intro_nth. intros.
+      rewrite !Vnth_map2.
       apply mat_vec_prod_mor. apply Vforall2_elim_nth. rewrite II'. refl.
       apply Vforall2_elim_nth. hyp. rewrite II'. refl.
     Qed.
@@ -150,8 +150,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
     Definition dom_zero : dom.
 
     Proof.
-      exists (Vreplace (Vconst A0 dim) dim_pos A1).
-      apply inv_id_matrix.
+      exists (Vreplace (Vconst A0 dim) dim_pos A1). apply inv_id_matrix.
     Defined.
 
     Definition I := @mkInterpretation sig dom dom_zero mi_eval.
@@ -170,9 +169,9 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
   
     Section VecMonotonicity.
     
-      Variable f : matrix dim dim -> vec -> vec.
-      Variable f_mon : forall M v1 v2, v1 >=v v2 -> f M v1 >=v f M v2.
-      Variables (a b : vec).
+      Variables (f : matrix dim dim -> vec -> vec)
+                (f_mon : forall M v1 v2, v1 >=v v2 -> f M v1 >=v f M v2)
+                (a b : vec).
 
       Lemma vec_add_weak_monotone_map2 : forall n1 (v1 : vector vec n1) n2 
         (v2 : vector vec n2) n (M : vector (matrix dim dim) n) i_j, a >=v b ->
@@ -218,8 +217,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
     Lemma succeq_dec : rel_dec succeq.
   
     Proof.
-      intros x y. unfold succeq. apply Vforall2_dec.
-      intros m n. apply ge_dec.
+      intros x y. unfold succeq. apply Vforall2_dec. intros m n. apply ge_dec.
     Defined.
 
     (** decidability of order on terms induced by matrix interpretations *)
@@ -233,8 +231,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       (** symbolic computation of term interpretation *)
 
       Definition mat_matrixInt_prod n M (mi : mint n) : mint n := 
-        mkMatrixInt (mat_vec_prod M (const mi)) 
-                    (Vmap (mat_mult M) (args mi)).
+        mkMatrixInt (mat_vec_prod M (const mi)) (Vmap (mat_mult M) (args mi)).
 
       Definition combine_matrices n k (v : vector (vector mat k) n) :=
         Vbuild (fun i ip => add_matrices (Vmap (fun v => Vnth v ip) v)).
@@ -309,8 +306,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       Proof.
         intros n x y. unfold mint_ge.
         destruct (Vforall2_dec (@mat_ge_dec dim dim) (args x) (args y)); 
-          intuition.
-        destruct (Vforall2_dec ge_dec (const x) (const y)); intuition.
+          destruct (Vforall2_dec ge_dec (const x) (const y));
+          split_all; right; tauto.
       Defined.
 
       Lemma term_ge_dec : rel_dec term_ge.
@@ -341,9 +338,9 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         Proper (@eq_mint k ==> eq_vec) (@mint_eval val k).
 
       Proof.
-        intros [c1 args1] [c2 args2]. unfold eq_mint. intuition.
+        intros [c1 args1] [c2 args2]. unfold eq_mint. split_all.
         unfold mint_eval. simpl. apply add_vectors_mor.
-        rewrite Vforall2_cons_eq. intuition.
+        rewrite Vforall2_cons_eq. split_all.
         apply Vmap2_proper with (R := mat_eqA) (S := eq_vec).
         apply mat_vec_prod_mor. hyp. refl.
       Qed.
@@ -374,22 +371,22 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
           =v @zero_vec dim). Focus 2. rewrite H.
         rewrite vector_plus_zero_l.
         replace (Vhead v) with (Vnth v ip). refl.
-        rewrite Vhead_nth. rewrite (lt_unique (lt_O_Sn k) ip). refl.
+        rewrite Vhead_nth, (lt_unique (lt_O_Sn k) ip). refl.
         apply add_vectors_zero. apply Vforall_nth_intro. intros.
-        rewrite Vnth_map2. rewrite Vnth_const.
+        rewrite Vnth_map2, Vnth_const.
         unfold M.mat_vec_prod. rewrite zero_matrix_mult_l.
         apply Vforall2_intro_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix, zero_vec.
-        rewrite mat_build_elem. rewrite Vnth_const. refl.
+        rewrite mat_build_elem, Vnth_const. refl.
         destruct k. omega.
         rewrite Vreplace_tail. simpl. rewrite add_vectors_cons.
         unfold M.mat_vec_prod at 1. rewrite zero_matrix_mult_l.
         assert (col_mat_to_vec (zero_matrix dim 1) =v zero_vec dim).
         apply Vforall2_intro_nth. intros. rewrite Vnth_col_mat.
         unfold zero_matrix, zero_vec.
-        rewrite mat_build_elem. rewrite Vnth_const. refl. rewrite H.
-        rewrite vector_plus_zero_l. rewrite IHi. rewrite Vnth_tail.
-        rewrite (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
+        rewrite mat_build_elem, Vnth_const. refl.
+        rewrite H, vector_plus_zero_l, IHi, Vnth_tail,
+          (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
       Qed.
 
       Lemma mint_eval_eq_term_int_var : forall v (val : valuation I) k 
@@ -401,10 +398,10 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         intros. rewrite mint_eval_split.
         change (const (mi_of_term (inject_term t_b))) with (zero_vec dim).
         rewrite vector_plus_zero_l.
-        change (args (mi_of_term (inject_term t_b))) with (Vreplace (Vconst 
-          (zero_matrix dim dim) (S k)) (le_lt_S (maxvar_var t_b)) 
-          (id_matrix dim)).
-        rewrite mint_eval_var_aux. rewrite Vbuild_nth. simpl.
+        change (args (mi_of_term (inject_term t_b)))
+          with (Vreplace (Vconst (zero_matrix dim dim) (S k))
+                         (le_lt_S (maxvar_var t_b)) (id_matrix dim)).
+        rewrite mint_eval_var_aux, Vbuild_nth. simpl.
         trans (col_mat_to_vec (vec_to_col_mat (dom2vec (val v)))).
         rewrite col_mat_to_vec_idem. refl. apply get_col_mor.
         rewrite mat_mult_id_l. refl. ded dim_pos. auto.
@@ -414,10 +411,10 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         mint_eval (k:=k) val (mkMatrixInt c (combine_matrices Vnil)) =v c.
 
       Proof.
-        intros. unfold mint_eval. simpl. autorewrite with arith.
+        intros. unfold mint_eval. simpl. (*SLOW*)autorewrite with arith.
         trans (c [+] @zero_vec dim). apply vector_plus_mor. refl.
         apply add_vectors_zero. apply Vforall_nth_intro. intros.
-        rewrite Vnth_map2. rewrite combine_matrices_nil. rewrite Vnth_const.
+        rewrite Vnth_map2, combine_matrices_nil, Vnth_const.
         unfold M.mat_vec_prod. apply Vforall2_intro_nth. intros.
         rewrite Vnth_col_mat.
         trans (get_elem (zero_matrix dim 1) ip0 access_0).
@@ -438,9 +435,10 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         intros. unfold mint_eval. simpl.
         set (vali := Vbuild (A := vec) (fun i (_ : i < k) => dom2vec (val i))).
         rewrite combine_matrices_cons.
-        autorewrite with arith. rewrite <- !vector_plus_assoc.
-        apply vector_plus_mor. refl. rewrite vector_plus_assoc.
-        rewrite (vector_plus_comm _ c_tl). rewrite <- vector_plus_assoc.
+        (*SLOW*)autorewrite with arith. rewrite <- !vector_plus_assoc.
+        apply vector_plus_mor. refl.
+        rewrite vector_plus_assoc, (vector_plus_comm _ c_tl),
+          <- vector_plus_assoc.
         apply vector_plus_mor. refl. apply add_vectors_split. intros.
         rewrite !Vnth_map2, vector_plus_comm. apply mat_vec_prod_distr_mat.
       Qed.
@@ -450,7 +448,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         mat_vec_prod M (mint_eval val mi).
 
       Proof.
-        unfold mint_eval. intros. simpl. autorewrite with arith.
+        unfold mint_eval. intros. simpl. (*SLOW*)autorewrite with arith.
         rewrite mat_vec_prod_distr_vec. apply vector_plus_mor. refl.
         set (gen := Vbuild (A:=vec) (fun i (_ : i < k) => dom2vec (val i))).
         rewrite (mat_vec_prod_distr_add_vectors M 
@@ -476,12 +474,12 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         induction i; intros.
         (* i = 0 *)
         VOtac. simpl.
-        unfold mi_eval_aux, add_vectors. simpl. autorewrite with arith.
+        unfold mi_eval_aux, add_vectors. simpl. (*SLOW*)autorewrite with arith.
         sym. apply mint_eval_const.
         (* i > 0 *)
         VSntac v. simpl mi_eval_aux.
-        rewrite mi_eval_cons. rewrite IHi. simpl.
-        (* FIXME: morphisms do work here ? *)
+        rewrite mi_eval_cons, IHi. simpl.
+        (*COQ: morphisms do work here ? *)
         trans (@mint_eval val (S k)
           (@mkMatrixInt A matrix dim (S k)
             (@M.mat_vec_prod dim dim
@@ -531,9 +529,9 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
                           (@Vmap (ABterm.bterm sig k)
                              (mint (S k))
                              (@mi_of_term k) (S i) v)))))))).
-        Focus 2. apply mint_eval_mor. split. rewrite add_vectors_perm.
-        rewrite (add_vectors_cons (i := S i) (mat_vec_prod (Vhead (args fi))
-          (const (Vhead (Vmap (mi_of_term (k:=k)) v))))). refl.
+        Focus 2. apply mint_eval_mor. split. rewrite add_vectors_perm,
+          (add_vectors_cons (i := S i) (mat_vec_prod (Vhead (args fi))
+            (const (Vhead (Vmap (mi_of_term (k:=k)) v))))). refl.
         refl.
         rewrite mint_eval_cons. apply vector_plus_mor.
         Focus 2. rewrite Vmap_tail. refl.
@@ -544,15 +542,14 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Lemma mint_eval_eq_bterm_int : forall (val : valuation I) t k 
                                             (t_b : maxvar_le k t),
-        dom2vec (bterm_int val (inject_term t_b)) =v
-        mint_eval val (mi_of_term (inject_term t_b)).
+        dom2vec (bterm_int val (inject_term t_b))
+        =v mint_eval val (mi_of_term (inject_term t_b)).
 
       Proof.
         intros val t. pattern t. apply term_ind_forall; intros.
         apply mint_eval_eq_term_int_var.
         rewrite inject_term_eq. simpl.
-        rewrite Vmap_map.
-        rewrite (@Vforall2_map_intro _ _ eq_vec
+        rewrite Vmap_map, (@Vforall2_map_intro _ _ eq_vec
           (fun x => dom2vec (bterm_int val x)) 
           (fun (t : bterm k) => mint_eval val (mi_of_term t))).
         apply mint_eval_eq_bterm_int_fapp.
@@ -560,10 +557,9 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         rewrite inject_terms_nth. apply (Vforall_nth ip H).
       Qed.
 
-      Lemma mint_eval_eq_term_int : forall t (val : valuation I) k
-        (t_b : maxvar_le k t),
-        dom2vec (term_int val t) =v
-        mint_eval val (mi_of_term (inject_term t_b)).
+      Lemma mint_eval_eq_term_int t (val: valuation I) k (t_b: maxvar_le k t) :
+        dom2vec (term_int val t)
+        =v mint_eval val (mi_of_term (inject_term t_b)).
 
       Proof.
         intros. rewrite <- (term_int_eq_bterm_int val t_b).
@@ -588,8 +584,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Lemma mint_eval_mon_succeq_args : forall k (val : vector vec k) 
         (mi mi' : mint k), mint_ge mi mi' -> 
-        add_vectors (Vmap2 mat_vec_prod (args mi) val) >=v 
-        add_vectors (Vmap2 mat_vec_prod (args mi') val).
+        add_vectors (Vmap2 mat_vec_prod (args mi) val)
+        >=v add_vectors (Vmap2 mat_vec_prod (args mi') val).
 
       Proof.
         destruct mi. gen val. clear val. induction args0. intros.
@@ -606,9 +602,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         apply Vforall2_elim_nth. hyp. refl.
       Qed.
 
-      Lemma mint_eval_mon_succeq : forall (val : valuation I) k 
-        (mi mi' : mint k), mint_ge mi mi' -> 
-        mint_eval val mi >=v mint_eval val mi'.
+      Lemma mint_eval_mon_succeq (val : valuation I) k (mi mi' : mint k) :
+        mint_ge mi mi' -> mint_eval val mi >=v mint_eval val mi'.
 
       Proof.
         intros. unfold mint_eval, add_vectors. simpl.
