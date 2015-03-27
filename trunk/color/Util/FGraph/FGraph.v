@@ -22,6 +22,10 @@ Module Make (X : OrderedType).
 
   Import X.
 
+  Lemma eq_com x y : eq x y <-> eq y x.
+
+  Proof. fo. Qed.
+
 (***********************************************************************)
 (** A finite graph on X.t is represented by its successor map: a
 finite map from X.t to the type of finite sets on X.t. Since an
@@ -58,7 +62,7 @@ they define the same relation. See below for more details. *)
   Lemma rel_empty : rel empty == empty_rel.
 
   Proof.
-    rewrite rel_eq; intros a b. unfold empty_rel. intuition.
+    rewrite rel_eq; intros a b. unfold empty_rel. split_all.
     destruct H as [sa [a1 a2]]. rewrite <- find_mapsto_iff in a1.
     rewrite empty_mapsto_iff in a1. hyp.
   Qed.
@@ -69,8 +73,8 @@ they define the same relation. See below for more details. *)
     intros g g' gg' x x' xx' y y' yy'. unfold impl, rel. intro h.
     destruct h as [sx [hx hy]].
     destruct (Equiv_find_Some gg' hx) as [sx' [h1 h2]].
-    exists sx'. rewrite <- yy'. rewrite <- h2 at 2. intuition.
-    rewrite <- xx'. hyp.
+    exists sx'. rewrite <- yy'. rewrite <- h2 at 2. split_all.
+    (*SLOW*)rewrite <- xx'. hyp.
   Qed.
 
   (*COQ: can be removed? Coq stuck in In_preds_rel *)
@@ -83,7 +87,7 @@ they define the same relation. See below for more details. *)
 
   Proof.
     intros hx hs. destruct (choose_mem_3 _ hs) as [y [h1 h2]].
-    rewrite <- mem_iff in h2. exists y. exists s. intuition.
+    rewrite <- mem_iff in h2. ex y s. tauto.
   Qed.
 
 (***********************************************************************)
@@ -118,8 +122,8 @@ they define the same relation. See below for more details. *)
   Lemma succ_empty : forall x, succ x XSet.empty == empty_rel.
 
   Proof.
-    intro x. rewrite rel_eq; intros a b. unfold succ, empty_rel. intuition.
-    revert H1. set_iff. auto.
+    intro x. rewrite rel_eq; intros a b. unfold succ, empty_rel. split_all.
+    revert H0. set_iff. auto.
   Qed.
 
   Lemma succ_add : forall x y s, succ x (XSet.add y s) == id x y U succ x s.
@@ -139,9 +143,9 @@ they define the same relation. See below for more details. *)
     inversion t1. subst t. fo.
     right. exists t. tauto.
     (* <- *)
-    intros [ab|ab]. exists s. unfold succ in ab. intuition. rewrite add_o.
+    intros [ab|ab]. exists s. unfold succ in ab. split_all. rewrite add_o.
     destruct (eq_dec x a). refl. absurd (eq x a). hyp. sym. hyp.
-    destruct ab as [t [t1 t2]]. exists t. intuition. rewrite add_o.
+    destruct ab as [t [t1 t2]]. exists t. split_all. rewrite add_o.
     destruct (eq_dec x a). 2: hyp. absurd (In x g). hyp. rewrite e.
     exists t. change (MapsTo a t g). rewrite find_mapsto_iff. hyp.
   Qed.
@@ -156,14 +160,14 @@ they define the same relation. See below for more details. *)
 
   Proof.
     intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ_list.
-    rewrite xx', ss', aa', bb'. refl.
+    (*SLOW*)rewrite xx', ss', aa', bb'. refl.
   Qed.
 
   Lemma succ_list_nil : forall x, succ_list x nil == empty_rel.
 
   Proof.
-    intro x. rewrite rel_eq; intros a b. unfold succ_list, empty_rel. intuition.
-    inversion H1.
+    intro x. rewrite rel_eq; intros a b. unfold succ_list, empty_rel.
+    split_all. inversion H0.
   Qed.
 
   Lemma succ_list_cons : forall x y l,
@@ -246,8 +250,7 @@ same relation *)
 
   Proof.
     intros g g' gg' h h' hh'. rewrite gle_antisym in gg', hh'. unfold impl.
-    intuition.
-    trans g. hyp. trans h. hyp. hyp.
+    intuition. trans g. hyp. trans h. hyp. hyp.
   Qed.
 
 (***********************************************************************)
@@ -257,7 +260,7 @@ same relation *)
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
-    rewrite <- xx', <- yy'. intuition.
+    (*SLOW*)rewrite <- xx', <- yy'. tauto.
   Qed.
 
   (*COQ: can be removed? used in TransClos *)
@@ -265,7 +268,7 @@ same relation *)
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
-    rewrite <- xx', <- yy'. intuition.
+    (*SLOW*)rewrite <- xx', <- yy'. tauto.
   Qed.
 
 (***********************************************************************)
@@ -280,8 +283,8 @@ same relation *)
   Lemma In_succs_rel : forall g x y, XSet.In y (succs x g) <-> rel g x y.
 
   Proof.
-    intros. unfold succs, rel. destruct (find x g); fo.
-    inversion H. hyp. revert H. set_iff. tauto. discr.
+    intros. unfold succs, rel. destruct (find x g); split_all.
+    ex t0. tauto. inversion H. hyp. revert H. set_iff. tauto. discr.
   Qed.
 
   Lemma mem_succs_rel : forall g x y,
@@ -331,7 +334,7 @@ same relation *)
   Proof.
     intros x x' xx' g g' gg'. rewrite gle_antisym in gg'.
     destruct gg' as [gg' g'g]. rewrite Subset_antisym. split.
-    rewrite xx', gg'. refl. rewrite xx', g'g. refl.
+    rewrite xx', gg'. refl. (*SLOW*)rewrite xx', g'g. refl.
   Qed.
 
   Lemma mem_succs_id : forall g x y,
@@ -398,7 +401,7 @@ successors of g' *)
     (* s not empty *)
     unfold Add. intro z. rewrite add_o. case_eq (eq_dec y z); intros.
     (* y = z *)
-    unfold succs. rewrite e0. case_eq (find z g'); intros. refl.
+    unfold succs. (*SLOW*)rewrite e0. case_eq (find z g'); intros. refl.
     rewrite geq_succs in e. ded (e y). rewrite succs_add_id in H2.
     rewrite e0 in H2. unfold succs in H2. rewrite H1 in H2.
     rewrite <- is_empty_eq in H2. rewrite H in H2. discr.
@@ -447,9 +450,9 @@ successors of g' *)
 
   Proof.
     intros x x' xx' g g' gg'. unfold preds.
-    apply fold_Equiv_ext with (eq0:= XSet.Equal).
-    intuition. intuition. apply preds_aux_m. refl. apply preds_aux_transp.
-    apply preds_aux_m. hyp. apply Equal_Equiv. intuition. hyp. refl.
+    apply fold_Equiv_ext with (eq0:= XSet.Equal). fo. fo.
+    apply preds_aux_m. refl. apply preds_aux_transp.
+    apply preds_aux_m. hyp. apply Equal_Equiv. fo. hyp. refl.
   Qed.
 
   Lemma preds_empty : forall x, preds x empty [=] XSet.empty.
@@ -460,7 +463,7 @@ successors of g' *)
     [=] if XSet.mem x s then XSet.add y (preds x g) else preds x g.
 
   Proof.
-    intros x y s g nyg. unfold preds. rewrite fold_add. refl. intuition.
+    intros x y s g nyg. unfold preds. rewrite fold_add. refl. fo.
     apply preds_aux_m'. refl. apply preds_aux_transp. hyp.
   Qed.
 
@@ -500,7 +503,7 @@ successors of g' *)
     sym. hyp.
     (* add *)
     intros y s g n h x x' xx' g' e. unfold preds. rewrite fold_add.
-    2: intuition. 2: apply preds_aux_m'. 2: refl. 2: apply preds_aux_transp.
+    2: class. 2: apply preds_aux_m'. 2: refl. 2: apply preds_aux_transp.
     2: hyp. fold (preds x g). fold (preds x' g'). ded (geq_add_remove n e).
     revert H. case_eq (XSet.is_empty s); intros; unfold preds_aux.
     (* s empty *)
@@ -508,7 +511,7 @@ successors of g' *)
     apply H.
     (* s not empty *)
     ded (geq_add n e). rewrite H in H1. unfold preds at 3. rewrite fold_Add.
-    6: apply H1. 2: intuition. 2: apply preds_aux_m'. 2: refl.
+    6: apply H1. 2: class. 2: apply preds_aux_m'. 2: refl.
     2: apply preds_aux_transp.
     Focus 2. rewrite remove_in_iff. intros [h1 h2]. absurd (eq y y). hyp. refl.
     Focus 1. fold (preds x' (remove y g')). unfold preds_aux. rewrite <- xx'.
@@ -522,7 +525,7 @@ successors of g' *)
   Proof.
     intros x y g. pattern g; apply map_induction_bis; clear g.
     (* Equal *)
-    intros m m' mm' h. rewrite <- mm'. hyp.
+    intros m m' mm' h. (*SLOW*)rewrite <- mm'. hyp.
     (* empty *)
     rewrite preds_empty. split. intro h. revert h. set_iff. tauto.
     intros [s [s1 s2]]. rewrite empty_o in s1. discr.
@@ -534,20 +537,20 @@ successors of g' *)
     (* -> *)
     intros [h'|h']. exists s. rewrite add_eq_o. rewrite mem_iff. intuition. hyp.
     destruct h' as [t [t1 t2]]. exists t. rewrite add_o. destruct (eq_dec z x).
-    rewrite not_find_in_iff, e in n. rewrite n in t1. discr. intuition.
+    (*SLOW*)rewrite not_find_in_iff, e in n. rewrite n in t1. discr. tauto.
     (* <- *)
     intros [t [t1 t2]]. rewrite add_o in t1. destruct (eq_dec z x). auto.
-    right. exists t. intuition.
+    right. exists t. tauto.
     (* y not in s *)
     rewrite h. split.
     (* -> *)
     intros [t [t1 t2]]. exists t. rewrite add_o. destruct (eq_dec z x).
-    rewrite not_find_in_iff, e in n. rewrite n in t1. discr. intuition.
+    (*SLOW*)rewrite not_find_in_iff, e in n. rewrite n in t1. discr. tauto.
     (* <- *)
     intros [t [t1 t2]]. rewrite add_o in t1. destruct (eq_dec z x).
     inversion t1. subst t. rewrite XSetFacts.mem_iff in t2. rewrite H in t2.
     discr.
-    exists t. intuition.
+    exists t. tauto.
   Qed.
 
   Lemma prod_add_incl_tc_id : forall x y g,
@@ -555,12 +558,16 @@ successors of g' *)
 
   Proof.
     intros x y g a b. unfold prod. rewrite !add_iff.
-    rewrite In_preds_rel, In_succs_rel. intuition.
-    apply t_step. unfold id. intuition.
-    apply t_trans with y; apply t_step; unfold id; intuition.
-    apply t_trans with x; apply t_step; unfold id; intuition.
-    apply t_trans with x. intuition.
-    apply t_trans with y; apply t_step; unfold id; intuition.
+    rewrite In_preds_rel, In_succs_rel. split_all.
+    (* eq x a /\ eq y b *)
+    apply t_step. fo.
+    (* g a x /\ eq y b *)
+    apply t_trans with x; apply t_step; fo.
+    (* eq x a /\ g y b *)
+    apply t_trans with y; apply t_step; fo.
+    (* g a x /\ g y b *)
+    apply t_trans with x. fo.
+    apply t_trans with y; apply t_step; fo.
   Qed.
 
 (***********************************************************************)
@@ -585,31 +592,34 @@ successors of g' *)
   Proof.
     intros x x' xx' y y' yy' g g' gg'. rewrite gle_antisym.
     rewrite gle_antisym in gg'. destruct gg' as [gg' g'g]. split.
-    rewrite xx', yy', gg'. refl. rewrite <- xx', <- yy', g'g. refl.
+    (*SLOW*)rewrite xx', yy', gg'. refl. rewrite <- xx', <- yy', g'g. refl.
   Qed.
 
   Lemma rel_add_edge : forall x y g, add_edge x y g == g U id x y.
 
   Proof.
     intros. rewrite rel_eq; intros a b.
-    unfold add_edge, Relation_Operators.union, id. intuition.
+    unfold add_edge, Relation_Operators.union, id. split_all.
     destruct H as [sa [a1 a2]]. rewrite add_o in a1. destruct (eq_dec x a).
     inversion a1. subst sa. rewrite add_iff in a2. rewrite In_succs_rel in a2.
-    rewrite e in a2. intuition.
-    left. exists sa. intuition.
-    destruct H0 as [sa [a1 a2]]. unfold rel. rewrite add_o.
+    rewrite e in a2. split_all.
+    left. exists sa. tauto.
+    destruct H as [sa [a1 a2]]. unfold rel. rewrite add_o.
     destruct (eq_dec x a).
-    exists (XSet.add y (succs x g)). intuition. rewrite add_iff. right.
-    rewrite e. rewrite In_succs_rel. exists sa. auto.
+    exists (XSet.add y (succs x g)). split_all. rewrite add_iff. right.
+    rewrite e, In_succs_rel. exists sa. auto.
     exists sa. auto.
     unfold rel. rewrite add_o. destruct (eq_dec x a).
-    exists (XSet.add y (succs x g)). intuition. rewrite add_iff. auto.
+    exists (XSet.add y (succs x g)). split_all. rewrite add_iff. auto.
     absurd (eq x a). hyp. sym. hyp.
   Qed.
 
   Lemma add_edge_transp_geq : forall x, transpose geq (add_edge x).
 
-  Proof. intros x y z g. unfold geq. rewrite !rel_add_edge. fo. Qed.
+  Proof.
+    intros x y z g. unfold geq. rewrite !rel_add_edge.
+    unfold same_rel, inclusion, id, Relation_Operators.union. tauto.
+  Qed.
 
 (***********************************************************************)
 (** set iteration of (add_edge x) *)
@@ -629,7 +639,7 @@ successors of g' *)
     rewrite R.union_assoc. rewrite union_commut with (R:=rel g0).
     rewrite <- R.union_assoc. apply R.union_same_rel. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
-    rewrite add_iff. fo.
+    rewrite add_iff, (eq_com b z). tauto.
   Qed.
 
   (*COQ: can we remove this lemma? *)
@@ -668,12 +678,12 @@ successors of g' *)
       <-> (rel g x y \/ exists a, List.In a l /\ rel (F empty a) x y).
 
     Proof.
-      induction l; simpl. fo. intros g x y. rewrite IHl. intuition.
-      apply hF in H0. destruct H0. right. exists a. intuition. intuition.
-      destruct H0 as [b [b1 b2]]. right. exists b. intuition.
+      induction l; simpl. fo. intros g x y. rewrite IHl. split_all.
+      apply hF in H. destruct H. right. exists a. tauto. tauto.
+      right. exists x0. tauto.
       left. apply hF. right. hyp.
-      destruct H0 as [b [b1 b2]]. destruct b1.
-      subst b. left. apply hF. left. hyp. right. exists b. intuition.
+      subst x0. left. apply hF. left. hyp.
+      right. exists x0. tauto.
     Qed.
 
   End list_fold_left.
