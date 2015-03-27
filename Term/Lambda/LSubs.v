@@ -1512,7 +1512,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     refl.
     (* app *)
     simpl. set_iff. intro h. rewrite union_inter_1, union_empty. intros [a b].
-    rewrite IHu1, IHu2; (*SLOW*)tauto.
+    rewrite IHu1, IHu2; split_all.
     (* lam *)
     simpl Def.fv. simpl Def.bv. set_iff. rewrite inter_empty.
     intros h1 h2.
@@ -1754,7 +1754,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite !In_fvcodom. split; intros [b [j1 [j2 j3]]]; exists b;
       simpl in *; revert j1 j2 j3; set_iff;
         unfold s'; unfold Def.update; eq_dec b z.
-    subst. tauto. intuition. subst. intuition. intuition.
+    subst. tauto. split_all. subst. tauto. tauto. split_all.
 
     rewrite e. revert h2. rewrite !empty_subset, add_union_singleton.
     intro h2. rewrite union_subset_2 with (s:=singleton z) (s':=bv u). hyp.
@@ -1763,7 +1763,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
       [=] fvcodom (fv (Lam z u)) s). intro a.
     rewrite !In_fvcodom. split; intros [b [j1 [j2 j3]]]; exists b;
       revert j1 j2 j3; set_iff; rewrite fv_rename; case_eq (mem x (fv u));
-        simpl; set_iff; (*SLOW*)intuition.
+        simpl; set_iff; split_all.
     subst b. revert H2. rewrite hy. simpl. set_iff. intro e. subst a. tauto.
     right. split. hyp. intro h. subst b. tauto.
 
