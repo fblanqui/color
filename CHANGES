@@ -12,6 +12,7 @@
 - Util/Option/ExcUtil: renamed into OptUtil
 - Util/Nat/NatLt: renamed into BoundNat
 - Util/Pair/LexOrder: renamed into PairLex
+- Util/List/lexicographicOrder: renamed into ListLex
 
 15-03-19: [Blanqui]
 - replaced Add Relation/Morphism by Instance everywhere
