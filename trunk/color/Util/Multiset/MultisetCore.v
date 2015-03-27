@@ -106,14 +106,8 @@ Section Multiset_IntersectionAsDifference.
     mult x (inter_as_diff M N) = Min.min (mult x M) (mult x N).
 
   Proof.
-    intros M N x.
-    unfold inter_as_diff.
-    rewrite !diff_mult.
-    set (m := mult x M) in *.
-    set (n := mult x N) in *.
-    case (Compare_dec.le_lt_dec n m); intro n_m.
-    rewrite Min.min_r; [omega | trivial].
-    rewrite Min.min_l; [omega | auto with arith].
+    intros M N x. unfold inter_as_diff. rewrite !diff_mult.
+    Require Import Psatz. lia.
   Qed.
 
 End Multiset_IntersectionAsDifference.
