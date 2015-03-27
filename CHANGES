@@ -1,20 +1,29 @@
-15-03-23: [Blanqui]
-- greatly improved compilation time by improving some scripts
-  CoLoR now compiles with -j20 in 4'20 instead of 6'30
+15-03-27: [Blanqui]
 - Util/Logic/LogicUtil: added split_all tactic
+- reduced compilation time by improving some scripts
+  CoLoR without Coccinelle now compiles in:
+  -j1: 17'53" instead of 22'16" (-21.0%)
+  -j3: 7'16" instead of 9'21" (-21.5%)
+  -j20: 4'43" instead of 6'28" (-26.9%)
+  CoLoR with Coccinelle now compiles in:
+  -j1: 22'18" instead of 27'00" (-17.4%)
+  -j3: 8'48" instead of 10'47" (-18.6%)
+  -j20: 5'27" instead of 6'45" (-18.5%)
 - Util/Option/ExcUtil: renamed into OptUtil
+- Util/Nat/NatLt: renamed into BoundNat
+- Util/Pair/LexOrder: renamed into PairLex
 
 15-03-19: [Blanqui]
-- removed Emacs local variables in Coccinelle
 - replaced Add Relation/Morphism by Instance everywhere
 - Util/Nat/BoundNat:
   . replaced bnat by N and nfirst_nats by L
   . renamed and moved everything into NatLt
+- removed Emacs local variables in Coccinelle
 
 15-03-15: [Blanqui]
 - Util/List/ListRepeatFree: renamed into ListNodup,
   make_repeat_free renamed into remdup, repeat_free renamed into nodup
-- Util/Relation/RelExtras: renamed and moved things to RelUtil and ExcUtil
+- Util/Relation/RelExtras: moved things to RelUtil and ExcUtil
 
 -----------------------------------------------------------------------------
 15-03-10: RELEASE OPAM 1.1.0 (SVN revision 2156)
