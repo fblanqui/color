@@ -10,7 +10,7 @@ and introduces, as Variable, some computability properties.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras LexOrder Horpo LogicUtil Setoid
+Require Import Relations RelExtras ListExtras PairLex Horpo LogicUtil Setoid
   AccUtil Morphisms Basics.
 
 Module Computability (S : TermsSig.Signature) 

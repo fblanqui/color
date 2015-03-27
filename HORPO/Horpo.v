@@ -10,7 +10,7 @@ recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras RelUtil Terms MultisetOrder LexOrder
+Require Import RelExtras ListExtras RelUtil Terms MultisetOrder PairLex
   MultisetList MultisetTheory AccUtil LogicUtil Morphisms Basics.
 
 Module Type Precedence.
@@ -33,7 +33,7 @@ Module Horpo (S : TermsSig.Signature)
 
   Module Export MSetOrd := MultisetOrder.MultisetOrder MSetCore.
 
-  Module Import Lex := LexOrder.LexicographicOrder Subterm_Ord Subterm_Ord.
+  Module Import Lex := PairLex.LexicographicOrder Subterm_Ord Subterm_Ord.
 
   Definition TermMul := Multiset.
   Implicit Type TM : TermMul.

@@ -10,7 +10,7 @@ higher-order recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras Horpo Computability LexOrder
+Require Import Relations RelExtras ListExtras Horpo Computability PairLex
   HorpoComp LogicUtil.
 
 Module HorpoWf (S : TermsSig.Signature) 
@@ -74,7 +74,7 @@ Module HorpoWf (S : TermsSig.Signature)
 
   End H_WFmul_ord.
 
-  Module Lex := LexOrder.LexicographicOrder Prec.P.O H_WFmul_ord.
+  Module Lex := PairLex.LexicographicOrder Prec.P.O H_WFmul_ord.
   Import Lex.
 
   Lemma compTerms : forall M N Ns, M [>>] Ns -> CompTerms (appArgs M) ->
