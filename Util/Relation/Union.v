@@ -34,7 +34,7 @@ Section S.
   Lemma wf_union_absorb : R @ S << R -> WF (R U S).
 
   Proof.
-    Require Import NotSN_IS ClassicUtil NatLeast DepChoice.
+    Require Import NotSN_IS ClassicUtil LeastNat DepChoice.
     intros RS x. apply notNT_SN. intros [f [f1 f2]].
     (* We prove that, for all [i], there is [j > i] such that
        [R (f j) (f (j+1))]. *)
