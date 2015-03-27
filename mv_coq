@@ -1,0 +1,11 @@
+#!/bin/sh
+
+f=${1%.v}
+d=`dirname $2`
+g=`basename $2 .v`
+
+svn mv $f.v $d/$g.v
+for s in vo glob v.d time
+do
+  mv $f.$s $d/$g.$s
+done
