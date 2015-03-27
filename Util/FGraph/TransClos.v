@@ -78,7 +78,7 @@ Module Make (X : OrderedType).
     intros a b [h1 h2]. unfold Relation_Operators.union, pred, succ.
     subst xpx ysy. rewrite add_iff in h1, h2. rewrite !add_iff.
     rewrite In_preds_rel in h1. rewrite In_succs_rel in h2.
-    rewrite !In_succs_rel. intuition.
+    rewrite !In_succs_rel, (eq_com a x). tauto.
   Qed.
 
 (***********************************************************************)
@@ -93,7 +93,7 @@ Module Make (X : OrderedType).
   Proof.
     intros x x' xx' s s' ss' y y' yy' t t' tt' g g' gg'. unfold add_pred.
     rewrite <- xx', <- tt'. clear - ss' yy' gg'. destruct (XSet.mem x t).
-    2: hyp. apply S.fold_m_ext; intuition. apply add_edge_geq. refl.
+    2: hyp. apply S.fold_m_ext; auto. class. apply add_edge_geq. refl.
     apply add_edge_transp_geq. apply add_edge_geq. hyp.
   Qed.
 
@@ -104,31 +104,32 @@ Module Make (X : OrderedType).
     intros x s g g0. pattern (fold (add_pred x s) g g0).
     apply fold_rec_weak; clear g.
     (* Equal *)
-    intros m n g mn h. apply Equal_geq in mn. rewrite <- mn. hyp.
+    intros m n g mn h. apply Equal_geq in mn. (*SLOW*)rewrite <- mn. hyp.
     (* empty *)
-    rewrite pred_empty. rewrite R.union_empty_l. refl.
+    rewrite pred_empty, R.union_empty_l. refl.
     (* add *)
     intros z t g m n h. unfold add_pred. case_eq (XSet.mem x t); intros.
     (* x in t *)
-    rewrite <- mem_iff in H. rewrite rel_set_fold_add_edge. rewrite h.
-    rewrite <- R.union_assoc. apply R.union_same_rel. 2: refl.
+    rewrite <- mem_iff in H.
+    rewrite rel_set_fold_add_edge, h, <- R.union_assoc.
+    apply R.union_same_rel. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, pred, Relation_Operators.union.
-    intuition.
-    rewrite H0. unfold rel. exists t. rewrite add_eq_o. intuition. refl.
+    split_all.
+    rewrite H0. unfold rel. exists t. rewrite add_eq_o. tauto. refl.
     unfold rel. rewrite add_o. destruct (eq_dec z a).
-    exists t. intuition.
-    destruct H0 as [u [u1 u2]]. exists u. intuition.
-    unfold rel in H1. rewrite add_o in H1. destruct (eq_dec z a).
-    left. intuition.
-    right. intuition.
+    exists t. tauto.
+    destruct H0 as [u [u1 u2]]. exists u. tauto.
+    unfold rel in H0. rewrite add_o in H0. destruct (eq_dec z a).
+    left. rewrite (eq_com a z). tauto.
+    right. tauto.
     (* x notin t *)
     rewrite <- not_mem_iff in H. rewrite h. apply R.union_same_rel. 2: refl.
     rewrite rel_eq; intros a b. unfold pred.
-    intuition; change (~In z m) in n; rewrite not_find_in_iff in n.
+    rewrite not_find_in_iff in n. split_all.
     unfold rel. rewrite add_o. destruct (eq_dec z a). 2: hyp.
-    rewrite e in n. destruct H1 as [u [u1 u2]]. rewrite n in u1. discr.
-    unfold rel in H1. rewrite add_o in H1. destruct (eq_dec z a). 2: hyp.
-    destruct H1 as [u [u1 u2]]. inversion u1. subst t. contr.
+    (*SLOW*)rewrite e in n. destruct H0 as [u [u1 u2]]. rewrite n in u1. discr.
+    unfold rel in H0. rewrite add_o in H0. destruct (eq_dec z a). 2: hyp.
+    destruct H0 as [u [u1 u2]]. inversion u1. subst t. contr.
   Qed.
 
   (*COQ: can we remove this lemma? *)
@@ -169,9 +170,9 @@ the transitive closure of [id x y U g] *)
 
   Proof.
     intros x x' xx' y y' yy' g g' gg'. unfold geq, trans_add_edge.
-    rewrite xx', yy', gg'. destruct (XSet.mem y' (succs x' g')).
+    (*SLOW*)rewrite xx', yy', gg'. destruct (XSet.mem y' (succs x' g')).
     hyp. repeat rewrite rel_map_fold_add_pred, rel_set_fold_add_edge.
-    apply R.union_same_rel. rewrite xx', yy', gg'. refl.
+    apply R.union_same_rel. (*SLOW*)rewrite xx', yy', gg'. refl.
     apply R.union_same_rel. rewrite xx', yy', gg'. refl.
     hyp.
   Qed.
@@ -219,16 +220,24 @@ the transitive closure of [id x y U g] *)
     intros x y g tg. rewrite rel_trans_add_edge_prod.
     destruct (XSet.mem y (succs x g)). hyp.
     intros a b c. unfold Relation_Operators.union, prod.
-    rewrite !add_iff. repeat rewrite In_preds_rel, In_succs_rel.
-    intuition.
-    rewrite H0, H. intuition.
-    left. intuition. right. apply tg with b; hyp.
-    rewrite H. intuition.
-    left. intuition. right. apply tg with b; hyp.
-    rewrite H, H0. intuition.
-    rewrite H. intuition.
-    left. intuition. right. apply tg with b; hyp.
-    left. intuition. right. apply tg with b; hyp.
+    rewrite !add_iff. repeat rewrite In_preds_rel, In_succs_rel. split_all.
+    (* g a b /\ eq x b /\ eq y c *)
+    (*SLOW*)rewrite H0, H1. intuition.
+    (* g a b /\ g b x /\ eq y c *)
+    left. split_all. right. apply tg with b; hyp.
+    (* g a b /\ eq x b /\ g y c *)
+    (*SLOW*)rewrite H0. tauto.
+    (* g a b /\ g b x /\ g y c *)
+    left. split_all. right. apply tg with b; hyp.
+    (* g b c /\ eq x a /\ eq y b *)
+    (*SLOW*)rewrite H, H1. intuition.
+    (* g b c /\ g a x /\ eq y b *)
+    (*SLOW*)rewrite H1. tauto.
+    (* g b c /\ eq x a /\ g y b *)
+    left. split_all. right. apply tg with b; hyp.
+    (* g b c /\ g a x /\ g y b *)
+    left. split_all. right. apply tg with b; hyp.
+    (* g a b /\ g b c *)
     right. apply tg with b; hyp.
   Qed.
 
@@ -260,7 +269,7 @@ the transitive closure of [id x y U g] *)
     case_eq (XSet.mem y (succs x g)); intros. refl.
     intro z. rewrite In_succs_rel, rel_map_fold_add_pred_ext,
     rel_set_fold_add_edge_ext. unfold pred, succ. rewrite union_iff.
-    rewrite !add_iff, !In_succs_rel. intuition.
+    rewrite !add_iff, !In_succs_rel. split_all.
   Qed.
 
   Lemma preds_trans_add_edge_id : forall x y g,
@@ -272,18 +281,18 @@ the transitive closure of [id x y U g] *)
   Proof.
     intros x y g. unfold trans_add_edge.
     case_eq (XSet.mem y (succs x g)); intros. refl.
-    set (ysy := XSet.add y (succs y g)). intro z. rewrite In_preds_rel.
-    rewrite rel_map_fold_add_pred_ext. rewrite rel_set_fold_add_edge_ext.
+    set (ysy := XSet.add y (succs y g)). intro z.
+    rewrite In_preds_rel, rel_map_fold_add_pred_ext, rel_set_fold_add_edge_ext.
     case_eq (XSet.mem x ysy); intros.
     (* x in ysy *)
-    rewrite add_iff. rewrite In_preds_rel. unfold ysy in H0.
+    rewrite add_iff, In_preds_rel. unfold ysy in H0.
     rewrite XSetFacts.add_b, orb_eq, eqb_ok, mem_succs_rel in H0.
-    unfold ysy, pred, succ. rewrite add_iff, In_succs_rel. intuition.
+    unfold ysy, pred, succ. rewrite add_iff, In_succs_rel. split_all.
     (* x not in ysy *)
     unfold ysy, pred, succ. rewrite add_iff, In_succs_rel, In_preds_rel.
     rewrite false_not_true in H, H0. unfold ysy in H0.
     rewrite <- mem_iff, add_iff, In_succs_rel in H0. rewrite mem_succs_rel in H.
-    intuition.
+    split_all; contr.
   Qed.
 
 (***********************************************************************)
@@ -474,7 +483,7 @@ using the function [trans_add_edge] now *)
 
   Proof.
     intros x g gtrans s. pattern (XSet.fold (trans_add_edge x) s g).
-    apply XSetProps.fold_rec_weak; intuition. apply transitive_trans_add_edge.
+    apply XSetProps.fold_rec_weak; split_all. apply transitive_trans_add_edge.
     hyp.
   Qed.
 
