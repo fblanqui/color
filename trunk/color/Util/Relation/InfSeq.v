@@ -11,7 +11,7 @@ description, and the axiom WF_notIS for WF_absorb *)
 
 Set Implicit Arguments.
 
-Require Import RelUtil NatUtil List Path NatLeast LogicUtil ClassicUtil
+Require Import RelUtil NatUtil List Path LeastNat LogicUtil ClassicUtil
   IndefiniteDescription SN NotSN_IS.
 
 Section S.
