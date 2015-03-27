@@ -10,7 +10,7 @@ non-collapsing arguments filtering with permutations
 Set Implicit Arguments.
 
 Require Import LogicUtil ATrs ListUtil NatUtil VecUtil SN BoolUtil
-  RelUtil ListNodup VecFilterPerm ARelation ACompat NaryFunction NatLt.
+  RelUtil ListNodup VecFilterPerm ARelation ACompat NaryFunction BoundNat.
 
 Section S.
 

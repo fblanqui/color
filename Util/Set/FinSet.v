@@ -14,7 +14,7 @@ Set Implicit Arguments.
 
 Require Import ClassicUtil IotaUtil EpsilonUtil
         Basics Morphisms Setoid
-        LogicUtil NatUtil FunUtil ListUtil ListNodup SetUtil NatLt.
+        LogicUtil NatUtil FunUtil ListUtil ListNodup SetUtil BoundNat.
 
 Section S.
 

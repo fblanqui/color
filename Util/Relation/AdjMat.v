@@ -11,7 +11,7 @@ and the corresponding boolean adjacency matrix of size n*n.
 Set Implicit Arguments.
 
 Require Import Matrix Bool Path Iter SCC ListExtras OrdSemiRing VecUtil RelSub
-  RelUtil NatUtil Log2 LogicUtil NatLt.
+  RelUtil NatUtil Log2 LogicUtil BoundNat.
 
 Module Export BMatrix := Matrix BOrdSemiRingT.
 
