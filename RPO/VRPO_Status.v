@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-Require Import VPrecedence MultisetListOrder LexicographicOrder VRPO_Type
+Require Import VPrecedence MultisetListOrder ListLex VRPO_Type
   Relations VTerm ListUtil AccUtil LogicUtil.
 
 Inductive status_name : Set := 

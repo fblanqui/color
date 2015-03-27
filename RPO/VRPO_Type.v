@@ -159,7 +159,7 @@ Module Status (PT : VPrecedenceType).
   Require Import MultisetListOrder.
   Module Export LMO := MultisetListOrder Term_dec.
 
-  Require Import LexicographicOrder.
+  Require Import ListLex.
   Module Export LO := LexOrder Term.
 
   Section Decidability.
