@@ -7,7 +7,7 @@ LIBNAME := CoLoR
 
 .SUFFIXES:
 
-.PHONY: default config clean clean-all clean-doc tags doc install-doc install-dist
+.PHONY: default config clean clean-dep clean-all clean-doc tags doc install-doc install-dist
 
 MAKECOQ := +$(MAKE) -r -f Makefile.coq
 
@@ -23,6 +23,9 @@ config Makefile.coq:
 clean:
 	rm -f `find . -name \*~`
 	$(MAKECOQ) clean
+
+clean-dep:
+	rm -f `find . -name \*.v.d`
 
 clean-all: clean
 	rm -f Makefile.coq _CoqProject
