@@ -10,7 +10,7 @@ rule elimination with reduction pairs
 Set Implicit Arguments.
 
 Require Import ATrs LogicUtil ARelation RelUtil SN ListUtil AMannaNess ACompat
-  BoolUtil NatLt.
+  BoolUtil BoundNat.
 
 (***********************************************************************)
 (** module type for reduction pairs *)

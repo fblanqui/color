@@ -11,7 +11,7 @@ WF_absorb. *)
 Set Implicit Arguments.
 
 Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
-  RelUtil ATrs LogicUtil ACalls SN InfSeq NatLeast ListUtil NatLt.
+  RelUtil ATrs LogicUtil ACalls SN InfSeq NatLeast ListUtil BoundNat.
 
 Section S.
 

@@ -9,7 +9,7 @@ Modular termination proof through SCC of an over DPGraph
 
 Set Implicit Arguments.
 
-Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup NatLt
+Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub ListNodup BoundNat
   AdjMat Permutation Multiset LogicUtil NatUtil ListPermutation SCC SCC_dec
   ListExtras Setoid SN VecUtil GDomainBij OptUtil PermutSetoid Union SortUtil.
 

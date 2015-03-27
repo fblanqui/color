@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 Require Import ATerm ABterm ListUtil ListForall VecUtil
   PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
-  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs Max NatLt.
+  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs Max BoundNat.
 
 Section S.
 
