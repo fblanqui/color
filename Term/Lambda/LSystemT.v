@@ -183,7 +183,7 @@ End L_SystemT.
 
 Require Import LCompRewrite.
 Import VectorNotations.
-Open Scope vector_scope.
+Open Local Scope vector_scope.
 
 Module RS_SystemT <: RS_Struct.
 
