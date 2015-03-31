@@ -109,7 +109,7 @@ Module FCmp <: Cmp.
 
   Fixpoint cmp f g :=
     match f, g with
-      | Rec A, Rec B => Ty_Cmp.cmp A B
+      | Rec u, Rec v => Ty_Cmp.cmp u v
       | _, _ => nat_compare (prec f) (prec g)
     end.
 
