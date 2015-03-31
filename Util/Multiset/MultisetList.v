@@ -93,7 +93,7 @@ Section SpecConformation.
     unfold meq. intros M N mult_MN x. rewrite <- !mult_comp. exact (mult_MN x).
   Qed.
 
-  Lemma meq_multeq : forall M N, M =mul= N -> (forall x, x / M = x / N).
+  Lemma meq_multeq : forall M N, M =mul= N -> forall x, x / M = x / N.
 
   Proof.
     unfold meq, permutation, Multiset.meq.
