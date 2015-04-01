@@ -570,7 +570,7 @@ predicates. *)
     intros g hg us r i hi. destruct (clos_aeq_trans_inv _ r) as [j|[v [h1 h2]]].
     inv_aeq j; subst. gen (eq_apps_fun_head i0). intro e. subst g.
     apply eq_apps_nb_args_args in i0. subst us0. apply vint_elim_nth.
-    (*FIXME:rewrite i2.*) eapply vint_vaeq. apply I_cp. hyp. sym. apply i2. hyp.
+    (*COQ:rewrite i2.*) eapply vint_vaeq. apply I_cp. hyp. sym. apply i2. hyp.
     gen (h _ h1). fold a. (*COQ: rewrite I_eq.*)
     gen (I_eq a); unfold equiv, pointwise_relation; intro e; rewrite e; clear e.
     intros [i1 i2]. apply i2; hyp.
