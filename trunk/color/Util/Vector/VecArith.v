@@ -38,7 +38,7 @@ Module VectorArith (SRT : SemiRingType).
   Proof.
     intros u u' uu' v v' vv'. apply Vforall2_intro_nth. intros.
     unfold vector_plus. rewrite !Vnth_map2.
-    (*FIXME: rewrite H does not work even if Vnth is declared as morphism *)
+    (*COQ: rewrite H does not work even if Vnth is declared as morphism *)
     apply Aplus_mor; apply Vforall2_elim_nth; hyp.
   Qed.
 

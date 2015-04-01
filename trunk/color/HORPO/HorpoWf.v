@@ -53,7 +53,7 @@ Module HorpoWf (S : TermsSig.Signature)
     destruct W as [Ts CompTs].
     apply acc_mul_acc_wfterms.
     unfold horpo_mul_lt; apply mOrd_acc.
-    gen (Eqset_def_gtA_eqA_compat horpo); fo. (*FIXME*)
+    class.
     intros x x_comp.
     assert (xComp: CompH x).
     apply CompTs.
@@ -245,7 +245,7 @@ Module HorpoWf (S : TermsSig.Signature)
     rewrite Mb_args; rewrite Nb_args.
     apply mulOrd_oneElemDiff.
     apply horpo_eq_compat'.
-    (*REMOVE*) refl.
+    refl.
     apply beta_imp_horpo; trivial. apply algebraic_arg with M; trivial.
     apply app_beta_headSymbol with M; trivial.
   Qed.

@@ -457,10 +457,6 @@ Module Lex (Export CO : DLQO_Struct).
       at which the decrease occurs. *)
       revert h1. unfold Def.gt_args_lex, Rof. simpl. set (M := CO.filter r).
       rewrite !lexv_eq. intros [i [i1 [i2 i3]]].
-      (*REMOVE:
-      (* Let [k := Vnth M i1] and [i0] be the first position of [k] in [M]. *)
-      set (k := Vnth M i1). assert (b : Vin k M). apply Vnth_in.
-      gen (Vin_first_position eq_nat_dec b); intros [i0 hi0].*)
       case_eq (Vfirst_position (eq_nat_dec j) M).
       (* Case when [k] is the first position of [j] in [M]. *)
       intros k hk. destruct (lt_dec k i).
