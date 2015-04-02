@@ -1240,7 +1240,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Definition terms_conv M N := exists S, M ~(S) N.
 
-  Notation "M ~ N" := (terms_conv M N) (at level 8).
+  Infix "~" := terms_conv (at level 7).
 
   Lemma terms_conv_criterion : forall M N,
     env M [<->] env N -> term M = term N -> M ~ N.
