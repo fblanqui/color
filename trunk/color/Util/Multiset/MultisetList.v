@@ -36,13 +36,13 @@ Section Operations.
 
 End Operations.
 
-  Notation "X =mul= Y" := (meq X Y) (at level 70) : msets_scope.
+  Infix "=mul=" := meq (at level 70) : msets_scope.
   Notation "X <>mul Y" := (~meq X Y) (at level 50) : msets_scope.
   Notation "{{ x }}" := (singleton x) (at level 5) : msets_scope.
-  Notation "X + Y" := (union X Y) : msets_scope.
-  Notation "X - Y" := (diff X Y) : msets_scope.
-  Notation "X # Y" := (intersection X Y) (at level 50, left associativity) : msets_scope.
-  Notation "x / M" := (mult x M) : msets_scope.
+  Infix "+" := union : msets_scope.
+  Infix "-" := diff : msets_scope.
+  Infix "#" := intersection (at level 50, left associativity) : msets_scope.
+  Infix "/" := mult : msets_scope.
 
   Delimit Scope msets_scope with msets.
   Open Scope msets_scope.

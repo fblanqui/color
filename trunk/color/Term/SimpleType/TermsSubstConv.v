@@ -21,25 +21,22 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     sc_rl: forall x y T',Q.(envSub) x y -> G2 |-> y/T' ->
       exists T,  G1 |-> x/T /\ T ~(Q) T';
     sc_inj_l: forall x T, G1 |-> x/T -> exists y, Q.(envSub) x y;
-    sc_inj_r: forall y T, G2 |-> y/T -> exists x, Q.(envSub) x y
-  }.
+    sc_inj_r: forall y T, G2 |-> y/T -> exists x, Q.(envSub) x y }.
+
   Notation "G ~~ ( S ) H" := (subst_conv_with G H S) (at level 70).
 
   Definition subst_conv G1 G2 := exists S, G1 ~~(S) G2.
 
-  Notation "G ~~ H" := (subst_conv G H) (at level 70).
+  Infix "~~" := subst_conv (at level 70).
 
   Lemma subst_empty_conv : forall S, nil ~~(S) nil.
 
   Proof.
-    intros; constructor; solve 
-      [ destruct x; try_solve
-      | destruct y; try_solve
-      ].
+    intros; constructor; solve [destruct x; try_solve | destruct y; try_solve].
   Qed.
 
-  Lemma conv_subst_udecl : forall G G' Q x y, G ~~(Q) G' -> Q.(envSub) x y -> G |-> x/- ->
-    G' |-> y/- .
+  Lemma conv_subst_udecl G G' Q x y :
+    G ~~(Q) G' -> Q.(envSub) x y -> G |-> x/- -> G' |-> y/- .
 
   Proof.
     intros.
@@ -51,8 +48,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     constructor; trivial.
   Qed.
 
- Lemma singletonSubst_conv : forall T T' G G' Q, isSingletonSubst T G -> isSingletonSubst T' G' ->
-    G ~~(Q) G' -> T ~(Q) T'.
+ Lemma singletonSubst_conv T T' G G' Q :
+   isSingletonSubst T G -> isSingletonSubst T' G' -> G ~~(Q) G' -> T ~(Q) T'.
 
   Proof.
     intros.
@@ -68,7 +65,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     rewrite T'T''; trivial.
   Qed.
 
-  Lemma singletonSubst_conv_rev : forall T T' G G' Q, isSingletonSubst T G ->
+  Lemma singletonSubst_conv_rev T T' G G' Q : isSingletonSubst T G ->
     isSingletonSubst T' G' -> envSub Q 0 0 -> T ~(Q) T' -> G ~~(Q) G'.
 
   Proof.
@@ -103,19 +100,18 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     destruct (H4 y); inversion H5; try_solve.
   Qed.
 
-  Lemma uneffective_singleton_subst_conv :
-    forall M G T (MG: correct_subst M G), isSingletonSubst T G ->
-      (activeEnv M |= 0 :!) -> terms_conv M (subst MG).
+  Lemma uneffective_singleton_subst_conv M G T (MG: correct_subst M G) :
+    isSingletonSubst T G -> (activeEnv M |= 0 :!) -> terms_conv M (subst MG).
 
   Proof.
-    intros.
-    apply terms_conv_criterion_strong.
+    intros. apply terms_conv_criterion_strong.
     apply singleton_subst_activeEnv_noSubst with T; trivial.
     apply singleton_subst_term_noSubst with T; trivial.
   Qed.
 
-  Lemma subst_conv_singleton : forall M G G' Q, Q.(envSub) 0 0 -> isSingletonSubst M G ->
-    G ~~(Q) G' -> exists M', isSingletonSubst M' G' /\ M ~(Q) M'.
+  Lemma subst_conv_singleton M G G' Q :
+    Q.(envSub) 0 0 -> isSingletonSubst M G -> G ~~(Q) G' ->
+    exists M', isSingletonSubst M' G' /\ M ~(Q) M'.
 
   Proof.
     intros.
@@ -136,11 +132,10 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     constructor; trivial.
   Qed.
 
-  Lemma subst_conv_sym : forall G1 G2 S, G1 ~~(S) G2 -> G2 ~~(envSubst_transp S) G1.
+  Lemma subst_conv_sym G1 G2 S : G1 ~~(S) G2 -> G2 ~~(envSubst_transp S) G1.
 
   Proof.
-    intros G1 G2 S G1G2.
-    constructor; intros.
+    intro G1G2. constructor; intros.
     destruct (@sc_rl G1 G2 S G1G2 y x T) as [T' [G1T' TT']]; trivial.
     destruct S; trivial.
     exists T'; split; auto.
@@ -155,7 +150,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     exists x; destruct S; trivial.
   Qed.  
 
-  Lemma subst_conv_cons : forall G G' Q, G ~~(Q) G' ->
+  Lemma subst_conv_cons G G' Q : G ~~(Q) G' ->
     None :: (lift_subst G 1) ~~(envSubst_lift1 Q) None :: (lift_subst G' 1).
 
   Proof.
@@ -203,8 +198,9 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     destruct Q; try_solve.
   Qed.
 
-  Lemma conv_subst_conv_term_aux : forall M M' G G' Q, conv_term M M' Q -> G ~~(Q) G' ->
-    conv_term (presubst M G) (presubst M' G') Q.
+  Lemma conv_subst_conv_term_aux :
+    forall M M' G G' Q, conv_term M M' Q -> G ~~(Q) G' ->
+                        conv_term (presubst M G) (presubst M' G') Q.
 
   Proof.
     induction M; intros; inversion H.
@@ -244,11 +240,12 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
 
   Definition subst_envMinimal G := forall x T, G |-> x/T -> envMinimal T.
 
-  Lemma subst_ran_decl_conv : forall G G' S x y A, G ~~(S) G' -> envSub S x y ->
-    subst_envs_comp G -> subst_envMinimal G' -> subst_ran G' |= y := A -> subst_ran G |= x := A.
+  Lemma subst_ran_decl_conv G G' S x y A :
+    G ~~(S) G' -> envSub S x y -> subst_envs_comp G -> subst_envMinimal G' ->
+    subst_ran G' |= y := A -> subst_ran G |= x := A.
 
   Proof.
-    intros G G' S x y A GG' Sxy G'comp G'min G'x.
+    intros GG' Sxy G'comp G'min G'x.
     destruct (subst_ran_decl G' G'x) as [W [p [Gp Wx]]].
     destruct (sc_inj_r GG' Gp) as [q pq].
     destruct (sc_rl GG' q pq Gp) as [W' [G'W' WW']].
@@ -258,12 +255,12 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     rewrite <- G'min with p W; trivial.
   Qed.
 
-  Lemma conv_subst_correct : forall M M' G G' S, M ~(S) M' -> envMinimal M' -> G ~~(S) G' ->
-    subst_envs_comp G' -> subst_envMinimal G' -> correct_subst M G -> correct_subst M' G'.
+  Lemma conv_subst_correct M M' G G' S :
+    M ~(S) M' -> envMinimal M' -> G ~~(S) G' -> subst_envs_comp G' ->
+    subst_envMinimal G' -> correct_subst M G -> correct_subst M' G'.
 
   Proof.
-    intros M M' G G' S MM' M'min GG' G'comp G'min MG.
-    constructor; trivial.
+    intros MM' M'min GG' G'comp G'min MG. constructor; trivial.
 
     intros p A B pG' pM'.
     destruct (subst_dom_varSubst_rev G' pG') as [W [G'W WA]].
@@ -306,9 +303,9 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     rewrite <- M'min; trivial.
   Qed.
 
-  Lemma conv_subst_singleton_build : forall M M' T G Q, envSub Q 0 0 -> M ~(Q) M' ->
+  Lemma conv_subst_singleton_build M M' T G Q : envSub Q 0 0 -> M ~(Q) M' ->
     envSub_minimal Q M -> isSingletonSubst T G -> correct_subst M G ->
-    exists Q' : EnvSubst, exists G' : Subst, exists T' : Term,
+    exists Q' G' T',
       correct_subst M' G' /\ isSingletonSubst T' G' /\ Q' |=> Q /\ G ~~(Q') G'.
 
   Proof.
@@ -368,8 +365,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     apply Q'Q; trivial.
   Qed.
 
-  Lemma conv_subst_conv : forall M M' G G' Q (MG: correct_subst M G)
-    (M'G': correct_subst M' G'),
+  Lemma conv_subst_conv :
+    forall M M' G G' Q (MG: correct_subst M G) (M'G': correct_subst M' G'),
       M ~(Q) M' -> G ~~(Q) G' -> (subst MG) ~(Q) (subst M'G').
 
   Proof.
@@ -513,7 +510,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     inversion H2.
     change (None :: copy i None ++ {x/T'}) with 
       (copy (Datatypes.S i) None ++ {x/T'}).
-    assert (presubst_aux R0 (Datatypes.S i) (copy (Datatypes.S i) None ++ {x/T'}) = R1).
+    assert (presubst_aux R0 (Datatypes.S i) (copy (Datatypes.S i) None
+                                                  ++ {x/T'}) = R1).
     apply (@IHM R0 T T' (envSubst_lift1 Q) L0 R1 (Datatypes.S i)); auto.
     intros j j_i; destruct j; destruct Q; simpl; trivial.
     apply H; omega.
@@ -531,8 +529,9 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     rewrite H10; trivial.
   Qed.
 
-  Lemma presubst_singleton_conv_sim : forall M M' T T' Q R R', envSub Q 0 0 -> conv_term M M' Q ->
-    T ~(Q) T' -> conv_term R R' Q -> presubst M {x/T} = R -> presubst M' {x/T'} = R'.
+  Lemma presubst_singleton_conv_sim M M' T T' Q R R' :
+    envSub Q 0 0 -> conv_term M M' Q -> T ~(Q) T' -> conv_term R R' Q ->
+    presubst M {x/T} = R -> presubst M' {x/T'} = R'.
 
   Proof.
     intros.
