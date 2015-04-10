@@ -68,7 +68,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** Beta-reduction is stable by substitution. *)
 
-  Lemma subs_beta_aeq : Proper (Logic.eq ==> beta_aeq ==> beta_aeq) subs.
+  Instance subs_beta_aeq : Proper (Logic.eq ==> beta_aeq ==> beta_aeq) subs.
 
   Proof.
     intros s s' ss' u v uv. subst s'. revert u v uv s.

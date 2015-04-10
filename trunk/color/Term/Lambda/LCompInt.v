@@ -129,7 +129,7 @@ Module Make (Export ST : ST_Struct)
     eapply WF_incl. apply supterm_acc_supterm. apply WF_tc. apply supterm_wf.
   Qed.
 
-  Lemma size_subpterm_acc : Proper (supterm_acc --> Peano.lt) size.
+  Instance size_subpterm_acc : Proper (supterm_acc --> Peano.lt) size.
 
   Proof. intros t u tu. inversion tu; subst. apply size_apps_r_nth. Qed.
 
