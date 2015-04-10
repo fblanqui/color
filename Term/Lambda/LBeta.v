@@ -68,44 +68,25 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** Beta-reduction is stable by substitution. *)
 
-  Instance subs_beta_aeq : Proper (Logic.eq ==> beta_aeq ==> beta_aeq) subs.
+  Instance subs_clos_aeq_beta_top :
+    Proper (Logic.eq ==> beta_top ==> clos_aeq beta_top) subs.
 
   Proof.
-    intros s s' ss' u v uv. subst s'. revert u v uv s.
-    (* We proceed by induction on the size of [u]. *)
-    intro u; pattern u; apply (induction_ltof1 size); clear u.
-    intros u IH v uv s. inversion uv; subst. rewrite H, H0.
-    (* We now proceed by case on [->b]. *)
-    inversion H1; subst.
-    (* top *)
-    inversion H2; subst; simpl. set (x':=var x u0 s).
+    intros s s' ss' u v uv. subst s'. inversion uv; clear uv; subst.
+    set (x' := var x u0 s).
     eapply clos_aeq_intro with
-      (v':=subs (single x' (subs s v0)) (subs (update x (Var x') s) u0)).
-    refl. do 2 rewrite subs_comp. apply subs_saeq. intros z hz. unfold Def.comp.
-    unfold Def.single at 1. unfold Def.update. eq_dec z x; simpl.
+      (v' := subs (single x' (subs s v0)) (subs (update x (Var x') s) u0)).
+    refl. do 2 rewrite subs_comp. apply subs_saeq. intros z hz.
+    unfold Def.comp. unfold Def.single at 1. unfold Def.update.
+    eq_dec z x; simpl.
     rewrite single_eq. refl.
     unfold x'. rewrite single_var. refl. hyp. auto.
-    apply m_step. apply beta_top_intro.
-    (* app_l *)
-    simpl. mon. apply IH. unfold ltof. rewrite H. simpl. max.
-    apply incl_clos_aeq. hyp.
-    (* app_r *)
-    simpl. mon. apply IH. unfold ltof. rewrite H. simpl. max.
-    apply incl_clos_aeq. hyp.
-    (* lam *)
-    (* We rename [x] into some variable [k] not in [xs] so that [subs s]
-       makes no alpha-conversion. *)
-    set (xs := union (union (fv u0) (fvcodom (remove x (fv u0)) s))
-                     (union (fv u'0) (fvcodom (remove x (fv u'0)) s))).
-    set (k := var_notin xs).
-    gen (var_notin_ok xs). fold k. unfold xs. set_iff. intro hk.
-    rewrite (aeq_alpha k). 2: tauto. rewrite (@aeq_alpha x _ k). 2: tauto.
-    rewrite subs_lam_no_alpha. 2: rewrite remove_fv_rename; tauto.
-    rewrite subs_lam_no_alpha. 2: rewrite remove_fv_rename; tauto.
-    mon. apply IH. unfold ltof. rewrite size_rename, H. simpl. omega.
-    apply IH. unfold ltof. rewrite H. simpl. omega.
-    apply incl_clos_aeq. hyp.
+    apply beta_top_intro.
   Qed.
+
+  Instance subs_beta_aeq : Proper (Logic.eq ==> beta_aeq ==> beta_aeq) subs.
+
+  Proof. class. Qed.
 
   Instance rename_beta_aeq :
     Proper (Logic.eq ==> Logic.eq ==> beta_aeq ==> beta_aeq) rename.
