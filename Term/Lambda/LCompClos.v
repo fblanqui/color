@@ -597,7 +597,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We check that [gt2] is invariant by [mcaeq]. *)
 
-  Lemma gt2c_caeq : Proper (caeq ==> caeq ==> impl) gt2c.
+  Instance gt2c_caeq : Proper (caeq ==> caeq ==> impl) gt2c.
 
   Proof.
     intros [f n ts] [f' n' ts'] e [g p us] [g' p' us'] e'.
@@ -610,7 +610,7 @@ Module SN_rewrite (Export CC : CC_Struct)
     right. rewrite <- h, <- h0. hyp.
   Qed.
 
-  Lemma gt2_mcaeq : Proper (mcaeq ==> mcaeq ==> impl) gt2.
+  Instance gt2_mcaeq : Proper (mcaeq ==> mcaeq ==> impl) gt2.
 
   Proof. intros [f ts] [f' ts'] e [g us] [g' us'] e'. apply gt2c_caeq; hyp. Qed.
 
