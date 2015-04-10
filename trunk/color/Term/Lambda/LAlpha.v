@@ -1094,6 +1094,35 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     refl. refl. hyp.
   Qed.
 
+  (** Alpha-closure is compatible with relation inclusion/equivalence. *)
+
+  Instance clos_aeq_incl : Proper (inclusion ==> inclusion) clos_aeq.
+
+  Proof.
+    intros R S RS u v uv. inversion uv; subst.
+    apply clos_aeq_intro with (u':=u') (v':=v'); fo.
+  Qed.
+
+  Instance clos_aeq_same_rel : Proper (same_rel ==> same_rel) clos_aeq.
+
+  Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
+
+  (** Alpha-closure distributes overs union. *)
+
+  Lemma clos_aeq_union : forall R S,
+    clos_aeq (R U S) == clos_aeq R U clos_aeq S.
+
+  Proof.
+    intros R S. split.
+    (* << *)
+    induction 1.
+    destruct H1 as [h|h]; [left|right];
+      (eapply clos_aeq_intro; [apply H | apply H0 | hyp]).
+    (* >> *)
+    intros t u [h|h]. eapply clos_aeq_incl. apply incl_union_l. refl. hyp.
+    eapply clos_aeq_incl. apply incl_union_r. refl. hyp.
+  Qed.
+
   (** Alpha-closure is compatible with alpha-equivalence. *)
 
   Instance clos_aeq_impl :
@@ -1138,37 +1167,18 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite H. refl. rewrite H0. refl. mon.      
   Qed.
 
-  (** Alpha-closure is compatible with relation inclusion/equivalence. *)
+  (** [clos_mon (clos_aeq R)] is included in [clos_aeq (clos_mon R)]. *)
 
-  Instance clos_aeq_incl : Proper (inclusion ==> inclusion) clos_aeq.
-
-  Proof.
-    intros R S RS u v uv. inversion uv; subst.
-    apply clos_aeq_intro with (u':=u') (v':=v'); fo.
-  Qed.
-
-  Instance clos_aeq_same_rel : Proper (same_rel ==> same_rel) clos_aeq.
-
-  Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
-
-  (** Alpha-closure distributes overs union. *)
-
-  Lemma clos_aeq_union : forall R S,
-    clos_aeq (R U S) == clos_aeq R U clos_aeq S.
+  Lemma clos_mon_aeq_incl R : clos_mon (clos_aeq R) << clos_aeq (clos_mon R).
 
   Proof.
-    intros R S. split.
-    (* << *)
-    induction 1.
-    destruct H1 as [h|h]; [left|right];
-      (eapply clos_aeq_intro; [apply H | apply H0 | hyp]).
-    (* >> *)
-    intros t u [h|h]. eapply clos_aeq_incl. apply incl_union_l. refl. hyp.
-    eapply clos_aeq_incl. apply incl_union_r. refl. hyp.
+    apply clos_mon_min. apply clos_aeq_mon. apply monotone_clos_mon.
+    apply clos_aeq_incl. intros u v uv. apply m_step. hyp.
   Qed.
 
   (** Alpha-closure preserves stability by substitution. *)
 
+  (*REMOVE?
   Instance subs_clos_aeq : forall R, Proper (Logic.eq ==> R ==> R) subs ->
     Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
 
@@ -1176,6 +1186,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     intros R subs_R s s' ss' t u tu. subst s'.
     inversion tu; subst; clear tu. rewrite H, H0.
     eapply clos_aeq_intro. refl. refl. apply subs_R. refl. hyp.
+  Qed.*)
+
+  Instance subs_clos_aeq R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
+    Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
+
+  Proof.
+    intros h s s' ss' u u' uu'. subst s'. inversion uu'; clear uu'; subst.
+    rewrite H, H0. apply h. refl. hyp.
   Qed.
 
   (* Note that the previous lemma cannot be used to prove the
@@ -1192,6 +1210,41 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     inversion tu; inversion H1; subst; clear tu H1.
     (*SLOW*)rewrite H0, H, 2!subs_comp.
     eapply clos_aeq_intro. refl. refl. eapply subs_step. hyp.
+  Qed.
+
+  (** [clos_aeq o clos_mon] preserves stability by substitution. *)
+
+  Instance subs_clos_mon_aeq R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
+    Proper (Logic.eq ==> clos_aeq (clos_mon R) ==> clos_aeq (clos_mon R)) subs.
+
+  Proof.
+    intros h s s' ss' u v uv. subst s'. revert u v uv s.
+    (* We proceed by induction on the size of [u]. *)
+    intro u; pattern u; apply (induction_ltof1 size); clear u.
+    intros u IH v uv s. inversion uv; clear uv; subst. rewrite H, H0.
+    (* We now proceed by case on [clos_mon R u' v']. *)
+    inversion H1; clear H1; subst.
+    (* top *)
+    apply clos_mon_aeq_incl. apply m_step. apply h. refl. hyp.
+    (* app_l *)
+    simpl. mon. apply IH. unfold ltof. rewrite H. simpl. max.
+    apply incl_clos_aeq. hyp.
+    (* app_r *)
+    simpl. mon. apply IH. unfold ltof. rewrite H. simpl. max.
+    apply incl_clos_aeq. hyp.
+    (* lam *)
+    (* We rename [x] into some variable [k] not in [xs] so that [subs s]
+       makes no alpha-conversion. *)
+    set (xs := union (union (fv u0) (fvcodom (remove x (fv u0)) s))
+                     (union (fv u'0) (fvcodom (remove x (fv u'0)) s))).
+    set (k := var_notin xs).
+    gen (var_notin_ok xs). fold k. unfold xs. set_iff. intro hk.
+    rewrite (aeq_alpha k). 2: tauto. rewrite (@aeq_alpha x _ k). 2: tauto.
+    rewrite subs_lam_no_alpha. 2: rewrite remove_fv_rename; tauto.
+    rewrite subs_lam_no_alpha. 2: rewrite remove_fv_rename; tauto.
+    mon. apply IH. unfold ltof. rewrite size_rename, H. simpl. omega.
+    apply IH. unfold ltof. rewrite H. simpl. omega.
+    apply incl_clos_aeq. hyp.
   Qed.
 
   (** Alpha-closure preserves free variables. *)
