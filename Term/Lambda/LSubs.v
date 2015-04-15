@@ -231,6 +231,14 @@ Module Make (Export L : L_Struct).
 
   (** Basic properties. *)
 
+  Instance rename_proper_eq A B : Proper (Logic.eq ==> A ==> B) subs ->
+    Proper (Logic.eq ==> Logic.eq ==> A ==> B) rename.
+
+  Proof.
+    intros h x x' xx' y y' yy' u u' uu'. subst x' y'. unfold Def.rename.
+    apply h. refl. hyp.
+  Qed.
+
   Lemma update_eq x u s : update x u s x = u.
 
   Proof. unfold Def.update. eq_dec x x. refl. fo. Qed.
