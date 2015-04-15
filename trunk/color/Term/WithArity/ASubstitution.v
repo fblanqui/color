@@ -202,7 +202,7 @@ Section S.
       intro x. simpl. refl.
       intros f ts. simpl. intro H. f_equal. hyp.
       simpl. refl.
-      intros. simpl. rewrite H. rewrite <- H0. refl.
+      intros. simpl. rewrite H, <- H0. refl.
     Qed.
 
   End substitution_lemma.
@@ -242,7 +242,7 @@ Section S.
     Lemma svars_app l2 : forall l1, svars (l1 ++ l2) = svars l1 ++ svars l2.
 
     Proof.
-      induction l1; simpl; intros. refl. rewrite IHl1. rewrite app_ass. refl.
+      induction l1; simpl; intros. refl. rewrite IHl1, app_ass. refl.
     Qed.
 
     Lemma incl_svars l1 l2 : incl l1 l2 -> incl (svars l1) (svars l2).
@@ -334,7 +334,7 @@ union s1 s2 x = s1 x if s1 x <> x, and s2 x otherwise *)
       unfold sub_eq_dom, union. intros.
       case (eq_term_dec (s1 x) (Var x)); intros.
       case (In_dec eq_nat_dec x l2); intro. apply sym_eq. auto.
-      ded (hyp2 _ n). rewrite e. rewrite H0. refl. refl.
+      ded (hyp2 _ n). rewrite e, H0. refl. refl.
     Qed.
 
     Lemma union_correct2 : sub_eq_dom union s2 l2.
@@ -413,7 +413,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
     intros. unfold restrict.
     assert (Inb x (vars r) = true). apply Inb_intro. hyp.
     assert (Inb x (vars l) = true). apply Inb_intro. apply H. hyp.
-    rewrite H1. rewrite H2. refl.
+    rewrite H1, H2. refl.
   Qed.
 
 (***********************************************************************)
@@ -432,8 +432,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
 
   Proof.
     induction C; intros. refl. simpl subc. simpl fill. simpl sub.
-    f_equal. rewrite Vmap_cast. rewrite Vmap_app. simpl Vmap.
-    rewrite IHC. refl.
+    f_equal. rewrite Vmap_cast, Vmap_app. simpl Vmap. rewrite IHC. refl.
   Qed.
 
 (***********************************************************************)
@@ -493,7 +492,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
     ts = Vmap (sub (sub_vars ts)) (fresh_vars n).
 
   Proof.
-    apply Veq_nth. intros. rewrite Vnth_map. rewrite Vnth_fresh_vars.
+    apply Veq_nth. intros. rewrite Vnth_map, Vnth_fresh_vars.
     simpl. unfold sub_vars. rewrite val_of_vec_eq with (h:=ip). refl.
   Qed.
 
@@ -663,10 +662,10 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
           (fill (Cont f e (fresh (S n) i) Hole (fresh (S n+i) j)) l).
 
   Proof.
-    intro. rename H into Hn. simpl. apply args_eq. rewrite Vmap_cast.
-    rewrite Vmap_app. simpl. apply Vcast_eq_intro. apply Vapp_eq_intro.
+    intro. rename H into Hn. simpl. apply args_eq. rewrite Vmap_cast, Vmap_app.
+    simpl. apply Vcast_eq_intro. apply Vapp_eq_intro.
     (* vi *)
-    apply Veq_nth; intros. rewrite Vnth_map. rewrite Vnth_fresh. simpl.
+    apply Veq_nth; intros. rewrite Vnth_map, Vnth_fresh. simpl.
     unfold maxvar_union. case (lt_ge_dec (S(n+i0)) (S n)); intro. omega.
     unfold fsub. case (le_lt_dec (S(n+i0)) n); intro. omega.
     case (le_lt_dec (S(n+i0)) (n+(i+j))); intro.
@@ -676,7 +675,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
     apply Vcons_eq_intro. apply sub_eq. intros. ded (vars_max H).
     unfold maxvar_union. case (lt_ge_dec x (S n)); intro. refl. omega.
     (* v2 *)
-    apply Veq_nth; intros. rewrite Vnth_map. rewrite Vnth_fresh. simpl.
+    apply Veq_nth; intros. rewrite Vnth_map, Vnth_fresh. simpl.
     unfold maxvar_union. case (lt_ge_dec (S(n+i+i0)) (S n)); intro.
     omega. unfold fsub. case (le_lt_dec (S(n+i+i0)) n); intro. omega.
     case (le_lt_dec (S(n+i+i0)) (n+(i+j))); intro. rewrite Vnth_app.
@@ -697,7 +696,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
     Proof.
       intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
         Vmap (sub s1) (Vmap (sub s2) ts) = ts); simpl; intros.
-      apply hyp. rewrite H. refl. refl. rewrite H. rewrite H0. refl.
+      apply hyp. rewrite H. refl. refl. rewrite H, H0. refl.
     Qed.
 
   End sub_inv.
@@ -717,7 +716,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
       clear t; intros.
       simpl. unfold swap, single, sub_comp. case_beq_nat x x0. simpl.
       rewrite (beq_refl beq_nat_ok). refl. simpl. case_beq_nat y x0.
-      simpl in H. tauto. refl. rewrite !sub_fun. rewrite H. refl.
+      simpl in H. tauto. refl. rewrite !sub_fun, H. refl.
       rewrite vars_fun in H0. hyp. refl. simpl in *. rewrite in_app in H1.
       rewrite H0, H. refl. tauto. tauto.
     Qed.

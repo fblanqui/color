@@ -57,9 +57,9 @@ Section prefix.
 
   Proof.
     induction l; intros. trivial. destruct l'. simpl in H0. destruct H0.
-    pose (prefix_nil l H1). rewrite H0 in H. rewrite e in H. tauto. simpl in H0.
+    pose (prefix_nil l H1). rewrite H0, e in H. tauto. simpl in H0.
     simpl.
-    split. tauto. apply IHl. intro. rewrite (proj1 H0) in H. rewrite H1 in H.
+    split. tauto. apply IHl. intro. rewrite (proj1 H0), H1 in H.
     tauto. tauto.
   Qed.
 
@@ -87,8 +87,7 @@ Section suffix.
     unfold suffix. intros. assert (rev l<>rev (x::l')). intro.
     assert (rev (rev l)=rev(rev (x::l'))).
     rewrite H1. trivial. pose (rev_involutive l). pose (rev_involutive (x::l')).
-    rewrite e in H2.
-    rewrite e0 in H2. tauto. apply prefix_smaller with x; hyp.
+    rewrite e, e0 in H2. tauto. apply prefix_smaller with x; hyp.
   Qed.
 
 End suffix.

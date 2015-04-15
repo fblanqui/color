@@ -46,9 +46,7 @@ Section S.
 
   Lemma var_term_of_string : forall s, var (term_of_string s) = 0.
 
-  Proof.
-    induction s. refl. simpl term_of_string. rewrite var_fun1. hyp.
-  Qed.
+  Proof. induction s. refl. simpl term_of_string. rewrite var_fun1. hyp. Qed.
 
   Fixpoint string_of_term (t : term) : string :=
     match t with
@@ -68,7 +66,7 @@ Section S.
 
   Proof.
     induction s; intros. refl. simpl term_of_string.
-    rewrite string_of_term_fun1. rewrite IHs. refl.
+    rewrite string_of_term_fun1, IHs. refl.
   Qed.
 
   Lemma term_of_string_epi : forall t, maxvar t = 0 ->
@@ -87,8 +85,8 @@ Section S.
     string_of_term (sub s l) = string_of_term l ++ string_of_term (s (var l)).
 
   Proof.
-    intro s. apply term_ind_forall. refl. intros f t IH. rewrite sub_fun1.
-    rewrite !string_of_term_fun1. rewrite IH. rewrite var_fun1. refl.
+    intro s. apply term_ind_forall. refl. intros f t IH.
+    rewrite sub_fun1, !string_of_term_fun1, IH, var_fun1. refl.
   Qed.
 
 (***********************************************************************)
@@ -104,16 +102,14 @@ Section S.
     string_of_cont (cont t) = string_of_term t.
 
   Proof.
-    apply term_ind_forall. refl. intros f t IH. rewrite string_of_term_fun1.
-    rewrite cont_fun1. simpl. rewrite IH. refl.
+    apply term_ind_forall. refl. intros f t IH.
+    rewrite string_of_term_fun1, cont_fun1. simpl. rewrite IH. refl.
   Qed.
 
   Lemma string_of_cont_comp : forall c d,
     string_of_cont (comp c d) = string_of_cont c ++ string_of_cont d.
 
-  Proof.
-    induction c; simpl; intros. refl. rewrite IHc. refl.
-  Qed.
+  Proof. induction c; simpl; intros. refl. rewrite IHc. refl. Qed.
 
   Lemma string_of_term_fill : forall t c,
     string_of_term (fill c t) = string_of_cont c ++ string_of_term t.
@@ -140,7 +136,7 @@ Section S.
 
   Proof.
     intros [l r] s. elim l. unfold SContext.fill. simpl.
-    elim s. refl. intros. simpl term_of_string. rewrite H. rewrite sub_fun1.
+    elim s. refl. intros. simpl term_of_string. rewrite H, sub_fun1.
     refl.
     unfold SContext.fill. simpl lft. simpl rgt. intros. simpl term_of_string.
     simpl cont_of_string. rewrite fill_cont1. apply args_eq.
@@ -183,7 +179,7 @@ Section S.
 
   Proof.
     unfold srs_of_trs, reset_rules. induction R; simpl; intros. refl.
-    rewrite IHR. rewrite srule_of_rule_reset. refl.
+    rewrite IHR, srule_of_rule_reset. refl.
   Qed.
 
   Require Import ListMax.
@@ -324,7 +320,7 @@ Section S.
   Lemma WF_red : WF (red R) <-> WF (Srs.red (srs_of_trs R)).
 
   Proof.
-    rewrite <- red_mod_empty. rewrite <- Srs.red_mod_empty. apply WF_red_mod.
+    rewrite <- red_mod_empty, <- Srs.red_mod_empty. apply WF_red_mod.
     unfold rules_preserve_vars. simpl. tauto.
   Qed.
 

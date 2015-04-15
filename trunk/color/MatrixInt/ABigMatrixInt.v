@@ -133,7 +133,7 @@ Module MatrixInt (Export MI : TMatrixInt).
       vec_at0 (vl [+] vr) > vec_at0 (vl' [+] vr').
 
     Proof.
-      unfold MBI.vec_at0, vector_plus. intros. do 2 rewrite Vnth_map2.
+      unfold MBI.vec_at0, vector_plus. intros. rewrite !Vnth_map2.
       unfold Aplus. apply plus_gt_compat_r; hyp.
     Qed.
 
@@ -155,8 +155,8 @@ Module MatrixInt (Export MI : TMatrixInt).
     Proof.
       intros l r lr v. destruct (mint_eval_equiv l r v). simpl in * .
       unfold succ, Rof, I, succ_vec. symmetry in H. symmetry in H0.
-      rewrite (vec_ge_mor H H0).
-      rewrite (Vforall2_elim_nth dim_pos H), (Vforall2_elim_nth dim_pos H0).
+      rewrite (vec_ge_mor H H0),
+        (Vforall2_elim_nth dim_pos H), (Vforall2_elim_nth dim_pos H0).
       change (succ_vec (mint_eval v
         (mi_of_term (ABterm.inject_term (Max.le_max_l (maxvar l) (maxvar r)))))
       (mint_eval v (mi_of_term
@@ -185,7 +185,7 @@ Module MatrixInt (Export MI : TMatrixInt).
 
         Proof.
           unfold MBI.vec_at0, vector_plus. intros.
-          simpl. do 2 rewrite Vnth_map2. 
+          simpl. rewrite !Vnth_map2. 
           unfold Aplus, Peano.gt. apply plus_gt_compat_l; hyp.
         Qed.
       
@@ -211,7 +211,7 @@ Module MatrixInt (Export MI : TMatrixInt).
 
           rewrite !Vcast_cons.
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
-          do 2 rewrite Vnth_map2.
+          rewrite !Vnth_map2.
           unfold Aplus. apply plus_gt_compat_r. apply eq_ge_compat. refl.
           unfold MBI.vec_at0 in f_mon. apply f_mon; try hyp.
           apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
@@ -219,7 +219,7 @@ Module MatrixInt (Export MI : TMatrixInt).
           destruct n0. omega.
           rewrite !Vcast_cons.
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
-          do 2 rewrite Vnth_map2.
+          rewrite !Vnth_map2.
           unfold Aplus. apply plus_gt_compat_l. 2: apply eq_ge_compat; refl.
           match goal with |- gt ?Hl ?Hr => fold (gt Hr Hl) end.
           unfold MBI.vec_at0, add_vectors in IHv1.
@@ -247,7 +247,7 @@ Module MatrixInt (Export MI : TMatrixInt).
         fold (dot_product (Vtail v) (Vtail w)).
         unfold Aplus, Peano.gt. apply plus_gt_compat_r.
         apply dot_product_mon; apply Vforall2_tail; hyp.
-        do 4 rewrite Vhead_nth. apply mult_lt_compat_lr.
+        rewrite !Vhead_nth. apply mult_lt_compat_lr.
         apply (Vforall2_elim_nth (R:=ge)). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
@@ -260,11 +260,10 @@ Module MatrixInt (Export MI : TMatrixInt).
         apply IHj with (lt_S_n jp).
         apply Vforall2_tail. hyp.
         apply Vforall2_tail. hyp.
-        rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
-        do 2 rewrite Vnth_tail. rewrite lt_nS_Sn. hyp.
-        apply BigN.mul_le_mono.
-        do 2 rewrite Vhead_nth. apply (Vforall2_elim_nth (R:=ge)). hyp.
-        do 2 rewrite Vhead_nth. apply (Vforall2_elim_nth (R:=ge)). hyp.
+        rewrite Vnth_tail, lt_nS_Sn. hyp.
+        rewrite !Vnth_tail, lt_nS_Sn. hyp.
+        apply BigN.mul_le_mono;
+          rewrite !Vhead_nth; apply (Vforall2_elim_nth (R:=ge)); hyp.
       Qed.
 
       (* additional property of interpretation required to ensure strict
@@ -282,17 +281,17 @@ Module MatrixInt (Export MI : TMatrixInt).
         intros f i j i_j vi vj a b ab. split.
         apply monotone_succeq. destruct ab. hyp.
         simpl. unfold mi_eval_aux. apply vec_plus_gt_compat_r.
-        do 2 rewrite Vmap_cast. do 2 rewrite Vmap_app. simpl.    
+        rewrite !Vmap_cast, !Vmap_app. simpl.    
         apply vec_add_monotone_map2; try solve [destruct ab; hyp].
         intros. unfold MBI.vec_at0. unfold mat_vec_prod. 
-        do 2 rewrite Vnth_col_mat.
-        do 2 rewrite mat_mult_spec. apply dot_product_mon_r with 0%nat dim_pos.
+        rewrite !Vnth_col_mat, !mat_mult_spec.
+        apply dot_product_mon_r with 0%nat dim_pos.
         unfold ge. apply Vforall2_intro_nth. intros. apply BigN.le_refl.
         unfold ge. apply Vforall2_intro_nth. intros.
-        do 2 rewrite get_col_col_mat. destruct ab.
+        rewrite !get_col_col_mat. destruct ab.
         apply (Vforall2_elim_nth (R:=ge)). hyp.
         hyp.
-        do 2 rewrite get_col_col_mat. hyp.
+        rewrite !get_col_col_mat. hyp.
         apply matrixInt_monotone. apply BigN.le_refl.
       Qed.
 

@@ -84,16 +84,12 @@ Module Make_Term (Import S : SIG) <: Term.
         | Vcons u k us => term_of_aterm u :: terms_of_aterms k us
       end) n ts = terms_of_aterms ts.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. refl.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
 
   Lemma term_of_aterm_fun : forall f ts,
     term_of_aterm (Fun f ts) = Term f (terms_of_aterms ts).
 
-  Proof.
-    intros. simpl. rewrite terms_of_aterms_eq. refl.
-  Qed.
+  Proof. intros. simpl. rewrite terms_of_aterms_eq. refl. Qed.
 
   Require Import VecUtil.
 
@@ -110,16 +106,12 @@ Module Make_Term (Import S : SIG) <: Term.
   Lemma terms_of_aterms_app : forall n (ts : aterms n) p (us : aterms p),
     terms_of_aterms (Vapp ts us) = terms_of_aterms ts ++ terms_of_aterms us.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. refl.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
 
   Lemma length_terms_of_aterms : forall n (ts : aterms n),
     length (terms_of_aterms ts) = n.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. refl.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
 
   Fixpoint sub_of_asub (s : ASubstitution.substitution Sig) n :=
     match n with
@@ -156,7 +148,7 @@ Notation find := (@find _ eq_var_bool _).
     refl. rewrite bgt_nat_ko in H0. omega.
     intros. simpl sub. rewrite !term_of_aterm_fun. simpl.
     f_equal. apply H. hyp.
-    refl. intros t n ts. simpl. rewrite maxvars_cons. rewrite gt_max.
+    refl. intros t n ts. simpl. rewrite maxvars_cons, gt_max.
     intros. destruct H1. rewrite H. 2: hyp. rewrite H0. 2: hyp. refl.
   Qed.
 
@@ -180,12 +172,12 @@ Notation find := (@find _ eq_var_bool _).
 
   Proof.
     induction c; intros. refl. simpl fill. rewrite term_of_aterm_fun. simpl.
-    rewrite terms_of_aterms_cast. rewrite terms_of_aterms_app. simpl.
+    rewrite terms_of_aterms_cast, terms_of_aterms_app. simpl.
     assert (nth_error (terms_of_aterms t ++ term_of_aterm (fill c u) ::
       terms_of_aterms t0) i = nth_error (terms_of_aterms t ++ term_of_aterm
         (fill c u) :: terms_of_aterms t0) (length (terms_of_aterms t))).
     f_equal. rewrite length_terms_of_aterms. refl.
-    rewrite H. rewrite nth_error_at_pos. hyp.
+    rewrite H, nth_error_at_pos. hyp.
   Qed.
 
 End Make_Term.
@@ -287,8 +279,8 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Proof.
     intros t u c h. unfold succ, transp, Rof.
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=t).
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=u).
+    rewrite term_of_aterm_fill with (u := AVar 0) (t:=t),
+            term_of_aterm_fill with (u := AVar 0) (t:=u).
     apply rpo_add_context. hyp. apply is_a_pos_context.
   Qed.
 
@@ -296,8 +288,8 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Proof.
     intros t u c h. unfold equiv_aterm, Rof.
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=t).
-    rewrite term_of_aterm_fill with (u := AVar 0) (t:=u).
+    rewrite term_of_aterm_fill with (u := AVar 0) (t:=t),
+            term_of_aterm_fill with (u := AVar 0) (t:=u).
     apply equiv_add_context. hyp. apply is_a_pos_context.
   Qed.
 
@@ -410,7 +402,7 @@ Section prec_eq_status.
     intros f g. unfold bprec_eq_status_symb, implb.
     case_eq (prec_eq_bool prec_nat f g); intros.
     rewrite prec_eq_ok in H. rewrite beq_status_ok. intuition.
-    intuition. rewrite <- prec_eq_ok in H1. rewrite H in H1. discr.
+    intuition. rewrite <- prec_eq_ok, H in H1. discr.
   Qed.
 
   Section bprec_eq_status_aux1.

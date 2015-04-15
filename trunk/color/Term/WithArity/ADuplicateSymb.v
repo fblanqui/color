@@ -98,7 +98,7 @@ unfold Q in H.
 cut (Vmap (sub (dup_int_subst s)) (Vmap dup_int_term v) =
   Vmap dup_int_term (Vmap (sub s) v)).
 intros. rewrite <- H0. auto.
-do 2 rewrite Vmap_map.
+rewrite !Vmap_map.
 apply Vmap_eq. apply H.
 (* Vnil *)
 unfold Q; simpl; auto.
@@ -116,7 +116,7 @@ rewrite dup_hd_term_fun. simpl.
 cut ((Vmap (sub (dup_int_subst s)) (Vmap dup_int_term v)) =
  (Vmap dup_int_term (Vmap (sub s) v)) ).
 intro. rewrite <- H. apply refl_equal.
-do 2 rewrite Vmap_map.
+rewrite !Vmap_map.
 apply Vmap_eq_ext. 
 apply dup_int_subst_spec.
 Qed. 
@@ -146,8 +146,7 @@ cut (Vmap dup_int_term (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e) =
       (fill (dup_int_context c) (sub (dup_int_subst s) (dup_int_term l)))
       (Vmap dup_int_term t0))) e)).
 intro. rewrite H; auto.
-rewrite Vmap_cast.
-rewrite Vmap_app.
+rewrite Vmap_cast, Vmap_app.
 simpl.
 rewrite IHc.
 auto.
@@ -191,7 +190,7 @@ intros. redtac. subst. unfold hd_red.
 ex (dup_hd_term l) (dup_hd_term r) (dup_int_subst s).
 ded (is_notvar_lhs_elim hyp lr). decomp H.
 ded (is_notvar_rhs_elim hyp' lr). decomp H. subst.
-do 2 rewrite dup_int_subst_hd_dup. split_all. unfold dup_hd_rules.
+rewrite !dup_int_subst_hd_dup. split_all. unfold dup_hd_rules.
 change (In (dup_hd_rule (mkRule (Fun x x0) (Fun x1 x2))) (map dup_hd_rule R)).
 apply in_map. hyp.
 Qed.
@@ -206,7 +205,7 @@ exists (dup_int_context c). exists (dup_int_subst s).
 split.
 change (In (dup_int_rule (mkRule l r)) (map dup_int_rule R)).
 apply in_map. auto.
-do 2 rewrite <- dup_int_context_spec.
+rewrite <- !dup_int_context_spec.
 split; subst; refl.
 Qed.
 
@@ -221,7 +220,7 @@ split.
 change (In (dup_int_rule (mkRule l r)) (map dup_int_rule R)).
 apply in_map. auto.
 subst; simpl.
-split; rewrite Vmap_cast; rewrite Vmap_app;
+split; rewrite Vmap_cast, Vmap_app;
 simpl; rewrite <- dup_int_context_spec; auto.
 Qed.
 

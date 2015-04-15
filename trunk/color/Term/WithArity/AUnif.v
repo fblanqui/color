@@ -694,7 +694,7 @@ apply lforall_notin_r. hyp.
 (* fun-fun *)
 simpl. case_beq_symb f f0; simpl; split_all.
 revert H0. elim s; simpl; split_all. revert H1. unfold notin_eqn. simpl.
-do 2 rewrite vars_fun. revert H3. unfold notin. simpl. rewrite lforall_app.
+rewrite !vars_fun. revert H3. unfold notin. simpl. rewrite lforall_app.
 split_all. apply lforall_notin_eqn_combine; hyp. Transparent vars.
 Qed.
 
@@ -722,7 +722,7 @@ Lemma is_sol_eqn_sub : forall s s' e,
 
 Proof.
 intros s s' e. destruct e. unfold is_sol_eqn. simpl. intro.
-do 2 rewrite <- sub_sub. f_equal. hyp.
+rewrite <- !sub_sub. f_equal. hyp.
 Qed.
 
 Lemma is_sol_solved_eqns_sub : forall s s' l,
@@ -730,7 +730,7 @@ Lemma is_sol_solved_eqns_sub : forall s s' l,
 
 Proof.
 induction l; simpl; split_all. destruct a. revert H. unfold is_sol_solved_eqn.
-simpl. intro. rewrite <- sub_sub. rewrite <- H. refl.
+simpl. intro. rewrite <- sub_sub, <- H. refl.
 Qed.
 
 Lemma is_sol_sub : forall s s' p, is_sol s p -> is_sol (sub_comp s' s) p.
@@ -752,9 +752,9 @@ Lemma is_sol_solved_eqns_map : forall s n u, s n = sub s u ->
 
 Proof.
 induction l; simpl. tauto. destruct a. unfold is_sol_solved_eqn. simpl.
-split_all; try tauto. rewrite H0. rewrite sub_sub. apply sub_eq. intros.
+split_all; try tauto. rewrite H0, sub_sub. apply sub_eq. intros.
 unfold sub_comp, single. case_beq_nat n x; auto.
-rewrite H0. rewrite sub_sub. apply sub_eq. intros.
+rewrite H0, sub_sub. apply sub_eq. intros.
 unfold sub_comp, single. case_beq_nat n x; auto.
 Qed.
 
@@ -763,10 +763,10 @@ Lemma is_sol_eqns_map : forall s x u, s x = sub s u ->
 
 Proof.
 induction l; simpl. tauto. destruct a. unfold is_sol_eqn. simpl.
-split_all; try tauto. do 2 rewrite sub_sub in H0.
+split_all; try tauto. rewrite !sub_sub in H0.
 trans (sub (sub_comp s (single x u)) t0). sym.
 apply sub_comp_single. hyp. rewrite H0. apply sub_comp_single. hyp.
-do 2 rewrite sub_sub. trans (sub s t0). apply sub_comp_single. hyp.
+rewrite !sub_sub. trans (sub s t0). apply sub_comp_single. hyp.
 rewrite H0. sym. apply sub_comp_single. hyp.
 Qed.
 
@@ -823,8 +823,8 @@ rewrite lforall_is_sol_solved_eqn in H2; hyp.
 rewrite is_sol_eqns_map in H1; hyp.
 (* fun-fun *)
 simpl. unfold is_sol_eqn. unfold fst, snd. rewrite !sub_fun.
-case_beq_symb f f0. simpl. unfold is_sol_eqns at 2. rewrite lforall_app.
-rewrite lforall_is_sol_eqn_combine. split_all. Funeqtac. hyp.
+case_beq_symb f f0. simpl. unfold is_sol_eqns at 2.
+rewrite lforall_app, lforall_is_sol_eqn_combine. split_all. Funeqtac. hyp.
 apply args_eq. hyp. split_all; try contr. Funeqtac.
 rewrite (beq_refl (@beq_symb_ok Sig)) in H. discr. Transparent vars.
 Qed.
@@ -845,8 +845,7 @@ Proof.
 induction l; simpl. auto. destruct a.
 unfold notin_solved_eqn at 1, is_sol_solved_eqn. simpl. split_all.
 unfold extend at 1. case_beq_nat n0 n. tauto.
-rewrite H0. sym. apply sub_extend_notin. rewrite in_vars_mem.
-rewrite H3. discr.
+rewrite H0. sym. apply sub_extend_notin. rewrite in_vars_mem, H3. discr.
 Qed.
 
 Lemma is_sol_eqn_extend : forall s x (v : term) e,
@@ -949,7 +948,7 @@ rewrite (beq_refl beq_nat_ok), sub_extend_notin.
 sym. apply sub_eq_id'. intros.
 ded (lforall_notin_vars_solved_eqn_dom H2 H3).
 ded (dom_subst_of_solved_eqns H4). hyp.
-rewrite in_vars_mem. rewrite H. discr.
+rewrite in_vars_mem, H. discr.
 apply is_sol_solved_eqns_extend; tauto.
 Qed.
 
@@ -958,7 +957,7 @@ Lemma subst_of_solved_eqns_correct_problem : forall p l k, problem_wf p ->
 
 Proof.
 intros. set (s := subst_of_solved_eqns l).
-rewrite (@iter_step_correct s p k). rewrite H0. simpl. split_all.
+rewrite (@iter_step_correct s p k), H0. simpl. split_all.
 apply subst_of_solved_eqns_correct.
 assert (problem_wf (Some (l, nil))). rewrite <- H0. apply iter_step_wf. hyp.
 simpl in H1. tauto.
@@ -1000,10 +999,7 @@ Qed.
 Lemma iter_step_None :
   forall p k, iter_step k p = None -> forall s, ~is_sol s p.
 
-Proof.
-intros. intro. rewrite (iter_step_correct s p k) in H0.
-rewrite H in H0. hyp.
-Qed.
+Proof. intros. intro. rewrite (iter_step_correct s p k), H in H0. hyp. Qed.
 
 Lemma iter_step_solved_eqn_wf : forall p l k, problem_wf p ->
   iter_step k p = Some (l, nil) -> solved_eqns_wf l.
@@ -1016,8 +1012,8 @@ Lemma iter_step_Some : forall p l k, problem_wf p ->
   iter_step k p = Some (l, nil) -> is_sol (subst_of_solved_eqns l) p.
 
 Proof.
-intros. rewrite (iter_step_correct (subst_of_solved_eqns l) p k).
-rewrite H0. simpl. split_all. apply subst_of_solved_eqns_correct.
+intros. rewrite (iter_step_correct (subst_of_solved_eqns l) p k), H0.
+simpl. split_all. apply subst_of_solved_eqns_correct.
 eapply iter_step_solved_eqn_wf; ehyp.
 Qed.
 

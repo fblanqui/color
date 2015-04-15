@@ -128,15 +128,11 @@ Section S.
 
   Lemma var_eq : forall x x', x = x' -> Var x = Var x'.
 
-  Proof.
-    intros. rewrite H. refl.
-  Qed.
+  Proof. intros. rewrite H. refl. Qed.
 
   Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
 
-  Proof.
-    intros. rewrite H. refl.
-  Qed.
+  Proof. intros. rewrite H. refl. Qed.
 
   Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
 
@@ -160,7 +156,7 @@ Section S.
     subst g. apply args_eq. destruct n. 2: discr. VOtac. assert (p=q).
     apply eq_unique. subst q. apply Vcast_eq_intro. auto.
     (* Vcons *)
-    subst g. apply args_eq. destruct n0. discr. rewrite H0. rewrite Vcast_cast.
+    subst g. apply args_eq. destruct n0. discr. rewrite H0, Vcast_cast.
     assert (trans_eq r q = p). apply eq_unique. rewrite H. refl.
   Qed.
 
@@ -168,8 +164,8 @@ Section S.
     us = Vcast ts (f_equal (@arity Sig) h) -> Fun f ts = Fun g us.
 
   Proof.
-    intros. rewrite <- (Vcast_refl ts (refl_equal (arity f))).
-    rewrite <- (Vcast_refl us (refl_equal (arity g))).
+    intros. rewrite <- (Vcast_refl ts (refl_equal (arity f))),
+            <- (Vcast_refl us (refl_equal (arity g))).
     eapply fun_eq_cast. hyp. apply H.
   Qed.
 
@@ -218,9 +214,7 @@ Section S.
   Lemma beq_fun : forall f ts g us,
     beq_term (Fun f ts) (Fun g us) = beq_symb f g && beq_vec beq_term ts us.
 
-  Proof.
-    intros. rewrite <- beq_terms. refl.
-  Qed.
+  Proof. intros. rewrite <- beq_terms. refl. Qed.
 
   Lemma beq_term_ok : forall t u, beq_term t u = true <-> t = u.
 
@@ -411,10 +405,10 @@ a variable occurs in the list as much as it has occurrences in t *)
     set (Q := fun n (ts : terms n) => maxvars ts = lmax (vars_vec ts)).
     apply term_ind with (Q := Q); clear t.
     intro. simpl. apply (sym_equal (max_l (le_O_n x))).
-    intros f ts H. rewrite maxvar_fun. rewrite vars_fun. hyp.
+    intros f ts H. rewrite maxvar_fun, vars_fun. hyp.
     unfold Q. auto.
     intros t n ts H1 H2. unfold Q. simpl. rewrite lmax_app.
-    unfold Q in H2. rewrite maxvars_cons. rewrite H1. rewrite H2. refl.
+    unfold Q in H2. rewrite maxvars_cons, H1, H2. refl.
   Qed.
 
 (***********************************************************************)
@@ -490,16 +484,12 @@ a variable occurs in the list as much as it has occurrences in t *)
         | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
       end) _ ts = nb_symb_occs_terms ts.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. refl.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
 
   Lemma nb_symb_occs_fun : forall f ts,
     nb_symb_occs (Fun f ts) = 1 + nb_symb_occs_terms ts.
 
-  Proof.
-    intros. simpl. rewrite nb_symb_occs_fix. refl.
-  Qed.
+  Proof. intros. simpl. rewrite nb_symb_occs_fix. refl. Qed.
 
   Lemma Vin_nb_symb_occs_terms_ge : forall n (ts : terms n) t,
     Vin t ts -> nb_symb_occs_terms ts >= nb_symb_occs t.
@@ -600,15 +590,11 @@ a variable occurs in the list as much as it has occurrences in t *)
         | Vcons u p us => size u + size_terms p us
       end) _ ts = size_terms ts.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. refl.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
 
   Lemma size_fun : forall f ts, size (Fun f ts) = 1 + size_terms ts.
 
-  Proof.
-    intros. simpl. rewrite size_fix. refl.
-  Qed.
+  Proof. intros. simpl. rewrite size_fix. refl. Qed.
 
   Lemma size_non_zero : forall t, size t > 0.
 
@@ -660,9 +646,7 @@ a variable occurs in the list as much as it has occurrences in t *)
   Lemma size_terms_app : forall n (ts : terms n) m (us : terms m),
     size_terms (Vapp ts us) = size_terms ts + size_terms us.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. omega.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. omega. Qed.
 
   Lemma term_ind_size : forall (P : term -> Prop),
     (forall n, (forall t, size t <= n -> P t) -> forall t, size t <= S n -> P t)

@@ -85,9 +85,7 @@ Fixpoint string_of_term (t : term) : string :=
 
 Lemma string_of_term_epi : forall s, string_of_term (term_of_string s) = s.
 
-Proof.
-induction s; simpl; intros. refl. rewrite IHs. refl.
-Qed.
+Proof. induction s; simpl; intros. refl. rewrite IHs. refl. Qed.
 
 Require Import NatUtil.
 
@@ -314,9 +312,7 @@ End red_mod.
 
 Lemma WF_red : WF (Srs.red R) <-> WF (red (trs_of_srs R)).
 
-Proof.
-rewrite <- Srs.red_mod_empty. rewrite <- red_mod_empty. apply WF_red_mod.
-Qed.
+Proof. rewrite <- Srs.red_mod_empty, <- red_mod_empty. apply WF_red_mod. Qed.
 
 End S.
 

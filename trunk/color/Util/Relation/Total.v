@@ -52,16 +52,13 @@ Inductive try_add_arc (x y : A) : relation A :=
 
 Lemma sub_rel_try_add_arc : forall x y, R << try_add_arc x y.
 
-Proof.
-unfold inclusion. intros. constructor. hyp. 
-Qed.
+Proof. unfold inclusion. intros. constructor. hyp.  Qed.
 
 Lemma try_add_arc_sym :  forall x y z t,
   try_add_arc x y z t -> try_add_arc x y t z -> R z t.
 
 Proof.
-intros. inversion H. hyp. inversion H0. contr. 
-rewrite H3 in H7. contr. 
+intros. inversion H. hyp. inversion H0. contr. rewrite H3 in H7. contr. 
 Qed.
 
 Lemma not_try_add_arc : rel_midex R -> forall x y, x<>y ->
@@ -77,7 +74,7 @@ Lemma restricted_try_add_arc : forall x y l,
 
 Proof.
 unfold is_restricted. intros. inversion H2. apply H1. hyp. 
-rewrite <- H5. rewrite <- H6. tauto.  
+rewrite <- H5, <- H6. tauto.  
 Qed.
 
 Lemma try_add_arc_dec : eq_dec A -> forall x y,  rel_dec R ->
@@ -87,7 +84,7 @@ Proof.
 repeat intro. destruct (X0 x0 y0). do 2 constructor. hyp. 
 destruct (X x0 y0). constructor 2. intro. inversion H; contr. 
 destruct (X0 y0 x0). constructor 2. intro. inversion H; contr. 
-destruct (X x x0). destruct (X y y0). rewrite e. rewrite e0. 
+destruct (X x x0). destruct (X y y0). rewrite e, e0. 
 constructor. constructor 2; hyp. 
 constructor 2. intro. inversion H; contr. 
 constructor 2. intro. inversion H; contr. 
@@ -100,7 +97,7 @@ Proof.
 do 6 intro. destruct (H0 x0 y0). do 2 constructor. hyp. 
 destruct (H x0 y0). constructor 2. intro. inversion H3; contr. 
 destruct (H0 y0 x0). constructor 2. intro. inversion H4; contr. 
-destruct (H x x0). destruct (H y y0). rewrite H4. rewrite H5. 
+destruct (H x x0). destruct (H y y0). rewrite H4, H5. 
 constructor. constructor 2; hyp. 
 constructor 2. intro. inversion H6; contr. 
 constructor 2. intro. inversion H5; contr. 

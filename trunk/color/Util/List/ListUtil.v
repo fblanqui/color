@@ -95,10 +95,8 @@ Section In.
   Proof.
     induction l; simpl; intros. contr. 
     destruct (In_midex H x l). destruct IHl. hyp. destruct H2. 
-    exists (a::x0). exists x1. rewrite (proj1 H2).
-    rewrite <- (app_comm_cons x0 (x::x1) a). tauto.  
-    destruct H0. exists nil. exists l. simpl. rewrite H0. tauto.
-    contr.
+    ex (a::x0) x1. rewrite (proj1 H2), <- (app_comm_cons x0 (x::x1) a). tauto.  
+    destruct H0. ex (@nil A) l. simpl. rewrite H0. tauto. contr.
   Qed.
 
   Lemma In_cons : forall (x a : A) l, In x (a::l) <-> a=x \/ In x l. 
@@ -321,7 +319,7 @@ Section cons.
   Lemma cons_eq : forall x x' : A, forall l l',
     x = x' -> l = l' -> x :: l = x' :: l'.
 
-  Proof. intros. rewrite H. rewrite H0. refl. Qed.
+  Proof. intros. rewrite H, H0. refl. Qed.
 
   Lemma head_eq : forall x x' : A, forall l, x = x' -> x :: l = x' :: l.
 
@@ -351,7 +349,7 @@ Section app.
   Lemma app_eq : forall l1 l2 l1' l2' : list A,
     l1 = l1' -> l2 = l2' -> l1 ++ l2 = l1' ++ l2'.
 
-  Proof. intros. rewrite H. rewrite H0. refl. Qed.
+  Proof. intros. rewrite H, H0. refl. Qed.
 
   Lemma appl_eq : forall l1 l2 l1' : list A, l1 = l1' -> l1 ++ l2 = l1' ++ l2.
 
@@ -895,9 +893,7 @@ Section flat_map.
   Lemma flat_map_app : forall l m,
     flat_map f (l ++ m) = flat_map f l ++ flat_map f m.
 
-  Proof.
-    induction l; simpl; intros. refl. rewrite IHl. rewrite app_ass. refl.
-  Qed.
+  Proof. induction l; simpl; intros. refl. rewrite IHl, app_ass. refl. Qed.
 
 End flat_map.
 
@@ -1579,21 +1575,14 @@ Section ListsNth.
   Lemma nth_some : forall (l : list A) n a,
     nth_error l n = Some a -> n < length l.
 
-  Proof.
-    intros.
-    apply (proj1 (nth_in l n)).
-    rewrite H; discr.
-  Qed.
+  Proof. intros. apply (proj1 (nth_in l n)). rewrite H; discr. Qed.
 
   Lemma nth_map_none : forall (l : list A) i (f: A -> A),
     nth_error l i = None -> nth_error (map f l) i = None.
 
   Proof. 
-    induction l.
-    trivial.
-    intros i f; destruct i; simpl.
-    intro; discr.
-    apply IHl.
+    induction l. trivial. intros i f; destruct i; simpl.
+    intro; discr. apply IHl.
   Qed.
 
   Lemma nth_map_none_rev : forall (l : list A) i (f: A -> A),
@@ -1676,9 +1665,7 @@ Section ith.
   Lemma ith_eq : forall l i (hi : i < length l) j (hj : j < length l),
     i = j -> ith hi = ith hj.
 
-  Proof.
-    intros. subst j. rewrite (lt_unique hi hj). refl.
-  Qed.
+  Proof. intros. subst j. rewrite (lt_unique hi hj). refl. Qed.
 
   Lemma ith_eq_app : forall m l i (hi : i < length (l++m))
     j (hj : j < length l), i = j -> ith hi = ith hj.
@@ -1814,7 +1801,7 @@ Section fold_left_list.
 
   Proof.
     induction bs; simpl; intro. refl.
-    rewrite IHbs. rewrite hyp. rewrite flat_map_app. rewrite app_ass. simpl.
+    rewrite IHbs, hyp, flat_map_app, app_ass. simpl.
     rewrite <- app_nil_end. refl.
   Qed.
 
@@ -1923,7 +1910,7 @@ Section forallb.
 
   Proof.
     induction l; simpl. intuition. destruct H. intuition.
-    rewrite andb_eq_false. rewrite IHl. intuition.
+    rewrite andb_eq_false, IHl. intuition.
     exists a. tauto. destruct H0. exists x. tauto.
     destruct H1. intuition. subst. tauto. right. exists x. tauto.
   Qed.
@@ -2020,7 +2007,7 @@ Section sub_list.
     ++ sub_list (l1++l2) (length l1) (length l2).
 
   Proof.
-    induction l1; simpl; intros. rewrite sub_list_0. rewrite sub_list_length.
+    induction l1; simpl; intros. rewrite sub_list_0, sub_list_length.
     refl. rewrite <- IHl1. refl.
   Qed.
 

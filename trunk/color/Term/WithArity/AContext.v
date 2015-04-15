@@ -130,9 +130,9 @@ Section S.
   Lemma fill_eq : forall t u c, fill c t = fill c u <-> t = u.
 
   Proof.
-    split. induction c; simpl; intros. hyp. Funeqtac. rewrite Vcast_eq in H0.
-    rewrite Vapp_eq in H0. decomp H0. rewrite Vcons_eq in H1. intuition.
-    intro. subst. refl.
+    split. induction c; simpl; intros. hyp. Funeqtac.
+    rewrite Vcast_eq, Vapp_eq in H0. decomp H0. rewrite Vcons_eq in H1.
+    intuition. intro. subst. refl.
   Qed.
 
   Lemma comp_eq : forall c d e, comp c d = comp c e <-> d = e.
@@ -145,17 +145,16 @@ Section S.
   Lemma size_fill : forall t c, size (fill c t) >= size t.
 
   Proof.
-    induction c. simpl. omega. simpl fill. rewrite size_fun.
-    rewrite size_terms_cast. rewrite size_terms_app. simpl. omega.
+    induction c. simpl. omega. simpl fill.
+    rewrite size_fun, size_terms_cast, size_terms_app. simpl. omega.
   Qed.
 
   Lemma wf_term : forall (t : term) c, t = fill c t -> c = Hole.
 
   Proof.
     intros. destruct c. refl. assert (size (fill (Cont e t0 c t1) t) > size t).
-    simpl fill. rewrite size_fun. rewrite size_terms_cast.
-    rewrite size_terms_app. simpl. ded (size_fill t c). omega.
-    rewrite <- H in H0. omega.
+    simpl fill. rewrite size_fun, size_terms_cast, size_terms_app. simpl.
+    ded (size_fill t c). omega. rewrite <- H in H0. omega.
   Qed.
 
 (***********************************************************************)
@@ -356,7 +355,7 @@ Section S.
     intro. rewrite beq_term_ok. split; intro. subst. refl.
     apply subterm_eq_var in H. hyp.
     (* Fun *)
-    split; rewrite orb_eq; rewrite beq_term_ok; intros. destruct H0.
+    split; rewrite orb_eq, beq_term_ok; intros. destruct H0.
     subst. refl. rewrite (bVexists_ok_Vin (subterm_eq t)) in H0.
     Focus 2. intros. pattern x. apply Vforall_in with (v:=v). apply H. hyp.
     rewrite Vexists_eq in H0. decomp H0. apply subterm_eq_trans with x.
@@ -365,7 +364,7 @@ Section S.
     rewrite (bVexists_ok_Vin (subterm_eq t)).
     Focus 2. intros. pattern x0. apply Vforall_in with (v:=v). apply H. hyp.
     rewrite Vexists_eq. exists (fill x t). split.
-    simpl in H0. Funeqtac. rewrite H1. rewrite Vin_cast. apply Vin_app_cons.
+    simpl in H0. Funeqtac. rewrite H1, Vin_cast. apply Vin_app_cons.
     exists x. refl.
   Qed.
 
@@ -384,8 +383,9 @@ Section S.
 
   Proof.
     destruct u; simpl. intuition. destruct H. destruct H. destruct x.
-    irrefl. simpl in H0. discr. rewrite (bVexists_ok (subterm_eq t)).
-    rewrite Vexists_eq. split; intro. decomp H. apply subterm_trans_eq1 with x.
+    irrefl. simpl in H0. discr.
+    rewrite (bVexists_ok (subterm_eq t)), Vexists_eq. split; intro.
+    decomp H. apply subterm_trans_eq1 with x.
     hyp. apply subterm_fun. hyp. apply subterm_fun_elim in H. hyp.
     apply bsubterm_eq_ok.
   Qed.
@@ -400,8 +400,8 @@ Section S.
 
   Proof.
     unfold subterm_eq. intros. destruct H as [C]. subst t. elim C; clear C.
-    simpl. hyp. intros. simpl fill. rewrite vars_fun.
-    rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
+    simpl. hyp. intros. simpl fill.
+    rewrite vars_fun, vars_vec_cast, vars_vec_app, vars_vec_cons.
     apply in_appr. apply in_appl. hyp.
   Qed.
 
@@ -451,10 +451,9 @@ Section S.
 
   Proof.
     induction c. simpl. refl.
-    simpl cvars. simpl fill. rewrite vars_fun.
-    rewrite vars_vec_cast. rewrite vars_vec_app. rewrite vars_vec_cons.
-    rewrite app_ass. apply appl_incl. apply app_com_incl. apply appr_incl.
-    exact IHc.
+    simpl cvars. simpl fill.
+    rewrite vars_fun, vars_vec_cast, vars_vec_app, vars_vec_cons, app_ass.
+    apply appl_incl. apply app_com_incl. apply appr_incl. exact IHc.
   Qed.
 
 (***********************************************************************)
@@ -484,8 +483,8 @@ Section S.
 
   Proof.
     induction c. simpl. refl. simpl csymbs. simpl fill.
-    rewrite symbs_fun, symbs_vec_cast, symbs_vec_app, symbs_vec_cons.
-    rewrite <- app_comm_cons, app_ass. intro x. simpl. intro H. destruct H.
+    rewrite symbs_fun, symbs_vec_cast, symbs_vec_app, symbs_vec_cons,
+      <- app_comm_cons, app_ass. intro x. simpl. intro H. destruct H.
     subst. left. refl. right. revert x H. apply appl_incl.
     apply app_com_incl. apply appr_incl. exact IHc.
   Qed.

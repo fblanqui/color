@@ -161,7 +161,7 @@ Module Horpo (S : TermsSig.Signature)
   Lemma horpo_eq_compat : forall M M' N N',
     M = M' -> N = N' -> M >> N -> M' >> N'.
 
-  Proof. intros; rewrite <- H; rewrite <- H0; trivial. Qed.
+  Proof. intros; rewrite <- H, <- H0; trivial. Qed.
 
   Instance horpo_eq_compat' : Proper (eq ==> eq ==> impl) horpo.
 
@@ -237,8 +237,7 @@ Module Horpo (S : TermsSig.Signature)
     apply app_type_eq with Mapp Napp; trivial.
     apply horpo_RC_type_preserving. hyp.
     apply horpo_RC_type_preserving. hyp.
-    rewrite <- appBodyL_env with M Mapp.
-    rewrite <- appBodyL_env with N Napp.
+    rewrite <- appBodyL_env with M Mapp, <- appBodyL_env with N Napp.
     apply horpo_RC_env_preserving. hyp.
     apply HApp with Mapp Napp; trivial.
     constructor. destruct LRgt.
@@ -433,8 +432,8 @@ Module Horpo (S : TermsSig.Signature)
     intros M N M' N' Q IH MM' NN' MN M'N'.
     destruct MN as [M N MNtype MNenv Mnorm Nnorm M_N].
     constructor; trivial.
-    rewrite <- (terms_conv_eq_type (conv_by MM')).
-    rewrite <- (terms_conv_eq_type (conv_by NN')).
+    rewrite <- (terms_conv_eq_type (conv_by MM')),
+      <- (terms_conv_eq_type (conv_by NN')).
     trivial.
     rewrite <- (conv_by MM'); trivial.
     rewrite <- (conv_by NN'); trivial.
@@ -489,11 +488,11 @@ Module Horpo (S : TermsSig.Signature)
     constructor.
     assert (arg_env: forall x y, isArg x M' -> isArg y N' -> env x = env y).
     intros.
-    rewrite (@appUnit_env x M').
-    rewrite (@appUnit_env y N'); trivial.
+    rewrite (@appUnit_env x M'), (@appUnit_env y N'); trivial.
     apply appArg_is_appUnit; trivial.
     apply appArg_is_appUnit; trivial.
-    apply mord_list_sim with (fun L R => L ~(Q) R) (appArgs M) (appArgs N); auto.
+    apply mord_list_sim
+      with (fun L R => L ~(Q) R) (appArgs M) (appArgs N); auto.
     apply horpo_eq_compat'.
     unfold order_compatible.
     intros; split; intro.
@@ -506,8 +505,7 @@ Module Horpo (S : TermsSig.Signature)
     destruct H4; trivial.
     unfold eq_compat; intros.
     apply term_eq.
-    rewrite (appUnit_env y M').
-    rewrite (appUnit_env y' N'); trivial.
+    rewrite (appUnit_env y M'), (appUnit_env y' N'); trivial.
     apply appArg_is_appUnit; trivial.
     apply appArg_is_appUnit; trivial.
     apply conv_term_unique with (term x) Q; destruct H2; destruct H3; trivial.
@@ -604,8 +602,8 @@ Module Horpo (S : TermsSig.Signature)
     apply abs_conv_absBody_aux; trivial.
     apply abs_conv_absBody_aux; trivial.
     apply absBody_eq_env; trivial.
-    rewrite <- (terms_conv_eq_type (conv_by MM')).
-    rewrite <- (terms_conv_eq_type (conv_by NN')).
+    rewrite <- (terms_conv_eq_type (conv_by MM')),
+      <- (terms_conv_eq_type (conv_by NN')).
     trivial.
 
      (* HBeta *)
@@ -690,14 +688,12 @@ Module Horpo (S : TermsSig.Signature)
     exists M'arg; trivial.
     inversion Marg_a.
     constructor.
-    rewrite M'argG.
-    rewrite H4.
+    rewrite M'argG, H4.
     apply IH; trivial.
     left; apply arg_subterm; trivial.
     replace M'arg with y.
     constructor 2.
-    rewrite M'argG.
-    rewrite H4.
+    rewrite M'argG, H4.
     apply term_eq.
     autorewrite with terms; rewrite H10; trivial.
     autorewrite with terms; rewrite H10; trivial.
@@ -769,7 +765,7 @@ Module Horpo (S : TermsSig.Signature)
     apply horpo_eq_compat'.
     unfold order_compatible; intros.
     inversion H1; inversion H4.
-    rewrite H5; rewrite H6.
+    rewrite H5, H6.
     split; intros.
     apply IH; trivial.
     left; apply arg_subterm; trivial.
@@ -829,11 +825,9 @@ Module Horpo (S : TermsSig.Signature)
     right; apply term_eq.
     autorewrite with terms; rewrite MNenv; trivial.
     destruct (app_subst Mapp MG).
-    rewrite (app_proof_irr (subst MG) M'app (app_subst_app Mapp MG)).
-    rewrite H2.
+    rewrite (app_proof_irr (subst MG) M'app (app_subst_app Mapp MG)), H2.
     destruct (app_subst Napp NG).
-    rewrite (app_proof_irr (subst NG) N'app (app_subst_app Napp NG)).
-    rewrite H4.
+    rewrite (app_proof_irr (subst NG) N'app (app_subst_app Napp NG)), H4.
     autorewrite with terms; rewrite H1; trivial.
     constructor; apply pair_mOrd_right; trivial.
     apply horpo_eq_compat'.
@@ -843,11 +837,9 @@ Module Horpo (S : TermsSig.Signature)
     right; apply term_eq.
     autorewrite with terms; rewrite MNenv; trivial.
     destruct (app_subst Mapp MG).
-    rewrite (app_proof_irr (subst MG) M'app (app_subst_app Mapp MG)).
-    rewrite H0.
+    rewrite (app_proof_irr (subst MG) M'app (app_subst_app Mapp MG)), H0.
     destruct (app_subst Napp NG).
-    rewrite (app_proof_irr (subst NG) N'app (app_subst_app Napp NG)).
-    rewrite H3.
+    rewrite (app_proof_irr (subst NG) N'app (app_subst_app Napp NG)), H3.
     autorewrite with terms; rewrite H1; trivial.
     apply R_R; trivial.
 
@@ -855,8 +847,7 @@ Module Horpo (S : TermsSig.Signature)
     constructor 6 with (abs_subst_abs Mabs MG) (abs_subst_abs Nabs NG).
     destruct (abs_subst Mabs MG) as [M'type M'body].
     destruct (abs_subst Nabs NG) as [N'type N'body].
-    rewrite M'body.
-    rewrite N'body.
+    rewrite M'body, N'body.
     apply IH; trivial.
     apply algebraicSubstitution_cons_none.
     apply algebraicSubstitution_lifted; trivial.
@@ -1005,8 +996,7 @@ Module Horpo (S : TermsSig.Signature)
     apply partialFlattening_subterm with Ns; trivial.
 
      (* HApp *)
-    rewrite (activeEnv_app M Mapp).
-    rewrite (activeEnv_app N Napp).
+    rewrite (activeEnv_app M Mapp), (activeEnv_app N Napp).
     destruct (horpo_app M N Mapp Napp MNtype LL) as [L_L [R_R str]].
     apply env_subset_sum.
     apply activeEnv_app_comp.
@@ -1020,8 +1010,7 @@ Module Horpo (S : TermsSig.Signature)
     rewrite H1; apply env_subset_refl.
 
      (* HAbs *)
-    rewrite activeEnv_abs with M Mabs.
-    rewrite activeEnv_abs with N Nabs.
+    rewrite activeEnv_abs with M Mabs, activeEnv_abs with N Nabs.
     apply env_subset_tail.
     apply IH; trivial.
     left; apply absBody_subterm.
@@ -1296,23 +1285,19 @@ Module Horpo (S : TermsSig.Signature)
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
     destruct (horpo_app M N MApp NApp MNtype) as [_ [_ [LL | RR]]]; trivial.
     apply n1; trivial.
-    rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
-      trivial.
+    rewrite (app_proof_irr M Mapp MApp), (app_proof_irr N Napp NApp); trivial.
     apply n2; trivial.
-    rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
-      trivial.
+    rewrite (app_proof_irr M Mapp MApp), (app_proof_irr N Napp NApp); trivial.
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
     destruct (horpo_app M N MApp NApp MNtype) as [_ [RR _]]; trivial.
     apply n1.
-    rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
-      trivial.
+    rewrite (app_proof_irr M Mapp MApp), (app_proof_irr N Napp NApp); trivial.
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
     destruct (horpo_app M N MApp NApp MNtype) as [LL [_ _]]; trivial.
     apply n1.
-    rewrite (app_proof_irr M Mapp MApp); rewrite (app_proof_irr N Napp NApp);
-      trivial.
+    rewrite (app_proof_irr M Mapp MApp), (app_proof_irr N Napp NApp); trivial.
     right; intro TrN.
     inversion TrN; try solve [term_inv M; apply H with f; trivial].
   Qed.
@@ -1369,8 +1354,7 @@ Module Horpo (S : TermsSig.Signature)
     constructor; trivial.
     apply app_type_eq with Mapp M'app; try_solve.
     apply horpo_type_preserving; trivial.
-    rewrite <- (appBodyR_env M Mapp).
-    rewrite <- (appBodyR_env M' M'app).
+    rewrite <- (appBodyR_env M Mapp), <- (appBodyR_env M' M'app).
     try_solve.
     apply HApp with Mapp M'app; trivial.
     constructor; apply pair_mOrd_left; trivial.
@@ -1382,8 +1366,7 @@ Module Horpo (S : TermsSig.Signature)
     constructor; trivial.
     apply app_type_eq with Mapp M'app; try_solve.
     apply horpo_type_preserving; trivial.
-    rewrite <- (appBodyR_env M Mapp).
-    rewrite <- (appBodyR_env M' M'app).
+    rewrite <- (appBodyR_env M Mapp), <- (appBodyR_env M' M'app).
     apply horpo_env_preserving; trivial.
     apply HApp with Mapp M'app; trivial.
     constructor; apply pair_mOrd_right; trivial.
@@ -1394,10 +1377,8 @@ Module Horpo (S : TermsSig.Signature)
     destruct P as [Mfa [MM'head [l [m [m' [Margs [M'args mm']]]]]]].
     constructor; trivial.
     apply eq_unitTypes_eq_types.
-    rewrite (app_units_app M Mapp).
-    rewrite (app_units_app M' M'app).
-    simpl; rewrite Margs; rewrite M'args.
-    rewrite !length_app; trivial.
+    rewrite (app_units_app M Mapp), (app_units_app M' M'app).
+    simpl; rewrite Margs, M'args, !length_app; trivial.
     intros.
     rewrite (app_units_app M Mapp) in H1.
     rewrite (app_units_app M' M'app) in H2.
@@ -1412,14 +1393,13 @@ Module Horpo (S : TermsSig.Signature)
     rewrite nth_app_right in H2; trivial.
     destruct ((p - length (fst l))%nat).
     inversion H1; inversion H2.
-    rewrite <- H4; rewrite <- H5.
+    rewrite <- H4, <- H5.
     apply horpo_type_preserving; trivial.
     inversion H1; inversion H2; try_solve.
     rewrite nth_app_left in H1; trivial.
     rewrite nth_app_left in H2; trivial.
     inversion H1; inversion H2; try_solve.
-    rewrite <- (@appUnit_env m M).
-    rewrite <- (@appUnit_env m' M').
+    rewrite <- (@appUnit_env m M), <- (@appUnit_env m' M').
     apply horpo_env_preserving; trivial.
     apply appArg_is_appUnit.
     unfold isArg; rewrite M'args; auto with datatypes.
@@ -1428,7 +1408,7 @@ Module Horpo (S : TermsSig.Signature)
     destruct (funApp_head M Mfa).
     apply HMul with x; trivial.
     rewrite <- MM'head; trivial.
-    rewrite Margs; rewrite M'args.
+    rewrite Margs, M'args.
     constructor; apply mulOrd_oneElemDiff; trivial.
     apply horpo_eq_compat'.
 

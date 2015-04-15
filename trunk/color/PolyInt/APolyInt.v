@@ -182,9 +182,7 @@ Section S.
     Proof.
       intros xint k t. apply (bterm_ind (@P xint k) (@Q xint k)).
       intros v Hv. unfold P, f1, f2. simpl bterm_int.
-      rewrite val_peval_D.
-      rewrite termpoly_v_eq_2.
-      rewrite meval_xi. rewrite Vnth_map.
+      rewrite val_peval_D, termpoly_v_eq_2, meval_xi, Vnth_map.
       pattern (xint v) at 1.
       rewrite <- (Vnth_vec_of_val xint (gt_le_S (le_lt_n_Sm Hv))).
       refl.
@@ -195,7 +193,7 @@ Section S.
       gen (Vmap_eq H). intro H'.
       rewrite peval_comp.
       f_equal.
-      rewrite Vmap_map. rewrite Vmap_map.
+      rewrite !Vmap_map.
       unfold f1 in H'. unfold f2 in H'. hyp.
 
       unfold Q, P. simpl. trivial.
@@ -254,13 +252,12 @@ Section S.
     Proof.
       intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
       set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
-      rewrite (PI_term_int_eq xint (le_max_r mvl mvr)).
-      do 2 rewrite val_peval_D.
+      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)),
+              (PI_term_int_eq xint (le_max_r mvl mvr)).
+      rewrite !val_peval_D.
       pose (v := (Vmap (proj1_sig (P:=pos))
         (vec_of_val xint (S (max mvl mvr))))).
-      apply pos_lt. rewrite <- (peval_const (1)%Z v).
-      do 2 rewrite <- peval_minus.
+      apply pos_lt. rewrite <- (peval_const (1)%Z v), <- !peval_minus.
       unfold v. apply pos_peval. exact H_coef_pos.
     Qed.
 
@@ -271,9 +268,9 @@ Section S.
       intros r H_coef_pos. unfold succ_eq, IR. intro xint.
       unfold Dge, Dle, transp.
       set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)).
-      rewrite (PI_term_int_eq xint (le_max_r mvl mvr)). 
-      do 2 rewrite val_peval_D. apply pos_le. rewrite <- peval_minus.
+      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)),
+              (PI_term_int_eq xint (le_max_r mvl mvr)), !val_peval_D.
+      apply pos_le. rewrite <- peval_minus.
       apply pos_peval. exact H_coef_pos.
     Qed.
 

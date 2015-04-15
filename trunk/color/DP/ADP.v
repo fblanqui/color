@@ -40,8 +40,8 @@ Definition dp := mkdp R.
 Lemma mkdp_app : forall l1 l2, mkdp (l1 ++ l2) = mkdp l1 ++ mkdp l2.
 
 Proof.
-induction l1; simpl; intros. refl. destruct a as [l r]. rewrite app_ass.
-rewrite IHl1. refl.
+induction l1; simpl; intros. refl. destruct a as [l r].
+rewrite app_ass, IHl1. refl.
 Qed.
 
 Lemma mkdp_elim : forall l t S, In (mkRule l t) (mkdp S) -> exists r,
@@ -66,9 +66,8 @@ Lemma dp_intro : forall l r t, In (mkRule l r) R -> In t (calls R r) ->
 
 Proof.
 intros. ded (in_elim H). do 2 destruct H2. ded (in_elim H0). do 2 destruct H3.
-unfold dp. rewrite H2. rewrite mkdp_app. simpl. rewrite H3.
-rewrite filter_app. rewrite map_app. simpl. rewrite H1.
-apply in_appr. apply in_appl. apply in_appr. apply in_eq.
+unfold dp. rewrite H2, mkdp_app. simpl. rewrite H3, filter_app, map_app. simpl.
+rewrite H1. apply in_appr. apply in_appl. apply in_appr. apply in_eq.
 Qed.
 
 Lemma dp_elim : forall l t, In (mkRule l t) dp -> exists r,
@@ -224,14 +223,14 @@ apply SN_intro. intros u H2. redtac. destruct c; simpl in xl, yr.
 (* c = Hole *)
 destruct (fun_eq_sub xl).
 (* lhs = Fun f us *)
-destruct e as [ls]. rewrite H2 in xl. rewrite sub_fun in xl. Funeqtac.
+destruct e as [ls]. rewrite H2, sub_fun in xl. Funeqtac.
 (* the substitution s is SN *)
 assert (Hsnsx : forall x, In x (vars l) -> SNR (s x)). intros.
 eapply sub_fun_sn with (f := f). subst l. apply H4.
 rewrite H3 in Hsnts. exact Hsnts.
 (* we decompose r into its caps and its aliens *)
 subst u. assert (r = sub (alien_sub r) (cap r)). apply sym_eq.
-apply (alien_sub_cap R). rewrite H4. rewrite sub_sub.
+apply (alien_sub_cap R). rewrite H4, sub_sub.
 apply no_call_sub_sn. hyp. apply calls_cap.
 (* we prove that the alien substitution is SN *)
 intros. ded (vars_cap R H5).
@@ -242,7 +241,7 @@ rewrite fsub_inf. simpl. apply Hsnsx. hyp. hyp.
 (* x > maxvar r *)
 rewrite (fsub_nth (aliens (capa r)) l0 H6).
 set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H6)).
-assert (Fun f ts = sub s l). rewrite H3. rewrite H2. refl.
+assert (Fun f ts = sub s l). rewrite H3, H2. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
 ded (in_calls H8). destruct H9 as [g]. destruct H9 as [vs]. destruct H9.
 (* every call is SN *)
@@ -252,7 +251,7 @@ intros h ws H13 H14.
 case_eq (negb_subterm l (Fun h ws)); intros. rename H11 into z.
 apply IH2 with (y := Fun h (Vmap (sub s) ws)) (f := h) (ts := Vmap (sub s) ws).
 unfold chain_min. split. 
-rewrite H7. rewrite <- sub_fun. eapply in_calls_chain. 
+rewrite H7, <- sub_fun. eapply in_calls_chain. 
 apply lr. hyp. hyp.
 split. simpl. apply Vforall_lforall. trivial. 
 simpl. apply Vforall_lforall. trivial.

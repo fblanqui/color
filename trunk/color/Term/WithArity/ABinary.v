@@ -122,14 +122,14 @@ Section BinSignatureTheory.
     rewrite (Veq_app_cons (Vapp v1 v) H0), (Veq_app_cons (Vapp v2 v) H0).
     assert (Ve1 : forall x,
       Vsub (Vapp x v) (Veq_app_cons_aux2 H0) = (Vcast v H1)).
-    intro x; pattern v at 2. rewrite <- (Vsub_app_r x v (le_refl (S n + m))).
-    rewrite Vcast_sub. apply Vsub_pi.
+    intro x; pattern v at 2.
+    rewrite <- (Vsub_app_r x v (le_refl (S n + m))), Vcast_sub. apply Vsub_pi.
     assert (Ve2 : forall x, Vsub (Vapp x v) (Veq_app_cons_aux1 H0) =
       (Vsub x (Veq_app_aux1 (le_n_Sn n)))). intro x.
     apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_app.
     case (le_gt_dec (S n) (0 + i)); intro. omega. apply Vnth_eq; auto.
-    rewrite (Ve1 v1), (Ve1 v2), (Ve2 v1), (Ve2 v2), !Vnth_app.
-    rewrite !Vcast_cast. case (le_gt_dec (S n) n); intro H2. omega.
+    rewrite (Ve1 v1), (Ve1 v2), (Ve2 v1), (Ve2 v2), !Vnth_app, !Vcast_cast.
+    case (le_gt_dec (S n) n); intro H2. omega.
     set (v' := Vcast v H1); set (x := Vnth v1 H2); set (y := Vnth v2 H2).
     set (v1' := Vsub v1 (Veq_app_aux1 (le_n_Sn n))).
     set (v2' := Vsub v2 (Veq_app_aux1 (le_n_Sn n))).

@@ -380,14 +380,14 @@ Section S.
     unfold hd_red_Mod_rule. split. auto. destruct h as [x1 e].
     destruct e as [x2 e]. destruct e as [x3 a]. destruct a as [H3 H4].
     destruct H4 as [H4 H5]. exists x3. assert (h : r = mkRule x1 x2).
-    rewrite <- SCC'_list_exact in H3. rewrite H in H3; simpl in *; tauto.
+    rewrite <- SCC'_list_exact, H in H3; simpl in *; tauto.
     rewrite h; simpl. subst x0. split; eauto.
     unfold hd_red_Mod_rule. split. auto. destruct Hz as [x1 H3].
     destruct H3 as [H3 H4]. destruct H4 as [x2 H4]. destruct H4 as [x3 H4].
     destruct H4 as [x4 H4]. destruct H4 as [H4 H5]. destruct H5 as [H5 H6].
-    exists x4. assert (r = mkRule x2 x3). rewrite <- SCC'_list_exact in H4.
-    rewrite H in H4; simpl in *; tauto. rewrite H7. simpl. subst x1.
-    split; eauto.
+    exists x4. assert (r = mkRule x2 x3).
+    rewrite <- SCC'_list_exact, H in H4; simpl in *; tauto.
+    rewrite H7. simpl. subst x1. split; eauto.
   Qed.
 
   Lemma WF_hd_red_Mod_SCC_fast_trivial : forall i (Hi : i < dim),
@@ -404,13 +404,12 @@ Section S.
     ded (find_first_exact _ _ _ H1). do 2 destruct H3.
     rewrite (SCC'_tag_exact hyps  HM) in H4. intuition.
     cut (x=h). intro; subst x; auto.
-    rewrite H5 in H2. rewrite <- SCC'_list_exact in H2.
-    rewrite <- H0 in H2; simpl in *. intuition.
+    rewrite H5, <- SCC'_list_exact, <- H0 in H2; simpl in *. intuition.
 
     cut (M[[i,i]] = true). intros. unfold mat_unbound in H2.
     destruct (le_gt_dec dim i); try discr.
     unfold Peano.gt in *; assert (g=Hi). apply lt_unique. subst g.
-    ded (incl_SCC_list_fast Hi H2). rewrite H in *. rewrite <- H0 in *.
+    ded (incl_SCC_list_fast Hi H2). rewrite H, <- H0 in *.
     unfold incl in H3. ded (H3 h). simpl in *. tauto.
     assert (SCC ODPG h h). split; apply t_step; auto.
     rewrite (SCC_effective_exact hyps HM) in H2.
@@ -441,7 +440,7 @@ Section S.
     cut (M[[i,i]]=true). intros. unfold mat_unbound in H11.
     destruct (le_gt_dec dim i). cut False; try tauto; omega.
     unfold Peano.gt in *. assert (g=Hi). apply lt_unique. subst g.
-    ded (incl_SCC_list_fast Hi H11). rewrite H in *. rewrite <- H0 in *.
+    ded (incl_SCC_list_fast Hi H11). rewrite H, <- H0 in *.
     unfold incl in H12. ded (H12 h). simpl in *. tauto.
 
     rewrite (SCC_effective_exact hyps HM) in H10.

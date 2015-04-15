@@ -99,7 +99,7 @@ Module ArcticBZInt (AI : TArcticBZInt).
 
     Proof.
       intros. unfold mi_eval_aux, vec_at0.
-      rewrite vector_plus_nth. rewrite Aplus_comm. 
+      rewrite vector_plus_nth, Aplus_comm. 
       apply arctic_plus_ge_monotone. exact H.
     Qed.
 
@@ -111,10 +111,8 @@ Module ArcticBZInt (AI : TArcticBZInt).
     Proof.
       intros. destruct H. destruct H0.
       left. apply plus_gt_compat; hyp.
-      destruct H0. rewrite H0. rewrite H1.
-      do 2 rewrite Aplus_0_r. left. hyp.
-      destruct H. rewrite H. rewrite H1.
-      do 2 rewrite Aplus_0_l. hyp.
+      destruct H0. rewrite H0, H1, !Aplus_0_r. left. hyp.
+      destruct H. rewrite H, H1, !Aplus_0_l. hyp.
     Qed.
 
     Lemma gtx_mult_compat : forall m m' n n',

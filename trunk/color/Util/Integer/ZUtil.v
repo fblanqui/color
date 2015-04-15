@@ -124,8 +124,8 @@ Lemma power_mult : forall x n1 n2, power x (n1*n2) = power (power x n1) n2.
 
 Proof.
 induction n1; induction n2; intros. refl. rewrite power_one. refl.
-rewrite mult_0_r. refl. rewrite power_succ. rewrite <- IHn2.
-rewrite <- mult_n_Sm. simpl. rewrite !power_plus. simpl. ring.
+rewrite mult_0_r. refl. rewrite power_succ, <- IHn2, <- mult_n_Sm. simpl.
+rewrite !power_plus. simpl. ring.
 Qed.
 
 Lemma pos_power : forall x n, 0 <= x -> 0 <= power x n.

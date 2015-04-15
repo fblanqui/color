@@ -156,12 +156,12 @@ f_equal. apply Some_eq in H. Funeqtac.
 apply Vreplace_eq_elim in H0. hyp. destruct a0. rewrite H0.
 exists (Cont f (Veq_app_cons_aux3 l) (Vsub t (Veq_app_cons_aux1 l)) x
   (Vsub t (Veq_app_cons_aux2 l))). intuition. simpl. apply args_eq.
-assert (fill x u = Vnth (Vreplace t l t1) l). rewrite <- H1.
-rewrite Vnth_replace. refl. rewrite H2.
-rewrite (Veq_app_cons_aux (Vreplace t l t1) (Veq_app_cons_aux1 l)
+assert (fill x u = Vnth (Vreplace t l t1) l).
+rewrite <- H1, Vnth_replace. refl.
+rewrite H2, (Veq_app_cons_aux (Vreplace t l t1) (Veq_app_cons_aux1 l)
   l (Veq_app_cons_aux2 l) (Veq_app_cons_aux3 l)).
 apply Vcast_eq_intro. apply Vapp_eq_intro. rewrite Vsub_replace_l. refl. omega.
-apply Vcons_eq_intro. rewrite Vnth_cast. rewrite Vnth_app_cons. refl.
+apply Vcons_eq_intro. rewrite Vnth_cast, Vnth_app_cons. refl.
 rewrite Vsub_replace_r. refl. omega.
 Defined.
 
@@ -183,7 +183,7 @@ Proof.
 induction c; intros; simpl.
 destruct u; auto.
 case (lt_ge_dec i (arity f)); intro. 2: omega.
-rewrite Vnth_cast. rewrite Vnth_app_cons. apply IHc.
+rewrite Vnth_cast, Vnth_app_cons. apply IHc.
 Qed.
 
 Lemma replace_fill_pos_context : forall c u v,
@@ -194,11 +194,11 @@ induction c; intros; simpl.
 (* nil *)
 destruct u; auto.
 (* cons *)
-case (lt_ge_dec i (arity f)); intro. rewrite Vnth_cast. rewrite Vnth_app_cons.
+case (lt_ge_dec i (arity f)); intro. rewrite Vnth_cast, Vnth_app_cons.
 2: omega. rewrite (IHc u v). f_equal. apply args_eq.
 apply Veq_nth; intros. rewrite Vnth_cast.
 destruct (eq_nat_dec i i0).
-subst i0. rewrite Vnth_replace. rewrite Vnth_app_cons. refl.
+subst i0. rewrite Vnth_replace, Vnth_app_cons. refl.
 rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast.
 apply Vnth_app_cons_neq. auto.
 Qed. 

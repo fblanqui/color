@@ -52,8 +52,7 @@ Section Morphism.
 
   Proof.
     induction c; intros. refl. simpl. apply args_eq.
-    rewrite Vmap_cast. rewrite Vmap_app. simpl. rewrite Vcast_cast.
-    rewrite IHc. apply Vcast_pi.
+    rewrite Vmap_cast, Vmap_app. simpl. rewrite Vcast_cast, IHc. apply Vcast_pi.
   Qed.
 
 (***********************************************************************)
@@ -104,8 +103,8 @@ Section Morphism.
       Fv (Vmap (sub s) ts) = Vmap (sub (Fs s)) (Fv ts));
     clear t; intros.
     refl. simpl. apply args_eq. unfold Fv in H.
-    rewrite H. rewrite Vmap_cast. refl.
-    refl. simpl. rewrite H. rewrite H0. refl.
+    rewrite H, Vmap_cast. refl.
+    refl. simpl. rewrite H, H0. refl.
   Qed.
 
 (***********************************************************************)
@@ -117,8 +116,8 @@ Section Morphism.
     intros. redtac. unfold red. subst.
     exists (Ft l). exists (Ft r). exists (Fc c). exists (Fs s). intuition.
     change (Frs R (Fr (mkRule l r))). exists (mkRule l r). intuition.
-    rewrite Ft_fill. rewrite Ft_sub. refl.
-    rewrite Ft_fill. rewrite Ft_sub. refl.
+    rewrite Ft_fill, Ft_sub. refl.
+    rewrite Ft_fill, Ft_sub. refl.
   Qed.
 
   Lemma Fhd_red : forall R t u, hd_red R t u -> hd_red (Frs R) (Ft t) (Ft u).
@@ -267,9 +266,7 @@ Section Epi.
 
   Lemma HG_epi : forall f, arity f = arity (G f).
 
-  Proof.
-    intro. rewrite <- (FG f) at 1. sym. apply HF.
-  Qed.
+  Proof. intro. rewrite <- (FG f) at 1. sym. apply HF. Qed.
 
   Lemma Ft_epi : forall t, Ft HF (Ft HG t) = t.
 
@@ -285,22 +282,19 @@ Section Epi.
     (* Vnil *)
     refl.
     (* Vcons *)
-    intros. simpl. rewrite H. rewrite H0. refl.
+    intros. simpl. rewrite H, H0. refl.
   Qed.
 
   Lemma Fv_epi : forall n (ts : vector (term S2) n), Fv HF (Fv HG ts) = ts.
 
-  Proof.
-    induction ts; simpl; intros. refl. rewrite IHts. rewrite Ft_epi. refl.
-  Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts, Ft_epi. refl. Qed.
 
   Lemma Fc_epi : forall c, Fc HF (Fc HG c) = c.
 
   Proof.
     induction c; simpl; intros. refl. eapply cont_eq_intro
     with (h1 := refl_equal i) (h2 := refl_equal j). apply FG. hyp.
-    rewrite Fv_epi. rewrite Vcast_refl. refl.
-    rewrite Fv_epi. rewrite Vcast_refl. refl.
+    rewrite Fv_epi, Vcast_refl. refl. rewrite Fv_epi, Vcast_refl. refl.
   Qed.
 
   Lemma Fr_epi : forall a, Fr HF (Fr HG a) = a.
@@ -309,9 +303,7 @@ Section Epi.
 
   Lemma Fl_epi : forall l, Fl HF (Fl HG l) = l.
 
-  Proof.
-    induction l; simpl; intros. refl. rewrite Fr_epi. rewrite IHl. refl.
-  Qed.
+  Proof. induction l; simpl; intros. refl. rewrite Fr_epi, IHl. refl. Qed.
 
 End Epi.
 

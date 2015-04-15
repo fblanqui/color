@@ -238,19 +238,16 @@ exists (exp2 n -1); intuition; omega.
 exists (p -exp2 n); intuition; omega. 
 Qed.
 
-Lemma iter_le_same : forall n x y, iter_le2 n x y <-> iter_le n x y.
+Lemma iter_le_same n x y : iter_le2 n x y <-> iter_le n x y.
 
-Proof.
-intros; rewrite iter_le_spec; rewrite iter_le2_spec; tauto.
-Qed.
+Proof. rewrite iter_le_spec, iter_le2_spec. tauto. Qed.
 
-Lemma iter_le_fast_exp2_same : forall n x y,
+Lemma iter_le_fast_exp2_same n x y :
   iter_le_fast n x y <-> iter_le ((exp2 n)-1) x y.
 
 Proof.
-intros; rewrite iter_le_spec; rewrite iter_le_fast_spec.
-split; intro; destruct H as [p]; exists p; intuition.
-ded (exp2_pos n); omega.
+rewrite iter_le_spec, iter_le_fast_spec.
+split; intro; destruct H as [p]; exists p; split_all; ded (exp2_pos n); omega.
 Qed.
 
 (***********************************************************************)

@@ -185,7 +185,7 @@ Section S.
       intros. sym. rewrite red_mod_reset_eq; try hyp.
       rewrite String_of_ATerm.WF_red_mod; try apply rules_preserve_vars_reset;
         try hyp.
-      rewrite <- WF_red_mod_rev_eq. rewrite ATerm_of_String.WF_red_mod; try hyp.
+      rewrite <- WF_red_mod_rev_eq, ATerm_of_String.WF_red_mod; try hyp.
       rewrite !trs_of_srs_reverse_trs, !reverse_trs_reset_rules,
         <- red_mod_reset_eq.
       refl. apply is_unary_sig'.

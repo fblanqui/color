@@ -40,7 +40,7 @@ Section basic_definitions.
 
   Proof.
     destruct a as [a1 a2]. destruct b as [b1 b2]. unfold beq_rule. simpl.
-    rewrite andb_eq. rewrite !beq_term_ok. split_all.
+    rewrite andb_eq, !beq_term_ok. split_all.
     subst. refl. inversion H. auto. inversion H. auto.
   Qed.
 
@@ -254,7 +254,7 @@ Section S.
     Proof.
       intros. redtac. unfold red.
       ex l r (AContext.comp c c0) s. split. hyp.
-      subst t. subst u. do 2 rewrite fill_fill. auto.
+      subst t. subst u. rewrite !fill_fill. auto.
     Qed.
 
     Lemma context_closed_red : context_closed (red R).
@@ -359,22 +359,21 @@ Section S.
       subst. simpl. split_all. rewrite Vnth_cast, Vnth_app.
       destruct (le_gt_dec i i). 2: omega. rewrite Vnth_cons_head.
       apply red_rule. hyp. omega.
-      apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast. rewrite Vnth_app.
+      apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast, Vnth_app.
       destruct (le_gt_dec i i0).
       (* 1) i <= i0 *)
       destruct (eq_nat_dec i i0).
       (* a) i = i0 *)
-      subst i0. rewrite Vnth_cons_head. rewrite Vnth_replace. refl. omega.
+      subst i0. rewrite Vnth_cons_head, Vnth_replace. refl. omega.
       (* b) i <> i0 *)
-      rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast. rewrite Vnth_app.
+      rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast, Vnth_app.
       destruct (le_gt_dec i i0). 2: omega. assert (l0=l1).
       apply le_unique.
       subst l1. rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i0-i)).
       apply Vnth_eq. refl. omega.
       (* 2) i > i0 *)
-      rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast.
-      rewrite Vnth_app. destruct (le_gt_dec i i0). omega.
-      apply Vnth_eq. refl.
+      rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast, Vnth_app.
+      destruct (le_gt_dec i i0). omega. apply Vnth_eq. refl.
     Qed.
 
     Lemma red_split : forall t u, red R t u -> hd_red R t u \/ int_red R t u.
@@ -404,7 +403,7 @@ Section S.
   Proof.
     intro R. unfold rules_preserve_vars, brules_preserve_vars.
     rewrite forallb_forall. split.
-    intros h l r hlr. rewrite <- incl_ok. rewrite <- (h _ hlr). refl.
+    intros h l r hlr. rewrite <- incl_ok, <- (h _ hlr). refl.
     apply beq_nat_ok.
     intros h [l r] hlr. rewrite incl_ok. apply h. hyp. apply beq_nat_ok.
   Qed.
@@ -562,7 +561,7 @@ Section S.
 
     Proof.
       intros. ded (Vrel1_app_impl H). do 8 destruct H0. destruct H1. redtac.
-      subst x1. subst x5. unfold transp, int_red. rewrite H0. rewrite H1.
+      subst x1. subst x5. unfold transp, int_red. rewrite H0, H1.
       ex l r (Cont f x4 x0 c x3) s. split. discr. auto.
     Qed.
 
@@ -791,15 +790,15 @@ Section S.
     Lemma sub_rules_inv : forall x, sub_rules s1 (sub_rules s2 x) = x.
 
     Proof.
-      induction x. refl. simpl. rewrite sub_rule_inv. rewrite IHx. refl.
+      induction x. refl. simpl. rewrite sub_rule_inv, IHx. refl.
     Qed.
 
     Lemma red_ren : forall R, red R << red (map (sub_rule s2) R).
 
     Proof.
-      intros R t u h. redtac. subst. rewrite <- (sub_inv hyp l).
-      rewrite <- (sub_inv hyp r). rewrite sub_sub.
-      rewrite sub_sub with (s1:=s) (s2:=s1). apply red_rule.
+      intros R t u h. redtac. subst.
+      rewrite <- (sub_inv hyp l), <- (sub_inv hyp r), sub_sub,
+        sub_sub with (s1:=s) (s2:=s1). apply red_rule.
       change (In (sub_rule s2 (mkRule l r)) (map (sub_rule s2) R)).
       apply in_map. hyp.
     Qed.
@@ -893,7 +892,7 @@ Section S.
     int_red R t u -> min (red R) t -> min (red R) u.
 
   Proof.
-    intros R t u tu. do 2 rewrite min_eq. intros ht f us hu.
+    intros R t u tu. rewrite !min_eq. intros ht f us hu.
     apply Vforall_intro. intros v hv.
     apply int_red_pos_eq in tu.
     destruct tu as [i [f' [hi [ts [hts [w [h1 h2]]]]]]]. ded (ht _ _ hts).

@@ -89,8 +89,8 @@ Section S.
       destruct l2. refl. set (k := S (maxvar (Fun f0 t0))). rewrite ren_cap_fun.
       revert H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl.
       intro. rewrite H1. unfold is_sol_eqn. unfold fst, snd.
-      rewrite !sub_fun. intro. Funeqtac. rewrite H6.
-      rewrite (beq_refl (@beq_symb_ok Sig)). refl.
+      rewrite !sub_fun. intro. Funeqtac.
+      rewrite H6, (beq_refl (@beq_symb_ok Sig)). refl.
     Qed.
 
     Lemma dpg_unif_N_correct : hd_rules_graph (red R #) D << Graph dpg_unif_N.
@@ -98,7 +98,7 @@ Section S.
     Proof.
       incl_trans dpg_unif. apply dpg_unif_correct. intros r1 r2 h. destruct h.
       destruct H0. unfold Graph, dpg_unif_N. rewrite <- mem_ok in H.
-      rewrite <- mem_ok in H0. rewrite H. rewrite H0. bool.
+      rewrite <- mem_ok in H0. rewrite H, H0. bool.
       destruct (iter_step_complete (wf_mk_problem (ren_cap r1 r2) (lhs r2)) H1).
       unfold connectable_N, unifiable_N. case (lt_eq_lt_dec x N); intro.
       destruct s. ded (successfull_preserved H2 l).

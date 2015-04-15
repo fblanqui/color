@@ -60,20 +60,20 @@ Definition Fun1 f (t : term) :=
 Lemma sub_fun1 : forall s f u, sub s (Fun1 f u) = Fun1 f (sub s u).
 
 Proof.
-intros. unfold Fun1. rewrite sub_fun. rewrite Vmap_cast. simpl Vmap. refl.
+intros. unfold Fun1. rewrite sub_fun, Vmap_cast. simpl Vmap. refl.
 Qed.
 
 Lemma vars_fun1 : forall f u, vars (Fun1 f u) = vars u.
 
 Proof.
-intros. unfold Fun1. rewrite vars_fun. rewrite vars_vec_cast. simpl.
+intros. unfold Fun1. rewrite vars_fun, vars_vec_cast. simpl.
 rewrite <- app_nil_end. refl.
 Qed.
 
 Lemma maxvar_fun1 : forall f t, maxvar (Fun1 f t) = maxvar t.
 
 Proof.
-intros. unfold Fun1. rewrite maxvar_fun. rewrite maxvars_cast.
+intros. unfold Fun1. rewrite maxvar_fun, maxvars_cast.
 unfold maxvars. simpl Vmap. simpl VecMax.Vmax. rewrite max_0_r. refl.
 Qed.
 
@@ -138,7 +138,7 @@ Lemma maxvar_var : forall t, maxvar t = var t.
 
 Proof.
 intro t; pattern t; apply term_ind_forall; clear t; intros. refl.
-rewrite maxvar_fun1. rewrite var_fun1. hyp.
+rewrite maxvar_fun1, var_fun1. hyp.
 Qed.
 
 (***********************************************************************)
@@ -200,7 +200,7 @@ Lemma term_sub_cont : forall x t,
   t = sub (single x (Var (var t))) (fill (cont t) (Var x)).
 
 Proof.
-intros. rewrite sub_fill. rewrite subc_cont. unfold single. simpl.
+intros. rewrite sub_fill, subc_cont. unfold single. simpl.
 rewrite (beq_refl beq_nat_ok). apply term_cont_var.
 Qed.
 
@@ -231,7 +231,7 @@ intro. change (fill (Cont f e t0 c t1) t = t) in H. symmetry in H.
 ded (wf_term H). hyp.
 (* d=Cont *)
 intro. Funeqtac. arity. arity. assert (e0=e). apply eq_unique. subst.
-rewrite Vcast_eq in H0. rewrite Vapp_eq in H0. destruct H0. inversion H2.
+rewrite Vcast_eq, Vapp_eq in H0. destruct H0. inversion H2.
 rewrite (IHc _ H4). refl.
 Qed.
 

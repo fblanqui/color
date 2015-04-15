@@ -94,7 +94,7 @@ Section S.
     apply Vin_cast_intro. apply Vin_appr. simpl. left; refl.
     right. assert (p : i < arity f). rewrite <- r. omega.
     assert (Hs : supterm (Vnth ts p) y).
-    rewrite H. rewrite Vnth_cast, Vnth_app.
+    rewrite H, Vnth_cast, Vnth_app.
     destruct (le_gt_dec i i). 2: omega.
     set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
     rewrite (Vnth_eq _ q (lt_O_Sn j)); try omega. simpl.

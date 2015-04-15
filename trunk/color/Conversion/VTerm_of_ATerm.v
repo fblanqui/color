@@ -116,8 +116,7 @@ Section S.
     vterm_of_aterm (afill c t) = fill (vcont_of_acont c) (vterm_of_aterm t).
 
   Proof.
-    induction c. refl. simpl afill. rewrite vterm_fun. rewrite vterms_cast.
-    rewrite vterms_app.
+    induction c. refl. simpl afill. rewrite vterm_fun, vterms_cast, vterms_app.
     simpl. apply args_eq. apply appr_eq. rewrite IHc. refl.
   Qed.
 
@@ -143,7 +142,7 @@ Section S.
     intros. pattern t. apply ATerm.term_ind with (Q := fun n (ts : aterms n) =>
     vterms_of_aterms (Vmap (asub s) ts)
     = List.map (vsub (vsubs_of_asubs s)) (vterms_of_aterms ts)).
-    refl. intros. simpl ASubstitution.sub. do 2 rewrite vterm_fun. simpl.
+    refl. intros. simpl ASubstitution.sub. rewrite !vterm_fun. simpl.
     apply args_eq. exact H. refl. intros. simpl. rewrite H.
     apply tail_eq. exact H0.
   Qed.
@@ -174,8 +173,7 @@ Section S.
     ared R t u -> vred S (vterm_of_aterm t) (vterm_of_aterm u).
 
   Proof.
-    intros. ATrs.redtac. subst t. subst u. do 2 rewrite vterm_fill.
-    do 2 rewrite vterm_subs.
+    intros. ATrs.redtac. subst t. subst u. rewrite !vterm_fill, !vterm_subs.
     apply red_rule. change (List.In (vrule_of_arule (ATrs.mkRule l r)) S).
     unfold S. apply in_map. hyp.
   Qed.
