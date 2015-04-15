@@ -843,13 +843,6 @@ variables. *)
     intro h. gen (hs3 _ h). set_iff. tauto.
   (*SLOW*)Qed.
 
-  Instance rename_aeq : Proper (Logic.eq ==> Logic.eq ==> aeq ==> aeq) rename.
-
-  Proof.
-    intros x x' xx' y y' yy' u u' uu'. subst x' y'.
-    unfold Def.rename. rewrite uu'. refl.
-  Qed.
-
 (****************************************************************************)
 (** [comp] is compatible with [saeq]. *)
 
