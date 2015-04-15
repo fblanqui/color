@@ -81,7 +81,7 @@ Section S.
     case_eq (mem beq_rule (mkRule l r) R); intros. 2: discr.
     revert H0. case_eq (subterm_pos t p); intros. 2: discr.
     revert H1. case_eq (matches l t0); intros. rename t1 into s. 2: discr.
-    rewrite red_pos_ok. exists p. exists l. exists r. exists s. intuition.
+    rewrite red_pos_ok. ex p l r s. split_all.
     rewrite mem_ok in H. hyp. apply beq_rule_ok.
     ded (matches_correct H1). rewrite H3. hyp.
   Qed.
@@ -195,7 +195,7 @@ Section S.
       (* r = k-1 *)
       assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
       omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
-      destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
+      destruct (eucl_div_unique h0 g1 e0). rewrite <- H3, <- H2. simpl.
       rewrite <- iter_com. apply red_iter. apply red_g.
       rewrite H0. fold last_term. rewrite last_term_g.
       apply red_g. unfold nth.
@@ -205,7 +205,7 @@ Section S.
       (* r < k-1 *)
       assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
       destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
-      destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
+      destruct (eucl_div_unique H1 g2 e0). rewrite <- H3, <- H2.
       apply red_iter. apply red_g. apply FS_red'. omega.
     Qed.
 
