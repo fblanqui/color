@@ -225,11 +225,11 @@ R-sequence *)
     intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). omega.
     rewrite e. apply hi. clear e. clear -H; omega.
     induction l; intro. rewrite plus_0_r. refl.
-    assert (hl : l < g (S i) - g i). clear -H0; omega. rewrite (IHl hl).
-    rewrite <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
+    assert (hl : l < g (S i) - g i). clear -H0; omega.
+    rewrite (IHl hl), <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
     destruct (hk x) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
-    rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2.
-    rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. clear -H0; omega.
+    rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2, Vnth_replace_neq.
+    refl. apply (hg i). unfold x. clear -H0; omega.
     (* [Vnth (v 0) ha] is a subterm of [f 0] *)
     exists (Vnth (v 0) ha). split.
     rewrite hv. apply subterm_fun. apply Vnth_in.
@@ -237,9 +237,9 @@ R-sequence *)
     exists (fun i => Vnth (v (g i)) ha). split. sym. hyp.
     intro i. rewrite <- h. destruct (hk (g i)) as [_ r].
     destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
-    rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H, H0.
-    rewrite Vreplace_pi with (h2:=ha). 2: apply h2. rewrite Vnth_replace.
-    rewrite Vnth_eq with (h2:=hi). 2: sym; apply h2. hyp.
+    rewrite hv in e, p2. Funeqtac. Funeqtac.
+    rewrite H, H0, Vreplace_pi with (h2:=ha). 2: apply h2.
+    rewrite Vnth_replace, Vnth_eq with (h2:=hi). 2: sym; apply h2. hyp.
   Qed.
 
 (*****************************************************************************)

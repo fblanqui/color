@@ -157,10 +157,10 @@ is transitive. *)
 
         assert (a: length l1+length(x::l2)=@arity Sig' f).
         unfold arity, filter_sig, filter_arity. rewrite hf, length_app. refl.
-        rewrite (Vfilter_app_eq (v:=vt) a hf).
-        rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
+        rewrite (Vfilter_app_eq (v:=vt) a hf), (Vfilter_app_eq (v:=vu) a hf).
+        simpl.
 
-        ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
+        ded (hyp f). unfold non_dup in H. rewrite hf, map_app in H.
         simpl in H. destruct (nodup_app_cons H) as [h1 h2].
         rewrite <- vx in h1. rewrite <- vx in h2.
 
@@ -169,7 +169,7 @@ is transitive. *)
         assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
-        apply hcc. unfold vt, vu. rewrite !Vnth_cast. rewrite !Vnth_app.
+        apply hcc. unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
         destruct (le_gt_dec i x). 2: omega.
         repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
@@ -208,10 +208,10 @@ is transitive. *)
 
         assert (a: length l1+length(x::l2)=@arity Sig' f).
         unfold arity, filter_sig, filter_arity. rewrite hf, length_app. refl.
-        rewrite (Vfilter_app_eq (v:=vt) a hf).
-        rewrite (Vfilter_app_eq (v:=vu) a hf). simpl.
+        rewrite (Vfilter_app_eq (v:=vt) a hf), (Vfilter_app_eq (v:=vu) a hf).
+        simpl.
 
-        ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
+        ded (hyp f). unfold non_dup in H. rewrite hf, map_app in H.
         simpl in H. destruct (nodup_app_cons H) as [h1 h2].
         rewrite <- vx in h1. rewrite <- vx in h2.
 
@@ -220,7 +220,7 @@ is transitive. *)
         assert (e2 : Vfilter l2 vt = Vfilter l2 vu). apply Vfilter_eq_notin.
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
-        apply hcc. unfold vt, vu. rewrite !Vnth_cast. rewrite !Vnth_app.
+        apply hcc. unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
         destruct (le_gt_dec i x). 2: omega.
         repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
@@ -258,7 +258,7 @@ is transitive. *)
         intros f i j e vi c.
         set (t := filter (fill c (sub s l))).
         set (u := filter (fill c (sub s r))).
-        intros htu vj. simpl. rewrite !Vmap_cast. rewrite !Vmap_app. simpl.
+        intros htu vj. simpl. rewrite !Vmap_cast, !Vmap_app. simpl.
         fold t u. set (vi' := Vmap filter vi). set (vj' := Vmap filter vj).
         destruct htu as [htu|htu]. rewrite htu. left. refl.
         case (In_dec eq_nat_dec i (map N_val (pi f))); intro Hi.
@@ -274,11 +274,11 @@ is transitive. *)
 
         assert (a: length l1+length(x::l2)=@arity Sig' f).
         unfold arity, filter_sig, filter_arity. rewrite hf, length_app. refl.
-        rewrite (Vfilter_app_eq a hf). rewrite (Vfilter_app_eq a hf). simpl.
+        rewrite (Vfilter_app_eq a hf), (Vfilter_app_eq a hf). simpl.
         set (v1 := Vfilter l1 vu). set (v2 := Vfilter l2 vu).
         simpl in a. set (d := Cont (Sig:=Sig') f a v1 Hole v2).
 
-        ded (hyp f). unfold non_dup in H. rewrite hf in H. rewrite map_app in H.
+        ded (hyp f). unfold non_dup in H. rewrite hf, map_app in H.
         simpl in H. destruct (nodup_app_cons H) as [h1 h2].
         rewrite <- vx in h1. rewrite <- vx in h2.
 

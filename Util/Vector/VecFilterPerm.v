@@ -50,9 +50,7 @@ Lemma Vfilter_app_eq : forall A n (l l1 l2 : list (N n)) (v : vector A n)
   (e : length l1+length l2 = length l),
   l=l1++l2 -> Vfilter l v = Vcast (Vapp (Vfilter l1 v) (Vfilter l2 v)) e.
 
-Proof.
-intros. subst l. rewrite Vfilter_app. apply Vcast_pi.
-Qed.
+Proof. intros. subst l. rewrite Vfilter_app. apply Vcast_pi. Qed.
 
 Implicit Arguments Vfilter_app_eq [A n l l1 l2 v].
 
@@ -78,9 +76,7 @@ Implicit Arguments Vfilter_eq_in [A n v l i].
 Lemma Vfilter_map : forall A B (f : A -> B) n (v : vector A n) (l : list (N n)),
   Vfilter l (Vmap f v) = Vmap f (Vfilter l v).
 
-Proof.
-induction l; simpl; intros. refl. rewrite IHl. rewrite Vnth_map. refl.
-Qed.
+Proof. induction l; simpl; intros. refl. rewrite IHl, Vnth_map. refl. Qed.
 
 Lemma Vin_filter_elim_in : forall A n (l : list (N n)) (v : vector A n) x,
   Vin x (Vfilter l v) -> Vin x v.

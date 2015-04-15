@@ -134,7 +134,7 @@ then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
     ded (Vin_map H2). destruct H4 as [v]. destruct H4. subst w.
     assert (v = sub (alien_sub R v) (cap R v)). apply sym_eq.
     apply (alien_sub_cap R).
-    rewrite H5. rewrite sub_sub. apply no_call_sub_sn. apply calls_cap. intros.
+    rewrite H5, sub_sub. apply no_call_sub_sn. apply calls_cap. intros.
     (* begin assert *)
     assert (subterm v r). eapply subterm_trans_eq2 with (u := Fun g vs).
     apply subterm_fun. hyp. eapply in_calls_subterm. apply H3.
@@ -194,8 +194,8 @@ then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
     exists (fill C z). split.
     exists l. exists r. exists (comp C Cred). exists s.
     split. hyp. split.
-    rewrite <- fill_fill. rewrite <- yfillCredl. hyp.
-    rewrite <- fill_fill. rewrite <- zfillCredr. refl.
+    rewrite <- fill_fill, <- yfillCredl. hyp.
+    rewrite <- fill_fill, <- zfillCredr. refl.
     exists C. split. hyp. refl.
   Qed.
 

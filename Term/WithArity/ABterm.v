@@ -182,7 +182,7 @@ intro t. apply (term_ind P Q).
  intro H3.
  gen (H1 _ (proj1 H3)). clear H1. intro H1.
  gen (H2 _ (proj2 H3)). clear H2. intro H2.
- simpl. unfold Vforall in H1, H2. rewrite H1. rewrite H2. refl.
+ simpl. unfold Vforall in H1, H2. rewrite H1, H2. refl.
 Qed.
  
 End term_int.

@@ -38,8 +38,7 @@ Section Somewhere_finite.
 
   Proof.
     intros. unfold bsomewhere_finite, somewhere_finite.
-    rewrite orb_eq. rewrite is_finite_ok.
-    rewrite bVexists_ok. refl. intro. apply is_finite_ok.
+    rewrite orb_eq, is_finite_ok, bVexists_ok. refl. intro. apply is_finite_ok.
   Qed.
 
   Variable sig : Signature.
@@ -115,8 +114,7 @@ Module ArcticInt (Import AI : TArcticInt).
       simpl. rewrite Aplus_comm. apply arctic_plus_notInf_left.
       apply arctic_mult_notInf. 
       rewrite H2 in H. unfold get_elem in H. simpl in H.
-      rewrite Vhead_nth. 
-      rewrite <- (Vnth_eq (Vhead m) dim_pos0 (lt_O_Sn n)); trivial.
+      rewrite Vhead_nth, <- (Vnth_eq (Vhead m) dim_pos0 (lt_O_Sn n)); trivial.
       rewrite H1 in H0. hyp.
     Qed.
 
@@ -131,10 +129,8 @@ Module ArcticInt (Import AI : TArcticInt).
     Proof.
       intros. destruct H. destruct H0.
       left. apply plus_gt_compat; hyp.
-      destruct H0. rewrite H0. rewrite H1.
-      do 2 rewrite Aplus_0_r. left. hyp.
-      destruct H. rewrite H. rewrite H1.
-      do 2 rewrite Aplus_0_l. hyp.
+      destruct H0. rewrite H0, H1, !Aplus_0_r. left. hyp.
+      destruct H. rewrite H, H1, !Aplus_0_l. hyp.
     Qed.
 
     Lemma gtx_mult_compat : forall m m' n n',

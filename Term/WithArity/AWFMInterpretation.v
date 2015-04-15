@@ -48,7 +48,7 @@ Section S.
 
     Proof.
       unfold transp, substitution_closed, IR. intros t1 t2 s H xint0.
-      do 2 rewrite substitution_lemma. apply (H (beta xint0 s)).
+      rewrite !substitution_lemma. apply (H (beta xint0 s)).
     Qed.
 
     Definition monotone := forall f, Vmonotone1 (fint I f) R.
@@ -60,7 +60,7 @@ Section S.
       gen (H0 xint). clear H0. intro. induction c.
       simpl. exact H0.
       simpl fill. simpl.
-      do 2 (rewrite Vmap_cast; rewrite Vmap_app). simpl. apply H. exact IHc.
+      do 2 (rewrite Vmap_cast, Vmap_app). simpl. apply H. exact IHc.
     Qed.
 
     Lemma IR_WF : WF R -> WF IR.

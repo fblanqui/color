@@ -153,7 +153,7 @@ assert (sub s (shift p l1) = sub s1' (shift p l1)).
 unfold s. eapply sub_union2. apply H4. apply H3. refl.
 rewrite H8.
 assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
-rewrite <- sub_restrict. rewrite <- sub_shift.
+rewrite <- sub_restrict, <- sub_shift.
 refl. rewrite H9. hyp.
 Qed.
 
@@ -249,7 +249,7 @@ clear H4. rewrite H5 in H3. ded (chain_dps_path_dp_graph H3).
 (* pigeon-hole principle: there is a dp visited twice *)
 set (l' := x0 :: x2 ++ x3 :: nil). assert (exists z, occur z l' >= 2).
 unfold l'. eapply long_path_occur. apply restricted_dp_graph. apply H4.
-rewrite H6. rewrite H2. unfold n. omega.
+rewrite H6, H2. unfold n. omega.
 (* we prove (A): in this cycle, a dp is included in succ *)
 assert (exists l, exists a, exists m,
   l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
@@ -274,8 +274,8 @@ apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
 ded (Hcycle h H14). do 2 destruct H10. ded (in_elim H10).
 do 2 destruct H15. exists (x5++x9++x14). exists x13. exists (x15++x12++x4::x8).
 intuition. rewrite !app_ass. trans (x5++(x4::x7)++x4::x8). refl.
-rewrite H11. rewrite app_ass. trans (x5++x9++(x10::x11)++x12++x4::x8).
-simpl. rewrite app_ass. refl. rewrite H15. rewrite app_ass. refl.
+rewrite H11, app_ass. trans (x5++x9++(x10::x11)++x12++x4::x8).
+simpl. rewrite app_ass. refl. rewrite H15, app_ass. refl.
 (* consequence of (A) *)
 do 4 destruct H8. unfold l' in H8. ded (chain_dps_app' H8 H3).
 do 2 destruct H10.

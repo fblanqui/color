@@ -211,19 +211,17 @@ Section Computability_theory.
     apply R_algebraic_preserving with M; trivial.
     apply algebraic_arrowType; trivial.
     rewrite H1; trivial.
-    rewrite e; rewrite e0; trivial.
+    rewrite e, e0; trivial.
     apply term_eq.
     rewrite swap_env_eq; trivial.
     rewrite swap_term_is; simpl; trivial.
-    rewrite e0.
-    rewrite <- H2; simpl.
+    rewrite e0, <- H2; simpl.
     change PtR with (term (buildT T2)).
     rewrite H3; trivial.
     apply term_eq.
     rewrite swap_env_eq; trivial.
     rewrite swap_term_is; simpl; trivial.
-    rewrite e.
-    rewrite <- H1; trivial.
+    rewrite e, <- H1; trivial.
   Qed.
 
   Lemma R_conv_to : forall M N M', M -R-> N -> M ~ M' ->
@@ -244,10 +242,7 @@ Section Computability_theory.
   Lemma base_step_base : forall M N, isBaseType (type M) -> M -R-> N ->
     isBaseType (type N).
 
-  Proof.
-    intros M N Mbase MN.
-    rewrite <- (R_type_preserving MN); trivial.
-  Qed.
+  Proof. intros M N Mbase MN. rewrite <- (R_type_preserving MN); trivial. Qed.
 
   Lemma base_comp_step_comp : forall M N, isBaseType (type M) ->
     Computable M -> M -R-> N -> Computable N.
@@ -284,11 +279,9 @@ Section Computability_theory.
     sym; auto with comp.
     rewrite <- MM'; auto.
     assert (typArrow: isArrowType (type N')).
-    rewrite <- (R_type_preserving M'N').
-    rewrite <- MM'; term_inv M.
+    rewrite <- (R_type_preserving M'N'), <- MM'; term_inv M.
     assert (typCorrect: type_left (type N') = type (appBodyR Mapp)).
-    rewrite <- (R_type_preserving M'N').
-    rewrite <- MM'; term_inv M.
+    rewrite <- (R_type_preserving M'N'), <- MM'; term_inv M.
     set (Ncond := Build_appCond N' (appBodyR Mapp) envOk typArrow typCorrect).
     set (N := buildApp Ncond).
     exists N.
@@ -371,12 +364,9 @@ Section Computability_theory.
       auto using terms_conv_sym.
   Qed.
 
-  Lemma comp_lift_comp : forall M n, Computable M -> Computable (lift M n).
+  Lemma comp_lift_comp M n : Computable M -> Computable (lift M n).
 
-  Proof.
-    intros.
-    rewrite <- (terms_lift_conv M n); trivial.
-  Qed.
+  Proof. intro. rewrite <- (terms_lift_conv M n); trivial. Qed.
 
   Lemma apply_var_comp : forall M A B, Computable M -> type M = A --> B ->
     (forall P, type P = A -> algebraic P -> isNeutral P ->
@@ -431,7 +421,7 @@ Section Computability_theory.
     apply CompArrow.
     apply R_algebraic_preserving with M; trivial.
     apply comp_algebraic; trivial.
-    rewrite <- (R_type_preserving MN); rewrite Marr; simpl; trivial.
+    rewrite <- (R_type_preserving MN), Marr; simpl; trivial.
     intros N'S N'S_app N'S_L N'S_Rnorm N'S_R.
     set (N' := appBodyL N'S_app) in * .
     set (S := appBodyR N'S_app) in * .
@@ -456,11 +446,9 @@ Section Computability_theory.
     assert (M'S'_envOk: env M' = env S').
     unfold S'; rewrite appBodyR_env; trivial.
     assert (M'S'_Marr: isArrowType (type M')).
-    rewrite <- typeMM'; rewrite Marr; simpl; trivial.
+    rewrite <- typeMM', Marr; simpl; trivial.
     assert (M'S'_typeOk: type_left (type M') = type S').
-    rewrite <- typeMM'.
-    rewrite (R_type_preserving MN).
-    rewrite <- (terms_conv_eq_type N'S_L).
+    rewrite <- typeMM', (R_type_preserving MN), <- (terms_conv_eq_type N'S_L).
     set (w := app_conv_app_right N'S_app N''S'_app NS_conv).
     unfold S'; rewrite <- (terms_conv_eq_type w).
     term_inv N'S.
@@ -483,7 +471,7 @@ Section Computability_theory.
     rewrite NS_conv.
     apply IHB2 with M'S'; unfold M'S'.
     rewrite buildApp_type; simpl.
-    rewrite <- typeMM'; rewrite Marr; trivial.
+    rewrite <- typeMM', Marr; trivial.
     apply CompCaseArrow with M' (buildApp_isApp M'S'_cond); trivial.
     assert (MeqM' :  M ~ M') by (exists Q''; trivial).
     rewrite <- MeqM'; trivial.
@@ -626,8 +614,7 @@ Section Computability_theory.
     rewrite <- NR; trivial.
     apply comp_step_comp with (appBodyR Napp); trivial.
     rewrite NR; trivial.
-    rewrite <- (R_type_preserving Rgt).
-    rewrite NR; trivial.
+    rewrite <- (R_type_preserving Rgt), NR; trivial.
     rewrite <- Leq; trivial.
 
      (* @(M, N) -> @(M', N) *)
@@ -635,8 +622,7 @@ Section Computability_theory.
     destruct (R_conv_to (M':=P) Lgt NL) as [S' [PS' SLS']].
     rewrite SLS'.
     apply PScomp; trivial.
-    rewrite <- Req.
-    rewrite NR; trivial.
+    rewrite <- Req, NR; trivial.
 
      (* @(M, N) -> @(M', N') *)
     apply comp_app with Sapp.
@@ -849,8 +835,7 @@ Section Computability_theory.
     assert (WLnorm: algebraic (appBodyL Wapp)).
     apply algebraic_appBodyL; trivial.
     unfold isFunApp; intro WFapp.
-    rewrite (appHead_app W Wapp) in WFapp.
-    rewrite (appHead_notApp (appBodyL Wapp)
+    rewrite (appHead_app W Wapp), (appHead_notApp (appBodyL Wapp)
       (abs_isnot_app (appBodyL Wapp) WLabs)) in WFapp.
     term_inv (appBodyL Wapp).
     assert (WRnorm: algebraic (appBodyR Wapp)).
@@ -862,15 +847,13 @@ Section Computability_theory.
       [W'app [[W'L_eq W'R_red] | [[W'L_red W'R_eq] | [W'L_red W'R_red]]]]];
     trivial.
     left; apply funAbs_notFunApp.
-    rewrite (appHead_app W Wapp).
-    rewrite appHead_notApp; trivial.
+    rewrite (appHead_app W Wapp), appHead_notApp; trivial.
     term_inv (appBodyL Wapp).
 
      (* beta-reduction step *)
-    rewrite W'beta.
-    rewrite <- (Computable_morph (terms_lower_conv
-      (subst (beta_subst W Wapp W'abs)) (beta_lowering W Wapp W'abs))).
-    rewrite (abs_proof_irr (appBodyL Wapp) W'abs WLabs).
+    rewrite W'beta, <- (Computable_morph (terms_lower_conv
+      (subst (beta_subst W Wapp W'abs)) (beta_lowering W Wapp W'abs))),
+      (abs_proof_irr (appBodyL Wapp) W'abs WLabs).
     apply WL_Hyp with (lift (appBodyR Wapp) 1).
     apply singletonSubst_cond.
     apply comp_lift_comp.
@@ -881,7 +864,7 @@ Section Computability_theory.
     rewrite <- W'L_eq; trivial.
     set (WL_W'L := absBody_eq WLabs W'Labs W'L_eq).
     assert (W'Lcomp: Computable (absBody W'Labs)).
-    rewrite <- WL_W'L; rewrite PL; trivial.
+    rewrite <- WL_W'L, PL; trivial.
     assert (W'Rcomp: Computable (appBodyR W'app)).
     apply comp_step_comp with (appBodyR Wapp); trivial.
     rewrite PR; trivial.
@@ -902,7 +885,7 @@ Section Computability_theory.
     apply WL_Hyp with T; trivial.
     apply term_eq.
     rewrite !subst_env, (absBody_eq WLabs W'Labs); trivial.
-    rewrite !subst_term; rewrite (absBody_eq WLabs W'Labs); trivial.
+    rewrite !subst_term, (absBody_eq WLabs W'Labs); trivial.
     apply algebraic_app with W'app.
     rewrite <- W'L_eq; trivial.
     apply R_algebraic_preserving with (appBodyR Wapp); trivial.
@@ -913,7 +896,7 @@ Section Computability_theory.
     apply comp_step_comp with (absBody WLabs); trivial.
     rewrite PL; trivial.
     assert (W'Rcomp: Computable (appBodyR W'app)).
-    rewrite <- W'R_eq; rewrite PR; trivial.
+    rewrite <- W'R_eq, PR; trivial.
     set (P'L := exist W'Lcomp).
     set (P'R := exist W'Rcomp).
     apply (IH (P'L, P'R)) with W'app W'Labs; trivial.
@@ -998,10 +981,8 @@ Section Computability_theory.
     apply singletonSubst_cond.
     apply var_comp; simpl; trivial.
     apply term_eq.
-    rewrite !subst_env.
-    rewrite S1eqS2; trivial.
-    rewrite !subst_term.
-    rewrite S1eqS2; trivial.
+    rewrite !subst_env, S1eqS2; trivial.
+    rewrite !subst_term, S1eqS2; trivial.
     unfold idS1; rewrite (idSubst_neutral (absBody (M:=M) Mabs)).
     apply abs_conv_absBody; trivial.
     set (PL := exist TLC).

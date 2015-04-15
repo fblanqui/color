@@ -36,15 +36,11 @@ Implicit Arguments Vmax_in [x n v].
 
 Lemma Vmax_head : forall n (v : nats (S n)), Vhead v <= Vmax v.
 
-Proof.
-intros n v. rewrite (VSn_eq v). simpl. auto with arith.
-Qed.
+Proof. intros n v. rewrite (VSn_eq v). simpl. auto with arith. Qed.
 
 Lemma Vmax_tail : forall n (v : nats (S n)), Vmax (Vtail v) <= Vmax v.
 
-Proof.
-intros n v. rewrite (VSn_eq v). simpl. auto with arith.
-Qed.
+Proof. intros n v. rewrite (VSn_eq v). simpl. auto with arith. Qed.
 
 Lemma Vmax_app_cons : forall n1 (v1 : nats n1) p n2 (v2 : nats n2),
   p <= Vmax (Vapp v1 (Vcons p v2)).

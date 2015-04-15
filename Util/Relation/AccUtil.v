@@ -254,7 +254,7 @@ Section Fix.
 
   Proof.
     intro x; induction (Rwf x); intros.
-    rewrite <- (Fix_F_eq r); rewrite <- (Fix_F_eq s); intros.
+    rewrite <- (Fix_F_eq r), <- (Fix_F_eq s); intros.
     apply F_ext; auto.
   Qed.
 

@@ -123,7 +123,7 @@ unfold dot_product in IHn.
 rewrite IHn in H; repeat destruct H.
 exists (S x); exists (lt_n_S x0); clear IHn.
 
-rewrite Hv. rewrite Hw. simpl.
+rewrite Hv, Hw. simpl.
 assert (lt_S_n (lt_n_S x0) = x0). apply lt_unique. rewrite H0. hyp.
 
 exists 0; exists (lt_O_Sn n); rewrite Hv, Hw; auto.
@@ -134,13 +134,12 @@ repeat destruct H; unfold Amult; apply Is_true_eq_true; apply orb_prop_intro.
 destruct x.
 right.
 rewrite <- (Vnth_cons_head (Vhead v) (Vtail v) x0); auto.
-rewrite <-Hv.
-rewrite <- (Vnth_cons_head (Vhead w) (Vtail w) x0); auto.
+rewrite <-Hv, <- (Vnth_cons_head (Vhead w) (Vtail w) x0); auto.
 rewrite <-Hw.
 auto.
 
 left.
-rewrite Hv in H. rewrite Hw in H. simpl in H.
+rewrite Hv, Hw in H. simpl in H.
 apply Is_true_eq_left. rewrite IHn. exists x. exists (lt_S_n x0). hyp.
 Qed.
 
@@ -256,14 +255,14 @@ Lemma Gmorph_clos_trans : forall x y,
 
 Proof.
 split; intros.
-rewrite Gmorph_iter_le_fast in H; rewrite iter_le_fast_exp2_same in H.
-rewrite iter_le_spec in H; destruct H as [p]; destruct H.
+rewrite Gmorph_iter_le_fast, iter_le_fast_exp2_same, iter_le_spec in H;
+  destruct H as [p]; destruct H.
 ded (iter_tc _ _ _ _ H0); trivial.
 ded (eq_dec_midex eq_nat_dec).
 ded (clos_trans_bpath H0 (@GoM_restricted M)).
 rewrite length_nats_decr_lt in H1; unfold inclusion in H1.
 ded (H1 _ _ H); ded (bpath_iter_le H2).
-rewrite Gmorph_iter_le_fast; rewrite iter_le_fast_spec.
+rewrite Gmorph_iter_le_fast, iter_le_fast_spec.
 rewrite iter_le_spec in H3.
 destruct H3 as [p]; exists p. intuition.
 ded (exp2_log2 dim).

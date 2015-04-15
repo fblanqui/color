@@ -46,7 +46,7 @@ Lemma in_vars_shift_min : forall x t, In x (vars (shift t)) -> p <= x.
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t.
 simpl. intros. destruct H. omega. contr.
-intros. unfold shift in H0. rewrite sub_fun in H0. rewrite vars_fun in H0.
+intros. unfold shift in H0. rewrite sub_fun, vars_fun in H0.
 ded (in_vars_vec_elim H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x0.
 ded (Vforall_in H H3). auto.
@@ -58,7 +58,7 @@ Lemma in_vars_shift_max : forall x t,
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t.
 simpl. intros. destruct H. omega. contr.
-intros. unfold shift in H0. rewrite sub_fun in H0. rewrite vars_fun in H0.
+intros. unfold shift in H0. rewrite sub_fun, vars_fun in H0.
 ded (in_vars_vec_elim H0). do 2 destruct H1.
 ded (Vin_map H1). do 2 destruct H3. subst x0.
 ded (Vforall_in H H3). ded (H4 H2).
@@ -71,15 +71,15 @@ Lemma vars_shift : forall t, vars (shift t) = map shift_var (vars t).
 Proof.
 apply term_ind with (Q := fun n (v : terms n) =>
   vars_vec (Vmap shift v) = map shift_var (vars_vec v)); intros. refl.
-unfold shift. rewrite sub_fun. rewrite !vars_fun. exact H.
-refl. simpl. rewrite map_app. rewrite H. apply appr_eq. exact H0.
+unfold shift. rewrite sub_fun, !vars_fun. exact H.
+refl. simpl. rewrite map_app, H. apply appr_eq. exact H0.
 Qed.
 
 Lemma notin_vars_shift : forall x l,
   ~In x (vars (shift l)) -> p <= x -> ~In (x-p) (vars l).
 
 Proof.
-intros. intro. apply H. rewrite vars_shift. rewrite <- (le_minus_plus H0).
+intros. intro. apply H. rewrite vars_shift, <- (le_minus_plus H0).
 fold (shift_var (x-p)). apply in_map. exact H1.
 Qed.
 

@@ -88,8 +88,7 @@ Lemma forallb_lforall : forall f, (forall x, f x = true <-> P x) ->
   forall l, forallb f l = true <-> lforall l.
 
 Proof.
-intros f fok. induction l; simpl. tauto.
-rewrite andb_eq. rewrite fok. intuition.
+intros f fok. induction l; simpl. tauto. rewrite andb_eq, fok. intuition.
 Qed.
 
 Variable P_dec : forall x, {P x}+{~P x}.

@@ -76,7 +76,7 @@ Lemma meval_monotone_D : forall i (vi : vec i) (mi : monom i)
   <= meval (Vapp mi (Vcons k mj)) (vals (Vapp vi (Vcons (inj Hy) vj))).
 
 Proof.
-intros. do 2 rewrite Vmap_app. simpl Vmap. do 2 rewrite meval_app.
+intros. rewrite !Vmap_app. simpl Vmap. rewrite !meval_app.
 apply Zmult_le_compat_l. simpl meval. apply Zmult_le_compat_r.
 apply power_le_compat; hyp. apply pos_meval. apply pos_meval.
 Qed.
@@ -126,7 +126,7 @@ gen (coef_pos_cons H'). clear H'. intros (H', H_coef_pos_p2). clear H'.
 unfold Vmonotone_i, Dlt, peval_D. unfold monotone, restrict.
 intros vi vj. destruct x as (x, Hx). destruct y as (y, Hy). simpl.
 intro Hxy. clear H_coef_pos_p.
-do 2 rewrite peval_app.
+rewrite !peval_app.
 apply Zplus_le_lt_compat.
  gen (coef_pos_monotone_peval_Dle H_coef_pos_p1).
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
@@ -136,8 +136,7 @@ apply Zplus_le_lt_compat.
  lazy beta iota delta [peval]. fold peval.
  apply Zplus_lt_le_compat.
   apply Zmult_lt_compat_l. hyp.
-  do 2 rewrite meval_xi.
-  do 2 rewrite Vmap_cast. case Hij. simpl.
+  rewrite !meval_xi, !Vmap_cast. case Hij. simpl.
   clear H_pmonotone_p. clear Hij. generalize dependent i. intro i. elim i.
    intro vi. rewrite (VO_eq vi). simpl. hyp.
    intros i' Hrec vi. rewrite (VSn_eq vi). simpl Vapp.

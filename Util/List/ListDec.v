@@ -33,9 +33,7 @@ Fixpoint beq_list (l m : list A) :=
 
 Lemma beq_list_refl : forall l, beq_list l l = true.
 
-Proof.
-induction l; simpl. refl. rewrite IHl. rewrite (beq_refl beq_ok). refl.
-Qed.
+Proof. induction l; simpl. refl. rewrite IHl, (beq_refl beq_ok). refl. Qed.
 
 Lemma beq_list_ok : forall l m, beq_list l m = true <-> l = m.
 
@@ -103,7 +101,7 @@ Proof.
 induction l; simpl; intros; auto. intuition. apply incl_nil. split; intro.
 destruct (andb_elim H). rewrite mem_ok in H0. rewrite IHl in H1. intuition.
 destruct (incl_cons_l H). rewrite <- mem_ok in H0. rewrite <- IHl in H1.
-rewrite H0. rewrite H1. refl.
+rewrite H0, H1. refl.
 Qed.
 
 (***********************************************************************)

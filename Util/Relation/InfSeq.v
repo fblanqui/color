@@ -371,7 +371,7 @@ Section TransIS.
     intro i; destruct (DecFSi i) as [Hi | Hi]; rewrite Hi.
 
     assert (S (i - fst (F0 (F1 i))) < length (h (F1 i) :: li (F1 i))).
-    gen (H (S i)). rewrite Hi. rewrite <- minus_Sn_m. auto.
+    gen (H (S i)). rewrite Hi, <- minus_Sn_m. auto.
     destruct (ch_minP _ (exP_F0 i)). auto.
 
     rewrite <- minus_Sn_m. Focus 2. apply (proj1 (ch_minP _ (exP_F0 i))).
@@ -401,7 +401,7 @@ Section TransIS.
     rewrite H1. clear H1. gen (HF0 (F1 i)). unfold F. intros.
 
     cut (i - fst (F0 (F1 i)) = length (li (F1 i))).
-    Focus 2. rewrite <- H0 in H1. rewrite <- minus_Sn_m in H1. simpl in H1.
+    Focus 2. rewrite <- H0, <- minus_Sn_m in H1. simpl in H1.
     omega.
     apply (proj1 (ch_minP _ (exP_F0 i))).
     set (k := i - fst (F0 (F1 i))).

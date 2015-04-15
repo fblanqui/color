@@ -122,7 +122,7 @@ isolated points are also considered as SCC *)
   Lemma Rquo_restricted : is_restricted Rquo (nats_decr_lt dim).
 
   Proof.
-    unfold is_restricted. intros. do 2 rewrite <- In_nats_decr_lt.
+    unfold is_restricted. intros. rewrite <- !In_nats_decr_lt.
     unfold Rquo in H.
     do 2 destruct H. do 2 destruct H0. unfold SCC'_tag in *.
     split; eapply find_first_Some_bound; eauto.

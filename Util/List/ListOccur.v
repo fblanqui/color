@@ -129,8 +129,8 @@ Section pigeon_hole.
     simpl in H. destruct H. subst a0. contr.
     ded (in_elim_dec eq_dec H2). do 3 destruct H3.
     (* ~In a x0 *)
-    assert (~In a x0). apply (occur_notin eq_dec). rewrite H3 in l0.
-    rewrite occur_app in l0. simpl in l0. rewrite eq_delta in l0. omega.
+    assert (~In a x0). apply (occur_notin eq_dec).
+    rewrite H3, occur_app in l0. simpl in l0. rewrite eq_delta in l0. omega.
     (* x and x0 included in s *)
     rewrite H3 in H1. ded (incl_app_elim H1). clear H1. destruct H6.
     ded (incl_cons_r H1). clear H1. destruct H7. contr.
@@ -141,7 +141,7 @@ Section pigeon_hole.
     assert (incl l' s). unfold l'. apply incl_app. exact H1.
     apply incl_cons. exact H. exact H6.
     assert (length l' > length s). unfold l'. rewrite length_app. simpl.
-    simpl in H0. rewrite H3 in H0. rewrite length_app in H0. simpl in H0. omega.
+    simpl in H0. rewrite H3, length_app in H0. simpl in H0. omega.
     ded (IHs l' H7 H8). destruct H9. exists x1.
     assert (occur x1 (a0::l) = occur x1 l' + delta x1 a). unfold l'. rewrite H3.
     simpl. rewrite !occur_app. simpl. omega. omega.

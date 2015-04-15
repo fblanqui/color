@@ -181,7 +181,7 @@ Section HorpoNotTrans.
     inversion H12.
     absurd (term (lower (subst (beta_subst (buildT t1) Mapp0 MLabs))
       (beta_lowering (buildT t1) Mapp0 MLabs)) = term (buildT t3)).
-    rewrite lower_term. rewrite subst_term. discr. 
+    rewrite lower_term, subst_term. discr. 
     rewrite <- H17. trivial.
     apply (Htr (buildT t1) (buildT t2) (buildT t3)).
     assert (@appBodyR (buildT t1) I >> @appBodyR (buildT t2) I).
@@ -195,8 +195,8 @@ Section HorpoNotTrans.
       (lower (subst (beta_subst (buildT t2) I I)) 
       (beta_lowering (buildT t2) I I)). apply Beta.
     apply term_eq. 
-    rewrite lower_env. rewrite subst_env. trivial.
-    rewrite lower_term. rewrite subst_term. trivial.
+    rewrite lower_env, subst_env. trivial.
+    rewrite lower_term, subst_term. trivial.
   Qed.
 
 End HorpoNotTrans.

@@ -60,7 +60,7 @@ Section S.
   Lemma notWF_EIS_eq : ~WF R <-> EIS R.
 
   Proof.
-    rewrite WF_notIS_eq. rewrite not_forall_eq.
+    rewrite WF_notIS_eq, not_forall_eq.
     intuition; destruct H as [f hf]; exists f. apply NNPP. hyp. auto.
   Qed.
 

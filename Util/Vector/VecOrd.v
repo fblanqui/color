@@ -87,7 +87,7 @@ Section S.
     contr. discr. discr.
     assert (n0 = n). apply eq_add_S. hyp. subst n0.
     assert (h = refl_equal (S n)). apply eq_unique. subst h.
-    rewrite (Vcast_refl (Vcons h0 v1)). rewrite (Vcast_refl v2). hyp.
+    rewrite (Vcast_refl (Vcons h0 v1)), (Vcast_refl v2). hyp.
   Qed.
 
   Lemma Vrel1_cast_elim : forall m n (h : m=n) (v1 v2 : vector A m),
@@ -99,7 +99,7 @@ Section S.
     discr. discr.
     assert (v1 = Vcons (Vhead v1) (Vtail v1)). apply VSn_eq. rewrite H0.
     assert (v2 = Vcons (Vhead v2) (Vtail v2)). apply VSn_eq. rewrite H1.
-    rewrite H0, H1 in H. rewrite !Vcast_cons in H. simpl in H.
+    rewrite H0, H1, !Vcast_cons in H. simpl in H.
     unfold Vhead_tail in H. simpl in H.
     apply Vrel1_cons_intro. inversion H. left. split. hyp.
     eapply Vcast_eq_elim with (m := n). apply H6.

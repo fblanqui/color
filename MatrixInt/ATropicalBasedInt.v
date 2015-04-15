@@ -194,7 +194,7 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       apply IHv. intros. 
       apply Vforall2_elim_nth. change v with (Vtail (Vcons h v)). 
       apply Vforall2_tail. apply Vforall2_intro_nth. hyp.
-      change h with (Vhead (Vcons h v)). do 2 rewrite Vhead_nth.
+      change h with (Vhead (Vcons h v)). rewrite !Vhead_nth.
       apply (H _ (Lt.lt_O_Sn n)).
     Qed.
 
@@ -218,8 +218,8 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
         change v with (Vtail (Vcons h v)). apply Vforall2_tail. hyp.
         apply Vforall2_tail. hyp.
         apply gtx_mult_compat. change h with (Vhead (Vcons h v)). 
-        do 2 rewrite Vhead_nth. apply Vforall2_elim_nth. hyp.
-        do 2 rewrite Vhead_nth. apply Vforall2_elim_nth. hyp.
+        rewrite !Vhead_nth. apply Vforall2_elim_nth. hyp.
+        rewrite !Vhead_nth. apply Vforall2_elim_nth. hyp.
       Qed.
 
       Lemma mat_arctic_mult_mon : mgt M M' -> mge N N' -> 
@@ -227,11 +227,11 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
       Proof.
         intros. unfold mat_forall2. intros.
-        do 2 rewrite mat_mult_spec. apply arctic_dot_product_mon.
+        rewrite !mat_mult_spec. apply arctic_dot_product_mon.
         apply Vforall2_intro_nth. intros. 
         exact (H i i0 ip ip0).
         apply Vforall2_intro_nth. intros.
-        do 2 rewrite <- get_elem_swap. exact (H0 i0 j ip0 jp).
+        rewrite <- !get_elem_swap. exact (H0 i0 j ip0 jp).
       Qed.
 
     End Matrix.
@@ -242,9 +242,9 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
     Proof.
       intros. unfold mat_vec_prod, vec_gt. apply Vforall2_intro_nth. 
-      intros. do 2 rewrite Vnth_col_mat. 
+      intros. rewrite !Vnth_col_mat. 
       apply mat_arctic_mult_mon. hyp.
-      intros k l pk pl. do 2 rewrite vec_to_col_mat_spec.
+      intros k l pk pl. rewrite !vec_to_col_mat_spec.
       apply Vforall2_elim_nth. hyp.
     Qed.
 
@@ -256,12 +256,12 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
       intros. unfold succ_vec. apply Vforall2_intro_nth. intros. destruct H.
       eapply gtx_mor. apply Vforall2_elim_nth; rewrite mint_eval_split; refl.
       apply Vforall2_elim_nth. rewrite mint_eval_split. refl.
-      do 2 rewrite vector_plus_nth.
+      rewrite !vector_plus_nth.
       apply gtx_plus_compat. 
       apply Vforall2_elim_nth. hyp.
-      do 2 rewrite add_vectors_nth.
+      rewrite !add_vectors_nth.
       apply Vfold_left_gtx_compat. intros.
-      do 2 rewrite Vnth_map. do 2 rewrite Vnth_map2.
+      rewrite !Vnth_map, !Vnth_map2.
       set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
       apply Vforall2_elim_nth. apply mat_vec_prod_gt_compat.
       apply Vforall2_elim_nth. hyp. refl.

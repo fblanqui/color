@@ -215,7 +215,7 @@ by a function testing whether a symbol occurs in a term
     destruct (proj1 (IHR f) H) as [a [H0 H1]]. exists a; split; auto.
     destruct H as [a [H H0]]. destruct H.
     destruct a as [[n | F' vs'] r']. inversion H0. inversion H. simpl in H0.
-    rewrite <- H2 in H0. rewrite beq_symb_ok in H0; auto.
+    rewrite <- H2, beq_symb_ok in H0; auto.
     right. apply (IHR f). exists a; auto.
   Qed.
 

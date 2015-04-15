@@ -183,9 +183,7 @@ Qed.
 
 Lemma meval_one : forall n (v : vec n), meval (mone n) v = 1.
 
-Proof.
-induction v; simpl. refl. rewrite IHv. refl.
-Qed.
+Proof. induction v; simpl. refl. rewrite IHv. refl. Qed.
 
 Lemma meval_xi : forall n i (H : lt i n) (v : vec n),
   meval (mxi H) v = Vnth v H.
@@ -198,9 +196,7 @@ Qed.
 
 Lemma peval_const : forall n c (v : vec n), peval (pconst n c) v = c.
 
-Proof.
-intros. simpl. rewrite meval_one. ring.
-Qed.
+Proof. intros. simpl. rewrite meval_one. ring. Qed.
 
 Lemma peval_app : forall n (p1 p2 : poly n) (v : vec n),
   peval (p1 ++ p2) v = peval p1 v + peval p2 v.
@@ -224,43 +220,40 @@ intros. elim p. auto. intros (c',m'). intros. simpl.
 case (monom_eq_dec m m'); simpl; intro. subst m'. ring. rewrite H. ring.
 Qed.  
 
-Lemma peval_plus : forall n (p1 p2 : poly n) (v : vec n),
+Lemma peval_plus n (p1 p2 : poly n) (v : vec n) :
   peval (p1 + p2) v = peval p1 v + peval p2 v.
 
 Proof.
-intros. elim p1. auto. intros (c,m). intros. simpl. rewrite peval_mpplus.
-rewrite H. ring.
+elim p1. auto. intros (c,m). intros. simpl. rewrite peval_mpplus, H. ring.
 Qed.
 
-Lemma peval_minus : forall n (p1 p2 : poly n) (v : vec n),
+Lemma peval_minus n (p1 p2 : poly n) (v : vec n) :
   peval (p1 - p2) v = peval p1 v - peval p2 v.
 
-Proof.
-intros. unfold pminus. rewrite peval_plus. rewrite peval_opp. ring.
-Qed.
+Proof. unfold pminus. rewrite peval_plus, peval_opp. ring. Qed.
 
 Lemma meval_mult : forall n (m1 m2 : monom n) (v : vec n),
   meval (mmult m1 m2) v = meval m1 v * meval m2 v.
 
 Proof.
 induction n; intros. VOtac. refl. VSntac m1. VSntac m2.
-simpl. unfold mmult in IHn. rewrite IHn. rewrite power_plus. ring.
+simpl. unfold mmult in IHn. rewrite IHn, power_plus. ring.
 Qed.
 
 Lemma peval_mpmult : forall n c (m : monom n) (p : poly n) (v : vec n),
   peval (mpmult c m p) v = c * meval m v * peval p v.
 
 Proof.
-induction p; intros; simpl. ring. destruct a. simpl. rewrite IHp.
-rewrite meval_mult. ring.
+induction p; intros; simpl. ring.
+destruct a. simpl. rewrite IHp, meval_mult. ring.
 Qed.
 
 Lemma peval_mult : forall n (p1 p2 : poly n) (v : vec n),
   peval (p1 * p2) v = peval p1 v * peval p2 v.
 
 Proof.
-induction p1; intros; simpl. refl. destruct a. simpl. rewrite peval_plus.
-rewrite peval_mpmult. rewrite IHp1. ring.
+induction p1; intros; simpl. refl. destruct a. simpl.
+rewrite peval_plus, peval_mpmult, IHp1. ring.
 Qed.
 
 Lemma peval_power : forall n (p : poly n) (k : nat) (v : vec n),
@@ -268,16 +261,15 @@ Lemma peval_power : forall n (p : poly n) (k : nat) (v : vec n),
 
 Proof.
 induction k; intros; simpl. rewrite meval_one. ring.
-rewrite peval_mult. rewrite IHk. refl.
+rewrite peval_mult, IHk. refl.
 Qed.
 
 Lemma peval_mcomp : forall n k (m : monom n) (ps : vector (poly k) n)
   (v : vec k), peval (mcomp m ps) v = meval m (Vmap (fun p => peval p v) ps).
 
 Proof.
-induction n; intros. VOtac. simpl. rewrite zeql. rewrite meval_one. ring.
-VSntac m. VSntac ps. simpl. rewrite peval_mult. rewrite peval_power.
-rewrite IHn. refl.
+induction n; intros. VOtac. simpl. rewrite zeql, meval_one. ring.
+VSntac m. VSntac ps. simpl. rewrite peval_mult, peval_power, IHn. refl.
 Qed.
 
 Lemma peval_cpmult : forall n c (p : poly n) (v : vec n),
@@ -291,6 +283,6 @@ Lemma peval_comp : forall n k (p : poly n) (ps : vector (poly k) n)
   (v : vec k), peval (pcomp p ps) v = peval p (Vmap (fun p => peval p v) ps).
 
 Proof.
-induction p; intros; simpl. refl. destruct a. rewrite peval_plus.
-rewrite peval_cpmult. rewrite IHp. rewrite peval_mcomp. refl.
+induction p; intros; simpl. refl. destruct a.
+rewrite peval_plus, peval_cpmult, IHp, peval_mcomp. refl.
 Qed.

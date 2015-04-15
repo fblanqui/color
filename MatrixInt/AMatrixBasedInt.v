@@ -183,7 +183,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         destruct n; try solve [omega].
         rewrite !Vcast_cons. simpl.
         unfold add_vectors, succeq. simpl. apply Vforall2_intro_nth. 
-        intros. unfold vector_plus. do 2 rewrite Vnth_map2.
+        intros. unfold vector_plus. rewrite !Vnth_map2.
         assert (Vnth (f (Vhead M) a) ip >>= Vnth (f (Vhead M) b) ip).
         apply Vforall2_elim_nth. apply f_mon. hyp.
         apply plus_ge_compat. apply ge_refl. hyp.
@@ -191,7 +191,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         destruct n0; try solve [omega].
         rewrite !Vcast_cons. simpl.
         unfold add_vectors, succeq. simpl. apply Vforall2_intro_nth. 
-        intros. unfold vector_plus. do 2 rewrite Vnth_map2.
+        intros. unfold vector_plus. rewrite !Vnth_map2.
         apply plus_ge_compat. 
         apply Vforall2_elim_nth. unfold add_vectors in IHv1. apply IHv1.
         hyp. apply ge_refl.
@@ -205,12 +205,12 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       intros f i j i_j vi vj a b ab.
       simpl. unfold mi_eval, mi_eval_aux, succeq. simpl. 
       apply (@vec_plus_ge_compat_r dim).
-      do 2 rewrite Vmap_cast. do 2 rewrite Vmap_app. simpl.
+      rewrite !Vmap_cast, !Vmap_app. simpl.
       apply vec_add_weak_monotone_map2; trivial.
       intros. unfold succeq. apply Vforall2_intro_nth. intros.
-      unfold M.mat_vec_prod. do 2 rewrite Vnth_col_mat. apply mat_mult_mon.
+      unfold M.mat_vec_prod. rewrite !Vnth_col_mat. apply mat_mult_mon.
       apply mat_ge_refl. intros x y xp yp.
-      do 2 rewrite vec_to_col_mat_spec.
+      rewrite !vec_to_col_mat_spec.
       apply Vforall2_elim_nth. hyp.
     Qed.
 
@@ -241,7 +241,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       
       Proof.
         intros. apply Veq_nth. intros. unfold combine_matrices.
-        rewrite Vnth_const. rewrite Vbuild_nth. trivial.
+        rewrite Vnth_const, Vbuild_nth. trivial.
       Qed.
 
       Lemma combine_matrices_cons :
@@ -252,7 +252,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       Proof.
         intros. apply Veq_nth. intros.
         unfold combine_matrices, add_matrices. simpl.
-        rewrite Vnth_map2. do 2 rewrite Vbuild_nth. refl.
+        rewrite Vnth_map2, !Vbuild_nth. refl.
       Qed.
 
       Fixpoint mi_of_term k (t : bterm k) : mint (S k) :=
@@ -368,8 +368,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
                                  (Vconst (zero_matrix dim dim) k) (Vtail v))).
         assert (add_vectors
           (Vmap2 mat_vec_prod (Vconst (zero_matrix dim dim) k) (Vtail v))
-          =v @zero_vec dim). Focus 2. rewrite H.
-        rewrite vector_plus_zero_l.
+          =v @zero_vec dim). Focus 2. rewrite H, vector_plus_zero_l.
         replace (Vhead v) with (Vnth v ip). refl.
         rewrite Vhead_nth, (lt_unique (lt_O_Sn k) ip). refl.
         apply add_vectors_zero. apply Vforall_nth_intro. intros.
@@ -598,7 +597,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         split. simpl. change args0 with (Vtail (Vcons h args0)). 
         apply Vforall2_tail. hyp. hyp.
         apply mat_vec_prod_ge_compat.
-        change h with (Vhead (Vcons h args0)). do 2 rewrite Vhead_nth.
+        change h with (Vhead (Vcons h args0)). rewrite !Vhead_nth.
         apply Vforall2_elim_nth. hyp. refl.
       Qed.
 

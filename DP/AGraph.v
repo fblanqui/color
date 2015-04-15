@@ -101,7 +101,7 @@ Section S.
       unfold s. eapply sub_union2. apply H4. apply H3. refl.
       rewrite H8.
       assert (sub s1' (shift p l1) = sub s1 l1). unfold s1'.
-      rewrite <- sub_restrict. rewrite <- sub_shift.
+      rewrite <- sub_restrict, <- sub_shift.
       refl. rewrite H9. hyp.
     Qed.
 

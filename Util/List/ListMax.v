@@ -44,12 +44,10 @@ intros l1 l2. induction l1 as [| a' l' Hrec].
   apply Hrec. hyp.
 Qed.
 
-Lemma lmax_app : forall l m, lmax (l ++ m) = max (lmax l) (lmax m).
+Lemma lmax_app m : forall l, lmax (l ++ m) = max (lmax l) (lmax m).
 
 Proof.
-intros. induction l as [| a l Hrec].
- auto.
- simpl. rewrite Hrec. rewrite max_assoc. refl.
+  induction l as [| a l Hrec]. auto. simpl. rewrite Hrec, max_assoc. refl.
 Qed.
 
 Lemma lmax_in : forall l, length l > 0 -> exists x, In x l /\ lmax l = x.

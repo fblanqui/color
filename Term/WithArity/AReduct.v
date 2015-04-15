@@ -318,7 +318,7 @@ Section S.
     rewrite <- xl. unfold v2. rewrite Vcons_nth. unfold v1.
     apply Veq_app_cons_aux.
     simpl. rewrite H2. apply args_eq. apply Veq_nth; intros.
-    rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).
+    rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec x i).
     (* 1) x <= i *)
     destruct (eq_nat_dec x i).
     (* a) x = i *)
@@ -327,14 +327,14 @@ Section S.
     trans (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
     rewrite Vnth_replace. hyp.
     (* b) x <> i *)
-    rewrite Vnth_replace_neq. 2: hyp. rewrite (Veq_app_cons ts x0).
-    rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).
+    rewrite Vnth_replace_neq. 2: hyp.
+    rewrite (Veq_app_cons ts x0), Vnth_cast, Vnth_app. destruct (le_gt_dec x i).
     2: omega.
     rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i-x)). unfold v2.
     rewrite !Vnth_sub. apply Vnth_eq. refl. omega.
     (* 2) x > i *)
-    rewrite Vnth_replace_neq. 2: omega. rewrite (Veq_app_cons ts x0).
-    rewrite Vnth_cast. rewrite Vnth_app. destruct (le_gt_dec x i).
+    rewrite Vnth_replace_neq. 2: omega.
+    rewrite (Veq_app_cons ts x0), Vnth_cast, Vnth_app. destruct (le_gt_dec x i).
     omega.
     assert (g0 = g). apply lt_unique. subst g0.
     assert (Vsub ts (Veq_app_cons_aux1 x0) = v1). unfold v1.
@@ -354,7 +354,7 @@ Section S.
     simpl. apply top_reducts_complete; hyp.
     decomp H2. discr.
     (* Fun *)
-    rewrite reducts_fun. rewrite in_app. ded (red_case H1). split_all.
+    rewrite reducts_fun, in_app. ded (red_case H1). split_all.
     left. apply top_reducts_complete; hyp.
     right. Funeqtac. subst x0. ded (Vforall_nth x2 H0). subst u.
     apply In_reducts_vec_intro. apply H2. hyp.

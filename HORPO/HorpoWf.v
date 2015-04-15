@@ -241,8 +241,7 @@ Module HorpoWf (S : TermsSig.Signature)
       [[al ar] [[tl tr] [tlM [trN [tltr [Mb_args Nb_args]]]]]].
     unfold H_WFmul_ord.gtA, transp, H_WFterms_lt, horpo_mul_lt, 
       MultisetLT, transp, WFterms_to_mul; simpl in * .
-    rewrite <- Margs.
-    rewrite Mb_args; rewrite Nb_args.
+    rewrite <- Margs, Mb_args, Nb_args.
     apply mulOrd_oneElemDiff.
     apply horpo_eq_compat'.
     refl.

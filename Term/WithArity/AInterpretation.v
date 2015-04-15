@@ -175,8 +175,8 @@ Section S.
     n > maxvars ts -> Vmap (term_int (fval v n)) ts = Vmap (term_int v) ts.
 
   Proof.
-    induction ts. refl. simpl. rewrite maxvars_cons. rewrite gt_max. intuition.
-    rewrite H. rewrite <- term_int_eq_fval_lt. refl. hyp.
+    induction ts. refl. simpl. rewrite maxvars_cons, gt_max. intuition.
+    rewrite H, <- term_int_eq_fval_lt. refl. hyp.
   Qed.
 
 End S.

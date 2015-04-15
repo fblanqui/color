@@ -182,7 +182,7 @@ induction ts.
 (* Vnil *)
 simpl. intuition.
 (* Vcons *)
-simpl. intro. rewrite in_app. rewrite nb_aliens_cons. intro. destruct H.
+simpl. intro. rewrite in_app, nb_aliens_cons. intro. destruct H.
 ded (vars_ren_cap H). omega. ded (IHts _ H). omega.
 Qed.
 
@@ -210,7 +210,7 @@ intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 simpl. single_tac k (@Var Sig x).
 (* Fun *)
-rewrite nb_aliens_fun. rewrite ren_cap_fun. case (defined f R).
+rewrite nb_aliens_fun, ren_cap_fun. case (defined f R).
 single_tac k (Fun f v). destruct (H k) as [s]. exists s. rewrite sub_fun.
 intuition. rewrite <- H1. refl.
 (* Vnil *)
@@ -222,11 +222,11 @@ set (s := fun x => match In_dec x (vars (ren_cap k t)) with
   | left _ => s1 x | right _ => s2 x end). exists s.
 assert (sub s (ren_cap k t) = sub s1 (ren_cap k t)). apply sub_eq. intros.
 unfold s. case (In_dec x (vars (ren_cap k t))); intro. refl.
-intuition. rewrite H3. rewrite <- H1.
+intuition. rewrite H3, <- H1.
 assert (Vmap (sub s) (ren_caps (k + nb_aliens t) v)
   = Vmap (sub s2) (ren_caps (k + nb_aliens t) v)). apply Vmap_sub_eq. intros.
 ded (vars_ren_caps H4). unfold s. case (In_dec x (vars (ren_cap k t))); intro.
-ded (vars_ren_cap i). omega. refl. rewrite H4. rewrite <- H2.
+ded (vars_ren_cap i). omega. refl. rewrite H4, <- H2.
 split. refl. rewrite nb_aliens_cons. intros. unfold s.
 case (In_dec x (vars (ren_cap k t))); intro. ded (vars_ren_cap i).
 omega. apply H2'. omega.
@@ -247,11 +247,11 @@ set (s := fun x => match In_dec x (vars (ren_cap k h)) with
   | left _ => s1 x | right _ => s2 x end). exists s.
 assert (sub s (ren_cap k h) = sub s1 (ren_cap k h)). apply sub_eq. intros.
 unfold s. case (In_dec x (vars (ren_cap k h))); intro. refl.
-intuition. rewrite H. rewrite <- H1.
+intuition. rewrite H, <- H1.
 assert (Vmap (sub s) (ren_caps (k + nb_aliens h) ts)
   = Vmap (sub s2) (ren_caps (k + nb_aliens h) ts)). apply Vmap_sub_eq. intros.
 ded (vars_ren_caps H0). unfold s. case (In_dec x (vars (ren_cap k h))); intro.
-ded (vars_ren_cap i). omega. refl. rewrite H0. rewrite <- H2.
+ded (vars_ren_cap i). omega. refl. rewrite H0, <- H2.
 split. refl. rewrite nb_aliens_cons. intros. unfold s.
 case (In_dec x (vars (ren_cap k h))); intro. ded (vars_ren_cap i).
 omega. apply H2'. omega.
@@ -272,7 +272,7 @@ simpl. single_tac l (ren_cap k (s x)).
 (* Fun *)
 rewrite sub_fun, !ren_cap_fun, nb_aliens_fun.
 case (defined f R). simpl. single_tac l (@Var Sig k).
-destruct (H k l) as [s']. destruct H0. exists s'. rewrite H0. rewrite sub_fun.
+destruct (H k l) as [s']. destruct H0. exists s'. rewrite H0, sub_fun.
 intuition.
 (* Vnil *)
 simpl. exists (fun x => Var x). auto.
@@ -346,7 +346,7 @@ intro t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
   clear t; intros; auto.
 (* Fun *)
 rewrite ren_cap_fun, nb_aliens_fun. case_eq (defined f R); intro H0. refl.
-rewrite nb_aliens_fun. rewrite H0. auto.
+rewrite nb_aliens_fun, H0. auto.
 (* Vcons *)
 simpl. rewrite !nb_aliens_cons. auto.
 Qed.
@@ -382,7 +382,7 @@ Lemma ren_caps_app : forall n2 (v2 : terms n2) n1 (v1 : terms n1) k,
 
 Proof.
 induction v1; simpl; intros. unfold nb_aliens_vec. simpl. rewrite plus_0_r.
-refl. rewrite nb_aliens_cons. rewrite plus_assoc. rewrite <- IHv1. refl.
+refl. rewrite nb_aliens_cons, plus_assoc, <- IHv1. refl.
 Qed.
 
 (***********************************************************************)
@@ -397,12 +397,12 @@ Proof.
 intros u v H. redtac. subst. elim c; clear c; simpl; intros.
 (* Hole *)
 destruct l. is_var_lhs. assert (defined f R = true).
-eapply lhs_fun_defined. apply lr. rewrite sub_fun. rewrite ren_cap_fun.
-rewrite H. exists_single k (sub s r).
+eapply lhs_fun_defined. apply lr. rewrite sub_fun, ren_cap_fun, H.
+exists_single k (sub s r).
 (* Cont *)
 rewrite ren_cap_fun. case (defined f R). simpl.
 exists_single k (Fun f (Vcast (Vapp t (Vcons (fill c (sub s r)) t0)) e)).
-rewrite ren_caps_cast. rewrite ren_caps_app. simpl ren_caps.
+rewrite ren_caps_cast, ren_caps_app. simpl ren_caps.
 destruct (ren_caps_intro t k) as [s1]. destruct H0 as [H0 H0'].
 destruct (H (k + nb_aliens_vec t)) as [s2].
 destruct (ren_caps_intro t0
@@ -412,7 +412,7 @@ set (s' := fun x => match In_dec x (vars_vec (ren_caps k t)) with
   | left _ => s1 x | right _ => match
   In_dec x (vars (ren_cap (k + nb_aliens_vec t) (fill c (sub s l)))) with
   | left _ => s2 x | right _ => s3 x end end). exists s'.
-rewrite sub_fun. apply args_eq. rewrite Vmap_cast. rewrite Vmap_app. simpl.
+rewrite sub_fun. apply args_eq. rewrite Vmap_cast, Vmap_app. simpl.
 apply Vcast_eq_intro. apply Vapp_eq_intro.
 trans (Vmap (sub s1) (ren_caps k t)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
@@ -438,8 +438,8 @@ Proof.
 induction 1; intros. apply red_sub_ren_cap. hyp.
 destruct (ren_cap_intro x k). exists x0. intuition.
 destruct IHclos_refl_trans1. destruct IHclos_refl_trans2. subst.
-destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1. rewrite H1.
-rewrite ren_cap_idem. rewrite sub_sub. exists (sub_comp x1 x2). refl.
+destruct (ren_cap_sub x0 (ren_cap k x) k). destruct H1.
+rewrite H1, ren_cap_idem, sub_sub. exists (sub_comp x1 x2). refl.
 Qed.
 
 End S.

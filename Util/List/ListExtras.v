@@ -136,15 +136,10 @@ Section Seg.
     apply IHl; trivial.
   Qed.
 
-  Lemma seg_exceeded : forall l k n,
-    n >= length l -> seg l k n = seg l k (length l).
+  Lemma seg_exceeded l k n : n >= length l -> seg l k n = seg l k (length l).
 
   Proof.
-    intros.
-    rewrite seg_tillEnd.
-    rewrite (@seg_tillEnd l k (length l)); trivial.
-    omega.
-    omega.
+    intro. rewrite seg_tillEnd, (@seg_tillEnd l k (length l)); trivial; omega.
   Qed.
 
 End Seg.
@@ -159,13 +154,9 @@ Section FinalSeg.
   Definition finalSeg (l: list A) fromPos
     := seg l fromPos (length l - fromPos).
 
-  Lemma finalSeg_full : forall l, finalSeg l 0 = l.
-  Proof.
-    intros.
-    unfold finalSeg; simpl.
-    rewrite initialSeg_full; trivial.
-    omega.
-  Qed.
+  Lemma finalSeg_full l : finalSeg l 0 = l.
+
+  Proof. unfold finalSeg; simpl. rewrite initialSeg_full; trivial. omega. Qed.
 
   Lemma finalSeg1_tail : forall l, finalSeg l 1 = tail l.
 
@@ -272,8 +263,7 @@ Section FinalSeg.
 
   Proof.
     intros.
-    rewrite initialSeg_length.
-    rewrite finalSeg_length.
+    rewrite initialSeg_length, finalSeg_length.
     destruct (Compare_dec.le_gt_dec k (length l)); 
       solve [rewrite min_l; omega | rewrite min_r; omega].
   Qed.
@@ -339,8 +329,7 @@ Section Copy.
   Proof.
     intros sn el x x_n.
     destruct (nth_error_In (copy sn el) x) as [[es es_nth] | en].
-    rewrite es_nth.
-    rewrite (copy_in sn el es); trivial.
+    rewrite es_nth, (copy_in sn el es); trivial.
     eapply nth_some_in; eauto.
     assert (x >= length (copy sn el)).
     apply nth_beyond_idx; trivial.
@@ -353,8 +342,7 @@ Section Copy.
 
   Proof.
     intros.
-    rewrite nth_app_right.
-    rewrite copy_length.
+    rewrite nth_app_right, copy_length.
     replace (n - n) with 0; [trivial | omega].
     rewrite copy_length.
     auto with arith.
@@ -521,7 +509,7 @@ Section DropNth.
     destruct l.
     inversion H.
     unfold drop_nth, insert_nth; simpl.
-    rewrite finalSeg_cons; rewrite finalSeg_full.
+    rewrite finalSeg_cons, finalSeg_full.
     inversion H; trivial.
     destruct l.
     inversion H.
@@ -665,9 +653,7 @@ Section DropLast.
 
   Lemma dropLast_eq : forall l1 l2, l1 = l2 -> dropLast l1 = dropLast l2.
 
-  Proof.
-    intros; rewrite H; trivial.
-  Qed.
+  Proof. intros; rewrite H; trivial. Qed.
 
   Lemma dropLast_app : forall a (l1 l2: list A),
     dropLast (l1 ++ a :: l2) = l1 ++ dropLast (a :: l2).
@@ -702,9 +688,7 @@ Section Last.
 
   Lemma last_eq : forall (l1 l2: list A), l1 = l2 -> last l1 = last l2.
 
-  Proof.
-    intros; rewrite H; trivial.
-  Qed.
+  Proof. intros; rewrite H; trivial. Qed.
 
   Lemma last_app : forall a (l1 l2: list A),
     last (l1 ++ a :: l2) = last (a :: l2).

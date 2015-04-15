@@ -138,7 +138,7 @@ Lemma hde_bool_correct_aux : forall x y, hde D x y <-> Graph hde_bool x y.
 Proof.
 intros x y. unfold hde, hde_bool, hd_eq, Graph; simpl.
 rewrite <- !mem_ok. destruct (rhs x); bool; intuition.
-apply (andb_eliml H). apply (andb_elimr H). rewrite H0. rewrite H. bool.
+apply (andb_eliml H). apply (andb_elimr H). rewrite H0, H. bool.
 destruct y. simpl in *. destruct lhs. refl. subst.
 apply beq_refl. exact (@beq_symb_ok Sig).
 ded (andb_elim H); clear H. destruct H0. apply (andb_elim H).

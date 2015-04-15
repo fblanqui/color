@@ -53,17 +53,13 @@ Variable S : relation nat.
 Lemma rel_on_nat_intro : forall i j a b,
   Dom[i] = Some a -> Dom[j] = Some b -> R a b -> rel_on_nat R i j.
 
-Proof.
-intros. unfold rel_on_nat. rewrite H. rewrite H0. exact H1.
-Qed.
+Proof. intros. unfold rel_on_nat. rewrite H, H0. exact H1. Qed.
 
 Lemma rel_on_dom_intro : forall i j a b,
   find_first (eq a) (eq_dec a) Dom = Some i ->
   find_first (eq b) (eq_dec b) Dom = Some j -> S i j -> rel_on_dom S a b.
 
-Proof.
-intros. unfold rel_on_dom. rewrite H. rewrite H0. exact H1.
-Qed.
+Proof. intros. unfold rel_on_dom. rewrite H, H0. exact H1. Qed.
 
 Lemma rel_on_nat_elim  : forall a b, rel_on_nat R a b ->
   exists x, exists y, R x y /\ Dom [a] = Some x /\ Dom [b] = Some y.
@@ -153,16 +149,16 @@ intros; split; intro.
 ded (rel_on_dom_elim H).
 repeat destruct H0; destruct H1.
 unfold rel_on_nat in H0.
-rewrite H1 in H0; rewrite H2 in H0; auto.
+rewrite H1, H2 in H0; auto.
 
 unfold is_restricted in restriction.
 ded (restriction H); destruct H0.
 ded (eq_In_find_first eq_dec H0); ded (eq_In_find_first eq_dec H1).
 destruct H2; destruct H2; destruct H3; destruct H3.
 unfold rel_on_dom.
-rewrite H2; rewrite H3.
+rewrite H2, H3.
 unfold rel_on_nat.
-rewrite H4; rewrite H5; auto.
+rewrite H4, H5; auto.
 Qed.
 
 End bijection.
@@ -185,7 +181,7 @@ intros; split; intro.
 ded (rel_on_dom_elim H).
 repeat destruct H0; destruct H1.
 unfold compose; ded (restriction H0); destruct H4.
-rewrite <- In_nats_decr_lt in H5. rewrite (@element_at_exists A) in H5.
+rewrite <- In_nats_decr_lt, (@element_at_exists A) in H5.
 destruct H5 as [z]. exists z.
 ded (element_at_in2 H1).
 ded (element_at_in2 H3).
@@ -200,7 +196,7 @@ ded (eq_In_find_first eq_dec H8); destruct H13; destruct H13.
 ded (nodup_unique Dom_nodup H1 H10).
 ded (nodup_unique Dom_nodup H3 H12).
 ded (nodup_unique Dom_nodup H5 H14).
-subst; rewrite H9; rewrite H11; rewrite H13; auto.
+subst; rewrite H9, H11, H13; auto.
 
 unfold compose in H; destruct H as [z]; destruct H.
 unfold rel_on_dom in *.
@@ -266,7 +262,7 @@ ded (rel_on_dom_elim2 H); do 3 destruct H0.
 ded (tc_iter H0); unfold Iter in *; unfold Iter_ge in *.
 destruct H2 as [n]. destruct H2; destruct H1.
 eapply (iter_tc R n); rewrite <- dom_change_iter.
-unfold rel_on_dom; rewrite H1; rewrite H4; trivial.
+unfold rel_on_dom; rewrite H1, H4; trivial.
 
 ded (tc_iter H); unfold Iter in *; unfold Iter_ge in *.
 destruct H0 as [n]; destruct H0.

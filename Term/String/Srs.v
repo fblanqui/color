@@ -37,7 +37,7 @@ Lemma beq_rule_ok : forall a1 a2, beq_rule a1 a2 = true <-> a1 = a2.
 
 Proof.
 destruct a1 as [l1 r1]. destruct a2 as [l2 r2]. simpl. intuition.
-rewrite andb_eq in H. rewrite !beq_string_ok in H. destruct H. subst.
+rewrite andb_eq, !beq_string_ok in H. destruct H. subst.
 refl. inversion H. subst. rewrite !(beq_refl beq_string_ok). refl.
 Qed.
 
@@ -105,7 +105,7 @@ Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).
 Proof.
 intros. redtac. unfold red.
 exists l. exists r. exists (comp c c0). split. hyp.
-do 2 rewrite fill_fill. auto.
+rewrite !fill_fill. auto.
 Qed.
 
 Lemma rtc_red_fill : forall c t u,

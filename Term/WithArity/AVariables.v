@@ -105,7 +105,7 @@ intros s x u. pattern u. apply term_ind with (Q := fun n (ts : terms n) =>
   mem x (vars_vec ts) = true -> size_terms (Vmap (sub s) ts) >= size (s x));
   clear u.
 intro. simpl. mem. intro. subst x0. omega.
-intros f v. rewrite vars_fun. rewrite sub_fun. rewrite size_fun. intros.
+intros f v. rewrite vars_fun, sub_fun, size_fun. intros.
 ded (H H0). omega. simpl. mem. intros. discr.
 intros until v. simpl. mem. intros. destruct (orb_true_elim H1).
 ded (H e). omega. ded (H0 e). omega.
@@ -231,7 +231,7 @@ intros x v. apply term_ind with (Q := fun n (ts : terms n) =>
 (* Var *)
 intro. simpl. unfold single. case_beq_nat x x0. 
 autorewrite with mem Equal. refl.
-simpl. mem. rewrite (beq_com beq_nat_ok). rewrite H. refl.
+simpl. mem. rewrite (beq_com beq_nat_ok), H. refl.
 (* Fun *)
 intros. rewrite sub_fun.
 case_eq (mem x (vars (Fun f v0))); rewrite !vars_fun; intro;

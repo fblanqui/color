@@ -63,8 +63,7 @@ Section S.
     intros [f1 l1] [f2 l2]. simpl. split; intro. rewrite andb_eq in H.
     destruct H.
     rewrite beq_symb_ok in H. subst. rewrite beq_ok in H0. subst. refl.
-    Leqtac. rewrite andb_eq. rewrite (beq_refl (@beq_symb_ok Sig)).
-    rewrite beq_ok. auto.
+    Leqtac. rewrite andb_eq, (beq_refl (@beq_symb_ok Sig)), beq_ok. auto.
   Qed.
 
   Definition lab_arity (fl : lab_symb) := let (f,_) := fl in arity f.
@@ -129,7 +128,7 @@ Section S.
     (* Vnil *)
     refl.
     (* Vcons *)
-    rewrite maxvars_cons in H1. rewrite gt_max in H1. destruct H1.
+    rewrite maxvars_cons, gt_max in H1. destruct H1.
     rewrite (H0 n0). 2: hyp. rewrite (H n0). 2: hyp. refl.
   Qed.
 
@@ -150,7 +149,7 @@ Section S.
 
   Proof.
     induction R; simpl; intros. refl. unfold maxvar_rules in H. simpl in H.
-    rewrite lab_rule_fval. rewrite IHR. refl.
+    rewrite lab_rule_fval, IHR. refl.
     apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
     apply maxvar_rules_init_mon. apply le_max_l. hyp.
     apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
@@ -254,7 +253,7 @@ Section S.
 
   Proof.
     intro E. trans (red E % #). rewrite red_mod_Frs_Decr. refl.
-    rewrite rc_incl_rtc. rewrite rtc_invol. refl.
+    rewrite rc_incl_rtc, rtc_invol. refl.
   Qed.
 
 (***********************************************************************)
@@ -583,9 +582,9 @@ Definition enum2 R :=
       Lemma WF_red_lab_fin : WF (red R) <-> WF (red_mod D' R').
 
       Proof.
-        rewrite <- red_Rules. rewrite <- red_mod_Rules. rewrite WF_red_lab.
-        2: apply ge_compatR. apply WF_same_rel. rewrite Rules_enum_Decr.
-        rewrite lab_rules_enum. refl.
+        rewrite <- red_Rules, <- red_mod_Rules, WF_red_lab.
+        2: apply ge_compatR. apply WF_same_rel.
+        rewrite Rules_enum_Decr, lab_rules_enum. refl.
       Qed.
 
       Import List.
@@ -726,7 +725,7 @@ Module Ord (SL : SemLab) <: OrdSemLab.
 
   Proof.
     unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
-    rewrite Lge_is_eq. rewrite H0. refl.
+    rewrite Lge_is_eq, H0. refl.
   Qed.
 
   Notation "t '>=I' u" := (IR I Dge t u) (at level 70).
@@ -1014,7 +1013,7 @@ Module FinSemLabProps (FSL : FinSemLab).
 
     Proof.
       rewrite WF_red_lab. 2: apply bge_compatR.
-      rewrite enum_Decr_empty. rewrite red_mod_empty. refl.
+      rewrite enum_Decr_empty, red_mod_empty. refl.
     Qed.
 
   End props.

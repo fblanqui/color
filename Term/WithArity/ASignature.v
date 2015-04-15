@@ -98,7 +98,7 @@ Section weight_inj.
     unfold bweight_inj. apply forallb_ok_fintype. 2: hyp. intro f.
     apply forallb_ok_fintype. 2: hyp. intro g. unfold implb.
     case_eq (beq_nat (weight f) (weight g)).
-    rewrite beq_nat_ok. rewrite beq_symb_ok. tauto.
+    rewrite beq_nat_ok, beq_symb_ok. tauto.
     rewrite (beq_ko beq_nat_ok). tauto.
   Qed.
 
@@ -138,8 +138,8 @@ Module OrdType (Import S : WSIG) <: OrderedType.
     beq_symb f g = false -> blt f g = false -> blt g f = true.
 
   Proof.
-    intros f g. unfold blt. rewrite bgt_nat_ok. rewrite bgt_nat_ko.
-    rewrite (beq_ko (@beq_symb_ok Sig)). intros.
+    intros f g. unfold blt.
+    rewrite bgt_nat_ok, bgt_nat_ko, (beq_ko (@beq_symb_ok Sig)). intros.
     destruct (eq_nat_dec (weight f) (weight g)).
     ded (weight_inj e). subst g. irrefl.
     omega.

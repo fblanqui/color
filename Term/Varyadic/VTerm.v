@@ -111,49 +111,15 @@ End term_rec_forall.
 
 Lemma term_eq : forall f f' v v', f = f' -> v = v' -> Fun f v = Fun f' v'.
 
-Proof.
-intros. rewrite H. rewrite H0. refl.
-Qed.
+Proof. intros. rewrite H, H0. refl. Qed.
 
 Lemma fun_eq : forall f f' v, f = f' -> Fun f v = Fun f' v.
 
-Proof.
-intros. rewrite H. refl.
-Qed.
+Proof. intros. rewrite H. refl. Qed.
 
 Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
 
-Proof.
-intros. rewrite H. refl.
-Qed.
-
-(*Lemma term_eq_dec : forall t u : term, {t = u} + {t <> u}.
-
-Proof.
-  intro. pattern t. apply term_rect with
-    (Q := fun ts : terms => forall us, {ts=us} + {~ts=us}); clear t; intros.
-  destruct u. 
-  destruct (eq_nat_dec x n). 
-  intuition. right. congruence.
-  right. discr.
-  destruct u. 
-  right. discr.
-  destruct (eq_symbol_dec f f0). destruct (X l).
-  left. congruence.
-  right. intro diff. apply n. congruence.
-  right. intro diff. apply n. congruence.
-  destruct us. 
-  left. trivial.
-  right. discr.
-  destruct us. 
-  right. discr.
-  destruct (X t0).
-  destruct (X0 us).
-  left. congruence.
-  right. intro diff. apply n. congruence.
-  right. intro diff. apply n. congruence.
-Defined.
-*)
+Proof. intros. rewrite H. refl. Qed.
 
 Require Import NatUtil.
 
@@ -200,16 +166,12 @@ Lemma beq_terms : forall ts us,
         end
     end) ts us = beq_list beq ts us.
 
-Proof.
-induction ts; destruct us; refl.
-Qed.
+Proof. induction ts; destruct us; refl. Qed.
 
 Lemma beq_fun : forall f ts g us,
   beq (Fun f ts) (Fun g us) = beq_symb f g && beq_list beq ts us.
 
-Proof.
-intros. rewrite <- beq_terms. refl.
-Qed.
+Proof. intros. rewrite <- beq_terms. refl. Qed.
 
 Lemma beq_ok : forall t u, beq t u = true <-> t = u.
 

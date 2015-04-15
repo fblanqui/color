@@ -99,12 +99,12 @@ Section LexPair.
     destruct p; destruct q; destruct p'; destruct q'; destruct pp';
       destruct qq';
     simpl in *; inversion p_q.
-    constructor 1; rewrite <- H; rewrite <- H1; trivial.
-    constructor 2. rewrite <- H; rewrite <- H1; trivial.
-    rewrite <- H0; rewrite <- H2; trivial.
-    constructor 1; rewrite H; rewrite H1; trivial.
-    constructor 2. rewrite H; rewrite H1; trivial.
-    rewrite H0; rewrite H2; trivial.
+    constructor 1; rewrite <- H, <- H1; trivial.
+    constructor 2. rewrite <- H, <- H1; trivial.
+    rewrite <- H0, <- H2; trivial.
+    constructor 1; rewrite H, H1; trivial.
+    constructor 2. rewrite H, H1; trivial.
+    rewrite H0, H2; trivial.
   Qed.
 
   Lemma LexProd_Gt_morph : forall x1 x2 : pair, eqPair x1 x2 ->
@@ -116,8 +116,8 @@ Section LexPair.
 
   Proof.
     unfold LexProd_Lt, transp. intros p p' pp' q q' qq'. split; intro p_q.
-    rewrite <- pp'; rewrite <- qq'; trivial.
-    rewrite pp'; rewrite qq'; trivial.
+    rewrite <- pp', <- qq'; trivial.
+    rewrite pp', qq'; trivial.
   Qed.
 
   Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
@@ -172,11 +172,11 @@ Section LexPair.
       constructor 1; apply (sord_trans gtL_so la la' ra'); 
         solve [trivial | rewrite eq1; trivial].
       (* case 2 *)
-      constructor 1. rewrite <- eq_ra. rewrite <- eq1. hyp.
+      constructor 1. rewrite <- eq_ra, <- eq1. hyp.
        (* case 3 *)
-      constructor 1. rewrite eq_la. rewrite eq1. hyp.
+      constructor 1. rewrite eq_la, eq1. hyp.
        (* case 4 *)
-      constructor 2. rewrite eq_la. rewrite <- eq_ra. rewrite eq1.
+      constructor 2. rewrite eq_la, <- eq_ra, eq1.
       auto with sets.
       apply (sord_trans gtR_so lb lb' rb'); 
         [ trivial 
@@ -294,8 +294,8 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
   Proof.
     unfold LexProd_Lt; unfold transp.
     intros p p' pp' q q' qq'. split; intro p_q.
-    rewrite <- pp'; rewrite <- qq'; trivial.
-    rewrite pp'; rewrite qq'; trivial.
+    rewrite <- pp', <- qq'; trivial.
+    rewrite pp', qq'; trivial.
   Qed.
 
   Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.

@@ -157,17 +157,17 @@ Section bool_ok.
 
   Lemma andb_ok : forall x, bP x && bQ x = true <-> P x /\ Q x.
 
-  Proof. intro. rewrite andb_eq. rewrite bP_ok. rewrite bQ_ok. refl. Qed.
+  Proof. intro. rewrite andb_eq, bP_ok, bQ_ok. refl. Qed.
 
   Lemma orb_ok : forall x, bP x || bQ x = true <-> P x \/ Q x.
 
-  Proof. intro. rewrite orb_eq. rewrite bP_ok. rewrite bQ_ok. refl. Qed.
+  Proof. intro. rewrite orb_eq, bP_ok, bQ_ok. refl. Qed.
 
   Lemma implb_ok : forall x, implb (bP x) (bQ x) = true <-> (P x -> Q x).
 
   Proof.
     intro x. unfold implb. case_eq (bP x).
-    rewrite bP_ok. rewrite bQ_ok. tauto.
+    rewrite bP_ok, bQ_ok. tauto.
     rewrite (ko bP_ok). tauto.
   Qed.
 
@@ -194,7 +194,7 @@ Section bforall_lt.
 
   Proof.
     unfold forall_lt. induction n; simpl; intros. bool. fo.    
-    rewrite andb_eq. rewrite IHn. rewrite bP_ok. intuition.
+    rewrite andb_eq, IHn, bP_ok. intuition.
     destruct (eq_nat_dec i n). subst. hyp. apply H2. omega.
   Qed.
 

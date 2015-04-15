@@ -200,7 +200,7 @@ unfold Q. simpl. intros. contr.
 (* cons *)
 unfold Q. simpl. set (m := max (maxvar t) (maxvars v)).
 intros m0 H1.
-rewrite fresh_plus. rewrite Vbreak_app. simpl. intros. ded (in_app_or H2).
+rewrite fresh_plus, Vbreak_app. simpl. intros. ded (in_app_or H2).
 destruct H4.
 (* head *)
 apply in_appl. apply H with (m := m0).
@@ -250,7 +250,7 @@ apply H; hyp.
 (* nil *)
 unfold Q. simpl. intros. contr.
 (* cons *)
-intros. unfold Q. simpl. intros m H1. rewrite fresh_plus. rewrite Vbreak_app.
+intros. unfold Q. simpl. intros m H1. rewrite fresh_plus, Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
 assert (x <= m + projS1 (capa t)). apply H. eapply le_max_elim_l.
 rewrite maxvars_cons in H1. apply H1. hyp. omega.
@@ -262,8 +262,7 @@ Lemma vars_cap : forall x t,
   In x (vars (cap t)) -> x <= maxvar t + nb_aliens t.
 
 Proof.
-intros. apply vars_fcap_fresh. apply le_refl. rewrite cap_eq in H.
-hyp.
+intros. apply vars_fcap_fresh. apply le_refl. rewrite cap_eq in H. hyp.
 Qed.
 
 (***********************************************************************)
@@ -290,15 +289,13 @@ rewrite H0. apply H.
 (* nil *)
 unfold Q. refl.
 (* cons *)
-unfold Q. simpl. intro. rewrite fresh_plus. rewrite Vbreak_app. simpl.
+unfold Q. simpl. intro. rewrite fresh_plus, Vbreak_app. simpl.
 apply app_nil. apply H. apply H0.
 Qed.
 
-Lemma calls_cap : forall t, calls (cap t) = nil.
+Lemma calls_cap t : calls (cap t) = nil.
 
-Proof.
-intro. rewrite cap_eq. apply calls_capa.
-Qed.
+Proof. rewrite cap_eq. apply calls_capa. Qed.
 
 Lemma aliens_incl_calls : forall u t,
   Vin u (aliens (capa t)) -> In u (calls t).
@@ -341,9 +338,8 @@ VSntac v. refl.
 apply args_eq. apply IH. hyp.
 unfold Q. auto.
 intros. unfold Q. simpl. intros.
-gen (Vbreak_eq_app v0). intro. rewrite H3. rewrite Vmap_app.
-do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H2.
-apply Vcons_eq_intro.
+gen (Vbreak_eq_app v0). intro. rewrite H3, Vmap_app, !Vbreak_app. simpl.
+rewrite maxvars_cons in H2. apply Vcons_eq_intro.
 apply H0. eapply le_max_elim_l. apply H2.
 apply H1. eapply le_max_elim_r. apply H2.
 Qed.
@@ -355,9 +351,8 @@ Lemma Vmap_map_sum : forall m s, (forall x, x <= m -> s x = Var x)
 
 Proof.
 induction ts; simpl; intros. refl.
-gen (Vbreak_eq_app v). intro. rewrite H1. rewrite Vmap_app.
-do 2 rewrite Vbreak_app. simpl. rewrite maxvars_cons in H0.
-apply Vcons_eq_intro.
+gen (Vbreak_eq_app v). intro. rewrite H1, Vmap_app, !Vbreak_app. simpl.
+rewrite maxvars_cons in H0. apply Vcons_eq_intro.
 eapply app_fcap. apply H. eapply le_max_elim_l. apply H0.
 apply IHts. eapply le_max_elim_r. apply H0.
 Qed.
@@ -390,8 +385,8 @@ set (s := fsub m v0). set (v1 := fresh (S m) (sum cs)).
 assert (Vmap (sub s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (sub s) v1)).
 unfold cs. eapply Vmap_map_sum with (m := m).
 unfold s. apply fsub_inf. apply le_refl. rewrite H4.
-assert (Vmap (sub s) v1 = conc cs). unfold s, v1. rewrite H3.
-rewrite Vmap_fsub_fresh. refl.
+assert (Vmap (sub s) v1 = conc cs). unfold s, v1. rewrite H3, Vmap_fsub_fresh.
+refl.
 rewrite H5. unfold cs. apply Vmap_sum_conc.
 Qed.
 
