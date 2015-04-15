@@ -54,30 +54,22 @@ Module SemiRing (SR : SemiRingType).
   Definition Amult_1_l := SRmul_1_l A_semi_ring.
   Definition A_plus_mult_distr_l := SRdistr_l A_semi_ring.
 
-  Lemma Aplus_0_r : forall n, n + A0 =A= n.
+  Lemma Aplus_0_r n : n + A0 =A= n.
+
+  Proof. rewrite Aplus_comm. apply Aplus_0_l. Qed.
+
+  Lemma Amult_0_r n : n * A0 =A= A0.
+
+  Proof. rewrite Amult_comm. apply Amult_0_l. Qed.
+
+  Lemma Amult_1_r n : n * A1 =A= n.
+
+  Proof. rewrite Amult_comm. apply Amult_1_l. Qed.
+
+  Lemma A_plus_mult_distr_r m n p : m * (n + p) =A= m * n + m * p.
 
   Proof.
-    intros. rewrite Aplus_comm. apply Aplus_0_l.
-  Qed.
-
-  Lemma Amult_0_r : forall n, n * A0 =A= A0.
-
-  Proof.
-    intros. rewrite Amult_comm. apply Amult_0_l.
-  Qed.
-
-  Lemma Amult_1_r : forall n, n * A1 =A= n.
-
-  Proof.
-    intros. rewrite Amult_comm. apply Amult_1_l.
-  Qed.
-
-  Lemma A_plus_mult_distr_r : forall m n p,
-    m * (n + p) =A= m * n + m * p.
-
-  Proof.
-    intros. rewrite Amult_comm. 
-    rewrite (Amult_comm m n). rewrite (Amult_comm m p).
+    rewrite Amult_comm, (Amult_comm m n), (Amult_comm m p).
     apply A_plus_mult_distr_l.
   Qed.
 
@@ -370,47 +362,42 @@ Module ArcticSemiRingT <: SemiRingType.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
-  Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
+  Lemma A_plus_comm m n : Aplus m n = Aplus n m.
 
   Proof.
-    intros. unfold Aplus. destruct m; destruct n; trivial.
-    rewrite max_comm. trivial.
+    unfold Aplus. destruct m; destruct n; trivial. rewrite max_comm. trivial.
   Qed.
 
-  Lemma A_plus_assoc : forall m n p, Aplus m (Aplus n p) = Aplus (Aplus m n) p.
+  Lemma A_plus_assoc m n p : Aplus m (Aplus n p) = Aplus (Aplus m n) p.
 
   Proof.
-    intros. unfold Aplus.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Aplus. destruct m; destruct n; destruct p; trivial.
     rewrite max_assoc. trivial.
   Qed.
 
-  Lemma A_mult_comm : forall m n, Amult m n = Amult n m.
+  Lemma A_mult_comm m n : Amult m n = Amult n m.
 
   Proof.
-    intros. unfold Amult. destruct m; destruct n; trivial.
-    rewrite plus_comm. trivial.
+    unfold Amult. destruct m; destruct n; trivial. rewrite plus_comm. trivial.
   Qed.
 
-  Lemma A_mult_assoc : forall m n p, Amult m (Amult n p) = Amult (Amult m n) p.
+  Lemma A_mult_assoc m n p : Amult m (Amult n p) = Amult (Amult m n) p.
 
   Proof.
-    intros. unfold Amult.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Amult. destruct m; destruct n; destruct p; trivial.
     rewrite plus_assoc. trivial.
   Qed.
 
   Import Compare. Import Max.
 
-  Lemma A_mult_plus_distr : forall m n p,
+  Lemma A_mult_plus_distr m n p :
     Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
 
   Proof.
-    intros. unfold Amult, Aplus.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Amult, Aplus. destruct m; destruct n; destruct p; trivial.
     destruct (le_dec n n0).
-    rewrite max_l. rewrite max_l. trivial. auto with arith. trivial.
-    rewrite max_r. rewrite max_r. trivial. auto with arith. trivial.
+    rewrite !max_l. trivial. auto with arith. trivial.
+    rewrite !max_r. trivial. auto with arith. trivial.
   Qed.
 
   Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
@@ -427,24 +414,14 @@ Module ArcticSemiRingT <: SemiRingType.
     apply A_mult_plus_distr.
   Qed.
 
-  Lemma arctic_plus_notInf_left : forall a b,
-    a <> MinusInf -> Aplus a b <> MinusInf.
+  Lemma arctic_plus_notInf_left a b : a <> MinusInf -> Aplus a b <> MinusInf.
 
-  Proof.
-    intros. destruct a. 
-    destruct b; simpl; discr.
-    auto. 
-  Qed.
+  Proof. destruct a. destruct b; discr. auto. Qed.
 
-  Lemma arctic_mult_notInf : forall a b,
+  Lemma arctic_mult_notInf a b :
     a <> MinusInf -> b <> MinusInf -> Amult a b <> MinusInf.
 
-  Proof.
-    intros. 
-    destruct a; auto. 
-    destruct b; auto. 
-    simpl. discr.
-  Qed.
+  Proof. destruct a; auto. destruct b; auto. discr. Qed.
 
 End ArcticSemiRingT.
 
@@ -467,11 +444,11 @@ Definition beq_ArcticBZDom x y :=
     | _, _ => false
   end.
 
-Lemma beq_ArcticBZDom_ok : forall x y, beq_ArcticBZDom x y = true <-> x = y.
+Lemma beq_ArcticBZDom_ok x y : beq_ArcticBZDom x y = true <-> x = y.
 
 Proof.
-unfold beq_ArcticBZDom. destruct x; destruct y; simpl; try (intuition; discr).
-rewrite beq_Z_ok. intuition. subst. refl. inversion H. refl.
+  unfold beq_ArcticBZDom. destruct x; destruct y; simpl; try (intuition; discr).
+  rewrite beq_Z_ok. intuition. subst. refl. inversion H. refl.
 Qed.
 
 Module ArcticBZ <: SetA.
@@ -516,42 +493,37 @@ Module ArcticBZSemiRingT <: SemiRingType.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
-  Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
+  Lemma A_plus_comm m n : Aplus m n = Aplus n m.
 
   Proof.
-    intros. unfold Aplus. destruct m; destruct n; trivial. 
-    rewrite Zmax_comm. refl.
+    unfold Aplus. destruct m; destruct n; trivial. rewrite Zmax_comm. refl.
   Qed.
 
-  Lemma A_plus_assoc : forall m n p, Aplus m (Aplus n p) = Aplus (Aplus m n) p.
+  Lemma A_plus_assoc m n p : Aplus m (Aplus n p) = Aplus (Aplus m n) p.
 
   Proof.
-    intros. unfold Aplus.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Aplus. destruct m; destruct n; destruct p; trivial.
     rewrite Zmax_assoc. refl.
   Qed.
 
-  Lemma A_mult_comm : forall m n, Amult m n = Amult n m.
+  Lemma A_mult_comm m n : Amult m n = Amult n m.
 
   Proof.
-    intros. unfold Amult. destruct m; destruct n; trivial.
-    rewrite Zplus_comm. refl.
+    unfold Amult. destruct m; destruct n; trivial. rewrite Zplus_comm. refl.
   Qed.
 
-  Lemma A_mult_assoc : forall m n p, Amult m (Amult n p) = Amult (Amult m n) p.
+  Lemma A_mult_assoc m n p : Amult m (Amult n p) = Amult (Amult m n) p.
 
   Proof.
-    intros. unfold Amult.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Amult. destruct m; destruct n; destruct p; trivial.
     rewrite Zplus_assoc. refl.
   Qed.
 
-  Lemma A_mult_plus_distr : forall m n p,
+  Lemma A_mult_plus_distr m n p :
     Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
 
   Proof.
-    intros. unfold Amult, Aplus. 
-    destruct m; destruct n; destruct p; trivial.
+    unfold Amult, Aplus. destruct m; destruct n; destruct p; trivial.
     rewrite Zplus_max_distr_r.
     destruct (Zmax_irreducible_inf z z0); rewrite e; refl.
   Qed.
@@ -570,24 +542,15 @@ Module ArcticBZSemiRingT <: SemiRingType.
     apply A_mult_plus_distr.
   Qed.
 
-  Lemma arctic_plus_notInf_left : forall (a b : A),
+  Lemma arctic_plus_notInf_left a b :
     a <> MinusInfBZ -> Aplus a b <> MinusInfBZ.
 
-  Proof.
-    intros. destruct a. 
-    destruct b; simpl; discr.
-    auto. 
-  Qed.
+  Proof. destruct a. destruct b; discr. auto. Qed.
 
-  Lemma arctic_mult_notInf : forall (a b : A),
+  Lemma arctic_mult_notInf a b :
     a <> MinusInfBZ -> b <> MinusInfBZ -> Amult a b <> MinusInfBZ.
 
-  Proof.
-    intros. 
-    destruct a; auto. 
-    destruct b; auto.
-    simpl. discr.
-  Qed.
+  Proof. destruct a; auto. destruct b; auto. discr. Qed.
 
 End ArcticBZSemiRingT.
 
@@ -618,7 +581,7 @@ Definition beq_TropicalDom x y :=
   | _, _ => false
   end.
 
-Lemma beq_TropicalDom_ok : forall x y, beq_TropicalDom x y = true <-> x = y.
+Lemma beq_TropicalDom_ok x y : beq_TropicalDom x y = true <-> x = y.
 
 Proof.
   unfold beq_TropicalDom. destruct x; destruct y; simpl; try (intuition; discr).
@@ -667,47 +630,42 @@ Module TropicalSemiRingT <: SemiRingType.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
-  Lemma A_plus_comm : forall m n, Aplus m n = Aplus n m.
+  Lemma A_plus_comm m n : Aplus m n = Aplus n m.
 
   Proof.
-    intros. unfold Aplus. destruct m; destruct n; trivial.
-    rewrite min_comm. trivial.
+    unfold Aplus. destruct m; destruct n; trivial. rewrite min_comm. trivial.
   Qed.
 
-  Lemma A_plus_assoc : forall m n p, Aplus m (Aplus n p) = Aplus (Aplus m n) p.
+  Lemma A_plus_assoc m n p : Aplus m (Aplus n p) = Aplus (Aplus m n) p.
 
   Proof.
-    intros. unfold Aplus.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Aplus. destruct m; destruct n; destruct p; trivial.
     rewrite min_assoc. trivial.
   Qed.
 
-  Lemma A_mult_comm : forall m n, Amult m n = Amult n m.
+  Lemma A_mult_comm m n : Amult m n = Amult n m.
 
   Proof.
-    intros. unfold Amult. destruct m; destruct n; trivial.
-    rewrite plus_comm. trivial.
+    unfold Amult. destruct m; destruct n; trivial. rewrite plus_comm. trivial.
   Qed.
 
-  Lemma A_mult_assoc : forall m n p, Amult m (Amult n p) = Amult (Amult m n) p.
+  Lemma A_mult_assoc m n p : Amult m (Amult n p) = Amult (Amult m n) p.
 
   Proof.
-    intros. unfold Amult.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Amult. destruct m; destruct n; destruct p; trivial.
     rewrite plus_assoc. trivial.
   Qed.
 
   Import Compare. Import Min.
 
-  Lemma A_mult_plus_distr : forall m n p,
+  Lemma A_mult_plus_distr m n p :
     Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
 
   Proof.
-    intros. unfold Amult, Aplus.
-    destruct m; destruct n; destruct p; trivial.
+    unfold Amult, Aplus. destruct m; destruct n; destruct p; trivial.
     destruct (le_dec n0 n).
-    rewrite min_l. rewrite min_l. trivial. auto with arith. trivial.
-    rewrite min_r. rewrite min_r. trivial. auto with arith. trivial.
+    rewrite !min_l. trivial. auto with arith. trivial.
+    rewrite !min_r. trivial. auto with arith. trivial.
   Qed.
 
   Lemma A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
@@ -724,24 +682,15 @@ Module TropicalSemiRingT <: SemiRingType.
     apply A_mult_plus_distr.
   Qed.
 
-  Lemma tropical_plus_notInf_left : forall a b,
+  Lemma tropical_plus_notInf_left a b :
     a <> PlusInf -> Aplus a b <> PlusInf.
 
-  Proof.
-    intros. destruct a. 
-    destruct b; simpl; discr.
-    auto. 
-  Qed.
+  Proof. destruct a. destruct b; discr. auto. Qed.
 
-  Lemma tropical_mult_notInf : forall a b,
+  Lemma tropical_mult_notInf a b :
     a <> PlusInf -> b <> PlusInf -> Amult a b <> PlusInf.
 
-  Proof.
-    intros. 
-    destruct a; auto. 
-    destruct b; auto. 
-    simpl. discr.
-  Qed.
+  Proof. destruct a; auto. destruct b; auto. discr. Qed.
 
 End TropicalSemiRingT.
 

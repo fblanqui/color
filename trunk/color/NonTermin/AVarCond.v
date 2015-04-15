@@ -22,7 +22,7 @@ Section S.
     ~rules_preserve_vars R -> EIS (red_mod E R).
 
   Proof.
-    intros E R. rewrite <- brules_preserve_vars_ok. rewrite <- false_not_true.
+    intros E R. rewrite <- brules_preserve_vars_ok, <- false_not_true.
     unfold brules_preserve_vars.
     rewrite (forallb_neg (@brule_preserve_vars_ok Sig)).
     intros [[l r] [h1 h2]]. simpl in *. rewrite not_incl in h2.
@@ -33,7 +33,7 @@ Section S.
     exists f. unfold IS. induction i; simpl in *. exists (f 0). split.
     apply rt_refl. exists l. exists r. exists Hole. simpl. exists s.
     repeat split. hyp. unfold s. rewrite sub_single_not_var. refl. hyp.
-    rewrite H3. rewrite sub_fill. unfold s, single. simpl.
+    rewrite H3, sub_fill. unfold s, single. simpl.
     rewrite (beq_refl beq_nat_ok). refl. unfold f. apply red_mod_fill. hyp.
   Qed.
 

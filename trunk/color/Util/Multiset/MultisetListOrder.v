@@ -65,8 +65,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       exists t'; split.
       elim (member_multiset_list ts) with t'; trivial.
       apply In_eqA_compat.
-      rewrite H0.
-      rewrite (union_comm Z X).
+      rewrite H0, (union_comm Z X).
       apply member_member_union; hyp.
       right; hyp.
       apply member_union.
@@ -230,8 +229,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       inversion HM.
       assert (H' : X =mul= Y).
       apply meq_union_meq with Z.
-      rewrite (union_comm X Z); rewrite (union_comm Y Z); rewrite <- H1;
-        rewrite <- H0.
+      rewrite (union_comm X Z), (union_comm Y Z), <- H1, <- H0.
       auto with multisets.
       assert (H'' : forall (x : A), x in X ->
         ex (fun (x' : A) => x' in X /\ r x' x)).
@@ -242,7 +240,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim (self_dom Htrans X H H''); intros x Hx.
       elim Hx; clear Hx; intros Hx1 Hx2.
       apply (Hsub x); trivial.
-      rewrite H0; rewrite (union_comm Z X); auto with multisets.
+      rewrite H0, (union_comm Z X); auto with multisets.
     Qed.
 
     Lemma irrefl_to_mult_irrefl : transitive r -> 
@@ -285,8 +283,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       intro HM; inversion HM.
       assert (H' : X =mul= Y).
       apply meq_union_meq with Z.
-      rewrite (union_comm X Z); rewrite (union_comm Y Z); rewrite <- H1;
-        rewrite <- H0.
+      rewrite (union_comm X Z), (union_comm Y Z), <- H1, <- H0.
       auto with multisets.
       (* H' proved *)
       assert (H'' : forall (x : A), x in X ->
@@ -300,7 +297,7 @@ Module MultisetListOrder (ES : Eqset_dec).
         forall y z, r y x -> r z y -> r z x).
       intros x x_in_X; assert (x_in_us : In x us).
       assert (x_in_usM : x in (list2multiset us)).
-      rewrite H0; rewrite (union_comm Z X); apply member_member_union; trivial.
+      rewrite H0, (union_comm Z X); apply member_member_union; trivial.
       elim (member_multiset_list us x_in_usM); intros; apply In_eqA_compat
         with x0; trivial.
       elim (Hsub x x_in_us); intros H3 H4; unfold transp in H3; simpl in H3;
@@ -310,7 +307,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       elim Hx; clear Hx; intros Hx1 Hx2.
       assert (x_in_us : In x us).
       assert (x_in_usM : x in (list2multiset us)).
-      rewrite H0; rewrite (union_comm Z X); apply member_member_union; trivial.
+      rewrite H0, (union_comm Z X); apply member_member_union; trivial.
       elim (member_multiset_list us x_in_usM); intros; apply In_eqA_compat
         with x0; trivial.
       elim (Hsub x x_in_us); intros H3 H4; unfold transp in H4; simpl in H4;

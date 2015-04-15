@@ -81,8 +81,7 @@ Section S.
 
   Proof.
     induction p; simpl; intros; subst. refl.
-    rewrite (beq_refl (@beq_symb_ok Sig)).
-    apply IHp. refl.
+    rewrite (beq_refl (@beq_symb_ok Sig)). apply IHp. refl.
   Qed.
 
 (***********************************************************************)
@@ -216,7 +215,7 @@ Section S.
       (* r = k-1 *)
       assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
       omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
-      destruct (eucl_div_unique h0 g1 e0). rewrite <- H3. rewrite <- H2. simpl.
+      destruct (eucl_div_unique h0 g1 e0). rewrite <- H3, <- H2. simpl.
       rewrite <- iter_com. apply red_iter. apply red_fill.
       rewrite H0. fold last_string. rewrite last_string_g. apply red_fill.
       unfold nth. change (red R (List.nth 0 (t :: us) default)
@@ -225,7 +224,7 @@ Section S.
       (* r < k-1 *)
       assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
       destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
-      destruct (eucl_div_unique H1 g2 e0). rewrite <- H3. rewrite <- H2.
+      destruct (eucl_div_unique H1 g2 e0). rewrite <- H3, <- H2.
       apply red_iter. apply red_fill. apply FS_red'. omega.
     Qed.
 

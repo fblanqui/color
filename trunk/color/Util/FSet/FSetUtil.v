@@ -53,7 +53,7 @@ Module Make (Export XSet : FSetInterface.S).
     match goal with
       | |- context [inter (union ?a _) _] => rewrite union_inter_1 with (s:=a)
       | |- context [inter ?a (union _ _)] =>
-        rewrite inter_sym with (s:=a); rewrite union_inter_1 with (s'':=a)
+        rewrite inter_sym with (s:=a), union_inter_1 with (s'':=a)
     end.
 
 (***********************************************************************)
@@ -161,7 +161,7 @@ Module Make (Export XSet : FSetInterface.S).
     [=] if eqb y x then remove y xs else add x (remove y xs).
 
   Proof.
-    eq_dec y x. rewrite e at 1. rewrite remove_add_eq. rewrite e. refl.
+    eq_dec y x. rewrite e at 1. rewrite remove_add_eq, e. refl.
     fset. apply n. rewrite H, H0. refl.
   Qed.
 

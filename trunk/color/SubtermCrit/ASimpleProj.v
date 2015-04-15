@@ -137,7 +137,7 @@ Section S.
 
   Proof.
     unfold valid, bvalid. apply forallb_ok_fintype. 2: hyp.
-    intro f. rewrite orb_eq. rewrite beq_nat_ok. rewrite bgt_nat_ok. omega.
+    intro f. rewrite orb_eq, beq_nat_ok, bgt_nat_ok. omega.
   Qed.
 
 End S.

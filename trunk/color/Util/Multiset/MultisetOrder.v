@@ -138,10 +138,10 @@ Section OrderDefinition.
 
   Proof.
     intros x1 x2 H x0 x3 H0; split; intro; inversion H1.
-    constructor 1; rewrite <- H; rewrite <- H0; trivial.
+    constructor 1; rewrite <- H, <- H0; trivial.
     constructor 2 with y; fold clos_transM_RedGt.
     rewrite <- H; hyp. rewrite <- H0; hyp.
-    constructor 1; rewrite H; rewrite H0; trivial.
+    constructor 1; rewrite H, H0; trivial.
     constructor 2 with y; fold clos_transM_RedGt.
     rewrite H; hyp. rewrite H0; hyp.
   Qed.
@@ -226,10 +226,10 @@ Section OrderDefinition.
   
   Proof.
     intros; split; intro; destruct H1.
-    left; rewrite <- H; rewrite <- H0; trivial.
-    right; rewrite <- H; rewrite <- H0; trivial.
-    left; rewrite H; rewrite H0; trivial.
-    right; rewrite H; rewrite H0; trivial.
+    left; rewrite <- H, <- H0; trivial.
+    right; rewrite <- H, <- H0; trivial.
+    left; rewrite H, H0; trivial.
+    right; rewrite H, H0; trivial.
   Qed.
 
 (* -----------------------------------------------------------------
@@ -269,22 +269,20 @@ Section OrderCharacterization.
      (* 'X' not empty *)
     auto with multisets.
      (* left component ok *)
-    rewrite M1_def.
-    rewrite (union_assoc (Z1#Z2) X1 (X2-Y1)).
-    rewrite (union_perm (Z1#Z2) X1 (X2-Y1)).
+    rewrite M1_def, (union_assoc (Z1#Z2) X1 (X2-Y1)),
+      (union_perm (Z1#Z2) X1 (X2-Y1)).
     apply meq_meq_union.
     apply double_split.
-    rewrite (union_comm Y1 Z1); rewrite (union_comm X2 Z2).
-    rewrite <- N1_def; rewrite <- N2_def; auto with multisets.
+    rewrite (union_comm Y1 Z1), (union_comm X2 Z2), <- N1_def, <- N2_def;
+      auto with multisets.
      (* right component ok *)
-    rewrite P2_def.
-    rewrite (union_assoc (Z1#Z2) Y2 (Y1-X2)).
-    rewrite (union_perm (Z1#Z2) Y2 (Y1-X2)).
+    rewrite P2_def, (union_assoc (Z1#Z2) Y2 (Y1-X2)),
+      (union_perm (Z1#Z2) Y2 (Y1-X2)).
     apply meq_meq_union.
     rewrite (intersection_comm Z1 Z2).
     apply double_split.
-    rewrite (union_comm X2 Z2); rewrite (union_comm Y1 Z1).
-    rewrite <- N1_def; rewrite <- N2_def; auto with multisets.
+    rewrite (union_comm X2 Z2), (union_comm Y1 Z1), <- N1_def, <- N2_def;
+      auto with multisets.
      (* order of elements ok *)
     intros y y_in_union; case (member_union y_in_union); intro y_in.
      (* *)
@@ -350,22 +348,20 @@ Section OrderCharacterization.
      (* 'X' not empty *)
     auto with multisets.
      (* left component ok *)
-    rewrite M1_def.
-    rewrite (union_assoc (Z1#Z2) X1 (X2-Y1)).
-    rewrite (union_perm (Z1#Z2) X1 (X2-Y1)).
+    rewrite M1_def, (union_assoc (Z1#Z2) X1 (X2-Y1)),
+      (union_perm (Z1#Z2) X1 (X2-Y1)).
     apply meq_meq_union.
     apply double_split.
-    rewrite (union_comm Y1 Z1); rewrite (union_comm X2 Z2).
-    rewrite <- N1_def; rewrite <- N2_def; auto with multisets.
+    rewrite (union_comm Y1 Z1), (union_comm X2 Z2), <- N1_def, <- N2_def;
+      auto with multisets.
      (* right component ok *)
-    rewrite P2_def.
-    rewrite (union_assoc (Z1#Z2) Y2 (Y1-X2)).
-    rewrite (union_perm (Z1#Z2) Y2 (Y1-X2)).
+    rewrite P2_def, (union_assoc (Z1#Z2) Y2 (Y1-X2)),
+      (union_perm (Z1#Z2) Y2 (Y1-X2)).
     apply meq_meq_union.
     rewrite (intersection_comm Z1 Z2).
     apply double_split.
-    rewrite (union_comm X2 Z2); rewrite (union_comm Y1 Z1).
-    rewrite <- N1_def; rewrite <- N2_def; auto with multisets.
+    rewrite (union_comm X2 Z2), (union_comm Y1 Z1), <- N1_def, <- N2_def;
+      auto with multisets.
      (* order of elements ok *)
     intros y y_in_union; case (member_union y_in_union); intro y_in.
      (* *)
@@ -375,8 +371,8 @@ Section OrderCharacterization.
     destruct (Ord1 x x_in_Y1) as [x' x'_in_X1 x'_gt_x]. 
     exists x'.
     apply member_member_union; trivial.
-    cut (y in P); [intro y_in_P | rewrite P2_def; rewrite (union_comm
-    Z2 Y2); auto with multisets].
+    cut (y in P); [intro y_in_P
+                  | rewrite P2_def, (union_comm Z2 Y2); auto with multisets].
     apply (Hsub y y_in_P x x'); trivial.
      (* *)
     exists x.
@@ -590,12 +586,10 @@ Section OrderCharacterization.
      (* a in parts that differ *)
     assert (a_in_X: a in X).
     apply member_meq_union with {{a}} M Z; auto with multisets.
-    rewrite (union_comm {{a}} M); rewrite (union_comm X Z); 
-      auto with multisets.
+    rewrite (union_comm {{a}} M), (union_comm X Z); auto with multisets.
     assert (a_in_Y: a in Y).
     apply member_meq_union with {{a}} N Z; auto with multisets.
-    rewrite (union_comm {{a}} N); rewrite (union_comm Y Z); 
-      auto with multisets.
+    rewrite (union_comm {{a}} N), (union_comm Y Z); auto with multisets.
     constructor 1 with (X - {{a}}) (Y - {{a}}) Z.
     destruct (H3 a); [trivial | idtac].
     apply member_notempty with x.
@@ -610,10 +604,9 @@ Section OrderCharacterization.
   Proof.
     intros; induction P as [ | P] using mset_ind.
      (* induction base *)
-    rewrite (union_empty M); rewrite (union_empty N); split; auto.
+    rewrite (union_empty M), (union_empty N); split; auto.
      (* induction step *)
-    rewrite (union_assoc M P {{a}}).
-    rewrite (union_assoc N P {{a}}).
+    rewrite (union_assoc M P {{a}}), (union_assoc N P {{a}}).
     split; intro ord.
     rewrite_lr (mord_ext1 (M + P) (N + P) a).
     rewrite_lr IHP; trivial.
@@ -621,14 +614,9 @@ Section OrderCharacterization.
     rewrite_rl (mord_ext1 (M + P) (N + P) a); trivial.
   Qed.
 
-  Lemma mord_ext_l: forall M N P, M >mul N <-> union P M >mul union P N.
+  Lemma mord_ext_l M N P : M >mul N <-> union P M >mul union P N.
 
-  Proof.
-    intros.
-    rewrite (union_comm P M).
-    rewrite (union_comm P N).
-    apply mord_ext_r.
-  Qed.
+  Proof. rewrite (union_comm P M), (union_comm P N). apply mord_ext_r. Qed.
 
 End OrderCharacterization.
 
@@ -694,8 +682,7 @@ Section MultisetOrder_Wf.
 
   Proof.
     intros a M0 H1 H2 H3; constructor; intros N N_lt.
-    case (red_insert N_lt); intros; repeat destruct H; fold AccM_1; 
-      rewrite H.
+    case (red_insert N_lt); intros; repeat destruct H; fold AccM_1; rewrite H.
     apply H3; trivial.
     clear H N_lt H3; induction x as [M|M a0] using mset_ind.
     setoid_replace (M0 + empty) with M0; auto with multisets.
@@ -809,12 +796,10 @@ Section OrderLemmas.
 
   Variables M N : Multiset.
 
-  Lemma mord_meq_compat: forall mA mA' mB mB',
+  Lemma mord_meq_compat mA mA' mB mB' :
      mA =mul= mA' -> mB =mul= mB' -> mA >mul mB -> mA' >mul mB'.
 
-  Proof.
-    intros; rewrite <- H; rewrite <- H0; trivial.
-  Qed.
+  Proof. intros. rewrite <- H, <- H0; trivial. Qed.
 
   Lemma mOrd_elts_ge : M >MUL N ->
    (forall n, n in N -> exists2 m, m in M & m >=A n).
@@ -833,8 +818,7 @@ Section OrderLemmas.
      (* n in strict part *)
     destruct (Cond n H) as [m mX mn].
     exists m.
-    rewrite MZX.
-    rewrite (union_comm Z X).
+    rewrite MZX, (union_comm Z X).
     apply member_member_union; trivial.
     left; trivial.
   Qed.
@@ -931,7 +915,7 @@ Section MOrdPair.
     absurd (X =mul= empty); trivial.
      (* {}, {aL, bL} *)
     assert (Y =mul= {{aR, bR}}).
-    rewrite H2; rewrite Zempty; solve_meq.
+    rewrite H2, Zempty; solve_meq.
     destruct (H3 aR).
     rewrite H4; mset_unfold.
     apply member_union_l; auto with multisets.
@@ -944,20 +928,18 @@ Section MOrdPair.
     rewrite <- XaLbL; trivial.
     destruct (member_pair H7); destruct (member_pair H10).
     left; repeat split; rewrite <- H11; try solve [left; trivial].
-    left; rewrite H11; rewrite <- H12; trivial.
+    left; rewrite H11, <- H12; trivial.
     right; right; left; repeat split; 
       try rewrite <- H11; try rewrite <- H12; try solve [left; trivial].
     right; right; right; repeat split;
       try rewrite <- H11; try rewrite <- H12; try solve [left; trivial].
     right; left; repeat split; rewrite <- H11; try solve [left; trivial].
-    left; rewrite H11; rewrite <- H12; trivial.
+    left; rewrite H11, <- H12; trivial.
      (* {aL}, {bL} *)
     destruct (eqA_dec aL aR).
     assert (Y =mul= {{bR}}).
     setoid_replace Y with (Z + Y - Z).
-    rewrite <- (meq_diff_meq Z H2).
-    rewrite ZaL.
-    rewrite e.
+    rewrite <- (meq_diff_meq Z H2), ZaL, e.
     solve_meq.
     solve_meq.
     destruct (H3 bR).
@@ -973,9 +955,7 @@ Section MOrdPair.
     destruct (eqA_dec aL bR).
     assert (Y =mul= {{aR}}).
     setoid_replace Y with (Z + Y - Z).
-    rewrite <- (meq_diff_meq Z H2).
-    rewrite ZaL.
-    rewrite e.
+    rewrite <- (meq_diff_meq Z H2), ZaL, e.
     solve_meq.
     solve_meq.
     destruct (H3 aR).
@@ -998,9 +978,7 @@ Section MOrdPair.
     destruct (eqA_dec bL aR).
     assert (Y =mul= {{bR}}).
     setoid_replace Y with (Z + Y - Z).
-    rewrite <- (meq_diff_meq Z H2).
-    rewrite ZbL.
-    rewrite e.
+    rewrite <- (meq_diff_meq Z H2), ZbL, e.
     solve_meq.
     solve_meq.
     destruct (H3 bR).
@@ -1016,9 +994,7 @@ Section MOrdPair.
     destruct (eqA_dec bL bR).
     assert (Y =mul= {{aR}}).
     setoid_replace Y with (Z + Y - Z).
-    rewrite <- (meq_diff_meq Z H2).
-    rewrite ZbL.
-    rewrite e.
+    rewrite <- (meq_diff_meq Z H2), ZbL, e.
     solve_meq.
     solve_meq.
     destruct (H3 aR).
@@ -1113,8 +1089,7 @@ Section OrderSim.
   Instance P_eqA_comp : Proper (eqA ==> eqA ==> impl) P.
 
   Proof.
-    intros a b ab c d cd h. rewrite eqA_eq in *.
-    rewrite <- ab, <- cd; trivial.
+    intros a b ab c d cd h. rewrite eqA_eq in *. rewrite <- ab, <- cd; trivial.
   Qed.
 
   Instance eqA_Equivalence : Equivalence eqA.
@@ -1132,8 +1107,8 @@ Section OrderSim.
     destruct (list_sim_permutation eqA_Equivalence P_eqA_comp MM' Mperm)
       as [M'' [M''sim M'M'']].
     exists (insert_nth M'' p b); split.
-    rewrite (list2multiset_insert_nth b M'' p).
-    rewrite (permutation_meq M'M''); auto with multisets.
+    rewrite (list2multiset_insert_nth b M'' p),
+      (permutation_meq M'M''); auto with multisets.
     assert (length M'' >= p).
     rewrite <- (list_sim_length M''sim).
     set (h := drop_nth_length (multiset2list (insert a M)) p).
@@ -1159,8 +1134,7 @@ Section OrderSim.
      (multiset2list (insert a (remove a M))) C (multiset2list M)) 
      as [C' [C'sim C'perm]]; trivial.
     apply meq_permutation.
-    rewrite (double_convertion M).
-    rewrite (double_convertion (insert a (remove a M))).
+    rewrite (double_convertion M), (double_convertion (insert a (remove a M))).
     apply multeq_meq; intro x.
     mset_unfold; unfold member in aM.
     destruct (eqA_dec x a); autorewrite with multisets.
@@ -1215,7 +1189,7 @@ Section OrderSim.
     inversion H.
     destruct (list_sim_remove H9 aA0 simL) as [C [CA Csim]].
     exists C; exists B'; split; [idtac | split]; trivial.
-    simpl; rewrite CA; rewrite ys'; solve_meq.
+    simpl; rewrite CA, ys'; solve_meq.
 
      (* a in B *)
     assert (list2multiset xs =mul= A0 + (remove a B)).
@@ -1225,7 +1199,7 @@ Section OrderSim.
     inversion H.
     destruct (list_sim_remove H10 aB simR) as [C [CA Csim]].
     exists A'; exists C; split; [idtac | split]; trivial.
-    simpl; rewrite CA; rewrite ys'; solve_meq.
+    simpl; rewrite CA, ys'; solve_meq.
   Qed.
 
   Lemma in_mul_sum : forall xs X Y x, list2multiset xs =mul= X + Y ->
@@ -1347,7 +1321,7 @@ Section OrderSim.
     rewrite (union_comm (list2multiset Y') (list2multiset Z'')); trivial.
     apply member_list_multiset.
     apply nth_some_in with p; trivial.
-    rewrite y'y''; rewrite x'mx'; rewrite y'my'.
+    rewrite y'y'', x'mx', y'my'.
     apply ord with mx my; trivial.
     rewrite eqA_eq in xmx.
     rewrite eqA_eq in x'mx'.
@@ -1361,7 +1335,7 @@ Section OrderSim.
     replace my with y.
     replace my' with y''.
     trivial.
-    rewrite <- xmx; rewrite <- ymy; trivial.
+    rewrite <- xmx, <- ymy; trivial.
   Qed.
  
   Lemma mulOrd_oneElemDiff : forall l m a b, a >A b ->
@@ -1457,8 +1431,7 @@ Section OrderDec.
     apply nth_some_in with x; trivial.
     split; trivial.
     rewrite H2; solve_meq.
-    unfold insert; rewrite <- (union_assoc {{a}} x'S x'R).
-    rewrite <- H6.
+    unfold insert; rewrite <- (union_assoc {{a}} x'S x'R), <- H6.
     fold (insert a (remove a N)).
     rewrite (meq_insert_remove m); auto with multisets.
      (*   - completeness *)
@@ -1469,11 +1442,9 @@ Section OrderDec.
     rewrite (union_comm (remove a S) L).
     apply meq_remove_elem_right; trivial.
     rewrite (union_comm L S); trivial.
-    rewrite <- (remove_union R aS).
-    rewrite H0; auto with multisets.
+    rewrite <- (remove_union R aS), H0; auto with multisets.
     exists L'; exists R'; exists (insert a S'); repeat split; trivial.
-    rewrite <- SS'.
-    rewrite (meq_insert_remove aS); auto with multisets.
+    rewrite <- SS', (meq_insert_remove aS); auto with multisets.
     destruct (list_In_nth restNa (L', R', S')); trivial.
     apply in_or_app; right.
     apply nth_some_in with x.
@@ -1483,8 +1454,7 @@ Section OrderDec.
       as [L' [R' [S' [LL' [RR' [SS' LRSN]]]]]]; trivial.
     apply meq_remove_elem_right; trivial.
     exists (insert a L'); exists R'; exists S'; repeat split; trivial.
-    rewrite <- LL'.
-    rewrite (meq_insert_remove aL); auto with multisets.
+    rewrite <- LL', (meq_insert_remove aL); auto with multisets.
     destruct (list_In_nth restN (L', R', S')); trivial.
     apply in_or_app; left.
     apply nth_some_in with x.
@@ -1512,8 +1482,7 @@ Section OrderDec.
       as [L' [R' [S' [LL' [RR' [SS' LRSN]]]]]]; trivial.
     apply meq_remove_elem_right; trivial.
     exists (insert a L'); exists R'; exists S'; repeat split; trivial.
-    rewrite <- LL'.
-    rewrite (meq_insert_remove aL); auto with multisets.
+    rewrite <- LL', (meq_insert_remove aL); auto with multisets.
     destruct (list_In_nth restN (L', R', S')); trivial.
     apply nth_some_in with x.
     change (insert a L', R', S') with (joinL (L', R', S')).

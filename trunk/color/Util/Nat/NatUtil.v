@@ -218,8 +218,7 @@ intros.
 case (le_dec b c); intro H.
  rewrite (max_r H).
  case (le_dec a b); intro H'.
-  rewrite (max_r (le_trans H' H)).
-  rewrite (max_r H'). rewrite (max_r H). refl.
+  rewrite (max_r (le_trans H' H)), (max_r H'), (max_r H). refl.
   case (le_dec a c); intro H''; rewrite (max_l H'); refl.
   rewrite (max_l H).
   case (le_dec a b); intro H'.
