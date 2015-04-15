@@ -1214,7 +1214,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** [clos_aeq o clos_mon] preserves stability by substitution. *)
 
-  Instance subs_clos_mon_aeq R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
+  Instance subs_clos_aeq_mon R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
     Proper (Logic.eq ==> clos_aeq (clos_mon R) ==> clos_aeq (clos_mon R)) subs.
 
   Proof.
