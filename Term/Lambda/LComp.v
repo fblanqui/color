@@ -339,10 +339,10 @@ Module Make (Export CP : CP_Struct).
     subst v.
     destruct (IHclos_aeq_trans2 y0 v0 (refl_equal _)) as [y1 [v1 [i1 i2]]].
     subst w.
-    exists y1. exists v1. intuition. trans (rename y0 x' v0). hyp.
+    ex y1 v1. split_all. trans (rename y0 x' v0). hyp.
     eapply rename_atc in i2; auto. 2: apply subs_R_aeq.
     rewrite rename2 in i2. apply i2.
-    rewrite notin_fv_lam, <- H0. simpl. set_iff. fo.
+    rewrite notin_fv_lam, <- H0. simpl. set_iff. tauto.
   Qed.
 
   (** Extension of [=>R*] to substitutions. *)
