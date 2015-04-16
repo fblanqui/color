@@ -45,7 +45,7 @@ Proof.
 intros dpR R t f l; split.
 intro H; inversion H as [g l1 l2 H1 H2 H3]; subst.
 constructor 1 with (Term f l2); trivial.
-inversion H2 as [k | k1 k2 K2]; subst.
+inversion H4 as [k | k1 k2 K2]; subst.
 left.
 right; clear -K2; induction K2 as [l1 l2 H | l1 l2 l3 H1 H2].
 left; constructor; assumption.
@@ -200,13 +200,13 @@ inversion H as [g k4 l t K4 K]; subst a; inversion K as [v u sigma]; subst t.
 assert (C : are_connected dpR R (u,v) (u4,v4)).
 exists sigma4; exists sigma.
 split.
-rewrite <- comp_def_on_dps; destruct H0 as [e _]; rewrite e; discriminate.
+rewrite <- comp_def_on_dps; destruct H2 as [H2 _]; rewrite H2; discriminate.
 split.
-rewrite <- comp_def_on_dps; destruct H1 as [e _]; rewrite e; discriminate.
-rewrite H7; rewrite <- H3; split; trivial.
+rewrite <- comp_def_on_dps; destruct H7 as [H7 _]; rewrite H7; discriminate.
+rewrite H1; rewrite <- H6; split; trivial.
 generalize (comp_approx _ _ C).
-destruct H0 as [e _]; rewrite e.
-destruct H1 as [e' _]; rewrite e'.
+destruct H2 as [H2 _]; rewrite H2.
+destruct H7 as [H7 _]; rewrite H7.
 intro Abs; generalize (le_S_n _ _ Abs); clear Abs; intro Abs; inversion Abs.
 (* 1/1 The new component n+2 (i.e. the old component n+1) is well founded *)
 apply wf_incl with (rest P (rdp_step (axiom (dpi comp (S (S (S n0))))) R)).
@@ -263,21 +263,21 @@ inversion H as [f l1 l2 v K1 K2]; clear H; subst.
 inversion K2 as [v u sigma [K3 | K3]]; clear K2; subst.
 injection K3; clear K3; intros; subst u v.
 left; apply Transo with (Term f l2).
-rewrite <- H0; apply Hso.
+rewrite <- H1; apply Hso.
 inversion K1 as [l | k1 k2 K]; clear K1; subst.
 apply lo_refl.
-clear Pt H0; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
+clear Pt H1; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
 apply Hlo; apply in_context; assumption.
 apply lo_trans with (Term f k2); [apply Hlo; apply in_context | ]; assumption.
 right.
 apply lo_trans with (Term f l2).
-rewrite <- H0; apply Hlo'; assumption.
+rewrite <- H1; apply Hlo'; assumption.
 inversion K1 as [l | k1 k2 K]; clear K1; subst.
 apply lo_refl.
-clear Pt H0; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
+clear Pt H1; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
 apply Hlo; apply in_context; assumption.
 apply lo_trans with (Term f k2); [apply Hlo; apply in_context | ]; assumption.
-split; [ constructor 1 with l2; [ | rewrite <- H0; apply instance] | split]; assumption.
+split; [ constructor 1 with l2; [ | rewrite <- H1; apply instance] | split]; assumption.
 Qed.
 
 

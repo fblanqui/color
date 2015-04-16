@@ -30,16 +30,16 @@ Section P1.
 
   Definition ch_min := constructive_indefinite_description _ ch_min_proof.
 
-  Lemma ch_minP : P (proj1_sig ch_min).
+  Lemma ch_minP : P (projT1 ch_min).
 
   Proof.
-    destruct (proj2_sig ch_min) as [H _]. destruct H. auto.
+    destruct (projT2 ch_min) as [H _]. destruct H. auto.
   Qed.
 
-  Lemma is_min_ch : forall n, P n -> proj1_sig ch_min <= n.
+  Lemma is_min_ch : forall n, P n -> projT1 ch_min <= n.
 
   Proof.
-    destruct (proj2_sig ch_min) as [H _]. destruct H.
+    destruct (projT2 ch_min) as [H _]. destruct H.
     intros. apply H0. auto.
   Qed.
 
@@ -58,8 +58,8 @@ Section P2.
 
   Fixpoint rec_ch_min n : nat :=
     match n with
-      | S n' => proj1_sig (ch_min (exP2 (S (rec_ch_min n'))))
-      | 0 => proj1_sig (ch_min (exP2 0))
+      | S n' => projT1 (ch_min (exP2 (S (rec_ch_min n'))))
+      | 0 => projT1 (ch_min (exP2 0))
     end.
 
   Lemma rec_ch_minP : forall i, P2 (S (rec_ch_min i)) (rec_ch_min (S i)).

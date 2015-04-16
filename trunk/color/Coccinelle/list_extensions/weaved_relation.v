@@ -130,7 +130,7 @@ discriminate.
 simpl in H; inversion H as [t1 t2 k K | t l1' l2' K]; clear H; subst.
 assert (J : l1 = l2).
 simpl in L; injection L; clear L.
-revert H3; clear.
+revert H4; clear.
 revert k1 k2 l1 l2; fix l1_eq_l2 1.
 intros [ | a k1] [ | b k2] l1 l2 J L.
 assumption.

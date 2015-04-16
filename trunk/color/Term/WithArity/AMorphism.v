@@ -44,7 +44,7 @@ Section Morphism.
   Fixpoint Fc (c : context S1) : context S2 :=
     match c with
       | Hole => Hole
-      | @Cont _ f _ _ e v1 c' v2 =>
+      | Cont f _ _ e v1 c' v2 =>
         Cont (F f) (Fc_aux e (HF f)) (Fv v1) (Fc c') (Fv v2)
     end.
 

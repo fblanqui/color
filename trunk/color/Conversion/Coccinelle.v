@@ -67,21 +67,21 @@ Module Make_Term (Import S : SIG) <: Term.
         let fix terms_of_aterms n (ts : aterms n) :=
           match ts with
             | Vnil => nil
-            | Vcons u us => term_of_aterm u :: terms_of_aterms _ us
+            | Vcons u k us => term_of_aterm u :: terms_of_aterms k us
           end in Term f (terms_of_aterms (arity f) ts)
     end.
 
   Fixpoint terms_of_aterms n (ts : aterms n) :=
     match ts with
       | Vnil => nil
-      | Vcons u us => term_of_aterm u :: terms_of_aterms us
+      | Vcons u k us => term_of_aterm u :: terms_of_aterms us
     end.
 
   Lemma terms_of_aterms_eq : forall n (ts : aterms n),
     (fix terms_of_aterms n (ts : aterms n) :=
       match ts with
         | Vnil => nil
-        | Vcons u us => term_of_aterm u :: terms_of_aterms _ us
+        | Vcons u k us => term_of_aterm u :: terms_of_aterms k us
       end) n ts = terms_of_aterms ts.
 
   Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
@@ -230,7 +230,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Lemma sc_succ : substitution_closed succ.
 
   Proof.
-    intros t u s h. unfold succ, transp, Rof. set (k:=max (maxvar t)(maxvar u)).
+    intros t u s h. unfold succ, transp, Rof. set (k:=max(maxvar t)(maxvar u)).
     rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_r.
     rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_l.
     apply rpo_subst. hyp.
@@ -344,7 +344,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Proof.
     unfold equiv_aterm. apply Rof_trans.
-    apply (@RelationClasses.Equivalence_Transitive _ _ (equiv_equiv Prec)).
+    apply (equiv_trans _ _ (equiv_equiv Prec)).
   Qed.
 
   Lemma trans_succeq : transitive succeq.

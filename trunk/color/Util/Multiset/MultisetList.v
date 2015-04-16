@@ -11,7 +11,7 @@ representation.
 Set Implicit Arguments.
 
 Require Import LogicUtil RelExtras MultisetCore Permutation Multiset List
-  ListExtras PermutSetoid Omega.
+  ListExtras PermutSetoid.
 
 Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
 
@@ -56,7 +56,7 @@ Section ImplLemmas.
     intros M mulM; destruct M.
     trivial.
     absurd (a / (a::M) = 0).
-    simpl. destruct (eqA_dec a a); auto with sets.
+    simpl; case (eqA_dec a a); auto with sets.
     auto.
   Qed.
 
@@ -70,7 +70,7 @@ Section SpecConformation.
      induction M.
      auto.
      intros; simpl.
-     destruct (eqA_dec x a); destruct (eqA_dec y a); intros;
+     case (eqA_dec x a); case (eqA_dec y a); intros;
        solve [ absurd (y =A= a); eauto with sets
              | assert (x / M = y / M); auto ].
   Qed.
@@ -82,8 +82,9 @@ Section SpecConformation.
     induction l.
     auto.
     intro a0; simpl.
-    destruct (eqA_dec a0 a); destruct (eqA_dec a a0); simpl;
-    rewrite <- (IHl a0); (reflexivity || absurd (a0 =A= a); auto with sets).
+    case (eqA_dec a0 a); intro a0_a; case (eqA_dec a a0); intro a_a0;
+      solve [ absurd (a0 =A= a); auto with sets 
+            | rewrite (IHl a0); trivial].
   Qed.
 
   Lemma multeq_meq : forall M N, (forall x, x / M = x / N) -> M =mul= N.
@@ -103,12 +104,13 @@ Section SpecConformation.
 
   Proof. auto. Qed.
 
-  Lemma union_mult : forall M N x,
-                       (x/(M + N))%msets = ((x/M)%msets + (x/N)%msets)%nat.
+  Lemma union_mult : forall M N x, x / (M + N) = (x / M + x / N)%nat.
 
   Proof.
     induction M; auto.
-    intros N x; simpl. destruct (eqA_dec x a); auto. rewrite IHM. auto.
+    intros; simpl; case (eqA_dec x a); intro; auto.
+    replace (x / (M + N)) with (x / M + x / N)%nat; 
+      solve [auto | apply IHM].
   Qed.
 
   Lemma diff_empty_l : forall M, empty - M = empty.
@@ -124,14 +126,14 @@ Section SpecConformation.
   Qed.
 
   Lemma mult_remove_in : forall x a M,
-    x =A= a -> (x / (rem a M))%msets = ((x / M)%msets - 1)%nat.
+    x =A= a -> x / (rem a M) = (x / M - 1)%nat.
 
   Proof.
     induction M.
     auto.
     intro x_a.
-    simpl; destruct (eqA_dec x a0); destruct (eqA_dec a a0); 
-      simpl; try solve [absurd (x =A= a); eauto with sets].
+    simpl; case (eqA_dec x a0); case (eqA_dec a a0); 
+      simpl; intros; try solve [absurd (x =A= a); eauto with sets].
     auto with arith.
     destruct (eqA_dec x a0).
     contr.
@@ -144,10 +146,10 @@ Section SpecConformation.
   Proof.
     induction M; intros.
     auto.
-    simpl; destruct (eqA_dec a0 a).
-    destruct (eqA_dec x a);
+    simpl; case (eqA_dec a0 a); intro a0_a.
+    case (eqA_dec x a); intro x_a; 
       solve [absurd (x =A= a); eauto with sets | trivial].
-    simpl; destruct (eqA_dec x a).
+    simpl; case (eqA_dec x a); intro x_a.
     rewrite (IHM a0 x); trivial.
     apply IHM; trivial.
   Qed.
@@ -214,7 +216,7 @@ Section SpecConformation.
   Qed.
 
   Lemma diff_mult_step_eq : forall M N a x,
-    x =A= a -> x / (rem a M - N) = ((x / (M - N))%msets - 1)%nat.
+    x =A= a -> x / (rem a M - N) = (x / (M - N)%msets - 1)%nat.
 
   Proof.
     intros M N a x x_a.
@@ -231,8 +233,7 @@ Section SpecConformation.
     rewrite mult_remove_not_in; trivial.
   Qed.
  
-  Lemma diff_mult : forall M N x,
-                      x / (M - N) = ((x / M)%msets - (x / N)%msets)%nat.
+  Lemma diff_mult : forall M N x, x / (M - N) = (x / M - x / N)%nat.
 
   Proof.
     induction N.
@@ -240,15 +241,15 @@ Section SpecConformation.
     simpl; intros; omega.
      (* induction step *)
     intro x; simpl.
-    destruct (eqA_dec x a); simpl.
+    case (eqA_dec x a); intro x_a; simpl.
      (* x = a *)
     fold rem.
-    rewrite (diff_mult_step_eq M N e).
+    rewrite (diff_mult_step_eq M N x_a).
     rewrite (IHN x).
     omega.
      (* x <> a *)
     fold rem.
-    rewrite (diff_mult_step_neq M N n).
+    rewrite (diff_mult_step_neq M N x_a).
     exact (IHN x).
   Qed.
 

@@ -13,10 +13,6 @@ Set Implicit Arguments.
 Require Import RelExtras ListPermutation Arith TermsConv ListUtil ListExtras
   LogicUtil.
 
-(*FIXME: because of notation conflict on ~ *)
-Require Omega.
-Ltac omega := Omega.omega.
-
 Module TermsSubst (Sig : TermsSig.Signature).
 
   Module Export TC := TermsConv.TermsConv Sig.
@@ -1549,12 +1545,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Lemma subst_appL_c : forall (M: Term) (Mapp: isApp M) G,
       correct_subst M G -> correct_subst (appBodyL Mapp) G.
 
-  Proof. intro M; term_inv M. fo. Qed.
+  Proof. intro M; term_inv M. Qed.
 
   Lemma subst_appR_c M (Mapp: isApp M) G :
       correct_subst M G -> correct_subst (appBodyR Mapp) G.
 
-  Proof. term_inv M. fo. Qed.
+  Proof. term_inv M. Qed.
 
   Lemma subst_abs_c M (Mabs: isAbs M) G :
     correct_subst M G -> correct_subst (absBody Mabs) (None :: lift_subst G 1).

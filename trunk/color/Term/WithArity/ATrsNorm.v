@@ -84,7 +84,7 @@ Section S.
                         | Vnil, Vnil => Eq
                         | Vnil, _ => Lt
                         | _, Vnil => Gt
-                        | Vcons t ts, Vcons u us =>
+                        | Vcons t _ ts, Vcons u _ us =>
                             match cmp t u with
                               | Eq => cmp_terms _ ts _ us
                               | c => c

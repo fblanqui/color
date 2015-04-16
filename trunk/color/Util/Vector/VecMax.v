@@ -22,7 +22,7 @@ Require Import Max.
 Fixpoint Vmax n (v : nats n) : nat :=
   match v with
     | Vnil => O
-    | Vcons a w => max a (Vmax w)
+    | Vcons a _ w => max a (Vmax w)
   end.
 
 Lemma Vmax_in : forall x n (v : nats n), Vin x v -> x <= Vmax v.
@@ -77,5 +77,5 @@ Require Import Min.
 Fixpoint Vmin n (v : nats n) : nat :=
   match v with
     | Vnil => O
-    | Vcons a w => min a (Vmin w)
+    | Vcons a _ w => min a (Vmin w)
   end.

@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Export AInterpretation.
 Require Import ATerm RelUtil ASubstitution NaryFunction AContext VecUtil SN
-  Max ARelation LogicUtil Omega.
+  Max ARelation LogicUtil.
 
 Section S.
 

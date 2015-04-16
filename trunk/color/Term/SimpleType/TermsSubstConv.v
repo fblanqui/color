@@ -9,7 +9,7 @@ Convertibility of substituted terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsSubst Arith Omega.
+Require Import RelExtras ListExtras TermsSubst Arith.
 
 Module TermsSubstConv (Sig : TermsSig.Signature).
 
@@ -510,8 +510,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     inversion H2.
     change (None :: copy i None ++ {x/T'}) with 
       (copy (Datatypes.S i) None ++ {x/T'}).
-    assert (presubst_aux R0 (Datatypes.S i)
-                         (copy (Datatypes.S i) None ++ {x/T'}) = R1).
+    assert (presubst_aux R0 (Datatypes.S i) (copy (Datatypes.S i) None
+                                                  ++ {x/T'}) = R1).
     apply (@IHM R0 T T' (envSubst_lift1 Q) L0 R1 (Datatypes.S i)); auto.
     intros j j_i; destruct j; destruct Q; simpl; trivial.
     apply H; omega.

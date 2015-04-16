@@ -18,7 +18,7 @@ Module BT <: BaseTypes.
   Lemma eq_BaseType_dec : forall A B : BaseType, {A = B} + {A <> B}.
 
   Proof.
-    destruct A. destruct B. auto.
+    decide equality.
   Qed.
 
   Lemma baseTypesNotEmpty : BaseType.

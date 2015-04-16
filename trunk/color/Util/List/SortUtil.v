@@ -87,7 +87,7 @@ Qed.
 (***********************************************************************)
 (** multiplicity *)
 
-Require Import ListPermutation Omega.
+Require Import ListPermutation.
 
 Section multiplicity.
 

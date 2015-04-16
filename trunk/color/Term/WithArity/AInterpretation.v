@@ -44,8 +44,8 @@ Section S.
   Fixpoint val_of_vec2 n (v : vector I n) : valuation := fun x =>
     match x, v with
       | _, Vnil => some_elt I
-      | 0, Vcons a _ => a
-      | S x', Vcons _ v' => val_of_vec2 v' x'
+      | 0, Vcons a _ _ => a
+      | S x', Vcons _ _ v' => val_of_vec2 v' x'
     end.
 
   Lemma val_of_vec_eq : forall n (v : vector I n) x (h : x < n),

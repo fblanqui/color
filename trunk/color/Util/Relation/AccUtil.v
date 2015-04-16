@@ -243,7 +243,7 @@ Section Fix.
     (P : A -> Type) (F : forall x : A, (forall y : A, R y x -> P y) -> P x)
     (eq : forall x, relation (P x))
     (F_ext : forall x (f g : forall y, R y x -> P y),
-      (forall y (p : R y x), eq _ (f y p) (g y p)) -> eq _ (F _ f) (F _ g)).
+      (forall y (p : R y x), eq (f y p) (g y p)) -> eq (F f) (F g)).
 
   Notation Fix_F := (Fix_F F).
   Notation Fix_F_eq := (Fix_F_eq F).

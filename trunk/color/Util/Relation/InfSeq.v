@@ -295,7 +295,7 @@ Section TransIS.
     assert (exPath : forall i, exists l, path E (h i) (h (S i)) l).
     intros i. apply clos_trans_path; auto.
     pose (li := fun i =>
-      proj1_sig (constructive_indefinite_description _ (exPath i))).
+      projT1 (constructive_indefinite_description _ (exPath i))).
     pose (F := fun i => length (cons (h i) (li i))).
 
     assert (HFi : forall i, exists y, F i = S y).
@@ -322,7 +322,7 @@ Section TransIS.
     rewrite H1 in H3; omega.
 
     assert (exP_F0 : forall i, exists j, P i j). intros i. apply int_exPi. auto.
-    pose (F1 := fun i => proj1_sig (ch_min (exP_F0 i))).
+    pose (F1 := fun i => projT1 (ch_min (exP_F0 i))).
 
     assert (HF0 : forall i, (snd (F0 i) - fst (F0 i) = F i)).
     induction i; auto. simpl. omega.
@@ -340,7 +340,7 @@ Section TransIS.
 
     cut (F1 (S i) = S (F1 i)). intros HT; rewrite HT. split; omega.
 
-    destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H1]. apply H1.
+    destruct (projT2 (ch_min (exP_F0 (S i)))) as [_ H1]. apply H1.
     split; auto. intros k. unfold P. intros H2.
     rewrite (HPeq _ _ _ (conj PSi H2)). omega.
 
@@ -348,7 +348,7 @@ Section TransIS.
 
     assert (PSi : P (S i) (F1 i)). split; try omega.
     apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
-    destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H].
+    destruct (projT2 (ch_min (exP_F0 (S i)))) as [_ H].
     apply H; split; try hyp.
     intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
 
@@ -377,9 +377,9 @@ Section TransIS.
     rewrite <- minus_Sn_m. Focus 2. apply (proj1 (ch_minP _ (exP_F0 i))).
     gen H0. set (k := i - fst (F0 (F1 i))). destruct k. simpl.
     intros. apply path_headP.
-    apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
+    apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
     simpl. intros. apply path_nth_inP with (x := (h (F1 i))); try omega.
-    apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
+    apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
     rewrite <- Hi. assert (S i = snd (F0 (F1 i))).
     destruct (ch_minP _ (exP_F0 i)) as [_ HT0].
     destruct (le_lt_or_eq (lt_le_S HT0)); try auto.
@@ -388,7 +388,7 @@ Section TransIS.
 
     assert (PSi : P (S i) (F1 i)). split; try omega; auto.
     apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
-    destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H1].
+    destruct (projT2 (ch_min (exP_F0 (S i)))) as [_ H1].
     apply H1; split; try hyp.
     intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
 
@@ -407,7 +407,7 @@ Section TransIS.
     set (k := i - fst (F0 (F1 i))).
 
     assert (path E (h (F1 i)) (h (S (F1 i))) (li (F1 i))).
-    apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
+    apply (projT2 (constructive_indefinite_description _ (exPath (F1 i)))).
 
     destruct k. intros. symmetry in H3.
     destruct (li (F1 i)). simpl. simpl in H3. rewrite Hi. auto.
@@ -438,7 +438,7 @@ Section ISCompSplit.
     assert (Hi : forall i, exists x, E (f i) x /\ R x (f (S i))).
     intro. destruct (H i). exists x. intuition.
     pose (Hgi := fun i => constructive_indefinite_description _ (Hi i)).
-    exists (fun i => proj1_sig (Hgi i)). intro. apply (proj2_sig (Hgi i)).
+    exists (fun i => projT1 (Hgi i)). intro. apply (projT2 (Hgi i)).
   Qed.
 
 End ISCompSplit.
@@ -494,7 +494,7 @@ Section ISModComp.
     intro. destruct (hyp1 i). destruct H0. exists x. split; intuition.
     apply TE with (g i); auto.
     pose (Hgi := fun i => (constructive_indefinite_description _ (Hi i))).
-    exists (fun i => proj1_sig (Hgi i)). intro. apply (proj2_sig (Hgi i)).
+    exists (fun i => projT1 (Hgi i)). intro. apply (projT2 (Hgi i)).
   Qed.
 
 End ISModComp.

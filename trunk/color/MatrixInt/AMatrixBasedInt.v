@@ -97,12 +97,12 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   Instance const_mor k : Proper (@eq_mint k ==> eq_vec) (@const A matrix dim k).
 
-  Proof. intro x. destruct x. destruct y. simpl. intuition. Qed.
+  Proof. destruct x. destruct y. simpl. intuition. Qed.
 
   Instance args_mor k :
     Proper (@eq_mint k ==> Vforall2 mat_eqA) (@args A matrix dim k).
 
-  Proof. intro x. destruct x. destruct y. simpl. intuition. Qed.
+  Proof. destruct x. destruct y. simpl. intuition. Qed.
 
   Section MBI.
 
@@ -257,7 +257,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Fixpoint mi_of_term k (t : bterm k) : mint (S k) :=
         match t with
-          | BVar ip => 
+          | BVar i ip => 
             let zero_int := Vconst (zero_matrix dim dim) (S k) in
             let args_int := Vreplace zero_int (le_lt_S ip) (id_matrix dim) in
             mkMatrixInt (@zero_vec dim) args_int

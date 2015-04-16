@@ -10,7 +10,7 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Eqdep_dec LogicUtil.
+Require Import RelExtras ListExtras List Eqdep_dec LogicUtil.
 Require TermsDef.
 
 Module TermsTyping (Sig : TermsSig.Signature).
@@ -134,10 +134,10 @@ Section Typing.
 	    end) 
 	  d1' _ cast = d2'
       with
-      | TVar _, TVar _ => _
+      | TVar _ _ _ _, TVar _ _ _ _ => _
       | TFun _ _, TFun _ _ => _
-      | TAbs _, TAbs _ => _
-      | TApp _ _, TApp _ _ => _
+      | TAbs _ _ _ _ _, TAbs _ _ _ _ _ => _
+      | TApp _ _ _ _ _ _ _, TApp _ _ _ _ _ _ _ => _
       | _, _ => _
       end (refl_equal _) (refl_equal _));
     intros; destruct t; try discr;
@@ -162,8 +162,8 @@ Section Typing.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H3.
     intros t2 t3.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec).
-    set(h1 := Type_unique t0 t2); injection h1; intro H7.
-    clear h1. revert t2 t3. rewrite <- H7.
+    set(e0 := Type_unique t0 t2); injection e0; intro H7.
+    clear e0. revert t2 t3. rewrite <- H7.
     intros; rewrite(Deriv_unique _ _ _ t0 t2); 
       rewrite(Deriv_unique _ _ _ t1 t3);
     apply refl_equal.

@@ -21,8 +21,8 @@ Notation vec := (vector A).
 Fixpoint Vfilter n (bs : bools n) : vec n -> vec (Vtrue bs) :=
   match bs as bs in vector _ n return vec n -> vec (Vtrue bs) with
   | Vnil => fun _ => Vnil
-  | Vcons true bs' => fun v => Vcons (Vhead v) (Vfilter bs' (Vtail v))
-  | Vcons false bs' => fun v => Vfilter bs' (Vtail v)
+  | Vcons true _ bs' => fun v => Vcons (Vhead v) (Vfilter bs' (Vtail v))
+  | Vcons false _ bs' => fun v => Vfilter bs' (Vtail v)
   end.
 
 Lemma Vfilter_in : forall n bs (v : vec n) x, Vin x (Vfilter bs v) -> Vin x v.

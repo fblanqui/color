@@ -229,8 +229,8 @@ subst l2 l2'''; apply well_formed_cf_build_inside with t; subst; trivial.
 rewrite <- (flatten_apply_cf_subst sigma (Var v' :: l1) Ar);
 rewrite (flatten_build l2''' Ar); subst l2 l2''' cp1'.
 rewrite (@permut_cons_inside t t) by reflexivity.
-cbn in t1_sigma. rewrite Ar in t1_sigma.
-pattern (Var v') in v_sigma; simpl apply_cf_subst in v_sigma; unfold apply_cf_subst at 1 in v_sigma.
+pattern (Var v :: l1) in t1_sigma; simpl in t1_sigma; rewrite Ar in t1_sigma.
+pattern (Var v') in v_sigma; simpl apply_cf_subst in v_sigma.
 rewrite v_sigma in t1_sigma; clear v_sigma.
 revert t1_sigma; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ t1_sigma | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
 assert (Inj : forall l' l'', Term f l' = Term f l'' -> l' = l'').
@@ -262,7 +262,7 @@ apply (well_formed_cf_alien Ar Wt2); apply in_or_app; [left | right; right]; tri
 intros Not_in Al_t;
 pattern (Var v :: l1) in t1_sigma; simpl in t1_sigma; rewrite Ar in t1_sigma.
 pattern (Var v') in v_sigma;
-simpl apply_cf_subst in v_sigma; unfold apply_cf_subst at 1 in v_sigma.
+simpl apply_cf_subst in v_sigma.
 rewrite v_sigma in t1_sigma; clear v_sigma.
 revert t1_sigma; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ t1_sigma | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
 assert (Inj : forall l' l'', Term f l' = Term f l'' -> l' = l'').
