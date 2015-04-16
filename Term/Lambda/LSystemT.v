@@ -412,7 +412,7 @@ Proof.
   simpl. omega.
   unfold gt1, Def.gt_call, Rof, transp. apply right_lex.
   unfold Def.gt_args_lex, Rof, lexv; simpl. apply lex1. apply opt_intro.
-  unfold gt. eapply clos_aeq_intro; try refl. apply t_step.
+  unfold gt. apply clos_aeq_intro_refl. apply t_step.
   eapply stacc_intro' with (i:=0) (f:=Succ) (ts:=[n]); try refl.
   intros i i1 i2. destruct i. simpl. hyp. destruct i.
   simpl. hyp. destruct i. simpl. hyp. omega.

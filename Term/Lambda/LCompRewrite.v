@@ -112,8 +112,7 @@ Module Make (Export RS : RS_Struct).
     induction 1; intros a ha b hb s; rewrite ha, hb.
     (* m_step *)
     inversion H; subst. rewrite 2!subs_comp.
-    eapply clos_aeq_intro. refl. refl.
-    apply m_step. apply subs_step. hyp.
+    apply clos_aeq_intro_refl. apply m_step. apply subs_step. hyp.
     (* m_app_l *)
     simpl. apply mon_app_l. class. eapply IHclos_mon. refl. refl. refl.
     (* m_app_r *)

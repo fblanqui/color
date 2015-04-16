@@ -1060,12 +1060,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Properties of [clos_aeq]. *)
 
-  Lemma clos_aeq_inv R : forall t u, clos_aeq R t u ->
-    exists t' u', t ~~ t' /\ u ~~ u' /\ R t' u'.
+  Lemma clos_aeq_intro_refl (R : rel Te) t u : R t u -> clos_aeq R t u.
 
-  Proof.
-    intros t u tu. inversion tu; clear tu; subst. ex u' v'. intuition.
-  Qed.
+  Proof. intro tu. eapply clos_aeq_intro. refl. refl. hyp. Qed.
+
+  Lemma clos_aeq_inv R t u :
+    clos_aeq R t u -> exists t' u', t ~~ t' /\ u ~~ u' /\ R t' u'.
+
+  Proof. intro tu. inversion tu; clear tu; subst. ex u' v'. intuition. Qed.
 
   Lemma clos_aeq_eq R : clos_aeq R == aeq @ (R @ aeq).
 
@@ -1202,7 +1204,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     intros R s s' ss' t u tu. subst s'.
     inversion tu; inversion H1; subst; clear tu H1.
     (*SLOW*)rewrite H0, H, 2!subs_comp.
-    eapply clos_aeq_intro. refl. refl. eapply subs_step. hyp.
+    apply clos_aeq_intro_refl. apply subs_step. hyp.
   Qed.
 
   (** [clos_aeq o clos_mon] preserves stability by substitution. *)
