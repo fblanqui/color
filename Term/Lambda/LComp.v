@@ -175,7 +175,7 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
 
   Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
-  Proof. exact subs_beta_aeq. Qed.
+  Proof. class. Qed.
 
   Lemma not_Rh_var : forall x u, ~ Var x ->Rh u.
 
