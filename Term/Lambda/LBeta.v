@@ -91,9 +91,7 @@ Module Make (Export L : L_Struct).
   Instance rename_beta_aeq :
     Proper (Logic.eq ==> Logic.eq ==> beta_aeq ==> beta_aeq) rename.
 
-  Proof.
-    intros x x' xx' y y' yy' u u' uu'. subst x' y'. apply subs_beta_aeq; auto.
-  Qed.
+  Proof. class. Qed.
 
 (****************************************************************************)
 (** Inversion lemmas for beta-reduction. *)
