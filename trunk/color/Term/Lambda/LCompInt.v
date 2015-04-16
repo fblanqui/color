@@ -270,7 +270,7 @@ Module Make (Export ST : ST_Struct)
   Proof.
     intros s t u tu.
     destruct (clos_aeq_inv tu) as [t' [u' [tt' [uu' t'u']]]]; clear tu.
-    rewrite tt', uu'. eapply clos_aeq_intro. refl. refl.
+    rewrite tt', uu'. apply clos_aeq_intro_refl.
     apply tc_supterm_acc_subs. hyp.
   Qed.
 
@@ -287,7 +287,7 @@ Module Make (Export ST : ST_Struct)
       inversion tu; clear tu; subst; rename u' into t'; rename v' into u'.
       assert (a : (supterm_acc @ R) t' v). exists u'. rewrite H0 in uv. fo.
       destruct (supterm_acc_R_mon_commut R_mon a) as [w [t'w wv]].
-      exists w. split. rewrite H. hyp. eapply clos_aeq_intro. refl. refl. hyp.
+      exists w. split. rewrite H. hyp. apply clos_aeq_intro_refl. hyp.
     Qed.
 
     Lemma clos_aeq_tc_supterm_acc_R_mon_commut :
