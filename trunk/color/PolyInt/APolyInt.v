@@ -32,7 +32,7 @@ Section S.
 
     Fixpoint termpoly k (t : bterm k) : poly (S k) :=
       match t with
-        | BVar x H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: List.nil
+        | BVar H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: List.nil
         | BFun f v => pcomp (PI f) (Vmap (@termpoly k) v)
       end.
 

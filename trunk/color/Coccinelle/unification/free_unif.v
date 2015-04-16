@@ -29,6 +29,8 @@ Require Import Relations.
 Require Import term_spec.
 Require Import term.
 
+Set Implicit Arguments.
+
 Lemma Dummy_bool : forall b, negb b = true <-> b = false.
 Proof.
 intros [ | ]; intuition.
@@ -49,11 +51,13 @@ Inductive exc (A : Type) : Type :=
   | Not_appliable : A -> exc A
   | No_solution : exc A.
 
+Arguments No_solution {A}.
+
 Definition bind (A : Type) (f : A -> exc A)  (x : exc A) : (exc A) :=
   match x with
   | Normal a => f a
-  | Not_appliable a => Not_appliable A a
-  | No_solution => @No_solution A
+  | Not_appliable a => Not_appliable a
+  | No_solution => No_solution
   end.
 
 Record unification_problem : Type :=
@@ -67,7 +71,7 @@ Fixpoint combine A (l : list (A * A))  (l1 l2 : list A) {struct l1} : list (A * 
   match l1, l2 with
   | nil, _ => l
   | _, nil => l
-  | (a1 :: l1), (a2 :: l2) => combine _ ((a1,a2) :: l) l1 l2
+  | (a1 :: l1), (a2 :: l2) => combine ((a1,a2) :: l) l1 l2
   end.
 
 Definition lt_ge_dec : forall x y, {x < y} + {x >= y} :=
@@ -78,7 +82,7 @@ Definition decomposition_step (pb : unification_problem) : exc unification_probl
    | nil => @Not_appliable _ pb
    | (s,t) :: l =>
       if T.eq_bool s t 
-      then Normal _ (mk_pb pb.(solved_part) l)
+      then Normal (mk_pb pb.(solved_part) l)
       else
       match s, t with
       | Var x, Var y => 
@@ -92,30 +96,30 @@ Definition decomposition_step (pb : unification_problem) : exc unification_probl
                                                   apply_subst ((x,t) :: nil) v)
                              end) l in
          match find X.eq_bool x solved_part' with
-         | Some x_val => Normal _ (mk_pb ((x, t) :: solved_part') ((t, x_val) :: l'))
-         | None => Normal _ (mk_pb ((x, t) :: solved_part') l')
+         | Some x_val => Normal (mk_pb ((x, t) :: solved_part') ((t, x_val) :: l'))
+         | None => Normal (mk_pb ((x, t) :: solved_part') l')
          end
       | Var x, (Term _ _ as u) => 
        match find X.eq_bool x pb.(solved_part) with
-        | None => Normal _ (mk_pb ((x,u) :: pb.(solved_part)) l)
+        | None => Normal (mk_pb ((x,u) :: pb.(solved_part)) l)
         | Some x_val => 
           if lt_ge_dec (T.size u) (T.size x_val) 
-          then (* u < x_val *) Normal _ (mk_pb ((x,u) :: pb.(solved_part)) ((x_val,u) :: l))
-          else (* x_val <= u *) Normal _ (mk_pb pb.(solved_part) ((x_val,u) :: l))
+          then (* u < x_val *) Normal (mk_pb ((x,u) :: pb.(solved_part)) ((x_val,u) :: l))
+          else (* x_val <= u *) Normal (mk_pb pb.(solved_part) ((x_val,u) :: l))
         end
       | (Term _ _ as u), Var x => 
         match find X.eq_bool x pb.(solved_part) with
-        | None => Normal _ (mk_pb ((x,u) :: pb.(solved_part)) l)
+        | None => Normal (mk_pb ((x,u) :: pb.(solved_part)) l)
         | Some x_val => 
           if lt_ge_dec (T.size u)  (T.size x_val) 
-          then Normal _ (mk_pb ((x,u) :: pb.(solved_part)) ((x_val,u) :: l))
-          else Normal _ (mk_pb pb.(solved_part) ((x_val,u) :: l))
+          then Normal (mk_pb ((x,u) :: pb.(solved_part)) ((x_val,u) :: l))
+          else Normal (mk_pb pb.(solved_part) ((x_val,u) :: l))
         end
       | Term f l1, Term g l2 => 
          if F.Symb.eq_bool f g
          then 
              match beq_nat (length l1) (length l2) with
-             | true => Normal _ (mk_pb pb.(solved_part) (combine _ l l1 l2))
+             | true => Normal (mk_pb pb.(solved_part) (combine l l1 l2))
              | false => @No_solution _
              end
          else @No_solution _
@@ -706,20 +710,20 @@ Module TermMul := dickson.Make(Term_eq_dec).
 
 Fixpoint list_size_mul (A : Type) (siz : A -> nat) (l : list A) {struct l} : list nat :=
   match l with
-  | nil => @nil nat
-  | h :: tl => (siz h) :: (list_size_mul A siz tl)
+  | nil => nil
+  | h :: tl => (siz h) :: (list_size_mul siz tl)
   end.
 
 Definition lt_mul : (relation (list nat)) := 
    trans_clos (NatMul.multiset_extension_step lt).
 
 Definition size_of_unsolved_part pb :=
-  list_size_mul _ 
+  list_size_mul
                  (fun s_t => match s_t with (s,t) => max (size s) (size t) end)
                  pb.(unsolved_part).
 
 Definition size_of_solved_part pb :=
-  list_size_mul _ 
+  list_size_mul
                   (fun x => match find X.eq_bool x pb.(solved_part) with
                                                Some x_val => size x_val
                                               | None => 0
@@ -938,16 +942,16 @@ rewrite H'; reflexivity.
 (* Second component phi2 *)
 unfold lt_mul, phi2, size_of_unsolved_part, size_of_solved_part; simpl.
 refine (NatMul.mult_is_complete_less_than _ _ _ _ _).
-apply lt_bool_ok.
+2: apply lt_bool_ok.
 intros n1 n2 n3; apply lt_trans.
 apply lt_irrefl.
-left; refine (@NatMul.rmv_case lt _ _ (list_size_mul _
+left; refine (@NatMul.rmv_case lt _ _ (@list_size_mul _
      (fun x  =>
       match find X.eq_bool x sigma with
       | Some x_val => size x_val
       | None => 0
       end) (VSet.support (domain_of_subst sigma)) ++
-      list_size_mul (term * term)
+      @list_size_mul (term * term)
         (fun s_t : term * term =>
          let (s0, t) := s_t in max (size s0) (size t)) l) 
       nil (max (size s) (size s)) _ _ _).
@@ -997,8 +1001,8 @@ contradiction.
 simpl set_of_variables_in_unsolved_part in x_in_l'; 
 destruct_set x_in_l' x_in_s'_t' x_in_l''.
 destruct_set x_in_s'_t' x_in_s' x_in_t'.
-apply (solved_var_inc_not_mem _ _ _ x_diff_y x_in_s').
-apply (solved_var_inc_not_mem _ _ _ x_diff_y x_in_t').
+apply (solved_var_inc_not_mem _ x_diff_y x_in_s').
+apply (solved_var_inc_not_mem _ x_diff_y x_in_t').
 apply IHl; trivial.
 Qed.
 
@@ -1014,7 +1018,7 @@ intros x y sigma x_diff_y x_in_sigma'; induction sigma as [ | [v t] sigma].
 contradiction.
 simpl set_of_variables_in_range_of_subst in x_in_sigma'; 
 destruct_set x_in_sigma' x_in_t' x_in_sigma''.
-apply (solved_var_inc_not_mem _ _ _ x_diff_y x_in_t').
+apply (solved_var_inc_not_mem _ x_diff_y x_in_t').
 apply IHsigma; trivial.
 Qed.
 
@@ -1149,7 +1153,7 @@ subst z; apply Hy.
 contradiction.
 intros z z_in_sigma'; 
 generalize (X.eq_bool_ok z y); case (X.eq_bool z y); [intro z_eq_y; subst; apply Hy | intro z_diff_y].
-do 2 apply VSet.union_2; apply (solved_var_inc_subst _ _ _ _ z_diff_y z_in_sigma').
+do 2 apply VSet.union_2; apply (solved_var_inc_subst _ _ z_diff_y z_in_sigma').
 
 intros z; do 2 (rewrite Dummy_bool; rewrite not_solved_var); simpl.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
@@ -1181,12 +1185,12 @@ destruct_set H x_in_y_x_val' x_in_l'.
 destruct_set x_in_y_x_val' x_in_y x_in_x_val'.
 destruct x_in_y as [x_eq_y | x_in_nil]; [idtac | contradiction].
 apply x_diff_y; subst; trivial.
-apply (solved_var_inc_not_mem _ _ _ x_diff_y x_in_x_val').
-apply (solved_var_inc_not_mem_list _ _ _ x_diff_y x_in_l').
+apply (solved_var_inc_not_mem _ x_diff_y x_in_x_val').
+apply (solved_var_inc_not_mem_list _ x_diff_y x_in_l').
 destruct_set H x_in_y x_in_sigma'.
 destruct x_in_y as [x_eq_y | x_in_nil]; [idtac | contradiction].
 apply x_diff_y; subst; trivial.
-apply (solved_var_inc_not_mem_subst _ _ _ x_diff_y x_in_sigma').
+apply (solved_var_inc_not_mem_subst _ x_diff_y x_in_sigma').
 
 apply VSet.filter_1.
 simpl unsolved_part; unfold set_of_variables_in_unsolved_part;
@@ -1234,7 +1238,7 @@ intros z z_in_y_sigma'; destruct_set z_in_y_sigma' z_in_y z_in_sigma'.
 do 2 apply VSet.union_1; apply VSet.union_2; trivial.
 generalize (X.eq_bool_ok z y); case (X.eq_bool z y); [intro z_eq_y | intro z_diff_y].
 do 2 apply VSet.union_1; apply VSet.union_2; left; subst; reflexivity.
-do 2 apply VSet.union_2; apply (solved_var_inc_subst _ _ _ _ z_diff_y z_in_sigma').
+do 2 apply VSet.union_2; apply (solved_var_inc_subst _ _ z_diff_y z_in_sigma').
 intros z; do 2 rewrite Dummy_bool; do 2 rewrite not_solved_var; simpl.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
 rewrite x_sigma; trivial.
@@ -1267,7 +1271,7 @@ Defined.
 
 Lemma list_size_mul_app:
  forall (A : Type) (siz : A -> nat) l1 l2,
- list_size_mul A siz (l1 ++ l2) = (list_size_mul A siz l1) ++ list_size_mul A siz l2.  
+ list_size_mul siz (l1 ++ l2) = (list_size_mul siz l1) ++ list_size_mul siz l2.  
 Proof. 
 induction l1 as [ | a1 l1 ]; trivial.
 intros; simpl; rewrite IHl1; trivial.
@@ -1289,7 +1293,7 @@ apply VSet.cardinal_subset; apply VSet.subset_filter.
 apply VSet.subset_subset_union.
 simpl; intros z z_in_x_val_t2_l; destruct_set z_in_x_val_t2_l z_in_x_val_t2 x_in_l.
 destruct_set z_in_x_val_t2 z_in_x_val z_in_t2.
-do 2 apply VSet.union_2; apply (solved_var_inc_occ_in_subst _ _ _ _ x_sigma z_in_x_val).
+do 2 apply VSet.union_2; apply (solved_var_inc_occ_in_subst _ _ _ x_sigma z_in_x_val).
 do 2 apply VSet.union_1; apply VSet.union_2; trivial.
 apply VSet.union_1; apply VSet.union_2; trivial.
 simpl; intros z z_in_x_dom_sig_t2_sigma; 
@@ -1309,7 +1313,7 @@ case_eq (find X.eq_bool z sigma); [ intros z_val z_sigma | intro z_sigma ].
 intros [ z_in_x_val_t2_l | z_in_t2_sigma].
 destruct_set z_in_x_val_t2_l z_in_x_val_t2 z_in_l.
 destruct_set z_in_x_val_t2 z_in_x_val z_in_t2.
-right; apply (solved_var_inc_occ_in_subst x z x_val); trivial.
+right; apply (@solved_var_inc_occ_in_subst x z x_val); trivial.
 left; apply VSet.union_1; apply VSet.union_2; trivial.
 left; apply VSet.union_2; trivial.
 destruct_set z_in_t2_sigma z_in_t2 z_in_sigma.
@@ -1410,7 +1414,7 @@ apply VSet.cardinal_subset; apply VSet.subset_filter.
 apply VSet.subset_subset_union.
 simpl; intros z z_in_x_val_t2_l; destruct_set z_in_x_val_t2_l z_in_x_val_t2 z_in_l.
 destruct_set z_in_x_val_t2 z_in_x_val z_in_t2.
-do 2 apply VSet.union_2; refine (solved_var_inc_occ_in_subst _ _ _ _ x_sigma z_in_x_val).
+do 2 apply VSet.union_2; refine (solved_var_inc_occ_in_subst _ _ _ x_sigma z_in_x_val).
 do 2 apply VSet.union_1; apply VSet.union_2; trivial.
 apply VSet.union_1; apply VSet.union_2; trivial.
 apply VSet.subset_subset_union.
@@ -1422,7 +1426,7 @@ destruct (find X.eq_bool z sigma) as [ z_val | ]; trivial.
 intros [z_in_x_val_t2_l  | z_in_sigma].
 destruct_set z_in_x_val_t2_l z_in_x_val_t2 z_in_l.
 destruct_set z_in_x_val_t2 z_in_x_val z_in_t2.
-right; apply (solved_var_inc_occ_in_subst x z x_val); trivial.
+right; apply (@solved_var_inc_occ_in_subst x z x_val); trivial.
 left; apply VSet.union_1; apply VSet.union_2; trivial.
 left; apply VSet.union_2; trivial.
 right; trivial.
@@ -1519,14 +1523,14 @@ Defined.
 
 Lemma decomposition_decreases :
  forall f l1 l2 l sigma,
-   lt_pb (mk_pb sigma (combine term l l1 l2)) 
+   lt_pb (mk_pb sigma (combine l l1 l2)) 
          (mk_pb sigma ((Term f l1, Term f l2) :: l)).
 Proof.
 intros f l1 l2 l sigma; unfold lt_pb, measure_for_unif_pb; apply lex_le_lt.
 
 (* First component phi1 *)
 assert (H : forall z, 
-             VSet.mem z (set_of_variables_in_unsolved_part (combine term l l1 l2)) ->
+             VSet.mem z (set_of_variables_in_unsolved_part (combine l l1 l2)) ->
              VSet.mem z (set_of_variables_in_unsolved_part ((Term f l1, Term f l2) :: l))).
 unfold set_of_variables_in_unsolved_part at 2.
 unfold set_of_variables.
@@ -1573,19 +1577,19 @@ do 2 rewrite (list_size_fold size).
 revert l2 l; induction l1 as [ | t1 l1]; intros [ | t2 l2] l.
 left; simpl;
 refine (@NatMul.rmv_case lt _ _ 
-                (list_size_mul (term * term)
+                (list_size_mul
                 (fun s_t : term * term => let (s, t) := s_t in max (size s) (size t)) l)
                 nil 1 _ _ _); try apply NatMul.LP.permut_refl. 
 intros; contradiction.
 left; simpl;
 refine (@NatMul.rmv_case lt _ _ 
-                (list_size_mul (term * term)
+                (list_size_mul
                 (fun s_t : term * term => let (s, t) := s_t in max (size s) (size t)) l)
                 nil _ _ _ _); try apply NatMul.LP.permut_refl. 
 intros; contradiction.
 left; simpl;
 refine (@NatMul.rmv_case lt _ _ 
-                (list_size_mul (term * term)
+                (list_size_mul
                 (fun s_t : term * term => let (s, t) := s_t in max (size s) (size t)) l)
                 nil _ _ _ _); try apply NatMul.LP.permut_refl. 
 intros; contradiction.
@@ -1593,11 +1597,11 @@ intros; contradiction.
 generalize (IHl1 l2 ((t1,t2) :: l)).
 simpl list_size; simpl combine; simpl list_size_mul.
 generalize (size_ge_one t1) (size_ge_one t2).
-generalize (list_size_mul (term * term)
+generalize (list_size_mul
      (fun s_t : term * term => let (s, t) := s_t in max (size s) (size t))
-     (combine term ((t1, t2) :: l) l1 l2))
+     (combine ((t1, t2) :: l) l1 l2))
 (list_size size l1) (list_size size l2) (size t1) (size t2)
-(list_size_mul (term * term)
+(list_size_mul
         (fun s_t : term * term => let (s, t) := s_t in max (size s) (size t)) l).
 clear t1 l1 sigma IHl1 t2 l2 l.
 intros nl nl1 nl2 nt1 nt2 n H1 H2.
@@ -1657,11 +1661,11 @@ generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _; split | intro x_
 intro x_in_y_x_val'_l'; destruct_set x_in_y_x_val'_l' x_in_y_x_val' x_in_l'.
 destruct_set x_in_y_x_val' x_in_y x_in_x_val'.
 apply s_diff_t; apply f_equal; destruct x_in_y as [x_eq_y | x_in_nil]; [trivial | contradiction].
-refine (solved_var_inc_not_mem _ _ _ _ x_in_x_val'); intro; apply s_diff_t; subst; trivial.
-refine (solved_var_inc_not_mem_list _ _ _ _ x_in_l'); intro; apply s_diff_t; subst; trivial.
+refine (@solved_var_inc_not_mem _ _ _ _ x_in_x_val'); intro; apply s_diff_t; subst; trivial.
+refine (@solved_var_inc_not_mem_list _ _ _ _ x_in_l'); intro; apply s_diff_t; subst; trivial.
 intro x_in_y_sigma'; destruct_set x_in_y_sigma' x_in_y x_in_sigma'.
 apply s_diff_t; apply f_equal; destruct x_in_y as [x_eq_y | x_in_nil]; [trivial | contradiction].
-refine (solved_var_inc_not_mem_subst _ _ _ _ x_in_sigma'); intro; apply s_diff_t; subst; trivial.
+refine (@solved_var_inc_not_mem_subst _ _ _ _ x_in_sigma'); intro; apply s_diff_t; subst; trivial.
 assert (Hz := find_map_subst z x (Var y) sigma).
 case_eq (find X.eq_bool z sigma); [ intros z_val z_sigma| intro z_sigma]; 
 rewrite z_sigma in Hz; rewrite Hz; [idtac | trivial].
@@ -1681,7 +1685,7 @@ apply z_not_in_x_y_l; apply VSet.union_1; apply VSet.union_2; trivial.
 generalize (X.eq_bool_ok z y); case (X.eq_bool z y); [intro z_eq_y | intro z_diff_y].
 apply z_not_in_x_y_l; apply VSet.union_1; apply VSet.union_2; left; subst; reflexivity.
 apply z_not_in_sigma; apply solved_var_inc_subst with x y; trivial;
-apply (solved_var_inc_occ_in_subst _ _ _ _ Hx z_in_x_val').
+apply (@solved_var_inc_occ_in_subst _ _ _ _ Hx z_in_x_val').
 generalize (X.eq_bool_ok z y); case (X.eq_bool z y); [intro z_eq_y | intro z_diff_y].
 apply z_not_in_x_y_l; apply VSet.union_1; apply VSet.union_2; left; subst; reflexivity.
 apply z_not_in_x_y_l; apply VSet.union_2; apply solved_var_inc_list with x y; trivial.
@@ -1695,10 +1699,10 @@ intro z; generalize (Inv_pb z); simpl; clear Inv_pb.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
 intros _; rewrite solved_var; simpl.
 generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _; split | intro x_diff_x; apply False_rect; apply x_diff_x; reflexivity].
-intro x_in_l'; refine (solved_var_inc_not_mem_list _ _ _ _ x_in_l'); intro; apply s_diff_t; subst; trivial.
+intro x_in_l'; refine (@solved_var_inc_not_mem_list _ _ _ _ x_in_l'); intro; apply s_diff_t; subst; trivial.
 intro x_in_y_sigma'; destruct_set x_in_y_sigma' x_in_y x_in_sigma'.
 apply s_diff_t; apply f_equal; destruct x_in_y as [x_eq_y | x_in_nil]; [trivial | contradiction].
-refine (solved_var_inc_not_mem_subst _ _ _ _ x_in_sigma'); intro; apply s_diff_t; subst; trivial.
+refine (@solved_var_inc_not_mem_subst _ _ _ _ x_in_sigma'); intro; apply s_diff_t; subst; trivial.
 assert (Hz := find_map_subst z x (Var y) sigma).
 case_eq (find X.eq_bool z sigma); [ intros z_val z_sigma | intros z_sigma];
 rewrite z_sigma in Hz; rewrite Hz; [idtac | trivial].
@@ -1997,7 +2001,7 @@ Proof.
 intros [sigma [ | [s t] l]] [Inv_pb | l_eq_nil].
 simpl; trivial.
 simpl; trivial.
-generalize (inv_solved_part _ Inv_pb); unfold decomposition_step; simpl.
+generalize (inv_solved_part Inv_pb); unfold decomposition_step; simpl.
 case (T1.eq_bool  s t).
 trivial.
 destruct s as [x | f1 l1]; destruct t as [y | f2 l2].
@@ -2016,40 +2020,40 @@ Defined.
 
 Definition decomposition_step_e : exc_pb_ok -> exc_pb_ok.
 intros [ [ pb | pb | ]  Inv_pb ].
-exact (OK (decomposition_step pb) (inv_solved_part_e _ (or_introl _ Inv_pb))).
-exact (OK (Not_appliable _ pb) Inv_pb).
-exact (OK (No_solution _) Inv_pb).
+exact (OK (decomposition_step pb) (inv_solved_part_e (or_introl _ Inv_pb))).
+exact (OK (Not_appliable pb) Inv_pb).
+exact (OK No_solution Inv_pb).
 Defined.
 
 Lemma decomposition_e_unfold_not_app :
 forall pb Inv_pb, 
-  decomposition_step_e (OK (Not_appliable _ pb) Inv_pb) = OK (Not_appliable _ pb) Inv_pb. 
+  decomposition_step_e (OK (Not_appliable pb) Inv_pb) = OK (Not_appliable pb) Inv_pb. 
 Proof.
 intros; simpl; trivial.
 Qed.
 
 Lemma decomposition_e_unfold_no_sol :
   forall Inv_pb,
-  decomposition_step_e (OK (No_solution _) Inv_pb) = OK (No_solution _) Inv_pb.
+  decomposition_step_e (OK No_solution Inv_pb) = OK No_solution Inv_pb.
 Proof.
 intros; simpl; trivial.
 Qed.
 
 Lemma decomposition_e_unfold_normal :
 forall pb Inv_pb, 
-  decomposition_step_e (OK (Normal _ pb) Inv_pb) = 
- OK (decomposition_step pb) (inv_solved_part_e _ (or_introl _ Inv_pb)).
+  decomposition_step_e (OK (Normal pb) Inv_pb) = 
+ OK (decomposition_step pb) (inv_solved_part_e (or_introl _ Inv_pb)).
 Proof.
 intros pb Inv_pb; simpl; trivial.
 Defined.
 
 Lemma decomposition_step_decreases_e :
   forall pb (Inv_pb : Inv_solved_part pb),
-  lt_exc_pb_ok (decomposition_step_e (OK (Normal _ pb) Inv_pb)) (OK (Normal _ pb) Inv_pb).
+  lt_exc_pb_ok (decomposition_step_e (OK (Normal pb) Inv_pb)) (OK (Normal pb) Inv_pb).
 Proof. 
 intros pb Inv_pb; rewrite decomposition_e_unfold_normal.
 unfold lt_exc_pb_ok, lt_weight_exc_pb_ok, lt_pb; simpl.
-generalize (decomposition_step_decreases pb Inv_pb). 
+generalize (decomposition_step_decreases Inv_pb). 
 destruct (decomposition_step pb).
 trivial.
 intros _; generalize (beq_nat_ok 1 2); case (beq_nat 1 2); [intros; discriminate | auto with arith].
@@ -2063,11 +2067,11 @@ Definition F_decompose :
 Proof.
 intros [[pb | pb | ] Inv_pb] IH.
 (* 1 Normal Case *)
-exact (IH _ (decomposition_step_decreases_e pb Inv_pb)).
+exact (IH _ (decomposition_step_decreases_e Inv_pb)).
 (* 2 Not_appliable Case *)
-exact (Not_appliable _ pb).
+exact (Not_appliable pb).
 (* 3 No_solution Case *)
-exact (No_solution _).
+exact No_solution.
 Defined.
 
 Definition decompose :  forall (u : exc_pb_ok),  (exc unification_problem).
@@ -2095,7 +2099,7 @@ Lemma decompose_nf :
 Proof. 
 intros e; pattern e; apply (well_founded_ind wf_lt_exc_pb_ok); clear e.
 intros [ [pb | pb | ] Inv_pb] IH; rewrite decompose_unfold; simpl.
-apply IH; refine (decomposition_step_decreases_e _ Inv_pb).
+apply IH; refine (decomposition_step_decreases_e Inv_pb).
 simpl in Inv_pb; destruct pb; trivial.
 trivial.
 Qed.
@@ -2118,10 +2122,10 @@ Proof.
 intro e; pattern e; apply (well_founded_ind wf_lt_exc_pb_ok); clear e.
 intros [[pb | pb | ] Inv_pb] IH theta; 
 rewrite decompose_unfold; unfold F_decompose; trivial.
-assert (H := IH _ (decomposition_step_decreases_e _ Inv_pb) theta).
+assert (H := IH _ (decomposition_step_decreases_e Inv_pb) theta).
 destruct pb as [sigma l].
 destruct (decompose
-    (decomposition_step_e (OK (Normal unification_problem (mk_pb sigma l)) Inv_pb))).
+    (decomposition_step_e (OK (Normal (mk_pb sigma l)) Inv_pb))).
 contradiction.
 intros sigma_is_sol; assert (H' := H sigma_is_sol); clear H; simpl in H'; simpl.
 assert (H'' := decomposition_step_is_sound l sigma theta).
@@ -2143,10 +2147,10 @@ Proof.
 intro e; pattern e; apply (well_founded_ind wf_lt_exc_pb_ok); clear e.
 intros [[pb | pb | ] Inv_pb] IH theta theta_is_sol;
 rewrite decompose_unfold; unfold F_decompose; trivial.
-assert (H := IH _ (decomposition_step_decreases_e _ Inv_pb) theta).
+assert (H := IH _ (decomposition_step_decreases_e Inv_pb) theta).
 destruct pb as [sigma l].
 destruct (decompose
-    (decomposition_step_e (OK (Normal unification_problem (mk_pb sigma l)) Inv_pb)));
+    (decomposition_step_e (OK (Normal (mk_pb sigma l)) Inv_pb)));
 apply H; simpl; simpl in theta_is_sol;
 apply decomposition_step_is_complete; trivial.
 Qed.
@@ -2377,12 +2381,12 @@ refine (var_in_subterm y _ (i :: p) Hsubterm' _).
 simpl; generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _ | intro x_diff_x; apply False_rect; apply x_diff_x; reflexivity].
 rewrite <- var_in_term_is_sound; trivial.
 rewrite next_not_in_l in Hcycle; discriminate.
-assert (Hsrc := is_a_cycle_all_var_inst _ _ _ _ Hcycle src).
+assert (Hsrc := @is_a_cycle_all_var_inst _ _ _ _ Hcycle src).
 case_eq (find X.eq_bool src sigma); [intros [v | f l] | idtac];
 intro src_sigma; rewrite src_sigma in Hsrc.
 apply False_rect; apply Hsrc; left; reflexivity.
 clear Hsrc.
-assert (Hnext := is_a_cycle_all_var_inst _ _ _ _ Hcycle next).
+assert (Hnext := @is_a_cycle_all_var_inst _ _ _ _ Hcycle next).
 case_eq (find X.eq_bool next sigma); [intros [v | g k] | idtac]; 
 intro next_sigma; rewrite next_sigma in Hnext.
 apply False_rect; apply Hnext; right; left; reflexivity.
@@ -2429,7 +2433,7 @@ destruct (find X.eq_bool src sigma) as [[v | f l] | ].
 discriminate.
 destruct (var_in_term next (Term f l)); trivial; discriminate.
 discriminate.
-apply (is_a_cycle_all_var_inst _ _ _ _ Hcycle); left; reflexivity.
+apply (@is_a_cycle_all_var_inst _ _ _ _ Hcycle); left; reflexivity.
 
 unfold VSet.without_red in W; simpl in W; revert W; unfold DecVar.eq_bool.
 generalize (X.eq_bool_ok src next); case (X.eq_bool src next); [intro src_eq_next | intro src_diff_next].
@@ -2922,7 +2926,7 @@ intro c; induction c as [ | v c]; intros sigma Hoc W H x y x_in_dom y_in_dom.
 (* 1/2 basis case *)
 contradiction.
 (* 1/1 induction step *)
-assert (v_case := total_acc_inst_head c v sigma W Hoc).
+assert (v_case := total_acc_inst_head sigma W Hoc).
 assert (v_in_dom := H v (or_introl _ (refl_equal _))); rewrite var_in_domain_of_subst in v_in_dom.
 case_eq (find X.eq_bool v sigma); [intro v_val | idtac]; 
 intro v_sigma; rewrite v_sigma in v_in_dom; [ clear v_in_dom | absurd (@None term = None); trivial].
@@ -3100,7 +3104,7 @@ assert (Idem : forall x y : variable,
        VSet.mem x (domain_of_subst (acc_inst c sigma)) ->
        VSet.mem y (domain_of_subst (acc_inst c sigma)) ->
        var_in_term x (apply_subst (acc_inst c sigma) (Var y)) = false).
-intros x y x_in_dom y_in_dom; apply (total_acc_inst_idem _ _ Hoc W).
+intros x y x_in_dom y_in_dom; apply (@total_acc_inst_idem _ _ Hoc W).
 intros z z_in_c; rewrite <- (VSet.LP.mem_permut_mem z c_in_dom); apply in_impl_mem; trivial.
 reflexivity.
 rewrite <- acc_inst_dom in x_in_dom; rewrite <- (VSet.LP.mem_permut_mem x c_in_dom) in x_in_dom.

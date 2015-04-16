@@ -173,7 +173,7 @@ Implicit Arguments replace_pos_elim [p t u t'].
 Fixpoint pos_context (C : context) : position :=
   match C with
     | Hole => nil
-    | Cont _ i _ _ _ C _ => i :: pos_context C
+    | @Cont _ _ i _ _ _ C _ => i :: pos_context C
   end.
 
 Lemma subterm_fill_pos_context : forall c u,

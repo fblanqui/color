@@ -116,7 +116,7 @@ Section term.
   Fixpoint apps {n} t (us : Tes n) :=
     match us with
       | Vnil => t
-      | Vcons u _ us' => apps (App t u) us'
+      | Vcons u us' => apps (App t u) us'
     end.
 
   Lemma apps_app_cons t u n (us : Tes n) :
@@ -381,7 +381,7 @@ Section term.
     Fixpoint fvs {n} (ts : Tes n) :=
       match ts with
         | Vnil => empty
-        | Vcons t _ ts' => union (fv t) (fvs ts')
+        | Vcons t ts' => union (fv t) (fvs ts')
       end.
 
     Fixpoint bv (t : Te) :=

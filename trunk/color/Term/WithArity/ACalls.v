@@ -93,7 +93,7 @@ Fixpoint calls (t : term) : list term :=
       let fix vcalls n (ts : terms n) : list term :=
         match ts with
           | Vnil => nil
-          | Vcons u n' ts' => calls u ++ vcalls n' ts'
+          | Vcons u ts' => calls u ++ vcalls _ ts'
         end
       in match defined f R with
 	   | true => t :: vcalls (arity f) ts
@@ -104,7 +104,7 @@ Fixpoint calls (t : term) : list term :=
 Fixpoint vcalls n (ts : terms n) : list term :=
   match ts with
     | Vnil => nil
-    | Vcons u _ ts' => calls u ++ vcalls ts'
+    | Vcons u ts' => calls u ++ vcalls ts'
   end.
 
 Lemma calls_fun : forall f ts, calls (Fun f ts) =

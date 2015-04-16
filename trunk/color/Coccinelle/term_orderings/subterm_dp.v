@@ -498,7 +498,7 @@ right; destruct a2 as [x2 | g2 k2].
 contradiction.
 simpl; rewrite in_map_iff; exists a1; split; trivial.
 inversion Sub as [u | u1 u2 K1 K2].
-subst u; simpl; rewrite <- H6; assumption.
+subst u; simpl; rewrite <- H5; assumption.
 subst u1 u2; apply trans_clos_is_trans with (projection (Term f l2)); trivial.
 apply trans_incl with (one_step R); trivial.
 intros u1 u2 K; left; trivial.
@@ -516,7 +516,7 @@ inversion H53 as [t5' t4 t3' H54 H43]; subst t3' t5'.
 assert (B21 := dp0_decreases _ _ H21).
 assert (B32 := between_dp0 Hdp t1 t2 t3 t4 H21 H32 H43).
 inversion B32 as [t | t4' t3' B32'].
-rewrite H1; assumption.
+rewrite H0; assumption.
 apply trans_clos_is_trans with (projection t2); assumption.
 Qed.
 
@@ -633,11 +633,11 @@ apply Ms; apply (projection_is_subterm t).
 assumption.
 inversion H as [g l1 l2 t3 H1 H2]; clear H; subst.
 inversion H2 as [t1 t2 sigma]; clear H2; subst.
-inversion H3; clear H3; subst t1 t2.
+inversion H; clear H; subst t1 t2.
 assert (H4 := cdp_in_dpR _ _ cdp_uv0).
 destruct H4 as [H4 _].
 inversion H4; subst.
-injection H; intros; subst f2 l; rewrite length_map.
+injection H0; intros; subst f2 l; rewrite length_map.
 assumption.
 intros b _; apply W'.
 Qed.

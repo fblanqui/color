@@ -214,7 +214,7 @@ intro H'; unfold nf in H'; apply (H' s); apply at_top; trivial.
 intros f l IHl s P; inversion P as [ss tt H K | g ll H K]; clear P; subst.
 intro H'; unfold nf in H'; apply (H' s); apply at_top; trivial.
 destruct K as [s [t [st_in_ll P]]].
-intro H; apply P; apply (nf_one_step_subterm _ _ H).
+intro H'; apply P; apply (nf_one_step_subterm _ _ H').
 simpl; rewrite in_map_iff; exists (s,t); split; trivial.
 Qed.
 
@@ -240,7 +240,7 @@ absurd (nf (one_step R) t); trivial.
 apply K'; rewrite in_map_iff; exists (s,t); split; trivial.
 
 apply (f_equal (fun l => Term f l)).
-generalize H1 ll' H' IHl H6; clear K K' H1 ll' H' IHl H6; induction ll as [ | [s t] ll].
+generalize H ll' H' IHl H5; clear K K' H ll' H' IHl H5; induction ll as [ | [s t] ll].
 intros _ [ | [s' t'] ll']; trivial; intros; discriminate.
 intros H1 [ | [s' t'] ll']; simpl; intros H' IHl H6.
 discriminate.
@@ -509,13 +509,13 @@ apply P_at_top; trivial.
 apply wf_inner.
 destruct K as [s [t [st_in_ll not_nf_t]]].
 assert (s_eq_t : s = t).
-clear H0 not_nf_t IHl; induction ll as [ | [u v] ll].
+clear H not_nf_t IHl; induction ll as [ | [u v] ll].
 contradiction.
 simpl in st_in_ll; destruct st_in_ll as [st_eq_uv | st_in_ll].
 injection st_eq_uv; clear st_eq_uv; intros; subst; 
 injection H2; clear H2; intros; subst; trivial.
 apply IHll; trivial; injection H2; clear H2; intros; trivial.
-destruct (H0 s t st_in_ll) as [P | [_ nf_t]].
+destruct (H s t st_in_ll) as [P | [_ nf_t]].
 subst s; apply (IHl t); trivial.
 rewrite in_map_iff; exists (t,t); split; trivial.
 apply not_nf_t; trivial.
@@ -561,7 +561,7 @@ apply K; trivial.
 left; apply (f_equal (fun l => Term f l)).
 rewrite map_map; apply map_eq.
 intros [s t] st_in_ll; simpl.
-destruct (H1 _ _ st_in_ll) as [H2 | [H2 nf_t]].
+destruct (H _ _ st_in_ll) as [H2 | [H2 nf_t]].
 rewrite (Psi_psi _ _ H2); trivial.
 rewrite psi_nf; trivial.
 Qed.
@@ -649,7 +649,7 @@ simpl; subst l; apply in_or_app; right; left; trivial.
 apply P_step_one_step with (inner R); trivial.
 subst g.
 assert (H6 : map (fst (A:=term) (B:=term)) ll = map psi l).
-rewrite <- H5; clear K H5 H0.
+rewrite <- H5; clear K H5 H.
 induction ll as [ | [u v] ll]; trivial.
 simpl; rewrite <- IHll.
 apply (f_equal (fun t => t :: map (fst (A:=term) (B:=term)) ll)).
@@ -659,7 +659,7 @@ apply psi_not_nf; intro H6; apply (Psi_not_nf v u); trivial.
 rewrite psi_nf; trivial.
 intros; apply H4; right; trivial.
 rewrite H6 in *.
-clear H4 H5 H6; rename H0 into H4.
+clear H4 H5 H6; rename H into H4.
 destruct (map_psi f l2) as [H5 | [H5 H5']].
 rewrite H4; rewrite H5.
 assert (t_in_k : In t (k1 ++ t :: k2)).
@@ -754,7 +754,7 @@ rewrite Sub' in Sub''; injection Sub''; clear Sub''; intro; subst u.
 destruct q'; discriminate.
 destruct K' as [s' [t' [st_in_ll' not_nf_t']]].
 absurd (nf (one_step R) t'); trivial.
-apply inner_fk; simpl; rewrite <- H5; rewrite in_map_iff; exists (s',t'); split; trivial.
+apply inner_fk; simpl; rewrite <- H4; rewrite in_map_iff; exists (s',t'); split; trivial.
 simpl; rewrite psi_not_inner; trivial.
 apply (f_equal (fun l => Term f l)); rewrite map_map; apply map_eq; trivial.
 apply (H4 l (@nil nat)); simpl; trivial.
@@ -779,7 +779,7 @@ apply False_rect.
 refine (K t _ s H1); simpl; subst l2; apply in_or_app; right; left; trivial.
 subst g.
 assert (H6 : map (fst (A:=term) (B:=term)) ll = map psi l2).
-rewrite <- H5; clear K H5 H0.
+rewrite <- H5; clear K H5 H.
 induction ll as [ | [u v] ll]; trivial.
 simpl; rewrite <- IHll.
 apply (f_equal (fun t => t :: map (fst (A:=term) (B:=term)) ll)).
@@ -789,7 +789,7 @@ apply psi_not_nf; intro H6; apply (Psi_not_nf v u); trivial.
 rewrite psi_nf; trivial.
 intros; apply H4; right; trivial.
 rewrite H6 in *; rewrite H5 in *.
-clear H4 H5 H6; rename H0 into H4.
+clear H4 H5 H6; rename H into H4.
 destruct (map_psi f' l1) as [H5 | [H5 H5']].
 rewrite H5.
 assert (t_in_k : In t (k1 ++ t :: k2)).

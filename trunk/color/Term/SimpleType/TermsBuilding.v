@@ -9,7 +9,7 @@ Constructing terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras LogicUtil.
+Require Import RelExtras ListExtras LogicUtil Omega.
 Require TermsActiveEnv.
 
 Module TermsBuilding (Sig : TermsSig.Signature).

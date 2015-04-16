@@ -45,7 +45,7 @@ Definition aliens (c : Cap) := snd (projS2 c).
 Fixpoint sum n (cs : Caps n) : nat :=
   match cs with
     | Vnil => 0
-    | Vcons c _ cs' => projS1 c + sum cs'
+    | Vcons c cs' => projS1 c + sum cs'
   end.
 
 (* concatenation of all the aliens of a vector of caps *)
@@ -53,7 +53,7 @@ Fixpoint sum n (cs : Caps n) : nat :=
 Fixpoint conc n (cs : Caps n) : terms (sum cs) :=
   match cs as cs return terms (sum cs) with
     | Vnil => Vnil
-    | Vcons c _ cs' => Vapp (aliens c) (conc cs')
+    | Vcons c cs' => Vapp (aliens c) (conc cs')
   end.
 
 Lemma in_conc : forall u n (cs : Caps n), Vin u (conc cs) ->
@@ -77,7 +77,7 @@ concatenate all the results *)
 Fixpoint Vmap_sum n (cs : Caps n) : terms (sum cs) -> terms n :=
   match cs as cs in vector _ n return terms (sum cs) -> terms n with
     | Vnil => fun _ => Vnil
-    | Vcons c _ cs' => fun ts =>
+    | Vcons c cs' => fun ts =>
       let (hd,tl) := Vbreak ts in Vcons (fcap c hd) (Vmap_sum cs' tl)
   end.
 
@@ -129,7 +129,7 @@ Definition ren_cap k t := fcap (capa t) (fresh k (nb_aliens t)).
 Fixpoint ren_caps k n (ts : terms n) : terms n :=
   match ts in vector _ n return terms n with
   | Vnil => Vnil
-  | Vcons t n' ts =>
+  | Vcons t ts =>
     Vcons (ren_cap k t) (ren_caps (k + nb_aliens t) ts)
   end.
 

@@ -170,7 +170,7 @@ Proof.
   inversion H2 as [t1 t2 sigma H2']; inversion H2' as [H2'' Sub].
   constructor 1 with l2.
   rewrite <- (@rwr_list_equiv _ _ R3_equiv_R4); assumption.
-  rewrite <- H3; constructor 1; split.
+  rewrite <- H0; constructor 1; split.
   rewrite <- R1_dp_equiv_R2; assumption.
   assumption.
 
@@ -178,7 +178,7 @@ Proof.
   inversion H2 as [t1 t2 sigma H2']; inversion H2' as [H2'' Sub].
   constructor 1 with l2.
   rewrite (@rwr_list_equiv _ _ R3_equiv_R4); assumption.
-  rewrite <- H3; constructor 1; split.
+  rewrite <- H0; constructor 1; split.
   rewrite R1_dp_equiv_R2; assumption.
   assumption.
 Qed.

@@ -14,7 +14,7 @@ Set Implicit Arguments.
 Require RelUtil.
 Require Import RelExtras MultisetTheory Transitive_Closure Compare_dec
   Relations Permutation ListPermutation MultisetCore Setoid ListExtras AccUtil
-  LogicUtil Morphisms Basics.
+  LogicUtil Morphisms Basics Omega.
 
 Module MultisetOrder (MC: MultisetCore).
 

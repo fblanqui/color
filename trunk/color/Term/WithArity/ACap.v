@@ -47,7 +47,7 @@ Local Open Scope nat_scope.
 Fixpoint sum n (cs : Caps n) : nat :=
   match cs with
     | Vnil => 0
-    | Vcons c _ cs' => projS1 c + sum cs'
+    | Vcons c cs' => projS1 c + sum cs'
   end.
 
 (* concatenation of all the aliens of a vector of caps *)
@@ -55,7 +55,7 @@ Fixpoint sum n (cs : Caps n) : nat :=
 Fixpoint conc n (cs : Caps n) : terms (sum cs) :=
   match cs as cs return terms (sum cs) with
     | Vnil => Vnil
-    | Vcons c _ cs' => Vapp (aliens c) (conc cs')
+    | Vcons c cs' => Vapp (aliens c) (conc cs')
   end.
 
 Lemma in_conc : forall u n (cs : Caps n), Vin u (conc cs) ->
@@ -79,7 +79,7 @@ concatenate all the results *)
 Fixpoint Vmap_sum n (cs : Caps n) : terms (sum cs) -> terms n :=
   match cs as cs in vector _ n return terms (sum cs) -> terms n with
     | Vnil => fun _ => Vnil
-    | Vcons c _ cs' => fun ts =>
+    | Vcons c cs' => fun ts =>
       let (hd,tl) := Vbreak ts in Vcons (fcap c hd) (Vmap_sum cs' tl)
   end.
 
@@ -165,7 +165,7 @@ Definition fresh_for (t : term) := fresh (S (maxvar t)).
 
 Definition cap t :=
   match capa t with
-    | existS n (f,_) => f (fresh_for t n)
+    | @existT _ _ n (f, _) => f (fresh_for t n)
   end.
 
 Lemma cap_eq : forall t,

@@ -37,7 +37,7 @@ Program Fixpoint check_proof (Pb : Problem Sig) (Prf : TerminationProof Sig)
           end
       end
 
-  | TP_ProblemEmpty => 
+  | TP_ProblemEmpty _ => 
       match EmptyChecker.is_problem_empty Pb with
       | true => TerminationEstablished _
       | _ => Error

@@ -1383,6 +1383,10 @@ trivial.
 intro v1; generalize (Is_sol'_psp v1);
 pattern 
 (apply_cf_subst sp (Var (new_var p)) :: closed_term p :: nil); simpl find.
+assert (e : forall A f B (a0:A) a (b:B) l,
+  find f a0 ((a,b) :: l) = if f a0 a then Some b else find f a0 l).  
+reflexivity.
+rewrite !e.
 generalize (X.eq_bool_ok v1 a); case (X.eq_bool v1 a); [intro v1_eq_a; subst v1 | intro v1_diff_a].
 intro H1; rewrite H1; 
 apply (f_equal (fun t => 

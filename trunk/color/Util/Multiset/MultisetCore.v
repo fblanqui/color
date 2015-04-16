@@ -60,11 +60,11 @@ Module Type MultisetCore.
 
     Parameter empty_mult: x/empty = 0.
 
-    Parameter union_mult: x/(M+N) = (x/M + x/N)%nat.
+    Parameter union_mult: x/(M+N) = ((x/M)%msets + (x/N)%msets)%nat.
 
-    Parameter diff_mult: x/(M-N) = (x/M - x/N)%nat.
+    Parameter diff_mult: x/(M-N) = ((x/M)%msets - (x/N)%msets)%nat.
 
-    Parameter intersection_mult: x/(M#N) = Min.min (x/M) (x/N).
+    Parameter intersection_mult: x/(M#N) = Min.min (x/M)%msets (x/N)%msets.
 
     Parameter singleton_mult_in: x =A= y -> x/{{y}} = 1.
 
