@@ -12,7 +12,7 @@ a more general development is given in AGraph.
 Set Implicit Arguments.
 
 Require Import LogicUtil ATrs ListUtil RelUtil RelSub Path ARelation SN
-  ListOccur ListNodup AShift VecUtil ASubstitution.
+  ListOccur ListNodup AShift VecUtil ASubstitution Omega.
 Require Export ADP.
 
 Section S.

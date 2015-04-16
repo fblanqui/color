@@ -214,8 +214,8 @@ arguments filtering *)
 Require Import AFilterBool VecUtil.
 
 Module Type Filter.
-  Variable Sig : Signature.
-  Variable pi : forall f, vector bool (@arity Sig f).
+  Parameter Sig : Signature.
+  Parameter pi : forall f, vector bool (@arity Sig f).
   Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
 End Filter.
 
@@ -276,9 +276,9 @@ arguments filtering *)
 Require Import AFilterPerm.
 
 Module Type Perm.
-  Variable Sig : Signature.
-  Variable pi : forall f : Sig, list (N (arity f)).
-  Variable pi_ok : non_dup pi.
+  Parameter Sig : Signature.
+  Parameter pi : forall f : Sig, list (N (arity f)).
+  Parameter pi_ok : non_dup pi.
   Declare Module WP : WeakRedPair with Definition Sig := filter_sig pi.
 End Perm.
 
@@ -338,8 +338,8 @@ End WP_Perm.
 Require Import AProj.
 
 Module Type Proj.
-  Variable Sig : Signature.
-  Variable pi : forall f : Sig, option {k | k < arity f}.
+  Parameter Sig : Signature.
+  Parameter pi : forall f : Sig, option {k | k < arity f}.
   Declare Module WP : WeakRedPair with Definition Sig := Sig.
 End Proj.
 

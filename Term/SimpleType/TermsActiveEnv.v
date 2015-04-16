@@ -10,7 +10,7 @@ environments with declarations that are really used in a term.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsEnv Arith LogicUtil.
+Require Import RelExtras ListExtras TermsEnv Arith LogicUtil Omega.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 
@@ -18,7 +18,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
 
   Definition activeEnv (M: Term) : Env :=
     match M with
-    | buildT E Pt T M0 =>
+    | @buildT E Pt T M0 =>
       Typing_rect
       (fun E0 Pt0 T0 _ => Env)
       (fun _ x A _ => copy x None ++ A [#] EmptyEnv)

@@ -9,7 +9,7 @@ boolean functions on lists
 
 Set Implicit Arguments.
 
-Require Import ListUtil BoolUtil EqUtil LogicUtil Arith.
+Require Import ListUtil BoolUtil EqUtil LogicUtil Arith Omega.
 
 Section S.
 

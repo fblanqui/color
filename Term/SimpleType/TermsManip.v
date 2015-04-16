@@ -10,7 +10,7 @@ typed lambda-calculus are defined.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras TermsTyping LogicUtil.
+Require Import Relations RelExtras ListExtras TermsTyping LogicUtil Omega.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
@@ -21,7 +21,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   Definition isVar M : Prop :=
   let (_, _, _, typ) := M in
   match typ with
-  | TVar _ _ _ _ => True
+  | TVar _ => True
   | _ => False
   end.
 
@@ -49,7 +49,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   Definition isAbs M : Prop :=
   let (_, _, _, typ) := M in
   match typ with
-  | TAbs _ _ _ _ _ => True
+  | TAbs _ => True
   | _ => False
   end.
 
@@ -63,9 +63,9 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Definition absBody M : isAbs M -> Term :=
   match M return (isAbs M -> Term) with
-  | buildT _ _ _ typ =>
+  | buildT typ =>
       match typ return (isAbs (buildT typ) -> Term) with
-      | TAbs _ _ _ _ absT => fun _ : True => buildT absT
+      | TAbs absT => fun _ : True => buildT absT
       | _ => fun notAbs: False => False_rect Term notAbs
       end
   end.
@@ -73,9 +73,9 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Definition absType M : isAbs M -> SimpleType :=
   match M return (isAbs M -> SimpleType) with
-  | buildT _ _ _ typ =>
+  | buildT typ =>
       match typ return (isAbs (buildT typ) -> SimpleType) with
-      | TAbs _ A B _ _ => fun _ : True => A
+      | @TAbs _ A B _ _ => fun _ : True => A
       | _ => fun notAbs : False => False_rect SimpleType notAbs
       end
   end.
@@ -165,7 +165,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   Definition isApp M : Prop :=
   let (_, _, _, typ) := M in
   match typ with
-  | TApp _ _ _ _ _ _ _ => True
+  | TApp _ _ => True
   | _ => False
   end.
 
@@ -177,9 +177,9 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Definition appBodyL M : isApp M -> Term :=
   match M return (isApp M -> Term) with
-  | buildT _ _ _ typ =>
+  | buildT typ =>
       match typ return (isApp (buildT typ) -> Term) with
-      | TApp _ _ _ _ _ L R => fun _ : True => buildT L
+      | TApp L R => fun _ : True => buildT L
       | _ => fun notApp: False => False_rect Term notApp
       end
   end.
@@ -188,9 +188,9 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Definition appBodyR M : isApp M -> Term :=
   match M return (isApp M -> Term) with
-  | buildT _ _ _ typ =>
+  | buildT typ =>
       match typ return (isApp (buildT typ) -> Term) with
-      | TApp _ _ _ _ _ L R => fun _ : True => buildT R
+      | TApp L R => fun _ : True => buildT R
       | _ => fun notApp: False => False_rect Term notApp
       end
   end.
@@ -323,7 +323,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   let
     fix appUnits_rec M (Mt: TermTyping M) : list Term :=
     match Mt with
-    | (TApp _ _ _ _ _ Ltyp Rtyp) => (buildT Rtyp) :: 
+    | (TApp Ltyp Rtyp) => (buildT Rtyp) :: 
                                     (@appUnits_rec (buildT Ltyp) Ltyp)
     | _ => (buildT Mt)::nil
     end    

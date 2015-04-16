@@ -10,7 +10,7 @@ over graph based on unification
 Set Implicit Arguments.
 
 Require Import ADecomp AUnif ARenCap ATrs ListUtil RelUtil AGraph LogicUtil
-  AShift ACalls BoolUtil Compare_dec ADuplicateSymb ListDec EqUtil.
+  AShift ACalls BoolUtil Compare_dec ADuplicateSymb ListDec EqUtil Omega.
 
 Section S.
 
@@ -90,7 +90,7 @@ Section S.
       revert H1. unfold undefined_rhs, undefined. simpl. rewrite negb_lr. simpl.
       intro. rewrite H1. unfold is_sol_eqn. unfold fst, snd.
       rewrite !sub_fun. intro. Funeqtac.
-      rewrite H6, (beq_refl (@beq_symb_ok Sig)). refl.
+      rewrite (beq_refl (@beq_symb_ok Sig)). refl.
     Qed.
 
     Lemma dpg_unif_N_correct : hd_rules_graph (red R #) D << Graph dpg_unif_N.

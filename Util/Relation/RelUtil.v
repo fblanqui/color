@@ -11,9 +11,8 @@ General definitions and results about relations.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Setoid Basics Morphisms List.
+Require Import LogicUtil Setoid Basics Morphisms List Omega.
 Require Export Relations RelMidex.
-Require Omega.
 
 Arguments inclusion {A} R1 R2.
 Arguments same_relation {A} R1 R2.
@@ -606,7 +605,7 @@ Section clos_equiv.
 
   Global Instance ec_equiv : Equivalence clos_equiv.
 
-  Proof. exact (Build_Equivalence _ _ e_refl e_sym e_trans). Qed.
+  Proof. exact (Build_Equivalence _ e_refl e_sym e_trans). Qed.
 
 End clos_equiv.
 

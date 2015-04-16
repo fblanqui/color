@@ -10,7 +10,7 @@ Infinite sets
 Set Implicit Arguments.
 
 Require Import ClassicUtil IotaUtil EpsilonUtil
-        Basics Morphisms Setoid
+        Basics Morphisms Setoid Omega
         LogicUtil SetUtil FinSet FunUtil BoundNat.
 
 Section S.

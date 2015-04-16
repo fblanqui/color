@@ -62,8 +62,8 @@ Section S.
   Fixpoint fill (c : context) (t : term) : term :=
     match c with
       | Hole => t
-      | Cont f i j H v1 c' v2 =>
-        Fun f (Vcast (Vapp v1 (Vcons (fill c' t) v2)) H)
+      | Cont H v1 c' v2 =>
+        Fun _ (Vcast (Vapp v1 (Vcons (fill c' t) v2)) H)
     end.
 
 (***********************************************************************)
@@ -72,7 +72,7 @@ Section S.
   Fixpoint comp (C : context) : context -> context :=
     match C with
       | Hole => fun E => E
-      | Cont _ _ _ H ts1 D ts2 => fun E => Cont H ts1 (comp D E) ts2
+      | Cont H ts1 D ts2 => fun E => Cont H ts1 (comp D E) ts2
     end.
 
   Lemma fill_fill : forall C D u, fill C (fill D u) = fill (comp C D) u.
@@ -432,7 +432,7 @@ Section S.
   Fixpoint cvars (c : context) : variables :=
     match c with
       | Hole => List.nil
-      | Cont f i j H v1 c' v2 => vars_vec v1 ++ cvars c' ++ vars_vec v2
+      | Cont H v1 c' v2 => vars_vec v1 ++ cvars c' ++ vars_vec v2
     end.
 
   Lemma vars_fill_elim : forall t c, vars (fill c t) [= cvars c ++ vars t.
@@ -462,7 +462,7 @@ Section S.
   Fixpoint csymbs (c : context) : list Sig :=
     match c with
       | Hole => List.nil
-      | Cont f i j H v1 c' v2 =>
+      | @Cont f _ _ _ v1 c' v2 =>
         f :: (symbs_vec v1 ++ csymbs c' ++ symbs_vec v2)
     end.
 
