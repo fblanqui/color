@@ -424,7 +424,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
   Fixpoint subc (s : substitution) (c : context) : context :=
     match c with
     | Hole => Hole
-    | Cont f H v1 c' v2 =>
+    | Cont f _ _ H v1 c' v2 =>
       Cont f H (Vmap (sub s) v1) (subc s c') (Vmap (sub s) v2)
     end.
 

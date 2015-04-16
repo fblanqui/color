@@ -13,7 +13,7 @@ de Bruijn indices) is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Compare_dec Arith LogicUtil Omega.
+Require Import RelExtras ListExtras Compare_dec Arith LogicUtil.
 Require TermsManip.
 
 Module TermsLifting (Sig : TermsSig.Signature).

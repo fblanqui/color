@@ -52,12 +52,12 @@ Hypotheses
 
 Fixpoint bterm_rect (t : bterm) : P t :=
   match t as t return P t with
-    | BVar h => H1 h
+    | BVar x h => H1 h
     | BFun f v =>
       let fix bterms_rect n (v : bterms n) : Q v :=
         match v as v return Q v with
           | Vnil => H3
-          | Vcons t' v' => H4 (bterm_rect t') (bterms_rect _ v')
+          | Vcons t' n' v' => H4 (bterm_rect t') (bterms_rect n' v')
         end
 	in H2 f (bterms_rect (arity f) v)
   end.
@@ -72,7 +72,7 @@ Definition bterm_ind (P : bterm -> Prop) (Q : forall n, bterms n -> Prop) :=
 
 Fixpoint term_of_bterm (bt : bterm) : term :=
   match bt with
-    | @BVar v _ => Var v
+    | BVar v _ => Var v
     | BFun f bts => Fun f (Vmap term_of_bterm bts)
   end.
 
@@ -90,8 +90,8 @@ Fixpoint inject_term (t : term) : max_le t -> bterm :=
 	match ts as v in vector _ n0
 	  return Vforall max_le v -> bterms n0 with
           | Vnil => fun _ => Vnil
-          | Vcons t' ts' => fun H =>
-	    Vcons (inject_term (proj1 H)) (inject_terms _ ts' (proj2 H))
+          | Vcons t' p' ts' => fun H =>
+	    Vcons (inject_term (proj1 H)) (inject_terms p' ts' (proj2 H))
 	end
       in BFun f (inject_terms (arity f) ts (maxvar_le_fun H))
   end.
@@ -101,7 +101,7 @@ Fixpoint inject_terms (n : nat) (ts : terms n) :
   match ts as v in vector _ n0
     return Vforall max_le v -> bterms n0 with
     | Vnil => fun _ => Vnil
-    | Vcons t' ts' => fun H =>
+    | Vcons t' p' ts' => fun H =>
       Vcons (inject_term (proj1 H)) (inject_terms ts' (proj2 H))
   end.
 
@@ -138,7 +138,7 @@ Notation fint := (fint I).
 
 Fixpoint bterm_int (t : bterm) { struct t } : D :=
   match t with
-    | @BVar x _ => xint x
+    | BVar x _ => xint x
     | BFun f v => fint f (Vmap bterm_int v)
   end.
 
@@ -182,7 +182,7 @@ intro t. apply (term_ind P Q).
  intro H3.
  gen (H1 _ (proj1 H3)). clear H1. intro H1.
  gen (H2 _ (proj2 H3)). clear H2. intro H2.
- simpl. rewrite H1, H2. refl.
+ simpl. unfold Vforall in H1, H2. rewrite H1, H2. refl.
 Qed.
  
 End term_int.
@@ -196,7 +196,7 @@ Implicit Arguments le_trans [n m p].
 
 Fixpoint bterm_le k (bt : bterm k) l (h0 : k <= l) : bterm l :=
   match bt with
-    | BVar h => BVar (le_trans h h0)
+    | BVar x h => BVar (le_trans h h0)
     | BFun f bts => BFun f (Vmap (fun bt => @bterm_le k bt l h0) bts)
   end.
 
@@ -204,7 +204,7 @@ Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l)
   : vector (bterm l) n :=
   match bts in vector _ n return vector (bterm l) n with
     | Vnil => Vnil
-    | Vcons bt bts' => Vcons (bterm_le bt h0) (bterms_le bts' h0)
+    | Vcons bt n' bts' => Vcons (bterm_le bt h0) (bterms_le bts' h0)
   end.
 
 Definition bterm_plus k bt l := bterm_le bt (le_plus_r k l).

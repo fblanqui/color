@@ -77,7 +77,6 @@ Module VectorArith (SRT : SemiRingType).
     Proper (Vforall2 (Vforall2 eqA) ==> Vforall2 eqA) (@add_vectors n k).
 
   Proof.
-    intro x; revert x.
     induction x; simpl; intros. VOtac. refl. revert H. VSntac y.
     unfold add_vectors. simpl. rewrite Vforall2_cons_eq. intuition.
     rewrite H1. apply vector_plus_mor. 2: refl.
@@ -175,7 +174,7 @@ Module VectorArith (SRT : SemiRingType).
 
     (* induction base *)
     VSntac v. unfold id_vec, dot_product. simpl.
-    change (dot_product (Vconst A0 n) (Vtail v) + A1 * Vhead v =A= Vhead v).
+    fold (dot_product (Vconst A0 n) (Vtail v)).
     rewrite dot_product_zero. ring.
     apply Vforall_nth_intro. intros.
     rewrite Vnth_const. refl.

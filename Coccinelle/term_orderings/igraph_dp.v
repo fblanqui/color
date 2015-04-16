@@ -42,7 +42,7 @@ Proof.
 intros dpR R t f l; split.
 intro H; inversion H as [g l1 l2 H1 H2 H3]; subst.
 constructor 1 with (Term f l2); trivial.
-inversion H2 as [k | k1 k2 K2]; subst.
+inversion H4 as [k | k1 k2 K2]; subst.
 left.
 right; clear -K2; induction K2 as [l1 l2 H | l1 l2 l3 H1 H2].
 left; constructor; assumption.
@@ -175,8 +175,8 @@ split.
 rewrite <- comp_def_on_dps; exists 0; assumption.
 split.
 rewrite <- comp_def_on_dps; exists 1; assumption.
-rewrite H7; rewrite <- H3; split; trivial.
-assert (Abs := comp_approx _ _ C _ _ H1 H0); inversion Abs.
+rewrite H1; rewrite <- H6; split; trivial.
+assert (Abs := comp_approx _ _ C _ _ H7 H2); inversion Abs.
 (* 1/1 The new component n+1 (i.e. the old component n+2) is well founded *)
 apply wf_incl with (rest P (rdp_step (axiom (fun v u : term => comp (u, v) (S (S n0)))) R)).
 intros s t [K [As At]]; split; [ | split; assumption].
@@ -226,21 +226,21 @@ inversion H as [f l1 l2 v K1 K2]; clear H; subst.
 inversion K2 as [v u sigma [K3 | K3]]; clear K2; subst.
 injection K3; clear K3; intros; subst u v.
 left; apply Transo with (Term f l2).
-rewrite <- H0; apply Hso.
+rewrite <- H1; apply Hso.
 inversion K1 as [l | k1 k2 K]; clear K1; subst.
 apply lo_refl.
-clear Pt H0; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
+clear Pt H1; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
 apply Hlo; apply in_context; assumption.
 apply lo_trans with (Term f k2); [apply Hlo; apply in_context | ]; assumption.
 right.
 apply lo_trans with (Term f l2).
-rewrite <- H0; apply Hlo'; assumption.
+rewrite <- H1; apply Hlo'; assumption.
 inversion K1 as [l | k1 k2 K]; clear K1; subst.
 apply lo_refl.
-clear Pt H0; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
+clear Pt H1; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
 apply Hlo; apply in_context; assumption.
 apply lo_trans with (Term f k2); [apply Hlo; apply in_context | ]; assumption.
-split; [ constructor 1 with l2; [ | rewrite <- H0; apply instance] | split]; assumption.
+split; [ constructor 1 with l2; [ | rewrite <- H1; apply instance] | split]; assumption.
 Qed.
 
 

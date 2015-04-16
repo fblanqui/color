@@ -127,7 +127,7 @@ Qed.
 Fixpoint dup_int_context c :=
   match c with
     | Hole => Hole
-    | @Cont _ f _ _ H v c' w => @Cont Sig' (int_symb f) _ _ H 
+    | Cont f _ _ H v c' w => @Cont Sig' (int_symb f) _ _ H 
       (Vmap dup_int_term v) (dup_int_context c') (Vmap dup_int_term w)
   end.
 
@@ -155,7 +155,7 @@ Qed.
 Definition dup_hd_context c :=
   match c with
     | Hole => Hole
-    | @Cont _ f _ _ H v c' w => @Cont Sig' (hd_symb f) _ _ H 
+    | Cont f _ _ H v c' w => @Cont Sig' (hd_symb f) _ _ H 
       (Vmap dup_int_term v) (dup_int_context c') (Vmap dup_int_term w)
   end.
 

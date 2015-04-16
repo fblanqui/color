@@ -27,7 +27,7 @@ Section S.
         let fix subterm_lst_vec k (us : terms k) {struct us} : list term :=
           match us with
             | Vnil => nil
-            | Vcons u1 us' => subterm_lst u1 ++ subterm_lst_vec _ us'
+            | Vcons u1 k' us' => subterm_lst u1 ++ subterm_lst_vec k' us'
           end
           in list_of_vec ts ++ subterm_lst_vec (arity f) ts
     end.
@@ -35,7 +35,7 @@ Section S.
   Fixpoint subterm_lst_vec k (us : terms k) : list term :=
     match us with
       | Vnil => nil
-      | Vcons u1 us' => subterm_lst u1 ++ subterm_lst_vec us'
+      | Vcons u1 k' us' => subterm_lst u1 ++ subterm_lst_vec us'
     end.
 
   Lemma subterm_lst_fun : forall F ts,

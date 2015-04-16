@@ -161,7 +161,7 @@ edge from b to c *)
       WF (hd_red_Mod S D).
 
   Proof.
-    intros. apply WF_decomp with cs; try hyp. clear hyp4 hyp2.
+    intros. apply WF_decomp with cs; try hyp. clear hyp4 hyp2 approx_correct.
     rewrite lforall_eq. intros. rewrite lforall_eq in hyp3. ded (hyp3 _ H).
     destruct H0. apply WF_co_scc; try hyp. trans (flat cs).
     apply In_incl_flat. hyp. hyp. hyp.

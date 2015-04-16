@@ -157,7 +157,7 @@ Lemma pos_expr_if_all_pos' :
     all_coef_pos 
     (norm_subst 0 1 Zplus Zmult Zminus Zopp Zeq_bool Zdiv_eucl ring_subst_niter nil pe) = true -> 
     forall l, all_mem_pos l  -> 
-    0<= (PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l pe) .
+    0<= (  PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l pe) .
 Proof.
   intros p H l H0.
   rewrite Zr_ring_lemma2 with 
@@ -182,11 +182,11 @@ Lemma pos_expr_if_all_pos :
         nil (PEsub pe2  pe1)
     ) = true -> 
     forall l, all_mem_pos l  -> 
-      PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l pe1 <=  
-    PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l pe2 .
+      PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l pe1 <=  
+    PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l pe2 .
 Proof.
   intros pe1 pe2 H l H0.
-  assert (0<= PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l (PEsub pe2 pe1)).
+  assert (0<=  PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower l (PEsub pe2 pe1)).
   apply pos_expr_if_all_pos'.
   assumption.
   assumption.
@@ -524,8 +524,8 @@ Lemma strict_pos_expr_if_all_pos' :
   forall pe, all_coef_pos (norm_subst 0 1 Zplus Zmult Zminus Zopp Zeq_bool Zdiv_eucl ring_subst_niter nil pe) = true -> 
     forall lb, all_mem_pos lb  -> 
       forall lz, length lb = length lz -> all_mem_bounded (combine lb lz) ->
-      0 < PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower lb pe -> 
-      0< ( PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower lz pe) .
+      0 < PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower lb pe -> 
+      0< ( PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower lz pe) .
 Proof.
   intros pe H lb lb_pos lz Hlength Hlb_lz.
 
@@ -549,19 +549,19 @@ Lemma strict_pos_expr_if_all_pos :   forall pe1 pe2,
   all_coef_pos (norm_subst 0 1 Zplus Zmult Zminus Zopp Zeq_bool Zdiv_eucl ring_subst_niter nil  (PEsub pe2 pe1)) = true -> 
   forall lb, all_mem_pos lb -> 
     forall lz, length lb = length lz -> all_mem_bounded (combine lb lz) ->
-      PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lb pe1 < 
-      PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lb pe2 -> 
-      PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe1 < 
-      ( PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe2) .
+      PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lb pe1 < 
+      PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lb pe2 -> 
+      PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe1 < 
+      ( PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe2) .
 Proof.
   intros pe1 pe2 H lb H0 lz H1 H2 H3.
 
 
-  assert (0<  PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe2  -
-    PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe1).
-  replace (PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe2  -
-    PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe1) with 
-  (PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz (PEsub pe2  pe1)) by (vm_compute;reflexivity).
+  assert (0<  PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe2  -
+    PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe1).
+  replace (PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe2  -
+    PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz pe1) with 
+  (PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower lz (PEsub pe2  pe1)) by (vm_compute;reflexivity).
   apply strict_pos_expr_if_all_pos' with lb.
   assumption.
   assumption. 
@@ -755,8 +755,8 @@ Lemma pos_expr_incr_aux :
   forall pe, 
   all_coef_pos (norm_subst 0 1 Zplus Zmult Zminus Zopp Zeq_bool Zdiv_eucl ring_subst_niter nil  pe) = true -> 
   forall l1 l2, all_le l1 l2 -> all_mem_pos l1 -> 
-    0 <=  PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l1 pe 
-    <= ( PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l2 pe) .
+    0 <=  PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l1 pe 
+    <= ( PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l2 pe) .
 Proof.
   intros pe H l1 l2 H0 H1.
   
@@ -779,8 +779,8 @@ Lemma pos_expr_incr :
   forall pe, 
   all_coef_pos (norm_subst 0 1 Zplus Zmult Zminus Zopp Zeq_bool Zdiv_eucl ring_subst_niter nil  pe) = true -> 
   forall l1 l2, all_le l1 l2 -> all_mem_pos l1 -> 
-    PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l1 pe 
-    <= ( PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l2 pe) .
+    PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l1 pe 
+    <= ( PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower l2 pe) .
 Proof.
   intros pe H l1 l2 H0 H1.
   destruct (pos_expr_incr_aux pe H l1 l2 H0 H1) as [_ h];exact h.
@@ -821,8 +821,8 @@ Ltac ring_ineq :=
           let fv := mkFV q fv in
             let pe := mkPol p fv in
             let qe := mkPol q fv in
-              let p' := constr:(Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv pe) in  
-                let q' := constr:(Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv qe) in 
+              let p' := constr:(Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv pe) in  
+                let q' := constr:(Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv qe) in 
                   let H:= fresh "H" in 
                   (assert (H':p' <= q');[
                     apply pos_expr_if_all_pos;
@@ -839,12 +839,12 @@ Ltac ring_ineq :=
             let qe := mkPol q fv in
               let p' := 
                 constr:(
-                  Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv pe
+                  Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv pe
                 ) 
                 in  
                 let q' := 
                   constr:(
-                    Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv qe
+                    Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv qe
                   ) 
                   in 
                   let H:= fresh "H" in 
@@ -910,8 +910,8 @@ Ltac ring_ineq_same_pol H :=
           let fv2 := mkFV q  (@List.nil Z) in
             let fv1 := modify_FV H fv2 in
             let qe := mkPol q fv2 in
-              let p' := constr:(Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv1 qe) in
-                let q' := constr:(Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv2 qe) in
+              let p' := constr:(Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv1 qe) in
+                let q' := constr:(Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv2 qe) in
                   let H':= fresh "H" in
                   (assert (H':p' <= q');[
                     apply pos_expr_incr;
@@ -1016,17 +1016,17 @@ Ltac isVar t :=
           let fv2 := mkFV q  (@List.nil Z) in
             let fv1 := modify_FV H fv2 in
             let qe := mkPol q fv2 in
-              let p' := constr:(Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv1 qe) in
-                let q' := constr:(Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv2 qe) in
+              let p' := constr:(Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv1 qe) in
+                let q' := constr:(Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv2 qe) in
 
 Goal 
   forall pe1 pe2 fv, 
-  PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe1 - 
-  PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower nil pe2
-    <= ( PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe2) - 
-      PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower nil pe2
- ->   PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe1 
-    <= ( PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe2) .
+  PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe1 - 
+  PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower nil pe2
+    <= ( PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe2) - 
+      PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower nil pe2
+ ->   PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe1 
+    <= ( PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z))  Z_of_N Zpower fv pe2) .
 Proof.
   intros pe1 pe2 fv H.
   omega.
@@ -1057,12 +1057,12 @@ Ltac translate_vars :=
                           | _::nil => 
                             let ve := mkPol v fv in
                               
-                              match eval vm_compute in (Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower nil ve) with
+                              match eval vm_compute in (Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower nil ve) with
                                 | 0%Z => fail 5
                                 | _ => 
                                   let h := fresh "h" in 
-                                    assert (h:p - Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower nil ve <=
-                                      Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv ve - Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower nil ve);
+                                    assert (h:p - Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower nil ve <=
+                                      Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower fv ve - Ring_polynom.PEeval 0 Zplus Zmult Zminus Zopp (IDphi (R:=Z)) Z_of_N Zpower nil ve);
                                     [     lazy beta delta  [Ring_polynom.PEeval IDphi BinList.nth hd] iota zeta; omega|
                                       lazy beta delta  [Ring_polynom.PEeval IDphi BinList.nth hd] iota zeta in h;
                                         ring_simplify in h;clear H]

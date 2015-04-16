@@ -21,7 +21,7 @@ Inductive comp : Type :=
 
 Module Type S.
 
-Parameter A : Type.
+Variable A : Type.
 Parameter eq_bool : A -> A -> bool.
 Parameter eq_bool_ok : forall a1 a2, match eq_bool a1 a2 with true => a1 = a2 | false => ~ a1 = a2 end.
 

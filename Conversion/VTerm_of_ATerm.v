@@ -45,7 +45,7 @@ Section S.
         let fix vterms_of_aterms n (ts : aterms n) : vterms :=
 	  match ts with
 	    | Vnil => List.nil
-	    | Vcons t' ts' => vterm_of_aterm t' :: vterms_of_aterms _ ts'
+	    | Vcons t' n' ts' => vterm_of_aterm t' :: vterms_of_aterms n' ts'
 	  end
 	  in VFun f (vterms_of_aterms (arity f) v)
     end.
@@ -53,7 +53,7 @@ Section S.
   Fixpoint vterms_of_aterms n (ts : aterms n) : vterms :=
     match ts with
       | Vnil => List.nil
-      | Vcons t' ts' => vterm_of_aterm t' :: vterms_of_aterms ts'
+      | Vcons t' _ ts' => vterm_of_aterm t' :: vterms_of_aterms ts'
     end.
 
   Lemma vterm_fun : forall f ts,
@@ -108,7 +108,7 @@ Section S.
   Fixpoint vcont_of_acont (c : acont) : vcont :=
     match c with
       | AContext.Hole => Hole
-      | @AContext.Cont _ f i j _ ts1 d ts2 =>
+      | AContext.Cont f i j _ ts1 d ts2 =>
         VCont f (vterms_of_aterms ts1) (vcont_of_acont d) (vterms_of_aterms ts2)
     end.
 

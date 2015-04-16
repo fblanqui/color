@@ -687,7 +687,7 @@ assert (H4 : { tau' : list (variable * (term * term)) |
                 (forall x t t', In x varl -> In (x,(t,t')) tau' -> Interp t t') }).
 assert (Acc_tau : forall x : variable, In x varl -> Interp_dom (apply_subst tau (Var x))).
 intros; simpl; rewrite <- H1; apply Acc_sigma; assumption.
-revert H2 H3 Acc_tau; clear -R_reg Rlist_ok P Plist Plist_ok Gdef'; induction tau as [ | [v vval] tau]; intros H2 H3 Acc_tau.
+revert H2 H3 Acc_tau; clear; induction tau as [ | [v vval] tau]; intros H2 H3 Acc_tau.
 exists nil; split; [apply refl_equal | intros; contradiction].
 destruct IHtau as [tau' [K1 K2]].
 intros x xval xval_in_tau; generalize (H2 _ _ (or_intror _ xval_in_tau)); simpl.
@@ -1285,7 +1285,7 @@ rewrite <- H5' in Acc_fl; destruct (interp_subst _ sigma Acc_fl) as [sigma' Isig
 destruct (interp_defined _ (interp_well_defined _ Acc_fl)) as [fl' Ifl].
 rewrite H5' in Ifl; inversion Ifl as [ | f' _l l' ll _ H10 H11 Ill | ]; [subst f' _l fl' | absurd (G f); assumption].
 apply rwr_subterm_rdp_rdp with l'.
-subst; revert Ills Ill Acc_sub_s H2; clear -R_reg Rlist_ok P Plist Plist_ok Gdef' V0_diff_V1 R_var; revert ll.
+subst; revert Ills Ill Acc_sub_s H2; clear; revert ll.
 induction lls as [ | [s s'] lls]; intros [ | [u u'] ll] Ills Ill Acc_sub_s K.
 left.
 generalize (refl_trans_clos_one_step_list_length_eq K); intro; discriminate.
@@ -1318,8 +1318,8 @@ destruct fl as [x | _f _l].
 apply False_rect; apply (R_var _ _ H0).
 simpl in H5'; injection H5'; intros; subst f.
 apply rwr_subterm_rdp_rdp with  (map (apply_subst sigma') _l).
-destruct H7 as [_ H7].
-generalize (H7 f_in_H); clear H7; intros [_ H7].
+destruct H5 as [_ H10].
+generalize (H10 f_in_H); clear H10; intros [_ H10].
 apply refl_trans_incl with (one_step_list (one_step (Pi pi V0 V1))); trivial.
 do 2 intro; apply one_step_list_incl.
 do 2 intro; apply one_step_incl.
@@ -1350,15 +1350,15 @@ apply (instance P (Term (mark g) lv) (Term (mark _f) _l) sigma'); trivial.
 
 apply Acc_intro; intros s [H _]; inversion H; clear H; subst.
 inversion H4 as [_t1 _t2 sigma]; clear H4; subst.
-assert (_K1 := P_in_dpR _ _ H).
+assert (_K1 := P_in_dpR _ _ H1).
 inversion _K1 as [t1 t2 K1]; subst.
 inversion K1; clear K1; subst.
 destruct t2 as [x2 | g2 k2].
 apply False_rect; apply (R_var _ _ H0).
-simpl in H1; injection H1; clear H1; intros; subst.
+simpl in H; injection H; clear H; intros; subst.
 rewrite Gdef' in f_not_in_H.
 apply False_rect; apply (mark_ok g2).
-inversion f_not_in_H as [g2' l t [H' _]].
+inversion f_not_in_H as [g2' l t [H _]].
 constructor 1 with l t; assumption.
 Qed.
 
@@ -1379,7 +1379,7 @@ inversion _K2 as [t1 t2 K2]; clear _K2; subst.
 inversion K2 as [u1 u2 p f2 k2 H Sub Df2]; subst.
 destruct t2 as [x2 | g2].
 apply False_rect; apply (R_var _ _ H).
-simpl in H0; injection H0; clear H0; intros; subst.
+simpl in H3; injection H3; clear H3; intros; subst.
 assert (Acc_t : Interp_dom (Term (mark g2) l1)).
 intros [ | i q] f k Sub' Gf.
 simpl in Sub'; injection Sub'; clear Sub'; intros; subst.

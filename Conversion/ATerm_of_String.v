@@ -118,7 +118,7 @@ Qed.
 Fixpoint string_of_cont (c : context) : string :=
   match c with
     | Hole => List.nil
-    | @Cont _ f _ _ _ _ d _ => f :: string_of_cont d
+    | Cont f _ _ _ _ d _ => f :: string_of_cont d
   end.
 
 Lemma string_of_cont_cont : forall t,

@@ -205,7 +205,7 @@ Section Specif.
 
   Definition proj1_sig2 (e: sig2 P Q) :=
     match e with
-    | exist2 _ _ a p q => a
+    | exist2 a p q => a
     end.
 
 End Specif.

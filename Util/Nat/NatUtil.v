@@ -11,7 +11,7 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Min Max Morphisms Omega Psatz.
+Require Import LogicUtil Min Max Morphisms Psatz.
 Require Export Arith.
 
 (***********************************************************************)

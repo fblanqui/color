@@ -121,7 +121,7 @@ Section Newman_section.
       inversion h1.
       subst.
       apply coherence_sym;apply Rstar_coherence;assumption.
-      subst.
+      subst;clear h1.
       apply caseRxy with y0;auto.
     Qed.
   End Induct.

@@ -1297,7 +1297,7 @@ inversion K as [s' t' p h l H' Sub Dh]; clear K; subst _s _t; subst.
 destruct s' as [x' | f' ls'].
 apply False_rect; apply (R123_var' _ _ H').
 simpl in H1; injection H1; clear H1; intros; subst.
-injection H0; clear H0; intros; subst. 
+injection H2; clear H2; intros; subst. 
 destruct H' as [H12 | [ H3 | HPi]].
 inversion Dh as [h' l' u [K12 | [K3 | KPi]]]; clear Dh; subst.
 left; split.
@@ -2010,8 +2010,7 @@ assert (s_not_in_F3 : forall g : symbol, symb_in_term g s = true -> ~ defined (u
 intros g g_in_s D3g.
 destruct module123' as [M].
 assert (H'' := M g _ _ D3g t_R12_s).
-change ((symb_in_term g (Term f' k') || (symb_in_term g s || false))%bool =
-        false) in H''.
+pattern (Term f' k') in H''; simpl symb_in_term_list in H''; cbv beta in H''.
 rewrite g_in_s in H''; destruct (symb_in_term g (Term f' k')); discriminate.
 destruct s as [v | ff ll].
 absurd (union term R1 R2 (Term f' k') (Var v)); trivial.
@@ -2022,8 +2021,6 @@ intros g g_in_s D3g.
 destruct module123' as [M].
 assert (H'' := M g _ _ D3g t_R12_s).
 pattern (Term f' k') in H''; simpl symb_in_term_list in H''; cbv beta in H''.
-simpl symb_in_term_list in H''; fold symb_in_term_list in H''.
-simpl in g_in_s; fold symb_in_term_list in g_in_s.
 rewrite g_in_s in H''; discriminate.
 assert (interp_dom_var : forall v, In v (var_list (Term ff ll))
               ->  Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) (apply_subst sigma (Var v))).

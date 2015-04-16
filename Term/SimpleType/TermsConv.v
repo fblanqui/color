@@ -14,7 +14,7 @@ environment are identified.
 Set Implicit Arguments.
 
 Require Import Relations RelExtras ListPermutation Compare_dec TermsPos Max
-  Setoid ListUtil ListExtras LogicUtil Morphisms Omega.
+  Setoid ListUtil ListExtras LogicUtil Morphisms.
 
 Module TermsConv (Sig : TermsSig.Signature).
 

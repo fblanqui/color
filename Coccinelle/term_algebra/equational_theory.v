@@ -23,7 +23,6 @@ Require Import weaved_relation.
 Require Import dickson.
 Require Import term_spec.
 Require Import equational_theory_spec.
-Require Max.
 
 Notation " T '-[' R ']->' U " := (R U T) (at level 80) : term_scope .
 
@@ -1011,7 +1010,7 @@ Qed.
     destruct l as [v | ]; [idtac | discriminate].
     apply well_formed_apply_subst_strong.
     intros x x_in_r; apply well_formed_remove_term with (Var v).
-    rewrite H0; apply refl_equal.
+    rewrite H1; apply refl_equal.
     rewrite var_in_term_is_sound; apply R_reg with r.
     assumption.
     rewrite <- var_in_term_is_sound; assumption.
@@ -1024,7 +1023,7 @@ Qed.
     subst t1.
     apply well_formed_apply_subst_strong.
     intros x x_in_r; apply well_formed_remove_term with l.
-    rewrite H0; assumption.
+    rewrite H1; assumption.
     rewrite var_in_term_is_sound; apply R_reg with r.
     assumption.
     rewrite <- var_in_term_is_sound; assumption.
@@ -1958,7 +1957,7 @@ Qed.
       split; trivial.
       rewrite <- h0; apply in_context; trivial.
 (* 1/1 s is a compound term *)
-      destruct (one_step_in_list H1) as [ti [ui [lt1 [lt2 [K [K1 K2]]]]]].
+      destruct (one_step_in_list H0) as [ti [ui [lt1 [lt2 [K [K1 K2]]]]]].
       simpl in h0; injection h0; clear h0; intro h0; intro; subst g.
       rewrite K1 in h0.
       destruct (split_map_set _ _ _ _ (sym_eq h0)) as [ls1 [ls2 [J1 [J2 J3]]]].
@@ -2023,7 +2022,7 @@ Qed.
       rewrite Sub''; trivial.
       apply var_in_subterm with (Var x) p''; trivial.
       left; reflexivity.
-      destruct (one_step_in_list H0) as [t [s [k [k' [K [K1 K2]]]]]]; subst l l1.
+      destruct (one_step_in_list H3) as [t [s [k [k' [K [K1 K2]]]]]]; subst l l1.
       intro x; do 2 rewrite var_list_unfold; do 2 rewrite var_list_list_app.
       intro x_in_ksk'; destruct (in_app_or _ _ _ x_in_ksk') as [x_in_k | x_in_sk'].
       apply in_or_app; left; assumption.
@@ -2309,17 +2308,17 @@ Qed.
       destruct l as [y | g l].
       apply False_rect; apply (R_var _ _ H''').
       apply False_rect.
-      revert H0; case_eq (find X.eq_bool x sigma); [intros x_val x_sigma | intro x_sigma]; [idtac | intro; discriminate].
+      revert H; case_eq (find X.eq_bool x sigma); [intros x_val x_sigma | intro x_sigma]; [idtac | intro; discriminate].
       assert (x_in_sig : In (x,x_val) sigma).
       destruct (find_mem _ _ X.eq_bool_ok _ _ x_sigma) as [x' [sig1 [sig2 [x_eq_x' K]]]]; subst x'.
       rewrite K; apply in_or_app; right; left; reflexivity.
-      intro e; generalize (H1 _ _ x_in_sig); rewrite <- e; simpl.
+      intro H; generalize (H1 _ _ x_in_sig); rewrite <- H; simpl.
       rewrite map_length; intro L; apply L.
       destruct (well_formed_unfold (proj2 (WR _ _ H'''))) as [_ L']; apply sym_eq; destruct (F.arity g); assumption.
       generalize (H1 x (Term f l2')).
       replace (length k) with (length l2').
       intro K; apply K.
-      rewrite H7; revert H7.
+      rewrite H8; revert H8.
       case_eq (find X.eq_bool x sigma); [intros x_val x_sigma | intro x_sigma]; [idtac | intro; discriminate].
       intros _; destruct (find_mem _ _ X.eq_bool_ok _ _ x_sigma) as [x' [sig1 [sig2 [x_eq_x' K']]]]; subst x'.
       rewrite K'; apply in_or_app; right; left; reflexivity.
@@ -2406,21 +2405,21 @@ Qed.
       rewrite replace_at_pos_list_replace_at_pos_in_subterm; trivial.
       do 2 (rewrite var_list_unfold; rewrite var_list_list_app; rewrite map_app).
       simpl var_list_list; do 2 rewrite map_app.
-      set (k1 :=  (map (fun x0 : variable => apply_subst sigma (Var x0)) 
-        (var_list_list l1))) in *.
-      set (k2 :=  (map (fun x0 : variable => apply_subst sigma (Var x0)) 
-        (var_list_list l2))) in *.
+      set (k1 :=  (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0)) 
+        (T1.var_list_list l1))) in *.
+      set (k2 :=  (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0)) 
+        (T1.var_list_list l2))) in *.
       clearbody k1 k2.
       assert (Hi : one_step_list (one_step R)
-        (map (fun x0 : variable => apply_subst sigma (Var x0))
-          (var_list (replace_at_pos ti (Var y) p)))
-        (map (fun x0 : variable => apply_subst sigma (Var x0))
-          (var_list ti))).
+        (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0))
+          (T1.var_list (T1.replace_at_pos ti (T1.Var y) p)))
+        (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0))
+          (T1.var_list ti))).
       apply IHl with x u'; trivial.
       apply in_or_app; right; left; reflexivity.
-      set (k := map (fun x0 : variable => apply_subst sigma (Var x0)) (var_list ti)) in *.
-      set (k' := map (fun x0 : variable => apply_subst sigma (Var x0))
-        (var_list (replace_at_pos ti (Var y) p))) in *.
+      set (k := map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0)) (T1.var_list ti)) in *.
+      set (k' := map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0))
+        (T1.var_list (T1.replace_at_pos ti (T1.Var y) p))) in *.
       clearbody k k'.
       induction k1 as [ | s1 k1].
       induction Hi; [left | right]; assumption.
@@ -2446,11 +2445,11 @@ Qed.
       rewrite replace_at_pos_list_replace_at_pos_in_subterm; trivial.
       do 2 (rewrite var_list_unfold; rewrite var_list_list_app; rewrite map_app).
       simpl var_list_list; do 2 rewrite map_app.
-      set (k1 :=  (map (fun x0 : variable => apply_subst sigma (Var x0)) 
-        (var_list_list l1))) in *.
+      set (k1 :=  (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0)) 
+        (T1.var_list_list l1))) in *.
       set (k1' := (map
-        (fun x0 : variable => apply_subst ((y, u') :: sigma) (Var x0))
-        (var_list_list l1))) in *.
+        (fun x0 : T1.variable => T1.apply_subst ((y, u') :: sigma) (T1.Var x0))
+        (T1.var_list_list l1))) in *.
       assert (k1_eq_k1' : k1 = k1').
       assert (y_not_in_l1 : ~In y (var_list_list l1)).
       intro y_in_l1; apply y_not_in_s.
@@ -2465,11 +2464,11 @@ Qed.
       intro v1_eq_y; apply y_not_in_l1; left; assumption.
       intro y_in_l1; apply y_not_in_l1; right; assumption.
       clearbody k1 k1'; subst k1.
-      set (k2 :=  (map (fun x0 : variable => apply_subst sigma (Var x0)) 
-        (var_list_list l2))) in *.
+      set (k2 :=  (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0)) 
+        (T1.var_list_list l2))) in *.
       set (k2' := (map
-        (fun x0 : variable => apply_subst ((y, u') :: sigma) (Var x0))
-        (var_list_list l2))) in *.
+        (fun x0 : T1.variable => T1.apply_subst ((y, u') :: sigma) (T1.Var x0))
+        (T1.var_list_list l2))) in *.
       assert (k2_eq_k2' : k2 = k2').
       assert (y_not_in_l2 : ~In y (var_list_list l2)).
       intro y_in_l2; apply y_not_in_s.
@@ -2485,17 +2484,17 @@ Qed.
       intro y_in_l2; apply y_not_in_l2; right; assumption.
       clearbody k2 k2'; subst k2.
       assert (Hi : one_step_list (one_step R)
-        (map (fun x0 : variable => apply_subst ((y,u') :: sigma) (Var x0))
-          (var_list (replace_at_pos ti (Var y) p)))
-        (map (fun x0 : variable => apply_subst sigma (Var x0))
-          (var_list ti))).
+        (map (fun x0 : T1.variable => T1.apply_subst ((y,u') :: sigma) (T1.Var x0))
+          (T1.var_list (T1.replace_at_pos ti (T1.Var y) p)))
+        (map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0))
+          (T1.var_list ti))).
       apply IHl with x; trivial.
       apply in_or_app; right; left; reflexivity.
       intro y_in_ti; apply y_not_in_s; rewrite var_list_unfold; rewrite var_list_list_app; apply in_or_app; right;
         apply in_or_app; left; assumption.
-      set (k := map (fun x0 : variable => apply_subst sigma (Var x0)) (var_list ti)) in *.
-      set (k' := map (fun x0 : variable => apply_subst ((y,u') :: sigma) (Var x0))
-        (var_list (replace_at_pos ti (Var y) p))) in *.
+      set (k := map (fun x0 : T1.variable => T1.apply_subst sigma (T1.Var x0)) (T1.var_list ti)) in *.
+      set (k' := map (fun x0 : T1.variable => T1.apply_subst ((y,u') :: sigma) (T1.Var x0))
+        (T1.var_list (T1.replace_at_pos ti (T1.Var y) p))) in *.
       clearbody k k'.
       induction k1' as [ | s1 k1].
       induction Hi; [left | right]; assumption.
@@ -2505,7 +2504,7 @@ Qed.
       apply IHs with l''; trivial.
       inversion s''_R_s' as [t' t'' J]; subst t' t''.
       subst s'; apply Ren.
-      replace (collapse_subst s) with (collapse_subst (replace_at_pos s (Var y) p)); trivial.
+      replace (collapse_subst s) with (collapse_subst (T1.replace_at_pos s (T1.Var y) p)); trivial.
       revert Sub.
       clear; intro Sub.
       assert (col_map : forall t, collapse_subst t = match t with
@@ -2556,10 +2555,10 @@ Qed.
       intros s H; inversion H as [t1 t2 H1 | g l1 l2 H2]; clear H; subst.
       inversion H1 as [r l' sigma H2].
       destruct l' as [ | g l'].
-      apply False_rect; apply (R_var _ _ H2).
-      apply False_rect; apply L; injection H0; clear H0; intros; subst.
+      apply False_rect; apply (R_var _ _ H0).
+      apply False_rect; apply L; injection H2; clear H2; intros; subst.
       rewrite map_length.
-      assert (Wf := WR _ _ H2).
+      assert (Wf := WR _ _ H0).
       destruct (well_formed_unfold (proj2 Wf)) as [_ L'].
       apply sym_eq; destruct (F.arity f); trivial.
       apply IHl; trivial.
@@ -2578,7 +2577,7 @@ Qed.
       intros y H; inversion H as [t1 t2 H1 | ].
       subst t1 t2.
       inversion H1 as [t1 t2 sigma]; subst.
-      destruct t2 as [ | ]; [apply False_rect; apply (R_var _ _ H0) | discriminate].
+      destruct t2 as [ | ]; [apply False_rect; apply (R_var _ _ H3) | discriminate].
       intros f l Acc_l.
       destruct (eq_nat_dec (match F.arity f with Free n => n | _ => 2 end ) (length l)) as [L | L].
       destruct (decompose_term (Term f l)) as [s [sigma [H0 [Ws [H1 [H2 [H3 H4]]]]]]].
@@ -2650,15 +2649,15 @@ clearbody t; revert H; induction K as [u1 u2 K1 | u1 u2 u3 K1 Kn]; intros; subst
 inversion K1 as [v1 v2 K | g k1 k2 K]; clear K1; subst.
 inversion K as [v1 v2 sigma H]; clear K.
 destruct v2 as [x2 | f2 l2].
-apply False_rect; apply (R_var _ _ H).
-apply False_rect; apply Cf; injection H1; clear H1; intros; subst; constructor 1 with l2 v1; assumption.
+apply False_rect; apply (R_var _ _ H1).
+apply False_rect; apply Cf; injection H; clear H; intros; subst; constructor 1 with l2 v1; assumption.
 exists k1; split; [reflexivity | right; left; assumption].
 destruct (IHKn (refl_equal _)) as [l' [H1 H2]]; clear IHKn; subst.
 inversion K1 as [v1 v2 K | g k1 k2 K]; clear K1; subst.
 inversion K as [v1 v2 sigma H]; clear K.
 destruct v2 as [x2 | f2 l2].
-apply False_rect; apply (R_var _ _ H).
-apply False_rect; apply Cf; injection H1; clear H1; intros; subst; constructor 1 with l2 v1; assumption.
+apply False_rect; apply (R_var _ _ H1).
+apply False_rect; apply Cf; injection H; clear H; intros; subst; constructor 1 with l2 v1; assumption.
 exists k1; split; [reflexivity | apply refl_trans_clos_is_trans with l'].
 right; left; assumption.
 assumption.

@@ -27,7 +27,7 @@ Proof. (*SLOW*)decide equality; apply eq_digits_dec. Defined.
 Ltac bad_case := right; intro; inversion H; contr.
 Ltac case_tac x y := case (eq_digits_dec x y); [idtac|bad_case].
 
-Require Export BigN. Import BigN.
+Require Import BigN. Import BigN.
 
 Definition w0 := Cyclic31.Int31Cyclic.t.
 
@@ -111,6 +111,8 @@ Defined.
 
 (***********************************************************************)
 (** properties of ?= on BigN *)
+
+Require Export BigN.
 
 Open Scope bigN_scope.
 
