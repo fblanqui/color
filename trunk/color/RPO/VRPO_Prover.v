@@ -9,7 +9,7 @@ converting terms with arities to varyadic terms).
 *)
 
 Require Import ATrs VPrecedence VRPO_Status VRPO_Results VTerm_of_ATerm
-  ListUtil Preorder SN RelUtil ARelation Arith VSignature LogicUtil.
+  ListUtil Preorder SN RelUtil ARelation Arith VSignature LogicUtil Wellfounded.
 
 Set Implicit Arguments.
 

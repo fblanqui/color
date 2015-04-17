@@ -253,20 +253,3 @@ Section rule_partition.
 End rule_partition.
 
 End S.
-
-(***********************************************************************)
-(** tactics *)
-
-Ltac incl_red :=
-  match goal with
-    | |- inclusion (red _) ?succ => apply compat_red
-    | |- inclusion (red_mod _ _) (rp_succ ?rp) =>
-      apply compat_red_mod with (succ_eq := rp_succ_eq rp)
-    | |- inclusion (red_mod _ _) (wp_succ ?wp) =>
-      apply compat_red_mod with (succ_eq := wp_succ_eq wp)
-    | |- inclusion (red_mod _ _) ?succ => apply compat_red_mod_tc
-    | |- inclusion (hd_red _) ?succ => apply compat_hd_red
-    | |- inclusion (hd_red_mod _ _) (wp_succ ?wp) =>
-      apply compat_hd_red_mod with (succ_eq := wp_succ_eq wp)
-    | |- inclusion (hd_red_mod _ _) ?succ => eapply compat_hd_red_mod
-  end; rptac.

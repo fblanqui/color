@@ -242,9 +242,8 @@ Lemma WF_duplicate_hd_int_red :
 
 Proof.
 intros. set (rel := hd_red_mod (dup_int_rules E) (dup_hd_rules R)).
-set (rel' := Rof rel (dup_hd_term)).
-apply (@WF_incl _ (hd_red_Mod (int_red E #) R) rel').
-unfold rel', rel, hd_red_Mod, hd_red_mod. unfold inclusion; intros.
+set (rel' := Rof rel (dup_hd_term)). apply (WF_incl rel').
+unfold Basics.flip, rel', rel, hd_red_Mod, hd_red_mod. unfold inclusion; intros.
 destruct H0 as [z]; exists (dup_hd_term z). destruct H0; split.
 clear H1. induction H0. apply rt_step. apply int_red_dup_int_red. hyp.
 apply rt_refl. eapply rt_trans. apply IHclos_refl_trans1. hyp.

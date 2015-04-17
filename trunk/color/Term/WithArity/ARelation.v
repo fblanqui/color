@@ -236,18 +236,3 @@ Section S.
   Qed.
 
 End S.
-
-(***********************************************************************)
-(** tactics *)
-
-Ltac destruct_rp :=
-  match goal with
-    | h : Reduction_pair _ |- _ => destruct h
-    | h : Weak_reduction_pair _ |- _ => destruct h
-    | h : reduction_ordering _ |- _ => destruct h
-    | h : rewrite_ordering _ |- _ => destruct h
-  end.
-
-Ltac WFtac := repeat destruct_rp; hyp.
-
-Ltac rptac := repeat destruct_rp; try split; hyp.

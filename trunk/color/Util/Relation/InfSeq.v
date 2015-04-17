@@ -471,9 +471,9 @@ End absorb.
 Lemma WF_mod_rev2 : forall E S : relation A, WF (S @ E#) -> WF (E# @ S).
 
 Proof.
-  intros E S wf. apply WF_incl with (S:=(E#@S)@E#).
+  intros E S wf. apply (WF_incl ((E#@S)@E#)).
   intros x y xy. exists y. intuition.
-  apply WF_incl with (S:=E#@(S@E#)). apply comp_assoc.
+  apply (WF_incl (E#@(S@E#))). apply comp_assoc.
   apply WF_absorb. 2: hyp. intros x z [y [xy yz]]. destruct xy as [t [xt ty]].
   exists t. intuition. apply rt_trans with y. hyp. apply rt_step. hyp.
 Qed.

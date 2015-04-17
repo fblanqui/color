@@ -18,50 +18,39 @@ Section S.
   Notation term := (term Sig).
   Notation rule := (rule Sig). Notation rules := (list rule).
 
-  Ltac WF_incl succ := apply WF_incl with (S := succ); [idtac | WFtac].
-
 (***********************************************************************)
 (** Manna-Ness theorem (1970) *)
 
-  Section manna_ness.
+  Lemma manna_ness (R : rules) succ :
+    reduction_ordering succ -> compat succ R -> WF (red R).
 
-    Variables (R : rules) (succ : relation term).
-
-    Lemma manna_ness : reduction_ordering succ -> compat succ R -> WF (red R).
-
-    Proof. intros. WF_incl succ. incl_red. Qed.
-
-  End manna_ness.
+  Proof.
+    intros. destruct H. apply (WF_incl succ). apply compat_red; auto. hyp.
+  Qed.
 
 (***********************************************************************)
 (** an extension for proving the well-foundedness of relations of the form:
 several steps of R1 followed by a step of R2 *)
 
-  Section manna_ness_mod.
+  Lemma manna_ness_mod (R E : rules) (rp : Reduction_pair Sig) :
+    compat (rp_succ_eq rp) E -> compat (rp_succ rp) R -> WF (red_mod E R).
 
-    Variables R E : rules.
-
-    Lemma manna_ness_mod : forall rp : Reduction_pair Sig,
-      compat (rp_succ_eq rp) E -> compat (rp_succ rp) R -> WF (red_mod E R).
-
-    Proof. intros. WF_incl (rp_succ rp). incl_red. Qed.
-
-  End manna_ness_mod.
+  Proof.
+    intros. apply (WF_incl (rp_succ rp)). destruct rp; simpl in *.
+    apply compat_red_mod with rp_succ_eq; try split; hyp. destruct rp; hyp.
+  Qed.
 
 (***********************************************************************)
 (** an extension for proving the well-foundedness of relations of the form:
 several steps of R1 followed by a -head- step of R2 *)
 
-  Section manna_ness_hd_mod.
+  Lemma manna_ness_hd_mod (R E : rules) (wp : Weak_reduction_pair Sig) :
+    compat (wp_succ_eq wp) E -> compat (wp_succ wp) R -> WF (hd_red_mod E R).
 
-    Variables R E : rules.
-
-    Lemma manna_ness_hd_mod : forall wp : Weak_reduction_pair Sig,
-      compat (wp_succ_eq wp) E -> compat (wp_succ wp) R -> WF (hd_red_mod E R).
-
-    Proof. intros. WF_incl (wp_succ wp). incl_red. Qed.
-
-  End manna_ness_hd_mod.
+  Proof.
+    intros. apply (WF_incl (wp_succ wp)). destruct wp; simpl in *.
+    apply compat_hd_red_mod with wp_succ_eq; try split; hyp. destruct wp; hyp.
+  Qed.
 
 (***********************************************************************)
 (** rule elimination *)
