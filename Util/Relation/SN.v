@@ -667,18 +667,31 @@ Qed.
 
 Require Import SetUtil.
 
-Lemma restrict_wf A (P : set A) (R : relation A) :
-  P [<=] SN R -> WF (restrict P R).
+Section restrict.
 
-Proof.
-  intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
-  clear x hx xy. revert y; induction 1. apply SN_intro. fo.
-Qed.
+  Variables (A : Type) (P : set A) (R : relation A).
+
+  Lemma wf_restrict_sn : P [<=] SN R -> WF (restrict P R).
+
+  Proof.
+    intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
+    clear x hx xy. revert y; induction 1. apply SN_intro. fo.
+  Qed.
+
+  Lemma sn_restrict : Proper (R ==> impl) P ->
+    forall x, SN (restrict P R) x -> P x -> SN R x.
+
+  Proof.
+    intro P_R. induction 1. intro px. apply SN_intro; intros y xy.
+    apply H0. fo. rewrite <- xy. hyp.
+  Qed.
+
+End restrict.
 
 (****************************************************************************)
 (** ** [opt] preserves wellfoundedness. *)
 
-Lemma opt_wf A (R : relation A) : WF R -> WF (opt R).
+Lemma wf_opt A (R : relation A) : WF R -> WF (opt R).
 
 Proof.
   intros h p. destruct p.
