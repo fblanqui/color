@@ -877,6 +877,14 @@ Module Make (Export L : L_Struct).
 
     Proof. apply commut_tc. apply supterm_R_mon_commut. Qed.
 
+    Lemma SN_supterm_R_mon : forall u, SN R u -> SN (supterm! U R) u.
+
+    Proof.
+      intros u hu. Require Import Union. apply SN_union_commut.
+      intros x _. apply WF_tc. apply supterm_wf. hyp.
+      apply tc_supterm_R_mon_commut.
+    Qed.
+
     Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
 
     Proof.
