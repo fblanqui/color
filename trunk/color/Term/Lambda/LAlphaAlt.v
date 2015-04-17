@@ -486,7 +486,7 @@ Module Make (Export L : L_Struct).
     unfold Def.transpose.
     intro u; revert u. ind_size1 u; intros u' uu'; inv_aeq uu'; subst; simpl.
     refl. refl.
-    rewrite hu with (y:=u), hv with (y:=u1). refl. sym; hyp. sym; hyp.
+    rewrite hu with (y:=u), hv with (y:=u1). refl. hyp. hyp.
     (* Lam *)
     rename x0 into y. rename u0 into v.
     rewrite hu with (u':=v) (y:=rename x y u).

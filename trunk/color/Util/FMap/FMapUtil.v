@@ -107,7 +107,7 @@ Module Make (X : OrderedType).
       unfold transpose_neqkey. intros k l x y m n. unfold Equal.
       intro k'. rewrite !add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
-      absurd (X.eq k l). hyp. trans k'. hyp. sym. hyp.
+      absurd (X.eq k l). hyp. trans k'; hyp.
     Qed.
 
     Definition add_add_neq := add_transp.

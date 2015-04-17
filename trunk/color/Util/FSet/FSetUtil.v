@@ -141,9 +141,7 @@ Module Make (Export XSet : FSetInterface.S).
   Lemma remove_add_com x y s : ~E.eq x y ->
     add x (remove y s) [=] remove y (add x s).
 
-  Proof.
-    intros n z. set_iff. fo. intro n'. apply n. trans z. hyp. sym. hyp.
-  Qed.
+  Proof. intros n z. set_iff. fo. intro n'. apply n. trans z; hyp. Qed.
 
   Lemma remove_add_eq x xs : remove x (add x xs) [=] remove x xs.
 
@@ -415,7 +413,7 @@ Module Make (Export XSet : FSetInterface.S).
       pattern s; apply set_induction_bis; clear s.
       (* Equal *)
       intros s s' ss' h t s't a a' aa'. trans (fold f s a).
-      apply fold_equal; auto. sym. hyp. apply h. trans s'; hyp. hyp.
+      apply fold_equal; auto. hyp. apply h. trans s'; hyp. hyp.
       (* empty *)
       intros s' e a a' aa'. trans (fold f' empty a').
       rewrite 2!fold_empty. hyp.

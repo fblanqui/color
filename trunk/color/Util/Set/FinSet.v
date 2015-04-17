@@ -43,7 +43,7 @@ Section S.
     case_eq (f x); intros a_val a ef. case_eq (f y); intros b_val b eg.
     simpl. intro e. apply sig_eq. auto.
     (* g is surjective. *)
-    intro y. assert (QP : Q [=] P). sym. hyp.
+    intro y. assert (QP : Q [=] P). hyp.
     destruct (f_surj (elts_equiv QP y)) as [x hx].
     ex x. unfold g. rewrite <- hx. apply sig_eq. destruct y as [y_val y].
     refl.

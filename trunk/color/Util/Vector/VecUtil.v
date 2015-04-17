@@ -198,7 +198,7 @@ Section Vcast.
   Lemma Vcast_rl : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h12 : n1=n2) (h21 : n2=n1), v1 = Vcast v2 h21 -> Vcast v1 h12 = v2.
 
-  Proof. intros; sym; apply Vcast_lr with h21; sym; hyp. Qed.
+  Proof. intros; sym; apply Vcast_lr with h21; hyp. Qed.
 
   Lemma Vcast_introrl : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h21 : n2=n1), Vcast v1 (sym_eq h21) = v2 -> v1 = Vcast v2 h21.

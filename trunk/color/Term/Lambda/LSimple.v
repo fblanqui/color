@@ -729,12 +729,12 @@ are finite maps from variables to types. *)
     apply tr_fun.
     (* app *)
     apply tr_app with V0.
-    eapply hu. apply H2. hyp. sym. hyp.
-    eapply hv. apply H4. hyp. sym. hyp.
+    eapply hu. apply H2. hyp. hyp.
+    eapply hv. apply H4. hyp. hyp.
     (* lam *)
     apply tr_lam. eapply hu with (u':=rename x x1 v) (E:=add x1 X0 E).
     rewrite size_rename. refl. unfold Def.rename. eapply tr_subs.
-    apply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: sym; hyp.
+    apply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: hyp.
 
     intros y V. unfold Def.single, Def.update.
     rewrite mapsto_restrict_dom, add_mapsto_iff. intros [h1 h2].

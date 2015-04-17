@@ -731,13 +731,13 @@ Module Make (Export L : L_Struct).
     intro R_mon. split.
     (* app_l *)
     intros u u' uu' v v' vv'. subst v'. revert u u' uu'. induction 1.
-    apply e_step. mon. refl. trans (App y v); hyp. sym. hyp.
+    apply e_step. mon. refl. trans (App y v); hyp. hyp.
     (* app_r *)
     intros u u' uu' v v' vv'. subst u'. revert v v' vv'. induction 1.
-    apply e_step. mon. refl. trans (App u y); hyp. sym. hyp.
+    apply e_step. mon. refl. trans (App u y); hyp. hyp.
     (* lam *)
     intros x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
-    apply e_step. mon. refl. trans (Lam x y); hyp. sym. hyp.
+    apply e_step. mon. refl. trans (Lam x y); hyp. hyp.
   Qed.
 
 (****************************************************************************)
@@ -800,7 +800,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros R_sym u v; revert u v; induction 1.
-    apply m_step. sym. hyp.
+    apply m_step. hyp.
     apply m_app_l. hyp. apply m_app_r. hyp. apply m_lam. hyp.
   Qed.
 

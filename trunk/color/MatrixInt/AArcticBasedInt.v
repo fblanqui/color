@@ -74,7 +74,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Proof.
       intros x x' xx' y y' yy'. unfold gtx. intuition.
       left. rewrite <- xx', <- yy'. hyp. right.
-      split. trans x. sym. hyp. hyp. trans y. sym. hyp. hyp.
+      split. trans x; hyp. trans y; hyp.
       left. rewrite xx', yy'. hyp. right. split.
       trans x'; hyp. trans y'; hyp.
     Qed.

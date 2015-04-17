@@ -19,7 +19,7 @@ Arguments existT [A P x] _.
 (***********************************************************************)
 (** Abbreviations of some basic Coq tactics. *)
 
-Ltac hyp := assumption.
+Ltac hyp := assumption || (symmetry; assumption).
 Ltac ehyp := eassumption.
 Ltac refl := reflexivity.
 Ltac sym := symmetry.

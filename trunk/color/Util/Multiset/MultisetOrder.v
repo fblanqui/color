@@ -308,7 +308,7 @@ Section OrderCharacterization.
 
   Lemma gtA_comp: forall a, comp_eqA (gtA a).
 
-  Proof. intros a b c bc. apply gtA_morph. refl. sym. hyp. Qed.
+  Proof. intros a b c bc. apply gtA_morph. refl. hyp. Qed.
 
   Lemma leA_comp: forall a, comp_eqA (leA a).
 
