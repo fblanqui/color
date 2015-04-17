@@ -1022,6 +1022,30 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof. intros t x u h. apply lam_aeq_r. sym. hyp. Qed.
 
+  Lemma permut_rename v x y u :
+    v ~~ rename x y u -> (x = y \/ ~In y (fv u)) ->
+    u ~~ rename y x v /\ (x = y \/ ~In x (fv v)).
+
+  Proof.
+    intros e h. split.
+    rewrite e, rename2, rename_id. refl. hyp.
+    rewrite e, fv_rename. destruct h. auto.
+    subst. auto.
+    case_eq (mem x (fv u)); intro i.
+    Focus 2. rewrite <- not_mem_iff in i. auto.
+    right. set_iff. rewrite <- mem_iff in i. split_all. subst. contr.
+  Qed.
+
+  Arguments permut_rename [v x y u] _ _.
+
+  Ltac permut_rename :=
+    match goal with
+    | h1 : _ ~~ rename ?x ?y ?u, h2 : ?x = ?y \/ ~XSet.In ?y (fv ?u) |- _ =>
+      gen (permut_rename h1 h2); clear h1 h2; intros [h1 h2]
+    | h1 : rename ?x ?y ?u ~~ _, h2 : ?x = ?y \/ ~In ?y (fv ?u) |- _ =>
+      symmetry in h1; gen (permut_rename h1 h2); clear h1 h2; intros [h1 h2]
+    end.
+
 (****************************************************************************)
 (** Inversion tactic for alpha-equivalence. *)
 
@@ -1266,7 +1290,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Lemma clos_aeq_wf_size : forall R, R << transp (ltof size) -> WF (clos_aeq R).
 
   Proof.
-    intros R h. apply WF_incl with (S := transp (ltof size)).
+    intros R h. apply (WF_incl (transp (ltof size))).
     2: apply transp_ltof_wf.
     intros t u tu. inversion tu; clear tu; subst. unfold transp, ltof.
     rewrite H, H0. apply h. hyp.

@@ -96,40 +96,39 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** Inversion lemmas for beta-reduction. *)
 
-  Lemma var_beta_aeq_l : forall x u, ~Var x =>b u.
+  Lemma var_beta_aeq_l x u : ~Var x =>b u.
 
   Proof.
-    intros x u b. inversion b; subst. simpl_aeq; subst. inversion H1; subst.
+    intro r; inversion r; subst. simpl_aeq; subst. inversion H1; subst.
     inversion H.
   Qed.
 
-  Lemma fun_beta_aeq_l : forall f u, ~Fun f =>b u.
+  Lemma fun_beta_aeq_l f u : ~Fun f =>b u.
 
   Proof.
-    intros x u b. inversion b; subst. simpl_aeq; subst. inversion H1; subst.
+    intro r; inversion r; subst. simpl_aeq; subst. inversion H1; subst.
     inversion H.
   Qed.
 
-  Lemma lam_beta_aeq_l : forall x u v,
-    Lam x u =>b v -> exists y, exists w, v = Lam y w /\ u =>b rename y x w.
+  Lemma lam_beta_aeq_l x u v :
+    Lam x u =>b v -> exists y w, v = Lam y w /\ u =>b rename y x w.
 
   Proof.
-    intros x u v b. inversion b; subst.
-    destruct (lam_aeq_l H) as [y [w [i1 [i2 i3]]]]; subst.
-    inversion H1; subst. inversion H2; subst.
-    destruct (lam_aeq_r H0) as [z [a [j1 [j2 j3]]]]; subst.
-    exists z. exists a. split. refl. rewrite j2, rename2. 2: hyp.
-    assert (h : u ~~ rename y x w). rewrite i2, rename2, rename_id. refl. hyp.
-    rewrite h. apply rename_beta_aeq. refl. refl. apply incl_clos_aeq. hyp.
+    intro r; inversion r; clear r; subst.
+    inv_aeq H; clear H; subst; permut_rename.
+    inversion H1; clear H1; subst. inversion H.
+    inv_aeq H0; clear H0; subst. ex x1 u1. split. refl.
+    rewrite i0, i2, rename2. 2: hyp. apply subs_beta_aeq. refl.
+    apply clos_aeq_intro_refl. hyp.
   Qed.
 
-  Lemma app_beta_aeq_l : forall u v w, App u v =>b w ->
+  Lemma app_beta_aeq_l u v w : App u v =>b w ->
     (exists u', w ~~ App u' v /\ u =>b u')
     \/ (exists v', w ~~ App u v' /\ v =>b v')
     \/ (exists x, exists a, u = Lam x a /\ w ~~ subs (single x v) a).
 
   Proof.
-    intros u v w b. inversion b; subst.
+    intro r; inversion r; subst.
     destruct (app_aeq_l H) as [u'1 [v'1 [e [uu'1 vv'1]]]]; subst.
     inversion H1; subst.
     (* top *)
@@ -226,12 +225,11 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 
   Arguments beta_aeq_apps_no_lam [n us u t0] _ _.
 
-  Lemma beta_aeq_apps_fun : forall f n (us : Tes n) t,
-    apps (Fun f) us =>b t ->
+  Lemma beta_aeq_apps_fun f n (us : Tes n) t : apps (Fun f) us =>b t ->
     exists vs, t = apps (Fun f) vs /\ clos_vaeq beta us vs.
 
   Proof.
-    intros f n us t r. assert (h : not_lam (Fun f)). discr.
+    intro r. assert (h : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam h r) as [v [vs [h1 h2]]]; clear h r; subst.
     exists vs. rewrite clos_vaeq_cons in h2. destruct h2 as [[h1 h2]|[h1 h2]].
     inv_beta_aeq h1. simpl_aeq. subst. auto.
@@ -243,12 +241,11 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
 (** [apps (Fun f) us] is strongly normalizing wrt beta-reduction if
 every element of [us] is strongly normalizing wrt beta-reduction. *)
 
-  Lemma sn_beta_apps_fun : forall f n (us : Tes n),
+  Lemma sn_beta_apps_fun f n (us : Tes n) :
     Vforall (SN beta_aeq) us -> SN beta_aeq (apps (Fun f) us).
 
   Proof.
-    intros f n us h. cut (SN (clos_vaeq beta) us).
-    2: apply sn_clos_vaeq_intro; hyp.
+    intro h. cut (SN (clos_vaeq beta) us). 2: apply sn_clos_vaeq_intro; hyp.
     clear h. revert us. induction 1. apply SN_intro. intros v r.
     assert (k : not_lam (Fun f)). discr.
     destruct (beta_aeq_apps_no_lam k r) as [u [y [h1 h2]]]; subst.
