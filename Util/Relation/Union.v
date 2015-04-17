@@ -14,16 +14,28 @@ Require Import SN RelUtil LogicUtil.
 
 Section S.
 
-  Variables (A : Type) (R S : relation A) (R_wf : WF R) (S_wf : WF S).
+  Variables (A : Type) (R S : relation A).
 
 (***********************************************************************)
 (** When the two relations commute. *)
 
-  Lemma WF_union_commut : R @ S << S @ R -> WF (R U S).
+  Lemma SN_union_commut t :
+    (forall x, SN S x -> SN R x) -> SN S t -> R @ S << S @ R -> SN (R U S) t.
 
   Proof. Require Import AccUtil Wellfounded.Union.
-    intro commut. apply wf_transp_WF. rewrite transp_union. apply wf_union.
+    intros h s c. apply Acc_transp_SN. rewrite transp_union. apply Acc_union.
     intros x y. unfold transp. intros xy z yz.
+    assert (a : (R@S) x z). exists y. fo.
+    apply c in a. fo.
+    intros x hx. apply SN_Acc_transp. apply h. apply Acc_transp_SN. hyp.
+    apply SN_Acc_transp. hyp.
+  Qed.
+
+  Lemma WF_union_commut : WF R -> WF S -> R @ S << S @ R -> WF (R U S).
+
+  Proof. Require Import AccUtil Wellfounded.Union.
+    intros R_wf S_wf commut. apply wf_transp_WF. rewrite transp_union.
+    apply wf_union. intros x y. unfold transp. intros xy z yz.
     assert (a : (R@S) x z). exists y. fo.
     apply commut in a. fo. apply WF_wf_transp. hyp. apply WF_wf_transp. hyp.
   Qed.
@@ -31,11 +43,11 @@ Section S.
 (***********************************************************************)
 (** When a relation absorbs the other. *)
 
-  Lemma wf_union_absorb : R @ S << R -> WF (R U S).
+  Lemma wf_union_absorb : WF R -> WF S -> R @ S << R -> WF (R U S).
 
   Proof.
     Require Import NotSN_IS ClassicUtil LeastNat DepChoice.
-    intros RS x. apply notNT_SN. intros [f [f1 f2]].
+    intros R_wf S_wf RS x. apply notNT_SN. intros [f [f1 f2]].
     (* We prove that, for all [i], there is [j > i] such that
        [R (f j) (f (j+1))]. *)
     assert (a1 : forall i, exists j, i < j /\ R (f j) (f (1+j))).
@@ -71,69 +83,11 @@ Section S.
   Qed.
 
 (***********************************************************************)
-(** Additional commutation properties *)
-
-  Lemma comm_s_rt : S@(R!1) << (R!1)@(S!1) -> (S!1)@(R!1) << (R!1)@(S!1).
-
-  Proof.
-    intros comm x y [z [H1 H2]].
-    induction H1 as [x z H | x y' z H H0 IH].
-    apply comm. 
-    exists z; split; hyp.
-    assert (H1 := IH H2); clear IH H2.
-    destruct H1 as [u [H2 H3]].
-    assert ((clos_trans1 R @ clos_trans1 S) x u).
-    apply comm. exists y'; split; hyp.
-    destruct H1 as [m [xRm mSu]].
-    exists m; split. hyp.
-    exact (clos_trans1_trans mSu H3).
-  Qed.
-
-  Lemma comm_s_r : S@R << (R!1)@(S#1) ->
-    (R U S)#1 @ R @ (R U S)#1 << (R!1) @ (R U S)#1.
-
-  Proof.
-    intros comm x y [z2 [[z1 [xRSz1 z1Rz2] z2RSy]]].
-    induction xRSz1 as [ | m n z1 mRSn nRSz1 IH].
-    exists z2. split. apply t1_step. hyp. hyp.
-    (* m RUS n RUS# z1 R z2 RUS# y *)
-    assert (((R!1) @ (R U S)#1) n y) as mRedy. apply IH. hyp.
-    (* m RUS n R!1@RUS#1 y *)
-    clear nRSz1 z1Rz2 z2RSy IH z1 z2.
-    destruct mRedy as [o [nRo oRSy]].
-    (* m RUS n R!1 o RUS#1 y *)
-    induction mRSn.
-    (* m R n *)
-    exists o. split; auto. apply t1_trans with n; hyp.
-    (* m S n *)
-    destruct nRo as [o p oRp | o p q oRp pRq ];
-
-    assert (((R!1)@(S#1)) m p) as mRedp.
-    apply comm. exists o; split; hyp.
-    destruct mRedp as [x [mRx xSp]].
-    exists x. split. hyp.
-    apply clos_refl_trans1_trans with p.
-    apply union_rel_rt_right. hyp. hyp.
-
-    assert (((R!1)@(S#1)) m p) as mRedp.
-    apply comm. exists o. split; hyp.
-    destruct mRedp as [x [mRx xSp]].
-    exists x. split. hyp. hyp.
-    destruct mRedp as [n [mRn sSp]].
-    exists n; split. hyp.
-    apply clos_refl_trans1_trans with q.
-    apply clos_refl_trans1_trans with p.
-    apply union_rel_rt_right. hyp.
-    apply union_rel_rt_left. apply incl_t_rt. hyp.    
-    hyp.
-  Qed.
-
-(***********************************************************************)
 (** Commutation and SN *)
 
   Lemma sn_comm_sntr :
-    forall x, SN R x -> (forall y, (R#1) x y -> SN S y) ->
-      (S@R << R!1@S#1) -> SN (R!1 U S!1) x.
+    forall x, SN R x -> (forall y, R#1 x y -> SN S y) ->
+      S@R << R!1@S#1 -> SN (R!1 U S!1) x.
 
   Proof.
     intros x snr sns comm.
@@ -182,8 +136,8 @@ Section S.
   Qed.
 
   Lemma sn_comm_sn :
-    forall x, SN R x -> (forall y, (R#1) x y -> SN S y) ->
-      (S@R << R!1@S#1) -> SN (R U S) x.
+    forall x, SN R x -> (forall y, R#1 x y -> SN S y) ->
+      S@R << R!1@S#1 -> SN (R U S) x.
 
   Proof.
     intros x snr sns comm.
