@@ -133,7 +133,7 @@ Module BigNat_Eqset <: Eqset.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
-    unfold Symmetric. sym. hyp.
+    unfold Symmetric. hyp.
     unfold Transitive. intros. trans y; hyp.
   Qed.
 End BigNat_Eqset.
@@ -236,7 +236,7 @@ Module BigInt_Eqset <: Eqset.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
-    unfold Symmetric. sym. hyp.
+    unfold Symmetric. hyp.
     unfold Transitive. intros. trans y; hyp.
   Qed.
 End BigInt_Eqset.

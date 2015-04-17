@@ -44,7 +44,7 @@ Section LexPair.
 (*REMOVE?*)
   Instance gtL_morph : Proper (eqL ==> eqL ==> iff) gtL.
 
-  Proof. intros a b ab c d cd. split; apply gtL_eqL_compat; (hyp||sym;hyp). Qed.
+  Proof. intros a b ab c d cd. split; apply gtL_eqL_compat; hyp. Qed.
 
   Variable gtR : relation R.
 
@@ -59,7 +59,7 @@ Section LexPair.
 (*REMOVE?*)
   Instance gtR_morph : Proper (eqR ==> eqR ==> iff) gtR.
 
-  Proof. intros a b ab c d cd. split; apply gtR_eqR_compat; (hyp||sym;hyp). Qed.
+  Proof. intros a b ab c d cd. split; apply gtR_eqR_compat; hyp. Qed.
 
   Definition pair := (L * R)%type.
 
@@ -286,7 +286,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
     intro pq. eapply LexProd_Gt_morph with (eqR := eqR); eauto with sets.
     cut (eqPair p' p). intro. cut (eqPair q' q). intro.
     intro p'q'. eapply LexProd_Gt_morph with (eqR := eqR); eauto with sets.
-    sym. hyp. sym. hyp.
+    hyp. hyp.
   Qed.
 
   Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.

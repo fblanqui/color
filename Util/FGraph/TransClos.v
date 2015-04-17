@@ -37,7 +37,7 @@ Module Make (X : OrderedType).
   Instance pred_geq :
     Proper (eq ==> XSet.Equal ==> geq ==> same_rel) pred.
 
-  Proof. split; apply pred_geq'; hyp||(sym;hyp). Qed.
+  Proof. split; apply pred_geq'; hyp. Qed.
 
   Instance pred_geq_ext' :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> impl) pred.
@@ -50,7 +50,7 @@ Module Make (X : OrderedType).
   Instance pred_geq_ext :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> iff) pred.
 
-  Proof. split; apply pred_geq_ext'; hyp||(sym;hyp). Qed.
+  Proof. split; apply pred_geq_ext'; hyp. Qed.
 
   Lemma pred_empty : forall x s, pred x s empty == empty_rel.
 
@@ -73,7 +73,7 @@ Module Make (X : OrderedType).
     (* pred *)
     unfold xpx. rewrite add_iff. right. rewrite In_preds_rel. hyp. hyp.
     (* succ *)
-    unfold xpx. rewrite add_iff. left. sym. hyp. hyp.
+    unfold xpx. rewrite add_iff. left. hyp. hyp.
     (* >> *)
     intros a b [h1 h2]. unfold Relation_Operators.union, pred, succ.
     subst xpx ysy. rewrite add_iff in h1, h2. rewrite !add_iff.

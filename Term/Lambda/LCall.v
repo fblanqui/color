@@ -279,7 +279,7 @@ Module Make (Export ST : ST_Struct).
   Proof.
     constructor.
     intros [f n ts]. apply caeq_intro. refl.
-    intros [f n ts] [g p us] fg. inv_caeq fg g p. apply caeq_intro. sym. hyp.
+    intros [f n ts] [g p us] fg. inv_caeq fg g p. apply caeq_intro. hyp.
     intros [f n ts] [g p us] [h q vs] fg gh. inv_caeq fg g p. inv_caeq gh h q.
     apply caeq_intro. trans us; hyp.
   Qed.
@@ -289,7 +289,7 @@ Module Make (Export ST : ST_Struct).
   Proof.
     unfold Def.mcaeq. constructor.
     intros [c hc]. refl.
-    intros [c hc] [d hd] cd. sym. hyp.
+    intros [c hc] [d hd] cd. hyp.
     intros [c hc] [d hd] [e he] cd de. trans (build_max_call d hd); hyp.
   Qed.
 
@@ -452,7 +452,7 @@ Module Lex (Export CO : DLQO_Struct).
       assert (a : S (Vnth us j1) (Vnth vs j1)). apply RS.
       split. apply sn_clos_vaeq_elim. hyp.
       eapply clos_aeq_intro. 3: apply j2.
-      apply Vforall2_elim_nth. hyp. apply Vforall2_elim_nth. sym. hyp.
+      apply Vforall2_elim_nth. hyp. apply Vforall2_elim_nth. hyp.
       (* We simplify [h1]. Let [i] be the position in [M:= CO.filter r]
       at which the decrease occurs. *)
       revert h1. unfold Def.gt_args_lex, Rof. simpl. set (M := CO.filter r).
@@ -473,7 +473,8 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
       destruct (lt_dec q n); destruct (lt_dec q p); try omega;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
-      rewrite H1, (Vforall2_elim_nth _ usus'), <- (Vforall2_elim_nth _ vs'vs), j3.
+      rewrite H1, (Vforall2_elim_nth _ usus'),
+        <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
       omega.
@@ -489,7 +490,8 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_eq with (h1:=j1) (h2:=l0) in a; auto.
       apply S_trans with (Vnth us l0); hyp.
       (* k > i *)
-      rewrite <- (Vforall2_elim_nth _ vs'vs), <- j3, <- (Vforall2_elim_nth _ usus').
+      rewrite <- (Vforall2_elim_nth _ vs'vs), <- j3,
+        <- (Vforall2_elim_nth _ usus').
       hyp.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
       omega.
@@ -498,7 +500,8 @@ Module Lex (Export CO : DLQO_Struct).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
       destruct (lt_dec q n); destruct (lt_dec q p); try omega;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
-      rewrite H1, (Vforall2_elim_nth _ usus'), <- (Vforall2_elim_nth _ vs'vs), j3.
+      rewrite H1, (Vforall2_elim_nth _ usus'),
+        <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
       omega.

@@ -110,7 +110,7 @@ Section list_N.
 
   Proof.
     intro xL. destruct (In_nth x xL) as [i [i1 i2]].
-    apply N_eq in i2. rewrite nth_L_aux in i2. ex i. sym. hyp.
+    apply N_eq in i2. rewrite nth_L_aux in i2. ex i. hyp.
     rewrite length_L_aux in i1. omega.
   Qed.
 

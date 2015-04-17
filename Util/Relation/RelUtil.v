@@ -173,7 +173,7 @@ Lemma inter_transp_Reflexive A (R : rel A) :
 
 Proof. fo. Qed.
 
-Lemma inter_transp__Symmetric A (R : rel A) : Symmetric (inter_transp R).
+Lemma inter_transp_Symmetric A (R : rel A) : Symmetric (inter_transp R).
 
 Proof. fo. Qed.
 
@@ -621,7 +621,7 @@ Lemma ec_min A (R S : rel A) : Equivalence S -> R << S -> clos_equiv R << S.
 
 Proof.
   intros S_eq RS. intros u v; revert u v; induction 1.
-  fo. refl. trans y; hyp. sym; hyp.
+  fo. refl. trans y; hyp. hyp.
 Qed.
 
 (***********************************************************************)
@@ -826,7 +826,7 @@ Instance rtc_sym A (R : rel A) : Symmetric R -> Symmetric (R#).
 
 Proof.
   intros R_sym x; revert x; induction 1.
-  apply rt_step. sym. hyp. refl. trans y; hyp.
+  apply rt_step. hyp. refl. trans y; hyp.
 Qed.
 
 (***********************************************************************)
@@ -1322,8 +1322,7 @@ Section opt.
   Global Instance opt_sym : Symmetric R -> Symmetric opt.
 
   Proof.
-    intros R_sym x y xy. inversion xy; clear xy; subst.
-    apply opt_intro. sym. hyp.
+    intros R_sym x y xy. inversion xy; clear xy; subst. apply opt_intro. hyp.
   Qed.
 
   Global Instance opt_opt_r E : Proper (E ==> E ==> impl) R ->

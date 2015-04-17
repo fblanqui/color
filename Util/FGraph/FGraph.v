@@ -144,7 +144,7 @@ they define the same relation. See below for more details. *)
     right. exists t. tauto.
     (* <- *)
     intros [ab|ab]. exists s. unfold succ in ab. split_all. rewrite add_o.
-    destruct (eq_dec x a). refl. absurd (eq x a). hyp. sym. hyp.
+    destruct (eq_dec x a). refl. absurd (eq x a); hyp.
     destruct ab as [t [t1 t2]]. exists t. split_all. rewrite add_o.
     destruct (eq_dec x a). 2: hyp. absurd (In x g). hyp. rewrite e.
     exists t. change (MapsTo a t g). rewrite find_mapsto_iff. hyp.
@@ -499,8 +499,7 @@ successors of g' *)
     sym. apply hm. refl. hyp.
     apply hm. hyp. trans m'; hyp.
     (* empty *)
-    intros x x' xx' g hg. rewrite preds_empty. sym. apply preds_geq_empty.
-    sym. hyp.
+    intros x x' xx' g hg. rewrite preds_empty. sym. apply preds_geq_empty. hyp.
     (* add *)
     intros y s g n h x x' xx' g' e. unfold preds. rewrite fold_add.
     2: class. 2: apply preds_aux_m'. 2: refl. 2: apply preds_aux_transp.
@@ -611,7 +610,7 @@ successors of g' *)
     exists sa. auto.
     unfold rel. rewrite add_o. destruct (eq_dec x a).
     exists (XSet.add y (succs x g)). split_all. rewrite add_iff. auto.
-    absurd (eq x a). hyp. sym. hyp.
+    absurd (eq x a); hyp.
   Qed.
 
   Lemma add_edge_transp_geq : forall x, transpose geq (add_edge x).

@@ -419,7 +419,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     rewrite vector_plus_nth. unfold b, c, d.
     rewrite !Vbuild_nth, dot_product_cons. refl. trans (dot_product (c[+]d) v').
     rewrite dot_product_distr_l, dot_product_distr_mult. refl.
-    apply dot_product_mor. sym. hyp. refl.
+    apply dot_product_mor. hyp. refl.
     apply Veq_nth. intros. rewrite !Vbuild_nth, lt_Sn_nS. refl.
   Qed.
 

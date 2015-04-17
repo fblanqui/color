@@ -224,7 +224,7 @@ such that [f i = a] *)
       (* i < i0 *)
       ded (indices_complete l e). destruct (In_nth d H0) as [j [h1 h2]].
       exists j. unfold prefix. fold is. fold n. destruct (lt_dec j n).
-      sym. hyp. contr.
+      hyp. contr.
       (* i >= i0 *)
       destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold is.
       fold n. destruct (lt_dec (n+j) n). omega.

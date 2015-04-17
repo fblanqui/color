@@ -1126,8 +1126,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     intros R R' [RR' _] u u' uu' v v' vv' h. inversion h; subst.
     eapply clos_aeq_intro.
-    trans u. sym; hyp. apply H.
-    trans v. sym; hyp. apply H0.
+    trans u. hyp. apply H.
+    trans v. hyp. apply H0.
     apply RR'. hyp.
   Qed.
 
@@ -1303,7 +1303,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Lemma apps_aeq_l : forall n (vs : Tes n) v t, apps v vs ~~ t ->
     exists u us, t = apps u us /\ u ~~ v /\ vaeq us vs.
 
-  Proof. intros n vs v t e. apply apps_aeq_r. sym. hyp. Qed.
+  Proof. intros n vs v t e. apply apps_aeq_r. hyp. Qed.
 
   Arguments apps_aeq_l [n vs v t0] _.
 
@@ -1491,8 +1491,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     Proof.
       intros us us' usus' ws ws' wsws' [vs [usvs [xs [bvsxs xsws]]]].
-      ex vs. split. trans us. sym. hyp. hyp. ex xs. intuition.
-      trans ws; hyp.
+      ex vs. split. trans us; hyp. ex xs. intuition. trans ws; hyp.
     Qed.
 
     Lemma clos_vaeq_sub : forall n (us vs : Tes n) p q (h : p+q<=n),
@@ -1504,7 +1503,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       left. rewrite (Vforall2_sub h usus'), (Vforall2_sub h vsvs'), H.
       refl.
       right. ex (Vsub us' h). split. apply Vforall2_sub. hyp.
-      ex (Vsub vs' h). split. hyp. apply Vforall2_sub. sym. hyp.
+      ex (Vsub vs' h). split. hyp. apply Vforall2_sub. hyp.
     Qed.
 
     Arguments clos_vaeq_sub [n us vs p q] _ _.
@@ -1555,7 +1554,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       assert (t2 : b' = Vnth y' l). rewrite ey', Vnth_cast, Vnth_app.
       destruct (Compare_dec.le_gt_dec i i). 2: omega.
       rewrite Vnth_cons_head. refl. omega.
-      rewrite t1, t2. apply Vforall2_elim_nth. sym. hyp.
+      rewrite t1, t2. apply Vforall2_elim_nth. hyp.
       (* We now prove that [y ~~~ Vcast (Vapp xi (Vcons b xj)) k0]. *)
       assert (h :  y ~~~ Vcast (Vapp xi (Vcons b xj)) k0).
       rewrite ex, ex', Vforall2_cast in xx'.
@@ -1606,7 +1605,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       intros j jn jni. rewrite !Vnth_replace_neq; auto.
 
       apply Vforall2_intro_nth. intros j jn. destruct (eq_nat_dec j i).
-      subst j. rewrite !Vnth_replace. sym. hyp.
+      subst j. rewrite !Vnth_replace. hyp.
       rewrite !Vnth_replace_neq; auto. refl.
     Qed.
 
