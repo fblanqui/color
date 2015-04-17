@@ -894,7 +894,7 @@ Module Make (Export L : L_Struct).
 
       Proof.
         intro h. rewrite restrict_union. apply Union.WF_union_commut.
-        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_wf. hyp.
+        apply wf_restrict_sn. intros t ht. apply WF_tc. apply supterm_wf. hyp.
         intros t v [u [[ht tu] [hu uv]]].
         assert (a : (supterm! @ R) t v). exists u. fo.
         destruct (tc_supterm_R_mon_commut a) as [u' [tu' u'v]]. exists u'.
@@ -908,7 +908,7 @@ Module Make (Export L : L_Struct).
     Proof.
       apply restrict_tc_supterm_R_mon_wf.
       intros u u' uu' h. eapply SN_inv. apply h. hyp.
-      apply restrict_wf. refl.
+      apply wf_restrict_sn. refl.
     Qed.
 
   End union.

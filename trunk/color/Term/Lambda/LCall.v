@@ -405,7 +405,7 @@ Module Lex (Export CO : DLQO_Struct).
     Lemma gt_args_lex_wf : WF gt -> forall r, WF (gt_args_lex gt r).
 
     Proof.
-      intros gt_wf r. apply WF_inverse. apply lexv_wf. apply opt_wf; hyp. class.
+      intros gt_wf r. apply WF_inverse. apply lexv_wf. apply wf_opt; hyp. class.
       apply opt_absorbs_left. intros t u [t' [tt' t'u]]. rewrite tt'. hyp.
     Qed.
 

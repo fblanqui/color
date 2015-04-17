@@ -206,7 +206,7 @@ Module Make (Export ST : ST_Struct)
 
       Proof.
         intro R_wf. rewrite restrict_union. apply Union.WF_union_commut.
-        apply restrict_wf. intros t ht. apply WF_tc. apply supterm_acc_wf.
+        apply wf_restrict_sn. intros t ht. apply WF_tc. apply supterm_acc_wf.
         hyp. intros t v [u [[ht tu] [hu uv]]].
         assert (a : (supterm_acc! @ R) t v). exists u. fo.
         destruct (tc_supterm_acc_R_mon_commut a) as [u' [tu' u'v]]. exists u'.
@@ -221,7 +221,7 @@ Module Make (Export ST : ST_Struct)
     Proof.
       apply restrict_tc_supterm_acc_R_mon_wf.
       intros u u' uu' h. eapply SN_inv. apply h. hyp.
-      apply restrict_wf. refl.
+      apply wf_restrict_sn. refl.
     Qed.
 
   End tc_supterm_acc_R_mon_wf.
@@ -318,7 +318,7 @@ Module Make (Export ST : ST_Struct)
 
       Proof.
         intro R_wf. rewrite restrict_union. apply Union.WF_union_commut.
-        apply restrict_wf. intros t ht. apply clos_aeq_tc_supterm_acc_wf.
+        apply wf_restrict_sn. intros t ht. apply clos_aeq_tc_supterm_acc_wf.
         hyp. intros t v [u [[ht tu] [hu uv]]].
         assert (a : (clos_aeq (supterm_acc!) @ R) t v). exists u. fo.
         destruct (clos_aeq_tc_supterm_acc_R_mon_commut a) as [u' [tu' u'v]].
@@ -333,7 +333,7 @@ Module Make (Export ST : ST_Struct)
     Proof.
       apply restrict_clos_aeq_tc_supterm_acc_R_mon_wf.
       intros u u' uu' h. eapply SN_inv. apply h. hyp.
-      apply restrict_wf. refl.
+      apply wf_restrict_sn. refl.
     Qed.
 
   End clos_aeq_tc_supterm_acc_R_mon_wf.
