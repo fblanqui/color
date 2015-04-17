@@ -16,6 +16,10 @@ Require Import Basics.
 Arguments exist [A P x] _.
 Arguments existT [A P x] _.
 
+Definition decidable0 P := {P}+{~P}.
+Definition decidable1 A P := forall x : A, {P x}+{~P x}.
+Definition decidable2 A B P := forall (x : A) (y : B), {P x y}+{~P x y}.
+
 (***********************************************************************)
 (** Abbreviations of some basic Coq tactics. *)
 
