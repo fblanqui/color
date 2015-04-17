@@ -78,7 +78,7 @@ Section S.
     apply rtc_intro_seq. gen (b1 i). omega.
     intros k hk. gen (b1 i). intros [c1 [c2 c3]]. apply c3. omega.
     (* We therefore get a contradiction since [R @ S# << R] and [R] is WF. *)
-    revert a3. apply SN_notNT. apply SN_incl with (S:=R).
+    revert a3. apply SN_notNT. apply (SN_incl R).
     apply absorbs_right_rtc. hyp. fo.
   Qed.
 
@@ -143,7 +143,7 @@ Section S.
     intros x snr sns comm.
     assert (SN (R!1 U S!1) x) as sntr.
     apply sn_comm_sntr; trivial.
-    apply SN_incl with (R!1 U S!1).
+    apply (SN_incl (R!1 U S!1)).
     apply union_inclusion.
     intros a b. apply t1_step.
     intros a b. apply t1_step.
