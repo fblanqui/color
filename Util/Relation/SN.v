@@ -130,38 +130,40 @@ End acc_transp.
 (***********************************************************************)
 (** ** SN properties of [inclusion]. *)
 
-Section incl.
+Lemma WF_empty_rel A : WF (@empty_rel A).
 
-  Variable (A : Type) (R S : relation A).
+Proof. intro x. apply SN_intro. intros. contr. Qed.
 
-  Lemma WF_empty_rel : WF (@empty_rel A).
+Instance SN_inclusion A : Proper (inclusion --> eq ==> impl) (@SN A).
 
-  Proof. intro x. apply SN_intro. intros. contr. Qed.
+Proof.
+  intros R S SR x y xy hx. subst y. elim hx. intros y h1 h2.
+  apply SN_intro. fo.
+Qed.
 
-  Lemma Acc_incl : R << S -> forall x, Acc S x -> Acc R x.
-  
-  Proof.
-    intros. elim H0; intros. apply Acc_intro. intros. apply H2. apply H. hyp.
-  Qed.
+Lemma SN_incl A (R S : rel A) : R << S -> forall x, SN S x -> SN R x.
 
-  Lemma SN_incl : R << S -> forall x, SN S x -> SN R x.
+Proof. intros RS x hx. eapply SN_inclusion. apply RS. refl. hyp. Qed.
 
-  Proof.
-    intros. elim H0; intros. apply SN_intro. intros. apply H2. apply H. hyp.
-  Qed.
+Instance SN_same_relation A : Proper (same_rel ==> eq ==> iff) (@SN A).
 
-  Lemma WF_incl : R << S -> WF S -> WF R.
+Proof. intros R S RS x y xy. subst y. split; apply SN_incl; fo. Qed.
 
-  Proof. unfold WF. intros. apply SN_incl; auto. Qed.
+Lemma SN_same_rel A (R S : rel A) : R == S -> forall x, SN R x <-> SN S x.
 
-End incl.
+Proof.
+  intros RS x. split; intro hx.
+  apply SN_incl with R; fo. apply SN_incl with S; fo.
+Qed.
 
-Instance WF_incl' A : Proper (inclusion --> impl) (@WF A).
+Instance WF_incl A : Proper (inclusion --> impl) (@WF A).
 
 Proof.
   intros S R RS S_wf x. gen (S_wf x). revert x. induction 1.
   apply SN_intro. fo.
 Qed.
+
+Arguments WF_incl [A] _ _ _ _ _.
 
 Instance WF_same_rel A : Proper (same_rel ==> iff) (@WF A).
 
@@ -169,19 +171,6 @@ Proof.
   intros x y x_eq_y. destruct x_eq_y. split; intro.
   apply WF_incl with x; hyp. apply WF_incl with y; hyp.
 Qed.
-
-(***********************************************************************)
-(** ** SN properties of [transp]. *)
-
-Section transp.
-
-  Variables (A : Type) (R : relation A).
-
-  Lemma WF_transp : WF R -> WF (transp (transp R)).
-
-  Proof. intro. apply WF_incl with R. unfold inclusion, transp. auto. hyp. Qed.
-
-End transp.
 
 (***********************************************************************)
 (** ** SN properties of [Rof]. *)

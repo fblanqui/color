@@ -457,7 +457,7 @@ Lemma WF_red0 : WF (red R) <-> WF (red0 R).
 Proof.
 split; intro.
 (* -> *)
-apply WF_incl with (S := red R). intros t u. unfold red0. intuition. hyp.
+apply (WF_incl (red R)). intros t u. unfold red0. intuition. hyp.
 (* <- *)
 cut (forall t, SN (red0 R) t -> maxvar t = 0 -> forall x,
   SN (red R) (sub (single 0 (@Var Sig x)) t)).
@@ -496,7 +496,7 @@ Lemma WF_red_mod0 : WF (red_mod E R) <-> WF (red_mod0 E R).
 Proof.
 split; intro.
 (* -> *)
-apply WF_incl with (S := red_mod E R). intros t u. unfold red_mod0. intuition.
+apply (WF_incl (red_mod E R)). intros t u. unfold red_mod0. intuition.
 hyp.
 (* <- *)
 cut (forall t, SN (red_mod0 E R) t -> maxvar t = 0 -> forall x,

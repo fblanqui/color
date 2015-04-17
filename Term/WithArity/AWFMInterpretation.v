@@ -67,9 +67,8 @@ Section S.
 
     Proof.
       intro. set (xint := fun x:nat => some_elt I).
-      apply WF_incl
-        with (S := fun t1 t2 => R (term_int xint t1) (term_int xint t2)).
-      unfold inclusion. auto. apply (WF_inverse (term_int xint) H).
+      apply (WF_incl (fun t1 t2 => R (term_int xint t1) (term_int xint t2))).
+      unfold Basics.flip, inclusion. auto. apply (WF_inverse (term_int xint) H).
     Qed.
 
     Lemma IR_reduction_ordering : monotone -> WF R -> reduction_ordering IR.

@@ -855,7 +855,7 @@ Module Make (Export L : L_Struct).
   Lemma supterm_wf : WF supterm.
 
   Proof.
-    eapply WF_incl with (S:=Rof Peano.gt size).
+    apply (WF_incl (Rof Peano.gt size)).
     induction 1; unfold Rof; simpl; try max; omega.
     apply WF_inverse. apply WF_gt.
   Qed.
