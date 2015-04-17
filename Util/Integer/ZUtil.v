@@ -15,18 +15,6 @@ Require Import LogicUtil.
 Require Export ZArith.
 
 (***********************************************************************)
-(** ordering on Z *)
-
-Add Relation Z Zle
-  reflexivity proved by Zle_refl
-  transitivity proved by Zle_trans
-  as Zle_rel.
-
-Add Relation Z Zlt
-  transitivity proved by Zlt_trans
-  as Zlt_rel.
-
-(***********************************************************************)
 (** decidability of equality *)
 
 Open Local Scope positive_scope.
