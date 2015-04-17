@@ -141,9 +141,11 @@ Proof.
   apply SN_intro. fo.
 Qed.
 
-Lemma SN_incl A (R S : rel A) : R << S -> forall x, SN S x -> SN R x.
+Lemma SN_incl A (S R : rel A) : R << S -> forall x, SN S x -> SN R x.
 
 Proof. intros RS x hx. eapply SN_inclusion. apply RS. refl. hyp. Qed.
+
+Arguments SN_incl [A] _ _ _ _ _.
 
 Instance SN_same_relation A : Proper (same_rel ==> eq ==> iff) (@SN A).
 
@@ -152,8 +154,7 @@ Proof. intros R S RS x y xy. subst y. split; apply SN_incl; fo. Qed.
 Lemma SN_same_rel A (R S : rel A) : R == S -> forall x, SN R x <-> SN S x.
 
 Proof.
-  intros RS x. split; intro hx.
-  apply SN_incl with R; fo. apply SN_incl with S; fo.
+  intros RS x. split; intro hx. apply (SN_incl R); fo. apply (SN_incl S); fo.
 Qed.
 
 Instance WF_incl A : Proper (inclusion --> impl) (@WF A).
@@ -560,7 +561,7 @@ Section path.
 
   Proof.
     intros. apply SN_iter with n. apply SN_intro. intros.
-    apply SN_incl with (R!). apply iter_tc. apply SN_tc.
+    apply (SN_incl (R!)). apply iter_tc. apply SN_tc.
     ded (iter_path H0). do 2 destruct H1. subst n.
     apply H with x0. refl. hyp.
   Qed.

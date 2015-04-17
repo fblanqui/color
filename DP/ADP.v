@@ -277,7 +277,7 @@ Lemma chain_fun : forall f, defined f R = true
 Proof.
 intros f defined_f ts sn_chain_f_ts sn_ts.
 apply chain_min_fun; auto.
-apply SN_incl with chain. apply chain_min_incl_chain. hyp.
+apply (SN_incl chain). apply chain_min_incl_chain. hyp.
 Qed.
 
 Lemma WF_chain : WF chain -> WF (red R).
