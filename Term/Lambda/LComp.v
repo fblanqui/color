@@ -218,35 +218,34 @@ Module Make (Export CP : CP_Struct).
 
   (** Variables are irreducible. *)
 
-  Lemma not_R_var : forall x u, ~ Var x ->R u.
+  Lemma not_R_var x u : ~ Var x ->R u.
 
-  Proof. intros x u r. inversion r; subst. eapply not_Rh_var. apply H. Qed.
+  Proof. intro r; inversion r; subst. eapply not_Rh_var. apply H. Qed.
 
-  Lemma not_R_aeq_var : forall x u, ~ Var x =>R u.
+  Lemma not_R_aeq_var x u : ~ Var x =>R u.
 
   Proof.
-    intros x u r. inversion r; subst. simpl_aeq; subst.
-    eapply not_R_var. apply H1.
+    intro r; inversion r; subst. simpl_aeq; subst. eapply not_R_var. apply H1.
   Qed.
 
   (** [App u v] is not head-reducible if [u] is neutral. *)
 
-  Lemma R_app_neutral : forall u v w, neutral u -> App u v ->R w ->
+  Lemma R_app_neutral u v w : neutral u -> App u v ->R w ->
       (exists u', w = App u' v /\ u ->R u')
       \/ (exists v', w = App u v' /\ v ->R v').
 
   Proof.
-    intros u v w n r. inversion r; subst.
+    intros n r; inversion r; subst.
     exfalso. eapply not_Rh_app_neutral. apply n. apply H.
     left. exists u'. auto. right. exists v'. auto.
   Qed.
 
-  Lemma R_aeq_app_neutral : forall u v w, neutral u -> App u v =>R w ->
+  Lemma R_aeq_app_neutral u v w : neutral u -> App u v =>R w ->
       (exists u', w ~~ App u' v /\ u =>R u')
       \/ (exists v', w ~~ App u v' /\ v =>R v').
 
   Proof.
-    intros u v w n r. inversion r; subst. inv_aeq H; clear H; subst.
+    intros n r; inversion r; subst. inv_aeq H; clear H; subst.
     rewrite <- i0 in n.
     destruct (R_app_neutral n H1) as [h|h]; destruct h as [t [a s]]; subst.
     left. exists t. rewrite <- i1, <- i0. intuition.
@@ -257,26 +256,22 @@ Module Make (Export CP : CP_Struct).
 
   (** No reduction can occur at the top of an abstraction. *)
 
-  Lemma R_lam : forall x u w, Lam x u ->R w ->
-    exists v, w = Lam x v /\ u ->R v.
+  Lemma R_lam x u w : Lam x u ->R w -> exists v, w = Lam x v /\ u ->R v.
 
   Proof.
-    intros x u w r. inversion r; subst.
-    apply not_Rh_lam in H. tauto. exists u'. auto.
+    intro r; inversion r; subst. apply not_Rh_lam in H. tauto. exists u'. auto.
   Qed.
 
-  Lemma R_aeq_lam : forall x u w, Lam x u =>R w ->
+  Lemma R_aeq_lam x u w : Lam x u =>R w ->
     exists y v, w = Lam y v /\ u =>R rename y x v.
 
   Proof.
-    intros x u w r. inversion r; subst. inv_aeq H; clear H; subst.
-    inversion H1; subst.
+    intro r; inversion r; subst. inv_aeq H; clear H; subst; permut_rename.
+    inversion H1; clear H1; subst.
     exfalso. eapply not_Rh_lam. apply H.
-    inv_aeq H0; clear H0; subst. exists x1. exists u1. split. refl.
-    rewrite i2, rename2. 2: hyp.
-    assert (a : u ~~ rename x0 x u0).
-    rewrite i0, rename2, rename_id. refl. hyp.
-    rewrite a. apply subs_R_aeq. refl. apply incl_clos_aeq. hyp.
+    inv_aeq H0; clear H0; subst. ex x1 u1. split. refl.
+    rewrite i0, i2, rename2. 2: hyp. apply subs_R_aeq. refl.
+    apply incl_clos_aeq. hyp.
   Qed.
 
   (** Extension of properties from [App] to [apps]. *)
@@ -285,13 +280,12 @@ Module Make (Export CP : CP_Struct).
     neutral u -> neutral (apps u us).
 
   Proof.
-    induction us; simpl. auto.
-    intros u nu. apply IHus. apply neutral_app. hyp.
+    induction us; simpl. auto. intros u nu. apply IHus. apply neutral_app. hyp.
   Qed.
 
-  Lemma neutral_apps_var : forall x n (us : Tes n), neutral (apps (Var x) us).
+  Lemma neutral_apps_var x n (us : Tes n) : neutral (apps (Var x) us).
 
-  Proof. intros x n us. apply neutral_apps. apply neutral_var. Qed.
+  Proof. apply neutral_apps. apply neutral_var. Qed.
 
   Lemma R_aeq_apps_neutral : forall n (us : Tes n) u v, neutral u ->
     apps u us =>R v -> (exists u', v ~~ apps u' us /\ u =>R u')
@@ -324,22 +318,21 @@ Module Make (Export CP : CP_Struct).
     cut (forall t w, t =>R* w -> forall x u, t = Lam x u ->
       exists y v, w = Lam y v /\ u =>R* rename y x v).
     intros h x u w i.
-    destruct (h _ _ i _ _ (refl_equal _)) as [y [v [h1 h2]]].
-    exists y. exists v. auto.
+    destruct (h _ _ i _ _ (refl_equal _)) as [y [v [h1 h2]]]. ex y v. auto.
     (* We proceed by induction on [=>R*]. *)
     induction 1; intros x' u' e; subst.
     (* step *)
     destruct (R_aeq_lam H) as [y0 [v0 [h1 h2]]].
-    exists y0. exists v0. intuition. apply at_step. hyp.
+    ex y0 v0. split. hyp. apply at_step. hyp.
     (* refl *)
-    inv_aeq H; clear H; subst. exists x. exists u.
-    split. refl. rewrite i0, rename2, rename_id. refl. hyp.
+    inv_aeq H; clear H; subst. ex x u. split. refl.
+    rewrite i0, rename2, rename_id. refl. hyp.
     (* trans *)
     destruct (IHclos_aeq_trans1 x' u' (refl_equal _)) as [y0 [v0 [h1 h2]]].
     subst v.
     destruct (IHclos_aeq_trans2 y0 v0 (refl_equal _)) as [y1 [v1 [i1 i2]]].
     subst w.
-    ex y1 v1. split_all. trans (rename y0 x' v0). hyp.
+    ex y1 v1. split. refl. trans (rename y0 x' v0). hyp.
     eapply rename_atc in i2; auto. 2: apply subs_R_aeq.
     rewrite rename2 in i2. apply i2.
     rewrite notin_fv_lam, <- H0. simpl. set_iff. tauto.
@@ -413,14 +406,14 @@ Module Make (Export CP : CP_Struct).
 
   Definition R_aeq_red t u v := t =>R* u /\ u =>R v.
 
-  Lemma WF_R_aeq_red : forall t, SN R_aeq t -> WF (R_aeq_red t).
+  Lemma WF_R_aeq_red t : SN R_aeq t -> WF (R_aeq_red t).
 
   Proof.
     (*FIXME: We prove this lemma by using the axiom of
       dependent choice (DepChoice) and classical logic. We should try
       to find an intuitionistic proof. *)
     Require NotSN_IS.
-    intros t ht. rewrite NotSN_IS.WF_notIS_eq. intros f hf.
+    intro ht. rewrite NotSN_IS.WF_notIS_eq. intros f hf.
     absurd (SN R_aeq (f 0)).
     rewrite NotSN_IS.SN_notNT_eq. intro h. apply h. exists f. intuition.
     intro i. destruct (hf i). hyp.
@@ -440,10 +433,10 @@ Module Make (Export CP : CP_Struct).
     refl. refl.
   Qed.
 
-  Lemma sn_lam : forall x u, SN R_aeq u -> SN R_aeq (Lam x u).
+  Lemma sn_lam x : forall u, SN R_aeq u -> SN R_aeq (Lam x u).
 
   Proof.
-    intro x. induction 1. rename x0 into u. apply SN_intro. intros t r.
+    induction 1. rename x0 into u. apply SN_intro. intros t r.
     destruct (R_aeq_lam r) as [y [v [h1 h2]]]; subst.
     destruct (fv_R_notin_fv_lam _ r).
     subst. apply H0. rewrite rename_id in h2. hyp.
