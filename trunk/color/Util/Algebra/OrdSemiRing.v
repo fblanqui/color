@@ -27,9 +27,9 @@ Module Type OrdSemiRingType.
 
   Parameter eq_ge_compat : forall x y, x =A= y -> x >>= y.
 
-  Parameter ge_refl : reflexive ge.
-  Parameter ge_trans : transitive ge.
-  Parameter gt_trans : transitive gt.
+  Declare Instance ge_refl : Reflexive ge.
+  Declare Instance ge_trans : Transitive ge.
+  Declare Instance gt_trans : Transitive gt.
 
   Parameter ge_dec : rel_dec ge.
   Parameter gt_dec : rel_dec gt.
@@ -54,32 +54,23 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
   Module Export SR := SemiRing OSR.SR.
   Export OSR.
 
-  Add Relation A ge
-    reflexivity proved by ge_refl
-    transitivity proved by ge_trans
-      as ge_rel.
-
   Instance ge_mor : Proper (eqA ==> eqA ==> iff) ge.
 
   Proof.
     intros x y H x0 y0 H0. intuition.
-    trans x. apply eq_ge_compat. sym. hyp.
+    trans x. apply eq_ge_compat. hyp.
     trans x0. hyp. apply eq_ge_compat. hyp.
     trans y. apply eq_ge_compat. hyp.
-    trans y0. hyp. apply eq_ge_compat. sym. hyp.
+    trans y0. hyp. apply eq_ge_compat. hyp.
   Qed.
-
-  Add Relation A gt
-    transitivity proved by gt_trans
-      as gt_rel.
 
   Instance gt_mor : Proper (eqA ==> eqA ==> iff) gt.
 
   Proof.
     intros x y H x0 y0 H0.
     intuition. apply ge_gt_compat2 with x0. 2: apply eq_ge_compat; hyp.
-    apply ge_gt_compat with x. apply eq_ge_compat. sym. hyp. hyp.
-    apply ge_gt_compat2 with y0. 2: apply eq_ge_compat; sym; hyp.
+    apply ge_gt_compat with x. apply eq_ge_compat. hyp. hyp.
+    apply ge_gt_compat2 with y0. 2: apply eq_ge_compat; hyp.
     apply ge_gt_compat with y. apply eq_ge_compat. hyp. hyp.
   Qed.
 
@@ -97,27 +88,19 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, x = y -> x >= y.
 
-  Proof.
-    intros. subst. apply le_refl.
-  Qed.
+  Proof. intros. subst. apply le_refl. Qed.
 
-  Lemma ge_refl : reflexive ge.
+  Instance ge_refl : Reflexive ge.
 
-  Proof.
-    intro m. unfold ge. auto with arith.
-  Qed.
+  Proof. intro m. unfold ge. auto with arith. Qed.
 
-  Lemma ge_trans : transitive ge.
+  Instance ge_trans : Transitive ge.
 
-  Proof.
-    intros m n p. unfold ge, Peano.ge. eauto with arith.
-  Qed.
+  Proof. intros m n p. unfold ge, Peano.ge. eauto with arith. Qed.
 
   Lemma ge_antisym : antisymmetric ge.
 
-  Proof.
-    intros m n. unfold ge, Peano.ge. auto with arith.
-  Qed.
+  Proof. intros m n. unfold ge, Peano.ge. auto with arith. Qed.
 
   Definition gt_irrefl := Gt.gt_irrefl.
 
@@ -130,58 +113,41 @@ Module NOrdSemiRingT <: OrdSemiRingType.
   Lemma gt_WF : WF gt.
 
   Proof.
-    apply wf_transp_WF. 
-    apply well_founded_lt_compat with (fun x:nat => x). auto.
+    apply wf_transp_WF. apply well_founded_lt_compat with (fun x => x). auto.
   Qed.
 
   Lemma ge_gt_compat : forall x y z, x >= y -> y > z -> x > z.
 
-  Proof.
-    intros. apply le_gt_trans with y; hyp.
-  Qed.
+  Proof. intros. apply le_gt_trans with y; hyp. Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x > y -> y >= z -> x > z.
 
-  Proof.
-    intros. apply gt_le_trans with y; hyp.
-  Qed.
+  Proof. intros. apply gt_le_trans with y; hyp. Qed.
 
   Lemma plus_gt_compat : forall m n m' n',
     m > m' -> n > n' -> m + n > m' + n'.
 
-  Proof.
-    intros. omega.
-  Qed.
+  Proof. omega. Qed.
 
   Lemma plus_gt_compat_l : forall m n m' n',
     m > m' -> n >= n' -> m + n > m' + n'.
 
-  Proof.
-    intros. omega.
-  Qed.
+  Proof. omega. Qed.
 
   Lemma plus_gt_compat_r : forall m n m' n',
     m >= m' -> n > n' -> m + n > m' + n'.
 
-  Proof.
-    intros. omega.
-  Qed.
+  Proof. omega. Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
     m >= m' -> n >= n' -> m + n >= m' + n'.
 
-  Proof.
-    intros. unfold Peano.ge.
-    apply plus_le_compat; hyp.
-  Qed.
+  Proof. intros. unfold Peano.ge. apply plus_le_compat; hyp. Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
     m >= m' -> n >= n' -> m * n >= m' * n'.
 
-  Proof.
-    intros. unfold Peano.ge.
-    apply mult_le_compat; hyp.
-  Qed.
+  Proof. intros. unfold Peano.ge. apply mult_le_compat; hyp. Qed.
 
 End NOrdSemiRingT.
 
@@ -201,23 +167,17 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, eqA x y -> x >= y.
 
-  Proof.
-    intros x y. unfold eqA, ge, BigN.eq, BigN.le. omega.
-  Qed.
+  Proof. intros x y. unfold eqA, ge, BigN.eq, BigN.le. omega. Qed.
 
   Definition ge_refl := BigN.le_refl.
 
-  Lemma ge_trans : transitive ge.
+  Instance ge_trans : Transitive ge.
 
-  Proof.
-    intros m n p. unfold ge, BigN.le. omega.
-  Qed.
+  Proof. intros m n p. unfold ge, BigN.le. omega. Qed.
 
-  Lemma gt_trans : transitive gt.
+  Instance gt_trans : Transitive gt.
 
-  Proof.
-    intros m n p. unfold gt, BigN.lt. omega.
-  Qed.
+  Proof. intros m n p. unfold gt, BigN.lt. omega. Qed.
 
   Lemma ge_dec : forall x y, {ge x y}+{~ge x y}.
 
@@ -237,50 +197,36 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_gt_compat : forall x y z, ge x y -> gt y z -> gt x z.
 
-  Proof.
-    intros x y z. unfold ge, gt, BigN.le, BigN.lt. omega.
-  Qed.
+  Proof. intros x y z. unfold ge, gt, BigN.le, BigN.lt. omega. Qed.
 
   Lemma ge_gt_compat2 : forall x y z, gt x y -> ge y z -> gt x z.
 
-  Proof.
-    intros x y z. unfold gt, BigN.lt, ge, BigN.le. omega.
-  Qed.
+  Proof. intros x y z. unfold gt, BigN.lt, ge, BigN.le. omega. Qed.
 
   Lemma plus_gt_compat :
     forall m n m' n', gt m m' -> gt n n' -> gt (m + n) (m' + n').
 
-  Proof.
-    intros m n m' n'. apply BigN.add_lt_mono; hyp.
-  Qed.
+  Proof. intros m n m' n'. apply BigN.add_lt_mono; hyp. Qed.
 
   Lemma plus_gt_compat_l :
     forall m n m' n', gt m m' -> ge n n' -> gt (m + n) (m' + n').
 
-  Proof.
-    intros. apply BigN.add_lt_le_mono; hyp.
-  Qed.
+  Proof. intros. apply BigN.add_lt_le_mono; hyp. Qed.
 
   Lemma plus_gt_compat_r :
     forall m n m' n', ge m m' -> gt n n' -> gt (m + n) (m' + n').
 
-  Proof.
-    intros. apply BigN.add_le_lt_mono; hyp.
-  Qed.
+  Proof. intros. apply BigN.add_le_lt_mono; hyp. Qed.
 
   Lemma plus_ge_compat :
     forall m n m' n', ge m m' -> ge n n' -> ge (m + n) (m' + n').
 
-  Proof.
-    intros. apply BigN.add_le_mono; hyp.
-  Qed.
+  Proof. intros. apply BigN.add_le_mono; hyp. Qed.
 
   Lemma mult_ge_compat :
     forall m n m' n', ge m m' -> ge n n' -> ge (m * n) (m' * n').
 
-  Proof.
-    intros. apply BigN.mul_le_mono; hyp.
-  Qed.
+  Proof. intros. apply BigN.mul_le_mono; hyp. Qed.
 
   Lemma mult_lt_compat_lr : forall i j k l,
     i <= j -> j > 0 -> k < l -> i * k < j * l.
@@ -314,32 +260,23 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, x = y -> ge x y.
 
-  Proof.
-    unfold ge. intuition.
-  Qed.
+  Proof. unfold ge. intuition. Qed.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof.
-    intros x xx. destruct x.
-    unfold gt in xx. omega.
-    auto.
-  Qed.
+  Proof. intros x xx. destruct x. unfold gt in xx. omega. auto. Qed.
 
-  Lemma gt_trans : transitive gt.
+  Instance gt_trans : Transitive gt.
 
   Proof.
     intros x y z xy yz. 
-    destruct x; destruct y; destruct z; try solve [ auto | contr ].
+    destruct x; destruct y; destruct z; (contr||auto).
     apply gt_trans with n0; auto.
   Qed.
 
-  Lemma gt_asym : forall x y, gt x y -> ~gt y x.
+  Lemma gt_asym x y : gt x y -> ~gt y x.
 
-  Proof.
-    intros x y xy. 
-    destruct x; destruct y; simpl in *; try solve [auto | omega].
-  Qed.
+  Proof. destruct x; destruct y; simpl; omega. Qed.
 
   Lemma gt_dec : rel_dec gt.
 
@@ -363,13 +300,11 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
       solve [auto with arith | exfalso; auto].
   Qed.
 
-  Lemma ge_refl : reflexive ge.
+  Instance ge_refl : Reflexive ge.
 
-  Proof.
-    intro m. right. trivial.
-  Qed.
+  Proof. intro m. right. trivial. Qed.
 
-  Lemma ge_trans : transitive ge.
+  Instance ge_trans : Transitive ge.
 
   Proof.
     intros x y z xy yz. destruct xy. destruct yz.
@@ -403,9 +338,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
 
-  Proof.
-    destruct 1; auto.
-  Qed.
+  Proof. destruct 1; auto. Qed.
 
   Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
 
@@ -430,8 +363,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     Pos m >>= Pos n -> Peano.ge m n.
 
   Proof.
-    intros. inversion H; simpl in H0. omega.
-    injection H0. omega.
+    intros. inversion H; simpl in H0. omega. injection H0. omega.
   Qed.
 
   Lemma plus_inf_dec : forall m n,
@@ -585,17 +517,13 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, x = y -> ge x y.
 
-  Proof.
-    unfold ge. intuition.
-  Qed.
+  Proof. unfold ge. intuition. Qed.
 
-  Lemma ge_refl : reflexive ge.
+  Instance ge_refl : Reflexive ge.
 
-  Proof.
-    intro m. right. trivial.
-  Qed.
+  Proof. intro m. right. trivial. Qed.
 
-  Lemma gt_trans : transitive gt.
+  Instance gt_trans : Transitive gt.
 
   Proof.
     intros m n p mn np.
@@ -608,20 +536,13 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof.
-    intros x xx. destruct x.
-    unfold gt in xx. omega.
-    auto.
-  Qed.
+  Proof. intros x xx. destruct x. unfold gt in xx. omega. auto. Qed.
 
   Lemma gt_asym : forall m n, gt m n -> ~gt n m.
 
-  Proof.
-    intros. destruct m; destruct n; try tauto.
-    simpl in *. omega.
-  Qed.
+  Proof. intros. destruct m; destruct n; try tauto. simpl in *. omega. Qed.
 
-  Lemma ge_trans : transitive ge.
+  Instance ge_trans : Transitive ge.
 
   Proof.
     intros m n p mn np. 
@@ -642,16 +563,14 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Lemma gt_dec : rel_dec gt.
 
   Proof.
-    intros x y.
-    destruct x; destruct y; simpl; auto.
+    intros x y. destruct x; destruct y; simpl; auto.
     destruct (Z_lt_dec z0 z); [left | right]; omega.
   Defined.
 
   Lemma ge_dec : rel_dec ge.
 
   Proof.
-    intros x y.
-    destruct (gt_dec x y).
+    intros x y. destruct (gt_dec x y).
     left. left. trivial.
     destruct (eqA_dec x y).
     left. right. trivial.
@@ -665,9 +584,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
 
-  Proof.
-    destruct 1; auto.
-  Qed.
+  Proof. destruct 1; auto. Qed.
 
   Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
 
@@ -692,10 +609,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Lemma fin_ge_Zge : forall m n,
     Fin m >>= Fin n -> (m >= n)%Z.
  
-  Proof.
-    intros. inversion H; simpl in H0. omega.
-    injection H0. omega.
-  Qed.
+  Proof. intros. inversion H; simpl in H0. omega. injection H0. omega. Qed.
 
   Lemma plus_inf_dec : forall m n,
     { exists p, (m = Fin p \/ n = Fin p) /\ m + n = Fin p} +
@@ -725,10 +639,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma minusInf_ge_min : forall a, a >>= MinusInfBZ.
 
-  Proof.
-    intros. destruct a. left. simpl. trivial.
-    right. refl.
-  Qed.
+  Proof. intros. destruct a. left. simpl. trivial. right. refl. Qed.
 
   Lemma ge_impl_fin_ge : forall m n, (m >= n)%Z -> Fin m >>= Fin n.
 
@@ -810,11 +721,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_A1_not_minusInf : forall a, a >>= A1 -> a <> MinusInfBZ.
 
-  Proof.
-    intros. destruct a. 
-    discr.
-    destruct H. contr. discr.
-  Qed.
+  Proof. intros. destruct a. discr. destruct H. contr. discr. Qed.
 
 End ArcticBZOrdSemiRingT.
 
@@ -839,32 +746,22 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, x = y -> ge x y.
 
-  Proof.
-    unfold ge. intuition.
-  Qed.
+  Proof. unfold ge. intuition. Qed.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof.
-    intros x xx. destruct x.
-    unfold gt in xx. omega.
-    auto.
-  Qed.
+  Proof. intros x xx. destruct x. unfold gt in xx. omega. auto. Qed.
 
-  Lemma gt_trans : transitive gt.
+  Instance gt_trans : Transitive gt.
 
   Proof.
-    intros x y z xy yz. 
-    destruct x; destruct y; destruct z; try solve [ auto | contr ].
+    intros x y z xy yz. destruct x; destruct y; destruct z; (contr||auto).
     apply gt_trans with n0; auto.
   Qed.
 
-  Lemma gt_asym : forall x y, gt x y -> ~gt y x.
+  Lemma gt_asym x y : gt x y -> ~gt y x.
 
-  Proof.
-    intros x y xy. 
-    destruct x; destruct y; simpl in *; try solve [auto | omega].
-  Qed.
+  Proof. destruct x; destruct y; simpl; omega. Qed.
 
   Lemma gt_dec : rel_dec gt.
 
@@ -875,9 +772,9 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Defined.
 
   Lemma gt_Fin_WF x : Acc (transp gt) (TPos x).
+
   Proof.
-    induction x using lt_wf_ind; apply Acc_intro; destruct y;
-      auto || contr.
+    induction x using lt_wf_ind; apply Acc_intro; destruct y; auto || contr.
   Qed.
 
   Hint Resolve gt_Fin_WF.
@@ -890,13 +787,11 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     apply Acc_intro. intros. destruct y...
   Qed.
 
-  Lemma ge_refl : reflexive ge.
+  Instance ge_refl : Reflexive ge.
 
-  Proof.
-    intro m. right. trivial.
-  Qed.
+  Proof. intro m. right. trivial. Qed.
 
-  Lemma ge_trans : transitive ge.
+  Instance ge_trans : Transitive ge.
 
   Proof.
     intros x y z xy yz. destruct xy. destruct yz.
@@ -930,9 +825,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_gt_eq : forall x y, x >>= y -> x >> y \/ x = y.
 
-  Proof.
-    destruct 1; auto.
-  Qed.
+  Proof. destruct 1; auto. Qed.
 
   Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
 
@@ -954,10 +847,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Lemma pos_ord : forall m n,
     TPos m >>= TPos n -> Peano.ge m n.
 
-  Proof.
-    intros. inversion H; simpl in H0. omega.
-    injection H0. omega.
-  Qed.
+  Proof. intros. inversion H; simpl in H0. omega. injection H0. omega. Qed.
 
   Lemma plus_inf_dec : forall m n,
     { exists p, (m = TPos p \/ n = TPos p) /\ m + n = TPos p} +
@@ -1046,10 +936,8 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
   Proof.
-    intros.
-    destruct m; destruct n; destruct m'; destruct n'; 
-      simpl; trivial; tropical_ord.
-    omega.
+    intros. destruct m; destruct n; destruct m'; destruct n'; 
+      simpl; trivial; tropical_ord. omega.
   Qed.
 
   Lemma not_minusInf_ge_A1 : forall a, a <> PlusInf -> a >>= A1.
@@ -1062,6 +950,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Qed.
 
   Lemma tropical_plus_inf_max : forall x, x <> PlusInf -> PlusInf >> x.
+
   Proof.
     intros. destruct x. simpl. auto.
     exfalso. apply H. trivial.
@@ -1092,59 +981,40 @@ Module BOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, x = y -> ge x y.
 
-  Proof.
-    unfold ge. destruct x; destruct y; auto. discr.
-  Qed.
+  Proof. unfold ge. destruct x; destruct y; auto. discr. Qed.
 
   Notation "x + y" := (Aplus x y).
   Notation "x * y" := (Amult x y).
   Notation "x >> y" := (gt x y) (at level 70).
   Notation "x >>= y" := (ge x y) (at level 70).
 
-  Lemma ge_refl : reflexive ge.
+  Instance ge_refl : Reflexive ge.
 
-  Proof.
-    intro m. unfold ge. destruct m; auto.
-  Qed.
+  Proof. intro m. unfold ge. destruct m; auto. Qed.
 
-  Lemma ge_trans : transitive ge.
+  Instance ge_trans : Transitive ge.
 
-  Proof.
-    intros m n p. unfold ge. 
-    destruct m; destruct n; destruct p; auto.
-  Qed.
+  Proof. intros m n p. unfold ge. destruct m; destruct n; destruct p; auto. Qed.
 
   Lemma ge_antisym : antisymmetric ge.
 
-  Proof.
-    intros m n. unfold ge. 
-    destruct m; destruct n; tauto.
-  Qed.
+  Proof. intros m n. unfold ge. destruct m; destruct n; tauto. Qed.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof.
-    intros x. unfold gt. destruct x; tauto.
-  Qed.
+  Proof. intros x. unfold gt. destruct x; tauto. Qed.
 
-  Lemma gt_trans : transitive gt.
+  Instance gt_trans : Transitive gt.
 
-  Proof.
-    intros x y z. 
-    destruct x; destruct y; destruct z; tauto.
-  Qed.
+  Proof. intros x y z. destruct x; destruct y; destruct z; tauto. Qed.
 
   Lemma ge_dec : rel_dec ge.
 
-  Proof.
-    intros x y. destruct x; destruct y; simpl; tauto.
-  Qed.
+  Proof. intros x y. destruct x; destruct y; simpl; tauto. Qed.
 
   Lemma gt_dec : rel_dec gt.
 
-  Proof.
-    intros x y. destruct x; destruct y; simpl; tauto.
-  Qed.
+  Proof. intros x y. destruct x; destruct y; simpl; tauto. Qed.
 
   Lemma gt_WF : WF gt.
 
@@ -1162,36 +1032,26 @@ Module BOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_gt_compat : forall x y z, x >>= y -> y >> z -> x >> z.
 
-  Proof.
-    destruct x; destruct y; destruct z; simpl; tauto.
-  Qed.
+  Proof. destruct x; destruct y; destruct z; simpl; tauto. Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
 
-  Proof.
-    destruct x; destruct y; destruct z; simpl; tauto.
-  Qed.
+  Proof. destruct x; destruct y; destruct z; simpl; tauto. Qed.
 
   Lemma plus_gt_compat : forall m n m' n',
     m >> m' -> n >> n' -> m + n >> m' + n'.
 
-  Proof.
-    destruct m; destruct m'; destruct n; destruct n'; simpl; tauto.
-  Qed.
+  Proof. destruct m; destruct m'; destruct n; destruct n'; simpl; tauto. Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m + n >>= m' + n'.
 
-  Proof.
-    destruct m; destruct m'; destruct n; destruct n'; simpl; tauto.
-  Qed.
+  Proof. destruct m; destruct m'; destruct n; destruct n'; simpl; tauto. Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
-  Proof.
-    destruct m; destruct m'; destruct n; destruct n'; simpl; tauto.
-  Qed.
+  Proof. destruct m; destruct m'; destruct n; destruct n'; simpl; tauto. Qed.
 
 End BOrdSemiRingT.
 
