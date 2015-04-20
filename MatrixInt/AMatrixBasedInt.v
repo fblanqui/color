@@ -113,7 +113,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
     Definition dom2vec (d : dom) : vec := proj1_sig d.
 
     Definition add_matrices i m n (v : vector (matrix m n) i) := 
-      Vfold_left (@mat_plus m n) (zero_matrix m n) v.
+      Vfold_left_rev (@mat_plus m n) (zero_matrix m n) v.
 
     Notation mat_vec_prod := (@mat_vec_prod dim dim).
 

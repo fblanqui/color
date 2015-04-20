@@ -185,7 +185,7 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
     Lemma Vfold_left_gtx_compat : forall n (v v' : vector A n),
       (forall i (ip: i < n), Vnth v ip >_0 Vnth v' ip) ->
-      Vfold_left Aplus A0 v >_0 Vfold_left Aplus A0 v'.
+      Vfold_left_rev Aplus A0 v >_0 Vfold_left_rev Aplus A0 v'.
 
     Proof.
       induction v; simpl; intros.
