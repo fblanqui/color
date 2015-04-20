@@ -402,24 +402,6 @@ Module Make (Export CP : CP_Struct).
     inversion ht; fo. rewrite <- H. hyp. fo.
   Qed.
 
-  (** Restriction of [=>R] to the reducts of some term [t]. *)
-
-  Definition R_aeq_red t u v := t =>R* u /\ u =>R v.
-
-  Lemma WF_R_aeq_red t : SN R_aeq t -> WF (R_aeq_red t).
-
-  Proof.
-    (*FIXME: We prove this lemma by using the axiom of
-      dependent choice (DepChoice) and classical logic. We should try
-      to find an intuitionistic proof. *)
-    Require NotSN_IS.
-    intro ht. rewrite NotSN_IS.WF_notIS_eq. intros f hf.
-    absurd (SN R_aeq (f 0)).
-    rewrite NotSN_IS.SN_notNT_eq. intro h. apply h. exists f. intuition.
-    intro i. destruct (hf i). hyp.
-    destruct (hf 0). rewrite H in ht. hyp.
-  Qed.
-
   (** The subterms of a strongly normalizing term are strongly
      normalizing. *)
 
@@ -490,15 +472,19 @@ Module Make (Export CP : CP_Struct).
   Proof.
     intros P P1 P3 P4 x0 u0 v0 h0 h1 h.
     set (gt_red x0 u0 v0 :=
-      Rof (symprod (R_aeq_red (Lam x0 u0)) (R_aeq_red v0))
+      Rof (symprod (RelUtil.restrict (R_aeq* (Lam x0 u0)) R_aeq)
+                   (RelUtil.restrict (R_aeq* v0) R_aeq))
       (fun a => match a with ((x,u),v) => (Lam x u, v) end)).
-    (* We proceed by well-founded induction on [((x,u),v)] with
-       [gt_red] as well-founded relation ([Lam x0 u0] and [v0] are [SN]). *)
     set (Q := fun a => match a with ((x,u),v) =>
       Lam x0 u0 =>R* Lam x u -> v0 =>R* v -> P (App (Lam x u) v) end).
+
+    (* We prove [Q] by well-founded induction on [((x,u),v)] with
+       [gt_red] as well-founded relation ([Lam x0 u0] and [v0] are [SN]). *)
     cut (Q ((x0,u0),v0)). intro q. apply q; refl.
     cut (SN (gt_red x0 u0 v0) (x0,u0,v0)).
-    Focus 2. apply WF_inverse. apply WF_symprod; apply WF_R_aeq_red; hyp.
+    Focus 2. apply WF_inverse. apply WF_symprod; apply wf_restrict_sn;
+      intros v hv; eapply SN_atc. apply hv. hyp. apply hv. hyp.
+
     apply SN_ind with (R:=gt_red x0 u0 v0). intros [[x u] v] i IH i1 i2.
     destruct (atc_lam i1) as [x1 [u1 [j1 j2]]]. inversion j1; subst x1 u1.
     clear j1. apply P4. apply neutral_beta. intros c r. inversion r; subst.
