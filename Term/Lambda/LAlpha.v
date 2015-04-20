@@ -647,8 +647,8 @@ Module Make (Export L : L_Struct).
     eapply saeq_s. unfold flip. apply union_subset_1. refl. refl. apply h1.
   Qed.
 
-  (** Meta-theorem saying that, for proving [P s -> subs s u ~~ subs s
-  v], we can assume w.l.o.g. that the domain of [s] is included in
+  (** Meta-theorem saying that, for proving [P s -> subs s u ~~ subs s v],
+  we can assume w.l.o.g. that the domain of [s] is included in
   [union (fv u) (fv v)], and the bound variables of [s] are disjoint
   from some fixed finite set [ys s], if [P] and [ys] are compatible
   with [saeq (union (fv u) (fv v))]. *)
