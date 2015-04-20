@@ -483,7 +483,7 @@ Module Make (Export CP : CP_Struct).
     cut (Q ((x0,u0),v0)). intro q. apply q; refl.
     cut (SN (gt_red x0 u0 v0) (x0,u0,v0)).
     Focus 2. apply WF_inverse. apply WF_symprod; apply wf_restrict_sn;
-      intros v hv; eapply SN_atc. apply hv. hyp. apply hv. hyp.
+      intros v hv; (eapply SN_atc; [apply hv|hyp]).
 
     apply SN_ind with (R:=gt_red x0 u0 v0). intros [[x u] v] i IH i1 i2.
     destruct (atc_lam i1) as [x1 [u1 [j1 j2]]]. inversion j1; subst x1 u1.
