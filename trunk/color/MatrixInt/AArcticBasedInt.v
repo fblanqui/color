@@ -179,9 +179,9 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       destruct (vec_gt_dec (const x) (const y)); intuition.      
     Defined.
 
-    Lemma Vfold_left_gtx_compat : forall n (v v' : vector A n),
+    Lemma Vfold_left_rev_gtx_compat : forall n (v v' : vector A n),
       (forall i (ip: i < n), Vnth v ip >_0 Vnth v' ip) ->
-      Vfold_left Aplus A0 v >_0 Vfold_left Aplus A0 v'.
+      Vfold_left_rev Aplus A0 v >_0 Vfold_left_rev Aplus A0 v'.
 
     Proof.
       induction v; simpl; intros.
@@ -256,7 +256,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       apply gtx_plus_compat. 
       apply Vforall2_elim_nth. hyp.
       rewrite !add_vectors_nth.
-      apply Vfold_left_gtx_compat. intros.
+      apply Vfold_left_rev_gtx_compat. intros.
       rewrite !Vnth_map, !Vnth_map2.
       set (eval := Vnth (Vbuild (fun i (_ : i < k) => val i)) ip0).
       apply Vforall2_elim_nth. apply mat_vec_prod_gt_compat.

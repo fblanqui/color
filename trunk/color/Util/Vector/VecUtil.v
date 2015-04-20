@@ -1805,27 +1805,27 @@ End Vbuild.
 (***********************************************************************)
 (** ** Iterators on vectors. *)
 
-(** Vfold_left f b [a1 .. an] = f .. (f (f b a1) a2) .. an. *)
+(** Vfold_left f a [b1 .. bn] = f .. (f (f a b1) b2) .. bn. *)
 
 Section Vfold_left.
 
-  Variables (A B : Type) (f : B->A->B).
+  Variables (A B : Type) (f : A->B->A).
 
-  Fixpoint Vfold_left n (b:B) (v : vector A n) : B :=
+  Fixpoint Vfold_left n (a:A) (v : vector B n) : A :=
     match v with
-      | Vnil => b
-      | Vcons a _ w => f (Vfold_left b w) a
+      | Vnil => a
+      | Vcons b _ w => Vfold_left (f a b) w
     end.
 
-  Variables (R : relation A) (S : relation B) (f_S : Proper (S ==> R ==> S) f).
-
-  Global Instance Vfold_left_proper n :
-    Proper (S ==> Vforall2 R ==> S) (Vfold_left (n:=n)).
+  Global Instance Vfold_left_Vforall2 n (R : rel A) (S : rel B) :
+    Proper (R ==> S ==> R) f
+    -> Proper (R ==> Vforall2 S ==> R) (Vfold_left (n:=n)).
 
   Proof.
-    intros b b' bb' v v' vv'. induction v; simpl; intros. VOtac. simpl. hyp.
-    revert vv'. VSntac v'. rewrite Vforall2_cons_eq. intuition. simpl.
-    apply f_S; try hyp. apply IHv; hyp.
+    intros hf a a' aa' v v' vv'. revert a a' aa'. induction v; simpl; intros.
+    VOtac. hyp.
+    revert vv'. VSntac v'. rewrite Vforall2_cons_eq. intros [h1 h2]. simpl.
+    apply IHv. hyp. apply hf; hyp.
   Qed.
 
 End Vfold_left.
@@ -1837,6 +1837,31 @@ Fixpoint Vfold_right (A B : Type) (f : A->B->B) n (v : vector A n) (b:B) : B :=
     | Vnil => b
     | Vcons a _ w => f a (Vfold_right f w b)
   end.
+
+(** Vfold_left_rev f a [b1 .. bn] = f .. (f (f a bn) bn-1) .. b1. *)
+
+Section Vfold_left_rev.
+
+  Variables (A B : Type) (f : A->B->A).
+
+  Fixpoint Vfold_left_rev n (a:A) (v : vector B n) : A :=
+    match v with
+      | Vnil => a
+      | Vcons b _ w => f (Vfold_left_rev a w) b
+    end.
+
+  Variables (R : relation A) (S : relation B) (f_S : Proper (R ==> S ==> R) f).
+
+  Global Instance Vfold_left_rev_Vforall2 n :
+    Proper (R ==> Vforall2 S ==> R) (Vfold_left_rev (n:=n)).
+
+  Proof.
+    intros a a' aa' v v' vv'. induction v; simpl; intros. VOtac. simpl. hyp.
+    revert vv'. VSntac v'. rewrite Vforall2_cons_eq. intuition. simpl.
+    apply f_S; try hyp. apply IHv; hyp.
+  Qed.
+
+End Vfold_left_rev.
 
 (* Vfold2 f x a{1..n} b{1..n} = f* a1 b1 (f* a2 b2 .. (f* an bn x) ..)
    Vfold2 f x a{1..n} b{1..p} = ⊥ if n ≠ p

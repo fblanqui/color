@@ -156,7 +156,7 @@ Module TropicalInt (Import AI : TTropicalInt).
 
     Lemma eval_some_notInf : forall n (mi : mint n) (v : vector dom n),
       Vexists (fun m => get_elem m dim_pos dim_pos <> PlusInf) (args mi) ->
-      Vfold_left Aplus A0
+      Vfold_left_rev Aplus A0
       (Vmap (fun v => Vnth v dim_pos)
         (Vmap2 mat_times_vec (args mi) (Vmap dom2vec v))) <> PlusInf.
       

@@ -71,7 +71,7 @@ Module VectorArith (SRT : SemiRingType).
   (** sum of a vector of vectors *)
 
   Definition add_vectors n k (v : vector (vec n) k) := 
-    Vfold_left (@vector_plus n) (zero_vec n) v.
+    Vfold_left_rev (@vector_plus n) (zero_vec n) v.
 
   Instance add_vectors_mor n k :
     Proper (Vforall2 (Vforall2 eqA) ==> Vforall2 eqA) (@add_vectors n k).
@@ -80,7 +80,7 @@ Module VectorArith (SRT : SemiRingType).
     induction x; simpl; intros. VOtac. refl. revert H. VSntac y.
     unfold add_vectors. simpl. rewrite Vforall2_cons_eq. intuition.
     rewrite H1. apply vector_plus_mor. 2: refl.
-    eapply Vfold_left_proper. apply vector_plus_mor. refl. hyp.
+    eapply Vfold_left_rev_Vforall2. apply vector_plus_mor. refl. hyp.
   Qed.
 
   Lemma add_vectors_cons n i (a : vec n) (v : vector (vec n) i) :
@@ -106,7 +106,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Lemma add_vectors_nth n k : forall (vs : vector (vec n) k) i (ip : i < n),
     Vnth (add_vectors vs) ip
-    =A= Vfold_left Aplus A0 (Vmap (fun v => Vnth v ip) vs).
+    =A= Vfold_left_rev Aplus A0 (Vmap (fun v => Vnth v ip) vs).
 
   Proof.
     induction vs; simpl; intros.
@@ -137,7 +137,7 @@ Module VectorArith (SRT : SemiRingType).
   (** point-wise product *)
 
   Definition dot_product n (l r : vec n) :=
-    Vfold_left Aplus A0 (Vmap2 Amult l r).
+    Vfold_left_rev Aplus A0 (Vmap2 Amult l r).
 
   Instance dot_product_mor n :
     Proper (Vforall2 eqA ==> Vforall2 eqA ==> eqA) (@dot_product n).
