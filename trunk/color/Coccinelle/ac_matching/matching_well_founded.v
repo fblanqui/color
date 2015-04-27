@@ -349,8 +349,8 @@ generalize l l2 In_pb' L12; clear W1 W2 W3 l l2 In_pb' L12.
 induction l1 as [ | t1 l1]; destruct l2 as [ | t2 l2].
 intros [In_pb' | In_pb'] _; [idtac | contradiction];
 subst pb'; simpl; rewrite Af1; rewrite <- plus_n_O; simpl; auto with arith.
-intros _ L12; simpl L12; discriminate.
-intros _ L12; simpl L12; discriminate.
+intros _ L12; simpl in L12; discriminate.
+intros _ L12; simpl in L12; discriminate.
 intros In_pb' L12; simpl in L12; generalize (eq_add_S _ _ L12); clear L12; intro L12.
 generalize (IHl1 _ _ In_pb' L12).
 intro H; apply lt_le_trans with 
