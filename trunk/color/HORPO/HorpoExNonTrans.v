@@ -11,17 +11,16 @@ Require Import TermsSig Horpo HorpoWf Relations RelExtras Wf_nat List Terms
 
 Module BT <: BaseTypes.
 
-  Inductive BaseType_aux :=
-  | Star.
+  Inductive BaseType_aux := Star.
+
   Definition BaseType := BaseType_aux.
 
   Lemma eq_BaseType_dec : forall A B : BaseType, {A = B} + {A <> B}.
 
-  Proof.
-    decide equality.
-  Qed.
+  Proof. decide equality. Qed.
 
   Lemma baseTypesNotEmpty : BaseType.
+
   Proof Star.
 
 End BT.
@@ -29,22 +28,20 @@ End BT.
 Module Sig <: Signature.
 
   Module BT := BT.
+
   Module Export ST := SimpleTypes BT.
 
-  Inductive FunctionSymbol_aux :=
-  | a
-  | b
-  | c.
+  Inductive FunctionSymbol_aux := a | b | c.
+
   Definition FunctionSymbol := FunctionSymbol_aux.
 
-  Lemma eq_FunctionSymbol_dec : forall f g : FunctionSymbol,
-    {f = g} + {f <> g}.
+  Lemma eq_FunctionSymbol_dec :
+    forall f g : FunctionSymbol, {f = g} + {f <> g}.
 
-  Proof.
-    decide equality.
-  Qed. 
+  Proof. decide equality. Qed.
 
   Lemma functionSymbolsNotEmpty : FunctionSymbol.
+
   Proof a.
 
   Definition f_type (f : FunctionSymbol) :=
@@ -68,11 +65,12 @@ Module P <: Precedence.
 
   Module Import FS_eq := Eqset_def FS.
 
-  Module P <: Poset.
+  Module Import P <: Poset.
 
     Definition A := A.
 
-    Module O <: Ord.
+    Module Export O <: Ord.
+
       Module S := FS_eq.
 
       Definition A := A.
@@ -84,9 +82,9 @@ Module P <: Precedence.
         end.
 
       Definition gtA_eqA_compat := @Eqset_def_gtA_eqA_compat A gtA.
+
     End O.
 
-    Export O.
     Lemma gtA_so : strict_order gtA.
 
     Proof.
@@ -96,8 +94,6 @@ Module P <: Precedence.
     Qed.
 
   End P.
-
-  Import P.
 
   Lemma Ord_wf : well_founded (transp gtA).
 
@@ -117,6 +113,7 @@ Module P <: Precedence.
 End P.
 
 Module Horpo := HorpoWf Sig P.
+
 Import Horpo.HC.
 
 (* -- Uncomment to verify that the theorem of well-foundedness of horpo 
@@ -131,21 +128,15 @@ Section HorpoNotTrans.
 
   Definition t1 : nil |- t1p := #Star.
 
-  Proof.
-    infer_tt.
-  Defined.
+  Proof. infer_tt. Defined.
 
   Definition t2 : nil |- t2p := #Star.
 
-  Proof.
-    infer_tt.
-  Defined.
+  Proof. infer_tt. Defined.
 
   Definition t3 : nil |- t3p := #Star.
 
-  Proof.
-    infer_tt.
-  Defined.
+  Proof. infer_tt. Defined.
 
   Lemma horpo_not_trans : ~transitive horpo.
 
