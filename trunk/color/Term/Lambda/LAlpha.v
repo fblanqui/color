@@ -87,10 +87,6 @@ Module Export Def.
       | at_trans : forall u v w, clos_aeq_trans u v ->
         clos_aeq_trans v w -> clos_aeq_trans u w.
 
-      (** Point-wise extension of a relation to substitutions. *)
-
-      Definition subs_rel xs s s' := forall x, In x xs -> R (s x) (s' x).
-
     End clos_aeq.
 
     (** Alpha-equivalence on substitutions. *)
@@ -128,7 +124,6 @@ Module Make (Export L : L_Struct).
   Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_aeq_trans :=
     (@clos_aeq_trans F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation subs_rel := (@subs_rel F X ens_X).
   Notation saeq := (@saeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_vaeq :=
     (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
@@ -380,48 +375,6 @@ Module Make (Export L : L_Struct).
     intros R_aeq t t' tt' u u' uu' tu.
     revert t u tu t' tt' u' uu'; induction 1; intros t' tt' u' uu'.
     apply t_step. rewrite <- tt', <- uu'. hyp. trans y; fo.
-  Qed.
-
-(****************************************************************************)
-(** ** Properties of [subs_rel]. *)
-
-  Lemma subs_rel_update (R : rel Te) xs x u u' s s' :
-    R u u' -> subs_rel R (remove x xs) s s'
-    -> subs_rel R xs (update x u s) (update x u' s').
-
-  Proof.
-    intros uu' ss' y hy. unfold Def.update. eq_dec y x.
-    hyp. apply ss'. set_iff. auto.
-  Qed.
-
-  (** Preserved properties. *)
-
-  Instance subs_rel_refl R xs : Reflexive R -> Reflexive (subs_rel R xs).
-
-  Proof. fo. Qed.
-
-  Instance subs_rel_sym R xs : Symmetric R -> Symmetric (subs_rel R xs).
-
-  Proof. fo. Qed.
-
-  Instance subs_rel_trans R xs : Transitive R -> Transitive (subs_rel R xs).
-
-  Proof. intros R_trans s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
-
-  (** [subs_rel R] is compatible with set inclusion and equality. *)
-
-  Instance subs_rel_s :
-    Proper (inclusion ==> Subset --> Logic.eq ==> Logic.eq ==> impl) subs_rel.
-
-  Proof. intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
-
-  Instance subs_rel_e :
-    Proper (same_rel ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
-
-  Proof.
-    intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
-    split; intros H x hx; apply RR'.
-    rewrite <- e in hx. fo. rewrite e in hx. fo.
   Qed.
 
 (****************************************************************************)
