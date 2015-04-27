@@ -23,6 +23,7 @@ config Makefile.coq:
 clean:
 	rm -f `find . -name \*~`
 	$(MAKECOQ) clean
+	rm -rf `find . -name .coq-native -o -name .\*.aux -o -name \*.time -o -name \*.cache`
 
 clean-dep:
 	rm -f `find . -name \*.v.d`
