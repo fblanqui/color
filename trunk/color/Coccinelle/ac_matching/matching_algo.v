@@ -1382,7 +1382,7 @@ absurd (S(S(n + nb_occ X.eq_bool a sp)) <= 1); auto with arith.
 trivial.
 intro v1; generalize (Is_sol'_psp v1);
 pattern 
-(apply_cf_subst sp (Var (new_var p)) :: closed_term p :: nil); simpl find.
+(apply_cf_subst sp (Var (new_var p)) :: closed_term p :: nil); unfold find.
 generalize (X.eq_bool_ok v1 a); case (X.eq_bool v1 a); [intro v1_eq_a; subst v1 | intro v1_diff_a].
 intro H1; rewrite H1; 
 apply (f_equal (fun t => 
@@ -1519,44 +1519,3 @@ contradiction.
 Qed.
 
 End Make.
-
-
-
-(*
-
-Extraction "tutu" Top.matching.
-
-Recursive Extraction Top.matching.
-*)
-
-(*
-Extraction "toto" Top.matching.
-Extract Constant eq_variable_dec => "fun x y -> x = y".
-Recursive Extraction Top.matching.
-*)
-
-(*
-Extraction "matching.ml" matching.
-Extraction "toto" matching.
-
-Check matching.
-
-Extraction "toto" wf_solve.
-
-Extraction "toto" matching.
-Check Top.matching.
-Extraction "toto" Top.matching.
-
-
-Extraction "toto" wf_solve.
-
-Extraction "titi" plus.
-
-Extraction plus.
-*)
-
-
-
-
-
-
