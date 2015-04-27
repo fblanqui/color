@@ -519,8 +519,8 @@ generalize l l2 In_pb' L12 W1_l W_l1 W_l2; simpl;
 clear W1 W2 W3 W4 W5 W6 Fresh_var_spec l l2 In_pb' L12 W1_l W_l1 W_l2;
 induction l1 as [ | t1 l1]; destruct l2 as [ | t2 l2].
 intros [In_pb' | In_pb'] _; [idtac | contradiction]; subst pb'; simpl; trivial.
-intros _ L12; simpl L12; discriminate.
-intros _ L12; simpl L12; discriminate.
+intros _ L12; simpl in L12; discriminate.
+intros _ L12; simpl in L12; discriminate.
 intros In_pb' L12; simpl in L12; generalize (eq_add_S _ _ L12); clear L12; intro L12;
 intros W1_l W_l1 W_l2; intros; apply IHl1 with ((t1, t2) :: l) l2; trivial.
 intros t4 t5 [H' | In_l].
