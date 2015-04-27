@@ -17,9 +17,7 @@ Set Implicit Arguments.
 
 Section P1.
 
-  Variable P : nat -> Prop.
-
-  Hypothesis exP : exists n, P n.
+  Variables (P : nat -> Prop) (exP : exists n, P n).
 
   Lemma ch_min_proof : has_unique_least_element le P.
 
@@ -32,15 +30,12 @@ Section P1.
 
   Lemma ch_minP : P (projT1 ch_min).
 
-  Proof.
-    destruct (projT2 ch_min) as [H _]. destruct H. auto.
-  Qed.
+  Proof. destruct (projT2 ch_min) as [H _]. destruct H. auto. Qed.
 
   Lemma is_min_ch : forall n, P n -> projT1 ch_min <= n.
 
   Proof.
-    destruct (projT2 ch_min) as [H _]. destruct H.
-    intros. apply H0. auto.
+    destruct (projT2 ch_min) as [H _]. destruct H. intros. apply H0. auto.
   Qed.
 
 End P1.
@@ -52,9 +47,7 @@ Implicit Arguments ch_min [P].
 
 Section P2.
 
-  Variable P2 : relation nat.
-
-  Hypothesis exP2 : forall m, exists n, P2 m n.
+  Variables (P2 : relation nat) (exP2 : forall m, exists n, P2 m n).
 
   Fixpoint rec_ch_min n : nat :=
     match n with
@@ -64,15 +57,11 @@ Section P2.
 
   Lemma rec_ch_minP : forall i, P2 (S (rec_ch_min i)) (rec_ch_min (S i)).
 
-  Proof.
-    intros. simpl. apply ch_minP.
-  Qed.
+  Proof. intros. simpl. apply ch_minP. Qed.
 
   Lemma is_min_rec_ch : forall i n,
     P2 (S (rec_ch_min i)) n -> (rec_ch_min (S i)) <= n.
 
-  Proof.
-    intros. simpl. apply is_min_ch. auto.
-  Qed.
+  Proof. intros. simpl. apply is_min_ch. auto. Qed.
 
 End P2.
