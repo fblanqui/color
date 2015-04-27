@@ -309,7 +309,7 @@ intros l1_sigma' t; replace (t :: l1_sigma') with ((t :: nil) ++ l1_sigma'); tri
 rewrite flatten_app; rewrite app_comm_cons; rewrite <- permut_app2.
 assert (Al_ct : match closed_term p1 with | Var _ => True | Term g _ => f1 <> g end).
 generalize (W3 v1); rewrite F'; rewrite <- f1_eq_hd_p1; rewrite Af1; intuition.
-pattern (quicksort (flatten f1 (t :: closed_term p1 :: nil))); simpl flatten at 1.
+pattern (quicksort (flatten f1 (t :: closed_term p1 :: nil))); unfold flatten at 1.
 generalize (F.Symb.eq_bool_ok f1 f1); case (F.Symb.eq_bool f1 f1); [intros _ | intro f1_diff_f1; apply False_rect; apply f1_diff_f1; reflexivity].
 rewrite <- app_nil_end; apply quick_permut_bis.
 replace (flatten f1 (t :: closed_term p1 :: nil)) with
@@ -631,8 +631,8 @@ intros [[_ W_t1] [_ W_t2]]; [rewrite Af1 in W_t1 | rewrite Af1 in W_t2]; trivial
 generalize l l2 In_pb' L12 H1; clear U_pb R W1 W2 W3 l l2 In_pb' L12 H1.
 induction l1 as [ | t1 l1]; destruct l2 as [ | t2 l2].
 intros [In_pb' | In_pb'] _; [idtac | contradiction]; trivial.
-intros _ L12; simpl L12; discriminate.
-intros _ L12; simpl L12; discriminate.
+intros _ L12; simpl in L12; discriminate.
+intros _ L12; simpl in L12; discriminate.
 intros In_pb' L12 H1; simpl in L12; generalize (eq_add_S _ _ L12); clear L12; intro L12.
 generalize (IHl1 _ _ In_pb' L12); clear IHl1; intro IHl1; 
 generalize (In_t1t2 _ _ l1 l2 ((t1,t2) :: l) (or_introl _ (refl_equal _))); clear In_t1t2; 
