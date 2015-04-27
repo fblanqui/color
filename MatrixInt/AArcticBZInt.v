@@ -12,8 +12,6 @@ Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil OrdSemiRing SN
   RelUtil ZArith AMatrixBasedInt.
 Import ArcticBZMatrix.
 
-Local Open Scope Z_scope.
-
 Definition matrixInt := @matrixInt A matrix.
 Definition mkMatrixInt := @mkMatrixInt A matrix.
 
@@ -72,10 +70,8 @@ Module Type TArcticBZInt.
 
 End TArcticBZInt.
 
-Module ArcticBZInt (AI : TArcticBZInt).
+Module ArcticBZInt (Import AI : TArcticBZInt).
 
-  Import AI.
-  
   Module AB <: TArcticBasedInt.
     
     Module OSR := ArcticBZOrdSemiRingT.
@@ -183,9 +179,9 @@ Module ArcticBZInt (AI : TArcticBZInt).
       destruct x; destruct y; arctic_ord.
 (*FIXME: this should be solved by arctic_ord *)
 unfold A1, OSR.SR.A1 in *.
-assert (z >= 0).
+assert ((z >= 0)%Z).
 apply fin_ge_impl_ge; hyp.
-assert (z0 >= 0).
+assert ((z0 >= 0)%Z).
 apply fin_ge_impl_ge; hyp.
       destruct xy. simpl in H1.
       apply Zabs_nat_lt. omega.
