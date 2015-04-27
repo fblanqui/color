@@ -50,6 +50,8 @@ Module Export Def.
     Notation union := (Ens_union ens_X).
     Notation remove := (Ens_remove ens_X).
     Notation fold := (Ens_fold ens_X).
+    Notation In := (Ens_In ens_X).
+
     Notation fv := (@fv F X ens_X).
 
     (** We assume that [X] is infinite. *)
@@ -190,8 +192,13 @@ A) A] if [A] is not empty). *)
        since substitution composition is correct modulo alpha-equivalence
        only (Lemma [subs_comp] in LAlpha). *)
 
-    Inductive clos_subs R : relation Te :=
+    Inductive clos_subs R : rel Te :=
     | subs_step : forall x y s, R x y -> clos_subs R (subs s x) (subs s y).
+
+    (** Point-wise extension of a relation to substitutions. *)
+
+    Definition subs_rel (R : rel Te) xs s s' :=
+      forall x : X, In x xs -> R (s x) (s' x).
 
   End subs.
 
@@ -226,6 +233,7 @@ Module Make (Export L : L_Struct).
   Notation rename := (@rename F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_subs :=
     (@clos_subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation subs_rel := (@subs_rel F X ens_X).
 
   Module Export T := LTerm.Make L.
 
@@ -2078,6 +2086,48 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     unfold Def.update. eq_dec z x. subst z. tauto. intros i2 i3.
     eapply h. set_iff. right. apply hy. rewrite In_fvcodom. exists z.
     set_iff. intuition.
+  Qed.
+
+(****************************************************************************)
+(** ** Properties of [subs_rel]. *)
+
+  Lemma subs_rel_update (R : rel Te) xs x u u' s s' :
+    R u u' -> subs_rel R (remove x xs) s s'
+    -> subs_rel R xs (update x u s) (update x u' s').
+
+  Proof.
+    intros uu' ss' y hy. unfold Def.update. eq_dec y x.
+    hyp. apply ss'. set_iff. auto.
+  Qed.
+
+  (** Preserved properties. *)
+
+  Instance subs_rel_refl R xs : Reflexive R -> Reflexive (subs_rel R xs).
+
+  Proof. fo. Qed.
+
+  Instance subs_rel_sym R xs : Symmetric R -> Symmetric (subs_rel R xs).
+
+  Proof. fo. Qed.
+
+  Instance subs_rel_trans R xs : Transitive R -> Transitive (subs_rel R xs).
+
+  Proof. intros R_trans s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
+
+  (** [subs_rel R] is compatible with set inclusion and equality. *)
+
+  Instance subs_rel_s :
+    Proper (inclusion ==> Subset --> Logic.eq ==> Logic.eq ==> impl) subs_rel.
+
+  Proof. intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
+
+  Instance subs_rel_e :
+    Proper (same_rel ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
+
+  Proof.
+    intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
+    split; intros H x hx; apply RR'.
+    rewrite <- e in hx. fo. rewrite e in hx. fo.
   Qed.
 
 End Make.
