@@ -927,6 +927,58 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Qed.
 
 (****************************************************************************)
+(** Given [u], [fun s => subs s u] is compatible with [subs_rel R (fv u)]. *)
+
+  Lemma subs_rel_mon_preorder_aeq R :
+    PreOrder R -> Monotone R -> Proper (aeq ==> aeq ==> impl) R ->
+    forall u s s', subs_rel R (fv u) s s' -> R (subs s u) (subs s' u).
+
+  Proof.
+    intros R_refl_trans R_mon R_aeq. induction u; intros s s' h.
+    (* var *)
+    simpl. apply h; simpl. set_iff. refl.
+    (* fun *)
+    refl.
+    (* app *)
+    simpl. destruct R_mon.
+    rewrite IHu1 with (s:=s) (s':=s'), IHu2 with (s:=s) (s':=s'). refl.
+    intros x hx. apply h. simpl. apply union_subset_2. hyp.
+    intros x hx. apply h. simpl. apply union_subset_1. hyp.
+    (* lam *)
+    rewrite subs_seq_restrict, subs_seq_restrict with (s:=s').
+    set (xs := fv (Lam x u)).
+    set (s1 := restrict xs s). set (s1' := restrict xs s').
+    set (ys := union xs (union (fvcodom xs s1) (fvcodom xs s1'))).
+    gen (var_notin_ok ys). set (z := var_notin ys). intro hz.
+    rewrite aeq_alpha' with (y:=z).
+    Focus 2. revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
+    set (u' := rename x z u).
+
+    assert (e : remove z (fv u') [=] xs).
+    unfold xs, u'. rewrite fv_rename. simpl.
+    case_eq (mem x (fv u)); intros hx a; set_iff; split_all; subst a. irrefl.
+    revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
+    rewrite <- not_mem_iff in hx. contr.
+    revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
+    
+    rewrite subs_lam_no_alpha.
+    Focus 2. rewrite e. revert hz. unfold ys. set_iff. tauto.
+    rewrite subs_lam_no_alpha.
+    Focus 2. rewrite e. revert hz. unfold ys. set_iff. tauto.
+
+    clear e. mon. unfold u', Def.rename. rewrite !subs_comp. apply IHu.
+    intros a ha. unfold Def.single, Def.comp. unfold Def.update at 2.
+    unfold Def.update at 3. unfold Def.id. eq_dec a x.
+
+    subst a. simpl. rewrite !update_eq. refl.
+    simpl. unfold Def.update. eq_dec a z. refl.
+    unfold s1, s1', Def.restrict; ens.
+    assert (e : mem a xs = true).
+    rewrite <- mem_iff. unfold xs. simpl. set_iff. fo.
+    rewrite e. apply h. rewrite mem_iff. hyp.
+  Qed.
+
+(****************************************************************************)
 (** ** Inversion lemma for alpha-equivalence on a lambda. *)
 
   Lemma lam_aeq_r : forall t x u, t ~~ Lam x u -> exists y v,
