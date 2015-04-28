@@ -1844,7 +1844,6 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 (****************************************************************************)
 (** ** Properties of [subs1]. *)
 
-  (****************************************************************************)
   (** Given [u], [fun s => subs s u] is compatible with [subs_rel R (fv u)]. *)
 
   Lemma subs1_rel_mon_preorder R : PreOrder R -> Monotone R ->
