@@ -165,6 +165,11 @@ Module Make (Export L : L_Struct).
 
   Proof. rewrite aeq_equiv_mon. apply ec_equiv. Qed.
 
+  (*COQ: cannot be removed?*)
+  Instance aeq_PreOrder : PreOrder aeq.
+
+  Proof. split; class. Qed.
+
   (** [aeq] is monotone. *)
 
   Instance aeq_mon : Monotone aeq.
@@ -229,18 +234,19 @@ Module Make (Export L : L_Struct).
   (** On variables and function symbols, alpha-equivalence is
   equivalent to equality. *)
 
-  Lemma var_aeq_l : forall x v, Var x ~~ v -> Var x = v.
+  Instance var_aeq_l : VarInvL aeq.
 
   Proof.
-    intro x. cut (forall u v, u ~~ v -> (u = Var x \/ v = Var x) -> u = v). fo.
+    split. intro x.
+    cut (forall u v, u ~~ v -> (u = Var x \/ v = Var x) -> u = v). fo.
     induction 1; intro h; try (destruct h; discr). refl. fo. trans v.
     apply IHaeq1. destruct h as [h|h]. auto. subst. right. fo.
     apply IHaeq2. destruct h as [h|h]. subst. left. fo. auto.
   Qed.
 
-  Lemma var_aeq_r : forall x v, v ~~ Var x -> v = Var x.
+  Instance var_aeq_r : VarInvR aeq.
 
-  Proof. intros x v h. sym. apply var_aeq_l. sym. hyp. Qed.
+  Proof. class. Qed.
 
   Lemma fun_aeq_l : forall f v, Fun f ~~ v -> Fun f = v.
 
@@ -377,69 +383,31 @@ Module Make (Export L : L_Struct).
 
   Notation saeq := (subs_rel aeq).
 
-  (** [domain] is compatible with [saeq]. *)
-
-  Lemma domain_saeq : forall xs xs', xs [=] xs' ->
-    forall s s', saeq xs s s' -> domain xs s [=] domain xs' s'.
+  Instance fvcodom_saeq xs : Proper (saeq xs ==> Equal) (fvcodom xs).
 
   Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_domain.
-    split_all; apply H1; apply var_aeq_r; rewrite <- H0.
-    apply ss'. hyp. sym. apply ss'. hyp.
+    intros s s' ss'. eapply fvcodom_subs_rel_Equal.
+    apply fv_aeq. class. class. hyp.
   Qed.
 
-  (*FIXME: change order of arguments in fvcod, domain and fvcodom? *)
+  Instance var_saeq x u :
+    Proper (saeq (remove x (fv u)) ==> Logic.eq) (var x u).
 
-  Instance domain_saeq' : forall xs, Proper (saeq xs ==> Equal) (domain xs).
+  Proof. eapply var_subs_rel; class. Qed.
 
-  Proof. intros xs s s' ss'. apply domain_saeq. refl. hyp. Qed.
+  Arguments var_saeq [x u s s'] _ : rename.
 
-  (** [fvcod] is compatible with [saeq]. *)
+  Lemma subs_saeq u s s' : saeq (fv u) s s' -> subs s u ~~ subs s' u.
 
-  Lemma fvcod_saeq : forall xs xs', xs [=] xs' ->
-    forall s s', saeq xs s s' -> fvcod xs s [=] fvcod xs' s'.
+  Proof. intro ss'. apply subs_rel_mon_preorder; class. Qed.
 
-  Proof.
-    intros xs xs' e s s' ss' x. rewrite <- e. rewrite !In_fvcod.
-    split_all; ex x0; split; auto.
-    rewrite <- (ss' _ H). hyp. rewrite (ss' _ H). hyp.
-  Qed.
+  Arguments subs_saeq [u s s'] _.
 
-  Instance fvcod_saeq' : forall xs, Proper (saeq xs ==> Equal) (fvcod xs).
+  Lemma subs1_saeq u s s' : saeq (fv u) s s' -> subs1 s u ~~ subs1 s' u.
 
-  Proof. intros xs s s' ss'. apply fvcod_saeq. refl. hyp. Qed.
+  Proof. intro ss'. apply subs1_rel_mon_preorder; class. Qed.
 
-  (** [fvcodom] is compatible with [saeq]. *)
-
-  Lemma fvcodom_saeq : forall xs xs', xs [=] xs' ->
-    forall s s', saeq xs s s' -> fvcodom xs s [=] fvcodom xs' s'.
-
-  Proof.
-    intros xs xs' e s s' ss'. unfold Def.fvcodom. rewrite <- e.
-    apply fvcod_saeq. apply domain_saeq. refl. hyp. rewrite domain_subset. hyp.
-  Qed.
-
-  Instance fvcodom_saeq' : forall xs, Proper (saeq xs ==> Equal) (fvcodom xs).
-
-  Proof. intros xs s s' ss'. apply fvcodom_saeq. refl. hyp. Qed.
-
-  (** [var] is compatible with [saeq]. *)
-
-  Lemma var_saeq : forall x x', x = x' -> forall u u', u ~~ u' -> forall s s',
-    saeq (remove x (fv u)) s s' -> var x u s = var x u' s'.
-
-  Proof.
-    intros x x' xx' u u' uu' s s' ss'. subst x'. unfold Def.var; ens.
-    rewrite <- uu', ss'. destruct (mem x (fvcodom (remove x (fv u)) s')).
-    rewrite <- uu', ss'. refl. refl.
-  Qed.
-
-  Instance var_saeq' : forall x u, Proper (saeq (remove x (fv u)) ==> Logic.eq)
-    (var x u).
-
-  Proof. intros x u s s' ss'. eapply var_saeq. refl. refl. hyp. Qed.
-
-  Arguments var_saeq' [x u x0 y] _.
+  Arguments subs1_saeq [u s s'] _.
 
   (** Generalization of [aeq_notin_bv] (Theorem 2b in CF) to
   substitutions: every substitution [s] is alpha-equivalent on any
@@ -475,50 +443,6 @@ Module Make (Export L : L_Struct).
     intro y. set_iff. intro hy. unfold Def.update. eq_dec y x.
     subst y. tauto. apply h2. tauto.
   Qed.
-
-  (** Given a term [u], [fun s => subs s u] is compatible with [saeq
-  (fv u)]. *) (*FIXME: change order of args in subs and subs1*)
-
-  Lemma subs_saeq : forall u s s', saeq (fv u) s s' -> subs s u ~~ subs s' u.
-
-  Proof.
-    induction u; simpl; intros s s' h.
-    (* var *)
-    apply h. set_iff. refl.
-    (* fun *)
-    refl.
-    (* app *)
-    rewrite IHu1 with (s:=s)(s':=s'), IHu2 with (s:=s)(s':=s'). refl.
-    intros x hx. apply h. apply union_subset_2. hyp.
-    intros x hx. apply h. apply union_subset_1. hyp.
-    (* lam *)
-    rewrite (var_saeq' h). apply aeq_lam. apply IHu. intros y hy.
-    unfold Def.update. eq_dec y x. refl. apply h. set_iff. auto.
-  Qed.
-
-  Arguments subs_saeq [u s s'] _.
-
-  (** Given a term [u], [fun s => subs1 s u] is compatible with [saeq
-  (fv u)]. *)
-
-  Lemma subs1_saeq : forall u s s', saeq (fv u) s s' -> subs1 s u ~~ subs1 s' u.
-
-  Proof.
-    induction u; simpl; intros s s' h.
-    (* var *)
-    apply h. set_iff. refl.
-    (* fun *)
-    refl.
-    (* app *)
-    rewrite IHu1 with (s:=s)(s':=s'), IHu2 with (s:=s)(s':=s'). refl.
-    intros x hx. apply h. apply union_subset_2. hyp.
-    intros x hx. apply h. apply union_subset_1. hyp.
-    (* lam *)
-    apply aeq_lam. apply IHu. intros y hy. unfold Def.update.
-    eq_dec y x. refl. apply h. set_iff. auto.
-  Qed.
-
-  Arguments subs1_saeq [u s s'] _.
 
 (****************************************************************************)
 (** ** Some meta-theorems. *)
@@ -646,14 +570,11 @@ variables. *)
       with (ys := fun s => singleton (var y u' s)).
 
     intros s s'. simpl. rewrite <- pp', union_idem. intro ss'.
-    rewrite var_saeq with (x':=y) (u':=u') (s':=s'); try refl.
-    rewrite <- pp'. hyp.
+    rewrite var_saeq. refl. rewrite <- pp'. hyp.
 
     intros s s'. simpl. rewrite <- pp', union_idem. intro ss'.
-    rewrite fvcodom_saeq with (xs':=remove x (fv u)) (s':=s').
-    rewrite var_saeq with (x':=y) (s:=s) (s':=s') (u:=u') (u':=u'); try refl.
-    rewrite var_saeq with (x':=x) (s:=s) (s':=s') (u:=u) (u':=u); try refl.
-    hyp. rewrite <- pp'. hyp. refl. hyp.
+    rewrite (fvcodom_saeq ss'), (var_saeq ss').
+    rewrite pp' in ss'. rewrite (var_saeq ss'). refl.
 
     intro s. simpl. set (x' := var x u s). set (y' := var y u' s).
     set (xs := add y' (add x' (add x (add y (union (fv u)
@@ -1228,16 +1149,6 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Qed.
 
   (** Alpha-closure preserves stability by substitution. *)
-
-  (*REMOVE?
-  Instance subs_clos_aeq : forall R, Proper (Logic.eq ==> R ==> R) subs ->
-    Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
-
-  Proof.
-    intros R subs_R s s' ss' t u tu. subst s'.
-    inversion tu; subst; clear tu. rewrite H, H0.
-    eapply clos_aeq_intro. refl. refl. apply subs_R. refl. hyp.
-  Qed.*)
 
   Instance subs_clos_aeq R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
     Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
