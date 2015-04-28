@@ -16,7 +16,8 @@ simultaneous substitution of any number of variables. *)
 
 Set Implicit Arguments.
 
-Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil VecUtil.
+Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil VecUtil
+  EqUtil.
 Require Export LTerm.
 
 (****************************************************************************)
@@ -528,27 +529,33 @@ on some finite set of variables *)
     eq_dec y x. subst. tauto. fo.
   Qed.
 
-  (** [domain] is compatible with substitution equality. *)
+  (** [domain] is compatible with [subs_rel]. *)
+  (*FIXME: change order of arguments in fvcod, domain and fvcodom? *)
 
-  Lemma domain_seq xs xs' : xs [=] xs' ->
-    forall s s', seq xs s s' -> domain xs s [=] domain xs' s'.
+  Instance domain_subs_rel_Subset (R : rel Te) : VarInvL R ->
+    forall xs, Proper (subs_rel R xs --> Subset) (domain xs).
 
   Proof.
-    intros e s s' ss' x. rewrite <- e, !In_domain.
-    split; intros [h1 h2]; split; auto. rewrite <- ss'; hyp. rewrite ss'; hyp.
+    intros [var_R_l] xs s s' s's x. rewrite !In_domain.
+    split_all. apply H1. apply var_R_l. rewrite <- H0. apply s's. hyp.
   Qed.
 
-  Instance domain_seq' xs : Proper (seq xs ==> Equal) (domain xs).
+  Instance domain_subs_rel_Equal (R : rel Te) : VarInvL R -> VarInvR R ->
+    forall xs, Proper (subs_rel R xs ==> Equal) (domain xs).
 
-  Proof. intros s s' ss'. apply domain_seq. refl. hyp. Qed.
+  Proof.
+    intros [var_R_l] [var_R_r] xs s s' ss' x. rewrite !In_domain.
+    split_all; apply H1; gen (ss' _ H); intro h; rewrite H0 in h.
+    gen (var_R_r _ _ h). auto. gen (var_R_l _ _ h). auto.
+  Qed.
 
 (****************************************************************************)
 (** ** Properties of [fvcod]. *)
 
   (** [fvcod_fun] is compatible with set equality and commutes with [add]. *)
 
-  Instance fvcod_fun_e : Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal)
-    fvcod_fun.
+  Instance fvcod_fun_e :
+    Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) fvcod_fun.
 
   Proof.
     intros s s' ss' x x' xx' vs vs' vsvs'. subst s' x'. unfold Def.fvcod_fun.
@@ -683,20 +690,23 @@ on some finite set of variables *)
     simpl. rewrite IH. intro a. set_iff. tauto.
   Qed.
 
-  (** [fvcod] is compatible with substitution equality. *)
+  (** [fvcod] is compatible with [subs_rel]. *)
 
-  Lemma fvcod_seq xs xs' : xs [=] xs' ->
-    forall s s', seq xs s s' -> fvcod xs s [=] fvcod xs' s'.
+  Instance fvcod_subs_rel_Subset R : Proper (R --> Subset) fv ->
+    forall xs, Proper (subs_rel R xs --> Subset) (fvcod xs).
 
   Proof.
-    intros e s s' ss' x. rewrite <- e, !In_fvcod.
-    split; intros [y [h1 h2]]; ex y; split; auto.
-    rewrite <- (ss' _ h1). hyp. rewrite (ss' _ h1). hyp.
+    intros fv_R xs s s' s's x. rewrite !In_fvcod. split_all; ex x0; split; auto.
+    rewrite <- (fv_R _ _ (s's _ H)). hyp.
   Qed.
 
-  Instance fvcod_seq' xs : Proper (seq xs ==> Equal) (fvcod xs).
+  Instance fvcod_subs_rel_Equal R : Proper (R ==> Equal) fv ->
+    forall xs, Proper (subs_rel R xs ==> Equal) (fvcod xs).
 
-  Proof. intros s s' ss'. apply fvcod_seq. refl. hyp. Qed.
+  Proof.
+    intros fv_R xs s s' ss' x. rewrite !In_fvcod. split_all; ex x0; split; auto.
+    rewrite <- (fv_R _ _ (ss' _ H)). hyp. rewrite (fv_R _ _ (ss' _ H)). hyp.
+  Qed.
 
 (****************************************************************************)
 (** ** Properties of [fvcodom]. *)
@@ -776,37 +786,54 @@ on some finite set of variables *)
     unfold Def.update; split; intros [a [h1 h2]]; ex a; eq_dec a x; subst; fo.
   Qed.
 
-  (** [fvcodom] is compatible with substitution equality. *)
+  (** [fvcodom] is compatible with [subs_rel]. *)
 
-  Lemma fvcodom_seq xs xs' : xs [=] xs' ->
-    forall s s', seq xs s s' -> fvcodom xs s [=] fvcodom xs' s'.
+  Instance fvcodom_subs_rel_Subset R :
+    Proper (R --> Subset) fv -> VarInvL R ->
+    forall xs, Proper (subs_rel R xs --> Subset) (fvcodom xs).
 
   Proof.
-    intros e s s' ss'. unfold Def.fvcodom. rewrite <- e. apply fvcod_seq.
-    apply domain_seq. refl. hyp. rewrite domain_subset. hyp.
+    intros fv_R R_var_l xs s s' s's x hx. unfold Def.fvcodom in *.
+    eapply fvcod_s. 2: refl. eapply domain_subs_rel_Subset. apply R_var_l.
+    apply s's. eapply fvcod_subs_rel_Subset. apply fv_R.
+    assert (s's2 : flip (subs_rel R (domain xs s)) s s').
+    intros y hy; ens. apply domain_subset in hy. apply s's. hyp.
+    apply s's2. hyp.
   Qed.
 
-  Instance fvcodom_seq' xs : Proper (seq xs ==> Equal) (fvcodom xs).
+  Instance fvcodom_subs_rel_Equal R :
+    Proper (R ==> Equal) fv -> VarInvL R -> VarInvR R ->
+    forall xs, Proper (subs_rel R xs ==> Equal) (fvcodom xs).
 
-  Proof. intros s s' ss'. apply fvcodom_seq. refl. hyp. Qed.
+  Proof.
+    intros fv_R R_var_l R_var_r xs s s' ss' x. unfold Def.fvcodom in *.
+    assert (e : domain xs s [=] domain xs s').
+    eapply domain_subs_rel_Equal. apply R_var_l. apply R_var_r. apply ss'.
+    rewrite e; clear e.
+    revert x. change (fvcod (domain xs s') s [=] fvcod (domain xs s') s').
+    eapply fvcod_subs_rel_Equal. apply fv_R.
+    intros x hx; ens. rewrite domain_subset in hx. apply ss'. hyp.
+  Qed.
 
 (****************************************************************************)
 (** ** Properties of [var]. *)
 
-  Lemma var_seq x x' : x=x' -> forall u u', u=u' -> forall s s',
-    seq (remove x (fv u)) s s' -> var x u s = var x' u' s'.
+  Lemma var_subs_rel R :
+    Proper (R ==> Equal) fv -> VarInvL R -> VarInvR R ->
+    forall x u, Proper (subs_rel R (remove x (fv u)) ==> Logic.eq) (var x u).
 
   Proof.
-    intros xx' u u' uu' s s' ss'. subst x' u'. unfold Def.var; ens.
-    rewrite ss'. destruct (mem x (fvcodom (remove x (fv u)) s')).
-    rewrite ss'. refl. refl.
+    intros fv_R R_var_l R_var_r x u s s' ss'. unfold Def.var; ens.
+    rewrite !(fvcodom_subs_rel_Equal fv_R R_var_l R_var_r ss'). refl.
   Qed.
 
-  Instance var_seq' x u : Proper (seq (remove x (fv u)) ==> Logic.eq) (var x u).
+  Arguments var_subs_rel [R] _ _ _ [x u s s'] _ : rename.
 
-  Proof. intros s s' ss'. apply var_seq; auto. Qed.
+  Instance var_seq x u : Proper (seq (remove x (fv u)) ==> Logic.eq) (var x u).
 
-  Arguments var_seq' [x u x0 y] _.
+  Proof. intros s s' ss'. eapply var_subs_rel; class. Qed.
+
+  Arguments var_seq [x u s s'] _ : rename.
 
   Lemma var_notin_fvcodom x u s :
     ~In (var x u s) (fvcodom (remove x (fv u)) s).
@@ -841,7 +868,8 @@ on some finite set of variables *)
     intros [hy n]. eapply var_notin_fv_subs. apply hy. 2: apply h. auto.
   Qed.
 
-  (** Basic properties of substitution. *)
+(****************************************************************************)
+(** ** Properties of [subs]. *)
 
   Lemma subs_lam_no_alpha s x u :
     ~In x (fvcodom (remove x (fv u)) s) ->
@@ -856,25 +884,33 @@ on some finite set of variables *)
 
   Proof. induction us; intro t; simpl. refl. rewrite IHus. refl. Qed.
 
-  (** [subs] is compatible with substitution equality. *)
+  (** Given [u], [fun s => subs s u] is compatible with [subs_rel R (fv u)]. *)
 
-  Lemma subs_seq : forall u s s', seq (fv u) s s' -> subs s u = subs s' u.
+  Lemma subs_rel_mon_preorder R : PreOrder R -> Monotone R ->
+    Proper (R ==> Equal) fv -> VarInvL R -> VarInvR R ->
+    forall u s s', subs_rel R (fv u) s s' -> R (subs s u) (subs s' u).
 
   Proof.
+    intros R_refl_trans R_mon fv_R var_R_l var_R_r.
     induction u; simpl; intros s s' h.
     (* var *)
-    apply h. set_iff. refl.
+    apply h; simpl. set_iff. refl.
     (* fun *)
     refl.
     (* app *)
-    rewrite IHu1 with (s:=s)(s':=s'), IHu2 with (s:=s)(s':=s'). refl.
-    intros x hx. apply h. apply union_subset_2. hyp.
-    intros x hx. apply h. apply union_subset_1. hyp.
+    destruct R_mon.
+    rewrite IHu1 with (s:=s) (s':=s'), IHu2 with (s:=s) (s':=s'). refl.
+    intros x hx. apply h. simpl. apply union_subset_2. hyp.
+    intros x hx. apply h. simpl. apply union_subset_1. hyp.
     (* lam *)
-    rewrite (var_seq' h). f_equal.
-    apply IHu. intros y hy. unfold Def.update. eq_dec y x. refl.
+    rewrite (var_subs_rel fv_R var_R_l var_R_r h). set (z := var x u s').
+    mon. apply IHu. intros y hy. unfold Def.update. eq_dec y x. refl.
     apply h. set_iff. auto.
   Qed.
+
+  Lemma subs_seq u s s' : seq (fv u) s s' -> subs s u = subs s' u.
+
+  Proof. intro ss'. apply subs_rel_mon_preorder; class. Qed.
 
   Arguments subs_seq [u s s'] _.
 
@@ -1807,6 +1843,28 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
 (****************************************************************************)
 (** ** Properties of [subs1]. *)
+
+  (****************************************************************************)
+  (** Given [u], [fun s => subs s u] is compatible with [subs_rel R (fv u)]. *)
+
+  Lemma subs1_rel_mon_preorder R : PreOrder R -> Monotone R ->
+    forall u s s', subs_rel R (fv u) s s' -> R (subs1 s u) (subs1 s' u).
+
+  Proof.
+    intros R_qo R_mon. induction u; simpl; intros s s' h.
+    (* var *)
+    apply h; simpl. set_iff. refl.
+    (* fun *)
+    refl.
+    (* app *)
+    destruct R_mon.
+    rewrite IHu1 with (s:=s) (s':=s'), IHu2 with (s:=s) (s':=s'). refl.
+    intros x hx. apply h. simpl. apply union_subset_2. hyp.
+    intros x hx. apply h. simpl. apply union_subset_1. hyp.
+    (* lam *)
+    mon. apply IHu. intros y hy. unfold Def.update.
+    eq_dec y x. refl. apply h. set_iff. auto.
+  Qed.
 
   (** Bound variables of a term of the form [subs1 s u] (CF, Lemma 3,
   page 99). *)
