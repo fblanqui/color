@@ -402,6 +402,10 @@ Section term.
     mon_app_r : Proper (Logic.eq ==> R ==> R) App;
     mon_lam : Proper (Logic.eq ==> R ==> R) Lam }.
 
+  Global Instance eq_mon : Monotone eq.
+
+  Proof. split; congruence. Qed.
+
 (****************************************************************************)
 (** ** Monotone closure of a relation. *)
 
@@ -424,6 +428,21 @@ Section term.
   | st_app_l : forall u v, supterm (App u v) u
   | st_app_r : forall u v, supterm (App u v) v
   | st_lam : forall x u, supterm (Lam x u) u.
+
+(****************************************************************************)
+(** ** Predicate saying if a relation is invariant on variables. *)
+
+  Class VarInvL R := { var_inv_l : forall x u, R (Var x) u -> u = Var x }.
+
+  Class VarInvR R := { var_inv_r : forall x u, R u (Var x) -> u = Var x }.
+
+  Global Instance VarInvR_sym R : Symmetric R -> VarInvL R -> VarInvR R.
+
+  Proof. fo. Qed.
+
+  Global Instance VarInvL_eq : VarInvL eq.
+
+  Proof. split. auto. Qed.
 
 End term.
 
