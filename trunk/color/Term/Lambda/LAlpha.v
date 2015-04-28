@@ -899,6 +899,17 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite e. apply h. rewrite mem_iff. hyp.
   Qed.
 
+  Instance subs_single_rel_mon_preorder_aeq R :
+    PreOrder R -> Monotone R -> Proper (aeq ==> aeq ==> impl) R ->
+    Proper (Logic.eq ==> R ==> aeq ==> R) subs_single.
+
+  Proof.
+    intros P_qo R_mon R_aeq x x' xx' u u' uu' v v' vv'. subst x'.
+    unfold subs_single. rewrite <- vv'. clear v' vv'.
+    apply subs_rel_mon_preorder_aeq; class.
+    intros y _. unfold Def.single, Def.update, Def.id. eq_dec y x. hyp. refl.
+  Qed.
+
 (****************************************************************************)
 (** ** Inversion lemma for alpha-equivalence on a lambda. *)
 
@@ -1296,7 +1307,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       Variable S_aeq : Proper (aeq ==> aeq ==> impl) S.
 
-      Instance atc_aeq : Proper (aeq ==> aeq ==> impl) (S*).
+      Global Instance atc_aeq : Proper (aeq ==> aeq ==> impl) (S*).
 
       Proof.
         intros x x' xx' y y' yy' h. revert x y h x' xx' y' yy'.
@@ -1396,6 +1407,18 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Proof.
       intros m x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
       apply at_step. mon. apply at_aeq. mon. trans (Lam x v); hyp.
+    Qed.
+
+    (** A predicate is stable by [S*] if it is stable by [~~] and [S]. *)
+
+    Global Instance proper_atc P : Proper (aeq ==> impl) P ->
+      Proper (S ==> impl) P -> Proper (S* ==> impl) P.
+
+    Proof.
+      intros P_aeq P_S_aeq u v uv hu; revert u v uv hu. induction 1; intro hu.
+      rewrite <- H. hyp.
+      rewrite <- H. hyp.
+      tauto.
     Qed.
 
   End atc_props.
