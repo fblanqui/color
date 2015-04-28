@@ -1097,27 +1097,15 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure is compatible with alpha-equivalence. *)
 
-  Instance clos_aeq_impl :
-    Proper (same_rel ==> aeq ==> aeq ==> impl) clos_aeq.
+  Instance clos_aeq_aeq R : Proper (aeq ==> aeq ==> impl) (clos_aeq R).
 
   Proof.
-    intros R R' [RR' _] u u' uu' v v' vv' h. inversion h; subst.
+    intros u u' uu' v v' vv' h. inversion h; subst.
     eapply clos_aeq_intro.
     trans u. hyp. apply H.
     trans v. hyp. apply H0.
-    apply RR'. hyp.
+    hyp.
   Qed.
-
-  (*COQ: can be removed?*)
-  Instance clos_aeq_impl' (R : relation Te) :
-    Proper (aeq ==> aeq ==> impl) (clos_aeq R).
-
-  Proof. apply clos_aeq_impl. refl. Qed.
-
-  Instance clos_aeq_iff :
-    Proper (same_rel ==> aeq ==> aeq ==> iff) clos_aeq.
-
-  Proof. apply Proper_inter_transp_3; class. Qed.
 
   (** Alpha-closure preserves monotony. *)
 
@@ -1306,9 +1294,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     Section aeq.
 
-      Variable S_aeq : Proper (aeq ==> aeq ==> iff) S.
+      Variable S_aeq : Proper (aeq ==> aeq ==> impl) S.
 
-      Instance atc_aeq_impl : Proper (aeq ==> aeq ==> impl) (S*).
+      Instance atc_aeq : Proper (aeq ==> aeq ==> impl) (S*).
 
       Proof.
         intros x x' xx' y y' yy' h. revert x y h x' xx' y' yy'.
@@ -1318,8 +1306,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
         trans v. apply IHh1. hyp. refl. apply IHh2. refl. hyp.
       Qed.
 
-      (*COQ: if removed, Coq is looping in LComp*)
-      Global Instance atc_aeq : Proper (aeq ==> aeq ==> iff) (S*).
+      (*COQ: if removed, Coq fails in LComp*)
+      Global Instance atc_aeq_iff : Proper (aeq ==> aeq ==> iff) (S*).
 
       Proof. apply Proper_inter_transp_2; class. Qed.
 
