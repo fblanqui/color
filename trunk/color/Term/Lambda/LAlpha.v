@@ -89,10 +89,6 @@ Module Export Def.
 
     End clos_aeq.
 
-    (** Alpha-equivalence on substitutions. *)
-
-    Definition saeq xs s s' := forall x, In x xs -> s x ~~ s' x.
-
     (** Alpha-equivalence on vectors of terms. *)
 
     Notation vaeq := (Vforall2 aeq).
@@ -124,7 +120,6 @@ Module Make (Export L : L_Struct).
   Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_aeq_trans :=
     (@clos_aeq_trans F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation saeq := (@saeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_vaeq :=
     (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
@@ -378,45 +373,9 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Properties of [saeq]. *)
+(** ** Alpha-equivalence on substitutions. *)
 
-  Lemma saeq_update : forall xs x u u' s s', u ~~ u' ->
-    saeq (remove x xs) s s' -> saeq xs (update x u s) (update x u' s').
-
-  Proof.
-    intros xs x u u' s s' uu' ss' y hy. unfold Def.update. eq_dec y x.
-    hyp. apply ss'. set_iff. auto.
-  Qed.
-
-  (** For all [xs], [saeq xs] is an equivalence relation. *)
-
-  Instance saeq_refl : forall xs, Reflexive (saeq xs).
-
-  Proof. fo. Qed.
-
-  Instance saeq_sym : forall xs, Symmetric (saeq xs).
-
-  Proof. fo. Qed.
-
-  Instance saeq_trans : forall xs, Transitive (saeq xs).
-
-  Proof. intros xs s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
-
-  (** [saeq] is compatible with set inclusion and equality. *)
-
-  Instance saeq_s : Proper (Subset --> Logic.eq ==> Logic.eq ==> impl) saeq.
-
-  Proof.
-    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
-    unfold flip, impl, Def.saeq in *. fo.
-  Qed.
-
-  Instance saeq_e : Proper (Equal ==> Logic.eq ==> Logic.eq ==> iff) saeq.
-
-  Proof.
-    intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. unfold Def.saeq.
-    split; intros H x hx; apply H. rewrite e. hyp. rewrite <- e. hyp.
-  Qed.
+  Notation saeq := (subs_rel aeq).
 
   (** [domain] is compatible with [saeq]. *)
 
@@ -596,8 +555,10 @@ Module Make (Export L : L_Struct).
       as [s' [h1 [h2 h3]]].
     rewrite subs_saeq with (s':=s'). rewrite subs_saeq with (s:=s) (s':=s').
     apply h; hyp.
-    eapply saeq_s. unfold flip. apply union_subset_2. refl. refl. apply h1.
-    eapply saeq_s. unfold flip. apply union_subset_1. refl. refl. apply h1.
+    eapply subs_rel_s. refl. unfold flip. apply union_subset_2. refl. refl.
+    apply h1.
+    eapply subs_rel_s. refl. unfold flip. apply union_subset_1. refl. refl.
+    apply h1.
   Qed.
 
   (** Meta-theorem saying that, for proving [P s -> subs s u ~~ subs s v],
@@ -619,8 +580,10 @@ Module Make (Export L : L_Struct).
       as [s' [h1 [h2 h3]]].
     rewrite subs_saeq with (s':=s'). rewrite subs_saeq with (s:=s) (s':=s').
     apply h. hyp. rewrite <- h1 at 2. hyp. rewrite <- h1. hyp.
-    eapply saeq_s. unfold flip. apply union_subset_2. refl. refl. apply h1.
-    eapply saeq_s. unfold flip. apply union_subset_1. refl. refl. apply h1.
+    eapply subs_rel_s. refl. unfold flip. apply union_subset_2. refl. refl.
+    apply h1.
+    eapply subs_rel_s. refl. unfold flip. apply union_subset_1. refl. refl.
+    apply h1.
   Qed.
 
 (****************************************************************************)
