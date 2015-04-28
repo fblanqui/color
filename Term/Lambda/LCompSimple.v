@@ -92,11 +92,11 @@ Module Make (Export ST : ST_Struct)
 
     Proof. induction T; simpl. apply cp_I. apply cp_arr; hyp. Qed.
 
-    Global Instance int_aeq : Proper (Logic.eq ==> aeq ==> iff) int.
+    Global Instance int_aeq : Proper (Logic.eq ==> aeq ==> impl) int.
 
     Proof.
       intros T V TV. subst V. destruct (cp_int T) as [h _ _ _].
-      intros t u tu. split; intro i. rewrite <- tu. hyp. rewrite tu. hyp.
+      intros t u tu i. rewrite <- tu. hyp.
     Qed.
 
     Lemma int_sn : forall T t, int T t -> SN R_aeq t.
