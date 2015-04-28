@@ -13,28 +13,36 @@ Require Import LogicUtil Structures.Equalities RelUtil BoolUtil.
 Require Export EqdepFacts Eqdep_dec.
 Require Setoid.
 
+(*COQ: makes Coq loops sometimes:
+
+Instance Equiv_is_PreOrder A (R : rel A) : Equivalence R -> PreOrder R.
+
+Proof. split; class. Qed.
+
+Instance Refl_Trans_is_PreOrder A (R : rel A) :
+  Reflexive R -> Transitive R -> PreOrder R.
+
+Proof. split; hyp. Qed.
+*)
 (***********************************************************************)
 (** Leibniz equality is an Equivalence. *)
 
-Section Leibniz.
+Instance eq_refl t : Reflexive (@eq t).
 
-  Variable t : Type.
+Proof. class. Qed.
 
-  Notation eq := (@Logic.eq t).
+Instance eq_sym t : Symmetric (@eq t).
 
-  Global Instance eq_refl : Reflexive eq.
+Proof. class. Qed.
 
-  Proof. fo. Qed.
+Instance eq_trans t : Transitive (@eq t).
 
-  Global Instance eq_sym : Symmetric eq.
+Proof. class. Qed.
 
-  Proof. fo. Qed.
+(*COQ: to be removed: why not solved by class?*)
+Instance eq_PreOrder t : PreOrder (@eq t).
 
-  Global Instance eq_trans : Transitive eq.
-
-  Proof. class. Qed.
-
-End Leibniz.
+Proof. split; class. Qed.
 
 (***********************************************************************)
 (** Functor providing properties the basic properties of Leibniz
