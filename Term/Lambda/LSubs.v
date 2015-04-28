@@ -288,34 +288,52 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
+(** ** Properties of [subs_rel]. *)
+
+  Lemma subs_rel_update (R : rel Te) xs x u u' s s' :
+    R u u' -> subs_rel R (remove x xs) s s'
+    -> subs_rel R xs (update x u s) (update x u' s').
+
+  Proof.
+    intros uu' ss' y hy. unfold Def.update. eq_dec y x.
+    hyp. apply ss'. set_iff. auto.
+  Qed.
+
+  (** Preserved properties. *)
+
+  Instance subs_rel_refl R xs : Reflexive R -> Reflexive (subs_rel R xs).
+
+  Proof. fo. Qed.
+
+  Instance subs_rel_sym R xs : Symmetric R -> Symmetric (subs_rel R xs).
+
+  Proof. fo. Qed.
+
+  Instance subs_rel_trans R xs : Transitive R -> Transitive (subs_rel R xs).
+
+  Proof. intros R_trans s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
+
+  (** [subs_rel R] is compatible with set inclusion and equality. *)
+
+  Instance subs_rel_s :
+    Proper (inclusion ==> Subset --> Logic.eq ==> Logic.eq ==> impl) subs_rel.
+
+  Proof. intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
+
+  Instance subs_rel_e :
+    Proper (same_rel ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
+
+  Proof.
+    intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
+    split; intros H x hx; apply RR'.
+    rewrite <- e in hx. fo. rewrite e in hx. fo.
+  Qed.
+
+(****************************************************************************)
 (** ** Syntactic equality of two substitutions
 on some finite set of variables *)
 
-  Definition seq xs (s s' : X -> Te) := forall x, In x xs -> s x = s' x.
-
-  (** For all [xs], [seq xs] is an equivalence relation. *)
-
-  Instance seq_refl xs : Reflexive (seq xs).
-
-  Proof. fo. Qed.
-
-  Instance seq_sym xs : Symmetric (seq xs).
-
-  Proof. fo. Qed.
-
-  Instance seq_trans xs : Transitive (seq xs).
-
-  Proof. intros s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
-
-  (** [seq] is compatible with set equality and inclusion. *)
-
-  Instance seq_e : Proper (Equal ==> Logic.eq ==> Logic.eq ==> iff) seq.
-
-  Proof. intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
-
-  Instance seq_s : Proper (Subset --> Logic.eq ==> Logic.eq ==> impl) seq.
-
-  Proof. intros xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
+  Notation seq := (subs_rel Logic.eq).
 
   Lemma seq_restrict xs ys s : xs [<=] ys -> seq xs s (restrict ys s).
 
@@ -2086,48 +2104,6 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     unfold Def.update. eq_dec z x. subst z. tauto. intros i2 i3.
     eapply h. set_iff. right. apply hy. rewrite In_fvcodom. exists z.
     set_iff. intuition.
-  Qed.
-
-(****************************************************************************)
-(** ** Properties of [subs_rel]. *)
-
-  Lemma subs_rel_update (R : rel Te) xs x u u' s s' :
-    R u u' -> subs_rel R (remove x xs) s s'
-    -> subs_rel R xs (update x u s) (update x u' s').
-
-  Proof.
-    intros uu' ss' y hy. unfold Def.update. eq_dec y x.
-    hyp. apply ss'. set_iff. auto.
-  Qed.
-
-  (** Preserved properties. *)
-
-  Instance subs_rel_refl R xs : Reflexive R -> Reflexive (subs_rel R xs).
-
-  Proof. fo. Qed.
-
-  Instance subs_rel_sym R xs : Symmetric R -> Symmetric (subs_rel R xs).
-
-  Proof. fo. Qed.
-
-  Instance subs_rel_trans R xs : Transitive R -> Transitive (subs_rel R xs).
-
-  Proof. intros R_trans s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
-
-  (** [subs_rel R] is compatible with set inclusion and equality. *)
-
-  Instance subs_rel_s :
-    Proper (inclusion ==> Subset --> Logic.eq ==> Logic.eq ==> impl) subs_rel.
-
-  Proof. intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
-
-  Instance subs_rel_e :
-    Proper (same_rel ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
-
-  Proof.
-    intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
-    split; intros H x hx; apply RR'.
-    rewrite <- e in hx. fo. rewrite e in hx. fo.
   Qed.
 
 End Make.
