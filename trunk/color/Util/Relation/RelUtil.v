@@ -32,6 +32,9 @@ Arguments symprod [A B] _ _ _ _.
 (***********************************************************************)
 (** Notations for some relations and operations on relations. *)
 
+Notation rel := relation.
+Notation same_rel := same_relation.
+
 Notation "x << y" := (inclusion x y) (at level 50) : relation_scope.
 Notation "R == S" := (same_relation R S) (at level 70).
 
@@ -48,8 +51,9 @@ Arguments Scope union [type_scope relation_scope relation_scope].
 
 Open Scope relation_scope.
 
-Notation rel := relation.
-Notation same_rel := same_relation.
+Lemma sym A (R : rel A) x y : Symmetric R -> (R x y <-> R y x).
+
+Proof. split_all. Qed.
 
 (***********************************************************************)
 (** Empty relation. *)
