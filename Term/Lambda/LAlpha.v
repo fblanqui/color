@@ -1352,6 +1352,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
         trans (subs s v); hyp.
       Qed.
 
+(*REMOVE?*)
       Global Instance rename_atc :
         Proper (Logic.eq ==> Logic.eq ==> S* ==> S*) rename.
 
