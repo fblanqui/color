@@ -13,17 +13,11 @@ Require Import LogicUtil Structures.Equalities RelUtil BoolUtil.
 Require Export EqdepFacts Eqdep_dec.
 Require Setoid.
 
-(*COQ: makes Coq loops sometimes:
-
+(*COQ: shouldn't it be part of the standard lib?*)
 Instance Equiv_is_PreOrder A (R : rel A) : Equivalence R -> PreOrder R.
 
 Proof. split; class. Qed.
 
-Instance Refl_Trans_is_PreOrder A (R : rel A) :
-  Reflexive R -> Transitive R -> PreOrder R.
-
-Proof. split; hyp. Qed.
-*)
 (***********************************************************************)
 (** Leibniz equality is an Equivalence. *)
 
