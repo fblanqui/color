@@ -908,8 +908,8 @@ Module Make (Export L : L_Struct).
 
     Proof.
       intros u_sn uv. eapply SN_incl. apply incl_union_r. refl.
-      eapply SN_inv. apply SN_supterm_R_mon. apply u_sn.
-      left. apply t_step. hyp.
+      eapply SN_inv. left. apply t_step. apply uv.
+      apply SN_supterm_R_mon. hyp.
     Qed.
 
     Lemma SN_st_app_l u v : SN R (App u v) -> SN R u.
@@ -954,7 +954,7 @@ Module Make (Export L : L_Struct).
 
     Proof.
       apply restrict_tc_supterm_R_mon_wf.
-      intros u u' uu' h. eapply SN_inv. apply h. hyp.
+      intros u u' uu' h. eapply SN_inv. apply uu'. hyp.
       apply wf_restrict_sn. refl.
     Qed.
 

@@ -202,10 +202,10 @@ Section S.
     eapply SN_inverse with (f := @Vhead_tail A n) (R := symprod R (Vrel1 R)).
     VSntac y. unfold Vhead_tail. simpl. simpl in H. destruct H.
     rewrite H1 in H0. inversion H0.
-    apply SN_symprod. eapply SN_inv. apply H. hyp.
+    apply SN_symprod. eapply SN_inv. apply H4. hyp.
     rewrite <- H7. apply IHv. hyp.
     apply SN_symprod. rewrite <- H6. hyp.
-    eapply SN_inv. apply IHv. apply H2. hyp.
+    eapply SN_inv. apply H4. apply IHv. hyp.
   Qed.
 
   Lemma SN_rel1_head : forall n (v : vector A (S n)),

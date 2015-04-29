@@ -340,7 +340,7 @@ Module Make (Export ST : ST_Struct).
 
   Proof.
     intros [f n ts]. apply SN_intro. intros [g p us] r. inv_gt_red r g p.
-    gen (SN_inv h h0). clear r h h0 ts.
+    gen (SN_inv h0 h). clear r h h0 ts.
     revert us; induction 1; rename x into ts.
     apply SN_intro. intros [g p us] r. inv_gt_red r g p. fo.
   Qed.

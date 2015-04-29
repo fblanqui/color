@@ -220,7 +220,7 @@ Module Make (Export ST : ST_Struct)
 
     Proof.
       apply restrict_tc_supterm_acc_R_mon_wf.
-      intros u u' uu' h. eapply SN_inv. apply h. hyp.
+      intros u u' uu' h. eapply SN_inv. apply uu'. hyp.
       apply wf_restrict_sn. refl.
     Qed.
 
@@ -332,7 +332,7 @@ Module Make (Export ST : ST_Struct)
 
     Proof.
       apply restrict_clos_aeq_tc_supterm_acc_R_mon_wf.
-      intros u u' uu' h. eapply SN_inv. apply h. hyp.
+      intros u u' uu' h. eapply SN_inv. apply uu'. hyp.
       apply wf_restrict_sn. refl.
     Qed.
 
@@ -512,7 +512,7 @@ predicates. *)
     Lemma G'_cp_red : cp_red (G' I_lt_a X).
 
     Proof.
-      intros t u tu [ht1 ht2]. split. eapply SN_inv. apply ht1. hyp.
+      intros t u tu [ht1 ht2]. split. eapply SN_inv. apply tu. hyp.
       intros f hf ts hu. assert (ht : t =>R* apps (Fun f) ts).
       trans u. apply at_step. hyp. hyp. apply ht2; hyp.
     Qed.
