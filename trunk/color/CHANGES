@@ -1,3 +1,8 @@
+15-04-29: [Blanqui]
+- Term/Lambda/LSubs,LAlpha:
+  . generalized seq and saeq by introducing subs_rel
+  . added subs_rel_mon_preorder and sub_rel_mon_preorder_aeq
+
 15-03-27: [Blanqui]
 - Util/Logic/LogicUtil: added split_all tactic
 - reduced compilation time by improving some scripts
