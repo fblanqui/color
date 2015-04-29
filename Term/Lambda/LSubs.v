@@ -831,7 +831,7 @@ on some finite set of variables *)
 
   Instance var_seq x u : Proper (seq (remove x (fv u)) ==> Logic.eq) (var x u).
 
-  Proof. intros s s' ss'. eapply var_subs_rel; class. Qed.
+  Proof. intros s s' ss'. apply (var_subs_rel _ _ _ ss'). Qed.
 
   Arguments var_seq [x u s s'] _ : rename.
 
@@ -1285,6 +1285,15 @@ on some finite set of variables *)
     destruct (mem y (fv u)). intro a. set_iff. tauto. refl.
   Qed.
 
+  Lemma notin_fv_rename x y u : x=y \/ ~In x (fv (rename x y u)).
+
+  Proof.
+    eq_dec x y. auto. right. rewrite fv_rename.
+    case_eq (mem x (fv u)); intro hx.
+    set_iff. split_all.
+    rewrite not_mem_iff. hyp.
+  Qed.
+
   Lemma rename_lam_no_alpha y z x u :
     ~In y (fv u) \/ x=y \/ x<>z -> rename y z (Lam x u)
     = Lam x (subs (update x (Var x) (single y (Var z))) u).
@@ -1397,8 +1406,8 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** [bvcod_fun] is compatible with set equality and commutes with [add]. *)
 
-  Instance bvcod_fun_e : Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal)
-    bvcod_fun.
+  Instance bvcod_fun_e :
+    Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) bvcod_fun.
 
   Proof.
     intros s s' ss' x x' xx' vs vs' vsvs'. subst s' x'. unfold bvcod_fun.
