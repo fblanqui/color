@@ -1052,6 +1052,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof. intro tu. eapply clos_aeq_intro. refl. refl. hyp. Qed.
 
+  Arguments clos_aeq_intro_refl [R t u] _ : rename.
+
   Lemma clos_aeq_inv R t u :
     clos_aeq R t u -> exists t' u', t ~~ t' /\ u ~~ u' /\ R t' u'.
 
