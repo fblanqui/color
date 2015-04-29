@@ -904,6 +904,26 @@ Module Make (Export L : L_Struct).
       apply tc_supterm_R_mon_commut.
     Qed.
 
+    Lemma SN_st u v : SN R u -> supterm u v -> SN R v.
+
+    Proof.
+      intros u_sn uv. eapply SN_incl. apply incl_union_r. refl.
+      eapply SN_inv. apply SN_supterm_R_mon. apply u_sn.
+      left. apply t_step. hyp.
+    Qed.
+
+    Lemma SN_st_app_l u v : SN R (App u v) -> SN R u.
+
+    Proof. intro h. eapply SN_st. apply h. apply st_app_l. Qed.
+
+    Lemma SN_st_app_r u v : SN R (App u v) -> SN R v.
+
+    Proof. intro h. eapply SN_st. apply h. apply st_app_r. Qed.
+
+    Lemma SN_st_lam x u : SN R (Lam x u) -> SN R u.
+
+    Proof. intro h. eapply SN_st. apply h. apply st_lam. Qed.
+
     Lemma supterm_R_mon_wf : WF R -> WF (supterm! U R).
 
     Proof.
