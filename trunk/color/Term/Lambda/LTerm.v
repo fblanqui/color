@@ -823,6 +823,14 @@ Module Make (Export L : L_Struct).
     apply m_app_l. hyp. apply m_app_r. hyp. apply m_lam. hyp.
   Qed.
 
+  Instance VarInvL_clos_mon (R : rel Te) : VarInvL R -> VarInvL (clos_mon R).
+
+  Proof. intros [h]. split; intros x u xu. inversion xu; subst. fo. Qed.
+
+  Instance VarInvR_clos_mon (R : rel Te) : VarInvR R -> VarInvR (clos_mon R).
+
+  Proof. intros [h]. split; intros x u xu. inversion xu; subst. fo. Qed.
+
 (****************************************************************************)
 (** ** Properties wrt free variables. *)
 
@@ -845,6 +853,13 @@ Module Make (Export L : L_Struct).
 
   Instance fv_clos_mon : forall R,
     Proper (R --> Subset) fv -> Proper (clos_mon R --> Subset) fv.
+
+  Proof.
+    intros R fv_R. induction 1; simpl; (rewrite IHclos_mon || rewrite H); refl.
+  Qed.
+
+  Instance fv_clos_mon_Equal : forall R,
+    Proper (R ==> Equal) fv -> Proper (clos_mon R ==> Equal) fv.
 
   Proof.
     intros R fv_R. induction 1; simpl; (rewrite IHclos_mon || rewrite H); refl.
