@@ -21,26 +21,26 @@ opposite way. *)
 
 Section sn.
 
-  Variable (A : Type) (R : relation A).
+  Variable (A : Type) (R : rel A).
 
   Inductive SN x : Prop := SN_intro : (forall y, R x y -> SN y) -> SN x.
-
-  Lemma SN_inv : forall x, SN x -> forall y, R x y -> SN y.
-
-  Proof. destruct 1; trivial. Qed.
 
   Definition WF := forall x, SN x.
 
 End sn.
 
-Arguments SN_inv [A R x] _ [y] _.
+Instance SN_inv A (R : rel A) : Proper (R ==> impl) (SN R).
 
-Global Instance SN_proper A (R E : relation A) : Equivalence E ->
+Proof. intros x y xy [x_sn]. auto. Qed.
+
+Arguments SN_inv [A R x y] _ _.
+
+Instance SN_Equiv A (R E : relation A) : Equivalence E ->
   Proper (E ==> E ==> impl) R -> Proper (E ==> impl) (SN R).
 
 Proof.
   intros hE hR x y xy hx. apply SN_intro. intros z yz. eapply SN_inv.
-  apply hx. rewrite xy. hyp.
+  2: apply hx. rewrite xy. hyp.
 Qed.
 
 (***********************************************************************)
@@ -233,22 +233,19 @@ End rel_inverse.
 (***********************************************************************)
 (** ** SN properties of [clos_refl_trans]. *)
 
-Section rtc.
+Instance SN_inv_rtc A (R : rel A) : Proper (R# ==> impl) (SN R).
 
-  Variable (A : Type) (R : relation A).
+Proof.
+  intros x y xy x_sn; revert y xy. induction 1.
+  apply (SN_inv H x_sn). hyp. auto.
+Qed.
 
-  Lemma SN_rtc : forall x, SN R x -> forall x', R# x x' -> SN R x'.
+Instance SN_inv_rtc1 A (R : rel A) : Proper (R#1 ==> impl) (SN R).
 
-  Proof. intros x H. induction 1. inversion H. auto. hyp. auto. Qed.
-
-  Lemma SN_rtc1 : forall x, SN R x -> forall x', R#1 x x' -> SN R x'.
-
-  Proof.
-    intros x snx x' xRx'. apply SN_rtc with x. hyp.
-    apply (proj1 (clos_refl_trans_equiv R x x')). hyp.
-  Qed.
-
-End rtc.
+Proof.
+  intros x x' xRx' snx. apply SN_inv_rtc with x.
+  apply (proj1 (rtc1_eq R x x')). hyp. hyp.
+Qed.
 
 (***********************************************************************)
 (** ** SN properties of [clos_trans]. *)
@@ -261,9 +258,10 @@ Section tc.
 
   Proof.
     induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
-    apply SN_rtc with (x := x0). apply H0. hyp.
+    apply SN_inv_rtc with (x := x0).
     apply inclusion_elim with (R := R#). apply clos_refl_trans_inclusion.
     apply incl_tc. refl. hyp.
+    apply H0. hyp.
   Qed.
 
   Lemma WF_tc : WF R -> WF (R!).
@@ -378,7 +376,7 @@ Section compat.
   Proof.
     intros. apply SN_intro. intros. do 2 destruct H1. assert (h : (R @ E) x y).
     exists x0; split. apply (inclusion_elim Hcomp). exists x'; split; hyp.
-    hyp. apply (SN_inv H). exact h.
+    hyp. eapply SN_inv. apply h. hyp.
   Qed.
 
   Lemma WF_compat_inv : WF R -> WF (R @ E).
@@ -397,8 +395,8 @@ Section absorb.
   Lemma SN_modulo_r : forall x x', SN (T @ R#) x -> R# x x' -> SN (T @ R#) x'.
 
   Proof.
-    intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
-    exists x0. intuition. apply (absorbs_left_rtc absorb). exists x'. intuition.
+    intros. apply SN_intro. intros. eapply SN_inv. 2: apply H. do 2 destruct H1.
+    ex x0. split_all. apply (absorbs_left_rtc absorb). ex x'. split_all.
   Qed.
 
   Lemma absorb_SN_modulo_r : forall x, SN T x -> SN (T @ R#) x.
@@ -407,7 +405,7 @@ Section absorb.
     induction 1. apply SN_intro. intros. apply SN_intro. intros.
     do 2 destruct H1. do 2 destruct H2.
     assert (T x0 x1). apply (absorbs_left_rtc absorb). exists y. intuition.
-    ded (H0 _ H1). apply (SN_inv H6). exists x1. intuition.
+    ded (H0 _ H1). eapply SN_inv. 2:apply H6. exists x1. intuition.
   Qed.
 
   Lemma absorb_WF_modulo_r : WF T -> WF (T @ R#).
@@ -443,7 +441,7 @@ Section modulo.
   Lemma SN_modulo : forall x x', SN (E# @ R) x -> E# x x' -> SN (E# @ R) x'.
 
   Proof.
-    intros. apply SN_intro. intros. apply (SN_inv H). do 2 destruct H1.
+    intros. apply SN_intro. intros. eapply SN_inv. 2: apply H. do 2 destruct H1.
     exists x0. intuition. apply rt_trans with x'; hyp.
   Qed.
 
@@ -675,7 +673,7 @@ Section restrict.
   Lemma wf_restrict_sn : P [<=] SN R -> WF (restrict P R).
 
   Proof.
-    intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv (h _ hx) xy).
+    intros h x. apply SN_intro; intros y [hx xy]. gen (SN_inv xy (h _ hx)).
     clear x hx xy. revert y; induction 1. apply SN_intro. fo.
   Qed.
 

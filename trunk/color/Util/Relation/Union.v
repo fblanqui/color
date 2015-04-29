@@ -98,17 +98,17 @@ Section S.
     apply SN_intro. intros y xRSy.
     destruct xRSy as [xRy | xSy]. apply IHr. hyp.
     assert (SN (S!1) y) as sny.
-    apply SN_tc1. apply sns. apply incl_t_rt; hyp.
+    apply SN_tc1. apply sns. apply tc1_incl_rtc1; hyp.
 
     (* x R! y *)
     intros y0 yRy0. apply sns.
-    apply incl_rt_rt_rt. exists y; split; trivial.
-    apply incl_t_rt. hyp.
+    apply trans_comp_incl. class. exists y; split; trivial.
+    apply tc1_incl_rtc1. hyp.
 
     (* x S! y *)
     assert (SN (S!1) y) as sny. apply SN_tc1.
-    apply SN_rtc1 with x. apply sns. apply rt1_refl.
-    apply incl_t_rt. hyp.
+    apply SN_inv_rtc1 with x. apply tc1_incl_rtc1. hyp.
+    apply sns. refl.
 
     (* Induction on y S! ... *)
     induction sny as [y _ IHs].
@@ -119,20 +119,19 @@ Section S.
     apply comm_s_r; trivial.
     destruct yRz as [y z yRz | y m z yRm mRz].
     exists z. split. exists y. split; trivial.
-    apply union_rel_rt_right. apply incl_t_rt. hyp. apply rt1_refl.
+    apply union_rel_rt1_right. apply tc1_incl_rtc1. hyp. refl.
     exists m. split. exists y. split; trivial.
-    apply union_rel_rt_right. apply incl_t_rt. hyp.
-    apply union_rel_rt_left. apply incl_t_rt. hyp.
+    apply union_rel_rt1_right. apply tc1_incl_rtc1. hyp.
+    apply union_rel_rt1_left. apply tc1_incl_rtc1. hyp.
 
     destruct xRz as [m [xRm mz]].
     assert (SN (R!1 U S!1) m) as SNm.
     apply IHr. hyp. intros y0 mRy0.
-    apply sns. apply incl_rt_rt_rt. exists m.
-    split; trivial. apply incl_t_rt. hyp.
+    apply sns. apply trans_comp_incl. class. exists m.
+    split; trivial. apply tc1_incl_rtc1. hyp.
 
-    apply SN_rtc1 with m. hyp.
-    apply incl_union_rtunion. hyp.
-    apply IHs; trivial. apply clos_trans1_trans with y; trivial.
+    apply SN_inv_rtc1 with m. apply incl_union_rt1_union. hyp. hyp.
+    apply IHs; trivial. trans y; trivial.
   Qed.
 
   Lemma sn_comm_sn :

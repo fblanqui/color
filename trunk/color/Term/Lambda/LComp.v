@@ -390,7 +390,7 @@ Module Make (Export CP : CP_Struct).
 
   Proof.
     intros t u tu h. apply SN_intro. intros u' uu'. rewrite <- tu in uu'.
-    eapply SN_inv. apply h. hyp.
+    eapply SN_inv. apply uu'. hyp.
   Qed.
 
   (** [SN R_aeq] is stable by [=>R*]. *)
