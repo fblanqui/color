@@ -433,6 +433,20 @@ Module Make (Export XSet : FSetInterface.S).
   Definition replace y z xs :=
     if mem y xs then add z (remove y xs) else xs.
 
+  Instance replace_Subset :
+    Proper (E.eq ==> E.eq ==> Subset ==> Subset) replace.
+
+  Proof.
+    intros y y' yy' z z' zz' xs xs' xsxs'. unfold replace.
+    rewrite <- yy'. case_eq (mem y xs); intro hy.
+    assert (hy' : mem y xs' = true).
+    rewrite <- mem_iff. apply xsxs'. rewrite mem_iff. hyp.
+    rewrite hy'. intro a. set_iff. rewrite <- zz', <- yy'. fo.
+    case_eq (mem y xs'); intro hy'. 2: hyp.
+    intros a ha. set_iff. rewrite <- zz', <- yy'. eq_dec z a. auto.
+    right. split. fo. intro ya. rewrite ya, <- not_mem_iff in hy. contr.
+  Qed.
+
   Instance replace_Equal :
     Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) replace.
 
@@ -448,11 +462,20 @@ Module Make (Export XSet : FSetInterface.S).
     right. split_all. right. rewrite not_mem_iff. hyp.
   Qed.
 
-  Lemma replace2 x y z xs :
-    ~In y xs -> replace y z (replace x y xs) [=] replace x z xs.
+  Lemma replace_idem x xs : replace x x xs [=] xs.
 
   Proof.
-    intro h. unfold replace at -1. case_eq (mem x xs); intro hx.
+    unfold replace. case_eq (mem x xs); intro hx. 2: refl.
+    rewrite <- mem_iff in hx. intro a. set_iff. split_all.
+    rewrite <- H. hyp. eq_dec x a; auto.
+  Qed.
+
+  Lemma replace2 x y z xs :
+    x = y \/ ~In y xs -> replace y z (replace x y xs) [=] replace x z xs.
+
+  Proof.
+    intros [h|h]. subst. rewrite replace_idem. refl.
+    unfold replace at -1. case_eq (mem x xs); intro hx.
     unfold replace. rewrite add_b, eqb_refl; simpl. rewrite remove_add_eq.
     eq_dec x y. (*SLOW*)rewrite <- e, remove_idem. refl.
     rewrite remove_com, remove_equal with (x:=y). refl. hyp.
