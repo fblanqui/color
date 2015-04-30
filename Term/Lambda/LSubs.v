@@ -1277,21 +1277,11 @@ on some finite set of variables *)
     intros [[h|h]|h]; rewrite h; repeat rewrite andb_false_r; refl.
   Qed.
 
-  Lemma fv_rename y z u : fv (rename y z u)
-    [=] if mem y (fv u) then add z (remove y (fv u)) else fv u.
+  Lemma fv_rename y z u : fv (rename y z u) [=] replace y z (fv u).
 
   Proof.
-    unfold Def.rename. rewrite fv_single. simpl.
+    unfold Def.rename, replace. rewrite fv_single. simpl.
     destruct (mem y (fv u)). intro a. set_iff. tauto. refl.
-  Qed.
-
-  Lemma notin_fv_rename x y u : x=y \/ ~In x (fv (rename x y u)).
-
-  Proof.
-    eq_dec x y. auto. right. rewrite fv_rename.
-    case_eq (mem x (fv u)); intro hx.
-    set_iff. split_all.
-    rewrite not_mem_iff. hyp.
   Qed.
 
   Lemma rename_lam_no_alpha y z x u :
@@ -1307,7 +1297,8 @@ on some finite set of variables *)
     remove y (fv (rename x y u)) [=] remove x (fv u).
 
   Proof.
-    intro hy. rewrite fv_rename. case_eq (mem x (fv u)); intro hx.
+    intro hy. rewrite fv_rename; unfold replace.
+    case_eq (mem x (fv u)); intro hx.
     apply remove_add. set_iff. tauto.
     rewrite remove_equal. 2: hyp. rewrite remove_equal. refl.
     rewrite mem_iff, hx. discr.
@@ -1841,8 +1832,8 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     assert (e : fvcodom (remove z (fv (rename x y u))) s
       [=] fvcodom (fv (Lam z u)) s). intro a.
     rewrite !In_fvcodom. split; intros [b [j1 [j2 j3]]]; exists b;
-      revert j1 j2 j3; set_iff; rewrite fv_rename; case_eq (mem x (fv u));
-        simpl; set_iff; split_all.
+      revert j1 j2 j3; set_iff; rewrite fv_rename; unfold replace;
+      case_eq (mem x (fv u)); simpl; set_iff; split_all.
     subst b. revert H2. rewrite hy. simpl. set_iff. intro e. subst a. tauto.
     right. split. hyp. intro h. subst b. tauto.
 
