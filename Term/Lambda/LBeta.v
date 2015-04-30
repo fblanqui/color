@@ -110,10 +110,10 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro r; inversion r; clear r; subst.
-    inv_aeq H; clear H; subst; permut_rename.
+    inv_aeq H; clear H; subst. permut_rename i0.
     inversion H1; clear H1; subst. inversion H.
     inv_aeq H0; clear H0; subst. ex x1 u1. split. refl.
-    rewrite i0, i2, rename2. 2: hyp. apply subs_beta_aeq. refl.
+    (*SLOW*)rewrite i3, i, rename2. 2: hyp. apply subs_beta_aeq. refl.
     apply clos_aeq_intro_refl. hyp.
   Qed.
 
