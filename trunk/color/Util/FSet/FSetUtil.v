@@ -427,4 +427,36 @@ Module Make (Export XSet : FSetInterface.S).
 
   End fold.
 
+(***********************************************************************)
+(** replace *)
+
+  Definition replace y z xs :=
+    if mem y xs then add z (remove y xs) else xs.
+
+  Instance replace_Equal :
+    Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) replace.
+
+  Proof.
+    intros y' y y'y z' z z'z xs' xs e; subst; unfold replace.
+    rewrite e. destruct (mem y xs); rewrite e; refl.
+  Qed.
+
+  Lemma notin_replace x y xs : E.eq y x \/ ~In x (replace x y xs).
+
+  Proof.
+    eq_dec y x. auto. unfold replace. case_eq (mem x xs); intro hx; set_iff.
+    right. split_all. right. rewrite not_mem_iff. hyp.
+  Qed.
+
+  Lemma replace2 x y z xs :
+    ~In y xs -> replace y z (replace x y xs) [=] replace x z xs.
+
+  Proof.
+    intro h. unfold replace at -1. case_eq (mem x xs); intro hx.
+    unfold replace. rewrite add_b, eqb_refl; simpl. rewrite remove_add_eq.
+    eq_dec x y. (*SLOW*)rewrite <- e, remove_idem. refl.
+    rewrite remove_com, remove_equal with (x:=y). refl. hyp.
+    unfold replace. rewrite not_mem_iff in h. rewrite h. refl.
+  Qed.
+
 End Make.
