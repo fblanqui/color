@@ -214,7 +214,7 @@ Module Make (Export L : L_Struct).
     rewrite IHaeq. refl.
     rewrite IHaeq. refl.
     rewrite IHaeq. refl.
-    rewrite fv_rename.
+    rewrite fv_rename; unfold replace.
     case_eq (mem x (fv u)); [rewrite <- mem_iff|rewrite <- not_mem_iff];
       intro hx.
     rewrite remove_add. refl. set_iff. tauto.
@@ -558,7 +558,7 @@ variables. *)
     set (u' := rename x y u).
 
     assert (pp' : remove x (fv u) [=] remove y (fv u')).
-    unfold u'. rewrite fv_rename.
+    unfold u'. rewrite fv_rename; unfold replace.
     case_eq (mem x (fv u)); [rewrite <- mem_iff|rewrite <- not_mem_iff];
       intro h. rewrite remove_add. refl. set_iff. intuition.
     rewrite !remove_equal; auto. refl.
@@ -616,7 +616,7 @@ variables. *)
     revert H1. rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
     intros i2 i3. apply H6. rewrite In_fvcodom. ex b. revert i1.
-    rewrite h1 in *. rewrite fv_rename.
+    rewrite h1 in *. rewrite fv_rename; unfold replace.
     destruct (mem x (fv v)); set_iff; split_all. subst b. irrefl. (*SLOW*)fo.
 
     rewrite e1, e2, e. unfold yy's. rewrite subs1_update_single.
@@ -644,8 +644,8 @@ variables. *)
 
     (* y' <> x *)
     absurd (In y' (fv u')). intro h'. apply p0. set_iff. auto.
-    unfold u'. rewrite fv_rename. rewrite <- h1 in H0. destruct (mem x (fv u)).
-    set_iff. split_all. hyp.
+    unfold u'. rewrite fv_rename; unfold replace. rewrite <- h1 in H0.
+    destruct (mem x (fv u)). set_iff. split_all. hyp.
 
     (* 2 *)
     change (In y' (fvcodom (fv v) xx's)) in H0. revert H0. rewrite In_fvcodom.
@@ -666,13 +666,15 @@ variables. *)
     absurd (In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y', Def.var; ens. rewrite hy. apply var_notin_ok.
     set_iff. right. rewrite In_fvcodom. ex a. set_iff. split_all.
-    unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
+    unfold u'. rewrite fv_rename; unfold replace.
+    destruct (mem x (fv u)); rewrite h1.
     set_iff. split_all. hyp. subst a. rewrite <- h1 in i1. tauto.
 
     assert (p0 : y' = y). unfold y', Def.var; ens. rewrite hy. refl.
     absurd (In y (fvcodom (remove y (fv u')) s)). rewrite not_mem_iff. hyp.
     rewrite In_fvcodom. ex a. set_iff. rewrite p0 in i3. split_all.
-    unfold u'. rewrite fv_rename. destruct (mem x (fv u)); rewrite h1.
+    unfold u'. rewrite fv_rename; unfold replace.
+    destruct (mem x (fv u)); rewrite h1.
     set_iff. intuition. hyp. subst a. rewrite <- h1 in i1. tauto.
 
     (* ~In y' (fv (subs1 xx's v)) *)
@@ -876,7 +878,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     set (u' := rename x z u).
 
     assert (e : remove z (fv u') [=] xs).
-    unfold xs, u'. rewrite fv_rename. simpl.
+    unfold xs, u'. rewrite fv_rename; unfold replace. simpl.
     case_eq (mem x (fv u)); intros hx a; set_iff; split_all; subst a. irrefl.
     revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
     rewrite <- not_mem_iff in hx. contr.
@@ -943,7 +945,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     right. rewrite H1, rename_id in i1. rewrite <- i1. hyp.
     right. rewrite <- H2. hyp.
     eq_dec z y. auto. right. intro hy. apply H2.
-    rewrite i1, fv_rename. destruct (mem z (fv a)); set_iff; auto.
+    rewrite i1, fv_rename; unfold replace.
+    destruct (mem z (fv a)); set_iff; auto.
 
     tauto. intro hw. subst u w. tauto.
 
@@ -960,7 +963,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     right. rewrite H1, rename_id in i1. rewrite <- i1. hyp.
     right. rewrite <- H2. hyp.
     eq_dec z y. auto. right. intro hy. apply H2.
-    rewrite i1, fv_rename. destruct (mem z (fv a)); set_iff; auto.
+    rewrite i1, fv_rename; unfold replace.
+    destruct (mem z (fv a)); set_iff; auto.
 
     intro hu. subst u w. tauto. tauto.
     (* app_l *)
@@ -975,7 +979,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     destruct e as [e|e].
     inversion e. subst. ex y (rename z y a). split_all. refl.
     inversion e. subst. ex x u. rewrite rename2, rename_id. 2: auto.
-    split_all. refl. rewrite fv_rename. case_eq (mem x (fv u));
+    split_all. refl. rewrite fv_rename; unfold replace.
+    case_eq (mem x (fv u));
       [rewrite <- mem_iff|rewrite <- not_mem_iff]; intro hx.
     right. set_iff. intros [h|h]. subst z. tauto. tauto.
     auto.
@@ -993,7 +998,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     intros e h. split.
     rewrite e, rename2, rename_id. refl. hyp.
-    rewrite e, fv_rename. destruct h. auto.
+    rewrite e, fv_rename; unfold replace. destruct h. auto.
     subst. auto.
     case_eq (mem x (fv u)); intro i.
     Focus 2. rewrite <- not_mem_iff in i. auto.
