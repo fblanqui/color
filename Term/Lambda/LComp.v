@@ -455,11 +455,10 @@ Module Make (Export CP : CP_Struct).
   (** A computability predicate is stable by [=>R*] if it satisfies
      [cp_aeq] and [cp_red]. *)
 
-  Instance cp_atc : forall P, cp_aeq P -> cp_red P ->
-    Proper (R_aeq* ==> impl) P.
+  Instance cp_atc P : cp_aeq P -> cp_red P -> Proper (R_aeq* ==> impl) P.
 
   Proof.
-    intros P P1 P3 u u' uu' hu. revert u u' uu' hu. induction 1.
+    intros P_aeq P_red u u' uu' hu. revert u u' uu' hu. induction 1.
     fo. rewrite H. auto. fo.
   Qed.
 
