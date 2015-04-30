@@ -1166,9 +1166,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   since substitution composition is correct modulo alpha-equivalence
   only. *)
 
-  Instance subs_clos_aeq_subs : forall R,
-    Proper (Logic.eq ==> clos_aeq (clos_subs R) ==> clos_aeq (clos_subs R))
-    subs.
+  Instance subs_clos_aeq_subs R :
+    Proper
+      (Logic.eq ==> clos_aeq (clos_subs R) ==> clos_aeq (clos_subs R)) subs.
 
   Proof.
     intros R s s' ss' t u tu. subst s'.
