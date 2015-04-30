@@ -901,7 +901,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite e. apply h. rewrite mem_iff. hyp.
   Qed.
 
-  Instance subs_single_rel_mon_preorder_aeq R :
+  Instance subs_single_mon_preorder_aeq R :
     PreOrder R -> Monotone R -> Proper (aeq ==> aeq ==> impl) R ->
     Proper (Logic.eq ==> R ==> aeq ==> R) subs_single.
 
