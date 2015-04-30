@@ -1,4 +1,5 @@
-15-04-29: [Blanqui]
+15-04-30: [Blanqui]
+- Util/FSet/FSetUtil: added replace
 - Term/Lambda/LSubs,LAlpha:
   . generalized seq and saeq by introducing subs_rel
   . added subs_rel_mon_preorder and sub_rel_mon_preorder_aeq
