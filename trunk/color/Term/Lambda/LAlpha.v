@@ -1007,29 +1007,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Arguments permut_rename [v x y u] _ _.
 
-  Ltac permut_rename :=
-    match goal with
-    | h1 : _ ~~ rename ?x ?y ?u, h2 : ?x = ?y \/ ~XSet.In ?y (fv ?u) |- _ =>
-      gen (permut_rename h1 h2); clear h1 h2; intros [h1 h2]
-    | h1 : rename ?x ?y ?u ~~ _, h2 : ?x = ?y \/ ~XSet.In ?y (fv ?u) |- _ =>
-      symmetry in h1; gen (permut_rename h1 h2); clear h1 h2; intros [h1 h2]
-    end.
-
-  Lemma permut_rename' v x y u :
-    v ~~ rename x y u -> (y = x \/ ~In y (fv u)) ->
-    u ~~ rename y x v /\ (y = x \/ ~In x (fv v)).
-
-  Proof. rewrite sym with (R:=Logic.eq). apply permut_rename. class. Qed.
-
-  Arguments permut_rename' [v x y u] _ _.
-
-  Ltac permut_rename' :=
-    match goal with
-    | h1 : _ ~~ rename ?x ?y ?u, h2 : ?y = ?x \/ ~XSet.In ?y (fv ?u) |- _ =>
-      gen (permut_rename' h1 h2); clear h1 h2; intros [h1 h2]
-    | h1 : rename ?x ?y ?u ~~ _, h2 : ?y = ?x \/ ~XSet.In ?y (fv ?u) |- _ =>
-      symmetry in h1; gen (permut_rename' h1 h2); clear h1 h2; intros [h1 h2]
-    end.
+  Ltac permut_rename h :=
+    apply permut_rename in h;
+    [ let h1 := fresh "i" in let h2 := fresh "i" in destruct h as [h1 h2]
+    | try tauto].
 
 (****************************************************************************)
 (** Inversion tactic for alpha-equivalence. *)

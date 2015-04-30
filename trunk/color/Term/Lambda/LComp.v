@@ -266,11 +266,11 @@ Module Make (Export CP : CP_Struct).
     exists y v, w = Lam y v /\ u =>R rename y x v.
 
   Proof.
-    intro r; inversion r; subst. inv_aeq H; clear H; subst; permut_rename.
-    inversion H1; clear H1; subst.
+    intro r; inversion r; subst. inv_aeq H; clear H; subst.
+    permut_rename i0; clear i1. inversion H1; clear H1; subst.
     exfalso. eapply not_Rh_lam. apply H.
     inv_aeq H0; clear H0; subst. ex x1 u1. split. refl.
-    rewrite i0, i2, rename2. 2: hyp. apply subs_R_aeq. refl.
+    rewrite i, i1, rename2. 2: hyp. apply subs_R_aeq. refl.
     apply incl_clos_aeq. hyp.
   Qed.
 
