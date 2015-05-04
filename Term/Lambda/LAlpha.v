@@ -1171,7 +1171,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       (Logic.eq ==> clos_aeq (clos_subs R) ==> clos_aeq (clos_subs R)) subs.
 
   Proof.
-    intros R s s' ss' t u tu. subst s'.
+    intros s s' ss' t u tu. subst s'.
     inversion tu; inversion H1; subst; clear tu H1.
     (*SLOW*)rewrite H0, H, 2!subs_comp.
     apply clos_aeq_intro_refl. apply subs_step. hyp.
