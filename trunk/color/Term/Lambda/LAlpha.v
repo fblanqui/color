@@ -769,10 +769,10 @@ y (Var x)], [s1 = single x (Var y)] and [s2 = single y (Var x)]. Then,
 while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 = Var x]. And one can define [var_notin] so that [y''<>y]. *)
 
-  Lemma subs_comp : forall u s1 s2, subs s2 (subs s1 u) ~~ subs (comp s2 s1) u.
+  Lemma subs_comp u s1 s2 : subs s2 (subs s1 u) ~~ subs (comp s2 s1) u.
 
   Proof.
-    intros u s1 s2. set (A := fvcodom (fv u) s1).
+    set (A := fvcodom (fv u) s1).
     set (B := fvcodom (fv (subs s1 u)) s2).
     set (C := fvcodom (fv u) (comp s2 s1)).
     set (D := fvcodom (fvcod (fv u) s1) s2).
@@ -817,11 +817,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       <- empty_subset. hyp.
   Qed.
 
-  Lemma single_rename : forall x y u v, x = y \/ ~In y (fv u) ->
+  Lemma single_rename x y u v : x = y \/ ~In y (fv u) ->
     subs (single y v) (rename x y u) ~~ subs (single x v) u.
 
   Proof.
-    intros x y u v hy. unfold Def.rename. rewrite subs_comp. apply subs_saeq.
+    intro hy. unfold Def.rename. rewrite subs_comp. apply subs_saeq.
     intros d hd. unfold Def.comp, Def.single. unfold Def.update at -1.
     eq_dec d x; simpl.
     rewrite update_eq. refl.
@@ -834,11 +834,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof. intros x y z u hy. apply single_rename. hyp. Qed.
 
-  Lemma subs_update : forall x y s u, s y = Var y ->
+  Lemma subs_update x y s u : s y = Var y ->
     subs (update x (Var y) s) u ~~ subs (update x (Var x) s) (rename x y u).
 
   Proof.
-    intros x y s u h. unfold Def.rename. rewrite subs_comp. apply subs_saeq.
+    intro h. unfold Def.rename. rewrite subs_comp. apply subs_saeq.
     intros z hz. unfold Def.comp, Def.single. unfold Def.update at -2.
     eq_dec z x; simpl.
     subst. unfold Def.update. eq_dec y x.
@@ -1594,7 +1594,12 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End clos_vaeq.
 
-  (** [clos_vaeq] is compatible with [same_rel]. *)
+  (** [clos_vaeq] is compatible with [inclusion] and [same_rel]. *)
+
+  Instance clos_vaeq_incl n :
+    Proper (inclusion ==> inclusion) (@clos_vaeq n).
+
+  Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 
   Instance clos_vaeq_same_rel n :
     Proper (same_rel ==> same_rel) (@clos_vaeq n).
