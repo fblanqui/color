@@ -1237,6 +1237,35 @@ on some finite set of variables *)
     rewrite empty_b. intro a. set_iff. tauto.
   Qed.
 
+  Lemma single_update x y u v s :
+    ~In y (remove x (fv u)) -> ~In y (fvcodom (remove x (fv u)) s) ->
+    subs (comp (single y v) (update x (Var y) s)) u = subs (update x v s) u.
+
+  Proof.
+    intros h1 h2. apply subs_seq. intros z hz; ens.
+    unfold Def.comp, Def.update. eq_dec z x.
+    subst. simpl. rewrite single_eq. refl.
+    case_eq (beq_term (s z) (Var z)).
+    rewrite beq_term_true_iff. intro e. rewrite e. simpl.
+    unfold Def.single, Def.update. eq_dec z y. 2: refl.
+    subst. exfalso. apply h1. set_iff. auto.
+    rewrite beq_term_false_iff. intro e. rewrite subs_notin_fv. refl.
+    rewrite domain_single.
+    case_eq (mem y (fv (s z)) && negb (beq_term v (Var y))). 2: refl.
+    rewrite andb_true_iff, <- mem_iff, negb_lr, beq_term_false_iff.
+    intros [i1 i2]. exfalso. apply h2. rewrite In_fvcodom. ex z. set_iff. fo.
+  Qed.
+
+  Lemma single_update_var x u v s :
+    subs (comp (single (var x u s) v) (update x (Var (var x u s)) s)) u
+    = subs (update x v s) u.
+
+  Proof.
+    apply single_update. 2: apply var_notin_fvcodom.
+    unfold Def.var; ens. set (xs := fvcodom (remove x (fv u)) s).
+    gen (var_notin_ok (union (fv u) xs)). destruct (mem x xs); set_iff; fo.
+  Qed.
+
 (****************************************************************************)
 (** ** Some equalities on single renamings. *)
 
