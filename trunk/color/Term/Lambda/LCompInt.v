@@ -219,8 +219,7 @@ Module Make (Export ST : ST_Struct)
       WF (restrict (SN R) (supterm_acc! U R)).
 
     Proof.
-      apply restrict_tc_supterm_acc_R_mon_wf.
-      intros u u' uu' h. eapply SN_inv. apply uu'. hyp.
+      apply restrict_tc_supterm_acc_R_mon_wf. class.
       apply wf_restrict_sn. refl.
     Qed.
 
@@ -331,8 +330,7 @@ Module Make (Export ST : ST_Struct)
       WF (restrict (SN R) (clos_aeq (supterm_acc!) U R)).
 
     Proof.
-      apply restrict_clos_aeq_tc_supterm_acc_R_mon_wf.
-      intros u u' uu' h. eapply SN_inv. apply uu'. hyp.
+      apply restrict_clos_aeq_tc_supterm_acc_R_mon_wf. class.
       apply wf_restrict_sn. refl.
     Qed.
 
