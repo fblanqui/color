@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil SN SetUtil.
-Require Export LBeta.
+Require Export LBeta LEta.
 
 (****************************************************************************)
 (** ** Computability predicates. *)
@@ -73,8 +73,10 @@ Module Type CP_Struct.
   Notation clos_vaeq :=
     (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation eta_top := (@eta_top F X ens_X).
 
   Infix "->bh" := beta_top (at level 70).
+  Infix "->eh" := eta_top (at level 70).
 
   (** We assume given a relation [->Rh] and a predicate [neutral]. *)
 
@@ -107,8 +109,7 @@ Module Type CP_Struct.
   Declare Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
   Declare Instance fv_Rh : Proper (Rh --> Subset) fv.
   Parameter not_Rh_var : forall x u, ~ Var x ->Rh u.
-  Parameter not_Rh_lam : forall x u w, ~ Lam x u ->Rh w.
-    (* FIXME: We exclude eta-reduction here. *)
+  Parameter Rh_eh : forall x u w, Lam x u ->Rh w -> Lam x u ->eh w.
   Parameter Rh_bh : forall x u v w,
     App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
   Parameter not_Rh_app_neutral : forall u v w, neutral u -> ~ App u v ->Rh w.
@@ -126,13 +127,14 @@ End CP_Struct.
 (****************************************************************************)
 (** * CP structure for beta-reduction alone. *)
 
-Module CP_beta (Import L : L_Struct) <: CP_Struct.
+Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
 
   Module L := L.
 
   Module Import B := LBeta.Make L.
+  Module Import E := LEta.Make L.
 
-  Definition Rh := beta_top.
+  Definition Rh := beta_top U eta_top.
   Infix "->Rh" := Rh (at level 70).
 
   Notation R := (clos_mon Rh).
@@ -140,6 +142,10 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
 
   Notation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
+
+  Lemma R_aeq_alt : R_aeq == beta_aeq U eta_aeq.
+
+  Proof. unfold Rh. rewrite clos_mon_union, clos_aeq_union. refl. Qed.
 
   (** A term is neutral if it is not a [Lam]. *)
 
@@ -155,19 +161,19 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
 
   Proof. intros u u' uu' hu. destruct u; inv_aeq uu'; subst; simpl; auto. Qed.
 
-  Lemma neutral_var : forall x, neutral (Var x).
+  Lemma neutral_var x : neutral (Var x).
 
   Proof. fo. Qed.
 
-  Lemma neutral_app : forall u v, neutral u -> neutral (App u v).
+  Lemma neutral_app u v : neutral u -> neutral (App u v).
 
   Proof. fo. Qed.
 
-  Lemma not_neutral_lam : forall x u, ~neutral (Lam x u).
+  Lemma not_neutral_lam x u : ~neutral (Lam x u).
 
   Proof. fo. Qed.
 
-  Lemma neutral_beta : forall x u v, neutral (App (Lam x u) v).
+  Lemma neutral_beta x u v : neutral (App (Lam x u) v).
 
   Proof. fo. Qed.
 
@@ -175,28 +181,32 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
 
   Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
-  Proof. class. Qed.
+  Proof.
+    eapply stable_same_rel. apply R_aeq_alt. apply stable_union.
+    apply subs_beta_aeq. apply subs_eta_aeq.
+  Qed.
 
-  Lemma not_Rh_var : forall x u, ~ Var x ->Rh u.
+  Lemma not_Rh_var x u : ~ Var x ->Rh u.
 
-  Proof. intros x u b. inversion b. Qed.
+  Proof. intro r; inversion r; clear r; inversion H. Qed.
 
-  Lemma not_Rh_lam : forall x u w, ~ Lam x u ->Rh w.
+  Lemma Rh_eh x u w : Lam x u ->Rh w -> Lam x u ->eh w.
 
-  Proof. intros x u w b. inversion b. Qed.
+  Proof. intro r; inversion r; clear r. inversion H. hyp. Qed.
 
-  Lemma Rh_bh : forall x u v w,
-    App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
+  Lemma Rh_bh x u v w : App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
 
-  Proof. fo. Qed.
+  Proof. intro r; inversion r; clear r. hyp. inversion H. Qed.
 
-  Lemma not_Rh_app_neutral : forall u v w, neutral u -> ~ App u v ->Rh w.
+  Lemma not_Rh_app_neutral u v w : neutral u -> ~ App u v ->Rh w.
 
-  Proof. intros u v w h r. destruct u; inversion r; auto. Qed.
+  Proof.
+    intros h r. inversion r; clear r; inversion H; clear H; subst. auto.
+  Qed.
 
   Instance fv_Rh : Proper (Rh --> Subset) fv.
 
-  Proof. exact fv_beta_top. Qed.
+  Proof. apply fv_union. apply fv_beta_top. apply fv_eta_top. Qed.
 
   (** Some notations. *)
   (*COQ: can we avoid to repeat these notations already declared in CP_Struct?*)
@@ -207,14 +217,40 @@ Module CP_beta (Import L : L_Struct) <: CP_Struct.
   Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
   Notation cp := (@cp F X aeq R_aeq neutral).
 
-End CP_beta.
+  (** Extra properties. *)
+
+  Lemma R_aeq_apps_fun f n (us : Tes n) t : apps (Fun f) us =>R t ->
+    exists vs, t = apps (Fun f) vs /\ clos_vaeq R us vs.
+
+  Proof.
+    intro r. apply R_aeq_alt in r. destruct r as [r|r].
+    destruct (beta_aeq_apps_fun r) as [vs [h1 h2]].
+    ex vs. split_all. (*COQ:rewrite clos_mon does not work*)
+    unfold Rh. eapply clos_vaeq_same_rel. rewrite clos_mon_union. refl.
+    eapply clos_vaeq_incl. apply incl_union_l. refl. hyp.
+
+    destruct (eta_aeq_apps_fun r) as [vs [h1 h2]].
+    ex vs. split_all. (*COQ:rewrite clos_mon does not work*)
+    unfold Rh. eapply clos_vaeq_same_rel. rewrite clos_mon_union. refl.
+    eapply clos_vaeq_incl. apply incl_union_r. refl. hyp.
+  Qed.
+
+  Arguments R_aeq_apps_fun [f n us t] _ : rename.
+
+End CP_beta_eta.
 
 (****************************************************************************)
 (** * Properties of CP structures. *)
 
 Module Make (Export CP : CP_Struct).
 
+  Notation arr := (@arr F X).
+
   Module Export B := LBeta.Make L.
+  Module Export E := LEta.Make L.
+
+(****************************************************************************)
+(** ** Properties of [R_aeq]. *)
 
   (** Variables are irreducible. *)
 
@@ -226,6 +262,29 @@ Module Make (Export CP : CP_Struct).
 
   Proof.
     intro r; inversion r; subst. simpl_aeq; subst. eapply not_R_var. apply H1.
+  Qed.
+
+  (** A reduct of an abstraction is either a top-eta-reduct or an
+  non-top-reduct. *)
+
+  Lemma lam_R_aeq_l x u v : Lam x u =>R v ->
+    (exists v', u = App v' (Var x) /\ ~In x (fv v') /\ v' ~~ v)
+    \/ (exists y w, v = Lam y w /\ u =>R rename y x w).
+
+  Proof.
+    intro r; inversion r; clear r; subst. inv_aeq H; clear H; subst.
+    permut_rename i0; clear i1. inversion H1; clear H1; subst.
+    (* top reduction = top eta *)
+    left. apply Rh_eh in H; inversion H; clear H; subst.
+    rewrite rename_app in i. inv_aeq i; clear i; subst. ex u0. split.
+    rewrite rename_var, eqb_refl in i3. inv_aeq i3. subst. refl.
+    (*COQ: inv_aeq i3; subst does not give the same result*)
+    rewrite rename_notin_fv in i1. 2: hyp. rewrite i1. split. 2: hyp.
+    revert i2. simpl. set_iff. split_all. subst. contr.
+    (* non top reduction *)
+    right. inv_aeq H0; clear H0; subst. ex x1 u1. split. refl.
+    (*SLOW*)rewrite i, i1, rename2. 2: hyp. 
+    apply subs_R_aeq. refl. apply clos_aeq_intro_refl. hyp.
   Qed.
 
   (** [App u v] is not head-reducible if [u] is neutral. *)
@@ -254,33 +313,14 @@ Module Make (Export CP : CP_Struct).
     apply incl_clos_aeq. hyp.
   Qed.
 
-  (** No reduction can occur at the top of an abstraction. *)
-
-  Lemma R_lam x u w : Lam x u ->R w -> exists v, w = Lam x v /\ u ->R v.
-
-  Proof.
-    intro r; inversion r; subst. apply not_Rh_lam in H. tauto. exists u'. auto.
-  Qed.
-
-  Lemma R_aeq_lam x u w : Lam x u =>R w ->
-    exists y v, w = Lam y v /\ u =>R rename y x v.
-
-  Proof.
-    intro r; inversion r; subst. inv_aeq H; clear H; subst.
-    permut_rename i0; clear i1. inversion H1; clear H1; subst.
-    exfalso. eapply not_Rh_lam. apply H.
-    inv_aeq H0; clear H0; subst. ex x1 u1. split. refl.
-    rewrite i, i1, rename2. 2: hyp. apply subs_R_aeq. refl.
-    apply incl_clos_aeq. hyp.
-  Qed.
-
   (** Extension of properties from [App] to [apps]. *)
 
   Lemma neutral_apps : forall n (us : Tes n) u,
-    neutral u -> neutral (apps u us).
+      neutral u -> neutral (apps u us).
 
   Proof.
-    induction us; simpl. auto. intros u nu. apply IHus. apply neutral_app. hyp.
+    induction us; simpl. auto.
+    intros u nu. apply IHus. apply neutral_app. hyp.
   Qed.
 
   Lemma neutral_apps_var x n (us : Tes n) : neutral (apps (Var x) us).
@@ -305,130 +345,72 @@ Module Make (Export CP : CP_Struct).
     split. rewrite h1. refl. apply right_sym. hyp.
   Qed.
 
+  Arguments R_aeq_apps_neutral [n us u v] _ _.
+
   (** Alpha-transitive closure of [=>R]. *)
 
   Infix "=>R*" := (R_aeq*) (at level 70).
 
-  (** Extension of [R_aeq_lam] to [=>R*]. *)
+  Notation satc := (subs_rel (R_aeq*)).
 
-  Lemma atc_lam : forall x u w, Lam x u =>R* w ->
-    exists y v, w = Lam y v /\ u =>R* rename y x v.
+  Lemma subs_satc u s s' : satc (fv u) s s' -> subs s u =>R* subs s' u.
+
+  Proof. intro ss'. apply subs_rel_mon_preorder_aeq; class. Qed.
+
+(****************************************************************************)
+(** ** Properties of [SN R_aeq]. *)
+
+  (** [SN R_aeq] is a computability predicate. *)
+
+  Lemma cp_sn_SN : cp_sn (SN R_aeq).
+
+  Proof. fo. Qed.
+
+  Lemma cp_red_SN : cp_red (SN R_aeq).
+
+  Proof. intros u u' b h. inversion h. apply H. hyp. Qed.
+
+  Lemma cp_neutral_SN : cp_neutral (SN R_aeq).
+
+  Proof. intros u n h. apply SN_intro. hyp. Qed.
+
+  Lemma cp_SN : cp (SN R_aeq).
 
   Proof.
-    cut (forall t w, t =>R* w -> forall x u, t = Lam x u ->
-      exists y v, w = Lam y v /\ u =>R* rename y x v).
-    intros h x u w i.
-    destruct (h _ _ i _ _ (refl_equal _)) as [y [v [h1 h2]]]. ex y v. auto.
-    (* We proceed by induction on [=>R*]. *)
-    induction 1; intros x' u' e; subst.
-    (* step *)
-    destruct (R_aeq_lam H) as [y0 [v0 [h1 h2]]].
-    ex y0 v0. split. hyp. apply at_step. hyp.
-    (* refl *)
-    inv_aeq H; clear H; subst. ex x u. split. refl.
-    rewrite i0, rename2, rename_id. refl. hyp.
-    (* trans *)
-    destruct (IHclos_aeq_trans1 x' u' (refl_equal _)) as [y0 [v0 [h1 h2]]].
-    subst v.
-    destruct (IHclos_aeq_trans2 y0 v0 (refl_equal _)) as [y1 [v1 [i1 i2]]].
-    subst w.
-    ex y1 v1. split. refl. trans (rename y0 x' v0). hyp.
-    eapply rename_atc in i2; auto. 2: apply subs_R_aeq.
-    rewrite rename2 in i2. apply i2.
-    rewrite notin_fv_lam, <- H0. simpl. set_iff. tauto.
+    constructor. class. apply cp_sn_SN. apply cp_red_SN. apply cp_neutral_SN.
   Qed.
 
-  (** Extension of [=>R*] to substitutions. *)
+  (** If [u] is SN , then [Lam x u] is SN too. *)
 
-  Definition satc s s' := forall x : X, s x =>R* s' x.
-
-  Instance satc_preorder : PreOrder satc.
+  Lemma sn_lam x u : SN R_aeq u -> SN R_aeq (Lam x u).
 
   Proof.
-    split.
-    intros s x. refl.
-    intros a b c ab bc x. trans (b x). apply ab. apply bc.
-  Qed.
-
-  Lemma subs_satc_aux : Proper (satc ==> Logic.eq ==> R_aeq*) subs.
-
-  Proof.
-    intros s s' ss' u u' uu'. subst u'. revert u s s' ss'.
-    induction u; intros s s' ss'.
-    apply ss'.
-    refl.
-    simpl. rewrite IHu1, IHu2. refl. hyp. hyp.
-    set (xs := union (fv u) (union (fvcodom (remove x (fv u)) s)
-      (fvcodom (remove x (fv u)) s'))).
-    gen (var_notin_ok xs). set (z := var_notin xs). unfold xs. set_iff.
-    intro hz. rewrite (aeq_alpha z). 2: tauto.
-    do 2 (rewrite subs_lam_no_alpha; [idtac|rewrite remove_fv_rename; tauto]).
-    apply Lam_atc. class. refl.
-    unfold Def.rename. rewrite !subs_comp. apply IHu.
-    intro y. unfold Def.comp, Def.single. unfold Def.update at 2.
-    unfold Def.update at 3. eq_dec y x; simpl.
-    rewrite !update_eq. refl.
-    unfold Def.update. eq_dec y z. refl. apply ss'.
-  Qed.
-
-  Instance subs_satc : Proper (satc ==> R_aeq* ==> R_aeq*) subs.
-
-  Proof.
-    intros s s' ss' u u' uu'. revert u u' uu'. induction 1.
-    (* step *)
-    trans (subs s v). apply at_step. apply subs_R_aeq. refl. hyp.
-    apply subs_satc_aux. hyp. refl.
-    (* aeq *)
-    rewrite H. apply subs_satc_aux. hyp. refl.
-    (* trans *)
-    trans (subs s v). rewrite uu'1. refl. hyp.
-  Qed.
-
-  (** [SN R_aeq] is compatible with [aeq]. *)
-
-  Instance SN_R_aeq_impl : Proper (aeq ==> impl) (SN R_aeq).
-
-  Proof.
-    intros t u tu h. apply SN_intro. intros u' uu'. rewrite <- tu in uu'.
-    eapply SN_inv. apply uu'. hyp.
-  Qed.
-
-  (** [SN R_aeq] is stable by [=>R*]. *)
-
-  Instance SN_atc : Proper (R_aeq* ==> impl) (SN R_aeq).
-
-  Proof.
-    intros t u tu ht. revert t u tu ht. induction 1; intro ht.
-    inversion ht; fo. rewrite <- H. hyp. fo.
-  Qed.
-
-  (** The subterms of a strongly normalizing term are strongly
-     normalizing. *)
-
-  Lemma sn_app_l : forall u v, SN R_aeq (App u v) -> SN R_aeq u.
-
-  Proof.
-    cut (forall w, SN R_aeq w -> forall u v, w = App u v -> SN R_aeq u).
-    intros h u v i. eapply h. apply i. refl.
-    induction 1. intros u v e. subst. apply SN_intro. intros u' uu'.
-    eapply H0. apply mon_app_l. class. apply uu'.
-    refl. refl.
-  Qed.
-
-  Lemma sn_lam x : forall u, SN R_aeq u -> SN R_aeq (Lam x u).
-
-  Proof.
-    induction 1. rename x0 into u. apply SN_intro. intros t r.
-    destruct (R_aeq_lam r) as [y [v [h1 h2]]]; subst.
-    destruct (fv_R_notin_fv_lam _ r).
-    subst. apply H0. rewrite rename_id in h2. hyp.
-    rewrite (@aeq_alpha y v x). 2: hyp. apply H0. hyp.
+    intro h'.
+    (* [u] is SN wrt [supterm! U R_aeq] since [R_aeq] is monotone. *)
+    assert (h : SN (supterm! U R_aeq) u). apply SN_supterm_R_mon. class. hyp.
+    (* We proceed by induction on [u] with [supterm! U R_aeq] as
+    well-founded relation. *)
+    clear h'. revert h; induction 1; rename x0 into u.
+    (* We prove that every reduct [t] of [Lam x u] is SN. *)
+    apply SN_intro; intros t r.
+    inversion r; clear r; subst. inv_aeq H1; clear H1; subst.
+    permut_rename i0; clear i1. inversion H3; clear H3; subst.
+    (* reduction at the top (eta) *)
+    apply Rh_eh in H1. inversion H1; clear H1; subst.
+    rewrite rename_app, rename_var, eqb_refl in i. inv_aeq i; clear i; subst.
+    rewrite rename_notin_fv in i1. 2: hyp. rewrite H2, <- i1.
+    apply (SN_incl (supterm! U R_aeq)). apply incl_union_r. refl.
+    apply H. left. apply t_step. apply st_app_l.
+    (* reduction in [u]. *)
+    assert (e : t ~~ Lam x (rename x0 x u')). 
+    trans (Lam x0 u'). hyp. apply aeq_alpha'. destruct i2. auto.
+    right. intro h. apply fv_clos_mon in H6; class.
+    rewrite e. apply H0. right. rewrite i. apply subs_R_aeq. refl.
+    apply clos_aeq_intro_refl. hyp.
   Qed.
 
 (****************************************************************************)
-(** ** Properties of computability predicates. *)
-
-  (** We check that computability properties are invariant wrt [=]. *)
+(** ** Computability properties are invariant wrt [=]. *)
 
   Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
 
@@ -452,87 +434,8 @@ Module Make (Export CP : CP_Struct).
 
   Proof. intros P Q PQ [P1 P2 P3 P4]. rewrite PQ in *. fo. Qed.
 
-  (** A computability predicate is stable by [=>R*] if it satisfies
-     [cp_aeq] and [cp_red]. *)
-
-  Instance cp_atc P : cp_aeq P -> cp_red P -> Proper (R_aeq* ==> impl) P.
-
-  Proof.
-    intros P_aeq P_red u u' uu' hu. revert u u' uu' hu. induction 1.
-    fo. rewrite H. auto. fo.
-  Qed.
-
-  (** Computability of a beta-redex. *)
-
-  Lemma cp_beta : forall P, cp_aeq P -> cp_red P -> cp_neutral P ->
-    forall x u v, SN R_aeq (Lam x u) -> SN R_aeq v ->
-      P (subs (single x v) u) -> P (App (Lam x u) v).
-
-  Proof.
-    intros P P1 P3 P4 x0 u0 v0 h0 h1 h.
-    set (gt_red x0 u0 v0 :=
-      Rof (symprod (RelUtil.restrict (R_aeq* (Lam x0 u0)) R_aeq)
-                   (RelUtil.restrict (R_aeq* v0) R_aeq))
-      (fun a => match a with ((x,u),v) => (Lam x u, v) end)).
-    set (Q := fun a => match a with ((x,u),v) =>
-      Lam x0 u0 =>R* Lam x u -> v0 =>R* v -> P (App (Lam x u) v) end).
-
-    (* We prove [Q] by well-founded induction on [((x,u),v)] with
-       [gt_red] as well-founded relation ([Lam x0 u0] and [v0] are [SN]). *)
-    cut (Q ((x0,u0),v0)). intro q. apply q; refl.
-    cut (SN (gt_red x0 u0 v0) (x0,u0,v0)).
-    Focus 2. apply WF_inverse. apply WF_symprod; apply wf_restrict_sn;
-      intros v hv; (eapply SN_atc; [apply hv|hyp]).
-
-    apply SN_ind with (R:=gt_red x0 u0 v0). intros [[x u] v] i IH i1 i2.
-    destruct (atc_lam i1) as [x1 [u1 [j1 j2]]]. inversion j1; subst x1 u1.
-    clear j1. apply P4. apply neutral_beta. intros c r. inversion r; subst.
-    inv_aeq H; clear H; subst. inv_aeq i3; subst. inversion H1; subst.
-    (* top *)
-    apply Rh_bh in H. inversion H; subst. rewrite H0, i5, single_rename.
-    2: hyp. eapply cp_atc; auto. 2: apply h.
-    trans (subs (single x0 u2) (rename x x0 u)). apply subs_satc. 2: hyp.
-    intro z. unfold Def.single, Def.update. eq_dec z x0.
-    rewrite i4. hyp. refl.
-    rewrite single_rename. refl.
-    rewrite notin_fv_lam, <- i1. simpl. set_iff. fo.
-    (* app_l *)
-    destruct (R_lam H4) as [t [k1 k2]]; subst. rewrite H0, i4.
-    assert (a : Lam x u =>R Lam x1 t).
-    apply (incl_clos_aeq R) in k2. destruct i6.
-    subst. rewrite rename_id in i5. rewrite <- i5. mon.
-    rewrite (aeq_alpha x1), <- i5. 2: hyp. mon.
-    cut (Q ((x1,t),v)). intro q. apply q. 2: hyp.
-    trans (Lam x u). hyp. apply at_step. hyp.
-    apply IH. unfold gt_red, Rof. apply left_sym. split; hyp.
-    (* app_r *)
-    rewrite H0, i3.
-    assert (a : v =>R v'0). rewrite <- i4. apply incl_clos_aeq. hyp.
-    cut (Q ((x,u),v'0)). intro q. apply q. hyp.
-    trans v. hyp. rewrite <- i4. apply at_step. apply incl_clos_aeq. hyp.
-    apply IH. unfold gt_red, Rof. apply right_sym. split; hyp.
-  Qed.
-
-  (** [SN R_aeq] is a computability predicate. *)
-
-  Lemma cp_sn_SN : cp_sn (SN R_aeq).
-
-  Proof. fo. Qed.
-
-  Lemma cp_red_SN : cp_red (SN R_aeq).
-
-  Proof. intros u u' b h. inversion h. apply H. hyp. Qed.
-
-  Lemma cp_neutral_SN : cp_neutral (SN R_aeq).
-
-  Proof. intros u n h. apply SN_intro. hyp. Qed.
-
-  Lemma cp_SN : cp (SN R_aeq).
-
-  Proof.
-    constructor. apply SN_R_aeq_impl. apply cp_sn_SN. apply cp_red_SN.
-    apply cp_neutral_SN.
-  Qed.
+(****************************************************************************)
+(** ** Properties of computability predicates wrt variables. *)
 
   (** A computability predicate contains every strongly normalizing term
      of the form [x t1 .. tn]. *)
@@ -544,7 +447,7 @@ Module Make (Export CP : CP_Struct).
     intros P p1 p4 x n us h.
     cut (SN (Vrel1 R_aeq) us). clear h. revert us. induction 1.
     rename x0 into us. apply p4. apply neutral_apps_var. intros v r.
-    destruct (R_aeq_apps_neutral _ (neutral_var x) r).
+    destruct (R_aeq_apps_neutral (neutral_var x) r).
     destruct H1 as [x' [h1 h2]]. apply not_R_aeq_var in h2. tauto.
     destruct H1 as [us' [h1 h2]]. rewrite h1. apply H0. hyp.
     apply Vforall_SN_rel1. hyp.
@@ -557,9 +460,18 @@ Module Make (Export CP : CP_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Properties of the interpretation of arrow types. *)
+(** ** Properties of [arr]. *)
 
-  Notation arr := (@arr F X).
+  (** Monotony properties of [arr]. *)
+
+  Instance arr_incl :
+    Proper (SetUtil.subset --> SetUtil.subset ==> SetUtil.subset) arr.
+
+  Proof. fo. Qed.
+
+  Instance arr_equiv : Proper (equiv ==> equiv ==> equiv) arr.
+
+  Proof. fo. Qed.
 
   (** [arr] preserves [cp_aeq]. *)
 
@@ -574,7 +486,7 @@ Module Make (Export CP : CP_Struct).
 
   Proof.
     intros P Q p1 p2 p4 q2 t ht.
-    apply sn_app_l with (v:=Var(var_notin XSet.empty)).
+    apply SN_st_app_l with (v:=Var(var_notin XSet.empty)). class.
     apply q2. apply ht. apply cp_var; hyp.
   Qed.
 
@@ -614,16 +526,97 @@ Module Make (Export CP : CP_Struct).
     apply cp_red_arr; fo. apply cp_neutral_arr; fo.
   Qed.
 
-  (** Monotony properties of [arr]. *)
+(****************************************************************************)
+(** ** Computability of an application. *)
 
-  Import SetUtil.
+  Lemma cp_app P Q : cp_aeq P -> cp_red P -> cp_sn P ->
+                     cp_aeq Q -> cp_red Q -> cp_neutral Q ->
+    forall t, (neutral t \/ exists x u, t = Lam x u) ->
+              (forall t', t =>R t' -> arr P Q t') ->
+              forall v, P v ->
+                        (forall x u, t = Lam x u -> Q (subs (single x v) u)) ->
+                        Q (App t v).
 
-  Instance arr_incl : Proper (subset --> subset ==> subset) arr.
+  Proof.
+    intros P_aeq P_red P_sn Q_aeq Q_red Q_neu
+           t t_neu_or_abs t_red_comp v0 v0_sn tv0_beta_comp.
+    (* We prove the more general property that [App t v] is
+    computable for every reduct of [v] of [v0]. *)
+    set (B := fun v => v0 =>R* v -> Q (App t v)).
+    cut (B v0). intro h. apply h. refl.
+    (* Since [P] satisfies [cp_sn], [v0] is SN wrt [R_aeq] and thus
+    wrt the restriction of [R_aeq] of the reducts of [v0]. *)
+    set (S := RelUtil.restrict (R_aeq* v0) R_aeq). cut (SN S v0).
+    Focus 2. apply wf_restrict_sn. intros v hv. eapply proper_atc. class.
+    2: apply hv. class. apply P_sn. hyp.
+    (* We prove that every reduct of [v0] is computable by
+       well-founded induction on [v0] with [S] as well-founded relation. *)
+    apply SN_ind; intros v i IH v0v.
+    (* Since [App t v] is neutral, it suffices to prove that its
+    reducts are computable. *)
+    apply Q_neu. destruct t_neu_or_abs as [t_neu|[x [u e]]].
+    apply neutral_app. hyp. rewrite e. apply neutral_beta.
+    intros w tv_w. inversion tv_w as [? a ? w' tv_a ww' aw']; clear tv_w; subst.
+    inv_aeq tv_a; clear tv_a; subst; rename u into t'; rename u0 into v'.
+    inversion aw'; clear aw'; subst.
+    (* top *)
+    destruct t_neu_or_abs as [t_neu|[x [u e]]].
+    exfalso. eapply not_Rh_app_neutral. 2: apply H. rewrite i1. hyp.
+    rewrite e in i1. inv_aeq i1; clear i1. rewrite i0 in H. apply Rh_bh in H.
+    inversion H; clear H; subst x1 u1 v1 w'. rewrite ww', i3, single_rename.
+    rewrite subs_single_eq, i2. (*COQ: rewrite <- v0v does not work*)
+    eapply proper_atc. hyp. apply Q_red.
+    apply subs_single_mon_preorder_aeq; class. apply v0v. refl.
+    apply tv0_beta_comp. hyp. tauto.
+    (* app_l *)
+    rewrite ww'. apply t_red_comp.
+    rewrite <- i1. apply clos_aeq_intro_refl. hyp.
+    rewrite i2. (*COQ: rewrite <- v0v does not work*)
+    gen (proper_atc P_aeq P_red); intro P_reds.
+    assert (h : Proper (Logic.eq ==> R_aeq* ==> aeq ==> R_aeq*) subs_single).
+    apply subs_single_mon_preorder_aeq; class. rewrite <- v0v. hyp.
+    (* app_r *)
+    rewrite ww', i1. apply IH.
+    split. hyp. rewrite <- i2. apply clos_aeq_intro_refl. hyp.
+    trans v. hyp. rewrite <- i2. apply at_step. apply clos_aeq_intro_refl. hyp.
+  Qed.
 
-  Proof. fo. Qed.
+(****************************************************************************)
+(** ** Computability of an abstraction. *)
 
-  Instance arr_equiv : Proper (equiv ==> equiv ==> equiv) arr.
+  Lemma cp_lam P Q : cp_aeq P -> cp_red P -> cp_sn P -> cp_neutral P ->
+                     cp_aeq Q -> cp_red Q -> cp_sn Q -> cp_neutral Q ->
+    forall x u, (forall v, P v -> Q (subs (single x v) u)) ->
+                arr P Q (Lam x u).
 
-  Proof. fo. Qed.
+  Proof.
+    intros P_aeq P_red P_sn P_neu Q_aeq Q_red Q_sn Q_neu x u hu.
+    (* [u] is SN. *)
+    cut (SN R_aeq u).
+    Focus 2. apply Q_sn. rewrite <- (single_id x). apply hu. apply cp_var; hyp.
+    (* We prove that [Lam x u] is computable by wellfounded induction on [u].*)
+    intro u_sn. revert u u_sn hu. induction 1; rename x0 into u; intros hu v hv.
+    (* We apply the lemma [cp_app]. *)
+    apply cp_app with (P:=P); auto.
+    right. ex x u. refl.
+    Focus 2. intros x' u' e; inversion e; clear e; subst. fo.
+    (* We prove that every reduct of [Lam x u] is computable. *)
+    intros t r. gen r; intro r'. apply lam_R_aeq_l in r'.
+    destruct r' as [[t' [h1 [h2 h3]]]|[y [w [h1 h2]]]]; subst.
+    (* top eta reduction *)
+    intros a ha.
+    assert (e : App t a ~~ subs (single x a) (App t' (Var x))).
+    simpl. rewrite single_eq, single_notin_fv, h3. refl. hyp.
+    rewrite e; clear e. apply hu. hyp.
+    (* non top reduction *)
+    assert (h : y=x \/ ~In x (fv w)). eq_dec x y. auto.
+    right. intro hx. apply fv_clos_aeq in r. 2: class. simpl in r.
+    assert (i : In x (remove y (fv w))). set_iff. fo.
+    apply r in i. revert i. set_iff. fo.
+    (* [Lam y w] is alpha-equivalent to [Lam x (rename y x w)]. *)
+    rewrite aeq_alpha' with (y:=x). 2: hyp. apply H0. hyp. intros a ha.
+    eapply proper_atc. class. apply Q_red. eapply subs_atc. class. refl.
+    apply at_step. apply h2. fo.
+  Qed.
 
 End Make.

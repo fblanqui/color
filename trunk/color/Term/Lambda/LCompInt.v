@@ -14,7 +14,7 @@ term are computable.
 
 Set Implicit Arguments.
 
-Require Import IndefiniteDescription LogicUtil Relations SN LCompSimple Tarski
+Require Import IndefiniteDescription LogicUtil SN LCompSimple Tarski
   Structures.OrderedType VecUtil SetUtil RelUtil.
 Require Union.
 

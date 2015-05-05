@@ -237,18 +237,19 @@ End Make.
 (****************************************************************************)
 (** * CP structure associated to a rewrite system. *)
 
-Require LComp LBeta.
+Require LComp LBeta LEta.
 
-Module CP_beta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
+Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 
   Module L := L.
 
   Module Import S := Make RS.
   Module Import B := LBeta.Make L.
+  Module Import E := LEta.Make L.
 
   (** We consider the union of beta-reduction and rewriting. *)
 
-  Definition Rh := beta_top U Sh.
+  Definition Rh := beta_top U eta_top U Sh.
   Infix "->Rh" := Rh (at level 70).
 
   Notation R := (clos_mon Rh).
@@ -257,9 +258,9 @@ Module CP_beta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
   Notation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
-  Lemma R_aeq_alt : R_aeq == beta_aeq U S_aeq.
+  Lemma R_aeq_alt : R_aeq == beta_aeq U eta_aeq U S_aeq.
 
-  Proof. unfold Rh. rewrite clos_mon_union, clos_aeq_union. refl. Qed.
+  Proof. unfold Rh. rewrite !clos_mon_union, !clos_aeq_union. refl. Qed.
 
   (** A term is neutral if it is not a [Lam] nor it is headed by a [Fun]. *)
 
@@ -316,57 +317,58 @@ Module CP_beta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 
   Proof.
     eapply stable_same_rel. apply R_aeq_alt. apply stable_union.
-    apply subs_beta_aeq. apply subs_S_aeq.
+    apply stable_union. apply subs_beta_aeq. apply subs_eta_aeq.
+    apply subs_S_aeq.
   Qed.
 
   Instance fv_Rh : Proper (Rh --> Subset) fv.
 
   Proof.
-    apply fv_union. apply fv_beta_top. apply fv_clos_subs. apply fv_rule.
+    apply fv_union. apply fv_union. apply fv_beta_top. apply fv_eta_top.
+    apply fv_clos_subs. apply fv_rule.
   Qed.
 
-  Lemma not_Rh_var : forall x u, ~ Var x ->Rh u.
+  Lemma not_Rh_var x u : ~ Var x ->Rh u.
 
   Proof.
-    intros x u r. inversion r; clear r.
-    inversion H.
+    intro r; inversion r; clear r.
+    destruct H; inversion H.
     inversion H; subst; clear H. revert H0.
     destruct (rule_ok H1) as [f [n [ls h]]]; subst; clear H1.
     rewrite subs_apps. destruct ls; simpl. discr. rewrite apps_app. discr.
   Qed.
 
-  Lemma not_Rh_lam : forall x u w, ~ Lam x u ->Rh w.
+  Lemma Rh_eh x u w : Lam x u ->Rh w -> Lam x u ->eh w.
 
-  Proof. (* Same proof as [not_Rh_var]. *)
-    intros x u w r. inversion r; clear r.
-    inversion H.
+  Proof.
+    intro r; inversion r; clear r.
+    destruct H. inversion H. hyp.
     inversion H; subst; clear H. revert H0.
     destruct (rule_ok H1) as [f [n [ls h]]]; subst; clear H1.
     rewrite subs_apps. destruct ls; simpl. discr. rewrite apps_app. discr.
   Qed.
 
-  Lemma Rh_bh : forall x u v w,
-    App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
+  Lemma Rh_bh x u v w : App (Lam x u) v ->Rh w -> App (Lam x u) v ->bh w.
 
   Proof.
-    intros x u v w r. inversion r; clear r.
-    hyp.
+    intro r; inversion r; clear r.
+    destruct H. hyp. inversion H.
     exfalso. inversion H; subst; clear H. revert H0.
     destruct (rule_ok H1) as [f [n [ls h]]]; subst; clear H1.
     rewrite subs_apps. simpl. destruct ls; simpl. discr.
     destruct ls; simpl. discr. rewrite 2!apps_app. discr.
   Qed.
 
-  Lemma not_Rh_app_neutral : forall u v w, neutral u -> ~ App u v ->Rh w.
+  Lemma not_Rh_app_neutral u v w : neutral u -> ~ App u v ->Rh w.
 
   Proof.
-    intros u v w h r. inversion r; clear r.
-    destruct u; inversion H; auto.
+    intros u_neu r; inversion r; clear r.
+    destruct H. destruct u; inversion H; auto. inversion H.
     inversion H; clear H.
     destruct (rule_ok H1) as [f [n [ls i]]]; subst; clear H1.
     rewrite subs_apps in H0. simpl in H0.
-    apply (f_equal head) in H0. revert h H0. rewrite head_apps.
-    destruct u; simpl; fo. discr. rewrite <- H0 in h. hyp.
+    apply (f_equal head) in H0. revert u_neu H0. rewrite head_apps.
+    destruct u; simpl; fo. discr. rewrite <- H0 in u_neu. hyp.
   Qed.
 
   (** Term vector rewriting. *)
@@ -374,13 +376,13 @@ Module CP_beta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
   Infix "==>R" := (clos_vaeq R) (at level 70).
 
   Lemma clos_vaeq_alt n :
-    @clos_vaeq n R == @clos_vaeq n beta U @clos_vaeq n S.
+    @clos_vaeq n R == @clos_vaeq n beta U @clos_vaeq n eta U @clos_vaeq n S.
 
-  Proof. unfold Rh. rewrite clos_mon_union, clos_vaeq_union. refl. Qed.
+  Proof. unfold Rh. rewrite !clos_mon_union, !clos_vaeq_union. refl. Qed.
 
   (** Inversion lemma for terms of the form [apps (Fun f) us]. *)
 
-  Lemma beta_rewrite_aeq_apps_fun : forall f n (us : Tes n) t,
+  Lemma beta_eta_rewrite_aeq_apps_fun : forall f n (us : Tes n) t,
     apps (Fun f) us =>R t ->
     (exists vs, t = apps (Fun f) vs /\ us ==>R vs)
     \/ (exists p (ls : Tes p) r s q (vs : Tes q) (h : p+q=n),
@@ -389,23 +391,29 @@ Module CP_beta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
       /\ t ~~ apps (subs s r) vs).
 
   Proof.
-    intros f n us t h. apply R_aeq_alt in h. destruct h as [h|h].
+    intros f n us t h. apply R_aeq_alt in h. destruct h as [[h|h]|h].
+    (* beta *)
     left. destruct (beta_aeq_apps_fun h) as [vs [h1 h2]]; subst.
-    exists vs. intuition. eapply inclusion_elim. rewrite clos_vaeq_alt.
-    apply incl_union_l. refl. hyp.
+    ex vs. split_all. eapply inclusion_elim. rewrite clos_vaeq_alt.
+    apply incl_union_l. apply incl_union_l. refl. hyp.
+    (* eta *)
+    left. destruct (eta_aeq_apps_fun h) as [vs [h1 h2]]; subst.
+    ex vs. split_all. eapply inclusion_elim. rewrite clos_vaeq_alt.
+    apply incl_union_l. apply incl_union_r. refl. hyp.  
+    (* rewrite *)
     destruct (rewrite_aeq_apps_fun h)
       as [[vs [h1 h2]]|[p [ls [r [s [q [vs [h0 [h1 [h2 h3]]]]]]]]]]; clear h.
-    left. exists vs. intuition. eapply inclusion_elim. rewrite clos_vaeq_alt.
+    left. ex vs. split_all. eapply inclusion_elim. rewrite clos_vaeq_alt.
     apply incl_union_r. refl. hyp.
-    right. ex p ls r s q vs h0. intuition.
+    right. ex p ls r s q vs h0. split_all.
   Qed.
 
-  Arguments beta_rewrite_aeq_apps_fun [f n us t0] _.
+  Arguments beta_eta_rewrite_aeq_apps_fun [f n us t0] _.
 
   (** Some notations. *)
   (*COQ: can we avoid to repeat these notations already declared in CP_Struct?*)
 
-  Require Import LComp.
+  Import LComp.
 
   Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
   Notation cp_sn := (@cp_sn F X R_aeq).
@@ -413,4 +421,4 @@ Module CP_beta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
   Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
   Notation cp := (@cp F X aeq R_aeq neutral).
 
-End CP_beta_rewrite.
+End CP_beta_eta_rewrite.

@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil. 
+Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil.
 Require Export LSimple LComp.
 
 (****************************************************************************)
@@ -88,7 +88,7 @@ Module Make (Export ST : ST_Struct)
 
     (** The interpretation of a type is a computability predicate. *)
 
-    Lemma cp_int : forall T, cp (int T).
+    Global Instance cp_int : forall T, cp (int T).
 
     Proof. induction T; simpl. apply cp_I. apply cp_arr; hyp. Qed.
 
@@ -108,10 +108,6 @@ Module Make (Export ST : ST_Struct)
     Proof.
       intros T x. gen (cp_int T). intros [T1 _ _ T4]. apply cp_var; auto.
     Qed.
-
-    Lemma int_typ_eq : forall T V t, int V t -> T = V -> int T t.
-
-    Proof. intros T V t h e. subst. hyp. Qed.
 
     (** A substitution is valid wrt an environment [E] if, for every
        mapping [(x,T) in E], [s x] is in the interpretation of [T]. *)
@@ -143,49 +139,15 @@ Module Make (Export ST : ST_Struct)
       simpl. gen (hu _ _ H2 _ hs); intro h1. simpl in h1. apply h1.
       eapply hv. apply H4. hyp.
       (* lam *)
-      rename X0 into A. rename V0 into V.
-      (* First note that [A] and [V] are computability predicates. *)
+      rename X0 into A; rename V0 into V.
+      simpl. set (x' := var x v s). set (s' := S.update x (Var x') s).
       gen (cp_int A). intros [A1 A2 A3 A4].
-      gen (cp_int V). intros [V1 V2 V3 V4].
-      (* We first replace [s] by its restriction [s0] on [fv (Lam x v)]. *)
-      rewrite subs_seq_restrict. set (s0 := S.restrict (fv (Lam x v)) s).
-      (* We simplify. *)
-      simpl. set (x' := var x v s0). set (s' := S.update x (Var x') s0).
-      intros a ha.
-      (* We check that [s0] is valid wrt [E]. *)
-      assert (hs0 : valid E s0). intros z B hz. unfold s0, Def.restrict; ens.
-      destruct (XSet.mem z (fv (Lam x v))). apply hs. hyp. apply int_var.
-      (* We check that [s'] is valid wrt [add x A E]. *)
-      assert (hs' : valid (add x A E) s'). intros z B.
-      rewrite add_mapsto_iff. unfold s'. intros [[h1 h2]|[h1 h2]].
-      subst z B. rewrite update_eq. apply int_var.
-      rewrite update_neq. 2: hyp. apply hs0. hyp.
-      (* We apply lemma [cp_beta]. *)
-      apply cp_beta; auto.
-      (* Proof that [SN R_aeq (Lam x' (subs s' v))]. *)
-      apply sn_lam. eapply int_sn. eapply hu. refl. apply H3. hyp.
-      (* Proof that [int V (subs (single x' a) (subs s' v))]. *)
-      rewrite subs_comp.
-      (* We first prove that [comp (single x' a) s'] is equal to
-        [update x a s0]. *)
-      assert (k : seq (fv v) (comp (single x' a) s') (S.update x a s0)).
-      intros z hz. unfold Def.comp, s', Def.update. eq_dec z x.
-      (* z = x *)
-      subst. simpl. rewrite single_eq. refl.
-      (* z <> x *)
-      unfold s0, Def.restrict; ens. case_eq (XSet.mem z (fv (Lam x v))).
-      (* ~In z (fv (Lam x v)) *)
-      Focus 2. rewrite <- not_mem_iff. simpl. set_iff. intuition.
-      (* In z (fv (Lam x v)) *)
-      intro k. gen (var_notin_fv_subs s0 hz n). fold x'.
-      unfold s0, Def.restrict; ens. rewrite k. intuition.
-      rewrite single_notin_fv. refl. hyp.
-      (* We can now apply the induction hypothesis. *)
-      rewrite (subs_seq k). eapply hu. refl. apply H3. intros z B.
-      rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]].
-      subst z B. rewrite update_eq. hyp.
-      rewrite update_neq. 2: hyp. unfold s0, Def.restrict; ens.
-      destruct (XSet.mem z (fv (Lam x v))). apply hs. hyp. apply int_var.
+      gen (cp_int V). intros [V1 V2 V3 V4]. apply cp_lam; class.
+      intros a ha. unfold s', x'. rewrite subs_comp, single_update_var.
+      eapply hu. refl. apply H3.
+      intros z B. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]]; subst.
+      rewrite update_eq. hyp.
+      rewrite update_neq. apply hs. hyp. hyp.
     Qed.
 
     Lemma tr_sn : forall E v V, E |- v ~: V -> SN R_aeq v.
@@ -497,22 +459,22 @@ Module Make (Export ST : ST_Struct)
 End Make.
 
 (****************************************************************************)
-(** * Termination of beta-reduction. *)
+(** * Termination of beta-eta-reduction. *)
 
-Module SN_beta (Export ST : ST_Struct).
+Module SN_beta_eta (Export ST : ST_Struct).
 
-  Module Import CP := CP_beta ST.L.
+  Module Import CP := CP_beta_eta ST.L.
   Module Import SN := Make ST CP.
 
   Lemma neutral_apps_fun : forall f n (us : Tes n), neutral (apps (Fun f) us).
 
   Proof. intros f n us. apply neutral_apps. fo. Qed.
 
-  Lemma tr_sn_beta_aeq : forall E v V, E |- v ~: V -> SN beta_aeq v.
+  Lemma tr_sn_beta_aeq : forall E v V, E |- v ~: V -> SN R_aeq v.
 
   Proof.
-    (* The interpretation [I := fun (_ : B) => SN beta_aeq] is valid. *)
-    set (I := fun (_ : So) => SN beta_aeq).
+    (* The interpretation [I := fun (_ : B) => SN R_aeq] is valid. *)
+    set (I := fun (_ : So) => SN R_aeq).
     assert (cp_I : forall b, cp (I b)). intro b. apply cp_SN.
     (* We apply [tr_sn] by using [I] as interpretation. *)
     apply tr_sn with (I:=I). hyp.
@@ -526,7 +488,7 @@ Module SN_beta (Export ST : ST_Struct).
     rewrite output_arity. simpl. set (b := output_base (typ f)).
     gen (cp_I b). intros [b1 b2 b3 b4].
     (* [vs] are strongly normalizing. *)
-    cut (SN (clos_vaeq beta) vs).
+    cut (SN (clos_vaeq R) vs).
     Focus 2. apply sn_clos_vaeq_intro. eapply vint_forall_sn. apply cp_I.
     apply hvs.
     (* We can therefore proceed by induction on [vs]. *)
@@ -534,11 +496,9 @@ Module SN_beta (Export ST : ST_Struct).
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
     reducts are computable. *)
     apply b4. apply neutral_apps_fun.
-    intros y r. assert (k : not_lam (Fun f)). discr.
-    destruct (beta_aeq_apps_no_lam k r) as [u [z [h1 h2]]]; subst.
-    rewrite clos_vaeq_cons in h2. destruct h2 as [[i1 i2]|[i1 i2]].
-    inversion i1; subst. simpl_aeq; subst. inversion H3; subst. inversion H1.
-    simpl_aeq; subst. apply H0. hyp. rewrite <- i2. hyp.
+    intros y r. Arguments R_aeq_apps_fun [f n us t] _.
+    destruct (R_aeq_apps_fun r) as [vs [h1 h2]]; clear r; subst.
+    apply H0. hyp. rewrite <- h2. hyp.
   Qed.
 
-End SN_beta.
+End SN_beta_eta.
