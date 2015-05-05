@@ -295,50 +295,14 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       simpl. apply IHcc1. hyp. hyp. apply IHcc2. hyp. hyp.
 
       (* cc_lam *)
-      simpl. set (x' := var x v s). set (s' := S.update x (Var x') s).
-      (* First note that [A] and [B] are computability predicates. *)
       gen (cp_int I_cp A). intros [A1 A2 A3 A4].
-      gen (cp_int I_cp B). intros [B1 B2 B3 B4].
-      (* Proof that [Lam x' (subs s' v)] is computable: we prove that,
-         for all computable u, [App (Lam x' (subs s' v)) u] is computable. *)
-      intros u hu. apply cp_beta; auto.
-      (* Proof that [SN R_aeq (Lam x' (subs s' v))]:
-         we prove that [subs s' v] is computable. *)
-      apply sn_lam. eapply int_sn. apply I_cp. apply IHcc.
-      (* Proof that [s'] is equal to [s0] on [fvs ls]. *)
-      intros y hy. unfold s'. unfold Def.update. eq_dec y x.
-      subst y. contradiction. apply hs1. hyp.
-      (* Proof that [s'] is valid wrt the variables of [add x A E] not in
-         [fvs ls] are computable. *)
-      intros z T. rewrite add_mapsto_iff. unfold s'.
-      intros [[i1 i2]|[i1 i2]] hz.
-      subst z T. rewrite update_eq. apply int_var. apply I_cp.
-      rewrite update_neq. 2: hyp. apply hs2; hyp.
-      (* Proof that [subs (single x' u) (subs s' v)] is computable. *)
-      rewrite subs_comp.
-      (* We prove that [comp (single x' u) s'] is equal to
-         [update x u s] on [fv v]. *)
-      assert (k : seq (fv v) (comp (single x' u) s') (S.update x u s)).
-      intros z hz. unfold Def.comp, s', Def.update. eq_dec z x.
-      (* z=x *)
-      subst. simpl. rewrite single_eq. refl.
-      (* z<>x *)
-      case_eq (XSet.mem z (fv (Lam x v))).
-      (* In z (fv (Lam x v)) *)
-      intro k. gen (var_notin_fv_subs s hz n0); fold x'; intro hx'.
-      rewrite single_notin_fv. refl. hyp.
-      (* ~In z (fv (Lam x v)) *)
-      rewrite <- not_mem_iff. simpl. set_iff. intuition.
-      (* We can now apply the induction hypothesis. *)
-      rewrite (subs_seq k). apply IHcc.
-      (* Proof that [update x u s] is equal to [s0] on [fvs ls]. *)
-      intros y hy. unfold Def.update. eq_dec y x.
-      subst y. contradiction. apply hs1. hyp.
-      (* Proof that [update x u s] is valid wrt the variables of [add x U E]
-         not in [fvs ls]. *)
-      intros z T. rewrite add_mapsto_iff. intros [[i1 i2]|[i1 i2]] hz.
-      subst z T. rewrite update_eq. hyp.
-      rewrite update_neq. 2: hyp. apply hs2; hyp.
+      gen (cp_int I_cp B). intros [B1 B2 B3 B4]. simpl. apply cp_lam; class.
+      intros a ha. rewrite subs_comp, single_update_var.
+      eapply IHcc. intros y hy. unfold Def.update. eq_dec y x.
+      subst. contr. apply hs1. hyp.
+      intros z Z. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]] i; subst.
+      rewrite update_eq. hyp.
+      rewrite update_neq. apply hs2; hyp. hyp.
 
       (* cc_acc *)
       rewrite <- Vnth_map with (f:=subs s). apply comp_acc.
@@ -384,9 +348,10 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       (* Proof that [vs] are computable. *)
       apply vint_eq. refl. intros j jn jp. rewrite Vnth_sub.
       assert (k : j < arity (output (typ g) p)). rewrite arity_output. hyp.
-      apply int_typ_eq with (V := Vnth (inputs (output (typ g) p)) k).
-      apply vint_elim_nth. hyp. simpl in H.
+      assert (a : Vnth (inputs (typ g)) (Vnth_sub_aux p pg jn)
+                  = Vnth (inputs (output (typ g) p)) k). sym. simpl in H.
       rewrite inputs_output with (h:=H), Vnth_sub. apply Vnth_eq. refl.
+      rewrite a. apply vint_elim_nth. hyp.
     Qed.
 
   End comp.
@@ -407,7 +372,7 @@ Module Termin (Export CC : CC_Struct)
   (** We use the CP structure for the union of beta-reduction and
   rewriting defined in LCompRewrite. *)
 
-  Module CP := CP_beta_rewrite RS.
+  Module CP := CP_beta_eta_rewrite RS.
 
   Module Export C := Comp CC CP.
 
@@ -496,7 +461,7 @@ Module Termin (Export CC : CC_Struct)
       (* We now use the assumption [comp_fun] and prove that every
          reduct of [apps (fun f) (Vapp ts vs)] is computable. *)
       apply comp_fun. hyp. intros t' h.
-      destruct (beta_rewrite_aeq_apps_fun h) as [[vs [j1 j2]]
+      destruct (beta_eta_rewrite_aeq_apps_fun h) as [[vs [j1 j2]]
         |[m [ls [r [s [q [vs [h1 [h2 [h3 h4]]]]]]]]]]; clear h.
       (* Reduction in one argument. *)
       subst t'. rewrite int_base, <- output_arity.
@@ -701,7 +666,7 @@ Module SN_rewrite (Export CC : CC_Struct)
         cc gt1 (lhs_fun h) (lhs_args h)
         ST.empty r (output (typ (lhs_fun h)) (lhs_nb_args h))).
 
-    Lemma tr_sn_beta_rewrite_aeq : forall E v V, E |- v ~: V -> SN R_aeq v.
+    Lemma tr_sn_beta_eta_rewrite_aeq : forall E v V, E |- v ~: V -> SN R_aeq v.
 
     Proof.
       eapply tr_sn_cc. apply I_cp. apply not_neutral_apps_fun.

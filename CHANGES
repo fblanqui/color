@@ -1,3 +1,7 @@
+15-05-05: [Blanqui]
+- Term/Lambda/LEta: eta-reduction
+- Term/Lambda: extended all termination results to eta-reduction
+
 15-04-30: [Blanqui]
 - Util/FSet/FSetUtil: added replace
 - Term/Lambda/LSubs,LAlpha:

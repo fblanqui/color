@@ -15,8 +15,7 @@ Require Import LogicUtil OrdUtil LSimple RelUtil Structures.Equalities.
 (****************************************************************************)
 (** ** Type constants of System T. **)
 
-Inductive B : Type :=
-| Nat : B.
+Inductive B : Type := Nat : B.
 
 Lemma eq_B_dec : forall a b : B, {a=b}+{~a=b}.
 
@@ -387,7 +386,7 @@ Import DLQO_SystemT RS_SystemT.
 Lemma tr_sn_SystemT : forall E v V, E |- v ~: V -> SN R_aeq v.
 
 Proof.
-  apply tr_sn_beta_rewrite_aeq.
+  apply tr_sn_beta_eta_rewrite_aeq.
   intros l r h; inversion h; subst;
     unfold lhs_fun, lhs_args, lhs_nb_args; simpl.
 
