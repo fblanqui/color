@@ -183,6 +183,8 @@ A) A] if [A] is not empty). *)
     (*TODO: replace by a notation?*)
     Definition rename y z := subs (single y (Var z)).
 
+    Definition subs_single x u := subs (single x u).
+
     (** Composition of two substitutions. *)
 
     Definition comp s2 s1 (x : X) := subs s2 (s1 x).
@@ -230,6 +232,8 @@ Module Make (Export L : L_Struct).
   Notation rename1 := (@rename1 F X XOrd.eq_dec).
   Notation comp1 := (@comp1 F X XOrd.eq_dec).
   Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Notation subs_single :=
+    (@subs_single F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation comp := (@comp F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation rename := (@rename F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Notation clos_subs :=
@@ -870,6 +874,10 @@ on some finite set of variables *)
 
 (****************************************************************************)
 (** ** Properties of [subs]. *)
+
+  Lemma fold_subs_single x u : subs (single x u) = subs_single x u.
+
+  Proof. refl. Qed.
 
   Lemma subs_lam_no_alpha s x u :
     ~In x (fvcodom (remove x (fv u)) s) ->
