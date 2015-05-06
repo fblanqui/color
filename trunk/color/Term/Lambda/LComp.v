@@ -564,7 +564,7 @@ Module Make (Export CP : CP_Struct).
     exfalso. eapply not_Rh_app_neutral. 2: apply H. rewrite i1. hyp.
     rewrite e in i1. inv_aeq i1; clear i1. rewrite i0 in H. apply Rh_bh in H.
     inversion H; clear H; subst x1 u1 v1 w'. rewrite ww', i3, single_rename.
-    rewrite subs_single_eq, i2. (*COQ: rewrite <- v0v does not work*)
+    rewrite fold_subs_single, i2. (*COQ: rewrite <- v0v does not work*)
     eapply proper_atc. hyp. apply Q_red.
     apply subs_single_mon_preorder_aeq; class. apply v0v. refl.
     apply tv0_beta_comp. hyp. tauto.

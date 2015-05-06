@@ -731,18 +731,12 @@ variables. *)
 
   (** [fun u v => subs (single x u) v] is compatible with [aeq]. *)
 
-  Definition subs_single x u := subs (single x u).
-
-  Lemma subs_single_eq x u : subs (single x u) = subs_single x u.
-
-  Proof. refl. Qed.
-
   Instance subs_single_aeq :
     Proper (Logic.eq ==> aeq ==> aeq ==> aeq) subs_single.
 
   Proof.
     intros x x' xx' u u' uu' v v' vv'. subst x'.
-    unfold subs_single. rewrite <- vv'. clear v' vv'. apply subs_saeq.
+    unfold Def.subs_single. rewrite <- vv'. clear v' vv'. apply subs_saeq.
     intros y _. unfold Def.single, Def.update, Def.id. eq_dec y x. hyp. refl.
   Qed.
 
@@ -907,7 +901,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   Proof.
     intros P_qo R_mon R_aeq x x' xx' u u' uu' v v' vv'. subst x'.
-    unfold subs_single. rewrite <- vv'. clear v' vv'.
+    unfold Def.subs_single. rewrite <- vv'. clear v' vv'.
     apply subs_rel_mon_preorder_aeq; class.
     intros y _. unfold Def.single, Def.update, Def.id. eq_dec y x. hyp. refl.
   Qed.
