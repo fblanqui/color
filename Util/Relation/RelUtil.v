@@ -840,10 +840,6 @@ Lemma transp_sym A (R : rel A) : Symmetric R -> Symmetric (transp R).
 
 Proof. fo. Qed.
 
-Lemma transp_transp A (R : rel A) : transp (transp R) << R.
-
-Proof. fo. Qed.
-
 Lemma transp_invol A (R : rel A) : transp (transp R) == R.
 
 Proof. fo. Qed.
