@@ -5,8 +5,8 @@ Requirements:
 - OPAM version 1.2 or later (https://opam.ocaml.org/)
 
 Procedure:
-- step 1/2: opam repo add coq-stable https://github.com/coq/repo-stable.git
-- step 2/2: opam install --jobs=N coq:color
+- step 1/2: opam repo add coq-released https://coq.inria.fr/opam/released
+- step 2/2: opam install --jobs=N coq-color
 
 Compilation time on my computer:
 
@@ -25,7 +25,7 @@ Requirements:
 - UNIX-like operating system (including Cygwin on Windows)
 - GNU find version 4.4.2 (http://www.gnu.org/software/findutils/findutils.html)
 - GNU make version 3.81 (http://www.gnu.org/software/make/)
-- Coq version 8.4pl5 (http://coq.inria.fr/)
+- Coq version 8.4pl6 (http://coq.inria.fr/)
 
 Procedure for installing CoLoR in Coq default directory for user contributions:
 - step 1/2: make [-j N]
