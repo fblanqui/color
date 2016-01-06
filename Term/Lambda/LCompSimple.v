@@ -496,7 +496,7 @@ Module SN_beta_eta (Export ST : ST_Struct).
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
     reducts are computable. *)
     apply b4. apply neutral_apps_fun.
-    intros y r. Arguments R_aeq_apps_fun [f n us t] _.
+    intros y r. Arguments R_aeq_apps_fun [f n us t0] _ : rename.
     destruct (R_aeq_apps_fun r) as [vs [h1 h2]]; clear r; subst.
     apply H0. hyp. rewrite <- h2. hyp.
   Qed.

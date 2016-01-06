@@ -11,14 +11,14 @@ Matching algorithm for ATerms.
 (**********************************************************************)
 Require Import Peano_dec LogicUtil EqUtil NatUtil VecUtil ATerm ASubstitution
   Bool.
-Require AVariables OrderedTypeEx FSetUtil FMapUtil.
+Require AVariables OrderedTypeEx FSetUtil FMapUtil FMapAVL.
 
 Module VSF := AVariables.VarSetUtil.XSetFacts.
 Module VS  := AVariables.XSet.
 
-Module VMU := FMapUtil.Make (OrderedTypeEx.Nat_as_OT).
+Module VM := FMapAVL.Make (OrderedTypeEx.Nat_as_OT).
+Module VMU := FMapUtil.Make VM.
 Module VMF := VMU.XMapFacts.
-Module VM  := VMU.XMap.
 
 (**********************************************************************)
 Set   Implicit Arguments.
@@ -70,7 +70,7 @@ Section Matching.
   Notation "\S ( θ )" := (subst_of_matching θ) (format "\S ( θ )").
 
   Definition matches (u t : term) :=
-  match matches_r u t (VM.empty _) with
+  match matches_r u t VM.empty with
   | None   => None
   | Some m => Some \S(m)
   end.
@@ -325,8 +325,8 @@ Section Matching.
     Lemma matches_correct : forall u t θ, matches u t = Some θ -> u ! θ = t.
     Proof.
       intros u t θ; unfold matches.
-      case_eq (matches_r u t (VM.empty _)); try discr; intros Ω HΩ.
-      inversion_clear 1; apply (proj1 matches_r_correct) with (VM.empty _).
+      case_eq (matches_r u t VM.empty); try discr; intros Ω HΩ.
+      inversion_clear 1; apply (proj1 matches_r_correct) with VM.empty.
       hyp.
     Qed.
   End MatchCorrectness.
@@ -443,7 +443,7 @@ Section Matching.
       forall u t θ, u!θ = t -> matches u t <> None.
     Proof.
       intros u t θ H; unfold matches.
-      case_eq (matches_r u t (VM.empty _)).
+      case_eq (matches_r u t VM.empty).
         by intros; discr.
         intros Habd _; eapply (proj1 matches_r_complete); [idtac|ehyp].
         exists θ; rewrite <- H; apply sub_eq; intros x _.
@@ -479,7 +479,7 @@ Section Matching.
     intuition. eapply H0. apply H. hyp. apply matches_some_ind.
     (* Var *)
     simpl. intuition. unfold exmatch in H.
-    destruct (VMU.XMap.find (elt:=term) x θ).
+    destruct (VM.find (elt:=term) x θ).
     revert H. case (beq_term t t0); intro. inversion H. refl. discr.
     inversion H. rewrite VMF.add_b. rewrite vmap_eqb. change (x<>x0) in H1.
     rewrite <- (beq_ko beq_nat_ok) in H1. rewrite H1. refl.
@@ -489,18 +489,18 @@ Section Matching.
     refl.
     (* Vcons *)
     simpl. intros. rewrite notin_app in H3. destruct H3.
-    trans (VMU.XMap.mem (elt:=term) x Ω). apply H0. hyp. apply H2. hyp.
+    trans (VM.mem (elt:=term) x Ω). apply H0. hyp. apply H2. hyp.
   Qed.
 
   Lemma matches_dom : forall u t s x,
     matches u t = Some s -> ~In x (ATerm.vars u) -> s x = Var x.
   Proof.
     intros u t s x. unfold matches.
-    case_eq (matches_r u t (VMU.XMap.empty term)).
+    case_eq (matches_r u t VM.empty).
     intros t0 H H0 H1. inversion H0.
     ded (matches_r_dom H H1). rewrite VMF.empty_a in H2.
     unfold subst_of_matching. revert H2. rewrite VMF.mem_find_b.
-    destruct (VMU.XMap.find (elt:=term) x t0). discr. refl. discr.
+    destruct (VM.find x t0). discr. refl. discr.
   Qed.
 
 End Matching.

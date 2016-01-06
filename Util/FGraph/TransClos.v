@@ -11,9 +11,10 @@ Require Import OrderedType RelUtil LogicUtil BoolUtil FGraph.
 
 Set Implicit Arguments.
 
-Module Make (X : OrderedType).
+Module Make (XSet : FSetInterface.S)
+       (XMap : FMapInterface.S with Module E := XSet.E).
 
-  Module Export G := FGraph.Make X.
+  Module Export G := FGraph.Make XSet XMap.
 
   Implicit Type g h : graph.
 
@@ -459,10 +460,15 @@ using the function [trans_add_edge] now *)
 
     Definition trans_clos_list l := fold_left trans_add_edge_list l empty.
 
+    Lemma transitive_empty : Transitive (rel empty).
+
+    Proof. intros x y z [s [s1 s2]]. rewrite find_empty in s1. discr. Qed.
+
     Lemma transitive_trans_clos_list : forall l, Transitive (trans_clos_list l).
 
     Proof.
-      intro l. apply transitive_list_fold_left_trans_add_edge_list. fo.
+      intro l. apply transitive_list_fold_left_trans_add_edge_list.
+      apply transitive_empty.
     Qed.
 
     Lemma rel_trans_clos_list : forall l,
@@ -470,7 +476,8 @@ using the function [trans_add_edge] now *)
 
     Proof.
       intro l. unfold trans_clos_list.
-      rewrite rel_list_fold_left_trans_add_edge_list. refl. fo.
+      rewrite rel_list_fold_left_trans_add_edge_list. refl.
+      apply transitive_empty.
     Qed.
 
   End list.

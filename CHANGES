@@ -1,3 +1,8 @@
+16-01-06: [Blanqui]
+- Util/FMap/FMapUtil: Make now takes an FMapInterface.S as argument;
+  moved parts of LSimple into a Domain submodule taking an FSetInterface.S
+  as argument
+
 15-05-05: [Blanqui]
 - Term/Lambda/LEta: eta-reduction
 - Term/Lambda: extended all termination results to eta-reduction
@@ -41,6 +46,10 @@
 15-03-10: RELEASE OPAM 1.1.0 (SVN revision 2156)
 
 15-03-10: [Blanqui]
+- Util/Set/Ramsey: classical infinite Ramsey theorem
+- Util/Set/FinSet: new file defining finiteness and providing finiteness lemmas
+- Util/Set/InfSet: new file defining infiniteness
+  and providing infiniteness lemmas
 - Util/List/ListUtil: added select, pos, new lemmas on remove,
   and renamed mk_nat_lts into L
 - Util/List/ListRepeatFree: added new lemmas
@@ -49,10 +58,6 @@
 - Util/Set/SetUtil: added new definitions and lemmas
 - Util/Nat/NatLt: new file gathering old and new results about natural numbers
   smaller than some fixed bound (type N and function L)
-- Util/Set/FinSet: new file defining finiteness and providing finiteness lemmas
-- Util/Set/InfSet: new file defining infiniteness
-  and providing infiniteness lemmas
-- Util/Set/Ramsey: classical infinite Ramsey theorem
 
 -----------------------------------------------------------------------------
 15-02-04: RELEASE 1.0.0 for OPAM (SVN revision 2104)

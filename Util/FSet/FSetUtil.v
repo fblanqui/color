@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FSets FSetFacts RelUtil BoolUtil.
+Require Import LogicUtil FSets RelUtil BoolUtil.
 
 Module Make (Export XSet : FSetInterface.S).
 
