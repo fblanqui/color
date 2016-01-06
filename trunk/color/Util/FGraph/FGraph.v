@@ -8,19 +8,17 @@ finite graphs
 *)
 
 Require Import ListUtil FSetUtil FMapUtil OrderedType RelUtil LogicUtil.
-Require FSetAVL.
 
 Set Implicit Arguments.
 
-Module Make (X : OrderedType).
+Module Make (XSet : FSetInterface.S)
+       (XMap : FMapInterface.S with Module E := XSet.E).
 
-  Module XSet := FSetAVL.Make X.
   Module Export S := FSetUtil.Make XSet.
-  Module Export M := FMapUtil.Make X.
+  Module Export M := FMapUtil.Make XMap.
 
   Module R := RelUtil.
-
-  Import X.
+  Module Import X := E.
 
   Lemma eq_com x y : eq x y <-> eq y x.
 
@@ -39,8 +37,6 @@ they define the same relation. See below for more details. *)
   Definition graph := XMap.t XSet.t.
 
   Implicit Type g h : graph.
-
-  Definition empty := @empty XSet.t.
 
   Definition meq : relation graph := XMap.Equiv XSet.Equal.
 
@@ -294,7 +290,7 @@ same relation *)
 
   Lemma succs_empty : forall x, succs x empty = XSet.empty.
 
-  Proof. refl. Qed.
+  Proof. intro x. unfold succs. rewrite find_empty. refl. Qed.
 
   Lemma succs_add : forall x y s g,
     succs x (add y s g) = if eq_dec y x then s else succs x g.
@@ -450,14 +446,14 @@ successors of g' *)
 
   Proof.
     intros x x' xx' g g' gg'. unfold preds.
-    apply fold_Equiv_ext with (eq0:= XSet.Equal). fo. fo.
+    apply fold_Equiv_ext with (eq := XSet.Equal). fo. fo.
     apply preds_aux_m. refl. apply preds_aux_transp.
     apply preds_aux_m. hyp. apply Equal_Equiv. fo. hyp. refl.
   Qed.
 
   Lemma preds_empty : forall x, preds x empty [=] XSet.empty.
 
-  Proof. refl. Qed.
+  Proof. intro x. unfold preds. rewrite fold_empty. refl. Qed.
 
   Lemma preds_add : forall x y s g, ~In y g -> preds x (add y s g)
     [=] if XSet.mem x s then XSet.add y (preds x g) else preds x g.
@@ -475,7 +471,7 @@ successors of g' *)
     (* Equal *)
     intros m m' mm' h hm'. rewrite <- mm'. apply h. rewrite mm'. hyp.
     (* empty *)
-    refl.
+    intros _. unfold preds. rewrite fold_empty. refl.
     (* add *)
     intros y s g n h e. rewrite preds_add. 2: hyp.
     case_eq (XSet.mem x s); intros.

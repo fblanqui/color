@@ -10,11 +10,10 @@ Wrapper for Coq's FMaps definition + additional facts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FMaps FMapAVL FMapFacts RelUtil BoolUtil ListUtil.
+Require Import LogicUtil FMaps RelUtil BoolUtil ListUtil.
 
-Module Make (X : OrderedType).
+Module Make (Export XMap : FMapInterface.S).
 
-  Module Export XMap := FMapAVL.Make X.
   Module Export XMapProps := Properties XMap.
   Module Export XMapFacts := Facts XMap.
   Module Export XMapOrdProps := OrdProperties XMap.
@@ -72,10 +71,8 @@ Module Make (X : OrderedType).
 
     Proof.
       intros h m n p. unfold Equiv, XMap.Equiv. intuition.
-      rewrite <- H. rewrite <- H1. hyp.
-      rewrite H1. rewrite H. hyp.
-      unfold In, Raw.In0 in H1, H.
-      assert (exists e, Raw.MapsTo k e m). exists e. hyp.
+      rewrite <- H, <- H1. hyp. rewrite H1, H. hyp. unfold In in H1, H.
+      assert (exists e, MapsTo k e m). ex e. hyp.
       rewrite H1 in H5. destruct H5 as [f].
       trans f. apply H2 with k; hyp. apply H3 with k; hyp.
     Qed.
@@ -107,18 +104,18 @@ Module Make (X : OrderedType).
       unfold transpose_neqkey. intros k l x y m n. unfold Equal.
       intro k'. rewrite !add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
-      absurd (X.eq k l). hyp. trans k'; hyp.
+      absurd (E.eq k l). hyp. trans k'; hyp.
     Qed.
 
     Definition add_add_neq := add_transp.
 
-    Lemma add_add_eq : forall k l, X.eq k l ->
+    Lemma add_add_eq : forall k l, E.eq k l ->
       forall (x y : A) m, Equal (add k x (add l y m)) (add k x m).
 
     Proof.
       intros k l kl x y m. unfold Equal. intro k'. rewrite !add_o.
       destruct (eq_dec k k'); destruct (eq_dec l k'); try refl.
-      absurd (X.eq k k'). hyp. trans l; hyp.
+      absurd (E.eq k k'). hyp. trans l; hyp.
     Qed.
 
     Lemma add_add : forall k l (x y : A) m,
@@ -140,7 +137,7 @@ Module Make (X : OrderedType).
 
     Definition add_add_neq_Equiv := add_transp_Equiv.
 
-    Lemma add_add_eq_Equiv : Reflexive eq -> forall k l, X.eq k l ->
+    Lemma add_add_eq_Equiv : Reflexive eq -> forall k l, E.eq k l ->
       forall x y m, Equiv eq (add k x (add l y m)) (add k x m).
 
     Proof.
@@ -161,7 +158,7 @@ Module Make (X : OrderedType).
 (** [add] is a morphism wrt Equiv. *)
 
     Global Instance add_Equiv :
-      Proper (X.eq ==> eq ==> Equiv eq ==> Equiv eq) (@add A).
+      Proper (E.eq ==> eq ==> Equiv eq ==> Equiv eq) (@add A).
 
     Proof. (* by Cedric Auger *)
       intros k1 k2 Hk e1 e2 He m1 m2 Hm.
@@ -176,7 +173,7 @@ Module Make (X : OrderedType).
          split with a_.
          apply add_3 with k1 e1; auto.
          intro H; destruct n.
-         now apply X.eq_trans with k1; auto.
+         now apply E.eq_trans with k1; auto.
         split with x.
         now apply add_2; auto.
        destruct (eq_dec k1 k).
@@ -186,7 +183,7 @@ Module Make (X : OrderedType).
         split with a_.
         apply add_3 with k2 e2; auto.
         intro H; destruct n.
-        now apply X.eq_trans with k2; auto.
+        now apply E.eq_trans with k2; auto.
        split with x.
        now apply add_2; auto.
       intro k.
@@ -196,19 +193,19 @@ Module Make (X : OrderedType).
        gen (find_1 H').
        rewrite (find_1 (add_1 _ _ e)).
        gen (find_1 H).
-       rewrite (find_1 (add_1 _ _ (X.eq_trans Hk e))).
+       rewrite (find_1 (add_1 _ _ (E.eq_trans Hk e))).
        clear.
        intro H; inversion_clear H.
        intro H; inversion_clear H.
        now auto.
       intros e_ e_' H H'.
       gen (add_3 n H').
-      cut (not (X.eq k1 k)).
+      cut (not (E.eq k1 k)).
        intro n'; gen (add_3 n' H).
        exact (proj2 Hm k e_ e_').
       clear -n Hk.
       intro H; destruct n.
-      now apply X.eq_trans with k1; auto.
+      now apply E.eq_trans with k1; auto.
     Qed.
 
 (***********************************************************************)
@@ -228,8 +225,8 @@ Module Make (X : OrderedType).
       MapsTo k x m -> exists x', MapsTo k x' m' /\ eq x x'.
 
     Proof.
-      intros m m' [h1 h2] k x kx. unfold In, Raw.In0 in h1.
-      assert (exists e, Raw.MapsTo k e m). exists x. hyp.
+      intros m m' [h1 h2] k x kx. unfold In in h1.
+      assert (exists e, MapsTo k e m). exists x. hyp.
       rewrite h1 in H. destruct H as [x']. exists x'. intuition.
       apply h2 with k; hyp.
     Qed.
@@ -251,8 +248,8 @@ Module Make (X : OrderedType).
       MapsTo k x m' -> exists x', MapsTo k x' m /\ eq x' x.
 
     Proof.
-      intros m m' [h1 h2] k x kx. unfold In, Raw.In0 in h1.
-      assert (exists e, Raw.MapsTo k e m'). exists x. hyp.
+      intros m m' [h1 h2] k x kx. unfold In in h1.
+      assert (exists e, MapsTo k e m'). exists x. hyp.
       rewrite <- h1 in H. destruct H as [x']. exists x'. intuition.
       apply h2 with k; hyp.
     Qed.
@@ -283,7 +280,7 @@ Module Make (X : OrderedType).
       rewrite hk in H0. discr.
     Qed.
 
-    Global Instance find_m : Proper (X.eq ==> Equiv eq ==> opt_r eq) (@find A).
+    Global Instance find_m : Proper (E.eq ==> Equiv eq ==> opt_r eq) (@find A).
 
     Proof.
       intros k k' kk' m m' [h1 h2]. rewrite <- kk'. clear k' kk'.
@@ -294,13 +291,17 @@ Module Make (X : OrderedType).
       apply opt_r_None.
     Qed.
 
+    Lemma find_empty k : find k empty = @None A.
+
+    Proof. apply not_find_in_iff. rewrite empty_in_iff. auto. Qed.
+
 (***********************************************************************)
 (** Properties of [Empty] and [is_empty]. *)
 
     Global Instance Empty_Equiv : Proper (Equiv eq ==> iff) (@Empty A).
 
     Proof.
-      intros m m' mm'. unfold Empty, Raw.Proofs.Empty. split; intros h k x kx.
+      intros m m' mm'. unfold Empty. split; intros h k x kx.
       destruct (Equiv_MapsTo' mm' kx) as [x' [h1 h2]]. fo.
       destruct (Equiv_MapsTo mm' kx) as [x' [h1 h2]]. fo.
     Qed.
@@ -319,7 +320,7 @@ Module Make (X : OrderedType).
     Lemma Equiv_empty : forall m, Equiv eq empty m <-> Empty m.
 
     Proof.
-      intro m. unfold Equiv, Empty, Raw.Proofs.Empty. intuition.
+      intro m. unfold Equiv, Empty. intuition.
       assert (In a m). exists e. hyp.
       rewrite <- H0 in H2. rewrite empty_in_iff in H2. hyp.
       rewrite empty_in_iff in H0. contr.
@@ -339,7 +340,7 @@ Module Make (X : OrderedType).
       rewrite <- h1 in H1. rewrite add_in_iff in H1. intuition.
       (* eq *)
       intros l y z ly lz.
-      assert (~X.eq k l). intro e. apply hk. exists y.
+      assert (~E.eq k l). intro e. apply hk. exists y.
       change (MapsTo k y n). rewrite (MapsTo_iff _ _ e). hyp.
       apply h2 with l. rewrite add_mapsto_iff. right. intuition.
       rewrite remove_mapsto_iff in lz. intuition.
@@ -358,6 +359,12 @@ Module Make (X : OrderedType).
     Qed.
 
 (***********************************************************************)
+(** Properties of [fold]. *)
+
+    Lemma fold_empty f (i:A) : fold f (@empty A) i = i.
+
+    Proof. rewrite fold_1, elements_empty. refl. Qed.
+ 
 (* [fold f] is a morphism wrt [Equiv eq] if [f] is a morphism wrt [eq]
 and satisfies some commutation property. *)
 
@@ -366,8 +373,8 @@ and satisfies some commutation property. *)
       Variables (heq : PreOrder eq)
         (B : Type) (eqB : relation B) (heqB : Equivalence eqB).
 
-      Global Instance fold_Equiv : forall (f : X.t -> A -> B -> B)
-        (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
+      Global Instance fold_Equiv : forall (f : E.t -> A -> B -> B)
+        (f_m : Proper (E.eq ==> eq ==> eqB ==> eqB) f)
         (hf : transpose_neqkey eqB f),
         Proper (Equiv eq ==> eqB ==> eqB) (fold f).
 
@@ -384,7 +391,7 @@ and satisfies some commutation property. *)
         rewrite fold_1. rewrite elements_Empty in hm. rewrite hm. hyp.
         (* Add *)
         intros k x m nxm hm m' xemm' b b' bb'.
-        assert (f_m': Proper (X.eq ==> Logic.eq ==> eqB ==> eqB) f).
+        assert (f_m': Proper (E.eq ==> Logic.eq ==> eqB ==> eqB) f).
         intros l l' ll' y y' yy' c c' cc'. subst y'. apply f_m; auto. refl.
         rewrite fold_add; auto. destruct (Equiv_add nxm xemm') as [x' [h1 h2]].
         assert (n: ~In k (remove k m')). apply remove_1. refl.
@@ -393,10 +400,10 @@ and satisfies some commutation property. *)
         eapply Equiv_add_remove. hyp. apply xemm'.
       Qed.
 
-      Lemma fold_Equiv_ext : forall (f : X.t -> A -> B -> B)
-        (f_m : Proper (X.eq ==> eq ==> eqB ==> eqB) f)
+      Lemma fold_Equiv_ext : forall (f : E.t -> A -> B -> B)
+        (f_m : Proper (E.eq ==> eq ==> eqB ==> eqB) f)
         (hf : transpose_neqkey eqB f) f',
-        (forall k k', X.eq k k' -> forall x x', eq x x' ->
+        (forall k k', E.eq k k' -> forall x x', eq x x' ->
           forall b b', eqB b b' -> eqB (f k x b) (f' k' x' b')) ->
         forall m m', Equiv eq m m' -> forall b b', eqB b b' ->
           eqB (fold f m b) (fold f' m' b').
@@ -415,32 +422,32 @@ and satisfies some commutation property. *)
     End fold.
 
 (***********************************************************************)
-(* Properties of [In]. *)
+(** Properties of [In]. *)
 
-    Global Instance In_Equiv' : Proper (X.eq ==> Equiv eq ==> impl) (@In A).
+    Global Instance In_Equiv' : Proper (E.eq ==> Equiv eq ==> impl) (@In A).
 
     Proof.
       intros k k' kk' m m' [h1 h2]. rewrite h1. rewrite kk'. unfold impl. auto.
     Qed.
 
     Global Instance In_Equiv : Reflexive eq ->
-      Proper (X.eq ==> Equiv eq ==> iff) (@In A).
+      Proper (E.eq ==> Equiv eq ==> iff) (@In A).
 
     Proof.
       intros heq k k' kk' m m' [h1 h2]. rewrite h1. apply In_m. hyp. refl.
     Qed.
 
 (***********************************************************************)
-(* Properties of [for_all]. *)
+(** Properties of [for_all]. *)
 
     Section for_all.
 
-      Variable f : X.t -> A -> bool.
+      Variable f : E.t -> A -> bool.
 
       Definition for_all_aux k x b := f k x && b.
 
-      Global Instance for_all_aux_m : Proper (X.eq ==> eq ==> Logic.eq) f ->
-        Proper (X.eq ==> eq ==> Logic.eq ==> Logic.eq) for_all_aux.
+      Global Instance for_all_aux_m : Proper (E.eq ==> eq ==> Logic.eq) f ->
+        Proper (E.eq ==> eq ==> Logic.eq ==> Logic.eq) for_all_aux.
 
       Proof.
         intros fm k k' kk' x x' xx' b b' bb'. subst b'. unfold for_all_aux.
@@ -459,7 +466,7 @@ and satisfies some commutation property. *)
       Proof. refl. Qed.
 
       Lemma for_all_add : Reflexive eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
+        Proper (E.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
           forall x, for_all f (add k x m) = f k x && for_all f m.
 
       Proof.
@@ -470,7 +477,7 @@ and satisfies some commutation property. *)
       Qed.
 
       Global Instance for_all_Equiv : PreOrder eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (E.eq ==> eq ==> Logic.eq) f ->
         Proper (Equiv eq ==> Logic.eq) (for_all f).
 
       Proof.
@@ -479,7 +486,7 @@ and satisfies some commutation property. *)
       Qed.
 
       Global Instance for_all_m : Reflexive eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (E.eq ==> eq ==> Logic.eq) f ->
         Proper (Equal ==> Logic.eq) (for_all f).
 
       Proof.
@@ -492,17 +499,17 @@ and satisfies some commutation property. *)
     End for_all.
 
 (***********************************************************************)
-(* Properties of [filter]. *)
+(** Properties of [filter]. *)
 
     Section filter.
 
-      Variable f : X.t -> A -> bool.
+      Variable f : E.t -> A -> bool.
 
       Definition filter_aux k x m := if f k x then add k x m else m.
 
       Global Instance filter_aux_m : PreOrder eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f ->
-        Proper (X.eq ==> eq ==> Equiv eq ==> Equiv eq) filter_aux.
+        Proper (E.eq ==> eq ==> Logic.eq) f ->
+        Proper (E.eq ==> eq ==> Equiv eq ==> Equiv eq) filter_aux.
 
       Proof.
         intros heq fm k k' kk' x x' xx' m m' mm'. unfold filter_aux.
@@ -525,7 +532,7 @@ and satisfies some commutation property. *)
       (*TODO?
 
       Lemma filter_add : Reflexive eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
+        Proper (E.eq ==> eq ==> Logic.eq) f -> forall k m, ~In k m ->
           forall x, filter f (add k x m) = f k x && filter f m.
 
       Proof.
@@ -536,7 +543,7 @@ and satisfies some commutation property. *)
       Qed.
 
       Global Instance filter_Equiv : PreOrder eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (E.eq ==> eq ==> Logic.eq) f ->
         Proper (Equiv eq ==> Logic.eq) (filter f).
 
       Proof.
@@ -545,7 +552,7 @@ and satisfies some commutation property. *)
       Qed.
 
       Global Instance filter_m : Reflexive eq ->
-        Proper (X.eq ==> eq ==> Logic.eq) f ->
+        Proper (E.eq ==> eq ==> Logic.eq) f ->
         Proper (Equal ==> Logic.eq) (filter f).
 
       Proof.
@@ -557,9 +564,245 @@ and satisfies some commutation property. *)
 
     End filter.
 
+(****************************************************************************)
+(** Inclusion ordering on maps. *)
+
+    Definition le E F := forall x (T : A), MapsTo x T E -> MapsTo x T F.
+
+    Global Instance le_refl : Reflexive le.
+
+    Proof. fo. Qed.
+
+    Global Instance le_trans : Transitive le.
+
+    Proof. intros E F G EF FG x T h. apply FG. apply EF. hyp. Qed.
+
+    Global Instance le_Equal : Proper (@Equal A ==> @Equal A ==> impl) le.
+
+    Proof.
+      intros E E' EE' F F' FF' EF x T hx.
+      rewrite <- FF'. apply EF. rewrite EE'. hyp.
+    Qed.
+
+    Lemma le_add : forall E x T, find x E = None -> le E (add x T E).
+
+    Proof.
+      intros E x T hx y U' hy. rewrite add_mapsto_iff. right. intuition.
+      rewrite H in hx. rewrite find_mapsto_iff, hx in hy. discr.
+    Qed.
+
+    Global Instance MapsTo_le :
+      Proper (Logic.eq ==> Logic.eq ==> le ==> impl) (@MapsTo A).
+
+    Proof. intros x y xy T V TV E F EF h. subst y V. fo. Qed.
+
+    Global Instance In_le : Proper (Logic.eq ==> le ==> impl) (@In A).
+
+    Proof. intros x y xy E F EF [T h]. subst y. exists T. fo. Qed.
+
+    Global Instance add_le : Proper (E.eq ==> Logic.eq ==> le ==> le) (@add A).
+
+    Proof.
+      intros x y xy T V TV E F EF. subst V. rewrite xy. intros z V.
+      do 2 rewrite find_mapsto_iff, add_o. case (E.eq_dec y z).
+      auto. do 2 rewrite <- find_mapsto_iff. rewrite EF. auto.
+    Qed.
+
   End S.
 
   Implicit Arguments Equiv_find_Some [A eq0 m m' k x].
   Implicit Arguments Equiv_find_Some' [A eq0 m m' k x].
+  Arguments le {A} _ _.
+
+(****************************************************************************)
+(** * Module providing results on the domain of a map. *)
+
+  Require Import FSetInterface FSetUtil.
+
+  Module Domain (XSet : FSetInterface.S with Module E := XMap.E).
+
+    Module Export XSetUtil := FSetUtil.Make XSet.
+
+    Import XMap XMapFacts XMapProps XMapOrdProps.
+
+    Section S.
+
+      Variable A : Type.
+
+(****************************************************************************)
+(** ** Restriction of an environment to some set of variables. *)
+
+      Definition restrict_fun xs x (T:A) E :=
+        if XSet.mem x xs then add x T E else E.
+
+      Global Instance restrict_fun_e :
+        Proper (XSet.Equal ==> E.eq ==> Logic.eq ==> Equal ==> Equal)
+               restrict_fun.
+
+      Proof.
+        intros xs xs' xsxs' x x' xx' T T' TT' E E' EE'. subst T'.
+        unfold restrict_fun. rewrite xx', xsxs'. destruct (XSet.mem x' xs').
+        rewrite xx', EE'. refl. hyp.
+      Qed.
+
+      Lemma restrict_fun_transp : forall xs,
+          transpose_neqkey Equal (restrict_fun xs).
+
+      Proof.
+        intros xs x x' T T' E h z. unfold restrict_fun.
+        destruct (XSet.mem x xs); destruct (XSet.mem x' xs); try refl.
+        rewrite !add_o. case (E.eq_dec x z); case (E.eq_dec x' z); try refl.
+        intros x'z. rewrite <- x'z. tauto.
+      Qed.
+
+      Definition restrict_dom E xs := fold (restrict_fun xs) E empty.
+
+      Lemma restrict_dom_empty : forall xs, Equal (restrict_dom empty xs) empty.
+
+      Proof.
+        intro xs. unfold restrict_dom. rewrite fold_Empty. refl. auto.
+        apply empty_1.
+      Qed.
+
+      Lemma restrict_dom_add : forall xs x T E, ~In x E ->
+        Equal (restrict_dom (add x T E) xs)
+              (restrict_fun xs x T (restrict_dom E xs)).
+
+      Proof.
+        intros xs x T E hx. unfold restrict_dom. rewrite fold_add. refl. auto.
+        apply restrict_fun_e. refl. apply restrict_fun_transp. hyp.
+      Qed.
+
+      Global Instance restrict_dom_e :
+        Proper (Equal ==> XSet.Equal ==> Equal) restrict_dom.
+
+      Proof.
+        intro E; pattern E; apply map_induction_bis; clear E.
+        (* Equal *)
+        intros E E' EE' h F E'F xs xs' xsxs'. trans (restrict_dom E xs).
+        sym. apply h. hyp. refl. apply h. trans E'; hyp. hyp.
+        (* empty *)
+        intros E h xs xs' xsxs'. rewrite restrict_dom_empty. unfold restrict_dom.
+        rewrite fold_Empty. refl. auto. rewrite <- h. apply empty_1.
+        (* add *)
+        intros x T E hx h F e xs xs' xsxs'. rewrite restrict_dom_add. 2: hyp.
+        unfold restrict_dom at -1. rewrite <- (fold_Equal _ _ _ e).
+        rewrite fold_add; auto. apply restrict_fun_e; auto. apply h; auto. refl.
+        apply restrict_fun_e. refl. apply restrict_fun_transp.
+      Qed.
+ 
+      Lemma mapsto_restrict_dom : forall E xs x T,
+          MapsTo x T (restrict_dom E xs) <-> (MapsTo x T E /\ XSet.In x xs).
+
+      Proof.
+        intro E; pattern E; apply map_induction_bis; clear E.
+        (* Equal *)
+        intros E E' EE' h xs x T. rewrite <- EE'. apply h.
+        (* empty *)
+        intros xs x T. rewrite restrict_dom_empty. rewrite empty_mapsto_iff.
+        tauto.
+        (* add *)
+        intros x T E hx h xs y V. rewrite restrict_dom_add. 2: hyp.
+        unfold restrict_fun. case_eq (XSet.mem x xs).
+        do 2 rewrite add_mapsto_iff. rewrite h, mem_iff. intuition.
+        subst. rewrite <- H0. hyp. 
+        rewrite add_mapsto_iff, h, <- not_mem_iff. intuition.
+        right. intuition. rewrite <- H0 in H2. tauto.
+        subst. rewrite <- H1 in H2. tauto.
+      Qed.
+
+      Global Instance restrict_dom_s :
+        Proper (le ==> Subset ==> le) restrict_dom.
+
+      Proof.
+        intros E F EF xs xs' xsxs' x T. do 2 rewrite mapsto_restrict_dom.
+        rewrite <- xsxs'. intuition.
+      Qed.
+
+      Lemma restrict_dom_le : forall E xs, le (restrict_dom E xs) E.
+
+      Proof. intros E xs y hy. rewrite mapsto_restrict_dom. tauto. Qed.
+
+      Lemma restrict_dom_singleton : forall E x,
+          Equal (restrict_dom E (singleton x))
+                match find x E with None => empty | Some T => add x T empty end.
+
+      Proof.
+        intros E x. case_eq (find x E).
+        (* Some *)
+        intro T. rewrite <- find_mapsto_iff, Equal_mapsto_iff. intros hx y V.
+        rewrite mapsto_restrict_dom. set_iff.
+        rewrite add_mapsto_iff, empty_mapsto_iff.
+        intuition; subst. 2: rewrite <- H; hyp. left. intuition.
+        eapply MapsTo_fun. apply hx. rewrite H1. hyp.
+        (* None *)
+        rewrite <- not_find_in_iff, Equal_mapsto_iff. intros hx y V.
+        rewrite empty_mapsto_iff, mapsto_restrict_dom. set_iff. intuition.
+        apply hx. rewrite H1. ex V. hyp.
+      Qed.
+
+      Lemma mapsto_restrict_dom_singleton : forall x T E,
+          MapsTo x T E -> MapsTo x T (restrict_dom E (singleton x)).
+
+      Proof. intros x T E h. rewrite mapsto_restrict_dom. set_iff. auto. Qed.
+
+(****************************************************************************)
+(** ** Domain of a typing environment. *)
+
+      Definition dom_fun x (T:A) xs := XSet.add x xs.
+
+      Global Instance dom_fun_e :
+        Proper (E.eq ==> Logic.eq ==> XSet.Equal ==> XSet.Equal) dom_fun.
+
+      Proof.
+        intros x y xy T V TV s t st. subst. unfold dom_fun. rewrite xy, st. refl.
+      Qed.
+
+      Lemma dom_fun_transp : transpose_neqkey XSet.Equal dom_fun.
+
+      Proof. intros x y xy T V E. unfold dom_fun. apply add_add. Qed.
+
+      Definition dom E := fold dom_fun E XSet.empty.
+
+      Global Instance dom_e : Proper (Equal ==> XSet.Equal) dom.
+
+      Proof.
+        intros E F EF. unfold dom. apply fold_Equal. fo. apply dom_fun_e. hyp.
+      Qed.
+
+      Lemma dom_empty : dom empty [=] XSet.empty.
+
+      Proof. unfold dom. rewrite fold_Empty. refl. fo. apply empty_1. Qed.
+
+      Lemma dom_add_notin : forall x T E,
+          ~In x E -> dom (add x T E) [=] XSet.add x (dom E).
+
+      Proof.
+        intros x T E h. unfold dom. rewrite fold_add. refl. fo. apply dom_fun_e.
+        apply dom_fun_transp. hyp.
+      Qed.
+
+      Lemma In_dom : forall x E, XSet.In x (dom E) <-> In x E.
+
+      Proof.
+        intros x E; pattern E; apply map_induction_bis; clear E.
+        (* Equal *)
+        intros E F EF h. rewrite <- EF. hyp.
+        (* empty *)
+        rewrite dom_empty, empty_in_iff. set_iff. refl.
+        (* add *)
+        intros y T E hy h. rewrite dom_add_notin. 2: hyp.
+        set_iff. rewrite add_in_iff, h. refl.
+      Qed.
+
+      Lemma dom_add : forall x T E, dom (add x T E) [=] XSet.add x (dom E).
+
+      Proof.
+        intros x T E y. rewrite In_dom, add_in_iff, <- In_dom. set_iff. refl.
+      Qed.
+
+    End S.
+
+  End Domain.
 
 End Make.
