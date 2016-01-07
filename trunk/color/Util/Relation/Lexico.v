@@ -9,7 +9,8 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil Morphisms NatUtil VecUtil VecOrd Basics.
+Require Import SN RelUtil LogicUtil Morphisms NatUtil VecUtil VecOrd Basics
+        ListUtil.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)
@@ -207,7 +208,7 @@ Proof.
 Qed.
 
 (****************************************************************************)
-(** ** Lexicographic order on vectors. *)
+(** ** Lexicographic order on vectors of fixed length. *)
 
 Definition lexv {n A} (eqA gtA : relation A) : relation (vector A n) :=
   fun v w => lexn eqA gtA (prod_of_vec v) (prod_of_vec w).
@@ -331,7 +332,8 @@ Section Vforall2_opt.
   Variables (A : Type) (eqA gtA : relation A).
 
   Lemma lexv_forall2_opt_l : eqA @ gtA << gtA -> Transitive eqA -> forall n,
-    Vforall2_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA) << lexv (opt eqA) (opt gtA).
+    Vforall2_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA)
+    << lexv (opt eqA) (opt gtA).
 
   Proof.
     intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
@@ -361,7 +363,8 @@ Section Vforall2_opt.
   Qed.
 
   Lemma lexv_forall2_opt_r : gtA @ eqA << gtA -> Transitive eqA -> forall n,
-    lexv (opt eqA) (opt gtA) @ Vforall2_opt (n:=n) eqA << lexv (opt eqA) (opt gtA).
+    lexv (opt eqA) (opt gtA) @ Vforall2_opt (n:=n) eqA
+    << lexv (opt eqA) (opt gtA).
 
   Proof.
     intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
@@ -440,3 +443,39 @@ Proof.
     try (refl || (exfalso; omega) || by (intro h; inversion h)).
   rewrite Vnth_eq with (h1:=l) (h2:=g), Vnth_eq with (h1:=l0) (h2:=g0); auto.
 Qed.
+
+(****************************************************************************)
+(** ** Lexicographic order on lists of bounded length. *)
+
+Section lexl.
+
+  Variables (A : Type) (eqA gtA : relation A) (m : nat).
+
+  Inductive lexl : relation (list A) :=
+  | lexl_intro : forall (xs ys : list A) i
+                        (im : i < m) (ixs : i < length xs) (iys : i < length ys),
+      gtA (ith ixs) (ith iys)
+      -> (forall j (ji : j < i) (jxs : j < length xs) (jys : j < length ys),
+             eqA (ith jxs) (ith jys))
+      -> lexl xs ys.
+
+  Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
+            (Hcomp : eqA @ gtA << gtA).
+
+  Lemma lexl_wf : WF lexl.
+
+  Proof.
+    assert (e : lexl << Rof (lexv (opt eqA) (opt gtA)) (vec_opt_of_list m)).
+    intros x y xy. unfold Rof. rewrite lexv_eq. inversion xy; subst. ex i im.
+    split. rewrite Vnth_vec_opt_of_list with (il:=ixs),
+      Vnth_vec_opt_of_list with (il:=iys). apply opt_intro. hyp.
+    intros j ji jm. assert (jxs : j < length x). omega.
+    assert (jys : j < length y). omega.
+    rewrite Vnth_vec_opt_of_list with (il:=jxs),
+      Vnth_vec_opt_of_list with (il:=jys). apply opt_intro.
+    apply H0; hyp.
+    rewrite e. apply WF_inverse. apply lexv_wf. apply wf_opt. hyp.
+    class. apply opt_absorbs_left. hyp.
+  Qed.
+
+End lexl.
