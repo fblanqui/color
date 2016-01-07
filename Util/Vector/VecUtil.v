@@ -1890,7 +1890,7 @@ Section FoldOpt2.
 End FoldOpt2.
 
 (***********************************************************************)
-(** ** Convert a vector into a list. *)
+(** ** Convert a vector into a list of the same length. *)
 
 Section vec_of_list.
 
@@ -1979,6 +1979,29 @@ Proof.
   intros lforall. red in lforall. destruct lforall as [pa vforall].
   red. simpl. split. trivial. 
   unfold lforall in IHv. apply IHv; trivial.
+Qed.
+
+(***********************************************************************)
+(** ** Convert a list intro a vector of options of fixed length. *)
+
+Fixpoint vec_opt_of_list A m (l : list A) : vector (option A) m :=
+  match m with
+  | 0 => Vnil
+  | S m' =>
+    match l with
+    | nil => Vconst None (S m')
+    | cons x l' => Vcons (Some x) (vec_opt_of_list m' l')
+    end
+  end.
+
+Lemma Vnth_vec_opt_of_list A : forall i m (l : list A) (im : i < m)
+  (il : i < length l), Vnth (vec_opt_of_list m l) im = Some (ith il).
+
+Proof.
+  induction i.
+  destruct m. omega. destruct l. simpl; omega. refl.
+  destruct m. omega. destruct l. simpl; omega.
+  simpl. intros im il. erewrite IHi. refl.
 Qed.
 
 (***********************************************************************)
