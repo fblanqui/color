@@ -300,7 +300,7 @@ Section typing.
 
   Variable typ : F -> Ty.
 
-  Definition Args f := vector Te (arity (typ f)).
+  Definition TypArgs f := vector Te (arity (typ f)).
 
   Record Env := mk_Env {
     Env_type : Type;
@@ -348,7 +348,7 @@ Module Type ST_Struct.
   (** Notations. *)
 
   Notation En := (@XMap.t Ty).
-  Notation Args := (@Args F X So typ).
+  Notation TypArgs := (@TypArgs F X So typ).
   Infix "=&=" := (@Equal Ty) (at level 30).
 
 End ST_Struct.

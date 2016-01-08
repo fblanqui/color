@@ -59,7 +59,7 @@ Module Export Def.
 
     Variable typ : F -> Ty.
 
-    Notation Args := (@Args F X So typ).
+    Notation TypArgs := (@TypArgs F X So typ).
 
     (** For each symbol [f], we assume given a finite number of
        accessible arguments. *)
@@ -94,7 +94,7 @@ Module Export Def.
       | cc_lam : forall E x A v B,
         ~In x (fvs ls) -> cc (add x A E) v B -> cc E (Lam x v) (A ~~> B)
 
-      | cc_acc : forall E g (us : Args g) i (hi : Acc g i),
+      | cc_acc : forall E g (us : TypArgs g) i (hi : Acc g i),
         cc E (apps (Fun g) us) (Base (output_base (typ g))) ->
         cc E (Vnth us (Acc_arity hi)) (Vnth (inputs (typ g)) (Acc_arity hi))
 
@@ -112,7 +112,7 @@ Module Export Def.
 
      Proof. intros hv hV. subst. apply cc_arg. Qed.
 
-     Lemma cc_acc' E v V g (us : Args g) i (hi : Acc g i) :
+     Lemma cc_acc' E v V g (us : TypArgs g) i (hi : Acc g i) :
         cc E (apps (Fun g) us) (Base (output_base (typ g))) ->
         v = Vnth us (Acc_arity hi) ->
         V = Vnth (inputs (typ g)) (Acc_arity hi) -> cc E v V.
@@ -137,7 +137,7 @@ Module Export Def.
         \/ (exists v V u, t = App u v /\ cc E u (V ~~> T) /\ cc E v V)
         \/ (exists x v A B, t = Lam x v /\ T = A ~~> B /\ ~In x (fvs ls)
           /\ cc (add x A E) v B)
-        \/ (exists g (us : Args g) i (hi : Acc g i),
+        \/ (exists g (us : TypArgs g) i (hi : Acc g i),
           t = Vnth us (Acc_arity hi) /\ T = Vnth (inputs (typ g)) (Acc_arity hi)
           /\ cc E (apps (Fun g) us) (Base (output_base (typ g))))
         \/ (exists g p (us : Tes p),
@@ -251,8 +251,8 @@ Module Comp (Export CC : CC_Struct)
          us] smaller in [gt2], is computable whenever [us] are
          computable. *)
 
-      (f : F) (ts : Args f) (hts : vint I (inputs (typ f)) ts)
-      (IH : forall g (us : Args g), gt2 (mk_max_call f ts) (mk_max_call g us) ->
+      (f : F) (ts : TypArgs f) (hts : vint I (inputs (typ f)) ts)
+      (IH : forall g (us : TypArgs g), gt2 (mk_max_call f ts) (mk_max_call g us) ->
         vint I (inputs (typ g)) us ->
         int I (output (typ g) (arity (typ g))) (apps (Fun g) us))
 
@@ -388,7 +388,7 @@ Module Termin (Export CC : CC_Struct)
       (** We assume that the accessible arguments of a computable term of
          the form [apps (Fun g) ts] are computable. *)
 
-      (comp_acc : forall g (ts : Args g),
+      (comp_acc : forall g (ts : TypArgs g),
         int I (Base (output_base (typ g))) (apps (Fun g) ts) ->
         forall i (hi : Acc g i),
           int I (Vnth (inputs (typ g)) (Acc_arity hi)) (Vnth ts (Acc_arity hi)))
@@ -396,7 +396,7 @@ Module Termin (Export CC : CC_Struct)
       (** We assume that [apps (Fun f) ts] is computable if all its
          reducts and arguments [ts] are computable. *)
 
-      (comp_fun : forall f (ts : Args f),
+      (comp_fun : forall f (ts : TypArgs f),
         vint I (inputs (typ f)) ts ->
         (forall u, apps (Fun f) ts =>R u -> I (output_base (typ f)) u) ->
         I (output_base (typ f)) (apps (Fun f) ts))
@@ -598,7 +598,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We check that [gt2] is compatible with [==>R]. *)
 
-  Lemma gt2_clos_vaeq : forall f (ts us : Args f),
+  Lemma gt2_clos_vaeq : forall f (ts us : TypArgs f),
     vint I (inputs (typ f)) ts -> ts ==>R us ->
     gt2 (mk_max_call f ts) (mk_max_call f us).
 

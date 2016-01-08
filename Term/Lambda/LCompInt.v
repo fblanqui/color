@@ -33,16 +33,16 @@ Module Export Def.
     Notation Ty := (@Ty So).
 
     Variable typ : F -> Ty.
-    Notation Args := (@Args F X So typ).
+    Notation TypArgs := (@TypArgs F X So typ).
 
     Variables (Acc : F -> set nat)
       (Acc_arity : forall f i, Acc f i -> i < arity (typ f)).
 
     Inductive supterm_acc : relation Te :=
-    | stacc_intro : forall f (ts : Args f) i (hi : Acc f i),
+    | stacc_intro : forall f (ts : TypArgs f) i (hi : Acc f i),
       supterm_acc (apps (Fun f) ts) (Vnth ts (Acc_arity hi)).
 
-    Lemma stacc_intro' f (ts : Args f) i (hi : Acc f i) t u :
+    Lemma stacc_intro' f (ts : TypArgs f) i (hi : Acc f i) t u :
       t = apps (Fun f) ts -> u = Vnth ts (Acc_arity hi) -> supterm_acc t u.
 
     Proof. intros e1 e2. subst. apply stacc_intro. Qed.
