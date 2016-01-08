@@ -17,28 +17,30 @@ Require Export Arith.
 (***********************************************************************)
 (** Declare implicit arguments. *)
 
-Implicit Arguments lt_S_n [n m].
-Implicit Arguments lt_n_S [n m].
-Implicit Arguments le_S [n m].
-Implicit Arguments gt_le_S [n m].
-Implicit Arguments le_lt_n_Sm [n m].
-Implicit Arguments lt_le_weak [n m].
-Implicit Arguments le_plus_minus [n m].
-Implicit Arguments le_plus_minus_r [n m].
-Implicit Arguments lt_n_0 [n].
-Implicit Arguments le_lt_trans [n m p].
-Implicit Arguments lt_le_trans [n m p].
-Implicit Arguments le_lt_or_eq [n m].
-Implicit Arguments lt_n_Sm_le [n m].
-Implicit Arguments lt_trans [n m p].
-Implicit Arguments le_trans [n m p].
-Implicit Arguments lt_le_weak [n m].
-Implicit Arguments lt_le_S [n m].
-Implicit Arguments lt_not_le [n m].
-Implicit Arguments le_lt_eq_dec [n m].
-Implicit Arguments le_S_n [n m].
-Implicit Arguments le_not_lt [n m].
-Implicit Arguments eq_add_S [n m].
+Arguments lt_S [n m] _.
+Arguments lt_S_n [n m] _.
+Arguments lt_n_S [n m] _.
+Arguments le_S [n m] _.
+Arguments gt_le_S [n m] _.
+Arguments le_lt_n_Sm [n m] _.
+Arguments lt_le_weak [n m] _.
+Arguments le_plus_minus [n m] _.
+Arguments le_plus_minus_r [n m] _.
+Arguments lt_n_0 [n] _.
+Arguments le_lt_trans [n m p] _ _.
+Arguments lt_le_trans [n m p] _ _.
+Arguments le_lt_or_eq [n m] _.
+Arguments lt_n_Sm_le [n m] _.
+Arguments lt_trans [n m p] _ _.
+Arguments le_trans [n m p] _ _.
+Arguments lt_le_weak [n m] _.
+Arguments lt_le_S [n m] _.
+Arguments lt_not_le [n m] _ _.
+Arguments le_lt_eq_dec [n m] _.
+Arguments le_S_n [n m] _.
+Arguments le_not_lt [n m] _ _.
+Arguments eq_add_S [n m] _.
+Arguments le_n_S [n m] _.
 
 (***********************************************************************)
 (** Tactics. *)
@@ -205,9 +207,8 @@ Proof. intros. apply lt_unique. Qed.
 
 Require Import Max.
 
-Implicit Arguments max_r [n m].
-Implicit Arguments max_l [n m].
-Implicit Arguments le_trans [n m p].
+Arguments max_r [n m] _.
+Arguments max_l [n m] _.
 
 Require Import Compare.
 
@@ -341,7 +342,7 @@ Lemma mult_lt_r_elim : forall x x' y, x * y < x' * y -> x < x'.
 
 Proof. induction x; induction y; simpl; nia. Qed.
 
-Implicit Arguments mult_lt_r_elim [x x' y].
+Arguments mult_lt_r_elim [x x' y] _.
 
 Lemma eucl_div_unique b q1 r1 q2 r2 :
   b > r1 -> b > r2 -> q1 * b + r1 = q2 * b + r2 -> q1 = q2 /\ r1 = r2.
@@ -371,7 +372,7 @@ assert (q1=q2). clear H H0 H1 H2 H4; omega.
 subst q2; clear H2 H3 H4 H5. omega.
 Qed.
 
-Implicit Arguments eucl_div_unique [b q1 r1 q2 r2].
+Arguments eucl_div_unique [b q1 r1 q2 r2] _ _ _.
 
 (***********************************************************************)
 (** Iteration of a function. *)
@@ -423,7 +424,7 @@ Lemma i_lt_n : forall n i j : nat, n = i + S j -> i < n.
 
 Proof. omega. Qed.
 
-Implicit Arguments i_lt_n [n i j].
+Arguments i_lt_n [n i j] _.
 
 Lemma S_neq_O : forall n, S n = O -> False.
 
@@ -445,7 +446,7 @@ Lemma le_minus_plus : forall v p, p<=v -> v-p+p=v.
 
 Proof. omega. Qed.
 
-Implicit Arguments le_minus_plus [v p].
+Arguments le_minus_plus [v p] _.
 
 Lemma plus_1_S : forall n, n+1 = S n.
 
@@ -463,7 +464,7 @@ Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.
 
 Proof. omega. Qed.
 
-Implicit Arguments lt_pm [n k x].
+Arguments lt_pm [n k x] _ _.
 
 Lemma le_plus_r : forall k l, k <= k+l.
 
@@ -490,13 +491,13 @@ Lemma S_add_S : forall n1 n2 n, n1 + S n2 = n -> S n1 + S n2 = S n.
 
 Proof. intros. subst. refl. Qed.
 
-Implicit Arguments S_add_S [n1 n2 n].
+Arguments S_add_S [n1 n2 n] _.
 
 Lemma gt_plus : forall l k, l > k -> exists m, l = (m + 1) + k.
 
 Proof. induction 1. exists 0. omega. destruct IHle. exists (S x). omega. Qed.
 
-Implicit Arguments gt_plus [l k].
+Arguments gt_plus [l k] _.
 
 (***********************************************************************)
 (** Given a non-null function [F], [Interval_list F i] is the pair
@@ -546,7 +547,7 @@ Section mon.
 
 End mon.
 
-Implicit Arguments monS [A ltA f x y].
+Arguments monS [A ltA] _ [f] _ [x y] _.
 
 (****************************************************************************)
 (** Smallest natural number satisfying some satisfiable property. *)
