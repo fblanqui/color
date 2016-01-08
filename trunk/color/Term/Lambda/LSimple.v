@@ -466,6 +466,28 @@ are finite maps from variables to types. *)
     set_iff. tauto.
   Qed.
 
+  Lemma tr_apps_fun_inv E f :
+    forall n (ts : Tes n) T, tr E (apps (Fun f) ts) T
+    -> T = output (typ f) n
+       /\ exists nf : n <= arity (typ f), forall i (hi : i < n),
+          tr E (Vnth ts hi) (Vnth (inputs (typ f)) (lt_le_trans hi nf)).
+
+  Proof.
+    induction n; intros ts T hT.
+    VOtac. inversion hT; subst. split. refl. ex (le_0_n (arity (typ f))). omega.
+    revert hT. VSntac ts. simpl Def.apps. rewrite apps_app.
+    set (us := Vremove_last (Vcons (Vhead ts) (Vtail ts))). rewrite <- !H.
+    intro hT. inversion hT. subst E0 T0. destruct (IHn _ _ H3) as [e [p h]].
+    symmetry in e. destruct (output_arrow_elim e) as [h1 [h2 h3]]. split. hyp.
+    ex h2. intros i hi. destruct (lt_dec i n) as [l|l].
+    rewrite Vnth_remove_last_intro with (h1:=l). rewrite H. fold us.
+    rewrite (lt_unique (lt_le_trans hi h2) (lt_le_trans l p)). apply h.
+    assert (i=n). omega. subst i. rewrite <- Vlast_nth with (x := Vhead ts).
+    rewrite Vnth_eq with (h2 := h2), h3, <- Vlast_tail. hyp. refl.
+  Qed.
+
+  Arguments tr_apps_fun_inv [E f n ts T] _.
+
 (****************************************************************************)
 (** ** Well-typed substitutions. *)
 
