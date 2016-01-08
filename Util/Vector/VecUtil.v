@@ -1132,16 +1132,18 @@ Section Vremove_last.
   Definition Vremove_last A n (v : vector A (S n)) : vector A n :=
     Vsub v (Vremove_last_aux n).
 
-  Lemma Vnth_remove_last_aux : forall i n, i<n -> i< S n.
-
-  Proof. omega. Qed.
-
-  Lemma Vnth_remove_last : forall n (v : vector A (S n)) i
-    (h : i<n), Vnth (Vremove_last v) h = Vnth v (Vnth_remove_last_aux h).
+  Lemma Vnth_remove_last_intro : forall n (v : vector A (S n)) i
+    (h1 : i<n) (h2 : i<S n), Vnth v h2 = Vnth (Vremove_last v) h1.
 
   Proof.
-    intros n v i h. unfold Vremove_last. rewrite Vnth_sub. apply Vnth_eq. refl.
+    intros n v i h1 h2. unfold Vremove_last. rewrite Vnth_sub. apply Vnth_eq.
+    refl.
   Qed.
+
+  Lemma Vnth_remove_last : forall n (v : vector A (S n)) i
+    (h : i<n), Vnth (Vremove_last v) h = Vnth v (lt_S h).
+
+  Proof. intros n v i h. sym. apply Vnth_remove_last_intro. Qed.
 
   Lemma Vremove_last_add : forall n (v : vector A n) x,
     Vremove_last (Vadd v x) = v.
