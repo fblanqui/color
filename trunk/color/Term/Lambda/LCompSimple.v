@@ -145,7 +145,7 @@ Module Make (Export ST : ST_Struct)
       gen (cp_int V). intros [V1 V2 V3 V4]. apply cp_lam; class.
       intros a ha. unfold s', x'. rewrite subs_comp, single_update_var.
       eapply hu. refl. apply H3.
-      intros z B. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]]; subst.
+      intros z B. env. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]]; subst.
       rewrite update_eq. hyp.
       rewrite update_neq. apply hs. hyp. hyp.
     Qed.

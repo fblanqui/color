@@ -302,9 +302,18 @@ Section typing.
 
   Definition Args f := vector Te (arity (typ f)).
 
-  Variables (En : Type)
-    (MapsTo : X -> Ty -> En -> Prop)
-    (add : X -> Ty -> En -> En).
+  Record Env := mk_Env {
+    Env_type : Type;
+    Env_empty : Env_type;
+    Env_add : X -> Ty -> Env_type -> Env_type;
+    Env_In : X -> Env_type -> Prop;
+    Env_MapsTo : X -> Ty -> Env_type -> Prop }.
+
+  Variable env : Env.
+
+  Notation En := (Env_type env).
+  Notation MapsTo := (Env_MapsTo env).
+  Notation add := (Env_add env).
 
   Inductive tr : En -> Te -> Ty -> Prop :=
   | tr_var : forall E x T, MapsTo x T E -> tr E (Var x) T
@@ -313,6 +322,8 @@ Section typing.
   | tr_lam : forall E x X v V, tr (add x X E) v V -> tr E (Lam x v) (X ~~> V).
 
 End typing.
+
+Ltac env := unfold Env_type, Env_empty, Env_add, Env_In, Env_MapsTo in *.
 
 (****************************************************************************)
 (** * Structure over which we will define typing. *)
@@ -336,10 +347,8 @@ Module Type ST_Struct.
 
   (** Notations. *)
 
-  Notation En := (XMap.t Ty).
-  Notation empty := (XMap.empty Ty).
+  Notation En := (@XMap.t Ty).
   Notation Args := (@Args F X So typ).
-
   Infix "=&=" := (@Equal Ty) (at level 30).
 
 End ST_Struct.
@@ -358,14 +367,17 @@ are finite maps from variables to types. *)
 
   Require FMapUtil.
 
-  Module Export XMapUtil := FMapUtil.Make XMap.
+  Module XMapUtil := FMapUtil.Make XMap.
   Module Export Domain := XMapUtil.Domain XSet.
-  Import XMapUtil.
+  Export XMapUtil.
+
+  Notation env :=
+    (mk_Env (@XMap.empty Ty) (@XMap.add Ty) (@XMap.In Ty) (@XMap.MapsTo Ty)).
 
 (****************************************************************************)
 (** ** Typing. *)
 
-  Notation tr := (@tr F X So typ En (@MapsTo Ty) (@add Ty)).
+  Notation tr := (@tr F X So typ env).
 
   Notation "E '|-' v '~:' V" := (tr E v V) (at level 70).
 
@@ -410,12 +422,11 @@ are finite maps from variables to types. *)
     apply tr_lam. eq_dec x y.
     (* x = y *)
     eapply tr_le with (x:=add x X0 E). 2: refl. 2: refl.
-    intros z hz. do 2 rewrite find_mapsto_iff, add_o. eq_dec x z; auto.
+    intros z hz. env. do 2 rewrite find_mapsto_iff, add_o. eq_dec x z; auto.
     rewrite remove_o. eq_dec y z. exfalso. apply n. trans y; hyp. auto. hyp.
     (* x <> y *)
     eapply tr_le with (x:= remove y (add x X0 E)). 2: refl. 2: refl.
-    intros z hz. do 2 rewrite find_mapsto_iff. rewrite add_o.
-    do 2 rewrite remove_o. rewrite add_o.
+    intros z hz. env. rewrite !find_mapsto_iff, add_o, !remove_o, add_o.
     eq_dec y z. discr.
     eq_dec x z; auto.
     apply IHtr. tauto.
@@ -432,8 +443,9 @@ are finite maps from variables to types. *)
     apply restrict_dom_s. refl. apply union_subset_1. refl. refl. hyp.
     apply restrict_dom_s. refl. apply union_subset_2. refl. refl. hyp.
     apply tr_lam. eapply tr_le. 2: refl. 2: refl. 2: apply IHtr.
-    intros y hy. rewrite mapsto_restrict_dom. do 2 rewrite add_mapsto_iff.
-    rewrite mapsto_restrict_dom. set_iff. tauto.
+    intros y hy.
+    env. rewrite mapsto_restrict_dom, !add_mapsto_iff, mapsto_restrict_dom.
+    set_iff. tauto.
   Qed.
 
 (****************************************************************************)
@@ -480,10 +492,10 @@ are finite maps from variables to types. *)
     (* lam *)
     set (x' := var x v s). set (s' := S.update x (Var x') s).
     apply tr_lam. apply IHtr. intros y T.
-    rewrite mapsto_restrict_dom, add_mapsto_iff.
+    env. rewrite mapsto_restrict_dom, add_mapsto_iff.
     intros [[[h1 h2]|[h1 h2]] h3]; unfold s', Def.update; eq_dec y x.
     (* (y,T) = (x,U) *)
-    subst y T. apply tr_var. rewrite add_mapsto_iff. intuition. intuition.
+    subst y T. apply tr_var. env. rewrite add_mapsto_iff. intuition. intuition.
     (* y <> x /\ MapsTo y T E *)
     intuition.
     assert (h2' : MapsTo y T (restrict_dom E (XSet.remove x (fv v)))).
@@ -521,12 +533,12 @@ are finite maps from variables to types. *)
     apply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: hyp.
 
     intros y V. unfold Def.single, Def.update.
-    rewrite mapsto_restrict_dom, add_mapsto_iff. intros [h1 h2].
+    env. rewrite mapsto_restrict_dom, add_mapsto_iff. intros [h1 h2].
     eq_dec y x. unfold XSet.E.eq in e. subst.
     assert (b : X0 = V). tauto. subst V.
-    apply tr_var. rewrite add_mapsto_iff. auto.
+    apply tr_var. env. rewrite add_mapsto_iff. auto.
     assert (b : MapsTo y V E). destruct h1. exfalso. apply n. sym. tauto. tauto.
-    apply tr_var. rewrite add_mapsto_iff. eq_dec x1 y.
+    apply tr_var. env. rewrite add_mapsto_iff. eq_dec x1 y.
     unfold XSet.E.eq in e. subst x1. tauto. tauto.
   Qed.
 
@@ -552,7 +564,7 @@ are finite maps from variables to types. *)
     rewrite h. apply tr_app with V. hyp. apply IHht2. hyp.
     (* top *)
     rewrite h0. inversion ht1; subst. eapply tr_subs. apply H1.
-    intros z B. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]].
+    intros z B. env. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]].
     subst z B. rewrite single_eq. hyp.
     rewrite single_neq. 2: hyp. apply tr_var. hyp.
     (* lam *)

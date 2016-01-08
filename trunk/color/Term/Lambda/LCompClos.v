@@ -429,7 +429,7 @@ Module Termin (Export CC : CC_Struct)
          the computability closure of the left hand-side. *)
 
       (lhs_cc_rhs : forall l r (h : rule l r),
-        cc gt1 (lhs_fun h) (lhs_args h) ST.empty r
+        cc gt1 (lhs_fun h) (lhs_args h) XMap.empty r
         (output (typ (lhs_fun h)) (lhs_nb_args h))).
 
 (****************************************************************************)
@@ -481,7 +481,7 @@ Module Termin (Export CC : CC_Struct)
       (* Proof that [subs s r] is computable: we use [cc_comp]. *)
       assert (hm : 0 + m <= arity (typ f)). omega.
       eapply cc_comp with (ts:=ts) (gt1:=gt1) (gt2:=gt2) (ls:=ls) (h:=hm)
-        (E:=ST.empty); auto.
+        (E:=XMap.empty); auto.
       (* Proof that [ts] is computable. *)
       rewrite h3, vint_cast_term. hyp.
       (* Proof that calls smaller than [mk_call f ts] are computable. *)
@@ -664,7 +664,7 @@ Module SN_rewrite (Export CC : CC_Struct)
     Variables
       (lhs_cc_rhs : forall l r (h : rule l r),
         cc gt1 (lhs_fun h) (lhs_args h)
-        ST.empty r (output (typ (lhs_fun h)) (lhs_nb_args h))).
+        XMap.empty r (output (typ (lhs_fun h)) (lhs_nb_args h))).
 
     Lemma tr_sn_beta_eta_rewrite_aeq : forall E v V, E |- v ~: V -> SN R_aeq v.
 
