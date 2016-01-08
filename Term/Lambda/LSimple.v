@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import VecUtil LogicUtil Relations OrdUtil.
+Require Import VecUtil LogicUtil Relations OrdUtil NatUtil.
 Require Export LBeta.
 
 (****************************************************************************)
@@ -85,6 +85,22 @@ Section simple.
     omega.
     assert (h' : p <= arity T2). omega.
     rewrite IHp with (h:=h'), Vsub_cons. apply Vsub_pi.
+  Qed.
+
+  Lemma output_Base (s : So) n : output (Base s) n = Base s.
+
+  Proof. destruct n; refl. Qed.
+
+  Lemma output_arrow_elim : forall n (A B C : Ty), output A n = B ~~> C
+    -> output A (S n) = C /\ exists h : S n <= arity A, Vnth (inputs A) h = B.
+
+  Proof.
+    induction n; destruct A; intros B C; rewrite ?output_Base; try discr;
+      simpl; intro e. inversion e; subst. split. refl.
+    ex (le_n_S (le_0_n (arity C))). refl.
+    destruct (IHn _ _ _ e) as [h1 [h2 h3]]. split.
+    revert h1. destruct A2; auto.
+    ex (le_n_S h2). rewrite <- h3. apply Vnth_eq. refl.
   Qed.
 
 (** Building the type [T1 ~~> .. ~~> Tn -> U] from the type vector
@@ -200,6 +216,8 @@ positively/negatively in a simple type. *)
   End pos.
 
 End simple.
+
+Arguments output_arrow_elim [So n A B C] _.
 
 Infix "~~>" := Arr (at level 55, right associativity).
 
