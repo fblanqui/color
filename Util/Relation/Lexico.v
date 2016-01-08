@@ -139,12 +139,12 @@ Fixpoint lexn {n A} (eqA gtA : relation A) :=
 
 Section lexn.
 
-  Variables (A : Type) (eqA gtA : relation A).
+  Variables (A : Type) (eqA gt : relation A).
 
   (** Equivalent definition. *)
  
-  Lemma lexn_eq : forall n (xs ys : prodn n A), lexn eqA gtA xs ys <->
-    (exists i (hi : i<n), gtA (projn xs hi) (projn ys hi)
+  Lemma lexn_eq : forall n (xs ys : prodn n A), lexn eqA gt xs ys <->
+    (exists i (hi : i<n), gt (projn xs hi) (projn ys hi)
       /\ forall j, j<i -> forall hj : j<n, eqA (projn xs hj) (projn ys hj)).
 
   Proof.
@@ -171,10 +171,10 @@ Section lexn.
 
   (** Wellfoundedness. *)
 
-  Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
-    (Hcomp : eqA @ gtA << gtA).
+  Variables (gt_wf : WF gt) (eqA_trans : Transitive eqA)
+    (Hcomp : eqA @ gt << gt).
 
-  Lemma lexn_wf n : WF (lexn (n:=n) eqA gtA).
+  Lemma lexn_wf n : WF (lexn (n:=n) eqA gt).
 
   Proof. induction n; simpl. apply WF_empty_rel. apply WF_lex; hyp. Qed.
 
@@ -187,7 +187,7 @@ Instance lexn_incl : forall A n,
 
 Proof.
   intro A. induction n; simpl. fo.
-  intros eqA eqA' eqAeqA' gtA gtA' gtAgtA'. apply lex_incl; auto.
+  intros eqA eqA' eqAeqA' gt gt' gtgt'. apply lex_incl; auto.
   apply IHn; hyp.
 Qed.
 
@@ -210,18 +210,18 @@ Qed.
 (****************************************************************************)
 (** ** Lexicographic order on vectors of fixed length. *)
 
-Definition lexv {n A} (eqA gtA : relation A) : relation (vector A n) :=
-  fun v w => lexn eqA gtA (prod_of_vec v) (prod_of_vec w).
+Definition lexv {n A} (eq gt : relation A) : relation (vector A n) :=
+  fun v w => lexn eq gt (prod_of_vec v) (prod_of_vec w).
 
 Section lexv.
 
-  Variables (A : Type) (eqA gtA : relation A).
+  Variables (A : Type) (eq gt : relation A).
 
   (** Equivalent definition. *)
 
-  Lemma lexv_eq : forall n (xs ys : vector A n), lexv eqA gtA xs ys <->
-    (exists i (hi : i<n), gtA (Vnth xs hi) (Vnth ys hi)
-      /\ forall j, j<i -> forall hj : j<n, eqA (Vnth xs hj) (Vnth ys hj)).
+  Lemma lexv_eq : forall n (xs ys : vector A n), lexv eq gt xs ys <->
+    (exists i (hi : i<n), gt (Vnth xs hi) (Vnth ys hi)
+      /\ forall j, j<i -> forall hj : j<n, eq (Vnth xs hj) (Vnth ys hj)).
 
   Proof.
     intros n xs ys. unfold lexv. rewrite lexn_eq.
@@ -236,49 +236,49 @@ Section lexv.
 
   Section wf.
 
-    Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
-      (Hcomp : eqA @ gtA << gtA).
+    Variables (gt_wf : WF gt) (eq_trans : Transitive eq)
+      (Hcomp : eq @ gt << gt).
 
-    Lemma lexv_wf n : WF (lexv (n:=n) eqA gtA).
+    Lemma lexv_wf n : WF (lexv (n:=n) eq gt).
 
     Proof. apply WF_inverse. apply lexn_wf; hyp. Qed.
 
   End wf.
 
-  (** [lexv eqA gtA] absorbs [Vforall2 eqA]. *)
+  (** [lexv eq gt] absorbs [Vforall2 eq]. *)
 
-  Lemma lexv_forall2_l : eqA @ gtA << gtA -> Transitive eqA ->
-    forall n, Vforall2 eqA (n:=n) @ lexv eqA gtA << lexv eqA gtA.
+  Lemma lexv_forall2_l : eq @ gt << gt -> Transitive eq ->
+    forall n, Vforall2 eq (n:=n) @ lexv eq gt << lexv eq gt.
 
   Proof.
-    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    intros gt_eq eq_trans n ts vs [us [tsus usvs]].
     revert usvs. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi. split.
-    apply gtA_eqA. exists (Vnth us hi). split.
+    apply gt_eq. exists (Vnth us hi). split.
     apply Vforall2_elim_nth. hyp. hyp.
     intros j ji jn. trans (Vnth us jn). apply Vforall2_elim_nth. hyp. fo.
   Qed.
 
-  Lemma lexv_forall2_r : gtA @ eqA << gtA -> Transitive eqA ->
-    forall n, lexv eqA gtA @ Vforall2 eqA (n:=n) << lexv eqA gtA.
+  Lemma lexv_forall2_r : gt @ eq << gt -> Transitive eq ->
+    forall n, lexv eq gt @ Vforall2 eq (n:=n) << lexv eq gt.
 
   Proof.
-    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    intros gt_eq eq_trans n ts vs [us [tsus usvs]].
     revert tsus. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi. split.
-    apply gtA_eqA. exists (Vnth us hi). split.
+    apply gt_eq. exists (Vnth us hi). split.
     hyp. apply Vforall2_elim_nth. hyp.
     intros j ji jn. trans (Vnth us jn). fo. apply Vforall2_elim_nth. hyp.
   Qed.
 
-  (** [lexv eqA gtA] is invariant by [Vforall2 eqA]. *)
+  (** [lexv eq gt] is invariant by [Vforall2 eq]. *)
 
-  Global Instance lexv_forall2 n : Transitive eqA -> Symmetric eqA ->
-    Proper (eqA ==> eqA ==> impl) gtA ->
-    Proper (Vforall2 eqA ==> Vforall2 eqA ==> impl) (lexv (n:=n) eqA gtA).
+  Global Instance lexv_forall2 n : Transitive eq -> Symmetric eq ->
+    Proper (eq ==> eq ==> impl) gt ->
+    Proper (Vforall2 eq ==> Vforall2 eq ==> impl) (lexv (n:=n) eq gt).
 
   Proof.
-    intros eqA_trans eqA_sym gtA_eqA ts ts' tsts' us us' usus'; unfold impl.
+    intros eq_trans eq_sym gt_eq ts ts' tsts' us us' usus'; unfold impl.
     rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
-    eapply gtA_eqA. apply Vforall2_elim_nth. apply tsts'.
+    eapply gt_eq. apply Vforall2_elim_nth. apply tsts'.
     apply Vforall2_elim_nth. apply usus'. hyp.
     intros j ji jn.
     rewrite <- (Vforall2_elim_nth _ tsts'), <- (Vforall2_elim_nth _ usus'). fo.
@@ -286,15 +286,15 @@ Section lexv.
 
   (** Transitivity. *)
 
-  Lemma lexv_trans n : Transitive eqA -> Transitive gtA ->
-    gtA @ eqA << gtA -> eqA @ gtA << gtA ->
-    Transitive (lexv (n:=n) eqA gtA).
+  Lemma lexv_trans n : Transitive eq -> Transitive gt ->
+    gt @ eq << gt -> eq @ gt << gt ->
+    Transitive (lexv (n:=n) eq gt).
 
   Proof.
-    intros eqA_trans gtA_trans gtA_eqA_r gtA_eqA_l ts us vs. rewrite !lexv_eq.
+    intros eq_trans gt_trans gt_eq_r gt_eq_l ts us vs. rewrite !lexv_eq.
     intros [i [i1 [i2 i3]]] [j [j1 [j2 j3]]]. destruct (lt_dec i j).
     (* i < j *)
-    ex i i1. split. apply gtA_eqA_r. exists (Vnth us i1). fo.
+    ex i i1. split. apply gt_eq_r. exists (Vnth us i1). fo.
     intros k ki kn. trans (Vnth us kn). fo. apply j3. omega.
     destruct (eq_nat_dec i j).
     (* i = j *)
@@ -302,7 +302,7 @@ Section lexv.
     trans (Vnth us i1). hyp. rewrite !(Vnth_eq _ i1 j1); auto.
     intros k ki kn. trans (Vnth us kn); fo.
     (* i > j *)
-    ex j j1. split. apply gtA_eqA_l. exists (Vnth us j1). split. fo. hyp.
+    ex j j1. split. apply gt_eq_l. exists (Vnth us j1). split. fo. hyp.
     intros k kj kn. trans (Vnth us kn). apply i3. omega. fo.
   Qed.
 
@@ -313,30 +313,30 @@ End lexv.
 Instance lexv_incl n A :
   Proper (inclusion ==> inclusion ==> inclusion) (@lexv n A). 
 
-Proof. intros eqA eqA' eqAeqA' gtA gtA' gtAgtA' t u. apply lexn_incl; hyp. Qed.
+Proof. intros eq eq' eqeq' gt gt' gtgt' t u. apply lexn_incl; hyp. Qed.
 
 (** [Vrel1] is included in [lexv]. *)
 
-Lemma Vrel1_lexv n A (gtA : relation A) :
-  Vrel1 (n:=n) gtA << lexv Logic.eq gtA.
+Lemma Vrel1_lexv n A (gt : relation A) :
+  Vrel1 (n:=n) gt << lexv Logic.eq gt.
 
 Proof.
   intros t u. rewrite Vrel1_nth_iff, lexv_eq. intros [i [hi [h1 h2]]].
   ex i hi. fo.
 Qed.
 
-(** [lexv (opt eqA) (opt gtA)] absorbs [Vforall2_opt eqA]. *)
+(** [lexv (opt eq) (opt gt)] absorbs [Vforall2_opt eq]. *)
 
 Section Vforall2_opt.
 
-  Variables (A : Type) (eqA gtA : relation A).
+  Variables (A : Type) (eq gt : relation A).
 
-  Lemma lexv_forall2_opt_l : eqA @ gtA << gtA -> Transitive eqA -> forall n,
-    Vforall2_opt (n:=n) eqA @ lexv (opt eqA) (opt gtA)
-    << lexv (opt eqA) (opt gtA).
+  Lemma lexv_forall2_opt_l : eq @ gt << gt -> Transitive eq -> forall n,
+    Vforall2_opt (n:=n) eq @ lexv (opt eq) (opt gt)
+    << lexv (opt eq) (opt gt).
 
   Proof.
-    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    intros gt_eq eq_trans n ts vs [us [tsus usvs]].
     revert usvs. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi.
     destruct tsus as [k [k1 [k2 k3]]]. inversion h1; clear h1; subst.
     destruct (le_dec k i).
@@ -352,7 +352,7 @@ Section Vforall2_opt.
     gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=us) (h2:=hi), <- H; auto.
     intro e; inversion e; clear e; subst.
-    apply opt_intro. apply gtA_eqA. exists x. fo.
+    apply opt_intro. apply gt_eq. exists x. fo.
     (* forall j<i, j-th arguments are equivalent *)
     intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
     assert (a : j < k). omega.
@@ -362,12 +362,12 @@ Section Vforall2_opt.
     apply opt_intro. trans x0; hyp.
   Qed.
 
-  Lemma lexv_forall2_opt_r : gtA @ eqA << gtA -> Transitive eqA -> forall n,
-    lexv (opt eqA) (opt gtA) @ Vforall2_opt (n:=n) eqA
-    << lexv (opt eqA) (opt gtA).
+  Lemma lexv_forall2_opt_r : gt @ eq << gt -> Transitive eq -> forall n,
+    lexv (opt eq) (opt gt) @ Vforall2_opt (n:=n) eq
+    << lexv (opt eq) (opt gt).
 
   Proof.
-    intros gtA_eqA eqA_trans n ts vs [us [tsus usvs]].
+    intros gt_eq eq_trans n ts vs [us [tsus usvs]].
     revert tsus. rewrite !lexv_eq. intros [i [hi [h1 h2]]]. ex i hi.
     destruct usvs as [k [k1 [k2 k3]]]. inversion h1; clear h1; subst.
     destruct (le_dec k i).
@@ -383,7 +383,7 @@ Section Vforall2_opt.
     gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=vs) (h2:=hi), <- H0; auto.
     intro e; inversion e; clear e; subst.
-    apply opt_intro. apply gtA_eqA. exists y. fo.
+    apply opt_intro. apply gt_eq. exists y. fo.
     (* forall j<i, j-th arguments are equivalent *)
     intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
     assert (a : j < k). omega.
@@ -397,9 +397,9 @@ End Vforall2_opt.
 
 (** Monotony of [lexv] wrt arguments. *)
 
-Lemma lexv_mon_arg A (eqA gtA : relation A) n (ts us : vector A n)
+Lemma lexv_mon_arg A (eq gt : relation A) n (ts us : vector A n)
   p (ts' us' : vector A p) :
-  lexv eqA gtA ts us -> lexv eqA gtA (Vapp ts ts') (Vapp us us').
+  lexv eq gt ts us -> lexv eq gt (Vapp ts ts') (Vapp us us').
 
 Proof.
   rewrite !lexv_eq. intros [i [i1 [i2 i3]]].
@@ -413,11 +413,11 @@ Qed.
 
 (** Monotony of [Rof lexv (Vopt_filter M)] when [M] is sorted. *)
 
-Lemma lexv_opt_filter_sorted_mon_arg A (eqA gtA : relation A)
+Lemma lexv_opt_filter_sorted_mon_arg A (eq gt : relation A)
   n (ks : vector nat n) (ks_sorted : sorted ks) p (ts : vector A p)
   q (us : vector A q) p' (ts' : vector A p') q' (us' : vector A q') :
-  lexv (opt eqA) (opt gtA) (Vopt_filter ks ts) (Vopt_filter ks us) ->
-  lexv (opt eqA) (opt gtA) (Vopt_filter ks (Vapp ts ts'))
+  lexv (opt eq) (opt gt) (Vopt_filter ks ts) (Vopt_filter ks us) ->
+  lexv (opt eq) (opt gt) (Vopt_filter ks (Vapp ts ts'))
                            (Vopt_filter ks (Vapp us us')).
 
 Proof.
@@ -449,33 +449,42 @@ Qed.
 
 Section lexl.
 
-  Variables (A : Type) (eqA gtA : relation A) (m : nat).
+  Variables (m : nat) (A : Type) (eq gt : relation A).
 
   Inductive lexl : relation (list A) :=
   | lexl_intro : forall (xs ys : list A) i
-                        (im : i < m) (ixs : i < length xs) (iys : i < length ys),
-      gtA (ith ixs) (ith iys)
-      -> (forall j (ji : j < i) (jxs : j < length xs) (jys : j < length ys),
-             eqA (ith jxs) (ith jys))
+                        (im : i < m) (ix : i < length xs) (iy : i < length ys),
+      gt (ith ix) (ith iy)
+      -> (forall j (ji : j < i) (jx : j < length xs) (jy : j < length ys),
+             eq (ith jx) (ith jy))
       -> lexl xs ys.
 
-  Variables (gtA_wf : WF gtA) (eqA_trans : Transitive eqA)
-            (Hcomp : eqA @ gtA << gtA).
+  Variables (gt_wf : WF gt) (eq_trans : Transitive eq)
+            (Hcomp : eq @ gt << gt).
 
   Lemma lexl_wf : WF lexl.
 
   Proof.
-    assert (e : lexl << Rof (lexv (opt eqA) (opt gtA)) (vec_opt_of_list m)).
+    assert (e : lexl << Rof (lexv (opt eq) (opt gt)) (vec_opt_of_list m)).
     intros x y xy. unfold Rof. rewrite lexv_eq. inversion xy; subst. ex i im.
-    split. rewrite Vnth_vec_opt_of_list with (il:=ixs),
-      Vnth_vec_opt_of_list with (il:=iys). apply opt_intro. hyp.
-    intros j ji jm. assert (jxs : j < length x). omega.
-    assert (jys : j < length y). omega.
-    rewrite Vnth_vec_opt_of_list with (il:=jxs),
-      Vnth_vec_opt_of_list with (il:=jys). apply opt_intro.
+    split. rewrite Vnth_vec_opt_of_list with (il:=ix),
+      Vnth_vec_opt_of_list with (il:=iy). apply opt_intro. hyp.
+    intros j ji jm. assert (jx : j < length x). omega.
+    assert (jy : j < length y). omega.
+    rewrite Vnth_vec_opt_of_list with (il:=jx),
+      Vnth_vec_opt_of_list with (il:=jy). apply opt_intro.
     apply H0; hyp.
     rewrite e. apply WF_inverse. apply lexv_wf. apply wf_opt. hyp.
     class. apply opt_absorbs_left. hyp.
   Qed.
 
 End lexl.
+
+Instance lexl_incl m A :
+  Proper (inclusion ==> inclusion ==> inclusion) (@lexl m A). 
+
+Proof.
+  intros eq eq' eqeq' gt gt' gtgt' xs ys h. destruct h.
+  eapply lexl_intro. apply im. apply gtgt'. apply H.
+  intros j ji jx jy. apply eqeq'. apply H0. hyp.
+Qed.
