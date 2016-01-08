@@ -251,7 +251,7 @@ Module ST_SystemT <: ST_Struct.
 
   Notation En := (XMap.t Ty).
   Notation empty := (XMap.empty Ty).
-  Notation Args := (@Args F X So typ).
+  Notation TypArgs := (@TypArgs F X So typ).
 
 End ST_SystemT.
 

@@ -48,7 +48,7 @@ Module Export Def.
 
     Variable typ : F -> Ty.
 
-    Notation Args := (@Args F X So typ).
+    Notation TypArgs := (@TypArgs F X So typ).
 
     (** A [max_call] is a call [mk_call f ts] with [ts] of length
        [arity (typ f)], that is, the maximum number of arguments that
@@ -59,7 +59,7 @@ Module Export Def.
       max_call_eq :
         call_nb_args max_call_call = arity (typ (call_fun max_call_call)) }.
 
-    Definition mk_max_call f (ts : Args f) :=
+    Definition mk_max_call f (ts : TypArgs f) :=
       build_max_call (mk_call f ts) Logic.eq_refl.
 
     (** Parameters for alpha-equivalence. *)
