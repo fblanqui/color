@@ -11,7 +11,7 @@ Type of natural numbers strictly smaller that some bound.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil NatUtil ListUtil ListNodup FunUtil.
+Require Import LogicUtil NatUtil ListUtil ListNodup FunUtil VecUtil.
 
 Definition N n := sig (gt n).
 
@@ -84,7 +84,7 @@ Section list_N.
 
   Variable n : nat.
 
-  Lemma L_ k' : S k' < n -> k' < n. Proof. omega. Qed.
+  Lemma L_ k : S k < n -> k < n. Proof. omega. Qed.
 
   (* Given k<n, returns the list [@N_ n k _; ..; @N_ n 0 _]. *)
   Fixpoint L_aux k :=
@@ -172,6 +172,9 @@ Lemma nodup_L n : nodup (L n).
 
 Proof. destruct n; simpl. auto. apply nodup_L_aux. Qed.
 
+(****************************************************************************)
+(** Functions between [N m] and [N n]. *)
+
 Lemma N_inj_le m n (f : N m -> N n) : injective f -> m <= n.
 
 Proof.
@@ -191,7 +194,81 @@ Proof.
 Qed.
 
 (****************************************************************************)
-(* Multiplicity and sorting properties. *)
+(** Vector [@N_ n (n-1) _; ..; @N_ n 0 _] of all the elements of [N n] in
+reverse order. *)
+
+Section vec_N.
+
+  Variable n : nat.
+
+  (* Given k<n, returns the list [@N_ n k _; ..; @N_ n 0 _]. *)
+  Fixpoint V_aux k :=
+    match k as k return k<n -> vector (N n) (S k) with
+      | 0 => fun h => Vcons (N_ h) Vnil
+      | S k' => fun h => Vcons (N_ h) (V_aux k' (L_ h))
+    end.
+
+  Lemma Vnth_V_aux :
+    forall k (h : k<n) i (hi : i < S k), N_val (Vnth (V_aux h) hi) = k - i.
+
+  Proof.
+    induction k; simpl; intros; destruct i; simpl. refl. omega. refl.
+    rewrite IHk. refl.
+  Qed.
+
+  Lemma Vin_V_aux_elim x k (h : k<n) :
+    Vin x (V_aux h) -> exists i, N_val x = k - i.
+
+  Proof.
+    intro xL. destruct (Vin_nth xL) as [i [i1 i2]].
+    apply N_eq in i2. rewrite Vnth_V_aux in i2. ex i. hyp.
+  Qed.
+
+  Arguments Vin_V_aux_elim [x k h] _.
+
+  Lemma Vin_V_aux :
+    forall k (h : k<n) i (p : i<n), i <= k -> Vin (N_ p) (V_aux h).
+
+  Proof.
+    induction k; simpl; intros.
+    left. apply N_eq; simpl. omega.
+    destruct (eq_nat_dec (S k) i).
+    left. apply N_eq; simpl. hyp.
+    right. apply IHk. omega.
+  Qed.
+
+End vec_N.
+
+Arguments Vin_V_aux_elim [n x k h] _.
+
+(* Returns the list [@N_ n (n-1) _; ..; @N_ n 0 _]. *)
+Definition V n :=
+  match n return vector (N n) n with
+    | 0 => Vnil
+    | S n' => V_aux (le_n (S n'))
+  end.
+
+Arguments V : clear implicits.
+
+Lemma Vnth_V n i (hi : i < n) : N_val (Vnth (V n) hi) = pred n - i.
+
+Proof. intros. unfold L. destruct n. omega. apply Vnth_V_aux. Qed.
+
+Lemma Vin_V n i (p : i<n) : Vin (N_ p) (V n).
+
+Proof. unfold L. destruct n. omega. apply Vin_V_aux. omega. Qed.
+
+Lemma Vin_V_elim n x : Vin x (V n) -> exists i, N_val x = n - i.
+
+Proof.
+  destruct n; simpl. fo.
+  intro xl. destruct (Vin_V_aux_elim xl) as [i e]. ex (S i). hyp.
+Qed.
+
+Arguments Vin_V_elim [n x] _.
+
+(****************************************************************************)
+(** Multiplicity and sorting properties. *)
 
 Lemma map_N_val_L_aux n :
   forall k (hk : k<n), map N_val (L_aux hk) = nats_decr_lt (S k).
