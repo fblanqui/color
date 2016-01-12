@@ -325,7 +325,8 @@ Section typing.
     Env_empty : Env_type;
     Env_add : X -> Ty -> Env_type -> Env_type;
     Env_In : X -> Env_type -> Prop;
-    Env_MapsTo : X -> Ty -> Env_type -> Prop }.
+    Env_MapsTo : X -> Ty -> Env_type -> Prop;
+    Env_Equal : relation Env_type }.
 
   Variable env : Env.
 
@@ -341,7 +342,8 @@ Section typing.
 
 End typing.
 
-Ltac env := unfold Env_type, Env_empty, Env_add, Env_In, Env_MapsTo in *.
+Ltac env :=
+  unfold Env_type, Env_empty, Env_add, Env_In, Env_MapsTo, Env_Equal in *.
 
 (****************************************************************************)
 (** * Structure over which we will define typing. *)
@@ -367,7 +369,6 @@ Module Type ST_Struct.
 
   Notation En := (@XMap.t Ty).
   Notation TypArgs := (@TypArgs F X So typ).
-  Infix "=&=" := (@Equal Ty) (at level 30).
 
 End ST_Struct.
 
@@ -390,7 +391,8 @@ are finite maps from variables to types. *)
   Export XMapUtil.
 
   Notation env :=
-    (mk_Env (@XMap.empty Ty) (@XMap.add Ty) (@XMap.In Ty) (@XMap.MapsTo Ty)).
+    (mk_Env (@XMap.empty Ty) (@XMap.add Ty) (@XMap.In Ty) (@XMap.MapsTo Ty)
+            (@XMap.Equal Ty)).
 
 (****************************************************************************)
 (** ** Typing. *)
