@@ -1034,6 +1034,11 @@ Section inverse_image.
 
 End inverse_image.
 
+Instance Rof_incl A B :
+  Proper (inclusion ==> Logic.eq ==> inclusion) (@Rof A B).
+
+Proof. intros R S RS f g fg. subst g. fo. Qed.
+
 (***********************************************************************)
 (** Alternative definition of the transitive closure, more convenient
 for some inductive proofs. *)
