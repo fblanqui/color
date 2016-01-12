@@ -1,3 +1,6 @@
+16-01-12: [Blanqui]
+- Util/Nat/BoundNat: added vector of bounded natural numbers
+
 16-01-06: [Blanqui]
 - Util/FMap/FMapUtil: Make now takes an FMapInterface.S as argument;
   moved parts of LSimple into a Domain submodule taking an FSetInterface.S
