@@ -269,8 +269,8 @@ Module Make (Export ST : ST_Struct).
             destruct (caeq_inv r)
               as [f0 [n0 [ts1 [us1 [h1 [h2 [h3 [h4 [h5 [h6 h7]]]]]]]]]];
                 subst f0 n0 g p;
-                  (apply inj_existT2 in h4; [subst ts1|exact eq_nat_dec]);
-                  (apply inj_existT2 in h7; [subst us1|exact eq_nat_dec]).
+                  (apply inj_existT in h4; [subst ts1|exact eq_nat_dec]);
+                  (apply inj_existT in h7; [subst us1|exact eq_nat_dec]).
 
   (** [caeq] and [mcaeq] are equivalence relations. *)
 
@@ -331,8 +331,8 @@ Module Make (Export ST : ST_Struct).
             destruct (gt_red_inv r)
               as [f0 [n0 [ts1 [us1 [[h1 h2] [h3 [h4 [h5 [h6 [h7 h8]]]]]]]]]];
                 subst f0 n0 g p;
-                  (apply inj_existT2 in h5; [subst ts1|exact eq_nat_dec]);
-                  (apply inj_existT2 in h8; [subst us1|exact eq_nat_dec]).
+                  (apply inj_existT in h5; [subst ts1|exact eq_nat_dec]);
+                  (apply inj_existT in h8; [subst us1|exact eq_nat_dec]).
 
   (** [gt_red] is wellfounded. *)
 

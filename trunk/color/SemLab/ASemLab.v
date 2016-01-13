@@ -45,12 +45,12 @@ Section S.
     match goal with
       | H : @mk ?x _ = @mk ?x _ |- _ =>
         let h1 := fresh in
-          (injection H; intro h1; ded (inj_existT2 eq_symb_dec h1);
+          (injection H; intro h1; ded (inj_existT eq_symb_dec h1);
             clear h1; clear H)
       | H : @mk _ _ = @mk _ _ |- _ =>
         let h1 := fresh in let h2 := fresh in
           (injection H; clear H; intros h1 h2; subst;
-            ded (inj_existT2 eq_symb_dec h1); clear h1; subst)
+            ded (inj_existT eq_symb_dec h1); clear h1; subst)
     end.
 
   Definition beq_lab_symb (fl1 fl2 : lab_symb) :=

@@ -96,12 +96,12 @@ Section eq_dep.
 
   Proof. exact (K_dec_type eq_dec). Qed.
 
-  Lemma inj_existT2 :
+  Lemma inj_existT :
     forall P (x : A) (p q : P x), existT p = existT q -> p = q.
 
   Proof. exact (eq_dep_eq__inj_pairT2 A eq_dep_eq). Qed.
 
-  Lemma inj_ex_intro2 :
+  Lemma inj_ex_intro :
     forall P (x : A) p q, ex_intro P x p = ex_intro P x q -> p = q.
 
   Proof.
