@@ -47,11 +47,11 @@ Ltac Veqtac := repeat
   match goal with
     | H : Vcons ?x ?v = Vcons ?x ?w |- _ =>
       let h := fresh in
-      (injection H; intro h; ded (inj_existT2 eq_nat_dec h);
+      (injection H; intro h; ded (inj_existT eq_nat_dec h);
         clear h; clear H)
     | H : Vcons ?x ?v = Vcons ?y ?w |- _ =>
       let h1 := fresh in let h2 := fresh in
-      (injection H; intros h1 h2; ded (inj_existT2 eq_nat_dec h1);
+      (injection H; intros h1 h2; ded (inj_existT eq_nat_dec h1);
         clear h1; clear H)
   end.
 

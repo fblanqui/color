@@ -137,7 +137,7 @@ Section S.
   Lemma fun_eq : forall f v w, Fun f v = Fun f w -> v = w.
 
   Proof.
-    intros. inversion H. apply (inj_existT2 (@eq_symb_dec _) H1).
+    intros. inversion H. apply (inj_existT (@eq_symb_dec _) H1).
   Qed.
 
   Lemma symb_eq : forall f us g vs, Fun f us = Fun g vs -> f = g.

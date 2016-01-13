@@ -377,9 +377,9 @@ set (s := mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs)).
 assert (s = mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs)). refl.
 destruct s. destruct p as [f0 v0]. injection H0. intros. subst x.
 assert (v0 = conc cs).
-apply (@inj_existT2 _ eq_nat_dec (fun x => terms x)). hyp.
+apply (@inj_existT _ eq_nat_dec (fun x => terms x)). hyp.
 assert (f0 = fun ts => Fun f (Vmap_sum cs ts)).
-apply (@inj_existT2 _ eq_nat_dec (fun x => terms x -> term)). hyp.
+apply (@inj_existT _ eq_nat_dec (fun x => terms x -> term)). hyp.
 subst f0. rewrite sub_fun. apply f_equal with (f := Fun f).
 set (s := fsub m v0). set (v1 := fresh (S m) (sum cs)).
 assert (Vmap (sub s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (sub s) v1)).
