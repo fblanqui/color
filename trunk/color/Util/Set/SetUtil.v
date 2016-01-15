@@ -31,12 +31,10 @@ Section S.
 
   Definition mem a (P : set) := P a.
 
-  (*Definition subset (P Q : set) := forall x, mem x P -> mem x Q.*)
   Definition subset : relation set := pointwise_relation A impl.
 
   Infix "[<=]" := subset (at level 70).
 
-  (*Definition equiv (P Q : set) := forall x, mem x P <-> mem x Q.*)
   Definition equiv : relation set := pointwise_relation A iff.
 
   Infix "[=]" := equiv (at level 70).
