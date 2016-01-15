@@ -19,14 +19,12 @@ needed). *)
 
 Section tarski.
 
-  Variables (A : Type) (le eq : relation A) (le_Trans : Transitive le).
-
-  Existing Instance le_Trans.
+  Variables (A : Type) (le eq : relation A).
 
   Infix "<=" := le (at level 70).
   Infix "==" := eq (at level 70).
 
-  Variable eq_compat : forall x y, x <= y -> y <= x -> x == y.
+  Variable eq_ok : forall x y, x <= y -> y <= x -> x == y.
 
 (****************************************************************************)
 (** Definitions of the notions of (least) upper/(greatest) lower bound. *)
@@ -61,7 +59,8 @@ function [f], when one can compute a lub and glb for every subset of
 
   Section lfp.
 
-    Variables (f : A -> A) (f_mon : Proper (le ==> le) f).
+    Variables (le_trans : Transitive le)
+              (f : A -> A) (f_mon : Proper (le ==> le) f).
 
     Definition lfp := glb (fun x => f x <= x).
 
@@ -130,8 +129,8 @@ are equivalent modulo [==] if their arguments are equivalent modulo
 
 End tarski.
 
-Arguments lfp_eq [A le eq] _ _ [glb] _ [f] _.
-Arguments gfp_eq [A le eq] _ _ [lub] _ [f] _.
+Arguments lfp_eq [A le eq] _ [glb] _ _ [f] _.
+Arguments gfp_eq [A le eq] _ [lub] _ _ [f] _.
 
 (****************************************************************************)
 (** * Example of complete lattice: the powerset of some set [X]. *)
@@ -146,11 +145,11 @@ Section powerset.
   Notation set_le := (@subset X).
   Notation set_eq := (@equiv X).
 
-  Lemma set_le_trans : Transitive set_le.
+  Global Instance set_le_trans : Transitive set_le.
 
   Proof. fo. Qed.
 
-  Lemma set_eq_compat : forall x y : A, x [<=] y -> y [<=] x -> x [=] y.
+  Lemma set_eq_ok : forall x y : A, x [<=] y -> y [<=] x -> x [=] y.
 
   Proof. fo. Qed.
 
@@ -175,22 +174,22 @@ Section powerset.
   Definition set_lfp := lfp set_le set_glb.
   Definition set_gfp := gfp set_le set_lub.
 
-  Definition set_lfp_eq := lfp_eq set_le_trans set_eq_compat set_glb_ok.
-  Definition set_gfp_eq := gfp_eq set_le_trans set_eq_compat set_lub_ok.
+  Definition set_lfp_eq := lfp_eq set_eq_ok set_glb_ok set_le_trans.
+  Definition set_gfp_eq := gfp_eq set_eq_ok set_lub_ok set_le_trans.
 
-  Instance set_eq_refl : Reflexive set_eq.
-
-  Proof. fo. Qed.
-
-  Instance set_le_eq : Proper (set_eq ==> set_eq ==> iff) set_le.
+  Global Instance set_eq_refl : Reflexive set_eq.
 
   Proof. fo. Qed.
 
-  Instance set_glb_equiv : Proper (equiv ==> set_eq) set_glb.
+  Global Instance set_le_eq : Proper (set_eq ==> set_eq ==> iff) set_le.
 
   Proof. fo. Qed.
 
-  Instance set_lub_equiv : Proper (equiv ==> set_eq) set_lub.
+  Global Instance set_glb_equiv : Proper (equiv ==> set_eq) set_glb.
+
+  Proof. fo. Qed.
+
+  Global Instance set_lub_equiv : Proper (equiv ==> set_eq) set_lub.
 
   Proof. fo. Qed.
 
@@ -206,3 +205,106 @@ Arguments set_lfp_eq {X} [f] _ _.
 Arguments set_gfp_eq {X} [f] _ _.
 Arguments set_lfp_ext {X} [f g] _ _.
 Arguments set_gfp_ext {X} [f g] _ _.
+
+(****************************************************************************)
+(** * Least fixpoint satisfying some property. *)
+
+Section sig.
+
+  Variables (A : Type) (le eq : relation A)
+            (eq_ok : forall x y, le x y -> le y x -> eq x y)
+            (lub glb : set A -> A)
+            (lub_ok : forall S, is_lub le (lub S) S)
+            (glb_ok : forall S, is_glb le (glb S) S)
+            (P : A -> Prop).
+
+  Notation B := (sig P).
+
+  Notation pr1 := (@proj1_sig A P).
+  Notation pr2 := (@proj2_sig A P).
+
+  Definition le_sig := Rof le pr1.
+  Definition eq_sig := Rof eq pr1.
+
+  Lemma eq_sig_ok x y : le_sig x y -> le_sig y x -> eq_sig x y.
+
+  Proof. fo. Qed.
+
+  Definition pr (R : set B) : set A := fun x => exists h : P x, R (exist h).
+
+  Variable glb_prop : forall S : set A, (forall x, S x -> P x) -> P (glb S).
+
+  Definition glb_sig (R : set B) : B.
+
+  Proof.
+    assert (h : P (glb (pr R))). apply glb_prop. intros x [h _]. hyp.
+    exact (exist h).
+  Defined.
+
+  Lemma glb_sig_ok R : is_glb le_sig (glb_sig R) R.
+
+  Proof.
+    destruct (glb_ok (pr R)) as [h1 h2]. split.
+    intros [x Px] Rx. unfold le_sig, Rof, glb_sig. simpl. apply h1. ex Px. hyp.
+    intros x x_inf. unfold le_sig, Rof, glb_sig. simpl. apply h2.
+    intros y [Py Ry]. apply (x_inf (exist Py)). hyp.
+  Qed.
+
+  Variable lub_prop : forall S : set A, (forall x, S x -> P x) -> P (lub S).
+
+  Definition lub_sig (R : set B) : B.
+
+  Proof.
+    assert (h : P (lub (pr R))). apply lub_prop. intros x [h _]. hyp.
+    exact (exist h).
+  Defined.
+
+  Lemma lub_sig_ok R : is_lub le_sig (lub_sig R) R.
+
+  Proof.
+    destruct (lub_ok (pr R)) as [h1 h2]. split.
+    intros [x Px] Rx. unfold le_sig, Rof, lub_sig. simpl. apply h1. ex Px. hyp.
+    intros x x_inf. unfold le_sig, Rof, lub_sig. simpl. apply h2.
+    intros y [Py Ry]. apply (x_inf (exist Py)). hyp.
+  Qed.
+
+  Variable le_trans : Transitive le.
+
+  Global Instance le_sig_trans : Transitive le_sig.
+
+  Proof. apply Rof_trans. hyp. Qed.
+
+  Variables (f : A -> A) (f_prop : forall x, P x -> P (f x)).
+
+  Definition lift (x : B) : B := exist (f_prop (pr2 x)).
+
+  Variable f_mon : Proper (le ==> le) f.
+
+  Lemma lift_mon : Proper (le_sig ==> le_sig) lift.
+
+  Proof. fo. Qed.
+
+  Definition lfp_lift := pr1 (lfp le_sig glb_sig lift).
+
+  Lemma lfp_lift_prop : P lfp_lift.
+
+  Proof.
+    unfold lfp_lift. destruct (lfp le_sig glb_sig lift) as [x Px]. hyp.
+  Qed.
+
+  Global Instance proj1_sig_eq : Proper (eq_sig ==> eq) pr1.
+
+  Proof. fo. Qed.
+
+  Lemma lfp_lift_eq : eq lfp_lift (f lfp_lift).
+
+  Proof.
+    ded (lfp_eq eq_sig_ok glb_sig_ok le_sig_trans lift_mon).
+    apply proj1_sig_eq in H. hyp.
+  Qed.
+
+End sig.
+
+Arguments lfp_lift [A] _ [glb P] _ [f] _.
+Arguments lfp_lift_eq [A le eq] _ [glb] _ [P] _ _ [f] _ _.
+Arguments lfp_lift_prop [A le glb P] _ [f] _.

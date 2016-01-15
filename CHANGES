@@ -1,3 +1,6 @@
+16-01-15: [Blanqui]
+- Util/Relation/Tarski: fixpoint on a sig type
+
 16-01-12: [Blanqui]
 - Util/Nat/BoundNat: added vector of bounded natural numbers
 
