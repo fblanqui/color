@@ -51,9 +51,11 @@ Module Export Def.
     (** We assume given a set [En] for typing environments equipped with
        the following functions: *)
 
-    Variables (En : Type)
-      (MapsTo : X -> Ty -> En -> Prop)
-      (add : X -> Ty -> En -> En).
+    Variable env : Env X So.
+
+    Notation En := (Env_type env).
+    Notation MapsTo := (Env_MapsTo env).
+    Notation add := (Env_add env).
 
     (** We assume given a type for each function symbol. *)
 
@@ -163,8 +165,7 @@ Module Export Def.
 
   End cc.
 
-  Arguments cc [F X So] ens_X [En] MapsTo add typ [Acc] Acc_arity gt1
-    f [n] ls _ _ _.
+  Arguments cc [F X So] ens_X [env] typ [Acc] Acc_arity gt1 f [n] ls _ _ _.
 
   Ltac inv_cc h := apply inv_cc in h;
     let i := fresh "i" in let g := fresh "g" in let us := fresh "us" in
@@ -194,7 +195,7 @@ Module Type CC_Struct.
   (** Some notations. *)
 
   Notation caeq := (@caeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation cc := (@cc F X So ens_X En (@MapsTo Ty) (@add Ty) typ Acc Acc_arity).
+  Notation cc := (@cc F X So ens_X env typ Acc Acc_arity).
 
 End CC_Struct.
 
@@ -252,7 +253,8 @@ Module Comp (Export CC : CC_Struct)
          computable. *)
 
       (f : F) (ts : TypArgs f) (hts : vint I (inputs (typ f)) ts)
-      (IH : forall g (us : TypArgs g), gt2 (mk_max_call f ts) (mk_max_call g us) ->
+      (IH : forall g (us : TypArgs g),
+          gt2 (mk_max_call f ts) (mk_max_call g us) ->
         vint I (inputs (typ g)) us ->
         int I (output (typ g) (arity (typ g))) (apps (Fun g) us))
 
@@ -300,7 +302,8 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       intros a ha. rewrite subs_comp, single_update_var.
       eapply IHcc. intros y hy. unfold Def.update. eq_dec y x.
       subst. contr. apply hs1. hyp.
-      intros z Z. rewrite add_mapsto_iff. intros [[h1 h2]|[h1 h2]] i; subst.
+      intros z Z. simpl. rewrite add_mapsto_iff.
+      intros [[h1 h2]|[h1 h2]] i; subst.
       rewrite update_eq. hyp.
       rewrite update_neq. apply hs2; hyp. hyp.
 
