@@ -401,6 +401,23 @@ are finite maps from variables to types. *)
 
   Notation "E '|-' v '~:' V" := (tr E v V) (at level 70).
 
+  Lemma tr_apps : forall n (us : Tes n) E t T (hn : n <= arity T),
+    E |- t ~: T
+    -> (forall i (hi : i < n),
+           E |- Vnth us hi ~: Vnth (inputs T) (lt_le_trans hi hn))
+    -> E |- apps t us ~: output T n.
+
+  Proof.
+    induction us; intros E t T hn ht g. hyp.
+    rename h into u. simpl. destruct T as [b|A B]; simpl in hn. omega.
+    apply IHus with (hn := le_S_n hn).
+    apply tr_app with A. hyp. gen (g _ (lt_0_Sn n)). simpl. auto.
+    intros i hi. gen (g _ (lt_n_S hi)). simpl.
+    rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2 := hi).
+    rewrite lt_unique with (h1 := lt_S_n (lt_le_trans (lt_n_S hi) hn))
+                             (h2 := lt_le_trans hi (le_S_n hn)). auto.
+ Qed.
+
 (** If a term [v] is typable in [E], then its free variable are in
 [E]. In fact, any subterm of [v] is typable in some extension of
 [restrict_dom E (fv v)]. *)
