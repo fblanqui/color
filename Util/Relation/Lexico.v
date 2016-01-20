@@ -488,3 +488,33 @@ Proof.
   eapply lexl_intro. apply im. apply gtgt'. apply H.
   intros j ji jx jy. apply eqeq'. apply H0. hyp.
 Qed.
+
+(****************************************************************************)
+(** ** Lexicographic ordering on dependent pairs. *)
+
+Section lexd.
+
+  Variables (A : Type) (B : A -> Type).
+
+  Section def.
+
+    Variables (gtA : relation A) (gtB : forall a : A, relation (B a)).
+
+    Inductive lexd : relation (sigT B) :=
+    | lexdl a a' (b : B a) (b' : B a') : gtA a a' -> lexd (existT b) (existT b')
+    | lexdr a (b b' : B a) : gtB b b' -> lexd (existT b) (existT b').
+
+  End def.
+
+  Lemma lexd_incl : forall gt1 gt1', gt1 << gt1'
+    -> forall gt2 gt2', (forall a, gt2 a << gt2' a)
+    -> lexd gt1 gt2 << lexd gt1' gt2'.
+
+  Proof.
+    intros gt1 gt1' h1 gt2 gt2' h2 a a'.
+    intro aa'. inversion aa'; subst.
+    apply lexdl. apply h1. hyp.
+    apply lexdr. apply h2. hyp.
+  Qed.
+
+End lexd.
