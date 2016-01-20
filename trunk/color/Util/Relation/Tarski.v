@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil Morphisms SetUtil.
+Require Import LogicUtil RelUtil Morphisms SetUtil Basics.
 
 (****************************************************************************)
 (** * We assume given a set [A] equipped with a transitive relation [<=]
@@ -92,6 +92,32 @@ function [f], when one can compute a lub and glb for every subset of
       assert (h : f a <= a). apply a_sup. apply f_mon. hyp.
       (* conclusion *)
       fo.
+    Qed.
+
+(** The least fixpoint can be reached by transfinite iteration. *)
+
+    Inductive K : set A :=
+    | Kf x : K x -> K (f x)
+    | Klub S : S [<=] K -> K (lub S).
+
+    Lemma lfp_eq_lub : eq (lub K) lfp.
+
+    Proof.
+      eapply glb_is_uniq. 2: apply glb_ok.
+      destruct (lub_ok K) as [h1 h2]. split.
+      intros x hx. apply h2. induction 1.
+      trans (f x). apply f_mon. hyp. hyp.
+      destruct (lub_ok S) as [g1 g2]. apply g2. hyp.
+      intros y hy. apply hy. apply h1. apply Kf. apply Klub. refl.
+    Qed.
+
+    Lemma lfp_ind (P : A -> Prop) :
+      Proper (eq ==> impl) P ->
+      (forall x, P x -> P (f x)) -> (forall S, S [<=] P -> P (lub S)) -> P lfp.
+
+    Proof.
+      intros Peq Pf Plub. rewrite <- lfp_eq_lub. apply Plub. induction 1.
+      apply Pf. hyp. apply Plub. hyp.
     Qed.
 
   End lfp.
@@ -207,7 +233,7 @@ Arguments set_lfp_ext {X} [f g] _ _.
 Arguments set_gfp_ext {X} [f g] _ _.
 
 (****************************************************************************)
-(** * Least fixpoint satisfying some property. *)
+(** * Least fixpoint over a sigma type. *)
 
 Section sig.
 
