@@ -361,14 +361,19 @@ Module Type ST_Struct.
  
   Parameter typ : F -> Ty.
 
+  Notation TypArgs := (@TypArgs F X So typ).
+
   (** Module providing finite maps on variables. *)
 
   Declare Module Export XMap : FMapInterface.S with Module E := XOrd.
 
-  (** Notations. *)
-
   Notation En := (@XMap.t Ty).
-  Notation TypArgs := (@TypArgs F X So typ).
+  Notation empty := (@XMap.empty Ty).
+  Notation add := (@XMap.add Ty).
+  Notation In := (@XMap.In Ty).
+  Notation MapsTo := (@XMap.MapsTo Ty).
+  Notation Equal := (@XMap.Equal Ty).
+  Notation env := (mk_Env empty add In MapsTo Equal).
 
 End ST_Struct.
 
@@ -389,10 +394,6 @@ are finite maps from variables to types. *)
   Module XMapUtil := FMapUtil.Make XMap.
   Module Export Domain := XMapUtil.Domain XSet.
   Export XMapUtil.
-
-  Notation env :=
-    (mk_Env (@XMap.empty Ty) (@XMap.add Ty) (@XMap.In Ty) (@XMap.MapsTo Ty)
-            (@XMap.Equal Ty)).
 
 (****************************************************************************)
 (** ** Typing. *)

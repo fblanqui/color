@@ -249,9 +249,13 @@ Module ST_SystemT <: ST_Struct.
 
   Module Export XMap := FMapAVL.Make XOrd.
 
-  Notation En := (XMap.t Ty).
-  Notation empty := (XMap.empty Ty).
-  Notation TypArgs := (@TypArgs F X So typ).
+  Notation En := (@XMap.t Ty).
+  Notation empty := (@XMap.empty Ty).
+  Notation add := (@XMap.add Ty).
+  Notation In := (@XMap.In Ty).
+  Notation MapsTo := (@XMap.MapsTo Ty).
+  Notation Equal := (@XMap.Equal Ty).
+  Notation env := (mk_Env empty add In MapsTo Equal).
 
 End ST_SystemT.
 
@@ -370,7 +374,7 @@ Module CC_SystemT <: CC_Struct.
 
   Module Export BI := BI_SystemT.
 
-  Notation cc := (@cc F X So ens_X En (@MapsTo Ty) (@add Ty) typ Acc Acc_arity).
+  Notation cc := (@cc F X So ens_X env typ Acc Acc_arity).
 
 End CC_SystemT.
 
