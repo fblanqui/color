@@ -7,7 +7,7 @@ LIBNAME := CoLoR
 
 .SUFFIXES:
 
-.PHONY: default config clean clean-dep clean-all clean-doc tags doc install-doc install-dist
+.PHONY: default config clean clean-dep clean-all clean-doc tags doc install-doc install-dist targz
 
 MAKECOQ := +$(MAKE) -r -f Makefile.coq
 
@@ -41,18 +41,23 @@ doc:
 	coqdoc --html -g -d doc -R . $(LIBNAME) `find . -path ./Coccinelle -prune -o -name \*.v -print`
 	./create_index
 
-WEB := ~/rewriting-svn/web/wdfs/color
-#LOCAL := ~/rewriting-svn/web/color/site
+WEB := scm.gforge.inria.fr:/home/groups/color/htdocs
 
 install-doc:
-	rm -f $(WEB)/doc/coqdoc.css $(WEB)/doc/*.html
-	cp -f doc/coqdoc.css doc/*.html $(WEB)/doc
-#	cp -f doc/coqdoc.css doc/*.html $(LOCAL)/doc
+	scp -r doc/coqdoc.css doc/*.html $(WEB)/doc/
 
 install-dist:
 #	cp -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
 	cp -f CHANGES $(WEB)/CHANGES.CoLoR
-#	cp -f CHANGES $(LOCAL)/CHANGES.CoLoR
+
+targz:
+	rm -rf /tmp/color
+	cp -r . /tmp/color
+	make -C /tmp/color clean
+	rm -rf `find /tmp/color -name .svn`
+	(cd /tmp; tar zcf color.tar.gz color)
+	rm -rf /tmp/color
+	mv /tmp/color.tar.gz .
 
 %.vo: %.v
 	$(MAKECOQ) $@
