@@ -486,6 +486,8 @@ are finite maps from variables to types. *)
     set_iff. tauto.
   Qed.
 
+(** Inversion lemma for function application. *)
+
   Lemma tr_apps_fun_inv E f :
     forall n (ts : Tes n) T, tr E (apps (Fun f) ts) T
     -> T = output (typ f) n
