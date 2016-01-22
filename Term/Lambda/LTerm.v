@@ -457,7 +457,8 @@ Arguments eq_apps_nb_args_args [F X n ts us t u] _.
 
 (** Tactic for unfolding the projections of the type [Ens]. *)
 
-Ltac ens := unfold Ens_type, Ens_empty, Ens_singleton, Ens_add, Ens_union, Ens_remove, Ens_diff, Ens_In, Ens_mem, Ens_fold in *.
+Ltac ens := unfold Ens_type, Ens_empty, Ens_singleton, Ens_add, Ens_union, Ens_remove,
+  Ens_diff, Ens_In, Ens_mem, Ens_fold in *.
 
 (** Tactic for doing induction on the size of a term. *)
 
