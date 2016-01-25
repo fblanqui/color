@@ -35,7 +35,7 @@ Proof. intros x y xy [x_sn]. auto. Qed.
 
 Arguments SN_inv [A R x y] _ _.
 
-Instance SN_Equiv A (R E : relation A) : Equivalence E ->
+Instance SN_prop A (R E : relation A) : Equivalence E ->
   Proper (E ==> E ==> impl) R -> Proper (E ==> impl) (SN R).
 
 Proof.
