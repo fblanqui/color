@@ -42,14 +42,14 @@ create_tar_gz () {
     rm -rf $dir
 }
 
-# Coccinelle_for_CoLoR
+# Coccinelle for CoLoR
 
 dir=coccinelle_for_color.$version
 rm -rf $dir
 cp -r color/Coccinelle $dir
 create_tar_gz
 
-# CoLoR (without Coccinelle)
+# CoLoR without Coccinelle
 
 dir=color.$version
 rm -rf $dir
@@ -58,7 +58,7 @@ rm -rf $dir/Coccinelle $dir/Conversion/Coccinelle.v
 head -n -3 color/README > $dir/README
 create_tar_gz
 
-# CoLoR_with_Coccinelle
+# CoLoR with Coccinelle
 
 dir=color_with_coccinelle.$version
 rm -rf $dir
