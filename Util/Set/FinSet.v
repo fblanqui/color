@@ -66,7 +66,7 @@ Section S.
     set (f := fun k : N n => elt (P:=of_list l) (nth_In a (i k))). ex f.
     split.
     (* f injective *)
-    intros [x_val x] [y_val y]. unfold f; simpl. intro e. apply sig_eq; simpl.
+    intros [x_val x] [y_val y]. unfold f; simpl. intro e. apply N_eq; simpl.
     apply sig_eq in e; simpl in e. subst n. eapply inj_nth_nodup.
     2: apply hl. apply eq_dec. hyp. hyp. apply e.
     (* f surjective *)
@@ -475,7 +475,7 @@ list of elements. *)
                 let (_, xl) := f i in N_ (pos_lt_length eq_dec xl)).
     apply N_inj_le with (f := g). intros i j. unfold g.
     case_eq (f i); intros x xl hx. case_eq (f j); intros y yl hy e.
-    apply sig_eq in e; simpl in e. apply inj_pos in e. 2: fo.
+    apply N_eq in e; simpl in e. apply inj_pos in e. 2: fo.
     subst y. apply f_inj. rewrite hx, hy. apply sig_eq. refl.
   Qed.
 
@@ -523,7 +523,7 @@ list of elements. *)
     destruct (cdd (card_uniq P_fin)) as [n [f [f_inj f_surj]]].
     apply N_inj_le with (f := fun x : N (length l) =>
       inverse f_surj (elt (P:=of_list l) (nth_In a x))).
-    intros [x_val x] [y_val y] e. apply sig_eq; simpl.
+    intros [x_val x] [y_val y] e. apply N_eq; simpl.
     apply inj_inverse in e. apply sig_eq in e; simpl in e.
     apply inj_nth_nodup in e; auto. apply eq_dec.
   Qed.

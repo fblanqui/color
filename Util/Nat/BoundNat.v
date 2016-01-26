@@ -14,20 +14,18 @@ Set Implicit Arguments.
 Require Import LogicUtil NatUtil ListUtil ListNodup FunUtil VecUtil.
 
 Definition N n := sig (gt n).
-
-Definition N_ n := @exist _ (gt n).
-
+ 
+Definition N_ n := @exist nat (gt n).
+ 
 Definition N_val {n} (x : N n) : nat := proj1_sig x.
 
 Coercion N_val : N >-> nat.
-
+ 
 Definition N_prf {n} (x : N n) : x < n := proj2_sig x.
 
 Coercion N_prf : N >-> lt.
 
-Definition zero {n} : N (S n).
-
-Proof. apply (@N_ _ 0). omega. Defined.
+Definition zero {n} : N (S n). Proof. apply (@N_ _ 0). omega. Defined.
 
 (* One can define anything from [N 0] since [N 0] is empty. *)
 Definition any_of_N0 {B : Type} : N 0 -> B.
@@ -45,7 +43,7 @@ Lemma N_eq {n} : forall x y : N n, N_val x = N_val y <-> x = y.
 Proof.
   intros [x xn] [y yn]; simpl. split; intro e.
   subst y. rewrite (lt_unique xn yn). refl.
-  gen (f_equal (@N_val _) e). tauto.
+  gen (f_equal N_val e). tauto.
 Qed.
 
 Lemma N_eq_dec {n} : forall x y : N n, {x=y}+{~x=y}.
@@ -159,7 +157,7 @@ Arguments In_L_elim [n x] _.
 
 Lemma length_L n : length (L n) = n.
 
-Proof. destruct n; simpl. refl. (*COQ*)unfold N. rewrite length_L_aux. refl. Qed.
+Proof. destruct n; simpl. refl. unfold N. rewrite length_L_aux. refl. Qed.
 
 Lemma nodup_L_aux {n} : forall k (hk : k < n), nodup (L_aux hk).
 
@@ -317,7 +315,7 @@ Lemma multiplicity_L_aux n (i : N n) : forall k (kn : k < n),
     = if le_dec i k then 1 else 0.
 
 Proof.
-  destruct i as [i hi]; fold (N_ hi); simpl.
+  destruct i as [i hi]; simpl.
   induction k; intro hk.
   simpl. destruct i.
   destruct (le_dec 0 0); omega.
