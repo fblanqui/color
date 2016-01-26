@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# CoLoR, a Coq library on rewriting and termination.
+# See the COPYRIGHTS and LICENSE files.
+#
+# - Frederic Blanqui, 2015-03-19
+
 args=$*
 n=$#
 shift `expr $n - 1`

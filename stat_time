@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# CoLoR, a Coq library on rewriting and termination.
+# See the COPYRIGHTS and LICENSE files.
+#
+# - Frederic Blanqui, 2015-03-19
+
 output=stat_time.log
 
 echo generate $output ...
