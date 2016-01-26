@@ -94,8 +94,8 @@ isolated points are also considered as SCC *)
   Fixpoint bools_find_first n (v : vector bool n) :=
     match v with
     | Vnil => None
-    | Vcons true i w => Some 0
-    | Vcons false i w =>
+    | Vcons true w => Some 0
+    | Vcons false w =>
       match bools_find_first w with 
       | None => None
       | Some r => Some (S r)

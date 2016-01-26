@@ -2,7 +2,7 @@ Require Import more_list.
 Require Import decidable_set.
 Require Import list_set.
 Require Import List.
-Require Omega.
+Require Import Omega.
 
 Module Type S.
   Parameter A : Type.

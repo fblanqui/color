@@ -13,7 +13,7 @@ de Bruijn indices) is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Compare_dec Arith LogicUtil.
+Require Import RelExtras ListExtras Compare_dec Arith LogicUtil Omega.
 Require TermsManip.
 
 Module TermsLifting (Sig : TermsSig.Signature).
@@ -517,7 +517,6 @@ Module TermsLifting (Sig : TermsSig.Signature).
     induction G; destruct x; try_solve.
     destruct a; try_solve.
     exists t; try_solve.
-    inversion H; trivial.
   Qed.
 
   Lemma app_lift_app_aux : forall M (Mapp: isApp M) n k,

@@ -51,9 +51,9 @@ Inductive exc (A : Type) : Type :=
 
 Definition bind (A : Type) (f : A -> exc A)  (x : exc A) : (exc A) :=
   match x with
-  | Normal a => f a
-  | Not_appliable a => Not_appliable A a
-  | No_solution => @No_solution A
+  | Normal _ a => f a
+  | Not_appliable _ a => Not_appliable A a
+  | No_solution _ => @No_solution A
   end.
 
 Record unification_problem : Type :=
@@ -273,9 +273,9 @@ Qed.
 Lemma decomposition_step_is_complete :
  forall l sigma theta, is_a_solution (mk_pb sigma l) theta ->
   match decomposition_step (mk_pb sigma l)  with
-  | Normal pb' => is_a_solution pb' theta
-  | No_solution => False
-  | Not_appliable pb' => is_a_solution pb' theta
+  | Normal _ pb' => is_a_solution pb' theta
+  | No_solution _ => False
+  | Not_appliable _ pb' => is_a_solution pb' theta
   end.
 Proof.
 intros [ | [s t] l]  sigma theta; 
@@ -438,9 +438,9 @@ Qed.
 Lemma decomposition_step_is_sound :
  forall l sigma theta, 
   match decomposition_step (mk_pb sigma l)  with
-  | Normal pb' => is_a_solution pb' theta -> is_a_solution (mk_pb sigma l) theta
-  | No_solution => is_a_solution (mk_pb sigma l)  theta -> False
-  | Not_appliable pb' => is_a_solution pb' theta -> is_a_solution (mk_pb sigma l) theta
+  | Normal _ pb' => is_a_solution pb' theta -> is_a_solution (mk_pb sigma l) theta
+  | No_solution _ => is_a_solution (mk_pb sigma l)  theta -> False
+  | Not_appliable _ pb' => is_a_solution pb' theta -> is_a_solution (mk_pb sigma l) theta
   end.
 Proof.
 intros [ | [s t] l]  sigma theta; 
@@ -1629,7 +1629,7 @@ Defined.
 Lemma inv_solved_part :
   forall pb, Inv_solved_part pb -> 
   match decomposition_step pb with
-   | Normal pb' => Inv_solved_part pb'
+   | Normal _ pb' => Inv_solved_part pb'
    | _ => True
    end.
 Proof.
@@ -1904,7 +1904,7 @@ Defined.
 Lemma decomposition_step_decreases :
   forall pb, Inv_solved_part pb ->
    match decomposition_step pb with
-  | Normal pb' => lt_pb pb' pb
+  | Normal _ pb' => lt_pb pb' pb
   | _ => True
   end.
 Proof.
@@ -1949,9 +1949,9 @@ Defined.
 
 Definition Inv_solved_part_e e :=
   match e with
-  | Normal pb => Inv_solved_part pb
-  | Not_appliable pb => pb.(unsolved_part) = nil
-  | No_solution => True
+  | Normal _ pb => Inv_solved_part pb
+  | Not_appliable _ pb => pb.(unsolved_part) = nil
+  | No_solution _ => True
   end.
 
 Inductive exc_pb_ok : Type :=
@@ -1959,9 +1959,9 @@ Inductive exc_pb_ok : Type :=
 
 Definition weight_exc_pb_ok  e := 
    match e with
-   | OK (Normal pb)  _  => (2, measure_for_unif_pb pb)
-   | OK (Not_appliable pb) _  => (1, measure_for_unif_pb pb)
-   | OK No_solution  _ => (0, (0,(nil,0)))
+   | OK (Normal _ pb)  _  => (2, measure_for_unif_pb pb)
+   | OK (Not_appliable _ pb) _  => (1, measure_for_unif_pb pb)
+   | OK (No_solution _) _ => (0, (0,(nil,0)))
    end.
 
 Definition lt_weight_exc_pb_ok (w1 w2 : nat * (nat * (list nat * nat))) :=
@@ -2088,9 +2088,9 @@ Qed.
 Lemma decompose_nf :
   forall e,
   match decompose e with
-  | Normal _ => False
-  | Not_appliable (mk_pb sigma l) => l = nil
-  | No_solution => True
+  | Normal _ _ => False
+  | Not_appliable _ (mk_pb sigma l) => l = nil
+  | No_solution _ => True
   end.
 Proof. 
 intros e; pattern e; apply (well_founded_ind wf_lt_exc_pb_ok); clear e.
@@ -2102,17 +2102,17 @@ Qed.
 
 Definition is_a_solution_e e sigma :=
   match e with
-  | OK (Normal pb) _ => is_a_solution pb sigma
-  | OK (Not_appliable pb) _ => is_a_solution pb sigma
-  | OK No_solution _ => False
+  | OK (Normal _ pb) _ => is_a_solution pb sigma
+  | OK (Not_appliable _ pb) _ => is_a_solution pb sigma
+  | OK (No_solution _) _ => False
   end.
 
 Lemma decompose_is_sound :
   forall e sigma, 
     match decompose e with
-    | Normal _ => False
-    | Not_appliable pb' => is_a_solution pb' sigma -> is_a_solution_e e sigma
-    | No_solution => True
+    | Normal _ _ => False
+    | Not_appliable _ pb' => is_a_solution pb' sigma -> is_a_solution_e e sigma
+    | No_solution _ => True
     end.
 Proof.
 intro e; pattern e; apply (well_founded_ind wf_lt_exc_pb_ok); clear e.
@@ -2135,9 +2135,9 @@ Qed.
 Lemma decompose_is_complete :
   forall e sigma, is_a_solution_e e sigma ->
     match decompose e with
-    | Normal _ => False
-    | Not_appliable pb' => is_a_solution pb' sigma  
-    | No_solution => False
+    | Normal _ _ => False
+    | Not_appliable _ pb' => is_a_solution pb' sigma  
+    | No_solution _ => False
     end.
 Proof.
 intro e; pattern e; apply (well_founded_ind wf_lt_exc_pb_ok); clear e.

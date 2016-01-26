@@ -96,9 +96,27 @@ function [f], when one can compute a lub and glb for every subset of
 
 (** The least fixpoint can be reached by transfinite iteration. *)
 
+    (*COQ: see https://coq.inria.fr/bugs/show_bug.cgi?id=4506 *)
+    Unset Elimination Schemes.
+
     Inductive K : set A :=
     | Kf x : K x -> K (f x)
     | Klub S : S [<=] K -> K (lub S).
+
+    Set Elimination Schemes.
+
+    Section K_ind.
+
+      Variables (P : A -> Prop) (Pf : forall x, K x -> P x -> P (f x))
+                (Plub : forall S, S [<=] K -> S [<=] P -> P (lub S)).
+
+      Fixpoint K_ind y (h : K y) : P y :=
+        match h in K y return P y with
+        | Kf g => Pf g (K_ind g)
+        | Klub QK => Plub QK (fun x g => K_ind (QK x g))
+        end.
+
+    End K_ind.
 
     Lemma lfp_eq_lub : eq (lub K) lfp.
 

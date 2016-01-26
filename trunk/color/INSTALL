@@ -11,10 +11,12 @@ Procedure:
 Compilation time on my computer:
 
 N  | without Coccinelle | with Coccinelle
+   | (opam package)     | (gforge version)
 -----------------------------------------
-1  | 22'16"             | 27'00"
-3  |  9'21"		| 10'47"
-20 |  6'28"             |  6'45"
+1  | 22'16"             | 29'25"
+3  |  9'21"		| 11'50"
+6  |                    |  9'34"
+20 |  6'28"             |  8'12"
 
 Enjoy!
 

@@ -1,3 +1,9 @@
+-----------------------------------------------------------------------------
+16-01-26: RELEASE OPAM 1.2.0 (SVN revision 2388)
+
+16-01-26: [Blanqui]
+- moved to Coq 8.5
+
 16-01-20: [Blanqui]
 - Util/Relation/Tarski: proof that the least fixpoint can be reached by transfinite induction; corresponding induction principle; fixpoint on a sig type
 

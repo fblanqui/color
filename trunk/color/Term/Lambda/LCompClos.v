@@ -441,8 +441,6 @@ Module Termin (Export CC : CC_Struct)
     Lemma tr_sn_cc : forall E v V, E |- v ~: V -> SN R_aeq v.
 
     Proof.
-      (*COQ*)Local Notation R := (clos_mon Rh).
-      Local Notation R_aeq := (clos_aeq R).
       (* [v] is SN since every function symbol is computable. *)
       apply tr_sn with (I:=I). hyp.
       (* [f] is computable if, for every max call [c], [c] is computable. *)
@@ -589,14 +587,12 @@ Module SN_rewrite (Export CC : CC_Struct)
   Lemma gt2_wf : WF gt2.
 
   Proof.
-    apply WF_inverse. apply WF_inverse.
-    (*COQ*)Local Notation R := (clos_mon Rh). apply wf_WF_transp.
+    apply WF_inverse. apply WF_inverse. apply wf_WF_transp.
     apply wf_lexprod. apply WF_wf_transp. apply gtC_wf.
     intro r. apply WF_wf_transp. apply wf_union_absorb.
     apply gt_args_lex_wf. class. apply WF_tc. apply gt0_wf. apply gt_red_wf.
     apply gt_args_lex_absorbs_gt_red. class. class.
-    (*COQ*)Local Notation R_aeq := (clos_aeq R). apply incl_tc. unfold gt0.
-    rewrite restrict_union. fo.
+    apply incl_tc. unfold gt0. rewrite restrict_union. fo.
   Qed.
 
   (** We check that [gt2] is compatible with [==>R]. *)

@@ -32,7 +32,7 @@ Section BinSignatureTheory.
   Fixpoint cons_term (t : term) n (v : terms n) : term :=
     match v with 
       | Vnil => t
-      | Vcons t' _ v' => Fun (Cons Sig)
+      | Vcons t' v' => Fun (Cons Sig)
         (Vcast (Vcons t (Vcons (cons_term t' v') Vnil)) cons_arity)
     end.
 

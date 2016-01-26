@@ -10,7 +10,7 @@ Wrapper for Coq's FMaps definition + additional facts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FMaps RelUtil BoolUtil ListUtil.
+Require Import LogicUtil FMaps RelUtil BoolUtil ListUtil FSetInterface FSetUtil.
 
 Module Make (Export XMap : FMapInterface.S).
 
@@ -616,8 +616,6 @@ and satisfies some commutation property. *)
 
 (****************************************************************************)
 (** * Module providing results on the domain of a map. *)
-
-  Require Import FSetInterface FSetUtil.
 
   Module Domain (XSet : FSetInterface.S with Module E := XMap.E).
 

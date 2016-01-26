@@ -159,7 +159,7 @@ Arguments In_L_elim [n x] _.
 
 Lemma length_L n : length (L n) = n.
 
-Proof. destruct n; simpl. refl. rewrite length_L_aux. refl. Qed.
+Proof. destruct n; simpl. refl. (*COQ*)unfold N. rewrite length_L_aux. refl. Qed.
 
 Lemma nodup_L_aux {n} : forall k (hk : k < n), nodup (L_aux hk).
 

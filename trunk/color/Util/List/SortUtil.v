@@ -11,7 +11,7 @@ and on Coq's multiplicity function
 Set Implicit Arguments.
 
 Require Export Sorting.
-Require Import RelUtil List LogicUtil Morphisms.
+Require Import RelUtil List LogicUtil Morphisms Omega.
 
 (***********************************************************************)
 (** lelistA and sort *)

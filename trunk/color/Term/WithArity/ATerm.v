@@ -59,7 +59,7 @@ Section S.
           let fix terms_rect n (v : terms n) : Q v :=
             match v as v return Q v with
               | Vnil => H3
-              | Vcons t' n' v' => H4 (term_rect t') (terms_rect n' v')
+              | Vcons t' v' => H4 (term_rect t') (terms_rect _ v')
             end
 	    in H2 f (terms_rect (arity f) v)
       end.
@@ -191,7 +191,7 @@ Section S.
         let fix beq_terms n (ts : terms n) p (us : terms p) :=
           match ts, us with
             | Vnil, Vnil => true
-            | Vcons t _ ts', Vcons u _ us' =>
+            | Vcons t ts', Vcons u us' =>
               beq_term t u && beq_terms _ ts' _ us'
             | _, _ => false
           end
@@ -203,7 +203,7 @@ Section S.
     (fix beq_terms n (ts : terms n) p (us : terms p) :=
       match ts, us with
         | Vnil, Vnil => true
-        | Vcons t _ ts', Vcons u _ us' => beq_term t u && beq_terms _ ts' _ us'
+        | Vcons t ts', Vcons u us' => beq_term t u && beq_terms _ ts' _ us'
         | _, _ => false
       end) _ ts _ us = beq_vec beq_term ts us.
 
@@ -325,7 +325,7 @@ a variable occurs in the list as much as it has occurrences in t *)
         let fix vars_vec n (ts : terms n) : variables :=
           match ts with
             | Vnil => nil
-            | Vcons t' n' ts' => vars t' ++ vars_vec n' ts'
+            | Vcons t' ts' => vars t' ++ vars_vec _ ts'
           end
           in vars_vec (arity f) v
     end.
@@ -333,7 +333,7 @@ a variable occurs in the list as much as it has occurrences in t *)
   Fixpoint vars_vec n (ts : terms n) : variables :=
     match ts with
       | Vnil => nil
-      | Vcons t' _ ts' => vars t' ++ vars_vec ts'
+      | Vcons t' ts' => vars t' ++ vars_vec ts'
     end.
 
   Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_vec ts.
@@ -425,7 +425,7 @@ a variable occurs in the list as much as it has occurrences in t *)
           let fix var_occurs_in_terms n (ts : terms n) :=
             match ts with
               | Vnil => false
-              | Vcons t _ ts' => var_occurs_in t || var_occurs_in_terms _ ts'
+              | Vcons t ts' => var_occurs_in t || var_occurs_in_terms _ ts'
             end
             in var_occurs_in_terms _ ts
       end.
@@ -433,7 +433,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     Fixpoint var_occurs_in_terms n (ts : terms n) :=
       match ts with
         | Vnil => false
-        | Vcons t _ ts' => var_occurs_in t || var_occurs_in_terms ts'
+        | Vcons t ts' => var_occurs_in t || var_occurs_in_terms ts'
       end.
 
     Lemma var_occurs_in_fun :
@@ -466,7 +466,7 @@ a variable occurs in the list as much as it has occurrences in t *)
         let fix nb_symb_occs_terms n (ts : terms n) :=
           match ts with
             | Vnil => 0
-            | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
+            | Vcons u us => nb_symb_occs u + nb_symb_occs_terms _ us
           end
           in 1 + nb_symb_occs_terms _ ts
     end.
@@ -474,14 +474,14 @@ a variable occurs in the list as much as it has occurrences in t *)
   Fixpoint nb_symb_occs_terms n (ts : terms n) :=
     match ts with
       | Vnil => 0
-      | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms us
+      | Vcons u us => nb_symb_occs u + nb_symb_occs_terms us
     end.
 
   Lemma nb_symb_occs_fix : forall n (ts : terms n),
     (fix nb_symb_occs_terms n (ts : terms n) :=
       match ts with
         | Vnil => 0
-        | Vcons u p us => nb_symb_occs u + nb_symb_occs_terms p us
+        | Vcons u us => nb_symb_occs u + nb_symb_occs_terms _ us
       end) _ ts = nb_symb_occs_terms ts.
 
   Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.
@@ -509,7 +509,7 @@ a variable occurs in the list as much as it has occurrences in t *)
         let fix symbs_vec n (ts : terms n) : list Sig :=
           match ts with
             | Vnil => nil
-            | Vcons t' n' ts' => symbs t' ++ symbs_vec n' ts'
+            | Vcons t' ts' => symbs t' ++ symbs_vec _ ts'
           end
           in f :: symbs_vec (arity f) v
     end.
@@ -517,7 +517,7 @@ a variable occurs in the list as much as it has occurrences in t *)
   Fixpoint symbs_vec n (ts : terms n) : list Sig :=
     match ts with
       | Vnil => nil
-      | Vcons t' _ ts' => symbs t' ++ symbs_vec ts'
+      | Vcons t' ts' => symbs t' ++ symbs_vec ts'
     end.
 
   Lemma symbs_fun : forall f ts, symbs (Fun f ts) = f :: symbs_vec ts.
@@ -572,7 +572,7 @@ a variable occurs in the list as much as it has occurrences in t *)
         let fix size_terms n (ts : terms n) :=
           match ts with
             | Vnil => 0
-            | Vcons u p us => size u + size_terms p us
+            | Vcons u us => size u + size_terms _ us
           end
           in 1 + size_terms _ ts
     end.
@@ -580,14 +580,14 @@ a variable occurs in the list as much as it has occurrences in t *)
   Fixpoint size_terms n (ts : terms n) :=
     match ts with
       | Vnil => 0
-      | Vcons u _ us => size u + size_terms us
+      | Vcons u us => size u + size_terms us
     end.
 
   Lemma size_fix : forall n (ts : terms n),
     (fix size_terms n (ts : terms n) :=
       match ts with
         | Vnil => 0
-        | Vcons u p us => size u + size_terms p us
+        | Vcons u us => size u + size_terms _ us
       end) _ ts = size_terms ts.
 
   Proof. induction ts; simpl; intros. refl. rewrite IHts. refl. Qed.

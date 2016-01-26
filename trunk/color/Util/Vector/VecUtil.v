@@ -119,7 +119,7 @@ Ltac VSntac y := let h := fresh in gen (VSn_eq y); intro h; try rewrite h.
 Definition Vfirst A default n (v : vector A n) : A :=
   match v with
     | Vnil => default
-    | Vcons x _ _ => x
+    | Vcons x _ => x
   end.
 
 (***********************************************************************)
@@ -236,13 +236,13 @@ Section Vnth.
   Program Fixpoint Vnth n (v : vector A n) : forall i, i < n -> A :=
     match v with
       | Vnil => fun i ip => !
-      | Vcons x p v' => fun i =>
+      | Vcons x v' => fun i =>
         match i with
           | 0 => fun _ => x
           | S j => fun H => Vnth v' (i:=j) _
         end
     end.
-  Solve Obligations using program_simplify; auto with *.
+  Solve Obligations with program_simplify; auto with *.
 
   Lemma Vhead_nth : forall n (v : vector A (S n)), Vhead v = Vnth v (lt_O_Sn n).
 
@@ -333,7 +333,7 @@ Section Vadd.
   Fixpoint Vadd n (v : vector A n) (x : A) : vector A (S n) :=
     match v with
       | Vnil => Vcons x Vnil
-      | Vcons a _ v' => Vcons a (Vadd v' x)
+      | Vcons a v' => Vcons a (Vadd v' x)
     end.
 
   Lemma Vnth_addl : forall k n (v : vector A n) a (H1 : k < S n) (H2 : k < n),
@@ -406,13 +406,13 @@ Section Vreplace.
     : vector A n :=
     match v with 
       | Vnil => !
-      | Vcons h _ v' => 
+      | Vcons h v' => 
         match i with
           | 0 => Vcons a v'
           | S i' => Vcons h (Vreplace v' (i:=i') _ a)
         end
     end.
-  Solve Obligations using program_simplify ; auto with *.
+  Solve Obligations with program_simplify ; auto with *.
 
   Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vector A (S n)) a,
     Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
@@ -475,7 +475,7 @@ Section Vapp.
     : vector A (n1+n2) :=
     match v1 with
       | Vnil => v2
-      | Vcons a _ v' => Vcons a (Vapp v' v2)
+      | Vcons a v' => Vcons a (Vapp v' v2)
     end.
 
   Lemma Vapp_cons : forall a n1 n2 (v1 : vector A n1) (v2 : vector A n2),
@@ -661,11 +661,8 @@ Section Vbreak.
   Proof.
     intros n1 n2. elim n1.
     auto.
-    clear n1. intros n1 Hrec. simpl.
-    intro v.
-    gen (Hrec (Vtail v)).
-    intro H. trans (Vcons (Vhead v) (Vtail v)).
-    apply VSn_eq. rewrite H. auto.
+    clear n1. intros n1 Hrec. simpl. intro v. gen (Hrec (Vtail v)); intro H.
+    rewrite VSn_eq at 1. rewrite H at 1. refl.
   Qed.
 
   Lemma Vbreak_eq_app_cast : forall n n1 n2 (H : n1+n2=n) (v : vector A n),
@@ -692,7 +689,7 @@ Section Vin.
   Fixpoint Vin (x : A) n (v : vector A n) : Prop :=
     match v with
       | Vnil => False
-      | Vcons y _ w => y = x \/ Vin x w
+      | Vcons y w => y = x \/ Vin x w
     end.
 
   Lemma Vin_head : forall n (v : vector A (S n)), Vin (Vhead v) v.
@@ -775,8 +772,7 @@ Section Vin.
   Proof.
     induction v; simpl. contr.
     intro H. destruct H. clear IHv. subst x.
-    exists 0 (@Vnil A) n. exists v (refl_equal (S n)).
-    rewrite Vcast_refl. refl.
+    ex 0 (@Vnil A) n. ex v (refl_equal (S n)). rewrite Vcast_refl. refl.
     assert (exists n1 (v1 : vector A n1) n2 (v2 : vector A n2)
       (H : n1 + S n2 = n), v = Vcast (Vapp v1 (Vcons x v2)) H). exact (IHv H).
     destruct H0 as [n1]. destruct H0 as [v1]. destruct H0 as [n2].
@@ -1166,7 +1162,7 @@ Section Vlast.
   Fixpoint Vlast default n (v : vector A n) : A :=
     match v with
       | Vnil => default
-      | Vcons x _ v' => Vlast x v'
+      | Vcons x v' => Vlast x v'
     end.
 
   Lemma Vlast_eq : forall x y n (v : vector A (S n)), Vlast x v = Vlast y v.
@@ -1215,7 +1211,7 @@ Section Vmap.
   Fixpoint Vmap n (v : vector A n) : vector B n :=
     match v with
       | Vnil => Vnil
-      | Vcons a _ v' => Vcons (f a) (Vmap v')
+      | Vcons a v' => Vcons (f a) (Vmap v')
     end.
 
   Lemma Vnth_map : forall n (v : vector A n) i (H : i < n),
@@ -1303,7 +1299,7 @@ Section Vforall.
   Fixpoint Vforall n (v : vector A n) { struct v } : Prop :=
     match v with
       | Vnil => True
-      | Vcons a _ w => P a /\ Vforall w
+      | Vcons a w => P a /\ Vforall w
     end.
 
   Lemma Vforall_intro : forall n (v : vector A n),
@@ -1385,7 +1381,7 @@ Section Vforall.
   Fixpoint bVforall n (v : vector A n) : bool :=
     match v with
       | Vnil => true
-      | Vcons a _ w => f a && bVforall w
+      | Vcons a w => f a && bVforall w
     end.
 
   Lemma bVforall_ok : forall n (v : vector A n),
@@ -1462,7 +1458,7 @@ Section Vforall2.
   Fixpoint Vforall2_aux n1 n2 (v1 : vector A n1) (v2 : vector B n2) : Prop :=
     match v1, v2 with
       | Vnil, Vnil => True
-      | Vcons a _ v, Vcons b _ w => R a b /\ Vforall2_aux v w
+      | Vcons a v, Vcons b w => R a b /\ Vforall2_aux v w
       | _, _ => False
     end.
 
@@ -1572,7 +1568,7 @@ Section Vforall2.
   Fixpoint bVforall2_aux n1 n2 (v1 : vector A n1) (v2 : vector B n2) : bool :=
     match v1, v2 with
       | Vnil, Vnil => true
-      | Vcons x _ xs, Vcons y _ ys => f x y && bVforall2_aux xs ys
+      | Vcons x xs, Vcons y ys => f x y && bVforall2_aux xs ys
       | _, _ => false
     end.
 
@@ -1694,7 +1690,7 @@ Section Vexists.
   Fixpoint Vexists n (v : vector A n) : Prop :=
     match v with
       | Vnil => False
-      | Vcons a _ v' => P a \/ Vexists v'
+      | Vcons a v' => P a \/ Vexists v'
     end.
 
   Lemma Vexists_eq : forall n (v : vector A n),
@@ -1711,7 +1707,7 @@ Section Vexists.
   Fixpoint bVexists n (v : vector A n) : bool :=
     match v with
       | Vnil => false
-      | Vcons a _ v' => f a || bVexists v'
+      | Vcons a v' => f a || bVexists v'
     end.
 
   Lemma bVexists_ok_Vin : forall n (v : vector A n),
@@ -1754,7 +1750,7 @@ Section Vbuild.
           Vcons (gen 0 _) (@Vbuild_spec p gen')
     end.
 
-  Solve Obligations using coq_omega.
+  Solve Obligations with coq_omega.
   (*COQ: why these obligations are not solved?*)
   Next Obligation. coq_omega. Qed.
   Next Obligation. coq_omega. Qed.
@@ -1778,7 +1774,7 @@ Section Vbuild.
 
   Proof.
     intros n gen x H. set (w := Vin_nth H). decomp w.
-    exists x0 x1. rewrite Vbuild_nth in H1. auto.
+    ex x0 x1. rewrite Vbuild_nth in H1. auto.
   Qed.
 
   Lemma Vbuild_head : forall n (gen : forall i, i < S n -> A),
@@ -1816,7 +1812,7 @@ Section Vfold_left.
   Fixpoint Vfold_left n (a:A) (v : vector B n) : A :=
     match v with
       | Vnil => a
-      | Vcons b _ w => Vfold_left (f a b) w
+      | Vcons b w => Vfold_left (f a b) w
     end.
 
   Global Instance Vfold_left_Vforall2 n (R : rel A) (S : rel B) :
@@ -1837,7 +1833,7 @@ End Vfold_left.
 Fixpoint Vfold_right (A B : Type) (f : A->B->B) n (v : vector A n) (b:B) : B :=
   match v with
     | Vnil => b
-    | Vcons a _ w => f a (Vfold_right f w b)
+    | Vcons a w => f a (Vfold_right f w b)
   end.
 
 (** Vfold_left_rev f a [b1 .. bn] = f .. (f (f a bn) bn-1) .. b1. *)
@@ -1849,7 +1845,7 @@ Section Vfold_left_rev.
   Fixpoint Vfold_left_rev n (a:A) (v : vector B n) : A :=
     match v with
       | Vnil => a
-      | Vcons b _ w => f (Vfold_left_rev a w) b
+      | Vcons b w => f (Vfold_left_rev a w) b
     end.
 
   Variables (R : relation A) (S : relation B) (f_S : Proper (R ==> S ==> R) f).
@@ -1880,13 +1876,13 @@ Section FoldOpt2.
   Fixpoint Vfold2 nA nB (vA : vector aT nA) (vB : vector bT nB) :=
     match vA, vB with
       | Vnil, Vnil => Some x
-      | Vcons xA nA sA, Vcons xB nB sB =>
+      | Vcons xA sA, Vcons xB sB =>
         match Vfold2 sA sB with
           | Some v => F xA xB v
           | None   => None
         end
-      | Vnil, Vcons _ _ _ => None
-      | Vcons _ _ _, Vnil => None
+      | Vnil, Vcons _ _ => None
+      | Vcons _ _, Vnil => None
     end.
 
 End FoldOpt2.
@@ -1912,7 +1908,7 @@ Section vec_of_list.
   Fixpoint list_of_vec n (v : vector A n) : list A :=
     match v with
       | Vnil => nil
-      | Vcons x _ v => x :: list_of_vec v
+      | Vcons x v => x :: list_of_vec v
     end.
 
   Lemma in_list_of_vec : forall n (v : vector A n) x,
@@ -2037,7 +2033,7 @@ Section beq.
   Fixpoint beq_vec n (v : vector A n) p (w : vector A p) :=
     match v, w with
       | Vnil, Vnil => true
-      | Vcons x _ v', Vcons y _ w' => beq x y && beq_vec v' w'
+      | Vcons x v', Vcons y w' => beq x y && beq_vec v' w'
       | _, _ => false
     end.
 
@@ -2140,7 +2136,7 @@ Section map_first.
 
   Definition Vmap_first n (v : vector A n) : B :=
     match v with
-      | Vcons a _ _ => f a
+      | Vcons a _ => f a
       | _ => default
     end.
 
@@ -2205,7 +2201,7 @@ Section Vsig.
     Vforall P v -> vector (sig P) n :=
     match v in vector _ n return Vforall P v -> vector (sig P) n with
       | Vnil => fun _ => Vnil
-      | Vcons a _ w => fun H =>
+      | Vcons a w => fun H =>
         Vcons (exist (proj1 H)) (Vsig_of_forall w (proj2 H))
     end.
 
@@ -2213,7 +2209,7 @@ Section Vsig.
     Vforall P (Vmap (@proj1_sig A P) v) :=
     match v in vector _ n return Vforall P (Vmap (@proj1_sig A P) v) with
       | Vnil => I
-      | Vcons a _ w => conj (@proj2_sig A P a) (Vforall_of_sig w)
+      | Vcons a w => conj (@proj2_sig A P a) (Vforall_of_sig w)
     end.
 
   Lemma Vmap_proj1_sig : forall n (v : vector A n)
@@ -2244,7 +2240,7 @@ Section Vopt_filter.
   Fixpoint Vopt_filter n (ks : vector nat n) p (xs : vector A p) :=
     match ks in vector _ n return vector (option A) n with
       | Vnil => Vnil
-      | Vcons k _ ks' =>
+      | Vcons k ks' =>
         Vcons (match lt_dec k p with left h => Some (Vnth xs h) | _ => None end)
           (Vopt_filter ks' xs)
     end.
@@ -2396,7 +2392,7 @@ Lemma Vforall2_opt_filter A p (ts us : vector A p) (R : relation A) :
 Proof.
   induction ks as [|k n ks IH]; intros kks_sorted tsus; simpl.
   (* Vnil *)
-  exists 0 (le_refl 0). rewrite !Vsub_nil, !Vforall2_cast. split; refl.
+  ex 0 (le_refl 0). rewrite !Vsub_nil, !Vforall2_cast. split; refl.
   (* Vcons *)
   destruct (lt_dec k p).
   (* k < p *)
@@ -2444,7 +2440,7 @@ Section first_position.
   Fixpoint Vfirst_position_aux k n (ys : vector A n) :=
     match ys with
       | Vnil => None
-      | Vcons y _ ys' =>
+      | Vcons y ys' =>
         match P_dec y with
           | left _ => Some k
           | _ => Vfirst_position_aux (S k) ys'

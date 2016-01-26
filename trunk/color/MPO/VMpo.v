@@ -159,7 +159,7 @@ Module Make (Import S : VMpo_Struct).
     inversion x_in_t; subst.
     elim H2; clear H2; intros tx H2.
     elim H2; clear H2; intros tx_in_ts Htx.
-    apply (HInd1 tx tx_in_ts (Fun f ss) (H1 tx tx_in_ts) x Htx).
+    apply (HInd1 tx tx_in_ts (Fun f ss) (H tx tx_in_ts) x Htx).
     (* t < s via mpo2 : *)
     inversion x_in_t; subst.
     elim H1; clear H1; intros tx H1.

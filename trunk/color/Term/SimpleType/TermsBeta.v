@@ -10,7 +10,7 @@ is introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsRed TermsConv Setoid LogicUtil.
+Require Import RelExtras ListExtras TermsRed TermsConv Setoid LogicUtil Omega.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 

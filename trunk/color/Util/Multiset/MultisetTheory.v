@@ -20,7 +20,7 @@ Module Multiset (MC : MultisetCore).
 
   Section NewOperations.
 
-    Definition member x M := x/M > 0.
+    Definition member x M := (x/M)%msets > 0.
 
     Definition insert x M : Multiset := {{x}}+M.
 
@@ -220,7 +220,8 @@ Module Multiset (MC : MultisetCore).
         {{a}} =mul= {{a'}} + M -> M =mul= empty.
 
     Proof.
-      intro H. destruct M using mset_ind; auto with multisets.
+      intros.
+      destruct M using mset_ind; auto with multisets.
       assert ({{a}} =mul= {{a'}} + {{a0}} + M).
       rewrite H; solve_meq.
       clear H IHM.
@@ -230,11 +231,11 @@ Module Multiset (MC : MultisetCore).
       rewrite !union_mult, !singleton_mult_in; auto with sets.
       omega.
       apply meq_multeq; trivial.
-      absurd (a0/({{a'}} + {{a0}} + M) > 0).
+      absurd ((a0/({{a'}} + {{a0}} + M))%msets > 0).
       rewrite <- (meq_multeq H0 a0).
       rewrite singleton_mult_notin; auto with sets arith.
       rewrite !union_mult, singleton_mult_in with a0 a0; auto with sets arith.
-      absurd (a'/({{a'}} + {{a0}} + M) > 0).
+      absurd ((a'/({{a'}} + {{a0}} + M))%msets > 0).
       rewrite <- (meq_multeq H0 a').
       rewrite singleton_mult_notin; auto with sets arith.
       rewrite !union_mult, singleton_mult_in with a' a'; auto with sets arith.
@@ -290,10 +291,11 @@ Module Multiset (MC : MultisetCore).
 
     Proof. unfold member; intro H. rewrite union_mult. omega. Qed.
 
-    Lemma mult_insert M a : a/(M + {{a}}) > 0.
+    Lemma mult_insert : forall M a, (a/(M + {{a}}))%msets > 0.
 
     Proof.
-      replace (a/(M + {{a}})) with (a/M + a/{{a}})%nat.
+      intros M a.
+      replace (a/(M + {{a}})) with ((a/M)%msets + (a/{{a}})%msets)%nat.
       replace (a/{{a}}) with 1.
       omega.
       sym; auto with multisets sets.
@@ -314,8 +316,8 @@ Module Multiset (MC : MultisetCore).
     Lemma member_member_union a M N : a in M -> a in (M+N).
 
     Proof.
-      unfold member; intro H.
-      replace (a/(M+N)) with (a/M + a/N)%nat.
+      unfold member; intros.
+      replace (a/(M+N)) with ((a/M)%msets + (a/N)%msets)%nat.
       omega.
       auto with multisets.
     Qed.
@@ -353,7 +355,8 @@ Module Multiset (MC : MultisetCore).
 
     Proof.
       mset_unfold; intros.
-      assert ((a/M + a/N)%nat = (a/M' + a/N')%nat).
+      assert (((a/M)%msets + (a/N)%msets)%nat
+              = ((a/M')%msets + (a/N')%msets)%nat).
       rewrite <- !union_mult.
       apply meq_multeq; trivial.
       omega.
@@ -363,7 +366,8 @@ Module Multiset (MC : MultisetCore).
 
     Proof.
       intros; try_solve_meq.
-      assert ((x/M + x/P)%nat = (x/N + x/P)%nat).
+      assert (((x/M)%msets + (x/P)%msets)%nat
+              = ((x/N)%msets + (x/P)%msets)%nat).
       rewrite <- !union_mult.
       apply meq_multeq; trivial.
       omega.
@@ -389,7 +393,8 @@ Module Multiset (MC : MultisetCore).
     Proof.
       intros.
       try_solve_meq.
-      assert ((x/M + x/{{a}})%nat = (x/M' + x/{{a'}})%nat).
+      assert ((x/M)%msets + (x/{{a}})%msets
+              = (x/M')%msets + (x/{{a'}})%msets)%nat.
       rewrite <- !union_mult.
       apply meq_multeq; trivial.
       omega.
@@ -400,7 +405,7 @@ Module Multiset (MC : MultisetCore).
 
     Proof.
       intros.
-      assert ((a/M + 1)%nat = (a/M' + 0)%nat).
+      assert (((a/M)%msets + 1)%nat = ((a/M')%msets + 0)%nat).
       rewrite <- (singleton_mult_in ((Seq_refl A eqA eqA_Equivalence) a)),
         <- (singleton_mult_notin H0), <- !union_mult.
       apply meq_multeq; trivial.
@@ -534,7 +539,7 @@ Module Multiset (MC : MultisetCore).
         left; solve_meq.
         intros M a cmp; right; intro emp.
         absurd (a/(M + {{a}}) = a/empty); auto with multisets.
-        rewrite empty_mult, union_mult.
+        rewrite empty_mult; rewrite union_mult.
         set (w := singleton_member a); unfold member in w.
         omega.
       Qed.
@@ -578,7 +583,8 @@ Module Multiset (MC : MultisetCore).
 
     Proof.
       mset_unfold; try_solve_meq.
-      assert ((x/M + x/{{a}})%nat = (x/N + x/P)%nat).
+      assert (((x/M)%msets + (x/{{a}})%msets)%nat
+              = ((x/N)%msets + (x/P)%msets)%nat).
       rewrite <- !union_mult.
       apply meq_multeq; trivial.
       case (eqA_dec x a); intro x_a.
@@ -586,13 +592,13 @@ Module Multiset (MC : MultisetCore).
       assert (x/N = a/N).
       apply mult_eqA_compat; trivial.
       rewrite singleton_mult_in.
-      assert ((x/M + 1)%nat = (x/N + x/P)%nat).
+      assert (((x/M)%msets + 1)%nat = ((x/N)%msets + (x/P)%msets)%nat).
       rewrite <- (singleton_mult_in x_a); trivial.
       omega.
       trivial.
       (* ~ x =A= a *)
       rewrite (singleton_mult_notin x_a).
-      assert ((x/M + 0)%nat = (x/N + x/P)%nat).
+      assert (((x/M)%msets + 0)%nat = ((x/N)%msets + (x/P)%msets)%nat).
       rewrite <- (singleton_mult_notin x_a); trivial.
       omega.
     Qed.
@@ -624,7 +630,7 @@ Module Multiset (MC : MultisetCore).
 
     Proof.
       intros; try_solve_meq.
-      assert ((x/M + x/N)%nat = x/empty).
+      assert (((x/M)%msets + (x/N)%msets)%nat = x/empty).
       rewrite <- (meq_multeq H); auto with multisets.
       rewrite empty_mult in H0.
       omega.
@@ -698,15 +704,20 @@ Module Multiset (MC : MultisetCore).
 
     Proof.
       intros; try_solve_meq.
-      assert ((x/L + x/R)%nat = (x/U + x/D)%nat).
-      rewrite <- (union_mult L R), <- (union_mult U D).
+      assert (((x/L)%msets + (x/R)%msets)%nat
+              = ((x/U)%msets + (x/D)%msets)%nat).
+      rewrite <- (union_mult L R).
+      rewrite <- (union_mult U D).
       auto with multisets.
-      case (Compare_dec.le_lt_dec (x/L) (x/U)); intro l_u.
+      case (Compare_dec.le_lt_dec (x/L)%msets (x/U)%msets); intro l_u.
       (* u >= l *)
-      assert (x/R >= x/D). omega. rewrite (Min.min_r (x/R) (x/D)); omega.
+      assert ((x/R)%msets >= (x/D)%msets); [omega | idtac].
+      rewrite (Min.min_r (x/R)%msets (x/D)%msets); omega.
       (* l > u *)
-      assert (x/R < x/D). omega.
-      rewrite Minus.not_le_minus_0, (Min.min_l (x/R) (x/D)); omega.
+      assert ((x/R)%msets < (x/D)%msets); [omega | idtac].
+      rewrite Minus.not_le_minus_0.
+      rewrite (Min.min_l (x/R)%msets (x/D)%msets); omega.
+      omega.
     Qed.
 
     Variables (P Q : A -> Prop) (PQ_dec : forall a, {P a}+{Q a}).
@@ -765,7 +776,7 @@ Module Multiset (MC : MultisetCore).
       intro ax; rewrite ax; apply member_insert.
       intro x_In_l; mset_unfold.
       rewrite union_mult.
-      assert (x/(list2multiset l) > 0).
+      assert ((x/(list2multiset l))%msets > 0).
       apply (IHl x); trivial.
       omega.
     Qed.
@@ -915,32 +926,34 @@ Module Multiset (MC : MultisetCore).
       destruct (@member_union a (list2multiset m) (list2multiset n)).
       rewrite <- H; auto with multisets.
       unfold insert; apply member_union_l; auto with multisets.
-      rewrite (IHl (removeElem eqA eqA_dec a m) n), (removeElem_length_in).
+      rewrite (IHl (removeElem eqA eqA_dec a m) n).
+      rewrite (removeElem_length_in).
       destruct m; simpl; trivial.
       exfalso; apply not_empty with (list2multiset nil) a; trivial.
       simpl; auto with multisets.
       destruct (member_multiset_list m H0).
       exists x; split; trivial.
-      rewrite <- (list2multiset_remove_in a m),
-        <- (remove_union (list2multiset n) H0).
+      rewrite <- (list2multiset_remove_in a m).
+      rewrite <- (remove_union (list2multiset n) H0).
       apply insert_meq with a.
       assert (a in (list2multiset m + list2multiset n)).
       apply member_union_l; trivial.
       rewrite (meq_insert_remove H1); trivial.
-      rewrite (IHl m (removeElem eqA eqA_dec a n)), removeElem_length_in.
+      rewrite (IHl m (removeElem eqA eqA_dec a n)).
+      rewrite (removeElem_length_in).
       destruct n; simpl; trivial.
       exfalso; apply not_empty with (list2multiset nil) a; trivial.
       simpl; auto with multisets.
       destruct (member_multiset_list n H0).
       exists x; split; trivial.
-      rewrite <- (list2multiset_remove_in a n),
-        (union_comm (list2multiset m) (remove a (list2multiset n))),
-        <- (remove_union (list2multiset m) H0).
+      rewrite <- (list2multiset_remove_in a n).
+      rewrite (union_comm (list2multiset m) (remove a (list2multiset n))).
+      rewrite <- (remove_union (list2multiset m) H0).
       apply insert_meq with a.
       assert (a in (list2multiset m + list2multiset n)).
       apply member_union_r; trivial.
-      rewrite (union_comm (list2multiset n) (list2multiset m)),
-        (meq_insert_remove H1); trivial.
+      rewrite (union_comm (list2multiset n) (list2multiset m)).
+      rewrite (meq_insert_remove H1); trivial.
     Qed.
 
     Lemma list2multiset_diff_length : forall l m n,
@@ -987,7 +1000,8 @@ Module Multiset (MC : MultisetCore).
       simpl; unfold insert; rewrite <- IHM; apply union_comm.
     Defined.
   
-    Definition multiset2list M := match mult_to_list M with exist l _ => l end.
+    Definition multiset2list M :=
+      match mult_to_list M with @exist _ _ l _ => l end.
   
     Lemma multiset2list_empty : multiset2list empty = nil.
 
@@ -1120,7 +1134,7 @@ Module Multiset (MC : MultisetCore).
         destruct (mult_to_list M);
 	destruct (mult_to_list N); simpl.    
       apply list2multiset_union_length.
-      rewrite <- m, <- m0, <- m1; auto with multisets.
+      rewrite <- m; rewrite <- m0; rewrite <- m1; auto with multisets.
     Qed.
 
     Lemma multiset2list_diff_length M N :
@@ -1133,7 +1147,7 @@ Module Multiset (MC : MultisetCore).
         destruct (mult_to_list M);
 	destruct (mult_to_list N); simpl.    
       apply list2multiset_diff_length.
-      rewrite <- m, <- m0, <- m1; auto with multisets.
+      rewrite <- m; rewrite <- m0; rewrite <- m1; auto with multisets.
     Qed.
 
     Lemma multiset2list_meq_length M M' :
@@ -1143,7 +1157,7 @@ Module Multiset (MC : MultisetCore).
       intros; unfold multiset2list.
       destruct (mult_to_list M); destruct (mult_to_list M'); simpl.
       apply list2multiset_eq_length.
-      rewrite <- m, <- m0; trivial.
+      rewrite <- m; rewrite <- m0; trivial.
     Qed.
 
     Lemma cons_eq_cons_cons_absurd a a' a'' M :
@@ -1210,8 +1224,11 @@ Module Multiset (MC : MultisetCore).
     Lemma empty_card : card empty = 0.
   
     Proof.
-      unfold card. destruct (card_def empty); simpl.
-      rewrite <- e, multiset2list_empty; trivial.
+      intros.
+      unfold card.
+      destruct (card_def empty); simpl.
+      rewrite <- e.
+      rewrite multiset2list_empty; trivial.
     Qed.
 
     Instance card_morph : Proper (meq ==> eq) card.
@@ -1220,7 +1237,7 @@ Module Multiset (MC : MultisetCore).
       intros m m0; unfold card.
       destruct (card_def m).
       destruct (card_def m0); simpl.
-      rewrite <- e, <- e0.
+      rewrite <- e; rewrite <- e0.
       apply multiset2list_meq_length; trivial.
     Qed.
 
@@ -1253,7 +1270,8 @@ Module Multiset (MC : MultisetCore).
     Proof.
       unfold card, pair, insert.
       destruct (card_def ({{x}} + {{y}})); simpl.
-      rewrite <- e, multiset2list_cons_length.
+      rewrite <- e.
+      rewrite multiset2list_cons_length.
       destruct (multiset2list_singleton x) as [x' [_ xx']].
       rewrite xx'; trivial.
     Qed.
@@ -1264,7 +1282,7 @@ Module Multiset (MC : MultisetCore).
       unfold card.
       destruct (card_def (M + N)); destruct (card_def M);
       destruct (card_def N); simpl.
-      rewrite <- e, <- e0, <- e1.
+      rewrite <- e; rewrite <- e0; rewrite <- e1.
       apply multiset2list_union_length.
     Qed.
 
@@ -1274,7 +1292,7 @@ Module Multiset (MC : MultisetCore).
       unfold card.
       destruct (card_def (M - N)); destruct (card_def M);
       destruct (card_def N); simpl.
-      rewrite <- e, <- e0, <- e1.
+      rewrite <- e; rewrite <- e0; rewrite <- e1.
       apply multiset2list_diff_length.
     Qed.
 
@@ -1403,7 +1421,7 @@ Module Multiset (MC : MultisetCore).
       absurd (card {{a, b}} = card (X + Y)).
       repeat (rewrite union_card; try rewrite (card_morph Xempty); 
               try rewrite (card_morph Yempty)).
-      rewrite pair_card, empty_card; omega.
+      rewrite pair_card; rewrite empty_card; omega.
       apply (card_morph H).    
     Qed.
 
