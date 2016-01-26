@@ -281,15 +281,15 @@ isolated points are also considered as SCC *)
     unfold meq in *. rewrite <- p, multiplicity_L. refl.
 
     apply treesort. ded (HF (nats_decr_lt dim)). destruct H; intuition.
-    intros. unfold total in H4. destruct x; destruct y.
-    assert (trichotomy (fun x0 y0 => F (nats_decr_lt dim) x0 y0 = true) x x0).
+    intros. unfold total in H4. destruct x as [x xdim]. destruct y as [y ydim].
+    assert (trichotomy (fun x y => F (nats_decr_lt dim) x y = true) x y).
     apply H4; rewrite <- In_nats_decr_lt; auto.
-    unfold trichotomy in H3. destruct (eq_nat_dec x x0).
+    unfold trichotomy in H3. destruct (eq_nat_dec x y).
     left; left; subst x; auto.
     f_equal. apply lt_unique.
-    assert ({F (nats_decr_lt dim) x x0 = true}
-            +{~F (nats_decr_lt dim) x x0 = true}).
-    destruct (F (nats_decr_lt dim) x x0); auto.
+    assert ({F (nats_decr_lt dim) x y = true}
+            +{~F (nats_decr_lt dim) x y = true}).
+    destruct (F (nats_decr_lt dim) x y); auto.
     destruct H5. left; auto. right; auto. right; auto. right; tauto.
 
     apply rc_trans. intros x y z xy yz. unfold RTb in *.
