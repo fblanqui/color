@@ -33,18 +33,18 @@ Module TermsPos (Sig : TermsSig.Signature).
   Fixpoint termAtPos M (pos: Pos M) : Term :=
   match pos with
   | PThis M => M
-  | PAbs _ _ _ _ _ pos => termAtPos pos
-  | PAppL _ _ _ _ _ _ _ pos => termAtPos pos
-  | PAppR _ _ _ _ _ _ _ pos => termAtPos pos
+  | PAbs pos => termAtPos pos
+  | PAppL _ pos => termAtPos pos
+  | PAppR _ pos => termAtPos pos
   end.
   Notation "M // pos" := (@termAtPos M pos) (at level 40).
 
   Fixpoint swap_term M (pos: Pos M) (R: Term) : Preterm :=
     match pos with
     | PThis M => term R
-    | PAbs _ A _ _ _ pos => Abs A (swap_term pos R)
-    | PAppL _ _ _ PtL PtR _ _ pos => swap_term pos R @@ PtR
-    | PAppR _ _ _ PtL PtR _ _ pos => PtL @@ swap_term pos R
+    | @PAbs _ A _ _ _ pos => Abs A (swap_term pos R)
+    | @PAppL _ _ _ PtL PtR _ _ pos => swap_term pos R @@ PtR
+    | @PAppR _ _ _ PtL PtR _ _ pos => PtL @@ swap_term pos R
     end.
 
   Definition PlaceHolder M pos := 

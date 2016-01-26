@@ -11,7 +11,7 @@ lambda-calculus is defined in this file.
 Set Implicit Arguments.
 
 Require Import RelExtras ListPermutation Arith TermsConv ListUtil ListExtras
-  LogicUtil.
+  LogicUtil Omega.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 
@@ -1545,12 +1545,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Lemma subst_appL_c : forall (M: Term) (Mapp: isApp M) G,
       correct_subst M G -> correct_subst (appBodyL Mapp) G.
 
-  Proof. intro M; term_inv M. Qed.
+  Proof. intro M; term_inv M. fo. Qed.
 
   Lemma subst_appR_c M (Mapp: isApp M) G :
       correct_subst M G -> correct_subst (appBodyR Mapp) G.
 
-  Proof. term_inv M. Qed.
+  Proof. term_inv M. fo. Qed.
 
   Lemma subst_abs_c M (Mabs: isAbs M) G :
     correct_subst M G -> correct_subst (absBody Mabs) (None :: lift_subst G 1).

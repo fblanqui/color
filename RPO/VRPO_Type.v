@@ -4,12 +4,12 @@ See the COPYRIGHTS and LICENSE files.
 
 - Solange Coupet-Grimal and William Delobel, 2006-01-09
 
-Axiomatic definition of RPO, and Hypotheses taken to prove
+Axiomatic definition of RPO, and hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
 Require Import VPrecedence Relations ListUtil VTerm RelMidex LogicUtil
-  Morphisms Basics.
+  Morphisms Basics AccUtil.
 
 Module Type RPO_Model.
 
@@ -198,13 +198,13 @@ Module Status (PT : VPrecedenceType).
 
   End Decidability.
 
+(*FIXME: unfinished proof
+
   Section Homomorphism.
 
     Variable R : relation Term.A.
     Variable F : Term.A -> Term.A.
     Variables ts ss : terms.
-
-    (*FIXME: unfinished proof
 
     Lemma mul_status_homomorphic : 
       (forall s t, In s ss -> In t ts -> R s t -> R (F s) (F t)) ->
@@ -218,8 +218,8 @@ Module Status (PT : VPrecedenceType).
       destruct (proj1 (in_map_iff F ts x') H2) as [x'' [x''x' x''ts]].
       destruct (proj1 (in_map_iff F ss y') H5) as [y'' [y''y' y''ss]].
       subst x'. subst y'. intro. apply H; try hyp. 
-    Abort.*)
+    Abort.
 
-  End Homomorphism.
+  End Homomorphism.*)
 
 End Status.

@@ -16,8 +16,8 @@ Notation bools := (vector bool).
 Fixpoint Vtrue n (bs : bools n) : nat :=
   match bs with
     | Vnil => 0
-    | Vcons true _ bs' => S (Vtrue bs')
-    | Vcons false _ bs' => Vtrue bs'
+    | Vcons true bs' => S (Vtrue bs')
+    | Vcons false bs' => Vtrue bs'
   end.
 
 Lemma Vtrue_app : forall n1 (bs1 : bools n1) n2 (bs2 : bools n2),

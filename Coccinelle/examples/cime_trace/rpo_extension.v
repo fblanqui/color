@@ -11,6 +11,7 @@ Require Import terminaison.
 Require Import Relations.
 Require Import ROmega.
 Require order_extension.
+Require Import Omega.
 
 Set Implicit Arguments.
 
@@ -128,7 +129,7 @@ Module MakeRpoExt (Eqt : equational_theory_spec.EqTh).
     Lemma rpo_eq_trans : transitive _ (Rpo.rpo_eq P n).
     Proof.
       intros x y z; do 2 inversion 1; subst;
-      [ constructor; destruct (Rpo.equiv_equiv P); apply equiv_trans with y
+      [ constructor; destruct (Rpo.equiv_equiv P); transitivity y
       | constructor 2; rewrite (@Rpo.equiv_rpo_equiv_2 P n  x y)
       | constructor 2; apply (@Rpo.equiv_rpo_equiv_1 P n y z H4 x)
       | constructor 2; apply Rpo.rpo_trans with y ]; assumption.

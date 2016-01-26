@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil Morphisms VecOrd VecUtil Basics.
+Require Import LogicUtil RelUtil Morphisms VecOrd VecUtil Basics Omega.
 Require Import LAlpha.
 
 (****************************************************************************)

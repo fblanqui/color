@@ -47,7 +47,7 @@ Fixpoint vars t :=
       let fix vars_vec n (ts : terms n) :=
         match ts with
           | Vnil => empty
-          | Vcons u _ ts => union (vars u) (vars_vec _ ts)
+          | Vcons u ts => union (vars u) (vars_vec _ ts)
         end
         in vars_vec _ ts
   end.
@@ -56,7 +56,7 @@ Definition vars_vec :=
   fix vars_vec n (ts : terms n) :=
   match ts with
     | Vnil => empty
-    | Vcons u _ ts => union (vars u) (vars_vec _ ts)
+    | Vcons u ts => union (vars u) (vars_vec _ ts)
   end.
 
 Lemma vars_fun : forall f ts, vars (Fun f ts) = vars_vec ts.

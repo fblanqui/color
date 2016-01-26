@@ -116,7 +116,7 @@ Section term.
   Fixpoint apps {n} t (us : Tes n) :=
     match us with
       | Vnil => t
-      | Vcons u _ us' => apps (App t u) us'
+      | Vcons u us' => apps (App t u) us'
     end.
 
   Lemma apps_app_cons t u n (us : Tes n) :
@@ -381,7 +381,7 @@ Section term.
     Fixpoint fvs {n} (ts : Tes n) :=
       match ts with
         | Vnil => empty
-        | Vcons t _ ts' => union (fv t) (fvs ts')
+        | Vcons t ts' => union (fv t) (fvs ts')
       end.
 
     Fixpoint bv (t : Te) :=
@@ -446,6 +446,8 @@ Section term.
 
 End term.
 
+Arguments Var [F X] _.
+Arguments Fun [F X] _.
 Arguments eq_apps_fun_head [F X f p ts g q us] _.
 Arguments eq_apps_fun_nb_args [F X f p ts g q us] _.
 Arguments eq_apps_fun_args [F X f p ts g q us] _.

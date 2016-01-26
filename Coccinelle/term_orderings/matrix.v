@@ -1771,7 +1771,7 @@ Parameter plus mult sub : A -> A -> A.
 Parameter opp : A -> A. 
 Declare Instance eq_Equivalence : Equivalence eq.
 Parameter Ath : ring_theory rO rI plus mult sub opp eq.
-Variable Aeqe : ring_eq_ext plus mult opp eq.
+Parameter Aeqe : ring_eq_ext plus mult opp eq.
 End TRing.
 
 Module Make(R:TRing).
@@ -1837,7 +1837,7 @@ Module Make(R:TRing).
 
   Instance create_vec_morph dim : Proper (eq ==> eq_vec) (create_vec dim).
   Proof.
-    apply create_vec_morph. apply eq_Equivalence.
+    apply create_vec_morph.
   Qed.
 
   (** Sum of vectors and its properties *)
@@ -2075,7 +2075,7 @@ Module Make(R:TRing).
 
   Instance create_mat_morph dim : Proper (eq ==> eq_mat) (create_mat dim).
   Proof.
-    apply create_mat_morph. apply eq_Equivalence.
+    apply create_mat_morph.
   Qed.
 
 

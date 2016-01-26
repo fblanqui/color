@@ -11,7 +11,7 @@ Inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-Require Import RelUtil Morphisms LogicUtil List Basics.
+Require Import RelUtil Morphisms LogicUtil List Basics Omega.
 
 (***********************************************************************)
 (** ** Definition of strong normalization.

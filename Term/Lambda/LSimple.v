@@ -109,7 +109,7 @@ Section simple.
   Fixpoint arrow n (Ts : Tys n) U :=
     match Ts with
       | Vnil => U
-      | Vcons T _ Ts' => T ~~> arrow Ts' U
+      | Vcons T Ts' => T ~~> arrow Ts' U
     end.
 
   Lemma arrow_cast : forall n (Ts : Tys n) U n' (h:n=n'),

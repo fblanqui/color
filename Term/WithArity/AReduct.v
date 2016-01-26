@@ -102,9 +102,9 @@ Section S.
         let fix reducts_vec k (us : terms k) : k <= arity f -> list term :=
           match us in vector _ k return k <= arity f -> list term with
             | Vnil => fun _ => nil
-            | Vcons u1 k' us' => fun h =>
+            | Vcons u1 us' => fun h =>
               map (fun x => Fun f (Vreplace ts (reducts_aux2 h) x)) (reducts u1)
-              ++ reducts_vec k' us' (reducts_aux1 h)
+              ++ reducts_vec _ us' (reducts_aux1 h)
           end
           in top_reducts R t ++ reducts_vec (arity f) ts (le_refl (arity f))
     end.
@@ -112,7 +112,7 @@ Section S.
   Fixpoint reducts_vec f ts k (us : terms k) : k <= arity f -> list term :=
     match us in vector _ k return k <= arity f -> list term with
       | Vnil => fun _ => nil
-      | Vcons u1 k' us' => fun h =>
+      | Vcons u1 us' => fun h =>
         map (fun x => Fun f (Vreplace ts (reducts_aux2 h) x)) (reducts u1)
         ++ reducts_vec f ts us' (reducts_aux1 h)
     end.
@@ -120,10 +120,10 @@ Section S.
   Lemma fix_reducts_vec : forall f ts k us h,
     (fix reducts_vec (k : nat) (us : terms k) : k <= arity f -> list term :=
       match us in (vector _ k0) return (k0 <= arity f -> list term) with
-        | Vnil => fun _ : 0 <= arity f => nil
-        | Vcons u1 k' us' => fun h : S k' <= arity f =>
+        | Vnil => fun _ => nil
+        | Vcons u1 us' => fun h =>
           map (fun x => Fun f (Vreplace ts (reducts_aux2 h) x)) (reducts u1)
-          ++ reducts_vec k' us' (reducts_aux1 h)
+          ++ reducts_vec _ us' (reducts_aux1 h)
       end) k us h = reducts_vec f ts us h.
 
   Proof.
@@ -245,7 +245,7 @@ Section S.
         let fix reducts2_vec k (us : terms k) : list (terms k) :=
           match us with
             | Vnil => nil
-            | Vcons u1 _ us' => map (fun x => Vcons x us') (reducts2 u1)
+            | Vcons u1 us' => map (fun x => Vcons x us') (reducts2 u1)
               ++ map (fun x => Vcons u1 x) (reducts2_vec _ us')
           end
           in top_reducts R t ++ map (Fun f) (reducts2_vec (arity f) ts)
@@ -254,7 +254,7 @@ Section S.
   Fixpoint reducts2_vec k (us : terms k) : list (terms k) :=
     match us with
       | Vnil => nil
-      | Vcons u1 _ us' => map (fun x => Vcons x us') (reducts2 u1)
+      | Vcons u1 us' => map (fun x => Vcons x us') (reducts2 u1)
         ++ map (fun x => Vcons u1 x) (reducts2_vec us')
     end.
 

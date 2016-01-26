@@ -11,7 +11,7 @@ WF_absorb. *)
 Set Implicit Arguments.
 
 Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
-  RelUtil ATrs LogicUtil ACalls SN InfSeq LeastNat ListUtil BoundNat.
+  RelUtil ATrs LogicUtil ACalls SN InfSeq LeastNat ListUtil BoundNat Omega.
 
 Section S.
 
@@ -29,13 +29,13 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
     Variables R D : rules Sig.
 
-    Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
-
-    Lemma undef_red_is_int_red : forall t u, red R t u ->
+    Lemma undef_red_is_int_red :
+      forall (hyp1 : forallb (@is_notvar_lhs Sig) R = true),
+      forall t u, red R t u ->
       undefined R t = true -> int_red R t u /\ undefined R u = true.
 
     Proof.
-      intros t u tu ht. unfold undefined in ht. destruct t. discr.
+      intros hyp1 t u tu ht. unfold undefined in ht. destruct t. discr.
       redtac. destruct l.
       rewrite forallb_forall in hyp1. ded (hyp1 _ lr). discr.
       ded (fun_eq_fill xl). decomp H.
@@ -44,29 +44,33 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       subst. hyp.
     Qed.
 
-    Lemma undef_rtc_red_is_rtc_int_red : forall t u, red R # t u ->
+    Lemma undef_rtc_red_is_rtc_int_red
+      (hyp1 : forallb (@is_notvar_lhs Sig) R = true) :
+      forall t u, red R # t u ->
       undefined R t = true -> int_red R # t u /\ undefined R u = true.
 
     Proof.
-      induction 1.
-      intro hx. ded (undef_red_is_int_red H hx). intuition. split_all. refl.
-      intuition. apply rt_trans with y; auto.
+      induction 1; intro hx.
+      ded (undef_red_is_int_red hyp1 H hx). intuition.
+      split_all. refl.
+      split_all. apply rt_trans with y; tauto. tauto.
     Qed.
 
-    Variable hyp2 : forallb (undefined_rhs R) D = true.
-
     Lemma WF_hd_red_Mod_int :
+      forall (hyp1 : forallb (@is_notvar_lhs Sig) R = true)
+             (hyp2 : forallb (undefined_rhs R) D = true),
       WF (hd_red_Mod (int_red R #) D) -> WF (hd_red_mod R D).
 
     Proof.
-      rewrite forallb_forall in hyp1, hyp2.
+      intros hyp1 hyp2.
       intro wf. unfold hd_red_mod. apply WF_mod_rev2. apply WF_mod_rev in wf.
       intro t. gen (wf t). induction 1.
       apply SN_intro. intros z [y [xy yz]]. apply H0. exists y. split_all.
-      assert (hy : undefined R y = true). redtac. gen (hyp2 _ lr).
+      assert (hy : undefined R y = true). redtac.
+      rewrite forallb_forall in hyp2. gen (hyp2 _ lr).
       unfold undefined_rhs. simpl. unfold undefined. subst. destruct r.
       discr. simpl. auto.
-      destruct (undef_rtc_red_is_rtc_int_red yz hy). hyp.
+      destruct (undef_rtc_red_is_rtc_int_red hyp1 yz hy). hyp.
     Qed.
 
   End WF_hd_red_mod_of_WF_hd_red_Mod_int.
@@ -105,7 +109,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
     Qed.
 
     Definition min_term :=
-      projT1 (constructive_indefinite_description _ NT_min_intro).
+      proj1_sig (constructive_indefinite_description _ NT_min_intro).
 
     Lemma NT_min_term : NT_min R min_term.
 
@@ -225,11 +229,11 @@ R-sequence *)
     intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). omega.
     rewrite e. apply hi. clear e. clear -H; omega.
     induction l; intro. rewrite plus_0_r. refl.
-    assert (hl : l < g (S i) - g i). clear -H0; omega.
-    rewrite (IHl hl), <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
+    assert (hl : l < g (S i) - g i). clear -H0; omega. rewrite (IHl hl).
+    rewrite <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
     destruct (hk x) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
-    rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2, Vnth_replace_neq.
-    refl. apply (hg i). unfold x. clear -H0; omega.
+    rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2.
+    rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. clear -H0; omega.
     (* [Vnth (v 0) ha] is a subterm of [f 0] *)
     exists (Vnth (v 0) ha). split.
     rewrite hv. apply subterm_fun. apply Vnth_in.
@@ -237,9 +241,9 @@ R-sequence *)
     exists (fun i => Vnth (v (g i)) ha). split. sym. hyp.
     intro i. rewrite <- h. destruct (hk (g i)) as [_ r].
     destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
-    rewrite hv in e, p2. Funeqtac. Funeqtac.
-    rewrite H, H0, Vreplace_pi with (h2:=ha). 2: apply h2.
-    rewrite Vnth_replace, Vnth_eq with (h2:=hi). 2: sym; apply h2. hyp.
+    rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H, H0.
+    rewrite Vreplace_pi with (h2:=ha). 2: apply h2. rewrite Vnth_replace.
+    rewrite Vnth_eq with (h2:=hi). 2: sym; apply h2. hyp.
   Qed.
 
 (*****************************************************************************)
@@ -301,7 +305,8 @@ minimal infinite R-sequence *)
       (* f has a top reduct *)
       destruct (classic (IS (int_red R) f)).
       destruct (NT_int_red_subterm_NT_red H). ded (ht x). intuition.
-      unfold IS in H. rewrite not_forall_eq in H. set (k := projT1 (ch_min H)).
+      unfold IS in H. rewrite not_forall_eq in H.
+      set (k := proj1_sig (ch_min H)).
       assert (hk : hd_red R (f k) (f (S k))). ded (hf k).
       destruct (red_split H0). hyp. ded (ch_minP _ H). contr.
       assert (hk' : int_red R # (f 0) (f k)).

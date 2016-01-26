@@ -262,7 +262,7 @@ apply (well_formed_cf_alien Ar Wt2); apply in_or_app; [left | right; right]; tri
 intros Not_in Al_t;
 pattern (Var v :: l1) in t1_sigma; simpl in t1_sigma; rewrite Ar in t1_sigma.
 pattern (Var v') in v_sigma;
-simpl apply_cf_subst in v_sigma.
+unfold apply_cf_subst in v_sigma.
 rewrite v_sigma in t1_sigma; clear v_sigma.
 revert t1_sigma; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ t1_sigma | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
 assert (Inj : forall l' l'', Term f l' = Term f l'' -> l' = l'').
@@ -274,7 +274,10 @@ reflexivity.
 rewrite <- in_quick_in.
 apply in_or_app; left.
 rewrite <- in_quick_in.
-replace (flatten f (apply_cf_subst sigma (Var v') :: t :: nil)) with
+replace (flatten f (match find eq_var_bool v' sigma with
+         | Some v_sigma => v_sigma
+         | None => Var v'
+         end :: t :: nil)) with
 (flatten f (apply_cf_subst sigma (Var v')  :: nil) ++ flatten f (t :: nil)).
 apply in_or_app; right; destruct t as [x | g ll]; simpl.
 left; trivial.

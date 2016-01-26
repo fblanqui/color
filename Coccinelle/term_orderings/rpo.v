@@ -166,7 +166,7 @@ Module Type RPO.
         equiv (Term f l1) (Term g l2).
 
 (* equiv is actually an equivalence *)
-    Parameter equiv_equiv  : equivalence term equiv.
+    Parameter equiv_equiv  : Equivalence equiv.
 
     Parameter equiv_dec : forall t1 t2, {equiv t1 t2}+{~equiv t1 t2}.
 (*
@@ -571,13 +571,35 @@ intros t1 t2 H; apply E; right; assumption.
 Qed.
 
 (* equiv is actually an equivalence *)
-Lemma equiv_equiv  : equivalence term equiv.
+Instance equiv_equiv  : Equivalence equiv.
 Proof.
-split.
+constructor.
 (* Reflexivity *)
 intro t; apply Eq.
+(* Symmetry *)
+intros t1; pattern t1; apply term_rec3; clear t1.
+intros v t2 t1_eq_t2; inversion t1_eq_t2; subst; trivial.
+intros f l1 IHl t2 t1_eq_t2; 
+inversion t1_eq_t2 as 
+  [ 
+  | f' g' l1' l2 Sf Sg preceq_f_g l1_eq_l2 
+  | f' g' l1' l2 Sf Sg preceq_f_g P]; clear t1_eq_t2; subst.
+apply Eq.
+apply Eq_lex; trivial.
+apply prec_eq_sym. trivial.
+generalize l2 l1_eq_l2; clear l2 l1_eq_l2; 
+induction l1 as [ | t1 l1]; intros l2 l1_eq_l2;
+inversion l1_eq_l2 as [ | s1 s2 l1' l2' s1_eq_s2 l1'_eq_l2']; subst; trivial.
+apply Eq_list_cons.
+apply IHl; trivial; left; trivial.
+apply IHl1; trivial.
+intros t t_in_l1; apply IHl; right; trivial.
+apply Eq_mul; trivial.
+apply prec_eq_sym. trivial.
+apply permut_sym; trivial.
+intros a b a_in_l1 _; apply IHl; trivial.
 (* Transitivity *)
-intros t1; pattern t1; apply term_rec3.
+intros t1; pattern t1; apply term_rec3; clear t1.
 (* 1/3 variable case *)
 intros v t2 t3 t1_eq_t2 t2_eq_t3; inversion t1_eq_t2; subst; trivial.
 (* 1/2 compound case *)
@@ -606,28 +628,6 @@ apply Eq_mul; trivial.
 apply prec_eq_transitive with g'; trivial.
 apply permut_trans with l2; trivial.
 intros a b c a_in_l1 _ _; apply E_l1; trivial.
-(* Symmetry *)
-intros t1; pattern t1; apply term_rec3; clear t1.
-intros v t2 t1_eq_t2; inversion t1_eq_t2; subst; trivial.
-intros f l1 IHl t2 t1_eq_t2; 
-inversion t1_eq_t2 as 
-  [ 
-  | f' g' l1' l2 Sf Sg preceq_f_g l1_eq_l2 
-  | f' g' l1' l2 Sf Sg preceq_f_g P]; clear t1_eq_t2; subst.
-apply Eq.
-apply Eq_lex; trivial.
-apply prec_eq_sym. trivial.
-generalize l2 l1_eq_l2; clear l2 l1_eq_l2; 
-induction l1 as [ | t1 l1]; intros l2 l1_eq_l2;
-inversion l1_eq_l2 as [ | s1 s2 l1' l2' s1_eq_s2 l1'_eq_l2']; subst; trivial.
-apply Eq_list_cons.
-apply IHl; trivial; left; trivial.
-apply IHl1; trivial.
-intros t t_in_l1; apply IHl; right; trivial.
-apply Eq_mul; trivial.
-apply prec_eq_sym. trivial.
-apply permut_sym; trivial.
-intros a b a_in_l1 _; apply IHl; trivial.
 Qed.
 
 Instance equiv_Equivalence : Equivalence equiv.
@@ -1341,7 +1341,7 @@ exact Q2.
 intros t t' t_eq_t' s; split.
 apply (H (s,t)); trivial.
 apply (H (s,t')); trivial.
-apply (Relation_Definitions.equiv_sym _ _ equiv_equiv); trivial.
+symmetry; assumption.
 Qed.
 
 Lemma equiv_rpo_equiv_2 :
@@ -1433,7 +1433,7 @@ apply (permut0_sym equiv_equiv). assumption. assumption.
 intros t t' t_eq_t' s; split.
 apply (H (s,t)); trivial.
 apply (H (s,t')); trivial.
-apply (Relation_Definitions.equiv_sym _ _ equiv_equiv); trivial.
+symmetry; assumption.
 Qed.
 
 Lemma equiv_rpo_equiv_3 :
@@ -1442,10 +1442,10 @@ Proof.
 intro bb.
 assert (H: forall t t', equiv t t' -> (forall s, rpo_eq bb s t -> rpo_eq bb s t')).
 intros t t' t_eq_t' s s_le_t; inversion s_le_t; subst.
-apply Equiv; apply (equiv_trans _ _ equiv_equiv) with t; trivial.
+apply Equiv; transitivity t; trivial.
 apply Lt; rewrite <- (equiv_rpo_equiv_1 _ t_eq_t'); trivial.
 intros t t' t_eq_t' s; split; apply H; trivial.
-apply (Relation_Definitions.equiv_sym _ _ equiv_equiv); trivial.
+symmetry; trivial.
 Qed.
 
 Lemma equiv_rpo_equiv_4 :
@@ -1454,11 +1454,11 @@ Proof.
 intro bb.
 assert (H: forall t t', equiv t t' -> (forall s, rpo_eq bb t s -> rpo_eq bb t' s)).
 intros t t' t_eq_t' s t_le_s; inversion t_le_s; subst.
-apply Equiv; apply (equiv_trans _ _ equiv_equiv) with t; trivial;
-apply (equiv_sym _ _ equiv_equiv); trivial.
+apply Equiv; transitivity t; trivial;
+symmetry; trivial.
 apply Lt; rewrite <- (equiv_rpo_equiv_2 _ t_eq_t'); trivial.
 intros t t' t_eq_t' s; split; apply H; trivial.
-apply (equiv_sym _ _ equiv_equiv); trivial.
+symmetry; trivial.
 Qed.
 
 (** ** rpo is a preorder, and its reflexive closure is an ordering. *)
@@ -1499,18 +1499,18 @@ apply (@Subterm bb f' l' tj s'); trivial.
 apply Lt; apply (IH (s', Term f l)); trivial.
 apply size2_lex1_mem; trivial.
 (* 1/3 Top_gt *)
-subst; apply H2; apply in_impl_mem; trivial.
+subst; apply H; apply in_impl_mem; trivial.
 intros; apply Eq.
 (* 1/2 Top_eq_lex *)
-subst; apply H2; apply in_impl_mem; trivial.
+subst; apply H; apply in_impl_mem; trivial.
 intros; apply Eq.
 (* Top_eq_mul *)
-inversion k'_lt_k as [a lg ls lc l1 l2 P1 P2 H]; subst.
+inversion k'_lt_k as [a lg ls lc l1 l2 P1 P2 H']; subst.
 assert (tj_mem_l := in_impl_mem equiv Eq tj l tj_in_l).
 rewrite (mem_permut0_mem equiv_equiv tj P1) in tj_mem_l.
 rewrite <- mem_or_app in tj_mem_l.
 destruct tj_mem_l as [tj_mem_ls | tj_mem_llc].
-destruct (H _ tj_mem_ls) as [a' [a'_mem_a_lg tj_lt_a']].
+destruct (H' _ tj_mem_ls) as [a' [a'_mem_a_lg tj_lt_a']].
 apply (@Subterm bb g k tj a').
 rewrite (mem_permut0_mem equiv_equiv a' P2); rewrite app_comm_cons.
 rewrite <- mem_or_app; left; trivial.
@@ -1607,7 +1607,7 @@ apply Top_gt. apply prec_eq_prec2 with f'. trivial.
 apply prec_eq_sym. trivial.
 intros u u_in_l''; apply (IH (Term f l, (Term f' l', u))); trivial.
 apply size3_lex3_mem; trivial.
-apply H0; trivial.
+apply H; trivial.
 (* 1/3 Top_gt, Top_eq_mul *)
 apply Top_gt. apply prec_eq_prec2 with f'. trivial.
 apply prec_eq_sym. trivial.
@@ -1617,7 +1617,7 @@ apply rpo_subterm_mem with g'' l''; trivial.
 (* 1/2 Top_eq_lex *)
 inversion u_lt_t as [ f''' l'' s' t' t'_in_l' u_le_t'
                                | g'' f''' k'' l'' f''_prec_f' H'''
-                               | g'' f''' k'' l'' Sf' Sg' f_eq_g' L' l''_lt_l' H H1 H2 
+                               | g'' f''' k'' l'' Sf' Sg' f_eq_g' L' l''_lt_l' H' H1 H2 
                                | g'' f''' k'' l'' Sf' Sg' f_eq_g' l''_lt_l' ]; subst.
 (* 1/5 Top_eq_lex, Subterm *)
 inversion u_le_t' as [t'' t''' u_eq_t' | t'' t''' u_lt_t']; subst.
@@ -1625,7 +1625,7 @@ rewrite (equiv_rpo_equiv_2 _ u_eq_t').
 apply rpo_subterm_mem with f'' l'; trivial.
 apply (IH (Term f l, (t', u))); trivial.
 apply size3_lex2_mem; trivial.
-apply H0; trivial.
+apply H; trivial.
 (* 1/4 Top_eq_lex, Top_gt *)
 apply Top_gt. apply prec_eq_prec1 with f''; trivial.
 intros u u_in_l''. apply (IH (Term f l, (Term f'' l', u))). 
@@ -1640,7 +1640,7 @@ rewrite L; assumption.
 destruct L' as [L' | [L1' L2']].
 rewrite <- L'; right; split; assumption.
 right; split; assumption.
-generalize l' l'' l'_lt_l l''_lt_l' IH; clear l' l'' l'_lt_l l''_lt_l' IH H0 H3 t_lt_fl u_lt_t L L';
+generalize l' l'' l'_lt_l l''_lt_l' IH; clear l' l'' l'_lt_l l''_lt_l' IH H H' t_lt_fl u_lt_t L L';
 induction l as [ | s l]; intros l' l'' l'_lt_l l''_lt_l' IH.
 inversion l'_lt_l.
 inversion l'_lt_l as [ t s' k' k t_lt_s  | t s' k' k t_eq_s k'_lt_k | t k];
@@ -1665,7 +1665,7 @@ subst; discriminate H3.
 subst; discriminate H3.
 intros u u_in_l''. apply (IH (Term f l, (Term f'' l', u))); trivial.
 apply size3_lex3_mem. trivial.
-apply H3; trivial.
+apply H'; trivial.
 (* 1/2 Top_eq_lex, Top_eq_mul *)
 rewrite Sf in Sg'; discriminate.
 (* 1/1 Top_eq_mul *)
@@ -1699,7 +1699,7 @@ rewrite <- ass_app.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial. apply equiv_equiv. apply equiv_equiv.
 rewrite P.
-rewrite <- permut0_cons;[|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)].
+rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity].
 rewrite <- ass_app.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial.  apply equiv_equiv. apply equiv_equiv.
@@ -1865,7 +1865,7 @@ apply Subterm with s'; trivial; apply Equiv; apply Eq.
 (* 1/3 Antirefl, Top_gt *)
 apply (prec_antisym Prec) with f; trivial.
 (* 1/2 Antirefl, Top_eq_lex *)
-clear H3;induction l as [| t l]. inversion l_lt_l. 
+clear H;induction l as [| t l]. inversion l_lt_l. 
 inversion l_lt_l as [ s t' l' l'' s_lt_t | 
   s t' l' l'' s_eq_t l'_lt_l'' | 
     s l']; subst.
@@ -1899,7 +1899,7 @@ apply rpo_antirefl.
 intros s_le_t t_le_s;
 destruct s_le_t as [s t s_eq_t | s t s_lt_t]; trivial.
 destruct t_le_s as [t s t_eq_s | t s t_lt_s].
-apply (equiv_sym _ _ equiv_equiv); trivial.
+symmetry; trivial.
 assert False; [idtac | contradiction].
 apply (@rpo_antirefl bb s); apply rpo_trans with t; trivial.
 Qed.
@@ -1966,7 +1966,7 @@ inversion H1' as [u s'' k1' k1'' u_lt_s | s1' s'' k1' k1'' s'_eq_s1 k'_lt_l1 H1 
 constructor 1; trivial.
 rewrite <- (equiv_rpo_equiv_1 _ s'_eq_s); trivial.
 constructor 2; trivial.
-apply (equiv_trans _ _ equiv_equiv) with s'; trivial.
+transitivity s'; trivial.
 constructor 3.
 (* 1/2 *)
 apply Acc_intro; intros l' H; inversion H as [ k k' L'' Acc_l1 Acc_l1' H' H1 H2]; clear H; subst.
@@ -2012,7 +2012,7 @@ inversion H1' as [u s'' k1' k1'' u_lt_s | s1' s'' k1' k1'' s'_eq_s1 k'_lt_l1 H1 
 constructor 1; trivial.
 rewrite <- (equiv_rpo_equiv_1 _ s'_eq_s); trivial.
 constructor 2; trivial.
-apply (equiv_trans _ _ equiv_equiv) with s'; trivial.
+transitivity s'; trivial.
 constructor 3.
 (* 1/1 *)
 apply Acc_intro; intros l' H; inversion H as [ k k' L' Acc_l1 Acc_l1' H' H1 H2]; clear H; subst.
@@ -2082,9 +2082,9 @@ rewrite P'.
 rewrite ass_app; rewrite <- permut_app2; trivial. apply equiv_equiv. reflexivity.
 apply (IHlg (g :: ls2 ++ lc) l a ls2 (g :: lc)); trivial.
 rewrite P.
-simpl; rewrite <- permut0_cons;[|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)].
-rewrite <- permut0_cons_inside;[reflexivity|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)].  
-rewrite <- permut0_cons_inside;[reflexivity|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)].  
+simpl; rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity].
+rewrite <- permut0_cons_inside;[reflexivity|apply equiv_equiv|reflexivity].  
+rewrite <- permut0_cons_inside;[reflexivity|apply equiv_equiv|reflexivity].  
 Qed.
 
 Inductive rpo_mul_rest (bb : nat) : list term -> list term -> Prop :=
@@ -2164,8 +2164,8 @@ rewrite P'; rewrite Pls; rewrite ass_app; reflexivity || auto.
 apply (IHlg (g :: ls2 ++ lc) l a ls2 (g :: lc)); trivial.
 rewrite <- permut0_cons_inside; try reflexivity. apply equiv_equiv.
 rewrite P.
-rewrite <- permut0_cons;[|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)]. 
-simpl; rewrite <- permut0_cons_inside;[reflexivity|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)].
+rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity]. 
+simpl; rewrite <- permut0_cons_inside;[reflexivity|apply equiv_equiv|reflexivity].
 simpl; intros s [g_eq_s | s_mem_ls2lc].
 apply Acc_l.
 rewrite P; right; left; trivial.
@@ -2201,7 +2201,7 @@ simpl in b_eq_b'; simpl in H.
 left; exists b'; exists (ls ++ (lc1 ++ lc2)); repeat split; trivial.
 rewrite P'; subst lc.
 rewrite ass_app; apply permut0_sym. apply equiv_equiv.
-rewrite <- permut0_cons_inside;[|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)]. 
+rewrite <- permut0_cons_inside;[|apply equiv_equiv|reflexivity]. 
 rewrite ass_app; reflexivity.
 apply (@List_mul_step bb a ls (lc1 ++ lc2)); try reflexivity.
 rewrite app_comm_cons.
@@ -2359,7 +2359,7 @@ intro; apply Acc_inv with t; trivial.
 (* 1/3 Top gt *)
 assert (Acc_k : forall s, mem equiv s k -> Acc (rpo bb) s).
 intros s s_mem_k; apply IHl; trivial.
-apply H0; trivial.
+apply H; trivial.
 apply (IH (g,k)); trivial.
 apply Top_gt_rest; trivial.
 (* 1/2 Top_eq_lex *)
@@ -3133,6 +3133,8 @@ Inductive result (A : Type) : Type :=
   | Not_finished : result A
   | Found : A -> result A.
 
+Arguments Not_found {A}.
+Arguments Not_finished {A}.
 
 Record rpo_inf : Type := 
   { bb : nat;
@@ -3147,17 +3149,17 @@ Record rpo_inf : Type :=
 Function remove_equiv_eval (p : term -> term -> option bool) 
     (t : term) (l : list term) {struct l} : result (list term) :=
      match l with
-     | nil => @Not_found _
+     | nil => Not_found
      | a :: l => 
             match p t a with
             | Some true => (Found l)
             | Some false =>
                match remove_equiv_eval p t l  with
                | Found l' => Found (a :: l')
-               | Not_found => @Not_found _
-               | Not_finished => @Not_finished _
+               | Not_found => Not_found
+               | Not_finished => Not_finished
                end
-             | None => @Not_finished _
+             | None => Not_finished
              end 
             end.
 
@@ -3344,12 +3346,10 @@ functional induction (remove_equiv_eval_list p l1 l2) as
 (* 1/ 6 *)
 exists (@nil (term * term)); simpl; intuition; intros.
 rewrite <- app_nil_end; apply list_permut.permut_refl; intro; trivial.
-apply list_permut.permut_refl; intro; trivial.
 (* 1/5 *)
 destruct l2 as [ | t2 l2].
 contradiction.
 exists (@nil (term * term)); simpl; intuition; intros.
-apply list_permut.permut_refl; intro; trivial.
 rewrite <- app_nil_end; apply list_permut.permut_refl; intro; trivial.
 (* 1/4 *)
 assert (K := remove_equiv_eval_is_sound p t1 l2); rewrite H in K.
@@ -3531,7 +3531,7 @@ discriminate.
 (* 1/5 *)
 discriminate.
 (* 1/4 *)
-assert (K := remove_equiv_eval_is_sound p t1 l2); rewrite H in K;
+assert (K := remove_equiv_eval_is_sound p t1 H3); rewrite H in K;
 destruct K as [t2 [t2_in_l2 P2]];
 apply IH; intros u1 u2 u1_in_l1 u2_in_l2'; apply E; trivial.
 right; trivial.
@@ -3542,7 +3542,7 @@ discriminate.
 rewrite R in IH; apply IH; intros u1 u2 u1_in_l1 u2_in_l2; apply E; trivial;
 right; trivial.
 (* 1/1 *)
-assert (K := remove_equiv_eval_fully_evaluates p t1 l2);
+assert (K := remove_equiv_eval_fully_evaluates p t1 H3);
 rewrite H in K; intros _; apply K; trivial.
 intros t2 t2_in_l2; apply E; trivial; left; trivial.
 Qed.
@@ -4376,7 +4376,7 @@ destruct H.
 rewrite H.
 simpl.
 left.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 simpl.
 right.
 auto.
@@ -4422,8 +4422,7 @@ case_eq (mem_bool eq_tt_bool (t1, t2) (equiv_l rpo_infos)).
 intros Hfind;apply (find_is_sound equiv _ (equiv_l_valid rpo_infos) _ _ (Hfind)).
 intro;
 case_eq (mem_bool eq_tt_bool (t2, t1) (equiv_l rpo_infos)). 
-intros Hfind; apply equiv_sym.
-apply equiv_equiv.
+intro Hfind. symmetry.
 apply (find_is_sound equiv _ (equiv_l_valid rpo_infos) _ _ (Hfind)).
 tauto.
 (* induction step *)
@@ -4438,8 +4437,7 @@ case_eq (mem_bool eq_tt_bool (t1, t2) (equiv_l rpo_infos)).
 intros Hfind;apply (find_is_sound equiv _ (equiv_l_valid rpo_infos) _ _ (Hfind)).
 intros _;
 case_eq (mem_bool eq_tt_bool (t2, t1) (equiv_l rpo_infos)). 
-intros Hfind; apply equiv_sym.
-apply equiv_equiv.
+intro Hfind. symmetry.
 apply (find_is_sound equiv _ (equiv_l_valid rpo_infos) _ _ (Hfind)).
 intros _.
 assert (E1 := equiv_eval_is_sound_weak rpo_infos (S n) t1 t2); 
@@ -4520,7 +4518,7 @@ apply in_impl_mem; trivial.
 exact Eq.
 generalize (IHn t1 (Term f2 l2)); 
 destruct (rpo_eval rpo_infos n t1 (Term f2 l2)) as [ [ | | | ] | ]; try discriminate.
-intro H1; apply Equiv; apply (equiv_sym _ _ equiv_equiv); trivial.
+intro H1; apply Equiv; symmetry; trivial.
 intro H1; apply Lt; trivial.
 (* 1/3 there are no terms in l1 which are greater than (Term f2 l2) *)
 intros _;
@@ -4599,7 +4597,7 @@ apply Subterm with u2.
 apply in_impl_mem; trivial.
 intros; apply Eq.
 destruct u'_le_u2 as [u'_eq_u2 | u'_lt_u2].
-left; apply (equiv_trans _ _ equiv_equiv) with u'; trivial.
+left; transitivity u'; trivial.
 generalize (IHn u' u2); rewrite u'_eq_u2; intro; assumption.
 right; rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn u' u2); rewrite u'_lt_u2; intro; assumption.
 rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f2 l2) u'); rewrite H''; intro; assumption.
@@ -4627,7 +4625,7 @@ apply Subterm with u2.
 subst l2; rewrite <- mem_or_app; left; apply in_impl_mem.
 apply Eq.
 rewrite in_map_iff; exists (u1,u2); split; trivial.
-simpl in H1; subst u1; left; apply (equiv_trans _ _ equiv_equiv) with u'; trivial.
+simpl in H1; subst u1; left; transitivity u'; trivial.
 generalize (IHn u' u2); rewrite (Hll _ _ K2); intro; assumption.
 intros u u_in_l1; rewrite mem_in_eq in u_in_l1; destruct u_in_l1 as [u' [u_eq_u' u'_in_l1]].
 destruct (H' _ u'_in_l1) as [ [u2 [u2_in_l2 u'_le_u2]] | H''].
@@ -4635,7 +4633,7 @@ apply Subterm with u2.
 apply in_impl_mem; trivial.
 intros; apply Eq.
 destruct u'_le_u2 as [u'_eq_u2 | u'_lt_u2].
-left; apply (equiv_trans _ _ equiv_equiv) with u'; trivial.
+left; transitivity u'; trivial.
 generalize (IHn u' u2); rewrite u'_eq_u2; intro; assumption.
 right; rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn u' u2); rewrite u'_lt_u2; intro; assumption.
 rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f2 l2) u'); rewrite H''; intro; assumption.
@@ -4654,7 +4652,7 @@ intro L; injection L; clear L; intro L; apply IHll; assumption.
 clear L H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 1; generalize (IHn t1 t2); rewrite Ht; intro; assumption.
 simpl; constructor 2.
-apply (equiv_sym _ _ equiv_equiv); generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 destruct H' as [[H1 H2] | [[ll [t1 [l1' [_ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l2; contradiction.
@@ -4668,8 +4666,8 @@ apply Subterm with u1.
 apply in_impl_mem; trivial.
 intros; apply Eq.
 destruct u'_le_u1 as [u'_eq_u1 | u'_lt_u1].
-left; apply (equiv_trans _ _ equiv_equiv) with u'; trivial.
-apply (equiv_sym _ _ equiv_equiv); generalize (IHn u1 u'); rewrite u'_eq_u1; intro; assumption.
+left; transitivity u'; trivial.
+symmetry; generalize (IHn u1 u'); rewrite u'_eq_u1; intro; assumption.
 right; rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn u1 u'); rewrite u'_lt_u1; intro; assumption.
 rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f1 l1) u'); rewrite H''; intro; assumption.
 intros _; generalize (leb_complete (length l1) (rpo_infos.(bb))); case (leb (length l1) rpo_infos.(bb)); [idtac | simpl; trivial].
@@ -4683,12 +4681,12 @@ subst l2; destruct l1 as [ | a1 l2]; [apply False_rect; apply H1; apply refl_equ
 subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 3.
 simpl; constructor 2.
-apply (equiv_sym _ _ equiv_equiv); generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 clear H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 1; generalize (IHn t1 t2); rewrite Ht; intro; assumption.
 simpl; constructor 2.
-apply (equiv_sym _ _ equiv_equiv); generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 clear L1 L2; destruct H' as [[H1 H2] | [[ll [t1 [l1' [Hll [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l2; contradiction.
@@ -4698,16 +4696,16 @@ apply Subterm with u1.
 subst l1; rewrite <- mem_or_app; left; apply in_impl_mem.
 apply Eq.
 rewrite in_map_iff; exists (u1,u2); split; trivial.
-simpl in K1; subst u2; left; apply (equiv_trans _ _ equiv_equiv) with u'; trivial.
-apply (equiv_sym _ _ equiv_equiv); generalize (IHn u1 u'); rewrite (Hll _ _ K2); intro; assumption.
+simpl in K1; subst u2; left; transitivity u'; trivial.
+symmetry; generalize (IHn u1 u'); rewrite (Hll _ _ K2); intro; assumption.
 intros u u_in_l2; rewrite mem_in_eq in u_in_l2; destruct u_in_l2 as [u' [u_eq_u' u'_in_l2]].
 destruct (H' _ u'_in_l2) as [ [u1 [u1_in_l1 u'_le_u1]] | H''].
 apply Subterm with u1.
 apply in_impl_mem; trivial.
 intros; apply Eq.
 destruct u'_le_u1 as [u'_eq_u1 | u'_lt_u1].
-left; apply (equiv_trans _ _ equiv_equiv) with u'; trivial.
-apply (equiv_sym _ _ equiv_equiv); generalize (IHn u1 u'); rewrite u'_eq_u1; intro; assumption.
+left; transitivity u'; trivial.
+symmetry; generalize (IHn u1 u'); rewrite u'_eq_u1; intro; assumption.
 right; rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn u1 u'); rewrite u'_lt_u1; intro; assumption.
 rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f1 l1) u'); rewrite H''; intro; assumption.
 (* 1/9 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = Some Uncomparable *)
@@ -5598,7 +5596,7 @@ intros _; assert (H' : list_forall_option
      end) l1 = Some true).
 apply list_forall_option_is_complete_true.
 intros u1 u1_in_l1; destruct (IHl1s2 u1 u1_in_l1) as [H1 _].
-apply H0; apply in_impl_mem; trivial.
+apply H; apply in_impl_mem; trivial.
 exact Eq.
 rewrite H1; trivial.
 rewrite H'; trivial.
@@ -5642,7 +5640,7 @@ intros _; assert (H' : list_forall_option
      end) l1 = Some true).
 apply list_forall_option_is_complete_true.
 intros u1 u1_in_l1; destruct (IHl1s2 u1 u1_in_l1) as [_ H2].
-apply H0; apply in_impl_mem; trivial.
+apply H; apply in_impl_mem; trivial.
 exact Eq.
 rewrite H2; trivial.
 rewrite H'; trivial.
@@ -5680,7 +5678,7 @@ destruct (list_exists_option
 trivial.
 simpl; generalize (prec_eval_is_sound f1 f2); destruct (prec_eval f1 f2).
 intros _; rewrite Sf; rewrite Sf in R; rewrite Sf in T; simpl in R; simpl in T.
-revert t1_lt_t2 H0 St IHl1l2 IHl2l1 IHl1s2 IHs2l1 IHs1l2 IHl2s1 R T l1_lt_l2 Sl.
+revert t1_lt_t2 H St IHl1l2 IHl2l1 IHl1s2 IHs2l1 IHs1l2 IHl2s1 R T l1_lt_l2 Sl.
 clear; revert s1 s2 l2; induction l1 as [ | t1 l1]; intros s1 s2 [ | t2 l2]; intros.
 inversion l1_lt_l2.
 apply refl_equal.
@@ -5688,7 +5686,7 @@ inversion l1_lt_l2.
 inversion l1_lt_l2; subst.
 simpl; rewrite (proj1 (IHl1l2 _ _ (or_introl _ (refl_equal _)) (or_introl _ (refl_equal _)) H1)).
 unfold term_gt_list.
-assert (H : list_forall_option
+assert (H' : list_forall_option
     (fun t : term =>
      match rpo_eval rpo_infos n s2 t with
      | Some Equivalent => Some false
@@ -5700,16 +5698,16 @@ assert (H : list_forall_option
 apply list_forall_option_is_complete_true.
 intros u1 u1_in_t1l1.
 assert (u1_lt_s2 : rpo rpo_infos.(bb) u1 s2).
-apply H0; apply in_impl_mem; trivial; exact Eq.
+apply H; apply in_impl_mem; trivial; exact Eq.
 rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply refl_equal.
-rewrite H; apply refl_equal.
+rewrite H'; apply refl_equal.
 simpl.
 assert (H' := @rpo_eval_is_complete_equivalent rpo_infos n t1 t2).
 generalize (H' (Sl _ _ (or_introl _ (refl_equal _)) 
                         (or_introl _ (refl_equal _))) H3);
 clear H'; intro H'; rewrite H'.
 apply IHl1; trivial.
-intros; apply H0; right; assumption.
+intros; apply H; right; assumption.
 intros; apply IHl1l2; trivial; right; assumption.
 intros; apply IHl2l1; trivial; right; assumption.
 intros; apply IHl1s2; trivial; right; assumption.
@@ -5759,7 +5757,7 @@ destruct (rpo_closure rpo_infos.(bb) s2 s1 s2) as [_ [Antisym _]].
 apply False_rect; apply Antisym; trivial.
 simpl; generalize (prec_eval_is_sound f2 f1); destruct (prec_eval f2 f1).
 intros _; rewrite Sg; rewrite Sg in R'; rewrite Sg in T'; simpl in R'; simpl in T'.
-revert t1_lt_t2 H0 St IHl1l2 IHl2l1 IHl1s2 IHs2l1 IHs1l2 IHl2s1 R' T' l1_lt_l2 Sl.
+revert t1_lt_t2 H St IHl1l2 IHl2l1 IHl1s2 IHs2l1 IHs1l2 IHl2s1 R' T' l1_lt_l2 Sl.
 clear; revert s1 s2 l1; induction l2 as [ | t2 l2]; intros s1 s2 [ | t1 l1]; intros.
 inversion l1_lt_l2.
 inversion l1_lt_l2.
@@ -5767,7 +5765,7 @@ apply refl_equal.
 inversion l1_lt_l2; subst.
 simpl; rewrite (proj2 (IHl1l2 _ _ (or_introl _ (refl_equal _)) (or_introl _ (refl_equal _)) H1)).
 unfold term_gt_list.
-assert (H : list_forall_option
+assert (H' : list_forall_option
     (fun t : term =>
      match rpo_eval rpo_infos n s2 t with
      | Some Equivalent => Some false
@@ -5779,16 +5777,16 @@ assert (H : list_forall_option
 apply list_forall_option_is_complete_true.
 intros u1 u1_in_t1l1.
 assert (u1_lt_s2 : rpo rpo_infos.(bb) u1 s2).
-apply H0; apply in_impl_mem; trivial; exact Eq.
+apply H; apply in_impl_mem; trivial; exact Eq.
 rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply refl_equal.
-rewrite H; apply refl_equal.
+rewrite H'; apply refl_equal.
 simpl.
 assert (H' := @rpo_eval_is_complete_equivalent rpo_infos n t2 t1).
 rewrite plus_comm in H'; generalize (H' (Sl _ _ (or_introl _ (refl_equal _)) 
-                        (or_introl _ (refl_equal _))) (equiv_sym _ _ equiv_equiv _ _ H3));
+                        (or_introl _ (refl_equal _))) (@Equivalence_Symmetric _ _ equiv_equiv _ _ H3));
 clear H'; intro H'; rewrite H'.
 apply IHl2; trivial.
-intros; apply H0; right; assumption.
+intros; apply H; right; assumption.
 intros; apply IHl1l2; trivial; right; assumption.
 intros; apply IHl2l1; trivial; right; assumption.
 intros; apply IHl1s2; trivial; right; assumption.
@@ -6014,7 +6012,7 @@ transitivity l2; [symmetry; apply permut_impl with eq | idtac]; trivial.
 intros a' b a_eq_b; subst a'; apply Eq.
 apply (@rpo_mul_remove_equiv_aux rpo_infos.(bb) l1' l2' t1 t2).
 intros t _; apply (@rpo_antirefl rpo_infos.(bb) t); trivial.
-apply (equiv_sym _ _ equiv_equiv); apply Ell; left; apply refl_equal.
+symmetry; apply Ell; left; apply refl_equal.
 apply IHll with l1 l2; trivial.
 intros; apply Ell; right; assumption.
 refine (list_permut.permut_trans _ P1 _).
@@ -6086,7 +6084,7 @@ assert (K := H' _ _ u2_in_tl2' u1_in_l1').
 assert (Su : size u2 + size u1 <= n).
 rewrite plus_comm; apply Sl; [idtac | rewrite (in_permut_in P2); apply in_or_app; left]; assumption.
 apply False_rect; generalize (@equiv_eval_is_sound rpo_infos n u2 u1 Su); rewrite K; intro E; apply E.
-apply (equiv_sym _ _ equiv_equiv); assumption.
+symmetry; assumption.
 rewrite K; apply refl_equal.
 (* 1/6 *)
 intros H; rewrite H in T'; apply False_rect; apply T'; apply refl_equal.
@@ -6323,7 +6321,7 @@ assert (H1:= H' term term eq equiv A B); clear H'.
 apply H1.
 intros a b H'.
 rewrite H'.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 assumption.
 Qed.
   
@@ -6336,7 +6334,7 @@ intro H.
 induction ll. 
 intros n rpo_infos H1. 
 simpl. apply permut_refl. intros a H'.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 
 intros.
 assert (H':= IHll n rpo_infos); clear IHll.
@@ -6395,7 +6393,7 @@ clear H3'' H3'.
 destruct (rpo_eval rpo_infos n t u) as [[ | | | ] | ].
 destruct (rpo_eval rpo_infos n t s) as [[ | | | ] | ].
 trivial.
-assert (H':= (Relation_Definitions.equiv_trans _ _ equiv_equiv)  t u s).
+assert (H':= @Equivalence_Transitive _ _ equiv_equiv t u s).
 assert (H1': equiv t s).
 auto.
 assert (H2: rpo_eval rpo_infos n s t = Some Greater_than).
@@ -6406,11 +6404,11 @@ assert (H4': size s + size t <=n).
 omega.
 assert (H4: rpo_eval rpo_infos n s t = Some Equivalent).
 rewrite H2 in H3'.
-assert (H5':= (Relation_Definitions.equiv_sym _ _ equiv_equiv) t s).
+assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv t s).
 assert (H5: equiv s t). apply H5'; assumption. auto.
 rewrite H2 in H4. discriminate.
 
-assert (H':= (Relation_Definitions.equiv_trans _ _ equiv_equiv)  t u s).
+assert (H':= @Equivalence_Transitive _ _ equiv_equiv t u s).
 assert (H1': equiv t s).
 auto.
 clear H2' H2''.
@@ -6421,7 +6419,7 @@ assert (H6:= H3 rpo_infos n s t). apply H6. omega. assumption.
 
 assert (H3:= rpo_eval_is_complete_equivalent).
 assert (H3':= H3 rpo_infos n s t).
-assert (H5':= (Relation_Definitions.equiv_sym _ _ equiv_equiv) t s).
+assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv t s).
 assert (H6: equiv s t). auto.
 assert (H4': size s + size t <=n).
 omega.
@@ -6432,7 +6430,7 @@ discriminate.
 
 clear H2' H2''.
 destruct H31.
-assert (H':= (Relation_Definitions.equiv_trans _ _ equiv_equiv)  t u s).
+assert (H':= @Equivalence_Transitive _ _ equiv_equiv t u s).
 tauto.
 contradict H31.
 
@@ -6440,10 +6438,10 @@ contradict H31.
 destruct (rpo_eval rpo_infos n t s) as [[ | | | ] | ].
 trivial.
 
-assert (H5':= (Relation_Definitions.equiv_sym _ _ equiv_equiv) u s).
+assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv u s).
 assert (H5'': equiv s u).
 auto.
-assert (H':= (Relation_Definitions.equiv_trans _ _ equiv_equiv)  t s u). 
+assert (H':= @Equivalence_Transitive _ _ equiv_equiv t s u). 
 assert (H1': equiv t u).
 auto.
 assert (H2: rpo_eval rpo_infos n u t = Some Greater_than).
@@ -6454,7 +6452,7 @@ assert (H4': size u + size t <=n).
 omega.
 assert (H4: rpo_eval rpo_infos n u t = Some Equivalent).
 rewrite H2 in H3'.
-assert (H6':= (Relation_Definitions.equiv_sym _ _ equiv_equiv) t u).
+assert (H6':= @Equivalence_Symmetric _ _ equiv_equiv t u).
 assert (H5: equiv u t). apply H6'; assumption. auto.
 rewrite H2 in H4.
 discriminate.
@@ -6480,10 +6478,10 @@ contradiction.
 destruct (rpo_eval rpo_infos n t s) as [[ | | | ] | ].
 trivial.
 
-assert (H5':= (Relation_Definitions.equiv_sym _ _ equiv_equiv) t s).
+assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv t s).
 assert (H5'': equiv s t).
 auto.
-assert (H':= (Relation_Definitions.equiv_trans _ _ equiv_equiv)  u s t). 
+assert (H':= @Equivalence_Transitive _ _ equiv_equiv u s t). 
 assert (H1': equiv u t).
 auto.
 assert (H3:= rpo_eval_is_complete_equivalent).
@@ -6523,10 +6521,10 @@ destruct (rpo_eval rpo_infos n t s) as [[ | | | ] | ].
 trivial.
 
 destruct H32 as (H41, (H42, H43)).
-assert (H5':= (Relation_Definitions.equiv_sym _ _ equiv_equiv)  u s).
+assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv u s).
 assert (H5'': equiv s u).
 auto.
-assert (H':= (Relation_Definitions.equiv_trans _ _ equiv_equiv)  t s u). 
+assert (H':= @Equivalence_Transitive _ _ equiv_equiv t s u). 
 tauto.
 
 destruct H32 as (H41, (H42, H43)).
@@ -6629,7 +6627,7 @@ simpl.
 tauto. assumption.
 apply H.
 simpl. 
-left. apply (Relation_Definitions.equiv_refl _ _ equiv_equiv). assumption.
+left. reflexivity. assumption.
 assumption.
 rewrite H5.
 
@@ -6715,7 +6713,7 @@ assert (H1':= H1 term term eq equiv A (X ++ L)); clear H1.
 assert (permut0 equiv A (X++L)).
 apply H1'.
 intros a b0 H2.
-rewrite H2. apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+rewrite H2. reflexivity.
 trivial.
 
 assert (H2:=mem_permut0_mem).
@@ -6938,11 +6936,11 @@ apply (@List_mul _ t B A [] (t::B) A).
 rewrite <- app_nil_end.
 apply permut_refl.
 intros.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 rewrite <- app_nil_end.
 apply permut_refl.
 intros.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 intros.
 assert (H0':= H0 b); clear H0.
 assert (exists t2 : term,
@@ -6979,7 +6977,7 @@ rewrite <- ass_app.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial. apply equiv_equiv. apply equiv_equiv.
 rewrite P.
-rewrite <- permut0_cons;[|apply equiv_equiv|apply (Relation_Definitions.equiv_refl _ _ equiv_equiv)].
+rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity].
 rewrite <- ass_app.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial.  apply equiv_equiv. apply equiv_equiv.
@@ -7041,8 +7039,7 @@ inversion H.
 inversion H1.
 intros. 
 apply IHl. 
-apply rpo_mul_remove_equiv_aux1 with a a.
-apply equiv_refl. apply equiv_equiv. trivial.
+apply rpo_mul_remove_equiv_aux1 with a a. reflexivity. trivial.
 Qed.
   
 (* other interesting lemmas *)
@@ -7051,7 +7048,7 @@ Lemma eq_equiv: forall t1 t2, eq t1 t2 -> equiv t1 t2.
 Proof.
 intros t1 t2 H.
 rewrite H.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv); trivial.
+reflexivity; trivial.
 Qed.
 
 Lemma rpo_mul_dickson: forall bb l l', rpo_mul_rest bb l l' -> clos_trans (list term) (rpo_mul_step_rest bb) l l'.
@@ -7264,11 +7261,11 @@ apply (@List_mul _ t A B [] (t::A) B).
 rewrite <- app_nil_end.
 apply permut_refl.
 intros.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 rewrite <- app_nil_end.
 apply permut_refl.
 intros.
-apply (Relation_Definitions.equiv_refl _ _ equiv_equiv).
+reflexivity.
 intros.
 assert (H0':= H0 b); clear H0.
 assert (exists t1 : term,
@@ -7354,8 +7351,7 @@ simpl. trivial.
 assert (((a :: l1) ++ l3) = a:: (l1 ++ l3)). 
 simpl. trivial.
 rewrite H0 in H. rewrite H1 in H.
-apply rpo_mul_remove_equiv_aux1 with a a.
-apply equiv_refl. apply equiv_equiv. trivial.
+apply rpo_mul_remove_equiv_aux1 with a a. reflexivity. trivial.
 Qed.
 
 Lemma rpo_mul_inclusion_right : forall rpo_infos l1 l2 l3, rpo_mul (bb rpo_infos) (l2++ l1) (l3 ++ l1) -> rpo_mul (bb rpo_infos) l2 l3.
@@ -7370,16 +7366,18 @@ assert (rpo_mul (bb rpo_infos) (a:: (l2 ++ l1)) (a :: (l3 ++ l1))).
 inversion H.
 apply List_mul with a0 lg ls lc.
 assert (permut0 equiv (a :: l2 ++ l1) (l2 ++ a :: l1)).
-rewrite <- permut0_cons_inside. 
-apply permut0_refl. apply equiv_equiv. apply equiv_equiv. apply equiv_refl. apply equiv_equiv.
-apply permut0_trans with (l2 ++ a :: l1). apply equiv_equiv. trivial. trivial.
+rewrite <- permut0_cons_inside.
+apply permut0_refl. auto with typeclass_instances.
+auto with typeclass_instances. reflexivity.
+apply permut0_trans with (l2 ++ a :: l1). auto with typeclass_instances.
+trivial. trivial.
 assert (permut0 equiv (a :: l3 ++ l1) (l3 ++ a :: l1)).
 rewrite <- permut0_cons_inside. 
-apply permut0_refl. apply equiv_equiv. apply equiv_equiv. apply equiv_refl. apply equiv_equiv.
-apply permut0_trans with (l3 ++ a :: l1). apply equiv_equiv. trivial. trivial.
-trivial.
-apply rpo_mul_remove_equiv_aux1 with a a.
-apply equiv_refl. apply equiv_equiv. trivial.
+apply permut0_refl. auto with typeclass_instances.
+auto with typeclass_instances. reflexivity.
+apply permut0_trans with (l3 ++ a :: l1). auto with typeclass_instances.
+trivial. trivial. trivial.
+apply rpo_mul_remove_equiv_aux1 with a a. reflexivity. trivial.
 Qed.
 
 Lemma rpo_mul_inclusion_permut0_left : forall rpo_infos l0 l1 l2 l3, permut0 equiv l0 l1 -> rpo_mul (bb rpo_infos) (l0++ l2) (l1 ++ l3) -> rpo_mul (bb rpo_infos) l2 l3.

@@ -118,13 +118,13 @@ Fixpoint prodn n A : Type :=
     | S n' => prod A (prodn n' A)
   end.
 
-Fixpoint projn n {A} :=
+Fixpoint projn n {A} : prodn n A -> forall i, i<n -> A :=
   match n as n return prodn n A -> forall i, i<n -> A with
     | 0 => fun xs i (hi : i<0) => False_rect _ (lt_n_0 hi)
     | S n' => fun xs i =>
       match i as i return i<S n' -> A with
         | 0 => fun _ => fst xs
-        | S i' => fun hi => projn _ (snd xs) _ (lt_S_n hi)
+        | S i' => fun hi => projn (snd xs) (lt_S_n hi)
       end
   end.
 
@@ -197,7 +197,7 @@ Qed.
 Fixpoint prod_of_vec n A (v : vector A n) :=
   match v in vector _ n return prodn n A with
     | Vnil => tt
-    | Vcons x _ v' => (x, prod_of_vec v')
+    | Vcons x v' => (x, prod_of_vec v')
   end.
 
 Lemma projn_prod_of_vec : forall A n (xs : vector A n) i (hi : i<n),

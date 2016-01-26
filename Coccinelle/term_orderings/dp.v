@@ -408,7 +408,7 @@ absurd (Acc (ddp_step_min R) (Term f l2)).
 apply cycle_not_acc; split; [idtac | split; trivial].
 apply Rdp_step with l2; trivial.
 left.
-rewrite <- H1; apply instance.
+rewrite <- H0; apply instance.
 simpl in Sub'; injection Sub'; clear Sub'; intro Sub'; subst t2.
 split.
 apply Dp with r p; trivial.
@@ -425,7 +425,7 @@ apply Acc_incl with (dp_step R).
 intros s1 s2 [H _]; assumption.
 apply acc_one_step_acc_dp; [apply HR | idtac].
 generalize (subterm_at_pos_apply_subst_apply_subst_subterm_at_pos t2 (i :: q) sigma).
-rewrite Sub'; rewrite H1; simpl subterm_at_pos.
+rewrite Sub'; rewrite H0; simpl subterm_at_pos.
 generalize (nth_error_ok_in i l2); destruct (nth_error l2 i) as [ti | ].
 (* 1/3 l2 has a subterm ti at position i *)
 intros H Sub''; destruct (H _ (refl_equal _)) as [l2' [l2'' [L2 H']]]; clear H.
@@ -436,7 +436,7 @@ intros _ H; discriminate.
 (* 1/1 (Term g k1) is NOT a subterm of t2 *)
 apply IH;  split; [idtac | split; trivial].
 apply Rdp_step with l2; trivial.
-rewrite <- H1; apply instance.
+rewrite <- H0; apply instance.
 split; [apply Dp with r p | idtac]; trivial.
 Qed.
 

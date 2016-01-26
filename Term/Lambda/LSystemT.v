@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil OrdUtil LSimple RelUtil Structures.Equalities.
+Require Import LogicUtil OrdUtil LSimple RelUtil Structures.Equalities Omega.
 
 (****************************************************************************)
 (** ** Type constants of System T. **)
@@ -19,7 +19,7 @@ Inductive B : Type := Nat : B.
 
 Lemma eq_B_dec : forall a b : B, {a=b}+{~a=b}.
 
-Proof. decide equality. Qed.
+Proof. (*COQ:decide equality*)destruct a. destruct b. auto. Qed.
 
 (** [Typ] structure for type constants. *)
 
@@ -189,9 +189,9 @@ Module RS_SystemT <: RS_Struct.
   Module Export L := L_SystemT.
 
   (* Some variables. *)
-  Let u := Var 0.
-  Let v := Var 1.
-  Let n := Var 2.
+  Definition u := Var 0.
+  Definition v := Var 1.
+  Definition n := Var 2.
 
   Inductive R : relation Te :=
   | rule_Rec_Zero : forall A, R (apps (Fun (Rec A)) [FZero; u; v]) u
@@ -202,7 +202,9 @@ Module RS_SystemT <: RS_Struct.
 
   Instance fv_rule : Proper (rule --> Subset) fv.
 
-  Proof. intros a b ba. inversion ba; subst; simpl; intro x; set_iff; fo. Qed.
+  Proof.
+    intros a b ba. inversion ba; subst; simpl; intro x; set_iff; tauto.
+  Qed.
 
   Definition lhs_fun l r (_ : rule l r) :=
     match head l with
@@ -381,7 +383,7 @@ End CC_SystemT.
 (****************************************************************************)
 (** ** Termination proof of System T. *)
 
-Module Export SN := SN_rewrite CC_SystemT RS_SystemT DLQO_SystemT.
+(*SLOW*)Module Export SN := SN_rewrite CC_SystemT RS_SystemT DLQO_SystemT.
 
 Require Import Lexico.
 

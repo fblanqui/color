@@ -10,7 +10,7 @@ when the union of two wellfounded relations is wellfounded
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil.
+Require Import SN RelUtil LogicUtil Omega.
 
 Section S.
 

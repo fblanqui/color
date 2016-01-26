@@ -9,9 +9,9 @@ general results on booleans
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Arith.
+Require Import LogicUtil Arith Omega.
 Require Export Bool.
-Require Setoid Omega.
+Require Setoid.
 
 Implicit Arguments orb_false_elim [b1 b2].
 Implicit Arguments orb_true_elim [b1 b2].

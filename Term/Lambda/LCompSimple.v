@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil.
+Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil Omega. 
 Require Export LSimple LComp.
 
 (****************************************************************************)
@@ -48,7 +48,7 @@ types. *)
     Fixpoint vint {n} (Ts : Tys n) {p} (ts : Tes p) :=
       match Ts, ts with
         | _, Vnil => True
-        | Vcons T _ Ts', Vcons t _ ts' => int T t /\ vint Ts' ts'
+        | Vcons T Ts', Vcons t ts' => int T t /\ vint Ts' ts'
         | _, _ => False
       end.
 

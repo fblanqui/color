@@ -962,10 +962,9 @@ Section pos.
   Lemma inj_pos x y : forall l, In x l -> pos x l = pos y l -> x = y.
 
   Proof.
-    induction l; intro h; simpl. fo.
-    destruct (eq_dec a x); destruct (eq_dec a y); subst;
-      intro e; try (hyp||discr).
-    inversion e. fo.
+    induction l; intro h; simpl. contr.
+    destruct (eq_dec a x); destruct (eq_dec a y); subst; intro e.
+    hyp. discr. discr. inversion e. fo.
   Qed.
 
 End pos.

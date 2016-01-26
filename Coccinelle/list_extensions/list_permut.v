@@ -57,7 +57,7 @@ intros A B R a1 a2 l1; induction l1 as [ | u1 l1];
 intros k1 l2 k2 a1_R_a2 P.
 apply (@Pcons _ _ R a1 a2 k1 l2 k2); trivial.
 inversion P as [ | b1 b2 l k k' b1_R_b2 Q]; clear P; subst.
-destruct (split_list _ _ _ _ H) as [H' | H']; clear H.
+destruct (split_list _ _ _ _ H1) as [H' | H']; clear H1.
 destruct H' as [l [H1 H2]]; subst; simpl.
 assert (Q' := @Pcons _ _ R u1 b2 (l1 ++ a1 :: k1) (l2 ++ a2 :: l) k' b1_R_b2).
 do 2 rewrite <- ass_app in Q'; simpl in Q'; apply Q'.
@@ -111,7 +111,7 @@ Proof.
 intros A R b l1; generalize b; clear b; 
 induction l1 as [ | a1 l1]; intros b l2 P;
 inversion P as [ | a b' l' l1' l2' a_R_b' Q H]; subst.
-destruct l1' as [ | a1' l1']; injection H2; clear H2; intros; subst.
+destruct l1' as [ | a1' l1']; injection H1; clear H1; intros; subst.
 exists a1; exists (@nil A); exists l1; repeat split; trivial.
 simpl in Q; destruct (IHl1 _ _ Q) as [a [k1' [k1'' [a_R_b [H Q']]]]]; subst.
 exists a; exists (a1 :: k1'); exists k1''; repeat split; trivial.
@@ -127,7 +127,7 @@ intros A B R b l1; generalize b; clear b;
 induction l1 as [ | a1 l1]; intros b l2' l2'' P;
 inversion P as [ | a b' l' l1' k2 a_R_b' Q H]; subst.
 destruct l2'; discriminate.
-destruct (in_in_split_set _ _ _ _ _ _ H2) as [[H2' | H2'] | H2']; clear H2.
+destruct (in_in_split_set _ _ _ _ _ _ H1) as [[H2' | H2'] | H2']; clear H1.
 destruct H2' as [l [H2 H3]]; subst.
 rewrite <- ass_app in Q; simpl in Q; 
 destruct (IHl1 b _ _ Q) as [a [l1' [l1'' [a_R_b [H Q']]]]]; subst.
@@ -228,7 +228,7 @@ apply trans_R with b a1'; trivial.
 right; apply in_or_app; right; left; trivial.
 apply in_or_app; right; left; trivial.
 left; trivial.
-apply in_insert; rewrite <- H; apply in_or_app; right; left; trivial.
+apply in_insert; rewrite <- H1; apply in_or_app; right; left; trivial.
 Qed.
 
 Lemma permut_add_inside :
@@ -474,33 +474,28 @@ simpl; rewrite ass_app; apply Pcons; trivial.
 rewrite <- ass_app; apply IHl1; trivial.
 Qed.
 
-Instance equivalence_coercion (A : Type) (R : relation A) (E : equivalence _ R) : Equivalence R.
-destruct E as [E1 E2 E3].
-split; assumption.
-Qed.
-
 Lemma permut_app1 :
-  forall (A : Type) (R : relation A), equivalence _ R ->
+  forall (A : Type) (R : relation A), Equivalence R ->
   forall l l1 l2, permut0 R l1 l2 <-> permut0 R (l ++ l1) (l ++ l2).
 Proof.
 intros A R E l l1 l2; split; intro P.
 (* -> case *)
 induction l as [ | u l]; trivial.
 simpl; apply (@Pcons _ _ R u u (l ++ l1) (@nil A) (l ++ l2)); trivial.
-apply (equiv_refl _ _ E).
+reflexivity.
 (* <- case *)
 induction l as [ | u l]; trivial.
 apply IHl.
 apply (@permut_cons_inside A A R u u (l ++ l1) (@nil _) (l ++ l2)); trivial.
 intros a1 b1 a2 b2 _ _ _ _ a1_R_b1 a2_R_b1 a2_R_b2.
-apply (equiv_trans _ _ E) with b1; trivial.
-apply (equiv_trans _ _ E) with a2; trivial.
-apply (equiv_sym _ _ E); trivial.
-apply (equiv_refl _ _ E).
+transitivity b1; trivial.
+transitivity a2; trivial.
+symmetry; trivial.
+reflexivity.
 Qed.
 
 Lemma permut_app2 :
-  forall (A : Type) (R : relation A), equivalence _ R ->
+  forall (A : Type) (R : relation A), Equivalence R ->
   forall l l1 l2, permut0 R l1 l2 <-> permut0 R (l1 ++ l) (l2 ++ l).
 Proof.
 intros A R E l l1 l2; split; intro P.
@@ -508,7 +503,7 @@ intros A R E l l1 l2; split; intro P.
 induction l as [ | u l].
 do 2 rewrite <- app_nil_end; trivial.
 apply permut_strong; trivial.
-apply (equiv_refl _ _ E).
+reflexivity.
 
 (* <- case *)
 induction l as [ | u l].
@@ -516,10 +511,10 @@ do 2 rewrite <- app_nil_end in P; trivial.
 apply IHl.
 apply (@permut_add_inside A A R u u); trivial.
 intros a1 b1 a2 b2 _ _ _ _ a1_R_b1 a2_R_b1 a2_R_b2;
-apply (equiv_trans _ _ E) with b1; trivial.
-apply (equiv_trans _ _ E) with a2; trivial.
-apply (equiv_sym _ _ E); trivial.
-apply (equiv_refl _ _ E).
+transitivity b1; trivial.
+transitivity a2; trivial.
+symmetry; trivial.
+reflexivity.
 Qed.
 
 Lemma permut_list_exists :
@@ -561,7 +556,7 @@ Qed.
 Section Srel. 
   Variable A : Type.
   Variable eq_A : relation A.
-  Variable eq_proof : equivalence _ eq_A.
+  Variable eq_proof : Equivalence eq_A.
   Lemma mem_permut0_mem :
     forall  l1 l2 (a:A), permut0 eq_A l1 l2 -> (mem eq_A a l1 <-> mem eq_A a l2).
   Proof. 
@@ -573,31 +568,31 @@ Section Srel.
     inversion P as [ | a' b l' l1' l2' a1_eq_b P' H1 H']; subst.
     destruct e_mem_l1 as [e_eq_a1 | e_mem_l1].
     rewrite <- mem_or_app.
-    right; left; apply (equiv_trans _ _ eq_proof) with a1; trivial.
+    right; left; transitivity a1; trivial.
     apply mem_insert; apply IHl1; trivial.
     split; apply H0; trivial.
     apply permut_sym; trivial.
-    intros a0 b _ _ a_eq_b; apply (equiv_sym _ _ eq_proof); trivial.
+    intros a0 b _ _ a_eq_b; symmetry; trivial.
   Qed.
 
   
   Lemma permut0_refl : forall l, permut0 eq_A l l.
   Proof.
     intro l; apply permut_refl.
-    intros a _; apply (equiv_refl _ _ eq_proof).
+    intros a _; reflexivity.
   Qed.
 
   Lemma permut0_sym : forall l1 l2, permut0 eq_A l1 l2 -> permut0 eq_A l2 l1.
   Proof.
     intros l1 l2 P; apply permut_sym; trivial.
-    intros a b _ _ a_eq_b; apply (equiv_sym _ _ eq_proof); trivial.
+    intros a b _ _ a_eq_b; symmetry; trivial.
   Qed.
 
   Lemma permut0_trans : 
     forall l1 l2 l3 : list A, permut0 eq_A l1 l2 -> permut0 eq_A l2 l3 -> permut0 eq_A l1 l3.
   Proof.
   intros l1 l2 l3 P1 P2; apply permut_trans with l2; trivial.
-  intros a b c _ _ _ a_eq_b b_eq_c; apply (equiv_trans _ _ eq_proof) with b; trivial.
+  intros a b c _ _ _ a_eq_b b_eq_c; transitivity b; trivial.
   Qed.
 
 
@@ -611,11 +606,11 @@ Section Srel.
     clear e1 e2 e1_eq_e2; intros e1 e2 e1_eq_e2;
     induction l2 as [ | a l]; simpl; trivial.
     intros [e1_eq_a | e1_mem_l]; [left | right; trivial].
-    apply (equiv_trans _ _ eq_proof) with e1; trivial.
-    apply (equiv_sym _ _ eq_proof); trivial.
+    transitivity e1; trivial.
+    symmetry; trivial.
     apply IHl; trivial.
     split; apply H; trivial.
-    apply (equiv_sym _ _ eq_proof); trivial.
+    symmetry; trivial.
   Qed.
 
 
@@ -624,7 +619,7 @@ Section Srel.
   Proof.
     intros l1 l2 e1 e2 e1_eq_e2 P.
     apply (proj1 (mem_morph0 e1_eq_e2 P)).
-    left; apply (equiv_refl _ _ eq_proof).
+    left; reflexivity.
   Qed.
 
   
@@ -637,9 +632,9 @@ Section Srel.
     replace l2 with (nil ++ l2); trivial;
     apply permut_cons_inside with e1 e2; trivial.
     intros a1 b1 a2 b2 _ _ _ _ a1_eq_b1 a2_eq_b1 a2_eq_b2;
-    apply (equiv_trans _ _ eq_proof) with a2; trivial.
-    apply (equiv_trans _ _ eq_proof) with b1; trivial.
-    apply (equiv_sym _ _ eq_proof); trivial.
+    transitivity a2; trivial.
+    transitivity b1; trivial.
+    symmetry; trivial.
   Qed.
 
  Lemma permut0_add_inside :
@@ -651,9 +646,9 @@ Section Srel.
   apply permut_strong; trivial.
   apply permut_add_inside with e1 e2; trivial.
   intros a1 b1 a2 b2 _ _ _ _ a1_eq_b1 a2_eq_b1 a2_eq_b2;
-  apply (equiv_trans _ _ eq_proof) with a2; trivial.
-  apply (equiv_trans _ _ eq_proof) with b1; trivial.
-  apply (equiv_sym _ _ eq_proof); trivial.
+  transitivity a2; trivial.
+  transitivity b1; trivial.
+  symmetry; trivial.
   Qed.
 
   Lemma permut0_cons_inside :
@@ -683,7 +678,7 @@ Qed.
 
 End Srel.
 
-Instance LP (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A) :
+Instance LP (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
   Equivalence (permut0 eq_A).
 
 Proof.
@@ -693,12 +688,12 @@ Proof.
   apply permut0_trans; assumption.
 Qed.
 
-Instance mem_morph2 (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A) :
+Instance mem_morph2 (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
   Proper (eq_A ==> permut0 eq_A ==> iff) (mem eq_A).
 
 Proof. exact (mem_morph0 eq_proof). Qed.
 
-Instance add_A_morph (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A):
+Instance add_A_morph (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A):
   Proper (eq_A ==> permut0 eq_A ==> permut0 eq_A) (List.cons (A:=A)).
 
 Proof.
@@ -706,7 +701,7 @@ Proof.
   rewrite <- (@permut0_cons _ _ eq_proof e1 e2 l1 l2); trivial.
 Qed.
 
-Instance app_morph (A:Type) (eq_A:relation A) (eq_proof: equivalence _ eq_A) :
+Instance app_morph (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
   Proper (permut0 eq_A ==> permut0 eq_A ==> permut0 eq_A) (List.app (A:=A)).
 
 Proof.
@@ -719,7 +714,7 @@ Qed.
 Section SRel2.
   Variable A : Type.
   Variable eq_A : relation A.
-  Variable eq_proof : equivalence _ eq_A.
+  Variable eq_proof : Equivalence eq_A.
   Variable eq_bool : A -> A -> bool.
   Hypothesis eq_bool_ok : 
     forall t1 t2, match eq_bool t1 t2 with true => eq_A t1 t2 | false => ~eq_A t1 t2 end.
@@ -743,7 +738,7 @@ apply (permut0_refl eq_proof).
 
 simpl in P.
 
-assert (a1_in_l3l4 := @cons_permut0_mem _ _  eq_proof _ _ _ _ (equiv_refl _ _ eq_proof a1) P).
+assert (a1_in_l3l4 := @cons_permut0_mem _ _ eq_proof _ _ _ _ (@Equivalence_Reflexive _ _ eq_proof a1) P).
 rewrite <- mem_or_app in a1_in_l3l4;
 destruct a1_in_l3l4 as [a1_in_l3 | a1_in_l4].
 generalize (mem_split_set _ _ eq_bool_ok _ _ a1_in_l3).
@@ -754,7 +749,7 @@ rewrite <- permut0_cons_inside in P; trivial.
 rewrite <- app_ass in P;
 destruct (IHl1 l2 (l3' ++ l3'') l4 P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]].
 exists (a1 :: u1); exists u2; exists u3; exists u4; repeat split; simpl; trivial.
-rewrite <- permut0_cons; trivial; apply (equiv_refl _ _ eq_proof).
+rewrite <- permut0_cons; trivial; reflexivity.
 apply (permut0_sym eq_proof).  rewrite <- permut0_cons_inside; auto.
 apply (permut0_sym eq_proof). assumption.
 
@@ -767,12 +762,10 @@ rewrite <- permut0_cons_inside in P; trivial.
 rewrite app_ass in P;
 destruct (IHl1 l2 l3 (l4' ++ l4'') P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]];
 exists u1; exists (a1 :: u2); exists u3; exists u4; intuition; simpl; trivial.
-rewrite <- permut0_cons_inside; trivial. constructor;assumption.
-apply permut0_sym; [constructor;auto|].
+rewrite <- permut0_cons_inside; trivial. reflexivity.
+apply permut0_sym; [constructor;auto with typeclass_instances|].
 rewrite <- permut0_cons_inside; trivial.
 apply permut0_sym; trivial.
-constructor;assumption.
-constructor;assumption.
 Qed.
 
 
@@ -938,14 +931,14 @@ Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1.
   Theorem permut_refl :  forall (l : list A), permut l l.
   Proof.
   intro l; apply permut_refl.
-  intros a _; apply (equiv_refl _ _ eq_proof).
+  intros a _; reflexivity.
   Qed.
 
   (** Symetry. *)
   Theorem permut_sym : forall l1 l2 : list A, permut l1 l2 -> permut l2 l1.
   Proof.
   intros l1 l2 P; apply permut_sym; trivial.
-  intros a b _ _ a_eq_b; apply (equiv_sym _ _ eq_proof); trivial.
+  intros a b _ _ a_eq_b; symmetry; trivial.
   Qed.
 
   Hint Immediate permut_refl.
@@ -956,7 +949,7 @@ Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1.
     forall l1 l2 l3 : list A, permut l1 l2 -> permut l2 l3 -> permut l1 l3.
   Proof.
   intros l1 l2 l3 P1 P2; apply permut_trans with l2; trivial.
-  intros a b c _ _ _ a_eq_b b_eq_c; apply (equiv_trans _ _ eq_proof) with b; trivial.
+  intros a b c _ _ _ a_eq_b b_eq_c; transitivity b; trivial.
   Qed.
 
   Instance LP : Equivalence permut.
@@ -976,7 +969,7 @@ Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1.
     inversion P as [ | a' b l' l1' l2' a1_eq_b P' H1 H']; subst.
     destruct e_mem_l1 as [e_eq_a1 | e_mem_l1].
     rewrite <- mem_or_app.
-    right; left; apply (equiv_trans _ _ eq_proof) with a1; trivial.
+    right; left; transitivity a1; trivial.
     apply mem_insert; apply IHl1; trivial.
     intros l1 l2 e P; split; apply H; trivial.
     apply permut_sym; trivial.
@@ -992,11 +985,11 @@ Lemma mem_morph :
     clear e1 e2 e1_eq_e2; intros e1 e2 e1_eq_e2;
     induction l2 as [ | a l]; simpl; trivial.
     intros [e1_eq_a | e1_mem_l]; [left | right; trivial].
-    apply (equiv_trans _ _ eq_proof) with e1; trivial.
-    apply (equiv_sym _ _ eq_proof); trivial.
+    transitivity e1; trivial.
+    symmetry; trivial.
     apply IHl; trivial.
     split; apply H; trivial.
-    apply (equiv_sym _ _ eq_proof); trivial.
+    symmetry; trivial.
   Qed.
 
 
@@ -1009,7 +1002,7 @@ Proof. exact mem_morph. Qed.
   Proof.
     intros l1 l2 e1 e2 e1_eq_e2 P.
     apply (proj1 (mem_morph e1_eq_e2 P)).
-    left; apply (equiv_refl _ _ eq_proof).
+    left; reflexivity.
 Qed.
 
   (** Permutation is compatible with addition and removal of common elements *)
@@ -1023,9 +1016,9 @@ Qed.
     replace l2 with (nil ++ l2); trivial;
     apply permut_cons_inside with e1 e2; trivial.
     intros a1 b1 a2 b2 _ _ _ _ a1_eq_b1 a2_eq_b1 a2_eq_b2;
-    apply (equiv_trans _ _ eq_proof) with a2; trivial.
-    apply (equiv_trans _ _ eq_proof) with b1; trivial.
-    apply (equiv_sym _ _ eq_proof); trivial.
+    transitivity a2; trivial.
+    transitivity b1; trivial.
+    symmetry; trivial.
      Qed.
 
   Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (List.cons (A:=A)).
@@ -1044,9 +1037,9 @@ Qed.
   apply permut_strong; trivial.
   apply permut_add_inside with e1 e2; trivial.
   intros a1 b1 a2 b2 _ _ _ _ a1_eq_b1 a2_eq_b1 a2_eq_b2;
-  apply (equiv_trans _ _ eq_proof) with a2; trivial.
-  apply (equiv_trans _ _ eq_proof) with b1; trivial.
-  apply (equiv_sym _ _ eq_proof); trivial.
+  transitivity a2; trivial.
+  transitivity b1; trivial.
+  symmetry; trivial.
   Qed.
 
   Lemma permut_cons_inside :
@@ -1061,15 +1054,13 @@ Qed.
 Lemma permut_app1 :
   forall l l1 l2, permut l1 l2 <-> permut (l ++ l1) (l ++ l2).
 Proof.
-intros l l1 l2; apply permut_app1.
-apply EDS.eq_proof.
+intros l l1 l2; apply permut_app1. apply EDS.EQA.
 Qed.
 
 Lemma permut_app2 :
   forall l l1 l2, permut l1 l2 <-> permut (l1 ++ l) (l2 ++ l).
 Proof.
-intros l l1 l2; apply permut_app2.
-apply EDS.eq_proof.
+intros l l1 l2; apply permut_app2. apply EDS.EQA.
 Qed.
 
 Instance app_morph : Proper (permut ==> permut ==> permut) (List.app (A:=A)).
@@ -1114,7 +1105,7 @@ intros not_P P'; apply not_P.
 subst k2; rewrite (permut_cons_inside l1 l2' l2'' a1_eq_a2); subst l2; apply P'.
 intros a1_diff_a2 P; apply a1_diff_a2.
 rewrite <- (mem_permut_mem a1 P); left.
-apply (equiv_refl _ _ eq_proof).
+reflexivity.
 Qed.
 
 (** ** Link with AC syntactic decomposition.*)
@@ -1143,7 +1134,7 @@ rewrite <- permut_cons_inside in P; trivial.
 rewrite <- app_ass in P;
 destruct (IHl1 l2 (l3' ++ l3'') l4 P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]].
 exists (a1 :: u1); exists u2; exists u3; exists u4; repeat split; simpl; trivial.
-rewrite <- permut_cons; trivial; apply (equiv_refl _ _ eq_proof).
+rewrite <- permut_cons; trivial; reflexivity.
 apply permut_sym; rewrite <- permut_cons_inside; auto.
 
 generalize (mem_split_set _ _ EDS1.eq_bool_ok _ _ a1_in_l4).
@@ -1155,7 +1146,7 @@ rewrite app_ass in P;
 destruct (IHl1 l2 l3 (l4' ++ l4'') P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]];
 exists u1; exists (a1 :: u2); exists u3; exists u4; intuition; simpl; trivial.
 rewrite <- permut_cons_inside; trivial.
-apply (equiv_refl _ _ eq_proof).
+reflexivity.
 apply permut_sym; 
 rewrite <- permut_cons_inside; trivial;
 apply permut_sym; trivial.
@@ -1208,14 +1199,14 @@ rewrite (@permut_cons a a l' l).
 apply permut_trans with l2; trivial.
 apply permut_trans with l1; trivial.
 apply permut_sym; trivial.
-apply (equiv_refl _ _ eq_proof).
+reflexivity.
 intros l P' a_not_in_l2; apply a_not_in_l2.
 rewrite <- (mem_permut_mem a P).
-rewrite (mem_permut_mem a P'); left; apply (equiv_refl _ _ eq_proof).
+rewrite (mem_permut_mem a P'); left; reflexivity.
 intros l a_not_in_l1 P'; assert False; [idtac | contradiction].
 apply a_not_in_l1.
 rewrite (mem_permut_mem a P).
-rewrite (mem_permut_mem a P'); left; apply (equiv_refl _ _ eq_proof).
+rewrite (mem_permut_mem a P'); left; reflexivity.
 intros; apply refl_equal.
 Defined.
 
@@ -1238,13 +1229,13 @@ case_eq (eq_bool a' b); [intro a'_eq_b | intro a'_diff_b].
 apply refl_equal.
 apply False_rect.
 assert (D := eq_bool_ok a' b); rewrite a'_diff_b in D; apply D.
-apply (equiv_trans _ _ eq_proof) with a.
-apply (equiv_sym _ _ eq_proof); assumption.
+transitivity a.
+symmetry; assumption.
 assert (E := eq_bool_ok a b); rewrite a_eq_b in E; assumption.
 case_eq (eq_bool a' b); [intro a'_eq_b | intro a'_diff_b].
 apply False_rect.
 assert (D := eq_bool_ok a b); rewrite a_diff_b in D; apply D.
-apply (equiv_trans _ _ eq_proof) with a'.
+transitivity a'.
 assumption.
 assert (E := eq_bool_ok a' b); rewrite a'_eq_b in E; assumption.
 generalize (remove_eq_eq l _ _ a_eq_a').
@@ -1287,7 +1278,7 @@ apply (proj1 (permut_cons l2' (l ++ l2'') (equiv_refl _ _ eq_proof e1))); assump
 case_eq (remove_equiv eq_bool l1 l2); intros l1' l2' H'''; rewrite H''' in H''; injection H''; clear H''; intros; subst l1'' l2''.
 rewrite H''' in H'; revert H'; intros [l [P1 [P2 H']]]; exists l; split.
 rewrite <- permut_cons_inside; trivial.
-apply (equiv_refl _ _ eq_proof).
+reflexivity.
 split; trivial.
 intros x [x_eq_e1 | x_mem_l1'] x_mem_l2'.
 assert (H'' := remove_is_sound e1 l2); rewrite H in H''.
@@ -1317,19 +1308,19 @@ intro P1; inversion P1.
 (* Case 2 *)
 case_eq (remove_equiv eq_bool l1 l2'); intros l1'' l2'' H''.
 assert (e1_in_l_k1' : mem eq_A e1 (l ++ k1')).
-rewrite <- (mem_permut_mem e1 P1); left; apply (equiv_refl _ _ eq_proof).
+rewrite <- (mem_permut_mem e1 P1); left; reflexivity.
 rewrite <- mem_or_app in e1_in_l_k1'; simpl.
 assert (Subcase : mem eq_A e1 l -> permut l1'' k1' /\ permut l2'' k2').
 intro e1_in_l; generalize (remove_is_sound e1 l); case (remove eq_bool e1 l).
 intros l' P.
 assert (Q1 : permut l1 (l' ++ k1')).
-rewrite (permut_cons l1 (l' ++ k1') (e1 := e1) (e2 := e1)) by apply (equiv_refl _ _ eq_proof).
+rewrite (permut_cons l1 (l' ++ k1') (e1 := e1) (e2 := e1)) by reflexivity.
 apply permut_trans with (l ++ k1').
 exact P1.
 rewrite app_comm_cons; rewrite <- permut_app2; exact P.
 generalize (remove_is_sound e1 l2); rewrite H; intro P2'.
 assert (Q2 : permut l2' (l' ++ k2')).
-rewrite (permut_cons l2' (l' ++ k2') (e1 := e1) (e2 := e1)) by apply (equiv_refl _ _ eq_proof).
+rewrite (permut_cons l2' (l' ++ k2') (e1 := e1) (e2 := e1)) by reflexivity.
 apply permut_trans with l2.
 apply permut_sym; assumption.
 apply permut_trans with (l ++ k2').
@@ -1344,7 +1335,7 @@ revert e1_in_l_k1'; intros [e1_in_l | e1_in_k1'].
 apply (Subcase e1_in_l).
 assert (R := remove_is_sound e1 l2); rewrite H in R.
 assert (e1_in_l2 : mem eq_A e1 l2).
-rewrite (mem_permut_mem e1 R); left; apply (equiv_refl _ _ eq_proof).
+rewrite (mem_permut_mem e1 R); left; reflexivity.
 rewrite (mem_permut_mem e1 P2) in e1_in_l2.
 rewrite <- mem_or_app in e1_in_l2.
 revert e1_in_l2; intros [e1_in_l | e1_in_k2'].
@@ -1354,7 +1345,7 @@ apply False_rect; apply (E _ e1_in_k1' e1_in_k2').
 case_eq (remove_equiv eq_bool l1 l2); intros l1' l2' H'''.
 assert (R := remove_is_sound e1 l2); rewrite H in R.
 assert (e1_in_l_k1' : mem eq_A e1 (l ++ k1')).
-rewrite <- (mem_permut_mem e1 P1); left; apply (equiv_refl _ _ eq_proof).
+rewrite <- (mem_permut_mem e1 P1); left; reflexivity.
 rewrite <- mem_or_app in e1_in_l_k1'.
 revert e1_in_l_k1'; intros [e1_in_l | e1_in_k1'].
 apply False_rect.
@@ -1363,19 +1354,19 @@ rewrite <- mem_or_app; left; assumption.
 simpl; generalize (remove_is_sound e1 k1'); case (remove eq_bool e1 k1').
 intros k' P.
 assert (Q1 : permut l1 (l ++ k')).
-rewrite (permut_cons l1 (l ++ k') (e1 := e1) (e2 := e1)) by apply (equiv_refl _ _ eq_proof).
+rewrite (permut_cons l1 (l ++ k') (e1 := e1) (e2 := e1)) by reflexivity.
 apply permut_trans with (l ++ k1').
 exact P1.
 apply permut_trans with (l ++ e1 :: k').
 rewrite <- permut_app1; assumption.
-apply permut_sym; rewrite <- permut_cons_inside; [apply permut_refl | apply (equiv_refl _ _ eq_proof)].
+apply permut_sym; rewrite <- permut_cons_inside; [apply permut_refl | reflexivity].
 assert (E' : forall x : EDS1.A, mem eq_A x k' -> mem eq_A x k2' -> False).
 intros x x_in_k x_in_k2'; apply (E x); trivial.
 rewrite (mem_permut_mem x P); right; assumption.
 generalize (H' l k' k2' Q1 P2 E'); rewrite H''; simpl.
 intros [H1 H2]; split; trivial.
 apply permut_trans with (e1 :: k').
-rewrite <- permut_cons by apply (equiv_refl _ _ eq_proof); assumption.
+rewrite <- permut_cons by reflexivity; assumption.
 apply permut_sym; assumption.
 intro Abs; apply False_rect; apply Abs; assumption.
 Qed.
