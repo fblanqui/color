@@ -47,8 +47,7 @@ install-doc:
 	scp -r doc/coqdoc.css doc/*.html $(WEB)/doc/
 
 install-dist:
-#	cp -f CoLoR_`date +%y%m%d`.tar.gz $(WEB)/CoLoR.tar.gz
-	cp -f CHANGES $(WEB)/CHANGES.CoLoR
+	scp CHANGES $(WEB)/CHANGES.CoLoR
 
 targz:
 	rm -rf /tmp/color
