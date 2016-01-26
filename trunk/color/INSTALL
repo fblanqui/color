@@ -6,6 +6,7 @@ Requirements:
 
 Procedure:
 - step 1/2: opam repo add coq-released https://coq.inria.fr/opam/released
+  or opam update # if repository coq-released already added
 - step 2/2: opam install --jobs=N coq-color
 
 Compilation time on my computer:
