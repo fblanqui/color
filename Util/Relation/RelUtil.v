@@ -68,11 +68,44 @@ Definition rel_of_bool A (f : A->A->bool) : rel A :=
 (***********************************************************************)
 (** Boolean function associated to a decidable relation. *)
 
-Definition bool_of_rel A (R : rel A) (R_dec : rel_dec R) t u :=
-  match R_dec t u with
-    | left _ => true
-    | _ => false
-  end.
+Section bool_of_rel.
+
+  Variables (A : Type) (R : rel A) (R_dec : rel_dec R).
+
+  Definition bool_of_rel t u := if R_dec t u then true else false.
+
+  Lemma bool_of_rel_true x y : bool_of_rel x y = true <-> R x y.
+
+  Proof.
+    unfold bool_of_rel. split; destruct (R_dec x y).
+    auto. discr. refl. tauto.
+  Qed.
+
+  Lemma bool_of_rel_false x y : bool_of_rel x y = false <-> ~R x y.
+
+  Proof.
+    unfold bool_of_rel. split; destruct (R_dec x y).
+    discr. auto. tauto. refl.
+  Qed.
+
+  Lemma bool_of_rel_refl x : Reflexive R -> bool_of_rel x x = true.
+
+  Proof.
+    intro R_refl. unfold bool_of_rel. destruct (R_dec x x). refl.
+    exfalso. apply n. refl.
+  Qed.
+
+  Global Instance bool_of_rel_prop :
+    Symmetric R -> Transitive R -> Proper (R ==> R ==> Logic.eq) bool_of_rel.
+
+  Proof.
+    intros R_sym R_trans x x' xx' y y' yy'. unfold bool_of_rel.
+    destruct (R_dec x y); destruct (R_dec x' y'); try refl.
+    exfalso. apply n. trans x. hyp. trans y; hyp.
+    exfalso. apply n. trans x'. hyp. trans y'; hyp.
+  Qed.
+
+End bool_of_rel.
 
 (***********************************************************************)
 (** Properties of [same_rel]. *)
