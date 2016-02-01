@@ -1,5 +1,4 @@
-(**
-CoLoR, a Coq library on rewriting and termination.
+(** CoLoR, a Coq library on rewriting and termination.
 
 See the COPYRIGHTS and LICENSE files.
 
@@ -10,14 +9,14 @@ See the COPYRIGHTS and LICENSE files.
 Remark on the structure of the files in this directory: In Coq,
 functor instantiation generates distinct Inductive's (or Class'es or
 Record's), i.e. if [F(M)] provides an [Inductive t], [N1:=F(M)] and
-[N2:=F(M)], then [N1.t <> N2.t]. To avoid name conflicts, we therefore
-need to define [Inductive]'s outside any module. Moreover, in order to
+[N2:=F(M)], then [N1.t <> N2.t]. To get around this problem, we have
+to define [Inductive]'s outside any module. Moreover, in order to
 define some module types, we also need some functions (e.g. free
 variables, substitution, etc.) to be defined outside any module
 too. Therefore, in this library, the files start by defining some
 [Inductive]'s and some functions in a section with the necessary
 abstract parameters. Then, a functor [Make] provides the properties of
-these [Inductive]'s and functions when these abstract parameters are
+these [Inductive]'s and functions when the abstract parameters are
 correctly set. We use a functor and not a section because, in Coq,
 modules cannot be defined inside a section and we rely on the [FSet]
 and [FMap] modules defined in the standard Coq library. We also use
