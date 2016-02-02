@@ -54,12 +54,10 @@ Lemma sym A (R : rel A) x y : Symmetric R -> (R x y <-> R y x).
 
 Proof. split_all. Qed.
 
-Instance equiv_prop A (R : rel A) :
+Instance equiv_prop A (R : relation A) :
   Transitive R -> Symmetric R -> Proper (R ==> R ==> impl) R.
 
-Proof.
-  intros R_trans R_sym x x' xx' y y' yy' xy. trans x. hyp. trans y; hyp.
-Qed.
+Proof. intros R_trans R_sym t t' tt' u u' uu' tu. trans t. hyp. trans u; hyp. Qed.
 
 (***********************************************************************)
 (** Empty relation. *)
@@ -113,6 +111,9 @@ Section bool_of_rel.
   Qed.
 
 End bool_of_rel.
+
+Arguments bool_of_rel_true [A R] _ [x y].
+Arguments bool_of_rel_false [A R] _ [x y].
 
 (***********************************************************************)
 (** Properties of [same_rel]. *)
@@ -1138,16 +1139,6 @@ Proof.
   eapply rt1_trans. apply H. refl.
   eapply rt1_trans. apply H. hyp.
 Qed.
-
-(*REMOVE?
-Lemma incl_rt_rt_rt A (R : rel A) : R#1 @ R#1 << R#1.
-
-Proof.
-  intros x y [z [xRz zRy]]. induction xRz.
-  trivial.
-  apply rt1_trans with y0. hyp. 
-  apply IHxRz. hyp.
-Qed.*)
 
 Lemma rtc1_union A (R S : rel A) : (R U S)#1 << (S#1 @ R)#1 @ S#1.
 
