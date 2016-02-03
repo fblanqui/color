@@ -159,7 +159,7 @@ Lemma position_aux_ok2 : forall i x l k, element_at l k = Some x ->
 Proof.
 induction l; simpl; intros. discr. case_beq x a.
 exists 0. intuition. rewrite (beq_ko beq_ok) in H0. destruct k.
-inversion H. subst. irrefl. destruct (IHl _ H). exists (S x0). intuition.
+inversion H. subst. cong. destruct (IHl _ H). exists (S x0). intuition.
 rewrite <- plus_Snm_nSm. simpl. apply position_aux_S. hyp.
 Qed.
 

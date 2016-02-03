@@ -28,7 +28,7 @@ Section occur.
   Lemma eq_delta : forall x, delta x x = 1.
 
   Proof.
-    intros. unfold delta. case (eq_dec x x); intro. refl. irrefl.
+    intros. unfold delta. case (eq_dec x x); intro. refl. cong.
   Qed.
 
   Lemma neq_delta : forall x y, x <> y -> delta x y = 0.
@@ -54,7 +54,7 @@ Section occur.
 
   Proof.
     induction l; simpl; intros. contr. unfold delta.
-    case (eq_dec x a); intro. omega. destruct H. subst a. irrefl. auto.
+    case (eq_dec x a); intro. omega. destruct H. subst a. cong. auto.
   Qed.
 
   Lemma notin_occur : forall x l, ~In x l -> occur x l = 0.
@@ -78,7 +78,7 @@ Section occur.
   Proof.
     induction l; simpl. do 2 intro. contr. unfold delta.
     case (eq_dec x a); intros.
-    discr. intro. destruct H0. subst a. irrefl. intuition.
+    discr. intro. destruct H0. subst a. cong. intuition.
   Qed.
 
   Lemma occur_S : forall x l n, occur x l = S n ->

@@ -64,26 +64,6 @@ Ltac geneq H x e := gen (refl_equal e); gen (H e);
     intros t h; revert t h x.
 
 (***********************************************************************)
-(** Tactic that can be used to conclude when there is an assumption of
-the form [x <> x]. *)
-
-Ltac irrefl := intros;
-  match goal with
-    | _ : ?x = ?x -> False |- _ => absurd (x=x); [hyp | refl]
-    | _ : ?x <> ?x |- _ => absurd (x=x); [hyp | refl]
-    | h1 : ?x <> ?y, h2 : ?x = ?y |- _ => rewrite h2 in h1; irrefl
-    | h1 : ?x <> ?y, h2 : ?y = ?x |- _ => rewrite h2 in h1; irrefl
-    | h1 : ?x <> ?y, h2 : ?x = ?z, h3 : ?z = ?y |- _ =>
-      rewrite h2, <- h3 in h1; irrefl
-    | h1 : ?x <> ?y, h2 : ?x = ?z, h3 : ?y = ?z |- _ =>
-      rewrite h2, h3 in h1; irrefl
-    | h1 : ?x <> ?y, h2 : ?z = ?x, h3 : ?z = ?y |- _ =>
-      rewrite <- h2, <- h3 in h1; irrefl
-    | h1 : ?x <> ?y, h2 : ?z = ?x, h3 : ?y = ?z |- _ =>
-      rewrite <- h2, h3 in h1; irrefl
-  end.
-
-(***********************************************************************)
 (** Normalization tactics used in Rainbow. *)
 
 Ltac norm e :=

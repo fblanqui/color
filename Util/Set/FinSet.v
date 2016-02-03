@@ -516,7 +516,7 @@ list of elements. *)
   Proof.
     intro l_nodup. destruct (dec (l = nil)) as [hl|hl].
     subst. rewrite card_empty_gen. refl.
-    assert (a : A). destruct l. irrefl. exact a.
+    assert (a : A). destruct l. cong. exact a.
     apply le_antisym. apply card_of_list_le_length_gen.
     unfold card. case_eq (mk_Pf h); intros P P_fin e.
     apply sig_eq in e; simpl in e; subst.

@@ -105,7 +105,7 @@ Section S.
       destruct (successfull_elim H3). rewrite H4.
       refl. subst. destruct (successfull_elim H2). rewrite H3. refl.
       ded (successfull_inv H2 l).
-      destruct (iter_step N (mk_problem (ren_cap r1 r2) (lhs r2))). 2: irrefl.
+      destruct (iter_step N (mk_problem (ren_cap r1 r2) (lhs r2))). 2: cong.
       destruct p. destruct e. refl. eapply successfull_hd_eq.
       rewrite <- mem_ok. hyp. rewrite <- mem_ok. hyp. apply H2.
     Qed.

@@ -118,7 +118,7 @@ Lemma mem_vars_size_sub_gt : forall s x u,
 
 Proof.
 intros. destruct u.
-simpl in H. autorewrite with mem in H. subst n. irrefl.
+simpl in H. autorewrite with mem in H. subst n. cong.
 clear H0. rewrite sub_fun, size_fun. rewrite vars_fun in H.
 destruct (mem_vars_vec H). destruct H0. ded (Vin_elim H0). decomp H2.
 rewrite H3, Vmap_cast, size_terms_cast, Vmap_app, size_terms_app. simpl.

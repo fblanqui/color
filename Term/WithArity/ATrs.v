@@ -844,7 +844,7 @@ Section S.
     rewrite Vnth_replace_neq. 2: clear -g; omega. unfold v1. rewrite Vnth_sub.
     apply Vnth_eq. refl.
     (* <- *)
-    redtac. subst. destruct c. irrefl. ex i f.
+    redtac. subst. destruct c. cong. ex i f.
     assert (hi : i < arity f). omega. exists hi.
     simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
     split_all. exists (fill c (sub s r)). split.
@@ -876,7 +876,7 @@ Section S.
     intros ht f ts e. apply Vforall_intro. intros u hu.
     apply ht. subst. apply subterm_fun. hyp.
     (* <- *)
-    intros h u ut hu. destruct ut as [c [hc e]]. destruct c. irrefl.
+    intros h u ut hu. destruct ut as [c [hc e]]. destruct c. cong.
     clear hc. simpl in e.
     set (ts := Vcast (Vapp t0 (Vcons (fill c u) t1)) e0). fold ts in e.
     ded (h f ts e).

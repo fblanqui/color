@@ -69,7 +69,7 @@ Section S.
   Proof.
     unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
     subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-    split. destruct x. irrefl.
+    split. destruct x. cong.
     destruct x0; simpl; discr. refl.
   Qed.
 
@@ -111,7 +111,7 @@ Section S.
     (* var *)
     unfold P'. intros. assert (u = Var x). apply subterm_eq_var. hyp.
     subst u. apply IH. unfold subterm. intros. destruct H0. destruct H0.
-    destruct x0. irrefl. discr.
+    destruct x0. cong. discr.
     (* fun *)
     intros. unfold P'. intros. apply IH. intros.
     assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. hyp.

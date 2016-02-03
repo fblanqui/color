@@ -582,7 +582,7 @@ Section filter.
 
   Proof.
     intros. rewrite filter_In. intuition. case (In_dec eq_dec x l); intro.
-    right. intuition. revert H. case (f x). irrefl. refl. auto.
+    right. intuition. revert H. case (f x). cong. refl. auto.
     rewrite H2 in H3. discr.
   Qed.
 
@@ -1287,7 +1287,7 @@ Section last.
   Lemma last_default : forall (d1 : A) d2 l, l <> nil -> last l d1 = last l d2.
 
   Proof.
-    induction l; simpl; intros. irrefl. destruct l. refl. apply IHl. discr.
+    induction l; simpl; intros. cong. destruct l. refl. apply IHl. discr.
   Qed.
 
 End last.

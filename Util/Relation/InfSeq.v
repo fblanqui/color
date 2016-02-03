@@ -123,7 +123,7 @@ Section S.
     Proof.
       induction i; simpl; intros. absurd (x<0); omega.
       destruct (lt_dec x i). apply IHi; hyp.
-      assert (x=i). omega. subst. destruct (eq_dec (f i) (f i)). 2: irrefl.
+      assert (x=i). omega. subst. destruct (eq_dec (f i) (f i)). 2: cong.
       apply In_indices_aux_intro. simpl. auto.
     Qed.
 
@@ -257,7 +257,7 @@ sequence on a finite codomain *)
     assert (forall i, In (f' i) As). intro i.
     ded (fin (i0+i)). simpl in H. destruct H. 2: hyp.
     ded (hi0 (i0+i)). rewrite not_and_eq in H0. destruct H0.
-    absurd (i0+i>=i0). hyp. omega. subst. irrefl.
+    absurd (i0+i>=i0). hyp. omega. subst. cong.
     destruct (IHAs f' H) as [b [g [h1 [h2 h3]]]]. exists b.
     exists (prefix f b i0 g). intuition.
     apply prefix_mon. hyp. apply prefix_correct. hyp.

@@ -189,7 +189,7 @@ Section S.
 
   Proof.
     intros. unfold subterm in H. destruct H as [C]. destruct H.
-    destruct C. irrefl.
+    destruct C. cong.
     clear H. simpl in H0. Funeqtac. subst ts. exists (fill C u). split.
     apply Vin_cast_intro. apply Vin_app_cons. unfold subterm_eq. exists C. refl.
   Qed.
@@ -210,7 +210,7 @@ Section S.
   Lemma subterm_size : forall t u : term, subterm t u -> size t < size u.
 
   Proof.
-    intros t u [C [hC e]]. subst u. destruct C. irrefl.
+    intros t u [C [hC e]]. subst u. destruct C. cong.
     simpl fill. rewrite size_fun, size_terms_cast, size_terms_app. simpl.
     ded (size_fill t C). omega.
   Qed.
@@ -225,7 +225,7 @@ Section S.
 
   Proof.
     unfold subterm_eq, subterm. intros. destruct H as [C]. destruct C.
-    subst t. simpl in H0. irrefl.
+    subst t. simpl in H0. cong.
     exists (Cont e t0 C t1). split. discr. subst t. refl.
   Qed.
 
@@ -290,7 +290,7 @@ Section S.
   Proof.
     unfold subterm, subterm_eq. intros. destruct H. destruct H0. destruct H0.
     subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-    split. destruct x0. irrefl. simpl. discr. refl.
+    split. destruct x0. cong. simpl. discr. refl.
   Qed.
 
   Lemma subterm_trans_eq2 : forall t u v,
@@ -299,7 +299,7 @@ Section S.
   Proof.
     unfold subterm, subterm_eq. intros. destruct H. destruct H. destruct H0.
     subst u. subst v. rewrite (fill_fill x0 x t). exists (comp x0 x).
-    split. destruct x. irrefl.
+    split. destruct x. cong.
     destruct x0; simpl; discr. refl.
   Qed.
 
@@ -321,7 +321,7 @@ Section S.
     (* var *)
     unfold P'. intros. assert (u = Var v). apply subterm_eq_var. hyp.
     subst u. apply IH. unfold subterm. intros. destruct H0. destruct H0.
-    destruct x. irrefl. discr.
+    destruct x. cong. discr.
     (* fun *)
     intros. unfold P'. intros. apply IH. intros.
     assert (subterm u0 (Fun f v)). eapply subterm_trans_eq2. apply H1. hyp.
@@ -383,7 +383,7 @@ Section S.
 
   Proof.
     destruct u; simpl. intuition. destruct H. destruct H. destruct x.
-    irrefl. simpl in H0. discr.
+    cong. simpl in H0. discr.
     rewrite (bVexists_ok (subterm_eq t)), Vexists_eq. split; intro.
     decomp H. apply subterm_trans_eq1 with x.
     hyp. apply subterm_fun. hyp. apply subterm_fun_elim in H. hyp.

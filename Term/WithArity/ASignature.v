@@ -141,7 +141,7 @@ Module OrdType (Import S : WSIG) <: OrderedType.
     intros f g. unfold blt.
     rewrite bgt_nat_ok, bgt_nat_ko, (beq_ko (@beq_symb_ok Sig)). intros.
     destruct (eq_nat_dec (weight f) (weight g)).
-    ded (weight_inj e). subst g. irrefl.
+    ded (weight_inj e). subst g. cong.
     omega.
   Qed.
 

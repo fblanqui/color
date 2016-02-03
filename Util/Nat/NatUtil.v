@@ -99,7 +99,7 @@ Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
 
 Proof.
   intro. gen (eq_nat_dec n n). destruct s.
-  rewrite (UIP_refl eq_nat_dec e). refl. irrefl.
+  rewrite (UIP_refl eq_nat_dec e). refl. cong.
 Qed.
 
 (***********************************************************************)

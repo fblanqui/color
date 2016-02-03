@@ -173,7 +173,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro h. unfold Def.replace_var. eq_dec z x.
-    subst. eq_dec y y. refl. irrefl.
+    subst. eq_dec y y. refl. cong.
     eq_dec z y. subst. fo. refl.
   Qed.
 
@@ -313,23 +313,23 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros nac nad nbc nbd. unfold Def.transpose_var.
-    eq_dec z c; subst. eq_dec d a; subst. irrefl. eq_dec d b; subst. irrefl.
-    eq_dec c a; subst. irrefl. eq_dec c b; subst. irrefl. eq_dec c c; subst.
-    refl. irrefl. eq_dec z d; subst. eq_dec c a; subst. irrefl.
-    eq_dec c b; subst. irrefl. eq_dec d a; subst. irrefl. eq_dec d b; subst.
-    irrefl. eq_dec d c; subst. refl. eq_dec d d; subst. refl. irrefl.
-    eq_dec z a; subst. eq_dec b c; subst. irrefl. eq_dec b d; subst. irrefl.
-    refl. eq_dec z b; subst. eq_dec a c; subst. irrefl. eq_dec a d; subst.
-    irrefl. refl. eq_dec z c; subst. irrefl. eq_dec z d; subst. irrefl. refl.
+    eq_dec z c; subst. eq_dec d a; subst. cong. eq_dec d b; subst. cong.
+    eq_dec c a; subst. cong. eq_dec c b; subst. cong. eq_dec c c; subst.
+    refl. cong. eq_dec z d; subst. eq_dec c a; subst. cong.
+    eq_dec c b; subst. cong. eq_dec d a; subst. cong. eq_dec d b; subst.
+    cong. eq_dec d c; subst. refl. eq_dec d d; subst. refl. cong.
+    eq_dec z a; subst. eq_dec b c; subst. cong. eq_dec b d; subst. cong.
+    refl. eq_dec z b; subst. eq_dec a c; subst. cong. eq_dec a d; subst.
+    cong. refl. eq_dec z c; subst. cong. eq_dec z d; subst. cong. refl.
   Qed.
 
   Lemma transpose_var_idem x y z : transpose_var x y (transpose_var x y z) = z.
 
   Proof.
     unfold Def.transpose_var. eq_dec z x; subst.
-    eq_dec y x; subst. refl. eq_dec y y; subst. refl. irrefl.
-    eq_dec z y; subst. eq_dec x x; subst. refl. irrefl.
-    eq_dec z x; subst. irrefl. eq_dec z y; subst. irrefl. refl.
+    eq_dec y x; subst. refl. eq_dec y y; subst. refl. cong.
+    eq_dec z y; subst. eq_dec x x; subst. refl. cong.
+    eq_dec z x; subst. cong. eq_dec z y; subst. cong. refl.
   Qed.
 
   Lemma transpose_var_comp a b c z : b <> z -> c <> z ->
@@ -337,8 +337,8 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intros nbz ncz. unfold Def.transpose_var. eq_dec z a; subst.
-    eq_dec b b; subst. refl. irrefl. eq_dec z b; subst. irrefl.
-    eq_dec z b; subst. irrefl. eq_dec z c; subst. irrefl. refl.
+    eq_dec b b; subst. refl. cong. eq_dec z b; subst. cong.
+    eq_dec z b; subst. cong. eq_dec z c; subst. cong. refl.
   Qed.
 
 (***********************************************************************)
@@ -391,8 +391,8 @@ Module Make (Export L : L_Struct).
     eq_dec x a. subst. eq_dec a b; eq_dec b a. refl. fo. fo.
     intro; set_iff; tauto.
     eq_dec x b. subst. eq_dec a b. refl. intro; set_iff; tauto.
-    eq_dec x x. 2: irrefl. eq_dec a b. refl.
-    intro y. set_iff. split_all; subst; irrefl.
+    eq_dec x x. 2: cong. eq_dec a b. refl.
+    intro y. set_iff. split_all; subst; cong.
   Qed.
 
   Lemma fvcod_subs_transpose a b : forall xs, fvcod xs (subs_transpose a b)
@@ -417,7 +417,7 @@ Module Make (Export L : L_Struct).
     rewrite n, remove_add_eq, union_empty_l, union_sym_2. refl.
     rewrite not_mem_iff in n. rewrite n.
     destruct (mem a xs); intro; set_iff; tauto.
-    rewrite remove_add_if. eq_dec a x. subst. irrefl.
+    rewrite remove_add_if. eq_dec a x. subst. cong.
     rewrite add_union_singleton, union_assoc. refl.
   Qed.
 
@@ -466,7 +466,7 @@ Module Make (Export L : L_Struct).
     unfold Def.transpose.
     induction u; simpl; set_iff; intros h1 h2; unfold Def.rename.
     unfold Def.transpose_var, Def.single, Def.update; simpl.
-    eq_dec x0 x. refl. eq_dec x0 y. subst. irrefl. refl.
+    eq_dec x0 x. refl. eq_dec x0 y. subst. cong. refl.
     refl.
     rewrite IHu1; [idtac|fo|fo]. rewrite IHu2; [idtac|fo|fo]. refl.
     rewrite IHu; [idtac|fo|fo]. rewrite subs_lam_no_alpha.
@@ -515,7 +515,7 @@ Module Make (Export L : L_Struct).
     set (u' := subs (subs_transpose a b) u).
     set (v' := subs (subs_transpose a b) v).
     set (xs := union (fv u') (fv v')). gen (var_notin_ok xs).
-    set (z := var_notin xs). unfold xs. set_iff. split_all. irrefl.
+    set (z := var_notin xs). unfold xs. set_iff. split_all. cong.
     rewrite aeq_alpha with (y:=z). 2: hyp.
     rewrite aeq_alpha with (x:=y') (y:=z). 2: hyp.
     unfold u', v'. rewrite i0. unfold Def.rename. rewrite !subs_comp.
@@ -529,21 +529,21 @@ Module Make (Export L : L_Struct).
     (* c <> x *)
     unfold Def.id at 3. unfold Def.comp, subs_transpose. simpl.
     unfold Def.transpose_var. eq_dec c y. subst. fo.
-    eq_dec c a. subst. eq_dec x a. subst. irrefl.
-    eq_dec y a. subst. irrefl. eq_dec x b. subst. rewrite update_neq. 2: hyp.
-    eq_dec y b. subst. irrefl. rewrite update_neq; auto.
+    eq_dec c a. subst. eq_dec x a. subst. cong.
+    eq_dec y a. subst. cong. eq_dec x b. subst. rewrite update_neq. 2: hyp.
+    eq_dec y b. subst. cong. rewrite update_neq; auto.
     rewrite update_neq. 2: hyp. eq_dec y b. subst.
     rewrite update_neq; auto. rewrite update_neq; auto.
-    eq_dec x a. subst. eq_dec c b. subst. eq_dec y b. subst. irrefl.
+    eq_dec x a. subst. eq_dec c b. subst. eq_dec y b. subst. cong.
     rewrite update_neq. 2: hyp. eq_dec y a. rewrite update_neq; auto.
     rewrite update_neq; auto. rewrite update_neq. 2: auto.
-    eq_dec y a. subst. irrefl. eq_dec y b. rewrite update_neq; auto.
-    unfold Def.update. eq_dec c y. subst. irrefl. refl.
-    eq_dec x b. subst. eq_dec c b. subst. irrefl. rewrite update_neq. 2: auto.
+    eq_dec y a. subst. cong. eq_dec y b. rewrite update_neq; auto.
+    unfold Def.update. eq_dec c y. subst. cong. refl.
+    eq_dec x b. subst. eq_dec c b. subst. cong. rewrite update_neq. 2: auto.
     eq_dec y a. subst. rewrite update_neq; auto. eq_dec y b.
     rewrite update_neq; auto. unfold Def.update. eq_dec c y.
-    subst. irrefl. refl. eq_dec c b. subst. rewrite update_neq. 2: hyp.
-    eq_dec y a. subst. rewrite update_neq; auto. eq_dec y b. subst. irrefl.
+    subst. cong. refl. eq_dec c b. subst. rewrite update_neq. 2: hyp.
+    eq_dec y a. subst. rewrite update_neq; auto. eq_dec y b. subst. cong.
     rewrite update_neq; auto. eq_dec y a. subst. rewrite !update_neq; auto.
     eq_dec y b. subst. rewrite !update_neq; auto. rewrite !update_neq; auto.
   Qed.
