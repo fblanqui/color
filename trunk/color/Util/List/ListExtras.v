@@ -998,7 +998,7 @@ Lemma element_at_find_first_eq : forall l x i,
 
 Proof.
 induction l; simpl; intros. discr. destruct i.
-inversion H. subst x. case (eq_dec a a); intro. exists 0. auto. irrefl.
+inversion H. subst x. case (eq_dec a a); intro. exists 0. auto. cong.
 case (eq_dec x a); intro. exists 0. intuition.
 destruct (IHl _ _ H). destruct H0. rewrite H1. exists (S x0). intuition.
 Qed.

@@ -632,7 +632,7 @@ Module Make (Export L : L_Struct).
 
   Lemma beq_term_refl u : beq_term u u = true.
 
-  Proof. unfold bool_of_rel. destruct (eq_term_dec u u). refl. irrefl. Qed.
+  Proof. unfold bool_of_rel. destruct (eq_term_dec u u). refl. cong. Qed.
 
   Lemma beq_term_var x y : beq_term (Var x) (Var y) = eqb x y.
 

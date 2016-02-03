@@ -663,12 +663,12 @@ on some finite set of variables *)
     rewrite n. rewrite <- not_mem_iff in n.
     intro a. set_iff. split.
     intros [a1|a1]. auto. right. split. auto. intro e. subst. fo.
-    intros [a1|[[a1|a1] a2]]; auto. subst. irrefl. 
+    intros [a1|[[a1|a1] a2]]; auto. subst. cong. 
     rewrite <- eqb_false_iff in n0. rewrite add_b, n0. simpl.
     case_eq (mem y u); [rewrite <- mem_iff|rewrite <- not_mem_iff]; intro hy.
     intro a. set_iff. split.
     intros [a1|[a1|[a1 a2]]]; auto. right. split. auto.
-    intro e. subst. rewrite eqb_false_iff in n0. irrefl.
+    intro e. subst. rewrite eqb_false_iff in n0. cong.
     intros [a1|[[a1|a1] a2]]; auto.
     sym. apply add_union_singleton.
   Qed.
@@ -997,7 +997,7 @@ on some finite set of variables *)
     right. right. ex x. rewrite In_domain. tauto.
 
     (* lam *)
-    unfold Def.var; ens. unfold Def.fvcodom.
+    unfold Def.var, Def.fvcodom; ens.
     set (xs := fvcod (domain (remove x (fv u)) s) s).
     case_eq (mem x xs); [rewrite <- mem_iff|rewrite <- not_mem_iff];
       intro hx; simpl; rewrite IHu; simpl.
@@ -1032,7 +1032,7 @@ on some finite set of variables *)
     revert H3. unfold xs. rewrite In_fvcod. intros [a ha]. revert ha.
     rewrite In_domain. set_iff. split_all. right. exists a.
     rewrite In_domain. unfold Def.update. eq_dec a x. subst a.
-    irrefl. tauto.
+    cong. tauto.
 
     subst y. absurd (In x' (union (fv u) xs)). apply var_notin_ok.
     apply union_subset_1. hyp.

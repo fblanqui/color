@@ -598,7 +598,7 @@ Section Vapp.
 
   Proof.
     induction v1; intros.
-    simpl. destruct k. irrefl. refl.
+    simpl. destruct k. cong. refl.
     rewrite !Vapp_cons. destruct k. refl. apply IHv1. omega.
   Qed.
 
@@ -2542,7 +2542,7 @@ Section first_position_eq.
   Proof.
     induction ys as [|y ys]; intro k; simpl. fo.
     intros [h|h]; destruct (eq_dec x y). subst y.
-    exists k. refl. irrefl. exists k. refl. fo.
+    exists k. refl. cong. exists k. refl. fo.
   Qed.
 
   Lemma Vin_first_position : forall n (ys : vector A n),

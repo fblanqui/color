@@ -617,7 +617,7 @@ variables. *)
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
     intros i2 i3. apply H6. rewrite In_fvcodom. ex b. revert i1.
     rewrite h1 in *. rewrite fv_rename; unfold replace.
-    destruct (mem x (fv v)); set_iff; split_all. subst b. irrefl. (*SLOW*)fo.
+    destruct (mem x (fv v)); set_iff; split_all. subst b. cong. (*SLOW*)fo.
 
     rewrite e1, e2, e. unfold yy's. rewrite subs1_update_single.
     Focus 2. intro h. gen (hs3 _ h). set_iff. tauto.
@@ -873,7 +873,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     assert (e : remove z (fv u') [=] xs).
     unfold xs, u'. rewrite fv_rename; unfold replace. simpl.
-    case_eq (mem x (fv u)); intros hx a; set_iff; split_all; subst a. irrefl.
+    case_eq (mem x (fv u)); intros hx a; set_iff; split_all; subst a. cong.
     revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
     rewrite <- not_mem_iff in hx. contr.
     revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.

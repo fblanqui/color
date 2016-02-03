@@ -209,7 +209,7 @@ Proof. refl. Qed.
     gen xX; intro xX'. apply XB in xX'. destruct xX' as [k xbk]. subst x.
     assert (k0k : k0 < k).
       assert (k0k' : k0 <= k). unfold k0. apply smallest_comp; hyp.
-      destruct (eq_nat_dec k0 k). rewrite e in nxbk0. irrefl.
+      destruct (eq_nat_dec k0 k). rewrite e in nxbk0. cong.
       omega.
     unfold lt in k0k. apply (Vle _ _ k0k). apply bV.
 

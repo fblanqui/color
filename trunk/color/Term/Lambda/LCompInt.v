@@ -394,7 +394,7 @@ of some variant of the following monotone function [G]. *)
       set (Ti := Vnth (inputs (typ f)) (Acc_arity hi)).
       destruct (occurs_dec BOrd.eq_dec a Ti).
       destruct (Acc_ok o) as [l|[_ l]].
-      rewrite hf in l. apply BOrd.lt_not_eq in l. unfold BOrd.eq in l. irrefl.
+      rewrite hf in l. apply BOrd.lt_not_eq in l. unfold BOrd.eq in l. cong.
       hyp.
       apply not_occurs_pos. hyp.
       (* [int (update X) ti Ti] *)

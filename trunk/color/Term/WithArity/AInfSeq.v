@@ -178,12 +178,12 @@ R-sequence *)
     IS (int_red R) f -> exists u, subterm u (f 0) /\ NT (red R) u.
 
   Proof.
-    intros R f hf. subst. ded (hf 0). redtac. destruct c. irrefl.
+    intros R f hf. subst. ded (hf 0). redtac. destruct c. cong.
     simpl in xl. clear yr lr cne r.
     (* forall i, exists v, f i = Fun f1 v *)
     assert (h : forall i, exists v, f i = Fun f0 v).
     induction i0. fo. clear xl s t0 c t e j i l.
-    destruct IHi0 as [w hw]. ded (hf i0). redtac. destruct c. irrefl.
+    destruct IHi0 as [w hw]. ded (hf i0). redtac. destruct c. cong.
     simpl in xl, yr. rewrite hw in xl. Funeqtac. rewrite yr.
     exists (Vcast (Vapp t (Vcons (fill c (sub s r)) t0)) e). refl.
     clear xl s t0 c t e j i l. destruct (choice _ h) as [v hv]. clear h.
