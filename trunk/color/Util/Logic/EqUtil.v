@@ -13,31 +13,6 @@ Require Import LogicUtil Structures.Equalities RelUtil BoolUtil.
 Require Export EqdepFacts Eqdep_dec.
 Require Setoid.
 
-(*COQ: shouldn't it be part of the standard lib?*)
-Instance Equiv_is_PreOrder A (R : rel A) : Equivalence R -> PreOrder R.
-
-Proof. split; class. Qed.
-
-(***********************************************************************)
-(** Leibniz equality is an Equivalence. *)
-
-Instance eq_refl t : Reflexive (@eq t).
-
-Proof. class. Qed.
-
-Instance eq_sym t : Symmetric (@eq t).
-
-Proof. class. Qed.
-
-Instance eq_trans t : Transitive (@eq t).
-
-Proof. class. Qed.
-
-(*COQ: to be removed: why not solved by class?*)
-Instance eq_PreOrder t : PreOrder (@eq t).
-
-Proof. split; class. Qed.
-
 (***********************************************************************)
 (** Functor providing properties the basic properties of Leibniz
 equality on some type. *)
@@ -195,13 +170,13 @@ Section eq_dec.
 
   Lemma beq_dec_refl : forall x, beq_dec x x = true.
 
-  Proof. intro. unfold beq_dec. case (eq_dec x x); intros. refl. irrefl. Qed.
+  Proof. intro. unfold beq_dec. case (eq_dec x x); intros. refl. cong. Qed.
 
   Lemma beq_dec_sym : forall x y, beq_dec x y = beq_dec y x.
 
   Proof.
-    intros. unfold beq_dec. case (eq_dec x y); case (eq_dec y x); intros;
-    (refl || irrefl).
+    intros. unfold beq_dec.
+    case (eq_dec x y); case (eq_dec y x); intros; (refl || cong).
   Qed.
 
   Lemma beq_dec_trans : forall x y z,
@@ -210,7 +185,7 @@ Section eq_dec.
   Proof.
     intros. unfold beq_dec.
     case (eq_dec x y); case (eq_dec y z); case (eq_dec x z);
-      intros; (refl || (irrefl || idtac)).
+      intros; (refl || (cong || idtac)).
   Qed.
 
   Lemma beq_dec_ko : forall x y, beq_dec x y = false <-> x <> y.
