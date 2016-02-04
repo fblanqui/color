@@ -54,7 +54,7 @@ Lemma sym A (R : rel A) x y : Symmetric R -> (R x y <-> R y x).
 
 Proof. split_all. Qed.
 
-Instance equiv_prop A (R : relation A) :
+Instance equiv_prop A (R : rel A) :
   Transitive R -> Symmetric R -> Proper (R ==> R ==> impl) R.
 
 Proof. intros R_trans R_sym t t' tt' u u' uu' tu. trans t. hyp. trans u; hyp. Qed.
