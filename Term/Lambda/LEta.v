@@ -79,7 +79,7 @@ Module Make (Export L : L_Struct).
     apply eta_top_intro.
     case_eq (mem x (fvcodom (fv v) s)); intro e; subst x';
       unfold Def.var; ens; simpl; Equal; rewrite !remove_equal; auto; rewrite e.
-    set (xs := union (fv v) (union (singleton x) (fvcodom (fv v) s))).
+    set (xs := union (fv v) (add x (fvcodom (fv v) s))).
     gen (var_notin_ok xs). set (x' := var_notin xs). unfold xs.
     rewrite fv_subs; simpl. set_iff. split_all.
     rewrite fv_subs; simpl. set_iff. rewrite <- not_mem_iff in e. split_all.
