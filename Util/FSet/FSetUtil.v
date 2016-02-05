@@ -22,18 +22,18 @@ Module Make (Export XSet : FSetInterface.S).
   Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
   Notation "s [<>] t" := (~Equal s t) (at level 70, no associativity).
 
-  Implicit Arguments remove_1 [s x y].
-  Implicit Arguments remove_3 [s x y].
-  Implicit Arguments singleton_1 [x y].
-  Implicit Arguments union_1 [s s' x].
+  Arguments remove_1 [s x y] _ _.
+  Arguments remove_3 [s x y] _.
+  Arguments singleton_1 [x y] _.
+  Arguments union_1 [s s' x] _.
 
   Ltac eq_dec x y := unfold eqb; destruct (P.FM.eq_dec x y).
 
 (***********************************************************************)
 (** database of Equal-ity lemmas. *)
 
-  Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all
-    : Equal.
+  Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all : Equal.
+  Hint Rewrite <- add_union_singleton : Equal.
 
   Ltac Equal := autorewrite with Equal.
 
@@ -59,7 +59,7 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** Tactic for proving simple membership propositions. *)
 
-  Ltac fset := intro; set_iff; intuition.
+  Ltac fset := intro; set_iff; tauto.
 
 (***********************************************************************)
 (** boolean equality on [X] *)
@@ -81,10 +81,10 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** empty *)
 
-  Lemma is_empty_eq : forall s, is_empty s = true <-> s [=] empty.
+  Lemma is_empty_eq s : is_empty s = true <-> s [=] empty.
 
   Proof.
-    intro s. split; intro hs.
+    split; intro hs.
     apply empty_is_empty_1. rewrite is_empty_iff. hyp.
     rewrite <- is_empty_iff. apply empty_is_empty_2. hyp.
   Qed.
@@ -96,41 +96,46 @@ Module Make (Export XSet : FSetInterface.S).
     fo.
   Qed.
 
-  Lemma subset_empty : forall s, s [<=] empty -> s [=] empty.
+  Lemma subset_empty s : s [<=] empty -> s [=] empty.
 
-  Proof. intros. rewrite double_inclusion. intuition. Qed.
+  Proof. intro hs. rewrite double_inclusion. intuition. Qed.
 
-  Lemma empty_subset : forall s, s [=] empty <-> s [<=] empty.
+  Lemma empty_subset s : s [=] empty <-> s [<=] empty.
 
   Proof. intuition. Qed.
 
 (***********************************************************************)
 (** remove *)
 
-  Lemma In_remove_neq : forall x y s, In x (remove y s) -> ~E.eq y x.
+(*REMOVE?
+  Lemma In_remove y x xs : ~E.eq y x -> In y xs -> In y (remove x xs).
 
-  Proof. intros x y s. set_iff. tauto. Qed.
+  Proof. intros n hy. apply remove_2; fo. Qed.*)
 
-  Lemma remove_3 : forall x y s, In x (remove y s) -> In x s /\ ~E.eq y x.
+  Lemma In_remove_neq x y s : In x (remove y s) -> ~E.eq y x.
 
-  Proof. intros x y s. set_iff. tauto. Qed.
+  Proof. set_iff. tauto. Qed.
 
-  Lemma remove_singleton : forall x, remove x (singleton x) [=] empty.
+  Lemma remove_3 x y s : In x (remove y s) -> In x s /\ ~E.eq y x.
 
-  Proof. intros x y. set_iff. tauto. Qed.
+  Proof. set_iff. tauto. Qed.
+
+  Lemma remove_singleton x : remove x (singleton x) [=] empty.
+
+  Proof. fset. Qed.
 
   Hint Rewrite remove_singleton : Equal.
 
-  Lemma remove_union : forall x s s',
+  Lemma remove_union x s s' :
     remove x (union s s') [=] union (remove x s) (remove x s').
 
-  Proof. intros x s s' y. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite remove_union : Equal.
 
-  Lemma remove_empty : forall x, remove x empty [=] empty.
+  Lemma remove_empty x : remove x empty [=] empty.
 
-  Proof. intros x y. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite remove_empty : Equal.
 
@@ -160,7 +165,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof.
     eq_dec y x. rewrite e at 1. rewrite remove_add_eq, e. refl.
-    fset. apply n. rewrite H, H0. refl.
+    intro; set_iff; intuition. apply n. rewrite H, H0. refl.
   Qed.
 
   Lemma remove_inter x ys zs :
@@ -171,20 +176,20 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** Subset *)
 
-  Lemma Subset_antisym : forall s t, s [=] t <-> (s [<=] t /\ t [<=] s).
+  Lemma Subset_antisym s t : s [=] t <-> (s [<=] t /\ t [<=] s).
 
   Proof. intuition. Qed.
 
 (***********************************************************************)
 (** ~In *)
 
-  Lemma notin_union : forall x s s', ~In x (union s s') <-> ~In x s /\ ~In x s'.
+  Lemma notin_union x s s' : ~In x (union s s') <-> ~In x s /\ ~In x s'.
 
-  Proof. intros x s s'. set_iff. tauto. Qed.
+  Proof. set_iff. tauto. Qed.
 
-  Lemma notin_singleton : forall x y, ~In x (singleton y) <-> ~E.eq y x.
+  Lemma notin_singleton x y : ~In x (singleton y) <-> ~E.eq y x.
 
-  Proof. intros x y. set_iff. refl. Qed.
+  Proof. set_iff. refl. Qed.
 
   Ltac notIn_elim := repeat
     match goal with
@@ -195,87 +200,105 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** union *)
 
-  Lemma union_empty_l : forall s, union empty s [=] s.
+  Lemma union_empty_l s : union empty s [=] s.
 
-  Proof. intros s x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite union_empty_l : Equal.
 
-  Lemma union_empty_r : forall s, union s empty [=] s.
+  Lemma union_empty_r s : union s empty [=] s.
 
-  Proof. intros s x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite union_empty_r : Equal.
 
-  Lemma union_idem : forall s, union s s [=] s.
+  Lemma union_idem s : union s s [=] s.
 
-  Proof. intros s x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite union_idem : Equal.
 
-  Lemma union_idem_1 : forall s t, union s (union s t) [=] union s t.
+  Lemma union_idem_1 s t : union s (union s t) [=] union s t.
 
-  Proof. intros s t x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite union_idem_1 : Equal.
 
-  Lemma union_idem_2 : forall s t u,
+  Lemma union_idem_2 s t u :
     union s (union t (union s u)) [=] union s (union t u).
 
-  Proof. intros s t u x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite union_idem_2 : Equal.
 
-  Lemma union_idem_3 : forall s t u,
+  Lemma union_idem_3 s t u :
     union (union s t) (union s u) [=] union s (union t u).
 
-  Proof. intros s t u x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
   Hint Rewrite union_idem_3 : Equal.
 
-  Lemma union_sym_2 : forall s t u, union s (union t u) [=] union t (union s u).
+  Lemma union_sym_2 s t u : union s (union t u) [=] union t (union s u).
 
-  Proof. intros s t u x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
-  Lemma union_empty : forall a b,
+  Lemma union_empty a b :
     union a b [=] empty <-> a [=] empty /\ b [=] empty.
 
   Proof.
-    intros a b. rewrite !empty_subset. split; intro h.
+    rewrite !empty_subset. split; intro h.
     split; trans (union a b).
     apply union_subset_1. hyp. apply union_subset_2. hyp.
     apply union_subset_3; tauto.
   Qed.
 
-  Lemma union_empty_subset : forall a b,
+  Lemma union_empty_subset a b :
     union a b [<=] empty <-> (a [<=] empty /\ b [<=] empty).
 
-  Proof. intros a b. rewrite <- !empty_subset. apply union_empty. Qed.
+  Proof. rewrite <- !empty_subset. apply union_empty. Qed.
 
 (***********************************************************************)
 (** difference *)
 
-  Lemma diff_union : forall a b c,
-    diff (union a b) c  [=] union (diff a c) (diff b c).
+  Lemma diff_union s t u :
+    diff (union s t) u  [=] union (diff s u) (diff t u).
 
-  Proof. intros a b c x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
+
+  Lemma diff_empty_r s : diff s empty [=] s.
+
+  Proof. fset. Qed.
+
+  Hint Rewrite diff_empty_r : Equal.
+
+  Lemma diff_empty_l s : diff empty s [=] empty.
+
+  Proof. fset. Qed.
+
+  Hint Rewrite diff_empty_l : Equal.
+
+  Lemma remove_diff_singleton x s : remove x s [=] diff s (singleton x).
+
+  Proof. fset. Qed.
+
+  Hint Rewrite <- remove_diff_singleton : Equal.
 
 (***********************************************************************)
 (** intersection *)
 
-  Lemma inter_empty_l : forall a, inter empty a [=] empty.
+  Lemma inter_empty_l a : inter empty a [=] empty.
 
-  Proof. intros a x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
-  Lemma inter_empty_r : forall a, inter a empty [=] empty.
+  Lemma inter_empty_r a : inter a empty [=] empty.
 
-  Proof. intros a x. set_iff. tauto. Qed.
+  Proof. fset. Qed.
 
-  Lemma inter_empty : forall a b,
+  Lemma inter_empty a b :
     inter a b [=] empty <-> (forall x, In x a -> ~In x b). 
 
   Proof.
-    intros a b. split; intro h.
+    split; intro h.
     intros x h1 h2. rewrite <- empty_iff with (x:=x), <- h. apply inter_3; hyp.
     intro x. set_iff. fo.
   Qed.
@@ -283,15 +306,15 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** some equivalences *)
 
-  Lemma mem_In : forall x s, mem x s = true <-> In x s.
+  Lemma mem_In x s : mem x s = true <-> In x s.
 
   Proof. intuition. Qed.
 
-  Lemma subset_Subset : forall s t, subset s t = true <-> Subset s t.
+  Lemma subset_Subset s t : subset s t = true <-> Subset s t.
 
   Proof. intuition. Qed.
 
-  Lemma equal_Equal : forall s t, equal s t = true <-> Equal s t.
+  Lemma equal_Equal s t : equal s t = true <-> Equal s t.
 
   Proof. intuition. Qed.
 
@@ -299,10 +322,10 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. apply rel_eq. apply equal_Equal. Qed.
 
-  Lemma mem_if : forall x xs (b : bool),
+  Lemma mem_if x xs (b : bool) :
     mem x (if b then xs else empty) = b && mem x xs.
 
-  Proof. intros x xs b. destruct b; simpl. refl. rewrite empty_b. refl. Qed.
+  Proof. destruct b; simpl. refl. rewrite empty_b. refl. Qed.
 
 (***********************************************************************)
 (** Compatibility of set operations wrt inclusion. *)
@@ -395,21 +418,21 @@ Module Make (Export XSet : FSetInterface.S).
       rewrite hf. apply ff'. refl. apply ff'; refl.
     Qed.
 
-    Global Instance fold_m : forall f, Proper (E.eq ==> eqA ==> eqA) f ->
+    Global Instance fold_m f : Proper (E.eq ==> eqA ==> eqA) f ->
       Proper (Equal ==> eqA ==> eqA) (fold f).
 
     Proof.
-      intros f f_m s s' ss' a a' aa'. trans (fold f s' a).
+      intros f_m s s' ss' a a' aa'. trans (fold f s' a).
       apply fold_equal; hyp. apply fold_init; hyp.
     Qed.
 
-    Lemma fold_m_ext : forall f, Proper (E.eq ==> eqA ==> eqA) f ->
+    Lemma fold_m_ext f : Proper (E.eq ==> eqA ==> eqA) f ->
       transpose eqA f ->
       forall f', feq f f' -> forall s s', s [=] s' -> forall a a', eqA a a' ->
         eqA (fold f s a) (fold f' s' a').
 
     Proof.
-      intros f fm ft f' ff' s s' ss' a a' aa'; revert s' ss' a a' aa'.
+      intros fm ft f' ff' s s' ss' a a' aa'; revert s' ss' a a' aa'.
       pattern s; apply set_induction_bis; clear s.
       (* Equal *)
       intros s s' ss' h t s't a a' aa'. trans (fold f s a).
