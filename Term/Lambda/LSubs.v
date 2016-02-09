@@ -2111,7 +2111,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     (* var *)
     rewrite fvcodom_singleton. unfold bool_of_rel.
     destruct (eq_term_dec (s x) (Var x)).
-    rewrite e. simpl. unfold Def.single, Def.update. eq_dec x y; auto.
+    intros _. rewrite e. simpl. unfold Def.single, Def.update. eq_dec x y; auto.
     intro h2. rewrite subs1_notin_fv. unfold Def.update. eq_dec x y.
     subst y. tauto. refl.
     rewrite empty_subset. intro a. rewrite In_domain.
