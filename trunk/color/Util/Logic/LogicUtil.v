@@ -79,6 +79,8 @@ Ltac check_eq := vm_compute; refl.
 (***********************************************************************)
 (** Other tactics. *)
 
+Ltac intro_neg := match goal with |- ~ _ => intro | _ => idtac end.
+
 Ltac done :=
   trivial; hnf; intros; solve
    [ repeat progress first
@@ -88,6 +90,25 @@ Ltac done :=
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end ].
 
 Tactic Notation "by" tactic(T) := (T; done).
+
+(***********************************************************************)
+(** Tactic for handling irreflexivity. *)
+
+  Ltac irrefl_rel R :=
+    match goal with
+    | h1 : R ?x ?x -> False |- _ => exfalso; apply h1; refl
+    | h1 : ~R ?x ?x |- _ => exfalso; apply h1; refl
+    | h1 : ~R ?x ?y, h2 : R ?x ?y |- _ => exfalso; apply h1; hyp
+    | h1 : ~R ?x ?y, h2 : R ?y ?x |- _ => exfalso; apply h1; hyp
+    | h1 : ~R ?x ?y, h2 : R ?x ?z, h3 : R ?z ?y |- _ =>
+      exfalso; apply h1; rewrite h2, <- h3; refl
+    | h1 : ~R ?x ?y, h2 : R ?x ?z, h3 : R ?y ?z |- _ =>
+      exfalso; apply h1; rewrite h2, h3; refl
+    | h1 : ~R ?x ?y, h2 : R ?z ?x, h3 : R ?y ?z |- _ =>
+      exfalso; apply h1; rewrite <- h2, h3; refl
+    | h1 : ~R ?x ?y, h2 : R ?z ?x, h3 : R ?z ?y |- _ =>
+      exfalso; apply h1; rewrite <- h2, <- h3; refl
+    end.
 
 (***********************************************************************)
 (** Basic theorems on intuitionist propositional calculus. *)
