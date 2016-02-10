@@ -1674,10 +1674,9 @@ In fact, these properties won't be used later. Instead, we will use similar prop
 
     Focus 2. unfold not. rewrite In_fvcodom. intros [z hz].
     revert hz. set_iff. unfold Def.single, Def.update.
-    eq_dec z y; eq_dec z x'.
-    subst. subst. tauto. subst. intuition. subst. intuition. intuition.
+    eq_dec z y; eq_dec z x'; subst; tauto.
 
-    Focus 1. rewrite !single_lam_no_alpha. 2: tauto. 2: tauto.
+    Focus 1. rewrite !single_lam_no_alpha; try tauto.
     f_equal. eq_dec x' x.
     (* x' = x *)
     subst x'. rewrite update2_neq_com. 2: hyp.
@@ -1692,11 +1691,10 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite update_single_eq, single_id. refl.
     (* x <> y *)
     rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; eq_dec x x'; try (subst; tauto).
+    eq_dec x y; eq_dec x x'; subst; tauto.
     Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; try (subst; tauto).
-    Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x x'; try (subst; tauto).
+    eq_dec x y; subst; tauto.
+    Focus 1. rewrite update_id. Focus 2. rewrite single_neq; auto.
     Focus 1. apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
   Qed.
 
@@ -1741,11 +1739,11 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite update_single_eq, single_id, update_id_single. refl. auto.
     (* x <> y *)
     rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; eq_dec x x'; try (subst; tauto).
+    eq_dec x y; eq_dec x x'; subst; tauto.
     Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x x'; try (subst; tauto).
+    eq_dec x x'; subst; tauto.
     Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; try (subst; tauto).
+    eq_dec x y; subst; tauto.
     Focus 1. apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
   Qed.
 
@@ -1778,21 +1776,27 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     unfold Def.rename at 1. simpl.
     rewrite var_single, beq_term_var. simpl. rewrite singleton_b.
     case_eq (mem x (fv u) && negb (eqb z x) && negb (eqb y x) && eqb y z).
+
     rewrite !andb_true_iff. intros [[[h1 h2] h3] h4].
     rewrite h1, h3, h4. simpl. (*SLOW*)rewrite union_sym, <- add_union_singleton. refl.
+
     rewrite !andb_false_iff. intros [[[h|h]|h]|h].
+
     rewrite h. simpl. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
     rewrite update_id_single. 2: auto. refl.
+
     revert h. rewrite negb_false_iff, eqb_true_iff. intro h. subst z.
     rewrite update_single_eq, single_id.
-    rewrite <- andb_assoc, andb_comm with (b2:=eqb y x), andb_negb_r,
+    rewrite <- andb_assoc. rewrite andb_comm with (b2:=eqb y x), andb_negb_r,
       andb_false_r, eqb_refl. refl.
+
     rewrite h. rewrite andb_false_r. simpl. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
     rewrite update_id_single. 2: auto.
     revert h. rewrite negb_false_iff, eqb_true_iff. intro h. subst y.
     rewrite single_id, rename_id. refl.
+
     rewrite h. rewrite !andb_false_r. eq_dec z x.
     subst z. rewrite update_single_eq, single_id. refl.
     rewrite update_id_single. 2: auto. refl.
@@ -1810,8 +1814,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     unfold bool_of_rel. destruct (eq_term_dec (s z) (Var z)).
     rewrite e, rename_var. eq_dec z x; auto.
     intro h. unfold Def.rename. rewrite single_notin_fv. 2: hyp.
-    eq_dec z x; simpl.
-    subst z. tauto. refl.
+    eq_dec z x; simpl. subst z. tauto. refl.
     (* fun *)
     refl.
     (* app *)
@@ -1861,7 +1864,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite !In_fvcodom. split; intros [b [j1 [j2 j3]]]; exists b;
       simpl in *; revert j1 j2 j3; set_iff;
         unfold s'; unfold Def.update; eq_dec b z.
-    subst. tauto. split_all. subst. tauto. tauto. split_all.
+    subst. tauto. split_all. subst. tauto. tauto.
 
     rewrite e. revert h2. rewrite !empty_subset, add_union_singleton.
     intro h2. rewrite union_subset_2 with (s:=singleton z) (s':=bv u). hyp.
