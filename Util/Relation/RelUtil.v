@@ -1067,6 +1067,17 @@ Section inverse_image.
 
   Proof. fo. Qed.
 
+  Lemma Rof_preorder : PreOrder R -> PreOrder Rof.
+
+  Proof. split. apply Rof_refl. class. apply Rof_trans. class. Qed.
+
+  Lemma Rof_equiv : Equivalence R -> Equivalence Rof.
+
+  Proof.
+    split. apply Rof_refl. class. apply Rof_sym. class.
+    apply Rof_trans. class.
+  Qed.
+
   Variable F : A -> B -> Prop.
 
   Definition RoF : rel A :=
