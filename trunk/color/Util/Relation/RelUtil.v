@@ -37,16 +37,9 @@ Notation same_rel := same_relation.
 Notation "x << y" := (inclusion x y) (at level 50) : relation_scope.
 Notation "R == S" := (same_relation R S) (at level 70).
 
-Notation "x 'U' y" := (union x y) (at level 45) : relation_scope.
+Infix "U" := union (at level 45) : relation_scope.
 Notation "x #" := (clos_refl_trans x) (at level 35) : relation_scope.
 Notation "x !" := (clos_trans x) (at level 35) : relation_scope.
-
-Bind Scope relation_scope with relation.
-
-Arguments Scope transp [type_scope relation_scope].
-Arguments Scope inclusion [type_scope relation_scope relation_scope].
-Arguments Scope clos_refl_trans [type_scope relation_scope].
-Arguments Scope union [type_scope relation_scope relation_scope].
 
 Open Scope relation_scope.
 
@@ -118,7 +111,7 @@ Arguments bool_of_rel_false [A R] _ [x y].
 (***********************************************************************)
 (** Properties of [same_rel]. *)
 
-Global Instance same_rel_equiv A : Equivalence (@same_rel A).
+Instance same_rel_equiv A : Equivalence (@same_rel A).
 
 Proof. fo. Qed.
 
@@ -205,8 +198,8 @@ Section finitely_branching.
 
 End finitely_branching.
 
-Implicit Arguments in_sons_R [A R x y].
-Implicit Arguments R_in_sons [A R x y].
+Arguments in_sons_R [A R] _ [x y] _.
+Arguments R_in_sons [A R] _ [x y] _.
 
 (***********************************************************************)
 (** Equivalence relation associated to a PreOrder. *)
@@ -310,7 +303,7 @@ Lemma inclusion_elim A (R S : rel A) : R << S -> forall x y, R x y -> S x y.
 
 Proof. auto. Qed.
 
-Implicit Arguments inclusion_elim [A R S x y].
+Arguments inclusion_elim [A R S] _ [x y] _.
 
 (***********************************************************************)
 (** Properties of [IS]. *)
@@ -365,7 +358,7 @@ Proof. unfold monotone, transp. auto. Qed.
 Definition compose A (R S : rel A) : rel A :=
   fun x y => exists z, R x z /\ S z y.
 
-Notation "R @ S" := (compose R S) (at level 40) : relation_scope.
+Infix "@" := compose (at level 40) : relation_scope.
 
 Instance compose_inclusion A :
   Proper (inclusion ==> inclusion ==> inclusion) (@compose A).
@@ -1069,14 +1062,11 @@ Section inverse_image.
 
   Lemma Rof_preorder : PreOrder R -> PreOrder Rof.
 
-  Proof. split. apply Rof_refl. class. apply Rof_trans. class. Qed.
+  Proof. fo. Qed.
 
   Lemma Rof_equiv : Equivalence R -> Equivalence Rof.
 
-  Proof.
-    split. apply Rof_refl. class. apply Rof_sym. class.
-    apply Rof_trans. class.
-  Qed.
+  Proof. fo. Qed.
 
   Variable F : A -> B -> Prop.
 
