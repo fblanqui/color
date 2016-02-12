@@ -43,6 +43,9 @@ Notation "x !" := (clos_trans x) (at level 35) : relation_scope.
 
 Open Scope relation_scope.
 
+(***********************************************************************)
+(** Basic meta-theorems. *)
+
 Lemma sym A (R : rel A) x y : Symmetric R -> (R x y <-> R y x).
 
 Proof. split_all. Qed.
@@ -51,6 +54,23 @@ Instance equiv_prop A (R : rel A) :
   Transitive R -> Symmetric R -> Proper (R ==> R ==> impl) R.
 
 Proof. intros R_trans R_sym t t' tt' u u' uu' tu. trans t. hyp. trans u; hyp. Qed.
+
+Instance proper_subrelation A (R S : rel A) :
+  Equivalence S -> subrelation R S -> Proper (R ==> R ==> impl) S.
+
+Proof.
+  intros S_eq RS u u' uu' v v' vv' uv. apply RS in uu'. apply RS in vv'.
+  rewrite <- uu', <- vv'. hyp.
+Qed.
+
+Instance proper_inclusion_2 A B C (f : A -> B -> C) :
+  Proper (inclusion --> inclusion --> inclusion ==> impl)
+         (fun R S T => Proper (R ==> S ==> T) f).
+
+Proof.
+  intros R R' RR' S S' SS' T T' TT' hf x x' xx' y y' yy'.
+  apply TT'. apply hf. apply RR'. hyp. apply SS'. hyp.
+Qed.
 
 (***********************************************************************)
 (** Empty relation. *)
@@ -223,60 +243,9 @@ Lemma inter_transp_Transitive A (R : rel A) :
 
 Proof. fo. Qed.
 
-(*WARNING: Do not declare following Lemmas as Instances. *)
-
-Lemma R_inter_transp A (R : rel A) :
-  Transitive R -> Proper (inter_transp R ==> inter_transp R ==> impl) R.
-
-Proof. fo. Qed.
-
 Lemma inter_transp_incl A (R : rel A) : inter_transp R << R.
 
 Proof. fo. Qed.
-
-(***********************************************************************)
-(** Morphisms wrt [inter_transp]. *)
-
-Lemma inter_transp_1 A1 (R1 : rel A1) B (S : rel B) f :
-  Proper (R1 ==> S) f -> Proper (inter_transp R1 ==> inter_transp S) f.
-
-Proof. fo. Qed.
-
-Lemma inter_transp_2 A1 (R1 : rel A1) A2 (R2 : rel A2)
-  B (S : rel B) f : Proper (R1 ==> R2 ==> S) f ->
-  Proper (inter_transp R1 ==> inter_transp R2 ==> inter_transp S) f.
-
-Proof. fo. Qed.
-
-Lemma Proper_inter_transp_1 A1 (R1 : rel A1) B (S : rel B) f :
-  Symmetric R1 -> Proper (R1 ==> S) f -> Proper (R1 ==> inter_transp S) f.
-
-Proof. fo. Qed.
-
-Lemma Proper_inter_transp_2 A1 (R1 : rel A1) A2 (R2 : rel A2)
-  B (S : rel B) f : Symmetric R1 -> Symmetric R2 ->
-  Proper (R1 ==> R2 ==> S) f -> Proper (R1 ==> R2 ==> inter_transp S) f.
-
-Proof. intros s1 s2 hf x1 y1 e1 x2 y2 e2. split; apply hf; fo. Qed.
-
-Lemma Proper_inter_transp_3 A1 (R1 : rel A1) A2 (R2 : rel A2)
-  A3 (R3 : rel A3) B (S : rel B) f :
-  Symmetric R1 -> Symmetric R2 -> Symmetric R3 ->
-  Proper (R1 ==> R2 ==> R3 ==> S) f ->
-  Proper (R1 ==> R2 ==> R3 ==> inter_transp S) f.
-
-Proof. intros s1 s2 s3 hf x1 y1 e1 x2 y2 e2 x3 y3 e3. split; apply hf; fo. Qed.
-
-Lemma Proper_inter_transp_4 A1 (R1 : rel A1) A2 (R2 : rel A2)
-  A3 (R3 : rel A3) A4 (R4 : rel A4) B (S : rel B) f :
-  Symmetric R1 -> Symmetric R2 -> Symmetric R3 -> Symmetric R4 ->
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> S) f ->
-  Proper (R1 ==> R2 ==> R3 ==> R4 ==> inter_transp S) f.
-
-Proof.
-  intros s1 s2 s3 s4 hf x1 y1 e1 x2 y2 e2 x3 y3 e3 x4 y4 e4.
-  split; apply hf; fo.
-Qed.
 
 (***********************************************************************)
 (** Properties of [inclusion]. *)
