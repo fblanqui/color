@@ -76,7 +76,11 @@ they define the same relation. See below for more details. *)
   (*COQ: can be removed? Coq stuck in In_preds_rel *)
   Instance rel_meq_ext : Proper (meq ==> eq ==> eq ==> iff) rel.
 
-  Proof. apply Proper_inter_transp_3; class. typeclasses eauto. Qed.
+  Proof.
+    intros g g' gg' x x' xx' y y' yy'. split; intro h.
+    rewrite  <- gg', <- xx', <- yy'. hyp.
+    rewrite  gg', xx', yy'. hyp.
+  Qed.
 
   Lemma find_Some_rel {g x s} : find x g = Some s ->
     XSet.is_empty s = false -> exists y, rel g x y.
@@ -113,7 +117,10 @@ they define the same relation. See below for more details. *)
   (*COQ: can be removed? used in rel_set_fold_add_edge *)
   Instance succ_m : Proper (eq ==> XSet.Equal ==> same_rel) succ.
 
-  Proof. apply Proper_inter_transp_2; class. Qed.
+  Proof.
+    intros x x' xx' s s' ss'. split.
+    rewrite xx', ss'. refl. rewrite <- xx', <- ss'. refl.
+  Qed.
 
   Lemma succ_empty : forall x, succ x XSet.empty == empty_rel.
 

@@ -656,9 +656,7 @@ variables. *)
     subst a. simpl. set_iff. intros i2 i3. rewrite <- i3. apply aeq_lam.
     apply aeq_refl_eq. apply subs1_seq. intros a ha.
     unfold xx's, Def.single, Def.update.
-    eq_dec a x; simpl; unfold yy's. unfold Def.update.
-    subst a. eq_dec y y. 2: tauto. rewrite i3. refl.
-    eq_dec a y. subst a. rewrite h1 in H. tauto. refl.
+    eq_dec a x. refl. eq_dec a y. subst a. rewrite h1 in H. tauto. refl.
 
     (* a <> x *)
     intros i2 i3. case_eq (mem y (fvcodom (remove y (fv u')) s)); intro hy.
@@ -1318,7 +1316,10 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       (*COQ: if removed, Coq fails in LComp*)
       Global Instance atc_aeq_iff : Proper (aeq ==> aeq ==> iff) (S*).
 
-      Proof. apply Proper_inter_transp_2; class. Qed.
+      Proof.
+        intros x x' xx' y y' yy'. split; intro h; eapply atc_aeq.
+        apply xx'. apply yy'. hyp. sym. apply xx'. sym. apply yy'. hyp.
+      Qed.
 
       (** Inversion lemma for [clos_aeq_trans]. *)
 
