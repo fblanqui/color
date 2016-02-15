@@ -72,6 +72,17 @@ Proof.
   apply TT'. apply hf. apply RR'. hyp. apply SS'. hyp.
 Qed.
 
+(*COQ: create problems if declared as Instance*)
+Lemma proper_iff_2 A B (f : A -> B -> Prop) (R : rel A) (S : rel B) :
+  Symmetric R -> Symmetric S
+  -> Proper (R ==> S ==> impl) f -> Proper (R ==> S ==> iff) f.
+
+Proof.
+  intros R_sym S_sym f_prop x x' xx' y y' yy'. split; intro h.
+  eapply f_prop. apply xx'. apply yy'. hyp.
+  eapply f_prop. sym. apply xx'. sym. apply yy'. hyp.
+Qed.
+
 (***********************************************************************)
 (** Empty relation. *)
 
@@ -380,6 +391,58 @@ Lemma absorbs_right_rtc A (R S : rel A) : S @ R << S -> S @ R# << S.
 Proof. intros h t v [u [tu uv]]. induction uv; fo. Qed.
 
 (***********************************************************************)
+(** Properties of [union]. *)
+
+Instance union_inclusion A :
+  Proper (inclusion ==> inclusion ==> inclusion) (@union A).
+
+Proof. fo. Qed.
+
+(*FIXME: try to remove*)
+Ltac union := apply union_inclusion; try incl_refl.
+
+Instance union_same_rel A :
+  Proper (same_rel ==> same_rel ==> same_rel) (@union A).
+
+Proof. fo. Qed.
+
+Lemma union_commut : forall A (R S : rel A), R U S == S U R.
+
+Proof. fo. Qed.
+
+Lemma union_assoc : forall A (R S T : rel A), (R U S) U T == R U (S U T).
+
+Proof. fo. Qed.
+
+Lemma comp_union_l : forall A (R S T : rel A), (R U S) @ T == (R @ T) U (S @ T).
+
+Proof. fo. Qed.
+
+Lemma comp_union_r : forall A (R S T : rel A), T @ (R U S) == (T @ R) U (T @ S).
+
+Proof. fo. Qed.
+
+Lemma union_empty_r : forall A (R : rel A), R U empty_rel == R.
+
+Proof. fo. Qed.
+
+Lemma union_empty_l : forall A (R : rel A), empty_rel U R == R.
+
+Proof. fo. Qed.
+
+Lemma incl_union_l : forall A (R S T : rel A), R << S -> R << S U T.
+
+Proof. fo. Qed.
+
+Lemma incl_union_r : forall A (R S T : rel A), R << T -> R << S U T.
+
+Proof. fo. Qed.
+
+Lemma union_incl : forall A (R R' S : rel A), R U R' << S <-> R << S /\ R' << S.
+
+Proof. fo. Qed.
+
+(***********************************************************************)
 (** Reflexive closure. *)
 
 Definition clos_refl A (R : rel A) : rel A := eq U R.
@@ -408,6 +471,74 @@ Qed.
 Lemma rc_incl A (R : rel A) : R << R%.
 
 Proof. fo. Qed.
+
+(***********************************************************************)
+(** Compatibility closure. *)
+
+Section comp_clos.
+
+  Variables (A : Type) (E : rel A) (E_eq : Equivalence E).
+
+  Inductive comp_clos (R : rel A) : rel A :=
+  | comp_clos_intro u u' v v' : E u u' -> E v v' -> R u' v' -> comp_clos R u v.
+
+  Lemma comp_clos_intro_refl (R : rel A) t u : R t u -> comp_clos R t u.
+
+  Proof. intro tu. eapply comp_clos_intro. refl. refl. hyp. Qed.
+
+  Lemma comp_clos_eq R : same_rel (comp_clos R) (E @ (R @ E)).
+
+  Proof.
+    split.
+    intros t u tu. inversion_clear tu; subst. ex u'. intuition. ex v'. intuition.
+    intros t u [t' [tt' [u' [t'u' u'u]]]]. eapply comp_clos_intro.
+    apply tt'. sym. apply u'u. hyp.
+  Qed.
+
+  Lemma incl_comp_clos R : R << comp_clos R.
+
+  Proof.
+    intros u v uv. apply comp_clos_intro with (u':=u) (v':=v).
+    refl. refl. hyp.
+  Qed.
+
+  Global Instance comp_clos_incl : Proper (inclusion ==> inclusion) comp_clos.
+
+  Proof.
+    intros R S RS u v uv. inversion uv; subst.
+    apply comp_clos_intro with (u':=u') (v':=v'); fo.
+  Qed.
+
+  Global Instance comp_clos_same_rel : Proper (same_rel ==> same_rel) comp_clos.
+
+  Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
+
+  Lemma comp_clos_union R S :
+    same_rel (comp_clos (R U S)) (comp_clos R U comp_clos S).
+
+  Proof.
+    split.
+    (* << *)
+    induction 1.
+    destruct H1 as [h|h]; [left|right];
+      (eapply comp_clos_intro; [apply H | apply H0 | hyp]).
+    (* >> *)
+    intros t u [h|h].
+    eapply comp_clos_incl. apply incl_union_l. refl. hyp.
+    eapply comp_clos_incl. apply incl_union_r. refl. hyp.
+  Qed.
+
+  Global Instance comp_clos_aeq R : Proper (E ==> E ==> impl) (comp_clos R).
+
+  Proof.
+    intros u u' uu' v v' vv' h. inversion h; subst.
+    eapply comp_clos_intro.
+    trans u. hyp. apply H.
+    trans v. hyp. apply H0.
+    hyp.
+  Qed.
+
+End comp_clos.
 
 (***********************************************************************)
 (** Properties of [clos_trans]. *)
@@ -511,26 +642,24 @@ Proof.
   trans y. apply IHxy1. hyp. refl. apply IHxy2. refl. hyp.
 Qed.
 
-Instance clos_trans_morph A (R : relation A) (eqA : relation A) :
-  Equivalence eqA ->
-  Proper (eqA ==> eqA ==> iff) R ->
-  Proper (eqA ==> eqA ==> iff) (clos_trans R).
+Instance tc_prop A (R E : rel A) : Reflexive E
+  -> Proper (E ==> E ==> impl) R
+  -> Proper (E ==> E ==> impl) (clos_trans R).
 
 Proof.
-  intros.
-  reduce. split; intros.
-  revert y y0 H1 H2.
-  induction H3; intros.
-  rewrite H2, H3 in H1. now constructor.
-  trans y. apply IHclos_trans1; eauto. reflexivity.
-  apply IHclos_trans2; eauto. reflexivity.
+  intros E_refl R_prop t t' tt' u u' uu' tu.
+  revert t u tu t' tt' u' uu'; induction 1; intros t' tt' u' uu'.
+  apply t_step. rewrite <- tt', <- uu'. hyp. trans y; fo.
+Qed.
 
-  revert x x0 H1 H2.
-  induction H3; intros.
-  rewrite <- H2, <- H3 in H1. now constructor.
-  trans y.
-  apply IHclos_trans1; eauto. reflexivity.
-  apply IHclos_trans2; eauto. reflexivity.
+(*REMOVE? used in MultisetOrder*)
+Instance clos_trans_morph A (R E : rel A) : Equivalence E
+  -> Proper (E ==> E ==> iff) R
+  -> Proper (E ==> E ==> iff) (clos_trans R).
+
+Proof.
+  intros E_eq R_prop. apply proper_iff_2; class. apply tc_prop; class.
+  intros x x' xx' y y' yy' xy. rewrite <- xx', <- yy'. hyp.
 Qed.
 
 Lemma tc_step_l A (R : rel A) x y :
@@ -616,58 +745,6 @@ Proof.
   intros S_eq RS. intros u v; revert u v; induction 1.
   fo. refl. trans y; hyp. hyp.
 Qed.
-
-(***********************************************************************)
-(** Properties of [union]. *)
-
-Instance union_inclusion A :
-  Proper (inclusion ==> inclusion ==> inclusion) (@union A).
-
-Proof. fo. Qed.
-
-(*FIXME: try to remove*)
-Ltac union := apply union_inclusion; try incl_refl.
-
-Instance union_same_rel A :
-  Proper (same_rel ==> same_rel ==> same_rel) (@union A).
-
-Proof. fo. Qed.
-
-Lemma union_commut : forall A (R S : rel A), R U S == S U R.
-
-Proof. fo. Qed.
-
-Lemma union_assoc : forall A (R S T : rel A), (R U S) U T == R U (S U T).
-
-Proof. fo. Qed.
-
-Lemma comp_union_l : forall A (R S T : rel A), (R U S) @ T == (R @ T) U (S @ T).
-
-Proof. fo. Qed.
-
-Lemma comp_union_r : forall A (R S T : rel A), T @ (R U S) == (T @ R) U (T @ S).
-
-Proof. fo. Qed.
-
-Lemma union_empty_r : forall A (R : rel A), R U empty_rel == R.
-
-Proof. fo. Qed.
-
-Lemma union_empty_l : forall A (R : rel A), empty_rel U R == R.
-
-Proof. fo. Qed.
-
-Lemma incl_union_l : forall A (R S T : rel A), R << S -> R << S U T.
-
-Proof. fo. Qed.
-
-Lemma incl_union_r : forall A (R S T : rel A), R << T -> R << S U T.
-
-Proof. fo. Qed.
-
-Lemma union_incl : forall A (R R' S : rel A), R U R' << S <-> R << S /\ R' << S.
-
-Proof. fo. Qed.
 
 (***********************************************************************)
 (** Properties of [clos_refl_trans]. *)
@@ -815,6 +892,57 @@ Proof.
   intros R_sym x; revert x; induction 1.
   apply rt_step. hyp. refl. trans y; hyp.
 Qed.
+
+(***********************************************************************)
+(** Quasi-ordering closure. *)
+
+Section qo_clos.
+
+  Variables (A : Type) (E : rel A) (E_eq : Equivalence E).
+
+  Inductive qo_clos (R : rel A) : rel A :=
+  | qo_step : R << qo_clos R
+  | qo_refl : E << qo_clos R
+  | qo_trans : Transitive (qo_clos R).
+
+  Variable R : rel A.
+
+  Global Instance qo_clos_preorder : PreOrder (qo_clos R).
+
+  Proof. split. intro x. apply qo_refl. refl. apply qo_trans. Qed.
+
+  Variable R_prop : Proper (E ==> E ==> impl) R.
+
+  Global Instance qo_clos_prop : Proper (E ==> E ==> impl) (qo_clos R).
+
+  Proof.
+    intros x x' xx' y y' yy' h. revert x y h x' xx' y' yy'.
+    induction 1; intros x' xx' y' yy'.
+    apply qo_step. rewrite <- xx', <- yy'. hyp.
+    apply qo_refl. rewrite <- xx', <- yy'. hyp.
+    trans y. apply IHh1. hyp. refl. apply IHh2. refl. hyp.
+  Qed.
+
+  (*COQ: if removed, Coq fails in LComp*)
+  Global Instance qo_clos_prop_iff : Proper (E ==> E ==> iff) (qo_clos R).
+
+  Proof. apply proper_iff_2; class. Qed.
+
+  Lemma qo_clos_inv : forall t u,
+      qo_clos R t u -> E t u \/ exists v, R t v /\ qo_clos R v u.
+
+  Proof.
+    induction 1.
+    right. ex y. intuition. auto.
+    destruct IHqo_clos1 as [h1|[a [i1 i2]]];
+      destruct IHqo_clos2 as [h2|[b [j1 j2]]].
+    left. trans y; hyp.
+    right. ex b. rewrite h1. auto.
+    right. ex a. rewrite <- h2. auto.
+    right. ex a. intuition. trans b. trans y. hyp. apply qo_step. hyp. hyp.
+  Qed.
+
+End qo_clos.
 
 (***********************************************************************)
 (** Properties of [transp]. *)
