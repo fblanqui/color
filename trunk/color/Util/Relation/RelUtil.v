@@ -528,7 +528,7 @@ Section comp_clos.
     eapply comp_clos_incl. apply incl_union_r. refl. hyp.
   Qed.
 
-  Global Instance comp_clos_aeq R : Proper (E ==> E ==> impl) (comp_clos R).
+  Global Instance comp_clos_prop R : Proper (E ==> E ==> impl) (comp_clos R).
 
   Proof.
     intros u u' uu' v v' vv' h. inversion h; subst.
