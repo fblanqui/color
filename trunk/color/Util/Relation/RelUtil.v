@@ -82,10 +82,6 @@ Instance same_equiv A : Equivalence (@same A).
 
 Proof. fo. Qed.
 
-Instance same_sub_incl A : subrelation (@same A) (@incl A).
-
-Proof. fo. Qed.
-
 (***********************************************************************)
 (** Basic meta-theorems. *)
 
@@ -158,7 +154,7 @@ Proof.
   apply RS. eapply h. apply xx'. apply yy'. apply SR. hyp.
 Qed.
 
-Instance prop_rel_subrel A (R S : rel A) :
+Lemma prop_subrel A (R S : rel A) :
   Equivalence S -> subrelation R S -> Proper (R ==> R ==> impl) S.
 
 Proof.
@@ -175,11 +171,6 @@ Proof.
   eapply f_prop. apply xx'. apply yy'. hyp.
   eapply f_prop. sym. apply xx'. sym. apply yy'. hyp.
 Qed.
-
-Instance equiv_prop A (R : rel A) :
-  Transitive R -> Symmetric R -> Proper (R ==> R ==> impl) R.
-
-Proof. intros R_trans R_sym t t' tt' u u' uu' tu. trans t. hyp. trans u; hyp. Qed.
 
 (***********************************************************************)
 (** Empty relation. *)
@@ -344,28 +335,26 @@ Proof. fo. Qed.
 (***********************************************************************)
 (** Properties of [IS]. *)
 
-Instance IS_incl A : Proper (incl ==> eq ==> impl) (@IS A).
+Instance IS_incl A : Proper (incl ==> Logic.eq ==> impl) (@IS A).
 
-Proof. intros R S RS f g fg h i. subst. apply RS. apply h. Qed.
+Proof. intros R S RS f g fg h i. subst. fo. Qed.
 
-Instance IS_same A : Proper (same ==> eq ==> impl) (@IS A).
+Instance IS_same A : Proper (same ==> Logic.eq ==> impl) (@IS A).
 
-Proof.
-  intros R S [RS SR] f g fg h. eapply IS_incl. apply RS. apply fg. hyp.
-Qed.
+Proof. intros R S RS f g fg h. subst. fo. Qed.
 
 Instance EIS_same A : Proper (same ==> impl) (@EIS A).
 
 Proof. intros R S RS h. destruct h as [f h]. exists f. rewrite <- RS. hyp. Qed.
 
-Lemma NT_IS_elt A (R : rel A) : forall f k, IS R f -> NT R (f k).
+Lemma NT_IS_elt A (R : rel A) f k : IS R f -> NT R (f k).
 
-Proof. intros f k hf. exists (fun i => f (i+k)). fo. Qed.
+Proof. intro hf. exists (fun i => f (i+k)). fo. Qed.
 
-Lemma red_NT A (R : rel A) : forall t u, R t u -> NT R u -> NT R t.
+Lemma red_NT A (R : rel A) t u : R t u -> NT R u -> NT R t.
 
 Proof.
-  intros t u tu [f [f0 hf]]. subst.
+  intros tu [f [f0 hf]]. subst.
   exists (fun k => match k with 0 => t | S k' => f k' end).
   intuition. intro k. destruct k. hyp. apply hf.
 Qed.
@@ -396,16 +385,14 @@ Definition compose A (R S : rel A) : rel A :=
 
 Infix "@" := compose (at level 40) : relation_scope.
 
-Instance compose_incl A :
-  Proper (incl ==> incl ==> incl) (@compose A).
+Instance compose_incl A : Proper (incl ==> incl ==> incl) (@compose A).
 
 Proof. fo. Qed.
 
 (*FIXME: try to remove*)
 Ltac comp := apply compose_incl; try incl_refl.
 
-Instance compose_same A :
-  Proper (same ==> same ==> same) (@compose A).
+Instance compose_same A : Proper (same ==> same ==> same) (@compose A).
 
 Proof. fo. Qed.
 
@@ -608,8 +595,7 @@ Proof.
   apply t_step. apply H. hyp. trans y; hyp.
 Qed.
 
-Instance tc_same A :
-  Proper (same ==> same) (@clos_trans A).
+Instance tc_same A : Proper (same ==> same) (@clos_trans A).
 
 Proof. intros R S [RS SR]. split; apply tc_incl; hyp. Qed.
 
@@ -694,10 +680,8 @@ Proof.
   trans y. apply IHxy1. hyp. refl. apply IHxy2. refl. hyp.
 Qed.
 
-(*REMOVE? used in MultisetOrder*)
-Instance tc_prop_iff A (R E : rel A) : Equivalence E
-  -> Proper (E ==> E ==> iff) R
-  -> Proper (E ==> E ==> iff) (clos_trans R).
+Lemma tc_prop_iff A (R E : rel A) : Equivalence E
+  -> Proper (E ==> E ==> iff) R -> Proper (E ==> E ==> iff) (clos_trans R).
 
 Proof.
   intros E_eq R_prop. apply prop_rel_sym; class. apply tc_prop; class.
@@ -1212,8 +1196,7 @@ Section inverse_image.
 
 End inverse_image.
 
-Instance Rof_incl A B :
-  Proper (incl ==> Logic.eq ==> incl) (@Rof A B).
+Instance Rof_incl A B : Proper (incl ==> Logic.eq ==> incl) (@Rof A B).
 
 Proof. intros R S RS f g fg. subst g. fo. Qed.
 
@@ -1254,7 +1237,7 @@ Inductive clos_refl_trans1 A (R : rel A) : rel A :=
 
 Notation "x #1" := (clos_refl_trans1 x) (at level 9) : relation_scope.
 
-Instance rtc1_trans A (R : rel A) : PreOrder (R#1).
+Instance rtc1_preorder A (R : rel A) : PreOrder (R#1).
 
 Proof.
   split; intro x. apply rt1_refl.
@@ -1293,7 +1276,7 @@ Proof.
   induction xRSy as [xRy | xSy].
   apply rt1_trans with m.
   exists x. split. refl. hyp.
-  apply rtc1_trans with n; trivial.
+  apply rtc1_preorder with n; trivial.
   apply rt1_trans with n; trivial. refl.
   apply rt1_trans with n.
   destruct mn as [q [mq qn]]. exists q. split; trivial.
@@ -1318,7 +1301,7 @@ Lemma incl_rt1_union_union A (R S : rel A) : (R!1 U S!1)#1 << (R U S)#1.
 
 Proof.
   intros x y xRy. induction xRy. refl.
-  apply rtc1_trans with y; trivial.
+  apply rtc1_preorder with y; trivial.
   destruct H.
   apply union_rel_rt1_left. apply tc1_incl_rtc1. hyp.
   apply union_rel_rt1_right. apply tc1_incl_rtc1. hyp.
@@ -1328,7 +1311,7 @@ Lemma incl_union_rt1_union A (R S : rel A) : (R U S)#1 << (R!1 U S!1)#1.
 
 Proof.
   intros x y xRy. induction xRy. refl.
-  apply rtc1_trans with y; trivial.
+  apply rtc1_preorder with y; trivial.
   destruct H.
   apply union_rel_rt1_left. apply rt1_trans with y.
   apply t1_step. hyp. refl.
@@ -1375,7 +1358,7 @@ Proof.
   assert (((R!1)@(S#1)) m p) as mRedp. apply comm; exists o; split; hyp.
   destruct mRedp as [x [mRx xSp]].
   exists x. split. hyp.
-  apply rtc1_trans with p.
+  apply rtc1_preorder with p.
   apply union_rel_rt1_right. hyp. hyp.
 
   assert (((R!1)@(S#1)) m p) as mRedp. apply comm; exists o; split; hyp.
@@ -1383,8 +1366,8 @@ Proof.
   exists x. split. hyp. hyp.
   destruct mRedp as [n [mRn sSp]].
   exists n; split. hyp.
-  apply rtc1_trans with q.
-  apply rtc1_trans with p.
+  apply rtc1_preorder with q.
+  apply rtc1_preorder with p.
   apply union_rel_rt1_right. hyp.
   apply union_rel_rt1_left. apply tc1_incl_rtc1. hyp.    
   hyp.
