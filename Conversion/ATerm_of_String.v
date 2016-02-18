@@ -296,7 +296,7 @@ apply (red_mod0_maxvar (rules_preserve_vars_trs_of_srs E)
 apply H1 with (string_of_term y). 3: refl.
 2: rewrite (term_of_string_epi h); hyp. rewrite <- (string_of_term_epi x).
 apply sred_mod_of_red_mod. subst.
-eapply inclusion_elim with (R := red_mod0 (trs_of_srs E) (trs_of_srs R)).
+eapply incl_elim with (R := red_mod0 (trs_of_srs E) (trs_of_srs R)).
 apply red_mod0_incl_red_mod. hyp.
 Qed.
 

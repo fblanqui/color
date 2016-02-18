@@ -174,7 +174,7 @@ is transitive. *)
         repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
 
         (* i not in (pi f) *)
-        apply eq_Refl_rel. hyp. apply args_eq. unfold vt, vu.
+        apply eq_incl_refl_rel. hyp. apply args_eq. unfold vt, vu.
         apply Vfilter_eq_notin with (l:=pi f). intros hi h.
         ded (in_map N_val h). contr.
       Qed.

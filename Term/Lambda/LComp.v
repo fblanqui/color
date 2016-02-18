@@ -182,7 +182,7 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
   Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
   Proof.
-    eapply stable_same_rel. apply R_aeq_alt. apply stable_union.
+    eapply stable_same_iff. apply R_aeq_alt. apply stable_union.
     apply subs_beta_aeq. apply subs_eta_aeq.
   Qed.
 
@@ -226,12 +226,12 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
     intro r. apply R_aeq_alt in r. destruct r as [r|r].
     destruct (beta_aeq_apps_fun r) as [vs [h1 h2]].
     ex vs. split_all. (*COQ:rewrite clos_mon does not work*)
-    unfold Rh. eapply clos_vaeq_same_rel. rewrite clos_mon_union. refl.
+    unfold Rh. eapply clos_vaeq_same. rewrite clos_mon_union. refl.
     eapply clos_vaeq_incl. apply incl_union_l. refl. hyp.
 
     destruct (eta_aeq_apps_fun r) as [vs [h1 h2]].
     ex vs. split_all. (*COQ:rewrite clos_mon does not work*)
-    unfold Rh. eapply clos_vaeq_same_rel. rewrite clos_mon_union. refl.
+    unfold Rh. eapply clos_vaeq_same. rewrite clos_mon_union. refl.
     eapply clos_vaeq_incl. apply incl_union_r. refl. hyp.
   Qed.
 

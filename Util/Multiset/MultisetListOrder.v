@@ -366,7 +366,7 @@ Module MultisetListOrder (ES : Eqset_dec).
         apply (Acc_inverse_image (list A) Multiset (MultisetLT r)
           list2multiset ss).
       cut (Acc (MultisetLt r) (list2multiset ss)).
-      apply Acc_incl; intros M N; unfold MultisetLT,MultisetLt,transp;
+      apply Inclusion.Acc_incl; intros M N; unfold MultisetLT, MultisetLt, transp;
         simpl; apply direct_subset_red; trivial.
       apply r_eqA.
       apply mord_acc with (gtA := r) (M := list2multiset ss); trivial.
@@ -401,7 +401,7 @@ Module MultisetListOrder (ES : Eqset_dec).
     intros r C1 C2 l Accs_l.
     elim (Restricted_acc_eq_acc (Accs r) (mult (transp r)) l); intros H1 H2.
     apply H1; clear H1 H2.
-    apply Acc_incl with (mult (transp r)).
+    apply Inclusion.Acc_incl with (mult (transp r)).
     intros a b H; elim H; trivial.
     apply HAccTermsToTermlist; trivial.
     unfold transp; simpl; intros x x' y y' Hxy Hx'y'.
@@ -455,5 +455,5 @@ Module MultisetListOrder (ES : Eqset_dec).
 
   End Mult_and_one_less.
 
-End  MultisetListOrder.
+End MultisetListOrder.
 

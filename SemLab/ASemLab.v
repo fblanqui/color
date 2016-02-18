@@ -359,8 +359,8 @@ Section S.
       intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
       ded (red_lab ge_compatR v H0). do 2 destruct H2. exists x0. intuition.
       apply rt_trans with (lab v x).
-      eapply inclusion_elim. apply rt_red_mod_union. hyp.
-      eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
+      eapply incl_elim. apply rt_red_mod_union. hyp.
+      eapply incl_elim. apply rtc_incl. apply red_incl.
       apply subset_union_l. hyp.
     Qed.
 
@@ -371,8 +371,8 @@ Section S.
       intros. do 2 destruct H. ded (rt_red_lab ge_compatE v H).
       ded (hd_red_lab v H0). do 2 destruct H2. exists x0. intuition.
       apply rt_trans with (lab v x).
-      eapply inclusion_elim. apply rt_red_mod_union. hyp.
-      eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
+      eapply incl_elim. apply rt_red_mod_union. hyp.
+      eapply incl_elim. apply rtc_incl. apply red_incl.
       apply subset_union_l. hyp.
     Qed.
 
@@ -385,7 +385,7 @@ Section S.
       apply WF_incl with (red_mod E R). 2: hyp. intros t u h. destruct h.
       destruct H0. apply rt_red_mod_Frs_Decr in H0. exists x.
       (*rewrite Frs_iso in H1. auto. *)
-      intuition. apply inclusion_elim with (R:=red (Frs HF R')).
+      intuition. apply incl_elim with (R:=red (Frs HF R')).
       rewrite Frs_iso. refl. hyp.
       (* <- *)
       set (v := fun x : variable => some_elt I).
@@ -404,7 +404,7 @@ Section S.
       apply WF_incl with (hd_red_mod E R). 2: hyp. intros t u h. destruct h.
       destruct H0. apply rt_red_mod_Frs_Decr in H0. exists x.
       (*rewrite Frs_iso in H1. auto. *)
-      intuition. apply inclusion_elim with (R:=hd_red (Frs HF R')).
+      intuition. apply incl_elim with (R:=hd_red (Frs HF R')).
       rewrite Frs_iso. refl. hyp.
       (* <- *)
       set (v := fun x : variable => some_elt I).
@@ -583,7 +583,7 @@ Definition enum2 R :=
 
       Proof.
         rewrite <- red_Rules, <- red_mod_Rules, WF_red_lab.
-        2: apply ge_compatR. apply WF_same_rel.
+        2: apply ge_compatR. apply WF_same.
         rewrite Rules_enum_Decr, lab_rules_enum. refl.
       Qed.
 
@@ -594,7 +594,7 @@ Definition enum2 R :=
 
       Proof.
         rewrite <- !red_mod_Rules, WF_red_mod_lab.
-        2: apply ge_compatE. 2: apply ge_compatR. apply WF_same_rel.
+        2: apply ge_compatE. 2: apply ge_compatR. apply WF_same.
         rewrite of_app, Rules_enum_Decr, !lab_rules_enum. refl.
       Qed.
 
@@ -603,7 +603,7 @@ Definition enum2 R :=
 
       Proof.
         rewrite <- !hd_red_mod_Rules, WF_hd_red_mod_lab.
-        2: apply ge_compatE. apply WF_same_rel.
+        2: apply ge_compatE. apply WF_same.
         rewrite of_app, Rules_enum_Decr, !lab_rules_enum. refl.
       Qed.
 

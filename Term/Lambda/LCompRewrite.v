@@ -316,7 +316,7 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
   Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
   Proof.
-    eapply stable_same_rel. apply R_aeq_alt. apply stable_union.
+    eapply stable_same_iff. apply R_aeq_alt. apply stable_union.
     apply stable_union. apply subs_beta_aeq. apply subs_eta_aeq.
     apply subs_S_aeq.
   Qed.
@@ -394,16 +394,16 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
     intros f n us t h. apply R_aeq_alt in h. destruct h as [[h|h]|h].
     (* beta *)
     left. destruct (beta_aeq_apps_fun h) as [vs [h1 h2]]; subst.
-    ex vs. split_all. eapply inclusion_elim. rewrite clos_vaeq_alt.
+    ex vs. split_all. eapply incl_elim. rewrite clos_vaeq_alt.
     apply incl_union_l. apply incl_union_l. refl. hyp.
     (* eta *)
     left. destruct (eta_aeq_apps_fun h) as [vs [h1 h2]]; subst.
-    ex vs. split_all. eapply inclusion_elim. rewrite clos_vaeq_alt.
+    ex vs. split_all. eapply incl_elim. rewrite clos_vaeq_alt.
     apply incl_union_l. apply incl_union_r. refl. hyp.  
     (* rewrite *)
     destruct (rewrite_aeq_apps_fun h)
       as [[vs [h1 h2]]|[p [ls [r [s [q [vs [h0 [h1 [h2 h3]]]]]]]]]]; clear h.
-    left. ex vs. split_all. eapply inclusion_elim. rewrite clos_vaeq_alt.
+    left. ex vs. split_all. eapply incl_elim. rewrite clos_vaeq_alt.
     apply incl_union_r. refl. hyp.
     right. ex p ls r s q vs h0. split_all.
   Qed.

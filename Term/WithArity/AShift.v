@@ -9,7 +9,7 @@ term variables shifting
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs ListUtil VecUtil VecMax NatUtil RelUtil.
+Require Import LogicUtil ATrs RelUtil ListUtil VecUtil VecMax NatUtil.
 
 Section S.
 

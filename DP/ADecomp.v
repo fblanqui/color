@@ -9,7 +9,7 @@ decomposition of an over DP graph
 
 Set Implicit Arguments.
 
-Require Import AGraph Union ATrs ListUtil RelUtil LogicUtil SN ListForall
+Require Import AGraph Union ATrs RelUtil ListUtil LogicUtil SN ListForall
   BoolUtil VecUtil.
 
 Section S.

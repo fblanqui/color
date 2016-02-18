@@ -326,7 +326,7 @@ Module Make (Export L : L_Struct).
   Proof. intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
 
   Instance subs_rel_e :
-    Proper (same_rel ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
+    Proper (same ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
 
   Proof.
     intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'.
@@ -1077,14 +1077,14 @@ on some finite set of variables *)
 
     Definition stable R := Proper (Logic.eq ==> R ==> R) subs.
 
-    Instance stable_same_rel_impl : Proper (same_rel ==> impl) stable.
+    Instance stable_same : Proper (same ==> impl) stable.
 
     Proof.
       intros S T e subs_S s s' ss' t u tu. subst s'. rewrite rel_eq in e.
       rewrite <- e. apply subs_S. refl. rewrite e. hyp.
     Qed.
 
-    Instance stable_same_rel : Proper (same_rel ==> iff) stable.
+    Instance stable_same_iff : Proper (same ==> iff) stable.
 
     Proof. intros S T e. split; intro h. rewrite <- e. hyp. rewrite e. hyp. Qed.
 

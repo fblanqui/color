@@ -147,7 +147,7 @@ Section props.
     apply rt_step. apply red_incl with R. apply subset_union_r. hyp.
     apply rt_step. apply red_incl with R. apply subset_union_r. hyp.
     apply rt_trans with y.
-    eapply inclusion_elim. apply clos_refl_trans_inclusion. apply red_incl.
+    eapply incl_elim. apply rtc_incl. apply red_incl.
     apply subset_union_l. hyp.
     auto.
   Qed.

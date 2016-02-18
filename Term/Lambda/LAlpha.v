@@ -1082,7 +1082,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     apply clos_aeq_intro with (u':=u') (v':=v'); fo.
   Qed.
 
-  Instance clos_aeq_same_rel : Proper (same_rel ==> same_rel) clos_aeq.
+  Instance clos_aeq_same : Proper (same ==> same) clos_aeq.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
@@ -1589,15 +1589,13 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   End clos_vaeq.
 
-  (** [clos_vaeq] is compatible with [inclusion] and [same_rel]. *)
+  (** [clos_vaeq] is compatible with [inclusion] and [same]. *)
 
-  Instance clos_vaeq_incl n :
-    Proper (inclusion ==> inclusion) (@clos_vaeq n).
+  Instance clos_vaeq_incl n : Proper (incl ==> incl) (@clos_vaeq n).
 
   Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 
-  Instance clos_vaeq_same_rel n :
-    Proper (same_rel ==> same_rel) (@clos_vaeq n).
+  Instance clos_vaeq_same n : Proper (same ==> same) (@clos_vaeq n).
 
   Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 

@@ -536,8 +536,6 @@ Module NatVar <: Var.
     intro h. apply max_elt_3 in h. fo.
   Qed.
 
-  Require FSetUtil.
-
   Module Export XSetUtil := FSetUtil.Make XSet.
 
   Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
@@ -699,9 +697,9 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Properties of [Monotone]. *)
 
-  (** Monotony is compatible with [same_rel]. *)
+  (** Monotony is compatible with [same]. *)
 
-  Instance Monotone_impl : Proper (same_rel ==> impl) Monotone.
+  Instance Monotone_impl : Proper (same ==> impl) Monotone.
 
   Proof.
     intros R S [RS SR] h. split.
@@ -784,7 +782,7 @@ Module Make (Export L : L_Struct).
 
   Proof. intros R S RS. induction 1; try mon. apply m_step. apply RS. hyp. Qed.
 
-  Instance clos_mon_same_rel : Proper (same_rel ==> same_rel) clos_mon.
+  Instance clos_mon_same : Proper (same ==> same) clos_mon.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 

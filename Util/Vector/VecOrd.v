@@ -250,7 +250,7 @@ Arguments Vrel1_app_impl [A R n v1 v2] _.
 Arguments Vrel1_sub [A R n v1 v2 p q] h _.
 
 (***********************************************************************)
-(** Compatibility of [Vrel1] with [inclusion] and [same_rel]. *)
+(** Compatibility of [Vrel1] with [inclusion] and [same]. *)
 
 Require Import Morphisms.
 
@@ -267,8 +267,8 @@ Instance Vrel1_incl n A : Proper (inclusion ==> inclusion) (@Vrel1 n A).
 
 Proof. intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel1_app_incl. hyp. Qed.
 
-Instance Vrel1_app_same_rel n A :
-  Proper (same_rel ==> same_rel) (@Vrel1_app n A).
+Instance Vrel1_app_same n A :
+  Proper (same ==> same) (@Vrel1_app n A).
 
 Proof.
   intros R R' RR'. rewrite rel_eq. intros v1 v2. unfold Vrel1.
@@ -276,10 +276,10 @@ Proof.
     ex i vi x j vj h y; fo.
 Qed.
 
-Instance Vrel1_same_rel n A : Proper (same_rel ==> same_rel) (@Vrel1 n A).
+Instance Vrel1_same n A : Proper (same ==> same) (@Vrel1 n A).
 
 Proof.
-  intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel1_app_same_rel. hyp.
+  intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel1_app_same. hyp.
 Qed.
 
 (***********************************************************************)
