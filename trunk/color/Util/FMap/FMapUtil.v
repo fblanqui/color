@@ -45,7 +45,7 @@ Module Make (Export XMap : FMapInterface.S).
 
     Proof. fo. Qed.
 
-    Global Instance Equiv_m A : Proper (same_rel ==> same_rel) (@Equiv A).
+    Global Instance Equiv_m A : Proper (same ==> same) (@Equiv A).
 
     Proof. fo. Qed.
 
@@ -89,7 +89,7 @@ Module Make (Export XMap : FMapInterface.S).
     Qed.
 
     Global Instance transpose_neqkey_m : forall B,
-      Proper (same_rel ==> Logic.eq ==> iff) (@transpose_neqkey A B).
+      Proper (same ==> Logic.eq ==> iff) (@transpose_neqkey A B).
 
     Proof.
       intros B R R' [h1 h2] f f' ff'. split; apply transpose_neqkey_m'; auto.
@@ -491,7 +491,7 @@ and satisfies some commutation property. *)
 
       Proof.
         intros heq fm m m' mm'. rewrite !for_all_eq.
-        apply fold_Equal; intuition. eapply Proper_inclusion_3.
+        apply fold_Equal; intuition. eapply prop3_incl.
         5: apply for_all_aux_m. refl. intros x y xy. subst y. refl.
         refl. refl. hyp.
       Qed.

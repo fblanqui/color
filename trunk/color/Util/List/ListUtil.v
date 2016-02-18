@@ -270,13 +270,13 @@ Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
 Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition. Qed.
 
 Instance incl_lequiv1 A1 B (f : list A1 -> relation B) :
-  Proper (incl ==> inclusion) f -> Proper (lequiv ==> same_rel) f.
+  Proper (incl ==> inclusion) f -> Proper (lequiv ==> same) f.
 
 Proof. intros hf l1 l1' [l1l1' l1'l1]. split; apply hf; hyp. Qed.
 
 Instance incl_lequiv2 A1 A2 B (f : list A1 -> list A2 -> relation B) :
   Proper (incl ==> incl ==> inclusion) f ->
-  Proper (lequiv ==> lequiv ==> same_rel) f.
+  Proper (lequiv ==> lequiv ==> same) f.
 
 Proof.
   intros hf l1 l1' [l1l1' l1'l1] l2 l2' [l2l2' l2'l2]. split; apply hf; hyp.
@@ -1760,8 +1760,7 @@ Instance transpose_inclusion A B :
 
 Proof. intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h. Qed.
 
-Instance transpose_same_rel A B :
-  Proper (same_rel ==> eq ==> iff) (@transpose A B).
+Instance transpose_same A B : Proper (same ==> eq ==> iff) (@transpose A B).
 
 Proof.
   intros R R' [h1 h2] f f' ff'. subst f'.

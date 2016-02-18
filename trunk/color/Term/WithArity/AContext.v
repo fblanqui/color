@@ -439,7 +439,7 @@ Section S.
 
   Proof.
     induction c. simpl. refl. simpl fill. rewrite vars_fun. simpl.
-    unfold incl. intros. ded (in_vars_vec_elim H). do 2 destruct H0.
+    unfold List.incl. intros. ded (in_vars_vec_elim H). do 2 destruct H0.
     ded (Vin_cast_elim H0). ded (Vin_app H2). destruct H3.
     repeat apply in_appl. apply (vars_vec_in H1 H3).
     simpl in H3. destruct H3. subst x. ded (IHc _ H1).

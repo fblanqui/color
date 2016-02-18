@@ -84,10 +84,10 @@ Section S.
     tauto.
     destruct (H x a). exists x0. rewrite H4. simpl.
     assert (length x0 <= S (length l)). omega. 
-    assert (incl x0 (a :: l)). apply incl_tl. tauto.
+    assert (x0 [= a :: l). apply incl_tl. tauto.
     tauto. exists (a::x0). simpl.
     assert (S (length x0) <= S (length l)). omega. 
-    assert (incl (a :: x0) (a :: l)). apply cons_incl. refl. tauto.
+    assert (a :: x0 [= a :: l). apply cons_incl. refl. tauto.
     assert (a<>x). intro. rewrite H7 in H4. tauto.
     assert (a<>y). intro. rewrite H8 in H2. tauto. tauto.
   Qed.
@@ -300,11 +300,11 @@ Section restriction.
   Variables (A : Type) (R : relation A) (l : list A).
 
   Lemma restricted_path_incl : is_restricted R l ->
-    forall m x y, path R x y m -> incl (x :: m ++ y :: nil) l.
+    forall m x y, path R x y m -> x :: m ++ y :: nil [= l.
 
   Proof.
     induction m; simpl; intros.
-    ded (H _ _ H0). unfold is_restricted in H. unfold incl. simpl. intuition.
+    ded (H _ _ H0). unfold is_restricted in H. unfold List.incl. simpl. intuition.
     subst a. exact H2. subst a. exact H3.
     destruct H0. apply incl_cons. ded (H _ _ H0). unfold is_restricted in H2.
     intuition.

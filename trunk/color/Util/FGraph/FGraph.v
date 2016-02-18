@@ -115,7 +115,7 @@ they define the same relation. See below for more details. *)
   Qed.
 
   (*COQ: can be removed? used in rel_set_fold_add_edge *)
-  Instance succ_m : Proper (eq ==> XSet.Equal ==> same_rel) succ.
+  Instance succ_m : Proper (eq ==> XSet.Equal ==> same) succ.
 
   Proof.
     intros x x' xx' s s' ss'. split.
@@ -234,7 +234,7 @@ same relation *)
   Instance geq_Equal : Proper (Equal ==> Equal ==> iff) geq.
 
   Proof.
-    eapply Proper_inclusion_2. 4: apply geq_meq.
+    eapply prop2_incl. 4: apply geq_meq.
     apply Equal_meq. apply Equal_meq. refl.
   Qed.
 
@@ -344,7 +344,7 @@ same relation *)
     XSet.mem y (succs x g) = true -> g U id x y == g.
 
   Proof.
-    intros g x y h. split. rewrite union_incl. split. refl.
+    intros g x y h. split. rewrite union_incl_eq. split. refl.
     intros a b [xa yb]. rewrite xa, yb. rewrite <- mem_succs_rel. hyp.
     apply incl_union_l. refl.
   Qed.
@@ -431,10 +431,10 @@ successors of g' *)
     preds_aux.
 
   Proof.
-    eapply Proper_inclusion_4. 6: apply preds_aux_m.
-    apply eq_Refl_rel. class.
+    eapply prop4_incl. 6: apply preds_aux_m.
+    apply eq_incl_refl_rel. class.
     refl.
-    apply eq_Refl_rel. class.
+    apply eq_incl_refl_rel. class.
     refl.
     refl.
   Qed.
@@ -620,7 +620,7 @@ successors of g' *)
 
   Proof.
     intros x y z g. unfold geq. rewrite !rel_add_edge.
-    unfold same_rel, inclusion, id, Relation_Operators.union. tauto.
+    unfold same, inclusion, id, Relation_Operators.union. tauto.
   Qed.
 
 (***********************************************************************)
@@ -639,7 +639,7 @@ successors of g' *)
     (* add *)
     intros z g s nzs e. rewrite rel_add_edge. rewrite e.
     rewrite R.union_assoc. rewrite union_commut with (R:=rel g0).
-    rewrite <- R.union_assoc. apply R.union_same_rel. 2: refl.
+    rewrite <- R.union_assoc. apply R.union_same. 2: refl.
     rewrite rel_eq; intros a b. unfold succ, Relation_Operators.union, id.
     rewrite add_iff, (eq_com b z). tauto.
   Qed.

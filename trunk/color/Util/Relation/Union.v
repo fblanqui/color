@@ -143,7 +143,7 @@ Section S.
     assert (SN (R!1 U S!1) x) as sntr.
     apply sn_comm_sntr; trivial.
     apply (SN_incl (R!1 U S!1)).
-    apply union_inclusion.
+    apply union_incl.
     intros a b. apply t1_step.
     intros a b. apply t1_step.
     hyp.

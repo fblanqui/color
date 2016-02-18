@@ -9,8 +9,8 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN RelUtil LogicUtil Morphisms NatUtil VecUtil VecOrd Basics
-        ListUtil.
+Require Import SN LogicUtil Morphisms NatUtil VecUtil VecOrd Basics
+        ListUtil RelUtil.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)
@@ -47,7 +47,7 @@ Section lex.
 
   Proof.
     intros a SN_a a' eqaa'. apply SN_intro. intros a'' gta'a''.
-    inversion SN_a. apply H. apply (inclusion_elim Hcomp). exists a'. auto.
+    inversion SN_a. apply H. apply (incl_elim Hcomp). exists a'. auto.
   Qed.
 
   Lemma lex_SN_eq : forall a b,
@@ -57,7 +57,7 @@ Section lex.
     intros a b SN_ab a' eqaa'. inversion SN_ab. apply SN_intro.
     destruct y as (a'',b'). intro H'.
     inversion H'; subst a'0 b'0 a0 b0; apply H.
-    apply lex1. apply (inclusion_elim Hcomp). exists a'. auto.
+    apply lex1. apply (incl_elim Hcomp). exists a'. auto.
     apply lex2. apply (eqA_trans eqaa' H3). exact H5.
   Qed.
 
@@ -93,16 +93,14 @@ Qed.
 
 (** [lex] is monotone wrt inclusion. *)
 
-Instance lex_incl A B :
-  Proper (inclusion ==> inclusion ==> inclusion ==> inclusion) (@lex A B).
+Instance lex_incl A B : Proper (incl ==> incl ==> incl ==> incl) (@lex A B).
 
 Proof.
   intros gtA gtA' gtAgtA' eqA eqA' eqAeqA' gtB gtB' gtBgtB' t u tu.
   inversion tu; clear tu; subst. apply lex1. fo. apply lex2; fo.
 Qed.
 
-Instance lex_same_rel A B :
-  Proper (same_rel ==> same_rel ==> same_rel ==> same_rel) (@lex A B).
+Instance lex_same A B : Proper (same ==> same ==> same ==> same) (@lex A B).
 
 Proof.
   intros gtA1 gtA' [gtAgtA' gtA'gtA] eqA eqA' [eqAeqA' eqA'eqA]
@@ -180,13 +178,12 @@ Section lexn.
 
 End lexn.
 
-(** Monotony wrt inclusion. *)
+(** Monotony wrt incl. *)
 
-Instance lexn_incl : forall A n,
-  Proper (inclusion ==> inclusion ==> inclusion) (@lexn n A). 
+Instance lexn_incl A : forall n, Proper (incl ==> incl ==> incl) (@lexn n A). 
 
 Proof.
-  intro A. induction n; simpl. fo.
+  induction n; simpl. fo.
   intros eqA eqA' eqAeqA' gt gt' gtgt'. apply lex_incl; auto.
   apply IHn; hyp.
 Qed.
@@ -308,10 +305,9 @@ Section lexv.
 
 End lexv.
 
-(** Monotony wrt inclusion. *)
+(** Monotony wrt incl. *)
 
-Instance lexv_incl n A :
-  Proper (inclusion ==> inclusion ==> inclusion) (@lexv n A). 
+Instance lexv_incl n A : Proper (incl ==> incl ==> incl) (@lexv n A). 
 
 Proof. intros eq eq' eqeq' gt gt' gtgt' t u. apply lexn_incl; hyp. Qed.
 
@@ -480,8 +476,7 @@ Section lexl.
 
 End lexl.
 
-Instance lexl_incl m A :
-  Proper (inclusion ==> inclusion ==> inclusion) (@lexl m A). 
+Instance lexl_incl m A : Proper (incl ==> incl ==> incl) (@lexl m A). 
 
 Proof.
   intros eq eq' eqeq' gt gt' gtgt' xs ys h. destruct h.

@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Require Export AContext ASubstitution.
 
-Require Import ARelation ListUtil ListNodup LogicUtil VecUtil RelUtil
+Require Import ARelation ListNodup LogicUtil VecUtil RelUtil ListUtil
   ListForall SN BoolUtil EqUtil NatUtil.
 
 Section basic_definitions.
@@ -624,8 +624,8 @@ Section S.
 
     Proof.
       unfold hd_red_Mod, hd_red_mod.
-      apply compose_inclusion. assert (int_red E # << red E #).
-      apply clos_refl_trans_inclusion. apply int_red_incl_red. eauto. refl.
+      apply compose_incl. assert (int_red E # << red E #).
+      apply rtc_incl. apply int_red_incl_red. eauto. refl.
     Qed.
 
     Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.

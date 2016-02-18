@@ -121,8 +121,7 @@ Section OrderDefinition.
 
   Proof.
     intros a b ab c d cd. unfold clos_transM_RedGt.
-    refine (RelUtil.clos_trans_morph
-              meq_Equivalence MultisetRedGt_morph a b ab c d cd).
+    refine (RelUtil.tc_prop_iff meq_Equivalence MultisetRedGt_morph a b ab c d cd).
   Qed.
 
   Instance clos_transM_RedLt_morph :
@@ -130,7 +129,7 @@ Section OrderDefinition.
 
   Proof.
     intros a b ab c d cd. unfold clos_transM_RedLt.
-    refine (RelUtil.clos_trans_morph meq_Equivalence _ a b ab c d cd).
+    refine (RelUtil.tc_prop_iff meq_Equivalence _ a b ab c d cd).
     reduce. unfold MultisetRedLt. unfold transp. rewrite H, H0. reflexivity.
   Qed.
 
@@ -218,8 +217,7 @@ Section OrderDefinition.
 
   Proof.
     compute. intros a a' a_a' b b' b_b'.
-    refine (RelUtil.clos_trans_morph
-              eqA_Equivalence gtA_morph a a' a_a' b b' b_b').
+    refine (RelUtil.tc_prop_iff eqA_Equivalence gtA_morph a a' a_a' b b' b_b').
   Qed.
 
   Instance geA_morph : Proper (eqA ==> eqA ==> iff) geA.

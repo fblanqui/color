@@ -11,7 +11,7 @@ Inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-Require Import RelUtil Morphisms LogicUtil List Basics Omega.
+Require Import Morphisms LogicUtil List RelUtil Basics Omega.
 
 (***********************************************************************)
 (** ** Definition of strong normalization.
@@ -147,17 +147,17 @@ Proof. intros RS x hx. eapply SN_inclusion. apply RS. refl. hyp. Qed.
 
 Arguments SN_incl [A] _ _ _ _ _.
 
-Instance SN_same_relation A : Proper (same_rel ==> eq ==> iff) (@SN A).
+Instance SN_same A : Proper (same ==> eq ==> iff) (@SN A).
 
 Proof. intros R S RS x y xy. subst y. split; apply SN_incl; fo. Qed.
 
-Lemma SN_same_rel A (R S : rel A) : R == S -> forall x, SN R x <-> SN S x.
+Lemma SN_same_ext A (R S : rel A) : R == S -> forall x, SN R x <-> SN S x.
 
 Proof.
   intros RS x. split; intro hx. apply (SN_incl R); fo. apply (SN_incl S); fo.
 Qed.
 
-Instance WF_incl A : Proper (inclusion --> impl) (@WF A).
+Instance WF_incl A : Proper (incl --> impl) (@WF A).
 
 Proof.
   intros S R RS S_wf x. gen (S_wf x). revert x. induction 1.
@@ -166,7 +166,7 @@ Qed.
 
 Arguments WF_incl [A] _ _ _ _ _.
 
-Instance WF_same_rel A : Proper (same_rel ==> iff) (@WF A).
+Instance WF_same A : Proper (same ==> iff) (@WF A).
 
 Proof.
   intros x y x_eq_y. destruct x_eq_y. split; intro.
@@ -259,7 +259,7 @@ Section tc.
   Proof.
     induction 1. apply SN_intro. intros. ded (tc_split H1). do 2 destruct H2.
     apply SN_inv_rtc with (x := x0).
-    apply inclusion_elim with (R := R#). apply clos_refl_trans_inclusion.
+    apply incl_elim with (R := R#). apply rtc_incl.
     apply incl_tc. refl. hyp.
     apply H0. hyp.
   Qed.
@@ -375,7 +375,7 @@ Section compat.
 
   Proof.
     intros. apply SN_intro. intros. do 2 destruct H1. assert (h : (R @ E) x y).
-    exists x0; split. apply (inclusion_elim Hcomp). exists x'; split; hyp.
+    exists x0; split. apply (incl_elim Hcomp). exists x'; split; hyp.
     hyp. eapply SN_inv. apply h. hyp.
   Qed.
 
@@ -528,7 +528,7 @@ Section iter.
     intros. elim H; intros. do 2 (apply SN_intro; intros). destruct n.
     simpl in *. apply H1. exists y. intuition.
     assert ((iter R (S (S n)) @ iter R n) x0 y0).
-    apply inclusion_elim with (R := iter R (S n) @ iter R (S n)).
+    apply incl_elim with (R := iter R (S n) @ iter R (S n)).
     incl_trans (iter R (S n+S n+1)). apply iter_iter.
     assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
     exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
@@ -579,7 +579,7 @@ Section wf_mod_shift.
     intro. apply WF_incl with ((T # @ (R U S)) !).
     intros x y Rxy. apply tc_split_inv. apply comp_assoc.
     destruct Rxy as [z [STxz Rzy]]. exists z. split; [idtac | intuition].
-    apply rtc_union. apply clos_refl_trans_inclusion with (S U T); trivial.
+    apply rtc_union. apply rtc_incl with (S U T); trivial.
     intros s t STst. destruct STst as [Sst | Tst]; solve [intuition].
     apply WF_tc. hyp.
   Qed.
@@ -609,8 +609,8 @@ Section wf_rel_mod.
     apply incl_rtc_rtc with (S# @ R); [idtac | intuition].
     intros a b B. destruct B as [c [Sac Rcb]].
     constructor 3 with c; [idtac | intuition].
-    apply clos_refl_trans_inclusion with S; intuition.
-    apply clos_refl_trans_inclusion with S; intuition.
+    apply rtc_incl with S; intuition.
+    apply rtc_incl with S; intuition.
   Qed.
 
 End wf_rel_mod.
@@ -624,7 +624,7 @@ Section wf_rel_mod_simpl.
 
   Proof.
     intros. apply WF_incl with ((empty_rel U S)# @ (R' U R)).
-    comp. apply clos_refl_trans_inclusion. intuition.
+    comp. apply rtc_incl. intuition.
     apply wf_rel_mod. hyp.
     apply WF_incl with ((R U S)# @ R'); trivial.
     comp. apply union_empty_r.

@@ -339,7 +339,7 @@ Section S.
       hd_red_Mod_SCC' i << hd_red_Mod S (SCC_list_fast Hi).
 
   Proof.
-    intros. eapply inclusion_Trans. apply chain_SCC'_red_Mod.
+    intros. eapply incl_trans. apply chain_SCC'_red_Mod.
     ded (incl_SCC_list_fast Hi H). unfold inclusion; intros.
     destruct H1 as [z]; exists z. destruct H1; split; auto.
     do 4 destruct H2. destruct H3.

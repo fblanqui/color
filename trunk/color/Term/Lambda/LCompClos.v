@@ -557,7 +557,7 @@ Module SN_rewrite (Export CC : CC_Struct)
   Instance gt0_aeq : Proper (aeq ==> aeq ==> impl) gt0.
 
   Proof.
-    eapply restrict_proper with (E:=aeq). class.
+    eapply restrict_prop with (E:=aeq). class.
     unfold gt. rewrite <- clos_aeq_union. class.
   Qed.
 

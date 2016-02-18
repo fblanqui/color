@@ -18,9 +18,8 @@ Module Make (Export XSet : FSetInterface.S).
   Module Export XSetFacts := Facts XSet.
   Module Export XSetOrdProps := OrdProperties XSet.
 
-  Notation "s [=] t" := (Equal s t) (at level 70, no associativity).
-  Notation "s [<=] t" := (Subset s t) (at level 70, no associativity).
-  Notation "s [<>] t" := (~Equal s t) (at level 70, no associativity).
+  Infix "[=]" := Equal (at level 70, no associativity).
+  Infix "[<=]" := Subset (at level 70, no associativity).
 
   Arguments remove_1 [s x y] _ _.
   Arguments remove_3 [s x y] _.
