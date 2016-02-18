@@ -128,7 +128,7 @@ Ltac list_ok := let x := fresh in intro x;
 (** Properties of [incl]
   (non-order-preserving inclusion predicate on lists). *)
 
-Instance incl_PreOrder A : PreOrder (@incl A).
+Instance incl_preorder A : PreOrder (@incl A).
 
 Proof.
   constructor.

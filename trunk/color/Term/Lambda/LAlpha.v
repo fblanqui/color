@@ -166,7 +166,7 @@ Module Make (Export L : L_Struct).
   Proof. rewrite aeq_equiv_mon. apply ec_equiv. Qed.
 
   (*COQ: cannot be removed?*)
-  Instance aeq_PreOrder : PreOrder aeq.
+  Instance aeq_preorder : PreOrder aeq.
 
   Proof. split; class. Qed.
 

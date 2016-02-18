@@ -282,7 +282,7 @@ list of elements. *)
 
   Definition Pf_subset (P Q : Pf) := P [<=] Q.
 
-  Global Instance Pf_subset_PreOrder : PreOrder Pf_subset.
+  Global Instance Pf_subset_preorder : PreOrder Pf_subset.
 
   Proof. fo. Qed.
 
