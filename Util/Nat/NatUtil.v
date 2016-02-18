@@ -58,19 +58,19 @@ Ltac max :=
 (***********************************************************************)
 (** Properties of ordering relations on nat. *)
 
-Instance le_PreOrder : PreOrder le.
+Instance le_preorder : PreOrder le.
 
 Proof. split; intro; omega. Qed.
 
-Instance lt_Transitive : Transitive lt. 
+Instance lt_trans : Transitive lt. 
 
 Proof. intro; omega. Qed.
 
-Instance ge_PreOrder : PreOrder ge.
+Instance ge_preorder : PreOrder ge.
 
 Proof. split; intro; omega. Qed.
 
-Instance gt_Transitive : Transitive gt.
+Instance gt_trans : Transitive gt.
 
 Proof. intro; omega. Qed.
 

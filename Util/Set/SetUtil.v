@@ -1,6 +1,6 @@
 (**
 CoLoR, a Coq library on rewriting and termination.
-See the COPYRIGHTS and LICENSE files.
+See the COPYRIGHTSGHTS and LICENSE files.
 
 - Frederic Blanqui, 2009-06-26
 
@@ -64,7 +64,7 @@ Section S.
 (****************************************************************************)
 (** Properties of [subset]. *)
 
-  Global Instance subset_PreOrder : PreOrder subset.
+  Global Instance subset_preorder : PreOrder subset.
 
   Proof. fo. Qed.
 
@@ -113,7 +113,7 @@ Section S.
 
   Proof. intros X Y [XY nYX]. hyp. Qed.
 
-  Global Instance strict_subset_Transitive : Transitive strict_subset.
+  Global Instance strict_subset_trans : Transitive strict_subset.
 
   Proof. intros X Y Z [XY nYX] [YZ nZY]. split. trans Y; hyp. fo. Qed.
 
