@@ -36,6 +36,7 @@ Ltac gen t := generalize t.
 Ltac ded t := gen t; intro.
 Ltac class := fold impl; auto with typeclass_instances.
 Ltac decomp h := decompose [and or ex] h; clear h.
+Ltac inv h := inversion h; clear h; subst.
 
 Tactic Notation "ex" constr(x1) := exists x1.
 Tactic Notation "ex" constr(x1) constr(x2) := exists x1; exists x2.
