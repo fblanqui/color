@@ -26,8 +26,8 @@ Section lex.
   (** Definition of the lexicographic relation. *)
 
   Inductive lex : relation (prod A B) :=
-  | lex1 : forall a a' b b', gtA a a' -> lex (a,b) (a',b')
-  | lex2 : forall a a' b b', eqA a a' -> gtB b b' -> lex (a,b) (a',b').
+  | lex1 a a' b b' : gtA a a' -> lex (a,b) (a',b')
+  | lex2 a a' b b' : eqA a a' -> gtB b b' -> lex (a,b) (a',b').
 
   Lemma lex_intro : forall a a' b b',
     gtA a a' \/ (eqA a a' /\ gtB b b') -> lex (a,b) (a',b').

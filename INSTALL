@@ -19,6 +19,10 @@ N  | without Coccinelle | with Coccinelle
 6  |  8'59"             |  9'34"
 20 |  8'18"             |  8'12"
 
+Remark: to use a CoLoR file in your development, you need to prefix it
+with CoLoR and its complete path from the root directory of CoLoR. For
+instance, for LogicUtil, you need to write CoLoR.Util.Logic.LogicUtil.
+
 Enjoy!
 
 Self compilation and installation
