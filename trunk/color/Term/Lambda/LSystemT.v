@@ -59,12 +59,6 @@ Module BCmpTransLeibniz <: CmpTransLeibniz.
 
 End BCmpTransLeibniz.
 
-(** [OrderedType] structure for type constants. *)
-
-Module BMOT := MOT_of_CmpTransLeibniz BCmpTransLeibniz.
-
-Module BOrd := MOT_to_OT BMOT.
-
 (****************************************************************************)
 (** ** Types of System T. *)
 
