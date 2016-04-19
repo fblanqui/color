@@ -23,13 +23,13 @@ config Makefile.coq:
 clean:
 	rm -f `find . -name \*~`
 	-$(MAKECOQ) clean
-	rm -rf `find . -name .coq-native -o -name .\*.aux -o -name \*.time -o -name \*.cache`
+	rm -rf `find . -name .coq-native -o -name .\*.aux -o -name \*.cache`
 
 clean-dep:
 	rm -f `find . -name \*.v.d`
 
 clean-all: clean
-	rm -f Makefile.coq _CoqProject
+	rm -f Makefile.coq _CoqProject `find . -name \*.time`
 
 clean-doc:
 	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html
