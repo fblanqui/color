@@ -10,8 +10,8 @@ representation.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelExtras MultisetCore Permutation Multiset List
-  ListExtras PermutSetoid Omega.
+From Coq Require Import Permutation PermutSetoid Omega Multiset.
+From CoLoR Require Import LogicUtil RelExtras MultisetCore ListExtras.
 
 Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
 

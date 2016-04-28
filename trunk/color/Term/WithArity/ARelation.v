@@ -9,8 +9,9 @@ general definitions and results about relations on terms
 
 Set Implicit Arguments.
 
-Require Import SN ASubstitution ATerm RelUtil List AContext LogicUtil VecUtil
-  NaryFunction.
+From CoLoR Require Import SN ASubstitution ATerm RelUtil AContext LogicUtil
+     VecUtil NaryFunction.
+From Coq Require Import List.
 
 Section S.
 

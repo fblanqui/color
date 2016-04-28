@@ -10,10 +10,11 @@ algebraic terms with fixed arity
 
 Set Implicit Arguments.
 
-Require Export Vector ASignature.
-
-Require Import ListUtil LogicUtil EqUtil BoolUtil NatUtil Max VecUtil VecMax
-  ListMax.
+From Coq Require Export Vector.
+From CoLoR Require Export ASignature.
+From Coq Require Import Max.
+From CoLoR Require Import ListUtil LogicUtil EqUtil BoolUtil NatUtil VecUtil
+     VecMax ListMax.
 
 Notation variables := (list variable) (only parsing).
 
@@ -247,7 +248,7 @@ right. unfold not. intro. discr.
 intros f ts H u. destruct u. right. unfold not. intro. discr.
 case (eq_symbol_dec f f0); intro. subst f0. case (H v); intro. subst ts. auto.
 right. intro. injection H0. intro. assert (ts=v).
-(* FIXME: can be removed ? *) Require Import Eqdep.
+(* FIXME: can be removed ? *) From CoLoR Require Import Eqdep.
 apply (inj_pair2 Sig (fun f => terms (arity f))). hyp. auto.
 right. unfold not. intro. injection H0. intros. auto.
 (* nil *)

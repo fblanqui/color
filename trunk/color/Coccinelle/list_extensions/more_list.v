@@ -13,12 +13,12 @@
 
 Set Implicit Arguments.
 
-Require Import Bool.
-Require Import List.
-Require Import Arith.
-Require Import Setoid.
-Require Import Relations.
-Require Import closure.
+From Coq Require Import Bool.
+From Coq Require Import List.
+From Coq Require Import Arith.
+From Coq Require Import Setoid.
+From Coq Require Import Relations.
+From CoLoR Require Import closure.
 
 Definition length_app := app_length.
 Definition length_map := map_length.

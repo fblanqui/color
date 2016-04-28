@@ -10,10 +10,9 @@ rewriting
 
 Set Implicit Arguments.
 
-Require Export AContext ASubstitution.
-
-Require Import ARelation ListNodup LogicUtil VecUtil RelUtil ListUtil
-  ListForall SN BoolUtil EqUtil NatUtil.
+From CoLoR Require Export AContext ASubstitution.
+From CoLoR Require Import ARelation ListNodup LogicUtil VecUtil RelUtil
+     ListUtil ListForall SN BoolUtil EqUtil NatUtil.
 
 Section basic_definitions.
 
@@ -192,7 +191,7 @@ Ltac redtac := repeat
 (***********************************************************************)
 (** monotony properties *)
 
-Require Import Morphisms.
+From Coq Require Import Morphisms.
 
 Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
@@ -389,7 +388,7 @@ Section S.
 (***********************************************************************)
 (** preservation of variables under reduction *)
 
-  Require Import ListDec.
+  From CoLoR Require Import ListDec.
 
   Definition rules_preserve_vars (R : rules) :=
     forall l r, In (mkRule l r) R -> vars r [= vars l.
@@ -444,7 +443,7 @@ Section S.
       refl. trans (vars y); hyp.
     Qed.
 
-    Require Import ListMax.
+    From CoLoR Require Import ListMax.
 
     Lemma red_maxvar : forall t u, red R t u -> maxvar u <= maxvar t.
 
@@ -501,7 +500,7 @@ Section S.
 (***********************************************************************)
 (** biggest variable in a list of rules *)
 
-  Require Import Max.
+  From Coq Require Import Max.
 
   Definition maxvar_rule (a : rule) :=
     let (l,r) := a in max (maxvar l) (maxvar r).
@@ -552,7 +551,7 @@ Section S.
 
   Section vector.
 
-    Require Import VecOrd.
+    From CoLoR Require Import VecOrd.
 
     Variable R : rules.
 

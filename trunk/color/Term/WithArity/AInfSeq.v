@@ -10,8 +10,10 @@ WF_absorb. *)
 
 Set Implicit Arguments.
 
-Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
-  RelUtil ATrs LogicUtil ACalls SN InfSeq LeastNat ListUtil BoundNat Omega.
+From Coq Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
+     Omega.
+From CoLoR Require Import RelUtil ATrs LogicUtil ACalls SN InfSeq LeastNat
+     ListUtil BoundNat.
 
 Section S.
 
@@ -135,7 +137,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 (** get a minimal infinite (R @ supterm_eq)-sequence from an infinite
 R-sequence *)
 
-  Require Import NatUtil.
+  From CoLoR Require Import NatUtil.
 
   Section IS_Min_supterm.
 
@@ -172,7 +174,7 @@ R-sequence *)
 (** get an infinite (red R)-sub-sequence from an infinite
 (int_red R)-sequence *)
 
-  Require Import VecUtil.
+  From CoLoR Require Import VecUtil.
 
   Lemma NT_int_red_subterm_NT_red : forall (R : rules Sig) f,
     IS (int_red R) f -> exists u, subterm u (f 0) /\ NT (red R) u.
@@ -250,7 +252,7 @@ R-sequence *)
 (** get a minimal infinite (hd_red_mod R (dp R))-sequence from a
 minimal infinite R-sequence *)
 
-  Require Import ADP NotSN_IS ASN BoolUtil.
+  From CoLoR Require Import ADP NotSN_IS ASN BoolUtil.
 
   Section IS_Min_dp.
 
@@ -294,7 +296,7 @@ minimal infinite R-sequence *)
       apply ht2. apply subterm_sub. hyp. destruct hv as [hv1 hv2]. hyp.
     Qed.
 
-    Require Import ClassicUtil.
+    From CoLoR Require Import ClassicUtil.
 
     Definition Rdp : relation (NTM (red R)) := hd_red_Mod (int_red R #) (dp R).
 

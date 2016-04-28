@@ -10,9 +10,10 @@ well-founded monotone interpretations
 
 Set Implicit Arguments.
 
-Require Export AInterpretation.
-Require Import ATerm RelUtil ASubstitution NaryFunction AContext VecUtil SN
-  Max ARelation LogicUtil Omega.
+From CoLoR Require Export AInterpretation.
+From CoLoR Require Import ATerm RelUtil ASubstitution NaryFunction AContext
+     VecUtil SN ARelation LogicUtil.
+From Coq Require Import Max Omega.
 
 Section S.
 

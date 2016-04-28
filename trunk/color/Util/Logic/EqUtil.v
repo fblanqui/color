@@ -9,9 +9,11 @@ general lemmas and tactics
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Structures.Equalities RelUtil BoolUtil.
-Require Export EqdepFacts Eqdep_dec.
-Require Setoid.
+From Coq Require Import Structures.Equalities.
+From Coq Require Export EqdepFacts Eqdep_dec.
+From Coq Require Setoid.
+
+From CoLoR Require Import LogicUtil RelUtil BoolUtil.
 
 (***********************************************************************)
 (** Functor providing properties the basic properties of Leibniz

@@ -9,7 +9,7 @@ violation of variable condition
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs AVariables BoolUtil EqUtil ListUtil RelUtil
+From CoLoR Require Import LogicUtil ATrs AVariables BoolUtil EqUtil ListUtil RelUtil
   NatUtil APosition.
 
 Section S.

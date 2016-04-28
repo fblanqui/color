@@ -10,7 +10,7 @@ there is a loop in a relative SRS
 
 Set Implicit Arguments.
 
-Require Import Srs LogicUtil SLoop ListUtil.
+From CoLoR Require Import Srs LogicUtil SLoop ListUtil.
 
 Section S.
 
@@ -97,7 +97,7 @@ Section S.
 
   Notation default := (@nil letter).
 
-  Require Import NatUtil.
+  From CoLoR Require Import NatUtil.
 
   Lemma red_mod_nth : forall ts t, mod_FS t ts -> forall i, i < length ts ->
     red_mod E R (List.nth i (t::ts) default) (List.nth (S i) (t::ts) default).
@@ -155,7 +155,7 @@ Section S.
       subst. refl.
     Qed.
 
-    Require Import RelUtil.
+    From CoLoR Require Import RelUtil.
 
     Lemma red_last_string_g : red E # last_string (g t).
 
@@ -164,7 +164,7 @@ Section S.
       apply (rewrites_correct h1').
     Qed.
 
-    Require Import Euclid.
+    From Coq Require Import Euclid.
 
     Definition seq : nat -> string.
 
@@ -172,7 +172,8 @@ Section S.
       intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
     Defined.
 
-    Require Import RelUtil Wf_nat.
+    From CoLoR Require Import RelUtil.
+    From Coq Require Import Wf_nat.
 
     Lemma IS_seq : IS (red_mod E R) seq.
 

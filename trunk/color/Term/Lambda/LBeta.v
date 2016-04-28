@@ -10,9 +10,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat RelUtil Basics Morphisms LogicUtil VecUtil VecOrd SN
-  NatUtil.
-Require Export LAlpha.
+From Coq Require Import Wf_nat Basics Morphisms.
+From CoLoR Require Import RelUtil LogicUtil VecUtil VecOrd SN NatUtil.
+From CoLoR Require Export LAlpha.
 
 (****************************************************************************)
 (** Definition of beta-top-reduction. *)

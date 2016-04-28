@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import DepChoice NotSN SN RelUtil LogicUtil.
+From CoLoR Require Import DepChoice NotSN SN RelUtil LogicUtil.
 
 Section S.
 
@@ -28,7 +28,7 @@ Section S.
     intro. ded (proj1 Hg i). destruct (g i). destruct (g (S i)). hyp.
   Qed.
 
-  Require Import ClassicUtil.
+  From CoLoR Require Import ClassicUtil.
 
   Lemma notNT_SN : forall a, ~NT R a -> SN R a.
 

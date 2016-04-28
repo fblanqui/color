@@ -10,7 +10,7 @@ dependancy pairs
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs ACalls ACap ASN RelUtil ListUtil
+From CoLoR Require Import LogicUtil ATrs ACalls ACap ASN RelUtil ListUtil
   ListForall SN VecUtil VecOrd NatUtil.
 
 Section S.
@@ -192,7 +192,7 @@ Qed.
 (***********************************************************************)
 (** fundamental dp theorem *)
 
-Require Import BoolUtil.
+From CoLoR Require Import BoolUtil.
 
 Notation capa := (capa R).
 Notation cap := (cap R).
@@ -312,7 +312,7 @@ Implicit Arguments dp_elim_vars [Sig l t].
 (***********************************************************************)
 (** tactics *)
 
-Require Import AVariables.
+From CoLoR Require Import AVariables.
 
 Ltac chain := no_relative_rules; apply WF_chain;
   [ check_eq || fail 10 "a LHS is a variable"

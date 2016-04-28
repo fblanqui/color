@@ -14,22 +14,22 @@
 
 (** * Termination of rewriting *)
 
-Require Import List.
-Require Import Relations.
-Require Import Wellfounded.
-Require Import Arith.
-Require Import Recdef.
-Require Import Setoid.
-Require Import closure.
-Require Import more_list.
-Require Import weaved_relation.
-Require Import term_spec.
-Require Import equational_theory_spec.
-Require Import dp.
-Require Import graph_dp.
+From Coq Require Import List.
+From Coq Require Import Relations.
+From Coq Require Import Wellfounded.
+From Coq Require Import Arith.
+From Coq Require Import Recdef.
+From Coq Require Import Setoid.
+From CoLoR Require Import closure.
+From CoLoR Require Import more_list.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import equational_theory_spec.
+From CoLoR Require Import dp.
+From CoLoR Require Import graph_dp.
 
-Require Import terminaison.
-Require Import interp.
+From CoLoR Require Import terminaison.
+From CoLoR Require Import interp.
 
 Module MakeUsableDP (E : EqTh).
 

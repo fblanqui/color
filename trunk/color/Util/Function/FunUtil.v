@@ -9,7 +9,7 @@ useful definitions and lemmas on functions
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+From CoLoR Require Import LogicUtil.
 
 (****************************************************************************)
 (** Some properties of functions. *)
@@ -73,7 +73,7 @@ Infix "o" := comp (at level 70).
 (****************************************************************************)
 (** Inverse of a surjective function, using Hilbert's epsilon operator. *)
 
-Require Import EpsilonUtil.
+From CoLoR Require Import EpsilonUtil.
 
 Section inverse.
 

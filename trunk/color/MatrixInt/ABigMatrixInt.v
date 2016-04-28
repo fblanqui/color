@@ -16,8 +16,9 @@ References:
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Setoid Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  AWFMInterpretation NatUtil BigNUtil AMatrixBasedInt.
+From Coq Require Import Setoid.
+From CoLoR Require Import LogicUtil Matrix OrdSemiRing VecUtil AMonAlg
+     SN RelUtil AWFMInterpretation NatUtil BigNUtil AMatrixBasedInt.
 Import BigNMatrix.
 
 (** Module type for proving termination with matrix interpretations *)

@@ -11,9 +11,10 @@ a more general development is given in AGraph.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs ListUtil RelUtil RelSub Path ARelation SN
-  ListOccur ListNodup AShift VecUtil ASubstitution Omega.
-Require Export ADP.
+From Coq Require Import Omega.
+From CoLoR Require Import LogicUtil ATrs ListUtil RelUtil RelSub Path ARelation
+     SN ListOccur ListNodup AShift VecUtil ASubstitution.
+From CoLoR Require Export ADP.
 
 Section S.
 
@@ -97,7 +98,7 @@ Qed.
 
 Implicit Arguments chain_dps_app' [a l m b p x y].
 
-Require Import Iter.
+From CoLoR Require Import Iter.
 
 Lemma chain_dps_iter_chain :
   forall l a, chain_dps a l << iter Chain (length l).
@@ -175,7 +176,7 @@ Implicit Arguments chain_dps_path_dp_graph [l a b t u].
 (** hypotheses of the criterion based on cycles
 using the same reduction pair for every cycle *)
 
-Require Import ACompat Cycle.
+From CoLoR Require Import ACompat Cycle.
 
 Variables (succ succ_eq : relation term)
   (Hredord : weak_rewrite_ordering succ succ_eq)

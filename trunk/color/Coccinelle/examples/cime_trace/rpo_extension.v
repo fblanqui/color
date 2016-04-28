@@ -1,17 +1,17 @@
-Require Import Setoid.
-Require Import weaved_relation.
-Require rpo.
-Require equational_theory.
-Require equational_extension.
-Require term.
-Require subterm_dp.
-Require Import List.
-Require Import list_permut.
-Require Import terminaison.
-Require Import Relations.
-Require Import ROmega.
-Require order_extension.
-Require Import Omega.
+From Coq Require Import Setoid.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require rpo.
+From CoLoR Require equational_theory.
+From CoLoR Require equational_extension.
+From CoLoR Require term.
+From CoLoR Require subterm_dp.
+From Coq Require Import List.
+From CoLoR Require Import list_permut.
+From CoLoR Require Import terminaison.
+From Coq Require Import Relations.
+From Coq Require Import ROmega.
+From CoLoR Require order_extension.
+From Coq Require Import Omega.
 
 Set Implicit Arguments.
 

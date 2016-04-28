@@ -11,7 +11,7 @@ a simple over graph of the DP graph based on the equality of head symbols
 
 Set Implicit Arguments.
 
-Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil AGraph
+From CoLoR Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil AGraph
   LogicUtil BoolUtil AShift EqUtil.
 
 (***********************************************************************)
@@ -125,7 +125,7 @@ Definition hd_eq (u v : term Sig) :=
 
 (* REMARK: [Inb _ D] can be optimized when D is sorted. *)
 
-Require Import ListDec.
+From CoLoR Require Import ListDec.
 
 Notation mem := (mem (@beq_rule Sig)).
 Notation mem_ok := (mem_ok (@beq_rule_ok Sig)).

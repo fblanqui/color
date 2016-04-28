@@ -12,7 +12,7 @@ definition of rewriting based on positions
 
 Set Implicit Arguments.
 
-Require Import ATrs ListUtil NatUtil VecUtil LogicUtil OptUtil.
+From CoLoR Require Import ATrs ListUtil NatUtil VecUtil LogicUtil OptUtil.
 
 (***********************************************************************)
 (** positions are lists of natural numbers *)

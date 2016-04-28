@@ -9,7 +9,8 @@ Utility results about the option/exception type.
 
 Set Implicit Arguments.
 
-Require Import Bool ListForall ListUtil Program LogicUtil.
+From Coq Require Import Bool Program.
+From CoLoR Require Import ListForall ListUtil LogicUtil.
 
 Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
 

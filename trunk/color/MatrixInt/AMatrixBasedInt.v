@@ -8,8 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Matrix AMonAlg VecUtil OrdSemiRing ATrs LogicUtil RelUtil
-  NatUtil AWFMInterpretation Max Setoid Morphisms.
+From CoLoR Require Import Matrix AMonAlg VecUtil OrdSemiRing ATrs LogicUtil
+     RelUtil NatUtil AWFMInterpretation.
+From Coq Require Import Max Setoid Morphisms.
 
 Section MatrixLinearFunction.
 
@@ -224,7 +225,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
     Section OrderDecidability.
 
-      Require Import ABterm.
+      From CoLoR Require Import ABterm.
 
       Notation bterm := (bterm sig).
 
@@ -273,7 +274,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
             mkMatrixInt res_const res_args
         end.
 
-      Require Import ATrs.
+      From CoLoR Require Import ATrs.
 
       Definition rule_mi r :=
         let mvl := maxvar (lhs r) in

@@ -9,14 +9,14 @@ convert a string into an algebraic term
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil SN VecUtil ListUtil.
+From CoLoR Require Import LogicUtil RelUtil SN VecUtil ListUtil.
 
 Section S.
 
 (***********************************************************************)
 (** string signature *)
 
-Require Import Srs.
+From CoLoR Require Import Srs.
 
 Variable SSig : VSignature.Signature.
 
@@ -28,7 +28,7 @@ Notation srule := (rule SSig). Notation srules := (rules SSig).
 
 Definition ar (_ : letter) := 1.
 
-Require Import ATrs.
+From CoLoR Require Import ATrs.
 
 Definition ASig_of_SSig := mkSignature ar (@VSignature.beq_symb_ok SSig).
 
@@ -37,7 +37,7 @@ Notation ASig := ASig_of_SSig.
 Notation term := (term ASig). Notation terms := (vector term).
 Notation context := (context ASig).
 
-Require Import AUnary.
+From CoLoR Require Import AUnary.
 
 Lemma is_unary_sig : is_unary ASig.
 
@@ -75,7 +75,7 @@ induction s. refl. unfold reset. simpl. apply args_eq.
 fold (reset (term_of_string s)). rewrite IHs. refl.
 Qed.
 
-Require Import VecUtil.
+From CoLoR Require Import VecUtil.
 
 Fixpoint string_of_term (t : term) : string :=
   match t with
@@ -87,7 +87,7 @@ Lemma string_of_term_epi : forall s, string_of_term (term_of_string s) = s.
 
 Proof. induction s; simpl; intros. refl. rewrite IHs. refl. Qed.
 
-Require Import NatUtil.
+From CoLoR Require Import NatUtil.
 
 Lemma term_of_string_epi : forall t, maxvar t = 0 ->
   term_of_string (string_of_term t) = t.

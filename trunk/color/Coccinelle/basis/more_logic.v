@@ -1,4 +1,4 @@
-Require Import Bool.
+From Coq Require Import Bool.
 
 
 Lemma impl_bool_def : 

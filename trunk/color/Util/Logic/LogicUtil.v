@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Basics.
+From Coq Require Import Basics.
 
 Arguments exist [A P x] _.
 Arguments existT [A P x] _.

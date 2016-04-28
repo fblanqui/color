@@ -10,7 +10,8 @@ Wrapper for Coq's FMaps definition + additional facts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FMaps RelUtil BoolUtil ListUtil FSetInterface FSetUtil.
+From Coq Require Import FMaps FSetInterface.
+From CoLoR Require Import LogicUtil RelUtil BoolUtil ListUtil FSetUtil.
 
 Module Make (Export XMap : FMapInterface.S).
 

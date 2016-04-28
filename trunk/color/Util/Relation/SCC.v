@@ -9,7 +9,7 @@ Strongly Connected Components (SCC) of a graph seen as a relation
 
 Set Implicit Arguments.
 
-Require Import Cycle Path ListUtil RelUtil LogicUtil.
+From CoLoR Require Import Cycle Path ListUtil RelUtil LogicUtil.
 
 Section S.
 

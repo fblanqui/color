@@ -7,8 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 Model of MPO statisfying Hypotheses in RPO_Types
 *)
 
-Require Import VPrecedence MultisetListOrder VRPO_Type Relations VTerm ListUtil
-  AccUtil LogicUtil.
+From CoLoR Require Import VPrecedence MultisetListOrder VRPO_Type VTerm
+  ListUtil AccUtil LogicUtil.
+From Coq Require Import Relations.
 
 Module MPO (PT : VPrecedenceType).
 
@@ -32,7 +33,7 @@ End MPO.
 
 (***********************************************************************)
 
-Require Import VRPO_Type.
+From CoLoR Require Import VRPO_Type.
 
 Module MPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
     

@@ -9,8 +9,9 @@ Constructing terms.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras LogicUtil Omega.
-Require TermsActiveEnv.
+From CoLoR Require Import RelExtras ListExtras LogicUtil.
+From CoLoR Require TermsActiveEnv.
+From Coq Require Import Omega.
 
 Module TermsBuilding (Sig : TermsSig.Signature).
 

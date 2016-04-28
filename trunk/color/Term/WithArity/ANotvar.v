@@ -9,7 +9,7 @@ properties of function-headed terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATerm AContext.
+From CoLoR Require Import LogicUtil ATerm AContext.
 
 Section S.
 
@@ -36,7 +36,7 @@ Proof.
 auto.
 Qed.
 
-Require Import ASubstitution.
+From CoLoR Require Import ASubstitution.
 
 Lemma notvar_sub : forall s t, notvar t -> notvar (sub s t).
 

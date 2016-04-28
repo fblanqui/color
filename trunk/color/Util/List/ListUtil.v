@@ -13,10 +13,11 @@ Extension of the Coq library on lists.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil EqUtil Setoid SetoidList RelMidex RelUtil BoolUtil
-  NatUtil.
-Require Export List.
-Require Program.
+From CoLoR Require Import LogicUtil EqUtil RelUtil BoolUtil NatUtil.
+
+From Coq Require Import Setoid SetoidList.
+From Coq Require Export List.
+From Coq Require Program.
 
 Arguments nil {A}.
 Arguments incl {A} l m.

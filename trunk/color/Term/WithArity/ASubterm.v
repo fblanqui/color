@@ -9,7 +9,7 @@ Properties of the subterm relation.
 
 Set Implicit Arguments.
 
-Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil ASN.
+From CoLoR Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil ASN.
 
 Section S.
 

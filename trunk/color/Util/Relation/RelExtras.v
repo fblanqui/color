@@ -11,7 +11,9 @@ missing in the standard library.
 
 Set Implicit Arguments.
 
-Require Import RelUtil LogicUtil Max Arith Setoid Morphisms Basics.
+From Coq Require Export Relations.
+From Coq Require Import Max Arith Setoid Morphisms Basics.
+From CoLoR Require Import LogicUtil RelUtil.
 
 (***********************************************************************)
 (** strict order *)

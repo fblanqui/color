@@ -9,8 +9,9 @@ algebra morphisms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs VecUtil List RelUtil SN ARules SetUtil NatUtil
-  Morphisms.
+From CoLoR Require Import LogicUtil ATrs VecUtil RelUtil SN ARules SetUtil
+     NatUtil.
+From Coq Require Import List Morphisms.
 
 Section Morphism.
 
@@ -64,7 +65,7 @@ Section Morphism.
 
   Definition Frs := image Fr.
 
-  Require Import Setoid.
+  From Coq Require Import Setoid.
 
   Instance Frs_equiv : Proper (equiv ==> equiv) Frs.
 
@@ -184,7 +185,7 @@ Section Morphism.
 (***********************************************************************)
 (** finite versions *)
 
-  Require Import ATrs.
+  From CoLoR Require Import ATrs.
 
   Lemma Fred_WF_fin : forall R, WF (red (Fl R)) -> WF (red R).
 

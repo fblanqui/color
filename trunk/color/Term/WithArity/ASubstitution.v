@@ -11,7 +11,7 @@ substitutions
 
 Set Implicit Arguments.
 
-Require Import AInterpretation ListForall AContext VecUtil NatUtil LogicUtil
+From CoLoR Require Import AInterpretation ListForall AContext VecUtil NatUtil LogicUtil
   ListUtil EqUtil.
 
 Section S.

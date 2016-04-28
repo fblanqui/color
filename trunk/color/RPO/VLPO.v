@@ -7,8 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 Model of LPO statisfying Hypotheses in RPO_Types
 *)
 
-Require Import VPrecedence ListLex VRPO_Type Relations VTerm
-  ListUtil AccUtil LogicUtil.
+From CoLoR Require Import VPrecedence ListLex VRPO_Type VTerm ListUtil AccUtil
+  LogicUtil.
+From Coq Require Import Relations.
 
 Module LPO (PT : VPrecedenceType).
 
@@ -32,7 +33,7 @@ End LPO.
 
 (***********************************************************************)
 
-Require Import VRPO_Type.
+From CoLoR Require Import VRPO_Type.
 
 Module LPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 

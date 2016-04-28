@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 sub-relation, restriction, etc.
 *)
 
-Require Import ListShrink RelUtil ListUtil LogicUtil.
+From CoLoR Require Import ListShrink RelUtil ListUtil LogicUtil.
 
 Set Implicit Arguments.
 

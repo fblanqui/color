@@ -9,7 +9,7 @@ root labelling (Zantema & Waldmann, RTA'07) (Sternagel & Middeldorp, RTA'08)
 
 Set Implicit Arguments.
 
-Require Import ATrs LogicUtil ListUtil VecUtil BoolUtil EqUtil ASemLab SN
+From CoLoR Require Import ATrs LogicUtil ListUtil VecUtil BoolUtil EqUtil ASemLab SN
   NatUtil RelUtil AWFMInterpretation.
 
 (***********************************************************************)

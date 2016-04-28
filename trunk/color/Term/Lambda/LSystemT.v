@@ -10,7 +10,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil OrdUtil LSimple RelUtil Structures.Equalities Omega.
+From CoLoR Require Import LogicUtil OrdUtil LSimple RelUtil.
+From Coq Require Import Structures.Equalities Omega.
 
 (****************************************************************************)
 (** ** Type constants of System T. **)
@@ -94,7 +95,7 @@ Definition prec f :=
 We use the lexicographic path ordering with Zero < Succ < Rec A and
 Rec A < Rec B if A < B. *)
 
-Require Import Compare_dec.
+From Coq Require Import Compare_dec.
 
 Module FCmp <: Cmp.
 
@@ -143,7 +144,7 @@ Module FOrd := MOT_to_OT FMOT.
 (****************************************************************************)
 (** ** [L] structure (term algebra) of System T. *)
 
-Require Import VecUtil.
+From CoLoR Require Import VecUtil.
 
 Module L_SystemT <: L_Struct.
 
@@ -174,7 +175,7 @@ End L_SystemT.
 (****************************************************************************)
 (** ** [RS] structure (rewrite rules) of System T. *)
 
-Require Import LCompRewrite.
+From CoLoR Require Import LCompRewrite.
 Import VectorNotations.
 Open Local Scope vector_scope.
 
@@ -224,7 +225,7 @@ End RS_SystemT.
 (****************************************************************************)
 (** ** [ST] structure (types of function symbols) of System T. *)
 
-Require FMapAVL.
+From Coq Require FMapAVL.
 
 Module ST_SystemT <: ST_Struct.
 
@@ -260,7 +261,7 @@ End ST_SystemT.
 
 We use [prec] to quasi-order function symbols in a wellfounded way. *)
 
-Require Import SN LCall.
+From CoLoR Require Import SN LCall.
 
 Module DLQO_SystemT <: DLQO_Struct.
 
@@ -294,7 +295,7 @@ End DLQO_SystemT.
 We use the empty relation to quasi-order type constants in a
 wellfounded way. *)
 
-Require Import EqUtil.
+From CoLoR Require Import EqUtil.
 
 Module BOrdWF_MOT <: MiniOrderedType.
 
@@ -323,7 +324,7 @@ Module BOrdWF := MOT_to_OT BOrdWF_MOT.
 (****************************************************************************)
 (** ** [BI] structure (accessible arguments) of System T. *)
 
-Require Import LCompInt.
+From CoLoR Require Import LCompInt.
 
 Module BI_SystemT <: BI_Struct.
 
@@ -337,7 +338,7 @@ Module BI_SystemT <: BI_Struct.
 
   Proof. intro b. apply Acc_intro. fo. Qed.
 
-  Require Import SetUtil.
+  From CoLoR Require Import SetUtil.
 
   Inductive acc : F -> set nat :=
   | Acc_Succ : acc Succ 0.
@@ -364,7 +365,7 @@ End BI_SystemT.
 (****************************************************************************)
 (** ** [CC] structure for the termination proof of System T. *)
 
-Require Import LCompClos.
+From CoLoR Require Import LCompClos.
 
 Module CC_SystemT <: CC_Struct.
 
@@ -379,7 +380,7 @@ End CC_SystemT.
 
 (*SLOW*)Module Export SN := SN_rewrite CC_SystemT RS_SystemT DLQO_SystemT.
 
-Require Import Lexico.
+From CoLoR Require Import Lexico.
 
 Import DLQO_SystemT RS_SystemT.
 

@@ -10,8 +10,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics RelUtil VecUtil VecOrd LogicUtil SN SetUtil.
-Require Export LBeta LEta.
+From Coq Require Import Morphisms Basics.
+From CoLoR Require Import RelUtil VecUtil VecOrd LogicUtil SN SetUtil.
+From CoLoR Require Export LBeta LEta.
 
 (****************************************************************************)
 (** ** Computability predicates. *)

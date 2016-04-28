@@ -9,7 +9,7 @@ list of reducts of a term and proof that rewriting is finitely branching
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs RelUtil ListUtil VecUtil AMatching NatUtil.
+From CoLoR Require Import LogicUtil ATrs RelUtil ListUtil VecUtil AMatching NatUtil.
 
 Section S.
 

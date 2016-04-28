@@ -9,7 +9,7 @@ signature for algebraic terms with arity
 
 Set Implicit Arguments.
 
-Require Import EqUtil ListUtil LogicUtil.
+From CoLoR Require Import EqUtil ListUtil LogicUtil.
 
 (***********************************************************************)
 (** Variables are represented by natural numbers. *)
@@ -52,7 +52,7 @@ Module Type SIG.
 End SIG.
 
 (* DecidableType *)
-Require Import DecidableType.
+From Coq Require Import DecidableType.
 Module DecType (Import S : SIG) <: DecidableType.
   Definition t := @symbol Sig.
   Definition eq := @eq t.
@@ -78,7 +78,7 @@ Module Type WSIG.
   Parameter weight_inj : forall f g, weight f = weight g -> f = g.
 End WSIG.
 
-Require Import NatUtil BoolUtil.
+From CoLoR Require Import NatUtil BoolUtil.
 
 Section weight_inj.
 
@@ -112,7 +112,7 @@ Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok Fs_ok);
 (***********************************************************************)
 (** Ordered signatures *)
 
-Require Import OrderedType.
+From Coq Require Import OrderedType.
 
 Module OrdType (Import S : WSIG) <: OrderedType.
 

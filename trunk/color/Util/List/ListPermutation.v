@@ -9,8 +9,9 @@ Some results concerning permutations of lists.
 
 Set Implicit Arguments.
 
-Require Import ListExtras NatUtil LogicUtil Setoid Morphisms Basics.
-Require Export Permutation PermutSetoid Multiset.
+From Coq Require Import Setoid Morphisms Basics.
+From CoLoR Require Import ListExtras NatUtil LogicUtil.
+From Coq Require Export Permutation PermutSetoid Multiset.
 
 Arguments list_contents [A eqA] _ _.
 Arguments permutation [A eqA] _ _ _.

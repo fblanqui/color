@@ -8,8 +8,8 @@ Axiomatic definition of RPO, and hypotheses taken to prove
 strict order, monotonicity, well-foundedness
 *)
 
-Require Import VPrecedence Relations ListUtil VTerm RelMidex LogicUtil
-  Morphisms Basics AccUtil.
+From CoLoR Require Import VPrecedence ListUtil VTerm RelMidex LogicUtil AccUtil.
+From Coq Require Import Relations Morphisms Basics.
 
 Module Type RPO_Model.
 
@@ -63,8 +63,8 @@ Module Type RPO_Model.
   Parameter mono_axiom : forall f (r : relation term), 
     forall ss ts, one_less r ss ts -> tau f r ss ts.
 
-  Require Import AccUtil.
-  Require Import ListUtil.
+  From CoLoR Require Import AccUtil.
+  From CoLoR Require Import ListUtil.
 
   Definition lifting R := forall l, Accs lt l -> Restricted_acc (Accs lt) R l.
 
@@ -156,10 +156,10 @@ Module Status (PT : VPrecedenceType).
 
   Module Export P := VPrecedence PT.
 
-  Require Import MultisetListOrder.
+  From CoLoR Require Import MultisetListOrder.
   Module Export LMO := MultisetListOrder Term_dec.
 
-  Require Import ListLex.
+  From CoLoR Require Import ListLex.
   Module Export LO := LexOrder Term.
 
   Section Decidability.

@@ -8,8 +8,9 @@ RPO employed for proving termination of concrete examples (after
 converting terms with arities to varyadic terms).
 *)
 
-Require Import ATrs VPrecedence VRPO_Status VRPO_Results VTerm_of_ATerm
-  ListUtil Preorder SN RelUtil ARelation Arith VSignature LogicUtil Wellfounded.
+From CoLoR Require Import ATrs VPrecedence VRPO_Status VRPO_Results
+  VTerm_of_ATerm ListUtil Preorder SN RelUtil ARelation VSignature LogicUtil.
+From Coq Require Import Arith Wellfounded.
 
 Set Implicit Arguments.
 
@@ -119,7 +120,7 @@ Module RPO_Prover (Export R : TRPO).
     rewrite <- minus_n_n; trivial.
   Qed.
 
-  Require Import ACompat.
+  From CoLoR Require Import ACompat.
 
   Definition part_rpo := rule_partition arpo_dec.
 

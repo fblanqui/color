@@ -9,9 +9,10 @@ set of variables occuring in a term
 
 Set Implicit Arguments.
 
-(*SLOW*)Require Import LogicUtil ASubstitution FSetUtil OrderedTypeEx NatUtil
-  BoolUtil EqUtil ATrs ListUtil VecUtil.
-Require FSetAVL.
+From CoLoR Require Import LogicUtil ASubstitution FSetUtil NatUtil
+     BoolUtil EqUtil ATrs ListUtil VecUtil.
+From Coq Require Import OrderedTypeEx.
+From Coq Require FSetAVL.
 
 (***********************************************************************)
 (** sets of variables *)
@@ -296,7 +297,7 @@ Qed.
 (***********************************************************************)
 (* preservation of variables under reduction *)
 
-Require Import ATrs.
+From CoLoR Require Import ATrs.
 
 Notation rule := (rule Sig). Notation rules := (rules Sig).
 

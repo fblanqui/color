@@ -1,10 +1,10 @@
-Require Import List.
-Require Import Bool.
-Require Import weaved_relation.
-Require Import closure.
-Require term_spec.
-Require equational_theory_spec.
-Require Import terminaison.
+From Coq Require Import List.
+From Coq Require Import Bool.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import closure.
+From CoLoR Require term_spec.
+From CoLoR Require equational_theory_spec.
+From CoLoR Require Import terminaison.
 
 Module Make  (Eqt:equational_theory_spec.EqTh).
 
@@ -170,8 +170,8 @@ Proof.
   constructor 2;assumption.
   assumption.
 Qed.
-Require Import List.
-Require Import closure_extension.
+From Coq Require Import List.
+From CoLoR Require Import closure_extension.
 
 Lemma star_cons : forall R t l t' l', 
   refl_trans_clos (one_step R) t' t -> 

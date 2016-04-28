@@ -9,7 +9,7 @@ properties of systems with unary symbols only
 
 Set Implicit Arguments.
 
-Require Import ATrs VecUtil LogicUtil ListUtil NatUtil.
+From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil NatUtil.
 
 (***********************************************************************)
 (** tactics *)
@@ -86,7 +86,7 @@ Variables (P : term -> Prop)
   (Hvar : forall x, P (Var x))
   (Hfun : forall f t, P t -> P (Fun1 f t)).
 
-Require Import NatUtil.
+From CoLoR Require Import NatUtil.
 
 Lemma term_ind_forall : forall t, P t.
 
@@ -194,7 +194,7 @@ intro. apply term_ind_forall. refl. intros.
 rewrite sub_fun1, cont_fun1, var_fun1, fill_cont1, <- H. refl.
 Qed.
 
-Require Import EqUtil.
+From CoLoR Require Import EqUtil.
 
 Lemma term_sub_cont : forall x t,
   t = sub (single x (Var (var t))) (fill (cont t) (Var x)).
@@ -235,7 +235,7 @@ rewrite Vcast_eq, Vapp_eq in H0. destruct H0. inversion H2.
 rewrite (IHc _ H4). refl.
 Qed.
 
-Require Import VecMax.
+From CoLoR Require Import VecMax.
 
 Lemma maxvar_fill : forall (t : term) c, maxvar (fill c t) = maxvar t.
 
@@ -264,7 +264,7 @@ Definition red1 t u := exists l, exists r, exists c, exists d,
   In (mkRule l r) R /\ t = fill (comp c (comp (cont l) d)) (Var (var t))
   /\ u = fill (comp c (comp (cont r) d)) (Var (var t)).
 
-Require Import EqUtil.
+From CoLoR Require Import EqUtil.
 
 Lemma red1_ok : forall t u, red R t u <-> red1 t u.
 
@@ -285,7 +285,7 @@ rewrite (rules_preserve_vars_var H0), (beq_refl beq_nat_ok),
   !fill_fill, !comp_comp. tauto.
 Qed.
 
-Require Import RelUtil.
+From CoLoR Require Import RelUtil.
 
 Lemma red1_eq : red R == red1.
 
@@ -303,7 +303,7 @@ Section red_mod.
 Variables (E R : rules)
   (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
 
-Require Import RelUtil.
+From CoLoR Require Import RelUtil.
 
 Definition red_mod1 := red1 E # @ red1 R.
 
@@ -384,7 +384,7 @@ symmetry in H2. destruct (IHclos_refl_trans2 x H2). exists x0. split_all.
 apply rtc_trans with x; hyp.
 Qed.
 
-Require Import SN.
+From CoLoR Require Import SN.
 
 Lemma SN_red_ren : forall t : term, SN (red R) t -> SN (red R) (sub s t).
 
@@ -413,7 +413,7 @@ Qed.
 
 Implicit Arguments red_mod_ren [t u].
 
-Require Import SN.
+From CoLoR Require Import SN.
 
 Lemma SN_red_mod_ren : forall t : term,
   SN (red_mod E R) t -> SN (red_mod E R) (sub s t).
@@ -441,7 +441,7 @@ Proof. intros R t u. unfold red0. tauto. Qed.
 
 Section red0.
 
-Require Import ListMax.
+From CoLoR Require Import ListMax.
 
 Variables (R : rules) (hR : rules_preserve_vars R).
 

@@ -9,7 +9,7 @@ basic consequences of ClassicalEpsilon.constructive_indefinite_description
 
 Set Implicit Arguments.
 
-Require Import ClassicalEpsilon.
+From Coq Require Import ClassicalEpsilon.
 
 Arguments constructive_indefinite_description [A P] _.
 

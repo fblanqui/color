@@ -10,8 +10,9 @@ Arithmetic over vectors on some semiring.
 
 Set Implicit Arguments.
 
-Require Import VecUtil RelUtil SemiRing OrdSemiRing NatUtil LogicUtil
-  Setoid Morphisms.
+From Coq Require Import Setoid Morphisms.
+From CoLoR Require Import VecUtil RelUtil SemiRing OrdSemiRing NatUtil
+  LogicUtil.
 
 Module VectorArith (SRT : SemiRingType).
 

@@ -7,8 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 Model of RPO with status
 *)
 
-Require Import VPrecedence MultisetListOrder ListLex VRPO_Type
-  Relations VTerm ListUtil AccUtil LogicUtil.
+From CoLoR Require Import VPrecedence MultisetListOrder ListLex VRPO_Type
+  VTerm ListUtil AccUtil LogicUtil.
+From Coq Require Import Relations.
 
 Inductive status_name : Set := 
 | lexicographic : status_name 
@@ -46,8 +47,6 @@ Module RPO (PT : VPrecedenceType).
 End RPO.
 
 (***********************************************************************)
-
-Require Import VRPO_Type.
 
 Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 

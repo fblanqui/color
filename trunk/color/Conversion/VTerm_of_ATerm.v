@@ -9,14 +9,14 @@ from algebraic terms to varyadic terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ListUtil VecUtil.
+From CoLoR Require Import LogicUtil ListUtil VecUtil.
 
 Section S.
 
 (***********************************************************************)
 (** algebraic signature *)
 
-  Require Import ATerm.
+  From CoLoR Require Import ATerm.
 
   Variable ASig : Signature.
 
@@ -26,7 +26,7 @@ Section S.
 (***********************************************************************)
 (** corresponding varyadic signature *)
 
-  Require Import VTerm.
+  From CoLoR Require Import VTerm.
 
   Definition VSig_of_ASig := mkSignature (@ASignature.beq_symb_ok ASig).
 
@@ -94,13 +94,13 @@ Section S.
 (***********************************************************************)
 (** conversion of contexts *)
 
-  Require Import AContext.
+  From CoLoR Require Import AContext.
 
   Notation acont := (@context ASig).
   Notation ACont := (@Cont ASig).
   Notation afill := fill.
 
-  Require Import VContext.
+  From CoLoR Require Import VContext.
 
   Notation vcont := (@context VSig).
   Notation VCont := (@Cont VSig).
@@ -123,12 +123,12 @@ Section S.
 (***********************************************************************)
 (** conversion of substitutions *)
 
-  Require Import ASubstitution.
+  From CoLoR Require Import ASubstitution.
 
   Notation asubs := (@substitution ASig).
   Notation asub := (@sub ASig).
 
-  Require Import VSubstitution.
+  From CoLoR Require Import VSubstitution.
 
   Notation vsubs := (@substitution VSig).
   Notation vsub := (@sub VSig).
@@ -150,12 +150,12 @@ Section S.
 (***********************************************************************)
 (** conversion of rules *)
 
-  Require Import ATrs.
+  From CoLoR Require Import ATrs.
 
   Notation arule := (@ATrs.rule ASig).
   Notation ared := (@ATrs.red ASig).
 
-  Require Import VTrs.
+  From CoLoR Require Import VTrs.
 
   Notation vrule := (@VTrs.rule VSig).
   Notation vred := (@VTrs.red VSig).
@@ -181,7 +181,7 @@ Section S.
 (***********************************************************************)
 (** preservation of termination *)
 
-  Require Import SN.
+  From CoLoR Require Import SN.
 
   Lemma SN_vred_imp_SN_ared : forall t,
     SN (vred S) t -> forall u, t = vterm_of_aterm u -> SN (ared R) u.

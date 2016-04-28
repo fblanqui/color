@@ -9,7 +9,7 @@ substitutions
 
 Set Implicit Arguments.
 
-Require Import LogicUtil VTerm.
+From CoLoR Require Import LogicUtil VTerm.
 
 Section S.
 
@@ -33,7 +33,7 @@ Qed.
 
 Section properties.
 
-Require Import Relations.
+From Coq Require Import Relations.
 
 Variable succ : relation term.
 

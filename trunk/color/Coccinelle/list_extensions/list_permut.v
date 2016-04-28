@@ -15,14 +15,14 @@
 
 Set Implicit Arguments. 
 
-Require Import decidable_set.
-Require Import List.
-Require Import more_list.
-Require Import equiv_list.
-Require Import Relations.
-Require Import Arith.
-Require Import Setoid.
-Require Import Morphisms.
+From CoLoR Require Import decidable_set.
+From Coq Require Import List.
+From CoLoR Require Import more_list.
+From CoLoR Require Import equiv_list.
+From Coq Require Import Relations.
+From Coq Require Import Arith.
+From Coq Require Import Setoid.
+From Coq Require Import Morphisms.
 
 Inductive permut0 (A B : Type) (R : A -> B -> Prop) : (list A -> list B -> Prop) :=
   | Pnil : permut0 R nil nil
@@ -908,7 +908,7 @@ Proof.
   split; intro x. apply permut_refl. apply permut_sym. apply permut_trans.
 Qed.
 
-Require Import Morphisms.
+From Coq Require Import Morphisms.
 
 Declare Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
 

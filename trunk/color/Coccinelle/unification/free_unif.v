@@ -10,24 +10,24 @@
 (**************************************************************************)
 
 
-Require Import Arith.
-Require Import Wf_nat.
-Require Import Wellfounded.
-Require Import Max.
-Require Import Min.
-Require Import List.
-Require Import Multiset.
-Require Import closure.
-Require Import decidable_set.
-Require Import ordered_set.
-Require Import more_list.
-Require Import list_permut.
-Require Import list_set.
-Require Import list_sort.
-Require Import dickson.
-Require Import Relations.
-Require Import term_spec.
-Require Import term.
+From Coq Require Import Arith.
+From Coq Require Import Wf_nat.
+From Coq Require Import Wellfounded.
+From Coq Require Import Max.
+From Coq Require Import Min.
+From Coq Require Import List.
+From Coq Require Import Multiset.
+From CoLoR Require Import closure.
+From CoLoR Require Import decidable_set.
+From CoLoR Require Import ordered_set.
+From CoLoR Require Import more_list.
+From CoLoR Require Import list_permut.
+From CoLoR Require Import list_set.
+From CoLoR Require Import list_sort.
+From CoLoR Require Import dickson.
+From Coq Require Import Relations.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import term.
 
 Lemma Dummy_bool : forall b, negb b = true <-> b = false.
 Proof.

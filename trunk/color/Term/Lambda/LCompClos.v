@@ -15,8 +15,9 @@ After "Inductive-data-type Systems", F. Blanqui, J.-P. Jouannaud and
 
 Set Implicit Arguments.
 
-Require Import LogicUtil LCompSimple VecUtil RelUtil LCall LCompInt
-  Morphisms SetUtil SN Basics NatUtil LCompRewrite EqUtil.
+From Coq Require Import Morphisms Basics.
+From CoLoR Require Import LogicUtil LCompSimple VecUtil RelUtil LCall LCompInt
+     SetUtil SN NatUtil LCompRewrite EqUtil.
 
 Module Export Def.
 
@@ -582,7 +583,8 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We prove that [gt2] is wellfounded. *)
 
-  Require Import Lexicographic_Product Union.
+  From Coq Require Import Lexicographic_Product.
+  From CoLoR Require Import Union.
 
   Lemma gt2_wf : WF gt2.
 
@@ -610,7 +612,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We check that [gt1] makes [gt2] decrease. *)
 
-  Require Import Lexico.
+  From CoLoR Require Import Lexico.
 
   Lemma gt2_gt1 : forall E f n (ls : Tes n) g p (us : Tes p),
       n <= arity (typ f) -> p <= arity (typ g) ->

@@ -9,7 +9,8 @@ arguments filtering with no projection
 
 Set Implicit Arguments.
 
-Require Import ATrs VecFilter VecUtil LogicUtil List RelUtil SN NatUtil.
+From CoLoR Require Import ATrs VecFilter VecUtil LogicUtil RelUtil SN NatUtil.
+From Coq Require Import List.
 
 Section S.
 
@@ -94,7 +95,7 @@ Section S.
 (***********************************************************************)
 (** well-foundedness *)
 
-    Require Import ARelation.
+    From CoLoR Require Import ARelation.
 
     Lemma WF_filter : WF succ -> WF fsucc.
 
@@ -114,7 +115,7 @@ Section S.
 (***********************************************************************)
 (** compatibility *)
 
-    Require Import ACompat.
+    From CoLoR Require Import ACompat.
 
     Lemma filter_comp : forall R : rules,
       compat succ (filter_rules R) -> compat fsucc R.

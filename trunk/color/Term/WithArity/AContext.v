@@ -10,9 +10,9 @@ one-hole contexts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil VecUtil ListUtil LogicUtil BoolUtil VecUtil NatUtil
-  RelUtil Setoid.
-Require Export ATerm.
+From Coq Require Import Setoid.
+From CoLoR Require Import LogicUtil VecUtil ListUtil BoolUtil NatUtil RelUtil.
+From CoLoR Require Export ATerm.
 
 Section S.
 

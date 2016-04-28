@@ -11,7 +11,7 @@ Type of natural numbers strictly smaller that some bound.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil NatUtil ListUtil ListNodup FunUtil VecUtil.
+From CoLoR Require Import LogicUtil NatUtil ListUtil ListNodup FunUtil VecUtil.
 
 Definition N n := sig (gt n).
  
@@ -277,7 +277,7 @@ Lemma map_N_val_L n : map N_val (L n) = nats_decr_lt n.
 
 Proof. destruct n; simpl. refl. apply map_N_val_L_aux. Qed.
 
-Require Import SortUtil RelUtil.
+From CoLoR Require Import SortUtil RelUtil.
 
 Lemma lelistA_map_N_val n R (a : N n) :
   forall l, lelistA (Rof R N_val) a l -> lelistA R a (map N_val l).
@@ -297,7 +297,7 @@ Proof.
   inversion h; subst. apply cons_sort. tauto. apply lelistA_map_N_val. hyp.
 Qed.
 
-Require Import ListPermutation.
+From CoLoR Require Import ListPermutation.
 
 Lemma multiplicity_nats_decr_lt i :
   forall n, multiplicity (list_contents eq_nat_dec (nats_decr_lt n)) i

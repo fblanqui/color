@@ -9,7 +9,7 @@ unary TRS reversing
 
 Set Implicit Arguments.
 
-Require Import Srs ATrs SReverse ATerm_of_String String_of_ATerm AUnary SN
+From CoLoR Require Import Srs ATrs SReverse ATerm_of_String String_of_ATerm AUnary SN
   LogicUtil AMorphism EqUtil NatUtil ListUtil.
 
 Section S.
@@ -57,7 +57,7 @@ Section S.
 (***********************************************************************)
 (** isomorphism properties *)
 
-  Require Import VecUtil.
+  From CoLoR Require Import VecUtil.
 
   Lemma term_of_string_epi : forall t, maxvar t = 0 ->
     ATerm_of_String.term_of_string (string_of_term t) = Ft HF t.
@@ -208,7 +208,7 @@ End S.
 (***********************************************************************)
 (** tactics for Rainbow *)
 
-Require Import AVariables.
+From CoLoR Require Import AVariables.
 
 Ltac rev_tac_cond Fs_ok :=
   match goal with

@@ -9,9 +9,11 @@ Matching algorithm for ATerms.
 *)
 
 (**********************************************************************)
-Require Import Peano_dec LogicUtil EqUtil NatUtil VecUtil ATerm ASubstitution
-  Bool.
-Require AVariables OrderedTypeEx FSetUtil FMapUtil FMapAVL.
+From Coq Require Import Peano_dec Bool.
+From Coq Require OrderedTypeEx FMapAVL.
+From CoLoR Require Import LogicUtil EqUtil NatUtil VecUtil ATerm ASubstitution
+  FSetUtil FMapUtil.
+From CoLoR Require AVariables.
 
 Module VSF := AVariables.VarSetUtil.XSetFacts.
 Module VS  := AVariables.XSet.
@@ -466,7 +468,7 @@ Section Matching.
   End MatchCompletness.
 
   (********************************************************************)
-  Require Import ListUtil.
+  From CoLoR Require Import ListUtil.
 
   Lemma matches_r_dom : forall u t m m' x, matches_r u t m = Some m' ->
     ~In x (ATerm.vars u) -> VM.mem x m' = VM.mem x m.

@@ -7,7 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 Definition of log2 (floor) and exp2, and some equalities
 *)
 
-Require Import Div2 Le LogicUtil Even Omega.
+From Coq Require Import Div2 Le Even Omega.
+From CoLoR Require Import LogicUtil.
 
 Lemma div2_le_n : forall n, div2 n <= n.
 

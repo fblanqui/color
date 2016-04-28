@@ -9,9 +9,9 @@ Infinite sets
 
 Set Implicit Arguments.
 
-Require Import ClassicUtil IotaUtil EpsilonUtil
-        Basics Morphisms Setoid Omega
-        LogicUtil SetUtil FinSet FunUtil BoundNat.
+From Coq Require Import Basics Morphisms Setoid Omega.
+From CoLoR Require Import ClassicUtil IotaUtil EpsilonUtil LogicUtil SetUtil
+     FinSet FunUtil BoundNat.
 
 Section S.
 
@@ -112,7 +112,7 @@ Section S.
 (****************************************************************************)
 (** An infinite set contains finite subsets of every cardinality. *)
 
-  Require Import IotaUtil.
+  From CoLoR Require Import IotaUtil.
 
   Section Pcard_of_inf.
 
@@ -140,7 +140,7 @@ Section S.
       rewrite card_add, cX. destruct (dec (mem a X)). fo. omega.
     Qed.
 
-    Require Import EpsilonUtil.
+    From CoLoR Require Import EpsilonUtil.
 
     Definition Pcard_of_inf (P : Pinf W) n : Pcard P (S n).
 

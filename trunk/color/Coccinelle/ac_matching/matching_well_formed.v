@@ -10,15 +10,15 @@
 (**************************************************************************)
 
 
-Require Import Arith.
-Require Import List.
-Require Import more_list.
-Require Import list_sort.
-Require Import term_spec.
-Require Import ac.
-Require Import cf_eq_ac.
-Require Import matching.
-Require Import matching_well_founded.
+From Coq Require Import Arith.
+From Coq Require Import List.
+From CoLoR Require Import more_list.
+From CoLoR Require Import list_sort.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import ac.
+From CoLoR Require Import cf_eq_ac.
+From CoLoR Require Import matching.
+From CoLoR Require Import matching_well_founded.
 
 Module Type S.
 

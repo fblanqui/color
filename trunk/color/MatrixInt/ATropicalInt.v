@@ -7,9 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import ATropicalBasedInt Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool
-  Structures.Equalities.
+From CoLoR Require Import ATropicalBasedInt Matrix OrdSemiRing VecUtil AMonAlg
+     SN RelUtil NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt BoolUtil.
+From Coq Require Import Structures.Equalities.
 
 (* TODO: this should be moved to Matrix.v *)
 Module Import TropicalMatrix := Matrix TropicalOrdSemiRingT.
@@ -34,8 +34,6 @@ Section Somewhere_tfinite.
     (fun m => tropical_is_finite (get_elem m dim_pos dim_pos)) (args fi)
     || tropical_is_finite (Vnth (const fi) dim_pos).
 
-  Require Import BoolUtil.
-
   Lemma bsomewhere_tfinite_ok : forall n (fi : matrixInt dim n),
     bsomewhere_tfinite fi = true <-> somewhere_tfinite fi.
 
@@ -48,8 +46,8 @@ Section Somewhere_tfinite.
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
 
-  Require Import List.
-  Require Import ListForall.
+  From Coq Require Import List.
+  From CoLoR Require Import ListForall.
 
   Variable Fs : list sig.
   Variable Fs_ok : forall f : sig, In f Fs.

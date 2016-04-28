@@ -9,11 +9,11 @@
 (*           *                                                            *)
 (**************************************************************************)
 
-(* dummy Require Import Relations. *)
-Require Import Relation_Definitions.
-Require Import Setoid.
-Require Import Bool.
-Require Import Arith.
+(* dummy From Coq Require Import Relations. *)
+From Coq Require Import Relation_Definitions.
+From Coq Require Import Setoid.
+From Coq Require Import Bool.
+From Coq Require Import Arith.
 
 Module Type S.
 

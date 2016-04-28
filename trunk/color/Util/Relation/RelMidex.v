@@ -7,7 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 excluded middle and decidability for relations.
 *)
 
-Require Import Relations LogicUtil.
+From Coq Require Import Relations.
+
+From CoLoR Require Import LogicUtil.
 
 Set Implicit Arguments.
 

@@ -11,11 +11,11 @@
 
 Set Implicit Arguments. 
 
-Require Import Setoid.
-Require Import Relations.
-Require Import List.
-Require Import Wellfounded.
-Require Export TransClosure.
+From Coq Require Import Setoid.
+From Coq Require Import Relations.
+From Coq Require Import List.
+From Coq Require Import Wellfounded.
+From CoLoR Require Export TransClosure.
 
 Lemma acc_trans :
  forall A (R : relation A) a, Acc R a -> Acc (trans_clos R) a.

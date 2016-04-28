@@ -9,7 +9,7 @@ infinite sets of rules
 
 Set Implicit Arguments.
 
-Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil.
+From CoLoR Require Import ATrs ListUtil RelUtil ARelation LogicUtil SetUtil.
 
 Section defs.
 
@@ -61,7 +61,7 @@ Ltac redtac := repeat
 (***********************************************************************)
 (** monotony properties *)
 
-Require Import Morphisms.
+From Coq Require Import Morphisms.
 
 Instance red_incl Sig : Proper (subset ==> inclusion) (@red Sig).
 

@@ -9,12 +9,12 @@ convert CoLoR terms into Coccinelle terms
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATerm VecUtil.
+From CoLoR Require Import LogicUtil ATerm VecUtil.
 
 (***********************************************************************)
 (** convert a CoLoR signature into a Coccinelle signature *)
 
-Require Import term_spec EqUtil.
+From CoLoR Require Import term_spec EqUtil.
 
 Module Make_Signature (Import S : SIG) <: Signature.
   Module Symb <: decidable_set.S.
@@ -33,7 +33,7 @@ End Make_Signature.
 (***********************************************************************)
 (** convert CoLoR variables to Coccinelle variables *)
 
-Require Import NatUtil.
+From CoLoR Require Import NatUtil.
 
 Module Var <: decidable_set.S.
   Definition A := nat.
@@ -49,7 +49,8 @@ End Var.
 (***********************************************************************)
 (** convert CoLoR terms into Coccinelle terms *)
 
-Require Import term List Relations SN ASubstitution.
+From Coq Require Import List Relations.
+From CoLoR Require Import term SN ASubstitution.
 
 Module Make_Term (Import S : SIG) <: Term.
 
@@ -91,7 +92,7 @@ Module Make_Term (Import S : SIG) <: Term.
 
   Proof. intros. simpl. rewrite terms_of_aterms_eq. refl. Qed.
 
-  Require Import VecUtil.
+  From CoLoR Require Import VecUtil.
 
   Lemma terms_of_aterms_cast : forall n (ts : aterms n) p (e : n=p),
     terms_of_aterms (Vcast ts e) = terms_of_aterms ts.
@@ -119,7 +120,7 @@ Module Make_Term (Import S : SIG) <: Term.
       | S n' => (n', term_of_aterm (s n')) :: sub_of_asub s n'
     end.
 
-Require Import more_list.
+From CoLoR Require Import more_list.
 
 Notation find := (@find _ eq_var_bool _).
 
@@ -152,8 +153,7 @@ Notation find := (@find _ eq_var_bool _).
     intros. destruct H1. rewrite H. 2: hyp. rewrite H0. 2: hyp. refl.
   Qed.
 
-  Require Import APosition.
-  Require Import AContext.
+  From CoLoR Require Import APosition AContext.
 
   Lemma term_of_aterm_fill : forall u t c, term_of_aterm (fill c t) =
     replace_at_pos (term_of_aterm (fill c u)) (term_of_aterm t) (pos_context c).
@@ -185,7 +185,7 @@ End Make_Term.
 (***********************************************************************)
 (** module type for using Coccinelle's RPO *)
 
-Require Import rpo rpo_extension.
+From CoLoR Require Import rpo rpo_extension.
 
 Module Type PRECEDENCE.
   Parameter Sig : Signature.
@@ -199,7 +199,7 @@ End PRECEDENCE.
 (***********************************************************************)
 (** convert Coccinelle RPO into a CoLoR WeakRedPair *)
 
-Require Import ARedPair ARelation RelUtil BoolUtil.
+From CoLoR Require Import ARedPair ARelation RelUtil BoolUtil.
 
 Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
@@ -216,7 +216,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Definition Sig := Sig.
   Definition succ := transp (Rof rpo term_of_aterm).
 
-  Require Import Inverse_Image.
+  From Coq Require Import Inverse_Image.
 
   Lemma wf_succ : WF succ.
 
@@ -225,7 +225,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     apply wf_rpo. apply (prec_wf prec_nat).
   Qed.
 
-  Require Import Max.
+  From Coq Require Import Max.
 
   Lemma sc_succ : substitution_closed succ.
 
@@ -240,7 +240,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Notation rpo_eval := (rpo_eval empty_rpo_infos P.bb).
   Notation rpo_eval_is_sound := (rpo_eval_is_sound_weak empty_rpo_infos P.bb).
 
-  Require Import ordered_set.
+  From CoLoR Require Import ordered_set.
 
   Definition bsucc t u :=
     match rpo_eval (term_of_aterm t) (term_of_aterm u) with

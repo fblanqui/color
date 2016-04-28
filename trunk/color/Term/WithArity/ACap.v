@@ -9,7 +9,8 @@ cap of undefined symbols and aliens of defined symbols
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil Max EqUtil.
+From Coq Require Import Max.
+From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil EqUtil.
 
 Section S.
 
@@ -271,7 +272,7 @@ Qed.
 Notation calls := (calls R).
 Definition vcalls := vcalls R.
 
-Require Import Sumbool.
+From Coq Require Import Sumbool.
 
 Lemma calls_capa : forall t m,
   calls (fcap (capa t) (fresh m (nb_aliens t))) = nil.

@@ -11,9 +11,9 @@ Math. Soc. s2-30(1):264-286, 1930, doi:10.1112/plms/s2-30.1.264. *)
 
 Set Implicit Arguments.
 
-Require Import ClassicUtil IotaUtil EpsilonUtil DepChoice
-        Morphisms Basics Setoid
-        LogicUtil SetUtil FinSet InfSet NatUtil.
+From Coq Require Import Morphisms Basics Setoid.
+From CoLoR Require Import ClassicUtil IotaUtil EpsilonUtil DepChoice
+     LogicUtil SetUtil FinSet InfSet NatUtil.
 
 Section S.
 

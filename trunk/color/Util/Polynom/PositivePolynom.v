@@ -10,7 +10,9 @@ polynomials with non-negative integers as coefficients
 
 Set Implicit Arguments.
 
-Require Import Polynom ZUtil LogicUtil NaryFunction ListForall VecUtil List Max.
+From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction ListForall
+     VecUtil.
+From Coq Require Import List Max.
 
 Notation vec := (vector D).
 Notation vals := (@Vmap D Z val _).

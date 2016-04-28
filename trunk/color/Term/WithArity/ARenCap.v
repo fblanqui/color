@@ -11,7 +11,7 @@ Like ACap.capa except that variables are considered as aliens too.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil RelUtil.
+From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil RelUtil.
 
 Section S.
 

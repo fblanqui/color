@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 Section S.
 
-Require Import ATerm VecUtil AInterpretation LogicUtil NatUtil.
+From CoLoR Require Import ATerm VecUtil AInterpretation LogicUtil NatUtil.
 
 Variable Sig : Signature.
 

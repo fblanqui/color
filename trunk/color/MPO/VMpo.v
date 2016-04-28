@@ -8,9 +8,10 @@ This file provides a definition of the multiset path ordering and proofs
 that it preserves various properties
 *)
 
-Require Import AccUtil List MultisetOrder ListExtras RelExtras MultisetCore
-  MultisetList Permutation MultisetTheory Arith MultisetListOrder VTerm Setoid
-  RelUtil LogicUtil.
+From CoLoR Require Import AccUtil MultisetOrder ListExtras RelExtras
+  MultisetCore MultisetList MultisetTheory MultisetListOrder VTerm RelUtil
+  LogicUtil.
+From Coq Require Import Permutation Arith Setoid.
 
 Module Type VMpo_Struct.
   Parameter Sig : Signature.

@@ -10,8 +10,9 @@ and on Coq's multiplicity function
 
 Set Implicit Arguments.
 
-Require Export Sorting.
-Require Import RelUtil List LogicUtil Morphisms Omega.
+From Coq Require Export Sorting.
+From Coq Require Import List Morphisms Omega.
+From CoLoR Require Import RelUtil LogicUtil.
 
 (***********************************************************************)
 (** lelistA and sort *)
@@ -63,7 +64,7 @@ Proof.
   eapply lelistA_map. apply f_mon. hyp.
 Qed.
 
-Require Import ListNodup.
+From CoLoR Require Import ListNodup.
 
 Lemma nodup_lelistA_strict : forall B a S (mb : list B)
   (HL : nodup (a::mb)), lelistA (S%) a mb -> lelistA S a mb.
@@ -87,7 +88,7 @@ Qed.
 (***********************************************************************)
 (** multiplicity *)
 
-Require Import ListPermutation.
+From CoLoR Require Import ListPermutation.
 
 Section multiplicity.
 
@@ -118,7 +119,8 @@ End multiplicity.
 (***********************************************************************)
 (** Sorted *)
 
-Require Import NatUtil Morphisms.
+From Coq Require Import Morphisms.
+From CoLoR Require Import NatUtil.
 
 Section Sorted.
 

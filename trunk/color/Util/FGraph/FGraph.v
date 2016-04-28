@@ -7,7 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 finite graphs
 *)
 
-Require Import ListUtil FSetUtil FMapUtil OrderedType RelUtil LogicUtil.
+From Coq Require Import OrderedType.
+From CoLoR Require Import ListUtil FSetUtil FMapUtil RelUtil LogicUtil.
 
 Set Implicit Arguments.
 

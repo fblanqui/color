@@ -10,8 +10,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil LSimple VecUtil RelUtil VecOrd EqUtil Morphisms
-  Lexico SN Basics Lexicographic_Product NatUtil.
+From Coq Require Import Morphisms Basics Lexicographic_Product.
+From CoLoR Require Import LogicUtil LSimple VecUtil RelUtil VecOrd EqUtil 
+  Lexico SN NatUtil.
 
 Module Export Def.
 

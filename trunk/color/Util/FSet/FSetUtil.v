@@ -9,7 +9,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil FSets RelUtil BoolUtil.
+From Coq Require Import FSets.
+From CoLoR Require Import LogicUtil RelUtil BoolUtil.
 
 Module Make (Export XSet : FSetInterface.S).
 

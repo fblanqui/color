@@ -9,7 +9,7 @@ non-collapsing arguments filtering with permutations
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs ListUtil NatUtil VecUtil SN BoolUtil
+From CoLoR Require Import LogicUtil ATrs ListUtil NatUtil VecUtil SN BoolUtil
   RelUtil ListNodup VecFilterPerm ARelation ACompat NaryFunction BoundNat.
 
 Section S.
@@ -416,7 +416,7 @@ is transitive. *)
 (***********************************************************************)
 (** verify if all filters are permutations *)
 
-    Require Import ListDec.
+    From CoLoR Require Import ListDec.
 
     Definition bpermut :=
       forallb (fun f =>

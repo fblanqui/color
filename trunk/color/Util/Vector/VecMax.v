@@ -10,14 +10,14 @@ greatest/smallest component of a vector of natural numbers
 
 Set Implicit Arguments.
 
-Require Import VecUtil NatUtil LogicUtil.
+From CoLoR Require Import VecUtil NatUtil LogicUtil.
 
 Notation nats := (vector nat).
 
 (***********************************************************************)
 (** max *)
 
-Require Import Max.
+From Coq Require Import Max.
 
 Fixpoint Vmax n (v : nats n) : nat :=
   match v with
@@ -72,7 +72,7 @@ Qed.
 (***********************************************************************)
 (** min *)
 
-Require Import Min.
+From Coq Require Import Min.
 
 Fixpoint Vmin n (v : nats n) : nat :=
   match v with

@@ -11,8 +11,11 @@ General definitions and results about relations.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Setoid Basics Morphisms List Omega.
-Require Export Relations RelMidex.
+From Coq Require Import Setoid Basics Morphisms List Omega.
+From Coq Require Export Relations.
+
+From CoLoR Require Import LogicUtil.
+From CoLoR Require Export RelMidex.
 
 Arguments inclusion {A} R1 R2.
 Arguments same_relation {A} R1 R2.

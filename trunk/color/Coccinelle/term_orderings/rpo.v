@@ -12,24 +12,24 @@
 (* RPO definition extended by Sorin Stratulat by considering a
 quasi-ordering for the precedence instead of an ordering. *)
 
-Require Import Bool.
-Require Import List.
-Require Import closure.
-Require Import more_list.
-Require Import equiv_list.
-Require Import list_permut.
-Require Import dickson.
-Require Import Relations.
-Require Import Wellfounded.
-Require Import Arith.
-Require Import Wf_nat.
-Require Import term_spec.
-Require Import term.
-Require Import decidable_set.
-Require Import ordered_set.
-Require Import Recdef.
-Require Import Program.
-Require Import Morphisms.
+From Coq Require Import Bool.
+From Coq Require Import List.
+From CoLoR Require Import closure.
+From CoLoR Require Import more_list.
+From CoLoR Require Import equiv_list.
+From CoLoR Require Import list_permut.
+From CoLoR Require Import dickson.
+From Coq Require Import Relations.
+From Coq Require Import Wellfounded.
+From Coq Require Import Arith.
+From Coq Require Import Wf_nat.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import term.
+From CoLoR Require Import decidable_set.
+From CoLoR Require Import ordered_set.
+From Coq Require Import Recdef.
+From Coq Require Import Program.
+From Coq Require Import Morphisms.
 
 Set Implicit Arguments.
 
@@ -6355,7 +6355,7 @@ apply H2; trivial.
 trivial.
 Qed.
 
-Require Import Omega.
+From Coq Require Import Omega.
 
 
 Lemma equiv_rpo_eval: forall  n rpo_infos t s u, size t + size u <= n -> size t + size s <= n -> equiv u s -> rpo_eval rpo_infos n t u = rpo_eval rpo_infos n t s.

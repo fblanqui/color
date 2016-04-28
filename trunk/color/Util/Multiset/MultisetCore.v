@@ -10,38 +10,36 @@ with specification of operations on multisets.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras Min.
+From CoLoR Require RelExtras.
+From Coq Require Import Min Relations.
 
 Module Type MultisetCore.
 
-  Declare Module Export Sid : Eqset_dec.
+  Declare Module Export Sid : RelExtras.Eqset_dec.
 
-  Section Operations.  
+  Parameter Multiset : Type.
 
-    Parameter Multiset : Type.
+  Parameter mult : A -> Multiset -> nat.
 
-    Parameter mult : A -> Multiset -> nat.
+  Parameter meq : relation Multiset.
+  
+  Parameter empty : Multiset.
 
-    Parameter meq : relation Multiset.
+  Parameter singleton : A -> Multiset.
 
-    Parameter empty : Multiset.
+  Parameter union : Multiset -> Multiset -> Multiset.
 
-    Parameter singleton : A -> Multiset.
+  Parameter intersection : Multiset -> Multiset -> Multiset.
 
-    Parameter union : Multiset -> Multiset -> Multiset.
-
-    Parameter intersection : Multiset -> Multiset -> Multiset.
-
-    Parameter diff : Multiset -> Multiset -> Multiset.
-
-  End Operations.
+  Parameter diff : Multiset -> Multiset -> Multiset.
 
   Notation "X =mul= Y" := (meq X Y) (at level 70) : msets_scope.
   Notation "X <>mul Y" := (~meq X Y) (at level 50) : msets_scope.
   Notation "{{ x }}" := (singleton x) (at level 5) : msets_scope.
   Notation "X + Y" := (union X Y) : msets_scope.
   Notation "X - Y" := (diff X Y) : msets_scope.
-  Notation "X # Y" := (intersection X Y) (at level 50, left associativity) : msets_scope.
+  Notation "X # Y" := (intersection X Y) (at level 50, left associativity)
+                      : msets_scope.
   Notation "x / M" := (mult x M) : msets_scope.
 
   Delimit Scope msets_scope with msets.
@@ -64,7 +62,7 @@ Module Type MultisetCore.
 
     Parameter diff_mult: x/(M-N) = (x/M - x/N)%nat.
 
-    Parameter intersection_mult: x/(M#N) = Min.min (x/M) (x/N).
+    Parameter intersection_mult: x/(M#N) = min (x/M) (x/N).
 
     Parameter singleton_mult_in: x =A= y -> x/{{y}} = 1.
 
@@ -107,7 +105,7 @@ Section Multiset_IntersectionAsDifference.
 
   Proof.
     intros M N x. unfold inter_as_diff. rewrite !diff_mult.
-    Require Import Psatz. lia.
+    From Coq Require Import Psatz. lia.
   Qed.
 
 End Multiset_IntersectionAsDifference.

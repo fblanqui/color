@@ -10,8 +10,9 @@ polynomials with multiple variables and integer coefficients
 
 Set Implicit Arguments.
 
-Require Import Arith VecUtil List LogicUtil.
-Require Export ZArith.
+From CoLoR Require Import VecUtil LogicUtil.
+From Coq Require Import Arith List.
+From Coq Require Export ZArith.
 
 (** monomials with n variables *)
 
@@ -158,7 +159,7 @@ Close Local Scope poly_scope.
 
 Notation vec := (vector Z).
 
-Require Import ZUtil.
+From CoLoR Require Import ZUtil.
 
 Fixpoint meval (n : nat) : monom n -> vec n -> Z :=
   match n as n return monom n -> vec n -> Z with

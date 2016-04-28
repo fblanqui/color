@@ -1,8 +1,8 @@
-Require Import List.
-Require Import Bool.
-Require Import TransClosure.
-Require term.
-Require terminaison.
+From Coq Require Import List.
+From Coq Require Import Bool.
+From CoLoR Require Import TransClosure.
+From CoLoR Require term.
+From CoLoR Require terminaison.
 
 Module Make(M:term_spec.Term).
   Import M.

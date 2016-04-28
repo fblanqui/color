@@ -10,8 +10,9 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Eqdep_dec LogicUtil.
-Require TermsDef.
+From Coq Require Import Eqdep_dec.
+From CoLoR Require Import RelExtras ListExtras LogicUtil.
+From CoLoR Require TermsDef.
 
 Module TermsTyping (Sig : TermsSig.Signature).
 

@@ -10,17 +10,17 @@
 (**************************************************************************)
 
 
-Require Import Relations.
-Require Import List.
-Require Import more_list.
-Require Import list_permut.
-Require Import list_sort.
-Require Import Arith.
-Require Import term_spec.
-Require Import term_o.
-Require Import equational_theory_spec.
-Require Import equational_theory.
-Require Import Morphisms.
+From Coq Require Import Relations.
+From Coq Require Import List.
+From CoLoR Require Import more_list.
+From CoLoR Require Import list_permut.
+From CoLoR Require Import list_sort.
+From Coq Require Import Arith.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import term_o.
+From CoLoR Require Import equational_theory_spec.
+From CoLoR Require Import equational_theory.
+From Coq Require Import Morphisms.
 
 Set Implicit Arguments.
 

@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A termination solver that knows how to deal with empty problems.
 *)
 
-Require Import ListUtil Problem ATrs SN LogicUtil.
+From CoLoR Require Import ListUtil Problem ATrs SN LogicUtil.
 
 Set Implicit Arguments.
 

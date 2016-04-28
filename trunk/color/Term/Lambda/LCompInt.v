@@ -14,9 +14,10 @@ term are computable.
 
 Set Implicit Arguments.
 
-Require Import IndefiniteDescription LogicUtil SN LCompSimple Tarski
-  Structures.OrderedType VecUtil SetUtil RelUtil.
-Require Union.
+From Coq Require Import IndefiniteDescription Structures.OrderedType.
+From CoLoR Require Import LogicUtil SN LCompSimple Tarski VecUtil SetUtil
+     RelUtil.
+From CoLoR Require Union.
 
 (****************************************************************************)
 (** * Accessible supterm relation. *)
@@ -306,7 +307,7 @@ Module Make (Export ST : ST_Struct)
       apply clos_aeq_tc_supterm_acc_R_mon_commut.
     Qed.
 
-    Require Import SetUtil RelUtil.
+    From CoLoR Require Import SetUtil RelUtil.
 
     Section restrict.
 
@@ -346,7 +347,7 @@ the interpretation [I_lt_a] for each base type strictly smaller than
 [a]. The interpretation of [a] itself is defined as the least fixpoint
 of some variant of the following monotone function [G]. *)
 
-  Require Import SetUtil AccUtil.
+  From CoLoR Require Import SetUtil AccUtil.
 
   Section fixpoint.
 

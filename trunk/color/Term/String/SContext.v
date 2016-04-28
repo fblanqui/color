@@ -9,8 +9,9 @@ one-hole contexts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Export VSignature List.
+From CoLoR Require Import LogicUtil.
+From CoLoR Require Export VSignature.
+From Coq Require Export List.
 
 Section S.
 

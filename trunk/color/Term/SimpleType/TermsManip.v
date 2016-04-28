@@ -10,7 +10,8 @@ typed lambda-calculus are defined.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras TermsTyping LogicUtil Omega.
+From CoLoR Require Import RelExtras ListExtras TermsTyping LogicUtil.
+From Coq Require Import Omega.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
