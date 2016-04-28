@@ -13,8 +13,9 @@ environment are identified.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListPermutation Compare_dec TermsPos Max
-  Setoid ListUtil ListExtras LogicUtil Morphisms Omega.
+From CoLoR Require Import RelExtras ListPermutation TermsPos ListUtil
+     ListExtras LogicUtil.
+From Coq Require Import Compare_dec Max Setoid Morphisms Omega.
 
 Module TermsConv (Sig : TermsSig.Signature).
 
@@ -247,7 +248,8 @@ Module TermsConv (Sig : TermsSig.Signature).
 
     intros. destruct H; unfold s.
     split; destruct (sizeOk Q i0 j0 H); eauto with arith.
-    destruct H; rewrite H; rewrite H0. Require Import Psatz. lia.
+    destruct H; rewrite H; rewrite H0.
+    From Coq Require Import Psatz. lia.
   Defined.
 
   Definition liftEnvSubst : forall (n: nat) (k: nat) (size: nat), EnvSubst.

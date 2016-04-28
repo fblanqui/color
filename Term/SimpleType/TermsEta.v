@@ -9,8 +9,9 @@ The eta-reduction relation of simply typed lambda-calculus.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras Omega.
-Require TermsBeta.
+From CoLoR Require Import RelExtras ListExtras.
+From Coq Require Import Omega.
+From CoLoR Require TermsBeta.
 
 Module TermsEta (Sig : TermsSig.Signature).
 

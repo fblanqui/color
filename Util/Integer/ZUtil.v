@@ -11,8 +11,8 @@ useful definitions and lemmas about integers
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Export ZArith.
+From CoLoR Require Import LogicUtil.
+From Coq Require Export ZArith.
 
 (***********************************************************************)
 (** decidability of equality *)
@@ -181,13 +181,12 @@ Proof. intros. destruct x. apply pos_power. hyp. Qed.
 Definition Dlt x y := Zlt (val x) (val y).
 Definition Dle x y := Zle (val x) (val y).
 
-Require Import RelUtil.
+From CoLoR Require Import RelUtil.
 
 Definition Dgt := transp Dlt.
 Definition Dge := transp Dle.
 
-Require Import Zwf.
-Require Import Wellfounded.
+From Coq Require Import Zwf Wellfounded.
 
 Lemma well_founded_Dlt : well_founded Dlt.
 
@@ -197,7 +196,7 @@ unfold inclusion, Zwf. intros (x,Hx) (y,Hy). simpl. intuition omega.
 apply (wf_inverse_image D Z (Zwf 0) val). apply Zwf_well_founded.
 Qed.
 
-Require Import SN.
+From CoLoR Require Import SN.
 
 Lemma WF_Dgt : WF Dgt.
 

@@ -10,10 +10,10 @@
 (**************************************************************************)
 
 
-Require Import Relations.
-Require Import List.
-Require Import list_sort.
-Require Import term_spec.
+From Coq Require Import Relations.
+From Coq Require Import List.
+From CoLoR Require Import list_sort.
+From CoLoR Require Import term_spec.
 
 Set Implicit Arguments.
 

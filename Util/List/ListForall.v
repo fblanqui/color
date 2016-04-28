@@ -9,7 +9,8 @@ forall predicate
 
 Set Implicit Arguments.
 
-Require Import LogicUtil List.
+From CoLoR Require Import LogicUtil.
+From Coq Require Import List.
 
 Section S.
 
@@ -81,8 +82,8 @@ apply H. destruct (f a)...
 destruct (f a)... discr.
 Qed.
 
-Require Import BoolUtil.
-Require Setoid.
+From CoLoR Require Import BoolUtil.
+From Coq Require Setoid.
 
 Lemma forallb_lforall : forall f, (forall x, f x = true <-> P x) ->
   forall l, forallb f l = true <-> lforall l.

@@ -9,7 +9,7 @@ dependent choice axiom
 
 Set Implicit Arguments.
 
-Require Import RelUtil.
+From CoLoR Require Import RelUtil.
 
 Axiom dep_choice : forall (A : Type) (a : A) (R : relation A),
   classic_left_total R -> exists f, IS R f /\ f 0 = a.

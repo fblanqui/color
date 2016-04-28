@@ -9,8 +9,8 @@ one-hole contexts
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
-Require Export VTerm.
+From CoLoR Require Import LogicUtil.
+From CoLoR Require Export VTerm.
 
 Section S.
 
@@ -99,7 +99,7 @@ Section S.
 
   Proof. intros. apply X. unfold subterm_eq. exists Hole. auto. Qed.
 
-  Require Import ListForall.
+  From CoLoR Require Import ListForall.
 
   Lemma subterm_sub_ind : forall (P : term -> Prop)
     (IH : forall t, (forall u, subterm u t -> P u) -> P t),

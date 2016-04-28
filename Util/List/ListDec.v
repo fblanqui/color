@@ -9,7 +9,8 @@ boolean functions on lists
 
 Set Implicit Arguments.
 
-Require Import ListUtil BoolUtil EqUtil LogicUtil Arith Omega.
+From Coq Require Import Arith Omega.
+From CoLoR Require Import ListUtil BoolUtil EqUtil LogicUtil.
 
 Section S.
 

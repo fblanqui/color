@@ -11,8 +11,9 @@ multisets.
 
 Set Implicit Arguments.
 
-Require Import RelExtras MultisetCore Min List
-  ListPermutation NatUtil Setoid ListExtras LogicUtil Morphisms.
+From Coq Require Import Min List Setoid Morphisms.
+From CoLoR Require Import RelExtras MultisetCore ListPermutation NatUtil
+     ListExtras LogicUtil.
 
 Module Multiset (MC : MultisetCore).
 

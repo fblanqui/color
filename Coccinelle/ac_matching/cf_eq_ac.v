@@ -10,16 +10,16 @@
 (**************************************************************************)
 
 
-Require Import Setoid.
-Require Import Arith.
-Require Import List.
-Require Import closure.
-Require Import more_list.
-Require Import weaved_relation.
-Require Import list_sort.
-Require Import term_spec.
-Require Import ac.
-Require Import Morphisms.
+From Coq Require Import Setoid.
+From Coq Require Import Arith.
+From Coq Require Import List.
+From CoLoR Require Import closure.
+From CoLoR Require Import more_list.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import list_sort.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import ac.
+From Coq Require Import Morphisms.
 
 Set Implicit Arguments.
 

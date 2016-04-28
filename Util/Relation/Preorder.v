@@ -7,7 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 Various properties of preorders
 *)
 
-Require Import Relations LogicUtil.
+From CoLoR Require Import LogicUtil.
+From Coq Require Import Relations.
 
 Section PreOrderFacts.
   Variable A : Type.

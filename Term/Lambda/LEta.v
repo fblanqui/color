@@ -10,8 +10,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil Morphisms Basics VecOrd VecUtil.
-Require Export LAlpha.
+From Coq Require Import Morphisms Basics.
+From CoLoR Require Import LogicUtil RelUtil VecOrd VecUtil.
+From CoLoR Require Export LAlpha.
 
 (****************************************************************************)
 (** Definition of eta-top-reduction. *)

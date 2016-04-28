@@ -9,7 +9,7 @@ decomposition of an over DP graph
 
 Set Implicit Arguments.
 
-Require Import AGraph Union ATrs RelUtil ListUtil LogicUtil SN ListForall
+From CoLoR Require Import AGraph Union ATrs RelUtil ListUtil LogicUtil SN ListForall
   BoolUtil VecUtil.
 
 Section S.
@@ -174,7 +174,7 @@ End S.
 
 Ltac co_scc := check_eq || fail 10 "not a co_scc".
 
-Require Import AVariables.
+From CoLoR Require Import AVariables.
 
 Ltac graph_decomp Sig f d :=
   apply WF_decomp_co_scc with (approx := f) (cs := d);

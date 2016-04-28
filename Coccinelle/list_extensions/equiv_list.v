@@ -9,9 +9,9 @@
 (*           *                                                            *)
 (**************************************************************************)
 
-Require Import List.
-Require Import Relations.
-Require Import Setoid.
+From Coq Require Import List.
+From Coq Require Import Relations.
+From Coq Require Import Setoid.
 
 Lemma equiv_in_list :
   forall (A : Type) (R : relation A) s ll, (forall s t, In (s,t) ll -> R s t) ->

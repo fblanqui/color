@@ -8,8 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil OrdSemiRing SN
-  RelUtil ZArith AMatrixBasedInt.
+From Coq Require Import ZArith.
+From CoLoR Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil
+     OrdSemiRing SN RelUtil AMatrixBasedInt.
 Import ArcticBZMatrix.
 
 Definition matrixInt := @matrixInt A matrix.
@@ -40,8 +41,8 @@ Section Absolute_finite.
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
 
-  Require Import List.
-  Require Import ListForall.
+  From Coq Require Import List.
+  From CoLoR Require Import ListForall.
 
   Variable Fs : list sig.
   Variable Fs_ok : forall f : sig, In f Fs.

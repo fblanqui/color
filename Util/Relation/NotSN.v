@@ -9,7 +9,8 @@ properties of ~SN terms (using classical logic)
 
 Set Implicit Arguments.
 
-Require Import ClassicUtil SN Relations LogicUtil.
+From Coq Require Import Relations.
+From CoLoR Require Import ClassicUtil SN LogicUtil.
 
 Section S.
 

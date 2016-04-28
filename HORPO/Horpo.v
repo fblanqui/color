@@ -10,8 +10,9 @@ recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras RelUtil Terms MultisetOrder PairLex
-  MultisetList MultisetTheory AccUtil LogicUtil Morphisms Basics.
+From CoLoR Require Import RelExtras ListExtras RelUtil Terms MultisetOrder
+     PairLex MultisetList MultisetTheory AccUtil LogicUtil.
+From Coq Require Import Morphisms Basics.
 
 Module Type Precedence.
 

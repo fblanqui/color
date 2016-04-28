@@ -8,9 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring equipped with two (strict and non-strict) orders.
 *)
 
-Require Export SemiRing.
-Require Import Morphisms RelDec SN RelExtras NatUtil LogicUtil Max ZUtil
-  RelUtil Min.
+From Coq Require Import Morphisms Max Min.
+From CoLoR Require Export SemiRing.
+From CoLoR Require Import RelDec RelUtil SN RelExtras NatUtil LogicUtil ZUtil.
 
 (***********************************************************************)
 (** Semi-rings equipped with orders *)
@@ -160,7 +160,7 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Module Export SR := BigNSemiRingT.
 
-  Require Import BigNUtil.
+  From CoLoR Require Import BigNUtil.
 
   Definition gt x y := BigN.lt y x.
   Definition ge x y := BigN.le y x.

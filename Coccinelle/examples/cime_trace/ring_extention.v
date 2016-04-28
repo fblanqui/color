@@ -1,9 +1,9 @@
-Require Import ZArith.
-Require Import ZArithRing.
-Require Import Ring_polynom.
-Require Import Bool.
-Require Import List.
-Require Import closure.
+From Coq Require Import ZArith.
+From Coq Require Import ZArithRing.
+From Coq Require Import Ring_polynom.
+From Coq Require Import Bool.
+From Coq Require Import List.
+From CoLoR Require Import closure.
 
 Function  all_coef_pos (p:Pol Z) : bool :=
   match p with 
@@ -996,8 +996,8 @@ Ltac soft_prove_ineq continue_tac Hacc :=
       check_goal continue_tac Hacc Zlt H Zle_lt_trans Zlt_le_trans p q lhs rhs
     | _ => ring_ineq
   end.
-Require Zwf.
-Require terminaison.
+From Coq Require Zwf.
+From CoLoR Require terminaison.
 Ltac prove_ineq := soft_prove_ineq ltac:(fun _ => prove_ineq) tt.
 
 Ltac isVar t := 
@@ -1076,9 +1076,9 @@ Ltac translate_vars :=
       end
   end.
 
-Require Import Omega.
+From Coq Require Import Omega.
 
-Require interp.
+From CoLoR Require interp.
 Ltac full_prove_ineq 
   term_constructor
   find_replacement 

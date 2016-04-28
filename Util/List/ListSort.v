@@ -9,7 +9,7 @@ sorting functions on lists
 
 Set Implicit Arguments.
 
-Require Import List.
+From Coq Require Import List.
 
 Section S.
 

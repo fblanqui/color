@@ -10,7 +10,8 @@ general results on the strong normalization of rewrite relations
 
 Set Implicit Arguments.
 
-Require Import ATrs SN List LogicUtil VecUtil VecOrd NatUtil Sumbool.
+From CoLoR Require Import ATrs SN LogicUtil VecUtil VecOrd NatUtil.
+From Coq Require Import List Sumbool.
 
 Section S.
 
@@ -70,7 +71,7 @@ Section S.
 (***********************************************************************)
 (** undefined symbol whose arguments are sn *)
 
-  Require Import ACalls.
+  From CoLoR Require Import ACalls.
 
   Lemma sn_args_sn_fun : forall f, defined f R = false ->
     forall ts, Vforall SNR ts -> SNR (Fun f ts).
@@ -118,7 +119,7 @@ if [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r]
 such that [Vmap (sub s) vs] are SN,
 then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
 
-  Require Import ACap.
+  From CoLoR Require Import ACap.
 
   Lemma calls_sn_args : forall r s, (forall x, In x (vars r) -> SNR (s x))
     -> (forall g vs, In (Fun g vs) (calls R r)
@@ -173,7 +174,7 @@ then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
 (***********************************************************************)
 (** relation with the subterm ordering *)
 
-  Require Import RelUtil ARelation Union.
+  From CoLoR Require Import RelUtil ARelation Union.
 
   Notation supterm := (@supterm Sig).
 

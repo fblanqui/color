@@ -1,14 +1,14 @@
 Set Implicit Arguments. 
-Require Import Omega.
-Require Import List.
-Require Import Setoid.
-Require Import Le.
-Require Import Peano_dec.
-Require Import Eqdep_dec.
-Require Import Ring. 
-Require Import Zwf.
-Require Import interp.
-Require Import Morphisms.
+From Coq Require Import Omega.
+From Coq Require Import List.
+From Coq Require Import Setoid.
+From Coq Require Import Le.
+From Coq Require Import Peano_dec.
+From Coq Require Import Eqdep_dec.
+From Coq Require Import Ring. 
+From Coq Require Import Zwf.
+From CoLoR Require Import interp.
+From Coq Require Import Morphisms.
 
 Lemma exist_pi:  forall (A:Type) (P: A -> Prop), (forall a (H1 H2:P a), H1=H2) ->
   forall a H1 H2,
@@ -4290,7 +4290,7 @@ Module Make_Ordered(R:Ordered_Ring).
 End Make_Ordered.
 
 
-Require ZArithRing.
+From Coq Require ZArithRing.
 
 Module ZRing <: TRing . 
 Definition A := Z.

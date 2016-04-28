@@ -9,8 +9,8 @@ rewriting
 
 Set Implicit Arguments.
 
-Require Export VContext VSubstitution LogicUtil.
-Require Import RelUtil.
+From CoLoR Require Export VContext VSubstitution LogicUtil.
+From CoLoR Require Import RelUtil.
 
 (***********************************************************************)
 (** definition *)

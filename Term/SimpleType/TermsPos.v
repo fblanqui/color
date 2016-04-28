@@ -10,7 +10,7 @@ monotonicity property.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras TermsBuilding.
+From CoLoR Require Import RelExtras ListExtras TermsBuilding.
 
 Module TermsPos (Sig : TermsSig.Signature).
 

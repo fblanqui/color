@@ -9,7 +9,7 @@ simple projections for the subterm criterion
 
 Set Implicit Arguments.
 
-Require Import ATrs NatUtil BoolUtil VecUtil ListUtil LogicUtil RelUtil SN
+From CoLoR Require Import ATrs NatUtil BoolUtil VecUtil ListUtil LogicUtil RelUtil SN
   ACompat ARelation EqUtil.
 
 Section S.

@@ -12,9 +12,9 @@ some prefix of nat) and definition of the cardinal of a finite set
 
 Set Implicit Arguments.
 
-Require Import ClassicUtil IotaUtil EpsilonUtil
-        Basics Morphisms Setoid
-        LogicUtil NatUtil FunUtil ListUtil ListNodup SetUtil BoundNat.
+From CoLoR Require Import ClassicUtil IotaUtil EpsilonUtil LogicUtil NatUtil
+     FunUtil ListUtil ListNodup SetUtil BoundNat.
+From Coq Require Import Basics Morphisms Setoid.
 
 Section S.
 

@@ -8,7 +8,7 @@ Definitions and proofs about the min of a non empty set of natural
 numbers, using classical logic and the axiom of indefinite
 description. *)
 
-Require Import Classical_Prop IndefiniteDescription Wf_nat Relations.
+From Coq Require Import Classical_Prop IndefiniteDescription Wf_nat Relations.
 
 Set Implicit Arguments.
 

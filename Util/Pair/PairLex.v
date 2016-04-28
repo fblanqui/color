@@ -10,7 +10,8 @@ concerning it are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil RelExtras Setoid Morphisms Basics.
+From CoLoR Require Import LogicUtil RelUtil RelExtras.
+From Coq Require Import Setoid Morphisms Basics.
 
 Section LexPair.
 
@@ -371,7 +372,7 @@ End LexicographicOrder.
 
 Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
 
-  Require Import Notations Relation_Operators.
+  From Coq Require Import Notations Relation_Operators.
 
   Module Import A_ext := OrdLemmas A_ord.
   Module Import B_ext := OrdLemmas B_ord.

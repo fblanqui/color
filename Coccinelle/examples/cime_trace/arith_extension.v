@@ -1,4 +1,4 @@
-Require Import Arith.
+From Coq Require Import Arith.
 
 
 Fixpoint le_bool (n m : nat ) : bool := 

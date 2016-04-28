@@ -7,8 +7,9 @@ See the COPYRIGHTS and LICENSE files.
 A machinery to check termination proofs.
 *)
 
-Require Import Relations List SN ATrs ARelation Problem Proof EmptyChecker.
-Require PolyChecker.
+From Coq Require Import Relations List.
+From CoLoR Require Import SN ATrs ARelation Problem Proof EmptyChecker.
+From CoLoR Require PolyChecker.
 
 Set Implicit Arguments.
 

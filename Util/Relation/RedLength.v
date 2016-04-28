@@ -10,7 +10,8 @@ for a finitely branching well-founded relation
 
 Set Implicit Arguments.
 
-Require Import SN ListMax RelUtil ListUtil LogicUtil Arith.
+From CoLoR Require Import SN ListMax RelUtil ListUtil LogicUtil.
+From Coq Require Import Arith.
 
 Section S.
 

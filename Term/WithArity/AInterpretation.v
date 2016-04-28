@@ -9,8 +9,9 @@ interpretation of algebraic terms with arity
 
 Set Implicit Arguments.
 
-Require Export ATerm.
-Require Import LogicUtil NaryFunction VecUtil Arith List VecMax NatUtil.
+From CoLoR Require Export ATerm.
+From Coq Require Import List.
+From CoLoR Require Import LogicUtil NaryFunction VecUtil VecMax NatUtil.
 
 Section S.
 

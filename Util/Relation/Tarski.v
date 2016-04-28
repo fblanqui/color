@@ -10,7 +10,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil Morphisms SetUtil Basics.
+From CoLoR Require Import LogicUtil RelUtil SetUtil.
+From Coq Require Import Morphisms Basics.
 
 (****************************************************************************)
 (** * We assume given a set [A] equipped with a transitive relation [<=]
@@ -178,8 +179,6 @@ Arguments gfp_eq [A le eq] _ [lub] _ _ [f] _.
 
 (****************************************************************************)
 (** * Example of complete lattice: the powerset of some set [X]. *)
-
-Require Import Basics.
 
 Section powerset.
 

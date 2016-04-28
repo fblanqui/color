@@ -11,7 +11,8 @@ Inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-Require Import Morphisms LogicUtil List RelUtil Basics Omega.
+From Coq Require Import Morphisms List Basics Omega.
+From CoLoR Require Import LogicUtil RelUtil.
 
 (***********************************************************************)
 (** ** Definition of strong normalization.
@@ -288,7 +289,7 @@ Section symprod.
 
   Notation gt := (symprod gtA gtB).
 
-  Require Import Wellfounded.
+  From Coq Require Import Wellfounded.
 
   Lemma SN_symprod : forall x, SN gtA x -> forall y, SN gtB y -> SN gt (x,y).
 
@@ -507,7 +508,7 @@ End commut_modulo.
 (***********************************************************************)
 (** ** SN properties of [Iter]. *)
 
-Require Import Iter.
+From CoLoR Require Import Iter.
 
 Section iter.
 
@@ -548,7 +549,7 @@ End iter.
 (***********************************************************************)
 (** ** Extension of [SN_intro] to paths of fixed length. *)
 
-Require Import Path.
+From CoLoR Require Import Path.
 
 Section path.
 
@@ -635,7 +636,7 @@ End wf_rel_mod_simpl.
 (***********************************************************************)
 (** ** Termination of the standard ordering on natural numbers. *)
 
-Require Export Wf_nat.
+From Coq Require Export Wf_nat.
 
 Arguments ltof [A] _ _ _.
 Arguments induction_ltof1 [A] _ _ _ _.
@@ -664,7 +665,7 @@ Qed.
 (***********************************************************************)
 (** ** [restrict P R] terminates if [P <= SN R]. *)
 
-Require Import SetUtil.
+From CoLoR Require Import SetUtil.
 
 Section restrict.
 

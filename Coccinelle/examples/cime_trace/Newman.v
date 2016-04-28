@@ -7,9 +7,9 @@
 (************************************************************************)
 
 (*i $Id: Newman.v 9245 2006-10-17 12:53:34Z notin $ i*)
-Require Import weaved_relation.
-Require Import closure.
-Require Import terminaison.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import closure.
+From CoLoR Require Import terminaison.
 
 Section Newman.
 
@@ -140,7 +140,7 @@ End Newman_section.
 
 
 End Newman.
-Require Import equational_theory_spec.
+From CoLoR Require Import equational_theory_spec.
 
 Module Confluence(Eqt:EqTh).
 Import Eqt.
@@ -166,7 +166,7 @@ Proof.
   apply star_trans with (Term f y);auto.
   apply star_R. auto. constructor 2.  auto. 
 Qed.
-Require Import List.
+From Coq Require Import List.
 
 Lemma star_cons : forall t l t' l', 
   star _ (one_step R) t' t -> star _ (one_step_list (one_step R)) l' l -> 
@@ -253,7 +253,7 @@ Qed.
 
 
 End Rew.
-Require Import List.
+From Coq Require Import List.
 Ltac reduce_term head_reduction t := 
   match t with 
     | ?Term ?f ?l => 

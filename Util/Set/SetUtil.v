@@ -9,8 +9,8 @@ See the COPYRIGHTSGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Basics Morphisms Setoid
-        LogicUtil RelUtil FunUtil ListUtil NatUtil.
+From Coq Require Import Basics Morphisms Setoid.
+From CoLoR Require Import LogicUtil RelUtil FunUtil ListUtil NatUtil.
 
 (****************************************************************************)
 (** We assume given a type A for elements. *)
@@ -293,7 +293,7 @@ Section S.
 
   Proof.
     intros [x_val x] [y_val y] e.
-    Require Import ClassicUtil. apply sig_eq in e. apply sig_eq. hyp.
+    From CoLoR Require Import ClassicUtil. apply sig_eq in e. apply sig_eq. hyp.
   Qed.
 
   Definition elts_equiv P Q : P [=] Q -> elts P -> elts Q.
@@ -338,7 +338,7 @@ Section S.
     apply in_appl. hyp. apply in_appr. hyp.
   Qed.
 
-  Require Import BoundNat.
+  From CoLoR Require Import BoundNat.
 
   Lemma of_map_L P n (f : N n -> elts P) :
     surjective f -> P [=] of_list (map (elt_val o f) (L n)).

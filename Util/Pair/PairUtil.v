@@ -9,7 +9,7 @@ general results on pairs
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+From CoLoR Require Import LogicUtil.
 
 Section S.
 

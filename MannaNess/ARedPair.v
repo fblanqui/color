@@ -9,7 +9,7 @@ rule elimination with reduction pairs
 
 Set Implicit Arguments.
 
-Require Import ATrs LogicUtil ARelation RelUtil SN ListUtil AMannaNess ACompat
+From CoLoR Require Import ATrs LogicUtil ARelation RelUtil SN ListUtil AMannaNess ACompat
   BoolUtil BoundNat.
 
 (***********************************************************************)
@@ -162,7 +162,7 @@ End WeakRedPairProps.
 (***********************************************************************)
 (** reduction pair associated to a monotone algebra *)
 
-Require Import AMonAlg.
+From CoLoR Require Import AMonAlg.
 
 Module WP_MonAlg (Import MA : MonotoneAlgebraType) <: WeakRedPair.
 
@@ -211,7 +211,7 @@ End WP_MonAlg.
 (** reduction pair associated to a non-permutative non-collapsing
 arguments filtering *)
 
-Require Import AFilterBool VecUtil.
+From CoLoR Require Import AFilterBool VecUtil.
 
 Module Type Filter.
   Parameter Sig : Signature.
@@ -273,7 +273,7 @@ End WP_Filter.
 (** reduction pair associated to a permutative non-collapsing
 arguments filtering *)
 
-Require Import AFilterPerm.
+From CoLoR Require Import AFilterPerm.
 
 Module Type Perm.
   Parameter Sig : Signature.
@@ -335,7 +335,7 @@ End WP_Perm.
 (***********************************************************************)
 (** reduction pair associated to collapsing arguments filtering *)
 
-Require Import AProj.
+From CoLoR Require Import AProj.
 
 Module Type Proj.
   Parameter Sig : Signature.
@@ -398,7 +398,7 @@ End WP_Proj.
 
 (*FIXME: arpo_subst_closed not proved yet
 
-Require Import VRPO_Prover.
+From CoLoR Require Import VRPO_Prover.
 
 Module WP_RPO (Import R : TRPO) <: WeakRedPair.
 

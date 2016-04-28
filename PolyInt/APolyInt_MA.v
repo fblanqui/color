@@ -7,8 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 Polynomial interpretations in the setting of monotone algebras.
 *)
 
-Require Import APolyInt AMonAlg ZUtil RelUtil PositivePolynom ATrs ListForall
-  MonotonePolynom LogicUtil BoolUtil.
+From CoLoR Require Import APolyInt AMonAlg ZUtil RelUtil PositivePolynom ATrs
+  ListForall MonotonePolynom LogicUtil BoolUtil.
 
 Module Type TPolyInt.
   Parameter sig : Signature.
@@ -110,7 +110,7 @@ Module PolyInt (Export PI : TPolyInt).
 
     End ExtendedMonotoneAlgebra.
 
-    Require Import List.
+    From Coq Require Import List.
 
     Section fin_Sig.
 

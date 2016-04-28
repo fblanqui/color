@@ -9,8 +9,8 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-Require Import SN LogicUtil Morphisms NatUtil VecUtil VecOrd Basics
-        ListUtil RelUtil.
+From Coq Require Import Morphisms Basics.
+From CoLoR Require Import SN LogicUtil NatUtil VecUtil VecOrd ListUtil RelUtil.
 
 (****************************************************************************)
 (** ** Lexicographic quasi-ordering on pairs. *)

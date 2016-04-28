@@ -10,7 +10,7 @@ higher-order recursive path ordering due to Jouannaud and Rubio.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras Horpo Computability PairLex
+From CoLoR Require Import RelExtras ListExtras Horpo Computability PairLex
   HorpoComp LogicUtil.
 
 Module HorpoWf (S : TermsSig.Signature) 
@@ -427,7 +427,7 @@ Module HorpoWf (S : TermsSig.Signature)
     apply algebraic_appBodyR; trivial.
   Qed.
 
-  Require SN.
+  From CoLoR Require SN.
 
   Lemma horpo_beta_wf : forall M, algebraic M -> SN.SN horpo M.
 

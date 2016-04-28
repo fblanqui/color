@@ -10,7 +10,7 @@ Lists without duplicated elements
 
 Set Implicit Arguments.
 
-Require Import ListUtil NatUtil RelMidex LogicUtil.
+From CoLoR Require Import ListUtil NatUtil RelMidex LogicUtil.
 
 Section S.
 
@@ -396,7 +396,7 @@ Section S.
 (***********************************************************************)
 (** Boolean function deciding nodup. *)
 
-  Require Import ListDec BoolUtil.
+  From CoLoR Require Import ListDec BoolUtil.
 
   Variables (beq : A -> A -> bool)
             (beq_ok : forall x y, beq x y = true <-> x = y).
@@ -425,7 +425,7 @@ Implicit Arguments bnodup_ok [A beq].
 (***********************************************************************)
 (** Properties of [nodup] involving more than one type. *)
 
-Require Import FunUtil.
+From CoLoR Require Import FunUtil.
 
 Lemma nodup_map_inj A B (f : A -> B) :
   injective f -> forall l, nodup l -> nodup (map f l).

@@ -16,9 +16,9 @@ simultaneous substitution of any number of variables. *)
 
 Set Implicit Arguments.
 
-Require Import BoolUtil SetoidList Basics Morphisms LogicUtil RelUtil VecUtil
-  EqUtil.
-Require Export LTerm.
+From Coq Require Import SetoidList Basics Morphisms.
+From CoLoR Require Import BoolUtil LogicUtil RelUtil VecUtil EqUtil.
+From CoLoR Require Export LTerm.
 
 (****************************************************************************)
 (** * Definition of substitution. *)

@@ -10,8 +10,9 @@ lambda-calculus is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListPermutation Arith TermsConv ListUtil ListExtras
-  LogicUtil Omega.
+From CoLoR Require Import RelExtras ListPermutation TermsConv ListUtil
+     ListExtras LogicUtil.
+From Coq Require Import Arith Omega.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 

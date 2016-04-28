@@ -9,7 +9,7 @@ term variables shifting
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs RelUtil ListUtil VecUtil VecMax NatUtil.
+From CoLoR Require Import LogicUtil ATrs RelUtil ListUtil VecUtil VecMax NatUtil.
 
 Section S.
 
@@ -30,7 +30,7 @@ Variable p : nat.
 
 Definition shift_var x := x+p.
 
-Require Import ASubstitution.
+From CoLoR Require Import ASubstitution.
 
 Definition shift_sub x := @Var Sig (x+p).
 Definition shift := sub shift_sub.

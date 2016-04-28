@@ -10,8 +10,9 @@ We represent the quotient of the Domain by SCC with a function to nat.
 
 Set Implicit Arguments.
 
-Require Import List AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil RelSub
-  Path SortUtil Permutation Multiset ListNodup OptUtil BoundNat SCC SCC_dec.
+From Coq Require Import Permutation Multiset.
+From CoLoR Require Import AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil
+     RelSub Path SortUtil ListNodup OptUtil BoundNat SCC SCC_dec.
 
 Section SCC_quotient.
 
@@ -224,7 +225,7 @@ isolated points are also considered as SCC *)
     rewrite SCC'_tag_exact. split. congruence. rewrite H3. discr.
   Qed.
 
-  Require Import Total.
+  From CoLoR Require Import Total.
 
   Lemma topo_sortable_Rquo' : topo_sortable Rquo'.
 
@@ -254,7 +255,7 @@ isolated points are also considered as SCC *)
 (***********************************************************************)
 (* SCCs sorting *)
 
-  Require Import Heap PermutSetoid.
+  From Coq Require Import Heap PermutSetoid.
 
   Lemma sorted_SCC' :
     {m : list nat | sort RT m & permutation eq_nat_dec (nats_decr_lt dim) m}.

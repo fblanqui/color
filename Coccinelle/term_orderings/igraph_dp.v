@@ -12,18 +12,18 @@
 
 (** * Termination of rewriting *)
 
-Require Import List.
-Require Import Relations.
-Require Import Wellfounded.
-Require Import Arith.
-Require Import Recdef.
-Require Import Setoid.
-Require Import closure.
-Require Import more_list.
-Require Import weaved_relation.
-Require Import term_spec.
-Require Import equational_theory_spec.
-Require Export dp.
+From Coq Require Import List.
+From Coq Require Import Relations.
+From Coq Require Import Wellfounded.
+From Coq Require Import Arith.
+From Coq Require Import Recdef.
+From Coq Require Import Setoid.
+From CoLoR Require Import closure.
+From CoLoR Require Import more_list.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import equational_theory_spec.
+From CoLoR Require Export dp.
 
 Module MakeIGDP (E : EqTh).
 

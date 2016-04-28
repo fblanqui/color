@@ -10,8 +10,8 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsLifting Arith Setoid LogicUtil
-  Morphisms OptUtil Omega.
+From CoLoR Require Import RelExtras ListExtras TermsLifting LogicUtil OptUtil.
+From Coq Require Import Arith Setoid Morphisms Omega.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 

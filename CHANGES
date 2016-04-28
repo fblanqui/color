@@ -1,31 +1,35 @@
+
+16-04-28: prefix Require's by From Coq or From CoLoR to avoid problems
+  when installing CoLoR with other libraries
+
 -----------------------------------------------------------------------------
 16-01-26: RELEASE OPAM 1.2.0 (SVN revision 2394)
 
-16-01-26: [Blanqui]
+16-01-26:
 - moved to Coq 8.5
 
-16-01-20: [Blanqui]
+16-01-20:
 - Util/Relation/Tarski: proof that the least fixpoint can be reached by transfinite induction; corresponding induction principle; fixpoint on a sig type
 
-16-01-12: [Blanqui]
+16-01-12:
 - Util/Nat/BoundNat: added vector of bounded natural numbers
 
-16-01-06: [Blanqui]
+16-01-06:
 - Util/FMap/FMapUtil: Make now takes an FMapInterface.S as argument;
   moved parts of LSimple into a Domain submodule taking an FSetInterface.S
   as argument
 
-15-05-05: [Blanqui]
+15-05-05:
 - Term/Lambda/LEta: eta-reduction
 - Term/Lambda: extended all termination results to eta-reduction
 
-15-04-30: [Blanqui]
+15-04-30:
 - Util/FSet/FSetUtil: added replace
 - Term/Lambda/LSubs,LAlpha:
   . generalized seq and saeq by introducing subs_rel
   . added subs_rel_mon_preorder and sub_rel_mon_preorder_aeq
 
-15-03-27: [Blanqui]
+15-03-27:
 - Util/Logic/LogicUtil: added split_all tactic
 - reduced compilation time by improving some scripts
   CoLoR without Coccinelle now compiles in:
@@ -42,14 +46,14 @@
 - Util/List/LexicographicOrder: renamed into ListLex
 - Util/Nat/NatLeast: renamed into LeastNat
 
-15-03-19: [Blanqui]
+15-03-19:
 - replaced Add Relation/Morphism by Instance everywhere
 - Util/Nat/BoundNat:
   . replaced bnat by N and nfirst_nats by L
   . renamed and moved everything into NatLt
 - removed Emacs local variables in Coccinelle
 
-15-03-15: [Blanqui]
+15-03-15:
 - Util/List/ListRepeatFree: renamed into ListNodup,
   make_repeat_free renamed into remdup, repeat_free renamed into nodup
 - Util/Relation/RelExtras: moved things to RelUtil and ExcUtil
@@ -57,7 +61,7 @@
 -----------------------------------------------------------------------------
 15-03-10: RELEASE OPAM 1.1.0 (SVN revision 2156)
 
-15-03-10: [Blanqui]
+15-03-10:
 - Util/Set/Ramsey: classical infinite Ramsey theorem
 - Util/Set/FinSet: new file defining finiteness and providing finiteness lemmas
 - Util/Set/InfSet: new file defining infiniteness
@@ -78,31 +82,31 @@
 - Util/Vector/VecUtil: Vcast defined by matching on the equality proof argument
   (like eq_rect) instead of on the vector argument
 
-14-02-19: [Blanqui]
+14-02-19:
 - Util/Vector/VecOrd: Vreln moved into VecUtil
 - Util/Vector/VecEq: moved into VecOrd
 
-14-01-28: [Blanqui]
+14-01-28:
 - Term/Lambda/LAlphaAlt: added Gabbay and Pitts definition of alpha-equivalence
 
 -----------------------------------------------------------------------------
 13-12-03: NEW RELEASE (SVN revision 2023)
 
-13-10-04: [Blanqui]
+13-10-04:
 - Term/Lambda/LAlphaAlt: definitions of alpha-equivalence by Church and
   Krivine, and proof that they are equivalent to the one of Curry and Feys
 
 -----------------------------------------------------------------------------
 13-09-20: NEW RELEASE (SVN revision 2003)
 
-13-09-20: [Blanqui]
+13-09-20:
 - Term/lambda/LSystemT: definition and termination proof of Goedel System T
 - Util/Relation/OrdDec replaced by Util/Relation/OrdUtil
 
 -----------------------------------------------------------------------------
 13-09-16: NEW RELEASE (SVN revision 1983)
 
-13-09-13: [Blanqui]
+13-09-13:
 - Term/Lambda/LCompClos: computability closure and proof that its ensures
   termination of higher-order rewrite systems
 - Term/Lambda/LCompRewrite: higher-order rewriting
@@ -111,17 +115,17 @@
 - Term/Lambda/LCompInt: interpretation of positive inductive types
   as computability predicates
 
-13-08-14: [Blanqui]
+13-08-14:
 - Term/Lambda and Util: various additions
 
-13-08-02: [Blanqui]
+13-08-02:
 - Util/Relation/Tarski: Knaster-Tarski theorem
 
-13-06-05: [Blanqui]
+13-06-05:
 - Term/Lambda: reorganized definitions so that Inductive's and various
 functions including substitution are defined out of any module
 
-12-11-06: [Blanqui]
+12-11-06:
 - Util/Relation/SN: added proof that SN -> ~NT following
   http://www.labri.fr/perso/casteran/CoqArt/gen-rec/SRC/not_decreasing.v
 - removed IS_NotSN_FB subsumed by previous result
@@ -130,7 +134,7 @@ functions including substitution are defined out of any module
 -----------------------------------------------------------------------------
 12-10-23: NEW RELEASE (SVN revision 1751)
 
-12-10-23: [Blanqui]
+12-10-23:
 - Term/Lambda/LTerm: pure lambda-terms with names variables
 - Term/Lambda/LSubs: higher-order simultaneous substitutions
 - Term/Lambda/LAlpha: alpha-equivalence
@@ -142,10 +146,10 @@ functions including substitution are defined out of any module
 -----------------------------------------------------------------------------
 12-08-22: NEW RELEASE (SVN revision 1743)
 
-12-08-22: [Blanqui]
+12-08-22:
 - migration to Coq 8.4
 
-11-03-25: [Blanqui]
+11-03-25:
 - Util/FGraph/TransClos: transitive closure of a finite graph
 - Util/FGraph/FGraph: library on finite graphs
 
@@ -155,7 +159,7 @@ functions including substitution are defined out of any module
 - Util/Nat/NatLeast: min of a non-empty set of nats
 - Term/WithArity/ADepRel: relation on defined symbols implied by rules
 
-10-11-24: [Blanqui]
+10-11-24:
 - Util/List/ListUtil: sub_list
 - Util/Vector/VecFilterPerm: vector filtering with permutations
 - Filter/AFilterPerm: non-collapsing arguments filtering with permutations
@@ -166,7 +170,7 @@ functions including substitution are defined out of any module
 -----------------------------------------------------------------------------
 10-10-28: NEW RELEASE (SVN revision 1341)
 
-10-10-27: [Blanqui]
+10-10-27:
 - migration to Coq 8.3
 
 10-06-30: [Stratulat]
@@ -176,37 +180,37 @@ quasi-ordering on symbols instead of an ordering
 -----------------------------------------------------------------------------
 09-12-07: NEW RELEASE (SVN revision 1000)
 
-09-11-04: [Blanqui]
+09-11-04:
 - DP/ADP: use Dershowitz improvement for defining DPs
 
-09-10-30: [Blanqui]
+09-10-30:
 - Coccinelle: Coccinelle library v8.2-bool (09-10-26)
 - Conversion/Coccinelle: convert CoLoR ATerm's into Coccinelle terms
   + definition of RPO on CoLoR ATerm's using Coccinelle RPO
 
-09-10-19: [Blanqui]
+09-10-19:
 - Conversion/String_of_ATerm: convert a unary TRS into an SRS
 - Term/WithArity/AReverse: reversal of unary TRSs
 
-09-07-08: [Blanqui]
+09-07-08:
 - SemLab/AFlatCont: flat context closure
 - SemLab/ARootLab: root labeling
 - MannaNess/ARedPair: rule elimination using reduction pairs,
   functors building a reduction pair from a monotone algebra
   or an argument filtering
 
-09-06-26: [Blanqui]
+09-06-26:
 - Util/Set/SetUtil: infinite sets
 - Term/WithArity/ARules: rewriting with infinite sets of rules
 - Term/WithArity/AMorphism: extended to infinite sets of rules
 - SemLab/ASemLab: theorem of semantic labeling (with ordered labels)
 
-09-06-19: [Blanqui]
+09-06-19:
 - simplified all function definitions on terms f such that the corresponding
   function on vectors is (Vmap f)
 - Filter/AProj: arguments filtering with projections only
 
-09-05-22: [Blanqui]
+09-05-22:
 - Term/WithArity/AUnary: properties of systems with unary symbols only
 - Conversion/ATerm_of_String: equivalence of the well-foundedness of an SRS
   and of its translation as TRS
@@ -222,7 +226,7 @@ quasi-ordering on symbols instead of an ordering
   checking that there is a loop in a TRS
 - NatUtil: unicity of Euclidean division
 
-09-05-07: [Blanqui]
+09-05-07:
 - Term/WithArity/AReduct: list of reducts of a term and proof that
   rewriting is finitely branching
 - Term/WithArity/AMorphism: definitions and lemmas on algebra morphisms
@@ -232,7 +236,7 @@ quasi-ordering on symbols instead of an ordering
 - Term/WithArity/APosition: positions in a term and related functions
   and relations (subterm, replacement, context, rewriting)
 
-09-04-29: [Blanqui]
+09-04-29:
 - added (ordered) semi-rings, matrices and matrix interpretations on BigN
 - removed antisymmetry and irreflexivity assumptions for ordered semi-rings
 
@@ -244,7 +248,7 @@ quasi-ordering on symbols instead of an ordering
 - added support for polynomial interpretations in the new proof
   checker framework.
 
-09-04-17: [Blanqui]
+09-04-17:
 - extended semi-rings, matrices and matrix interpretations on setoids
 - added boolean function for testing integer equality since the one
   defined in Coq is too complex and uses an opaque lemma
@@ -253,7 +257,7 @@ quasi-ordering on symbols instead of an ordering
 - Term/WithArity/AMatching: correct and complete matching algorithm
 - Util/FMap/FMapUtil: bundle for FMap definitions + properties
 
-09-03-18: [Blanqui]
+09-03-18:
 - decidability of equality on symbols and terms are replaced
   by boolean functions
 
@@ -264,19 +268,19 @@ quasi-ordering on symbols instead of an ordering
 - HORPO: beta-reduction included into HORPO; added examples, including
   an example illustrating non-transitivity of HORPO
 
-08-10-31: [Blanqui]
+08-10-31:
 - Term/WithArity/AUnif: termination and completeness of the syntactic
   unification algorithm
 - DP/ADPUnif: correctness of the over DP graph based on unification
 
-08-08-07: [Blanqui]
+08-08-07:
 - Util/Relation/OrdDec: type totally ordered with a comparison function
 - Util/List/ListDec: boolean functions on lists using a boolean equality test
 - DP/ADecomp: proof that termination follows from any valid decomposition
   of an over DP graph and the termination of each component
 - Term/WithArity/ATrsNorm: canonical representation of lists of rules
 
-08-05-15: [Blanqui]
+08-05-15:
 - Util/FSet/FSetUtil: lemmas and tactics on Coq FSet's
 - Term/WithArity/AVariables: set of variables in a term (based on FSet)
   and properties wrt substitution
@@ -289,10 +293,10 @@ unified with development on matrix interpretations
 - Util/Algebra/SemiRing
 - Util/Algebra/OrdSemiRing
 
-08-02-13: [Blanqui]
+08-02-13:
 - Term/String/SReverse: SRS inversion preserves termination
 
-08-01-23: [Blanqui]
+08-01-23:
 added support for boolean reasoning and boolean functions testing equality
 - Util/Bool/BoolUtil
 - Util/List/ListUtil
@@ -312,7 +316,7 @@ added support for boolean reasoning and boolean functions testing equality
 - Util/Relation/SCCTopoOrdering: topological ordering on SCCs
 - DP/SCCunion: termination based on SCC decomposition
 
-07-08-06: [Blanqui] added support for classical reasoning
+07-08-06: added support for classical reasoning
 - Util/Logic/ClassicUtil: basic meta-theorems of classical logic
 - Util/Logic/DepChoice: axiom of dependent choice
 - Util/Logic/DepChoicePrf: proof of the axiom of dependent choice
@@ -325,7 +329,7 @@ added support for boolean reasoning and boolean functions testing equality
 - Util/Relation/IS_NotSN: a well-founded finitely branching relation
   has no infinite sequence
 
-07-05-25: [Blanqui]
+07-05-25:
 - Term/String: strings
 - Conversion/ATerm_of_String: conversion strings -> algebraic terms
 
@@ -338,30 +342,30 @@ added support for boolean reasoning and boolean functions testing equality
 07-03-22: NEW RELEASE
 
 07-02-16:
-- Simplification of the compilation procedure [Blanqui]
+- Simplification of the compilation procedure
 
-- DP/ADPGraph: proof of the DP criterion based on cycles [Blanqui]
+- DP/ADPGraph: proof of the DP criterion based on cycles
 
-- Util/Relation/Union: union of two well-founded relations [Blanqui]
-- Util/Relation/SN: new general lemmas on termination [Blanqui]
+- Util/Relation/Union: union of two well-founded relations
+- Util/Relation/SN: new general lemmas on termination
 - Util/Relation/Iter: iteration of a relation
 
 - Util/Relation/Total: total completion [Le Roux]
 - Util/Relation/RelDec: decidability of relations [Le Roux]
 - Util/Relation/Path: paths and sub-relations [Le Roux]
 
-- Util/List/ListOccur: number of occurrences and pigeon-hole principle [Blanqui]
-- Util/List/ListRepeatFree: smallest prefix without duplication [Blanqui]
+- Util/List/ListOccur: number of occurrences and pigeon-hole principle
+- Util/List/ListRepeatFree: smallest prefix without duplication
 - Util/List/ListShrink: new functions and lemmas on lists [Le Roux]
 
-- Term/WithArity/ARename: variable renamings [Blanqui]
+- Term/WithArity/ARename: variable renamings
 - Term/WithArity/ASubstitution: added union of two substitutions
 
 - Term/WithArity/ARelation: results on compatibility moved to ACompat
 - Util/Relation/WfUtil renamed into AccUtil
 - Various lemmas renamed with intro or elim suffix
 
-06-12-04: [Blanqui]
+06-12-04:
 - MannaNess/AMannaNess: added rule elimination for relative termination
 - Acc replaced by SN in various files
 - Term/WithArity/ARedOrd moved to MannaNess/AMannaNess
@@ -377,7 +381,7 @@ added support for boolean reasoning and boolean functions testing equality
 - Util/Relation/Lexico: new formalization of lexicographic ordering
   with minimal hypotheses
 - Term/WithArity/ATrs: rewriting modulo the transitive closure of some relation
-- Term/WithArity/ARedOrd: rule elimination for relative elimination [Blanqui]
+- Term/WithArity/ARedOrd: rule elimination for relative elimination
 
 06-07-21:
 - various updates for the first release of Rainbow
@@ -442,4 +446,4 @@ added support for boolean reasoning and boolean functions testing equality
 - Term/WithArity: library on algebraic terms with symbols of fixed arity
 - PolyInt: proof of the termination criterion based on polynomial
   interpretations [Hinderer]
-- DP: proof of the fundamental dependency pairs theorem [Blanqui]
+- DP: proof of the fundamental dependency pairs theorem

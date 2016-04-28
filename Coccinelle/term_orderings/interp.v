@@ -1,11 +1,11 @@
 
-Require Import weaved_relation.
-Require Import equational_theory.
-Require Import term_spec.
-Require Import List.
-Require Import terminaison.
-Require Zwf.
-Require Import ZArith.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import equational_theory.
+From CoLoR Require Import term_spec.
+From Coq Require Import List.
+From CoLoR Require Import terminaison.
+From Coq Require Zwf.
+From Coq Require Import ZArith.
 Set Implicit Arguments.
 
 Record ordering_pair (A:Type) (eq:A -> A -> Prop)   (lt le : A -> A -> Prop)

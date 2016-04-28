@@ -26,9 +26,10 @@ therefore put in a module [Def] in order to be refered later
 
 Set Implicit Arguments.
 
-Require Import LogicUtil BoolUtil VecUtil FSets FSetUtil NatUtil
-  Structures.OrderedType RelUtil SN SetUtil.
-Require Union.
+From Coq Require Import FSets Structures.OrderedType.
+From CoLoR Require Import LogicUtil BoolUtil VecUtil FSetUtil NatUtil RelUtil
+     SN SetUtil.
+From CoLoR Require Union.
 
 (****************************************************************************)
 (** * The set [Te] of lambda-terms
@@ -509,7 +510,7 @@ End Var.
 
 (** Example of [Var] structure using natural numbers. *)
 
-Require OrderedTypeEx FSetAVL.
+From Coq Require OrderedTypeEx FSetAVL.
 
 Module NatVar <: Var.
 
@@ -914,7 +915,7 @@ Module Make (Export L : L_Struct).
     Lemma SN_supterm_R_mon : forall u, SN R u -> SN (supterm! U R) u.
 
     Proof.
-      intros u hu. Require Import Union. apply SN_union_commut.
+      intros u hu. apply Union.SN_union_commut.
       intros x _. apply WF_tc. apply supterm_wf. hyp.
       apply tc_supterm_R_mon_commut.
     Qed.

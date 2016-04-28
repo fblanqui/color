@@ -10,8 +10,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import VecUtil LogicUtil Relations OrdUtil NatUtil.
-Require Export LBeta.
+From Coq Require Import Relations.
+From CoLoR Require Import VecUtil LogicUtil OrdUtil NatUtil.
+From CoLoR Require Export LBeta.
 
 (****************************************************************************)
 (** * Simple types over a set [So] of type constants or sorts. *)
@@ -388,7 +389,7 @@ Ltac env :=
 (****************************************************************************)
 (** * Structure over which we will define typing. *)
 
-Require FMapInterface.
+From Coq Require FMapInterface.
 
 Module Type ST_Struct.
 
@@ -429,7 +430,7 @@ Module Make (Export ST : ST_Struct).
 
 are finite maps from variables to types. *)
 
-  Require FMapUtil.
+  From CoLoR Require FMapUtil.
 
   Module XMapUtil := FMapUtil.Make XMap.
   Module Export Domain := XMapUtil.Domain XSet.

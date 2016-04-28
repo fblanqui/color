@@ -13,7 +13,8 @@ iff the transitive closures of its finite restrictions are decidable
 
 Set Implicit Arguments.
 
-Require Import Path Relations List RelMidex RelSub Arith LogicUtil.
+From Coq Require Import Relations List Arith.
+From CoLoR Require Import Path RelMidex RelSub LogicUtil.
 
 Section S.
 

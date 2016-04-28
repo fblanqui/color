@@ -9,7 +9,8 @@ cycles
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Relations Path ListUtil ListNodup.
+From Coq Require Import Relations.
+From CoLoR Require Import LogicUtil Path ListUtil ListNodup.
 
 Section S.
 

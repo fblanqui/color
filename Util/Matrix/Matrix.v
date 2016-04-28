@@ -8,8 +8,9 @@ See the COPYRIGHTS and LICENSE files.
   Matrices as a functor.
 *)
 
-Require Import VecArith OrdSemiRing VecUtil NatUtil LogicUtil Relations List
-  Setoid Morphisms RelUtil.
+From Coq Require Import List Setoid Morphisms.
+From CoLoR Require Import VecArith OrdSemiRing VecUtil NatUtil LogicUtil
+  RelUtil.
 
 Set Implicit Arguments.
 
@@ -530,8 +531,6 @@ Module Matrix (OSRT : OrdSemiRingType).
     Definition mat_forall2' (M N : matrix m n) := 
       Vforall2 (@Vforall2 A A P n) M N.
 
-    Require Import RelMidex.
-
     Variable P_dec : rel_dec P.
 
     Lemma mat_forall2'_dec : rel_dec mat_forall2'.
@@ -572,8 +571,6 @@ Module Matrix (OSRT : OrdSemiRingType).
 (** 'monotonicity' of matrix multiplication over naturals *)
 
   Section MatMultMonotonicity.
-
-    Require Import RelMidex.
 
     Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 

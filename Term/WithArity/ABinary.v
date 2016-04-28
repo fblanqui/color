@@ -9,7 +9,7 @@ properties of signatures with a symbol of arity 2
 
 Set Implicit Arguments.
 
-Require Import ATrs VecUtil ListUtil LogicUtil NatUtil RelUtil.
+From CoLoR Require Import ATrs VecUtil ListUtil LogicUtil NatUtil RelUtil.
 
 Record BinSignature : Type := Make {
   Sig :> Signature;

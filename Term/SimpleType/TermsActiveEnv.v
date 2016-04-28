@@ -10,7 +10,8 @@ environments with declarations that are really used in a term.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras TermsEnv Arith LogicUtil Omega.
+From CoLoR Require Import RelExtras ListExtras TermsEnv LogicUtil.
+From Coq Require Import Arith Omega.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 

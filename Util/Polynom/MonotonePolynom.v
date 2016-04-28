@@ -11,8 +11,8 @@ monotone polynomials
 
 Set Implicit Arguments.
 
-Require Import Polynom PositivePolynom NaryFunction VecUtil LogicUtil ListUtil
-  ListForall ZUtil RelUtil NatUtil BoundNat.
+From CoLoR Require Import Polynom PositivePolynom NaryFunction VecUtil
+     LogicUtil ListUtil ListForall ZUtil RelUtil NatUtil BoundNat.
 
 Open Local Scope Z_scope.
 
@@ -172,12 +172,10 @@ Qed.
 Definition bpweak_monotone n (p : poly n) := bcoef_pos p.
 Definition bpweak_monotone_ok n (p : poly n) := bcoef_pos_ok p.
 
-Require Import Bool.
+From CoLoR Require Import BoolUtil.
 
 Definition bpstrong_monotone n (p : poly n) :=
   bcoef_pos p && forallb (fun x => is_pos (coef (mxi (N_prf x)) p)) (L n).
-
-Require Import BoolUtil.
 
 Lemma bpstrong_monotone_ok : forall n (p : poly n),
   bpstrong_monotone p = true <-> pstrong_monotone p.

@@ -10,7 +10,7 @@ lambda-calculus.
 
 Set Implicit Arguments.
 
-Require TermsAlgebraic.
+From CoLoR Require TermsAlgebraic.
 
 Module Terms (Sig : TermsSig.Signature).
 

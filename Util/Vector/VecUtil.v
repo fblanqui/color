@@ -14,8 +14,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Vector Program LogicUtil NatUtil EqUtil RelMidex ListUtil
-  BoolUtil RelUtil ListForall Structures.Equalities Morphisms.
+From Coq Require Import Vector Program Structures.Equalities Morphisms.
+From CoLoR Require Import LogicUtil NatUtil EqUtil ListUtil BoolUtil RelUtil ListForall.
 
 Notation vector := Vector.t.
 Notation Vnil := Vector.nil.

@@ -10,24 +10,24 @@
 (**************************************************************************)
 
 
-Require Import Arith.
-Require Import List.
-Require Import more_list.
-Require Import list_permut.
-Require Import list_sort.
-Require Import term_spec.
-Require Import term_o.
-Require Import equational_theory.
-Require Import ac.
-Require Import matching.
-Require Import dickson.
-Require Import matching_well_formed.
-Require Import matching_well_founded.
-Require Import matching_sound.
-Require Import matching_complete.
-Require Import Wellfounded.
-Require Import Wf_nat.
-Require Import dickson.
+From Coq Require Import Arith.
+From Coq Require Import List.
+From CoLoR Require Import more_list.
+From CoLoR Require Import list_permut.
+From CoLoR Require Import list_sort.
+From CoLoR Require Import term_spec.
+From CoLoR Require Import term_o.
+From CoLoR Require Import equational_theory.
+From CoLoR Require Import ac.
+From CoLoR Require Import matching.
+From CoLoR Require Import dickson.
+From CoLoR Require Import matching_well_formed.
+From CoLoR Require Import matching_well_founded.
+From CoLoR Require Import matching_sound.
+From CoLoR Require Import matching_complete.
+From Coq Require Import Wellfounded.
+From Coq Require Import Wf_nat.
+From CoLoR Require Import dickson.
 
 Module Type S.
 

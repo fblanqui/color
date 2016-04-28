@@ -11,8 +11,10 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-Require Import LogicUtil Min Max Morphisms Psatz.
-Require Export Arith Omega.
+From Coq Require Import Min Max Morphisms Psatz Compare Euclid.
+From Coq Require Export Arith Omega.
+
+From CoLoR Require Import LogicUtil EqUtil BoolUtil RelUtil.
 
 (***********************************************************************)
 (** Declare implicit arguments. *)
@@ -91,8 +93,6 @@ Proof.
   f_equal. fo. fo.
 Qed.
 
-Require Import EqUtil.
-
 Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
 
 Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
@@ -153,8 +153,6 @@ Proof. intros. unfold blt_nat. rewrite bgt_nat_ok. omega. Qed.
 
 Definition bne_nat x y := negb (beq_nat x y).
 
-Require Import BoolUtil.
-
 Lemma bne_nat_ok : forall x y, bne_nat x y = true <-> x <> y.
 
 Proof.
@@ -205,12 +203,10 @@ Proof. intros. apply lt_unique. Qed.
 (***********************************************************************)
 (** Lemmas on the maximum of two numbers. *)
 
-Require Import Max.
-
 Arguments max_r [n m] _.
 Arguments max_l [n m] _.
 
-Require Import Compare.
+From Coq Require Import Compare.
 
 Lemma max_assoc : forall a b c, max a (max b c) = max (max a b) c.
 
@@ -280,8 +276,6 @@ Proof. destruct x; refl. Qed.
 (***********************************************************************)
 (** Lemmas on the minimum of two numbers. *)
 
-Require Import Min.
-
 Lemma elim_min_l x y z : x <= z -> min x y <= z.
 
 Proof. lia. Qed.
@@ -313,8 +307,6 @@ Proof. lia. Qed.
 (***********************************************************************)
 (** Decidability of ordering relations on nat. *)
 
-Require Import RelMidex.
-
 Lemma ge_dec : rel_dec ge.
 
 Proof. intros i j. destruct (le_lt_dec j i); intuition. Defined. 
@@ -331,8 +323,6 @@ Defined.
 
 (***********************************************************************)
 (** Euclidian division. *)
-
-Require Import Euclid.
 
 Lemma mult_is_not_O m n : m * n <> 0 <-> m <> 0 /\ n <> 0.
 
@@ -396,8 +386,6 @@ Section iter_prop.
   Lemma iter_com : forall a i, iter (f a) f i = f (iter a f i).
 
   Proof. induction i; simpl; intros. refl. rewrite IHi. refl. Qed.
-
-  Require Import Relations.
 
   Lemma red_iter : forall R : relation A,
     (forall x y, R x y -> R (f x) (f y)) ->
@@ -529,8 +517,6 @@ End Interval_list.
 
 (***********************************************************************)
 (** Monotone functions on nat. *)
-
-Require Import RelUtil.
 
 Section mon.
 

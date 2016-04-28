@@ -30,7 +30,8 @@ assuming a total ordering >symb on symbols
 
 Set Implicit Arguments.
 
-Require Import ATrs ListDec ListSort NatUtil List VecUtil.
+From Coq Require Import List.
+From CoLoR Require Import ATrs ListDec ListSort NatUtil VecUtil.
 
 Section S.
 
@@ -68,7 +69,7 @@ Section S.
 
     Variable symb_cmp : Sig -> Sig -> comparison.
 
-    Require Import Compare_dec.
+    From Coq Require Import Compare_dec.
 
     Fixpoint cmp (t u : term) : comparison :=
       match t, u with

@@ -10,8 +10,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil Morphisms VecOrd VecUtil Basics Omega.
-Require Import LAlpha.
+From Coq Require Import Morphisms Basics Omega.
+From CoLoR Require Import LogicUtil RelUtil VecOrd VecUtil LAlpha.
 
 (****************************************************************************)
 (** * Rewrite system structure. *)
@@ -237,7 +237,7 @@ End Make.
 (****************************************************************************)
 (** * CP structure associated to a rewrite system. *)
 
-Require LComp LBeta LEta.
+From CoLoR Require LComp LBeta LEta.
 
 Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 

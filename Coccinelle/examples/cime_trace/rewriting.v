@@ -1,9 +1,9 @@
-Require Import Omega.
-Require Import term. 
-Require Import Relations.
-Require Inclusion.
-Require equational_theory. (* mainly for one_step...*)
-Require Import Wellfounded.
+From Coq Require Import Omega.
+From CoLoR Require Import term. 
+From Coq Require Import Relations.
+From Coq Require Inclusion.
+From CoLoR Require equational_theory. (* mainly for one_step...*)
+From Coq Require Import Wellfounded.
 
 Notation "'SN'" := Acc.
 Notation "'termine'" := well_founded.

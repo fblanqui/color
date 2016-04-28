@@ -11,8 +11,9 @@ description, and the axiom WF_notIS for WF_absorb *)
 
 Set Implicit Arguments.
 
-Require Import RelUtil NatUtil List Path LeastNat LogicUtil ClassicUtil
-  IndefiniteDescription SN NotSN_IS.
+From CoLoR Require Import RelUtil NatUtil Path LeastNat LogicUtil ClassicUtil
+     SN NotSN_IS.
+From Coq Require Import List IndefiniteDescription.
 
 Section S.
 
@@ -148,7 +149,7 @@ Section S.
       omega.
     Qed.
 
-    Require Import SortUtil.
+    From CoLoR Require Import SortUtil.
 
     Lemma indices_aux_Sorted : forall i acc,
       Sorted lt acc -> HdRel le i acc -> Sorted lt (indices_aux acc i).
@@ -198,7 +199,7 @@ such that [f i = a] *)
       apply hg.
     Qed.
 
-    Require Import ListUtil.
+    From CoLoR Require Import ListUtil.
 
     Lemma prefix_mon :
       (forall i, g i < g (S i)) -> (forall i, prefix i < prefix (S i)).

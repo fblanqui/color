@@ -8,9 +8,10 @@ See the COPYRIGHTS and LICENSE files.
 on (extended) weakly monotone algebra.
 *)
 
-Require Import ATrs RelUtil SN AWFMInterpretation AMannaNess ACompat ListUtil
-  ListForall ARelation LogicUtil OptUtil IntBasedChecker Problem Program
-  NaryFunction Proof.
+From Coq Require Import Program.
+From CoLoR Require Import ATrs RelUtil SN AWFMInterpretation AMannaNess ACompat
+     ListUtil ListForall ARelation LogicUtil OptUtil IntBasedChecker Problem
+     NaryFunction Proof.
 
 Set Implicit Arguments.
 

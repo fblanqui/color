@@ -9,7 +9,7 @@ signature for algebraic terms with no arity
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+From CoLoR Require Import LogicUtil.
 
 (***********************************************************************)
 (** Variables are represented by natural numbers. *)
@@ -29,7 +29,7 @@ Implicit Arguments mkSignature [symbol beq_symb].
 Implicit Arguments beq_symb [s].
 Implicit Arguments beq_symb_ok [s x y].
 
-Require Import EqUtil.
+From CoLoR Require Import EqUtil.
 
 Ltac case_beq_symb Sig := EqUtil.case_beq (@beq_symb Sig) (@beq_symb_ok Sig).
 
@@ -52,7 +52,7 @@ Module Type SIG.
 End SIG.
 
 (* DecidableType *)
-Require Import DecidableType.
+From Coq Require Import DecidableType.
 Module DecType (Import S : SIG) <: DecidableType.
   Definition t := @symbol Sig.
   Definition eq := @eq t.
@@ -63,7 +63,7 @@ Module DecType (Import S : SIG) <: DecidableType.
 End DecType.
 
 (* finite signature *)
-Require Import ListUtil.
+From CoLoR Require Import ListUtil.
 Module Type FSIG.
   Parameter Sig : Signature.
   Parameter Fs : list Sig.
@@ -79,7 +79,7 @@ Module Type WSIG.
   Parameter weight_inj : forall f g, weight f = weight g -> f = g.
 End WSIG.
 
-Require Import NatUtil BoolUtil.
+From CoLoR Require Import NatUtil BoolUtil.
 
 Section weight_inj.
 
@@ -113,7 +113,7 @@ Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok _ Fs_ok);
 (***********************************************************************)
 (** Ordered signatures *)
 
-Require Import OrderedType.
+From Coq Require Import OrderedType.
 
 Module OrdType (Import S : WSIG) <: OrderedType.
 

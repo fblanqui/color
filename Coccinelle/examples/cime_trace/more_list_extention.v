@@ -1,8 +1,8 @@
-Require Import more_list.
-Require Import decidable_set.
-Require Import list_set.
-Require Import List.
-Require Import Omega.
+From CoLoR Require Import more_list.
+From CoLoR Require Import decidable_set.
+From CoLoR Require Import list_set.
+From Coq Require Import List.
+From Coq Require Import Omega.
 
 Module Type S.
   Parameter A : Type.
@@ -54,7 +54,7 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
       rewrite e0 in IHp. omega.
       simpl;rewrite e0 in IHp. omega.
     Qed.
-    Require Import Recdef.
+    From Coq Require Import Recdef.
     Function qs (l:list A) {measure length } : list A := 
       match l with 
         | nil => nil

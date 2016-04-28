@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import LogicUtil VecUtil RelUtil NatUtil RelMidex.
+From CoLoR Require Import LogicUtil VecUtil RelUtil NatUtil.
 
 (***********************************************************************)
 (** * Component-wise extension to vectors on [A] of a relation on [A]. *)
@@ -192,7 +192,7 @@ Section S.
 (***********************************************************************)
 (** Properties of [Vrel1] wrt termination. *)
 
-  Require Import SN.
+  From CoLoR Require Import SN.
 
   Lemma Vforall_SN_rel1 : forall n (v : vector A n),
     Vforall (SN R) v -> SN (Vrel1 R) v.
@@ -252,7 +252,7 @@ Arguments Vrel1_sub [A R n v1 v2 p q] h _.
 (***********************************************************************)
 (** Compatibility of [Vrel1] with [inclusion] and [same]. *)
 
-Require Import Morphisms.
+From Coq Require Import Morphisms.
 
 Instance Vrel1_app_incl n A :
   Proper (inclusion ==> inclusion) (@Vrel1_app n A).

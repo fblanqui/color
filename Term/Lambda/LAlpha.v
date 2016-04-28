@@ -10,9 +10,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Wf_nat BoolUtil Morphisms Basics Equivalence RelUtil LogicUtil
-  SN VecUtil NatUtil VecOrd.
-Require Export LSubs.
+From Coq Require Import Wf_nat Morphisms Basics Equivalence.
+From CoLoR Require Import BoolUtil RelUtil LogicUtil SN VecUtil NatUtil VecOrd.
+From CoLoR Require Export LSubs.
 
 (****************************************************************************)
 (** ** Definition of alpha-equivalence

@@ -12,16 +12,16 @@
 (** * Term algebra defined as functor from a Module Signature and a Module Variable.*)
 
 
-Require Import Recdef.
-Require Import List.
-Require Import closure.
-Require Import more_list.
-Require Import list_permut.
-Require Import list_set.
-Require Import Arith.
-Require Import decidable_set.
-Require Import Setoid.
-Require Import term_spec.
+From Coq Require Import Recdef.
+From Coq Require Import List.
+From CoLoR Require Import closure.
+From CoLoR Require Import more_list.
+From CoLoR Require Import list_permut.
+From CoLoR Require Import list_set.
+From Coq Require Import Arith.
+From CoLoR Require Import decidable_set.
+From Coq Require Import Setoid.
+From CoLoR Require Import term_spec.
 
 Set Implicit Arguments.
 

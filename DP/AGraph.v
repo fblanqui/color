@@ -10,9 +10,10 @@ to S @ (hd_red R) instead of (int_red R ##) @ (dp R)
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs RelUtil List RelSub SN AShift ADPGraph VecUtil
-  ASubstitution Omega.
-Require Export ADP.
+From CoLoR Require Import LogicUtil ATrs RelUtil RelSub SN AShift ADPGraph
+     VecUtil ASubstitution.
+From CoLoR Require Export ADP.
+From Coq Require Import List Omega.
 
 Section S.
 

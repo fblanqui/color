@@ -9,12 +9,12 @@ extension of BigN
 
 Set Implicit Arguments.
 
-Require Import LogicUtil.
+From CoLoR Require Import LogicUtil.
 
 (***********************************************************************)
 (** decidability of equality *)
 
-Require Import Int31.
+From Coq Require Import Int31.
 
 Lemma eq_digits_dec : forall x y : digits, {x=y}+{~x=y}.
 
@@ -27,7 +27,7 @@ Proof. (*SLOW*)decide equality; apply eq_digits_dec. Defined.
 Ltac bad_case := right; intro; inversion H; contr.
 Ltac case_tac x y := case (eq_digits_dec x y); [idtac|bad_case].
 
-Require Import BigN. Import BigN.
+From Coq Require Import BigN. Import BigN.
 
 Definition w0 := Cyclic31.Int31Cyclic.t.
 
@@ -69,7 +69,7 @@ Lemma eq_BigN_w6_dec : forall x y : w6, {x=y}+{~x=y}.
 
 Proof. decide equality; apply eq_BigN_w5_dec. Defined.
 
-Require Import DoubleType.
+From Coq Require Import DoubleType.
 
 Section zn2z.
 
@@ -91,7 +91,7 @@ Section word.
 
 End word.
 
-Require Import EqUtil.
+From CoLoR Require Import EqUtil.
 
 Lemma eq_bigN_dec : forall x y : bigN, {x=y}+{~x=y}.
 
@@ -112,7 +112,7 @@ Defined.
 (***********************************************************************)
 (** properties of ?= on BigN *)
 
-Require Export BigN.
+From Coq Require Export BigN.
 
 Open Scope bigN_scope.
 
@@ -120,7 +120,7 @@ Lemma compare_antisym : forall x y, CompOpp (x?=y) = (y?=x).
 
 Proof. intros x y. rewrite !spec_compare. apply Zcompare_antisym. Qed.
 
-Require Import OrdUtil.
+From CoLoR Require Import OrdUtil.
 
 Lemma compare_antisym_eq : forall x y c, (x?=y = CompOpp c) <-> (y?=x = c).
 

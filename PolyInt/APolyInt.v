@@ -11,9 +11,11 @@ proof of the termination criterion based on polynomial interpretations
 
 Set Implicit Arguments.
 
-Require Import ATerm ABterm ListUtil ListForall VecUtil
+From Coq Require Import Max.
+
+From CoLoR Require Import ATerm ABterm ListUtil ListForall VecUtil
   PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
-  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs Max BoundNat.
+  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs BoundNat.
 
 Section S.
 
@@ -91,7 +93,7 @@ Section S.
 (***********************************************************************)
 (** interpretation monotony *)
 
-    Require Import AWFMInterpretation.
+    From CoLoR Require Import AWFMInterpretation.
 
     Lemma pi_monotone : monotone I Dgt.
 
@@ -244,7 +246,7 @@ Section S.
 (***********************************************************************)
 (** compatibility *)
 
-    Require Import ZUtil.
+    From CoLoR Require Import ZUtil.
 
     Lemma pi_compat_rule : forall r,
       coef_pos (rulePoly_gt r) -> succ (lhs r) (rhs r).
@@ -274,7 +276,7 @@ Section S.
       apply pos_peval. exact H_coef_pos.
     Qed.
 
-    Require Import ACompat.
+    From CoLoR Require Import ACompat.
 
     Lemma pi_compat : forall R,
       lforall (fun r => coef_pos (rulePoly_gt r)) R -> compat succ R.
@@ -288,7 +290,7 @@ Section S.
 (***********************************************************************)
 (** termination *)
 
-    Require Import AMannaNess.
+    From CoLoR Require Import AMannaNess.
 
     Lemma polyInterpretationTermination : forall R,
       lforall (fun r => coef_pos (rulePoly_gt r)) R -> WF (red R).

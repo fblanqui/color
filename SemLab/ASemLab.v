@@ -10,9 +10,10 @@ semantic labelling (with ordered labels)
 
 Set Implicit Arguments.
 
-Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil VecUtil SN
-  RelUtil AWFMInterpretation NaryFunction NatUtil ARelation ARules List
-  SetUtil FunUtil.
+From CoLoR Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil
+     VecUtil SN RelUtil AWFMInterpretation NaryFunction NatUtil ARelation
+     ARules SetUtil FunUtil.
+From Coq Require Import List.
 
 Section S.
 
@@ -110,7 +111,7 @@ Section S.
     apply Vcons_eq_intro; hyp.
   Qed.
 
-  Require Import VecMax.
+  From CoLoR Require Import VecMax.
 
   Lemma lab_fval : forall v t n, n > maxvar t -> lab (fval v n) t = lab v t.
 
@@ -142,7 +143,7 @@ Section S.
 
   Notation fold_max := (@fold_max Sig).
 
-  Require Import Max.
+  From Coq Require Import Max.
 
   Lemma map_lab_rule_fval : forall v R n, n > maxvar_rules R ->
     map (lab_rule (fval v n)) R = map (lab_rule v) R.
@@ -185,7 +186,7 @@ Section S.
 (***********************************************************************)
 (** unlabelling *)
 
-  Require Import AMorphism.
+  From CoLoR Require Import AMorphism.
 
   Definition F (f' : Sig') := let (f,_) := f' in f.
 

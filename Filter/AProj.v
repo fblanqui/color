@@ -9,7 +9,7 @@ arguments filtering with projections only
 
 Set Implicit Arguments.
 
-Require Import ATrs VecUtil LogicUtil ListUtil SN ARelation RelUtil ACompat
+From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil SN ARelation RelUtil ACompat
   NatUtil.
 
 Section S.

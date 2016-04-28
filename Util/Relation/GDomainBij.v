@@ -10,7 +10,7 @@ and relation restricted to Dom with relation restricted to [[1,n]].
 
 Set Implicit Arguments.
 
-Require Import ListUtil SCC ListExtras Path Iter AdjMat RelSub LogicUtil
+From CoLoR Require Import ListUtil SCC ListExtras Path Iter AdjMat RelSub LogicUtil
   ListNodup RelUtil BoundNat.
 
 Section S.

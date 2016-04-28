@@ -7,7 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 A specification of a termination problem.
 *)
 
-Require Import List Relations ATrs SN.
+From Coq Require Import List Relations.
+From CoLoR Require Import ATrs SN.
 
 Set Implicit Arguments.
 

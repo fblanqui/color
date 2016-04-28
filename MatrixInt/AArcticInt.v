@@ -8,8 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import AArcticBasedInt Matrix OrdSemiRing VecUtil AMonAlg SN RelUtil
-  NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt Bool.
+From CoLoR Require Import AArcticBasedInt Matrix OrdSemiRing VecUtil AMonAlg SN
+     RelUtil NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt BoolUtil.
 Import ArcticMatrix.
 
 Definition matrixInt := @matrixInt A matrix.
@@ -31,8 +31,6 @@ Section Somewhere_finite.
     bVexists (fun m => is_finite (get_elem m dim_pos dim_pos)) (args fi)
     || is_finite (Vnth (const fi) dim_pos).
 
-  Require Import BoolUtil.
-
   Lemma bsomewhere_finite_ok : forall n (fi : matrixInt dim n),
     bsomewhere_finite fi = true <-> somewhere_finite fi.
 
@@ -44,8 +42,8 @@ Section Somewhere_finite.
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
 
-  Require Import List.
-  Require Import ListForall.
+  From Coq Require Import List.
+  From CoLoR Require Import ListForall.
 
   Variable Fs : list sig.
   Variable Fs_ok : forall f : sig, In f Fs.

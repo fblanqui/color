@@ -1,6 +1,6 @@
-Require Omega.
-Require Import Relations.
-Require Import Wellfounded.
+From Coq Require Omega.
+From Coq Require Import Relations.
+From Coq Require Import Wellfounded.
 Set Implicit Arguments.
 
 Section star.

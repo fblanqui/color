@@ -8,8 +8,9 @@ This file provides an order on lists derived from the order on
 multisets, along with some properties of this order.
 *)
 
-Require Import List MultisetOrder RelExtras MultisetCore MultisetList
-  Permutation MultisetTheory Arith AccUtil RelUtil LogicUtil Morphisms Basics.
+From Coq Require Import List Permutation Arith Morphisms Basics.
+From CoLoR Require Import MultisetOrder RelExtras MultisetCore MultisetList
+  MultisetTheory AccUtil RelUtil LogicUtil.
 
 Module MultisetListOrder (ES : Eqset_dec).
 
@@ -389,8 +390,7 @@ Module MultisetListOrder (ES : Eqset_dec).
 
   End MultisetListOrderFacts.
 
-  Require Import AccUtil.
-  Require Import ListUtil.
+  From CoLoR Require Import AccUtil ListUtil.
 
   Lemma mult_lifting : forall (r : relation A),
     (forall x x' y y', x =A= x' -> y =A= y' -> r x y -> r x' y') ->

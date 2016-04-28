@@ -11,8 +11,9 @@ Proofs of a relation verifying Hypotheses in RPO_Type is
 a well-founded monotonic strict order
 *)
 
-Require Import VRPO_Type VTerm Preorder ListUtil Peano_dec RelUtil LogicUtil
-  AccUtil.
+From CoLoR Require Import VRPO_Type VTerm Preorder ListUtil RelUtil
+  LogicUtil AccUtil.
+From Coq Require Import Peano_dec.
 
 Set Implicit Arguments.
 
@@ -389,7 +390,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     intro x; constructor; intros t lt_t_var_x. elim (var_are_min lt_t_var_x).
   Qed.
 
-  Require Import ListExtras.
+  From CoLoR Require Import ListExtras.
 
   Lemma eqF_sym : forall f g, f =F= g -> g =F= f.
 
@@ -398,8 +399,8 @@ Module RPO_Results (Export RPO : RPO_Model).
     unfold eqF; intuition.
   Defined.
 
-  Require Import VSubstitution.
-  Require Import VContext.
+  From CoLoR Require Import VSubstitution.
+  From CoLoR Require Import VContext.
 
   Section subst_closed.
 

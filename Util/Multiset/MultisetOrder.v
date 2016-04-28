@@ -11,10 +11,11 @@ in this file.
 
 Set Implicit Arguments.
 
-Require RelUtil.
-Require Import RelExtras MultisetTheory Transitive_Closure Compare_dec
-  Relations Permutation ListPermutation MultisetCore Setoid ListExtras AccUtil
-  LogicUtil Morphisms Basics Omega.
+From CoLoR Require RelUtil.
+From Coq Require Import Transitive_Closure Compare_dec Relations Permutation
+     Setoid Morphisms Basics Omega.
+From CoLoR Require Import RelExtras MultisetTheory ListPermutation MultisetCore
+     ListExtras AccUtil LogicUtil.
 
 Module MultisetOrder (MC: MultisetCore).
 

@@ -12,16 +12,16 @@
 
 Set Implicit Arguments.
 
-Require Import Relations.
-Require Import Setoid.
-Require Import List.
-Require Import more_list.
-Require Import Multiset.
-Require Import list_permut.
-Require Import Arith.
-Require Import ordered_set.
-Require Import Recdef.
-Require Import Morphisms.
+From Coq Require Import Relations.
+From Coq Require Import Setoid.
+From Coq Require Import List.
+From CoLoR Require Import more_list.
+From Coq Require Import Multiset.
+From CoLoR Require Import list_permut.
+From Coq Require Import Arith.
+From CoLoR Require Import ordered_set.
+From Coq Require Import Recdef.
+From Coq Require Import Morphisms.
 
 Ltac dummy a b a_eq_b :=
 assert (Dummy : a = b); [exact a_eq_b | clear a_eq_b; rename Dummy into a_eq_b].

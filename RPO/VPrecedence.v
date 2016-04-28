@@ -7,7 +7,8 @@ See the COPYRIGHTS and LICENSE files.
 recursive path orderings are monotonic well-founded strict orders
 *)
 
-Require Import VSignature VTerm RelMidex Preorder Setoid.
+From CoLoR Require Import VSignature VTerm RelMidex Preorder.
+From Coq Require Import Setoid.
 
 Module Type VPrecedenceType.
 
@@ -41,7 +42,7 @@ Module VPrecedence (P : VPrecedenceType).
   (***********************************************************************)
   (** eqset module of terms *)
 
-  Require Import RelExtras.
+  From CoLoR Require Import RelExtras.
 
   Module Term <: Eqset.
 

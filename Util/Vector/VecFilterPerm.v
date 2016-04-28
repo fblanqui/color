@@ -9,7 +9,7 @@ vector filtering with permutations
 
 Set Implicit Arguments.
 
-Require Import VecUtil ListUtil NatUtil LogicUtil ListNodup BoundNat.
+From CoLoR Require Import VecUtil ListUtil NatUtil LogicUtil ListNodup BoundNat.
 
 (***********************************************************************)
 (** filtering function *)

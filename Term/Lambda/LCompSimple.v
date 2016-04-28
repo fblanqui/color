@@ -11,8 +11,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import Morphisms Basics SN VecUtil LogicUtil SetUtil Omega. 
-Require Export LSimple LComp.
+From Coq Require Import Morphisms Basics Omega. 
+From CoLoR Require Import SN VecUtil LogicUtil SetUtil.
+From CoLoR Require Export LSimple LComp.
 
 (****************************************************************************)
 (** ** Interpretation of simple types as computability predicates. *)
@@ -394,7 +395,7 @@ Module Make (Export ST : ST_Struct)
 (****************************************************************************)
 (** ** Monotony properties of [int] and [vint]. *)
 
-  Require Import SetUtil.
+  From CoLoR Require Import SetUtil.
 
   Lemma int_equiv : forall I J T,
     (forall a, occurs a T -> I a [=] J a) -> int I T [=] int J T.

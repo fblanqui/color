@@ -1,12 +1,12 @@
-Require Import Relations.
-Require Import weaved_relation.
-Require Import closure.
-Require Import equational_theory_spec.
-Require Import dp.
-Require Import modular_dp.
-Require Import List.
-Require Import terminaison.
-Require Import Setoid.
+From Coq Require Import Relations.
+From CoLoR Require Import weaved_relation.
+From CoLoR Require Import closure.
+From CoLoR Require Import equational_theory_spec.
+From CoLoR Require Import dp.
+From CoLoR Require Import modular_dp.
+From Coq Require Import List.
+From CoLoR Require Import terminaison.
+From Coq Require Import Setoid.
 
 Module Make(E:EqTh) .
 
@@ -431,7 +431,7 @@ Proof.
   apply Empty_R_no_dp with (1:=H6).
 Qed.
 
-Require Inclusion.
+From Coq Require Inclusion.
 
 Lemma well_founded_equiv : forall (A:Type) R R' (H:forall x y, R x y <-> R' x y), 
   @well_founded A R <-> well_founded R'.

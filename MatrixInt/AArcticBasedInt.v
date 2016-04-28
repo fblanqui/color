@@ -8,8 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-Require Import AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil LogicUtil Setoid
-  AMatrixBasedInt Morphisms.
+From CoLoR Require Import AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil
+     LogicUtil AMatrixBasedInt.
+From Coq Require Import Setoid Morphisms.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TArcticBasedInt.

@@ -10,7 +10,8 @@ assumed) encoded via lambda-terms.
 
 Set Implicit Arguments.
 
-Require Import Relations RelExtras ListExtras TermsEta Morphisms LogicUtil.
+From CoLoR Require Import RelExtras ListExtras TermsEta LogicUtil.
+From Coq Require Import Morphisms.
 
 Module TermsAlgebraic (Sig : TermsSig.Signature).
 

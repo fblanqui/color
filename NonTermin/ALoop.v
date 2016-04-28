@@ -10,7 +10,7 @@ there is a loop in a TRS
 
 Set Implicit Arguments.
 
-Require Import LogicUtil ATrs ListUtil.
+From CoLoR Require Import LogicUtil ATrs ListUtil.
 
 Section S.
 
@@ -44,7 +44,7 @@ Section S.
     intros t x. destruct x. exact f.
   Defined.
 
-  Require Import RelUtil.
+  From CoLoR Require Import RelUtil.
 
   Lemma FS_rtc : forall us t, FS t us -> red R # t (last us t).
 
@@ -57,7 +57,7 @@ Section S.
 (***********************************************************************)
 (** data necessary for a sequence of rewrite steps *)
 
-  Require Import AMatching ListDec APosition.
+  From CoLoR Require Import AMatching ListDec APosition.
 
   Definition data := (position * rule Sig)%type.
 
@@ -113,7 +113,7 @@ Section S.
 
   Implicit Arguments rewrites_correct [ds t us].
 
-  Require Import NatUtil.
+  From CoLoR Require Import NatUtil.
 
   Notation default := (Var 0).
 
@@ -177,7 +177,7 @@ Section S.
       intros. apply red_fill. apply red_sub. hyp.
     Qed.
 
-    Require Import Euclid.
+    From Coq Require Import Euclid.
 
     Definition seq : nat -> term.
 
@@ -185,7 +185,8 @@ Section S.
       intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
     Defined.
 
-    Require Import RelUtil Wf_nat.
+    From CoLoR Require Import RelUtil.
+    From Coq Require Import Wf_nat.
 
     Lemma IS_seq : IS (red R) seq.
 

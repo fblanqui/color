@@ -13,8 +13,9 @@ de Bruijn indices) is defined in this file.
 
 Set Implicit Arguments.
 
-Require Import RelExtras ListExtras Compare_dec Arith LogicUtil Omega.
-Require TermsManip.
+From Coq Require Import Compare_dec Arith Omega.
+From CoLoR Require Import RelExtras ListExtras LogicUtil.
+From CoLoR Require TermsManip.
 
 Module TermsLifting (Sig : TermsSig.Signature).
 

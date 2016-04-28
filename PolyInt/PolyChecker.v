@@ -7,9 +7,11 @@ See the COPYRIGHTS and LICENSE files.
 A termination solver using the polynomial interpretations method.
 *)
 
-Require Import Program ListUtil ListForall LogicUtil ZUtil VecUtil Problem ATrs
-  SN APolyInt Polynom RelUtil MonotonePolynom PositivePolynom NaryFunction
-  MonAlgChecker IntBasedChecker Proof OptUtil AWFMInterpretation.
+From Coq Require Import Program.
+From CoLoR Require Import ListUtil ListForall LogicUtil ZUtil VecUtil Problem
+     ATrs SN APolyInt Polynom RelUtil MonotonePolynom PositivePolynom
+     NaryFunction MonAlgChecker IntBasedChecker Proof OptUtil
+     AWFMInterpretation.
 
 Set Implicit Arguments.
 

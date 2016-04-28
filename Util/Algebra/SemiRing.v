@@ -8,9 +8,9 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring structure.
 *)
 
-Require Export Ring Ring_theory.
-Require Import RelDec Relations Max Arith Compare LogicUtil Bool RelExtras
-  Setoid EqUtil NatUtil ZUtil Morphisms.
+From Coq Require Export Ring Ring_theory.
+From Coq Require Import Relations Max Arith Compare Bool Setoid Morphisms.
+From CoLoR Require Import RelDec LogicUtil RelExtras EqUtil NatUtil ZUtil.
 
 (***********************************************************************)
 (** Semi-ring structure type *)
@@ -19,13 +19,10 @@ Module Type SemiRingType.
 
   Declare Module Export ES : Eqset_dec.
 
-  Parameter A0 : A.
-  Parameter A1 : A.
+  Parameters A0 A1 : A.
 
   Parameter Aplus : A -> A -> A.
   Notation "x + y" := (Aplus x y).
-
-  Require Import Morphisms.
 
   Declare Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
@@ -83,8 +80,6 @@ End SemiRing.
 (***********************************************************************)
 (** Natural numbers as a semi-ring *)
 
-Require Import Arith.
-
 Module Nat <: SetA.
   Definition A := nat.
 End Nat.
@@ -124,7 +119,7 @@ Module NSemiRing := SemiRing NSemiRingT.
 (***********************************************************************)
 (** BigN natural numbers as a semi-ring *)
 
-Require Import BigN.
+From Coq Require Import BigN.
 
 Module BigNat_Eqset <: Eqset.
   Definition A := bigN.
@@ -174,7 +169,7 @@ Module BigNSemiRing := SemiRing BigNSemiRingT.
 (***********************************************************************)
 (** Integers as a semi-ring *)
 
-Require Import ZArith.
+From Coq Require Import ZArith.
 
 Module Int <: SetA.
   Definition A := Z.
@@ -227,7 +222,7 @@ Module ZSemiRing := SemiRing ZSemiRingT.
 (***********************************************************************)
 (** BigZ integers as a semi-ring *)
 
-Require Import BigZ.
+From Coq Require Import BigZ.
 
 Module BigInt_Eqset <: Eqset.
   Definition A := bigZ.
@@ -431,7 +426,7 @@ Module ArcticSemiRing := SemiRing ArcticSemiRingT.
 (** Arctic semi-ring over integers with minus infinity and 
     plus-max operations *)
 
-Require Import ZUtil.
+From CoLoR Require Import ZUtil.
 
 Inductive ArcticBZDom : Type := 
 | Fin (z : Z)

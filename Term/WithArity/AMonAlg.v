@@ -14,8 +14,8 @@ References:
   Proceedings of the 3rd International Joint Conference (IJCAR 2006), 2006.
 *)
 
-Require Import ATrs RelUtil SN ListUtil ARelation LogicUtil.
-Require Export AWFMInterpretation.
+From CoLoR Require Import ATrs RelUtil SN ListUtil ARelation LogicUtil.
+From CoLoR Require Export AWFMInterpretation.
 
 (***********************************************************************)
 (** * Module type specifying a weakly monotone algebra.                *)
@@ -76,7 +76,7 @@ End MonotoneAlgebraType.
 (** * Functor with a theory of weakly monotone algebras                *)
 (***********************************************************************)
 
-Require Import ACompat.
+From CoLoR Require Import ACompat.
 
 Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 

@@ -9,7 +9,7 @@ conversion of a TRS with unary symbols only into an SRS
 
 Set Implicit Arguments.
 
-Require Import LogicUtil RelUtil SN ListUtil Srs ATrs AUnary VecUtil.
+From CoLoR Require Import LogicUtil RelUtil SN ListUtil Srs ATrs AUnary VecUtil.
 
 Section S.
 
@@ -155,7 +155,7 @@ Section S.
 (***********************************************************************)
 (** invariance under reset *)
 
-  Require Import EqUtil NatUtil.
+  From CoLoR Require Import EqUtil NatUtil.
 
   Lemma string_of_term_reset :
     forall t, string_of_term (reset t) = string_of_term t.
@@ -182,7 +182,7 @@ Section S.
     rewrite IHR, srule_of_rule_reset. refl.
   Qed.
 
-  Require Import ListMax.
+  From CoLoR Require Import ListMax.
 
   Section reset.
 
@@ -338,7 +338,7 @@ End Make.
 (***********************************************************************)
 (** tactics for Rainbow *)
 
-Require Import AVariables.
+From CoLoR Require Import AVariables.
 
 Ltac as_srs_cond Fs_ok :=
   match goal with

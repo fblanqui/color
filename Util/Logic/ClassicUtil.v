@@ -9,8 +9,8 @@ basic classical meta-theorems
 
 Set Implicit Arguments.
 
-Require Export Classical.
-Require Import LogicUtil Setoid.
+From Coq Require Export Classical Setoid.
+From CoLoR Require Import LogicUtil.
 
 (***********************************************************************)
 (** Basic meta-theorems. *)
@@ -70,7 +70,7 @@ Qed.
 (****************************************************************************)
 (** Properties of Leibniz equality on [sig]. *)
 
-Require Import FunUtil.
+From CoLoR Require Import FunUtil.
 
 Section sig.
 

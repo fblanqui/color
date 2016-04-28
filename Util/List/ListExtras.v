@@ -9,8 +9,9 @@ Some additional functions on lists.
 
 Set Implicit Arguments.
 
-Require Export ListUtil.
-Require Import NatUtil Min Permutation LogicUtil Setoid.
+From CoLoR Require Export ListUtil.
+From Coq Require Import Min Permutation Setoid.
+From CoLoR Require Import NatUtil LogicUtil.
 
 (***********************************************************************)
 (** initial segment of a list *)
