@@ -52,7 +52,7 @@ install-dist:
 targz:
 	rm -rf /tmp/color
 	cp -r . /tmp/color
-	make -C /tmp/color clean
+	make -C /tmp/color clean-all
 	rm -rf `find /tmp/color -name .svn`
 	(cd /tmp; tar zcf color.tar.gz color)
 	rm -rf /tmp/color
