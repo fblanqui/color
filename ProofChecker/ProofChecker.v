@@ -21,8 +21,8 @@ Inductive TerminationAnalysisResult (P : Problem Sig) :=
 | TerminationEstablished (Prf : Prob_WF P)
 | Error.
 
-Implicit Arguments TerminationEstablished [P].
-Implicit Arguments Error [P].
+Arguments TerminationEstablished [P] _.
+Arguments Error [P].
 
 Program Fixpoint check_proof (Pb : Problem Sig) (Prf : TerminationProof Sig) 
   : TerminationAnalysisResult Pb :=

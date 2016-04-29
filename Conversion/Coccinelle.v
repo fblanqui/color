@@ -424,7 +424,7 @@ Section prec_eq_status.
       apply IHgs. hyp.
     Qed.
 
-    Implicit Arguments bprec_eq_status_aux1_true [gs b].
+    Arguments bprec_eq_status_aux1_true [gs b] _.
 
     Lemma bprec_eq_status_aux1_ok : forall gs b,
       bprec_eq_status_aux1 b gs = true ->
@@ -439,7 +439,7 @@ Section prec_eq_status.
 
   End bprec_eq_status_aux1.
 
-  Implicit Arguments bprec_eq_status_aux1_ok [f gs b].
+  Arguments bprec_eq_status_aux1_ok [f gs b] _ _ _ _.
 
   Fixpoint bprec_eq_status_aux2 b fs :=
     match fs with
@@ -455,7 +455,7 @@ Section prec_eq_status.
     apply IHfs. apply H.
   Qed.
 
-  Implicit Arguments bprec_eq_status_aux2_true [fs b].
+  Arguments bprec_eq_status_aux2_true [fs b] _.
 
   Lemma bprec_eq_status_aux2_ok : forall fs b,
     bprec_eq_status_aux2 b fs = true -> forall f g, In f fs -> In g fs ->
@@ -485,7 +485,7 @@ Section prec_eq_status.
 
 End prec_eq_status.
 
-Implicit Arguments bprec_eq_status_ok [Sig Fs].
+Arguments bprec_eq_status_ok [Sig] _ _ [Fs] _ _ _ _ _.
 
 Ltac prec_eq_status s p o := apply (bprec_eq_status_ok s p o); check_eq
   || fail 10 "statuses incompatible with precedences".

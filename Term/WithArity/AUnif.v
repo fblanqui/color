@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From Coq Require Import Relations.
 From CoLoR Require Import ASubstitution ATerm EqUtil ListUtil LogicUtil VecUtil
-     AVariables BoolUtil ListForall NatUtil SN.
+     AVariables BoolUtil NatUtil SN.
 
 Section S.
 
@@ -410,7 +410,7 @@ Proof.
   discr. discr.
 Qed.
 
-Implicit Arguments successfull_elim [k p].
+Arguments successfull_elim [k p] _.
 
 Lemma successfull_preserved : forall k p,
   successfull (iter_step k p) = true ->
@@ -432,7 +432,7 @@ intros. destruct (gt_plus H1). subst. apply H. hyp.
 elim l; clear l; simpl. hyp. intros. rewrite H0. refl.
 Qed.
 
-Implicit Arguments unsuccessfull_preserved [k p l].
+Arguments unsuccessfull_preserved [k p] _ [l] _.
 
 Lemma successfull_inv : forall k p,
   successfull (iter_step k p) = true ->
@@ -637,7 +637,7 @@ apply Lt_combine. hyp. trivial.
 simpl. discr.
 Qed.
 
-Implicit Arguments Lt_step [p].
+Arguments Lt_step [p] _.
 
 Lemma solved_inv : forall p, solved (step p) = false -> solved p = false.
 
@@ -645,7 +645,7 @@ Proof.
 destruct p. 2: discr. destruct p. destruct e. discr. destruct e. refl.
 Qed.
 
-Implicit Arguments solved_inv [p].
+Arguments solved_inv [p] _.
 
 Lemma wf_iter_step : forall p, exists k, solved (iter_step k p) = true.
 
@@ -892,7 +892,7 @@ mem. intro. destruct (orb_false_elim H). unfold extend.
 rewrite (beq_com beq_nat_ok) in H0. rewrite H0. auto.
 Qed.
 
-Implicit Arguments dom_subst_of_solved_eqns [x l].
+Arguments dom_subst_of_solved_eqns [x l] _.
 
 Lemma lforall_notin_vars_solved_eqn_dom : forall x u l,
   lforall (notin_vars_solved_eqn u) l ->
@@ -904,7 +904,7 @@ unfold notin_vars_solved_eqn at 1. simpl. mem. split_all.
 case_beq_nat n x; simpl. rewrite H in H0. discr. apply IHl; hyp.
 Qed.
 
-Implicit Arguments lforall_notin_vars_solved_eqn_dom [x u l].
+Arguments lforall_notin_vars_solved_eqn_dom [x u l] _ _.
 
 Lemma lforall_notin_vars_solved_eqn_mem : forall x u l,
   lforall (notin_vars_solved_eqn u) l ->
@@ -916,7 +916,7 @@ unfold notin_vars_solved_eqn at 1. simpl. split_all.
 destruct (orb_true_elim H0). rewrite beq_nat_ok in e. subst n. hyp. auto.
 Qed.
 
-Implicit Arguments lforall_notin_vars_solved_eqn_mem [x u l].
+Arguments lforall_notin_vars_solved_eqn_mem [x u l] _ _.
 
 Lemma sub_eq' : forall s1 s2 (t : term),
   (forall x, mem x (vars t) = true -> s1 x = s2 x) -> sub s1 t = sub s2 t.
@@ -937,7 +937,7 @@ induction l. simpl. mem. auto. simpl. destruct a. unfold notin_solved_eqn at 1.
 simpl. split_all. unfold extend. case_beq_nat x n0; tauto.
 Qed.
 
-Implicit Arguments lforall_notin_solved_eqn_mem [n x l].
+Arguments lforall_notin_solved_eqn_mem [n x l] _ _.
 
 Lemma subst_of_solved_eqns_correct : forall l, solved_eqns_wf l ->
   is_sol_solved_eqns (subst_of_solved_eqns l) l.
@@ -964,7 +964,7 @@ assert (problem_wf (Some (l, nil))). rewrite <- H0. apply iter_step_wf. hyp.
 simpl in H1. tauto.
 Qed.
 
-Implicit Arguments subst_of_solved_eqns_correct_problem [p l k].
+Arguments subst_of_solved_eqns_correct_problem [p l k] _ _.
 
 Lemma successfull_is_sol : forall k p, problem_wf p ->
   successfull (iter_step k p) = true -> exists s, is_sol s p.
@@ -1018,7 +1018,7 @@ simpl. split_all. apply subst_of_solved_eqns_correct.
 eapply iter_step_solved_eqn_wf; ehyp.
 Qed.
 
-Implicit Arguments iter_step_Some [p l k].
+Arguments iter_step_Some [p l k] _ _.
 
 Lemma iter_step_most_general : forall p l k, problem_wf p ->
   iter_step k p = Some (l, nil) -> forall s, is_sol s p ->
@@ -1081,9 +1081,9 @@ Qed.
 
 End S.
 
-Implicit Arguments iter_step_complete [Sig p].
-Implicit Arguments successfull_elim [Sig k p].
-Implicit Arguments successfull_preserved [Sig k p l].
-Implicit Arguments unsuccessfull_preserved [Sig k p l].
-Implicit Arguments successfull_inv [Sig k p l].
-Implicit Arguments successfull_is_sol [Sig k p].
+Arguments iter_step_complete [Sig p] _ _.
+Arguments successfull_elim [Sig k p] _.
+Arguments successfull_preserved [Sig k p] _ [l] _.
+Arguments unsuccessfull_preserved [Sig k p] _ [l] _.
+Arguments successfull_inv [Sig k p] _ [l] _ _.
+Arguments successfull_is_sol [Sig k p] _ _.

@@ -63,7 +63,7 @@ Proof.
 unfold coef_pos. intros n p1 p2. simpl. rewrite lforall_app. intuition.
 Qed.
 
-Implicit Arguments coef_pos_app [n p1 p2].
+Arguments coef_pos_app [n p1 p2] _.
 
 Lemma coef_pos_mpmult : forall n c (m : monom n) (p : poly n),
   0 <= c -> coef_pos p -> coef_pos (mpmult c m p).
@@ -93,7 +93,7 @@ Qed.
 Definition peval_D n (p : poly n) (H : coef_pos p) :=
   restrict (preserve_pos_peval p H).
 
-Implicit Arguments peval_D [n p].
+Arguments peval_D [n p] _ _.
 
 Lemma val_peval_D : forall n (p : poly n) (H : coef_pos p) (v : vec n),
   val (peval_D H v) = peval p (vals v).

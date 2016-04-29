@@ -10,7 +10,7 @@ Utility results about the option/exception type.
 Set Implicit Arguments.
 
 From Coq Require Import Bool Program.
-From CoLoR Require Import ListForall ListUtil LogicUtil.
+From CoLoR Require Import ListUtil LogicUtil.
 
 Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
 
@@ -106,4 +106,4 @@ Section Map_option.
 
 End Map_option.
 
-Implicit Arguments opt_to_bool [P].
+Arguments opt_to_bool [P] _.

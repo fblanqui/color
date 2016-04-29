@@ -52,7 +52,7 @@ Lemma Vfilter_app_eq : forall A n (l l1 l2 : list (N n)) (v : vector A n)
 
 Proof. intros. subst l. rewrite Vfilter_app. apply Vcast_pi. Qed.
 
-Implicit Arguments Vfilter_app_eq [A n l l1 l2 v].
+Arguments Vfilter_app_eq [A n l l1 l2 v] _ _.
 
 Lemma Vfilter_eq_in : forall A n (v : vector A n) (l : list (N n))
   (rf : nodup (map (@N_val n) l)) i, In i (map (@N_val n) l) ->
@@ -71,7 +71,7 @@ rewrite length_app. refl. exists hi. exists l1. exists l2. exists e.
 rewrite Vfilter_app. simpl. apply Vcast_pi.
 Qed.
 
-Implicit Arguments Vfilter_eq_in [A n v l i].
+Arguments Vfilter_eq_in [A n v l] _ [i] _.
 
 Lemma Vfilter_map : forall A B (f : A -> B) n (v : vector A n) (l : list (N n)),
   Vfilter l (Vmap f v) = Vmap f (Vfilter l v).

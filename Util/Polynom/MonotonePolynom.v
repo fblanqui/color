@@ -12,7 +12,7 @@ monotone polynomials
 Set Implicit Arguments.
 
 From CoLoR Require Import Polynom PositivePolynom NaryFunction VecUtil
-     LogicUtil ListUtil ListForall ZUtil RelUtil NatUtil BoundNat.
+     LogicUtil ListUtil ZUtil RelUtil NatUtil BoundNat.
 
 Open Local Scope Z_scope.
 
@@ -109,7 +109,7 @@ generalize dependent p. intro p. elim p.
    hyp.
 Qed.
 
-Implicit Arguments coef_pos_monotone_peval_Dle [n p i j x y].
+Arguments coef_pos_monotone_peval_Dle [n p] _ [i j] _ _ _ [x y] _ _.
 
 Lemma pmonotone'_imp_monotone_peval_Dlt :
   forall n (p : poly n) (H: pstrong_monotone' p), 

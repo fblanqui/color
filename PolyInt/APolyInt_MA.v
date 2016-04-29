@@ -8,7 +8,7 @@ Polynomial interpretations in the setting of monotone algebras.
 *)
 
 From CoLoR Require Import APolyInt AMonAlg ZUtil RelUtil PositivePolynom ATrs
-  ListForall MonotonePolynom LogicUtil BoolUtil.
+  MonotonePolynom LogicUtil BoolUtil.
 
 Module Type TPolyInt.
   Parameter sig : Signature.
@@ -133,7 +133,7 @@ Module PolyInt (Export PI : TPolyInt).
 (***********************************************************************)
 (** tactics for Rainbow *)
 
-  Implicit Arguments fin_monotone_succ [Fs].
+  Arguments fin_monotone_succ [Fs] _ _ _ _ _ _ _ _ _ _ _.
 
   Ltac prove_cc_succ Fs_ok :=
     apply IR_context_closed; apply (fin_monotone_succ Fs_ok);

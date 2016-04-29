@@ -76,7 +76,7 @@ Section S.
 
   End enum.
 
-  Implicit Arguments g [f a].
+  Arguments g [f a] _ _.
 
 (*****************************************************************************)
 (** sorted list of indices [j] such that [f j = a /\ j < i] *)
@@ -102,7 +102,7 @@ Section S.
       destruct H0. subst. auto. auto.
     Qed.
 
-    Implicit Arguments In_indices_aux_elim [i x acc].
+    Arguments In_indices_aux_elim [i x acc] _.
 
     Lemma indices_correct : forall i x, In x (indices i) -> f x = a /\ x < i.
 
@@ -170,8 +170,8 @@ Section S.
 
   End indices.
 
-  Implicit Arguments In_indices_aux_elim [f a i x acc].
-  Implicit Arguments indices_complete [f a i x].
+  Arguments In_indices_aux_elim [f a i x acc] _.
+  Arguments indices_complete [f a i x] _ _.
 
 (*****************************************************************************)
 (** given an infinite sub-sequence [g] of [f] for the indices [i>=i0]
@@ -706,4 +706,4 @@ End ISModTrans.
 
 End S.
 
-Implicit Arguments finite_codomain [A As f].
+Arguments finite_codomain [A] _ [As f] _.

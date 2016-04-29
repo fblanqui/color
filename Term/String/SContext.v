@@ -40,4 +40,4 @@ Qed.
 
 End S.
 
-Implicit Arguments mkContext [Sig].
+Arguments mkContext [Sig] _ _.

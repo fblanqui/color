@@ -65,13 +65,13 @@ Section occur.
     apply IHl. intro. apply H. auto.
   Qed.
 
-  Implicit Arguments notin_occur [x l].
+  Arguments notin_occur [x l] _.
 
   Lemma occur_in : forall x l, occur x l > 0 -> In x l.
 
   Proof. induction l; simpl. omega. unfold delta. case (eq_dec x a); auto. Qed.
 
-  Implicit Arguments occur_in [x l].
+  Arguments occur_in [x l] _.
 
   Lemma occur_notin : forall x l, occur x l = 0 -> ~In x l.
 
@@ -95,9 +95,9 @@ Section occur.
 
 End occur.
 
-Implicit Arguments in_occur [A x l].
-Implicit Arguments notin_occur [A x l].
-Implicit Arguments occur_S [A x l n].
+Arguments in_occur [A] _ [x l] _.
+Arguments notin_occur [A] _ [x l] _.
+Arguments occur_S [A] _ [x l n] _.
 
 (***********************************************************************)
 (** pigeon-hole principle *)

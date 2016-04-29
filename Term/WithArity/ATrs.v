@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Export AContext ASubstitution.
 From CoLoR Require Import ARelation ListNodup LogicUtil VecUtil RelUtil
-     ListUtil ListForall SN BoolUtil EqUtil NatUtil.
+     ListUtil SN BoolUtil EqUtil NatUtil.
 
 Section basic_definitions.
 
@@ -149,8 +149,8 @@ Section basic_definitions.
 
 End basic_definitions.
 
-Implicit Arguments is_notvar_lhs_elim [Sig R l r].
-Implicit Arguments is_notvar_rhs_elim [Sig R l r].
+Arguments is_notvar_lhs_elim [Sig R] _ [l r] _.
+Arguments is_notvar_rhs_elim [Sig R] _ [l r] _.
 
 (***********************************************************************)
 (** basic tactic for eliminating rewriting hypotheses *)
@@ -936,7 +936,7 @@ internal [R]-steps is minimal if:
 
 End S.
 
-Implicit Arguments int_red_fun [Sig R f ts v].
+Arguments int_red_fun [Sig R f ts v] _.
 
 (***********************************************************************)
 (** tactics *)

@@ -63,7 +63,7 @@ Section Somewhere_tfinite.
 
 End Somewhere_tfinite.
 
-Implicit Arguments fin_somewhere_tfinite [dim sig Fs].
+Arguments fin_somewhere_tfinite [dim] _ [sig] _ [Fs] _ _ _.
 
 Ltac somewhere_tfinite Fs_ok :=
   apply (fin_somewhere_tfinite _ _ Fs_ok);

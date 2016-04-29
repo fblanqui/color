@@ -40,7 +40,7 @@ Section Morphism.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Fc_aux [i j n n'].
+  Arguments Fc_aux [i j n n'] _ _.
 
   Fixpoint Fc (c : context S1) : context S2 :=
     match c with
@@ -207,13 +207,13 @@ Section Morphism.
 
 End Morphism.
 
-Implicit Arguments Ft [S1 S2 F].
-Implicit Arguments Fv [S1 S2 F n].
-Implicit Arguments Fc [S1 S2 F].
-Implicit Arguments Fs [S1 S2 F].
-Implicit Arguments Fr [S1 S2 F].
-Implicit Arguments Fl [S1 S2 F].
-Implicit Arguments Frs [S1 S2 F].
+Arguments Ft [S1 S2 F] _ _.
+Arguments Fv [S1 S2 F] _ [n] _.
+Arguments Fc [S1 S2 F] _ _.
+Arguments Fs [S1 S2 F] _ _ _.
+Arguments Fr [S1 S2 F] _ _.
+Arguments Fl [S1 S2 F] _ _.
+Arguments Frs [S1 S2 F] _ _ _.
 
 (***********************************************************************)
 (** preservation of termination *)
@@ -308,7 +308,7 @@ Section Epi.
 
 End Epi.
 
-Implicit Arguments HG_epi [S1 S2 F G].
+Arguments HG_epi [S1 S2 F] _ [G] _ _.
 
 (***********************************************************************)
 (** isomorphism *)

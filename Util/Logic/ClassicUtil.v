@@ -27,7 +27,7 @@ Proof.
   intro. absurd (exists x, ~ P x). exact H0. exists x. exact H1.
 Qed.
 
-Implicit Arguments not_forall_imply_exists_not [A P].
+Arguments not_forall_imply_exists_not [A P] _.
 
 Lemma not_forall_eq : forall (A : Type) (P : A -> Prop),
   ~(forall x, P x) <-> exists x, ~P x.

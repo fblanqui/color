@@ -137,4 +137,4 @@ Section S.
 
 End S.
 
-Implicit Arguments Hole [Sig].
+Arguments Hole [Sig].

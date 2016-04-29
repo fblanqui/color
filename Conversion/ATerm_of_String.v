@@ -100,7 +100,7 @@ rewrite (Vcast_cons (hS:=is_unary_sig f)), Vcast_refl. simpl.
 rewrite max_0_r. intro h. rewrite (IH h). refl.
 Qed.
 
-Implicit Arguments term_of_string_epi [t].
+Arguments term_of_string_epi [t] _.
 
 Lemma string_of_term_sub : forall s l,
   string_of_term (sub s l) = string_of_term l ++ string_of_term (s (var l)).

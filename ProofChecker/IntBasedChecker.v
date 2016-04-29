@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 *)
 
 From Coq Require Import Program.
-From CoLoR Require Import LogicUtil OptUtil ListForall ATrs NaryFunction
+From CoLoR Require Import LogicUtil OptUtil ATrs NaryFunction
   AInterpretation Proof ListUtil.
 
 Set Implicit Arguments.

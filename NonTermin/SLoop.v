@@ -37,7 +37,7 @@ Section S.
     intros t x. destruct x. exact x.
   Defined.
 
-  Implicit Arguments strings_of_reduc [t].
+  Arguments strings_of_reduc [t] _.
 
   Definition proof_of_reduc :
     forall t, forall x : {us| FS t us}, FS t (strings_of_reduc x).
@@ -75,7 +75,7 @@ Section S.
     rewrite (IHp _ _ H). refl.
   Qed.
 
-  Implicit Arguments matches_correct [p t u].
+  Arguments matches_correct [p t u] _.
 
   Lemma matches_complete : forall p t u, t = p ++ u -> matches p t = Some u.
 
@@ -116,7 +116,7 @@ Section S.
     ded (matches_correct H1). ded (split_correct H0). subst. refl.
   Qed.
 
-  Implicit Arguments rewrite_correct [t d s].
+  Arguments rewrite_correct [t d s] _.
 
   Fixpoint rewrites t (ds : list data) : option (list string) :=
     match ds with
@@ -141,7 +141,7 @@ Section S.
     inversion H1. simpl. ded (rewrite_correct H). intuition.
   Qed.
 
-  Implicit Arguments rewrites_correct [ds t us].
+  Arguments rewrites_correct [ds t us] _.
 
   From CoLoR Require Import NatUtil.
 
@@ -274,11 +274,11 @@ Section S.
 
 End S.
 
-Implicit Arguments rewrite_correct [Sig R t d s].
-Implicit Arguments rewrites_correct [Sig R ds t us].
-Implicit Arguments matches [Sig].
-Implicit Arguments matches_correct [Sig p t u].
-Implicit Arguments matches_complete [Sig p t u].
+Arguments rewrite_correct [Sig R t d s] _.
+Arguments rewrites_correct [Sig R ds t us] _.
+Arguments matches [Sig] _ _.
+Arguments matches_correct [Sig p t u] _.
+Arguments matches_complete [Sig p t u] _.
 
 (***********************************************************************)
 (** tactics *)

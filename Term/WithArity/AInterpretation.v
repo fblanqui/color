@@ -182,4 +182,4 @@ Section S.
 
 End S.
 
-Implicit Arguments mkInterpretation [Sig domain].
+Arguments mkInterpretation [Sig domain] _ _.

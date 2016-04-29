@@ -232,7 +232,7 @@ Module Make (Export XMap : FMapInterface.S).
       apply h2 with k; hyp.
     Qed.
 
-    Implicit Arguments Equiv_MapsTo [m m' k x].
+    Arguments Equiv_MapsTo [m m'] _ [k x] _.
 
     Lemma Equiv_find_Some : forall m m', Equiv eq m m' -> forall k x,
       find k m = Some x -> exists x', find k m' = Some x' /\ eq x x'.
@@ -243,7 +243,7 @@ Module Make (Export XMap : FMapInterface.S).
       rewrite <- find_mapsto_iff. hyp.
     Qed.
 
-    Implicit Arguments Equiv_find_Some [m m' k x].
+    Arguments Equiv_find_Some [m m'] _ [k x] _.
 
     Lemma Equiv_MapsTo' : forall m m', Equiv eq m m' -> forall k x,
       MapsTo k x m' -> exists x', MapsTo k x' m /\ eq x' x.
@@ -255,7 +255,7 @@ Module Make (Export XMap : FMapInterface.S).
       apply h2 with k; hyp.
     Qed.
 
-    Implicit Arguments Equiv_MapsTo' [m m' k x].
+    Arguments Equiv_MapsTo' [m m'] _ [k x] _.
 
     Lemma Equiv_find_Some' : forall m m', Equiv eq m m' -> forall k x,
       find k m' = Some x -> exists x', find k m = Some x' /\ eq x' x.
@@ -266,7 +266,7 @@ Module Make (Export XMap : FMapInterface.S).
       rewrite <- find_mapsto_iff. hyp.
     Qed.
 
-    Implicit Arguments Equiv_find_Some' [m m' k x].
+    Arguments Equiv_find_Some' [m m'] _ [k x] _.
  
     Lemma Equiv_find_None : forall m m', Equiv eq m m' ->
       forall k, find k m = None <-> find k m' = None.
@@ -611,8 +611,8 @@ and satisfies some commutation property. *)
 
   End S.
 
-  Implicit Arguments Equiv_find_Some [A eq0 m m' k x].
-  Implicit Arguments Equiv_find_Some' [A eq0 m m' k x].
+  Arguments Equiv_find_Some [A eq0 m m'] _ [k x] _.
+  Arguments Equiv_find_Some' [A eq0 m m'] _ [k x] _.
   Arguments le {A} _ _.
 
 (****************************************************************************)

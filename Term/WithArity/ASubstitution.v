@@ -11,7 +11,7 @@ substitutions
 
 Set Implicit Arguments.
 
-From CoLoR Require Import AInterpretation ListForall AContext VecUtil NatUtil LogicUtil
+From CoLoR Require Import AInterpretation AContext VecUtil NatUtil LogicUtil
   ListUtil EqUtil.
 
 Section S.
@@ -237,7 +237,7 @@ Section S.
       exists a. auto. ded (IHl H0). do 2 destruct H1. exists x0. auto.
     Qed.
 
-    Implicit Arguments in_svars_elim [x l].
+    Arguments in_svars_elim [x l] _.
 
     Lemma svars_app l2 : forall l1, svars (l1 ++ l2) = svars l1 ++ svars l2.
 
@@ -548,7 +548,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
 
   Proof. induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega. Qed.
 
-  Implicit Arguments in_freshl [x n x0].
+  Arguments in_freshl [x n x0] _.
 
 (***********************************************************************)
 (** given a variable [x0] and a vector [v] of [n] terms, [fsub x0 n v]
@@ -731,13 +731,13 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
 
 End S.
 
-Implicit Arguments swap [Sig].
-Implicit Arguments sub_inv [Sig s1 s2].
-Implicit Arguments fun_eq_sub [Sig f ts s u].
-Implicit Arguments sub_restrict_incl [Sig l r].
-Implicit Arguments fresh_vars [Sig].
-Implicit Arguments fresh [Sig].
-Implicit Arguments subterm_eq_sub_elim [Sig u t0 s].
+Arguments swap [Sig] _ _ _.
+Arguments sub_inv [Sig s1 s2] _ _.
+Arguments fun_eq_sub [Sig f ts s u] _.
+Arguments sub_restrict_incl [Sig] _ [l r] _.
+Arguments fresh_vars [Sig] _.
+Arguments fresh [Sig] _ _.
+Arguments subterm_eq_sub_elim [Sig u t0 s] _.
 
 (***********************************************************************)
 (** tactics *)

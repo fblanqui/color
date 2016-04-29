@@ -185,8 +185,8 @@ Section S.
 
     End filter_cont.
 
-    Implicit Arguments filter_cont_true [f i j].
-    Implicit Arguments filter_cont_false [f i j].
+    Arguments filter_cont_true [f i j] _ _ _ _ _ _.
+    Arguments filter_cont_false [f i j] _ _ _ _ _ _.
 
 (***********************************************************************)
 (** stability wrt contexts *)
@@ -333,7 +333,7 @@ Section S.
 
 End S.
 
-Implicit Arguments filter_sig [Sig].
+Arguments filter_sig [Sig] _.
 
 (***********************************************************************)
 (** tactics *)

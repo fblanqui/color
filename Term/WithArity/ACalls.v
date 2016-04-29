@@ -163,7 +163,7 @@ unfold Q. simpl. intro. contr.
 unfold Q. simpl. intros. ded (in_app_or H1). intuition.
 Qed.
 
-Implicit Arguments in_calls [x t0].
+Arguments in_calls [x t0] _.
 
 Lemma in_calls_defined : forall t g vs,
   In (Fun g vs) (calls t) -> defined g R = true.
@@ -234,7 +234,7 @@ Qed.
 
 End S.
 
-Implicit Arguments in_calls [Sig R x t0].
-Implicit Arguments in_calls_defined [Sig R t0 g vs].
-Implicit Arguments in_calls_subterm [Sig R u t].
-Implicit Arguments lhs_fun_defined [Sig f us r R].
+Arguments in_calls [Sig R x t0] _.
+Arguments in_calls_defined [Sig R t0 g vs] _.
+Arguments in_calls_subterm [Sig R u t] _.
+Arguments lhs_fun_defined [Sig f us r R] _.

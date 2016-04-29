@@ -79,7 +79,7 @@ Section S.
     rewrite string_of_term_fun1. simpl. rewrite IH. refl. hyp.
   Qed.
 
-  Implicit Arguments term_of_string_epi [t].
+  Arguments term_of_string_epi [t] _.
 
   Lemma string_of_term_sub : forall s l,
     string_of_term (sub s l) = string_of_term l ++ string_of_term (s (var l)).

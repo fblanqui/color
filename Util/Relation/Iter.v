@@ -298,5 +298,5 @@ End S.
 (***********************************************************************)
 (** implicit arguments *)
 
-Implicit Arguments iter_path [A R n x y].
-Implicit Arguments path_iter [A R l x y].
+Arguments iter_path [A R n x y] _.
+Arguments path_iter [A R l x y] _.

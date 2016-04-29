@@ -939,7 +939,7 @@ Qed.
 
 End Find.
 
-Implicit Arguments In_find_first2 [A P P_dec l z].
+Arguments In_find_first2 [A P P_dec l z] _.
 
 Section Find_more.
 
@@ -1006,9 +1006,9 @@ Qed.
 
 End Find_more.
 
-Implicit Arguments eq_In_find_first [A x l].
-Implicit Arguments eq_find_first_exact [A eq_dec l x z].
-Implicit Arguments element_at_find_first_eq [A l x i].
+Arguments eq_In_find_first [A] _ [x l] _.
+Arguments eq_find_first_exact [A eq_dec l x z] _.
+Arguments element_at_find_first_eq [A] _ [l x i] _.
 
 (***********************************************************************)
 (** decidability of finding an element satisfying some relation *)

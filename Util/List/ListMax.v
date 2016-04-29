@@ -32,7 +32,7 @@ destruct H. subst a. apply le_max_l.
 ded (IHl H). apply le_max_intro_r. exact H0.
 Qed.
 
-Implicit Arguments in_lmax [x l].
+Arguments in_lmax [x l] _.
 
 Lemma incl_lmax : forall l1 l2, incl l1 l2 -> lmax l1 <= lmax l2.
 
@@ -77,4 +77,4 @@ destruct H. subst a. apply le_min_l.
 ded (IHl H). apply elim_min_r. exact H0.
 Qed.
 
-Implicit Arguments in_lmin [x l].
+Arguments in_lmin [x l] _.

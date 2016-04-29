@@ -9,8 +9,8 @@ simple projections for the subterm criterion
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ATrs NatUtil BoolUtil VecUtil ListUtil LogicUtil RelUtil SN
-  ACompat ARelation EqUtil.
+From CoLoR Require Import ATrs NatUtil BoolUtil VecUtil ListUtil LogicUtil
+     RelUtil SN ACompat ARelation EqUtil.
 
 Section S.
 
@@ -31,7 +31,7 @@ Section S.
 
   Variable Hpi : valid.
 
-  Implicit Arguments Hpi [f].
+  Arguments Hpi [f] _.
 
   Fixpoint proj t :=
     match t with
@@ -142,11 +142,11 @@ Section S.
 
 End S.
 
-Implicit Arguments valid [Sig].
-Implicit Arguments bvalid [Sig].
-Implicit Arguments bvalid_ok [Sig Fs].
-Implicit Arguments proj [Sig pi].
-Implicit Arguments proj_ord [Sig pi].
+Arguments valid [Sig] _.
+Arguments bvalid [Sig] _ _.
+Arguments bvalid_ok [Sig] _ [Fs] _.
+Arguments proj [Sig pi] _ _.
+Arguments proj_ord [Sig pi] _ _ _ _.
 
 Ltac valid Fs_ok := rewrite <- (bvalid_ok _ Fs_ok);
   (check_eq || fail 10 "invalid simple projection").

@@ -70,7 +70,7 @@ assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. hyp.
 destruct H1 as [c]. exists c. intuition.
 Qed.
 
-Implicit Arguments in_conc [u n cs].
+Arguments in_conc [u n cs] _.
 
 (* given a vector cs of caps and a vector ts of (sum cs) terms, this
 function breaks ts in vectors of size the number of aliens of every
@@ -393,6 +393,6 @@ Qed.
 
 End S.
 
-Implicit Arguments vars_cap_inf [Sig x t].
-Implicit Arguments vars_cap_sup [Sig x t].
-Implicit Arguments vars_cap [Sig x t].
+Arguments vars_cap_inf [Sig] _ [x t] _ _.
+Arguments vars_cap_sup [Sig] _ [x t] _ _ _.
+Arguments vars_cap [Sig] _ [x t] _.

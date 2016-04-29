@@ -9,8 +9,8 @@ arguments filtering with projections only
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil SN ARelation RelUtil ACompat
-  NatUtil.
+From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil SN ARelation RelUtil
+     ACompat NatUtil.
 
 Section S.
 
@@ -232,7 +232,7 @@ Section pi.
 
   Definition mk_proj (f : Sig) k := @exist _ (fun k => k < arity f) k.
 
-  Implicit Arguments mk_proj [f k].
+  Arguments mk_proj [f k] _.
 
   Definition build_pi : forall f : Sig, option {k | k < arity f}.
 
@@ -266,10 +266,10 @@ Qed.
 
 End S.
 
-Implicit Arguments build_pi [Sig raw_pi].
-Implicit Arguments valid [Sig].
-Implicit Arguments bvalid [Sig].
-Implicit Arguments bvalid_ok [Sig Fs].
+Arguments build_pi [Sig raw_pi] _ _.
+Arguments valid [Sig] _.
+Arguments bvalid [Sig] _ _.
+Arguments bvalid_ok [Sig] _ [Fs] _.
 
 (***********************************************************************)
 (** tactics *)

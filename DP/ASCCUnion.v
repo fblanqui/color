@@ -454,7 +454,7 @@ Section S.
 
 End S.
 
-Implicit Arguments WF_SCC'_union [Sig R ODPG M].
+Arguments WF_SCC'_union [Sig] _ [R] _ [ODPG] _ _ _ _ [M] _ _ _.
 
 (***********************************************************************)
 (** tactics *)

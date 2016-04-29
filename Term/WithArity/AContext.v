@@ -28,7 +28,7 @@ Section S.
   | Cont : forall (f : Sig) (i j : nat), i + S j = arity f ->
     terms i -> context -> terms j -> context.
 
-  Implicit Arguments Cont [f i j].
+  Arguments Cont [f i j] _ _ _ _.
 
   Lemma cont_eq_intro : forall f f', f = f' -> forall c c', c = c' ->
     forall i v1 i' v1' (h1 : i'=i) j v2 (e : i+S j=arity f) j' v2' (h2 : j'=j)
@@ -494,11 +494,11 @@ End S.
 (***********************************************************************)
 (** declarations of implicit arguments *)
 
-Implicit Arguments Hole [Sig].
-Implicit Arguments in_vars_subterm_eq [Sig x t].
-Implicit Arguments in_vars_fun [Sig x f ts].
-Implicit Arguments vars_fill_elim [Sig t c].
-Implicit Arguments var_eq_fill [Sig x c t].
-Implicit Arguments fun_eq_fill [Sig f ts c u].
-Implicit Arguments wf_term [Sig t c].
-Implicit Arguments subterm_fun [Sig ts u].
+Arguments Hole [Sig].
+Arguments in_vars_subterm_eq [Sig x t] _.
+Arguments in_vars_fun [Sig x f ts] _.
+Arguments vars_fill_elim [Sig t c] _ _.
+Arguments var_eq_fill [Sig x c t] _.
+Arguments fun_eq_fill [Sig f ts c u] _.
+Arguments wf_term [Sig t c] _.
+Arguments subterm_fun [Sig] _ [ts u] _.

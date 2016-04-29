@@ -616,7 +616,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     ded (IHts _ H). omega.
   Qed.
 
-  Implicit Arguments Vin_size_terms_ge [n ts t].
+  Arguments Vin_size_terms_ge [n ts t] _.
 
   Lemma Vin_size_terms_gt : forall n (ts : terms n) t,
     Vin t ts -> n > 1 -> size_terms ts > size t.
@@ -675,18 +675,18 @@ End S.
 (***********************************************************************)
 (** implicit arguments *)
 
-Implicit Arguments Var [Sig].
-Implicit Arguments maxvar_var [Sig k x].
-Implicit Arguments maxvar_le_fun [Sig m f ts].
-Implicit Arguments maxvar_le_arg [Sig f ts m t].
-Implicit Arguments in_vars_vec_elim [Sig x n ts].
-Implicit Arguments vars_vec_in [Sig x t0 n ts].
-Implicit Arguments in_symbs_vec_elim [Sig x n ts].
-Implicit Arguments symbs_vec_in [Sig x t0 n ts].
-Implicit Arguments vars_max [Sig x t].
-Implicit Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t].
-Implicit Arguments Vin_size_terms_ge [Sig n ts t].
-Implicit Arguments Vin_size_terms_gt [Sig n ts t].
+Arguments Var [Sig] _.
+Arguments maxvar_var [Sig k x] _.
+Arguments maxvar_le_fun [Sig m f ts] _.
+Arguments maxvar_le_arg [Sig f ts m t] _ _.
+Arguments in_vars_vec_elim [Sig x n ts] _.
+Arguments vars_vec_in [Sig x t0 n ts] _ _.
+Arguments in_symbs_vec_elim [Sig x n ts] _.
+Arguments symbs_vec_in [Sig x t0 n ts] _ _.
+Arguments vars_max [Sig x t] _.
+Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t] _.
+Arguments Vin_size_terms_ge [Sig n ts t] _.
+Arguments Vin_size_terms_gt [Sig n ts t] _ _.
 
 (***********************************************************************)
 (** tactics *)

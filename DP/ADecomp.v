@@ -9,7 +9,7 @@ decomposition of an over DP graph
 
 Set Implicit Arguments.
 
-From CoLoR Require Import AGraph Union ATrs RelUtil ListUtil LogicUtil SN ListForall
+From CoLoR Require Import AGraph Union ATrs RelUtil ListUtil LogicUtil SN
   BoolUtil VecUtil.
 
 Section S.
@@ -85,7 +85,7 @@ edge from b to c *)
     exists a. intuition. destruct (IHcs _ _ H). exists x0. intuition.
   Qed.
 
-  Implicit Arguments In_Union_elim [cs x y].
+  Arguments In_Union_elim [cs x y] _.
 
 (***********************************************************************)
 (** main theorem *)

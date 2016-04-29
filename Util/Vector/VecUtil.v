@@ -15,7 +15,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From Coq Require Import Vector Program Structures.Equalities Morphisms.
-From CoLoR Require Import LogicUtil NatUtil EqUtil ListUtil BoolUtil RelUtil ListForall.
+From CoLoR Require Import LogicUtil NatUtil EqUtil ListUtil BoolUtil RelUtil.
 
 Notation vector := Vector.t.
 Notation Vnil := Vector.nil.
@@ -25,10 +25,10 @@ Notation Vtail := Vector.tl.
 Notation Vconst := Vector.const.
 
 Arguments Vnil {A}.
-Implicit Arguments Vcons [A n].
-Implicit Arguments Vhead [A n].
-Implicit Arguments Vtail [A n].
-Implicit Arguments Vconst [A].
+Arguments Vcons [A] _ [n] _.
+Arguments Vhead [A n] _.
+Arguments Vtail [A n] _.
+Arguments Vconst [A] _ _.
 
 (***********************************************************************)
 (** Notations for vectors. *)
@@ -106,7 +106,7 @@ Section Velementary.
 
 End Velementary.
 
-Implicit Arguments VSn_eq [A n].
+Arguments VSn_eq [A n] _.
 
 (***********************************************************************)
 (** Tactic for destructing non empty vectors. *)
@@ -150,7 +150,7 @@ Section Vcast.
 
   Proof. intros until h; case h; trivial. Qed.
 
-  Implicit Arguments Vcast_eq_elim [n v1 v2 m h].
+  Arguments Vcast_eq_elim [n v1 v2 m h] _.
 
   Lemma Vcast_cast_eq :
     forall n (v : vector A n) m (h1 : n=m) p (h2 : m=p) (h3 : n=p),
@@ -212,8 +212,8 @@ Section Vcast.
 
 End Vcast.
 
-Implicit Arguments Vcast_eq_elim [A n v1 v2 m h].
-Implicit Arguments Vcast_cons [A n v x p hS].
+Arguments Vcast_eq_elim [A n v1 v2 m h] _.
+Arguments Vcast_cons [A n v x p hS].
 
 (***********************************************************************)
 (** ** Lemma and tactic for replacing an empty vector by Vnil. *)
@@ -567,7 +567,7 @@ Section Vapp.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vnth_app_aux [n1 n2 i].
+  Arguments Vnth_app_aux [n1 n2 i] _ _.
 
   Lemma Vnth_app : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     i (h : i < n1+n2), Vnth (Vapp v1 v2) h =
@@ -645,7 +645,7 @@ Section Vbreak.
         let w := Vbreak p1 n2 (Vtail v) in (Vcons (Vhead v) (fst w), snd w)
     end.
 
-  Implicit Arguments Vbreak [n1 n2].
+  Arguments Vbreak [n1 n2] _.
 
   Lemma Vbreak_app : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2),
     Vbreak (Vapp v1 v2) = (v1, v2).
@@ -675,9 +675,9 @@ Section Vbreak.
 
 End Vbreak.
 
-Implicit Arguments Vbreak [A n1 n2].
-Implicit Arguments Vbreak_eq_app [A n1 n2].
-Implicit Arguments Vbreak_eq_app_cast [A n n1 n2].
+Arguments Vbreak [A n1 n2] _.
+Arguments Vbreak_eq_app [A n1 n2] _.
+Arguments Vbreak_eq_app_cast [A n n1 n2] _ _.
 
 (***********************************************************************)
 (** ** Membership predicate on vectors. *)
@@ -732,7 +732,7 @@ Section Vin.
 
   Proof. intros m n H. case H. intros v x. rewrite Vcast_refl. auto. Qed.
 
-  Implicit Arguments Vin_cast_elim [m n H v x].
+  Arguments Vin_cast_elim [m n H v x] _.
 
   Lemma Vin_cast : forall m n (H : m=n) (v : vector A m) x,
     Vin x (Vcast v H) <-> Vin x v.
@@ -795,11 +795,11 @@ Section Vin.
 
 End Vin.
 
-Implicit Arguments Vin_nth [A n v a].
-Implicit Arguments Vin_cast_elim [A m n H v x].
-Implicit Arguments Vin_elim [A x n v].
-Implicit Arguments Vin_app [A x n1 v1 n2 v2].
-Implicit Arguments Vin_cast [A m n H v x].
+Arguments Vin_nth [A n v a] _.
+Arguments Vin_cast_elim [A m n H v x] _.
+Arguments Vin_elim [A x n v] _.
+Arguments Vin_app [A x n1 v1 n2 v2] _.
+Arguments Vin_cast [A m n H v x].
 
 (***********************************************************************)
 (** ** Sub-vector.
@@ -816,13 +816,13 @@ Section Vsub.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vsub_aux1 [i k' n].
+  Arguments Vsub_aux1 [i k' n] _.
 
   Lemma Vsub_aux2: forall i k' n : nat, i + S k' <= n -> S i + k' <= n.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vsub_aux2 [i k' n].
+  Arguments Vsub_aux2 [i k' n] _.
 
   Fixpoint Vsub n (v : vector A n) i k : i+k<=n -> vector A k :=
     match k as k return i+k<=n -> vector A k with
@@ -831,7 +831,7 @@ Section Vsub.
         Vcons (Vnth v (Vsub_aux1 h)) (Vsub v (S i) k' (Vsub_aux2 h))
     end.
 
-  Global Implicit Arguments Vsub [n i k].
+  Global Arguments Vsub [n] _ [i k] _.
 
   Lemma Vsub_nil_aux : forall i k (h:i+k<=0) (e : 0=k),
     Vsub Vnil h = Vcast Vnil e.
@@ -842,7 +842,7 @@ Section Vsub.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vsub_nil_aux1 [i k].
+  Arguments Vsub_nil_aux1 [i k] _.
 
   Lemma Vsub_nil : forall i k (h:i+k<=0),
     Vsub Vnil h = Vcast Vnil (Vsub_nil_aux1 h).
@@ -858,7 +858,7 @@ Section Vsub.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vnth_sub_aux [n i k j].
+  Arguments Vnth_sub_aux [n i k j] _ _.
 
   Lemma Vnth_sub : forall k n (v : vector A n) i (h : i+k<=n) j (p : j<k),
     Vnth (Vsub v h) p = Vnth v (Vnth_sub_aux h p).
@@ -898,7 +898,7 @@ Section Vsub.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vsub_cast_aux1 [n n' i k].
+  Arguments Vsub_cast_aux1 [n n' i k] _ _.
 
   Lemma Vsub_cast : forall n (v : vector A n) n' (e : n=n') i k (h : i+k<=n')
     (h' : i+k<=n), Vsub (Vcast v e) h = Vsub v (Vsub_cast_aux1 e h).
@@ -909,7 +909,7 @@ Section Vsub.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vcast_sub_aux1 [n i k j].
+  Arguments Vcast_sub_aux1 [n i k j] _ _.
 
   Lemma Vcast_sub : forall n (v : vector A n) i k (h : i + k <= n) j
     (e : k = j), Vcast (Vsub v h) e = Vsub v (Vcast_sub_aux1 h e).
@@ -945,13 +945,13 @@ Section Vsub.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vsub_cons_intro_aux1 [n i k].
+  Arguments Vsub_cons_intro_aux1 [n i k] _ _.
 
   Lemma Vsub_cons_intro_aux2 : forall n i k, i+k<=n -> k>0 -> S i+pred k <= n.
 
   Proof. omega. Qed.
 
-  Implicit Arguments Vsub_cons_intro_aux2 [n i k].
+  Arguments Vsub_cons_intro_aux2 [n i k] _ _.
 
   Lemma Vsub_cons_intro_aux3 : forall k, k>0 -> S(pred k) = k.
 
@@ -1407,7 +1407,7 @@ Lemma Vforall_map_elim : forall A B (f: A->B) (P : B->Prop) n (v : vector A n),
 
 Proof. induction v; simpl; intuition. Qed.
 
-Implicit Arguments Vforall_map_elim [A B f P n v].
+Arguments Vforall_map_elim [A B f P n v] _.
 
 Lemma Vforall_map_intro : forall A B (f: A->B) (P : B->Prop) n (v : vector A n),
   Vforall (fun a : A => P (f a)) v -> Vforall P (Vmap f v).
@@ -1424,7 +1424,7 @@ Proof.
   induction v; simpl; intros. refl. destruct H. apply Vcons_eq_intro; auto.
 Qed.
 
-Implicit Arguments Vmap_eq [A B f g n v].
+Arguments Vmap_eq [A B f g n v] _.
 
 Lemma Vmap_eq_ext : forall (A B : Type) (f g : A->B),
   (forall a, f a = g a) ->
@@ -1955,7 +1955,7 @@ Section vec_of_list.
 
 End vec_of_list.
 
-Implicit Arguments in_list_of_vec [A n v x].
+Arguments in_list_of_vec [A n v x] _.
 
 (** Equivalence between [Vforall] and [lforall]. *)
 
@@ -2052,7 +2052,7 @@ Section beq.
     destruct (andb_elim H). ded (IHv _ _ H1). subst n0. refl.
   Qed.
 
-  Implicit Arguments beq_vec_ok_length [n v p w].
+  Arguments beq_vec_ok_length [n v p w] _.
 
   Lemma beq_vec_ok1_cast : forall n (v : vector A n) p (w : vector A p)
     (leq : n = p), beq_vec v w = true -> Vcast v leq = w.
@@ -2085,7 +2085,7 @@ Section beq.
 
 End beq.
 
-Implicit Arguments beq_vec_ok_length [n v p w].
+Arguments beq_vec_ok_length _ _ [n v p w] _.
 
 Section beq_in.
 
@@ -2123,8 +2123,8 @@ Section beq_in.
 
 End beq_in.
 
-Implicit Arguments beq_vec_ok_in1 [A beq n v p w].
-Implicit Arguments beq_vec_ok_in2 [A beq n v w].
+Arguments beq_vec_ok_in1 [A beq n v] _ [p w] _.
+Arguments beq_vec_ok_in2 [A beq n v] _ [w] _.
 
 (***********************************************************************)
 (** ** Function applying a function [f] on the first element of a
