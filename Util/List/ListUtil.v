@@ -115,8 +115,8 @@ Section In.
 
 End In.
 
-Implicit Arguments in_elim [A x l].
-Implicit Arguments in_elim_dec [A x l].
+Arguments in_elim [A x l] _.
+Arguments in_elim_dec [A] _ [x l] _.
 
 Ltac intac := repeat (apply in_eq || apply in_cons).
 
@@ -235,7 +235,7 @@ Section incl.
 
 End incl.
 
-Implicit Arguments incl_app_elim [A l1 l2 l3].
+Arguments incl_app_elim [A l1 l2 l3] _.
 
 (***********************************************************************)
 (** Strict inclusion. *)
@@ -438,7 +438,7 @@ Section length.
 
 End length.
 
-Implicit Arguments length_0 [A l].
+Arguments length_0 [A l] _.
 
 (***********************************************************************)
 (** Properties of [head] and [tail]. *)
@@ -859,7 +859,7 @@ Section map.
 
 End map.
 
-Implicit Arguments in_map_elim [A B f x l].
+Arguments in_map_elim [A B f x l] _.
 
 Lemma map_eq_id : forall A (f:A->A) l,
   (forall x, In x l -> f x = x) -> map f l = l.
@@ -924,7 +924,7 @@ Section flat.
 
 End flat.
 
-Implicit Arguments In_incl_flat [A x l].
+Arguments In_incl_flat [A x l] _ _ _.
 
 (****************************************************************************)
 (** Position of an element in a list (the result is meaningful only if
@@ -1110,10 +1110,10 @@ Section Element_At_List.
 
 End Element_At_List.
 
-Implicit Arguments element_at_in [A x l n].
-Implicit Arguments element_at_in2 [A x l n].
-Implicit Arguments in_exists_element_at [A l a].
-Implicit Arguments element_at_exists [A l p].
+Arguments element_at_in [A x l n] _.
+Arguments element_at_in2 [A x l n] _.
+Arguments in_exists_element_at [A l a] _.
+Arguments element_at_exists [A l p].
 
 Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
 Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
@@ -1145,8 +1145,8 @@ Section one_less.
 
 End one_less.
 
-Implicit Arguments one_less [A].
-Implicit Arguments one_less_cons [A].
+Arguments one_less [A] _ _ _.
+Arguments one_less_cons [A] _ _ _ _ _ _ _ _ _.
 
 (***********************************************************************)
 (** Properties of [rev]. *)
@@ -1254,7 +1254,7 @@ Section split.
     rewrite app_ass in H0. hyp.
   Qed.
 
-  Implicit Arguments split_aux_correct [l n l1 l2].
+  Arguments split_aux_correct [l n l1 l2] _ _.
 
   Notation split := (split_aux nil).
 
@@ -1269,7 +1269,7 @@ End split.
 
 Notation split := (split_aux nil).
 
-Implicit Arguments split_correct [A l n l1 l2].
+Arguments split_correct [A l n l1 l2] _.
 
 (***********************************************************************)
 (** Last element of a list. *)
@@ -1293,7 +1293,7 @@ Section last.
 
 End last.
 
-Implicit Arguments last_intro [A l].
+Arguments last_intro [A l] _.
 
 (***********************************************************************)
 (** Properties of [partition]. *)
@@ -1633,7 +1633,7 @@ Section ListsNth.
 
 End ListsNth.
 
-Implicit Arguments In_nth [A x l].
+Arguments In_nth [A] d [x l] _.
 
 (****************************************************************************)
 (** Total function returning the [i]th element of a list [ŀ]
@@ -1677,7 +1677,7 @@ Section ith.
 
 End ith.
 
-Implicit Arguments ith_In [A l i].
+Arguments ith_In [A l i] _.
 
 (****************************************************************************)
 (** Given a function [f:nat->A] and [j:nat], [values f j] returns the
@@ -1815,8 +1815,8 @@ Section fold_left_list.
 
 End fold_left_list.
 
-Implicit Arguments fold_left_flat_map [A B f].
-Implicit Arguments In_fold_left [A B f].
+Arguments fold_left_flat_map [A B f] _ _ _ _.
+Arguments In_fold_left [A B f] _ _ _ _ _.
 
 (****************************************************************************)
 (** [lookup el default l] takes an association list of pairs of keys
@@ -2012,5 +2012,104 @@ Section sub_list.
 
 End sub_list.
 
-Implicit Arguments eq_app_elim_l [A l1 l l2].
-Implicit Arguments eq_app_elim_r [A l1 l l2].
+Arguments eq_app_elim_l [A l1 l l2] _.
+Arguments eq_app_elim_r [A l1 l l2] _.
+
+(****************************************************************************)
+(** [lforall] checks whether a predicate is satisfied by every element. *)
+
+Section lforall.
+
+  Variables (A : Type) (P : A->Prop).
+
+  Fixpoint lforall (l : list A) : Prop :=
+    match l with
+    | nil => True
+    | cons h t => P h /\ lforall t
+    end.
+
+  Lemma lforall_eq : forall l, lforall l <-> (forall x, In x l -> P x).
+
+  Proof. induction l; simpl; intuition. subst. hyp. Qed.
+
+  Lemma lforall_nil : lforall nil.
+
+  Proof. simpl. auto. Qed.
+
+  Lemma lforall_cons a l : lforall (cons a l) -> P a /\ lforall l.
+
+  Proof. auto. Qed.
+
+  Lemma lforall_app l2 : forall l1 : list A,
+      lforall (l1 ++ l2) <-> lforall l1 /\ lforall l2.
+
+  Proof. induction l1; simpl; intuition. Qed.
+
+  Lemma lforall_in a l : lforall l -> In a l -> P a.
+
+  Proof.
+    elim l.
+    intros H1 H2. absurd (In a nil); [apply in_nil | hyp].
+    intros b l' Hrec H1 H2. elim (in_inv H2).
+    intro H3. subst a. unfold lforall in H1. intuition.
+    clear H2. intro H2. gen (lforall_cons H1).
+    intros (H3, H4). apply (Hrec H4 H2).
+  Qed.
+
+  Lemma lforall_intro : forall l, (forall x, In x l -> P x) -> lforall l.
+
+  Proof.
+    induction l; simpl; intros. exact I. split. apply H. auto.
+    apply IHl. intros. apply H. auto.
+  Qed.
+
+  Lemma lforall_incl l1 l2 : l1 [= l2 -> lforall l2 -> lforall l1.
+
+  Proof.
+    intros. apply lforall_intro. intros. eapply lforall_in. apply H0.
+    apply H. hyp.
+  Qed.
+
+  Lemma forallb_imp_lforall f : forall l,
+      (forall x, f x = true -> P x) -> forallb f l = true -> lforall l.
+
+  Proof with auto.
+    induction l; simpl; intros...
+    split.
+    apply H. destruct (f a)...
+    destruct (f a)... discr.
+  Qed.
+
+  Lemma forallb_lforall f (fok : forall x, f x = true <-> P x) :
+    forall l, forallb f l = true <-> lforall l.
+
+  Proof. induction l; simpl. tauto. rewrite andb_eq, fok. intuition. Qed.
+
+  Variable P_dec : forall x, {P x}+{~P x}.
+
+  Lemma lforall_dec : forall l, {lforall l} + {~lforall l}.
+
+  Proof.
+    induction l.
+    left. simpl. trivial.
+    simpl. destruct (@P_dec a). 
+    destruct IHl.
+    left; auto.
+    right; intuition.
+    right; intuition.
+  Defined.
+
+End lforall.
+
+Arguments lforall_in [A P a l] _ _.
+
+Lemma lforall_imp A (P1 P2 : A->Prop) :
+  (forall x, P1 x -> P2 x) -> forall l, lforall P1 l -> lforall P2 l.
+
+Proof.
+intros H l. elim l.
+ intuition.
+ intros a' l' Hrec. simpl. intros (H1, H2). split.
+  apply H. hyp.
+  apply Hrec. hyp.
+Qed.
