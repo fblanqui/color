@@ -297,16 +297,16 @@ Module Make (Export L : L_Struct).
     destruct (IHaeq1 _ _ p1) as [a [b [h1 [h2 [h3 h4]]]]].
     assert (p2 : v = App a b \/ w = App a b). tauto.
     destruct (IHaeq2 _ _ p2) as [c [d [i1 [i2 [i3 i4]]]]].
-    ex c d. (*SLOW*)intuition; subst; try inversion H4; try inversion H5;
-    try inversion H6; subst; auto.
-    trans a; hyp. trans b; hyp.
+    ex c d. split_all; subst; try inversion H4; try inversion H5;
+              try inversion H6; try inversion H2; subst; auto;
+                try (trans a; hyp); try (trans b; hyp).
     assert (p2 : v = App u1 u2 \/ w = App u1 u2). tauto.
     destruct (IHaeq2 _ _ p2) as [a [b [h1 [h2 [h3 h4]]]]].
     assert (p1 : u = App a b \/ v = App a b). tauto.
     destruct (IHaeq1 _ _ p1) as [c [d [i1 [i2 [i3 i4]]]]].
-    ex c d. (*SLOW*)intuition; subst; try inversion H2; try inversion H4;
-      try inversion H5; subst; auto.
-    trans a; hyp. trans b; hyp.
+    ex c d. split_all; subst; try inversion H2; try inversion H4;
+              try inversion H5; subst; auto;
+                try (trans a; hyp); try (trans b; hyp).
     (* app_l *)
     destruct e as [h|h]; inversion h; subst; clear h.
     ex u' u2. fo. ex u u2. fo.

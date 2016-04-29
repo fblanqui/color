@@ -500,7 +500,8 @@ Module Make (Export XSet : FSetInterface.S).
     intros [h|h]. subst. rewrite replace_idem. refl.
     unfold replace at -1. case_eq (mem x xs); intro hx.
     unfold replace. rewrite add_b, eqb_refl; simpl. rewrite remove_add_eq.
-    eq_dec x y. (*SLOW*)rewrite <- e, remove_idem. refl.
+    eq_dec x y. (*SLOW:rewrite <- e, remove_idem. refl.*)
+    apply add_m. refl. rewrite <- e, remove_idem. refl.
     rewrite remove_com, remove_equal with (x:=y). refl. hyp.
     unfold replace. rewrite not_mem_iff in h. rewrite h. refl.
   Qed.

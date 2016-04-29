@@ -71,7 +71,7 @@ they define the same relation. See below for more details. *)
     destruct h as [sx [hx hy]].
     destruct (Equiv_find_Some gg' hx) as [sx' [h1 h2]].
     exists sx'. rewrite <- yy'. rewrite <- h2 at 2. split_all.
-    (*SLOW*)rewrite <- xx'. hyp.
+    (*SLOW:rewrite <- xx'.*) rewrite <- h1. apply find_o. hyp.
   Qed.
 
   (*COQ: can be removed? Coq stuck in In_preds_rel *)
@@ -264,7 +264,8 @@ same relation *)
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
-    (*SLOW*)rewrite <- xx', <- yy'. tauto.
+    (*SLOW:rewrite <- xx', <- yy'. tauto.*) split.
+    rewrite <- s1. apply find_o. hyp. rewrite <- yy'. hyp.
   Qed.
 
   (*COQ: can be removed? used in TransClos *)
@@ -272,7 +273,8 @@ same relation *)
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
-    (*SLOW*)rewrite <- xx', <- yy'. tauto.
+    (*SLOW:rewrite <- xx', <- yy'. tauto.*) split.
+    rewrite <- s1. apply find_o. hyp. rewrite <- yy'. hyp.
   Qed.
 
 (***********************************************************************)
@@ -338,7 +340,8 @@ same relation *)
   Proof.
     intros x x' xx' g g' gg'. rewrite gle_antisym in gg'.
     destruct gg' as [gg' g'g]. rewrite Subset_antisym. split.
-    rewrite xx', gg'. refl. (*SLOW*)rewrite xx', g'g. refl.
+    rewrite xx', gg'. refl. (*SLOW:rewrite xx', g'g. refl.*)
+    apply succs_gle; hyp.
   Qed.
 
   Lemma mem_succs_id : forall g x y,
@@ -595,7 +598,8 @@ successors of g' *)
   Proof.
     intros x x' xx' y y' yy' g g' gg'. rewrite gle_antisym.
     rewrite gle_antisym in gg'. destruct gg' as [gg' g'g]. split.
-    (*SLOW*)rewrite xx', yy', gg'. refl. rewrite <- xx', <- yy', g'g. refl.
+    (*SLOW:rewrite xx', yy', gg'. refl.*) apply add_edge_gle; hyp.
+    (*SLOW:rewrite <- xx', <- yy', g'g. refl.*) apply add_edge_gle; hyp.
   Qed.
 
   Lemma rel_add_edge : forall x y g, add_edge x y g == g U id x y.
