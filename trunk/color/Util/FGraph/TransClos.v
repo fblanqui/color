@@ -106,7 +106,8 @@ Module Make (XSet : FSetInterface.S)
     intros x s g g0. pattern (fold (add_pred x s) g g0).
     apply fold_rec_weak; clear g.
     (* Equal *)
-    intros m n g mn h. apply Equal_geq in mn. (*SLOW*)rewrite <- mn. hyp.
+    intros m n g mn h. apply Equal_geq in mn. (*SLOW:rewrite <- mn. hyp.*)
+    rewrite h. apply union_same. apply pred_geq; (refl||hyp). refl.
     (* empty *)
     rewrite pred_empty, R.union_empty_l. refl.
     (* add *)
@@ -174,9 +175,9 @@ the transitive closure of [id x y U g] *)
     intros x x' xx' y y' yy' g g' gg'. unfold geq, trans_add_edge.
     (*SLOW*)rewrite xx', yy', gg'. destruct (XSet.mem y' (succs x' g')).
     hyp. repeat rewrite rel_map_fold_add_pred, rel_set_fold_add_edge.
-    apply R.union_same. (*SLOW*)rewrite xx', yy', gg'. refl.
-    apply R.union_same. rewrite xx', yy', gg'. refl.
-    hyp.
+    apply union_same. (*SLOW:rewrite xx', yy', gg'. refl.*)
+    apply pred_geq. hyp. apply XSetFacts.add_m. hyp. apply succs_geq; hyp. hyp.
+    apply union_same. rewrite xx', yy', gg'. refl. hyp.
   Qed.
 
   Lemma rel_trans_add_edge_pred_succ : forall x y g,

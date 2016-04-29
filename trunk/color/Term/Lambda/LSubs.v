@@ -1778,8 +1778,12 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     case_eq (mem x (fv u) && negb (eqb z x) && negb (eqb y x) && eqb y z).
 
     rewrite !andb_true_iff. intros [[[h1 h2] h3] h4].
-    rewrite h1, h3, h4. simpl. (*SLOW*)rewrite union_sym, <- add_union_singleton. refl.
-
+    rewrite h1, h3, h4. simpl.
+    (*SLOW:rewrite union_sym, <- add_union_singleton. refl.*)
+    assert (e : var_notin (union (fv u) (singleton y))
+                = var_notin (add y (fv u))).
+    apply var_notin_e. rewrite union_sym, <- add_union_singleton. refl.
+    rewrite e. refl.
     rewrite !andb_false_iff. intros [[[h|h]|h]|h].
 
     rewrite h. simpl. eq_dec z x.
