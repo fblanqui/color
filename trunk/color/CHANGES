@@ -1,4 +1,8 @@
 
+16-04-29:
+- moved ListForall into ListUtil
+- replaced Implicit Arguments by Arguments
+
 16-04-28: prefix Require's by From Coq or From CoLoR to avoid problems
   when installing CoLoR with other libraries
 

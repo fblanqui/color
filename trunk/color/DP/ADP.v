@@ -11,7 +11,7 @@ dependancy pairs
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATrs ACalls ACap ASN RelUtil ListUtil
-  ListForall SN VecUtil VecOrd NatUtil.
+  SN VecUtil VecOrd NatUtil.
 
 Section S.
 
@@ -56,7 +56,7 @@ exists rhs. intuition. destruct (IHS H). destruct H0. destruct H1.
 exists x. intuition.
 Qed.
 
-Implicit Arguments mkdp_elim [l t S].
+Arguments mkdp_elim [l t S] _.
 
 (***********************************************************************)
 (** basic properties *)
@@ -77,7 +77,7 @@ Proof.
 intros. apply mkdp_elim. hyp.
 Qed.
 
-Implicit Arguments dp_elim [l t].
+Arguments dp_elim [l t] _.
 
 Lemma in_calls_hd_red_dp : forall l r t s, In (mkRule l r) R ->
   In t (calls R r) -> negb_subterm l t = true -> hd_red dp (sub s l) (sub s t).
@@ -165,7 +165,7 @@ Variable hyp1 : forallb (@is_notvar_lhs Sig) R = true.
 
 Variable hyp2 : rules_preserve_vars R.
 
-Implicit Arguments hyp2 [l r].
+Arguments hyp2 [l r] _ _ _.
 
 (***********************************************************************)
 (** dp preserves variables *)
@@ -181,7 +181,7 @@ eapply subterm_eq_vars. eapply in_calls_subterm. apply H3. hyp.
 apply hyp2. hyp.
 Qed.
 
-Implicit Arguments dp_elim_vars [l t].
+Arguments dp_elim_vars [l t] _.
 
 Lemma dp_preserve_vars : rules_preserve_vars dp.
 
@@ -306,8 +306,8 @@ End S.
 (***********************************************************************)
 (** declaration of implicit arguments *)
 
-Implicit Arguments dp_elim [Sig l t].
-Implicit Arguments dp_elim_vars [Sig l t].
+Arguments dp_elim [Sig] _ [l t] _.
+Arguments dp_elim_vars [Sig] _ _ [l t] _.
 
 (***********************************************************************)
 (** tactics *)

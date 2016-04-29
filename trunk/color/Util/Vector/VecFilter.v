@@ -9,7 +9,8 @@ vector filtering
 
 Set Implicit Arguments.
 
-From Coq Require Export Vector. Require Export VecBool.
+From Coq Require Export Vector.
+From CoLoR Require Export VecBool.
 From Coq Require Import Arith.
 From CoLoR Require Import VecUtil LogicUtil EqUtil.
 
@@ -211,8 +212,8 @@ Qed.
 
 End S.
 
-Implicit Arguments Vfilter_head_true [A n bs].
-Implicit Arguments Vfilter_head_false [A n bs].
+Arguments Vfilter_head_true [A n bs] _ _ _.
+Arguments Vfilter_head_false [A n bs] _ _ _.
 
 Lemma Vmap_filter : forall (A B : Type) (f : A->B) n (bs : bools n)
   (v : vector A n), Vmap f (Vfilter bs v) = Vfilter bs (Vmap f v).

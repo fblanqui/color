@@ -36,7 +36,7 @@ Section S.
     intros t x. destruct x. exact x.
   Defined.
 
-  Implicit Arguments mod_strings_of_reduc [t].
+  Arguments mod_strings_of_reduc [t] _.
 
   Definition mod_proof_of_reduc :
     forall t, forall x : {us| mod_FS t us}, mod_FS t (mod_strings_of_reduc x).
@@ -67,7 +67,7 @@ Section S.
     exists (last l t); split. apply FS_rtc. hyp. hyp.
   Qed.
 
-  Implicit Arguments mod_rewrite_correct [t mds u].
+  Arguments mod_rewrite_correct [t mds u] _.
 
   Fixpoint mod_rewrites t (mds : list mod_data) : option (list string) :=
     match mds with
@@ -93,7 +93,7 @@ Section S.
     inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
   Qed.
 
-  Implicit Arguments mod_rewrites_correct [mds t us].
+  Arguments mod_rewrites_correct [mds t us] _.
 
   Notation default := (@nil letter).
 

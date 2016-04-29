@@ -330,7 +330,7 @@ Module MatrixInt (MI : TMatrixInt).
 
   End MonotoneAlgebra.
 
-  Implicit Arguments fin_monotone_succ [Fs].
+  Arguments fin_monotone_succ [Fs] _ _ _ _ _ _ _ _ _ _ _.
 
   Ltac prove_cc_succ Fs_ok :=
     apply IR_context_closed; apply (fin_monotone_succ Fs_ok);

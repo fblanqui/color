@@ -54,7 +54,7 @@ Definition red_mod E R := red E # @ red R.
 
 End definition.
 
-Implicit Arguments mkRule [Sig].
+Arguments mkRule [Sig] _ _.
 
 (***********************************************************************)
 (** tactics *)

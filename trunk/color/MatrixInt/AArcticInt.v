@@ -59,7 +59,7 @@ Section Somewhere_finite.
 
 End Somewhere_finite.
 
-Implicit Arguments fin_somewhere_finite [dim sig Fs].
+Arguments fin_somewhere_finite [dim] _ [sig] _ [Fs] _ _ _.
 
 Ltac somewhere_finite Fs_ok :=
   apply (fin_somewhere_finite _ _ Fs_ok);
@@ -216,7 +216,8 @@ Module ArcticInt (Import AI : TArcticInt).
       apply WF_incl with 
         (fun x y => vec_at0 (dom2vec x) >> vec_at0 (dom2vec y)).
       intros x y xy.
-      destruct (@Vforall2_elim_nth _ _ gtx _ (dom2vec x) (dom2vec y) _ dim_pos xy). 
+      destruct
+        (@Vforall2_elim_nth _ _ gtx _ (dom2vec x) (dom2vec y) _ dim_pos xy). 
       hyp.
       destruct H. destruct x.
       absurd (Vnth x dim_pos = A0).

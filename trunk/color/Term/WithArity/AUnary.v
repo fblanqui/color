@@ -215,7 +215,7 @@ assert (x2=e). apply eq_unique. subst x2. rewrite Vcast_eq in H0.
 inversion H0. destruct (IHc _ _ H3). subst. exists x0. refl.
 Qed.
 
-Implicit Arguments fill_var_elim [x c d u].
+Arguments fill_var_elim [x c d u] _.
 
 Lemma fill_eq_cont : forall (t : term) c d, fill c t = fill d t <-> c = d.
 
@@ -258,7 +258,7 @@ intros. ded (hR _ _ H). rewrite !vars_var in H0. unfold incl in H0.
 ded (H0 (var r)). simpl in H1. fo.
 Qed.
 
-Implicit Arguments rules_preserve_vars_var [l r].
+Arguments rules_preserve_vars_var [l r] _.
 
 Definition red1 t u := exists l, exists r, exists c, exists d,
   In (mkRule l r) R /\ t = fill (comp c (comp (cont l) d)) (Var (var t))
@@ -293,7 +293,7 @@ Proof. rewrite rel_eq. apply red1_ok. Qed.
 
 End red.
 
-Implicit Arguments rules_preserve_vars_var [R l r].
+Arguments rules_preserve_vars_var [R] _ [l r] _.
 
 (***********************************************************************)
 (** equivalent definition of rewriting modulo (when rules preserve variables) *)
@@ -368,7 +368,7 @@ rewrite sub_fill, subc_cont, H3, fill_eq.
 simpl. rewrite var_sub. destruct (hs (var t)). rewrite H. refl.
 Qed.
 
-Implicit Arguments red_ren [t u].
+Arguments red_ren [t u] _.
 
 Lemma rtc_red_ren : forall t u,
   red R # (sub s t) u -> exists v, red R # t v /\ sub s v = u.
@@ -395,8 +395,8 @@ Qed.
 
 End red.
 
-Implicit Arguments red_ren [R t u].
-Implicit Arguments rtc_red_ren [R t u].
+Arguments red_ren [R] _ [t u] _.
+Arguments rtc_red_ren [R] _ [t u] _.
 
 Section red_mod.
 
@@ -411,7 +411,7 @@ intros. do 2 destruct H. destruct (rtc_red_ren hE H). destruct H1. subst.
 destruct (red_ren hR H0). exists x. split_all. exists x0. intuition.
 Qed.
 
-Implicit Arguments red_mod_ren [t u].
+Arguments red_mod_ren [t u] _.
 
 From CoLoR Require Import SN.
 
@@ -427,8 +427,8 @@ End red_mod.
 
 End renaming.
 
-Implicit Arguments red_ren [s R t u].
-Implicit Arguments red_mod_ren [s E R t u].
+Arguments red_ren [s] _ [R] _ [t u] _.
+Arguments red_mod_ren [s] _ [E R] _ _ [t u] _.
 
 (***********************************************************************)
 (** equivalence with rewriting on terms with at most 0 as variable *)
@@ -651,8 +651,8 @@ End reset.
 
 End S.
 
-Implicit Arguments rules_preserve_vars_var [Sig R l r].
-Implicit Arguments bis_unary_ok [Sig Fs].
+Arguments rules_preserve_vars_var [Sig] _ [R] _ [l r] _.
+Arguments bis_unary_ok [Sig Fs] _.
 
 (***********************************************************************)
 (** tactics for Rainbow *)

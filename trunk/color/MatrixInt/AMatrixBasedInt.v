@@ -24,7 +24,7 @@ Section MatrixLinearFunction.
 
 End MatrixLinearFunction.
 
-Implicit Arguments mkMatrixInt [A matrix dim argCnt].
+Arguments mkMatrixInt [A matrix dim argCnt] _ _.
 
 Module Type MatrixMethodConf.
 

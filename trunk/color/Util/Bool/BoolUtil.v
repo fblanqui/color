@@ -15,8 +15,8 @@ From Coq Require Setoid.
 
 From CoLoR Require Import LogicUtil.
 
-Implicit Arguments orb_false_elim [b1 b2].
-Implicit Arguments orb_true_elim [b1 b2].
+Arguments orb_false_elim [b1 b2] _.
+Arguments orb_true_elim [b1 b2] _.
 
 Hint Rewrite negb_orb negb_andb negb_involutive eqb_negb1 eqb_negb2
   orb_true_r orb_true_l orb_false_r orb_false_l orb_negb_r orb_assoc
@@ -59,19 +59,19 @@ Lemma andb_elim : forall b c, b && c = true -> b = true /\ c = true.
 
 Proof. destruct b; destruct c; intuition. Qed.
 
-Implicit Arguments andb_elim [b c].
+Arguments andb_elim [b c] _.
 
 Lemma andb_eliml : forall b c, b && c = true -> b = true.
 
 Proof. destruct b; destruct c; intuition. Qed.
 
-Implicit Arguments andb_eliml [b c].
+Arguments andb_eliml [b c] _.
 
 Lemma andb_elimr : forall b c, b && c = true -> c = true.
 
 Proof. destruct b; destruct c; intuition. Qed.
 
-Implicit Arguments andb_elimr [b c].
+Arguments andb_elimr [b c] _.
 
 Lemma andb_intro : forall b c, b = true -> c = true -> b && c = true.
 
@@ -141,8 +141,8 @@ Section dec.
 
 End dec.
 
-Implicit Arguments ko [A P f].
-Implicit Arguments dec [A P f].
+Arguments ko [A P f] _ x.
+Arguments dec [A P f] _ x.
 
 (***********************************************************************)
 (** correspondance between boolean functions and logical connectors *)

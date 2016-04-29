@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 From Coq Require Import Max.
 
-From CoLoR Require Import ATerm ABterm ListUtil ListForall VecUtil
+From CoLoR Require Import ATerm ABterm ListUtil VecUtil
   PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
   LogicUtil SN Polynom MonotonePolynom NatUtil ATrs BoundNat.
 
@@ -215,7 +215,7 @@ Section S.
       gen (PI_bterm_int_eq xint (inject_term H)). intuition.
     Qed.
 
-    Implicit Arguments PI_term_int_eq [t k].
+    Arguments PI_term_int_eq _ [t k] _.
 
 (***********************************************************************)
 (** polynomial associated to a rule *)
@@ -319,7 +319,7 @@ Section S.
 
 End S.
 
-Implicit Arguments fin_PolyWeakMonotone [Sig Fs]. 
+Arguments fin_PolyWeakMonotone [Sig] _ [Fs] _ _ _.
 
 (***********************************************************************)
 (** tactics *)

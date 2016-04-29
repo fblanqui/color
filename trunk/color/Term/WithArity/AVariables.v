@@ -94,7 +94,7 @@ destruct (orb_true_elim H). exists h. auto.
 destruct (IHts e). exists x0. tauto.
 Qed.
 
-Implicit Arguments mem_vars_vec [x n ts].
+Arguments mem_vars_vec [x n ts] _.
 
 Local Open Scope nat_scope.
 
@@ -112,7 +112,7 @@ intros until v. simpl. mem. intros. destruct (orb_true_elim H1).
 ded (H e). omega. ded (H0 e). omega.
 Qed.
 
-Implicit Arguments mem_vars_size_sub_ge [x u].
+Arguments mem_vars_size_sub_ge _ [x u] _.
 
 Lemma mem_vars_size_sub_gt : forall s x u,
   mem x (vars u) = true -> u <> Var x -> size (sub s u) > size (s x).
@@ -126,7 +126,7 @@ rewrite H3, Vmap_cast, size_terms_cast, Vmap_app, size_terms_app. simpl.
 ded (mem_vars_size_sub_ge s H1). omega.
 Qed.
 
-Implicit Arguments mem_vars_size_sub_gt [x u].
+Arguments mem_vars_size_sub_gt _ [x u] _ _.
 
 Lemma wf_term_var : forall s x u,
   s x = sub s u -> mem x (vars u) = true -> u = Var x.
@@ -346,9 +346,9 @@ Qed.
 
 End S.
 
-Implicit Arguments wf_term_var [Sig s x u].
-Implicit Arguments mem_vars_vec [Sig x n ts].
-Implicit Arguments vars_subs_elim [Sig s x v].
+Arguments wf_term_var [Sig s x u] _ _.
+Arguments mem_vars_vec [Sig x n ts] _.
+Arguments vars_subs_elim [Sig s x v] _.
 
 Ltac rules_preserve_vars := rewrite <- brules_preserve_vars_ok;
   (check_eq || fail 10 "some rule does not preserve variables").

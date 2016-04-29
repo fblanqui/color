@@ -70,7 +70,7 @@ Module TermsManip (Sig : TermsSig.Signature).
       | _ => fun notAbs: False => False_rect Term notAbs
       end
   end.
-  Implicit Arguments absBody [M].
+  Arguments absBody [M] _.
 
   Definition absType M : isAbs M -> SimpleType :=
   match M return (isAbs M -> SimpleType) with
@@ -80,7 +80,7 @@ Module TermsManip (Sig : TermsSig.Signature).
       | _ => fun notAbs : False => False_rect SimpleType notAbs
       end
   end.
-  Implicit Arguments absType [M].
+  Arguments absType [M] _.
 
   Lemma abs_isAbs : forall M A Pt, term M = \A => Pt -> isAbs M.
 
@@ -185,7 +185,7 @@ Module TermsManip (Sig : TermsSig.Signature).
       end
   end.
 
-  Implicit Arguments appBodyL [M].
+  Arguments appBodyL [M] _.
 
   Definition appBodyR M : isApp M -> Term :=
   match M return (isApp M -> Term) with
@@ -196,7 +196,7 @@ Module TermsManip (Sig : TermsSig.Signature).
       end
   end.
 
-  Implicit Arguments appBodyR [M].
+  Arguments appBodyR [M] _.
 
   Lemma app_isApp : forall M Pt0 Pt1, term M = Pt0 @@ Pt1 -> isApp M.
 

@@ -96,7 +96,7 @@ Section S.
     apply (H5 x); hyp.
   Qed.
 
-  Implicit Arguments nodup_app_elim [l m].
+  Arguments nodup_app_elim [l m] _.
 
   Lemma nodup_app_cons : forall l (x : A) m,
     nodup (l ++ x :: m) -> ~In x l /\ ~In x m.
@@ -249,7 +249,7 @@ Section S.
     rewrite (IHl (a::acc) H1 H2). rewrite app_ass. refl.
   Qed.
 
-  Implicit Arguments greatest_nodup_prefix_aux_app [l acc].
+  Arguments greatest_nodup_prefix_aux_app _ [l acc] _ _.
 
   Lemma greatest_nodup_prefix_app : forall m l, nodup l ->
     greatest_nodup_prefix (l ++ m)
@@ -260,7 +260,7 @@ Section S.
     apply greatest_nodup_prefix_aux_app. exact H. simpl. auto.
   Qed.
 
-  Implicit Arguments greatest_nodup_prefix_app [l].
+  Arguments greatest_nodup_prefix_app _ [l] _.
 
   Lemma nodup_greatest_nodup_prefix : forall l,
     nodup l -> greatest_nodup_prefix l = l.
@@ -417,10 +417,10 @@ Section S.
 
 End S.
 
-Implicit Arguments nodup_app_elim [A l m].
-Implicit Arguments nodup_unique [A l x n m].
-Implicit Arguments nodup_app_cons [A l x m].
-Implicit Arguments bnodup_ok [A beq].
+Arguments nodup_app_elim [A l m] _.
+Arguments nodup_unique [A l x] _ [n m] _ _.
+Arguments nodup_app_cons [A l x m] _.
+Arguments bnodup_ok [A beq] _ _.
 
 (***********************************************************************)
 (** Properties of [nodup] involving more than one type. *)

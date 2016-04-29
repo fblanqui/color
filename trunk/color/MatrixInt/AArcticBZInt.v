@@ -203,7 +203,7 @@ destruct y_lb; [ contr | discr ].
 
 End ArcticBZInt.
 
-Implicit Arguments fin_absolute_finite [dim sig Fs].
+Arguments fin_absolute_finite [dim] _ [sig] _ [Fs] _ _ _.
 
 Ltac absolute_finite Fs_ok :=
   apply (fin_absolute_finite _ _ Fs_ok);

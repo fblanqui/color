@@ -30,7 +30,7 @@ Section S.
   Definition flat_cont_symb n (f : Sig) i (h : i < arity f) :=
     Cont f (flat_cont_aux h) (fresh n i) Hole (fresh (n+i) (arity f - S i)).
 
-  Implicit Arguments flat_cont_symb [f i].
+  Arguments flat_cont_symb _ [f i] _.
 
   Variables (some_symbol : Sig) (arity_some_symbol : arity some_symbol > 0)
             (n : nat).

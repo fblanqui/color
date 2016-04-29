@@ -40,7 +40,7 @@ Section P1.
 
 End P1.
 
-Implicit Arguments ch_min [P].
+Arguments ch_min [P] _.
 
 (***********************************************************************)
 (** binary predicate *)

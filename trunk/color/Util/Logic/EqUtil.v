@@ -89,7 +89,7 @@ Section eq_dep.
 
 End eq_dep.
 
-Implicit Arguments UIP_refl [A x].
+Arguments UIP_refl [A] _ [x] p.
 
 (***********************************************************************)
 (** Properties of a boolean function testing Leibniz equality. *)
@@ -142,10 +142,10 @@ Section beq.
 
 End beq.
 
-Implicit Arguments beq_refl [A beq].
-Implicit Arguments dec_beq [A beq].
-Implicit Arguments beq_com [A beq].
-Implicit Arguments beq_ko [A beq].
+Arguments beq_refl [A beq] _ x.
+Arguments dec_beq [A beq] _ x y.
+Arguments beq_com [A beq] _ x y.
+Arguments beq_ko [A beq] _ x y.
 
 Ltac case_beq beq beq_ok x y := case_eq (beq x y);
   [let h := fresh in intro h; rewrite beq_ok in h;

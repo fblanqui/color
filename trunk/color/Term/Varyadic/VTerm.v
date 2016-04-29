@@ -211,5 +211,5 @@ Definition maxvar_le k t := maxvar t <= k.
 
 End S.
 
-Implicit Arguments Var [Sig].
-Implicit Arguments maxvar_var [Sig k x].
+Arguments Var [Sig] _.
+Arguments maxvar_var [Sig k x] _.

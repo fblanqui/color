@@ -52,7 +52,7 @@ Section S.
     eapply incl_elim. apply hd_red_incl with (x := R). hyp. tauto.
   Qed.
 
-  Implicit Arguments top_reducts_correct [t u R].
+  Arguments top_reducts_correct [t u R] _.
 
   Lemma top_reducts_correct_red : forall t u R,
     In u (top_reducts R t) -> red R t u.
@@ -153,7 +153,7 @@ Section S.
     omega. apply IHus.
   Qed.
 
-  Implicit Arguments reducts_vec_cast [f ts k us k' e h'].
+  Arguments reducts_vec_cast [f ts k us] _ [k' e h'].
 
   Lemma In_reducts_vec_elim_aux : forall v' f ts k (us : terms k),
     (forall i (p : i < k), exists r : arity f - k + i < arity f,
@@ -184,7 +184,7 @@ Section S.
     apply IHus with (h:=h'); hyp.
   Qed.
 
-  Implicit Arguments In_reducts_vec_elim_aux [v' f ts k us h].
+  Arguments In_reducts_vec_elim_aux [v' f ts k us] _ [h] _.
 
   Lemma In_reducts_vec_elim : forall v' f ts,
     In v' (reducts_vec f ts ts (le_refl (arity f))) ->
@@ -198,7 +198,7 @@ Section S.
     apply Vnth_eq. omega. hyp.
   Qed.
 
-  Implicit Arguments In_reducts_vec_elim [v' f ts].
+  Arguments In_reducts_vec_elim [v' f ts] _.
 
   Lemma In_reducts_vec_intro_aux : forall f ts k (us : terms k)
     (h : k <= arity f) t i (p : i < k) (q : arity f - k + i < arity f),
@@ -223,7 +223,7 @@ Section S.
     rewrite H0. apply IHus with (p := lt_S_n p). hyp.
   Qed.
 
-  Implicit Arguments In_reducts_vec_intro_aux [k us i p].
+  Arguments In_reducts_vec_intro_aux _ _ [k us] _ _ [i p] _ _.
 
   Lemma In_reducts_vec_intro : forall f ts t i (p : i < arity f),
     In t (reducts (Vnth ts p)) ->
@@ -282,7 +282,7 @@ Section S.
     rewrite H. subst x. auto. 
   Qed.
 
-  Implicit Arguments In_reducts2_vec_elim [n vs ts].
+  Arguments In_reducts2_vec_elim [n vs ts] _.
 
   Lemma In_reducts2_vec_intro : forall n (ts : terms n) t i (p : i < n),
     In t (reducts2 (Vnth ts p)) -> In (Vreplace ts p t) (reducts2_vec ts).

@@ -566,7 +566,7 @@ Definition enum2 R :=
 
     End bge.
 
-    Implicit Arguments ge_compat [R].
+    Arguments ge_compat [R] _ _ _ _ _.
 
     Section red_mod.
 
@@ -634,18 +634,18 @@ Definition enum2 R :=
 
 End S.
 
-Implicit Arguments lab_sig [L beq].
-Implicit Arguments Decr [Sig L beq].
-Implicit Arguments lab_rules [Sig L beq I].
-Implicit Arguments enum [Sig L beq I].
-Implicit Arguments enum_Decr [Sig L beq].
-Implicit Arguments Fs_lab [Sig L].
-Implicit Arguments Fs_lab_ok [Sig L beq Fs Ls].
-Implicit Arguments unlab_rules_fin [L beq].
-Implicit Arguments WF_red_unlab_fin [Sig L beq].
-Implicit Arguments WF_red_mod_unlab_fin [Sig L beq].
-Implicit Arguments WF_hd_red_mod_unlab_fin [Sig L beq].
-Implicit Arguments enum_tuple_complete [Sig Is n].
+Arguments lab_sig _ [L beq] _.
+Arguments Decr [Sig L beq] _ _ _.
+Arguments lab_rules [Sig L beq] _ [I] _ _ _.
+Arguments enum [Sig L beq] _ [I] _ _ _.
+Arguments enum_Decr [Sig L beq] _ _ _.
+Arguments Fs_lab [Sig L] _ _.
+Arguments Fs_lab_ok [Sig L beq] _ [Fs] _ [Ls] _ _.
+Arguments unlab_rules_fin _ [L beq] _ _.
+Arguments WF_red_unlab_fin [Sig L beq] _ _ _ _.
+Arguments WF_red_mod_unlab_fin [Sig L beq] _ _ _ _ _.
+Arguments WF_hd_red_mod_unlab_fin [Sig L beq] _ _ _ _ _.
+Arguments enum_tuple_complete [Sig] _ [Is] _ [n] _.
 
 (***********************************************************************)
 (** basic module type for semantic labellings *)

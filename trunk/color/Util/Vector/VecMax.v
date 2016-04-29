@@ -32,7 +32,7 @@ induction v; simpl; intros. contr. destruct H. subst h.
 apply le_max_intro_l. apply le_refl. apply le_max_intro_r. auto.
 Qed.
 
-Implicit Arguments Vmax_in [x n v].
+Arguments Vmax_in [x n v] _.
 
 Lemma Vmax_head : forall n (v : nats (S n)), Vhead v <= Vmax v.
 
@@ -60,7 +60,7 @@ eapply le_trans. apply (le_max_l h (Vmax t)). hyp.
 apply (Hrec (le_trans (le_max_r h (Vmax t)) H)).
 Qed.
 
-Implicit Arguments Vmax_forall [n v p].
+Arguments Vmax_forall [n v p] _.
 
 Lemma Vmax_cast : forall n (v : nats n) p (e : n=p), Vmax (Vcast v e) = Vmax v.
 

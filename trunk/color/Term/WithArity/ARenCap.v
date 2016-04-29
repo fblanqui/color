@@ -67,7 +67,7 @@ assert (exists c, Vin c cs /\ Vin u (aliens c)). apply IHcs. hyp.
 destruct H1 as [c]. exists c. intuition.
 Qed.
 
-Implicit Arguments in_conc [u n cs].
+Arguments in_conc [u n cs] _.
 
 (* given a vector cs of caps and a vector ts of (sum cs) terms, this
 function breaks ts in vectors of size the number of aliens of every
@@ -172,7 +172,7 @@ intros t n ts h1 h2 k0. rewrite nb_aliens_cons. simpl. rewrite in_app.
 intro. destruct H. ded (h1 _ H). omega. ded (h2 _ H). omega.
 Qed.
 
-Implicit Arguments vars_ren_cap [x t k].
+Arguments vars_ren_cap [x t k] _.
 
 Lemma vars_ren_caps : forall x n (ts : terms n) k,
   In x (vars_vec (ren_caps k ts)) -> k <= x /\ x < k + nb_aliens_vec ts.
@@ -186,7 +186,7 @@ simpl. intro. rewrite in_app, nb_aliens_cons. intro. destruct H.
 ded (vars_ren_cap H). omega. ded (IHts _ H). omega.
 Qed.
 
-Implicit Arguments vars_ren_caps [x n ts k].
+Arguments vars_ren_caps [x n ts k] _.
 
 (***********************************************************************)
 (** relation wrt substitution *)
@@ -444,5 +444,5 @@ Qed.
 
 End S.
 
-Implicit Arguments vars_ren_cap [Sig R x t k].
-Implicit Arguments vars_ren_caps [Sig R x n ts k].
+Arguments vars_ren_cap [Sig R x t k] _.
+Arguments vars_ren_caps [Sig R x n ts k] _.

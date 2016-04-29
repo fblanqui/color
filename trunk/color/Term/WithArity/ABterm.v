@@ -105,7 +105,7 @@ Fixpoint inject_terms (n : nat) (ts : terms n) :
       Vcons (inject_term (proj1 H)) (inject_terms ts' (proj2 H))
   end.
 
-Implicit Arguments inject_terms [n ts].
+Arguments inject_terms [n ts] _.
 
 Lemma inject_term_eq : forall f ts (H : max_le (Fun f ts)),
   inject_term H = BFun f (inject_terms (maxvar_le_fun H)).
@@ -144,7 +144,7 @@ Fixpoint bterm_int (t : bterm) { struct t } : D :=
 
 End bterm.
 
-Implicit Arguments inject_terms [k n ts].
+Arguments inject_terms [k n ts] _.
 
 (***********************************************************************)
 (** relation between bterm_int and term_int *)
@@ -187,12 +187,10 @@ Qed.
  
 End term_int.
 
-Implicit Arguments inject_terms [k n ts].
+Arguments inject_terms [k n ts] _.
 
 (***********************************************************************)
 (** lemmas about bterm *)
-
-Implicit Arguments le_trans [n m p].
 
 Fixpoint bterm_le k (bt : bterm k) l (h0 : k <= l) : bterm l :=
   match bt with
@@ -214,6 +212,6 @@ Definition bterms_plus k n (bts : vector (bterm k) n) l
 
 End S.
 
-Implicit Arguments BVar [Sig k x].
-Implicit Arguments BFun [Sig k].
-Implicit Arguments inject_terms [Sig k n ts].
+Arguments BVar [Sig k x] _.
+Arguments BFun [Sig k] _ _.
+Arguments inject_terms [Sig k n ts] _.

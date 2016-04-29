@@ -332,5 +332,5 @@ Section restriction.
 
 End restriction.
 
-Implicit Arguments path_app_elim [A R l x y z m].
-Implicit Arguments restricted_path_incl [A R l m x y].
+Arguments path_app_elim [A R l x y z m] _.
+Arguments restricted_path_incl [A R l] _ [m x y] _ _ _.

@@ -25,9 +25,9 @@ Record Signature : Type := mkSignature {
   beq_symb_ok : forall x y, beq_symb x y = true <-> x = y
 }.
 
-Implicit Arguments mkSignature [symbol beq_symb].
-Implicit Arguments beq_symb [s].
-Implicit Arguments beq_symb_ok [s x y].
+Arguments mkSignature [symbol beq_symb] _.
+Arguments beq_symb [s] _ _.
+Arguments beq_symb_ok [s x y].
 
 From CoLoR Require Import EqUtil.
 
@@ -35,7 +35,7 @@ Ltac case_beq_symb Sig := EqUtil.case_beq (@beq_symb Sig) (@beq_symb_ok Sig).
 
 Definition eq_symb_dec Sig := dec_beq (@beq_symb_ok Sig).
 
-Implicit Arguments eq_symb_dec [Sig].
+Arguments eq_symb_dec [Sig] _ _.
 
 (***********************************************************************)
 (** Tactic for proving beq_symb_ok *)
@@ -105,7 +105,7 @@ Section weight_inj.
 
 End weight_inj.
 
-Implicit Arguments bweight_inj_ok [Fs weight].
+Arguments bweight_inj_ok _ [Fs] _ [weight].
 
 Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok _ Fs_ok);
   (check_eq || fail 10 "non-injective weight function").

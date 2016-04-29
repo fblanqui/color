@@ -35,7 +35,7 @@ Section S.
     intros t x. destruct x. exact x.
   Defined.
 
-  Implicit Arguments terms_of_reduc [t].
+  Arguments terms_of_reduc [t] _.
 
   Definition proof_of_reduc :
     forall t, forall x : {us| FS t us}, FS t (terms_of_reduc x).
@@ -86,7 +86,7 @@ Section S.
     ded (matches_correct H1). rewrite H3. hyp.
   Qed.
 
-  Implicit Arguments rewrite_correct [t d u].
+  Arguments rewrite_correct [t d u] _.
 
   Fixpoint rewrites t (ds : list data) : option (list term) :=
     match ds with
@@ -111,7 +111,7 @@ Section S.
     inversion H1. simpl. ded (rewrite_correct H). intuition.
   Qed.
 
-  Implicit Arguments rewrites_correct [ds t us].
+  Arguments rewrites_correct [ds t us] _.
 
   From CoLoR Require Import NatUtil.
 
@@ -256,8 +256,8 @@ Section S.
 
 End S.
 
-Implicit Arguments rewrite_correct [Sig R t d u].
-Implicit Arguments rewrites_correct [Sig R ds t us].
+Arguments rewrite_correct [Sig R t d u] _.
+Arguments rewrites_correct [Sig R ds t us] _.
 
 (***********************************************************************)
 (** tactics *)

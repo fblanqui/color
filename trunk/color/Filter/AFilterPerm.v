@@ -382,7 +382,7 @@ is transitive. *)
       rewrite andb_eq in H. destruct H. hyp.
     Defined.
 
-    Implicit Arguments build_nat_lts [n l].
+    Arguments build_nat_lts [n l] _.
 
     Lemma build_nat_lts_ok : forall n l (h : forallb (bgt_nat n) l = true),
       map N_val (build_nat_lts h) = l.
@@ -434,13 +434,13 @@ is transitive. *)
 
 End S.
 
-Implicit Arguments filter_sig [Sig].
-Implicit Arguments bvalid [Sig].
-Implicit Arguments build_pi [Sig raw_pi Fs].
-Implicit Arguments bnon_dup_ok [Sig raw_pi Fs].
-Implicit Arguments non_dup [Sig].
-Implicit Arguments bpermut_ok [Sig raw_pi Fs].
-Implicit Arguments permut [Sig].
+Arguments filter_sig [Sig] _.
+Arguments bvalid [Sig] _ _.
+Arguments build_pi [Sig raw_pi Fs] _ _ _.
+Arguments bnon_dup_ok [Sig raw_pi Fs] _ _.
+Arguments non_dup [Sig] _.
+Arguments bpermut_ok [Sig raw_pi Fs] _ _.
+Arguments permut [Sig] _.
 
 (***********************************************************************)
 (** tactics *)

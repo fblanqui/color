@@ -165,7 +165,7 @@ apply Vcons_eq_intro. rewrite Vnth_cast. rewrite Vnth_app_cons. refl.
 rewrite Vsub_replace_r. refl. omega.
 Defined.
 
-Implicit Arguments replace_pos_elim [p t u t'].
+Arguments replace_pos_elim [p t u t'] _.
 
 (***********************************************************************)
 (** position of the Hole in a context *)
@@ -249,6 +249,6 @@ Qed.
 
 End S.
 
-Implicit Arguments subterm_pos_elim [Sig p t u].
-Implicit Arguments in_vars_subterm [Sig x t].
-Implicit Arguments subterm_pos_sub [Sig u p t].
+Arguments subterm_pos_elim [Sig p t u] _.
+Arguments in_vars_subterm [Sig x t] _.
+Arguments subterm_pos_sub [Sig] _ [u p t] _.

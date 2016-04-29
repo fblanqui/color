@@ -30,7 +30,7 @@ ded (path_app_elim H). destruct H1.
 exists x0. exists x1. intuition.
 Qed.
 
-Implicit Arguments path_cycle [x y l].
+Arguments path_cycle [x y l] _ _.
 
 (***********************************************************************)
 (** cycles of minimum length *)
@@ -66,4 +66,4 @@ End S.
 (***********************************************************************)
 (** implicit arguments *)
 
-Implicit Arguments cycle_min_intro [A R x l].
+Arguments cycle_min_intro [A R] _ [x l] _.

@@ -10,7 +10,7 @@ general definitions and results about relations on terms
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ATrs RelUtil ListUtil ARelation SN ListForall LogicUtil.
+From CoLoR Require Import ATrs RelUtil ListUtil ARelation SN LogicUtil.
 
 Section S.
 

@@ -35,7 +35,7 @@ Section S.
     intros t x. destruct x. exact x.
   Defined.
 
-  Implicit Arguments mod_terms_of_reduc [t].
+  Arguments mod_terms_of_reduc [t] _.
 
   Definition mod_proof_of_reduc :
     forall t, forall x : {us| mod_FS t us}, mod_FS t (mod_terms_of_reduc x).
@@ -66,7 +66,7 @@ Section S.
     apply rewrite_correct with (d:=d). hyp.
   Qed.
 
-  Implicit Arguments mod_rewrite_correct [t dm u].
+  Arguments mod_rewrite_correct [t dm u] _.
 
   Fixpoint mod_rewrites t (mds : list mod_data) : option (list term) :=
     match mds with
@@ -92,7 +92,7 @@ Section S.
     inversion H1. simpl. ded (mod_rewrite_correct H). intuition.
   Qed.
 
-  Implicit Arguments mod_rewrites_correct [ds t us].
+  Arguments mod_rewrites_correct [ds t us] _.
 
   From CoLoR Require Import NatUtil.
 

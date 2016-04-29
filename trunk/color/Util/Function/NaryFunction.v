@@ -44,7 +44,7 @@ Definition naryFunction1 A := naryFunction A A.
 Definition Vmonotone1_i A n f R := @Vmonotone_i A A n f R R.
 Definition Vmonotone1 A n f R := @Vmonotone A A n f R R.
 
-Implicit Arguments Vmonotone_i [A B n i j].
+Arguments Vmonotone_i [A B n] _ _ _ [i j] _.
 
 Section preserv.
 

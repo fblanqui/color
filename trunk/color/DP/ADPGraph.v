@@ -84,7 +84,7 @@ Lemma chain_dps_app : forall l a b m,
 
 Proof. induction l; simpl; intros. refl. assoc. comp. apply IHl. Qed.
 
-Implicit Arguments chain_dps_app [l a b m].
+Arguments chain_dps_app [l a b m] _ _ _.
 
 Lemma chain_dps_app' : forall a l m b p, a :: l = m ++ b :: p ->
   chain_dps a l << chain_dps a (tail m) % @ chain_dps b p.
@@ -96,7 +96,7 @@ subst r. subst l. simpl. ded (chain_dps_app _ _ H2). do 2 destruct H0.
 exists x0. unfold clos_refl. intuition.
 Qed.
 
-Implicit Arguments chain_dps_app' [a l m b p x y].
+Arguments chain_dps_app' [a l m b p] _ [x y] _.
 
 From CoLoR Require Import Iter.
 
@@ -119,7 +119,7 @@ ded (IHn _ _ H0). do 3 destruct H2. exists (x1 :: x2). simpl. intuition.
 exists x. intuition.
 Qed.
 
-Implicit Arguments iter_chain_chain_dps [n t u].
+Arguments iter_chain_chain_dps [n t u] _.
 
 (***********************************************************************)
 (** two consecutive chain steps provide a dp_graph step *)
@@ -170,7 +170,7 @@ eapply chain_dp2_dp_graph. apply H. apply H0.
 eapply chain_dp2_dp_graph. apply H. apply H0.
 Qed.
 
-Implicit Arguments chain_dps_path_dp_graph [l a b t u].
+Arguments chain_dps_path_dp_graph [l a b t u] _.
 
 (***********************************************************************)
 (** hypotheses of the criterion based on cycles

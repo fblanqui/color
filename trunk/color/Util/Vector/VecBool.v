@@ -36,7 +36,7 @@ induction n1; simpl; intros. refl. VSntac bs. simpl. case (Vhead bs); simpl.
 f_equal. apply IHn1. apply IHn1.
 Qed.
 
-Implicit Arguments Vtrue_break [n1 n2].
+Arguments Vtrue_break [n1 n2] _.
 
 Lemma Vtrue_cast : forall n (bs : bools n) p (h:n=p),
   Vtrue (Vcast bs h) = Vtrue bs.

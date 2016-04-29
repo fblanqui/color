@@ -404,7 +404,7 @@ End red_dup.
 
 End S.
 
-Implicit Arguments rtc_red_dup_int_hd_symb [Sig R f us v].
+Arguments rtc_red_dup_int_hd_symb [Sig R] _ [f us v] _.
 
 (***********************************************************************)
 (** tactics *)
