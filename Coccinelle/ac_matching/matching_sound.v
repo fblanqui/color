@@ -109,7 +109,7 @@ intros sigma [W1 [W2 [W3 [W4 [W5 W6]]]]] pb' In_pb';
 assert (U_pb : forall pb', pb' = pb -> unsolved_part pb' = unsolved_part pb).
 intros; subst; trivial.
 destruct (unsolved_part pb) as [ | [[v1 | f1 l1] t2] l]; 
-generalize (U_pb pb (refl_equal _)); clear U_pb; intro U_pb.
+generalize (U_pb pb (eq_refl _)); clear U_pb; intro U_pb.
 (* unsolved_part pb = nil *)
 contradiction.
 (* unsolved_part pb =  (v1,t2) :: _ *)
@@ -261,7 +261,7 @@ Term f1 (quicksort (flatten f1 (apply_cf_subst sigma' (Var (new_var p1)) ::
                                                  closed_term p1 :: nil)))).
 generalize (H2 v1); simpl; rewrite F'; subst f1; trivial.
 assert (l1_sigma'_eq := 
-             (H1 (build f1 (Var (new_var p1) :: l1))  (build f1 l2''') (or_introl _ (refl_equal _)))).
+             (H1 (build f1 (Var (new_var p1) :: l1))  (build f1 l2''') (or_introl _ (eq_refl _)))).
 
 replace (apply_cf_subst sigma' (Term f1 (Var v1 :: l1))) with 
          (Term f1 (quicksort (flatten f1 (((apply_cf_subst sigma' (Var v1)) :: nil) ++ 
@@ -361,7 +361,7 @@ Term (head_symb p1)
                                                  closed_term p1 :: nil)))).
 generalize (H2 v1); simpl; rewrite F'; trivial.
 assert (l1_sigma'_eq := 
-             (H1 (build f1 l1)  (build f1 l2''') ((or_intror _ (or_introl _ (refl_equal _)))))).
+             (H1 (build f1 l1)  (build f1 l2''') ((or_intror _ (or_introl _ (eq_refl _)))))).
 
 replace (apply_cf_subst sigma' (Term f1 (Var v1 :: l1)))
 with (Term f1 (quicksort (flatten f1 (((apply_cf_subst sigma' (Var v1)) :: nil) ++ map (apply_cf_subst sigma') l1))));
@@ -387,7 +387,7 @@ rewrite <- app_ass; rewrite <- permut_app2.
 refine (permut_trans _ (list_permut_app_app _ _));
 rewrite <- permut_app2.
 assert (new_var_p1_sigma'_eq :=
-  (H1 (Var (new_var p1))  (build g2 ll2''') (or_introl _ (refl_equal _)))).
+  (H1 (Var (new_var p1))  (build g2 ll2''') (or_introl _ (eq_refl _)))).
 rewrite v1_sigma'_eq; rewrite new_var_p1_sigma'_eq; rewrite <- g2_eq_hd_p1;
 transitivity
 (Term g2
@@ -458,7 +458,7 @@ injection st_eq; intros; subst s t; clear st_eq.
 assert (v1_sigma'_eq : apply_cf_subst sigma' (Var v1) = t2).
 generalize (H3 v1); simpl.
 generalize (X.eq_bool_ok v1 v1); case (X.eq_bool v1 v1); [ intros _ | intro v1_diff_v1]; [idtac | absurd (v1 = v1)] ; trivial.
-assert (l1_sigma'_eq := H1 (build f1 l1)  (build f1 l2''') (or_introl _ (refl_equal _))).
+assert (l1_sigma'_eq := H1 (build f1 l1)  (build f1 l2''') (or_introl _ (eq_refl _))).
 replace (apply_cf_subst sigma' (Term f1 (Var v1 :: l1)))
 with (Term f1 (quicksort (flatten f1 ((t2 :: nil) ++ map (apply_cf_subst sigma') l1))));
 [ idtac | rewrite <- v1_sigma'_eq; simpl; rewrite Af1; trivial];
@@ -514,7 +514,7 @@ rewrite app_ass; rewrite <- app_comm_cons.
 rewrite <- permut_add_inside.
 rewrite <- app_ass; do 2 rewrite <- app_nil_end.
 apply permut_sym; 
-rewrite <- (H1 (build f1 (Var (fresh_var pb) :: l1))  (build f1 (l2' ++ l2'')) (or_introl _ (refl_equal _))).
+rewrite <- (H1 (build f1 (Var (fresh_var pb) :: l1))  (build f1 (l2' ++ l2'')) (or_introl _ (eq_refl _))).
 rewrite build_eq_Term; [idtac | generalize (well_formed_cf_length Af1 W_t1); simpl; trivial].
 simpl; rewrite Af1; 
 generalize (F.Symb.eq_bool_ok f1 f1); case (F.Symb.eq_bool f1 f1); [intros _ | intro f1_diff_f1; apply False_rect; apply f1_diff_f1; reflexivity].
@@ -567,7 +567,7 @@ apply (f_equal (fun l => Term f1 l)).
 apply sort_is_unique; 
 [apply quick_sorted | apply well_formed_cf_sorted with f1; trivial | idtac].
 apply quick_permut_bis.
-rewrite (H1 _ _ (or_introl _ (refl_equal _))); rewrite <- flatten_app;
+rewrite (H1 _ _ (or_introl _ (eq_refl _))); rewrite <- flatten_app;
 rewrite <- app_comm_cons; simpl (app (A:=term) nil); cbv beta.
 apply add_a_subterm_subst; trivial. 
 apply H1; right; left; trivial.
@@ -581,10 +581,10 @@ intros [sigma' [[H1 [H2 H3]] H4]]; exists sigma';
 split; [split; [idtac | split] | idtac]; trivial;
 rewrite U_pb; intros s t [st_eq | In_st].
 injection st_eq; intros; subst; simpl; rewrite Af1;
-rewrite (H1 _ _ (or_introl _ (refl_equal _)));
-rewrite (H1 _ _ (or_intror _ (or_introl _ (refl_equal _))));
+rewrite (H1 _ _ (or_introl _ (eq_refl _)));
+rewrite (H1 _ _ (or_intror _ (or_introl _ (eq_refl _))));
 apply (f_equal (fun l => Term f1 l));
-assert (W_t2 := proj2 (W1 _ _ (or_introl _ (refl_equal _)))); 
+assert (W_t2 := proj2 (W1 _ _ (or_introl _ (eq_refl _))));
 simpl in W_t2; rewrite Af1 in W_t2; 
 apply sort_is_unique; [apply quick_sorted | intuition | apply quick_permut_bis; auto].
 apply H1; right; right; trivial.
@@ -593,10 +593,10 @@ intros [sigma' [[H1 [H2 H3]] H4]]; exists sigma';
 split; [split; [idtac | split] | idtac]; trivial;
 rewrite U_pb; intros s t [st_eq | In_st].
 injection st_eq; intros; subst; simpl; rewrite Af1;
-rewrite (H1 _ _ (or_introl _ (refl_equal _)));
-rewrite (H1 _ _ (or_intror _ (or_introl _ (refl_equal _))));
+rewrite (H1 _ _ (or_introl _ (eq_refl _)));
+rewrite (H1 _ _ (or_intror _ (or_introl _ (eq_refl _))));
 apply (f_equal (fun l => Term f1 l));
-assert (W_t2 := proj2 (W1 _ _ (or_introl _ (refl_equal _)))); 
+assert (W_t2 := proj2 (W1 _ _ (or_introl _ (eq_refl _))));
 simpl in W_t2; rewrite Af1 in W_t2; 
 apply sort_is_unique; [apply quick_sorted | intuition | idtac].
 apply quick_permut_bis.
@@ -626,7 +626,7 @@ injection st_eq; clear st_eq;
 intros; subst; simpl; rewrite Af1; apply (f_equal (fun l => Term f1 l)).
 assert (L12 : length l1 = length l2).
 apply trans_eq with n1; [idtac | apply sym_eq];
-generalize (W1 (Term f1 l1) (Term f1 l2) (or_introl _ (refl_equal _)));
+generalize (W1 (Term f1 l1) (Term f1 l2) (or_introl _ (eq_refl _)));
 intros [[_ W_t1] [_ W_t2]]; [rewrite Af1 in W_t1 | rewrite Af1 in W_t2]; trivial.
 generalize l l2 In_pb' L12 H1; clear U_pb R W1 W2 W3 l l2 In_pb' L12 H1.
 induction l1 as [ | t1 l1]; destruct l2 as [ | t2 l2].
@@ -635,7 +635,7 @@ intros _ L12; simpl in L12; discriminate.
 intros _ L12; simpl in L12; discriminate.
 intros In_pb' L12 H1; simpl in L12; generalize (eq_add_S _ _ L12); clear L12; intro L12.
 generalize (IHl1 _ _ In_pb' L12); clear IHl1; intro IHl1; 
-generalize (In_t1t2 _ _ l1 l2 ((t1,t2) :: l) (or_introl _ (refl_equal _))); clear In_t1t2; 
+generalize (In_t1t2 _ _ l1 l2 ((t1,t2) :: l) (or_introl _ (eq_refl _))); clear In_t1t2;
 intro In_t1t2.
 simpl in In_pb';
 destruct (fold_left2

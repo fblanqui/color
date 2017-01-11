@@ -177,7 +177,7 @@ intros A B f l; case l; clear l.
 intros l1 l2 H; exists nil; exists nil.
 revert H; case l1; clear l1.
 case l2; clear l2.
-intros _; repeat split; apply refl_equal.
+intros _; repeat split; apply eq_refl.
 intros b2 l2 H; discriminate.
 intros b1 l1 H; discriminate.
 intros a l l1; case l1; clear l1.
@@ -186,7 +186,7 @@ intros b1 l1 l2 H; injection H; clear H; intros H H'.
 destruct (split_map_set A B f l l1 l2 H) as [k1 [k2 [H1 [H2 H3]]]].
 exists (a :: k1); exists k2; repeat split; trivial.
 simpl; apply f_equal; assumption.
-simpl; rewrite H'; rewrite H2; apply refl_equal.
+simpl; rewrite H'; rewrite H2; apply eq_refl.
 Qed.
 
 Lemma in_map_set :
@@ -196,7 +196,7 @@ Proof.
 intros A B eqB_dec f b; induction l as [ | a1 l].
 contradiction.
 destruct (eqB_dec b (f a1)) as [b_eq_fa1 | b_diff_fa1].
-intros _; exists a1; split; [apply sym_eq; assumption | left; apply refl_equal].
+intros _; exists a1; split; [apply sym_eq; assumption | left; apply eq_refl].
 simpl; intro b_in_fa1_fl.
 destruct IHl as [a [fa_eq_b a_in_l]].
 destruct b_in_fa1_fl as [fa1_eq_b | b_in_fl]; [apply False_rect; apply b_diff_fa1; apply sym_eq | idtac]; assumption.
@@ -207,8 +207,8 @@ Lemma flat_map_app :
 	forall A B (f : A -> list B) (l1 l2 : list A), flat_map f (l1 ++ l2) = (flat_map f l1) ++ (flat_map f l2).
 intros A B f; fix 1.
 intros l1; case l1; clear l1.
-intros l2; apply refl_equal.
-intros a1 l1 l2; simpl; rewrite (flat_map_app l1 l2); rewrite ass_app; apply refl_equal.
+intros l2; apply eq_refl.
+intros a1 l1 l2; simpl; rewrite (flat_map_app l1 l2); rewrite ass_app; apply eq_refl.
 Qed.
 
 (** ** Iterators. *) 
@@ -296,7 +296,7 @@ Lemma list_size_size_eq :
 Proof.
 intros A size1 size2 l; induction l as [ | a l]; simpl; trivial.
 intros size1_eq_size2.
-rewrite (size1_eq_size2 a (or_introl _ (refl_equal _))).
+rewrite (size1_eq_size2 a (or_introl _ (eq_refl _))).
 apply (f_equal (fun n => size2 a + n)); apply IHl;
 intros; apply size1_eq_size2; right; trivial.
 Qed.
@@ -1113,7 +1113,7 @@ Proof.
 intros A B eqB eqB_bool eqB_bool_ok f b; induction l as [ | a1 l].
 contradiction.
 generalize (eqB_bool_ok b (f a1)); case (eqB_bool b (f a1)); [intro b_eq_fa1 | intro b_diff_fa1].
-intros _; exists a1; split; [assumption | left; apply refl_equal].
+intros _; exists a1; split; [assumption | left; apply eq_refl].
 simpl; intro b_in_fa1_fl.
 destruct IHl as [a [fa_eq_b a_in_l]].
 destruct b_in_fa1_fl as [fa1_eq_b | b_in_fl]; [apply False_rect; apply b_diff_fa1 | idtac]; assumption.
@@ -1150,7 +1150,7 @@ intros Pl b b_in_al; case b_in_al; clear b_in_al.
 intro a_eq_b; subst b; exact Pa.
 revert b; rewrite <- (list_forall_is_sound A P_bool l); exact Pl.
 intro Abs; discriminate.
-intros Pal; rewrite (Pal a (or_introl _ (refl_equal _))); simpl.
+intros Pal; rewrite (Pal a (or_introl _ (eq_refl _))); simpl.
 rewrite (list_forall_is_sound A P_bool l).
 intros b b_in_l; apply Pal; right; assumption.
 Qed.
@@ -1161,10 +1161,10 @@ Lemma list_forall_impl :
   (list_forall f l) = true -> (list_forall f' l) = true.
 Proof.
 intros A f f' l; induction l as [ | a l]; simpl; trivial.
-intros Hl; assert (Ha := Hl a (or_introl _ (refl_equal _))).
+intros Hl; assert (Ha := Hl a (or_introl _ (eq_refl _))).
 destruct (f a); simpl.
 intro H; rewrite IHl; simpl; trivial.
-rewrite (Ha (refl_equal _)); trivial.
+rewrite (Ha (eq_refl _)); trivial.
 intros; apply Hl; trivial; right; trivial.
 intro; absurd (false = true); trivial; discriminate.
 Qed.
@@ -1192,7 +1192,7 @@ injection H1; intros; subst a0 b0;
 destruct (f a b); try discriminate; trivial.
 destruct (f a b); try discriminate; simpl in H;
 destruct (proj1 (IHl l') H) as [_ H']; apply H'; trivial.
-rewrite (H1 a b (or_introl _ (refl_equal _))); simpl.
+rewrite (H1 a b (or_introl _ (eq_refl _))); simpl.
 apply (proj2 (IHl l')); split.
 injection H0; trivial.
 intros; apply H1; right; trivial.
@@ -1226,7 +1226,7 @@ intros A f l; induction l as [ | a l].
 simpl; intros; contradiction.
 simpl; assert (Fa : forall b, b = a -> f b = f a).
 intros; subst; trivial.
-destruct (f a) as [ [ | ] | ]; generalize (Fa _ (refl_equal _)); clear Fa; intro Fa.
+destruct (f a) as [ [ | ] | ]; generalize (Fa _ (eq_refl _)); clear Fa; intro Fa.
 destruct (list_forall_option f l) as [ [ | ] | ].
 intros b [b_eq_a | b_in_l]; [subst; rewrite Fa | rewrite IHl]; trivial.
 destruct IHl as [[b [b_in_l fb_eq_false]] IHl].
@@ -1256,7 +1256,7 @@ Lemma list_forall_option_is_complete_true :
 Proof.
 intros A f l; induction l as [ | a l].
 simpl; intros; trivial.
-intro H; simpl; rewrite (H _ (or_introl _ (refl_equal _)));
+intro H; simpl; rewrite (H _ (or_introl _ (eq_refl _)));
 apply IHl; intros; apply H; right; trivial.
 Qed.
 
@@ -1273,7 +1273,7 @@ generalize (list_forall_option_is_sound f l);
 destruct (list_forall_option f l) as [ [ | ] | ]; trivial.
 intros [c [c_in_l fc_eq_none]].
 assert (H' := H c (or_intror _ c_in_l) fc_eq_none); contradiction.
-generalize (H a (or_introl _ (refl_equal _))); destruct (f a) as [ [ | ] | ].
+generalize (H a (or_introl _ (eq_refl _))); destruct (f a) as [ [ | ] | ].
 intros _; apply IHl.
 exists b; split; trivial.
 intros c c_in_l; apply H; right; trivial.
@@ -1282,7 +1282,7 @@ generalize (list_forall_option_is_sound f l);
 destruct (list_forall_option f l) as [ [ | ] | ]; trivial.
 intros [c [c_in_l fc_eq_none]].
 assert (H' := H c (or_intror _ c_in_l) fc_eq_none); contradiction.
-intro H'; generalize (H' (refl_equal _)); contradiction.
+intro H'; generalize (H' (eq_refl _)); contradiction.
 Qed.
 
 Function list_exists (A : Type) (f : A -> bool) (l : list A) {struct l} : bool :=
@@ -1309,7 +1309,7 @@ split; [intros; discriminate | intros [a [Abs _]]; contradiction].
 assert (H: forall a', a' = a -> f a' = f a).
 intros; subst; trivial.
 destruct (f a) as [fa | not_fa]; simpl; 
-generalize (H _ (refl_equal _)); clear H; intro H;
+generalize (H _ (eq_refl _)); clear H; intro H;
 split; intro H'.
 exists a; split; trivial; left; trivial.
 trivial.
@@ -1336,9 +1336,9 @@ Lemma list_exists_impl :
   (list_exists f l) = true -> (list_exists f' l) = true.
 Proof.
 intros A f f' l; induction l as [ | a l]; simpl; trivial.
-intros Hl; assert (Ha := Hl a (or_introl _ (refl_equal _))).
+intros Hl; assert (Ha := Hl a (or_introl _ (eq_refl _))).
 destruct (f a); simpl.
-rewrite (Ha (refl_equal _)); trivial.
+rewrite (Ha (eq_refl _)); trivial.
 intro H; rewrite IHl; simpl; trivial.
 destruct (f' a); trivial.
 intros; apply Hl; trivial; right; trivial.
@@ -1372,7 +1372,7 @@ intros A f l; induction l as [ | a l].
 simpl; intros; contradiction.
 simpl; assert (Fa : forall b, b = a -> f b = f a).
 intros; subst; trivial.
-destruct (f a) as [ [ | ] | ]; generalize (Fa _ (refl_equal _)); clear Fa; intro Fa.
+destruct (f a) as [ [ | ] | ]; generalize (Fa _ (eq_refl _)); clear Fa; intro Fa.
 destruct (list_exists_option f l) as [ [ | ] | ];
 exists a; split; trivial; left; trivial.
 destruct (list_exists_option f l) as [ [ | ] | ].
@@ -1414,7 +1414,7 @@ Proof.
 intros A f l; induction l as [ | a l].
 intros; simpl; trivial.
 intros H; simpl.
-rewrite (H _ (or_introl _ (refl_equal _))); 
+rewrite (H _ (or_introl _ (eq_refl _)));
 apply IHl; intros; apply H; right; trivial.
 Qed.
 
@@ -1432,8 +1432,8 @@ destruct (list_exists_option f l) as [ [ | ] | ]; trivial.
 intros [a [a_in_l fa_eq_true]]; 
 assert False; [idtac | contradiction].
 apply (H a); trivial; right; trivial.
-generalize (H t (or_introl _ (refl_equal _))); destruct (f t) as [ [ | ] | ].
-intro H'; assert (H'' := H' (refl_equal _)); contradiction.
+generalize (H t (or_introl _ (eq_refl _))); destruct (f t) as [ [ | ] | ].
+intro H'; assert (H'' := H' (eq_refl _)); contradiction.
 intros _; apply IHl.
 exists a; split; trivial.
 intros b b_in_l; apply H; right; trivial.
@@ -1451,7 +1451,7 @@ Definition list_exists_rest : forall (A : Type) (P : A -> Prop) l
 Proof.
 intros A P l; induction l as [ | a l]; intro P_dec.
 exact false.
-case (P_dec a (or_introl _ (refl_equal _))).
+case (P_dec a (or_introl _ (eq_refl _))).
 intros; exact true.
 intros; assert (P_dec' : forall a : A, In a l -> {P a} + {~ P a}).
 intros; apply P_dec; right; trivial.
@@ -1574,7 +1574,7 @@ Definition F_mapii:
 Proof.
 intros [l f] mrec; destruct l as [ | a l].
 exact nil.
-exact (map (fun b => b :: l) (f a (or_introl _ (refl_equal _))) ++ 
+exact (map (fun b => b :: l) (f a (or_introl _ (eq_refl _))) ++
           (map (fun k => a :: k) (mrec (dep_fun_tail f) (map_dep_call f)))).
 Defined.
 
@@ -1609,7 +1609,7 @@ exists (or_introl
                  match l with
                  | nil => False
                  | b :: m => b = a \/ In a m
-                 end) a l) (refl_equal a));
+                 end) a l) (eq_refl a));
 exists b; exists l; subst; repeat split; trivial.
 rewrite in_map_iff in H; destruct H as [l'' [H1 H2]].
 unfold dep_fun_tail in H2.
@@ -1657,7 +1657,7 @@ apply (f_equal (fun ll =>
             match l0 with
             | nil => False
             | b :: m => b = a0 \/ In a0 m
-            end) a l) (refl_equal a))) ++
+            end) a l) (eq_refl a))) ++
    map (fun k : list A => a :: k) ll)).
 unfold dep_fun_tail.
 apply IHl.
@@ -1730,7 +1730,7 @@ intros _ b b_in_nil; contradiction.
 intros a l IH; generalize (prop_map_without_repetition l (tail_prop _ IH)); revert IH.
 case l; clear l.
 (* 1/2 l = _ :: nil *)
-intros IH H b; generalize (IH a (or_introl _ (refl_equal _))); case (f a).
+intros IH H b; generalize (IH a (or_introl _ (eq_refl _))); case (f a).
 simpl; intros b' Pb' [b_eq_b' | b_in_nil].
 subst b'; assumption.
 contradiction.
@@ -1738,7 +1738,7 @@ intros _ b_in_nil; contradiction.
 (* 1/1 l = _ :: _ :: _ *)
 intros a2 l IH H b; generalize (eq_bool_ok a a2); case (eq_bool a a2); [intro a_eq_a2 | intro a_diff_a2].
 apply H.
-generalize (IH a (or_introl _ (refl_equal _))); case (f a).
+generalize (IH a (or_introl _ (eq_refl _))); case (f a).
 simpl In; intros b' Pb' [b_eq_b' | b_in_mapl].
 subst b'; assumption.
 apply H; assumption.
@@ -1835,7 +1835,7 @@ intros _ b b_in_nil; contradiction.
 intros a l IH; generalize (prop_map12_without_repetition l (tail_prop _ IH)); revert IH.
 case l; clear l; simpl.
 (* 1/2 l = _ :: nil *)
-intros IH H b; generalize (IH a (or_introl _ (refl_equal _))); destruct (f a) as [[b' | ] [b'' | ]].
+intros IH H b; generalize (IH a (or_introl _ (eq_refl _))); destruct (f a) as [[b' | ] [b'' | ]].
 intros [Pb' Pb''] [b_eq_b' | [b_eq_b'' | b_in_nil]].
 subst b'; assumption.
 subst b''; assumption.
@@ -1850,7 +1850,7 @@ contradiction.
 (* 1/1 l = _ :: _ :: _ *)
 intros a2 l IH; simpl; generalize (eq_bool_ok a a2); case (eq_bool a a2); [intro a_eq_a2 | intro a_diff_a2].
 intros Hl b b_in_map; apply Hl; assumption.
-generalize (IH a (or_introl _ (refl_equal _))); destruct (f a) as [[b' | ] [b'' | ]].
+generalize (IH a (or_introl _ (eq_refl _))); destruct (f a) as [[b' | ] [b'' | ]].
 intros [Pb' Pb''] Hl b [b_eq_b' | [b_eq_b'' | b_in_map]].
 subst b; assumption.
 subst b; assumption.

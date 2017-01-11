@@ -65,15 +65,15 @@ intros R s; pattern s; apply term_rec3; clear s.
 intros v t K; inversion K; subst.
 inversion H; subst.
 destruct t2 as [x2 | f2 l2].
-exists t1; exists (Var x2); split; [assumption | apply at_top; apply instance; left; apply refl_equal].
+exists t1; exists (Var x2); split; [assumption | apply at_top; apply instance; left; apply eq_refl].
 discriminate.
 intros f l IH t K; inversion K; subst.
 inversion H; subst.
 exists t1; exists t2; split; trivial.
-left; apply instance; left; apply refl_equal.
+left; apply instance; left; apply eq_refl.
 destruct (one_step_in_list H1) as [u [u' [k1 [k2 [H2 [H3 H4]]]]]].
 assert (u_in_l : In u l).
-subst; apply in_or_app; right; left; apply refl_equal.
+subst; apply in_or_app; right; left; apply eq_refl.
 destruct (IH u u_in_l u' H2) as [t1 [t2 [K1 K2]]].
 exists t1; exists t2; split; trivial.
 apply in_context.
@@ -100,10 +100,10 @@ do 2 rewrite <- subst_comp_is_subst_comp; apply at_top; apply instance; assumpti
 simpl; right.
 injection H3; clear H3; intros; subst.
 revert sigma IHl; induction K as [t1 t2 l K | t l1 l2 K]; intros sigma IHl.
-left; apply IHl; [left; apply refl_equal | left; apply instance; assumption].
+left; apply IHl; [left; apply eq_refl | left; apply instance; assumption].
 right; apply (IHK sigma (tail_prop _ IHl)).
 right; revert IHl; induction K1 as [t1 t2 l K | t l1 l2 K]; intros IHl.
-left; apply IHl; [left; apply refl_equal | assumption].
+left; apply IHl; [left; apply eq_refl | assumption].
 right; apply (IHK (tail_prop _ IHl)).
 left; generalize (instance _ s t nil H); do 2 rewrite empty_subst_is_id; trivial.
 Qed.
@@ -296,7 +296,7 @@ apply general_context; generalize l2 H'; clear l2 H'.
 induction l1 as [ | a1 l1 ]; intros l2 H.
 inversion H.
 inversion H as [ H1 a2 H3 a1_R_a2 H5 H6 | H1 H2 l2' l1_R_l2' H5 H6]; subst.
-generalize (Hrec _ (or_introl _ (refl_equal _)) _ a1_R_a2).
+generalize (Hrec _ (or_introl _ (eq_refl _)) _ a1_R_a2).
 clear; intro H; induction H as [a1 a2 H | a1 a2 a3 H1 H2].
 do 2 left; assumption.
 right with (a2 :: l1); trivial.
@@ -334,7 +334,7 @@ subst t'; simpl; apply general_context.
 revert l Sbt; induction i as [ | i]; intros [ | s l] Sbt; simpl.
 discriminate.
 simpl in Sbt.
-generalize (IHp s sigma u v _ Sbt H (refl_equal _)).
+generalize (IHp s sigma u v _ Sbt H (eq_refl _)).
 generalize (replace_at_pos s (apply_subst sigma v) p); clear.
 intros t H; induction H as [t1 t2 H | t1 t2 t3 H1 H2].
 do 2 left; assumption.
@@ -369,7 +369,7 @@ Qed.
       assert (H'' : one_step_list (one_step R1) lt ls \/
         one_step_list (one_step R2) lt ls).
     induction H' as [t' s' l H'' | s lt' ls' H'']; subst.
-    rewrite (IHn s' (Size_ls s' (or_introl _ (refl_equal _))) t') in H''.
+    rewrite (IHn s' (Size_ls s' (or_introl _ (eq_refl _))) t') in H''.
     destruct H'' as [H1 | H2].
     left; apply head_step; trivial.
     right; apply head_step; trivial.
@@ -455,7 +455,7 @@ assert (H : forall R l1 l2, one_step_list (one_step R) l2 l1 ->
   (forall s, In s l1 -> Acc (one_step R) s) -> (forall s, In s l2 -> Acc (one_step R) s)).
 intros R l1 l2 H; induction H; simpl.
 intros Hacc s [s_eq_t1 | s_in_l].
-apply Acc_inv with t2; [apply Hacc; left; apply refl_equal | subst s; assumption ].
+apply Acc_inv with t2; [apply Hacc; left; apply eq_refl | subst s; assumption ].
 apply Hacc; right; assumption.
 intros Hacc s [s_eq_t | s_in_l1].
 apply Hacc; left; assumption.
@@ -512,7 +512,7 @@ Qed.
     destruct t as [ x | f l].
     discriminate.
     assert (H' := nth_error_ok_in i l); destruct (nth_error l i) as [ s' | ].
-    generalize (H' _ (refl_equal _)); clear H'; intro s'_in_l.
+    generalize (H' _ (eq_refl _)); clear H'; intro s'_in_l.
     apply (IHp s'); trivial; apply (acc_subterms_1 R (Term f l)); trivial.
     destruct s'_in_l as [l1 [l2 [_ H']]]; subst l; simpl; 
       apply in_or_app; right; left; trivial.
@@ -622,7 +622,7 @@ Qed.
     case_eq (matching ((l,t) :: nil)).
     intros sigma mlt_eq_sigma.
     destruct (matching_correct mlt_eq_sigma) as [C1 [C2 C3]].
-    assert (H' := C3 _ _ (or_introl _ (refl_equal _))).
+    assert (H' := C3 _ _ (or_introl _ (eq_refl _))).
     rewrite mlt_eq_sigma in H.
     destruct H as [H | H].
     subst; apply instance.
@@ -649,7 +649,7 @@ Qed.
     assert (C := @matching_correct ((l, apply_subst sigma l) :: nil)).
     assert (C' := matching_complete ((l, apply_subst sigma l) :: nil) sigma).
     destruct (matching ((l, apply_subst sigma l) :: nil)) as [tau | ].
-    generalize (C _ (refl_equal _)); clear C; intros [C1 [C2 C3]].
+    generalize (C _ (eq_refl _)); clear C; intros [C1 [C2 C3]].
     left.
     assert (H' : forall v, In v (var_list r) -> apply_subst tau (Var v) = apply_subst sigma (Var v)).
     intros v v_in_r;
@@ -817,7 +817,7 @@ Qed.
       rewrite mapii_dep_unfold; simpl.
       apply in_or_app; left.
       rewrite in_map_iff; exists t1; split; trivial.
-      rewrite (IHl _ (or_introl _ (refl_equal _)) t1); trivial.
+      rewrite (IHl _ (or_introl _ (eq_refl _)) t1); trivial.
       rewrite mapii_dep_unfold; simpl.
       apply in_or_app; right.
       rewrite in_map_iff.
@@ -944,7 +944,7 @@ Qed.
 (* 1/3 *)
     intros y valy H''; apply Acc_tau with y; right; trivial.
 (* 1/2 *)
-    destruct (acc_nf FB red_dec (Acc_tau x val (or_introl _ (refl_equal _)))) as [val' [H4 H5]].
+    destruct (acc_nf FB red_dec (Acc_tau x val (or_introl _ (eq_refl _)))) as [val' [H4 H5]].
     exists ((x,val') :: sigma'); split.
 (* 1/3 *)
     intros y valy; split; intro H6.
@@ -955,7 +955,7 @@ Qed.
     assert (H7 := K3 _ _ H6).
     assert (H8 := find_mem _ _ X.eq_bool_ok y tau).
     destruct (find eq_var_bool y tau) as [valy' | ]; [idtac | absurd (@None term = None); trivial].
-    destruct (H8 _ (refl_equal _)) as [y' [tau1 [tau2 [H9 H10]]]]; subst y'; subst; clear H7 H8.
+    destruct (H8 _ (eq_refl _)) as [y' [tau1 [tau2 [H9 H10]]]]; subst y'; subst; clear H7 H8.
     generalize (H y valy') (X.eq_bool_ok y x); simpl; case (eq_var_bool y x); [intros _ y_eq_x | intros H7 y_diff_x].
     subst y; absurd (x = x); trivial; apply (H' x x val valy' nil tau1 tau2); trivial.
     rewrite <- H1; trivial.
@@ -1011,7 +1011,7 @@ Qed.
     destruct l as [v | ]; [idtac | discriminate].
     apply well_formed_apply_subst_strong.
     intros x x_in_r; apply well_formed_remove_term with (Var v).
-    rewrite H0; apply refl_equal.
+    rewrite H0; apply eq_refl.
     rewrite var_in_term_is_sound; apply R_reg with r.
     assumption.
     rewrite <- var_in_term_is_sound; assumption.
@@ -1140,15 +1140,15 @@ Qed.
     Proof.
       fix 5.
       intros C B v f sigma; case sigma; clear sigma.
-      apply refl_equal.
+      apply eq_refl.
       intros p l; case p; clear p.
       intros n c; simpl.
       destruct (eq_nat_dec (inject_inv v) n) as [v_eq_n | v_diff_n].
       subst n; rewrite Hinject1.
-      generalize (X.eq_bool_ok v v); case (X.eq_bool v v); [intros _ | intro v_diff_v; apply False_rect; apply v_diff_v; apply refl_equal].
-      rewrite <- beq_nat_refl; apply refl_equal.
+      generalize (X.eq_bool_ok v v); case (X.eq_bool v v); [intros _ | intro v_diff_v; apply False_rect; apply v_diff_v; apply eq_refl].
+      rewrite <- beq_nat_refl; apply eq_refl.
       generalize (X.eq_bool_ok v (inject n)); case (X.eq_bool v (inject n)); [intro v_eq_n | intros _].
-      subst v; apply False_rect; apply v_diff_n; rewrite Hinject2; apply refl_equal.
+      subst v; apply False_rect; apply v_diff_n; rewrite Hinject2; apply eq_refl.
       generalize (decidable_set.beq_nat_ok (inject_inv v) n).
       case (beq_nat (inject_inv v) n); [intro v_eq_n | intros _].
       apply False_rect; apply v_diff_n; assumption.
@@ -1162,7 +1162,7 @@ Qed.
       intros sigma H x u xu_in_sig; case_eq (find X.eq_bool x sigma); [intros x_val x_sigma | intro x_sigma].
       apply f_equal; apply (H x); trivial.
       destruct (find_mem _ _ X.eq_bool_ok _ _ x_sigma) as [x' [sig1 [sig2 [x_eq_x' H']]]].
-      subst x'; rewrite H'; apply in_or_app; right; left; apply refl_equal.
+      subst x'; rewrite H'; apply in_or_app; right; left; apply eq_refl.
       apply False_rect; refine (find_not_found X.eq_bool _ x u sigma x_sigma (eq_var_bool_refl x) xu_in_sig).
     Qed.
 
@@ -1197,7 +1197,7 @@ Qed.
       exists (Var x); exists nil; split.
       simpl; rewrite (subst_aux sigma h2 _ _ v_in_sig'); trivial.
       split.
-      apply refl_equal.
+      apply eq_refl.
       split.
       apply h1.
       split.
@@ -1209,9 +1209,9 @@ Qed.
       exists (Var (inject m)); exists ((inject m, Var v ) :: nil).
       split.
       simpl.
-      rewrite eq_var_bool_refl; apply refl_equal.
+      rewrite eq_var_bool_refl; apply eq_refl.
       split.
-      apply refl_equal.
+      apply eq_refl.
       split.
       simpl; intros x u [xu_eq_mv | xu_in_sigma].
       injection xu_eq_mv; intros; subst x u; trivial.
@@ -1267,7 +1267,7 @@ Qed.
       exists (Var x); exists nil; split.
       simpl; rewrite (subst_aux sigma h2 _ _ fl_in_sig'); trivial.
       split.
-      apply refl_equal.
+      apply eq_refl.
       split.
       apply h1.
       split.
@@ -1305,7 +1305,7 @@ Qed.
       intros; contradiction.
       destruct IHl with sigma as [ls [tau [H0 [Wls [H1 [H2 [H3 H4]]]]]]]; trivial.
       apply (tail_set _ Hl).
-      destruct (Hl t (or_introl _ (refl_equal _)) (tau ++ sigma) H1 H2 H3) as [s [tau' [K0 [Ws [K1 [K2 [K3 K4]]]]]]].
+      destruct (Hl t (or_introl _ (eq_refl _)) (tau ++ sigma) H1 H2 H3) as [s [tau' [K0 [Ws [K1 [K2 [K3 K4]]]]]]].
       exists (s :: ls); exists (tau' ++ tau); rewrite <- ass_app; repeat split; trivial.
       simpl; apply f_equal2.
       assumption.
@@ -1322,10 +1322,10 @@ Qed.
       apply (K2 v).
       apply in_or_app; right.
       destruct (find_mem _ _ X.eq_bool_ok _ _ v_tau) as [v' [tau1 [tau2 [v_eq_v' H]]]].
-      subst v'; rewrite H; apply in_or_app; right; left; apply refl_equal.
+      subst v'; rewrite H; apply in_or_app; right; left; apply eq_refl.
       apply in_or_app; left.
       destruct (find_mem _ _ X.eq_bool_ok _ _ v_tau') as [v' [tau1 [tau2 [v_eq_v' H]]]].
-      subst v'; rewrite H; apply in_or_app; right; left; apply refl_equal.
+      subst v'; rewrite H; apply in_or_app; right; left; apply eq_refl.
       assert (H : In v (map (@fst _ _) (tau ++ sigma))).
       apply H4.
       destruct (in_split _ _ u_in_ls) as [ls1 [ls2 H]]; rewrite H.
@@ -1350,9 +1350,9 @@ Qed.
       set (m := (S (maxl _ (map (fun xt => (inject_inv (fst xt), snd xt)) sigma)))).
       exists (Var (inject m)); exists ((inject m, Term f l ) :: nil).
       split.
-      simpl; rewrite eq_var_bool_refl; apply refl_equal.
+      simpl; rewrite eq_var_bool_refl; apply eq_refl.
       split.
-      apply refl_equal.
+      apply eq_refl.
       split.
       simpl; intros x u [xu_eq_mv | xu_in_sigma].
       injection xu_eq_mv; intros; subst x u.
@@ -1463,15 +1463,15 @@ Qed.
       intros v1 [v2 | f2 l2] sigma W1 W2 H1 H2 H3 H41 H42 H0.
       apply f_equal; apply H3 with (apply_subst sigma (Var v1)).
       assert (v1_in_sig : In v1 (map (@fst _ _) sigma)).
-      apply H41; left; apply refl_equal.
+      apply H41; left; apply eq_refl.
       rewrite in_map_iff in v1_in_sig; destruct v1_in_sig as [[v1' u1] [v1_eq_v1' v1_in_sig]]; simpl in v1_eq_v1'; subst v1'.
       simpl; rewrite (subst_aux _ H2 _ _ v1_in_sig); assumption.
       rewrite H0; assert (v2_in_sig : In v2 (map (@fst _ _) sigma)).
-      apply H42; left; apply refl_equal.
+      apply H42; left; apply eq_refl.
       rewrite in_map_iff in v2_in_sig; destruct v2_in_sig as [[v2' u1] [v2_eq_v2' v2_in_sig]]; simpl in v2_eq_v2'; subst v2'.
       simpl; rewrite (subst_aux _ H2 _ _ v2_in_sig); assumption.
       assert (v1_in_sig : In v1 (map (@fst _ _) sigma)).
-      apply H41; left; apply refl_equal.
+      apply H41; left; apply eq_refl.
       rewrite in_map_iff in v1_in_sig; destruct v1_in_sig as [[v1' u1] [v1_eq_v1' v1_in_sig]]; simpl in v1_eq_v1'; subst v1'.
       simpl in H0; rewrite (subst_aux _ H2 _ _ v1_in_sig) in H0.
       destruct u1 as [x1 | g1 k1].
@@ -1482,7 +1482,7 @@ Qed.
 (* 1/1 s1 is a compound term *)
       intros f1 l1 Hl1 [v2 | f2 l2] sigma W1 W2 H1 H2 H3 H41 H42 H0.
       assert (v2_in_sig : In v2 (map (@fst _ _) sigma)).
-      apply H42; left; apply refl_equal.
+      apply H42; left; apply eq_refl.
       rewrite in_map_iff in v2_in_sig; destruct v2_in_sig as [[v2' u2] [v2_eq_v2' v2_in_sig]]; simpl in v2_eq_v2'; subst v2'.
       simpl in H0; rewrite (subst_aux _ H2 _ _ v2_in_sig) in H0.
       destruct u2 as [x2 | g2 k2].
@@ -1496,18 +1496,18 @@ Qed.
       destruct (well_formed_unfold W2) as [Wl2 _]; clear W2.
       revert l2 sigma Wl1 Wl2 H1 H2 H3 H41 H42 H0.
       induction l1 as [ | t1 l1]; intros [ | t2 l2] sigma Wl1 Wl2 H1 H2 H3 H41 H42 H0.
-      apply refl_equal.
+      apply eq_refl.
       discriminate.
       discriminate.
       simpl in H0; injection H0; clear H0; intros H0 h0.
-      rewrite (Hl1 t1 (or_introl _ (refl_equal _)) t2 sigma); trivial.
+      rewrite (Hl1 t1 (or_introl _ (eq_refl _)) t2 sigma); trivial.
       apply f_equal; rewrite (IHl1 (tail_prop _ Hl1) l2 sigma); trivial.
       intros u u_in_l1; apply Wl1; right; assumption.
       intros u u_in_l2; apply Wl2; right; assumption.
       intros v v_in_l1; apply H41; apply in_or_app; right; assumption.
       intros v v_in_l2; apply H42; apply in_or_app; right; assumption.
-      apply Wl1; left; apply refl_equal.
-      apply Wl2; left; apply refl_equal.
+      apply Wl1; left; apply eq_refl.
+      apply Wl2; left; apply eq_refl.
       intros v v_in_t1; apply H41; apply in_or_app; left; assumption.
       intros v v_in_t2; apply H42; apply in_or_app; left; assumption.
     Qed.
@@ -1539,7 +1539,7 @@ Qed.
 (* 1/3 variable case *)
       intros v sigma t tau Ws H1 H2 H3 H4 Wt H0; simpl in H0; revert H0.
       assert (v_in_sig : In v (map (@fst _ _) sigma)).
-      rewrite <- H4; left; apply refl_equal.
+      rewrite <- H4; left; apply eq_refl.
       destruct (mem_map_set _ _ X.eq_bool_ok (@fst _ _) v sigma) as [[v' v_val] [v_eq_v' v_in_sig']].
       apply in_impl_mem; [reflexivity | assumption].
       simpl in v_eq_v'; subst v'.
@@ -1549,14 +1549,14 @@ Qed.
       intros H0 x' [ | i p]; [idtac | intro; discriminate].
       intro H; injection H; clear H; intro H; subst x'.
       exists (Var v); split.
-      apply refl_equal.
-      rewrite H0; simpl; rewrite (subst_aux _ H2 _ _ v_in_sig'); apply refl_equal.
+      apply eq_refl.
+      rewrite H0; simpl; rewrite (subst_aux _ H2 _ _ v_in_sig'); apply eq_refl.
       intros L; destruct t as [y | g k].
       intros H0 x' [ | i p]; [idtac | intro; discriminate].
       intro H; injection H; clear H; intro H; subst x'.
       exists (Var v); split.
-      apply refl_equal.
-      rewrite H0; simpl; rewrite (subst_aux _ H2 _ _ v_in_sig'); apply refl_equal.
+      apply eq_refl.
+      rewrite H0; simpl; rewrite (subst_aux _ H2 _ _ v_in_sig'); apply eq_refl.
       intro H0; injection H0; clear H0; do 2 intro; subst g l.
       apply False_rect; apply L; rewrite map_length; apply sym_eq.
       destruct (well_formed_unfold Wt) as [_ L']; destruct (F.arity f); assumption.
@@ -1566,20 +1566,20 @@ Qed.
       intros H0 x' [ | i p]; [idtac | intro; discriminate].
       intro H; injection H; clear H; intro H; subst x'.
       exists (Term f ls); split.
-      apply refl_equal.
+      apply eq_refl.
       apply sym_eq; assumption.
       intro H0; injection H0; clear H0; intros H0 H0'; subst g.
       intros x [ | i p] Sub.
       discriminate.
       simpl in Sub.
       generalize (nth_error_ok_in i lt).
-      destruct (nth_error lt i) as [ti | ]; [intros H; destruct (H _ (refl_equal _)) as [lt1 [lt2 [L H']]]; clear H | discriminate].
+      destruct (nth_error lt i) as [ti | ]; [intros H; destruct (H _ (eq_refl _)) as [lt1 [lt2 [L H']]]; clear H | discriminate].
       rewrite H' in H0; rewrite map_app in H0.
       destruct (split_map_set _ _ _ _ (sym_eq  H0)) as [ls1 [ls2 [h1 [h2 h3]]]].
       destruct ls2 as [ | si ls2].
       discriminate.
       assert (si_in_ls : In si ls).
-      rewrite h1; apply in_or_app; right; left; apply refl_equal.
+      rewrite h1; apply in_or_app; right; left; apply eq_refl.
       destruct (Hls _ si_in_ls (subst_rest (var_list si) sigma) ti tau) with x p as [v_val [Sub' Sub'']].
       destruct (well_formed_unfold Ws) as [Wls _]; apply Wls; trivial.
       intros y u yu_in_rest_sig; apply (H1 y); apply subst_rest_subst  with (var_list si); trivial.
@@ -1600,7 +1600,7 @@ Qed.
       intro y_in_rest_subst; rewrite in_map_iff in y_in_rest_subst; 
         destruct y_in_rest_subst as [[y' u] [y_eq_y' y_in_rest_subst]]; simpl in y_eq_y'; subst y'.
       apply subst_rest_rest with sigma u; trivial.
-      destruct (well_formed_unfold Wt) as [Wlt _]; apply Wlt; rewrite H'; apply in_or_app; right; left; apply refl_equal.
+      destruct (well_formed_unfold Wt) as [Wlt _]; apply Wlt; rewrite H'; apply in_or_app; right; left; apply eq_refl.
       injection h3; clear h3; intros _ h3; rewrite <- h3.
       rewrite <- subst_eq_vars; intros z z_in_si; rewrite subst_rest_ok; trivial.
       assumption.
@@ -1640,13 +1640,13 @@ Qed.
 (* 1/2 t is a variable *)
       intros v _ s Ws sigma tau H0 H1 H2 H3 H4 Aux2.
       destruct (Aux2 v) as [v_val [K1 [K2 K3]]].
-      left; apply refl_equal.
+      left; apply eq_refl.
       exists ((v,v_val) :: nil); split.
       intros z [z_eq_v | z_in_nil]; [subst z | contradiction].
       rewrite subst_comp_is_subst_comp; simpl; rewrite eq_var_bool_refl; rewrite K1; trivial.
       split.
       simpl; simpl; rewrite eq_var_bool_refl.
-      assert (K2' := K2 nil (refl_equal _)); injection K2'; intros; apply sym_eq; assumption.
+      assert (K2' := K2 nil (eq_refl _)); injection K2'; intros; apply sym_eq; assumption.
       split.
       intros z; split; intro H; assumption.
       unfold well_formed_subst; simpl.
@@ -1658,7 +1658,7 @@ Qed.
       apply False_rect.
       destruct (well_formed_unfold Wt) as [_ L].
       assert (x_in_sig : In x (map (@fst _ _) sigma)).
-      rewrite <- H4; left; apply refl_equal.
+      rewrite <- H4; left; apply eq_refl.
       rewrite in_map_iff in x_in_sig; destruct x_in_sig as [[x' u] [x_eq_x' x_in_sig]]; simpl in x_eq_x'; subst x'.
       simpl in H0; rewrite (subst_aux _ H2 _ _ x_in_sig) in H0; subst u.
       apply (H1 _ _ x_in_sig); apply sym_eq; rewrite length_map; destruct (F.arity f); assumption.
@@ -1676,8 +1676,8 @@ Qed.
       destruct ls as [ | s ls]; [discriminate | idtac].
       injection H0; clear H0; intros H0 h0.
 (* applying the induction hypothesis in lt *)
-      destruct (Hlt t (or_introl _ (refl_equal _)) (Wlt t (or_introl _ (refl_equal _))) 
-        s (Wls s (or_introl _ (refl_equal _))) (subst_rest (var_list s) sigma)) with tau as [phi [k1 [k2 [k3 k4]]]]; trivial.
+      destruct (Hlt t (or_introl _ (eq_refl _)) (Wlt t (or_introl _ (eq_refl _)))
+        s (Wls s (or_introl _ (eq_refl _))) (subst_rest (var_list s) sigma)) with tau as [phi [k1 [k2 [k3 k4]]]]; trivial.
       rewrite h0; rewrite <- subst_eq_vars; intros x x_in_s; rewrite subst_rest_ok; trivial.
       intros x u xu_in_rest_sig; apply (H1 x u); apply subst_rest_subst with (var_list s); trivial.
       intros x u v xu_in_rest_sig xv_in_rest_sig; apply (H2 x u v); apply subst_rest_subst with (var_list s); trivial.
@@ -1740,7 +1740,7 @@ Qed.
       replace (length lt1) with (length ls1).
       rewrite nth_error_at_pos; intro; assumption.
       rewrite <- (map_length (apply_subst sigma) ls1).
-      rewrite Hs1; rewrite map_length; apply refl_equal.
+      rewrite Hs1; rewrite map_length; apply eq_refl.
       split; trivial.
       intros [ | i p].
       intro; discriminate.
@@ -1752,28 +1752,28 @@ Qed.
       assert (x_in_t : In x (var_list t)).
       rewrite <- k3; rewrite in_map_iff; exists (x,u); split; trivial.
       destruct (find_mem _ _ X.eq_bool_ok _ phi x_phi) as [x' [phi1 [phi2 [x_eq_x' H]]]]; subst x'.
-      rewrite H; apply in_or_app; right; left; apply refl_equal.
+      rewrite H; apply in_or_app; right; left; apply eq_refl.
       rewrite <- k2.
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x_in_t)) as [p Sub].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x_in_t)) as [p Sub].
       apply var_in_subterm with u p; trivial.
       generalize (subterm_at_pos_apply_subst_apply_subst_subterm_at_pos t p phi).
-      rewrite Sub; intro H; rewrite H; apply f_equal; simpl; rewrite x_phi; apply refl_equal.
+      rewrite Sub; intro H; rewrite H; apply f_equal; simpl; rewrite x_phi; apply eq_refl.
       assert (v_in_ls : forall x v, find X.eq_bool x Phi = Some v -> forall x0 : T1.variable, In x0 (T1.var_list v) -> In x0 (var_list_list ls)).
       intros x v x_Phi.
       intros z z_in_v.
       assert (x_in_lt : In x (var_list_list lt)).
       rewrite <- K3; rewrite in_map_iff; exists (x,v); split; trivial.
       destruct (find_mem _ _ X.eq_bool_ok _ Phi x_Phi) as [x' [Phi1 [Phi2 [x_eq_x' H]]]]; subst x'.
-      rewrite H; apply in_or_app; right; left; apply refl_equal.
+      rewrite H; apply in_or_app; right; left; apply eq_refl.
       injection K2; clear K2; intro K2; rewrite <- K2.
       destruct (in_var_list_list _ _ x_in_lt) as [ti [ti_in_lt x_in_ti]].
       destruct (in_split _ _ ti_in_lt) as [lt1 [lt2 H]]; rewrite H.
       simpl; rewrite map_app; rewrite var_list_list_app; apply in_or_app; right.
       simpl; apply in_or_app; left.
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x_in_ti)) as [p Sub].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x_in_ti)) as [p Sub].
       apply var_in_subterm with (apply_subst Phi (Var x)) p.
       generalize (subterm_at_pos_apply_subst_apply_subst_subterm_at_pos ti p Phi).
-      rewrite Sub; intro H'; rewrite H'; apply f_equal; simpl; rewrite x_Phi; apply refl_equal.
+      rewrite Sub; intro H'; rewrite H'; apply f_equal; simpl; rewrite x_Phi; apply eq_refl.
       simpl; rewrite x_Phi; trivial.
       assert (ok : forall x u v, find X.eq_bool x phi = Some u -> find X.eq_bool x Phi = Some v -> u = v).
       intros x u v x_phi x_Phi.
@@ -1789,14 +1789,14 @@ Qed.
       apply u_in_s with x u; assumption.
       rewrite <- k3; rewrite in_map_iff; exists (x,u); split; trivial.
       destruct (find_mem _ _ X.eq_bool_ok _ phi x_phi) as [x' [phi1 [phi2 [x_eq_x' H]]]]; subst x'.
-      rewrite H; apply in_or_app; right; left; apply refl_equal.
+      rewrite H; apply in_or_app; right; left; apply eq_refl.
       rewrite <- K1.
       rewrite subst_comp_is_subst_comp; simpl; rewrite x_Phi.
       rewrite <- subst_eq_vars; intros z z_in_v; rewrite subst_rest_ok; trivial.
       apply v_in_ls with x v; assumption.
       rewrite <- K3; rewrite in_map_iff; exists (x,v); split; trivial.
       destruct (find_mem _ _ X.eq_bool_ok _ _ x_Phi) as [x' [Phi1 [Phi2 [x_eq_x' H]]]]; subst x';
-        rewrite H; apply in_or_app; right; left; apply refl_equal.
+        rewrite H; apply in_or_app; right; left; apply eq_refl.
 (* MAIN PROOF *)
       exists (phi ++ Phi); split.
       simpl var_list_list; intros v v_in_tlt; destruct (in_app_or _ _ _ v_in_tlt) as [v_in_t | v_in_lt]; clear v_in_tlt.
@@ -1946,7 +1946,7 @@ Qed.
       rewrite <- subst_eq_vars; intros z z_in_v_phi'.
       rewrite subst_rest_ok; trivial.
       rewrite <- K2.
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ v_in_l)) as [p Sub].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ v_in_l)) as [p Sub].
       apply var_in_subterm with (apply_subst phi' (Var v)) p; trivial.
       generalize (subterm_at_pos_apply_subst_apply_subst_subterm_at_pos l p phi').
       rewrite Sub; trivial.
@@ -2001,7 +2001,7 @@ Qed.
       intros f l IHl s H; inversion H as [t1 t2 H0 H1 H2 | g l1 l2 H0 H1 H2]; clear H; subst.
       inversion H0 as [r l' sigma H H1 H2].
       intros x x_in_left.
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x_in_left)) as [p Sub].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x_in_left)) as [p Sub].
       generalize (subterm_in_instantiated_term _ _ _ Sub).
       case_eq (subterm_at_pos r p); [intros u' Sub' | intro Sub'].
       destruct u' as [x' | ]; [idtac | intro; discriminate].
@@ -2009,7 +2009,7 @@ Qed.
       apply (var_in_subterm x' r p Sub'); left; reflexivity.
       assert (x'_in_l : In x' (var_list l')).
       apply (R_reg _ _ H); assumption.
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x'_in_l)) as [q Sub''].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x'_in_l)) as [q Sub''].
       apply var_in_subterm with (apply_subst sigma (Var x')) q.
       generalize (subterm_at_pos_apply_subst_apply_subst_subterm_at_pos l' q sigma).
       rewrite Sub''; trivial.
@@ -2017,7 +2017,7 @@ Qed.
       intros [x' [p' [p'' [K [x'_in_r [Sub1 Sub2]]]]]].
       assert (x'_in_l : In x' (var_list l')).
       apply (R_reg _ _ H); assumption.
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x'_in_l)) as [q Sub''].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x'_in_l)) as [q Sub''].
       apply var_in_subterm with (apply_subst sigma (Var x')) q.
       generalize (subterm_at_pos_apply_subst_apply_subst_subterm_at_pos l' q sigma).
       rewrite Sub''; trivial.
@@ -2120,7 +2120,7 @@ Qed.
       intros s Ws IHs sigma H0 Acc_sigma H1 H2 H3 H4; apply Acc_intro.
       intros u H.
       destruct (rewrite_decomposed_term (apply_subst sigma s) s sigma 
-        (refl_equal _) Ws H1 H2 H3 H4 u H) as [[t [J1 J2]] | J2]; clear H.
+        (eq_refl _) Ws H1 H2 H3 H4 u H) as [[t [J1 J2]] | J2]; clear H.
 (* 1/2 rewriting in s *)
       rewrite J2; apply (IHs t) with (map (fun x => apply_subst sigma (Var x)) (var_list t)); trivial.
       apply one_step_Rwf; trivial.
@@ -2399,7 +2399,7 @@ Qed.
       simpl in Sub.
       revert Sub; generalize (nth_error_ok_in i l).
       destruct (nth_error l i) as [ti | ]; [idtac | intros; discriminate].
-      intro H'; destruct (H' _ (refl_equal _)) as [l1 [l2 [L H'']]]; clear H'.
+      intro H'; destruct (H' _ (eq_refl _)) as [l1 [l2 [L H'']]]; clear H'.
       intro Sub.
       subst l.
       rewrite replace_at_pos_unfold.
@@ -2439,7 +2439,7 @@ Qed.
       simpl in Sub.
       revert Sub; generalize (nth_error_ok_in i l).
       destruct (nth_error l i) as [ti | ]; [idtac | intros; discriminate].
-      intro H'; destruct (H' _ (refl_equal _)) as [l1 [l2 [L H'']]]; clear H'.
+      intro H'; destruct (H' _ (eq_refl _)) as [l1 [l2 [L H'']]]; clear H'.
       intro Sub.
       subst l.
       rewrite replace_at_pos_unfold.
@@ -2594,12 +2594,12 @@ Qed.
       rewrite <- acc_one_step_list.
       intros t t_in_sig.
       rewrite in_map_iff in t_in_sig; destruct t_in_sig as [x [H x_in_s]].
-      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x_in_s)) as [p Sub].
+      destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x_in_s)) as [p Sub].
       destruct p as [ | i p].
       discriminate.
       simpl in Sub; revert Sub; generalize (nth_error_ok_in i k).
       destruct (nth_error k i) as [ti | ].
-      intros H'; destruct (H' _ (refl_equal _)) as [l1 [l2 [L' H'']]].
+      intros H'; destruct (H' _ (eq_refl _)) as [l1 [l2 [L' H'']]].
       intro Sub; subst t.
       apply acc_subterms_3 with p (apply_subst sigma ti).
       apply Acc_l; injection H0; clear H0; intros; subst l.
@@ -2612,12 +2612,12 @@ Qed.
       assert (x_in_s : In x (var_list (Term g k))).
       rewrite H4; rewrite in_map_iff; exists (x,u); split; trivial.
       replace u with (apply_subst sigma (Var x)).
-      destruct (var_in_subterm2 _ _  (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ x_in_s)) as [p Sub].
+      destruct (var_in_subterm2 _ _  (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ x_in_s)) as [p Sub].
       destruct p as [ | i p].
       discriminate.
       simpl in Sub; revert Sub; generalize (nth_error_ok_in i k).
       destruct (nth_error k i) as [ti | ].
-      intros H'; destruct (H' _ (refl_equal _)) as [l1 [l2 [L' H'']]].
+      intros H'; destruct (H' _ (eq_refl _)) as [l1 [l2 [L' H'']]].
       intro Sub.
       apply acc_subterms_3 with p (apply_subst sigma ti).
       apply Acc_l; injection H0; clear H0; intros; subst l.
@@ -2644,7 +2644,7 @@ intros R R_var f l t' H Cf.
 inversion H as [u | u1 u2 K]; clear H; subst.
 exists l; split; [reflexivity | left].
 set (t := Term f l) in *.
-assert (H := refl_equal t).
+assert (H := eq_refl t).
 unfold t at 2 in H.
 clearbody t; revert H; induction K as [u1 u2 K1 | u1 u2 u3 K1 Kn]; intros; subst.
 inversion K1 as [v1 v2 K | g k1 k2 K]; clear K1; subst.
@@ -2653,7 +2653,7 @@ destruct v2 as [x2 | f2 l2].
 apply False_rect; apply (R_var _ _ H).
 apply False_rect; apply Cf; injection H1; clear H1; intros; subst; constructor 1 with l2 v1; assumption.
 exists k1; split; [reflexivity | right; left; assumption].
-destruct (IHKn (refl_equal _)) as [l' [H1 H2]]; clear IHKn; subst.
+destruct (IHKn (eq_refl _)) as [l' [H1 H2]]; clear IHKn; subst.
 inversion K1 as [v1 v2 K | g k1 k2 K]; clear K1; subst.
 inversion K as [v1 v2 sigma H]; clear K.
 destruct v2 as [x2 | f2 l2].

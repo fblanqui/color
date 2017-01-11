@@ -11,6 +11,7 @@ Semi-ring equipped with two (strict and non-strict) orders.
 From Coq Require Import Morphisms Max Min.
 From CoLoR Require Export SemiRing.
 From CoLoR Require Import RelDec RelUtil SN RelExtras NatUtil LogicUtil ZUtil.
+From CoLoR Require BigNUtil.
 
 (***********************************************************************)
 (** Semi-rings equipped with orders *)
@@ -160,7 +161,7 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Module Export SR := BigNSemiRingT.
 
-  From CoLoR Require Import BigNUtil.
+  Import BigNUtil.
 
   Definition gt x y := BigN.lt y x.
   Definition ge x y := BigN.le y x.

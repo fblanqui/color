@@ -16,8 +16,8 @@ Ltac find_replacement l :=
         let e := 
           match goal with 
             | H: refl_trans_clos _ ?x' x |- _ => 
-              constr:x'
-	  | |- _ => constr:x
+              constr:(x')
+      | |- _ => constr:(x)
           end
           in
           constr:(e::l')
@@ -35,7 +35,7 @@ Ltac find_replacement l :=
   
   Ltac is_closed t := 
     match t with 
-      | Term _ ?l => is_closed_list ltac:is_closed l
+      | Term _ ?l => is_closed_list ltac:(is_closed l)
       | Var _ => idtac
       | _ => 
         (match goal with 
@@ -106,7 +106,7 @@ Lemma eq_bool_ok : forall n1 n2, if eq_bool n1 n2 then n1=n2 else n1<>n2.
 Proof.
   induction n1 as [|n1];intros [|n2];simpl in *. 
   
-  exact (refl_equal _). 
+  exact (eq_refl _).
   intro abs;discriminate abs. 
   intro abs;discriminate abs. 
   generalize (IHn1 n2).

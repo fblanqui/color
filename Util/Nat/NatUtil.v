@@ -95,7 +95,7 @@ Qed.
 
 Ltac case_beq_nat := case_beq beq_nat beq_nat_ok.
 
-Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (refl_equal n).
+Lemma eq_nat_dec_refl : forall n, eq_nat_dec n n = left (n<>n) (eq_refl n).
 
 Proof.
   intro. gen (eq_nat_dec n n). destruct s.

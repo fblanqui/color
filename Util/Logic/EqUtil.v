@@ -64,12 +64,12 @@ Section eq_dep.
 
   Proof. exact (eq_dep_eq__UIP A eq_dep_eq). Qed.
 
-  Lemma UIP_refl : forall (x : A) (p : x = x), p = refl_equal x.
+  Lemma UIP_refl : forall (x : A) (p : x = x), p = eq_refl x.
 
   Proof. exact (UIP__UIP_refl A UIP). Qed.
 
   Lemma Streicher_K :
-    forall (x : A) (P : x = x -> Prop), P (refl_equal x) -> forall p, P p.
+    forall (x : A) (P : x = x -> Prop), P (eq_refl x) -> forall p, P p.
 
   Proof. exact (K_dec_type eq_dec). Qed.
 
@@ -136,7 +136,7 @@ Section beq.
 
   Proof.
     intros. rewrite beq_ok in H. rewrite beq_ok in H0.
-    assert (x = z). apply trans_eq with y; hyp.
+    assert (x = z). apply eq_trans with y; hyp.
     rewrite beq_ok. exact H1.
   Qed.
 

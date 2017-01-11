@@ -353,7 +353,7 @@ destruct (list_exists_rest
        let (b, y) := bll' in
        let (l, l') := y in R a1 b /\ permut0 R l1 (l ++ l')) (split_all l2) P_dec).
 left.
-destruct ((proj1 H) (refl_equal _)) as [[b [l l']] [H' [a1_R_b P]]].
+destruct ((proj1 H) (eq_refl _)) as [[b [l l']] [H' [a1_R_b P]]].
 rewrite split_all_is_sound in H'; subst l2; apply Pcons; trivial.
 right; intro P; inversion P; subst.
 assert (false = true).
@@ -908,8 +908,6 @@ Proof.
   split; intro x. apply permut_refl. apply permut_sym. apply permut_trans.
 Qed.
 
-From Coq Require Import Morphisms.
-
 Declare Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
 
 Declare Instance app_morph : Proper (permut ==> permut ==> permut) (@app A).
@@ -1207,7 +1205,7 @@ intros l a_not_in_l1 P'; assert False; [idtac | contradiction].
 apply a_not_in_l1.
 rewrite (mem_permut_mem a P).
 rewrite (mem_permut_mem a P'); left; reflexivity.
-intros; apply refl_equal.
+intros; apply eq_refl.
 Defined.
 
 Lemma remove_eq_eq :
@@ -1223,10 +1221,10 @@ Lemma remove_eq_eq :
 Proof.
 fix 1.
 intros [ | b l] a a' a_eq_a'; simpl.
-apply refl_equal.
+apply eq_refl.
 case_eq (eq_bool a b); [intro a_eq_b | intro a_diff_b].
 case_eq (eq_bool a' b); [intro a'_eq_b | intro a'_diff_b].
-apply refl_equal.
+apply eq_refl.
 apply False_rect.
 assert (D := eq_bool_ok a' b); rewrite a'_diff_b in D; apply D.
 transitivity a.
@@ -1248,8 +1246,8 @@ Lemma remove_equiv_nil_2 :
 Proof.
 fix 1.
 intros [ | a l]; simpl.
-apply refl_equal.
-rewrite remove_equiv_nil_2; apply refl_equal.
+apply eq_refl.
+rewrite remove_equiv_nil_2; apply eq_refl.
 Qed.
 
 Lemma remove_equiv_is_sound: 
@@ -1393,7 +1391,7 @@ Lemma remove_equiv_permut_2:
 Proof.
 fix 1.
 intros [ | a1 l1] l2 l2' P.
-simpl; split; [apply refl_equal | trivial].
+simpl; split; [apply eq_refl | trivial].
 simpl; generalize (remove_permut P a1).
 case_eq (remove eq_bool a1 l2); [intro k2 | idtac]; intro H2.
 case_eq (remove eq_bool a1 l2'); [intro k2' | idtac]; intro H2'.

@@ -210,15 +210,15 @@ apply th_refl.
 apply general_context.
 revert a IH; induction l as [ | b l].
 intros a IH.
-assert (Ha := IH _ (or_introl _ (refl_equal _))).
+assert (Ha := IH _ (or_introl _ (eq_refl _))).
 apply rwr_list_cons; assumption.
 intros a IH.
-assert (Ha := IH _ (or_introl _ (refl_equal _))).
+assert (Ha := IH _ (or_introl _ (eq_refl _))).
 assert (Hl : rwr_list (one_step (sym_refl unit_one_step_at_top)) (b :: l) (map unit_nf (b :: l))).
 apply IHl.
 simpl; intros t [t_eq_b | t_in_l]; apply IH; right; [left | right]; assumption.
 simpl; apply rwr_list_split.
-apply IH; left; apply refl_equal.
+apply IH; left; apply eq_refl.
 apply Hl.
 
 clear IH; destruct l as [ | t1 [ | t2 [ | t3 l ]]]; 
@@ -295,7 +295,7 @@ subst; trivial.
 simpl; clear H; assert (map unit_nf l = map unit_nf l2).
 generalize l2 H'; clear l2 H'; induction l as [ | t l ]; intros l2 H; 
 inversion H as [ t' t2 l' H' | t' l' l2' H']; subst; simpl.
-rewrite (IHl t (or_introl _ (refl_equal t)) t2 H'); trivial.
+rewrite (IHl t (or_introl _ (eq_refl t)) t2 H'); trivial.
 apply (f_equal (fun l => unit_nf t :: l)); refine (IHl0 _ l2' H');
 intros; apply IHl; trivial; right; trivial.
 clear IHl H'; destruct l as [ | t1 [ | t2 [ | t3 l]]];
@@ -405,7 +405,7 @@ intros; subst; trivial.
 generalize (unit_for_AC _ Ar); destruct (unit_theory f) as [ u | u | u | ];
 try contradiction;
 intros _;
-generalize (UT f (refl_equal _)); clear UT; intro UT.
+generalize (UT f (eq_refl _)); clear UT; intro UT.
 generalize (T.eq_bool_ok (unit_nf u1) (Term u nil)); case (T.eq_bool (unit_nf u1) (Term u nil)); [intro u1_eq_u | intro u1_diff_u].
 apply th_refl.
 generalize (T.eq_bool_ok (unit_nf u2) (Term u nil)); case (T.eq_bool (unit_nf u2) (Term u nil)); [intro u2_eq_u | intro u2_diff_u].
@@ -437,7 +437,7 @@ intros; subst; trivial.
 generalize (unit_for_C _ Ar); destruct (unit_theory f) as [ u | u | u | ];
 try contradiction;
 intros _;
-generalize (UT f (refl_equal _)); clear UT; intro UT.
+generalize (UT f (eq_refl _)); clear UT; intro UT.
 generalize (T.eq_bool_ok (unit_nf u1) (Term u nil)); case (T.eq_bool (unit_nf u1) (Term u nil)); [intro u1_eq_u | intro u1_diff_u].
 generalize (T.eq_bool_ok (unit_nf u2) (Term u nil)); case (T.eq_bool (unit_nf u2) (Term u nil)); [intro u2_eq_u | intro u2_diff_u].
 rewrite u1_eq_u; rewrite u2_eq_u; apply th_refl.
@@ -489,7 +489,7 @@ clear S_t1; generalize l2 H'; clear l2 H';
 induction l1 as [ | t1 l1]; intros l2 H;
 inversion_clear H as [ t1' t2 l1'  H' | t1' l1' l2' H'].
 apply rwr_list_cons; apply IHn; trivial.
-apply S_l1; left; apply refl_equal.
+apply S_l1; left; apply eq_refl.
 simpl; apply rwr_list_tail; apply IHl1; trivial.
 intros; apply S_l1; right; trivial.
 clear S_t1; 
@@ -503,9 +503,9 @@ simpl; inversion H' as [H3 H4 H5 H'' | H3 H4 H5 H'']; subst.
 apply general_context; trivial.
 inversion H''.
 simpl; inversion H' as [H3 H4 H5 H'' | H3 H4 H5 H'']; subst.
-assert (s1_acu_s2 := IHn s1 (S_l1 _ (or_introl _ (refl_equal _))) s2 H'').
+assert (s1_acu_s2 := IHn s1 (S_l1 _ (or_introl _ (eq_refl _))) s2 H'').
 destruct (unit_theory f) as [ u | u | u | ];
-generalize (UT f (refl_equal _)); clear UT; intro UT; simpl.
+generalize (UT f (eq_refl _)); clear UT; intro UT; simpl.
 generalize (T.eq_bool_ok (unit_nf s1) (Term u nil)); case (T.eq_bool (unit_nf s1) (Term u nil)); [intro s1_eq_u | intro s1_diff_u].
 generalize (T.eq_bool_ok (unit_nf s2) (Term u nil)); case (T.eq_bool (unit_nf s2) (Term u nil)); [intro s2_eq_u | intro s2_diff_u].
 apply th_refl.
@@ -531,9 +531,9 @@ trivial.
 apply general_context; simpl; intuition.
 apply general_context; simpl; intuition.
 inversion H'' as [H3 H4 H5 H''' | H3 H4 H5 H''']; subst.
-assert (t1_acu_t2 := IHn t1 (S_l1 _ (or_intror _ (or_introl _ (refl_equal _)))) t2 H''').
+assert (t1_acu_t2 := IHn t1 (S_l1 _ (or_intror _ (or_introl _ (eq_refl _)))) t2 H''').
 destruct (unit_theory f) as [ u | u | u | ];
-generalize (UT f (refl_equal _)); clear UT; intro UT; simpl.
+generalize (UT f (eq_refl _)); clear UT; intro UT; simpl.
 generalize (T.eq_bool_ok ); case (T.eq_bool (unit_nf s2) (Term u nil)); [intro s2_eq_u | intro s2_diff_u].
 trivial.
 apply general_context; simpl; intuition.
@@ -579,8 +579,8 @@ induction l1 as [ | s1 l1]; intros l2 Wl2 H;
 destruct l2 as [ | s2 l2]; trivial; try discriminate.
 left; trivial.
 simpl in H; injection H; clear H; intros H H'.
-assert (Ws1 := Wl1 _ (or_introl _ (refl_equal _))).
-assert (Ws2 := Wl2 _ (or_introl _ (refl_equal _))).
+assert (Ws1 := Wl1 _ (or_introl _ (eq_refl _))).
+assert (Ws2 := Wl2 _ (or_introl _ (eq_refl _))).
 right; 
 generalize (acu_is_ac_on_unit_nf s1 s2); intros [ H'' _];
 generalize (H''  (cf_eq_ac (well_formed_unit_nf _ Ws1) 

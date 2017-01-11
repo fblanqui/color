@@ -11,6 +11,7 @@ order property, and is a lifting.
 *)
 
 From CoLoR Require Import RelExtras ListUtil AccUtil LogicUtil.
+From Coq Require Peano_dec.
 
 Module LexOrder (ES : Eqset).
 
@@ -127,9 +128,9 @@ Module LexOrder (ES : Eqset).
       Proof.
         intros l l' H1; inversion H1; subst. 
         generalize dependent l; induction p as [ | p]; intros l Hl H1.
-        destruct l as [|h l]; inversion Hl.
+        destruct l as [|h l]; inversion H1.
         subst; simpl; constructor; trivial.
-        destruct l as [|h l]; inversion Hl.
+        destruct l as [|h l]; inversion H1.
         subst; simpl; constructor 2; trivial.
         apply IHp; trivial.
         apply (@one_less_cons _ r l (l [p := a']) p a a'); trivial.
@@ -148,7 +149,7 @@ Module LexOrder (ES : Eqset).
 
   Section Decidability.
 
-    From Coq Require Import Peano_dec.
+    Import Peano_dec.
 
     Variable eqA_dec : forall a b : ES.A, {a = b} + {~a = b}.
 

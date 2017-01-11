@@ -93,7 +93,7 @@ apply IHl; trivial.
 apply interp_well_defined_1 with f l; trivial.
 (* 1/1 rewriting step, top function symbol defined *)
 apply Acc_inv with (Term f l); trivial.
-assert (Acc_fl := H nil f l (refl_equal _) def_f).
+assert (Acc_fl := H nil f l (eq_refl _) def_f).
 revert Acc_fl; generalize (Term f l); clear.
 intros t Acc_t; rewrite acc_with_subterm in Acc_t.
 induction Acc_t as [t Acc_t' IH]. 
@@ -141,7 +141,7 @@ case_eq (subterm_at_pos d p).
 intros [x | f' k'] Sub' K.
 (* 1/5 u is a variable x -> x in g, ok *)
 rewrite K.
-assert (x_in_g := R1_reg _ _ H1 x (var_in_subterm x _ _ Sub' (or_introl _ (refl_equal _)))).
+assert (x_in_g := R1_reg _ _ H1 x (var_in_subterm x _ _ Sub' (or_introl _ (eq_refl _)))).
 destruct (var_in_subterm2 x g) as [q Sub''].
 apply in_impl_mem; trivial.
 rewrite <- K; apply (It q); trivial.
@@ -152,10 +152,10 @@ injection K; clear K; intros; subst f' k.
 inversion module_R1_R2 as [M].
 apply False_rect; generalize (M _ _ _ Df H1); simpl; rewrite (symb_in_subterm f _ _ Sub').
 discriminate.
-simpl; rewrite eq_symb_bool_refl; apply refl_equal.
+simpl; rewrite eq_symb_bool_refl; apply eq_refl.
 (* 1/3 d has no subterm at position p *)
 intros Sub' [x [q [q' [K1 [x_in_d [Sub'' Sub''']]]]]].
-assert (x_in_g := R1_reg _ _ H1 x (var_in_subterm x _ _ Sub'' (or_introl _ (refl_equal _)))).
+assert (x_in_g := R1_reg _ _ H1 x (var_in_subterm x _ _ Sub'' (or_introl _ (eq_refl _)))).
 destruct (var_in_subterm2 x g) as [q'' Sub4].
 apply in_impl_mem; trivial.
 apply (It (q'' ++ q')); trivial.
@@ -183,16 +183,16 @@ destruct (one_step_in_list H') as [a [b [l1 [l2 [H'' [H1 H2]]]]]]; subst ls lt.
 intros t t_in_lt; destruct (in_app_or _ _ _ t_in_lt) as [t_in_l1 | [t_eq_b | t_in_l2]].
 apply Hls; apply in_or_app; left; assumption.
 subst t; apply IHn with a; trivial.
-apply Size_ls; apply in_or_app; right; left; apply refl_equal.
+apply Size_ls; apply in_or_app; right; left; apply eq_refl.
 apply interp_well_defined_1 with f (l1 ++ a :: l2); trivial.
-apply in_or_app; right; left; apply refl_equal.
+apply in_or_app; right; left; apply eq_refl.
 apply Hls; apply in_or_app; do 2 right; assumption.
 
 intros [ | i p]; intros g l H Dg; simpl in H.
 injection H; intros; subst; absurd (defined R2 g); trivial.
 assert (H'' := nth_error_ok_in i lt).
 destruct (nth_error lt i) as [ ti | ].
-generalize (H'' _ (refl_equal _)); clear H''; 
+generalize (H'' _ (eq_refl _)); clear H'';
 intros [l1 [l2 [L1 H'']]].
 assert (ti_in_lt : In ti lt).
 subst; apply in_or_app; right; left; trivial.
@@ -291,7 +291,7 @@ apply IH; trivial.
 generalize l H2 Acc_l'; clear l H2 Acc_l' Acc_l IH.
 intros l H; induction H.
 intros Acc_l t [t_eq_t1 | t_in_l].
-subst; assert (Acc_t2 := Acc_l t2 (or_introl _ (refl_equal _))).
+subst; assert (Acc_t2 := Acc_l t2 (or_introl _ (eq_refl _))).
 inversion Acc_t2.
 apply H0; trivial.
 apply Acc_l; right; trivial.
@@ -471,14 +471,14 @@ intros t l; induction l as [ | a l].
 contradiction.
 simpl; set (sigma := (V0,a) :: (V1, Comb l) :: nil).
 assert (H1 : a = apply_subst sigma (Var V0)).
-simpl; rewrite eq_var_bool_refl; apply refl_equal.
+simpl; rewrite eq_var_bool_refl; apply eq_refl.
 assert (H2 : Comb l = apply_subst sigma (Var V1)).
 simpl; rewrite eq_var_bool_refl; case_eq (eq_var_bool V1 V0).
 intro V1_eq_V0; apply False_rect; apply V0_diff_V1; apply sym_eq.
 generalize (eq_var_bool_ok V1 V0); rewrite V1_eq_V0; intro; assumption.
-intros _; apply refl_equal.
+intros _; apply eq_refl.
 assert (H3 : Term pi (a :: Comb l :: nil) = apply_subst sigma (Term pi (Var V0 :: Var V1 :: nil))).
-rewrite H1, H2; apply refl_equal.
+rewrite H1, H2; apply eq_refl.
 intros [t_eq_a | t_in_l].
 subst t; do 2 left.
 rewrite H3, H1; apply instance; left.
@@ -497,7 +497,7 @@ inversion Is as [ | f' l' l'' ll Cf Hl Hl' Hll | f' l' l'' ll _ Hl Hl' Hll]; sub
 absurd (defined R2 f); trivial.
 apply project_comb.
 rewrite in_map_iff; exists (t,t'); split.
-apply refl_equal.
+apply eq_refl.
 assert (t_R_fl_bis := t_R_fl); rewrite FB12 in t_R_fl_bis.
 rewrite Hl in t_R_fl_bis.
 rewrite in_map_iff in t_R_fl_bis.
@@ -520,7 +520,7 @@ Lemma R1_at_top_aux_1 :
   Interp (apply_subst sigma t) (apply_subst sigma' t).
 Proof.
 intro t; pattern t; apply term_rec3; clear t.
-intros v sigma sigma' _ Ht Hsigma; apply (proj2 (Hsigma v (or_introl _ (refl_equal _)))).
+intros v sigma sigma' _ Ht Hsigma; apply (proj2 (Hsigma v (or_introl _ (eq_refl _)))).
 intros f l IH sigma sigma' Ct Ht Hsigma; simpl.
 apply (Ccase f (map (apply_subst sigma) l)
   (map (apply_subst sigma') l)
@@ -689,7 +689,7 @@ simpl in t_p_eq_r; destruct t as [ | g ll].
 discriminate.
 assert (H' := nth_error_ok_in i ll).
 destruct (nth_error ll i) as [ti | ].
-destruct (H' _ (refl_equal _)) as [l1 [l2 [L H'']]]; subst ll.
+destruct (H' _ (eq_refl _)) as [l1 [l2 [L H'']]]; subst ll.
 apply (IHp ti r); trivial.
 simpl in Ht; apply (interp_well_defined_1 R1 R2 _ _ Ht).
 rewrite in_map_iff.
@@ -700,7 +700,7 @@ discriminate.
 split; trivial; split; trivial; split.
 exact (R1_at_top_aux_1 (Term f l) sigma sigma' Cl Hl Hsigma).
 destruct r as [v | g k].
-apply (proj2 (Hsigma'' v (or_introl _ (refl_equal _)))).
+apply (proj2 (Hsigma'' v (or_introl _ (eq_refl _)))).
 exact (R1_at_top_aux_1 (Term g k) sigma sigma' Cr Hr Hsigma'').
 Qed.
 
@@ -1051,17 +1051,17 @@ generalize (refl_trans_clos_one_step_list_length_eq l2_R_l1); intros; discrimina
 rewrite refl_trans_clos_one_step_list_head_tail; split.
 assert (u_R_v : refl_trans_clos (one_step (union term R1 R2)) u v).
 apply refl_trans_clos_one_step_list_refl_trans_clos_one_step with nil (map (@fst _ _) ll2) nil (map (@fst _ _) ll1).
-apply refl_equal.
+apply eq_refl.
 assumption.
 inversion u_R_v as [uv | uu vv u_R_v']; clear u_R_v; subst.
-assert (Iv := Ill1 v (or_introl _ (refl_equal _))).
-rewrite (interp_unicity _ Iv v' u' (Hll1 _ _ (or_introl _ (refl_equal _))) (Hll2 _ _ (or_introl _ (refl_equal _)))).
+assert (Iv := Ill1 v (or_introl _ (eq_refl _))).
+rewrite (interp_unicity _ Iv v' u' (Hll1 _ _ (or_introl _ (eq_refl _))) (Hll2 _ _ (or_introl _ (eq_refl _)))).
 left.
-assert (Iv := Ill1 _ (or_introl _ (refl_equal _))).
-assert (Iu := Ill2 _ (or_introl _ (refl_equal _))).
+assert (Iv := Ill1 _ (or_introl _ (eq_refl _))).
+assert (Iu := Ill2 _ (or_introl _ (eq_refl _))).
 destruct (R1_R2_case _ _ Iv u_R_v') as [v'' [u'' [Iv' [Iu' H]]]].
-rewrite (interp_unicity _ Iv _ _ (Hll1 _ _ (or_introl _ (refl_equal _))) Iv').
-rewrite (interp_unicity _ Iu _ _ (Hll2 _ _ (or_introl _ (refl_equal _))) Iu').
+rewrite (interp_unicity _ Iv _ _ (Hll1 _ _ (or_introl _ (eq_refl _))) Iv').
+rewrite (interp_unicity _ Iu _ _ (Hll2 _ _ (or_introl _ (eq_refl _))) Iu').
 right; assumption.
 apply (IHll2 ll1 (tail_prop _ Ill1) (tail_prop _ Ill2) (fun s s' H => Hll1 _ _ (or_intror _ H)) 
                          (fun s s' H => Hll2 _ _ (or_intror _ H))).
@@ -1405,7 +1405,7 @@ destruct H12 as [H1 | H2].
 generalize (M3 f t' _ (Def R3 f l' u K3) H1).
 simpl; rewrite (symb_in_subterm f _ _ Sub).
 simpl; intro; discriminate.
-simpl; rewrite eq_symb_bool_refl; apply refl_equal.
+simpl; rewrite eq_symb_bool_refl; apply eq_refl.
 assert (F := Indep3 _ _ _ (Def _ _ _ _ K3) H2).
 simpl in F; destruct (symb_in_term f t).
 destruct (symb_in_term f t'); discriminate.
@@ -2120,7 +2120,7 @@ apply False_rect; apply (Incomp23 f (Def R2 f k u H2) D3).
 apply False_rect; inversion HPi; subst f; apply (Incomp3' D3).
 simpl in Sub; assert (H := nth_error_ok_in i l);
 destruct (nth_error l i) as [ti | ]; [idtac | discriminate].
-destruct (H _ (refl_equal _)) as [ls1 [ls2 [L H']]]; clear H; subst l.
+destruct (H _ (eq_refl _)) as [ls1 [ls2 [L H']]]; clear H; subst l.
 assert (Hti : Interp_dom (union term R1 R3) (union term R2 (Pi pi V0 V1)) ti).
 apply acc_interp_dom.
 apply IHl; apply in_or_app; right; left; trivial.
@@ -2222,12 +2222,12 @@ apply R3_reg with (Term f' k'); trivial.
 apply var_in_subterm with (Var v) (p ++ q).
 apply subterm_in_subterm with t; trivial.
 left; trivial.
-destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ v_in_s)) as [q' Sub''].
+destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ v_in_s)) as [q' Sub''].
 destruct q' as [ | i q'].
 discriminate.
 assert (H'' := nth_error_ok_in i k).
 simpl in Sub''; destruct (nth_error k i) as [si | ].
-destruct (H'' _ (refl_equal _)) as [l1 [l2 [L1 H''']]].
+destruct (H'' _ (eq_refl _)) as [l1 [l2 [L1 H''']]].
 apply acc_subterms_3 with q' (apply_subst sigma si).
 apply IHl.
 simpl in K2; injection K2; clear K2; intros; subst.
@@ -2275,7 +2275,7 @@ simpl; intros s s_in_k3; rewrite in_map_iff in s_in_k3; destruct s_in_k3 as [s' 
 apply Hk3; trivial.
 simpl in _Sub'.
 generalize (nth_error_ok_in i k); destruct (nth_error k i) as [ti | ]; [idtac | discriminate].
-intros H''; destruct (H'' _ (refl_equal _)) as [l1' [l2' [L H3]]]; clear H''; subst k.
+intros H''; destruct (H'' _ (eq_refl _)) as [l1' [l2' [L H3]]]; clear H''; subst k.
 apply acc_subterms_3 with q' (apply_subst sigma ti).
 apply IHl.
 simpl; injection K2; clear K2; intros; subst.
@@ -2332,7 +2332,7 @@ assert (H'' := nth_error_map (apply_subst sigma) k3 i).
 destruct (nth_error (map (apply_subst sigma) k3) i) as [ti | ].
 assert (H''' := nth_error_ok_in i k3).
 destruct (nth_error k3 i) as [si | ].
-destruct (H''' _ (refl_equal _)) as [l1 [l2 [L1 H'''']]].
+destruct (H''' _ (eq_refl _)) as [l1 [l2 [L1 H'''']]].
 assert (si_in_lr : In si k3).
 subst k3; apply in_or_app; right; left; trivial.
 apply acc_subterms_3 with r ti; trivial.
@@ -2469,7 +2469,7 @@ assert False; [idtac | contradiction].
 apply (Incomp123' f); trivial.
 simpl in Sub; assert (H := nth_error_ok_in i l);
 destruct (nth_error l i) as [ti | ]; [idtac | discriminate].
-destruct (H _ (refl_equal _)) as [ls1 [ls2 [L H']]]; clear H; subst l.
+destruct (H _ (eq_refl _)) as [ls1 [ls2 [L H']]]; clear H; subst l.
 assert (Hti : Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) ti).
 apply acc_interp_dom.
 apply IHl; apply in_or_app; right; left; trivial.
@@ -2897,17 +2897,17 @@ intros R1 R1_in_L; apply WL; right; trivial.
 intros R1 R2 R1_in_L R2_in_L; apply IL; right; trivial.
 simpl; apply Mod.
 intros f s t Df H'; destruct Df as [f' l u [H | H0]].
-destruct (ML R (or_introl _ (refl_equal _))) as [M'].
+destruct (ML R (or_introl _ (eq_refl _))) as [M'].
 apply (M' f' s t (Def (Rel pi R) f' l u H)); trivial.
 destruct M0 as [M0].
 apply (M0 f' s t (Def (Rel pi R0) f' l u H0)); trivial.
 simpl; assert (M := modular_termination_lift _ _ V0_diff_V1 pi (Rel pi R') (Rel pi R) (Rel pi R0) 
-(ML _ (or_introl _ (refl_equal _))) M0
+(ML _ (or_introl _ (eq_refl _))) M0
 _ (REquiv pi R') (RR_var pi R') (RR_reg pi R') (RP pi R')
 _ (REquiv pi R) (RR_var pi R) (RR_reg pi R) (RP pi R)
 _ (REquiv pi R0) (RR_var pi R0) (RR_reg pi R0) (RP pi R0)
-(I2 R (or_introl _ (refl_equal _)))
-(I1 R (or_introl _ (refl_equal _)))).
+(I2 R (or_introl _ (eq_refl _)))
+(I1 R (or_introl _ (eq_refl _)))).
 apply wf_incl with (ddp_step
          (union term (union term (Rel pi R') (Rel pi R))
             (union term (Rel pi R0) (Pi pi V0 V1)))).

@@ -91,7 +91,7 @@ set (Q := Vforall (fun t0 =>
   sub (dup_int_subst s) (dup_int_term t0) = dup_int_term (sub s t0))).
 apply term_ind with (Q:=Q).
 (* Var *)
-intro; unfold dup_int_subst; simpl. apply refl_equal.
+intro; unfold dup_int_subst; simpl. apply eq_refl.
 (* Fun *)
 intros. rewrite dup_int_term_fun. simpl.
 unfold Q in H.
@@ -115,7 +115,7 @@ intros.
 rewrite dup_hd_term_fun. simpl.
 cut ((Vmap (sub (dup_int_subst s)) (Vmap dup_int_term v)) =
  (Vmap dup_int_term (Vmap (sub s) v)) ).
-intro. rewrite <- H. apply refl_equal.
+intro. rewrite <- H. apply eq_refl.
 rewrite !Vmap_map.
 apply Vmap_eq_ext. 
 apply dup_int_subst_spec.
@@ -138,7 +138,7 @@ Lemma dup_int_context_spec : forall c s l,
 Proof.
 induction c; intros.
 simpl.
-rewrite dup_int_subst_spec. apply refl_equal.
+rewrite dup_int_subst_spec. apply eq_refl.
 simpl.
 cut (Vmap dup_int_term (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e) =
   (Vcast (Vapp (Vmap dup_int_term t)
@@ -334,10 +334,10 @@ split. auto.
 clear H.
 ded (int_red_rtc_preserve_hd H1).
 destruct H.
-exists v. subst. hyp.
+exists v. subst. auto.
 do 3 destruct H; subst.
 destruct H. inversion H. subst.
-exists x2. apply refl_equal.
+exists x2. apply eq_refl.
 
 split. apply rt_refl.
 exists v; auto.
@@ -356,7 +356,7 @@ Lemma dup_int_rules_int_red_rtc : forall f v t,
   red R # (Fun' (hd_symb f) v) t -> int_red R # (Fun' (hd_symb f) v) t.
 
 Proof.
-intros. ded (dup_int_rules_int_red_rtc_aux H (refl_equal _)). tauto.
+intros. ded (dup_int_rules_int_red_rtc_aux H (eq_refl _)). tauto.
 Qed. 
 
 End int_red.

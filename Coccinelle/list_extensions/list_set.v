@@ -1108,7 +1108,7 @@ intros e_eq_a1 e_eq_a1'.
 assert (a1_mem_s2' : mem_bool EDS1.eq_bool a1 (support s2') = true).
 generalize (mem_bool_ok _ _ eq_bool_ok a1 (support s2')).
 case (mem_bool EDS1.eq_bool a1 (support s2')).
-intros _; apply refl_equal.
+intros _; apply eq_refl.
 intro a1_not_mem_s2'; apply False_rect; apply a1_not_mem_s2'.
 apply (mem_eq_mem EDS1.eq_proof e _ (support s2') e_eq_a1' e_mem_s2').
 rewrite a1_mem_s2'; simpl.
@@ -1117,7 +1117,7 @@ rewrite <- (not_mem_compat s2 e_eq_a1').
 generalize (mem_bool_ok _ _ eq_bool_ok e (support s2)).
 case (mem_bool EDS1.eq_bool e (support s2)).
 intro e_mem_s2; apply False_rect; apply e_not_mem_s2; assumption.
-intros _; apply refl_equal.
+intros _; apply eq_refl.
 rewrite a1_not_mem_s2.
 simpl; apply le_n_S.
 apply (subset_set_diff (mk_set prf1) s2_in_s2').

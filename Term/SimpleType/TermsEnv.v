@@ -1296,7 +1296,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof.
     intros. set (w := (proj1 H) 0 A); compute in w.
-    set (p := w (refl_equal (Some (Some A)))); inversion p.
+    set (p := w (eq_refl (Some (Some A)))); inversion p.
   Qed.
 
   Lemma env_eq_some_nil_absurd : forall E1 A,
@@ -1304,7 +1304,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof.
     intros. set (w := (proj1 H) 0 A); compute in w.
-    set (p := w (refl_equal (Some (Some A)))); inversion p.
+    set (p := w (eq_refl (Some (Some A)))); inversion p.
   Qed.
 
   Lemma env_eq_tail : forall E1 E2, E1 [=] E2 -> tail E1 [=] tail E2.
@@ -1434,7 +1434,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     intros.    
     destruct a.
     set (w := proj2 (H 0 s)); compute in w.
-    set (p := w (refl_equal (Some (Some s)))); try_solve.
+    set (p := w (eq_refl (Some (Some s)))); try_solve.
     apply env_eq_sym; apply env_eq_empty_cons_rev; apply env_eq_sym.
     apply IHE2; intros.
     split.
@@ -1451,11 +1451,11 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_eq_cons.
     destruct a; destruct o; trivial.
     set (w := proj1 (H 0 s)); compute in w.
-    set (p := w (refl_equal (Some (Some s)))); inversion p; trivial.
+    set (p := w (eq_refl (Some (Some s)))); inversion p; trivial.
     set (w := proj1 (H 0 s)); compute in w.
-    set (p := w (refl_equal (Some (Some s)))); inversion p.
+    set (p := w (eq_refl (Some (Some s)))); inversion p.
     set (w := proj2 (H 0 s)); compute in w.
-    set (p := w (refl_equal (Some (Some s)))); inversion p.
+    set (p := w (eq_refl (Some (Some s)))); inversion p.
     apply IHE1.
     intros.
     set (hint := H (S i) A); trivial.

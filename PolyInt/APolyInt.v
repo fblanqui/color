@@ -231,7 +231,7 @@ Section S.
     Notation "'1'" := (pconst _ 1) : poly_scope.
 
     Bind Scope poly_scope with poly.
-    Open Local Scope poly_scope.
+    Local Open Scope poly_scope.
 
     Hint Unfold maxvar_le.
     Hint Resolve le_max_l le_max_r.

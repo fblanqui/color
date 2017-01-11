@@ -98,7 +98,7 @@ intros ti H; assumption.
 contradiction.
 case (nth_error l (P f)).
 contradiction.
-intros; apply refl_equal.
+intros; apply eq_refl.
 Qed.
 
 
@@ -337,10 +337,10 @@ Proof.
 intros h l3 l4 H; simpl.
 generalize (nth_error_ok_in (P h) l4).
 case_eq (nth_error l4 (P h)).
-intros s4 H4 K; destruct (K _ (refl_equal _)) as [l41 [l42 [L4 H4']]]; clear K H4.
+intros s4 H4 K; destruct (K _ (eq_refl _)) as [l41 [l42 [L4 H4']]]; clear K H4.
 generalize (nth_error_ok_in (P h) l3).
 case_eq (nth_error l3 (P h)).
-intros s3 H3 K; destruct (K _ (refl_equal _)) as [l31 [l32 [L3 H3']]]; clear K H3.
+intros s3 H3 K; destruct (K _ (eq_refl _)) as [l31 [l32 [L3 H3']]]; clear K H3.
 rewrite <- L4 in L3.
 subst l3 l4.
 apply (refl_trans_clos_one_step_list_refl_trans_clos_one_step _ _ _ _ _ _ (sym_eq L3) H).
@@ -359,7 +359,7 @@ apply le_n_S; apply le_plus_r.
 intros H4 _.
 generalize (nth_error_ok_in (P h) l3).
 case_eq (nth_error l3 (P h)).
-intros s3 H3 K; destruct (K _ (refl_equal _)) as [l31 [l32 [L3 H3']]]; clear K H3.
+intros s3 H3 K; destruct (K _ (eq_refl _)) as [l31 [l32 [L3 H3']]]; clear K H3.
 absurd (length l31 < length l31).
 apply lt_irrefl.
 assert (L : length l4 = length l3).
@@ -697,19 +697,19 @@ constructor 1.
 rewrite split_cdp in H3; destruct H3 as [H3 | H3]; [assumption | contradiction].
 
 apply (dp_subterm_criterion R R_var _ cdp_in_dpR P u0 v0) with comp.
-apply l0_diff; left; apply refl_equal.
-rewrite split_cdp; right; left; apply refl_equal.
-apply P_ok with u0; left; apply refl_equal.
-apply l0_decr; left; apply refl_equal.
+apply l0_diff; left; apply eq_refl.
+rewrite split_cdp; right; left; apply eq_refl.
+apply P_ok with u0; left; apply eq_refl.
+apply l0_decr; left; apply eq_refl.
 assumption.
 assumption.
-apply Wl0 with u0; left; apply refl_equal.
+apply Wl0 with u0; left; apply eq_refl.
 unfold strong_connect_approx;  intros n u v [H1 H2]; apply cdp_decr.
 replace n0 with n.
 assumption.
 apply comp_fonc with (u0,v0).
 assumption.
-apply l0_in_comp_n0; left; apply refl_equal.
+apply l0_in_comp_n0; left; apply eq_refl.
 
 apply wf_incl with (rest (acc_sub R) (rdp_step (axiom (fun v u => cdp' v u \/ In (u, v) l0)) R)).
 intros x y [H Hmin]; split; [ | assumption].

@@ -85,7 +85,7 @@ Lemma refl_trans_clos_is_refl_trans_clos :
 Proof.
 intros A R a b; split; intro H.
 inversion H as [a' | a' b'].
-left; apply refl_equal.
+left; apply eq_refl.
 right; assumption.
 destruct H as [H | H].
 subst b; apply r_step.
@@ -140,7 +140,7 @@ assert (split_case : forall a b, trans_clos R a b <-> (trans_clos R' a b \/
 assert (R'_in_R : inclusion _ R' R).
 intros x y [K _]; assumption.
 assert (Ruv : R u v).
-rewrite Rlist_ok; left; apply refl_equal.
+rewrite Rlist_ok; left; apply eq_refl.
 intros a b; split; [intro H1 | intros [H1 | [H1 H2]]].
 induction H1 as [a b H1 | a b c H1 H2];
 rewrite Rlist_ok in H1; simpl in H1; destruct H1 as [H1 | H1].
@@ -158,17 +158,17 @@ apply trans_incl with R'; [apply R'_in_R | ]; assumption.
 inversion H1 as [x | x y K1]; clear H1; subst.
 inversion H2 as [x' | x' y' K2]; clear H2; subst.
 left; apply Ruv.
-right with v; [rewrite Rlist_ok; left; apply refl_equal | apply trans_incl with R'; [apply R'_in_R | ]; assumption].
+right with v; [rewrite Rlist_ok; left; apply eq_refl | apply trans_incl with R'; [apply R'_in_R | ]; assumption].
 apply trans_clos_is_trans with u; [apply trans_incl with R'; [apply R'_in_R | assumption] | ].
 inversion H2 as [x' | x' y' K2]; clear H2; subst.
 left; assumption.
-right with v; [rewrite Rlist_ok; left; apply refl_equal | apply trans_incl with R'; [apply R'_in_R | ]; assumption].
+right with v; [rewrite Rlist_ok; left; apply eq_refl | apply trans_incl with R'; [apply R'_in_R | ]; assumption].
 
 assert (Hrefl : forall a b, {refl_trans_clos R' a b}+{~refl_trans_clos R' a b}).
 intros a b; generalize (eq_bool_ok a b); destruct (eq_bool a b); [intro a_eq_b; subst; do 2 left | intro a_diff_b].
 destruct (H a b) as [Hab | Hab].
 left; right; assumption.
-right; intro K; inversion K; subst; [apply a_diff_b; apply refl_equal | apply Hab; assumption].
+right; intro K; inversion K; subst; [apply a_diff_b; apply eq_refl | apply Hab; assumption].
 intros a b; destruct (H a b) as [Hab | Hab].
 left; apply trans_incl with R'; [intros x y [K _] | ]; assumption.
 destruct (Hrefl a u) as [Hau | Hau].
@@ -192,7 +192,7 @@ intros A eq_bool eq_bool_ok R Rlist Rlist_ok a b.
 generalize (eq_bool_ok a b); destruct (eq_bool a b); [intro a_eq_b; subst; do 2 left | intro a_diff_b].
 destruct (trans_clos_dec _ eq_bool_ok _ _ Rlist_ok a b) as [Hab | Hab].
 left; right; assumption.
-right; intro K; inversion K; subst; [apply a_diff_b; apply refl_equal | apply Hab; assumption].
+right; intro K; inversion K; subst; [apply a_diff_b; apply eq_refl | apply Hab; assumption].
 Defined.
 
 

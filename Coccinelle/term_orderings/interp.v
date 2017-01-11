@@ -191,7 +191,7 @@ Proof.
 intros l IHl k1 H1.
 destruct (one_step_in_list H1) as [t1 [t2 [l1 [l2 [K [K1 K2]]]]]].
 assert (Ht : measure t2 <= measure t1).
-apply IHl; [subst; apply in_or_app; right; left; apply refl_equal | assumption].
+apply IHl; [subst; apply in_or_app; right; left; apply eq_refl | assumption].
 subst l k1.
 clear IHl H1 K.
 induction l1 as [ | a1 l1]; intros [ | n] P1 P2 Hmon; simpl.
@@ -366,7 +366,7 @@ Proof.
 intros l IHl k1 H1 Wl.
 destruct (one_step_in_list H1) as [t1 [t2 [l1 [l2 [K [K1 K2]]]]]].
 assert (Ht : measure t2 < measure t1).
-apply IHl; [idtac | assumption | apply Wl]; subst; apply in_or_app; right; left; apply refl_equal.
+apply IHl; [idtac | assumption | apply Wl]; subst; apply in_or_app; right; left; apply eq_refl.
 subst l k1.
 clear IHl H1 K Wl.
 induction l1 as [ | a1 l1]; intros [ | n] P1 P2 L Hmon; simpl.

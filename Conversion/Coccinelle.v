@@ -10,6 +10,8 @@ convert CoLoR terms into Coccinelle terms
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATerm VecUtil.
+From CoLoR Require VecUtil more_list APosition AContext ordered_set.
+From Coq Require Inverse_Image Max.
 
 (***********************************************************************)
 (** convert a CoLoR signature into a Coccinelle signature *)
@@ -92,7 +94,7 @@ Module Make_Term (Import S : SIG) <: Term.
 
   Proof. intros. simpl. rewrite terms_of_aterms_eq. refl. Qed.
 
-  From CoLoR Require Import VecUtil.
+  Import VecUtil.
 
   Lemma terms_of_aterms_cast : forall n (ts : aterms n) p (e : n=p),
     terms_of_aterms (Vcast ts e) = terms_of_aterms ts.
@@ -120,7 +122,7 @@ Module Make_Term (Import S : SIG) <: Term.
       | S n' => (n', term_of_aterm (s n')) :: sub_of_asub s n'
     end.
 
-From CoLoR Require Import more_list.
+Import more_list.
 
 Notation find := (@find _ eq_var_bool _).
 
@@ -153,7 +155,7 @@ Notation find := (@find _ eq_var_bool _).
     intros. destruct H1. rewrite H. 2: hyp. rewrite H0. 2: hyp. refl.
   Qed.
 
-  From CoLoR Require Import APosition AContext.
+  Import APosition AContext.
 
   Lemma term_of_aterm_fill : forall u t c, term_of_aterm (fill c t) =
     replace_at_pos (term_of_aterm (fill c u)) (term_of_aterm t) (pos_context c).
@@ -216,7 +218,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Definition Sig := Sig.
   Definition succ := transp (Rof rpo term_of_aterm).
 
-  From Coq Require Import Inverse_Image.
+  Import Inverse_Image.
 
   Lemma wf_succ : WF succ.
 
@@ -225,7 +227,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     apply wf_rpo. apply (prec_wf prec_nat).
   Qed.
 
-  From Coq Require Import Max.
+  Import Max.
 
   Lemma sc_succ : substitution_closed succ.
 
@@ -240,7 +242,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Notation rpo_eval := (rpo_eval empty_rpo_infos P.bb).
   Notation rpo_eval_is_sound := (rpo_eval_is_sound_weak empty_rpo_infos P.bb).
 
-  From CoLoR Require Import ordered_set.
+  Import ordered_set.
 
   Definition bsucc t u :=
     match rpo_eval (term_of_aterm t) (term_of_aterm u) with

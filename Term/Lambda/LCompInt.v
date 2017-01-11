@@ -17,7 +17,8 @@ Set Implicit Arguments.
 From Coq Require Import IndefiniteDescription Structures.OrderedType.
 From CoLoR Require Import LogicUtil SN LCompSimple Tarski VecUtil SetUtil
      RelUtil.
-From CoLoR Require Union.
+From CoLoR Require Union SetUtil RelUtil AccUtil.
+
 
 (****************************************************************************)
 (** * Accessible supterm relation. *)
@@ -307,7 +308,7 @@ Module Make (Export ST : ST_Struct)
       apply clos_aeq_tc_supterm_acc_R_mon_commut.
     Qed.
 
-    From CoLoR Require Import SetUtil RelUtil.
+    Import SetUtil RelUtil.
 
     Section restrict.
 
@@ -347,7 +348,7 @@ the interpretation [I_lt_a] for each base type strictly smaller than
 [a]. The interpretation of [a] itself is defined as the least fixpoint
 of some variant of the following monotone function [G]. *)
 
-  From CoLoR Require Import SetUtil AccUtil.
+  Import SetUtil AccUtil.
 
   Section fixpoint.
 

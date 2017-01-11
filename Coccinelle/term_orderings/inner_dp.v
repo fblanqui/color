@@ -108,7 +108,7 @@ simpl; intros t t_in_map_h; rewrite in_map_iff in t_in_map_h.
 destruct t_in_map_h as [t' [H''' t'_in_h]]; subst; apply Acc_h; trivial.
 simpl in Sub.
 generalize (nth_error_ok_in i k); destruct (nth_error k i) as [ti | ].
-intro H; destruct (H _ (refl_equal _)) as [k1 [k2 [L H']]].
+intro H; destruct (H _ (eq_refl _)) as [k1 [k2 [L H']]].
 apply P_acc_subterms_3 with q (apply_subst sigma ti).
 apply Acc_l'.
 rewrite in_map_iff; exists ti; split; trivial.
@@ -245,9 +245,9 @@ intros _ [ | [s' t'] ll']; trivial; intros; discriminate.
 intros H1 [ | [s' t'] ll']; simpl; intros H' IHl H6.
 discriminate.
 injection H6; clear H6; intros H6 H7; subst t'.
-destruct (H1 s t (or_introl _ (refl_equal _))) as [P | [E I]];
-destruct (H' s' t (or_introl _ (refl_equal _))) as [P' | [E' I']].
-rewrite (IHl t (or_introl _ (refl_equal _)) s s'); trivial.
+destruct (H1 s t (or_introl _ (eq_refl _))) as [P | [E I]];
+destruct (H' s' t (or_introl _ (eq_refl _))) as [P' | [E' I']].
+rewrite (IHl t (or_introl _ (eq_refl _)) s s'); trivial.
 apply (f_equal (fun l => s' :: l)).
 apply IHll; trivial.
 intros; apply H1; right; trivial.
@@ -289,7 +289,7 @@ assert False; [idtac | contradiction].
 unfold inner in inner_fl; simpl in inner_fl.
 generalize inner_fl; clear f Acc_t IH t_not_nf red_dec_fl H' inner_fl.
 induction H''; intros nf_l.
-apply (nf_l t2 (or_introl _ (refl_equal _)) t1 H).
+apply (nf_l t2 (or_introl _ (eq_refl _)) t1 H).
 apply IHH''; intros; apply nf_l; right; trivial.
 assert (H : forall t, In t l -> ~ nf (one_step R) t -> { t' : term | Psi t' t} ).
 intros t t_in_l; apply IH; right; trivial.
@@ -308,7 +308,7 @@ intros u v [uv_eq_tt | uv_in_ll].
 injection uv_eq_tt; intros; do 2 subst.
 right; split; trivial.
 apply H2; trivial.
-destruct (H t (or_introl _ (refl_equal _))) as [t' P]; trivial.
+destruct (H t (or_introl _ (eq_refl _))) as [t' P]; trivial.
 exists ((t',t) :: ll); simpl; split.
 subst l; trivial.
 intros u v [uv_eq_tt' | uv_in_ll].
@@ -474,7 +474,7 @@ assert (H' : forall kk, (forall u v, In (u,v) kk -> refl_trans_clos (P_step R (i
 intros kk; induction kk as [ | [u1 v1] kk]; intros H'.
 left; trivial.
 simpl; rewrite refl_trans_clos_one_step_list_head_tail; split.
-apply H'; left; apply refl_equal.
+apply H'; left; apply eq_refl.
 apply IHkk; intros; apply H'; right; assumption.
 split.
 apply H'; intros u v uv_in_ll1; destruct (H2 u v) as [H2' | [H2' _]].
@@ -653,7 +653,7 @@ rewrite <- H5; clear K H5 H.
 induction ll as [ | [u v] ll]; trivial.
 simpl; rewrite <- IHll.
 apply (f_equal (fun t => t :: map (fst (A:=term) (B:=term)) ll)).
-destruct (H4 _ _ (or_introl _ (refl_equal _))) as [H5 | [H5 H6]].
+destruct (H4 _ _ (or_introl _ (eq_refl _))) as [H5 | [H5 H6]].
 apply Psi_unique with v; trivial.
 apply psi_not_nf; intro H6; apply (Psi_not_nf v u); trivial.
 rewrite psi_nf; trivial.
@@ -759,7 +759,7 @@ simpl; rewrite psi_not_inner; trivial.
 apply (f_equal (fun l => Term f l)); rewrite map_map; apply map_eq; trivial.
 apply (H4 l (@nil nat)); simpl; trivial.
 rewrite H1; rewrite H3'.
-assert (P := psi_subst sigma tau (refl_equal _) r).
+assert (P := psi_subst sigma tau (eq_refl _) r).
 inversion P as [pr H4 H4' | pr pr' H4].
 left; apply t_step; apply at_top; rewrite H4'; apply instance; trivial.
 left; apply trans_clos_is_trans with (apply_subst tau r).
@@ -783,7 +783,7 @@ rewrite <- H5; clear K H5 H.
 induction ll as [ | [u v] ll]; trivial.
 simpl; rewrite <- IHll.
 apply (f_equal (fun t => t :: map (fst (A:=term) (B:=term)) ll)).
-destruct (H4 _ _ (or_introl _ (refl_equal _))) as [H5 | [H5 H6]].
+destruct (H4 _ _ (or_introl _ (eq_refl _))) as [H5 | [H5 H6]].
 apply Psi_unique with v; trivial.
 apply psi_not_nf; intro H6; apply (Psi_not_nf v u); trivial.
 rewrite psi_nf; trivial.
@@ -839,7 +839,7 @@ Qed.
 Lemma acc_psi_acc : forall t, Acc (one_step R) (psi t) -> Acc (one_step R) t.
 Proof.
 intros t Acc_psi_t;
-assert (Acc_t := acc_psi_acc_ooo _ Acc_psi_t t (refl_equal _)).
+assert (Acc_t := acc_psi_acc_ooo _ Acc_psi_t t (eq_refl _)).
 generalize Acc_psi_t; clear Acc_psi_t; induction Acc_t as [t Acc_t IH].
 intros Acc_psi_t; apply Acc_intro; intros s H.
 destruct (Psi_sim_one_step t s H) as [H1 | [H1 | [s' [H1 H2]]]]; unfold ooo, oo, psi_id in *.
@@ -913,7 +913,7 @@ intros t s s' It H H'; inversion H as [r l sigma]; inversion H' as [d g tau]; su
 assert (H6 := NO l r g d sigma tau H0 H3).
 destruct l as [v | f l].
 absurd (R r (Var v)); trivial.
-destruct (H6 f l (@nil nat) (refl_equal _) (sym_eq H5)) as [ _ [H7 H8]]; clear H6; subst.
+destruct (H6 f l (@nil nat) (eq_refl _) (sym_eq H5)) as [ _ [H7 H8]]; clear H6; subst.
 apply sym_eq; rewrite <- subst_eq_vars.
 intros v v_in_d; rewrite <- subst_eq_vars in H5.
 apply H5; apply Rreg with d; trivial.

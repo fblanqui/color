@@ -30,6 +30,8 @@ From CoLoR Require Import ordered_set.
 From Coq Require Import Recdef.
 From Coq Require Import Program.
 From Coq Require Import Morphisms.
+From Coq Require Omega.
+
 
 Set Implicit Arguments.
 
@@ -564,7 +566,7 @@ intros a2 l2 L _; discriminate.
 intros a1 l1 l2; case l2; clear l2.
 intro L; discriminate.
 intros a2 l2 L E; apply Eq_list_cons.
-apply E; left; apply refl_equal.
+apply E; left; apply eq_refl.
 apply (equiv_in_list l1 l2).
 injection L; intros; assumption.
 intros t1 t2 H; apply E; right; assumption.
@@ -686,15 +688,15 @@ revert Acc_t1 IHAcc; case t1; clear t1; [intro v1 | intros f1 l1];
 
 exists (X.eq_bool v1 v2); intros [ | p] p_lt_k def.
 apply False_ind; exact (gt_irrefl 0 p_lt_k).
-exact (refl_equal _).
+exact (eq_refl _).
 
 exists false; intros [ | p] p_lt_k def.
 apply False_ind; exact (gt_irrefl 0 p_lt_k).
-exact (refl_equal _).
+exact (eq_refl _).
 
 exists false; intros [ | p] p_lt_k def.
 apply False_ind; exact (le_Sn_O _ p_lt_k).
-exact (refl_equal _).
+exact (eq_refl _).
 
 rewrite size_unfold.
 assert ({v : bool |
@@ -716,12 +718,12 @@ case (status Prec f1).
 clear IHAcc Acc_t1 f2; revert l1 IH l2; fix equiv_lex_bool 1.
 intros l1; case l1.
 intros _ l2; case l2.
-exists true; intros k p_lt_k def; exact (refl_equal _).
-exists false; intros k p_lt_k def; exact (refl_equal _).
+exists true; intros k p_lt_k def; exact (eq_refl _).
+exists false; intros k p_lt_k def; exact (eq_refl _).
 intros a1 k1 IHl1 l2; case l2.
-exists false; intros k p_lt_k def; exact (refl_equal _).
+exists false; intros k p_lt_k def; exact (eq_refl _).
 intros a2 k2; case (equiv_lex_bool k1 (tail_set _ IHl1) k2); intros bl IH'.
-case (IHl1 a1 (or_introl _ (refl_equal _)) a2); intros ba IH''.
+case (IHl1 a1 (or_introl _ (eq_refl _)) a2); intros ba IH''.
 exists (ba && bl); intros k p_le_k def.
 assert (pa_lt_k : size a1 <= k).
 apply le_trans with (list_size size (a1 :: k1)); [apply le_plus_l | exact p_le_k].
@@ -735,8 +737,8 @@ clear IHAcc Acc_t1 f2.
 revert l1 IH l2; fix IHl1 1.
 intro l1; case l1; clear l1.
 intros _ l2; case l2.
-exists true; intros k p_lt_k def; exact (refl_equal _).
-exists false; intros k p_lt_k def; exact (refl_equal _).
+exists true; intros k p_lt_k def; exact (eq_refl _).
+exists false; intros k p_lt_k def; exact (eq_refl _).
 intros a1 l1 IH l2.
 assert (Hrem : {ok : option (list term) |
                              forall k : nat, list_size size (a1 :: l1) <= k ->
@@ -749,7 +751,7 @@ intro L; apply False_rect.
 apply (le_Sn_O _ (le_trans 1 _ 0 (size_ge_one a1) (le_trans (size a1) _ 0 (le_plus_l _ _) L))).
 intros k _ def; reflexivity.
 intros a2 l2;
-case (IH a1 (or_introl _ (refl_equal _)) a2); intro v; case v; intro Ha1.
+case (IH a1 (or_introl _ (eq_refl _)) a2); intro v; case v; intro Ha1.
 exists (Some l2); intros k L def; simpl; rewrite Ha1.
 reflexivity.
 apply le_trans with (list_size size (a1 :: l1)); [apply le_plus_l | apply L].
@@ -778,7 +780,7 @@ intro Hrem; exists false; intros k L def.
 rewrite (Hrem k L).
 reflexivity.
 
-exists false; intros _ _ _; exact (refl_equal _).
+exists false; intros _ _ _; exact (eq_refl _).
 
 case H; clear H; intros v H; exists v; intro k; case k; clear k.
 intro L; apply False_rect.
@@ -907,7 +909,7 @@ assert (H' : forall f1 f2, (forall t2, f1 a1 t2 = f2 a1 t2) -> forall l2, remove
 clear l1 l2 g1 g2 IH IHl1; intros g1 g2 IH; induction l2 as [ | a2 l2].
 reflexivity.
 simpl; rewrite (IH a2); rewrite IHl2; reflexivity.
-rewrite (H' g1 g2 (IH a1 (or_introl _ (refl_equal _)))).
+rewrite (H' g1 g2 (IH a1 (or_introl _ (eq_refl _)))).
 case (remove g2 a1 l2).
 intro k2; apply (IHl1 g1 g2 (tail_prop _ IH)).
 reflexivity.
@@ -949,7 +951,7 @@ revert l2; induction l1 as [ | a1 l1]; intro l2; case l2; clear l2.
 apply Eq_list_nil.
 intros a2 l2; simpl; intro l1_eq_l2; inversion l1_eq_l2.
 simpl; intro l1_eq_l2; inversion l1_eq_l2.
-intros a2 l2; simpl; generalize (IH a1 (or_introl _ (refl_equal _)) a2).
+intros a2 l2; simpl; generalize (IH a1 (or_introl _ (eq_refl _)) a2).
 case (equiv_bool a1 a2).
 intro a1_eq_a2; generalize (IHl1 (tail_prop _ IH) l2).
 simpl.
@@ -1019,7 +1021,7 @@ assert (R : forall l2, match remove equiv_bool a1 l2 with
 intro l2; induction l2 as [ | a2 l2].
 intros a2 a1_eq_a2 F; assumption.
 rewrite remove_equation.
-generalize (IH a1 (or_introl _ (refl_equal _)) a2); case (equiv_bool a1 a2).
+generalize (IH a1 (or_introl _ (eq_refl _)) a2); case (equiv_bool a1 a2).
 intro a1_eq_a2; exists a2; exists (@nil term); exists l2; repeat split; assumption.
 intro a1_diff_a2; revert IHl2; case (remove equiv_bool a1 l2).
 intros k2 [a1' [l2' [l2'' [H1 [H2 H3]]]]]; exists a1'; exists (a2 :: l2'); exists l2''; repeat split.
@@ -1872,7 +1874,7 @@ inversion l_lt_l as [ s t' l' l'' s_lt_t |
 apply IHl with t; trivial; left; reflexivity.
 apply IHl0; trivial.
 intros s s_in_l; apply IHl; right; trivial.
-left; apply refl_equal.
+left; apply eq_refl.
 
 (* 1/1 Antirefl, Top_eq_mul *)
 induction l as [ | s l].
@@ -2308,7 +2310,7 @@ intros wf_prec bb; unfold well_founded; intros [f l]; generalize l; clear l;
 pattern f; apply (well_founded_induction_type wf_prec); clear f.
 intros f IHf l; assert (Sf : forall f', f' = f -> status Prec f' = status Prec f).
 intros; subst; trivial.
-destruct (status Prec f); generalize (Sf _ (refl_equal _)); clear Sf; intro Sf.
+destruct (status Prec f); generalize (Sf _ (eq_refl _)); clear Sf; intro Sf.
 pattern l; apply (well_founded_induction_type (wf_rpo_lex_rest bb bb)); clear l.
 intros l IHl; apply Acc_intro; intros [g l'] H. 
 inversion H as [ f' g' k k' g_prec_f Acc_l Acc_l' 
@@ -2559,7 +2561,7 @@ discriminate.
 assert (Status : forall g, g = f -> status Prec g = status Prec f).
 intros; subst; trivial.
 do 2 (rewrite replace_at_pos_unfold);
-destruct (status Prec f); generalize (Status f (refl_equal _)); clear Status; 
+destruct (status Prec f); generalize (Status f (eq_refl _)); clear Status;
 intro Status.
 (* 1/2 Lex case *)
 apply Eq_lex; trivial.
@@ -2599,13 +2601,13 @@ discriminate.
 assert (Status : forall g, g = f -> status Prec g = status Prec f).
 intros; subst; trivial.
 do 2 (rewrite replace_at_pos_unfold);
-destruct (status Prec f); generalize (Status f (refl_equal _)); clear Status; 
+destruct (status Prec f); generalize (Status f (eq_refl _)); clear Status;
 intro Status.
 (* 1/2 Lex case *)
 apply Top_eq_lex; trivial. 
 apply prec_eq_refl.
 left; clear; revert l; induction i as [ | i]; intros [ | a l]; simpl; trivial.
-rewrite IHi; apply refl_equal.
+rewrite IHi; apply eq_refl.
 generalize i H; clear i H; induction l as [ | u l]; intros i H; simpl.
 simpl in H; destruct i; discriminate.
 destruct i as [ | i].
@@ -2706,7 +2708,7 @@ injection R; intro; subst l'; clear R;
 exists a; split; reflexivity || auto.
 destruct (remove_equiv t l) as [ l'' | ].
 injection R; intro; subst l'; clear R.
-destruct (IHl l'' (refl_equal _)) as [t' [t_eq_t' P]].
+destruct (IHl l'' (eq_refl _)) as [t' [t_eq_t' P]].
 exists t'; split; trivial.
 rewrite <- (@permut0_cons_inside _ _ equiv_equiv a a l (t' :: nil) l''); trivial.
 reflexivity.
@@ -3281,7 +3283,7 @@ left; discriminate.
 left; discriminate.
 assert (H : forall u2, u2 = t2 -> p t1 u2 = p t1 t2).
 intros; subst; trivial.
-destruct (p t1 t2) as [ [ | ] | ]; generalize (H _ (refl_equal _)); clear H; intro H.
+destruct (p t1 t2) as [ [ | ] | ]; generalize (H _ (eq_refl _)); clear H; intro H.
 generalize (IHl1 l2); destruct (equiv_eval_list p l1 l2) as [ [ | ] | ].
 intros [L H']; repeat split.
 rewrite L; trivial.
@@ -3511,7 +3513,7 @@ discriminate.
 discriminate.
 discriminate.
 rewrite H' in IH; apply IH; intros; apply E; right; trivial.
-assert (H' := E _ (or_introl _ (refl_equal _)) H); contradiction.
+assert (H' := E _ (or_introl _ (eq_refl _)) H); contradiction.
 Qed.
 
 Lemma remove_equiv_eval_list_fully_evaluates :
@@ -3785,7 +3787,7 @@ Lemma lexico_eval_equation :
      end
 end.
 Proof.
-intros p s1 s2 [ | t1 l1] [ | t2 l2]; apply refl_equal.
+intros p s1 s2 [ | t1 l1] [ | t2 l2]; apply eq_refl.
 Qed.
 
 Definition list_gt_list  (p : term -> term -> option comp) lg ls :=
@@ -4103,8 +4105,8 @@ end.
 Proof. 
 intros p s1 s2 l1; induction l1 as [ | t1 l1]; intros [ | t2 l2].
 simpl; exists (@nil (term * term)); simpl; intuition.
-simpl; left; split; [apply refl_equal | discriminate].
-simpl; left; split; [discriminate | apply refl_equal].
+simpl; left; split; [apply eq_refl | discriminate].
+simpl; left; split; [discriminate | apply eq_refl].
 simpl; case_eq (p t1 t2); [idtac | trivial].
 intros [ | | | ] Ht; generalize (IHl1 l2).
 (* 1/4 p t1 t2 = Some Equivalent *)
@@ -4112,17 +4114,17 @@ case_eq (lexico_eval p s1 s2 l1 l2); [intros [ | | | ] Hl | trivial].
 (* 1/7 lexico_eval p s1 s2 l1 l2 = Some Equivalent *)
 intros [ll [Hll [H1 H2]]]; exists ((t1,t2) :: ll); split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_ll]; [injection u1u2_eq_t1t2; intros; subst | apply Hll]; assumption.
-simpl; split; subst; apply refl_equal.
+simpl; split; subst; apply eq_refl.
 (* 1/6 lexico_eval p s1 s2 l1 l2 = Some Less_than *)
 intros [[H1 H2] | [[ll [a2 [l2' [Hll [H1 H2]]]]] | [ll [a1 [a2 [l1' [l2' [Hll [Ha [H [H1 H2]]]]]]]]]]].
 right; left; subst; destruct l2 as [ | a2 l2].
 discriminate.
 exists ((t1,t2) :: nil); exists a2; exists l2; split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_nil]; [injection u1u2_eq_t1t2; intros; subst; assumption | contradiction].
-split; apply refl_equal.
+split; apply eq_refl.
 right; left; exists ((t1,t2) :: ll); exists a2; exists l2'; split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_ll]; [injection u1u2_eq_t1t2; intros; subst | apply Hll]; assumption.
-split; subst; apply refl_equal.
+split; subst; apply eq_refl.
 do 2 right; exists ((t1,t2) :: ll); exists a1; exists a2; exists l1'; exists l2'; split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_ll]; [injection u1u2_eq_t1t2; intros; subst | apply Hll]; assumption.
 split.
@@ -4133,17 +4135,17 @@ subst u; left; exists t2; split; left; trivial.
 destruct (H _ u_in_l1) as [[u2 [u2_in_l2 H']] | H'].
 left; exists u2; split; [right | idtac]; assumption.
 right; assumption.
-split; subst; apply refl_equal.
+split; subst; apply eq_refl.
 (* 1/5 lexico_eval p s1 s2 l1 l2 = Some Greater_than *)
 intros [[H1 H2] | [[ll [a1 [l1' [Hll [H1 H2]]]]] | [ll [a1 [a2 [l1' [l2' [Hll [Ha [H [H1 H2]]]]]]]]]]].
 right; left; subst; destruct l1 as [ | a1 l1].
 discriminate.
 exists ((t1,t2) :: nil); exists a1; exists l1; split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_nil]; [injection u1u2_eq_t1t2; intros; subst; assumption | contradiction].
-split; apply refl_equal.
+split; apply eq_refl.
 right; left; exists ((t1,t2) :: ll); exists a1; exists l1'; split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_ll]; [injection u1u2_eq_t1t2; intros; subst | apply Hll]; assumption.
-split; subst; apply refl_equal.
+split; subst; apply eq_refl.
 do 2 right; exists ((t1,t2) :: ll); exists a1; exists a2; exists l1'; exists l2'; split.
 simpl; intros u1 u2 [u1u2_eq_t1t2 | u1u2_in_ll]; [injection u1u2_eq_t1t2; intros; subst | apply Hll]; assumption.
 split.
@@ -4154,7 +4156,7 @@ subst u; left; exists t1; split; left; trivial.
 destruct (H _ u_in_l2) as [[u1 [u1_in_l1 H']] | H'].
 left; exists u1; split; [right | idtac]; assumption.
 right; assumption.
-split; subst; apply refl_equal.
+split; subst; apply eq_refl.
 (* 1/4 lexico_eval p s1 s2 l1 l2 = Some Uncomparable *)
 trivial.
 (* 1/3 p t1 t2 = Some Less_than *)
@@ -4170,7 +4172,7 @@ split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H; trivial.
-simpl; split; subst; apply refl_equal.
+simpl; split; subst; apply eq_refl.
 trivial.
 trivial.
 (* 1/6 lexico_eval p s1 s2 l1 l2 = Some Less_than *)
@@ -4182,19 +4184,19 @@ split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 intros; contradiction.
 split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 intros; contradiction.
 split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/5 lexico_eval p s1 s2 l1 l2 = Some Greater_than *)
 intros _.
 generalize (term_gt_list_is_sound p s2 (t1 :: l1)); destruct (term_gt_list p s2 (t1 :: l1)) as [[ | ] | ]; intro H'; trivial.
@@ -4204,7 +4206,7 @@ split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/4 lexico_eval p s1 s2 l1 l2 = Some  Some Uncomparable *)
 intros _.
 generalize (term_gt_list_is_sound p s2 (t1 :: l1)); destruct (term_gt_list p s2 (t1 :: l1)) as [[ | ] | ]; intro H'; trivial.
@@ -4214,7 +4216,7 @@ split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/3 lexico_eval p s1 s2 l1 l2 = None *)
 intros _.
 generalize (term_gt_list_is_sound p s2 (t1 :: l1)); destruct (term_gt_list p s2 (t1 :: l1)) as [[ | ] | ]; intro H'; trivial.
@@ -4224,7 +4226,7 @@ split.
 assumption.
 split.
 intros u u_in_t1l1; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/3 p t1 t2 = Some Greater_than *)
 case_eq (lexico_eval p s1 s2 l1 l2).
 intros [ | | | ] Hl.
@@ -4238,7 +4240,7 @@ split.
 assumption.
 split.
 intros u u_in_t1l2; right; apply H; trivial.
-simpl; split; subst; apply refl_equal.
+simpl; split; subst; apply eq_refl.
 trivial.
 trivial.
 (* 1/5 lexico_eval p s1 s2 l1 l2 = Some Less_than *)
@@ -4250,19 +4252,19 @@ split.
 assumption.
 split.
 intros u u_in_t2l2; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 intros; contradiction.
 split.
 assumption.
 split.
 intros u u_in_t2l2; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 intros; contradiction.
 split.
 assumption.
 split.
 intros u u_in_t2l2; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/4 lexico_eval p s1 s2 l1 l2 = Some Greater_than *)
 intros _.
 generalize (term_gt_list_is_sound p s1 (t2 :: l2)); destruct (term_gt_list p s1 (t2 :: l2)) as [[ | ] | ]; intro H'; trivial.
@@ -4272,7 +4274,7 @@ split.
 assumption.
 split.
 intros u u_in_t2l2; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/3 lexico_eval p s1 s2 l1 l2 = Some  Some Uncomparable *)
 intros _.
 generalize (term_gt_list_is_sound p s1 (t2 :: l2)); destruct (term_gt_list p s1 (t2 :: l2)) as [[ | ] | ]; intro H'; trivial.
@@ -4282,7 +4284,7 @@ split.
 assumption.
 split.
 intros u u_in_t2l2; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/2 lexico_eval p s1 s2 l1 l2 = None *)
 intros _.
 generalize (term_gt_list_is_sound p s1 (t2 :: l2)); destruct (term_gt_list p s1 (t2 :: l2)) as [[ | ] | ]; intro H'; trivial.
@@ -4292,7 +4294,7 @@ split.
 assumption.
 split.
 intros u u_in_t2l2; right; apply H'; assumption.
-split; apply refl_equal.
+split; apply eq_refl.
 (* 1/1 p t1 t2 = Some Uncomparable *)
 trivial.
 (*SLOW*)Qed.
@@ -4342,7 +4344,7 @@ destruct
         end) lg) ls) as [[ | ] | ].
 intros H' u [s_eq_u | u_in_ls].
 subst u; exists g; split; trivial.
-destruct (p g s) as [[ | | | ] | ]; (apply refl_equal || discriminate).
+destruct (p g s) as [[ | | | ] | ]; (apply eq_refl || discriminate).
 apply H'; assumption.
 trivial.
 trivial.
@@ -4475,7 +4477,7 @@ assert (Sl' : list_size size l' <= m).
 apply le_S_n; refine (le_trans _ _ _ _ L); rewrite size_unfold; simpl;
 apply le_n_S; auto with arith.
 generalize (IHm _ Sl'); destruct (var_in_term_list v l').
-intro H; destruct (H (refl_equal _)) as [v_in_l' | [t [t_in_l' H']]].
+intro H; destruct (H (eq_refl _)) as [v_in_l' | [t [t_in_l' H']]].
 right; exists (Term f' l'); split.
 left; trivial.
 left; trivial.
@@ -4483,7 +4485,7 @@ right; exists (Term f' l'); split.
 left; trivial.
 apply trans_clos_is_trans with t; trivial; left; trivial.
 intros _; generalize (IHm _ Sl); destruct (var_in_term_list v l).
-intro H; destruct (H (refl_equal _)) as [v_in_l' | [t [t_in_l' H']]].
+intro H; destruct (H (eq_refl _)) as [v_in_l' | [t [t_in_l' H']]].
 left; right; trivial.
 right; exists t; split; trivial; right; trivial.
 intros; discriminate.
@@ -4568,14 +4570,14 @@ apply (@Eq_lex f1 f2 l1 l2 Sf1). assert (H3:= prec_eq_status). assert (H3':= H3 
 subst l1 l2; induction ll as [ | [t1 t2] ll]; simpl.
 apply Eq_list_nil.
 apply Eq_list_cons.
-generalize (IHn t1 t2); rewrite (E_ll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+generalize (IHn t1 t2); rewrite (E_ll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply E_ll; right; assumption.
 (* 1/11 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = Some Less_than *)
 case_eq (beq_nat (length l1) (length l2)); simpl.
 intro L; apply (@Top_eq_lex rpo_infos.(bb) f1 f2 l2 l1 Sf1).  assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. rewrite <- H4; trivial. trivial.
 left; apply sym_eq; apply beq_nat_true; assumption.
 destruct H' as [[H1 H2] | [[ll [t2 [l2' [ _ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
-destruct l2 as [ | a2 l2]; [apply False_rect; apply H2; apply refl_equal | subst l1; discriminate].
+destruct l2 as [ | a2 l2]; [apply False_rect; apply H2; apply eq_refl | subst l1; discriminate].
 subst l1 l2; rewrite length_app in L; do 2 rewrite length_map in L.
 apply False_rect; generalize (beq_nat_true _ _ L); clear L; induction ll as [ | [u1 u2] ll].
 discriminate.
@@ -4583,7 +4585,7 @@ intro L; injection L; clear L; intro L; apply IHll; assumption.
 clear L H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 1; generalize (IHn t1 t2); rewrite Ht; intro; assumption.
 simpl; constructor 2.
-generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 destruct H' as [[H1 H2] | [[ll [t2 [l2' [_ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l1; contradiction.
@@ -4604,18 +4606,18 @@ rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f2 l2) u'); rewrite
 intros _; generalize (leb_complete (length l1) (rpo_infos.(bb))); case (leb (length l1) rpo_infos.(bb)); [idtac | simpl; trivial].
 generalize (leb_complete (length l2) (rpo_infos.(bb))); case (leb (length l2) (bb rpo_infos)); simpl; [idtac | trivial].
 intros L2 L1; apply (@Top_eq_lex rpo_infos.(bb) f1 f2 l2 l1 Sf1).  assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. rewrite <- H4; trivial. trivial.
-right; split; [apply L1 | apply L2]; apply refl_equal.
+right; split; [apply L1 | apply L2]; apply eq_refl.
 clear L1 L2; destruct H' as [[H1 H2] | [[ll [t2 [l2' [Hll [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
-subst l1; destruct l2 as [ | a2 l2]; [apply False_rect; apply H2; apply refl_equal | constructor 3].
+subst l1; destruct l2 as [ | a2 l2]; [apply False_rect; apply H2; apply eq_refl | constructor 3].
 subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 3.
 simpl; constructor 2.
-generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 clear H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 1; generalize (IHn t1 t2); rewrite Ht; intro; assumption.
 simpl; constructor 2.
-generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 clear L1 L2; destruct H' as [[H1 H2] | [[ll [t2 [l2' [Hll [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l1; contradiction.
@@ -4644,7 +4646,7 @@ assert (Sf2: status Prec f2 = Lex).
 intro L; apply (@Top_eq_lex rpo_infos.(bb) f2 f1 l1 l2 Sf2). trivial. apply prec_eq_sym; trivial.
 left; apply beq_nat_true; assumption.
 destruct H' as [[H1 H2] | [[ll [t1 [l1' [ _ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
-destruct l1 as [ | a1 l1]; [apply False_rect; apply H1; apply refl_equal | subst l2; discriminate].
+destruct l1 as [ | a1 l1]; [apply False_rect; apply H1; apply eq_refl | subst l2; discriminate].
 subst l1 l2; rewrite length_app in L; do 2 rewrite length_map in L.
 apply False_rect; generalize (beq_nat_true _ _ L); clear L; induction ll as [ | [u1 u2] ll].
 discriminate.
@@ -4652,7 +4654,7 @@ intro L; injection L; clear L; intro L; apply IHll; assumption.
 clear L H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 1; generalize (IHn t1 t2); rewrite Ht; intro; assumption.
 simpl; constructor 2.
-symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 destruct H' as [[H1 H2] | [[ll [t1 [l1' [_ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l2; contradiction.
@@ -4675,18 +4677,18 @@ generalize (leb_complete (length l2) (rpo_infos.(bb))); case (leb (length l2) (b
  assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. assert (Sf2: status Prec f2 = Lex). rewrite <- H4; trivial.
 intros L2 L1; apply (@Top_eq_lex rpo_infos.(bb) f2 f1 l1 l2 Sf2). trivial. apply prec_eq_sym;
 trivial.
-right; split; [apply L2 | apply L1]; apply refl_equal.
+right; split; [apply L2 | apply L1]; apply eq_refl.
 clear L1 L2; destruct H' as [[H1 H2] | [[ll [t1 [l2' [Hll [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
-subst l2; destruct l1 as [ | a1 l2]; [apply False_rect; apply H1; apply refl_equal | constructor 3].
+subst l2; destruct l1 as [ | a1 l2]; [apply False_rect; apply H1; apply eq_refl | constructor 3].
 subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 3.
 simpl; constructor 2.
-symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 clear H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
 simpl; constructor 1; generalize (IHn t1 t2); rewrite Ht; intro; assumption.
 simpl; constructor 2.
-symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (refl_equal _))); intro; assumption.
+symmetry; generalize (IHn u1 u2); rewrite (Hll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply Hll; right; assumption.
 clear L1 L2; destruct H' as [[H1 H2] | [[ll [t1 [l1' [Hll [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l2; contradiction.
@@ -4923,7 +4925,7 @@ Lemma lexico_eval_fully_evaluates :
 Proof.
 intros p s1 s2 l1; induction l1 as [ | t1 l1]; intros [ | t2 l2] Es2 Es1 E;
 simpl; try discriminate.
-assert (H := E t1 t2 (or_introl _ (refl_equal _)) (or_introl _ (refl_equal _)));
+assert (H := E t1 t2 (or_introl _ (eq_refl _)) (or_introl _ (eq_refl _)));
 destruct (p t1 t2) as [ [ | | | ] | ].
 (* 1/5 p t1 t2 = Some Equivalent *)
 apply IHl1; intros; [apply Es2 | apply Es1 | apply E]; right; trivial.
@@ -4948,7 +4950,7 @@ destruct (list_forall_option
          | None => None
          end) l1) as [ [ | ] | ].
 (* 1/6 all terms in l1 are smaller than s2 *)
-clear H; assert (H := Es2 t1 (or_introl _ (refl_equal _))).
+clear H; assert (H := Es2 t1 (or_introl _ (eq_refl _))).
 destruct (p s2 t1) as [ [ | | | ] | ].
 intros _; discriminate.
 intros _; discriminate.
@@ -4956,7 +4958,7 @@ intros _; discriminate.
 intros _; discriminate.
 intros _; apply H; trivial.
 (* 1/5 NOT all terms in l1 are smaller than s2 *)
-clear H; assert (H := Es2 t1 (or_introl _ (refl_equal _))).
+clear H; assert (H := Es2 t1 (or_introl _ (eq_refl _))).
 destruct (p s2 t1) as [ [ | | | ] | ].
 intros _; discriminate.
 intros _; discriminate.
@@ -4993,7 +4995,7 @@ destruct (list_forall_option
          | None => None
          end) l2) as [ [ | ] | ].
 (* 1/5 all terms in l2 are smaller than s1 *)
-clear H; assert (H := Es1 t2 (or_introl _ (refl_equal _))).
+clear H; assert (H := Es1 t2 (or_introl _ (eq_refl _))).
 destruct (p s1 t2) as [ [ | | | ] | ].
 intros _; discriminate.
 intros _; discriminate.
@@ -5001,7 +5003,7 @@ intros _; discriminate.
 intros _; discriminate.
 intros _; apply H; trivial.
 (* 1/4 NOT all terms in l2 are smaller than s1 *)
-clear H; assert (H := Es1 t2 (or_introl _ (refl_equal _))).
+clear H; assert (H := Es1 t2 (or_introl _ (eq_refl _))).
 destruct (p s1 t2) as [ [ | | | ] | ].
 intros _; discriminate.
 intros _; discriminate.
@@ -5681,10 +5683,10 @@ intros _; rewrite Sf; rewrite Sf in R; rewrite Sf in T; simpl in R; simpl in T.
 revert t1_lt_t2 H St IHl1l2 IHl2l1 IHl1s2 IHs2l1 IHs1l2 IHl2s1 R T l1_lt_l2 Sl.
 clear; revert s1 s2 l2; induction l1 as [ | t1 l1]; intros s1 s2 [ | t2 l2]; intros.
 inversion l1_lt_l2.
-apply refl_equal.
+apply eq_refl.
 inversion l1_lt_l2.
 inversion l1_lt_l2; subst.
-simpl; rewrite (proj1 (IHl1l2 _ _ (or_introl _ (refl_equal _)) (or_introl _ (refl_equal _)) H1)).
+simpl; rewrite (proj1 (IHl1l2 _ _ (or_introl _ (eq_refl _)) (or_introl _ (eq_refl _)) H1)).
 unfold term_gt_list.
 assert (H' : list_forall_option
     (fun t : term =>
@@ -5699,12 +5701,12 @@ apply list_forall_option_is_complete_true.
 intros u1 u1_in_t1l1.
 assert (u1_lt_s2 : rpo rpo_infos.(bb) u1 s2).
 apply H; apply in_impl_mem; trivial; exact Eq.
-rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply refl_equal.
-rewrite H'; apply refl_equal.
+rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply eq_refl.
+rewrite H'; apply eq_refl.
 simpl.
 assert (H' := @rpo_eval_is_complete_equivalent rpo_infos n t1 t2).
-generalize (H' (Sl _ _ (or_introl _ (refl_equal _)) 
-                        (or_introl _ (refl_equal _))) H3);
+generalize (H' (Sl _ _ (or_introl _ (eq_refl _))
+                        (or_introl _ (eq_refl _))) H3);
 clear H'; intro H'; rewrite H'.
 apply IHl1; trivial.
 intros; apply H; right; assumption.
@@ -5761,9 +5763,9 @@ revert t1_lt_t2 H St IHl1l2 IHl2l1 IHl1s2 IHs2l1 IHs1l2 IHl2s1 R' T' l1_lt_l2 Sl
 clear; revert s1 s2 l1; induction l2 as [ | t2 l2]; intros s1 s2 [ | t1 l1]; intros.
 inversion l1_lt_l2.
 inversion l1_lt_l2.
-apply refl_equal.
+apply eq_refl.
 inversion l1_lt_l2; subst.
-simpl; rewrite (proj2 (IHl1l2 _ _ (or_introl _ (refl_equal _)) (or_introl _ (refl_equal _)) H1)).
+simpl; rewrite (proj2 (IHl1l2 _ _ (or_introl _ (eq_refl _)) (or_introl _ (eq_refl _)) H1)).
 unfold term_gt_list.
 assert (H' : list_forall_option
     (fun t : term =>
@@ -5778,12 +5780,12 @@ apply list_forall_option_is_complete_true.
 intros u1 u1_in_t1l1.
 assert (u1_lt_s2 : rpo rpo_infos.(bb) u1 s2).
 apply H; apply in_impl_mem; trivial; exact Eq.
-rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply refl_equal.
-rewrite H'; apply refl_equal.
+rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply eq_refl.
+rewrite H'; apply eq_refl.
 simpl.
 assert (H' := @rpo_eval_is_complete_equivalent rpo_infos n t2 t1).
-rewrite plus_comm in H'; generalize (H' (Sl _ _ (or_introl _ (refl_equal _)) 
-                        (or_introl _ (refl_equal _))) (@Equivalence_Symmetric _ _ equiv_equiv _ _ H3));
+rewrite plus_comm in H'; generalize (H' (Sl _ _ (or_introl _ (eq_refl _))
+                        (or_introl _ (eq_refl _))) (@Equivalence_Symmetric _ _ equiv_equiv _ _ H3));
 clear H'; intro H'; rewrite H'.
 apply IHl2; trivial.
 intros; apply H; right; assumption.
@@ -5845,7 +5847,7 @@ destruct H' as [ll [Ell [P1 [P2 _]]]].
 assert (Ell' : forall t1 t2, In (t1,t2) ll -> equiv t1 t2).
 intros t1 t2 t1t2_in_ll.
 generalize (equiv_eval_is_sound_weak rpo_infos n t1 t2).
-rewrite (Ell _ _ t1t2_in_ll); intro t1_eq_t2; apply t1_eq_t2; apply refl_equal.
+rewrite (Ell _ _ t1t2_in_ll); intro t1_eq_t2; apply t1_eq_t2; apply eq_refl.
 revert Ell' l1_lt_l2 P1 P2; clear; revert l1 l2 l1' l2'; induction ll as [ | [t1 t2] ll];
 intros l1 l2 l1' l2' Ell l1_lt_l2 P1 P2.
 rewrite <- app_nil_end in P1.
@@ -5858,18 +5860,18 @@ transitivity l2; [symmetry; apply permut_impl with eq | idtac]; trivial.
 intros a' b a_eq_b; subst a'; apply Eq.
 apply (@rpo_mul_remove_equiv_aux rpo_infos.(bb) l1' l2' t1 t2).
 intros t _; apply (@rpo_antirefl rpo_infos.(bb) t); trivial.
-apply Ell; left; apply refl_equal.
+apply Ell; left; apply eq_refl.
 apply IHll with l1 l2; trivial.
 intros; apply Ell; right; assumption.
 refine (list_permut.permut_trans _ P1 _).
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 apply list_permut.permut_sym.
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 simpl; apply Pcons; [trivial | apply list_permut.permut_refl; intros; trivial].
 refine (list_permut.permut_trans _ P2 _).
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 apply list_permut.permut_sym.
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 simpl; apply Pcons; [trivial | apply list_permut.permut_refl; intros; trivial].
 destruct l1' as [ | t1' l1']; destruct l2' as [ | t2' l2'].
 (* 1/11 *)
@@ -5935,7 +5937,7 @@ assert (a''_in_l2 : In a'' l2).
 destruct H' as [ll [ _ [_ [P2 _]]]].
 rewrite (in_permut_in P2); apply in_or_app; left; trivial.
 (* bug, rewrite passe avec _ a la place de u1_in_l1 a''_in_l2 *)
-rewrite (proj2 (IHl1l2 u1 a'' u1_in_l1 a''_in_l2 u1_lt_a'')); apply refl_equal.
+rewrite (proj2 (IHl1l2 u1 a'' u1_in_l1 a''_in_l2 u1_lt_a'')); apply eq_refl.
 assert (u1_mem_tl2' : exists u2, equiv u1 u2 /\ In u2 (t2' :: l2')).
 rewrite <- (mem_in_eq equiv).
 rewrite (mem_permut0_mem equiv_equiv u1 H1).
@@ -5946,11 +5948,11 @@ assert (K := H' _ _ u1_in_l1' u2_in_tl2').
 assert (Su : size u1 + size u2 <= n).
 apply Sl; [idtac | rewrite (in_permut_in P2); apply in_or_app; left]; assumption.
 apply False_rect; generalize (@equiv_eval_is_sound rpo_infos n u1 u2 Su); rewrite K; intro E; apply E; assumption.
-rewrite K; apply refl_equal.
+rewrite K; apply eq_refl.
 (* 1/8 *)
-apply False_rect; apply T; apply refl_equal.
+apply False_rect; apply T; apply eq_refl.
 (* 1/7 *)
-intros H; rewrite H in T; apply False_rect; apply T; apply refl_equal.
+intros H; rewrite H in T; apply False_rect; apply T; apply eq_refl.
 (* 1/6 *)
 intro; apply False_rect; apply (prec_antisym Prec f2); trivial. assert (H4: False). apply prec_not_prec_eq with symbol Prec f1 f2; trivial.  contradict H4. 
 (* 1/5 *)
@@ -5959,9 +5961,9 @@ intro; apply False_rect; apply (prec_antisym Prec f1); trivial. assert (H4: Fals
 intros [f2_diff_f2 _]; absurd (f2 = f2); trivial.
 (* 1/3 *)
 contradict f2_diff_f2; trivial.
-apply False_rect; apply T; apply refl_equal.
+apply False_rect; apply T; apply eq_refl.
 (* 1/2 *)
-apply False_rect; apply T; apply refl_equal.
+apply False_rect; apply T; apply eq_refl.
 (* 1/1 *)
 destruct (list_exists_option
      (fun t : term =>
@@ -5999,7 +6001,7 @@ destruct H' as [ll [Ell [P2 [P1 _]]]].
 assert (Ell' : forall t1 t2, In (t1,t2) ll -> equiv t1 t2).
 intros t1 t2 t1t2_in_ll.
 generalize (equiv_eval_is_sound_weak rpo_infos n t1 t2).
-rewrite (Ell _ _ t1t2_in_ll); intro t1_eq_t2; apply t1_eq_t2; apply refl_equal.
+rewrite (Ell _ _ t1t2_in_ll); intro t1_eq_t2; apply t1_eq_t2; apply eq_refl.
 revert Ell' l1_lt_l2 P1 P2; clear; revert l1 l2 l1' l2'; induction ll as [ | [t2 t1] ll];
 intros l1 l2 l1' l2' Ell l1_lt_l2 P1 P2.
 rewrite <- app_nil_end in P1.
@@ -6012,18 +6014,18 @@ transitivity l2; [symmetry; apply permut_impl with eq | idtac]; trivial.
 intros a' b a_eq_b; subst a'; apply Eq.
 apply (@rpo_mul_remove_equiv_aux rpo_infos.(bb) l1' l2' t1 t2).
 intros t _; apply (@rpo_antirefl rpo_infos.(bb) t); trivial.
-symmetry; apply Ell; left; apply refl_equal.
+symmetry; apply Ell; left; apply eq_refl.
 apply IHll with l1 l2; trivial.
 intros; apply Ell; right; assumption.
 refine (list_permut.permut_trans _ P1 _).
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 apply list_permut.permut_sym.
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 simpl; apply Pcons; [trivial | apply list_permut.permut_refl; intros; trivial].
 refine (list_permut.permut_trans _ P2 _).
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 apply list_permut.permut_sym.
-intros; subst; apply refl_equal.
+intros; subst; apply eq_refl.
 simpl; apply Pcons; [trivial | apply list_permut.permut_refl; intros; trivial].
 destruct l1' as [ | t1' l1']; destruct l2' as [ | t2' l2'].
 (* 1/10 *)
@@ -6073,7 +6075,7 @@ assert (a''_in_l2 : In a'' l2).
 destruct H' as [ll [ _ [P2 _]]].
 rewrite (in_permut_in P2); apply in_or_app; left; trivial.
 (* bug, rewrite passe avec _ a la place de u1_in_l1 a''_in_l2 *)
-rewrite (proj2 (IHl1l2 u1 a'' u1_in_l1 a''_in_l2 u1_lt_a'')); apply refl_equal.
+rewrite (proj2 (IHl1l2 u1 a'' u1_in_l1 a''_in_l2 u1_lt_a'')); apply eq_refl.
 assert (u1_mem_tl2' : exists u2, equiv u1 u2 /\ In u2 (t2' :: l2')).
 rewrite <- (mem_in_eq equiv).
 rewrite (mem_permut0_mem equiv_equiv u1 H1).
@@ -6085,9 +6087,9 @@ assert (Su : size u2 + size u1 <= n).
 rewrite plus_comm; apply Sl; [idtac | rewrite (in_permut_in P2); apply in_or_app; left]; assumption.
 apply False_rect; generalize (@equiv_eval_is_sound rpo_infos n u2 u1 Su); rewrite K; intro E; apply E.
 symmetry; assumption.
-rewrite K; apply refl_equal.
+rewrite K; apply eq_refl.
 (* 1/6 *)
-intros H; rewrite H in T'; apply False_rect; apply T'; apply refl_equal.
+intros H; rewrite H in T'; apply False_rect; apply T'; apply eq_refl.
 (* 1/5 *)
 intro. assert (H4: False). apply prec_not_prec_eq with symbol Prec f2 f1; trivial.  apply prec_eq_sym; trivial. contradict H4. 
 (* 1/4 *)
@@ -6097,9 +6099,9 @@ assert (H4: False). apply prec_not_prec_eq with symbol Prec f1 f2; trivial. cont
 intros [f2_diff_f2 _]; absurd (f2 = f2); trivial.
 contradict f2_diff_f2. apply prec_eq_sym; trivial.
 (* 1/2 *)
-apply False_rect; apply T'; apply refl_equal.
+apply False_rect; apply T'; apply eq_refl.
 (* 1/1 *)
-apply False_rect; apply T'; apply refl_equal.
+apply False_rect; apply T'; apply eq_refl.
 (*SLOW*)Qed.
 
 Lemma rpo_eval_is_complete :
@@ -6355,7 +6357,8 @@ apply H2; trivial.
 trivial.
 Qed.
 
-From Coq Require Import Omega.
+
+Import Omega.
 
 
 Lemma equiv_rpo_eval: forall  n rpo_infos t s u, size t + size u <= n -> size t + size s <= n -> equiv u s -> rpo_eval rpo_infos n t u = rpo_eval rpo_infos n t s.
@@ -7294,39 +7297,23 @@ Qed.
  
 Lemma permut0_rpo_mul_antirefl: forall l1 l2 rpo_infos, permut0 equiv l1 l2 -> rpo_mul (bb rpo_infos) l1 l2 -> False. 
 Proof.
-double induction l1 l2.
-intros.
-apply rpo_mul_antirefl with rpo_infos []. trivial.
-intros.
-inversion H0.
-intros.
-inversion H1.
-apply app_eq_nil in H5.
-destruct H5. 
-discriminate H8.
-intros.
-assert (forall (a : term) (l : list term) (rpo_infos : rpo_inf),
-       permut0 equiv (a :: l) l0 ->
-       rpo_mul (bb rpo_infos) (a :: l) l0 -> False).
-apply H0; trivial. clear H0 H1.
-inversion H3.
-assert (rpo_mul (bb rpo_infos) (a1 :: l3) (a1 :: l3)-> False).
-apply rpo_mul_antirefl.
-apply H8.
-apply List_mul with a2 lg ls lc. trivial.
-apply permut0_trans with (a0:: l0). apply equiv_equiv. trivial. trivial.
-trivial.
-Qed.
-
-Lemma rpo_mul_permut0_left: forall rpo_infos l0 l1 l2, permut0 equiv l0 l1 -> rpo_mul (bb rpo_infos) l0 l2 -> rpo_mul (bb rpo_infos) l1 l2.
-Proof.
-intros.
-inversion H0.
-apply List_mul with a lg ls lc.
-apply permut0_trans with l0. apply equiv_equiv.
-apply permut0_sym. apply equiv_equiv. trivial. trivial.
-trivial.
-trivial.
+  induction l1.
+  (* l1 = nil *)
+  induction l2.
+  (* l2 = nil *)
+  intros. apply rpo_mul_antirefl with rpo_infos []. trivial.
+  (* l2 = cons *)
+  intros. inversion H.
+  (* l1 = cons *)
+  induction l2.
+  (* l2 = nil *)
+  intros. inversion H. apply app_eq_nil in H3. destruct H3. discriminate.
+  (* l2 = cons *)
+  intros. inversion H0. apply (rpo_mul_antirefl rpo_infos (l:=a::l1)).
+  eapply List_mul.
+  apply H1.
+  apply permut0_trans with (a0::l2). apply equiv_equiv. trivial. apply H2.
+  trivial.
 Qed.
 
 Lemma rpo_mul_permut0_right:  forall rpo_infos l0 l1 l2, permut0 equiv l0 l1 -> rpo_mul (bb rpo_infos)  l2 l0 -> rpo_mul (bb rpo_infos) l2 l1.

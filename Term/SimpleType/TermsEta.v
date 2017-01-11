@@ -57,7 +57,7 @@ Module TermsEta (Sig : TermsSig.Signature).
      (* build @(M, x) *)
     assert (typeOk: type_left (type L) = type R).
     trivial.
-    set (Mx_cond := Build_appCond L R (refl_equal (env L)) I typeOk).
+    set (Mx_cond := Build_appCond L R (eq_refl (env L)) I typeOk).
     set (Mx := buildApp Mx_cond).
     assert (envOk: env Mx |= 0 := A).
     trivial.

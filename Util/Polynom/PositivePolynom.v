@@ -10,13 +10,15 @@ polynomials with non-negative integers as coefficients
 
 Set Implicit Arguments.
 
-From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction ListUtil VecUtil.
-From Coq Require Import Max.
+From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction VecUtil.
+From Coq Require Import List Max.
+
+From CoLoR Require ListUtil.
 
 Notation vec := (vector D).
 Notation vals := (@Vmap D Z val _).
 
-Open Local Scope Z_scope.
+Local Open Scope Z_scope.
 
 Lemma pos_meval : forall n (m : monom n) (v : vec n), 0 <= meval m (vals v).
 
@@ -26,19 +28,19 @@ apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). hyp.
 apply IHn.
 Qed.
 
-Lemma preserve_pos_meval n (m : monom n) : preserv ZUtil.pos (meval m).
+Lemma preserve_pos_meval n (m : monom n) : preserv pos (meval m).
 
 Proof. intros v Hv. rewrite (Vmap_proj1_sig Hv). apply pos_meval. Qed.
 
 Definition meval_D n (m : monom n) := restrict (preserve_pos_meval m).
 
-Definition coef_pos n (p : poly n) := lforall (fun x => 0 <= fst x) p.
+Definition coef_pos n (p : poly n) := ListUtil.lforall (fun x => 0 <= fst x) p.
 
 Definition bcoef_pos n (p : poly n) := forallb (fun x => is_not_neg (fst x)) p.
 
 Lemma bcoef_pos_ok n (p : poly n) : bcoef_pos p = true <-> coef_pos p.
 
-Proof. apply forallb_lforall. intros [z m]. apply is_not_neg_ok. Qed.
+Proof. apply ListUtil.forallb_lforall. intros [z m]. apply is_not_neg_ok. Qed.
 
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
@@ -59,7 +61,7 @@ Lemma coef_pos_app : forall n (p1 p2 : poly n),
   coef_pos (p1 ++ p2) -> coef_pos p1 /\ coef_pos p2.
 
 Proof.
-unfold coef_pos. intros n p1 p2. simpl. rewrite lforall_app. intuition.
+unfold coef_pos. intros n p1 p2. simpl. rewrite ListUtil.lforall_app. intuition.
 Qed.
 
 Arguments coef_pos_app [n p1 p2] _.
@@ -82,7 +84,7 @@ apply pos_meval. apply IHp. hyp.
 Qed.
 
 Lemma preserve_pos_peval : forall n (p : poly n),
-  coef_pos p -> preserv ZUtil.pos (peval p).
+  coef_pos p -> preserv pos (peval p).
 
 Proof.
 intros. unfold preserv. intros v Hv.

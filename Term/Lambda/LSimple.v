@@ -13,6 +13,7 @@ Set Implicit Arguments.
 From Coq Require Import Relations.
 From CoLoR Require Import VecUtil LogicUtil OrdUtil NatUtil.
 From CoLoR Require Export LBeta.
+From CoLoR Require FMapUtil.
 
 (****************************************************************************)
 (** * Simple types over a set [So] of type constants or sorts. *)
@@ -355,7 +356,7 @@ Section typing.
     apply tr_app with A. hyp. gen (g _ (lt_0_Sn n)). simpl. auto.
     intros i hi. gen (g _ (lt_n_S hi)). simpl.
     rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2 := hi).
-    rewrite lt_unique with (h1 := lt_S_n (lt_le_trans (lt_n_S hi) hn))
+    rewrite lt_unique with (h1 := lt_S_n _)
                              (h2 := lt_le_trans hi (le_S_n hn)). auto.
   Qed.
 
@@ -376,7 +377,9 @@ Section typing.
     rewrite Vnth_remove_last_intro with (h1:=l). rewrite H. fold us.
     rewrite (lt_unique (lt_le_trans hi h2) (lt_le_trans l p)). apply h.
     assert (i=n). omega. subst i. rewrite <- Vlast_nth with (x := Vhead ts).
-    rewrite Vnth_eq with (h2 := h2), h3, <- Vlast_tail. hyp. refl.
+    rewrite Vnth_eq with (h2 := h2).
+    setoid_rewrite h3.
+    rewrite <- Vlast_tail. hyp. refl.
   Qed.
 
 End typing.
@@ -429,8 +432,6 @@ Module Make (Export ST : ST_Struct).
 (** ** Typing environments
 
 are finite maps from variables to types. *)
-
-  From CoLoR Require FMapUtil.
 
   Module XMapUtil := FMapUtil.Make XMap.
   Module Export Domain := XMapUtil.Domain XSet.

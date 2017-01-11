@@ -50,18 +50,18 @@ right with (Term f l2); [ constructor | ]; assumption.
 intro H; inversion H as [u1 u2 u3 H1 H2]; subst.
 assert (K : exists l2, u2 = Term f l2 /\ refl_trans_clos (one_step_list (one_step R)) l2 l).
 clear -H2; inversion H2 as [u | u1 v2 K2]; clear H2; subst.
-exists l; split; [apply refl_equal | left].
+exists l; split; [apply eq_refl | left].
 set (s := Term f l) in *.
-assert (s_eq_fl := refl_equal s).
+assert (s_eq_fl := eq_refl s).
 unfold s at 2 in s_eq_fl; clearbody s.
 revert f l s_eq_fl; induction K2 as [t1 t2 K | t1 t2 t3 K1 K2]; intros f l s_eq_fl.
 inversion K as [f' l1 l2]; clear K; subst.
 injection H1; clear H1; intros; subst f' l2.
-exists l1; split; [apply refl_equal | right; left; assumption].
+exists l1; split; [apply eq_refl | right; left; assumption].
 inversion K1 as [f' l1 l2]; clear K1; subst.
-destruct (IHK2 _ _ (refl_equal _)) as [l3 [J1 J2]].
+destruct (IHK2 _ _ (eq_refl _)) as [l3 [J1 J2]].
 injection J1; clear J1; intros; subst f' l3.
-exists l1; split; [apply refl_equal | apply refl_trans_clos_is_trans with l2; [right; left | ]; assumption].
+exists l1; split; [apply eq_refl | apply refl_trans_clos_is_trans with l2; [right; left | ]; assumption].
 destruct K as [l2 [J1 J2]].
 subst u2; constructor 1 with l2; assumption.
 Qed.

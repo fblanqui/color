@@ -14,7 +14,7 @@ Set Implicit Arguments.
 From CoLoR Require Import Polynom PositivePolynom NaryFunction VecUtil
      LogicUtil ListUtil ZUtil RelUtil NatUtil BoundNat.
 
-Open Local Scope Z_scope.
+Local Open Scope Z_scope.
 
 (***********************************************************************)
 (** definition of weak and strong monotony conditions *)
@@ -141,8 +141,8 @@ apply Zplus_le_lt_compat.
    intro vi. rewrite (VO_eq vi). simpl. hyp.
    intros i' Hrec vi. rewrite (VSn_eq vi). simpl Vapp.
    simpl Vmap. simpl Vnth. gen (Hrec (Vtail vi)). clear Hrec. intro H'.
-   assert (H'' : i_lt_n (refl_equal (i' + S j)%nat) = lt_S_n
-     (@i_lt_n (S (i' + S j)) (S i') _ (refl_equal (S (i' + S j))))).
+   assert (H'' : i_lt_n (eq_refl (i' + S j)%nat) = lt_S_n
+     (@i_lt_n (S (i' + S j)) (S i') _ (eq_refl (S (i' + S j))))).
    apply lt_unique.
    rewrite <- H''. hyp.
  gen (coef_pos_monotone_peval_Dle H_coef_pos_p2).
@@ -201,7 +201,8 @@ unfold pstrong_monotone, pweak_monotone in H1.
 unfold bpstrong_monotone, bcoef_pos. simpl in *.
 rewrite !andb_eq. intuition. rewrite is_not_neg_ok. hyp.
 change (bcoef_pos p = true). rewrite bcoef_pos_ok. hyp.
-rewrite forallb_forall. intros [i hi Hi]. simpl. rewrite is_pos_ok.
+rewrite forallb_forall.
+intros [i hi].  simpl. rewrite is_pos_ok.
 ded (H3 _ hi). omega. Transparent coef.
 Qed.
 

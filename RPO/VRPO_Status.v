@@ -100,7 +100,7 @@ Module RPO_Model (PT : VPrecedenceType) <: RPO_Model with Module P := PT.
 
   Proof.
     unfold lt, tau, mytau.
-    intros f g feqg ss ts Hsub; gen (refl_equal (status f));
+    intros f g feqg ss ts Hsub; gen (eq_refl (status f));
       pattern (status f) at -1;
       case (status f); intros statusf Hstatusf.
     apply rpo2_lex; trivial.

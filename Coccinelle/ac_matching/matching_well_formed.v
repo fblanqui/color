@@ -392,7 +392,7 @@ unfold new_var; intros v' one_v' v'_eq_fresh_var_pb; apply (fresh_var_spec pb);
 right; left; rewrite <- v'_eq_fresh_var_pb.
 generalize (none_nb_occ_O X.eq_bool v' (partly_solved_part pb));
 destruct (find X.eq_bool v' (partly_solved_part pb)); trivial;
-intro H; generalize (H (refl_equal _)); clear H; intro H; rewrite H in one_v';
+intro H; generalize (H (eq_refl _)); clear H; intro H; rewrite H in one_v';
 absurd (1 <= 0); trivial; auto with arith.
 apply W5.
 (* W6 *) 
@@ -504,7 +504,7 @@ right; right; trivial.
 (* arity f1 = Free n1 *)
 assert (L12 : length l1 = length l2).
 apply trans_eq with n1; [idtac | apply sym_eq];
-generalize (W1 (Term f1 l1) (Term f1 l2) (or_introl _ (refl_equal _)));
+generalize (W1 (Term f1 l1) (Term f1 l2) (or_introl _ (eq_refl _)));
 intros [[_ W_t1] [_ W_t2]]; [rewrite Af1 in W_t1 | rewrite Af1 in W_t2]; trivial.
 split.
 assert (W1_l : forall t1 t2, In (t1,t2) l -> well_formed_cf t1 /\ well_formed_cf t2). 

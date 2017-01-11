@@ -31,7 +31,7 @@ Bind Scope poly_scope with poly.
 
 (** coefficient of monomial m in polynomial p *)
 
-Open Local Scope Z_scope.
+Local Open Scope Z_scope.
 
 Fixpoint coef n (m : monom n) (p : poly n) : Z :=
   match p with
@@ -104,7 +104,7 @@ Fixpoint pplus n (p1 p2 : poly n) : poly n :=
 
 Infix "+" := pplus : poly_scope.
 
-Open Local Scope poly_scope.
+Local Open Scope poly_scope.
 
 Definition pminus n (p1 p2 : poly n) := p1 + (- p2).
 
@@ -152,7 +152,7 @@ Fixpoint pcomp n (p : poly n) k (ps : vector (poly k) n) : poly k :=
     | cons (c,m) p' => cpmult c (mcomp m ps) + pcomp p' ps
   end.
 
-Close Local Scope poly_scope.
+Local Close Scope poly_scope.
 
 (***********************************************************************)
 (** evaluation *)
