@@ -43,8 +43,8 @@ intros A R; fix 1.
 intros l1; case l1; clear l1.
 intros l2 H; inversion H.
 intros a1 l1 l2 H; inversion H as [b1 b2 l H1 | b k1 k2 Hk]; subst.
-apply refl_equal.
-simpl; rewrite (one_step_list_length_eq _ _ Hk); apply refl_equal.
+apply eq_refl.
+simpl; rewrite (one_step_list_length_eq _ _ Hk); apply eq_refl.
 Qed.
 
 Lemma trans_clos_one_step_list_length_eq :
@@ -59,7 +59,7 @@ Lemma refl_trans_clos_one_step_list_length_eq :
   forall A R (l1 l2 : list A), refl_trans_clos (one_step_list R) l1 l2 -> length l1 = length l2.
 Proof.
 intros A R l1 l2 H; inversion H as [l | k1 k2 K]; clear H; subst.
-apply refl_equal.
+apply eq_refl.
 apply trans_clos_one_step_list_length_eq with R; assumption.
 Qed.
 
@@ -97,7 +97,7 @@ subst l; clear Acc_l t_in_l; revert l1; fix Hone_step 1.
 intros [ | a1 l1].
 left; assumption.
 right; apply Hone_step.
-apply in_or_app; right; left; apply refl_equal.
+apply in_or_app; right; left; apply eq_refl.
 Qed.
 
 Lemma acc_one_step_list :
@@ -149,11 +149,11 @@ Lemma rwr_list_chop :
 Proof.
 intros A R k1 l1 k2 l2 L H.
 set (ll1 := k1 ++ l1) in *.
-assert (H1 := refl_equal ll1).
+assert (H1 := eq_refl ll1).
 unfold ll1 at 2 in H1.
 clearbody ll1.
 set (ll2 := k2 ++ l2) in *.
-assert (H2 := refl_equal ll2).
+assert (H2 := eq_refl ll2).
 unfold ll2 at 2 in H2.
 clearbody ll2.
 revert k1 l1 k2 l2 L H1 H2.
@@ -163,7 +163,7 @@ assert (H : exists k3, exists l3, length k1 = length k3 /\ ll2 = k3 ++ l3).
 generalize (one_step_list_length_eq H1).
 subst; clear.
 revert ll2  l1; induction k1 as [ | a k1]; intros ll2 l1 L.
-exists nil; exists ll2; split; apply refl_equal.
+exists nil; exists ll2; split; apply eq_refl.
 destruct ll2 as [ | b ll2].
 discriminate.
 simpl in L; injection L; clear L; intro L.
@@ -193,14 +193,14 @@ destruct IHH' as [u [u' [k1 [k2 [k2' [K1 [K2 [K3 K4]]]]]]]].
 rewrite K2 in H2.
 destruct (in_in_split_set _ _ _ _ _ _ H2) as [[[k [J1 J2]] | [k [J1 J2]]] | [k [J1 J2]]]; subst.
 exists t; exists t'; exists l1; exists (k ++ u :: k2); exists (k ++ u' :: k2'); split; [idtac | split; [idtac | split]].
-rewrite <- ass_app; apply refl_equal.
-apply refl_equal.
+rewrite <- ass_app; apply eq_refl.
+apply eq_refl.
 left; assumption.
 apply rwr_list_chop with (l1 ++ t :: nil) (l1 ++ t :: nil); trivial.
 do 2 rewrite <- ass_app in H'; simpl in H; do 2 rewrite <- ass_app; simpl; trivial.
 exists u; exists u'; exists k1; exists k2; exists (k ++ t' :: l2); split; [idtac | split; [idtac | split]].
-apply refl_equal.
-rewrite <- ass_app; apply refl_equal.
+apply eq_refl.
+rewrite <- ass_app; apply eq_refl.
 assumption.
 apply refl_trans_clos_is_trans with (k ++ t :: l2); trivial.
 right; left.
@@ -208,8 +208,8 @@ revert H1; clear; intro H1; induction k as [ | a k].
 left; assumption.
 right; assumption.
 exists u; exists t'; exists l1; exists k2; exists l2; split; [idtac | split; [idtac | split]].
-apply refl_equal.
-apply refl_equal.
+apply eq_refl.
+apply eq_refl.
 apply trans_clos_is_trans with t; trivial.
 left; assumption.
 assumption.
@@ -232,8 +232,8 @@ intros l1 l2 H; induction H as [l1 l2 H | l1 l2 l3 H1 H2].
 left; right; assumption.
 apply trans_clos_is_trans with (a :: l2); trivial.
 left; right; assumption.
-rewrite <- ass_app; simpl; apply refl_equal.
-rewrite <- ass_app; simpl; apply refl_equal.
+rewrite <- ass_app; simpl; apply eq_refl.
+rewrite <- ass_app; simpl; apply eq_refl.
 Qed.
 
 Lemma rwr_list_expand : 
@@ -257,7 +257,7 @@ apply trans_clos_is_trans with (k1' ++ t :: l2).
 rewrite rwr_list_expand_strong.
 exists t; exists t'; exists k1'; exists l2; exists l2'.
 split; [idtac | split; [idtac | split]]; try assumption.
-apply refl_equal.
+apply eq_refl.
 subst l; revert K3; clear; intro K; induction K as [k1 k2 K | k1 k2 k3 K1 K2].
 left; induction K as [a1 a2 k K | a k1 k2 K].
 left; assumption.
@@ -302,9 +302,9 @@ Lemma one_step_list_refl_trans_clos_one_step :
 Proof.  
 intros A R l1 l2 s k1 k2 t L H.
 set (l := l1 ++ s :: l2) in *.
-assert (H1 := refl_equal l); unfold l at 2 in H1; clearbody l.
+assert (H1 := eq_refl l); unfold l at 2 in H1; clearbody l.
 set (k := k1 ++ t :: k2) in *.
-assert (H2 := refl_equal k); unfold k at 2 in H2; clearbody k.
+assert (H2 := eq_refl k); unfold k at 2 in H2; clearbody k.
 revert l1 l2 s k1 k2 t L H1 H2.
 induction H as [u u' k H | u l k' H].
 intros l1 l2 s k1 k2 t L H1 H2.
@@ -331,7 +331,7 @@ discriminate.
 discriminate.
 injection L; clear L; intro L.
 injection H1; injection H2; intros K1 K2 K3 K4; subst.
-apply (IHH _ _ _ _ _ _ L (refl_equal _) (refl_equal _)).
+apply (IHH _ _ _ _ _ _ L (eq_refl _) (eq_refl _)).
 Qed.
 
 Lemma refl_trans_clos_one_step_list_refl_trans_clos_one_step :
@@ -341,9 +341,9 @@ Lemma refl_trans_clos_one_step_list_refl_trans_clos_one_step :
 Proof.  
 intros A R l1 l2 s k1 k2 t L H.
 set (l := l1 ++ s :: l2) in *.
-assert (H1 := refl_equal l); unfold l at 2 in H1; clearbody l.
+assert (H1 := eq_refl l); unfold l at 2 in H1; clearbody l.
 set (k := k1 ++ t :: k2) in *.
-assert (H2 := refl_equal k); unfold k at 2 in H2; clearbody k.
+assert (H2 := eq_refl k); unfold k at 2 in H2; clearbody k.
 revert l1 l2 s k1 k2 t L H1 H2.
 inversion H as [l' | l' k' H'].
 subst l' k; intros l1 l2 s k1 k2 t L H1 H2.
@@ -393,8 +393,8 @@ Proof.
 intros A R s t l1 l2; split; intro H.
 inversion H as [l | l1' l2' H']; clear H; subst.
 split; left.
-set (k1 := s :: l1) in *; assert (H1 := refl_equal k1); unfold k1 at 2 in H1; clearbody k1.
-set (k2 := t :: l2) in *; assert (H2 := refl_equal k2); unfold k2 at 2 in H2; clearbody k2.
+set (k1 := s :: l1) in *; assert (H1 := eq_refl k1); unfold k1 at 2 in H1; clearbody k1.
+set (k2 := t :: l2) in *; assert (H2 := eq_refl k2); unfold k2 at 2 in H2; clearbody k2.
 revert s t l1 l2 H1 H2.
 induction H' as [k1 k2 H | k1 k2 k3 H].
 intros s t l1 l2 H1 H2; subst; inversion H; clear H; subst; split.
@@ -442,7 +442,7 @@ simpl in H; rewrite refl_trans_clos_one_step_list_head_tail in H; destruct H as 
 simpl; intros s t [st_eq_ab | st_in_ll]; 
   [injection st_eq_ab; intros; subst; apply H1 | revert s t st_in_ll; rewrite <- IHll; assumption].
 simpl; rewrite refl_trans_clos_one_step_list_head_tail; split.
-apply H; left; apply refl_equal.
+apply H; left; apply eq_refl.
 rewrite IHll; intros; apply H; intros; right; assumption.
 Qed.
 
@@ -457,7 +457,7 @@ left.
 simpl in H; rewrite refl_trans_clos_one_step_list_head_tail in H; destruct H as [H1 H2].
 simpl; intros t [t_eq_a | t_in_l]; [subst; apply H1 | revert t t_in_l; rewrite <- IHl; assumption].
 simpl; rewrite refl_trans_clos_one_step_list_head_tail; split.
-apply H; left; apply refl_equal.
+apply H; left; apply eq_refl.
 rewrite IHl; intros; apply H; intros; right; assumption.
 Qed.
 

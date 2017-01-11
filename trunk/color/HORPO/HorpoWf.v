@@ -12,6 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras Horpo Computability PairLex
   HorpoComp LogicUtil.
+From CoLoR Require SN.
 
 Module HorpoWf (S : TermsSig.Signature) 
                (Prec : Horpo.Precedence with Module S := S).
@@ -426,8 +427,6 @@ Module HorpoWf (S : TermsSig.Signature)
     apply appBodyR_subterm.
     apply algebraic_appBodyR; trivial.
   Qed.
-
-  From CoLoR Require SN.
 
   Lemma horpo_beta_wf : forall M, algebraic M -> SN.SN horpo M.
 

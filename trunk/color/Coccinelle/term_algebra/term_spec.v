@@ -62,7 +62,7 @@ Declare Module VSet :
 (* Declare Module VSet : list_set.S with Definition DS.A := variable. *)
 
 Ltac destruct_arity f n Af :=
-generalize (refl_equal (arity f)); pattern f at 1; destruct (arity f) as [ |  | n]; intro Af.
+generalize (eq_refl (arity f)); pattern f at 1; destruct (arity f) as [ |  | n]; intro Af.
 
 
 (** Definition of terms. 

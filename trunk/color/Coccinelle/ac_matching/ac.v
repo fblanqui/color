@@ -1008,7 +1008,7 @@ Lemma flatten_build :
 Proof.
 intros f [ | t1 [ | t2 l]] Af Al.
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _; apply Pnil | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-assert (Al_t1 := Al _ (or_introl _ (refl_equal _))).
+assert (Al_t1 := Al _ (or_introl _ (eq_refl _))).
 simpl; destruct t1 as [ | g]; [auto | idtac].
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g | intros _].
 apply False_rect; apply Al_t1; assumption.
@@ -1081,7 +1081,7 @@ apply Hsigma'.
 
 intro v; generalize (Wsigma v) (Nb_occ_sigma v); simpl; case (X.eq_bool v v1); trivial.
 generalize (some_nb_occ_Sn X.eq_bool v sigma); case (find X.eq_bool v sigma).
-intros t H; generalize (H _ (refl_equal _)); clear H; intros H _ H'.
+intros t H; generalize (H _ (eq_refl _)); clear H; intros H _ H'.
 destruct (nb_occ X.eq_bool v sigma) as [ | no];
 [ absurd (1 <= 0) | absurd (S(S no) <= 1) ]; auto with arith.
 intros; exact I.
@@ -1469,16 +1469,16 @@ intros; apply H; trivial; apply Wl; trivial.
 clear H Wt;
 assert (Hl' : list_size size l = list_size ac_size (map canonical_form l)).
 clear Ll; induction l as [ | t l]; trivial.
-simpl; rewrite (Hl t (or_introl _ (refl_equal _))); rewrite IHl; trivial.
+simpl; rewrite (Hl t (or_introl _ (eq_refl _))); rewrite IHl; trivial.
 intros; apply Wl; right; trivial.
 intros; apply Hl; right; trivial.
 simpl; rewrite (list_size_fold size); rewrite (list_size_fold ac_size);
 destruct_arity f n Af.
 assert (Dummy : DOS.A = term).
-apply refl_equal.
+apply eq_refl.
 rewrite length_quicksort.
 assert (Dummy2 : forall l, @length DOS.A l = @length term l).
-intro k; apply refl_equal.
+intro k; apply eq_refl.
 rewrite Dummy2.
 replace (list_size ac_size (quicksort (flatten f (map canonical_form l))))
 with (list_size ac_size (flatten f (map canonical_form l))).
@@ -1487,8 +1487,8 @@ destruct l as [ | t1 [ | t2 [ | t3 l]]];
 auto with arith.
 simpl map; simpl list_size;
 rewrite plus_0_r;
-rewrite (Hl t1 (or_introl _ (refl_equal _)));
-rewrite (Hl t2 (or_intror _ (or_introl _ (refl_equal _)))).
+rewrite (Hl t1 (or_introl _ (eq_refl _)));
+rewrite (Hl t2 (or_intror _ (or_introl _ (eq_refl _)))).
 assert (W1 : well_formed_cf (canonical_form t1)).
 apply well_formed_cf_is_well_formed_cf_conv; 
 exists t1; split; trivial; apply Wl; left; trivial.

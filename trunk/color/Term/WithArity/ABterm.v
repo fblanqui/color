@@ -182,7 +182,7 @@ intro t. apply (term_ind P Q).
  intro H3.
  gen (H1 _ (proj1 H3)). clear H1. intro H1.
  gen (H2 _ (proj2 H3)). clear H2. intro H2.
- simpl. rewrite H1, H2. refl.
+ simpl. rewrite <-H1, <-H2. refl.
 Qed.
  
 End term_int.

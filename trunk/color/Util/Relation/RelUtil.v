@@ -1348,7 +1348,7 @@ Lemma comm_s_r A (R S : rel A) :
   S@R << (R!1)@(S#1) -> (R U S)#1 @ R @ (R U S)#1 << (R!1) @ (R U S)#1.
 
 Proof.
-  intros comm x y [z2 [[z1 [xRSz1 z1Rz2] z2RSy]]].
+  intros comm x y [z2 [[z1 [xRSz1 z1Rz2]] z2RSy]].
   induction xRSz1 as [ | m n z1 mRSn nRSz1 IH].
   exists z2. split. apply t1_step. hyp. hyp.
   (* m RUS n RUS# z1 R z2 RUS# y *)

@@ -922,7 +922,7 @@ induction l; intros; simpl in H. discr; tauto.
 destruct (P_dec a).
 inversion H; subst. exists a; simpl; split; auto.
 destruct (find_first l); try discr; try tauto.
-inversion H. ded (IHl n0 (refl_equal (Some n0))).
+inversion H. ded (IHl n0 (eq_refl (Some n0))).
 destruct H0. exists x. simpl; auto.
 Qed.
 

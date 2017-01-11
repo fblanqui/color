@@ -794,10 +794,10 @@ Ltac find_bounds_fv fv :=
         | true => 
           match b with
             | 0 => fail 2
-            | _ => constr:b
+            | _ => constr:(b)
           end
       end
-    | _ => constr:0
+    | _ => constr:(0)
   end
   .
 
@@ -929,7 +929,7 @@ Ltac ring_ineq_same_pol H :=
 Ltac get_fun p e := 
   let e' := eval pattern p in e in 
     match e' with 
-      | ?f _ => constr:f
+      | ?f _ => constr:(f)
     end
 .
 
@@ -1004,9 +1004,9 @@ Ltac isVar t :=
   match goal with 
     | v:Z |- _ => 
       match t with 
-        v => constr:true
+        v => constr:(true)
       end
-    | _ => constr:false
+    | _ => constr:(false)
   end.
 
 

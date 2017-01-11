@@ -523,9 +523,9 @@ Definition eq_A := @eq A.
 
 Lemma eq_proof : equivalence A eq_A.
 unfold eq_A; split.
-intro n; apply refl_equal.
+intro n; apply eq_refl.
 intros a1 a2 a3 H1 H2; rewrite H1; assumption.
-intros a1 a2 H; rewrite H; apply refl_equal.
+intros a1 a2 H; rewrite H; apply eq_refl.
 Qed.
 
   Add Relation A eq_A 
@@ -554,19 +554,19 @@ revert l1 l2.
 assert (H :  forall l1 l2, match eq_bool_list l1 l2 with true => l1 = l2 | false => ~l1 = l2 end).
 fix 1.
 intros [ | a1 l1] [ | a2 l2]; simpl.
-apply refl_equal.
+apply eq_refl.
 discriminate.
 discriminate.
 generalize (DS1.eq_bool_ok a1 a2); case (DS1.eq_bool a1 a2); [intros a1_eq_a2 | intros a1_diff_a2].
 generalize (eq_bool_ok0 l1 l2); case (eq_bool_list l1 l2); [intro l1_eq_l2 | intro l1_diff_l2].
-subst; apply refl_equal.
-intro E; apply l1_diff_l2; injection E; intros; subst; apply refl_equal.
-intro E; apply a1_diff_a2; injection E; intros; subst; apply refl_equal.
+subst; apply eq_refl.
+intro E; apply l1_diff_l2; injection E; intros; subst; apply eq_refl.
+intro E; apply a1_diff_a2; injection E; intros; subst; apply eq_refl.
 intros l1 l2; generalize (H l1 l2).
 case (eq_bool_list l1 l2); [intro l1_eq_l2 | intro l1_diff_l2].
 subst; apply (equiv_refl _ _ eq_proof).
-intro E; apply l1_diff_l2; injection E; intros; subst; apply refl_equal.
-intro E; apply e1_diff_e2; injection E; intros; subst; apply refl_equal.
+intro E; apply l1_diff_l2; injection E; intros; subst; apply eq_refl.
+intro E; apply e1_diff_e2; injection E; intros; subst; apply eq_refl.
 Defined.
 
 End LDS.
@@ -630,29 +630,29 @@ intros [ | [b1 l1] l] lc cns H1 H2.
 discriminate.
 injection H1; clear H1; intros; subst.
 generalize (split_list _ _ _ _ H2); clear H2; intros [[k [H3 H4]] | [k [H3 H4]]]; subst.
-generalize (IHP l lc (k ++ k2) (refl_equal _)); rewrite ass_app.
-intro IH; generalize (IH (refl_equal _)); clear IH.
+generalize (IHP l lc (k ++ k2) (eq_refl _)); rewrite ass_app.
+intro IH; generalize (IH (eq_refl _)); clear IH.
 intros [ll [ll' [Q1 [Q2 Q3]]]].
 exists ll; exists ((b1,l1) :: ll'); simpl; repeat split; trivial.
-rewrite <- LLP.permut_cons_inside; [assumption | apply refl_equal].
+rewrite <- LLP.permut_cons_inside; [assumption | apply eq_refl].
 rewrite <- permut_cons_inside; assumption.
 revert H4; case k; [idtac | intros a k']; intro H4.
 simpl in H4; subst.
-generalize (IHP l k1 k2 (refl_equal _) (refl_equal _)).
+generalize (IHP l k1 k2 (eq_refl _) (eq_refl _)).
 intros [ll [ll' [Q1 [Q2 Q3]]]].
 exists ll; exists ((b1,l1) :: ll'); repeat split.
-rewrite <- LLP.permut_cons_inside; [assumption | apply refl_equal].
+rewrite <- LLP.permut_cons_inside; [assumption | apply eq_refl].
 rewrite <- app_nil_end; assumption.
 simpl; rewrite <- permut_cons; assumption.
 injection H4; clear H4; intros; subst a k2.
-assert (IH := IHP l (k1 ++ k') cns (refl_equal _)).
+assert (IH := IHP l (k1 ++ k') cns (eq_refl _)).
 rewrite ass_app in IH.
-generalize (IH (refl_equal _)); clear IH; intros [ll [ll' [Q1 [Q2 Q3]]]].
+generalize (IH (eq_refl _)); clear IH; intros [ll [ll' [Q1 [Q2 Q3]]]].
 exists ((b1, l1) :: ll); exists ll'; repeat split.
-simpl; rewrite <- LLP.permut_cons; [assumption | apply refl_equal].
+simpl; rewrite <- LLP.permut_cons; [assumption | apply eq_refl].
 simpl; rewrite <- permut_cons_inside; assumption.
 assumption.
-intros l lc cns P; apply (H (consn l) (lc ++ cns) P _ _ _ (refl_equal _) (refl_equal _)).
+intros l lc cns P; apply (H (consn l) (lc ++ cns) P _ _ _ (eq_refl _) (eq_refl _)).
 Qed.
 
 Lemma multiset_closure :
@@ -757,7 +757,7 @@ rewrite mem_consn; exists ly; trivial.
 apply trans_R with a.
 apply la_lt_a; rewrite (mem_permut_mem y Pla); rewrite <- mem_or_app; left; trivial.
 apply (app_lt_cns x (lx' ++ a' :: lx'')).
-apply in_or_app; right; left; apply refl_equal.
+apply in_or_app; right; left; apply eq_refl.
 rewrite <- mem_or_app; right; left; trivial.
 apply (app_lt_cns y ly); trivial; apply in_insert; trivial.
 rewrite (list_permut.in_permut_in P').
@@ -770,12 +770,12 @@ destruct b_in_lx_la_app as [b_in_lx_la | b_in_app].
 rewrite <- mem_or_app in b_in_lx_la.
 destruct b_in_lx_la as [b_in_lx | b_in_la].
 apply (irrefl_R x); apply (app_lt_cns x (lx' ++ a' :: lx'')).
-apply in_or_app; right; left; apply refl_equal.
+apply in_or_app; right; left; apply eq_refl.
 apply mem_insert; trivial.
 apply (irrefl_R x); apply trans_R with a.
 apply la_lt_a; rewrite (mem_permut_mem x Pla); rewrite <- mem_or_app; right; trivial.
 apply (app_lt_cns x (lx' ++ a' :: lx'')).
-apply in_or_app; right; left; apply refl_equal.
+apply in_or_app; right; left; apply eq_refl.
 rewrite <- mem_or_app; right; left; trivial.
 apply (app_disj_cns irrefl_R x).
 rewrite consn_app; rewrite <- mem_or_app; right; left.
@@ -1010,7 +1010,7 @@ intros _ _; exists (a1 :: l1); exists (@nil (A * list A)); simpl; intuition.
 intros l1 E; simpl.
 generalize (list_exists_is_sound (fun t1 : A => R_bool a2 t1) l1);
 case (list_exists (fun t1 : A => R_bool a2 t1) l1).
-intro H; generalize (proj1 H (refl_equal _)); clear H; 
+intro H; generalize (proj1 H (eq_refl _)); clear H;
 intros [a1 [a1_in_l1 a2_R_a1]].
 assert (a2_R_a1' : R a2 a1).
 generalize (R_bool_ok a2 a1); rewrite a2_R_a1; trivial.
@@ -1107,7 +1107,7 @@ right; discriminate.
 intros; contradiction.
 generalize (greater_case (e1' :: l1') (e2' :: l2') E); unfold A in *.
 case (list_forall (fun t2 : DS1.A => list_exists (fun t1 : DS1.A => R_bool t2 t1) (e1' :: l1')) (e2' :: l2')).
-intro H; generalize (H (refl_equal _)); clear H; intros [le [ll [P1' [P2' app_lt_cns]]]].
+intro H; generalize (H (eq_refl _)); clear H; intros [le [ll [P1' [P2' app_lt_cns]]]].
 apply (multiset_closure_aux2 R (p := l2) (q := l1) (le := le)  (l := ll) l); simpl; auto.
 apply permut_trans with (l ++ e2' :: l2').
 assumption.
@@ -1131,7 +1131,7 @@ assert (E' : forall x : DS1.A, mem eq_A x (e2' :: l2') -> mem eq_A x (e1' :: l1'
 intros x H2 H1; apply (E x H1 H2).
 intros _; generalize (greater_case (e2' :: l2') (e1' :: l1') E'); unfold A in *;
 case (list_forall (fun t1 : DS1.A => list_exists (fun t2 : DS1.A => R_bool t1 t2) (e2' :: l2')) (e1' :: l1')).
-intro H; generalize (H (refl_equal _)); clear H; intros [le [ll [P2' [P1' app_lt_cns]]]].
+intro H; generalize (H (eq_refl _)); clear H; intros [le [ll [P2' [P1' app_lt_cns]]]].
 apply (multiset_closure_aux2 R (p := l1) (q := l2) (le := le)  (l := ll) l); simpl; auto.
 apply permut_trans with (l ++ e1' :: l1').
 assumption.
@@ -1168,7 +1168,7 @@ generalize (@remove_equiv_is_complete l1 l2 l1 nil nil P1 P2 E).
 unfold mult; unfold A in *; case (@remove_equiv DS1.A eq_bool l1 l2); intros k1 k2 [Q1 Q2].
 simpl in Q1; rewrite (permut_nil Q1).
 simpl in Q2; rewrite (permut_nil Q2).
-apply refl_equal.
+apply eq_refl.
 Defined.
 
 Lemma mult_is_complete_greater_aux :
@@ -1185,18 +1185,18 @@ intros [ll [lc [P2 [P1 [ll_diff_nil [app_lt_cns cns_disj_app]]]]]].
 generalize (cns_disj_app irrefl_R); clear cns_disj_app; intro cns_disj_app.
 assert (lc_eq_nil : lc = nil).
 revert P2 P1 cns_disj_app.
-case lc; clear lc; [intros _ _ _; apply refl_equal | intros c lc P2 P1 cns_disj_app].
+case lc; clear lc; [intros _ _ _; apply eq_refl | intros c lc P2 P1 cns_disj_app].
 apply False_rect.
 apply (l2_disj_l1 c).
 rewrite (mem_permut_mem c P1); rewrite <- mem_or_app; right; left; apply (equiv_refl _ _ eq_proof).
 rewrite (mem_permut_mem c P2); rewrite <- mem_or_app; right; left; apply (equiv_refl _ _ eq_proof).
 subst lc; rewrite <- app_nil_end in P1; rewrite <- app_nil_end in P2.
 assert (Compat : forall ta ta' tb tb' : A, eq_A ta tb -> eq_A ta' tb' -> R_bool ta ta' = R_bool tb tb').
-unfold eq_A; intros a a' b b' a_eq_a' b_eq_b'; subst; apply refl_equal.
+unfold eq_A; intros a a' b b' a_eq_a' b_eq_b'; subst; apply eq_refl.
 rewrite (permut_list_forall_exists R_bool R_bool Compat P2 P1); 
 clear Compat cns_disj_app P1 P2 ll_diff_nil; induction ll as [ | [a la] ll]; simpl; trivial.
 rewrite list_forall_app; rewrite Bool.andb_true_iff; split.
-generalize la (app_lt_cns a la (or_introl _ (refl_equal _)));
+generalize la (app_lt_cns a la (or_introl _ (eq_refl _)));
 clear la app_lt_cns; intros la la_lt_a; induction la as [ | b la]; trivial.
 simpl; generalize (R_bool_ok b a); case (R_bool b a); [intro b_R_a | intro not_b_R_a]; simpl.
 apply IHla; intros; apply la_lt_a; right; assumption.
@@ -1205,8 +1205,8 @@ rewrite (list_forall_impl (fun t1 : A => list_exists (fun t2 : A => R_bool t1 t2
                                         (fun t1 : A =>  Bool.ifb (R_bool t1 a) true
                                                                              (list_exists (fun t2 : A => R_bool t1 t2) (consn ll)))
                                         (appendn ll)).
-apply refl_equal.
-intros b b_in_all H; case (R_bool b a); simpl; [apply refl_equal | assumption].
+apply eq_refl.
+intros b b_in_all H; case (R_bool b a); simpl; [apply eq_refl | assumption].
 apply IHll; intros b lb blb_in_ll; apply app_lt_cns; right; assumption.
 Qed.
 
@@ -1221,8 +1221,8 @@ assert (H : forall l1 l2, trans_clos (multiset_extension_step R) l1 l2 -> l2 = n
 intros l1 l2 T; induction T as [k1 k2 H | k1 k2 k3 H1 H2]; intros; subst.
 inversion H as [l1 l2 l la a la_lt_a P1 P2]; subst.
 generalize (permut_length P2); simpl; discriminate.
-apply IHH2; apply refl_equal.
-apply (H _ _ nil_lt_nil); apply refl_equal.
+apply IHH2; apply eq_refl.
+apply (H _ _ nil_lt_nil); apply eq_refl.
 Qed.
 
 Lemma mult_is_complete_greater :
@@ -1237,8 +1237,8 @@ apply list_permut_trans_clos_multiset_extension_step_1 with l2; [assumption | id
 apply list_permut_trans_clos_multiset_extension_step_2 with l1; assumption.
 assert (Dummy := @mult_is_complete_greater_aux trans_R irrefl_R l _ _ k1_disj_k2 lk2_lt_lk1).
 unfold A in Dummy; rewrite Dummy; clear Dummy.
-revert lk2_lt_lk1; case k1; [idtac | intros _ _ _; apply refl_equal].
-case k2; [idtac | intros _ _ _; apply refl_equal].
+revert lk2_lt_lk1; case k1; [idtac | intros _ _ _; apply eq_refl].
+case k2; [idtac | intros _ _ _; apply eq_refl].
 intro T; apply False_rect.
 apply (mult_irrefl trans_R irrefl_R T).
 Qed.
@@ -1268,16 +1268,16 @@ unfold A in Dummy; rewrite Dummy; clear Dummy.
 revert ll_diff_nil Q1' Q2'; case k1.
 case k2.
 case ll.
-intro ll_diff_nil; apply False_rect; apply ll_diff_nil; apply refl_equal.
+intro ll_diff_nil; apply False_rect; apply ll_diff_nil; apply eq_refl.
 intros [a la] ll' _ _ Q2'; apply False_rect.
 assert (L := permut_length Q2'); discriminate.
-intros; apply refl_equal.
+intros; apply eq_refl.
 clear k1; intros a1 k1 ll_diff_nil Q1' Q2'.
 case (list_forall (fun t2 : DS1.A => list_exists (fun t1 : DS1.A => R_bool t2 t1) (a1 :: k1)) k2).
 intro l2_lt_l1; apply False_rect.
 apply (@mult_irrefl trans_R irrefl_R l1).
 apply trans_clos_is_trans with l2; assumption.
-intros; apply refl_equal.
+intros; apply eq_refl.
 
 intros x x_in_k2 x_in_k1; apply (cns_disj_app x).
 rewrite <- (mem_permut_mem x Q2'); assumption.

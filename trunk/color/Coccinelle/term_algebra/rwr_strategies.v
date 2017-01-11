@@ -137,7 +137,7 @@ injection H; intro; subst; trivial.
 destruct t as [ x | f l].
 discriminate.
 assert (H' := nth_error_ok_in i l); destruct (nth_error l i) as [ s' | ].
-generalize (H' _ (refl_equal _)); clear H'; intro s'_in_l.
+generalize (H' _ (eq_refl _)); clear H'; intro s'_in_l.
 apply (IHp s'); trivial; apply (P_acc_subterms_1 R P (Term f l)); trivial.
 destruct s'_in_l as [l1 [l2 [_ H']]]; subst l; simpl; 
 apply in_or_app; right; left; trivial.
@@ -258,7 +258,7 @@ assert False.
 generalize l1 H'' H'; clear IH H l1 H'' H'; 
 induction l as [ | t l]; intros l1 H'' H';
 inversion H'' as [t1 t2' l' H3 | t' l1' l2' H3]; clear H''; subst.
-apply (H' t (or_introl _ (refl_equal _)) t1); trivial.
+apply (H' t (or_introl _ (eq_refl _)) t1); trivial.
 apply (IHl l1'); trivial.
 intros s s_in_l; apply H'; right; trivial.
 contradiction.
@@ -330,17 +330,17 @@ Lemma active_is_active :
 Proof.
 intros s t; split.
 intro H; inversion H as [u | s' t' H']; clear H.
-subst; exists nil; simpl; split; apply refl_equal.
+subst; exists nil; simpl; split; apply eq_refl.
 subst s' t'; rewrite trans_clos_trans_clos_alt in H'; induction H' as [x y H | x y z H1 H2].
 destruct y as [v | f l].
 contradiction.
 destruct H as [i [K1 K2]].
 exists (i :: nil); simpl; split.
 generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool beq_nat i (mu f)).
-intros _; simpl; rewrite K2; apply refl_equal.
+intros _; simpl; rewrite K2; apply eq_refl.
 intro i_not_in_mu_f; apply False_rect; apply i_not_in_mu_f.
-apply (in_impl_mem (@eq _) (fun a => refl_equal a) i (mu f) K1).
-rewrite K2; apply refl_equal.
+apply (in_impl_mem (@eq _) (fun a => eq_refl a) i (mu f) K1).
+rewrite K2; apply eq_refl.
 destruct z as [v | f l].
 contradiction.
 destruct H as [i [K1 K2]].
@@ -349,7 +349,7 @@ exists (i :: p); simpl; split.
 generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool beq_nat i (mu f)).
 intros _; simpl; rewrite K2; assumption.
 intro i_not_in_mu_f; apply False_rect; apply i_not_in_mu_f.
-apply (in_impl_mem (@eq _) (fun a => refl_equal a) i (mu f) K1).
+apply (in_impl_mem (@eq _) (fun a => eq_refl a) i (mu f) K1).
 rewrite K2; assumption.
 intros [p [H1 H2]].
 revert s t H1 H2; induction p as [ | i p]; intros s t H1 H2.
@@ -358,14 +358,14 @@ destruct t as [x | f l].
 discriminate.
 simpl in H1; simpl in H2.
 revert H1 H2; generalize (nth_error_ok_in i l); case (nth_error l i).
-intros ti H; destruct (H _ (refl_equal _)) as [l1 [l2 [L H']]]; clear H.
+intros ti H; destruct (H _ (eq_refl _)) as [l1 [l2 [L H']]]; clear H.
 generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool beq_nat i (mu f)).
 intro i_in_mu_f; simpl; intros H1 H2.
 apply refl_trans_clos_is_trans with ti.
 apply IHp; trivial.
 right; left; exists i; split.
 apply mem_impl_in with (@eq _); trivial.
-subst l i; rewrite nth_error_at_pos; apply refl_equal.
+subst l i; rewrite nth_error_at_pos; apply eq_refl.
 intros; discriminate.
 intros; discriminate.
 Qed.
@@ -388,7 +388,7 @@ left; assumption.
 right; apply IHl1; assumption.
 exists (length l1); split.
 subst; trivial.
-rewrite nth_error_at_pos; apply refl_equal.
+rewrite nth_error_at_pos; apply eq_refl.
 Qed.
 
 Lemma context_acc_subterms_2 :
@@ -418,7 +418,7 @@ destruct H as [i [H1 H2]].
 exists i; split; trivial.
 generalize (nth_error_map (apply_subst sigma) l i); rewrite H2.
 case (nth_error (map (apply_subst sigma) l) i).
-intros ti Hi; rewrite Hi; apply refl_equal.
+intros ti Hi; rewrite Hi; apply eq_refl.
 contradiction.
 apply refl_trans_clos_is_trans with (apply_subst sigma y); trivial.
 right; left; destruct z as [v | f l].
@@ -427,7 +427,7 @@ destruct H as [i [H1 H2]].
 exists i; split; trivial.
 generalize (nth_error_map (apply_subst sigma) l i); rewrite H2.
 case (nth_error (map (apply_subst sigma) l) i).
-intros ti Hi; rewrite Hi; apply refl_equal.
+intros ti Hi; rewrite Hi; apply eq_refl.
 contradiction.
 Qed.
 
@@ -443,8 +443,8 @@ case (mem_bool beq_nat i (mu f)); [idtac | intros; discriminate].
 generalize (nth_error_map (apply_subst sigma) l i).
 case (nth_error (map (apply_subst sigma) l) i); [idtac | intros; discriminate]; simpl.
 generalize (nth_error_ok_in i l); case (nth_error l i); [idtac | contradiction].
-intros t H s' H'; destruct (H _ (refl_equal _)) as [l1 [l2 [L K]]]; clear H; subst.
-apply IHp; apply in_or_app; right; left; apply refl_equal.
+intros t H s' H'; destruct (H _ (eq_refl _)) as [l1 [l2 [L K]]]; clear H; subst.
+apply IHp; apply in_or_app; right; left; apply eq_refl.
 Qed.
 
 Inductive cdp (R : relation term) : term -> term -> Prop:= 
@@ -511,7 +511,7 @@ generalize (mem_bool_ok _ _ beq_nat_ok n (mu f)).
 case (mem_bool beq_nat n (mu f)).
 intro n_in_mu_f.
 intros [[ | i] [H1 H2]].
-simpl in H2; injection H2; clear H2; intro; subst s; left; apply refl_equal.
+simpl in H2; injection H2; clear H2; intro; subst s; left; apply eq_refl.
 right; rewrite IHl.
 exists i; split; trivial.
 revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
@@ -556,7 +556,7 @@ left; trivial.
 rewrite plus_comm; simpl.
 apply mem_impl_in with (@eq _); trivial.
 assumption.
-exists l; apply refl_equal.
+exists l; apply eq_refl.
 Qed.
 
 Lemma filtering : 
@@ -605,7 +605,7 @@ rewrite <- acc_one_step_list.
 simpl; intros u [u_eq_t1 | u_in_actives].
 subst; apply Acc_inv with t; trivial.
 apply (shifting_head _ _ _ _ Acc_l); trivial.
-exists l; apply refl_equal.
+exists l; apply eq_refl.
 revert u u_in_actives.
 rewrite acc_one_step_list.
 rewrite <- IHl.
@@ -615,7 +615,7 @@ apply shifting_context.
 rewrite <- acc_one_step_list.
 simpl; intros u [u_eq_t1 | u_in_actives].
 subst u; apply (shifting_head _ _ _ _ Acc_l); trivial.
-exists l; apply refl_equal.
+exists l; apply eq_refl.
 revert u u_in_actives; rewrite acc_one_step_list.
 apply Acc_inv with (actives f (S shift) l); trivial.
 rewrite <- IHl.
@@ -635,7 +635,7 @@ intros Acc_tl.
 assert (Acc_l := tail_prop _ Acc_tl).
 rewrite acc_one_step_list in Acc_l.
 rewrite <- IHl in Acc_l.
-assert (Acc_t := Acc_tl _ (or_introl _ (refl_equal _))).
+assert (Acc_t := Acc_tl _ (or_introl _ (eq_refl _))).
 clear Acc_tl.
 clear IHl; revert l Acc_l.
 induction Acc_t as [t Acc_t IH].
@@ -728,14 +728,14 @@ intros s n; right; intros; contradiction.
 intros s n; simpl.
 generalize (mem_bool_ok _ _ beq_nat_ok n (mu f)); case (mem_bool beq_nat n (mu f)).
 (* 1/3 n is in (mu f) *)
-intro n_in_mu_f; destruct (IH _ (or_introl _ (refl_equal _)) s) as [A1 | not_A1].
+intro n_in_mu_f; destruct (IH _ (or_introl _ (eq_refl _)) s) as [A1 | not_A1].
 (* 1/4 s is active in t1 *)
 left; exists t1; split.
-left; apply refl_equal.
+left; apply eq_refl.
 split; trivial.
 exists 0; split.
 rewrite plus_comm; apply mem_impl_in with (@eq _); trivial.
-apply refl_equal.
+apply eq_refl.
 (* 1/3 s is NOT active in t1 *)
 destruct (IHl (tail_set _ IH) s (S n)) as [Ai | not_Al].
 (* 1/4 there is a ti such that s is active in ti *)
@@ -773,7 +773,7 @@ destruct Al as [[ | i] [H1 H2]].
 rewrite plus_comm in H1; apply not_mem_n_mu_f; apply in_impl_mem; trivial.
 apply (not_Al ti); trivial.
 simpl in H2; destruct (nth_error_ok_in _ _ H2) as [l1 [l2 [L H]]]; 
-subst l; apply in_or_app; right; left; apply refl_equal.
+subst l; apply in_or_app; right; left; apply eq_refl.
 exists i; split; trivial.
 revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
 (* 1/2 proof of the right alternative for ti *)
@@ -787,17 +787,17 @@ destruct H as [[ti [ti_in_l [Ai Al]]] | H].
 left; apply refl_trans_clos_is_trans with ti; trivial.
 right; left; trivial.
 right; intro A; inversion A as [u | x y A']; clear A.
-subst; apply s_diff_fl; apply refl_equal.
+subst; apply s_diff_fl; apply eq_refl.
 rewrite trans_clos_trans_clos_alt in A'; inversion A' as [x' y' A'' | x' y' z' A1 A2]; clear A'; subst.
 apply (H s); trivial.
 destruct A'' as [i [H1 H2]].
 simpl in H2; destruct (nth_error_ok_in _ _ H2) as [l1 [l2 [L H3]]]; 
-subst l; apply in_or_app; right; left; apply refl_equal.
+subst l; apply in_or_app; right; left; apply eq_refl.
 left.
 apply (H y'); trivial.
 destruct A2 as [i [H1 H2]].
 simpl in H2; destruct (nth_error_ok_in _ _ H2) as [l1 [l2 [L H3]]]; 
-subst l; apply in_or_app; right; left; apply refl_equal.
+subst l; apply in_or_app; right; left; apply eq_refl.
 rewrite <- trans_clos_trans_clos_alt in A1; right; trivial.
 Qed.
 
@@ -818,7 +818,7 @@ assert (Acc_l' := Acc_C_step_acc_c_in_context _ _ _ Acc_l).
 rewrite acc_filtering in Acc_l'.
 clear Acc_l; rename Acc_l' into Acc_l.
 set (actives_l := actives f 0 l).
-generalize (refl_equal actives_l).
+generalize (eq_refl actives_l).
 unfold actives_l at 2.
 clearbody actives_l.
 intro H; rewrite <- H in Acc_l.
@@ -881,7 +881,7 @@ destruct Axu_in_k as [i [K1 K2]].
 rewrite actives_ok; exists i; split; trivial.
 generalize (nth_error_map (apply_subst sigma) k i); rewrite K2.
 case (nth_error (map (apply_subst sigma) k) i).
-intros ti Hi; rewrite H; rewrite Hi; apply refl_equal.
+intros ti Hi; rewrite H; rewrite Hi; apply eq_refl.
 contradiction.
 apply context_acc_subterms_2 with (apply_subst sigma y).
 apply Acc_l.
@@ -889,7 +889,7 @@ destruct A2 as [i [K1 K2]].
 rewrite actives_ok; exists i; split; trivial.
 generalize (nth_error_map (apply_subst sigma) k i); rewrite K2.
 case (nth_error (map (apply_subst sigma) k) i).
-intros ti Hi; rewrite Hi; apply refl_equal.
+intros ti Hi; rewrite Hi; apply eq_refl.
 contradiction.
 rewrite H; apply instanciated_active_subterm; rewrite <- trans_clos_trans_clos_alt in A1; right; assumption.
 (* 1/5 xu is not active in (Term f k) *)
@@ -904,7 +904,7 @@ apply active_position_in_instanciated_term with (Var xu) sigma; trivial.
 left.
 intros s s_in_h; apply Acc_h.
 destruct s_in_h as [i [K1 K2]].
-destruct (nth_error_ok_in _ _ K2) as [h1 [h2 [L K3]]]; subst; apply in_or_app; right; left; apply refl_equal.
+destruct (nth_error_ok_in _ _ K2) as [h1 [h2 [L K3]]]; subst; apply in_or_app; right; left; apply eq_refl.
 apply refl_trans_clos_is_trans with (Term g h); trivial.
 right; left; trivial.
 assert (Dummy : active_subterm (Term g h) (apply_subst sigma t1)).
@@ -924,7 +924,7 @@ apply active_position_in_instanciated_term with (Term g' lu) sigma; trivial.
 injection H; clear H; intros; subst; assumption.
 intros s As; apply Acc_h.
 rewrite <- H in As; destruct As as [i [K1 K2]].
-destruct (nth_error_ok_in _ _ K2) as [h1 [h2 [L K3]]]; subst; apply in_or_app; right; left; apply refl_equal.
+destruct (nth_error_ok_in _ _ K2) as [h1 [h2 [L K3]]]; subst; apply in_or_app; right; left; apply eq_refl.
 apply refl_trans_clos_is_trans with (Term g h); trivial.
 right; left; rewrite H; assumption.
 assert (Dummy : active_subterm (Term g h) (apply_subst sigma t1)).
@@ -942,7 +942,7 @@ destruct Av_in_k as [i [K1 K2]].
 rewrite actives_ok; exists i; split; trivial.
 generalize (nth_error_map (apply_subst sigma) k i); rewrite K2.
 case (nth_error (map (apply_subst sigma) k) i).
-intros ti Hi; rewrite Hi; apply refl_equal.
+intros ti Hi; rewrite Hi; apply eq_refl.
 contradiction.
 apply context_acc_subterms_2 with (apply_subst sigma y).
 apply Acc_l.
@@ -950,7 +950,7 @@ destruct A2 as [i [K1 K2]].
 rewrite actives_ok; exists i; split; trivial.
 generalize (nth_error_map (apply_subst sigma) k i); rewrite K2.
 case (nth_error (map (apply_subst sigma) k) i).
-intros ti Hi; rewrite Hi; apply refl_equal.
+intros ti Hi; rewrite Hi; apply eq_refl.
 contradiction.
 apply refl_trans_clos_is_trans with (apply_subst sigma (Var v)).
 assert (Dummy : active_subterm (Term g h) (apply_subst sigma (Var v))).
@@ -1014,7 +1014,7 @@ simpl; case (nth_error l i); [idtac | intros; discriminate].
 intro t; apply IHq.
 intros s s_in_h; apply Acc_h.
 destruct s_in_h as [i [K1 K2]].
-destruct (nth_error_ok_in _ _ K2) as [h1 [h2 [L K3]]]; subst; apply in_or_app; right; left; apply refl_equal.
+destruct (nth_error_ok_in _ _ K2) as [h1 [h2 [L K3]]]; subst; apply in_or_app; right; left; apply eq_refl.
 apply refl_trans_clos_is_trans with (Term g h); trivial.
 right; left; trivial.
 assert (Dummy : active_subterm (Term g h) (apply_subst sigma t1)).

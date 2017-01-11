@@ -131,7 +131,7 @@ Section Vcast.
 
   Definition Vcast m (v : vector A m) n (mn : m = n) : vector A n :=
     match mn in _ = p return vector A p with
-      | refl_equal => v
+      | eq_refl => v
     end.
  
   Lemma Vcast_cons n (v : vector A n) x p (hS : S n = S p) :
@@ -305,7 +305,7 @@ Section Vnth.
   Proof.
     induction v as [|x p v IHv]. intros; omega. intros [|n']; try discr.
     inversion e; subst p; intros [|k] h; rewrite Vcast_refl; simpl.
-    refl. rewrite (IHv n' (refl_equal n') k); apply Vnth_eq; refl.
+    refl. rewrite (IHv n' (eq_refl n') k); apply Vnth_eq; refl.
   Qed.
 
   Lemma Veq_nth : forall n (v v' : vector A n), 
@@ -772,7 +772,7 @@ Section Vin.
   Proof.
     induction v; simpl. contr.
     intro H. destruct H. clear IHv. subst x.
-    ex 0 (@Vnil A) n. ex v (refl_equal (S n)). rewrite Vcast_refl. refl.
+    ex 0 (@Vnil A) n. ex v (eq_refl (S n)). rewrite Vcast_refl. refl.
     assert (exists n1 (v1 : vector A n1) n2 (v2 : vector A n2)
       (H : n1 + S n2 = n), v = Vcast (Vapp v1 (Vcons x v2)) H). exact (IHv H).
     destruct H0 as [n1]. destruct H0 as [v1]. destruct H0 as [n2].
@@ -2067,7 +2067,7 @@ Section beq.
   Lemma beq_vec_ok1 n (v w : vector A n) : beq_vec v w = true -> v = w.
 
   Proof.
-    intro. rewrite <- (Vcast_refl v (refl_equal n)). apply beq_vec_ok1_cast.
+    intro. rewrite <- (Vcast_refl v (eq_refl n)). apply beq_vec_ok1_cast.
     hyp.
   Qed.
 

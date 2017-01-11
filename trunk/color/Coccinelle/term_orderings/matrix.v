@@ -39,11 +39,11 @@ Proof.
 intros x y P.
 case P.
 left.
-exists (refl_equal x); auto.
+exists (eq_refl x); auto.
 intros m H.
 right.
 exists m.
-exists (refl_equal (S m)).
+exists (eq_refl (S m)).
 exists H; auto.
 Qed.
 
@@ -54,7 +54,7 @@ elim p1 using le_rec.
 intros p2.
 destruct (@le_inversion x x p2) as [(x0,H0)|(x0,(x1,(x2,_)))].
 rewrite H0.
-rewrite (eq_proofs_unicity nat_dec x0 (refl_equal x)); auto.
+rewrite (eq_proofs_unicity nat_dec x0 (eq_refl x)); auto.
 subst.
 absurd (S x0 <= x0); auto with arith.
 
@@ -66,7 +66,7 @@ assumption.
 
 injection x1; intros; subst.
 rewrite (H x2).
-rewrite (eq_proofs_unicity nat_dec x1 (refl_equal (S m))); auto.
+rewrite (eq_proofs_unicity nat_dec x1 (eq_refl (S m))); auto.
 Qed.
 
 
@@ -2805,7 +2805,7 @@ End Make.
 
 
 Module Type Ordered_Ring. 
-  Include Type TRing. 
+  Include TRing.
   Parameter lt le : A -> A -> Prop.
   Parameter o : ordering_pair eq lt le.
   Parameter lt_wf : well_founded lt.

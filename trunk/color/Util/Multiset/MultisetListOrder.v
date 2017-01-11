@@ -11,6 +11,7 @@ multisets, along with some properties of this order.
 From Coq Require Import List Permutation Arith Morphisms Basics.
 From CoLoR Require Import MultisetOrder RelExtras MultisetCore MultisetList
   MultisetTheory AccUtil RelUtil LogicUtil.
+From CoLoR Require Import AccUtil ListUtil.
 
 Module MultisetListOrder (ES : Eqset_dec).
 
@@ -390,7 +391,7 @@ Module MultisetListOrder (ES : Eqset_dec).
 
   End MultisetListOrderFacts.
 
-  From CoLoR Require Import AccUtil ListUtil.
+  Import AccUtil ListUtil.
 
   Lemma mult_lifting : forall (r : relation A),
     (forall x x' y y', x =A= x' -> y =A= y' -> r x y -> r x' y') ->
@@ -431,7 +432,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       intros r r_eqA_compat l l' H1; inversion H1; subst.
       generalize dependent l; induction p as [ | p]; intros l Hl H1.
       (* case p = 0 : *)
-      destruct l as [|h l]; inversion Hl. (* case l = nil done *)
+      destruct l as [|h l];inversion H1.
       subst; simpl; simpl in H1.
       unfold mult, MultisetLT, transp; simpl.
       constructor 1 with (X := {{a'}}) (Y :={{a}}) (Z := (list2multiset l));
@@ -445,7 +446,7 @@ Module MultisetListOrder (ES : Eqset_dec).
       exists a'; auto with multisets.
       apply r_eqA_compat with a a'; auto with sets multisets.
       (* case p > 0 : *)
-      destruct l as [|h l]; inversion Hl. (* case l = nil done *)
+      destruct l as [|h l]; inversion H1. (* case l = nil done *)
       subst; simpl.
       assert (Hml : mult (transp r) l (l [p := a'])).
       apply IHp; trivial.

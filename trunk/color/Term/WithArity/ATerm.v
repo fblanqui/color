@@ -110,7 +110,7 @@ Section S.
 
   Proof.
     intros. apply term_ind_forall. hyp. intros.
-    rewrite <- (Vcast_refl v (refl_equal (arity f))). apply Hfun. hyp.
+    rewrite <- (Vcast_refl v (eq_refl (arity f))). apply Hfun. hyp.
   Qed.
 
   Lemma term_ind_forall2 : forall (P : term -> Prop)
@@ -165,8 +165,8 @@ Section S.
     us = Vcast ts (f_equal (@arity Sig) h) -> Fun f ts = Fun g us.
 
   Proof.
-    intros. rewrite <- (Vcast_refl ts (refl_equal (arity f))),
-            <- (Vcast_refl us (refl_equal (arity g))).
+    intros. rewrite <- (Vcast_refl ts (eq_refl (arity f))),
+            <- (Vcast_refl us (eq_refl (arity g))).
     eapply fun_eq_cast. hyp. apply H.
   Qed.
 

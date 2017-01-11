@@ -18,6 +18,9 @@ Set Implicit Arguments.
 From Coq Require Import Morphisms Basics.
 From CoLoR Require Import LogicUtil LCompSimple VecUtil RelUtil LCall LCompInt
      SetUtil SN NatUtil LCompRewrite EqUtil.
+From Coq Require Lexicographic_Product.
+From CoLoR Require Union Lexico.
+
 
 Module Export Def.
 
@@ -355,7 +358,7 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       assert (a : Vnth (inputs (typ g)) (Vnth_sub_aux p pg jn)
                   = Vnth (inputs (output (typ g) p)) k). sym. simpl in H.
       rewrite inputs_output with (h:=H), Vnth_sub. apply Vnth_eq. refl.
-      rewrite a. apply vint_elim_nth. hyp.
+      setoid_rewrite a. apply vint_elim_nth. hyp.
     Qed.
 
   End comp.
@@ -492,7 +495,7 @@ Module Termin (Export CC : CC_Struct)
       sym. gen (Vforall2_sub hm h3). rewrite Vsub_cast, Vsub_app_l. auto.
       omega.
       (* Proof that [r] is in the computability closure of [mk_call f ls]. *)
-      rewrite <- output_arity. rewrite <- h1 at 3. rewrite arrow_output. hyp.
+      rewrite <- output_arity. setoid_rewrite <- h1 at 3. rewrite arrow_output. hyp.
       (* Proof that [s] is valid on the empty environment. *)
       intros z T. rewrite empty_mapsto_iff. fo.
     Qed.
@@ -583,8 +586,8 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We prove that [gt2] is wellfounded. *)
 
-  From Coq Require Import Lexicographic_Product.
-  From CoLoR Require Import Union.
+  Import Lexicographic_Product.
+  Import Union.
 
   Lemma gt2_wf : WF gt2.
 
@@ -612,7 +615,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We check that [gt1] makes [gt2] decrease. *)
 
-  From CoLoR Require Import Lexico.
+  Import Lexico.
 
   Lemma gt2_gt1 : forall E f n (ls : Tes n) g p (us : Tes p),
       n <= arity (typ f) -> p <= arity (typ g) ->

@@ -19,6 +19,8 @@ Set Implicit Arguments.
 From Coq Require Import Setoid.
 From CoLoR Require Import LogicUtil Matrix OrdSemiRing VecUtil AMonAlg SN
      RelUtil AWFMInterpretation NatUtil AMatrixBasedInt.
+From Coq Require List.
+From CoLoR Require ListUtil.
 
 Import NMatrix.
 
@@ -306,7 +308,7 @@ Module MatrixInt (MI : TMatrixInt).
         apply H. apply le_refl.
       Qed.
 
-      From CoLoR Require Import ListUtil.
+      Import List ListUtil.
 
       Section fin_Sig.
 

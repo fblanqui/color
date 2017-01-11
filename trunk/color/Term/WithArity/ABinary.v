@@ -182,6 +182,6 @@ Section MakeExtSig.
 
   Definition ext_sig := mkSignature ext_arity beq_ext_symb_ok.
 
-  Definition ext := Make ext_sig Pair (refl_equal 2).
+  Definition ext := Make ext_sig Pair (eq_refl 2).
 
 End MakeExtSig.

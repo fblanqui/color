@@ -965,7 +965,7 @@ Section pos.
   Proof.
     induction l; intro h; simpl. contr.
     destruct (eq_dec a x); destruct (eq_dec a y); subst; intro e.
-    hyp. discr. discr. inversion e. fo.
+    reflexivity. discr. discr. inversion e. fo.
   Qed.
 
 End pos.
@@ -1887,7 +1887,7 @@ Section lookup_dep.
     simpl. destruct a. destruct (@eqA_dec el x).
 
     unfold eq_rect, lookup_dep_obligation_1.
-    set (w := eq_ind_r (fun el => x = el) refl_equal e).
+    set (w := eq_ind_r (fun el => x = el) eq_refl e).
     dependent inversion w.
 
     apply (H (existT b))...

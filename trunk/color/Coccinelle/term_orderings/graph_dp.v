@@ -53,18 +53,18 @@ right with (Term f l2); [ constructor | ]; assumption.
 intro H; inversion H as [u1 u2 u3 H1 H2]; subst.
 assert (K : exists l2, u2 = Term f l2 /\ refl_trans_clos (one_step_list (one_step R)) l2 l).
 clear -H2; inversion H2 as [u | u1 v2 K2]; clear H2; subst.
-exists l; split; [apply refl_equal | left].
+exists l; split; [apply eq_refl | left].
 set (s := Term f l) in *.
-assert (s_eq_fl := refl_equal s).
+assert (s_eq_fl := eq_refl s).
 unfold s at 2 in s_eq_fl; clearbody s.
 revert f l s_eq_fl; induction K2 as [t1 t2 K | t1 t2 t3 K1 K2]; intros f l s_eq_fl.
 inversion K as [f' l1 l2]; clear K; subst.
 injection H1; clear H1; intros; subst f' l2.
-exists l1; split; [apply refl_equal | right; left; assumption].
+exists l1; split; [apply eq_refl | right; left; assumption].
 inversion K1 as [f' l1 l2]; clear K1; subst.
-destruct (IHK2 _ _ (refl_equal _)) as [l3 [J1 J2]].
+destruct (IHK2 _ _ (eq_refl _)) as [l3 [J1 J2]].
 injection J1; clear J1; intros; subst f' l3.
-exists l1; split; [apply refl_equal | apply refl_trans_clos_is_trans with l2; [right; left | ]; assumption].
+exists l1; split; [apply eq_refl | apply refl_trans_clos_is_trans with l2; [right; left | ]; assumption].
 destruct K as [l2 [J1 J2]].
 subst u2; constructor 1 with l2; assumption.
 Qed.
@@ -88,7 +88,7 @@ constructor 1 with l2; trivial.
 rewrite <- H5; constructor.
 rewrite <- comp_def_on_dps.
 destruct n as [ | n].
-destruct H3 as [ _ H3]; apply False_rect; apply H3; apply refl_equal.
+destruct H3 as [ _ H3]; apply False_rect; apply H3; apply eq_refl.
 destruct H3 as [H3 _]; rewrite H3; discriminate.
 
 destruct split_graph as [n G].
@@ -100,7 +100,7 @@ inversion K as [f l1 l2 s' H1 H2]; subst.
 inversion H2 as [t1 t2 sigma H3 H4 H5]; subst.
 rewrite G in H3.
 destruct H3 as [ [ | i] [i_le_0 Hi]].
-destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply refl_equal.
+destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply eq_refl.
 inversion i_le_0.
 intros W.
 destruct n as [ | n].
@@ -110,7 +110,7 @@ intros s t [K [As At]]; split; [ | split; assumption].
 inversion K as [f l1 l2 s' H1 H2]; subst.
 inversion H2 as [t1 t2 sigma H3 H4 H5]; subst.
 rewrite G in H3; destruct H3 as [[ | [ | i]] [i_le_1 [H3 i_diff_0]]].
-apply False_rect; apply i_diff_0; apply refl_equal.
+apply False_rect; apply i_diff_0; apply eq_refl.
 constructor 1 with l2; trivial.
 rewrite <- H5; constructor.
 split; trivial.
@@ -129,23 +129,23 @@ unfold comp'; destruct (comp (u,v)) as [ | [ | i]]; split; intro; (trivial || di
 (* 1/2 *)
 intros u v; rewrite G; split.
 intros [[ | [ | i]] [i_le_n Hi]].
-destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply refl_equal.
+destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply eq_refl.
 destruct Hi as [Hi _]; exists 1; split.
 apply le_n_S; apply le_O_n.
-split; [unfold comp'; rewrite Hi; apply refl_equal | discriminate].
+split; [unfold comp'; rewrite Hi; apply eq_refl | discriminate].
 exists (S i); split.
 apply le_S_n; assumption.
 split; [destruct Hi as [Hi _] | discriminate].
-unfold comp'; rewrite Hi; apply refl_equal.
+unfold comp'; rewrite Hi; apply eq_refl.
 
 intros [[ | i] [i_le_Sn Hi]].
-destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply refl_equal.
+destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply eq_refl.
 destruct Hi as [Hi _]; exists (comp (u,v)); split.
 unfold comp' in Hi; destruct (comp (u,v)) as [ | [ | c]]; 
 [ discriminate 
 | apply le_n_S; apply le_O_n 
 | injection Hi; intros; subst; apply le_n_S; assumption].
-split; [apply refl_equal | unfold comp' in Hi; destruct (comp (u,v)); discriminate].
+split; [apply eq_refl | unfold comp' in Hi; destruct (comp (u,v)); discriminate].
 
 (* 1/1 *)
 intros [ | [ | n0]].
@@ -154,7 +154,7 @@ apply wf_incl with (rest P (rdp_step (axiom (dpi comp 0)) R)).
 intros s t [K [As At]]; split; [ | split; assumption].
 inversion K as [f l1 l2 s' H1 H2]; subst.
 inversion H2 as [t1 t2 sigma H3 H4 H5]; subst.
-destruct H3 as [_ i_diff_0]; apply False_rect; apply i_diff_0; apply refl_equal.
+destruct H3 as [_ i_diff_0]; apply False_rect; apply i_diff_0; apply eq_refl.
 apply W.
 (* 1/2 The new component 1 (i.e. the union of old components 1 and 2) is well founded *)
 apply wf_incl with (union _ (rest P (rdp_step (axiom (dpi comp 2)) R))
@@ -219,7 +219,7 @@ split; [ | discriminate].
 destruct H3 as [H3 _]; unfold comp' in H3; destruct (comp (t2,t1)) as [ | [ | c]].
 discriminate H3.
 discriminate H3.
-injection H3; intros; subst; apply refl_equal.
+injection H3; intros; subst; apply eq_refl.
 apply W.
 Qed.
 

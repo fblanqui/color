@@ -17,7 +17,7 @@ From Coq Require Export ZArith.
 (***********************************************************************)
 (** decidability of equality *)
 
-Open Local Scope positive_scope.
+Local Open Scope positive_scope.
 
 Fixpoint beq_pos x y :=
   match x, y with
@@ -35,7 +35,7 @@ rewrite IHx. intuition. subst. refl. inversion H. refl.
 rewrite IHx. intuition. subst. refl. inversion H. refl.
 Qed.
 
-Open Local Scope Z_scope.
+Local Open Scope Z_scope.
 
 Fixpoint beq_Z x y :=
   match x, y with

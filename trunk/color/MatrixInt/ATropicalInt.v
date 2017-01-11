@@ -46,6 +46,7 @@ Section Somewhere_tfinite.
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
 
+  From Coq Require Import List.
   From CoLoR Require Import ListUtil.
 
   Variable Fs : list sig.

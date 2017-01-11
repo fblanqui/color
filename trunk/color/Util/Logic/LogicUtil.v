@@ -60,7 +60,7 @@ Tactic Notation "ex" constr(x1) constr(x2) constr(x3) constr(x4) constr(x5)
 (** [geneq H x e(x)] transforms a goal [G(x)] into
 [forall t, H t -> forall x, e(x) = t -> G(x)] *)
 
-Ltac geneq H x e := gen (refl_equal e); gen (H e);
+Ltac geneq H x e := gen (eq_refl e); gen (H e);
   clear H; generalize e at -2; let t := fresh "t" in let h := fresh "h" in
     intros t h; revert t h x.
 
@@ -85,7 +85,7 @@ Ltac intro_neg := match goal with |- ~ _ => intro | _ => idtac end.
 Ltac done :=
   trivial; hnf; intros; solve
    [ repeat progress first
-       [solve [trivial | apply sym_equal; trivial]
+       [solve [trivial | apply eq_sym; trivial]
          | discr | contr | split]
    | hyp
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end ].

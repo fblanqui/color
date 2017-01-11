@@ -7,6 +7,8 @@ From CoLoR Require Import modular_dp.
 From Coq Require Import List.
 From CoLoR Require Import terminaison.
 From Coq Require Import Setoid.
+From Coq Require Inclusion.
+
 
 Module Make(E:EqTh) .
 
@@ -431,9 +433,7 @@ Proof.
   apply Empty_R_no_dp with (1:=H6).
 Qed.
 
-From Coq Require Inclusion.
-
-Lemma well_founded_equiv : forall (A:Type) R R' (H:forall x y, R x y <-> R' x y), 
+Lemma well_founded_equiv : forall (A:Type) R R' (H:forall x y, R x y <-> R' x y),
   @well_founded A R <-> well_founded R'.
 Proof.
   intros A R R' H.

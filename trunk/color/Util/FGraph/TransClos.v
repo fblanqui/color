@@ -9,6 +9,7 @@ Transitive closure of a finite graph.
 
 From Coq Require Import OrderedType.
 From CoLoR Require Import RelUtil LogicUtil BoolUtil FGraph.
+From CoLoR Require ListUtil.
 
 Set Implicit Arguments.
 
@@ -301,7 +302,7 @@ the transitive closure of [id x y U g] *)
 (***********************************************************************)
 (** building a transitive graph using list iteration *)
 
-  From CoLoR Require Import ListUtil.
+  Import ListUtil.
 
   Definition trans_add_edge' x g y := trans_add_edge x y g.
 

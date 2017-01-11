@@ -10,6 +10,8 @@
 From CoLoR Require Import weaved_relation.
 From CoLoR Require Import closure.
 From CoLoR Require Import terminaison.
+From Coq Require List.
+
 
 Section Newman.
 
@@ -166,7 +168,8 @@ Proof.
   apply star_trans with (Term f y);auto.
   apply star_R. auto. constructor 2.  auto. 
 Qed.
-From Coq Require Import List.
+
+Import List.
 
 Lemma star_cons : forall t l t' l', 
   star _ (one_step R) t' t -> star _ (one_step_list (one_step R)) l' l -> 
@@ -253,7 +256,7 @@ Qed.
 
 
 End Rew.
-From Coq Require Import List.
+Import List.
 Ltac reduce_term head_reduction t := 
   match t with 
     | ?Term ?f ?l => 
@@ -262,12 +265,12 @@ Ltac reduce_term head_reduction t :=
           | l => head_reduction t
           | _ => constr:(Term f l')
         end
-    | _ => constr:t
+    | _ => constr:(t)
   end
 with reduce_list head_reduction l := 
   match l with 
     | nil => 
-      constr:l
+      constr:(l)
     | ?t::?l => 
       let t' := reduce_term head_reduction t in 
         match t' with 
@@ -296,7 +299,7 @@ Ltac prove_red_star head_reduction no_need_of_instance'  :=
 Ltac normalize_term head_reduction t := 
   let t' := reduce_term head_reduction t in 
     match t' with 
-      | t => constr:t
+      | t => constr:(t)
       | _ => normalize_term head_reduction t'
     end.
 

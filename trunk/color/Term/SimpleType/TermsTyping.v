@@ -140,7 +140,7 @@ Section Typing.
       | TAbs _, TAbs _ => _
       | TApp _ _, TApp _ _ => _
       | _, _ => _
-      end (refl_equal _) (refl_equal _));
+      end (eq_refl _) (eq_refl _));
     intros; destruct t; try discr;
     try discr cast; try discr dis;
     injection cast; intros; gen cast; clear cast.
@@ -148,16 +148,16 @@ Section Typing.
     revert v v0.
     rewrite H0; rewrite H1; rewrite H2.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec).
-    rewrite (VarD_unique v v0); apply refl_equal.
+    rewrite (VarD_unique v v0); apply eq_refl.
 
     rewrite H1; rewrite H2.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec); 
-      apply refl_equal.
+      apply eq_refl.
 
     revert t1.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H4.
     intros; pattern cast; apply (K_dec_type eq_EPS_dec).
-    rewrite(Deriv_unique _ _ _ t0 t1); apply refl_equal.
+    rewrite(Deriv_unique _ _ _ t0 t1); apply eq_refl.
 
     revert t2 t3.
     rewrite <- H0; rewrite <- H1; rewrite <- H2; rewrite <- H3.
@@ -167,7 +167,7 @@ Section Typing.
     clear h1. revert t2 t3. rewrite <- H7.
     intros; rewrite(Deriv_unique _ _ _ t0 t2); 
       rewrite(Deriv_unique _ _ _ t1 t3);
-    apply refl_equal.
+    apply eq_refl.
   Qed.
 
   Lemma deriv_uniq : forall M N, env M = env N -> term M = term N ->
@@ -179,7 +179,7 @@ Section Typing.
     rewrite H; rewrite H0; rewrite H1.
     intros.
     rewrite(typing_unique typing0 typing1).
-    apply refl_equal.
+    apply eq_refl.
   Qed.
 
   Lemma typing_uniq : forall M N, env M = env N -> term M = term N ->

@@ -295,24 +295,24 @@ intros [Hl Hsigma];
 assert (Htheta : forall t, apply_subst theta t = apply_subst theta (apply_subst ((x, Var y) :: nil) t)).
 intro t; pattern t; apply term_rec3; clear t; [intros v | intros f l'].
 simpl; generalize (X.eq_bool_ok v x); case (X.eq_bool v x); [intro v_eq_x; subst v | intro v_diff_x].
-apply (Hl (Var x) (Var y) (or_introl _ (refl_equal _))).
+apply (Hl (Var x) (Var y) (or_introl _ (eq_refl _))).
 trivial.
 intros IH; simpl; apply (f_equal (fun l => Term f l)); induction l' as [ | s' l']; trivial.
-simpl; rewrite (IH s' (or_introl _ (refl_equal _))); rewrite IHl'; trivial;
+simpl; rewrite (IH s' (or_introl _ (eq_refl _))); rewrite IHl'; trivial;
 intros; apply IH; right; trivial.
 
 rewrite Hx; split.
 intros s t H; destruct (in_inv H) as [s_t_eq_y_x_val' | s_t_in_l']; clear H.
 assert (H':=Hsigma x); rewrite x_sigma in H';
 injection s_t_eq_y_x_val'; clear s_t_eq_y_x_val'; intros; subst s t;
-rewrite <-  (Hl _ _ (or_introl _ (refl_equal _))); rewrite H'; apply Htheta.
+rewrite <-  (Hl _ _ (or_introl _ (eq_refl _))); rewrite H'; apply Htheta.
 rewrite in_map_iff in s_t_in_l'; destruct s_t_in_l' as [[s' t'] [H s'_t'_in_l]];
 injection H; intros; subst; clear H; do 2 rewrite <- Htheta;
 apply Hl; right; trivial.
 
 intro z; simpl.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
-apply (Hl (Var x) (Var y) (or_introl _ (refl_equal _))).
+apply (Hl (Var x) (Var y) (or_introl _ (eq_refl _))).
 assert (Hz := find_map_subst z x (Var y) sigma).
 case_eq (find X.eq_bool z sigma); [ intros z_val z_sigma | intro z_sigma ];
 rewrite z_sigma in Hz; rewrite Hz.
@@ -324,10 +324,10 @@ intros [Hl Hsigma];
 assert (Htheta : forall t, apply_subst theta t = apply_subst theta (apply_subst ((x, Var y) :: nil) t)).
 intro t; pattern t; apply term_rec3; clear t; [intros v | intros f l'].
 simpl; generalize (X.eq_bool_ok v x); case (X.eq_bool v x); [intro v_eq_x; subst v | intro v_diff_x].
-apply (Hl (Var x) (Var y) (or_introl _ (refl_equal _))).
+apply (Hl (Var x) (Var y) (or_introl _ (eq_refl _))).
 trivial.
 intros IH; simpl; apply (f_equal (fun l => Term f l)); induction l' as [ | s' l']; trivial.
-simpl; rewrite (IH s' (or_introl _ (refl_equal _))); rewrite IHl'; trivial;
+simpl; rewrite (IH s' (or_introl _ (eq_refl _))); rewrite IHl'; trivial;
 intros; apply IH; right; trivial.
 
 rewrite Hx; simpl; split.
@@ -338,7 +338,7 @@ apply Hl; right; trivial.
 
 intro z; simpl.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
-apply (Hl (Var x) (Var y) (or_introl _ (refl_equal _))).
+apply (Hl (Var x) (Var y) (or_introl _ (eq_refl _))).
 assert (Hz := find_map_subst z x (Var y) sigma).
 case_eq (find X.eq_bool z sigma); [ intros z_val z_sigma | intro z_sigma ];
 rewrite z_sigma in Hz; rewrite Hz.
@@ -358,7 +358,7 @@ apply Hl; left; trivial.
 apply Hl; right; trivial.
 intro z; simpl.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
-apply (Hl _ _ (or_introl _ (refl_equal _))).
+apply (Hl _ _ (or_introl _ (eq_refl _))).
 apply (Hsigma z).
 simpl; split.
 intros s t [s_t_eq_x_val_g_l2 | s_t_in_l].
@@ -372,7 +372,7 @@ intros s t s_t_in_l.
 apply H; right; trivial.
 intro z; simpl.
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x; subst z | intro z_diff_x].
-apply ((proj1 H) _ _ (or_introl _ (refl_equal _))).
+apply ((proj1 H) _ _ (or_introl _ (eq_refl _))).
 apply ((proj2 H) z).
 
 (* 1/2 Merge (sym) *)
@@ -388,7 +388,7 @@ apply sym_eq; apply Hl; left; trivial.
 apply Hl; right; trivial.
 intro z; simpl.
 generalize (X.eq_bool_ok z y); case (X.eq_bool z y); [intro z_eq_y; subst z | intro z_diff_y].
-apply sym_eq; apply (Hl _ _ (or_introl _ (refl_equal _))).
+apply sym_eq; apply (Hl _ _ (or_introl _ (eq_refl _))).
 apply (Hsigma z).
 simpl; split.
 intros s t [s_t_eq_y_val_f_l1 | s_t_in_l].
@@ -402,7 +402,7 @@ intros s t s_t_in_l.
 apply (proj1 H); right; trivial.
 intro z; simpl.
 generalize (X.eq_bool_ok z y); case (X.eq_bool z y); [intro z_eq_y; subst z | intro z_diff_y].
-apply sym_eq; apply ((proj1 H) _ _ (or_introl _ (refl_equal _))).
+apply sym_eq; apply ((proj1 H) _ _ (or_introl _ (eq_refl _))).
 apply ((proj2 H) z).
 
 (* 1/1 Decomposition *)
@@ -414,7 +414,7 @@ split; trivial.
 assert (Hl' : forall s t, In (s,t) l -> apply_subst theta s = apply_subst theta t).
 intros; apply Hl; right; trivial.
 assert (Hl12 : map (apply_subst theta) l1 = map (apply_subst theta) l2).
-generalize (Hl _ _ (or_introl _ (refl_equal _))); simpl; 
+generalize (Hl _ _ (or_introl _ (eq_refl _))); simpl;
 intro H; injection H; intros; trivial.
 clear Hsigma; generalize l2 l L Hl' Hl12; clear s_diff_t l2 l L Hl Hl' Hl12; 
 induction l1 as [ | s1 l1]; intros [ | s2 l2] l L Hl Hl12.
@@ -429,9 +429,9 @@ injection s_t_eq_s1_s2; simpl in Hl12; injection Hl12; intros; subst s t; trivia
 apply Hl; trivial.
 simpl in Hl12; injection Hl12; intros; trivial.
 unfold is_a_solution; simpl solved_part; simpl unsolved_part.
-intros [Hl _]; generalize (Hl _ _ (or_introl _ (refl_equal _))); simpl; intro H; injection H; intros H' _.
+intros [Hl _]; generalize (Hl _ _ (or_introl _ (eq_refl _))); simpl; intro H; injection H; intros H' _.
 apply L; rewrite <- (length_map (apply_subst theta)); rewrite H'; apply length_map.
-intros [Hl _]; generalize (Hl _ _ (or_introl _ (refl_equal _))); simpl; intro H; injection H; intros _ H'.
+intros [Hl _]; generalize (Hl _ _ (or_introl _ (eq_refl _))); simpl; intro H; injection H; intros _ H'.
 apply f_diff_g; assumption.
 Qed.
 
@@ -468,7 +468,7 @@ assert (Htheta : forall t, apply_subst theta t = apply_subst theta (apply_subst 
 intro t; pattern t; apply term_rec3; clear t; [intros v | intros f l'].
 simpl; generalize (X.eq_bool_ok v x); case (X.eq_bool v x); [intro v_eq_x; subst v | intro v_diff_x]; trivial.
 intros IH; simpl; apply (f_equal (fun l => Term f l)); induction l' as [ | s' l']; trivial.
-simpl; rewrite (IH s' (or_introl _ (refl_equal _))); rewrite IHl'; trivial;
+simpl; rewrite (IH s' (or_introl _ (eq_refl _))); rewrite IHl'; trivial;
 intros; apply IH; right; trivial.
 split.
 intros s t [s_t_eq_x_y | s_t_in_l].
@@ -498,7 +498,7 @@ assert (Htheta : forall t, apply_subst theta t = apply_subst theta (apply_subst 
 intro t; pattern t; apply term_rec3; clear t; [intros v | intros f l'].
 simpl; generalize (X.eq_bool_ok v x); case (X.eq_bool v x); [intro v_eq_x; subst v | intro v_diff_x]; trivial.
 intros IH; simpl; apply (f_equal (fun l => Term f l)); induction l' as [ | s' l']; trivial.
-simpl; rewrite (IH s' (or_introl _ (refl_equal _))); rewrite IHl'; trivial;
+simpl; rewrite (IH s' (or_introl _ (eq_refl _))); rewrite IHl'; trivial;
 intros; apply IH; right; trivial.
 split.
 intros s t [s_t_eq_x_y | s_t_in_l].
@@ -621,12 +621,12 @@ destruct H as [ H _ ]; apply H; trivial.
 unfold is_a_solution; simpl solved_part; simpl unsolved_part; 
 intros [Hl Hsigma].
 apply L; do 2 (apply sym_eq; rewrite <- (length_map (apply_subst theta)));
-assert (Abs := Hl _ _ (or_introl _ (refl_equal _))); simpl in Abs; injection Abs;
+assert (Abs := Hl _ _ (or_introl _ (eq_refl _))); simpl in Abs; injection Abs;
 intros H _; rewrite H; trivial.
 
 unfold is_a_solution; simpl solved_part; simpl unsolved_part; 
 intros [Hl Hsigma].
-apply f_diff_g; assert (Abs := Hl _ _ (or_introl _ (refl_equal _))); simpl in Abs; injection Abs;
+apply f_diff_g; assert (Abs := Hl _ _ (or_introl _ (eq_refl _))); simpl in Abs; injection Abs;
 intros _ H; rewrite H; trivial.
 Qed.
 
@@ -2322,7 +2322,7 @@ generalize (Hsol src); revert Hcycle.
 case (find X.eq_bool src sigma); [intros [x | f l] | intro src_sol]; [idtac | idtac | discriminate].
 intro; discriminate.
 rewrite var_in_term_is_sound; intro src_in_l. 
-case (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ src_in_l)); intros [ | i p] Hsubterm.
+case (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ src_in_l)); intros [ | i p] Hsubterm.
 inversion Hsubterm.
 assert (Hsubterm' := subterm_at_pos_apply_subst_apply_subst_subterm_at_pos (Term f l) (i :: p) tau).
 rewrite Hsubterm in Hsubterm'.
@@ -2367,7 +2367,7 @@ rewrite next_sigma in F.
 unfold DecVar.A in *; simpl apply_subst at 1 in F; rewrite F; clear F.
 simpl apply_subst at 1; cbv iota beta.
 rewrite var_in_term_is_sound in Hcycle.
-case (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ Hcycle)); intros [ | i p] Hsubterm.
+case (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ Hcycle)); intros [ | i p] Hsubterm.
 inversion Hsubterm.
 assert (Hsubterm' := subterm_at_pos_apply_subst_apply_subst_subterm_at_pos (Term g k) (i :: p)
                                        ((x, apply_subst sigma (Var x)) :: nil)).
@@ -2401,7 +2401,7 @@ simpl apply_subst at 1; cbv iota beta.
 assert (H : var_in_term next'
       (apply_subst ((x, apply_subst sigma (Var x)) :: nil) (Term g k)) = true).
 rewrite var_in_term_is_sound in next'_in_k.
-case (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal _) _ _ next'_in_k)); intros [ | i p] Hsubterm.
+case (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl _) _ _ next'_in_k)); intros [ | i p] Hsubterm.
 inversion Hsubterm.
 assert (Hsubterm' := subterm_at_pos_apply_subst_apply_subst_subterm_at_pos (Term g k) (i :: p)
                                        ((x, apply_subst sigma (Var x)) :: nil)).
@@ -2474,7 +2474,7 @@ intros IH y_in_tl.
 unfold set_of_variables in y_in_tl.
 destruct (VSet.union_12 _ _ _ y_in_tl) as [y_in_t | y_in_l].
 simpl; apply in_or_app; left.
-apply (IH t (or_introl _ (refl_equal _)) y_in_t).
+apply (IH t (or_introl _ (eq_refl _)) y_in_t).
 simpl; apply in_or_app; right.
 refine (IHl _ y_in_l).
 intros; apply IH.
@@ -2524,7 +2524,7 @@ case_eq (find X.eq_bool y sigma); [intro y_val | idtac]; intro y_sigma; rewrite 
 assert (var_in_term v (apply_subst ((v, v_val) :: nil) y_val) <> true).
 (* 1/3 a new assertion, equivalent to the goal, but easier to handle *)
 intro H1; rewrite var_in_term_is_sound in H1.
-destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal a) _ _ H1)) as [p H'''].
+destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl a) _ _ H1)) as [p H'''].
 assert (H4 := subterm_in_instantiated_term _ _ _ H''').
 case_eq (subterm_at_pos y_val p); [intros [w | f l] | idtac]; intro Hsub; rewrite Hsub in H4.
 (* 1/6 y_val at position p is a variable w *)
@@ -2538,7 +2538,7 @@ discriminate.
 (* 1/3 y_val at position p is not defined *)
 destruct H4 as [w [q [q' [H4 [H5 [H6 H7]]]]]].
 simpl in H7; revert H7; generalize (X.eq_bool_ok w v); case (X.eq_bool w v); [intro w_eq_v | intro w_diff_v].
-intro H7; subst w; assert (x_in_v_val := var_in_subterm v _ _ H7 (or_introl _ (refl_equal _))).
+intro H7; subst w; assert (x_in_v_val := var_in_subterm v _ _ H7 (or_introl _ (eq_refl _))).
 rewrite <- var_in_term_is_sound in x_in_v_val.
 rewrite v_in_v_val in x_in_v_val; discriminate.
 intro H7; destruct q'; [injection H7; clear H7; intro H7; subst w | discriminate].
@@ -2556,7 +2556,7 @@ intros x x_val w_val' z z_not_in_x_val z_not_in_w_val';
 assert (var_in_term z (apply_subst ((x, x_val) :: nil) w_val') <> true).
 (* 1/2 a new assertion, equivalent to the goal, but easier to handle *)
 intro H1; rewrite var_in_term_is_sound in H1.
-destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => refl_equal _) _ _ H1)) as [p H'''].
+destruct (var_in_subterm2 _ _ (in_impl_mem (@eq _) (fun a => eq_refl _) _ _ H1)) as [p H'''].
 assert (H4 := subterm_in_instantiated_term _ _ _ H''').
 case_eq (subterm_at_pos w_val' p); [intros [u | f l] | idtac]; intro Hsub; rewrite Hsub in H4.
 (* 1/4 w_val' at position p is a variable u *)
@@ -2565,7 +2565,7 @@ intro H4; subst u x_val; assert (z_in_x_val' : var_in_term z (Var z) = true).
 simpl; generalize (X.eq_bool_ok z z); case (X.eq_bool z z); [intros _; trivial | intro z_diff_z; apply False_rect; apply z_diff_z; trivial].
 rewrite z_in_x_val' in z_not_in_x_val; discriminate.
 intro H4; injection H4; clear H4; intro H4; subst u.
-assert (z_in_w_val' := var_in_subterm z _ _ Hsub (or_introl _ (refl_equal _))).
+assert (z_in_w_val' := var_in_subterm z _ _ Hsub (or_introl _ (eq_refl _))).
 rewrite <- var_in_term_is_sound in z_in_w_val'.
 rewrite z_not_in_w_val' in z_in_w_val'; discriminate.
 (* 1/3 w_val' at position p is a composite term *)
@@ -2573,7 +2573,7 @@ discriminate.
 (* 1/2 w_val' at position p is not defined *)
 destruct H4 as [u [q [q' [H4 [H5 [H6 H7]]]]]].
 simpl in H7; revert H7; generalize (X.eq_bool_ok u x); case (X.eq_bool u x); [intro u_eq_x | intro u_diff_x].
-intro H7; subst u; assert (z_in_x_val := var_in_subterm z _ _ H7 (or_introl _ (refl_equal _))).
+intro H7; subst u; assert (z_in_x_val := var_in_subterm z _ _ H7 (or_introl _ (eq_refl _))).
 rewrite <- var_in_term_is_sound in z_in_x_val.
 rewrite z_not_in_x_val in z_in_x_val; discriminate.
 intro H7; destruct q'; [injection H7; clear H7; intro H7; subst u | discriminate].
@@ -2826,7 +2826,7 @@ generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _; discriminate | i
 intros f l; simpl; induction l as [ | t l]; intro IH.
 trivial.
 simpl.
-generalize (apply_subst sigma t) (IH t (or_introl _ (refl_equal _))).
+generalize (apply_subst sigma t) (IH t (or_introl _ (eq_refl _))).
 intros [w | g k] H; rewrite var_in_term_list_equation.
 simpl in H; revert H; 
 generalize (X.eq_bool_ok w x); case (X.eq_bool w x); [intros _ Abs; discriminate | intro w_diff_x].
@@ -2883,7 +2883,7 @@ induction l as [ | t l]; simpl.
 unfold VSet.mem; simpl; intuition.
 split; intro H.
 destruct (VSet.union_12 _ _ _ H) as [H1 | H2].
-rewrite (IH t (or_introl _ (refl_equal _))) in H1.
+rewrite (IH t (or_introl _ (eq_refl _))) in H1.
 rewrite var_in_term_list_equation.
 destruct t as [w | g k]; simpl in H1; simpl.
 generalize (X.eq_bool_ok v w); case (X.eq_bool v w); [intros _; trivial | intro v_diff_w]. 
@@ -2906,7 +2906,7 @@ apply VSet.union_2; rewrite IHl; trivial.
 intros u u_in_l; apply IH; right; trivial.
 case_eq (var_in_term_list v k); intro v_in_k; rewrite v_in_k in H; simpl in H.
 apply VSet.union_1.
-rewrite (IH _ (or_introl _ (refl_equal _))); trivial.
+rewrite (IH _ (or_introl _ (eq_refl _))); trivial.
 apply VSet.union_2.
 rewrite IHl; trivial.
 intros u u_in_l; apply IH; right; trivial.
@@ -2923,7 +2923,7 @@ intro c; induction c as [ | v c]; intros sigma Hoc W H x y x_in_dom y_in_dom.
 contradiction.
 (* 1/1 induction step *)
 assert (v_case := total_acc_inst_head c v sigma W Hoc).
-assert (v_in_dom := H v (or_introl _ (refl_equal _))); rewrite var_in_domain_of_subst in v_in_dom.
+assert (v_in_dom := H v (or_introl _ (eq_refl _))); rewrite var_in_domain_of_subst in v_in_dom.
 case_eq (find X.eq_bool v sigma); [intro v_val | idtac]; 
 intro v_sigma; rewrite v_sigma in v_in_dom; [ clear v_in_dom | absurd (@None term = None); trivial].
 simpl in Hoc; rewrite v_sigma in Hoc.

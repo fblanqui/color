@@ -82,7 +82,7 @@ apply t_clos; apply t_step; assumption.
 apply t_clos; apply t_trans with b2; assumption.
 
 intro H; destruct H as [a1 H | a1 a2 H].
-apply t_step; left; apply refl_equal.
+apply t_step; left; apply eq_refl.
 apply (@trans_incl _ R); trivial.
 right; assumption.
 Qed.
@@ -645,7 +645,7 @@ Lemma acc_inv_im :
 Proof.
 intros A B R1 R2 f H a.
 set (b := f a) in *.
-assert (b_eq_fa := refl_equal b).
+assert (b_eq_fa := eq_refl b).
 unfold b at 2 in b_eq_fa; clearbody b.
 intro Acc_b; revert a b_eq_fa; induction Acc_b as [b Acc_b IH].
 intros a b_eq_fa; apply Acc_intro; intros a' H'.
@@ -660,7 +660,7 @@ Lemma acc_inv_im2 :
 Proof.
 intros A B R1 R2 f a Hinv Acc_b.
 set (b := f a) in *.
-assert (b_eq_fa := refl_equal b).
+assert (b_eq_fa := eq_refl b).
 unfold b at 2 in b_eq_fa; clearbody b.
 revert a b_eq_fa Hinv; induction Acc_b as [b Acc_b IH].
 intros a b_eq_fa Hinv.
@@ -686,7 +686,7 @@ Lemma acc_inv_im3 :
 Proof.
 intros A B R1 R2 f a Hinv Acc_b.
 set (b := f a) in *.
-assert (b_eq_fa := refl_equal b).
+assert (b_eq_fa := eq_refl b).
 unfold b at 2 in b_eq_fa; clearbody b.
 revert a b_eq_fa Hinv; induction Acc_b as [b Acc_b IH].
 intros a b_eq_fa Hinv.

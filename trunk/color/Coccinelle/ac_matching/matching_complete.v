@@ -352,8 +352,8 @@ assert (Fresh_var := fresh_var_spec pb).
 rewrite Pb in S'.
 rewrite Pb in W; destruct W as [W1_pb [W2_pb [W3_pb [W4_pb [W5_pb W6_pb]]]]].
 rewrite Pb in S; destruct S as [S1 [S2 S3]].
-destruct (W1_pb t1 t2 (or_introl _ (refl_equal _))) as [Wt1 Wt2].
-assert (t1_sigma := S1 t1 t2 (or_introl _ (refl_equal _))).
+destruct (W1_pb t1 t2 (or_introl _ (eq_refl _))) as [Wt1 Wt2].
+assert (t1_sigma := S1 t1 t2 (or_introl _ (eq_refl _))).
 simpl unsolved_part in *; simpl solved_part in *; simpl partly_solved_part in *; simpl existential_vars in *.
 unfold solve; simpl; destruct t1 as [v | f1 l1].
 (* 1/2 t1 is a variable v *)
@@ -482,7 +482,7 @@ clear Wv; rewrite v_sigma; rewrite v_sigma in W;
 generalize (F.Symb.eq_bool_ok (head_symb pst) (head_symb pst));
 case (F.Symb.eq_bool (head_symb pst) (head_symb pst)); [intros _ | intros h_diff_h; apply False_rect; apply h_diff_h; reflexivity]. 
 assert (v'_sigma := remove_several_subterms_bis_nil _ _ _ _ _ _ Ahsp W_sigma W v_sigma v_sigma Act).
-assert (t_sigma := remove_a_subterm _ _ _ _ _ _ Af1 W_sigma Wt1 Wt2 (refl_equal _) t1_sigma).
+assert (t_sigma := remove_a_subterm _ _ _ _ _ _ Af1 W_sigma Wt1 Wt2 (eq_refl _) t1_sigma).
 destruct (remove T.eq_bool (closed_term pst)
       (quicksort
          (flatten (head_symb pst)
@@ -499,7 +499,7 @@ rewrite v_sigma in t_sigma; apply f1_diff_hd_pst; trivial.
 clear v_sigma; clear W3_v.
 unfold ac_elementary_solve_term_var_without_val_term.
 refine (exists_map12_without_repetition _ T.eq_bool_ok _ _ _ _).
-assert (t_sigma := remove_a_subterm sigma _ _ _ _ _ Af1 W_sigma Wt1 Wt2 (refl_equal _) t1_sigma).
+assert (t_sigma := remove_a_subterm sigma _ _ _ _ _ Af1 W_sigma Wt1 Wt2 (eq_refl _) t1_sigma).
 case_eq (apply_cf_subst sigma (Var v)); [intros v' v_sigma | intros f k v_sigma]; rewrite v_sigma in t_sigma.
 (* 1/6 the actual value of v is a variable *)
 exists (Var v').
@@ -635,10 +635,10 @@ generalize (X.eq_bool_ok v' (fresh_var pb)); case (X.eq_bool v' (fresh_var pb));
 unfold ac_elementary_solve_term_term_term.
 refine (exists_map_without_repetition _ T.eq_bool_ok _ _ _ _).
 exists (apply_cf_subst sigma (Term f k)).
-assert (f_diff_s := well_formed_cf_alien Af1 Wt1 _ (or_introl _ (refl_equal _))).
+assert (f_diff_s := well_formed_cf_alien Af1 Wt1 _ (or_introl _ (eq_refl _))).
 simpl in f_diff_s.
 assert (s_l0_in_l2 : In (apply_cf_subst sigma (Term f k)) l2).
-generalize (S1 _ _ (or_introl _ (refl_equal _))); simpl; rewrite Af1;
+generalize (S1 _ _ (or_introl _ (eq_refl _))); simpl; rewrite Af1;
 generalize (F.Symb.eq_bool_ok f1 f); case (F.Symb.eq_bool f1 f); [intros f1_eq_f; absurd (f1 = f); trivial | intro f_diff_f1].
 intro H; injection H; intros; subst l2.
 rewrite <- in_quick_in; left; trivial.

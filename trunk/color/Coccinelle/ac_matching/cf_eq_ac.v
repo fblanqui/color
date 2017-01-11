@@ -78,12 +78,12 @@ destruct l as [ | t3 l]; [idtac | absurd (S(S(S(length l)))=2); auto with arith]
 replace (map canonical_form (t1 :: t2 :: nil)) with 
 ((canonical_form t1 :: nil) ++ canonical_form t2 :: nil) in P; trivial;
 rewrite flatten_app in P;
-assert (Wt1 := Wl t1 (or_introl _  (refl_equal t1)));
-assert (Wt2 := Wl t2 (or_intror _ (or_introl _  (refl_equal t2))));
+assert (Wt1 := Wl t1 (or_introl _  (eq_refl t1)));
+assert (Wt2 := Wl t2 (or_intror _ (or_introl _  (eq_refl t2))));
 elim (ac_syntactic _ _ _ _ P); intros k1 [k2 [k3 [k4 [P2 [P1 [P3 P4]]]]]].
-generalize (IHl t1 (or_introl _ (refl_equal _)) k3 k4 Wt1 P1); 
+generalize (IHl t1 (or_introl _ (eq_refl _)) k3 k4 Wt1 P1);
 intros [Hk3 | [Hk4 | [t11 [t12 [Wt11 [Wt12 [H1 [Q11 Q12]]]]]]]];
-generalize (IHl t2 (or_intror _ (or_introl _ (refl_equal _))) k1 k2 Wt2 P2);
+generalize (IHl t2 (or_intror _ (or_introl _ (eq_refl _))) k1 k2 Wt2 P2);
 intros [Hk1 | [Hk2 | [t21 [t22 [Wt21 [Wt22 [H2 [Q21 Q22]]]]]]]].
 (* k1 = nil, k3 = nil *)
 subst; right; left; apply list_permut.permut_nil with term (@eq term); trivial.
@@ -519,10 +519,10 @@ destruct l1 as [ | a3 l1]; [clear Ll1 | absurd (S(S(S(length l1)))=2); auto with
 destruct l2 as [ | a3 l2]; [absurd (0=2); auto with arith | idtac];
 destruct l2 as [ | a4 l2]; [absurd (1=2); auto with arith | idtac];
 destruct l2 as [ | a5 l2]; [clear Ll2 | absurd (S(S(S(length l2)))=2); auto with arith];
-assert (Wa1 := Wl1 a1 (or_introl _ (refl_equal _)));
-assert (Wa2 := Wl1 a2 (or_intror _ (or_introl _ (refl_equal _))));
-assert (Wa3 := Wl2 a3 (or_introl _ (refl_equal _)));
-assert (Wa4 := Wl2 a4 (or_intror _ (or_introl _ (refl_equal _))));
+assert (Wa1 := Wl1 a1 (or_introl _ (eq_refl _)));
+assert (Wa2 := Wl1 a2 (or_intror _ (or_introl _ (eq_refl _))));
+assert (Wa3 := Wl2 a3 (or_introl _ (eq_refl _)));
+assert (Wa4 := Wl2 a4 (or_intror _ (or_introl _ (eq_refl _))));
 simpl in St1; rewrite plus_0_r in St1;
 simpl in St2; rewrite plus_0_r in St2.
 assert (Sa1 : size a1 <= n).
@@ -609,10 +609,10 @@ destruct l1 as [ | a3 l1]; [clear Ll1 | absurd (S(S(S(length l1)))=2); auto with
 destruct l2 as [ | a3 l2]; [absurd (0=2); auto with arith | idtac];
 destruct l2 as [ | a4 l2]; [absurd (1=2); auto with arith | idtac];
 destruct l2 as [ | a5 l2]; [clear Ll2 | absurd (S(S(S(length l2)))=2); auto with arith];
-assert (Wa1 := Wl1 a1 (or_introl _ (refl_equal _)));
-assert (Wa2 := Wl1 a2 (or_intror _ (or_introl _ (refl_equal _))));
-assert (Wa3 := Wl2 a3 (or_introl _ (refl_equal _)));
-assert (Wa4 := Wl2 a4 (or_intror _ (or_introl _ (refl_equal _))));
+assert (Wa1 := Wl1 a1 (or_introl _ (eq_refl _)));
+assert (Wa2 := Wl1 a2 (or_intror _ (or_introl _ (eq_refl _))));
+assert (Wa3 := Wl2 a3 (or_introl _ (eq_refl _)));
+assert (Wa4 := Wl2 a4 (or_intror _ (or_introl _ (eq_refl _))));
 simpl in St1; rewrite plus_0_r in St1;
 simpl in St2; rewrite plus_0_r in St2.
 assert (Sa1 : size a1 <= n).

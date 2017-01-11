@@ -179,7 +179,7 @@ destruct (remove T.eq_bool s1 l2) as [ l2''' |].
 intros [cp1 [l2' [l2'' [ H [l2_eq l2'''_eq]]]]].
 injection l2'''_eq; clear l2'''_eq; intro l2'''_eq; rewrite <- H in l2_eq; clear H; subst l2''';
 inversion_clear In_pb' as [pb'_eq_ | ]; [idtac | contradiction].
-generalize (W1 (Term f1 (Var v1 :: l1))  (Term f1 l2) (or_introl _ (refl_equal _)));
+generalize (W1 (Term f1 (Var v1 :: l1))  (Term f1 l2) (or_introl _ (eq_refl _)));
 intros [Wt1 Wt2];  subst; unfold unsolved_part; 
 apply list_size_tl_compat; apply plus_lt_compat; 
 [replace (Var v1 :: l1) with (nil ++ Var v1 :: l1); trivial;
@@ -343,7 +343,7 @@ apply le_S; apply le_n.
 (* arity f1 = Free n1 *)
 assert (L12 : length l1 = length l2).
 apply trans_eq with n1; [idtac | apply sym_eq];
-generalize (W1 (Term f1 l1) (Term f1 l2) (or_introl _ (refl_equal _)));
+generalize (W1 (Term f1 l1) (Term f1 l2) (or_introl _ (eq_refl _)));
 intros [[_ W_t1] [_ W_t2]]; [rewrite Af1 in W_t1 | rewrite Af1 in W_t2]; trivial.
 generalize l l2 In_pb' L12; clear W1 W2 W3 l l2 In_pb' L12.
 induction l1 as [ | t1 l1]; destruct l2 as [ | t2 l2].

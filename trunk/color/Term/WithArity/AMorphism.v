@@ -294,7 +294,7 @@ Section Epi.
 
   Proof.
     induction c; simpl; intros. refl. eapply cont_eq_intro
-    with (h1 := refl_equal i) (h2 := refl_equal j). apply FG. hyp.
+    with (h1 := eq_refl i) (h2 := eq_refl j). apply FG. hyp.
     rewrite Fv_epi, Vcast_refl. refl. rewrite Fv_epi, Vcast_refl. refl.
   Qed.
 

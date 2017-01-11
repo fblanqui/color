@@ -70,7 +70,7 @@ Fixpoint build_well_formed_matching_problem_list
       list well_formed_matching_problem with 
  | nil => fun _ => nil
  | pb :: tl_lpb => fun proof =>
-   (W pb (proof pb (or_introl _ (refl_equal _)))) :: 
+   (W pb (proof pb (or_introl _ (eq_refl _)))) ::
    (build_well_formed_matching_problem_list tl_lpb (@tail_prop _ _ pb tl_lpb proof))
   end.
 
@@ -288,7 +288,7 @@ Fixpoint build_well_formed_matching_problem_list
       list well_formed_matching_problem with 
  | nil => fun _ => nil
  | pb :: tl_lpb => fun proof =>
-   (W pb (proof pb (or_introl _ (refl_equal _)))) :: 
+   (W pb (proof pb (or_introl _ (eq_refl _)))) ::
    (build_well_formed_matching_problem_list tl_lpb (@tail_prop _ _ pb tl_lpb proof))
   end.
 
@@ -559,7 +559,7 @@ exists
                match l1 with
                | nil => False
                | b :: m => b = a0 \/ In a0 m
-               end) a l0) (refl_equal a))));
+               end) a l0) (eq_refl a))));
 split; [ left | subst pb' ]; trivial.
 cut (exists pb' : matching_problem,
           In pb' l0 /\ is_well_formed_sol pb' sigma).
@@ -622,7 +622,7 @@ rewrite wf_solve_nil; contradiction.
 rewrite wf_solve_cons; destruct w.
 cut (forall pb1, pb1 = pb -> unsolved_part pb1 = unsolved_part pb).
 intro H; destruct (unsolved_part pb);
-generalize (H pb (refl_equal _)); clear H; intros H In_wpb.
+generalize (H pb (eq_refl _)); clear H; intros H In_wpb.
 elim In_wpb; clear In_wpb; intro In_wpb.
 subst wpb; trivial.
 refine (IH lpb (F_wf_solve_dec1 _ _) _ In_wpb).
@@ -712,12 +712,12 @@ trivial.
 generalize (new_var_occ v ps); simpl.
 generalize (X.eq_bool_ok v v); case (X.eq_bool v v); [intros _ | intro v_diff_v; apply False_rect; apply v_diff_v; reflexivity].
 intro new_var_ps_occ; 
-generalize (new_var_ps_occ (refl_equal _)); clear new_var_ps_occ;
+generalize (new_var_ps_occ (eq_refl _)); clear new_var_ps_occ;
 unfold occurs_in_pb; simpl in U; subst usp; simpl;
 intros [F | new_var_ps_occ]; [contradiction | idtac].
 generalize (some_nb_occ_Sn X.eq_bool (new_var ps) psp);
 destruct (find X.eq_bool (new_var ps) psp) as [new_var_ps_val | ].
-intro F; generalize (F new_var_ps_val (refl_equal _)); clear F; intros F;
+intro F; generalize (F new_var_ps_val (eq_refl _)); clear F; intros F;
 simpl in well_sorted; destruct well_sorted as [_ [H _]];
 assert (new_var_diff_new_var := H _ F);
 absurd (new_var ps = new_var ps); trivial.
@@ -773,7 +773,7 @@ apply (f_equal (fun t =>
         Term (head_symb p)
             (quicksort (flatten (head_symb p) (t :: closed_term p :: nil))))).
 generalize (new_var_occ_in_solved_part (mk_pb ex nil sp ((x,p) :: psp))
-                          (refl_equal _) well_sorted new_var_occ).
+                          (eq_refl _) well_sorted new_var_occ).
 simpl partly_solved_part; simpl solved_part.
 replace (apply_cf_subst sp (Var (new_var p))) with
 (match find eq_var_bool (new_var p) sp with
@@ -882,7 +882,7 @@ refine (IH (wf_solve (W (mk_pb ex ((s, t) :: usp) sp psp) w_pb) ++ lpb) (F_wf_so
 clear wpb wpb_in_loop; intros wpb wpb_in_loop.
 destruct (in_app_or _ _ _ wpb_in_loop) as [wpb_in_solve_pb | wpb_in_loop_lpb];
 clear wpb_in_loop; [ idtac |  apply P_lpb; right; trivial].
-generalize (P_lpb _ (or_introl _ (refl_equal _))); simpl existential_vars; intros [NE O].
+generalize (P_lpb _ (or_introl _ (eq_refl _))); simpl existential_vars; intros [NE O].
 destruct wpb as [pb' w_pb']; generalize (wf_projection _ _ _ _ wpb_in_solve_pb).
 clear lpb IH P_lpb; unfold solve; simpl unsolved_part; simpl solved_part; cbv iota beta.
 destruct s as [ v | f1 l1].
@@ -1213,7 +1213,7 @@ induction sigma.
 unfold clean_sol; simpl; trivial.
 intros v not_occurs; destruct a; simpl.
 generalize (X.eq_bool_ok v a); case (X.eq_bool v a); [intro v_eq_a | intro v_diff_a].
-subst v; assert (a_not_in_l := not_occurs a (refl_equal _)).
+subst v; assert (a_not_in_l := not_occurs a (eq_refl _)).
 generalize (mem_bool_ok _ _ X.eq_bool_ok a l); case (mem_bool X.eq_bool a l).
 intro a_mem_l; absurd (In a l); trivial.
 apply (mem_impl_in (@eq variable)); trivial.
@@ -1358,7 +1358,7 @@ apply (f_equal (fun t => Term (head_symb p)
 generalize 
 (new_var_occ_in_solved_part 
   (mk_pb ex nil sp ((v,p) :: psp))
- (refl_equal _) well_sorted new_var_occ)
+ (eq_refl _) well_sorted new_var_occ)
 (Is_sol'_sp (new_var p)); simpl.
 destruct (find X.eq_bool (new_var p) sp); trivial; contradiction.
 generalize (nb_occ_v v); simpl.
@@ -1374,7 +1374,7 @@ simpl nb_occ; simpl find.
 generalize (X.eq_bool_ok v0 a); case (X.eq_bool v0 a); [intro v0_eq_a; subst v0 | intro v0_diff_a].
 generalize (some_nb_occ_Sn X.eq_bool a psp);
 destruct (find X.eq_bool a psp); trivial.
-intro H1; generalize (H1 p0 (refl_equal _)); clear H1; intro H1;
+intro H1; generalize (H1 p0 (eq_refl _)); clear H1; intro H1;
 destruct (nb_occ X.eq_bool a psp).
 absurd (1 <= 0); auto with arith.
 intros _ H2; rewrite plus_comm in H2; simpl in H2;
@@ -1393,7 +1393,7 @@ Term (head_symb p)
 generalize 
 (new_var_occ_in_solved_part 
   (mk_pb ex nil sp ((a, p) :: psp))
-  (refl_equal _) well_sorted new_var_occ); intro H4; simpl in H4.
+  (eq_refl _) well_sorted new_var_occ); intro H4; simpl in H4.
 generalize (Is_sol'_sp (new_var p)).
 simpl; destruct (find X.eq_bool (new_var p) sp); trivial; contradiction.
 intros _; apply Is_sol'_sp.
@@ -1406,7 +1406,7 @@ intro H'; simpl in H'; generalize H'; clear H'.
 generalize (X.eq_bool_ok v1 a); case (X.eq_bool v1 a); [intro v1_eq_a; subst v1 | intro v1_diff_a].
 intros H'; generalize (some_nb_occ_Sn X.eq_bool a psp).
 destruct (find X.eq_bool a psp).
-intro H1; generalize (H1 p0 (refl_equal _)); clear H1; intro H1.
+intro H1; generalize (H1 p0 (eq_refl _)); clear H1; intro H1.
 destruct (nb_occ X.eq_bool a psp).
 absurd (1 <= 0); auto with arith.
 rewrite plus_comm in H'; simpl in H';
@@ -1439,7 +1439,7 @@ intro H'; simpl in H'; generalize H'; clear H'.
 generalize (X.eq_bool_ok v2 a); case (X.eq_bool v2 a); [intro v2_eq_a; subst v2 | intro v2_diff_a].
 intros H'; generalize (some_nb_occ_Sn X.eq_bool a psp).
 destruct (find X.eq_bool a psp).
-intro H1; generalize (H1 p0 (refl_equal _)); clear H1; intro H1.
+intro H1; generalize (H1 p0 (eq_refl _)); clear H1; intro H1.
 destruct (nb_occ X.eq_bool a psp).
 absurd (1 <= 0); auto with arith.
 rewrite plus_comm in H'; simpl in H';
@@ -1458,7 +1458,7 @@ right; right; simpl; case (X.eq_bool (new_var p0) a); trivial.
 generalize (Is_sol'_sp v) 
 (extract_solution_in_solved_part sp psp v); 
 destruct (find X.eq_bool v sp).
-intros H0 H; generalize (H t (nb_occ_v v) (refl_equal _)); clear H; 
+intros H0 H; generalize (H t (nb_occ_v v) (eq_refl _)); clear H;
 intro H; rewrite H; rewrite H0; trivial.
 contradiction.
 

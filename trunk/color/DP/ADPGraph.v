@@ -206,7 +206,9 @@ Qed.
 Lemma compat_chain_dp : forall a, chain_dp a << succ_eq#.
 
 Proof.
-intros. incl_trans (red_mod R DP). incl_trans (Chain). apply chain_dp_chain.
+intros. incl_trans (red_mod R DP).
+apply incl_trans with Chain; try incl_refl.
+apply chain_dp_chain.
 incl_trans (hd_red_mod R DP). apply chain_hd_red_mod.
 apply hd_red_mod_incl_red_mod. incl_trans (succ_eq!).
 apply compat_red_mod_tc; hyp. apply tc_incl_rtc.

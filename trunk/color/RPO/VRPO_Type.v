@@ -10,6 +10,7 @@ strict order, monotonicity, well-foundedness
 
 From CoLoR Require Import VPrecedence ListUtil VTerm RelMidex LogicUtil AccUtil.
 From Coq Require Import Relations Morphisms Basics.
+From CoLoR Require AccUtil ListUtil MultisetListOrder ListLex.
 
 Module Type RPO_Model.
 
@@ -63,8 +64,7 @@ Module Type RPO_Model.
   Parameter mono_axiom : forall f (r : relation term), 
     forall ss ts, one_less r ss ts -> tau f r ss ts.
 
-  From CoLoR Require Import AccUtil.
-  From CoLoR Require Import ListUtil.
+  Import AccUtil ListUtil.
 
   Definition lifting R := forall l, Accs lt l -> Restricted_acc (Accs lt) R l.
 
@@ -86,6 +86,7 @@ Module Type RPO_Model.
         let Hr := (fresh "case_roots") in
           let Hs := (fresh "case_status") in
             let Ht := (fresh "case_subterm") in
+              let Hdum := (fresh "case_hdum") in
               (elim (lt_decomp s t H);
                 [intro Hdum; elim Hdum; clear Hdum;
                   [intro Hr | intro Hs] | intro Ht])
@@ -137,6 +138,7 @@ Module Type RPO_Model.
         let Hr := (fresh "case_roots") in
           let Hs := (fresh "case_status") in
             let Ht := (fresh "case_subterm") in
+              let Hdum := (fresh "case_hdum") in
               (elim (lt_decomp s t H);
                 [intro Hdum; elim Hdum; clear Hdum;
                   [intro Hr | intro Hs] | intro Ht];
@@ -156,10 +158,10 @@ Module Status (PT : VPrecedenceType).
 
   Module Export P := VPrecedence PT.
 
-  From CoLoR Require Import MultisetListOrder.
+  Import MultisetListOrder.
   Module Export LMO := MultisetListOrder Term_dec.
 
-  From CoLoR Require Import ListLex.
+  Import ListLex.
   Module Export LO := LexOrder Term.
 
   Section Decidability.

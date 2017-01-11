@@ -16,6 +16,7 @@ Set Implicit Arguments.
 From CoLoR Require Import RelExtras ListPermutation TermsPos ListUtil
      ListExtras LogicUtil.
 From Coq Require Import Compare_dec Max Setoid Morphisms Omega.
+From Coq Require Psatz.
 
 Module TermsConv (Sig : TermsSig.Signature).
 
@@ -249,7 +250,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros. destruct H; unfold s.
     split; destruct (sizeOk Q i0 j0 H); eauto with arith.
     destruct H; rewrite H; rewrite H0.
-    From Coq Require Import Psatz. lia.
+    Import Psatz. lia.
   Defined.
 
   Definition liftEnvSubst : forall (n: nat) (k: nat) (size: nat), EnvSubst.

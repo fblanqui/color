@@ -12,6 +12,8 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil OrdUtil LSimple RelUtil.
 From Coq Require Import Structures.Equalities Omega.
+From CoLoR Require SetUtil.
+
 
 (****************************************************************************)
 (** ** Type constants of System T. **)
@@ -177,7 +179,7 @@ End L_SystemT.
 
 From CoLoR Require Import LCompRewrite.
 Import VectorNotations.
-Open Local Scope vector_scope.
+Local Open Scope vector_scope.
 
 Module RS_SystemT <: RS_Struct.
 
@@ -338,7 +340,7 @@ Module BI_SystemT <: BI_Struct.
 
   Proof. intro b. apply Acc_intro. fo. Qed.
 
-  From CoLoR Require Import SetUtil.
+  Import SetUtil.
 
   Inductive acc : F -> set nat :=
   | Acc_Succ : acc Succ 0.

@@ -379,7 +379,7 @@ cut (forall t' u, red R # t' u -> forall t, t' = sub s t -> exists v,
 induction 1; intros; subst.
 destruct (red_ren H). exists x. intuition.
 exists t. intuition.
-destruct (IHclos_refl_trans1 t (refl_equal (sub s t))). destruct H1.
+destruct (IHclos_refl_trans1 t (eq_refl (sub s t))). destruct H1.
 symmetry in H2. destruct (IHclos_refl_trans2 x H2). exists x0. split_all.
 apply rtc_trans with x; hyp.
 Qed.

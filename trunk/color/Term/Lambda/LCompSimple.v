@@ -395,7 +395,7 @@ Module Make (Export ST : ST_Struct)
 (****************************************************************************)
 (** ** Monotony properties of [int] and [vint]. *)
 
-  From CoLoR Require Import SetUtil.
+  Import SetUtil.
 
   Lemma int_equiv : forall I J T,
     (forall a, occurs a T -> I a [=] J a) -> int I T [=] int J T.

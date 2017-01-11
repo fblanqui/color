@@ -6,6 +6,8 @@ From CoLoR Require term_spec.
 From CoLoR Require equational_theory_spec.
 From CoLoR Require Import terminaison.
 
+From CoLoR Require closure_extension.
+
 Module Make  (Eqt:equational_theory_spec.EqTh).
 
 Lemma one_step_list_same_length : 
@@ -32,7 +34,7 @@ Lemma one_step_list_star_decompose_cons :
 Proof.
   intros R x l l''. 
   set (l1 := x::l) in *.
-  generalize (refl_equal l1); unfold l1 at 1;clearbody l1.
+  generalize (eq_refl l1); unfold l1 at 1;clearbody l1.
   intros H H0  .
   revert x l  H.
   induction H0. 
@@ -53,18 +55,18 @@ Proof.
   repeat (assumption||constructor).
   
   inversion H;clear H;subst;  intros;  injection H;clear H;intros;subst.
-  destruct (IHtrans_clos _ _ (refl_equal _)) as [u [l'' [h1 [h2 h3]]]];clear IHtrans_clos.
+  destruct (IHtrans_clos _ _ (eq_refl _)) as [u [l'' [h1 [h2 h3]]]];clear IHtrans_clos.
   subst.
   exists u;exists l''.
-  split. apply refl_equal.
+  split. apply eq_refl.
   split.
   apply refl_trans_clos_is_trans with t2;  repeat (assumption||constructor).
   assumption.
 
-  destruct (IHtrans_clos _ _ (refl_equal _)) as [u [l'' [h1 [h2 h3]]]];clear IHtrans_clos.
+  destruct (IHtrans_clos _ _ (eq_refl _)) as [u [l'' [h1 [h2 h3]]]];clear IHtrans_clos.
   subst.
   exists u;exists l''.
-  split. apply refl_equal.
+  split. apply eq_refl.
   split.
   assumption.
   apply refl_trans_clos_is_trans with l2;  repeat (assumption||constructor).
@@ -75,7 +77,7 @@ Lemma one_step_list_star_decompose_nil :
 Proof.
   intros R l'' H.
   set (l:= @nil Eqt.T.term) in *.
-  generalize (refl_equal l).
+  generalize (eq_refl l).
   unfold l at 1;clearbody l.
   induction H;intro;subst;auto.
   inversion H;clear H;subst;  inversion H0.
@@ -170,8 +172,8 @@ Proof.
   constructor 2;assumption.
   assumption.
 Qed.
-From Coq Require Import List.
-From CoLoR Require Import closure_extension.
+
+Import closure_extension.
 
 Lemma star_cons : forall R t l t' l', 
   refl_trans_clos (one_step R) t' t -> 
@@ -210,8 +212,8 @@ Lemma cons_star : forall R t l t' l',
   refl_trans_clos (one_step_list (one_step R)) l' l.
 Proof.
   intros R t l t' l' H.
-  set (l1:= t'::l') in *; generalize (refl_equal l1);unfold l1 at 1;clearbody l1.
-  set (l2:= t::l) in *; generalize (refl_equal l2);unfold l2 at 1;clearbody l2.
+  set (l1:= t'::l') in *; generalize (eq_refl l1);unfold l1 at 1;clearbody l1.
+  set (l2:= t::l) in *; generalize (eq_refl l2);unfold l2 at 1;clearbody l2.
   revert t l t' l'.
   induction H.
   intros;do 2 subst.
@@ -234,14 +236,14 @@ Proof.
   intros t l t' l' H1 H2.
   subst.
   inversion H;subst.
-  destruct (IHtrans_clos _ _ _ _ (refl_equal _) (refl_equal _)) as [h1 h2].
+  destruct (IHtrans_clos _ _ _ _ (eq_refl _) (eq_refl _)) as [h1 h2].
   clear IHtrans_clos H H0.
   split.
   inversion h1;subst;clear h1.
   constructor. constructor;assumption. 
   constructor. constructor 2 with t2; assumption. 
   assumption.
-  destruct (IHtrans_clos _ _ _ _ (refl_equal _) (refl_equal _)) as [h1 h2].
+  destruct (IHtrans_clos _ _ _ _ (eq_refl _) (eq_refl _)) as [h1 h2].
   clear IHtrans_clos H H0.
   split.
   assumption.

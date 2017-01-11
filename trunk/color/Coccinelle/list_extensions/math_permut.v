@@ -117,7 +117,7 @@ simpl; auto with arith.
 generalize (H 0 L'); simpl.
 assert (H' := nth_error_ok_in (pi 0) l2).
 destruct (nth_error l2 (pi 0)) as [ b1 | ].
-intro a1_R_b1; destruct (H' _ (refl_equal _)) as [l2' [l2'' [L'' H'']]]; clear H'.
+intro a1_R_b1; destruct (H' _ (eq_refl _)) as [l2' [l2'' [L'' H'']]]; clear H'.
 subst l2; apply list_permut.Pcons; trivial.
 rewrite IHn; [split | simpl in L1; apply le_S_n; trivial].
 rewrite length_app in L; rewrite plus_comm in L; simpl in L; injection L; 
@@ -209,7 +209,7 @@ destruct (nth_error l1 i) as [ai | ]; trivial.
 generalize (nth_error_ok_in (pi (S i)) (l2' ++ b1 :: l2''));
 destruct (nth_error (l2' ++ b1 :: l2'') (pi (S i))) as [bi | ]; 
 [idtac | contradiction].
-intros H' ai_R_bi; destruct (H' _ (refl_equal _)) as [k2 [k2' [Lk2 H'']]]; clear H'.
+intros H' ai_R_bi; destruct (H' _ (eq_refl _)) as [k2 [k2' [Lk2 H'']]]; clear H'.
 destruct (in_in_split_set b1 bi l2' l2'' k2 k2' H'') as [[H''' | H'''] | H''']; clear H''.
 destruct H''' as [l [H3 H4]]; subst.
 rewrite <- ass_app; rewrite <- Lk2; rewrite <- L''; simpl.

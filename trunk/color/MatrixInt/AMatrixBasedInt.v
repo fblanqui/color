@@ -11,6 +11,7 @@ Set Implicit Arguments.
 From CoLoR Require Import Matrix AMonAlg VecUtil OrdSemiRing ATrs LogicUtil
      RelUtil NatUtil AWFMInterpretation.
 From Coq Require Import Max Setoid Morphisms.
+From CoLoR Require ABterm ATrs.
 
 Section MatrixLinearFunction.
 
@@ -225,7 +226,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
     Section OrderDecidability.
 
-      From CoLoR Require Import ABterm.
+      Import ABterm.
 
       Notation bterm := (bterm sig).
 
@@ -274,7 +275,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
             mkMatrixInt res_const res_args
         end.
 
-      From CoLoR Require Import ATrs.
+      Import ATrs.
 
       Definition rule_mi r :=
         let mvl := maxvar (lhs r) in

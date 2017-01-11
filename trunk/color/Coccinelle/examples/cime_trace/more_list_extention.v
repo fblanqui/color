@@ -3,6 +3,8 @@ From CoLoR Require Import decidable_set.
 From CoLoR Require Import list_set.
 From Coq Require Import List.
 From Coq Require Import Omega.
+From Coq Require Recdef.
+
 
 Module Type S.
   Parameter A : Type.
@@ -54,7 +56,7 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
       rewrite e0 in IHp. omega.
       simpl;rewrite e0 in IHp. omega.
     Qed.
-    From Coq Require Import Recdef.
+    Import Recdef.
     Function qs (l:list A) {measure length } : list A := 
       match l with 
         | nil => nil
@@ -107,7 +109,7 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
   Proof.
     intros order f l H.
     apply (more_list.in_impl_mem (@eq A) 
-     (fun a => refl_equal a)) in H.
+     (fun a => eq_refl a)) in H.
      apply XSet.remove_red_included in H.     
      generalize (more_list.mem_bool_ok _ _ eq_bool_ok f (remove_red l)).
      case_eq (more_list.mem_bool eq_bool f (remove_red l)).
