@@ -99,7 +99,7 @@ Section S.
 
   Proof. intros. apply X. unfold subterm_eq. exists Hole. auto. Qed.
 
-  From CoLoR Require Import ListForall.
+  From CoLoR Require Import ListUtil.
 
   Lemma subterm_sub_ind : forall (P : term -> Prop)
     (IH : forall t, (forall u, subterm u t -> P u) -> P t),

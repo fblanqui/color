@@ -41,8 +41,7 @@ Section Absolute_finite.
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
 
-  From Coq Require Import List.
-  From CoLoR Require Import ListForall.
+  From CoLoR Require Import ListUtil.
 
   Variable Fs : list sig.
   Variable Fs_ok : forall f : sig, In f Fs.

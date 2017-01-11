@@ -306,8 +306,7 @@ Module MatrixInt (MI : TMatrixInt).
         apply H. apply le_refl.
       Qed.
 
-      From Coq Require Import List.
-      From CoLoR Require Import ListForall.
+      From CoLoR Require Import ListUtil.
 
       Section fin_Sig.
 
