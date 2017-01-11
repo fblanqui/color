@@ -62,8 +62,6 @@ End term_rect.
 
 Definition term_ind (P : term -> Prop) (Q : terms -> Prop) := term_rect P Q.
 
-From CoLoR Require Import ListForall.
-
 Lemma term_ind_forall : forall (P : term -> Prop)
   (H1 : forall x, P (Var x))
   (H2 : forall f v, lforall P v -> P (Fun f v)),

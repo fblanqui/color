@@ -10,9 +10,8 @@ polynomials with non-negative integers as coefficients
 
 Set Implicit Arguments.
 
-From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction ListForall
-     VecUtil.
-From Coq Require Import List Max.
+From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction ListUtil VecUtil.
+From Coq Require Import Max.
 
 Notation vec := (vector D).
 Notation vals := (@Vmap D Z val _).
@@ -27,7 +26,7 @@ apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). hyp.
 apply IHn.
 Qed.
 
-Lemma preserve_pos_meval n (m : monom n) : preserv pos (meval m).
+Lemma preserve_pos_meval n (m : monom n) : preserv ZUtil.pos (meval m).
 
 Proof. intros v Hv. rewrite (Vmap_proj1_sig Hv). apply pos_meval. Qed.
 
@@ -83,7 +82,7 @@ apply pos_meval. apply IHp. hyp.
 Qed.
 
 Lemma preserve_pos_peval : forall n (p : poly n),
-  coef_pos p -> preserv pos (peval p).
+  coef_pos p -> preserv ZUtil.pos (peval p).
 
 Proof.
 intros. unfold preserv. intros v Hv.
