@@ -80,8 +80,8 @@ Defined.
     revert IHn P f f_eq. generalize (S n); clear n; intros n IH P f f_eq.
 
 (* begin hide *)
-(* Let [i] be the function which maps [X] in [Pcard V m] to [add a X]
-  in [Pcard P (S m)] provided that [a] is in [P] but not in [V]. *)
+(* Let [i] be the function which maps [X] in [Pcard V n] to [add a X]
+  in [Pcard P (S n)] provided that [a] is in [P] but not in [V]. *)
 Definition i n P (Q : Pinf P) (U : Pinf Q) V (a : A)
   (aU : mem a U) (VU_a : V [<=] rem a U) : Pcard V n -> Pcard P (S n).
 
@@ -111,7 +111,7 @@ Proof. refl. Qed.
 
     (* We prove the following key lemma L:
     if [R Q c] is total, then there is T infinite such that
-    f is equal to c on [Pcard T (S m)]. *)
+    f is equal to c on [Pcard T (S n)]. *)
     assert (L : forall (Q : Pinf P) c, (forall U, exists V, R Q c U V) ->
       exists T : Pinf P, forall X : Pcard T (S n), f (Pcard_subset T X) = c).
     intros Q c RQc_total.
@@ -140,7 +140,7 @@ Proof. refl. Qed.
     assert (VSV_b : forall k, V (S k) [<=] rem (b k) (V k)).
     intro k. unfold b. destruct (cid (b_spec k)) as [a [a1 [a2 a3]]]. hyp.
 
-    (* [f o i] is equal to c on Pcard (V (S k)) m. *)
+    (* [f o i] is equal to c on Pcard (V (S k)) n. *)
     assert (Vf : forall k
       (X : Pcard (V (S k)) n), f (i (bV k) (VSV_b k) X) = c).
     intros k X. case_eq (cid (b_spec k)); intros a [a1 [a2 a3]] e.
