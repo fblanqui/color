@@ -57,6 +57,7 @@ cp -r color $dir
 rm -rf $dir/Coccinelle $dir/Conversion/Coccinelle.v
 head -n -3 color/README > $dir/README
 create_tar_gz
+md5sum $cwd/$dir.tar.gz
 
 # CoLoR with Coccinelle
 
