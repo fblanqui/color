@@ -41,6 +41,8 @@ In ~/rewriting-svn/web:
 - make
 - make install
 
+After pull request approval, send a mail to color@inria.fr.
+
 About compilation:
 ------------------
 
