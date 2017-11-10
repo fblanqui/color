@@ -12,13 +12,15 @@ How to create a new release:
 ----------------------------
 
 In ~/color-svn:
-- Check that every thing compiles (make clean-all && make)
-- Update CHANGES and INSTALL
-- Commit your changes
+- check that every compiles: make clean-all && make && make doc
+- update CHANGES and INSTALL
+- make install-doc
+- make install-dist
+- commit your changes
 - ./create_dist $new_version_name (e.g. 1.4.0)
-- Check that color.$new_version_name compiles
+  (it computes md5sum color.$new_version_name)
+- check that color.$new_version_name compiles
 - add color.$new_version_name on https://gforge.inria.fr/frs/?group_id=467
-- md5sum color.$new_version_name
 
 In ~/src/opam-coq-archive-fblanqui-git:
 - update-from-remote
@@ -33,6 +35,11 @@ In ~/src/opam-coq-archive-fblanqui-git:
 
 On https://github.com/fblanqui/opam-coq-archive:
 - create a pull request
+
+In ~/rewriting-svn/web:
+- update color/index.html
+- make
+- make install
 
 About compilation:
 ------------------
