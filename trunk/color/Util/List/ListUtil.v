@@ -15,7 +15,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil EqUtil RelUtil BoolUtil NatUtil.
 
-From Coq Require Import Setoid SetoidList.
+From Coq Require Import Setoid SetoidList FunInd.
 From Coq Require Export List.
 From Coq Require Program.
 

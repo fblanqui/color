@@ -1,5 +1,6 @@
 From Coq Require Import List.
 From Coq Require Import Bool.
+From Coq Require Import FunInd.
 From CoLoR Require Import weaved_relation.
 From CoLoR Require Import closure.
 From CoLoR Require term_spec.

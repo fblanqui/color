@@ -119,7 +119,7 @@ Module NSemiRing := SemiRing NSemiRingT.
 (***********************************************************************)
 (** BigN natural numbers as a semi-ring *)
 
-From Coq Require Import BigN.
+From Bignums Require Import BigN.
 
 Module BigNat_Eqset <: Eqset.
   Definition A := bigN.
@@ -222,7 +222,7 @@ Module ZSemiRing := SemiRing ZSemiRingT.
 (***********************************************************************)
 (** BigZ integers as a semi-ring *)
 
-From Coq Require Import BigZ.
+From Bignums Require Import BigZ.
 
 Module BigInt_Eqset <: Eqset.
   Definition A := bigZ.

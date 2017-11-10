@@ -16,6 +16,9 @@ VFILES := $(shell find . -name \*.v | grep -v .\# | sed -e 's|^./||g')
 default: Makefile.coq
 	$(MAKECOQ)
 
+time: Makefile.coq
+	COQC=./time_coqc make
+
 config Makefile.coq:
 	echo -R . $(LIBNAME) $(VFILES) > _CoqProject
 	coq_makefile -f _CoqProject > Makefile.coq
@@ -28,11 +31,11 @@ clean:
 clean-dep:
 	rm -f `find . -name \*.v.d`
 
-clean-all: clean
-	rm -f Makefile.coq _CoqProject `find . -name \*.time`
+clean-all: clean clean-doc clean-dep
+	rm -f Makefile.coq _CoqProject stat_time.log `find . -name \*.time`
 
 clean-doc:
-	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html
+	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html doc/coqdoc.css
 
 tags:
 	coqtags $(VFILES)

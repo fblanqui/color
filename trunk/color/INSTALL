@@ -2,7 +2,7 @@ Compilation and installation procedure using OPAM
 -------------------------------------------------
 
 Requirements:
-- OPAM version 1.2 or later (https://opam.ocaml.org/)
+- OPAM version 1.2.2 or later (https://opam.ocaml.org/)
 
 Procedure:
 - step 1/2: opam repo add coq-released https://coq.inria.fr/opam/released
@@ -22,9 +22,10 @@ Self compilation and installation
 
 Requirements:
 - UNIX-like operating system (including Cygwin)
-- GNU find version 4.4.2 (http://www.gnu.org/software/findutils/findutils.html)
-- GNU make version 3.81 (http://www.gnu.org/software/make/)
-- Coq version 8.6 (http://coq.inria.fr/)
+- GNU find version 4.7.0 (http://www.gnu.org/software/findutils/findutils.html)
+- GNU make version 4.1 (http://www.gnu.org/software/make/)
+- Coq version 8.7 (http://coq.inria.fr/)
+- coq-bignums 8.7 (`opam install coq-bignums`)
 
 Procedure for installing CoLoR in Coq default directory for user contributions:
 - step 1/2: make [-j N]
@@ -46,5 +47,5 @@ Procedure for compiling the TAGS file:
 - step 1/1: make tags
 This requires 'coqtags' from ProofGeneral (http://proofgeneral.inf.ed.ac.uk/).
 
-If you encounter any problem, send a mail to Frederic Blanqui
+If you encounter any problem, send a mail to Frédéric Blanqui
 (firstname.name@inria.fr).

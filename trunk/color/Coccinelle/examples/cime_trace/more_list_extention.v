@@ -4,7 +4,7 @@ From CoLoR Require Import list_set.
 From Coq Require Import List.
 From Coq Require Import Omega.
 From Coq Require Recdef.
-
+From Coq Require Import FunInd.
 
 Module Type S.
   Parameter A : Type.
