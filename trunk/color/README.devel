@@ -8,6 +8,32 @@ Guideline for CoLoR developers
 - If you bring important modifications to an already existing file,
 add in the header your name with the modification date yy-mm-dd.
 
+How to create a new release:
+----------------------------
+
+In ~/color-svn:
+- Check that every thing compiles (make clean-all && make)
+- Update CHANGES and INSTALL
+- Commit your changes
+- ./create_dist $new_version_name (e.g. 1.4.0)
+- Check that color.$new_version_name compiles
+- add color.$new_version_name on https://gforge.inria.fr/frs/?group_id=467
+- md5sum color.$new_version_name
+
+In ~/src/opam-coq-archive-fblanqui-git:
+- update-from-remote
+- cd released/packages/coq-color
+- cp coq-color.$old_version_name coq-color.$new_version_name
+- cd coq-color.$new_version_name
+- update descr, opam and url
+- nettoie
+- cd ..
+- add coq-color.$new_version_name
+- ci -m "$comment"
+
+On https://github.com/fblanqui/opam-coq-archive:
+- create a pull request
+
 About compilation:
 ------------------
 
