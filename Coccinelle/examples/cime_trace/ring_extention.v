@@ -3,6 +3,7 @@ From Coq Require Import ZArithRing.
 From Coq Require Import Ring_polynom.
 From Coq Require Import Bool.
 From Coq Require Import List.
+From Coq Require Import FunInd.
 From CoLoR Require Import closure.
 
 Function  all_coef_pos (p:Pol Z) : bool :=

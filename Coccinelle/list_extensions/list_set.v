@@ -20,6 +20,7 @@ From CoLoR Require Import decidable_set.
 From CoLoR Require Import more_list.
 From CoLoR Require Import list_permut.
 From Coq Require Import Arith.
+From Coq Require Import FunInd.
 
 Module Type S.
 

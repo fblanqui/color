@@ -24,6 +24,7 @@ From CoLoR Require Import list_permut.
 From CoLoR Require Import ordered_set.
 From Coq Require Import Arith.
 From Coq Require Import Morphisms.
+From Coq Require Import FunInd.
 
 Ltac dummy a b a_eq_b :=
 assert (Dummy : a = b); [exact a_eq_b | clear a_eq_b; rename Dummy into a_eq_b].

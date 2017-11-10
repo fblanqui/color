@@ -77,11 +77,11 @@ subst b2; apply r_step; assumption.
 apply t_clos; apply t_step; assumption.
 destruct H1 as [H1 | H1].
 subst b2; assumption.
-destruct IHH2 as [b2 H3 | b2 b3 H3].
+destruct IHH2 as [b2 _ | b2 b3 H3].
 apply t_clos; apply t_step; assumption.
 apply t_clos; apply t_trans with b2; assumption.
 
-intro H; destruct H as [a1 H | a1 a2 H].
+intro H; destruct H as [a1 _ | a1 a2 H].
 apply t_step; left; apply eq_refl.
 apply (@trans_incl _ R); trivial.
 right; assumption.

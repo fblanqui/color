@@ -1275,7 +1275,7 @@ Proof.
   intros x y xRSy. induction xRSy as [ | x y z xRSy yRSz]. 
   exists x. split; refl.
   destruct IHyRSz as [m [ym mz]].
-  destruct ym as [m | m n o mn no oz].
+  destruct ym as [m | m n o mn no _].
   induction xRSy as [xRy | xSy].
   exists m. split; trivial. apply rt1_trans with m.
   exists x. split; trivial. refl. refl.
