@@ -1,4 +1,4 @@
-This is the CoLoR library version 1.2.0.
+This is the CoLoR library version 1.4.0.
 Check http://color.inria.fr/ for more recent versions.
 
 CoLoR is a library for the Coq proof assistant/checker
@@ -63,8 +63,7 @@ INSTALL: this file describes a compilation procedure.
 THANKS: thanks to various people for their comments or help.
 CHANGES: this file briefly describes the main changes between two releases.
 
-The development version is available under SVN on
-http://gforge.inria.fr/projects/color/.
+The development version is available on https://github.com/fblanqui/color .
 
 The following scripts provide some statistics:
 
