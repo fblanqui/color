@@ -13,7 +13,7 @@ How to create a new release:
 
 In ~/color-svn:
 - check that every compiles: make clean-all && make && make doc
-- update CHANGES and INSTALL
+- update CHANGES, README and INSTALL
 - make install-doc
 - make install-dist
 - commit your changes
