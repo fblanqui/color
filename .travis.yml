@@ -1,0 +1,57 @@
+dist: trusty
+sudo: required
+language: c
+cache:
+  apt: true
+  directories:
+  - $HOME/.opam
+addons:
+  apt:
+    sources:
+    - avsm
+    packages:
+    - opam
+    - aspcud
+env:
+  global:
+  - NJOBS=2
+  # system is == 4.02.3
+  - COMPILER="system"
+  # Main test targets
+  matrix:
+  - TEST_TARGET="v8.7"
+  - TEST_TARGET="master"
+
+# matrix:
+#   allow_failures:
+  # - env: TEST_TARGET="v8.5"
+
+install:
+# Opam
+- opam init -j ${NJOBS} --compiler=${COMPILER} -n -y
+- eval $(opam config env)
+- opam config var root
+- opam install -j ${NJOBS} -y ocamlfind camlp5 ${EXTRA_OPAM}
+- opam list
+# Coq
+- echo 'Installing Coq...' && echo -en 'travis_fold:start:coq.build\\r'
+- git clone --depth 1 -b ${TEST_TARGET} https://github.com/coq/coq.git ${HOME}/coq-${TEST_TARGET}
+- cd ${HOME}/coq-${TEST_TARGET}
+- ./configure -native-compiler no -local -coqide no
+- make -j ${NJOBS}
+- cd -
+- echo -en 'travis_fold:end:coq.build\\r'
+# BigNums
+- echo 'Installing BigNums...' && echo -en 'travis_fold:start:bign.build\\r'
+- export PATH=${HOME}/coq-${TEST_TARGET}/bin:$PATH
+- git clone --depth 1 -b ${TEST_TARGET} https://github.com/coq/bignums.git ${HOME}/bign-${TEST_TARGET}
+- cd ${HOME}/bign-${TEST_TARGET}
+- make -j ${NJOBS} && make install
+- cd -
+- echo -en 'travis_fold:end:bign.build\\r'
+
+script:
+- echo 'Building CoLoR...' && echo -en 'travis_fold:start:color.build\\r'
+- export PATH=${HOME}/coq-${TEST_TARGET}/bin:$PATH
+- make -j ${NJOBS}
+- echo -en 'travis_fold:end:color.build\\r'
