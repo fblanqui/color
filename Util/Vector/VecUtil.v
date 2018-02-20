@@ -1289,8 +1289,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** ** Predicate saying that every element of a vector satisfies some
-predicate [P]. *)
+(** ** Predicate saying that every element of a vector satisfies some predicate [P]. *)
 
 Section Vforall.
 
@@ -1448,8 +1447,7 @@ Lemma Vmap_eq_ext_id : forall (A : Type) (f : A->A), (forall a, f a = a) ->
 Proof. intros. rewrite <- Vmap_id. apply Vmap_eq_ext. hyp. Qed.
 
 (***********************************************************************)
-(** ** Predicate saying that the elements of two vectors are pairwise
-in relation. *)
+(** ** Predicate saying that the elements of two vectors are pairwise in relation. *)
 
 Section Vforall2.
 
@@ -1680,8 +1678,7 @@ Section Vforall2_map.
 End Vforall2_map.
 
 (***********************************************************************)
-(** ** Predicate saying that some element of a vector satisfies some
-predicate [P]. *)
+(** ** Predicate saying that some element of a vector satisfies some predicate [P]. *)
 
 Section Vexists.
 
@@ -1980,7 +1977,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** ** Convert a list intro a vector of options of fixed length. *)
+(** ** Convert a list into a vector of options of fixed length. *)
 
 Fixpoint vec_opt_of_list A m (l : list A) : vector (option A) m :=
   match m with
@@ -2003,8 +2000,7 @@ Proof.
 Qed.
 
 (***********************************************************************)
-(** ** Leibniz equality on [vector A n] is decidable if Leibniz
-equality on [A] is decidable. *)
+(** ** Leibniz equality on [vector A n] is decidable if Leibniz equality on [A] is decidable. *)
 
 Section eq_dec.
 
@@ -2127,8 +2123,7 @@ Arguments beq_vec_ok_in1 [A beq n v] _ [p w] _.
 Arguments beq_vec_ok_in2 [A beq n v] _ [w] _.
 
 (***********************************************************************)
-(** ** Function applying a function [f] on the first element of a
-non-empty vector, or some default value if the vector is empty. *)
+(** ** Function applying a function [f] on the first element of a non-empty vector, or some default value if the vector is empty. *)
 
 Section map_first.
 
@@ -2229,8 +2224,8 @@ Arguments Vsig_of_forall [A P n v] _.
 Arguments Vmap_proj1_sig [A P n v] _.
 
 (****************************************************************************)
-(** ** Build a vector of [option A] of size [n] from the elements (if
-they exist) of an arbitrary vector [xs] of size [p] whose positions
+(** ** Build a vector of [option A] of size [n] from the elements
+(if they exist) of an arbitrary vector [xs] of size [p] whose positions
 are given by a vector [ks] of natural numbers of size [n]. *)
 
 Section Vopt_filter.
