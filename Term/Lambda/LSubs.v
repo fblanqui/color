@@ -335,8 +335,7 @@ Module Make (Export L : L_Struct).
   Qed.
 
 (****************************************************************************)
-(** ** Syntactic equality of two substitutions
-on some finite set of variables *)
+(** ** Syntactic equality of two substitutions on some finite set of variables *)
 
   Notation seq := (subs_rel Logic.eq).
 
