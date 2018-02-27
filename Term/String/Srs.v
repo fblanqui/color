@@ -29,7 +29,7 @@ Definition beq_string_ok := beq_list_ok (@beq_symb_ok Sig).
 
 Record rule : Type := mkRule { lhs : string; rhs : string }.
 
-Fixpoint beq_rule (a1 a2 : rule) : bool :=
+Definition beq_rule (a1 a2 : rule) : bool :=
   let (l1,r1) := a1 in let (l2,r2) := a2 in
     beq_string l1 l2 && beq_string r1 r2.
 
