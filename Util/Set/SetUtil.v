@@ -10,7 +10,8 @@ See the COPYRIGHTSGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From Coq Require Import Basics Morphisms Setoid.
-From CoLoR Require Import LogicUtil RelUtil FunUtil ListUtil NatUtil.
+From CoLoR Require Import LogicUtil RelUtil FunUtil ListUtil NatUtil
+     ClassicUtil BoundNat.
 
 (****************************************************************************)
 (** We assume given a type A for elements. *)
@@ -292,8 +293,7 @@ Section S.
   Lemma inj_elts_subset P Q (h : P [<=] Q) : injective (elts_subset h).
 
   Proof.
-    intros [x_val x] [y_val y] e.
-    From CoLoR Require Import ClassicUtil. apply sig_eq in e. apply sig_eq. hyp.
+    intros [x_val x] [y_val y] e. apply sig_eq in e. apply sig_eq. hyp.
   Qed.
 
   Definition elts_equiv P Q : P [=] Q -> elts P -> elts Q.
@@ -337,8 +337,6 @@ Section S.
     intro x. fo. destruct (in_app_or H); fo.
     apply in_appl. hyp. apply in_appr. hyp.
   Qed.
-
-  From CoLoR Require Import BoundNat.
 
   Lemma of_map_L P n (f : N n -> elts P) :
     surjective f -> P [=] of_list (map (elt_val o f) (L n)).
