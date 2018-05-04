@@ -10,7 +10,7 @@ prefix, suffix, cut, elimination of doubles, etc.
 Set Implicit Arguments.
 
 From Coq Require Import Le.
-From CoLoR Require Import ListUtil ListNodup LogicUtil.
+From CoLoR Require Import ListUtil ListNodup LogicUtil RelMidex.
 
 (***********************************************************************)
 (** prefix *)
@@ -183,8 +183,6 @@ Section shrink.
     unfold incl. intros. simpl in H. simpl. case (eq_dec a a0); intro.
     subst a0. auto. right. apply IHl. destruct H. contr. exact H.
   Qed.
-
-  From CoLoR Require Import RelMidex.
 
   Lemma length_shrink : forall l l' : list A,
     incl l l' -> length (shrink l) <= length l'.
