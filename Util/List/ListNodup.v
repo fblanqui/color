@@ -11,6 +11,7 @@ Lists without duplicated elements
 Set Implicit Arguments.
 
 From CoLoR Require Import ListUtil NatUtil RelMidex LogicUtil.
+From CoLoR Require ListDec BoolUtil.
 
 Section S.
 
@@ -396,7 +397,7 @@ Section S.
 (***********************************************************************)
 (** Boolean function deciding nodup. *)
 
-  From CoLoR Require Import ListDec BoolUtil.
+  Import ListDec BoolUtil.
 
   Variables (beq : A -> A -> bool)
             (beq_ok : forall x y, beq x y = true <-> x = y).
