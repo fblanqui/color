@@ -12,7 +12,9 @@ Set Implicit Arguments.
 
 From CoLoR Require Export AContext ASubstitution.
 From CoLoR Require Import ARelation ListNodup LogicUtil VecUtil RelUtil
-     ListUtil SN BoolUtil EqUtil NatUtil.
+     ListUtil SN BoolUtil EqUtil NatUtil ListMax VecOrd.
+From CoLoR Require ListDec.
+From Coq Require Import Morphisms Max.
 
 Section basic_definitions.
 
@@ -190,8 +192,6 @@ Ltac redtac := repeat
 
 (***********************************************************************)
 (** monotony properties *)
-
-From Coq Require Import Morphisms.
 
 Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
@@ -388,13 +388,11 @@ Section S.
 (***********************************************************************)
 (** preservation of variables under reduction *)
 
-  From CoLoR Require Import ListDec.
-
   Definition rules_preserve_vars (R : rules) :=
     forall l r, In (mkRule l r) R -> vars r [= vars l.
 
   Definition brules_preserve_vars (R : rules) :=
-    forallb (fun x => incl beq_nat (vars (rhs x)) (vars (lhs x))) R.
+    forallb (fun x => ListDec.incl beq_nat (vars (rhs x)) (vars (lhs x))) R.
 
   Lemma brules_preserve_vars_ok :
     forall R, brules_preserve_vars R = true <-> rules_preserve_vars R.
@@ -402,9 +400,9 @@ Section S.
   Proof.
     intro R. unfold rules_preserve_vars, brules_preserve_vars.
     rewrite forallb_forall. split.
-    intros h l r hlr. rewrite <- incl_ok, <- (h _ hlr). refl.
+    intros h l r hlr. rewrite <- ListDec.incl_ok, <- (h _ hlr). refl.
     apply beq_nat_ok.
-    intros h [l r] hlr. rewrite incl_ok. apply h. hyp. apply beq_nat_ok.
+    intros h [l r] hlr. rewrite ListDec.incl_ok. apply h. hyp. apply beq_nat_ok.
   Qed.
 
   Lemma rules_preserve_vars_cons : forall a R, rules_preserve_vars (a :: R)
@@ -442,8 +440,6 @@ Section S.
       unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
       refl. trans (vars y); hyp.
     Qed.
-
-    From CoLoR Require Import ListMax.
 
     Lemma red_maxvar : forall t u, red R t u -> maxvar u <= maxvar t.
 
@@ -500,8 +496,6 @@ Section S.
 (***********************************************************************)
 (** biggest variable in a list of rules *)
 
-  From Coq Require Import Max.
-
   Definition maxvar_rule (a : rule) :=
     let (l,r) := a in max (maxvar l) (maxvar r).
 
@@ -550,8 +544,6 @@ Section S.
 (** rewriting vectors of terms *)
 
   Section vector.
-
-    From CoLoR Require Import VecOrd.
 
     Variable R : rules.
 
@@ -947,7 +939,7 @@ Ltac is_var_lhs := cut False;
 Ltac is_var_rhs := cut False;
   [tauto | eapply is_notvar_rhs_false; ehyp].
 
-Ltac incl_rule Sig := incl (@beq_rule_ok Sig).
+Ltac incl_rule Sig := ListDec.incl (@beq_rule_ok Sig).
 
 Ltac set_Sig_to x :=
   match goal with
