@@ -121,7 +121,7 @@ Section S.
   Proof.
     intros. simpl. apply args_eq. apply Veq_nth; intros j Hj.
     rewrite Vnth_cast, Vnth_app. case (le_gt_dec i j); intros.
-    2:{unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.}
+    2:{ unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl. }
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
     unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
     apply Vnth_eq. omega.
