@@ -142,7 +142,7 @@ Section Matching.
         try discr.
       by apply Hfun; auto; rewrite (proj1 beq_symb_ok Hfg).
       (* nil *)
-      intros nt ts θ θ'; destruct ts as [x|t nt ts]; try discr.
+      intros nt ts θ θ'; destruct ts as [|t nt ts]; try discr.
       by inversion_clear 1; apply Hnil.
       (* cons *)
       intros u nu us Hu Hus nt ts θ θ'.
