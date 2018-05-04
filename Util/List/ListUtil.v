@@ -224,10 +224,10 @@ Section incl.
     do 2 destruct H. contr.
     (* cons *)
     split; intro.
-    Focus 2. do 3 destruct H.
-    subst. intro. apply H0. apply H. left. refl.
-    intro. absurd (In x m). hyp. apply H1. right. hyp.
-    Focus 1. case (In_dec eqA_dec a m); intro.
+    2:{ do 3 destruct H.
+        subst. intro. apply H0. apply H. left. refl.
+        intro. absurd (In x m). hyp. apply H1. right. hyp. }
+    case (In_dec eqA_dec a m); intro.
     assert (~l[=m). intro. apply H. unfold incl. intro b. simpl. intuition.
     rewrite IHl in H0. do 2 destruct H0. exists x. tauto.
     exists a. tauto.
