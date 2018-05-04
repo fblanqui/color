@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil VecUtil RelUtil NatUtil.
+From CoLoR Require Import LogicUtil VecUtil RelUtil NatUtil SN.
 
 (***********************************************************************)
 (** * Component-wise extension to vectors on [A] of a relation on [A]. *)
@@ -191,8 +191,6 @@ Section S.
 
 (***********************************************************************)
 (** Properties of [Vrel1] wrt termination. *)
-
-  From CoLoR Require Import SN.
 
   Lemma Vforall_SN_rel1 : forall n (v : vector A n),
     Vforall (SN R) v -> SN (Vrel1 R) v.
