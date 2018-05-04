@@ -11,7 +11,7 @@ Inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms List Basics Omega.
+From Coq Require Import Morphisms List Basics Omega Wellfounded.
 From CoLoR Require Import LogicUtil RelUtil.
 
 (***********************************************************************)
@@ -288,8 +288,6 @@ Section symprod.
   Variable (A B : Type) (gtA : relation A) (gtB : relation B).
 
   Notation gt := (symprod gtA gtB).
-
-  From Coq Require Import Wellfounded.
 
   Lemma SN_symprod : forall x, SN gtA x -> forall y, SN gtB y -> SN gt (x,y).
 
