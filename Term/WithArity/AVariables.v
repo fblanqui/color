@@ -297,8 +297,6 @@ Qed.
 (***********************************************************************)
 (* preservation of variables under reduction *)
 
-From CoLoR Require Import ATrs.
-
 Notation rule := (rule Sig). Notation rules := (rules Sig).
 
 Definition brule_preserve_vars (a : rule) :=
