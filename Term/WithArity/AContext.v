@@ -121,7 +121,7 @@ Section S.
   Proof.
     intros. simpl. apply args_eq. apply Veq_nth; intros j Hj.
     rewrite Vnth_cast, Vnth_app. case (le_gt_dec i j); intros.
-    Focus 2. unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.
+    2:{unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.}
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
     unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
     apply Vnth_eq. omega.
@@ -357,12 +357,12 @@ Section S.
     (* Fun *)
     split; rewrite orb_eq, beq_term_ok; intros. destruct H0.
     subst. refl. rewrite (bVexists_ok_Vin (subterm_eq t)) in H0.
-    Focus 2. intros. pattern x. apply Vforall_in with (v:=v). apply H. hyp.
+    2:{ intros. pattern x. apply Vforall_in with (v:=v). apply H. hyp. }
     rewrite Vexists_eq in H0. decomp H0. apply subterm_eq_trans with x.
     hyp. apply subterm_strict. apply subterm_fun. hyp.
     destruct H0. destruct x. auto. right.
     rewrite (bVexists_ok_Vin (subterm_eq t)).
-    Focus 2. intros. pattern x0. apply Vforall_in with (v:=v). apply H. hyp.
+    2:{ intros. pattern x0. apply Vforall_in with (v:=v). apply H. hyp. }
     rewrite Vexists_eq. exists (fill x t). split.
     simpl in H0. Funeqtac. rewrite H1, Vin_cast. apply Vin_app_cons.
     exists x. refl.
