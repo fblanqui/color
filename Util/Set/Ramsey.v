@@ -47,6 +47,55 @@ Section S.
 (****************************************************************************)
 (** Ramsey theorem with 2 colors only. *)
 
+  (* Let [g] be the function that, given a function f from [Pcard P 1]
+  to bool, maps every element of [P] to [f (singleton x)]. *)
+  Definition g (P : Pinf W) (f : Pcard P 1 -> bool) : elts P -> bool.
+
+  Proof.
+    intros [x_val x]. apply f. ex (Pf_singleton x_val). split.
+    intro y. simpl. unfold impl. fo. subst. hyp. apply card_singleton.
+  Defined.
+
+  (* Let [i] be the function which maps [X] in [Pcard V n] to [add a X]
+  in [Pcard P (S n)] provided that [a] is in [P] but not in [V]. *)
+  Definition i n P (Q : Pinf P) (U : Pinf Q) V (a : A)
+    (aU : mem a U) (VU_a : V [<=] rem a U) : Pcard V n -> Pcard P (S n).
+
+  Proof.
+    intro X. ex (Pf_add a X). split.
+    simpl. destruct X as [X [XV cXm]]; simpl. rewrite XV, VU_a, add_rem.
+    destruct U as [U [UQ Uinf]]; simpl. destruct Q as [Q [QP Qinf]]; simpl.
+    trans Q; hyp. apply eq_dec. hyp.
+    rewrite card_add. destruct X as [X [XV cXm]]; simpl. rewrite cXm.
+    destruct (dec (mem a X)). fo. omega.
+  Defined.
+
+  Arguments i [n P Q U V a] _ _ _.
+
+  Lemma i_eq n P (Q : Pinf P) (U : Pinf Q) V (a : A)
+        (VU_a : V [<=] rem a U) (aU : mem a U) (X : Pcard V n) :
+    i aU VU_a X [=] add a X.
+
+  Proof. refl. Qed.
+
+  (* Let j be the function mapping every X in [Pcard T' n] to (add a X)
+  in [Pcard P (S n)]. *) 
+  Definition j n (P : Pinf W) a (T' : Pinf W) :
+    mem a P -> ~mem a T' -> T' [<=] P -> Pcard T' n -> Pcard P (S n).
+
+  Proof.
+    intros aP naT TP [X [XT cXn]]. ex (Pf_add a X). split.
+    simpl. intro x. unfold impl, mem, add. fo. subst. fo.
+    rewrite card_add, cXn. destruct (dec (mem a X)). fo. omega.
+  Defined.
+
+  Arguments j n [P a T'] _ _ _ _.
+
+  Lemma j_eq n (P : Pinf W) a (T' : Pinf W) (aP : mem a P) (naT : ~mem a T')
+        (TP : T' [<=] P) X : j n aP naT TP X [=] add a X.
+
+  Proof. destruct X as [X [XT cXn]]. refl. Qed.
+
   Theorem ramsey_with_2_colors : forall n (P : Pinf W)
     (f : Pcard P (S n) -> bool), Proper (Pcard_equiv ==> eq) f ->
     exists b (Q : Pinf P), forall X : Pcard Q (S n), f (Pcard_subset Q X) = b.
@@ -56,17 +105,6 @@ Section S.
     induction n; intros P f f_eq.
 
     (* Case n=0. *)
-
-(* begin hide *)
-(* Let [g] be the function that, given a function f from [Pcard P 1]
-  to bool, maps every element of [P] to [f (singleton x)]. *)
-Definition g (P : Pinf W) (f : Pcard P 1 -> bool) : elts P -> bool.
-
-Proof.
-  intros [x_val x]. apply f. ex (Pf_singleton x_val). split.
-  intro y. simpl. unfold impl. fo. subst. hyp. apply card_singleton.
-Defined.
-(* end hide *)
 
     (* We apply the infinite pigeon hole principle. *) 
     destruct (IPHP_with_2_holes P (g P f)) as [b [Q h]].
@@ -78,30 +116,6 @@ Defined.
 
     (* Case n>0. *)
     revert IHn P f f_eq. generalize (S n); clear n; intros n IH P f f_eq.
-
-(* begin hide *)
-(* Let [i] be the function which maps [X] in [Pcard V n] to [add a X]
-  in [Pcard P (S n)] provided that [a] is in [P] but not in [V]. *)
-Definition i n P (Q : Pinf P) (U : Pinf Q) V (a : A)
-  (aU : mem a U) (VU_a : V [<=] rem a U) : Pcard V n -> Pcard P (S n).
-
-Proof.
-  intro X. ex (Pf_add a X). split.
-  simpl. destruct X as [X [XV cXm]]; simpl. rewrite XV, VU_a, add_rem.
-  destruct U as [U [UQ Uinf]]; simpl. destruct Q as [Q [QP Qinf]]; simpl.
-  trans Q; hyp. apply eq_dec. hyp.
-  rewrite card_add. destruct X as [X [XV cXm]]; simpl. rewrite cXm.
-  destruct (dec (mem a X)). fo. omega.
-Defined.
-
-Arguments i [n P Q U V a] _ _ _.
-
-Lemma i_eq n P (Q : Pinf P) (U : Pinf Q) V (a : A)
-  (VU_a : V [<=] rem a U) (aU : mem a U) (X : Pcard V n) :
-  i aU VU_a X [=] add a X.
-
-Proof. refl. Qed.
-(* end hide *)
 
     (* Given Q in [Pinf P] and c, we consider the following relation
     on [Pinf Q]. *)
@@ -249,26 +263,6 @@ Proof. refl. Qed.
     destruct P as [P [PW Pinf]]; hyp.
     assert (Tinf : infinite T). unfold T. rewrite infinite_rem. hyp.
     set (T' := mk_Pinf TW Tinf).
-
-(* begin hide *)
-(* Let j be the function mapping every X in [Pcard T' n] to (add a X)
-in [Pcard P (S n)]. *) 
-Definition j n (P : Pinf W) a (T' : Pinf W) :
-  mem a P -> ~mem a T' -> T' [<=] P -> Pcard T' n -> Pcard P (S n).
-
-Proof.
-  intros aP naT TP [X [XT cXn]]. ex (Pf_add a X). split.
-  simpl. intro x. unfold impl, mem, add. fo. subst. fo.
-  rewrite card_add, cXn. destruct (dec (mem a X)). fo. omega.
-Defined.
-
-Arguments j n [P a T'] _ _ _ _.
-
-Lemma j_eq n (P : Pinf W) a (T' : Pinf W) (aP : mem a P) (naT : ~mem a T')
-  (TP : T' [<=] P) X : j n aP naT TP X [=] add a X.
-
-Proof. destruct X as [X [XT cXn]]. refl. Qed.
-(* end hide *)
 
     (* Properties of a and T. *)
     assert (aP : mem a P). rewrite UE, EP in aU. hyp.
