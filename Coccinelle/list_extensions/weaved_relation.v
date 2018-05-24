@@ -28,7 +28,7 @@ Lemma one_step_list_incl :
   forall l1 l2, one_step_list R1 l1 l2 -> one_step_list R2 l1 l2.
 Proof.
 intros A R1 R2 R1_in_R2.
-fix 1.
+fix one_step_list_incl 1.
 intros l1; case l1; clear l1.
 intros l2 H; inversion H.
 intros a1 l1 l2 H; inversion H as [b1 b2 l H1 | b k1 k2 Hk]; subst.
@@ -39,7 +39,7 @@ Qed.
 Lemma one_step_list_length_eq :
   forall A R (l1 l2 : list A), one_step_list R l1 l2 -> length l1 = length l2.
 Proof.
-intros A R; fix 1.
+intros A R; fix one_step_list_length_eq 1.
 intros l1; case l1; clear l1.
 intros l2 H; inversion H.
 intros a1 l1 l2 H; inversion H as [b1 b2 l H1 | b k1 k2 Hk]; subst.
@@ -66,7 +66,7 @@ Qed.
 Lemma acc_one_step_list_1 :
   forall A R (l : list A), (forall t, In t l -> Acc R t) -> Acc (one_step_list R) l.
 Proof.
-fix 3.
+fix acc_one_step_list_1 3.
 intros A R l; case l; clear l.
 intros _; apply Acc_intro; intros l' H; inversion H.
 intros a l Acc_l.
@@ -88,7 +88,7 @@ Qed.
 Lemma acc_one_step_list_2 :
  forall A R (l : list A), Acc (one_step_list R) l -> (forall t, In t l -> Acc R t). 
 Proof.
-fix 4.
+fix acc_one_step_list_2 4.
 intros A R l Acc_l t t_in_l; apply Acc_intro; intros s H.
 destruct (in_split t l t_in_l) as [l1 [l2 K]].
 apply (acc_one_step_list_2 A R (l1 ++ s :: l2)).
@@ -121,7 +121,7 @@ Qed.
 Lemma one_step_list_chop : 
   forall A R (k1 l1 k2 l2 : list A), length k1 = length k2 -> one_step_list R (k1 ++ l1) (k2 ++ l2) -> refl_trans_clos (one_step_list R) l1 l2.
 Proof.
-fix 3.
+fix one_step_list_chop 3.
 intros A R k1 l1 k2 l2 L H.
 destruct k1 as [ | a k1]; destruct k2 as [ | b k2].
 right; left; assumption.

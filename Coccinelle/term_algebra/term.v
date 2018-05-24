@@ -95,7 +95,7 @@ Proof.
 intro t; case t; clear t.
 intro v; reflexivity.
 intros f l; simpl; apply f_equal.
-revert l; fix 1.
+revert l; fix size_unfold 1.
 intro l; case l; clear l.
 reflexivity.
 intros t l; simpl; rewrite size_unfold; reflexivity.
@@ -150,14 +150,14 @@ Function var_list_list (l : list term) {struct l} : list variable :=
 
 Lemma var_list_list_app : forall l1 l2, var_list_list (l1 ++ l2) = (var_list_list l1) ++ var_list_list l2.
 Proof.
-fix 1; intros l1 l2; case l1; clear l1.
+fix var_list_list_app 1; intros l1 l2; case l1; clear l1.
 reflexivity.
 intros t1 l1; simpl; rewrite <- ass_app; rewrite var_list_list_app; reflexivity.
 Qed.
 
 Lemma in_var_list_list : forall l v, In v (var_list_list l) -> exists t, In t l /\ In v (var_list t).
 Proof.
-fix 1; intro l; case l; clear l.
+fix in_var_list_list 1; intro l; case l; clear l.
 intros v v_in_nil; contradiction.
 simpl; intros t l v v_in_tl; destruct (in_app_or _ _ _ v_in_tl) as [v_in_t | v_in_l].
 exists t; split; [left; apply eq_refl | assumption].
@@ -167,7 +167,7 @@ Qed.
 
 Lemma mem_var_list_list : forall l v, mem (@eq _) v (var_list_list l) -> exists t, In t l /\ mem (@eq _) v (var_list t).
 Proof.
-fix 1; intro l; case l; clear l.
+fix mem_var_list_list 1; intro l; case l; clear l.
 intros v v_in_nil; contradiction.
 simpl; intros t l v v_in_tl; rewrite <- mem_or_app in v_in_tl; destruct v_in_tl as [v_in_t | v_in_l].
 exists t; split; [left; apply eq_refl | assumption].
@@ -232,7 +232,7 @@ Proof.
 intros t1 t2; unfold direct_subterm; case t2; clear t2.
 intros a Abs; elim Abs.
 intros f l; rewrite (size_unfold (Term f l)).
-revert t1 l; clear f; fix 2.
+revert t1 l; clear f; fix size_direct_subterm 2.
 intros t1 l; case l; clear l; simpl.
 intro Abs; elim Abs.
 intros t l t1_in_tl; case t1_in_tl; clear t1_in_tl.
@@ -282,14 +282,14 @@ Function symb_list_list (l : list term) {struct l} : list symbol :=
 
 Lemma symb_list_list_app : forall l1 l2, symb_list_list (l1 ++ l2) = (symb_list_list l1) ++ symb_list_list l2.
 Proof.
-fix 1; intros l1 l2; case l1; clear l1.
+fix symb_list_list_app 1; intros l1 l2; case l1; clear l1.
 reflexivity.
 intros t1 l1; simpl; rewrite <- ass_app; rewrite symb_list_list_app; reflexivity.
 Qed.
 
 Lemma in_symb_list_list : forall l f, In f (symb_list_list l) -> exists t, In t l /\ In f (symb_list t).
 Proof.
-fix 1; intro l; case l; clear l.
+fix in_symb_list_list 1; intro l; case l; clear l.
 intros v v_in_nil; contradiction.
 simpl; intros t l v v_in_tl; destruct (in_app_or _ _ _ v_in_tl) as [v_in_t | v_in_l].
 exists t; split; [left; apply eq_refl | assumption].
@@ -310,7 +310,7 @@ Lemma symb_in_term_list_app :
   forall f l1 l2, symb_in_term_list f (l1 ++ l2) = 
                      orb (symb_in_term_list f l1) (symb_in_term_list f l2).
 Proof.
-fix 2.
+fix symb_in_term_list_app 2.
 intros f l1 l2; case l1; clear l1; simpl.
 reflexivity.
 intros t l1; rewrite <- Bool.orb_assoc.
@@ -324,7 +324,7 @@ Proof.
 intros f l s g s_in_l g_in_s; rewrite symb_in_term_unfold.
 case (eq_symb_bool g f).
 reflexivity.
-simpl; revert l s_in_l; fix 1.
+simpl; revert l s_in_l; fix symb_in_direct_subterm 1.
 intro l; case l; clear l.
 intro Abs; elim Abs.
 simpl In; intros t l s_in_tl; case s_in_tl; clear s_in_tl.
@@ -355,7 +355,7 @@ Fixpoint eq_bool (t1 t2 :term) : bool :=
    end.
 
 Lemma eq_bool_ok : forall t1 t2, match eq_bool t1 t2 with true => t1 = t2 | false => t1<> t2 end.
-fix 1.
+fix eq_bool_ok0 1.
 intro t1; case t1; [intro v1 | intros f1 l1]; (intro t2; case t2; [intro v2 | intros f2 l2]); simpl.
 generalize (X.eq_bool_ok v1 v2); case (eq_var_bool v1 v2).
 intros v1_eq_v2; rewrite v1_eq_v2; reflexivity.
@@ -489,7 +489,7 @@ Definition term_rec3 :
 Proof.
 
 intros Hv Halg. 
-fix 1.
+fix term_rec3 1.
 intro t;case t.
 exact Hv.
 intro a.
@@ -710,7 +710,7 @@ Lemma subst_comp_is_subst_comp_aux2 :
   | None => find eq_var_bool v sigma2
   end.
 Proof.
-fix 2.
+fix subst_comp_is_subst_comp_aux2 2.
 intros v sigma1 sigma2; case sigma1; clear sigma1.
 reflexivity.
 intros p sigma; case p; clear p; intros v1 a1; simpl.
@@ -975,7 +975,7 @@ Qed.
 Lemma subterm_at_pos_dec :
   forall t s, {p : list nat | subterm_at_pos t p = Some s}+{forall p, subterm_at_pos t p <> Some s}.
 Proof.
-fix 1.
+fix subterm_at_pos_dec 1.
 intros t; case t; clear t.
 intros x s; case s; clear s; [intro x'| intros f' l'].
 generalize (X.eq_bool_ok x x'); case (eq_var_bool x x').
@@ -1007,7 +1007,7 @@ intro t_in_l; exact t_in_l.
 assert (IH' : forall s, {n :nat & {t : term & {p | (nth_error l n) = Some t /\ subterm_at_pos t p = Some s}}} + 
                         {(forall t, In t l -> forall p, subterm_at_pos t p <> Some s)}).
 clear -IH.
-revert l IH; fix 1.
+revert l IH; fix subterm_at_pos_dec 1.
 intro l; case l; clear l.
 intros _ s; right; intros t Abs; elim Abs.
 intros t l IH s.
@@ -1158,7 +1158,7 @@ Qed.
 Lemma symb_in_subterm :
   forall f s t p, subterm_at_pos t p = Some s -> symb_in_term f s = true -> symb_in_term f t = true.
 Proof.
-fix 4.
+fix symb_in_subterm 4.
 intros f s t p; case p; clear p; simpl.
 intro H; injection H; clear H; intro H; rewrite H; intro H'; exact H'.
 intros n p; case t; clear t.
@@ -1241,7 +1241,7 @@ Qed.
 Lemma well_formed_subterm :
   forall t p s, well_formed t -> subterm_at_pos t p = Some s -> well_formed s.
 Proof.
-fix 2; intros t p; case p; clear p.
+fix well_formed_subterm 2; intros t p; case p; clear p.
 intros s Wt Sub; injection Sub; intros; subst; assumption.
 intros i p s; simpl; case t; clear t.
 intros; discriminate.
@@ -1534,7 +1534,7 @@ Lemma remove_garbage_subst :
                                      sigma' = tau ++ (x,val) :: tau' ++ (y,val') :: tau'' ->
                                      x <> y)}.
 Proof.
-fix 1.
+fix remove_garbage_subst 1.
 intro sigma; case sigma; clear sigma.
 exists nil; repeat split.
 intros x val Abs; elim Abs.
@@ -1655,7 +1655,7 @@ end.
 Lemma subst_rest_ok :
   forall vars sigma v, In v vars -> apply_subst (subst_rest vars sigma) (Var v) = apply_subst sigma (Var v).
 Proof.
-fix 2.
+fix subst_rest_ok 2.
 intros vars sigma; case sigma; clear sigma.
 intros v _; apply eq_refl.
 intros p sigma; case p; clear p.
@@ -1676,7 +1676,7 @@ Qed.
 Lemma subst_rest_rest :
   forall vars sigma v t, In (v,t) (subst_rest vars sigma) -> In v vars.
 Proof.
-fix 2.
+fix subst_rest_rest 2.
 intros vars sigma; case sigma; clear sigma.
 intros v t; contradiction.
 intros p sigma; case p; clear p.
@@ -1695,7 +1695,7 @@ Qed.
 Lemma subst_rest_subst :
   forall vars sigma v t, In (v,t) (subst_rest vars sigma) -> In (v,t) sigma.
 Proof.
-fix 2.
+fix subst_rest_subst 2.
 intros vars sigma; case sigma; clear sigma.
 intros v t; contradiction.
 intros p sigma; case p; clear p.
@@ -1712,7 +1712,7 @@ Qed.
 Lemma subst_rest_subst_rest :
   forall vars sigma v t, In v vars -> In (v,t) sigma -> In (v,t) (subst_rest vars sigma).
 Proof.
-fix 2; intros vars sigma; case sigma; clear sigma.
+fix subst_rest_subst_rest 2; intros vars sigma; case sigma; clear sigma.
 intros; contradiction.
 intros p sigma; case p; clear p.
 simpl; intros x u v t x_in_vars.

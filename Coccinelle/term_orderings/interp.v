@@ -78,7 +78,7 @@ Module Interp(EQT:equational_theory_spec.EqTh).
 
    Definition measure : term -> A. 
    Proof.
-     fix 1.
+     fix measure 1.
      intros [a | f l].
      exact A0.
      assert (f_pol := Pols f).
@@ -148,7 +148,7 @@ Module Interp(EQT:equational_theory_spec.EqTh).
 
    Lemma measure_bounded : forall t, A0 <= measure t.
    Proof.
-     fix 1.
+     fix measure_bounded 1.
      intros [a | f l].
      simpl.
      apply Aop.(le_refl).
@@ -277,7 +277,7 @@ Lemma measure_monotonic :
 
    Definition marked_measure : term -> A.
    Proof.
-     fix 1.
+     fix marked_measure 1.
      intros [a|f l].
      exact (measure (Var a)).
      case (defined_dec f).

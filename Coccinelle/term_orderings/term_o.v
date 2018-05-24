@@ -235,7 +235,7 @@ absurd (f1 =f2); auto.
 intros H1 H2; absurd (f1 = f2); trivial; apply As.
 generalize (OF1.o_bool_ok f1 f2); rewrite H1; intro; assumption.
 generalize (OF1.o_bool_ok f2 f1); rewrite H2; intro; assumption.
-fix 1; intro l1; case l1; clear l1; [idtac | intros a1 l1].
+fix o_anti_sym 1; intro l1; case l1; clear l1; [idtac | intros a1 l1].
 intros l2 _; case l2; clear l2; [trivial | intros a2 l2]; intros; discriminate.
 intros l2; case l2; clear l2; [intros; discriminate | intros a2 l2 Hrec; simpl].
 generalize (T1.eq_bool_ok a1 a2); case (T1.eq_bool a1 a2); [intro a1_eq_a2 | intro a1_diff_a2];
@@ -263,7 +263,7 @@ intros f l l_le_l; simpl.
 generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); 
 [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
 rewrite <- o_term_list_is_o_term_list; assumption.
-fix 1; intro l; case l; clear l.
+fix o_proof 1; intro l; case l; clear l.
 intros _; reflexivity.
 intros t l H; simpl.
 generalize (T1.eq_bool_ok t t); case (T1.eq_bool t t); [intros _ | intro t_diff_t; apply False_rect; apply t_diff_t; reflexivity].
@@ -308,7 +308,7 @@ reflexivity.
 apply False_rect; apply f1_not_le_f3; apply Ts with f2.
 generalize (OF1.o_bool_ok f1 f2); rewrite f1_le_f2; intro; assumption.
 generalize (OF1.o_bool_ok f2 f3); rewrite f2_le_f3; intro; assumption.
-fix 1; intro l1; case l1; clear l1.
+fix o_proof 1; intro l1; case l1; clear l1.
 intros _ l2; case l2; clear l2.
 intros l3; case l3; clear l3.
 intros _ _; reflexivity.

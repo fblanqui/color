@@ -106,7 +106,7 @@ Function eq_bool (n m : nat) {struct n} : bool :=
   end.
 
 Lemma eq_bool_ok : forall a1 a2, match eq_bool a1 a2 with true => a1 = a2 | false => ~a1 = a2 end.
-fix 1.
+fix eq_bool_ok 1.
 intros [ | n] [ | m]; simpl.
 reflexivity.
 discriminate.
@@ -124,7 +124,7 @@ Function o_bool (n m : nat) {struct n} : bool :=
   end.
 
 Lemma o_bool_ok : forall a1 a2, match o_bool a1 a2 with true => o a1 a2 | false => ~ o a1 a2 end.
-unfold o; fix 1.
+unfold o; fix o_bool_ok 1.
 intros [ | n] [ | m]; simpl.
 apply le_n.
 apply le_O_n.

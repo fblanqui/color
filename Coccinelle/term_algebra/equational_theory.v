@@ -1082,7 +1082,7 @@ Qed.
 
   Lemma maxl_is_max : forall (A : Type) l n a, In (n,a) l -> n <= maxl A l.
   Proof.
-    fix 2.
+    fix maxl_is_max 2.
     intros A l; case l; clear l.
     intros; contradiction.
     simpl; intros na1 l.
@@ -1101,7 +1101,7 @@ Qed.
     end.
 
   Lemma maxll_is_max : forall (A : Type) ll l, In l ll -> forall n a, In (n,a) l -> n <= maxll A ll.
-    fix 2.
+    fix maxll_is_max 2.
     intros A ll; case ll; clear ll.
     intros; contradiction.
     simpl; intros l1 ll.
@@ -1138,7 +1138,7 @@ Qed.
       find X.eq_bool v (map (fun xt => (inject (fst xt), f xt)) sigma) =
       find beq_nat (inject_inv v) (map (fun xt => (fst xt, f xt)) sigma).
     Proof.
-      fix 5.
+      fix find_inject 5.
       intros C B v f sigma; case sigma; clear sigma.
       apply eq_refl.
       intros p l; case p; clear p.

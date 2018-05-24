@@ -1090,7 +1090,7 @@ Definition permut_bool :=
 Lemma permut_bool_ok : 
 forall l1 l2, match permut_bool l1 l2 with true => permut l1 l2 | false => ~permut l1 l2 end.
 Proof.
-fix 1.
+fix permut_bool_ok 1.
 intro l1; case l1; clear l1.
 intro l2; case l2; clear l2.
 simpl; apply Pnil.
@@ -1220,7 +1220,7 @@ Lemma remove_eq_eq :
   | None => remove eq_bool a' l = None
   end.
 Proof.
-fix 1.
+fix remove_eq_eq 1.
 intros [ | b l] a a' a_eq_a'; simpl.
 apply eq_refl.
 case_eq (eq_bool a b); [intro a_eq_b | intro a_diff_b].
@@ -1245,7 +1245,7 @@ Defined.
 Lemma remove_equiv_nil_2 :
   forall l, remove_equiv eq_bool l nil = (l,nil).
 Proof.
-fix 1.
+fix remove_equiv_nil_2 1.
 intros [ | a l]; simpl.
 apply eq_refl.
 rewrite remove_equiv_nil_2; apply eq_refl.
@@ -1390,7 +1390,7 @@ Lemma remove_equiv_permut_2:
       (fst (remove_equiv eq_bool l1 l2) =  fst (remove_equiv eq_bool l1 l2') /\
           permut (snd (remove_equiv eq_bool l1 l2)) (snd (remove_equiv eq_bool l1 l2'))).
 Proof.
-fix 1.
+fix remove_equiv_permut_2 1.
 intros [ | a1 l1] l2 l2' P.
 simpl; split; [apply eq_refl | trivial].
 simpl; generalize (remove_permut P a1).

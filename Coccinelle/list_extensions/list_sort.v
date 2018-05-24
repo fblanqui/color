@@ -364,7 +364,7 @@ Lemma in_remove_list :
   | Some rmv => permut (la ++ rmv) l
   end.
 Proof.
-fix 1.
+fix in_remove_list 1.
 intro l; case l; clear l.
 (* l = [] *)
 intro la; simpl; case la; clear la.

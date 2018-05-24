@@ -559,7 +559,7 @@ Lemma equiv_in_list :
       equiv (Term f l1) (Term g l2).
 Proof.
 intros f g f_stat g_stat l1 l2 L prec_eq_f_g E.  apply (Eq_lex f g f_stat g_stat prec_eq_f_g).
-clear f f_stat prec_eq_f_g; revert l1 l2 L E; fix 1; intro l1; case l1; clear l1.
+clear f f_stat prec_eq_f_g; revert l1 l2 L E; fix equiv_in_list 1; intro l1; case l1; clear l1.
 intros l2; case l2; clear l2.
 intros _ _; apply Eq_list_nil.
 intros a2 l2 L _; discriminate.
