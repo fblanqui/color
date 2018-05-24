@@ -136,7 +136,7 @@ right; left; reflexivity.
 assert (Abs := le_S_n _ _ (le_S_n _ _ P_ok)); inversion Abs.
 rewrite <- L in P_ok; generalize P_ok.
 simpl; set (k := map (apply_subst sigma) k1); clearbody k; set (p := P f); clearbody p.
-revert p k; fix 1.
+revert p k; fix projection_is_subterm 1.
 intro p; case p; clear p.
 intro l; case l; clear l.
 intro Abs; inversion Abs.

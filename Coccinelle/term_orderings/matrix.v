@@ -134,7 +134,7 @@ Section Definitions.
       dim v, P dim v.
   Proof.
     intros P f1 f2.
-    fix 1;intros [|dim].
+    fix vector_rect 1;intros [|dim].
     exact f1.
     simpl.
     intros [a v].
@@ -166,7 +166,7 @@ Section Definitions.
   Definition eq_vec {dim} : vector dim -> vector dim -> Prop.
   Proof.
     revert dim.
-    fix 1.
+    fix eq_vec 1.
     intros [|dim].
     simpl; exact eq.
     simpl.
@@ -240,7 +240,7 @@ Section Definitions.
   
   Definition sum_vector : forall dim (v1 v2: vector dim), vector dim.
   Proof.
-    fix 1.
+    fix sum_vector 1.
     intros [|dim].
 
     simpl;  intros a b;exact (plus a b).
@@ -272,7 +272,7 @@ Section Definitions.
     forall (dim:nat) (v1 v2: vector dim), 
       sum_vector _ v1 v2 ==v sum_vector _ v2 v1.
   Proof.
-    fix 1.
+    fix sum_vector_comm 1.
     intros [|dim].
     simpl.
     intros v1 v2.
@@ -290,7 +290,7 @@ Section Definitions.
       sum_vector _ (sum_vector _ v1 v2) v3 ==v
       sum_vector _ v1 (sum_vector _ v2 v3).
   Proof.
-    fix 1.
+    fix sum_vector_assoc 1.
     intros [|dim].
     simpl.
     intros v1 v2 v3.
@@ -309,7 +309,7 @@ Section Definitions.
     forall dim (a:A)(v:vector dim), 
       vector dim.
   Proof.
-    fix 1.
+    fix prod_scal_vec 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -342,7 +342,7 @@ Section Definitions.
       prod_scal_vec _ (plus c1 c2) r ==v
       sum_vector _ (prod_scal_vec  dim c1 r) (prod_scal_vec _ c2 r).
   Proof.
-    fix 1.
+    fix psv_distrib_left 1.
     intros [|dim].
     simpl. intros. 
     apply mult_distrib_left.
@@ -360,7 +360,7 @@ Section Definitions.
       prod_scal_vec _ c (sum_vector _ r1 r2)  ==v
       sum_vector _ (prod_scal_vec  dim c r1) (prod_scal_vec _ c r2).
   Proof.
-    fix 1.
+    fix psv_distrib_right 1.
     intros [|dim].
     simpl. intros. 
     apply mult_distrib_right.
@@ -378,7 +378,7 @@ Section Definitions.
       prod_scal_vec _ c1  (prod_scal_vec _  c2 r) ==v 
       prod_scal_vec _ (mult c1 c2) r .
   Proof.
-    fix 1.
+    fix psv_assoc 1.
     intros [|dim].
     simpl. intros. 
     symmetry; apply mult_assoc.
@@ -396,7 +396,7 @@ Section Definitions.
       prod_scal_vec _ a1 (prod_scal_vec _ a2 v) ==v
       prod_scal_vec _ a2 (prod_scal_vec _ a1 v).
   Proof.
-    fix 1.
+    fix psv_comm 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -421,7 +421,7 @@ Section Definitions.
   Definition prod_row_col : 
     forall dim (v1 v2:vector dim), A.
   Proof.
-    fix 1.
+    fix prod_row_col 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -451,7 +451,7 @@ Section Definitions.
       prod_row_col _ r (prod_scal_vec _ a c) ==
       mult a  (prod_row_col _ r c).
   Proof.
-    fix 1.
+    fix prc_comm_sv_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -475,7 +475,7 @@ Section Definitions.
       prod_row_col _ (prod_scal_vec _ a r) c ==
       mult a  (prod_row_col _ r c).
   Proof.
-    fix 1.
+    fix prc_comm_sv_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -496,7 +496,7 @@ Section Definitions.
       prod_row_col _ (sum_vector _ c1  c2) r ==
       plus (prod_row_col  dim c1 r) (prod_row_col _ c2 r).
   Proof.
-    fix 1.
+    fix prc_distrib_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -527,7 +527,7 @@ Section Definitions.
       prod_row_col _ c (sum_vector _ r1  r2) ==
       plus (prod_row_col  dim c r1) (prod_row_col _ c r2).
   Proof.
-    fix 1.
+    fix prc_distrib_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -582,7 +582,7 @@ Section Definitions.
       dim m, P dim m.
   Proof.
     intros P f1 f2.
-    fix 1;intros [|dim].
+    fix matrix_rect 1;intros [|dim].
     exact f1.
     simpl.
     intros [a [r [c v]]].
@@ -612,7 +612,7 @@ Section Definitions.
 
   Definition eq_mat {dim} : matrix dim -> matrix dim -> Prop.
   Proof.
-    revert dim. fix 1.
+    revert dim. fix eq_mat 1.
     intros [|dim].
     simpl; exact eq.
     simpl.
@@ -695,7 +695,7 @@ Section Definitions.
 
   Definition sum_matrix : forall dim (m1 m2:matrix dim), matrix dim.
   Proof.
-    fix 1.
+    fix sum_matrix 1.
     intros [|dim].
     simpl.
     intros a b;exact (plus a b).
@@ -729,7 +729,7 @@ Section Definitions.
   Lemma sum_matrix_comm : 
     forall dim m1 m2, sum_matrix dim m1 m2 ==m sum_matrix dim m2 m1.
   Proof.
-    fix 1.
+    fix sum_matrix_comm 1.
     intros [|dim]. 
     (* dim = 0 *) 
     simpl; apply plus_comm.
@@ -750,7 +750,7 @@ Section Definitions.
       sum_matrix dim (sum_matrix _ m1 m2) m3 ==m 
       sum_matrix dim m1 (sum_matrix _ m2 m3).
   Proof.
-    fix 1.
+    fix sum_matrix_assoc 1.
     intros [|dim]. 
     (* dim = 0 *) 
     simpl; apply plus_assoc.
@@ -771,7 +771,7 @@ Section Definitions.
     forall dim (a:A)(v:matrix dim), 
       matrix dim.
   Proof.
-    fix 1.
+    fix prod_scal_mat 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -811,7 +811,7 @@ Section Definitions.
       (prod_scal_mat  dim c1 m)
       (prod_scal_mat _ c2 m).
   Proof.
-    fix 1.
+    fix psm_distrib_left 1.
     intros [|dim].
     simpl. intros. 
     apply mult_distrib_left.
@@ -831,7 +831,7 @@ Section Definitions.
       prod_scal_mat _ c (sum_matrix _ r1 r2) ==m 
       sum_matrix _ (prod_scal_mat  dim c r1) (prod_scal_mat _ c r2).
   Proof.
-    fix 1.
+    fix psm_distrib_right 1.
     intros [|dim].
     simpl. intros. 
     apply mult_distrib_right.
@@ -851,7 +851,7 @@ Section Definitions.
       prod_scal_mat _ c1  (prod_scal_mat _  c2 r) ==m 
       prod_scal_mat _ (mult c1 c2) r .
   Proof.
-    fix 1.
+    fix psm_assoc 1.
     intros [|dim].
     simpl. intros. 
     symmetry; apply mult_assoc.
@@ -871,7 +871,7 @@ Section Definitions.
       prod_scal_mat _ a1 (prod_scal_mat _ a2 v) ==m 
       prod_scal_mat _ a2 (prod_scal_mat _ a1 v).
   Proof.
-    fix 1.
+    fix psm_comm 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -896,7 +896,7 @@ Section Definitions.
   (* product of a col by a row *)
   Definition prod_col_row : forall (dim:nat) (c r:vector dim), matrix dim.
   Proof.
-    fix 1.
+    fix prod_col_row 1.
     intros [|dim].
     simpl.
     intros a b;exact (mult a b).
@@ -931,7 +931,7 @@ Section Definitions.
       prod_col_row _ c (prod_scal_vec _ a r) ==m 
       prod_scal_mat _ a  (prod_col_row _ c r).
   Proof.
-    fix 1.
+    fix pcr_comm_sv_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -958,7 +958,7 @@ Section Definitions.
       prod_col_row _ (prod_scal_vec _ a r) c ==m
       prod_scal_mat _ a  (prod_col_row _ r c).
   Proof.
-    fix 1.
+    fix pcr_comm_sv_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl.
@@ -984,7 +984,7 @@ Section Definitions.
       sum_matrix _
       (prod_col_row dim c1 r) (prod_col_row _ c2 r).
   Proof.
-    fix 1.
+    fix pcr_distrib_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1005,7 +1005,7 @@ Section Definitions.
       prod_col_row _ c (sum_vector _ r1  r2) ==m
       sum_matrix _ (prod_col_row  dim c r1) (prod_col_row _ c r2).
   Proof.
-    fix 1.
+    fix pcr_distrib_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1025,7 +1025,7 @@ Section Definitions.
   
   Definition prod_row_mat : forall (dim:nat) (r:vector dim)  (m:matrix dim), vector dim.
   Proof.
-    fix 1.
+    fix prod_row_mat 1.
     intros [|dim].
     simpl.
     intros a b;exact (mult a b).
@@ -1060,7 +1060,7 @@ Section Definitions.
       prod_row_mat _ r (prod_scal_mat _ a m) ==v 
       prod_scal_vec _ a  (prod_row_mat _ r m).
   Proof.
-    fix 1.
+    fix prm_comm_sv_right 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -1092,7 +1092,7 @@ Section Definitions.
       prod_row_mat _ (prod_scal_vec _ a r) m ==v
       prod_scal_vec _ a  (prod_row_mat _ r m).
   Proof.
-    fix 1.
+    fix prm_comm_sv_left 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -1119,7 +1119,7 @@ Section Definitions.
       sum_vector _
       (prod_row_mat dim r1 m) (prod_row_mat _ r2 m).
   Proof.
-    fix 1.
+    fix prm_distrib_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1152,7 +1152,7 @@ Section Definitions.
       prod_row_mat _ r (sum_matrix _ m1  m2) ==v 
       sum_vector _ (prod_row_mat  dim r m1) (prod_row_mat _ r m2).
   Proof.
-    fix 1.
+    fix prm_distrib_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1181,7 +1181,7 @@ Section Definitions.
   
   Definition prod_mat_col : forall (dim:nat) (m:matrix dim) (c:vector dim), vector dim.
   Proof.
-    fix 1.
+    fix prod_mat_col 1.
     intros [|dim].
     simpl.
     intros a b;exact (mult a b).
@@ -1216,7 +1216,7 @@ Section Definitions.
       prod_mat_col _ m (prod_scal_vec _ a c) ==v 
       prod_scal_vec _ a  (prod_mat_col _ m c).
   Proof.
-    fix 1.
+    fix pmc_comm_sv_right 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -1243,7 +1243,7 @@ Section Definitions.
       prod_mat_col _ (prod_scal_mat _ a m) c ==v 
       prod_scal_vec _ a  (prod_mat_col _ m c).
   Proof.
-    fix 1.
+    fix pmc_comm_sv_left 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -1268,7 +1268,7 @@ Section Definitions.
       sum_vector _
       (prod_mat_col dim m1 c) (prod_mat_col _ m2 c).
   Proof.
-    fix 1.
+    fix pmc_distrib_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1297,7 +1297,7 @@ Section Definitions.
       prod_mat_col _ m (sum_vector _ c1  c2) ==v
       sum_vector _ (prod_mat_col  dim m c1) (prod_mat_col _ m c2).
   Proof.
-    fix 1.
+    fix pmc_distrib_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1327,7 +1327,7 @@ Section Definitions.
 
   Definition prod_matrix : forall (dim:nat) (m1 m2:matrix dim), matrix dim. 
   Proof.
-    fix 1.
+    fix prod_matrix 1.
     intros [|dim].
     intros a b;exact (mult a b).
 
@@ -1368,7 +1368,7 @@ Section Definitions.
       prod_matrix _ (prod_scal_mat _ a m1) m2 ==m
       prod_scal_mat _ a  (prod_matrix _ m1 m2).
   Proof.
-    fix 1.
+    fix pm_comm_sv_right 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -1401,7 +1401,7 @@ Section Definitions.
       prod_matrix _ m1 (prod_scal_mat _ a m2) ==m
       prod_scal_mat _ a  (prod_matrix _ m1 m2).
   Proof.
-    fix 1.
+    fix pm_comm_sv_left 1.
     intros [|dim].
     (* dim = 0 *)
     simpl.
@@ -1440,7 +1440,7 @@ Section Definitions.
       sum_matrix _
       (prod_matrix dim m1 m3) (prod_matrix _ m2 m3).
   Proof.
-    fix 1.
+    fix pm_distrib_left 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1491,7 +1491,7 @@ Section Definitions.
       sum_matrix _
       (prod_matrix dim m1 m2) (prod_matrix _ m1 m3).
   Proof.
-    fix 1.
+    fix pm_distrib_right 1.
     intros [|dim].
         (* dim = 0 *)
     simpl. intros. 
@@ -1538,7 +1538,7 @@ Section Definitions.
       prod_row_col dim (prod_row_mat _ r m) c == 
       prod_row_col dim r (prod_mat_col _ m c).
   Proof.
-    fix 1.
+    fix prm_pmc_comm 1.
     intros [|dim].
     (* dim = 0 *)
     simpl;intros;apply mult_assoc.
@@ -1575,7 +1575,7 @@ Section Definitions.
       prod_mat_col dim (prod_col_row _ c1 r) c2 ==v  
       prod_scal_vec _ (prod_row_col _ r c2) c1.
   Proof.
-    fix 1.
+    fix pcr_prc_comm 1.
     intros [|dim].
     intros;simpl.
     rewrite (mult_comm c1).
@@ -1612,7 +1612,7 @@ Section Definitions.
     prod_mat_col dim m1 (prod_mat_col _ m2 c) ==v 
     prod_mat_col _ (prod_matrix _ m1 m2) c. 
   Proof.
-    fix 1.
+    fix pm_assoc_pmc 1.
     intros [|dim].
     (* dim = 0 *)
     intros;simpl.
@@ -1678,7 +1678,7 @@ Definition split_vector :
   forall A B dim,  vector (A * B) dim -> vector A dim * vector B dim.
 Proof.
   intros A B.
-  fix 1;intros [|dim].
+  fix split_vector 1;intros [|dim].
   simpl.
   intros res;exact res.
   simpl. 
@@ -1692,7 +1692,7 @@ Definition combine_vector :
   forall A B dim,   vector A dim  -> vector B dim -> vector (A * B) dim.
 Proof.
   intros A B.
-  fix 1;intros [|dim].
+  fix combine_vector 1;intros [|dim].
   simpl.
   intros a b;exact (a,b).
 
@@ -1733,7 +1733,7 @@ Definition matrix_from_vector_of_vectors : forall A dim, (vector (vector A dim) 
   matrix A dim.
 Proof.
   intros A. 
-  fix 1.
+  fix matrix_from_vector_of_vectors 1.
   intros [|dim].
   
   intros a;exact a.
@@ -1752,7 +1752,7 @@ Definition vector_of_vectors_from_matrix :
   forall A dim, matrix A dim -> vector (vector A dim) dim.
 Proof.
   intros A.
-  fix 1;intros [|dim].
+  fix vector_of_vectors_from_matrix 1;intros [|dim].
   intros a;exact a.
   simpl.
   intros [a [r [c m]]].
@@ -2706,7 +2706,7 @@ Module Make(R:TRing).
 
   Definition id_matrix : forall dim, matrix dim .
   Proof.
-    fix 1.
+    fix id_matrix 1.
     intros [|dim].
     exact rI.
     simpl.
@@ -2827,7 +2827,7 @@ Module Make_Ordered(R:Ordered_Ring).
 
   Definition vec_order_large : forall dim, vector dim -> vector dim -> Prop.
   Proof.
-    fix 1;intros [|dim].
+    fix vec_order_large 1;intros [|dim].
     exact le.
     simpl;intros [a1 v1] [a2 v2]. 
     refine (and _ _).
@@ -2837,7 +2837,7 @@ Module Make_Ordered(R:Ordered_Ring).
 
   Definition vec_order_strict : forall dim, vector dim -> vector dim -> Prop.
   Proof.
-    fix 1;intros [|dim].
+    fix vec_order_strict 1;intros [|dim].
     exact lt.
     simpl;intros [a1 v1] [a2 v2]. 
     refine (and _ _).
@@ -2993,7 +2993,7 @@ Module Make_Ordered(R:Ordered_Ring).
 
   Definition mat_order_large : forall dim, matrix dim -> matrix dim -> Prop.
   Proof.
-    fix 1;intros [|dim].
+    fix mat_order_large 1;intros [|dim].
     exact le.
     simpl;intros [a1 [l1 [c1 m1]]] [a2 [l2 [c2 m2]]]. 
     refine (and _ (and _ (and _ _))).
@@ -3005,7 +3005,7 @@ Module Make_Ordered(R:Ordered_Ring).
 
   Definition mat_order_strict : forall dim, matrix dim -> matrix dim -> Prop.
   Proof.
-    fix 1;intros [|dim].
+    fix mat_order_strict 1;intros [|dim].
     exact lt.
     simpl;intros [a1 [l1 [c1 m1]]] [a2 [l2 [c2 m2]]]. 
     refine (and _ (and _ (and _ _))).

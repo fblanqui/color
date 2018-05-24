@@ -173,7 +173,7 @@ Qed.
 Lemma split_map_set : forall (A B : Type) (f : A -> B) l l1 l2, map f l = l1 ++ l2 -> 
    {k1 : list A & {k2 : list A | l = k1 ++ k2 /\ map f k1 = l1 /\ map f k2 = l2}}.
 Proof.
-fix 4.
+fix split_map_set 4.
 intros A B f l; case l; clear l.
 intros l1 l2 H; exists nil; exists nil.
 revert H; case l1; clear l1.
@@ -206,7 +206,7 @@ Qed.
 
 Lemma flat_map_app : 
 	forall A B (f : A -> list B) (l1 l2 : list A), flat_map f (l1 ++ l2) = (flat_map f l1) ++ (flat_map f l2).
-intros A B f; fix 1.
+intros A B f; fix flat_map_app 1.
 intros l1; case l1; clear l1.
 intros l2; apply eq_refl.
 intros a1 l1 l2; simpl; rewrite (flat_map_app l1 l2); rewrite ass_app; apply eq_refl.
@@ -368,7 +368,7 @@ Qed.
 Lemma nth_error_none :
    forall A n (l : list A) , nth_error l n = None -> length l <= n.
 Proof.
-fix 3.
+fix nth_error_none 3.
 intros A n [ | a l]; case n; clear n; simpl.
 intros _; apply le_n.
 intros; apply le_O_n.
@@ -383,7 +383,7 @@ Lemma nth_error_almost_id :
 	nth_error (l ++ a1 :: l') n = nth_error (l ++ a2 :: l') n \/
 	(nth_error (l ++ a1 :: l') n = Some a1 /\ nth_error (l ++ a2 :: l') n = Some a2).
 Proof.
-fix 2.
+fix nth_error_almost_id 2.
 intros A [ | n] l l' a1 a2; case l; clear l; simpl.
 right; split; reflexivity.
 intro a; left; reflexivity.
@@ -424,7 +424,7 @@ Lemma list_eq_bool_ok :
   match list_eq_bool eq_bool l1 l2 with true => l1 = l2 | false => l1 <> l2 end.
 Proof.
 intros A eq_bool eq_bool_ok.
-fix 1; intro l1; case l1; clear l1; [idtac | intros a1 l1]; (intro l2; case l2; clear l2; [idtac | intros a2 l2]).
+fix list_eq_bool_ok 1; intro l1; case l1; clear l1; [idtac | intros a1 l1]; (intro l2; case l2; clear l2; [idtac | intros a2 l2]).
 simpl; reflexivity.
 simpl; discriminate.
 simpl; discriminate.
@@ -450,7 +450,7 @@ Fixpoint mem (e : A) (l : list A) {struct l} : Prop :=
 Lemma mem_eq_mem :
   equivalence _ eqA -> forall a a' l, eqA a a' -> mem a l -> mem a' l.
 Proof.
-intros E a a'; fix 1.
+intros E a a'; fix mem_eq_mem 1.
 intro l; case l; clear l.
 intros _ a_mem_nil; contradiction.
 intros b l a_eq_a' H; simpl in H; case H; clear H; [intro a_eq_b | intro a_mem_l].
@@ -463,7 +463,7 @@ Qed.
 Lemma mem_in_eq :
   forall a l, mem a l <-> (exists a', eqA a a' /\ In a' l).
 Proof.
-fix 2.
+fix mem_in_eq 2.
 intros a l; case l; clear l; simpl.
 split.
 intro; contradiction.
@@ -485,7 +485,7 @@ Qed.
 
 Lemma mem_impl_in : (forall a b, eqA a b -> a = b) -> forall e l, mem e l -> In e l.
 Proof.
-fix 3.
+fix mem_impl_in 3.
 intros eq_is_eq e l; case l; clear l.
 intro e_mem_nil; contradiction.
 simpl; intros a l [e_eq_a | e_mem_l].
@@ -501,7 +501,7 @@ end.
 
 Lemma mem_bool_ok  : forall a l, match mem_bool a l with true => mem a l | false => ~mem a l end.
 Proof.
-fix 2.
+fix mem_bool_ok 2.
 intros a l; case l; simpl.
 intro F; assumption.
 intros b k; generalize (eq_bool_ok a b); case (eq_bool a b).
@@ -515,7 +515,7 @@ Defined.
 
 Lemma mem_bool_app : forall a l1 l2, mem_bool a (l1 ++ l2) = orb (mem_bool a l1) (mem_bool a l2).
 Proof.
-fix 2.
+fix mem_bool_app 2.
 intros a l1; case l1; clear l1.
 intros l2; reflexivity.
 simpl; intros a1 l1 l2; rewrite mem_bool_app; rewrite orb_assoc; reflexivity.
@@ -635,7 +635,7 @@ Lemma included_list_sound :
   forall l1 l2, (included_list l1 l2 = true) -> forall x, mem x l1 -> mem x l2.
 Proof.
   intro eq_trans.
-  fix 1.
+  fix included_list_sound 1.
   intros l1 l2;case l1.
 
   intros _ x abs;elim abs.
@@ -665,7 +665,7 @@ Function find (B : Type) (a : A) (l : list (A * B)) {struct l} : option B :=
 Lemma eq_find_eq : equivalence _ eqA -> forall B a a' l, eq_bool a a'  = true -> find (B := B) a l = find a' l.
 Proof.
 intro eq_proof.
-fix 4.
+fix eq_find_eq 4.
 intros B a a' l; case l; clear l; simpl.
 intros _; reflexivity.
 intros p l; case p; clear p; simpl.
@@ -690,7 +690,7 @@ Lemma find_diff :
      forall (B : Type) a1 a2, eq_bool a2 a1 = false -> 
      forall l1 l2 b, find a2 (l1 ++ (a1,b) :: l2) = find (B:= B) a2 (l1 ++ l2).
 Proof.
-fix 5.
+fix find_diff 5.
 intros B a1 a2 a2_diff_a1 l1; case l1; clear l1; simpl.
 revert a2_diff_a1; generalize (eq_bool_ok a2 a1); case (eq_bool a2 a1).
 intros _ Abs; discriminate.
@@ -705,7 +705,7 @@ Lemma find_mem :
    forall (B : Type)  (a : A)  (l : list (A * B)) (b : B),
   find a l = Some b -> {a' : A & {l1 : list (A * B) & {l2 : list (A * B) | eqA a a' /\ l = l1 ++ (a',b) :: l2 } } }.
 Proof.
-fix 3.
+fix find_mem 3.
 intros B a l b; case l; clear l; simpl. 
 intro Abs; discriminate.
 intros p l; case p; clear p; intros a1 b1.
@@ -740,7 +740,7 @@ Qed.
 Lemma find_not_found : 
   forall (B : Type) (a a' : A) (b : B) (l : list (A * B)), find a l = None -> eq_bool a a' = true -> ~In (a',b) l.
 Proof.
-fix 5.
+fix find_not_found 5.
 intros B a a' b l; case l; clear l.
 intros _ _ Abs; contradiction.
 intros p l; case p; clear p; intros a1 b1; simpl.
@@ -757,7 +757,7 @@ Lemma find_app :
   find a (l1 ++ l2) =
      if mem_bool a (map (fun st => fst st) l1) then find a l1 else find a l2.  
 Proof.
-fix 3.
+fix find_app 3.
 intros B a l1; case l1; clear l1; simpl.
 intros l2; reflexivity.
 intros p l1 l2; case p; clear p; intros a1 b1; simpl.
@@ -774,7 +774,7 @@ Lemma find_map :
    | None => find a (map (fun xval : A * B => (fst xval, f (snd xval))) l) = None
    end.
 Proof.
-fix 5.
+fix find_map 5.
 intros B C  f a l; case l; clear l; simpl.
 reflexivity.
 intros p l; case p; clear p; intros a1 b1; simpl.
@@ -826,7 +826,7 @@ Lemma merge_correct :
                                                   eq_bool a a' = true /\ eqB_bool b2 b1 = false
         end.
 Proof.
-intros eq_proof RB; fix 2.
+intros eq_proof RB; fix merge_correct 2.
 intros l1 l2; case l2; clear l2; simpl.
 (* 1/2 l2 = [] *)
 repeat split.
@@ -951,7 +951,7 @@ Lemma merge_inv :
        | None => True
        end.
 Proof.
-intros eq_proof RB; fix 2.
+intros eq_proof RB; fix merge_inv 2.
 intros l1 l2; case l2; clear l2.
 (* 1/2 l2 = [] *)
 intros Inv1 _; exact Inv1.
@@ -1003,7 +1003,7 @@ Lemma nb_occ_app :
   forall (B : Type) a (l1 l2 : list (A * B)), 
   nb_occ a (l1++l2) = nb_occ a l1 + nb_occ a l2.
 Proof.
-fix 3.
+fix nb_occ_app 3.
 intros B a l1; case l1; clear l1; simpl.
 intros l2; reflexivity.
 intros p l1 l2; case p; clear p; intros a1 _; simpl.
@@ -1015,7 +1015,7 @@ Qed.
 Lemma none_nb_occ_O :
   forall (B : Type) (a : A) (l : list (A * B)), find a l = None -> nb_occ a l = 0.
 Proof.
-fix 3.
+fix none_nb_occ_O 3.
 intros B a l; case l; clear l; simpl.
 intros _; reflexivity.
 intros p l; case p; clear p; intros a1 b1; simpl.
@@ -1027,7 +1027,7 @@ Qed.
 Lemma some_nb_occ_Sn :
   forall (B : Type) (a : A) (l : list (A * B)) b, find a l = Some b -> 1 <= nb_occ a l.
 Proof.
-fix 3.
+fix some_nb_occ_Sn 3.
 intros B a l; case l; clear l; simpl.
 intros b Abs; discriminate.
 intros p l b; case p; clear p; simpl.
@@ -1041,7 +1041,7 @@ Lemma reduce_assoc_list :
   forall (B : Type) (l : list (A * B)),  {l' : list (A * B) | (forall a, nb_occ a l' <= 1) /\ (forall a, find a l = find a l')}.
 Proof.
 intro eq_proof.
-fix 2.
+fix reduce_assoc_list 2.
 intros B l; case l; clear l; simpl.
 exists (nil : list (A * B)); simpl; split.
 intros _; apply le_O_n.
@@ -1140,7 +1140,7 @@ Lemma list_forall_is_sound :
   list_forall P_bool l = true <-> 
   (forall a, In a l -> P_bool a = true).
 Proof.
-fix 3.
+fix list_forall_is_sound 3.
 intros A P_bool l; case l; clear l; simpl.
 split.
 intros _ a Abs; contradiction.
@@ -1724,7 +1724,7 @@ Lemma prop_map_without_repetition :
    end) ->
    (forall b, In b (map_without_repetition eq_bool f l) -> P b).
 Proof.
-intros A B eq_bool eq_bool_ok P f; fix 1; intro l; case l; clear l; simpl.
+intros A B eq_bool eq_bool_ok P f; fix prop_map_without_repetition 1; intro l; case l; clear l; simpl.
 (* 1/2 l = nil *)
 intros _ b b_in_nil; contradiction.
 (* 1/1 l = _ :: _ *)
@@ -1756,7 +1756,7 @@ Lemma exists_map_without_repetition :
                         end) ->
   (exists b, In b (map_without_repetition eq_bool f l) /\ P b).
 Proof.
-intros A B eq_bool eq_bool_ok P f; fix 1; intro l; case l; clear l; simpl.
+intros A B eq_bool eq_bool_ok P f; fix exists_map_without_repetition 1; intro l; case l; clear l; simpl.
 (* 1/2 l = nil *)
 intros [a [F _]]; contradiction.
 (* 1/1 l = _ :: _ *)
@@ -1829,7 +1829,7 @@ Lemma prop_map12_without_repetition :
    end) ->
  (forall d, In d (map12_without_repetition eq_bool f l) -> P d).
 Proof.
-intros A B eq_bool eq_bool_ok P f; fix 1; intro l; case l; clear l.
+intros A B eq_bool eq_bool_ok P f; fix prop_map12_without_repetition 1; intro l; case l; clear l.
 (* 1/2 l = nil *)
 intros _ b b_in_nil; contradiction.
 (* 1/1 l = _ :: _ *)
@@ -1877,7 +1877,7 @@ Lemma exists_map12_without_repetition :
                         end) ->
   (exists d, In d (map12_without_repetition eq_bool f l) /\ P d)).
 Proof.
-intros A B eq_bool eq_bool_ok P f; fix 1; intro l; case l; clear l.
+intros A B eq_bool eq_bool_ok P f; fix exists_map12_without_repetition 1; intro l; case l; clear l.
 (* 1/2 l = nil *)
 intros [a [a_in_nil _]]; contradiction.
 (* 1/1 l = _ :: _ *)

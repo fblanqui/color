@@ -81,7 +81,7 @@ Definition without_red l := without_red_bool l = true.
 Lemma without_red_remove :
   forall e l1 l2, without_red (l1 ++ e :: l2) -> without_red (l1 ++ l2).
 Proof.
-unfold without_red; fix 2.
+unfold without_red; fix without_red_remove 2.
 intros e l1 l2; case l1; clear l1; simpl.
 case (mem_bool eq_bool e l2); [intro H; discriminate | trivial].
 intros e1 l1;
@@ -98,7 +98,7 @@ Qed.
 Lemma without_red_not_in :
   forall e l1 l2, without_red (l1 ++ e :: l2) -> ~mem eq_A e (l1 ++ l2).
 Proof.
-unfold without_red; fix 2.
+unfold without_red; fix without_red_not_in 2.
 intros e l1 l2; case l1; clear l1; simpl.
 generalize (mem_bool_ok _ _ eq_bool_ok e l2); case (mem_bool eq_bool e l2).
 intros _ H _; discriminate.
@@ -115,7 +115,7 @@ Lemma add_prf :
   forall e l1 l2, without_red (l1 ++ l2) -> ~mem eq_A e (l1 ++ l2) ->
   without_red (l1 ++ e :: l2).
 Proof.
-unfold without_red; fix 2.
+unfold without_red; fix add_prf 2.
 intros e l1 l2; case l1; clear l1; simpl.
 intros wr12 e_not_in_l1_l2; 
 generalize (mem_bool_ok _ _ eq_bool_ok e l2); case (mem_bool eq_bool e l2).
@@ -136,7 +136,7 @@ Qed.
 Lemma without_red_permut :
  forall l1 l2, without_red l1 -> LP.permut l1 l2 -> without_red l2.
 Proof.
-unfold without_red; fix 1.
+unfold without_red; fix without_red_permut 1.
 intros l1; case l1; clear l1.
 intros l2 _ P; rewrite (permut_nil (permut_sym P)); reflexivity.
 intros a1 l1 l2; simpl.
@@ -170,7 +170,7 @@ Function remove_red (l : list A) : list A :=
 Lemma included_remove_red : 
 forall e l, mem eq_A e (remove_red l) -> mem eq_A e l.
 Proof.
-fix 2.
+fix included_remove_red 2.
 intros x l; case l; clear l.
 intro H; exact H.
 intros a l; simpl; case (mem_bool eq_bool a l).
@@ -182,7 +182,7 @@ Qed.
 
 Lemma remove_red_included : forall e l, mem eq_A e l -> mem eq_A e (remove_red l).
 Proof.
-fix 2.
+fix remove_red_included 2.
 intros x l; case l; clear l.
 intro H; exact H.
 intros a l; simpl; generalize (mem_bool_ok _ _ eq_bool_ok a l); case (mem_bool eq_bool a l).
@@ -197,7 +197,7 @@ Qed.
 
 Lemma without_red_remove_red :  forall l, without_red (remove_red l).
 Proof.
-unfold without_red; fix 1.
+unfold without_red; fix without_red_remove_red 1.
 intro l; case l; clear l.
 reflexivity.
 intros a l; simpl.
@@ -308,7 +308,7 @@ Qed.
 Lemma without_red_filter_aux :  
   forall P_bool l, without_red l -> without_red (filter_aux P_bool l).
 Proof.
-unfold without_red; fix 2.
+unfold without_red; fix without_red_filter_aux 2.
 intros P_bool l; case l; clear l.
 intros _; reflexivity.
 simpl; intros a l.
@@ -424,7 +424,7 @@ Definition union s1 s2 := mk_set (without_red_add_without_red s2.(support) s1.(i
 Lemma union_1_aux :
 forall (l1 l2 : list A) (e : A), more_list.mem eq_A e l1 -> more_list.mem eq_A e (add_without_red l1 l2).
 Proof.
-fix 2.
+fix union_1_aux 2.
 intros l1 l2; case l2; clear l2.
 intros; assumption.
 intros a2 l2 e e_in_l1; simpl.
@@ -441,7 +441,7 @@ Qed.
 Lemma union_2_aux :
 forall (l1 l2 : list A) (e : A), more_list.mem eq_A e l2 -> more_list.mem eq_A e (add_without_red l1 l2).
 Proof.
-fix 2.
+fix union_2_aux 2.
 intros l1 l2; case l2; clear l2.
 intros; contradiction.
 intros a2 l2 e e_in_a2l2; simpl in e_in_a2l2; simpl.
@@ -489,7 +489,7 @@ Function remove_not_common (acc l1 l2 : list A) {struct l2} : list A :=
 
 Lemma length_remove_not_common : 
    forall l1 l2 acc, length (remove_not_common acc l1 l2) = length acc + length (remove_not_common nil l1 l2).
-fix 2.
+fix length_remove_not_common 2.
 intros l1 l2 acc; case l2; clear l2; simpl.
 rewrite <- plus_n_O; reflexivity.
 intros a2 l2; case (mem_bool eq_bool a2 l1).
@@ -638,7 +638,7 @@ Definition subset s1 s2 : Prop :=
 Lemma subset_dec : forall s1 s2, {subset s1 s2} + {~ subset s1 s2}.
 Proof.
 unfold subset, mem; intros s1 s2; case s1; clear s1; simpl; intros l1 _; case s2; clear s2; simpl; intros l2 _.
-revert l1 l2; fix 1.
+revert l1 l2; fix subset_dec 1.
 intros l1; case l1; clear l1; simpl.
 (* 1/2  l1 = [] *)
 intros l2; left; intros; contradiction.
@@ -896,7 +896,7 @@ Proof.
 intro s1; case s1; clear s1; intros l1 wr1.
 intro s2; case s2; clear s2; intros l2 wr2.
 revert l1 wr1 l2 wr2; unfold subset, cardinal, mem, without_red; simpl.
-fix 1.
+fix cardinal_subset 1.
 intro l1; case l1; clear l1.
 intros _ l2 _ _; apply le_O_n.
 simpl; intros a1 l1.
@@ -940,7 +940,7 @@ Proof.
 intro s1; case s1; clear s1; intros l1 wr1.
 intro s2; case s2; clear s2; intros l2 wr2.
 revert l1 wr1 l2 wr2; unfold without_red, cardinal; simpl.
-fix 3.
+fix cardinal_union_inter_12 3.
 intros l1 wr1 l2; case l2; clear l2; simpl.
 intros _; reflexivity.
 intros a2 l2; generalize (mem_bool_ok _ _ eq_bool_ok a2 l2); case_eq (mem_bool eq_bool a2 l2).
@@ -994,7 +994,7 @@ Proof.
 intro s1; case s1; clear s1; intros l1 wr1.
 intro s2; case s2; clear s2; intros l2 wr2.
 revert l1 wr1 l2 wr2; unfold without_red, cardinal, subset, mem; simpl.
-fix 1.
+fix subset_cardinal_not_eq_not_eq_set 1.
 intros l1 wr1 l2 wr2 a l1_in_l2 a_not_in_l1 a_in_l2.
 case (mem_split_set _ _ eq_bool_ok _ _ a_in_l2); 
 intros a' M; case M; clear M.

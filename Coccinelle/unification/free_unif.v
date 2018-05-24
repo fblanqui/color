@@ -770,7 +770,7 @@ Fixpoint lt_bool (n1 n2 : nat) {struct n1} :=
 
 Lemma lt_bool_ok : forall n1 n2, if lt_bool n1 n2 then n1 < n2 else ~n1 < n2.
 Proof.
-fix 1.
+fix lt_bool_ok 1.
 intro n1; case n1; clear n1.
 intros [ | n2]; simpl.
 apply lt_irrefl.
@@ -821,7 +821,7 @@ rewrite p2_lt_q2; trivial.
 generalize (lt_bool_ok p1 q1); case (lt_bool p1 q1).
 reflexivity.
 intro Abs; apply False_rect; apply p1_diff_q1.
-clear p1_diff_q1; revert p1 q1 p1_le_q1 Abs ; fix 1. 
+clear p1_diff_q1; revert p1 q1 p1_le_q1 Abs ; fix lex_le_lt 1. 
 intro p1; case p1; clear p1.
 intros q1 _; case q1; clear q1.
 intros _; reflexivity.
@@ -845,7 +845,7 @@ generalize (beq_nat_ok p1 q1); case (beq_nat p1 q1); [intro p1_eq_q1 | intro p1_
 generalize (lt_bool_ok p3 q3); case (lt_bool p3 q3).
 reflexivity.
 intro Abs; apply False_rect; apply Abs; assumption.
-revert p1 q1 p1_le_q1 p1_diff_q1 ; fix 1. 
+revert p1 q1 p1_le_q1 p1_diff_q1 ; fix lex_le_meq_lt 1. 
 intro p1; case p1; clear p1.
 intros q1 _; case q1; clear q1.
 intros Abs; apply False_rect; apply Abs; reflexivity.
@@ -1500,7 +1500,7 @@ intro Abs; apply False_rect; apply (lt_n_O _ Abs).
 intros n _; rewrite <- NatMul.LP.permut_cons_inside.
 rewrite <- NatMul.LP.permut_app2.
 clear l; revert x_not_in_dom_sig; unfold VSet.mem, DecVar.eq_A.
-generalize (VSet.support (domain_of_subst sigma)); fix 1.
+generalize (VSet.support (domain_of_subst sigma)); fix move_eq_decreases 1.
 intro l; case l; clear l.
 intros _; reflexivity.
 simpl; intros a l x_not_in_al.

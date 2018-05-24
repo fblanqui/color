@@ -553,7 +553,7 @@ intros [e1 l1] [e2 l2]; simpl.
 generalize (DS1.eq_bool_ok e1 e2); case (DS1.eq_bool e1 e2); [intros e1_eq_e2 | intros e1_diff_e2].
 revert l1 l2.
 assert (H :  forall l1 l2, match eq_bool_list l1 l2 with true => l1 = l2 | false => ~l1 = l2 end).
-fix 1.
+fix eq_bool_ok0 1.
 intros [ | a1 l1] [ | a2 l2]; simpl.
 apply eq_refl.
 discriminate.
@@ -1003,7 +1003,7 @@ Lemma greater_case :
                               (forall a la, In (a,la) ll -> forall b, mem eq_A b la -> R b a).
 Proof. 
 intros l1 l2; revert l2 l1.
-fix 1.
+fix greater_case 1.
 intros [ | a2 l2].
 intros [ | a1 l1]; simpl.
 intros _ _; exists (@nil A);  exists (@nil (A * list A)); simpl; intuition.

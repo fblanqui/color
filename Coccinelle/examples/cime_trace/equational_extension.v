@@ -144,7 +144,7 @@ Lemma one_step_ind2
 .
 Proof.
   intros R P P0 H H0 H1 H2.
-  fix 3.
+  fix one_step_ind2 3.
   intros t t0 [t1 t2 a|f l1 l2 o].
   apply H.
   apply H0.
