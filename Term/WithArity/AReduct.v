@@ -9,7 +9,8 @@ list of reducts of a term and proof that rewriting is finitely branching
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil ATrs RelUtil ListUtil VecUtil AMatching NatUtil.
+From CoLoR Require Import LogicUtil ATrs RelUtil ListUtil VecUtil AMatching
+     NatUtil.
 
 Section S.
 
@@ -70,8 +71,8 @@ Section S.
     assert (h0 : rules_preserve_vars R). eapply rules_preserve_vars_incl.
     2: apply H. apply incl_tl. refl. split_all.
     (* In (mkRule l r) R *)
-    Focus 2. simpl.  assert (h1 : hd_red R t u). subst. apply hd_red_rule. hyp.
-    case (top_reduct t a). right. apply IHR; hyp. apply IHR; hyp.
+    2:{ simpl. assert (h1 : hd_red R t u). subst. apply hd_red_rule. hyp.
+    case (top_reduct t a). right. apply IHR; hyp. apply IHR; hyp. }
     (* a = mkRule l r *)
     subst a. simpl. unfold top_reduct. simpl.
     case_eq (matches l t).

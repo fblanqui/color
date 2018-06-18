@@ -10,9 +10,10 @@ when the union of two wellfounded relations is wellfounded
 
 Set Implicit Arguments.
 
-From Coq Require Import Omega.
-From CoLoR Require Import SN RelUtil LogicUtil.
-
+From Coq Require Import Omega Wellfounded.Union.
+From CoLoR Require Import SN RelUtil LogicUtil AccUtil NotSN_IS ClassicUtil
+     LeastNat DepChoice.
+    
 Section S.
 
   Variables (A : Type) (R S : relation A).
@@ -24,8 +25,6 @@ Section S.
     (forall x, SN S x -> SN R x) -> SN S t -> R @ S << S @ R -> SN (R U S) t.
 
   Proof.
-    From Coq Require Import Wellfounded.Union.
-    From CoLoR Require Import AccUtil.
     intros h s c. apply Acc_transp_SN. rewrite transp_union. apply Acc_union.
     intros x y. unfold transp. intros xy z yz.
     assert (a : (R@S) x z). exists y. fo.
@@ -37,8 +36,6 @@ Section S.
   Lemma WF_union_commut : WF R -> WF S -> R @ S << S @ R -> WF (R U S).
 
   Proof.
-    From Coq Require Import Wellfounded.Union.
-    From CoLoR Require Import AccUtil.
     intros R_wf S_wf commut. apply wf_transp_WF. rewrite transp_union.
     apply wf_union. intros x y. unfold transp. intros xy z yz.
     assert (a : (R@S) x z). exists y. fo.
@@ -51,7 +48,6 @@ Section S.
   Lemma wf_union_absorb : WF R -> WF S -> R @ S << R -> WF (R U S).
 
   Proof.
-    From CoLoR Require Import NotSN_IS ClassicUtil LeastNat DepChoice.
     intros R_wf S_wf RS x. apply notNT_SN. intros [f [f1 f2]].
     (* We prove that, for all [i], there is [j > i] such that
        [R (f j) (f (j+1))]. *)

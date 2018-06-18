@@ -11,7 +11,8 @@ Like ACap.capa except that variables are considered as aliens too.
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil RelUtil.
+From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil
+     RelUtil.
 
 Section S.
 
@@ -31,21 +32,21 @@ its property is: if capa(t) = (k,f,v) then f(v)=t
 
 f acts as an abstract context with k holes *)
 
-Definition Cap := sigS (fun k => ((terms k -> term) * terms k)%type).
+Definition Cap := sigT (fun k => ((terms k -> term) * terms k)%type).
 
 Notation Caps := (vector Cap).
 
-Definition mkCap := @existS nat (fun k => ((terms k -> term) * terms k)%type).
+Definition mkCap := @existT nat (fun k => ((terms k -> term) * terms k)%type).
 
-Definition fcap (c : Cap) := fst (projS2 c).
-Definition aliens (c : Cap) := snd (projS2 c).
+Definition fcap (c : Cap) := fst (projT2 c).
+Definition aliens (c : Cap) := snd (projT2 c).
 
 (* total number of aliens of a vector of caps *)
 
 Fixpoint sum n (cs : Caps n) : nat :=
   match cs with
     | Vnil => 0
-    | Vcons c cs' => projS1 c + sum cs'
+    | Vcons c cs' => projT1 c + sum cs'
   end.
 
 (* concatenation of all the aliens of a vector of caps *)
@@ -101,7 +102,7 @@ end.
 (***********************************************************************)
 (** number of aliens of a term *)
 
-Definition nb_aliens t := projS1 (capa t).
+Definition nb_aliens t := projT1 (capa t).
 
 Definition nb_aliens_vec n (ts : terms n) := sum (Vmap capa ts).
 

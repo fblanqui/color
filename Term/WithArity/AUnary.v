@@ -9,7 +9,8 @@ properties of systems with unary symbols only
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil NatUtil.
+From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil NatUtil VecMax EqUtil
+     RelUtil SN ListMax.
 
 (***********************************************************************)
 (** tactics *)
@@ -85,8 +86,6 @@ Section term_ind.
 Variables (P : term -> Prop)
   (Hvar : forall x, P (Var x))
   (Hfun : forall f t, P t -> P (Fun1 f t)).
-
-From CoLoR Require Import NatUtil.
 
 Lemma term_ind_forall : forall t, P t.
 
@@ -194,8 +193,6 @@ intro. apply term_ind_forall. refl. intros.
 rewrite sub_fun1, cont_fun1, var_fun1, fill_cont1, <- H. refl.
 Qed.
 
-From CoLoR Require Import EqUtil.
-
 Lemma term_sub_cont : forall x t,
   t = sub (single x (Var (var t))) (fill (cont t) (Var x)).
 
@@ -220,7 +217,7 @@ Arguments fill_var_elim [x c d u] _.
 Lemma fill_eq_cont : forall (t : term) c d, fill c t = fill d t <-> c = d.
 
 Proof.
-split. Focus 2. intro. subst. refl.
+split. 2:{ intro. subst. refl. }
 revert d. revert c. induction c.
 (* c=Hole *)
 simpl. intro. sym. apply (wf_term H).
@@ -234,8 +231,6 @@ intro. Funeqtac. arity. arity. assert (e0=e). apply eq_unique. subst.
 rewrite Vcast_eq, Vapp_eq in H0. destruct H0. inversion H2.
 rewrite (IHc _ H4). refl.
 Qed.
-
-From CoLoR Require Import VecMax.
 
 Lemma maxvar_fill : forall (t : term) c, maxvar (fill c t) = maxvar t.
 
@@ -264,8 +259,6 @@ Definition red1 t u := exists l, exists r, exists c, exists d,
   In (mkRule l r) R /\ t = fill (comp c (comp (cont l) d)) (Var (var t))
   /\ u = fill (comp c (comp (cont r) d)) (Var (var t)).
 
-From CoLoR Require Import EqUtil.
-
 Lemma red1_ok : forall t u, red R t u <-> red1 t u.
 
 Proof.
@@ -285,8 +278,6 @@ rewrite (rules_preserve_vars_var H0), (beq_refl beq_nat_ok),
   !fill_fill, !comp_comp. tauto.
 Qed.
 
-From CoLoR Require Import RelUtil.
-
 Lemma red1_eq : red R == red1.
 
 Proof. rewrite rel_eq. apply red1_ok. Qed.
@@ -302,8 +293,6 @@ Section red_mod.
 
 Variables (E R : rules)
   (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
-
-From CoLoR Require Import RelUtil.
 
 Definition red_mod1 := red1 E # @ red1 R.
 
@@ -384,8 +373,6 @@ symmetry in H2. destruct (IHclos_refl_trans2 x H2). exists x0. split_all.
 apply rtc_trans with x; hyp.
 Qed.
 
-From CoLoR Require Import SN.
-
 Lemma SN_red_ren : forall t : term, SN (red R) t -> SN (red R) (sub s t).
 
 Proof.
@@ -413,8 +400,6 @@ Qed.
 
 Arguments red_mod_ren [t u] _.
 
-From CoLoR Require Import SN.
-
 Lemma SN_red_mod_ren : forall t : term,
   SN (red_mod E R) t -> SN (red_mod E R) (sub s t).
 
@@ -440,8 +425,6 @@ Lemma red0_incl_red : forall R, red0 R << red R.
 Proof. intros R t u. unfold red0. tauto. Qed.
 
 Section red0.
-
-From CoLoR Require Import ListMax.
 
 Variables (R : rules) (hR : rules_preserve_vars R).
 
@@ -576,7 +559,7 @@ rewrite H1. apply in_map. hyp.
 (* ~In 0 (vars l) *)
 rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
 rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
-Focus 2. rewrite vars_var. rewrite vars_var in n. rewrite H. hyp.
+2:{ rewrite vars_var. rewrite vars_var in n. rewrite H. hyp. }
 (*SLOW*)rewrite H at -2. apply red_rule.
 change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 (* <- *)
@@ -605,7 +588,7 @@ rewrite H1. apply in_map. hyp.
 (* ~In 0 (vars l) *)
 rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
 rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
-Focus 2. rewrite vars_var. rewrite vars_var in n. rewrite H. hyp.
+2:{ rewrite vars_var. rewrite vars_var in n. rewrite H. hyp. }
 (*SLOW*)rewrite H at -2. apply hd_red_rule.
 change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 (* <- *)

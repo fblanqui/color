@@ -220,7 +220,7 @@ Qed.
       rwr R (apply_subst sigma t1) (apply_subst sigma t2).
   Proof.
     intros R t1 t2 sigma H; 
-      induction H as [ | t1 t2 t3 H1 Hrec1 H2 Hrec2].
+      induction H as [ | t1 t2 t3 H1 Hrec1 H2].
     apply t_step; apply one_step_apply_subst; trivial.
     apply t_trans with (apply_subst sigma t2); trivial.
     apply one_step_apply_subst; trivial.

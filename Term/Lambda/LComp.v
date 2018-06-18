@@ -548,8 +548,8 @@ Module Make (Export CP : CP_Struct).
     (* Since [P] satisfies [cp_sn], [v0] is SN wrt [R_aeq] and thus
     wrt the restriction of [R_aeq] of the reducts of [v0]. *)
     set (S := RelUtil.restrict (R_aeq* v0) R_aeq). cut (SN S v0).
-    Focus 2. apply wf_restrict_sn. intros v hv. eapply proper_atc. class.
-    2: apply hv. class. apply P_sn. hyp.
+    2:{ apply wf_restrict_sn. intros v hv. eapply proper_atc. class.
+    2: apply hv. class. apply P_sn. hyp. }
     (* We prove that every reduct of [v0] is computable by
        well-founded induction on [v0] with [S] as well-founded relation. *)
     apply SN_ind; intros v i IH v0v.
@@ -594,13 +594,13 @@ Module Make (Export CP : CP_Struct).
     intros P_aeq P_red P_sn P_neu Q_aeq Q_red Q_sn Q_neu x u hu.
     (* [u] is SN. *)
     cut (SN R_aeq u).
-    Focus 2. apply Q_sn. rewrite <- (single_id x). apply hu. apply cp_var; hyp.
+    2:{ apply Q_sn. rewrite <- (single_id x). apply hu. apply cp_var; hyp. }
     (* We prove that [Lam x u] is computable by wellfounded induction on [u].*)
     intro u_sn. revert u u_sn hu. induction 1; rename x0 into u; intros hu v hv.
     (* We apply the lemma [cp_app]. *)
     apply cp_app with (P:=P); auto.
     right. ex x u. refl.
-    Focus 2. intros x' u' e; inversion e; clear e; subst. fo.
+    2:{ intros x' u' e; inversion e; clear e; subst. fo. }
     (* We prove that every reduct of [Lam x u] is computable. *)
     intros t r. gen r; intro r'. apply lam_R_aeq_l in r'.
     destruct r' as [[t' [h1 [h2 h3]]]|[y [w [h1 h2]]]]; subst.

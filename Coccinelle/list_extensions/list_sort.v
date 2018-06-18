@@ -12,16 +12,8 @@
 
 Set Implicit Arguments.
 
-From Coq Require Import Relations.
-From Coq Require Import Setoid.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From Coq Require Import Multiset.
-From CoLoR Require Import list_permut.
-From Coq Require Import Arith.
-From CoLoR Require Import ordered_set.
-From Coq Require Import Recdef.
-From Coq Require Import Morphisms.
+From Coq Require Import Relations Setoid List Multiset Arith Recdef Morphisms.
+From CoLoR Require Import more_list list_permut ordered_set.
 
 Ltac dummy a b a_eq_b :=
 assert (Dummy : a = b); [exact a_eq_b | clear a_eq_b; rename Dummy into a_eq_b].
@@ -151,8 +143,8 @@ Function quicksort (l : list A) { measure (@length A) l} : list A :=
 Proof. 
 (* 1 Second recursive call *)
 intros e_l e l e_l_eq_e_l; subst e_l;
-functional induction (partition e l) 
-   as [ | H1 e' l' H2 IH l1 l2 rec_res e'_lt_e _ | H1 e' l' H2 IH l1 l2 rec_res H3 H4];
+functional induction (partition e l)
+   as [|H1 e' l' H2 IH l1 l2 rec_res e'_lt_e|H1 e' l' H2 IH l1 l2 rec_res H3];
 intros ll1 ll2 Hpart; injection Hpart; intros H H'; subst.
 (* 1.1 l = nil *)
 simpl; auto with arith.
@@ -161,9 +153,9 @@ apply lt_trans with (length (e :: l')); [apply (IH _ _ rec_res) | auto with arit
 simpl; apply lt_n_S; apply (IH _ _ rec_res).
 
 (* 2 First recursive call *)
-intros e_l e l e_l_eq_e_l; subst e_l; 
+intros e_l e l e_l_eq_e_l; subst e_l;
 functional induction (partition e l)
-   as [ | H1 e' l' H2 IH l1 l2 rec_res e'_lt_e _ | H1 e' l' H2 IH l1 l2 rec_res H3 H4];
+   as [|H1 e' l' H2 IH l1 l2 rec_res e'_lt_e|H1 e' l' H2 IH l1 l2 rec_res H3];
 intros ll1 ll2 Hpart; injection Hpart; intros H H'; subst.
 (* 2.1 l = nil *)
 simpl; auto with arith.
@@ -177,7 +169,7 @@ Lemma partition_list_permut1 :
  forall e l, let (l1,l2) := partition e l in permut (l1 ++ l2) l.
 Proof.
 intros e l; functional induction (partition e l)
-   as [ | H1 e' l' H2 IH l1 l2 rec_res e'_lt_e _ | H1 e' l' H2 IH l1 l2 rec_res H3].
+   as [|H1 e' l' H2 IH l1 l2 rec_res e'_lt_e|H1 e' l' H2 IH l1 l2 rec_res H3].
  (* l = nil *)
 auto.
 (* l = a :: l' /\ o_A a e *)
@@ -244,9 +236,10 @@ Qed.
 Lemma quick_sorted_aux3 :
   forall l e, let (l1,_) := partition e l in forall a, mem EDS.eq_A a l1 -> o a e.
 Proof.
-intros l e; 
-functional induction (partition e l) 
-    as [ | l a' l' l_eq_a'_l' IH l1' l2' H a'_lt_e _ | l a' l' l_eq_a'_l' IH l1' l2' H _H _ ].
+intros l e;
+  functional induction (partition e l) as
+    [|l a' l' l_eq_a'_l' IH l1' l2' H a'_lt_e
+     |l a' l' l_eq_a'_l' IH l1' l2' H _H].
 contradiction.
 intros a [a_eq_a' | a_in_l1']; [idtac | rewrite H in IH; apply IH; trivial].
 generalize (o_bool_ok a' e); dummy a a' a_eq_a'; subst; rewrite a'_lt_e; trivial.
@@ -256,9 +249,10 @@ Qed.
 Lemma quick_sorted_aux4 :
   forall l e, let (_,l2) := partition e l in forall a, mem EDS.eq_A a l2 -> o e a.
 Proof.
-intros l e; 
+intros l e;
 functional induction (partition e l) 
-    as [ | l a' l' l_eq_a'_l' IH l1' l2' H a'_lt_e _ | l a' l' l_eq_a'_l' IH l1' l2' H a'_ge_e _ ].
+  as [|l a' l' l_eq_a'_l' IH l1' l2' H a'_lt_e
+      |l a' l' l_eq_a'_l' IH l1' l2' H a'_ge_e].
 contradiction.
 intros; rewrite H in IH; apply IH; trivial.
 intros a [a_eq_a' | a_in_l1']; [subst | rewrite H in IH; apply IH]; trivial.

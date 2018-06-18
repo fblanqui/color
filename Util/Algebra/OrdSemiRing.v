@@ -619,8 +619,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct m. 
     left. destruct n.
-    exists (Zmax z z0). split.
-    apply Zmax_case; auto. trivial.
+    exists (Z.max z z0). split.
+    apply Z.max_case; auto. trivial.
     exists z. auto.
     destruct n.
     left. exists z. auto.
@@ -682,8 +682,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord; simpl in *.
     apply Zmax_gt_compat; hyp.
-    apply Zlt_gt. apply elim_lt_Zmax_l. omega.
-    apply Zlt_gt. apply elim_lt_Zmax_r. omega.
+    apply Z.lt_gt. apply elim_lt_Zmax_l. omega.
+    apply Z.lt_gt. apply elim_lt_Zmax_r. omega.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
@@ -694,8 +694,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
     apply Zmax_ge_compat; hyp.
-    apply Zle_ge. apply elim_Zmax_l. omega.
-    apply Zle_ge. apply elim_Zmax_r. omega.
+    apply Z.le_ge. apply elim_Zmax_l. omega.
+    apply Z.le_ge. apply elim_Zmax_r. omega.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
@@ -714,7 +714,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct c.
     destruct a. destruct b. simpl. arctic_ord. 
-    apply Zle_ge. apply elim_Zmax_l. omega.
+    apply Z.le_ge. apply elim_Zmax_l. omega.
     trivial.
     arctic_ord.
     apply minusInf_ge_min.

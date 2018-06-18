@@ -10,7 +10,7 @@ Set Implicit Arguments.
 
 From Coq Require Import ZArith.
 From CoLoR Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil
-     OrdSemiRing SN RelUtil AMatrixBasedInt.
+     OrdSemiRing SN RelUtil AMatrixBasedInt ListUtil.
 Import ArcticBZMatrix.
 
 Definition matrixInt := @matrixInt A matrix.
@@ -40,9 +40,6 @@ Section Absolute_finite.
 
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
-
-  From Coq Require Import List.
-  From CoLoR Require Import ListUtil.
 
   Variable Fs : list sig.
   Variable Fs_ok : forall f : sig, In f Fs.
@@ -166,7 +163,7 @@ Module ArcticBZInt (Import AI : TArcticBZInt).
       apply well_founded_lt_compat with (f := 
         (fun d: dom => 
           match vec_at0 (dom2vec d) with
-          | Fin x => Zabs_nat x
+          | Fin x => Z.abs_nat x
           | MinusInfBZ => 0%nat
           end
         )

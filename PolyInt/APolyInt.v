@@ -15,7 +15,8 @@ From Coq Require Import Max.
 
 From CoLoR Require Import ATerm ABterm ListUtil VecUtil
   PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
-  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs BoundNat.
+  LogicUtil SN Polynom MonotonePolynom NatUtil ATrs BoundNat AWFMInterpretation
+  ZUtil ACompat AMannaNess.
 
 Section S.
 
@@ -93,8 +94,6 @@ Section S.
 (***********************************************************************)
 (** interpretation monotony *)
 
-    From CoLoR Require Import AWFMInterpretation.
-
     Lemma pi_monotone : monotone I Dgt.
 
     Proof.
@@ -131,7 +130,7 @@ Section S.
     Proof.
       unfold absorbs_left, inclusion. intros. do 2 destruct H.
       unfold succ_eq, succ, IR, Dge, Dgt, transp, Dle, Dlt in *. intro.
-      eapply Zlt_le_trans. apply H0. apply H.
+      eapply Z.lt_le_trans. apply H0. apply H.
     Qed.
 
     Definition rp := @mkReduction_pair Sig
@@ -246,8 +245,6 @@ Section S.
 (***********************************************************************)
 (** compatibility *)
 
-    From CoLoR Require Import ZUtil.
-
     Lemma pi_compat_rule : forall r,
       coef_pos (rulePoly_gt r) -> succ (lhs r) (rhs r).
 
@@ -276,8 +273,6 @@ Section S.
       apply pos_peval. exact H_coef_pos.
     Qed.
 
-    From CoLoR Require Import ACompat.
-
     Lemma pi_compat : forall R,
       lforall (fun r => coef_pos (rulePoly_gt r)) R -> compat succ R.
 
@@ -289,8 +284,6 @@ Section S.
 
 (***********************************************************************)
 (** termination *)
-
-    From CoLoR Require Import AMannaNess.
 
     Lemma polyInterpretationTermination : forall R,
       lforall (fun r => coef_pos (rulePoly_gt r)) R -> WF (red R).

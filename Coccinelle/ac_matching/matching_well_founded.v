@@ -123,7 +123,7 @@ contradiction.
 (* unsolved_part pb =  (v1,t2) :: _ *)
 destruct (find X.eq_bool v1 (solved_part pb)) as [t1 | ].
 (* v1 has already a plain value t1, and t1 is equal or not to t2 *)
-destruct (T.eq_bool t1 t2) as [t1_eq_t2 | _]; [idtac | contradiction];
+destruct (T.eq_bool t1 t2); [idtac | contradiction];
 inversion_clear In_pb' as [pb'_eq_ | ]; [idtac | contradiction];
 subst; simpl; auto with arith.
 generalize (W3 v1); 
@@ -310,7 +310,7 @@ pattern pb';
 refine 
 (prop_map_without_repetition (B:=matching_problem) _ T.eq_bool_ok _ _ _ _ pb' In_pb');
 clear pb' In_pb'; intros [ | g2 ll2] In_t2; trivial;
-destruct (F.Symb.eq_bool g1 g2) as [g1_eq_g2 | g1_diff_g2]; trivial.
+destruct (F.Symb.eq_bool g1 g2); trivial.
 generalize (in_remove _ _ T.eq_bool_ok (Term g2 ll2) l2);
 destruct (remove T.eq_bool (Term g2 ll2) l2) as [l2''' | ]; trivial.
 intros [cp1 [l2' [l2'' [ H [l2_eq l2'''_eq]]]]].

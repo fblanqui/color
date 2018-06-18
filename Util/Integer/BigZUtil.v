@@ -37,5 +37,5 @@ Lemma le_gt_dec : forall n m, {n <= m} + {n > m}.
 
 Proof.
   intros. unfold BigZ.le, BigZ.lt. destruct (Z_le_gt_dec [n] [m]).
-  left. hyp. right. unfold Zlt. rewrite <- Zcompare_antisym, g. refl.
+  left. hyp. right. unfold Z.lt. rewrite <- Zcompare_antisym, g. refl.
 Defined.

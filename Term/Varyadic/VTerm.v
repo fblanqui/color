@@ -9,7 +9,8 @@ algebraic terms with no arity
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil BoolUtil ListUtil EqUtil ListDec.
+From CoLoR Require Import LogicUtil BoolUtil ListUtil EqUtil ListDec NatUtil
+     ListMax.
 From Coq Require Import Peano_dec.
 From CoLoR Require Export VSignature.
 From Coq Require Export List.
@@ -121,8 +122,6 @@ Lemma args_eq : forall f v v', v = v' -> Fun f v = Fun f v'.
 
 Proof. intros. rewrite H. refl. Qed.
 
-From CoLoR Require Import NatUtil.
-
 Fixpoint beq (t u : term) :=
   match t with
     | Var x =>
@@ -190,8 +189,6 @@ Definition term_eq_dec := dec_beq beq_ok.
 
 (***********************************************************************)
 (** maximal index of a variable *)
-
-From CoLoR Require Import ListMax.
 
 Fixpoint maxvar (t : term) : nat :=
   match t with

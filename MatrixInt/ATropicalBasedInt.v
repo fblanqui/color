@@ -46,7 +46,7 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
         cover all three: arctic/arctic-below-zero/tropical *)
     Definition vec_invariant (v : vec) := A0 >> vec_at0 v.
 
-    Variable A0_gt_A1 : A0 >> A1.
+    Parameter A0_gt_A1 : A0 >> A1.
 
     Lemma inv_id_matrix : 
       vec_invariant (Vreplace (Vconst A0 dim) dim_pos A1).

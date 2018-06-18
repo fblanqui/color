@@ -469,7 +469,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
     match m, n with
     | MinusInfBZ, n => n
     | m, MinusInfBZ => m
-    | Fin m, Fin n => Fin (Zmax m n)
+    | Fin m, Fin n => Fin (Z.max m n)
     end.
 
   Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
@@ -491,14 +491,14 @@ Module ArcticBZSemiRingT <: SemiRingType.
   Lemma A_plus_comm m n : Aplus m n = Aplus n m.
 
   Proof.
-    unfold Aplus. destruct m; destruct n; trivial. rewrite Zmax_comm. refl.
+    unfold Aplus. destruct m; destruct n; trivial. rewrite Z.max_comm. refl.
   Qed.
 
   Lemma A_plus_assoc m n p : Aplus m (Aplus n p) = Aplus (Aplus m n) p.
 
   Proof.
     unfold Aplus. destruct m; destruct n; destruct p; trivial.
-    rewrite Zmax_assoc. refl.
+    rewrite Z.max_assoc. refl.
   Qed.
 
   Lemma A_mult_comm m n : Amult m n = Amult n m.

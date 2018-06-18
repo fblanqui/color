@@ -9,37 +9,34 @@ substitutions
 
 Set Implicit Arguments.
 
+From Coq Require Import Relations.
 From CoLoR Require Import LogicUtil VTerm.
 
 Section S.
 
-Variable Sig : Signature.
+  Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (list term).
+  Notation term := (term Sig). Notation terms := (list term).
 
-Definition substitution := variable -> term.
+  Definition substitution := variable -> term.
 
-Fixpoint sub (s : substitution) (t : term) : term :=
-  match t with
+  Fixpoint sub (s : substitution) (t : term) : term :=
+    match t with
     | Var x => s x
     | Fun f ts => Fun f (map (sub s) ts)
-  end.
+    end.
 
-Lemma sub_fun : forall s f ts, sub s (Fun f ts) = Fun f (map (sub s) ts).
+  Lemma sub_fun : forall s f ts, sub s (Fun f ts) = Fun f (map (sub s) ts).
 
-Proof.
-refl.
-Qed.
+  Proof. refl. Qed.
 
-Section properties.
+  Section properties.
 
-From Coq Require Import Relations.
+    Variable succ : relation term.
 
-Variable succ : relation term.
+    Definition substitution_closed :=
+      forall t1 t2 s, succ t1 t2 -> succ (sub s t1) (sub s t2).
 
-Definition substitution_closed :=
-  forall t1 t2 s, succ t1 t2 -> succ (sub s t1) (sub s t2).
-
-End properties.
+  End properties.
 
 End S.

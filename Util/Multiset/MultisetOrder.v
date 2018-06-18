@@ -683,7 +683,7 @@ Section MultisetOrder_Wf.
     intros a M0 H1 H2 H3; constructor; intros N N_lt.
     case (red_insert N_lt); intros; repeat destruct H; fold AccM_1; rewrite H.
     apply H3; trivial.
-    clear H N_lt H3; induction x as [_|M a0] using mset_ind.
+    clear H N_lt H3; induction x as [|M a0] using mset_ind.
     setoid_replace (M0 + empty) with M0; auto with multisets.
     setoid_replace (M0 + (M + {{a0}})) with ((M0 + M) + {{a0}}).
     auto with multisets.

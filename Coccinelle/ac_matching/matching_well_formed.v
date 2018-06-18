@@ -111,7 +111,7 @@ intros [pb'_eq_ | pb'_in_nil]; [subst; split | contradiction].
 (* v1 has no value at all, neither plain nor partial *)
 (* W1 *) intros; apply W1; right; trivial.
 repeat split.
-(* W2 *) intros v; simpl; destruct (X.eq_bool v v1) as [_ | _]; [idtac | apply W2];
+(* W2 *) intros v; simpl; destruct (X.eq_bool v v1); [idtac | apply W2];
 refine (proj2 (A:= well_formed_cf (Var v1)) _); apply W1; left; trivial.
 (* W3 *) intros; apply W3; right; trivial.
 (* W4 *) intros v; simpl; generalize (X.eq_bool_ok v v1); case (X.eq_bool v v1); [intros v_eq_v1 | intros _; apply W4].
@@ -123,7 +123,7 @@ right; right; rewrite H1; simpl; generalize (X.eq_bool_ok v1 v1); case (X.eq_boo
 [trivial | intro v1_diff_v1; apply False_rect; apply v1_diff_v1; reflexivity].
 left; trivial.
 right; left; trivial.
-right; right; simpl; destruct (X.eq_bool (new_var p) v1) as [ _ | _]; trivial.
+right; right; simpl; destruct (X.eq_bool (new_var p) v1); trivial.
 
 (* unsolved_part pb = (Term f1 l1, t2) :: _ *)
 (* t2 is compatible or not with (Term f1 l1) *)
@@ -315,7 +315,7 @@ apply well_formed_cf_build_inside with cp1'; trivial.
 apply W1; right; trivial.
 repeat split.
 (* W2 *) 
-intro v; simpl; destruct (X.eq_bool v v1) as [_ | _];
+intro v; simpl; destruct (X.eq_bool v v1);
 [ apply well_formed_cf_subterms with f1 l2; trivial | apply W2 ].
 (* W3 *) intros; apply W3; right; trivial.
 (* W4 *) 
@@ -332,7 +332,7 @@ simpl; apply list_permut_occurs_in_term_list with (u1 :: u2 :: l1); trivial;
 apply quick_permut.
 left; right; trivial.
 right; left; trivial.
-right; right; simpl; destruct (X.eq_bool (new_var p) v1) as [_ | _]; trivial.
+right; right; simpl; destruct (X.eq_bool (new_var p) v1); trivial.
 do 2 split. 
 (* W1 *) 
 intros t1 t3 [H'' | In_l].
@@ -344,7 +344,7 @@ apply well_formed_cf_build_inside with cp1'; trivial.
 apply W1; right; trivial.
 repeat split.
 (* W2 *) 
-intro v; simpl; destruct (X.eq_bool v v1) as [_ | _];
+intro v; simpl; destruct (X.eq_bool v v1);
 [ apply well_formed_cf_subterms with f1 l2; trivial | apply W2 ].
 (* W3 *) intros; apply W3; right; trivial.
 (* W4 *) 
@@ -361,7 +361,7 @@ simpl; apply list_permut_occurs_in_term_list with (u1 :: u2 :: l1); trivial;
 apply quick_permut.
 left; right; trivial.
 right; left; trivial.
-right; right; simpl; destruct (X.eq_bool (new_var p) v1) as [_ | _]; trivial.
+right; right; simpl; destruct (X.eq_bool (new_var p) v1); trivial.
 (* W1 *) 
 intros t1 t3 [H'' | In_l].
 replace t1 with (fst (t1,t3)); trivial; rewrite <- H''; unfold fst;
@@ -376,7 +376,7 @@ subst; apply well_formed_cf_build_inside with cp1'; trivial.
 apply W1; right; trivial.
 repeat split.
 (* W2 *) intros; apply W2; right; trivial.
-(* W3 *) intro v; simpl; destruct (X.eq_bool v v1) as [_ | _].
+(* W3 *) intro v; simpl; destruct (X.eq_bool v v1).
 simpl; rewrite Af1; split.
 apply well_formed_cf_subterms with f1 l2; trivial.
 apply well_formed_cf_alien with l2; trivial.
@@ -396,7 +396,7 @@ intro H; generalize (H (eq_refl _)); clear H; intro H; rewrite H in one_v';
 absurd (1 <= 0); trivial; auto with arith.
 apply W5.
 (* W6 *) 
-simpl; intros v p H; destruct (X.eq_bool v v1) as [_ | v_diff_v1].
+simpl; intros v p H; destruct (X.eq_bool v v1).
 injection H; clear H; intro H; subst p; simpl.
 left; left; destruct l1 as [ | u1 l1]; simpl; [trivial | idtac];
 apply list_permut_occurs_in_term_list with (Var (fresh_var pb) :: u1 :: l1);
@@ -409,7 +409,7 @@ left; left; destruct l1 as [ | u1 l1]; simpl; [contradiction | idtac];
 apply list_permut_occurs_in_term_list with (Var (fresh_var pb) :: u1 :: l1);
 [apply quick_permut | right; trivial].
 left; right; trivial.
-right; left; simpl; destruct (X.eq_bool (new_var p) v1) as [_ | _]; trivial.
+right; left; simpl; destruct (X.eq_bool (new_var p) v1); trivial.
 right; right; trivial.
 
 (* l1 = t1 :: _, t1 is a complex term (Term g1 ll1) *)
@@ -418,7 +418,7 @@ intro In_pb'; pattern pb';
 refine 
 (prop_map_without_repetition (B:=matching_problem) _ T.eq_bool_ok _ _ _ _ pb' In_pb');
 clear pb' In_pb'; intros [ | g2 ll2] In_t2; trivial;
-destruct (F.Symb.eq_bool g1 g2) as [g1_eq_g2 | g1_diff_g2]; trivial.
+destruct (F.Symb.eq_bool g1 g2); trivial.
 generalize (in_remove _ _ T.eq_bool_ok (Term g2 ll2) l2);
 destruct (remove T.eq_bool (Term g2 ll2) l2) as [l2''' | ]; trivial.
 intros [cp1' [l2' [l2'' [ H' [l2_eq l2'''_eq]]]]].

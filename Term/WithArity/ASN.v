@@ -10,7 +10,8 @@ general results on the strong normalization of rewrite relations
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ATrs SN LogicUtil VecUtil VecOrd NatUtil.
+From CoLoR Require Import ATrs SN LogicUtil VecUtil VecOrd NatUtil RelUtil
+     ARelation Union ACap ACalls.
 From Coq Require Import List Sumbool.
 
 Section S.
@@ -71,8 +72,6 @@ Section S.
 (***********************************************************************)
 (** undefined symbol whose arguments are sn *)
 
-  From CoLoR Require Import ACalls.
-
   Lemma sn_args_sn_fun : forall f, defined f R = false ->
     forall ts, Vforall SNR ts -> SNR (Fun f ts).
 
@@ -119,8 +118,6 @@ if [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r]
 such that [Vmap (sub s) vs] are SN,
 then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
 
-  From CoLoR Require Import ACap.
-
   Lemma calls_sn_args : forall r s, (forall x, In x (vars r) -> SNR (s x))
     -> (forall g vs, In (Fun g vs) (calls R r)
       -> Vforall SNR (Vmap (sub s) vs) -> SNR (sub s (Fun g vs)))
@@ -147,7 +144,7 @@ then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
     apply (vars_cap_inf R). hyp. hyp.
     (* x > maxvar v *)
     ded (vars_cap R H6). rewrite (fsub_nth (aliens (capa R v)) l H8).
-    set (a := Vnth (aliens (capa R v)) (lt_pm (k:=projS1 (capa R v)) l H8)).
+    set (a := Vnth (aliens (capa R v)) (lt_pm (k:=projT1 (capa R v)) l H8)).
     assert (Vin a (aliens (capa R v))). unfold a. apply Vnth_in.
     assert (subterm_eq a v). apply (in_aliens_subterm R). hyp.
     assert (In a (calls R v)). apply aliens_incl_calls. hyp.
@@ -173,8 +170,6 @@ then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
 
 (***********************************************************************)
 (** relation with the subterm ordering *)
-
-  From CoLoR Require Import RelUtil ARelation Union.
 
   Notation supterm := (@supterm Sig).
 

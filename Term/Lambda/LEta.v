@@ -76,7 +76,7 @@ Module Make (Export L : L_Struct).
     intros s s' ss' u v uv. subst s'. inversion uv; clear uv; subst. simpl.
     set (x':= var x (App v (Var x)) s).
     rewrite update_eq, subs_seq with (s':=s).
-    Focus 2. intros y hy. unfold Def.update. eq_dec y x. subst. contr. refl.
+    2:{ intros y hy. unfold Def.update. eq_dec y x. subst. contr. refl. }
     apply eta_top_intro.
     case_eq (mem x (fvcodom (fv v) s)); intro e; subst x';
       unfold Def.var; ens; simpl; Equal; rewrite !remove_equal; auto; rewrite e.
@@ -136,8 +136,8 @@ Module Make (Export L : L_Struct).
     right. inv_aeq H0; clear H0; subst.
     rename x into x2; rename u into u2'; rename u' into u1'.
     ex x2 u2'. split. refl. split.
-    Focus 2. (*SLOW*)rewrite i, i1, rename2. apply subs_eta_aeq. refl.
-    apply clos_aeq_intro_refl. hyp. hyp.
+    2:{ (*SLOW*)rewrite i, i1, rename2. apply subs_eta_aeq. refl.
+    apply clos_aeq_intro_refl. hyp. hyp. }
     (* condition on variables *)
     permut_rename i1; clear i3.
     split_all; subst; try rewrite rename_id in *. auto.

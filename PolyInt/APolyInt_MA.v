@@ -45,7 +45,7 @@ Module PolyInt (Export PI : TPolyInt).
 
     Proof.
       unfold succ, succeq. intros p q pq. destruct pq as [r [pr rq]].
-      unfold Dgt, Dlt, transp. apply Zlt_le_trans with (val r); auto.
+      unfold Dgt, Dlt, transp. apply Z.lt_le_trans with (val r); auto.
     Qed.
 
     Definition rulePoly_gt l r := rulePoly_gt trsInt (@mkRule sig l r).

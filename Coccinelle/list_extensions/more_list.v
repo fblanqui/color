@@ -1309,12 +1309,12 @@ intros A f l; induction l as [ | a l]; simpl.
 split; [intros; discriminate | intros [a [Abs _]]; contradiction].
 assert (H: forall a', a' = a -> f a' = f a).
 intros; subst; trivial.
-destruct (f a) as [fa | not_fa]; simpl; 
-generalize (H _ (eq_refl _)); clear H; intro H;
-split; intro H'.
+destruct (f a); simpl;
+  generalize (H _ (eq_refl _)); clear H; intro H; split; intro H'.
 exists a; split; trivial; left; trivial.
 trivial.
-destruct ((proj1 IHl) H') as [a' [a'_in_l fa']]; exists a'; split; trivial; right; trivial.
+destruct ((proj1 IHl) H') as [a' [a'_in_l fa']]; exists a'; split; trivial;
+  right; trivial.
 destruct H' as [a' [[a_eq_a' | a'_in_l] fa']]. 
 subst a'; rewrite H in fa'; absurd (false = true); trivial; discriminate.
 apply (proj2 IHl); exists a'; split; trivial.

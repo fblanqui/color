@@ -95,12 +95,12 @@ Section S.
   Lemma finite_eq P : finite P <-> exists l, P [=] of_list l.
 
   Proof.
-    split. Focus 2.
-    (* <- *)
-    intros [l e]. rewrite e. apply finite_of_list.
+    split.
     (* -> *)
     intros [n [f [f_inj f_surj]]].
     ex (map (elt_val o f) (L n)). apply of_map_L. hyp.
+    (* <- *)
+    intros [l e]. rewrite e. apply finite_of_list.
   Qed.
 
 (** Finiteness is contravariant wrt inclusion. *)

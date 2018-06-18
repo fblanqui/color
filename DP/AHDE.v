@@ -11,8 +11,8 @@ a simple over graph of the DP graph based on the equality of head symbols
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil AGraph
-  LogicUtil BoolUtil AShift EqUtil.
+From CoLoR Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil
+     AGraph LogicUtil BoolUtil AShift EqUtil ListDec.
 
 (***********************************************************************)
 (** definition of the hde over graph *)
@@ -125,8 +125,6 @@ Definition hd_eq (u v : term Sig) :=
 
 (* REMARK: [Inb _ D] can be optimized when D is sorted. *)
 
-From CoLoR Require Import ListDec.
-
 Notation mem := (mem (@beq_rule Sig)).
 Notation mem_ok := (mem_ok (@beq_rule_ok Sig)).
 
@@ -180,7 +178,7 @@ Lemma hde_bool_mark_correct :
 
 Proof.
 incl_trans (hde (dup_hd_rules D)).
-Focus 2. intros x y. rewrite hde_bool_correct_aux. auto.
+2:{ intros x y. rewrite hde_bool_correct_aux. auto. }
 intros x y h. destruct h. decomp H0. unfold hde. intuition.
 destruct (in_map_elim H). destruct H0. destruct x2. unfold dup_hd_rule in H3.
 simpl in H3. subst x. simpl in *.

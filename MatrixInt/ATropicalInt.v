@@ -8,7 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From CoLoR Require Import ATropicalBasedInt Matrix OrdSemiRing VecUtil AMonAlg
-     SN RelUtil NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt BoolUtil.
+     SN RelUtil NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt BoolUtil
+     ListUtil.
 From Coq Require Import Structures.Equalities.
 
 (* TODO: this should be moved to Matrix.v *)
@@ -45,9 +46,6 @@ Section Somewhere_tfinite.
 
   Variable sig : Signature.
   Variable trsInt : forall f : sig, matrixInt dim (arity f).
-
-  From Coq Require Import List.
-  From CoLoR Require Import ListUtil.
 
   Variable Fs : list sig.
   Variable Fs_ok : forall f : sig, In f Fs.

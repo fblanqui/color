@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATrs VecUtil RelUtil SN ARules SetUtil
      NatUtil.
-From Coq Require Import List Morphisms.
+From Coq Require Import List Morphisms Setoid.
 
 Section Morphism.
 
@@ -64,8 +64,6 @@ Section Morphism.
   Definition Fl := map Fr.
 
   Definition Frs := image Fr.
-
-  From Coq Require Import Setoid.
 
   Instance Frs_equiv : Proper (equiv ==> equiv) Frs.
 
@@ -185,7 +183,7 @@ Section Morphism.
 (***********************************************************************)
 (** finite versions *)
 
-  From CoLoR Require Import ATrs.
+  Import ATrs.
 
   Lemma Fred_WF_fin : forall R, WF (red (Fl R)) -> WF (red R).
 

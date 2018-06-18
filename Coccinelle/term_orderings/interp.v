@@ -24,7 +24,7 @@ Record ordering_pair (A:Type) (eq:A -> A -> Prop)   (lt le : A -> A -> Prop)
 }.
 
 
-Definition o_Z : forall m, ordering_pair (@eq Z) (Zwf.Zwf m) Zle.
+Definition o_Z : forall m, ordering_pair (@eq Z) (Zwf.Zwf m) Z.le.
 Proof.
   intros m.
   constructor.

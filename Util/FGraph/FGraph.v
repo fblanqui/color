@@ -519,8 +519,8 @@ successors of g' *)
     ded (geq_add n e). rewrite H in H1. unfold preds at 3. rewrite fold_Add.
     6: apply H1. 2: class. 2: apply preds_aux_m'. 2: refl.
     2: apply preds_aux_transp.
-    Focus 2. rewrite remove_in_iff. intros [h1 h2]. absurd (eq y y). hyp. refl.
-    Focus 1. fold (preds x' (remove y g')). unfold preds_aux. rewrite <- xx'.
+    2:{rewrite remove_in_iff. intros [h1 h2]. absurd (eq y y). hyp. refl. }
+    fold (preds x' (remove y g')). unfold preds_aux. rewrite <- xx'.
     rewrite <- e at 1. rewrite succs_add_id. destruct (XSet.mem x s).
     rewrite <- xx'. apply XSetFacts.add_m. refl. apply h. refl. hyp.
     apply h. hyp. hyp.

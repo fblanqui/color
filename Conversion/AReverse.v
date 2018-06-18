@@ -9,8 +9,8 @@ unary TRS reversing
 
 Set Implicit Arguments.
 
-From CoLoR Require Import Srs ATrs SReverse ATerm_of_String String_of_ATerm AUnary SN
-  LogicUtil AMorphism EqUtil NatUtil ListUtil.
+From CoLoR Require Import Srs ATrs SReverse ATerm_of_String String_of_ATerm
+     AUnary SN LogicUtil AMorphism EqUtil NatUtil ListUtil VecUtil.
 
 Section S.
 
@@ -56,8 +56,6 @@ Section S.
 
 (***********************************************************************)
 (** isomorphism properties *)
-
-  From CoLoR Require Import VecUtil.
 
   Lemma term_of_string_epi : forall t, maxvar t = 0 ->
     ATerm_of_String.term_of_string (string_of_term t) = Ft HF t.

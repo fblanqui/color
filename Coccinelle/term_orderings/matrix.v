@@ -4300,13 +4300,13 @@ Definition rI := 1%Z.
 Definition  plus := Zplus. 
 Definition mult := Zmult.
 Definition sub := Zminus.
-Definition opp := Zopp. 
+Definition opp := Z.opp. 
 Definition eq_Equivalence := Zsth. 
 Definition Ath := Zth. 
 Definition Aeqe := Zeqe.
 Definition lt := (Zwf.Zwf 0).
-Definition le := Zle.
-Definition o:ordering_pair eq  (Zwf.Zwf 0) Zle .
+Definition le := Z.le.
+Definition o:ordering_pair eq  (Zwf.Zwf 0) Z.le .
 Proof.
   apply mk_ordering_pair.
   intros.

@@ -10,7 +10,9 @@ there is a loop in a relative TRS
 
 Set Implicit Arguments.
 
-From CoLoR Require Import ATrs LogicUtil ALoop ListUtil RelUtil.
+From Coq Require Import Euclid Wf_nat.
+From CoLoR Require Import ATrs LogicUtil ALoop ListUtil RelUtil NatUtil
+     APosition AMatching ARelation.
 
 Section S.
 
@@ -94,8 +96,6 @@ Section S.
 
   Arguments mod_rewrites_correct [ds t us] _.
 
-  From CoLoR Require Import NatUtil.
-
   Notation default := (Var 0).
 
   Lemma mod_FS_red : forall ts t, mod_FS t ts -> forall i, i < length ts ->
@@ -137,8 +137,6 @@ Section S.
 
     Definition last_term' := last us' last_term.
 
-    From CoLoR Require Import APosition AMatching.
-
     Variables (p : position) (u : term) (h2 : subterm_pos last_term' p = Some u)
       (s : substitution Sig) (h3 : matches t u = Some s).
 
@@ -167,24 +165,17 @@ Section S.
       apply (rewrites_correct h1').
     Qed.
 
-    From CoLoR Require Import ARelation.
-
     Lemma red_mod_g : forall a b, red_mod E R a b -> red_mod E R (g a) (g b).
 
     Proof.
       intros. apply red_mod_fill. apply red_mod_sub. hyp.
     Qed.
 
-    From Coq Require Import Euclid.
-
     Definition seq : nat -> term.
 
     Proof.
       intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
     Defined.
-
-    From CoLoR Require Import RelUtil.
-    From Coq Require Import Wf_nat.
 
     Lemma IS_seq : IS (red_mod E R) seq.
 

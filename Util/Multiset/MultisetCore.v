@@ -11,7 +11,7 @@ with specification of operations on multisets.
 Set Implicit Arguments.
 
 From CoLoR Require RelExtras.
-From Coq Require Import Min Relations.
+From Coq Require Import Min Relations Psatz.
 
 Module Type MultisetCore.
 
@@ -104,8 +104,7 @@ Section Multiset_IntersectionAsDifference.
     mult x (inter_as_diff M N) = Min.min (mult x M) (mult x N).
 
   Proof.
-    intros M N x. unfold inter_as_diff. rewrite !diff_mult.
-    From Coq Require Import Psatz. lia.
+    intros M N x. unfold inter_as_diff. rewrite !diff_mult. lia.
   Qed.
 
 End Multiset_IntersectionAsDifference.

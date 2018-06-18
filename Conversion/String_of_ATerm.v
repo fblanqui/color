@@ -9,7 +9,8 @@ conversion of a TRS with unary symbols only into an SRS
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil RelUtil SN ListUtil Srs ATrs AUnary VecUtil.
+From CoLoR Require Import LogicUtil RelUtil SN ListUtil Srs ATrs AUnary VecUtil
+     EqUtil NatUtil ListMax.
 
 Section S.
 
@@ -155,8 +156,6 @@ Section S.
 (***********************************************************************)
 (** invariance under reset *)
 
-  From CoLoR Require Import EqUtil NatUtil.
-
   Lemma string_of_term_reset :
     forall t, string_of_term (reset t) = string_of_term t.
 
@@ -182,8 +181,6 @@ Section S.
     rewrite IHR, srule_of_rule_reset. refl.
   Qed.
 
-  From CoLoR Require Import ListMax.
-
   Section reset.
 
     Variables (R : rules) (h1 : rules_preserve_vars R)
@@ -196,9 +193,9 @@ Section S.
       intros. Srs.redtac. subst. rewrite !term_of_string_fill.
       destruct (in_map_elim H). destruct H0. destruct x as [l' r'].
       unfold srule_of_rule in H1. simpl in H1. inversion H1.
-      rewrite !term_of_string_epi. Focus 3. eapply h2. apply H0.
-      Focus 2. ded (h2 _ _ H0). cut (maxvar r' <= maxvar l'). omega.
-      rewrite !maxvar_lmax. apply incl_lmax. apply h1. hyp.
+      rewrite !term_of_string_epi. 3:{ eapply h2. apply H0. }
+      2:{ ded (h2 _ _ H0). cut (maxvar r' <= maxvar l'). omega.
+      rewrite !maxvar_lmax. apply incl_lmax. apply h1. hyp. }
       apply red_rule. hyp.
     Qed.
 

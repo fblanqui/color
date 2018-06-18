@@ -57,7 +57,7 @@ Section BinSignatureTheory.
     pose (s := fun i => match i with | 0 => t | S j => match j with
       | 0 => (cons_term a v) | S k => t end end).
     exists s. split. unfold proj_cons. rewrite In_cons. left. refl.
-    split. Focus 2. simpl; auto. rewrite cons_term_cons. unfold Vxy.
+    split. 2: simpl; auto. rewrite cons_term_cons. unfold Vxy.
     apply args_eq. apply Veq_nth. intros i Hi. rewrite Vnth_map, !Vnth_cast.
     destruct i. simpl; refl. rewrite !Vnth_cons. destruct i. simpl; refl.
     cut (S (S i) < 2). intro; omega. rewrite cons_arity; auto.
@@ -72,7 +72,7 @@ Section BinSignatureTheory.
     pose (s := fun i => match i with | 0 => t | S j => match j with
       | 0 => (cons_term a v) | S k => t end end). exists s. split.
     unfold proj_cons. rewrite In_cons. right. rewrite In_cons. left; refl.
-    split. Focus 2. simpl; auto. rewrite cons_term_cons. unfold Vxy.
+    split. 2: simpl; auto. rewrite cons_term_cons. unfold Vxy.
     apply args_eq. apply Veq_nth. intros i Hi. rewrite Vnth_map, !Vnth_cast.
     destruct i. simpl; refl. rewrite !Vnth_cons. destruct i. simpl; refl.
     cut (S (S i) < 2). intro; omega. rewrite cons_arity; auto.
@@ -102,7 +102,7 @@ Section BinSignatureTheory.
                       (Fun f (Vcast (Vapp v1 (Vcons y v2)) Emn)).
 
   Proof.
-    intros f m n. induction 1. Focus 2. apply rt_refl. apply rt_step.
+    intros f m n. induction 1. 2: apply rt_refl. apply rt_step.
     destruct H as [l H]; destruct H as [r H]; destruct H as [c H].
     destruct H as [s H]. exists l. exists r.
     exists (Cont _ Emn v1 c v2). exists s. split. destruct H; auto. simpl.

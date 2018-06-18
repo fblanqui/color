@@ -10,8 +10,9 @@ there is a loop in an SRS
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil Srs ListUtil EqUtil.
-
+From Coq Require Import Euclid Wf_nat.
+From CoLoR Require Import LogicUtil Srs ListUtil EqUtil RelUtil ListDec NatUtil.
+    
 Section S.
 
   Variable Sig : Signature.
@@ -45,8 +46,6 @@ Section S.
   Proof.
     intros t x. destruct x. exact f.
   Defined.
-
-  From CoLoR Require Import RelUtil.
 
   Lemma FS_rtc : forall us t, FS t us -> red R # t (last us t).
 
@@ -86,8 +85,6 @@ Section S.
 
 (***********************************************************************)
 (** data necessary for a sequence of rewrite steps *)
-
-  From CoLoR Require Import ListDec.
 
   Definition data := (nat * rule Sig)%type.
 
@@ -143,8 +140,6 @@ Section S.
 
   Arguments rewrites_correct [ds t us] _.
 
-  From CoLoR Require Import NatUtil.
-
   Notation default := (@nil letter).
 
   Lemma FS_red : forall ts t, FS t ts -> forall i, i < length ts ->
@@ -197,16 +192,11 @@ Section S.
       subst. refl.
     Qed.
 
-    From Coq Require Import Euclid.
-
     Definition seq : nat -> string.
 
     Proof.
       intro n. destruct (eucl_dev k h0 n). exact (iter (nth r) g q).
     Defined.
-
-    From CoLoR Require Import RelUtil.
-    From Coq Require Import Wf_nat.
 
     Lemma IS_seq : IS (red R) seq.
 

@@ -196,7 +196,7 @@ Lemma succ_succeq_compat : absorbs_left Dgt Dge.
 
 Proof.
   intros p q pq. destruct pq as [r [pr rq]].
-  unfold Dgt, Dlt, transp. apply Zlt_le_trans with (val r); auto.
+  unfold Dgt, Dlt, transp. apply Z.lt_le_trans with (val r); auto.
 Qed.
 
 Program Definition polySolver := monotoneAlgebraSolver succ_WF 

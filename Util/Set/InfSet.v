@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From Coq Require Import Basics Morphisms Setoid Omega.
 From CoLoR Require Import ClassicUtil IotaUtil EpsilonUtil LogicUtil SetUtil
-     FinSet FunUtil BoundNat.
+     FinSet FunUtil BoundNat IotaUtil EpsilonUtil.
 
 Section S.
 
@@ -112,8 +112,6 @@ Section S.
 (****************************************************************************)
 (** An infinite set contains finite subsets of every cardinality. *)
 
-  From CoLoR Require Import IotaUtil.
-
   Section Pcard_of_inf.
 
     Variable W : set A.
@@ -139,8 +137,6 @@ Section S.
       simpl. intro x. unfold impl. fo. subst. fo.
       rewrite card_add, cX. destruct (dec (mem a X)). fo. omega.
     Qed.
-
-    From CoLoR Require Import EpsilonUtil.
 
     Definition Pcard_of_inf (P : Pinf W) n : Pcard P (S n).
 

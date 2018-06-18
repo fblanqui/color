@@ -3481,8 +3481,8 @@ intros p l1 l2 E;
 functional induction (equiv_eval_list p l1 l2) as 
 [ 
 | H1 H2 t1 l1 H3 t2 l2 H4 H IH
-| H1 H2 t1 l1 H3 t2 l2 H4 H IH
-| H1 H2 t1 l1 H3 t2 l2 H4 H IH
+| H1 H2 t1 l1 H3 t2 l2 H4 H
+| H1 H2 t1 l1 H3 t2 l2 H4 H
 | l1 l2 H1 H2 H3 H4 H].
 (* 1/5 *) 
 discriminate.

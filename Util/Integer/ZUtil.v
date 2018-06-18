@@ -178,8 +178,8 @@ Lemma pos_power_val : forall x n, pos (power (val x) n).
 
 Proof. intros. destruct x. apply pos_power. hyp. Qed.
 
-Definition Dlt x y := Zlt (val x) (val y).
-Definition Dle x y := Zle (val x) (val y).
+Definition Dlt x y := Z.lt (val x) (val y).
+Definition Dle x y := Z.le (val x) (val y).
 
 From CoLoR Require Import RelUtil.
 
@@ -208,8 +208,8 @@ Lemma power_Dlt_compat : forall x y n,
 Proof.
 intros x y. destruct x. destruct y. unfold Dlt. simpl.
 induction n; simpl; intros. omega. ded (IHn H).
-apply Zle_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
-omega. hyp. apply Zmult_gt_0_lt_compat_r. apply Zlt_gt.
+apply Z.le_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
+omega. hyp. apply Zmult_gt_0_lt_compat_r. apply Z.lt_gt.
 apply Zmult_lt_O_compat. omega. apply spos_power. omega. hyp.
 Qed.
 
@@ -228,49 +228,49 @@ Proof. intros [x hs]. unfold Dge, Dle, transp. simpl. refl. Qed.
 (***********************************************************************)
 (** max *)
 
-Lemma Zmax_gub : forall m n k, m >= k -> n >= k -> Zmax m n >= k.
+Lemma Zmax_gub : forall m n k, m >= k -> n >= k -> Z.max m n >= k.
 
-Proof. intros. apply Zmax_case; hyp. Qed.
+Proof. intros. apply Z.max_case; hyp. Qed.
 
-Lemma elim_Zmax_l : forall x y z, x <= y -> x <= Zmax y z.
+Lemma elim_Zmax_l : forall x y z, x <= y -> x <= Z.max y z.
 
-Proof. intros. eapply Zle_trans. apply H. apply Zle_max_l. Qed.
+Proof. intros. eapply Z.le_trans. apply H. apply Z.le_max_l. Qed.
 
-Lemma elim_lt_Zmax_l : forall x y z, x < y -> x < Zmax y z.
+Lemma elim_lt_Zmax_l : forall x y z, x < y -> x < Z.max y z.
 
-Proof. intros. eapply Zlt_le_trans. eexact H. apply Zle_max_l. Qed.
+Proof. intros. eapply Z.lt_le_trans. eexact H. apply Z.le_max_l. Qed.
 
-Lemma elim_Zmax_r : forall x y z, x <= z -> x <= Zmax y z.
+Lemma elim_Zmax_r : forall x y z, x <= z -> x <= Z.max y z.
 
-Proof. intros. eapply Zle_trans. apply H. apply Zle_max_r. Qed.
+Proof. intros. eapply Z.le_trans. apply H. apply Z.le_max_r. Qed.
 
-Lemma elim_lt_Zmax_r : forall x y z, x < z -> x < Zmax y z.
+Lemma elim_lt_Zmax_r : forall x y z, x < z -> x < Z.max y z.
 
-Proof. intros. rewrite Zmax_comm. apply elim_lt_Zmax_l. hyp. Qed.
+Proof. intros. rewrite Z.max_comm. apply elim_lt_Zmax_l. hyp. Qed.
 
-Lemma Zmax_l : forall x y, x >= y -> Zmax x y = x.
+Lemma Zmax_l : forall x y, x >= y -> Z.max x y = x.
 
 Proof.
-intros. unfold Zmax. 
+intros. unfold Z.max. 
 destruct (Dcompare_inf (x ?= y)) as [[xy | xy] | xy]; rewrite xy; try refl.
 assert (x < y). hyp. omega.
 Qed.
 
-Lemma Zmax_r : forall x y, y >= x -> Zmax x y = y.
+Lemma Zmax_r : forall x y, y >= x -> Z.max x y = y.
 
-Proof. intros. rewrite Zmax_comm. apply Zmax_l. hyp. Qed.
+Proof. intros. rewrite Z.max_comm. apply Zmax_l. hyp. Qed.
 
 Lemma Zmax_ge_compat : forall x y x' y',
-  x >= x' -> y >= y' -> Zmax x y >= Zmax x' y'.
+  x >= x' -> y >= y' -> Z.max x y >= Z.max x' y'.
 
 Proof.
 intros. destruct (Zmax_irreducible_inf x' y'); rewrite e; unfold ge.
-rewrite Zmax_comm. apply Zle_ge. apply elim_Zmax_r. omega.
-apply Zle_ge. apply elim_Zmax_r. omega.
+rewrite Z.max_comm. apply Z.le_ge. apply elim_Zmax_r. omega.
+apply Z.le_ge. apply elim_Zmax_r. omega.
 Qed.
 
 Lemma Zmax_gt_compat : forall x y x' y',
-  x > x' -> y > y' -> Zmax x y > Zmax x' y'.
+  x > x' -> y > y' -> Z.max x y > Z.max x' y'.
 
 Proof.
 intros. destruct (Z_ge_dec x y); destruct (Z_ge_dec x' y');

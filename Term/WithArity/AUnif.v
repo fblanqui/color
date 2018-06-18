@@ -9,9 +9,10 @@ syntactic unification
 
 Set Implicit Arguments.
 
-From Coq Require Import Relations.
+From Coq Require Import Relations Wellfounded.
 From CoLoR Require Import ASubstitution ATerm EqUtil ListUtil LogicUtil VecUtil
-     AVariables BoolUtil NatUtil SN.
+     AVariables BoolUtil NatUtil SN AVariables Lexico.
+From CoLoR Require MultisetNat.
 
 Section S.
 
@@ -54,8 +55,6 @@ Proof. destruct p. destruct p. destruct e. refl. discr. discr. Qed.
 
 (***********************************************************************)
 (** variables of a list of equations *)
-
-From CoLoR Require Import AVariables.
 
 Definition vars_eqn (e : eqn) := union (vars (fst e)) (vars (snd e)).
 
@@ -449,13 +448,11 @@ Notation nb_symb_occs := (@nb_symb_occs Sig).
 
 Definition size e := nb_symb_occs (fst e) + nb_symb_occs (snd e).
 
-From CoLoR Require Import MultisetNat.
+Import MultisetNat.
 
 Definition sizes l := list2multiset (List.map size l).
 
 Definition sizes_lt l1 l2 := MultisetLt gt (sizes l1) (sizes l2).
-
-From Coq Require Import Wellfounded.
 
 Lemma wf_sizes_lt : well_founded sizes_lt.
 
@@ -480,7 +477,7 @@ Qed.
 Definition nb_vars_eq l1 l2 :=
   cardinal (vars_eqns l1) = cardinal (vars_eqns l2).
 
-From CoLoR Require Import AVariables.
+Import AVariables.
 
 Lemma lt_card_vars_eqns_subs_l : forall x v l, mem x (vars v) = false ->
   cardinal (vars_eqns (map (eqn_sub (single x v)) l)) <
@@ -514,8 +511,6 @@ Qed.
 
 (***********************************************************************)
 (** wellfounded ordering on equations *)
-
-From CoLoR Require Import Lexico.
 
 Definition lt : relation (eqns * eqns) :=
   transp (lex (transp nb_vars_lt) nb_vars_eq (transp sizes_lt)).

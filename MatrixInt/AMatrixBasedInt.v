@@ -370,9 +370,9 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
                                  (Vconst (zero_matrix dim dim) k) (Vtail v))).
         assert (add_vectors
           (Vmap2 mat_vec_prod (Vconst (zero_matrix dim dim) k) (Vtail v))
-          =v @zero_vec dim). Focus 2. rewrite H, vector_plus_zero_l.
+          =v @zero_vec dim). 2:{ rewrite H, vector_plus_zero_l.
         replace (Vhead v) with (Vnth v ip). refl.
-        rewrite Vhead_nth, (lt_unique (lt_O_Sn k) ip). refl.
+        rewrite Vhead_nth, (lt_unique (lt_O_Sn k) ip). refl. }
         apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vnth_map2, Vnth_const.
         unfold M.mat_vec_prod. rewrite zero_matrix_mult_l.
@@ -530,12 +530,12 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
                           (@Vmap (ABterm.bterm sig k)
                              (mint (S k))
                              (@mi_of_term k) (S i) v)))))))).
-        Focus 2. apply mint_eval_mor. split. rewrite add_vectors_perm,
+        2:{ apply mint_eval_mor. split. rewrite add_vectors_perm,
           (add_vectors_cons (i := S i) (mat_vec_prod (Vhead (args fi))
             (const (Vhead (Vmap (mi_of_term (k:=k)) v))))). refl.
-        refl.
+        refl. }
         rewrite mint_eval_cons. apply vector_plus_mor.
-        Focus 2. rewrite Vmap_tail. refl.
+        2:{ rewrite Vmap_tail. refl. }
         rewrite H. simpl.
         fold (mat_matrixInt_prod (Vhead (args fi)) (mi_of_term (Vhead v))).
         sym. apply mint_eval_mult_factor.

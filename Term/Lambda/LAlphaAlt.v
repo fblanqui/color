@@ -453,9 +453,9 @@ Module Make (Export L : L_Struct).
     unfold Def.transpose_var. eq_dec x a. fo. eq_dec x b. fo. refl.
 
     rewrite h, subs_lam_no_alpha.
-    Focus 2. rewrite fvcodom_subs_transpose. eq_dec a b. set_iff. fo.
+    2:{ rewrite fvcodom_subs_transpose. eq_dec a b. set_iff. fo.
     mem. eq_dec x a. fo. eq_dec x b. fo. bool.
-    destruct (mem a (fv u)); destruct (mem b (fv u)); set_iff; fo.
+    destruct (mem a (fv u)); destruct (mem b (fv u)); set_iff; fo. }
 
     f_equal. rewrite update_id. refl. unfold subs_transpose. rewrite h. refl.
   Qed.
@@ -471,9 +471,9 @@ Module Make (Export L : L_Struct).
     refl.
     rewrite IHu1; [idtac|fo|fo]. rewrite IHu2; [idtac|fo|fo]. refl.
     rewrite IHu; [idtac|fo|fo]. rewrite subs_lam_no_alpha.
-    Focus 2. rewrite fvcodom_single.
+    2:{ rewrite fvcodom_single.
     destruct (mem x (remove x0 (fv u)) && negb (beq_term (Var y) (Var x))).
-    simpl. set_iff. fo. set_iff. fo.
+    simpl. set_iff. fo. set_iff. fo. }
     unfold Def.transpose_var. eq_dec x0 x. subst.
     rewrite <- aeq_alpha. 2: fo. rewrite update_single_eq, single_id. refl.
     eq_dec x0 y. fo. rewrite update_id_single. 2: fo. refl.
@@ -608,8 +608,8 @@ Module Make (Export L : L_Struct).
     trans (replace_all x z (Lam x u)).
     apply rt_step. apply m_step. apply aeq_ch_top_intro; simpl; set_iff; fo.
     trans (replace_all y z (Lam y v)).
-    Focus 2. sym. apply rt_step. apply m_step.
-    apply aeq_ch_top_intro; simpl; set_iff; fo.
+    2:{ sym. apply rt_step. apply m_step.
+    apply aeq_ch_top_intro; simpl; set_iff; fo. }
     simpl. rewrite !replace_var_eq. apply mon_lam. class. refl.
     apply hu. rewrite size_replace_all. refl.
     (*SLOW*)rewrite !replace_all_aeq_rename, i0, rename2; fo.

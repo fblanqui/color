@@ -12,8 +12,8 @@ description, and the axiom WF_notIS for WF_absorb *)
 Set Implicit Arguments.
 
 From CoLoR Require Import RelUtil NatUtil Path LeastNat LogicUtil ClassicUtil
-     SN NotSN_IS.
-From Coq Require Import List IndefiniteDescription.
+     SN NotSN_IS SortUtil ListUtil.
+From Coq Require Import IndefiniteDescription.
 
 Section S.
 
@@ -149,8 +149,6 @@ Section S.
       omega.
     Qed.
 
-    From CoLoR Require Import SortUtil.
-
     Lemma indices_aux_Sorted : forall i acc,
       Sorted lt acc -> HdRel le i acc -> Sorted lt (indices_aux acc i).
 
@@ -198,8 +196,6 @@ such that [f i = a] *)
       eapply indices_correct. apply nth_In. hyp.
       apply hg.
     Qed.
-
-    From CoLoR Require Import ListUtil.
 
     Lemma prefix_mon :
       (forall i, g i < g (S i)) -> (forall i, prefix i < prefix (S i)).
@@ -334,16 +330,16 @@ Section TransIS.
 
     assert (HSi : S i <= snd (F0 (F1 i))).
     gen (ch_minP _ (exP_F0 i)). unfold P. intuition.
-    destruct (le_lt_or_eq HSi) as [H0 | H0]. Focus 2.
+    destruct (le_lt_or_eq HSi) as [H0 | H0].
 
-    assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
+    2: { assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
     split; try omega. destruct (HFi (S (F1 i))) as [y Hy]. rewrite Hy; omega.
 
     cut (F1 (S i) = S (F1 i)). intros HT; rewrite HT. split; omega.
 
     destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H1]. apply H1.
     split; auto. intros k. unfold P. intros H2.
-    rewrite (HPeq _ _ _ (conj PSi H2)). omega.
+    rewrite (HPeq _ _ _ (conj PSi H2)). omega. }
 
     cut (F1 (S i) = F1 i). intros HT; rewrite HT. split; omega.
 
@@ -375,7 +371,7 @@ Section TransIS.
     gen (H (S i)). rewrite Hi, <- minus_Sn_m. auto.
     destruct (ch_minP _ (exP_F0 i)). auto.
 
-    rewrite <- minus_Sn_m. Focus 2. apply (proj1 (ch_minP _ (exP_F0 i))).
+    rewrite <- minus_Sn_m. 2: { apply (proj1 (ch_minP _ (exP_F0 i))). }
     gen H0. set (k := i - fst (F0 (F1 i))). destruct k. simpl.
     intros. apply path_headP.
     apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
@@ -402,9 +398,9 @@ Section TransIS.
     rewrite H1. clear H1. gen (HF0 (F1 i)). unfold F. intros.
 
     cut (i - fst (F0 (F1 i)) = length (li (F1 i))).
-    Focus 2. rewrite <- H0, <- minus_Sn_m in H1. simpl in H1.
+    2: { rewrite <- H0, <- minus_Sn_m in H1. simpl in H1.
     omega.
-    apply (proj1 (ch_minP _ (exP_F0 i))).
+    apply (proj1 (ch_minP _ (exP_F0 i))). }
     set (k := i - fst (F0 (F1 i))).
 
     assert (path E (h (F1 i)) (h (S (F1 i))) (li (F1 i))).
@@ -536,8 +532,8 @@ Section ISModUnion.
       S (reid i) <= j -> j <= k  -> k <= reid (S i) -> E (f j) (g k)).
     intros i j k le_ij le_jk le_ki. induction k.
     rewrite <- (le_n_O_eq _ le_jk) in le_ij. destruct (le_Sn_O _ le_ij).
-    destruct (le_lt_or_eq le_jk) as [HT | HT]. Focus 2. rewrite HT.
-    apply (proj1 (hyp1 (S k))). apply TE with (g k).
+    destruct (le_lt_or_eq le_jk) as [HT | HT]. 2: { rewrite HT.
+    apply (proj1 (hyp1 (S k))). } apply TE with (g k).
     exact (IHk (lt_n_Sm_le HT) (le_trans (le_n_Sn k) le_ki)).
     apply TE with (f (S k)). apply (E_gfi i k); try omega.
     apply (proj1 (hyp1 (S k))).
@@ -545,19 +541,19 @@ Section ISModUnion.
     assert (HEfg0 : forall j k, j <= k -> k <= reid 0 -> E (f j) (g k)).
     intros j k le_jk le_k0. induction k. rewrite <- (le_n_O_eq _ le_jk).
     apply (proj1 (hyp1 0)). destruct (le_lt_or_eq le_jk) as [HT | HT].
-    Focus 2. rewrite HT. apply (proj1 (hyp1 (S k))).
+    2: { rewrite HT. apply (proj1 (hyp1 (S k))). }
     apply TE with (g k). apply IHk; omega. apply TE with (f (S k)).
     apply (E_gf0 k); try omega. apply (proj1 (hyp1 (S k))).
 
     assert (Rgf : forall i, R (g (reid i)) (f (S (reid i)))).
-    intro i. induction i. Focus 2. destruct (rec_ch_minP P hyp2 i). hyp.
+    intro i. induction i. 2: { destruct (rec_ch_minP P hyp2 i). hyp. }
     simpl. destruct (ch_minP (P 0) (hyp2 0)). hyp.
 
-    exists f0; exists g0. split. Focus 2. intro. split. exists (reid i). auto.
-    destruct i. exists 0; auto. exists (S (reid i)). auto.
-    intro. split. Focus 2. apply Rgf. destruct i. Focus 2. unfold f0, g0.
+    exists f0; exists g0. split. 2: { intro. split. exists (reid i). auto.
+    destruct i. exists 0; auto. exists (S (reid i)). auto. }
+    intro. split. 2: { apply Rgf. } destruct i. 2: { unfold f0, g0.
     apply (HEfgi i); auto.
-    destruct (ch_minP (P (S (reid i))) (hyp2 (S (reid i)))) as [? _]. hyp.
+    destruct (ch_minP (P (S (reid i))) (hyp2 (S (reid i)))) as [? _]. hyp. }
     unfold f0, g0. apply HEfg0; omega.
   Qed.
 
@@ -674,22 +670,22 @@ Section ISModTrans.
     apply (proj1 (hyp1 j)).
 
     assert (HEfg : forall i, (E !) (f (reid i)) (g (reid i))).
-    intro i. induction i. Focus 2. destruct (rec_ch_minP  _ HexP i); hyp.
+    intro i. induction i. 2: { destruct (rec_ch_minP  _ HexP i); hyp. }
     destruct (ch_minP _ (HexP 0)); hyp.
 
     assert (HRfg : forall i j k, (reid i) <= j -> j < k  -> k <= reid (S i) ->
       R (g j) (f k)).
     intros i j k le_ij lt_jk le_ki. induction k. destruct (lt_n_O lt_jk).
-    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT]. Focus 2.
-    rewrite HT. apply (proj2 (hyp1 k)).
+    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT].
+    2: { rewrite HT. apply (proj2 (hyp1 k)). }
     apply (@TrsR _ (f k)). apply IHk; try omega.
     rewrite (eq_fgi i k); try omega.
     apply (proj2 (hyp1 k)).
 
     assert (HRfg0 : forall j k, j < k  -> k <= reid 0 -> R (g j) (f k)).
     intros j k lt_jk le_k0. induction k. destruct (lt_n_O lt_jk).
-    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT]. Focus 2.
-    rewrite HT. apply (proj2 (hyp1 k)).
+    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT].
+    2: { rewrite HT. apply (proj2 (hyp1 k)). }
     apply (@TrsR _ (f k)). apply IHk; try omega. rewrite (eq_fg0 k); try omega.
     apply (proj2 (hyp1 k)).
 

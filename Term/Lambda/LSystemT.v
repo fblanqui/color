@@ -106,7 +106,7 @@ Module FCmp <: Cmp.
   Fixpoint cmp f g :=
     match f, g with
       | Rec u, Rec v => Ty_Cmp.cmp u v
-      | _, _ => nat_compare (prec f) (prec g)
+      | _, _ => Nat.compare (prec f) (prec g)
     end.
 
   Lemma cmp_opp f g : cmp f g = CompOpp (cmp g f).

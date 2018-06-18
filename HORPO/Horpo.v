@@ -443,7 +443,7 @@ Module Horpo (S : TermsSig.Signature)
       | M N f g Mf Ng f_g M_Nargs
       | M N f Mf Nf MNargs 
       | M N Ns Mfapp NsN MNs 
-      | M N Mapp Napp Mnfapp Nnfapp LL RR LRstr 
+      | M N Mapp Napp Mnfapp Nnfapp LL 
       | M N Mabs Nabs MN 
       | M N MNbeta].
 
@@ -720,7 +720,7 @@ Module Horpo (S : TermsSig.Signature)
       | M N f g Mf Ng f_g M_Nargs
       | M N f Mf Nf MNargs 
       | M N Ns Mfapp NsN MNs 
-      | M N Mapp Napp Mnfapp Nnfapp LL RR LRstr 
+      | M N Mapp Napp Mnfapp Nnfapp LL 
       | M N Mabs Nabs MN 
       | M N MNbeta].
 
@@ -938,7 +938,7 @@ Module Horpo (S : TermsSig.Signature)
       | M N f g Mf Ng f_g M_Nargs
       | M N f Mf Nf MNargs 
       | M N Ns Mfapp NsN MNs 
-      | M N Mapp Napp Mnfapp _ LL RR LRstr 
+      | M N Mapp Napp Mnfapp _ LL 
       | M N Mabs Nabs MN 
       | M N MNbeta].
 

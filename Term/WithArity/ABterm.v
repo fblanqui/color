@@ -10,9 +10,9 @@ terms whose variable indexes are bounded
 
 Set Implicit Arguments.
 
-Section S.
-
 From CoLoR Require Import ATerm VecUtil AInterpretation LogicUtil NatUtil.
+
+Section S.
 
 Variable Sig : Signature.
 

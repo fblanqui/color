@@ -414,7 +414,7 @@ Section Matching.
         by rewrite (proj2 (beq_term_ok _ _) (sym_eq Ht)); discr.
 
         (* fun *)
-        intros g us IH t m H; destruct t as [x|f nt ts];
+        intros g us IH t m H; destruct t as [x|f nt];
           elim H; intros θ Hθ; rewrite sub_fun in Hθ; try discr.
         inversion_clear Hθ; simpl; rewrite (beq_refl (@beq_symb_ok Sig)).
         apply IH; exists θ; rewrite beq_vec_refl; try done.

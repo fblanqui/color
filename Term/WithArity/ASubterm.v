@@ -9,7 +9,8 @@ Properties of the subterm relation.
 
 Set Implicit Arguments.
 
-From CoLoR Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil ASN.
+From CoLoR Require Import AContext VecUtil ListUtil LogicUtil NatUtil RelUtil
+     ASN.
 
 Section S.
 
@@ -81,11 +82,11 @@ Section S.
     intros x. exists (subterm_lst x). pattern x; apply term_ind_forall; clear x.
     simpl. intros v y. split; try tauto. intro HS; destruct HS as [c Hc].
     destruct (var_eq_fill (proj2 Hc)) as [Hc' _]; intuition.
-    intros f ts Hts y. split; rewrite subterm_lst_fun, in_app. Focus 2.
-    intuition. gen (in_list_of_vec H0). apply subterm_fun.
+    intros f ts Hts y. split; rewrite subterm_lst_fun, in_app.
+    2:{ intuition. gen (in_list_of_vec H0). apply subterm_fun.
     ded (In_subterm_lst_vec_elim _ _ H0). decomp H.
     ded (Vforall_nth x0 Hts y). apply (@subterm_trans _ _ (Vnth ts x0)).
-    apply H. hyp. apply subterm_fun. apply Vnth_in.
+    apply H. hyp. apply subterm_fun. apply Vnth_in. }
     intros. destruct H as [c Hc]. destruct (fun_eq_fill (proj2 Hc)). intuition.
     destruct H as [i H]. destruct H as [j H]. destruct H as [r H].
     destruct H as [ti H]. destruct H as [c0 H]. destruct H as [tj Hc0].

@@ -240,7 +240,7 @@ Section HorpoMap.
     apply AlgVar; try_solve.
     apply HSub. compute. trivial.
     match goal with
-    | |- exists2 M', isArg M' ?T & _ => exists (@appBodyR T I)
+    | |- exists2 _, isArg _ ?T & _ => exists (@appBodyR T I)
     end.
     right. left. trivial.
     right.

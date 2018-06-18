@@ -609,7 +609,7 @@ intros acc0 x y0 H1 H2; apply H;auto with *.
 case (is_def f); [ | assumption].
 case (eq_bool lhs (Term f l)).
 right; assumption.
-destruct (is_subterm (Term f l) lhs) as [Sub | not_Sub].
+destruct (is_subterm (Term f l) lhs).
 assumption.
 right; assumption.
 Qed.

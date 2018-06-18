@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From Coq Require Import Omega Compare_dec.
 From CoLoR Require Import ADecomp AUnif ARenCap ATrs ListUtil RelUtil AGraph
-     LogicUtil AShift ACalls BoolUtil ADuplicateSymb ListDec EqUtil.
+     LogicUtil AShift ACalls BoolUtil ADuplicateSymb ListDec EqUtil AHDE.
 
 Section S.
 
@@ -58,8 +58,6 @@ Section S.
 
     Definition unifiable_N r1 r2 :=
       iter_step N (mk_problem (ren_cap r1 r2) (lhs r2)).
-
-    From CoLoR Require Import AHDE.
 
     Definition connectable_N r1 r2 :=
       match unifiable_N r1 r2 with

@@ -12,8 +12,8 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil
      VecUtil SN RelUtil AWFMInterpretation NaryFunction NatUtil ARelation
-     ARules SetUtil FunUtil.
-From Coq Require Import List.
+     ARules SetUtil FunUtil VecMax AMorphism.
+From Coq Require Import List Max.
 
 Section S.
 
@@ -111,8 +111,6 @@ Section S.
     apply Vcons_eq_intro; hyp.
   Qed.
 
-  From CoLoR Require Import VecMax.
-
   Lemma lab_fval : forall v t n, n > maxvar t -> lab (fval v n) t = lab v t.
 
   Proof.
@@ -142,8 +140,6 @@ Section S.
   Qed.
 
   Notation fold_max := (@fold_max Sig).
-
-  From Coq Require Import Max.
 
   Lemma map_lab_rule_fval : forall v R n, n > maxvar_rules R ->
     map (lab_rule (fval v n)) R = map (lab_rule v) R.
@@ -185,8 +181,6 @@ Section S.
 
 (***********************************************************************)
 (** unlabelling *)
-
-  From CoLoR Require Import AMorphism.
 
   Definition F (f' : Sig') := let (f,_) := f' in f.
 

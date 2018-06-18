@@ -9,7 +9,7 @@ cap of undefined symbols and aliens of defined symbols
 
 Set Implicit Arguments.
 
-From Coq Require Import Max.
+From Coq Require Import Max Sumbool.
 From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil EqUtil.
 
 Section S.
@@ -35,10 +35,10 @@ Definition Cap := {k : nat & (terms k -> term) * terms k }.
 
 Notation Caps := (vector Cap).
 
-Definition mkCap := @existS nat (fun k => ((terms k -> term) * terms k)).
+Definition mkCap := @existT nat (fun k => ((terms k -> term) * terms k)).
 
-Definition fcap (c : Cap) := fst (projS2 c).
-Definition aliens (c : Cap) := snd (projS2 c).
+Definition fcap (c : Cap) := fst (projT2 c).
+Definition aliens (c : Cap) := snd (projT2 c).
 Definition fcap_aliens (c : Cap) := fcap c (aliens c).
 
 (* total number of aliens of a vector of caps *)
@@ -48,7 +48,7 @@ Local Open Scope nat_scope.
 Fixpoint sum n (cs : Caps n) : nat :=
   match cs with
     | Vnil => 0
-    | Vcons c cs' => projS1 c + sum cs'
+    | Vcons c cs' => projT1 c + sum cs'
   end.
 
 (* concatenation of all the aliens of a vector of caps *)
@@ -104,7 +104,7 @@ Fixpoint capa (t : term) : Cap :=
 
 (* number of aliens of a term *)
 
-Definition nb_aliens t := projS1 (capa t).
+Definition nb_aliens t := projT1 (capa t).
 
 (* proof of the capa property: if c = capa t then fcap c (aliens c) = t *)
 
@@ -208,7 +208,7 @@ apply in_appl. apply H with (m := m0).
 eapply le_max_elim_l. unfold m in H1. rewrite maxvars_cons in H1. apply H1.
 unfold nb_aliens. hyp. hyp.
 (* tail *)
-apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projS1 (capa t)).
+apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projT1 (capa t)).
 assert (maxvars v <= m0). eapply le_max_elim_r. unfold m in H1.
 rewrite maxvars_cons in H1. apply H1. omega. hyp. omega.
 Qed.
@@ -253,7 +253,7 @@ unfold Q. simpl. intros. contr.
 (* cons *)
 intros. unfold Q. simpl. intros m H1. rewrite fresh_plus, Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
-assert (x <= m + projS1 (capa t)). apply H. eapply le_max_elim_l.
+assert (x <= m + projT1 (capa t)). apply H. eapply le_max_elim_l.
 rewrite maxvars_cons in H1. apply H1. hyp. omega.
 rewrite plus_assoc. apply H0. assert (maxvars v <= m).
 eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. omega. hyp.
@@ -271,8 +271,6 @@ Qed.
 
 Notation calls := (calls R).
 Definition vcalls := vcalls R.
-
-From Coq Require Import Sumbool.
 
 Lemma calls_capa : forall t m,
   calls (fcap (capa t) (fresh m (nb_aliens t))) = nil.

@@ -1671,11 +1671,11 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     assert (~In x (fv v) /\ ~In x (fv w)). tauto. clear hx.
     rewrite subs_lam_no_alpha.
 
-    Focus 2. unfold not. rewrite In_fvcodom. intros [z hz].
+    2:{ unfold not. rewrite In_fvcodom. intros [z hz].
     revert hz. set_iff. unfold Def.single, Def.update.
-    eq_dec z y; eq_dec z x'; subst; tauto.
+    eq_dec z y; eq_dec z x'; subst; tauto. }
 
-    Focus 1. rewrite !single_lam_no_alpha; try tauto.
+    rewrite !single_lam_no_alpha; try tauto.
     f_equal. eq_dec x' x.
     (* x' = x *)
     subst x'. rewrite update2_neq_com. 2: hyp.
@@ -1689,12 +1689,12 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     subst. rewrite update2_eq, update_id_single. 2: auto.
     rewrite update_single_eq, single_id. refl.
     (* x <> y *)
-    rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; eq_dec x x'; subst; tauto.
-    Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; subst; tauto.
-    Focus 1. rewrite update_id. Focus 2. rewrite single_neq; auto.
-    Focus 1. apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
+    rewrite update_id.
+    2:{ unfold Def.single, Def.update. eq_dec x y; eq_dec x x'; subst; tauto. }
+    rewrite update_id.
+    2:{ unfold Def.single, Def.update. eq_dec x y; subst; tauto. }
+    rewrite update_id. 2:{ rewrite single_neq; auto. }
+    apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
   Qed.
 
   Lemma update_single_split_swap : forall u x y v w, x<>y -> ~In x (fv w) ->
@@ -1718,12 +1718,12 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     assert (~In x (fv v) /\ ~In x (fv w)). tauto. clear hx.
     rewrite subs_lam_no_alpha.
 
-    Focus 2. unfold not. rewrite In_fvcodom. intros [z hz].
+    2:{ unfold not. rewrite In_fvcodom. intros [z hz].
     revert hz. set_iff. unfold Def.single, Def.update.
     eq_dec z y; eq_dec z x'.
-    subst. subst. tauto. subst. intuition. subst. intuition. intuition.
+    subst. subst. tauto. subst. intuition. subst. intuition. intuition. }
 
-    Focus 1. rewrite !single_lam_no_alpha. 2: tauto. 2: tauto.
+    rewrite !single_lam_no_alpha. 2: tauto. 2: tauto.
     f_equal. eq_dec x' x.
     (* x' = x *)
     subst x'. rewrite update2_neq_com. 2: hyp.
@@ -1737,13 +1737,13 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     subst. rewrite update2_eq, update_id_single. 2: auto.
     rewrite update_single_eq, single_id, update_id_single. refl. auto.
     (* x <> y *)
-    rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; eq_dec x x'; subst; tauto.
-    Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x x'; subst; tauto.
-    Focus 1. rewrite update_id. Focus 2. unfold Def.single, Def.update.
-    eq_dec x y; subst; tauto.
-    Focus 1. apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
+    rewrite update_id.
+    2:{ unfold Def.single, Def.update. eq_dec x y; eq_dec x x'; subst; tauto. }
+    rewrite update_id.
+    2:{ unfold Def.single, Def.update. eq_dec x x'; subst; tauto. }
+    rewrite update_id.
+    2:{ unfold Def.single, Def.update. eq_dec x y; subst; tauto. }
+    apply IHu. hyp. hyp. intro z. gen (h z). set_iff. tauto.
   Qed.
 
   Lemma subs_lam s x u :
@@ -2164,11 +2164,11 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     rewrite subs1_update2_neq_com with (y:=x'). 2: tauto.
     rewrite subs1_update_id_single. 2: tauto. eq_dec z x. tauto.
     rewrite subs1_update2_neq_com. 2: tauto. rewrite IHu; auto.
-    Focus 2. rewrite In_fvcodom. intros [a [i1 [i2 i3]]]. revert i1 i2 i3.
+    2:{ rewrite In_fvcodom. intros [a [i1 [i2 i3]]]. revert i1 i2 i3.
     unfold Def.update. eq_dec a z; simpl; set_iff. tauto.
     intros [i0 i1] i2 i3. apply h2. rewrite In_fvcodom. exists a. set_iff.
-    intuition.
-    Focus 1. apply subs1_seq. intros a ha. unfold Def.update.
+    intuition. }
+    apply subs1_seq. intros a ha. unfold Def.update.
     eq_dec a x'; eq_dec a x; eq_dec a z;
       try subst a; try subst x; try subst z; tauto.
   Qed.

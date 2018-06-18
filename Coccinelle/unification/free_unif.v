@@ -2753,7 +2753,7 @@ generalize (X.eq_bool_ok v' v); case (X.eq_bool v' v); [intro v'_eq_v; absurd (v
 revert W; unfold VSet.without_red; simpl; unfold DecVar.eq_bool.
 generalize (X.eq_bool_ok v v'); case (X.eq_bool v v'); [intro v_eq_v'; intros; discriminate | intro v_diff_v'].
 subst v'; intros _; assumption.
-destruct (X.eq_bool z v') as [z_eq_v' | z_diff_v']; [idtac | reflexivity].
+destruct (X.eq_bool z v'); [idtac | reflexivity].
 rewrite <- subst_comp_is_subst_comp.
 rewrite <- subst_eq_vars.
 intros u u_in_val; simpl.

@@ -1663,7 +1663,7 @@ intros z t v v_in_vars; simpl.
 generalize (mem_bool_ok _ _ X.eq_bool_ok z vars);
 case (mem_bool eq_var_bool z vars); [intro z_in_vars | intro z_not_in_vars].
 simpl.
-destruct (eq_var_bool v z) as [v_eq_z | v_diff_z].
+destruct (eq_var_bool v z).
 apply eq_refl.
 apply subst_rest_ok; trivial.
 generalize (X.eq_bool_ok v z); case (eq_var_bool v z); [intro v_eq_z | intro v_diff_z].
@@ -1835,7 +1835,7 @@ exact (Some nil).
 assert (Size := matching_call1 patt subj pb).
 destruct patt as [x | f l].
 set (o_subst := mrec _ Size).
-destruct o_subst as [subst | None].
+destruct o_subst as [subst |].
 exact (merge eq_var_bool eq_bool ((x,subj) :: nil) subst).
 exact None.
 destruct subj as [x | g m].
@@ -1843,7 +1843,7 @@ exact None.
 case_eq (eq_symb_bool f g); [intro f_eq_g | intro f_diff_g].
 destruct l as [ | pat lpat]; destruct m as [ | sub lsub].
 set (o_subst := mrec _ Size).
-destruct o_subst as [subst | None].
+destruct o_subst as [subst |].
 exact (Some subst).
 exact None.
 exact None.

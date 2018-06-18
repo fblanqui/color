@@ -586,11 +586,11 @@ variables. *)
     unfold ltof. simpl. omega. hyp.
     unfold u'. trans (Lam y' (subs yy's (rename x y v))).
 
-    Focus 2. apply aeq_lam. apply IH.
+    2:{ apply aeq_lam. apply IH.
     unfold ltof. rewrite h1, size_rename. simpl. omega.
-    apply IH. unfold ltof. rewrite h1. simpl. omega. sym. hyp.
+    apply IH. unfold ltof. rewrite h1. simpl. omega. sym. hyp. }
 
-    Focus 1. rewrite inter_sym, inter_empty in hs3. unfold xs in hs3.
+    rewrite inter_sym, inter_empty in hs3. unfold xs in hs3.
     rewrite <- eqb_false_iff, eqb_sym in n.
 
     assert (e : rename x y v = subs1 (single x (Var y)) v).
@@ -611,7 +611,7 @@ variables. *)
 
     assert (e2 : subs yy's (rename x y v) = subs1 yy's (rename x y v)).
     apply subs1_no_alpha. rewrite bv_rename.
-    Focus 2. intro h. gen (hs3 _ h). set_iff. tauto. Focus 1.
+    2:{ intro h. gen (hs3 _ h). set_iff. tauto. }
     rewrite inter_empty. intros a ha. gen (hs3 _ ha). set_iff. split_all.
     revert H1. rewrite In_fvcodom. intros [b [i1 [i2 i3]]]. revert i2 i3.
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
@@ -620,8 +620,8 @@ variables. *)
     destruct (mem x (fv v)); set_iff; split_all. subst b. cong. (*SLOW*)fo.
 
     rewrite e1, e2, e. unfold yy's. rewrite subs1_update_single.
-    Focus 2. intro h. gen (hs3 _ h). set_iff. tauto.
-    Focus 1. destruct (In_dec y' (fv (subs1 xx's v))).
+    2:{ intro h. gen (hs3 _ h). set_iff. tauto. }
+    destruct (In_dec y' (fv (subs1 xx's v))).
 
     (* In y' (fv (subs1 xx's v)) *)
     rewrite <- e1, fv_subs in i. revert i. simpl. set_iff. rewrite In_domain.
@@ -629,8 +629,8 @@ variables. *)
 
     (* 1 *)
     case_eq (mem y (fvcodom (remove y (fv u')) s)); intro h.
-    Focus 2. revert H0. unfold y', Def.var; ens. rewrite h. rewrite h1 in H.
-    tauto.
+    2:{ revert H0. unfold y', Def.var; ens. rewrite h. rewrite h1 in H.
+    tauto. }
     assert (p0 : ~In y' (union (fv u') (fvcodom (remove y (fv u')) s))).
     unfold y', Def.var; ens. rewrite h. apply var_notin_ok.
     destruct (eq_term_dec (xx's y') (Var y')). 2: tauto.
@@ -679,7 +679,7 @@ variables. *)
     trans (Lam y' (rename x' y' (subs1 xx's v))). apply aeq_alpha. hyp.
     apply aeq_lam. unfold Def.rename. rewrite subs1_no_alpha.
 
-    Focus 2. rewrite fvcodom_single, beq_term_var.
+    2:{ rewrite fvcodom_single, beq_term_var.
     case_eq (mem x' (fv (subs1 xx's v)) && negb (eqb y' x')).
     2: intros _; apply inter_empty_r.
     rewrite andb_true_iff, negb_true_iff, eqb_false_iff, <- mem_iff.
@@ -692,9 +692,9 @@ variables. *)
     rewrite update_neq. 2: auto.
     assert (h : In z (remove x (fv u))). rewrite h1. set_iff. auto.
     intro i. rewrite inter_sym, inter_empty in hs2. eapply hs2. set_iff. refl.
-    rewrite In_bvcod. ex z. auto.
+    rewrite In_bvcod. ex z. auto. }
 
-    Focus 1. unfold xx's. apply aeq_refl_eq.
+    unfold xx's. apply aeq_refl_eq.
 
     destruct (In_dec x' (fv v)).
     case_eq (mem x (fvcodom (remove x (fv u)) s)); intro hx.
@@ -794,9 +794,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     rewrite b, a, c, subs1_comp.
 
-    Focus 2. rewrite <- e1. rewrite <- uu' at 2. fold A.
+    2:{ rewrite <- e1. rewrite <- uu' at 2. fold A.
     rewrite empty_subset, union_subset_1 with (s:=A) (s':=union B C),
-      <- empty_subset. hyp. Focus 1.
+      <- empty_subset. hyp. }
 
     apply subs1_saeq. intros x hx. unfold Def.comp1, Def.comp.
     rewrite (e1 _ hx). sym. apply aeq_refl_eq. apply subs1_no_alpha.
@@ -866,7 +866,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     set (ys := union xs (union (fvcodom xs s1) (fvcodom xs s1'))).
     gen (var_notin_ok ys). set (z := var_notin ys). intro hz.
     rewrite aeq_alpha' with (y:=z).
-    Focus 2. revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
+    2:{ revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto. }
     set (u' := rename x z u).
 
     assert (e : remove z (fv u') [=] xs).
@@ -877,9 +877,9 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     revert hz. unfold ys. unfold xs at 1. simpl. set_iff. tauto.
     
     rewrite subs_lam_no_alpha.
-    Focus 2. rewrite e. revert hz. unfold ys. set_iff. tauto.
+    2:{ rewrite e. revert hz. unfold ys. set_iff. tauto. }
     rewrite subs_lam_no_alpha.
-    Focus 2. rewrite e. revert hz. unfold ys. set_iff. tauto.
+    2:{ rewrite e. revert hz. unfold ys. set_iff. tauto. }
 
     clear e. mon. unfold u', Def.rename. rewrite !subs_comp. apply IHu.
     intros a ha. unfold Def.single, Def.comp. unfold Def.update at 2.
@@ -993,7 +993,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite e, fv_rename; unfold replace. destruct h. auto.
     subst. auto.
     case_eq (mem x (fv u)); intro i.
-    Focus 2. rewrite <- not_mem_iff in i. auto.
+    2:{ rewrite <- not_mem_iff in i. auto. }
     right. set_iff. rewrite <- mem_iff in i. split_all. subst. contr.
   Qed.
 

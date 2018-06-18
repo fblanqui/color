@@ -11,7 +11,7 @@ dependancy pairs
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATrs ACalls ACap ASN RelUtil ListUtil
-  SN VecUtil VecOrd NatUtil.
+     SN VecUtil VecOrd NatUtil BoolUtil.
 
 Section S.
 
@@ -192,8 +192,6 @@ Qed.
 (***********************************************************************)
 (** fundamental dp theorem *)
 
-From CoLoR Require Import BoolUtil.
-
 Notation capa := (capa R).
 Notation cap := (cap R).
 Notation alien_sub := (alien_sub R).
@@ -240,7 +238,7 @@ ded (vars_cap_inf R H5 l0). ded (hyp2 lr _ H7).
 rewrite fsub_inf. simpl. apply Hsnsx. hyp. hyp.
 (* x > maxvar r *)
 rewrite (fsub_nth (aliens (capa r)) l0 H6).
-set (a := Vnth (aliens (capa r)) (lt_pm (k:=projS1 (capa r)) l0 H6)).
+set (a := Vnth (aliens (capa r)) (lt_pm (k:=projT1 (capa r)) l0 H6)).
 assert (Fun f ts = sub s l). rewrite H3, H2. refl.
 assert (In a (calls R r)). apply aliens_incl_calls. unfold a. apply Vnth_in.
 ded (in_calls H8). destruct H9 as [g]. destruct H9 as [vs]. destruct H9.
