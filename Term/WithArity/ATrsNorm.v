@@ -73,7 +73,7 @@ Section S.
 
     Fixpoint cmp (t u : term) : comparison :=
       match t, u with
-        | Var x, Var y => nat_compare x y
+        | Var x, Var y => Nat.compare x y
         | Var x, _ => Lt
         | _, Var x => Gt
         | Fun f ts, Fun g us =>
