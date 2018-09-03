@@ -6,4 +6,5 @@
 *.vo
 CoqMakefile.conf
 Makefile.coq
+Makefile.coq.conf
 _CoqProject
