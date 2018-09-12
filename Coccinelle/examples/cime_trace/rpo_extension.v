@@ -9,7 +9,6 @@ From Coq Require Import List.
 From CoLoR Require Import list_permut.
 From CoLoR Require Import terminaison.
 From Coq Require Import Relations.
-From Coq Require Import ROmega.
 From CoLoR Require order_extension.
 From Coq Require Import Omega.
 
