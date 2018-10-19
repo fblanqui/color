@@ -69,7 +69,7 @@ Section S.
 
     Variable symb_cmp : Sig -> Sig -> comparison.
 
-    From Coq Require Import Compare_dec.
+    Import Compare_dec.
 
     Fixpoint cmp (t u : term) : comparison :=
       match t, u with

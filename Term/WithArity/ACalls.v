@@ -147,7 +147,7 @@ ded (app_eq_nil _ _ H0). destruct H1.
 destruct H. subst x. hyp. apply IHv; hyp.
 Qed.
 
-From Coq Require Import Sumbool.
+Import Sumbool.
 
 Lemma in_calls : forall x t, In x (calls t)
   -> exists g, exists vs, x = Fun g vs /\ defined g R = true.

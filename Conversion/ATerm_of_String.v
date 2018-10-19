@@ -10,13 +10,14 @@ convert a string into an algebraic term
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil RelUtil SN VecUtil ListUtil.
+From CoLoR Require Srs ATrs AUnary.
 
 Section S.
 
 (***********************************************************************)
 (** string signature *)
 
-From CoLoR Require Import Srs.
+Import Srs.
 
 Variable SSig : VSignature.Signature.
 
@@ -28,7 +29,7 @@ Notation srule := (rule SSig). Notation srules := (rules SSig).
 
 Definition ar (_ : letter) := 1.
 
-From CoLoR Require Import ATrs.
+Import ATrs.
 
 Definition ASig_of_SSig := mkSignature ar (@VSignature.beq_symb_ok SSig).
 
@@ -37,7 +38,7 @@ Notation ASig := ASig_of_SSig.
 Notation term := (term ASig). Notation terms := (vector term).
 Notation context := (context ASig).
 
-From CoLoR Require Import AUnary.
+Import AUnary.
 
 Lemma is_unary_sig : is_unary ASig.
 
@@ -75,7 +76,7 @@ induction s. refl. unfold reset. simpl. apply args_eq.
 fold (reset (term_of_string s)). rewrite IHs. refl.
 Qed.
 
-From CoLoR Require Import VecUtil.
+Import VecUtil.
 
 Fixpoint string_of_term (t : term) : string :=
   match t with
@@ -87,7 +88,7 @@ Lemma string_of_term_epi : forall s, string_of_term (term_of_string s) = s.
 
 Proof. induction s; simpl; intros. refl. rewrite IHs. refl. Qed.
 
-From CoLoR Require Import NatUtil.
+Import NatUtil.
 
 Lemma term_of_string_epi : forall t, maxvar t = 0 ->
   term_of_string (string_of_term t) = t.
@@ -319,7 +320,7 @@ End S.
 (***********************************************************************)
 (** signature functor *)
 
-Module Make (S : VSignature.FSIG) <: FSIG.
+Module Make (S : VSignature.FSIG) <: ASignature.FSIG.
   Definition Sig := ASig_of_SSig S.Sig.
   Definition Fs := S.Fs.
   Definition Fs_ok := S.Fs_ok.

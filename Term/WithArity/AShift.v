@@ -31,7 +31,7 @@ Section S.
 
     Definition shift_var x := x+p.
 
-    From CoLoR Require Import ASubstitution.
+    Import ASubstitution.
 
     Definition shift_sub x := @Var Sig (x+p).
     Definition shift := sub shift_sub.
