@@ -121,7 +121,7 @@ by a function testing whether a symbol occurs in a term
     intro Rc; elim Rc; simpl; intros; try tauto.
     case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H1;
       rewrite H1 in H0.
-    Focus 2. apply (H R f g H0).
+      2: apply (H R f g H0).
     rewrite andb_true_iff in H1; destruct H1. destruct (in_app_or H0).
     exists a; split; auto. apply (Inb_true (@eq_rule_dec _) _ _ H2).
     apply (H R f g H3).
@@ -147,7 +147,7 @@ by a function testing whether a symbol occurs in a term
     simpl; intros. apply incl_nil.
     intros. simpl.
     case_eq (root_eq f (lhs a) && Inb (@eq_rule_dec _) a R); intro H0.
-    Focus 2. apply IHRc1. apply incl_cons_l_incl with (x := a); auto.
+      2: apply IHRc1; apply incl_cons_l_incl with (x := a); auto.
     apply incl_app. intros g Hg. rewrite andb_true_iff in H0. destruct H0.
     apply symb_ord_img_recP2 with (a := a); auto.
     apply (Inb_true (@eq_rule_dec _) _ _ H1). apply (incl_cons_l_in H).

@@ -52,14 +52,15 @@ Lemma defined_equiv : forall f R,
  defined f R = true <-> exists v, exists r, In (mkRule (Fun f v) r) R.
 
 Proof.
-intros. split. Focus 2.
-intro. destruct H as [v [r H]]. apply (lhs_fun_defined f v r). auto.
+intros. split.
+2: now intros [v [r H]]; apply (lhs_fun_defined f v r).
 intros. induction R. simpl in H. discr.
 simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
 destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
-destruct (orb_prop _ _ H). Focus 2. destruct (IHR H0) as [v' H1].
+destruct (orb_prop _ _ H).
+  rewrite beq_symb_ok in H0; rewrite <- H0. exists t; exists a2. left; refl.
+destruct (IHR H0) as [v' H1].
 destruct H1 as [r H1]. exists v'; exists r. auto.
-rewrite beq_symb_ok in H0; rewrite <- H0. exists t; exists a2. left; refl.
 Qed.
 
 Fixpoint list_defined (l : rules) : list Sig :=
