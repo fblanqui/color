@@ -56,3 +56,7 @@ script:
 - export PATH=${HOME}/coq-${TEST_TARGET}/bin:$PATH
 - make -j ${NJOBS}
 - echo -en 'travis_fold:end:color.build\\r'
+
+notifications:
+  email:
+    - frederic.blanqui@inria.fr
