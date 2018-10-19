@@ -59,7 +59,7 @@ Module TermsPos (Sig : TermsSig.Signature).
 
   Proof.
     intros M pos N.
-    destruct N as [N envN typeN termN].
+    destruct N as [N envN typeN].
     induction pos; simpl in * .
      (* PThis *)
     exists N; auto.

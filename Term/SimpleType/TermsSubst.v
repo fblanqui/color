@@ -46,7 +46,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof.
     destruct (nth_error_In G x) as [[T Gx] | Gnx].
-    destruct T as [T | Gnx].
+    destruct T as [T | ].
     left; exists T; auto.
     right; auto with terms.
     right; auto with terms.
