@@ -10,6 +10,7 @@ symbols defined by a set of rules, list of calls in a rhs
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATrs ListUtil VecUtil EqUtil BoolUtil.
+From Coq Require Import Sumbool.
 
 Section S.
 
@@ -52,13 +53,14 @@ Lemma defined_equiv : forall f R,
  defined f R = true <-> exists v, exists r, In (mkRule (Fun f v) r) R.
 
 Proof.
-intros. split. Focus 2.
-intro. destruct H as [v [r H]]. apply (lhs_fun_defined f v r). auto.
+intros. split.
+2:{intro. destruct H as [v [r H]]. apply (lhs_fun_defined f v r). auto. }
 intros. induction R. simpl in H. discr.
 simpl. simpl in H. destruct a as [a1 a2]. simpl in H. destruct a1.
 destruct (IHR H) as [v H0]; destruct H0 as [r H0]. exists v; exists r; auto.
-destruct (orb_prop _ _ H). Focus 2. destruct (IHR H0) as [v' H1].
-destruct H1 as [r H1]. exists v'; exists r. auto.
+destruct (orb_prop _ _ H).
+2:{destruct (IHR H0) as [v' H1]. destruct H1 as [r H1]. exists v'; exists r.
+   auto. }
 rewrite beq_symb_ok in H0; rewrite <- H0. exists t; exists a2. left; refl.
 Qed.
 
@@ -145,8 +147,6 @@ induction v; simpl; intros. contr.
 ded (app_eq_nil _ _ H0). destruct H1.
 destruct H. subst x. hyp. apply IHv; hyp.
 Qed.
-
-From Coq Require Import Sumbool.
 
 Lemma in_calls : forall x t, In x (calls t)
   -> exists g, exists vs, x = Fun g vs /\ defined g R = true.

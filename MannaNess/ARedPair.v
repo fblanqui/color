@@ -81,6 +81,8 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
     hyp.
   Qed.
 
+  Section S.
+
   Variable cc_succ : context_closed succ.
 
   Lemma WF_rp_red_mod : forall E R,
@@ -133,6 +135,8 @@ Module WeakRedPairProps (Import WP : WeakRedPair).
     intros. rewrite <- red_mod_empty. apply WF_rp_red_mod. refl. hyp.
     simpl. rewrite red_mod_empty. hyp.
   Qed.
+
+  End S.
 
 (***********************************************************************)
 (** tactics for Rainbow *)
