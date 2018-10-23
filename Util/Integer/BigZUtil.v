@@ -12,10 +12,6 @@ Set Implicit Arguments.
 From CoLoR Require Import LogicUtil BigNUtil NatUtil.
 From Bignums Require Export BigZ.
 
-Lemma eq_bigZ_dec : forall x y : bigZ, {x=y}+{~x=y}.
-
-Proof. decide equality; apply eq_bigN_dec. Defined.
-
 From Coq Require Import Zcompare.
 
 Open Scope bigZ_scope.
