@@ -46,7 +46,7 @@ Module Make (Export XMap : FMapInterface.S).
 
     Proof. fo. Qed.
 
-    Global Instance Equiv_m A : Proper (same ==> same) (@Equiv A).
+    Global Instance Equiv_m : Proper (same ==> same) (@Equiv A).
 
     Proof. fo. Qed.
 
