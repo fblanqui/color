@@ -1,6 +1,3 @@
-This is the CoLoR library version 1.5.0.
-Check http://color.inria.fr/ for more recent versions.
-
 CoLoR is a library for the Coq proof assistant/checker
 (http://coq.inria.fr/) providing definitions and theorems about the
 termination/well-foundedness of arbitrary relations and rewrite
