@@ -8,3 +8,5 @@ CoqMakefile.conf
 Makefile.coq
 Makefile.coq.conf
 _CoqProject
+*.time
+*.log
