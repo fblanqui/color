@@ -352,9 +352,9 @@ Module Make (Export XMap : FMapInterface.S).
 
     Proof.
       intros n k x m' hk [h1 h2].
-      assert (In k (add k x n)). rewrite add_in_iff. auto.
+      assert (In k (add k x n)). rewrite add_in_iff. auto with ordered_type.
       rewrite h1 in H. destruct H as [x']. exists x'. split.
-      apply h2 with k. rewrite add_mapsto_iff. auto. hyp.
+      apply h2 with k. rewrite add_mapsto_iff. auto with ordered_type. hyp.
       intro l. rewrite add_o. rewrite remove_o. destruct (eq_dec k l).
       rewrite <- e. rewrite <- find_mapsto_iff. hyp. refl.
     Qed.
@@ -397,7 +397,7 @@ and satisfies some commutation property. *)
         rewrite fold_add; auto. destruct (Equiv_add nxm xemm') as [x' [h1 h2]].
         assert (n: ~In k (remove k m')). apply remove_1. refl.
         rewrite fold_Add with (m2:=m'); auto. 2: apply n. 2: apply h2.
-        apply f_m; auto. apply hm; auto.
+        apply f_m; auto with ordered_type. apply hm; auto.
         eapply Equiv_add_remove. hyp. apply xemm'.
       Qed.
 
@@ -686,7 +686,7 @@ and satisfies some commutation property. *)
         (* add *)
         intros x T E hx h F e xs xs' xsxs'. rewrite restrict_dom_add. 2: hyp.
         unfold restrict_dom at -1. rewrite <- (fold_Equal _ _ _ e).
-        rewrite fold_add; auto. apply restrict_fun_e; auto. apply h; auto. refl.
+        rewrite fold_add; auto. apply restrict_fun_e; auto with ordered_type. apply h; auto. refl.
         apply restrict_fun_e. refl. apply restrict_fun_transp.
       Qed.
  
@@ -743,7 +743,7 @@ and satisfies some commutation property. *)
       Lemma mapsto_restrict_dom_singleton : forall x T E,
           MapsTo x T E -> MapsTo x T (restrict_dom E (singleton x)).
 
-      Proof. intros x T E h. rewrite mapsto_restrict_dom. set_iff. auto. Qed.
+      Proof. intros x T E h. rewrite mapsto_restrict_dom. set_iff. auto with ordered_type. Qed.
 
 (****************************************************************************)
 (** ** Domain of a typing environment. *)

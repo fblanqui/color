@@ -609,7 +609,7 @@ successors of g' *)
     unfold add_edge, Relation_Operators.union, id. split_all.
     destruct H as [sa [a1 a2]]. rewrite add_o in a1. destruct (eq_dec x a).
     inversion a1. subst sa. rewrite add_iff in a2. rewrite In_succs_rel in a2.
-    rewrite e in a2. split_all.
+    rewrite e in a2. split_all. auto with ordered_type.
     left. exists sa. tauto.
     destruct H as [sa [a1 a2]]. unfold rel. rewrite add_o.
     destruct (eq_dec x a).
@@ -617,7 +617,7 @@ successors of g' *)
     rewrite e, In_succs_rel. exists sa. auto.
     exists sa. auto.
     unfold rel. rewrite add_o. destruct (eq_dec x a).
-    exists (XSet.add y (succs x g)). split_all. rewrite add_iff. auto.
+    exists (XSet.add y (succs x g)). split_all. rewrite add_iff. auto with ordered_type.
     absurd (eq x a); hyp.
   Qed.
 
