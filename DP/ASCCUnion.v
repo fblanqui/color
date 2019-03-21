@@ -72,7 +72,7 @@ Section S.
     cut (exists j, j=i /\ In j (nats_decr_lt dim)).
     intros; destruct H1. destruct H1. 
     rewrite <- In_nats_decr_lt in H2. subst i; auto.
-    eapply permutation_in. auto using gen_st.
+    eapply permutation_in. constructor; congruence.
     apply permutation_sym. eauto. auto.
   Qed.
 
