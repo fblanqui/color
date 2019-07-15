@@ -15,6 +15,8 @@ From CoLoR Require Import ListUtil LogicUtil ZUtil VecUtil Problem
 
 Set Implicit Arguments.
 
+Open Scope nat_scope.
+
 Section PolySolver.
 
 Variable Sig : Signature.

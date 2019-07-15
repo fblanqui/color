@@ -292,7 +292,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       Notation vec_ge := (@Vforall2 ge dim).
 
       Definition mint_ge n (l r : mint n) := 
-        Vforall2 mat_ge (args l) (args r) /\ Vforall2 ge (const l) (const r).
+        Vforall2 mat_ge (args l) (args r) /\ Vforall2 ge (AMatrixBasedInt.const l) (AMatrixBasedInt.const r).
 
       Definition term_ord (ord : forall n, relation (mint n)) l r :=
         let (li, ri) := rule_mi (mkRule l r) in ord _ li ri.
@@ -308,7 +308,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       Proof.
         intros n x y. unfold mint_ge.
         destruct (Vforall2_dec (@mat_ge_dec dim dim) (args x) (args y)); 
-          destruct (Vforall2_dec ge_dec (const x) (const y));
+          destruct (Vforall2_dec ge_dec (AMatrixBasedInt.const x) (AMatrixBasedInt.const y));
           split_all; right; tauto.
       Defined.
 
@@ -334,7 +334,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Definition mint_eval (val : valuation I) k (mi : mint k) : vec :=
         let coefs := Vbuild (fun i (ip : i < k) => dom2vec (val i)) in
-        add_vectors (Vcons (const mi) (Vmap2 mat_vec_prod (args mi) coefs)).
+        add_vectors (Vcons (AMatrixBasedInt.const mi) (Vmap2 mat_vec_prod (args mi) coefs)).
 
       Global Instance mint_eval_mor k val :
         Proper (@eq_mint k ==> eq_vec) (@mint_eval val k).
@@ -349,7 +349,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Lemma mint_eval_split : forall val k (mi : mint k),
         let coefs := Vbuild (fun i (ip : i < k) => dom2vec (val i)) in
-          mint_eval val mi =v const mi [+] 
+          mint_eval val mi =v AMatrixBasedInt.const mi [+] 
           add_vectors (Vmap2 mat_vec_prod (args mi) coefs).
 
       Proof.
@@ -467,8 +467,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
           mi_eval_aux fi (Vmap 
             (fun t : bterm k => mint_eval val (mi_of_term t)) v) =v
           mint_eval val (mkMatrixInt
-            (add_vectors (Vcons (const fi) (Vmap 
-              (@const A matrix dim (S k)) arg_eval)))
+            (add_vectors (Vcons (AMatrixBasedInt.const fi) (Vmap 
+              (@AMatrixBasedInt.const A matrix dim (S k)) arg_eval)))
             (combine_matrices (Vmap (@args A matrix dim (S k)) arg_eval))).
 
       Proof.
@@ -486,15 +486,15 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
             (@M.mat_vec_prod dim dim
                        (@Vhead (matrix dim dim) i
                           (@args A matrix dim (S i) fi))
-                       (@const A matrix dim (S k)
+                       (@AMatrixBasedInt.const A matrix dim (S k)
                           (@Vhead (mint (S k)) i
                              (@Vmap (ABterm.bterm sig k)
                                 (mint (S k))
                                 (@mi_of_term k) (S i) v)))
                  [+] @add_vectors dim (S i) (@Vcons (vector A dim)
-                     (@const A matrix dim (S i) fi) i
+                     (@AMatrixBasedInt.const A matrix dim (S i) fi) i
                     (@Vmap (mint (S k)) 
-                       (vector A dim) (@const A matrix dim (S k)) i
+                       (vector A dim) (@AMatrixBasedInt.const A matrix dim (S k)) i
                        (@Vmap2 (matrix dim dim)
                           (mint (S k))
                           (mint (S k))
@@ -532,7 +532,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
                              (@mi_of_term k) (S i) v)))))))).
         2:{ apply mint_eval_mor. split. rewrite add_vectors_perm,
           (add_vectors_cons (i := S i) (mat_vec_prod (Vhead (args fi))
-            (const (Vhead (Vmap (mi_of_term (k:=k)) v))))). refl.
+            (AMatrixBasedInt.const (Vhead (Vmap (mi_of_term (k:=k)) v))))). refl.
         refl. }
         rewrite mint_eval_cons. apply vector_plus_mor.
         2:{ rewrite Vmap_tail. refl. }
@@ -592,7 +592,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         destruct mi. gen val. clear val. induction args0. intros.
         destruct mi'. VOtac. 
         unfold mint_eval, add_vectors. simpl. refl.
-        intros. destruct mi'. VSntac args1.
+        intros. destruct mi' as [const1 args1]. VSntac args1.
         unfold mint_eval, add_vectors. simpl.
         destruct H. apply (@vec_plus_ge_compat dim).
         apply (IHargs0 (Vtail val) (mkMatrixInt const1 (Vtail (args1)))).

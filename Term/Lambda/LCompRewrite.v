@@ -415,10 +415,10 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 
   Import LComp.
 
-  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+  Notation cp_aeq := (Proper (A.aeq ==> impl)) (only parsing).
   Notation cp_sn := (@cp_sn F X R_aeq).
   Notation cp_red := (@cp_red F X R_aeq).
   Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
-  Notation cp := (@cp F X aeq R_aeq neutral).
+  Notation cp := (@cp F X A.aeq R_aeq neutral).
 
 End CP_beta_eta_rewrite.
