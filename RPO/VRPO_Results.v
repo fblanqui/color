@@ -400,7 +400,7 @@ Module RPO_Results (Export RPO : RPO_Model).
     unfold eqF; intuition.
   Defined.
 
-  Import VSubstitution VContext.
+  Import VSubstitution VContext RPO.P.
 
   Section subst_closed.
 

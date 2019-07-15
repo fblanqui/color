@@ -540,7 +540,7 @@ Definition enum2 R :=
 (***********************************************************************)
 (** main theorems (finite versions) *)
 
-    Import ATrs. Notation rules := (rules Sig).
+    Import ATrs List. Notation rules := (rules Sig). Notation term := S.term.
 
     Variable bge : term -> term -> bool.
     Variable bge_ok : rel_of_bool bge << Ige.

@@ -17,6 +17,8 @@ References:
 From CoLoR Require Import ATrs RelUtil SN ListUtil ARelation LogicUtil.
 From CoLoR Require Export AWFMInterpretation.
 
+Import List.
+
 (***********************************************************************)
 (** * Module type specifying a weakly monotone algebra.                *)
 (***********************************************************************)
