@@ -224,7 +224,8 @@ simpl.
 
 replace (pow_pos Zmult 0 p2) with 0.
 ring.
-clear;induction p2;simpl;auto with zarith.
+clear; induction p2; simpl.
+1, 3: reflexivity.
 rewrite <- IHp2;reflexivity.
 Qed.
 
@@ -467,7 +468,8 @@ Proof.
   replace  (pow_pos Zmult 0 p2) with 0 in *.
   omega.
   clear.
-  induction p2;simpl;auto with zarith.
+  induction p2;simpl.
+  1, 3: reflexivity.
   rewrite <- IHp2;ring.
   simpl.
   clear -  h9 Hlength lb_pos lb_lz.
