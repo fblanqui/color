@@ -1747,13 +1747,14 @@ Section Vbuild.
           Vcons (gen 0 _) (@Vbuild_spec p gen')
     end.
 
-  Solve Obligations with coq_omega.
+  Solve Obligations with try omega.
   (*COQ: why these obligations are not solved?*)
-  Next Obligation. coq_omega. Qed.
-  Next Obligation. coq_omega. Qed.
-  Next Obligation. coq_omega. Qed.
+  Next Obligation. omega. Qed.
   Next Obligation.
-    simpl. destruct i. f_equal. apply lt_unique.
+    assert (h : Vbuild_spec_obligation_5 (eq_refl (S p)) = eq_refl (S p)).
+    apply eq_unique.
+    rewrite h. simpl. destruct i.
+    f_equal. apply lt_unique.
     rewrite e. f_equal. apply lt_unique.
   Defined.
 
