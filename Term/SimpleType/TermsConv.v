@@ -120,8 +120,9 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros i j.
-    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Max.max i j))); fo.
-    destruct (eq_nat_dec i0 i); destruct (eq_nat_dec j0 j); fo.
+    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Max.max i j))). 2-3: fo.
+    intros i0 j0; destruct (eq_nat_dec i0 i); destruct (eq_nat_dec j0 j); fo.
+    intros i0 j0 [ H H0 ]; split.
     rewrite H; auto with arith.
     rewrite H0; auto with arith.
   Defined.

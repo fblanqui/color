@@ -48,9 +48,10 @@ Fixpoint beq_Z x y :=
 Lemma beq_Z_ok : forall x y, beq_Z x y = true <-> x = y.
 
 Proof.
-induction x; destruct y; simpl; intros; try (intuition; discr).
-rewrite beq_pos_ok. intuition. subst. refl. inversion H. refl.
-rewrite beq_pos_ok. intuition. subst. refl. inversion H. refl.
+  intros [] []; simpl; split.
+  1-2: reflexivity.
+  1-6, 9-14: discriminate.
+  all: rewrite beq_pos_ok; intros H; inversion H; reflexivity.
 Qed.
 
 (***********************************************************************)
