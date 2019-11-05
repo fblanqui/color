@@ -31,6 +31,8 @@ Arguments union {A} R1 R2 x y.
 Arguments lexprod [A B] _ _ _ _.
 Arguments symprod [A B] _ _ _ _.
 
+Declare Scope relation_scope.
+
 (***********************************************************************)
 (** Notations for some relations and operations on relations. *)
 
