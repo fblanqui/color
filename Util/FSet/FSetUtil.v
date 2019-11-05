@@ -12,6 +12,8 @@ Set Implicit Arguments.
 From Coq Require Import FSets.
 From CoLoR Require Import LogicUtil RelUtil BoolUtil.
 
+Create HintDb ordered_type.
+
 Module Make (Export XSet : FSetInterface.S).
 
   Module Export XSetEqProps := EqProperties XSet.
@@ -70,7 +72,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma eqb_refl x : eqb x x = true.
 
-  Proof. eq_dec x x. refl. absurd (x=x); auto. Qed.
+  Proof. eq_dec x x. refl. absurd (x=x); auto with ordered_type. Qed.
 
   Hint Rewrite eqb_refl : mem.
 
@@ -480,9 +482,9 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma notin_replace x y xs : E.eq y x \/ ~In x (replace x y xs).
 
-  Proof.
-    eq_dec y x. auto. unfold replace. case_eq (mem x xs); intro hx; set_iff.
-    right. split_all. right. rewrite not_mem_iff. hyp.
+  Proof with auto with ordered_type.
+    eq_dec y x... unfold replace. case_eq (mem x xs); intro hx; set_iff.
+    right. split_all... right. rewrite not_mem_iff. hyp.
   Qed.
 
   Lemma replace_idem x xs : replace x x xs [=] xs.

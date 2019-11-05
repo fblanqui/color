@@ -273,7 +273,7 @@ the transitive closure of [id x y U g] *)
     case_eq (XSet.mem y (succs x g)); intros. refl.
     intro z. rewrite In_succs_rel, rel_map_fold_add_pred_ext,
     rel_set_fold_add_edge_ext. unfold pred, succ. rewrite union_iff.
-    rewrite !add_iff, !In_succs_rel. split_all.
+    rewrite !add_iff, !In_succs_rel. split_all; auto with ordered_type.
   Qed.
 
   Lemma preds_trans_add_edge_id : forall x y g,
@@ -291,7 +291,7 @@ the transitive closure of [id x y U g] *)
     (* x in ysy *)
     rewrite add_iff, In_preds_rel. unfold ysy in H0.
     rewrite XSetFacts.add_b, orb_eq, eqb_ok, mem_succs_rel in H0.
-    unfold ysy, pred, succ. rewrite add_iff, In_succs_rel. split_all.
+    unfold ysy, pred, succ. rewrite add_iff, In_succs_rel. split_all; auto with ordered_type.
     (* x not in ysy *)
     unfold ysy, pred, succ. rewrite add_iff, In_succs_rel, In_preds_rel.
     rewrite false_not_true in H, H0. unfold ysy in H0.

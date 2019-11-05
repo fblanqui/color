@@ -162,6 +162,8 @@ Notation vec := (vector Z).
 
 From CoLoR Require Import ZUtil.
 
+Open Scope Z_scope.
+
 Fixpoint meval (n : nat) : monom n -> vec n -> Z :=
   match n as n return monom n -> vec n -> Z with
     | O => fun _ _ => 1

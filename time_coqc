@@ -5,6 +5,8 @@
 #
 # - Frederic Blanqui, 2015-03-19
 
+if test "$1" = "--print-version"; then coqc --print-version; exit 0; fi
+
 args=$*
 n=$#
 shift `expr $n - 1`
