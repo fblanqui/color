@@ -154,7 +154,7 @@ Section S.
     omega. apply IHus.
   Qed.
 
-  Arguments reducts_vec_cast [f ts k us] _ [k' e h'].
+  (*Arguments reducts_vec_cast [f ts k us] _ [k' e h'].*)
 
   Lemma In_reducts_vec_elim_aux : forall v' f ts k (us : terms k),
     (forall i (p : i < k), exists r : arity f - k + i < arity f,

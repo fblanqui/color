@@ -136,4 +136,4 @@ Section S.
 
 End S.
 
-Arguments Hole [Sig].
+Arguments Hole {Sig}.

@@ -29,7 +29,7 @@ Record Signature : Type := mkSignature {
 Arguments mkSignature [symbol] _ [beq_symb] _.
 Arguments arity [s] _.
 Arguments beq_symb [s] _ _.
-Arguments beq_symb_ok [s x y].
+Arguments beq_symb_ok {s x y}.
 
 Ltac case_beq_symb Sig := EqUtil.case_beq (@beq_symb Sig) (@beq_symb_ok Sig).
 
@@ -104,7 +104,7 @@ Section weight_inj.
 
 End weight_inj.
 
-Arguments bweight_inj_ok [Sig Fs] _ [weight].
+(*Arguments bweight_inj_ok [Sig Fs] _ [weight].*)
 
 Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok Fs_ok);
   (check_eq || fail 10 "non-injective weight function").

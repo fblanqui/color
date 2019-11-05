@@ -24,6 +24,8 @@ From Coq Require Import Setoid.
 
 Set Implicit Arguments.
 
+Declare Scope term_scope.
+
 (** The arity of a symbol contains the information about built-in theories as in CiME *)
 Inductive arity_type : Type :=
   | AC : arity_type

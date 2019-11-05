@@ -27,7 +27,7 @@ Record Signature : Type := mkSignature {
 
 Arguments mkSignature [symbol beq_symb] _.
 Arguments beq_symb [s] _ _.
-Arguments beq_symb_ok [s x y].
+Arguments beq_symb_ok {s x y}.
 
 From CoLoR Require Import EqUtil.
 
@@ -105,7 +105,7 @@ Section weight_inj.
 
 End weight_inj.
 
-Arguments bweight_inj_ok _ [Fs] _ [weight].
+(*Arguments bweight_inj_ok _ [Fs] _ [weight].*)
 
 Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok _ Fs_ok);
   (check_eq || fail 10 "non-injective weight function").

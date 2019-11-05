@@ -235,8 +235,8 @@ Section bool_of_rel.
 
 End bool_of_rel.
 
-Arguments bool_of_rel_true [A R] _ [x y].
-Arguments bool_of_rel_false [A R] _ [x y].
+(*Arguments bool_of_rel_true [A R] _ [x y].
+Arguments bool_of_rel_false [A R] _ [x y].*)
 
 (***********************************************************************)
 (** Definition of some properties on relations. *)

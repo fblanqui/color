@@ -1113,7 +1113,7 @@ End Element_At_List.
 Arguments element_at_in [A x l n] _.
 Arguments element_at_in2 [A x l n] _.
 Arguments in_exists_element_at [A l a] _.
-Arguments element_at_exists [A l p].
+(*Arguments element_at_exists [A l p].*)
 
 Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
 Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.

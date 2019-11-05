@@ -26,6 +26,7 @@ Proof. intros. eapply eq_vec_dec. apply eq_nat_dec. Defined.
 
 Definition poly n := list (Z * monom n).
 
+Declare Scope poly_scope.
 Delimit Scope poly_scope with poly.
 Bind Scope poly_scope with poly.
 

@@ -17,6 +17,8 @@ From Coq Require Import Transitive_Closure Compare_dec Relations Permutation
 From CoLoR Require Import RelExtras MultisetTheory ListPermutation MultisetCore
      ListExtras AccUtil LogicUtil.
 
+Declare Scope mord_scope.
+
 Module MultisetOrder (MC: MultisetCore).
 
   Module Import MSet := MultisetTheory.Multiset MC.

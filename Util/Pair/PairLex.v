@@ -398,7 +398,7 @@ Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
   Definition snd3 (t : triple) : M := snd (fst t).
   Definition trd3 (t : triple) : R := snd t.
 
-  Hint Unfold fst3 snd3 trd3.
+  Hint Unfold fst3 snd3 trd3 : core.
 
   Module LR_ord := LexicographicOrder A_ord B_ord.
   Module Lex3 := LexicographicOrder LR_ord.Rel C_ord.

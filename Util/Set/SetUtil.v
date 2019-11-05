@@ -38,7 +38,7 @@ Section S.
 
   Definition equiv : relation set := pointwise_relation A iff.
 
-  Infix "[=]" := equiv (at level 70).
+  Infix "[=]" := equiv (at level 70). (* notation already defined in ListUtil *)
 
   Definition strict_subset P Q := P [<=] Q /\ ~Q [<=] P.
 

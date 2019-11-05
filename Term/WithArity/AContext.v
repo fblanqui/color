@@ -494,7 +494,7 @@ End S.
 (***********************************************************************)
 (** declarations of implicit arguments *)
 
-Arguments Hole [Sig].
+Arguments Hole {Sig}.
 Arguments in_vars_subterm_eq [Sig x t] _.
 Arguments in_vars_fun [Sig x f ts] _.
 Arguments vars_fill_elim [Sig t c] _ _.

@@ -2,7 +2,7 @@ Compilation and installation procedure using OPAM
 -------------------------------------------------
 
 Requirements:
-- OPAM version 1.2.2 or later (https://opam.ocaml.org/)
+- Opam (https://opam.ocaml.org/)
 
 Procedure:
 - step 1/2: opam repo add coq-released https://coq.inria.fr/opam/released
@@ -24,8 +24,8 @@ Requirements:
 - UNIX-like operating system (including Cygwin)
 - GNU find version 4.7.0 (http://www.gnu.org/software/findutils/findutils.html)
 - GNU make version 4.1 (http://www.gnu.org/software/make/)
-- Coq version 8.8 (http://coq.inria.fr/)
-- coq-bignums 8.8
+- Coq version 8.10 (http://coq.inria.fr/)
+- coq-bignums 8.10
 
 Procedure for installing CoLoR in Coq default directory for user contributions:
 - step 1/2: make [-j N]

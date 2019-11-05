@@ -778,7 +778,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     induction x using lt_wf_ind; apply Acc_intro; destruct y; auto || contr.
   Qed.
 
-  Hint Resolve gt_Fin_WF.
+  Hint Resolve gt_Fin_WF : core.
 
   Lemma gt_WF : WF gt.
 

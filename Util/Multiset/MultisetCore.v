@@ -13,6 +13,8 @@ Set Implicit Arguments.
 From CoLoR Require RelExtras.
 From Coq Require Import Min Relations Psatz.
 
+Declare Scope msets_scope.
+
 Module Type MultisetCore.
 
   Declare Module Export Sid : RelExtras.Eqset_dec.

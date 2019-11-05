@@ -31,6 +31,8 @@ Section Terminaison.
   Variable T:Type.
   Variable R: T -> T -> Prop.
 
+  Declare Scope rewriting.
+  
   Notation "T -R> U" := (R U T) (at level 80) : rewriting.
 
   Open Scope rewriting.

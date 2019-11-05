@@ -47,7 +47,7 @@ Proof.
   induction bs; intros.
   destruct n1; destruct n2; repeat rewrite Vcast_refl; solve [discr | refl].
   destruct n1; try VOtac; repeat rewrite Vcast_refl; try solve [discr | refl].
-  revert h'; rewrite (Vcast_cons (hS:=h0)); simpl; intro h'.
+  revert h'; rewrite (Vcast_cons h0); simpl; intro h'.
   VSntac v1. destruct h; simpl; try apply IHbs.
   rewrite Vcast_cons; f_equal; apply IHbs.
 Qed.

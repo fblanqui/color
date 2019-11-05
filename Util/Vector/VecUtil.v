@@ -30,6 +30,8 @@ Arguments Vhead [A n] _.
 Arguments Vtail [A n] _.
 Arguments Vconst [A] _ _.
 
+Declare Scope vec_scope.
+
 (***********************************************************************)
 (** Notations for vectors. *)
 
@@ -213,7 +215,7 @@ Section Vcast.
 End Vcast.
 
 Arguments Vcast_eq_elim [A n v1 v2 m h] _.
-Arguments Vcast_cons [A n v x p hS].
+Arguments Vcast_cons [A n v x p] _.
 
 (***********************************************************************)
 (** ** Lemma and tactic for replacing an empty vector by Vnil. *)
@@ -489,7 +491,7 @@ Section Vapp.
   Proof.
     induction v; intros.
     VOtac; rewrite Vcast_refl; refl.
-    rewrite (Vcast_cons (hS:=h0)), <- (IHv w); refl.
+    rewrite (Vcast_cons h0), <- (IHv w); refl.
   Qed.
 
   Lemma Vapp_nil : forall n (v : vector A n) (w : vector A 0), 
@@ -799,7 +801,7 @@ Arguments Vin_nth [A n v a] _.
 Arguments Vin_cast_elim [A m n H v x] _.
 Arguments Vin_elim [A x n v] _.
 Arguments Vin_app [A x n1 v1 n2 v2] _.
-Arguments Vin_cast [A m n H v x].
+(*Arguments Vin_cast [A m n H v x].*)
 
 (***********************************************************************)
 (** ** Sub-vector.

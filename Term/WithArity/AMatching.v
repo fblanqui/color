@@ -47,7 +47,7 @@ Section Matching.
   Notation "ts =V us" := (beq_terms ts us)     (at level 70, no associativity).
 
   Local Coercion is_true b := b = true.
-  Local Hint Unfold is_true.
+  Local Hint Unfold is_true : core.
 
   Definition exmatch (m : matching) (x : variable) (t : term) :=
   match VM.find x m with

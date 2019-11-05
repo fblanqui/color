@@ -91,7 +91,7 @@ Proof.
 intro t; pattern t; apply term_ind_forall; clear t.
 simpl in *. intros. subst. refl.
 intros f t IH. unfold AUnary.Fun1. simpl.
-rewrite (Vcast_cons (hS:=is_unary_sig f)), Vcast_refl. simpl.
+rewrite (Vcast_cons (is_unary_sig f)), Vcast_refl. simpl.
 rewrite max_0_r. intro h. rewrite (IH h). refl.
 Qed.
 
@@ -103,7 +103,7 @@ Lemma string_of_term_sub : forall s l,
 Proof.
 intro s. apply term_ind_forall. refl. intros f t IH.
 rewrite sub_fun1. simpl.
-rewrite !(Vcast_cons (hS:=is_unary_sig f)). simpl.
+rewrite !(Vcast_cons (is_unary_sig f)). simpl.
 rewrite IH. refl.
 Qed.
 
@@ -121,7 +121,7 @@ Lemma string_of_cont_cont : forall t,
 
 Proof.
 apply term_ind_forall. refl. intros f t IH. simpl.
-rewrite !(Vcast_cons (hS:=is_unary_sig f)). simpl. rewrite IH. refl.
+rewrite !(Vcast_cons (is_unary_sig f)). simpl. rewrite IH. refl.
 Qed.
 
 Lemma string_of_term_fill : forall t c,
@@ -151,7 +151,7 @@ Proof.
 intros [l r] s. elim l; unfold SContext.fill; simpl.
 elim s. refl. intros. simpl. rewrite H. refl.
 intros.
-rewrite H, (Vcast_cons (hS:=cont_aux is_unary_sig a)), Vcast_refl.
+rewrite H, (Vcast_cons (cont_aux is_unary_sig a)), Vcast_refl.
 refl.
 Qed.
 
