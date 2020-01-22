@@ -1036,8 +1036,8 @@ Module TermsManip (Sig : TermsSig.Signature).
     apply appUnit_env.
     unfold isAppUnit; rewrite <- H.
     destruct H0.
-    rewrite <- H0; fo.
-    fo.
+    rewrite <- H0; firstorder auto with datatypes.
+    firstorder auto with datatypes.
   Qed.
 
   Lemma partialFlattening_inv : forall M (Mapp: isApp M) Ms,

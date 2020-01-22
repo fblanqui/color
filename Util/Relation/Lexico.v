@@ -299,7 +299,7 @@ Section lexv.
     trans (Vnth us i1). hyp. rewrite !(Vnth_eq _ i1 j1); auto.
     intros k ki kn. trans (Vnth us kn); fo.
     (* i > j *)
-    ex j j1. split. apply gt_eq_l. exists (Vnth us j1). split. fo. hyp.
+    ex j j1. split. apply gt_eq_l. exists (Vnth us j1). split. firstorder auto with zarith. hyp.
     intros k kj kn. trans (Vnth us kn). apply i3. omega. fo.
   Qed.
 
@@ -318,7 +318,7 @@ Lemma Vrel1_lexv n A (gt : relation A) :
 
 Proof.
   intros t u. rewrite Vrel1_nth_iff, lexv_eq. intros [i [hi [h1 h2]]].
-  ex i hi. fo.
+  ex i hi. firstorder auto with zarith.
 Qed.
 
 (** [lexv (opt eq) (opt gt)] absorbs [Vforall2_opt eq]. *)

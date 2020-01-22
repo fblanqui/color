@@ -570,7 +570,7 @@ list of elements. *)
 
   Proof.
     rewrite Pf_singleton_eq, card_add, card_empty.
-    destruct (dec (mem a Pf_empty)). fo. refl.
+    destruct (dec (mem a Pf_empty)). firstorder with arith. refl.
   Qed.
 
 (** Cardinal of [rem]. *)

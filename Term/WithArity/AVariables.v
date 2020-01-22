@@ -78,7 +78,7 @@ intros. pattern u. apply term_ind with (Q := fun n (us : terms n) =>
   List.In x (ATerm.vars_vec us) <-> mem x (vars_vec us) = true); clear u.
 intro. simpl. mem. tauto.
 intros f us H. rewrite ATerm.vars_fun, vars_fun. hyp.
-simpl. mem. fo.
+simpl. mem. easy.
 intros. simpl. mem. split_all. destruct (in_app_or H1).
 rewrite (H H4). refl. rewrite (H0 H4). bool. refl.
 case (orb_true_elim H1); intro e.

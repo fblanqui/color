@@ -129,7 +129,7 @@ Section S.
     assert (lm1m2 : l [= m1 ++ m2). intros x xl.
     assert (xal : In x (a :: l)). right. hyp.
     apply lm in xal. rewrite in_app in xal.
-    assert (x <> a). intro. subst. contr. fo.
+    assert (x <> a). intro. subst. contr. firstorder auto with datatypes exfalso.
     gen (IHl _ l_nodup lm1m2). rewrite !app_length. simpl. omega.
   Qed.
 

@@ -2466,7 +2466,7 @@ Section first_position.
 
   Proof.
     induction ys as [|y n ys]; intros k i; simpl. discr.
-    destruct (P_dec y). 2: fo.
+    destruct (P_dec y). 2: firstorder auto with arith.
     intro h; inversion h; clear h; subst. refl.
   Qed.
 

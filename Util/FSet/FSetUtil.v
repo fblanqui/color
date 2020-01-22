@@ -78,7 +78,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma eqb_sym : forall x y, eqb x y = eqb y x.
 
-  Proof. intros x y. apply eqb_equiv. rewrite !eqb_ok. fo. Qed.
+  Proof. intros x y. apply eqb_equiv. rewrite !eqb_ok. firstorder auto with crelations. Qed.
 
 (***********************************************************************)
 (** empty *)
@@ -402,7 +402,7 @@ Module Make (Export XSet : FSetInterface.S).
 
     Global Instance feq_Sym : Symmetric eqA -> Symmetric feq.
 
-    Proof. fo. Qed.
+    Proof. firstorder auto with crelations. Qed.
 
     Global Instance Proper_m' :
       Proper (feq ==> impl) (Proper (E.eq ==> eqA ==> eqA)).

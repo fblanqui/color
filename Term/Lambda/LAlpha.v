@@ -287,7 +287,7 @@ Module Make (Export L : L_Struct).
     ex a b. intuition.
     induction 1; intros u1 u2 e.
     (* refl *)
-    ex u1 u2. fo.
+    ex u1 u2. firstorder auto with crelations.
     (* sym *)
     rewrite or_sym in e. destruct (IHaeq _ _ e) as [a [b [h1 [h2 [h3 h4]]]]].
     ex a b. fo.
@@ -309,10 +309,10 @@ Module Make (Export L : L_Struct).
                 try (trans a; hyp); try (trans b; hyp).
     (* app_l *)
     destruct e as [h|h]; inversion h; subst; clear h.
-    ex u' u2. fo. ex u u2. fo.
+    ex u' u2. firstorder auto with crelations. ex u u2. firstorder auto with crelations.
     (* app_r *)
     destruct e as [h|h]; inversion h; subst; clear h.
-    ex u1 v'. fo. ex u1 v. fo.
+    ex u1 v'. firstorder auto with crelations. ex u1 v. firstorder auto with crelations.
     (* lam *)
     destruct e; discr.
     (* alpha *)
@@ -375,7 +375,7 @@ Module Make (Export L : L_Struct).
   Proof.
     intros R_aeq t t' tt' u u' uu' tu.
     revert t u tu t' tt' u' uu'; induction 1; intros t' tt' u' uu'.
-    apply t_step. rewrite <- tt', <- uu'. hyp. trans y; fo.
+    apply t_step. rewrite <- tt', <- uu'. hyp. trans y; firstorder auto with crelations.
   Qed.
 
 (****************************************************************************)
@@ -617,7 +617,7 @@ variables. *)
     unfold yy's. unfold Def.update. eq_dec b y; simpl; set_iff. auto.
     intros i2 i3. apply H6. rewrite In_fvcodom. ex b. revert i1.
     rewrite h1 in *. rewrite fv_rename; unfold replace.
-    destruct (mem x (fv v)); set_iff; split_all. subst b. cong. (*SLOW*)fo.
+    destruct (mem x (fv v)); set_iff; split_all. subst b. cong. firstorder auto with set.
 
     rewrite e1, e2, e. unfold yy's. rewrite subs1_update_single.
     2:{ intro h. gen (hs3 _ h). set_iff. tauto. }
@@ -1036,7 +1036,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     intros u v uv. revert u v uv.
     induction u; intros v uv; inv_aeq_0 uv; subst; simpl.
-    refl. refl. fo. fo.
+    refl. refl. firstorder auto with crelations. fo.
   Qed.
 
 (****************************************************************************)
@@ -1327,7 +1327,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
         S* t u -> t ~~ u \/ exists v, S t v /\ S* v u.
 
       Proof.
-        induction 1. fo. fo. destruct IHclos_aeq_trans1 as [h|[t [h1 h2]]].
+        induction 1. firstorder auto with crelations. fo. destruct IHclos_aeq_trans1 as [h|[t [h1 h2]]].
         destruct IHclos_aeq_trans2 as [i|[t' [i1 i2]]].
         left. trans v; hyp.
         right. ex t'. rewrite h. auto.
