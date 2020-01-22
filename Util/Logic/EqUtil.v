@@ -29,7 +29,7 @@ Module LeibnizFacts (Import T : Typ).
 
   Instance eq_sym : Symmetric eq.
 
-  Proof. fo. Qed.
+  Proof. firstorder auto with crelations. Qed.
 
   Instance eq_trans : Transitive eq.
 

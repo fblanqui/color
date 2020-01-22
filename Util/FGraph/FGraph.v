@@ -23,7 +23,7 @@ Module Make (XSet : FSetInterface.S)
 
   Lemma eq_com x y : eq x y <-> eq y x.
 
-  Proof. fo. Qed.
+  Proof. firstorder auto with crelations. Qed.
 
 (***********************************************************************)
 (** A finite graph on X.t is represented by its successor map: a
@@ -134,7 +134,7 @@ they define the same relation. See below for more details. *)
 
   Proof.
     intros x y s. apply rel_eq; intros a b.
-    unfold Relation_Operators.union, succ, id. rewrite add_iff. fo.
+    unfold Relation_Operators.union, succ, id. rewrite add_iff. firstorder auto with crelations.
   Qed.
 
   Lemma rel_add : forall x g s, ~In x g -> rel (add x s g) == succ x s U g.
@@ -144,7 +144,7 @@ they define the same relation. See below for more details. *)
     unfold Relation_Operators.union. split.
     (* -> *)
     intros [t [t1 t2]]. rewrite add_o in t1. destruct (eq_dec x a).
-    inversion t1. subst t. fo.
+    inversion t1. subst t. firstorder auto with crelations.
     right. exists t. tauto.
     (* <- *)
     intros [ab|ab]. exists s. unfold succ in ab. split_all. rewrite add_o.
@@ -566,14 +566,14 @@ successors of g' *)
     intros x y g a b. unfold prod. rewrite !add_iff.
     rewrite In_preds_rel, In_succs_rel. split_all.
     (* eq x a /\ eq y b *)
-    apply t_step. fo.
+    apply t_step. firstorder auto with crelations.
     (* g a x /\ eq y b *)
-    apply t_trans with x; apply t_step; fo.
+    apply t_trans with x; apply t_step; firstorder auto with crelations.
     (* eq x a /\ g y b *)
-    apply t_trans with y; apply t_step; fo.
+    apply t_trans with y; apply t_step; firstorder auto with crelations.
     (* g a x /\ g y b *)
-    apply t_trans with x. fo.
-    apply t_trans with y; apply t_step; fo.
+    apply t_trans with x. firstorder auto with sets.
+    apply t_trans with y; apply t_step; firstorder auto with crelations.
   Qed.
 
 (***********************************************************************)

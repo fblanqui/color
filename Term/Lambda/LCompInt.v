@@ -252,7 +252,7 @@ Module Make (Export ST : ST_Struct)
     intros t u tu. inversion tu; clear tu; subst.
     revert u' v' H1 t H u H0; induction 1; intros t tt' u uu'.
     apply t_step. eapply clos_aeq_intro. apply tt'. apply uu'. hyp.
-    trans y; fo.
+    trans y; firstorder auto with crelations.
     (* >> *)
     apply tc_min. 2: class. apply clos_aeq_incl. apply incl_tc. refl.
   Qed.

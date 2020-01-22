@@ -611,7 +611,7 @@ Proof. intros R S [RS SR]. split; apply tc_incl; hyp. Qed.
 
 Lemma incl_tc A (R S : rel A) : R << S -> R << S!.
 
-Proof. fo. Qed.
+Proof. firstorder with sets. Qed.
 
 Lemma trans_tc_incl A (R : rel A) : Transitive R -> R! << R.
 
@@ -787,7 +787,7 @@ Qed.
 
 Instance rtc_refl A (R : rel A) : Reflexive (R#).
 
-Proof. fo. Qed.
+Proof. firstorder with sets. Qed.
 
 Instance rtc_trans A (R : rel A) : Transitive (R#).
 
@@ -806,7 +806,7 @@ Proof. intros R S [RS SR]. split; apply rtc_incl; hyp. Qed.
 
 Lemma incl_rtc A (R : rel A) : R << R#.
 
-Proof. fo. Qed.
+Proof. firstorder with sets. Qed.
 
 Lemma tc_incl_rtc A (R : rel A) : R! << R#.
 

@@ -404,5 +404,5 @@ Proof.
   destruct (dec (Pf_val D (elt_val (f X'))));
     intro a; apply sig_eq in a; simpl in a;
     apply sig_eq; simpl; rewrite <- a.
-  apply f_eq. refl. fo.
+  apply f_eq. refl. firstorder auto with exfalso.
 Qed.

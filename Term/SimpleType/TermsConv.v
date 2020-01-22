@@ -120,7 +120,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros i j.
-    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Max.max i j))). 2-3: fo.
+    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Max.max i j))). 2-3: firstorder auto with zarith.
     intros i0 j0; destruct (eq_nat_dec i0 i); destruct (eq_nat_dec j0 j); fo.
     intros i0 j0 [ H H0 ]; split.
     rewrite H; auto with arith.
@@ -130,7 +130,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Definition idEnvSubst : nat -> EnvSubst.
 
   Proof.
-    intro s. apply (@build_envSub (fun x y => x = y /\ x < s) s); fo.
+    intro s. apply (@build_envSub (fun x y => x = y /\ x < s) s); firstorder auto with zarith.
     destruct (eq_nat_dec i j).
     destruct (le_gt_dec s i).
     right; omega.
@@ -491,7 +491,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros M N Mabs Nabs MN MNin; constructor; intros i j; term_inv M;
       term_inv N.
     set (hint := MNin 0 A A0).
-    destruct i; destruct j; fo.
+    destruct i; destruct j; firstorder auto with zarith.
     set (hint := MNin 0 A A0).
     destruct i; destruct j; try contr.
     split_all. ex A. fo. ex A0. fo.

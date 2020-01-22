@@ -59,11 +59,11 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Instance mat_eqA_refl m n : Reflexive (@mat_eqA m n).
 
-  Proof. fo. Qed.
+  Proof. firstorder auto with crelations. Qed.
 
   Instance mat_eqA_sym m n : Symmetric (@mat_eqA m n).
 
-  Proof. fo. Qed.
+  Proof. firstorder auto with sets. Qed.
 
   Instance mat_eqA_trans m n : Transitive (@mat_eqA m n).
 

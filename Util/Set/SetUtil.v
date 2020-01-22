@@ -306,7 +306,7 @@ Section S.
   Instance elts_eq_Equivalence P : Equivalence (@elts_eq P).
 
   Proof.
-    split. fo. fo.
+    split. fo. firstorder auto with crelations.
     intros x y z xy yz. unfold elts_eq in *. trans (elt_val y); hyp.
   Qed.
 
@@ -327,7 +327,7 @@ Section S.
     forall l, of_list (remove eq_dec a l) [=] rem a (of_list l). 
 
   Proof.
-    induction l; simpl. fo. destruct (eq_dec a0 a). subst. fo.
+    induction l; simpl. fo. destruct (eq_dec a0 a). subst. firstorder auto with exfalso.
     rewrite !of_cons, IHl, add_rem_neq, rem_add_neq; auto. refl.
   Qed.
 

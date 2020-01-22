@@ -195,7 +195,7 @@ Section bforall_lt.
     bforall_lt_aux b n = true <-> b = true /\ forall_lt n.
 
   Proof.
-    unfold forall_lt. induction n; simpl; intros. bool. fo.    
+    unfold forall_lt. induction n; simpl; intros. bool. firstorder auto with zarith.
     rewrite andb_eq, IHn, bP_ok. intuition.
     destruct (Nat.eq_dec i n). subst. hyp. apply H2. omega.
   Qed.

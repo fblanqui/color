@@ -188,7 +188,7 @@ Module nat_ord <: Ord.
 
   Instance gtA_eqA_compat : Proper (eq ==> eq ==> impl) gt.
 
-  Proof. fo. Qed.
+  Proof. firstorder auto with zarith. Qed.
 
 End nat_ord.
 

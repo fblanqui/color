@@ -260,12 +260,12 @@ Module Make (Export L : L_Struct).
     (* fun *)
     refl.
     (* app *)
-    rewrite rename_app, IHu1, IHu2; fo.
+    rewrite rename_app, IHu1, IHu2; firstorder auto with crelations.
     (* lam *)
     rewrite IHu; [idtac|fo|fo]. unfold Def.replace_var. eq_dec x0 x.
     subst x0. rewrite rename_notin_fv with (u:=Lam x u). 2: simpl; set_iff; fo.
     sym. apply aeq_alpha. fo.
-    rewrite rename_lam. eq_dec y x0. fo. bool. eq_dec x0 x. fo. refl.
+    rewrite rename_lam. eq_dec y x0. firstorder auto with exfalso. bool. eq_dec x0 x. fo. refl.
   Qed.
 
 (***********************************************************************)
@@ -389,7 +389,7 @@ Module Make (Export L : L_Struct).
     (* add *)
     intros x xs n IH. rewrite domain_add, IH. 2: hyp. unfold Def.domain_fun.
     ens. unfold subs_transpose, Def.transpose_var. rewrite beq_term_var.
-    eq_dec x a. subst. eq_dec a b; eq_dec b a. refl. fo. fo.
+    eq_dec x a. subst. eq_dec a b; eq_dec b a. refl. firstorder auto with exfalso. firstorder auto with exfalso.
     intro; set_iff; tauto.
     eq_dec x b. subst. eq_dec a b. refl. intro; set_iff; tauto.
     eq_dec x x. 2: cong. eq_dec a b. refl.
@@ -590,7 +590,7 @@ Module Make (Export L : L_Struct).
   Proof.
     apply rtc_min. constructor; class. apply clos_mon_min. class.
     intros u v uv; inversion uv; clear uv; subst.
-    rewrite replace_all_aeq_rename; [idtac|fo|fo]. rewrite rename_notin_fv; fo.
+    rewrite replace_all_aeq_rename; [idtac|fo|fo]. rewrite rename_notin_fv; firstorder auto with crelations.
   Qed.
 
   Lemma aeq_le_aeq_ch : aeq << aeq_ch.
@@ -599,7 +599,7 @@ Module Make (Export L : L_Struct).
     intro u; revert u.
     ind_size1 u; intros u' uu'; inv_aeq uu'; subst; ens. refl. refl.
     trans (App u v).
-    apply mon_app_l. class. fo. fo. apply mon_app_r. class. fo. fo.
+    apply mon_app_l. class. firstorder auto with crelations. fo. apply mon_app_r. class. fo. firstorder auto with crelations.
     rename x0 into y. rename u0 into v.
     set (xs := union
       (add x (union (fv u) (bv u))) (add y (union (fv v) (bv v)))).
@@ -612,7 +612,7 @@ Module Make (Export L : L_Struct).
     apply aeq_ch_top_intro; simpl; set_iff; fo. }
     simpl. rewrite !replace_var_eq. apply mon_lam. class. refl.
     apply hu. rewrite size_replace_all. refl.
-    (*SLOW*)rewrite !replace_all_aeq_rename, i0, rename2; fo.
+    (*SLOW*)rewrite !replace_all_aeq_rename, i0, rename2; firstorder auto with crelations.
   Qed.
 
 (***********************************************************************)
@@ -656,7 +656,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro u; revert u. ind_size1 u; intros t' tt'; inv_aeq tt'; subst.
-    refl. refl. apply aeq_kr_app; fo. clear tt'.
+    refl. refl. apply aeq_kr_app; firstorder auto with crelations. clear tt'.
     pose (xs := union (bv u) (bv u0)).
     apply aeq_kr_lam with (xs := xs); ens. intro y.
     unfold xs. set_iff. intro hy.
@@ -716,9 +716,10 @@ Module Make (Export L : L_Struct).
     intros u v; revert u v; induction 1.
     refl. refl. rewrite IHaeq_gp1, IHaeq_gp2. refl. ens. revert IHaeq_gp.
     rewrite transpose_sym, transpose_sym with (x:=z).
-    rewrite transpose_rename; [idtac|fo|fo].
-    rewrite transpose_rename; [idtac|fo|fo]. intro IH.
-    rewrite aeq_alpha with (y:=z). 2: fo. rewrite IH, <- aeq_alpha; fo.
+    rewrite transpose_rename. 2-3: firstorder auto with set.
+    rewrite transpose_rename. 2-3: firstorder auto with set.
+    intro IH.
+    rewrite aeq_alpha with (y:=z). 2: firstorder auto with set. rewrite IH, <- aeq_alpha; firstorder auto with crelations set.
   Qed.
 
   (** [transpose] is invariant by [aeq_gp]. *)
@@ -835,7 +836,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro u; revert u. ind_size1 u; intros u' uu'; inv_aeq uu'; subst.
-    refl. refl. apply aeq_gp_app; fo.
+    refl. refl. apply aeq_gp_app; firstorder auto with crelations.
     set (xs := union (union (add x (union (fv u) (bv u)))
                             (add x0 (union (fv u0) (bv u0))))
                      (union (fv (rename x x0 u)) (bv (rename x x0 u)))).

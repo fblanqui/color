@@ -771,7 +771,7 @@ Module Make (Export L : L_Struct).
     unfold bool_of_rel. case_eq (mem y xs); intro hy;
       destruct (eq_term_dec v (Var y)); simpl; try rewrite empty_b.
     refl. rewrite singleton_b, eqb_refl, singleton_equal_add,
-      remove_add, empty_union_2. refl. fo. set_iff. tauto. refl. refl.
+      remove_add, empty_union_2. refl. apply empty_1. set_iff. tauto. refl. refl.
   Qed.
 
   Lemma fvcodom_rename y z xs : fvcodom xs (single y (Var z))
@@ -976,7 +976,7 @@ Module Make (Export L : L_Struct).
     induction u; simpl; intro s.
 
     (* var *)
-    rewrite singleton_equal_add, domain_add, domain_empty. 2: fo.
+    rewrite singleton_equal_add, domain_add, domain_empty. 2: firstorder auto with set.
     unfold Def.domain_fun, bool_of_rel. destruct (eq_term_dec (s x) (Var x)).
     rewrite e. simpl. rewrite fvcod_empty. fset.
     rewrite fvcod_add, fvcod_empty. 2: set_iff; fo.
@@ -1419,7 +1419,7 @@ Module Make (Export L : L_Struct).
     (* x0 = x *)
     subst x0. simpl. bool. rewrite update_single_eq, single_id. refl.
     (* x0 <> x *)
-    simpl. bool. eq_dec y x0. fo. bool. rewrite update_id, IHu. refl. tauto.
+    simpl. bool. eq_dec y x0. firstorder auto with exfalso. bool. rewrite update_id, IHu. refl. tauto.
     rewrite single_neq. refl. fo.
   Qed.
 
@@ -1490,7 +1490,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     intros [h|[a [a1 a2]]].
     ex x. split; set_iff; auto. ex a. split; set_iff; auto.
     intros [a [a1 a2]]. eq_dec a x. subst. auto. right. ex a. split.
-    revert a1. set_iff. fo. hyp.
+    revert a1. set_iff. firstorder auto with exfalso. hyp.
   Qed.
 
   (** [bvcod] is compatible with inclusion. *)
@@ -1977,7 +1977,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     apply inter_empty. intros z hz. rewrite fvcodom_single.
     case_eq (mem x (fv u) && negb (beq_term (Var y) (Var x))); simpl; set_iff.
     2: fo. rewrite andb_eq, <- mem_iff, beq_term_var, negb_lr; simpl.
-    unfold XSetFacts.eqb. eq_dec y x; split_all; subst; fo.
+    unfold XSetFacts.eqb. eq_dec y x; split_all; subst; firstorder with bool.
   Qed.
 
   (** [subs1 s1 u] equals [subs1 s2 u] if [s1] and [s2] are equal on
