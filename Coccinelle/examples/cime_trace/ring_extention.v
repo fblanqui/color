@@ -348,7 +348,7 @@ Qed.
 
 Lemma pow_pos_strict_pos : forall z p, 0<z -> 0< pow_pos Zmult z p .
 Proof.
-intros z p;functional induction  (pow_pos Zmult z p);auto with zarith.
+intros z p; functional induction  (pow_pos Zmult z p). 3: easy.
 
 intros.
 apply Zmult_lt_0_compat;auto.
