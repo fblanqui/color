@@ -1749,6 +1749,8 @@ Section Vbuild.
           Vcons (gen 0 _) (@Vbuild_spec p gen')
     end.
 
+  Local Unset Transparent Obligations.
+
   Solve Obligations with try (idtac + program_simplify; omega).
   Next Obligation.
     assert (h : Vbuild_spec_obligation_5 (eq_refl (S p)) = eq_refl (S p)).
