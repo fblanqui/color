@@ -9,3 +9,6 @@ Makefile.coq
 Makefile.coq.conf
 _CoqProject
 *.time
+*.vok
+*.vos
+make.log
