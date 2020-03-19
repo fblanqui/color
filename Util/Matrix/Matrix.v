@@ -118,18 +118,22 @@ Module Matrix (OSRT : OrdSemiRingType).
       get_elem M ip jp = gen i j ip jp }.
 
   Proof.
-    induction m; intros.
-    exists (Vnil (A:=vec n)). intros.
-    exfalso. exact (lt_n_O ip).
-    set (gen_1 := fun j => gen 0 j (lt_O_Sn m)).
+    induction m; intros n gen.
+    (* case m = 0 *)
+    ex (Vnil (A:=vec n)). intros i j i_0 j_n.
+    exfalso. exact (lt_n_O i_0).
+    (* case m > 0 *)
     set (gen' := fun i j H => gen (S i) j (lt_n_S H)).
     destruct (IHm n gen') as [Mtl Mtl_spec].
-    destruct (Vbuild_spec gen_1) as [Mhd Mhd_spec].
-    exists (Vcons Mhd Mtl). intros.    
+    set (gen_1 := fun j => gen 0 j (lt_O_Sn m)).
+    set (Mhd := Vbuild gen_1).
+    set (Mhd_spec := Vbuild_nth gen_1).
+    ex (Vcons Mhd Mtl).
+    intros i j i_Sm j_n.    
     destruct i; unfold get_elem; simpl.
-    rewrite Mhd_spec. unfold gen_1. rewrite (le_unique (lt_O_Sn m) ip). refl.
+    rewrite Mhd_spec. unfold gen_1. rewrite (le_unique (lt_O_Sn m) i_Sm). refl.
     unfold get_elem in Mtl_spec. rewrite Mtl_spec.
-    unfold gen'. rewrite (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
+    unfold gen'. rewrite (le_unique (lt_n_S (lt_S_n i_Sm)) i_Sm). refl.
   Defined.
 
   Definition mat_build m n gen : matrix m n := proj1_sig (mat_build_spec gen).

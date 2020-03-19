@@ -801,7 +801,6 @@ Arguments Vin_nth [A n v a] _.
 Arguments Vin_cast_elim [A m n H v x] _.
 Arguments Vin_elim [A x n v] _.
 Arguments Vin_app [A x n1 v1 n2 v2] _.
-(*Arguments Vin_cast [A m n H v x].*)
 
 (***********************************************************************)
 (** ** Sub-vector.
@@ -1740,50 +1739,40 @@ Section Vbuild.
 
   Variable A : Type.
 
-  Program Fixpoint Vbuild_spec (n : nat) (gen : forall i, i < n -> A) :
-    { v : vector A n | forall i (ip : i < n), Vnth v ip = gen i ip } :=
-    match n with
-      | 0 => Vnil
-      | S p => 
-        let gen' := fun i ip => gen (S i) _ in
-          Vcons (gen 0 _) (@Vbuild_spec p gen')
+  Fixpoint Vbuild n : (forall i, i<n -> A) -> vector A n :=
+    match n as n return (forall i, i<n -> A) -> vector A n with
+    | 0 => fun _ => Vnil
+    | S p => fun gen => Vcons (gen 0 (lt_0_Sn p))
+                              (Vbuild (fun i ip => gen (S i) (lt_n_S ip)))
     end.
 
-  Solve Obligations with try omega.
-  (*COQ: why these obligations are not solved?*)
-  Next Obligation. omega. Qed.
-  Next Obligation.
-    assert (h : Vbuild_spec_obligation_5 (eq_refl (S p)) = eq_refl (S p)).
-    apply eq_unique.
-    rewrite h. simpl. destruct i.
-    f_equal. apply lt_unique.
-    rewrite e. f_equal. apply lt_unique.
-  Defined.
-
-  Definition Vbuild n gen : vector A n := proj1_sig (Vbuild_spec gen).
-
-  Lemma Vbuild_nth : forall n gen i (ip : i < n), 
-    Vnth (Vbuild gen) ip = gen i ip.
+  Lemma Vbuild_nth :
+    forall n gen i (ip : i < n), Vnth (Vbuild gen) ip = gen i ip.
 
   Proof.
-    intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl. apply e.
+    induction n; intros gen i ip.
+    (* case n = 0 *)
+    omega.
+    (* case n = S p *)
+    destruct i; simpl.
+    (* case i = 0 *)
+    f_equal. apply lt_unique.
+    (* case i > 0 *)
+    rewrite IHn. f_equal. apply lt_unique.
   Qed.
 
-  Lemma Vbuild_in : forall n gen x, Vin x (Vbuild gen) -> 
-    exists i, exists ip : i < n, x = gen i ip.
+  Lemma Vbuild_in n gen x :
+    Vin x (Vbuild gen) ->  exists i, exists ip : i < n, x = gen i ip.
 
   Proof.
-    intros n gen x H. set (w := Vin_nth H). decomp w.
-    ex x0 x1. rewrite Vbuild_nth in H1. auto.
+    intro hx. apply Vin_nth in hx. destruct hx as [i [i_n hi]]. ex i i_n.
+    rewrite <- Vbuild_nth. auto.
   Qed.
 
   Lemma Vbuild_head : forall n (gen : forall i, i < S n -> A),
     Vhead (Vbuild gen) = gen 0 (lt_O_Sn n).
 
-  Proof.
-    intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl.
-    rewrite Vhead_nth. apply e.
-  Qed.
+  Proof. intros n gen. rewrite Vhead_nth, Vbuild_nth. refl. Qed.
 
   Lemma Vbuild_tail n (gen : forall i, i < S n -> A) :
     Vtail (Vbuild gen) = Vbuild (fun i ip => gen (S i) (lt_n_S ip)).
@@ -1794,8 +1783,7 @@ Section Vbuild.
     (exists i (ip : i < n), x = gen i ip) -> Vin x (Vbuild gen).
 
   Proof.
-    intros. unfold Vbuild. destruct (Vbuild_spec gen). simpl.
-    destruct H as [i [ip H]]. rewrite H, <- (e i ip). apply Vnth_in.
+    intros n gen x [i [i_n hi]]. subst x. rewrite <- Vbuild_nth. apply Vnth_in.
   Qed.
 
 End Vbuild.
