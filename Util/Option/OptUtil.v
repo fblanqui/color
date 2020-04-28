@@ -11,6 +11,7 @@ Set Implicit Arguments.
 
 From Coq Require Import Bool Program.
 From CoLoR Require Import ListUtil LogicUtil.
+Import ListNotations.
 
 Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
 

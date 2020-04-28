@@ -32,6 +32,7 @@ From Coq Require Import Program.
 From Coq Require Import Morphisms.
 From Coq Require Omega.
 
+Import ListNotations.
 
 Set Implicit Arguments.
 
