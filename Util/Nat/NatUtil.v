@@ -11,10 +11,11 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-From Coq Require Import Min Max Morphisms Psatz Compare Euclid.
-From Coq Require Export Arith Omega.
-
 From CoLoR Require Import LogicUtil EqUtil BoolUtil RelUtil.
+
+From Coq Require Import Min Max Morphisms Psatz Euclid Peano.
+From Coq Require Export Arith Omega.
+From Coq Require Import Compare.
 
 (***********************************************************************)
 (** Declare implicit arguments. *)
@@ -205,8 +206,6 @@ Proof. intros. apply lt_unique. Qed.
 
 Arguments max_r [n m] _.
 Arguments max_l [n m] _.
-
-From Coq Require Import Compare.
 
 Lemma max_assoc : forall a b c, max a (max b c) = max (max a b) c.
 
