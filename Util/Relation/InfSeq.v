@@ -124,7 +124,7 @@ Section S.
     Proof.
       induction i; simpl; intros. absurd (x<0); omega.
       destruct (lt_dec x i). apply IHi; hyp.
-      assert (x=i). omega. subst. destruct (eq_dec (f i) (f i)). 2: cong.
+      assert (x=i). omega. subst x. destruct (eq_dec (f i) a). 2: cong.
       apply In_indices_aux_intro. simpl. auto.
     Qed.
 
