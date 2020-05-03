@@ -1547,11 +1547,11 @@ contradiction.
 intros f l IH t; split; intro H.
 inversion H; clear H; subst.
 inversion H0; clear H0; subst.
-destruct t2 as [v2 | f2 l2]; inversion H2; clear H2; subst.
-simpl in H; injection H; clear H; intros H f2_eq_f; subst f f2.
+destruct t2 as [v2 | f2 l2]; inversion H2; clear H2; subst f2; subst.
+simpl in H; injection H; clear H; intros H f2_eq_f; subst f.
 simpl Pi_red.
 simpl; generalize (F.Symb.eq_bool_ok pi pi); case (F.Symb.eq_bool pi pi); [intros _; left | intros pi_diff_pi; absurd (pi = pi)]; trivial.
-simpl in H; injection H; clear H; intros H f2_eq_f; subst f f2.
+simpl in H; injection H; clear H; intros H f2_eq_f; subst f.
 simpl Pi_red.
 simpl; generalize (F.Symb.eq_bool_ok pi pi); case (F.Symb.eq_bool pi pi); [intros _; right; left | intros pi_diff_pi; absurd (pi = pi)]; trivial.
 

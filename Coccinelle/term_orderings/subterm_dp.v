@@ -115,7 +115,7 @@ intros s f l K L.
 inversion K as [g l1 l2 t3 H1 H2]; subst.
 inversion H2 as [t1 t2 sigma K1 K2 K3]; subst.
 destruct t1 as [x | g1 k1].
-inversion K1 as [J1 J2]; subst.
+inversion K1 as [J1 J2]; clear K K1 H2; subst.
 assert (K4 := cdp_in_dpR _ _ cdp_uv0).
 destruct K4 as [K4 _]; inversion K4.
 inversion K1 as [J1 J2].
@@ -412,6 +412,7 @@ destruct u4 as [x4 | f4 ll4].
 apply False_rect; apply (R_var _ _ R4).
 do 2 rewrite subst_projection.
 apply one_step_subterm_subst.
+clear Hdp4' H65 H54 H32 H43 H21.
 inversion K1 as [[u v] | uv0 uv4 K1'].
 subst u v u0 v0.
 right; assumption.
@@ -483,7 +484,7 @@ inversion Hdp2 as [v2 u2 sigma2 Hdp2' K2 J2]; clear Hdp2.
 inversion Hdp2'; subst v2 u2.
 assert (dp_uv0 := cdp_in_dpR _ _ cdp_uv0).
 destruct dp_uv0 as [dp_uv0 H2].
-inversion dp_uv0 as [u0' r0 p0 g0 k0 H1 H3]; subst.
+inversion dp_uv0 as [u0' r0 p0 g0 k0 H1 H3]; clear Hdp2' H21; subst.
 destruct u0 as [x0 | f0 l0].
 apply False_rect; apply (R_var _ _ H1).
 assert (Sub := projection_one_step_list f _ _ Hl21).
@@ -497,7 +498,7 @@ left; apply one_step_apply_subst; assumption.
 right; destruct a2 as [x2 | g2 k2].
 contradiction.
 simpl; rewrite in_map_iff; exists a1; split; trivial.
-inversion Sub as [u | u1 u2 K1 K2].
+inversion Sub as [u H0 H5 | u1 u2 K1 K2].
 subst u; simpl; rewrite <- H5; assumption.
 subst u1 u2; apply trans_clos_is_trans with (projection (Term f l2)); trivial.
 apply trans_incl with (one_step R); trivial.
@@ -636,7 +637,7 @@ inversion H2 as [t1 t2 sigma]; clear H2; subst.
 inversion H; clear H; subst t1 t2.
 assert (H4 := cdp_in_dpR _ _ cdp_uv0).
 destruct H4 as [H4 _].
-inversion H4; subst.
+inversion H4; clear IH W'; subst.
 injection H0; intros; subst f2 l; rewrite length_map.
 assumption.
 intros b _; apply W'.
