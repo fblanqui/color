@@ -19,9 +19,10 @@ env:
   - COMPILER="4.07.0"
   # Main test targets
   matrix:
+  - TEST_TARGET="v8.11"
   - TEST_TARGET="master"
     allow_failures:
-    - TEST_TARGET="v8.11"
+    - env: TEST_TARGET="v8.11"
 
 install:
 # Opam
