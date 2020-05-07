@@ -13,6 +13,7 @@
 quasi-ordering for the precedence instead of an ordering. *)
 
 From Coq Require Import Bool.
+From Coq Require Import Peano.
 From Coq Require Import List.
 From CoLoR Require Import closure.
 From CoLoR Require Import more_list.
