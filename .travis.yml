@@ -21,8 +21,6 @@ env:
   matrix:
   - TEST_TARGET="v8.11"
   - TEST_TARGET="master"
-    allow_failures:
-    - env: TEST_TARGET="v8.11"
 
 install:
 # Opam
