@@ -18,7 +18,7 @@ Set Implicit Arguments.
 
 Section On_relation_completion.
 
-Variable A : Set.
+Variable A : Type.
 
 (***********************************************************************)
 (** total *)
@@ -508,7 +508,7 @@ Lemma total_order_eq_dec :
       transitive G /\ irreflexive G /\ total G l} -> eq_dec A. 
 
 Proof.
-unfold transitive, irreflexive, total, trichotomy. do 3 intro. destruct H.
+unfold transitive, irreflexive, total, trichotomy. intros H x y. destruct H.
 pose (a (x::y::nil)). 
 assert ({x0 (x::y::nil) x y=true}+{x0  (x::y::nil) x y=false}).
 case (x0 (x::y::nil) x y); tauto. 
@@ -601,7 +601,7 @@ Lemma antisym_topo_sortable_topo_sortable : forall R,
   antisym_topo_sortable R -> topo_sortable R.
 
 Proof.
-intros. exists (let (f,s):= H in f). intros. destruct H. destruct a.
+intros R H. exists (let (f,s):= H in f). intros. destruct H. destruct a.
 pose (H0 l). unfold linear_extension in *|-* . tauto. 
 Qed. 
 
@@ -610,7 +610,7 @@ Lemma antisym_topo_sortable_rel_dec : forall R,
 
 Proof.
 unfold antisym_topo_sortable, linear_extension. 
-intros. assert (irreflexive (clos_trans R)). apply local_global_acyclic. 
+intros R H H0. assert (irreflexive (clos_trans R)). apply local_global_acyclic.
 intro. exists (fun x y => (let (f,s):= H0 in f) l x y=true). destruct H0.
 destruct a. pose (H1 l). tauto. 
 assert (eq_dec A). apply total_order_eq_dec. exists (let (f,s):= H0 in f).
@@ -640,7 +640,7 @@ Lemma rel_dec_topo_sortable_eq_dec :  forall R,
   rel_dec R -> topo_sortable R -> eq_dec A.
 
 Proof.
-intros. apply total_order_eq_dec. exists (let (first,second):=H in first). 
+intros R Rd H. apply total_order_eq_dec. exists (let (first,second):=H in first).
 destruct H. intro. pose (l l0). destruct l1. split; tauto. 
 Qed. 
 
@@ -648,7 +648,7 @@ Lemma rel_dec_topo_sortable_acyclic :  forall R,
   rel_dec R -> topo_sortable R -> irreflexive (clos_trans R).
 
 Proof.
-intros. apply local_global_acyclic. intro. destruct H.
+intros R Rd H. apply local_global_acyclic. intro. destruct H.
 exists (fun x0 y => x l x0 y=true). destruct (l0 l). tauto. 
 Qed.
 
