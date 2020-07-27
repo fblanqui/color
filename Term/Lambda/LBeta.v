@@ -202,7 +202,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     exists u. exists (Vcons h vs). intuition. do 2 apply right_sym. hyp.
   Qed.
 
-  Arguments beta_apps_no_lam [n us u t0] _ _.
+  Arguments beta_apps_no_lam [n us u t0] _ _ : rename.
 
   Lemma beta_aeq_apps_no_lam : forall n (us : Tes n) u t,
     not_lam u -> apps u us =>b t ->
@@ -218,7 +218,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     exists (Vcons v vs). split. fo. exists (Vcons w ws). intuition. fo.
   Qed.
 
-  Arguments beta_aeq_apps_no_lam [n us u t0] _ _.
+  Arguments beta_aeq_apps_no_lam [n us u t0] _ _ : rename.
 
   Lemma beta_aeq_apps_fun f n (us : Tes n) t : apps (Fun f) us =>b t ->
     exists vs, t = apps (Fun f) vs /\ clos_vaeq beta us vs.
@@ -230,7 +230,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     inv_beta_aeq h1. simpl_aeq. subst. auto.
   Qed.
 
-  Arguments beta_aeq_apps_fun [f n us t0] _.
+  Arguments beta_aeq_apps_fun [f n us t0] _ : rename.
 
 (****************************************************************************)
 (** [apps (Fun f) us] is strongly normalizing wrt beta-reduction if

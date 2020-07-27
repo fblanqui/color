@@ -737,7 +737,7 @@ Arguments fun_eq_sub [Sig f ts s u] _.
 Arguments sub_restrict_incl [Sig] _ [l r] _.
 Arguments fresh_vars [Sig] _.
 Arguments fresh [Sig] _ _.
-Arguments subterm_eq_sub_elim [Sig u t0 s] _.
+Arguments subterm_eq_sub_elim [Sig u t0 s] _ : rename.
 
 (***********************************************************************)
 (** tactics *)

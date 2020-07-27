@@ -204,7 +204,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     ex u (Vcons h vs). split_all. do 2 apply right_sym. hyp.
   Qed.
 
-  Arguments eta_apps [n us u t0] _.
+  Arguments eta_apps [n us u t0] _ : rename.
 
   Lemma eta_aeq_apps : forall n (us : Tes n) u t, apps u us =>e t ->
     exists v vs, t = apps v vs /\ Vcons u us ==>e Vcons v vs.
@@ -218,7 +218,7 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     ex (Vcons v vs). split. fo. ex (Vcons w ws). split_all. fo.
   Qed.
 
-  Arguments eta_aeq_apps [n us u t0] _ .
+  Arguments eta_aeq_apps [n us u t0] _ : rename.
 
   Lemma eta_aeq_apps_fun f n (us : Tes n) t : apps (Fun f) us =>e t ->
     exists vs, t = apps (Fun f) vs /\ us ==>e vs.
@@ -230,6 +230,6 @@ then [t] is of the form [apps v vs] with [Vcons u us ==>b Vcons v vs]. *)
     inv_eta_aeq h1. simpl_aeq. subst. auto.
   Qed.
 
-  Arguments eta_aeq_apps_fun [f n us t0] _.
+  Arguments eta_aeq_apps_fun [f n us t0] _ : rename.
 
 End Make.

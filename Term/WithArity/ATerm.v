@@ -680,9 +680,9 @@ Arguments maxvar_var [Sig k x] _.
 Arguments maxvar_le_fun [Sig m f ts] _.
 Arguments maxvar_le_arg [Sig f ts m t] _ _.
 Arguments in_vars_vec_elim [Sig x n ts] _.
-Arguments vars_vec_in [Sig x t0 n ts] _ _.
+Arguments vars_vec_in [Sig x t0 n ts] _ _ : rename.
 Arguments in_symbs_vec_elim [Sig x n ts] _.
-Arguments symbs_vec_in [Sig x t0 n ts] _ _.
+Arguments symbs_vec_in [Sig x t0 n ts] _ _ : rename.
 Arguments vars_max [Sig x t] _.
 Arguments Vin_nb_symb_occs_terms_ge [Sig n ts t] _.
 Arguments Vin_size_terms_ge [Sig n ts t] _.

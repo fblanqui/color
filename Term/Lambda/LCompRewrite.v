@@ -207,7 +207,7 @@ Module Make (Export RS : RS_Struct).
     destruct us; simpl in H. discr. rewrite apps_app in H. discr.
   Qed.
 
-  Arguments rewrite_apps_fun [f n us t0] _.
+  Arguments rewrite_apps_fun [f n us t0] _ : rename.
 
   Lemma rewrite_aeq_apps_fun : forall f n (us : Tes n) t,
     apps (Fun f) us =>S t ->
@@ -230,7 +230,7 @@ Module Make (Export RS : RS_Struct).
     rewrite Vcast_refl. intuition. rewrite i0, i2. refl.
   Qed.
 
-  Arguments rewrite_aeq_apps_fun [f n us t0] _.
+  Arguments rewrite_aeq_apps_fun [f n us t0] _ : rename.
 
 End Make.
 
@@ -408,7 +408,7 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
     right. ex p ls r s q vs h0. split_all.
   Qed.
 
-  Arguments beta_eta_rewrite_aeq_apps_fun [f n us t0] _.
+  Arguments beta_eta_rewrite_aeq_apps_fun [f n us t0] _ : rename.
 
   (** Some notations. *)
   (*COQ: can we avoid to repeat these notations already declared in CP_Struct?*)

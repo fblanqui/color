@@ -1260,14 +1260,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite Vforall2_cons_eq. intuition.
   Qed.
 
-  Arguments apps_aeq_r [n vs v t0] _.
+  Arguments apps_aeq_r [n vs v t0] _ : rename.
 
   Lemma apps_aeq_l : forall n (vs : Tes n) v t, apps v vs ~~ t ->
     exists u us, t = apps u us /\ u ~~ v /\ vaeq us vs.
 
   Proof. intros n vs v t e. apply apps_aeq_r. hyp. Qed.
 
-  Arguments apps_aeq_l [n vs v t0] _.
+  Arguments apps_aeq_l [n vs v t0] _ : rename.
 
 (****************************************************************************)
 (** Extended inversion tactic for alpha-equivalence. *)
