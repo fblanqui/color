@@ -611,8 +611,8 @@ and satisfies some commutation property. *)
 
   End S.
 
-  Arguments Equiv_find_Some [A eq0 m m'] _ [k x] _.
-  Arguments Equiv_find_Some' [A eq0 m m'] _ [k x] _.
+  Arguments Equiv_find_Some [A eq0 m m'] _ [k x] _ : rename.
+  Arguments Equiv_find_Some' [A eq0 m m'] _ [k x] _ : rename.
   Arguments le {A} _ _.
 
 (****************************************************************************)

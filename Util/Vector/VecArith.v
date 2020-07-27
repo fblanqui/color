@@ -262,7 +262,7 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
 
   Proof. apply Vforall2_aux_Proper. class. Qed.
 
-  Arguments vec_ge_mor [n x y] _ [x0 y0] _.
+  Arguments vec_ge_mor [n x y] _ [x0 y0] _ : rename.
 
   Lemma vec_plus_ge_compat : forall n (vl vl' vr vr' : vec n), 
     vl >=v vl' -> vr >=v vr' -> vl [+] vr >=v vl' [+] vr'.
