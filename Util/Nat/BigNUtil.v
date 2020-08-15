@@ -30,7 +30,15 @@ End zn2z.
 
 Section word.
 
-  Variables (w : Type) (eq_dec : forall x y : w, {x=y}+{~x=y}).
+  (* For backward compatibility. The intended value is Set,
+     but we use Type when compiling against an old version
+     of the standard library. *)
+  Definition univ_of_cycles : Type.
+  Proof.
+    first [let _ := constr:(word : Set -> nat -> Set) in exact Set | exact Type].
+  Defined.
+
+  Variables (w : univ_of_cycles) (eq_dec : forall x y : w, {x=y}+{~x=y}).
 
   Lemma eq_word_dec : forall n, forall x y : word w n, {x=y}+{~x=y}.
 
