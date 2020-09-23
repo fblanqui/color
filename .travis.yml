@@ -20,6 +20,7 @@ env:
   # Main test targets
   matrix:
   - TEST_TARGET="v8.11"
+  - TEST_TARGET="v8.12"
   - TEST_TARGET="master"
 
 install:
