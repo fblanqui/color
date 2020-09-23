@@ -11,7 +11,7 @@ polynomials with multiple variables and integer coefficients
 Set Implicit Arguments.
 
 From CoLoR Require Import VecUtil LogicUtil.
-From Coq Require Import Arith List.
+From Coq Require Import Arith List Lia.
 From Coq Require Export ZArith.
 
 (** monomials with n variables *)
@@ -193,7 +193,7 @@ Lemma meval_xi : forall n i (H : lt i n) (v : vec n),
   meval (mxi H) v = Vnth v H.
 
 Proof.
-induction n. intros. absurd (lt i 0). omega. hyp.
+induction n. intros. absurd (lt i 0). lia. hyp.
 intro. destruct i; intros; VSntac v.
 simpl. rewrite meval_one. ring. simpl. rewrite IHn. apply zeql.
 Qed.

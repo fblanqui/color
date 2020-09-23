@@ -83,17 +83,17 @@ Section term.
   Lemma intro_size : forall P : Te -> Prop,
     (forall n u, size u < n -> P u) -> forall u, P u.
 
-  Proof. intros P h u. eapply h with (n:=S(size u)). omega. Qed.
+  Proof. intros P h u. eapply h with (n:=S(size u)). lia. Qed.
 
   Lemma ind_size0 : forall P : Te -> Prop,
     (forall u, (forall v, size v < size u -> P v) -> P u) -> forall u, P u.
 
   Proof.
     intros P h. apply intro_size. induction n; intro u; simpl; intro hs.
-    exfalso. omega.
+    exfalso. lia.
     destruct (eq_nat_dec (size u) n).
     subst. apply h. hyp.
-    apply IHn. omega.
+    apply IHn. lia.
   Qed.
 
   Lemma ind_size1 : forall P : Te -> Prop,
@@ -105,7 +105,7 @@ Section term.
   Proof.
     intros P hv hf ha hl. apply ind_size0. intros [x|f|u v|x u] h.
     apply hv. apply hf. apply ha; apply h; simpl; max.
-    apply hl. intros u' h'. apply h. simpl. omega.
+    apply hl. intros u' h'. apply h. simpl. lia.
   Qed.
 
 (****************************************************************************)
@@ -219,7 +219,7 @@ Section term.
   Lemma nb_args_apps : forall n (ts : Tes n) t,
     nb_args (apps t ts) = nb_args t + n.
 
-  Proof. induction ts; intro t; simpl. omega. rewrite IHts. simpl. omega. Qed.
+  Proof. induction ts; intro t; simpl. lia. rewrite IHts. simpl. lia. Qed.
 
   Lemma eq_apps_head : forall p (ts : Tes p) q (us : Tes q) a b,
     apps a ts = apps b us -> nb_args a = nb_args b -> a = b.
@@ -228,10 +228,10 @@ Section term.
     induction ts; destruct us; intros a b e1 e2; simpl in *.
     hyp.
     gen (f_equal nb_args e1).
-      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+      rewrite apps_app. simpl. rewrite nb_args_apps. lia.
     gen (f_equal nb_args e1).
-      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
-    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
+      rewrite apps_app. simpl. rewrite nb_args_apps. lia.
+    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. lia.
     gen (IHts _ us (App a h) (App b h0) e1 i); intro j. inversion j. refl.
   Qed.
 
@@ -244,11 +244,11 @@ Section term.
     induction ts; destruct us; intros a b e1 e2; simpl in *.
     refl.
     gen (f_equal nb_args e1).
-      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+      rewrite apps_app. simpl. rewrite nb_args_apps. lia.
     gen (f_equal nb_args e1).
-      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
-    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
-    gen (IHts _ us (App a h) (App b h0) e1 i); intro j. omega.
+      rewrite apps_app. simpl. rewrite nb_args_apps. lia.
+    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. lia.
+    gen (IHts _ us (App a h) (App b h0) e1 i); intro j. lia.
   Qed.
 
   Arguments eq_apps_nb_args [p ts q us a b] _ _.
@@ -268,10 +268,10 @@ Section term.
     induction ts; destruct us; intros a b e1 e2; simpl in *.
     rewrite Vcast_refl. refl.
     gen (f_equal nb_args e1).
-      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
+      rewrite apps_app. simpl. rewrite nb_args_apps. lia.
     gen (f_equal nb_args e1).
-      rewrite apps_app. simpl. rewrite nb_args_apps. omega.
-    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. omega.
+      rewrite apps_app. simpl. rewrite nb_args_apps. lia.
+    assert (i : nb_args (App a h) = nb_args (App b h0)). simpl. lia.
     gen (eq_apps_head e1 i); intro j. inversion j; subst.
     match goal with |- _ = Vcast _ ?p => set (h:=p) end.
     rewrite Vcast_cons. apply Vtail_eq.
@@ -533,7 +533,7 @@ Module NatVar <: Var.
 
   Proof.
     unfold var_notin. case_eq (max_elt xs).
-    intros k e h. gen (max_elt_2 e h). omega.
+    intros k e h. gen (max_elt_2 e h). lia.
     intro h. apply max_elt_3 in h. fo.
   Qed.
 
@@ -670,7 +670,7 @@ Module Make (Export L : L_Struct).
         R (apps t (Vreplace ts h1 u)) (apps t (Vreplace ts h2 u')).
 
     Proof.
-      intros u u' uu'. induction ts; intros t i h1 h2. omega.
+      intros u u' uu'. induction ts; intros t i h1 h2. lia.
       rename h into t0. simpl. destruct i; simpl.
       apply mon_apps_l. apply mon_app_r; auto. refl.
       apply IHts.
@@ -844,7 +844,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     intro x. induction ts; intros i hi.
-    exfalso. omega.
+    exfalso. lia.
     destruct i; simpl; set_iff. auto. intro a. right. eapply IHts. apply a.
   Qed.
 
@@ -879,7 +879,7 @@ Module Make (Export L : L_Struct).
     supterm! (apps (Fun f) ts) (Vnth ts hi).
 
   Proof.
-    induction n; intros ts i hi. omega.
+    induction n; intros ts i hi. lia.
     rewrite (VSn_add ts). rewrite <- app_apps.
     set (us := Vremove_last ts). set (t0 := Vhead ts). set (tn := Vlast t0 ts).
     rewrite Vnth_add. destruct (eq_nat_dec i n).
@@ -891,7 +891,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     apply (WF_incl (Rof Peano.gt size)).
-    induction 1; unfold Rof; simpl; try max; omega.
+    induction 1; unfold Rof; simpl; try max; lia.
     apply WF_inverse. apply WF_gt.
   Qed.
 

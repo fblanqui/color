@@ -9,7 +9,7 @@ Infinite sets
 
 Set Implicit Arguments.
 
-From Coq Require Import Basics Morphisms Setoid Omega.
+From Coq Require Import Basics Morphisms Setoid Lia.
 From CoLoR Require Import ClassicUtil IotaUtil EpsilonUtil LogicUtil SetUtil
      FinSet FunUtil BoundNat IotaUtil EpsilonUtil.
 
@@ -41,7 +41,7 @@ Section S.
 
   Proof.
     intros [f f_inj] [n [g [g_inj g_surj]]].
-    assert (S n <= n). 2: omega.
+    assert (S n <= n). 2: lia.
     apply N_inj_le with (f := inverse g_surj o f o (@N_val _)).
     inj. apply inj_N_val.
   Qed.
@@ -135,7 +135,7 @@ Section S.
   
       destruct (infinite_not_empty Qinf) as [a aQ]. ex (Pf_add a X). split.
       simpl. intro x. unfold impl. fo. subst. fo.
-      rewrite card_add, cX. destruct (dec (mem a X)). fo. omega.
+      rewrite card_add, cX. destruct (dec (mem a X)). fo. lia.
     Qed.
 
     Definition Pcard_of_inf (P : Pinf W) n : Pcard P (S n).

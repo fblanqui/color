@@ -327,14 +327,14 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
          we prove that for all computable [vs], [apps t vs] is computable. *)
       apply int_arrow with (n := arity (typ g) - p). rewrite arity_output. refl.
       intros vs hvs. rewrite output_output.
-      assert (pg : p + (arity (typ g) - p) = arity (typ g)). omega.
+      assert (pg : p + (arity (typ g) - p) = arity (typ g)). lia.
       rewrite pg, apps_apps, <- apps_cast with (h:=pg).
       (* We now use the induction hypothesis [IH]. *)
       apply IH.
       (* Proof that [gt2 (mk_max_call f ts)
          (mk_max_call g (Vcast (Vapp (Vmap (subs s) us) vs) pg))]. *)
       rewrite (Veq_app ts h).
-      assert (nf : n + (arity (typ f) - (0 + n)) = arity (typ f)). omega.
+      assert (nf : n + (arity (typ f) - (0 + n)) = arity (typ f)). lia.
       eapply gt2_mcaeq with (x := mk_max_call f
         (Vcast (Vapp (Vmap (subs s) ls) (Vsub ts (Veq_app_aux2 h))) nf)).
       2: refl. apply caeq_intro. rewrite Vforall2_cast.
@@ -347,10 +347,10 @@ variables of [E] not in [fvs ls], then [subs s v] is computable. *)
       apply vint_sub_intro. hyp. refl. hyp.
       (* Proof that [Vapp (Vmap (subs s) us) vs] are computable. *)
       rewrite vint_cast_term. clear pg.
-      assert (pg : p + (arity (typ g) - p) <= arity (typ g)). omega.
+      assert (pg : p + (arity (typ g) - p) <= arity (typ g)). lia.
       apply vint_app_intro with (h := pg).
       (* Proof that [Vmap (sub s) us] are computable. *)
-      apply vint_intro_nth. omega.
+      apply vint_intro_nth. lia.
       intros j jn jp. rewrite Vnth_map. apply H2; hyp.
       (* Proof that [vs] are computable. *)
       apply vint_eq. refl. intros j jn jp. rewrite Vnth_sub.
@@ -484,7 +484,7 @@ Module Termin (Export CC : CC_Struct)
       (* Proof that [vs] are computable. *)
       gen (vint_app_term_elim_r hts); intro hvs. apply hvs.
       (* Proof that [subs s r] is computable: we use [cc_comp]. *)
-      assert (hm : 0 + m <= arity (typ f)). omega.
+      assert (hm : 0 + m <= arity (typ f)). lia.
       eapply cc_comp with (ts:=ts) (gt1:=gt1) (gt2:=gt2) (ls:=ls) (h:=hm)
         (E:=XMap.empty); auto.
       (* Proof that [ts] is computable. *)
@@ -493,7 +493,7 @@ Module Termin (Export CC : CC_Struct)
       intros g us h. apply (H0 _ h).
       (* Proof that [Vmap (subs s) ls ~~~ Vsubs ts hm]. *)
       sym. gen (Vforall2_sub hm h3). rewrite Vsub_cast, Vsub_app_l. auto.
-      omega.
+      lia.
       (* Proof that [r] is in the computability closure of [mk_call f ls]. *)
       rewrite <- output_arity. setoid_rewrite <- h1 at 3. rewrite arrow_output. hyp.
       (* Proof that [s] is valid on the empty environment. *)

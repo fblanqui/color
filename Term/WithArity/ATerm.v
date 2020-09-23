@@ -310,7 +310,7 @@ Defined.*)
     maxvars (Vcast ts e) = maxvars ts.
 
   Proof.
-    induction ts; destruct p; intros; try omega.
+    induction ts; destruct p; intros; try lia.
     rewrite Vcast_refl. refl.
     rewrite Vcast_cons, !maxvars_cons, IHts. refl.
   Qed.
@@ -496,8 +496,8 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> nb_symb_occs_terms ts >= nb_symb_occs t.
 
   Proof.
-    induction ts; simpl; intros. contr. destruct H. subst h. omega.
-    ded (IHts _ H). omega.
+    induction ts; simpl; intros. contr. destruct H. subst h. lia.
+    ded (IHts _ H). lia.
   Qed.
 
 (***********************************************************************)
@@ -602,18 +602,18 @@ a variable occurs in the list as much as it has occurrences in t *)
   Proof.
     intro. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
     size_terms ts >= 0); clear t.
-    intro. simpl. omega.
-    intros. rewrite size_fun. omega.
-    simpl. omega.
-    intros. simpl. omega.
+    intro. simpl. lia.
+    intros. rewrite size_fun. lia.
+    simpl. lia.
+    intros. simpl. lia.
   Qed.
 
   Lemma Vin_size_terms_ge : forall n (ts : terms n) t,
     Vin t ts -> size_terms ts >= size t.
 
   Proof.
-    induction ts; simpl; intros. contr. destruct H. subst h. omega.
-    ded (IHts _ H). omega.
+    induction ts; simpl; intros. contr. destruct H. subst h. lia.
+    ded (IHts _ H). lia.
   Qed.
 
   Arguments Vin_size_terms_ge [n ts t] _.
@@ -622,11 +622,11 @@ a variable occurs in the list as much as it has occurrences in t *)
     Vin t ts -> n > 1 -> size_terms ts > size t.
 
   Proof.
-    intro. destruct n. omega. destruct n. omega. intros.
+    intro. destruct n. lia. destruct n. lia. intros.
     VSntac ts. rewrite H1 in H. VSntac (Vtail ts). rewrite H2 in H. simpl in *.
     ded (size_non_zero (Vhead ts)). ded (size_non_zero (Vhead (Vtail ts))).
-    destruct H. subst t. omega. destruct H. subst t. omega.
-    ded (Vin_size_terms_ge H). omega.
+    destruct H. subst t. lia. destruct H. subst t. lia.
+    ded (Vin_size_terms_ge H). lia.
   Qed.
 
   Lemma size_terms_cast : forall n (ts : terms n) m (h : n=m),
@@ -647,7 +647,7 @@ a variable occurs in the list as much as it has occurrences in t *)
   Lemma size_terms_app : forall n (ts : terms n) m (us : terms m),
     size_terms (Vapp ts us) = size_terms ts + size_terms us.
 
-  Proof. induction ts; simpl; intros. refl. rewrite IHts. omega. Qed.
+  Proof. induction ts; simpl; intros. refl. rewrite IHts. lia. Qed.
 
   Lemma term_ind_size : forall (P : term -> Prop),
     (forall n, (forall t, size t <= n -> P t) -> forall t, size t <= S n -> P t)
@@ -657,7 +657,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     intro P. set (Q := fun n => forall t, size t <= n -> P t).
     change ((forall n, Q n -> Q (S n)) -> forall t, P t). intro IH.
     cut (forall t, Q t). intros. unfold Q in H. eapply H. apply le_refl.
-    induction t. unfold Q. destruct t; simpl; intros; omega.
+    induction t. unfold Q. destruct t; simpl; intros; lia.
     apply IH. hyp.
   Qed.
 

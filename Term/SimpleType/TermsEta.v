@@ -10,7 +10,7 @@ The eta-reduction relation of simply typed lambda-calculus.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras.
-From Coq Require Import Omega.
+From Coq Require Import Lia.
 From CoLoR Require TermsBeta.
 
 Module TermsEta (Sig : TermsSig.Signature).
@@ -38,7 +38,7 @@ Module TermsEta (Sig : TermsSig.Signature).
     rewrite <- (lift_env).
     exact (typing (lift M 1)).
     unfold liftedEnv, declDummy, finalSeg; simpl.
-    rewrite initialSeg_full; solve [trivial | omega].
+    rewrite initialSeg_full; solve [trivial | lia].
     rewrite env_comp_sum_comm.
     unfold declDummy.
     replace (None :: env M)

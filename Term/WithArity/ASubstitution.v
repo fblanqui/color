@@ -511,7 +511,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
   Proof.
     induction n1; simpl; intros. rewrite plus_0_r. refl.
     apply Vtail_eq. rewrite IHn1.
-    assert (S x0 + n1 = x0 + S n1). omega. rewrite H. refl.
+    assert (S x0 + n1 = x0 + S n1). lia. rewrite H. refl.
   Qed.
 
   Lemma fresh_tail x0 : forall n, fresh (S x0) n = Vtail (fresh x0 (S n)).
@@ -522,8 +522,8 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
     forall n i (h : i < n) x0, Vnth (fresh x0 n) h = Var (x0+i).
 
   Proof.
-    induction n; simpl. intros. absurd (i<0); omega. intro. destruct i. auto.
-    intros. assert (x0+S i=(S x0)+i). omega. rewrite H. apply IHn.
+    induction n; simpl. intros. absurd (i<0); lia. intro. destruct i. auto.
+    intros. assert (x0+S i=(S x0)+i). lia. rewrite H. apply IHn.
   Qed.
 
   Lemma Vbreak_fresh p :
@@ -546,7 +546,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
   Lemma in_freshl x :
     forall n x0, ~In x (freshl x0 n) -> x < x0 \/ x >= x0 + n.
 
-  Proof. induction n; simpl; intuition. omega. ded (IHn (S x0) H1). omega. Qed.
+  Proof. induction n; simpl; intuition. lia. ded (IHn (S x0) H1). lia. Qed.
 
   Arguments in_freshl [x n x0] _.
 
@@ -569,22 +569,22 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
   Lemma fsub_inf x0 n (ts : terms n) x : x <= x0 -> fsub x0 ts x = Var x.
 
   Proof.
-    intro. unfold fsub. case (le_lt_dec x x0). auto. intro. absurd (n<x); omega.
+    intro. unfold fsub. case (le_lt_dec x x0). auto. intro. absurd (n<x); lia.
   Qed.
 
   Lemma fsub_sup x0 n (ts : terms n) x : x > x0+n -> fsub x0 ts x = Var x.
 
   Proof.
     intro. unfold fsub. case (le_lt_dec x x0). auto. intro.
-    case (le_lt_dec x (x0+n)). intro. absurd (x>x0+n); omega. auto.
+    case (le_lt_dec x (x0+n)). intro. absurd (x>x0+n); lia. auto.
   Qed.
 
   Lemma fsub_nth x0 n (ts : terms n) x (h1 : x0 < x) (h2 : x <= x0+n) :
     fsub x0 ts x = Vnth ts (lt_pm h1 h2).
 
   Proof.
-    unfold fsub. case (le_lt_dec x x0); intro. omega.
-    case (le_lt_dec x (x0+n)); intro. apply Vnth_eq. refl. omega.
+    unfold fsub. case (le_lt_dec x x0); intro. lia.
+    case (le_lt_dec x (x0+n)); intro. apply Vnth_eq. refl. lia.
   Qed.
 
   Lemma fsub_cons x0 t n (ts : terms n) x :
@@ -592,8 +592,8 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
 
   Proof.
     intro. subst x. unfold fsub. case (le_lt_dec (x0+1) x0); intro.
-    omega. case (le_lt_dec (x0+1) (x0+S n)); intro. rewrite Vnth_cons_head.
-    refl. omega. omega.
+    lia. case (le_lt_dec (x0+1) (x0+S n)); intro. rewrite Vnth_cons_head.
+    refl. lia. lia.
   Qed.
 
   Lemma fsub_cons_rec x0 t n (ts : terms n) x k :
@@ -601,24 +601,24 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
 
   Proof.
     intro. subst x. unfold fsub.
-    destruct (le_lt_dec (x0+2+k) x0). omega.
-    destruct (le_lt_dec (x0+2+k) (x0+1)). omega.
+    destruct (le_lt_dec (x0+2+k) x0). lia.
+    destruct (le_lt_dec (x0+2+k) (x0+1)). lia.
     destruct (le_lt_dec (x0+2+k) (x0+S n));
-      destruct (le_lt_dec (x0+2+k) (x0+1+n)); try omega.
+      destruct (le_lt_dec (x0+2+k) (x0+1+n)); try lia.
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (x0+2+k-x0-1)).
-    apply Vnth_eq. clear. lia. omega. refl.
+    apply Vnth_eq. clear. lia. lia. refl.
   Qed.
 
   Lemma fsub_cons_rec0 x0 t n (ts : terms n) x :
     x = x0+2 -> fsub x0 (Vcons t ts) x = fsub (x0+1) ts x.
 
-  Proof. intro. eapply fsub_cons_rec with (k := 0). omega. Qed.
+  Proof. intro. eapply fsub_cons_rec with (k := 0). lia. Qed.
 
   Lemma fsub_nil x0 x : fsub x0 Vnil x = Var x.
 
   Proof.
     unfold fsub. case (le_lt_dec x x0); intro. refl.
-    case (le_lt_dec x (x0+0)); intro. omega. refl.
+    case (le_lt_dec x (x0+0)); intro. lia. refl.
   Qed.
 
   Lemma sub_fsub_inf n (ts : terms n) m :
@@ -629,7 +629,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
     change (forall t, P t). apply term_ind_forall.
     (* var *)
     unfold P, fsub. simpl. intros. case (le_lt_dec v m); intro. refl.
-    case (le_lt_dec v (m+n)); intro. omega. refl.
+    case (le_lt_dec v (m+n)); intro. lia. refl.
     (* fun *)
     intros. unfold P. intro. simpl sub. f_equal.
     apply Vmap_eq_id. eapply Vforall_impl. apply H. intros. apply H2.
@@ -641,10 +641,10 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
 
   Proof.
     intros. apply Vmap_eq_nth. intros. rewrite Vnth_fresh. simpl.
-    set (x := S(x0+i)). assert (h1 : x0<x). unfold x. omega.
-    assert (h2 : x<=x0+n). unfold x. omega.
+    set (x := S(x0+i)). assert (h1 : x0<x). unfold x. lia.
+    assert (h2 : x<=x0+n). unfold x. lia.
     assert (fsub x0 ts x = Vnth ts (lt_pm h1 h2)). apply fsub_nth.
-    rewrite H. apply Vnth_eq. unfold x. omega.
+    rewrite H. apply Vnth_eq. unfold x. lia.
   Qed.
 
   Lemma fsub_dom x0 n :
@@ -653,7 +653,7 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
   Proof.
     unfold dom_incl. induction ts; simpl; intros. apply fsub_nil.
     split_all. ded (in_freshl H0). destruct H1.
-    apply fsub_inf. omega. apply fsub_sup. omega.
+    apply fsub_inf. lia. apply fsub_sup. lia.
   Qed.
 
   Lemma fill_sub n f i vi j vj e s l : n >= maxvar l ->
@@ -666,21 +666,21 @@ is the substitution {x0+1 -> v1, .., x0+n -> vn} *)
     simpl. apply Vcast_eq_intro. apply Vapp_eq_intro.
     (* vi *)
     apply Veq_nth; intros. rewrite Vnth_map, Vnth_fresh. simpl.
-    unfold maxvar_union. case (lt_ge_dec (S(n+i0)) (S n)); intro. omega.
-    unfold fsub. case (le_lt_dec (S(n+i0)) n); intro. omega.
+    unfold maxvar_union. case (lt_ge_dec (S(n+i0)) (S n)); intro. lia.
+    unfold fsub. case (le_lt_dec (S(n+i0)) n); intro. lia.
     case (le_lt_dec (S(n+i0)) (n+(i+j))); intro.
-    rewrite Vnth_app. case (le_gt_dec i (S(n+i0)-n-1)); intro. omega.
-    apply Vnth_eq. clear; omega. omega.
+    rewrite Vnth_app. case (le_gt_dec i (S(n+i0)-n-1)); intro. lia.
+    apply Vnth_eq. clear; lia. lia.
     (* cons *)
     apply Vcons_eq_intro. apply sub_eq. intros. ded (vars_max H).
-    unfold maxvar_union. case (lt_ge_dec x (S n)); intro. refl. omega.
+    unfold maxvar_union. case (lt_ge_dec x (S n)); intro. refl. lia.
     (* v2 *)
     apply Veq_nth; intros. rewrite Vnth_map, Vnth_fresh. simpl.
     unfold maxvar_union. case (lt_ge_dec (S(n+i+i0)) (S n)); intro.
-    omega. unfold fsub. case (le_lt_dec (S(n+i+i0)) n); intro. omega.
+    lia. unfold fsub. case (le_lt_dec (S(n+i+i0)) n); intro. lia.
     case (le_lt_dec (S(n+i+i0)) (n+(i+j))); intro. rewrite Vnth_app.
     case (le_gt_dec i (S(n+i+i0)-n-1)); intro. apply Vnth_eq.
-    clear; lia. omega. omega.
+    clear; lia. lia. lia.
   Qed.
 
 (***********************************************************************)

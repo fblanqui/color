@@ -25,12 +25,12 @@ Definition N_prf {n} (x : N n) : x < n := proj2_sig x.
 
 Coercion N_prf : N >-> lt.
 
-Definition zero {n} : N (S n). Proof. apply (@N_ _ 0). omega. Defined.
+Definition zero {n} : N (S n). Proof. apply (@N_ _ 0). lia. Defined.
 
 (* One can define anything from [N 0] since [N 0] is empty. *)
 Definition any_of_N0 {B : Type} : N 0 -> B.
 
-Proof. intros [k_val k]. omega. Qed.
+Proof. intros [k_val k]. lia. Qed.
 
 Lemma inj_N_val n : injective (@N_val n).
 
@@ -68,7 +68,7 @@ Definition nats_incr_lt n := rev' (nats_decr_lt n).
 
 Lemma In_nats_decr_lt : forall n x, x < n <-> In x (nats_decr_lt n).
 
-Proof. induction n; simpl; intros. omega. rewrite <- IHn. omega. Qed.
+Proof. induction n; simpl; intros. lia. rewrite <- IHn. lia. Qed.
 
 Lemma length_nats_decr_lt n : length (nats_decr_lt n) = n.
 
@@ -82,7 +82,7 @@ Section list_N.
 
   Variable n : nat.
 
-  Lemma L_ k : S k < n -> k < n. Proof. omega. Qed.
+  Lemma L_ k : S k < n -> k < n. Proof. lia. Qed.
 
   (* Given k<n, returns the list [@N_ n k _; ..; @N_ n 0 _]. *)
   Fixpoint L_aux k :=
@@ -93,14 +93,14 @@ Section list_N.
 
   Lemma length_L_aux : forall k (hk : k<n), length (L_aux hk) = S k.
 
-  Proof. induction k; intro hk; simpl. omega. rewrite IHk. omega. Qed.
+  Proof. induction k; intro hk; simpl. lia. rewrite IHk. lia. Qed.
 
   Lemma nth_L_aux x :
     forall k (h : k<n) i, i <= k -> N_val (nth i (L_aux h) x) = k - i.
 
   Proof.
-    induction k; simpl; intros; destruct i; simpl. refl. omega. refl.
-    rewrite IHk. refl. omega.
+    induction k; simpl; intros; destruct i; simpl. refl. lia. refl.
+    rewrite IHk. refl. lia.
   Qed.
 
   Lemma In_L_aux_elim x k (h : k<n) :
@@ -109,7 +109,7 @@ Section list_N.
   Proof.
     intro xL. destruct (In_nth x xL) as [i [i1 i2]].
     apply N_eq in i2. rewrite nth_L_aux in i2. ex i. hyp.
-    rewrite length_L_aux in i1. omega.
+    rewrite length_L_aux in i1. lia.
   Qed.
 
   Arguments In_L_aux_elim [x k h] _.
@@ -119,10 +119,10 @@ Section list_N.
 
   Proof.
     induction k; simpl; intros.
-    left. apply N_eq; simpl. omega.
+    left. apply N_eq; simpl. lia.
     destruct (eq_nat_dec (S k) i).
     left. apply N_eq; simpl. hyp.
-    right. apply IHk. omega.
+    right. apply IHk. lia.
   Qed.
 
 End list_N.
@@ -140,11 +140,11 @@ Arguments L : clear implicits.
 
 Lemma nth_L n x i : i < n -> N_val (nth i (L n) x) = pred n - i.
 
-Proof. intros. unfold L. destruct n. omega. apply nth_L_aux. omega. Qed.
+Proof. intros. unfold L. destruct n. lia. apply nth_L_aux. lia. Qed.
 
 Lemma In_L n i (p : i<n) : In (N_ p) (L n).
 
-Proof. unfold L. destruct n. omega. apply In_L_aux. omega. Qed.
+Proof. unfold L. destruct n. lia. apply In_L_aux. lia. Qed.
 
 Lemma In_L_elim n x : In x (L n) -> exists i, N_val x = n - i.
 
@@ -163,7 +163,7 @@ Lemma nodup_L_aux {n} : forall k (hk : k < n), nodup (L_aux hk).
 
 Proof.
   induction k; intro hk; simpl. tauto. split. 2: apply IHk.
-  intro h. destruct (In_L_aux_elim h) as [i e]. simpl in e. omega.
+  intro h. destruct (In_L_aux_elim h) as [i e]. simpl in e. lia.
 Qed.
 
 Lemma nodup_L n : nodup (L n).
@@ -210,7 +210,7 @@ Section vec_N.
     forall k (h : k<n) i (hi : i < S k), N_val (Vnth (V_aux h) hi) = k - i.
 
   Proof.
-    induction k; simpl; intros; destruct i; simpl. refl. omega. refl.
+    induction k; simpl; intros; destruct i; simpl. refl. lia. refl.
     rewrite IHk. refl.
   Qed.
 
@@ -229,10 +229,10 @@ Section vec_N.
 
   Proof.
     induction k; simpl; intros.
-    left. apply N_eq; simpl. omega.
+    left. apply N_eq; simpl. lia.
     destruct (eq_nat_dec (S k) i).
     left. apply N_eq; simpl. hyp.
-    right. apply IHk. omega.
+    right. apply IHk. lia.
   Qed.
 
 End vec_N.
@@ -250,11 +250,11 @@ Arguments V : clear implicits.
 
 Lemma Vnth_V n i (hi : i < n) : N_val (Vnth (V n) hi) = pred n - i.
 
-Proof. intros. unfold L. destruct n. omega. apply Vnth_V_aux. Qed.
+Proof. intros. unfold L. destruct n. lia. apply Vnth_V_aux. Qed.
 
 Lemma Vin_V n i (p : i<n) : Vin (N_ p) (V n).
 
-Proof. unfold L. destruct n. omega. apply Vin_V_aux. omega. Qed.
+Proof. unfold L. destruct n. lia. apply Vin_V_aux. lia. Qed.
 
 Lemma Vin_V_elim n x : Vin x (V n) -> exists i, N_val x = n - i.
 
@@ -305,9 +305,9 @@ Lemma multiplicity_nats_decr_lt i :
 
 Proof.
   induction n; simpl.
-  destruct (lt_ge_dec i 0); omega.
+  destruct (lt_ge_dec i 0); lia.
   rewrite IHn. destruct (lt_ge_dec i n); destruct (eq_nat_dec n i);
-    destruct (lt_ge_dec i (S n)); omega.
+    destruct (lt_ge_dec i (S n)); lia.
 Qed.
 
 Lemma multiplicity_L_aux n (i : N n) : forall k (kn : k < n),
@@ -318,12 +318,12 @@ Proof.
   destruct i as [i hi]; simpl.
   induction k; intro hk.
   simpl. destruct i.
-  destruct (le_dec 0 0); omega.
-  destruct (le_dec (S i) 0); omega.
+  destruct (le_dec 0 0); lia.
+  destruct (le_dec (S i) 0); lia.
   simpl. destruct i; rewrite IHk.
-  destruct (le_dec 0 k); destruct (le_dec 0 (S k)); omega.
+  destruct (le_dec 0 k); destruct (le_dec 0 (S k)); lia.
   destruct (eq_nat_dec k i); simpl;
-    destruct (le_dec (S i) k); destruct (le_dec (S i) (S k)); omega.
+    destruct (le_dec (S i) k); destruct (le_dec (S i) (S k)); lia.
 Qed.
 
 Lemma multiplicity_L n (i : N n) :
@@ -332,7 +332,7 @@ Lemma multiplicity_L n (i : N n) :
 Proof.
   destruct n as [|n]. apply any_of_N0. hyp.
   unfold L. rewrite multiplicity_L_aux. destruct (le_dec i n). refl.
-  destruct i as [i hi]. simpl in n0. omega.
+  destruct i as [i hi]. simpl in n0. lia.
 Qed.
 
 Lemma multiplicity_map_N_val n i (hi : i<n) :
@@ -349,7 +349,7 @@ Lemma multiplicity_map_N_val_notin n i (hi : i>=n) : forall l : list (N n),
 
 Proof.
   induction l; simpl. refl. rewrite IHl. destruct (eq_nat_dec a i).
-  subst. destruct a as [a ha]. simpl in hi. omega. refl.
+  subst. destruct a as [a ha]. simpl in hi. lia. refl.
 Qed.
 
 (****************************************************************************)
@@ -372,14 +372,14 @@ Section Check_seq_aux.
         end
     end.
 
-  Next Obligation. apply H. destruct i. simpl. omega. Qed.
+  Next Obligation. apply H. destruct i. simpl. lia. Qed.
   Next Obligation.
     destruct i as [x l]. simpl in *.
     destruct (eq_nat_dec x p).
     subst. rewrite (lt_unique l cmp). hyp.
-    apply H. simpl. omega.
+    apply H. simpl. lia.
   Qed.
-  Next Obligation. omega. Qed.
+  Next Obligation. lia. Qed.
 
 End Check_seq_aux.
 
@@ -387,6 +387,6 @@ Program Definition check_seq (n : nat) (Pr : N n -> Prop)
   (P : forall (i : N n), option (Pr i)) : option (forall (i : N n), Pr i)
   := check_seq_aux _ P (p:=0) _.
 
-Next Obligation. omega. Qed.
+Next Obligation. lia. Qed.
 
 Arguments check_seq [n Pr] _.

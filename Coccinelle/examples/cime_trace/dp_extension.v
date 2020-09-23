@@ -1,13 +1,7 @@
-From Coq Require Import Relations.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import closure.
-From CoLoR Require Import equational_theory_spec.
-From CoLoR Require Import dp.
-From CoLoR Require Import modular_dp.
-From Coq Require Import List.
-From CoLoR Require Import terminaison.
-From Coq Require Import Setoid.
+From Coq Require Import Relations List Setoid.
 From Coq Require Inclusion.
+From CoLoR Require Import weaved_relation closure equational_theory_spec dp modular_dp terminaison.
+
 
 
 Module Make(E:EqTh) .

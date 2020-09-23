@@ -9,7 +9,7 @@ boolean functions on lists
 
 Set Implicit Arguments.
 
-From Coq Require Import Arith Omega.
+From Coq Require Import Arith Lia.
 From CoLoR Require Import ListUtil BoolUtil EqUtil LogicUtil.
 
 Section S.
@@ -141,8 +141,8 @@ Section S.
   Proof.
     induction l; simpl. discr. case_beq x a. intros. inversion H.
     rewrite <- minus_n_n. intuition. destruct l. simpl. discr. intros.
-    ded (IHl _ H0). assert (exists p', k - i = S p'). exists (k-i-1). omega.
-    destruct H2. rewrite H2. assert (k - S i = x0). omega. rewrite <- H3.
+    ded (IHl _ H0). assert (exists p', k - i = S p'). exists (k-i-1). lia.
+    destruct H2. rewrite H2. assert (k - S i = x0). lia. rewrite <- H3.
     intuition.
   Qed.
 

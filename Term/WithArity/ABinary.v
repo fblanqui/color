@@ -60,7 +60,7 @@ Section BinSignatureTheory.
     split. 2: simpl; auto. rewrite cons_term_cons. unfold Vxy.
     apply args_eq. apply Veq_nth. intros i Hi. rewrite Vnth_map, !Vnth_cast.
     destruct i. simpl; refl. rewrite !Vnth_cons. destruct i. simpl; refl.
-    cut (S (S i) < 2). intro; omega. rewrite cons_arity; auto.
+    cut (S (S i) < 2). intro; lia. rewrite cons_arity; auto.
   Qed.
 
   Lemma proj_cons_r : forall n (v : terms n) t a,
@@ -75,7 +75,7 @@ Section BinSignatureTheory.
     split. 2: simpl; auto. rewrite cons_term_cons. unfold Vxy.
     apply args_eq. apply Veq_nth. intros i Hi. rewrite Vnth_map, !Vnth_cast.
     destruct i. simpl; refl. rewrite !Vnth_cons. destruct i. simpl; refl.
-    cut (S (S i) < 2). intro; omega. rewrite cons_arity; auto.
+    cut (S (S i) < 2). intro; lia. rewrite cons_arity; auto.
   Qed.
 
   Lemma proj_cons_rtc_l : forall t n (v : terms n),
@@ -118,7 +118,7 @@ Section BinSignatureTheory.
   Proof.
     intro f. induction n; intros m Emn v v1 v2 Hin.
     rewrite (VO_eq v1), (VO_eq v2). simpl. apply rt_refl.
-    assert (H0 : n < S n + m). omega. assert (H1 : m = S n + m - S n). omega.
+    assert (H0 : n < S n + m). lia. assert (H1 : m = S n + m - S n). lia.
     rewrite (Veq_app_cons (Vapp v1 v) H0), (Veq_app_cons (Vapp v2 v) H0).
     assert (Ve1 : forall x,
       Vsub (Vapp x v) (Veq_app_cons_aux2 H0) = (Vcast v H1)).
@@ -127,9 +127,9 @@ Section BinSignatureTheory.
     assert (Ve2 : forall x, Vsub (Vapp x v) (Veq_app_cons_aux1 H0) =
       (Vsub x (Veq_app_aux1 (le_n_Sn n)))). intro x.
     apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_app.
-    case (le_gt_dec (S n) (0 + i)); intro. omega. apply Vnth_eq; auto.
+    case (le_gt_dec (S n) (0 + i)); intro. lia. apply Vnth_eq; auto.
     rewrite (Ve1 v1), (Ve1 v2), (Ve2 v1), (Ve2 v2), !Vnth_app, !Vcast_cast.
-    case (le_gt_dec (S n) n); intro H2. omega.
+    case (le_gt_dec (S n) n); intro H2. lia.
     set (v' := Vcast v H1); set (x := Vnth v1 H2); set (y := Vnth v2 H2).
     set (v1' := Vsub v1 (Veq_app_aux1 (le_n_Sn n))).
     set (v2' := Vsub v2 (Veq_app_aux1 (le_n_Sn n))).

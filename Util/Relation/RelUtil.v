@@ -11,7 +11,7 @@ General definitions and results about relations.
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid Basics Morphisms List Omega.
+From Coq Require Import Setoid Basics Morphisms List Lia.
 From Coq Require Export Relations.
 
 From CoLoR Require Import LogicUtil.
@@ -905,12 +905,12 @@ Lemma rtc_intro_seq A (R : rel A) f i : forall j, i <= j ->
 Proof.
   cut (forall n, (forall k, i <= k < i + n -> R (f k) (f (1+k))) ->
     R# (f i) (f (n+i))).
-  intros h j ij hij. assert (j = (j-i) + i). omega.
+  intros h j ij hij. assert (j = (j-i) + i). lia.
   rewrite H. apply h.
-  intros k hk. apply hij. omega.
+  intros k hk. apply hij. lia.
   induction n; intro h. refl. trans (f (n+i)).
-  apply IHn. intros k hk. apply h. omega.
-  apply rt_step. apply h. omega.
+  apply IHn. intros k hk. apply h. lia.
+  apply rt_step. apply h. lia.
 Qed.
 
 Lemma rtc_min A (R S : rel A) : PreOrder S -> R << S -> R# << S.

@@ -77,17 +77,17 @@ Section S.
     rewrite (proj1 H4). apply in_or_app. simpl. tauto. rewrite (proj1 H4) in H1.
     split.
     destruct (nodup_app_elim_right x1 (x::x2)). tauto. tauto.   
-    split. rewrite (length_app x1 (x::x2)) in H1. simpl in H1|-* . omega. split.
+    split. rewrite (length_app x1 (x::x2)) in H1. simpl in H1|-* . lia. split.
     trans (x::x2). apply incl_tl. refl.
     trans (x1++(x::x2)). apply incl_appr. refl.
     trans l.
     tauto. apply incl_tl. refl. apply path_app_elim_right with x1 a.
     tauto.
     destruct (H x a). exists x0. rewrite H4. simpl.
-    assert (length x0 <= S (length l)). omega. 
+    assert (length x0 <= S (length l)). lia. 
     assert (x0 [= a :: l). apply incl_tl. tauto.
     tauto. exists (a::x0). simpl.
-    assert (S (length x0) <= S (length l)). omega. 
+    assert (S (length x0) <= S (length l)). lia. 
     assert (a :: x0 [= a :: l). apply cons_incl. refl. tauto.
     assert (a<>x). intro. rewrite H7 in H4. tauto.
     assert (a<>y). intro. rewrite H8 in H2. tauto. tauto.
@@ -106,11 +106,11 @@ Section S.
 
   Proof.
     induction l.
-    intros. simpl in H0. omega.
+    intros. simpl in H0. lia.
     intros. simpl in H. simpl in H0. gen (lt_n_Sm_le H0); intro.
     simpl. induction k. induction l. simpl. simpl in H. intuition.
     simpl. simpl in H. intuition.
-    clear IHk. apply (IHl a y k). intuition. omega.
+    clear IHk. apply (IHl a y k). intuition. lia.
   Qed.
 
   Lemma path_lastP : forall k x y l,
@@ -118,10 +118,10 @@ Section S.
 
   Proof.
     induction k.
-    intros. destruct l. simpl in H0. omega.
+    intros. destruct l. simpl in H0. lia.
     destruct l. simpl. simpl in H. intuition.
-    simpl in H0. omega.
-    intros. destruct l. simpl in H0. omega.
+    simpl in H0. lia.
+    intros. destruct l. simpl in H0. lia.
     simpl. simpl in H. simpl in H0. apply (IHk a y l); intuition.
   Qed.
 
@@ -320,7 +320,7 @@ Section restriction.
 
   Proof.
     intros. apply pigeon_hole with l. apply restricted_path_incl.
-    apply H. apply H0. simpl. rewrite length_app. simpl. omega.
+    apply H. apply H0. simpl. rewrite length_app. simpl. lia.
   Qed.
 
   Lemma path_restriction_In_left : forall (x y : A) l', 

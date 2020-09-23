@@ -67,7 +67,7 @@ Section S.
     destruct U as [U [UQ Uinf]]; simpl. destruct Q as [Q [QP Qinf]]; simpl.
     trans Q; hyp. apply eq_dec. hyp.
     rewrite card_add. destruct X as [X [XV cXm]]; simpl. rewrite cXm.
-    destruct (dec (mem a X)). fo. omega.
+    destruct (dec (mem a X)). fo. lia.
   Defined.
 
   Arguments i [n P Q U V a] _ _ _.
@@ -86,7 +86,7 @@ Section S.
   Proof.
     intros aP naT TP [X [XT cXn]]. ex (Pf_add a X). split.
     simpl. intro x. unfold impl, mem, add. fo. subst. fo.
-    rewrite card_add, cXn. destruct (dec (mem a X)). fo. omega.
+    rewrite card_add, cXn. destruct (dec (mem a X)). fo. lia.
   Defined.
 
   Arguments j n [P a T'] _ _ _ _.
@@ -168,10 +168,10 @@ Section S.
     (* V is anti-monotone: the sets V_k are decreasing. *)
     assert (Vle : Proper (le --> subset) V).
     intros l k. unfold flip. revert k l. intro k. induction l; intro hl.
-    assert (k=0). omega. subst. refl.
+    assert (k=0). lia. subst. refl.
     destruct (le_dec k l) as [kl|nkl]. trans (Pinf_val (V l)).
     2: apply IHl; hyp. rewrite VSV_b. apply subset_rem.
-    assert (k=S l). omega. subst. refl.
+    assert (k=S l). lia. subst. refl.
 
     (* V_{k+1} is strictly included in V_k. *)
     assert (VSlt : forall k, V (S k) [<] V k).
@@ -198,7 +198,7 @@ Section S.
     apply lt_nbV in kl. rewrite e in kl. gen (bV l). contr.
     destruct (lt_dec l k) as [lk|nlk].
     apply lt_nbV in lk. rewrite <- e in lk. gen (bV k). contr.
-    omega.
+    lia.
 
     (* The solution is [B]. *)
     set (B' := mk_Pinf BP Binf). ex B'.
@@ -224,13 +224,13 @@ Section S.
     assert (k0k : k0 < k).
       assert (k0k' : k0 <= k). unfold k0. apply smallest_comp; hyp.
       destruct (eq_nat_dec k0 k). rewrite e in nxbk0. cong.
-      omega.
+      lia.
     unfold lt in k0k. apply (Vle _ _ k0k). apply bV.
 
     (* card Y = n. *)
     assert (cYm : card Y = n).
     unfold Y. rewrite card_rem. unfold mk_Pf. rewrite cXSn. simpl.
-    destruct (dec (mem (b k0) X)). omega. contr.
+    destruct (dec (mem (b k0) X)). lia. contr.
 
     set (Y' := mk_Pcard YVSk0 cYm).
     rewrite <- (Vf k0 Y'). apply f_eq. unfold Pcard_equiv, Pf_equiv.

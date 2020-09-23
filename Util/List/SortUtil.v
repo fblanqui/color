@@ -11,7 +11,7 @@ and on Coq's multiplicity function
 Set Implicit Arguments.
 
 From Coq Require Export Sorting.
-From Coq Require Import List Morphisms Omega.
+From Coq Require Import List Morphisms Lia.
 From CoLoR Require Import RelUtil LogicUtil.
 
 (***********************************************************************)
@@ -100,7 +100,7 @@ Section multiplicity.
   Proof.
     intros; induction mb; simpl in *; try tauto.
     destruct H; destruct (B_eq_dec a0 a); subst; try congruence; simpl;
-      try omega.
+      try lia.
     tauto.
   Qed.
 
@@ -110,8 +110,8 @@ Section multiplicity.
   Proof.
     intros. induction mb; simpl; auto. simpl in H. split.
     ded (H a). intuition. ded (In_multiplicity _ _ H1).
-    destruct (B_eq_dec a a); auto. omega.
-    apply IHmb. intros. ded (H a0). destruct (B_eq_dec a a0); simpl in *; omega.
+    destruct (B_eq_dec a a); auto. lia.
+    apply IHmb. intros. ded (H a0). destruct (B_eq_dec a a0); simpl in *; lia.
   Qed.
 
 End multiplicity.
@@ -130,10 +130,10 @@ Section Sorted.
     i < length l -> S i < length l -> lt (nth i l d) (nth (S i) l d).
 
   Proof.
-    induction l; destruct i; simpl; intros. omega. omega.
-    inversion H. subst. destruct l. simpl in H1. omega.
+    induction l; destruct i; simpl; intros. lia. lia.
+    inversion H. subst. destruct l. simpl in H1. lia.
     inversion H5. hyp.
-    inversion H. apply IHl. hyp. omega. omega.
+    inversion H. apply IHl. hyp. lia. lia.
   Qed.
 
   Lemma HdRel_nth : forall l i n, Sorted lt l ->
@@ -141,21 +141,21 @@ Section Sorted.
 
   Proof.
     induction l; destruct i; simpl; intros.
-    omega. omega. inversion H0. hyp.
+    lia. lia. inversion H0. hyp.
     apply IHl. inversion H. hyp.
     destruct l. apply HdRel_nil. apply HdRel_cons.
-    inversion H0. inversion H. inversion H8. subst. trans a; hyp. omega.
+    inversion H0. inversion H. inversion H8. subst. trans a; hyp. lia.
   Qed.
 
   Lemma Sorted_nth : forall j l i, Sorted lt l ->
     i < length l -> j < length l -> i < j -> lt (nth i l d) (nth j l d).
 
   Proof.
-    induction j; intros. omega.
-    destruct l; simpl in *. omega.
+    induction j; intros. lia.
+    destruct l; simpl in *. lia.
     inversion H. subst. destruct i; simpl.
-    apply HdRel_nth. hyp. hyp. omega.
-    apply IHj. hyp. omega. omega. omega.
+    apply HdRel_nth. hyp. hyp. lia.
+    apply IHj. hyp. lia. lia. lia.
   Qed.
 
 End Sorted.

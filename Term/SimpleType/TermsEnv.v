@@ -11,7 +11,7 @@ lambda-calculus are introduced in this file.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsLifting LogicUtil OptUtil.
-From Coq Require Import Arith Setoid Morphisms Omega.
+From Coq Require Import Arith Setoid Morphisms Lia.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 
@@ -51,9 +51,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec n (p - Min.min k (length E))).
     rewrite nth_app_right; autorewrite with datatypes; trivial.
     left; apply nth_beyond; autorewrite with datatypes; trivial.
-    simpl; omega.
+    simpl; lia.
     rewrite nth_app_left; autorewrite with datatypes; try_solve.
-    set (w := Min.le_min_r k (length E)); omega.
+    set (w := Min.le_min_r k (length E)); lia.
   Qed.
 
   Lemma equiv_copy_split_l : forall E k p n, p < k ->
@@ -64,7 +64,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length E) p).
     set (w := split_beyond E n H l).
     split; split; intro; trivial.
-    set (ww := nth_some E p H0); omega.
+    set (ww := nth_some E p H0); lia.
     exfalso; apply varD_UD_absurd with 
       (initialSeg E k ++ copy n None ++ finalSeg E k) p A; trivial.
     left; apply nth_beyond; trivial.
@@ -110,17 +110,17 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec k (length E)).
     replace (p + n - Min.min k (length E) - n) with (p - k).
     split; split; intro; solve
-      [ replace (k + (p - k)) with p; [trivial | omega]
-      | replace p with (k + (p - k)); [trivial | omega]
+      [ replace (k + (p - k)) with p; [trivial | lia]
+      | replace p with (k + (p - k)); [trivial | lia]
       ].
-    rewrite Min.min_l; omega.
+    rewrite Min.min_l; lia.
     replace (p + n - Min.min k (length E) - n) with (p - length E).
     split; split; intro; try solve 
-      [ left; apply nth_beyond; omega
-      | set (w := nth_some E _ H1); omega ].
-    rewrite Min.min_r; omega.
-    set (w := Min.le_min_l k (length E)); omega.
-    set (w := Min.le_min_l k (length E)); omega.
+      [ left; apply nth_beyond; lia
+      | set (w := nth_some E _ H1); lia ].
+    rewrite Min.min_r; lia.
+    set (w := Min.le_min_l k (length E)); lia.
+    set (w := Min.le_min_l k (length E)); lia.
   Qed.
 
   Lemma copy_split_r_varD : forall E k n p p' A, p >= k -> p' = p + n ->
@@ -159,9 +159,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length E) p).
     assert (p >= length (initialSeg E k ++ finalSeg E (S k))).
     autorewrite with datatypes using simpl.
-    omega.
+    lia.
     split; split; intro; try solve [left; apply nth_beyond; trivial].
-    set (ww := nth_some E p H1); omega.
+    set (ww := nth_some E p H1); lia.
     exfalso; apply varD_UD_absurd with 
       (initialSeg E k ++ finalSeg E (S k)) p A; trivial.
     left; apply nth_beyond; trivial.
@@ -199,17 +199,17 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec k (length E)).
     replace (p' - Min.min k (length E)) with (p' - k).
     split; split; intro; solve
-      [ replace (S k + (p' - k)) with (S p'); [trivial | omega]
-      | replace (S p') with (S k + (p' - k)); [trivial | omega]
+      [ replace (S k + (p' - k)) with (S p'); [trivial | lia]
+      | replace (S p') with (S k + (p' - k)); [trivial | lia]
       ].
-    rewrite Min.min_l; omega.
+    rewrite Min.min_l; lia.
     replace (p' - Min.min k (length E)) with (p' - (length E)).
     split; split; intro; solve
-      [ left; apply nth_beyond; omega
-      | set (w := nth_some E _ H1); omega
+      [ left; apply nth_beyond; lia
+      | set (w := nth_some E _ H1); lia
       ].
-    rewrite Min.min_r; omega.
-    set (w := Min.le_min_l k (length E)); omega.
+    rewrite Min.min_r; lia.
+    set (w := Min.le_min_l k (length E)); lia.
   Qed.
 
   Lemma hole_r_varD : forall E k p p' A, p > k -> p = S p' -> E |= p := A ->
@@ -283,7 +283,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     intros. destruct (find_last_last isNotEmpty isNotEmpty_dec E x H)
       as [q [Eq qx]]; try_solve.
     unfold dropEmptySuffix. rewrite Eq.
-    unfold VarD; rewrite initialSeg_nth; trivial. omega.
+    unfold VarD; rewrite initialSeg_nth; trivial. lia.
   Qed.
 
   Lemma dropSuffix_decl_rev : forall E x A,
@@ -317,7 +317,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     auto with arith.
     assert (nth_error E p <> None); try_solve.
     set (w := proj1 (nth_in E p) H).
-    omega.
+    lia.
     destruct wSome; trivial.
   Qed.
 
@@ -510,17 +510,17 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (A = B).
     cut ((copy x None ++ A[#]EmptyEnv) |= p := B); trivial.
     unfold VarD.
-    rewrite nth_app_right; autorewrite with datatypes using try omega.
+    rewrite nth_app_right; autorewrite with datatypes using try lia.
     rewrite p_x; rewrite <- minus_n_n.
     intro D; inversion D; trivial.
     inversion Dr; inversion H0; try_solve.
     exfalso; apply (varD_UD_absurd Dl).
     left; unfold VarUD.
     rewrite nth_app_right; autorewrite with datatypes.
-    cut (p - x > 0); try omega.
-    destruct (p - x); intro; try solve [omega].
+    cut (p - x > 0); try lia.
+    destruct (p - x); intro; try solve [lia].
     destruct n; trivial.
-    omega.
+    lia.
   Qed.
 
   Hint Resolve env_comp_cons : terms.
@@ -941,7 +941,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply initialSeg_prefix with n; trivial.
     assert (w < n).
     set (h := Min.le_min_l n (length E)).
-    omega.
+    lia.
     unfold VarD; rewrite nth_app_left; autorewrite with datatypes; trivial.
     apply Min.min_case2; trivial.
     apply nth_some with (Some A); trivial.
@@ -949,7 +949,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (Min.min n (length E) = n).
     apply Min.min_l.
     set (h := finalSeg_nth_idx E (S n) (w - Min.min n (length E)) ED).
-    omega.
+    lia.
     rewrite H0 in ED.
     assert (ED': nth_error E (S n + (w - n)) = Some (Some A)).
     rewrite <- nth_finalSeg_nth; trivial.
@@ -958,14 +958,14 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (Min.min n (length E') = n).
     set (ww := nth_some E' (S w) E'D).
     apply Min.min_l.
-    omega.
+    lia.
     unfold VarD; rewrite nth_app_right.
     autorewrite with datatypes; rewrite H1.
     replace (S n + (w - n)) with (S w); trivial.
-    omega.
+    lia.
     autorewrite with datatypes.
     rewrite H1; rewrite <- H0; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma env_subset_comp : forall E E', envSubset E E' -> E [<->] E'.
@@ -985,7 +985,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct E'; trivial.
     assert (E = E' [+] E).
     apply (IHE E').
-    simpl in H; omega.
+    simpl in H; lia.
     apply env_subset_cons_rev with o a; trivial.
     assert (forall E E', E = E' -> a :: E = a :: E').
     intros; replace E0 with E'0; trivial.
@@ -1005,7 +1005,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct E'; trivial.
     assert (E = E [+] E').
     apply (IHE E').
-    simpl in H; omega.
+    simpl in H; lia.
     apply env_subset_cons_rev with o a; trivial.
     assert (forall E E' (a: option SimpleType), E = E' -> a :: E = a :: E').
     intros; replace E0 with E'0; trivial.
@@ -1090,7 +1090,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     intros.
     destruct (lt_eq_lt_dec x w) as [[xw | xw] | xw].
     exfalso; apply (varD_UD_absurd H).
-    left; apply nth_beyond; autorewrite with datatypes using simpl; try omega.
+    left; apply nth_beyond; autorewrite with datatypes using simpl; try lia.
     rewrite xw; split; trivial.
     rewrite xw in H.
     unfold VarD in H.
@@ -1098,7 +1098,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
       (@nth_app_right (option SimpleType) (copy w None) (A[#]EmptyEnv) w) in H;
       autorewrite with datatypes using auto.
     rewrite copy_length in H.
-    replace (w - w) with 0 in H; [inversion H; trivial | omega].
+    replace (w - w) with 0 in H; [inversion H; trivial | lia].
     exfalso; apply (varD_UD_absurd H).
     right; rewrite nth_app_left; autorewrite with datatypes using trivial.
   Qed.
@@ -1143,13 +1143,13 @@ Module TermsEnv (Sig : TermsSig.Signature).
   Proof.
     intros.
     destruct (dropSuffix_last E') as [E'e | [A E'A]].
-    rewrite E'e; omega.
+    rewrite E'e; lia.
     set (E'd := dropSuffix_decl_rev E' E'A).
     set (w := H (pred (length (dropEmptySuffix E'))) A E'd).
     assert (Ed: nth_error E (pred (length (dropEmptySuffix E'))) <> None).
     inversion w; try_solve.
     set (x := proj1 (nth_in E (pred (length (dropEmptySuffix E')))) Ed).
-    omega.
+    lia.
   Qed.
 
   Lemma varUD_hole : forall E i,
@@ -1160,15 +1160,15 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (lt_eq_lt_dec (length E) i) as [[iE | iE] | iE].
     left.
     apply nth_beyond.
-    autorewrite with datatypes using simpl; try omega.
+    autorewrite with datatypes using simpl; try lia.
     right.
     rewrite nth_app_right; autorewrite with datatypes; rewrite iE.
-    apply Min.min_case2; replace (i - i) with 0; solve [trivial | omega].
+    apply Min.min_case2; replace (i - i) with 0; solve [trivial | lia].
     auto with arith.
     right.
     rewrite nth_app_right; autorewrite with datatypes; auto with arith.
     replace (i - Min.min i (length E)) with 0; trivial.
-    rewrite Min.min_l; omega.
+    rewrite Min.min_l; lia.
   Qed.
 
   Lemma varD_hole : forall E i j A, i <> j -> E |= j := A ->
@@ -1179,11 +1179,11 @@ Module TermsEnv (Sig : TermsSig.Signature).
     set (iE := nth_some E j H0).
     destruct (lt_eq_lt_dec i j) as [[ij | ij] | ij].
     rewrite nth_app_right; autorewrite with datatypes; rewrite Min.min_l;
-      try omega.
-    replace (j - i) with (S (j - S i)); try omega.
+      try lia.
+    replace (j - i) with (S (j - S i)); try lia.
     simpl; rewrite nth_finalSeg_nth.
-    replace (S i + (j - S i)) with j; [trivial | omega].
-    omega.
+    replace (S i + (j - S i)) with j; [trivial | lia].
+    lia.
     rewrite nth_app_left; autorewrite with datatypes; trivial.
     apply Min.min_case2; trivial.
   Qed.
@@ -1201,25 +1201,25 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite Min.min_r in H; trivial.
     rewrite (finalSeg_empty E (k := S i)) in H.
     destruct (j - length E); try destruct n; try_solve.
-    omega.
+    lia.
     assert (forall (A : Type) l (a: A) i,
       i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
     intros; destruct i0; try_solve.
-    omega.
+    lia.
     rewrite H0 in H.
     set (w := finalSeg_nth_idx E (S i) (pred (j - Min.min i (length E))) H).
-    rewrite Min.min_l in w; omega.
+    rewrite Min.min_l in w; lia.
     destruct (j - Min.min i (length E)); try_solve.
-    omega.
+    lia.
     autorewrite with datatypes; trivial.
     rewrite nth_app_left in H; autorewrite with datatypes; trivial.
-    set (w := Min.le_min_r i (length E)); omega.
+    set (w := Min.le_min_r i (length E)); lia.
   Qed.
 
   Lemma varD_hole_env_length_j_ge_i : forall E i j A, j >= i ->
     (initialSeg E i ++ None :: finalSeg E (S i)) |= j := A -> length E > i.
 
-  Proof. intros; set (w := varD_hole_env_length E i H0); omega. Qed.
+  Proof. intros; set (w := varD_hole_env_length E i H0); lia. Qed.
 
   Lemma varD_hole_rev : forall E i j A, i <> j ->
     (initialSeg E i ++ None :: finalSeg E (S i)) |= j := A -> E |= j := A.
@@ -1234,22 +1234,22 @@ Module TermsEnv (Sig : TermsSig.Signature).
     assert (forall (A : Type) l (a: A) i,
       i > 0 -> nth_error (a::l) i = nth_error l (pred i)).
     intros; destruct i0; try_solve.
-    omega.
+    lia.
     rewrite (H2 (option SimpleType) (finalSeg E (S i)) None (j - i)) in H0.
     replace j with (S i + pred (j - i)).
     rewrite <- nth_finalSeg_nth; trivial.
-    omega.
-    omega.
-    autorewrite with datatypes; rewrite Min.min_l; trivial; omega.
-    rewrite Min.min_l; trivial; omega.
-    omega.
+    lia.
+    lia.
+    autorewrite with datatypes; rewrite Min.min_l; trivial; lia.
+    rewrite Min.min_l; trivial; lia.
+    lia.
     rewrite nth_app_left in H0; autorewrite with datatypes.
     apply initialSeg_prefix with i; trivial.
     assert (Min.min i (length E) > j).
     rewrite Min.min_comm.
     apply Min.min_case2; trivial.
     apply varD_hole_env_length with i A; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma env_hole_subset : forall E i,
@@ -1264,14 +1264,14 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply Min.min_l.
     assert (length E > j).
     apply varD_hole_env_length_j_ge_i with j A; trivial.
-    omega.
-    omega.
+    lia.
+    lia.
     unfold VarD in D.
     rewrite nth_app_right in D.
     replace (j - length (initialSeg E j)) with 0 in D.
     inversion D.
-    rewrite H; omega.
-    omega.
+    rewrite H; lia.
+    lia.
     apply varD_hole_rev with i; trivial.
   Qed.
 
@@ -1392,7 +1392,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     trivial.
     destruct (le_gt_dec n (p - length E)).
     assert (p - length E >= length (copy n (None (A:=SimpleType)))).
-    autorewrite with datatypes using omega.
+    autorewrite with datatypes using lia.
     set (w := nth_beyond (copy n None) H).
     try_solve.
     set (w := nth_copy_in (None (A:=SimpleType)) g).
@@ -1677,7 +1677,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (nth_app _ _ _ D) as [[Dl cond] | [Dr cond]].
     assert (p < k).
     rewrite initialSeg_length in cond.
-    set (w := Min.le_min_l k (length (El[+]Er))); omega.
+    set (w := Min.le_min_l k (length (El[+]Er))); lia.
     set (ElErD := initialSeg_prefix (El[+]Er) k p Dl).
     destruct (env_sum_varDecl El Er ElErD) as [[ElD ErND] | ErD].
     apply env_sum_ly_rn.
@@ -1696,23 +1696,23 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length (El[+]Er)) k).
     rewrite finalSeg_empty in Drr; trivial.
     destruct (p - length (initialSeg (El[+]Er) k) - n); try_solve.
-    apply Min.min_l; omega.
+    apply Min.min_l; lia.
     destruct (env_sum_varDecl El Er ElErD) as [[ElD ErND] | ErD].
     apply env_sum_ly_rn.
     apply copy_split_r_varD
-      with (k + (p - length (initialSeg (El[+]Er) k) - n)); trivial; try omega.
+      with (k + (p - length (initialSeg (El[+]Er) k) - n)); trivial; try lia.
     apply copy_split_r_varUD
-      with (k + (p - length (initialSeg (El[+]Er) k) - n)); trivial; try omega.
+      with (k + (p - length (initialSeg (El[+]Er) k) - n)); trivial; try lia.
     apply env_sum_ry.
     apply copy_split_r_varD
-      with (k + (p - length (initialSeg (El[+]Er) k) - n)); trivial; try omega.
+      with (k + (p - length (initialSeg (El[+]Er) k) - n)); trivial; try lia.
 
     destruct (env_sum_varDecl _ _ D) as [[DL DRN] | DR].
     destruct (nth_app _ _ _ DL) as [[DLl cond] | [DLr cond]].
     assert (p < k).
     rewrite initialSeg_length in cond.
     set (w := Min.le_min_l k (length El)).
-    omega.
+    lia.
     apply copy_split_l_varD; trivial.
     apply env_sum_ly_rn.
     rewrite initialSeg_nth in DLl; trivial.
@@ -1727,17 +1727,17 @@ Module TermsEnv (Sig : TermsSig.Signature).
     rewrite finalSeg_empty in DLrr; trivial.
     rewrite copy_length in DLrr.
     destruct (p - length (initialSeg El k) - n); try_solve.
-    apply Min.min_l; omega.
+    apply Min.min_l; lia.
     rewrite copy_length in DLrr.
     set (w := DLrr); rewrite nth_finalSeg_nth in w.
     apply copy_split_r_varD with (k + (p - length (initialSeg El k) - n));
-      trivial; try omega.
+      trivial; try lia.
     apply env_sum_ly_rn; trivial.
-    apply copy_split_r_rev_varUD with k n p; trivial; try omega.
+    apply copy_split_r_rev_varUD with k n p; trivial; try lia.
     destruct (nth_app _ _ _ DR) as [[DRl cond] | [DRr cond]].
     apply copy_split_l_varD; trivial.
     rewrite initialSeg_length in cond.
-    set (w := Min.le_min_l k (length Er)); omega.
+    set (w := Min.le_min_l k (length Er)); lia.
     apply env_sum_ry.
     unfold VarD; apply initialSeg_prefix with k; trivial.
     destruct (nth_app _ _ _ DRr) as [[DRrl cond'] | [DRrr cond']];
@@ -1752,9 +1752,9 @@ Module TermsEnv (Sig : TermsSig.Signature).
     clear w.
     rewrite finalSeg_empty in DRrr; trivial.
     destruct (p - length (initialSeg Er k) - n); try_solve.
-    apply Min.min_l; omega.
+    apply Min.min_l; lia.
     apply copy_split_r_varD with (k + (p - length (initialSeg Er k) - n));
-      trivial; try omega.
+      trivial; try lia.
     apply env_sum_ry; trivial.
   (*SLOW*)Qed.
 
@@ -1768,40 +1768,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes.
     rewrite !env_sum_length.
     autorewrite with datatypes.
-    destruct (le_gt_dec (length El) (length Er)).
-
-    rewrite (@Max.max_r (length El) (length Er)); trivial.
-    destruct (le_gt_dec k (length Er)).
-    rewrite (Min.min_l k (length Er)); trivial.
-    destruct (le_gt_dec k (length El)).
-    rewrite (Min.min_l k (length El)); trivial.
-    rewrite Max.max_r; trivial.
-    omega.
-    rewrite Min.min_r; try omega.
-    rewrite Max.max_r; omega.
-    rewrite (Min.min_r k (length Er)); try omega.
-    destruct (le_gt_dec k (length El)).
-    omega.
-    rewrite (Min.min_r k (length El)); try omega.
-    rewrite Max.max_r; trivial.
-    omega.
-
-    rewrite (@Max.max_l (length El) (length Er)); trivial.
-    destruct (le_gt_dec k (length El)).
-    rewrite (Min.min_l k (length El)); trivial.
-    destruct (le_gt_dec k (length Er)).
-    rewrite (Min.min_l k (length Er)); trivial.
-    rewrite Max.max_l; trivial.
-    omega.
-    rewrite Min.min_r; try omega.
-    rewrite Max.max_l; omega.
-    rewrite (Min.min_r k (length El)); try omega.
-    destruct (le_gt_dec k (length Er)).
-    omega.
-    rewrite (Min.min_r k (length Er)); try omega.
-    rewrite Max.max_l; trivial.
-    omega.
-    omega.
+    destruct (le_gt_dec (length El) (length Er)); lia.
   Qed.
 
   Lemma loweredEnv_distr_sum_equiv : forall El Er n,
@@ -1812,7 +1779,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (nth_app _ _ _ D) as [[Dl cond] | [Dr cond]].
     assert (p < n).
     rewrite initialSeg_length in cond.
-    set (w := Min.le_min_l n (length (El[+]Er))); omega.
+    set (w := Min.le_min_l n (length (El[+]Er))); lia.
     set (ElErD := initialSeg_prefix (El[+]Er) n p Dl).
     destruct (env_sum_varDecl El Er ElErD) as [[ElD ErND] | ErD].
     apply env_sum_ly_rn.
@@ -1827,24 +1794,24 @@ Module TermsEnv (Sig : TermsSig.Signature).
     clear ElErD.
     rewrite finalSeg_empty in Dr; trivial.
     destruct (p - length (initialSeg (El[+]Er) n)); try_solve.
-    omega.
-    apply Min.min_l; omega.
+    lia.
+    apply Min.min_l; lia.
     destruct (env_sum_varDecl El Er ElErD) as [[ElD ErND] | ErD].
     apply env_sum_ly_rn.
     apply hole_r_varD with (S n + (p - length (initialSeg (El[+]Er) n))); 
-      trivial; try omega.
+      trivial; try lia.
     apply hole_r_varUD with (S n + (p - length (initialSeg (El[+]Er) n))); 
-      trivial; try omega.
+      trivial; try lia.
     apply env_sum_ry.
     apply hole_r_varD with (S n + (p - length (initialSeg (El[+]Er) n))); 
-      trivial; try omega.
+      trivial; try lia.
 
     destruct (env_sum_varDecl _ _ D) as [[DL DRN] | DR].
     destruct (nth_app _ _ _ DL) as [[DLl cond] | [DLr cond]].
     assert (p < n).
     rewrite initialSeg_length in cond.
     set (w := Min.le_min_l n (length El)).
-    omega.
+    lia.
     apply hole_l_varD; trivial.
     apply env_sum_ly_rn.
     rewrite initialSeg_nth in DLl; trivial.
@@ -1854,17 +1821,17 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length El) n).
     rewrite finalSeg_empty in DLr; trivial.
     destruct (p - length (initialSeg El n)); try_solve.
-    omega.
-    apply Min.min_l; omega.
+    lia.
+    apply Min.min_l; lia.
     rewrite nth_finalSeg_nth in DLr.
     apply hole_r_varD with (S n + (p - length (initialSeg El n))); trivial;
-      try omega.
+      try lia.
     apply env_sum_ly_rn; trivial.
-    apply hole_r_rev_varUD with n p; trivial; try omega.
+    apply hole_r_rev_varUD with n p; trivial; try lia.
     destruct (nth_app _ _ _ DR) as [[DRl cond] | [DRr cond]].
     apply hole_l_varD.
     rewrite initialSeg_length in cond.
-    set (w := Min.le_min_l n (length Er)); omega.
+    set (w := Min.le_min_l n (length Er)); lia.
     apply env_sum_ry.
     unfold VarD; apply initialSeg_prefix with n; trivial.
     set (w := DRr); rewrite nth_finalSeg_nth in w.
@@ -1873,10 +1840,10 @@ Module TermsEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length Er) n).
     rewrite finalSeg_empty in DRr; trivial.
     destruct (p - length (initialSeg Er n)); try_solve.
-    omega.
-    apply Min.min_l; omega.
+    lia.
+    apply Min.min_l; lia.
     apply hole_r_varD with (S n + (p - length (initialSeg Er n))); trivial;
-      try omega.
+      try lia.
     apply env_sum_ry; trivial.
   Qed.
 
@@ -1891,40 +1858,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     autorewrite with datatypes.
     rewrite !env_sum_length.
     autorewrite with datatypes.
-    destruct (le_gt_dec (length El) (length Er)).
-
-    rewrite (@Max.max_r (length El) (length Er)); trivial.
-    destruct (le_gt_dec n (length Er)).
-    rewrite (Min.min_l n (length Er)); trivial.
-    destruct (le_gt_dec n (length El)).
-    rewrite (Min.min_l n (length El)); trivial.
-    rewrite Max.max_r; trivial.
-    omega.
-    rewrite Min.min_r; try omega.
-    rewrite Max.max_r; omega.
-    rewrite (Min.min_r n (length Er)); try omega.
-    destruct (le_gt_dec n (length El)).
-    omega.
-    rewrite (Min.min_r n (length El)); try omega.
-    rewrite Max.max_r; trivial.
-    omega.
-
-    rewrite (@Max.max_l (length El) (length Er)); trivial.
-    destruct (le_gt_dec n (length El)).
-    rewrite (Min.min_l n (length El)); trivial.
-    destruct (le_gt_dec n (length Er)).
-    rewrite (Min.min_l n (length Er)); trivial.
-    rewrite Max.max_l; trivial.
-    omega.
-    rewrite Min.min_r; try omega.
-    rewrite Max.max_l; omega.
-    rewrite (Min.min_r n (length El)); try omega.
-    destruct (le_gt_dec n (length Er)).
-    omega.
-    rewrite (Min.min_r n (length Er)); try omega.
-    rewrite Max.max_l; trivial.
-    omega.
-    omega.
+    destruct (le_gt_dec (length El) (length Er)); lia.
   Qed.
 
   Lemma lift_tail : forall E n k,

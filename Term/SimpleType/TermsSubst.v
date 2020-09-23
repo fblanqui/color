@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListPermutation TermsConv ListUtil
      ListExtras LogicUtil.
-From Coq Require Import Arith Omega.
+From Coq Require Import Arith Lia.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 
@@ -274,7 +274,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intro n_le_p.
     rewrite !nth_app_right; autorewrite with datatypes using trivial.
     unfold finalSeg; simpl.
-    repeat rewrite initialSeg_full; try solve [auto with datatypes | omega].
+    repeat rewrite initialSeg_full; try solve [auto with datatypes | lia].
     exact (G_comp i j T_i T_j TiG TjG (p-n)).
     intro p_lt_n.
     rewrite !nth_app_left; autorewrite with datatypes using try_solve.
@@ -474,7 +474,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     induction i; intros.
     destruct j; simpl.
-    omega.
+    lia.
     constructor; destruct j; trivial.
     destruct j.
     constructor 2; trivial.
@@ -518,11 +518,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite !env_sum_empty_r.
     unfold liftedEnv; simpl.
     unfold finalSeg; simpl.
-    rewrite initialSeg_full; solve [auto with datatypes | omega].
+    rewrite initialSeg_full; solve [auto with datatypes | lia].
     rewrite IHG; trivial.
     simpl.
     unfold finalSeg; simpl.
-    rewrite initialSeg_full; solve [auto with datatypes | omega].
+    rewrite initialSeg_full; solve [auto with datatypes | lia].
      (* -) hd G = None *)
     rewrite !subst_ran_cons_none.
     apply IHG.
@@ -733,20 +733,20 @@ Module TermsSubst (Sig : TermsSig.Signature).
     induction Pt; unfold prelift; intros; simpl.
     destruct (le_gt_dec k x); simpl.
     rewrite nth_beyond; trivial.
-    omega.
+    lia.
     destruct (H0 x).
-    omega.
+    lia.
     rewrite H1; trivial.
     rewrite H1; trivial.
     trivial.
     assert (presubst_aux (prelift_aux j Pt (S k)) (S i) (None :: G)
             = prelift_aux j Pt (S k)).
     apply IHPt.
-    simpl; omega.
+    simpl; lia.
     intros.
     destruct p.
     constructor 2; trivial.
-    apply (H0 p); omega.
+    apply (H0 p); lia.
     congruence.
     rewrite IHPt1; trivial.
     rewrite IHPt2; trivial.
@@ -756,8 +756,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     j >= length G -> presubst_aux (prelift Pt j) i G = prelift Pt j.
 
   Proof.
-    intro. unfold prelift. apply presubst_beyond_aux. omega.
-    intros; omega.
+    intro. unfold prelift. apply presubst_beyond_aux. lia.
+    intros; lia.
   Qed.
 
   Lemma presubst_prelift_aux : forall M G i j,
@@ -767,25 +767,25 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     induction M; simpl; intros.
     destruct (Compare_dec.le_gt_dec i x); simpl.
-    rewrite !nth_app_right; autorewrite with datatypes using trivial; try omega.
-    replace (x + j - (i + j)) with (x - i); [idtac | omega].
+    rewrite !nth_app_right; autorewrite with datatypes using trivial; try lia.
+    replace (x + j - (i + j)) with (x - i); [idtac | lia].
     destruct (varSubst_dec G (x-i)) as [[W GW] | Gn].
     rewrite GW.
     rewrite (var_subst_lift j GW).
     autorewrite with terms.
     rewrite <- prelift_fold.
-    unfold prelift; rewrite prelift_aux_fold_aux; try_solve; try omega.
+    unfold prelift; rewrite prelift_aux_fold_aux; try_solve; try lia.
     rewrite plus_comm; trivial.
     destruct (var_notSubst_lift j Gn); destruct Gn;
       rewrite H; rewrite H0; simpl; destruct (Compare_dec.le_gt_dec i x); solve
-	[ omega
-	| assert (S x = (x + 1)%nat); [omega | try_solve]
+	[ lia
+	| assert (S x = (x + 1)%nat); [lia | try_solve]
         ].
-    rewrite !nth_app_left; autorewrite with datatypes using trivial; try omega.
+    rewrite !nth_app_left; autorewrite with datatypes using trivial; try lia.
     simpl.
     destruct (Compare_dec.le_gt_dec i x).
-    omega.
-    rewrite nth_app_left; autorewrite with datatypes using trivial; try omega.
+    lia.
+    rewrite nth_app_left; autorewrite with datatypes using trivial; try lia.
     trivial.
     replace (None :: copy (i + j) None ++ lift_subst G 1) with 
       (copy (S i + j) None ++ lift_subst G 1); trivial.
@@ -1116,11 +1116,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite x_eq_n.
     rewrite <- (minus_n_n n); simpl.
     destruct (isVarDecl_dec E0 0) as [[B EB] | En]; trivial.
-    omega.
+    lia.
     rewrite nth_beyond; trivial.
     rewrite length_app.
     autorewrite with datatypes.
-    destruct (isVarDecl_dec E0 0) as [[B EB] | En]; simpl; omega.
+    destruct (isVarDecl_dec E0 0) as [[B EB] | En]; simpl; lia.
      (* abstraction *)
     set (hint := IHM E0 (S n)).
      (* x-man, replace... at would be useful *)
@@ -1172,14 +1172,14 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite nth_beyond; trivial.
     rewrite length_app.
     rewrite copy_length.
-    omega.
+    lia.
     rewrite nth_app_left.
     destruct (nth_error_In (copy i (@None Term)) x) as [ [ss ss_nth] 
                                                        | sn].
     rewrite ss_nth.
     rewrite (copy_in i None ss (nth_some_in _ _ ss_nth)); trivial.
     rewrite sn; trivial.
-    autorewrite with datatypes using omega.
+    autorewrite with datatypes using lia.
      (* function symbol *)
     trivial.
      (* abstraction *)
@@ -1189,9 +1189,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite app_comm_cons.
     rewrite copy_cons.
     rewrite (IHPt (lift_subst G 1) (S m) n (S i)); trivial.
-    omega.
+    lia.
     rewrite (length_lift_subst G 1).
-    omega.
+    lia.
      (* application *)
     fold (presubst (prelift_aux n Pt1 m) (copy i None ++ G)).
     rewrite IHPt1; trivial.
@@ -1226,7 +1226,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
       autorewrite with datatypes using auto with arith).
     assert (w_xk: exists w, x - k = S w).
     assert (x_k_0: x - k > 0).
-    omega.
+    lia.
     destruct (x - k).
     absurd (0 > 0); auto with arith.
     exists n; trivial.
@@ -1249,18 +1249,18 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite lift_subst_distr.
     rewrite lift_empty_subst.
     rewrite presubst_lift_beyond; trivial.
-    omega.
+    lia.
     rewrite length_lift_subst; simpl.
-    omega.
+    lia.
      (*        - x not substituted *)
     rewrite presubst_var_beyond; trivial.
     autorewrite with datatypes using simpl.
-    omega.
+    lia.
      (*     - x beyond G *)
     rewrite pn.
     rewrite presubst_var_beyond; trivial.
     autorewrite with datatypes using simpl.
-    omega.
+    lia.
      (*   - x = k *)
     rewrite x_eq_k.
     do 2 (rewrite nth_app_right; autorewrite with datatypes using auto).
@@ -1275,12 +1275,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     auto.
      (* abstraction *)
     unfold EL, ER, EC, shift; simpl.
-    replace (S i) with (i + 1); [idtac | omega].
+    replace (S i) with (i + 1); [idtac | lia].
     rewrite !subst_lift_subst_aux; simpl.
     rewrite !lift_subst_distr; simpl.
     rewrite <- lift_subst_fold.
     rewrite lift_empty_subst, !app_comm_cons, copy_cons.
-    replace (S k + 1) with (S (S k)); [idtac | omega].
+    replace (S k + 1) with (S (S k)); [idtac | lia].
     rewrite <- (IHPt (lift Pt_x 1) G i (S k)); auto.
     simpl; trivial.
      (* application *)
@@ -1477,17 +1477,17 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Proof.
     destruct M as [E Pt T M]; induction M; intros; unfold presubst; simpl in * .
     destruct (lt_eq_lt_dec x i) as [[x_i | x_i] | x_i].
-    rewrite !nth_app_left; autorewrite with datatypes; solve [omega | trivial].
+    rewrite !nth_app_left; autorewrite with datatypes; solve [lia | trivial].
     rewrite x_i.
-    rewrite !nth_app_right; autorewrite with datatypes; try omega.
-    replace (i - i) with 0; [simpl | omega].
+    rewrite !nth_app_right; autorewrite with datatypes; try lia.
+    replace (i - i) with 0; [simpl | lia].
     destruct G.
     inversion H; inversion H0.
     destruct o; inversion H; inversion H0.
     rewrite <- H3; trivial.
-    rewrite !nth_app_right; autorewrite with datatypes; try omega.
-    assert (x - i > 0); [omega | destruct (x - i)].
-    omega.
+    rewrite !nth_app_right; autorewrite with datatypes; try lia.
+    assert (x - i > 0); [lia | destruct (x - i)].
+    lia.
     destruct G.
     inversion H; inversion H1.
     destruct o; simpl.
@@ -1572,7 +1572,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite Tjl.
     rewrite !lift_env.
     unfold liftedEnv, finalSeg; simpl.
-    rewrite !initialSeg_full; try solve [auto | omega].
+    rewrite !initialSeg_full; try solve [auto | lia].
     apply env_comp_cons; auto.
     apply (envs_c0 i j); trivial.
      (* domain of G ok *)
@@ -1830,7 +1830,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     exists (appBodyR Mapp).
     destruct (nth_error_singleton_in MGr (i - length (appUnits MGl)) MGr_i).
     assert (i = length (appUnits MGl)).
-    omega.
+    lia.
     assert (Mi: nth_error (appUnits M) i = Some (appBodyR Mapp)).
     rewrite (appUnits_app M Mapp).
     rewrite nth_app_right.
@@ -2023,12 +2023,12 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite x_i; apply nth_after_copy.
     simpl in H.
     rewrite x_i; rewrite x_i in H; trivial.
-    rewrite nth_app_right; autorewrite with datatypes using (try omega).
+    rewrite nth_app_right; autorewrite with datatypes using (try lia).
     cut (x - i > 0).
     destruct (x - i).
-    intros; omega.
+    intros; lia.
     destruct n; trivial.
-    omega.
+    lia.
     rewrite (activeEnv_var (subst MG) MGterm).
     autorewrite with terms; trivial.
      (* function symbol *)
@@ -2095,11 +2095,11 @@ Module TermsSubst (Sig : TermsSig.Signature).
       autorewrite with terms using unfold presubst; simpl.
      (* variable *)
     destruct (lt_eq_lt_dec i x) as [[i_x | i_x] | i_x].
-    rewrite nth_app_right; autorewrite with datatypes using trivial; try omega.
+    rewrite nth_app_right; autorewrite with datatypes using trivial; try lia.
     assert (x - i > 0).
-    omega.
+    lia.
     destruct (x - i).
-    omega.
+    lia.
     destruct n; simpl; trivial.
     exfalso; apply varD_UD_absurd with 
       (activeEnv (buildT (TVar v))) x A.
@@ -2178,7 +2178,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     exfalso; apply (varD_UD_absurd D').
     apply varUD_hole.
 
-    assert (j <> i); [omega | idtac].
+    assert (j <> i); [lia | idtac].
     split; intro D.
     destruct (env_sum_varDecl (El[+]E) Er D) as [[D' Dn] | D'].
     destruct (env_sum_varDecl El E D') as [[D'' Dn'] | D''].
@@ -2236,7 +2236,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     exfalso;
       apply varD_UD_absurd with (copy x None ++ A[#]EmptyEnv) i A0; trivial.
     constructor; apply nth_beyond.
-    autorewrite with datatypes using simpl; try omega.
+    autorewrite with datatypes using simpl; try lia.
     rewrite (@activeEnv_var (buildT (TVar v)) x); trivial.
     rewrite (equiv_term_activeEnv (subst MG) T).
     simpl.
@@ -2247,7 +2247,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite
       (@initialSeg_app (option SimpleType) (copy i None) (A[#]EmptyEnv) i).
     rewrite finalSeg_app_right; autorewrite with datatypes using auto.
-    replace (S i - i) with 1; [idtac | omega].
+    replace (S i - i) with 1; [idtac | lia].
     unfold finalSeg; simpl.
     rewrite initialSeg_full.
     change ((None (A:=SimpleType)) :: nil) with (copy 1 (None (A:=SimpleType))).
@@ -2264,7 +2264,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     unfold presubst; simpl.
     rewrite xi.
     rewrite nth_app_right; autorewrite with datatypes; auto.
-    replace (i - i) with 0; [idtac | omega].
+    replace (i - i) with 0; [idtac | lia].
     simpl; rewrite lift_0; trivial.
     apply subst_env_compat with i.
     unfold varSubstTo; apply nth_after_copy.
@@ -2330,7 +2330,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     intros; intros C D Tj Ej.
     apply (ran_c0 j); trivial.
     apply env_sub_ly_rn; trivial.
-    apply subst_dom_singleton_after_none_nodecl; omega.
+    apply subst_dom_singleton_after_none_nodecl; lia.
     assert (forall j, j <> i -> env_comp_on (activeEnv T) AE1 j).
     intros.
     apply env_comp_on_subset with (env T) E.
@@ -2376,14 +2376,14 @@ Module TermsSubst (Sig : TermsSig.Signature).
       ((initialSeg AE1 i ++ None :: finalSeg AE1 (S i)) |= j := A
       <-> AE1 |= j := A)).
     intros; split; intro.
-    apply varD_hole_rev with i; [omega | trivial].
-    apply varD_hole; [omega | trivial].
+    apply varD_hole_rev with i; [lia | trivial].
+    apply varD_hole; [lia | trivial].
     assert (forall (j : nat) (A : SimpleType), j <> i ->
       ((initialSeg AE2 i ++ None :: finalSeg AE2 (S i)) |= j := A
       <-> AE2 |= j := A)).
     intros; split; intro.
-    apply varD_hole_rev with i; [omega | trivial].
-    apply varD_hole; [omega | trivial].
+    apply varD_hole_rev with i; [lia | trivial].
+    apply varD_hole; [lia | trivial].
 
      (*   - case 1 *)
     destruct (env_sum_varDecl AE1 AE2 H) as [[MLi MRi] | MRi]. 

@@ -105,11 +105,11 @@ Proof.
 intros s x u. pattern u. apply term_ind with (Q := fun n (ts : terms n) =>
   mem x (vars_vec ts) = true -> size_terms (Vmap (sub s) ts) >= size (s x));
   clear u.
-intro. simpl. mem. intro. subst x0. omega.
+intro. simpl. mem. intro. subst x0. lia.
 intros f v. rewrite vars_fun, sub_fun, size_fun. intros.
-ded (H H0). omega. simpl. mem. intros. discr.
+ded (H H0). lia. simpl. mem. intros. discr.
 intros until v. simpl. mem. intros. destruct (orb_true_elim H1).
-ded (H e). omega. ded (H0 e). omega.
+ded (H e). lia. ded (H0 e). lia.
 Qed.
 
 Arguments mem_vars_size_sub_ge _ [x u] _.
@@ -123,7 +123,7 @@ simpl in H. autorewrite with mem in H. subst n. cong.
 clear H0. rewrite sub_fun, size_fun. rewrite vars_fun in H.
 destruct (mem_vars_vec H). destruct H0. ded (Vin_elim H0). decomp H2.
 rewrite H3, Vmap_cast, size_terms_cast, Vmap_app, size_terms_app. simpl.
-ded (mem_vars_size_sub_ge s H1). omega.
+ded (mem_vars_size_sub_ge s H1). lia.
 Qed.
 
 Arguments mem_vars_size_sub_gt _ [x u] _ _.
@@ -133,7 +133,7 @@ Lemma wf_term_var : forall s x u,
 
 Proof.
 intros. ded (mem_vars_size_sub_gt s H0). rewrite H in H1.
-case (eq_term_dec u (Var x)). auto. intro. ded (H1 n). omega.
+case (eq_term_dec u (Var x)). auto. intro. ded (H1 n). lia.
 Qed.
 
 (***********************************************************************)

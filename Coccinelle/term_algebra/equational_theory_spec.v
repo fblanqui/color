@@ -12,16 +12,8 @@
 
 (** * Equational theory on a term algebra *)
 
-From Coq Require Import List.
-From Coq Require Import Relations.
-From Coq Require Import Wellfounded.
-From Coq Require Import Arith.
-From Coq Require Import Setoid.
-From CoLoR Require Import closure.
-From CoLoR Require Import more_list.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import dickson.
-From CoLoR Require Import term_spec.
+From Coq Require Import List Relations Wellfounded Arith Setoid.
+From CoLoR Require Import closure more_list weaved_relation dickson term_spec.
 
 Notation " T '-[' R ']->' U " := (R U T) (at level 80) : term_scope .
 

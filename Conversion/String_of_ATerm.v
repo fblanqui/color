@@ -194,7 +194,7 @@ Section S.
       destruct (in_map_elim H). destruct H0. destruct x as [l' r'].
       unfold srule_of_rule in H1. simpl in H1. inversion H1.
       rewrite !term_of_string_epi. 3:{ eapply h2. apply H0. }
-      2:{ ded (h2 _ _ H0). cut (maxvar r' <= maxvar l'). omega.
+      2:{ ded (h2 _ _ H0). cut (maxvar r' <= maxvar l'). lia.
       rewrite !maxvar_lmax. apply incl_lmax. apply h1. hyp. }
       apply red_rule. hyp.
     Qed.

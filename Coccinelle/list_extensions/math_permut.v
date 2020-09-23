@@ -4,16 +4,9 @@
 
 Set Implicit Arguments. 
 
-From CoLoR Require Import decidable_set.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import equiv_list.
-From Coq Require Import Relations.
-From Coq Require Import Multiset.
-From Coq Require Import Arith.
-From Coq Require Import Setoid.
+From Coq Require Import List Relations Multiset Arith Setoid.
+From CoLoR Require Import decidable_set more_list equiv_list.
 From CoLoR Require list_permut.
-
 
  Definition permut (n : nat) (f : nat -> nat) :=
   (forall i, n <= i -> f i = i) /\

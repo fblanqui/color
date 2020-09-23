@@ -1,14 +1,6 @@
-From Coq Require Import Setoid.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require equational_theory.
-From CoLoR Require equational_extension.
-From CoLoR Require term.
-From CoLoR Require subterm_dp.
-From Coq Require Import List.
-From CoLoR Require Import list_permut.
-From CoLoR Require Import terminaison.
-From Coq Require Import Relations.
-From Coq Require Import Wellfounded.
+From Coq Require Import Setoid List Relations Wellfounded.
+From CoLoR Require Import weaved_relation list_permut terminaison.
+From CoLoR Require equational_theory equational_extension term subterm_dp.
 
 Module MakeMarkedEqTh (EqtT : equational_theory_spec.EqTh).
 

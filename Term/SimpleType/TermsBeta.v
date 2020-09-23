@@ -11,7 +11,7 @@ is introduced in this file.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsRed TermsConv LogicUtil.
-From Coq Require Import Setoid Omega.
+From Coq Require Import Setoid Lia.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 
@@ -35,7 +35,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite lift_env.
     rewrite absBody_env.
     unfold liftedEnv, finalSeg; simpl.
-    rewrite initialSeg_full; try solve [auto with datatypes | omega].
+    rewrite initialSeg_full; try solve [auto with datatypes | lia].
     unfold decl; apply env_comp_cons.
     rewrite appBodyL_env.
     rewrite appBodyR_env.
@@ -252,7 +252,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite beta_env.
     unfold loweredEnv, finalSeg; simpl.
     rewrite initialSeg_full; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma beta_env_preserving : forall M N, M -b-> N -> env M = env N.
@@ -436,18 +436,18 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite e in Mi.
     exfalso; eapply varD_UD_absurd; eauto.
      (*   - x > i *)
-    destruct x; simpl. omega.
+    destruct x; simpl. lia.
     replace (copy i None ++ None :: lift_subst G 1) with 
       ((None :: copy i None) ++ lift_subst G 1).
     simpl.
-    repeat rewrite nth_app_right; rewrite copy_length; try omega.
+    repeat rewrite nth_app_right; rewrite copy_length; try lia.
     destruct (varSubst_dec G (x - i)) as [[T GT] | Gn].
     rewrite GT, (nth_lift_subst_s G 1 (x - i) GT), !lift_term, <- prelift_fold.
     apply prelower_prelift.
     set (w := var_notSubst_lift 1 Gn).
     inversion Gn; inversion w; rewrite H; rewrite H0; simpl;
       destruct (Compare_dec.le_gt_dec i (S x)); 
-	solve [trivial | omega].
+	solve [trivial | lia].
     rewrite <- list_app_first_last.
     rewrite <- copy_add; trivial.
     rewrite <- app_nil_end; trivial.
@@ -455,10 +455,10 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite !nth_app_left, nth_copy_in.
     simpl.
     destruct (Compare_dec.le_gt_dec i x); trivial.
-    omega.
-    omega.
-    rewrite copy_length; omega.
-    rewrite copy_length; omega.
+    lia.
+    lia.
+    rewrite copy_length; lia.
+    rewrite copy_length; lia.
      (* function symbol *)
     trivial.
      (* abstraction *)
@@ -527,30 +527,30 @@ Module TermsBeta (Sig : TermsSig.Signature).
     induction M; unfold presubst; intros; simpl.
 
     destruct (Compare_dec.gt_eq_gt_dec i x) as [[x_gt_i | x_eq_i] | x_lt_i].
-    rewrite nth_beyond; autorewrite with terms datatypes; simpl; try omega.
+    rewrite nth_beyond; autorewrite with terms datatypes; simpl; try lia.
     replace (None :: copy i None ++ lift_subst G 1) with 
       (copy (S i) None ++ lift_subst G 1); trivial.
-    rewrite nth_app_right; autorewrite with terms datatypes; try omega.
+    rewrite nth_app_right; autorewrite with terms datatypes; try lia.
     destruct (varSubst_dec G (x - S i)) as [[T GT] | Gn].
     rewrite (var_subst_lift 1 GT), !lift_term, <- prelift_fold,
       presubst_beyond; trivial.
-    autorewrite with datatypes using simpl; try omega.
+    autorewrite with datatypes using simpl; try lia.
     destruct (var_notSubst_lift 1 Gn); rewrite H; 
       replace (%x) with (prelift (%0) x); trivial;
       rewrite presubst_beyond; solve 
 	[ trivial
-	| autorewrite with datatypes using simpl; try omega
+	| autorewrite with datatypes using simpl; try lia
 	].
 
     rewrite x_eq_i.
-    rewrite nth_app_right; autorewrite with datatypes using try omega.
+    rewrite nth_app_right; autorewrite with datatypes using try lia.
     rewrite <- Minus.minus_n_n; simpl.
     replace (None :: copy x None ++ lift_subst G 1) with 
       (copy (S x) None ++ lift_subst G 1); trivial.
     rewrite nth_app_left; autorewrite with datatypes terms using simpl;
-      try omega.
+      try lia.
     rewrite nth_app_right; autorewrite with datatypes terms using simpl;
-      try omega.
+      try lia.
     rewrite <- Minus.minus_n_n; simpl.
     autorewrite with terms.
     rewrite <- presubst_prelift_comm; simpl.
@@ -562,13 +562,13 @@ Module TermsBeta (Sig : TermsSig.Signature).
     replace (None :: copy i None ++ lift_subst G 1) with 
       (copy (S i) None ++ lift_subst G 1); trivial.
     rewrite !nth_app_left; autorewrite with terms datatypes using simpl;
-      try omega.
+      try lia.
     replace (None :: copy i None ++ lift_subst G 1) with 
       (copy (S i) None ++ lift_subst G 1); trivial.
     replace (None :: copy i (None (A:=Term)))
       with (copy (S i) (None (A:=Term))); trivial.
     rewrite !nth_app_left; autorewrite with terms datatypes using simpl;
-      try omega.
+      try lia.
     rewrite nth_app_left; autorewrite with terms datatypes using trivial.
 
     trivial.

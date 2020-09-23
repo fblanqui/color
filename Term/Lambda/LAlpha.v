@@ -549,7 +549,7 @@ variables. *)
     rewrite (@var_aeq _ _ (Logic.eq_refl x) _ _ uu' _ _ (Logic.eq_refl s)).
     set (x' := var x u' s). set (s' := update x (Var x') s). apply aeq_lam.
     apply IHuu'. intros v hv v' vv' l. apply IH.
-    revert hv. unfold ltof. simpl. intro hv. omega. hyp.
+    revert hv. unfold ltof. simpl. intro hv. lia. hyp.
     (* alpha *)
     eq_dec x y.
     (* x = y *)
@@ -583,12 +583,12 @@ variables. *)
     set (xx's := update x (Var x') s). set (yy's := update y (Var y') s).
 
     trans (Lam x' (subs xx's v)). apply aeq_lam. apply IH.
-    unfold ltof. simpl. omega. hyp.
+    unfold ltof. simpl. lia. hyp.
     unfold u'. trans (Lam y' (subs yy's (rename x y v))).
 
     2:{ apply aeq_lam. apply IH.
-    unfold ltof. rewrite h1, size_rename. simpl. omega.
-    apply IH. unfold ltof. rewrite h1. simpl. omega. sym. hyp. }
+    unfold ltof. rewrite h1, size_rename. simpl. lia.
+    apply IH. unfold ltof. rewrite h1. simpl. lia. sym. hyp. }
 
     rewrite inter_sym, inter_empty in hs3. unfold xs in hs3.
     rewrite <- eqb_false_iff, eqb_sym in n.
@@ -1199,8 +1199,8 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite (aeq_alpha k). 2: tauto. rewrite (@aeq_alpha x _ k). 2: tauto.
     rewrite subs_lam_no_alpha. 2: rewrite remove_fv_rename; tauto.
     rewrite subs_lam_no_alpha. 2: rewrite remove_fv_rename; tauto.
-    mon. apply IH. unfold ltof. rewrite size_rename, H. simpl. omega.
-    apply IH. unfold ltof. rewrite H. simpl. omega.
+    mon. apply IH. unfold ltof. rewrite size_rename, H. simpl. lia.
+    apply IH. unfold ltof. rewrite H. simpl. lia.
     apply incl_clos_aeq. hyp.
   Qed.
 
@@ -1514,24 +1514,24 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       set (yi := fst q). set (b := Vhead (snd q)). set (yj := Vtail (snd q)).
       intro ey. clear e.
       (* We have i < n *)
-      assert (l : i<n). omega.
+      assert (l : i<n). lia.
       (* We now prove that [a ~~ a']. *)
       assert (aa' : a ~~ a').
       assert (s1 : a = Vnth x l). rewrite ex, Vnth_cast, Vnth_app.
-      destruct (Compare_dec.le_gt_dec i i). 2: omega.
-      rewrite Vnth_cons_head. refl. omega.
+      destruct (Compare_dec.le_gt_dec i i). 2: lia.
+      rewrite Vnth_cons_head. refl. lia.
       assert (s2 : a' = Vnth x' l). rewrite ex', Vnth_cast, Vnth_app.
-      destruct (Compare_dec.le_gt_dec i i). 2: omega.
-      rewrite Vnth_cons_head. refl. omega.
+      destruct (Compare_dec.le_gt_dec i i). 2: lia.
+      rewrite Vnth_cons_head. refl. lia.
       rewrite s1, s2. apply Vforall2_elim_nth. hyp.
       (* We now prove that [b ~~ b']. *)
       assert (bb' : b ~~ b').
       assert (t1 : b = Vnth y l). rewrite ey, Vnth_cast, Vnth_app.
-      destruct (Compare_dec.le_gt_dec i i). 2: omega.
-      rewrite Vnth_cons_head. refl. omega.
+      destruct (Compare_dec.le_gt_dec i i). 2: lia.
+      rewrite Vnth_cons_head. refl. lia.
       assert (t2 : b' = Vnth y' l). rewrite ey', Vnth_cast, Vnth_app.
-      destruct (Compare_dec.le_gt_dec i i). 2: omega.
-      rewrite Vnth_cons_head. refl. omega.
+      destruct (Compare_dec.le_gt_dec i i). 2: lia.
+      rewrite Vnth_cons_head. refl. lia.
       rewrite t1, t2. apply Vforall2_elim_nth. hyp.
       (* We now prove that [y ~~~ Vcast (Vapp xi (Vcons b xj)) k0]. *)
       assert (h :  y ~~~ Vcast (Vapp xi (Vcons b xj)) k0).
@@ -1575,7 +1575,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       ex (Vreplace us hi vi). split.
       apply Vforall2_intro_nth. intros j jn. destruct (eq_nat_dec j i).
       subst j. rewrite Vnth_replace. rewrite (Vnth_eq _ jn hi); auto.
-      rewrite Vnth_replace_neq. refl. omega.
+      rewrite Vnth_replace_neq. refl. lia.
 
       ex (Vreplace us hi vi'). split.
       rewrite Vrel1_nth_iff. ex i hi. split.

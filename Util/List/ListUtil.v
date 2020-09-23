@@ -415,12 +415,12 @@ Section app.
     exists m, exists a, l = m ++ a :: nil /\ length m = length l - 1.
 
   Proof.
-    induction l; simpl; intros. apply False_ind. omega.
+    induction l; simpl; intros. apply False_ind. lia.
     destruct l. exists nil. exists a. intuition.
-    assert (length (a0::l) > 0). simpl. omega.
+    assert (length (a0::l) > 0). simpl. lia.
     ded (IHl H0). do 3 destruct H1.
     exists (a::x). exists x0. split. rewrite H1. refl.
-    simpl. simpl in H2. omega.
+    simpl. simpl in H2. lia.
   Qed.
 
 End app.
@@ -454,7 +454,7 @@ Section head_tail.
 
   Lemma length_tail : forall l : list A, length (tail l) <= length l.
 
-  Proof. induction l; simpl; intros; omega. Qed.
+  Proof. induction l; simpl; intros; lia. Qed.
 
   Lemma tail_in : forall (x: A) l, In x (tail l) -> In x l.
 
@@ -467,7 +467,7 @@ Section head_tail.
 
   Lemma length_tail_minus : forall (l : list A), length (tail l) = length l - 1.
 
-  Proof. destruct l; simpl; omega. Qed.
+  Proof. destruct l; simpl; lia. Qed.
 
   Lemma list_decompose_head : forall (l : list A) el (lne: l <> nil),
     head l = Some el -> l = el :: tail l.
@@ -954,7 +954,7 @@ Section pos.
     Lemma pos_lt_length : forall l, In x l -> pos l < length l.
 
     Proof.
-      induction l; intro h; simpl. fo. destruct (eq_dec a x). omega.
+      induction l; intro h; simpl. fo. destruct (eq_dec a x). lia.
       apply lt_n_S. fo.
     Qed.
 
@@ -1085,7 +1085,7 @@ Section Element_At_List.
   Proof.
     induction l; intros; simpl in H; try discr. destruct n.
     inversion H; subst; simpl; auto with *.
-    ded (IHl n H). intuition; simpl; omega.
+    ded (IHl n H). intuition; simpl; lia.
   Qed.
 
   Lemma element_at_app_r : forall l l' p, 
@@ -1492,7 +1492,7 @@ Section ListsNth.
 
   Proof.
     induction l; simpl; intros m i i_l.
-    omega.
+    lia.
     destruct i; simpl.
     trivial.
     apply (IHl m i).
@@ -1506,7 +1506,7 @@ Section ListsNth.
     induction l; simpl; intros m i i_l.
     auto with arith.
     destruct i; simpl.
-    omega.
+    lia.
     apply IHl.
     auto with arith.
   Qed.
@@ -1532,7 +1532,7 @@ Section ListsNth.
     destruct i; trivial.
     destruct i; simpl.
     intros.
-    omega.
+    lia.
     intro.
     rewrite (IHl i); trivial.
     auto with arith.
@@ -1560,7 +1560,7 @@ Section ListsNth.
     induction l; simpl; intro i.
     split.
     destruct i; intro; exfalso; auto.
-    intro; omega.
+    intro; lia.
     destruct i; simpl.
     split; intro.
     auto with arith.
@@ -1659,7 +1659,7 @@ Section ith.
   Lemma ith_In : forall l i (h : i < length l), In (ith h) l.
 
   Proof.
-    induction l; simpl; intros. omega. destruct i. auto. right. apply IHl.
+    induction l; simpl; intros. lia. destruct i. auto. right. apply IHl.
   Qed.
 
   Lemma ith_eq : forall l i (hi : i < length l) j (hj : j < length l),
@@ -1671,7 +1671,7 @@ Section ith.
     j (hj : j < length l), i = j -> ith hi = ith hj.
 
   Proof.
-    induction l; simpl; intros. contradict hj; omega. subst j.
+    induction l; simpl; intros. contradict hj; lia. subst j.
     destruct i. refl. apply IHl. refl.
   Qed.
 
@@ -1958,8 +1958,8 @@ Section sub_list.
 
   Proof.
     intros l k n. functional induction (sub_list l k n); simpl; intros.
-    refl. omega. destruct i. refl. apply IHl0; try omega.
-    apply IHl0; omega.
+    refl. lia. destruct i. refl. apply IHl0; try lia.
+    apply IHl0; lia.
   Qed.
 
   Lemma length_sub_list : forall l k n,
@@ -1967,9 +1967,9 @@ Section sub_list.
 
   Proof.
     intros l k n. functional induction (sub_list l k n); simpl; intros.
-    omega. omega.
-    destruct l'. simpl in *. omega. rewrite IHl0; simpl in *; omega.
-    rewrite IHl0; omega.
+    lia. lia.
+    destruct l'. simpl in *. lia. rewrite IHl0; simpl in *; lia.
+    rewrite IHl0; lia.
   Qed.
 
   Lemma eq_app_elim_l : forall l1 l l2,

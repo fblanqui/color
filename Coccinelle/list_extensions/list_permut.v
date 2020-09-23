@@ -15,15 +15,8 @@
 
 Set Implicit Arguments. 
 
-From CoLoR Require Import decidable_set.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import equiv_list.
-From Coq Require Import Relations.
-From Coq Require Import Arith.
-From Coq Require Import Setoid.
-From Coq Require Import Morphisms.
-From Coq Require Import FunInd.
+From Coq Require Import List Relations Arith Setoid Morphisms FunInd.
+From CoLoR Require Import decidable_set more_list equiv_list.
 
 Inductive permut0 (A B : Type) (R : A -> B -> Prop) : (list A -> list B -> Prop) :=
   | Pnil : permut0 R nil nil

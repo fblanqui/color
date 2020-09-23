@@ -18,8 +18,8 @@ From CoLoR Require Import ATrs VecUtil LogicUtil ListUtil NatUtil VecMax EqUtil
 Ltac arity1 hyp :=
   match goal with
     | e : ?i + S ?j = arity ?f |- _ =>
-      ded (hyp f); assert (i=0); [omega | subst i; assert (j=0);
-        [omega | subst j; VOtac]]
+      ded (hyp f); assert (i=0); [lia | subst i; assert (j=0);
+        [lia | subst j; VOtac]]
   end.
 
 (***********************************************************************)
@@ -91,10 +91,10 @@ Lemma term_ind_forall : forall t, P t.
 
 Proof.
 apply term_ind_forall_cast. hyp. intro f. ded (is_unary_sig f). destruct ts.
-intro. omega. destruct ts.
+intro. lia. destruct ts.
 simpl Vforall. split_all. assert (h0 = is_unary_sig f). apply eq_unique.
 subst h0. apply Hfun. hyp.
-intro. omega.
+intro. lia.
 Qed.
 
 End term_ind.
@@ -431,7 +431,7 @@ Variables (R : rules) (hR : rules_preserve_vars R).
 Lemma red0_maxvar : forall t u, red0 R t u -> maxvar u = 0.
 
 Proof.
-unfold red0. split_all. cut (maxvar u <= maxvar t). omega.
+unfold red0. split_all. cut (maxvar u <= maxvar t). lia.
 apply (red_maxvar hR H).
 Qed.
 
@@ -470,7 +470,7 @@ Variables (E R : rules)
 Lemma red_mod0_maxvar : forall t u, red_mod0 E R t u -> maxvar u = 0.
 
 Proof.
-intros. destruct H. cut (maxvar u <= maxvar t). omega.
+intros. destruct H. cut (maxvar u <= maxvar t). lia.
 apply (red_mod_maxvar hE hR H).
 Qed.
 

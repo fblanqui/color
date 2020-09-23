@@ -1,11 +1,8 @@
-
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import equational_theory.
-From CoLoR Require Import term_spec.
-From Coq Require Import List.
-From CoLoR Require Import terminaison.
+From Coq Require Import List ZArith Lia.
 From Coq Require Zwf.
-From Coq Require Import ZArith.
+
+From CoLoR Require Import weaved_relation equational_theory term_spec terminaison.
+
 Set Implicit Arguments.
 
 Record ordering_pair (A:Type) (eq:A -> A -> Prop)   (lt le : A -> A -> Prop)
@@ -29,16 +26,16 @@ Proof.
   intros m.
   constructor.
   intros;subst;reflexivity.
-  intros x;intro abs;destruct abs;omega.
-  intros x y H;destruct H;intro abs;destruct abs;omega. 
-  intros x y z H1 H2;destruct H1; destruct H2;constructor;omega. 
+  intros x;intro abs;destruct abs;lia.
+  intros x y H;destruct H;intro abs;destruct abs;lia. 
+  intros x y z H1 H2;destruct H1; destruct H2;constructor;lia. 
   intros;subst;reflexivity.
-  intros x;omega.
-  intros x y  H1 H2;omega. 
-  intros x y z H1 H2;omega. 
-  intros x y z H1 H2;destruct H2;split;omega. 
-  intros x y z H1 H2;destruct H1;split;omega. 
-  intros x y H1;destruct H1;omega. 
+  intros x;lia.
+  intros x y  H1 H2;lia. 
+  intros x y z H1 H2;lia. 
+  intros x y z H1 H2;destruct H2;split;lia. 
+  intros x y z H1 H2;destruct H1;split;lia. 
+  intros x y H1;destruct H1;lia. 
 Defined.
 
 

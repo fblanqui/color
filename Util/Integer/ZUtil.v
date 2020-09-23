@@ -13,6 +13,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil.
 From Coq Require Export ZArith.
+From Coq Require Import Lia.
 
 (***********************************************************************)
 (** decidability of equality *)
@@ -80,11 +81,11 @@ Proof. intro. destruct x; refl. Qed.
 
 Lemma pos_lt : forall x y : Z, 0 <= y-x-1 -> x < y.
 
-Proof. intros. omega. Qed.
+Proof. intros. lia. Qed.
 
 Lemma pos_le : forall x y : Z, 0 <= y-x -> x <= y.
 
-Proof. intros. omega. Qed.
+Proof. intros. lia. Qed.
 
 (***********************************************************************)
 (** power *)
@@ -120,21 +121,21 @@ Qed.
 Lemma pos_power : forall x n, 0 <= x -> 0 <= power x n.
 
 Proof.
-induction n; intros; simpl. omega. apply Zmult_le_0_compat. hyp.
+induction n; intros; simpl. lia. apply Zmult_le_0_compat. hyp.
 apply IHn. hyp.
 Qed.
 
 Lemma spos_power : forall x n, 0 < x -> 0 < power x n.
 
 Proof.
-induction n; intros; simpl. omega. apply Zmult_lt_O_compat. hyp.
+induction n; intros; simpl. lia. apply Zmult_lt_O_compat. hyp.
 apply IHn. hyp.
 Qed.
 
 Lemma power_le_compat : forall x y n, 0<=x -> x<=y -> power x n <= power y n.
 
 Proof.
-induction n; intros; simpl. omega. apply Zmult_le_compat. hyp.
+induction n; intros; simpl. lia. apply Zmult_le_compat. hyp.
 apply IHn; hyp. hyp. apply pos_power. hyp.
 Qed.
 
@@ -171,7 +172,7 @@ Notation inj := (@exist Z pos _).
 
 Lemma Zero_in_D : pos 0.
 
-Proof. simpl. omega. Qed.
+Proof. simpl. lia. Qed.
 
 Notation D0 := (inj Zero_in_D).
 
@@ -193,7 +194,7 @@ Lemma well_founded_Dlt : well_founded Dlt.
 
 Proof.
 unfold Dlt. apply wf_incl with (R2 := (fun x y : D => Zwf 0 (val x) (val y))).
-unfold inclusion, Zwf. intros (x,Hx) (y,Hy). simpl. intuition omega.
+unfold inclusion, Zwf. intros (x,Hx) (y,Hy). simpl. intuition lia.
 apply (wf_inverse_image D Z (Zwf 0) val). apply Zwf_well_founded.
 Qed.
 
@@ -208,19 +209,19 @@ Lemma power_Dlt_compat : forall x y n,
 
 Proof.
 intros x y. destruct x. destruct y. unfold Dlt. simpl.
-induction n; simpl; intros. omega. ded (IHn H).
+induction n; simpl; intros. lia. ded (IHn H).
 apply Z.le_lt_trans with (m := x * (x0 * power x0 n)). apply Zmult_le_compat_l.
-omega. hyp. apply Zmult_gt_0_lt_compat_r. apply Z.lt_gt.
-apply Zmult_lt_O_compat. omega. apply spos_power. omega. hyp.
+lia. hyp. apply Zmult_gt_0_lt_compat_r. apply Z.lt_gt.
+apply Zmult_lt_O_compat. lia. apply spos_power. lia. hyp.
 Qed.
 
 Lemma trans_Dgt : transitive Dgt.
 
-Proof. intros [x hx] [y hy] [z hz]. unfold Dgt, Dlt, transp. simpl. omega. Qed.
+Proof. intros [x hx] [y hy] [z hz]. unfold Dgt, Dlt, transp. simpl. lia. Qed.
 
 Lemma trans_Dge : transitive Dge.
 
-Proof. intros [x hx] [y hy] [z hz]. unfold Dge, Dle, transp. simpl. omega. Qed.
+Proof. intros [x hx] [y hy] [z hz]. unfold Dge, Dle, transp. simpl. lia. Qed.
 
 Lemma refl_Dge : reflexive Dge.
 
@@ -254,7 +255,7 @@ Lemma Zmax_l : forall x y, x >= y -> Z.max x y = x.
 Proof.
 intros. unfold Z.max. 
 destruct (Dcompare_inf (x ?= y)) as [[xy | xy] | xy]; rewrite xy; try refl.
-assert (x < y). hyp. omega.
+assert (x < y). hyp. lia.
 Qed.
 
 Lemma Zmax_r : forall x y, y >= x -> Z.max x y = y.
@@ -266,8 +267,8 @@ Lemma Zmax_ge_compat : forall x y x' y',
 
 Proof.
 intros. destruct (Zmax_irreducible_inf x' y'); rewrite e; unfold ge.
-rewrite Z.max_comm. apply Z.le_ge. apply elim_Zmax_r. omega.
-apply Z.le_ge. apply elim_Zmax_r. omega.
+rewrite Z.max_comm. apply Z.le_ge. apply elim_Zmax_r. lia.
+apply Z.le_ge. apply elim_Zmax_r. lia.
 Qed.
 
 Lemma Zmax_gt_compat : forall x y x' y',
@@ -276,9 +277,9 @@ Lemma Zmax_gt_compat : forall x y x' y',
 Proof.
 intros. destruct (Z_ge_dec x y); destruct (Z_ge_dec x' y');
   do 2 first 
-    [ rewrite Zmax_r; [idtac | omega]
-    | rewrite Zmax_l; [idtac | omega]
-    | idtac ]; omega.
+    [ rewrite Zmax_r; [idtac | lia]
+    | rewrite Zmax_l; [idtac | lia]
+    | idtac ]; lia.
 Qed.
 
 (***********************************************************************)
@@ -286,4 +287,4 @@ Qed.
 
 Lemma Zge_refl : forall k, k >= k.
 
-Proof. intros. omega. Qed.
+Proof. intros. lia. Qed.

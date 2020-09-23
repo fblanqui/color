@@ -1,5 +1,6 @@
 From CoLoR Require Import closure. 
 From Coq Require Import Relation_Operators.
+
 Section S.
 
   Variable A : Type.

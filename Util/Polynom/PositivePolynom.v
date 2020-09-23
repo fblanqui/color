@@ -11,7 +11,7 @@ polynomials with non-negative integers as coefficients
 Set Implicit Arguments.
 
 From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction VecUtil.
-From Coq Require Import List Max.
+From Coq Require Import List Max Lia.
 
 From CoLoR Require ListUtil.
 
@@ -23,7 +23,7 @@ Local Open Scope Z_scope.
 Lemma pos_meval : forall n (m : monom n) (v : vec n), 0 <= meval m (vals v).
 
 Proof.
-induction n; intros; simpl. omega. VSntac m. VSntac v. simpl.
+induction n; intros; simpl. lia. VSntac m. VSntac v. simpl.
 apply Zmult_le_0_compat. apply pos_power. destruct (Vhead v). hyp.
 apply IHn.
 Qed.
@@ -45,9 +45,9 @@ Proof. apply ListUtil.forallb_lforall. intros [z m]. apply is_not_neg_ok. Qed.
 Lemma coef_pos_coef : forall n (p : poly n) m, coef_pos p -> 0 <= coef m p.
 
 Proof.
-induction p; intros; simpl. omega. destruct a. simpl in H. destruct H.
+induction p; intros; simpl. lia. destruct a. simpl in H. destruct H.
 case (monom_eq_dec m t); intro. assert (0 <= coef m p). apply IHp. hyp.
-omega. apply IHp. hyp.
+lia. apply IHp. hyp.
 Qed.
 
 Lemma coef_pos_cons : forall n c (m : monom n) (p : poly n),
@@ -78,7 +78,7 @@ Qed.
 Lemma pos_peval : forall n (p : poly n) v, coef_pos p -> 0 <= peval p (vals v).
 
 Proof.
-induction p; intros; simpl. omega. destruct a. simpl in H. destruct H.
+induction p; intros; simpl. lia. destruct a. simpl in H. destruct H.
 apply Zplus_le_0_compat. apply Zmult_le_0_compat. hyp.
 apply pos_meval. apply IHp. hyp.
 Qed.

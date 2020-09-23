@@ -1,9 +1,7 @@
-From Coq Require Import Omega.
-From CoLoR Require Import term. 
-From Coq Require Import Relations.
+From Coq Require Import Lia Relations Wellfounded.
 From Coq Require Inclusion.
+From CoLoR Require Import term.
 From CoLoR Require equational_theory. (* mainly for one_step...*)
-From Coq Require Import Wellfounded.
 
 Notation "'SN'" := Acc.
 Notation "'termine'" := well_founded.
@@ -73,7 +71,7 @@ Section Terminaison.
     assert (f b < f a).
     apply H_compat.
     trivial.
-    omega.
+    lia.
   Qed.
 
   Inductive R2 (y x: T) : Prop :=

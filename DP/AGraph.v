@@ -13,7 +13,7 @@ Set Implicit Arguments.
 From CoLoR Require Import LogicUtil ATrs RelUtil RelSub SN AShift ADPGraph
      VecUtil ASubstitution.
 From CoLoR Require Export ADP.
-From Coq Require Import List Omega.
+From Coq Require Import List Lia.
 
 Section S.
 
@@ -88,7 +88,7 @@ Section S.
       assert (compat s0' s1' (vars l0) (vars (shift p l1))).
       unfold compat. intros.
       ded (vars_max H3). ded (in_vars_shift_min H4). unfold p in H6.
-      absurd (x <= maxvar l0). omega. hyp.
+      absurd (x <= maxvar l0). lia. hyp.
       (* domains of substitutions *)
       assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
       assert (dom_incl s1' (vars (shift p l1))).

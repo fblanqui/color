@@ -1,16 +1,7 @@
-From Coq Require Import Setoid.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require rpo.
-From CoLoR Require equational_theory.
-From CoLoR Require equational_extension.
-From CoLoR Require term.
-From CoLoR Require subterm_dp.
-From Coq Require Import List.
-From CoLoR Require Import list_permut.
-From CoLoR Require Import terminaison.
-From Coq Require Import Relations.
-From CoLoR Require order_extension.
-From Coq Require Import Omega.
+From Coq Require Import Setoid List Relations Lia Omega.
+From CoLoR Require Import weaved_relation list_permut terminaison.
+From CoLoR Require rpo equational_theory equational_extension term subterm_dp
+     order_extension.
 
 Set Implicit Arguments.
 
@@ -64,7 +55,7 @@ Qed.
 
   Lemma prec_eq_transitive : transitive A prec_eq.
   Proof.
-intros a b c H1 H2. unfold prec_eq. unfold prec_eq in H2. unfold prec_eq in H1. assert (H3: prec_nat a = prec_nat b).  apply eq_nat_eq.  trivial. assert (H4: prec_nat b = prec_nat c). apply eq_nat_eq. trivial. assert (H5: prec_nat a = prec_nat c). omega. rewrite H5. apply eq_nat_refl.
+intros a b c H1 H2. unfold prec_eq. unfold prec_eq in H2. unfold prec_eq in H1. assert (H3: prec_nat a = prec_nat b).  apply eq_nat_eq.  trivial. assert (H4: prec_nat b = prec_nat c). apply eq_nat_eq. trivial. assert (H5: prec_nat a = prec_nat c). lia. rewrite H5. apply eq_nat_refl.
   Qed.
 
 Lemma prec_eq_prec1: forall a1 a2 a3, prec a1 a2 -> prec_eq a2 a3 -> prec a1 a3.
@@ -92,13 +83,13 @@ Hypothesis  prec_eq_status: forall f g, prec_eq f g -> status f = status g.
 (* Proof. *)
 (* unfold prec. unfold prec_eq. *)
 (* intros. *)
-(* assert (prec_nat f = prec_nat g). apply eq_nat_eq. trivial. omega. *)
+(* assert (prec_nat f = prec_nat g). apply eq_nat_eq. trivial. lia. *)
 (* Qed. *)
 
 Lemma prec_not_prec_eq: forall f g, prec f g -> prec_eq f g -> False.
 Proof.
 unfold prec. unfold prec_eq. intros.
-assert (prec_nat f = prec_nat g). apply eq_nat_eq. trivial. omega.
+assert (prec_nat f = prec_nat g). apply eq_nat_eq. trivial. lia.
 Qed.
 
 Lemma prec_wf : well_founded prec.

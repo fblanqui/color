@@ -11,13 +11,8 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import Setoid.
-From Coq Require Import Relations.
-From Coq Require Import List.
-From Coq Require Import Wellfounded.
-From CoLoR Require Export TransClosure.
-From CoLoR Require Export closure.
-From CoLoR Require Export more_list.
+From Coq Require Import Setoid Relations List Wellfounded.
+From CoLoR Require Export TransClosure closure more_list.
 
 Inductive one_step_list A (R : relation A) : relation (list A) :=
     | head_step : forall t1 t2 l, R t1 t2 -> one_step_list R (t1 :: l) (t2 :: l)

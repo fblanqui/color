@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 From CoLoR Require RelUtil.
 From Coq Require Import Transitive_Closure Compare_dec Relations Permutation
-     Setoid Morphisms Basics Omega.
+     Setoid Morphisms Basics Lia.
 From CoLoR Require Import RelExtras MultisetTheory ListPermutation MultisetCore
      ListExtras AccUtil LogicUtil.
 
@@ -297,7 +297,7 @@ Section OrderCharacterization.
         (* *)
     exists x.
     rewrite (union_comm X1 (X2-Y1)); apply member_member_union.
-    unfold member in *; rewrite (diff_mult X2 Y1); omega.
+    unfold member in *; rewrite (diff_mult X2 Y1); lia.
     trivial.
      (* *)
     destruct (Ord1 y).
@@ -378,7 +378,7 @@ Section OrderCharacterization.
      (* *)
     exists x.
     rewrite (union_comm X1 (X2-Y1)); apply member_member_union.
-    unfold member in *; rewrite (diff_mult X2 Y1); omega.
+    unfold member in *; rewrite (diff_mult X2 Y1); lia.
     trivial.
      (* *)
     destruct (Ord1 y).
@@ -973,7 +973,7 @@ Section MOrdPair.
     mset_unfold; rewrite !union_mult, !singleton_mult_notin; trivial.
     assert (aL in Z).
     rewrite ZaL; auto with multisets.
-    unfold member in H4; omega.
+    unfold member in H4; lia.
     apply meq_multeq; trivial.
      (* {bL}, {aL} *)    
     destruct (eqA_dec bL aR).
@@ -1012,7 +1012,7 @@ Section MOrdPair.
     mset_unfold; rewrite !union_mult, !singleton_mult_notin; trivial.
     assert (bL in Z).
     rewrite ZbL; auto with multisets.
-    unfold member in H4; omega.
+    unfold member in H4; lia.
     apply meq_multeq; trivial.
   Qed.
 
@@ -1114,7 +1114,7 @@ Section OrderSim.
     rewrite <- (list_sim_length M''sim).
     set (h := drop_nth_length (multiset2list (insert a M)) p).
     set (h' := nth_some (multiset2list (insert a M)) p Mp).
-    omega.
+    lia.
     apply (@list_sim_insert_nth A A P p (multiset2list (insert a M)) 
       (insert_nth M'' p b) a' b); trivial.
     apply nth_insert_nth; trivial.
@@ -1141,9 +1141,9 @@ Section OrderSim.
     destruct (eqA_dec x a); autorewrite with multisets.
     rewrite !singleton_mult_in; trivial.
     rewrite <- (mult_eqA_compat M e) in aM.
-    omega.
+    lia.
     rewrite !singleton_mult_notin; trivial.
-    omega.
+    lia.
     exists C'; split; trivial.
     rewrite <- (permutation_meq C'perm); trivial.
   Qed.

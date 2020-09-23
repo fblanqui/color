@@ -57,12 +57,12 @@ Section S.
     destruct l.
     (* l = nil *)
     intros _. exists 0. exists any_of_N0. split.
-    intros [x_val x]. intros; omega.
+    intros [x_val x]. intros; lia.
     intros [y_val y]. contradiction.
     (* l <> nil *)
     rename l into l'. set (l := a :: l').
     intro hl. set (n := length l). ex n.
-    assert (i : forall k : N n, k < n). intros [k_val k]. simpl. omega.
+    assert (i : forall k : N n, k < n). intros [k_val k]. simpl. lia.
     set (f := fun k : N n => elt (P:=of_list l) (nth_In a (i k))). ex f.
     split.
     (* f injective *)
@@ -447,7 +447,7 @@ list of elements. *)
   Proof.
     intros [P P_fin] [Q Q_fin] PQ. unfold Pf_equiv in PQ.
     rewrite equiv_subset2 in PQ. destruct PQ as [PQ QP].
-    gen (card_subset PQ). gen (card_subset QP). omega.
+    gen (card_subset PQ). gen (card_subset QP). lia.
   Qed.
 
 (****************************************************************************)
@@ -470,7 +470,7 @@ list of elements. *)
     unfold card.
     case_eq (mk_Pf h); intros P P_fin e; apply sig_eq in e; simpl in e; subst.
     destruct (cdd (card_uniq P_fin)) as [n [f [f_inj f_surj]]].
-    destruct n. omega.
+    destruct n. lia.
     set (g := fun i : N (S n) =>
                 let (_, xl) := f i in N_ (pos_lt_length eq_dec xl)).
     apply N_inj_le with (f := g). intros i j. unfold g.
@@ -488,7 +488,7 @@ list of elements. *)
   Lemma card_empty_gen (h : finite empty) : card h = 0.
 
   Proof.
-    cut (card h <= 0). omega. change (card h <= length (@nil A)).
+    cut (card h <= 0). lia. change (card h <= length (@nil A)).
     assert (e : Pf_equiv h (finite_of_list nil)). fo. rewrite e.
     apply card_of_list_le_length.
   Qed.
@@ -505,7 +505,7 @@ list of elements. *)
     unfold card. destruct P as [P P_fin].
     destruct (cdd (card_uniq P_fin)) as [n [f [f_inj f_surj]]]. intro; subst.
     unfold Pf_equiv; simpl. intro x. split. 2: fo.
-    intro hx. destruct (f_surj (elt hx)) as [k _]. destruct k. omega.
+    intro hx. destruct (f_surj (elt hx)) as [k _]. destruct k. lia.
   Qed.
 
 (** Cardinal of a set defined by a non-duplcating list of elements. *)
@@ -558,7 +558,7 @@ list of elements. *)
     set (l := list_of_finite P). set (P' := Pf_of_list l).
     rewrite (Pf_equiv_of2 (P:=Pf_add a P') (Q:=Pf_of_list (a::l))).
     rewrite card_of_list_eq_length. simpl length.
-    unfold P', l. rewrite <- Pf_eq_of_list, <- card_eq. omega.
+    unfold P', l. rewrite <- Pf_eq_of_list, <- card_eq. lia.
     simpl. split. unfold l. rewrite In_list_of_finite. hyp.
     apply nodup_list_of_finite.
     simpl. sym. apply of_cons.
@@ -605,7 +605,7 @@ list of elements. *)
     split. unfold Pf_equiv; simpl. rewrite (add_rem eq_dec). refl. hyp.
     split. apply notin_rem.
     rewrite card_rem. unfold mk_Pf at 1. rewrite e.
-    destruct (dec (mem a P_fin)). omega. contr.
+    destruct (dec (mem a P_fin)). lia. contr.
   Qed.
 
 (****************************************************************************)

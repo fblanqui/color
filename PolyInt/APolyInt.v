@@ -307,7 +307,7 @@ Section S.
 
   Proof.
     intro f. unfold pweak_monotone, coef_pos, default_pi. rewrite lforall_eq.
-    intros. destruct (in_map_elim H). destruct H0. subst. simpl. omega.
+    intros. destruct (in_map_elim H). destruct H0. subst. simpl. lia.
   Qed.
 
 End S.

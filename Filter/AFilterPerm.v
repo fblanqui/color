@@ -171,8 +171,8 @@ is transitive. *)
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
         apply hcc. unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
-        destruct (le_gt_dec i x). 2: omega.
-        repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
+        destruct (le_gt_dec i x). 2: lia.
+        repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;lia]). hyp.
 
         (* i not in (pi f) *)
         apply eq_incl_refl_rel. hyp. apply args_eq. unfold vt, vu.
@@ -222,11 +222,11 @@ is transitive. *)
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
         apply hcc. unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
-        destruct (le_gt_dec i x). 2: omega.
-        repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;omega]). hyp.
+        destruct (le_gt_dec i x). 2: lia.
+        repeat (rewrite Vnth_cons_head; [idtac|rewrite vx;lia]). hyp.
 
         (* i not in (pi f) *)
-        assert (hi : i<arity f). omega. ded (hp f i hi). contr.
+        assert (hi : i<arity f). lia. ded (hp f i hi). contr.
       Qed.
 
     End filter_ordering.
@@ -289,8 +289,8 @@ is transitive. *)
         intros hi h. ded (in_map N_val h). contr. rewrite e2.
 
         unfold vt, vu. rewrite !Vnth_cast, !Vnth_app.
-        destruct (le_gt_dec i x). 2: omega.
-        repeat (rewrite Vnth_cons_head; [idtac|omega]).
+        destruct (le_gt_dec i x). 2: lia.
+        repeat (rewrite Vnth_cons_head; [idtac|lia]).
         change (red R' (fill d t) (fill d u)). apply red_fill. hyp.
 
         (* i not in (pi f) *)

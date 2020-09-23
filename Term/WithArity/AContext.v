@@ -123,8 +123,8 @@ Section S.
     rewrite Vnth_cast, Vnth_app. case (le_gt_dec i j); intros.
     2:{ unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl. }
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    unfold v2. rewrite Vnth_sub. apply Vnth_eq. omega.
-    apply Vnth_eq. omega.
+    unfold v2. rewrite Vnth_sub. apply Vnth_eq. lia.
+    apply Vnth_eq. lia.
   Qed.
 
   Lemma fill_eq : forall t u c, fill c t = fill c u <-> t = u.
@@ -145,8 +145,8 @@ Section S.
   Lemma size_fill : forall t c, size (fill c t) >= size t.
 
   Proof.
-    induction c. simpl. omega. simpl fill.
-    rewrite size_fun, size_terms_cast, size_terms_app. simpl. omega.
+    induction c. simpl. lia. simpl fill.
+    rewrite size_fun, size_terms_cast, size_terms_app. simpl. lia.
   Qed.
 
   Lemma wf_term : forall (t : term) c, t = fill c t -> c = Hole.
@@ -154,7 +154,7 @@ Section S.
   Proof.
     intros. destruct c. refl. assert (size (fill (Cont e t0 c t1) t) > size t).
     simpl fill. rewrite size_fun, size_terms_cast, size_terms_app. simpl.
-    ded (size_fill t c). omega. rewrite <- H in H0. omega.
+    ded (size_fill t c). lia. rewrite <- H in H0. lia.
   Qed.
 
 (***********************************************************************)
@@ -212,7 +212,7 @@ Section S.
   Proof.
     intros t u [C [hC e]]. subst u. destruct C. cong.
     simpl fill. rewrite size_fun, size_terms_cast, size_terms_app. simpl.
-    ded (size_fill t C). omega.
+    ded (size_fill t C). lia.
   Qed.
 
   Lemma subterm_strict : forall u t, subterm u t -> subterm_eq u t.

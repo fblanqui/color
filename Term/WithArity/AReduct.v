@@ -90,11 +90,11 @@ Section S.
 
   Lemma reducts_aux1 : forall k n, S k <= n -> k <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma reducts_aux2 : forall k n, S k <= n -> n - S k < n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Fixpoint reducts t :=
     match t with
@@ -151,7 +151,7 @@ Section S.
     induction us; intros; destruct k'; try discr. rewrite Vcast_refl. refl.
     rewrite Vcast_cons. simpl. inversion e. subst k'.
     apply app_eq. apply map_eq. intros. apply args_eq. apply Vreplace_pi.
-    omega. apply IHus.
+    lia. apply IHus.
   Qed.
 
   (*Arguments reducts_vec_cast [f ts k us] _ [k' e h'].*)
@@ -171,16 +171,16 @@ Section S.
     (* case 1 *)
     ded (in_map_elim H). decomp H0. destruct (E 0 (lt_O_Sn n)). simpl in H0.
     ex (arity f - S n + 0) x0 x. rewrite <- H0. split_all.
-    rewrite H3. apply args_eq. apply Vreplace_pi. omega.
+    rewrite H3. apply args_eq. apply Vreplace_pi. lia.
     (* case 2 *)
     assert (E' : forall (i : nat) (p : i < n),
       exists r : arity f - n + i < arity f, Vnth us p = Vnth ts r). intros.
-    assert (p' : S i < S n). omega. destruct (E (S i) p'). simpl in H.
+    assert (p' : S i < S n). lia. destruct (E (S i) p'). simpl in H.
     assert (lt_S_n p' = p). apply lt_unique. simpl in H0. rewrite H1 in H0.
     rewrite H0.
-    assert (r : arity f - n + i < arity f). omega. exists r. apply Vnth_eq.
-    omega.
-    assert (h' : n <= arity f). omega.
+    assert (r : arity f - n + i < arity f). lia. exists r. apply Vnth_eq.
+    lia.
+    assert (h' : n <= arity f). lia.
     rewrite reducts_vec_pi with (h':=h') in H.
     apply IHus with (h:=h'); hyp.
   Qed.
@@ -195,8 +195,8 @@ Section S.
   Proof.
     intros. apply In_reducts_vec_elim_aux
     with (k := arity f) (us := ts) (h := le_refl (arity f)).
-    intros. assert (r : arity f - arity f + i < arity f). omega. exists r.
-    apply Vnth_eq. omega. hyp.
+    intros. assert (r : arity f - arity f + i < arity f). lia. exists r.
+    apply Vnth_eq. lia. hyp.
   Qed.
 
   Arguments In_reducts_vec_elim [v' f ts] _.
@@ -209,18 +209,18 @@ Section S.
   Proof.
     induction us.
     (* Vnil *)
-    intros. omega.
+    intros. lia.
     (* Vcons *)
     intros g t. simpl.
     set (F := fun x : term => Fun f (Vreplace ts (reducts_aux2 g) x)).
     destruct i; intros p q; rewrite in_app.
     (* i = 0 *)
-    left. assert (e : arity f - S n + 0 = arity f - S n). omega.
+    left. assert (e : arity f - S n + 0 = arity f - S n). lia.
     rewrite (Vreplace_pi ts q (reducts_aux2 g) t e).
     apply in_map with (f:=F). hyp.
     (* i > 0 *)
-    right. assert (q' : arity f - n + i < arity f). omega.
-    assert (Vreplace ts q t = Vreplace ts q' t). apply Vreplace_pi. omega.
+    right. assert (q' : arity f - n + i < arity f). lia.
+    assert (Vreplace ts q t = Vreplace ts q' t). apply Vreplace_pi. lia.
     rewrite H0. apply IHus with (p := lt_S_n p). hyp.
   Qed.
 
@@ -231,8 +231,8 @@ Section S.
     In (Fun f (Vreplace ts p t)) (reducts_vec f ts ts (le_refl (arity f))).
 
   Proof.
-    intros. assert (q : arity f - arity f + i < arity f). omega.
-    assert (Vreplace ts p t = Vreplace ts q t). apply Vreplace_pi. omega.
+    intros. assert (q : arity f - arity f + i < arity f). lia.
+    assert (Vreplace ts p t = Vreplace ts q t). apply Vreplace_pi. lia.
     rewrite H0. apply In_reducts_vec_intro_aux with (p := p). hyp.
   Qed.
 
@@ -278,7 +278,7 @@ Section S.
     (* case 1 *)
     set (p := lt_O_Sn n). ex 0 p x. simpl. auto.
     (* case 2 *)
-    ded (IHts x H1); clear IHts. decomp H. assert (p : S x0<S n). omega.
+    ded (IHts x H1); clear IHts. decomp H. assert (p : S x0<S n). lia.
     ex (S x0) p x2. simpl. assert (lt_S_n p = x1). apply lt_unique.
     rewrite H. subst x. auto. 
   Qed.
@@ -291,7 +291,7 @@ Section S.
   Proof.
     induction ts.
     (* Vnil *)
-    intros. omega.
+    intros. lia.
     (* Vcons *)
     destruct i; simpl; intro; rewrite in_app.
     left. apply in_map with (f := fun x => Vcons x ts). hyp.
@@ -312,9 +312,9 @@ Section S.
     apply hd_red_incl_red. apply top_reducts_correct. hyp.
     rename H into h. ded (In_reducts_vec_elim h). decomp H.
     ded (Vforall_nth x0 IH _ H1). redtac. unfold red. ex l r.
-    assert (h1 : 0+x<=arity f). omega. set (v1 := Vsub ts h1).
-    assert (h2 : S x+(arity f-S x)<=arity f). omega. set (v2 := Vsub ts h2).
-    assert (e : x+S(arity f-S x)=arity f). omega.
+    assert (h1 : 0+x<=arity f). lia. set (v1 := Vsub ts h1).
+    assert (h2 : S x+(arity f-S x)<=arity f). lia. set (v2 := Vsub ts h2).
+    assert (e : x+S(arity f-S x)=arity f). lia.
     exists (Cont f e v1 c v2). exists s. split_all. simpl. apply args_eq.
     rewrite <- xl. unfold v2. rewrite Vcons_nth. unfold v1.
     apply Veq_app_cons_aux.
@@ -324,19 +324,19 @@ Section S.
     destruct (eq_nat_dec x i).
     (* a) x = i *)
     set (q := Vnth_app_aux (S (arity f - S x)) (Vnth_cast_aux e ip) l0).
-    gen q. assert (i - x = 0). subst; clear; omega. rewrite H. intro. simpl.
+    gen q. assert (i - x = 0). subst; clear; lia. rewrite H. intro. simpl.
     trans (Vnth (Vreplace ts x0 x1) x0). apply Vnth_eq. auto.
     rewrite Vnth_replace. hyp.
     (* b) x <> i *)
     rewrite Vnth_replace_neq. 2: hyp.
     rewrite (Veq_app_cons ts x0), Vnth_cast, Vnth_app. destruct (le_gt_dec x i).
-    2: omega.
+    2: lia.
     rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i-x)). unfold v2.
-    rewrite !Vnth_sub. apply Vnth_eq. refl. omega.
+    rewrite !Vnth_sub. apply Vnth_eq. refl. lia.
     (* 2) x > i *)
-    rewrite Vnth_replace_neq. 2: omega.
+    rewrite Vnth_replace_neq. 2: lia.
     rewrite (Veq_app_cons ts x0), Vnth_cast, Vnth_app. destruct (le_gt_dec x i).
-    omega.
+    lia.
     assert (g0 = g). apply lt_unique. subst g0.
     assert (Vsub ts (Veq_app_cons_aux1 x0) = v1). unfold v1.
     f_equal. apply le_unique. rewrite H. refl.

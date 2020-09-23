@@ -13,7 +13,7 @@ de Bruijn indices) is defined in this file.
 
 Set Implicit Arguments.
 
-From Coq Require Import Compare_dec Arith Omega.
+From Coq Require Import Compare_dec Arith Lia.
 From CoLoR Require Import RelExtras ListExtras LogicUtil.
 From CoLoR Require TermsManip.
 
@@ -64,14 +64,14 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (nth_error E x); discr.
     assert (k_E: Min.min k (length E) = k).
     apply Min.min_l.
-    omega.
+    lia.
     rewrite nth_app_right; autorewrite with datatypes.
     rewrite k_E.
     rewrite nth_app_right; autorewrite with datatypes.
     replace (k + (x + n - k - n)) with x; trivial.
-    omega.
-    omega.
-    omega.
+    lia.
+    lia.
+    lia.
   Qed.
 
   Lemma liftedEnv_var_notLifted : forall E x A k n,
@@ -106,8 +106,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite <- plus_assoc.
     rewrite (plus_comm (length (finalSeg E k)) (length (initialSeg E k))).
     rewrite initialFinalSeg_length.
-    autorewrite with datatypes using omega.
-    rewrite H0 in w; omega.
+    autorewrite with datatypes using lia.
+    rewrite H0 in w; lia.
     rewrite nth_app_right in Ex.
     rewrite initialSeg_length in Ex.
     destruct (le_lt_dec k (length E)).
@@ -116,15 +116,15 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite Min.min_l in Ex; trivial.
     rewrite (finalSeg_nth_nth E x_k).
     replace (x - k) with (x + n - k - n); trivial.
-    omega.
+    lia.
     autorewrite with datatypes.
     rewrite Min.min_l; trivial.
-    omega.
-    omega.
+    lia.
+    lia.
     autorewrite with datatypes.
     destruct (le_gt_dec k (length E)).
-    rewrite Min.min_l; solve [trivial | omega].
-    omega.
+    rewrite Min.min_l; solve [trivial | lia].
+    lia.
   Qed.
 
   Lemma var_liftedEnv_var_notLifted : forall E x A k n,
@@ -141,7 +141,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length E) x).
     rewrite nth_app_right in Ex.
     rewrite initialSeg_length in Ex.
-    rewrite Min.min_r in Ex; [trivial | omega].
+    rewrite Min.min_r in Ex; [trivial | lia].
     rewrite finalSeg_empty in Ex; trivial.
     rewrite <- app_nil_end in Ex.
     destruct (le_gt_dec (length (copy n (A := option SimpleType) None)) 
@@ -151,19 +151,19 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite copy_length in g0.
     trivial.
     set (w := nth_copy_in (A:=option SimpleType) (n:=n) None H); try_solve.
-    omega.    
+    lia.    
     autorewrite with datatypes.
     rewrite Min.min_r; trivial.
-    omega.
+    lia.
     rewrite nth_app_left in Ex.
     rewrite <- (initialSeg_nth E x_k); trivial.
     autorewrite with datatypes.
-    rewrite Min.min_r; omega.
+    rewrite Min.min_r; lia.
   Qed.
 
   Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted
     var_liftedEnv_var_lifted var_liftedEnv_var_notLifted
-    using solve [omega | auto] : terms.
+    using solve [lia | auto] : terms.
 
   Definition lift_aux : forall (n: nat) (M: Term) (k: nat),
    {N: Term | env N = liftedEnv n (env M) k
@@ -342,16 +342,16 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_gt_dec i x); simpl.
     destruct (le_gt_dec j (x + n)); simpl.
     assert (x + (m + n) = x + n + m).
-    omega.
+    lia.
     try_solve.
-    omega.
+    lia.
     destruct (le_gt_dec j x); simpl.
-    omega.
+    lia.
     try_solve.
     trivial.
     rewrite <- (IHPt m n (S i) (S j)); trivial.
-    omega.
-    omega.
+    lia.
+    lia.
     rewrite IHPt1; try_solve.
     rewrite IHPt2; try_solve.
   Qed.
@@ -362,7 +362,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
   Proof.
     intros.
     rewrite prelift_aux_fold_aux; try_solve.
-    omega.
+    lia.
   Qed.
 
   Lemma prelift_fold : forall Pt m n,
@@ -400,7 +400,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     intros.
     replace (S n) with (n + 1).
     rewrite lift_fold; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma lift_fold_1in : forall M n, lift (lift M 1) n = lift M (S n).
@@ -409,7 +409,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     intros.
     replace (S n) with (1 + n).
     rewrite lift_fold; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma lift_subst_fold : forall G m n,
@@ -605,9 +605,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
       [destruct (le_gt_dec j x); try_solve].
     destruct (le_gt_dec j x); destruct (le_gt_dec j x0); try_solve.
     inversion H.
-    cut (x = x0); [auto | omega].
-    inversion H; omega.
-    inversion H; omega.
+    cut (x = x0); [auto | lia].
+    inversion H; lia.
+    inversion H; lia.
     rewrite (IHM N i (S j)); inversion H; trivial.
     rewrite (IHM1 N1 i j).
     rewrite (IHM2 N2 i j).
@@ -655,21 +655,21 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite_lr (nth_in E x); unfold VarD in Ex; try_solve.
     destruct (le_lt_or_eq k_x) as [k_lt_x | k_eq_x].
     destruct x.
-    omega.
+    lia.
     unfold VarD, loweredEnv.
     rewrite nth_app_right.
     unfold finalSeg; simpl.
     destruct E; try_solve.
     assert (k_E: Min.min k (S (length E)) = k).
-    rewrite Min.min_l; omega.
+    rewrite Min.min_l; lia.
     rewrite seg_nth.
     rewrite initialSeg_length; simpl.
     rewrite k_E.
-    replace (k + (x - k)) with x; solve [trivial | omega].
+    replace (k + (x - k)) with x; solve [trivial | lia].
     rewrite initialSeg_length; simpl.
-    rewrite k_E; omega.
+    rewrite k_E; lia.
     rewrite initialSeg_length.
-    rewrite Min.min_l; omega.
+    rewrite Min.min_l; lia.
     rewrite k_eq_x in Ek0.
     unfold VarD in Ex; destruct Ek0; try_solve.
   Qed.
@@ -698,19 +698,19 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_gt_dec (length E) k).
     rewrite finalSeg_empty in Ex.
     destruct (x - Min.min k (length E)); try_solve.
-    omega.
+    lia.
     rewrite Min.min_l in Ex.
     destruct (le_gt_dec (length E) (S x)).
     rewrite nth_beyond in Ex; try_solve.
     rewrite finalSeg_length.
-    omega.
+    lia.
     rewrite (@finalSeg_nth_nth (option SimpleType) E (S k) (S x)).
     replace (S x - S k) with (x - k); trivial.
-    omega.
-    omega.
+    lia.
+    lia.
     rewrite initialSeg_length.
     set (w := Min.le_min_l k (length E)).
-    omega.
+    lia.
   Qed.
 
   Lemma var_loweredEnv_var_notLowered : forall E x A k,
@@ -724,18 +724,18 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite nth_app_left in Ex; trivial.
     rewrite <- (initialSeg_nth E kx); trivial.
     autorewrite with datatypes.
-    apply Min.min_case2; omega.
+    apply Min.min_case2; lia.
     rewrite nth_app_right in Ex.
     rewrite finalSeg_empty in Ex.
     destruct (x - length (initialSeg E k)); try_solve.
-    omega.
+    lia.
     autorewrite with datatypes.
     rewrite Min.min_r; trivial.
-    omega.
+    lia.
     rewrite nth_app_left in Ex.
     rewrite initialSeg_nth in Ex; trivial.
     autorewrite with datatypes.
-    apply Min.min_case2; omega.
+    apply Min.min_case2; lia.
   Qed.
 
   Lemma prelower_prelift_aux : forall Pt i j k, k >= j -> k <= i + j + 1 ->
@@ -746,15 +746,15 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_gt_dec j x); simpl.
     destruct (le_gt_dec k (x + (i + 1))); simpl.
     assert (x + i = pred (x + (i + 1))).
-    omega.
+    lia.
     try_solve.
-    omega.
+    lia.
     destruct (le_gt_dec k x); trivial.
-    omega.
+    lia.
     trivial.
-    rewrite (IHPt i (S j) (S k)); solve [trivial | omega].
-    rewrite (IHPt1 i j k); try omega.
-    rewrite (IHPt2 i j k); try omega.
+    rewrite (IHPt i (S j) (S k)); solve [trivial | lia].
+    rewrite (IHPt1 i j k); try lia.
+    rewrite (IHPt2 i j k); try lia.
     trivial.
   Qed.
 
@@ -764,8 +764,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
   Proof.
     intros; unfold prelift.
     apply prelower_prelift_aux.
-    omega.
-    omega.
+    lia.
+    lia.
   Qed.
 
   Definition lower_aux : forall (M: Term) (k: nat), env M |= k :! ->
@@ -856,16 +856,16 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_gt_dec i (pred x)); simpl.
     destruct x.
     assert (i = 0).
-    omega.
+    lia.
     rewrite H0 in H.
     inversion v; destruct E; inversion H; try_solve.
-    assert (pred (S x) + 1 = S x); [omega | auto].
+    assert (pred (S x) + 1 = S x); [lia | auto].
     assert (i = x).
-    omega.
+    lia.
     inversion v; destruct E; inversion H; try_solve.
     destruct (le_gt_dec i x); simpl; trivial.
     assert (i = x).
-    omega.
+    lia.
     inversion v; destruct E; inversion H; try_solve.
     trivial.
     set (w := IHM (S i)); simpl in w.

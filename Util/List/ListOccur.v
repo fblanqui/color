@@ -47,14 +47,14 @@ Section occur.
 
   Proof.
     induction l; simpl; intros. refl. rewrite IHl. unfold delta.
-    case (eq_dec x a); intro; omega.
+    case (eq_dec x a); intro; lia.
   Qed.
 
   Lemma in_occur : forall x l, In x l -> occur x l > 0.
 
   Proof.
     induction l; simpl; intros. contr. unfold delta.
-    case (eq_dec x a); intro. omega. destruct H. subst a. cong. auto.
+    case (eq_dec x a); intro. lia. destruct H. subst a. cong. auto.
   Qed.
 
   Lemma notin_occur : forall x l, ~In x l -> occur x l = 0.
@@ -69,7 +69,7 @@ Section occur.
 
   Lemma occur_in : forall x l, occur x l > 0 -> In x l.
 
-  Proof. induction l; simpl. omega. unfold delta. case (eq_dec x a); auto. Qed.
+  Proof. induction l; simpl. lia. unfold delta. case (eq_dec x a); auto. Qed.
 
   Arguments occur_in [x l] _.
 
@@ -85,12 +85,12 @@ Section occur.
     exists m, exists p, l = m ++ x :: p /\ ~In x m /\ occur x p = n.
 
   Proof.
-    intros. assert (occur x l > 0). omega. ded (occur_in H0).
+    intros. assert (occur x l > 0). lia. ded (occur_in H0).
     ded (in_elim_dec eq_dec H1). do 3 destruct H2. subst l.
     exists x0. exists x1. (* intuition makes occur untypable ! *)
     split. refl. split. exact H3.
     rewrite occur_app in H. simpl in H. rewrite eq_delta in H.
-    ded (notin_occur H3). omega.
+    ded (notin_occur H3). lia.
   Qed.
 
 End occur.
@@ -115,12 +115,12 @@ Section pigeon_hole.
   Proof.
     induction s; simpl; intros.
     (* case s=nil *)
-    apply False_ind. destruct l. simpl in H0. omega.
+    apply False_ind. destruct l. simpl in H0. lia.
     unfold incl in H. simpl in H. apply (H a). auto.
     (* case s=a::s *)
-    destruct l. apply False_ind. simpl in H0. omega.
+    destruct l. apply False_ind. simpl in H0. lia.
     case (In_dec eq_dec a0 l); intro. ded (in_occur eq_dec i).
-    exists a0. simpl. rewrite eq_delta. omega.
+    exists a0. simpl. rewrite eq_delta. lia.
     case (le_lt_dec (occur a l) 1); intro.
     (* case occur a l <= 1 *)
     ded (incl_cons_l H). clear H. destruct H1.
@@ -130,7 +130,7 @@ Section pigeon_hole.
     ded (in_elim_dec eq_dec H2). do 3 destruct H3.
     (* ~In a x0 *)
     assert (~In a x0). apply (occur_notin eq_dec).
-    rewrite H3, occur_app in l0. simpl in l0. rewrite eq_delta in l0. omega.
+    rewrite H3, occur_app in l0. simpl in l0. rewrite eq_delta in l0. lia.
     (* x and x0 included in s *)
     rewrite H3 in H1. ded (incl_app_elim H1). clear H1. destruct H6.
     ded (incl_cons_r H1). clear H1. destruct H7. contr.
@@ -141,15 +141,15 @@ Section pigeon_hole.
     assert (incl l' s). unfold l'. apply incl_app. exact H1.
     apply incl_cons. exact H. exact H6.
     assert (length l' > length s). unfold l'. rewrite length_app. simpl.
-    simpl in H0. rewrite H3, length_app in H0. simpl in H0. omega.
+    simpl in H0. rewrite H3, length_app in H0. simpl in H0. lia.
     ded (IHs l' H7 H8). destruct H9. exists x1.
     assert (occur x1 (a0::l) = occur x1 l' + delta x1 a). unfold l'. rewrite H3.
-    simpl. rewrite !occur_app. simpl. omega. omega.
+    simpl. rewrite !occur_app. simpl. lia. lia.
     (* incl l s *)
-    assert (length l > length s). simpl in H0. omega.
-    ded (IHs l H2 H3). destruct H4. exists x. simpl. omega.
+    assert (length l > length s). simpl in H0. lia.
+    ded (IHs l H2 H3). destruct H4. exists x. simpl. lia.
     (* 1 < occur a l *)
-    exists a. simpl. omega.
+    exists a. simpl. lia.
   Qed.
  
 End pigeon_hole.

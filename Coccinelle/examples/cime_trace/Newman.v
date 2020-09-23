@@ -7,9 +7,7 @@
 (************************************************************************)
 
 (*i $Id: Newman.v 9245 2006-10-17 12:53:34Z notin $ i*)
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import closure.
-From CoLoR Require Import terminaison.
+From CoLoR Require Import weaved_relation closure terminaison.
 From Coq Require List.
 
 

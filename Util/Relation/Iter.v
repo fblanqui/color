@@ -52,7 +52,7 @@ Lemma iter_commut : forall p q, iter p @ iter q << iter q @ iter p.
 
 Proof.
 intros. incl_trans (iter (p+q+1)). apply iter_iter.
-assert (p+q+1 = q+p+1). omega.
+assert (p+q+1 = q+p+1). lia.
 rewrite H. apply iter_plus_1.
 Qed.
 
@@ -89,7 +89,7 @@ do 2 destruct H. destruct x0. left. auto.
 right. exists (S x0). intuition.
 ded (IHn _ _ H). destruct H0. left. right. exact H0.
 do 2 destruct H0. case (le_lt_dec x0 (S n)); intro.
-assert (x0 = S n). omega. subst x0. left. left. exact H1.
+assert (x0 = S n). lia. subst x0. left. left. exact H1.
 right. exists x0. intuition.
 Qed.
 
@@ -97,10 +97,10 @@ Lemma Iter_ge_split : forall n, Iter_ge n << iter n U Iter_ge (S n).
 
 Proof.
 induction n; simpl; intros; unfold inclusion; intros; do 2 destruct H.
-case (le_lt_dec x0 0); intro. assert (x0 = 0). omega. subst x0.
+case (le_lt_dec x0 0); intro. assert (x0 = 0). lia. subst x0.
 left. exact H0.
 right. exists x0. intuition.
-case (le_lt_dec x0 (S n)); intro. assert (x0 = S n). omega. subst x0.
+case (le_lt_dec x0 (S n)); intro. assert (x0 = S n). lia. subst x0.
 left. exact H0.
 right. exists x0. intuition.
 Qed.
@@ -219,7 +219,7 @@ subst; auto with *. split; intros; simpl in *.
 destruct H. 
 destruct H as [z]; destruct H. rewrite IHn in H0; rewrite IHn in H.
 destruct H0 as [p]; destruct H as [p']; destruct H0; destruct H.
-exists (p+p'+1). split. omega.
+exists (p+p'+1). split. lia.
 assert ((iter p' @ iter p) x y). unfold compose; exists z; auto with *.
 assert (p+p'+1=p'+p+1); intuition.
 rewrite H4; apply iter_compose; auto with *.
@@ -229,12 +229,12 @@ destruct H as [p]; destruct H; simpl in H.
 destruct (le_gt_dec (S p) (exp2 n)).
 right; rewrite IHn; exists p; split; auto with *.
 assert(p = (exp2 n - 1) + (p - exp2 n) +1 ).
-omega.
+lia.
 rewrite H1 in H0. ded (iter_plus_1 _ _ _ _ H0).
 left; unfold compose in *; destruct H2 as [z]; destruct H2.
 exists z; split; rewrite IHn.
-exists (exp2 n -1); intuition; omega.
-exists (p -exp2 n); intuition; omega. 
+exists (exp2 n -1); intuition; lia.
+exists (p -exp2 n); intuition; lia. 
 Qed.
 
 Lemma iter_le_same n x y : iter_le2 n x y <-> iter_le n x y.
@@ -246,7 +246,7 @@ Lemma iter_le_fast_exp2_same n x y :
 
 Proof.
 rewrite iter_le_spec, iter_le_fast_spec.
-split; intro; destruct H as [p]; exists p; split_all; ded (exp2_pos n); omega.
+split; intro; destruct H as [p]; exists p; split_all; ded (exp2_pos n); lia.
 Qed.
 
 (***********************************************************************)

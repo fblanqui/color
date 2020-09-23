@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras LogicUtil.
 From CoLoR Require TermsActiveEnv.
-From Coq Require Import Omega.
+From Coq Require Import Lia.
 
 Module TermsBuilding (Sig : TermsSig.Signature).
 
@@ -128,9 +128,9 @@ Module TermsBuilding (Sig : TermsSig.Signature).
 
   Proof.
     constructor; unfold VarD.
-    rewrite nth_app_right; autorewrite with datatypes using try omega.
+    rewrite nth_app_right; autorewrite with datatypes using try lia.
     replace (x - x) with 0; trivial.
-    omega.
+    lia.
   Defined.
 
   Lemma buildVar_minimal : forall A x, envMinimal (buildT (buildVar A x)).

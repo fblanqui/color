@@ -462,23 +462,23 @@ Module Lex (Export CO : DLQO_Struct).
       (* Case when [k] is the first position of [j] in [M]. *)
       intros k hk. destruct (lt_dec k i).
       (* k < i *)
-      assert (kr : k < filter_arity r). omega. ex k kr. split.
+      assert (kr : k < filter_arity r). lia. ex k kr. split.
       (* Proof that the k-th argument decrease. *)
       gen (i3 _ l kr).
       rewrite !Vnth_opt_filter, <- (Vnth_first_position (eq_nat_dec j) hk).
-      destruct (lt_dec j n); destruct (lt_dec j p); try omega;
+      destruct (lt_dec j n); destruct (lt_dec j p); try lia;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
       rewrite H1, Vnth_eq with (h2:=j1), Vnth_eq with (h1:=l1) (h2:=j1); auto.
       (* Proof that the arguments m<k are equivalent. *)
-      intros m mk mr. assert (mi : m < i). omega. gen (i3 _ mi mr).
+      intros m mk mr. assert (mi : m < i). lia. gen (i3 _ mi mr).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
-      destruct (lt_dec q n); destruct (lt_dec q p); try omega;
+      destruct (lt_dec q n); destruct (lt_dec q p); try lia;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
       rewrite H1, (Vforall2_elim_nth _ usus'),
         <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
-      omega.
+      lia.
       (* k >= i *)
       ex i i1. split.
       (* Proof that the i-th argument decrease. *)
@@ -495,17 +495,17 @@ Module Lex (Export CO : DLQO_Struct).
         <- (Vforall2_elim_nth _ usus').
       hyp.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
-      omega.
+      lia.
       (* Proof that the arguments m<i are equivalent. *)
       intros m mi mr. gen (i3 _ mi mr).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
-      destruct (lt_dec q n); destruct (lt_dec q p); try omega;
+      destruct (lt_dec q n); destruct (lt_dec q p); try lia;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
       rewrite H1, (Vforall2_elim_nth _ usus'),
         <- (Vforall2_elim_nth _ vs'vs), j3.
       refl.
       intro b. symmetry in b. gen (Vfirst_position_nth (eq_nat_dec j) hk b).
-      omega.
+      lia.
       (* Case when [j] does not occur in [M]. *)
       ex i i1. split.
       (* Proof that the i-th argument decrease. *)
@@ -520,7 +520,7 @@ Module Lex (Export CO : DLQO_Struct).
       (* Proof that the arguments m<i are equivalent. *)
       intros m mi mr. gen (i3 _ mi mr).
       rewrite !Vnth_opt_filter. set (q := Vnth M mr).
-      destruct (lt_dec q n); destruct (lt_dec q p); try omega;
+      destruct (lt_dec q n); destruct (lt_dec q p); try lia;
         intro i3k; inversion i3k; clear i3k; subst; apply opt_intro.
       rewrite H2, (Vforall2_elim_nth _ usus'),
         <- (Vforall2_elim_nth _ vs'vs), j3.

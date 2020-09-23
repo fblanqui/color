@@ -10,7 +10,7 @@ Convertibility of substituted terms.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsSubst.
-From Coq Require Import Arith Omega.
+From Coq Require Import Arith Lia.
 
 Module TermsSubstConv (Sig : TermsSig.Signature).
 
@@ -79,8 +79,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     assert (T = T0).
     inversion H; inversion H6; try_solve.
     rewrite <- H7; trivial.
-    absurd (S y = 0); [omega | apply envSub_Lok with Q 0; trivial].
-    absurd (S x = 0); [omega | apply envSub_Rok with Q 0; trivial].
+    absurd (S y = 0); [lia | apply envSub_Lok with Q 0; trivial].
+    absurd (S x = 0); [lia | apply envSub_Rok with Q 0; trivial].
     destruct (H3 x); inversion H6; try_solve.
 
     destruct x; destruct y.
@@ -88,8 +88,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     assert (T'0 = T').
     inversion H0; inversion H6; try_solve.
     rewrite H7; trivial.
-    absurd (S y = 0); [omega | apply envSub_Lok with Q 0; trivial].
-    absurd (S x = 0); [omega | apply envSub_Rok with Q 0; trivial].
+    absurd (S y = 0); [lia | apply envSub_Lok with Q 0; trivial].
+    absurd (S x = 0); [lia | apply envSub_Rok with Q 0; trivial].
     destruct (H4 y); inversion H6; try_solve.
 
     destruct x.
@@ -126,7 +126,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     destruct (sc_inj_r H1 GT).
     destruct x.
     absurd (0 = S i).
-    omega.
+    lia.
     apply envSub_Lok with Q 0; trivial.
     apply conv_subst_udecl with G Q (S x); trivial.
     constructor 2; trivial.
@@ -316,8 +316,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     intros.
     destruct x; destruct y.
     inversion H6.
-    absurd (0 = S y); [omega | apply envSub_Lok with Q 0; trivial].
-    absurd (S x = 0); [omega | apply envSub_Rok with Q 0; trivial].
+    absurd (0 = S y); [lia | apply envSub_Lok with Q 0; trivial].
+    absurd (S x = 0); [lia | apply envSub_Rok with Q 0; trivial].
     destruct (envSub_minimal_rev (S x) (S y) H1 H0 H4).
     replace B with x0.
     set (MM'comp := proj2 H0 (S x) (S y) H4).
@@ -475,30 +475,30 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     autorewrite with datatypes using simpl.
     destruct (le_gt_dec y i).
     absurd (x = y).
-    omega.
+    lia.
     apply envSub_Rok with Q y; trivial.
     apply H; trivial.
-    omega.
-    autorewrite with datatypes using simpl; try omega.
-    rewrite nth_app_right in H2; autorewrite with datatypes using try omega.
+    lia.
+    autorewrite with datatypes using simpl; try lia.
+    rewrite nth_app_right in H2; autorewrite with datatypes using try lia.
     replace (x - length (copy i (None (A:=Term)))) with 0 in H2.
     simpl in H2.
     destruct H1.
     assert (x = y).
     apply envSub_Lok with Q x; trivial.
-    apply H; omega.
+    apply H; lia.
     rewrite  <- H9; simpl.
     rewrite nth_app_right; autorewrite with datatypes.
     replace (x - i) with 0; simpl.
     apply conv_term_unique with (term (lift T i)) Q; trivial.
-    omega.
-    omega.
-    autorewrite with datatypes using omega.
+    lia.
+    lia.
+    autorewrite with datatypes using lia.
     rewrite nth_app_left in H2; autorewrite with datatypes using trivial.
     rewrite nth_copy_in in H2; trivial.
     assert (x = y).
     apply envSub_Lok with Q x; trivial.
-    apply H; omega.
+    apply H; lia.
     rewrite <- H8; simpl.
     rewrite nth_app_left; autorewrite with datatypes using trivial.
     inversion H2.
@@ -515,7 +515,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
                                                   ++ {x/T'}) = R1).
     apply (@IHM R0 T T' (envSubst_lift1 Q) L0 R1 (Datatypes.S i)); auto.
     intros j j_i; destruct j; destruct Q; simpl; trivial.
-    apply H; omega.
+    apply H; lia.
     rewrite <- (lift_fold_1out T).
     rewrite <- (lift_fold_1out T').
     apply terms_conv_conv_lift; trivial.
@@ -540,7 +540,7 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     change {x/T'} with (copy 0 None ++ {x/T'}).
     apply presubst_singleton_conv_sim_aux with M T Q R; trivial.
     intros; destruct j; trivial.
-    omega.
+    lia.
     rewrite !lift_0; trivial.
   Qed.
 

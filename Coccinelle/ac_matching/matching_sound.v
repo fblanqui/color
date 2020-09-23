@@ -10,27 +10,14 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_sort.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import ac.
-From CoLoR Require Import cf_eq_ac.
-From CoLoR Require Import matching.
-From CoLoR Require Import matching_well_founded.
-From CoLoR Require Import matching_well_formed.
+From Coq Require Import Arith List.
+From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching
+     matching_well_founded matching_well_formed.
 
 Module Type S.
 
 Declare Module WFMMatching : matching_well_formed.S.
-Import WFMMatching.
-Import WFMatching. 
-Import Matching.
-Import Cf_eq_ac.
-Import Ac.
-Import EqTh.
-Import T.
+Import WFMMatching WFMatching Matching Cf_eq_ac Ac EqTh T.
 
 (* Parameter add_a_subterm
 Parameter add_a_subterm_subst *)
@@ -45,18 +32,7 @@ Module Make (WFMMatching1 : matching_well_formed.S) :
 
 Module WFMMatching := WFMMatching1.
 
-Import WFMMatching1.
-Import WFMMatching.
-Import WFMatching. 
-Import Matching.
-Import Cf_eq_ac.
-Import Ac.
-Import EqTh.
-Import T.
-Import F.
-Import X.
-Import Sort.
-Import LPermut.
+Import WFMMatching1 WFMMatching WFMatching Matching Cf_eq_ac Ac EqTh T F X Sort LPermut.
 
 Lemma add_a_subterm :
  forall f l l' t, arity f = AC -> (well_formed_cf (Term f (l ++ t :: l'))) ->

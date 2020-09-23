@@ -119,7 +119,7 @@ Section S.
     split. refl. split. refl. hyp.
     ded (IHv1 (Vtail v2) H2). do 8 destruct H6. destruct H7. rewrite H6, H7.
     ex (S x0) (Vcons (Vhead v2) x1) x2 x3 x4.
-    assert (S x0 + S x3 = S n). omega. ex H9 x6.
+    assert (S x0 + S x3 = S n). lia. ex H9 x6.
     simpl. rewrite !Vcast_cons, (eq_unique (@eq_add_S (x0 + (S x3)) n H9) x5). intuition.
   Qed.
 
@@ -147,30 +147,30 @@ Section S.
 
     intros [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]];
       subst; rewrite !Vcast_refl.
-    exists i. assert (hi : i<i+S j). omega. exists hi.
+    exists i. assert (hi : i<i+S j). lia. exists hi.
     rewrite !Vnth_app_cons. intuition.
     rewrite !Vnth_app. destruct (le_gt_dec i j0). 2: refl.
-    rewrite !Vnth_cons. destruct (lt_ge_dec 0 (j0-i)). 2: omega.
+    rewrite !Vnth_cons. destruct (lt_ge_dec 0 (j0-i)). 2: lia.
     apply Vnth_eq. refl.
 
     intros [i [hi [i1 i2]]].
-    assert (ki : 0+i<=n). omega. ex i (Vsub v1 ki) (Vnth v1 hi).
-    assert (kj : S i+(n-i-1)<=n). omega. ex (n-i-1) (Vsub v1 kj).
-    assert (k : i+S(n-i-1)=n). omega. ex k (Vnth v2 hi).
+    assert (ki : 0+i<=n). lia. ex i (Vsub v1 ki) (Vnth v1 hi).
+    assert (kj : S i+(n-i-1)<=n). lia. ex (n-i-1) (Vsub v1 kj).
+    assert (k : i+S(n-i-1)=n). lia. ex k (Vnth v2 hi).
     split; [idtac|split;[idtac|hyp]].
 
     apply Veq_nth. intros j hj. rewrite Vnth_cast, Vnth_app.
     destruct (le_gt_dec i j). rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    rewrite Vnth_sub. apply Vnth_eq. clear -l0; omega.
-    apply Vnth_eq. clear -l g; omega.
+    rewrite Vnth_sub. apply Vnth_eq. clear -l0; lia.
+    apply Vnth_eq. clear -l g; lia.
     rewrite Vnth_sub. apply Vnth_eq. refl.
 
     apply Veq_nth. intros j hj. rewrite Vnth_cast, Vnth_app.
     destruct (le_gt_dec i j). rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
     rewrite Vnth_sub.
-    trans (Vnth v1 hj). sym. apply i2. clear -l0; omega. apply Vnth_eq.
-    clear -l0; omega. apply Vnth_eq. clear -l g; omega. rewrite Vnth_sub.
-    trans (Vnth v1 hj). sym. apply i2. clear -g; omega. apply Vnth_eq. refl.
+    trans (Vnth v1 hj). sym. apply i2. clear -l0; lia. apply Vnth_eq.
+    clear -l0; lia. apply Vnth_eq. clear -l g; lia. rewrite Vnth_sub.
+    trans (Vnth v1 hj). sym. apply i2. clear -g; lia. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vrel1_sub : forall n (v1 v2 : vector A n) p q (h : p+q<=n),
@@ -179,14 +179,14 @@ Section S.
   Proof.
     intros n v1 v2 p q k. rewrite Vrel1_nth_iff.
     intros [i [hi [i1 i2]]]. destruct (lt_dec i p).
-    left. apply Veq_nth. intros j hj. rewrite !Vnth_sub. apply i2. omega.
+    left. apply Veq_nth. intros j hj. rewrite !Vnth_sub. apply i2. lia.
     destruct (ge_dec i (p+q)).
-    left. apply Veq_nth. intros j hj. rewrite !Vnth_sub. apply i2. omega.
+    left. apply Veq_nth. intros j hj. rewrite !Vnth_sub. apply i2. lia.
     right. rewrite Vrel1_nth_iff.
-    exists (i-p). assert (l : i-p<q). omega. exists l. split.
+    exists (i-p). assert (l : i-p<q). lia. exists l. split.
     rewrite !Vnth_sub. erewrite Vnth_eq, Vnth_eq with (v:=v2). apply i1.
-    omega. omega.
-    intros j hj m. rewrite !Vnth_sub. apply i2. omega.
+    lia. lia.
+    intros j hj m. rewrite !Vnth_sub. apply i2. lia.
   Qed.
 
 (***********************************************************************)

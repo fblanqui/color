@@ -208,7 +208,7 @@ Module MatrixInt (Export MI : TMatrixInt).
 
         Proof.
           induction v1; intros; simpl.
-          destruct n. omega.
+          destruct n. lia.
 
           rewrite !Vcast_cons.
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
@@ -217,7 +217,7 @@ Module MatrixInt (Export MI : TMatrixInt).
           unfold MBI.vec_at0 in f_mon. apply f_mon; try hyp.
           apply (Vforall_in (x:=Vhead M) H). apply Vin_head.
 
-          destruct n0. omega.
+          destruct n0. lia.
           rewrite !Vcast_cons.
           unfold add_vectors, MBI.vec_at0, vector_plus. simpl.
           rewrite !Vnth_map2.
@@ -241,7 +241,7 @@ Module MatrixInt (Export MI : TMatrixInt).
       Proof.
         intros i j. gen i. clear i.
         induction j; intros.
-        destruct i. omega.
+        destruct i. lia.
         VSntac v. VSntac w. VSntac v'. VSntac w'.
         unfold dot_product. simpl.
         fold (dot_product (Vtail v') (Vtail w')). 
@@ -252,7 +252,7 @@ Module MatrixInt (Export MI : TMatrixInt).
         apply (Vforall2_elim_nth (R:=ge)). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
         rewrite (lt_unique (lt_O_Sn i) jp). hyp.
-        destruct i. omega.
+        destruct i. lia.
         VSntac v. VSntac w. VSntac v'. VSntac w'.
         unfold dot_product. simpl.
         fold (dot_product (Vtail v') (Vtail w')). 

@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics Omega. 
+From Coq Require Import Morphisms Basics Lia. 
 From CoLoR Require Import SN VecUtil LogicUtil SetUtil.
 From CoLoR Require Export LSimple LComp.
 
@@ -169,8 +169,8 @@ Module Make (Export ST : ST_Struct)
       vint Ts ts -> p <= n.
 
     Proof.
-      induction Ts; destruct ts; simpl; try omega.
-      intros [h1 h2]. gen (IHTs _ _ h2). omega.
+      induction Ts; destruct ts; simpl; try lia.
+      intros [h1 h2]. gen (IHTs _ _ h2). lia.
     Qed.
 
     Arguments vint_le [n Ts p ts] _.
@@ -206,15 +206,15 @@ Module Make (Export ST : ST_Struct)
       -> vint Ts ts.
 
     Proof.
-      induction Ts; destruct ts; intros a b; simpl; auto. omega. split.
-      assert (p: 0<S n). omega. assert (q:0<S n0). omega. gen (b _ p q). auto.
-      apply IHTs. omega. intros j p q.
-      assert (p': S j<S n). omega. assert (q':S j<S n0). omega. gen (b _ p' q').
-      rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (S j)). 2: omega.
+      induction Ts; destruct ts; intros a b; simpl; auto. lia. split.
+      assert (p: 0<S n). lia. assert (q:0<S n0). lia. gen (b _ p q). auto.
+      apply IHTs. lia. intros j p q.
+      assert (p': S j<S n). lia. assert (q':S j<S n0). lia. gen (b _ p' q').
+      rewrite 2!Vnth_cons. destruct (NatUtil.lt_ge_dec 0 (S j)). 2: lia.
       assert (c : Vnth Ts (Vnth_cons_tail_aux p' l) = Vnth Ts p).
-      apply Vnth_eq. omega.
+      apply Vnth_eq. lia.
       assert (d : Vnth ts (Vnth_cons_tail_aux q' l) = Vnth ts q).
-      apply Vnth_eq. omega.
+      apply Vnth_eq. lia.
       rewrite c, d. auto.
     Qed.
 
@@ -240,7 +240,7 @@ Module Make (Export ST : ST_Struct)
       vint (Vsub Ts h) ts -> vint Ts ts.
 
     Proof.
-      intros n Ts p ts h. rewrite 2!vint_eq; try omega. intuition.
+      intros n Ts p ts h. rewrite 2!vint_eq; try lia. intuition.
       gen (H _ jp jp). rewrite Vnth_sub. erewrite Vnth_eq. intro i; apply i.
       refl.
     Qed.
@@ -257,7 +257,7 @@ Module Make (Export ST : ST_Struct)
       q (h : 0+q<=p), vint Ts ts -> vint Ts (Vsub ts h).
 
     Proof.
-      intros n Ts p ts q h hts. apply vint_intro_nth. gen (vint_le hts). omega.
+      intros n Ts p ts q h hts. apply vint_intro_nth. gen (vint_le hts). lia.
       intros j jn jq. rewrite Vnth_sub. apply vint_elim_nth. hyp.
     Qed.
 
@@ -289,7 +289,7 @@ Module Make (Export ST : ST_Struct)
 
     Proof.
       intros n Ts p ts q us h.
-      assert (a : p+q<=p+q). omega. rewrite <- Vsub_app_r with (v1:=ts) (h:=a).
+      assert (a : p+q<=p+q). lia. rewrite <- Vsub_app_r with (v1:=ts) (h:=a).
       apply vint_sub_intro. hyp. refl.
     Qed.
 
@@ -300,8 +300,8 @@ Module Make (Export ST : ST_Struct)
     Proof.
       induction Ts; simpl.
       destruct ts; simpl; intros q us i.
-      assert (q=0). omega. subst. VOtac. fo.
-      omega.
+      assert (q=0). lia. subst. VOtac. fo.
+      lia.
       destruct ts; simpl; intros q us i.
       destruct us; simpl. fo. rewrite Vsub_cons. intuition.
       eapply vint_sub_typ_elim. apply H2.
@@ -342,11 +342,11 @@ Module Make (Export ST : ST_Struct)
     Proof.
       induction V; simpl; intros v n hn hv.
       (* base *)
-      assert (n=0). omega. subst n.
+      assert (n=0). lia. subst n.
       change (I s (apps v Vnil)). apply hv. auto.
       (* arrow *)
       destruct n. gen (hv Vnil). fo.
-      intros v1 h1. apply IHV2 with (n:=n). omega. intros vs hvs.
+      intros v1 h1. apply IHV2 with (n:=n). lia. intros vs hvs.
       change (int (output V2 n) (apps v (Vcons v1 vs))). apply hv. fo.
     Qed.
 

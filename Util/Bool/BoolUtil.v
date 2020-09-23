@@ -9,7 +9,7 @@ general results on booleans
 
 Set Implicit Arguments.
 
-From Coq Require Import Arith Omega.
+From Coq Require Import Arith Omega Lia.
 From Coq Require Export Bool.
 From Coq Require Setoid.
 
@@ -197,7 +197,7 @@ Section bforall_lt.
   Proof.
     unfold forall_lt. induction n; simpl; intros. bool. firstorder auto with zarith.
     rewrite andb_eq, IHn, bP_ok. intuition.
-    destruct (Nat.eq_dec i n). subst. hyp. apply H2. omega.
+    destruct (Nat.eq_dec i n). subst. hyp. apply H2. lia.
   Qed.
 
   Definition bforall_lt := bforall_lt_aux true.

@@ -12,19 +12,9 @@
 (** * Unit Equational theory on a term algebra *)
 
 
-From Coq Require Import Arith.
-From Coq Require Import Max.
-From Coq Require Import List.
-From CoLoR Require Import closure.
-From CoLoR Require Import more_list.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import list_sort.
-From Coq Require Import Relations.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import equational_theory.
-From CoLoR Require Import ac. 
-From CoLoR Require Import cf_eq_ac. 
-From CoLoR Require Import rpo.
+From Coq Require Import Arith Max List Relations.
+From CoLoR Require Import closure more_list weaved_relation list_sort term_spec
+     equational_theory ac cf_eq_ac rpo.
 
 (** ** Module Type EqTh, an equational theory over a term algebra. *)
 

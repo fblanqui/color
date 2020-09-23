@@ -123,7 +123,7 @@ Section S.
     rewrite (H n). assert (Vmap (int v) v0 = Vmap (int (fval v n)) v0).
     apply Vmap_eq. apply Vforall_intro. intros. apply term_int_eq_fval_lt.
     apply le_lt_trans with (Vmax (Vmap (@maxvar Sig) v0)). apply Vmax_in.
-    apply Vin_map_intro. hyp. hyp. rewrite H1. refl. unfold maxvars. omega.
+    apply Vin_map_intro. hyp. hyp. rewrite H1. refl. unfold maxvars. lia.
     (* Vnil *)
     refl.
     (* Vcons *)
@@ -464,7 +464,7 @@ Fixpoint enum_tuple2 n : list (vector I n) :=
       unfold enum. rewrite in_flat_map. exists (vec_of_val x0 (S n)). split.
       apply enum_tuple_complete. subst.
       change (In (lab_rule x0 x) (map (lab_rule (fval x0 (S n))) R)).
-      rewrite map_lab_rule_fval. apply in_map. hyp. unfold n. omega.
+      rewrite map_lab_rule_fval. apply in_map. hyp. unfold n. lia.
     Qed.
 
     Infix "[=]" := equiv.

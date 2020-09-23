@@ -10,7 +10,7 @@ when the union of two wellfounded relations is wellfounded
 
 Set Implicit Arguments.
 
-From Coq Require Import Omega Wellfounded.Union.
+From Coq Require Import Lia Wellfounded.Union.
 From CoLoR Require Import SN RelUtil LogicUtil AccUtil NotSN_IS ClassicUtil
      LeastNat DepChoice.
     
@@ -57,7 +57,7 @@ Section S.
     assert (hi0' : forall i, i0 < i -> S (f i) (f (1+i))).
     intros i ii0. gen (hi0 i). rewrite not_and_eq. fo.
     absurd (NT S (f (i0+1))). apply SN_notNT. fo.
-    exists (fun i => f (i+(i0+1))). split. refl. intro i. apply hi0'. omega.
+    exists (fun i => f (i+(i0+1))). split. refl. intro i. apply hi0'. lia.
     (* We prove that, for all [i], there is [j > i] such that
        [R (f j) (f (j+1))] and, for all [k] between [i] and [j],
        [S (f k) (f (k+1))]. *)
@@ -65,7 +65,7 @@ Section S.
         /\ forall k, i < k < j -> S (f k) (f (1+k))).
     intro i. gen (ch_min (a1 i)); intros [j [[[j1 j2] j3] j4]].
     ex j. split. hyp. split. hyp. intros k ikj. destruct (f2 k). 2: hyp.
-    assert (j <= k). apply j3. fo. omega.
+    assert (j <= k). apply j3. fo. lia.
     (* Let [i0] be the first or second [R] step in [f]. *)
     destruct (a2 0) as [i0 [i0h [i0r i0s]]].
     (* Let [b] be the function mapping [j] to [i] and such that [b 0 = i0]. *)
@@ -76,8 +76,8 @@ Section S.
     rewrite b2. refl.
     intro i. ex (f (1 + b i)). split.
     destruct i. rewrite b2. hyp. gen (b1 i). fo.
-    apply rtc_intro_seq. gen (b1 i). omega.
-    intros k hk. gen (b1 i). intros [c1 [c2 c3]]. apply c3. omega.
+    apply rtc_intro_seq. gen (b1 i). lia.
+    intros k hk. gen (b1 i). intros [c1 [c2 c3]]. apply c3. lia.
     (* We therefore get a contradiction since [R @ S# << R] and [R] is WF. *)
     revert a3. apply SN_notNT. apply (SN_incl R).
     apply absorbs_right_rtc. hyp. fo.

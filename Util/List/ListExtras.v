@@ -35,7 +35,7 @@ Section InitialSeg.
     simpl.
     intros n n_l.
     destruct n.
-    omega.
+    lia.
     simpl.
     rewrite IHl; trivial.
     auto with arith.
@@ -59,7 +59,7 @@ Section InitialSeg.
     induction l; intros size x x_size.
     destruct size; trivial.
     destruct size; simpl.
-    omega.
+    lia.
     destruct x; simpl.
     trivial.
     apply IHl.
@@ -86,10 +86,10 @@ Section InitialSeg.
   Proof.
     induction l; intros.
     destruct n; simpl; trivial.
-    simpl in H; omega.
+    simpl in H; lia.
     destruct n; simpl; trivial.
     rewrite (IHl l' n); trivial.
-    simpl in H; omega.
+    simpl in H; lia.
   Qed.
 
 End InitialSeg.
@@ -115,8 +115,8 @@ Section Seg.
     induction l.
     destruct m; destruct n; trivial.
     destruct m; destruct n; simpl; try solve
-      [intro x; omega].
-    intro n_l; do 2 (rewrite initialSeg_full; [idtac | omega]); trivial.
+      [intro x; lia].
+    intro n_l; do 2 (rewrite initialSeg_full; [idtac | lia]); trivial.
     apply IHl.
     intro n_m; rewrite (IHl m (S n)); trivial.
   Qed.
@@ -129,7 +129,7 @@ Section Seg.
     destruct i; destruct j; destruct x; trivial.
     intros i j x x_j.
     destruct i; simpl.
-    destruct j; destruct x; simpl; try solve [omega | trivial].
+    destruct j; destruct x; simpl; try solve [lia | trivial].
     change x at 2 with (0 + x).
     assert (xj: x < j).
     auto with arith.
@@ -140,7 +140,7 @@ Section Seg.
   Lemma seg_exceeded l k n : n >= length l -> seg l k n = seg l k (length l).
 
   Proof.
-    intro. rewrite seg_tillEnd, (@seg_tillEnd l k (length l)); trivial; omega.
+    intro. rewrite seg_tillEnd, (@seg_tillEnd l k (length l)); trivial; lia.
   Qed.
 
 End Seg.
@@ -157,14 +157,14 @@ Section FinalSeg.
 
   Lemma finalSeg_full l : finalSeg l 0 = l.
 
-  Proof. unfold finalSeg; simpl. rewrite initialSeg_full; trivial. omega. Qed.
+  Proof. unfold finalSeg; simpl. rewrite initialSeg_full; trivial. lia. Qed.
 
   Lemma finalSeg1_tail : forall l, finalSeg l 1 = tail l.
 
   Proof.
     destruct l; unfold finalSeg; simpl; trivial.
     rewrite initialSeg_full; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma finalSeg_empty : forall l k, k >= length l -> finalSeg l k = nil.
@@ -175,12 +175,12 @@ Section FinalSeg.
     intros k k_al.
     destruct k.
     simpl in k_al.
-    omega.
+    lia.
     unfold finalSeg; simpl.
     fold (finalSeg l k).
     apply IHl.
     simpl in k_al.
-    omega.
+    lia.
   Qed.
 
   Lemma finalSeg_cons : forall a l, finalSeg (a::l) 1 = l.
@@ -189,7 +189,7 @@ Section FinalSeg.
     intros.
     unfold finalSeg; simpl.
     rewrite initialSeg_full; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma nth_finalSeg_nth: forall l k p,
@@ -210,7 +210,7 @@ Section FinalSeg.
     intros.
     rewrite nth_finalSeg_nth.
     replace (k + (p - k)) with p; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma finalSeg_length : forall l k, length (finalSeg l k) = length l - k.
@@ -221,7 +221,7 @@ Section FinalSeg.
     destruct k; trivial.
     simpl.
     rewrite initialSeg_full; trivial.
-    omega.
+    lia.
     unfold finalSeg; simpl.
     fold (finalSeg l k).
     apply IHl.
@@ -232,14 +232,14 @@ Section FinalSeg.
 
   Proof.
     induction l; intros.    
-    simpl; replace (n - 0) with n; [trivial | omega].
+    simpl; replace (n - 0) with n; [trivial | lia].
     destruct n.
-    omega.
+    lia.
     unfold finalSeg; simpl.
     fold (finalSeg (l ++ k) n).
     rewrite (IHl k n).
     unfold finalSeg; trivial.
-    simpl in H; omega.
+    simpl in H; lia.
   Qed.
 
   Lemma finalSeg_nth_idx : forall l i j a,
@@ -250,13 +250,13 @@ Section FinalSeg.
     destruct i; destruct j; inversion H.
     destruct i.
     destruct j.
-    simpl; omega.
+    simpl; lia.
     simpl in *; rewrite initialSeg_full in H; auto with arith.
-    set (w := nth_some l j H); omega.
+    set (w := nth_some l j H); lia.
     simpl in * .
     assert (length l > i + j).
     apply IHl with a0; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma initialFinalSeg_length : forall l k,
@@ -266,7 +266,7 @@ Section FinalSeg.
     intros.
     rewrite initialSeg_length, finalSeg_length.
     destruct (Compare_dec.le_gt_dec k (length l)); 
-      solve [rewrite min_l; omega | rewrite min_r; omega].
+      solve [rewrite min_l; lia | rewrite min_r; lia].
   Qed.
 
   Lemma initialSeg_finalSeg_full : forall l k,
@@ -344,7 +344,7 @@ Section Copy.
   Proof.
     intros.
     rewrite nth_app_right, copy_length.
-    replace (n - n) with 0; [trivial | omega].
+    replace (n - n) with 0; [trivial | lia].
     rewrite copy_length.
     auto with arith.
   Qed.
@@ -378,13 +378,13 @@ Section Copy.
   Proof.
     induction k; intros.
     rewrite finalSeg_full.
-    replace (n - 0) with n; [trivial | omega].
+    replace (n - 0) with n; [trivial | lia].
     destruct n.
-    omega.
+    lia.
     unfold finalSeg; simpl.
     fold (finalSeg (copy n el ++ l) k).
     rewrite IHk; trivial.
-    omega.
+    lia.
   Qed.
 
 End Copy.
@@ -412,13 +412,13 @@ Section InsertNth.
   Proof.
     induction l; simpl; intros.
     destruct p; trivial.
-    omega.
+    lia.
     destruct p; trivial.
     simpl.
     unfold finalSeg; simpl.
     fold (finalSeg l p); fold (insert_nth l p el).
     apply IHl.
-    omega.
+    lia.
   Qed.
 
 End InsertNth.
@@ -442,8 +442,8 @@ Section DropNth.
     change (drop_nth (a :: l) (S p)) with (a :: drop_nth l p).
     simpl in *; rewrite IHp.
     destruct l; trivial.
-    simpl in H; omega.
-    omega.
+    simpl in H; lia.
+    lia.
   Qed.
 
   Lemma drop_nth_beyond : forall l p, length l <= p -> drop_nth l p = l.
@@ -452,10 +452,10 @@ Section DropNth.
     induction l; intros.
     destruct p; trivial.
     destruct p.
-    simpl in H; omega.
+    simpl in H; lia.
     change (drop_nth (a::l) (S p)) with (a :: drop_nth l p).
     rewrite IHl; trivial.
-    simpl in H; omega.
+    simpl in H; lia.
   Qed.
 
   Lemma drop_nth_length : forall l p,
@@ -465,7 +465,7 @@ Section DropNth.
     intros.
     destruct (le_gt_dec (length l) p).
     rewrite drop_nth_beyond; trivial.
-    omega.
+    lia.
     rewrite drop_nth_in_length; auto.
   Qed.
 
@@ -490,7 +490,7 @@ Section DropNth.
   Proof.
     induction l; simpl; intros.
     destruct p; trivial.
-    omega.
+    lia.
     destruct p.
     unfold insert_nth; simpl.
     rewrite finalSeg_full.
@@ -499,7 +499,7 @@ Section DropNth.
     change (drop_nth (insert_nth (a::l) (S p) el) (S p)) with
       (a :: drop_nth (insert_nth l p el) p).
     rewrite IHl; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma insert_nth_drop_nth : forall p l el, nth_error l p = Some el ->
@@ -549,10 +549,10 @@ Section CountIn.
   Proof.
     induction l; inversion 1; intro; simpl.
     rewrite H0; destruct (eqA_dec a' a).
-    omega.
+    lia.
     absurd (eqA a' a); intuition.
     destruct (eqA_dec a' a0).
-    omega.
+    lia.
     apply IHl; trivial.
   Qed.
 
@@ -561,7 +561,7 @@ Section CountIn.
 
   Proof.
     induction l; simpl.
-    intro w; omega.
+    intro w; lia.
     destruct (eqA_dec a a0).
     intros _.
     exists a0; auto.
@@ -575,7 +575,7 @@ Section CountIn.
 
   Proof.
     induction l.
-    simpl; intros; omega.
+    simpl; intros; lia.
     simpl; intros.
     destruct (eqA_dec a a0).
     exists 0; exists a0.
@@ -593,7 +593,7 @@ Section CountIn.
     destruct p; trivial.
     destruct p.
     simpl; rewrite drop_nth_cons; destruct (eqA_dec el a).
-    omega.
+    lia.
     absurd (eqA el el'); trivial.
     inversion H; rewrite <- H2; trivial.
     rewrite drop_nth_succ.
@@ -603,7 +603,7 @@ Section CountIn.
     assert (el'el: eqA el' el).
     intuition.
     set (w := in_countIn l el'l el'el).
-    omega.
+    lia.
   Qed.
 
   Lemma countIn_dropNth_neq : forall l p el el',
@@ -862,13 +862,13 @@ Defined.
     inversion H.
     simpl; destruct (P_dec el).
     destruct (find_last l).
-    exists (S n); split; [trivial | omega].
-    exists 0; split; [trivial | omega].
+    exists (S n); split; [trivial | lia].
+    exists 0; split; [trivial | lia].
     absurd (P el); trivial.
     destruct (IHl p el) as [w [lw wp]]; trivial.
     exists (S w); split.
     simpl; rewrite lw; trivial.
-    omega.
+    lia.
   Qed.
 
 Lemma find_first_exist : forall x l, In x l -> P x -> find_first l <> None.
@@ -907,7 +907,7 @@ induction l; intros.
 simpl in H; discr.
 simpl in H. destruct (P_dec a).
 inversion H; subst.
-simpl; omega.
+simpl; lia.
 destruct (find_first l).
 inversion H; subst.
 simpl; apply lt_n_S; apply IHl; auto.
@@ -1070,7 +1070,7 @@ End List_Rel_Dec.
 
 Hint Rewrite initialSeg_full initialSeg_nth seg_nth seg_tillEnd seg_exceeded
   finalSeg_empty nth_finalSeg_nth nth_copy_in nth_app_left nth_app_right
-  using solve [omega | auto] : datatypes.
+  using solve [lia | auto] : datatypes.
 
 Hint Rewrite initialSeg_length finalSeg_full finalSeg_cons finalSeg_length
   initialFinalSeg_length copy_split copy_length : datatypes.

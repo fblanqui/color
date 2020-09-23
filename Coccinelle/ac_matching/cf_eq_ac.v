@@ -10,16 +10,8 @@
 (**************************************************************************)
 
 
-From Coq Require Import Setoid.
-From Coq Require Import Arith.
-From Coq Require Import List.
-From CoLoR Require Import closure.
-From CoLoR Require Import more_list.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import list_sort.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import ac.
-From Coq Require Import Morphisms.
+From Coq Require Import Setoid Arith List Morphisms.
+From CoLoR Require Import closure more_list weaved_relation list_sort term_spec ac.
 
 Set Implicit Arguments.
 
@@ -38,13 +30,7 @@ End S.
 Module Make (Ac1 : ac.S) <: S with Module Ac := Ac1.
 
 Module Ac := Ac1.
-Import Ac1.
-Import EqTh.
-Import Sort.
-Import T.
-Import F.
-Import X.
-Import LPermut.
+Import Ac1 EqTh Sort T F X LPermut.
 
 Lemma split_cf :
   forall f, arity f = AC -> forall t u1 u2, well_formed t ->

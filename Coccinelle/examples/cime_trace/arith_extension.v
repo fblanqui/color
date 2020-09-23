@@ -1,6 +1,5 @@
 From Coq Require Import Arith.
 
-
 Fixpoint le_bool (n m : nat ) : bool := 
   match n,m with 
     | 0,_ => true

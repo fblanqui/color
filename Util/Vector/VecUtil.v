@@ -255,8 +255,8 @@ Section Vnth.
 
   Proof.
     induction v; intro; case i1.
-    intro. absurd (0 <= 0); omega.
-    intros n h1. absurd (0 <= S n); omega.
+    intro. absurd (0 <= 0); lia.
+    intros n h1. absurd (0 <= S n); lia.
     intros. subst i2. refl.
     intros. subst i2. simpl. apply IHv. refl.
   Qed.
@@ -273,12 +273,12 @@ Section Vnth.
 
   Lemma Vnth_cons_tail_aux : forall n i, i < S n -> i > 0 -> i-1 < n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vnth_cons_tail : forall x n (v : vector A n) i (h1:i<S n) (h2:i>0),
     Vnth (Vcons x v) h1 = Vnth v (Vnth_cons_tail_aux h1 h2).
 
-  Proof. intros. simpl. destruct i. omega. apply Vnth_eq. omega. Qed.
+  Proof. intros. simpl. destruct i. lia. apply Vnth_eq. lia. Qed.
 
   Lemma Vnth_cons : forall x n (v : vector A n) i (h1:i<S n),
     Vnth (Vcons x v) h1 = match lt_ge_dec 0 i with
@@ -288,24 +288,24 @@ Section Vnth.
 
   Proof.
     intros. case (lt_ge_dec 0 i); intro. apply Vnth_cons_tail.
-    apply Vnth_cons_head. omega.
+    apply Vnth_cons_head. lia.
   Qed.
 
   Lemma Vnth_const : forall n (a : A) i (ip : i < n), Vnth (Vconst a n) ip = a.
 
   Proof.
-    induction n; intros. omega. destruct i. trivial. simpl. rewrite IHn. refl.
+    induction n; intros. lia. destruct i. trivial. simpl. rewrite IHn. refl.
   Qed.
 
   Lemma Vnth_cast_aux : forall n n' k, n = n' -> k < n' -> k < n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vnth_cast : forall n (v : vector A n) n' (e : n = n') k (h : k < n'),
     Vnth (Vcast v e) h = Vnth v (Vnth_cast_aux e h).
 
   Proof.
-    induction v as [|x p v IHv]. intros; omega. intros [|n']; try discr.
+    induction v as [|x p v IHv]. intros; lia. intros [|n']; try discr.
     inversion e; subst p; intros [|k] h; rewrite Vcast_refl; simpl.
     refl. rewrite (IHv n' (eq_refl n') k); apply Vnth_eq; refl.
   Qed.
@@ -365,7 +365,7 @@ Section Vadd.
 
   Lemma Vnth_add_aux : forall i n, i < S n -> i <> n -> i < n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vnth_add : forall n (v : vector A n) x i (h : i < S n),
     Vnth (Vadd v x) h =
@@ -377,17 +377,17 @@ Section Vadd.
   Proof.
     induction v; intros x i hi; simpl Vadd.
     (* nil *)
-    destruct (eq_nat_dec i 0). apply Vnth_cons_head. hyp. omega.
+    destruct (eq_nat_dec i 0). apply Vnth_cons_head. hyp. lia.
     (* cons *)
     destruct (eq_nat_dec i (S n)).
     (* i = S n *)
-    subst. rewrite Vnth_cons. destruct (lt_ge_dec 0 (S n)). 2: omega.
-    rewrite IHv. destruct (eq_nat_dec (S n - 1) n). refl. omega.
+    subst. rewrite Vnth_cons. destruct (lt_ge_dec 0 (S n)). 2: lia.
+    rewrite IHv. destruct (eq_nat_dec (S n - 1) n). refl. lia.
     (* i <> S n *)
     rename h into y. rewrite Vnth_cons. destruct (lt_ge_dec 0 i).
-    rewrite IHv. destruct (eq_nat_dec (i-1) n). omega.
-    rewrite Vnth_cons. destruct (lt_ge_dec 0 i). 2: omega. apply Vnth_eq. refl.
-    sym. apply Vnth_cons_head. omega.
+    rewrite IHv. destruct (eq_nat_dec (i-1) n). lia.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 i). 2: lia. apply Vnth_eq. refl.
+    sym. apply Vnth_cons_head. lia.
   Qed.
 
   Lemma Vadd_cons : forall x n (v : vector A (S n)),
@@ -419,13 +419,13 @@ Section Vreplace.
   Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vector A (S n)) a,
     Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
 
-  Proof. destruct n; intros. omega. VSntac v. refl. Qed.
+  Proof. destruct n; intros. lia. VSntac v. refl. Qed.
 
   Lemma Vnth_replace : forall n i (ip ip' : i < n) (v : vector A n) (a : A),
     Vnth (Vreplace v ip a) ip' = a.
 
   Proof.
-    induction n; intros. omega.
+    induction n; intros. lia.
     VSntac v. destruct i. trivial. simpl. apply IHn.
   Qed.
 
@@ -433,9 +433,9 @@ Section Vreplace.
     (v : vector A n) (a : A), i <> j -> Vnth (Vreplace v ip a) jp = Vnth v jp.
 
   Proof.
-    induction n; intros. omega.
+    induction n; intros. lia.
     VSntac v. destruct i; destruct j; trivial.
-    omega. simpl. rewrite IHn. trivial. omega.
+    lia. simpl. rewrite IHn. trivial. lia.
   Qed.
 
   Lemma Vreplace_pi : forall n (v : vector A n) i1 i2 (h1 : i1 < n)
@@ -443,7 +443,7 @@ Section Vreplace.
 
   Proof.
     intros. subst i2. revert i1 h1 h2. elim v; clear v; simpl; intros.
-    omega. destruct i1. refl. apply Vtail_eq. apply H.
+    lia. destruct i1. refl. apply Vtail_eq. apply H.
   Qed.
 
   Lemma Vreplace_eq_elim : forall n (v : vector A n) i (h : i < n) x x',
@@ -567,7 +567,7 @@ Section Vapp.
 
   Lemma Vnth_app_aux : forall n1 n2 i, i < n1+n2 -> n1 <= i -> i - n1 < n2.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vnth_app_aux [n1 n2 i] _ _.
 
@@ -579,12 +579,12 @@ Section Vapp.
     end.
 
   Proof.
-    induction v1; intros. simpl. apply Vnth_eq. omega.
+    induction v1; intros. simpl. apply Vnth_eq. lia.
     destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h0)). revert H.
     case (le_gt_dec n i); simpl; intros.
     (* case 1 *)
     trans (Vnth v2 (Vnth_app_aux (lt_S_n h0) l)). hyp.
-    apply Vnth_eq. omega.
+    apply Vnth_eq. lia.
     (* case 2 *)
     trans (Vnth v1 g). hyp. apply Vnth_eq. refl.
   Qed.
@@ -601,12 +601,12 @@ Section Vapp.
   Proof.
     induction v1; intros.
     simpl. destruct k. cong. refl.
-    rewrite !Vapp_cons. destruct k. refl. apply IHv1. omega.
+    rewrite !Vapp_cons. destruct k. refl. apply IHv1. lia.
   Qed.
 
   Lemma Vapp_cast_aux : forall n1 n2 n2', n2 = n2' -> n1+n2 = n1+n2'.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vapp_cast : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     n2' (e : n2 = n2'),
@@ -620,7 +620,7 @@ Section Vapp.
 
   Lemma Vadd_app_aux : forall p q, p + S q = S (p+q).
 
-  Proof. intros p q. omega. Qed.
+  Proof. intros p q. lia. Qed.
 
   Lemma Vadd_app : forall p (v : vector A p) q (w : vector A q) x,
     Vadd (Vapp v w) x = Vcast (Vapp v (Vadd w x)) (Vadd_app_aux p q).
@@ -705,7 +705,7 @@ Section Vin.
   Lemma Vnth_in : forall n (v : vector A n) k (h : k<n), Vin (Vnth v h) v.
 
   Proof.
-    induction v. intros. absurd (k<0); omega.
+    induction v. intros. absurd (k<0); lia.
     intro. destruct k; simpl. auto. intro. right. apply IHv.
   Qed.
 
@@ -815,13 +815,13 @@ Section Vsub.
 
   Lemma Vsub_aux1 : forall i k' n : nat, i + S k' <= n -> i < n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vsub_aux1 [i k' n] _.
 
   Lemma Vsub_aux2: forall i k' n : nat, i + S k' <= n -> S i + k' <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vsub_aux2 [i k' n] _.
 
@@ -841,7 +841,7 @@ Section Vsub.
 
   Lemma Vsub_nil_aux1 : forall i k, i+k <= 0 -> 0=k.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vsub_nil_aux1 [i k] _.
 
@@ -857,7 +857,7 @@ Section Vsub.
 
   Lemma Vnth_sub_aux : forall n i k j, i+k<=n -> j<k -> i+j<n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vnth_sub_aux [n i k j] _ _.
 
@@ -865,20 +865,20 @@ Section Vsub.
     Vnth (Vsub v h) p = Vnth v (Vnth_sub_aux h p).
 
   Proof.
-    induction k; intros. omega. simpl. destruct j. apply Vnth_eq. omega.
-    rewrite IHk. apply Vnth_eq. omega.
+    induction k; intros. lia. simpl. destruct j. apply Vnth_eq. lia.
+    rewrite IHk. apply Vnth_eq. lia.
   Qed.
 
   Lemma Vsub_cons_aux : forall n i k, S i + k <= S n -> i + k <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vsub_cons : forall x i k n (v : vector A n) (h : S i + k <= S n),
     Vsub (Vcons x v) h = Vsub v (Vsub_cons_aux h).
 
   Proof.
     intros. apply Veq_nth; intros. rewrite !Vnth_sub. simpl.
-    apply Vnth_eq. omega.
+    apply Vnth_eq. lia.
   Qed.
 
   Lemma Vsub_pi : forall n (v : vector A n) i k (h h' : i+k<=n),
@@ -897,7 +897,7 @@ Section Vsub.
 
   Lemma Vsub_cast_aux1 : forall n n' i k, n=n' -> i+k<=n' -> i+k<=n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vsub_cast_aux1 [n n' i k] _ _.
 
@@ -908,7 +908,7 @@ Section Vsub.
 
   Lemma Vcast_sub_aux1 : forall n i k j, i + k <= n -> k = j -> i + j <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vcast_sub_aux1 [n i k j] _ _.
 
@@ -922,7 +922,7 @@ Section Vsub.
 
   Lemma Vcons_nth_aux1 : forall n i k, i < n -> S i+k <= n -> i+S k <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vcons_nth : forall n (v : vector A n) i k (h1 : i<n)
     (h2 : S i + k <= n),
@@ -930,7 +930,7 @@ Section Vsub.
 
   Proof.
     intros. apply Veq_nth; intros.
-    destruct i0; simpl; repeat rewrite Vnth_sub; apply Vnth_eq; omega.
+    destruct i0; simpl; repeat rewrite Vnth_sub; apply Vnth_eq; lia.
   Qed.
 
   Lemma Vsub_cons_intro_aux : forall n (v : vector A n) i k (h : i+k<=n)
@@ -939,24 +939,24 @@ Section Vsub.
 
   Proof.
     intros. apply Veq_nth; intros. rewrite Vnth_cast.
-    destruct i0; simpl; rewrite !Vnth_sub; apply Vnth_eq; omega.
+    destruct i0; simpl; rewrite !Vnth_sub; apply Vnth_eq; lia.
   Qed.
 
   Lemma Vsub_cons_intro_aux1 : forall n i k, i+k<=n -> k>0 -> i<n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vsub_cons_intro_aux1 [n i k] _ _.
 
   Lemma Vsub_cons_intro_aux2 : forall n i k, i+k<=n -> k>0 -> S i+pred k <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Vsub_cons_intro_aux2 [n i k] _ _.
 
   Lemma Vsub_cons_intro_aux3 : forall k, k>0 -> S(pred k) = k.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vsub_cons_intro :  forall n (v : vector A n) i k (h : i+k<=n) (p : k>0),
     Vsub v h = Vcast (Vcons (Vnth v (Vsub_cons_intro_aux1 h p))
@@ -971,7 +971,7 @@ Section Vsub.
   Proof.
     induction v; intros.
     (* Vnil *)
-    apply Veq_nth; intros. omega.
+    apply Veq_nth; intros. lia.
     (* Vcons *)
     destruct i; simpl in *; [rewrite Vcast_refl | rewrite Vcast_cons];
       f_equal; rewrite !Vsub_cons.
@@ -983,15 +983,15 @@ Section Vsub.
 
   Lemma Veq_app_aux1 : forall n i, i <= n -> 0 + i <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Veq_app_aux2 : forall n i, i <= n -> i + (n - i) <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Veq_app_aux3 : forall n i, i <= n -> i + (n - i) = n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Veq_app : forall n (v : vector A n) i (h : i<=n),
     v = Vcast (Vapp (Vsub v (Veq_app_aux1 h)) (Vsub v (Veq_app_aux2 h)))
@@ -1006,27 +1006,27 @@ Section Vsub.
   Proof.
     induction v; intros.
     (* Vnil *)
-    apply Veq_nth; intros. omega.
+    apply Veq_nth; intros. lia.
     (* Vcons *)
     destruct i; simpl; rewrite Vcast_cons; f_equal; rewrite !Vsub_cons.
     (* i = 0 *)
     apply Veq_nth; intros. rewrite Vnth_cast, Vnth_sub.
-    apply Vnth_eq. omega.
+    apply Vnth_eq. lia.
     (* i > 0 *)
     apply IHv.
   Qed.
 
   Lemma Veq_app_cons_aux1 : forall n i, i < n -> 0 + i <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Veq_app_cons_aux2 : forall n i, i < n -> S i + (n - S i) <= n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Veq_app_cons_aux3 : forall n i, i < n -> i + S (n - S i) = n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Veq_app_cons : forall n (v : vector A n) i (h : i<n),
     v = Vcast (Vapp (Vsub v (Veq_app_cons_aux1 h))
@@ -1040,7 +1040,7 @@ Section Vsub.
     Vsub v h1 = Vsub v' h1 -> Vsub v h2 = Vsub v' h2 -> v = v'.
 
   Proof.
-    intros. assert (e:i+(n-i)=n). omega.
+    intros. assert (e:i+(n-i)=n). lia.
     rewrite (Veq_app_aux v h1 h2 e), (Veq_app_aux v' h1 h2 e).
     apply Vcast_eq_intro. apply Vapp_eq_intro; hyp.
   Qed.
@@ -1056,7 +1056,7 @@ Section Vsub.
     Vnth v h2 = Vnth v' h2 -> Vsub v h3 = Vsub v' h3 -> v = v'.
 
   Proof.
-    intros. assert (e:i+S(n-S i)=n). omega.
+    intros. assert (e:i+S(n-S i)=n). lia.
     rewrite (Veq_app_cons_aux v h1 h2 h3 e), (Veq_app_cons_aux v' h1 h2 h3 e).
     apply Vcast_eq_intro. apply Vapp_eq_intro. hyp. apply Vcons_eq_intro; hyp.
   Qed.
@@ -1073,7 +1073,7 @@ Section Vsub.
 
   Proof.
     intros. apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_replace_neq.
-    2: omega. apply Vnth_eq. refl.
+    2: lia. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vsub_replace_r : forall n (v : vector A n) i (h : i<n) x j k
@@ -1081,12 +1081,12 @@ Section Vsub.
 
   Proof.
     intros. apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_replace_neq.
-    2: omega. apply Vnth_eq. refl.
+    2: lia. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vsub_app_l_aux : forall n1 n2 i, i <= n1 -> 0 + i <= n1 + n2.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma Vsub_app_l : forall n1 (v1 : vector A n1) n2 (v2 : vector A n2)
     (h : 0+n1<=n1+n2), Vsub (Vapp v1 v2) h = v1.
@@ -1124,7 +1124,7 @@ Section Vremove_last.
 
   Lemma Vremove_last_aux : forall n, 0 + n <= S n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Definition Vremove_last A n (v : vector A (S n)) : vector A n :=
     Vsub v (Vremove_last_aux n).
@@ -1148,7 +1148,7 @@ Section Vremove_last.
   Proof.
     intros n v x. apply Veq_nth. intros i h.
     rewrite Vnth_remove_last, Vnth_add.
-    destruct (eq_nat_dec i n). omega. apply Vnth_eq. refl.
+    destruct (eq_nat_dec i n). lia. apply Vnth_eq. refl.
   Qed.
 
 End Vremove_last.
@@ -1191,8 +1191,8 @@ Section Vlast.
     intros x n v. apply Veq_nth. intros i h.
     destruct (lt_dec i n).
     rewrite Vnth_addl with (H2:=l), Vnth_remove_last. apply Vnth_eq. refl.
-    rewrite Vnth_addr. 2: omega.
-    assert (e : i=n). omega. subst i. rewrite Vlast_nth with (h:=h). refl.
+    rewrite Vnth_addr. 2: lia.
+    assert (e : i=n). lia. subst i. rewrite Vlast_nth with (h:=h). refl.
   Qed.
 
   Lemma VSn_add : forall n (v : vector A (S n)),
@@ -1475,7 +1475,7 @@ Section Vforall2.
     (ip : i < n), Vforall2 v1 v2 -> R (Vnth v1 ip) (Vnth v2 ip).
 
   Proof.
-    induction v1; intros. absurd (i<0); omega. revert H. VSntac v2.
+    induction v1; intros. absurd (i<0); lia. revert H. VSntac v2.
     unfold Vforall2. destruct i; simpl. tauto. intuition.
   Qed.
 
@@ -1485,7 +1485,7 @@ Section Vforall2.
   Proof.
     unfold Vforall2. induction v1; intros. VOtac. simpl. auto.
     revert H. VSntac v2. intro. split. apply (H0 0 (lt_O_Sn _)).
-    apply IHv1. intros. assert (S i< S n). omega. ded (H0 _ H1). simpl in H2.
+    apply IHv1. intros. assert (S i< S n). lia. ded (H0 _ H1). simpl in H2.
     assert (ip = lt_S_n H1). apply lt_unique. rewrite H3. hyp.
   Qed.
 
@@ -1505,13 +1505,13 @@ Section Vforall2.
 
   Proof.
     intro h. apply Vforall2_intro_nth. intros i hi.
-    assert (hi' : i < n1+n2). omega.
+    assert (hi' : i < n1+n2). lia.
     assert (a1 : Vnth v1 hi = Vnth (Vapp v1 v2) hi').
     rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
-    omega. apply Vnth_eq. refl.
+    lia. apply Vnth_eq. refl.
     assert (a2 : Vnth v1' hi = Vnth (Vapp v1' v2') hi').
     rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 i).
-    omega. apply Vnth_eq. refl.
+    lia. apply Vnth_eq. refl.
     rewrite a1, a2. apply Vforall2_elim_nth. hyp.
   Qed.
 
@@ -1521,13 +1521,13 @@ Section Vforall2.
 
   Proof.
     intro h. apply Vforall2_intro_nth. intros i hi.
-    assert (hi' : n1+i < n1+n2). omega.
+    assert (hi' : n1+i < n1+n2). lia.
     assert (a1 : Vnth v2 hi = Vnth (Vapp v1 v2) hi').
     rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
-    apply Vnth_eq. omega. omega.
+    apply Vnth_eq. lia. lia.
     assert (a2 : Vnth v2' hi = Vnth (Vapp v1' v2') hi').
     rewrite Vnth_app. destruct (Compare_dec.le_gt_dec n1 (n1+i)).
-    apply Vnth_eq. omega. omega.
+    apply Vnth_eq. lia. lia.
     rewrite a1, a2. apply Vforall2_elim_nth. hyp.
   Qed.
 
@@ -1752,7 +1752,7 @@ Section Vbuild.
   Proof.
     induction n; intros gen i ip.
     (* case n = 0 *)
-    omega.
+    lia.
     (* case n = S p *)
     destruct i; simpl.
     (* case i = 0 *)
@@ -1919,7 +1919,7 @@ Section vec_of_list.
     Vnth (vec_of_list l) Hi = nth i l d.
 
   Proof.
-    induction l. simpl. intros. omega.
+    induction l. simpl. intros. lia.
     intros. rewrite vec_of_list_cons. destruct i; simpl; auto.
   Qed.
 
@@ -1928,8 +1928,8 @@ Section vec_of_list.
 
   Proof.
     induction i; intros.
-    destruct l; simpl in *. contradict Hi; omega. auto.
-    destruct l; simpl in *. contradict Hi; omega. apply IHi.
+    destruct l; simpl in *. contradict Hi; lia. auto.
+    destruct l; simpl in *. contradict Hi; lia. apply IHi.
   Qed.
 
   Lemma list_of_vec_exact : forall i n (v : vector A n) (Hi : i < n),
@@ -1937,8 +1937,8 @@ Section vec_of_list.
 
   Proof.
     induction i; intros.
-    destruct v; simpl in *. contradict Hi; omega. auto.
-    destruct v; simpl in *. contradict Hi; omega. apply IHi.
+    destruct v; simpl in *. contradict Hi; lia. auto.
+    destruct v; simpl in *. contradict Hi; lia. apply IHi.
   Qed.
 
 End vec_of_list.
@@ -1985,8 +1985,8 @@ Lemma Vnth_vec_opt_of_list A : forall i m (l : list A) (im : i < m)
 
 Proof.
   induction i.
-  destruct m. omega. destruct l. simpl; omega. refl.
-  destruct m. omega. destruct l. simpl; omega.
+  destruct m. lia. destruct l. simpl; lia. refl.
+  destruct m. lia. destruct l. simpl; lia.
   simpl. intros im il. erewrite IHi. refl.
 Qed.
 
@@ -2156,7 +2156,7 @@ Section Vmap2.
 
   Proof.
     induction n; intros.
-    VOtac. omega.
+    VOtac. lia.
     VSntac vl. VSntac vr. destruct i. refl. 
     simpl. apply IHn.
   Qed.
@@ -2240,7 +2240,7 @@ Section Vopt_filter.
       end.
 
   Proof.
-    intros p xs. induction ks; intros i hi. omega. simpl. destruct i as [|i].
+    intros p xs. induction ks; intros i hi. lia. simpl. destruct i as [|i].
     destruct (lt_dec h p); refl. apply IHks.
   Qed.
 
@@ -2250,7 +2250,7 @@ Section Vopt_filter.
       exists h : Vnth ks hi < p, x = Vnth xs h.
 
   Proof.
-    intros p xs. induction ks; intros i hi x. omega. rename h into k.
+    intros p xs. induction ks; intros i hi x. lia. rename h into k.
     simpl. destruct i as [|i]. 2: fo.
     destruct (lt_dec k p). 2: discr. intro hx; inversion hx. exists l. refl.
   Qed.
@@ -2260,9 +2260,9 @@ Section Vopt_filter.
     Vnth (Vopt_filter ks xs) hi = Some (Vnth xs h).
 
   Proof.
-    intros p xs. induction ks; intros i hi. exfalso. omega. rename h into k.
+    intros p xs. induction ks; intros i hi. exfalso. lia. rename h into k.
     simpl. destruct i as [|i]; intro hj. 2: fo.
-    destruct (lt_dec k p). 2: omega. f_equal. apply Vnth_eq. refl.
+    destruct (lt_dec k p). 2: lia. f_equal. apply Vnth_eq. refl.
   Qed.
 
   Lemma Vopt_filter_cast p (xs : vector A p) p' (h : p = p') :
@@ -2278,8 +2278,8 @@ Section Vopt_filter.
 
   Proof.
     induction ks; simpl; intros i hi. fo. destruct i.
-    destruct (lt_dec h p); destruct (lt_dec h (p+q)); try (discr||omega).
-    rewrite Vnth_app. destruct (le_gt_dec p h). omega.
+    destruct (lt_dec h p); destruct (lt_dec h (p+q)); try (discr||lia).
+    rewrite Vnth_app. destruct (le_gt_dec p h). lia.
     rewrite Vnth_eq with (h2:=g); auto.
     apply IHks.
   Qed.
@@ -2330,9 +2330,9 @@ Lemma sorted_cons_elim n k (ks : vector nat n) :
 Proof.
   intros h i hi j hj ij. gen (h _ (lt_n_S hi) _ (lt_n_S hj) (lt_n_S ij)).
   rewrite !Vnth_cons.
-  destruct (lt_ge_dec 0 (S i)); destruct (lt_ge_dec 0 (S j)); try omega.
+  destruct (lt_ge_dec 0 (S i)); destruct (lt_ge_dec 0 (S j)); try lia.
   rewrite Vnth_eq with (h2:=hi),
-    Vnth_eq with (h1 := Vnth_cons_tail_aux (lt_n_S hj) l0) (h2:=hj); omega.
+    Vnth_eq with (h1 := Vnth_cons_tail_aux (lt_n_S hj) l0) (h2:=hj); lia.
 Qed.
 
 Lemma Vnth_opt_filter_sorted_None A p (ts : vector A p) :
@@ -2341,19 +2341,19 @@ Lemma Vnth_opt_filter_sorted_None A p (ts : vector A p) :
       forall j (hj : j < n), i < j -> Vnth (Vopt_filter ks ts) hj = None.
 
 Proof.
-  induction ks as [|k n ks]; intros hks i i1 i2 j j1 ij. omega.
+  induction ks as [|k n ks]; intros hks i i1 i2 j j1 ij. lia.
   gen (sorted_cons_elim hks); intro ks_sorted.
   gen (hks _ i1 _ j1 ij). revert i2. simpl Vopt_filter. rewrite !Vnth_cons.
   destruct (lt_ge_dec 0 i).
   (* 0 < i *)
-  intro ai. destruct (lt_ge_dec 0 j). 2: omega.
-  intros _. eapply IHks. hyp. apply ai. omega.
+  intro ai. destruct (lt_ge_dec 0 j). 2: lia.
+  intros _. eapply IHks. hyp. apply ai. lia.
   (* 0 >= i *)
-  assert (i = 0). omega. subst i. clear g.
+  assert (i = 0). lia. subst i. clear g.
   destruct (lt_dec k p). discr. intros _.
   destruct (lt_ge_dec 0 j). 2: refl.
   rewrite Vnth_opt_filter.
-  destruct (lt_dec (Vnth ks (Vnth_cons_tail_aux j1 l)) p). omega. refl.
+  destruct (lt_dec (Vnth ks (Vnth_cons_tail_aux j1 l)) p). lia. refl.
 Qed.
 
 (***********************************************************************)
@@ -2386,34 +2386,34 @@ Proof.
   assert (tsus' : forall i (ip:i<p), Vin i ks -> R (Vnth ts ip) (Vnth us ip)).
   intros i ip hi. apply tsus. simpl. auto.
   gen (IH ks_sorted tsus'). intros [i [i1 [i2 i3]]].
-  assert (a : S i <= S n). omega. ex (S i) a. split.
+  assert (a : S i <= S n). lia. ex (S i) a. split.
 
   apply Vforall2_intro_nth. intros j jSi. rewrite !Vnth_sub, !Vnth_cons. simpl.
   destruct (lt_ge_dec 0 j).
-  assert (b : j - 1 < i). omega. gen (Vforall2_elim_nth b i2).
+  assert (b : j - 1 < i). lia. gen (Vforall2_elim_nth b i2).
   rewrite !Vnth_sub. erewrite Vnth_eq.
   erewrite Vnth_eq with (v := Vopt_filter ks us).
-  apply impl_refl. omega. omega.
+  apply impl_refl. lia. lia.
   apply opt_intro. apply tsus. fo.
 
   apply Vforall2_intro_nth. intros j hj. rewrite !Vnth_sub, !Vnth_cons.
-  destruct (lt_ge_dec 0 (S i + j)). 2: omega.
-  assert (b : j < n - i). omega. gen (Vforall2_elim_nth b i3).
+  destruct (lt_ge_dec 0 (S i + j)). 2: lia.
+  assert (b : j < n - i). lia. gen (Vforall2_elim_nth b i3).
   rewrite !Vnth_sub. erewrite Vnth_eq.
   erewrite Vnth_eq with (v := Vopt_filter ks us).
-  apply impl_refl. omega. omega.
+  apply impl_refl. lia. lia.
   (* k >= p *)
-  assert (a : 0 <= S n). omega. ex 0 a. split.
-  apply Vforall2_intro_nth. intros j hj. omega.
+  assert (a : 0 <= S n). lia. ex 0 a. split.
+  apply Vforall2_intro_nth. intros j hj. lia.
   apply Vforall2_intro_nth. intros j hj. rewrite !Vnth_sub, !Vnth_cons. simpl.
   destruct (lt_ge_dec 0 j). 2: apply opt_r_None. rewrite !Vnth_opt_filter.
   match goal with |- context C [lt_dec (Vnth ks ?x) p] => set (h := x) end.
   destruct (lt_dec (Vnth ks h) p). 2: apply opt_r_None. exfalso.
   unfold sorted in kks_sorted.
-  assert (ai : 0 < S n). omega. assert (aj : j < S n). omega.
+  assert (ai : 0 < S n). lia. assert (aj : j < S n). lia.
   gen (kks_sorted _ ai _ aj l). rewrite !Vnth_cons.
-  destruct (lt_ge_dec 0 0). omega. destruct (lt_ge_dec 0 j). 2: omega.
-  rewrite Vnth_eq with (h2:=h). omega. omega.
+  destruct (lt_ge_dec 0 0). lia. destruct (lt_ge_dec 0 j). 2: lia.
+  rewrite Vnth_eq with (h2:=h). lia. lia.
 Qed.
 
 (****************************************************************************)
@@ -2440,8 +2440,8 @@ Section first_position.
 
   Proof.
     induction ys as [|y n ys]; intros k i; simpl. discr. destruct (P_dec y).
-    intro h; inversion h; clear h; subst. omega.
-    intro h. gen (IHys _ _ h). omega.
+    intro h; inversion h; clear h; subst. lia.
+    intro h. gen (IHys _ _ h). lia.
   Qed.
 
   Lemma Vfirst_position_lt : forall n (ys : vector A n) i,
@@ -2464,9 +2464,9 @@ Section first_position.
   Proof.
     induction ys as [|y n ys]; intros k i j hj; simpl. discr.
     destruct (P_dec y).
-    intro h; inversion h; clear h; subst. destruct j as [|j]; omega.
+    intro h; inversion h; clear h; subst. destruct j as [|j]; lia.
     intro h1. destruct j as [|j]; intro h2. fo.
-    gen (IHys _ _ _ _ h1 h2). omega.
+    gen (IHys _ _ _ _ h1 h2). lia.
   Qed.
 
   Lemma Vfirst_position_nth : forall n (ys : vector A n) i j (hj : j<n),
@@ -2482,19 +2482,19 @@ Section first_position.
     discr.
     destruct (P_dec y).
     intro h; inversion h; clear h; subst.
-    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega. hyp.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). lia. hyp.
     intro h. rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-k)).
-    assert (hi' : i - S k < n). omega. gen (IH _ _ hi' h); intro hx.
-    rewrite Vnth_eq with (h2:=hi'). hyp. omega.
-    gen (Vfirst_position_aux_ge _ _ h). omega.
+    assert (hi' : i - S k < n). lia. gen (IH _ _ hi' h); intro hx.
+    rewrite Vnth_eq with (h2:=hi'). hyp. lia.
+    gen (Vfirst_position_aux_ge _ _ h). lia.
   Qed.
 
   Lemma Vnth_first_position : forall n (ys : vector A n) i (hi : i<n),
     Vfirst_position ys = Some i -> P (Vnth ys hi).
 
   Proof.
-    intros n ys i hi h. assert (hi' : i-0 < n). omega.
-    rewrite Vnth_eq with (h2:=hi'). apply Vnth_first_position_aux. hyp. omega.
+    intros n ys i hi h. assert (hi' : i-0 < n). lia.
+    rewrite Vnth_eq with (h2:=hi'). apply Vnth_first_position_aux. hyp. lia.
   Qed.
 
 End first_position.

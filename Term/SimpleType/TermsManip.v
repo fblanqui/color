@@ -11,7 +11,7 @@ typed lambda-calculus are defined.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsTyping LogicUtil.
-From Coq Require Import Omega.
+From Coq Require Import Lia.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
@@ -750,7 +750,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     rewrite (appUnits_app M Mapp) in MNunits.
     rewrite (appUnits_app N Napp) in MNunits.
     rewrite !length_app in MNunits.
-    simpl in MNunits; omega.
+    simpl in MNunits; lia.
     intros; apply (H p Ma Na).
     rewrite (appUnits_app M Mapp).
     rewrite nth_app_left; trivial.
@@ -765,7 +765,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     rewrite length_app; try_solve.
     term_inv (appBodyL Mapp).
     rewrite (appUnits_app Tr I).
-    rewrite length_app; simpl; omega.
+    rewrite length_app; simpl; lia.
     destruct (isApp_dec N) as [Napp | Nnapp].
     absurd (length (appUnits M) = length (appUnits N)); trivial.
     rewrite (appUnits_app N Napp).
@@ -773,7 +773,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     rewrite length_app; try_solve.
     term_inv (appBodyL Napp).
     rewrite (appUnits_app Tr I).
-    rewrite length_app; simpl; omega.
+    rewrite length_app; simpl; lia.
     apply (H 0 M N).
     rewrite (appUnits_notApp M Mnapp); trivial.
     rewrite (appUnits_notApp N Nnapp); trivial.
@@ -1073,7 +1073,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     destruct (appUnits t); auto.
     inversion H.
     cut (length (l ++ t0 :: t1 :: Ms) = length (buildT M2 :: nil)).
-    autorewrite with datatypes; simpl; omega.
+    autorewrite with datatypes; simpl; lia.
     rewrite H2; trivial.
     apply appUnits_not_nil.
     exists (t :: t0 :: dropLast (t1 :: Ms)); split.

@@ -1,14 +1,6 @@
 Set Implicit Arguments. 
-From Coq Require Import Omega.
-From Coq Require Import List.
-From Coq Require Import Setoid.
-From Coq Require Import Le.
-From Coq Require Import Peano_dec.
-From Coq Require Import Eqdep_dec.
-From Coq Require Import Ring. 
-From Coq Require Import Zwf.
+From Coq Require Import Lia List Setoid Le Peano_dec Eqdep_dec Ring Omega Zwf Morphisms.
 From CoLoR Require Import interp.
-From Coq Require Import Morphisms.
 
 Lemma exist_pi:  forall (A:Type) (P: A -> Prop), (forall a (H1 H2:P a), H1=H2) ->
   forall a H1 H2,
@@ -4311,16 +4303,16 @@ Proof.
   apply mk_ordering_pair.
   intros.
   unfold eq in *;subst;reflexivity.
-  intros x [H1 H2]. abstract omega.
-  intros x y [H1 H2] [H3 H4];abstract omega.
-  intros x y z [H1 H2] [H4 H5];split; abstract omega.
+  intros x [H1 H2]. abstract lia.
+  intros x y [H1 H2] [H3 H4];abstract lia.
+  intros x y z [H1 H2] [H4 H5];split; abstract lia.
   unfold eq;intros;subst;reflexivity.
-  intros;abstract omega.
-  unfold eq;intros;abstract omega.
-  intros;abstract omega.
-  intros x y z H1 [H2 H3];split;abstract omega.
-  intros x y z [H2 H3] H1;split;abstract omega.
-  intros x y [H1 H2];abstract omega.
+  intros;abstract lia.
+  unfold eq;intros;abstract lia.
+  intros;abstract lia.
+  intros x y z H1 [H2 H3];split;abstract lia.
+  intros x y z [H2 H3] H1;split;abstract lia.
+  intros x y [H1 H2];abstract lia.
 Defined.
 
 Definition lt_wf : well_founded (Zwf.Zwf 0). 

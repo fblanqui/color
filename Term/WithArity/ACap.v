@@ -195,7 +195,7 @@ hyp.
 (* fun *)
 rewrite vars_fun. unfold nb_aliens in H1. simpl in H1.
 destruct (defined f R); simpl in H1. destruct H1.
-absurd (x<=m); omega. contr. apply H with (m := m); hyp.
+absurd (x<=m); lia. contr. apply H with (m := m); hyp.
 (* nil *)
 unfold Q. simpl. intros. contr.
 (* cons *)
@@ -210,7 +210,7 @@ unfold nb_aliens. hyp. hyp.
 (* tail *)
 apply in_appr. unfold Q in H0. apply H0 with (m := m0 + projT1 (capa t)).
 assert (maxvars v <= m0). eapply le_max_elim_r. unfold m in H1.
-rewrite maxvars_cons in H1. apply H1. omega. hyp. omega.
+rewrite maxvars_cons in H1. apply H1. lia. hyp. lia.
 Qed.
 
 Lemma vars_cap_inf : forall x t,
@@ -229,7 +229,7 @@ intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
 intuition. change (In x (vars_vec v)) in H2.
 change (x > maxvars v) in H1.
 ded (in_vars_vec_elim H2). destruct H3 as [t]. destruct H3.
-ded (vars_max H4). ded (maxvar_in _ _ H5 H3). omega.
+ded (vars_max H4). ded (maxvar_in _ _ H5 H3). lia.
 Qed.
 
 Lemma vars_fcap_fresh : forall x t m, maxvar t <= m
@@ -243,10 +243,10 @@ intro. set (Q := fun n (ts : terms n) =>
   -> x <= m + sum (Vmap capa ts)).
 intro. pattern t. apply term_ind with (Q := Q); clear t.
 (* var *)
-simpl. intros. destruct H0. subst x0. omega. contr.
+simpl. intros. destruct H0. subst x0. lia. contr.
 (* fun *)
 intros f ts H m H0. unfold nb_aliens. simpl.
-case (defined f R); simpl; intros. destruct H1. omega. contr.
+case (defined f R); simpl; intros. destruct H1. lia. contr.
 apply H; hyp.
 (* nil *)
 unfold Q. simpl. intros. contr.
@@ -254,9 +254,9 @@ unfold Q. simpl. intros. contr.
 intros. unfold Q. simpl. intros m H1. rewrite fresh_plus, Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
 assert (x <= m + projT1 (capa t)). apply H. eapply le_max_elim_l.
-rewrite maxvars_cons in H1. apply H1. hyp. omega.
+rewrite maxvars_cons in H1. apply H1. hyp. lia.
 rewrite plus_assoc. apply H0. assert (maxvars v <= m).
-eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. omega. hyp.
+eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. lia. hyp.
 Qed.
 
 Lemma vars_cap : forall x t,
@@ -367,7 +367,7 @@ unfold alien_sub, cap, fresh_for. set (m := maxvar (Fun f v)).
 simpl. case (defined f R).
 (* f defined *)
 change (fsub m (Vcons (Fun f v) Vnil) (S m) = Fun f v).
-apply fsub_cons. omega.
+apply fsub_cons. lia.
 (* f undefined *)
 set (cs := Vmap capa v).
 change (let (n,p) := mkCap (fun ts => Fun f (Vmap_sum cs ts), conc cs) in

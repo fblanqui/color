@@ -11,7 +11,7 @@ environments with declarations that are really used in a term.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsEnv LogicUtil.
-From Coq Require Import Arith Omega.
+From Coq Require Import Arith Lia.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 
@@ -36,14 +36,14 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
   Proof.
     destruct M as [E Pt T M]; induction M.
     simpl; autorewrite with datatypes using simpl.
-    assert (x < length E); [idtac | omega].
+    assert (x < length E); [idtac | lia].
     apply (proj1 (nth_in E x)).
     inversion v; try_solve.
-    simpl; omega.
+    simpl; lia.
     simpl; fold (activeEnv (buildT M)).
     destruct (activeEnv (buildT M)).
-    simpl; omega.
-    simpl in *; omega.
+    simpl; lia.
+    simpl in *; lia.
     simpl; fold (activeEnv (buildT M1)); fold (activeEnv (buildT M2)).
     rewrite env_sum_length.
     apply Max.max_case2; trivial.
@@ -81,8 +81,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
       as [[m sm] | z].
     rewrite <- sm in H0; simpl in H0; destruct m; try_solve.
     absurd (0 = i - length (copy x0 (None (A:=SimpleType)))); trivial.
-    autorewrite with datatypes using omega.
-    autorewrite with datatypes; omega.
+    autorewrite with datatypes using lia.
+    autorewrite with datatypes; lia.
     rewrite x_eq_i in H0.
     rewrite nth_app_right in H0.
     replace (i - length (copy i (None (A:=SimpleType)))) with 0 in H0.
@@ -91,11 +91,11 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     split; trivial.
     inversion H; trivial.
     inversion H0; trivial.
-    autorewrite with datatypes using omega.
-    autorewrite with datatypes using omega.
+    autorewrite with datatypes using lia.
+    autorewrite with datatypes using lia.
     rewrite nth_app_left in H0.
     rewrite nth_copy_in in H0; try_solve.
-    autorewrite with datatypes using omega.
+    autorewrite with datatypes using lia.
   Qed.
 
   Lemma activeEnv_var_single : forall M x y A,
@@ -188,8 +188,8 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     constructor 1.
     unfold VarD; rewrite nth_app_right; autorewrite with datatypes.
     replace (x - x) with 0; trivial.
-    omega.
-    omega.
+    lia.
+    lia.
     constructor.
     constructor.
     fold (activeEnv (buildT M)).
@@ -277,9 +277,9 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite finalSeg_copy; trivial.
     rewrite <- copy_split.
     repeat (rewrite <- app_ass; rewrite <- copy_split).
-    replace (x + n) with (k + n + (x - k)); [apply env_eq_refl | omega].
-    rewrite initialSeg_full; autorewrite with datatypes using simpl; try omega.
-    rewrite finalSeg_empty; autorewrite with datatypes using simpl; try omega.
+    replace (x + n) with (k + n + (x - k)); [apply env_eq_refl | lia].
+    rewrite initialSeg_full; autorewrite with datatypes using simpl; try lia.
+    rewrite finalSeg_empty; autorewrite with datatypes using simpl; try lia.
     rewrite <- app_nil_end.
     apply env_eq_empty_tail.
      (* function symbol *)
@@ -338,17 +338,17 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec n x); simpl.
     destruct (le_gt_dec x n).
     exfalso; apply varD_UD_absurd with E x A; trivial.
-    replace x with n; [trivial | omega].
+    replace x with n; [trivial | lia].
     rewrite initialSeg_app; autorewrite with datatypes using trivial.
     rewrite initialSeg_copy.
     rewrite Min.min_r; trivial.
-    rewrite finalSeg_copy; [idtac | omega].
+    rewrite finalSeg_copy; [idtac | lia].
     rewrite <- app_ass.
     rewrite <- copy_split.
     replace (pred x) with (n + (x - S n)); trivial.
-    omega.
-    rewrite initialSeg_full; autorewrite with datatypes using simpl; try omega.
-    rewrite finalSeg_empty; autorewrite with datatypes using simpl; try omega.
+    lia.
+    rewrite initialSeg_full; autorewrite with datatypes using simpl; try lia.
+    rewrite finalSeg_empty; autorewrite with datatypes using simpl; try lia.
     rewrite <- app_nil_end; trivial.
      (* function symbol *)
     destruct n; try_solve.

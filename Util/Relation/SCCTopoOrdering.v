@@ -268,7 +268,7 @@ isolated points are also considered as SCC *)
     rewrite multiplicity_nats_decr_lt in *. destruct (lt_ge_dec a dim).
     ded (p (N_ l)). rewrite <- multiplicity_map_N_val, map_N_val_L,
                     multiplicity_nats_decr_lt in H.
-    destruct (lt_ge_dec a dim); try omega.
+    destruct (lt_ge_dec a dim); try lia.
     rewrite <- multiplicity_map_N_val in H; auto.
     erewrite <- multiplicity_map_N_val_notin; auto.
 

@@ -281,7 +281,7 @@ cut (forall s, SN (Srs.red_mod E R) s -> forall t, maxvar t = 0 ->
   t = term_of_string s -> SN (red_mod0 (trs_of_srs E) (trs_of_srs R)) t).
 (* cut correctness *)
 intros. intro t. destruct (eq_nat_dec (maxvar t) 0).
-  2: apply SN_intro; intros ? []; omega.
+  2: apply SN_intro; intros ? []; lia.
 apply H0 with (string_of_term t). apply H. hyp. rewrite term_of_string_epi.
 refl. hyp.
 (* proof with cut *)

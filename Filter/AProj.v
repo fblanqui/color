@@ -117,9 +117,9 @@ Section proj.
       simpl. hyp. simpl. destruct (pi f) as [[k h]|].
       rewrite !Vnth_cast, !Vnth_app.
       case (le_gt_dec i k); intro. case (eq_nat_dec i k); intro.
-      subst. rewrite !Vnth_cons_head; try omega. apply IHc. hyp.
+      subst. rewrite !Vnth_cons_head; try lia. apply IHc. hyp.
       gen (Vnth_app_aux (S j) (Vnth_cast_aux e h) l).
-      assert (k-i=S(k-i-1)). omega. rewrite H1. intro.
+      assert (k-i=S(k-i-1)). lia. rewrite H1. intro.
       rewrite !Vnth_cons. apply Hrefl. apply Hrefl.
       rewrite !Vmap_cast, !Vmap_app. simpl.
       set (d := Cont f e (Vmap proj t) Hole (Vmap proj t0)).
@@ -157,9 +157,9 @@ Section proj.
       (* Some *)
       intros [k h]. rewrite !Vnth_cast, !Vnth_app. case (le_gt_dec i k); intro.
       case (eq_nat_dec i k); intro. subst.
-      repeat (rewrite Vnth_cons_head; [idtac|omega]). hyp.
+      repeat (rewrite Vnth_cons_head; [idtac|lia]). hyp.
       gen (Vnth_app_aux (S j) (Vnth_cast_aux e h) l0).
-      assert (k-i=S(k-i-1)). omega. rewrite H0. intro. rewrite !Vnth_cons.
+      assert (k-i=S(k-i-1)). lia. rewrite H0. intro. rewrite !Vnth_cons.
       left. refl. left. refl.
       (* None *)
       rewrite !Vmap_cast, !Vmap_app. simpl.

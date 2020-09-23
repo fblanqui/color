@@ -132,11 +132,11 @@ Notation find := (@find _ eq_var_bool _).
   Proof.
     induction n; intros. refl. simpl sub_of_asub. simpl more_list.find.
     rewrite IHn. unfold eq_var_bool. case_beq_nat v n.
-    assert (bgt_nat (S v) v = true). rewrite bgt_nat_ok. omega. rewrite H. refl.
+    assert (bgt_nat (S v) v = true). rewrite bgt_nat_ok. lia. rewrite H. refl.
     case_eq (bgt_nat n v); intros; case_eq (bgt_nat (S n) v); intros.
-    refl. rewrite bgt_nat_ok in H0. rewrite bgt_nat_ko in H1. omega.
+    refl. rewrite bgt_nat_ok in H0. rewrite bgt_nat_ko in H1. lia.
     rewrite bgt_nat_ok in H1. rewrite bgt_nat_ko in H0.
-    rewrite (beq_ko beq_nat_ok) in H. omega. refl.
+    rewrite (beq_ko beq_nat_ok) in H. lia. refl.
   Qed.
 
   Lemma term_of_aterm_sub : forall s k t, k > maxvar t ->
@@ -148,7 +148,7 @@ Notation find := (@find _ eq_var_bool _).
         k > maxvars ts -> terms_of_aterms (Vmap (sub s) ts) =
         map (apply_subst (sub_of_asub s k)) (terms_of_aterms ts)); clear t.
     simpl. intros. rewrite find_sub_of_asub. case_eq (bgt_nat k x); intros.
-    refl. rewrite bgt_nat_ko in H0. omega.
+    refl. rewrite bgt_nat_ko in H0. lia.
     intros. simpl sub. rewrite !term_of_aterm_fun. simpl.
     f_equal. apply H. hyp.
     refl. intros t n ts. simpl. rewrite maxvars_cons, gt_max.

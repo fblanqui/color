@@ -459,7 +459,7 @@ Lemma wf_sizes_lt : well_founded sizes_lt.
 Proof.
 unfold sizes_lt. apply wf_inverse_image with (B := Multiset).
 apply mord_wf. unfold eqA. intros. subst.
-compute. omega. exact lt_wf.
+compute. lia. exact lt_wf.
 Qed.
 
 (***********************************************************************)
@@ -565,7 +565,7 @@ split_all. unfold sizes_lt. unfold sizes. simpl.
 unfold MultisetLt, transp. apply t_step. set (M := list2multiset (map size l)).
 apply MSetRed with (X := M) (a := size x) (Y := MSetCore.empty). solve_meq.
 solve_meq. intros. apply False_rec. eapply not_empty. apply H0. refl.
-left. omega.
+left. lia.
 Qed.
 
 Lemma Lt_combine : forall f vs g us l, beq_symb f g = true ->
@@ -587,7 +587,7 @@ destruct (member_multiset_list _ H0). destruct (in_map_elim H1). destruct H3.
 subst. destruct x0. ded (in_combine_l H3). ded (in_combine_r H3).
 ded (in_list_of_vec H4). ded (in_list_of_vec H5).
 ded (Vin_nb_symb_occs_terms_ge H6). ded (Vin_nb_symb_occs_terms_ge H7).
-rewrite H2. unfold size, fst, snd. omega.
+rewrite H2. unfold size, fst, snd. lia.
 Qed.
 
 Definition Lt' (p1 p2 : problem) :=

@@ -37,7 +37,7 @@ Section S.
     Lemma g_mon : forall i, g i < g (S i).
 
     Proof.
-      intro i. simpl. destruct (ch_min (H (S (g i)))). simpl. omega.
+      intro i. simpl. destruct (ch_min (H (S (g i)))). simpl. lia.
     Qed.
 
     Lemma g_correct : forall i, f (g i) = a.
@@ -51,14 +51,14 @@ Section S.
     Lemma g_ge_id : forall i, g i >= i.
 
     Proof.
-      induction i. omega. simpl. destruct (ch_min (H (S (g i)))). simpl. omega.
+      induction i. lia. simpl. destruct (ch_min (H (S (g i)))). simpl. lia.
     Qed.
 
     Lemma g_neq : forall i j, g i < j < g (S i) -> f j <> a.
 
     Proof.
       intros i j hj e. assert (g (S i) <= j). simpl.
-      destruct (ch_min (H (S (g i)))). simpl. intuition. omega.
+      destruct (ch_min (H (S (g i)))). simpl. intuition. lia.
     Qed.
 
     Lemma g_complete : forall i, f i = a -> exists j, i = g j.
@@ -66,10 +66,10 @@ Section S.
     Proof.
       intros i hi. assert (h : exists j, g j >= i). exists i. apply g_ge_id.
       exists (proj1_sig (ch_min h)). destruct (ch_min h). simpl. clear h.
-      apply NNPP. intro. assert (h1 : i < g x). omega. destruct x.
-      absurd (g 0 <= i). omega.
+      apply NNPP. intro. assert (h1 : i < g x). lia. destruct x.
+      absurd (g 0 <= i). lia.
       simpl. destruct (ch_min (H 0)). simpl. intuition.
-      assert (h2 : g x < i). apply NNPP. intro. cut (S x <= x). omega.
+      assert (h2 : g x < i). apply NNPP. intro. cut (S x <= x). lia.
       intuition.
       absurd (f i = a). eapply g_neq. split. apply h2. hyp. hyp.
     Qed.
@@ -122,9 +122,9 @@ Section S.
       x < i -> f x = a -> In x (indices_aux acc i).
 
     Proof.
-      induction i; simpl; intros. absurd (x<0); omega.
+      induction i; simpl; intros. absurd (x<0); lia.
       destruct (lt_dec x i). apply IHi; hyp.
-      assert (x=i). omega. subst x. destruct (eq_dec (f i) a). 2: cong.
+      assert (x=i). lia. subst x. destruct (eq_dec (f i) a). 2: cong.
       apply In_indices_aux_intro. simpl. auto.
     Qed.
 
@@ -139,14 +139,14 @@ Section S.
 
     Proof.
       induction i; simpl; intros. refl. destruct (eq_dec (f i) a).
-      ded (IHi (i::acc)). simpl in H. omega. ded (IHi acc). omega.
+      ded (IHi (i::acc)). simpl in H. lia. ded (IHi acc). lia.
     Qed.
 
     Lemma indices_length : forall i, length (indices i) <= i.
 
     Proof.
       intro i. ded (indices_aux_length i nil). unfold indices. simpl in H.
-      omega.
+      lia.
     Qed.
 
     Lemma indices_aux_Sorted : forall i acc,
@@ -155,9 +155,9 @@ Section S.
     Proof.
       induction i; simpl; intros. hyp. apply IHi.
       destruct (eq_dec (f i) a). 2: hyp. apply Sorted_cons. hyp.
-      destruct acc. apply HdRel_nil. apply HdRel_cons. inversion H0. omega.
+      destruct acc. apply HdRel_nil. apply HdRel_cons. inversion H0. lia.
       destruct (eq_dec (f i) a). apply HdRel_cons. refl.
-      inversion H0. apply HdRel_nil. apply HdRel_cons. omega.
+      inversion H0. apply HdRel_nil. apply HdRel_cons. lia.
     Qed.
 
     Lemma indices_Sorted : forall i, Sorted lt (indices i).
@@ -203,10 +203,10 @@ such that [f i = a] *)
     Proof.
       intros hg i. unfold prefix. set (is := indices i0).
       set (n := length is). destruct (lt_dec (S i) n); destruct (lt_dec i n).
-      apply Sorted_nth. class. apply indices_Sorted. hyp. hyp. omega.
-      omega. assert (n=S i). omega. subst. rewrite H, minus_diag.
+      apply Sorted_nth. class. apply indices_Sorted. hyp. hyp. lia.
+      lia. assert (n=S i). lia. subst. rewrite H, minus_diag.
       ded (nth_In d l). destruct (In_indices_aux_elim H0). inversion H1.
-      omega. assert (e : S i - n = S (i-n)). omega. rewrite e.
+      lia. assert (e : S i - n = S (i-n)). lia. rewrite e.
       apply plus_lt_compat_l. apply hg.
     Qed.
 
@@ -224,8 +224,8 @@ such that [f i = a] *)
       hyp. contr.
       (* i >= i0 *)
       destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold is.
-      fold n. destruct (lt_dec (n+j) n). omega.
-      assert (s : n+j-n=j). omega. rewrite s. hyp.
+      fold n. destruct (lt_dec (n+j) n). lia.
+      assert (s : n+j-n=j). lia. rewrite s. hyp.
     Qed.
 
   End prefix.
@@ -254,13 +254,13 @@ sequence on a finite codomain *)
     assert (forall i, In (f' i) As). intro i.
     ded (fin (i0+i)). simpl in H. destruct H. 2: hyp.
     ded (hi0 (i0+i)). rewrite not_and_eq in H0. destruct H0.
-    absurd (i0+i>=i0). hyp. omega. subst. cong.
+    absurd (i0+i>=i0). hyp. lia. subst. cong.
     destruct (IHAs f' H) as [b [g [h1 [h2 h3]]]]. exists b.
     exists (prefix f b i0 g). intuition.
     apply prefix_mon. hyp. apply prefix_correct. hyp.
     apply prefix_complete. intros j hj e. unfold f' in h3.
-    assert (j = i0 + (j-i0)). omega. rewrite H1 in e.
-    destruct (h3 _ e) as [k hk]. exists k. omega. hyp.
+    assert (j = i0 + (j-i0)). lia. rewrite H1 in e.
+    destruct (h3 _ e) as [k hk]. exists k. lia. hyp.
   Qed.
 
 (*****************************************************************************)
@@ -301,28 +301,28 @@ Section TransIS.
     pose (P := fun i j => fst (F0 j) <= i /\ i < snd (F0 j)).
 
     assert (HinT : forall k, fst (F0 k) < snd (F0 k)).
-    induction k. simpl. destruct (HFi 0) as [y Hy]; rewrite Hy; omega.
-    simpl. destruct (HFi (S k)) as [y Hy]; rewrite Hy; omega.
+    induction k. simpl. destruct (HFi 0) as [y Hy]; rewrite Hy; lia.
+    simpl. destruct (HFi (S k)) as [y Hy]; rewrite Hy; lia.
 
     assert (HPeq : forall i j k, P k i /\ P k j -> i = j).
     intros i j k H; unfold P in H. destruct H as [H H0]. destruct H0 as [H1 H2].
     destruct H as [H H0]. gen (le_lt_trans H H2). intros H3.
     gen (le_lt_trans H1 H0). intros H4.
     destruct (le_or_lt i j) as [H5 | H5]. case (le_lt_or_eq H5); try auto.
-    clear H5 H1 H2 H3; intros H5. induction j. omega. simpl in H4.
+    clear H5 H1 H2 H3; intros H5. induction j. lia. simpl in H4.
     case (le_lt_or_eq (lt_n_Sm_le H5)); intros H1.
-    rewrite (IHj (lt_trans (HinT j) H4) H1) in H1. omega.
-    rewrite H1 in H4. omega.
-    clear H1 H2 H4 H H0. induction i. omega. simpl in H3.
+    rewrite (IHj (lt_trans (HinT j) H4) H1) in H1. lia.
+    rewrite H1 in H4. lia.
+    clear H1 H2 H4 H H0. induction i. lia. simpl in H3.
     case (le_lt_or_eq (lt_n_Sm_le H5)); intros H1.
-    rewrite (IHi (lt_trans (HinT i) H3) H1) in H1. omega.
-    rewrite H1 in H3; omega.
+    rewrite (IHi (lt_trans (HinT i) H3) H1) in H1. lia.
+    rewrite H1 in H3; lia.
 
     assert (exP_F0 : forall i, exists j, P i j). intros i. apply int_exPi. auto.
     pose (F1 := fun i => proj1_sig (ch_min (exP_F0 i))).
 
     assert (HF0 : forall i, (snd (F0 i) - fst (F0 i) = F i)).
-    induction i; auto. simpl. omega.
+    induction i; auto. simpl. lia.
     pose (h' := fun i => let j := (F1 i) in let i' := i - (fst (F0 j)) in
       nth i' (h j :: li j) (h (S j))).
 
@@ -333,24 +333,24 @@ Section TransIS.
     destruct (le_lt_or_eq HSi) as [H0 | H0].
 
     2: { assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
-    split; try omega. destruct (HFi (S (F1 i))) as [y Hy]. rewrite Hy; omega.
+    split; try lia. destruct (HFi (S (F1 i))) as [y Hy]. rewrite Hy; lia.
 
-    cut (F1 (S i) = S (F1 i)). intros HT; rewrite HT. split; omega.
+    cut (F1 (S i) = S (F1 i)). intros HT; rewrite HT. split; lia.
 
     destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H1]. apply H1.
     split; auto. intros k. unfold P. intros H2.
-    rewrite (HPeq _ _ _ (conj PSi H2)). omega. }
+    rewrite (HPeq _ _ _ (conj PSi H2)). lia. }
 
-    cut (F1 (S i) = F1 i). intros HT; rewrite HT. split; omega.
+    cut (F1 (S i) = F1 i). intros HT; rewrite HT. split; lia.
 
-    assert (PSi : P (S i) (F1 i)). split; try omega.
-    apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
+    assert (PSi : P (S i) (F1 i)). split; try lia.
+    apply (@le_trans _ i); try lia. destruct (ch_minP _ (exP_F0 i)); hyp.
     destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H].
     apply H; split; try hyp.
-    intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
+    intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). lia.
 
     assert (DecFSi : forall i, F1 (S i) = F1 i \/ F1 (S i) = S (F1 i)).
-    intros. destruct (HT i) as [Hi1 Hi2]. omega.
+    intros. destruct (HT i) as [Hi1 Hi2]. lia.
 
     assert (forall i, i - fst (F0 (F1 i)) < length (h (F1 i) :: li (F1 i))).
     intros i. destruct (ch_minP _ (exP_F0 i)) as [H1 H2].
@@ -375,31 +375,31 @@ Section TransIS.
     gen H0. set (k := i - fst (F0 (F1 i))). destruct k. simpl.
     intros. apply path_headP.
     apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
-    simpl. intros. apply path_nth_inP with (x := (h (F1 i))); try omega.
+    simpl. intros. apply path_nth_inP with (x := (h (F1 i))); try lia.
     apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
     rewrite <- Hi. assert (S i = snd (F0 (F1 i))).
     destruct (ch_minP _ (exP_F0 i)) as [_ HT0].
     destruct (le_lt_or_eq (lt_le_S HT0)); try auto.
 
-    cut (F1 (S i) = F1 i). rewrite Hi. intros. symmetry in H1. omega.
+    cut (F1 (S i) = F1 i). rewrite Hi. intros. symmetry in H1. lia.
 
-    assert (PSi : P (S i) (F1 i)). split; try omega; auto.
-    apply (@le_trans _ i); try omega. destruct (ch_minP _ (exP_F0 i)); hyp.
+    assert (PSi : P (S i) (F1 i)). split; try lia; auto.
+    apply (@le_trans _ i); try lia. destruct (ch_minP _ (exP_F0 i)); hyp.
     destruct (proj2_sig (ch_min (exP_F0 (S i)))) as [_ H1].
     apply H1; split; try hyp.
-    intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). omega.
+    intros k Hk. rewrite (HPeq _ _ _ (conj PSi Hk)). lia.
 
     assert (nth (S i - fst (F0 (F1 (S i)))) (h (F1 (S i)) :: li (F1 (S i)))
       (h (S (F1 (S i)))) = h (F1 (S i))).
 
     cut (S i - fst (F0 (F1 (S i))) = 0). intros. rewrite H1. simpl; auto.
 
-    rewrite Hi, H0. simpl. omega.
+    rewrite Hi, H0. simpl. lia.
     rewrite H1. clear H1. gen (HF0 (F1 i)). unfold F. intros.
 
     cut (i - fst (F0 (F1 i)) = length (li (F1 i))).
     2: { rewrite <- H0, <- minus_Sn_m in H1. simpl in H1.
-    omega.
+    lia.
     apply (proj1 (ch_minP _ (exP_F0 i))). }
     set (k := i - fst (F0 (F1 i))).
 
@@ -408,13 +408,13 @@ Section TransIS.
 
     destruct k. intros. symmetry in H3.
     destruct (li (F1 i)). simpl. simpl in H3. rewrite Hi. auto.
-    simpl in H3. omega. simpl. intros. 
+    simpl in H3. lia. simpl. intros. 
     apply path_lastP with (x := (h (F1 i)));  auto. rewrite Hi. hyp.
 
     (* 2 *)
     cut ((F1 0) = 0). intro H0; rewrite H0; refl.
-    assert (P00 : P 0 0). unfold P. simpl. split; try omega.
-    destruct (HFi 0) as [k Hk]. rewrite Hk; omega.
+    assert (P00 : P 0 0). unfold P. simpl. split; try lia.
+    destruct (HFi 0) as [k Hk]. rewrite Hk; lia.
     sym. apply le_n_O_eq. apply (is_min_ch (P 0) (exP_F0 0) 0 P00).
   Qed.
 
@@ -526,7 +526,7 @@ Section ISModUnion.
     intros j lt_jx. gen (is_min_ch (P 0) (hyp2 0)). unfold P. intro HP.
     gen (HP j). intro HPj. destruct (hyp1 j) as [_ ERj].
     destruct ERj; auto.
-    destruct (lt_not_le lt_jx). apply HPj. split; auto. omega.
+    destruct (lt_not_le lt_jx). apply HPj. split; auto. lia.
 
     assert (HEfgi : forall i j k,
       S (reid i) <= j -> j <= k  -> k <= reid (S i) -> E (f j) (g k)).
@@ -535,15 +535,15 @@ Section ISModUnion.
     destruct (le_lt_or_eq le_jk) as [HT | HT]. 2: { rewrite HT.
     apply (proj1 (hyp1 (S k))). } apply TE with (g k).
     exact (IHk (lt_n_Sm_le HT) (le_trans (le_n_Sn k) le_ki)).
-    apply TE with (f (S k)). apply (E_gfi i k); try omega.
+    apply TE with (f (S k)). apply (E_gfi i k); try lia.
     apply (proj1 (hyp1 (S k))).
 
     assert (HEfg0 : forall j k, j <= k -> k <= reid 0 -> E (f j) (g k)).
     intros j k le_jk le_k0. induction k. rewrite <- (le_n_O_eq _ le_jk).
     apply (proj1 (hyp1 0)). destruct (le_lt_or_eq le_jk) as [HT | HT].
     2: { rewrite HT. apply (proj1 (hyp1 (S k))). }
-    apply TE with (g k). apply IHk; omega. apply TE with (f (S k)).
-    apply (E_gf0 k); try omega. apply (proj1 (hyp1 (S k))).
+    apply TE with (g k). apply IHk; lia. apply TE with (f (S k)).
+    apply (E_gf0 k); try lia. apply (proj1 (hyp1 (S k))).
 
     assert (Rgf : forall i, R (g (reid i)) (f (S (reid i)))).
     intro i. induction i. 2: { destruct (rec_ch_minP P hyp2 i). hyp. }
@@ -554,7 +554,7 @@ Section ISModUnion.
     intro. split. 2: { apply Rgf. } destruct i. 2: { unfold f0, g0.
     apply (HEfgi i); auto.
     destruct (ch_minP (P (S (reid i))) (hyp2 (S (reid i)))) as [? _]. hyp. }
-    unfold f0, g0. apply HEfg0; omega.
+    unfold f0, g0. apply HEfg0; lia.
   Qed.
 
 End ISModUnion.
@@ -636,7 +636,7 @@ Section ISModTrans.
     apply (proj2 (hyp1 k)). tauto. apply (@NISR g). hyp.
     assert (HT : forall j, ~ ((E !) (f (S i + j)) (g (S i + j)))).
     intro j. gen (HTF (S i + j)). apply contraposee_inv. intro HT.
-    split; try omega. hyp.
+    split; try lia. hyp.
     assert (HT0 : forall j, (f (S i + j)) = (g (S i + j))).
     intro j. destruct (rtc_split (proj1 (hyp1 (S i + j)))); auto.
     destruct (HT j); auto.
@@ -678,15 +678,15 @@ Section ISModTrans.
     intros i j k le_ij lt_jk le_ki. induction k. destruct (lt_n_O lt_jk).
     destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT].
     2: { rewrite HT. apply (proj2 (hyp1 k)). }
-    apply (@TrsR _ (f k)). apply IHk; try omega.
-    rewrite (eq_fgi i k); try omega.
+    apply (@TrsR _ (f k)). apply IHk; try lia.
+    rewrite (eq_fgi i k); try lia.
     apply (proj2 (hyp1 k)).
 
     assert (HRfg0 : forall j k, j < k  -> k <= reid 0 -> R (g j) (f k)).
     intros j k lt_jk le_k0. induction k. destruct (lt_n_O lt_jk).
     destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT].
     2: { rewrite HT. apply (proj2 (hyp1 k)). }
-    apply (@TrsR _ (f k)). apply IHk; try omega. rewrite (eq_fg0 k); try omega.
+    apply (@TrsR _ (f k)). apply IHk; try lia. rewrite (eq_fg0 k); try lia.
     apply (proj2 (hyp1 k)).
 
     exists f0; exists g0. split. intro i. simpl. unfold f0, g0. split.
@@ -695,7 +695,7 @@ Section ISModTrans.
     apply (@lt_le_trans (reid i) (S (reid i)) (reid (S i))); auto.
     split. exists (reid 0). simpl. auto.
     unfold f0. case_eq (reid 0); intros. left; refl. right.
-    rewrite eq_fg0; try omega. apply HRfg0; omega.
+    rewrite eq_fg0; try lia. apply HRfg0; lia.
   Qed.
 
 End ISModTrans.

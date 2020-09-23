@@ -54,10 +54,10 @@ Section S.
     intros. unfold s_SCC's. destruct (sorted_SCC' hyps). unfold proj1_sig2.
     unfold permutation, meq in *. ded (p i).
     rewrite multiplicity_nats_decr_lt in H0.
-    destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
+    destruct (lt_ge_dec i (length (hyp_Dom hyps))); try lia.
     cut (exists j, j=i /\ In j x). intros; destruct H1. destruct H1.
     rewrite <- H1; auto.
-    apply (multiplicity_in (@eq nat) eq_nat_dec). omega.
+    apply (multiplicity_in (@eq nat) eq_nat_dec). lia.
     assert (length (hyp_Dom hyps) = dim); intuition.
   Qed.
 
@@ -67,7 +67,7 @@ Section S.
     intros. unfold s_SCC's in H. destruct (sorted_SCC' hyps).
     unfold proj1_sig2 in *. gen p; intros. unfold permutation, meq in p.
     ded (p i). rewrite multiplicity_nats_decr_lt in H0.
-    destruct (lt_ge_dec i (length (hyp_Dom hyps))); try omega.
+    destruct (lt_ge_dec i (length (hyp_Dom hyps))); try lia.
     assert (dim = length (hyp_Dom hyps)). auto. rewrite H1 in *; auto.
     cut (exists j, j=i /\ In j (nats_decr_lt dim)).
     intros; destruct H1. destruct H1. 
@@ -302,7 +302,7 @@ Section S.
 
   Proof.
     intros. assert(M[[i,i]] = true).
-    unfold mat_unbound; destruct (le_gt_dec dim i). cut False; try tauto; omega.
+    unfold mat_unbound; destruct (le_gt_dec dim i). cut False; try tauto; lia.
     assert (g=Hi).
     unfold Peano.gt in *; apply lt_unique. subst; auto.
     unfold incl. intros. rewrite SCC'_list_exact in H1.
@@ -329,8 +329,8 @@ Section S.
     unfold GoM in H3. rewrite HM in H3. auto.
 
     unfold mat_unbound in H9; destruct (le_gt_dec dim i).
-    cut False; try tauto; omega.
-    destruct (le_gt_dec dim x). cut False; try tauto; omega.
+    cut False; try tauto; lia.
+    destruct (le_gt_dec dim x). cut False; try tauto; lia.
     rewrite <- H9. unfold Peano.gt in *.
     assert (g=Hi). apply lt_unique. subst g; apply list_of_vec_exact.
   Qed.
@@ -439,7 +439,7 @@ Section S.
     do 2 destruct H9; try subst x; try tauto. simpl in *.
     eapply SCC_trans. apply SCC_sym. apply H9. apply H9.
     cut (M[[i,i]]=true). intros. unfold mat_unbound in H11.
-    destruct (le_gt_dec dim i). cut False; try tauto; omega.
+    destruct (le_gt_dec dim i). cut False; try tauto; lia.
     unfold Peano.gt in *. assert (g=Hi). apply lt_unique. subst g.
     ded (incl_SCC_list_fast Hi H11). rewrite H, <- H0 in *.
     unfold incl in H12. ded (H12 h). simpl in *. tauto.
@@ -466,7 +466,7 @@ Ltac use_SCC_tag h M S R t :=
         | Some ?X1 =>
           let Hi := fresh in
             (assert (Hi : X1 < length R);
-              [ norm (length R); omega
+              [ norm (length R); lia
               | let L := fresh in
                 (set (L := SCC_list_fast R M Hi);
                   norm_in L (SCC_list_fast R M Hi);
@@ -486,7 +486,7 @@ Ltac use_SCC_hyp M l :=
 Ltac use_SCC_all_hyps M i Hi Hj :=
   let rec aux x :=
     match x with
-      | 0 => omega
+      | 0 => lia
       | S ?y => destruct i; [use_SCC_hyp M Hi | aux y]
     end in	
     match type of Hj with

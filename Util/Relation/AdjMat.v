@@ -267,7 +267,7 @@ rewrite Gmorph_iter_le_fast, iter_le_fast_spec.
 rewrite iter_le_spec in H3.
 destruct H3 as [p]; exists p. intuition.
 ded (exp2_log2 dim).
-omega.
+lia.
 Qed.
 
 End GoM_Iter_le.
@@ -375,7 +375,7 @@ Proof.
 intros. unfold GoM, mat_unbound. split; intros;
 destruct (le_gt_dec dim x); destruct (le_gt_dec dim y);
 try ded (hyp H);
-auto; intuition; try omega; try tauto; try discr.
+auto; intuition; try lia; try tauto; try discr.
 unfold MoG in H; rewrite mat_build_nth in H.
 destruct (R_dec x y); auto; try discr.
 unfold MoG; rewrite mat_build_nth.

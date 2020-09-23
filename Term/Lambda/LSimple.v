@@ -74,7 +74,7 @@ Section simple.
   Lemma inputs_output_aux : forall p T,
     p <= arity T -> p + arity (output T p) <= arity T.
 
-  Proof. intros p T. rewrite arity_output. omega. Qed.
+  Proof. intros p T. rewrite arity_output. lia. Qed.
 
   Arguments inputs_output_aux [p T] _.
 
@@ -84,8 +84,8 @@ Section simple.
   Proof.
     induction p; destruct T; simpl; intro h. refl.
     apply Vtail_eq. rewrite Vsub_cons, Vsub_id. refl.
-    omega.
-    assert (h' : p <= arity T2). omega.
+    lia.
+    assert (h' : p <= arity T2). lia.
     rewrite IHp with (h:=h'), Vsub_cons. apply Vsub_pi.
   Qed.
 
@@ -124,7 +124,7 @@ Section simple.
 
   Proof.
     induction T; simpl; intros p q h.
-    assert (p=0). omega. assert (q=0). omega. subst. refl.
+    assert (p=0). lia. assert (q=0). lia. subst. refl.
     destruct p; simpl.
     destruct q; simpl. refl. rewrite Vsub_cons, IHT2. refl.
     rewrite Vsub_cons, IHT2. refl.
@@ -351,7 +351,7 @@ Section typing.
 
   Proof.
     induction us; intros E t T hn ht g. hyp.
-    rename h into u. simpl. destruct T as [b|A B]; simpl in hn. omega.
+    rename h into u. simpl. destruct T as [b|A B]; simpl in hn. lia.
     apply IHus with (hn := le_S_n hn).
     apply tr_app with A. hyp. gen (g _ (lt_0_Sn n)). simpl. auto.
     intros i hi. gen (g _ (lt_n_S hi)). simpl.
@@ -368,7 +368,7 @@ Section typing.
 
   Proof.
     induction n; intros ts T hT.
-    VOtac. inversion hT; subst. split. refl. ex (le_0_n (arity (typ f))). omega.
+    VOtac. inversion hT; subst. split. refl. ex (le_0_n (arity (typ f))). lia.
     revert hT. VSntac ts. simpl Def.apps. rewrite apps_app.
     set (us := Vremove_last (Vcons (Vhead ts) (Vtail ts))). rewrite <- !H.
     intro hT. inversion hT. subst E0 T0. destruct (IHn _ _ H3) as [e [p h]].
@@ -376,7 +376,7 @@ Section typing.
     ex h2. intros i hi. destruct (lt_dec i n) as [l|l].
     rewrite Vnth_remove_last_intro with (h1:=l). rewrite H. fold us.
     rewrite (lt_unique (lt_le_trans hi h2) (lt_le_trans l p)). apply h.
-    assert (i=n). omega. subst i. rewrite <- Vlast_nth with (x := Vhead ts).
+    assert (i=n). lia. subst i. rewrite <- Vlast_nth with (x := Vhead ts).
     rewrite Vnth_eq with (h2 := h2).
     setoid_rewrite h3.
     rewrite <- Vlast_tail. hyp. refl.

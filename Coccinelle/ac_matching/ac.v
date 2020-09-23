@@ -10,17 +10,8 @@
 (**************************************************************************)
 
 
-From Coq Require Import Relations.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_permut.
-From CoLoR Require Import list_sort.
-From Coq Require Import Arith.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import term_o.
-From CoLoR Require Import equational_theory_spec.
-From CoLoR Require Import equational_theory.
-From Coq Require Import Morphisms.
+From Coq Require Import Relations List Arith Morphisms.
+From CoLoR Require Import more_list list_permut list_sort term_spec term_o equational_theory_spec equational_theory.
 
 Set Implicit Arguments.
 
@@ -351,9 +342,7 @@ S with Module EqTh.T := T1.
 
 Module T := T1.
 Module EqTh := equational_theory.Make (T).
-Import EqTh.
-Import T1.
-Import T1.F.
+Import EqTh T1 T1.F.
 
 (** ** Definition of AC. *)
 Inductive ac_one_step_at_top : term -> term -> Prop :=

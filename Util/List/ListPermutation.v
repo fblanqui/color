@@ -29,7 +29,7 @@ Section Multiplicity.
 
   Proof.
     induction l; simpl; intros.
-    omega.
+    lia.
     destruct (eqA_dec a x).
     exists a; auto.
     destruct (IHl x) as [x' [x'x x'l]]; trivial.
@@ -42,13 +42,13 @@ Section Multiplicity.
 
   Proof.
     induction l; simpl; intros.
-    omega.
+    lia.
     destruct H.
     destruct (eqA_dec a a0).
-    omega.
+    lia.
     absurd (eqA a a0); trivial.
     rewrite H; intuition.
-    set (w := IHl a0 H); omega.
+    set (w := IHl a0 H); lia.
   Qed.
 
   Lemma multiplicity_countIn: forall l el,
@@ -57,10 +57,10 @@ Section Multiplicity.
   Proof.
     induction l; simpl; intros; trivial.
     destruct (eqA_dec a el); destruct (eqA_dec el a).
-    rewrite IHl; omega.
+    rewrite IHl; lia.
     absurd (eqA el a); intuition.
     absurd (eqA a el); intuition.
-    rewrite IHl; omega.
+    rewrite IHl; lia.
   Qed.
 
   Lemma multiplicity_dropNth_eq: forall l p el el',
@@ -124,7 +124,7 @@ Section Permutation.
     rewrite (multiplicity_dropNth_eq eqA_dec eqA_Equivalence l' p el H0 H2).
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 1 in w.
-    omega.
+    lia.
     clear w; destruct (eqA_dec a el); [trivial | contr].
     assert (~eqA el b).
     intro elb.
@@ -133,7 +133,7 @@ Section Permutation.
     rewrite (multiplicity_dropNth_neq eqA_dec eqA_Equivalence l' p el H0 H2).
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 0 in w.
-    omega.
+    lia.
     clear w; destruct (eqA_dec a el); [contr | trivial].
   Qed.
 
@@ -168,7 +168,7 @@ Section Permutation.
     exfalso.
     assert (w := H a); simpl in w; clear H.
     destruct (eqA_dec a a).
-    omega.
+    lia.
     intuition.
      (* step *)
     destruct (permutation_cons H) as [p [a' [l'p [aa' ll'p]]]].
@@ -176,7 +176,7 @@ Section Permutation.
     rewrite (IHl (drop_nth l' p)); trivial.
     set (w := nth_some l' p l'p).
     rewrite drop_nth_in_length; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma insert_nth_permut: forall (l: list A) el n,
@@ -219,7 +219,7 @@ Section Permutation.
     rewrite initialSeg_finalSeg_full; trivial.
     rewrite (H w); auto with arith.
     rewrite list_contents_app; trivial.
-    omega.
+    lia.
   Qed.
 
 End Permutation.
@@ -384,7 +384,7 @@ Section ListSim_iso.
     constructor.
     set (w := H0 a); inversion w.
     destruct (eqA_dec a a).
-    omega.
+    lia.
     absurd (eqA a a); intuition.
     inversion H.
     apply permut_refl.
@@ -398,7 +398,7 @@ Section ListSim_iso.
     rewrite <- (list_sim_length mm').
     set (h := nth_some m p mp).
     set (w := drop_nth_length m p).
-    omega.
+    lia.
     exists (insert_nth m' p a0); split.
     unfold list_simA; apply list_sim_insert_nth with p a' a0; trivial.
     apply nth_insert_nth; trivial.

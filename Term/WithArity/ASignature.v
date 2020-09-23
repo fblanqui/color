@@ -122,11 +122,11 @@ Module OrdType (Import S : WSIG) <: OrderedType.
 
   Lemma lt_trans : forall x y z, lt x y -> lt y z -> lt x z.
 
-  Proof. unfold lt. intros. omega. Qed.
+  Proof. unfold lt. intros. lia. Qed.
 
   Lemma lt_not_eq : forall x y, lt x y -> x <> y.
 
-  Proof. unfold lt. intros x y l e. subst. omega. Qed.
+  Proof. unfold lt. intros x y l e. subst. lia. Qed.
 
   Definition blt f g := bgt_nat (weight g) (weight f).
 
@@ -142,7 +142,7 @@ Module OrdType (Import S : WSIG) <: OrderedType.
     rewrite bgt_nat_ok, bgt_nat_ko, (beq_ko (@beq_symb_ok Sig)). intros.
     destruct (eq_nat_dec (weight f) (weight g)).
     ded (weight_inj e). subst g. cong.
-    omega.
+    lia.
   Qed.
 
   Definition compare : forall x y, Compare lt (@Logic.eq t) x y.

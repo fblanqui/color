@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics Omega.
+From Coq Require Import Morphisms Basics Lia.
 From CoLoR Require Import LogicUtil RelUtil VecOrd VecUtil LAlpha.
 
 (****************************************************************************)
@@ -180,7 +180,7 @@ Module Make (Export RS : RS_Struct).
     gen (eq_apps_fun_nb_args H0); intro e; subst m.
     gen (eq_apps_nb_args_args H0); intro e.
     ex (succ n) ls y s 0 (@Vnil Te).
-    assert (a : succ n + 0 = succ n). omega. exists a. simpl. intuition.
+    assert (a : succ n + 0 = succ n). lia. exists a. simpl. intuition.
     sym. rewrite Vapp_nil, Vcast_cast, e, Vcast_refl. refl.
     (* m_app_l *)
     rewrite (VSn_eq us) in H. simpl in H. rewrite apps_app in H.
@@ -194,7 +194,7 @@ Module Make (Export RS : RS_Struct).
     (* 2 *)
     right. rewrite Vcast_refl in h3.
     ex p ls r s (Datatypes.S q) (Vadd vs (Vlast (Vhead us) us)).
-    assert (h : p + succ q = succ (p+q)). omega. exists h. split. hyp. split.
+    assert (h : p + succ q = succ (p+q)). lia. exists h. split. hyp. split.
     rewrite (VSn_add us) at 1. rewrite h3, Vadd_app. apply Vcast_pi.
     rewrite Vlast_tail. apply app_apps.
     (* m_app_r *)

@@ -12,26 +12,17 @@
 (* RPO definition extended by Sorin Stratulat by considering a
 quasi-ordering for the precedence instead of an ordering. *)
 
-From Coq Require Import Bool.
-From Coq Require Import Peano.
-From Coq Require Import List.
-From CoLoR Require Import closure.
-From CoLoR Require Import more_list.
-From CoLoR Require Import equiv_list.
-From CoLoR Require Import list_permut.
-From CoLoR Require Import dickson.
-From Coq Require Import Relations.
-From Coq Require Import Wellfounded.
-From Coq Require Import Arith.
-From Coq Require Import Wf_nat.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import term.
-From CoLoR Require Import decidable_set.
-From CoLoR Require Import ordered_set.
-From Coq Require Import Recdef.
-From Coq Require Import Program.
-From Coq Require Import Morphisms.
-From Coq Require Omega.
+(*
+From Coq Require Import Bool Peano List Relations Wellfounded Arith Wf_nat Recdef
+     Program Morphisms Lia Omega.
+From CoLoR Require Import closure more_list equiv_list list_permut dickson term_spec
+     term decidable_set ordered_set.
+ *)
+
+From Coq Require Import Bool Peano List.
+From CoLoR Require Import closure more_list equiv_list list_permut dickson.
+From Coq Require Import Relations Wellfounded Arith Wf_nat Recdef Program Morphisms Lia.
+From CoLoR Require Import term_spec term decidable_set ordered_set.
 
 Import ListNotations.
 
@@ -6359,10 +6350,6 @@ apply H2; trivial.
 trivial.
 Qed.
 
-
-Import Omega.
-
-
 Lemma equiv_rpo_eval: forall  n rpo_infos t s u, size t + size u <= n -> size t + size s <= n -> equiv u s -> rpo_eval rpo_infos n t u = rpo_eval rpo_infos n t s.
 Proof.
 intros n rpo_infos t s u tu ts H.
@@ -6406,7 +6393,7 @@ tauto.
 assert (H3:= rpo_eval_is_complete_equivalent).
 assert (H3':= H3 rpo_infos n s t).
 assert (H4': size s + size t <=n).
-omega.
+lia.
 assert (H4: rpo_eval rpo_infos n s t = Some Equivalent).
 rewrite H2 in H3'.
 assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv t s).
@@ -6419,7 +6406,7 @@ auto.
 clear H2' H2''.
 assert (H4: rpo_eval rpo_infos n s t = Some Less_than).
 assert (H3:= rpo_eval_is_complete_less_greater).
-assert (H6:= H3 rpo_infos n s t). apply H6. omega. assumption.
+assert (H6:= H3 rpo_infos n s t). apply H6. lia. assumption.
 
 
 assert (H3:= rpo_eval_is_complete_equivalent).
@@ -6427,7 +6414,7 @@ assert (H3':= H3 rpo_infos n s t).
 assert (H5':= @Equivalence_Symmetric _ _ equiv_equiv t s).
 assert (H6: equiv s t). auto.
 assert (H4': size s + size t <=n).
-omega.
+lia.
 rewrite H4 in H3'.
 assert (Some Less_than = Some Equivalent).
 auto.
@@ -6454,7 +6441,7 @@ tauto.
 assert (H3:= rpo_eval_is_complete_equivalent).
 assert (H3':= H3 rpo_infos n u t).
 assert (H4': size u + size t <=n).
-omega.
+lia.
 assert (H4: rpo_eval rpo_infos n u t = Some Equivalent).
 rewrite H2 in H3'.
 assert (H6':= @Equivalence_Symmetric _ _ equiv_equiv t u).
@@ -6468,7 +6455,7 @@ assert (H2:= rpo_eval_is_complete_less_greater); clear H2' H2''.
 assert (H2':= H2 rpo_infos n t s).
 assert (H2'':= H2 rpo_infos n s t).
 assert (H4': size s + size t <=n).
-omega.
+lia.
 assert (H5: rpo_eval rpo_infos n t s = Some Less_than).
 tauto.
 assert (H5': rpo_eval rpo_infos n t s = Some Greater_than).
@@ -6492,7 +6479,7 @@ auto.
 assert (H3:= rpo_eval_is_complete_equivalent).
 assert (H3':= H3 rpo_infos n u t).
 assert (H4': size u + size t <=n).
-omega.
+lia.
 assert (H4: rpo_eval rpo_infos n u t = Some Equivalent).
 auto.
 assert (H2:= rpo_eval_is_complete_less_greater); clear H2' H2''.
@@ -6507,7 +6494,7 @@ assert (H2:= rpo_eval_is_complete_less_greater); clear H2' H2''.
 assert (H2':= H2 rpo_infos n t u).
 assert (H2'':= H2 rpo_infos n u t).
 assert (H4': size u + size t <=n).
-omega.
+lia.
 assert (H5: rpo_eval rpo_infos n t u = Some Less_than).
 tauto.
 assert (H5': rpo_eval rpo_infos n t u = Some Greater_than).
@@ -6557,7 +6544,7 @@ intros rpo_infos n lg ls H0.
 assert (forall t t' : term,
       mem equiv t ls -> mem equiv t' lg -> size t' + size t <= n).
 intros.
-assert (H0':= H0 t t').  assert (size t + size t' <= n). tauto. omega. 
+assert (H0':= H0 t t').  assert (size t + size t' <= n). tauto. lia. 
 
 induction ls as [ | s ls].
 
@@ -6680,7 +6667,7 @@ apply H.
 intros H1' H2.
 assert (size t' + size t <= n).
 auto.
-omega. 
+lia. 
 generalize (list_gt_list_is_sound_mem_equiv rpo_infos l1 l2 H0). destruct (list_gt_list (rpo_eval rpo_infos n) l1 l2) as [[ | ] | ]. trivial. intros H' t2 H1.
 assert (H2':= H' t2); clear H'. 
 assert (H3: exists g : term,
@@ -6831,7 +6818,7 @@ intros H1' H2.
 assert (H6':= H6 t2 t').
 assert (size t2 + size t' <= n).
 auto.
-omega. 
+lia. 
 
 assert (H1': match mult_eval (rpo_eval rpo_infos n) (t :: l) (t0 :: l0) with
          | Some Equivalent => False
@@ -6859,7 +6846,7 @@ assert (H6':= H6 t2' t1').
 intros.
 assert (size t2' + size t1' <= n).
 auto.
-omega. 
+lia. 
 
 intros. apply H0. assumption. assumption.
 intros. apply H0. assumption. assumption.
@@ -6931,7 +6918,7 @@ intros.
 assert (size t' + size t <= n).
 apply H1.
 trivial. trivial.
-omega.
+lia.
 clear H2'.
 
 destruct B.
@@ -7199,7 +7186,7 @@ intros H1' H2.
 assert (H6':= H6 t' t2).
 assert (H0: size t2 + size t' <= n).
 auto.
-omega. 
+lia. 
 assumption.  intros. apply H0; trivial.
 clear H1''.
 rewrite H in H1'.
@@ -7219,7 +7206,7 @@ apply H2.
 assert (H6':= H6 b x).
 assert (size b + size x <= n).
 apply H6'. trivial. trivial.
-omega.
+lia.
 
 assert (H6'':= rpo_eval_is_complete).
 assert (H6':= H6'' rpo_infos n x b); clear H6''.
@@ -7228,12 +7215,12 @@ apply H6'.
 assert (H6'':= H6 b x). 
 assert (size b + size x <= n).
 apply H6''. trivial. trivial.
-omega.
+lia.
 
 assert (H6'':= H6 b x). 
 assert (size b + size x <= n).
 apply H6''. trivial. trivial.
-omega.
+lia.
 
 intro. 
 rewrite H0 in H.
@@ -7256,7 +7243,7 @@ intros.
 assert (size t' + size t <= n).
 apply H1.
 trivial. trivial.
-omega.
+lia.
 clear H2'.
  
 destruct A.
@@ -7288,7 +7275,7 @@ assert (H1':= H1 b x).
 assert  (size b + size x <= n).
 apply H1'; trivial.
 assert (size x + size b <= n).
-omega.
+lia.
 assert (rpo_eval rpo_infos n x b = Some Greater_than).
 apply H3; trivial.
 assert (H8:= rpo_eval_is_sound_weak rpo_infos n x b ).
@@ -8193,7 +8180,7 @@ assert (H2:= rpo_eval_is_complete_less_greater).
 assert (H3:= H2 rpo_infos n a b).
 assert (H4:= H2 rpo_infos n b a).
 assert (size b + size a <= n).
-omega.
+lia.
 assert (rpo_eval rpo_infos n a b = Some Less_than
            /\ rpo_eval rpo_infos n b a =
              Some Greater_than).

@@ -9,7 +9,7 @@ over graph based on unification
 
 Set Implicit Arguments.
 
-From Coq Require Import Omega Compare_dec.
+From Coq Require Import Lia Compare_dec.
 From CoLoR Require Import ADecomp AUnif ARenCap ATrs ListUtil RelUtil AGraph
      LogicUtil AShift ACalls BoolUtil ADuplicateSymb ListDec EqUtil AHDE.
 
@@ -46,7 +46,7 @@ Section S.
       destruct H3. revert H0. rewrite H3. unfold shift. rewrite !sub_sub.
       intro. assert (forall x, In x (vars (ren_cap R k r1))
         -> In x (vars l2) -> False).
-      intros. ded (vars_ren_cap H5). ded (vars_max H6). subst k. omega.
+      intros. ded (vars_ren_cap H5). ded (vars_max H6). subst k. lia.
       unfold unifiable. eapply sub_eq_is_sol. hyp. symmetry in H0. apply H0.
     Qed.
 

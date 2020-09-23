@@ -9,10 +9,7 @@
 (*           *                                                            *)
 (**************************************************************************)
 
-From Coq Require Import Setoid.
-From Coq Require Import Relations.
-From Coq Require Import Arith.
-From Coq Require Import FunInd.
+From Coq Require Import Setoid Relations Arith FunInd.
 
 Inductive comp : Type :=
   | Equivalent : comp

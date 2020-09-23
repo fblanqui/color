@@ -1,13 +1,6 @@
-From Coq Require Import List.
-From Coq Require Import Bool.
-From Coq Require Import FunInd.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import closure.
-From CoLoR Require term_spec.
-From CoLoR Require equational_theory_spec.
-From CoLoR Require Import terminaison.
-
-From CoLoR Require closure_extension.
+From Coq Require Import List Bool FunInd.
+From CoLoR Require Import weaved_relation closure term_spec terminaison.
+From CoLoR Require equational_theory_spec closure_extension.
 
 Module Make  (Eqt:equational_theory_spec.EqTh).
 

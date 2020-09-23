@@ -40,7 +40,7 @@ split. auto.
 intros i Hi. gen (H2 i Hi). clear H2.
 generalize dependent p. intro p. elim p.
  intros H1 H2.
- absurd (coef (mxi Hi) nil = 0). omega. simpl. refl.
+ absurd (coef (mxi Hi) nil = 0). lia. simpl. refl.
  intros (c, m) p' Hrec H1. simpl in H1. gen H1. clear H1.
  intros (H1, H2). simpl.
  case (monom_eq_dec (mxi Hi) m); intro Hm; simpl.
@@ -89,7 +89,7 @@ unfold Vmonotone1, Vmonotone, Dle, peval_D, Vmonotone_i, restrict, monotone.
 intros n p H_coef_pos i j Hij vi vj. destruct x as (x, Hx).
 destruct y as (y, Hy). simpl. intro Hxy.
 generalize dependent p. intro p. elim p.
- intro. simpl. omega.
+ intro. simpl. lia.
  unfold coef_pos. intros (c, m) p' Hrec H_coef_pos.
  simpl in H_coef_pos. gen H_coef_pos. clear H_coef_pos.
  intros (H_pos_c, H_coef_pos_p').
@@ -132,7 +132,7 @@ apply Zplus_le_lt_compat.
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
  intro H'.
  gen (H' _ _ Hij vi vj (exist Hx) (exist Hy)).
- simpl. clear H'. intro H'. apply H'. omega.
+ simpl. clear H'. intro H'. apply H'. lia.
  lazy beta iota delta [peval]. fold peval.
  apply Zplus_lt_le_compat.
   apply Zmult_lt_compat_l. hyp.
@@ -149,7 +149,7 @@ apply Zplus_le_lt_compat.
  unfold Vmonotone, Dle, peval_D. unfold Vmonotone_i, restrict. unfold monotone.
  intro H'.
  gen (H' _ _ Hij vi vj (exist Hx) (exist Hy)).
- simpl. clear H'. intro H'. apply H'. omega.
+ simpl. clear H'. intro H'. apply H'. lia.
 Qed.
 
 Lemma pmonotone_imp_monotone_peval_Dlt : forall n (p : poly n) 
@@ -184,8 +184,8 @@ Proof.
 induction p.
 (* nil *)
 unfold pstrong_monotone, bpstrong_monotone, pweak_monotone. simpl.
-intuition. unfold L in H. destruct n. omega. destruct n; discr.
-destruct n. refl. ded (H1 n (le_n (S n))). omega.
+intuition. unfold L in H. destruct n. lia. destruct n; discr.
+destruct n. refl. ded (H1 n (le_n (S n))). lia.
 (* cons *)
 destruct a. intuition.
 (* -> *)
@@ -195,7 +195,7 @@ rewrite !andb_eq in H1. intuition. change (bcoef_pos p = true) in H4.
 rewrite <- is_not_neg_ok. hyp. rewrite <- bcoef_pos_ok. hyp.
 assert (In (N_ H2) (L n)). apply In_L.
 rewrite forallb_forall in H3. ded (H3 _ H5).
-rewrite is_pos_ok in H6. simpl in H6. omega.
+rewrite is_pos_ok in H6. simpl in H6. lia.
 (* <- *)
 unfold pstrong_monotone, pweak_monotone in H1.
 unfold bpstrong_monotone, bcoef_pos. simpl in *.
@@ -203,7 +203,7 @@ rewrite !andb_eq. intuition. rewrite is_not_neg_ok. hyp.
 change (bcoef_pos p = true). rewrite bcoef_pos_ok. hyp.
 rewrite forallb_forall.
 intros [i hi].  simpl. rewrite is_pos_ok.
-ded (H3 _ hi). omega. Transparent coef.
+ded (H3 _ hi). lia. Transparent coef.
 Qed.
 
 (***********************************************************************)

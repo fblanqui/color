@@ -148,16 +148,16 @@ Section lexn.
   Proof.
     induction n; simpl prodn.
     (* 0 *)
-    intuition. destruct H as [i [hi _]]. omega.
+    intuition. destruct H as [i [hi _]]. lia.
     (* S *)
     intros [x xs] [y ys]. simpl lexn. split; intro h.
     (* -> *)
     inversion h; clear h; subst.
-    ex 0 (lt_0_Sn n). split. simpl projn. hyp. intros. omega.
+    ex 0 (lt_0_Sn n). split. simpl projn. hyp. intros. lia.
     rewrite IHn in H4. destruct H4 as [i [hi [h1 h2]]].
     ex (S i) (lt_n_S hi). split.
     simpl. rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2:=hi). hyp.
-    intros [|j] k hj; simpl. hyp. apply h2. omega.
+    intros [|j] k hj; simpl. hyp. apply h2. lia.
     (* <- *)
     destruct h as [i [hi [h1 h2]]]. destruct i as [|i].
     apply lex1. hyp. 
@@ -201,7 +201,7 @@ Lemma projn_prod_of_vec : forall A n (xs : vector A n) i (hi : i<n),
   projn (prod_of_vec xs) hi = Vnth xs hi.
 
 Proof.
-  intro A. induction xs; intros i hi. omega. simpl. destruct i as [|i]; fo.
+  intro A. induction xs; intros i hi. lia. simpl. destruct i as [|i]; fo.
 Qed.
 
 (****************************************************************************)
@@ -292,7 +292,7 @@ Section lexv.
     intros [i [i1 [i2 i3]]] [j [j1 [j2 j3]]]. destruct (lt_dec i j).
     (* i < j *)
     ex i i1. split. apply gt_eq_r. exists (Vnth us i1). fo.
-    intros k ki kn. trans (Vnth us kn). fo. apply j3. omega.
+    intros k ki kn. trans (Vnth us kn). fo. apply j3. lia.
     destruct (eq_nat_dec i j).
     (* i = j *)
     subst j. ex i i1. split.
@@ -300,7 +300,7 @@ Section lexv.
     intros k ki kn. trans (Vnth us kn); fo.
     (* i > j *)
     ex j j1. split. apply gt_eq_l. exists (Vnth us j1). split. firstorder auto with zarith. hyp.
-    intros k kj kn. trans (Vnth us kn). apply i3. omega. fo.
+    intros k kj kn. trans (Vnth us kn). apply i3. lia. fo.
   Qed.
 
 End lexv.
@@ -337,21 +337,21 @@ Section Vforall2_opt.
     destruct tsus as [k [k1 [k2 k3]]]. inversion h1; clear h1; subst.
     destruct (le_dec k i).
     (* k <= i *)
-    exfalso. assert (a : i - k < n - k). omega.
+    exfalso. assert (a : i - k < n - k). lia.
     gen (Vforall2_elim_nth a k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
-      Vnth_eq with (v:=us) (h2:=hi), <- H; try omega.
+      Vnth_eq with (v:=us) (h2:=hi), <- H; try lia.
     intro e; inversion e; clear e; subst. fo.
     (* k >= i *)
     split.
     (* i-th argument is decreasing *)
-    assert (a : i < k). omega.
+    assert (a : i < k). lia.
     gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=us) (h2:=hi), <- H; auto.
     intro e; inversion e; clear e; subst.
     apply opt_intro. apply gt_eq. exists x. fo.
     (* forall j<i, j-th arguments are equivalent *)
     intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
-    assert (a : j < k). omega.
+    assert (a : j < k). lia.
     gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
       Vnth_eq with (v:=us) (h2:=jn), <- H2; auto.
     intro e; inversion e; clear e; subst.
@@ -368,21 +368,21 @@ Section Vforall2_opt.
     destruct usvs as [k [k1 [k2 k3]]]. inversion h1; clear h1; subst.
     destruct (le_dec k i).
     (* k <= i *)
-    exfalso. assert (a : i - k < n - k). omega.
+    exfalso. assert (a : i - k < n - k). lia.
     gen (Vforall2_elim_nth a k3). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
-      Vnth_eq with (v:=vs) (h2:=hi), <- H0; try omega.
+      Vnth_eq with (v:=vs) (h2:=hi), <- H0; try lia.
     intro e; inversion e; clear e; subst. fo.
     (* k >= i *)
     split.
     (* i-th argument is decreasing *)
-    assert (a : i < k). omega.
+    assert (a : i < k). lia.
     gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=hi),
       Vnth_eq with (v:=vs) (h2:=hi), <- H0; auto.
     intro e; inversion e; clear e; subst.
     apply opt_intro. apply gt_eq. exists y. fo.
     (* forall j<i, j-th arguments are equivalent *)
     intros j ji jn. gen (h2 _ ji jn). intro e; inversion e; clear e; subst.
-    assert (a : j < k). omega.
+    assert (a : j < k). lia.
     gen (Vforall2_elim_nth a k2). rewrite !Vnth_sub, Vnth_eq with (h2:=jn),
       Vnth_eq with (v:=vs) (h2:=jn), <- H3; auto.
     intro e; inversion e; clear e; subst.
@@ -399,12 +399,12 @@ Lemma lexv_mon_arg A (eq gt : relation A) n (ts us : vector A n)
 
 Proof.
   rewrite !lexv_eq. intros [i [i1 [i2 i3]]].
-  assert (hi : i < n + p). omega. ex i hi. split.
+  assert (hi : i < n + p). lia. ex i hi. split.
   (* i-th argument *)
-  rewrite !Vnth_app. destruct (le_gt_dec n i). omega.
+  rewrite !Vnth_app. destruct (le_gt_dec n i). lia.
   rewrite !Vnth_eq with (h1:=g) (h2:=i1); auto.
   (* arguments before i-th *)
-  intros j ji hj. rewrite !Vnth_app. destruct (le_gt_dec n j). omega. fo.
+  intros j ji hj. rewrite !Vnth_app. destruct (le_gt_dec n j). lia. fo.
 Qed.
 
 (** Monotony of [Rof lexv (Vopt_filter M)] when [M] is sorted. *)
@@ -423,20 +423,20 @@ Proof.
   destruct (lt_dec (Vnth ks i1) p); destruct (lt_dec (Vnth ks i1) q);
     destruct (lt_dec (Vnth ks i1) (p+p'));
       destruct (lt_dec (Vnth ks i1) (q+q'));
-        try (refl || (exfalso; omega) || by (intro h; inversion h)).
+        try (refl || (exfalso; lia) || by (intro h; inversion h)).
   rewrite !Vnth_app.
   destruct (le_gt_dec p (Vnth ks i1)); destruct (le_gt_dec q (Vnth ks i1));
-    try (refl || (exfalso; omega) || by (intro h; inversion h)).
+    try (refl || (exfalso; lia) || by (intro h; inversion h)).
   rewrite Vnth_eq with (h1:=l) (h2:=g), Vnth_eq with (h1:=l0) (h2:=g0); auto.
   (* arguments before i-th *)
   intros j ji hj. gen (i3 _ ji hj). rewrite !Vnth_opt_filter.
   destruct (lt_dec (Vnth ks hj) p); destruct (lt_dec (Vnth ks hj) q);
     destruct (lt_dec (Vnth ks hj) (p+p'));
       destruct (lt_dec (Vnth ks hj) (q+q'));
-        try (refl || (exfalso; omega) || by (intro h; inversion h)).
+        try (refl || (exfalso; lia) || by (intro h; inversion h)).
   rewrite !Vnth_app.
   destruct (le_gt_dec p (Vnth ks hj)); destruct (le_gt_dec q (Vnth ks hj));
-    try (refl || (exfalso; omega) || by (intro h; inversion h)).
+    try (refl || (exfalso; lia) || by (intro h; inversion h)).
   rewrite Vnth_eq with (h1:=l) (h2:=g), Vnth_eq with (h1:=l0) (h2:=g0); auto.
 Qed.
 
@@ -465,8 +465,8 @@ Section lexl.
     intros x y xy. unfold Rof. rewrite lexv_eq. inversion xy; subst. ex i im.
     split. rewrite Vnth_vec_opt_of_list with (il:=ix),
       Vnth_vec_opt_of_list with (il:=iy). apply opt_intro. hyp.
-    intros j ji jm. assert (jx : j < length x). omega.
-    assert (jy : j < length y). omega.
+    intros j ji jm. assert (jx : j < length x). lia.
+    assert (jy : j < length y). lia.
     rewrite Vnth_vec_opt_of_list with (il:=jx),
       Vnth_vec_opt_of_list with (il:=jy). apply opt_intro.
     apply H0; hyp.

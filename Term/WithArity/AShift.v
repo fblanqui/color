@@ -44,7 +44,7 @@ Section S.
 
     Proof.
       pattern t. apply term_ind_forall; clear t.
-      simpl. intros. destruct H. omega. contr.
+      simpl. intros. destruct H. lia. contr.
       intros. unfold shift in H0. rewrite sub_fun, vars_fun in H0.
       ded (in_vars_vec_elim H0). do 2 destruct H1.
       ded (Vin_map H1). do 2 destruct H3. subst x0.
@@ -55,13 +55,13 @@ Section S.
 
     Proof.
       pattern t. apply term_ind_forall; clear t.
-      simpl. intros. destruct H. omega. contr.
+      simpl. intros. destruct H. lia. contr.
       intros. unfold shift in H0. rewrite sub_fun, vars_fun in H0.
       ded (in_vars_vec_elim H0). do 2 destruct H1.
       ded (Vin_map H1). do 2 destruct H3. subst x0.
       ded (Vforall_in H H3). ded (H4 H2).
       rewrite maxvar_fun. ded (Vin_map_intro (f:=@maxvar Sig) H3).
-      ded (Vmax_in H6). unfold maxvars. omega.
+      ded (Vmax_in H6). unfold maxvars. lia.
     Qed.
 
     Lemma vars_shift : forall t, vars (shift t) = map shift_var (vars t).
@@ -105,7 +105,7 @@ Section S.
         rewrite sub_comp_assoc. unfold sub_comp. simpl. f_equal.
         unfold shift_inv_var. rewrite plus_minus_eq.
         assert (Inb eq_nat_dec x (vars l) = true). apply Inb_intro. exact H.
-        rewrite H0. case (le_lt_dec p (x+p)); intro. refl. omega.
+        rewrite H0. case (le_lt_dec p (x+p)); intro. refl. lia.
       Qed.
 
       Lemma sub_shift_incl s r : vars r [= vars l ->
@@ -117,7 +117,7 @@ Section S.
         unfold shift_inv_var. rewrite plus_minus_eq.
         assert (Inb eq_nat_dec x (vars l) = true).
         apply Inb_intro. apply H. hyp.
-        rewrite H1. case (le_lt_dec p (x+p)); intro. refl. omega.
+        rewrite H1. case (le_lt_dec p (x+p)); intro. refl. lia.
       Qed.
 
     End inverse.
@@ -228,7 +228,7 @@ Section S.
 
   Proof.
     intros. ded (in_vars_shift_terms H). do 3 destruct H1. destruct H2. subst t.
-    ded (in_vars_shift_min H0). omega.
+    ded (in_vars_shift_min H0). lia.
   Qed.
 
   Arguments in_vars_shift_terms_min [p t l x] _ _.
@@ -239,7 +239,7 @@ Section S.
     induction l. unfold pw_disjoint_vars. intros. contr.
     intro. simpl. apply pw_disjoint_vars_cons. apply IHl.
     unfold disjoint_vars. intros. ded (in_vars_shift_max H0).
-    ded (in_vars_shift_terms_min H H1). absurd (x <= maxvar a + p); omega.
+    ded (in_vars_shift_terms_min H H1). absurd (x <= maxvar a + p); lia.
   Qed.
 
 (***********************************************************************)

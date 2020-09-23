@@ -11,7 +11,7 @@ WF_absorb. *)
 Set Implicit Arguments.
 
 From Coq Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
-     Omega.
+     Lia.
 From CoLoR Require Import RelUtil ATrs LogicUtil ACalls SN InfSeq LeastNat
      ListUtil BoundNat NatUtil VecUtil ADP NotSN_IS ASN BoolUtil ClassicUtil.
 
@@ -107,7 +107,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
       split_all. rename u0 into v.
       assert (size u <= size v). apply nleP. exists v. split_all.
       eapply subterm_eq_trans. apply subterm_strict. apply H. hyp.
-      ded (subterm_size H). omega.
+      ded (subterm_size H). lia.
     Qed.
 
     Definition min_term :=
@@ -201,37 +201,37 @@ R-sequence *)
     assert (ha : a < arity f0). rewrite <- (h2 0). destruct (hk (g 0)). hyp.
     (* monotony of g *)
     assert (me : forall x y, x <= y -> g x <= g y). intros x y xy.
-    destruct (lt_dec x y). ded (monS lt_trans h1). ded (H _ _ l). omega.
-    assert (x=y). omega. subst. refl.
+    destruct (lt_dec x y). ded (monS lt_trans h1). ded (H _ _ l). lia.
+    assert (x=y). lia. subst. refl.
     (* forall j, j < g 0 -> k j <> a *)
     assert (hg0 : forall j, j < g 0 -> k j <> a).
     intros j hj e. destruct (h3 _ e) as [l hl]. subst.
-    destruct (le_dec 0 l). ded (me _ _ l0). omega. omega.
+    destruct (le_dec 0 l). ded (me _ _ l0). lia. lia.
     (* forall i j, g i < j < g (S i) -> k j <> a *)
     assert (hg : forall i j, g i < j < g (S i) -> k j <> a).
     intros i j hj e. destruct (h3 _ e) as [l hl]. subst.
-    destruct (ge_dec i l). ded (me _ _ g0). omega.
-    destruct (ge_dec l (S i)). ded (me _ _ g0). omega. omega.
+    destruct (ge_dec i l). ded (me _ _ g0). lia.
+    destruct (ge_dec l (S i)). ded (me _ _ g0). lia. lia.
     (* Vnth (v 0) ha = Vnth (v (g 0)) ha *)
     assert (h0 : Vnth (v 0) ha = Vnth (v (g 0)) ha).
     cut (forall l, l <= g 0 -> Vnth (v 0) ha = Vnth (v l) ha).
     intro h. apply h. refl.
-    induction l; simpl. refl. intro h. rewrite IHl. 2: omega.
+    induction l; simpl. refl. intro h. rewrite IHl. 2: lia.
     destruct (hk l) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
     rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H, H0.
-    rewrite Vnth_replace_neq. refl. apply (hg0 l). omega.
+    rewrite Vnth_replace_neq. refl. apply (hg0 l). lia.
     (* forall i, Vnth (v (S (g i))) ha = Vnth (v (g (S i))) ha *)
     assert (h : forall i, Vnth (v (S (g i))) ha = Vnth (v (g (S i))) ha).
     intro i. ded (h1 i). cut (forall l, l < g (S i) - g i ->
       Vnth (v (S (g i))) ha = Vnth (v (S (g i) + l)) ha).
-    intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). omega.
-    rewrite e. apply hi. clear e. clear -H; omega.
+    intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). lia.
+    rewrite e. apply hi. clear e. clear -H; lia.
     induction l; intro. rewrite plus_0_r. refl.
-    assert (hl : l < g (S i) - g i). clear -H0; omega. rewrite (IHl hl).
+    assert (hl : l < g (S i) - g i). clear -H0; lia. rewrite (IHl hl).
     rewrite <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
     destruct (hk x) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
     rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2.
-    rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. clear -H0; omega.
+    rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. clear -H0; lia.
     (* [Vnth (v 0) ha] is a subterm of [f 0] *)
     exists (Vnth (v 0) ha). split.
     rewrite hv. apply subterm_fun. apply Vnth_in.
@@ -307,8 +307,8 @@ minimal infinite R-sequence *)
       cut (forall i, i <= k -> int_red R # (f 0) (f i)).
       intro h. apply h. refl.
       induction i; intro hi. apply rt_refl. apply rt_trans with (f i).
-      apply IHi. omega. apply rt_step. apply NNPP. intro h.
-      assert (k <= i). apply is_min_ch. hyp. omega.
+      apply IHi. lia. apply rt_step. apply NNPP. intro h.
+      assert (k <= i). apply is_min_ch. hyp. lia.
       (* (f k) is minimal *)
       assert (NT_min (red R) (f k)). split.
       exists (fun i => f (i+k)). intuition. intro i. apply hf.

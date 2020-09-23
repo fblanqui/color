@@ -40,7 +40,7 @@ Section Morphism.
 
   Lemma Fc_aux : forall i j n n', i+S j=n -> n=n' -> i+S j=n'.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Arguments Fc_aux [i j n n'] _ _.
 

@@ -42,7 +42,7 @@ Section S.
     tauto. unfold incl in *|-* . intros. apply in_or_app. destruct (em a0 a).
     subst a0. tauto. assert (In a0 x \/ In a0 (a::x0)). apply in_app_or.
     rewrite <- (proj1 H1). apply H0. simpl. tauto. simpl in H4. intuition.
-    rewrite (length_app x x0) in H2. simpl. omega. 
+    rewrite (length_app x x0) in H2. simpl. lia. 
   Qed.
 
 (***********************************************************************)
@@ -114,15 +114,15 @@ Section S.
 
   Proof.
     induction l; intros hl ha; simpl. refl. destruct (eq_dec a x).
-    subst. rewrite remove_notin. omega. fo.
-    simpl. rewrite IHl. destruct l. fo. simpl. omega. fo. fo.
+    subst. rewrite remove_notin. lia. fo.
+    simpl. rewrite IHl. destruct l. fo. simpl. lia. fo. fo.
   Qed.
 
   Lemma nodup_incl_length_le :
     forall l m : list A, nodup l -> l [= m -> length l <= length m.
 
   Proof.
-    induction l; simpl; intros m l_nodup lm. omega.
+    induction l; simpl; intros m l_nodup lm. lia.
     destruct l_nodup as [a_notin_l l_nodup].
     assert (am : In a m). apply lm. fo.
     destruct (in_elim am) as [m1 [m2 e]]. subst.
@@ -130,7 +130,7 @@ Section S.
     assert (xal : In x (a :: l)). right. hyp.
     apply lm in xal. rewrite in_app in xal.
     assert (x <> a). intro. subst. contr. firstorder auto with datatypes exfalso.
-    gen (IHl _ l_nodup lm1m2). rewrite !app_length. simpl. omega.
+    gen (IHl _ l_nodup lm1m2). rewrite !app_length. simpl. lia.
   Qed.
 
   Lemma nodup_remove (x : A) :
@@ -167,22 +167,22 @@ Section S.
     gen (nth_In x l0). rewrite <- aj. tauto.
     (* j >= length l1 *)
     assert (aj : a = nth (j-length l1) (a::l2) x). rewrite e at 1.
-    rewrite n0, app_nth2. refl. omega.
+    rewrite n0, app_nth2. refl. lia.
     destruct (lt_dec i (length l1)).
     (* i < length l1 *)
     assert (ai : a = nth i l1 x). unfold a. rewrite n0, app_nth1; auto.
     gen (nth_In x l0). rewrite <- ai. tauto.
     (* i >= length l1 *)
     assert (ai : a = nth (i-length l1) (a::l2) x). unfold a at 1.
-    rewrite n0, app_nth2. refl. omega.
+    rewrite n0, app_nth2. refl. lia.
     gen aj. gen ai. simpl.
     case_eq (j - length l1).
     (* j = length l1 *)
-    case_eq (i - length l1). intros; omega. intros r r1 r2 _ r3.
-    assert (p : r < length l2). omega. gen (nth_In x p).
+    case_eq (i - length l1). intros; lia. intros r r1 r2 _ r3.
+    assert (p : r < length l2). lia. gen (nth_In x p).
     simpl in ai. rewrite r1 in ai. rewrite <- ai. tauto.
     (* j > length l1 *)
-    intros r r1. assert (p : r < length l2). omega. gen (nth_In x p).
+    intros r r1. assert (p : r < length l2). lia. gen (nth_In x p).
     simpl in aj. rewrite r1 in aj. rewrite <- aj. tauto.
   Qed.
 

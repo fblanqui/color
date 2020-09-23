@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Definition of log2 (floor) and exp2, and some equalities
 *)
 
-From Coq Require Import Div2 Le Even Omega.
+From Coq Require Import Div2 Le Even Lia.
 From CoLoR Require Import LogicUtil.
 
 Lemma div2_le_n : forall n, div2 n <= n.
@@ -100,8 +100,8 @@ Lemma double_div2 : forall n, S (2 * div2 n) >= n.
 
 Proof.
 intro n. destruct (even_or_odd n).
-rewrite even_double; auto; unfold double; omega.
-rewrite odd_double; auto; unfold double; omega.
+rewrite even_double; auto; unfold double; lia.
+rewrite odd_double; auto; unfold double; lia.
 Qed.
 
 Lemma exp2_pos : forall n, exp2 n >0.
@@ -112,8 +112,8 @@ Lemma exp2_log2_prop : forall n p, log2_prop n p -> exp2 (S p) > n.
 
 Proof.
 cut(forall n n' p, n'<=n -> log2_prop n' p -> exp2 (S p) > n').
-intros. eapply H. assert (n<=n). omega. ehyp. hyp.
-intro; induction n; intros. assert (n'=0). omega. subst. apply exp2_pos.
+intros. eapply H. assert (n<=n). lia. ehyp. hyp.
+intro; induction n; intros. assert (n'=0). lia. subst. apply exp2_pos.
 inversion H; auto.
 subst; inversion H0. simpl; auto.
 subst.
@@ -123,7 +123,7 @@ simpl; destruct n; auto with *.
 assert (div2 n <= n); auto with *. apply div2_le_n.
 hyp.
 change (2*exp2 (S q) > S n).
-gen(double_div2 (S n)); intro; omega.
+gen(double_div2 (S n)); intro; lia.
 Qed.
 
 Lemma exp2_log2 : forall n, exp2(S (log2 n)) > n.

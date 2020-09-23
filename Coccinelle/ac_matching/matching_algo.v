@@ -10,37 +10,15 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_permut.
-From CoLoR Require Import list_sort.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import term_o.
-From CoLoR Require Import equational_theory.
-From CoLoR Require Import ac.
-From CoLoR Require Import matching.
-From CoLoR Require Import dickson.
-From CoLoR Require Import matching_well_formed.
-From CoLoR Require Import matching_well_founded.
-From CoLoR Require Import matching_sound.
-From CoLoR Require Import matching_complete.
-From Coq Require Import Wellfounded.
-From Coq Require Import Wf_nat.
-From CoLoR Require Import dickson.
+From Coq Require Import Arith List Wellfounded Wf_nat.
+From CoLoR Require Import more_list list_permut list_sort term_spec term_o
+     equational_theory ac matching dickson matching_well_formed matching_well_founded
+     matching_sound matching_complete dickson.
 
 Module Type S.
 
 Declare Module Import CMatching : matching_complete.S.
-Import SMatching.
-Import WFMMatching.
-Import WFMatching.
-Import Matching.
-Import Cf_eq_ac.
-Import Ac.
-Import EqTh.
-Import T.
-Import Sort.
+Import SMatching WFMMatching WFMatching Matching Cf_eq_ac Ac EqTh T Sort.
 
 (* Inductive well_formed_matching_problem *)
 Inductive well_formed_matching_problem : Type :=
@@ -255,19 +233,7 @@ Module Make (CMatching1 : matching_complete.S) :
 
 Module CMatching := CMatching1.
 
-Import CMatching1.
-Import SMatching.
-Import WFMMatching.
-Import WFMatching.
-Import Matching.
-Import Cf_eq_ac.
-Import Ac.
-Import EqTh.
-Import T.
-Import F.
-Import X.
-Import Sort.
-Import LPermut.
+Import CMatching1 SMatching WFMMatching WFMatching Matching Cf_eq_ac Ac EqTh T F X Sort LPermut.
 
 Inductive well_formed_matching_problem : Type :=
   | W : forall pb, well_formed_pb pb -> well_formed_matching_problem.

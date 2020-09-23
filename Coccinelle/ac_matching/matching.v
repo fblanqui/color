@@ -10,24 +10,14 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_sort.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import ac.
-From CoLoR Require Import cf_eq_ac.
+From Coq Require Import Arith List.
+From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac.
 
 Module Type S.
 
 Declare Module Import Cf_eq_ac : cf_eq_ac.S.
 
-Import Cf_eq_ac.Ac.
-Import Sort.
-Import EqTh.
-Import EqTh.T.
-Import F.
-Import LPermut.
+Import Cf_eq_ac.Ac Sort EqTh EqTh.T F LPermut.
 
 Record partly_solved_term : Type :=
   mk_pst 
@@ -406,14 +396,7 @@ End S.
 Module Make (Cf_eq_ac1 : cf_eq_ac.S) : S with Module Cf_eq_ac := Cf_eq_ac1.
 
 Module Cf_eq_ac := Cf_eq_ac1.
-Import Cf_eq_ac1.
-Import Ac.
-Import EqTh.
-Import T.
-Import F.
-Import X.
-Import Sort.
-Import LPermut.
+Import Cf_eq_ac1 Ac EqTh T F X Sort LPermut.
 
 Record partly_solved_term : Type :=
   mk_pst 

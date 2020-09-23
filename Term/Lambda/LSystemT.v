@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil OrdUtil LSimple RelUtil.
-From Coq Require Import Structures.Equalities Omega.
+From Coq Require Import Structures.Equalities Lia.
 From CoLoR Require SetUtil.
 
 
@@ -349,7 +349,7 @@ Module BI_SystemT <: BI_Struct.
 
   Lemma Acc_arity f i (hi : Acc f i) : i < arity (typ f).
 
-  Proof. inversion hi; clear hi; subst; simpl; omega. Qed.
+  Proof. inversion hi; clear hi; subst; simpl; lia. Qed.
 
   Lemma Acc_ok f i (hi : Acc f i) a :
     occurs a (Vnth (inputs (typ f)) (Acc_arity hi)) ->
@@ -411,15 +411,15 @@ Proof.
 
   eapply cc_app. eapply cc_app. apply hv. hyp.
   eapply cc_call' with (g:=Rec A) (us:=[n; u; v]); try refl.
-  simpl. omega.
+  simpl. lia.
   unfold gt1, Def.gt_call, Rof, transp. apply right_lex.
   unfold Def.gt_args_lex, Rof, lexv; simpl. apply lex1. apply opt_intro.
   unfold gt. apply clos_aeq_intro_refl. apply t_step.
   eapply stacc_intro' with (i:=0) (f:=Succ) (ts:=[n]); try refl.
   intros i i1 i2. destruct i. simpl. hyp. destruct i.
-  simpl. hyp. destruct i. simpl. hyp. omega.
+  simpl. hyp. destruct i. simpl. hyp. lia.
 
   Grab Existential Variables.
-  apply Acc_Succ. simpl; omega. omega. simpl; omega. omega. simpl; omega.
-  omega. apply Acc_Succ. simpl; omega. omega.
+  apply Acc_Succ. simpl; lia. lia. simpl; lia. lia. simpl; lia.
+  lia. apply Acc_Succ. simpl; lia. lia.
 Qed.

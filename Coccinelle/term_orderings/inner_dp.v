@@ -1,18 +1,9 @@
 
 (** * Equational theory on a term algebra *)
 
-From Coq Require Import List.
-From Coq Require Import Relations.
-From Coq Require Import Wellfounded.
-From Coq Require Import Arith.
-From CoLoR Require Import closure.
-From CoLoR Require Import more_list.
-From CoLoR Require Import weaved_relation.
-From CoLoR Require Import term.
-From CoLoR Require Import equational_theory_spec.
-From CoLoR Require Import rwr_strategies.
-From CoLoR Require Import dp.
-From CoLoR Require Import rpo.
+From Coq Require Import List Relations Wellfounded Arith.
+From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec
+     rwr_strategies dp rpo.
 
 Module Make (E : EqTh).
 

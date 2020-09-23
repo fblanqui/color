@@ -170,7 +170,7 @@ case (defined f R). simpl. intuition. rewrite vars_fun. simpl. exact (H k0).
 simpl. intuition.
 (* Vcons *)
 intros t n ts h1 h2 k0. rewrite nb_aliens_cons. simpl. rewrite in_app.
-intro. destruct H. ded (h1 _ H). omega. ded (h2 _ H). omega.
+intro. destruct H. ded (h1 _ H). lia. ded (h2 _ H). lia.
 Qed.
 
 Arguments vars_ren_cap [x t k] _.
@@ -184,7 +184,7 @@ induction ts.
 simpl. intuition.
 (* Vcons *)
 simpl. intro. rewrite in_app, nb_aliens_cons. intro. destruct H.
-ded (vars_ren_cap H). omega. ded (IHts _ H). omega.
+ded (vars_ren_cap H). lia. ded (IHts _ H). lia.
 Qed.
 
 Arguments vars_ren_caps [x n ts k] _.
@@ -196,7 +196,7 @@ Ltac single_tac x t :=
   exists (single x t); split; [single
   | unfold single, nb_aliens; simpl;
     let y := fresh "y" in intro y; intro;
-    case_beq_nat x y; [omega | refl]].
+    case_beq_nat x y; [lia | refl]].
 
 Notation In_dec := (In_dec eq_nat_dec).
 
@@ -227,10 +227,10 @@ intuition. rewrite H3, <- H1.
 assert (Vmap (sub s) (ren_caps (k + nb_aliens t) v)
   = Vmap (sub s2) (ren_caps (k + nb_aliens t) v)). apply Vmap_sub_eq. intros.
 ded (vars_ren_caps H4). unfold s. case (In_dec x (vars (ren_cap k t))); intro.
-ded (vars_ren_cap i). omega. refl. rewrite H4, <- H2.
+ded (vars_ren_cap i). lia. refl. rewrite H4, <- H2.
 split. refl. rewrite nb_aliens_cons. intros. unfold s.
 case (In_dec x (vars (ren_cap k t))); intro. ded (vars_ren_cap i).
-omega. apply H2'. omega.
+lia. apply H2'. lia.
 Qed.
 
 Lemma ren_caps_intro : forall n (ts : terms n) k,
@@ -252,10 +252,10 @@ intuition. rewrite H, <- H1.
 assert (Vmap (sub s) (ren_caps (k + nb_aliens h) ts)
   = Vmap (sub s2) (ren_caps (k + nb_aliens h) ts)). apply Vmap_sub_eq. intros.
 ded (vars_ren_caps H0). unfold s. case (In_dec x (vars (ren_cap k h))); intro.
-ded (vars_ren_cap i). omega. refl. rewrite H0, <- H2.
+ded (vars_ren_cap i). lia. refl. rewrite H0, <- H2.
 split. refl. rewrite nb_aliens_cons. intros. unfold s.
 case (In_dec x (vars (ren_cap k h))); intro. ded (vars_ren_cap i).
-omega. apply H2'. omega.
+lia. apply H2'. lia.
 Qed.
 
 Lemma ren_cap_sub_aux : forall s t k l,
@@ -287,11 +287,11 @@ apply Vcons_eq_intro. apply sub_eq. intros. unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. refl. intuition.
 apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. ded (vars_ren_cap i).
-omega. refl.
+lia. refl.
 (* domain *)
 rewrite nb_aliens_cons. intros. unfold s'.
 case (In_dec x (vars (ren_cap l t))); intro. ded (vars_ren_cap i).
-omega. apply H2'. omega.
+lia. apply H2'. lia.
 Qed.
 
 Lemma ren_cap_sub : forall s t k,
@@ -321,11 +321,11 @@ apply Vcons_eq_intro. apply sub_eq. intros. unfold s'.
 case (In_dec x (vars (ren_cap l h))); intro. refl. intuition.
 apply Vmap_sub_eq. intros. ded (vars_ren_caps H). unfold s'.
 case (In_dec x (vars (ren_cap l h))); intro. ded (vars_ren_cap i).
-omega. refl.
+lia. refl.
 (* domain *)
 rewrite nb_aliens_cons. intros. unfold s'.
 case (In_dec x (vars (ren_cap l h))); intro. ded (vars_ren_cap i).
-omega. apply H2'. omega.
+lia. apply H2'. lia.
 Qed.
 
 Lemma ren_caps_sub : forall s n (ts : terms n) k,
@@ -420,16 +420,16 @@ hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k t))); intro. refl. intuition.
 apply Vcons_eq_intro. rewrite H1. apply sub_eq. intros. ded (vars_ren_cap H3).
 unfold s'. case (In_dec x (vars_vec (ren_caps k t))); intro.
-ded (vars_ren_caps i0). omega. case
+ded (vars_ren_caps i0). lia. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec t) (fill c (sub s l)))));
   intro. refl. intuition.
 trans (Vmap (sub s3)
   (ren_caps (k + nb_aliens_vec t + nb_aliens (fill c (sub s l))) t0)).
 hyp. apply Vmap_sub_eq. intros. ded (vars_ren_caps H3). unfold s'.
 case (In_dec x (vars_vec (ren_caps k t))); intro.
-ded (vars_ren_caps i0). omega. case
+ded (vars_ren_caps i0). lia. case
   (In_dec x (vars (ren_cap (k + nb_aliens_vec t) (fill c (sub s l)))));
-  intro. ded (vars_ren_cap i0). omega. refl.
+  intro. ded (vars_ren_cap i0). lia. refl.
 Qed.
 
 Lemma rtc_red_sub_ren_cap : forall k u v,

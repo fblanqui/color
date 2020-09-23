@@ -1,9 +1,4 @@
-From Coq Require Import ZArith.
-From Coq Require Import ZArithRing.
-From Coq Require Import Ring_polynom.
-From Coq Require Import Bool.
-From Coq Require Import List.
-From Coq Require Import FunInd.
+From Coq Require Import ZArith ZArithRing Ring_polynom Bool List FunInd Lia.
 From CoLoR Require Import closure.
 
 Function  all_coef_pos (p:Pol Z) : bool :=
@@ -90,7 +85,7 @@ Proof.
   assert (0<=hd 0 l).
   clear - H0.
   induction l.
-  simpl;omega.
+  simpl;lia.
   simpl.
 
   rewrite <- all_mem_pos_def in H0;simpl in H0;eauto.
@@ -333,9 +328,9 @@ Proof.
   replace 0 with (0*n) in H0 by ring;
   replace (n*m) with (m*n) in H0 by ring;
   generalize (Zmult_gt_0_lt_reg_r _ _ _ (Z.lt_gt _ _ H') H0);auto.
-  intro;  assert (n=0) by omega.
+  intro;  assert (n=0) by lia.
   subst;simpl in H0.
-  omega.
+  lia.
 Qed.
 
 Functional Scheme pow_pos_ind := Induction for pow_pos Sort Prop.
@@ -466,7 +461,7 @@ Proof.
   clear - h9;
     apply False_ind.
   replace  (pow_pos Zmult 0 p2) with 0 in *.
-  omega.
+  lia.
   clear.
   induction p2;simpl.
   1, 3: reflexivity.
@@ -491,7 +486,7 @@ Proof.
   apply pos_expr_if_all_pos_aux.
   symmetry in Hp1_p3;destruct (@andb_true_eq _ _ Hp1_p3);auto.
   apply all_mem_pos_tail. apply all_mem_pos_all_mem_bounded with lb; assumption.
-  omega.
+  lia.
 Defined.
 
 
@@ -1032,7 +1027,7 @@ Goal
     <= ( PEeval 0 1 Zplus Zmult Zminus Z.opp (IDphi (R:=Z))  Z_of_N Zpower fv pe2) .
 Proof.
   intros pe1 pe2 fv H.
-  omega.
+  lia.
 Qed.
 *)
 
@@ -1066,7 +1061,7 @@ Ltac translate_vars :=
                                   let h := fresh "h" in 
                                     assert (h:p - Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Z.opp (IDphi (R:=Z)) Z_of_N Zpower nil ve <=
                                       Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Z.opp (IDphi (R:=Z)) Z_of_N Zpower fv ve - Ring_polynom.PEeval 0 1 Zplus Zmult Zminus Z.opp (IDphi (R:=Z)) Z_of_N Zpower nil ve);
-                                    [     lazy beta delta  [Ring_polynom.PEeval IDphi BinList.nth hd] iota zeta; omega|
+                                    [     lazy beta delta  [Ring_polynom.PEeval IDphi BinList.nth hd] iota zeta; lia|
                                       lazy beta delta  [Ring_polynom.PEeval IDphi BinList.nth hd] iota zeta in h;
                                         ring_simplify in h;clear H]
                             end
@@ -1079,7 +1074,7 @@ Ltac translate_vars :=
       end
   end.
 
-From Coq Require Import Omega.
+From Coq Require Import Lia.
 
 From CoLoR Require interp.
 Ltac full_prove_ineq 
@@ -1114,7 +1109,7 @@ Ltac full_prove_ineq
           rew tt;
           repeat (gen_pos_hyp tt);
             pre_concl_tac tt;
-            (omega) || 
+            (lia) || 
               (repeat translate_vars;( ring_ineq|| prove_ineq ))]|
       let IHx' := fresh "IHx" in
         match goal with 
@@ -1146,7 +1141,7 @@ simpl apply_subst;
                     rew tt;
                     repeat (gen_pos_hyp tt);
                       pre_concl_tac tt;
-                        ((omega) || ((repeat translate_vars);
+                        ((lia) || ((repeat translate_vars);
                           prove_ineq))
           | clear IHx;rename IHx' into IHx;
             repeat match goal with | H: terminaison.star _ _ _ _ |- _ => clear H end

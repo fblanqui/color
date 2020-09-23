@@ -12,25 +12,13 @@
 
 
 
-From Coq Require Import Arith.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_sort.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import ac.
-From CoLoR Require Import cf_eq_ac.
-From CoLoR Require Import matching_sound.
+From Coq Require Import Arith List.
+From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching_sound.
 
 Module Type S.
 
 Declare Module Import SMatching : matching_sound.S.
-Import WFMMatching.
-Import WFMatching.
-Import Matching.
-Import Cf_eq_ac.
-Import Ac.
-Import EqTh.
-Import T.
+Import WFMMatching WFMatching Matching Cf_eq_ac Ac EqTh T.
 
 (* Parameter remove_a_subterm
 Parameter remove_several_subterms
@@ -49,18 +37,7 @@ Module Make (SMatching1 : matching_sound.S) :
  S with Module SMatching := SMatching1.
 Module SMatching := SMatching1.
 
-Import SMatching1.
-Import WFMMatching.
-Import WFMatching.
-Import Matching.
-Import Cf_eq_ac.
-Import Ac.
-Import EqTh.
-Import T.
-Import F.
-Import X.
-Import Sort.
-Import LPermut.
+Import SMatching1 WFMMatching WFMatching Matching Cf_eq_ac Ac EqTh T F X Sort LPermut.
 
 Lemma remove_a_subterm :
   forall sigma f v l1 t l2, arity f = AC -> well_formed_cf_subst sigma ->

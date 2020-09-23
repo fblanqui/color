@@ -54,8 +54,8 @@ Qed.
 Lemma lmax_in : forall l, length l > 0 -> exists x, In x l /\ lmax l = x.
 
 Proof.
-induction l; simpl; intros. contradict H; omega. destruct l.
-exists a. intuition. set (l' := n::l) in *. assert (length l'>0). simpl. omega.
+induction l; simpl; intros. contradict H; lia. destruct l.
+exists a. intuition. set (l' := n::l) in *. assert (length l'>0). simpl. lia.
 ded (IHl H0). do 2 destruct H1. case (max_dec a (lmax l')); intro.
 exists a. intuition. exists x. intuition.
 Qed.

@@ -25,7 +25,7 @@ Section S.
 
   Lemma flat_cont_aux : forall n i, i < n -> i + S (n - S i) = n.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Definition flat_cont_symb n (f : Sig) i (h : i < arity f) :=
     Cont f (flat_cont_aux h) (fresh n i) Hole (fresh (n+i) (arity f - S i)).
@@ -116,21 +116,21 @@ Section S.
       set (l := Fun f t). set (r := Fun f0 t0).
       apply context_closed_red.
       assert (m : maxvar_rule (mkRule l r) < S n). eapply maxvar_rules_elim.
-      apply lr. omega.
+      apply lr. lia.
       rewrite !fill_sub with (n:=n).
       set (s' := maxvar_union (S n) s (fsub n (Vapp vi vj))).
       apply hd_red_incl_red. apply hd_red_rule. unfold flat_rules.
       rewrite in_flat_map. exists (mkRule l r). split_all. unfold flat_rule.
-      unfold l, r. rewrite H, in_map_iff. assert (h : i < arity g). omega.
+      unfold l, r. rewrite H, in_map_iff. assert (h : i < arity g). lia.
       exists (flat_cont_symb (S n) h). split_all. simpl.
-      gen (flat_cont_aux h). assert (arity g - S i = j). omega.
+      gen (flat_cont_aux h). assert (arity g - S i = j). lia.
       rewrite H1.
       intro. assert (e0=e). apply eq_unique. subst. refl.
       unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
       unfold flat_conts_symb. rewrite in_map_iff. exists (N_ h). split_all.
       apply In_L.
-      trans (maxvar_rule (mkRule l r)). omega. apply le_max_r.
-      trans (maxvar_rule (mkRule l r)). omega. apply le_max_l.
+      trans (maxvar_rule (mkRule l r)). lia. apply le_max_r.
+      trans (maxvar_rule (mkRule l r)). lia. apply le_max_l.
     Qed.
 
     Lemma rtc_red_one_flat_cont_intro : forall t u, red R # t u ->

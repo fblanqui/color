@@ -45,7 +45,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     (jp : j < n), Vnth (get_row M ip) jp = Vnth (get_col M jp) ip.
 
   Proof.
-    induction M; intros. omega.
+    induction M; intros. lia.
     destruct i.
     trivial.
     simpl. rewrite IHM. trivial.
@@ -214,7 +214,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     rewrite get_elem_swap.
     destruct j.
     rewrite get_col_col_mat. trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma vec_to_row_mat_spec : forall n (v : vec n) i (ip : i < 1) j 
@@ -222,14 +222,14 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Proof.
     intros. unfold get_elem.
-    destruct i. trivial. omega.
+    destruct i. trivial. lia.
   Qed.
 
   Lemma Vnth_col_mat : forall n (m : col_mat n) i (ip : i < n),
     Vnth (col_mat_to_vec m) ip = get_elem m ip access_0.
 
   Proof.
-    induction m; intros. omega.
+    induction m; intros. lia.
     destruct i.
     trivial.
     simpl. rewrite IHm. trivial.
@@ -255,7 +255,7 @@ Module Matrix (OSRT : OrdSemiRingType).
   Proof.
     intros. apply mat_eq. intros. mat_get_simpl.
     destruct j. rewrite (lt_unique access_0 jp). refl.
-    omega.
+    lia.
   Qed.
 
   Lemma row_mat_to_vec_idem : forall n (v : vec n), 
@@ -270,7 +270,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Proof.
     intros. apply mat_eq. intros. mat_get_simpl.
-    destruct i. simpl. rewrite (lt_unique access_0 ip). refl. omega.
+    destruct i. simpl. rewrite (lt_unique access_0 ip). refl. lia.
   Qed.
 
 (***********************************************************************)

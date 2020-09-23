@@ -54,7 +54,7 @@ Section S.
 
   Proof.
     intros. unfold val_of_vec. case (le_lt_dec n x); intro.
-    absurd (x<n); omega. apply Vnth_eq. refl.
+    absurd (x<n); lia. apply Vnth_eq. refl.
   Qed.
 
   Section vec_of_val.
@@ -137,18 +137,18 @@ Section S.
   Proof.
     intros xint t. pattern t; apply term_ind_forall; clear t; intros.
     simpl. unfold restrict. case (le_lt_dec k v); intro.
-    simpl in H. absurd (v<k); omega. refl. simpl. apply (f_equal (fint I f)).
+    simpl in H. absurd (v<k); lia. refl. simpl. apply (f_equal (fint I f)).
     apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
     rewrite maxvar_fun in H0.
     ded (Vin_map_intro (f:=@maxvar Sig) H1).
-    ded (Vmax_in H2). unfold maxvars in H0. omega.
+    ded (Vmax_in H2). unfold maxvars in H0. lia.
   Qed.
 
   Lemma term_int_eq_restrict : forall xint t,
     term_int xint t = term_int (restrict xint (maxvar t + 1)) t.
 
   Proof.
-    intros. apply term_int_eq_restrict_lt. omega.
+    intros. apply term_int_eq_restrict_lt. lia.
   Qed.
 
   Lemma term_int_eq_fval_lt : forall xint t k,
@@ -157,19 +157,19 @@ Section S.
   Proof.
     intros xint t. pattern t; apply term_ind_forall; clear t; intros.
     simpl in *. unfold fval, val_of_vec. case (le_lt_dec k v); intro.
-    absurd (v<k); omega. rewrite Vnth_vec_of_val. refl.
+    absurd (v<k); lia. rewrite Vnth_vec_of_val. refl.
     simpl. apply (f_equal (fint I f)).
     apply Vmap_eq. apply Vforall_intro. intros. apply (Vforall_in H H1).
     rewrite maxvar_fun in H0.
     ded (Vin_map_intro (B:=nat) (f:=maxvar (Sig:=Sig)) H1).
-    ded (Vmax_in H2). unfold maxvars in H0. omega.
+    ded (Vmax_in H2). unfold maxvars in H0. lia.
   Qed.
 
   Lemma term_int_eq_fval : forall xint t,
     term_int xint t = term_int (fval xint (maxvar t + 1)) t.
 
   Proof.
-    intros. apply term_int_eq_fval_lt. omega.
+    intros. apply term_int_eq_fval_lt. lia.
   Qed.
 
   Lemma Vmap_term_int_fval : forall v n k (ts : terms k),

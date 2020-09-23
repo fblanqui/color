@@ -10,14 +10,8 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith.
-From Coq Require Import List.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_sort.
-From CoLoR Require Import term_spec.
-From CoLoR Require Import ac.
-From CoLoR Require Import cf_eq_ac.
-From CoLoR Require Import matching.
+From Coq Require Import Arith List.
+From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching.
 
 Module Type S.
 

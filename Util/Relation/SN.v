@@ -11,7 +11,7 @@ Inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms List Basics Omega Wellfounded.
+From Coq Require Import Morphisms List Basics Lia Wellfounded.
 From CoLoR Require Import LogicUtil RelUtil.
 
 (***********************************************************************)
@@ -529,7 +529,7 @@ Section iter.
     assert ((iter R (S (S n)) @ iter R n) x0 y0).
     apply incl_elim with (R := iter R (S n) @ iter R (S n)).
     incl_trans (iter R (S n+S n+1)). apply iter_iter.
-    assert (S n+S n+1 = S(S n)+n+1). omega. rewrite H4. apply iter_plus_1.
+    assert (S n+S n+1 = S(S n)+n+1). lia. rewrite H4. apply iter_plus_1.
     exists y. intuition. do 2 destruct H4. ded (H1 _ H4).
     eapply SN_commut with (S := iter R n). apply iter_commut. apply H6. hyp.
   Qed.
@@ -646,7 +646,7 @@ Section ltof.
 
   Global Instance ltof_trans : Transitive (ltof f).
 
-  Proof. intros x y z. unfold ltof. omega. Qed.
+  Proof. intros x y z. unfold ltof. lia. Qed.
 
   Lemma transp_ltof_wf : WF (transp (ltof f)).
 

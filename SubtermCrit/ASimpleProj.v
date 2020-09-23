@@ -33,7 +33,7 @@ Section S.
 
   Arguments Hpi [f] _.
 
-  Fixpoint proj t :=
+  Definition proj t :=
     match t with
       | Var _ => t
       | Fun f ts =>
@@ -137,7 +137,7 @@ Section S.
 
   Proof.
     unfold valid, bvalid. apply forallb_ok_fintype. 2: hyp.
-    intro f. rewrite orb_eq, beq_nat_ok, bgt_nat_ok. omega.
+    intro f. rewrite orb_eq, beq_nat_ok, bgt_nat_ok. lia.
   Qed.
 
 End S.

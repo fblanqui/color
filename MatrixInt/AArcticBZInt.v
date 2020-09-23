@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import ZArith.
+From Coq Require Import ZArith Lia.
 From CoLoR Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil
      OrdSemiRing SN RelUtil AMatrixBasedInt ListUtil.
 Import ArcticBZMatrix.
@@ -120,10 +120,10 @@ Module ArcticBZInt (Import AI : TArcticBZInt).
           [ exfalso; auto
           | intuition; discr
           | left; simpl; auto
-          | left; simpl in *; omega
+          | left; simpl in *; lia
           | right; auto
           ].
-      left. simpl. injection H0. intro. subst z1. simpl in H. omega.
+      left. simpl. injection H0. intro. subst z1. simpl in H. lia.
     Qed.
 
     Lemma mi_eval_ok : forall f v,
@@ -182,7 +182,7 @@ apply fin_ge_impl_ge; hyp.
 assert ((z0 >= 0)%Z).
 apply fin_ge_impl_ge; hyp.
       destruct xy. simpl in H1.
-      apply Zabs_nat_lt. omega.
+      apply Zabs_nat_lt. lia.
       destruct H1; discr.
 destruct x_lb; [ contr | discr ].
 destruct y_lb; [ contr | discr ].

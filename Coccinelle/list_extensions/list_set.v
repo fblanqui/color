@@ -13,14 +13,8 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import Relations.
-From Coq Require Import List.
-From Coq Require Import Setoid.
-From CoLoR Require Import decidable_set.
-From CoLoR Require Import more_list.
-From CoLoR Require Import list_permut.
-From Coq Require Import Arith.
-From Coq Require Import FunInd.
+From Coq Require Import Relations List Setoid Arith FunInd.
+From CoLoR Require Import decidable_set more_list list_permut.
 
 Module Type S.
 

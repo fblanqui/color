@@ -13,8 +13,8 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil EqUtil BoolUtil RelUtil.
 
-From Coq Require Import Min Max Morphisms Psatz Euclid Peano.
-From Coq Require Export Arith Omega.
+From Coq Require Import Min Max Morphisms Euclid Peano Lia Omega.
+From Coq Require Export Arith.
 From Coq Require Import Compare.
 
 (***********************************************************************)
@@ -48,7 +48,6 @@ Arguments le_n_S [n m] _.
 (***********************************************************************)
 (** Tactics. *)
 
-Ltac coq_omega := omega.
 Tactic Notation "omega" := intros; omega.
 Tactic Notation "lia" := intros; lia.
 Tactic Notation "nia" := intros; nia.
@@ -56,26 +55,26 @@ Tactic Notation "nia" := intros; nia.
 Ltac max :=
   match goal with
     | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
-  end; omega.
+  end; lia.
 
 (***********************************************************************)
 (** Properties of ordering relations on nat. *)
 
 Instance le_preorder : PreOrder le.
 
-Proof. split; intro; omega. Qed.
+Proof. split; intro; lia. Qed.
 
 Instance lt_trans : Transitive lt. 
 
-Proof. intro; omega. Qed.
+Proof. intro; lia. Qed.
 
 Instance ge_preorder : PreOrder ge.
 
-Proof. split; intro; omega. Qed.
+Proof. split; intro; lia. Qed.
 
 Instance gt_trans : Transitive gt.
 
-Proof. intro; omega. Qed.
+Proof. intro; lia. Qed.
 
 (***********************************************************************)
 (** Boolean function for equality. *)
@@ -116,8 +115,8 @@ Fixpoint bgt_nat (x y : nat) :=
 Lemma bgt_nat_ok : forall x y, bgt_nat x y = true <-> x > y.
 
 Proof.
-  induction x; destruct y; simpl; split; intro; try omega; try discr. refl.
-  rewrite IHx in H. omega. rewrite IHx. omega.
+  induction x; destruct y; simpl; split; intro; try lia; try discr. refl.
+  rewrite IHx in H. lia. rewrite IHx. lia.
 Qed.
 
 Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
@@ -125,8 +124,8 @@ Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
 Lemma bgt_nat_ko : forall x y, bgt_nat x y = false <-> x <= y.
 
 Proof.
-  induction x; destruct y; simpl; split; intro; try (refl || discr || omega).
-  rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
+  induction x; destruct y; simpl; split; intro; try (refl || discr || lia).
+  rewrite IHx in H. lia. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Fixpoint bge_nat (x y : nat) :=
@@ -140,8 +139,8 @@ Fixpoint bge_nat (x y : nat) :=
 Lemma bge_nat_ok : forall x y, bge_nat x y = true <-> x >= y.
 
 Proof.
-  induction x; destruct y; simpl; split; intro; try (refl || discr || omega).
-  rewrite IHx in H. omega. apply le_S_n in H. rewrite IHx. hyp.
+  induction x; destruct y; simpl; split; intro; try (refl || discr || lia).
+  rewrite IHx in H. lia. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
 Ltac check_ge := rewrite <- bge_nat_ok; check_eq.
@@ -150,7 +149,7 @@ Definition blt_nat x y := bgt_nat y x.
 
 Lemma blt_nat_ok : forall x y, blt_nat x y = true <-> x < y.
 
-Proof. intros. unfold blt_nat. rewrite bgt_nat_ok. omega. Qed.
+Proof. intros. unfold blt_nat. rewrite bgt_nat_ok. lia. Qed.
 
 Definition bne_nat x y := negb (beq_nat x y).
 
@@ -340,7 +339,7 @@ Proof.
 intros.
 assert ((q1-q2)*b=r2-r1). nia.
 assert ((q2-q1)*b=r1-r2). (*nia works but is slow*)
-rewrite mult_minus_distr_r. clear H2; omega.
+rewrite mult_minus_distr_r. clear H2; lia.
 (*nia works but is slow*)
 destruct (le_gt_dec r1 r2).
 (* r1 <= r2 *)
@@ -348,17 +347,17 @@ destruct (eq_nat_dec r1 r2).
 (* r1 = r2 *)
 subst. rewrite minus_diag in *. nia.
 (* r1 < r2 *)
-assert (r2 - r1 < b). clear -H H0; omega.
+assert (r2 - r1 < b). clear -H H0; lia.
 rewrite <- H2 in H4. rewrite <- (mult_1_l b) in H4 at -1.
 ded (mult_lt_r_elim H4).
-assert (q1=q2). clear H H0 H1 H3 H4; omega.
-subst q2; clear H2 H3 H4 H5. omega.
+assert (q1=q2). clear H H0 H1 H3 H4; lia.
+subst q2; clear H2 H3 H4 H5. lia.
 (* r1 > r2 *)
-assert (r1 - r2 < b). clear -H H0; omega.
+assert (r1 - r2 < b). clear -H H0; lia.
 rewrite <- H3 in H4. rewrite <- (mult_1_l b) in H4 at -1.
 ded (mult_lt_r_elim H4).
-assert (q1=q2). clear H H0 H1 H2 H4; omega.
-subst q2; clear H2 H3 H4 H5. omega.
+assert (q1=q2). clear H H0 H1 H2 H4; lia.
+subst q2; clear H2 H3 H4 H5. lia.
 Qed.
 
 Arguments eucl_div_unique [b q1 r1 q2 r2] _ _ _.
@@ -400,7 +399,7 @@ End iter_prop.
 Lemma le_plus : forall x y, x <= y -> exists k, y = k + x.
 
 Proof.
-  induction 1; simpl. ex 0. refl. destruct IHle as [k e]. ex (S k). omega.
+  induction 1; simpl. ex 0. refl. destruct IHle as [k e]. ex (S k). lia.
 Qed.
 
 Lemma le_lt_S : forall i k, i <= k -> i < S k.
@@ -409,7 +408,7 @@ Proof. auto with arith. Qed.
 
 Lemma i_lt_n : forall n i j : nat, n = i + S j -> i < n.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Arguments i_lt_n [n i j] _.
 
@@ -419,51 +418,51 @@ Proof. discr. Qed.
 
 Lemma plus_reg_l_inv : forall n1 n2 p2, n2=p2 -> n1+n2=n1+p2.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma plus_reg_r_inv : forall n1 p1 n2, n1=p1 -> n1+n2=p1+n2.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma plus_minus_eq : forall v p, v+p-p=v.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma le_minus_plus : forall v p, p<=v -> v-p+p=v.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Arguments le_minus_plus [v p] _.
 
 Lemma plus_1_S : forall n, n+1 = S n.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma lt_from_le : forall x y, 0 < y -> x <= y-1 -> x < y.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma le_from_lt : forall x y, x < y+1 -> x <= y.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma lt_pm : forall n k x, n < x -> x <= n+k -> x-n-1 < k.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Arguments lt_pm [n k x] _ _.
 
 Lemma le_plus_r : forall k l, k <= k+l.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma misc1 : forall x k, S k = x+2+k-x-1.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma misc2 : forall x k, k = x+2+k-(x+1)-1.
 
-Proof. omega. Qed.
+Proof. lia. Qed.
 
 Lemma mult_gt_0 : forall i j, i > 0 -> j > 0 -> i * j > 0.
 
@@ -482,7 +481,7 @@ Arguments S_add_S [n1 n2 n] _.
 
 Lemma gt_plus : forall l k, l > k -> exists m, l = (m + 1) + k.
 
-Proof. induction 1. exists 0. omega. destruct IHle. exists (S x). omega. Qed.
+Proof. induction 1. exists 0. lia. destruct IHle. exists (S x). lia. Qed.
 
 Arguments gt_plus [l k] _.
 
@@ -505,11 +504,11 @@ Section Interval_list.
   Lemma int_exPi : forall i, exists j, fst (F' j) <= i /\ i < snd (F' j).
 
   Proof.
-    intros i. induction i. exists 0. simpl. destruct (HFi 0); rewrite H. omega.
-    destruct IHi as [k Hk]. assert (HSi : S i <= snd (F' k)). omega.
+    intros i. induction i. exists 0. simpl. destruct (HFi 0); rewrite H. lia.
+    destruct IHi as [k Hk]. assert (HSi : S i <= snd (F' k)). lia.
     destruct (le_lt_or_eq HSi). exists k. intuition.
-    exists (S k). simpl. rewrite H. split. omega.
-    destruct (HFi (S k)). rewrite H0. omega.
+    exists (S k). simpl. rewrite H. split. lia.
+    destruct (HFi (S k)). rewrite H0. lia.
   Qed.
 
 End Interval_list.
@@ -526,7 +525,7 @@ Section mon.
 
   Proof.
     intros hf x. cut (forall k, ltA (f x) (f (k+S x))).
-    intros hx y xy. assert (y = (y-S x)+S x). omega. rewrite H. apply hx.
+    intros hx y xy. assert (y = (y-S x)+S x). lia. rewrite H. apply hx.
     induction k; simpl. apply hf. apply ht with (f (k+S x)). hyp. apply hf.
   Qed.
 
@@ -570,8 +569,8 @@ Section smallest.
 
     Proof.
       induction k; intros acc accl kl; simpl.
-      destruct (P_dec 0); omega.
-      destruct (P_dec (S k)); apply IHk; omega.
+      destruct (P_dec 0); lia.
+      destruct (P_dec (S k)); apply IHk; lia.
     Qed.
 
     Lemma smallest_le_arg : smallest <= n.
@@ -609,7 +608,7 @@ Section smallest.
 
     Proof.
       intros kl Pk. destruct (le_plus kl) as [m e]; subst.
-      assert (e : S (m + k) = m + S k). omega. rewrite e.
+      assert (e : S (m + k) = m + S k). lia. rewrite e.
       apply smallest_aux_plus. hyp.
     Qed.
 
@@ -624,14 +623,14 @@ Section smallest.
     cut (forall l acc, smallest_aux acc l = 0). fo.
     induction l; intro acc; simpl. destruct (P_dec 0). refl. contr. fo.
     (* k > 0 *)
-    destruct l; simpl. omega. intro kl. apply smallest_aux_le. omega.
+    destruct l; simpl. lia. intro kl. apply smallest_aux_le. lia.
   Qed.
 
   Lemma smallest_inv m n : P m -> P n -> smallest m = smallest n.
 
   Proof.
     intros Pm Pn. destruct (le_dec n m). apply smallest_inv_le; hyp.
-    sym. apply smallest_inv_le. omega. hyp.
+    sym. apply smallest_inv_le. lia. hyp.
   Qed.
 
   Lemma smallest_comp m n : P m -> P n -> smallest m <= n.

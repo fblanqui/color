@@ -1,10 +1,6 @@
-From CoLoR Require Import more_list.
-From CoLoR Require Import decidable_set.
-From CoLoR Require Import list_set.
-From Coq Require Import List.
-From Coq Require Import Omega.
+From CoLoR Require Import more_list decidable_set list_set.
+From Coq Require Import List Lia FunInd.
 From Coq Require Recdef.
-From Coq Require Import FunInd.
 
 Module Type S.
   Parameter A : Type.
@@ -53,8 +49,8 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
       functional induction (split l x).
       reflexivity.
       simpl.
-      rewrite e0 in IHp. omega.
-      simpl;rewrite e0 in IHp. omega.
+      rewrite e0 in IHp. lia.
+      simpl;rewrite e0 in IHp. lia.
     Qed.
     Import Recdef.
     Function qs (l:list A) {measure length } : list A := 
@@ -66,9 +62,9 @@ Module Make(AX:S)(X:decidable_set.ES with Definition A:=AX.A with Definition eq_
       end.
     Proof.
       abstract(intros;generalize (split_length x l');  
-        rewrite teq0;  simpl;  intros; omega).
+        rewrite teq0;  simpl;  intros; lia).
       abstract(intros;generalize (split_length x l');  
-        rewrite teq0;  simpl;  intros; omega).
+        rewrite teq0;  simpl;  intros; lia).
     Defined.
 
     Lemma split_mem_bool : 

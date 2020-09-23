@@ -354,25 +354,25 @@ Section S.
       left. subst. simpl. apply hd_red_rule. hyp.
       (* Cont *)
       right. ex f (Vcast (Vapp t0 (Vcons (fill c (sub s l)) t1)) e) i.
-      assert (p : i<arity f). omega. ex p (fill c (sub s r)).
+      assert (p : i<arity f). lia. ex p (fill c (sub s r)).
       subst. simpl. split_all. rewrite Vnth_cast, Vnth_app.
-      destruct (le_gt_dec i i). 2: omega. rewrite Vnth_cons_head.
-      apply red_rule. hyp. omega.
+      destruct (le_gt_dec i i). 2: lia. rewrite Vnth_cons_head.
+      apply red_rule. hyp. lia.
       apply args_eq. apply Veq_nth; intros. rewrite Vnth_cast, Vnth_app.
       destruct (le_gt_dec i i0).
       (* 1) i <= i0 *)
       destruct (eq_nat_dec i i0).
       (* a) i = i0 *)
-      subst i0. rewrite Vnth_cons_head, Vnth_replace. refl. omega.
+      subst i0. rewrite Vnth_cons_head, Vnth_replace. refl. lia.
       (* b) i <> i0 *)
       rewrite Vnth_replace_neq. 2: hyp. rewrite Vnth_cast, Vnth_app.
-      destruct (le_gt_dec i i0). 2: omega. assert (l0=l1).
+      destruct (le_gt_dec i i0). 2: lia. assert (l0=l1).
       apply le_unique.
       subst l1. rewrite !Vnth_cons. destruct (lt_ge_dec 0 (i0-i)).
-      apply Vnth_eq. refl. omega.
+      apply Vnth_eq. refl. lia.
       (* 2) i > i0 *)
-      rewrite Vnth_replace_neq. 2: omega. rewrite Vnth_cast, Vnth_app.
-      destruct (le_gt_dec i i0). omega. apply Vnth_eq. refl.
+      rewrite Vnth_replace_neq. 2: lia. rewrite Vnth_cast, Vnth_app.
+      destruct (le_gt_dec i i0). lia. apply Vnth_eq. refl.
     Qed.
 
     Lemma red_split : forall t u, red R t u -> hd_red R t u \/ int_red R t u.
@@ -451,18 +451,18 @@ Section S.
     Lemma red_maxvar0 : forall t u, maxvar t = 0 -> red R t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). omega. apply red_maxvar. hyp.
+      intros. cut (maxvar u <= maxvar t). lia. apply red_maxvar. hyp.
     Qed.
 
     Lemma rtc_red_maxvar : forall t u, red R # t u -> maxvar u <= maxvar t.
 
-    Proof. induction 1. apply red_maxvar. hyp. omega. omega. Qed.
+    Proof. induction 1. apply red_maxvar. hyp. lia. lia. Qed.
 
     Lemma rtc_red_maxvar0 : forall t u,
       maxvar t = 0 -> red R # t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). omega. apply rtc_red_maxvar. hyp.
+      intros. cut (maxvar u <= maxvar t). lia. apply rtc_red_maxvar. hyp.
     Qed.
 
   End vars.
@@ -483,7 +483,7 @@ Section S.
       maxvar t = 0 -> red_mod E R t u -> maxvar u = 0.
 
     Proof.
-      intros. cut (maxvar u <= maxvar t). omega. apply red_mod_maxvar. hyp.
+      intros. cut (maxvar u <= maxvar t). lia. apply red_mod_maxvar. hyp.
     Qed.
 
   End red_mod.
@@ -813,42 +813,42 @@ Section S.
     destruct tu as [i [f [hi [ts [e [v [h1 h2]]]]]]].
     redtac. subst. ex l r.
     (* context *)
-    assert (l1 : 0 + i <= arity f). omega. set (v1 := Vsub ts l1).
-    assert (l2 : S i + (arity f - S i) <= arity f). omega.
+    assert (l1 : 0 + i <= arity f). lia. set (v1 := Vsub ts l1).
+    assert (l2 : S i + (arity f - S i) <= arity f). lia.
     set (v2 := Vsub ts l2).
-    assert (l3 : i + S (arity f - S i) = arity f). omega.
+    assert (l3 : i + S (arity f - S i) = arity f). lia.
     ex (Cont f l3 v1 c v2) s. split_all. discr.
     (* lhs *)
     simpl. apply args_eq. apply Veq_nth. intros j hj.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    unfold v2. rewrite Vnth_sub. apply Vnth_eq. clear -l4; omega.
-    assert (j=i). clear -l0 g; omega. subst. rewrite (lt_unique _ hi). hyp.
+    unfold v2. rewrite Vnth_sub. apply Vnth_eq. clear -l4; lia.
+    assert (j=i). clear -l0 g; lia. subst. rewrite (lt_unique _ hi). hyp.
     unfold v1. rewrite Vnth_sub. apply Vnth_eq. refl.
     (* rhs *)
     simpl. apply args_eq. apply Veq_nth. intros j hj.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i j).
     rewrite Vnth_cons. destruct (lt_ge_dec 0 (j-i)).
-    rewrite Vnth_replace_neq. 2: clear -l4; omega. unfold v2. rewrite Vnth_sub.
-    apply Vnth_eq. clear -l4; omega.
-    assert (j=i). clear -l0 g; omega. subst. apply Vnth_replace.
-    rewrite Vnth_replace_neq. 2: clear -g; omega. unfold v1. rewrite Vnth_sub.
+    rewrite Vnth_replace_neq. 2: clear -l4; lia. unfold v2. rewrite Vnth_sub.
+    apply Vnth_eq. clear -l4; lia.
+    assert (j=i). clear -l0 g; lia. subst. apply Vnth_replace.
+    rewrite Vnth_replace_neq. 2: clear -g; lia. unfold v1. rewrite Vnth_sub.
     apply Vnth_eq. refl.
     (* <- *)
     redtac. subst. destruct c. cong. ex i f.
-    assert (hi : i < arity f). omega. exists hi.
+    assert (hi : i < arity f). lia. exists hi.
     simpl. exists (Vcast (Vapp t (Vcons (fill c (sub s l)) t0)) e).
     split_all. exists (fill c (sub s r)). split.
     rewrite Vnth_cast, Vnth_app. destruct (le_gt_dec i i).
-    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). omega.
-    apply red_rule. hyp. omega.
+    rewrite Vnth_cons. destruct (lt_ge_dec 0 (i-i)). lia.
+    apply red_rule. hyp. lia.
     apply args_eq. apply Veq_nth. intros k hk.
     rewrite Vnth_cast, Vnth_app. case_eq (le_gt_dec i k); intros l0 H.
     rewrite Vnth_cons. case_eq (lt_ge_dec 0 (k-i)); intros l1 H0.
     rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H, Vnth_cons, H0.
-    refl. omega.
-    assert (k=i). omega. subst. sym. apply Vnth_replace.
-    rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H. refl. omega.
+    refl. lia.
+    assert (k=i). lia. subst. sym. apply Vnth_replace.
+    rewrite Vnth_replace_neq, Vnth_cast, Vnth_app, H. refl. lia.
   Qed.
 
 (***********************************************************************)
@@ -894,7 +894,7 @@ Section S.
     assert (NT (red R) (Vnth ts hi)). eapply red_NT. apply h1. hyp.
     ded (Vforall_nth hi H). contr.
     (* j <> i *)
-    rewrite Vnth_replace_neq. 2: omega. intro hv.
+    rewrite Vnth_replace_neq. 2: lia. intro hv.
     ded (Vforall_nth hj H). contr.
   Qed.
 

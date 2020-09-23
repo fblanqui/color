@@ -11,7 +11,7 @@ a more general development is given in AGraph.
 
 Set Implicit Arguments.
 
-From Coq Require Import Omega.
+From Coq Require Import Lia.
 From CoLoR Require ACompat.
 From CoLoR Require Import LogicUtil ATrs ListUtil RelUtil RelSub Path ARelation
      SN ListOccur ListNodup AShift VecUtil ASubstitution Iter Cycle.
@@ -140,7 +140,7 @@ set (s := ASubstitution.union s0' s1'). exists s.
 (* compatibility *)
 assert (compat s0' s1' (vars l0) (vars (shift p l1))). unfold compat. intros.
 ded (vars_max H3). ded (in_vars_shift_min H4). unfold p in H6.
-absurd (x <= maxvar l0). omega. hyp.
+absurd (x <= maxvar l0). lia. hyp.
 (* domains of substitutions *)
 assert (dom_incl s0' (vars l0)). unfold s0'. apply dom_incl_restrict.
 assert (dom_incl s1' (vars (shift p l1))). unfold s1'. apply dom_incl_restrict.
@@ -246,17 +246,17 @@ assert (Hwf' : WF (succ @ succ_eq#)). apply absorb_WF_modulo_r; hyp.
 gen (Hwf' x). induction 1. apply SN_intro; intros. apply H0.
 (* path in the dp_graph corresponding to the chains *)
 ded (iter_chain_chain_dps H1). do 3 destruct H2.
-assert (length x1 > 0). omega. ded (last_intro H4). do 3 destruct H5.
+assert (length x1 > 0). lia. ded (last_intro H4). do 3 destruct H5.
 clear H4. rewrite H5 in H3. ded (chain_dps_path_dp_graph H3).
 (* pigeon-hole principle: there is a dp visited twice *)
 set (l' := x0 :: x2 ++ x3 :: nil). assert (exists z, occur z l' >= 2).
 unfold l'. eapply long_path_occur. apply restricted_dp_graph. apply H4.
-rewrite H6, H2. unfold n. omega.
+rewrite H6, H2. unfold n. lia.
 (* we prove (A): in this cycle, a dp is included in succ *)
 assert (exists l, exists a, exists m,
   l' = l ++ a :: m /\ succ (lhs a) (rhs a)).
 destruct H7. set (p := occur x4 l' - 2). assert (occur x4 l' = S (S p)).
-unfold p. omega. ded (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
+unfold p. lia. ded (occur_S eq_dec H8). do 3 destruct H9. destruct H10.
 clear H8. rewrite H9. ded (occur_S eq_dec H11). do 3 destruct H8.
 destruct H12. clear H11. clear H13. clear p. rewrite H8. rewrite H8 in H9.
 clear H8. clear H10.
@@ -264,14 +264,14 @@ clear H8. clear H10.
 assert (cycle dp_graph x4 x7). unfold cycle. eapply sub_path. unfold l' in H9.
 apply H9. exact H4. ded (cycle_min_intro eq_dec H8). decomp H10.
 (* length x11 < length DP *)
-assert (length l' = n+2). unfold l'. simpl. rewrite <- H5. omega.
+assert (length l' = n+2). unfold l'. simpl. rewrite <- H5. lia.
 rewrite H9 in H10. change (length (x5++(x4::x7)++x4::x8) = n+2) in H10.
 rewrite H11 in H10. repeat (rewrite length_app in H10; simpl in H10).
 unfold n in H10. assert (h : length x11 < length DP).
 unfold cycle_min in H14. destruct H14. assert (length (x10::x11) <= length DP).
 apply nodup_incl_length. apply eq_dec. exact H14.
 apply incl_appr_incl with (x10::nil). simpl. eapply restricted_path_incl.
-apply restricted_dp_graph. exact H13. simpl in H15. omega. clear H10.
+apply restricted_dp_graph. exact H13. simpl in H15. lia. clear H10.
 (* end of the proof of (A) *)
 ded (Hcycle h H14). do 2 destruct H10. ded (in_elim H10).
 do 2 destruct H15. exists (x5++x9++x14). exists x13. exists (x15++x12++x4::x8).

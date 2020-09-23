@@ -128,17 +128,17 @@ Module NOrdSemiRingT <: OrdSemiRingType.
   Lemma plus_gt_compat : forall m n m' n',
     m > m' -> n > n' -> m + n > m' + n'.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma plus_gt_compat_l : forall m n m' n',
     m > m' -> n >= n' -> m + n > m' + n'.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma plus_gt_compat_r : forall m n m' n',
     m >= m' -> n > n' -> m + n > m' + n'.
 
-  Proof. omega. Qed.
+  Proof. lia. Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
     m >= m' -> n >= n' -> m + n >= m' + n'.
@@ -168,41 +168,41 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, eqA x y -> x >= y.
 
-  Proof. intros x y. unfold eqA, ge, BigN.eq, BigN.le. omega. Qed.
+  Proof. intros x y. unfold eqA, ge, BigN.eq, BigN.le. lia. Qed.
 
   Definition ge_refl := BigN.le_refl.
 
   Instance ge_trans : Transitive ge.
 
-  Proof. intros m n p. unfold ge, BigN.le. omega. Qed.
+  Proof. intros m n p. unfold ge, BigN.le. lia. Qed.
 
   Instance gt_trans : Transitive gt.
 
-  Proof. intros m n p. unfold gt, BigN.lt. omega. Qed.
+  Proof. intros m n p. unfold gt, BigN.lt. lia. Qed.
 
   Lemma ge_dec : forall x y, {ge x y}+{~ge x y}.
 
   Proof.
     intros x y. unfold ge, BigN.le. destruct (Z_le_dec [y] [x]).
-    left. omega. right. omega.
+    left. lia. right. lia.
   Qed.
 
   Lemma gt_dec : forall x y, {gt x y}+{~gt x y}.
 
   Proof.
     intros. unfold gt, BigN.lt. destruct (Z_lt_dec [y] [x]).
-    left. omega. right. omega.
+    left. lia. right. lia.
   Qed.
 
   Definition gt_WF := wf_transp_WF BigN.lt_wf_0.
 
   Lemma ge_gt_compat : forall x y z, ge x y -> gt y z -> gt x z.
 
-  Proof. intros x y z. unfold ge, gt, BigN.le, BigN.lt. omega. Qed.
+  Proof. intros x y z. unfold ge, gt, BigN.le, BigN.lt. lia. Qed.
 
   Lemma ge_gt_compat2 : forall x y z, gt x y -> ge y z -> gt x z.
 
-  Proof. intros x y z. unfold gt, BigN.lt, ge, BigN.le. omega. Qed.
+  Proof. intros x y z. unfold gt, BigN.lt, ge, BigN.le. lia. Qed.
 
   Lemma plus_gt_compat :
     forall m n m' n', gt m m' -> gt n n' -> gt (m + n) (m' + n').
@@ -265,7 +265,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof. intros x xx. destruct x. unfold gt in xx. omega. auto. Qed.
+  Proof. intros x xx. destruct x. unfold gt in xx. lia. auto. Qed.
 
   Instance gt_trans : Transitive gt.
 
@@ -277,7 +277,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Lemma gt_asym x y : gt x y -> ~gt y x.
 
-  Proof. destruct x; destruct y; simpl; omega. Qed.
+  Proof. destruct x; destruct y; simpl; lia. Qed.
 
   Lemma gt_dec : rel_dec gt.
 
@@ -346,7 +346,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct y. destruct x. destruct z.
     unfold gt, ge in *. destruct H. 
-    simpl in H. omega.
+    simpl in H. lia.
     injection H. intro. subst n0. hyp.
     auto.
     exfalso. destruct H. auto. discr.
@@ -364,7 +364,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     Pos m >>= Pos n -> Peano.ge m n.
 
   Proof.
-    intros. inversion H; simpl in H0. omega. injection H0. omega.
+    intros. inversion H; simpl in H0. lia. injection H0. lia.
   Qed.
 
   Lemma plus_inf_dec : forall m n,
@@ -398,7 +398,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct (lt_eq_lt_dec m n) as [[m_n | m_n] | m_n].
-    omega.
+    lia.
     subst m. right. refl.
     left. trivial.
   Qed.
@@ -457,7 +457,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
-    omega.
+    lia.
   Qed.
 
   Lemma not_minusInf_ge_A1 : forall a, a <> MinusInf -> a >>= A1.
@@ -465,7 +465,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct a. destruct n.
     right. refl.
-    left. simpl. omega.
+    left. simpl. lia.
     tauto.
   Qed.
 
@@ -531,17 +531,17 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct m; auto. 
     destruct n. 
     destruct p; auto.
-    simpl in *. omega.
+    simpl in *. lia.
     simpl in *. tauto.
   Qed.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof. intros x xx. destruct x. unfold gt in xx. omega. auto. Qed.
+  Proof. intros x xx. destruct x. unfold gt in xx. lia. auto. Qed.
 
   Lemma gt_asym : forall m n, gt m n -> ~gt n m.
 
-  Proof. intros. destruct m; destruct n; try tauto. simpl in *. omega. Qed.
+  Proof. intros. destruct m; destruct n; try tauto. simpl in *. lia. Qed.
 
   Instance ge_trans : Transitive ge.
 
@@ -565,7 +565,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros x y. destruct x; destruct y; simpl; auto.
-    destruct (Z_lt_dec z0 z); [left | right]; omega.
+    destruct (Z_lt_dec z0 z); [left | right]; lia.
   Defined.
 
   Lemma ge_dec : rel_dec ge.
@@ -592,7 +592,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct y. destruct x. destruct z.
     unfold gt, ge in *. destruct H. 
-    simpl in H. omega.
+    simpl in H. lia.
     injection H. intro. subst z0. hyp.
     auto.
     exfalso. destruct H. auto. discr.
@@ -610,7 +610,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Lemma fin_ge_Zge : forall m n,
     Fin m >>= Fin n -> (m >= n)%Z.
  
-  Proof. intros. inversion H; simpl in H0. omega. injection H0. omega. Qed.
+  Proof. intros. inversion H; simpl in H0. lia. injection H0. lia. Qed.
 
   Lemma plus_inf_dec : forall m n,
     { exists p, (m = Fin p \/ n = Fin p) /\ m + n = Fin p} +
@@ -645,8 +645,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Lemma ge_impl_fin_ge : forall m n, (m >= n)%Z -> Fin m >>= Fin n.
 
   Proof.
-    intros. destruct (Z_le_lt_eq_dec n m). omega.
-    left. simpl. omega.
+    intros. destruct (Z_le_lt_eq_dec n m). lia.
+    left. simpl. lia.
     subst n. right. refl.
   Qed.
 
@@ -654,8 +654,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct H. 
-    simpl in H. omega.
-    injection H. intro. subst m. omega.
+    simpl in H. lia.
+    injection H. intro. subst m. lia.
   Qed.
 
   Ltac arctic_ord :=
@@ -682,8 +682,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord; simpl in *.
     apply Zmax_gt_compat; hyp.
-    apply Z.lt_gt. apply elim_lt_Zmax_l. omega.
-    apply Z.lt_gt. apply elim_lt_Zmax_r. omega.
+    apply Z.lt_gt. apply elim_lt_Zmax_l. lia.
+    apply Z.lt_gt. apply elim_lt_Zmax_r. lia.
   Qed.
 
   Lemma plus_ge_compat : forall m n m' n',
@@ -694,8 +694,8 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
     apply Zmax_ge_compat; hyp.
-    apply Z.le_ge. apply elim_Zmax_l. omega.
-    apply Z.le_ge. apply elim_Zmax_r. omega.
+    apply Z.le_ge. apply elim_Zmax_l. lia.
+    apply Z.le_ge. apply elim_Zmax_r. lia.
   Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
@@ -705,7 +705,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     intros.
     destruct m; destruct n; destruct m'; destruct n'; 
       simpl; trivial; arctic_ord.
-    omega.
+    lia.
   Qed.
 
   Lemma arctic_plus_ge_monotone : forall (a b c : A),
@@ -714,7 +714,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct c.
     destruct a. destruct b. simpl. arctic_ord. 
-    apply Z.le_ge. apply elim_Zmax_l. omega.
+    apply Z.le_ge. apply elim_Zmax_l. lia.
     trivial.
     arctic_ord.
     apply minusInf_ge_min.
@@ -751,7 +751,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Lemma gt_irrefl : irreflexive gt.
 
-  Proof. intros x xx. destruct x. unfold gt in xx. omega. auto. Qed.
+  Proof. intros x xx. destruct x. unfold gt in xx. lia. auto. Qed.
 
   Instance gt_trans : Transitive gt.
 
@@ -762,7 +762,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Lemma gt_asym x y : gt x y -> ~gt y x.
 
-  Proof. destruct x; destruct y; simpl; omega. Qed.
+  Proof. destruct x; destruct y; simpl; lia. Qed.
 
   Lemma gt_dec : rel_dec gt.
 
@@ -833,7 +833,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Proof with simpl; intuition.
     intros. 
     destruct y; destruct x; destruct z; auto...
-    destruct H. simpl in *. omega. injection H. intros. subst...
+    destruct H. simpl in *. lia. injection H. intros. subst...
     destruct H. contr. discr.
   Qed.
 
@@ -848,7 +848,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Lemma pos_ord : forall m n,
     TPos m >>= TPos n -> Peano.ge m n.
 
-  Proof. intros. inversion H; simpl in H0. omega. injection H0. omega. Qed.
+  Proof. intros. inversion H; simpl in H0. lia. injection H0. lia. Qed.
 
   Lemma plus_inf_dec : forall m n,
     { exists p, (m = TPos p \/ n = TPos p) /\ m + n = TPos p} +
@@ -881,7 +881,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct (lt_eq_lt_dec m n) as [[m_n | m_n] | m_n].
-    omega.
+    lia.
     subst m. right. refl.
     left. trivial.
   Qed.
@@ -938,7 +938,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     intros. destruct m; destruct n; destruct m'; destruct n'; 
-      simpl; trivial; tropical_ord. omega.
+      simpl; trivial; tropical_ord. lia.
   Qed.
 
   Lemma not_minusInf_ge_A1 : forall a, a <> PlusInf -> a >>= A1.
@@ -946,7 +946,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Proof.
     intros. destruct a. destruct n.
     right. refl.
-    left. simpl. omega.
+    left. simpl. lia.
     tauto.
   Qed.
 

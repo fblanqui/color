@@ -146,7 +146,7 @@ Section S.
     red R (nth i (t::ts) default) (nth (S i) (t::ts) default).
 
   Proof.
-    induction ts; simpl; intros. omega. destruct H. destruct i. hyp.
+    induction ts; simpl; intros. lia. destruct H. destruct i. hyp.
     ded (IHts _ H1 i (lt_S_n H0)). hyp.
   Qed.
 
@@ -172,7 +172,7 @@ Section S.
       intros. unfold nth.
       change (red R (List.nth (S i) (t :: us) default)
         (List.nth (S (S i)) (t :: us) default)).
-      apply FS_red. eapply rewrites_correct. apply h1. unfold k in *. omega.
+      apply FS_red. eapply rewrites_correct. apply h1. unfold k in *. lia.
     Qed.
 
     Variables (p : nat) (u v : string) (h2 : split last_string p = Some (u,v))
@@ -204,8 +204,8 @@ Section S.
       intro n; pattern n; apply lt_wf_ind; clear n; intros. unfold seq at -2 .
       destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
       (* r = k-1 *)
-      assert (r = k-1). omega. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
-      omega. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
+      assert (r = k-1). lia. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
+      lia. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
       destruct (eucl_div_unique h0 g1 e0). rewrite <- H3, <- H2. simpl.
       rewrite <- iter_com. apply red_iter. apply red_fill.
       rewrite H0. fold last_string. rewrite last_string_g. apply red_fill.
@@ -213,10 +213,10 @@ Section S.
         (List.nth 1 (t :: us) default)).
       apply FS_red. apply (rewrites_correct h1). hyp.
       (* r < k-1 *)
-      assert (S n = q*k + S r). omega. rewrite H0. unfold seq.
-      destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). omega.
+      assert (S n = q*k + S r). lia. rewrite H0. unfold seq.
+      destruct (eucl_dev k h0 (q * k + S r)). assert (k>S r). lia.
       destruct (eucl_div_unique H1 g2 e0). rewrite <- H3, <- H2.
-      apply red_iter. apply red_fill. apply FS_red'. omega.
+      apply red_iter. apply red_fill. apply FS_red'. lia.
     Qed.
 
     Lemma loop : EIS (red R).
@@ -256,7 +256,7 @@ Section S.
     destruct l. discr. set (us := s::l). set (u := last us default).
     case_eq (split u p). 2: discr. intros [v w].
     case_eq (matches t w); intros.
-    2: discr. assert (h0 : k us > 0). unfold k, us. simpl. omega.
+    2: discr. assert (h0 : k us > 0). unfold k, us. simpl. lia.
     assert (h : u = last_string us). unfold last_string, k, nth.
     rewrite <- last_nth. refl. rewrite h in H0. exists (seq us h0 v s0).
     eapply IS_seq. apply H1. apply H0. hyp.

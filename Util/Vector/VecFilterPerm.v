@@ -33,7 +33,7 @@ induction l; simpl; intros. refl. apply Vcons_eq. split.
 rewrite !Vnth_cast, !Vnth_app.
 destruct a as [k h]. unfold N_val; simpl proj1_sig. case (le_gt_dec i k); intro.
 rewrite !Vnth_cons. case (lt_ge_dec 0 (k-i)); intro. refl.
-assert (k=i). omega. subst k. ded (H h). fo.
+assert (k=i). lia. subst k. ded (H h). fo.
 refl. apply IHl. fo.
 Qed.
 

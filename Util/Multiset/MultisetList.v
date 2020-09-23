@@ -10,7 +10,7 @@ representation.
 
 Set Implicit Arguments.
 
-From Coq Require Import Permutation PermutSetoid Omega Multiset.
+From Coq Require Import Permutation PermutSetoid Lia Multiset.
 From CoLoR Require Import LogicUtil RelExtras MultisetCore ListExtras.
 
 Module MultisetList (ES : Eqset_dec) <: MultisetCore with Module Sid := ES.
@@ -237,7 +237,7 @@ Section SpecConformation.
   Proof.
     induction N.
      (* induction base *)
-    simpl; intros; omega.
+    simpl; intros; lia.
      (* induction step *)
     intro x; simpl.
     destruct (eqA_dec x a); simpl.
@@ -245,7 +245,7 @@ Section SpecConformation.
     fold rem.
     rewrite (diff_mult_step_eq M N e).
     rewrite (IHN x).
-    omega.
+    lia.
      (* x <> a *)
     fold rem.
     rewrite (diff_mult_step_neq M N n).
