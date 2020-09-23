@@ -932,7 +932,7 @@ Module Make (Export L : L_Struct).
 
   Proof.
     induction u; simpl. refl. refl. rewrite IHu1, IHu2. refl.
-    unfold Def.var; ens. (*SLOW*)rewrite fvcodom_id, empty_b.
+    unfold Def.var; ens. (*VERY SLOW*)rewrite fvcodom_id, empty_b.
     f_equal. rewrite <- IHu at 2. apply subs_seq.
     intros y hy. unfold Def.update. eq_dec y x. rewrite e. refl. refl.
   Qed.
@@ -988,7 +988,7 @@ Module Make (Export L : L_Struct).
 
     (* app *)
     rewrite IHu1, IHu2. simpl. intro y. (*SLOW*)set_iff.
-    (*SLOW*)rewrite !In_fvcod, !In_domain. set_iff. split_all; try tauto.
+    rewrite !In_fvcod, !In_domain. set_iff. split_all; try tauto.
     right. ex x. revert H. rewrite !In_domain. set_iff. tauto.
     right. ex x. revert H. rewrite !In_domain. set_iff. tauto.
     revert H. rewrite In_domain. set_iff. split_all.

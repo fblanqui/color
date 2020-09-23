@@ -1165,7 +1165,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     intros s s' ss' t u tu. subst s'.
     inversion tu; inversion H1; subst; clear tu H1.
-    (*SLOW*)rewrite H0, H, 2!subs_comp.
+    (*VERY SLOW*)rewrite H0, H, 2!subs_comp.
     apply clos_aeq_intro_refl. apply subs_step. hyp.
   Qed.
 
@@ -1446,7 +1446,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       intros [x [uusx [y [xy yvvs]]]]. revert uusx yvvs xy. VSntac x. VSntac y.
       rewrite !Vforall2_cons_eq. intros [h1 h2] [i1 i2] h. inversion h.
-      left. subst x0 y0 x'. (*SLOW*)rewrite h1, <- i1, h2, H5, i2. split.
+      left. subst x0 y0 x'. (*VERY SLOW*)rewrite h1, <- i1, h2, H5, i2. split.
       apply incl_clos_aeq. hyp. refl.
       right. subst x0 y0 y'. rewrite h1, H4, i1. split. refl. 
       ex (Vtail x). intuition. ex (Vtail y). intuition.

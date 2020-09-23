@@ -560,7 +560,7 @@ rewrite H1. apply in_map. hyp.
 rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
 rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
 2:{ rewrite vars_var. rewrite vars_var in n. rewrite H. hyp. }
-(*SLOW*)rewrite H at -2. apply red_rule.
+(*VERY SLOW*)rewrite H at -2. apply red_rule.
 change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 (* <- *)
 redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).
@@ -589,7 +589,7 @@ rewrite H1. apply in_map. hyp.
 rewrite swap_intro with (x:=var l)(y:=0). 2: hyp.
 rewrite swap_intro with (t:=r)(x:=var r)(y:=0).
 2:{ rewrite vars_var. rewrite vars_var in n. rewrite H. hyp. }
-(*SLOW*)rewrite H at -2. apply hd_red_rule.
+(*VERY SLOW*)rewrite H at -2. apply hd_red_rule.
 change (In (reset_rule (mkRule l r)) (reset_rules R)). apply in_map. hyp.
 (* <- *)
 redtac. rename l into l0. rename r into r0. subst. destruct (in_map_elim lr).

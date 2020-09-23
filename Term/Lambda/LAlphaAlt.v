@@ -612,7 +612,7 @@ Module Make (Export L : L_Struct).
     apply aeq_ch_top_intro; simpl; set_iff; fo. }
     simpl. rewrite !replace_var_eq. apply mon_lam. class. refl.
     apply hu. rewrite size_replace_all. refl.
-    (*SLOW*)rewrite !replace_all_aeq_rename, i0, rename2; firstorder auto with crelations.
+    rewrite !replace_all_aeq_rename, i0, rename2; firstorder auto with crelations.
   Qed.
 
 (***********************************************************************)
@@ -828,7 +828,7 @@ Module Make (Export L : L_Struct).
     erewrite <- transpose_comp with (u:=w) (b:=b); auto.
     rewrite transpose_sym with (x:=y), transpose_sym with (x:=z).
     apply transpose_aeq_gp. hyp.
-  (*SLOW*)Qed.
+  Qed.
 
   (** [aeq] is included in [aeq_gp]. *)
 
@@ -841,7 +841,7 @@ Module Make (Export L : L_Struct).
                             (add x0 (union (fv u0) (bv u0))))
                      (union (fv (rename x x0 u)) (bv (rename x x0 u)))).
     gen (var_notin_ok xs). set (z := var_notin xs).
-    unfold xs. (*SLOW*)set_iff. split_all.
+    unfold xs. set_iff. split_all.
 
     apply aeq_gp_lam with (z:=z). ens. set_iff. split_all. apply hu.
     unfold Def.transpose. rewrite size_action. refl.

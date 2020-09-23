@@ -103,7 +103,7 @@ Module FCmp <: Cmp.
 
   Definition t := F.
 
-  Fixpoint cmp f g :=
+  Definition cmp f g :=
     match f, g with
       | Rec u, Rec v => Ty_Cmp.cmp u v
       | _, _ => Nat.compare (prec f) (prec g)
@@ -239,7 +239,7 @@ Module ST_SystemT <: ST_Struct.
 
   Notation TNat := (Base Nat).
 
-  Fixpoint typ f :=
+  Definition typ f :=
     match f with
       | Zero => TNat
       | Succ => TNat ~~> TNat
@@ -380,7 +380,7 @@ End CC_SystemT.
 (****************************************************************************)
 (** ** Termination proof of System T. *)
 
-(*SLOW*)Module Export SN := SN_rewrite CC_SystemT RS_SystemT DLQO_SystemT.
+(*VERY SLOW*)Module Export SN := SN_rewrite CC_SystemT RS_SystemT DLQO_SystemT.
 
 From CoLoR Require Import Lexico.
 

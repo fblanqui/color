@@ -136,7 +136,7 @@ Module Make (Export L : L_Struct).
     right. inv_aeq H0; clear H0; subst.
     rename x into x2; rename u into u2'; rename u' into u1'.
     ex x2 u2'. split. refl. split.
-    2:{ (*SLOW*)rewrite i, i1, rename2. apply subs_eta_aeq. refl.
+    2:{ (*VERY SLOW*)rewrite i, i1, rename2. apply subs_eta_aeq. refl.
     apply clos_aeq_intro_refl. hyp. hyp. }
     (* condition on variables *)
     permut_rename i1; clear i3.

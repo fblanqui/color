@@ -513,7 +513,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros S1 S2; constructor; intros i j; destruct S1; destruct S2.
-    (*SLOW*)destruct i; destruct j; fo; destruct x; fo.
+    destruct i; destruct j; fo; destruct x; fo.
     destruct i; destruct j; try_solve.
     exists 0; fo.
     destruct 1; exists (S x); trivial.
@@ -524,10 +524,10 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros n k s; constructor; intros i j.
-    (*SLOW*)destruct i; destruct j; try_solve; try lia.
+    destruct i; destruct j; try_solve; try lia.
     destruct (le_gt_dec k i); try_solve; try lia.
     destruct (le_gt_dec k i); try_solve; try lia.
-    (*SLOW*)destruct i; destruct j; try_solve; try lia.
+    destruct i; destruct j; try_solve; try lia.
     destruct (le_gt_dec k i); try_solve; lia.
   Qed.
 
@@ -805,7 +805,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     Proper (eq ==> eq ==> envSubst_eq ==> iff) conv_env.
 
   Proof.
-    intros a b ab c d cd E F EF. subst b d. Set Firstorder Depth 5. (*SLOW*)fo.
+    intros a b ab c d cd E F EF. subst b d. Set Firstorder Depth 5. fo.
   Qed.
 
   Lemma conv_env_refl : forall M, conv_env M M (idEnvSubst (length (env M))).
@@ -1360,35 +1360,35 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1; 
-      term_inv t; term_inv t'. (*SLOW*)
+      term_inv t; term_inv t'.
   Qed.
 
   Instance isVar_morph : Proper (terms_conv ==> iff) isVar.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
-      term_inv t; term_inv t'. (*SLOW*)
+      term_inv t; term_inv t'.
   Qed.
 
   Instance isAbs_morph : Proper (terms_conv ==> iff) isAbs.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
-      term_inv t; term_inv t'. (*SLOW*)
+      term_inv t; term_inv t'.
   Qed.
 
   Instance isNeutral_morph : Proper (terms_conv ==> iff) isNeutral.
 
   Proof.
      intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
-      term_inv t; term_inv t'. (*SLOW*)
+      term_inv t; term_inv t'.
   Qed.
 
   Instance isFunS_morph : Proper (terms_conv ==> iff) isFunS.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
-      term_inv t; term_inv t'. (*SLOW*)
+      term_inv t; term_inv t'.
   Qed.
 
   Lemma conv_by : forall M N Q, M ~(Q) N -> M ~ N.
@@ -1854,7 +1854,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     assert (f_dec: forall i j, {f i j} + {~f i j}).
     intros p q.
     destruct (envSub_dec Q p q).
-    (*SLOW*)fo.
+    fo.
     destruct (eq_nat_dec p i); destruct (eq_nat_dec q v);
       subst; unfold f; tauto.
     assert (f_Lok: forall i j j', f i j -> f i j' -> j = j').
@@ -1890,7 +1890,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     split; eauto with arith.
     exists (build_envSub f f_dec f_Lok f_Rok s_ok).
     simpl; split.
-    (*SLOW*)fo.
+    fo.
     exists v; split.
     fo.
     split.

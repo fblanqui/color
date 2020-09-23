@@ -1756,7 +1756,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply copy_split_r_varD with (k + (p - length (initialSeg Er k) - n));
       trivial; try lia.
     apply env_sum_ry; trivial.
-  (*SLOW*)Qed.
+  Qed.
 
   Lemma liftedEnv_distr_sum : forall El Er n k,
     liftedEnv n (El [+] Er) k = liftedEnv n El k [+] liftedEnv n Er k.
