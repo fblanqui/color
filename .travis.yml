@@ -29,8 +29,8 @@ install:
 - eval $(opam config env)
 - opam config var root
 - opam list
-- opam install -j ${NJOBS} -y ocamlfind camlp5 ${EXTRA_OPAM}
-- opam install zarith
+- opam install -y -j ${NJOBS} -y ocamlfind camlp5 ${EXTRA_OPAM}
+- opam install -y zarith
 # Coq
 - echo 'Installing Coq...' && echo -en 'travis_fold:start:coq.build\\r'
 - git clone --depth 1 -b ${TEST_TARGET} https://github.com/coq/coq.git ${HOME}/coq-${TEST_TARGET}
