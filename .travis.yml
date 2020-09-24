@@ -16,7 +16,7 @@ env:
   global:
   - NJOBS=2
   # system is == 4.02.3
-  - COMPILER="4.07.0"
+  - COMPILER="4.07.1"
   # Main test targets
   matrix:
   - TEST_TARGET="v8.11"
@@ -28,9 +28,9 @@ install:
 - opam init -j ${NJOBS} --compiler=${COMPILER} -n -y
 - eval $(opam config env)
 - opam config var root
-- opam install -j ${NJOBS} -y ocamlfind camlp5 ${EXTRA_OPAM}
-- opam install num conf-gmp zarith
 - opam list
+- opam install -j ${NJOBS} -y ocamlfind camlp5 ${EXTRA_OPAM}
+- opam install zarith
 # Coq
 - echo 'Installing Coq...' && echo -en 'travis_fold:start:coq.build\\r'
 - git clone --depth 1 -b ${TEST_TARGET} https://github.com/coq/coq.git ${HOME}/coq-${TEST_TARGET}
