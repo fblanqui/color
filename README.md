@@ -135,8 +135,7 @@ F. Blanqui and A. Koprowski, INRIA Research Report 6949, 2009.
 
 - [Automated Verification of Termination
 Certificates](http://rewriting.gforge.inria.fr/talks/shanghai08.pdf),
-F. Blanqui, Talk at East China Normal University, Shanghai, 3 December
-2008.
+F. Blanqui, Talk at East China Normal University, Shanghai, 3 December 2008.
 
 - [Termination of rewriting and its
 certification](http://dx.doi.org/10.6100/IR637480), A. Koprowski, PhD
