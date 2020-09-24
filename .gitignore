@@ -1,3 +1,7 @@
+doc/CoLoR.*.html
+doc/coqdoc.css
+doc/index.html
+doc/main.html
 .lia.cache
 .nia.cache
 .*.aux
