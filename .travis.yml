@@ -29,7 +29,7 @@ install:
 - eval $(opam config env)
 - opam config var root
 - opam install -j ${NJOBS} -y ocamlfind camlp5 ${EXTRA_OPAM}
-- opam install num
+- opam install num zarith
 - opam list
 # Coq
 - echo 'Installing Coq...' && echo -en 'travis_fold:start:coq.build\\r'
