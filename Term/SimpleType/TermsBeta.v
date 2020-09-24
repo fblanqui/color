@@ -596,14 +596,14 @@ Module TermsBeta (Sig : TermsSig.Signature).
     intros.
     apply term_eq.
 
-    (*SLOW*)autorewrite with terms.
+    autorewrite with terms.
     cut (tail (env M) [+] tail (env P) [-] subst_dom G [+] subst_ran G =
       tail (env M) [-] subst_dom G [+] subst_ran G [+] 
       (tail (env P) [-] subst_dom G [+] subst_ran G)).
     destruct (subst_empty_dec G).
     (*SLOW*)destruct (env M); destruct (env P); try destruct o;
       try destruct o0; simpl; (autorewrite with terms using simpl); try_solve.
-    (*SLOW*)destruct (env M); destruct (env P); try destruct o;
+    (*VERY SLOW*)destruct (env M); destruct (env P); try destruct o;
       try destruct o0; simpl; (autorewrite with terms using simpl); 
       try destruct (subst_ran G); try destruct (subst_dom G);
       try destruct e; try destruct o; try destruct o0; try_solve.
@@ -613,11 +613,11 @@ Module TermsBeta (Sig : TermsSig.Signature).
     rewrite <- env_sum_assoc.
     rewrite env_sub_move; trivial.
 
-    (*SLOW*)autorewrite with terms datatypes.
+    autorewrite with terms datatypes.
     unfold presubst.
     set (w := double_subst_aux (term M) G 0 PG).
     simpl in w; trivial.
-  (*SLOW*)Qed.
+  Qed.
 
   Lemma double_lift : forall M G
     (CS: correct_subst (lift M 1) (None :: lift_subst G 1))
@@ -626,7 +626,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
   Proof.
     intros.
     apply term_eq.
-    (*SLOW*)destruct (subst_empty_dec G); 
+    destruct (subst_empty_dec G); 
       autorewrite with terms datatypes using unfold liftedEnv; simpl; trivial.
     autorewrite with terms.
     replace (None :: lift_subst G 1) with (copy (S 0) None ++ lift_subst G 1);
@@ -692,13 +692,13 @@ Module TermsBeta (Sig : TermsSig.Signature).
     auto with terms.
     left; rewrite beta_type; trivial.
     destruct (subst_empty_dec G); autorewrite with terms using simpl; auto.
-    (*SLOW*)destruct (subst_empty_dec G);
+    destruct (subst_empty_dec G);
       autorewrite with terms datatypes using simpl; auto with terms.
     rewrite (double_subst G (beta_subst M Mapp MLabs) s0 s1 s2 s3).
     apply term_eq.
-    (*SLOW*)destruct (subst_empty_dec G);
+    destruct (subst_empty_dec G);
       autorewrite with datatypes terms using simpl; trivial.
-    (*SLOW*)autorewrite with datatypes terms using simpl.
+    autorewrite with datatypes terms using simpl.
     assert (Leq: presubst (term (absBody MLabs)) (None :: lift_subst G 1) = 
       term (absBody MNS_Labs)).
     cut (term (subst s1) = term (absBody MNS_Labs)).
@@ -863,8 +863,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     right; intro MN; inversion MN.
     apply n; rewrite <- H0.
     apply term_eq.
-    (*SLOW*)autorewrite with terms using trivial.
-    (*SLOW*)autorewrite with terms using trivial.
+    autorewrite with terms using trivial.
+    autorewrite with terms using trivial.
     replace (absBody MLabs0) with (absBody MLabs).
     replace (appBodyR Mapp1) with (appBodyR Mapp); trivial.
     term_inv M.
