@@ -38,7 +38,7 @@ Qed.
 
 Local Open Scope Z_scope.
 
-Fixpoint beq_Z x y :=
+Definition beq_Z x y :=
   match x, y with
     | Z0, Z0 => true
     | Zpos x', Zpos y' => beq_pos x' y'
