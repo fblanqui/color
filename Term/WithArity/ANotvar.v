@@ -17,7 +17,7 @@ Variable Sig : Signature.
 
 Notation term := (term Sig).
 
-Fixpoint notvar (t : term) : Prop :=
+Definition notvar (t : term) : Prop :=
   match t with
     | Var _ => False
     | _ => True
