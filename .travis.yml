@@ -30,7 +30,7 @@ install:
 - opam config var root
 - opam list
 - opam install -y -j ${NJOBS} ocamlfind camlp5 ${EXTRA_OPAM}
-- opam install -y zarith
+- opam install -y -j ${NJOBS} num zarith
 # Coq
 - echo 'Installing Coq...' && echo -en 'travis_fold:start:coq.build\\r'
 - git clone --depth 1 -b ${TEST_TARGET} https://github.com/coq/coq.git ${HOME}/coq-${TEST_TARGET}
