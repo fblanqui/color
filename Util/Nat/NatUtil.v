@@ -115,7 +115,7 @@ Fixpoint bgt_nat (x y : nat) :=
 Lemma bgt_nat_ok : forall x y, bgt_nat x y = true <-> x > y.
 
 Proof.
-  induction x; destruct y; simpl; split; intro; try lia; try discr. refl.
+  induction x; destruct y; simpl; split; intro; try (lia||discr||refl).
   rewrite IHx in H. lia. rewrite IHx. lia.
 Qed.
 
@@ -124,7 +124,7 @@ Ltac check_gt := rewrite <- bgt_nat_ok; check_eq.
 Lemma bgt_nat_ko : forall x y, bgt_nat x y = false <-> x <= y.
 
 Proof.
-  induction x; destruct y; simpl; split; intro; try (refl || discr || lia).
+  induction x; destruct y; simpl; split; intro; try (lia||discr||refl).
   rewrite IHx in H. lia. apply le_S_n in H. rewrite IHx. hyp.
 Qed.
 
