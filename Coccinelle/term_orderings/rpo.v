@@ -12,13 +12,6 @@
 (* RPO definition extended by Sorin Stratulat by considering a
 quasi-ordering for the precedence instead of an ordering. *)
 
-(*
-From Coq Require Import Bool Peano List Relations Wellfounded Arith Wf_nat Recdef
-     Program Morphisms Lia Omega.
-From CoLoR Require Import closure more_list equiv_list list_permut dickson term_spec
-     term decidable_set ordered_set.
- *)
-
 From Coq Require Import Bool Peano List.
 From CoLoR Require Import closure more_list equiv_list list_permut dickson.
 From Coq Require Import Relations Wellfounded Arith Wf_nat Recdef Program Morphisms Lia.

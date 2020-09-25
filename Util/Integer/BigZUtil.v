@@ -11,8 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil BigNUtil NatUtil.
 From Bignums Require Export BigZ.
-
-From Coq Require Import Zcompare Omega.
+From Coq Require Import ZArith.
 
 Open Scope bigZ_scope.
 

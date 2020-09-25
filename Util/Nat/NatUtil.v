@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil EqUtil BoolUtil RelUtil.
 
-From Coq Require Import Min Max Morphisms Euclid Peano Lia Omega.
+From Coq Require Import Min Max Morphisms Euclid Peano Lia.
 From Coq Require Export Arith.
 From Coq Require Import Compare.
 
@@ -48,9 +48,7 @@ Arguments le_n_S [n m] _.
 (***********************************************************************)
 (** Tactics. *)
 
-Tactic Notation "omega" := intros; omega.
 Tactic Notation "lia" := intros; lia.
-Tactic Notation "nia" := intros; nia.
 
 Ltac max :=
   match goal with

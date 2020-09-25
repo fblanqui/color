@@ -9,7 +9,7 @@ general results on booleans
 
 Set Implicit Arguments.
 
-From Coq Require Import Arith Omega Lia.
+From Coq Require Import ZArith Lia.
 From Coq Require Export Bool.
 From Coq Require Setoid.
 
