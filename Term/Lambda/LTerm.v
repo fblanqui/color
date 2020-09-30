@@ -923,8 +923,8 @@ Module Make (Export L : L_Struct).
     Lemma SN_st u v : SN R u -> supterm u v -> SN R v.
 
     Proof.
-      intros u_sn uv. eapply SN_incl. apply incl_union_r. refl.
-      eapply SN_inv. left. apply t_step. apply uv.
+      intros u_sn uv. eapply SN_incl. eapply incl_union_r. refl.
+      eapply SN_inv. left. eapply t_step. apply uv.
       apply SN_supterm_R_mon. hyp.
     Qed.
 

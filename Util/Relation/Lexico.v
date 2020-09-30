@@ -275,8 +275,8 @@ Section lexv.
   Proof.
     intros eq_trans eq_sym gt_eq ts ts' tsts' us us' usus'; unfold impl.
     rewrite !lexv_eq. intros [i [i1 [i2 i3]]]. ex i i1. split.
-    eapply gt_eq. apply Vforall2_elim_nth. apply tsts'.
-    apply Vforall2_elim_nth. apply usus'. hyp.
+    eapply gt_eq. eapply Vforall2_elim_nth. apply tsts'.
+    eapply Vforall2_elim_nth. apply usus'. hyp.
     intros j ji jn.
     rewrite <- (Vforall2_elim_nth _ tsts'), <- (Vforall2_elim_nth _ usus'). fo.
   Qed.

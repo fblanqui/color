@@ -232,15 +232,15 @@ Section Preserv.
   Lemma WF_Fred : WF (red R) -> WF (red (Frs HF R)).
 
   Proof.
-    intro. eapply WF_incl. apply red_incl. apply hyp4.
-    eapply Fred_WF. eapply WF_incl. apply red_incl. apply hyp3. hyp.
+    intro. eapply WF_incl. eapply red_incl. apply hyp4.
+    eapply Fred_WF. eapply WF_incl. eapply red_incl. apply hyp3. hyp.
   Qed.
 
   Lemma WF_Fred_mod : WF (red_mod E R) -> WF (red_mod (Frs HF E) (Frs HF R)).
 
   Proof.
-    intro. eapply WF_incl. apply red_mod_incl. apply hyp2. apply hyp4.
-    eapply Fred_mod_WF. eapply WF_incl. apply red_mod_incl. apply hyp1.
+    intro. eapply WF_incl. eapply red_mod_incl. apply hyp2. apply hyp4.
+    eapply Fred_mod_WF. eapply WF_incl. eapply red_mod_incl. apply hyp1.
     apply hyp3. hyp.
   Qed.
 
@@ -248,8 +248,8 @@ Section Preserv.
     WF (hd_red_mod E R) -> WF (hd_red_mod (Frs HF E) (Frs HF R)).
 
   Proof.
-    intro. eapply WF_incl. apply hd_red_mod_incl. apply hyp2. apply hyp4.
-    eapply Fhd_red_mod_WF. eapply WF_incl. apply hd_red_mod_incl. apply hyp1.
+    intro. eapply WF_incl. eapply hd_red_mod_incl. apply hyp2. apply hyp4.
+    eapply Fhd_red_mod_WF. eapply WF_incl. eapply hd_red_mod_incl. apply hyp1.
     apply hyp3. hyp.
   Qed.
 

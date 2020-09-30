@@ -503,8 +503,8 @@ are finite maps from variables to types. *)
     apply tr_var. apply mapsto_restrict_dom_singleton. hyp.
     apply tr_fun.
     apply tr_app with V; eapply tr_le.
-    apply restrict_dom_s. refl. apply union_subset_1. refl. refl. hyp.
-    apply restrict_dom_s. refl. apply union_subset_2. refl. refl. hyp.
+    eapply restrict_dom_s. refl. apply union_subset_1. refl. refl. hyp.
+    eapply restrict_dom_s. refl. apply union_subset_2. refl. refl. hyp.
     apply tr_lam. eapply tr_le. 2: refl. 2: refl. 2: apply IHtr.
     intros y hy.
     env. rewrite mapsto_restrict_dom, !add_mapsto_iff, mapsto_restrict_dom.
@@ -593,7 +593,7 @@ are finite maps from variables to types. *)
     (* lam *)
     apply tr_lam. eapply hu with (u':=rename x x1 v) (E:=add x1 X0 E).
     rewrite size_rename. refl. unfold Def.rename. eapply tr_subs.
-    apply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: hyp.
+    eapply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: hyp.
 
     intros y V. unfold Def.single, Def.update.
     env. rewrite mapsto_restrict_dom, add_mapsto_iff. intros [h1 h2].

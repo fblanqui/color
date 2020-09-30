@@ -479,9 +479,9 @@ Module Make (Export L : L_Struct).
       as [s' [h1 [h2 h3]]].
     rewrite subs_saeq with (s':=s'). rewrite subs_saeq with (s:=s) (s':=s').
     apply h; hyp.
-    eapply subs_rel_s. refl. unfold flip. apply union_subset_2. refl. refl.
+    eapply subs_rel_s. refl. unfold flip. eapply union_subset_2. refl. refl.
     apply h1.
-    eapply subs_rel_s. refl. unfold flip. apply union_subset_1. refl. refl.
+    eapply subs_rel_s. refl. unfold flip. eapply union_subset_1. refl. refl.
     apply h1.
   Qed.
 
@@ -504,9 +504,9 @@ Module Make (Export L : L_Struct).
       as [s' [h1 [h2 h3]]].
     rewrite subs_saeq with (s':=s'). rewrite subs_saeq with (s:=s) (s':=s').
     apply h. hyp. rewrite <- h1 at 2. hyp. rewrite <- h1. hyp.
-    eapply subs_rel_s. refl. unfold flip. apply union_subset_2. refl. refl.
+    eapply subs_rel_s. refl. unfold flip. eapply union_subset_2. refl. refl.
     apply h1.
-    eapply subs_rel_s. refl. unfold flip. apply union_subset_1. refl. refl.
+    eapply subs_rel_s. refl. unfold flip. eapply union_subset_1. refl. refl.
     apply h1.
   Qed.
 
