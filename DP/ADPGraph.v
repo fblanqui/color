@@ -283,13 +283,13 @@ do 4 destruct H8. unfold l' in H8. ded (chain_dps_app' H8 H3).
 do 2 destruct H10.
 (* succ_eq# x x7 *)
 assert (succ_eq# x x7). destruct H10. subst x7. intuition.
-eapply incl_elim. apply compat_chain_dps. apply H10.
+eapply incl_elim. eapply compat_chain_dps. apply H10.
 (* (succ @ succ_eq#) x7 y *)
 assert ((succ @ succ_eq#) x7 y). destruct x6; simpl in H11.
 ded (compat_chain_dp_strict H9 H11). exists y. intuition.
 do 2 destruct H11. exists x8. split. eapply incl_elim.
 apply (compat_chain_dp_strict H9). exact H11.
-eapply incl_elim. apply compat_chain_dps. apply H13.
+eapply incl_elim. eapply compat_chain_dps. apply H13.
 (* (succ @ succ_eq#) x y *)
 do 2 destruct H13. exists x8. intuition.
 eapply incl_elim with (R := succ_eq# @ succ). apply absorbs_left_rtc.

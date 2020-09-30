@@ -355,7 +355,7 @@ Section S.
       ded (red_lab ge_compatR v H0). do 2 destruct H2. exists x0. intuition.
       apply rt_trans with (lab v x).
       eapply incl_elim. apply rt_red_mod_union. hyp.
-      eapply incl_elim. apply rtc_incl. apply red_incl.
+      eapply incl_elim. eapply rtc_incl. eapply red_incl.
       apply subset_union_l. hyp.
     Qed.
 
@@ -367,7 +367,7 @@ Section S.
       ded (hd_red_lab v H0). do 2 destruct H2. exists x0. intuition.
       apply rt_trans with (lab v x).
       eapply incl_elim. apply rt_red_mod_union. hyp.
-      eapply incl_elim. apply rtc_incl. apply red_incl.
+      eapply incl_elim. eapply rtc_incl. eapply red_incl.
       apply subset_union_l. hyp.
     Qed.
 
@@ -385,7 +385,7 @@ Section S.
       (* <- *)
       set (v := fun x : variable => some_elt I).
       apply WF_incl with (Rof (red_mod (union Decr E') R') (lab v)).
-      intros t u h. unfold Rof. apply red_mod_lab. hyp.
+      intros t u h. unfold Rof. eapply red_mod_lab. hyp.
       apply WF_inverse. hyp.
     Qed.
 

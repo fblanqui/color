@@ -274,7 +274,7 @@ minimal infinite R-sequence *)
       eapply subterm_eq_vars. apply hw1. simpl. auto.
       destruct hv as [hv1 hv2]. absurd (NT (red R) v).
       rewrite <- SN_notNT_eq. eapply subterm_eq_sn. rewrite SN_notNT_eq.
-      apply hs. apply hn. hyp. hyp.
+      eapply hs. apply hn. hyp. hyp.
       (* w = Fun f v0 *)
       subst. ex l (Fun f t) s. split_all. eapply dp_intro. apply lr.
       (* In (Fun f v0) (calls R r) *)

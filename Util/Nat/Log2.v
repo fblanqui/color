@@ -57,7 +57,7 @@ apply log2_prop_p.
  intro; discr.
  intro H; discr.
 apply IHcount; eapply le_trans.
-apply le_n_S; apply div2_le_n.
+eapply le_n_S; apply div2_le_n.
 apply le_S_n; hyp.
 Qed.
 

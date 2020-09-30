@@ -255,8 +255,8 @@ Module TropicalBasedInt (Export TBI : TTropicalBasedInt).
 
     Proof.
       intros. unfold succ_vec. apply Vforall2_intro_nth. intros. destruct H.
-      eapply gtx_mor. apply Vforall2_elim_nth; rewrite mint_eval_split; refl.
-      apply Vforall2_elim_nth. rewrite mint_eval_split. refl.
+      eapply gtx_mor. eapply Vforall2_elim_nth; rewrite mint_eval_split; refl.
+      eapply Vforall2_elim_nth. rewrite mint_eval_split. refl.
       rewrite !vector_plus_nth.
       apply gtx_plus_compat. 
       apply Vforall2_elim_nth. hyp.

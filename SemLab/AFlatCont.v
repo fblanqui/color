@@ -174,7 +174,7 @@ Section S.
       intro t. gen (H t). induction 1. apply SN_intro; intros. apply H1.
       do 2 destruct H2. exists x0. split.
       (* rewrite red_flat in H2. hyp. *) eapply incl_elim.
-      apply rtc_incl. apply red_flat. hyp.
+      eapply rtc_incl. apply red_flat. hyp.
       apply red_flat. hyp.
       (* <- *)
       intro t. geneq H t (fill one_flat_cont t). induction 1. intros. subst.

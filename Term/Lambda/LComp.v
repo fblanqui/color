@@ -496,7 +496,7 @@ Module Make (Export CP : CP_Struct).
   Lemma cp_red_arr : forall P Q, cp_red Q -> cp_red (arr P Q).
 
   Proof.
-    intros P Q q3 v v' vv' hv u hu. eapply q3. apply mon_app_l.
+    intros P Q q3 v v' vv' hv u hu. eapply q3. eapply mon_app_l.
     class. apply vv'. refl. apply hv. hyp.
   Qed.
 
@@ -567,7 +567,7 @@ Module Make (Export CP : CP_Struct).
     inversion H; clear H; subst x1 u1 v1 w'. rewrite ww', i3, single_rename.
     rewrite fold_subs_single, i2. (*COQ: rewrite <- v0v does not work*)
     eapply proper_atc. hyp. apply Q_red.
-    apply subs_single_mon_preorder_aeq; class. apply v0v. refl.
+    eapply subs_single_mon_preorder_aeq; class. apply v0v. refl.
     apply tv0_beta_comp. hyp. tauto.
     (* app_l *)
     rewrite ww'. apply t_red_comp.
