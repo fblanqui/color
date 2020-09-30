@@ -568,7 +568,7 @@ Module Make (Export L : L_Struct).
     intros u v uv. inversion uv; clear uv; subst; unfold Ens_In in *.
     rewrite not_mem_iff in H. set (v := replace_all x y u).
     rewrite <- replace_all2 with (x:=x) (y:=y); auto.    
-    apply aeq_ch_top_intro; ens.
+    apply aeq_ch_top_intro; ens; unfold v.
     rewrite fv_replace_all; [idtac|fo|fo]. rewrite H. hyp.
     rewrite fv_replace_all; [idtac|fo|fo]. rewrite H, not_mem_iff. hyp.
     eq_dec x y. subst y. rewrite replace_all_id. hyp.
