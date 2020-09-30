@@ -161,7 +161,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       VOtac. auto.
       simpl in H. VSntac args. rewrite H0 in H; simpl. destruct H.
       rewrite Aplus_comm. apply tropical_plus_notInf_left.
-      apply mat_times_vec_at0_positive. hyp.
+      apply (@mat_times_vec_at0_positive dim). hyp.
       VSntac v. simpl. destruct (Vhead v). 
       unfold vec_invariant, Conf.vec_at0 in v0. simpl in *.
        (* TODO... change - specific to tropical... *)

@@ -1595,14 +1595,14 @@ apply (NatMul.rmv_case lt
                        (a := S (max (nt1 + nl1) (nt2 + nl2)))).
 unfold  NatMul.DS.eq_A.
 intros b [b_eq | [b_eq | b_in_nil]].
-subst b; apply le_n_S; apply max_case2.
+subst b. apply le_n_S; apply (max_case2 nl1 nl2).
 refine (le_trans _ _ _ _ (le_max_l _ _)); destruct nt1 as [ | nt1].
 inversion H1.
 simpl; apply le_n_S; apply le_plus_r.
 refine (le_trans _ _ _ _ (le_max_r _ _)); destruct nt2 as [ | nt2].
 inversion H2.
 simpl; apply le_n_S; apply le_plus_r.
-subst b; apply max_case2.
+subst b; apply (max_case2 nt1 nt2).
 simpl; apply le_n_S; refine (le_trans _ _ _ _ (le_max_l _ _)); apply le_plus_l.
 simpl; apply le_n_S; refine (le_trans _ _ _ _ (le_max_r _ _)); apply le_plus_l.
 contradiction.
