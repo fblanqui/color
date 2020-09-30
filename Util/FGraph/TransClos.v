@@ -104,7 +104,7 @@ Module Make (XSet : FSetInterface.S)
     fold (add_pred x s) g g0 == pred x s g U g0.
 
   Proof.
-    intros x s g g0. pattern (fold (add_pred x s) g g0).
+    intros x s g g0. pattern g, (fold (add_pred x s) g g0).
     apply fold_rec_weak; clear g.
     (* Equal *)
     intros m n g mn h. apply Equal_geq in mn. (*SLOW:rewrite <- mn. hyp.*)
