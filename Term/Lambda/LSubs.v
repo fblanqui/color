@@ -1876,7 +1876,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
       [=] fvcodom (fv (Lam z u)) s). intro a.
     rewrite !In_fvcodom. split; intros [b [j1 [j2 j3]]]; exists b;
       revert j1 j2 j3; set_iff; rewrite fv_rename; unfold replace;
-      case_eq (mem x (fv u)); simpl; set_iff; split_all.
+      case_eq (mem x (fv u)); simpl; set_iff; intros ??? H2; split_all.
     subst b. revert H2. rewrite hy. simpl. set_iff. intro e. subst a. tauto.
     right. split. hyp. intro h. subst b. tauto.
 
