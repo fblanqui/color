@@ -54,7 +54,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   | _ => False
   end.
 
-  Hint Unfold isVar isFunS isAbs : terms.
+  #[global] Hint Unfold isVar isFunS isAbs : terms.
 
   Ltac assert_abs hypName M :=
      assert (hypName : isAbs M); 
@@ -159,7 +159,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intros; term_inv M. Qed.
 
-  Hint Resolve absBody absType abs_isAbs absBody_eq_env funS_is_funS
+  #[global] Hint Resolve absBody absType abs_isAbs absBody_eq_env funS_is_funS
     absBody_equiv_type absBody_eq_type : terms.
   Hint Rewrite absBody_env : terms.
 
@@ -299,9 +299,9 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intro M; term_inv M. Qed.
 
-  Hint Resolve appBodyL appBodyR app_isApp app_proof_irr app_Req_LtypeEq
+  #[global] Hint Resolve appBodyL appBodyR app_isApp app_proof_irr app_Req_LtypeEq
     app_Leq_RtypeEq : terms.
-  Hint Unfold isApp : terms.
+  #[global] Hint Unfold isApp : terms.
   Hint Rewrite appBodyL_env appBodyR_env : terms.
 
   Lemma isVar_dec : forall M, {isVar M} + {~isVar M}.
@@ -357,8 +357,8 @@ Module TermsManip (Sig : TermsSig.Signature).
   | hd::tl => appUnits hd ++ tl = appUnits M
   end.
 
-  Hint Resolve appUnits appHead appArgs appUnits_not_nil : terms.
-  Hint Unfold isPartialFlattening isFunApp isNeutral : terms.
+  #[global] Hint Resolve appUnits appHead appArgs appUnits_not_nil : terms.
+  #[global] Hint Unfold isPartialFlattening isFunApp isNeutral : terms.
 
   Lemma appUnits_notApp : forall M, ~isApp M -> appUnits M = M::nil.
 
@@ -567,7 +567,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intro M; term_inv M. Qed.
 
-  Hint Resolve appArg_inv appArg_is_appUnit abs_isnot_app app_isnot_abs 
+  #[global] Hint Resolve appArg_inv appArg_is_appUnit abs_isnot_app app_isnot_abs 
                appUnits_notApp appHead_notApp appHead_app appArgs_notApp 
                appArgs_app appUnit_left: terms.
 
@@ -1163,7 +1163,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     rewrite MN; trivial.
   Qed.
 
-  Hint Resolve appUnit_subterm partialFlattening_app eq_units_eq_terms
+  #[global] Hint Resolve appUnit_subterm partialFlattening_app eq_units_eq_terms
                partialFlattening_subterm funApp_head funApp : terms.
 
   Module TermSet <: SetA.

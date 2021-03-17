@@ -228,8 +228,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
 
   Definition lift_subst (G: Subst)(l: nat) : Subst := map (fun T => lift_subst_comp T l) G.
 
-  Hint Resolve prelift_aux : terms.
-  Hint Unfold lift : terms.
+  #[global] Hint Resolve prelift_aux : terms.
+  #[global] Hint Unfold lift : terms.
 
   Lemma lift_env : forall M n, env (lift M n) = liftedEnv n (env M) 0.
 

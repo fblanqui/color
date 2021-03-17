@@ -274,12 +274,12 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
   Definition Acc_LexProd := Acc LexProd_Lt.
 
 (* --- Extension of setoids on components to setoid on pair *)
-  Hint Unfold eqPair : sets.
+  #[global] Hint Unfold eqPair : sets.
 
   Instance eqPair_Equivalence : Equivalence eqPair := 
     eqPair_Equivalence A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence.
 
-  Hint Resolve A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence : sets.
+  #[global] Hint Resolve A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence : sets.
 
   Instance LexProd_Gt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
 
@@ -317,7 +317,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
          (pA: Poset with Definition A := A_ord.S.A with Module O := A_ord)
          (pB: Poset with Definition A := B_ord.S.A with Module O := B_ord).
 
-    Hint Resolve pA.gtA_so pB.gtA_so : sets.
+    #[global] Hint Resolve pA.gtA_so pB.gtA_so : sets.
 
     Lemma lexprod_irreflex : forall a, a >lex a -> False.
 
@@ -398,7 +398,7 @@ Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
   Definition snd3 (t : triple) : M := snd (fst t).
   Definition trd3 (t : triple) : R := snd t.
 
-  Hint Unfold fst3 snd3 trd3 : core.
+  #[global] Hint Unfold fst3 snd3 trd3 : core.
 
   Module LR_ord := LexicographicOrder A_ord B_ord.
   Module Lex3 := LexicographicOrder LR_ord.Rel C_ord.

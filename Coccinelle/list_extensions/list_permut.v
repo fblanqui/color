@@ -808,8 +808,8 @@ Module Type S.
   Parameter permut_trans :
     forall l1 l2 l3 : list A, permut l1 l2 -> permut l2 l3 -> permut l1 l3.
 
-  Hint Immediate permut_refl : core.
-  Hint Resolve permut_sym : core.
+  #[global] Hint Immediate permut_refl : core.
+  #[global] Hint Resolve permut_sym : core.
 
 (* Theorem mem_permut_mem *)
  Parameter mem_permut_mem :
@@ -933,8 +933,8 @@ Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1.
   intros a b _ _ a_eq_b; symmetry; trivial.
   Qed.
 
-  Hint Immediate permut_refl : core.
-  Hint Resolve permut_sym : core.
+  #[global] Hint Immediate permut_refl : core.
+  #[global] Hint Resolve permut_sym : core.
 
   (** Transitivity. *)
   Theorem permut_trans :

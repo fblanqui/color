@@ -62,7 +62,7 @@ Inductive is_sorted : list A -> Prop :=
   | is_sorted_cons2 :
       forall t1 t2 l, o t1 t2 -> is_sorted (t2 :: l) -> is_sorted (t1 :: t2 :: l).
 
-Hint Constructors is_sorted : core.
+#[global] Hint Constructors is_sorted : core.
 
 Parameter in_remove_list :
   forall l la, is_sorted la -> is_sorted l -> 
@@ -205,7 +205,7 @@ Inductive is_sorted : list A -> Prop :=
   | is_sorted_cons2 :
       forall t1 t2 l, o t1 t2 -> is_sorted (t2 :: l) -> is_sorted (t1 :: t2 :: l).
 
-Hint Constructors is_sorted : core.
+#[global] Hint Constructors is_sorted : core.
 
 (** *** The result of quicksort is a sorted list. *)
 Lemma sorted_tl_sorted :

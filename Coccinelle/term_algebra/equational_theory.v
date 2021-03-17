@@ -118,7 +118,7 @@ Qed.
 
   Notation " T '-[' R '+]->' U " := (rwr R T U) (at level 80) : term_scope .
 
-  Hint Constructors axiom one_step one_step_list trans_clos : core.
+  #[global] Hint Constructors axiom one_step one_step_list trans_clos : core.
 
 (** *** Rewriting is a congruence. *)
   Lemma context_cons :

@@ -97,7 +97,7 @@ Module Multiset (MC : MultisetCore).
      (solve [try_solve_meq_ext] || 
       fail "Couldn't show multisets equality"). 
 
-  Hint Unfold member 
+  #[global] Hint Unfold member 
               insert
               pair
               remove : multisets.
@@ -118,7 +118,7 @@ Module Multiset (MC : MultisetCore).
 
   End meq_equivalence.
 
-  Hint Resolve meq_refl meq_trans meq_sym : multisets.
+  #[global] Hint Resolve meq_refl meq_trans meq_sym : multisets.
 
   Instance meq_Equivalence : Equivalence meq.
 
@@ -669,7 +669,7 @@ Module Multiset (MC : MultisetCore).
 
   End MultisetLemmas.
 
-  Hint Immediate member_singleton
+  #[global] Hint Immediate member_singleton
        member_member_union
        member_diff_member
        member_union
@@ -678,7 +678,7 @@ Module Multiset (MC : MultisetCore).
        intersection_comm
        union_assoc : multisets.
 
-  Hint Resolve union_empty
+  #[global] Hint Resolve union_empty
        not_empty
        singleton_member
        meq_union_meq
@@ -1428,7 +1428,7 @@ Module Multiset (MC : MultisetCore).
 
   End Pair.
 
-  Hint Immediate double_split : multisets.
+  #[global] Hint Immediate double_split : multisets.
 
 (*COQ: At the moment I extended module Eqset to include the requirement of
 decidable equality. Hence to instantiate multisets to Eqset module decidability

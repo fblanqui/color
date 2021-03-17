@@ -40,7 +40,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof. constructor; constructor. destruct i; trivial. Qed.
 
-  Hint Unfold varSubstTo varIsSubst varIsNotSubst : terms.
+  #[global] Hint Unfold varSubstTo varIsSubst varIsNotSubst : terms.
 
   Lemma varSubst_dec G x : {T: Term | G |-> x/T} + { G |-> x/- }.
 
@@ -351,7 +351,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof. intros NGe x. apply (NGe (S x)). Qed.
 
-  Hint Resolve subst_cons_empty subst_tail_empty : terms.
+  #[global] Hint Resolve subst_cons_empty subst_tail_empty : terms.
 
   Lemma subst_nil_empty : isEmptySubst nil.
 
@@ -374,7 +374,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     right; apply nth_lift_subst_sn_rev with i; trivial.
   Qed.
 
-  Hint Resolve subst_lift_empty subst_lift_empty_rev : terms.
+  #[global] Hint Resolve subst_lift_empty subst_lift_empty_rev : terms.
 
   Lemma subst_empty_dec : forall G, {isEmptySubst G} + {~isEmptySubst G}.
 
@@ -983,8 +983,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
     unfold VarD in *; congruence.
   Qed.
 
-  Hint Resolve presubst_aux : terms.
-  Hint Unfold subst presubst : terms.
+  #[global] Hint Resolve presubst_aux : terms.
+  #[global] Hint Unfold subst presubst : terms.
 
   Definition emptySubst : Subst := nil.
 

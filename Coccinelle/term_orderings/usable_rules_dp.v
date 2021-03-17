@@ -717,11 +717,11 @@ generalize (find_map eq_var_bool (fun y : (term * term) => fst y) x tau')
 rewrite (map_eq (fun xval0 : variable * (term * term) => (fst xval0, fst (snd xval0)))
                                (fun xtt' : variable * (term * term) => let (x0, y) := xtt' in let (t, _) := y in (x0, t)) 
                                tau'
-                               (fun xtt' _ => match xtt' with (x,(t,t')) => eq_refl (x,t) end)).
+                               (fun xtt' _ => match xtt' with (x,(t,_)) => eq_refl (x,t) end)).
 rewrite (map_eq (fun xval0 : variable * (term * term) => (fst xval0, snd (snd xval0)))
                                (fun xtt' : variable * (term * term) => let (x0, y) := xtt' in let (_, t'0) := y in (x0, t'0)) 
                                tau'
-                               (fun xtt' _ => match xtt' with (x,(t,t')) => eq_refl (x,t') end)).
+                               (fun xtt' _ => match xtt' with (x,(_,t')) => eq_refl (x,t') end)).
 case (find eq_var_bool x tau').
 intros [xval xval']; simpl.
 intros K1 K2 K3; rewrite K1, K2.

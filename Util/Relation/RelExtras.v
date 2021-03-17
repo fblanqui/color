@@ -64,9 +64,9 @@ Module Type Eqset.
 
   Declare Instance eqA_Equivalence : Equivalence eqA.
 
-  Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
-  Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
-  Hint Resolve (Seq_sym   A eqA eqA_Equivalence) : sets.
+  #[global] Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
+  #[global] Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
+  #[global] Hint Resolve (Seq_sym   A eqA eqA_Equivalence) : sets.
 
 End Eqset.
 
@@ -88,9 +88,9 @@ Module Eqset_def (A : SetA) <: Eqset.
 
   Proof. unfold eqA. class. Qed.
 
-  Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
-  Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
-  Hint Resolve (Seq_sym   A eqA eqA_Equivalence) : sets.
+  #[global] Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
+  #[global] Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
+  #[global] Hint Resolve (Seq_sym   A eqA eqA_Equivalence) : sets.
 
 End Eqset_def.
 
@@ -120,7 +120,7 @@ Module Type Ord.
 
   Declare Instance gtA_eqA_compat : Proper (eqA ==> eqA ==> impl) gtA.
 
-  Hint Resolve gtA_eqA_compat : sets.
+  #[global] Hint Resolve gtA_eqA_compat : sets.
 
 End Ord.
 
@@ -135,7 +135,7 @@ Module OrdLemmas (Export P : Ord).
   Notation "X >=A Y" := (geA X Y) (at level 70).
   Notation "X <=A Y" := (leA X Y) (at level 70).
 
-  Hint Unfold ltA geA leA AccA : sets.
+  #[global] Hint Unfold ltA geA leA AccA : sets.
 
 (*REMOVE?*)
   Instance gtA_morph : Proper (eqA ==> eqA ==> iff) gtA.
@@ -167,10 +167,10 @@ Module Type Poset.
 
   Parameter gtA_so : strict_order gtA.
 
-  Hint Resolve (sord_trans gtA_so) : sets.
-  Hint Resolve (sord_irrefl gtA_so) : sets.
-  Hint Resolve (so_not_symmetric gtA_so) : sets.
-  Hint Resolve (so_strict gtA_so gtA_eqA_compat eqA_Equivalence) : sets.
+  #[global] Hint Resolve (sord_trans gtA_so) : sets.
+  #[global] Hint Resolve (sord_irrefl gtA_so) : sets.
+  #[global] Hint Resolve (so_not_symmetric gtA_so) : sets.
+  #[global] Hint Resolve (so_strict gtA_so gtA_eqA_compat eqA_Equivalence) : sets.
 
 End Poset.
 

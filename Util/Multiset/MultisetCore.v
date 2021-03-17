@@ -75,7 +75,7 @@ Module Type MultisetCore.
 
   End Specification.
 
-  Hint Resolve mult_eqA_compat 
+  #[global] Hint Resolve mult_eqA_compat 
                meq_multeq
                multeq_meq
                empty_mult

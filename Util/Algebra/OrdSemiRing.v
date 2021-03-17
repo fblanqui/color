@@ -46,7 +46,7 @@ Module Type OrdSemiRingType.
   Parameter mult_ge_compat : forall m n m' n',
     m >>= m' -> n >>= n' -> m * n >>= m' * n'.
 
-  Hint Resolve ge_refl : arith.
+  #[global] Hint Resolve ge_refl : arith.
 
 End OrdSemiRingType.
 
@@ -778,7 +778,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     induction x using lt_wf_ind; apply Acc_intro; destruct y; auto || contr.
   Qed.
 
-  Hint Resolve gt_Fin_WF : core.
+  #[global] Hint Resolve gt_Fin_WF : core.
 
   Lemma gt_WF : WF gt.
 

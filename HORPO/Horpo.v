@@ -115,7 +115,7 @@ Module Horpo (S : TermsSig.Signature)
     with prehorpo_Ind  := Minimality for prehorpo  Sort Prop
     with horpo_Ind     := Minimality for horpo     Sort Prop.
 
-  Hint Constructors horpoRC horpo prehorpo horpoArgs : horpo.
+  #[global] Hint Constructors horpoRC horpo prehorpo horpoArgs : horpo.
 
   Lemma horpo_prehorpo : forall M N, M >> N -> M >-> N.
 
@@ -1426,7 +1426,7 @@ Module Horpo (S : TermsSig.Signature)
     apply HAbs with Nabs N'abs; trivial.
   Qed.
 
-  Hint Resolve horpo_prehorpo horpo_type_preserving horpo_eq_compat
+  #[global] Hint Resolve horpo_prehorpo horpo_type_preserving horpo_eq_compat
     horpo_env_preserving horpo_algebraic_preserving horpo_var_normal 
     horpo_app_reduct horpo_abs_reduct horpo_monotonous horpo_conv_comp 
     horpo_subst_stable horpo_var_consistent : horpo.

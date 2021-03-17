@@ -469,7 +469,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply dropSuffix_decl; trivial.
   Qed.
 
-  Hint Immediate env_comp_refl env_comp_empty env_comp_empty_r : terms.
+  #[global] Hint Immediate env_comp_refl env_comp_empty env_comp_empty_r : terms.
 
   Lemma env_comp_tail : forall e1 e2 E1 E2,
     (e1::E1) [<->] (e2::E2) -> E1 [<->] E2.
@@ -523,7 +523,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     lia.
   Qed.
 
-  Hint Resolve env_comp_cons : terms.
+  #[global] Hint Resolve env_comp_cons : terms.
 
   Lemma env_sum_ly : forall E1 E2 x A, env_comp_on E1 E2 x ->
     E1 |= x := A ->  E1 [+] E2 |= x := A.
@@ -1471,7 +1471,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     try_solve.
   Qed.
 
-  Hint Immediate env_eq_refl env_eq_sym env_eq_empty_none_empty : terms.
+  #[global] Hint Immediate env_eq_refl env_eq_sym env_eq_empty_none_empty : terms.
 
   Instance env_eq_Equivalence : Equivalence env_eq.
 

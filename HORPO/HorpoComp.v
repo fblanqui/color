@@ -35,7 +35,7 @@ Module HorpoComp (S : TermsSig.Signature)
   Coercion WFterms_to_mul: WFterms >-> Multiset.
   Definition H_WFterms_lt (M N: WFterms) := horpo_mul_lt M N.
 
-  Hint Unfold horpo_lt horpo_mul_lt CompH CompTerms : horpo.
+  #[global] Hint Unfold horpo_lt horpo_mul_lt CompH CompTerms : horpo.
 
   Lemma horpo_comp_imp_acc M : CompH M -> AccR horpo M.
 

@@ -419,7 +419,7 @@ Proof.
   intros i i1 i2. destruct i. simpl. hyp. destruct i.
   simpl. hyp. destruct i. simpl. hyp. lia.
 
-  Grab Existential Variables.
-  apply Acc_Succ. simpl; lia. lia. simpl; lia. lia. simpl; lia.
-  lia. apply Acc_Succ. simpl; lia. lia.
+  Unshelve.
+  simpl; lia. simpl; lia. apply Acc_Succ. simpl; lia. simpl; lia. simpl; lia.
+  simpl; lia. simpl; lia. simpl; lia. apply Acc_Succ.
 Qed.

@@ -301,14 +301,14 @@ Section SpecConformation.
  
 End SpecConformation.
 
-  Hint Unfold meq 
+  #[global] Hint Unfold meq 
 	      empty
               singleton
               mult
               union
               diff : multisets.
 
-  Hint Resolve mult_eqA_compat 
+  #[global] Hint Resolve mult_eqA_compat 
                meq_multeq
                multeq_meq
                empty_mult

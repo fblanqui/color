@@ -40,7 +40,7 @@ Inductive ac_one_step_at_top : term -> term -> Prop :=
         ac_one_step_at_top (Term f (t1 :: t2 :: nil))
           (Term f (t2 :: t1 :: nil)).
 
-Hint Constructors ac_one_step_at_top : core.
+#[global] Hint Constructors ac_one_step_at_top : core.
 
 Definition ac := th_eq ac_one_step_at_top.
 
@@ -358,7 +358,7 @@ Inductive ac_one_step_at_top : term -> term -> Prop :=
         ac_one_step_at_top (Term f (t1 :: t2 :: nil))
           (Term f (t2 :: t1 :: nil)).
 
-Hint Constructors ac_one_step_at_top : core.
+#[global] Hint Constructors ac_one_step_at_top : core.
 
 Definition ac := th_eq ac_one_step_at_top.
 

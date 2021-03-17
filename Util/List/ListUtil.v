@@ -495,7 +495,7 @@ Section head_tail.
 
 End head_tail.
 
-Hint Resolve tail_in tail_cons_tail head_app : datatypes.
+#[global] Hint Resolve tail_in tail_cons_tail head_app : datatypes.
 Hint Rewrite head_app length_app : datatypes.
 
 (***********************************************************************)

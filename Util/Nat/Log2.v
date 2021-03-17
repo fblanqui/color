@@ -26,7 +26,7 @@ Inductive log2_prop : nat -> nat -> Prop :=
 | log2_prop_p : forall p q,
   p <> 0 -> p <> 1 -> log2_prop (div2 p) q -> log2_prop p (S q).
 
-Hint Constructors log2_prop : core.
+#[global] Hint Constructors log2_prop : core.
 
 Fixpoint log2_aux n count : nat :=
   match count with
