@@ -9,7 +9,7 @@ Procedure:
   or opam update # if repository coq-released already added
 - step 2/2: opam install --jobs=N coq-color
 
-Compilation time: about 14' with 1 processor.
+Compilation time: about 6'.
 
 Remark: to use a CoLoR file in your development, you need to prefix it
 with CoLoR and its complete path from the root directory of CoLoR. For
@@ -24,8 +24,8 @@ Requirements:
 - UNIX-like operating system (including Cygwin)
 - GNU find version 4.7.0 (http://www.gnu.org/software/findutils/findutils.html)
 - GNU make version 4.1 (http://www.gnu.org/software/make/)
-- Coq 8.12 (http://coq.inria.fr/)
-- coq-bignums 8.12
+- Coq >= 8.12 (http://coq.inria.fr/)
+- coq-bignums >= 8.12 (https://github.com/coq/bignums)
 
 Procedure for installing CoLoR in Coq default directory for user contributions:
 - step 1/2: make [-j N]
