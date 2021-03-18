@@ -55,7 +55,7 @@ dir=color.$version
 rm -rf $dir
 cp -r color $dir
 rm -rf $dir/Coccinelle $dir/Conversion/Coccinelle.v
-head -n -3 color/README > $dir/README
+head -n -3 color/README.md > $dir/README.md
 create_tar_gz
 md5sum $cwd/$dir.tar.gz
 
