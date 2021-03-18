@@ -36,7 +36,7 @@ Module TermsTyping (Sig : TermsSig.Signature).
     unfold not in *. inversion H. eapply IHA1. apply H1.
   Qed.
 
-Section Equality_Decidable.
+(*Section Equality_Decidable.*)
 
 (* FIXME: eq_nat_dec has to be redefined here for the following Hint
 Resolve, otherwise it does not work! *)
@@ -44,13 +44,13 @@ Resolve, otherwise it does not work! *)
 
   Proof. decide equality. Qed.
 
-  Hint Resolve eq_nat_dec : terms.
+  #[global] Hint Resolve eq_nat_dec : terms.
 
   Lemma eq_SimpleType_dec : forall (A B: SimpleType), {A=B} + {A<>B}.
 
   Proof. decide equality; auto with terms. Defined.
 
-  Hint Resolve eq_SimpleType_dec : terms.
+  #[global] Hint Resolve eq_SimpleType_dec : terms.
 
   Lemma eq_Env_dec : forall (E1 E2 : Env), {E1=E2} + {E1<>E2}.
 
@@ -58,13 +58,13 @@ Resolve, otherwise it does not work! *)
     decide equality; generalize a o; decide equality; apply eq_SimpleType_dec.
   Defined.
 
-  Hint Resolve eq_Env_dec : terms.
+  #[global] Hint Resolve eq_Env_dec : terms.
 
   Lemma eq_Preterm_dec : forall (F G: Preterm), {F=G}+{F<>G}.
 
   Proof. decide equality; auto with terms. Defined.
 
-  Hint Resolve eq_Preterm_dec : terms.
+  #[global] Hint Resolve eq_Preterm_dec : terms.
 
   Lemma isVarDecl_dec : forall E x,
     {A: SimpleType | E |= x := A} + {E |= x :!}.
@@ -89,9 +89,7 @@ Resolve, otherwise it does not work! *)
     apply eq_Env_dec.
   Defined.
 
-End Equality_Decidable.
-
-Section Typing.
+(*Section Typing.*)
 
   Lemma VarD_unique : forall E x A (v1 v2 : VarD E x A), v1 = v2.
 
@@ -210,11 +208,9 @@ Section Typing.
      left; apply deriv_uniq; trivial.
   Qed.
 
-End Typing.
+  #[global] Hint Resolve typing_uniq deriv_uniq term_eq : terms.
 
-  Hint Resolve typing_uniq deriv_uniq term_eq : terms.
-
-Section Auto_Typing.
+(*Section Auto_Typing.*)
   
   Definition autoType : forall E Pt, {N: Term | env N = E & term N = Pt} + 
     {~exists N: Term, env N = E /\ term N = Pt}.
@@ -328,8 +324,6 @@ Section Auto_Typing.
      exact None.
      exact None.
   Defined.
-
-End Auto_Typing.
 
 Module TermsSet <: SetA.
   Definition A := Term.

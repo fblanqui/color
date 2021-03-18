@@ -2253,7 +2253,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply terms_conv_sym_aux; trivial.
   Qed.
 
-  Hint Resolve terms_eq_conv terms_conv_eq_type terms_conv_sym terms_conv_refl 
+  #[global] Hint Resolve terms_eq_conv terms_conv_eq_type terms_conv_sym terms_conv_refl 
     terms_conv_trans app_conv_app_left app_conv_app_right (* abs_conv_absBody 
     abs_conv_absType *) : terms_eq.
 

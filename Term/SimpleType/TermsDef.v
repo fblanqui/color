@@ -30,7 +30,7 @@ Module TermsDef (Sig : Signature).
   end.
 
   Notation "A == B" := (TypeEq A B) (at level 70).
-  Hint Unfold TypeEq : terms.
+  #[global] Hint Unfold TypeEq : terms.
 
   Definition isArrowType (A: SimpleType) : Prop :=
     match A with
@@ -44,7 +44,7 @@ Module TermsDef (Sig : Signature).
     | _ => False
     end.
 
-  Hint Unfold isArrowType isBaseType : terms.
+  #[global] Hint Unfold isArrowType isBaseType : terms.
 
   (* 
      Every simple type A can be written in an unique way as:
@@ -73,7 +73,7 @@ Module TermsDef (Sig : Signature).
   Proof.
     induction A; intros; rewrite <- H; simpl; auto.
   Qed.
-  Hint Resolve type_eq_equiv : terms.
+  #[global] Hint Resolve type_eq_equiv : terms.
 
    (* 
         We are using de Bruijn indices for bindings so environments are 
@@ -99,7 +99,7 @@ Module TermsDef (Sig : Signature).
   Infix "[#]" := decl (at level 20, right associativity).  
    (* 'declDummy E' returns environment E with new dummy variable *)
   Definition declDummy E := None::E.
-  Hint Unfold VarD VarUD decl declDummy EmptyEnv : terms.
+  #[global] Hint Unfold VarD VarUD decl declDummy EmptyEnv : terms.
 
    (* 
       Preterm represents the set of preterms
@@ -140,12 +140,12 @@ Module TermsDef (Sig : Signature).
             E |- PtL @@ PtR := B
   where "E |- Pt := A" := (Typing E Pt A).
 
-  Hint Constructors Typing : terms.
-  Hint Extern 5 (?X1 |- %?X2 := ?X3) => 
+  #[global] Hint Constructors Typing : terms.
+  #[global] Hint Extern 5 (?X1 |- %?X2 := ?X3) => 
          (apply TVar; auto with terms) : terms.
-  Hint Extern 5 (?X1 |- ^?X2 := ?X3) => 
+  #[global] Hint Extern 5 (?X1 |- ^?X2 := ?X3) => 
          (apply TFun with (f := X2); auto with terms) : terms.
-  Hint Extern 5 (?X1 |- \?X2 => ?X3 := ?X4) =>
+  #[global] Hint Extern 5 (?X1 |- \?X2 => ?X3 := ?X4) =>
          (apply TAbs; auto with terms) : terms.
 
   Record Term : Type := buildT { 

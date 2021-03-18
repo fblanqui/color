@@ -30,4 +30,4 @@ Section EmptySolver.
 
 End EmptySolver.
 
-Hint Resolve empty_solver : rainbow.
+#[global] Hint Resolve empty_solver : rainbow.

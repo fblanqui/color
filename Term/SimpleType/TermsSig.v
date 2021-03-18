@@ -17,7 +17,7 @@ Module Type BaseTypes.
   Implicit Types a b c : BaseType.
    (* Equality on base types needs to be decidable *)
   Parameter eq_BaseType_dec : forall (a b: BaseType), {a=b}+{~a=b}.
-  Hint Resolve eq_BaseType_dec : terms.
+  #[global] Hint Resolve eq_BaseType_dec : terms.
    (* To ensure that set of base types is not empty *)
   Parameter baseTypesNotEmpty : BaseType.
 
@@ -42,7 +42,7 @@ Module SimpleTypes (BT : BaseTypes).
     (at level 55, right associativity) : type_scope.
   Notation "# x " := (BasicType x) (at level 0) : type_scope.
   Implicit Types A B C : SimpleType.
-  Hint Constructors SimpleType : terms.
+  #[global] Hint Constructors SimpleType : terms.
 
 End SimpleTypes.
 
@@ -64,7 +64,7 @@ Module Type Signature.
    (* Equality on function symbols needs to be decidable *)
   Parameter eq_FunctionSymbol_dec : forall (f g: FunctionSymbol), 
     {f=g} + {~f=g}.
-  Hint Resolve eq_FunctionSymbol_dec : terms.
+  #[global] Hint Resolve eq_FunctionSymbol_dec : terms.
 
     (* To ensure that set of function symbols is not empty *)
   Parameter functionSymbolsNotEmpty : FunctionSymbol.
