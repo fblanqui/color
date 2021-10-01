@@ -570,7 +570,7 @@ are finite maps from variables to types. *)
     rewrite mapsto_restrict_dom. intros [i1 i2].
     exfalso. eapply var_notin_fv_subs. apply h3. apply n. apply i2.
     (* find x' F' = None *)
-    intro i. eapply tr_le with (x:=add x' X0 F') (x0:=s y) (x1:=T); try refl.
+    intro i. eapply tr_le with (x:=add x' X0 F'); try refl.
     unfold F'. rewrite restrict_dom_le. refl. rewrite <- le_add; hyp.
   Qed. 
 
