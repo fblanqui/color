@@ -172,11 +172,11 @@ Resolve, otherwise it does not work! *)
     type M = type N -> M = N.
 
   Proof.
-    intros; destruct M; destruct N; simpl in *.
-    revert typing0.
+    intros [??? typingM] [??? typingN] H H0 H1; simpl in *.
+    revert typingM.
     rewrite H; rewrite H0; rewrite H1.
     intros.
-    rewrite(typing_unique typing0 typing1).
+    rewrite(typing_unique typingM typingN).
     apply eq_refl.
   Qed.
 
@@ -184,10 +184,10 @@ Resolve, otherwise it does not work! *)
     type M = type N.
 
   Proof.
-    intros; destruct M; destruct N; simpl in *.
-    revert typing0.
+    intros; destruct M as [??? typingM]; destruct N as [??? typingN]; simpl in *.
+    revert typingM.
     rewrite H; rewrite H0; intros.
-    apply (Type_unique typing0 typing1).
+    apply (Type_unique typingM typingN).
   Qed.
 
   Lemma term_eq : forall M N, env M = env N -> term M = term N -> M = N.

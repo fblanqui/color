@@ -29,11 +29,11 @@ Module TermsBuilding (Sig : TermsSig.Signature).
 
   Proof.
     intro t; inversion t as [L R eq_env typ_arr typ_ok].
-    destruct L; destruct R; simpl in *.
-    rewrite eq_env in typing0.
-    destruct type0; try contr; simpl in *.
-    rewrite typ_ok in typing0.
-    exact (buildT (TApp typing0 typing1)).
+    destruct L as [?? typeL typingL]; destruct R as [??? typingR]; simpl in *.
+    rewrite eq_env in typingL.
+    destruct typeL; try contr; simpl in *.
+    rewrite typ_ok in typingL.
+    exact (buildT (TApp typingL typingR)).
   Defined.
 
   Lemma buildApp_isApp : forall a, isApp (buildApp a).
@@ -84,16 +84,16 @@ Module TermsBuilding (Sig : TermsSig.Signature).
 
   Proof.
     intro t; inversion t as [aBody aType envCond].
-    destruct aBody; simpl in *; destruct env0.
+    destruct aBody as [env ?? typing]; simpl in *; destruct env.
     try_solve.
     destruct o.
-    exact (buildT (TAbs typing0)).
+    exact (buildT (TAbs typing)).
     try_solve.
   Defined.
 
   Lemma buildAbs_isAbs: forall a, isAbs (buildAbs a).
   Proof.
-    destruct a; destruct absB0; destruct env0.
+    destruct a as [[env ???] ??]; destruct env.
     try_solve.
     destruct o; try_solve.
   Qed.
@@ -101,7 +101,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
   Lemma buildAbs_absBody : forall a, absBody (buildAbs_isAbs a) = a.(absB).
 
   Proof.
-    destruct a; destruct absB0; destruct env0.
+    destruct a as [[env ???] ??]; destruct env.
     try_solve.
     destruct o; try_solve.
   Qed.
@@ -109,7 +109,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
   Lemma buildAbs_absType : forall a, absType (buildAbs_isAbs a) = a.(absT).
 
   Proof.
-    destruct a; destruct absB0; destruct env0.
+    destruct a as [[env ???] ??]; destruct env.
     try_solve.
     destruct o; try_solve.
     unfold VarD in * .
@@ -119,7 +119,7 @@ Module TermsBuilding (Sig : TermsSig.Signature).
   Lemma buildAbs_env : forall a, env (buildAbs a) = tail (env a.(absB)).
 
   Proof.
-    destruct a; destruct absB0; destruct env0.
+    destruct a as [[env ???] ??]; destruct env.
     try_solve.
     destruct o; try_solve.
   Qed.

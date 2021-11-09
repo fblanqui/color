@@ -289,8 +289,8 @@ same relation *)
   Lemma In_succs_rel : forall g x y, XSet.In y (succs x g) <-> rel g x y.
 
   Proof.
-    intros. unfold succs, rel. destruct (find x g); split_all.
-    ex t0. tauto. inversion H. hyp. revert H. set_iff. tauto. discr.
+    intros. unfold succs, rel. destruct (find x g) as [t|]; split_all.
+    ex t. tauto. inversion H. hyp. revert H. set_iff. tauto. discr.
   Qed.
 
   Lemma mem_succs_rel : forall g x y,
@@ -318,13 +318,13 @@ same relation *)
 
   Proof.
     intros x x' xx' g g' gg'. unfold succs. rewrite <- xx'. clear x' xx'.
-    case_eq (find x g); intros; case_eq (find x g'); intros.
+    destruct (find x g) as [t|] eqn:H; destruct (find x g') as [t0|] eqn:H0.
     (* find x g = Some t0, find x g' = Some t1 *)
     intros y hy.
-    assert (xy : rel g x y). exists t0. intuition. rewrite gg' in xy.
-    destruct xy as [s [s1 s2]]. rewrite H0 in s1. inversion s1. subst t1. hyp.
+    assert (xy : rel g x y). exists t. intuition. rewrite gg' in xy.
+    destruct xy as [s [s1 s2]]. rewrite H0 in s1. inversion s1. subst t0. hyp.
     (* find x g = Some t0, find x g' = None *)
-    case_eq (XSet.is_empty t0); intros.
+    case_eq (XSet.is_empty t); intros.
     rewrite is_empty_eq in H1. rewrite H1. refl.
     destruct (find_Some_rel H H1) as [y hy]. rewrite gg' in hy.
     destruct hy as [s [s1 s2]]. rewrite H0 in s1. discr.

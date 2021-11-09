@@ -99,8 +99,8 @@ Module TropicalInt (Import AI : TTropicalInt).
 
     Definition Sig := Sig.
 
-    Lemma mat_times_vec_at0_positive : forall n (m : matrix n n) 
-      (v : vector A n) (dim_pos : n > 0),
+    Lemma mat_times_vec_at0_positive n (m : matrix n n)
+      (v : vector A n) (dim_pos : n > 0) :
       get_elem m dim_pos dim_pos <> PlusInf ->   
       Vnth v dim_pos <> PlusInf ->
       Vnth (mat_vec_prod m v) dim_pos <> PlusInf.
@@ -114,7 +114,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       simpl. rewrite Aplus_comm. apply tropical_plus_notInf_left.
       apply tropical_mult_notInf. 
       rewrite H2 in H. unfold get_elem in H. simpl in H.
-      rewrite Vhead_nth, <- (Vnth_eq (Vhead m) dim_pos0 (lt_O_Sn n)); trivial.
+      rewrite Vhead_nth, <- (Vnth_eq (Vhead m) dim_pos (lt_O_Sn n)); trivial.
       rewrite H1 in H0. hyp.
     Qed.
 

@@ -79,8 +79,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
   Proof.
     intros.
-    destruct M.
-    destruct typing0; try contr.
+    destruct M as [??? typingM].
+    destruct typingM; try contr.
     assert (type (appBodyL Mapp) = A --> B).
     trivial.
     rewrite (abs_type (appBodyL Mapp) MLabs H); trivial.
@@ -383,13 +383,12 @@ Module TermsBeta (Sig : TermsSig.Signature).
     correct_subst M (None :: lift_subst G 1).
 
   Proof.
-    intros.
-    destruct H.
-    rewrite H0 in dom_c0.
-    rewrite H0 in ran_c0.
-    rewrite lower_env in dom_c0.
-    rewrite lower_env in ran_c0.
-    clear H0.
+    intros ???? [envNG domNG ranNG] H.
+    rewrite H in domNG.
+    rewrite H in ranNG.
+    rewrite lower_env in domNG.
+    rewrite lower_env in ranNG.
+    clear H.
     constructor.
     apply subst_envs_comp_cons.
     apply lifted_subst_envs_comp; trivial.
@@ -400,9 +399,9 @@ Module TermsBeta (Sig : TermsSig.Signature).
     simpl.
     rewrite subst_dom_lifted.
     apply env_comp_cons; auto.
-    unfold loweredEnv in dom_c0.
-    simpl in dom_c0.
-    rewrite finalSeg_cons in dom_c0; trivial.
+    unfold loweredEnv in domNG.
+    simpl in domNG.
+    rewrite finalSeg_cons in domNG; trivial.
     simpl.
     rewrite subst_ran_cons_none.
     rewrite subst_dom_lifted.
@@ -416,9 +415,9 @@ Module TermsBeta (Sig : TermsSig.Signature).
     destruct o.
     destruct M0; try_solve.
     apply env_comp_cons; auto.
-    unfold loweredEnv in ran_c0.
-    simpl in ran_c0.
-    rewrite finalSeg_cons in ran_c0; trivial.
+    unfold loweredEnv in ranNG.
+    simpl in ranNG.
+    rewrite finalSeg_cons in ranNG; trivial.
   Qed.
 
   Lemma lower_subst_aux : forall M G i, env M |= i :! ->
@@ -479,15 +478,15 @@ Module TermsBeta (Sig : TermsSig.Signature).
     intros.
     apply term_eq; autorewrite with terms; rewrite H; autorewrite with terms.
 
-    destruct M.
+    destruct M as [envM ???].
     autorewrite with terms using simpl.
     unfold loweredEnv; simpl.
     destruct (subst_empty_dec G).
-    destruct env0; simpl.
+    destruct envM; simpl.
     autorewrite with terms; trivial.
     autorewrite with terms datatypes; trivial.
     destruct o; autorewrite with datatypes; trivial.
-    destruct env0; simpl.
+    destruct envM; simpl.
     autorewrite with datatypes terms.
     destruct (subst_ran G); trivial.
     destruct o; autorewrite with datatypes terms using simpl; trivial.

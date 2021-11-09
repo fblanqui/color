@@ -1061,8 +1061,8 @@ Module TermsSubst (Sig : TermsSig.Signature).
   Definition idSubst : forall M : Term, Subst.
 
   Proof.
-    intros M; destruct M.
-    destruct (isVarDecl_dec env0 0) as [[A EA] | EE].
+    intros M; destruct M as [envM ???].
+    destruct (isVarDecl_dec envM 0) as [[A EA] | EE].
     set (var := TVar EA).
     exact ({x/buildT var}).
     assert (var: decl (#baseTypesNotEmpty) EmptyEnv |= 0 := #baseTypesNotEmpty).
@@ -1074,25 +1074,25 @@ Module TermsSubst (Sig : TermsSig.Signature).
     idSubst M = {x/buildT (TVar M0)}.
 
   Proof.
-    destruct M; simpl.
-    destruct (isVarDecl_dec env0 0) as [[B EB] | En].
+    destruct M as [envM ???]; simpl.
+    destruct (isVarDecl_dec envM 0) as [[B EB] | En].
     replace (buildT (TVar EB)) with (buildT (TVar M0)); trivial.
     apply term_eq; trivial.
-    exfalso; apply varD_UD_absurd with env0 0 A; trivial.
+    exfalso; apply varD_UD_absurd with envM 0 A; trivial.
   Qed.
 
   Lemma idSubst_correct M : correct_subst M (idSubst M).
 
   Proof.
-    destruct M.
+    destruct M as [envM ???].
     unfold idSubst; simpl.
-    destruct (isVarDecl_dec env0 0) as [[A EA] | En].
+    destruct (isVarDecl_dec envM 0) as [[A EA] | En].
     simpl; apply one_var_subst_correct; simpl.
     intros; inversion EA; inversion H; try_solve.
     apply env_comp_refl.
     simpl; apply one_var_subst_correct; simpl.
-    intros A E0; inversion E0; inversion En; destruct env0; try_solve.
-    destruct env0.
+    intros A E0; inversion E0; inversion En; destruct envM; try_solve.
+    destruct envM.
     apply env_comp_sym; apply env_comp_empty.
     destruct o.
     inversion En; try_solve.
@@ -1142,14 +1142,14 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply terms_conv_criterion.
      (* env *)
     rewrite subst_env.
-    destruct M; unfold idSubst; simpl.
-    destruct (isVarDecl_dec env0 0) as [[A EA] | En]; simpl.
-    destruct env0; try destruct o; try_solve.
+    destruct M as [envM ???]; unfold idSubst; simpl.
+    destruct (isVarDecl_dec envM 0) as [[A EA] | En]; simpl.
+    destruct envM; try destruct o; try_solve.
     rewrite env_sub_empty.
     rewrite env_sum_double.
     apply env_comp_refl.
     unfold subst_ran; simpl.
-    destruct env0; try_solve.
+    destruct envM; try_solve.
     destruct o.
     inversion En; try_solve.
     simpl; rewrite env_sub_empty; rewrite env_sum_empty_r.

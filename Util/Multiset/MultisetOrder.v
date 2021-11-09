@@ -1158,9 +1158,9 @@ Section OrderSim.
     induction xs.
 
      (* induction base *)
-    intros; inversion H.
-    exists (nil (A:=A)).
-    exists (nil (A:=A)); split.
+    intros ? A B H H0; inversion H.
+    exists (nil (A:=Eq.A)).
+    exists (nil (A:=Eq.A)); split.
     solve_meq.
     split.
     rewrite (multiset2list_meq_empty).
@@ -1168,35 +1168,35 @@ Section OrderSim.
     exact (union_isempty (meq_sym H0)).
     rewrite (multiset2list_meq_empty).
     constructor.
-    assert (empty =mul= B + A0).
+    assert (empty =mul= B + A).
     eauto with multisets.
     exact (union_isempty (meq_sym H1)).
 
      (* induction step *)
-    intros.
+    intros ? A B H H0.
     inversion H.
     rewrite <- H4 in H.
     simpl in H0.
-    assert (list2multiset xs + {{a}} =mul= A0 + B).
+    assert (list2multiset xs + {{a}} =mul= A + B).
     eauto with multisets.
     clear H0.
-    assert (a_A0B: a in (A0 + B)).
+    assert (a_AB: a in (A + B)).
     rewrite <- H6; auto with multisets.
-    destruct (member_union a_A0B) as [aA0 | aB].
+    destruct (member_union a_AB) as [aA | aB].
 
      (* a in A *)
-    destruct (IHxs ys (remove a A0) B H5 (ins_meq_union H6 aA0)) 
+    destruct (IHxs ys (remove a A) B H5 (ins_meq_union H6 aA))
       as [A' [B' [ys' [simL simR]]]].
     inversion H.
-    destruct (list_sim_remove H9 aA0 simL) as [C [CA Csim]].
+    destruct (list_sim_remove H9 aA simL) as [C [CA Csim]].
     exists C; exists B'; split; [idtac | split]; trivial.
     simpl; rewrite CA, ys'; solve_meq.
 
      (* a in B *)
-    assert (list2multiset xs =mul= A0 + (remove a B)).
-    rewrite (union_comm A0 (remove a B)).
+    assert (list2multiset xs =mul= A + (remove a B)).
+    rewrite (union_comm A (remove a B)).
     unfold remove; apply ins_meq_union; eauto with multisets.
-    destruct (IHxs ys A0 (remove a B) H5 H0) as [A' [B' [ys' [simL simR]]]].
+    destruct (IHxs ys A (remove a B) H5 H0) as [A' [B' [ys' [simL simR]]]].
     inversion H.
     destruct (list_sim_remove H10 aB simR) as [C [CA Csim]].
     exists A'; exists C; split; [idtac | split]; trivial.

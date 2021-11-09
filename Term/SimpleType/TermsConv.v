@@ -622,13 +622,13 @@ Module TermsConv (Sig : TermsSig.Signature).
     constructor 3.
     replace (@compEnvSubst E (env N) MN) with 
       (@compEnvSubst (env (buildT (TAbs M))) (env N) MN); trivial.
-    destruct N; destruct typing0; inversion MN_term.
+    destruct N as [??? typingN]; destruct typingN; inversion MN_term.
     assert (EE0: decl A E [<->] decl A0 E0).
     unfold decl; apply env_comp_cons; trivial.
     left; try_solve.
-    rewrite (envSubst_eq_abs (buildT (TAbs M)) (buildT (TAbs typing0)) 
+    rewrite (envSubst_eq_abs (buildT (TAbs M)) (buildT (TAbs typingN))
       I I MN EE0).
-    set (w := IHM (buildT typing0) EE0); simpl in w.
+    set (w := IHM (buildT typingN) EE0); simpl in w.
     rewrite <- H1 in w.
     apply w; trivial.
     constructor 4; term_inv N; inversion MN_term.

@@ -478,11 +478,13 @@ are finite maps from variables to types. *)
     E |- v ~: V -> forall y, ~XSet.In y (fv v) -> remove y E |- v ~: V.
 
   Proof.
-    induction 1; intro y; simpl; set_iff; intro hy.
+    induction 1 ; intro y; simpl; set_iff; intro hy.
     apply tr_var. apply remove_2; auto.
     apply tr_fun.
     apply tr_app with V. apply IHtr1. tauto. apply IHtr2. tauto.
-    apply tr_lam. eq_dec x y.
+    apply tr_lam.
+    try rename X into X0. (* compat: variable is X0 before coq 8.15 but X after *)
+    eq_dec x y.
     (* x = y *)
     eapply tr_le with (x:=add x X0 E). 2: refl. 2: refl.
     intros z hz. env. do 2 rewrite find_mapsto_iff, add_o. eq_dec x z; auto.
@@ -570,7 +572,7 @@ are finite maps from variables to types. *)
     rewrite mapsto_restrict_dom. intros [i1 i2].
     exfalso. eapply var_notin_fv_subs. apply h3. apply n. apply i2.
     (* find x' F' = None *)
-    intro i. eapply tr_le with (x:=add x' X0 F'); try refl.
+    intro i. eapply tr_le with (x:=add x' _ F'); try refl.
     unfold F'. rewrite restrict_dom_le. refl. rewrite <- le_add; hyp.
   Qed. 
 
@@ -591,6 +593,7 @@ are finite maps from variables to types. *)
     eapply hu. apply H2. hyp. hyp.
     eapply hv. apply H4. hyp. hyp.
     (* lam *)
+    try rename X into X0. (* compat: variable is X0 before coq 8.15 but X after *)
     apply tr_lam. eapply hu with (u':=rename x x1 v) (E:=add x1 X0 E).
     rewrite size_rename. refl. unfold Def.rename. eapply tr_subs.
     eapply tr_restrict. apply H3. 2: rewrite EE'; refl. 2: hyp.
