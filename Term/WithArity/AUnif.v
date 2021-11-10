@@ -292,22 +292,22 @@ apply mem_vars_sub_single; hyp. apply lforall_notin_solved_eqn_2; hyp.
 apply lforall_notin_vars_solved_eqn_1' with l'; hyp.
 Qed.
 
-Lemma notin_map : forall x t, mem x (vars t) = false ->
+Lemma notin_map x t : mem x (vars t) = false ->
   forall l, notin (map (eqn_sub (single x t)) l) (x, t).
 
 Proof.
 induction l; simpl. trivial. destruct a. unfold notin_eqn. simpl. split_all.
 trans (mem x
-  (if mem x (vars t1) then union (vars t0) (remove x (vars t1)) else vars t1)).
+  (if mem x (vars t0) then union (vars t) (remove x (vars t0)) else vars t0)).
+apply mem_m. refl. apply vars_single.
+case_eq (mem x (vars t0)); intro H0. mem. rewrite H, H0. refl. hyp.
+trans (mem x
+  (if mem x (vars t1) then union (vars t) (remove x (vars t1)) else vars t1)).
 apply mem_m. refl. apply vars_single.
 case_eq (mem x (vars t1)); intro H0. mem. rewrite H, H0. refl. hyp.
-trans (mem x
-  (if mem x (vars t2) then union (vars t0) (remove x (vars t2)) else vars t2)).
-apply mem_m. refl. apply vars_single.
-case_eq (mem x (vars t2)); intro H0. mem. rewrite H, H0. refl. hyp.
 Qed.
 
-Lemma lforall_notin_eqn : forall x t, mem x (vars t) = false ->
+Lemma lforall_notin_eqn x t : mem x (vars t) = false ->
   forall n l, lforall (notin_eqn x) l ->
       lforall (notin_eqn x) (map (eqn_sub (single n t)) l).
 
@@ -316,13 +316,13 @@ induction l; simpl; split_all. gen (IHl H1); clear IHl H1; intro H1.
 destruct a. unfold eqn_sub. simpl. unfold notin_eqn. simpl.
 unfold notin_eqn in H0. simpl in H0. split_all.
 trans (mem x
-  (if mem n (vars t1) then union (vars t0) (remove n (vars t1)) else vars t1)).
+  (if mem n (vars t0) then union (vars t) (remove n (vars t0)) else vars t0)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem n (vars t1)); intro H3. mem. rewrite H, H0. refl. hyp.
+case_eq (mem n (vars t0)); intro H3. mem. rewrite H, H0. refl. hyp.
 trans (mem x
-  (if mem n (vars t2) then union (vars t0) (remove n (vars t2)) else vars t2)).
+  (if mem n (vars t1) then union (vars t) (remove n (vars t1)) else vars t1)).
 apply mem_m. refl. apply vars_single.
-case_eq (mem n (vars t2)); intro H3. mem. rewrite H, H2. refl. hyp.
+case_eq (mem n (vars t1)); intro H3. mem. rewrite H, H2. refl. hyp.
 Qed.
 
 Lemma lforall_notin_r : forall x t l' l,
@@ -613,14 +613,14 @@ Qed.
 Lemma Lt_step : forall p, solved p = false -> Lt' (step p) p.
 
 Proof.
-destruct p. destruct p. destruct e. simpl. discr. intro. destruct e.
-destruct t0; destruct t1.
+destruct p. destruct p. destruct e. simpl. discr. intro. destruct e as [t0 t1].
+destruct t0 as [?|? t0]; destruct t1 as [?|? t1].
 (* var-var *)
 simpl. mem. case_beq_nat n n0; unfold Lt'. apply Lt_cons.
 apply Lt_eqns_subs_r. simpl. mem. hyp.
 (* var-fun *)
 unfold step. rewrite vars_fun. simpl.
-case_eq (mem n (vars_vec t0)); intro H0; unfold Lt'.
+case_eq (mem n (vars_vec t1)); intro H0; unfold Lt'.
 trivial. apply Lt_eqns_subs_l. hyp.
 (* fun-var *)
 unfold step. rewrite vars_fun. simpl.
@@ -659,8 +659,8 @@ Qed.
 Lemma step_wf : forall p, problem_wf p -> problem_wf (step p).
 
 Proof.
-intro. destruct p. 2: auto. destruct p. destruct e. auto. destruct e.
-destruct t0; destruct t1.
+intro. destruct p. 2: auto. destruct p. destruct e. auto.
+destruct e as [[?|? t0] [?|? t1]].
 (* var-var *)
 simpl. mem. case_beq_nat n n0; simpl.
 intuition. revert H1. elim s; simpl; intuition.
@@ -672,7 +672,7 @@ unfold notin_eqn in H2. simpl in H2. split_all.
 apply notin_map. simpl. mem. hyp.
 apply lforall_notin_r. hyp.
 (* var-fun *)
-Opaque vars. simpl. set (u := Fun f t0). split_all.
+Opaque vars. simpl. set (u := Fun f t1). split_all.
 case_eq (mem n (vars u)); simpl; split_all.
 eapply lforall_notin_solved_eqn_1'. hyp. apply H0.
 eapply solved_eqns_wf_map. hyp. hyp. apply H0.
@@ -758,7 +758,7 @@ Lemma is_sol_eqns_map : forall s x u, s x = sub s u ->
   forall l, is_sol_eqns s (map (eqn_sub (single x u)) l) <-> is_sol_eqns s l.
 
 Proof.
-induction l; simpl. tauto. destruct a. unfold is_sol_eqn. simpl.
+induction l; simpl. tauto. destruct a as [t0 t1]. unfold is_sol_eqn. simpl.
 split_all; try tauto. rewrite !sub_sub in H0.
 trans (sub (sub_comp s (single x u)) t0). sym.
 apply sub_comp_single. hyp. rewrite H0. apply sub_comp_single. hyp.
@@ -792,7 +792,7 @@ Lemma step_correct : forall s p, is_sol s p <-> is_sol s (step p).
 
 Proof.
 intros s p. destruct p. 2: simpl; tauto. destruct p. destruct l0.
-simpl. split_all. destruct e. destruct t0; destruct t1.
+simpl. split_all. destruct e as [[?|? t0] [?|? t1]].
 (* var-var *)
 simpl. unfold is_sol_eqn. mem. simpl.
 case_beq_nat n n0; simpl. tauto. unfold is_sol_solved_eqn. simpl. split_all.
@@ -800,7 +800,7 @@ rewrite is_sol_solved_eqns_map; auto. rewrite is_sol_eqns_map; auto.
 rewrite is_sol_solved_eqns_map in H2; auto.
 rewrite is_sol_eqns_map in H1; auto.
 (* var-fun *)
-Opaque vars. simpl. set (u := Fun f t0). unfold is_sol_eqn. simpl fst.
+Opaque vars. simpl. set (u := Fun f t1). unfold is_sol_eqn. simpl fst.
 simpl snd.
 simpl sub at 1. case_eq (mem n (vars u)). split_all; try contr.
 ded (wf_term_var H1 H). discr. unfold is_sol, is_sol_solved_eqns.

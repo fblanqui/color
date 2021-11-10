@@ -316,7 +316,7 @@ Module HorpoWf (S : TermsSig.Signature)
     apply subterm_wf.
     clear M; intros M IH G MG Mnorm Gcomp Gnorm.
     destruct M as [E Pt TM TypM]; simpl in * .
-    destruct Pt.
+    destruct Pt as [?|?|A0 ?|??].
      (* variable *)
     assert (Mvar: isVar (buildT TypM)).
     dependent inversion TypM; simpl; trivial.

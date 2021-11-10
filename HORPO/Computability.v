@@ -60,13 +60,13 @@ Section Computability_def.
     Computable M.
 
   Proof.
-    intro M; term_type_inv M; intros.
+    intros [E Pt [?|A1 A2] Typ];try_solve; intros.
     hnf; intros; split; trivial.
     split; trivial.
     intros; unfold Computable in H1.
     rewrite <- typeL.
     apply H1 with Papp; trivial.
-    rewrite (@app_typeR P A0_1 A0_2 Papp); trivial.
+    rewrite (@app_typeR P A1 A2 Papp); trivial.
     rewrite (terms_conv_eq_type PL); trivial.
   Qed.
 
@@ -171,6 +171,8 @@ Section Computability_theory.
   Proof.
     intros.
     term_inv M'; term_inv N'.
+    (* compat: variables are A0, A1 before coq 8.15 but A, A0 after *)
+    try (rename A0 into A1; rename A into A0).
     assert (EE0: E = E0).
     replace E with (env M).
     replace E0 with (env N).

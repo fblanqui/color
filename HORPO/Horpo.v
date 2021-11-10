@@ -264,7 +264,9 @@ Module Horpo (S : TermsSig.Signature)
     intros.
     inversion H0.
     term_inv M; term_inv N.
-    destruct (pair_mOrd horpo_eq_compat' H1) as 
+    (* compat: variables are A0, A1 before coq 8.15 but A, A0 after *)
+    try (rename A0 into A1; rename A into A0).
+    destruct (pair_mOrd horpo_eq_compat' H1) as
       [o1 | [o2 | [o3 | o4]]].
      (* Ml:Nl Ml:Nr *)
     absurd (A1 = A1 --> B0).

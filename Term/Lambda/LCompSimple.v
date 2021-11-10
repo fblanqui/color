@@ -140,6 +140,7 @@ Module Make (Export ST : ST_Struct)
       simpl. gen (hu _ _ H2 _ hs); intro h1. simpl in h1. apply h1.
       eapply hv. apply H4. hyp.
       (* lam *)
+      try rename X into X0. (* compat: variable is X0 before coq 8.15 but X after *)
       rename X0 into A; rename V0 into V.
       simpl. set (x' := var x v s). set (s' := S.update x (Var x') s).
       gen (cp_int A). intros [A1 A2 A3 A4].
@@ -497,9 +498,10 @@ Module SN_beta_eta (Export ST : ST_Struct).
     (* Since [apps (Fun f) x] is neutral, it suffices to prove that all its
     reducts are computable. *)
     apply b4. apply neutral_apps_fun.
-    intros y r. Arguments R_aeq_apps_fun [f n us t0] _ : rename.
+    intros y r. 
     destruct (R_aeq_apps_fun r) as [vs [h1 h2]]; clear r; subst.
     apply H0. hyp. rewrite <- h2. hyp.
   Qed.
 
+  Arguments R_aeq_apps_fun [f n us t0] _ : rename.
 End SN_beta_eta.

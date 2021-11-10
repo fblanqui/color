@@ -267,8 +267,8 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     destruct (subst_dom_varSubst_rev G' pG') as [W [G'W WA]].
     destruct GG'.
     destruct (sc_inj_r0 p W G'W) as [q qp].
-    destruct MG.
-    apply (dom_c0 q A B).
+    destruct MG as [envsMG domMG ranMG].
+    apply (domMG q A B).
     destruct (sc_rl0 q p W qp G'W) as [W' [GW' WW']].
     rewrite <- WA.
     assert (W_W': W' ~ W).
@@ -285,11 +285,11 @@ Module TermsSubstConv (Sig : TermsSig.Signature).
     destruct (subst_ran_decl G' pG') as [W [i [G'i Wp]]].
     destruct (sc_inj_r GG' G'i) as [m ml].
     destruct (sc_rl GG' m ml G'i) as [W' [GmW' WW']].
-    destruct MG.
+    destruct MG as [envsMG domMG ranMG].
     set (Wmin := G'min i W G'i).
     rewrite Wmin in Wp.
     destruct (terms_conv_activeEnv_rev WW' Wp) as [q qp].
-    apply (ran_c0 q A B).
+    apply (ranMG q A B).
     apply env_sub_ly_rn.
     apply (subst_ran_decl_conv) with G' S p; trivial.
     apply subst_dom_varNotSubst.

@@ -260,7 +260,7 @@ dummy a a' a_eq_a'; subst; trivial.
 generalize (o_bool_ok a' e); rewrite a'_ge_e; intro a'_ge_e'.
 destruct (o_total e a'); intros.
 assumption.
-absurd (o a' e); assumption.
+absurd (DOS.o a' e); assumption.
 Qed.
 
 Theorem quick_sorted : forall l, is_sorted (quicksort l).
