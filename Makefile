@@ -32,7 +32,7 @@ clean-dep:
 	rm -f `find . -name \*.v.d`
 
 clean-all: clean clean-doc clean-dep
-	rm -f Makefile.coq _CoqProject CoqMakefile.conf stat_time.log `find . -name \*.time`
+	rm -f _CoqProject Makefile.coq Makefile.coq.conf stat_time.log `find . -name \*.time`
 
 clean-doc:
 	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html doc/coqdoc.css
