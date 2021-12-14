@@ -493,6 +493,8 @@ Module Type Var.
 
   Declare Module Export XSet : FSetInterface.S with Module E := XOrd.
 
+  #[global] Declare Instance eq_rel : @RelationClasses.RewriteRelation t Equal.
+
   Notation ens_X :=
     (@mk_Ens X XSet.t empty singleton add union remove diff In mem fold).
 
@@ -519,6 +521,8 @@ Module NatVar <: Var.
   Module XOrd := OrderedTypeEx.Nat_as_OT.
 
   Module Export XSet := FSetAVL.Make XOrd.
+
+  #[global] Instance eq_rel : @RelationClasses.RewriteRelation t Equal := {}.
 
   Notation ens_X :=
     (@mk_Ens X XSet.t empty singleton add union remove diff In mem fold).
