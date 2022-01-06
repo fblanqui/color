@@ -252,5 +252,5 @@ Proof with auto; try congruence || discr.
   split. 
   destruct pweak_monotone_check...
   destruct (check_seq (check_coef_gt0 p))...
-  intros. exact (l (N_ H1)).
+  refine (fun i H => l (N_ H)).
 Qed.
