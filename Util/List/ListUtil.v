@@ -129,7 +129,7 @@ Ltac list_ok := let x := fresh in intro x;
 (** Properties of [incl]
   (non-order-preserving inclusion predicate on lists). *)
 
-Instance incl_preorder A : PreOrder (@incl A).
+#[global] Instance incl_preorder A : PreOrder (@incl A).
 
 Proof.
   constructor.
@@ -137,7 +137,7 @@ Proof.
   intros x y z xy yz. apply incl_tran with y; hyp.
 Qed.
 
-Instance app_incl A : Proper (incl ==> incl ==> incl) (@app A).
+#[global] Instance app_incl A : Proper (incl ==> incl ==> incl) (@app A).
 
 Proof. intros l l' ll' m m' mm' x. rewrite !in_app. intuition. Qed.
 
@@ -251,7 +251,7 @@ unfold strict_incl. intuition. trans m; hyp.
 apply H2. trans n; hyp.
 Qed.
 
-Instance strict_incl_rel A : Transitive (@strict_incl A).
+#[global] Instance strict_incl_rel A : Transitive (@strict_incl A).
 
 Proof. intros x y z xy yz. apply strict_incl_tran with y; hyp. Qed.
 
@@ -262,20 +262,20 @@ Definition lequiv {A} (l1 l2 : list A) := l1 [= l2 /\ l2 [= l1.
 
 Infix "[=]" := lequiv (at level 70).
 
-Instance lequiv_rel A : Equivalence (@lequiv A).
+#[global] Instance lequiv_rel A : Equivalence (@lequiv A).
 
 Proof. fo. Qed.
 
-Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
+#[global] Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
 
 Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition. Qed.
 
-Instance incl_lequiv1 A1 B (f : list A1 -> relation B) :
+#[global] Instance incl_lequiv1 A1 B (f : list A1 -> relation B) :
   Proper (incl ==> inclusion) f -> Proper (lequiv ==> same) f.
 
 Proof. intros hf l1 l1' [l1l1' l1'l1]. split; apply hf; hyp. Qed.
 
-Instance incl_lequiv2 A1 A2 B (f : list A1 -> list A2 -> relation B) :
+#[global] Instance incl_lequiv2 A1 A2 B (f : list A1 -> list A2 -> relation B) :
   Proper (incl ==> incl ==> inclusion) f ->
   Proper (lequiv ==> lequiv ==> same) f.
 
@@ -305,11 +305,11 @@ End nil.
 (***********************************************************************)
 (** Properties of [cons]. *)
 
-Instance cons_incl A : Proper (eq ==> incl ==> incl) (@cons A). 
+#[global] Instance cons_incl A : Proper (eq ==> incl ==> incl) (@cons A). 
 
 Proof. intros x x' xx'. subst x'. fo. Qed.
 
-Instance cons_lequiv A : Proper (eq ==> lequiv ==> lequiv) (@cons A).
+#[global] Instance cons_lequiv A : Proper (eq ==> lequiv ==> lequiv) (@cons A).
 
 Proof. intros x x' xx'. subst x'. fo. Qed.
 
@@ -496,7 +496,7 @@ Section head_tail.
 End head_tail.
 
 #[global] Hint Resolve tail_in tail_cons_tail head_app : datatypes.
-Hint Rewrite head_app length_app : datatypes.
+#[global] Hint Rewrite head_app length_app : datatypes.
 
 (***********************************************************************)
 (** Iteration of [tail]. *)
@@ -1756,12 +1756,12 @@ End first.
 (***********************************************************************)
 (** Properties of [fold_left]. *)
 
-Instance transpose_inclusion A B :
+#[global] Instance transpose_inclusion A B :
   Proper (inclusion ==> eq ==> impl) (@transpose A B).
 
 Proof. intros R R' RR' f f' ff' h x y z. subst f'. apply RR'. apply h. Qed.
 
-Instance transpose_same A B : Proper (same ==> eq ==> iff) (@transpose A B).
+#[global] Instance transpose_same A B : Proper (same ==> eq ==> iff) (@transpose A B).
 
 Proof.
   intros R R' [h1 h2] f f' ff'. subst f'.

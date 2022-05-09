@@ -80,7 +80,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       trans x'; hyp. trans y'; hyp.
     Qed.
 
-    Instance gtx_trans : Transitive gtx.
+    #[global] Instance gtx_trans : Transitive gtx.
 
     Proof.
       unfold gtx. intros x y z. intuition.
@@ -93,7 +93,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Definition succ (x y : dom) := succ_vec (dom2vec x) (dom2vec y).
     Notation "x >v y" := (succ x y) (at level 70).
 
-    Instance trans_succ : Transitive succ.
+    #[global] Instance trans_succ : Transitive succ.
 
     Proof.
       change (Transitive (Rof succ_vec dom2vec)). apply Rof_trans.

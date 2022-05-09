@@ -672,7 +672,7 @@ Qed.
 
 End Srel.
 
-Instance LP (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
+#[global] Instance LP (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
   Equivalence (permut0 eq_A).
 
 Proof.
@@ -682,12 +682,12 @@ Proof.
   apply permut0_trans; assumption.
 Qed.
 
-Instance mem_morph2 (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
+#[global] Instance mem_morph2 (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
   Proper (eq_A ==> permut0 eq_A ==> iff) (mem eq_A).
 
 Proof. exact (mem_morph0 eq_proof). Qed.
 
-Instance add_A_morph (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A):
+#[global] Instance add_A_morph (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A):
   Proper (eq_A ==> permut0 eq_A ==> permut0 eq_A) (List.cons (A:=A)).
 
 Proof.
@@ -695,7 +695,7 @@ Proof.
   rewrite <- (@permut0_cons _ _ eq_proof e1 e2 l1 l2); trivial.
 Qed.
 
-Instance app_morph (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
+#[global] Instance app_morph (A:Type) (eq_A:relation A) (eq_proof: Equivalence eq_A) :
   Proper (permut0 eq_A ==> permut0 eq_A ==> permut0 eq_A) (List.app (A:=A)).
 
 Proof.
@@ -896,17 +896,17 @@ Parameter remove_equiv_permut:
       permut (fst (remove_equiv eq_bool l1 l2))  (fst (remove_equiv eq_bool l1' l2')) /\
           permut (snd (remove_equiv eq_bool l1 l2)) (snd (remove_equiv eq_bool l1' l2')).
 
-Instance LP : Equivalence permut.
+#[global] Instance LP : Equivalence permut.
 
 Proof.
   split; intro x. apply permut_refl. apply permut_sym. apply permut_trans.
 Qed.
 
-Declare Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
+#[global] Declare Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
 
-Declare Instance app_morph : Proper (permut ==> permut ==> permut) (@app A).
+#[global] Declare Instance app_morph : Proper (permut ==> permut ==> permut) (@app A).
 
-Declare Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (@cons A).
+#[global] Declare Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (@cons A).
 
 End S.
 
@@ -944,7 +944,7 @@ Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1.
   intros a b c _ _ _ a_eq_b b_eq_c; transitivity b; trivial.
   Qed.
 
-  Instance LP : Equivalence permut.
+  #[global] Instance LP : Equivalence permut.
 
   Proof.
     split; intro x. apply permut_refl. apply permut_sym. apply permut_trans.
@@ -985,7 +985,7 @@ Lemma mem_morph :
   Qed.
 
 
-Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
+#[global] Instance mem_morph2 : Proper (eq_A ==> permut ==> iff) (mem eq_A).
 
 Proof. exact mem_morph. Qed.
 
@@ -1013,7 +1013,7 @@ Qed.
     symmetry; trivial.
      Qed.
 
-  Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (List.cons (A:=A)).
+  #[global] Instance add_A_morph : Proper (eq_A ==> permut ==> permut) (List.cons (A:=A)).
 
   Proof.
     intros e1 e2 e1_eq_e2 l1 l2 P;
@@ -1055,7 +1055,7 @@ Proof.
 intros l l1 l2; apply permut_app2. apply EDS.EQA.
 Qed.
 
-Instance app_morph : Proper (permut ==> permut ==> permut) (List.app (A:=A)).
+#[global] Instance app_morph : Proper (permut ==> permut ==> permut) (List.app (A:=A)).
 
 Proof.
 intros l1 l2 P l1' l2' P'.

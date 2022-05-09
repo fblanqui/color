@@ -23,15 +23,15 @@ Module LeibnizFacts (Import T : Typ).
 
   Definition eq : relation t := @Logic.eq t.
 
-  Instance eq_refl : Reflexive eq.
+  #[global] Instance eq_refl : Reflexive eq.
 
   Proof. fo. Qed.
 
-  Instance eq_sym : Symmetric eq.
+  #[global] Instance eq_sym : Symmetric eq.
 
   Proof. firstorder auto with crelations. Qed.
 
-  Instance eq_trans : Transitive eq.
+  #[global] Instance eq_trans : Transitive eq.
 
   Proof. unfold eq; class. Qed.
 

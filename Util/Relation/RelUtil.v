@@ -53,19 +53,19 @@ Open Scope relation_scope.
 (***********************************************************************)
 (** Properties of [incl]. *)
 
-Instance incl_refl A : Reflexive (@incl A).
+#[global] Instance incl_refl A : Reflexive (@incl A).
 
 Proof. fo. Qed.
 
 Ltac incl_refl := apply incl_refl.
 
-Instance incl_trans A : Transitive (@incl A).
+#[global] Instance incl_trans A : Transitive (@incl A).
 
 Proof. fo. Qed.
 
 Ltac incl_trans S := apply incl_trans with S; try incl_refl.
 
-Instance incl_same A : Proper (same ==> same ==> impl) (@incl A).
+#[global] Instance incl_same A : Proper (same ==> same ==> impl) (@incl A).
 
 Proof. fo. Qed.
 
@@ -83,7 +83,7 @@ Lemma rel_eq A (R S : rel A) : R == S <-> forall x y, R x y <-> S x y.
 
 Proof. fo. Qed.
 
-Instance same_equiv A : Equivalence (@same A).
+#[global] Instance same_equiv A : Equivalence (@same A).
 
 Proof. fo. Qed.
 
@@ -101,22 +101,22 @@ Proof. split_all. Qed.
 (***********************************************************************)
 (** Morphisms wrt [incl] and [same]. *)
 
-Instance refl_same A : Proper (same ==> impl) (@Reflexive A).
+#[global] Instance refl_same A : Proper (same ==> impl) (@Reflexive A).
 
 Proof. fo. Qed.
 
-Instance sym_same A : Proper (same ==> impl) (@Symmetric A).
+#[global] Instance sym_same A : Proper (same ==> impl) (@Symmetric A).
 
 Proof. fo. Qed.
 
-Instance trans_same A : Proper (same ==> impl) (@Transitive A).
+#[global] Instance trans_same A : Proper (same ==> impl) (@Transitive A).
 
 Proof.
   intros R S e h x y z xy yz. rewrite rel_eq in e. rewrite <- e in *.
   apply h with y; hyp.
 Qed.
 
-Instance equiv_same A : Proper (same ==> impl) (@Equivalence A).
+#[global] Instance equiv_same A : Proper (same ==> impl) (@Equivalence A).
 
 Proof. intros R S RS [hr hs ht]. constructor; rewrite <- RS; hyp. Qed.
 
@@ -151,7 +151,7 @@ Proof.
   apply WW'. apply hf; fo.
 Qed.
 
-Instance prop_rel_same A (E : rel A) :
+#[global] Instance prop_rel_same A (E : rel A) :
   Proper (same ==> impl) (Proper (E ==> E ==> impl)).
 
 Proof.
@@ -177,7 +177,7 @@ Proof.
   eapply f_prop. sym. apply xx'. sym. apply yy'. hyp.
 Qed.
 
-Instance equiv_prop A (R : rel A) : 	 
+#[global] Instance equiv_prop A (R : rel A) : 	 
   Transitive R -> Symmetric R -> Proper (R ==> R ==> impl) R.
 
 Proof. intros R_trans R_sym t t' tt' u u' uu' tu. trans t. hyp. trans u; hyp. Qed.
@@ -321,7 +321,7 @@ Arguments R_in_sons [A R] _ [x y] _.
 
 Definition inter_transp A (R : rel A) : rel A := fun x y => R x y /\ R y x.
 
-(*COQ: declaring these Lemma's as Instance's creates problems in
+(*COQ: declaring these Lemma's as #[global] Instance's creates problems in
 FSetUtil and FGraph *)
 
 Lemma inter_transp_refl A (R : rel A) :
@@ -345,15 +345,15 @@ Proof. fo. Qed.
 (***********************************************************************)
 (** Properties of [IS]. *)
 
-Instance IS_incl A : Proper (incl ==> Logic.eq ==> impl) (@IS A).
+#[global] Instance IS_incl A : Proper (incl ==> Logic.eq ==> impl) (@IS A).
 
 Proof. intros R S RS f g fg h i. subst. fo. Qed.
 
-Instance IS_same A : Proper (same ==> Logic.eq ==> impl) (@IS A).
+#[global] Instance IS_same A : Proper (same ==> Logic.eq ==> impl) (@IS A).
 
 Proof. intros R S RS f g fg h. subst. fo. Qed.
 
-Instance EIS_same A : Proper (same ==> impl) (@EIS A).
+#[global] Instance EIS_same A : Proper (same ==> impl) (@EIS A).
 
 Proof. intros R S RS h. destruct h as [f h]. exists f. rewrite <- RS. hyp. Qed.
 
@@ -372,7 +372,7 @@ Qed.
 (***********************************************************************)
 (** Properties of [irreflexive]. *)
 
-Instance irreflexive_incl A : Proper (incl --> impl) (@irreflexive A).
+#[global] Instance irreflexive_incl A : Proper (incl --> impl) (@irreflexive A).
 
 Proof. fo. Qed.
 
@@ -395,14 +395,14 @@ Definition compose A (R S : rel A) : rel A :=
 
 Infix "@" := compose (at level 40) : relation_scope.
 
-Instance compose_incl A : Proper (incl ==> incl ==> incl) (@compose A).
+#[global] Instance compose_incl A : Proper (incl ==> incl ==> incl) (@compose A).
 
 Proof. fo. Qed.
 
 (*FIXME: try to remove*)
 Ltac comp := apply compose_incl; try incl_refl.
 
-Instance compose_same A : Proper (same ==> same ==> same) (@compose A).
+#[global] Instance compose_same A : Proper (same ==> same ==> same) (@compose A).
 
 Proof. fo. Qed.
 
@@ -446,14 +446,14 @@ Proof. intros h t v [u [tu uv]]. induction uv; fo. Qed.
 (***********************************************************************)
 (** Properties of [union]. *)
 
-Instance union_incl A : Proper (incl ==> incl ==> incl) (@union A).
+#[global] Instance union_incl A : Proper (incl ==> incl ==> incl) (@union A).
 
 Proof. fo. Qed.
 
 (*FIXME: try to remove*)
 Ltac union := apply union_incl; try incl_refl.
 
-Instance union_same A : Proper (same ==> same ==> same) (@union A).
+#[global] Instance union_same A : Proper (same ==> same ==> same) (@union A).
 
 Proof. fo. Qed.
 
@@ -500,19 +500,19 @@ Definition clos_refl A (R : rel A) : rel A := eq U R.
 
 Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
 
-Instance rc_incl A : Proper (incl ==> incl) (@clos_refl A).
+#[global] Instance rc_incl A : Proper (incl ==> incl) (@clos_refl A).
 
 Proof. fo. Qed.
 
-Instance rc_same A : Proper (same ==> same) (@clos_refl A).
+#[global] Instance rc_same A : Proper (same ==> same) (@clos_refl A).
 
 Proof. fo. Qed.
 
-Instance rc_refl A (R : rel A) : Reflexive (R%).
+#[global] Instance rc_refl A (R : rel A) : Reflexive (R%).
 
 Proof. fo. Qed.
 
-Instance rc_trans A (R : rel A) : Transitive R -> Transitive (R%).
+#[global] Instance rc_trans A (R : rel A) : Transitive R -> Transitive (R%).
 
 Proof.
   intro. unfold Transitive, clos_refl, union. intros. decomp H0. subst y. hyp.
@@ -594,18 +594,18 @@ End comp_clos.
 (***********************************************************************)
 (** Properties of [clos_trans]. *)
 
-Instance tc_trans A (R : rel A) : Transitive (R!).
+#[global] Instance tc_trans A (R : rel A) : Transitive (R!).
 
 Proof. unfold Transitive. intros. apply t_trans with y; hyp. Qed.
 
-Instance tc_incl A : Proper (incl ==> incl) (@clos_trans A).
+#[global] Instance tc_incl A : Proper (incl ==> incl) (@clos_trans A).
 
 Proof.
   intros R R' H t u H0. elim H0; intros.
   apply t_step. apply H. hyp. trans y; hyp.
 Qed.
 
-Instance tc_same A : Proper (same ==> same) (@clos_trans A).
+#[global] Instance tc_same A : Proper (same ==> same) (@clos_trans A).
 
 Proof. intros R S [RS SR]. split; apply tc_incl; hyp. Qed.
 
@@ -680,7 +680,7 @@ Lemma tc_incl_trans A (R S : rel A) : Transitive S -> R << S -> R! << S.
 
 Proof. intros S_trans RS. intros t u tu; revert t u tu. induction 1; fo. Qed.
 
-Instance tc_prop A (E R : rel A) : Reflexive E ->
+#[global] Instance tc_prop A (E R : rel A) : Reflexive E ->
   Proper (E ==> E ==> impl) R -> Proper (E ==> E ==> impl) (R!).
 
 Proof.
@@ -768,7 +768,7 @@ Section clos_equiv.
 
 End clos_equiv.
 
-Instance ec_incl A : Proper (incl ==> incl) (@clos_equiv A).
+#[global] Instance ec_incl A : Proper (incl ==> incl) (@clos_equiv A).
 
 Proof.
   intros R S RS x y; revert x y; induction 1.
@@ -785,22 +785,22 @@ Qed.
 (***********************************************************************)
 (** Properties of [clos_refl_trans]. *)
 
-Instance rtc_refl A (R : rel A) : Reflexive (R#).
+#[global] Instance rtc_refl A (R : rel A) : Reflexive (R#).
 
 Proof. firstorder with sets. Qed.
 
-Instance rtc_trans A (R : rel A) : Transitive (R#).
+#[global] Instance rtc_trans A (R : rel A) : Transitive (R#).
 
 Proof. unfold Transitive. intros. eapply rt_trans. apply H. hyp. Qed.
 
-Instance rtc_incl A : Proper (incl ==> incl) (@clos_refl_trans A).
+#[global] Instance rtc_incl A : Proper (incl ==> incl) (@clos_refl_trans A).
 
 Proof.
   intro. unfold incl. intros. elim H0; intros.
   apply rt_step. apply H. hyp. refl. trans y1; hyp.
 Qed.
 
-Instance rtc_same A : Proper (same ==> same) (@clos_refl_trans A).
+#[global] Instance rtc_same A : Proper (same ==> same) (@clos_refl_trans A).
 
 Proof. intros R S [RS SR]. split; apply rtc_incl; hyp. Qed.
 
@@ -920,7 +920,7 @@ Proof.
   fo. refl. trans y; hyp.
 Qed.
 
-Instance rtc_sym A (R : rel A) : Symmetric R -> Symmetric (R#).
+#[global] Instance rtc_sym A (R : rel A) : Symmetric R -> Symmetric (R#).
 
 Proof.
   intros R_sym x; revert x; induction 1.
@@ -981,11 +981,11 @@ End qo_clos.
 (***********************************************************************)
 (** Properties of [transp]. *)
 
-Instance transp_incl A : Proper (incl ==> incl) (@transp A).
+#[global] Instance transp_incl A : Proper (incl ==> incl) (@transp A).
 
 Proof. fo. Qed.
 
-Instance transp_same A : Proper (same ==> same) (@transp A).
+#[global] Instance transp_same A : Proper (same ==> same) (@transp A).
 
 Proof. fo. Qed.
 
@@ -1206,7 +1206,7 @@ Section inverse_image.
 
 End inverse_image.
 
-Instance Rof_incl A B : Proper (incl ==> Logic.eq ==> incl) (@Rof A B).
+#[global] Instance Rof_incl A B : Proper (incl ==> Logic.eq ==> incl) (@Rof A B).
 
 Proof. intros R S RS f g fg. subst g. fo. Qed.
 
@@ -1220,7 +1220,7 @@ Inductive clos_trans1 A (R : rel A) : rel A :=
 
 Notation "x !1" := (clos_trans1 x) (at level 35) : relation_scope.
 
-Instance tc1_trans A (R : rel A) : Transitive (R!1).
+#[global] Instance tc1_trans A (R : rel A) : Transitive (R!1).
 
 Proof.
   induction 1; intro H1.
@@ -1247,7 +1247,7 @@ Inductive clos_refl_trans1 A (R : rel A) : rel A :=
 
 Notation "x #1" := (clos_refl_trans1 x) (at level 9) : relation_scope.
 
-Instance rtc1_preorder A (R : rel A) : PreOrder (R#1).
+#[global] Instance rtc1_preorder A (R : rel A) : PreOrder (R#1).
 
 Proof.
   split; intro x. apply rt1_refl.
@@ -1470,13 +1470,13 @@ Section opt.
 
 End opt.
 
-Instance opt_incl A : Proper (incl ==> incl) (@opt A).
+#[global] Instance opt_incl A : Proper (incl ==> incl) (@opt A).
 
 Proof.
   intros R S RS x y xy. inversion xy; clear xy; subst. apply opt_intro. fo.
 Qed.
 
-Instance opt_prop A (E1 E2 R : rel A) :
+#[global] Instance opt_prop A (E1 E2 R : rel A) :
   Proper (E1 ==> E2 ==> impl) R -> Proper (opt E1 ==> opt E2 ==> impl) (opt R).
 
 Proof.

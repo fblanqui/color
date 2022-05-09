@@ -42,7 +42,7 @@ Module CmpFacts (Import C : Cmp).
 
   Definition lt : relation t := fun x y => cmp x y = Lt.
 
-  Instance eq_refl : Reflexive eq.
+  #[global] Instance eq_refl : Reflexive eq.
 
   Proof.
     intro x. unfold eq. case_eq (cmp x x); intro h.
@@ -51,7 +51,7 @@ Module CmpFacts (Import C : Cmp).
     gen h. rewrite cmp_opp, h. discr.
   Qed.
 
-  Instance eq_sym : Symmetric eq.
+  #[global] Instance eq_sym : Symmetric eq.
 
   Proof. intros x y. unfold eq. intro xy. rewrite cmp_opp, xy. refl. Qed.
 
@@ -94,11 +94,11 @@ Module CmpTransFacts (Import CT : CmpTrans).
 
   Include CmpFacts CT.
 
-  Instance eq_trans : Transitive eq.
+  #[global] Instance eq_trans : Transitive eq.
 
   Proof. intros x y z. apply cmp_eq_trans. Qed.
 
-  Instance lt_trans : Transitive lt.
+  #[global] Instance lt_trans : Transitive lt.
 
   Proof. intros x y z. apply cmp_lt_trans. Qed.
 
@@ -158,7 +158,7 @@ Module MOT_of_CmpTransLeibniz (Import CTL : CmpTransLeibniz) <: MiniOrderedType.
 
   Definition lt : relation t := fun x y => cmp x y = Lt.
 
-  Instance lt_trans : Transitive lt.
+  #[global] Instance lt_trans : Transitive lt.
 
   Proof. intros x y z. apply cmp_lt_trans. Qed.
 

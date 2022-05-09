@@ -28,9 +28,9 @@ Module Type OrdSemiRingType.
 
   Parameter eq_ge_compat : forall x y, x =A= y -> x >>= y.
 
-  Declare Instance ge_refl : Reflexive ge.
-  Declare Instance ge_trans : Transitive ge.
-  Declare Instance gt_trans : Transitive gt.
+  #[global] Declare Instance ge_refl : Reflexive ge.
+  #[global] Declare Instance ge_trans : Transitive ge.
+  #[global] Declare Instance gt_trans : Transitive gt.
 
   Parameter ge_dec : rel_dec ge.
   Parameter gt_dec : rel_dec gt.
@@ -55,7 +55,7 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
   Module Export SR := SemiRing OSR.SR.
   Export OSR.
 
-  Instance ge_mor : Proper (eqA ==> eqA ==> iff) ge.
+  #[global] Instance ge_mor : Proper (eqA ==> eqA ==> iff) ge.
 
   Proof.
     intros x y H x0 y0 H0. intuition.
@@ -65,7 +65,7 @@ Module OrdSemiRing (OSR : OrdSemiRingType).
     trans y0. hyp. apply eq_ge_compat. hyp.
   Qed.
 
-  Instance gt_mor : Proper (eqA ==> eqA ==> iff) gt.
+  #[global] Instance gt_mor : Proper (eqA ==> eqA ==> iff) gt.
 
   Proof.
     intros x y H x0 y0 H0.
@@ -91,11 +91,11 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Proof. intros. subst. apply le_refl. Qed.
 
-  Instance ge_refl : Reflexive ge.
+  #[global] Instance ge_refl : Reflexive ge.
 
   Proof. intro m. unfold ge. auto with arith. Qed.
 
-  Instance ge_trans : Transitive ge.
+  #[global] Instance ge_trans : Transitive ge.
 
   Proof. intros m n p. unfold ge, Peano.ge. eauto with arith. Qed.
 
@@ -172,11 +172,11 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
 
   Definition ge_refl := BigN.le_refl.
 
-  Instance ge_trans : Transitive ge.
+  #[global] Instance ge_trans : Transitive ge.
 
   Proof. intros m n p. unfold ge, BigN.le. lia. Qed.
 
-  Instance gt_trans : Transitive gt.
+  #[global] Instance gt_trans : Transitive gt.
 
   Proof. intros m n p. unfold gt, BigN.lt. lia. Qed.
 
@@ -267,7 +267,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
 
   Proof. intros x xx. destruct x. unfold gt in xx. lia. auto. Qed.
 
-  Instance gt_trans : Transitive gt.
+  #[global] Instance gt_trans : Transitive gt.
 
   Proof.
     intros x y z xy yz. 
@@ -301,11 +301,11 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
       solve [auto with arith | exfalso; auto].
   Qed.
 
-  Instance ge_refl : Reflexive ge.
+  #[global] Instance ge_refl : Reflexive ge.
 
   Proof. intro m. right. trivial. Qed.
 
-  Instance ge_trans : Transitive ge.
+  #[global] Instance ge_trans : Transitive ge.
 
   Proof.
     intros x y z xy yz. destruct xy. destruct yz.
@@ -520,11 +520,11 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof. unfold ge. intuition. Qed.
 
-  Instance ge_refl : Reflexive ge.
+  #[global] Instance ge_refl : Reflexive ge.
 
   Proof. intro m. right. trivial. Qed.
 
-  Instance gt_trans : Transitive gt.
+  #[global] Instance gt_trans : Transitive gt.
 
   Proof.
     intros m n p mn np.
@@ -543,7 +543,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof. intros. destruct m; destruct n; try tauto. simpl in *. lia. Qed.
 
-  Instance ge_trans : Transitive ge.
+  #[global] Instance ge_trans : Transitive ge.
 
   Proof.
     intros m n p mn np. 
@@ -753,7 +753,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof. intros x xx. destruct x. unfold gt in xx. lia. auto. Qed.
 
-  Instance gt_trans : Transitive gt.
+  #[global] Instance gt_trans : Transitive gt.
 
   Proof.
     intros x y z xy yz. destruct x; destruct y; destruct z; (contr||auto).
@@ -788,11 +788,11 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     apply Acc_intro. intros. destruct y...
   Qed.
 
-  Instance ge_refl : Reflexive ge.
+  #[global] Instance ge_refl : Reflexive ge.
 
   Proof. intro m. right. trivial. Qed.
 
-  Instance ge_trans : Transitive ge.
+  #[global] Instance ge_trans : Transitive ge.
 
   Proof.
     intros x y z xy yz. destruct xy. destruct yz.
@@ -989,11 +989,11 @@ Module BOrdSemiRingT <: OrdSemiRingType.
   Notation "x >> y" := (gt x y) (at level 70).
   Notation "x >>= y" := (ge x y) (at level 70).
 
-  Instance ge_refl : Reflexive ge.
+  #[global] Instance ge_refl : Reflexive ge.
 
   Proof. intro m. unfold ge. destruct m; auto. Qed.
 
-  Instance ge_trans : Transitive ge.
+  #[global] Instance ge_trans : Transitive ge.
 
   Proof. intros m n p. unfold ge. destruct m; destruct n; destruct p; auto. Qed.
 
@@ -1005,7 +1005,7 @@ Module BOrdSemiRingT <: OrdSemiRingType.
 
   Proof. intros x. unfold gt. destruct x; tauto. Qed.
 
-  Instance gt_trans : Transitive gt.
+  #[global] Instance gt_trans : Transitive gt.
 
   Proof. intros x y z. destruct x; destruct y; destruct z; tauto. Qed.
 

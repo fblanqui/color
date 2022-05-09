@@ -29,7 +29,7 @@ Module Make (XSet : FSetInterface.S)
 
   Definition pred x s g a b := rel g a x /\ XSet.In b s.
 
-  Instance pred_geq' :
+  #[global] Instance pred_geq' :
     Proper (eq ==> XSet.Equal ==> geq ==> inclusion) pred.
 
   Proof.
@@ -37,12 +37,12 @@ Module Make (XSet : FSetInterface.S)
     tauto.
   Qed.
 
-  Instance pred_geq :
+  #[global] Instance pred_geq :
     Proper (eq ==> XSet.Equal ==> geq ==> same) pred.
 
   Proof. split; apply pred_geq'; hyp. Qed.
 
-  Instance pred_geq_ext' :
+  #[global] Instance pred_geq_ext' :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> impl) pred.
 
   Proof.
@@ -50,7 +50,7 @@ Module Make (XSet : FSetInterface.S)
     rewrite xx', e, gg', aa', bb'. refl.
   Qed.
 
-  Instance pred_geq_ext :
+  #[global] Instance pred_geq_ext :
     Proper (eq ==> XSet.Equal ==> geq ==> eq ==> eq ==> iff) pred.
 
   Proof. split; apply pred_geq_ext'; hyp. Qed.
@@ -90,7 +90,7 @@ Module Make (XSet : FSetInterface.S)
   Definition add_pred x s w sw g :=
     if XSet.mem x sw then XSet.fold (add_edge w) s g else g.
 
-  Instance add_pred_geq :
+  #[global] Instance add_pred_geq :
     Proper (eq ==> XSet.Equal ==> eq ==> XSet.Equal ==> geq ==> geq) add_pred.
 
   Proof.
@@ -169,7 +169,7 @@ the transitive closure of [id x y U g] *)
         (* and, for every z in {y} U (succs y g), add a pair (x,z) *)
           (XSet.fold (add_edge x) ysy g).
 
-  Instance trans_add_edge_geq :
+  #[global] Instance trans_add_edge_geq :
     Proper (eq ==> eq ==> geq ==> geq) trans_add_edge.
 
   Proof.

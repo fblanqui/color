@@ -63,20 +63,20 @@ Ltac redtac := repeat
 
 From Coq Require Import Morphisms.
 
-Instance red_incl Sig : Proper (subset ==> inclusion) (@red Sig).
+#[global] Instance red_incl Sig : Proper (subset ==> inclusion) (@red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. fo. Qed.
 
-Instance hd_red_incl Sig : Proper (subset ==> inclusion) (@hd_red Sig).
+#[global] Instance hd_red_incl Sig : Proper (subset ==> inclusion) (@hd_red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. ex l r s. fo. Qed.
 
-Instance red_mod_incl Sig :
+#[global] Instance red_mod_incl Sig :
   Proper (subset ==> subset ==> inclusion) (@red_mod Sig).
 
 Proof. intros E E' EE' R R' RR'. unfold red_mod. rewrite EE', RR'. refl. Qed.
 
-Instance hd_red_mod_incl Sig :
+#[global] Instance hd_red_mod_incl Sig :
   Proper (subset ==> subset ==> inclusion) (@hd_red_mod Sig).
 
 Proof. intros E E' EE' R R' RR'. unfold hd_red_mod. rewrite EE', RR'. refl. Qed.

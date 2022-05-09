@@ -67,7 +67,7 @@ Section Morphism.
 
   Definition Frs := image Fr.
 
-  Instance Frs_equiv : Proper (equiv ==> equiv) Frs.
+  #[global] Instance Frs_equiv : Proper (equiv ==> equiv) Frs.
 
   Proof. fo. Qed.
 

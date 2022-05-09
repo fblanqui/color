@@ -102,7 +102,7 @@ Module MatrixInt (MI : TMatrixInt).
       apply WF_inverse. apply gt_WF.
     Qed.
 
-    Instance trans_succ : Transitive succ.
+    #[global] Instance trans_succ : Transitive succ.
 
     Proof.
       apply Rof_trans. unfold succ_vec. intros v1 v2 v3 h12 h23. intuition.

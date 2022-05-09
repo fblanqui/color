@@ -31,7 +31,7 @@ Section OrderDefinition.
   Let leA x y := ~gtA x y.
   Let gtA_trans := clos_trans gtA.
   Let geA x y := gtA x y \/ eqA x y.
-  Hint Unfold ltA leA gtA_trans : sets.
+  #[local] Hint Unfold ltA leA gtA_trans : sets.
 
   Notation "X >A Y" := (gtA X Y) (at level 50). 
   Notation "X <A Y" := (ltA X Y) (at level 50). 
@@ -101,7 +101,7 @@ Section OrderDefinition.
      Some morphisms
    ------------------------------------------------------------------ *)
 
-  Instance MultisetRedGt_morph : Proper (meq ==> meq ==> iff) MultisetRedGt.
+  #[global] Instance MultisetRedGt_morph : Proper (meq ==> meq ==> iff) MultisetRedGt.
 
   Proof.
     intros x1 x2 H x3 x4 H0. split; intros H1; inversion H1.
@@ -111,7 +111,7 @@ Section OrderDefinition.
     rewrite H0; trivial.
   Qed.
 
-  Instance AccM_1_morph : Proper (meq ==> iff) AccM_1.
+  #[global] Instance AccM_1_morph : Proper (meq ==> iff) AccM_1.
 
   Proof.
     intros; split; intro H0; inversion H0.
@@ -119,7 +119,7 @@ Section OrderDefinition.
     constructor; intros. apply H1; compute in *; rewrite <- H; trivial.
   Qed.
 
-  Instance clos_transM_RedGt_morph :
+  #[global] Instance clos_transM_RedGt_morph :
     Proper (meq ==> meq ==> iff) clos_transM_RedGt.
 
   Proof.
@@ -127,7 +127,7 @@ Section OrderDefinition.
     refine (RelUtil.tc_prop_iff meq_Equivalence MultisetRedGt_morph a b ab c d cd).
   Qed.
 
-  Instance clos_transM_RedLt_morph :
+  #[global] Instance clos_transM_RedLt_morph :
     Proper (meq ==> meq ==> iff) clos_transM_RedLt.
 
   Proof.
@@ -136,7 +136,7 @@ Section OrderDefinition.
     reduce. unfold MultisetRedLt. unfold transp. rewrite H, H0. reflexivity.
   Qed.
 
-  Instance MultisetGt_morph_equiv : Proper (meq ==> meq ==> iff) MultisetGt.
+  #[global] Instance MultisetGt_morph_equiv : Proper (meq ==> meq ==> iff) MultisetGt.
 
   Proof.
     intros x1 x2 H x0 x3 H0; split; intro; inversion H1.
@@ -148,7 +148,7 @@ Section OrderDefinition.
     rewrite H; hyp. rewrite H0; hyp.
   Qed.
 
-  Instance MultisetGT_morph : Proper (meq ==> meq ==> iff) MultisetGT.
+  #[global] Instance MultisetGT_morph : Proper (meq ==> meq ==> iff) MultisetGT.
 
   Proof.
     intros xL xR H yL yR H0; split; intro; inversion H1.
@@ -169,7 +169,7 @@ Section OrderDefinition.
     intros. apply (proj1 (MultisetGt_morph_equiv H H0)). hyp.
   Qed.
 
-  Instance AccM_morph : Proper (meq ==> iff) AccM.
+  #[global] Instance AccM_morph : Proper (meq ==> iff) AccM.
 
   Proof.
     intros; split; intro; inversion H0.
@@ -191,9 +191,9 @@ Section OrderDefinition.
   Variable gtA_eqA_compat : Proper (eqA ==> eqA ==> impl) gtA.
   Existing Instance gtA_eqA_compat.
 
-  Hint Resolve (gtA_transitive) : sets.
-  Hint Resolve (gtA_irreflexive) : sets.
-  Hint Resolve (so_not_symmetric
+  #[local] Hint Resolve (gtA_transitive) : sets.
+  #[local] Hint Resolve (gtA_irreflexive) : sets.
+  #[local] Hint Resolve (so_not_symmetric
     (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
 
   Lemma gtA_eqA_compat' :
@@ -201,9 +201,9 @@ Section OrderDefinition.
 
   Proof. apply gtA_eqA_compat. Qed.
 
-  Hint Resolve gtA_eqA_compat' : sets.
+  #[local] Hint Resolve gtA_eqA_compat' : sets.
 
-  Instance gtA_morph : Proper (eqA ==> eqA ==> iff) gtA.
+  #[global] Instance gtA_morph : Proper (eqA ==> eqA ==> iff) gtA.
 
   Proof.
     intros a b ab c d cd.
@@ -212,18 +212,18 @@ Section OrderDefinition.
     apply Seq_sym. exact eqA_Equivalence. apply cd. hyp.
   Qed.
 
-  Instance ltA_morph : Proper (eqA ==> eqA ==> iff) ltA.
+  #[global] Instance ltA_morph : Proper (eqA ==> eqA ==> iff) ltA.
 
   Proof. intros a b ab c d cd. unfold ltA, transp. apply gtA_morph; hyp. Qed.
 
-  Instance gtA_trans_morph : Proper (eqA ==> eqA ==> iff) gtA_trans.
+  #[global] Instance gtA_trans_morph : Proper (eqA ==> eqA ==> iff) gtA_trans.
 
   Proof.
     compute. intros a a' a_a' b b' b_b'.
     refine (RelUtil.tc_prop_iff eqA_Equivalence gtA_morph a a' a_a' b b' b_b').
   Qed.
 
-  Instance geA_morph : Proper (eqA ==> eqA ==> iff) geA.
+  #[global] Instance geA_morph : Proper (eqA ==> eqA ==> iff) geA.
   
   Proof.
     intros; split; intro; destruct H1.
@@ -621,7 +621,7 @@ Section OrderCharacterization.
 
 End OrderCharacterization.
 
-Hint Resolve empty_min empty_min_red : multisets.
+#[local] Hint Resolve empty_min empty_min_red : multisets.
 
 (* -----------------------------------------------------------------
      Multiset order being strict order
@@ -1087,13 +1087,13 @@ Section OrderSim.
 
   Proof. rewrite eqA_eq; trivial. Qed.
  
-  Instance P_eqA_comp : Proper (eqA ==> eqA ==> impl) P.
+  #[global] Instance P_eqA_comp : Proper (eqA ==> eqA ==> impl) P.
 
   Proof.
     intros a b ab c d cd h. rewrite eqA_eq in *. rewrite <- ab, <- cd; trivial.
   Qed.
 
-  Instance eqA_Equivalence : Equivalence eqA.
+  #[global] Instance eqA_Equivalence : Equivalence eqA.
 
   Proof. rewrite eqA_eq; constructor; try_solve. Qed.
 

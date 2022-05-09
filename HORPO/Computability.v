@@ -161,7 +161,7 @@ Section Computability_theory.
   Variable R_abs_reduct : forall M (Mabs: isAbs M) N, M -R-> N ->
     exists Nabs: isAbs N, absBody Mabs -R-> absBody Nabs.
 
-  Hint Resolve R_type_preserving R_env_preserving R_var_normal : comp.
+  #[local] Hint Resolve R_type_preserving R_env_preserving R_var_normal : comp.
 
   Lemma R_right_app_monotonous : forall M N M' N' (M'app: isApp M')
     (N'app: isApp N'),
@@ -329,7 +329,7 @@ Section Computability_theory.
     apply terms_conv_sym; trivial.
   Qed.
 
-  Instance AccR_morph : Proper (terms_conv ==> iff) AccR.
+  #[global] Instance AccR_morph : Proper (terms_conv ==> iff) AccR.
 
   Proof.
     intros M M' M'M.
@@ -359,7 +359,7 @@ Section Computability_theory.
     apply terms_conv_trans with M'; auto with terms_eq.
   Qed.
 
-  Instance Computable_morph : Proper (terms_conv ==> iff) Computable.
+  #[global] Instance Computable_morph : Proper (terms_conv ==> iff) Computable.
 
   Proof.
     intros t t' teqt'; split; apply Computable_morph_aux;
@@ -768,7 +768,7 @@ Section Computability_theory.
   Definition CompTerm_eq (T1 T2: CompTerm) := proj1_sig T1 = proj1_sig T2.
   Definition TermsPairLex := LexProd_Lt CompTerm_eq R_Comp R_Comp.
 
-  Instance R_Comp_morph : Proper (CompTerm_eq ==> CompTerm_eq ==> impl) R_Comp.
+  #[global] Instance R_Comp_morph : Proper (CompTerm_eq ==> CompTerm_eq ==> impl) R_Comp.
 
   Proof.
     intros [a ac] [b bc] ab [c cc] [d dc] cd;

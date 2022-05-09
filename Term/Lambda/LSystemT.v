@@ -197,7 +197,7 @@ Module RS_SystemT <: RS_Struct.
 
   Definition rule := R.
 
-  Instance fv_rule : Proper (rule --> Subset) fv.
+  #[global] Instance fv_rule : Proper (rule --> Subset) fv.
 
   Proof.
     intros a b ba. inversion ba; subst; simpl; intro x; set_iff; tauto.
@@ -307,7 +307,7 @@ Module BOrdWF_MOT <: MiniOrderedType.
 
   Definition lt : relation t := empty_rel.
 
-  Instance lt_trans : Transitive lt.
+  #[global] Instance lt_trans : Transitive lt.
 
   Proof. fo. Qed.
 

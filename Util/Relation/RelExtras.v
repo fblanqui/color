@@ -62,7 +62,7 @@ Module Type Eqset.
   Parameter eqA : relation A.
   Notation "X =A= Y" := (eqA X Y) (at level 70).
 
-  Declare Instance eqA_Equivalence : Equivalence eqA.
+  #[global] Declare Instance eqA_Equivalence : Equivalence eqA.
 
   #[global] Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
   #[global] Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
@@ -84,7 +84,7 @@ Module Eqset_def (A : SetA) <: Eqset.
 
   Definition eqA := eq (A:=A).
 
-  Instance eqA_Equivalence : Equivalence eqA.
+  #[global] Instance eqA_Equivalence : Equivalence eqA.
 
   Proof. unfold eqA. class. Qed.
 
@@ -101,7 +101,7 @@ Section Eqset_def_gtA_eqA_compat.
 
   Variables (A : Type) (gtA : relation A).
 
-  Instance Eqset_def_gtA_eqA_compat : Proper (eq ==> eq ==> impl) gtA.
+  #[global] Instance Eqset_def_gtA_eqA_compat : Proper (eq ==> eq ==> impl) gtA.
 
   Proof.
     intros x x' x_x' y y' y_y' x_y. rewrite <- x_x', <- y_y'; trivial.
@@ -118,7 +118,7 @@ Module Type Ord.
   Parameter gtA : relation A.
   Notation "X >A Y" := (gtA X Y) (at level 70).
 
-  Declare Instance gtA_eqA_compat : Proper (eqA ==> eqA ==> impl) gtA.
+  #[global] Declare Instance gtA_eqA_compat : Proper (eqA ==> eqA ==> impl) gtA.
 
   #[global] Hint Resolve gtA_eqA_compat : sets.
 
@@ -138,16 +138,16 @@ Module OrdLemmas (Export P : Ord).
   #[global] Hint Unfold ltA geA leA AccA : sets.
 
 (*REMOVE?*)
-  Instance gtA_morph : Proper (eqA ==> eqA ==> iff) gtA.
+  #[global] Instance gtA_morph : Proper (eqA ==> eqA ==> iff) gtA.
 
   Proof. intros a b ab c d cd. split; apply gtA_eqA_compat; (hyp||sym;hyp). Qed.
 
 (*REMOVE?*)
-  Instance ltA_morph : Proper (eqA ==> eqA ==> iff) ltA.
+  #[global] Instance ltA_morph : Proper (eqA ==> eqA ==> iff) ltA.
 
   Proof. intros a b ab c d cd. split; apply gtA_eqA_compat; (hyp||sym;hyp). Qed.
 
-  Instance AccA_morph : Proper (eqA ==> iff) AccA.
+  #[global] Instance AccA_morph : Proper (eqA ==> iff) AccA.
 
   Proof.
     intros a b eq_ab. split.
@@ -186,7 +186,7 @@ Module nat_ord <: Ord.
   Definition A := nat.
   Definition gtA := gt.
 
-  Instance gtA_eqA_compat : Proper (eq ==> eq ==> impl) gt.
+  #[global] Instance gtA_eqA_compat : Proper (eq ==> eq ==> impl) gt.
 
   Proof. firstorder auto with zarith. Qed.
 

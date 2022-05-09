@@ -93,14 +93,14 @@ Qed.
 
 (** [lex] is monotone wrt inclusion. *)
 
-Instance lex_incl A B : Proper (incl ==> incl ==> incl ==> incl) (@lex A B).
+#[global] Instance lex_incl A B : Proper (incl ==> incl ==> incl ==> incl) (@lex A B).
 
 Proof.
   intros gtA gtA' gtAgtA' eqA eqA' eqAeqA' gtB gtB' gtBgtB' t u tu.
   inversion tu; clear tu; subst. apply lex1. fo. apply lex2; fo.
 Qed.
 
-Instance lex_same A B : Proper (same ==> same ==> same ==> same) (@lex A B).
+#[global] Instance lex_same A B : Proper (same ==> same ==> same ==> same) (@lex A B).
 
 Proof.
   intros gtA1 gtA' [gtAgtA' gtA'gtA] eqA eqA' [eqAeqA' eqA'eqA]
@@ -180,7 +180,7 @@ End lexn.
 
 (** Monotony wrt incl. *)
 
-Instance lexn_incl A : forall n, Proper (incl ==> incl ==> incl) (@lexn n A). 
+#[global] Instance lexn_incl A : forall n, Proper (incl ==> incl ==> incl) (@lexn n A). 
 
 Proof.
   induction n; simpl. fo.
@@ -307,7 +307,7 @@ End lexv.
 
 (** Monotony wrt incl. *)
 
-Instance lexv_incl n A : Proper (incl ==> incl ==> incl) (@lexv n A). 
+#[global] Instance lexv_incl n A : Proper (incl ==> incl ==> incl) (@lexv n A). 
 
 Proof. intros eq eq' eqeq' gt gt' gtgt' t u. apply lexn_incl; hyp. Qed.
 
@@ -476,7 +476,7 @@ Section lexl.
 
 End lexl.
 
-Instance lexl_incl m A : Proper (incl ==> incl ==> incl) (@lexl m A). 
+#[global] Instance lexl_incl m A : Proper (incl ==> incl ==> incl) (@lexl m A). 
 
 Proof.
   intros eq eq' eqeq' gt gt' gtgt' xs ys h. destruct h.

@@ -57,22 +57,22 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Notation "M =m N" := (mat_eqA M N) (at level 70).
 
-  Instance mat_eqA_refl m n : Reflexive (@mat_eqA m n).
+  #[global] Instance mat_eqA_refl m n : Reflexive (@mat_eqA m n).
 
   Proof. firstorder auto with crelations. Qed.
 
-  Instance mat_eqA_sym m n : Symmetric (@mat_eqA m n).
+  #[global] Instance mat_eqA_sym m n : Symmetric (@mat_eqA m n).
 
   Proof. firstorder auto with sets. Qed.
 
-  Instance mat_eqA_trans m n : Transitive (@mat_eqA m n).
+  #[global] Instance mat_eqA_trans m n : Transitive (@mat_eqA m n).
 
   Proof.
     unfold mat_eqA, Transitive. intros. trans (get_elem y ip jp); auto.
   Qed.
 
   (*REMOVE?*)
-  Instance mat_eqA_equiv m n : Equivalence (@mat_eqA m n).
+  #[global] Instance mat_eqA_equiv m n : Equivalence (@mat_eqA m n).
 
   Proof. constructor; class. Qed.
 
@@ -91,12 +91,12 @@ Module Matrix (OSRT : OrdSemiRingType).
     unfold get_elem, get_row. rewrite !Vnth_tail. apply H.
   Qed.
 
-  Instance get_row_mor m n i (h:i<m) :
+  #[global] Instance get_row_mor m n i (h:i<m) :
     Proper (@mat_eqA m n ==> Vforall2 eqA) (fun M => @get_row m n M i h).
 
   Proof. intros M N MN. apply Vforall2_intro_nth. intros. apply MN. Qed.
 
-  Instance get_col_mor m n i (h:i<n) :
+  #[global] Instance get_col_mor m n i (h:i<n) :
     Proper (@mat_eqA m n ==> Vforall2 eqA) (fun M => @get_col m n M i h).
 
   Proof.
@@ -104,7 +104,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     apply MN.
   Qed.
 
-  Instance get_elem_mor m n i j (ip:i<m) (jp:j<n) :
+  #[global] Instance get_elem_mor m n i j (ip:i<m) (jp:j<n) :
     Proper (@mat_eqA m n ==> eqA) (fun M => @get_elem m n M i j ip jp).
 
   Proof. fo. Qed.
@@ -175,7 +175,7 @@ Module Matrix (OSRT : OrdSemiRingType).
   Definition vec_to_col_mat n (v : vec n) : col_mat n := 
     Vmap (fun i => Vcons i Vnil) v.
 
-  Instance vec_to_col_mat_mor n :
+  #[global] Instance vec_to_col_mat_mor n :
     Proper (Vforall2 eqA ==> @mat_eqA n 1) (@vec_to_col_mat n).
 
   Proof.
@@ -328,7 +328,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   Infix "<*>" := mat_mult (at level 40).
 
-  Instance mat_mult_mor m n p :
+  #[global] Instance mat_mult_mor m n p :
     Proper (@mat_eqA m n ==> @mat_eqA n p ==> @mat_eqA m p) (@mat_mult m n p).
 
   Proof.
@@ -444,7 +444,7 @@ Module Matrix (OSRT : OrdSemiRingType).
   Definition mat_vec_prod m n (m : matrix m n) (v : vec n) :=
     col_mat_to_vec (m <*> (vec_to_col_mat v)).
 
-  Instance mat_vec_prod_mor m n :
+  #[global] Instance mat_vec_prod_mor m n :
     Proper (@mat_eqA m n ==> Vforall2 eqA ==> Vforall2 eqA) (@mat_vec_prod m n).
 
   Proof.
@@ -569,7 +569,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 
   End Forall2.
 
-  Hint Rewrite mat_mult_id_l zero_matrix_mult_l using simpl : arith.
+  #[global] Hint Rewrite mat_mult_id_l zero_matrix_mult_l using simpl : arith.
 
 (***********************************************************************)
 (** 'monotonicity' of matrix multiplication over naturals *)

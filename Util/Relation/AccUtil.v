@@ -19,13 +19,13 @@ Arguments wf_incl [A R1 R2] _ _ _.
 (***********************************************************************)
 (** Compatibility of accessibility wrt relation inclusion/equivalence. *)
 
-Instance Acc_incl A : Proper (incl --> eq ==> impl) (@Acc A).
+#[global] Instance Acc_incl A : Proper (incl --> eq ==> impl) (@Acc A).
 
 Proof.
   intros R R' R'R x x' xx'. subst x'. induction 1. apply Acc_intro. fo.
 Qed.
 
-Instance Acc_same A : Proper (same ==> eq ==> iff) (@Acc A).
+#[global] Instance Acc_same A : Proper (same ==> eq ==> iff) (@Acc A).
 
 Proof.
   intros R R' [RR' R'R] x x' xx'. subst x'. split; intro h.
@@ -40,12 +40,12 @@ Proof.
   induction 2. constructor. intros z Szx; apply H1. exact (proj2 (H z x) Szx).
 Qed.
 
-Instance well_founded_incl A :
+#[global] Instance well_founded_incl A :
   Proper (incl --> impl) (@well_founded A).
 
 Proof. intros R R' R'R h. intro x. rewrite <- R'R. fo. Qed.
 
-Instance well_founded_same A : Proper (same ==> iff) (@well_founded A).
+#[global] Instance well_founded_same A : Proper (same ==> iff) (@well_founded A).
 
 Proof.
   intros R R' [RR' R'R]. split; intro h. rewrite R'R. hyp. rewrite RR'. hyp.

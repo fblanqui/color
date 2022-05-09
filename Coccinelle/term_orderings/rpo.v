@@ -559,7 +559,7 @@ intros t1 t2 H; apply E; right; assumption.
 Qed.
 
 (* equiv is actually an equivalence *)
-Instance equiv_equiv  : Equivalence equiv.
+#[global] Instance equiv_equiv  : Equivalence equiv.
 Proof.
 constructor.
 (* Reflexivity *)
@@ -618,7 +618,7 @@ apply permut_trans with l2; trivial.
 intros a b c a_in_l1 _ _; apply E_l1; trivial.
 Qed.
 
-Instance equiv_Equivalence : Equivalence equiv.
+#[global] Instance equiv_Equivalence : Equivalence equiv.
 
 Proof. generalize equiv_equiv. firstorder. Qed.
 
@@ -1520,11 +1520,11 @@ apply rpo_subterm with (Term f l); trivial.
 subst l; simpl; apply in_or_app; right; left; trivial.
 Qed.
 
-Instance EQA : Equivalence equiv.
+#[global] Instance EQA : Equivalence equiv.
 
 Proof. generalize equiv_equiv. firstorder. Qed.
 
-Instance LP : Equivalence (permut0 equiv).
+#[global] Instance LP : Equivalence (permut0 equiv).
 
 Proof.
   split; intro x.
@@ -1533,16 +1533,16 @@ Proof.
   apply permut0_trans. apply equiv_equiv.
 Qed.
 
-Instance mem_morph2 : Proper (equiv ==> permut0 equiv ==> iff) (mem equiv).
+#[global] Instance mem_morph2 : Proper (equiv ==> permut0 equiv ==> iff) (mem equiv).
 
 Proof. exact (mem_morph2 equiv_equiv). Qed.
 
-Instance app_morph :
+#[global] Instance app_morph :
   Proper (permut0 equiv ==> permut0 equiv ==> permut0 equiv) (@List.app term).
 
 Proof. exact (app_morph equiv_equiv). Qed.
 
-Instance add_A_morph :
+#[global] Instance add_A_morph :
   Proper (equiv ==> permut0 equiv ==> permut0 equiv) (@List.cons term).
 
 Proof. exact (add_A_morph equiv_equiv). Qed.

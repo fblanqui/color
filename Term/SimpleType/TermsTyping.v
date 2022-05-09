@@ -38,7 +38,7 @@ Module TermsTyping (Sig : TermsSig.Signature).
 
 (*Section Equality_Decidable.*)
 
-(* FIXME: eq_nat_dec has to be redefined here for the following Hint
+(* FIXME: eq_nat_dec has to be redefined here for the following #[global] Hint
 Resolve, otherwise it does not work! *)
   Lemma eq_nat_dec : forall (m n: nat), {m=n}+{m<>n}.
 

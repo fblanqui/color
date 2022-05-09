@@ -232,8 +232,8 @@ Section S.
     Bind Scope poly_scope with poly.
     Local Open Scope poly_scope.
 
-    Hint Unfold maxvar_le : core.
-    Hint Resolve le_max_l le_max_r : core.
+    #[local] Hint Unfold maxvar_le : core.
+    #[local] Hint Resolve le_max_l le_max_r : core.
 
     Program Definition rulePoly_ge rule := 
       let l := lhs rule in let r := rhs rule in

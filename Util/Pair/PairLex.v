@@ -21,17 +21,17 @@ Section LexPair.
 
   Existing Instance eqL_Equivalence.
 
-  Hint Resolve (Seq_refl  L eqL eqL_Equivalence) : sets.
-  Hint Resolve (Seq_trans L eqL eqL_Equivalence) : sets.
-  Hint Resolve (Seq_sym   L eqL eqL_Equivalence) : sets.
+  #[local] Hint Resolve (Seq_refl  L eqL eqL_Equivalence) : sets.
+  #[local] Hint Resolve (Seq_trans L eqL eqL_Equivalence) : sets.
+  #[local] Hint Resolve (Seq_sym   L eqL eqL_Equivalence) : sets.
 
   Variables (eqR : relation R) (eqR_Equivalence : Equivalence eqR).
 
   Existing Instance eqR_Equivalence.
 
-  Hint Resolve (Seq_refl  R eqR eqR_Equivalence) : sets.
-  Hint Resolve (Seq_trans R eqR eqR_Equivalence) : sets.
-  Hint Resolve (Seq_sym   R eqR eqR_Equivalence) : sets.
+  #[local] Hint Resolve (Seq_refl  R eqR eqR_Equivalence) : sets.
+  #[local] Hint Resolve (Seq_trans R eqR eqR_Equivalence) : sets.
+  #[local] Hint Resolve (Seq_sym   R eqR eqR_Equivalence) : sets.
  
   Variable gtL : relation L.
 
@@ -44,7 +44,7 @@ Section LexPair.
   Definition AccL := Acc ltL.
 
 (*REMOVE?*)
-  Instance gtL_morph : Proper (eqL ==> eqL ==> iff) gtL.
+  #[global] Instance gtL_morph : Proper (eqL ==> eqL ==> iff) gtL.
 
   Proof. intros a b ab c d cd. split; apply gtL_eqL_compat; hyp. Qed.
 
@@ -59,7 +59,7 @@ Section LexPair.
   Definition AccR := Acc ltR.
 
 (*REMOVE?*)
-  Instance gtR_morph : Proper (eqR ==> eqR ==> iff) gtR.
+  #[global] Instance gtR_morph : Proper (eqR ==> eqR ==> iff) gtR.
 
   Proof. intros a b ab c d cd. split; apply gtR_eqR_compat; hyp. Qed.
 
@@ -81,10 +81,10 @@ Section LexPair.
 
   Definition Acc_LexProd := Acc LexProd_Lt.
 
-  Hint Unfold eqPair : sets.
+  #[local] Hint Unfold eqPair : sets.
 
   (* --- Extension of setoids on components to setoid on pair *)
-  Instance eqPair_Equivalence : Equivalence eqPair.
+  #[global] Instance eqPair_Equivalence : Equivalence eqPair.
 
   Proof.
     constructor.
@@ -93,7 +93,7 @@ Section LexPair.
     intros x y z xy yz; inversion xy; inversion yz; eauto with sets.
   Qed.
 
-  Instance LexProd_Gt_morph_equiv :
+  #[global] Instance LexProd_Gt_morph_equiv :
     Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
 
   Proof.
@@ -114,7 +114,7 @@ Section LexPair.
 
   Proof. intros. apply (proj1 (LexProd_Gt_morph_equiv H H0)). hyp. Qed.
 
-  Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
+  #[global] Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
 
   Proof.
     unfold LexProd_Lt, transp. intros p p' pp' q q' qq'. split; intro p_q.
@@ -122,7 +122,7 @@ Section LexPair.
     rewrite pp', qq'; trivial.
   Qed.
 
-  Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
+  #[global] Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
 
   Proof.
     intros p p' p_p'. split.
@@ -140,17 +140,17 @@ Section LexPair.
 
     Variable gtL_so: strict_order gtL.
 
-    Hint Resolve (sord_trans gtL_so) : sets.
-    Hint Resolve (sord_irrefl gtL_so) : sets.
-    Hint Resolve (so_not_symmetric gtL_so) : sets.
-    Hint Resolve (so_strict gtL_so gtL_eqL_compat eqL_Equivalence) : sets.
+    #[local] Hint Resolve (sord_trans gtL_so) : sets.
+    #[local] Hint Resolve (sord_irrefl gtL_so) : sets.
+    #[local] Hint Resolve (so_not_symmetric gtL_so) : sets.
+    #[local] Hint Resolve (so_strict gtL_so gtL_eqL_compat eqL_Equivalence) : sets.
 
     Variable gtR_so: strict_order gtR.
 
-    Hint Resolve (sord_trans gtR_so) : sets.
-    Hint Resolve (sord_irrefl gtR_so) : sets.
-    Hint Resolve (so_not_symmetric gtR_so) : sets.
-    Hint Resolve (so_strict gtR_so gtR_eqR_compat eqR_Equivalence) : sets.
+    #[local] Hint Resolve (sord_trans gtR_so) : sets.
+    #[local] Hint Resolve (sord_irrefl gtR_so) : sets.
+    #[local] Hint Resolve (so_not_symmetric gtR_so) : sets.
+    #[local] Hint Resolve (so_strict gtR_so gtR_eqR_compat eqR_Equivalence) : sets.
 
     Lemma lexprod_irreflex  : forall a, a >lex a -> False.
 
@@ -276,12 +276,12 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
 (* --- Extension of setoids on components to setoid on pair *)
   #[global] Hint Unfold eqPair : sets.
 
-  Instance eqPair_Equivalence : Equivalence eqPair := 
+  #[global] Instance eqPair_Equivalence : Equivalence eqPair := 
     eqPair_Equivalence A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence.
 
   #[global] Hint Resolve A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence : sets.
 
-  Instance LexProd_Gt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
+  #[global] Instance LexProd_Gt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
 
   Proof.
     intros p p' pp' q q' qq'. split.
@@ -291,7 +291,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
     hyp. hyp.
   Qed.
 
-  Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
+  #[global] Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
 
   Proof.
     unfold LexProd_Lt; unfold transp.
@@ -300,7 +300,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
     rewrite pp', qq'; trivial.
   Qed.
 
-  Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
+  #[global] Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
 
   Proof.
     intros p q pq.
@@ -363,7 +363,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
 
     Definition gtA := LexProd_Gt.
 
-    Instance gtA_eqA_compat : Proper (S.eqA ==> S.eqA ==> impl) gtA.
+    #[global] Instance gtA_eqA_compat : Proper (S.eqA ==> S.eqA ==> impl) gtA.
 
     Proof. intros x x' xx' y y' yy' x_y. rewrite <- xx', <- yy'; trivial. Qed.
 

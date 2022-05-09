@@ -33,7 +33,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Infix "[+]" := vector_plus (at level 50).
 
-  Instance vector_plus_mor n :
+  #[global] Instance vector_plus_mor n :
     Proper (Vforall2 eqA ==> Vforall2 eqA ==> Vforall2 eqA) (@vector_plus n).
 
   Proof.
@@ -74,7 +74,7 @@ Module VectorArith (SRT : SemiRingType).
   Definition add_vectors n k (v : vector (vec n) k) := 
     Vfold_left_rev (@vector_plus n) (zero_vec n) v.
 
-  Instance add_vectors_mor n k :
+  #[global] Instance add_vectors_mor n k :
     Proper (Vforall2 (Vforall2 eqA) ==> Vforall2 eqA) (@add_vectors n k).
 
   Proof.
@@ -141,7 +141,7 @@ Module VectorArith (SRT : SemiRingType).
   Definition dot_product n (l r : vec n) :=
     Vfold_left_rev Aplus A0 (Vmap2 Amult l r).
 
-  Instance dot_product_mor n :
+  #[global] Instance dot_product_mor n :
     Proper (Vforall2 eqA ==> Vforall2 eqA ==> eqA) (@dot_product n).
 
   Proof.
@@ -240,7 +240,7 @@ Module VectorArith (SRT : SemiRingType).
   (***********************************************************************)
   (** hints *)
 
-  Hint Rewrite vector_plus_zero_l vector_plus_zero_r add_vectors_cons : arith.
+  #[global] Hint Rewrite vector_plus_zero_l vector_plus_zero_r add_vectors_cons : arith.
 
 End VectorArith.
 
@@ -257,7 +257,7 @@ Module OrdVectorArith (OSRT : OrdSemiRingType).
 
   Infix ">=v" := (Vforall2 ge) (at level 70).
 
-  Instance vec_ge_mor n :
+  #[global] Instance vec_ge_mor n :
     Proper (Vforall2 eqA ==> Vforall2 eqA ==> iff) (Vforall2 ge (n:=n)).
 
   Proof. apply Vforall2_aux_Proper. class. Qed.

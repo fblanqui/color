@@ -339,7 +339,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     exists T; exists (S p); split; trivial.
   Qed.
 
-  Hint Rewrite subst_ran_single subst_ran_cons_none subst_ran_cons_some : terms.
+  #[global] Hint Rewrite subst_ran_single subst_ran_cons_none subst_ran_cons_some : terms.
 
   Lemma subst_cons_empty G : isEmptySubst G -> isEmptySubst (None::G).
 
@@ -531,7 +531,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     apply subst_cons_empty; trivial.
   Qed.
 
-  Hint Rewrite subst_ran_empty subst_ran_lifted_empty subst_ran_lifted_ne 
+  #[global] Hint Rewrite subst_ran_empty subst_ran_lifted_empty subst_ran_lifted_ne 
     using solve [auto with terms] : terms.
 
   Lemma subst_ran_lifted_noDecl G : subst_ran (lift_subst G 1) |= 0 :! .
@@ -542,7 +542,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite subst_ran_lifted_ne; auto with terms.
   Qed.
 
-  Hint Rewrite subst_ran_single subst_dom_lifted subst_ran_cons_none
+  #[global] Hint Rewrite subst_ran_single subst_dom_lifted subst_ran_cons_none
        subst_ran_cons_some : terms.
 
   Fixpoint presubst_aux (P: Preterm) (l: nat) (G: Subst) : Preterm :=
@@ -942,7 +942,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof. unfold subst. destruct (subst_aux C); simpl; tauto. Qed.
 
-  Hint Rewrite subst_env subst_term subst_type : terms.
+  #[global] Hint Rewrite subst_env subst_term subst_type : terms.
 
   Lemma subst_env_cont_subst_comp M G x (MG: correct_subst M G) T :
     G |-> x/T -> env (subst MG) = env (subst MG) [+] env T.

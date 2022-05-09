@@ -1068,9 +1068,9 @@ End List_Rel_Dec.
 (***********************************************************************)
 (** hints *)
 
-Hint Rewrite initialSeg_full initialSeg_nth seg_nth seg_tillEnd seg_exceeded
+#[global] Hint Rewrite initialSeg_full initialSeg_nth seg_nth seg_tillEnd seg_exceeded
   finalSeg_empty nth_finalSeg_nth nth_copy_in nth_app_left nth_app_right
   using solve [lia | auto] : datatypes.
 
-Hint Rewrite initialSeg_length finalSeg_full finalSeg_cons finalSeg_length
+#[global] Hint Rewrite initialSeg_length finalSeg_full finalSeg_cons finalSeg_length
   initialFinalSeg_length copy_split copy_length : datatypes.

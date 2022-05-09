@@ -34,15 +34,15 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** database of Equal-ity lemmas. *)
 
-  Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all : Equal.
-  Hint Rewrite <- add_union_singleton : Equal.
+  #[global] Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all : Equal.
+  #[global] Hint Rewrite <- add_union_singleton : Equal.
 
   Ltac Equal := autorewrite with Equal.
 
 (***********************************************************************)
 (** database of equality lemmas on [mem]. *)
 
-  Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
+  #[global] Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
     : mem.
 
   Ltac mem := autorewrite with mem.
@@ -74,7 +74,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. eq_dec x x. refl. absurd (x=x); auto with ordered_type. Qed.
 
-  Hint Rewrite eqb_refl : mem.
+  #[global] Hint Rewrite eqb_refl : mem.
 
   Lemma eqb_sym : forall x y, eqb x y = eqb y x.
 
@@ -126,20 +126,20 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. fset. Qed.
 
-  Hint Rewrite remove_singleton : Equal.
+  #[global] Hint Rewrite remove_singleton : Equal.
 
   Lemma remove_union x s s' :
     remove x (union s s') [=] union (remove x s) (remove x s').
 
   Proof. fset. Qed.
 
-  Hint Rewrite remove_union : Equal.
+  #[global] Hint Rewrite remove_union : Equal.
 
   Lemma remove_empty x : remove x empty [=] empty.
 
   Proof. fset. Qed.
 
-  Hint Rewrite remove_empty : Equal.
+  #[global] Hint Rewrite remove_empty : Equal.
 
   Lemma remove_com x y s : remove x (remove y s) [=] remove y (remove x s).
 
@@ -154,13 +154,13 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. fset. Qed.
 
-  Hint Rewrite remove_add_eq : Equal.
+  #[global] Hint Rewrite remove_add_eq : Equal.
 
   Lemma remove_idem x xs : remove x (remove x xs) [=] remove x xs.
 
   Proof. fset. Qed.
 
-  Hint Rewrite remove_idem : Equal.
+  #[global] Hint Rewrite remove_idem : Equal.
 
   Lemma remove_add_if x y xs : remove y (add x xs)
     [=] if eqb y x then remove y xs else add x (remove y xs).
@@ -206,39 +206,39 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. fset. Qed.
 
-  Hint Rewrite union_empty_l : Equal.
+  #[global] Hint Rewrite union_empty_l : Equal.
 
   Lemma union_empty_r s : union s empty [=] s.
 
   Proof. fset. Qed.
 
-  Hint Rewrite union_empty_r : Equal.
+  #[global] Hint Rewrite union_empty_r : Equal.
 
   Lemma union_idem s : union s s [=] s.
 
   Proof. fset. Qed.
 
-  Hint Rewrite union_idem : Equal.
+  #[global] Hint Rewrite union_idem : Equal.
 
   Lemma union_idem_1 s t : union s (union s t) [=] union s t.
 
   Proof. fset. Qed.
 
-  Hint Rewrite union_idem_1 : Equal.
+  #[global] Hint Rewrite union_idem_1 : Equal.
 
   Lemma union_idem_2 s t u :
     union s (union t (union s u)) [=] union s (union t u).
 
   Proof. fset. Qed.
 
-  Hint Rewrite union_idem_2 : Equal.
+  #[global] Hint Rewrite union_idem_2 : Equal.
 
   Lemma union_idem_3 s t u :
     union (union s t) (union s u) [=] union s (union t u).
 
   Proof. fset. Qed.
 
-  Hint Rewrite union_idem_3 : Equal.
+  #[global] Hint Rewrite union_idem_3 : Equal.
 
   Lemma union_sym_2 s t u : union s (union t u) [=] union t (union s u).
 
@@ -271,19 +271,19 @@ Module Make (Export XSet : FSetInterface.S).
 
   Proof. fset. Qed.
 
-  Hint Rewrite diff_empty_r : Equal.
+  #[global] Hint Rewrite diff_empty_r : Equal.
 
   Lemma diff_empty_l s : diff empty s [=] empty.
 
   Proof. fset. Qed.
 
-  Hint Rewrite diff_empty_l : Equal.
+  #[global] Hint Rewrite diff_empty_l : Equal.
 
   Lemma remove_diff_singleton x s : remove x s [=] diff s (singleton x).
 
   Proof. fset. Qed.
 
-  Hint Rewrite <- remove_diff_singleton : Equal.
+  #[global] Hint Rewrite <- remove_diff_singleton : Equal.
 
 (***********************************************************************)
 (** intersection *)
@@ -332,19 +332,19 @@ Module Make (Export XSet : FSetInterface.S).
 (***********************************************************************)
 (** Compatibility of set operations wrt inclusion. *)
 
-  Instance add_s : Proper (E.eq ==> Subset ==> Subset) add.
+  #[global] Instance add_s : Proper (E.eq ==> Subset ==> Subset) add.
 
   Proof. intros x y xy s t st z. rewrite xy, st. auto. Qed.
 
-  Instance inter_s : Proper (Subset ==> Subset ==> Subset) inter.
+  #[global] Instance inter_s : Proper (Subset ==> Subset ==> Subset) inter.
 
   Proof. intros a a' aa' b b' bb' x. set_iff. rewrite aa', bb'. auto. Qed.
 
-  Instance union_s : Proper (Subset ==> Subset ==> Subset) union.
+  #[global] Instance union_s : Proper (Subset ==> Subset ==> Subset) union.
 
   Proof. intros a a' aa' b b' bb' x. set_iff. rewrite aa', bb'. auto. Qed.
 
-  Instance diff_s : Proper (Subset ==> Subset --> Subset) diff.
+  #[global] Instance diff_s : Proper (Subset ==> Subset --> Subset) diff.
 
   Proof. intros a a' aa' b b' b'b x. set_iff. rewrite aa', b'b. auto. Qed.
 
@@ -356,7 +356,7 @@ Module Make (Export XSet : FSetInterface.S).
   | le_opt_2 : forall x, le_opt None (Some x)
   | le_opt_3 : forall x y, E.lt x y \/ E.eq x y -> le_opt (Some x) (Some y).
 
-  Instance max_elt_s : Proper (Subset ==> le_opt) max_elt.
+  #[global] Instance max_elt_s : Proper (Subset ==> le_opt) max_elt.
 
   Proof.
     intros A B AB. case_eq (max_elt A).
@@ -370,7 +370,7 @@ Module Make (Export XSet : FSetInterface.S).
     intro Be. apply le_opt_1.
   Qed.
 
-  Instance max_elt_e : Proper (Equal ==> opt_r E.eq) max_elt.
+  #[global] Instance max_elt_e : Proper (Equal ==> opt_r E.eq) max_elt.
 
   Proof.
     intros A B e. assert (AB : Subset A B). rewrite e. refl.
@@ -458,7 +458,7 @@ Module Make (Export XSet : FSetInterface.S).
   Definition replace y z xs :=
     if mem y xs then add z (remove y xs) else xs.
 
-  Instance replace_Subset :
+  #[global] Instance replace_Subset :
     Proper (E.eq ==> E.eq ==> Subset ==> Subset) replace.
 
   Proof.
@@ -472,7 +472,7 @@ Module Make (Export XSet : FSetInterface.S).
     right. split. fo. intro ya. rewrite ya, <- not_mem_iff in hy. contr.
   Qed.
 
-  Instance replace_Equal :
+  #[global] Instance replace_Equal :
     Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) replace.
 
   Proof.

@@ -56,21 +56,21 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** Eta-reduction do not create free variables. *)
 
-  Instance fv_eta_top_Equal : Proper (eta_top ==> Equal) fv.
+  #[global] Instance fv_eta_top_Equal : Proper (eta_top ==> Equal) fv.
 
   Proof.
     intros u u' u'u; unfold flip in u'u. inversion u'u; clear u'u; subst.
     simpl. intro y. set_iff. split_all. contr. subst. contr.
   Qed.
 
-  Instance fv_eta_top : Proper (eta_top --> Subset) fv.
+  #[global] Instance fv_eta_top : Proper (eta_top --> Subset) fv.
 
   Proof. intros u u' u'u; unfold flip in u'u. rewrite u'u. refl. Qed.
 
 (****************************************************************************)
 (** Eta-reduction is stable by substitution. *)
 
-  Instance subs_eta_top : Proper (Logic.eq ==> eta_top ==> eta_top) subs.
+  #[global] Instance subs_eta_top : Proper (Logic.eq ==> eta_top ==> eta_top) subs.
 
   Proof.
     intros s s' ss' u v uv. subst s'. inversion uv; clear uv; subst. simpl.
@@ -88,7 +88,7 @@ Module Make (Export L : L_Struct).
 
   (*COQ: should follow from a general meta-theorem
     since [R] is a subrelation of [clos_aeq R]. *)
-  Instance subs_clos_aeq_eta_top :
+  #[global] Instance subs_clos_aeq_eta_top :
     Proper (Logic.eq ==> eta_top ==> clos_aeq eta_top) subs.
 
   Proof.
@@ -96,7 +96,7 @@ Module Make (Export L : L_Struct).
     apply subs_eta_top. refl. hyp.
   Qed.
 
-  Instance subs_eta_aeq : Proper (Logic.eq ==> eta_aeq ==> eta_aeq) subs.
+  #[global] Instance subs_eta_aeq : Proper (Logic.eq ==> eta_aeq ==> eta_aeq) subs.
 
   Proof. class. Qed.
 

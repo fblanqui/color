@@ -340,7 +340,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof. induction E; auto. Qed.
 
-  Hint Rewrite env_sum_empty_l env_sum_empty_r : terms.
+  #[global] Hint Rewrite env_sum_empty_l env_sum_empty_r : terms.
 
   Lemma env_sum_assoc : forall (E1 E2 E3: Env),
     E1 [+] E2 [+] E3 = E1 [+] (E2 [+] E3).
@@ -603,7 +603,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof. destruct E; trivial. destruct o; trivial. Qed.
 
-  Hint Rewrite env_sub_empty : terms.
+  #[global] Hint Rewrite env_sub_empty : terms.
 
   Lemma env_sub_Empty : forall E1 E2, emptyEnv E2 -> E1 [-] E2 = E1.
 
@@ -683,7 +683,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof. induction E; auto. destruct a; simpl; congruence. Qed.
 
-  Hint Rewrite env_sum_double : terms.
+  #[global] Hint Rewrite env_sum_double : terms.
 
   Lemma env_comp_sum_comp_right : forall E1 E2 E3,
     E1 [<->] E2 [+] E3 -> E1 [<->] E3.
@@ -1473,7 +1473,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   #[global] Hint Immediate env_eq_refl env_eq_sym env_eq_empty_none_empty : terms.
 
-  Instance env_eq_Equivalence : Equivalence env_eq.
+  #[global] Instance env_eq_Equivalence : Equivalence env_eq.
 
   Proof.
     split.
@@ -1482,11 +1482,11 @@ Module TermsEnv (Sig : TermsSig.Signature).
     intros x y z. apply env_eq_trans.
   Qed.
 
-  Instance envSubset_morph : Proper (env_eq ==> env_eq ==> iff) envSubset.
+  #[global] Instance envSubset_morph : Proper (env_eq ==> env_eq ==> iff) envSubset.
 
   Proof. fo. Qed.
 
-  Instance loweredEnv_morph : Proper (env_eq ==> eq ==> env_eq) loweredEnv.
+  #[global] Instance loweredEnv_morph : Proper (env_eq ==> eq ==> env_eq) loweredEnv.
 
   Proof.
     intros E F [EF FE] x y xy. subst y. split.
@@ -1494,15 +1494,15 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_subset_lowered; trivial.
   Qed.
 
-  Instance env_comp_morph : Proper (env_eq ==> env_eq ==> iff) env_comp.
+  #[global] Instance env_comp_morph : Proper (env_eq ==> env_eq ==> iff) env_comp.
 
   Proof. fo. Qed.
 
-  Instance VarD_morph : Proper (env_eq ==> eq ==> eq ==> iff) VarD.
+  #[global] Instance VarD_morph : Proper (env_eq ==> eq ==> eq ==> iff) VarD.
 
   Proof. intros E F EF x y xy t u tu. subst y u. fo. Qed.
 
-  Instance VarUD_morph : Proper (env_eq ==> eq ==> iff) VarUD.
+  #[global] Instance VarUD_morph : Proper (env_eq ==> eq ==> iff) VarUD.
 
   Proof.
     intros e e0 H n m nm. subst m. split; intro H0.
@@ -1608,7 +1608,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
     apply env_compose_morph_aux0; trivial.
   Qed.
 
-  Instance env_compose_morph :
+  #[global] Instance env_compose_morph :
     Proper (env_eq ==> env_eq ==> env_eq) env_compose.
 
   Proof.

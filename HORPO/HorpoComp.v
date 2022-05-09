@@ -78,7 +78,7 @@ Module HorpoComp (S : TermsSig.Signature)
     apply Computable_morph_aux with t; eauto with horpo.
   Qed.
 
-  Instance CompH_morph : Proper (terms_conv ==> iff) CompH.
+  #[global] Instance CompH_morph : Proper (terms_conv ==> iff) CompH.
 
   Proof.
     intros; split; apply CompH_morph_aux; auto using terms_conv_sym.

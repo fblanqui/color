@@ -57,11 +57,11 @@ End MatrixMethodConf.
 Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   (*REMOVE?*)
-  Instance eq_vec_eq_vec_rel k : Equivalence (Vforall2 eq_vec (n:=k)).
+  #[global] Instance eq_vec_eq_vec_rel k : Equivalence (Vforall2 eq_vec (n:=k)).
 
   Proof. class. Qed.
 
-  Instance eq_vec_mat_eqA_rel k : Equivalence (Vforall2 mat_eqA (n:=k)).
+  #[global] Instance eq_vec_mat_eqA_rel k : Equivalence (Vforall2 mat_eqA (n:=k)).
 
   Proof. class. Qed.
   
@@ -72,15 +72,15 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   Notation "x =i y" := (eq_mint x y) (at level 70).
 
-  Instance eq_mint_refl k : Reflexive (@eq_mint k).
+  #[global] Instance eq_mint_refl k : Reflexive (@eq_mint k).
 
   Proof. unfold eq_mint, Reflexive. destruct x. intuition. Qed.
 
-  Instance eq_mint_sym k : Symmetric (@eq_mint k).
+  #[global] Instance eq_mint_sym k : Symmetric (@eq_mint k).
 
   Proof. unfold eq_mint, Symmetric. destruct x. destruct y. intuition. Qed.
 
-  Instance eq_mint_trans k : Transitive (@eq_mint k).
+  #[global] Instance eq_mint_trans k : Transitive (@eq_mint k).
 
   Proof.
     unfold eq_mint, Transitive. destruct x. destruct y. destruct z. intuition.
@@ -88,20 +88,20 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
   Qed.
 
   (*REMOVE?*)
-  Instance eq_mint_equiv k : Equivalence (@eq_mint k).
+  #[global] Instance eq_mint_equiv k : Equivalence (@eq_mint k).
 
   Proof. constructor; class. Qed.
  
-  Instance mkMatrix_mor k : Proper (eq_vec ==> Vforall2 mat_eqA ==> @eq_mint k)
+  #[global] Instance mkMatrix_mor k : Proper (eq_vec ==> Vforall2 mat_eqA ==> @eq_mint k)
     (@mkMatrixInt A matrix dim k).
 
   Proof. fo. Qed.
 
-  Instance const_mor k : Proper (@eq_mint k ==> eq_vec) (@const A matrix dim k).
+  #[global] Instance const_mor k : Proper (@eq_mint k ==> eq_vec) (@const A matrix dim k).
 
   Proof. intro x. destruct x. destruct y. simpl. intuition. Qed.
 
-  Instance args_mor k :
+  #[global] Instance args_mor k :
     Proper (@eq_mint k ==> Vforall2 mat_eqA) (@args A matrix dim k).
 
   Proof. intro x. destruct x. destruct y. simpl. intuition. Qed.
@@ -159,11 +159,11 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
     Definition succeq := Rof (Vforall2 ge) dom2vec.
 
-    Instance refl_succeq : Reflexive succeq.
+    #[global] Instance refl_succeq : Reflexive succeq.
       
     Proof. intro x. unfold succeq, Rof. refl. Qed.
 
-    Instance trans_succeq : Transitive succeq.
+    #[global] Instance trans_succeq : Transitive succeq.
       
     Proof. apply Rof_trans. class. Qed.
 

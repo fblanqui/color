@@ -244,7 +244,7 @@ Module Make (Export L : L_Struct).
 
   (** Basic properties. *)
 
-  Instance rename_proper_eq A B : Proper (Logic.eq ==> A ==> B) subs ->
+  #[global] Instance rename_proper_eq A B : Proper (Logic.eq ==> A ==> B) subs ->
     Proper (Logic.eq ==> Logic.eq ==> A ==> B) rename.
 
   Proof.
@@ -275,11 +275,11 @@ Module Make (Export L : L_Struct).
 
   Definition dom_incl xs s := forall x, ~In x xs -> s x = Var x.
 
-  Instance dom_incl_e : Proper (Equal ==> Logic.eq ==> iff) dom_incl.
+  #[global] Instance dom_incl_e : Proper (Equal ==> Logic.eq ==> iff) dom_incl.
 
   Proof. intros xs xs' e s s' ss'. subst s'. fo. Qed.
 
-  Instance dom_incl_s : Proper (Subset ==> Logic.eq ==> impl) dom_incl.
+  #[global] Instance dom_incl_s : Proper (Subset ==> Logic.eq ==> impl) dom_incl.
 
   Proof.
     intros xs xs' xsxs' s s' ss' h x hx. subst s'. apply h. rewrite xsxs'. hyp.
@@ -306,26 +306,26 @@ Module Make (Export L : L_Struct).
 
   (** Preserved properties. *)
 
-  Instance subs_rel_refl R xs : Reflexive R -> Reflexive (subs_rel R xs).
+  #[global] Instance subs_rel_refl R xs : Reflexive R -> Reflexive (subs_rel R xs).
 
   Proof. fo. Qed.
 
-  Instance subs_rel_sym R xs : Symmetric R -> Symmetric (subs_rel R xs).
+  #[global] Instance subs_rel_sym R xs : Symmetric R -> Symmetric (subs_rel R xs).
 
   Proof. fo. Qed.
 
-  Instance subs_rel_trans R xs : Transitive R -> Transitive (subs_rel R xs).
+  #[global] Instance subs_rel_trans R xs : Transitive R -> Transitive (subs_rel R xs).
 
   Proof. intros R_trans s1 s2 s3 a b x h. trans (s2 x); fo. Qed.
 
   (** [subs_rel R] is compatible with set inclusion and equality. *)
 
-  Instance subs_rel_s :
+  #[global] Instance subs_rel_s :
     Proper (inclusion ==> Subset --> Logic.eq ==> Logic.eq ==> impl) subs_rel.
 
   Proof. intros R R' RR' xs xs' e s1 s1' h1 s2 s2' h2. subst s1' s2'. fo. Qed.
 
-  Instance subs_rel_e :
+  #[global] Instance subs_rel_e :
     Proper (same ==> Equal ==> Logic.eq ==> Logic.eq ==> iff) subs_rel.
 
   Proof.
@@ -352,7 +352,7 @@ Module Make (Export L : L_Struct).
   (** [domain_fun] is compatible with set inclusion and equality and
   commutes with [add]. *)
 
-  Instance domain_fun_s :
+  #[global] Instance domain_fun_s :
     Proper (Logic.eq ==> Logic.eq ==> Subset ==> Subset) domain_fun.
 
   Proof.
@@ -361,7 +361,7 @@ Module Make (Export L : L_Struct).
     destruct (eq_term_dec (s x) (Var x)); rewrite xsxs'; refl.
   Qed.
 
-  Instance domain_fun_e :
+  #[global] Instance domain_fun_e :
     Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) domain_fun.
 
   Proof.
@@ -380,7 +380,7 @@ Module Make (Export L : L_Struct).
 
   (** [domain] is compatible with set equality. *)
 
-  Instance domain_e : Proper (Equal ==> Logic.eq ==> Equal) domain.
+  #[global] Instance domain_e : Proper (Equal ==> Logic.eq ==> Equal) domain.
 
   Proof.
     intros xs xs' xsxs' s s' ss'. subst s'. unfold Def.domain.
@@ -439,7 +439,7 @@ Module Make (Export L : L_Struct).
 
   (** [domain] is compatible with set inclusion. *)
 
-  Instance domain_s : Proper (Subset ==> Logic.eq ==> Subset) domain.
+  #[global] Instance domain_s : Proper (Subset ==> Logic.eq ==> Subset) domain.
 
   Proof.
     intros xs xs' xsxs' s s' ss' x. subst s'. do 2 rewrite In_domain.
@@ -535,7 +535,7 @@ Module Make (Export L : L_Struct).
   (** [domain] is compatible with [subs_rel]. *)
   (*FIXME: change order of arguments in fvcod, domain and fvcodom? *)
 
-  Instance domain_subs_rel_Subset (R : rel Te) : VarInvL R ->
+  #[global] Instance domain_subs_rel_Subset (R : rel Te) : VarInvL R ->
     forall xs, Proper (subs_rel R xs --> Subset) (domain xs).
 
   Proof.
@@ -543,7 +543,7 @@ Module Make (Export L : L_Struct).
     split_all. apply H1. apply var_R_l. rewrite <- H0. apply s's. hyp.
   Qed.
 
-  Instance domain_subs_rel_Equal (R : rel Te) : VarInvL R -> VarInvR R ->
+  #[global] Instance domain_subs_rel_Equal (R : rel Te) : VarInvL R -> VarInvR R ->
     forall xs, Proper (subs_rel R xs ==> Equal) (domain xs).
 
   Proof.
@@ -557,7 +557,7 @@ Module Make (Export L : L_Struct).
 
   (** [fvcod_fun] is compatible with set equality and commutes with [add]. *)
 
-  Instance fvcod_fun_e :
+  #[global] Instance fvcod_fun_e :
     Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) fvcod_fun.
 
   Proof.
@@ -571,7 +571,7 @@ Module Make (Export L : L_Struct).
 
   (** [fvcod] is compatible with set equality. *)
 
-  Instance fvcod_e : Proper (Equal ==> Logic.eq ==> Equal) fvcod.
+  #[global] Instance fvcod_e : Proper (Equal ==> Logic.eq ==> Equal) fvcod.
 
   Proof.
     intros xs xs' xsxs' s s' ss'. subst s'. unfold Def.fvcod.
@@ -616,7 +616,7 @@ Module Make (Export L : L_Struct).
 
   (** [fvcod] is compatible with inclusion. *)
 
-  Instance fvcod_s : Proper (Subset ==> Logic.eq ==> Subset) fvcod.
+  #[global] Instance fvcod_s : Proper (Subset ==> Logic.eq ==> Subset) fvcod.
 
   Proof.
     intros xs xs' xsxs' s s' ss' x. subst s'. rewrite !In_fvcod.
@@ -695,7 +695,7 @@ Module Make (Export L : L_Struct).
 
   (** [fvcod] is compatible with [subs_rel]. *)
 
-  Instance fvcod_subs_rel_Subset R : Proper (R --> Subset) fv ->
+  #[global] Instance fvcod_subs_rel_Subset R : Proper (R --> Subset) fv ->
     forall xs, Proper (subs_rel R xs --> Subset) (fvcod xs).
 
   Proof.
@@ -703,7 +703,7 @@ Module Make (Export L : L_Struct).
     rewrite <- (fv_R _ _ (s's _ H)). hyp.
   Qed.
 
-  Instance fvcod_subs_rel_Equal R : Proper (R ==> Equal) fv ->
+  #[global] Instance fvcod_subs_rel_Equal R : Proper (R ==> Equal) fv ->
     forall xs, Proper (subs_rel R xs ==> Equal) (fvcod xs).
 
   Proof.
@@ -716,14 +716,14 @@ Module Make (Export L : L_Struct).
 
   (** [fvcodom] is compatible with set inclusion and equality. *)
 
-  Instance fvcodom_s : Proper (Subset ==> Logic.eq ==> Subset) fvcodom.
+  #[global] Instance fvcodom_s : Proper (Subset ==> Logic.eq ==> Subset) fvcodom.
 
   Proof.
     intros xs xs' xsxs' s s' ss'. subst s'. unfold Def.fvcodom. rewrite xsxs'.
     refl.
   Qed.
 
-  Instance fvcodom_e : Proper (Equal ==> Logic.eq ==> Equal) fvcodom.
+  #[global] Instance fvcodom_e : Proper (Equal ==> Logic.eq ==> Equal) fvcodom.
 
   Proof.
     intros xs xs' xsxs' s s' ss' . subst s'. unfold Def.fvcodom. rewrite xsxs'.
@@ -791,7 +791,7 @@ Module Make (Export L : L_Struct).
 
   (** [fvcodom] is compatible with [subs_rel]. *)
 
-  Instance fvcodom_subs_rel_Subset R :
+  #[global] Instance fvcodom_subs_rel_Subset R :
     Proper (R --> Subset) fv -> VarInvL R ->
     forall xs, Proper (subs_rel R xs --> Subset) (fvcodom xs).
 
@@ -804,7 +804,7 @@ Module Make (Export L : L_Struct).
     apply s's2. hyp.
   Qed.
 
-  Instance fvcodom_subs_rel_Equal R :
+  #[global] Instance fvcodom_subs_rel_Equal R :
     Proper (R ==> Equal) fv -> VarInvL R -> VarInvR R ->
     forall xs, Proper (subs_rel R xs ==> Equal) (fvcodom xs).
 
@@ -832,7 +832,7 @@ Module Make (Export L : L_Struct).
 
   Arguments var_subs_rel [R] _ _ _ [x u s s'] _ : rename.
 
-  Instance var_seq x u : Proper (seq (remove x (fv u)) ==> Logic.eq) (var x u).
+  #[global] Instance var_seq x u : Proper (seq (remove x (fv u)) ==> Logic.eq) (var x u).
 
   Proof. intros s s' ss'. apply (var_subs_rel _ _ _ ss'). Qed.
 
@@ -1076,14 +1076,14 @@ Module Make (Export L : L_Struct).
 
     Definition stable R := Proper (Logic.eq ==> R ==> R) subs.
 
-    Instance stable_same : Proper (same ==> impl) stable.
+    #[global] Instance stable_same : Proper (same ==> impl) stable.
 
     Proof.
       intros S T e subs_S s s' ss' t u tu. subst s'. rewrite rel_eq in e.
       rewrite <- e. apply subs_S. refl. rewrite e. hyp.
     Qed.
 
-    Instance stable_same_iff : Proper (same ==> iff) stable.
+    #[global] Instance stable_same_iff : Proper (same ==> iff) stable.
 
     Proof. intros S T e. split; intro h. rewrite <- e. hyp. rewrite e. hyp. Qed.
 
@@ -1099,7 +1099,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** [clos_subs] preserves free variables. *)
 
-  Instance fv_clos_subs R :
+  #[global] Instance fv_clos_subs R :
     Proper (R --> Subset) fv -> Proper (clos_subs R --> Subset) fv.
 
   Proof.
@@ -1433,7 +1433,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** [bvcod_fun] is compatible with set equality and commutes with [add]. *)
 
-  Instance bvcod_fun_e :
+  #[global] Instance bvcod_fun_e :
     Proper (Logic.eq ==> Logic.eq ==> Equal ==> Equal) bvcod_fun.
 
   Proof.
@@ -1449,7 +1449,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** [bvcod] is compatible with set equality. *)
 
-  Instance bvcod_e : Proper (Equal ==> Logic.eq ==> Equal) bvcod.
+  #[global] Instance bvcod_e : Proper (Equal ==> Logic.eq ==> Equal) bvcod.
 
   Proof.
     intros xs xs' xsxs' s s' ss'. subst s'. unfold bvcod.
@@ -1495,7 +1495,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
 
   (** [bvcod] is compatible with inclusion. *)
 
-  Instance bvcod_s : Proper (Subset ==> Logic.eq ==> Subset) bvcod.
+  #[global] Instance bvcod_s : Proper (Subset ==> Logic.eq ==> Subset) bvcod.
 
   Proof.
     intros xs xs' xsxs' s s' ss' x. subst s'. rewrite !In_bvcod.
@@ -1587,7 +1587,7 @@ defined by iteration of the function [bvcod_fun] on [xs]. *)
     rewrite <- (ss' _ h1). tauto. rewrite (ss' _ h1). tauto.
   Qed.
 
-  Instance bvcod_seq' xs : Proper (seq xs ==> Equal) (bvcod xs).
+  #[global] Instance bvcod_seq' xs : Proper (seq xs ==> Equal) (bvcod xs).
 
   Proof. intros s s' ss'. apply bvcod_seq. refl. hyp. Qed.
 

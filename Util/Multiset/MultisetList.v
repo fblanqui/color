@@ -318,7 +318,7 @@ End SpecConformation.
                singleton_mult_in
                singleton_mult_notin : multisets.
 
-  Hint Rewrite empty_mult
+  #[global] Hint Rewrite empty_mult
                union_mult
 	       diff_mult
 	       intersection_mult using trivial : multisets.

@@ -230,7 +230,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       apply WF_inverse. apply gt_WF.
     Qed.
 
-    Instance trans_succ : Transitive succ.
+    #[global] Instance trans_succ : Transitive succ.
 
     Proof.
       change (transitive (Rof succ_vec dom2vec)). apply Rof_trans.

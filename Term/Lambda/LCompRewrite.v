@@ -25,7 +25,7 @@ Module Type RS_Struct.
 
   Parameter rule : relation Te.
 
-  Declare Instance fv_rule : Proper (rule --> Subset) fv.
+  #[global] Declare Instance fv_rule : Proper (rule --> Subset) fv.
 
   Parameter lhs_fun : forall l r, rule l r -> F.
   Parameter lhs_nb_args : forall l r, rule l r -> nat.
@@ -103,7 +103,7 @@ Module Make (Export RS : RS_Struct).
 
   (** Rewriting is stable by substitution. *)
 
-  Instance subs_S_aeq : Proper (Logic.eq ==> S_aeq ==> S_aeq) subs.
+  #[global] Instance subs_S_aeq : Proper (Logic.eq ==> S_aeq ==> S_aeq) subs.
 
   Proof.
     intros s s' ss' t u tu. subst s'. inversion tu; subst; clear tu.
@@ -276,7 +276,7 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 
   (** CP structure properties not involving reduction. *)
 
-  Instance neutral_aeq : Proper (aeq ==> impl) neutral.
+  #[global] Instance neutral_aeq : Proper (aeq ==> impl) neutral.
 
   Proof.
     intros u v uv hu. destruct v; inv_aeq uv; subst; simpl in *; auto.
@@ -313,7 +313,7 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 
   (** CP structure properties involving reduction. *)
 
-  Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
+  #[global] Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
   Proof.
     eapply stable_same_iff. apply R_aeq_alt. apply stable_union.
@@ -321,7 +321,7 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
     apply subs_S_aeq.
   Qed.
 
-  Instance fv_Rh : Proper (Rh --> Subset) fv.
+  #[global] Instance fv_Rh : Proper (Rh --> Subset) fv.
 
   Proof.
     apply fv_union. apply fv_union. apply fv_beta_top. apply fv_eta_top.

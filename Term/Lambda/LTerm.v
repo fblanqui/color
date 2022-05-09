@@ -506,7 +506,7 @@ Module Type Var.
 
   Arguments var_notin_ok : clear implicits.
 
-  Declare Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
+  #[global] Declare Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
 
 End Var.
 
@@ -543,7 +543,7 @@ Module NatVar <: Var.
 
   Module Export XSetUtil := FSetUtil.Make XSet.
 
-  Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
+  #[global] Instance var_notin_e : Proper (Equal ==> Logic.eq) var_notin.
 
   Proof.
     intros xs xs' xsxs'. unfold var_notin.
@@ -704,7 +704,7 @@ Module Make (Export L : L_Struct).
 
   (** Monotony is compatible with [same]. *)
 
-  Instance Monotone_impl : Proper (same ==> impl) Monotone.
+  #[global] Instance Monotone_impl : Proper (same ==> impl) Monotone.
 
   Proof.
     intros R S [RS SR] h. split.
@@ -715,7 +715,7 @@ Module Make (Export L : L_Struct).
 
   (** [clos_trans] preserves [Monotone]. *)
 
-  Instance clos_trans_mon R : Monotone R -> Monotone (R!).
+  #[global] Instance clos_trans_mon R : Monotone R -> Monotone (R!).
 
   Proof.
     intro R_mon. split.
@@ -732,7 +732,7 @@ Module Make (Export L : L_Struct).
 
   (** [clos_refl_trans] preserves [Monotone]. *)
 
-  Instance clos_refl_trans_mon R : Monotone R -> Monotone (R#).
+  #[global] Instance clos_refl_trans_mon R : Monotone R -> Monotone (R#).
 
   Proof.
     intro R_mon. split.
@@ -749,7 +749,7 @@ Module Make (Export L : L_Struct).
 
   (** [clos_equiv] preserves [Monotone]. *)
 
-  Instance clos_equiv_mon R : Monotone R -> Monotone (clos_equiv R).
+  #[global] Instance clos_equiv_mon R : Monotone R -> Monotone (clos_equiv R).
 
   Proof.
     intro R_mon. split.
@@ -767,7 +767,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Properties of [clos_mon]. *)
 
-  Instance monotone_clos_mon R : Monotone (clos_mon R).
+  #[global] Instance monotone_clos_mon R : Monotone (clos_mon R).
 
   Proof.
     split.
@@ -783,11 +783,11 @@ Module Make (Export L : L_Struct).
   (** The monotone closure is compatible with relation inclusion and
   equivalence. *)
 
-  Instance clos_mon_incl : Proper (inclusion ==> inclusion) clos_mon.
+  #[global] Instance clos_mon_incl : Proper (inclusion ==> inclusion) clos_mon.
 
   Proof. intros R S RS. induction 1; try mon. apply m_step. apply RS. hyp. Qed.
 
-  Instance clos_mon_same : Proper (same ==> same) clos_mon.
+  #[global] Instance clos_mon_same : Proper (same ==> same) clos_mon.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
@@ -814,7 +814,7 @@ Module Make (Export L : L_Struct).
   (** Preservation of some properties by [clos_mon]. *)
 
   (*COQ: creates problem in the proof of LSubs.subs_id when declared
-  as Instance. *)
+  as #[global] Instance. *)
 
   Lemma clos_mon_refl R : Reflexive R -> Reflexive (clos_mon R).
 
@@ -828,11 +828,11 @@ Module Make (Export L : L_Struct).
     apply m_app_l. hyp. apply m_app_r. hyp. apply m_lam. hyp.
   Qed.
 
-  Instance VarInvL_clos_mon (R : rel Te) : VarInvL R -> VarInvL (clos_mon R).
+  #[global] Instance VarInvL_clos_mon (R : rel Te) : VarInvL R -> VarInvL (clos_mon R).
 
   Proof. intros [h]. split; intros x u xu. inversion xu; subst. fo. Qed.
 
-  Instance VarInvR_clos_mon (R : rel Te) : VarInvR R -> VarInvR (clos_mon R).
+  #[global] Instance VarInvR_clos_mon (R : rel Te) : VarInvR R -> VarInvR (clos_mon R).
 
   Proof. intros [h]. split; intros x u xu. inversion xu; subst. fo. Qed.
 
@@ -856,21 +856,21 @@ Module Make (Export L : L_Struct).
 
   (** The monotone closure preserves free variables. *)
 
-  Instance fv_clos_mon : forall R,
+  #[global] Instance fv_clos_mon : forall R,
     Proper (R --> Subset) fv -> Proper (clos_mon R --> Subset) fv.
 
   Proof.
     intros R fv_R. induction 1; simpl; (rewrite IHclos_mon || rewrite H); refl.
   Qed.
 
-  Instance fv_clos_mon_Equal : forall R,
+  #[global] Instance fv_clos_mon_Equal : forall R,
     Proper (R ==> Equal) fv -> Proper (clos_mon R ==> Equal) fv.
 
   Proof.
     intros R fv_R. induction 1; simpl; (rewrite IHclos_mon || rewrite H); refl.
   Qed.
 
-  Instance fv_union : forall R S,
+  #[global] Instance fv_union : forall R S,
     Proper (R --> Subset) fv -> Proper (S --> Subset) fv ->
     Proper (R U S --> Subset) fv.
 

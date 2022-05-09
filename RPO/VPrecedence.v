@@ -52,7 +52,7 @@ Module VPrecedence (P : VPrecedenceType).
     Definition eqA := eq (A := term).
     Notation "X =A= Y" := (eqA X Y) (at level 70).
 
-    Instance eqA_Equivalence : Equivalence eqA.
+    #[global] Instance eqA_Equivalence : Equivalence eqA.
 
     Proof.
       constructor; unfold Reflexive, Symmetric, Transitive.

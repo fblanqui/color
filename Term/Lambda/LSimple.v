@@ -223,7 +223,7 @@ Arguments output_arrow_elim [So n A B C] _.
 
 Infix "~~>" := Arr (at level 55, right associativity).
 
-Hint Rewrite pos_base pos_arrow neg_base neg_arrow : pos.
+#[global] Hint Rewrite pos_base pos_arrow neg_base neg_arrow : pos.
 
 Ltac simpl_pos := autorewrite with pos; simpl.
 
@@ -461,7 +461,7 @@ are finite maps from variables to types. *)
 
 (** Weakening: [tr] is compatible with [le]. *)
 
-  Instance tr_le : Proper (le ==> Logic.eq ==> Logic.eq ==> impl) tr.
+  #[global] Instance tr_le : Proper (le ==> Logic.eq ==> Logic.eq ==> impl) tr.
 
   Proof.
     intros E F EF t v tv T V TV ht. subst v V. revert E t T ht F EF.
@@ -520,7 +520,7 @@ are finite maps from variables to types. *)
 
   Notation "F |-s s ~: E" := (wt s E F) (at level 70).
 
-  Instance wt_le : Proper (Logic.eq ==> le --> le ==> impl) wt.
+  #[global] Instance wt_le : Proper (Logic.eq ==> le --> le ==> impl) wt.
 
   Proof.
     intros s t st E E' E'E F F' FF' hs x T hx. subst t. eapply tr_le.
@@ -579,7 +579,7 @@ are finite maps from variables to types. *)
 (****************************************************************************)
 (** ** Typing is compatible with alpha-equivalence. *)
 
-  Instance tr_aeq_impl : Proper (Equal ==> aeq ==> Logic.eq ==> impl) tr.
+  #[global] Instance tr_aeq_impl : Proper (Equal ==> aeq ==> Logic.eq ==> impl) tr.
 
   Proof.
     intros E E' EE' v v' vv' V V' VV' h. subst V'. revert v E V h E' EE' v' vv'.
@@ -608,7 +608,7 @@ are finite maps from variables to types. *)
     unfold XSet.E.eq in e. subst x1. tauto. tauto.
   Qed.
 
-  Instance tr_aeq : Proper (Equal ==> aeq ==> Logic.eq ==> iff) tr.
+  #[global] Instance tr_aeq : Proper (Equal ==> aeq ==> Logic.eq ==> iff) tr.
 
   Proof.
     intros E E' EE' v v' vv' V V' VV'. subst V'.
@@ -618,7 +618,7 @@ are finite maps from variables to types. *)
 (****************************************************************************)
 (** ** Subject reduction for beta. *)
 
-  Instance tr_beta_aeq :
+  #[global] Instance tr_beta_aeq :
     Proper (Logic.eq ==> beta_aeq ==> Logic.eq ==> impl) tr.
 
   Proof.
