@@ -57,11 +57,11 @@ End MatrixMethodConf.
 Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   (*REMOVE?*)
-  Instance eq_vec_eq_vec_rel k : Equivalence (Vforall2 eq_vec (n:=k)).
+  Global Instance eq_vec_eq_vec_rel k : Equivalence (Vforall2 eq_vec (n:=k)).
 
   Proof. class. Qed.
 
-  Instance eq_vec_mat_eqA_rel k : Equivalence (Vforall2 mat_eqA (n:=k)).
+  Global Instance eq_vec_mat_eqA_rel k : Equivalence (Vforall2 mat_eqA (n:=k)).
 
   Proof. class. Qed.
   
@@ -72,15 +72,15 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   Notation "x =i y" := (eq_mint x y) (at level 70).
 
-  Instance eq_mint_refl k : Reflexive (@eq_mint k).
+  Global Instance eq_mint_refl k : Reflexive (@eq_mint k).
 
   Proof. unfold eq_mint, Reflexive. destruct x. intuition. Qed.
 
-  Instance eq_mint_sym k : Symmetric (@eq_mint k).
+  Global Instance eq_mint_sym k : Symmetric (@eq_mint k).
 
   Proof. unfold eq_mint, Symmetric. destruct x. destruct y. intuition. Qed.
 
-  Instance eq_mint_trans k : Transitive (@eq_mint k).
+  Global Instance eq_mint_trans k : Transitive (@eq_mint k).
 
   Proof.
     unfold eq_mint, Transitive. destruct x. destruct y. destruct z. intuition.
@@ -88,20 +88,20 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
   Qed.
 
   (*REMOVE?*)
-  Instance eq_mint_equiv k : Equivalence (@eq_mint k).
+  Global Instance eq_mint_equiv k : Equivalence (@eq_mint k).
 
   Proof. constructor; class. Qed.
  
-  Instance mkMatrix_mor k : Proper (eq_vec ==> Vforall2 mat_eqA ==> @eq_mint k)
+  Global Instance mkMatrix_mor k : Proper (eq_vec ==> Vforall2 mat_eqA ==> @eq_mint k)
     (@mkMatrixInt A matrix dim k).
 
   Proof. fo. Qed.
 
-  Instance const_mor k : Proper (@eq_mint k ==> eq_vec) (@const A matrix dim k).
+  Global Instance const_mor k : Proper (@eq_mint k ==> eq_vec) (@const A matrix dim k).
 
   Proof. intro x. destruct x. destruct y. simpl. intuition. Qed.
 
-  Instance args_mor k :
+  Global Instance args_mor k :
     Proper (@eq_mint k ==> Vforall2 mat_eqA) (@args A matrix dim k).
 
   Proof. intro x. destruct x. destruct y. simpl. intuition. Qed.

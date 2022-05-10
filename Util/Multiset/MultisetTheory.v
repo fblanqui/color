@@ -120,7 +120,7 @@ Module Multiset (MC : MultisetCore).
 
   #[global] Hint Resolve meq_refl meq_trans meq_sym : multisets.
 
-  Instance meq_Equivalence : Equivalence meq.
+  Global Instance meq_Equivalence : Equivalence meq.
 
   Proof.
     split.
@@ -129,11 +129,11 @@ Module Multiset (MC : MultisetCore).
     intros x y z. apply meq_trans.
   Qed.
 
-  Instance union_morph : Proper (meq ==> meq ==> meq) union.
+  Global Instance union_morph : Proper (meq ==> meq ==> meq) union.
 
   Proof. intros a b ab c d cd. solve_meq. Qed.
 
-  Instance singleton_morph : Proper (eqA ==> meq) singleton.
+  Global Instance singleton_morph : Proper (eqA ==> meq) singleton.
 
   Proof.
     intros x y H. try_solve_meq_ext; case (eqA_dec x0 x); intros.
@@ -147,31 +147,31 @@ Module Multiset (MC : MultisetCore).
       solve [auto with multisets | congruence].
   Qed.
 
-  Instance pair_morph : Proper (eqA ==> eqA ==> meq) pair.
+  Global Instance pair_morph : Proper (eqA ==> eqA ==> meq) pair.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance mult_morph : Proper (eqA ==> meq ==> eq) mult.
+  Global Instance mult_morph : Proper (eqA ==> meq ==> eq) mult.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance diff_morph : Proper (meq ==> meq ==> meq) diff.
+  Global Instance diff_morph : Proper (meq ==> meq ==> meq) diff.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance insert_morph : Proper (eqA ==> meq ==> meq) insert.
+  Global Instance insert_morph : Proper (eqA ==> meq ==> meq) insert.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance member_morph : Proper (eqA ==> meq ==> iff) member.
+  Global Instance member_morph : Proper (eqA ==> meq ==> iff) member.
 
   Proof. mset_unfold; intros a a0 h m m0 H. rewrite h, H. intuition. Qed.
 
-  Instance remove_morph : Proper (eqA ==> meq ==> meq) remove.
+  Global Instance remove_morph : Proper (eqA ==> meq ==> meq) remove.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance intersection_morph : Proper (meq ==> meq ==> meq) intersection.
+  Global Instance intersection_morph : Proper (meq ==> meq ==> meq) intersection.
 
   Proof. intros a b ab c d cd. solve_meq. Qed.
 

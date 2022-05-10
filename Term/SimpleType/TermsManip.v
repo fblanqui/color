@@ -116,7 +116,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intro M; term_inv M; congruence. Qed.
 
-  Hint Rewrite absBody_term absBody_env abs_type
+  Global Hint Rewrite absBody_term absBody_env abs_type
     using solve [auto with terms] : terms.
 
   Lemma type_eq_absType_eq : forall M N (Mabs: isAbs M) (Nabs: isAbs N),
@@ -161,7 +161,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   #[global] Hint Resolve absBody absType abs_isAbs absBody_eq_env funS_is_funS
     absBody_equiv_type absBody_eq_type : terms.
-  Hint Rewrite absBody_env : terms.
+  Global Hint Rewrite absBody_env : terms.
 
   Definition isApp M : Prop :=
   let (_, _, _, typ) := M in
@@ -244,7 +244,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intro M; term_inv M. Qed.
 
-  Hint Rewrite appBodyL_env appBodyR_env : terms.
+  Global Hint Rewrite appBodyL_env appBodyR_env : terms.
 
   Lemma appBodyL_term : forall M PtL PtR (Mterm: term M = PtL @@ PtR)
     (Mapp: isApp M), term (appBodyL Mapp) = PtL.
@@ -266,7 +266,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intros M N; term_inv M; term_inv N. Qed.
 
-  Hint Rewrite appBodyL_term appBodyR_term
+  Global Hint Rewrite appBodyL_term appBodyR_term
     using solve [auto with terms] : terms.
 
   Lemma app_typeL_type : forall M A B (Mapp: isApp M),
@@ -279,7 +279,7 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intros. term_inv M. Qed.
 
-  Hint Rewrite app_typeL_type app_typeR using solve [auto with terms] : terms.
+  Global Hint Rewrite app_typeL_type app_typeR using solve [auto with terms] : terms.
 
   Lemma app_type_eq : forall M N (Mapp: isApp M) (Napp: isApp N),
     type (appBodyL Mapp) = type (appBodyL Napp) ->
@@ -302,7 +302,7 @@ Module TermsManip (Sig : TermsSig.Signature).
   #[global] Hint Resolve appBodyL appBodyR app_isApp app_proof_irr app_Req_LtypeEq
     app_Leq_RtypeEq : terms.
   #[global] Hint Unfold isApp : terms.
-  Hint Rewrite appBodyL_env appBodyR_env : terms.
+  Global Hint Rewrite appBodyL_env appBodyR_env : terms.
 
   Lemma isVar_dec : forall M, {isVar M} + {~isVar M}.
 
@@ -468,7 +468,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Hint Rewrite appUnits_notApp appUnits_app appHead_notApp appHead_app 
+  Global Hint Rewrite appUnits_notApp appUnits_app appHead_notApp appHead_app 
     appArgs_notApp appArgs_app : terms.
 
   Lemma appArg_inv : forall M N (Mapp: isApp M), isArg N M ->

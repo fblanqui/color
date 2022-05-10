@@ -74,7 +74,7 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
     apply H1; trivial.
   Qed.
 
-  Instance algebraic_morph : Proper (terms_conv ==> iff) algebraic.
+  Global Instance algebraic_morph : Proper (terms_conv ==> iff) algebraic.
 
   Proof.
     intros a b ab. intuition.

@@ -479,7 +479,7 @@ generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro
 rewrite Af; rewrite <- app_nil_end; apply quick_permut.
 Qed.
 
-Instance length_morph : Proper (permut ==> eq) (length (A:=term)).
+Global Instance length_morph : Proper (permut ==> eq) (length (A:=term)).
 
 Proof. intros a b ab. eapply list_permut.permut_length. apply ab. Qed.
 

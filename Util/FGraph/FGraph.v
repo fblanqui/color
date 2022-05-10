@@ -41,7 +41,7 @@ they define the same relation. See below for more details. *)
 
   Definition meq : relation graph := XMap.Equiv XSet.Equal.
 
-  Instance Equal_meq : subrelation Equal meq.
+  Global Instance Equal_meq : subrelation Equal meq.
 
   Proof. intros g h gh. apply Equal_Equiv with (eq:=XSet.Equal) in gh; fo. Qed.
 
@@ -64,7 +64,7 @@ they define the same relation. See below for more details. *)
     rewrite empty_mapsto_iff in a1. hyp.
   Qed.
 
-  Instance rel_meq_ext' : Proper (meq ==> eq ==> eq ==> impl) rel.
+  Global Instance rel_meq_ext' : Proper (meq ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy'. unfold impl, rel. intro h.
@@ -75,7 +75,7 @@ they define the same relation. See below for more details. *)
   Qed.
 
   (*COQ: can be removed? Coq stuck in In_preds_rel *)
-  Instance rel_meq_ext : Proper (meq ==> eq ==> eq ==> iff) rel.
+  Global Instance rel_meq_ext : Proper (meq ==> eq ==> eq ==> iff) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy'. split; intro h.
@@ -101,7 +101,7 @@ they define the same relation. See below for more details. *)
 
   Definition succ x s a b := eq a x /\ XSet.In b s.
 
-  Instance succ_m_ext' : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> impl) succ.
+  Global Instance succ_m_ext' : Proper (eq ==> XSet.Equal ==> eq ==> eq ==> impl) succ.
 
   Proof.
     intros x x' xx' s s' ss' a a' aa' b b' bb'. unfold succ.
@@ -109,14 +109,14 @@ they define the same relation. See below for more details. *)
   Qed.
 
   (*COQ: can be removed? used in rel_set_fold_add_edge *)
-  Instance succ_m' : Proper (eq ==> XSet.Equal ==> inclusion) succ.
+  Global Instance succ_m' : Proper (eq ==> XSet.Equal ==> inclusion) succ.
 
   Proof.
     intros x x' xx' s s' ss' a b. unfold succ. rewrite xx', ss'. tauto.
   Qed.
 
   (*COQ: can be removed? used in rel_set_fold_add_edge *)
-  Instance succ_m : Proper (eq ==> XSet.Equal ==> same) succ.
+  Global Instance succ_m : Proper (eq ==> XSet.Equal ==> same) succ.
 
   Proof.
     intros x x' xx' s s' ss'. split.
@@ -159,7 +159,7 @@ they define the same relation. See below for more details. *)
 
   Definition succ_list x s a (b : X.t) := eq a x /\ InA eq b s.
 
-  Instance succ_list_m_ext' :
+  Global Instance succ_list_m_ext' :
     Proper (eq ==> eqlistA eq ==> eq ==> eq ==> impl) succ_list.
 
   Proof.
@@ -201,7 +201,7 @@ included in [rel g'] *)
 
   Definition gle g h := g << h.
 
-  Instance gle_PreOrder : PreOrder gle.
+  Global Instance gle_PreOrder : PreOrder gle.
 
   Proof. fo. Qed.
 
@@ -215,7 +215,7 @@ same relation *)
 
   Definition geq g h := g == h.
 
-  Instance geq_Equivalence : Equivalence geq.
+  Global Instance geq_Equivalence : Equivalence geq.
 
   Proof. fo. Qed.
 
@@ -225,14 +225,14 @@ same relation *)
     intros g h gh. split; intros x y xy. rewrite <- gh. hyp. rewrite gh. hyp.
   Qed.
 
-  Instance geq_meq : Proper (meq ==> meq ==> iff) geq.
+  Global Instance geq_meq : Proper (meq ==> meq ==> iff) geq.
 
   Proof.
     intros g g' gg' h h' hh'. apply meq_geq in gg'. apply meq_geq in hh'.
     split; intro H. rewrite <- gg', <- hh'. hyp. rewrite gg', hh'. hyp.
   Qed.
 
-  Instance geq_Equal : Proper (Equal ==> Equal ==> iff) geq.
+  Global Instance geq_Equal : Proper (Equal ==> Equal ==> iff) geq.
 
   Proof.
     eapply prop2_incl. 4: apply geq_meq.
@@ -250,7 +250,7 @@ same relation *)
 
   Proof. fo. Qed.
 
-  Instance gle_geq' : Proper (geq ==> geq ==> impl) gle.
+  Global Instance gle_geq' : Proper (geq ==> geq ==> impl) gle.
 
   Proof.
     intros g g' gg' h h' hh'. rewrite gle_antisym in gg', hh'. unfold impl.
@@ -260,7 +260,7 @@ same relation *)
 (***********************************************************************)
 (** properties of rel *)
 
-  Instance rel_gle_ext : Proper (gle ==> eq ==> eq ==> impl) rel.
+  Global Instance rel_gle_ext : Proper (gle ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
@@ -269,7 +269,7 @@ same relation *)
   Qed.
 
   (*COQ: can be removed? used in TransClos *)
-  Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
+  Global Instance rel_geq_ext' : Proper (geq ==> eq ==> eq ==> impl) rel.
 
   Proof.
     intros g g' gg' x x' xx' y y' yy' [s [s1 s2]]. apply gg'. exists s.
@@ -314,7 +314,7 @@ same relation *)
 
   Proof. intros x s g. unfold succs. rewrite add_eq_o. refl. refl. Qed.
 
-  Instance succs_gle : Proper (eq ==> gle ==> XSet.Subset) succs.
+  Global Instance succs_gle : Proper (eq ==> gle ==> XSet.Subset) succs.
 
   Proof.
     intros x x' xx' g g' gg'. unfold succs. rewrite <- xx'. clear x' xx'.
@@ -335,7 +335,7 @@ same relation *)
   Qed.
 
   (*COQ: can be removed? used in geq_add_remove *)
-  Instance succs_geq : Proper (eq ==> geq ==> XSet.Equal) succs.
+  Global Instance succs_geq : Proper (eq ==> geq ==> XSet.Equal) succs.
 
   Proof.
     intros x x' xx' g g' gg'. rewrite gle_antisym in gg'.
@@ -421,7 +421,7 @@ successors of g' *)
 
   Definition preds_aux x y sy s := if XSet.mem x sy then XSet.add y s else s.
 
-  Instance preds_aux_m :
+  Global Instance preds_aux_m :
     Proper (eq ==> eq ==> XSet.Equal ==> XSet.Equal ==> XSet.Equal) preds_aux.
 
   Proof.
@@ -430,7 +430,7 @@ successors of g' *)
   Qed.
 
   (*COQ: can be removed? apply preds_aux_m doesn't work in some cases *)
-  Instance preds_aux_m' :
+  Global Instance preds_aux_m' :
     Proper (Logic.eq ==> eq ==> Logic.eq ==> XSet.Equal ==> XSet.Equal)
     preds_aux.
 
@@ -453,7 +453,7 @@ successors of g' *)
 
   Definition preds x g := fold (preds_aux x) g XSet.empty.
 
-  Instance preds_Equal : Proper (eq ==> Equal ==> XSet.Equal) preds.
+  Global Instance preds_Equal : Proper (eq ==> Equal ==> XSet.Equal) preds.
 
   Proof.
     intros x x' xx' g g' gg'. unfold preds.
@@ -495,7 +495,7 @@ successors of g' *)
     refl. rewrite remove_empty. refl.
   Qed.
 
-  Instance preds_geq : Proper (eq ==> geq ==> XSet.Equal) preds.
+  Global Instance preds_geq : Proper (eq ==> geq ==> XSet.Equal) preds.
 
   Proof.
     intros x x' xx' g; revert x x' xx'.
@@ -581,7 +581,7 @@ successors of g' *)
 
   Definition add_edge x y g : graph := add x (XSet.add y (succs x g)) g.
 
-  Instance add_edge_gle : Proper (eq ==> eq ==> gle ==> gle) add_edge.
+  Global Instance add_edge_gle : Proper (eq ==> eq ==> gle ==> gle) add_edge.
 
   Proof.
     intros x x' xx' y y' yy' g g' gg'. unfold add_edge.
@@ -593,7 +593,7 @@ successors of g' *)
   Qed.
 
   (*COQ: can be removed? used in TransClos*)
-  Instance add_edge_geq : Proper (eq ==> eq ==> geq ==> geq) add_edge.
+  Global Instance add_edge_geq : Proper (eq ==> eq ==> geq ==> geq) add_edge.
 
   Proof.
     intros x x' xx' y y' yy' g g' gg'. rewrite gle_antisym.

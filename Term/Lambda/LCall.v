@@ -275,7 +275,7 @@ Module Make (Export ST : ST_Struct).
 
   (** [caeq] and [mcaeq] are equivalence relations. *)
 
-  Instance caeq_equiv : Equivalence caeq.
+  Global Instance caeq_equiv : Equivalence caeq.
 
   Proof.
     constructor.
@@ -285,7 +285,7 @@ Module Make (Export ST : ST_Struct).
     apply caeq_intro. trans us; hyp.
   Qed.
 
-  Instance mcaeq_equiv : Equivalence mcaeq.
+  Global Instance mcaeq_equiv : Equivalence mcaeq.
 
   Proof.
     unfold Def.mcaeq. constructor.
@@ -296,12 +296,12 @@ Module Make (Export ST : ST_Struct).
 
   (** Properties of [mk_call] amd [mk_max_call]. *)
 
-  Instance mk_call_vaeq f n :
+  Global Instance mk_call_vaeq f n :
     Proper (vaeq ==> caeq) (mk_call f (call_nb_args:=n)).
 
   Proof. intros ts us e. apply caeq_intro. hyp. Qed.
 
-  Instance mk_max_call_vaeq f : Proper (vaeq ==> mcaeq) (mk_max_call f).
+  Global Instance mk_max_call_vaeq f : Proper (vaeq ==> mcaeq) (mk_max_call f).
 
   Proof. intros ts us e. apply caeq_intro. hyp. Qed.
 
@@ -348,7 +348,7 @@ Module Make (Export ST : ST_Struct).
 
   (** [gt_red] is invariant by [caeq]. *)
 
-  Instance gt_red_caeq R : Proper (caeq ==> caeq ==> impl) (gt_red R).
+  Global Instance gt_red_caeq R : Proper (caeq ==> caeq ==> impl) (gt_red R).
 
   Proof.
     intros [f n ts] [f' n' ts'] e [g p us] [g' p' us'] e' h.

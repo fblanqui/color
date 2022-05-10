@@ -161,31 +161,31 @@ Module Make (Export L : L_Struct).
 
   (** [aeq] is an equivalence relation. *)
 
-  Instance aeq_equiv : Equivalence aeq.
+  Global Instance aeq_equiv : Equivalence aeq.
 
   Proof. rewrite aeq_equiv_mon. apply ec_equiv. Qed.
 
   (*COQ: cannot be removed?*)
-  Instance aeq_preorder : PreOrder aeq.
+  Global Instance aeq_preorder : PreOrder aeq.
 
   Proof. split; class. Qed.
 
   (** [aeq] is monotone. *)
 
-  Instance aeq_mon : Monotone aeq.
+  Global Instance aeq_mon : Monotone aeq.
 
   Proof. rewrite aeq_equiv_mon. class. Qed.
 
   (** Term constructors are compatible with [aeq]. *)
 
-  Instance App_aeq : Proper (aeq ==> aeq ==> aeq) App.
+  Global Instance App_aeq : Proper (aeq ==> aeq ==> aeq) App.
 
   Proof.
     intros u1 v1 u1v1 u2 v2 u2v2. trans (App u1 v2).
     apply aeq_app_r. hyp. apply aeq_app_l. hyp.
   Qed.
 
-  Instance Lam_aeq : Proper (Logic.eq ==> aeq ==> aeq) Lam.
+  Global Instance Lam_aeq : Proper (Logic.eq ==> aeq ==> aeq) Lam.
 
   Proof. intros x x' xx' u u' uu'. subst x'. apply aeq_lam. hyp. Qed.
 
@@ -204,7 +204,7 @@ Module Make (Export L : L_Struct).
 
   (** [fv] is compatible with [aeq]. *)
 
-  Instance fv_aeq : Proper (aeq ==> Equal) fv.
+  Global Instance fv_aeq : Proper (aeq ==> Equal) fv.
 
   Proof.
     induction 1; simpl.
@@ -223,7 +223,7 @@ Module Make (Export L : L_Struct).
 
   (** [var] is compatible with [aeq]. *)
 
-  Instance var_aeq : Proper (Logic.eq ==> aeq ==> Logic.eq ==> Logic.eq) var.
+  Global Instance var_aeq : Proper (Logic.eq ==> aeq ==> Logic.eq ==> Logic.eq) var.
 
   Proof.
     intros x x' xx' u u' uu' s s' ss'. subst s'. subst x'. unfold Def.var; ens.
@@ -234,7 +234,7 @@ Module Make (Export L : L_Struct).
   (** On variables and function symbols, alpha-equivalence is
   equivalent to equality. *)
 
-  Instance var_aeq_l : VarInvL aeq.
+  Global Instance var_aeq_l : VarInvL aeq.
 
   Proof.
     split. intro x.
@@ -244,7 +244,7 @@ Module Make (Export L : L_Struct).
     apply IHaeq2. destruct h as [h|h]. subst. left. fo. auto.
   Qed.
 
-  Instance var_aeq_r : VarInvR aeq.
+  Global Instance var_aeq_r : VarInvR aeq.
 
   Proof. class. Qed.
 
@@ -326,7 +326,7 @@ Module Make (Export L : L_Struct).
 
   (** [size] is compatible with [aeq]. *)
 
-  Instance size_aeq : Proper (aeq ==> Logic.eq) size.
+  Global Instance size_aeq : Proper (aeq ==> Logic.eq) size.
 
   Proof.
     intro u; revert u; induction 1; simpl.
@@ -383,14 +383,14 @@ Module Make (Export L : L_Struct).
 
   Notation saeq := (subs_rel aeq).
 
-  Instance fvcodom_saeq xs : Proper (saeq xs ==> Equal) (fvcodom xs).
+  Global Instance fvcodom_saeq xs : Proper (saeq xs ==> Equal) (fvcodom xs).
 
   Proof.
     intros s s' ss'. eapply fvcodom_subs_rel_Equal.
     apply fv_aeq. class. class. hyp.
   Qed.
 
-  Instance var_saeq x u :
+  Global Instance var_saeq x u :
     Proper (saeq (remove x (fv u)) ==> Logic.eq) (var x u).
 
   Proof. eapply var_subs_rel; class. Qed.
@@ -520,7 +520,7 @@ and the following Coq proof has about 200 lines, but it could
 certainly be shortened by defining tactics for reasoning on free
 variables. *)
 
-  Instance subs_aeq : Proper (Logic.eq ==> aeq ==> aeq) subs.
+  Global Instance subs_aeq : Proper (Logic.eq ==> aeq ==> aeq) subs.
 
   Proof.
     intros s s' ss'. subst s'. intros u u' uu'; revert u u' uu' s.
@@ -729,7 +729,7 @@ variables. *)
 
   (** [fun u v => subs (single x u) v] is compatible with [aeq]. *)
 
-  Instance subs_single_aeq :
+  Global Instance subs_single_aeq :
     Proper (Logic.eq ==> aeq ==> aeq ==> aeq) subs_single.
 
   Proof.
@@ -893,7 +893,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     rewrite e. apply h. rewrite mem_iff. hyp.
   Qed.
 
-  Instance subs_single_mon_preorder_aeq R :
+  Global Instance subs_single_mon_preorder_aeq R :
     PreOrder R -> Monotone R -> Proper (aeq ==> aeq ==> impl) R ->
     Proper (Logic.eq ==> R ==> aeq ==> R) subs_single.
 
@@ -1024,14 +1024,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** Compatibility of some basic predicates/functions with [aeq]. *)
 
-  Instance not_lam_aeq : Proper (aeq ==> impl) not_lam.
+  Global Instance not_lam_aeq : Proper (aeq ==> impl) not_lam.
 
   Proof.
     intros u v uv hu x a hv. subst.
     inv_aeq_0 uv; clear uv; subst. eapply hu. refl.
   Qed.
 
-  Instance head_aeq : Proper (aeq ==> aeq) head.
+  Global Instance head_aeq : Proper (aeq ==> aeq) head.
 
   Proof.
     intros u v uv. revert u v uv.
@@ -1075,14 +1075,14 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure is compatible with relation inclusion/equivalence. *)
 
-  Instance clos_aeq_incl : Proper (inclusion ==> inclusion) clos_aeq.
+  Global Instance clos_aeq_incl : Proper (inclusion ==> inclusion) clos_aeq.
 
   Proof.
     intros R S RS u v uv. inversion uv; subst.
     apply clos_aeq_intro with (u':=u') (v':=v'); fo.
   Qed.
 
-  Instance clos_aeq_same : Proper (same ==> same) clos_aeq.
+  Global Instance clos_aeq_same : Proper (same ==> same) clos_aeq.
 
   Proof. intros R S [RS SR]. split. rewrite RS. refl. rewrite SR. refl. Qed.
 
@@ -1104,7 +1104,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure is compatible with alpha-equivalence. *)
 
-  Instance clos_aeq_aeq R : Proper (aeq ==> aeq ==> impl) (clos_aeq R).
+  Global Instance clos_aeq_aeq R : Proper (aeq ==> aeq ==> impl) (clos_aeq R).
 
   Proof.
     intros u u' uu' v v' vv' h. inversion h; subst.
@@ -1116,7 +1116,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure preserves monotony. *)
 
-  Instance clos_aeq_mon R : Monotone R -> Monotone (clos_aeq R).
+  Global Instance clos_aeq_mon R : Monotone R -> Monotone (clos_aeq R).
 
   Proof.
     intro h. split.
@@ -1145,7 +1145,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure preserves stability by substitution. *)
 
-  Instance subs_clos_aeq R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
+  Global Instance subs_clos_aeq R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
     Proper (Logic.eq ==> clos_aeq R ==> clos_aeq R) subs.
 
   Proof.
@@ -1158,7 +1158,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   since substitution composition is correct modulo alpha-equivalence
   only. *)
 
-  Instance subs_clos_aeq_subs R :
+  Global Instance subs_clos_aeq_subs R :
     Proper
       (Logic.eq ==> clos_aeq (clos_subs R) ==> clos_aeq (clos_subs R)) subs.
 
@@ -1171,7 +1171,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** [clos_aeq o clos_mon] preserves stability by substitution. *)
 
-  Instance subs_clos_aeq_mon R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
+  Global Instance subs_clos_aeq_mon R : Proper (Logic.eq ==> R ==> clos_aeq R) subs ->
     Proper (Logic.eq ==> clos_aeq (clos_mon R) ==> clos_aeq (clos_mon R)) subs.
 
   Proof.
@@ -1206,7 +1206,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** Alpha-closure preserves free variables. *)
 
-  Instance fv_clos_aeq : forall R,
+  Global Instance fv_clos_aeq : forall R,
     Proper (R --> Subset) fv -> Proper (clos_aeq R --> Subset) fv.
 
   Proof.
@@ -1237,7 +1237,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 (****************************************************************************)
 (** ** Compatibility of [apps] with [aeq] and [vaeq]. *)
 
-  Instance apps_aeq : forall n, Proper (aeq ==> vaeq ==> aeq) (@apps n).
+  Global Instance apps_aeq : forall n, Proper (aeq ==> vaeq ==> aeq) (@apps n).
 
   Proof.
     intros n t t' tt' us us' usus'. revert n us us' usus' t t' tt'.
@@ -1591,11 +1591,11 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
   (** [clos_vaeq] is compatible with [inclusion] and [same]. *)
 
-  Instance clos_vaeq_incl n : Proper (incl ==> incl) (@clos_vaeq n).
+  Global Instance clos_vaeq_incl n : Proper (incl ==> incl) (@clos_vaeq n).
 
   Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 
-  Instance clos_vaeq_same n : Proper (same ==> same) (@clos_vaeq n).
+  Global Instance clos_vaeq_same n : Proper (same ==> same) (@clos_vaeq n).
 
   Proof. intros R R' RR'. unfold Def.clos_vaeq. rewrite RR'. refl. Qed.
 

@@ -27,9 +27,9 @@ Proof.
   rewrite <- beq_nat_ok in n. ded (not_true_is_false _ n). rewrite H. refl.
 Qed.
 
-Hint Rewrite eqb_beq_nat : mem.
-Hint Rewrite beq_nat_ok : mem.
-Hint Rewrite (beq_refl beq_nat_ok) : mem.
+Global Hint Rewrite eqb_beq_nat : mem.
+Global Hint Rewrite beq_nat_ok : mem.
+Global Hint Rewrite (beq_refl beq_nat_ok) : mem.
 
 (***********************************************************************)
 (** variables in a term *)

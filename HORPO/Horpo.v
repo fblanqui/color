@@ -164,7 +164,7 @@ Module Horpo (S : TermsSig.Signature)
 
   Proof. intros; rewrite <- H, <- H0; trivial. Qed.
 
-  Instance horpo_eq_compat' : Proper (eq ==> eq ==> impl) horpo.
+  Global Instance horpo_eq_compat' : Proper (eq ==> eq ==> impl) horpo.
 
   Proof.
     intros a b ab c d cd ac. eapply horpo_eq_compat. apply ab. apply cd. hyp.

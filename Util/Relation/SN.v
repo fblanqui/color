@@ -30,13 +30,13 @@ Section sn.
 
 End sn.
 
-Instance SN_inv A (R : rel A) : Proper (R ==> impl) (SN R).
+Global Instance SN_inv A (R : rel A) : Proper (R ==> impl) (SN R).
 
 Proof. intros x y xy [x_sn]. auto. Qed.
 
 Arguments SN_inv [A R x y] _ _.
 
-Instance SN_prop A (R E : relation A) : Equivalence E ->
+Global Instance SN_prop A (R E : relation A) : Equivalence E ->
   Proper (E ==> E ==> impl) R -> Proper (E ==> impl) (SN R).
 
 Proof.
@@ -135,7 +135,7 @@ Lemma WF_empty_rel A : WF (@empty_rel A).
 
 Proof. intro x. apply SN_intro. intros. contr. Qed.
 
-Instance SN_inclusion A : Proper (inclusion --> eq ==> impl) (@SN A).
+Global Instance SN_inclusion A : Proper (inclusion --> eq ==> impl) (@SN A).
 
 Proof.
   intros R S SR x y xy hx. subst y. elim hx. intros y h1 h2.
@@ -148,7 +148,7 @@ Proof. intros RS x hx. eapply SN_inclusion. apply RS. refl. hyp. Qed.
 
 Arguments SN_incl [A] _ _ _ _ _.
 
-Instance SN_same A : Proper (same ==> eq ==> iff) (@SN A).
+Global Instance SN_same A : Proper (same ==> eq ==> iff) (@SN A).
 
 Proof. intros R S RS x y xy. subst y. split; apply SN_incl; fo. Qed.
 
@@ -158,7 +158,7 @@ Proof.
   intros RS x. split; intro hx. apply (SN_incl R); fo. apply (SN_incl S); fo.
 Qed.
 
-Instance WF_incl A : Proper (incl --> impl) (@WF A).
+Global Instance WF_incl A : Proper (incl --> impl) (@WF A).
 
 Proof.
   intros S R RS S_wf x. gen (S_wf x). revert x. induction 1.
@@ -167,7 +167,7 @@ Qed.
 
 Arguments WF_incl [A] _ _ _ _ _.
 
-Instance WF_same A : Proper (same ==> iff) (@WF A).
+Global Instance WF_same A : Proper (same ==> iff) (@WF A).
 
 Proof.
   intros x y x_eq_y. destruct x_eq_y. split; intro.
@@ -234,14 +234,14 @@ End rel_inverse.
 (***********************************************************************)
 (** ** SN properties of [clos_refl_trans]. *)
 
-Instance SN_inv_rtc A (R : rel A) : Proper (R# ==> impl) (SN R).
+Global Instance SN_inv_rtc A (R : rel A) : Proper (R# ==> impl) (SN R).
 
 Proof.
   intros x y xy x_sn; revert y xy. induction 1.
   apply (SN_inv H x_sn). hyp. auto.
 Qed.
 
-Instance SN_inv_rtc1 A (R : rel A) : Proper (R#1 ==> impl) (SN R).
+Global Instance SN_inv_rtc1 A (R : rel A) : Proper (R#1 ==> impl) (SN R).
 
 Proof.
   intros x x' xRx' snx. apply SN_inv_rtc with x.

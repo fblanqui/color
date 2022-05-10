@@ -252,7 +252,7 @@ Arguments Vrel1_sub [A R n v1 v2 p q] h _.
 
 From Coq Require Import Morphisms.
 
-Instance Vrel1_app_incl n A :
+Global Instance Vrel1_app_incl n A :
   Proper (inclusion ==> inclusion) (@Vrel1_app n A).
 
 Proof.
@@ -261,11 +261,11 @@ Proof.
     ex i vi x j vj h y; fo.
 Qed.
 
-Instance Vrel1_incl n A : Proper (inclusion ==> inclusion) (@Vrel1 n A).
+Global Instance Vrel1_incl n A : Proper (inclusion ==> inclusion) (@Vrel1 n A).
 
 Proof. intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel1_app_incl. hyp. Qed.
 
-Instance Vrel1_app_same n A :
+Global Instance Vrel1_app_same n A :
   Proper (same ==> same) (@Vrel1_app n A).
 
 Proof.
@@ -274,7 +274,7 @@ Proof.
     ex i vi x j vj h y; fo.
 Qed.
 
-Instance Vrel1_same n A : Proper (same ==> same) (@Vrel1 n A).
+Global Instance Vrel1_same n A : Proper (same ==> same) (@Vrel1 n A).
 
 Proof.
   intros R R' RR'. rewrite 2!Vrel1_app_eq. apply Vrel1_app_same. hyp.

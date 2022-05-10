@@ -131,7 +131,7 @@ Module Make (Export ST : ST_Struct)
     eapply WF_incl. apply supterm_acc_supterm. apply WF_tc. apply supterm_wf.
   Qed.
 
-  Instance size_subpterm_acc : Proper (supterm_acc --> Peano.lt) size.
+  Global Instance size_subpterm_acc : Proper (supterm_acc --> Peano.lt) size.
 
   Proof. intros t u tu. inversion tu; subst. apply size_apps_r_nth. Qed.
 
@@ -234,7 +234,7 @@ Module Make (Export ST : ST_Struct)
 
   Proof. apply clos_aeq_wf_size. apply supterm_acc_size. Qed.
 
-  Instance clos_aeq_tc_supterm_cc_trans : Transitive (clos_aeq (supterm_acc!)).
+  Global Instance clos_aeq_tc_supterm_cc_trans : Transitive (clos_aeq (supterm_acc!)).
 
   Proof.
     rewrite <- trans_intro. rewrite clos_aeq_eq, !comp_assoc.

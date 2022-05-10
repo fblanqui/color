@@ -193,24 +193,24 @@ Ltac redtac := repeat
 (***********************************************************************)
 (** monotony properties *)
 
-Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
+Global Instance red_incl Sig : Proper (incl ==> inclusion) (@red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. ex l r c s. split_all. Qed.
 
-Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
+Global Instance hd_red_incl Sig : Proper (incl ==> inclusion) (@hd_red Sig).
 
 Proof. intros R R' RR' t t' tt'. redtac. ex l r s. split_all. Qed.
 
-Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
+Global Instance red_mod_incl Sig : Proper (incl ==> incl ==> inclusion) (@red_mod Sig).
 
 Proof. intros E E' EE' R R' RR'. unfold red_mod. rewrite EE', RR'. refl. Qed.
 
-Instance hd_red_mod_incl Sig :
+Global Instance hd_red_mod_incl Sig :
   Proper (incl ==> incl ==> inclusion) (@hd_red_mod Sig).
 
 Proof. intros E E' EE' R R' RR'. unfold hd_red_mod. rewrite EE', RR'. refl. Qed.
 
-Instance hd_red_Mod_incl Sig :
+Global Instance hd_red_Mod_incl Sig :
   Proper (inclusion ==> incl ==> inclusion) (@hd_red_Mod Sig).
 
 Proof. intros S S' SS' R R' RR'. unfold hd_red_Mod. rewrite SS', RR'. refl. Qed.

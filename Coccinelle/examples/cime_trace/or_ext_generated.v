@@ -52,7 +52,7 @@ constructor 3. exact H.
 Qed.
 
 
-Instance or3_morph : Proper (iff ==> iff ==> iff ==> iff) or3.
+Global Instance or3_morph : Proper (iff ==> iff ==> iff ==> iff) or3.
 
 Proof. morph or3_equiv. Qed.
 
@@ -86,7 +86,7 @@ constructor 4. exact H.
 Qed.
 
 
-Instance or4_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff) or4.
+Global Instance or4_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff) or4.
 
 Proof. morph or4_equiv. Qed.
 
@@ -122,7 +122,7 @@ constructor 5. exact H.
 
 Qed.
 
-Instance or5_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) or5.
+Global Instance or5_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) or5.
 
 Proof. morph or5_equiv. Qed.
 
@@ -161,7 +161,7 @@ constructor 6. exact H.
 
 Qed.
 
-Instance or6_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or6.
+Global Instance or6_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or6.
 
 Proof. morph or6_equiv. Qed.
 
@@ -203,7 +203,7 @@ constructor 7. exact H.
 
 Qed.
 
-Instance or7_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or7.
+Global Instance or7_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or7.
 
 Proof. morph or7_equiv. Qed.
 
@@ -248,7 +248,7 @@ constructor 8. exact H.
 
 Qed.
 
-Instance or8_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or8.
+Global Instance or8_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or8.
 
 Proof. morph or8_equiv. Qed.
 
@@ -296,7 +296,7 @@ constructor 9. exact H.
 
 Qed.
 
-Instance or9_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or9.
+Global Instance or9_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or9.
 
 Proof. morph or9_equiv. Qed.
 
@@ -347,7 +347,7 @@ constructor 10. exact H.
 
 Qed.
 
-Instance or10_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or10.
+Global Instance or10_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or10.
 
 Proof. morph or10_equiv. Qed.
 
@@ -401,7 +401,7 @@ constructor 11. exact H.
 
 Qed.
 
-Instance or11_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or11.
+Global Instance or11_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or11.
 
 Proof. morph or11_equiv. Qed.
 
@@ -458,7 +458,7 @@ constructor 12. exact H.
 
 Qed.
 
-Instance or12_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or12.
+Global Instance or12_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or12.
 
 Proof. morph or12_equiv. Qed.
 
@@ -518,7 +518,7 @@ constructor 13. exact H.
 
 Qed.
 
-Instance or13_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or13.
+Global Instance or13_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or13.
 
 Proof. morph or13_equiv. Qed.
 
@@ -581,7 +581,7 @@ constructor 14. exact H.
 
 Qed.
 
-Instance or14_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or14.
+Global Instance or14_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or14.
 
 Proof. morph or14_equiv. Qed.
 
@@ -647,7 +647,7 @@ constructor 15. exact H.
 
 Qed.
 
-Instance or15_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or15.
+Global Instance or15_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or15.
 
 Proof. morph or15_equiv. Qed.
 
@@ -716,7 +716,7 @@ constructor 16. exact H.
 
 Qed.
 
-Instance or16_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or16.
+Global Instance or16_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or16.
 
 Proof. morph or16_equiv. Qed.
 
@@ -788,7 +788,7 @@ constructor 17. exact H.
 
 Qed.
 
-Instance or17_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or17.
+Global Instance or17_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or17.
 
 Proof. morph or17_equiv. Qed.
 
@@ -863,7 +863,7 @@ constructor 18. exact H.
 
 Qed.
 
-Instance or18_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or18.
+Global Instance or18_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or18.
 
 Proof. morph or18_equiv. Qed.
 
@@ -941,7 +941,7 @@ constructor 19. exact H.
 
 Qed.
 
-Instance or19_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or19.
+Global Instance or19_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or19.
 
 Proof. morph or19_equiv. Qed.
 
@@ -1022,7 +1022,7 @@ constructor 20. exact H.
 
 Qed.
 
-Instance or20_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or20.
+Global Instance or20_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or20.
 
 Proof. morph or20_equiv. Qed.
 
@@ -1106,7 +1106,7 @@ constructor 21. exact H.
 
 Qed.
 
-Instance or21_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or21.
+Global Instance or21_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or21.
 
 Proof. morph or21_equiv. Qed.
 
@@ -1193,7 +1193,7 @@ constructor 22. exact H.
 
 Qed.
 
-Instance or22_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or22.
+Global Instance or22_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or22.
 
 Proof. morph or22_equiv. Qed.
 
@@ -1283,7 +1283,7 @@ constructor 23. exact H.
 
 Qed.
 
-Instance or23_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or23.
+Global Instance or23_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or23.
 
 Proof. morph or23_equiv. Qed.
 
@@ -1376,7 +1376,7 @@ constructor 24. exact H.
 
 Qed.
 
-Instance or24_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or24.
+Global Instance or24_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or24.
 
 Proof. morph or24_equiv. Qed.
 
@@ -1472,6 +1472,6 @@ constructor 25. exact H.
 
 Qed.
 
-Instance or25_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or25.
+Global Instance or25_morph : Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff ==> iff) or25.
 
 Proof. morph or25_equiv. Qed.

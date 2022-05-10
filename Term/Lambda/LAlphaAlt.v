@@ -481,7 +481,7 @@ Module Make (Export L : L_Struct).
 
   (** [transpose] is invariant by [aeq]. *)
 
-  Instance transpose_aeq a b : Proper (aeq ==> aeq) (transpose a b).
+  Global Instance transpose_aeq a b : Proper (aeq ==> aeq) (transpose a b).
 
   Proof.
     unfold Def.transpose.
@@ -554,15 +554,15 @@ Module Make (Export L : L_Struct).
 
   (** [aeq_ch] is a congruence relation. *)
 
-  Instance aeq_ch_refl : Reflexive aeq_ch.
+  Global Instance aeq_ch_refl : Reflexive aeq_ch.
 
   Proof. unfold Def.aeq_ch. class. Qed.
 
-  Instance aeq_ch_trans : Transitive aeq_ch.
+  Global Instance aeq_ch_trans : Transitive aeq_ch.
 
   Proof. unfold Def.aeq_ch. class. Qed.
 
-  Instance aeq_ch_top_sym : Symmetric aeq_ch_top.
+  Global Instance aeq_ch_top_sym : Symmetric aeq_ch_top.
 
   Proof.
     intros u v uv. inversion uv; clear uv; subst; unfold Ens_In in *.
@@ -575,11 +575,11 @@ Module Make (Export L : L_Struct).
     apply notin_bv_replace_all. hyp.
   Qed.
 
-  Instance aeq_ch_sym : Symmetric aeq_ch.
+  Global Instance aeq_ch_sym : Symmetric aeq_ch.
 
   Proof. apply rtc_sym. apply clos_mon_sym. class. Qed.
 
-  Instance aeq_ch_mon : Monotone aeq_ch.
+  Global Instance aeq_ch_mon : Monotone aeq_ch.
 
   Proof. unfold Def.aeq_ch. class. Qed.
 
@@ -620,7 +620,7 @@ Module Make (Export L : L_Struct).
 
   (** [aeq_kr] is an equivalence relation. *)
 
-  Instance aeq_kr_refl : Reflexive aeq_kr.
+  Global Instance aeq_kr_refl : Reflexive aeq_kr.
 
   Proof.
     intro u; revert u. ind_size1 u.
@@ -631,7 +631,7 @@ Module Make (Export L : L_Struct).
     intros y hy. apply hu. rewrite size_rename1. refl.
   Qed.
 
-  Instance aeq_kr_sym : Symmetric aeq_kr.
+  Global Instance aeq_kr_sym : Symmetric aeq_kr.
 
   Proof.
     intro u; revert u. ind_size1 u; intros t' h; inversion h; clear h; subst.
@@ -640,7 +640,7 @@ Module Make (Export L : L_Struct).
     rewrite size_rename1. refl. fo.
   Qed.
 
-  Instance aeq_kr_trans : Transitive aeq_kr.
+  Global Instance aeq_kr_trans : Transitive aeq_kr.
 
   Proof.
     intro u; revert u. ind_size1 u; intros b c tb bc;
@@ -683,7 +683,7 @@ Module Make (Export L : L_Struct).
 
   (** [aeq_gp] is reflexive. *)
 
-  Instance aeq_gp_refl : Reflexive aeq_gp.
+  Global Instance aeq_gp_refl : Reflexive aeq_gp.
 
   Proof.
     intro u; revert u. ind_size1 u.
@@ -699,7 +699,7 @@ Module Make (Export L : L_Struct).
 
   (** [aeq_gp] is symmetric. *)
 
-  Instance aeq_gp_sym : Symmetric aeq_gp.
+  Global Instance aeq_gp_sym : Symmetric aeq_gp.
 
   Proof.
     intro u; revert u. ind_size1 u; intros t' h; inversion h; clear h; subst.
@@ -724,7 +724,7 @@ Module Make (Export L : L_Struct).
 
   (** [transpose] is invariant by [aeq_gp]. *)
 
-  Instance transpose_aeq_gp a b : Proper (aeq_gp ==> aeq_gp) (transpose a b).
+  Global Instance transpose_aeq_gp a b : Proper (aeq_gp ==> aeq_gp) (transpose a b).
 
   Proof.
     unfold Def.transpose. intros u v uv; revert u v uv a b.
@@ -798,7 +798,7 @@ Module Make (Export L : L_Struct).
 
   (** [aeq_gp] is transitive. *)
 
-  Instance aeq_gp_trans : Transitive aeq_gp.
+  Global Instance aeq_gp_trans : Transitive aeq_gp.
 
   Proof.
     intro u; revert u. ind_size1 u; intros b c tb bc;

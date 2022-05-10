@@ -276,12 +276,12 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
 (* --- Extension of setoids on components to setoid on pair *)
   #[global] Hint Unfold eqPair : sets.
 
-  Instance eqPair_Equivalence : Equivalence eqPair := 
+  Global Instance eqPair_Equivalence : Equivalence eqPair := 
     eqPair_Equivalence A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence.
 
   #[global] Hint Resolve A_ord.S.eqA_Equivalence B_ord.S.eqA_Equivalence : sets.
 
-  Instance LexProd_Gt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
+  Global Instance LexProd_Gt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Gt.
 
   Proof.
     intros p p' pp' q q' qq'. split.
@@ -291,7 +291,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
     hyp. hyp.
   Qed.
 
-  Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
+  Global Instance LexProd_Lt_morph : Proper (eqPair ==> eqPair ==> iff) LexProd_Lt.
 
   Proof.
     unfold LexProd_Lt; unfold transp.
@@ -300,7 +300,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
     rewrite pp', qq'; trivial.
   Qed.
 
-  Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
+  Global Instance Acc_LexProd_morph : Proper (eqPair ==> iff) Acc_LexProd.
 
   Proof.
     intros p q pq.
@@ -363,7 +363,7 @@ Module LexicographicOrder (Import A_ord B_ord : Ord).
 
     Definition gtA := LexProd_Gt.
 
-    Instance gtA_eqA_compat : Proper (S.eqA ==> S.eqA ==> impl) gtA.
+    Global Instance gtA_eqA_compat : Proper (S.eqA ==> S.eqA ==> impl) gtA.
 
     Proof. intros x x' xx' y y' yy' x_y. rewrite <- xx', <- yy'; trivial. Qed.
 

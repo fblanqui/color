@@ -24,12 +24,12 @@ Module Type SemiRingType.
   Parameter Aplus : A -> A -> A.
   Notation "x + y" := (Aplus x y).
 
-  Declare Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Declare Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Parameter Amult : A -> A -> A.
   Notation "x * y" := (Amult x y).
 
-  Declare Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Declare Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Parameter A_semi_ring : semi_ring_theory A0 A1 Aplus Amult eqA.
 
@@ -70,7 +70,7 @@ Module SemiRing (SR : SemiRingType).
     apply A_plus_mult_distr_l.
   Qed.
 
-  Hint Rewrite Aplus_0_l Aplus_0_r Amult_0_l Amult_0_r 
+  Global Hint Rewrite Aplus_0_l Aplus_0_r Amult_0_l Amult_0_r 
     Amult_1_l Amult_1_r : arith.
 
   Add Ring Aring : A_semi_ring.
@@ -100,13 +100,13 @@ Module NSemiRingT <: SemiRingType.
 
   Definition Aplus := plus.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := mult.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -124,7 +124,7 @@ From Bignums Require Import BigN.
 Module BigNat_Eqset <: Eqset.
   Definition A := bigN.
   Definition eqA := BigN.eq.
-  Instance eqA_Equivalence : Equivalence eqA.
+  Global Instance eqA_Equivalence : Equivalence eqA.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
@@ -150,13 +150,13 @@ Module BigNSemiRingT <: SemiRingType.
 
   Definition Aplus := BigN.add.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := BigN.mul.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -191,13 +191,13 @@ Module ZSemiRingT <: SemiRingType.
 
   Definition Aplus := Zplus.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := Zmult.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -227,7 +227,7 @@ From Bignums Require Import BigZ.
 Module BigInt_Eqset <: Eqset.
   Definition A := bigZ.
   Definition eqA := BigZ.eq.
-  Instance eqA_Equivalence : Equivalence eqA.
+  Global Instance eqA_Equivalence : Equivalence eqA.
   Proof.
     unfold eqA. constructor.
     unfold Reflexive. refl.
@@ -253,13 +253,13 @@ Module BigZSemiRingT <: SemiRingType.
 
   Definition Aplus := BigZ.add.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := BigZ.mul.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -341,7 +341,7 @@ Module ArcticSemiRingT <: SemiRingType.
     | Pos m, Pos n => Pos (max m n)
     end.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -353,7 +353,7 @@ Module ArcticSemiRingT <: SemiRingType.
     | Pos m, Pos n => Pos (m + n)
     end.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -472,7 +472,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
     | Fin m, Fin n => Fin (Z.max m n)
     end.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -484,7 +484,7 @@ Module ArcticBZSemiRingT <: SemiRingType.
     | Fin m, Fin n => Fin (m + n)
     end.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -609,7 +609,7 @@ Module TropicalSemiRingT <: SemiRingType.
     | TPos m, TPos n => TPos (min m n)
     end.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -621,7 +621,7 @@ Module TropicalSemiRingT <: SemiRingType.
     | TPos m, TPos n => TPos (m + n)
     end.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
@@ -714,13 +714,13 @@ Module BSemiRingT <: SemiRingType.
 
   Definition Aplus := orb.
 
-  Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
+  Global Instance Aplus_mor : Proper (eqA ==> eqA ==> eqA) Aplus.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
   Definition Amult := andb.
 
-  Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
+  Global Instance Amult_mor : Proper (eqA ==> eqA ==> eqA) Amult.
 
   Proof. intros a b ab c d cd. rewrite ab, cd. refl. Qed.
 
