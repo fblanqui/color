@@ -5,8 +5,8 @@ license: "CeCILL"
 bug-reports: "https://github.com/fblanqui/color/issues"
 depends: [
   "ocaml"
-  "coq" {>= "8.11"}
-  "coq-bignums" {>= "8.11"}
+  "coq" {>= "8.14"}
+  "coq-bignums" {>= "8.14"}
 ]
 build: [make "-j%{jobs}%"]
 install: [make "-f" "Makefile.coq" "install"]
