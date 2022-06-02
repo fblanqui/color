@@ -99,7 +99,7 @@ Module Type CP_Struct.
 
   (** Properties not involving reduction. *)
 
-  Declare Instance neutral_aeq : Proper (aeq ==> impl) neutral.
+  Global Declare Instance neutral_aeq : Proper (aeq ==> impl) neutral.
   Parameter neutral_var : forall x, neutral (Var x).
   Parameter neutral_app : forall u v, neutral u -> neutral (App u v).
   Parameter not_neutral_lam : forall x u, ~neutral (Lam x u).
@@ -107,8 +107,8 @@ Module Type CP_Struct.
 
   (** Properties involving reduction. *)
 
-  Declare Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
-  Declare Instance fv_Rh : Proper (Rh --> Subset) fv.
+  Global Declare Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
+  Global Declare Instance fv_Rh : Proper (Rh --> Subset) fv.
   Parameter not_Rh_var : forall x u, ~ Var x ->Rh u.
   Parameter Rh_eh : forall x u w, Lam x u ->Rh w -> Lam x u ->eh w.
   Parameter Rh_bh : forall x u v w,
@@ -158,7 +158,7 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
 
   (** CP structure properties not involving reduction. *)
 
-  Instance neutral_aeq : Proper (aeq ==> impl) neutral.
+  Global Instance neutral_aeq : Proper (aeq ==> impl) neutral.
 
   Proof. intros u u' uu' hu. destruct u; inv_aeq uu'; subst; simpl; auto. Qed.
 
@@ -180,7 +180,7 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
 
   (** CP structure properties involving reduction. *)
 
-  Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
+  Global Instance subs_R_aeq : Proper (Logic.eq ==> R_aeq ==> R_aeq) subs.
 
   Proof.
     eapply stable_same_iff. apply R_aeq_alt. apply stable_union.
@@ -205,7 +205,7 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
     intros h r. inversion r; clear r; inversion H; clear H; subst. auto.
   Qed.
 
-  Instance fv_Rh : Proper (Rh --> Subset) fv.
+  Global Instance fv_Rh : Proper (Rh --> Subset) fv.
 
   Proof. apply fv_union. apply fv_beta_top. apply fv_eta_top. Qed.
 
@@ -413,25 +413,25 @@ Module Make (Export CP : CP_Struct).
 (****************************************************************************)
 (** ** Computability properties are invariant wrt [=]. *)
 
-  Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
+  Global Instance cp_aeq_equiv : Proper (equiv ==> impl) cp_aeq.
 
   Proof. intros P Q PQ hP t u tu Qt. apply PQ. rewrite <- tu. fo. Qed.
 
-  Instance cp_sn_equiv : Proper (equiv ==> impl) cp_sn.
+  Global Instance cp_sn_equiv : Proper (equiv ==> impl) cp_sn.
 
   Proof. fo. Qed.
 
-  Instance cp_red_equiv : Proper (equiv ==> impl) cp_red.
+  Global Instance cp_red_equiv : Proper (equiv ==> impl) cp_red.
 
   Proof.
     intros P Q PQ hP t u tu Qt. apply PQ. apply PQ in Qt. clear PQ; fo.
   Qed.
 
-  Instance cp_neutral_equiv : Proper (equiv ==> impl) cp_neutral.
+  Global Instance cp_neutral_equiv : Proper (equiv ==> impl) cp_neutral.
 
   Proof. fo. Qed.
 
-  Instance cp_equiv : Proper (equiv ==> impl) cp.
+  Global Instance cp_equiv : Proper (equiv ==> impl) cp.
 
   Proof. intros P Q PQ [P1 P2 P3 P4]. rewrite PQ in *. fo. Qed.
 
@@ -465,18 +465,18 @@ Module Make (Export CP : CP_Struct).
 
   (** Monotony properties of [arr]. *)
 
-  Instance arr_incl :
+  Global Instance arr_incl :
     Proper (SetUtil.subset --> SetUtil.subset ==> SetUtil.subset) arr.
 
   Proof. fo. Qed.
 
-  Instance arr_equiv : Proper (equiv ==> equiv ==> equiv) arr.
+  Global Instance arr_equiv : Proper (equiv ==> equiv ==> equiv) arr.
 
   Proof. fo. Qed.
 
   (** [arr] preserves [cp_aeq]. *)
 
-  Instance cp_aeq_arr : forall P Q, cp_aeq Q -> cp_aeq (arr P Q).
+  Global Instance cp_aeq_arr : forall P Q, cp_aeq Q -> cp_aeq (arr P Q).
 
   Proof. intros P Q q t u tu h v hv. rewrite <- tu. fo. Qed.
 

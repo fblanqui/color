@@ -85,7 +85,7 @@ Module Type MultisetCore.
                singleton_mult_in
                singleton_mult_notin : multisets.
 
-  Hint Rewrite empty_mult
+  Global Hint Rewrite empty_mult
                union_mult
 	       diff_mult
 	       intersection_mult using trivial : multisets.

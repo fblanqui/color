@@ -68,7 +68,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** Beta-reduction is stable by substitution. *)
 
-  Instance subs_clos_aeq_beta_top :
+  Global Instance subs_clos_aeq_beta_top :
     Proper (Logic.eq ==> beta_top ==> clos_aeq beta_top) subs.
 
   Proof.
@@ -84,7 +84,7 @@ Module Make (Export L : L_Struct).
     apply beta_top_intro.
   Qed.
 
-  Instance subs_beta_aeq : Proper (Logic.eq ==> beta_aeq ==> beta_aeq) subs.
+  Global Instance subs_beta_aeq : Proper (Logic.eq ==> beta_aeq ==> beta_aeq) subs.
 
   Proof. class. Qed.
 
@@ -167,7 +167,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** Beta-reduction do not create free variables. *)
 
-  Instance fv_beta_top : Proper (beta_top --> Subset) fv.
+  Global Instance fv_beta_top : Proper (beta_top --> Subset) fv.
 
   Proof.
     intros u u' u'u. unfold flip in u'u. inversion u'u; subst.

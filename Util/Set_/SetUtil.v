@@ -366,12 +366,12 @@ Infix "[<]" := strict_subset (at level 70).
 (***********************************************************************)
 (** * Compatibility of [subset] and [equiv] with [inclusion] and [same_rel]. *)
 
-Instance subset_equiv1 A1 B (f : set A1 -> relation B) :
+Global Instance subset_equiv1 A1 B (f : set A1 -> relation B) :
   Proper (subset ==> inclusion) f -> Proper (equiv ==> same) f.
 
 Proof. intros hf s1 s1'. rewrite equiv_elim. fo. Qed.
 
-Instance subset_equiv2 A1 A2 B (f : set A1 -> set A2 -> relation B) :
+Global Instance subset_equiv2 A1 A2 B (f : set A1 -> set A2 -> relation B) :
   Proper (subset ==> subset ==> inclusion) f ->
   Proper (equiv ==> equiv ==> same) f.
 

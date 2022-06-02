@@ -1761,7 +1761,7 @@ Parameter eq : A -> A -> Prop.
 Parameter  rO rI : A. 
 Parameter plus mult sub : A -> A -> A.
 Parameter opp : A -> A. 
-Declare Instance eq_Equivalence : Equivalence eq.
+Global Declare Instance eq_Equivalence : Equivalence eq.
 Parameter Ath : ring_theory rO rI plus mult sub opp eq.
 Parameter Aeqe : ring_eq_ext plus mult opp eq.
 End TRing.
@@ -1770,13 +1770,13 @@ Module Make(R:TRing).
   Import R.
   Local Notation "x == y" := (eq x y) (at level 70, no associativity).
 
-  Instance plus_morph : Proper (eq ==> eq ==> eq) plus.
+  Global Instance plus_morph : Proper (eq ==> eq ==> eq) plus.
   Proof. exact (Radd_ext Aeqe). Qed.
 
-  Instance mult_morph : Proper (eq ==> eq ==> eq) mult.
+  Global Instance mult_morph : Proper (eq ==> eq ==> eq) mult.
   Proof. exact (Rmul_ext Aeqe). Qed.
  
-  Instance opp_morph : Proper (eq ==> eq) opp.
+  Global Instance opp_morph : Proper (eq ==> eq) opp.
   Proof. exact (Ropp_ext Aeqe). Qed.
 
   Add Ring Rring : Ath.
@@ -1812,7 +1812,7 @@ Module Make(R:TRing).
     exact (eq_vec_sym eq_Equivalence).
   Qed.
 
-  Instance eq_vec_Equivalence dim : Equivalence (@eq_vec dim).
+  Global Instance eq_vec_Equivalence dim : Equivalence (@eq_vec dim).
 
   Proof. apply eq_vec_Equivalence. apply eq_Equivalence. Qed.
 
@@ -1827,7 +1827,7 @@ Module Make(R:TRing).
     apply create_vec.
   Defined.
 
-  Instance create_vec_morph dim : Proper (eq ==> eq_vec) (create_vec dim).
+  Global Instance create_vec_morph dim : Proper (eq ==> eq_vec) (create_vec dim).
   Proof.
     apply create_vec_morph.
   Qed.
@@ -1839,7 +1839,7 @@ Module Make(R:TRing).
     apply (sum_vector plus).
   Defined.
 
-  Instance sum_vector_morph dim :
+  Global Instance sum_vector_morph dim :
     Proper (eq_vec ==> eq_vec ==> eq_vec) (sum_vector dim).
   Proof.
     apply sum_vector_morph with (eq:=eq) (plus:=plus).
@@ -1872,7 +1872,7 @@ Module Make(R:TRing).
     apply (prod_scal_vec mult).
   Defined.
   
-  Instance psv_morph dim :
+  Global Instance psv_morph dim :
     Proper (eq ==> eq_vec ==> eq_vec) (prod_scal_vec dim).
   Proof.
     apply (psv_morph eq_Equivalence) with (mult:=mult);intros. apply mult_morph;assumption.
@@ -1922,7 +1922,7 @@ Module Make(R:TRing).
   Defined.
 
 
-  Instance prc_morph dim : Proper (eq_vec ==> eq_vec ==> eq) (prod_row_col dim).
+  Global Instance prc_morph dim : Proper (eq_vec ==> eq_vec ==> eq) (prod_row_col dim).
   Proof.
     apply prc_morph with (eq:=eq) (plus:=plus) (mult:=mult).
     apply eq_Equivalence.
@@ -2028,7 +2028,7 @@ Module Make(R:TRing).
     apply eq_mat_sym with (eq:=eq). apply eq_Equivalence.
   Qed.
 
-  Instance eq_mat_Equivalence dim : Equivalence (@eq_mat dim).
+  Global Instance eq_mat_Equivalence dim : Equivalence (@eq_mat dim).
 
   Proof. apply eq_mat_Equivalence. apply eq_Equivalence. Qed.
 
@@ -2046,7 +2046,7 @@ Module Make(R:TRing).
     apply (sum_matrix plus). 
   Defined.
 
-  Instance sum_matrix_morph dim :
+  Global Instance sum_matrix_morph dim :
     Proper (eq_mat ==> eq_mat ==> eq_mat) (sum_matrix dim).
   Proof.
     apply sum_matrix_morph with (eq:=eq) (plus:=plus).
@@ -2065,7 +2065,7 @@ Module Make(R:TRing).
     apply create_mat.
   Defined.
 
-  Instance create_mat_morph dim : Proper (eq ==> eq_mat) (create_mat dim).
+  Global Instance create_mat_morph dim : Proper (eq ==> eq_mat) (create_mat dim).
   Proof.
     apply create_mat_morph.
   Qed.
@@ -2097,7 +2097,7 @@ Module Make(R:TRing).
     apply mult.
   Defined.
 
-  Instance psm_morph dim :
+  Global Instance psm_morph dim :
     Proper (eq ==> eq_mat ==> eq_mat) (prod_scal_mat dim).
   Proof.
     apply psm_morph with (eq:=eq) (mult:=mult).
@@ -2155,7 +2155,7 @@ Module Make(R:TRing).
     apply (prod_col_row mult).
   Defined.
 
-  Instance pcr_morph dim :
+  Global Instance pcr_morph dim :
     Proper (eq_vec ==> eq_vec ==> eq_mat) (prod_col_row dim).
   Proof.
     apply pcr_morph with (eq:=eq) (mult:=mult).
@@ -2216,7 +2216,7 @@ Module Make(R:TRing).
     apply (prod_row_mat plus mult).
   Defined.
 
-  Instance prm_morph dim :
+  Global Instance prm_morph dim :
     Proper (eq_vec ==> eq_mat ==> eq_vec) (prod_row_mat dim).
   Proof.
     apply prm_morph with (eq:=eq) (plus:=plus) (mult:=mult).
@@ -2286,7 +2286,7 @@ Module Make(R:TRing).
     apply (prod_mat_col plus mult).
   Defined.
 
-  Instance pmc_morph dim :
+  Global Instance pmc_morph dim :
     Proper (eq_mat ==> eq_vec ==> eq_vec) (prod_mat_col dim).
   Proof.
     apply pmc_morph with (eq:=eq) (plus:=plus) (mult:=mult).
@@ -2362,7 +2362,7 @@ Module Make(R:TRing).
     apply (prod_matrix plus mult).
   Defined.
 
-  Instance pm_morph dim :
+  Global Instance pm_morph dim :
     Proper (eq_mat ==> eq_mat ==> eq_mat) (prod_matrix dim).
   Proof.
     apply pm_morph with (eq:=eq) (plus:=plus) (mult:=mult).
@@ -2808,11 +2808,11 @@ Module Make_Ordered(R:Ordered_Ring).
   Import R.
   Include Make(R). 
 
-  Instance lt_morph : Proper (eq ==> eq ==> iff) lt.
+  Global Instance lt_morph : Proper (eq ==> eq ==> iff) lt.
   Proof.
     exact o.(lt_morph).
   Qed.
-  Instance le_morph : Proper (eq ==> eq ==> iff) le.
+  Global Instance le_morph : Proper (eq ==> eq ==> iff) le.
   Proof.
     exact o.(le_morph).
   Qed.
@@ -2853,7 +2853,7 @@ Module Make_Ordered(R:Ordered_Ring).
     intuition.
   Defined.
 
-  Instance vol_morph dim :
+  Global Instance vol_morph dim :
     Proper (eq_vec ==> eq_vec ==> iff) (vec_order_large dim).
   Proof.
     intros a b ab c d cd. apply vec_order_large_morph; assumption.
@@ -2876,7 +2876,7 @@ Module Make_Ordered(R:Ordered_Ring).
     intuition.
   Defined.
 
-  Instance vos_morph dim :
+  Global Instance vos_morph dim :
     Proper (eq_vec ==> eq_vec ==> iff) (vec_order_strict dim).
   Proof.
     intros a b ab c d cd. apply vec_order_strict_morph; assumption.
@@ -3025,7 +3025,7 @@ Module Make_Ordered(R:Ordered_Ring).
     intuition.
   Defined.
 
-  Instance mol_morph dim :
+  Global Instance mol_morph dim :
     Proper (eq_mat ==> eq_mat ==> iff) (mat_order_large dim).
   Proof.
     intros a b ab c d cd. apply mat_order_large_morph; assumption.
@@ -3050,7 +3050,7 @@ Module Make_Ordered(R:Ordered_Ring).
     rewrite  Heq8;rewrite Heq4;assumption.
   Defined.
 
-  Instance mos_morph dim :
+  Global Instance mos_morph dim :
     Proper (eq_mat ==> eq_mat ==> iff) (mat_order_strict dim).
   Proof.
     intros a b ab c d cd. apply mat_order_strict_morph; assumption.

@@ -537,7 +537,7 @@ Module SN_rewrite (Export CC : CC_Struct)
     apply clos_aeq_tc_supterm_acc_wf.
   Qed.
 
-  Instance gt1_aeq E : Proper (caeq ==> caeq ==> impl) (gt1 E).
+  Global Instance gt1_aeq E : Proper (caeq ==> caeq ==> impl) (gt1 E).
 
   Proof. unfold gt1, gt. class. Qed.
 
@@ -558,7 +558,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   Proof. apply restrict_SN_clos_aeq_tc_supterm_acc_R_mon_wf; class. Qed.
 
-  Instance gt0_aeq : Proper (aeq ==> aeq ==> impl) gt0.
+  Global Instance gt0_aeq : Proper (aeq ==> aeq ==> impl) gt0.
 
   Proof.
     eapply restrict_prop with (E:=aeq). class.
@@ -567,7 +567,7 @@ Module SN_rewrite (Export CC : CC_Struct)
 
   (** We check that [gt2] is invariant by [mcaeq]. *)
 
-  Instance gt2c_caeq : Proper (caeq ==> caeq ==> impl) gt2c.
+  Global Instance gt2c_caeq : Proper (caeq ==> caeq ==> impl) gt2c.
 
   Proof.
     intros [f n ts] [f' n' ts'] e [g p us] [g' p' us'] e'.
@@ -580,7 +580,7 @@ Module SN_rewrite (Export CC : CC_Struct)
     right. rewrite <- h, <- h0. hyp.
   Qed.
 
-  Instance gt2_mcaeq : Proper (mcaeq ==> mcaeq ==> impl) gt2.
+  Global Instance gt2_mcaeq : Proper (mcaeq ==> mcaeq ==> impl) gt2.
 
   Proof. intros [f ts] [f' ts'] e [g us] [g' us'] e'. apply gt2c_caeq; hyp. Qed.
 

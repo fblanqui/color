@@ -43,7 +43,7 @@ Parameter list_permut_multiset_extension_step_2 :
   forall R l1 l2 l, permut l1 l2 -> 
   multiset_extension_step R l l1 -> multiset_extension_step R l l2.
 
-Declare Instance mult_morph (R : relation A) :
+Global Declare Instance mult_morph (R : relation A) :
   Proper (permut ==> permut ==> iff) (multiset_extension_step R).
 
 (** *** Accessibility lemmata. *)
@@ -124,7 +124,7 @@ apply permut_sym; assumption.
 assumption.
 Defined.
 
-Instance mult_morph (R : relation A) :
+Global Instance mult_morph (R : relation A) :
   Proper (permut ==> permut ==> iff) (multiset_extension_step R).
 
 Proof.

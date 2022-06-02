@@ -110,15 +110,15 @@ Module Import LPermut   <:
                       with Definition EDS.eq_A := @eq DOS.A :=
 list_permut.Make EDS.
 
-  Instance mem_morph : Proper (eq ==> permut ==> iff) (mem EDS.eq_A).
+  Global Instance mem_morph : Proper (eq ==> permut ==> iff) (mem EDS.eq_A).
 
   Proof. intros a b ab c d cd. subst. apply mem_permut_mem; trivial. Qed.
 
-  Instance add_A_morph : Proper (eq ==> permut ==> permut) (List.cons (A:=A)).
+  Global Instance add_A_morph : Proper (eq ==> permut ==> permut) (List.cons (A:=A)).
 
   Proof. intros a b e l1 l2 P. rewrite <- permut_cons; trivial. Qed.
 
-Instance length_morph : Proper (permut ==> eq) (length (A:=A)).
+Global Instance length_morph : Proper (permut ==> eq) (length (A:=A)).
 
 Proof. intros a b ab. eapply permut_length. apply ab. Qed.
 

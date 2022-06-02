@@ -50,7 +50,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct E; trivial.
   Qed.
 
-  Hint Rewrite liftedEnv_next : terms.
+  Global Hint Rewrite liftedEnv_next : terms.
 
   Lemma liftedEnv_var_lifted : forall E x A k n, E |= x := A -> x >= k ->
     liftedEnv n E k |= x + n := A.
@@ -161,7 +161,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite Min.min_r; lia.
   Qed.
 
-  Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted
+  Global Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted
     var_liftedEnv_var_lifted var_liftedEnv_var_notLifted
     using solve [lia | auto] : terms.
 
@@ -255,7 +255,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Hint Rewrite lift_env lift_term lift_type : terms.
+  Global Hint Rewrite lift_env lift_term lift_type : terms.
 
   Lemma in_lift_subst : forall Q G i, In (Some Q) (lift_subst G i) ->
     (exists2 W, In (Some W) G  &  Q = lift W i).
@@ -332,7 +332,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct a; try rewrite lift_0; rewrite IHG; trivial.
   Qed.
 
-  Hint Rewrite prelift_aux_0 prelift_0 lift_0 lift_subst_0 : terms.
+  Global Hint Rewrite prelift_aux_0 prelift_0 lift_0 lift_subst_0 : terms.
 
   Lemma prelift_aux_fold_aux : forall Pt m n i j, j >= i -> j <= n + i ->
     prelift_aux m (prelift_aux n Pt i) j = prelift_aux (m + n) Pt i.
@@ -425,7 +425,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     trivial.
   Qed.
 
-  Hint Rewrite lift_fold lift_subst_fold : terms.
+  Global Hint Rewrite lift_fold lift_subst_fold : terms.
 
   Lemma lift_empty_subst : forall m i,
     lift_subst (copy m None) i = copy m None.
@@ -446,7 +446,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite (IHG i); trivial.
   Qed.
 
-  Hint Rewrite lift_empty_subst length_lift_subst : terms.
+  Global Hint Rewrite lift_empty_subst length_lift_subst : terms.
 
   Lemma nth_lift_subst_n : forall (G: Subst) i x, nth_error G x = None ->
     nth_error (lift_subst G i) x = None.
@@ -493,7 +493,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     simpl; trivial.
   Qed.
 
-  Hint Rewrite nth_lift_subst_n nth_lift_subst_n_rev nth_lift_subst_sn
+  Global Hint Rewrite nth_lift_subst_n nth_lift_subst_n_rev nth_lift_subst_sn
     nth_lift_subst_sn_rev 
     using solve [auto with terms] : terms.
 
@@ -844,7 +844,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (lower_aux M ME); try_solve.
   Qed.
 
-  Hint Rewrite lower_env lower_term lower_type : terms.
+  Global Hint Rewrite lower_env lower_term lower_type : terms.
 
   Lemma prelift_prelower_aux : forall M i, env M |= i :! ->
     prelift_aux 1 (prelower_aux (term M) i) i = (term M).

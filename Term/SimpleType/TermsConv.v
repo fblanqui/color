@@ -98,7 +98,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof. fo. Qed.
 
-  Instance envSubst_eq_Equivalence : Equivalence envSubst_eq.
+  Global Instance envSubst_eq_Equivalence : Equivalence envSubst_eq.
 
   Proof.
     split.
@@ -107,7 +107,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros x y z. apply envSubst_eq_trans.
   Qed.
 
-  Instance envSubst_extends_morph :
+  Global Instance envSubst_extends_morph :
     Proper (envSubst_eq ==> envSubst_eq ==> iff) envSubst_extends.
 
   Proof. fo. Qed.
@@ -583,7 +583,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply IHx2 with E; trivial.   
   Qed.
 
-  Instance conv_term_morph :
+  Global Instance conv_term_morph :
     Proper (eq ==> eq ==> envSubst_eq ==> iff) conv_term.
 
   Proof.
@@ -801,7 +801,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Definition conv_env (M N: Term) (S: EnvSubst) :=
     forall x y, S.(envSub) x y -> activeEnv_compSubst_on M N x y.
 
-  Instance conv_env_morph :
+  Global Instance conv_env_morph :
     Proper (eq ==> eq ==> envSubst_eq ==> iff) conv_env.
 
   Proof.
@@ -1233,7 +1233,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof. intros; inversion H0. constructor; rewrite <- H; trivial. Qed.
 
-  Instance terms_conv_with_morph :
+  Global Instance terms_conv_with_morph :
     Proper (envSubst_eq ==> eq ==> eq ==> iff) terms_conv_with.
 
   Proof.
@@ -1347,7 +1347,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply conv_env_refl.
   Qed.
 
-  Instance terms_conv_Equivalence : Equivalence terms_conv.
+  Global Instance terms_conv_Equivalence : Equivalence terms_conv.
 
   Proof.
     split.
@@ -1356,35 +1356,35 @@ Module TermsConv (Sig : TermsSig.Signature).
     intros x y z. apply terms_conv_trans.
   Qed.
 
-  Instance isApp_morph : Proper (terms_conv ==> iff) isApp.
+  Global Instance isApp_morph : Proper (terms_conv ==> iff) isApp.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1; 
       term_inv t; term_inv t'.
   Qed.
 
-  Instance isVar_morph : Proper (terms_conv ==> iff) isVar.
+  Global Instance isVar_morph : Proper (terms_conv ==> iff) isVar.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
       term_inv t; term_inv t'.
   Qed.
 
-  Instance isAbs_morph : Proper (terms_conv ==> iff) isAbs.
+  Global Instance isAbs_morph : Proper (terms_conv ==> iff) isAbs.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
       term_inv t; term_inv t'.
   Qed.
 
-  Instance isNeutral_morph : Proper (terms_conv ==> iff) isNeutral.
+  Global Instance isNeutral_morph : Proper (terms_conv ==> iff) isNeutral.
 
   Proof.
      intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
       term_inv t; term_inv t'.
   Qed.
 
-  Instance isFunS_morph : Proper (terms_conv ==> iff) isFunS.
+  Global Instance isFunS_morph : Proper (terms_conv ==> iff) isFunS.
 
   Proof.
     intros t t' H; split; intro H'; inversion H; inversion H0; inversion H1;
@@ -1554,7 +1554,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     inversion MN; inversion H; term_inv M.
   Qed.
 
-  Instance appHead_morph : Proper (terms_conv ==> terms_conv) appHead.
+  Global Instance appHead_morph : Proper (terms_conv ==> terms_conv) appHead.
 
   Proof.
     intros t t' teqt'.
@@ -1563,7 +1563,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply appHead_conv; trivial.
   Qed.
 
-  Instance isFunApp_morph : Proper (terms_conv ==> iff) isFunApp.
+  Global Instance isFunApp_morph : Proper (terms_conv ==> iff) isFunApp.
 
   Proof. unfold isFunApp; intros t t' H. rewrite H; split; trivial. Qed.
 
