@@ -436,10 +436,10 @@ Module MultisetListOrder (ES : Eqset_dec).
       subst; simpl; simpl in H1.
       unfold mult, MultisetLT, transp; simpl.
       constructor 1 with (X := {{a'}}) (Y :={{a}}) (Z := (list2multiset l));
-        auto with multisets.
-      unfold insert; simpl; auto with multisets.
+        [auto with multisets|..].
+      unfold insert; simpl.
       rewrite union_comm; auto with multisets.
-      unfold insert; simpl; auto with multisets.
+      unfold insert; simpl.
       rewrite union_comm; auto with multisets.
       intros y Hy; assert (HY : y =A= a).
       apply (member_singleton Hy).

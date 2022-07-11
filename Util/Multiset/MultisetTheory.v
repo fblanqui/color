@@ -1316,7 +1316,7 @@ Module Multiset (MC : MultisetCore).
       rewrite (@singleton_mult_in b b); auto with sets.
       rewrite (@singleton_mult_notin b a); eauto with sets.
       rewrite (@singleton_mult_notin b c); eauto with sets.
-      rewrite (@singleton_mult_notin b d); eauto with sets.
+      rewrite (@singleton_mult_notin b d); [|eauto with sets].
       lia.
       setoid_replace c with d; eauto with sets.
       apply meq_multeq; trivial.
