@@ -13,6 +13,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil
      AGraph LogicUtil BoolUtil AShift EqUtil ListDec.
+From Coq Require Btauto.
 
 (***********************************************************************)
 (** definition of the hde over graph *)
@@ -135,14 +136,15 @@ Lemma hde_bool_correct_aux : forall x y, hde D x y <-> Graph hde_bool x y.
 
 Proof.
 intros x y. unfold hde, hde_bool, hd_eq, Graph; simpl.
-rewrite <- !mem_ok. destruct (rhs x); bool; intuition.
-apply (andb_eliml H). apply (andb_elimr H). rewrite H0, H. bool.
-destruct y. simpl in *. destruct lhs. refl. subst.
-apply beq_refl. exact (@beq_symb_ok Sig).
-ded (andb_elim H); clear H. destruct H0. apply (andb_elim H).
-ded (andb_elim H); clear H. destruct H0. apply (andb_elim H).
-destruct y. simpl in *. destruct lhs. auto.
-ded (andb_elim H). rewrite beq_symb_ok in H0. intuition.
+pose proof (fun s x y => proj1 (@beq_symb_ok s x y)).
+pose proof (fun s x y => proj2 (@beq_symb_ok s x y)).
+rewrite <- !mem_ok. destruct (rhs x); bool; intuition auto with core;
+repeat match goal with
+| H : _ && _ = true |- _ => apply andb_elim in H; case H as []
+| H : _ = true |- _ => rewrite H; cbn [andb]
+| H : match ?x in term _ return _ with _ => _ end |- _ => case x eqn:? in *; subst
+| H : match ?x in term _ return _ with _ => _ end = true |- _ => case x eqn:? in *; subst
+end; auto.
 Qed.
 
 End bool_def.
