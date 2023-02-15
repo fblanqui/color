@@ -18,6 +18,7 @@ From CoLoR Require Import LogicUtil EqUtil RelUtil BoolUtil NatUtil.
 From Coq Require Import Setoid SetoidList FunInd.
 From Coq Require Export List.
 From Coq Require Program.
+From Coq Require Btauto.
 
 Arguments nil {A}.
 Arguments incl {A} l m.
@@ -2073,11 +2074,8 @@ Section lforall.
   Lemma forallb_imp_lforall f : forall l,
       (forall x, f x = true -> P x) -> forallb f l = true -> lforall l.
 
-  Proof with auto.
-    induction l; simpl; intros...
-    split.
-    apply H. destruct (f a)...
-    destruct (f a)... discr.
+  Proof.
+    induction l; simpl; auto.
   Qed.
 
   Lemma forallb_lforall f (fok : forall x, f x = true <-> P x) :
