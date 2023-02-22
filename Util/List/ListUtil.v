@@ -2075,7 +2075,7 @@ Section lforall.
       (forall x, f x = true -> P x) -> forallb f l = true -> lforall l.
 
   Proof.
-    induction l; simpl; auto.
+    induction l; simpl; intros; Algebra.bool; auto.
   Qed.
 
   Lemma forallb_lforall f (fok : forall x, f x = true <-> P x) :
