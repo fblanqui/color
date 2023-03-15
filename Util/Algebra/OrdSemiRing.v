@@ -183,14 +183,14 @@ Module BigNOrdSemiRingT <: OrdSemiRingType.
   Lemma ge_dec : forall x y, {ge x y}+{~ge x y}.
 
   Proof.
-    intros x y. unfold ge, BigN.le. destruct (Z_le_dec [y] [x]).
+    intros x y. unfold ge, BigN.le. destruct (Z_le_dec (BigN.to_Z y) (BigN.to_Z x)).
     left. lia. right. lia.
   Qed.
 
   Lemma gt_dec : forall x y, {gt x y}+{~gt x y}.
 
   Proof.
-    intros. unfold gt, BigN.lt. destruct (Z_lt_dec [y] [x]).
+    intros. unfold gt, BigN.lt. destruct (Z_lt_dec (BigN.to_Z y) (BigN.to_Z x)).
     left. lia. right. lia.
   Qed.
 
