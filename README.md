@@ -38,8 +38,8 @@ Scripts:
 CoLoR provides also useful scripts for doing statistics:
 - do `make time` to record the compilation time of each file (then `time_coqc` is used instead of `coqc`)
 - do `./stat_time` to get statistics on compilation time
-- `./coq_stat [<directory>]` (default is `.`) provides the number of definitions, lemmas, etc.
-- `./color_stat` provides the number of Coq lines (including newlines and comments) for the various kinds of formalizations (mathematical structures, data structures, etc.)
+- `./stat_coq [<directory>]` (default is `.`) provides the number of definitions, lemmas, etc.
+- `./stat_color` provides the number of Coq lines (including newlines and comments) for the various kinds of formalizations (mathematical structures, data structures, etc.)
 
 Library contents:
 ----------------------
