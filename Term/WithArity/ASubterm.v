@@ -56,7 +56,7 @@ Section S.
   Proof.
     induction ts. contr.
     intros In_v; simpl in In_v. rewrite in_app in In_v. intuition.
-    exists 0. exists (lt_O_Sn n). simpl. hyp.
+    exists 0. exists (Nat.lt_0_succ n). simpl. hyp.
     destruct H0 as [i H0]. destruct H0 as [p H0].
     assert (p' : S i < S n). lia. exists (S i). exists p'. simpl.
     assert (H1 : (lt_S_n p') = p). apply lt_unique. rewrite H1. hyp.
@@ -98,7 +98,7 @@ Section S.
     rewrite H, Vnth_cast, Vnth_app.
     destruct (le_gt_dec i i). 2: lia.
     set (q := (Vnth_app_aux (S j) (Vnth_cast_aux r p) l)).
-    rewrite (Vnth_eq _ q (lt_O_Sn j)); try lia. simpl.
+    rewrite (Vnth_eq _ q (Nat.lt_0_succ j)); try lia. simpl.
     exists (Cont f0 e t c0 t0). simpl. intuition. discr.
     ded (Vforall_nth p Hts y). apply (In_subterm_lst_vec_intro _ _ p).
     apply (proj1 H0). auto.

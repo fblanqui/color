@@ -58,7 +58,7 @@ assert (H'' : forall n t, size (apply_subst sigma t) <= n ->
                       Acc (P_step R (inner R)) (apply_subst sigma t)).
 intro n; induction n as [ | n].
 intros t St; absurd (1 <= 0); auto with arith; 
-apply le_trans with (size (apply_subst sigma t)); trivial; apply size_ge_one.
+apply Nat.le_trans with (size (apply_subst sigma t)); trivial; apply size_ge_one.
 intros [x | g h] St [p H''].
 
 
@@ -71,7 +71,7 @@ rewrite var_list_unfold in H; trivial.
 assert (Acc_h : forall t, In t h -> Acc (P_step R (inner R)) (apply_subst sigma t)).
 intros t t_in_h; destruct (In_split _ _ t_in_h) as [h' [h'' K]]; subst h.
 apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St); apply size_direct_subterm; trivial.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); apply size_direct_subterm; trivial.
 simpl; rewrite map_app; apply in_or_app; right; left; trivial.
 exists (p ++ (length h' :: nil)).
 generalize t1 H''; clear t1 H'' H1 t1_R_t2 IHn; induction p as [ | i p].

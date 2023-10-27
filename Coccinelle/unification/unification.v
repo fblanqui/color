@@ -12,7 +12,7 @@
 (** * Unit Equational theory on a term algebra *)
 
 
-From Coq Require Import Arith Max List Relations.
+From Coq Require Import Arith List Relations.
 From CoLoR Require Import closure more_list weaved_relation list_sort term_spec
      equational_theory ac cf_eq_ac rpo.
 
@@ -118,7 +118,7 @@ intros _; assert (S := ac_size_eq H);
 simpl in S; injection S; clear S; intro S;
 absurd (1 <= 0).
 auto with arith.
-pattern 0 at 2; rewrite S; apply le_trans with (size t).
+pattern 0 at 2; rewrite S; apply Nat.le_trans with (size t).
 apply size_ge_one.
 auto with arith.
 Qed.
@@ -169,7 +169,7 @@ apply well_formed_fold; intuition.
 rewrite length_map in Ar; simpl.
 destruct (arity f) as [ | | n]; try discriminate.
 subst n; rewrite length_map.
-rewrite <- beq_nat_refl; rewrite Bool.andb_true_r.
+rewrite Nat.eqb_refl; rewrite Bool.andb_true_r.
 rewrite (IHl t1); simpl.
 rewrite (IHl t2); simpl.
 rewrite (IHl t3); simpl.
@@ -442,7 +442,7 @@ refine (rwr_inv _ (sym_refl (union _ ac_one_step_at_top unit_one_step_at_top))
 apply trans_clos_is_trans.
 clear t1 t2 H; intro t1; pattern t1; apply term_rec2; clear t1; induction n.
 intros t1 S_t1; 
-absurd (1 <= 0); [auto with arith | apply le_trans with (size t1)]; 
+absurd (1 <= 0); [auto with arith | apply Nat.le_trans with (size t1)]; 
 [apply size_ge_one | trivial].
 intros t1 S_t1 t2 H; inversion H as [H3 H4 H' | f l1 l2 H']; clear H.
 subst; induction H' as [t1 t2 sigma H'].
@@ -472,8 +472,8 @@ subst; apply th_refl.
 
 subst; 
 assert (S_l1 : forall t, In t l1 -> size t <= n). 
-intros t In_t; apply lt_n_Sm_le; 
-apply lt_le_trans with (size (Term f l1)); [apply size_direct_subterm | idtac]; trivial.
+intros t In_t; apply Nat.lt_succ_r; 
+apply Nat.lt_le_trans with (size (Term f l1)); [apply size_direct_subterm | idtac]; trivial.
 assert (H : rwr_list (one_step (sym_refl ac_one_step_at_top)) (map unit_nf l1) (map unit_nf l2)).
 clear S_t1; generalize l2 H'; clear l2 H';
 induction l1 as [ | t1 l1]; intros l2 H;

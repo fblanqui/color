@@ -127,7 +127,7 @@ exists (S x); exists (lt_n_S x0); clear IHn.
 rewrite Hv, Hw. simpl.
 assert (lt_S_n (lt_n_S x0) = x0). apply lt_unique. rewrite H0. hyp.
 
-exists 0; exists (lt_O_Sn n); rewrite Hv, Hw; auto.
+exists 0; exists (Nat.lt_0_succ n); rewrite Hv, Hw; auto.
 unfold Amult in *; auto with *.
 
 repeat destruct H; unfold Amult; apply Is_true_eq_true; apply orb_prop_intro.

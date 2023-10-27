@@ -185,7 +185,7 @@ Section S.
       intro n; pattern n; apply lt_wf_ind; clear n; intros. unfold seq at -2 .
       destruct (eucl_dev k h0 n); simpl. destruct (le_gt_dec (k-1) r).
       (* r = k-1 *)
-      assert (r = k-1). lia. assert (S n = (S q)*k + 0). rewrite mult_succ_l.
+      assert (r = k-1). lia. assert (S n = (S q)*k + 0). rewrite Nat.mul_succ_l.
       lia. rewrite H1. unfold seq. destruct (eucl_dev k h0 (S q * k + 0)).
       destruct (eucl_div_unique h0 g1 e0). rewrite <- H3, <- H2. simpl.
       rewrite <- iter_com. apply red_iter. apply red_g.

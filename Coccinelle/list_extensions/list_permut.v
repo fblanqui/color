@@ -155,7 +155,7 @@ Lemma permut_length :
 Proof.
 intros A R l; induction l as [ | a l]; intros l' P; inversion P; trivial.
 subst.
-rewrite length_app; simpl; rewrite plus_comm; simpl; rewrite plus_comm.
+rewrite length_app; simpl; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm.
 rewrite <- length_app; rewrite (IHl (l1 ++ l2)); trivial.
 Qed.
 
@@ -419,10 +419,10 @@ rewrite list_size_app; simpl.
 rewrite (E a1 b); trivial.
 rewrite (IHl1 (l2' ++ l2'')); trivial.
 rewrite list_size_app; simpl.
-rewrite plus_comm.
-rewrite <- plus_assoc.
+rewrite Nat.add_comm.
+rewrite <- Nat.add_assoc.
 apply (f_equal (fun n => list_size size' l2' + n)).
-apply plus_comm.
+apply Nat.add_comm.
 intros a a' a_in_la a_in_l'; apply E; trivial.
 right; trivial.
 apply in_insert; trivial.

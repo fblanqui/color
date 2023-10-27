@@ -1,5 +1,5 @@
 Set Implicit Arguments. 
-From Coq Require Import Lia List Setoid Le Peano_dec Eqdep_dec Ring Zwf Morphisms ZArith.
+From Coq Require Import Lia List Setoid Peano_dec Eqdep_dec Ring Zwf Morphisms ZArith.
 From CoLoR Require Import interp.
 
 Lemma exist_pi:  forall (A:Type) (P: A -> Prop), (forall a (H1 H2:P a), H1=H2) ->

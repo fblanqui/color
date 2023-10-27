@@ -9,7 +9,7 @@ prefix, suffix, cut, elimination of doubles, etc.
 
 Set Implicit Arguments.
 
-From Coq Require Import Le.
+From Coq Require Import PeanoNat.
 From CoLoR Require Import ListUtil ListNodup LogicUtil RelMidex.
 
 (***********************************************************************)
@@ -125,8 +125,8 @@ Section cut.
   Lemma length_cut : forall (x : A) l, length (cut x l) <= length l.
 
   Proof.
-    induction l; simpl. apply le_O_n. destruct (eq_dec x a).
-    apply le_refl. apply le_trans with (length l). hyp. apply le_n_Sn.
+    induction l; simpl. apply Nat.le_0_l. destruct (eq_dec x a).
+    apply Nat.le_refl. apply Nat.le_trans with (length l). hyp. apply Nat.le_succ_diag_r.
   Qed.
 
   Lemma length_tail_cut_cons : forall (x y : A) l,
@@ -134,7 +134,7 @@ Section cut.
 
   Proof.
     intros. simpl. destruct (eq_dec x y); simpl. trivial.
-    apply le_trans with (length (cut x l)). apply length_tail.
+    apply Nat.le_trans with (length (cut x l)). apply length_tail.
     apply length_cut. 
   Qed.
 

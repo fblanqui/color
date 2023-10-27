@@ -714,8 +714,8 @@ Section remove.
   Lemma length_remove : forall (x : A) l, length (remove x l) <= length l.
 
   Proof.
-    induction l; simpl; intros. apply le_O_n. destruct (eq_dec a x).
-    apply le_trans with (length l). apply IHl. apply le_n_Sn. simpl.
+    induction l; simpl; intros. apply Nat.le_0_l. destruct (eq_dec a x).
+    apply Nat.le_trans with (length l). apply IHl. apply Nat.le_succ_diag_r. simpl.
     apply le_n_S. apply IHl.
   Qed.
 
@@ -1104,7 +1104,7 @@ Section Element_At_List.
 
   Proof.
     induction l; intros.
-    simpl. rewrite <- minus_n_O. refl.
+    simpl. rewrite Nat.sub_0_r. refl.
     destruct p. inversion H.
     simpl. rewrite IHl. refl. intuition.
   Qed.
@@ -1649,7 +1649,7 @@ Section ith.
 
   Fixpoint ith (l : list A) : forall i, i < length l -> A :=
     match l as l return forall i, i < length l -> A with
-      | nil => fun i H => False_rect A (lt_n_O H)
+      | nil => fun i H => False_rect A (Nat.nlt_0_r H)
       | cons x m => fun i =>
         match i return i < S (length m) -> A with
 	  | O => fun _ => x
@@ -1710,7 +1710,7 @@ Section pvalues.
     match n as n return (forall i, i < n -> A) -> list A with
       | 0 => fun _ => nil
       | S k => fun f =>
-        f 0 (lt_O_Sn k) :: pvalues (fun i h => f (S i) (lt_n_S h))
+        f 0 (Nat.lt_0_succ k) :: pvalues (fun i h => f (S i) (lt_n_S h))
     end.
 
   Lemma pvalues_eq : forall n (f g : forall i, i < n -> A),

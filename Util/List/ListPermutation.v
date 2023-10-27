@@ -208,7 +208,7 @@ Section Permutation.
     change (el :: l') with ((el :: nil) ++ l').
     rewrite !list_contents_app.
     simpl.
-    rewrite plus_0_r.
+    rewrite Nat.add_0_r.
     match goal with
     | |- ?a + (?b + ?c) = ?d => replace (a + (b + c)) with (a + c + b)
     end.

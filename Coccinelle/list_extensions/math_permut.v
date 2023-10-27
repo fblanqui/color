@@ -60,8 +60,8 @@ rewrite (Q i L').
 destruct (le_lt_dec (length l2') i) as [ll2'_le_i | ll2'_gt_i]; trivial.
 rewrite L in L'.
 absurd (length l2' < length l2'); auto with arith.
-apply le_lt_trans with i; trivial.
-apply le_trans with (length (l2' ++ l2'')); trivial.
+apply Nat.le_lt_trans with i; trivial.
+apply Nat.le_trans with (length (l2' ++ l2'')); trivial.
 rewrite length_app; auto with arith.
 intros [ | i] L'.
 simpl; rewrite L; unfold lt; apply le_n_S; rewrite length_app; auto with arith.
@@ -69,7 +69,7 @@ simpl in L'; generalize (le_S_n _ _ L'); clear L'; intro L'.
 destruct Q as [_ [Q _]].
 destruct (le_lt_dec (length l2') (pi i)) as [ll2'_le_pii | ll2'_gt_pii].
 simpl; unfold lt; apply le_n_S; apply Q; trivial.
-simpl; apply lt_le_trans with (length l1').
+simpl; apply Nat.lt_le_trans with (length l1').
 apply Q; trivial.
 auto with arith.
 destruct Q as [_ [_ Q]].
@@ -83,18 +83,18 @@ absurd (S (pi i) <= pi i); trivial; auto with arith.
 destruct  (le_lt_dec (length l2') (pi i)) as [ll2'_le_pii | ll2'_gt_pii];
 destruct  (le_lt_dec (length l2') (pi j)) as [ll2'_le_pij | ll2'_gt_pij].
 apply (f_equal (fun n => S n)); apply Q.
-simpl in L'; apply lt_S_n; trivial.
-simpl in L''; apply lt_S_n; trivial.
+simpl in L'; apply Nat.lt_succ_r; trivial.
+simpl in L''; apply Nat.lt_succ_r; trivial.
 injection H'; trivial.
 absurd (length l2' < length l2'); auto with arith.
-apply le_lt_trans with (pi j); trivial.
+apply Nat.le_lt_trans with (pi j); trivial.
 rewrite <- H'; auto with arith.
 absurd (length l2' < length l2'); auto with arith.
-apply le_lt_trans with (pi i); trivial.
+apply Nat.le_lt_trans with (pi i); trivial.
 rewrite H'; auto with arith.
 apply (f_equal (fun n => S n)); apply Q; trivial.
-simpl in L'; apply lt_S_n; trivial.
-simpl in L''; apply lt_S_n; trivial.
+simpl in L'; apply Nat.lt_succ_r; trivial.
+simpl in L''; apply Nat.lt_succ_r; trivial.
 intros [ | i] L'.
 simpl; rewrite nth_error_at_pos; trivial.
 simpl in L'; generalize (le_S_n _ _ L'); clear L'; intro L'.
@@ -113,8 +113,8 @@ destruct (nth_error l2 (pi 0)) as [ b1 | ].
 intro a1_R_b1; destruct (H' _ (eq_refl _)) as [l2' [l2'' [L'' H'']]]; clear H'.
 subst l2; apply list_permut.Pcons; trivial.
 rewrite IHn; [split | simpl in L1; apply le_S_n; trivial].
-rewrite length_app in L; rewrite plus_comm in L; simpl in L; injection L; 
-intro L'''; rewrite L'''; rewrite plus_comm; rewrite length_app; trivial.
+rewrite length_app in L; rewrite Nat.add_comm in L; simpl in L; injection L; 
+intro L'''; rewrite L'''; rewrite Nat.add_comm; rewrite length_app; trivial.
 exists (fun i => 
                if le_lt_dec (length l1) i
                then i
@@ -127,7 +127,7 @@ unfold permut in *; repeat split.
 intros i L'''; 
 destruct (le_lt_dec (length l1) i) as [ll1_le_i | ll1_gt_i]; trivial.
 absurd (i < i); auto with arith.
-apply lt_le_trans with (length l1); trivial.
+apply Nat.lt_le_trans with (length l1); trivial.
 
 intros i L'''; 
 destruct (le_lt_dec (length l1) i) as [ll1_le_i | _]; trivial.
@@ -135,51 +135,51 @@ assert (L'''' : S i < length (a1 :: l1)).
 simpl; auto with arith.
 destruct (le_lt_dec (pi (S i)) (pi 0)) as [piSi_le_pi0 | piSi_gt_pi0].
 assert (piSi_lt_pi0 : pi (S i) < pi 0).
-destruct (le_lt_or_eq _ _ piSi_le_pi0) as [L5 | E]; trivial.
+destruct (proj1 (Nat.lt_eq_cases _ _) piSi_le_pi0) as [L5 | E]; trivial.
 destruct P as [_ [_ P]]. 
 absurd (S i = 0).
 discriminate.
 apply (P (S i) 0); trivial.
-apply lt_le_trans with (pi 0); trivial.
+apply Nat.lt_le_trans with (pi 0); trivial.
 destruct P as [_ [P _]].
-generalize (P 0 (lt_O_Sn _)); simpl; auto with arith.
+generalize (P 0 (Nat.lt_0_succ _)); simpl; auto with arith.
 destruct P as [_ [P _]].
 generalize (P (S i) L''''); destruct (pi (S i)) as [ | p]; simpl.
-intros _; apply le_lt_trans with i; auto with arith.
-rewrite <- minus_n_O; auto with arith.
+intros _; apply Nat.le_lt_trans with i; auto with arith.
+rewrite Nat.sub_0_r; auto with arith.
 
 intros i j Li Lj;
 destruct (le_lt_dec (length l1) i) as [ll1_le_i | _];
 destruct (le_lt_dec (length l1) j) as [ll1_le_j | _];
 trivial.
 absurd (i < i); auto with arith.
-apply lt_le_trans with (length l1); trivial.
+apply Nat.lt_le_trans with (length l1); trivial.
 absurd (j < j); auto with arith.
-apply lt_le_trans with (length l1); trivial.
+apply Nat.lt_le_trans with (length l1); trivial.
 destruct P as [_ [_ P]];
 destruct (le_lt_dec (pi (S i)) (pi 0)) as [piSi_le_pi0 | piSi_gt_pi0];
 destruct (le_lt_dec (pi (S j)) (pi 0)) as [piSj_le_pi0 | piSj_gt_pi0].
 intro piSi_eq_piSj; assert (Si_eq_Sj : S i = S j).
 apply (P (S i) (S j)); simpl; auto with arith.
 injection Si_eq_Sj; trivial.
-destruct (le_lt_or_eq _ _ piSi_le_pi0) as [L5 | E]; clear piSi_le_pi0.
+destruct (proj1 (Nat.lt_eq_cases _ _) piSi_le_pi0) as [L5 | E]; clear piSi_le_pi0.
 destruct (pi (S j)) as [ | pj].
 absurd (pi 0 < 0); auto with arith.
-simpl; rewrite <- minus_n_O.
+simpl; rewrite Nat.sub_0_r.
 intro H'; rewrite H' in L5.
 absurd (S pj < S pj); auto with arith.
-apply le_lt_trans with (pi 0); auto with arith.
+apply Nat.le_lt_trans with (pi 0); auto with arith.
 absurd (S i = 0).
 discriminate.
 apply (P (S i) 0); trivial.
 simpl; auto with arith.
-destruct (le_lt_or_eq _ _ piSj_le_pi0) as [L5 | E]; clear piSj_le_pi0.
+destruct (proj1 (Nat.lt_eq_cases _ _) piSj_le_pi0) as [L5 | E]; clear piSj_le_pi0.
 destruct (pi (S i)) as [ | qi].
 absurd (pi 0 < 0); auto with arith.
-simpl; rewrite <- minus_n_O.
+simpl; rewrite Nat.sub_0_r.
 intro H'; rewrite <- H' in L5.
 absurd (S qi < S qi); auto with arith.
-apply le_lt_trans with (pi 0); auto with arith.
+apply Nat.le_lt_trans with (pi 0); auto with arith.
 absurd (S j = 0).
 discriminate.
 apply (P (S j) 0); trivial.
@@ -190,14 +190,14 @@ destruct (pi (S i)) as [ | qi].
 absurd (pi 0 < 0); auto with arith.
 destruct (pi (S j)) as [ | pj].
 absurd (pi 0 < 0); auto with arith.
-simpl in piSi_eq_piSj; do 2 rewrite <- minus_n_O in piSi_eq_piSj; subst; trivial.
+simpl in piSi_eq_piSj; do 2 rewrite Nat.sub_0_r in piSi_eq_piSj; subst; trivial.
 injection Si_eq_Sj; trivial.
 
 intros i Li; 
 destruct (le_lt_dec (length l1) i) as [ll1_lt_i | _].
 absurd (i < i); auto with arith.
-apply lt_le_trans with (length l1); trivial.
-generalize (H (S i) (lt_n_S _ _ Li)); simpl.
+apply Nat.lt_le_trans with (length l1); trivial.
+generalize (H (S i) (proj1 (Nat.succ_lt_mono _ _) Li)); simpl.
 destruct (nth_error l1 i) as [ai | ]; trivial.
 generalize (nth_error_ok_in (pi (S i)) (l2' ++ b1 :: l2''));
 destruct (nth_error (l2' ++ b1 :: l2'') (pi (S i))) as [bi | ]; 
@@ -209,16 +209,16 @@ rewrite <- ass_app; rewrite <- Lk2; rewrite <- L''; simpl.
 destruct (le_lt_dec (length k2) (length (k2 ++ bi :: l))) as [Ok | Ko].
 rewrite nth_error_at_pos; trivial.
 absurd (length k2 < length k2); auto with arith.
-apply le_lt_trans with (length (k2 ++ bi :: l)); trivial.
+apply Nat.le_lt_trans with (length (k2 ++ bi :: l)); trivial.
 rewrite length_app; auto with arith.
 destruct H''' as [l [H3 H4]]; subst.
 rewrite <- Lk2; rewrite <- L''; simpl.
 destruct (le_lt_dec (length (l2' ++ b1 :: l)) (length l2')) as [Ko | Ok].
 absurd (length l2' < length l2'); auto with arith.
-apply lt_le_trans with (length (l2' ++ b1 :: l)); trivial.
-rewrite length_app; rewrite plus_comm; simpl; auto with arith.
+apply Nat.lt_le_trans with (length (l2' ++ b1 :: l)); trivial.
+rewrite length_app; rewrite Nat.add_comm; simpl; auto with arith.
 rewrite (length_app l2' (b1 :: l)).
-rewrite plus_comm; simpl; rewrite <- minus_n_O; rewrite plus_comm;
+rewrite Nat.add_comm; simpl; rewrite Nat.sub_0_r; rewrite Nat.add_comm;
 rewrite <- length_app.
 rewrite ass_app; rewrite nth_error_at_pos; trivial.
 destruct H''' as [_ [H3 H4]]; subst;

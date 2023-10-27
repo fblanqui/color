@@ -121,17 +121,17 @@ Module Matrix (OSRT : OrdSemiRingType).
     induction m; intros n gen.
     (* case m = 0 *)
     ex (Vnil (A:=vec n)). intros i j i_0 j_n.
-    exfalso. exact (lt_n_O i_0).
+    exfalso. exact (Nat.nlt_0_r i_0).
     (* case m > 0 *)
     set (gen' := fun i j H => gen (S i) j (lt_n_S H)).
     destruct (IHm n gen') as [Mtl Mtl_spec].
-    set (gen_1 := fun j => gen 0 j (lt_O_Sn m)).
+    set (gen_1 := fun j => gen 0 j (Nat.lt_0_succ m)).
     set (Mhd := Vbuild gen_1).
     set (Mhd_spec := Vbuild_nth gen_1).
     ex (Vcons Mhd Mtl).
     intros i j i_Sm j_n.    
     destruct i; unfold get_elem; simpl.
-    rewrite Mhd_spec. unfold gen_1. rewrite (le_unique (lt_O_Sn m) i_Sm). refl.
+    rewrite Mhd_spec. unfold gen_1. rewrite (le_unique (Nat.lt_0_succ m) i_Sm). refl.
     unfold get_elem in Mtl_spec. rewrite Mtl_spec.
     unfold gen'. rewrite (le_unique (lt_n_S (lt_S_n i_Sm)) i_Sm). refl.
   Defined.
@@ -415,9 +415,9 @@ Module Matrix (OSRT : OrdSemiRingType).
     set (a := Vbuild (fun (j : nat) (jp : j < n) =>
       dot_product (Vtail v) (get_col (Vtail M) jp))).
     set (b := Vbuild (fun (j : nat) (jp : j < n) =>
-         dot_product (Vcons (Vnth v (lt_O_Sn m)) (Vtail v))
+         dot_product (Vcons (Vnth v (Nat.lt_0_succ m)) (Vtail v))
            (Vcons (Vnth (Vhead M) jp) (get_col (Vtail M) jp)))).
-    set (c := Vbuild (fun j jp => Vnth v (lt_O_Sn m) * (Vnth (Vhead M) jp))).
+    set (c := Vbuild (fun j jp => Vnth v (Nat.lt_0_succ m) * (Vnth (Vhead M) jp))).
     set (d := Vbuild (fun j jp =>
       dot_product (Vtail v) (get_col (Vtail M) jp))).
     assert (b =v c [+] d). apply Vforall2_intro_nth. intros.
@@ -604,7 +604,7 @@ Module Matrix (OSRT : OrdSemiRingType).
       apply IHv.
       change v with (Vtail (Vcons h v)). apply Vforall2_tail. hyp.
       apply Vforall2_tail. hyp.
-      set (p0 := lt_O_Sn n0). apply mult_ge_compat.
+      set (p0 := Nat.lt_0_succ n0). apply mult_ge_compat.
       change h with (Vnth (Vcons h v) p0). rewrite Vhead_nth.
       apply Vforall2_elim_nth. hyp.
       rewrite !Vhead_nth. apply Vforall2_elim_nth. hyp.

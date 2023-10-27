@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith Wf_nat Wellfounded Max Min List Multiset Relations.
+From Coq Require Import Arith Wf_nat Wellfounded List Multiset Relations.
 From CoLoR Require Import closure decidable_set ordered_set more_list list_permut list_set list_sort dickson term_spec term.
 
 Lemma Dummy_bool : forall b, negb b = true <-> b = false.
@@ -98,7 +98,7 @@ Definition decomposition_step (pb : unification_problem) : exc unification_probl
       | Term f l1, Term g l2 => 
          if F.Symb.eq_bool f g
          then 
-             match beq_nat (length l1) (length l2) with
+             match Nat.eqb (length l1) (length l2) with
              | true => Normal _ (mk_pb pb.(solved_part) (combine _ l l1 l2))
              | false => @No_solution _
              end
@@ -391,7 +391,7 @@ apply ((proj2 H) z).
 
 (* 1/1 Decomposition *)
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g | intro f_diff_g].
-generalize (beq_nat_ok (length l1) (length l2)); case (beq_nat (length l1) (length l2)); intro L.
+generalize (beq_nat_ok (length l1) (length l2)); case (Nat.eqb (length l1) (length l2)); intro L.
 unfold is_a_solution; simpl solved_part; simpl unsolved_part; 
 intros [Hl Hsigma].
 split; trivial.
@@ -578,7 +578,7 @@ trivial.
 
 (* 1/1 Decomposition *)
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g | intro f_diff_g].
-generalize (beq_nat_ok (length l1) (length l2)); case (beq_nat (length l1) (length l2)); intro L.
+generalize (beq_nat_ok (length l1) (length l2)); case (Nat.eqb (length l1) (length l2)); intro L.
 unfold is_a_solution; simpl solved_part; simpl unsolved_part; 
 intros [Hl Hsigma].
 split; trivial.
@@ -757,10 +757,10 @@ Proof.
 fix lt_bool_ok 1.
 intro n1; case n1; clear n1.
 intros [ | n2]; simpl.
-apply lt_irrefl.
-apply le_n_S; apply le_O_n.
+apply Nat.lt_irrefl.
+apply le_n_S; apply Nat.le_0_l.
 intros n1 [ | n2]; simpl.
-apply le_Sn_O.
+apply Nat.nle_succ_0.
 generalize (lt_bool_ok n1 n2); case (lt_bool n1 n2).
 intro H; apply le_n_S; assumption.
 intros H1 H2; apply H1; apply le_S_n; assumption.
@@ -770,7 +770,7 @@ Definition lt_ms_bool :=
   fun p123 q123 =>
   match p123, q123 with
   (p1,(p2,p3)), (q1,(q2,q3)) =>
-    if beq_nat p1 q1
+    if Nat.eqb p1 q1
     then 
  	 (match dickson.NatMul.mult lt_bool p2 q2 with
   	| Less_than => true 
@@ -789,7 +789,7 @@ Lemma lex_lt : forall p1 p2 p3 q1 q2 q3,
    p1 < q1 -> lt_ms (p1,(p2,p3)) (q1,(q2,q3)).
 Proof.
 intros p1 p2 p3 q1 q2 q3 p1_lt_q1; unfold lt_ms, lt_ms_bool.
-generalize (beq_nat_ok p1 q1); case (beq_nat p1 q1); [intro p1_eq_q1 | intro p1_diff_q1]; trivial.
+generalize (beq_nat_ok p1 q1); case (Nat.eqb p1 q1); [intro p1_eq_q1 | intro p1_diff_q1]; trivial.
 absurd (S p1 <= p1); subst; trivial; auto with arith.
 generalize (lt_bool_ok p1 q1); case (lt_bool p1 q1).
 reflexivity.
@@ -800,7 +800,7 @@ Lemma lex_le_lt : forall p1 p2 p3 q1 q2 q3,
   p1 <= q1 -> dickson.NatMul.mult lt_bool p2 q2 = Less_than -> lt_ms (p1,(p2,p3)) (q1,(q2,q3)).
 Proof.
 intros p1 p2 p3 q1 q2 q3 p1_le_q1 p2_lt_q2; unfold lt_ms, lt_ms_bool.
-generalize (beq_nat_ok p1 q1); case (beq_nat p1 q1); [intro p1_eq_q1 | intro p1_diff_q1].
+generalize (beq_nat_ok p1 q1); case (Nat.eqb p1 q1); [intro p1_eq_q1 | intro p1_diff_q1].
 rewrite p2_lt_q2; trivial.
 generalize (lt_bool_ok p1 q1); case (lt_bool p1 q1).
 reflexivity.
@@ -809,7 +809,7 @@ clear p1_diff_q1; revert p1 q1 p1_le_q1 Abs ; fix lex_le_lt 1.
 intro p1; case p1; clear p1.
 intros q1 _; case q1; clear q1.
 intros _; reflexivity.
-intros n Abs; apply False_rect; apply Abs; apply le_n_S; apply le_O_n.
+intros n Abs; apply False_rect; apply Abs; apply le_n_S; apply Nat.le_0_l.
 intros p1 q1; case q1; clear q1.
 intro Abs; inversion Abs.
 intros q1 Hle Hnot_lt; apply f_equal.
@@ -825,7 +825,7 @@ forall p1 p2 p3 q1 q2 q3,
 Proof.
 intros p1 p2 p3 q1 q2 q3 p1_le_q1 p2_eq_q2 p3_lt_q3; unfold lt_ms, lt_ms_bool.
 rewrite p2_eq_q2.
-generalize (beq_nat_ok p1 q1); case (beq_nat p1 q1); [intro p1_eq_q1 | intro p1_diff_q1].
+generalize (beq_nat_ok p1 q1); case (Nat.eqb p1 q1); [intro p1_eq_q1 | intro p1_diff_q1].
 generalize (lt_bool_ok p3 q3); case (lt_bool p3 q3).
 reflexivity.
 intro Abs; apply False_rect; apply Abs; assumption.
@@ -853,15 +853,15 @@ intros q IHq r; pattern r; refine (well_founded_ind Wf_nat.lt_wf _ _ r); clear r
 
 intros r IHr; apply Acc_intro.
 intros [p' [q' r']]; 
-generalize (beq_nat_ok p' p); case (beq_nat p' p); [intro p'_eq_p | intro p'_diff_p].
+generalize (beq_nat_ok p' p); case (Nat.eqb p' p); [intro p'_eq_p | intro p'_diff_p].
 subst p'; case_eq (NatMul.mult lt_bool q' q); [intro q'_eq_q | intro q'_lt_q | intro q'_gt_q  | intro q'_diff_q ].
 intro r'_lt_r; generalize (lt_bool_ok r' r); rewrite  r'_lt_r; clear  r'_lt_r; intro  r'_lt_r.
 assert (Acc_p_q_r' := IHr _ r'_lt_r).
 apply Acc_intro; intros [p'' [q'' r'']].
-generalize (beq_nat_ok p'' p); case (beq_nat p'' p); [intro p''_eq_p | intro p''_diff_p].
+generalize (beq_nat_ok p'' p); case (Nat.eqb p'' p); [intro p''_eq_p | intro p''_diff_p].
 subst p''; case_eq (NatMul.mult lt_bool q'' q'); [intro q''_eq_q' | intro q''_lt_q' | intro q''_gt_q'  | intro q''_diff_q' ].
 intro r''_lt_r'; refine (Acc_inv Acc_p_q_r' _ _).
-rewrite <- (beq_nat_refl p).
+rewrite (Nat.eqb_refl p).
 assert (q''_eq_q : NatMul.mult lt_bool q'' q = Equivalent).
 apply NatMul.mult_is_complete_equiv.
 transitivity q'.
@@ -876,8 +876,8 @@ apply NatMul.list_permut_trans_clos_multiset_extension_step_2 with q'; trivial.
 assert (H3 := NatMul.mult_is_sound _ _ lt_bool_ok q'' q).
 apply NatMul.mult_is_complete_less_than with lt.
 exact lt_bool_ok.
-exact lt_trans.
-exact lt_irrefl.
+exact Nat.lt_trans.
+exact Nat.lt_irrefl.
 assumption.
 
 apply IHq.
@@ -923,8 +923,8 @@ rewrite H'; reflexivity.
 unfold lt_mul, phi2, size_of_unsolved_part, size_of_solved_part; simpl.
 refine (NatMul.mult_is_complete_less_than _ _ _ _ _).
 apply lt_bool_ok.
-intros n1 n2 n3; apply lt_trans.
-apply lt_irrefl.
+intros n1 n2 n3; apply Nat.lt_trans.
+apply Nat.lt_irrefl.
 left; refine (@NatMul.rmv_case lt _ _ (list_size_mul _
      (fun x  =>
       match find X.eq_bool x sigma with
@@ -1360,7 +1360,7 @@ rewrite <- mem_or_app; right; left; reflexivity.
 (* Third component phi3 *)
 unfold phi3, nb_var_eq_of_unsolved_part; simpl.
 destruct x_val as [v | f l1].
-simpl in L; assert (L' := le_Sn_O _ (lt_S_n _ _ L)); contradiction.
+simpl in L; assert (L' := Nat.nle_succ_0 _ (proj2 (Nat.succ_lt_mono _ _) L)); contradiction.
 auto with arith.
 Defined.
 
@@ -1480,7 +1480,7 @@ revert x_sigma; case (X.eq_bool x y); trivial; intros; discriminate.
 replace (VSet.support (domain_of_subst ((x, t2) :: sigma))) with (x :: (VSet.support (domain_of_subst sigma))). 
 simpl; generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _ | intro x_diff_x; apply False_rect; apply x_diff_x; reflexivity].
 generalize (size_ge_one t2); case (size t2).
-intro Abs; apply False_rect; apply (lt_n_O _ Abs).
+intro Abs; apply False_rect; apply (Nat.nlt_0_r _ Abs).
 intros n _; rewrite <- NatMul.LP.permut_cons_inside.
 rewrite <- NatMul.LP.permut_app2.
 clear l; revert x_not_in_dom_sig; unfold VSet.mem, DecVar.eq_A.
@@ -1549,8 +1549,8 @@ right; trivial.
 (* Second component phi2 *)
 apply NatMul.mult_is_complete_less_than with lt.
 exact lt_bool_ok.
-intros n1 n2 n3; apply lt_trans.
-apply lt_irrefl.
+intros n1 n2 n3; apply Nat.lt_trans.
+apply Nat.lt_irrefl.
 unfold phi2, size_of_solved_part, size_of_unsolved_part; simpl.
 unfold lt_mul; apply NatMul.context_trans_clos_multiset_extension_step_app1.
 do 2 rewrite (list_size_fold size).
@@ -1595,16 +1595,16 @@ apply (NatMul.rmv_case lt
                        (a := S (max (nt1 + nl1) (nt2 + nl2)))).
 unfold  NatMul.DS.eq_A.
 intros b [b_eq | [b_eq | b_in_nil]].
-subst b. apply le_n_S; apply (max_case2 nl1 nl2).
-refine (le_trans _ _ _ _ (le_max_l _ _)); destruct nt1 as [ | nt1].
+subst b. apply le_n_S; apply (Nat.max_case nl1 nl2).
+refine (Nat.le_trans _ _ _ _ (Nat.le_max_l _ _)); destruct nt1 as [ | nt1].
 inversion H1.
-simpl; apply le_n_S; apply le_plus_r.
-refine (le_trans _ _ _ _ (le_max_r _ _)); destruct nt2 as [ | nt2].
+simpl; apply le_n_S; apply Nat.le_add_l.
+refine (Nat.le_trans _ _ _ _ (Nat.le_max_r _ _)); destruct nt2 as [ | nt2].
 inversion H2.
-simpl; apply le_n_S; apply le_plus_r.
-subst b; apply (max_case2 nt1 nt2).
-simpl; apply le_n_S; refine (le_trans _ _ _ _ (le_max_l _ _)); apply le_plus_l.
-simpl; apply le_n_S; refine (le_trans _ _ _ _ (le_max_r _ _)); apply le_plus_l.
+simpl; apply le_n_S; apply Nat.le_add_l.
+subst b; apply (Nat.max_case nt1 nt2).
+simpl; apply le_n_S; refine (Nat.le_trans _ _ _ _ (Nat.le_max_l _ _)); apply Nat.le_add_r.
+simpl; apply le_n_S; refine (Nat.le_trans _ _ _ _ (Nat.le_max_r _ _)); apply Nat.le_add_r.
 contradiction.
 reflexivity.
 reflexivity.
@@ -1802,7 +1802,7 @@ apply z_not_in_sigma; assumption.
 
 (* 1/1 Decomposition *)
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g; subst g | intros _; trivial].
-generalize (beq_nat_ok (length l1) (length l2)); case (beq_nat (length l1) (length l2)); intro L; trivial.
+generalize (beq_nat_ok (length l1) (length l2)); case (Nat.eqb (length l1) (length l2)); intro L; trivial.
 intros z; generalize (Inv_pb z); clear Inv_pb; simpl.
 case_eq (find X.eq_bool z sigma); [ intros z_val z_sigma | intros _; trivial].
 destruct z_val as [v | h l']; trivial.
@@ -1876,7 +1876,7 @@ apply VSet.union_2; trivial.
 intro H; rewrite solved_var_swapp_eq; trivial.
 assert (Phi2 : phi2 (mk_pb sigma ((s,t) :: l)) = phi2 (mk_pb sigma ((t,s) :: l))).
 unfold phi2, size_of_solved_part, size_of_unsolved_part; simpl;
-rewrite max_comm; trivial.
+rewrite Nat.max_comm; trivial.
 
 assert (Phi3 : phi3 (mk_pb sigma ((s,t) :: l)) = phi3 (mk_pb sigma ((t,s) :: l))).
 unfold phi3, nb_var_eq_of_unsolved_part; simpl;
@@ -1925,7 +1925,7 @@ unfold lt_pb; rewrite (measure_for_unif_pb_swapp_eq (Term f l1));
 apply move_eq_decreases; trivial.
 
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g; subst g | intros _; trivial].
-generalize (beq_nat_ok (length l1) (length l2)); case (beq_nat (length l1) (length l2)); intro L; trivial.
+generalize (beq_nat_ok (length l1) (length l2)); case (Nat.eqb (length l1) (length l2)); intro L; trivial.
 simpl solved_part; apply decomposition_decreases.
 Defined.
 
@@ -1951,7 +1951,7 @@ Definition weight_exc_pb_ok  e :=
 Definition lt_weight_exc_pb_ok (w1 w2 : nat * (nat * (list nat * nat))) :=
   match w1, w2 with
   | (n1,m1), (n2,m2) =>
-     if beq_nat n1 n2
+     if Nat.eqb n1 n2
      then lt_ms m1 m2
      else n1 < n2
 end.
@@ -1966,10 +1966,10 @@ unfold well_founded, lt_weight_exc_pb_ok.
 intros [n m]; generalize m; clear m; pattern n.
 refine (well_founded_ind lt_wf _ _ n).
 clear n; intros n IHn m; apply Acc_intro.
-intros [n' m']; generalize (beq_nat_ok n' n); case (beq_nat n' n); [intro n'_eq_n; subst n' | intro n'_diff_n].
+intros [n' m']; generalize (beq_nat_ok n' n); case (Nat.eqb n' n); [intro n'_eq_n; subst n' | intro n'_diff_n].
 revert m'; pattern m; refine (well_founded_ind wf_lt_ms _ _ m); clear m.
 intros m IHm m' m'_lt_m; apply Acc_intro.
-intros [n'' m'']; generalize (beq_nat_ok n'' n); case (beq_nat n'' n); [intro n''_eq_n | intro n''_diff_n].
+intros [n'' m'']; generalize (beq_nat_ok n'' n); case (Nat.eqb n'' n); [intro n''_eq_n | intro n''_diff_n].
 subst n''; apply IHm; trivial.
 intro n''_lt_n; apply IHn; trivial.
 intro n'_lt_n; apply IHn; trivial.
@@ -1994,7 +1994,7 @@ intro x_val; case (lt_ge_dec (T.size (Term f2 l2)) (T.size x_val)); trivial.
 case (find X.eq_bool y sigma); trivial.
 intro y_val; case (lt_ge_dec (T.size (Term f1 l1)) (T.size y_val)); trivial.
 case (F.Symb.eq_bool f1 f2); trivial.
-case (beq_nat (length l1) (length l2)); trivial.
+case (Nat.eqb (length l1) (length l2)); trivial.
 discriminate.
 Defined.
 
@@ -2036,8 +2036,8 @@ unfold lt_exc_pb_ok, lt_weight_exc_pb_ok, lt_pb; simpl.
 generalize (decomposition_step_decreases pb Inv_pb). 
 destruct (decomposition_step pb).
 trivial.
-intros _; generalize (beq_nat_ok 1 2); case (beq_nat 1 2); [intros; discriminate | auto with arith].
-intros _; generalize (beq_nat_ok 0 2); case (beq_nat 0 2); [intros; discriminate | auto with arith].
+intros _; generalize (beq_nat_ok 1 2); case (Nat.eqb 1 2); [intros; discriminate | auto with arith].
+intros _; generalize (beq_nat_ok 0 2); case (Nat.eqb 0 2); [intros; discriminate | auto with arith].
 Defined.
 
 Definition F_decompose : 
@@ -2313,7 +2313,7 @@ rewrite Hsubterm in Hsubterm'.
 assert (Hsize := size_subterm_at_pos (apply_subst tau (Term f l)) i p).
 rewrite Hsubterm' in Hsize.
 intros src_sol; simpl apply_subst at 1 in Hsize; rewrite src_sol in Hsize.
-apply (lt_irrefl _ Hsize).
+apply (Nat.lt_irrefl _ Hsize).
 
 (* 1/1 c = next :: c *)
 intros src sigma W Hcycle tau.

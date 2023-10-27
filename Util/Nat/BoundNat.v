@@ -186,7 +186,7 @@ Qed.
 Lemma N_bij_eq m n (f : N m -> N n) : bijective f -> m = n.
 
 Proof.
-  intros [f_inj f_surj]. apply le_antisym.
+  intros [f_inj f_surj]. apply Nat.le_antisymm.
   apply N_inj_le with (f := f). hyp.
   apply N_inj_le with (f := inverse f_surj). inj. 
 Qed.

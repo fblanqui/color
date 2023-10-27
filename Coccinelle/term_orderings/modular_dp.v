@@ -120,7 +120,7 @@ intros R1 R2 module_R1_R2 def_dec R1_reg R2_var s.
 pattern s; apply term_rec2; clear s.
 intro n; induction n as [ | n]; intros t Size_t.
 absurd (1 <= 0); auto with arith.
-apply le_trans with (size t); [apply size_ge_one | assumption].
+apply Nat.le_trans with (size t); [apply size_ge_one | assumption].
 intros s It H; inversion H as [ t1 s1 H' | f lt ls H']; clear H; subst.
 (* 1/2 rewriting step at top *)
 inversion H' as [d g sigma [H1 | H2]]; clear H'; subst.
@@ -164,7 +164,7 @@ destruct (def_dec f) as [Df | Cf].
 apply interp_well_defined_2 with f ls; trivial.
 right; assumption.
 assert (Size_ls : forall s, In s ls -> size s <= n).
-intros s s_in_ls; apply le_S_n; apply le_trans with (size (Term f ls)); trivial.
+intros s s_in_ls; apply le_S_n; apply Nat.le_trans with (size (Term f ls)); trivial.
 apply size_direct_subterm; trivial.
 
 assert (Hlt : forall t, In t lt -> Interp_dom R1 R2 t).
@@ -703,7 +703,7 @@ assert (R1_in_R1 : inclusion _ R1 R1).
 intros t1 t2; trivial.
 intro s; pattern s; apply term_rec2; clear s.
 intro n; induction n as [ | n]; intros s Size_s t Is t_R_s.
-absurd (1 <= 0); auto with arith; apply le_trans with (size s); trivial;
+absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size s); trivial;
 apply size_ge_one.
 induction t_R_s as [t' s' t'_R_s' | f' lt ls lt_R_ls]; subst.
 inversion t'_R_s' as [t3 s3 sigma t3_R_s3]; subst.
@@ -725,7 +725,7 @@ split; trivial.
 inversion Hs' as [ | f l' l'' ll Cf Hl Hl' Hll | f l' l'' ll Df Hl Hl' Hll].
 inversion Ht' as [ | g k' k'' kk Cg Hk Hk' Hkk | g k' k'' kk Dg Hk Hk' Hkk].
 assert (Size_ls : forall s, In s ls -> size s <= n).
-intros s s_in_ls; apply le_S_n; apply le_trans with (size (Term f' ls)); trivial.
+intros s s_in_ls; apply le_S_n; apply Nat.le_trans with (size (Term f' ls)); trivial.
 apply size_direct_subterm; trivial.
 assert (Hls : forall s, In s ls -> Interp_dom R1 R2 s).
 intros; apply interp_well_defined_1 with f' ls; trivial.
@@ -820,7 +820,7 @@ Lemma R2_case :
 Proof.
 intro s; pattern s; apply term_rec2; clear s.
 intro n; induction n as [ | n]; intros s Size_s t Is t_R_s.
-absurd (1 <= 0); auto with arith; apply le_trans with (size s); trivial;
+absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size s); trivial;
 apply size_ge_one.
 induction t_R_s as [t' s' t'_R_s' | f' lt ls lt_R_ls]; subst.
 inversion t'_R_s' as [t3 s3 sigma t3_R_s3]; subst.
@@ -862,7 +862,7 @@ split; trivial.
 inversion Hs' as [ | f l' l'' ll Cf Hl Hl' Hll | f l' l'' ll Df Hl Hl' Hll].
 inversion Ht' as [ | g k' k'' kk Cg Hk Hk' Hkk | g k' k'' kk Dg Hk Hk' Hkk].
 assert (Size_ls : forall s, In s ls -> size s <= n).
-intros s s_in_ls; apply le_S_n; apply le_trans with (size (Term f' ls)); trivial.
+intros s s_in_ls; apply le_S_n; apply Nat.le_trans with (size (Term f' ls)); trivial.
 apply size_direct_subterm; trivial.
 assert (Hls : forall s, In s ls -> Interp_dom R1 R2 s).
 intros; apply interp_well_defined_1 with f' ls; trivial.
@@ -2200,13 +2200,13 @@ clear DD3.
 generalize (Term g'' k'') p _Sub Sub D123; clear g'' k'' p _Sub Sub Df'' D123.
 intro t; pattern t; apply term_rec2; clear t.
 intro n; induction n as [ | n]; intros t St p _Sub Sub D123.
-absurd (1 <= 0); auto with arith; apply le_trans with (size t); trivial; apply size_ge_one.
+absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 assert (IHk'' : forall s q, subterm_at_pos t q = Some s ->
                       Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))))
                         (apply_subst sigma s)).
 intro s; pattern s; apply term_rec2; clear s.
 intro m; induction m as [ | m]; intros s Ss q Sub'.
-absurd (1 <= 0); auto with arith; apply le_trans with (size s); trivial; apply size_ge_one.
+absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size s); trivial; apply size_ge_one.
 destruct s as [v | g3 k3].
 assert (v_in_s : In v (var_list (Term g k))).
 apply R3_reg with (Term f' k'); trivial.
@@ -2234,7 +2234,7 @@ intros s' s'_in_k3;
 destruct (In_split _ _ s'_in_k3) as [k3' [k3'' H]]; subst k3.
 apply IHm with (q ++ (length k3' :: nil)).
 apply le_S_n.
-apply le_trans with (size (Term g3 (k3' ++ s' :: k3''))); trivial.
+apply Nat.le_trans with (size (Term g3 (k3' ++ s' :: k3''))); trivial.
 apply size_direct_subterm; trivial.
 apply subterm_in_subterm with (Term g3 (k3' ++ s' :: k3'')); trivial.
 simpl; rewrite nth_error_at_pos; trivial.
@@ -2329,7 +2329,7 @@ subst k3; apply in_or_app; right; left; trivial.
 apply acc_subterms_3 with r ti; trivial.
 subst; rewrite Dummy; apply IHm with (length l1 :: nil); trivial.
 apply le_S_n.
-apply le_trans with (size (Term g3 (l1 ++ si :: l2))); trivial.
+apply Nat.le_trans with (size (Term g3 (l1 ++ si :: l2))); trivial.
 apply size_direct_subterm; trivial.
 simpl; rewrite nth_error_at_pos; trivial.
 contradiction.
@@ -2343,7 +2343,7 @@ apply R132_reg'.
 apply def_dec132'.
 apply IHn with (p ++ i :: q).
 apply le_S_n.
-apply le_trans with (size t); trivial.
+apply Nat.le_trans with (size t); trivial.
 generalize (size_subterm_at_pos t i q).
 rewrite Sub'; trivial.
 intros j q' Sub''; apply (not_Sub (j :: q')); trivial.

@@ -46,7 +46,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     simpl in *; lia.
     simpl; fold (activeEnv (buildT M1)); fold (activeEnv (buildT M2)).
     rewrite env_sum_length.
-    apply Max.max_case2; trivial.
+    apply Nat.max_case; trivial.
   Qed.
 
   Lemma activeEnv_abs : forall M (Mabs: isAbs M),
@@ -273,7 +273,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     destruct (le_gt_dec k x); simpl.
     rewrite initialSeg_app; autorewrite with datatypes using trivial.
     rewrite initialSeg_copy.
-    rewrite Min.min_r; trivial.
+    rewrite Nat.min_r; trivial.
     rewrite finalSeg_copy; trivial.
     rewrite <- copy_split.
     repeat (rewrite <- app_ass; rewrite <- copy_split).
@@ -341,7 +341,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     replace x with n; [trivial | lia].
     rewrite initialSeg_app; autorewrite with datatypes using trivial.
     rewrite initialSeg_copy.
-    rewrite Min.min_r; trivial.
+    rewrite Nat.min_r; trivial.
     rewrite finalSeg_copy; [idtac | lia].
     rewrite <- app_ass.
     rewrite <- copy_split.

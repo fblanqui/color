@@ -159,9 +159,9 @@ Module MatrixInt (Export MI : TMatrixInt).
       rewrite (vec_ge_mor H H0),
         (Vforall2_elim_nth dim_pos H), (Vforall2_elim_nth dim_pos H0).
       change (succ_vec (mint_eval v
-        (mi_of_term (ABterm.inject_term (Max.le_max_l (maxvar l) (maxvar r)))))
+        (mi_of_term (ABterm.inject_term (Nat.le_max_l (maxvar l) (maxvar r)))))
       (mint_eval v (mi_of_term
-        (ABterm.inject_term (Max.le_max_r (maxvar l) (maxvar r)))))).
+        (ABterm.inject_term (Nat.le_max_r (maxvar l) (maxvar r)))))).
       apply mint_eval_mon_succ. hyp.
     Qed.
 
@@ -250,8 +250,8 @@ Module MatrixInt (Export MI : TMatrixInt).
         apply dot_product_mon; apply Vforall2_tail; hyp.
         rewrite !Vhead_nth. apply mult_lt_compat_lr.
         apply (Vforall2_elim_nth (R:=ge)). hyp.
-        rewrite (lt_unique (lt_O_Sn i) jp). hyp.
-        rewrite (lt_unique (lt_O_Sn i) jp). hyp.
+        rewrite (lt_unique (Nat.lt_0_succ i) jp). hyp.
+        rewrite (lt_unique (Nat.lt_0_succ i) jp). hyp.
         destruct i. lia.
         VSntac v. VSntac w. VSntac v'. VSntac w'.
         unfold dot_product. simpl.

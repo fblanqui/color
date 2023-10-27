@@ -126,7 +126,7 @@ Module VectorArith (SRT : SemiRingType).
     VOtac. unfold add_vectors. simpl. rewrite vector_plus_zero_r. refl.
     VSntac v. VSntac vl. VSntac vr.
     rewrite !add_vectors_cons, (IHk (Vtail v) (Vtail vl) (Vtail vr)),
-      !Vhead_nth, (H 0 (lt_O_Sn k)).
+      !Vhead_nth, (H 0 (Nat.lt_0_succ k)).
     match goal with
       |- (?A [+] ?B) [+] (?C [+] ?D) =v (?A [+] ?C) [+] (?B [+] ?D) =>
         set (X := A); set (Y := B); set (W := C); set (V := D) end.

@@ -123,16 +123,16 @@ Section BinSignatureTheory.
     assert (Ve1 : forall x,
       Vsub (Vapp x v) (Veq_app_cons_aux2 H0) = (Vcast v H1)).
     intro x; pattern v at 2.
-    rewrite <- (Vsub_app_r x v (le_refl (S n + m))), Vcast_sub. apply Vsub_pi.
+    rewrite <- (Vsub_app_r x v (Nat.le_refl (S n + m))), Vcast_sub. apply Vsub_pi.
     assert (Ve2 : forall x, Vsub (Vapp x v) (Veq_app_cons_aux1 H0) =
-      (Vsub x (Veq_app_aux1 (le_n_Sn n)))). intro x.
+      (Vsub x (Veq_app_aux1 (Nat.le_succ_diag_r n)))). intro x.
     apply Veq_nth; intros. rewrite !Vnth_sub, Vnth_app.
     case (le_gt_dec (S n) (0 + i)); intro. lia. apply Vnth_eq; auto.
     rewrite (Ve1 v1), (Ve1 v2), (Ve2 v1), (Ve2 v2), !Vnth_app, !Vcast_cast.
     case (le_gt_dec (S n) n); intro H2. lia.
     set (v' := Vcast v H1); set (x := Vnth v1 H2); set (y := Vnth v2 H2).
-    set (v1' := Vsub v1 (Veq_app_aux1 (le_n_Sn n))).
-    set (v2' := Vsub v2 (Veq_app_aux1 (le_n_Sn n))).
+    set (v1' := Vsub v1 (Veq_app_aux1 (Nat.le_succ_diag_r n))).
+    set (v2' := Vsub v2 (Veq_app_aux1 (Nat.le_succ_diag_r n))).
     set (H3 := trans_eq (Veq_app_cons_aux3 H0) Emn).
     apply rt_trans with (y := Fun f (Vcast (Vapp v2' (Vcons x v')) H3)).
     apply IHn. intros. unfold v1', v2'. rewrite !Vnth_sub. apply Hin.
@@ -144,7 +144,7 @@ Section BinSignatureTheory.
     -> red proj_cons # (Fun f v1) (Fun f v2).
 
   Proof.
-    intros. gen (proj_cons_fun_aux2 f (plus_0_r (arity f)) Vnil v1 v2 H).
+    intros. gen (proj_cons_fun_aux2 f (Nat.add_0_r (arity f)) Vnil v1 v2 H).
     rewrite !Vapp_nil, !Vcast_cast, !Vcast_refl; auto.
   Qed.
 

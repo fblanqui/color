@@ -166,7 +166,7 @@ Section S.
 
   Proof.
     apply sub_eq. intros. unfold sub_comp, single, extend.
-    case_beq_nat x x0. rewrite <- beq_nat_refl. refl.
+    case_beq_nat x x0. rewrite Nat.eqb_refl. refl.
     rewrite (beq_com beq_nat_ok) in H0. rewrite H0. refl.
   Qed.
 
@@ -509,7 +509,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
     forall n1 n2 x0, fresh x0 (n1+n2) = Vapp (fresh x0 n1) (fresh (x0+n1) n2).
 
   Proof.
-    induction n1; simpl; intros. rewrite plus_0_r. refl.
+    induction n1; simpl; intros. rewrite Nat.add_0_r. refl.
     apply Vtail_eq. rewrite IHn1.
     assert (S x0 + n1 = x0 + S n1). lia. rewrite H. refl.
   Qed.
@@ -530,8 +530,8 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
     forall n k, Vbreak (fresh k (n+p)) = (fresh k n, fresh (k+n) p).
 
   Proof.
-    induction n; simpl; intros. rewrite plus_0_r. refl.
-    rewrite IHn. simpl. rewrite <- plus_Snm_nSm. refl.
+    induction n; simpl; intros. rewrite Nat.add_0_r. refl.
+    rewrite IHn. simpl. rewrite Nat.add_succ_r. refl.
   Qed.
 
 (***********************************************************************)
@@ -744,7 +744,7 @@ Arguments subterm_eq_sub_elim [Sig u t0 s] _ : rename.
 
 (* to prove a goal of the form: sub (single x t) (Var x) = t. *)
 
-Ltac single := simpl; unfold single; rewrite <- beq_nat_refl; refl.
+Ltac single := simpl; unfold single; rewrite Nat.eqb_refl; refl.
 
 (* to prove a goal of the form: exists s, sub s (Var x) = t. *)
 

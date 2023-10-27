@@ -91,10 +91,10 @@ Variable R : rules.
 
 Fixpoint capa (t : term) : Cap :=
   match t with
-    | Var x => mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+    | Var x => mkCap (fun v => Vnth v (Nat.lt_0_succ 0), Vcons t Vnil)
     | Fun f ts =>
       if defined f R
-	then mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+	then mkCap (fun v => Vnth v (Nat.lt_0_succ 0), Vcons t Vnil)
 	else let cs := Vmap capa ts in
 	  mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
 end.
@@ -382,8 +382,8 @@ Lemma ren_caps_app : forall n2 (v2 : terms n2) n1 (v1 : terms n1) k,
   = Vapp (ren_caps k v1) (ren_caps (k + nb_aliens_vec v1) v2).
 
 Proof.
-induction v1; simpl; intros. unfold nb_aliens_vec. simpl. rewrite plus_0_r.
-refl. rewrite nb_aliens_cons, plus_assoc, <- IHv1. refl.
+induction v1; simpl; intros. unfold nb_aliens_vec. simpl. rewrite Nat.add_0_r.
+refl. rewrite nb_aliens_cons, Nat.add_assoc, <- IHv1. refl.
 Qed.
 
 (***********************************************************************)

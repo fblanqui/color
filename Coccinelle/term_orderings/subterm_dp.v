@@ -133,10 +133,10 @@ intro Abs; inversion Abs.
 intros t l _; simpl; left; reflexivity.
 intros p l; case l; clear l.
 intro Abs; inversion Abs.
-intros t l LL; simpl; right; generalize (projection_is_subterm p l (lt_S_n _ _ LL)).
+intros t l LL; simpl; right; generalize (projection_is_subterm p l (proj2 (Nat.succ_lt_mono _ _) LL)).
 case (nth_error l p).
 intros s s_in_l; exact s_in_l.
-intros Abs; apply False_rect; apply (lt_irrefl (size (Term f l))).
+intros Abs; apply False_rect; apply (Nat.lt_irrefl (size (Term f l))).
 apply size_direct_subterm; assumption.
 Qed.
 
@@ -271,7 +271,7 @@ Proof.
 intros uv uv'; unfold connect_approx.
 destruct (le_lt_dec (comp uv) (comp uv')).
 left; exact l.
-right; apply gt_not_le; assumption.
+right; apply Nat.lt_nge; assumption.
 Defined.
 
 Lemma approx_is_approx : forall uv uv', ~connect_approx uv uv' -> ~ trans_clos (are_connected cdp R) uv uv'.
@@ -280,7 +280,7 @@ unfold connect_approx; intros u v H.
 intro H'; apply H; clear H.
 induction H' as [x y H1 | x y z H1 Hn].
 apply comp_ok; assumption.
-apply le_trans with (comp y).
+apply Nat.le_trans with (comp y).
 apply comp_ok; assumption.
 assumption.
 Qed.
@@ -341,31 +341,31 @@ subst l3 l4.
 apply (refl_trans_clos_one_step_list_refl_trans_clos_one_step _ _ _ _ _ _ (sym_eq L3) H).
 intros H3 _.
 absurd (length l41 < length l41).
-apply lt_irrefl.
+apply Nat.lt_irrefl.
 assert (L : length l4 = length l3).
 inversion H.
 trivial.
 apply rwr_list_length_eq with (one_step R); assumption.
 assert (L' := nth_error_none _ _ H3).
 rewrite <- L4 in L'; rewrite <- L in L'; subst l4. 
-apply lt_le_trans with (length (l41 ++ s4 :: l42)); trivial.
-rewrite length_app; rewrite plus_comm; simpl.
-apply le_n_S; apply le_plus_r.
+apply Nat.lt_le_trans with (length (l41 ++ s4 :: l42)); trivial.
+rewrite length_app; rewrite Nat.add_comm; simpl.
+apply le_n_S; apply Nat.le_add_l.
 intros H4 _.
 generalize (nth_error_ok_in (P h) l3).
 case_eq (nth_error l3 (P h)).
 intros s3 H3 K; destruct (K _ (eq_refl _)) as [l31 [l32 [L3 H3']]]; clear K H3.
 absurd (length l31 < length l31).
-apply lt_irrefl.
+apply Nat.lt_irrefl.
 assert (L : length l4 = length l3).
 inversion H.
 trivial.
 apply rwr_list_length_eq with (one_step R); assumption.
 assert (L' := nth_error_none _ _ H4).
 rewrite <- L3 in L'; rewrite L in L'; subst l3. 
-apply lt_le_trans with (length (l31 ++ s3 :: l32)); trivial.
-rewrite length_app; rewrite plus_comm; simpl.
-apply le_n_S; apply le_plus_r.
+apply Nat.lt_le_trans with (length (l31 ++ s3 :: l32)); trivial.
+rewrite length_app; rewrite Nat.add_comm; simpl.
+apply le_n_S; apply Nat.le_add_l.
 intros H3 _.
 inversion H.
 left.
@@ -698,7 +698,7 @@ apply Wl0 with u0; left; apply eq_refl.
 unfold connect_approx; intros u v H0 H1 H2; apply cdp_decr.
 assumption.
 rewrite <- (l0_in_comp_n0 _ (or_introl _ (eq_refl _))).
-apply le_antisym; assumption.
+apply Nat.le_antisymm; assumption.
 
 apply wf_incl with (rest (acc_sub R) (rdp_step (axiom (fun v u => cdp' v u \/ In (u, v) l0)) R)).
 intros x y [H Hmin]; split; [ | assumption].

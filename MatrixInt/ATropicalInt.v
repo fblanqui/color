@@ -114,7 +114,7 @@ Module TropicalInt (Import AI : TTropicalInt).
       simpl. rewrite Aplus_comm. apply tropical_plus_notInf_left.
       apply tropical_mult_notInf. 
       rewrite H2 in H. unfold get_elem in H. simpl in H.
-      rewrite Vhead_nth, <- (Vnth_eq (Vhead m) dim_pos (lt_O_Sn n)); trivial.
+      rewrite Vhead_nth, <- (Vnth_eq (Vhead m) dim_pos (PeanoNat.Nat.lt_0_succ n)); trivial.
       rewrite H1 in H0. hyp.
     Qed.
 

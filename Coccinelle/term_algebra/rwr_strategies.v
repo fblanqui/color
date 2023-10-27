@@ -144,20 +144,20 @@ intros R P l; pattern l; apply (list_rec3 size); clear l;
 intro n; induction n as [ | n]; intros [ | t l] Sl x sigma H Acc_l.
 simpl in H; contradiction.
 simpl in Sl; absurd (1 <= 0); auto with arith.
-apply le_trans with (size t).
+apply Nat.le_trans with (size t).
 apply size_ge_one.
-refine (le_trans _ _ _ _ Sl); auto with arith.
+refine (Nat.le_trans _ _ _ _ Sl); auto with arith.
 simpl in H; contradiction.
 assert (Sl' : list_size size l <= n).
-apply le_S_n; refine (le_trans _ _ _ _ Sl); simpl;
-apply (plus_le_compat_r 1 (size t) (list_size size l)); apply size_ge_one.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ Sl); simpl;
+apply (Nat.add_le_mono_r 1 (size t) (list_size size l)); apply size_ge_one.
 destruct t as [y | g k].
 simpl in H; destruct H as [y_eq_x | x_in_l].
 subst y; apply Acc_l; simpl map; left; trivial.
 apply (IHn l); trivial; intros; apply Acc_l; simpl map; right; trivial.
 assert (Sk : list_size size k <= n).
-apply le_S_n; refine (le_trans _ _ _ _ Sl); simpl; rewrite (list_size_fold size k);
-apply le_n_S; apply le_plus_l.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ Sl); simpl; rewrite (list_size_fold size k);
+apply le_n_S; apply Nat.le_add_r.
 assert (Acc_k : forall t, In t (map (apply_subst sigma) k) -> Acc (P_step R P) t).
 intros t H'; apply P_acc_subterms_1 with (Term g (map (apply_subst sigma) k)).
 apply Acc_l; simpl map; left; trivial.
@@ -188,7 +188,7 @@ intros R P t; split.
 intro Acc_t; induction Acc_t as [t Acc_t IH].
 generalize Acc_t IH; clear Acc_t IH; pattern t; apply term_rec2; clear t.
 intro n; induction n as [ | n]; intros t size_t Acc_t IH.
-absurd (1 <= 0); auto with arith; apply le_trans with (size t); trivial;
+absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size t); trivial;
 apply size_ge_one.
 apply Acc_intro.
 intros u H; destruct H as [H | H].
@@ -196,7 +196,7 @@ intros u H; destruct H as [H | H].
 apply IH; trivial.
 (* 1/1 direct_subterm *)
 apply IHn.
-apply le_S_n; apply le_trans with (size t); trivial.
+apply le_S_n; apply Nat.le_trans with (size t); trivial.
 apply size_direct_subterm; trivial.
 assert (H' : Acc (P_step R P) u).
 apply P_acc_subterms_1 with t; trivial.
@@ -308,7 +308,7 @@ match p with
    match t with 
    | Var _ => false
    | Term f l => 
-        andb (mem_bool beq_nat i (mu f))
+        andb (mem_bool Nat.eqb i (mu f))
                  (match nth_error l i with
                  | None => false
                  | Some ti => active_position ti q
@@ -327,7 +327,7 @@ destruct y as [v | f l].
 contradiction.
 destruct H as [i [K1 K2]].
 exists (i :: nil); simpl; split.
-generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool beq_nat i (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool Nat.eqb i (mu f)).
 intros _; simpl; rewrite K2; apply eq_refl.
 intro i_not_in_mu_f; apply False_rect; apply i_not_in_mu_f.
 apply (in_impl_mem (@eq _) (fun a => eq_refl a) i (mu f) K1).
@@ -337,7 +337,7 @@ contradiction.
 destruct H as [i [K1 K2]].
 destruct H2 as [p [K3 K4]].
 exists (i :: p); simpl; split.
-generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool beq_nat i (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool Nat.eqb i (mu f)).
 intros _; simpl; rewrite K2; assumption.
 intro i_not_in_mu_f; apply False_rect; apply i_not_in_mu_f.
 apply (in_impl_mem (@eq _) (fun a => eq_refl a) i (mu f) K1).
@@ -350,7 +350,7 @@ discriminate.
 simpl in H1; simpl in H2.
 revert H1 H2; generalize (nth_error_ok_in i l); case (nth_error l i).
 intros ti H; destruct (H _ (eq_refl _)) as [l1 [l2 [L H']]]; clear H.
-generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool beq_nat i (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok i (mu f)); case (mem_bool Nat.eqb i (mu f)).
 intro i_in_mu_f; simpl; intros H1 H2.
 apply refl_trans_clos_is_trans with ti.
 apply IHp; trivial.
@@ -430,7 +430,7 @@ intro p; induction p as [ | i p].
 intros; trivial.
 intros [v | f l] s sigma; simpl.
 intros; discriminate.
-case (mem_bool beq_nat i (mu f)); [idtac | intros; discriminate].
+case (mem_bool Nat.eqb i (mu f)); [idtac | intros; discriminate].
 generalize (nth_error_map (apply_subst sigma) l i).
 case (nth_error (map (apply_subst sigma) l) i); [idtac | intros; discriminate]; simpl.
 generalize (nth_error_ok_in i l); case (nth_error l i); [idtac | contradiction].
@@ -476,7 +476,7 @@ Qed.
 Fixpoint actives f n l : list term :=
 match l with
 | nil => nil
-| t :: l => if mem_bool beq_nat n (mu f) then t :: (actives f (S n) l) else (actives f (S n) l) 
+| t :: l => if mem_bool Nat.eqb n (mu f) then t :: (actives f (S n) l) else (actives f (S n) l) 
 end.
 
 Lemma actives_ok : 
@@ -486,31 +486,31 @@ intros f n l; revert n; induction l as [ | t l]; intros n s; simpl; split.
 contradiction.
 intros [[ | i] [_ H]]; discriminate.
 generalize (mem_bool_ok _ _ beq_nat_ok n (mu f)).
-case (mem_bool beq_nat n (mu f)).
+case (mem_bool Nat.eqb n (mu f)).
 intro n_in_mu_f.
 simpl; intros [s_eq_t | s_in_actives].
 subst s; exists 0; split; trivial.
-rewrite plus_comm; apply mem_impl_in with (@eq _); trivial.
+rewrite Nat.add_comm; apply mem_impl_in with (@eq _); trivial.
 rewrite IHl in s_in_actives; destruct s_in_actives as [i [H1 H2]].
 exists (S i); split; trivial.
-rewrite plus_comm; simpl; rewrite plus_comm; assumption.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; assumption.
 intro n_not_in_mu_f.
 rewrite IHl; intros [i [H1 H2]].
 exists (S i); split; trivial.
-rewrite plus_comm; simpl; rewrite plus_comm; assumption.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; assumption.
 generalize (mem_bool_ok _ _ beq_nat_ok n (mu f)).
-case (mem_bool beq_nat n (mu f)).
+case (mem_bool Nat.eqb n (mu f)).
 intro n_in_mu_f.
 intros [[ | i] [H1 H2]].
 simpl in H2; injection H2; clear H2; intro; subst s; left; apply eq_refl.
 right; rewrite IHl.
 exists i; split; trivial.
-revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H1; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 intro n_not_in_mu_f.
 intros [[ | i] [H1 H2]].
-rewrite plus_comm in H1; apply False_rect; apply n_not_in_mu_f; apply in_impl_mem; trivial.
+rewrite Nat.add_comm in H1; apply False_rect; apply n_not_in_mu_f; apply in_impl_mem; trivial.
 rewrite IHl; exists i; split; trivial.
-revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H1; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 Qed.
 
 Lemma shifting_context : 
@@ -527,7 +527,7 @@ unfold c_in_context in *.
 destruct H as [n [H1 H2]].
 exists (S n); split.
 apply C_tail_step; assumption.
-rewrite plus_comm; simpl; rewrite plus_comm; assumption.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; assumption.
 Qed.
 
 Lemma shifting_head :
@@ -544,7 +544,7 @@ apply Acc_intro; intros s H.
 apply (IH (s :: l)).
 exists 0; split.
 left; trivial.
-rewrite plus_comm; simpl.
+rewrite Nat.add_comm; simpl.
 apply mem_impl_in with (@eq _); trivial.
 assumption.
 exists l; apply eq_refl.
@@ -561,17 +561,17 @@ induction l as [ | t l]; simpl; intros f shift l1.
 intros [n [H _]]; inversion H.
 (* 1/2 t :: l *)
 intros [n [K H]]; inversion K; clear K; subst; simpl.
-generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool beq_nat shift (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool Nat.eqb shift (mu f)).
 intro shift_in_mu_f; left; assumption.
-intro shift_not_in_mu; apply False_rect; rewrite plus_comm in H;
+intro shift_not_in_mu; apply False_rect; rewrite Nat.add_comm in H;
 apply shift_not_in_mu; apply in_impl_mem; trivial.
-generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool beq_nat shift (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool Nat.eqb shift (mu f)).
 intros _; right; apply IHl.
 exists i; split; trivial.
-revert H; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 intros _; apply IHl.
 exists i; split; trivial.
-revert H; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 Qed.
 
 Lemma acc_filtering : 
@@ -586,7 +586,7 @@ intro Acc_nil; apply Acc_intro; intros y [n [H _]]; inversion H.
 (* 1/2 t :: l -> *)
 intro Acc_l.
 apply Acc_intro.
-generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool beq_nat shift (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool Nat.eqb shift (mu f)).
 (* 1/3 shift belongs to (mu f) *)
 intro shift_in_mu_f.
 intros k H.
@@ -618,7 +618,7 @@ apply Acc_inv with (actives f (S shift) l); trivial.
 rewrite <- IHl.
 apply (shifting_context _ _ _ _ Acc_l).
 (* 1/1 t :: l <-  *)
-generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool beq_nat shift (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok shift (mu f)); case (mem_bool Nat.eqb shift (mu f)).
 (* 1/2 shift belongs to (mu f) *)
 intro shift_in_mu_f.
 rewrite <- acc_one_step_list.
@@ -642,7 +642,7 @@ apply Acc_intro; assumption.
 (* 1/2 reduction in the tail *)
 apply IHl; trivial.
 exists i; split; trivial.
-revert H2; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H2; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 (* 1/1 shift DOES NOT belong to (mu f) *)
 intros shift_not_in_mu_f.
 rewrite <- IHl.
@@ -653,9 +653,9 @@ destruct H as [n [H1 H2]].
 inversion H1; clear H1; subst.
 apply False_rect; apply shift_not_in_mu_f.
 apply in_impl_mem; trivial.
-rewrite plus_comm in H2; assumption.
+rewrite Nat.add_comm in H2; assumption.
 apply IH; exists i; split; trivial.
-revert H2; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H2; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 Qed.
 
 Lemma Acc_C_step_acc_c_in_context :
@@ -717,7 +717,7 @@ revert s; induction l as [ | t1 l].
 intros s n; right; intros; contradiction.
 (* 1/2 l is equal to (t1 :: l) *)
 intros s n; simpl.
-generalize (mem_bool_ok _ _ beq_nat_ok n (mu f)); case (mem_bool beq_nat n (mu f)).
+generalize (mem_bool_ok _ _ beq_nat_ok n (mu f)); case (mem_bool Nat.eqb n (mu f)).
 (* 1/3 n is in (mu f) *)
 intro n_in_mu_f; destruct (IH _ (or_introl _ (eq_refl _)) s) as [A1 | not_A1].
 (* 1/4 s is active in t1 *)
@@ -725,7 +725,7 @@ left; exists t1; split.
 left; apply eq_refl.
 split; trivial.
 exists 0; split.
-rewrite plus_comm; apply mem_impl_in with (@eq _); trivial.
+rewrite Nat.add_comm; apply mem_impl_in with (@eq _); trivial.
 apply eq_refl.
 (* 1/3 s is NOT active in t1 *)
 destruct (IHl (tail_set _ IH) s (S n)) as [Ai | not_Al].
@@ -736,7 +736,7 @@ right; assumption.
 assumption.
 destruct Al as [i [H1 H2]].
 exists (S i); split; trivial.
-rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 (* 1/3 there is no ti such that s is active in ti *)
 right; intros ti [t1_eq_ti | ti_in_l] Al Ai.
 apply not_A1; subst ti; assumption.
@@ -745,7 +745,7 @@ injection H2; clear H2; intro; subst ti.
 apply not_A1; assumption.
 apply (not_Al ti ti_in_l); trivial.
 exists i; split; trivial.
-revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H1; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 (* 1/2 n in NOT in (mu f) *)
 intro not_mem_n_mu_f.
 destruct (IHl (tail_set _ IH) s (S n)) as [Ai | not_Al].
@@ -756,23 +756,23 @@ right; assumption.
 assumption.
 destruct Al as [i [H1 H2]].
 exists (S i); split; trivial.
-rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 (* 1/2 there is no ti such that s is active in ti *)
 right; intros ti [t1_eq_ti | ti_in_l] Al Ai.
 (* 1/3 proof of the right alternative for t1 *)
 destruct Al as [[ | i] [H1 H2]].
-rewrite plus_comm in H1; apply not_mem_n_mu_f; apply in_impl_mem; trivial.
+rewrite Nat.add_comm in H1; apply not_mem_n_mu_f; apply in_impl_mem; trivial.
 apply (not_Al ti); trivial.
 simpl in H2; destruct (nth_error_ok_in _ _ H2) as [l1 [l2 [L H]]]; 
 subst l; apply in_or_app; right; left; apply eq_refl.
 exists i; split; trivial.
-revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H1; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 (* 1/2 proof of the right alternative for ti *)
 apply (not_Al ti); trivial.
 destruct Al as [[ | i] [H1 H2]].
-apply False_rect; rewrite plus_comm in H1; apply not_mem_n_mu_f; apply in_impl_mem; trivial.
+apply False_rect; rewrite Nat.add_comm in H1; apply not_mem_n_mu_f; apply in_impl_mem; trivial.
 simpl in H2; exists i; split; trivial.
-revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H1; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 (* 1/1 application of the main proof *)
 destruct H as [[ti [ti_in_l [Ai Al]]] | H].
 left; apply refl_trans_clos_is_trans with ti; trivial.
@@ -832,14 +832,14 @@ assert (H'' : forall n t, size t <= n -> active_subterm t (apply_subst sigma t1)
                                                         Acc (C_step R) t).
 intro n; induction n as [ | n].
 intros t St; absurd (1 <= 0); auto with arith;
-apply le_trans with (size t); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 intros [x | g h] St A.
 (* 1/4 t is a variable *)
 apply Context_Acc_var; trivial.
 (* 1/3 t = Term g h *)
 assert (Acc_h : forall t, In t h -> active_subterm t (apply_subst sigma t1) -> Acc (C_step R) t).
 intros t t_in_h At; apply IHn; trivial.
-apply le_S_n; refine (le_trans _ _ _ _ St); apply size_direct_subterm; simpl; trivial.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); apply size_direct_subterm; simpl; trivial.
 destruct (CD g) as [Cg | Dg].
 (* 1/4 g is a constructor symbol *)
 simpl; apply context_acc_subterms; trivial.
@@ -851,7 +851,7 @@ intros n [[ | i] [H1 H2]]; simpl in H2.
 injection H2; clear H2; intros; left; assumption.
 right; apply IHh with (S n).
 exists i; split; trivial.
-revert H1; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+revert H1; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 apply refl_trans_clos_is_trans with (Term g h); trivial.
 right; left; trivial.
 (* 1/3 g is a defined symbol *)
@@ -954,7 +954,7 @@ revert q'; induction q as [ | i q]; simpl.
 intros q' t s A H; injection H; clear H; intros; subst; trivial.
 intros q' [v | f l] s.
 intros; discriminate.
-case (mem_bool beq_nat i (mu f)); [idtac | intros; discriminate].
+case (mem_bool Nat.eqb i (mu f)); [idtac | intros; discriminate].
 simpl; case (nth_error l i); [idtac | intros; discriminate].
 intro t; apply IHq.
 left.
@@ -971,7 +971,7 @@ revert q'; induction q as [ | i q]; simpl.
 intros q' t s A H; injection H; clear H; intros; subst; trivial.
 intros q' [v | f l] s.
 intros; discriminate.
-case (mem_bool beq_nat i (mu f)); [idtac | intros; discriminate].
+case (mem_bool Nat.eqb i (mu f)); [idtac | intros; discriminate].
 simpl; case (nth_error l i); [idtac | intros; discriminate].
 intro t; apply IHq.
 (* 1/3 v is not active in (Term f k) *)
@@ -987,7 +987,7 @@ revert q'; induction q as [ | i q]; intro q'.
 simpl; trivial.
 intros [v | f l].
 intros; discriminate.
-simpl; case (mem_bool beq_nat i (mu f)); [idtac | intros; discriminate].
+simpl; case (mem_bool Nat.eqb i (mu f)); [idtac | intros; discriminate].
 case (nth_error l i); [idtac | intros; discriminate].
 intros t; simpl; apply IHq.
 rewrite active_is_active; exists q'; split; trivial.
@@ -1000,7 +1000,7 @@ revert q'; induction q as [ | i q]; simpl.
 intros q' t s A H; injection H; clear H; intros; subst; trivial.
 intros q' [v | f l] s.
 intros; discriminate.
-case (mem_bool beq_nat i (mu f)); [idtac | intros; discriminate].
+case (mem_bool Nat.eqb i (mu f)); [idtac | intros; discriminate].
 simpl; case (nth_error l i); [idtac | intros; discriminate].
 intro t; apply IHq.
 intros s s_in_h; apply Acc_h.

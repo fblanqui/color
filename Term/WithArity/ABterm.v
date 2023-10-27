@@ -194,7 +194,7 @@ Arguments inject_terms [k n ts] _.
 
 Fixpoint bterm_le k (bt : bterm k) l (h0 : k <= l) : bterm l :=
   match bt with
-    | BVar h => BVar (le_trans h h0)
+    | BVar h => BVar (Nat.le_trans h h0)
     | BFun f bts => BFun f (Vmap (fun bt => @bterm_le k bt l h0) bts)
   end.
 
@@ -205,10 +205,10 @@ Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l)
     | Vcons bt bts' => Vcons (bterm_le bt h0) (bterms_le bts' h0)
   end.
 
-Definition bterm_plus k bt l := bterm_le bt (le_plus_r k l).
+Definition bterm_plus k bt l := bterm_le bt (Nat.le_add_l k l).
 
 Definition bterms_plus k n (bts : vector (bterm k) n) l
-  := bterms_le bts (le_plus_r k l).
+  := bterms_le bts (Nat.le_add_l k l).
 
 End S.
 

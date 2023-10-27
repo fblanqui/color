@@ -192,7 +192,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
       apply Vforall2_elim_nth. change v with (Vtail (Vcons h v)). 
       apply Vforall2_tail. apply Vforall2_intro_nth. hyp.
       change h with (Vhead (Vcons h v)). rewrite !Vhead_nth.
-      apply (H _ (Lt.lt_O_Sn n)).
+      apply (H _ (PeanoNat.Nat.lt_0_succ n)).
     Qed.
 
     Section Matrix.

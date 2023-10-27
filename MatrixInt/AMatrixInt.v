@@ -162,9 +162,9 @@ Module MatrixInt (MI : TMatrixInt).
       rewrite (vec_ge_mor H H0), (Vforall2_elim_nth dim_pos H),
         (Vforall2_elim_nth dim_pos H0).
       change (succ_vec (mint_eval v
-        (mi_of_term (ABterm.inject_term (Max.le_max_l (maxvar l) (maxvar r)))))
+        (mi_of_term (ABterm.inject_term (Nat.le_max_l (maxvar l) (maxvar r)))))
       (mint_eval v (mi_of_term
-        (ABterm.inject_term (Max.le_max_r (maxvar l) (maxvar r)))))).
+        (ABterm.inject_term (Nat.le_max_r (maxvar l) (maxvar r)))))).
       apply mint_eval_mon_succ. hyp.
     Qed.
 
@@ -252,8 +252,8 @@ Module MatrixInt (MI : TMatrixInt).
         apply dot_product_mon; apply Vforall2_tail; hyp.
         rewrite !Vhead_nth. apply mult_lt_compat_lr.
         apply (Vforall2_elim_nth (R:=ge)). hyp.
-        rewrite (lt_unique (lt_O_Sn i) jp). hyp.
-        rewrite (lt_unique (lt_O_Sn i) jp). hyp.
+        rewrite (lt_unique (Nat.lt_0_succ i) jp). hyp.
+        rewrite (lt_unique (Nat.lt_0_succ i) jp). hyp.
         destruct i. lia.
         VSntac v. VSntac w. VSntac v'. VSntac w'.
         unfold dot_product. simpl.
@@ -265,7 +265,7 @@ Module MatrixInt (MI : TMatrixInt).
         apply Vforall2_tail. hyp.
         rewrite Vnth_tail, lt_nS_Sn. hyp.
         rewrite !Vnth_tail, lt_nS_Sn. hyp.
-        apply mult_le_compat.
+        apply Nat.mul_le_mono.
         rewrite !Vhead_nth. apply (Vforall2_elim_nth (R:=ge)). hyp.
         rewrite !Vhead_nth. apply (Vforall2_elim_nth (R:=ge)). hyp.
       Qed.
@@ -299,13 +299,13 @@ Module MatrixInt (MI : TMatrixInt).
         intros. unfold MBI.vec_at0. unfold mat_vec_prod. 
         rewrite !Vnth_col_mat, !mat_mult_spec.
         apply dot_product_mon_r with 0%nat dim_pos.
-        unfold ge. apply Vforall2_intro_nth. intros. apply le_refl.
+        unfold ge. apply Vforall2_intro_nth. intros. apply Nat.le_refl.
         unfold ge. apply Vforall2_intro_nth. intros.
         rewrite !get_col_col_mat. destruct ab.
         apply Vforall2_elim_nth. hyp.
         hyp.
         rewrite !get_col_col_mat. hyp.
-        apply H. apply le_refl.
+        apply H. apply Nat.le_refl.
       Qed.
 
       Import List ListUtil.

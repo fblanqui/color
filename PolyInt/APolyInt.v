@@ -11,8 +11,6 @@ proof of the termination criterion based on polynomial interpretations
 
 Set Implicit Arguments.
 
-From Coq Require Import Max.
-
 From CoLoR Require Import ATerm ABterm ListUtil VecUtil
   PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
   LogicUtil SN Polynom MonotonePolynom NatUtil ATrs BoundNat AWFMInterpretation
@@ -233,7 +231,7 @@ Section S.
     Local Open Scope poly_scope.
 
     Hint Unfold maxvar_le : core.
-    Hint Resolve le_max_l le_max_r : core.
+    Hint Resolve Nat.le_max_l Nat.le_max_r : core.
 
     Program Definition rulePoly_ge rule := 
       let l := lhs rule in let r := rhs rule in
@@ -251,8 +249,8 @@ Section S.
     Proof.
       intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
       set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)),
-              (PI_term_int_eq xint (le_max_r mvl mvr)).
+      rewrite (PI_term_int_eq xint (Nat.le_max_l mvl mvr)),
+              (PI_term_int_eq xint (Nat.le_max_r mvl mvr)).
       rewrite !val_peval_D.
       pose (v := (Vmap (proj1_sig (P:=pos))
         (vec_of_val xint (S (max mvl mvr))))).
@@ -267,8 +265,8 @@ Section S.
       intros r H_coef_pos. unfold succ_eq, IR. intro xint.
       unfold Dge, Dle, transp.
       set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)),
-              (PI_term_int_eq xint (le_max_r mvl mvr)), !val_peval_D.
+      rewrite (PI_term_int_eq xint (Nat.le_max_l mvl mvr)),
+              (PI_term_int_eq xint (Nat.le_max_r mvl mvr)), !val_peval_D.
       apply pos_le. rewrite <- peval_minus.
       apply pos_peval. exact H_coef_pos.
     Qed.

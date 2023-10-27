@@ -102,7 +102,7 @@ apply (IHn comp'); clear IHn.
 intros uv uv' H; assert (K := comp_approx _ _ H); unfold comp'.
 intros [ | c] [ | c'].
 intros _ _; apply le_n.
-intros _ _; apply le_O_n.
+intros _ _; apply Nat.le_0_l.
 intros J [J' | J'].
 assert (J'' := K _ _ J J'); inversion J''.
 apply (le_S_n _ _ (K _ _ J J')).
@@ -119,7 +119,7 @@ exists 0; right; assumption.
 exists (S n0); assumption.
 (* 1/2 *)
 unfold comp'; intros [u v] [ | n0].
-intros _; apply le_O_n.
+intros _; apply Nat.le_0_l.
 intro K; apply le_S_n; apply (G _ _ K).
 
 (* 1/1 *)

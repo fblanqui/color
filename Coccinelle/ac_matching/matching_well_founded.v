@@ -68,21 +68,21 @@ intros f l1 l2 t1 Ar W;
 pattern (ac_size (Term f (l1 ++ t1 :: l2))); rewrite ac_size_unfold.
 rewrite ac_size_build_eq; trivial.
 do 2 rewrite length_app;
-do 2 rewrite list_size_app; simpl; rewrite <- plus_assoc; 
-apply plus_lt_le_compat.
-rewrite (plus_comm (length l1) (S (length l2))); simpl;
-rewrite <- minus_n_O;
-rewrite (plus_comm (length l2));
+do 2 rewrite list_size_app; simpl; rewrite <- Nat.add_assoc; 
+apply Nat.add_lt_le_mono.
+rewrite (Nat.add_comm (length l1) (S (length l2))); simpl;
+rewrite <- Nat.sub_0_r;
+rewrite (Nat.add_comm (length l2));
 elim W; clear W; rewrite Ar; 
 intros _ W; elim W; clear W;
 intros L _; rewrite length_app in L; simpl in L;
-rewrite plus_comm in L; simpl in L;
-rewrite plus_comm in L;
+rewrite Nat.add_comm in L; simpl in L;
+rewrite Nat.add_comm in L;
 destruct (length l1 + length l2).
 absurd (1 >= 2); trivial; unfold ge; auto with arith.
 auto with arith.
-rewrite <- plus_assoc; apply plus_le_compat_l; 
-rewrite plus_comm; auto with arith.
+rewrite <- Nat.add_assoc; apply Nat.add_le_mono_l; 
+rewrite Nat.add_comm; auto with arith.
 Qed.
 
 Lemma ac_size_build_lt : 
@@ -90,13 +90,13 @@ Lemma ac_size_build_lt :
   ac_size (build f (l1 ++ l2)) < ac_size (Term f (l1 ++ t1 :: l2)).
 Proof.
 intros f l1 l2 t1 Ar W.
-apply lt_le_trans with (ac_size (build f (l1 ++ l2)) + ac_size t1).
+apply Nat.lt_le_trans with (ac_size (build f (l1 ++ l2)) + ac_size t1).
 rewrite (plus_n_O (ac_size (build f (l1 ++ l2))));
-rewrite <- plus_assoc; apply plus_lt_compat_l;
+rewrite <- Nat.add_assoc; apply Nat.add_lt_mono_l;
 simpl; unfold lt; apply ac_size_ge_one;
 elim (well_formed_cf_unfold _ W); intros Wl _;
 apply Wl; apply in_or_app; right; left; trivial.
-apply lt_le_weak; apply ac_size_build_lt_args; trivial.
+apply Nat.lt_le_incl; apply ac_size_build_lt_args; trivial.
 Qed.
 
 Definition pb_weight pb := 
@@ -135,7 +135,7 @@ destruct In_l2 as [cp1 [l2' [l2'' [H [l2_eq l2'''_eq]]]]].
 injection l2'''_eq; clear l2'''_eq; intro l2'''_eq; rewrite <- H in l2_eq; clear H; subst l2;
 inversion_clear In_pb' as [pb'_eq_ | ]; [idtac | contradiction].
 subst; simpl unsolved_part; 
-apply list_size_tl_compat; apply plus_le_lt_compat; auto with arith.
+apply list_size_tl_compat; apply Nat.add_le_lt_mono; auto with arith.
 apply ac_size_build_lt;
 [ rewrite Af2 | apply (proj2 (A:=well_formed_cf (Var v1))); apply W1; left] ; trivial.
 inversion_clear In_pb' as [pb'_eq_ | ]; [idtac | contradiction].
@@ -175,7 +175,7 @@ injection l2'''_eq; clear l2'''_eq; intro l2'''_eq; rewrite <- H in l2_eq; clear
 inversion_clear In_pb' as [pb'_eq_ | ]; [idtac | contradiction].
 generalize (W1 (Term f1 (Var v1 :: l1))  (Term f1 l2) (or_introl _ (eq_refl _)));
 intros [Wt1 Wt2];  subst; unfold unsolved_part; 
-apply list_size_tl_compat; apply plus_lt_compat; 
+apply list_size_tl_compat; apply Nat.add_lt_mono; 
 [replace (Var v1 :: l1) with (nil ++ Var v1 :: l1); trivial;
 replace (build f1 l1) with (build f1 (nil ++ l1)); trivial | 
 idtac]; apply ac_size_build_lt; trivial.
@@ -192,16 +192,16 @@ unfold DOS.A in *;
 destruct (le_gt_dec (length l1) (length l2')) as [L_l1_l2' |]; [idtac | contradiction].
 inversion_clear In_pb' as [pb'_eq_ | ]; [idtac | contradiction].
 intro P; subst; simpl unsolved_part; 
-apply list_size_tl_compat; apply plus_lt_le_compat.
+apply list_size_tl_compat; apply Nat.add_lt_le_mono.
 replace (Var v1 :: l1) with (nil ++ Var v1 :: l1); trivial;
 replace (build f1 l1) with (build f1 (nil ++ l1)); trivial;
 apply ac_size_build_lt; trivial.
 rewrite ac_size_build_eq; trivial;
-rewrite ac_size_unfold; rewrite Af1; apply plus_le_compat.
+rewrite ac_size_unfold; rewrite Af1; apply Nat.add_le_mono.
 generalize (list_permut.permut_length P); intro H;
 unfold EDS.A, DOS.A in *; rewrite <- H; rewrite length_app;
 destruct (length l2'); simpl; auto with arith;
-rewrite plus_comm; simpl; do 2 rewrite <- minus_n_O; auto with arith.
+rewrite Nat.add_comm; simpl; do 2 rewrite Nat.sub_0_r; auto with arith.
 assert (Dummy : forall a a' : term,
   In a (ll1 ++ l2') -> In a' l2 -> a = a' -> ac_size a = ac_size a').
 intros; subst; trivial.
@@ -220,10 +220,10 @@ destruct In_pb' as [pb'_eq_ | ]; [idtac | contradiction].
 intros [cp1 [l2' [l2'' [ H [l2_eq l2'''_eq]]]]].
 injection l2'''_eq; clear l2'''_eq; intro l2'''_eq; rewrite <- H in l2_eq; clear H;
 subst; simpl unsolved_part; rewrite Af1; intros.
-apply list_size_tl_compat; apply plus_le_lt_compat.
+apply list_size_tl_compat; apply Nat.add_le_lt_mono.
 destruct l1 as [ | s1 l1]; [simpl; auto with arith | idtac].
 do 2 rewrite ac_size_unfold; rewrite Af1; rewrite length_quicksort; 
-simpl; apply le_n_S; apply plus_le_compat_l.
+simpl; apply le_n_S; apply Nat.add_le_mono_l.
 assert (H'' := @list_permut.permut_size _ term (@eq term) ac_size ac_size (quicksort (Var (new_var p1) :: s1 :: l1))
   ((Var (new_var p1) :: s1 :: l1))).
 unfold EDS.A, DOS.A in *; rewrite H''.
@@ -247,19 +247,19 @@ generalize (in_remove _ _ T.eq_bool_ok (Term g2 ll2) l2);
 destruct (remove T.eq_bool (Term g2 ll2) l2) as [l2''' | ]; trivial.
 intros [cp1 [l2' [l2'' [ H [l2_eq l2'''_eq]]]]].
 injection l2'''_eq; clear l2'''_eq; intro; subst l2''';
-simpl unsolved_part; unfold list_size; rewrite plus_assoc; apply plus_lt_compat_r;
+simpl unsolved_part; unfold list_size; rewrite Nat.add_assoc; apply Nat.add_lt_mono_r;
 replace (ac_size (Var (new_var p1))) with (ac_size (Var v1)); trivial;
-rewrite (plus_comm (ac_size (Var v1))); rewrite <- plus_assoc;
-rewrite (plus_assoc (ac_size (Var v1))); rewrite plus_comm;
-rewrite <- plus_assoc; apply plus_lt_compat.
-rewrite plus_comm; replace (build f1 l1) with (build f1 (nil ++ l1)); trivial;
+rewrite (Nat.add_comm (ac_size (Var v1))); rewrite <- Nat.add_assoc;
+rewrite (Nat.add_assoc (ac_size (Var v1))); rewrite Nat.add_comm;
+rewrite <- Nat.add_assoc; apply Nat.add_lt_mono.
+rewrite Nat.add_comm; replace (build f1 l1) with (build f1 (nil ++ l1)); trivial;
 replace (Var v1 :: l1) with (nil ++ Var v1 :: l1); trivial; 
 apply ac_size_build_lt_args; trivial.
-apply lt_trans with (ac_size (build f1 (l2' ++ l2'')) + ac_size (Term g2 ll2)).
-apply plus_lt_compat_l; subst; apply ac_size_build_lt.
+apply Nat.lt_trans with (ac_size (build f1 (l2' ++ l2'')) + ac_size (Term g2 ll2)).
+apply Nat.add_lt_mono_l; subst; apply ac_size_build_lt.
 destruct (arity (head_symb p1)); [trivial | contradiction | contradiction].
 apply (well_formed_cf_subterms W_t2); trivial.
-subst; apply ac_size_build_lt_args; trivial.
+subst. apply ac_size_build_lt_args; trivial.
 (* l1 = t1 :: _, t1 is a variable v1, v1 has no value, neither plain nor partial *)
 intros _; unfold ac_elementary_solve_term_var_without_val_term in *.
 pattern pb';
@@ -281,13 +281,13 @@ list_size
   (fun t1_t2 : term * term =>
    let (t1, t3) := t1_t2 in ac_size t1 + ac_size t3)
   ((Term f1 (Var v1 :: l1), Term f1 l2) :: l)).
-simpl unsolved_part; apply list_size_tl_compat; apply plus_le_lt_compat.
-simpl; rewrite Af1; rewrite <- minus_n_O; rewrite (list_size_fold ac_size);
-rewrite ac_size_build_eq; trivial; apply plus_le_compat; auto with arith; apply le_minus.
+simpl unsolved_part; apply list_size_tl_compat; apply Nat.add_le_lt_mono.
+simpl; rewrite Af1; rewrite Nat.sub_0_r; rewrite (list_size_fold ac_size);
+rewrite ac_size_build_eq; trivial; apply Nat.add_le_mono; auto with arith; apply Nat.le_sub_l.
 subst; apply ac_size_build_lt; trivial.
 unfold EDS.A, DOS.A in *; destruct (le_gt_dec (length l2) (length l1 + 1)) as [_ | _]; trivial;
 split; trivial; clear Common_ineq.
-simpl unsolved_part; apply list_size_tl_compat; apply plus_le_lt_compat.
+simpl unsolved_part; apply list_size_tl_compat; apply Nat.add_le_lt_mono.
 destruct l1 as [| t1' l1]; [simpl; auto with arith | idtac];
 simpl; rewrite Af1; rewrite length_quicksort; simpl;
 do 2 rewrite (list_size_fold ac_size); simpl;
@@ -309,12 +309,12 @@ generalize (in_remove _ _ T.eq_bool_ok (Term g2 ll2) l2);
 destruct (remove T.eq_bool (Term g2 ll2) l2) as [l2''' | ]; trivial.
 intros [cp1 [l2' [l2'' [ H [l2_eq l2'''_eq]]]]].
 injection l2'''_eq; clear l2'''_eq; intro; subst l2''';
-simpl unsolved_part; unfold list_size; do 2 rewrite plus_assoc; apply plus_lt_compat_r.
-rewrite <- plus_assoc;
-rewrite (plus_comm (ac_size (Term g1 ll1))); rewrite <- plus_assoc;
-rewrite (plus_assoc (ac_size (Term g1 ll1))); rewrite plus_comm;
-rewrite <- plus_assoc; apply plus_lt_compat.
-rewrite plus_comm; replace (build f1 l1) with (build f1 (nil ++ l1)); trivial;
+simpl unsolved_part; unfold list_size; do 2 rewrite Nat.add_assoc; apply Nat.add_lt_mono_r.
+rewrite <- Nat.add_assoc;
+rewrite (Nat.add_comm (ac_size (Term g1 ll1))); rewrite <- Nat.add_assoc;
+rewrite (Nat.add_assoc (ac_size (Term g1 ll1))); rewrite Nat.add_comm;
+rewrite <- Nat.add_assoc; apply Nat.add_lt_mono.
+rewrite Nat.add_comm; replace (build f1 l1) with (build f1 (nil ++ l1)); trivial;
 replace (Term g1 ll1 :: l1) with (nil ++ Term g1 ll1 :: l1); trivial; 
 apply ac_size_build_lt_args; trivial.
 subst l2 cp1; apply ac_size_build_lt_args; trivial.
@@ -325,13 +325,13 @@ destruct l2 as [ | v1 [ | v2 [ | v3 l2]]]; [contradiction | contradiction | idta
 inversion_clear In_pb' as [pb'_eq_ | In_pb'']; 
 [idtac | inversion_clear In_pb'' as [pb''_eq_ | ]; [idtac | contradiction]];
 subst; simpl unsolved_part; simpl list_size;
-rewrite Af1; do 2 rewrite plus_assoc; apply plus_lt_compat_r; do 2 rewrite plus_0_r.
-do 2 rewrite plus_assoc; apply plus_lt_compat_r;
-simpl; unfold lt; apply le_n_S; do 3 rewrite <- plus_assoc;
-apply plus_le_compat_l; rewrite plus_comm; apply plus_le_compat_l;
+rewrite Af1; do 2 rewrite Nat.add_assoc; apply Nat.add_lt_mono_r; do 2 rewrite Nat.add_0_r.
+do 2 rewrite Nat.add_assoc; apply Nat.add_lt_mono_r;
+simpl; unfold lt; apply le_n_S; do 3 rewrite <- Nat.add_assoc;
+apply Nat.add_le_mono_l; rewrite Nat.add_comm; apply Nat.add_le_mono_l;
 simpl; apply le_S; apply le_n.
-simpl; unfold lt; apply le_n_S; do 3 rewrite <- plus_assoc; apply plus_le_compat_l;
-rewrite plus_comm;  rewrite <- plus_assoc; apply plus_le_compat_l;
+simpl; unfold lt; apply le_n_S; do 3 rewrite <- Nat.add_assoc; apply Nat.add_le_mono_l;
+rewrite Nat.add_comm;  rewrite <- Nat.add_assoc; apply Nat.add_le_mono_l;
 apply le_S; apply le_n.
 
 (* arity f1 = Free n1 *)
@@ -347,16 +347,16 @@ intros _ L12; simpl in L12; discriminate.
 intros _ L12; simpl in L12; discriminate.
 intros In_pb' L12; simpl in L12; generalize (eq_add_S _ _ L12); clear L12; intro L12.
 generalize (IHl1 _ _ In_pb' L12).
-intro H; apply lt_le_trans with 
+intro H; apply Nat.lt_le_trans with 
 (list_size
   (fun t1_t2 : term * term =>
    let (t1, t2) := t1_t2 in ac_size t1 + ac_size t2)
   ((Term f1 l1, Term f1 l2) :: (t1, t2) :: l)); trivial.
 simpl; rewrite Af1; do 2 rewrite (list_size_fold ac_size); simpl; apply le_n_S.
-rewrite plus_assoc; apply plus_le_compat_r.
-rewrite plus_comm; do 2 rewrite <- plus_assoc; apply plus_le_compat_l.
-rewrite plus_comm; rewrite <- plus_assoc; apply plus_le_compat_l.
-simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_assoc; apply Nat.add_le_mono_r.
+rewrite Nat.add_comm; do 2 rewrite <- Nat.add_assoc; apply Nat.add_le_mono_l.
+rewrite Nat.add_comm; rewrite <- Nat.add_assoc; apply Nat.add_le_mono_l.
+simpl; rewrite Nat.add_comm; trivial.
 
 Qed.
 

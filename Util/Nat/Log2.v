@@ -7,13 +7,13 @@ See the COPYRIGHTS and LICENSE files.
 Definition of log2 (floor) and exp2, and some equalities
 *)
 
-From Coq Require Import Div2 Le Even Lia.
+From Coq Require Import Lia PeanoNat.
 From CoLoR Require Import LogicUtil.
 
-Lemma div2_le_n : forall n, div2 n <= n.
+Lemma div2_le_n : forall n, Nat.div2 n <= n.
 
 Proof.
-cut (forall n, div2 n <= n /\ div2 (S n) <= S n).
+cut (forall n, Nat.div2 n <= n /\ Nat.div2 (S n) <= S n).
 intros H n; gen (H n); tauto.
 induction n; auto.
 inversion IHn; split; auto.
@@ -24,7 +24,7 @@ Inductive log2_prop : nat -> nat -> Prop :=
 | log2_prop_O : log2_prop 0 0
 | log2_prop_1 : log2_prop 1 0
 | log2_prop_p : forall p q,
-  p <> 0 -> p <> 1 -> log2_prop (div2 p) q -> log2_prop p (S q).
+  p <> 0 -> p <> 1 -> log2_prop (Nat.div2 p) q -> log2_prop p (S q).
 
 #[global] Hint Constructors log2_prop : core.
 
@@ -35,7 +35,7 @@ Fixpoint log2_aux n count : nat :=
       match n with
         | 0 => 0
         | 1 => 0
-        | _ => S (log2_aux (div2 n) count')
+        | _ => S (log2_aux (Nat.div2 n) count')
       end
   end.
 
@@ -56,7 +56,7 @@ simpl.
 apply log2_prop_p.
  intro; discr.
  intro H; discr.
-apply IHcount; eapply le_trans.
+apply IHcount; eapply Nat.le_trans.
 eapply le_n_S; apply div2_le_n.
 apply le_S_n; hyp.
 Qed.
@@ -96,12 +96,12 @@ Fixpoint exp2 n :=
     | S i => 2 * exp2 i
   end.
 
-Lemma double_div2 : forall n, S (2 * div2 n) >= n.
+Lemma double_div2 : forall n, S (2 * Nat.div2 n) >= n.
 
 Proof.
-intro n. destruct (even_or_odd n).
-rewrite even_double; auto; unfold double; lia.
-rewrite odd_double; auto; unfold double; lia.
+intro n. destruct (Nat.Even_or_Odd n).
+rewrite Nat.Even_double; [| exact H]; unfold Nat.double; lia.
+rewrite Nat.Odd_double; auto; unfold Nat.double; lia.
 Qed.
 
 Lemma exp2_pos : forall n, exp2 n >0.
@@ -117,10 +117,10 @@ intro; induction n; intros. assert (n'=0). lia. subst. apply exp2_pos.
 inversion H; auto.
 subst; inversion H0. simpl; auto.
 subst.
-assert (exp2 (S q) > div2 (S n)).
+assert (exp2 (S q) > Nat.div2 (S n)).
 apply IHn.
 simpl; destruct n; auto with *.
-assert (div2 n <= n); auto with *. apply div2_le_n.
+assert (Nat.div2 n <= n); auto with *. apply div2_le_n.
 hyp.
 change (2*exp2 (S q) > S n).
 gen(double_div2 (S n)); intro; lia.

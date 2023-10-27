@@ -11,7 +11,7 @@ is introduced in this file.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsRed TermsConv LogicUtil.
-From Coq Require Import Setoid Lia.
+From Coq Require Import Setoid PeanoNat Lia.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 
@@ -543,14 +543,14 @@ Module TermsBeta (Sig : TermsSig.Signature).
 
     rewrite x_eq_i.
     rewrite nth_app_right; autorewrite with datatypes using try lia.
-    rewrite <- Minus.minus_n_n; simpl.
+    rewrite Nat.sub_diag; simpl.
     replace (None :: copy x None ++ lift_subst G 1) with 
       (copy (S x) None ++ lift_subst G 1); trivial.
     rewrite nth_app_left; autorewrite with datatypes terms using simpl;
       try lia.
     rewrite nth_app_right; autorewrite with datatypes terms using simpl;
       try lia.
-    rewrite <- Minus.minus_n_n; simpl.
+    rewrite Nat.sub_diag; simpl.
     autorewrite with terms.
     rewrite <- presubst_prelift_comm; simpl.
     rewrite subst_lift_subst; simpl.

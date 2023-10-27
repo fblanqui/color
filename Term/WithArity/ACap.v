@@ -9,7 +9,7 @@ cap of undefined symbols and aliens of defined symbols
 
 Set Implicit Arguments.
 
-From Coq Require Import Max Sumbool.
+From Coq Require Import Sumbool.
 From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil EqUtil.
 
 Section S.
@@ -96,7 +96,7 @@ Fixpoint capa (t : term) : Cap :=
     | Var x => mkCap (fun _ => t, Vnil)
     | Fun f ts =>
       if defined f R then
-	mkCap (fun v => Vnth v (lt_O_Sn 0), Vcons t Vnil)
+	mkCap (fun v => Vnth v (Nat.lt_0_succ 0), Vcons t Vnil)
       else
 	let cs := Vmap capa ts in
 	mkCap (fun v => Fun f (Vmap_sum cs v), conc cs)
@@ -217,7 +217,7 @@ Lemma vars_cap_inf : forall x t,
   In x (vars (cap t)) -> x <= maxvar t -> In x (vars t).
 
 Proof.
-intros. apply vars_fcap_fresh_inf with (m := maxvar t). apply le_refl.
+intros. apply vars_fcap_fresh_inf with (m := maxvar t). apply Nat.le_refl.
 rewrite cap_eq in H. hyp. hyp.
 Qed.
 
@@ -255,7 +255,7 @@ intros. unfold Q. simpl. intros m H1. rewrite fresh_plus, Vbreak_app.
 simpl. intro. ded (in_app_or H2). destruct H3.
 assert (x <= m + projT1 (capa t)). apply H. eapply le_max_elim_l.
 rewrite maxvars_cons in H1. apply H1. hyp. lia.
-rewrite plus_assoc. apply H0. assert (maxvars v <= m).
+rewrite Nat.add_assoc. apply H0. assert (maxvars v <= m).
 eapply le_max_elim_r. rewrite maxvars_cons in H1. apply H1. lia. hyp.
 Qed.
 
@@ -263,7 +263,7 @@ Lemma vars_cap : forall x t,
   In x (vars (cap t)) -> x <= maxvar t + nb_aliens t.
 
 Proof.
-intros. apply vars_fcap_fresh. apply le_refl. rewrite cap_eq in H. hyp.
+intros. apply vars_fcap_fresh. apply Nat.le_refl. rewrite cap_eq in H. hyp.
 Qed.
 
 (***********************************************************************)
@@ -317,7 +317,7 @@ Lemma alien_sub_var : forall x, alien_sub (Var x) x = Var x.
 
 Proof.
 intro. unfold alien_sub, fsub. simpl. case (le_lt_dec x x). auto.
-intro. absurd (x < x). apply lt_irrefl. hyp.
+intro. absurd (x < x). apply Nat.lt_irrefl. hyp.
 Qed.
 
 Lemma app_fcap : forall m s, (forall x, x <= m -> s x = Var x)
@@ -383,7 +383,7 @@ subst f0. rewrite sub_fun. apply f_equal with (f := Fun f).
 set (s := fsub m v0). set (v1 := fresh (S m) (sum cs)).
 assert (Vmap (sub s) (Vmap_sum cs v1) = Vmap_sum cs (Vmap (sub s) v1)).
 unfold cs. eapply Vmap_map_sum with (m := m).
-unfold s. apply fsub_inf. apply le_refl. rewrite H4.
+unfold s. apply fsub_inf. apply Nat.le_refl. rewrite H4.
 assert (Vmap (sub s) v1 = conc cs). unfold s, v1. rewrite H3, Vmap_fsub_fresh.
 refl.
 rewrite H5. unfold cs. apply Vmap_sum_conc.

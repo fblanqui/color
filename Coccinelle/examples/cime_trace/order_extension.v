@@ -1,4 +1,4 @@
-From Coq Require Import Setoid List Relations Wellfounded.
+From Coq Require Import Setoid List Relations Wellfounded PeanoNat.
 From CoLoR Require Import weaved_relation list_permut terminaison.
 From CoLoR Require equational_theory equational_extension term subterm_dp.
 
@@ -148,7 +148,7 @@ Module OrdAFS (Eqt : equational_theory_spec.EqTh).
     intros; revert i H; induction l;
     intros; [ inversion H |];
     destruct i; simpl; [ reflexivity |];
-    apply IHl; apply Lt.lt_S_n in H; assumption.
+    apply IHl; apply Nat.succ_lt_mono in H; assumption.
   Qed.
 
   Section S.
@@ -182,7 +182,7 @@ Module OrdAFS (Eqt : equational_theory_spec.EqTh).
       apply Tle_mono;
       induction H; [ left | right ]; assumption.
 
-      generalize (Lt.le_or_lt (length l1) i); intros [Hi|Hi].
+      generalize (Nat.le_gt_cases (length l1) i); intros [Hi|Hi].
 
       rewrite nth_overflow; [| rewrite map_length; assumption ];
       rewrite nth_overflow; [| rewrite map_length;
@@ -193,7 +193,7 @@ Module OrdAFS (Eqt : equational_theory_spec.EqTh).
       [ assumption
       | apply Tle_refl
       | apply Tle_refl
-      | apply IHone_step_list; apply (Lt.lt_S_n _ _ Hi) ].
+      | apply IHone_step_list; apply (proj2 (Nat.succ_lt_mono _ _) Hi) ].
 
       cut (refl_trans_clos (one_step_list Tle)
         (afs_filt (map afs l1) ns) (afs_filt (map afs l2) ns));
@@ -254,7 +254,7 @@ Module OrdAFS (Eqt : equational_theory_spec.EqTh).
       [ reflexivity |]; f_equal; [ apply H; left; reflexivity |];
       apply IHl; intros; apply H; right; assumption.
 
-      generalize (Lt.le_or_lt (length l) i); intros [Hi|Hi].
+      generalize (Nat.le_gt_cases (length l) i); intros [Hi|Hi].
 
       rewrite nth_overflow;
       [| rewrite map_length; rewrite map_length; assumption ];
@@ -302,7 +302,7 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
 
   Fixpoint afs_rest (ns ac : list nat) (l : nat) :=
     match l with
-    | S l => if existsb (EqNat.beq_nat l) ns
+    | S l => if existsb (Nat.eqb l) ns
              then afs_rest ns ac l
              else afs_rest ns (l::ac) l
     | _ => ac
@@ -337,21 +337,21 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
          In i (afs_rest ns ac l));
     [ intros; apply H; try intros; assumption |].
       induction l; intros; simpl; [ inversion H |];
-    apply Lt.le_lt_or_eq in H; destruct H;
-    [ destruct (existsb (EqNat.beq_nat l)); apply IHl;
-      try apply Lt.lt_S_n; try assumption;
+    apply Nat.lt_eq_cases in H; destruct H;
+    [ destruct (existsb (Nat.eqb l)); apply IHl;
+      try apply Nat.succ_lt_mono; try assumption;
       intros; right; apply H0; assumption |].
     assert (Hk : forall k ac, In i ac -> In i (afs_rest ns ac k));
     [ induction k; intros; simpl; [ assumption |];
-      destruct (existsb (EqNat.beq_nat k) ns);
+      destruct (existsb (Nat.eqb k) ns);
       apply IHk; [| right ]; assumption |].
 
     apply eq_add_S in H; rewrite <- H; clear H IHl;
-    case_eq (existsb (EqNat.beq_nat i) ns); intros;
+    case_eq (existsb (Nat.eqb i) ns); intros;
     [| apply Hk; left; reflexivity ].
 
     apply existsb_exists in H; destruct H as [j [Hi H]];
-    apply EqNat.beq_nat_true in H; rewrite <- H in Hi; clear H;
+    apply Nat.eqb_eq in H; rewrite <- H in Hi; clear H;
     apply Hk; apply H0; assumption.
   Qed.
 
@@ -366,7 +366,7 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
     match l with
     | m :: tl =>
       let ls := dissect n tl in
-      if EqNat.beq_nat n m then (nil :: ls)
+      if Nat.eqb n m then (nil :: ls)
       else match ls with
       | (r::ls) => ((m::r) :: ls)
       | _ => ((m::nil) :: nil)
@@ -378,7 +378,7 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
   Proof.
     intros n; destruct l as [|i l];
     intros Heq; simpl in Heq;
-    [| destruct (EqNat.beq_nat n i);
+    [| destruct (Nat.eqb n i);
     [| destruct (dissect n l) ]];
     discriminate Heq.
   Qed.
@@ -389,12 +389,12 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
   Proof.
     induction l; simpl; intros;
     [ contradiction H | destruct H ];
-    [ rewrite H; rewrite <- EqNat.beq_nat_refl;
+    [ rewrite H; rewrite Nat.eqb_refl;
       destruct l; simpl;
-      [| destruct (EqNat.beq_nat i n);
+      [| destruct (Nat.eqb i n);
       [| destruct (dissect i l) ]]
     | destruct (IHl i H) as [m1 [m2 [mm Hm]]];
-      rewrite <- Hm; destruct (EqNat.beq_nat i a) ];
+      rewrite <- Hm; destruct (Nat.eqb i a) ];
     eexists; eexists; eexists; eauto.
   Qed.
 
@@ -420,18 +420,18 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
 
     destruct l; simpl in Heq;
     [ injection Heq; intros; subst; reflexivity |];
-    case_eq (EqNat.beq_nat (length lh) n);
+    case_eq (Nat.eqb (length lh) n);
     intros Hn; rewrite Hn in Heq;
     [| destruct (dissect (length lh) l); discriminate Heq ];
     injection Heq; clear Heq; intros Heq; destruct ds;
     [ apply dissect_not_nil in Heq; contradiction Heq |];
-    apply EqNat.beq_nat_true in Hn; rewrite <- Hn; clear Hn;
+    apply Nat.eqb_eq in Hn; rewrite <- Hn; clear Hn;
     simpl; rewrite nth_in; f_equal; apply IHds; assumption.
 
     destruct l; simpl in Heq; [ discriminate Heq |];
-    case_eq (EqNat.beq_nat (length lh) n);
+    case_eq (Nat.eqb (length lh) n);
     intros Hn; rewrite Hn in Heq;
-    [ discriminate Heq | apply EqNat.beq_nat_false in Hn ];
+    [ discriminate Heq | apply Nat.eqb_neq in Hn ];
     case_eq (dissect (length lh) l);
     [ intros G; apply dissect_not_nil in G; contradiction G |];
     intros; rewrite H in Heq; injection Heq; intros; subst;
@@ -509,8 +509,8 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
       cut (exists m1, exists m2, exists mm,
         m1 :: m2 :: mm = dissect (length lh) l);
       [| apply dissect_in; apply Hin; rewrite app_length;
-         simpl; pattern (length lh) at 1; rewrite <- Plus.plus_0_r;
-         apply Plus.plus_lt_compat_l; apply Lt.lt_O_Sn ].
+         simpl; pattern (length lh) at 1; rewrite <- Nat.add_0_r;
+         apply Nat.add_lt_mono_l; apply Nat.lt_0_succ ].
 
       set (ll := dissect (length lh) l); clearbody ll;
       induction ll; intros [m1 [m2 [mm Hm]]]; rewrite <- Hm;

@@ -13,7 +13,7 @@ Set Implicit Arguments.
 From CoLoR Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil
      VecUtil SN RelUtil AWFMInterpretation NaryFunction NatUtil ARelation
      ARules SetUtil FunUtil VecMax AMorphism.
-From Coq Require Import List Max.
+From Coq Require Import List.
 
 Section S.
 
@@ -122,7 +122,7 @@ Section S.
     (* Fun *)
     rewrite (H n). assert (Vmap (int v) v0 = Vmap (int (fval v n)) v0).
     apply Vmap_eq. apply Vforall_intro. intros. apply term_int_eq_fval_lt.
-    apply le_lt_trans with (Vmax (Vmap (@maxvar Sig) v0)). apply Vmax_in.
+    apply Nat.le_lt_trans with (Vmax (Vmap (@maxvar Sig) v0)). apply Vmax_in.
     apply Vin_map_intro. hyp. hyp. rewrite H1. refl. unfold maxvars. lia.
     (* Vnil *)
     refl.
@@ -147,9 +147,9 @@ Section S.
   Proof.
     induction R; simpl; intros. refl. unfold maxvar_rules in H. simpl in H.
     rewrite lab_rule_fval, IHR. refl.
-    apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
-    apply maxvar_rules_init_mon. apply le_max_l. hyp.
-    apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
+    apply Nat.le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
+    apply maxvar_rules_init_mon. apply Nat.le_max_l. hyp.
+    apply Nat.le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
     apply maxvar_rules_init. hyp.
   Qed.
 

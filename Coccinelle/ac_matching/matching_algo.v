@@ -651,12 +651,12 @@ intros sp v t H v_sp.
 simpl; rewrite v_sp; trivial.
 rewrite extract_solution_unfold; apply IHpsp.
 simpl; simpl in H; revert H; generalize (X.eq_bool_ok v x); case (X.eq_bool v x); [intro v_eq_x | intro v_diff_x]; trivial.
-intro H; rewrite plus_comm in H; simpl in H; rewrite plus_comm in H; simpl; trivial.
+intro H; rewrite Nat.add_comm in H; simpl in H; rewrite Nat.add_comm in H; simpl; trivial.
 revert H; simpl; generalize (X.eq_bool_ok v x); case (X.eq_bool v x); [intros _ | intro v_diff_x]; trivial.
 generalize (some_nb_occ_Sn X.eq_bool v _ v_sp);
 destruct (nb_occ X.eq_bool v sp) as [ | n].
 intro; absurd (1 <= 0); auto with arith.
-intros _ H; simpl in H; rewrite plus_comm in H; simpl in H.
+intros _ H; simpl in H; rewrite Nat.add_comm in H; simpl in H.
 absurd (S(S (nb_occ X.eq_bool v psp + n)) <= 1); auto with arith.
 Qed.
 
@@ -732,7 +732,7 @@ assert (H :=
 refine (trans_eq (H _ _) _); clear H y_psp. (* instead of rewrite H, coq bug ? *)
 generalize (only_one_occ x); simpl; 
 generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _ | intro x_diff_x; apply False_rect; apply x_diff_x; reflexivity].
-rewrite plus_comm; simpl; rewrite plus_comm; subst; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; subst; trivial.
 simpl; generalize (X.eq_bool_ok x x); case (X.eq_bool x x); [intros _ | intro x_diff_x; apply False_rect; apply x_diff_x; reflexivity].
 reflexivity.
 apply (f_equal (fun t => 
@@ -770,7 +770,7 @@ trivial.
 refine (IHpsp _ ex _ _ _ y p y_psp).
 intros z; generalize (only_one_occ z); simpl;
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x | intro z_diff_x]; trivial.
-rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 inversion well_sorted; intuition.
 intros z z_val z_psp; 
 generalize (new_var_occ z) (only_one_occ z) 
@@ -779,7 +779,7 @@ simpl find; simpl nb_occ;
 generalize (X.eq_bool_ok z x); case (X.eq_bool z x); [intro z_eq_x | intro z_diff_x].
 intros _; subst z; destruct (nb_occ X.eq_bool x psp) as [ | n].
 intros; absurd (1 <= 0); auto with arith.
-rewrite plus_comm; simpl plus;
+rewrite Nat.add_comm; simpl plus;
 intros; absurd (S (S (n + nb_occ X.eq_bool x sp)) <= 1); auto with arith.
 intros H _ _; generalize (H z_val z_psp).
 unfold occurs_in_pb; simpl;
@@ -1329,7 +1329,7 @@ generalize
 destruct (find X.eq_bool (new_var p) sp); trivial; contradiction.
 generalize (nb_occ_v v); simpl.
 generalize (X.eq_bool_ok v v); case (X.eq_bool v v); [intros _ | intro v_diff_v; apply False_rect; apply v_diff_v; reflexivity].
-rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 simpl find;
 generalize (X.eq_bool_ok v v); case (X.eq_bool v v); [intros _; trivial | intro v_diff_v; apply False_rect; apply v_diff_v; reflexivity].
 
@@ -1343,7 +1343,7 @@ destruct (find X.eq_bool a psp); trivial.
 intro H1; generalize (H1 p0 (eq_refl _)); clear H1; intro H1;
 destruct (nb_occ X.eq_bool a psp).
 absurd (1 <= 0); auto with arith.
-intros _ H2; rewrite plus_comm in H2; simpl in H2;
+intros _ H2; rewrite Nat.add_comm in H2; simpl in H2;
 absurd (S(S(n + nb_occ X.eq_bool a sp)) <= 1); auto with arith.
 trivial.
 intro v1; generalize (Is_sol'_psp v1);
@@ -1365,7 +1365,7 @@ simpl; destruct (find X.eq_bool (new_var p) sp); trivial; contradiction.
 intros _; apply Is_sol'_sp.
 intro v1; generalize (nb_occ_v v1); simpl.
 generalize (X.eq_bool_ok v1 a); case (X.eq_bool v1 a); [intro v1_eq_a; subst v1 | intro v1_diff_a; trivial].
-rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 elim well_sorted; intros _ H1; elim H1; trivial.
 intros v1; generalize (nb_occ_v v1) (new_var_occ v1); simpl find;
 intro H'; simpl in H'; generalize H'; clear H'.
@@ -1375,7 +1375,7 @@ destruct (find X.eq_bool a psp).
 intro H1; generalize (H1 p0 (eq_refl _)); clear H1; intro H1.
 destruct (nb_occ X.eq_bool a psp).
 absurd (1 <= 0); auto with arith.
-rewrite plus_comm in H'; simpl in H';
+rewrite Nat.add_comm in H'; simpl in H';
 absurd (S(S(n + nb_occ X.eq_bool a sp)) <= 1); auto with arith.
 intros; discriminate.
 intros H' H1 p0 H2; elim (H1 p0 H2); clear H1; intro H1.
@@ -1398,7 +1398,7 @@ intros v1 p1 F1.
 refine (extract_solution_in_partly_solved_part _ _ ex _ _ _ _ _ F1).
 intros v2; generalize (nb_occ_v v2); simpl.
 generalize (X.eq_bool_ok v2 a); case (X.eq_bool v2 a); [intro v2_eq_a; subst v2 | intro v2_diff_a; trivial].
-rewrite plus_comm; simpl; rewrite plus_comm; trivial.
+rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
 elim well_sorted; intros _ H2; elim H2; trivial.
 intros v2; generalize (nb_occ_v v2) (new_var_occ v2); simpl find;
 intro H'; simpl in H'; generalize H'; clear H'.
@@ -1408,7 +1408,7 @@ destruct (find X.eq_bool a psp).
 intro H1; generalize (H1 p0 (eq_refl _)); clear H1; intro H1.
 destruct (nb_occ X.eq_bool a psp).
 absurd (1 <= 0); auto with arith.
-rewrite plus_comm in H'; simpl in H';
+rewrite Nat.add_comm in H'; simpl in H';
 absurd (S(S(n + nb_occ X.eq_bool a sp)) <= 1); auto with arith.
 intros; discriminate.
 intros H' H1 p0 H2; elim (H1 p0 H2); clear H1; intro H1.

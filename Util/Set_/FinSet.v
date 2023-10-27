@@ -421,7 +421,7 @@ list of elements. *)
 
   Proof.
     intros [n [f [f_inj f_surj]]]. ex n. split. ex f. fo.
-    intros m [g [g_inj g_surj]]. apply le_antisym.
+    intros m [g [g_inj g_surj]]. apply Nat.le_antisymm.
     apply N_inj_le with (f := inverse g_surj o f). inj.
     apply N_inj_le with (f := inverse f_surj o g). inj.
   Qed.
@@ -517,7 +517,7 @@ list of elements. *)
     intro l_nodup. destruct (dec (l = nil)) as [hl|hl].
     subst. rewrite card_empty_gen. refl.
     assert (a : A). destruct l. cong. exact a.
-    apply le_antisym. apply card_of_list_le_length_gen.
+    apply Nat.le_antisymm. apply card_of_list_le_length_gen.
     unfold card. case_eq (mk_Pf h); intros P P_fin e.
     apply sig_eq in e; simpl in e; subst.
     destruct (cdd (card_uniq P_fin)) as [n [f [f_inj f_surj]]].
@@ -589,7 +589,7 @@ list of elements. *)
     unfold l. rewrite In_list_of_finite. hyp. apply nodup_remove. hyp.
     simpl. sym. apply of_remove.
     (* a not in P *)
-    rewrite <- minus_n_O. apply card_equiv. unfold Pf_equiv. simpl.
+    rewrite Nat.sub_0_r. apply card_equiv. unfold Pf_equiv. simpl.
     apply rem_notin. hyp.
   Qed.
 

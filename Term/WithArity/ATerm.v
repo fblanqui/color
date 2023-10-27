@@ -12,7 +12,6 @@ Set Implicit Arguments.
 
 From Coq Require Export Vector.
 From CoLoR Require Export ASignature.
-From Coq Require Import Max.
 From CoLoR Require Import ListUtil LogicUtil EqUtil BoolUtil NatUtil VecUtil
      VecMax ListMax.
 
@@ -405,7 +404,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     intro t. pattern t.
     set (Q := fun n (ts : terms n) => maxvars ts = lmax (vars_vec ts)).
     apply term_ind with (Q := Q); clear t.
-    intro. simpl. apply (sym_equal (max_l (le_O_n x))).
+    intros x; simpl; now rewrite Nat.max_0_r.
     intros f ts H. rewrite maxvar_fun, vars_fun. hyp.
     unfold Q. auto.
     intros t n ts H1 H2. unfold Q. simpl. rewrite lmax_app.
@@ -656,7 +655,7 @@ a variable occurs in the list as much as it has occurrences in t *)
   Proof.
     intro P. set (Q := fun n => forall t, size t <= n -> P t).
     change ((forall n, Q n -> Q (S n)) -> forall t, P t). intro IH.
-    cut (forall t, Q t). intros. unfold Q in H. eapply H. apply le_refl.
+    cut (forall t, Q t). intros. unfold Q in H. eapply H. apply Nat.le_refl.
     induction t. unfold Q. destruct t; simpl; intros; lia.
     apply IH. hyp.
   Qed.

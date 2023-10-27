@@ -35,7 +35,7 @@ Section S.
     forall l l', nodup l -> incl l l' -> length l <= length l'.
 
   Proof.
-    intro em. induction l; simpl; intros. apply le_O_n.
+    intro em. induction l; simpl; intros. apply Nat.le_0_l.
     destruct (In_elim_right em a l'). apply H0. simpl. tauto. destruct H1.
     rewrite (proj1 H1), (length_app x (a::x0)).
     assert (length l <= length (x++x0)). apply IHl.
@@ -65,8 +65,8 @@ Section S.
     nodup l -> incl l l' -> length l <= length l'.
 
   Proof.
-    induction l; simpl; intros. apply le_O_n.
-    apply le_trans with (S (length (remove eq_dec a l'))).
+    induction l; simpl; intros. apply Nat.le_0_l.
+    apply Nat.le_trans with (S (length (remove eq_dec a l'))).
     apply le_n_S. apply IHl. tauto. apply incl_remove. tauto.
     apply incl_cons_l_incl with a. hyp.
     apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. hyp.

@@ -107,7 +107,7 @@ Section S.
               map (fun x => Fun f (Vreplace ts (reducts_aux2 h) x)) (reducts u1)
               ++ reducts_vec _ us' (reducts_aux1 h)
           end
-          in top_reducts R t ++ reducts_vec (arity f) ts (le_refl (arity f))
+          in top_reducts R t ++ reducts_vec (arity f) ts (Nat.le_refl (arity f))
     end.
 
   Fixpoint reducts_vec f ts k (us : terms k) : k <= arity f -> list term :=
@@ -132,7 +132,7 @@ Section S.
   Qed.
 
   Lemma reducts_fun : forall f ts, reducts (Fun f ts)
-    = top_reducts R (Fun f ts) ++ reducts_vec f ts ts (le_refl (arity f)).
+    = top_reducts R (Fun f ts) ++ reducts_vec f ts ts (Nat.le_refl (arity f)).
 
   Proof. intros. simpl. rewrite <- fix_reducts_vec. refl. Qed.
 
@@ -169,7 +169,7 @@ Section S.
     (* Vcons *)
     intros E g H. simpl in H. rewrite in_app in H. split_all.
     (* case 1 *)
-    ded (in_map_elim H). decomp H0. destruct (E 0 (lt_O_Sn n)). simpl in H0.
+    ded (in_map_elim H). decomp H0. destruct (E 0 (Nat.lt_0_succ n)). simpl in H0.
     ex (arity f - S n + 0) x0 x. rewrite <- H0. split_all.
     rewrite H3. apply args_eq. apply Vreplace_pi. lia.
     (* case 2 *)
@@ -188,13 +188,13 @@ Section S.
   Arguments In_reducts_vec_elim_aux [v' f ts k us] _ [h] _.
 
   Lemma In_reducts_vec_elim : forall v' f ts,
-    In v' (reducts_vec f ts ts (le_refl (arity f))) ->
+    In v' (reducts_vec f ts ts (Nat.le_refl (arity f))) ->
     exists i, exists p : i < arity f, exists u',
       In u' (reducts (Vnth ts p)) /\ v' = Fun f (Vreplace ts p u').
 
   Proof.
     intros. apply In_reducts_vec_elim_aux
-    with (k := arity f) (us := ts) (h := le_refl (arity f)).
+    with (k := arity f) (us := ts) (h := Nat.le_refl (arity f)).
     intros. assert (r : arity f - arity f + i < arity f). lia. exists r.
     apply Vnth_eq. lia. hyp.
   Qed.
@@ -228,7 +228,7 @@ Section S.
 
   Lemma In_reducts_vec_intro : forall f ts t i (p : i < arity f),
     In t (reducts (Vnth ts p)) ->
-    In (Fun f (Vreplace ts p t)) (reducts_vec f ts ts (le_refl (arity f))).
+    In (Fun f (Vreplace ts p t)) (reducts_vec f ts ts (Nat.le_refl (arity f))).
 
   Proof.
     intros. assert (q : arity f - arity f + i < arity f). lia.
@@ -276,7 +276,7 @@ Section S.
     simpl in H. rewrite in_app in H.
     split_all; ded (in_map_elim H); clear H; decomp H0.
     (* case 1 *)
-    set (p := lt_O_Sn n). ex 0 p x. simpl. auto.
+    set (p := Nat.lt_0_succ n). ex 0 p x. simpl. auto.
     (* case 2 *)
     ded (IHts x H1); clear IHts. decomp H. assert (p : S x0<S n). lia.
     ex (S x0) p x2. simpl. assert (lt_S_n p = x1). apply lt_unique.

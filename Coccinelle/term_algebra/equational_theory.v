@@ -13,7 +13,6 @@
 (** * Equational theory on a term algebra *)
 
 From Coq Require Import List Relations Wellfounded Arith Setoid.
-From Coq Require Max.
 From CoLoR Require Import closure more_list weaved_relation dickson term_spec
      equational_theory_spec.
 
@@ -345,7 +344,7 @@ Qed.
   Proof. 
     intros R1 R2 s; pattern s; apply term_rec2; clear s.
     intro n; induction n as [ | n]; intros s Size_s.
-    absurd (1 <= 0); auto with arith; apply le_trans with (size s); trivial;
+    absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size s); trivial;
       apply size_ge_one.
     intros t; split; intro H.
     inversion H as [s' t' H' | f' lt ls H']; subst.
@@ -355,7 +354,7 @@ Qed.
     right; apply at_top; apply instance; trivial.
     assert (Size_ls : forall s, In s ls -> size s <= n). 
     intros s s_in_ls; apply le_S_n.
-    apply le_trans with (size (Term f' ls)); trivial.
+    apply Nat.le_trans with (size (Term f' ls)); trivial.
     apply size_direct_subterm; trivial.
     clear H Size_s; 
       assert (H'' : one_step_list (one_step R1) lt ls \/
@@ -528,7 +527,7 @@ Qed.
     intro Acc_t; induction Acc_t as [t Acc_t IH].
     generalize Acc_t IH; clear Acc_t IH; pattern t; apply term_rec2; clear t.
     intro n; induction n as [ | n]; intros t size_t Acc_t IH.
-    absurd (1 <= 0); auto with arith; apply le_trans with (size t); trivial;
+    absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size t); trivial;
       apply size_ge_one.
     apply Acc_intro.
     intros u H; destruct H as [H | H].
@@ -536,7 +535,7 @@ Qed.
     apply IH; trivial.
 (* 1/1 direct_subterm *)
     apply IHn.
-    apply le_S_n; apply le_trans with (size t); trivial.
+    apply le_S_n; apply Nat.le_trans with (size t); trivial.
     apply size_direct_subterm; trivial.
     assert (H' : Acc (one_step R) u).
     apply acc_subterms_1 with t; trivial.
@@ -561,20 +560,20 @@ Qed.
       intro n; induction n as [ | n]; intros [ | t l] Sl x sigma H Acc_l.
     simpl in H; contradiction.
     simpl in Sl; absurd (1 <= 0); auto with arith.
-    apply le_trans with (size t).
+    apply Nat.le_trans with (size t).
     apply size_ge_one.
-    refine (le_trans _ _ _ _ Sl); auto with arith.
+    refine (Nat.le_trans _ _ _ _ Sl); auto with arith.
     simpl in H; contradiction.
     assert (Sl' : list_size size l <= n).
-    apply le_S_n; refine (le_trans _ _ _ _ Sl); simpl;
-      apply (plus_le_compat_r 1 (size t) (list_size size l)); apply size_ge_one.
+    apply le_S_n; refine (Nat.le_trans _ _ _ _ Sl); simpl;
+      apply (Nat.add_le_mono_r 1 (size t) (list_size size l)); apply size_ge_one.
     destruct t as [y | g k].
     simpl in H; destruct H as [y_eq_x | x_in_l].
     subst y; apply Acc_l; simpl map; left; trivial.
     apply (IHn l); trivial; intros; apply Acc_l; simpl map; right; trivial.
     assert (Sk : list_size size k <= n).
-    apply le_S_n; refine (le_trans _ _ _ _ Sl); simpl; rewrite (list_size_fold size k);
-      apply le_n_S; apply le_plus_l.
+    apply le_S_n; refine (Nat.le_trans _ _ _ _ Sl); simpl; rewrite (list_size_fold size k);
+    apply le_n_S; apply Nat.le_add_r.
     assert (Acc_k : forall t, In t (map (apply_subst sigma) k) -> Acc (one_step R) t).
     intros t H'; apply acc_subterms_1 with (Term g (map (apply_subst sigma) k)).
     apply Acc_l; simpl map; left; trivial.
@@ -1069,7 +1068,7 @@ Qed.
   Fixpoint maxl  (A : Type) (l  : list (nat * A)) : nat :=
     match l with
       | nil => 0
-      | (n,_) :: l => Max.max n (maxl _ l)
+      | (n,_) :: l => Nat.max n (maxl _ l)
     end.
 
   Lemma maxl_is_max : forall (A : Type) l n a, In (n,a) l -> n <= maxl A l.
@@ -1080,16 +1079,16 @@ Qed.
     simpl; intros na1 l.
     case na1; clear na1; intros n1 a1 n a [na_eq_na1 | na_in_l].
     injection na_eq_na1; intros; subst n1.
-    apply Max.le_max_l.
-    apply le_trans with (maxl A l).
+    apply Nat.le_max_l.
+    apply Nat.le_trans with (maxl A l).
     apply maxl_is_max with a; assumption.
-    apply Max.le_max_r.
+    apply Nat.le_max_r.
   Qed.
 
   Fixpoint maxll  (A : Type) (ll : list (list (nat * A))) : nat :=
     match ll with
       | nil => 0
-      | l :: ll => Max.max (maxl _ l) (maxll _ ll)
+      | l :: ll => Nat.max (maxl _ l) (maxll _ ll)
     end.
 
   Lemma maxll_is_max : forall (A : Type) ll l, In l ll -> forall n a, In (n,a) l -> n <= maxll A ll.
@@ -1098,12 +1097,12 @@ Qed.
     intros; contradiction.
     simpl; intros l1 ll.
     intros l [l_eq_l1 | l_in_ll] n a na_in_l.
-    subst l; apply le_trans with (maxl A l1).
+    subst l; apply Nat.le_trans with (maxl A l1).
     apply maxl_is_max with a; assumption.
-    apply Max.le_max_l.
-    apply le_trans with (maxll A ll).
+    apply Nat.le_max_l.
+    apply Nat.le_trans with (maxll A ll).
     apply maxll_is_max with l a; assumption.
-    apply Max.le_max_r.
+    apply Nat.le_max_r.
   Qed.
 
   Section Dec_well_formed.
@@ -1128,7 +1127,7 @@ Qed.
 
     Lemma find_inject : forall (A B : Type) v (f : (nat * A) -> B) sigma,
       find X.eq_bool v (map (fun xt => (inject (fst xt), f xt)) sigma) =
-      find beq_nat (inject_inv v) (map (fun xt => (fst xt, f xt)) sigma).
+      find Nat.eqb (inject_inv v) (map (fun xt => (fst xt, f xt)) sigma).
     Proof.
       fix find_inject 5.
       intros C B v f sigma; case sigma; clear sigma.
@@ -1138,11 +1137,11 @@ Qed.
       destruct (eq_nat_dec (inject_inv v) n) as [v_eq_n | v_diff_n].
       subst n; rewrite Hinject1.
       generalize (X.eq_bool_ok v v); case (X.eq_bool v v); [intros _ | intro v_diff_v; apply False_rect; apply v_diff_v; apply eq_refl].
-      rewrite <- beq_nat_refl; apply eq_refl.
+      rewrite Nat.eqb_refl; apply eq_refl.
       generalize (X.eq_bool_ok v (inject n)); case (X.eq_bool v (inject n)); [intro v_eq_n | intros _].
       subst v; apply False_rect; apply v_diff_n; rewrite Hinject2; apply eq_refl.
       generalize (decidable_set.beq_nat_ok (inject_inv v) n).
-      case (beq_nat (inject_inv v) n); [intro v_eq_n | intros _].
+      case (Nat.eqb (inject_inv v) n); [intro v_eq_n | intros _].
       apply False_rect; apply v_diff_n; assumption.
       apply find_inject.
     Qed.
@@ -2222,7 +2221,7 @@ Qed.
       split.
       right; split.
       intro m_in_s; assert (m_in_sig := H4 _ m_in_s); absurd (m < m).
-      apply lt_irrefl.
+      apply Nat.lt_irrefl.
       rewrite in_map_iff in m_in_sig; destruct m_in_sig as [[z' t] [z_eq_z' z_in_sig]]; simpl in z_eq_z'; subst z'.
       unfold m at 2; apply le_n_S.
       apply maxl_is_max with t.
@@ -2239,8 +2238,8 @@ Qed.
       rewrite <- subst_eq_vars; intros z z_in_s; simpl.
       generalize (X.eq_bool_ok z (inject m)); case (X.eq_bool z (inject m)); [intro z_eq_m | intros _; reflexivity].
       absurd (m < m).
-      apply lt_irrefl.
-      apply le_lt_trans with (inject_inv z).
+      apply Nat.lt_irrefl.
+      apply Nat.le_lt_trans with (inject_inv z).
       subst z; rewrite Hinject2; apply le_n.
       assert (z_in_sig := H4 _ z_in_s).
       rewrite in_map_iff in z_in_sig; destruct z_in_sig as [[z' t] [z_eq_z' z_in_sig]]; simpl in z_eq_z'; subst z'.
@@ -2258,8 +2257,8 @@ Qed.
       revert K1; simpl.
       generalize (X.eq_bool_ok z (inject m)); case (X.eq_bool z (inject m)); [intro z_eq_m | intros _; trivial].
       absurd (m < m).
-      apply lt_irrefl.
-      apply le_lt_trans with (inject_inv z).
+      apply Nat.lt_irrefl.
+      apply Nat.le_lt_trans with (inject_inv z).
       subst z; rewrite Hinject2; apply le_n.
       assert (z_in_sig := H4 _ z_in_s).
       rewrite in_map_iff in z_in_sig; destruct z_in_sig as [[z' t'] [z_eq_z' z_in_sig]]; simpl in z_eq_z'; subst z'.
@@ -2325,16 +2324,16 @@ Qed.
       injection yvv_eq_xu; intros; subst vv; trivial.
       injection yuu_eq_xu; intros _ y_eq_m.
       absurd (m < m).
-      apply lt_irrefl.
-      apply le_lt_trans with (inject_inv y).
+      apply Nat.lt_irrefl.
+      apply Nat.le_lt_trans with (inject_inv y).
       subst y; rewrite Hinject2; apply le_n.
       subst m; apply le_n_S.
       apply maxl_is_max with vv.
       rewrite in_map_iff; exists (y, vv); split; trivial.
       injection yvv_eq_xu; intros _ y_eq_m.
       absurd (m < m).
-      apply lt_irrefl.
-      apply le_lt_trans with (inject_inv y).
+      apply Nat.lt_irrefl.
+      apply Nat.le_lt_trans with (inject_inv y).
       subst y; rewrite Hinject2; apply le_n.
       subst m; apply le_n_S.
       apply maxl_is_max with uu.
