@@ -246,7 +246,7 @@ Section Vnth.
     end.
   Solve Obligations.
   Next Obligation. exact (Nat.nlt_0_r ip). Defined.
-  Next Obligation. exact (NatUtil.lt_S_n H). Defined.
+  Next Obligation. exact (NatCompat.lt_S_n H). Defined.
 
   Lemma Vhead_nth : forall n (v : vector A (S n)), Vhead v = Vnth v (Nat.lt_0_succ n).
 
@@ -264,7 +264,7 @@ Section Vnth.
   Qed.
 
   Lemma Vnth_tail : forall n (v : vector A (S n)) i (h : i < n),
-    Vnth (Vtail v) h = Vnth v (lt_n_S h).
+    Vnth (Vtail v) h = Vnth v (NatCompat.lt_n_S h).
 
   Proof. intros. VSntac v. simpl. apply Vnth_eq. refl. Qed.
 
@@ -351,7 +351,7 @@ Section Vadd.
     simpl. refl.
     simpl Vadd.
     assert (H' : k < S n'). auto with arith. simpl. 
-    assert (lt_S_n (le_S H) = le_S (lt_S_n H)). apply lt_unique.
+    assert (NatCompat.lt_S_n (le_S H) = le_S (NatCompat.lt_S_n H)). apply lt_unique.
     rewrite H0, Hrec. refl.
   Qed.
 
@@ -417,10 +417,10 @@ Section Vreplace.
         end
     end.
   Next Obligation. exact (Nat.nlt_0_r ip). Defined.
-  Next Obligation. exact (NatUtil.lt_S_n ip). Defined.
+  Next Obligation. exact (NatCompat.lt_S_n ip). Defined.
 
   Lemma Vreplace_tail : forall n i (ip : S i < S n) (v : vector A (S n)) a,
-    Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (lt_S_n ip) a).
+    Vreplace v ip a = Vcons (Vhead v) (Vreplace (Vtail v) (NatCompat.lt_S_n ip) a).
 
   Proof. destruct n; intros. lia. VSntac v. refl. Qed.
 
@@ -583,10 +583,10 @@ Section Vapp.
 
   Proof.
     induction v1; intros. simpl. apply Vnth_eq. lia.
-    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (lt_S_n h0)). revert H.
+    destruct i. refl. simpl le_gt_dec. ded (IHv1 _ v2 i (NatCompat.lt_S_n h0)). revert H.
     case (le_gt_dec n i); simpl; intros.
     (* case 1 *)
-    trans (Vnth v2 (Vnth_app_aux (lt_S_n h0) l)). hyp.
+    trans (Vnth v2 (Vnth_app_aux (NatCompat.lt_S_n h0) l)). hyp.
     apply Vnth_eq. lia.
     (* case 2 *)
     trans (Vnth v1 g). hyp. apply Vnth_eq. refl.
@@ -721,7 +721,7 @@ Section Vin.
     VSntac v. rewrite H0 in H. destruct H.
     exists 0. exists (Nat.lt_0_succ n). simpl. congruence.
     destruct (IHn (Vtail v) a H) as [j [jp v_j]].
-    exists (S j). exists (lt_n_S jp). simpl.
+    exists (S j). exists (NatCompat.lt_n_S jp). simpl.
     rewrite lt_Sn_nS. hyp.
   Qed.
 
@@ -1227,7 +1227,7 @@ Section Vmap.
     clear n. intros n Hrec v i. case i.
     intro. rewrite (VSn_eq v). simpl. refl.
     clear i. intros i Hi. rewrite (VSn_eq v). simpl.
-    apply (Hrec (Vtail v) i (lt_S_n Hi)).
+    apply (Hrec (Vtail v) i (NatCompat.lt_S_n Hi)).
   Qed.
 
   Lemma Vin_map : forall x n (v : vector A n),
@@ -1489,7 +1489,7 @@ Section Vforall2.
     unfold Vforall2. induction v1; intros. VOtac. simpl. auto.
     revert H. VSntac v2. intro. split. apply (H0 0 (Nat.lt_0_succ _)).
     apply IHv1. intros. assert (S i< S n). lia. ded (H0 _ H1). simpl in H2.
-    assert (ip = lt_S_n H1). apply lt_unique. rewrite H3. hyp.
+    assert (ip = NatCompat.lt_S_n H1). apply lt_unique. rewrite H3. hyp.
   Qed.
 
   Lemma Vforall2_cons_eq : forall u v n (us : vector A n) (vs : vector B n),
@@ -1746,7 +1746,7 @@ Section Vbuild.
     match n as n return (forall i, i<n -> A) -> vector A n with
     | 0 => fun _ => Vnil
     | S p => fun gen => Vcons (gen 0 (Nat.lt_0_succ p))
-                              (Vbuild (fun i ip => gen (S i) (lt_n_S ip)))
+                              (Vbuild (fun i ip => gen (S i) (NatCompat.lt_n_S ip)))
     end.
 
   Lemma Vbuild_nth :
@@ -1778,7 +1778,7 @@ Section Vbuild.
   Proof. intros n gen. rewrite Vhead_nth, Vbuild_nth. refl. Qed.
 
   Lemma Vbuild_tail n (gen : forall i, i < S n -> A) :
-    Vtail (Vbuild gen) = Vbuild (fun i ip => gen (S i) (lt_n_S ip)).
+    Vtail (Vbuild gen) = Vbuild (fun i ip => gen (S i) (NatCompat.lt_n_S ip)).
 
   Proof. apply Veq_nth; intros. rewrite Vnth_tail, !Vbuild_nth. refl. Qed.
 
@@ -2331,11 +2331,11 @@ Lemma sorted_cons_elim n k (ks : vector nat n) :
   sorted (Vcons k ks) -> sorted ks.
 
 Proof.
-  intros h i hi j hj ij. gen (h _ (lt_n_S hi) _ (lt_n_S hj) (lt_n_S ij)).
+  intros h i hi j hj ij. gen (h _ (NatCompat.lt_n_S hi) _ (NatCompat.lt_n_S hj) (NatCompat.lt_n_S ij)).
   rewrite !Vnth_cons.
   destruct (lt_ge_dec 0 (S i)); destruct (lt_ge_dec 0 (S j)); try lia.
   rewrite Vnth_eq with (h2:=hi),
-    Vnth_eq with (h1 := Vnth_cons_tail_aux (lt_n_S hj) l0) (h2:=hj); lia.
+    Vnth_eq with (h1 := Vnth_cons_tail_aux (NatCompat.lt_n_S hj) l0) (h2:=hj); lia.
 Qed.
 
 Lemma Vnth_opt_filter_sorted_None A p (ts : vector A p) :

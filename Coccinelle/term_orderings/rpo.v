@@ -15,7 +15,7 @@ quasi-ordering for the precedence instead of an ordering. *)
 From Coq Require Import Bool Peano List PeanoNat.
 From CoLoR Require Import closure more_list equiv_list list_permut dickson.
 From Coq Require Import Relations Wellfounded Arith Wf_nat Recdef Program Morphisms Lia.
-From CoLoR Require Import term_spec term decidable_set ordered_set.
+From CoLoR Require Import term_spec term decidable_set ordered_set NatCompat.
 
 Import ListNotations.
 
@@ -715,7 +715,7 @@ assert (pa_lt_k : size a1 <= k).
 apply Nat.le_trans with (list_size size (a1 :: k1)); [apply Nat.le_add_r | exact p_le_k].
 rewrite (IH'' k pa_lt_k).
 assert (pl_le_k : list_size size k1 <= k).
-apply Nat.le_trans with (list_size size (a1 :: k1)); [apply Nat.le_add_l | exact p_le_k].
+apply Nat.le_trans with (list_size size (a1 :: k1)); [apply NatCompat.le_add_l | exact p_le_k].
 rewrite (IH' k pl_le_k def).
 reflexivity.
 
@@ -759,7 +759,7 @@ intros k2 Hrem.
 case (IHl1 _ (tail_set _ IH) k2); intros v Hl1; exists v; intros k L def.
 rewrite (Hrem k L).
 assert (l1_le_k : list_size size l1 <= k).
-refine (Nat.le_trans _ _ _ _ L); apply Nat.le_add_l.
+refine (Nat.le_trans _ _ _ _ L); apply NatCompat.le_add_l.
 rewrite (Hl1 k l1_le_k def).
 reflexivity.
 intro Hrem; exists false; intros k L def.
@@ -2025,7 +2025,7 @@ inversion H as [a lg ls lc k k' P' P ls_lt_alg]; subst.
 generalize l' l a ls lc P P' ls_lt_alg;
 clear l' l a ls lc P P' ls_lt_alg H;
 induction lg as [ | g lg]; intros l' l a ls lc P P' ls_lt_alg.
-apply t_step; apply (@List_mul_step bb a ls lc); trivial.
+apply t_step. apply (@List_mul_step bb a ls lc); trivial.
 intros b b_in_ls; destruct (ls_lt_alg b b_in_ls) as [a' [[a'_eq_a | a'_in_nil] b_lt_a']].
 rewrite <- (equiv_rpo_equiv_1 _ a'_eq_a); trivial.
 contradiction.

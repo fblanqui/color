@@ -176,7 +176,7 @@ Section S.
     assert (E' : forall (i : nat) (p : i < n),
       exists r : arity f - n + i < arity f, Vnth us p = Vnth ts r). intros.
     assert (p' : S i < S n). lia. destruct (E (S i) p'). simpl in H.
-    assert (lt_S_n p' = p). apply lt_unique. simpl in H0. rewrite H1 in H0.
+    assert (NatCompat.lt_S_n p' = p). apply lt_unique. simpl in H0. rewrite H1 in H0.
     rewrite H0.
     assert (r : arity f - n + i < arity f). lia. exists r. apply Vnth_eq.
     lia.
@@ -221,7 +221,7 @@ Section S.
     (* i > 0 *)
     right. assert (q' : arity f - n + i < arity f). lia.
     assert (Vreplace ts q t = Vreplace ts q' t). apply Vreplace_pi. lia.
-    rewrite H0. apply IHus with (p := lt_S_n p). hyp.
+    rewrite H0. apply IHus with (p := NatCompat.lt_S_n p). hyp.
   Qed.
 
   Arguments In_reducts_vec_intro_aux _ _ [k us] _ _ [i p] _ _.
@@ -279,7 +279,7 @@ Section S.
     set (p := Nat.lt_0_succ n). ex 0 p x. simpl. auto.
     (* case 2 *)
     ded (IHts x H1); clear IHts. decomp H. assert (p : S x0<S n). lia.
-    ex (S x0) p x2. simpl. assert (lt_S_n p = x1). apply lt_unique.
+    ex (S x0) p x2. simpl. assert (NatCompat.lt_S_n p = x1). apply lt_unique.
     rewrite H. subst x. auto. 
   Qed.
 

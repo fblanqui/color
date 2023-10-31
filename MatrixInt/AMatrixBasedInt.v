@@ -387,7 +387,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         unfold zero_matrix, zero_vec.
         rewrite mat_build_elem, Vnth_const. refl.
         rewrite H, vector_plus_zero_l, IHi, Vnth_tail,
-          (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
+          (le_unique (NatCompat.lt_n_S (NatCompat.lt_S_n ip)) ip). refl.
       Qed.
 
       Lemma mint_eval_eq_term_int_var : forall v (val : valuation I) k 

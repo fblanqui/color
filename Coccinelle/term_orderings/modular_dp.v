@@ -13,8 +13,7 @@
 (** * Termination of rewriting *)
 
 From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
-From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec
-     dp.
+From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec dp.
 
 Module MakeModDP (E : EqTh).
 
@@ -27,11 +26,11 @@ Module MakeModDP (E : EqTh).
 Inductive interp_call R1 R2 : term -> term -> Prop :=
   | Constr : forall f1 l t, ~defined R2 f1 -> In t l -> interp_call R1 R2 t (Term f1 l)
   | Defd : forall f2 l t, defined R2 f2 -> 
-            one_step (union _ R1 R2) t (Term f2 l) -> interp_call R1 R2 t (Term f2 l).
+            one_step (@union _ R1 R2) t (Term f2 l) -> interp_call R1 R2 t (Term f2 l).
 
 Definition Interp_dom R1 R2 t :=
   forall p f l, subterm_at_pos t p = Some (Term f l) -> defined R2 f ->
-                   Acc (one_step (union _ R1  R2)) (Term f l).
+                   Acc (one_step (@union _ R1  R2)) (Term f l).
 
 Lemma interp_well_defined_1 :
   forall R1 R2 f1 l, Interp_dom R1 R2 (Term f1 l) -> 
@@ -53,7 +52,7 @@ apply subterm_in_subterm with t; trivial.
 Qed.
 
 Lemma acc_one_step_interp_dom :
-  forall R1 R2 t, Acc (one_step (union _ R1 R2)) t -> Interp_dom R1 R2 t.
+  forall R1 R2 t, Acc (one_step (@union _ R1 R2)) t -> Interp_dom R1 R2 t.
 Proof.
 intros R1 R2 t Acc_t p f l Sub _.
 apply acc_subterms_3 with p t; assumption.
@@ -61,7 +60,7 @@ Qed.
 
 Lemma interp_well_defined_2 :
   forall R1 R2 f2 l, Interp_dom R1 R2 (Term f2 l) -> defined R2 f2 ->
-  forall (t : term), one_step (union _ R1 R2) t (Term f2 l) -> Interp_dom R1 R2 t.
+  forall (t : term), one_step (@union _ R1 R2) t (Term f2 l) -> Interp_dom R1 R2 t.
 Proof.
 intros R1 R2 f2 l H Df2 t t_R_f2l p f k Sub _.
 apply acc_subterms_3 with p t; trivial.
@@ -114,7 +113,7 @@ Lemma interp_dom_R1_R2 :
   (forall s t, R1 s t -> forall x, In x (var_list s) -> In x (var_list t)) ->
   (forall v t, ~ R2 t (Var v)) ->
   forall (s t : term), Interp_dom R1 R2 s -> 
-  one_step (union _ R1 R2) t s -> Interp_dom R1 R2 t.
+  one_step (@union _ R1 R2) t s -> Interp_dom R1 R2 t.
 Proof.
 intros R1 R2 module_R1_R2 def_dec R1_reg R2_var s.
 pattern s; apply term_rec2; clear s.
@@ -158,7 +157,7 @@ destruct g as [v | f l].
 apply False_rect; apply (R2_var _ _ H2).
 simpl in It; apply (interp_well_defined_2 R1 R2 _ _ It).
 apply (Def _ _ _ _ H2).
-apply at_top; apply (instance (union _ R1 R2) d (Term f l) sigma); right; trivial.
+apply at_top; apply (instance (@union _ R1 R2) d (Term f l) sigma); right; trivial.
 (* 1/1 R1 R2 in context *)
 destruct (def_dec f) as [Df | Cf].
 apply interp_well_defined_2 with f ls; trivial.
@@ -224,7 +223,7 @@ Lemma interp_dom_R1_R2_rwr :
   (forall s t, R1 s t -> forall x, In x (var_list s) -> In x (var_list t)) ->
   (forall v t, ~ R2 t (Var v)) ->
   forall (s t : term), Interp_dom R1 R2 s -> 
-  rwr (union _ R1 R2) t s -> Interp_dom R1 R2 t.
+  rwr (@union _ R1 R2) t s -> Interp_dom R1 R2 t.
 Proof.
 intros R1 R2 module_R1_R2 def_dec R1_reg R2_var; 
 intros s t Is H; induction H.
@@ -252,18 +251,18 @@ Definition is_primary_pi pi R :=
 
 Lemma acc_subterms_pi :
   forall pi v1 v2 R, (forall x t, ~ (R t (Var x))) -> is_primary_pi pi R ->
-  forall l, (forall t, In t l -> Acc (one_step (union _ R (Pi pi v1 v2))) t) -> 
-                   Acc (one_step (union _ R (Pi pi v1 v2))) (Term pi l).
+  forall l, (forall t, In t l -> Acc (one_step (@union _ R (Pi pi v1 v2))) t) -> 
+                   Acc (one_step (@union _ R (Pi pi v1 v2))) (Term pi l).
 Proof.
 intros pi x1 x2 R R_var P l Hl;
-assert (Acc_l : Acc (one_step_list (one_step (union _ R (Pi pi x1 x2)))) l).
+assert (Acc_l : Acc (one_step_list (one_step (@union _ R (Pi pi x1 x2)))) l).
 rewrite <- acc_one_step_list; trivial.
 generalize Hl; clear Hl; induction Acc_l as [l Acc_l IH].
 intros Acc_l'; apply Acc_intro. 
 intros t H; inversion H; clear H; subst.
 inversion H0; clear H0; subst.
 destruct t2 as [v2 | f2 l2].
-absurd ((union _ R (Pi pi x1 x2)) t1 (Var v2)); trivial.
+absurd ((@union _ R (Pi pi x1 x2)) t1 (Var v2)); trivial.
 intros [H' | HPi].
 apply (R_var _ _ H').
 inversion HPi.
@@ -314,7 +313,7 @@ Variable FB2 : forall t s, one_step R2 s t <-> In s (R2_red t).
 
 Definition R1_R2_red t := R1_red t ++ R2_red t.
 
-Lemma FB12 : forall s t, one_step (union _ R1 R2) s t <-> In s (R1_R2_red t).
+Lemma FB12 : forall s t, one_step (@union _ R1 R2) s t <-> In s (R1_R2_red t).
 Proof.
 intros s t; split.
 intro s_R_t; rewrite split_rel in s_R_t; unfold R1_R2_red;
@@ -481,7 +480,7 @@ Qed.
 Lemma recover_red :
   forall f l t s' t', defined R2 f -> Interp_dom R1 R2 (Term f l) -> 
   Interp (Term f l) s' -> Interp t t' -> 
-  one_step (union _ R1 R2) t (Term f l) -> rwr (Pi pi V0 V1) t' s'.
+  one_step (@union _ R1 R2) t (Term f l) -> rwr (Pi pi V0 V1) t' s'.
 Proof.
 intros f l t s' t' Df Idfl Is It t_R_fl.
 inversion Is as [ | f' l' l'' ll Cf Hl Hl' Hll | f' l' l'' ll _ Hl Hl' Hll]; subst.
@@ -580,7 +579,7 @@ exists sigma'; trivial.
 Qed.
 
 Lemma R1_at_top :
-  forall S1, inclusion _ S1 R1 -> forall l r, S1 r l -> forall sigma, 
+  forall S1, @inclusion _ S1 R1 -> forall l r, S1 r l -> forall sigma, 
   Interp_dom R1 R2 (apply_subst sigma l)->
   {sigma' : substitution & {s' : term & {t' : term | 
      Interp_subst (var_list l) sigma sigma' /\
@@ -623,7 +622,7 @@ apply instance; trivial.
 Qed.
 
 Lemma R1_at_top_dp :
-  forall S1, inclusion _ S1 R1 -> forall l t r p, S1 t l ->  subterm_at_pos t p = Some r ->
+  forall S1, @inclusion _ S1 R1 -> forall l t r p, S1 t l ->  subterm_at_pos t p = Some r ->
   forall sigma, 
   Interp_dom R1 R2 (apply_subst sigma l)->
   {sigma' : substitution | 
@@ -697,9 +696,9 @@ Qed.
 
 Lemma R1_case :
    forall (s t : term), Interp_dom R1 R2 s -> one_step R1 t s ->
-   exists s', exists t', Interp s s' /\ Interp t t' /\ rwr (union _ R1 (Pi pi V0 V1)) t' s'.
+   exists s', exists t', Interp s s' /\ Interp t t' /\ rwr (@union _ R1 (Pi pi V0 V1)) t' s'.
 Proof.
-assert (R1_in_R1 : inclusion _ R1 R1).
+assert (R1_in_R1 : @inclusion _ R1 R1).
 intros t1 t2; trivial.
 intro s; pattern s; apply term_rec2; clear s.
 intro n; induction n as [ | n]; intros s Size_s t Is t_R_s.
@@ -746,7 +745,7 @@ discriminate.
 simpl in Hk; injection Hk; clear Hk; intros; subst.
 simpl; replace (map (fun st : term * term => snd st) kk) with
             (map (fun st : term * term => snd st) ll).
-assert (t''_R_s'' : rwr (union term R1 (Pi pi V0 V1)) t'' s'').
+assert (t''_R_s'' : rwr (@union term R1 (Pi pi V0 V1)) t'' s'').
 assert (Size_s' : size s' <= n).
 apply Size_ls; left; trivial.
 assert (Is' : Interp_dom R1 R2 s').
@@ -791,7 +790,7 @@ refine (interp_unicity t' _ t'' s'' _ _).
 apply Hlt; left; trivial.
 apply Hkk; left; trivial.
 apply Hll; left; trivial.
-assert (H : rwr_list (one_step (union term R1 (Pi pi V0 V1)))
+assert (H : rwr_list (one_step (@union term R1 (Pi pi V0 V1)))
                                      (map (fun st : term * term => snd st) kk)
                                      (map (fun st : term * term => snd st) ll)).
 apply IHlt_R1_ls; trivial.
@@ -950,8 +949,8 @@ Qed.
 
 Lemma R1_R2_case_one_step :
    forall (s t : term), Interp_dom R1 R2 s -> 
-   one_step (union _ R1 R2) t s ->
-   exists s', exists t', Interp s s' /\ Interp t t' /\ rwr (union _ R1 (Pi pi V0 V1)) t' s'.
+   one_step (@union _ R1 R2) t s ->
+   exists s', exists t', Interp s s' /\ Interp t t' /\ rwr (@union _ R1 (Pi pi V0 V1)) t' s'.
 Proof.
 intros s t Is H.
 rewrite split_rel in H.
@@ -966,8 +965,8 @@ Qed.
 
 Lemma R1_R2_case :
    forall (s t : term), Interp_dom R1 R2 s -> 
-   rwr (union _ R1 R2) t s ->
-   exists s', exists t', Interp s s' /\ Interp t t' /\ rwr (union _ R1 (Pi pi V0 V1)) t' s'.
+   rwr (@union _ R1 R2) t s ->
+   exists s', exists t', Interp s s' /\ Interp t t' /\ rwr (@union _ R1 (Pi pi V0 V1)) t' s'.
 Proof.
 intros s t Is t_R_s; induction t_R_s; subst.
 apply R1_R2_case_one_step; trivial.
@@ -982,7 +981,7 @@ rewrite (interp_unicity _ It2 _ _ Hs'' Ht'); trivial.
 Qed.
 
 Lemma technical_lemma_1 :
-  forall S1, inclusion _ S1 R1 -> 
+  forall S1, @inclusion _ S1 R1 -> 
   forall s s' t t', Interp_dom R1 R2 s -> Interp_dom R1 R2 t -> 
   Interp s s' -> Interp t t' ->
   axiom (ddp S1) t s -> axiom (ddp S1) t' s'.
@@ -1004,17 +1003,17 @@ split; [apply (Dp _ _ _ _ _ _ t''_S1_s'' H Df) | assumption].
 Qed.
 
 Lemma technical_lemma :
-  forall S1, inclusion _ S1 R1 -> forall s s' t t', 
+  forall S1, @inclusion _ S1 R1 -> forall s s' t t', 
   Interp_dom R1 R2 s -> Interp_dom R1 R2 t -> 
   Interp s s' -> Interp t t' ->
-  rdp_step (axiom (ddp S1)) (union _ R1 R2) t s -> 
-  rdp_step (axiom (ddp S1)) (union _ R1 (Pi pi V0 V1)) t' s'.
+  rdp_step (axiom (ddp S1)) (@union _ R1 R2) t s -> 
+  rdp_step (axiom (ddp S1)) (@union _ R1 (Pi pi V0 V1)) t' s'.
 Proof.
 inversion module_R1_R2 as [M].
 intros S1 S1_in_R1 s s' t t' Is It Hs' Ht' t_R_s.
 inversion t_R_s as [f l1 l2 t'' l2_R_l1 H]; subst; clear t_R_s.
 assert (Is2 : Interp_dom R1 R2 (Term f l2)).
-assert (t2_R_t1 : refl_trans_clos (one_step (union _ R1 R2)) (Term f l2) (Term f l1)).
+assert (t2_R_t1 : refl_trans_clos (one_step (@union _ R1 R2)) (Term f l2) (Term f l1)).
 inversion l2_R_l1 as [l | l2' l1' l2_R_l1']; subst; 
   [left | right; apply general_context; assumption].
 inversion t2_R_t1 as [t12 | t2 t1 t2_R_t1']; clear t2_R_t1; subst.
@@ -1025,7 +1024,7 @@ inversion Hs' as [ | f' l' l'' ll1 Cf' Hl Hl' Hll1 | f' l' l'' ll1 Df Hl Hl' Hll
 (* 1/2 *)
 inversion Hs'' as [ | f'' k' k'' ll2 Cf'' Hk Hk' Hll2 | f'' k' k'' ll2 Df' Hk Hk' Hll2]; subst.
 (* 1/3 *)
-apply (Rdp_step (axiom (ddp S1)) (union term R1 (Pi pi V0 V1)) f (map (@snd _ _) ll1) (map (@snd _ _) ll2) t'); trivial.
+apply (Rdp_step (axiom (ddp S1)) (@union term R1 (Pi pi V0 V1)) f (map (@snd _ _) ll1) (map (@snd _ _) ll2) t'); trivial.
 (* 1/4 *)
 assert (Ill2 : forall s, In s (map (@fst _ _) ll2) -> Interp_dom R1 R2 s).
 intros; apply (interp_well_defined_1 R1 R2 _ _ Is2); trivial.
@@ -1040,7 +1039,7 @@ generalize (refl_trans_clos_one_step_list_length_eq l2_R_l1); intros; discrimina
 intros [ | [v v'] ll1]; simpl; intros Ill1 Ill2 Hll1 Hll2 l2_R_l1.
 generalize (refl_trans_clos_one_step_list_length_eq l2_R_l1); intros; discriminate.
 rewrite refl_trans_clos_one_step_list_head_tail; split.
-assert (u_R_v : refl_trans_clos (one_step (union term R1 R2)) u v).
+assert (u_R_v : refl_trans_clos (one_step (@union term R1 R2)) u v).
 apply refl_trans_clos_one_step_list_refl_trans_clos_one_step with nil (map (@fst _ _) ll2) nil (map (@fst _ _) ll1).
 apply eq_refl.
 assumption.
@@ -1078,9 +1077,9 @@ rewrite eq_symb_bool_refl; discriminate.
 Qed.
 
 Lemma acc_interp_acc :
-  forall S1, inclusion _ S1 R1 -> forall s s', 
+  forall S1, @inclusion _ S1 R1 -> forall s s', 
   Interp_dom R1 R2 s -> Interp s s' ->
-  Acc (rdp_step (axiom (ddp S1)) (union _ R1 (Pi pi V0 V1))) s' -> Acc (rdp_step (axiom (ddp S1)) (union _ R1 R2)) s.
+  Acc (rdp_step (axiom (ddp S1)) (@union _ R1 (Pi pi V0 V1))) s' -> Acc (rdp_step (axiom (ddp S1)) (@union _ R1 R2)) s.
 Proof.
 intros S1 S1_in_R1 s s' Is Hs' Acc_s';
 generalize s Is Hs'; clear s Is Hs';
@@ -1105,9 +1104,9 @@ apply (technical_lemma _ S1_in_R1 s s' t t'); trivial.
 Qed.
 
 Lemma wf_interp_acc :
-  forall S1, inclusion _ S1 R1 -> 
-  well_founded (rdp_step (axiom (ddp S1)) (union _ R1 (Pi pi V0 V1))) ->
-  forall s, Interp_dom R1 R2 s ->   Acc (rdp_step (axiom (ddp S1)) (union _ R1 R2)) s.
+  forall S1, @inclusion _ S1 R1 -> 
+  well_founded (rdp_step (axiom (ddp S1)) (@union _ R1 (Pi pi V0 V1))) ->
+  forall s, Interp_dom R1 R2 s ->   Acc (rdp_step (axiom (ddp S1)) (@union _ R1 R2)) s.
 Proof.
 intros S1 S1_in_R1 wf s Is.
 destruct (interp_defined _ Is) as [s' Hs'].
@@ -1115,7 +1114,7 @@ apply acc_interp_acc with s'; trivial.
 Qed.
 
 Lemma acc_interp_dom :
-  forall t, Acc (one_step (union _ R1 R2)) t -> Interp_dom R1 R2 t.
+  forall t, Acc (one_step (@union _ R1 R2)) t -> Interp_dom R1 R2 t.
 Proof.
 intros t Acc_t p f l Sub _.
 apply acc_subterms_3 with p t; trivial.
@@ -1155,11 +1154,11 @@ Variable P2 : is_primary_pi pi R2.
 Variable P3 : is_primary_pi pi R3.
 Variable Indep2 :  forall s t f, defined R2 f -> R3 s t -> symb_in_term_list f (s :: t :: nil) = false.
 Variable Indep3 : forall s t f, defined R3 f -> R2 s t -> symb_in_term_list f (s :: t :: nil) = false.
-Variable W2 : well_founded (one_step (union _ (union _ R1 R2) (Pi pi V0 V1))).
-Variable W3 : well_founded (rdp_step (axiom (ddp R3)) (union _ (union _ R1 R3) (Pi pi V0 V1))).
+Variable W2 : well_founded (one_step (@union _ (@union _ R1 R2) (Pi pi V0 V1))).
+Variable W3 : well_founded (rdp_step (axiom (ddp R3)) (@union _ (@union _ R1 R3) (Pi pi V0 V1))).
 
 Lemma R132_reg' : 
-    forall s t, union _ (union _ R1 R3) (union _ R2 (Pi pi V0 V1)) s t -> 
+    forall s t, @union _ (@union _ R1 R3) (@union _ R2 (Pi pi V0 V1)) s t -> 
     forall x, In x (var_list s) -> In x (var_list t) .
 Proof.
 intros s t [[H1 | H3] | [H2 | HPi]].
@@ -1174,7 +1173,7 @@ subst; right; left; trivial.
 Qed.
 
 Lemma R123_reg' : 
-    forall s t, union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1)) s t -> 
+    forall s t, @union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1)) s t -> 
     forall x, In x (var_list s) -> In x (var_list t) .
 Proof.
 intros s t H; destruct H as [[H1 | H2] | [H3 | HPi]].
@@ -1188,7 +1187,7 @@ intros x [x_eq_v1 | x_in_nil]; [idtac | contradiction].
 subst; right; left; trivial.
 Qed.
 
-Lemma R12_var' : forall (v : variable) (t :term), ~ (union _ (union _ R1 R2) (Pi pi V0 V1)) t (Var v).
+Lemma R12_var' : forall (v : variable) (t :term), ~ (@union _ (@union _ R1 R2) (Pi pi V0 V1)) t (Var v).
 Proof.
 intros v u H; destruct H as [H12 | H].
 destruct H12 as [H1 | H2].
@@ -1197,7 +1196,7 @@ apply (R2_var _ _ H2).
 inversion H.
 Qed.
 
-Lemma R123_var' : forall v t, ~ (union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1))) t (Var v).
+Lemma R123_var' : forall v t, ~ (@union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1))) t (Var v).
 Proof.
 intros v t [[H1 | H2] | [H3 | HPi]].
 apply (R1_var _ _ H1).
@@ -1206,7 +1205,7 @@ apply (R3_var _ _ H3).
 inversion HPi.
 Qed.
 
-Lemma R132_var' : forall v t, ~ (union _ (union _ R1 R3) (union _ R2 (Pi pi V0 V1))) t (Var v).
+Lemma R132_var' : forall v t, ~ (@union _ (@union _ R1 R3) (@union _ R2 (Pi pi V0 V1))) t (Var v).
 Proof.
 intros v t [[H1 | H3] | [H2 | HPi]].
 apply (R1_var _ _ H1).
@@ -1261,7 +1260,7 @@ Definition Incomp2' := Incomp R2 P2.
 Definition Incomp3' := Incomp R3 P3.
 
 Lemma Incomp123' :
-  forall f, defined (union _ R1 R2) f -> defined (union _ R3 (Pi pi V0 V1)) f -> False.
+  forall f, defined (@union _ R1 R2) f -> defined (@union _ R3 (Pi pi V0 V1)) f -> False.
 Proof.
 intros f D12f D3f';
 inversion D12f as [f' l u [H1 | H2]]; clear D12f; subst;
@@ -1274,10 +1273,10 @@ Qed.
 
 Lemma split_dp_top :
   forall f g ls lt,
-   axiom (ddp (union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1)))) (Term g lt) (Term f ls) ->
-   ( (defined (union _ R1 R2) f /\ defined (union _ R1 R2) g) \/
+   axiom (ddp (@union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1)))) (Term g lt) (Term f ls) ->
+   ( (defined (@union _ R1 R2) f /\ defined (@union _ R1 R2) g) \/
      (defined R3 f /\ defined R3 g) \/
-     (defined R3 f /\ defined (union _ R1 R2) g)).
+     (defined R3 f /\ defined (@union _ R1 R2) g)).
 Proof.
 destruct module_R1_R2 as [M2].
 destruct module_R1_R3 as [M3].
@@ -1332,7 +1331,7 @@ destruct K as [K12 | [K3 | KPi]].
 destruct K12 as [K1 | K2].
 right; right; split.
 apply (Def _ _ _ _ H3).
-apply (Def (union _ R1 R2) g l' u); left; trivial.
+apply (Def (@union _ R1 R2) g l' u); left; trivial.
 assert (F := Indep2 _ _ _ (Def _ _ _ _ K2) H3).
 simpl in F; rewrite (symb_in_subterm g _ _ Sub) in F.
 discriminate.
@@ -1358,10 +1357,10 @@ Qed.
 
 Lemma split_rdp_step_top :
   forall R f g ls lt,
-   rdp_step (axiom (ddp (union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1))))) R (Term g lt) (Term f ls) ->
-   ( (defined (union _ R1 R2) f /\ defined (union _ R1 R2) g) \/
+   rdp_step (axiom (ddp (@union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1))))) R (Term g lt) (Term f ls) ->
+   ( (defined (@union _ R1 R2) f /\ defined (@union _ R1 R2) g) \/
      (defined R3 f /\ defined R3 g) \/
-     (defined R3 f /\ defined (union _ R1 R2) g)).
+     (defined R3 f /\ defined (@union _ R1 R2) g)).
 Proof.
 intros R f g ls lt H; 
 inversion H as [f' l1 l2 t3 H' H'']; subst.
@@ -1370,8 +1369,8 @@ Qed.
 
 Lemma split_dp :
   forall s t,
-   axiom (ddp (union _ (union _ (union _ R1 R2) R3) (Pi pi V0 V1))) s t ->
-   (axiom (ddp (union _ R1 R2)) s t \/ 
+   axiom (ddp (@union _ (@union _ (@union _ R1 R2) R3) (Pi pi V0 V1))) s t ->
+   (axiom (ddp (@union _ R1 R2)) s t \/ 
    axiom (ddp R3) s t \/
    (exists t3, exists t1, exists p, exists f1, exists l1, exists sigma,
     R3 t1 t3 /\
@@ -1463,8 +1462,8 @@ Qed.
 
 Lemma split_rdp_step :
   forall R s t,
-   rdp_step (axiom (ddp (union _ (union _ (union _ R1 R2) R3) (Pi pi V0 V1)))) R s t ->
-   (rdp_step (axiom (ddp (union _ R1 R2))) R s t \/
+   rdp_step (axiom (ddp (@union _ (@union _ (@union _ R1 R2) R3) (Pi pi V0 V1)))) R s t ->
+   (rdp_step (axiom (ddp (@union _ R1 R2))) R s t \/
    rdp_step (axiom (ddp R3)) R s t \/
    (exists t1, exists f3, exists l2, exists p, exists f1, exists l1, exists sigma, exists l3,
    R3 t1 (Term f3 l2) /\ 
@@ -1648,27 +1647,27 @@ intro H; rewrite in_map_iff in H; destruct H as [l' [H'' H]]; subst t.
 apply in_context; apply H'; trivial.
 Qed.
 
-Lemma def_dec3' : forall f : symbol, {defined (union _ R3 (Pi pi V0 V1)) f} + {~ defined (union _ R3 (Pi pi V0 V1)) f}.
+Lemma def_dec3' : forall f : symbol, {defined (@union _ R3 (Pi pi V0 V1)) f} + {~ defined (@union _ R3 (Pi pi V0 V1)) f}.
 Proof.
 intros f; destruct (def_dec3 f) as [Df | Cf].
 left; inversion Df as [f' l s H]; subst.
-apply (Def (union _ R3 (Pi pi V0 V1)) f l s); left; trivial.
+apply (Def (@union _ R3 (Pi pi V0 V1)) f l s); left; trivial.
 generalize (F.Symb.eq_bool_ok f pi); case (F.Symb.eq_bool f pi); [intros f_eq_pi | intros f_diff_pi].
-subst f; left; apply (Def (union _ R3 (Pi pi V0 V1)) pi (Var V0 :: Var V1 :: nil) (Var V0)).
+subst f; left; apply (Def (@union _ R3 (Pi pi V0 V1)) pi (Var V0 :: Var V1 :: nil) (Var V0)).
 right; apply Pi1.
 right; intro Df; inversion Df as [f' l s [H3 | Hpi]]; subst.
 apply Cf; apply (Def R3 f l s); trivial.
 inversion Hpi; subst f; absurd (pi = pi); trivial.
 Qed.
 
-Lemma R3_var' : forall (v : variable) (t :term), ~ (union _ R3 (Pi pi V0 V1)) t (Var v).
+Lemma R3_var' : forall (v : variable) (t :term), ~ (@union _ R3 (Pi pi V0 V1)) t (Var v).
 Proof.
 intros v u [H3 | HPi].
 apply (R3_var _ _ H3).
 inversion HPi.
 Qed.
 
-Lemma R12_var : forall (v : variable) (t :term), ~ (union _ R1 R2) t (Var v).
+Lemma R12_var : forall (v : variable) (t :term), ~ (@union _ R1 R2) t (Var v).
 Proof.
 intros v u [H1 | H2].
 apply (R1_var _ _ H1).
@@ -1676,7 +1675,7 @@ apply (R2_var _ _ H2).
 Qed.
 
 Lemma R12_reg : forall s t : term,
-         union term R1 R2 s t ->
+         @union term R1 R2 s t ->
          forall x : variable, In x (var_list s) -> In x (var_list t).
 Proof.
 intros s t [H1 | H2] x x_in_s.
@@ -1684,7 +1683,7 @@ apply R1_reg with s; trivial.
 apply R2_reg with s; trivial.
 Qed.
 
-Lemma module123' : module (union term R1 R2) (union term R3 (Pi pi V0 V1)).
+Lemma module123' : module (@union term R1 R2) (@union term R3 (Pi pi V0 V1)).
 Proof.
 inversion module_R1_R2 as [M2].
 inversion module_R1_R3 as [M3].
@@ -1722,7 +1721,7 @@ absurd (pi = pi); trivial; apply Ht; trivial.
 trivial.
 Qed.
 
-Lemma W12' : well_founded (rdp_step (axiom (ddp (union _ R1 R2))) (union _ (union _ R1 R2) (Pi pi V0 V1))).
+Lemma W12' : well_founded (rdp_step (axiom (ddp (@union _ R1 R2))) (@union _ (@union _ R1 R2) (Pi pi V0 V1))).
 Proof.
 assert (W2' := dp_necessary _ R12_var' W2).
 refine (wf_incl _ _ _ _ W2').
@@ -1730,41 +1729,41 @@ clear; intros s t H; inversion H; clear H; subst.
 apply Rdp_step with l2; trivial.
 inversion H1; clear H1; subst.
 apply instance.
-apply dp_incl with (union _ R1 R2).
+apply dp_incl with (@union _ R1 R2).
 do 3 intro; left; assumption.
 apply ddp_is_dp; assumption.
 Qed.
 
 Definition T12 := 
      wf_interp_acc V0 V1 V0_diff_V1 pi bot 
-                           (union _ R1 R2) (union _ R3 (Pi pi V0 V1)) R12_reg R12_var R3_var'
+                           (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1)) R12_reg R12_var R3_var'
                            module123' def_dec3' _ _
                            (fun s t => FB12 _ _ _ _ FB1 FB2 t s) 
                            (fun s t => FB12 _ _ _ _ FB3 FB_Pi t s)
-                           (union _ R1 R2) (fun s t H => H) W12'.
+                           (@union _ R1 R2) (fun s t H => H) W12'.
 
 Lemma def_dec2' : 
-   forall f : symbol, {defined (union _ R2 (Pi pi V0 V1)) f} + {~ defined (union _ R2 (Pi pi V0 V1)) f}.
+   forall f : symbol, {defined (@union _ R2 (Pi pi V0 V1)) f} + {~ defined (@union _ R2 (Pi pi V0 V1)) f}.
 Proof.
 intros f; destruct (def_dec2 f) as [Df | Cf].
 left; inversion Df as [f' l s H]; subst.
-apply (Def (union _ R2 (Pi pi V0 V1)) f l s); left; trivial.
+apply (Def (@union _ R2 (Pi pi V0 V1)) f l s); left; trivial.
 generalize (F.Symb.eq_bool_ok f pi); case (F.Symb.eq_bool f pi); [intros f_eq_pi | intros f_diff_pi].
-subst f; left; apply (Def (union _ R2 (Pi pi V0 V1)) pi (Var V0 :: Var V1 :: nil) (Var V0)).
+subst f; left; apply (Def (@union _ R2 (Pi pi V0 V1)) pi (Var V0 :: Var V1 :: nil) (Var V0)).
 right; apply Pi1.
 right; intro Df; inversion Df as [f' l s [H2 | Hpi]]; subst.
 apply Cf; apply (Def R2 f l s); trivial.
 inversion Hpi; subst f; absurd (pi = pi); trivial.
 Qed.
 
-Lemma R2_var' : forall (v : variable) (t :term), ~ (union _ R2 (Pi pi V0 V1)) t (Var v).
+Lemma R2_var' : forall (v : variable) (t :term), ~ (@union _ R2 (Pi pi V0 V1)) t (Var v).
 Proof.
 intros v u [H2 | HPi].
 apply (R2_var _ _ H2).
 inversion HPi.
 Qed.
 
-Lemma R13_var : forall (v : variable) (t :term), ~ (union _ R1 R3) t (Var v).
+Lemma R13_var : forall (v : variable) (t :term), ~ (@union _ R1 R3) t (Var v).
 Proof.
 intros v u [H1 | H3].
 apply (R1_var _ _ H1).
@@ -1772,7 +1771,7 @@ apply (R3_var _ _ H3).
 Qed.
 
 Lemma R13_reg : forall s t : term,
-         union term R1 R3 s t ->
+         @union term R1 R3 s t ->
          forall x : variable, In x (var_list s) -> In x (var_list t).
 Proof.
 intros s t [H1 | H3] x x_in_s.
@@ -1780,7 +1779,7 @@ apply R1_reg with s; trivial.
 apply R3_reg with s; trivial.
 Qed.
 
-Lemma module132' : module (union term R1 R3) (union term R2 (Pi pi V0 V1)).
+Lemma module132' : module (@union term R1 R3) (@union term R2 (Pi pi V0 V1)).
 Proof.
 inversion module_R1_R3 as [M3].
 inversion module_R1_R2 as [M2].
@@ -1820,7 +1819,7 @@ Qed.
 
 Definition T3 := 
          wf_interp_acc V0 V1 V0_diff_V1 pi bot 
-                               (union _ R1 R3) (union _ R2 (Pi pi V0 V1)) 
+                               (@union _ R1 R3) (@union _ R2 (Pi pi V0 V1)) 
                                R13_reg R13_var R2_var' module132' 
                                def_dec2' _ _
                                (fun s t => FB12 _ _ _ _  FB1 FB3 t s) 
@@ -1829,8 +1828,8 @@ Definition T3 :=
 
 Lemma def_dec123' : 
    forall f : symbol,
-     {constructor (union term (union term R1 R2) (union _ R3 (Pi pi V0 V1))) f} +
-     {defined (union term (union term R1 R2) (union _ R3 (Pi pi V0 V1))) f}.
+     {constructor (@union term (@union term R1 R2) (@union _ R3 (Pi pi V0 V1))) f} +
+     {defined (@union term (@union term R1 R2) (@union _ R3 (Pi pi V0 V1))) f}.
 Proof.
 intros f; generalize (F.Symb.eq_bool_ok f pi); case (F.Symb.eq_bool f pi); [intros f_eq_pi | intros f_diff_pi].
 subst; right.
@@ -1845,7 +1844,7 @@ refine (Def _ f k t _); do 1 left; right; trivial.
 destruct (def_dec3 f) as [D3f | C3f].
 right; inversion D3f as [f' k t H1]; subst f'.
 refine (Def _ f k t _); right; left; trivial.
-left; assert (Cf : forall k t, ~ (union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1))) t (Term f k)).
+left; assert (Cf : forall k t, ~ (@union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1))) t (Term f k)).
 intros k t  [[H1 | H2] | [H3 | HPi]].
 apply C1f; apply (Def _ _ _ _ H1).
 apply C2f; apply (Def _ _ _ _ H2).
@@ -1856,8 +1855,8 @@ Qed.
 
 Lemma def_dec132' : 
    forall f : symbol,
-     {constructor (union term (union term R1 R3) (union _ R2 (Pi pi V0 V1))) f} +
-     {defined (union term (union term R1 R3) (union _ R2 (Pi pi V0 V1))) f}.
+     {constructor (@union term (@union term R1 R3) (@union _ R2 (Pi pi V0 V1))) f} +
+     {defined (@union term (@union term R1 R3) (@union _ R2 (Pi pi V0 V1))) f}.
 Proof.
 intros f; generalize (F.Symb.eq_bool_ok f pi); case (F.Symb.eq_bool f pi); [intros f_eq_pi | intros f_diff_pi].
 subst; right.
@@ -1872,7 +1871,7 @@ refine (Def _ f k t _); right; left; trivial.
 destruct (def_dec3 f) as [D3f | C3f].
 right; inversion D3f as [f' k t H1]; subst f'.
 refine (Def _ f k t _); left; right; trivial.
-left; assert (Cf : forall k t, ~ (union _ (union _ R1 R3) (union _ R2 (Pi pi V0 V1))) t (Term f k)).
+left; assert (Cf : forall k t, ~ (@union _ (@union _ R1 R3) (@union _ R2 (Pi pi V0 V1))) t (Term f k)).
 intros k t  [[H1 | H3] | [H2 | HPi]].
 apply C1f; apply (Def _ _ _ _ H1).
 apply C3f; apply (Def _ _ _ _ H3).
@@ -1882,13 +1881,13 @@ apply Const; trivial.
 Qed.
 
 Lemma modular_var : forall v, 
-                      Acc (ddp_step (union term (union term R1 R2) (union _ R3 (Pi pi V0 V1)))) (Var v).
+                      Acc (ddp_step (@union term (@union term R1 R2) (@union _ R3 (Pi pi V0 V1)))) (Var v).
 Proof.
 intro x; apply Acc_intro; intros s H; inversion H; subst.
 Qed.
 
 Lemma def_dec12 : 
-  forall f : symbol, {defined (union _ R1 R2) f} + {~ defined (union _ R1 R2) f}.
+  forall f : symbol, {defined (@union _ R1 R2) f} + {~ defined (@union _ R1 R2) f}.
 Proof.
 intro f; destruct (def_dec1 f) as [D1f | C1f].
 left; inversion D1f as [f' k t H1]; subst f'.
@@ -1902,8 +1901,8 @@ apply C2f; apply (Def _ _ _ _ H2).
 Qed.
 
 Lemma Dummy :
-   forall t, Acc (one_step (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)))) t <->
-              Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) t.
+   forall t, Acc (one_step (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)))) t <->
+              Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) t.
 Proof.
 intros t; split; apply Acc_incl;
 clear t; intros t1 t2; apply one_step_incl.
@@ -1920,9 +1919,9 @@ right; right; trivial.
 Qed.
 
 Lemma Case12 :
-  forall f l, defined (union _ R1 R2) f ->
-             (Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) (Term f l)) ->
-              Acc (ddp_step (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))))
+  forall f l, defined (@union _ R1 R2) f ->
+             (Interp_dom (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) (Term f l)) ->
+              Acc (ddp_step (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))))
                      (Term f l).
 Proof.
 intros f l D12 It.
@@ -1930,30 +1929,30 @@ inversion D12 as [f' k u H12]; subst.
 assert (Ts := T12 _ It).
 assert (D12' : match Term f l with
                      | Var _ => False
-                     | Term g _ => defined (union _ R1 R2) g
+                     | Term g _ => defined (@union _ R1 R2) g
                      end).
 trivial.
 generalize (Term f l) Ts D12' It; clear f l It Ts D12' D12 H12.
 intros t Acc_t; induction Acc_t as [[ v | f l] Acc_t IH]; intros D12f It.
 contradiction.
 (* 1/1 goal is now 
-    Acc (ddp_step (union term (union term R1 R2) (union term R3 (Pi pi)))) (Term f l) *)
+    Acc (ddp_step (@union term (@union term R1 R2) (@union term R3 (Pi pi)))) (Term f l) *)
 apply Acc_intro; intros t H.
 assert (Simple_step : 
 forall l
 (IH : forall y : term,
-     rdp_step (axiom (ddp (union term R1 R2)))
-       (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) y (Term f l) ->
+     rdp_step (axiom (ddp (@union term R1 R2)))
+       (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) y (Term f l) ->
      match y with
      | Var _ => False
-     | Term g _ => defined (union term R1 R2) g
+     | Term g _ => defined (@union term R1 R2) g
      end ->
-     Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) y ->
-     Acc (ddp_step (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)))) y)
-(It : Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) (Term f l))
+     Interp_dom (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) y ->
+     Acc (ddp_step (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)))) y)
+(It : Interp_dom (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) (Term f l))
 (t : term)
-(H : axiom (ddp (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)))) t (Term f l)),
-Acc (ddp_step (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)))) t).
+(H : axiom (ddp (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)))) t (Term f l)),
+Acc (ddp_step (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)))) t).
 (* 1/2 simple RDP step *)
 clear l Acc_t IH It t H;
 intros l IH It t Hm.
@@ -1965,9 +1964,9 @@ destruct p; discriminate.
 destruct (split_dp_top _ _ _ _ Hm) as [D12' | [D13 | D3]]; clear Hm.
 (* 1/4 the new top symbol is also defined in R1 U R2 -> dp of type {1,2}x{1,2} *)
 destruct D12' as [Df Dg].
-assert (t_R12_s : (union term R1 R2) (Term f' k') s).
+assert (t_R12_s : (@union term R1 R2) (Term f' k') s).
 clear k; destruct s as [ v | g k].
-absurd (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)) (Term f' k') (Var v)); trivial.
+absurd (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) (Term f' k') (Var v)); trivial.
 intros [[H1 | H2] | [H3 | Hpi]].
 apply (R1_var _ _ H1).
 apply (R2_var _ _ H2).
@@ -1977,27 +1976,27 @@ simpl in K2; injection K2; clear K2; intros H' f_eq_g; subst.
 destruct t_R_s as [H12 | H3']; trivial.
 destruct module123' as [M].
 clear u; inversion Df as [f'' l u H12]; subst.
-assert (F := M f _ _ (Def (union _ R3 (Pi pi V0 V1)) f k (Term f' k') H3') H12).
+assert (F := M f _ _ (Def (@union _ R3 (Pi pi V0 V1)) f k (Term f' k') H3') H12).
 simpl in F; destruct (symb_in_term f u).
 discriminate.
 rewrite eq_symb_bool_refl in F; discriminate.
-assert (H : rdp_step (axiom (ddp (union term R1 R2))) (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) 
+assert (H : rdp_step (axiom (ddp (@union term R1 R2))) (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) 
                            (Term g'' (map (apply_subst sigma) k'')) 
                            (Term f l)).
 apply Rdp_step with l.
 left.
 clear k; destruct s as [ v | g k].
-absurd ((union term R1 R2) (Term f' k') (Var v)); trivial.
+absurd ((@union term R1 R2) (Term f' k') (Var v)); trivial.
 intros [H1 | H2].
 apply (R1_var _ _ H1).
 apply (R2_var _ _ H2).
 simpl in K2; injection K2; clear K2; intros H' f_eq_g; subst.
 refine (instance _ (Term g'' k'') (Term f k) sigma _).
-split; [apply (Dp (union _ R1 R2) (Term f k) (Term f' k') p g'' k'') | idtac]; trivial.
+split; [apply (Dp (@union _ R1 R2) (Term f k) (Term f' k') p g'' k'') | idtac]; trivial.
 apply IH; trivial.
 (* 1/4 goal is now 
-  Interp_dom (union term R1 R2) (union term R3 (Pi pi))  (Term g'' (map (apply_subst sigma) k'')) *)
-assert (s_not_in_F3 : forall g : symbol, symb_in_term g s = true -> ~ defined (union term R3 (Pi pi V0 V1)) g).
+  Interp_dom (@union term R1 R2) (@union term R3 (Pi pi))  (Term g'' (map (apply_subst sigma) k'')) *)
+assert (s_not_in_F3 : forall g : symbol, symb_in_term g s = true -> ~ defined (@union term R3 (Pi pi V0 V1)) g).
 intros g g_in_s D3g.
 destruct module123' as [M].
 assert (H'' := M g _ _ D3g t_R12_s).
@@ -2005,10 +2004,10 @@ change ((symb_in_term g (Term f' k') || (symb_in_term g s || false))%bool =
         false) in H''.
 rewrite g_in_s in H''; destruct (symb_in_term g (Term f' k')); discriminate.
 destruct s as [v | ff ll].
-absurd (union term R1 R2 (Term f' k') (Var v)); trivial.
+absurd (@union term R1 R2 (Term f' k') (Var v)); trivial.
 apply R12_var.
 
-assert (f'k'_not_in_F3 : forall g : symbol, symb_in_term g (Term f' k') = true -> ~ defined (union term R3 (Pi pi V0 V1)) g). 
+assert (f'k'_not_in_F3 : forall g : symbol, symb_in_term g (Term f' k') = true -> ~ defined (@union term R3 (Pi pi V0 V1)) g). 
 intros g g_in_s D3g.
 destruct module123' as [M].
 assert (H'' := M g _ _ D3g t_R12_s).
@@ -2017,10 +2016,10 @@ simpl symb_in_term_list in H''; fold symb_in_term_list in H''.
 simpl in g_in_s; fold symb_in_term_list in g_in_s.
 rewrite g_in_s in H''; discriminate.
 assert (interp_dom_var : forall v, In v (var_list (Term ff ll))
-              ->  Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) (apply_subst sigma (Var v))).
+              ->  Interp_dom (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) (apply_subst sigma (Var v))).
 intros v v_in_s'.
 rewrite <- K2 in It.
-exact (interp_dom_subst (union term R1 R2) (union term R3 (Pi pi V0 V1)) _ sigma It v v_in_s').
+exact (interp_dom_subst (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) _ sigma It v v_in_s').
 intros [ | i q] h kk Sub' D3h.
 simpl in Sub'; injection Sub'; clear Sub'; intros; subst.
 apply False_rect.
@@ -2043,7 +2042,7 @@ left; trivial.
 apply (interp_dom_var v v_in_s nil); trivial.
 rewrite K; trivial.
 simpl in K; injection K; clear K; intros; subst.
-absurd (defined (union term R3 (Pi pi V0 V1)) h'); trivial.
+absurd (defined (@union term R3 (Pi pi V0 V1)) h'); trivial.
 apply f'k'_not_in_F3.
 rewrite (symb_in_subterm h' _ _ Sub5); trivial.
 simpl; rewrite eq_symb_bool_refl; trivial.
@@ -2058,7 +2057,7 @@ destruct D13 as [D3 _].
 destruct module123' as [M].
 clear k u; inversion D12f as [g k u H12]; subst.
 inversion D3 as [g' k''' u' H3]; subst.
-assert (F := M f _ _ (Def (union _ R3 (Pi pi V0 V1)) f k''' u' (or_introl _ H3)) H12).
+assert (F := M f _ _ (Def (@union _ R3 (Pi pi V0 V1)) f k''' u' (or_introl _ H3)) H12).
 simpl in F; destruct (symb_in_term f u).
 discriminate.
 simpl in F; revert F; 
@@ -2070,7 +2069,7 @@ destruct D3 as [D3 _].
 destruct module123' as [M].
 clear k u; inversion D12f as [g k u H12]; subst.
 inversion D3 as [g' k''' u' H3]; subst.
-assert (F := M f _ _ (Def (union _ R3 (Pi pi V0 V1)) f k''' u' (or_introl _ H3)) H12).
+assert (F := M f _ _ (Def (@union _ R3 (Pi pi V0 V1)) f k''' u' (or_introl _ H3)) H12).
 simpl in F; destruct (symb_in_term f u).
 discriminate.
 rewrite eq_symb_bool_refl in F; discriminate.
@@ -2098,12 +2097,12 @@ Lemma Case3 :
   forall f l, defined R3 f ->
                   ( forall t : term,
                     In t l ->
-                       Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) t) ->
-    Acc (ddp_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) (Term f l).
+                       Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) t) ->
+    Acc (ddp_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) (Term f l).
 Proof.
 intros f l  D3 IHl.
 (* 1/1 f is defined in R3 *)
-assert (H : Interp_dom (union term R1 R3) (union term R2 (Pi pi V0 V1)) (Term f l)).
+assert (H : Interp_dom (@union term R1 R3) (@union term R2 (Pi pi V0 V1)) (Term f l)).
 intros [ | i p] g k Sub D2.
 simpl in Sub; injection Sub; clear Sub; intros; subst g k.
 inversion D2 as [g k u [H2 | HPi]]; subst.
@@ -2112,7 +2111,7 @@ apply False_rect; inversion HPi; subst f; apply (Incomp3' D3).
 simpl in Sub; assert (H := nth_error_ok_in i l);
 destruct (nth_error l i) as [ti | ]; [idtac | discriminate].
 destruct (H _ (eq_refl _)) as [ls1 [ls2 [L H']]]; clear H; subst l.
-assert (Hti : Interp_dom (union term R1 R3) (union term R2 (Pi pi V0 V1)) ti).
+assert (Hti : Interp_dom (@union term R1 R3) (@union term R2 (Pi pi V0 V1)) ti).
 apply acc_interp_dom.
 apply IHl; apply in_or_app; right; left; trivial.
 apply (Hti p); trivial.
@@ -2124,18 +2123,18 @@ assert (D3' : match Term f l with
 trivial.
 assert (Ts := T3 _ H).
 assert (IHl' : forall t, direct_subterm t (Term f l) ->
-                Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) t).
+                Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) t).
 simpl; trivial.
 generalize (Term f l) Ts D3' IHl'; clear f l H Ts D3' IHl D3 IHl'.
 intros t Acc_t; induction Acc_t as [[ v | _f l] Acc_t IH]; intros D3 IHl.
 contradiction.
 (* 1/1 goal is now 
-    Acc (dpd_step (union term (union term R1 R3) (union term R2 (Pi pi)))) (Term _f l) *)
+    Acc (dpd_step (@union term (@union term R1 R3) (@union term R2 (Pi pi)))) (Term _f l) *)
 apply Acc_intro; intros t H.
 assert (Simple_step : 
 forall l
 (IH : forall y : term,
-     rdp_step (axiom (ddp R3)) (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))) y
+     rdp_step (axiom (ddp R3)) (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1))) y
        (Term _f l) ->
      match y with
      | Var _ => False
@@ -2143,17 +2142,17 @@ forall l
      end ->
      (forall t : term,
       direct_subterm t y ->
-      Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))))
+      Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1))))
         t) ->
-     Acc (ddp_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) y) 
+     Acc (ddp_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) y) 
 (D3 : defined R3 _f)
 (IHl : forall t : term,
       direct_subterm t (Term _f l) ->
-      Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) t)
+      Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) t)
 (t : term)
-(H : axiom (ddp (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) t
+(H : axiom (ddp (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) t
       (Term _f l)),
-Acc (ddp_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) t).
+Acc (ddp_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) t).
 (* 1/2 simpl RDP step *)
 clear l Acc_t IH D3 IHl t H;
 intros l IH D3 IHl t _Hm.
@@ -2162,7 +2161,7 @@ destruct Hm as [Hm _Sub];
 inversion Hm as [s [ v | f' k'] p g'' k'' t_R_s Sub Df'' H1 H']; clear Hm; subst.
 destruct p; discriminate.
 destruct _s as [ v | g k].
-absurd (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)) (Term f' k') (Var v)); trivial.
+absurd (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)) (Term f' k') (Var v)); trivial.
 apply R132_var'.
 
 assert (t_R3_s : R3 (Term f' k') (Term g k)).
@@ -2173,27 +2172,27 @@ apply False_rect; apply (Incomp23 _f (Def _ _ _ _ H2) D3).
 apply False_rect; inversion HPi; subst _f; apply (Incomp3' D3).
 
 (* 1/2 R3 (Term f' k') (Term g k) *)
-assert (Hm' : axiom (ddp (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))))
+assert (Hm' : axiom (ddp (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))))
                            (apply_subst sigma (Term g'' k'')) (Term _f l)).
 rewrite <- K2; apply instance.
 split; [idtac | trivial].
-refine (Dp (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) _ (Term f' k')  p  g'' k'' _ _ _); trivial.
+refine (Dp (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) _ (Term f' k')  p  g'' k'' _ _ _); trivial.
 right; left; trivial.
 inversion Df'' as [h'' l'' u'' [[H1 | H3] | [H2 | Hpi]]]; subst.
-apply (Def (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) g'' l'' u''); left; left; trivial.
-apply (Def (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) g'' l'' u''); right; left; trivial.
-apply (Def (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) g'' l'' u''); left; right; trivial.
-apply (Def (union term (union term R1 R2) (union term R3 (Pi pi V0 V1))) g'' l'' u''); right; right; trivial.
+apply (Def (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) g'' l'' u''); left; left; trivial.
+apply (Def (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) g'' l'' u''); right; left; trivial.
+apply (Def (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) g'' l'' u''); left; right; trivial.
+apply (Def (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1))) g'' l'' u''); right; right; trivial.
 destruct (split_dp_top _ _ _ _ Hm') as [D12' | DD3]; clear Hm'.
 (* 1/3  symbol is also defined in R1 U R2  -> contradiction *)
 destruct D12' as [Df Dg].
-absurd (defined (union term R1 R2) _f); trivial.
+absurd (defined (@union term R1 R2) _f); trivial.
 intros D12f; inversion D12f as [f'' k''' u [H1 | H2]]; subst.
 apply (Incomp13 _f (Def R1 _f k''' u H1) D3).
 apply (Incomp23 _f (Def R2 _f k''' u H2) D3).
 assert (D123 : match Term g'' k'' with
                        | Var _ => False
-                       | Term f _ => defined R3 f \/ defined (union _ R1 R2) f
+                       | Term f _ => defined R3 f \/ defined (@union _ R1 R2) f
                        end).
 destruct DD3 as [[_ D3'] | [_ D12]]; [left | right]; trivial.
 clear DD3.
@@ -2202,7 +2201,7 @@ intro t; pattern t; apply term_rec2; clear t.
 intro n; induction n as [ | n]; intros t St p _Sub Sub D123.
 absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 assert (IHk'' : forall s q, subterm_at_pos t q = Some s ->
-                      Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))))
+                      Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1))))
                         (apply_subst sigma s)).
 intro s; pattern s; apply term_rec2; clear s.
 intro m; induction m as [ | m]; intros s Ss q Sub'.
@@ -2228,7 +2227,7 @@ assert (Sub3 := subterm_at_pos_apply_subst_apply_subst_subterm_at_pos
 rewrite Sub'' in Sub3; trivial.
 discriminate.
 assert (Hk3 : forall s, In s k3 -> 
-                  Acc (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))))
+                  Acc (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1))))
                          (apply_subst sigma s)).
 intros s' s'_in_k3; 
 destruct (In_split _ _ s'_in_k3) as [k3' [k3'' H]]; subst k3.
@@ -2282,7 +2281,7 @@ destruct q as [ | i q].
 simpl in Sub'; injection Sub'; clear Sub'; intros; subst t.
 destruct D123 as [Dg | Dg].
 (* 1/5  the new symbol is also defined in R3 -> dp of type {3}x{3} *)
-assert (H : rdp_step (axiom (ddp R3)) (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))) 
+assert (H : rdp_step (axiom (ddp R3)) (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1))) 
                            (Term g3 (map (apply_subst sigma) k3)) 
                            (Term _f l)).
 apply Rdp_step with l.
@@ -2307,7 +2306,7 @@ apply ddp_simple_criterion_local.
 apply R132_var'.
 apply R132_reg'.
 apply def_dec132'.
-apply Acc_incl with (ddp_step (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)))).
+apply Acc_incl with (ddp_step (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)))).
 apply ddp_step_incl.
 intros t1 t2 [[H1 | H3] | [H2 | HPi]].
 do 2 left; trivial.
@@ -2349,9 +2348,9 @@ rewrite Sub'; trivial.
 intros j q' Sub''; apply (not_Sub (j :: q')); trivial.
 apply subterm_in_subterm with t; trivial.
 destruct Dg3 as [g' l' u [[H1 | H3] | [H2 | Hpi]]].
-right; apply (Def (union _ R1 R2) g' l' u); left; trivial.
+right; apply (Def (@union _ R1 R2) g' l' u); left; trivial.
 left; apply (Def  R3 g' l' u); trivial.
-right; apply (Def (union _ R1 R2) g' l' u); right; trivial.
+right; apply (Def (@union _ R1 R2) g' l' u); right; trivial.
 apply False_rect; destruct (P3 _ _ t_R3_s g') as [F _]; apply F.
 apply (symb_in_subterm g' _ p Sub).
 apply (symb_in_subterm g' _ (i :: q) Sub').
@@ -2376,7 +2375,7 @@ apply refl_trans_clos_is_trans with l'; trivial.
 
 simpl; intros u' u'_in_l'.
 assert (H : exists u, In u l /\ 
-                          (refl_trans_clos (one_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) u' u)).
+                          (refl_trans_clos (one_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) u' u)).
 generalize l l' l_R_l' u'_in_l'.
 intro k1; induction k1 as [ | t1 k1]; intros [ | t2 k2] H u_in_k1.
 contradiction.
@@ -2395,17 +2394,17 @@ assumption.
 destruct H as [u [u_in_l H]].
 inversion H as [u'' | u1' u1 H1]; clear H; subst.
 apply IHl; simpl; trivial.
-assert (Acc_u : Acc (rwr (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))) u).
+assert (Acc_u : Acc (rwr (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))) u).
 rewrite <- acc_one_step.
 apply IHl; trivial.
 apply Acc_incl with (trans_clos (one_step
-                                       (union term (union term R1 R3) (union term R2 (Pi pi V0 V1))))).
+                                       (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1))))).
 do 3 intro; left; assumption.
 apply Acc_inv with u; assumption.
 Qed.
 
 Lemma modular_termination :
-   well_founded (ddp_step (union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1)))).
+   well_founded (ddp_step (@union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1)))).
 Proof.
 intros s; apply ddp_necessary; simpl; trivial.
 apply R123_var'.
@@ -2420,7 +2419,7 @@ discriminate.
 intros f l IHl; 
 generalize (F.Symb.eq_bool_ok f pi); case (F.Symb.eq_bool f pi); [intros f_eq_pi | intros f_diff_pi].
 subst f.
-apply Acc_incl with (one_step (union _ (union _ (union _ R1 R2) R3) (Pi pi V0 V1))).
+apply Acc_incl with (one_step (@union _ (@union _ (@union _ R1 R2) R3) (Pi pi V0 V1))).
 intros t1 t2; apply one_step_incl; clear t1 t2.
 intros t1 t2 [[H1 | H2] | [H3 | Hpi]].
 do 3 left; trivial.
@@ -2437,7 +2436,7 @@ apply (P1 t1 t2 H1).
 apply (P2 t1 t2 H2).
 apply (P3 t1 t2 H3).
 intros t t_in_ll;
-apply Acc_incl with (one_step (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)))).
+apply Acc_incl with (one_step (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)))).
 intros t1 t2; apply one_step_incl; clear t1 t2.
 intros t1 t2 [[[H1 | H2] | H3] | Hpi].
 do 2 left; trivial.
@@ -2461,13 +2460,13 @@ apply (Incomp123' f); trivial.
 simpl in Sub; assert (H := nth_error_ok_in i l);
 destruct (nth_error l i) as [ti | ]; [idtac | discriminate].
 destruct (H _ (eq_refl _)) as [ls1 [ls2 [L H']]]; clear H; subst l.
-assert (Hti : Interp_dom (union term R1 R2) (union term R3 (Pi pi V0 V1)) ti).
+assert (Hti : Interp_dom (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) ti).
 apply acc_interp_dom.
 apply IHl; apply in_or_app; right; left; trivial.
 apply (Hti p); trivial.
 
 destruct (def_dec3 f) as [D3' | C3].
-apply Acc_incl with (ddp_step (union term (union term R1 R3) (union term R2 (Pi pi V0 V1)))).
+apply Acc_incl with (ddp_step (@union term (@union term R1 R3) (@union term R2 (Pi pi V0 V1)))).
 refine (ddp_step_incl _ _ _).
 intros t1 t2 [[H1 | H2] | [H3 | HPi]].
 do 2 left; assumption.
@@ -2484,11 +2483,11 @@ destruct Hm as [Hm _Sub].
 inversion Hm as [_s [ v | f' k'] p g'' k'' t_R_s Sub Df'' H1 H']; subst.
 destruct p; discriminate.
 destruct s as [x | g k].
-absurd (union term (union term R1 R2) (union term R3 (Pi pi V0 V1)) (Term f' k') (Var x)); trivial.
+absurd (@union term (@union term R1 R2) (@union term R3 (Pi pi V0 V1)) (Term f' k') (Var x)); trivial.
 apply R123_var'.
 simpl in K2; injection K2; clear K2; intros; subst.
 apply False_rect; destruct t_R_s as [H12 | [H3 | HPi]].
-apply C12; apply (Def (union _ R1 R2) f _ _ H12).
+apply C12; apply (Def (@union _ R1 R2) f _ _ H12).
 apply C3; apply (Def R3 f _ _ H3).
 apply f_diff_pi; inversion HPi; subst; trivial.
 Qed.
@@ -2553,9 +2552,9 @@ Lemma modular_termination_lift :
   (forall s t f, defined R2 f -> R3 s t -> symb_in_term_list f (s :: t :: nil) = false) ->
   (forall s t f, defined R3 f -> R2 s t -> symb_in_term_list f (s :: t :: nil) = false) ->
 
-  well_founded (ddp_step (union _ (union _ R1 R2) (Pi pi V0 V1))) ->
-  well_founded (rdp_step (axiom (ddp R3)) (union _ (union _ R1 R3) (Pi pi V0 V1))) ->
-  well_founded (ddp_step (union _ (union _ R1 R2) (union _ R3 (Pi pi V0 V1)))).
+  well_founded (ddp_step (@union _ (@union _ R1 R2) (Pi pi V0 V1))) ->
+  well_founded (rdp_step (axiom (ddp R3)) (@union _ (@union _ R1 R3) (Pi pi V0 V1))) ->
+  well_founded (ddp_step (@union _ (@union _ R1 R2) (@union _ R3 (Pi pi V0 V1)))).
 Proof.
 intros V0 V1 V0_diff_V1 pi R1 R2 R3 M12 M13 
 rule_list1 Equiv1 R1_var R1_reg P1
@@ -2590,13 +2589,13 @@ intros x [x_eq_v1 | x_in_nil]; [left; trivial | contradiction].
 intros x [x_eq_v2 | x_in_nil]; [right; left; trivial | contradiction].
 intros f; destruct (def_dec_rules _ _ Equiv1 f) as [D1 | C1].
 right; inversion D1 as [f' l u H1].
-subst f'; apply (Def (union _ (union _ R1 R2) (Pi pi V0 V1)) f l u); left; left; trivial.
+subst f'; apply (Def (@union _ (@union _ R1 R2) (Pi pi V0 V1)) f l u); left; left; trivial.
 destruct (def_dec_rules _ _ Equiv2 f) as [D2 | C2].
 right; inversion D2 as [f' l u H2].
-subst f'; apply (Def (union _ (union _ R1 R2) (Pi pi V0 V1)) f l u); left; right; trivial.
+subst f'; apply (Def (@union _ (@union _ R1 R2) (Pi pi V0 V1)) f l u); left; right; trivial.
 generalize (F.Symb.eq_bool_ok f pi); case (F.Symb.eq_bool f pi); [intros f_eq_pi | intros f_diff_pi].
 subst f; right; 
-apply (Def (union _ (union _ R1 R2) (Pi pi V0 V1)) pi (Var V0 :: Var V1 :: nil) (Var V0)).
+apply (Def (@union _ (@union _ R1 R2) (Pi pi V0 V1)) pi (Var V0 :: Var V1 :: nil) (Var V0)).
 right; apply Pi1.
 left; apply Const; intros l u [[H1 | H2] | Hpi].
 apply C1; apply (Def R1 f l u H1).
@@ -2644,15 +2643,15 @@ Lemma modular_termination_indep_lift :
   (forall s t f, defined R2 f -> R3 s t -> symb_in_term_list f (s :: t :: nil) = false) ->
   (forall s t f, defined R3 f -> R2 s t -> symb_in_term_list f (s :: t :: nil) = false) ->
 
-  well_founded (ddp_step (union _ R2 (Pi pi V0 V1))) ->
-  well_founded (ddp_step (union _ R3 (Pi pi V0 V1))) ->
-  well_founded (ddp_step (union _ (union _ R2 R3) (Pi pi V0 V1))).
+  well_founded (ddp_step (@union _ R2 (Pi pi V0 V1))) ->
+  well_founded (ddp_step (@union _ R3 (Pi pi V0 V1))) ->
+  well_founded (ddp_step (@union _ (@union _ R2 R3) (Pi pi V0 V1))).
 Proof.
 intros V0 V1 V0_diff_V1 pi R2 R3 
 rule_list2 Equiv2 R2_var R2_reg P2
 rule_list3 Equiv3 R3_var R3_reg P3
 Indep2 Indep3 W12 W3.
-apply wf_incl with  (ddp_step (union term (union _ Empty_R R2) (union term R3 (Pi pi V0 V1)))).
+apply wf_incl with  (ddp_step (@union term (@union _ Empty_R R2) (@union term R3 (Pi pi V0 V1)))).
 intros t1 t2; apply  ddp_step_incl; clear t1 t2.
 intros t1 t2 [[H2 | H3] | Hpi].
 left; right; trivial.
@@ -2665,16 +2664,16 @@ apply list_rules_empty.
 intros s t H; case H.
 intros s t H; case H.
 intros s t H; case H.
-apply wf_incl with  (ddp_step (union term R2 (Pi pi V0 V1))); trivial.
-assert (H : inclusion term (union term (union term Empty_R R2) (Pi pi V0 V1)) 
-                                         (union term R2 (Pi pi V0 V1))).
+apply wf_incl with  (ddp_step (@union term R2 (Pi pi V0 V1))); trivial.
+assert (H : @inclusion term (@union term (@union term Empty_R R2) (Pi pi V0 V1)) 
+                                         (@union term R2 (Pi pi V0 V1))).
 intros t1 t2 [[HE | H2] | Hpi].
 case HE.
 left; trivial.
 right; trivial.
 apply ddp_step_incl; trivial.
 
-apply wf_incl with  (rdp_step (axiom (ddp (union term R3 (Pi pi V0 V1)))) (union term R3 (Pi pi V0 V1))); trivial.
+apply wf_incl with  (rdp_step (axiom (ddp (@union term R3 (Pi pi V0 V1)))) (@union term R3 (Pi pi V0 V1))); trivial.
 clear; intros s t H; inversion H; clear H; subst.
 apply Rdp_step with l2.
 refine (refl_trans_incl (one_step_list_incl _ (one_step_incl _ _ _)) H0).
@@ -2707,15 +2706,15 @@ Lemma modular_termination_hierarch_lift :
   (forall l r, In (l,r) rule_list3 -> (forall f, ((symb_in_term f r = true -> f <> pi) /\
                                                               (symb_in_term f l = true -> f <> pi)))) ->
 
-  well_founded (ddp_step (union _ R1 (Pi pi V0 V1))) ->
-  well_founded (rdp_step (axiom (ddp R3)) (union _ (union _ R1 R3) (Pi pi V0 V1))) ->
-  well_founded (ddp_step (union _ (union _ R1 R3) (Pi pi V0 V1))).
+  well_founded (ddp_step (@union _ R1 (Pi pi V0 V1))) ->
+  well_founded (rdp_step (axiom (ddp R3)) (@union _ (@union _ R1 R3) (Pi pi V0 V1))) ->
+  well_founded (ddp_step (@union _ (@union _ R1 R3) (Pi pi V0 V1))).
 Proof.
 intros V0 V1 V0_diff_V1 pi R1 R3 M13 
 rule_list1 Equiv1 R1_var R1_reg P1
 rule_list3 Equiv3 R3_var R3_reg P3
 W12 W3.
-apply wf_incl with  (ddp_step (union term (union _ R1 Empty_R) (union term R3 (Pi pi V0 V1)))).
+apply wf_incl with  (ddp_step (@union term (@union _ R1 Empty_R) (@union term R3 (Pi pi V0 V1)))).
 intros t1 t2; apply  ddp_step_incl; clear t1 t2.
 intros t1 t2 [[H1 | H3] | Hpi].
 do 2 left; trivial.
@@ -2730,7 +2729,7 @@ intros s t H; case H.
 intros s t H; case H.
 intros s t f [f' l u HE]; case HE.
 intros s t f _ HE; case HE.
-apply wf_incl with  (ddp_step (union term R1 (Pi pi V0 V1))); trivial.
+apply wf_incl with  (ddp_step (@union term R1 (Pi pi V0 V1))); trivial.
 apply ddp_step_incl.
 intros t1 t2 [[H1 | HE] | Hpi].
 left; trivial.
@@ -2778,7 +2777,7 @@ Definition rwr_rel_empty pi : rwr_rel pi :=
 
 Lemma Equiv_comb :
   forall R1 R2 rules1 rules2, (forall l r, R1 r l <-> In (l,r) rules1) -> (forall l r, R2 r l <-> In (l,r) rules2) ->
-          (forall (l r : term), (union _ R1 R2) r l <-> In (l,r) (rules1 ++ rules2)).
+          (forall (l r : term), (@union _ R1 R2) r l <-> In (l,r) (rules1 ++ rules2)).
 Proof.
 intros R1 R2 rules1 rules2 Equiv1 Equiv2.
 intros l r; split; intro H.
@@ -2817,7 +2816,7 @@ destruct (in_app_or _ _ _ H) as [H' | H']; [apply (P1 l r H' f) | apply (P2 l r 
 Qed.
 
 Definition rwr_rel_comb pi (R1 R2 : rwr_rel pi)  : rwr_rel pi :=
-  mk_set pi (ident pi R1) (union _ (Rel pi R1) (Rel pi R2)) (rules pi R1 ++ rules pi R2)
+  mk_set pi (ident pi R1) (@union _ (Rel pi R1) (Rel pi R2)) (rules pi R1 ++ rules pi R2)
                   (Equiv_comb _ _ _ _ (REquiv pi R1) (REquiv pi R2))
                   (R_var_comb _ _ (RR_var pi R1) (RR_var pi R2))
                   (R_reg_comb _ _ (RR_reg pi R1) (RR_reg pi R2))
@@ -2826,23 +2825,23 @@ Definition rwr_rel_comb pi (R1 R2 : rwr_rel pi)  : rwr_rel pi :=
 Lemma modular_termination_indep_list_lift :
   forall (V0 V1 : variable), V0 <> V1 -> forall pi (list_rel : list (rwr_rel pi)) R',
    (forall R1 R2 L' L'' L''', list_rel = L' ++ R1 :: L'' ++ R2 :: L''' -> ident pi R1 <> ident pi R2) ->
-   well_founded (ddp_step (union _ (Rel pi R') (Pi pi V0 V1))) ->
+   well_founded (ddp_step (@union _ (Rel pi R') (Pi pi V0 V1))) ->
   (forall R, In R list_rel ->   module (Rel pi R') (Rel pi R)) ->
-  (forall R, In R list_rel ->   well_founded (rdp_step (axiom (ddp (Rel pi R))) (union _ (union _ (Rel pi R) (Rel pi R')) (Pi pi V0 V1)))) ->
+  (forall R, In R list_rel ->   well_founded (rdp_step (axiom (ddp (Rel pi R))) (@union _ (@union _ (Rel pi R) (Rel pi R')) (Pi pi V0 V1)))) ->
   (forall R1 R2, In R1 list_rel -> In R2 list_rel -> ident pi R1 <> ident pi R2 ->
         (forall s t f, defined (Rel pi R1) f -> (Rel pi R2) s t -> symb_in_term_list f (s :: t :: nil) = false)) ->
-    well_founded (ddp_step (fold_left (fun acc Rr => union _ (Rel pi Rr) acc)  list_rel  (union _ (Rel pi R') (Pi pi V0 V1)))).
+    well_founded (ddp_step (fold_left (fun acc Rr => @union _ (Rel pi Rr) acc)  list_rel  (@union _ (Rel pi R') (Pi pi V0 V1)))).
 Proof.
 intros V0 V1 V0_diff_V1 pi L R' U W' ML WL IL.
 assert (fold_incl : forall (L0 : list (rwr_rel pi)) (P0 P1 : term -> term -> Prop),
-inclusion term P0 P1 ->
-inclusion term
+@inclusion term P0 P1 ->
+@inclusion term
   (fold_left
      (fun (acc : relation term) (Rr : rwr_rel pi) =>
-      union term (Rel pi Rr) acc) L0 P0)
+      @union term (Rel pi Rr) acc) L0 P0)
   (fold_left
      (fun (acc : relation term) (Rr : rwr_rel pi) =>
-      union term (Rel pi Rr) acc) L0 P1)).
+      @union term (Rel pi Rr) acc) L0 P1)).
 intro L'; induction L' as [ | R'' L'']; simpl; intros P1 P2 P1_in_P2; trivial.
 apply IHL''.
 intros t1 t2 [H'' | H1].
@@ -2850,12 +2849,12 @@ left; trivial.
 right; apply P1_in_P2; trivial.
 
 assert (Gen : forall (R0 : rwr_rel pi), module (Rel pi R') (Rel pi R0) ->
-                     (well_founded (rdp_step (axiom (ddp (Rel pi R0))) (union _ (union _ (Rel pi R') (Rel pi R0)) (Pi pi V0 V1)))) ->
+                     (well_founded (rdp_step (axiom (ddp (Rel pi R0))) (@union _ (@union _ (Rel pi R') (Rel pi R0)) (Pi pi V0 V1)))) ->
                      (forall R2, In R2 L -> 
                           (forall s t f, defined (Rel pi R0) f -> (Rel pi R2) s t -> symb_in_term_list f (s :: t :: nil) = false)) ->
                      (forall R1, In R1 L -> 
                             (forall s t f, defined (Rel pi R1) f -> (Rel pi R0) s t -> symb_in_term_list f (s :: t :: nil) = false)) ->
-                     well_founded (ddp_step (fold_left (fun acc Rr => union _ (Rel pi Rr) acc)  L  (union _ (union _ (Rel pi R') (Rel pi R0)) (Pi pi V0 V1))))).
+                     well_founded (ddp_step (fold_left (fun acc Rr => @union _ (Rel pi Rr) acc)  L  (@union _ (@union _ (Rel pi R') (Rel pi R0)) (Pi pi V0 V1))))).
 induction L as [ | R L]; intros R0 M0 W0 I1 I2; simpl; trivial.
 apply (modular_termination_hierarch_lift V0 V1 V0_diff_V1) with (rules pi R') (rules pi R0); trivial.
 apply (REquiv pi R').
@@ -2871,8 +2870,8 @@ apply wf_incl with
 (ddp_step
      (fold_left
         (fun (acc : relation term) (Rr : rwr_rel pi) =>
-         union term (Rel pi Rr) acc) L
-        (union term (union term (Rel pi R') (Rel pi (rwr_rel_comb pi R R0))) (Pi pi V0 V1)))).
+         @union term (Rel pi Rr) acc) L
+        (@union term (@union term (Rel pi R') (Rel pi (rwr_rel_comb pi R R0))) (Pi pi V0 V1)))).
 apply ddp_step_incl.
 apply fold_incl.
 intros t1 t2 [H | [[H' | H0] | Hpi]].
@@ -2900,8 +2899,8 @@ _ (REquiv pi R0) (RR_var pi R0) (RR_reg pi R0) (RP pi R0)
 (I2 R (or_introl _ (eq_refl _)))
 (I1 R (or_introl _ (eq_refl _)))).
 apply wf_incl with (ddp_step
-         (union term (union term (Rel pi R') (Rel pi R))
-            (union term (Rel pi R0) (Pi pi V0 V1)))).
+         (@union term (@union term (Rel pi R') (Rel pi R))
+            (@union term (Rel pi R0) (Pi pi V0 V1)))).
 apply rddp_step_incl.
 intros t1 t2 [H | H0].
 left; right; trivial.
@@ -2923,7 +2922,7 @@ apply (RR_var pi R).
 apply (RR_reg pi R).
 apply (RP pi R).
 apply wf_incl with (rdp_step (axiom (ddp (Rel pi R)))
-     (union term (union term (Rel pi R) (Rel pi R')) (Pi pi V0 V1))).
+     (@union term (@union term (Rel pi R) (Rel pi R')) (Pi pi V0 V1))).
 apply rddp_step_incl.
 intros t1 t2; trivial.
 intros t1 t2 [[H | H'] | Hpi].
@@ -2954,8 +2953,8 @@ apply I2 with R1; trivial; right; trivial.
 apply wf_incl with (ddp_step
            (fold_left
               (fun (acc : relation term) (Rr : rwr_rel pi) =>
-               union term (Rel pi Rr) acc) L
-              (union term (union term (Rel pi R') (Rel pi (rwr_rel_empty pi))) (Pi pi V0 V1)))).
+               @union term (Rel pi Rr) acc) L
+              (@union term (@union term (Rel pi R') (Rel pi (rwr_rel_empty pi))) (Pi pi V0 V1)))).
 apply rddp_step_incl.
 apply fold_incl.
 intros t1 t2 [H' | Hpi].

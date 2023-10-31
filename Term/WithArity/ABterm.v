@@ -205,10 +205,10 @@ Fixpoint bterms_le k n (bts : vector (bterm k) n) l (h0 : k <= l)
     | Vcons bt bts' => Vcons (bterm_le bt h0) (bterms_le bts' h0)
   end.
 
-Definition bterm_plus k bt l := bterm_le bt (Nat.le_add_l k l).
+Definition bterm_plus k bt l := bterm_le bt (NatCompat.le_add_l k l).
 
 Definition bterms_plus k n (bts : vector (bterm k) n) l
-  := bterms_le bts (Nat.le_add_l k l).
+  := bterms_le bts (NatCompat.le_add_l k l).
 
 End S.
 

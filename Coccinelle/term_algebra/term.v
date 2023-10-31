@@ -14,6 +14,7 @@
 
 From Coq Require Import Recdef List Arith Setoid.
 From CoLoR Require Import closure more_list list_permut list_set decidable_set term_spec.
+From CoLoR.Util.Nat Require Import NatCompat.
 
 Set Implicit Arguments.
 
@@ -231,7 +232,7 @@ intros t l t1_in_tl; case t1_in_tl; clear t1_in_tl.
 intro t_eq_t1; subst t1; apply le_n_S; apply Nat.le_add_r.
 intro t_in_l; apply Nat.lt_le_trans with (1 + list_size size l).
 apply size_direct_subterm; assumption.
-apply le_n_S; apply Nat.le_add_l.
+apply le_n_S; apply NatCompat.le_add_l.
 Defined.
 
 Fixpoint symb_in_term (f : symbol) (t:term) : bool :=

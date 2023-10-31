@@ -308,13 +308,13 @@ Section TransIS.
     intros i j k H; unfold P in H. destruct H as [H H0]. destruct H0 as [H1 H2].
     destruct H as [H H0]. gen (Nat.le_lt_trans H H2). intros H3.
     gen (Nat.le_lt_trans H1 H0). intros H4.
-    destruct (Nat.le_gt_cases i j) as [H5 | H5]. case (le_lt_or_eq H5); try auto.
+    destruct (Nat.le_gt_cases i j) as [H5 | H5]. case (NatCompat.le_lt_or_eq H5); try auto.
     clear H5 H1 H2 H3; intros H5. induction j. lia. simpl in H4.
-    case (le_lt_or_eq (lt_n_Sm_le H5)); intros H1.
+    case (NatCompat.le_lt_or_eq (NatCompat.lt_n_Sm_le H5)); intros H1.
     rewrite (IHj (Nat.lt_trans (HinT j) H4) H1) in H1. lia.
     rewrite H1 in H4. lia.
     clear H1 H2 H4 H H0. induction i. lia. simpl in H3.
-    case (le_lt_or_eq (lt_n_Sm_le H5)); intros H1.
+    case (NatCompat.le_lt_or_eq (NatCompat.lt_n_Sm_le H5)); intros H1.
     rewrite (IHi (Nat.lt_trans (HinT i) H3) H1) in H1. lia.
     rewrite H1 in H3; lia.
 
@@ -330,7 +330,7 @@ Section TransIS.
 
     assert (HSi : S i <= snd (F0 (F1 i))).
     gen (ch_minP _ (exP_F0 i)). unfold P. intuition.
-    destruct (le_lt_or_eq HSi) as [H0 | H0].
+    destruct (NatCompat.le_lt_or_eq HSi) as [H0 | H0].
 
     2: { assert (PSi : P (S i) (S (F1 i))). unfold P. simpl. rewrite H0.
     split; try lia. destruct (HFi (S (F1 i))) as [y Hy]. rewrite Hy; lia.
@@ -379,7 +379,7 @@ Section TransIS.
     apply (proj2_sig (constructive_indefinite_description _ (exPath (F1 i)))).
     rewrite <- Hi. assert (S i = snd (F0 (F1 i))).
     destruct (ch_minP _ (exP_F0 i)) as [_ HT0].
-    destruct (le_lt_or_eq (lt_le_S HT0)); try auto.
+    destruct (NatCompat.le_lt_or_eq (NatCompat.lt_le_S HT0)); try auto.
 
     cut (F1 (S i) = F1 i). rewrite Hi. intros. symmetry in H1. lia.
 
@@ -520,27 +520,27 @@ Section ISModUnion.
       E (g j) (f (S j))). intros i j le_Sij lt_jx.
     gen (is_min_ch (P (S (reid i))) (hyp2 (S (reid i)))). unfold P.
     intros Hproj. gen (Hproj j). intros HT. destruct (hyp1 j) as [_ ERj].
-    destruct ERj; auto. destruct (lt_not_le lt_jx). apply HT. auto.
+    destruct ERj; auto. destruct (NatCompat.lt_not_le lt_jx). apply HT. auto.
 
     assert (E_gf0 : forall j, j < (reid 0) -> E (g j) (f (S j))).
     intros j lt_jx. gen (is_min_ch (P 0) (hyp2 0)). unfold P. intro HP.
     gen (HP j). intro HPj. destruct (hyp1 j) as [_ ERj].
     destruct ERj; auto.
-    destruct (lt_not_le lt_jx). apply HPj. split; auto. lia.
+    destruct (NatCompat.lt_not_le lt_jx). apply HPj. split; auto. lia.
 
     assert (HEfgi : forall i j k,
       S (reid i) <= j -> j <= k  -> k <= reid (S i) -> E (f j) (g k)).
     intros i j k le_ij le_jk le_ki. induction k.
     rewrite (proj1 (Nat.le_0_r _) le_jk) in le_ij. destruct (Nat.nle_succ_0 _ le_ij).
-    destruct (le_lt_or_eq le_jk) as [HT | HT]. 2: { rewrite HT.
+    destruct (NatCompat.le_lt_or_eq le_jk) as [HT | HT]. 2: { rewrite HT.
     apply (proj1 (hyp1 (S k))). } apply TE with (g k).
-    exact (IHk (lt_n_Sm_le HT) (Nat.le_trans (Nat.le_succ_diag_r k) le_ki)).
+    exact (IHk (NatCompat.lt_n_Sm_le HT) (Nat.le_trans (Nat.le_succ_diag_r k) le_ki)).
     apply TE with (f (S k)). apply (E_gfi i k); try lia.
     apply (proj1 (hyp1 (S k))).
 
     assert (HEfg0 : forall j k, j <= k -> k <= reid 0 -> E (f j) (g k)).
     intros j k le_jk le_k0. induction k. rewrite (proj1 (Nat.le_0_r _) le_jk).
-    apply (proj1 (hyp1 0)). destruct (le_lt_or_eq le_jk) as [HT | HT].
+    apply (proj1 (hyp1 0)). destruct (NatCompat.le_lt_or_eq le_jk) as [HT | HT].
     2: { rewrite HT. apply (proj1 (hyp1 (S k))). }
     apply TE with (g k). apply IHk; lia. apply TE with (f (S k)).
     apply (E_gf0 k); try lia. apply (proj1 (hyp1 (S k))).
@@ -657,7 +657,7 @@ Section ISModTrans.
     intros j lt_j0. gen (is_min_ch _ (HexP 0)). intros Hproj.
     gen (Hproj j). intros HT. cut (E # (f j) (g j)).
     intros HT0. destruct (rtc_split HT0) as [| HT1]; auto.
-    destruct (le_not_lt (HT (conj (@le_0_n j) HT1))). hyp.
+    destruct (NatCompat.le_not_lt (HT (conj (@le_0_n j) HT1))). hyp.
     apply (proj1 (hyp1 j)).
 
     assert (eq_fgi : forall i j,
@@ -666,7 +666,7 @@ Section ISModTrans.
     gen (is_min_ch _ (HexP (S (reid i)))). intros Hproj.
     gen (Hproj j). intros HT. cut (E # (f j) (g j)).
     intros HT0. destruct (rtc_split HT0) as [| HT1]; auto.
-    destruct (le_not_lt (HT (conj le_Sij HT1))). hyp.
+    destruct (NatCompat.le_not_lt (HT (conj le_Sij HT1))). hyp.
     apply (proj1 (hyp1 j)).
 
     assert (HEfg : forall i, (E !) (f (reid i)) (g (reid i))).
@@ -676,7 +676,7 @@ Section ISModTrans.
     assert (HRfg : forall i j k, (reid i) <= j -> j < k  -> k <= reid (S i) ->
       R (g j) (f k)).
     intros i j k le_ij lt_jk le_ki. induction k. destruct (Nat.nlt_0_r lt_jk).
-    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT].
+    destruct (NatCompat.le_lt_or_eq (NatCompat.lt_n_Sm_le lt_jk)) as [HT | HT].
     2: { rewrite HT. apply (proj2 (hyp1 k)). }
     apply (@TrsR _ (f k)). apply IHk; try lia.
     rewrite (eq_fgi i k); try lia.
@@ -684,7 +684,7 @@ Section ISModTrans.
 
     assert (HRfg0 : forall j k, j < k  -> k <= reid 0 -> R (g j) (f k)).
     intros j k lt_jk le_k0. induction k. destruct (Nat.nlt_0_r lt_jk).
-    destruct (le_lt_or_eq (lt_n_Sm_le lt_jk)) as [HT | HT].
+    destruct (NatCompat.le_lt_or_eq (NatCompat.lt_n_Sm_le lt_jk)) as [HT | HT].
     2: { rewrite HT. apply (proj2 (hyp1 k)). }
     apply (@TrsR _ (f k)). apply IHk; try lia. rewrite (eq_fg0 k); try lia.
     apply (proj2 (hyp1 k)).

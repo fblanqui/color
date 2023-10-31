@@ -14,6 +14,7 @@
 
 From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec.
+From CoLoR Require Import NatCompat.
 
 (** ** Module Type Termin, for termination of rewriting systems. *)
 
@@ -31,7 +32,7 @@ Inductive rdp_step (R1 R2 : relation term) : term -> term -> Prop :=
    | Rdp_step : forall f l1 l2 t3, refl_trans_clos (one_step_list (one_step R2)) l2 l1 -> R1 t3 (Term f l2) -> 
                               rdp_step R1 R2 t3 (Term f l1).
 
-Lemma dp_incl : forall R1 R2, inclusion _ R1 R2 -> inclusion _ (dp R1) (dp R2).
+Lemma dp_incl : forall R1 R2, @inclusion _ R1 R2 -> @inclusion _ (dp R1) (dp R2).
 Proof.
 intros R1' R2' R1_in_R2 t1 t2 H.
 inversion H as [t1' t2' p f2 l2 H' Subt Df2]; subst.
@@ -42,8 +43,8 @@ apply (Def R2' f2 l u).
 apply R1_in_R2; trivial.
 Qed.
 
-Lemma rdp_step_incl : forall R R' R1 R2, inclusion _ R R' -> inclusion _ R1 R2 ->  
-               inclusion _ (rdp_step (axiom (dp R)) R1) (rdp_step (axiom (dp R')) R2).
+Lemma rdp_step_incl : forall R R' R1 R2, @inclusion _ R R' -> @inclusion _ R1 R2 ->  
+               @inclusion _ (rdp_step (axiom (dp R)) R1) (rdp_step (axiom (dp R')) R2).
 Proof.
 intros R R' R1' R2' R_in_R' R1_in_R2 t1 t2 H.
 inversion H as [g k l' s'' l_R_l' Hm]; clear H; subst.
@@ -100,7 +101,7 @@ Lemma acc_one_step_acc_dp :
     forall t, Acc (one_step R)  t -> Acc (dp_step R) t.
 Proof.
 intros R HR.
-assert (H : forall s t, axiom (dp R) s t -> trans_clos (union term (one_step R) direct_subterm) s t).
+assert (H : forall s t, axiom (dp R) s t -> trans_clos (@union term (one_step R) direct_subterm) s t).
 intros s t H'.
 inversion H' as [s' t' sigma H]; clear H'; subst.
 inversion H as [t1 t2 p f l H'' H3 Df]; clear H; subst.
@@ -112,7 +113,7 @@ apply trans_incl with direct_subterm; trivial.
 intros s t H; right; trivial.
 apply t_step; left; apply at_top; apply instance; trivial.
 
-intros t Acc_t; apply Acc_incl with (trans_clos (union term (one_step R) direct_subterm)).
+intros t Acc_t; apply Acc_incl with (trans_clos (@union term (one_step R) direct_subterm)).
 clear t Acc_t; intros s t H'; inversion H' as [f' l1 l2 H1 H2 H3]; clear H'; subst.
 inversion H2 as [l | k1 k2 K2]; clear H2; subst.
 apply H; assumption.
@@ -348,8 +349,8 @@ Qed.
 Definition ddp_step R := rdp_step (axiom (ddp R)) R.
 Definition ddp_step_min R := rest (acc_sub R) (ddp_step R).
 
-Lemma rddp_step_incl : forall R R' R1 R2, inclusion _ R R' -> inclusion _ R1 R2 ->  
-               inclusion _ (rdp_step (axiom (ddp R)) R1) (rdp_step (axiom (ddp R')) R2).
+Lemma rddp_step_incl : forall R R' R1 R2, @inclusion _ R R' -> @inclusion _ R1 R2 ->  
+               @inclusion _ (rdp_step (axiom (ddp R)) R1) (rdp_step (axiom (ddp R')) R2).
 Proof.
 intros R R' R1' R2' R_in_R' R1_in_R2 t1 t2 H.
 inversion H as [g k l' s'' l_R_l' Hm]; clear H; subst.
@@ -367,8 +368,8 @@ inversion H2; clear H2; subst.
 apply Def with l t; apply R_in_R'; assumption.
 Qed.
 
-Lemma ddp_step_incl : forall R1 R2, inclusion _ R1 R2 ->  
-               inclusion _ (ddp_step R1) (ddp_step R2).
+Lemma ddp_step_incl : forall R1 R2, @inclusion _ R1 R2 ->  
+               @inclusion _ (ddp_step R1) (ddp_step R2).
 Proof.
 intros R1' R2' R1_in_R2 t1 t2 H.
 apply (rddp_step_incl R1' R2' R1' R2'); trivial.

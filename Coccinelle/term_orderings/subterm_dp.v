@@ -15,6 +15,7 @@
 From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term_spec
      equational_theory_spec dp.
+From CoLoR Require Import NatCompat.
 
 (** ** Module Type Termin, for termination of rewriting systems. *)
 
@@ -350,7 +351,7 @@ assert (L' := nth_error_none _ _ H3).
 rewrite <- L4 in L'; rewrite <- L in L'; subst l4. 
 apply Nat.lt_le_trans with (length (l41 ++ s4 :: l42)); trivial.
 rewrite length_app; rewrite Nat.add_comm; simpl.
-apply le_n_S; apply Nat.le_add_l.
+apply le_n_S; apply NatCompat.le_add_l.
 intros H4 _.
 generalize (nth_error_ok_in (P h) l3).
 case_eq (nth_error l3 (P h)).
@@ -365,7 +366,7 @@ assert (L' := nth_error_none _ _ H4).
 rewrite <- L3 in L'; rewrite L in L'; subst l3. 
 apply Nat.lt_le_trans with (length (l31 ++ s3 :: l32)); trivial.
 rewrite length_app; rewrite Nat.add_comm; simpl.
-apply le_n_S; apply Nat.le_add_l.
+apply le_n_S; apply NatCompat.le_add_l.
 intros H3 _.
 inversion H.
 left.

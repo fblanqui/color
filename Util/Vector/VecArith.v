@@ -184,7 +184,7 @@ Module VectorArith (SRT : SemiRingType).
     (* induction step *)
     intros. destruct n. lia.
     VSntac v. unfold dot_product. simpl.
-    rewrite <- (IHi n (lt_S_n ip) (Vtail v)).
+    rewrite <- (IHi n (NatCompat.lt_S_n ip) (Vtail v)).
     ring_simplify. unfold dot_product. refl.
   Qed.
 

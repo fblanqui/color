@@ -59,7 +59,7 @@ Section S.
     exists 0. exists (Nat.lt_0_succ n). simpl. hyp.
     destruct H0 as [i H0]. destruct H0 as [p H0].
     assert (p' : S i < S n). lia. exists (S i). exists p'. simpl.
-    assert (H1 : (lt_S_n p') = p). apply lt_unique. rewrite H1. hyp.
+    assert (H1 : (NatCompat.lt_S_n p') = p). apply lt_unique. rewrite H1. hyp.
   Qed.
 
   Lemma In_subterm_lst_vec_intro : forall n (ts : terms n) v i (p : i < n),
@@ -68,7 +68,7 @@ Section S.
   Proof.
     induction ts. intros. lia.
     destruct i; simpl; intros; rewrite in_app.
-    left; hyp. right. apply (IHts _ _ (lt_S_n p)); auto.
+    left; hyp. right. apply (IHts _ _ (NatCompat.lt_S_n p)); auto.
   Qed.
 
 (***********************************************************************)

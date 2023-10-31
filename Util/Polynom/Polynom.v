@@ -59,7 +59,7 @@ Fixpoint mxi (n : nat) : forall i, lt i n -> monom n :=
     | S n' => fun i =>
       match i as i return lt i (S n') -> monom (S n') with
 	| O => fun _ => Vcons (S O) (mone n')
-	| S _ => fun h => Vcons O (mxi (lt_S_n h))
+	| S _ => fun h => Vcons O (mxi (NatCompat.lt_S_n h))
       end
   end.
 

@@ -147,7 +147,7 @@ Section S.
 
   Proof.
     induction ts; simpl; intros. lia. destruct H. destruct i. hyp.
-    ded (IHts _ H1 i (lt_S_n H0)). hyp.
+    ded (IHts _ H1 i (NatCompat.lt_S_n H0)). hyp.
   Qed.
 
 (***********************************************************************)

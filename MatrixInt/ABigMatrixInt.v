@@ -258,7 +258,7 @@ Module MatrixInt (Export MI : TMatrixInt).
         fold (dot_product (Vtail v') (Vtail w')). 
         fold (dot_product (Vtail v) (Vtail w)).
         unfold Aplus, Peano.gt. apply plus_gt_compat_l.
-        apply IHj with (lt_S_n jp).
+        apply IHj with (NatCompat.lt_S_n jp).
         apply Vforall2_tail. hyp.
         apply Vforall2_tail. hyp.
         rewrite Vnth_tail, lt_nS_Sn. hyp.

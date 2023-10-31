@@ -8,7 +8,7 @@ Definition of log2 (floor) and exp2, and some equalities
 *)
 
 From Coq Require Import Lia PeanoNat.
-From CoLoR Require Import LogicUtil.
+From CoLoR Require Import LogicUtil NatCompat.
 
 Lemma div2_le_n : forall n, Nat.div2 n <= n.
 
@@ -100,8 +100,8 @@ Lemma double_div2 : forall n, S (2 * Nat.div2 n) >= n.
 
 Proof.
 intro n. destruct (Nat.Even_or_Odd n).
-rewrite Nat.Even_double; [| exact H]; unfold Nat.double; lia.
-rewrite Nat.Odd_double; auto; unfold Nat.double; lia.
+rewrite NatCompat.Even_double; [| exact H]; unfold Nat.double; lia.
+rewrite NatCompat.Odd_double; auto; unfold Nat.double; lia.
 Qed.
 
 Lemma exp2_pos : forall n, exp2 n >0.

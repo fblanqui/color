@@ -11,49 +11,11 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil EqUtil BoolUtil RelUtil.
-
 From Coq Require Import Morphisms Euclid Peano Lia.
 From Coq Require Export Arith.
 From Coq Require Import Compare.
 
-
-(***********************************************************************)
-(** Adapt to the removal of some Arith files in 8.19:
-    unidirectional version better suited to implicit arguments: *)
-
-Lemma lt_S_n : forall n m : nat, S n < S m -> n < m.
-Proof. intros n m; now apply Nat.succ_lt_mono. Qed.
-
-Lemma lt_n_S : forall n m : nat, n < m -> S n < S m.
-Proof. intros n m; now apply Nat.succ_lt_mono. Qed.
-
-Lemma gt_le_S : forall n m : nat, m > n -> S n <= m.
-Proof. intros n m; now apply Nat.le_succ_l. Qed.
-
-Lemma le_lt_n_Sm : forall n m : nat, n <= m -> n < S m.
-Proof. intros n m; now apply Nat.lt_succ_r. Qed.
-
-Lemma le_plus_minus : forall n m : nat, n <= m -> m = n + (m - n).
-Proof. intros n m H; now rewrite Nat.add_comm, Nat.sub_add. Qed.
-
-Lemma le_plus_minus_r : forall n m : nat, n <= m -> n + (m - n) = m.
-Proof. intros n m H; now rewrite Nat.add_comm, Nat.sub_add. Qed.
-
-Lemma le_lt_or_eq : forall n m : nat, n <= m -> n < m \/ n = m.
-Proof. intros n m H; now apply Nat.lt_eq_cases. Qed.
-
-Lemma lt_n_Sm_le : forall n m : nat, n < S m -> n <= m.
-Proof. intros n m H; now apply Nat.lt_succ_r. Qed.
-
-Lemma lt_le_S : forall n m : nat, n < m -> S n <= m.
-Proof. intros n m H; now apply Nat.le_succ_l. Qed.
-
-Lemma lt_not_le : forall n m : nat, n < m -> ~ m <= n.
-Proof. intros n m H; now apply Nat.lt_nge. Qed.
-
-Lemma le_not_lt : forall n m : nat, n <= m -> ~ m < n.
-Proof. intros n m H; now apply Nat.le_ngt. Qed.
+From CoLoR Require Import LogicUtil EqUtil BoolUtil NatCompat RelUtil.
 
 (***********************************************************************)
 (** Declare implicit arguments. *)

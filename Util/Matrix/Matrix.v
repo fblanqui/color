@@ -123,7 +123,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     ex (Vnil (A:=vec n)). intros i j i_0 j_n.
     exfalso. exact (Nat.nlt_0_r i_0).
     (* case m > 0 *)
-    set (gen' := fun i j H => gen (S i) j (lt_n_S H)).
+    set (gen' := fun i j H => gen (S i) j (NatCompat.lt_n_S H)).
     destruct (IHm n gen') as [Mtl Mtl_spec].
     set (gen_1 := fun j => gen 0 j (Nat.lt_0_succ m)).
     set (Mhd := Vbuild gen_1).
@@ -133,7 +133,7 @@ Module Matrix (OSRT : OrdSemiRingType).
     destruct i; unfold get_elem; simpl.
     rewrite Mhd_spec. unfold gen_1. rewrite (le_unique (Nat.lt_0_succ m) i_Sm). refl.
     unfold get_elem in Mtl_spec. rewrite Mtl_spec.
-    unfold gen'. rewrite (le_unique (lt_n_S (lt_S_n i_Sm)) i_Sm). refl.
+    unfold gen'. rewrite (le_unique (NatCompat.lt_n_S (NatCompat.lt_S_n i_Sm)) i_Sm). refl.
   Defined.
 
   Definition mat_build m n gen : matrix m n := proj1_sig (mat_build_spec gen).

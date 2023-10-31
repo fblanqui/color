@@ -910,7 +910,7 @@ inversion H; subst.
 simpl; lia.
 destruct (find_first l).
 inversion H; subst.
-simpl; apply lt_n_S; apply IHl; auto.
+simpl; apply NatCompat.lt_n_S; apply IHl; auto.
 discr.
 Qed.
 

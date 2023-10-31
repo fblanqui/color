@@ -122,10 +122,10 @@ apply orb_prop in H.
 destruct H.
 unfold dot_product in IHn.
 rewrite IHn in H; repeat destruct H.
-exists (S x); exists (lt_n_S x0); clear IHn.
+exists (S x); exists (NatCompat.lt_n_S x0); clear IHn.
 
 rewrite Hv, Hw. simpl.
-assert (lt_S_n (lt_n_S x0) = x0). apply lt_unique. rewrite H0. hyp.
+assert (NatCompat.lt_S_n (NatCompat.lt_n_S x0) = x0). apply lt_unique. rewrite H0. hyp.
 
 exists 0; exists (Nat.lt_0_succ n); rewrite Hv, Hw; auto.
 unfold Amult in *; auto with *.
@@ -141,7 +141,7 @@ auto.
 
 left.
 rewrite Hv, Hw in H. simpl in H.
-apply Is_true_eq_left. rewrite IHn. exists x. exists (lt_S_n x0). hyp.
+apply Is_true_eq_left. rewrite IHn. exists x. exists (NatCompat.lt_S_n x0). hyp.
 Qed.
 
 Lemma existandb_matmult : forall x y,

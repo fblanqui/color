@@ -354,9 +354,9 @@ Section typing.
     rename h into u. simpl. destruct T as [b|A B]; simpl in hn. lia.
     apply IHus with (hn := le_S_n hn).
     apply tr_app with A. hyp. gen (g _ (Nat.lt_0_succ n)). simpl. auto.
-    intros i hi. gen (g _ (lt_n_S hi)). simpl.
-    rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2 := hi).
-    rewrite lt_unique with (h1 := lt_S_n _)
+    intros i hi. gen (g _ (NatCompat.lt_n_S hi)). simpl.
+    rewrite lt_unique with (h1 := NatCompat.lt_S_n (NatCompat.lt_n_S hi)) (h2 := hi).
+    rewrite lt_unique with (h1 := NatCompat.lt_S_n _)
                              (h2 := Nat.lt_le_trans hi (le_S_n hn)). auto.
   Qed.
 

@@ -1598,10 +1598,10 @@ intros b [b_eq | [b_eq | b_in_nil]].
 subst b. apply le_n_S; apply (Nat.max_case nl1 nl2).
 refine (Nat.le_trans _ _ _ _ (Nat.le_max_l _ _)); destruct nt1 as [ | nt1].
 inversion H1.
-simpl; apply le_n_S; apply Nat.le_add_l.
+simpl; apply le_n_S; apply NatCompat.le_add_l.
 refine (Nat.le_trans _ _ _ _ (Nat.le_max_r _ _)); destruct nt2 as [ | nt2].
 inversion H2.
-simpl; apply le_n_S; apply Nat.le_add_l.
+simpl; apply le_n_S; apply NatCompat.le_add_l.
 subst b; apply (Nat.max_case nt1 nt2).
 simpl; apply le_n_S; refine (Nat.le_trans _ _ _ _ (Nat.le_max_l _ _)); apply Nat.le_add_r.
 simpl; apply le_n_S; refine (Nat.le_trans _ _ _ _ (Nat.le_max_r _ _)); apply Nat.le_add_r.

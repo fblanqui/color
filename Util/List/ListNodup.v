@@ -69,7 +69,7 @@ Section S.
     apply Nat.le_trans with (S (length (remove eq_dec a l'))).
     apply le_n_S. apply IHl. tauto. apply incl_remove. tauto.
     apply incl_cons_l_incl with a. hyp.
-    apply lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. hyp.
+    apply NatCompat.lt_le_S. apply In_length_remove. apply incl_cons_l_in with l. hyp.
   Qed.
 
   Lemma nodup_last : forall (a : A) l,

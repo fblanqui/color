@@ -141,7 +141,7 @@ apply Zplus_le_lt_compat.
    intro vi. rewrite (VO_eq vi). simpl. hyp.
    intros i' Hrec vi. rewrite (VSn_eq vi). simpl Vapp.
    simpl Vmap. simpl Vnth. gen (Hrec (Vtail vi)). clear Hrec. intro H'.
-   assert (H'' : i_lt_n (eq_refl (i' + S j)%nat) = lt_S_n
+   assert (H'' : i_lt_n (eq_refl (i' + S j)%nat) = NatCompat.lt_S_n
      (@i_lt_n (S (i' + S j)) (S i') _ (eq_refl (S (i' + S j))))).
    apply lt_unique.
    rewrite <- H''. hyp.
