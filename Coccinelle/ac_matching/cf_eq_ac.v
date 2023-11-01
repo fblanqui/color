@@ -49,7 +49,7 @@ intros v l1 l2 _ P; simpl in P;
 destruct l1 as [ | t1 l1]; [left; trivial | idtac];
 destruct l2 as [ | t2 l2]; [right; left; trivial | idtac];
 generalize (list_permut.permut_length P); rewrite length_app; simpl;
-rewrite plus_comm; intro; discriminate.
+rewrite Nat.add_comm; intro; discriminate.
 (* t = Term g l *)
 intros g l IHl l1 l2 Wt; simpl.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g; subst g | intro f_diff_g]; intro P'.
@@ -200,7 +200,7 @@ apply list_permut_app_app.
 assert ( Ll := list_permut.permut_length P'); clear P';
 destruct l1 as [ | t1 l1]; [left; trivial | idtac];
 destruct l2 as [ | t2 l2]; [right; left; trivial | idtac];
-rewrite length_app in Ll; simpl in Ll; rewrite plus_comm in Ll; simpl in Ll;
+rewrite length_app in Ll; simpl in Ll; rewrite Nat.add_comm in Ll; simpl in Ll;
 discriminate.
 Qed.
 
@@ -489,7 +489,7 @@ Theorem cf_eq_ac :
 Proof.
 intro t1; pattern t1; apply term_rec2; clear t1; induction n as [ | n].
 intros t1 St1; absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t1); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t1); trivial; apply size_ge_one.
 intros [v1 | f1 l1] St1 [v2 | f l2] Wt1 Wt2 H;
 [simpl in H; rewrite H; unfold ac; apply th_refl | discriminate | discriminate | idtac].
 assert (St2 : size (Term f l2) <= S n). 
@@ -509,16 +509,16 @@ assert (Wa1 := Wl1 a1 (or_introl _ (eq_refl _)));
 assert (Wa2 := Wl1 a2 (or_intror _ (or_introl _ (eq_refl _))));
 assert (Wa3 := Wl2 a3 (or_introl _ (eq_refl _)));
 assert (Wa4 := Wl2 a4 (or_intror _ (or_introl _ (eq_refl _))));
-simpl in St1; rewrite plus_0_r in St1;
-simpl in St2; rewrite plus_0_r in St2.
+simpl in St1; rewrite Nat.add_0_r in St1;
+simpl in St2; rewrite Nat.add_0_r in St2.
 assert (Sa1 : size a1 <= n).
-apply le_trans with (size a1 + size a2); auto with arith.
+apply Nat.le_trans with (size a1 + size a2); auto with arith.
 assert (Sa2 : size a2 <= n).
-apply le_trans with (size a1 + size a2); auto with arith.
+apply Nat.le_trans with (size a1 + size a2); auto with arith.
 assert (Sa3 : size a3 <= n).
-apply le_trans with (size a3 + size a4); auto with arith.
+apply Nat.le_trans with (size a3 + size a4); auto with arith.
 assert (Sa4 : size a4 <= n).
-apply le_trans with (size a3 + size a4); auto with arith.
+apply Nat.le_trans with (size a3 + size a4); auto with arith.
 elim (ac_syntactic 
 (flatten f (canonical_form a1 :: nil))
 (flatten f (canonical_form a2 :: nil))
@@ -599,16 +599,16 @@ assert (Wa1 := Wl1 a1 (or_introl _ (eq_refl _)));
 assert (Wa2 := Wl1 a2 (or_intror _ (or_introl _ (eq_refl _))));
 assert (Wa3 := Wl2 a3 (or_introl _ (eq_refl _)));
 assert (Wa4 := Wl2 a4 (or_intror _ (or_introl _ (eq_refl _))));
-simpl in St1; rewrite plus_0_r in St1;
-simpl in St2; rewrite plus_0_r in St2.
+simpl in St1; rewrite Nat.add_0_r in St1;
+simpl in St2; rewrite Nat.add_0_r in St2.
 assert (Sa1 : size a1 <= n).
-apply le_trans with (size a1 + size a2); auto with arith.
+apply Nat.le_trans with (size a1 + size a2); auto with arith.
 assert (Sa2 : size a2 <= n).
-apply le_trans with (size a1 + size a2); auto with arith.
+apply Nat.le_trans with (size a1 + size a2); auto with arith.
 assert (Sa3 : size a3 <= n).
-apply le_trans with (size a3 + size a4); auto with arith.
+apply Nat.le_trans with (size a3 + size a4); auto with arith.
 assert (Sa4 : size a4 <= n).
-apply le_trans with (size a3 + size a4); auto with arith.
+apply Nat.le_trans with (size a3 + size a4); auto with arith.
 elim (@list_permut.permut_length_2 _ term (@eq term) (canonical_form a1) (canonical_form a2)
 (canonical_form a3) (canonical_form a4)).
 intros [D1 D2]; apply trans_clos_is_trans with (Term f (a3 :: a2 :: nil)).
@@ -633,7 +633,7 @@ apply general_context;
 generalize (well_formed_unfold Wt1); intros [Wl1 _];
 generalize (well_formed_unfold Wt2); intros [Wl2 _].
 assert (Sl1 : forall t1, In t1 l1 -> size t1 <= n).
-intros t1 In_t1; apply le_S_n; apply lt_le_trans with (size (Term f l1)); trivial; 
+intros t1 In_t1; apply le_S_n; apply Nat.lt_le_trans with (size (Term f l1)); trivial; 
 apply size_direct_subterm; trivial.
 generalize l2 H Wl2 l1_diff_l2; clear St1 Wt1 l2 Wt2 St2 H Wl2 l1_diff_l2;
 induction l1 as [ | t1 l1]; intros l2 H Wl2; destruct l2 as [ | t2 l2]; simpl; trivial.

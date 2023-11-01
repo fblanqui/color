@@ -67,10 +67,10 @@ Section S.
 
   Proof.
     induction l; intros; simpl in H0. exists (nil : list A). simpl.
-    pose (incl_nil (nil : list A)). pose (le_O_n 0). tauto. 
+    pose (incl_nil (nil : list A)). pose (Nat.le_0_l 0). tauto. 
     destruct (IHl a). tauto.
     destruct (H y a). exists (nil : list A). simpl.
-    pose (le_O_n (S (length l))). pose (incl_nil (a::l)). rewrite H2. tauto. 
+    pose (Nat.le_0_l (S (length l))). pose (incl_nil (a::l)). rewrite H2. tauto. 
     destruct (In_midex H x x0). destruct (In_elim_right H x x0). hyp. 
     destruct H4. exists x2. split. tauto. split.
     intro. absurd (In y x0). tauto. 
@@ -107,7 +107,7 @@ Section S.
   Proof.
     induction l.
     intros. simpl in H0. lia.
-    intros. simpl in H. simpl in H0. gen (lt_n_Sm_le H0); intro.
+    intros. simpl in H. simpl in H0. gen (NatCompat.lt_n_Sm_le H0); intro.
     simpl. induction k. induction l. simpl. simpl in H. intuition.
     simpl. simpl in H. intuition.
     clear IHk. apply (IHl a y k). intuition. lia.
@@ -156,8 +156,8 @@ Section S.
   Lemma bpath_n_Sn : forall n x y, bpath n x y -> bpath (S n) x y.
 
   Proof.
-    intros. inversion H. apply bp_intro with l. apply le_trans with n. hyp. 
-    apply le_n_Sn. hyp.
+    intros. inversion H. apply bp_intro with l. apply Nat.le_trans with n. hyp. 
+    apply Nat.le_succ_diag_r. hyp.
   Qed.
 
   Lemma bpath_Sn_n_or_Rn : forall n x y,
@@ -166,7 +166,7 @@ Section S.
   Proof.
     intros. inversion H. destruct (le_le_S_dec (length l) n). 
     constructor. apply bp_intro with l; hyp. constructor 2. 
-    destruct l. simpl in l0. pose (le_Sn_O n l0). tauto. exists a.
+    destruct l. simpl in l0. pose (Nat.nle_succ_0 n l0). tauto. exists a.
     simpl in H0, H1.
     split. tauto. apply bp_intro with l. apply le_S_n. hyp. tauto.
   Qed.

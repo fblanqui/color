@@ -242,9 +242,9 @@ exists (x0::x2). simpl. case (lt_ge_dec x0 (arity f)); intro.
 rewrite (lt_unique l x1). hyp. lia.
 simpl. tauto.
 intros t n ts ht hts. simpl vars_vec. rewrite in_app. intros [h|h].
-destruct (ht h). exists 0. exists (lt_O_Sn n). exists x0. simpl. hyp.
-destruct (hts h). do 2 destruct H. exists (S x0). exists (lt_n_S x1).
-exists x2. simpl. rewrite (lt_unique (lt_S_n (lt_n_S x1)) x1). hyp.
+destruct (ht h). exists 0. exists (Nat.lt_0_succ n). exists x0. simpl. hyp.
+destruct (hts h). do 2 destruct H. exists (S x0). exists (NatCompat.lt_n_S x1).
+exists x2. simpl. rewrite (lt_unique (NatCompat.lt_S_n (NatCompat.lt_n_S x1)) x1). hyp.
 Qed.
 
 End S.

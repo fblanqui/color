@@ -15,7 +15,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListPermutation TermsPos ListUtil
      ListExtras LogicUtil.
-From Coq Require Import Compare_dec Max Setoid Morphisms Lia.
+From Coq Require Import Compare_dec Setoid Morphisms Lia PeanoNat.
 From Coq Require Psatz.
 
 Module TermsConv (Sig : TermsSig.Signature).
@@ -120,7 +120,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros i j.
-    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Max.max i j))). 2-3: firstorder auto with zarith.
+    apply (@build_envSub (fun x y => x = i /\ y = j) (S (Nat.max i j))). 2-3: firstorder auto with zarith.
     intros i0 j0; destruct (eq_nat_dec i0 i); destruct (eq_nat_dec j0 j); fo.
     intros i0 j0 [ H H0 ]; split.
     rewrite H; auto with arith.
@@ -155,9 +155,9 @@ Module TermsConv (Sig : TermsSig.Signature).
     right; intros [_ [[A E1i] _]]; inversion v; inversion E1i; try_solve.
     right; intros [ij _]; lia.
     lia. lia.
-    apply max_case2; [apply (nth_some E1 i H0) | apply (nth_some E2 i H1)].
+    apply Nat.max_case; [apply (nth_some E1 i H0) | apply (nth_some E2 i H1)].
     rewrite <- H.
-    apply max_case2; [apply (nth_some E1 i H0) | apply (nth_some E2 i H1)].
+    apply Nat.max_case; [apply (nth_some E1 i H0) | apply (nth_some E2 i H1)].
   Defined.
 
   Definition sumEnvSubst : forall Q Q1 Q2, Q |=> Q1 -> Q |=> Q2 -> EnvSubst.
@@ -165,7 +165,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Proof.
     intros Q Q1 Q2 QQ1 QQ2.
     apply (@build_envSub (fun (x y: nat) => envSub Q1 x y \/ envSub Q2 x y) 
-      (Max.max (size Q1) (size Q2))).
+      (Nat.max (size Q1) (size Q2))).
     intros i j; destruct (envSub_dec Q1 i j); destruct (envSub_dec Q2 i j);
       fo.
     intros i j j' D1 D2; destruct D1; destruct D2; try_solve; 
@@ -212,7 +212,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Proof.
     intros Q i j ok.
-    set (s := Max.max (size Q) (Max.max (S i) (S j))).
+    set (s := Nat.max (size Q) (Nat.max (S i) (S j))).
     apply (@build_envSub (fun (x y: nat) => 
         envSub Q x y \/ (x = i /\ y = j)) s).
 
@@ -805,7 +805,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     Proper (eq ==> eq ==> envSubst_eq ==> iff) conv_env.
 
   Proof.
-    intros a b ab c d cd E F EF. subst b d. Set Firstorder Depth 5. fo.
+    intros a b ab c d cd E F EF. subst b d. Set Firstorder Depth 6. fo.
   Qed.
 
   Lemma conv_env_refl : forall M, conv_env M M (idEnvSubst (length (env M))).
@@ -823,7 +823,7 @@ Module TermsConv (Sig : TermsSig.Signature).
   Proof.
     intros; destruct mn; destruct np.
     intros x y xy A; destruct xy as [z [xz zy]].
-    split; intro. Set Firstorder Depth 5.
+    split; intro. Set Firstorder Depth 6.
     set (hint := H x z xz); fo.
     set (hint := H0 z y zy); fo.
   Qed. 
@@ -1873,12 +1873,12 @@ Module TermsConv (Sig : TermsSig.Signature).
     absurd (j < size Q).
     destruct H0; rewrite H2.
     unfold v; intro w.
-    set (w' := le_max_l (size Q) (max i (length E))); lia.
+    set (w' := Nat.le_max_l (size Q) (max i (length E))); lia.
     set (w := sizeOk Q i' j H1); fo.
     absurd (j < size Q).
     destruct H1; rewrite H2.
     unfold v; intro w.
-    set (w' := le_max_l (size Q) (max i (length E))); lia.
+    set (w' := Nat.le_max_l (size Q) (max i (length E))); lia.
     set (w := sizeOk Q i0 j H0); fo.
     apply (envSub_Rok Q) with j; trivial.
     assert (s_ok: forall i j, f i j -> i < S v /\ j < S v).
@@ -2379,7 +2379,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     apply env_sum_ly_rn.
     unfold newVarEnv, VarD.
     rewrite nth_app_right; autorewrite with datatypes using auto.
-    rewrite <- Minus.minus_n_n; trivial.
+    rewrite Nat.sub_diag; trivial.
     left; apply nth_beyond; auto.
     assert (envOk: env (buildT RL) = env (buildT RR)); trivial.
     assert (Larr: isArrowType (type (buildT RL))); trivial.

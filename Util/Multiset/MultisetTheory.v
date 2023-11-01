@@ -11,7 +11,7 @@ multisets.
 
 Set Implicit Arguments.
 
-From Coq Require Import Min List Setoid Morphisms.
+From Coq Require Import List Setoid Morphisms.
 From CoLoR Require Import RelExtras MultisetCore ListPermutation NatUtil
      ListExtras LogicUtil.
 
@@ -713,11 +713,11 @@ Module Multiset (MC : MultisetCore).
       case (Compare_dec.le_lt_dec (x/L)%msets (x/U)%msets); intro l_u.
       (* u >= l *)
       assert ((x/R)%msets >= (x/D)%msets); [lia | idtac].
-      rewrite (Min.min_r (x/R)%msets (x/D)%msets); lia.
+      rewrite (Nat.min_r (x/R)%msets (x/D)%msets); lia.
       (* l > u *)
       assert ((x/R)%msets < (x/D)%msets); [lia | idtac].
-      rewrite Minus.not_le_minus_0.
-      rewrite (Min.min_l (x/R)%msets (x/D)%msets); lia.
+      rewrite (proj2 (Nat.sub_0_le _ _)).
+      rewrite (Nat.min_l (x/R)%msets (x/D)%msets); lia.
       lia.
     Qed.
 

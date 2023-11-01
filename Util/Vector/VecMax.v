@@ -17,8 +17,6 @@ Notation nats := (vector nat).
 (***********************************************************************)
 (** max *)
 
-From Coq Require Import Max.
-
 Fixpoint Vmax n (v : nats n) : nat :=
   match v with
     | Vnil => O
@@ -29,7 +27,7 @@ Lemma Vmax_in : forall x n (v : nats n), Vin x v -> x <= Vmax v.
 
 Proof.
 induction v; simpl; intros. contr. destruct H. subst h.
-apply le_max_intro_l. apply le_refl. apply le_max_intro_r. auto.
+apply le_max_intro_l. apply Nat.le_refl. apply le_max_intro_r. auto.
 Qed.
 
 Arguments Vmax_in [x n v] _.
@@ -47,7 +45,7 @@ Lemma Vmax_app_cons : forall n1 (v1 : nats n1) p n2 (v2 : nats n2),
 
 Proof.
 intros. elim v1. simpl. auto with arith.
-intros a n' w H. simpl. eapply le_trans. apply H. auto with arith.
+intros a n' w H. simpl. eapply Nat.le_trans. apply H. auto with arith.
 Qed.
 
 Lemma Vmax_forall : forall n (v : nats n) p,
@@ -56,8 +54,8 @@ Lemma Vmax_forall : forall n (v : nats n) p,
 Proof.
 intros n v p. elim v. intro. simpl. auto.
 simpl. intros h n' t Hrec H. split.
-eapply le_trans. apply (le_max_l h (Vmax t)). hyp.
-apply (Hrec (le_trans (le_max_r h (Vmax t)) H)).
+eapply Nat.le_trans. apply (Nat.le_max_l h (Vmax t)). hyp.
+apply (Hrec (Nat.le_trans (Nat.le_max_r h (Vmax t)) H)).
 Qed.
 
 Arguments Vmax_forall [n v p] _.
@@ -71,8 +69,6 @@ Qed.
 
 (***********************************************************************)
 (** min *)
-
-From Coq Require Import Min.
 
 Fixpoint Vmin n (v : nats n) : nat :=
   match v with

@@ -134,10 +134,10 @@ intro Abs; inversion Abs.
 intros t l _; simpl; left; reflexivity.
 intros p l; case l; clear l.
 intro Abs; inversion Abs.
-intros t l LL; simpl; right; generalize (projection_is_subterm p l (lt_S_n _ _ LL)).
+intros t l LL; simpl; right; generalize (projection_is_subterm p l (proj2 (Nat.succ_lt_mono _ _) LL)).
 case (nth_error l p).
 intros s s_in_l; exact s_in_l.
-intros Abs; apply False_rect; apply (lt_irrefl (size (Term f l))).
+intros Abs; apply False_rect; apply (Nat.lt_irrefl (size (Term f l))).
 apply size_direct_subterm; assumption.
 Qed.
 
@@ -272,7 +272,7 @@ apply comp_ok; assumption.
 intros nx nz Hx Hz.
 destruct x as [ux vx]; destruct y as [uy vy]; destruct H1 as [sigma [sigma' [H1 [H2 H3]]]].
 destruct (comp_def _ _ H1) as [ny Hy].
-apply le_trans with ny.
+apply Nat.le_trans with ny.
 apply comp_ok with (ux,vx) (uy,vy).
 exists sigma; exists sigma'; split; [ | split]; assumption.
 assumption.
@@ -337,31 +337,31 @@ subst l3 l4.
 apply (refl_trans_clos_one_step_list_refl_trans_clos_one_step _ _ _ _ _ _ (sym_eq L3) H).
 intros H3 _.
 absurd (length l41 < length l41).
-apply lt_irrefl.
+apply Nat.lt_irrefl.
 assert (L : length l4 = length l3).
 inversion H.
 trivial.
 apply rwr_list_length_eq with (one_step R); assumption.
 assert (L' := nth_error_none _ _ H3).
 rewrite <- L4 in L'; rewrite <- L in L'; subst l4. 
-apply lt_le_trans with (length (l41 ++ s4 :: l42)); trivial.
-rewrite length_app; rewrite plus_comm; simpl.
-apply le_n_S; apply le_plus_r.
+apply Nat.lt_le_trans with (length (l41 ++ s4 :: l42)); trivial.
+rewrite length_app; rewrite Nat.add_comm; simpl.
+apply le_n_S; apply NatCompat.le_add_l.
 intros H4 _.
 generalize (nth_error_ok_in (P h) l3).
 case_eq (nth_error l3 (P h)).
 intros s3 H3 K; destruct (K _ (eq_refl _)) as [l31 [l32 [L3 H3']]]; clear K H3.
 absurd (length l31 < length l31).
-apply lt_irrefl.
+apply Nat.lt_irrefl.
 assert (L : length l4 = length l3).
 inversion H.
 trivial.
 apply rwr_list_length_eq with (one_step R); assumption.
 assert (L' := nth_error_none _ _ H4).
 rewrite <- L3 in L'; rewrite L in L'; subst l3. 
-apply lt_le_trans with (length (l31 ++ s3 :: l32)); trivial.
-rewrite length_app; rewrite plus_comm; simpl.
-apply le_n_S; apply le_plus_r.
+apply Nat.lt_le_trans with (length (l31 ++ s3 :: l32)); trivial.
+rewrite length_app; rewrite Nat.add_comm; simpl.
+apply le_n_S; apply NatCompat.le_add_l.
 intros H3 _.
 inversion H.
 left.
@@ -413,7 +413,7 @@ apply Hdp with n4; split; [ | assumption].
 destruct (comp_def _ _ cdp_uv0) as [n0 K0].
 replace n4 with n0.
 assumption.
-apply le_antisym.
+apply Nat.le_antisymm.
 apply (trans_comp_ok _ _ K1'); assumption.
 apply (trans_comp_ok _ _ K2'); assumption.
 apply refl_trans_incl with (one_step R).

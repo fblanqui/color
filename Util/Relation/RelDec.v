@@ -72,7 +72,7 @@ Section S.
       apply bp_intro with (nil : list A). trivial. simpl. hyp. constructor 2.
       intro.
       inversion H0. destruct l0. simpl in H2. contr. simpl in H1. 
-      exact (le_Sn_O (length l0) H1). destruct (IHn H X x y). constructor. 
+      exact (Nat.nle_succ_0 (length l0) H1). destruct (IHn H X x y). constructor. 
       apply bpath_n_Sn. hyp.
       assert ({z : A | In z l /\ R x z /\ bpath R n z y}
         +{~exists z : A, In z l /\ R x z /\ bpath R n z y}).
@@ -92,7 +92,7 @@ Section S.
       apply bp_intro with (nil : list A). trivial. simpl. hyp. constructor 2.
       intro.
       inversion H2. destruct l0. simpl in H4. contr. simpl in H3. 
-      exact (le_Sn_O (length l0) H3). destruct (IHn H H0 x y). constructor. 
+      exact (Nat.nle_succ_0 (length l0) H3). destruct (IHn H H0 x y). constructor. 
       apply bpath_n_Sn. hyp. 
       assert ((exists z : A,  In z l /\ R x z /\  bpath R n z y) \/
         (~exists z : A,  In z l /\ R x z /\  bpath R n z y)).

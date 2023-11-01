@@ -201,7 +201,7 @@ R-sequence *)
     assert (ha : a < arity f0). rewrite <- (h2 0). destruct (hk (g 0)). hyp.
     (* monotony of g *)
     assert (me : forall x y, x <= y -> g x <= g y). intros x y xy.
-    destruct (lt_dec x y). ded (monS lt_trans h1). ded (H _ _ l). lia.
+    destruct (lt_dec x y). ded (monS Nat.lt_trans h1). ded (H _ _ l). lia.
     assert (x=y). lia. subst. refl.
     (* forall j, j < g 0 -> k j <> a *)
     assert (hg0 : forall j, j < g 0 -> k j <> a).
@@ -226,9 +226,9 @@ R-sequence *)
       Vnth (v (S (g i))) ha = Vnth (v (S (g i) + l)) ha).
     intro hi. assert (e : g (S i) = S (g i) + (g (S i) - g i - 1)). lia.
     rewrite e. apply hi. clear e. clear -H; lia.
-    induction l; intro. rewrite plus_0_r. refl.
+    induction l; intro. rewrite Nat.add_0_r. refl.
     assert (hl : l < g (S i) - g i). clear -H0; lia. rewrite (IHl hl).
-    rewrite <- plus_Snm_nSm. simpl. set (x := S (g i + l)).
+    rewrite Nat.add_succ_r. simpl. set (x := S (g i + l)).
     destruct (hk x) as [_ r]. destruct r as [f' [hi [ts [e [w [p1 p2]]]]]].
     rewrite hv in e, p2. Funeqtac. Funeqtac. rewrite H1, H2.
     rewrite Vnth_replace_neq. refl. apply (hg i). unfold x. clear -H0; lia.

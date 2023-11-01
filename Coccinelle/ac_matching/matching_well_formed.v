@@ -187,7 +187,7 @@ replace l1 with (nil ++ l1); trivial; apply well_formed_cf_build_inside with (Va
 assert (In_l2'_In_l2 : forall t, In t l2' -> In t l2).
 intros t In_l2'; rewrite <- (list_permut.in_permut_in P); apply in_or_app; right; trivial.
 apply well_formed_cf_build; trivial.
-apply le_trans with (length l1); trivial; apply le_S_n;
+apply Nat.le_trans with (length l1); trivial; apply le_S_n;
 replace (S (length l1)) with (length (Var v1 :: l1)); trivial;
 apply well_formed_cf_length with g1; trivial.
 intros t In_l2'; apply well_formed_cf_subterms with g1 l2; trivial; apply In_l2'_In_l2; trivial.
@@ -573,5 +573,3 @@ right; right; trivial.
 Qed.
 
 End Make.
-
-

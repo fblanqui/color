@@ -13,7 +13,7 @@ Set Implicit Arguments.
 From CoLoR Require Export AInterpretation.
 From CoLoR Require Import ATerm RelUtil ASubstitution NaryFunction AContext
      VecUtil SN ARelation LogicUtil.
-From Coq Require Import Max Lia.
+From Coq Require Import Lia PeanoNat.
 
 Section S.
 
@@ -98,8 +98,8 @@ Section S.
 
     Proof.
       unfold inclusion, IR, IR'. intros. set (m := max (maxvar x) (maxvar y)).
-      assert (maxvar x <= m). unfold m. apply le_max_l.
-      assert (maxvar y <= m). unfold m. apply le_max_r.
+      assert (maxvar x <= m). unfold m. apply Nat.le_max_l.
+      assert (maxvar y <= m). unfold m. apply Nat.le_max_r.
       assert (term_int xint x = term_int (fval xint (1+m)) x).
       apply term_int_eq_fval_lt. lia. rewrite H2.
       assert (term_int xint y = term_int (fval xint (1+m)) y).

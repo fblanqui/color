@@ -346,25 +346,25 @@ Section typing.
   Lemma tr_apps : forall n (us : Tes n) E t T (hn : n <= arity T),
     tr E t T
     -> (forall i (hi : i < n),
-           tr E (Vnth us hi) (Vnth (inputs T) (lt_le_trans hi hn)))
+           tr E (Vnth us hi) (Vnth (inputs T) (Nat.lt_le_trans hi hn)))
     -> tr E (apps t us) (output T n).
 
   Proof.
     induction us; intros E t T hn ht g. hyp.
     rename h into u. simpl. destruct T as [b|A B]; simpl in hn. lia.
     apply IHus with (hn := le_S_n hn).
-    apply tr_app with A. hyp. gen (g _ (lt_0_Sn n)). simpl. auto.
-    intros i hi. gen (g _ (lt_n_S hi)). simpl.
-    rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2 := hi).
-    rewrite lt_unique with (h1 := lt_S_n _)
-                             (h2 := lt_le_trans hi (le_S_n hn)). auto.
+    apply tr_app with A. hyp. gen (g _ (Nat.lt_0_succ n)). simpl. auto.
+    intros i hi. gen (g _ (NatCompat.lt_n_S hi)). simpl.
+    rewrite lt_unique with (h1 := NatCompat.lt_S_n (NatCompat.lt_n_S hi)) (h2 := hi).
+    rewrite lt_unique with (h1 := NatCompat.lt_S_n _)
+                             (h2 := Nat.lt_le_trans hi (le_S_n hn)). auto.
   Qed.
 
   Lemma tr_apps_fun_inv E f :
     forall n (ts : Tes n) T, tr E (apps (Fun f) ts) T
     -> T = output (typ f) n
        /\ exists nf : n <= arity (typ f), forall i (hi : i < n),
-          tr E (Vnth ts hi) (Vnth (inputs (typ f)) (lt_le_trans hi nf)).
+          tr E (Vnth ts hi) (Vnth (inputs (typ f)) (Nat.lt_le_trans hi nf)).
 
   Proof.
     induction n; intros ts T hT.
@@ -375,7 +375,7 @@ Section typing.
     symmetry in e. destruct (output_arrow_elim e) as [h1 [h2 h3]]. split. hyp.
     ex h2. intros i hi. destruct (lt_dec i n) as [l|l].
     rewrite Vnth_remove_last_intro with (h1:=l). rewrite H. fold us.
-    rewrite (lt_unique (lt_le_trans hi h2) (lt_le_trans l p)). apply h.
+    rewrite (lt_unique (Nat.lt_le_trans hi h2) (Nat.lt_le_trans l p)). apply h.
     assert (i=n). lia. subst i. rewrite <- Vlast_nth with (x := Vhead ts).
     rewrite Vnth_eq with (h2 := h2).
     setoid_rewrite h3.

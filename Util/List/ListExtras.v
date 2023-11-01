@@ -10,7 +10,7 @@ Some additional functions on lists.
 Set Implicit Arguments.
 
 From CoLoR Require Export ListUtil.
-From Coq Require Import Min Permutation Setoid.
+From Coq Require Import Permutation Setoid.
 From CoLoR Require Import NatUtil LogicUtil.
 
 (***********************************************************************)
@@ -910,7 +910,7 @@ inversion H; subst.
 simpl; lia.
 destruct (find_first l).
 inversion H; subst.
-simpl; apply lt_n_S; apply IHl; auto.
+simpl; apply NatCompat.lt_n_S; apply IHl; auto.
 discr.
 Qed.
 

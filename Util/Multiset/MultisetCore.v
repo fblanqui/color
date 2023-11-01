@@ -11,7 +11,7 @@ with specification of operations on multisets.
 Set Implicit Arguments.
 
 From CoLoR Require RelExtras.
-From Coq Require Import Min Relations Psatz.
+From Coq Require Import Relations Psatz.
 
 Declare Scope msets_scope.
 
@@ -103,7 +103,7 @@ Section Multiset_IntersectionAsDifference.
   Definition inter_as_diff x y := diff x (diff x y).
 
   Lemma inter_as_diff_ok : forall M N x,
-    mult x (inter_as_diff M N) = Min.min (mult x M) (mult x N).
+    mult x (inter_as_diff M N) = Nat.min (mult x M) (mult x N).
 
   Proof.
     intros M N x. unfold inter_as_diff. rewrite !diff_mult. lia.

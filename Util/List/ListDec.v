@@ -140,7 +140,7 @@ Section S.
 
   Proof.
     induction l; simpl. discr. case_beq x a. intros. inversion H.
-    rewrite <- minus_n_n. intuition. destruct l. simpl. discr. intros.
+    rewrite Nat.sub_diag. intuition. destruct l. simpl. discr. intros.
     ded (IHl _ H0). assert (exists p', k - i = S p'). exists (k-i-1). lia.
     destruct H2. rewrite H2. assert (k - S i = x0). lia. rewrite <- H3.
     intuition.
@@ -153,7 +153,7 @@ Section S.
     induction l; simpl; intros. discr. case_beq x a.
     exists 0. intuition. rewrite (beq_ko beq_ok) in H0. destruct k.
     inversion H. subst. cong. destruct (IHl _ H). exists (S x0). intuition.
-    rewrite <- plus_Snm_nSm. simpl. apply position_aux_S. hyp.
+    rewrite Nat.add_succ_r. simpl. apply position_aux_S. hyp.
   Qed.
 
 End S.

@@ -12,10 +12,10 @@
 (* RPO definition extended by Sorin Stratulat by considering a
 quasi-ordering for the precedence instead of an ordering. *)
 
-From Coq Require Import Bool Peano List.
+From Coq Require Import Bool Peano List PeanoNat.
 From CoLoR Require Import closure more_list equiv_list list_permut dickson.
 From Coq Require Import Relations Wellfounded Arith Wf_nat Recdef Program Morphisms Lia.
-From CoLoR Require Import term_spec term decidable_set ordered_set.
+From CoLoR Require Import term_spec term decidable_set ordered_set NatCompat.
 
 Import ListNotations.
 
@@ -266,11 +266,11 @@ generalize (well_founded_ltof _ size); unfold ltof; trivial.
 Defined.
 
 Definition size2 s := match s with (s1,s2) => (size s1, size s2) end.
-Definition o_size2 s t := lex beq_nat lt lt (size2 s) (size2 t).
+Definition o_size2 s t := lex Nat.eqb lt lt (size2 s) (size2 t).
 
 Lemma wf_size2 : well_founded o_size2.
 Proof.
-refine (wf_inverse_image _ _ (lex  beq_nat lt lt) size2 _);
+refine (wf_inverse_image _ _ (lex  Nat.eqb lt lt) size2 _);
 apply wf_lex.
 exact beq_nat_ok.
 apply lt_wf.
@@ -281,7 +281,7 @@ Lemma size2_lex1 :
  forall s f l t1 t2, In s l -> o_size2 (s,t1) (Term f l,t2).
 Proof.
 intros s f l t1 t2 s_in_l; unfold o_size2, size2, lex.
-generalize (beq_nat_ok (size s) (size (Term f l))); case (beq_nat (size s) (size (Term f l))); [intro s_eq_t | intro s_lt_t].
+generalize (beq_nat_ok (size s) (size (Term f l))); case (Nat.eqb (size s) (size (Term f l))); [intro s_eq_t | intro s_lt_t].
 absurd (size (Term f l) < size (Term f l)); auto with arith;
 generalize (size_direct_subterm s (Term f l) s_in_l); rewrite s_eq_t; trivial.
 apply (size_direct_subterm s (Term f l) s_in_l).
@@ -292,15 +292,15 @@ Lemma size2_lex1_bis :
 Proof.
 intros a f l t1 t2; unfold o_size2, size2, lex;
 generalize (beq_nat_ok (size (Term f l)) (size (Term f (a :: l)))); 
-case (beq_nat (size (Term f l)) (size (Term f (a :: l)))); [intro s_eq_t | intro s_lt_t].
+case (Nat.eqb (size (Term f l)) (size (Term f (a :: l)))); [intro s_eq_t | intro s_lt_t].
 do 2 rewrite size_unfold in s_eq_t; injection s_eq_t; clear s_eq_t; intro s_eq_t;
 absurd (list_size size l < list_size size l); auto with arith;
-generalize (plus_le_compat_r _ _ (list_size size l) (size_ge_one a));
+generalize (proj1 (Nat.add_le_mono_r _ _ (list_size size l)) (size_ge_one a));
 rewrite <- s_eq_t; trivial.
 do 2 rewrite size_unfold;
-simpl; apply lt_n_S; apply lt_le_trans with (1 + list_size size l);
+simpl; apply Nat.lt_succ_r; apply Nat.lt_le_trans with (1 + list_size size l);
 auto with arith; 
-apply plus_le_compat_r; apply size_ge_one.
+apply Nat.add_le_mono_r; apply size_ge_one.
 Defined.
 
 Lemma size2_lex1_bis_prec_eq : 
@@ -308,15 +308,15 @@ Lemma size2_lex1_bis_prec_eq :
 Proof.
 intros a f g P l t1 t2 f_eq_g; unfold o_size2, size2, lex.
 generalize (beq_nat_ok (size (Term f l)) (size (Term g (a :: l))));
-case (beq_nat (size (Term f l)) (size (Term g (a :: l)))); [intro s_eq_t | intro s_lt_t].
+case (Nat.eqb (size (Term f l)) (size (Term g (a :: l)))); [intro s_eq_t | intro s_lt_t].
 do 2 rewrite size_unfold in s_eq_t; injection s_eq_t; clear s_eq_t; intro s_eq_t;
 absurd (list_size size l < list_size size l); auto with arith;
-generalize (plus_le_compat_r _ _ (list_size size l) (size_ge_one a));
+generalize (proj1 (Nat.add_le_mono_r _ _ (list_size size l)) (size_ge_one a));
 rewrite <- s_eq_t; trivial.
 do 2 rewrite size_unfold;
-simpl; apply lt_n_S; apply lt_le_trans with (1 + list_size size l);
+simpl; apply Nat.lt_succ_r; apply Nat.lt_le_trans with (1 + list_size size l);
 auto with arith; 
-apply plus_le_compat_r; apply size_ge_one.
+apply Nat.add_le_mono_r; apply size_ge_one.
 Defined.
 
 
@@ -325,7 +325,7 @@ Lemma size2_lex2 :
 Proof.
 intros t f l s t_in_l;
 unfold o_size2, size2, lex;
-generalize (beq_nat_ok (size s) (size s)); case (beq_nat (size s) (size s)); [intros _ | intro s_diff_s].
+generalize (beq_nat_ok (size s) (size s)); case (Nat.eqb (size s) (size s)); [intros _ | intro s_diff_s].
 apply size_direct_subterm; trivial.
 apply False_rect; apply s_diff_s; reflexivity.
 Defined.
@@ -335,9 +335,9 @@ Lemma size2_lex2_bis :
 Proof.
 intros a f l s;
 unfold o_size2, size2, lex;
-generalize (beq_nat_ok (size s) (size s)); case (beq_nat (size s) (size s)); [intros _ | intro s_diff_s].
-do 2 rewrite size_unfold; apply plus_lt_compat_l; simpl.
-exact (plus_le_compat_r _ _ (list_size size l) (size_ge_one a)).
+generalize (beq_nat_ok (size s) (size s)); case (Nat.eqb (size s) (size s)); [intros _ | intro s_diff_s].
+do 2 rewrite size_unfold; apply Nat.add_lt_mono_l; simpl.
+exact (proj1 (Nat.add_lt_mono_r _ _ (list_size size l)) (size_ge_one a)).
 apply False_rect; apply s_diff_s; reflexivity.
 Defined.
 
@@ -346,30 +346,30 @@ Lemma size2_lex2_bis_prec_eq :
 Proof.
 intros a f g P l s f_eq_g;
 unfold o_size2, size2, lex;
-generalize (beq_nat_ok (size s) (size s)); case (beq_nat (size s) (size s)); [intros _ | intro s_diff_s].
-do 2 rewrite size_unfold; apply plus_lt_compat_l; simpl.
-exact (plus_le_compat_r _ _ (list_size size l) (size_ge_one a)).
+generalize (beq_nat_ok (size s) (size s)); case (Nat.eqb (size s) (size s)); [intros _ | intro s_diff_s].
+do 2 rewrite size_unfold; apply Nat.add_lt_mono_l; simpl.
+exact (proj1 (Nat.add_lt_mono_r _ _ (list_size size l)) (size_ge_one a)).
 apply False_rect; apply s_diff_s; reflexivity.
 Defined.
 
 Lemma o_size2_trans : transitive _ o_size2.
 Proof.
 intros [x1 x2] [y1 y2] [z1 z2].
-apply (lex_trans beq_nat beq_nat_ok).
+apply (lex_trans Nat.eqb beq_nat_ok).
 intros n m n_lt_m m_lt_n;
-generalize (lt_asym n m n_lt_m m_lt_n); contradiction.
-intros n1 n2 n3; apply lt_trans.
-intros n1 n2 n3; apply lt_trans.
+generalize (Nat.lt_asymm n m n_lt_m m_lt_n); contradiction.
+intros n1 n2 n3; apply Nat.lt_trans.
+intros n1 n2 n3; apply Nat.lt_trans.
 Qed.
 
 Definition size3 s := match s with (s1,s2) => (size s1, size2 s2) end.
 Definition o_size3 s t := 
-  lex beq_nat lt (lex beq_nat lt lt) (size3 s) (size3 t).
+  lex Nat.eqb lt (lex Nat.eqb lt lt) (size3 s) (size3 t).
 
 Lemma wf_size3 : well_founded o_size3.
 Proof.
 refine (wf_inverse_image _ _ 
-  (lex  beq_nat lt (lex  beq_nat lt lt)) size3 _).
+  (lex  Nat.eqb lt (lex  Nat.eqb lt lt)) size3 _).
 apply wf_lex; 
 [ exact beq_nat_ok 
 | apply lt_wf 
@@ -380,7 +380,7 @@ Lemma size3_lex1 :
  forall s f l t1 u1 t2 u2, In s l -> o_size3 (s,(t1,u1)) (Term f l,(t2,u2)).
 Proof.
 intros s f l t1 u1 t2 u2 s_in_l; unfold o_size3, size3, size2, lex.
-generalize (beq_nat_ok (size s) (size (Term f l))); case (beq_nat (size s) (size (Term f l))); [intro s_eq_t | intro s_lt_t].
+generalize (beq_nat_ok (size s) (size (Term f l))); case (Nat.eqb (size s) (size (Term f l))); [intro s_eq_t | intro s_lt_t].
 absurd (size (Term f l) < size (Term f l)); auto with arith;
 generalize (size_direct_subterm s (Term f l) s_in_l); rewrite s_eq_t; trivial.
 apply (size_direct_subterm s (Term f l) s_in_l).
@@ -391,15 +391,15 @@ Lemma size3_lex1_bis :
 Proof.
 intros a f l t1 u1 t2 u2; unfold o_size3, size3, lex;
 generalize (beq_nat_ok (size (Term f l)) (size (Term f (a :: l)))); 
-case (beq_nat (size (Term f l)) (size (Term f (a :: l)))); [intro s_eq_t | intro s_lt_t].
+case (Nat.eqb (size (Term f l)) (size (Term f (a :: l)))); [intro s_eq_t | intro s_lt_t].
 do 2 rewrite size_unfold in s_eq_t; injection s_eq_t; clear s_eq_t; intro s_eq_t;
 absurd (list_size size l < list_size size l); auto with arith;
-generalize (plus_le_compat_r _ _ (list_size size l) (size_ge_one a));
+generalize (proj1 (Nat.add_le_mono_r _ _ (list_size size l)) (size_ge_one a));
 rewrite <- s_eq_t; trivial.
 do 2 rewrite size_unfold;
-simpl; apply lt_n_S; apply lt_le_trans with (1 + list_size size l);
+simpl; apply Nat.lt_succ_r; apply Nat.lt_le_trans with (1 + list_size size l);
 auto with arith; 
-apply plus_le_compat_r; apply size_ge_one.
+apply Nat.add_le_mono_r; apply size_ge_one.
 Defined.
 
 
@@ -408,15 +408,15 @@ Lemma size3_lex1_bis_prec_eq :
 Proof.
 intros a f g P l t1 u1 t2 u2 f_eq_g ; unfold o_size3, size3, lex;
 generalize (beq_nat_ok (size (Term f l)) (size (Term f (a :: l)))); 
-case (beq_nat (size (Term f l)) (size (Term f (a :: l)))); [intro s_eq_t | intro s_lt_t].
+case (Nat.eqb (size (Term f l)) (size (Term f (a :: l)))); [intro s_eq_t | intro s_lt_t].
 do 2 rewrite size_unfold in s_eq_t; injection s_eq_t; clear s_eq_t; intro s_eq_t;
 absurd (list_size size l < list_size size l); auto with arith;
-generalize (plus_le_compat_r _ _ (list_size size l) (size_ge_one a));
+generalize (proj1 (Nat.add_le_mono_r _ _ (list_size size l)) (size_ge_one a));
 rewrite <- s_eq_t; trivial.
 do 2 rewrite size_unfold;
-simpl; apply lt_n_S; apply lt_le_trans with (1 + list_size size l);
+simpl; apply Nat.lt_succ_r; apply Nat.lt_le_trans with (1 + list_size size l);
 auto with arith; 
-apply plus_le_compat_r; apply size_ge_one.
+apply Nat.add_le_mono_r; apply size_ge_one.
 Defined.
 
 Lemma size3_lex2 :
@@ -424,8 +424,8 @@ Lemma size3_lex2 :
 Proof.
 intros t f l s u1 u2 t_in_l;
 unfold o_size3, size3, size2, lex.
-generalize (beq_nat_ok (size s) (size s)); case (beq_nat (size s) (size s)); [intros _ | intro s_diff_s].
-generalize (beq_nat_ok (size t) (size (Term f l))); case (beq_nat (size t) (size (Term f l))); [intro t_eq_fl | intro t_lt_fl].
+generalize (beq_nat_ok (size s) (size s)); case (Nat.eqb (size s) (size s)); [intros _ | intro s_diff_s].
+generalize (beq_nat_ok (size t) (size (Term f l))); case (Nat.eqb (size t) (size (Term f l))); [intro t_eq_fl | intro t_lt_fl].
 absurd (size (Term f l) < size (Term f l)); auto with arith;
 generalize (size_direct_subterm t (Term f l) t_in_l); rewrite t_eq_fl; trivial.
 apply (size_direct_subterm t (Term f l) t_in_l).
@@ -437,8 +437,8 @@ Lemma size3_lex3 :
 Proof.
 intros u f l s t u_in_l;
 unfold o_size3, size3, size2, lex;
-generalize (beq_nat_ok (size s) (size s)); case (beq_nat (size s) (size s)); [intros _ | intro s_diff_s].
-generalize (beq_nat_ok (size t) (size t)); case (beq_nat (size t) (size t)); [intros _ | intro t_diff_t].
+generalize (beq_nat_ok (size s) (size s)); case (Nat.eqb (size s) (size s)); [intros _ | intro s_diff_s].
+generalize (beq_nat_ok (size t) (size t)); case (Nat.eqb (size t) (size t)); [intros _ | intro t_diff_t].
 apply (size_direct_subterm u (Term f l) u_in_l).
 apply False_rect; apply t_diff_t; reflexivity.
 apply False_rect; apply s_diff_s; reflexivity.
@@ -447,16 +447,16 @@ Defined.
 Lemma o_size3_trans : transitive _ o_size3.
 Proof.
 intros [x1 x2] [y1 y2] [z1 z2].
-apply (@lex_trans _ _ beq_nat lt (lex beq_nat lt lt) beq_nat_ok).
+apply (@lex_trans _ _ Nat.eqb lt (lex Nat.eqb lt lt) beq_nat_ok).
 intros n m n_lt_m m_lt_n;
-generalize (lt_asym n m n_lt_m m_lt_n); contradiction.
-intros n1 n2 n3; apply lt_trans.
+generalize (Nat.lt_asymm n m n_lt_m m_lt_n); contradiction.
+intros n1 n2 n3; apply Nat.lt_trans.
 apply lex_trans.
 exact beq_nat_ok.
 intros n m n_lt_m m_lt_n;
-generalize (lt_asym n m n_lt_m m_lt_n); contradiction.
-intros n1 n2 n3; apply lt_trans.
-intros n1 n2 n3; apply lt_trans.
+generalize (Nat.lt_asymm n m n_lt_m m_lt_n); contradiction.
+intros n1 n2 n3; apply Nat.lt_trans.
+intros n1 n2 n3; apply Nat.lt_trans.
 Qed.
 
 (** ** Definition of rpo.*)
@@ -508,7 +508,7 @@ Lemma equiv_same_size :
 Proof.
 intros t; pattern t; apply term_rec2.
 intro n; induction n as [ | n]; intros t1 St1 t2 t1_eq_t2.
-absurd (1 <= 0); auto with arith; apply le_trans with (size t1); trivial;
+absurd (1 <= 0); auto with arith; apply Nat.le_trans with (size t1); trivial;
 apply size_ge_one.
 inversion t1_eq_t2 as [ | f g l1' l2' Sf Sg prec_eq_f_g l1_eq_l2 | f g l1' l2' Sf Sg prec_eq_f_g P];  
 subst.
@@ -520,22 +520,22 @@ induction l1' as [ | t1 l1]; intros l2 l1_eq_l2;
 inversion l1_eq_l2 as [ | s1 s2 l1' l2' s1_eq_s2 l1'_eq_l2']; subst; trivial.
 simpl.
 assert (St1' : size t1 <= n).
-apply le_S_n; apply le_trans with (size (Term f (t1 :: l1))); trivial.
+apply le_S_n; apply Nat.le_trans with (size (Term f (t1 :: l1))); trivial.
 apply size_direct_subterm; left; trivial.
 rewrite (IHn t1 St1' s2); trivial. 
 assert (Sl1 : size (Term f l1) <= S n).
-apply le_trans with (size (Term f (t1 :: l1))); trivial.
+apply Nat.le_trans with (size (Term f (t1 :: l1))); trivial.
 do 2 rewrite size_unfold.
 simpl; apply le_n_S.
-apply (plus_le_compat_r 0 (size t1) (list_size size l1)).
-apply lt_le_weak; apply (size_ge_one t1).
+apply (Nat.add_le_mono_r 0 (size t1) (list_size size l1)).
+apply Nat.lt_le_incl; apply (size_ge_one t1).
 rewrite (IHl1 Sl1 l2'); trivial.
 (* Mul case *)
 subst; do 2 rewrite size_unfold; apply (f_equal (fun n => 1 + n)).
 apply (@permut_size _ _ equiv); trivial.
 intros a a' a_in_l1 _ a_eq_a'; apply IHn; trivial.
 apply le_S_n.
-apply le_trans with (size (Term f l1')); trivial.
+apply Nat.le_trans with (size (Term f l1')); trivial.
 apply size_direct_subterm; trivial.
 Qed.
 
@@ -673,15 +673,15 @@ revert Acc_t1 IHAcc; case t1; clear t1; [intro v1 | intros f1 l1];
 (intros Acc_t1 IHAcc t2; case t2; clear t2; [intro v2 | intros f2 l2]).
 
 exists (X.eq_bool v1 v2); intros [ | p] p_lt_k def.
-apply False_ind; exact (gt_irrefl 0 p_lt_k).
+apply False_ind; exact (Nat.lt_irrefl 0 p_lt_k).
 exact (eq_refl _).
 
 exists false; intros [ | p] p_lt_k def.
-apply False_ind; exact (gt_irrefl 0 p_lt_k).
+apply False_ind; exact (Nat.lt_irrefl 0 p_lt_k).
 exact (eq_refl _).
 
 exists false; intros [ | p] p_lt_k def.
-apply False_ind; exact (le_Sn_O _ p_lt_k).
+apply False_ind; exact (Nat.nle_succ_0 _ p_lt_k).
 exact (eq_refl _).
 
 rewrite size_unfold.
@@ -712,10 +712,10 @@ intros a2 k2; case (equiv_lex_bool k1 (tail_set _ IHl1) k2); intros bl IH'.
 case (IHl1 a1 (or_introl _ (eq_refl _)) a2); intros ba IH''.
 exists (ba && bl); intros k p_le_k def.
 assert (pa_lt_k : size a1 <= k).
-apply le_trans with (list_size size (a1 :: k1)); [apply le_plus_l | exact p_le_k].
+apply Nat.le_trans with (list_size size (a1 :: k1)); [apply Nat.le_add_r | exact p_le_k].
 rewrite (IH'' k pa_lt_k).
 assert (pl_le_k : list_size size k1 <= k).
-apply le_trans with (list_size size (a1 :: k1)); [apply le_plus_r | exact p_le_k].
+apply Nat.le_trans with (list_size size (a1 :: k1)); [apply NatCompat.le_add_l | exact p_le_k].
 rewrite (IH' k pl_le_k def).
 reflexivity.
 
@@ -734,32 +734,32 @@ revert l2; fix IHl2 1.
 intro l2; case l2; clear l2.
 exists (@None (list term)); intro k; case k; clear k.
 intro L; apply False_rect.
-apply (le_Sn_O _ (le_trans 1 _ 0 (size_ge_one a1) (le_trans (size a1) _ 0 (le_plus_l _ _) L))).
+apply (Nat.nle_succ_0 _ (Nat.le_trans 1 _ 0 (size_ge_one a1) (Nat.le_trans (size a1) _ 0 (Nat.le_add_r _ _) L))).
 intros k _ def; reflexivity.
 intros a2 l2;
 case (IH a1 (or_introl _ (eq_refl _)) a2); intro v; case v; intro Ha1.
 exists (Some l2); intros k L def; simpl; rewrite Ha1.
 reflexivity.
-apply le_trans with (list_size size (a1 :: l1)); [apply le_plus_l | apply L].
+apply Nat.le_trans with (list_size size (a1 :: l1)); [apply Nat.le_add_r | apply L].
 case (IHl2 l2); clear IHl2; intro ok; case ok; clear ok.
 intros k2 IHl2; exists (Some (a2 :: k2)); intros k L def; simpl.
 rewrite Ha1.
 rewrite IHl2.
 reflexivity.
 apply L.
-apply le_trans with (list_size size (a1 :: l1)); [apply le_plus_l | apply L].
+apply Nat.le_trans with (list_size size (a1 :: l1)); [apply Nat.le_add_r | apply L].
 intro IHl2; exists (@None (list term)); intros k L def; simpl.
 rewrite Ha1.
 rewrite IHl2.
 reflexivity.
 apply L.
-apply le_trans with (list_size size (a1 :: l1)); [apply le_plus_l | apply L].
+apply Nat.le_trans with (list_size size (a1 :: l1)); [apply Nat.le_add_r | apply L].
 case Hrem; clear Hrem; intro ok; case ok; clear ok.
 intros k2 Hrem.
 case (IHl1 _ (tail_set _ IH) k2); intros v Hl1; exists v; intros k L def.
 rewrite (Hrem k L).
 assert (l1_le_k : list_size size l1 <= k).
-refine (le_trans _ _ _ _ L); apply le_plus_r.
+refine (Nat.le_trans _ _ _ _ L); apply NatCompat.le_add_l.
 rewrite (Hl1 k l1_le_k def).
 reflexivity.
 intro Hrem; exists false; intros k L def.
@@ -770,7 +770,7 @@ exists false; intros _ _ _; exact (eq_refl _).
 
 case H; clear H; intros v H; exists v; intro k; case k; clear k.
 intro L; apply False_rect.
-apply (le_Sn_O _ (le_trans 1 _ 0 (le_plus_l _ _) L)).
+apply (Nat.nle_succ_0 _ (Nat.le_trans 1 _ 0 (Nat.le_add_r _ _) L)).
 intros k L def; rewrite (H k).
 reflexivity.
 apply (le_S_n  _ _ L).
@@ -1089,11 +1089,11 @@ Proof.
 intros P Hvar Hterm. 
 apply term_rec2; induction n; intros t Size_t.
 absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 destruct t as [ x | f l ]; trivial;
 apply Hterm; intros; apply IHn;
-apply lt_n_Sm_le.
-apply lt_le_trans with (size (Term f l)); trivial.
+apply Nat.lt_succ_r.
+apply Nat.lt_le_trans with (size (Term f l)); trivial.
 destruct (mem_split_set _ _ equiv_bool_ok _ _ H) as [t' [l1 [l2 [t_eq_t' [H' _]]]]].
 simpl in t_eq_t'; simpl in H'; subst l.
 rewrite (equiv_same_size t_eq_t').
@@ -1133,7 +1133,7 @@ Lemma size_direct_subterm_mem :
 Proof.
 intros n t f l Sfl t_mem_l;
 apply le_S_n.
-apply le_trans with (size (Term f l)); trivial.
+apply Nat.le_trans with (size (Term f l)); trivial.
 destruct (mem_split_set _ _ equiv_bool_ok _ _ t_mem_l) as [t' [l1 [l2 [t_eq_t' [H _]]]]].
 simpl in t_eq_t'; simpl in H; subst l.
 rewrite (equiv_same_size t_eq_t').
@@ -1202,8 +1202,8 @@ Lemma size3_lex3_prec :
 Proof.
 intros u f g h l l' s u_in_l;
 unfold o_size3, size3, size2, lex;
-generalize (beq_nat_ok (size s) (size s)); case (beq_nat (size s) (size s)); [intros _ | intro s_diff_s].
-generalize (beq_nat_ok (size (Term g l')) (size (Term h l')));  case (beq_nat (size (Term g l')) (size (Term h l'))); [intros _ | intro t_diff_t]. intros.
+generalize (beq_nat_ok (size s) (size s)); case (Nat.eqb (size s) (size s)); [intros _ | intro s_diff_s].
+generalize (beq_nat_ok (size (Term g l')) (size (Term h l')));  case (Nat.eqb (size (Term g l')) (size (Term h l'))); [intros _ | intro t_diff_t]. intros.
 apply (size_direct_subterm u (Term f l) u_in_l). intros.
 apply False_rect; apply t_diff_t; reflexivity.
 apply False_rect; apply s_diff_s; reflexivity.
@@ -1793,7 +1793,7 @@ rewrite <- mem_or_app; right; trivial.
 assert (L : length (alg' ++ alg'') = S (length lg)).
 assert (L' := f_equal (fun l => length l) H).
 simpl in L'; rewrite length_app in L'; simpl in L'.
-rewrite plus_comm in L'; simpl in L'; rewrite plus_comm in L'.
+rewrite Nat.add_comm in L'; simpl in L'; rewrite Nat.add_comm in L'.
 rewrite <- length_app in L'; injection L'; intro L''; symmetry; assumption.
 destruct (alg' ++ alg'') as [ | a' lg'].
 discriminate.
@@ -2025,7 +2025,7 @@ inversion H as [a lg ls lc k k' P' P ls_lt_alg]; subst.
 generalize l' l a ls lc P P' ls_lt_alg;
 clear l' l a ls lc P P' ls_lt_alg H;
 induction lg as [ | g lg]; intros l' l a ls lc P P' ls_lt_alg.
-apply t_step; apply (@List_mul_step bb a ls lc); trivial.
+apply t_step. apply (@List_mul_step bb a ls lc); trivial.
 intros b b_in_ls; destruct (ls_lt_alg b b_in_ls) as [a' [[a'_eq_a | a'_in_nil] b_lt_a']].
 rewrite <- (equiv_rpo_equiv_1 _ a'_eq_a); trivial.
 contradiction.
@@ -2869,8 +2869,8 @@ apply H; exists s; split; assumption.
 apply prec_not_prec_eq with symbol Prec g f; trivial. apply prec_eq_sym; trivial.
 destruct H7 as [H7 | [H7 H7']].
 apply n; assumption.
-apply lt_irrefl with bb.
-apply lt_le_trans with (length l); assumption.
+apply Nat.lt_irrefl with bb.
+apply Nat.lt_le_trans with (length l); assumption.
 rewrite H5 in Sf; discriminate.
 right; intro fk_lt_fl; inversion fk_lt_fl; subst.
 apply H; exists s; split; assumption.
@@ -2879,8 +2879,8 @@ assert (H6: False).
 apply prec_not_prec_eq with symbol Prec g f; trivial. apply prec_eq_sym; trivial. contradict H6.
 destruct H7 as [H7 | [H7 H7']].
 apply n; assumption.
-apply lt_irrefl with bb.
-apply lt_le_trans with (length k); assumption.
+apply Nat.lt_irrefl with bb.
+apply Nat.lt_le_trans with (length k); assumption.
 rewrite H5 in Sf; discriminate.
 right;  intro fk_lt_fl; inversion fk_lt_fl; subst.
 apply Ko; intros s' s'_mem_k; apply rpo_trans with (Term g k); trivial.
@@ -3542,9 +3542,9 @@ intros rpo_infos n; induction n as [ | n].
 (* base case *)
 intros t1 t2 St1; 
 absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t1 + size t2); trivial;
-apply le_trans with (1 + size t2);
-[apply le_plus_l | apply plus_le_compat_r; apply size_ge_one].
+apply Nat.le_trans with (size t1 + size t2); trivial;
+apply Nat.le_trans with (1 + size t2);
+[apply Nat.le_add_r | apply Nat.add_le_mono_r; apply size_ge_one].
 (* induction step *)
 intros t1 t2 St; rewrite equiv_eval_equation.
 destruct t1 as [ v1 | f1 l1]; destruct t2 as [ v2 | f2 l2].
@@ -3556,9 +3556,9 @@ discriminate.
 case_eq (prec_eq_bool Prec f1 f2). intro f1_eq_f2.
 assert (H : forall t1 t2 : term, In t1 l1 -> In t2 l2 -> equiv_eval rpo_infos n t1 t2 <> None).
 intros t1 t2 t1_in_l1 t2_in_l2; apply IHn.
-rewrite size_unfold in St; rewrite <- plus_assoc in St.
+rewrite size_unfold in St; rewrite <- Nat.add_assoc in St.
 rewrite size_unfold in St; simpl in St.
-refine (le_trans _ _ _ _ (le_S_n _ _ St)); apply plus_le_compat.
+refine (Nat.le_trans _ _ _ _ (le_S_n _ _ St)); apply Nat.add_le_mono.
 generalize (size_direct_subterm t1 (Term f1 l1) t1_in_l1);
 rewrite (size_unfold (Term f1 l1)); simpl; auto with arith.
 generalize (size_direct_subterm t2 (Term f1 l2) t2_in_l2);
@@ -3580,8 +3580,8 @@ Proof.
 intros rpo_infos n; induction n as [ | n ].
 (* base case *)
 intros t1 t2 St; absurd (1 <= 0); auto with arith.
-refine (le_trans _ _ _ _ St); apply le_trans with (size t1);
-[ apply size_ge_one | apply le_plus_l].
+refine (Nat.le_trans _ _ _ _ St); apply Nat.le_trans with (size t1);
+[ apply size_ge_one | apply Nat.le_add_r].
 (* induction step *)
 intros t1 t2 St t1_eq_t2; 
 inversion t1_eq_t2 as 
@@ -3596,9 +3596,9 @@ case_eq (prec_eq_bool Prec f2 f2).
 intro H. clear H.
 assert (H : forall t2, In t2 l2 -> equiv_eval rpo_infos n t2 t2 = Some true).
 intros t2 t2_in_l2; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t2 + size t2)) with (S (size t2) + size t2); trivial;
-apply plus_le_compat; [idtac | apply lt_le_weak];
+apply Nat.add_le_mono; [idtac | apply Nat.lt_le_incl];
 apply size_direct_subterm; trivial.
 apply Eq.
 destruct (status Prec f2).
@@ -3618,9 +3618,9 @@ rewrite Sf;
 generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; absurd (f = f); trivial].
 assert (Size : forall t1 t2, In t1 l1 -> In t2 l2 -> size t1 + size t2 <= n).
 intros t1 t2 t1_in_l1 t2_in_l2;
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size t2)) with (S (size t1) + size t2); trivial;
-apply plus_le_compat; [idtac | apply lt_le_weak];
+apply Nat.add_le_mono; [idtac | apply Nat.lt_le_incl];
 apply size_direct_subterm; trivial.
 generalize l2 H Size; clear l2 H Size St t1_eq_t2; 
 induction l1 as [ | t1 l1]; intros l2 H Size;
@@ -3634,9 +3634,9 @@ intros; apply Size; right; trivial.
 apply Size; left; trivial.
 (* 1/1 Eq_mul *)
 assert (St' : forall t1 t2, In t1 l1 -> In t2 l2 -> size t1 + size t2 <= n).
-intros t1 t2 t1_in_l1 t2_in_l2; apply le_S_n; refine (le_trans _ _ _ _ St);
+intros t1 t2 t1_in_l1 t2_in_l2; apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size t2)) with (S (size t1) + size t2); trivial;
-apply plus_le_compat; [idtac | apply lt_le_weak];
+apply Nat.add_le_mono; [idtac | apply Nat.lt_le_incl];
 apply size_direct_subterm; trivial.
 assert (T : forall t1 t2, In t1 l1 -> In t2 l2 -> equiv_eval rpo_infos n t1 t2 <> None).
 intros t1 t2 t1_in_l1 t2_in_l2; apply equiv_eval_terminates; apply St'; trivial.
@@ -3897,7 +3897,7 @@ Fixpoint rpo_eval rpo_infos (n : nat) (t1 t2 : term) {struct n} : option comp :=
                                 | Some (l1, l2) => mult_eval (rpo_eval rpo_infos m) l1 l2
                                 end
  | Lex => 
-                               if (beq_nat (length l1) (length l2)) || 
+                               if (Nat.eqb (length l1) (length l2)) || 
                                   (leb (length l1) rpo_infos.(bb) && leb (length l2) rpo_infos.(bb))
                                then lexico_eval (rpo_eval rpo_infos m) t1 t2 l1 l2
                                else Some Uncomparable
@@ -4008,7 +4008,7 @@ Lemma rpo_eval_equation :
                                 | Some (l1, l2) => mult_eval (rpo_eval rpo_infos m) l1 l2
                                 end
  | Lex => 
-                               if (beq_nat (length l1) (length l2)) || 
+                               if (Nat.eqb (length l1) (length l2)) || 
                                   (leb (length l1) rpo_infos.(bb) && leb (length l2) rpo_infos.(bb))
                                then lexico_eval (rpo_eval rpo_infos m) t1 t2 l1 l2
                                else Some Uncomparable
@@ -4446,12 +4446,12 @@ generalize H; clear H; pattern l; refine (list_rec3 size _ _ _); clear l.
 intros m; induction m as [ | m]; intros [ | t l] L.
 intros; discriminate.
 simpl in L; absurd (1 <= 0); auto with arith;
-refine (le_trans _ _ _ _ L); apply le_trans with (size t); auto with arith;
+refine (Nat.le_trans _ _ _ _ L); apply Nat.le_trans with (size t); auto with arith;
 apply size_ge_one.
 intros; discriminate.
 simpl in L; assert (Sl : list_size size l <= m).
-apply le_S_n; refine (le_trans _ _ _ _ L); 
-apply (plus_le_compat_r 1 (size t) (list_size size l));
+apply le_S_n; refine (Nat.le_trans _ _ _ _ L); 
+apply (Nat.add_le_mono_r 1 (size t) (list_size size l));
 apply size_ge_one.
 destruct t as [v' | f' l']; rewrite var_in_term_list_equation.
 generalize (X.eq_bool_ok v v'); case (X.eq_bool v v'); [intros v_eq_v' _ | intro v_diff_v'].
@@ -4460,7 +4460,7 @@ intro H; destruct (IHm _ Sl H) as [v_in_l | [t [t_in_l H']]].
 left; right; trivial.
 right; exists t; split; trivial; right; trivial.
 assert (Sl' : list_size size l' <= m).
-apply le_S_n; refine (le_trans _ _ _ _ L); rewrite size_unfold; simpl;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ L); rewrite size_unfold; simpl;
 apply le_n_S; auto with arith.
 generalize (IHm _ Sl'); destruct (var_in_term_list v l').
 intro H; destruct (H (eq_refl _)) as [v_in_l' | [t [t_in_l' H']]].
@@ -4551,7 +4551,7 @@ destruct (lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f2 l2) l1 l2) as
 (* 1/12 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = Some Equivalent *)
 destruct H' as [ll [E_ll [H1 H2]]].
 rewrite (f_equal (@length _) H1); rewrite (f_equal (@length _) H2); do 2 rewrite length_map.
-rewrite <- beq_nat_refl; simpl.
+rewrite Nat.eqb_refl; simpl.
 apply (@Eq_lex f1 f2 l1 l2 Sf1). assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. rewrite <- H4; trivial. trivial.
 subst l1 l2; induction ll as [ | [t1 t2] ll]; simpl.
 apply Eq_list_nil.
@@ -4559,13 +4559,13 @@ apply Eq_list_cons.
 generalize (IHn t1 t2); rewrite (E_ll _ _ (or_introl _ (eq_refl _))); intro; assumption.
 apply IHll; intros; apply E_ll; right; assumption.
 (* 1/11 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = Some Less_than *)
-case_eq (beq_nat (length l1) (length l2)); simpl.
+case_eq (Nat.eqb (length l1) (length l2)); simpl.
 intro L; apply (@Top_eq_lex rpo_infos.(bb) f1 f2 l2 l1 Sf1).  assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. rewrite <- H4; trivial. trivial.
-left; apply sym_eq; apply beq_nat_true; assumption.
+left; apply sym_eq; apply Nat.eqb_eq; assumption.
 destruct H' as [[H1 H2] | [[ll [t2 [l2' [ _ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 destruct l2 as [ | a2 l2]; [apply False_rect; apply H2; apply eq_refl | subst l1; discriminate].
 subst l1 l2; rewrite length_app in L; do 2 rewrite length_map in L.
-apply False_rect; generalize (beq_nat_true _ _ L); clear L; induction ll as [ | [u1 u2] ll].
+apply False_rect; generalize (proj1 (Nat.eqb_eq _ _) L); clear L; induction ll as [ | [u1 u2] ll].
 discriminate.
 intro L; injection L; clear L; intro L; apply IHll; assumption.
 clear L H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
@@ -4576,7 +4576,7 @@ apply IHll; intros; apply Hll; right; assumption.
 destruct H' as [[H1 H2] | [[ll [t2 [l2' [_ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l1; contradiction.
 subst l1 l2; rewrite length_app in L; do 2 rewrite length_map in L.
-apply False_rect; generalize (beq_nat_true _ _ L); clear L; induction ll as [ | [u1 u2] ll].
+apply False_rect; generalize (proj1 (Nat.eqb_eq _ _) L); clear L; induction ll as [ | [u1 u2] ll].
 discriminate.
 intro L; injection L; clear L; intro L; apply IHll; assumption.
 intros u u_in_l1; rewrite mem_in_eq in u_in_l1; destruct u_in_l1 as [u' [u_eq_u' u'_in_l1]].
@@ -4626,15 +4626,15 @@ generalize (IHn u' u2); rewrite u'_eq_u2; intro; assumption.
 right; rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn u' u2); rewrite u'_lt_u2; intro; assumption.
 rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f2 l2) u'); rewrite H''; intro; assumption.
 (* 1/10 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = Some Greater_than *)
-case_eq (beq_nat (length l1) (length l2)); simpl.
+case_eq (Nat.eqb (length l1) (length l2)); simpl.
 assert (Sf2: status Prec f2 = Lex).
  assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. rewrite <- H4; trivial. trivial.
 intro L; apply (@Top_eq_lex rpo_infos.(bb) f2 f1 l1 l2 Sf2). trivial. apply prec_eq_sym; trivial.
-left; apply beq_nat_true; assumption.
+left; apply Nat.eqb_eq; assumption.
 destruct H' as [[H1 H2] | [[ll [t1 [l1' [ _ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 destruct l1 as [ | a1 l1]; [apply False_rect; apply H1; apply eq_refl | subst l2; discriminate].
 subst l1 l2; rewrite length_app in L; do 2 rewrite length_map in L.
-apply False_rect; generalize (beq_nat_true _ _ L); clear L; induction ll as [ | [u1 u2] ll].
+apply False_rect; generalize (proj1 (Nat.eqb_eq _ _) L); clear L; induction ll as [ | [u1 u2] ll].
 discriminate.
 intro L; injection L; clear L; intro L; apply IHll; assumption.
 clear L H'; subst l1 l2; induction ll as [ | [u1 u2] ll].
@@ -4645,7 +4645,7 @@ apply IHll; intros; apply Hll; right; assumption.
 destruct H' as [[H1 H2] | [[ll [t1 [l1' [_ [H1 H2]]]]] | [ll [t1 [t2 [l1' [l2' [Hll [Ht [H' [H1 H2]]]]]]]]]]].
 intros; subst l2; contradiction.
 subst l1 l2; rewrite length_app in L; do 2 rewrite length_map in L.
-apply False_rect; generalize (beq_nat_true _ _ L); clear L; induction ll as [ | [u1 u2] ll].
+apply False_rect; generalize (proj1 (Nat.eqb_eq _ _) L); clear L; induction ll as [ | [u1 u2] ll].
 discriminate.
 intro L; injection L; clear L; intro L; apply IHll; assumption.
 intros u u_in_l2; rewrite mem_in_eq in u_in_l2; destruct u_in_l2 as [u' [u_eq_u' u'_in_l2]].
@@ -4697,10 +4697,10 @@ symmetry; generalize (IHn u1 u'); rewrite u'_eq_u1; intro; assumption.
 right; rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn u1 u'); rewrite u'_lt_u1; intro; assumption.
 rewrite (equiv_rpo_equiv_2 _ u_eq_u'); generalize (IHn (Term f1 l1) u'); rewrite H''; intro; assumption.
 (* 1/9 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = Some Uncomparable *)
-case (beq_nat (length l1) (length l2)
+case (Nat.eqb (length l1) (length l2)
       || leb (length l1) (bb rpo_infos) && leb (length l2) (bb rpo_infos)); trivial.
 (* 1/8 lexico_eval (rpo_eval rpo_infos n) (Term f1 l1) (Term f1 l2) l1 l2 = None *)
-case (beq_nat (length l1) (length l2)
+case (Nat.eqb (length l1) (length l2)
       || leb (length l1) (bb rpo_infos) && leb (length l2) (bb rpo_infos)); trivial.
 (* 1/7 f1 has a Mul status *)
  assert (H3:= prec_eq_status). assert (H3':= H3 symbol Prec f1 f2). assert (H4: status Prec f1 = status Prec f2). apply H3'; trivial. assert (Sf2: status Prec f2 = Mul). rewrite <- H4; trivial. 
@@ -5107,9 +5107,9 @@ intros rpo_infos n; induction n as [ | n].
 (* Base case *)
 intros t1 t2 St1; 
 absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t1 + size t2); trivial;
-apply le_trans with (1 + size t2);
-[apply le_plus_l | apply plus_le_compat_r; apply size_ge_one].
+apply Nat.le_trans with (size t1 + size t2); trivial;
+apply Nat.le_trans with (1 + size t2);
+[apply Nat.le_add_r | apply Nat.add_le_mono_r; apply size_ge_one].
 (* Induction step *)
 intros t1 t2 St; rewrite rpo_eval_equation.
 case (mem_bool eq_tt_bool (t1, t2) (rpo_l rpo_infos)).
@@ -5167,26 +5167,26 @@ destruct (list_exists_option
 intros _; simpl; discriminate.
 intros _; simpl; destruct (prec_eval f1 f2); try discriminate.
 destruct (status Prec f1).
-case (beq_nat (length l1) (length l2)
+case (Nat.eqb (length l1) (length l2)
     || leb (length l1) (bb rpo_infos) && leb (length l2) (bb rpo_infos)).
 apply lexico_eval_fully_evaluates.
 intros t1 t1_in_l1; apply IHn.
-rewrite plus_comm.
-apply le_S_n; refine (le_trans _ _ _ _ St).
+rewrite Nat.add_comm.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St).
 replace (S (size t1 + size (Term f2 l2))) with 
                 (S (size t1) + size (Term f2 l2)); trivial.
-apply plus_le_compat_r; apply size_direct_subterm; trivial.
+apply Nat.add_le_mono_r; apply size_direct_subterm; trivial.
 intros t2 t2_in_l2; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St); rewrite plus_comm;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); rewrite Nat.add_comm;
 replace (S (size t2 + size (Term f1 l1))) with 
-                (S (size t2) + size (Term f1 l1)); trivial; rewrite plus_comm;
-apply plus_le_compat_l; apply size_direct_subterm; trivial.
+                (S (size t2) + size (Term f1 l1)); trivial; rewrite Nat.add_comm;
+apply Nat.add_le_mono_l; apply size_direct_subterm; trivial.
 intros t1 t2 t1_in_l1 t2_in_l2; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size t2)) with  (S (size t1) + size t2); trivial;
-apply plus_le_compat.
+apply Nat.add_le_mono.
 apply size_direct_subterm; trivial.
-apply lt_le_weak; apply size_direct_subterm; trivial.
+apply Nat.lt_le_incl; apply size_direct_subterm; trivial.
 discriminate.
 generalize (remove_equiv_eval_list_is_sound (equiv_eval rpo_infos n) l1 l2);
 destruct (remove_equiv_eval_list (equiv_eval rpo_infos n) l1 l2) as [ [[ | t1' l1'] [ | t2' l2']] | ].
@@ -5196,18 +5196,18 @@ intros _; discriminate.
 intros [ll [H [P1 [P2 H']]]]. 
 apply mult_eval_fully_evaluates.
 intros t1 t2 t1_in_l1' t2_in_l2'; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size t2)) with  (S (size t1) + size t2); trivial;
-apply plus_le_compat.
+apply Nat.add_le_mono.
 apply size_direct_subterm; simpl;
 rewrite (in_permut_in P1); apply in_or_app; left; trivial.
-apply lt_le_weak; apply size_direct_subterm; simpl;
+apply Nat.lt_le_incl; apply size_direct_subterm; simpl;
 rewrite (in_permut_in P2); apply in_or_app; left; trivial.
 intros t1 t2 t1_in_l1' t2_in_l2'; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t2 + size t1)) with  (S (size t2) + size t1); trivial.
-rewrite plus_comm; apply plus_le_compat.
-apply lt_le_weak; apply size_direct_subterm; simpl;
+rewrite Nat.add_comm; apply Nat.add_le_mono.
+apply Nat.lt_le_incl; apply size_direct_subterm; simpl;
 rewrite (in_permut_in P1); apply in_or_app; left; trivial.
 apply size_direct_subterm; simpl;
 rewrite (in_permut_in P2); apply in_or_app; left; trivial.
@@ -5217,11 +5217,11 @@ destruct (equiv_eval rpo_infos n t1 t2) as [ [ | ] | ].
 discriminate.
 discriminate.
 intros _; apply H'; trivial.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size t2)) with  (S (size t1) + size t2); trivial;
-apply plus_le_compat.
+apply Nat.add_le_mono.
 apply size_direct_subterm; trivial.
-apply lt_le_weak; apply size_direct_subterm; trivial.
+apply Nat.lt_le_incl; apply size_direct_subterm; trivial.
 generalize (list_forall_option_is_sound
     (fun t : term =>
      match rpo_eval rpo_infos n t (Term f2 l2) with
@@ -5249,10 +5249,10 @@ discriminate.
 discriminate.
 discriminate.
 apply H'.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size u1 + size (Term f2 l2))) with 
                 (S (size u1) + size (Term f2 l2)); trivial;
-apply plus_le_compat_r; apply size_direct_subterm; trivial.
+apply Nat.add_le_mono_r; apply size_direct_subterm; trivial.
 generalize  (list_forall_option_is_sound
     (fun t : term =>
      match rpo_eval rpo_infos n (Term f1 l1) t with
@@ -5280,10 +5280,10 @@ discriminate.
 discriminate.
 discriminate.
 apply H'.
-apply le_S_n; refine (le_trans _ _ _ _ St); rewrite plus_comm;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); rewrite Nat.add_comm;
 replace (S (size u2 + size (Term f1 l1))) with 
-                (S (size u2) + size (Term f1 l1)); trivial; rewrite plus_comm;
-apply plus_le_compat_l; apply size_direct_subterm; trivial.
+                (S (size u2) + size (Term f1 l1)); trivial; rewrite Nat.add_comm;
+apply Nat.add_le_mono_l; apply size_direct_subterm; trivial.
 intros [[u2 [u2_in_l2 H]] _]; assert (H' := IHn (Term f1 l1) u2); 
 destruct (rpo_eval rpo_infos n (Term f1 l1) u2) as [ [ | | | ] | ].
 discriminate.
@@ -5291,10 +5291,10 @@ discriminate.
 discriminate.
 discriminate.
 apply H'.
-apply le_S_n; refine (le_trans _ _ _ _ St); rewrite plus_comm;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); rewrite Nat.add_comm;
 replace (S (size u2 + size (Term f1 l1))) with 
-                (S (size u2) + size (Term f1 l1)); trivial; rewrite plus_comm;
-apply plus_le_compat_l; apply size_direct_subterm; trivial.
+                (S (size u2) + size (Term f1 l1)); trivial; rewrite Nat.add_comm;
+apply Nat.add_le_mono_l; apply size_direct_subterm; trivial.
 intros [[u1 [u1_in_l1 H]] _]; assert (H' := IHn u1 (Term f2 l2)); 
 destruct (rpo_eval rpo_infos n u1 (Term f2 l2)) as [ [ | | | ] | ].
 discriminate.
@@ -5302,10 +5302,10 @@ discriminate.
 discriminate.
 discriminate.
 apply H'.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size u1 + size (Term f2 l2))) with 
                 (S (size u1) + size (Term f2 l2)); trivial;
-apply plus_le_compat_r; apply size_direct_subterm; trivial.
+apply Nat.add_le_mono_r; apply size_direct_subterm; trivial.
 intros _; apply T; trivial.
 Qed.
 
@@ -5354,9 +5354,9 @@ pattern l; apply (list_rec3 size); clear l.
 intro n; induction n as [ | n]; intros [ | t l] Sl s s_in_l v_le_s.
 contradiction.
 simpl in Sl; absurd (1 <= 0); auto with arith.
-refine (le_trans _ _ _ _ Sl); apply le_trans with (size t).
+refine (Nat.le_trans _ _ _ _ Sl); apply Nat.le_trans with (size t).
 apply size_ge_one.
-apply le_plus_l.
+apply Nat.le_add_r.
 contradiction.
 simpl in s_in_l; destruct s_in_l as [s_eq_t | s_in_l].
 rewrite (@equiv_rpo_equiv_3 _ _ _ s_eq_t) in v_le_s.
@@ -5367,12 +5367,12 @@ rewrite eq_var_bool_refl; trivial.
 inversion H as [g k u1 s' s'_in_k v_le_s' | | |]; subst;
 rewrite var_in_term_list_equation; simpl.
 assert (Sk : list_size size k <= n).
-apply le_S_n; refine (le_trans _ _ _ _ Sl); simpl; apply le_n_S;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ Sl); simpl; apply le_n_S;
 rewrite (list_size_fold size k); auto with arith.
 rewrite (IHn k Sk s' s'_in_k v_le_s'); simpl; trivial.
 assert (Sl' : list_size size l <= n).
-apply le_S_n; refine (le_trans _ _ _ _ Sl); simpl;
-apply (plus_le_compat_r 1 (size t) (list_size size l));
+apply le_S_n; refine (Nat.le_trans _ _ _ _ Sl); simpl;
+apply (Nat.add_le_mono_r 1 (size t) (list_size size l));
 apply size_ge_one.
 rewrite var_in_term_list_equation; 
 rewrite (IHn l Sl' s s_in_l v_le_s); destruct t as [v' | g k].
@@ -5388,13 +5388,13 @@ Lemma rpo_eval_is_complete_less_greater :
 Proof.
 intros rpo_infos n; induction n as [ | n]; intros t1 t2 St t1_lt_t2. 
 absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t1 + size t2); trivial;
-apply le_trans with (1 + size t2);
-[apply le_plus_l | apply plus_le_compat_r; apply size_ge_one].
+apply Nat.le_trans with (size t1 + size t2); trivial;
+apply Nat.le_trans with (1 + size t2);
+[apply Nat.le_add_r | apply Nat.add_le_mono_r; apply size_ge_one].
 assert (TE := @equiv_eval_terminates rpo_infos _ _ _ St);
 assert (R := rpo_eval_is_sound_weak rpo_infos (S n) t1 t2);
 assert (T := @rpo_eval_terminates rpo_infos (S n) t1 t2 St).
-rewrite plus_comm in St;
+rewrite Nat.add_comm in St;
 assert (TE' := @equiv_eval_terminates rpo_infos _ _ _ St);
 assert (R' := rpo_eval_is_sound_weak rpo_infos (S n) t2 t1);
 assert (T' := @rpo_eval_terminates rpo_infos (S n) t2 t1 St).
@@ -5429,10 +5429,10 @@ inversion t1_lt_t2.
 rewrite (@var_case2 _ _ _ _ t1_lt_t2); split; trivial.
 inversion t1_lt_t2.
 assert (Sl : forall t1 t2, In t1 l1 -> In t2 l2 -> size t1 + size t2 <= n).
-intros t1 t2 t1_in_l1 t2_in_l2; apply le_S_n; refine (le_trans _ _ _ _ St);
+intros t1 t2 t1_in_l1 t2_in_l2; apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size t2)) with (S (size t1) + size t2); trivial;
-rewrite plus_comm; apply plus_le_compat.
-apply lt_le_weak; apply size_direct_subterm; trivial.
+rewrite Nat.add_comm; apply Nat.add_le_mono.
+apply Nat.lt_le_incl; apply size_direct_subterm; trivial.
 apply size_direct_subterm; trivial.
 assert (IHl1l2 : forall t1 t2, In t1 l1 -> In t2 l2 -> rpo rpo_infos.(bb) t1 t2 ->
      rpo_eval rpo_infos n t1 t2 = Some Less_than /\
@@ -5443,39 +5443,39 @@ assert (IHl2l1 : forall t1 t2, In t1 l1 -> In t2 l2 -> rpo rpo_infos.(bb) t2 t1 
      rpo_eval rpo_infos n t2 t1 = Some Less_than /\
       rpo_eval rpo_infos n t1 t2 = Some Greater_than).
 intros; apply IHn; trivial.
-rewrite plus_comm; apply Sl; trivial.
+rewrite Nat.add_comm; apply Sl; trivial.
 assert (IHl1s2 : forall t1, In t1 l1 -> rpo rpo_infos.(bb) t1 (Term f2 l2) ->
      rpo_eval rpo_infos n t1 (Term f2 l2) = Some Less_than /\
       rpo_eval rpo_infos n (Term f2 l2) t1 = Some Greater_than).
 intros; apply IHn; trivial.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size (Term f2 l2))) with (S (size t1) + size (Term f2 l2)); trivial;
-rewrite plus_comm; apply plus_le_compat_l.
+rewrite Nat.add_comm; apply Nat.add_le_mono_l.
 apply size_direct_subterm; trivial.
 assert (IHs2l1 : forall t1, In t1 l1 -> rpo rpo_infos.(bb) (Term f2 l2) t1 ->
      rpo_eval rpo_infos n (Term f2 l2) t1 = Some Less_than /\
       rpo_eval rpo_infos n t1 (Term f2 l2) = Some Greater_than).
 intros; apply IHn; trivial.
-rewrite plus_comm; apply le_S_n; refine (le_trans _ _ _ _ St);
+rewrite Nat.add_comm; apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t1 + size (Term f2 l2))) with (S (size t1) + size (Term f2 l2)); trivial;
-rewrite plus_comm; apply plus_le_compat_l.
+rewrite Nat.add_comm; apply Nat.add_le_mono_l.
 apply size_direct_subterm; trivial.
 assert (IHs1l2 : forall t2, In t2 l2 -> rpo rpo_infos.(bb) (Term f1 l1) t2 ->
      rpo_eval rpo_infos n (Term f1 l1) t2 = Some Less_than /\
       rpo_eval rpo_infos n t2 (Term f1 l1) = Some Greater_than).
 intros; apply IHn; trivial.
-rewrite plus_comm;
-apply le_S_n; refine (le_trans _ _ _ _ St);
+rewrite Nat.add_comm;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t2 + size (Term f1 l1))) with (S (size t2) + size (Term f1 l1)); trivial;
-apply plus_le_compat_r.
+apply Nat.add_le_mono_r.
 apply size_direct_subterm; trivial.
 assert (IHl2s1 : forall t2, In t2 l2 -> rpo rpo_infos.(bb) t2 (Term f1 l1) ->
      rpo_eval rpo_infos n t2 (Term f1 l1) = Some Less_than /\
       rpo_eval rpo_infos n (Term f1 l1) t2 = Some Greater_than).
 intros; apply IHn; trivial.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size t2 + size (Term f1 l1))) with (S (size t2) + size (Term f1 l1)); trivial;
-apply plus_le_compat_r.
+apply Nat.add_le_mono_r.
 apply size_direct_subterm; trivial.
 inversion t1_lt_t2 as
 [ f2' l2' u1 s2 s2_in_l2 u1_le_s2
@@ -5514,10 +5514,10 @@ exists s2'; split; trivial.
 rewrite (equiv_rpo_equiv_3  _ s2_eq_s2') in u1_le_s2.
 inversion u1_le_s2; subst.
 rewrite (@rpo_eval_is_complete_equivalent rpo_infos n (Term f1 l1) s2'); trivial.
-rewrite plus_comm;
-apply le_S_n; refine (le_trans _ _ _ _ St);
+rewrite Nat.add_comm;
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size s2' + size (Term f1 l1))) with (S (size s2') + size (Term f1 l1)); trivial;
-apply plus_le_compat_r.
+apply Nat.add_le_mono_r.
 apply size_direct_subterm; simpl; trivial.
 destruct (IHs1l2 s2' s2'_in_l2 H0) as [H1 _]; rewrite H1; trivial.
 rewrite t1_lt_l2; simpl; trivial.
@@ -5539,9 +5539,9 @@ subst l2; apply in_or_app; right; left; trivial.
 exists s2'; split; trivial.
 inversion u1_le_s2; subst.
 rewrite (@rpo_eval_is_complete_equivalent rpo_infos n s2' (Term f1 l1)); trivial.
-apply le_S_n; refine (le_trans _ _ _ _ St);
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St);
 replace (S (size s2' + size (Term f1 l1))) with (S (size s2') + size (Term f1 l1)); trivial;
-apply plus_le_compat_r.
+apply Nat.add_le_mono_r.
 apply size_direct_subterm; trivial.
 symmetry; transitivity s2; trivial.
 rewrite (equiv_rpo_equiv_1 _ s2_eq_s2') in H0.
@@ -5637,7 +5637,7 @@ absurd (@None comp = None); trivial.
 absurd (@None comp = None); trivial.
 (* 1/2 @Top_eq_lex *)
 split; [clear R' T' | clear R T].
-case_eq (beq_nat (length l1) (length l2)
+case_eq (Nat.eqb (length l1) (length l2)
     || leb (length l1) (bb rpo_infos) && leb (length l2) (bb rpo_infos)).
 clear L; intros L; rewrite L in R, T; clear L.
 set (s1 := Term f1 l1) in *; clearbody s1.
@@ -5714,9 +5714,9 @@ contradict f2_diff_f2; trivial.
 simpl in T; absurd (@None comp = None); trivial.
 simpl in T; absurd (@None comp = None); trivial.
 destruct L as [L | [L1 L2]].
-rewrite L; rewrite <- beq_nat_refl; intro; discriminate.
+rewrite L; rewrite Nat.eqb_refl; intro; discriminate.
 rewrite (leb_correct _ _ L1); rewrite (leb_correct _ _ L2); rewrite orb_true_r; intro; discriminate.
-case_eq (beq_nat (length l2) (length l1)
+case_eq (Nat.eqb (length l2) (length l1)
     || leb (length l2) (bb rpo_infos) && leb (length l1) (bb rpo_infos)).
 clear L; intros L; rewrite L in R', T'; clear L.
 set (s1 := Term f1 l1) in *; clearbody s1.
@@ -5770,7 +5770,7 @@ rewrite (proj2 (IHl1s2 _ u1_in_t1l1 u1_lt_s2)); apply eq_refl.
 rewrite H'; apply eq_refl.
 simpl.
 assert (H' := @rpo_eval_is_complete_equivalent rpo_infos n t2 t1).
-rewrite plus_comm in H'; generalize (H' (Sl _ _ (or_introl _ (eq_refl _))
+rewrite Nat.add_comm in H'; generalize (H' (Sl _ _ (or_introl _ (eq_refl _))
                         (or_introl _ (eq_refl _))) (@Equivalence_Symmetric _ _ equiv_equiv _ _ H3));
 clear H'; intro H'; rewrite H'.
 apply IHl2; trivial.
@@ -5790,7 +5790,7 @@ intros [f2_diff_f2 _]; absurd (f2 = f2); trivial. contradict f2_diff_f2. apply p
 simpl in T'; absurd (@None comp = None); trivial.
 simpl in T'; absurd (@None comp = None); trivial.
 destruct L as [L | [L1 L2]].
-rewrite L; rewrite <- beq_nat_refl; intro; discriminate.
+rewrite L; rewrite Nat.eqb_refl; intro; discriminate.
 rewrite (leb_correct _ _ L1); rewrite (leb_correct _ _ L2); rewrite orb_true_r; intro; discriminate.
 (* 1/1 Top_eq_mul *)
 set (s1 := Term f1 l1) in *.
@@ -6070,7 +6070,7 @@ destruct u1_mem_tl2' as [u2 [u1_eq_u2 u2_in_tl2']].
 destruct H' as [ll [ _ [P2 [_ H']]]].
 assert (K := H' _ _ u2_in_tl2' u1_in_l1').
 assert (Su : size u2 + size u1 <= n).
-rewrite plus_comm; apply Sl; [idtac | rewrite (in_permut_in P2); apply in_or_app; left]; assumption.
+rewrite Nat.add_comm; apply Sl; [idtac | rewrite (in_permut_in P2); apply in_or_app; left]; assumption.
 apply False_rect; generalize (@equiv_eval_is_sound rpo_infos n u2 u1 Su); rewrite K; intro E; apply E.
 symmetry; assumption.
 rewrite K; apply eq_refl.
@@ -6104,7 +6104,7 @@ generalize (rpo_eval_is_sound_weak rpo_infos n t1 t2)
 (@rpo_eval_is_complete_equivalent rpo_infos n t1 t2 St)
 (@rpo_eval_is_complete_less_greater rpo_infos n t1 t2 St)
 (@rpo_eval_terminates rpo_infos n t1 t2 St);
-rewrite plus_comm in St;
+rewrite Nat.add_comm in St;
 generalize (@rpo_eval_is_complete_less_greater rpo_infos n t2 t1 St).
 destruct (rpo_eval rpo_infos n t1 t2) as [ [ | | | ] | ]; trivial.
 intros not_t2_lt_t1 _ t1_diff_t2 not_t1_lt_t2 T; repeat split; intro H.

@@ -10,7 +10,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import Matrix AMonAlg VecUtil OrdSemiRing ATrs LogicUtil
      RelUtil NatUtil AWFMInterpretation.
-From Coq Require Import Max Setoid Morphisms.
+From Coq Require Import PeanoNat Setoid Morphisms.
 From CoLoR Require ABterm ATrs.
 
 Section MatrixLinearFunction.
@@ -281,8 +281,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         let mvl := maxvar (lhs r) in
         let mvr := maxvar (rhs r) in
         let m := max mvl mvr in
-        let lt := inject_term (le_max_l mvl mvr) in
-        let rt := inject_term (le_max_r mvl mvr) in
+        let lt := inject_term (Nat.le_max_l mvl mvr) in
+        let rt := inject_term (Nat.le_max_r mvl mvr) in
           (mi_of_term lt, mi_of_term rt).
 
       (** order characteristic for symbolically computed interpretation and 
@@ -372,7 +372,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
           (Vmap2 mat_vec_prod (Vconst (zero_matrix dim dim) k) (Vtail v))
           =v @zero_vec dim). 2:{ rewrite H, vector_plus_zero_l.
         replace (Vhead v) with (Vnth v ip). refl.
-        rewrite Vhead_nth, (lt_unique (lt_O_Sn k) ip). refl. }
+        rewrite Vhead_nth, (lt_unique (Nat.lt_0_succ k) ip). refl. }
         apply add_vectors_zero. apply Vforall_nth_intro. intros.
         rewrite Vnth_map2, Vnth_const.
         unfold M.mat_vec_prod. rewrite zero_matrix_mult_l.
@@ -387,7 +387,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         unfold zero_matrix, zero_vec.
         rewrite mat_build_elem, Vnth_const. refl.
         rewrite H, vector_plus_zero_l, IHi, Vnth_tail,
-          (le_unique (lt_n_S (lt_S_n ip)) ip). refl.
+          (le_unique (NatCompat.lt_n_S (NatCompat.lt_S_n ip)) ip). refl.
       Qed.
 
       Lemma mint_eval_eq_term_int_var : forall v (val : valuation I) k 
@@ -577,9 +577,9 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Proof.
         intros. simpl. split.
-        rewrite (mint_eval_eq_term_int val (le_max_l (maxvar l) (maxvar r))).
+        rewrite (mint_eval_eq_term_int val (Nat.le_max_l (maxvar l) (maxvar r))).
         refl.
-        rewrite (mint_eval_eq_term_int val (le_max_r (maxvar l) (maxvar r))).
+        rewrite (mint_eval_eq_term_int val (Nat.le_max_r (maxvar l) (maxvar r))).
         refl.
       Qed.
 

@@ -761,7 +761,7 @@ simpl; destruct t as [v | g ll].
 simpl; apply le_n_S; apply IHl; intros; apply Wl; right; trivial.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g | intro f_diff_g].
 rewrite length_app; replace (S (length l)) with (1 + length l); trivial;
-apply plus_le_compat.
+apply Nat.add_le_mono.
 assert (Wt : well_formed_cf (Term g ll)). apply Wl; left; trivial.
 unfold well_formed_cf in Wt; subst g; rewrite Af in Wt;
 destruct Wt as [_ [Lll _]]; auto with arith.
@@ -777,29 +777,29 @@ intros f l; pattern l; apply (list_rec3 size); clear l; induction n;
 destruct l as [ | t l]. 
 simpl; trivial.
 simpl; intro S_l; absurd (1 <= 0); auto with arith;
-apply le_trans with (size t + list_size size l); trivial;
-apply le_plus_trans; apply size_ge_one.
+apply Nat.le_trans with (size t + list_size size l); trivial.
+apply Nat.le_trans with (2 := Nat.le_add_r _ _), size_ge_one.
 simpl; trivial.
 intros Sl Af Wl;
 replace (t :: l) with ((t :: nil) ++ l); trivial;
 rewrite map_app; rewrite flatten_app; do 2 rewrite length_app;
-apply plus_le_compat.
+apply Nat.add_le_mono.
 assert (Wt : well_formed t). apply Wl; left; trivial.
 destruct t as [v | g ll]; simpl; auto with arith.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g | intro f_diff_g].
 subst g; rewrite <- app_nil_end; rewrite Af; rewrite length_quicksort;
-apply le_trans with (length ll).
+apply Nat.le_trans with (length ll).
 elim (well_formed_unfold Wt); rewrite Af; intros _ Lll; rewrite Lll; auto with arith.
 apply IHn; trivial.
 apply le_S_n; 
-apply le_trans with (size (Term f ll) + list_size size l); trivial;
-rewrite size_unfold; simpl; apply le_n_S; apply le_plus_l.
+apply Nat.le_trans with (size (Term f ll) + list_size size l); trivial;
+rewrite size_unfold; simpl; apply le_n_S; apply Nat.le_add_r.
 elim (well_formed_unfold Wt); rewrite Af; trivial.
 apply le_n.
 apply IHn; trivial.
-apply plus_le_reg_l with 1; 
-apply le_trans with (size t + list_size size l); trivial;
-apply plus_le_compat_r; apply size_ge_one.
+apply Nat.add_le_mono_l with 1; 
+apply Nat.le_trans with (size t + list_size size l); trivial;
+apply Nat.add_le_mono_r; apply size_ge_one.
 intros; apply Wl; right; trivial.
 Qed.
 
@@ -810,7 +810,7 @@ intros cf [t [Wt Ct]]; subst; generalize Wt; clear Wt.
 pattern t; apply term_rec2; clear t; induction n as [ | n ];
 intros t St Wt.
 absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 apply well_formed_cf_fold; destruct t as [ v | f l ]; simpl; trivial.
 generalize (well_formed_unfold Wt); intros [Wl L].
 assert (Wl' : forall t, In t (map canonical_form l)  -> well_formed_cf t).
@@ -818,10 +818,10 @@ clear Wt L; rewrite size_unfold in St; induction l as [ | t1 l ].
 contradiction.
 intros t In_t; elim In_t; clear In_t; intro In_t; subst.
 apply IHn;
-[ apply le_trans with (list_size size (t1 :: l)); simpl; auto with arith
+[ apply Nat.le_trans with (list_size size (t1 :: l)); simpl; auto with arith
 | apply Wl; left; trivial ].
 apply IHl; trivial;
-[ apply le_trans with (1 + list_size size (t1 :: l)); simpl; auto with arith
+[ apply Nat.le_trans with (1 + list_size size (t1 :: l)); simpl; auto with arith
 | intros; apply Wl; right; trivial].
 destruct_arity f a Af.
 (* AC *)
@@ -848,8 +848,8 @@ intro l; pattern l; apply (list_rec3 size); clear l;
 induction n0 as [ | m]; destruct l as [ | t l ].
 contradiction.
 intro H; absurd (1 <= 0); auto with arith; 
-apply le_trans with (list_size size (t :: l)); trivial;
-apply le_trans with (size t); simpl; auto with arith; apply size_ge_one.
+apply Nat.le_trans with (list_size size (t :: l)); trivial;
+apply Nat.le_trans with (size t); simpl; auto with arith; apply size_ge_one.
 contradiction.
 assert (H:=flatten_app f (t :: nil) l); simpl app in H; rewrite H; clear H.
 intros Sl In_u Wl; elim (in_app_or _ _ _ In_u); clear In_u; intro In_u.
@@ -861,9 +861,9 @@ subst g; rewrite <- app_nil_end in In_u;
 apply well_formed_cf_alien with ll; trivial.
 elim In_u; clear In_u; intro In_u; subst; trivial; contradiction.
 apply (IHm l); trivial.
-apply le_S_n; apply le_trans with (1 + list_size size l); auto with arith;
-apply le_trans with (size t + list_size size l); trivial;
-apply plus_le_compat_r; apply size_ge_one.
+apply le_S_n; apply Nat.le_trans with (1 + list_size size l); auto with arith;
+apply Nat.le_trans with (size t + list_size size l); trivial;
+apply Nat.add_le_mono_r; apply size_ge_one.
 intros; apply Wl; right; trivial.
 (* C *)
 split; [idtac | split].
@@ -984,8 +984,8 @@ apply in_or_app; [ left | right; right ]; trivial.
 apply well_formed_cf_build; trivial.
 apply le_S_n; replace (S (length (l1 ++ l2))) with (length (l1 ++ t :: l2)).
 apply well_formed_cf_length with f; trivial.
-do 2 rewrite length_app; rewrite plus_comm; simpl; 
-rewrite plus_comm; trivial.
+do 2 rewrite length_app; rewrite Nat.add_comm; simpl; 
+rewrite Nat.add_comm; trivial.
 intros u In_u; apply (well_formed_cf_subterms W); apply H; trivial.
 intros u In_u; apply (well_formed_cf_alien Af W); apply H; trivial.
 Qed.
@@ -1212,14 +1212,14 @@ Proof.
 intros f sigma Af Wsigma l Wl; induction l as [ | t l]; trivial.
 replace (t::l) with ((t::nil) ++ l); trivial;
 rewrite map_app; rewrite flatten_app; 
-do 2 rewrite length_app; apply plus_le_compat.
+do 2 rewrite length_app; apply Nat.add_le_mono.
 assert (Wtsigma : well_formed_cf (apply_cf_subst sigma t)).
 apply well_formed_cf_apply_subst; trivial; apply Wl; left; trivial.
 simpl map;
 destruct (apply_cf_subst sigma t) as [ v | g ll ]; simpl; trivial;
 simpl; generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g; subst g | intros _]; trivial.
 rewrite <- app_nil_end;
-apply le_trans with 2; auto with arith;
+apply Nat.le_trans with 2; auto with arith;
 apply well_formed_cf_length with f; trivial.
 apply IHl; intros; apply Wl; right; trivial.
 Qed.
@@ -1331,10 +1331,10 @@ Qed.
 Lemma ac_one_step_at_top_size_eq :
   forall t1 t2, ac_one_step_at_top t1 t2 -> size t1 = size t2.
 Proof.
-intros t1 t2 H; destruct H; simpl; repeat rewrite plus_0_r; auto with arith;
-rewrite (plus_comm (size t1) (S (size t2 + size t3))); simpl;
+intros t1 t2 H; destruct H; simpl; repeat rewrite Nat.add_0_r; auto with arith;
+rewrite (Nat.add_comm (size t1) (S (size t2 + size t3))); simpl;
 apply (f_equal (fun n => S (S n)));
-rewrite <- (plus_assoc (size t1) (size t2) (size t3)); apply plus_comm.
+rewrite <- (Nat.add_assoc (size t1) (size t2) (size t3)); apply Nat.add_comm.
 Qed.
 
 Lemma sym_refl_ac_one_step_at_top_size_eq :
@@ -1429,12 +1429,12 @@ rewrite Af; rewrite <- app_nil_end;
 generalize (well_formed_cf_length Af Wu); intro Ll;
 destruct (length l) as [ | n].
 absurd (2 <= 0); auto with arith.
-rewrite (plus_comm (list_size ac_size l)); simpl;
-do 2 rewrite <- minus_n_O; trivial.
+rewrite (Nat.add_comm (list_size ac_size l)); simpl;
+do 2 rewrite Nat.sub_0_r; trivial.
 simpl; rewrite (list_size_fold ac_size); trivial.
-simpl; rewrite plus_0_r; apply sym_eq;
-rewrite plus_comm; simpl;
-rewrite <- minus_n_O; trivial.
+simpl; rewrite Nat.add_0_r; apply sym_eq;
+rewrite Nat.add_comm; simpl;
+rewrite Nat.sub_0_r; trivial.
 Qed.
 
 Lemma size_size_aux3 :
@@ -1475,7 +1475,7 @@ destruct l as [ | t1 [ | t2 [ | t3 l]]];
 [absurd (0 = 2) | absurd (1 = 2) | idtac | absurd (S(S(S(length l))) = 2)];
 auto with arith.
 simpl map; simpl list_size;
-rewrite plus_0_r;
+rewrite Nat.add_0_r;
 rewrite (Hl t1 (or_introl _ (eq_refl _)));
 rewrite (Hl t2 (or_intror _ (or_introl _ (eq_refl _)))).
 assert (W1 : well_formed_cf (canonical_form t1)).
@@ -1489,21 +1489,21 @@ destruct (canonical_form t2) as [v2 | f2 ll2]; trivial.
 simpl flatten;
 generalize (F.Symb.eq_bool_ok f f2); case (F.Symb.eq_bool f f2); [intros f_eq_f2; subst f2 | intros f_diff_f2].
 simpl; rewrite <- app_nil_end; simpl; rewrite Af.
-rewrite (list_size_fold ac_size); rewrite <- minus_n_O.
+rewrite (list_size_fold ac_size); rewrite Nat.sub_0_r.
 generalize (well_formed_cf_length Af W2).
 intro Lll2; destruct (length ll2) as [ | n2].
 absurd (2 <= 0); auto with arith.
-simpl; rewrite <- minus_n_O;
-apply sym_eq; rewrite plus_comm; simpl; rewrite plus_comm; trivial.
-simpl; rewrite plus_0_r; trivial.
+simpl; rewrite Nat.sub_0_r;
+apply sym_eq; rewrite Nat.add_comm; simpl; rewrite Nat.add_comm; trivial.
+simpl; rewrite Nat.add_0_r; trivial.
 simpl flatten;
 generalize (F.Symb.eq_bool_ok f f1); case (F.Symb.eq_bool f f1); [intros f_eq_f1; subst f1 | intros f_diff_f1].
 simpl; rewrite Af; rewrite (list_size_fold ac_size).
 generalize (well_formed_cf_length Af W1);
 intro Lll1; rewrite length_app; destruct (length ll1) as [ | n1].
 absurd (2 <= 0); auto with arith.
-rewrite list_size_app; simpl; do 2 rewrite <- minus_n_O;
-rewrite (plus_comm n1 1); simpl; rewrite plus_assoc; trivial.
+rewrite list_size_app; simpl; do 2 rewrite Nat.sub_0_r;
+rewrite (Nat.add_comm n1 1); simpl; rewrite Nat.add_assoc; trivial.
 trivial.
 replace (flatten f (Term f1 ll1 :: Term f2 ll2 :: nil)) with
    ((flatten f (Term f1 ll1 :: nil)) ++ (flatten f (Term f2 ll2 :: nil))).
@@ -1518,30 +1518,30 @@ absurd (2 <= 0); auto with arith.
 unfold DOS.A in *; generalize (well_formed_cf_length Af W2);
 intro Lll2; destruct (length ll2) as [ | n2].
 absurd (2 <= 0); auto with arith.
-simpl; do 3 rewrite <- minus_n_O;
-rewrite (plus_comm n1 (S n2)); simpl; rewrite (plus_comm n2 n1);
-do 2 rewrite <- plus_assoc; apply (f_equal (fun n => S (n1 + n)));
-rewrite plus_comm; rewrite <- plus_assoc;
-apply (f_equal (fun n => n2 + n)); apply plus_comm.
+simpl; do 3 rewrite Nat.sub_0_r;
+rewrite (Nat.add_comm n1 (S n2)); simpl; rewrite (Nat.add_comm n2 n1);
+do 2 rewrite <- Nat.add_assoc; apply (f_equal (fun n => S (n1 + n)));
+rewrite Nat.add_comm; rewrite <- Nat.add_assoc;
+apply (f_equal (fun n => n2 + n)); apply Nat.add_comm.
 
 rewrite Af; rewrite <- app_nil_end; rewrite list_size_app; simpl;
-do 2 rewrite (list_size_fold ac_size); simpl; rewrite plus_0_r;
-rewrite (plus_comm (length ll1) 1); simpl; rewrite <- minus_n_O;
+do 2 rewrite (list_size_fold ac_size); simpl; rewrite Nat.add_0_r;
+rewrite (Nat.add_comm (length ll1) 1); simpl; rewrite Nat.sub_0_r;
 unfold DOS.A in *; generalize (well_formed_cf_length Af W1);
 intro Lll1; destruct (length ll1) as [ | n1].
 absurd (2 <= 0); auto with arith.
-simpl; rewrite <- minus_n_O; rewrite <- plus_assoc; trivial.
+simpl; rewrite Nat.sub_0_r; rewrite <- Nat.add_assoc; trivial.
 
 rewrite Af; rewrite <- app_nil_end.
 do 2 rewrite (list_size_fold ac_size).
 unfold DOS.A in *; generalize (well_formed_cf_length Af W2);
 intro Lll2; destruct (length ll2) as [ | n2].
 absurd (2 <= 0); auto with arith.
-simpl minus;  rewrite <- minus_n_O; simpl plus; do 3 rewrite plus_assoc;
+simpl minus;  rewrite Nat.sub_0_r; simpl plus; do 3 rewrite Nat.add_assoc;
 apply (f_equal (fun n => S (n + list_size ac_size ll2))).
-rewrite plus_comm; rewrite plus_assoc; rewrite (list_size_fold ac_size); trivial.
+rewrite Nat.add_comm; rewrite Nat.add_assoc; rewrite (list_size_fold ac_size); trivial.
 
-simpl; rewrite plus_0_r; trivial.
+simpl; rewrite Nat.add_0_r; trivial.
 rewrite <- flatten_app; simpl app; trivial.
 apply permut_size with (@eq term).
 intros; subst; trivial.

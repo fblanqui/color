@@ -118,11 +118,11 @@ Fixpoint prodn n A : Type :=
 
 Fixpoint projn n {A} : prodn n A -> forall i, i<n -> A :=
   match n as n return prodn n A -> forall i, i<n -> A with
-    | 0 => fun xs i (hi : i<0) => False_rect _ (lt_n_0 hi)
+    | 0 => fun xs i (hi : i<0) => False_rect _ (Nat.nlt_0_r hi)
     | S n' => fun xs i =>
       match i as i return i<S n' -> A with
         | 0 => fun _ => fst xs
-        | S i' => fun hi => projn (snd xs) (lt_S_n hi)
+        | S i' => fun hi => projn (snd xs) (NatCompat.lt_S_n hi)
       end
   end.
 
@@ -153,18 +153,18 @@ Section lexn.
     intros [x xs] [y ys]. simpl lexn. split; intro h.
     (* -> *)
     inversion h; clear h; subst.
-    ex 0 (lt_0_Sn n). split. simpl projn. hyp. intros. lia.
+    ex 0 (Nat.lt_0_succ n). split. simpl projn. hyp. intros. lia.
     rewrite IHn in H4. destruct H4 as [i [hi [h1 h2]]].
-    ex (S i) (lt_n_S hi). split.
-    simpl. rewrite lt_unique with (h1 := lt_S_n (lt_n_S hi)) (h2:=hi). hyp.
+    ex (S i) (NatCompat.lt_n_S hi). split.
+    simpl. rewrite lt_unique with (h1 := NatCompat.lt_S_n (NatCompat.lt_n_S hi)) (h2:=hi). hyp.
     intros [|j] k hj; simpl. hyp. apply h2. lia.
     (* <- *)
     destruct h as [i [hi [h1 h2]]]. destruct i as [|i].
     apply lex1. hyp. 
-    apply lex2. gen (h2 _ (lt_0_Sn i) (lt_0_Sn n)). simpl. auto.
-    rewrite IHn. ex i (lt_S_n hi). split. fo.
-    intros j ji jn. gen (h2 _ (lt_n_S ji) (lt_n_S jn)). simpl.
-    rewrite lt_unique with (h1 := lt_S_n (lt_n_S jn)) (h2:=jn). auto.
+    apply lex2. gen (h2 _ (Nat.lt_0_succ i) (Nat.lt_0_succ n)). simpl. auto.
+    rewrite IHn. ex i (NatCompat.lt_S_n hi). split. fo.
+    intros j ji jn. gen (h2 _ (NatCompat.lt_n_S ji) (NatCompat.lt_n_S jn)). simpl.
+    rewrite lt_unique with (h1 := NatCompat.lt_S_n (NatCompat.lt_n_S jn)) (h2:=jn). auto.
   Qed.
 
   (** Wellfoundedness. *)

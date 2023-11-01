@@ -11,7 +11,7 @@ polynomials with non-negative integers as coefficients
 Set Implicit Arguments.
 
 From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction VecUtil.
-From Coq Require Import List Max Lia.
+From Coq Require Import List Lia.
 
 From CoLoR Require ListUtil.
 

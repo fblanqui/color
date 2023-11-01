@@ -11,7 +11,6 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ATrs NatUtil LogicUtil ListUtil SN EqUtil VecUtil
      RelUtil BoundNat.
-From Coq Require Import Max.
 
 (***********************************************************************)
 (** flat context closure of a rule *)
@@ -129,8 +128,8 @@ Section S.
       unfold flat_conts. rewrite in_flat_map. exists g. split. apply Fs_ok.
       unfold flat_conts_symb. rewrite in_map_iff. exists (N_ h). split_all.
       apply In_L.
-      trans (maxvar_rule (mkRule l r)). lia. apply le_max_r.
-      trans (maxvar_rule (mkRule l r)). lia. apply le_max_l.
+      trans (maxvar_rule (mkRule l r)). lia. apply Nat.le_max_r.
+      trans (maxvar_rule (mkRule l r)). lia. apply Nat.le_max_l.
     Qed.
 
     Lemma rtc_red_one_flat_cont_intro : forall t u, red R # t u ->
@@ -216,7 +215,7 @@ Module FlatCCProps (Import F : FlatCC).
 
     Proof.
       eapply WF_red_mod_flat. apply arity_some_symbol. apply Fs_ok.
-      apply le_max_l. apply le_max_r.
+      apply Nat.le_max_l. apply Nat.le_max_r.
     Qed.
 
   End red_mod.
@@ -232,7 +231,7 @@ Module FlatCCProps (Import F : FlatCC).
     Lemma WF_red_flat : WF (red R) <-> WF (red flat_rules).
 
     Proof.
-      eapply WF_red_flat. apply arity_some_symbol. apply Fs_ok. apply le_refl.
+      eapply WF_red_flat. apply arity_some_symbol. apply Fs_ok. apply Nat.le_refl.
     Qed.
 
   End red.

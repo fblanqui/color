@@ -714,8 +714,8 @@ Section remove.
   Lemma length_remove : forall (x : A) l, length (remove x l) <= length l.
 
   Proof.
-    induction l; simpl; intros. apply le_O_n. destruct (eq_dec a x).
-    apply le_trans with (length l). apply IHl. apply le_n_Sn. simpl.
+    induction l; simpl; intros. apply Nat.le_0_l. destruct (eq_dec a x).
+    apply Nat.le_trans with (length l). apply IHl. apply Nat.le_succ_diag_r. simpl.
     apply le_n_S. apply IHl.
   Qed.
 
@@ -724,8 +724,8 @@ Section remove.
 
   Proof.
     induction l; simpl; intros. contr. destruct (eq_dec a x).
-    apply le_lt_n_Sm.
-    apply length_remove. destruct H. rewrite H in n. tauto. simpl. apply lt_n_S.
+    apply NatCompat.le_lt_n_Sm.
+    apply length_remove. destruct H. rewrite H in n. tauto. simpl. apply NatCompat.lt_n_S.
     apply IHl. hyp.
   Qed.
 
@@ -956,7 +956,7 @@ Section pos.
 
     Proof.
       induction l; intro h; simpl. fo. destruct (eq_dec a x). lia.
-      apply lt_n_S. fo.
+      apply NatCompat.lt_n_S. fo.
     Qed.
 
   End def.
@@ -1104,7 +1104,7 @@ Section Element_At_List.
 
   Proof.
     induction l; intros.
-    simpl. rewrite <- minus_n_O. refl.
+    simpl. rewrite Nat.sub_0_r. refl.
     destruct p. inversion H.
     simpl. rewrite IHl. refl. intuition.
   Qed.
@@ -1649,11 +1649,11 @@ Section ith.
 
   Fixpoint ith (l : list A) : forall i, i < length l -> A :=
     match l as l return forall i, i < length l -> A with
-      | nil => fun i H => False_rect A (lt_n_O H)
+      | nil => fun i H => False_rect A (Nat.nlt_0_r H)
       | cons x m => fun i =>
         match i return i < S (length m) -> A with
 	  | O => fun _ => x
-	  | S j => fun H => ith (lt_S_n H)
+	  | S j => fun H => ith (NatCompat.lt_S_n H)
         end
     end.
 
@@ -1710,7 +1710,7 @@ Section pvalues.
     match n as n return (forall i, i < n -> A) -> list A with
       | 0 => fun _ => nil
       | S k => fun f =>
-        f 0 (lt_O_Sn k) :: pvalues (fun i h => f (S i) (lt_n_S h))
+        f 0 (Nat.lt_0_succ k) :: pvalues (fun i h => f (S i) (NatCompat.lt_n_S h))
     end.
 
   Lemma pvalues_eq : forall n (f g : forall i, i < n -> A),

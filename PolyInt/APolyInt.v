@@ -11,8 +11,6 @@ proof of the termination criterion based on polynomial interpretations
 
 Set Implicit Arguments.
 
-From Coq Require Import Max.
-
 From CoLoR Require Import ATerm ABterm ListUtil VecUtil
   PositivePolynom AInterpretation ZUtil NaryFunction ARelation RelUtil
   LogicUtil SN Polynom MonotonePolynom NatUtil ATrs BoundNat AWFMInterpretation
@@ -35,7 +33,7 @@ Section S.
 
     Fixpoint termpoly k (t : bterm k) : poly (S k) :=
       match t with
-        | BVar H => ((1)%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: List.nil
+        | BVar H => ((1)%Z, mxi (NatCompat.gt_le_S (NatCompat.le_lt_n_Sm H))) :: List.nil
         | BFun f v => pcomp (PI f) (Vmap (@termpoly k) v)
       end.
 
@@ -165,13 +163,13 @@ Section S.
       Vforall (@P xint k) ts.
 
     Lemma termpoly_v_eq_1 : forall x k (H : (x<=k)%nat),
-      termpoly (BVar H) = (1%Z, mxi (gt_le_S (le_lt_n_Sm H))) :: pzero (S k).
+      termpoly (BVar H) = (1%Z, mxi (NatCompat.gt_le_S (NatCompat.le_lt_n_Sm H))) :: pzero (S k).
 
     Proof. refl. Qed.
 
     Lemma termpoly_v_eq_2 :
       forall x k (H : (x<=k)%nat) (v : vector Z (S k)),
-        peval (termpoly (BVar H)) v = meval (mxi (gt_le_S (le_lt_n_Sm H))) v.
+        peval (termpoly (BVar H)) v = meval (mxi (NatCompat.gt_le_S (NatCompat.le_lt_n_Sm H))) v.
 
     Proof.
       intros x k H v. rewrite termpoly_v_eq_1. unfold pzero. unfold peval at 1.
@@ -185,7 +183,7 @@ Section S.
       intros v Hv. unfold P, f1, f2. simpl bterm_int.
       rewrite val_peval_D, termpoly_v_eq_2, meval_xi, Vnth_map.
       pattern (xint v) at 1.
-      rewrite <- (Vnth_vec_of_val xint (gt_le_S (le_lt_n_Sm Hv))).
+      rewrite <- (Vnth_vec_of_val xint (NatCompat.gt_le_S (NatCompat.le_lt_n_Sm Hv))).
       refl.
 
       intros f ts. unfold Q. intro H. unfold P, f1, f2.
@@ -233,7 +231,7 @@ Section S.
     Local Open Scope poly_scope.
 
     Hint Unfold maxvar_le : core.
-    Hint Resolve le_max_l le_max_r : core.
+    Hint Resolve Nat.le_max_l Nat.le_max_r : core.
 
     Program Definition rulePoly_ge rule := 
       let l := lhs rule in let r := rhs rule in
@@ -251,8 +249,8 @@ Section S.
     Proof.
       intros r H_coef_pos. unfold succ, IR. intro xint. unfold Dgt, Dlt, transp.
       set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)),
-              (PI_term_int_eq xint (le_max_r mvl mvr)).
+      rewrite (PI_term_int_eq xint (Nat.le_max_l mvl mvr)),
+              (PI_term_int_eq xint (Nat.le_max_r mvl mvr)).
       rewrite !val_peval_D.
       pose (v := (Vmap (proj1_sig (P:=pos))
         (vec_of_val xint (S (max mvl mvr))))).
@@ -267,8 +265,8 @@ Section S.
       intros r H_coef_pos. unfold succ_eq, IR. intro xint.
       unfold Dge, Dle, transp.
       set (mvl := maxvar (lhs r)). set (mvr := maxvar (rhs r)).
-      rewrite (PI_term_int_eq xint (le_max_l mvl mvr)),
-              (PI_term_int_eq xint (le_max_r mvl mvr)), !val_peval_D.
+      rewrite (PI_term_int_eq xint (Nat.le_max_l mvl mvr)),
+              (PI_term_int_eq xint (Nat.le_max_r mvl mvr)), !val_peval_D.
       apply pos_le. rewrite <- peval_minus.
       apply pos_peval. exact H_coef_pos.
     Qed.

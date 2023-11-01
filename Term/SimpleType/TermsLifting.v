@@ -62,8 +62,8 @@ Module TermsLifting (Sig : TermsSig.Signature).
     assert (x_E: x < length E).
     rewrite_lr (nth_in E x).
     destruct (nth_error E x); discr.
-    assert (k_E: Min.min k (length E) = k).
-    apply Min.min_l.
+    assert (k_E: Nat.min k (length E) = k).
+    apply Nat.min_l.
     lia.
     rewrite nth_app_right; autorewrite with datatypes.
     rewrite k_E.
@@ -83,7 +83,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite nth_app_left.
     rewrite initialSeg_nth; trivial.
     autorewrite with datatypes.
-    apply (Min.min_case2 k (length E)); trivial.
+    apply (Nat.min_case k (length E)); trivial.
     rewrite_lr (nth_in E x).
     destruct (nth_error E x); discr.    
   Qed.
@@ -102,9 +102,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
     assert (length q = length E + n).
     unfold q.
     do 2 rewrite length_app.
-    rewrite plus_comm.
-    rewrite <- plus_assoc.
-    rewrite (plus_comm (length (finalSeg E k)) (length (initialSeg E k))).
+    rewrite Nat.add_comm.
+    rewrite <- Nat.add_assoc.
+    rewrite (Nat.add_comm (length (finalSeg E k)) (length (initialSeg E k))).
     rewrite initialFinalSeg_length.
     autorewrite with datatypes using lia.
     rewrite H0 in w; lia.
@@ -113,17 +113,17 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (le_lt_dec k (length E)).
     rewrite nth_app_right in Ex.
     rewrite copy_length in Ex.
-    rewrite Min.min_l in Ex; trivial.
+    rewrite Nat.min_l in Ex; trivial.
     rewrite (finalSeg_nth_nth E x_k).
     replace (x - k) with (x + n - k - n); trivial.
     lia.
     autorewrite with datatypes.
-    rewrite Min.min_l; trivial.
+    rewrite Nat.min_l; trivial.
     lia.
     lia.
     autorewrite with datatypes.
     destruct (le_gt_dec k (length E)).
-    rewrite Min.min_l; solve [trivial | lia].
+    rewrite Nat.min_l; solve [trivial | lia].
     lia.
   Qed.
 
@@ -137,11 +137,11 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite nth_app_left in Ex.
     rewrite <- (initialSeg_nth E x_k); trivial.
     autorewrite with datatypes.
-    rewrite Min.min_l; trivial.
+    rewrite Nat.min_l; trivial.
     destruct (le_gt_dec (length E) x).
     rewrite nth_app_right in Ex.
     rewrite initialSeg_length in Ex.
-    rewrite Min.min_r in Ex; [trivial | lia].
+    rewrite Nat.min_r in Ex; [trivial | lia].
     rewrite finalSeg_empty in Ex; trivial.
     rewrite <- app_nil_end in Ex.
     destruct (le_gt_dec (length (copy n (A := option SimpleType) None)) 
@@ -153,12 +153,12 @@ Module TermsLifting (Sig : TermsSig.Signature).
     set (w := nth_copy_in (A:=option SimpleType) (n:=n) None H); try_solve.
     lia.    
     autorewrite with datatypes.
-    rewrite Min.min_r; trivial.
+    rewrite Nat.min_r; trivial.
     lia.
     rewrite nth_app_left in Ex.
     rewrite <- (initialSeg_nth E x_k); trivial.
     autorewrite with datatypes.
-    rewrite Min.min_r; lia.
+    rewrite Nat.min_r; lia.
   Qed.
 
   Global Hint Rewrite liftedEnv_var_lifted liftedEnv_var_notLifted
@@ -387,10 +387,10 @@ Module TermsLifting (Sig : TermsSig.Signature).
 
      (* equality of environments *)
     rewrite envL, envRn, envRm. unfold liftedEnv; simpl.    
-    rewrite !finalSeg_full, plus_comm, copy_split, app_ass; trivial.
+    rewrite !finalSeg_full, Nat.add_comm, copy_split, app_ass; trivial.
 
      (* equality of preterms *)
-    rewrite termL, termRn, termRm, plus_comm. fold (prelift (term Pt) (n+m)).
+    rewrite termL, termRn, termRm, Nat.add_comm. fold (prelift (term Pt) (n+m)).
     rewrite prelift_fold. trivial.
   Qed.
 
@@ -653,15 +653,15 @@ Module TermsLifting (Sig : TermsSig.Signature).
     intros E x A k Ek0 Ex k_x.
     assert (x_E: x < length E).
     rewrite_lr (nth_in E x); unfold VarD in Ex; try_solve.
-    destruct (le_lt_or_eq k_x) as [k_lt_x | k_eq_x].
+    destruct (proj1 (Nat.lt_eq_cases _ _) k_x) as [k_lt_x | k_eq_x].
     destruct x.
     lia.
     unfold VarD, loweredEnv.
     rewrite nth_app_right.
     unfold finalSeg; simpl.
     destruct E; try_solve.
-    assert (k_E: Min.min k (S (length E)) = k).
-    rewrite Min.min_l; lia.
+    assert (k_E: Nat.min k (S (length E)) = k).
+    rewrite Nat.min_l; lia.
     rewrite seg_nth.
     rewrite initialSeg_length; simpl.
     rewrite k_E.
@@ -669,7 +669,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite initialSeg_length; simpl.
     rewrite k_E; lia.
     rewrite initialSeg_length.
-    rewrite Min.min_l; lia.
+    rewrite Nat.min_l; lia.
     rewrite k_eq_x in Ek0.
     unfold VarD in Ex; destruct Ek0; try_solve.
   Qed.
@@ -683,7 +683,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite nth_app_left.
     rewrite initialSeg_nth; trivial.
     rewrite initialSeg_length; trivial.
-    apply Min.min_case2; trivial.
+    apply Nat.min_case; trivial.
     rewrite_lr (nth_in E x); unfold VarD in Ex; try_solve.
   Qed.
 
@@ -697,9 +697,9 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite initialSeg_length in Ex.
     destruct (le_gt_dec (length E) k).
     rewrite finalSeg_empty in Ex.
-    destruct (x - Min.min k (length E)); try_solve.
+    destruct (x - Nat.min k (length E)); try_solve.
     lia.
-    rewrite Min.min_l in Ex.
+    rewrite Nat.min_l in Ex.
     destruct (le_gt_dec (length E) (S x)).
     rewrite nth_beyond in Ex; try_solve.
     rewrite finalSeg_length.
@@ -709,7 +709,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     lia.
     lia.
     rewrite initialSeg_length.
-    set (w := Min.le_min_l k (length E)).
+    set (w := Nat.le_min_l k (length E)).
     lia.
   Qed.
 
@@ -724,18 +724,18 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite nth_app_left in Ex; trivial.
     rewrite <- (initialSeg_nth E kx); trivial.
     autorewrite with datatypes.
-    apply Min.min_case2; lia.
+    apply Nat.min_case; lia.
     rewrite nth_app_right in Ex.
     rewrite finalSeg_empty in Ex.
     destruct (x - length (initialSeg E k)); try_solve.
     lia.
     autorewrite with datatypes.
-    rewrite Min.min_r; trivial.
+    rewrite Nat.min_r; trivial.
     lia.
     rewrite nth_app_left in Ex.
     rewrite initialSeg_nth in Ex; trivial.
     autorewrite with datatypes.
-    apply Min.min_case2; lia.
+    apply Nat.min_case; lia.
   Qed.
 
   Lemma prelower_prelift_aux : forall Pt i j k, k >= j -> k <= i + j + 1 ->

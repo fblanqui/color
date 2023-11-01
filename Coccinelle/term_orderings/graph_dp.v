@@ -123,7 +123,7 @@ intros u v; rewrite G; split.
 intros [[ | [ | i]] [i_le_n Hi]].
 destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply eq_refl.
 destruct Hi as [Hi _]; exists 1; split.
-apply le_n_S; apply le_O_n.
+apply le_n_S; apply Nat.le_0_l.
 split; [unfold comp'; rewrite Hi; apply eq_refl | discriminate].
 exists (S i); split.
 apply le_S_n; assumption.
@@ -135,7 +135,7 @@ destruct Hi as [_ Hi]; apply False_rect; apply Hi; apply eq_refl.
 destruct Hi as [Hi _]; exists (comp (u,v)); split.
 unfold comp' in Hi; destruct (comp (u,v)) as [ | [ | c]]; 
 [ discriminate 
-| apply le_n_S; apply le_O_n 
+| apply le_n_S; apply Nat.le_0_l 
 | injection Hi; intros; subst; apply le_n_S; assumption].
 split; [apply eq_refl | unfold comp' in Hi; destruct (comp (u,v)); discriminate].
 

@@ -570,7 +570,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     destruct (varSubst_dec G x) as [[T GxT] | Gxn].
     rewrite GxT.
     rewrite (nth_lift_subst_s G n x GxT).
-    rewrite plus_comm.
+    rewrite Nat.add_comm.
     rewrite lift_fold; trivial.
     destruct (var_notSubst_lift n Gxn) as [Nglx | Nglx];
       destruct Gxn as [Ngx | Ngx];
@@ -775,7 +775,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     autorewrite with terms.
     rewrite <- prelift_fold.
     unfold prelift; rewrite prelift_aux_fold_aux; try_solve; try lia.
-    rewrite plus_comm; trivial.
+    rewrite Nat.add_comm; trivial.
     destruct (var_notSubst_lift j Gn); destruct Gn;
       rewrite H; rewrite H0; simpl; destruct (Compare_dec.le_gt_dec i x); solve
 	[ lia
@@ -1114,7 +1114,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     autorewrite with datatypes using trivial.
     rewrite nth_app_right; autorewrite with datatypes.
     rewrite x_eq_n.
-    rewrite <- (minus_n_n n); simpl.
+    rewrite (Nat.sub_diag n); simpl.
     destruct (isVarDecl_dec E0 0) as [[B EB] | En]; trivial.
     lia.
     rewrite nth_beyond; trivial.
@@ -1264,9 +1264,9 @@ Module TermsSubst (Sig : TermsSig.Signature).
      (*   - x = k *)
     rewrite x_eq_k.
     do 2 (rewrite nth_app_right; autorewrite with datatypes using auto).
-    rewrite <- minus_n_n; simpl.
+    rewrite Nat.sub_diag; simpl.
     rewrite nth_app_right; autorewrite with datatypes using auto.
-    rewrite <- minus_n_n; trivial.
+    rewrite Nat.sub_diag; trivial.
      (*   - x < k *)
     do 2 (rewrite nth_app_left; autorewrite with datatypes using trivial).
     simpl.
@@ -1836,7 +1836,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
     rewrite nth_app_right.
     rewrite H3.
     rewrite <- (appUnits_subst_length (subst_appL_c Mapp MG)); trivial.
-    fold MGl; rewrite <- minus_n_n; trivial.
+    fold MGl; rewrite Nat.sub_diag; trivial.
     rewrite H3.
     rewrite <- (appUnits_subst_length (subst_appL_c Mapp MG)); trivial.
     fold MGl; auto.

@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring equipped with two (strict and non-strict) orders.
 *)
 
-From Coq Require Import Morphisms Max Min.
+From Coq Require Import Morphisms.
 From CoLoR Require Export SemiRing.
 From CoLoR Require Import RelDec RelUtil SN RelExtras NatUtil LogicUtil ZUtil.
 From CoLoR Require BigNUtil.
@@ -89,7 +89,7 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Lemma eq_ge_compat : forall x y, x = y -> x >= y.
 
-  Proof. intros. subst. apply le_refl. Qed.
+  Proof. intros. subst. apply Nat.le_refl. Qed.
 
   Global Instance ge_refl : Reflexive ge.
 
@@ -103,13 +103,17 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Proof. intros m n. unfold ge, Peano.ge. auto with arith. Qed.
 
-  Definition gt_irrefl := Gt.gt_irrefl.
+  Lemma gt_irrefl :forall n : nat, ~ n > n.
+  Proof. now intros n; apply Nat.lt_irrefl. Qed.
 
-  Definition gt_trans := Gt.gt_trans.
+  Lemma gt_trans : forall n m p : nat, n > m -> m > p -> n > p.
+  Proof. now intros n m p H1 H2; apply Nat.lt_trans with (1 := H2). Qed.
 
-  Definition ge_dec := ge_dec.
+  Lemma ge_dec : forall n m : nat, {n >= m} + {~ n >= m}.
+  Proof. now intros n m; apply Compare_dec.le_dec. Qed.
 
-  Definition gt_dec := gt_dec.
+  Lemma gt_dec : forall n m : nat, {n > m} + {~ n > m}.
+  Proof. now intros n m; apply Compare_dec.lt_dec. Qed.
 
   Lemma gt_WF : WF gt.
 
@@ -119,11 +123,11 @@ Module NOrdSemiRingT <: OrdSemiRingType.
 
   Lemma ge_gt_compat : forall x y z, x >= y -> y > z -> x > z.
 
-  Proof. intros. apply le_gt_trans with y; hyp. Qed.
+  Proof. now intros x y z H1 H2; apply Nat.lt_le_trans with (1 := H2). Qed.
 
   Lemma ge_gt_compat2 : forall x y z, x > y -> y >= z -> x > z.
 
-  Proof. intros. apply gt_le_trans with y; hyp. Qed.
+  Proof. now intros x y z H1 H2; apply Nat.le_lt_trans with (1 := H2). Qed.
 
   Lemma plus_gt_compat : forall m n m' n',
     m > m' -> n > n' -> m + n > m' + n'.
@@ -143,12 +147,12 @@ Module NOrdSemiRingT <: OrdSemiRingType.
   Lemma plus_ge_compat : forall m n m' n',
     m >= m' -> n >= n' -> m + n >= m' + n'.
 
-  Proof. intros. unfold Peano.ge. apply plus_le_compat; hyp. Qed.
+  Proof. intros. unfold Peano.ge. apply Nat.add_le_mono; hyp. Qed.
 
   Lemma mult_ge_compat : forall m n m' n',
     m >= m' -> n >= n' -> m * n >= m' * n'.
 
-  Proof. intros. unfold Peano.ge. apply mult_le_compat; hyp. Qed.
+  Proof. intros. unfold Peano.ge. apply Nat.mul_le_mono; hyp. Qed.
 
 End NOrdSemiRingT.
 
@@ -375,7 +379,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
     intros. destruct m. 
     left. destruct n.
     exists (max n0 n). split.
-    apply max_case; auto. trivial.
+    apply Nat.max_case; auto. trivial.
     exists n0. auto.
     destruct n.
     left. exists n. auto.
@@ -858,7 +862,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
     intros. destruct m. 
     left. destruct n.
     exists (min n0 n). split.
-    apply min_case; auto. trivial.
+    apply Nat.min_case; auto. trivial.
     exists n0. auto.
     destruct n.
     left. exists n. auto.

@@ -81,7 +81,7 @@ Lemma o_proof : order A o.
 Proof.
 unfold o; constructor; auto.
 unfold reflexive; auto.
-unfold transitive; intros n1 n2 n3 H1 H2; apply le_trans with n2; trivial.
+unfold transitive; intros n1 n2 n3 H1 H2; apply Nat.le_trans with n2; trivial.
 unfold antisymmetric; auto with arith.
 Qed.
 
@@ -124,7 +124,7 @@ Lemma o_bool_ok : forall a1 a2, match o_bool a1 a2 with true => o a1 a2 | false 
 unfold o; fix o_bool_ok 1.
 intros [ | n] [ | m]; simpl.
 apply le_n.
-apply le_O_n.
+apply Nat.le_0_l.
 intro H; inversion H.
 generalize (o_bool_ok n m); case (o_bool n m).
 intro H; apply (le_n_S _ _ H).

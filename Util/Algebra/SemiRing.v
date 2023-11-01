@@ -9,7 +9,7 @@ Semi-ring structure.
 *)
 
 From Coq Require Export Ring Ring_theory.
-From Coq Require Import Relations Max Arith Compare Bool Setoid Morphisms.
+From Coq Require Import Relations Arith Compare Bool Setoid Morphisms.
 From CoLoR Require Import RelDec LogicUtil RelExtras EqUtil NatUtil ZUtil.
 
 (***********************************************************************)
@@ -360,7 +360,7 @@ Module ArcticSemiRingT <: SemiRingType.
   Lemma A_plus_comm m n : Aplus m n = Aplus n m.
 
   Proof.
-    unfold Aplus. destruct m; destruct n; trivial. rewrite max_comm. trivial.
+    unfold Aplus. destruct m; destruct n; trivial. rewrite Nat.max_comm. trivial.
   Qed.
 
   Lemma A_plus_assoc m n p : Aplus m (Aplus n p) = Aplus (Aplus m n) p.
@@ -373,17 +373,17 @@ Module ArcticSemiRingT <: SemiRingType.
   Lemma A_mult_comm m n : Amult m n = Amult n m.
 
   Proof.
-    unfold Amult. destruct m; destruct n; trivial. rewrite plus_comm. trivial.
+    unfold Amult. destruct m; destruct n; trivial. rewrite Nat.add_comm. trivial.
   Qed.
 
   Lemma A_mult_assoc m n p : Amult m (Amult n p) = Amult (Amult m n) p.
 
   Proof.
     unfold Amult. destruct m; destruct n; destruct p; trivial.
-    rewrite plus_assoc. trivial.
+    rewrite Nat.add_assoc. trivial.
   Qed.
 
-  Import Compare. Import Max.
+  Import Compare.
 
   Lemma A_mult_plus_distr m n p :
     Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).
@@ -628,30 +628,30 @@ Module TropicalSemiRingT <: SemiRingType.
   Lemma A_plus_comm m n : Aplus m n = Aplus n m.
 
   Proof.
-    unfold Aplus. destruct m; destruct n; trivial. rewrite min_comm. trivial.
+    unfold Aplus. destruct m; destruct n; trivial. rewrite Nat.min_comm. trivial.
   Qed.
 
   Lemma A_plus_assoc m n p : Aplus m (Aplus n p) = Aplus (Aplus m n) p.
 
   Proof.
     unfold Aplus. destruct m; destruct n; destruct p; trivial.
-    rewrite min_assoc. trivial.
+    rewrite Nat.min_assoc. trivial.
   Qed.
 
   Lemma A_mult_comm m n : Amult m n = Amult n m.
 
   Proof.
-    unfold Amult. destruct m; destruct n; trivial. rewrite plus_comm. trivial.
+    unfold Amult. destruct m; destruct n; trivial. rewrite Nat.add_comm. trivial.
   Qed.
 
   Lemma A_mult_assoc m n p : Amult m (Amult n p) = Amult (Amult m n) p.
 
   Proof.
     unfold Amult. destruct m; destruct n; destruct p; trivial.
-    rewrite plus_assoc. trivial.
+    rewrite Nat.add_assoc. trivial.
   Qed.
 
-  Import Compare. Import Min.
+  Import Compare.
 
   Lemma A_mult_plus_distr m n p :
     Amult (Aplus m n) p = Aplus (Amult m p) (Amult n p).

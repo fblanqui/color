@@ -14,6 +14,7 @@
 
 From Coq Require Import Recdef List Arith Setoid.
 From CoLoR Require Import closure more_list list_permut list_set decidable_set term_spec.
+From CoLoR.Util.Nat Require Import NatCompat.
 
 Set Implicit Arguments.
 
@@ -97,7 +98,7 @@ Lemma size_ge_one : forall t, 1 <= size t.
 Proof.
 intro t; case t; clear t.
 intro v; apply le_n.
-intros f l; rewrite size_unfold; apply le_n_S; apply le_O_n.
+intros f l; rewrite size_unfold; apply le_n_S; apply Nat.le_0_l.
 Qed.
 
 Function var_in_term_list (x : variable) (l : list term) 
@@ -110,7 +111,7 @@ end.
 Proof.
 intros _ l t l' y H1 H2;  simpl; auto with arith.
 intros _ l t l' f ll H1 H2; simpl; auto with arith.
-intros _ l t l' f ll H1 H2; simpl; apply lt_le_trans with (size (Term f ll)).
+intros _ l t l' f ll H1 H2; simpl; apply Nat.lt_le_trans with (size (Term f ll)).
 rewrite size_unfold; simpl; auto with arith.
 simpl; auto with arith.
 Defined.
@@ -228,10 +229,10 @@ revert t1 l; clear f; fix size_direct_subterm 2.
 intros t1 l; case l; clear l; simpl.
 intro Abs; elim Abs.
 intros t l t1_in_tl; case t1_in_tl; clear t1_in_tl.
-intro t_eq_t1; subst t1; apply le_n_S; apply le_plus_l.
-intro t_in_l; apply lt_le_trans with (1 + list_size size l).
+intro t_eq_t1; subst t1; apply le_n_S; apply Nat.le_add_r.
+intro t_in_l; apply Nat.lt_le_trans with (1 + list_size size l).
 apply size_direct_subterm; assumption.
-apply le_n_S; apply le_plus_r.
+apply le_n_S; apply NatCompat.le_add_l.
 Defined.
 
 Fixpoint symb_in_term (f : symbol) (t:term) : bool :=
@@ -513,11 +514,11 @@ Proof.
 intros Hvar Hterm Hlist; apply term_rec2; 
 induction n; intros t Size_t.
 absurd (1<=0); auto with arith;
-apply le_trans with (size t); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 destruct t as [ x | f l ]; trivial;
-apply Hterm; apply Hlist; intros t In_t; apply IHn;
-apply lt_n_Sm_le;
-apply lt_le_trans with (size (Term f l)); trivial;
+apply Hterm; apply Hlist; intros t In_t; apply IHn.
+apply Nat.lt_succ_r;
+apply Nat.lt_le_trans with (size (Term f l)); trivial;
 apply size_direct_subterm; trivial.
 Defined.
 End Recursion.
@@ -538,12 +539,12 @@ intros Hvt Htv Hterm Hlist.
 intro t1; pattern t1; apply term_rec2; induction n; clear t1;
 intros t1 Size_t1.
 absurd (1<=0); auto with arith;
-apply le_trans with (size t1); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t1); trivial; apply size_ge_one.
 destruct t1 as [ x1 | f1 l1 ]; trivial. 
 destruct t2 as [ x2 | f2 l2 ]; trivial.
 apply Hterm; apply Hlist; intros t1 t2 In_t1 In_t2; apply IHn;
-apply lt_n_Sm_le;
-apply lt_le_trans with (size (Term f1 l1)); trivial;
+apply Nat.lt_succ_r;
+apply Nat.lt_le_trans with (size (Term f1 l1)); trivial;
 apply size_direct_subterm; trivial.
 Defined.
 
@@ -573,8 +574,8 @@ Fixpoint well_formed_bool (t:term) : bool :=
        end) in
        andb (well_formed_list l)
      (match arity f with
-     | Free n => beq_nat (length l) n 
-     | _ => beq_nat (length l) 2
+     | Free n => Nat.eqb (length l) n 
+     | _ => Nat.eqb (length l) 2
      end)
   end.
 
@@ -602,7 +603,7 @@ rewrite Bool.andb_true_iff in Wl.
 destruct Wl as [Wa Wl]; intros u [Eq_u_a | In_u].
 subst u; trivial.
 apply IHl; trivial.
-revert Ar; case (arity f); intros; apply beq_nat_eq; symmetry; assumption.
+revert Ar; case (arity f); intros; apply Nat.eqb_eq; assumption.
 Qed.
 
 Lemma well_formed_fold :
@@ -626,9 +627,9 @@ rewrite Bool.andb_true_iff; split.
 apply Wl; left; trivial.
 apply IHl; intros; apply Wl; right; trivial.
 revert Ar; case (arity f).
-intro Ar; rewrite Ar; symmetry; apply beq_nat_refl; assumption.
-intro Ar; rewrite Ar; symmetry; apply beq_nat_refl; assumption.
-intros n Ar; rewrite Ar; symmetry; apply beq_nat_refl; assumption.
+intro Ar; rewrite Ar; apply Nat.eqb_refl; assumption.
+intro Ar; rewrite Ar; apply Nat.eqb_refl; assumption.
+intros n Ar; rewrite Ar; apply Nat.eqb_refl; assumption.
 Qed.
 
 (** ** Substitutions. *)
@@ -1079,7 +1080,7 @@ intro ti_in_l; generalize (IHp ti j); simpl subterm_at_pos;
 destruct ti as [vi | fi li]; trivial.
 generalize (nth_error_ok_in j li); destruct (nth_error li j) as [tij | ]; [idtac | trivial].
 intro tij_in_li; destruct (subterm_at_pos tij p) as [ u | ]; trivial.
-intro H; apply lt_trans with (size (Term fi li)); trivial.
+intro H; apply Nat.lt_trans with (size (Term fi li)); trivial.
 apply size_direct_subterm.
 destruct (ti_in_l _ (eq_refl _)) as [l1 [l2 [_ H']]]; subst l; simpl;
 apply in_or_app; right; left; trivial. 
@@ -1089,7 +1090,7 @@ Lemma size_strict_subterm : forall s t, trans_clos direct_subterm s t -> size s 
 Proof.
 intros s t Sub; induction Sub as [ s t H | s u t H1 H2].
 apply size_direct_subterm; assumption.
-apply lt_trans with (size u); trivial.
+apply Nat.lt_trans with (size u); trivial.
 apply size_direct_subterm; assumption.
 Qed.
 
@@ -1104,7 +1105,7 @@ Proof.
   elim H0;reflexivity.
   generalize (size_subterm_at_pos s n p).
   rewrite H.
-  intros h;apply False_ind;apply (lt_irrefl _ h).
+  intros h;apply False_ind;apply (Nat.lt_irrefl _ h).
 Qed.
 
 
@@ -1788,7 +1789,7 @@ Proof.
 intros patt sibj pb;
 unfold o_list_size; simpl.
 pattern (list_size (fun st : term * term => size (fst st)) pb); rewrite <- plus_O_n.
-apply plus_lt_compat_r.
+apply Nat.add_lt_mono_r.
 unfold lt; apply size_ge_one; trivial.
 Qed.
 
@@ -1805,15 +1806,15 @@ Lemma matching_call3 :
      o_list_size ((Term f lpat, Term g lsub):: pb) ((Term f (pat :: lpat), Term g (sub :: lsub)) :: pb).
 Proof.
 intros pat sub f lpat g lsub pb; unfold o_list_size; simpl.
-apply lt_n_S.
-rewrite <- plus_assoc.
+apply ->Nat.succ_lt_mono.
+rewrite <- Nat.add_assoc.
  pattern ((fix size_list (l : list term) : nat :=
    match l with
    | nil => 0
    | t :: lt => size t + size_list lt
    end) lpat + list_size (fun st : term * term => size (fst st)) pb);
 rewrite <- plus_O_n.
-apply plus_lt_compat_r.
+apply Nat.add_lt_mono_r.
 unfold lt; apply size_ge_one; trivial.
 Qed.
 

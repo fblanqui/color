@@ -408,7 +408,7 @@ Qed.
    apply rules_strictly_monotonic; assumption.
    assert (L : length l = get_arity f).
    unfold well_formed in W; simpl in W; rewrite Bool.andb_true_iff in W; destruct W as [_ W].
-   apply beq_nat_true; unfold get_arity; destruct (arity f) as [ | | n]; assumption.
+   apply Nat.eqb_eq; unfold get_arity; destruct (arity f) as [ | | n]; assumption.
    apply measure_strictly_monotonic_aux; trivial.
    apply (well_formed_unfold W).
    generalize (All_strictly_monotonic f); 

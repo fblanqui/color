@@ -14,7 +14,7 @@ From CoLoR Require Export AContext ASubstitution.
 From CoLoR Require Import ARelation ListNodup LogicUtil VecUtil RelUtil
      ListUtil SN BoolUtil EqUtil NatUtil ListMax VecOrd.
 From CoLoR Require ListDec.
-From Coq Require Import Morphisms Max.
+From Coq Require Import Morphisms.
 
 Section basic_definitions.
 
@@ -505,7 +505,7 @@ Section S.
 
   Lemma maxvar_rules_init : forall R x, fold_left fold_max R x >= x.
 
-  Proof. induction R; simpl; intros. refl. rewrite IHR. apply le_max_l. Qed.
+  Proof. induction R; simpl; intros. refl. rewrite IHR. apply Nat.le_max_l. Qed.
 
   Lemma maxvar_rules_init_mon : forall R x y,
     x >= y -> fold_left fold_max R x >= fold_left fold_max R y.
@@ -523,7 +523,7 @@ Section S.
 
   Proof.
     induction R; simpl; intros. hyp. case (rule_dec a0 a); intro. subst a0.
-    apply IHR. trans x. apply le_max_l. hyp.
+    apply IHR. trans x. apply Nat.le_max_l. hyp.
     simpl. apply IHR. apply max_ge_compat. hyp. refl.
   Qed.
 
@@ -533,11 +533,11 @@ Section S.
   Proof.
     unfold maxvar_rules. induction R; simpl; split_all. subst.
     unfold fold_max in H0. simpl in H0. fold fold_max in H0.
-    apply le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
+    apply Nat.le_lt_trans with (fold_left fold_max R (fold_max 0 a)).
     apply maxvar_rules_init. hyp.
-    apply IHR. hyp. apply le_lt_trans
+    apply IHR. hyp. apply Nat.le_lt_trans
     with (fold_left fold_max R (fold_max 0 a0)).
-    apply maxvar_rules_init_mon. apply le_max_l. hyp.
+    apply maxvar_rules_init_mon. apply Nat.le_max_l. hyp.
   Qed.
 
 (***********************************************************************)

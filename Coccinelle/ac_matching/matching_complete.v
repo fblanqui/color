@@ -138,7 +138,7 @@ apply flatten_cf with f; trivial.
 apply well_formed_cf_apply_subst; trivial; 
 apply well_formed_cf_build_cons with (Var v); trivial.
 apply well_formed_cf_build; trivial.
-apply le_trans with (length l1); trivial.
+apply Nat.le_trans with (length l1); trivial.
 apply le_S_n; generalize (well_formed_cf_length Ar Wt1); trivial.
 intros t In_t; apply (well_formed_cf_subterms Wt2).
 rewrite <- (list_permut.in_permut_in P);
@@ -153,16 +153,17 @@ simpl in v_sigma; rewrite v_sigma.
 generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
 apply quick_permut.
 symmetry; trivial.
-generalize (plus_lt_compat_l _ _ (length ll) L).
+generalize (proj1 (Nat.add_lt_mono_l _ _ (length ll)) L).
 rewrite <- length_app; assert (L' := list_permut.permut_length P).
 setoid_rewrite L'; clear L'.
 simpl in t1_sigma; rewrite Ar in t1_sigma.
 inversion_clear t1_sigma; rewrite length_quicksort; 
 simpl in v_sigma; rewrite v_sigma;
 generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite length_app; intro L'; assert (L'' := plus_lt_reg_l _ _ (length ll) L'); clear L L'.
+rewrite length_app; intro L';
+assert (L'' := (proj2 (Nat.add_lt_mono_l _ _ (length ll)) L')); clear L L'.
 absurd (length l1 < length l1); auto with arith.
-refine (le_lt_trans _ _ _ _ L'').
+refine (Nat.le_lt_trans _ _ _ _ L'').
 rewrite <- (length_map (apply_cf_subst sigma)).
 apply length_flatten_bis; trivial.
 intros t' t'_in_map_l1; rewrite in_map_iff in t'_in_map_l1;
@@ -576,14 +577,14 @@ exists a; split; trivial.
 destruct (remove T.eq_bool a l2) as [l2' | ]; [idtac | contradiction].
 unfold TO.A in *; destruct (le_gt_dec (length l2) (length l1 + 1)) as [Ll2' | Ll2'].
 absurd (length l2 < length l2); auto with arith.
-rewrite plus_comm in Ll2';  apply le_lt_trans with (S (length l1)); trivial.
+rewrite Nat.add_comm in Ll2';  apply Nat.le_lt_trans with (S (length l1)); trivial.
 pattern (Var v :: l1) in t1_sigma; simpl in t1_sigma; rewrite Af1 in t1_sigma.
 simpl in v_sigma; rewrite v_sigma in t1_sigma.
 revert t1_sigma; 
 generalize (F.Symb.eq_bool_ok f1 f1); case (F.Symb.eq_bool f1 f1); [intros _ t1_sigma | intro f1_diff_f1; apply False_rect; apply f1_diff_f1; reflexivity].
 injection t1_sigma; intro H2; rewrite <- H2; clear H2.
 rewrite length_quicksort; simpl; apply le_n_S; rewrite length_app.
-replace (S (length l1)) with (1 + length l1); trivial; apply plus_le_compat.
+replace (S (length l1)) with (1 + length l1); trivial; apply Nat.add_le_mono.
 destruct W_fk as [_ [W_fk _]]; apply le_S_n; trivial.
 rewrite <- (length_map (apply_cf_subst sigma) l1).
 apply length_flatten_bis; trivial.
@@ -658,7 +659,7 @@ intro; apply H; apply in_impl_mem; trivial.
 
 (* 1/3 length l1 > length l2 *)
 absurd (length l1 > length l2); trivial;
-unfold gt; apply le_not_lt;
+unfold gt; apply Nat.le_ngt;
 simpl in t1_sigma; rewrite Af1 in t1_sigma; inversion_clear t1_sigma;
 rewrite length_quicksort;
 apply length_flatten_ter; trivial.

@@ -14,6 +14,7 @@
 
 From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec.
+From CoLoR Require Import NatCompat.
 
 (** ** Module Type Termin, for termination of rewriting systems. *)
 
@@ -31,7 +32,7 @@ Inductive rdp_step (R1 R2 : relation term) : term -> term -> Prop :=
    | Rdp_step : forall f l1 l2 t3, refl_trans_clos (one_step_list (one_step R2)) l2 l1 -> R1 t3 (Term f l2) -> 
                               rdp_step R1 R2 t3 (Term f l1).
 
-Lemma dp_incl : forall R1 R2, inclusion _ R1 R2 -> inclusion _ (dp R1) (dp R2).
+Lemma dp_incl : forall R1 R2, @inclusion _ R1 R2 -> @inclusion _ (dp R1) (dp R2).
 Proof.
 intros R1' R2' R1_in_R2 t1 t2 H.
 inversion H as [t1' t2' p f2 l2 H' Subt Df2]; subst.
@@ -42,8 +43,8 @@ apply (Def R2' f2 l u).
 apply R1_in_R2; trivial.
 Qed.
 
-Lemma rdp_step_incl : forall R R' R1 R2, inclusion _ R R' -> inclusion _ R1 R2 ->  
-               inclusion _ (rdp_step (axiom (dp R)) R1) (rdp_step (axiom (dp R')) R2).
+Lemma rdp_step_incl : forall R R' R1 R2, @inclusion _ R R' -> @inclusion _ R1 R2 ->  
+               @inclusion _ (rdp_step (axiom (dp R)) R1) (rdp_step (axiom (dp R')) R2).
 Proof.
 intros R R' R1' R2' R_in_R' R1_in_R2 t1 t2 H.
 inversion H as [g k l' s'' l_R_l' Hm]; clear H; subst.
@@ -100,7 +101,7 @@ Lemma acc_one_step_acc_dp :
     forall t, Acc (one_step R)  t -> Acc (dp_step R) t.
 Proof.
 intros R HR.
-assert (H : forall s t, axiom (dp R) s t -> trans_clos (union term (one_step R) direct_subterm) s t).
+assert (H : forall s t, axiom (dp R) s t -> trans_clos (@union term (one_step R) direct_subterm) s t).
 intros s t H'.
 inversion H' as [s' t' sigma H]; clear H'; subst.
 inversion H as [t1 t2 p f l H'' H3 Df]; clear H; subst.
@@ -112,7 +113,7 @@ apply trans_incl with direct_subterm; trivial.
 intros s t H; right; trivial.
 apply t_step; left; apply at_top; apply instance; trivial.
 
-intros t Acc_t; apply Acc_incl with (trans_clos (union term (one_step R) direct_subterm)).
+intros t Acc_t; apply Acc_incl with (trans_clos (@union term (one_step R) direct_subterm)).
 clear t Acc_t; intros s t H'; inversion H' as [f' l1 l2 H1 H2 H3]; clear H'; subst.
 inversion H2 as [l | k1 k2 K2]; clear H2; subst.
 apply H; assumption.
@@ -163,7 +164,7 @@ assert (H'' : forall n t, size (apply_subst sigma t) <= n -> (exists p, subterm_
                                                         Acc (one_step R) (apply_subst sigma t)).
 intro n; induction n as [ | n].
 intros t St; absurd (1 <= 0); auto with arith; 
-apply le_trans with (size (apply_subst sigma t)); trivial; apply size_ge_one.
+apply Nat.le_trans with (size (apply_subst sigma t)); trivial; apply size_ge_one.
 intros [x | g h] St [p H''].
 (* 1/4 t is a variable *)
 apply E.var_acc with k; trivial.
@@ -175,7 +176,7 @@ rewrite var_list_unfold in H; trivial.
 (* 1/3 t = Term g h *)
 assert (Acc_h : forall t, In t h -> Acc (one_step R) (apply_subst sigma t)).
 intros t t_in_h; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St); apply size_direct_subterm; simpl.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); apply size_direct_subterm; simpl.
 rewrite in_map_iff; exists t; split; trivial.
 destruct (In_split _ _ t_in_h) as [h' [h'' K]]; subst h.
 exists (p ++ (length h' :: nil)).
@@ -264,7 +265,7 @@ assert (H'' : forall n t, size t <= n -> (exists p, subterm_at_pos t1 p = Some t
                                                         Acc (one_step R) (apply_subst sigma t)).
 intro n; induction n as [ | n].
 intros t St; absurd (1 <= 0); auto with arith; 
-apply le_trans with (size t); trivial; apply size_ge_one.
+apply Nat.le_trans with (size t); trivial; apply size_ge_one.
 intros [x | g h] St [p H''].
 (* 1/4 t is a variable *)
 apply E.var_acc with k. 
@@ -275,7 +276,7 @@ rewrite acc_one_step_list; assumption.
 (* 1/3 t = Term g h *)
 assert (Acc_h : forall t, In t h -> Acc (one_step R) (apply_subst sigma t)).
 intros t t_in_h; apply IHn.
-apply le_S_n; refine (le_trans _ _ _ _ St); apply size_direct_subterm; assumption.
+apply le_S_n; refine (Nat.le_trans _ _ _ _ St); apply size_direct_subterm; assumption.
 destruct (In_split _ _ t_in_h) as [h' [h'' K]]; subst h.
 exists (p ++ (length h' :: nil)).
 apply subterm_in_subterm with (Term g (h' ++ t :: h'')).
@@ -348,8 +349,8 @@ Qed.
 Definition ddp_step R := rdp_step (axiom (ddp R)) R.
 Definition ddp_step_min R := rest (acc_sub R) (ddp_step R).
 
-Lemma rddp_step_incl : forall R R' R1 R2, inclusion _ R R' -> inclusion _ R1 R2 ->  
-               inclusion _ (rdp_step (axiom (ddp R)) R1) (rdp_step (axiom (ddp R')) R2).
+Lemma rddp_step_incl : forall R R' R1 R2, @inclusion _ R R' -> @inclusion _ R1 R2 ->  
+               @inclusion _ (rdp_step (axiom (ddp R)) R1) (rdp_step (axiom (ddp R')) R2).
 Proof.
 intros R R' R1' R2' R_in_R' R1_in_R2 t1 t2 H.
 inversion H as [g k l' s'' l_R_l' Hm]; clear H; subst.
@@ -367,8 +368,8 @@ inversion H2; clear H2; subst.
 apply Def with l t; apply R_in_R'; assumption.
 Qed.
 
-Lemma ddp_step_incl : forall R1 R2, inclusion _ R1 R2 ->  
-               inclusion _ (ddp_step R1) (ddp_step R2).
+Lemma ddp_step_incl : forall R1 R2, @inclusion _ R1 R2 ->  
+               @inclusion _ (ddp_step R1) (ddp_step R2).
 Proof.
 intros R1' R2' R1_in_R2 t1 t2 H.
 apply (rddp_step_incl R1' R2' R1' R2'); trivial.
@@ -403,7 +404,7 @@ rewrite <- H0; apply instance.
 simpl in Sub'; injection Sub'; clear Sub'; intro Sub'; subst t2.
 split.
 apply Dp with r p; trivial.
-intros i q Sub''; generalize (size_subterm_at_pos (Term g k1) i q); rewrite Sub''; apply lt_irrefl.
+intros i q Sub''; generalize (size_subterm_at_pos (Term g k1) i q); rewrite Sub''; apply Nat.lt_irrefl.
 refine (rwr_sub_acc_sub_acc_sub R l1 l2 K1 Ht).
 refine (rwr_sub_acc_sub_acc_sub R l1 l2 K1 Ht).
 (* 1/3 Acc (ddp_step_min R) (Term f l2) *)
@@ -810,7 +811,7 @@ Proof.
    generalize (eq_bool_ok lhs (Term g k)); rewrite lhs_eq_fl; clear lhs_eq_fl; intro lhs_eq_gk; rewrite <- lhs_eq_gk.
    intros i q Sub.
    generalize (size_subterm_at_pos lhs i q); rewrite Sub.
-   apply lt_irrefl.
+   apply Nat.lt_irrefl.
    case_eq (is_subterm (Term f l) lhs).
    contradiction.
    intros nSub lhs_diff_fl Df [gk_eq_fl | gk_in_nil]; [ | contradiction].
@@ -1306,10 +1307,10 @@ assert (L:= refl_trans_clos_one_step_list_length_eq H).
 discriminate.
 absurd (1 <= 0).
 intro Abs; inversion Abs.
-apply le_trans with (list_size size (s :: k)); trivial.
-apply le_trans with (size s).
+apply Nat.le_trans with (list_size size (s :: k)); trivial.
+apply Nat.le_trans with (size s).
 apply size_ge_one.
-simpl; apply le_plus_l.
+simpl; apply Nat.le_add_r.
 destruct l as [ | t l].
 apply eq_refl.
 assert (L:= refl_trans_clos_one_step_list_length_eq H).
@@ -1321,12 +1322,12 @@ simpl in H; rewrite refl_trans_clos_one_step_list_head_tail in H.
 destruct H as [H' H].
 assert (Sk' : list_size size k <= n).
 apply le_S_n.
-apply le_trans with (list_size size (s :: k)); trivial.
-simpl; refine (plus_le_compat_r 1 (size s) _ _).
+apply Nat.le_trans with (list_size size (s :: k)); trivial.
+simpl; refine (proj1 (Nat.add_le_mono_r 1 (size s) _) _).
 apply size_ge_one.
 assert (Ss : size s <= S n).
-apply le_trans with (list_size size (s :: k)); trivial.
-simpl; apply le_plus_l.
+apply Nat.le_trans with (list_size size (s :: k)); trivial.
+simpl; apply Nat.le_add_r.
 simpl; rewrite IHn with k l sigma sigma'; trivial.
 clear l k Sk Sk' H.
 rewrite rough_unif_unfold.
@@ -1402,13 +1403,13 @@ destruct H3 as [a | a b H3].
 apply eq_refl.
 destruct H4 as [a | a b H4].
 apply eq_refl.
-apply le_antisym.
+apply Nat.le_antisymm.
 clear H4; induction H3 as [a b H3 | a b c H3 H4].
 apply H1; assumption.
-apply le_trans with (comp b); [ apply H1 | ]; assumption.
+apply Nat.le_trans with (comp b); [ apply H1 | ]; assumption.
 clear H3; induction H4 as [a b H3 | a b c H3 H4].
 apply H1; assumption.
-apply le_trans with (comp b); [ apply H1 | ]; assumption.
+apply Nat.le_trans with (comp b); [ apply H1 | ]; assumption.
 Qed.
 
 End MakeDP.

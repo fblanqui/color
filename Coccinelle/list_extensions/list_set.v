@@ -892,7 +892,7 @@ intro s2; case s2; clear s2; intros l2 wr2.
 revert l1 wr1 l2 wr2; unfold subset, cardinal, mem, without_red; simpl.
 fix cardinal_subset 1.
 intro l1; case l1; clear l1.
-intros _ l2 _ _; apply le_O_n.
+intros _ l2 _ _; apply Nat.le_0_l.
 simpl; intros a1 l1.
 generalize (mem_bool_ok _ _ eq_bool_ok a1 l1); case (mem_bool eq_bool a1 l1).
 intros _ Abs; discriminate.
@@ -972,12 +972,12 @@ Lemma cardinal_union:
   forall s1 s2, cardinal (union s1 s2) = cardinal s1 + cardinal s2 - cardinal (inter s1 s2).
 Proof.
 intros s1 s2; assert (H := cardinal_union_inter_12 s1 s2).
-apply plus_minus; apply sym_eq; rewrite plus_comm; trivial.
+apply sym_eq, Nat.add_sub_eq_r; trivial.
 Qed.
 
 Lemma cardinal_eq_set : forall s1 s2, eq_set s1 s2 -> cardinal s1 = cardinal s2.
 Proof.
-intros s1 s2 s1_eq_s2; apply le_antisym; apply cardinal_subset;
+intros s1 s2 s1_eq_s2; apply Nat.le_antisymm; apply cardinal_subset;
 intros e e_in_si; generalize (s1_eq_s2 e); intuition.
 Qed.
 

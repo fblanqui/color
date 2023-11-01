@@ -167,7 +167,7 @@ Section term.
   Proof.
     induction n; intros ts t ti. VOtac; simpl. fo.
     VSntac ts; simpl. intros [h|h].
-    rewrite h. eapply lt_le_trans. 2: apply size_apps_l. simpl. max.
+    rewrite h. eapply Nat.lt_le_trans. 2: apply size_apps_l. simpl. max.
     apply IHn. hyp.
   Qed.
 

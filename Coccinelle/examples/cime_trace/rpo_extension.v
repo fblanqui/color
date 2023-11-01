@@ -16,7 +16,7 @@ Section MakePrecedence.
 
   Definition prec_bool (a1 a2 : A) := leb (S (prec_nat a1)) (prec_nat a2).
 
-  Definition prec_eq_bool (a1 a2 : A) := beq_nat (prec_nat a1)  (prec_nat a2).
+  Definition prec_eq_bool (a1 a2 : A) := Nat.eqb (prec_nat a1)  (prec_nat a2).
 
 
 Lemma prec_bool_ok : forall a1 a2,
@@ -33,24 +33,24 @@ Lemma prec_bool_ok : forall a1 a2,
 Lemma prec_eq_bool_ok: forall a1 a2, match prec_eq_bool a1 a2 with true => prec_eq a1 a2 | false => ~prec_eq a1 a2 end.
 Proof.
 unfold prec. unfold prec_eq.    unfold prec_eq_bool. 
-intros; case_eq( beq_nat (prec_nat a1) (prec_nat a2)); intros.
+intros; case_eq( Nat.eqb (prec_nat a1) (prec_nat a2)); intros.
 assert (prec_nat a1 = prec_nat a2).   
-apply beq_nat_eq. rewrite H. trivial. rewrite H0. apply eq_nat_refl.
+apply Nat.eqb_eq. rewrite H. trivial. rewrite H0. apply eq_nat_refl.
 intro.
 assert (prec_nat a1 = prec_nat a2).
 apply eq_nat_eq; trivial.
 contradict H1.
-apply beq_nat_false. trivial.
+apply Nat.eqb_neq. trivial.
 Qed.
 
   Lemma prec_antisym : forall a, prec a a -> False.
   Proof.
-    intros; apply (lt_irrefl _ H).
+    intros; apply (Nat.lt_irrefl _ H).
   Qed.
 
   Lemma prec_transitive : transitive A prec.
   Proof.
-    intros a b c H1 H2; apply lt_trans with (prec_nat b); assumption.
+    intros a b c H1 H2; apply Nat.lt_trans with (prec_nat b); assumption.
   Qed.
 
   Lemma prec_eq_transitive : transitive A prec_eq.
@@ -420,20 +420,20 @@ Module MakeRpoSdpMarkedAFS (Eqt : equational_theory_spec.EqTh).
       | (true, f) =>
         match afs_symb_marked f with
         | Afs.AFS_id g =>
-          AfsM.AFS_id (beq_nat (prec_marked f) (prec_marked g), g)
+          AfsM.AFS_id (Nat.eqb (prec_marked f) (prec_marked g), g)
         | Afs.AFS_arg i =>
           AfsM.AFS_arg i
         | Afs.AFS_filt g p =>
-          AfsM.AFS_filt (beq_nat (prec_marked f) (prec_marked g), g) p
+          AfsM.AFS_filt (Nat.eqb (prec_marked f) (prec_marked g), g) p
         end
       | (_, f) =>
         match afs_symb f with
         | Afs.AFS_id g =>
-          AfsM.AFS_id (beq_nat (prec f) (prec_marked g), g)
+          AfsM.AFS_id (Nat.eqb (prec f) (prec_marked g), g)
         | Afs.AFS_arg i =>
           AfsM.AFS_arg i
         | Afs.AFS_filt g p =>
-          AfsM.AFS_filt (beq_nat (prec f) (prec_marked g), g) p
+          AfsM.AFS_filt (Nat.eqb (prec f) (prec_marked g), g) p
         end
       end.
 

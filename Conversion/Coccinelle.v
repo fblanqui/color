@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATerm VecUtil.
 From CoLoR Require VecUtil more_list APosition AContext ordered_set.
-From Coq Require Inverse_Image Max.
+From Coq Require Inverse_Image.
 
 (***********************************************************************)
 (** convert a CoLoR signature into a Coccinelle signature *)
@@ -227,14 +227,12 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     apply wf_rpo. apply (prec_wf prec_nat).
   Qed.
 
-  Import Max.
-
   Lemma sc_succ : substitution_closed succ.
 
   Proof.
     intros t u s h. unfold succ, transp, Rof. set (k:=max(maxvar t)(maxvar u)).
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_r.
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_l.
+    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply Nat.le_max_r.
+    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply Nat.le_max_l.
     apply rpo_subst. hyp.
   Qed.
 
@@ -272,8 +270,8 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
   Proof.
     intros t u s [h|h]. left. apply sc_succ. hyp. right.
     unfold equiv_aterm, Rof. set (k := max (maxvar t) (maxvar u)).
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_l.
-    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply le_max_r.
+    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply Nat.le_max_l.
+    rewrite term_of_aterm_sub with (k:=S k). 2: apply le_n_S; apply Nat.le_max_r.
     apply equiv_subst. hyp.
   Qed.
 

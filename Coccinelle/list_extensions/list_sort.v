@@ -149,8 +149,8 @@ intros ll1 ll2 Hpart; injection Hpart; intros H H'; subst.
 (* 1.1 l = nil *)
 simpl; auto with arith.
 (* 1.2 l = _ :: _ *)
-apply lt_trans with (length (e :: l')); [apply (IH _ _ rec_res) | auto with arith].
-simpl; apply lt_n_S; apply (IH _ _ rec_res).
+apply Nat.lt_le_trans with (length (e :: l')); [apply (IH _ _ rec_res) | auto with arith].
+simpl; apply ->Nat.succ_lt_mono; apply (IH _ _ rec_res).
 
 (* 2 First recursive call *)
 intros e_l e l e_l_eq_e_l; subst e_l;
@@ -160,8 +160,8 @@ intros ll1 ll2 Hpart; injection Hpart; intros H H'; subst.
 (* 2.1 l = nil *)
 simpl; auto with arith.
 (* 2.2 l = _ :: _ *)
-simpl; apply lt_n_S; apply (IH _ _ rec_res).
-apply lt_trans with (length (e :: l')); [apply (IH _ _ rec_res) | auto with arith].
+simpl; apply ->Nat.succ_lt_mono; apply (IH _ _ rec_res).
+apply Nat.lt_le_trans with (length (e :: l')); [apply (IH _ _ rec_res) | auto with arith].
 Defined.
 
 (** *** The result of quicksort is a permutation of the original list. *)

@@ -10,7 +10,7 @@ polynomials with multiple variables and integer coefficients
 
 Set Implicit Arguments.
 
-From CoLoR Require Import VecUtil LogicUtil.
+From CoLoR Require Import VecUtil LogicUtil NatUtil.
 From Coq Require Import Arith List Lia.
 From Coq Require Export ZArith.
 
@@ -55,11 +55,11 @@ Notation mone := (Vconst O).
 
 Fixpoint mxi (n : nat) : forall i, lt i n -> monom n :=
   match n as n return forall i, lt i n -> monom n with
-    | O => fun i h => False_rec (monom O) (lt_n_O h)
+    | O => fun i h => False_rec (monom O) (Nat.nlt_0_r h)
     | S n' => fun i =>
       match i as i return lt i (S n') -> monom (S n') with
 	| O => fun _ => Vcons (S O) (mone n')
-	| S _ => fun h => Vcons O (mxi (lt_S_n h))
+	| S _ => fun h => Vcons O (mxi (NatCompat.lt_S_n h))
       end
   end.
 

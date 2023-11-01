@@ -11,32 +11,32 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-From CoLoR Require Import LogicUtil EqUtil BoolUtil RelUtil.
-
-From Coq Require Import Min Max Morphisms Euclid Peano Lia.
+From Coq Require Import Morphisms Euclid Peano Lia.
 From Coq Require Export Arith.
 From Coq Require Import Compare.
+
+From CoLoR Require Import LogicUtil EqUtil BoolUtil NatCompat RelUtil.
 
 (***********************************************************************)
 (** Declare implicit arguments. *)
 
-Arguments lt_S [n m] _.
+Arguments Nat.lt_lt_succ_r [n m] _.
 Arguments lt_S_n [n m] _.
 Arguments lt_n_S [n m] _.
 Arguments le_S [n m] _.
 Arguments gt_le_S [n m] _.
 Arguments le_lt_n_Sm [n m] _.
-Arguments lt_le_weak [n m] _.
+Arguments Nat.lt_le_incl [n m] _.
 Arguments le_plus_minus [n m] _.
 Arguments le_plus_minus_r [n m] _.
-Arguments lt_n_0 [n] _.
-Arguments le_lt_trans [n m p] _ _.
-Arguments lt_le_trans [n m p] _ _.
+Arguments Nat.nlt_0_r [n] _.
+Arguments Nat.le_lt_trans [n m p] _ _.
+Arguments Nat.lt_le_trans [n m p] _ _.
 Arguments le_lt_or_eq [n m] _.
 Arguments lt_n_Sm_le [n m] _.
-Arguments lt_trans [n m p] _ _.
-Arguments le_trans [n m p] _ _.
-Arguments lt_le_weak [n m] _.
+Arguments Nat.lt_trans [n m p] _ _.
+Arguments Nat.le_trans [n m p] _ _.
+Arguments Nat.lt_le_incl [n m] _.
 Arguments lt_le_S [n m] _.
 Arguments lt_not_le [n m] _ _.
 Arguments le_lt_eq_dec [n m] _.
@@ -52,7 +52,7 @@ Tactic Notation "lia" := intros; lia.
 
 Ltac max :=
   match goal with
-    | |- context [max ?x ?y] => gen (le_max_l x y); gen (le_max_r x y)
+    | |- context [max ?x ?y] => gen (Nat.le_max_l x y); gen (Nat.le_max_r x y)
   end; lia.
 
 (***********************************************************************)
@@ -211,13 +211,13 @@ intros.
 case (le_dec b c); intro H.
  rewrite (max_r H).
  case (le_dec a b); intro H'.
-  rewrite (max_r (le_trans H' H)), (max_r H'), (max_r H). refl.
+  rewrite (max_r (Nat.le_trans H' H)), (max_r H'), (max_r H). refl.
   case (le_dec a c); intro H''; rewrite (max_l H'); refl.
   rewrite (max_l H).
   case (le_dec a b); intro H'.
    rewrite (max_r H').
    apply (sym_equal (max_l H)).
-   assert (H'' : c <= max a b). eapply le_trans. apply H. apply le_max_r.
+   assert (H'' : c <= max a b). eapply Nat.le_trans. apply H. apply Nat.le_max_r.
    apply (sym_equal (max_l H'')).
 Qed.
 
@@ -337,22 +337,22 @@ Proof.
 intros.
 assert ((q1-q2)*b=r2-r1). nia.
 assert ((q2-q1)*b=r1-r2). (*nia works but is slow*)
-rewrite mult_minus_distr_r. clear H2; lia.
+rewrite Nat.mul_sub_distr_r. clear H2; lia.
 (*nia works but is slow*)
 destruct (le_gt_dec r1 r2).
 (* r1 <= r2 *)
 destruct (eq_nat_dec r1 r2).
 (* r1 = r2 *)
-subst. rewrite minus_diag in *. nia.
+subst. rewrite Nat.sub_diag in *. nia.
 (* r1 < r2 *)
 assert (r2 - r1 < b). clear -H H0; lia.
-rewrite <- H2 in H4. rewrite <- (mult_1_l b) in H4 at -1.
+rewrite <- H2 in H4. rewrite <- (Nat.mul_1_l b) in H4 at -1.
 ded (mult_lt_r_elim H4).
 assert (q1=q2). clear H H0 H1 H3 H4; lia.
 subst q2; clear H2 H3 H4 H5. lia.
 (* r1 > r2 *)
 assert (r1 - r2 < b). clear -H H0; lia.
-rewrite <- H3 in H4. rewrite <- (mult_1_l b) in H4 at -1.
+rewrite <- H3 in H4. rewrite <- (Nat.mul_1_l b) in H4 at -1.
 ded (mult_lt_r_elim H4).
 assert (q1=q2). clear H H0 H1 H2 H4; lia.
 subst q2; clear H2 H3 H4 H5. lia.
