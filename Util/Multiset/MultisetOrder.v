@@ -191,10 +191,9 @@ Section OrderDefinition.
   Variable gtA_eqA_compat : Proper (eqA ==> eqA ==> impl) gtA.
   Existing Instance gtA_eqA_compat.
 
-  Hint Resolve (gtA_transitive) : sets.
-  Hint Resolve (gtA_irreflexive) : sets.
-  Hint Resolve (so_not_symmetric
-    (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
+  Hint Resolve gtA_transitive : sets.
+  Hint Resolve gtA_irreflexive : sets.
+  Hint Extern 3 False => simple eapply (so_not_symmetric (Build_strict_order gtA_transitive gtA_irreflexive)) : sets.
 
   Lemma gtA_eqA_compat' :
     forall a b, eqA a b -> forall c d, eqA c d -> gtA a c -> gtA b d.
