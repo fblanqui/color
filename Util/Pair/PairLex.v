@@ -21,17 +21,17 @@ Section LexPair.
 
   Existing Instance eqL_Equivalence.
 
-  Hint Resolve (Seq_refl  L eqL eqL_Equivalence) : sets.
-  Hint Resolve (Seq_trans L eqL eqL_Equivalence) : sets.
-  Hint Resolve (Seq_sym   L eqL eqL_Equivalence) : sets.
+  Hint Extern 0 (eqL _ _) => simple apply (Seq_refl  L eqL eqL_Equivalence) : sets.
+  Hint Extern 3 (eqL _ _) => simple eapply (Seq_trans L eqL eqL_Equivalence) : sets.
+  Hint Extern 1 (eqL _ _) => simple apply (Seq_sym   L eqL eqL_Equivalence) : sets.
 
   Variables (eqR : relation R) (eqR_Equivalence : Equivalence eqR).
 
   Existing Instance eqR_Equivalence.
 
-  Hint Resolve (Seq_refl  R eqR eqR_Equivalence) : sets.
-  Hint Resolve (Seq_trans R eqR eqR_Equivalence) : sets.
-  Hint Resolve (Seq_sym   R eqR eqR_Equivalence) : sets.
+  Hint Extern 0 (eqR _ _) => simple apply (Seq_refl  R eqR eqR_Equivalence) : sets.
+  Hint Extern 3 (eqR _ _) => simple eapply (Seq_trans R eqR eqR_Equivalence) : sets.
+  Hint Extern 1 (eqR _ _) => simple apply (Seq_sym   R eqR eqR_Equivalence) : sets.
  
   Variable gtL : relation L.
 
@@ -140,17 +140,17 @@ Section LexPair.
 
     Variable gtL_so: strict_order gtL.
 
-    Hint Resolve (sord_trans gtL_so) : sets.
-    Hint Resolve (sord_irrefl gtL_so) : sets.
-    Hint Resolve (so_not_symmetric gtL_so) : sets.
-    Hint Resolve (so_strict gtL_so gtL_eqL_compat eqL_Equivalence) : sets.
+    Hint Extern 0 => exact (sord_trans gtL_so) : sets.
+    Hint Extern 0 => simple apply (sord_irrefl gtL_so) : sets.
+    Hint Extern 3 False => simple eapply (so_not_symmetric gtL_so) : sets.
+    Hint Extern 1 => simple apply (so_strict gtL_so gtL_eqL_compat eqL_Equivalence) : sets.
 
     Variable gtR_so: strict_order gtR.
 
-    Hint Resolve (sord_trans gtR_so) : sets.
-    Hint Resolve (sord_irrefl gtR_so) : sets.
-    Hint Resolve (so_not_symmetric gtR_so) : sets.
-    Hint Resolve (so_strict gtR_so gtR_eqR_compat eqR_Equivalence) : sets.
+    Hint Extern 0 => exact (sord_trans gtR_so) : sets.
+    Hint Extern 0 => simple apply (sord_irrefl gtR_so) : sets.
+    Hint Extern 3 False => simple eapply (so_not_symmetric gtR_so) : sets.
+    Hint Extern 1 => simple apply (so_strict gtR_so gtR_eqR_compat eqR_Equivalence) : sets.
 
     Lemma lexprod_irreflex  : forall a, a >lex a -> False.
 

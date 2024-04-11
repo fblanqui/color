@@ -64,9 +64,9 @@ Module Type Eqset.
 
   Global Declare Instance eqA_Equivalence : Equivalence eqA.
 
-  #[global] Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
-  #[global] Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
-  #[global] Hint Resolve (Seq_sym   A eqA eqA_Equivalence) : sets.
+  #[global] Hint Extern 0 => simple apply (Seq_refl  A eqA eqA_Equivalence) : sets.
+  #[global] Hint Extern 3 => simple eapply (Seq_trans A eqA eqA_Equivalence) : sets.
+  #[global] Hint Extern 1 => simple apply (Seq_sym   A eqA eqA_Equivalence) : sets.
 
 End Eqset.
 
@@ -88,9 +88,9 @@ Module Eqset_def (A : SetA) <: Eqset.
 
   Proof. unfold eqA. class. Qed.
 
-  #[global] Hint Resolve (Seq_refl  A eqA eqA_Equivalence) : sets.
-  #[global] Hint Resolve (Seq_trans A eqA eqA_Equivalence) : sets.
-  #[global] Hint Resolve (Seq_sym   A eqA eqA_Equivalence) : sets.
+  #[global] Hint Extern 0 (eqA _ _) => simple apply (Seq_refl  A eqA eqA_Equivalence) : sets.
+  #[global] Hint Extern 3 (eqA _ _) => simple eapply (Seq_trans A eqA eqA_Equivalence) : sets.
+  #[global] Hint Extern 1 (eqA _ _) => simple apply (Seq_sym   A eqA eqA_Equivalence) : sets.
 
 End Eqset_def.
 
@@ -167,10 +167,10 @@ Module Type Poset.
 
   Parameter gtA_so : strict_order gtA.
 
-  #[global] Hint Resolve (sord_trans gtA_so) : sets.
-  #[global] Hint Resolve (sord_irrefl gtA_so) : sets.
-  #[global] Hint Resolve (so_not_symmetric gtA_so) : sets.
-  #[global] Hint Resolve (so_strict gtA_so gtA_eqA_compat eqA_Equivalence) : sets.
+  #[global] Hint Extern 0 => exact (sord_trans gtA_so) : sets.
+  #[global] Hint Extern 0 => simple apply (sord_irrefl gtA_so) : sets.
+  #[global] Hint Extern 3 False => simple eapply (so_not_symmetric gtA_so) : sets.
+  #[global] Hint Extern 1 => simple apply (so_strict gtA_so gtA_eqA_compat eqA_Equivalence) : sets.
 
 End Poset.
 
