@@ -15,11 +15,6 @@ Some developments using CoLoR:
 [ATBR](http://perso.ens-lyon.fr/damien.pous/),
 [CPV](http://proofos.sourceforge.net/doc/).
 
-Mailing list for announcements and discussions about this project:
-create an account on
-[sympa](https://sympa.inria.fr/), log in and
-subscribe to [color](https://sympa.inria.fr/sympa/info/color).
-
 Installation:
 ---------------
 
