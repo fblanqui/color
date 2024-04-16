@@ -90,7 +90,7 @@ Conversion/Coccinelle.v. See `Coccinelle/README` for more information.
 Contributors:
 -----------------
 
-Maintainer: [Frédéric Blanqui](http://rewriting.gforge.inria.fr/) (INRIA, France)
+Maintainer: [Frédéric Blanqui](https://blanqui.gitlabpages.inria.fr/) (INRIA, France)
 
 **Contributors:**
 Kim-Quyen Ly (INRIA),
