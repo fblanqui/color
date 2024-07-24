@@ -9,7 +9,7 @@ general lemmas and tactics
 
 Set Implicit Arguments.
 
-From Coq Require Import Structures.Equalities.
+From Coq.Structures Require Import Equalities.
 From Coq Require Export EqdepFacts Eqdep_dec.
 From Coq Require Setoid.
 

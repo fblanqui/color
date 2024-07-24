@@ -11,7 +11,8 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil OrdUtil LSimple RelUtil.
-From Coq Require Import Structures.Equalities Lia.
+From Coq.Structures Require Import Equalities.
+From Coq Require Import Lia.
 From CoLoR Require SetUtil.
 
 
