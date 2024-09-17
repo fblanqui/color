@@ -26,7 +26,8 @@ therefore put in a module [Def] in order to be refered later
 
 Set Implicit Arguments.
 
-From Coq Require Import FSets Structures.OrderedType.
+From Coq Require Import FSets.
+From Coq.Structures Require Import OrderedType.
 From CoLoR Require Import LogicUtil BoolUtil VecUtil FSetUtil NatUtil RelUtil
      SN SetUtil.
 From CoLoR Require Union.
