@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith Wf_nat Wellfounded List Multiset Relations.
+From Coq Require Import Sumbool Arith Wf_nat Wellfounded List Multiset Relations.
 From CoLoR Require Import closure decidable_set ordered_set more_list list_permut list_set list_sort dickson term_spec term.
 
 Lemma Dummy_bool : forall b, negb b = true <-> b = false.
