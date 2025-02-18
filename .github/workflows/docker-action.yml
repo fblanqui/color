@@ -1,13 +1,10 @@
-# following https://github.com/coq-community/huffman/blob/master/.github/workflows/docker-action.yml
-# See also:
-# https://github.com/coq-community/docker-coq-action#readme
-# https://github.com/erikmd/docker-coq-github-action-demo
+# following https://github.com/coq-community/docker-coq-action
 
 name: Docker CI
 
 on:
   pull_request:
-    types: [opened, synchronize, edited, reopened]
+    types: [opened, synchronize, reopened]
   push:
   workflow_dispatch:
 
@@ -17,19 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image:
-          - 'coqorg/coq:dev'
-          - 'coqorg/coq:8.20'
-          - 'coqorg/coq:8.19'
-          - 'coqorg/coq:8.18'
-          - 'coqorg/coq:8.17'
-          - 'coqorg/coq:8.16'
-          - 'coqorg/coq:8.15'
-          - 'coqorg/coq:8.14'
+        coq_version:
+          - dev
+          - '8.20'
+          - '8.19'
+          - '8.18'
+          - '8.17'
+          - '8.16'
+          - '8.15'
+          - '8.14'
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - uses: coq-community/docker-coq-action@v1
         with:
           opam_file: 'coq-color.opam'
-          custom_image: ${{ matrix.image }}
+          coq_version: ${{ matrix.coq_version }}
