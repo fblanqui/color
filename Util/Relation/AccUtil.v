@@ -10,8 +10,8 @@ useful results on accessibility
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics.
-From Coq Require Export Wellfounded.
+From Stdlib Require Import Morphisms Basics.
+From Stdlib Require Export Wellfounded.
 From CoLoR Require Import LogicUtil RelUtil.
 
 Arguments wf_incl [A R1 R2] _ _ _.
@@ -153,7 +153,7 @@ End RestrictedAcc.
 (***********************************************************************)
 (** List of accessible arguments. *)
 
-From Coq Require Import List.
+From Stdlib Require Import List.
 
 Definition Accs (A : Type) R l := forall a : A, In a l -> Acc R a.
 

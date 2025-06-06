@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics Lexicographic_Product.
+From Stdlib Require Import Morphisms Basics Lexicographic_Product.
 From CoLoR Require Import LogicUtil LSimple VecUtil RelUtil VecOrd EqUtil 
   Lexico SN NatUtil.
 

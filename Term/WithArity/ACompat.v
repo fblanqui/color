@@ -118,9 +118,9 @@ Lemma is_compat_correct : forall R,
   is_compat R = true -> compat R /\ is_compat R = false -> ~compat R.
 
 Proof.
-induction R; simpl. intuition.
+induction R; simpl. intuition auto with *.
 destruct a. case (succ_dec lhs rhs); intros;
-  destruct H0; ded (compat_cons_elim H0); intuition.
+  destruct H0; ded (compat_cons_elim H0); intuition auto with *.
 Qed.
 
 Lemma is_compat_complete : forall R,

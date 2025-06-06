@@ -9,7 +9,7 @@ basic classical meta-theorems
 
 Set Implicit Arguments.
 
-From Coq Require Export Classical Setoid.
+From Stdlib Require Export Classical Setoid.
 From CoLoR Require Import LogicUtil.
 
 (***********************************************************************)

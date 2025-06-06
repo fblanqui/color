@@ -8,7 +8,7 @@ Various properties of preorders
 *)
 
 From CoLoR Require Import LogicUtil.
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 
 Section PreOrderFacts.
   Variable A : Type.

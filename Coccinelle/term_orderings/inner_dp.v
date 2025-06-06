@@ -1,7 +1,7 @@
 
 (** * Equational theory on a term algebra *)
 
-From Coq Require Import List Relations Wellfounded Arith.
+From Stdlib Require Import List Relations Wellfounded Arith.
 From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec
      rwr_strategies dp rpo.
 
@@ -915,7 +915,7 @@ assert (H7 := subterm_in_instantiated_term _ _ _ Sub).
 case_eq (subterm_at_pos l p).
 intros u' Sub'; rewrite Sub' in H7.
 destruct u' as [v | f' l'].
-right; exists p; exists (@nil nat); exists v; split; trivial; rewrite <- app_nil_end; trivial.
+right; exists p; exists (@nil nat); exists v; split; trivial; rewrite app_nil_r; trivial.
 destruct (H6 f' l' p Sub' (sym_eq H7)) as [p_eq_nil _]; left; trivial.
 intros Sub'; rewrite Sub' in H7.
 destruct H7 as [v [q [q' [H7 [v_in_l [Sub'' Sub3]]]]]].

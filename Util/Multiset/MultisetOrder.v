@@ -12,7 +12,7 @@ in this file.
 Set Implicit Arguments.
 
 From CoLoR Require RelUtil.
-From Coq Require Import Transitive_Closure Compare_dec Relations Permutation
+From Stdlib Require Import Transitive_Closure Compare_dec Relations Permutation
      Setoid Morphisms Basics Lia.
 From CoLoR Require Import RelExtras MultisetTheory ListPermutation MultisetCore
      ListExtras AccUtil LogicUtil.

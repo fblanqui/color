@@ -11,8 +11,8 @@ General definitions and results about relations.
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid Basics Morphisms List Lia.
-From Coq Require Export Relations.
+From Stdlib Require Import Setoid Basics Morphisms List Lia.
+From Stdlib Require Export Relations.
 
 From CoLoR Require Import LogicUtil.
 From CoLoR Require Export RelMidex.
@@ -541,7 +541,8 @@ Section comp_clos.
 
   Proof.
     split.
-    intros t u tu. inversion_clear tu; subst. ex u'. intuition. ex v'. intuition.
+    intros t u tu. inversion_clear tu; subst. ex u'. intuition.
+    ex v'. intuition auto with *.
     intros t u [t' [tt' [u' [t'u' u'u]]]]. eapply comp_clos_intro.
     apply tt'. sym. apply u'u. hyp.
   Qed.
@@ -862,7 +863,7 @@ Lemma tc_split_inv A (R : rel A) : R# @ R << R!.
 Proof.
   intros x y RRxy. destruct RRxy as [z [Rxz Rzy]].
   destruct (rtc_split Rxz).
-  rewrite H. intuition.
+  rewrite H. intuition auto with *.
   constructor 2 with z. hyp.
   constructor 1. hyp.
 Qed.
@@ -967,7 +968,7 @@ Section qo_clos.
 
   Proof.
     induction 1.
-    right. ex y. intuition. auto.
+    right. ex y. intuition auto with *. auto.
     destruct IHqo_clos1 as [h1|[a [i1 i2]]];
       destruct IHqo_clos2 as [h2|[b [j1 j2]]].
     left. trans y; hyp.
@@ -1089,7 +1090,7 @@ Lemma tc_union A (R S : rel A) : (R U S)! << R! U (R# @ S)! @ R#.
 
 Proof.
   unfold incl. induction 1. destruct H. left. apply t_step. exact H.
-  right. exists y. intuition. apply t_step. exists x. intuition.
+  right. exists y. intuition auto with *. apply t_step. exists x. intuition auto with *.
   destruct IHclos_trans1. destruct IHclos_trans2.
   left. trans y; hyp.
   right. do 2 destruct H2. exists x0. intuition.
@@ -1113,8 +1114,8 @@ Section commut.
     unfold incl. intros. do 2 destruct H. generalize x x0 H y H0.
     clear H0 y H x0 x. induction 1; intros.
     assert ((S @ R) x y0). apply commut. exists y. intuition.
-    do 2 destruct H1. exists x0. intuition.
-    exists y. intuition.
+    do 2 destruct H1. exists x0. intuition auto with *.
+    exists y. intuition auto with *.
     ded (IHclos_refl_trans2 _ H1). do 2 destruct H2.
     ded (IHclos_refl_trans1 _ H2). do 2 destruct H4.
     exists x1. intuition. trans x0; hyp.
@@ -1126,8 +1127,8 @@ Section commut.
     unfold incl. intros. do 2 destruct H. generalize x0 y H0 x H.
     clear H x x0 H0 y. induction 1; intros.
     assert ((S @ R) x0 y). apply commut. exists x. intuition.
-    do 2 destruct H1. exists x1. intuition.
-    exists x0. intuition.
+    do 2 destruct H1. exists x1. intuition auto with *.
+    exists x0. intuition auto with *.
     ded (IHclos_refl_trans1 _ H). do 2 destruct H0.
     ded (IHclos_refl_trans2 _ H1). do 2 destruct H2.
     exists x2. intuition. apply rtc_trans with x1; hyp.

@@ -11,7 +11,7 @@ with specification of operations on multisets.
 Set Implicit Arguments.
 
 From CoLoR Require RelExtras.
-From Coq Require Import Relations Psatz.
+From Stdlib Require Import Relations Psatz.
 
 Declare Scope msets_scope.
 

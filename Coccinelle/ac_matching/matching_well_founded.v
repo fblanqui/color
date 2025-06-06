@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith List.
+From Stdlib Require Import Arith List.
 From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching.
 
 Module Type S.

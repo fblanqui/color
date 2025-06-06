@@ -10,7 +10,7 @@ termination by using compatible reduction orderings
 Set Implicit Arguments.
 
 From CoLoR Require Import ATrs SN ARelation RelUtil ACompat LogicUtil.
-From Coq Require Import List.
+From Stdlib Require Import List.
 
 Section S.
 

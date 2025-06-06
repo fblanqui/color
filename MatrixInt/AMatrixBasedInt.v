@@ -10,7 +10,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import Matrix AMonAlg VecUtil OrdSemiRing ATrs LogicUtil
      RelUtil NatUtil AWFMInterpretation.
-From Coq Require Import PeanoNat Setoid Morphisms.
+From Stdlib Require Import PeanoNat Setoid Morphisms.
 From CoLoR Require ABterm ATrs.
 
 Section MatrixLinearFunction.
@@ -74,11 +74,11 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
   Global Instance eq_mint_refl k : Reflexive (@eq_mint k).
 
-  Proof. unfold eq_mint, Reflexive. destruct x. intuition. Qed.
+  Proof. unfold eq_mint, Reflexive. destruct x. intuition auto with *. Qed.
 
   Global Instance eq_mint_sym k : Symmetric (@eq_mint k).
 
-  Proof. unfold eq_mint, Symmetric. destruct x. destruct y. intuition. Qed.
+  Proof. unfold eq_mint, Symmetric. destruct x. destruct y. intuition auto with *. Qed.
 
   Global Instance eq_mint_trans k : Transitive (@eq_mint k).
 

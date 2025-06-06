@@ -9,7 +9,7 @@ Model of MPO statisfying Hypotheses in RPO_Types
 
 From CoLoR Require Import VPrecedence MultisetListOrder VRPO_Type VTerm
   ListUtil AccUtil LogicUtil.
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 
 Module MPO (PT : VPrecedenceType).
 

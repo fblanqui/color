@@ -1,4 +1,4 @@
-From Coq Require Import Setoid List Relations Lia Arith.
+From Stdlib Require Import Setoid List Relations Lia Arith.
 From CoLoR Require Import weaved_relation list_permut terminaison.
 From CoLoR Require rpo equational_theory equational_extension term subterm_dp
      order_extension.

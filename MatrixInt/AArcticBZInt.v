@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import ZArith Lia.
+From Stdlib Require Import ZArith Lia.
 From CoLoR Require Import LogicUtil Matrix AMonAlg AArcticBasedInt VecUtil
      OrdSemiRing SN RelUtil AMatrixBasedInt ListUtil.
 Import ArcticBZMatrix.

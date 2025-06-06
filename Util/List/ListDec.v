@@ -9,7 +9,7 @@ boolean functions on lists
 
 Set Implicit Arguments.
 
-From Coq Require Import Arith Lia.
+From Stdlib Require Import Arith Lia.
 From CoLoR Require Import ListUtil BoolUtil EqUtil LogicUtil.
 
 Section S.
@@ -77,9 +77,9 @@ Section S.
   Lemma mem_ok x : forall l, mem x l = true <-> In x l.
 
   Proof.
-    induction l; simpl; intros; auto. intuition. split; intro.
+    induction l; simpl; intros; auto. intuition auto with *. split; intro.
     destruct (orb_true_elim H). rewrite beq_ok in e. subst. auto. intuition.
-    destruct H. subst. rewrite (beq_refl beq_ok). refl. intuition.
+    destruct H. subst. rewrite (beq_refl beq_ok). refl. intuition auto with *.
   Qed.
 
 (***********************************************************************)
@@ -95,7 +95,7 @@ Section S.
 
   Proof.
     induction l; simpl; intros; auto. intuition. apply incl_nil. split; intro.
-    destruct (andb_elim H). rewrite mem_ok in H0. rewrite IHl in H1. intuition.
+    destruct (andb_elim H). rewrite mem_ok in H0. rewrite IHl in H1. intuition auto with *.
     destruct (incl_cons_l H). rewrite <- mem_ok in H0. rewrite <- IHl in H1.
     rewrite H0, H1. refl.
   Qed.
@@ -143,7 +143,7 @@ Section S.
     rewrite Nat.sub_diag. intuition. destruct l. simpl. discr. intros.
     ded (IHl _ H0). assert (exists p', k - i = S p'). exists (k-i-1). lia.
     destruct H2. rewrite H2. assert (k - S i = x0). lia. rewrite <- H3.
-    intuition.
+    intuition auto with *.
   Qed.
 
   Lemma position_aux_ok2 i x : forall l k, element_at l k = Some x ->
@@ -151,8 +151,8 @@ Section S.
 
   Proof.
     induction l; simpl; intros. discr. case_beq x a.
-    exists 0. intuition. rewrite (beq_ko beq_ok) in H0. destruct k.
-    inversion H. subst. cong. destruct (IHl _ H). exists (S x0). intuition.
+    exists 0. intuition auto with *. rewrite (beq_ko beq_ok) in H0. destruct k.
+    inversion H. subst. cong. destruct (IHl _ H). exists (S x0). intuition auto with *.
     rewrite Nat.add_succ_r. simpl. apply position_aux_S. hyp.
   Qed.
 

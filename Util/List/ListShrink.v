@@ -9,7 +9,7 @@ prefix, suffix, cut, elimination of doubles, etc.
 
 Set Implicit Arguments.
 
-From Coq Require Import PeanoNat.
+From Stdlib Require Import PeanoNat.
 From CoLoR Require Import ListUtil ListNodup LogicUtil RelMidex.
 
 (***********************************************************************)

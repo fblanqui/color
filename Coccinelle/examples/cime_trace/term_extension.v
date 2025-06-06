@@ -1,4 +1,4 @@
-From Coq Require Import List Bool.
+From Stdlib Require Import List Bool.
 From CoLoR Require Import TransClosure.
 From CoLoR Require term terminaison.
 

@@ -11,7 +11,7 @@ lambda-calculus are introduced in this file.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsLifting LogicUtil OptUtil.
-From Coq Require Import Arith Setoid Morphisms Lia.
+From Stdlib Require Import Arith Setoid Morphisms Lia.
 
 Module TermsEnv (Sig : TermsSig.Signature).
 

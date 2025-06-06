@@ -125,7 +125,7 @@ Section S.
     induction R; intros. unfold rules_preserve_vars. simpl. tauto.
     simpl. revert H. rewrite !rules_preserve_vars_cons. destruct a as [l r].
     simpl. intuition. rewrite !vars_var; try (hyp||apply is_unary_sig').
-    rewrite !var_reverse_term. intuition.
+    rewrite !var_reverse_term. intuition auto with *.
   Qed.
 
   Lemma trs_of_srs_reverse_trs : forall R,

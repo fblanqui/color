@@ -11,7 +11,7 @@ a more general development is given in AGraph.
 
 Set Implicit Arguments.
 
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 From CoLoR Require ACompat.
 From CoLoR Require Import LogicUtil ATrs ListUtil RelUtil RelSub Path ARelation
      SN ListOccur ListNodup AShift VecUtil ASubstitution Iter Cycle.
@@ -92,9 +92,9 @@ Lemma chain_dps_app' : forall a l m b p, a :: l = m ++ b :: p ->
 
 Proof.
 intros. destruct m; simpl in H; injection H; unfold inclusion; intros.
-subst p. subst b. exists x. unfold clos_refl. intuition.
+subst p. subst b. exists x. unfold clos_refl. intuition auto with *.
 subst r. subst l. simpl. ded (chain_dps_app _ _ H2). do 2 destruct H0.
-exists x0. unfold clos_refl. intuition.
+exists x0. unfold clos_refl. intuition auto with *.
 Qed.
 
 Arguments chain_dps_app' [a l m b p] _ [x y] _.
@@ -282,11 +282,11 @@ simpl. rewrite app_ass. refl. rewrite H15, app_ass. refl.
 do 4 destruct H8. unfold l' in H8. ded (chain_dps_app' H8 H3).
 do 2 destruct H10.
 (* succ_eq# x x7 *)
-assert (succ_eq# x x7). destruct H10. subst x7. intuition.
+assert (succ_eq# x x7). destruct H10. subst x7. intuition auto with *.
 eapply incl_elim. eapply compat_chain_dps. apply H10.
 (* (succ @ succ_eq#) x7 y *)
 assert ((succ @ succ_eq#) x7 y). destruct x6; simpl in H11.
-ded (compat_chain_dp_strict H9 H11). exists y. intuition.
+ded (compat_chain_dp_strict H9 H11). exists y. intuition auto with *.
 do 2 destruct H11. exists x8. split. eapply incl_elim.
 apply (compat_chain_dp_strict H9). exact H11.
 eapply incl_elim. eapply compat_chain_dps. apply H13.

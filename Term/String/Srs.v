@@ -97,7 +97,7 @@ Lemma red_rule_top : forall l r, In (mkRule l r) R ->
 
 Proof.
   intros. red. exists l. exists r. exists (mkContext nil nil). 
-  repeat split; unfold fill; simpl; trivial || rewrite <- app_nil_end; trivial. 
+  repeat split; unfold fill; simpl; trivial || rewrite app_nil_r; trivial. 
 Qed.
 
 Lemma red_fill : forall c t u, red R t u -> red R (fill c t) (fill c u).

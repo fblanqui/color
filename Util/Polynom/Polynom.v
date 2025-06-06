@@ -11,8 +11,8 @@ polynomials with multiple variables and integer coefficients
 Set Implicit Arguments.
 
 From CoLoR Require Import VecUtil LogicUtil NatUtil.
-From Coq Require Import Arith List Lia.
-From Coq Require Export ZArith.
+From Stdlib Require Import Arith List Lia.
+From Stdlib Require Export ZArith.
 
 (** monomials with n variables *)
 

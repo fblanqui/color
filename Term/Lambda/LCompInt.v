@@ -14,10 +14,8 @@ term are computable.
 
 Set Implicit Arguments.
 
-From Coq Require Import IndefiniteDescription.
-From Coq.Structures Require Import OrderedType.
-From CoLoR Require Import LogicUtil SN LCompSimple Tarski VecUtil SetUtil
-     RelUtil.
+From Stdlib Require Import IndefiniteDescription Structures.OrderedType.
+From CoLoR Require Import LogicUtil SN LCompSimple Tarski VecUtil SetUtil RelUtil.
 From CoLoR Require Union SetUtil RelUtil AccUtil.
 
 

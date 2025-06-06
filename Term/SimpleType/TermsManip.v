@@ -11,7 +11,7 @@ typed lambda-calculus are defined.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsTyping LogicUtil.
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 
 Module TermsManip (Sig : TermsSig.Signature).
 
@@ -657,7 +657,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     intro M1notApp.
     unfold isAppUnit, appUnits in Narg.
     simpl in Narg.
-    change TypM1 at 2 with (typing (buildT TypM1)) in Narg.
+    change TypM1 with (typing (buildT TypM1)) in Narg at 2.
     fold (appUnits (buildT TypM1)) in Narg.
     case (@in_app_or _ (appUnits (buildT TypM1)) (buildT TypM2::nil) N).
     trivial.

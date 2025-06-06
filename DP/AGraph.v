@@ -13,7 +13,7 @@ Set Implicit Arguments.
 From CoLoR Require Import LogicUtil ATrs RelUtil RelSub SN AShift ADPGraph
      VecUtil ASubstitution.
 From CoLoR Require Export ADP.
-From Coq Require Import List Lia.
+From Stdlib Require Import List Lia.
 
 Section S.
 

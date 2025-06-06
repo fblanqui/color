@@ -11,7 +11,7 @@ polynomials with non-negative integers as coefficients
 Set Implicit Arguments.
 
 From CoLoR Require Import Polynom ZUtil LogicUtil NaryFunction VecUtil.
-From Coq Require Import List Lia.
+From Stdlib Require Import List Lia.
 
 From CoLoR Require ListUtil.
 
@@ -108,7 +108,7 @@ Lemma coef_pos_mpplus : forall n c (m : monom n) (p : poly n),
 
 Proof.
 induction p; intros; simpl. auto. destruct a. simpl in H0. destruct H0.
-case (monom_eq_dec m t); simpl; intuition.
+case (monom_eq_dec m t); simpl; intuition auto with *.
 Qed.
 
 Lemma coef_pos_plus : forall n (p1 p2 : poly n),
@@ -131,7 +131,7 @@ Lemma coef_pos_power : forall k n (p : poly n),
   coef_pos p -> coef_pos (ppower p k).
 
 Proof.
-induction k; intros; simpl. intuition. apply coef_pos_mult. hyp.
+induction k; intros; simpl. intuition auto with *. apply coef_pos_mult. hyp.
 apply IHk. hyp.
 Qed.
 
@@ -139,7 +139,7 @@ Lemma coef_pos_mcomp : forall k n (m : monom n) (ps : vector (poly k) n),
   Vforall (@coef_pos k) ps -> coef_pos (mcomp m ps).
 
 Proof.
-induction n; intros; simpl. intuition. VSntac ps. simpl. rewrite H0 in H.
+induction n; intros; simpl. intuition auto with *. VSntac ps. simpl. rewrite H0 in H.
 simpl in H. destruct H. apply coef_pos_mult. apply coef_pos_power.
 hyp. apply IHn. hyp.
 Qed.
@@ -148,7 +148,7 @@ Lemma coef_pos_cpmult : forall n c (p : poly n),
   0 <= c -> coef_pos p -> coef_pos (cpmult c p).
 
 Proof.
-induction p; intros; simpl. exact I. destruct a. simpl. simpl in H0. intuition.
+induction p; intros; simpl. exact I. destruct a. simpl. simpl in H0. intuition auto with *.
 Qed.
 
 Lemma coef_pos_pcomp : forall n k (p : poly n) (ps : vector (poly k) n),

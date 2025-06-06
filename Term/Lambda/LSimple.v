@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 From CoLoR Require Import VecUtil LogicUtil OrdUtil NatUtil.
 From CoLoR Require Export LBeta.
 From CoLoR Require FMapUtil.
@@ -392,7 +392,7 @@ Ltac env :=
 (****************************************************************************)
 (** * Structure over which we will define typing. *)
 
-From Coq Require FMapInterface.
+From Stdlib Require FMapInterface.
 
 Module Type ST_Struct.
 
@@ -560,9 +560,9 @@ are finite maps from variables to types. *)
     env. rewrite mapsto_restrict_dom, add_mapsto_iff.
     intros [[[h1 h2]|[h1 h2]] h3]; unfold s', Def.update; eq_dec y x.
     (* (y,T) = (x,U) *)
-    subst y T. apply tr_var. env. rewrite add_mapsto_iff. intuition. intuition.
+    subst y T. apply tr_var. env. rewrite add_mapsto_iff. intuition. intuition auto with *.
     (* y <> x /\ MapsTo y T E *)
-    intuition.
+    intuition auto with *.
     assert (h2' : MapsTo y T (restrict_dom E (XSet.remove x (fv v)))).
     rewrite mapsto_restrict_dom. set_iff. intuition.
     gen (hs _ _ h2'); intro h. apply tr_restrict in h.

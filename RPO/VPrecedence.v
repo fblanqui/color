@@ -8,7 +8,7 @@ recursive path orderings are monotonic well-founded strict orders
 *)
 
 From CoLoR Require Import VSignature VTerm RelMidex Preorder.
-From Coq Require Import Setoid.
+From Stdlib Require Import Setoid.
 From CoLoR Require RelExtras.
 
 Module Type VPrecedenceType.

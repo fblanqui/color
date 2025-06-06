@@ -13,11 +13,8 @@
 
 Set Implicit Arguments.
 
-From Coq Require Import Bool List Arith Setoid Relations FunInd.
+From Stdlib Require Import Bool List Arith Setoid Relations FunInd.
 From CoLoR Require Import closure.
-
-Definition length_app := app_length.
-Definition length_map := map_length.
 
 Lemma tail_prop : forall A :  Type, forall (P : A -> Prop), forall a, forall l, 
   (forall b, In b (a::l) -> P b) -> (forall b, In b l -> P b).
@@ -204,7 +201,7 @@ Lemma flat_map_app :
 intros A B f; fix flat_map_app 1.
 intros l1; case l1; clear l1.
 intros l2; apply eq_refl.
-intros a1 l1 l2; simpl; rewrite (flat_map_app l1 l2); rewrite ass_app; apply eq_refl.
+intros a1 l1 l2; simpl; rewrite (flat_map_app l1 l2); rewrite app_assoc; apply eq_refl.
 Qed.
 
 (** ** Iterators. *) 
@@ -230,7 +227,7 @@ Proof.
   split; auto with *.
   intros acc1 acc2; rewrite <- IHl.
   unfold g.
-  rewrite ass_app. 
+  rewrite app_assoc. 
   reflexivity.
 Qed.
 
@@ -246,9 +243,9 @@ Fixpoint fold_left2 (A B C : Type) (f : A -> B -> C -> A) (a : A) (l1 : list B) 
 Lemma length_add : 
   forall (A : Type) (l1 l2 : list A) a, length (l1 ++ a :: l2) = S (length (l1 ++ l2)).
 Proof.
-intros A l1 l2 a; rewrite app_length; simpl;
+intros A l1 l2 a; rewrite length_app; simpl;
 rewrite Nat.add_comm; simpl; rewrite Nat.add_comm;
-rewrite app_length; trivial.
+rewrite length_app; trivial.
 Qed.
 
 (** ** A measure on lists based on a measure on elements. *)

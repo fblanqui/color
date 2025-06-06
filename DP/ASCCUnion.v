@@ -9,7 +9,7 @@ Modular termination proof through SCC of an over DPGraph
 
 Set Implicit Arguments.
 
-From Coq Require Import Permutation Multiset Setoid PermutSetoid.
+From Stdlib Require Import Permutation Multiset Setoid PermutSetoid.
 From CoLoR Require Import SCCTopoOrdering AGraph ATrs RelUtil RelSub BoundNat
      AdjMat LogicUtil NatUtil SCC SCC_dec ListExtras SN VecUtil GDomainBij
      OptUtil Union SortUtil ListNodup ListPermutation.
@@ -58,7 +58,7 @@ Section S.
     cut (exists j, j=i /\ In j x). intros; destruct H1. destruct H1.
     rewrite <- H1; auto.
     apply (multiplicity_in (@eq nat) eq_nat_dec). lia.
-    assert (length (hyp_Dom hyps) = dim); intuition.
+    assert (length (hyp_Dom hyps) = dim); intuition auto with *.
   Qed.
 
   Lemma s_SCC's_spec_bound i : In i s_SCC's -> i < dim.

@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ATrs SN LogicUtil VecUtil VecOrd NatUtil RelUtil
      ARelation Union ACap ACalls.
-From Coq Require Import List Sumbool.
+From Stdlib Require Import List Sumbool.
 
 Section S.
 

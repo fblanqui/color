@@ -13,7 +13,7 @@ de Bruijn indices) is defined in this file.
 
 Set Implicit Arguments.
 
-From Coq Require Import Compare_dec Arith Lia.
+From Stdlib Require Import Compare_dec Arith Lia.
 From CoLoR Require Import RelExtras ListExtras LogicUtil.
 From CoLoR Require TermsManip.
 
@@ -143,7 +143,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     rewrite initialSeg_length in Ex.
     rewrite Nat.min_r in Ex; [trivial | lia].
     rewrite finalSeg_empty in Ex; trivial.
-    rewrite <- app_nil_end in Ex.
+    rewrite app_nil_r in Ex.
     destruct (le_gt_dec (length (copy n (A := option SimpleType) None)) 
       (x - length E)).
     set (w := nth_beyond (copy n None) l0); try_solve.

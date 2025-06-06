@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A machinery to check termination proofs.
 *)
 
-From Coq Require Import Relations List.
+From Stdlib Require Import Relations List.
 From CoLoR Require Import SN ATrs ARelation Problem Proof EmptyChecker.
 From CoLoR Require PolyChecker.
 

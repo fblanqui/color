@@ -9,8 +9,8 @@ Matching algorithm for ATerms.
 *)
 
 (**********************************************************************)
-From Coq Require Import Peano_dec Bool.
-From Coq Require OrderedTypeEx FMapAVL.
+From Stdlib Require Import Peano_dec Bool.
+From Stdlib Require OrderedTypeEx FMapAVL.
 From CoLoR Require Import LogicUtil EqUtil NatUtil VecUtil ATerm ASubstitution
   FSetUtil FMapUtil ListUtil.
 From CoLoR Require AVariables.

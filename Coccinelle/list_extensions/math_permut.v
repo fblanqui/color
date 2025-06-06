@@ -1,10 +1,8 @@
-
-
 (** * Permutation over lists, and finite multisets. *)
 
 Set Implicit Arguments. 
 
-From Coq Require Import List Relations Multiset Arith Setoid.
+From Stdlib Require Import List Relations Multiset Arith Setoid.
 From CoLoR Require Import decidable_set more_list equiv_list.
 From CoLoR Require list_permut.
 
@@ -205,7 +203,7 @@ destruct (nth_error (l2' ++ b1 :: l2'') (pi (S i))) as [bi | ];
 intros H' ai_R_bi; destruct (H' _ (eq_refl _)) as [k2 [k2' [Lk2 H'']]]; clear H'.
 destruct (in_in_split_set b1 bi l2' l2'' k2 k2' H'') as [[H''' | H'''] | H''']; clear H''.
 destruct H''' as [l [H3 H4]]; subst.
-rewrite <- ass_app; rewrite <- Lk2; rewrite <- L''; simpl.
+rewrite <- app_assoc; rewrite <- Lk2; rewrite <- L''; simpl.
 destruct (le_lt_dec (length k2) (length (k2 ++ bi :: l))) as [Ok | Ko].
 rewrite nth_error_at_pos; trivial.
 absurd (length k2 < length k2); auto with arith.
@@ -220,7 +218,7 @@ rewrite length_app; rewrite Nat.add_comm; simpl; auto with arith.
 rewrite (length_app l2' (b1 :: l)).
 rewrite Nat.add_comm; simpl; rewrite Nat.sub_0_r; rewrite Nat.add_comm;
 rewrite <- length_app.
-rewrite ass_app; rewrite nth_error_at_pos; trivial.
+rewrite app_assoc; rewrite nth_error_at_pos; trivial.
 destruct H''' as [_ [H3 H4]]; subst;
 absurd (0 = S i).
 discriminate.

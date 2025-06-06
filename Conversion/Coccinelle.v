@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATerm VecUtil.
 From CoLoR Require VecUtil more_list APosition AContext ordered_set.
-From Coq Require Inverse_Image.
+From Stdlib Require Inverse_Image.
 
 (***********************************************************************)
 (** convert a CoLoR signature into a Coccinelle signature *)
@@ -51,7 +51,7 @@ End Var.
 (***********************************************************************)
 (** convert CoLoR terms into Coccinelle terms *)
 
-From Coq Require Import List Relations.
+From Stdlib Require Import List Relations.
 From CoLoR Require Import term SN ASubstitution.
 
 Module Make_Term (Import S : SIG) <: Term.

@@ -11,8 +11,8 @@ concerning it are introduced in this file.
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil RelUtil RelExtras.
-From Coq Require Import Setoid Morphisms Basics.
-From Coq Require Notations Relation_Operators.
+From Stdlib Require Import Setoid Morphisms Basics.
+From Stdlib Require Notations Relation_Operators.
 
 Section LexPair.
 

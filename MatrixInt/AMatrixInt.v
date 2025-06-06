@@ -16,10 +16,10 @@ References:
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid.
+From Stdlib Require Import Setoid.
 From CoLoR Require Import LogicUtil Matrix OrdSemiRing VecUtil AMonAlg SN
      RelUtil AWFMInterpretation NatUtil AMatrixBasedInt.
-From Coq Require List.
+From Stdlib Require List.
 From CoLoR Require ListUtil.
 
 Import NMatrix.
@@ -105,7 +105,7 @@ Module MatrixInt (MI : TMatrixInt).
     Global Instance trans_succ : Transitive succ.
 
     Proof.
-      apply Rof_trans. unfold succ_vec. intros v1 v2 v3 h12 h23. intuition.
+      apply Rof_trans. unfold succ_vec. intros v1 v2 v3 h12 h23. intuition auto with *.
       trans v2; hyp.
     Qed.
 

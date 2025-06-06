@@ -9,7 +9,7 @@ Model of RPO with status
 
 From CoLoR Require Import VPrecedence MultisetListOrder ListLex VRPO_Type
   VTerm ListUtil AccUtil LogicUtil.
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 
 Inductive status_name : Set := 
 | lexicographic : status_name 

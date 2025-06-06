@@ -9,7 +9,7 @@ Infinite sets
 
 Set Implicit Arguments.
 
-From Coq Require Import Basics Morphisms Setoid Lia.
+From Stdlib Require Import Basics Morphisms Setoid Lia.
 From CoLoR Require Import ClassicUtil IotaUtil EpsilonUtil LogicUtil SetUtil
      FinSet FunUtil BoundNat IotaUtil EpsilonUtil.
 

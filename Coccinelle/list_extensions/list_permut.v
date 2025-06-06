@@ -15,7 +15,7 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import List Relations Arith Setoid Morphisms FunInd.
+From Stdlib Require Import List Relations Arith Setoid Morphisms FunInd.
 From CoLoR Require Import decidable_set more_list equiv_list.
 
 Inductive permut0 (A B : Type) (R : A -> B -> Prop) : (list A -> list B -> Prop) :=
@@ -54,20 +54,20 @@ inversion P as [ | b1 b2 l k k' b1_R_b2 Q]; clear P; subst.
 destruct (split_list _ _ _ _ H1) as [H' | H']; clear H1.
 destruct H' as [l [H1 H2]]; subst; simpl.
 assert (Q' := @Pcons _ _ R u1 b2 (l1 ++ a1 :: k1) (l2 ++ a2 :: l) k' b1_R_b2).
-do 2 rewrite <- ass_app in Q'; simpl in Q'; apply Q'.
+do 2 rewrite <- app_assoc in Q'; simpl in Q'; apply Q'.
 apply IHl1; trivial.
-rewrite ass_app; trivial.
+rewrite app_assoc; trivial.
 destruct H' as [l [H1 H2]]; subst; simpl.
 destruct l as [ | u l].
-simpl in H2; subst k2; rewrite <- app_nil_end.
+simpl in H2; subst k2; rewrite app_nil_r.
 assert (Q' := @Pcons _ _ R u1 b2 (l1 ++ a1 :: k1) (k ++ a2 :: nil) k' b1_R_b2).
-do 2 rewrite <- ass_app in Q'; simpl in Q'; apply Q'.
+do 2 rewrite <- app_assoc in Q'; simpl in Q'; apply Q'.
 apply IHl1; trivial.
 simpl in H2; injection H2; clear H2; intros H2 b2_eq_u; subst u k'.
 assert (Q' := @Pcons _ _ R u1 b2 (l1 ++ a1 :: k1) k (l ++ a2 :: k2) b1_R_b2).
-rewrite <- ass_app; simpl; apply Q'.
-rewrite ass_app; apply IHl1; trivial.
-rewrite <- ass_app; trivial.
+rewrite <- app_assoc; simpl; apply Q'.
+rewrite app_assoc; apply IHl1; trivial.
+rewrite <- app_assoc; trivial.
 Qed.
 
 Lemma permut_inv_left_strong :
@@ -84,17 +84,17 @@ destruct (IHl1' _ _ _ Q) as [b' [k2' [k2'' [a_R_b' [H Q']]]]]; clear Q.
 destruct (split_list _ _ _ _ H) as [H' | H']; clear H.
 destruct H' as [[ | b'' l] [H1 H2]]; simpl in *; subst.
 exists b'; exists (k2' ++ b :: nil); exists k2''; repeat split; trivial.
-rewrite <- app_nil_end; rewrite <- ass_app; simpl; trivial.
-rewrite <- ass_app; simpl; apply Pcons; trivial.
+rewrite app_nil_r; rewrite <- app_assoc; simpl; trivial.
+rewrite <- app_assoc; simpl; apply Pcons; trivial.
 injection H2; clear H2; intros; subst.
 exists b''; exists k2'; exists (l ++ b :: l2''); repeat split; trivial.
-rewrite <- ass_app; simpl; trivial.
-rewrite ass_app; apply Pcons; trivial; rewrite <- ass_app; trivial.
+rewrite <- app_assoc; simpl; trivial.
+rewrite app_assoc; apply Pcons; trivial; rewrite <- app_assoc; trivial.
 destruct H' as [l [H1 H2]]; subst.
 exists b'; exists (l2' ++ b :: l); exists k2''; repeat split; trivial.
-rewrite <- ass_app; simpl; trivial.
-rewrite <- ass_app.
-do 2 rewrite <- app_comm_cons; apply Pcons; trivial; rewrite ass_app; trivial.
+rewrite <- app_assoc; simpl; trivial.
+rewrite <- app_assoc.
+do 2 rewrite <- app_comm_cons; apply Pcons; trivial; rewrite app_assoc; trivial.
 Qed.
   
 Lemma permut_inv_right :
@@ -123,17 +123,17 @@ inversion P as [ | a b' l' l1' k2 a_R_b' Q H]; subst.
 destruct l2'; discriminate.
 destruct (in_in_split_set _ _ _ _ _ _ H1) as [[H2' | H2'] | H2']; clear H1.
 destruct H2' as [l [H2 H3]]; subst.
-rewrite <- ass_app in Q; simpl in Q; 
+rewrite <- app_assoc in Q; simpl in Q; 
 destruct (IHl1 b _ _ Q) as [a [l1' [l1'' [a_R_b [H Q']]]]]; subst.
 exists a; exists (a1 :: l1'); exists l1''; repeat split; trivial.
-simpl; rewrite ass_app; apply Pcons; trivial.
-rewrite <- ass_app; trivial.
+simpl; rewrite app_assoc; apply Pcons; trivial.
+rewrite <- app_assoc; trivial.
 destruct H2' as [l [H2 H3]]; subst.
-rewrite ass_app in Q.
+rewrite app_assoc in Q.
 destruct (IHl1 b _ _ Q) as [a [k1' [k1'' [a_R_b [H Q']]]]]; subst.
 exists a; exists (a1 :: k1'); exists k1''; repeat split; trivial.
-rewrite <- ass_app; simpl; apply Pcons; trivial.
-rewrite ass_app; trivial.
+rewrite <- app_assoc; simpl; apply Pcons; trivial.
+rewrite app_assoc; trivial.
 destruct H2' as [b'_eq_b [H2 H3]]; subst.
 exists a1; exists (@nil A); exists l1; repeat split; trivial.
 Qed.
@@ -236,25 +236,25 @@ intros A B R a b l1 l1' l2 l2' trans_R a_R_b P.
 destruct (permut_inv_left_strong (R := R) _ _ _ P) as [b' [k2 [k2' [a_R_b' [H P']]]]].
 destruct (in_in_split_set _ _ _ _ _ _ H) as [[H' | H'] | H']; clear H.
 destruct H' as [l [H1 H2]]; subst.
-rewrite ass_app in P'.
+rewrite app_assoc in P'.
 destruct (permut_inv_right_strong (R := R) _ _ _ P') as [a' [k1' [k1'' [a'_R_b' [H P'']]]]].
-rewrite H; rewrite <- ass_app; simpl; apply permut_strong.
+rewrite H; rewrite <- app_assoc; simpl; apply permut_strong.
 apply trans_R with b a; trivial.
 apply in_insert; rewrite H; apply in_or_app; right; left; trivial.
 apply in_or_app; right; left; trivial.
 apply in_or_app; right; left; trivial.
 apply in_or_app; left; apply in_or_app; right; left; trivial.
-rewrite ass_app; trivial.
+rewrite app_assoc; trivial.
 destruct H' as [l [H1 H2]]; subst.
-rewrite <- ass_app in P'; simpl in P'.
+rewrite <- app_assoc in P'; simpl in P'.
 destruct (permut_inv_right_strong (R := R) _ _ _ P') as [a' [k1' [k1'' [a'_R_b' [H P'']]]]].
-rewrite H; rewrite ass_app; simpl; apply permut_strong.
+rewrite H; rewrite app_assoc; simpl; apply permut_strong.
 apply trans_R with b a; trivial.
 apply in_insert; rewrite H; apply in_or_app; right; left; trivial.
 apply in_or_app; right; left; trivial.
 apply in_or_app; right; left; trivial.
 apply in_or_app; right; right; apply in_or_app; right; left; trivial.
-rewrite <- ass_app; trivial.
+rewrite <- app_assoc; trivial.
 destruct H' as [H1 [H2 H3]]; subst; trivial.
 Qed.
 
@@ -452,8 +452,8 @@ intros A B R l1; induction l1 as [ | a1 l1];
 intros l1' l2 l2' P P'.
 inversion_clear P; trivial.
 inversion P as [ | a b l1'' l2'' l2''' a_R_b Q]; subst.
-simpl; rewrite <- ass_app; simpl; apply Pcons; trivial.
-rewrite ass_app; apply IHl1; trivial.
+simpl; rewrite <- app_assoc; simpl; apply Pcons; trivial.
+rewrite app_assoc; apply IHl1; trivial.
 Qed.
 
 Lemma permut_swapp :
@@ -462,10 +462,10 @@ Lemma permut_swapp :
 Proof.
 intros A B R l1; induction l1 as [ | a1 l1];
 intros l1' l2 l2' P P'.
-inversion_clear P; rewrite <- app_nil_end; trivial.
+inversion_clear P; rewrite app_nil_r; trivial.
 inversion P as [ | a b l1'' l2'' l2''' a_R_b Q]; subst.
-simpl; rewrite ass_app; apply Pcons; trivial.
-rewrite <- ass_app; apply IHl1; trivial.
+simpl; rewrite app_assoc; apply Pcons; trivial.
+rewrite <- app_assoc; apply IHl1; trivial.
 Qed.
 
 Lemma permut_app1 :
@@ -495,13 +495,13 @@ Proof.
 intros A R E l l1 l2; split; intro P.
 (* -> case *)
 induction l as [ | u l].
-do 2 rewrite <- app_nil_end; trivial.
+do 2 rewrite app_nil_r; trivial.
 apply permut_strong; trivial.
 reflexivity.
 
 (* <- case *)
 induction l as [ | u l].
-do 2 rewrite <- app_nil_end in P; trivial.
+do 2 rewrite app_nil_r in P; trivial.
 apply IHl.
 apply (@permut_add_inside A A R u u); trivial.
 intros a1 b1 a2 b2 _ _ _ _ a1_R_b1 a2_R_b1 a2_R_b2;
@@ -738,9 +738,9 @@ destruct a1_in_l3l4 as [a1_in_l3 | a1_in_l4].
 generalize (mem_split_set _ _ eq_bool_ok _ _ a1_in_l3).
 intros [a1' [l3' [l3'' [a1_eq_a1' [H _]]]]]; 
 simpl in a1_eq_a1'; simpl in H; subst l3.
-rewrite app_ass in P; rewrite <- app_comm_cons in P;
+rewrite <- app_assoc in P; rewrite <- app_comm_cons in P;
 rewrite <- permut0_cons_inside in P; trivial.
-rewrite <- app_ass in P;
+rewrite app_assoc in P;
 destruct (IHl1 l2 (l3' ++ l3'') l4 P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]].
 exists (a1 :: u1); exists u2; exists u3; exists u4; repeat split; simpl; trivial.
 rewrite <- permut0_cons; trivial; reflexivity.
@@ -751,9 +751,9 @@ apply (permut0_sym eq_proof). assumption.
 generalize (mem_split_set _ _ eq_bool_ok _ _ a1_in_l4).
 intros [a1' [l4' [l4'' [a1_eq_a1' [H _]]]]]; 
 simpl in a1_eq_a1'; simpl in H; subst l4.
-rewrite <- app_ass in P; 
+rewrite app_assoc in P; 
 rewrite <- permut0_cons_inside in P; trivial.
-rewrite app_ass in P;
+rewrite <- app_assoc in P;
 destruct (IHl1 l2 l3 (l4' ++ l4'') P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]];
 exists u1; exists (a1 :: u2); exists u3; exists u4; intuition; simpl; trivial.
 rewrite <- permut0_cons_inside; trivial. reflexivity.
@@ -1121,9 +1121,9 @@ destruct a1_in_l3l4 as [a1_in_l3 | a1_in_l4].
 generalize (mem_split_set _ _ EDS1.eq_bool_ok _ _ a1_in_l3).
 intros [a1' [l3' [l3'' [a1_eq_a1' [H _]]]]]; 
 simpl in a1_eq_a1'; simpl in H; subst l3.
-rewrite app_ass in P; rewrite <- app_comm_cons in P;
+rewrite <- app_assoc in P; rewrite <- app_comm_cons in P;
 rewrite <- permut_cons_inside in P; trivial.
-rewrite <- app_ass in P;
+rewrite app_assoc in P;
 destruct (IHl1 l2 (l3' ++ l3'') l4 P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]].
 exists (a1 :: u1); exists u2; exists u3; exists u4; repeat split; simpl; trivial.
 rewrite <- permut_cons; trivial; reflexivity.
@@ -1132,9 +1132,9 @@ apply permut_sym; rewrite <- permut_cons_inside; auto.
 generalize (mem_split_set _ _ EDS1.eq_bool_ok _ _ a1_in_l4).
 intros [a1' [l4' [l4'' [a1_eq_a1' [H _]]]]]; 
 simpl in a1_eq_a1'; simpl in H; subst l4.
-rewrite <- app_ass in P; 
+rewrite app_assoc in P; 
 rewrite <- permut_cons_inside in P; trivial.
-rewrite app_ass in P;
+rewrite <- app_assoc in P;
 destruct (IHl1 l2 l3 (l4' ++ l4'') P) as [u1 [u2 [u3 [u4 [P1 [P2 [P3 P4]]]]]]];
 exists u1; exists (a1 :: u2); exists u3; exists u4; intuition; simpl; trivial.
 rewrite <- permut_cons_inside; trivial.

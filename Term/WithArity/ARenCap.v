@@ -162,10 +162,10 @@ intros x t; pattern t; apply term_ind with (Q := fun n (ts : terms n) =>
   forall k, In x (vars_vec (ren_caps k ts)) ->
   k <= x /\ x < k + nb_aliens_vec ts); clear t.
 (* Var *)
-unfold nb_aliens. simpl. intuition.
+unfold nb_aliens. simpl. intuition auto with *.
 (* Fun *)
 intros f ts H k0. rewrite ren_cap_fun. unfold nb_aliens. simpl.
-case (defined f R). simpl. intuition. rewrite vars_fun. simpl. exact (H k0).
+case (defined f R). simpl. intuition auto with *. rewrite vars_fun. simpl. exact (H k0).
 (* Vnil *)
 simpl. intuition.
 (* Vcons *)

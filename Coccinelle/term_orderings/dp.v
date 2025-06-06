@@ -12,7 +12,7 @@
 
 (** * Termination of rewriting *)
 
-From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
+From Stdlib Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec.
 From CoLoR Require Import NatCompat.
 
@@ -960,7 +960,7 @@ intros Rlist is_def x y H.
 induction Rlist as  [ | [l1 r1] Rlist].
 contradiction.
 unfold ddp_list in H; simpl in H.
-rewrite <- app_nil_end in H.
+rewrite app_nil_r in H.
 replace (ddp_rule is_def l1 r1) with (nil ++ ddp_rule is_def l1 r1) in H; [ | apply eq_refl].
 rewrite fold_left_in_acc_split in H; destruct H as [H | H].
 destruct (IHRlist H) as [[t2 [f2 [ l2 [p [H1 [H2 H3]]]]]] H4].

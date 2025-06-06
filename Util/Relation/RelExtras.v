@@ -11,8 +11,8 @@ missing in the standard library.
 
 Set Implicit Arguments.
 
-From Coq Require Export Relations.
-From Coq Require Import Arith Setoid Morphisms Basics ZArith.
+From Stdlib Require Export Relations.
+From Stdlib Require Import Arith Setoid Morphisms Basics ZArith.
 From CoLoR Require Import LogicUtil RelUtil.
 
 (***********************************************************************)

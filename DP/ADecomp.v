@@ -111,7 +111,7 @@ edge from b to c *)
     rewrite negb_lr in H5. simpl in H5.
     absurd (Graph (mkRule l r) (mkRule l0 r0)). unfold Graph. rewrite H5. discr.
     apply approx_correct. apply hd_red_Mod_rule2_hd_rules_graph
-      with (t := t) (u := x) (v := v); unfold hd_red_Mod_rule; subst; intuition.
+      with (t := t) (u := x) (v := v); unfold hd_red_Mod_rule; subst; intuition auto with *.
     exists s. intuition. eapply incl_flat_In. apply lr0. apply H0.
     apply incl_appl_incl with a. hyp. exists s0. intuition.
   Qed.

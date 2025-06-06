@@ -11,7 +11,7 @@ and introduces, as Variable, some computability properties.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras PairLex Horpo LogicUtil AccUtil.
-From Coq Require Import Setoid Morphisms Basics.
+From Stdlib Require Import Setoid Morphisms Basics.
 
 Module Computability (S : TermsSig.Signature) 
                      (Prec : Horpo.Precedence with Module S := S).

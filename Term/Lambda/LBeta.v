@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Wf_nat Basics Morphisms.
+From Stdlib Require Import Wf_nat Basics Morphisms.
 From CoLoR Require Import RelUtil LogicUtil VecUtil VecOrd SN NatUtil.
 From CoLoR Require Export LAlpha.
 

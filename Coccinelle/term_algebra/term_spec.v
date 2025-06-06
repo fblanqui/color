@@ -12,7 +12,7 @@
 (** * Term algebra defined as functor from a Module Signature and a Module Variable.*)
 
 
-From Coq Require Import Recdef List Arith Setoid.
+From Stdlib Require Import Recdef List Arith Setoid.
 From CoLoR Require Import closure more_list list_permut list_set decidable_set.
 
 Set Implicit Arguments.

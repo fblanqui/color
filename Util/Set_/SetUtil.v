@@ -9,7 +9,7 @@ See the COPYRIGHTSGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Basics Morphisms Setoid.
+From Stdlib Require Import Basics Morphisms Setoid.
 From CoLoR Require Import LogicUtil RelUtil FunUtil ListUtil NatUtil
      ClassicUtil BoundNat.
 

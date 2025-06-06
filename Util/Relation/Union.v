@@ -10,7 +10,7 @@ when the union of two wellfounded relations is wellfounded
 
 Set Implicit Arguments.
 
-From Coq Require Import Lia Wellfounded.Union.
+From Stdlib Require Import Lia Wellfounded.Union.
 From CoLoR Require Import SN RelUtil LogicUtil AccUtil NotSN_IS ClassicUtil
      LeastNat DepChoice.
     

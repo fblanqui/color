@@ -10,7 +10,7 @@ lambda-calculus are introduced in this file.
 
 Set Implicit Arguments.
 
-From Coq Require Import Eqdep_dec.
+From Stdlib Require Import Eqdep_dec.
 From CoLoR Require Import RelExtras ListExtras LogicUtil.
 From CoLoR Require TermsDef.
 
@@ -346,7 +346,7 @@ Ltac infer_tt :=
       match t with
       | App _ _ => eapply TApp; infer_tt
       | Abs _ _ => eapply TAbs; infer_tt
-      | Fun _ => intuition
+      | Fun _ => intuition auto with *
       | Var _ => eapply TVar; compute; trivial
       end
     end.

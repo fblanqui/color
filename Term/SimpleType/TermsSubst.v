@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListPermutation TermsConv ListUtil
      ListExtras LogicUtil.
-From Coq Require Import Arith Lia.
+From Stdlib Require Import Arith Lia.
 
 Module TermsSubst (Sig : TermsSig.Signature).
 
@@ -1204,7 +1204,7 @@ Module TermsSubst (Sig : TermsSig.Signature).
 
   Proof.
     intro x_G. rewrite subst_lift_subst.
-    change (%x) at 1 with (prelift_aux x (%0) 0).
+    change (%x) with (prelift_aux x (%0) 0) at 1.
     change (lift_subst G i) with (copy 0 None ++ lift_subst G i).
     rewrite presubst_lift_beyond; trivial.
     rewrite length_lift_subst; trivial.

@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil.
 From CoLoR Require Export VSignature.
-From Coq Require Export List.
+From Stdlib Require Export List.
 
 Section S.
 
@@ -35,7 +35,7 @@ Lemma fill_fill : forall c d u, fill c (fill d u) = fill (comp c d) u.
 
 Proof.
 intros. destruct c. destruct d.
-unfold fill. simpl. rewrite !app_ass. refl.
+unfold fill. simpl. rewrite !app_assoc. refl.
 Qed.
 
 End S.

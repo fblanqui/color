@@ -15,7 +15,7 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import Relations List Multiset Arith Morphisms FunInd.
+From Stdlib Require Import Relations List Multiset Arith Morphisms FunInd.
 From CoLoR Require Import closure more_list list_permut ordered_set.
 
 Ltac dummy a b a_eq_b :=
@@ -302,7 +302,7 @@ intros R l1 l2 l H; destruct H as [l1 l2 l12 la a H P1 P2].
 apply (@rmv_case R (l++l1) (l++l2) (l++l12) la a); trivial.
 apply permut_trans with (l ++ la ++ l12).
 rewrite <- permut_app1; trivial.
-do 2 rewrite <- app_ass; rewrite <- permut_app2; trivial.
+do 2 rewrite app_assoc; rewrite <- permut_app2; trivial.
 apply list_permut_app_app.
 apply permut_trans with (l ++ a :: l12).
 rewrite <- permut_app1; trivial.
@@ -343,8 +343,8 @@ generalize (mem_split_set _ _ eq_bool_ok _ _ a_mem_lc).
 intros [a' [lc' [lc'' [a_eq_a' [H'' _]]]]]; 
 dummy a a' a_eq_a';
 subst a' lc; apply (rmv_case R (l1:=l1) (l2:= l2) (l:=lc' ++ lc'') lb (a:=a)); trivial.
-rewrite <- app_ass in P1; rewrite <- (permut_cons_inside) in P1.
-rewrite <- ass_app in P1; trivial.
+rewrite app_assoc in P1; rewrite <- (permut_cons_inside) in P1.
+rewrite <- app_assoc in P1; trivial.
 apply (equiv_refl _ _ eq_proof).
 rewrite app_comm_cons in P2; rewrite <- (permut_cons_inside) in P2; trivial.
 apply (equiv_refl _ _ eq_proof).
@@ -353,8 +353,8 @@ generalize (mem_split_set _ _ eq_bool_ok _ _ a_mem_lc).
 intros [a' [lc' [lc'' [a_eq_a' [H'' _]]]]]; 
 dummy a a' a_eq_a';
 subst a' lc; apply (rmv_case R (l1:=l1) (l2:= l2) (l:=lc' ++ lc'') lb (a:=b)); trivial.
-rewrite <- app_ass in P1; rewrite <- (permut_cons_inside) in P1.
-rewrite <- ass_app in P1; trivial.
+rewrite app_assoc in P1; rewrite <- (permut_cons_inside) in P1.
+rewrite <- app_assoc in P1; trivial.
 apply (equiv_refl _ _ eq_proof).
 rewrite app_comm_cons in P2; rewrite <- (permut_cons_inside) in P2.
 simpl  in P2; trivial.
@@ -386,7 +386,7 @@ Lemma context_multiset_extension_step_app2 :
 Proof.
 intros R l1 l2 l H; destruct H as [l1 l2 l12 la a H P1 P2].
 apply (@rmv_case R (l1++l) (l2++l) (l12++l) la a); trivial.
-rewrite <- app_ass; rewrite <- permut_app2; trivial.
+rewrite app_assoc; rewrite <- permut_app2; trivial.
 rewrite app_comm_cons; rewrite <- permut_app2; trivial.
 Qed.
 
@@ -431,7 +431,7 @@ Lemma appendn_app :
  forall ll1 ll2, appendn (ll1 ++ ll2) = appendn ll1 ++ appendn ll2.
 Proof.
 intros ll1; induction ll1 as [ | [a la] ll1]; simpl; trivial; simpl; 
-intros; rewrite IHll1; rewrite ass_app; trivial.
+intros; rewrite IHll1; rewrite app_assoc; trivial.
 Qed.
 
 Lemma in_appendn : 
@@ -461,18 +461,18 @@ simpl; intros p q pq Pp Pq _ H.
 assert (lx_lt_x : forall b, mem EDS.eq_A b lx -> R b x).
 apply H; left; trivial.
 destruct l as [ | [y ly] l]; simpl in *.
-rewrite <- app_nil_end in Pp.
+rewrite app_nil_r in Pp.
 simpl in Pq; apply t_step. 
 exact (rmv_case R lx lx_lt_x Pp Pq).
 apply t_trans with (x :: ly ++ (appendn l) ++ pq).
-do 2 rewrite app_ass in Pp;
+do 2 rewrite <- app_assoc in Pp;
 refine (rmv_case R lx lx_lt_x Pp (permut_refl _)).
 refine (list_permut_trans_clos_multiset_extension_step_2  
                       (permut_sym Pq) _).
 apply (@context_trans_clos_multiset_extension_step_app1 R
             (ly ++ appendn l ++ pq) (y :: consn l ++ pq) (x :: nil)); 
 apply (@IHl (ly ++ appendn l ++ pq) (y :: consn l ++ pq) pq); auto.
-rewrite ass_app; auto.
+rewrite app_assoc; auto.
 discriminate.
 intros a la H1 b b_in_la; apply (H a la); trivial; right; trivial.
 Qed.
@@ -493,7 +493,7 @@ rewrite <- permut_app2;
 rewrite appendn_app; clear Pq H; induction le as [ | e le]; simpl; auto.
 apply permut_trans with (le ++ consn l ++ pq).
 assumption.
-rewrite ass_app; rewrite <- permut_app2;
+rewrite app_assoc; rewrite <- permut_app2;
 rewrite consn_app; clear Pq H; induction le as [ | e le]; simpl; auto.
 rewrite <- permut_cons; trivial.
 apply (equiv_refl _ _ eq_proof).
@@ -592,7 +592,7 @@ rewrite <- (in_permut_in P); left; trivial.
 destruct (In_split _ _ ala_in_ll2) as [ll2' [ll2'' H]]; subst.
 rewrite appendn_app; simpl.
 refine (permut_trans _ (list_permut_app_app _ _)).
-rewrite <- ass_app.
+rewrite <- app_assoc.
 rewrite <- permut_app1.
 refine (permut_trans _ (list_permut_app_app _ _)).
 rewrite <- appendn_app; apply IHll1; trivial.
@@ -623,7 +623,7 @@ intros [ | [b1 l1] l] lc cns H1 H2.
 discriminate.
 injection H1; clear H1; intros; subst.
 generalize (split_list _ _ _ _ H2); clear H2; intros [[k [H3 H4]] | [k [H3 H4]]]; subst.
-generalize (IHP l lc (k ++ k2) (eq_refl _)); rewrite ass_app.
+generalize (IHP l lc (k ++ k2) (eq_refl _)); rewrite app_assoc.
 intro IH; generalize (IH (eq_refl _)); clear IH.
 intros [ll [ll' [Q1 [Q2 Q3]]]].
 exists ll; exists ((b1,l1) :: ll'); simpl; repeat split; trivial.
@@ -635,11 +635,11 @@ generalize (IHP l k1 k2 (eq_refl _) (eq_refl _)).
 intros [ll [ll' [Q1 [Q2 Q3]]]].
 exists ll; exists ((b1,l1) :: ll'); repeat split.
 rewrite <- LLP.permut_cons_inside; [assumption | apply eq_refl].
-rewrite <- app_nil_end; assumption.
+rewrite app_nil_r; assumption.
 simpl; rewrite <- permut_cons; assumption.
 injection H4; clear H4; intros; subst a k2.
 assert (IH := IHP l (k1 ++ k') cns (eq_refl _)).
-rewrite ass_app in IH.
+rewrite app_assoc in IH.
 generalize (IH (eq_refl _)); clear IH; intros [ll [ll' [Q1 [Q2 Q3]]]].
 exists ((b1, l1) :: ll); exists ll'; repeat split.
 simpl; rewrite <- LLP.permut_cons; [assumption | apply eq_refl].
@@ -662,11 +662,11 @@ intros R trans_R p q p_lt_q; induction p_lt_q as [p q p_lt_q | p q r p_lt_q q_lt
 (* R_step *)
 destruct p_lt_q as [p q pq la a la_lt_a Pp Pq].
 exists ((a,la) :: nil); exists pq; simpl; repeat split; auto.
-rewrite <- app_nil_end; auto.
+rewrite app_nil_r; auto.
 discriminate.
 intros x lx [H | H] b b_in_lx; 
 [injection H; intros; subst; apply la_lt_a; trivial | contradiction].
-rewrite <- app_nil_end; intros irrefl_R b [a_eq_b | Abs] b_in_la.
+rewrite app_nil_r; intros irrefl_R b [a_eq_b | Abs] b_in_la.
 dummy b a a_eq_b;
 subst b; apply (irrefl_R a); apply la_lt_a; trivial.
 contradiction.
@@ -685,11 +685,11 @@ destruct (in_appendn _ _ a_in_appl) as [x [lx [xlx_in_l a_in_lx]]].
 destruct (mem_split_set _ _ eq_bool_ok _ _ a_in_lx) as [a' [lx' [lx'' [a_eq_a' [H _]]]]].
 simpl in a_eq_a'; simpl in H; subst lx.
 destruct (In_split _ _  xlx_in_l) as [l' [l'' H]]; subst l.
-rewrite appendn_app in Pq'; simpl in Pq'; do 3 rewrite <-  ass_app in Pq'.
-simpl in Pq'; rewrite ass_app in Pq'.
+rewrite appendn_app in Pq'; simpl in Pq'; do 3 rewrite <- app_assoc in Pq'.
+simpl in Pq'; rewrite app_assoc in Pq'.
 generalize (permut_trans (permut_sym Pq) Pq'); clear Pq'; intro Pq'.
 rewrite <- permut_cons_inside in Pq'.
-rewrite <- ass_app in Pq'.
+rewrite <- app_assoc in Pq'.
 generalize (remove_equiv_is_sound (consn (l' ++ l'')) la).
 destruct (@remove_equiv A eq_bool  (consn (l' ++ l'')) la) as [cns la'].
 intros [lc [Pcns [Pla cns_disj_la']]];
@@ -701,17 +701,17 @@ apply permut_trans with ((lc ++ la') ++ pq).
 rewrite <- permut_app2; trivial.
 apply permut_trans with ((lc ++ la') ++ (appendn l' ++ lx' ++ lx'' ++ appendn l'' ++ qr)).
 rewrite <- permut_app1; trivial.
-simpl; do 5 rewrite ass_app; rewrite <- permut_app2.
+simpl; do 5 rewrite app_assoc; rewrite <- permut_app2.
 refine (permut_trans _ (list_permut_app_app _ _)).
-do 5 rewrite <- ass_app; rewrite <- permut_app1.
-rewrite ass_app.
+do 5 rewrite <- app_assoc; rewrite <- permut_app1.
+rewrite app_assoc.
 refine (permut_trans (list_permut_app_app _ _) _).
-do 3 rewrite <- ass_app; do 2 rewrite <- permut_app1.
+do 3 rewrite <- app_assoc; do 2 rewrite <- permut_app1.
 refine (permut_trans (list_permut_app_app _ _) _).
-do 2 rewrite <- ass_app; rewrite <- permut_app1.
+do 2 rewrite <- app_assoc; rewrite <- permut_app1.
 do 2 rewrite <- appendn_app; apply permut_appendn; trivial.
 split.
-rewrite ass_app.
+rewrite app_assoc.
 apply permut_trans with (consn (l' ++ (x, lx' ++ a' :: lx'') :: l'') ++ qr).
 assumption.
 rewrite <- permut_app2;
@@ -729,7 +729,7 @@ discriminate.
 split.
 simpl; intros y ly [yly_eq_xly | yly_in_ll''] b b_in_ly.
 injection yly_eq_xly; intros; subst y ly; clear yly_eq_xly.
-rewrite ass_app in b_in_ly;
+rewrite app_assoc in b_in_ly;
 rewrite <- mem_or_app in b_in_ly.
 destruct b_in_ly as [b_in_lx | b_in_la_app].
 apply (app_lt_cns x (lx' ++ a' :: lx'')); trivial.
@@ -756,7 +756,7 @@ apply (app_lt_cns y ly); trivial; apply in_insert; trivial.
 rewrite (list_permut.in_permut_in P').
 apply in_or_app; right; trivial.
 simpl; intros irrefl_R b [x_eq_b | b_in_cns] b_in_lx_la_app;
-do 3 rewrite <- ass_app in b_in_lx_la_app; do 2 rewrite ass_app in b_in_lx_la_app.
+do 3 rewrite <- app_assoc in b_in_lx_la_app; do 2 rewrite app_assoc in b_in_lx_la_app.
 dummy b x x_eq_b;
 subst b; rewrite <- mem_or_app in b_in_lx_la_app.
 destruct b_in_lx_la_app as [b_in_lx_la | b_in_app].
@@ -809,8 +809,8 @@ destruct a_in_appl_qr as [a_in_appl | a_in_qr]; trivial.
 absurd (mem eq_A a (appendn l)); trivial.
 destruct (mem_split_set _ _ eq_bool_ok _ _ a_in_qr) as [a' [qr' [qr'' [a_eq_a' [H _]]]]]; subst qr.
 generalize (permut_trans (permut_sym Pq) Pq'); clear Pq'; intro Pq'.
-rewrite ass_app in Pq';
-rewrite <- permut_cons_inside in Pq'; rewrite <- ass_app in Pq'.
+rewrite app_assoc in Pq';
+rewrite <- permut_cons_inside in Pq'; rewrite <- app_assoc in Pq'.
 generalize (remove_equiv_is_sound (consn l) la);
 destruct (@remove_equiv A eq_bool (consn l) la) as [cns la'];
 intros [lc [Pcns [Pla cns_disj_la']]];
@@ -821,19 +821,19 @@ assumption.
 apply permut_trans with (la ++ (appendn l ++ qr' ++ qr'')).
 rewrite <- permut_app1.
 assumption.
-do 4 rewrite ass_app; do 2 rewrite <- permut_app2.
+do 4 rewrite app_assoc; do 2 rewrite <- permut_app2.
 apply permut_trans with ((lc ++ la') ++ appendn l).
 rewrite <- permut_app2; assumption.
-rewrite <- ass_app; refine (permut_trans (list_permut_app_app _ _) _);
-rewrite <- permut_app2; rewrite <- ass_app;
+rewrite <- app_assoc; refine (permut_trans (list_permut_app_app _ _) _);
+rewrite <- permut_app2; rewrite <- app_assoc;
 rewrite <- appendn_app; rewrite <- permut_app1.
 apply permut_appendn; assumption.
 split.
 apply permut_trans with (consn l ++ qr' ++ a' :: qr'').
 assumption.
-simpl; rewrite ass_app; apply permut_sym; 
+simpl; rewrite app_assoc; apply permut_sym; 
 rewrite <- permut_cons_inside; trivial.
-do 2 rewrite ass_app;
+do 2 rewrite app_assoc;
 do 2 rewrite <- permut_app2.
 apply permut_trans with (consn ll' ++ consn ll).
 rewrite <- permut_app1; apply permut_sym; assumption.
@@ -861,7 +861,7 @@ rewrite <- (mem_permut_mem z H1).
 rewrite mem_consn; exists lz; trivial.
 apply (app_lt_cns y ly); trivial; 
 rewrite (list_permut.in_permut_in P'); apply in_or_app; right; trivial.
-intros irrefl_R; simpl; rewrite <- ass_app; rewrite ass_app;
+intros irrefl_R; simpl; rewrite <- app_assoc; rewrite app_assoc;
 intros b b_in_a_cns b_in_la_app.
 rewrite <- mem_or_app in b_in_la_app.
 destruct b_in_la_app as [b_in_la | b_in_app].
@@ -915,10 +915,10 @@ generalize (mem_bool_ok _ _ eq_bool_ok a q).
 case (mem_bool DS1.eq_bool a q); [intro a_in_q | intro a_not_in_q].
 destruct (mem_split_set _ _ eq_bool_ok _ _ a_in_q) as [a' [q' [q'' [a_eq_a' [H' _]]]]]; 
 simpl in a_eq_a'; simpl in H'; subst q.
-rewrite ass_app in P1; rewrite <- permut_cons_inside in P1; 
-rewrite <- ass_app in P1.
-rewrite ass_app in P2; rewrite <- permut_cons_inside in P2; 
-rewrite <- ass_app in P2.
+rewrite app_assoc in P1; rewrite <- permut_cons_inside in P1; 
+rewrite <- app_assoc in P1.
+rewrite app_assoc in P2; rewrite <- permut_cons_inside in P2; 
+rewrite <- app_assoc in P2.
 apply (multiset_closure_aux R (q' ++ q'') P1 P2 p_diff_nil).
 intros a'' la ala'_in_ll; apply app_lt_cns; trivial.
 trivial.
@@ -1041,9 +1041,9 @@ exists (le' ++ le''); exists ((a1, a2 :: nil) :: ll); split.
 simpl.
 apply permut_trans with (consn ll ++ le' ++ a1' :: le'').
 assumption.
-rewrite ass_app; apply permut_sym;
+rewrite app_assoc; apply permut_sym;
 rewrite <- permut_cons_inside; trivial.
-rewrite ass_app; auto.
+rewrite app_assoc; auto.
 split.
 simpl; rewrite <- permut_cons; trivial.
 apply (equiv_refl _ _ eq_proof).
@@ -1082,7 +1082,7 @@ revert P1 P2 E; case k1; [ idtac| intros e1' l1']; (case k2; [ idtac | intros e2
 apply permut_trans with (l ++ nil).
 assumption.
 apply permut_sym; assumption.
-simpl; rewrite <- app_nil_end in P1;
+simpl; rewrite app_nil_r in P1;
 apply (multiset_closure_aux2 R (p := l1) (q := l2) 
                       (le := e2' :: l2') (l := nil) l); simpl; auto.
 apply permut_trans with (l ++ e2' :: l2').
@@ -1090,7 +1090,7 @@ assumption.
 rewrite app_comm_cons; apply list_permut_app_app.
 right; discriminate.
 intros; contradiction.
-simpl; rewrite <- app_nil_end in P2;
+simpl; rewrite app_nil_r in P2;
 apply (multiset_closure_aux2 R (p := l2) (q := l1) 
                       (le := e1' :: l1') (l := nil) l); simpl; auto.
 apply permut_trans with (l ++ e1' :: l1').
@@ -1113,7 +1113,7 @@ apply permut_trans with (l ++ consn ll ++ le).
 rewrite <- permut_app1; assumption.
 apply permut_trans with (l ++ le ++ consn ll).
 rewrite <- permut_app1; apply list_permut_app_app.
-rewrite (ass_app le); apply list_permut_app_app.
+rewrite (app_assoc le); apply list_permut_app_app.
 destruct ll as [ | [x lx] ll].
 destruct le as [ | e le].
 generalize (permut_length P1'); simpl; intro; 
@@ -1137,7 +1137,7 @@ apply permut_trans with (l ++ consn ll ++ le).
 rewrite <- permut_app1; assumption.
 apply permut_trans with (l ++ le ++ consn ll).
 rewrite <- permut_app1; apply list_permut_app_app.
-rewrite (ass_app le); apply list_permut_app_app.
+rewrite (app_assoc le); apply list_permut_app_app.
 destruct ll as [ | [x lx] ll].
 destruct le as [ | e le].
 generalize (permut_length P2'); simpl; intro; 
@@ -1152,9 +1152,9 @@ Lemma mult_is_complete_equiv :
 Proof.
 intros l1 l2 P; 
 assert (P1 : permut l1 (l1 ++ nil)).
-rewrite <- app_nil_end; apply permut_refl.
+rewrite app_nil_r; apply permut_refl.
 assert (P2 : permut l2 (l1 ++ nil)).
-rewrite <- app_nil_end; apply permut_sym; assumption.
+rewrite app_nil_r; apply permut_sym; assumption.
 assert (E : forall x : A, mem eq_A x nil -> mem eq_A x nil -> False).
 intros; contradiction.
 generalize (@remove_equiv_is_complete l1 l2 l1 nil nil P1 P2 E).
@@ -1183,7 +1183,7 @@ apply False_rect.
 apply (l2_disj_l1 c).
 rewrite (mem_permut_mem c P1); rewrite <- mem_or_app; right; left; apply (equiv_refl _ _ eq_proof).
 rewrite (mem_permut_mem c P2); rewrite <- mem_or_app; right; left; apply (equiv_refl _ _ eq_proof).
-subst lc; rewrite <- app_nil_end in P1; rewrite <- app_nil_end in P2.
+subst lc; rewrite app_nil_r in P1; rewrite app_nil_r in P2.
 assert (Compat : forall ta ta' tb tb' : A, eq_A ta tb -> eq_A ta' tb' -> R_bool ta ta' = R_bool tb tb').
 unfold eq_A; intros a a' b b' a_eq_a' b_eq_b'; subst; apply eq_refl.
 rewrite (permut_list_forall_exists R_bool R_bool Compat P2 P1); 
@@ -1207,7 +1207,7 @@ Lemma mult_irrefl :
  transitive _ R -> (forall a, ~ R a a) -> forall l, trans_clos (multiset_extension_step R) l l -> False.
 Proof.
 intros trans_R irrefl_R l l_lt_l.
-rewrite (app_nil_end l) in l_lt_l.
+rewrite <- (app_nil_r l) in l_lt_l.
 assert (nil_lt_nil := remove_context_trans_clos_multiset_extension_step_app1 trans_R irrefl_R nil nil l l_lt_l).
 clear l l_lt_l.
 assert (H : forall l1 l2, trans_clos (multiset_extension_step R) l1 l2 -> l2 = nil -> False).

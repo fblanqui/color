@@ -11,7 +11,7 @@ acyclic iff its restriction to any finite set has a decidable
 (resp. middle-excluding) irreflexive linear extension.
 *)
 
-From Coq Require Import Sumbool Arith.
+From Stdlib Require Import Sumbool Arith.
 From CoLoR Require Import RelDec RelUtil ListUtil RelSub Path LogicUtil.
 
 Set Implicit Arguments.

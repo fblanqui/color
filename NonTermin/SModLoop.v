@@ -10,7 +10,7 @@ there is a loop in a relative SRS
 
 Set Implicit Arguments.
 
-From Coq Require Import Euclid Wf_nat.
+From Stdlib Require Import Euclid Wf_nat.
 From CoLoR Require Import Srs LogicUtil SLoop ListUtil NatUtil RelUtil.
 
 Section S.

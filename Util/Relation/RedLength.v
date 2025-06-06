@@ -11,7 +11,7 @@ for a finitely branching well-founded relation
 Set Implicit Arguments.
 
 From CoLoR Require Import SN ListMax RelUtil ListUtil LogicUtil.
-From Coq Require Import Arith.
+From Stdlib Require Import Arith.
 
 Section S.
 

@@ -10,7 +10,7 @@ symbols defined by a set of rules, list of calls in a rhs
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ATrs ListUtil VecUtil EqUtil BoolUtil.
-From Coq Require Import Sumbool.
+From Stdlib Require Import Sumbool.
 
 Section S.
 

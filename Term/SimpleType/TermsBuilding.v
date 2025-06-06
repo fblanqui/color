@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras LogicUtil.
 From CoLoR Require TermsActiveEnv.
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 
 Module TermsBuilding (Sig : TermsSig.Signature).
 

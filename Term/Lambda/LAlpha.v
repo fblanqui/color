@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Wf_nat Morphisms Basics Equivalence.
+From Stdlib Require Import Wf_nat Morphisms Basics Equivalence.
 From CoLoR Require Import BoolUtil RelUtil LogicUtil SN VecUtil NatUtil VecOrd.
 From CoLoR Require Export LSubs.
 
@@ -965,7 +965,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     destruct e; discr.
     (* lam *)
     destruct e as [e|e]; inversion e; subst.
-    ex z u'. rewrite rename_id. intuition.
+    ex z u'. rewrite rename_id. intuition auto with *.
     ex z u. rewrite rename_id. intuition.
     (* alpha *)
     destruct e as [e|e].
@@ -1060,7 +1060,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     (* << *)
     intros t u tu.
     destruct (clos_aeq_inv tu) as [t' [u' [tt' [uu' t'u']]]]; clear tu.
-    ex t'. intuition. ex u'. intuition.
+    ex t'. intuition. ex u'. intuition auto with *.
     (* >> *)
     intros t u [t' [tt' [u' [t'u' u'u]]]]. eapply clos_aeq_intro.
     apply tt'. sym. apply u'u. hyp.
@@ -1253,7 +1253,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
   Proof.
     induction vs; simpl; intros v t a.
     (* nil *)
-    ex t (@Vnil Te). simpl. intuition.
+    ex t (@Vnil Te). simpl. intuition auto with *.
     (* cons *)
     rename h into w. destruct (IHvs _ _ a) as [u [us [h1 [h2 h3]]]].
     inv_aeq_0 h2; clear h2; subst. ex u0 (Vcons u1 us). simpl.
@@ -1453,12 +1453,12 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       intros [[h1 h2]|[h1 h2]].
       inversion h1; subst. ex (Vcons u' us). split.
-      rewrite Vforall2_cons_eq. intuition. ex (Vcons v' us). split.
-      apply Vrel1_cons_intro. auto. rewrite Vforall2_cons_eq. intuition.
+      rewrite Vforall2_cons_eq. intuition auto with *. ex (Vcons v' us). split.
+      apply Vrel1_cons_intro. auto. rewrite Vforall2_cons_eq. intuition auto with *.
 
       destruct h2 as [us' [usus' [vs' [us'vs' vs'vs]]]].
       ex (Vcons v us'). rewrite Vforall2_cons_eq. intuition.
-      ex (Vcons v vs'). rewrite Vforall2_cons_eq. intuition.
+      ex (Vcons v vs'). rewrite Vforall2_cons_eq. intuition auto with *.
       apply Vrel1_cons_intro. right. intuition.
     Qed.
 

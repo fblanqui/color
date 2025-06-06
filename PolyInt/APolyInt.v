@@ -71,7 +71,7 @@ Section S.
 
       Proof.
         intros k t. apply (bterm_ind (@P k) (@Q k)).
-        intros v Hv. unfold P. simpl. intuition.
+        intros v Hv. unfold P. simpl. intuition auto with *.
         unfold Q. intros f ts H. unfold P. simpl.
         apply coef_pos_pcomp.
         apply (PI_WM f).

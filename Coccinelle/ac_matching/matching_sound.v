@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith List.
+From Stdlib Require Import Arith List.
 From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching
      matching_well_founded matching_well_formed.
 
@@ -44,7 +44,7 @@ apply (well_formed_cf_alien Af W); apply in_or_app; right; left; trivial.
 replace (build f (l ++ l') :: t :: nil) with ((build f (l ++ l') :: nil) ++ (t :: nil)); trivial.
 rewrite flatten_app; replace (flatten f (t :: nil)) with (t :: nil).
 rewrite <- permut_add_inside.
-rewrite <- app_nil_end; 
+rewrite app_nil_r; 
 apply flatten_build_inside with t; trivial.
 reflexivity.
 simpl; destruct t as [ v | g ll].
@@ -287,18 +287,18 @@ assert (Al_ct : match closed_term p1 with | Var _ => True | Term g _ => f1 <> g 
 generalize (W3 v1); rewrite F'; rewrite <- f1_eq_hd_p1; rewrite Af1; intuition.
 pattern (quicksort (flatten f1 (t :: closed_term p1 :: nil))); unfold flatten at 1.
 generalize (F.Symb.eq_bool_ok f1 f1); case (F.Symb.eq_bool f1 f1); [intros _ | intro f1_diff_f1; apply False_rect; apply f1_diff_f1; reflexivity].
-rewrite <- app_nil_end; apply quick_permut_bis.
+rewrite app_nil_r; apply quick_permut_bis.
 replace (flatten f1 (t :: closed_term p1 :: nil)) with
   (flatten f1 (t :: nil) ++ flatten f1 (closed_term p1 :: nil)).
 simpl flatten at 2.
 destruct (closed_term p1) as [v | g ll].
 apply permut_sym; rewrite <- permut_cons_inside.
-rewrite <- app_nil_end; reflexivity.
+rewrite app_nil_r; reflexivity.
 reflexivity.
 generalize (F.Symb.eq_bool_ok f1 g); case (F.Symb.eq_bool f1 g). 
 intro f1_eq_g; apply False_rect; apply Al_ct; assumption.
 intros _; apply permut_sym; rewrite <- permut_cons_inside.
-rewrite <- app_nil_end; reflexivity.
+rewrite app_nil_r; reflexivity.
 reflexivity.
 rewrite <- flatten_app; reflexivity.
 reflexivity.
@@ -387,7 +387,7 @@ subst ll2 ll2'''; generalize (in_app_or _ _ _ In_t); clear In_t; intros [In_t | 
 apply in_or_app; [left | right; right]; trivial.
 replace (flatten g2 (closed_term p1 :: nil)) with (closed_term p1 :: nil).
 subst ll2 ll2'''; simpl; rewrite <- permut_add_inside.
-rewrite <- app_nil_end; auto.
+rewrite app_nil_r; auto.
 subst; reflexivity.
 simpl; destruct (arity (head_symb p1)) as [ | | ]; [idtac | contradiction | contradiction].
 generalize (well_formed_cf_alien Ag2 W_g2_ll2 cp1); subst.
@@ -488,13 +488,13 @@ do 2 rewrite flatten_app; replace (flatten f1 (t2 :: nil)) with (t2 :: nil);
             absurd (f1 = g2); trivial; apply (well_formed_cf_alien Af1 W_t2 _ In_t2)].
 rewrite app_ass; rewrite <- app_comm_cons.
 rewrite <- permut_add_inside.
-rewrite <- app_ass; do 2 rewrite <- app_nil_end.
+rewrite <- app_ass; do 2 rewrite app_nil_r.
 apply permut_sym; 
 rewrite <- (H1 (build f1 (Var (fresh_var pb) :: l1))  (build f1 (l2' ++ l2'')) (or_introl _ (eq_refl _))).
 rewrite build_eq_Term; [idtac | generalize (well_formed_cf_length Af1 W_t1); simpl; trivial].
 simpl; rewrite Af1; 
 generalize (F.Symb.eq_bool_ok f1 f1); case (F.Symb.eq_bool f1 f1); [intros _ | intro f1_diff_f1; apply False_rect; apply f1_diff_f1; reflexivity].
-rewrite <- app_nil_end; apply quick_permut_bis.
+rewrite app_nil_r; apply quick_permut_bis.
 transitivity (flatten f1 (map (apply_cf_subst sigma') (Var (fresh_var pb) :: l1))).
 apply list_permut_flatten.
 apply list_permut.permut_map with (@eq term).
@@ -503,7 +503,7 @@ apply quick_permut_bis; auto.
 simpl; destruct (find X.eq_bool (fresh_var pb) sigma') as [ [ | g ] | ].
 intros; apply permut_refl.
 case (F.Symb.eq_bool f1 g).
-intros; rewrite <- app_nil_end; apply permut_refl.
+intros; rewrite app_nil_r; apply permut_refl.
 intros; apply permut_refl.
 apply permut_refl.
 reflexivity.

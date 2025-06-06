@@ -9,7 +9,7 @@ Model of LPO statisfying Hypotheses in RPO_Types
 
 From CoLoR Require Import VPrecedence ListLex VRPO_Type VTerm ListUtil AccUtil
   LogicUtil.
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 
 Module LPO (PT : VPrecedenceType).
 

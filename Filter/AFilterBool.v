@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ATrs VecFilter VecUtil LogicUtil RelUtil SN NatUtil
      ARelation ACompat.
-From Coq Require Import List.
+From Stdlib Require Import List.
 
 Section S.
 

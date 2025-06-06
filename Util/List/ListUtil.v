@@ -15,10 +15,10 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil EqUtil RelUtil BoolUtil NatUtil.
 
-From Coq Require Import Setoid SetoidList FunInd.
-From Coq Require Export List.
-From Coq Require Program.
-From Coq Require Btauto.
+From Stdlib Require Import Setoid SetoidList FunInd.
+From Stdlib Require Export List.
+From Stdlib Require Program.
+From Stdlib Require Btauto.
 
 Arguments nil {A}.
 Arguments incl {A} l m.
@@ -41,11 +41,11 @@ Section In.
 
   Lemma in_app : forall l m (x : A), In x (l ++ m) <-> In x l \/ In x m.
 
-  Proof. intuition. Qed.
+  Proof. intuition auto with *. Qed.
 
   Lemma notin_app : forall l m (x : A), ~In x (l ++ m) <-> ~In x l /\ ~In x m.
 
-  Proof. intuition. rewrite in_app in H0. intuition. Qed.
+  Proof. intuition auto with *. rewrite in_app in H0. intuition. Qed.
 
   Lemma in_appl : forall (x : A) l1 l2, In x l1 -> In x (l1 ++ l2).
 
@@ -61,7 +61,7 @@ Section In.
   Lemma in_app_com : forall (x : A) l1 l2 l3,
     In x ((l1 ++ l3) ++ l2) -> In x ((l1 ++ l2) ++ l3).
 
-  Proof. intros. rewrite !in_app in H. intuition. Qed.
+  Proof. intros. rewrite !in_app in H. intuition auto with *. Qed.
 
   Lemma in_elim : forall (x : A) l,
     In x l -> exists l1, exists l2, l = l1 ++ x :: l2.
@@ -229,7 +229,7 @@ Section incl.
         subst. intro. apply H0. apply H. left. refl.
         intro. absurd (In x m). hyp. apply H1. right. hyp. }
     case (In_dec eqA_dec a m); intro.
-    assert (~l[=m). intro. apply H. unfold incl. intro b. simpl. intuition.
+    assert (~l[=m). intro. apply H. unfold incl. intro b. simpl. intuition auto with *.
     rewrite IHl in H0. do 2 destruct H0. exists x. tauto.
     exists a. tauto.
   Qed.
@@ -269,7 +269,7 @@ Proof. fo. Qed.
 
 Global Instance app_lequiv A : Proper (lequiv ==> lequiv ==> lequiv) (@app A).
 
-Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition. Qed.
+Proof. intros l l' ll' m m' mm'. unfold lequiv in *. intuition auto with *. Qed.
 
 Global Instance incl_lequiv1 A1 B (f : list A1 -> relation B) :
   Proper (incl ==> inclusion) f -> Proper (lequiv ==> same) f.
@@ -895,7 +895,7 @@ Section flat_map.
   Lemma flat_map_app : forall l m,
     flat_map f (l ++ m) = flat_map f l ++ flat_map f m.
 
-  Proof. induction l; simpl; intros. refl. rewrite IHl, app_ass. refl. Qed.
+  Proof. induction l; simpl; intros. refl. rewrite IHl, app_assoc. refl. Qed.
 
 End flat_map.
 
@@ -915,7 +915,7 @@ Section flat.
   Lemma In_incl_flat : forall x l, In x l -> x [= flat l.
 
   Proof.
-    induction l; simpl; intros. contr. intuition. subst. apply incl_appl. refl.
+    induction l; simpl; intros. contr. intuition auto with *. subst. apply incl_appl. refl.
   Qed.
 
   Lemma incl_flat_In : forall x c cs l,
@@ -1086,14 +1086,14 @@ Section Element_At_List.
   Proof.
     induction l; intros; simpl in H; try discr. destruct n.
     inversion H; subst; simpl; auto with *.
-    ded (IHl n H). intuition; simpl; lia.
+    ded (IHl n H). intuition auto with *; simpl; lia.
   Qed.
 
   Lemma element_at_app_r : forall l l' p, 
     p >= length l -> (l ++ l') [p] = l' [p - length l].
 
   Proof.
-    induction l. intuition.
+    induction l. intuition auto with *.
     intros. destruct p.
     inversion H.
     simpl. apply IHl. simpl in H. auto with arith.
@@ -1106,7 +1106,7 @@ Section Element_At_List.
     induction l; intros.
     simpl. rewrite Nat.sub_0_r. refl.
     destruct p. inversion H.
-    simpl. rewrite IHl. refl. intuition.
+    simpl. rewrite IHl. refl. intuition auto with *.
   Qed.
 
 End Element_At_List.
@@ -1199,7 +1199,7 @@ Section reverse_tail_recursive.
 
   Lemma rev_append_rev : forall l l', rev_append l' l = rev l ++ l'.
 
-  Proof. induction l; simpl; auto; intros. rewrite <- ass_app; fo. Qed.
+  Proof. induction l; simpl; auto; intros. rewrite <- app_assoc; fo. Qed.
 
   Lemma rev_append_app : forall l l' acc : list A,
     rev_append acc (l ++ l') = rev_append (rev_append acc l) l'.
@@ -1209,12 +1209,12 @@ Section reverse_tail_recursive.
   Lemma rev'_app : forall l l' : list A, rev' (l ++ l') = rev' l' ++ rev' l.
 
   Proof.
-    intros. rewrite rev_append_app, !rev_append_rev, <- !app_nil_end. refl.
+    intros. rewrite rev_append_app, !rev_append_rev, !app_nil_r. refl.
   Qed.
 
   Lemma rev'_rev : forall l : list A, rev' l = rev l.
 
-  Proof. intro. rewrite rev_append_rev, <- app_nil_end. refl. Qed.
+  Proof. intro. rewrite rev_append_rev, app_nil_r. refl. Qed.
 
   Lemma rev'_rev' : forall l : list A, rev' (rev' l) = l.
 
@@ -1252,7 +1252,7 @@ Section split.
   Proof.
     induction l; destruct n; simpl; intros. inversion H. refl. discr.
     inversion H. refl. ded (IHl _ _ _ _ H). rewrite rev'_cons in H0.
-    rewrite app_ass in H0. hyp.
+    rewrite <- app_assoc in H0. hyp.
   Qed.
 
   Arguments split_aux_correct [l n l1 l2] _ _.
@@ -1445,8 +1445,8 @@ Section ListsNth.
 
   Proof.
     induction l; simpl; intros. contr. destruct H.
-    subst. exists 0. intuition.
-    destruct (IHl H) as [i hi]. exists (S i). intuition.
+    subst. exists 0. intuition auto with *.
+    destruct (IHl H) as [i hi]. exists (S i). intuition auto with *.
   Qed.
 
   Lemma nth_error_In : forall (l : list A) i, 
@@ -1801,8 +1801,8 @@ Section fold_left_list.
 
   Proof.
     induction bs; simpl; intro. refl.
-    rewrite IHbs, hyp, flat_map_app, app_ass. simpl.
-    rewrite <- app_nil_end. refl.
+    rewrite IHbs, hyp, flat_map_app, app_assoc. simpl.
+    rewrite app_nil_r. refl.
   Qed.
 
   Lemma In_fold_left : forall a bs l,
@@ -1909,7 +1909,7 @@ Section forallb.
     forallb f l = false <-> exists x, In x l /\ f x = false.
 
   Proof.
-    induction l; simpl. intuition. destruct H. intuition.
+    induction l; simpl. intuition auto with *. destruct H. intuition.
     rewrite andb_eq_false, IHl. intuition.
     exists a. tauto. destruct H0. exists x. tauto.
     destruct H1. intuition. subst. tauto. right. exists x. tauto.

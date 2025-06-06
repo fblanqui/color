@@ -13,7 +13,7 @@ a well-founded monotonic strict order
 
 From CoLoR Require Import VRPO_Type VTerm Preorder ListUtil RelUtil
   LogicUtil AccUtil.
-From Coq Require Import Peano_dec.
+From Stdlib Require Import Peano_dec.
 From CoLoR Require ListExtras VSubstitution VContext.
 
 Set Implicit Arguments.

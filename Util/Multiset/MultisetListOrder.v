@@ -8,7 +8,7 @@ This file provides an order on lists derived from the order on
 multisets, along with some properties of this order.
 *)
 
-From Coq Require Import List Permutation Arith Morphisms Basics.
+From Stdlib Require Import List Permutation Arith Morphisms Basics.
 From CoLoR Require Import MultisetOrder RelExtras MultisetCore MultisetList
   MultisetTheory AccUtil RelUtil LogicUtil.
 From CoLoR Require Import AccUtil ListUtil.

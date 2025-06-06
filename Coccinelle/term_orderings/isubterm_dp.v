@@ -12,7 +12,7 @@
 
 (** * Termination of rewriting *)
 
-From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
+From Stdlib Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term_spec
      equational_theory_spec dp.
 

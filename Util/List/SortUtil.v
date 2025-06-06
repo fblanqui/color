@@ -10,8 +10,8 @@ and on Coq's multiplicity function
 
 Set Implicit Arguments.
 
-From Coq Require Export Sorting.
-From Coq Require Import List Morphisms Lia.
+From Stdlib Require Export Sorting.
+From Stdlib Require Import List Morphisms Lia.
 From CoLoR Require Import RelUtil LogicUtil.
 
 (***********************************************************************)
@@ -119,7 +119,7 @@ End multiplicity.
 (***********************************************************************)
 (** Sorted *)
 
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 From CoLoR Require Import NatUtil.
 
 Section Sorted.

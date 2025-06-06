@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith List Wellfounded Wf_nat.
+From Stdlib Require Import Arith List Wellfounded Wf_nat.
 From CoLoR Require Import more_list list_permut list_sort term_spec term_o
      equational_theory ac matching dickson matching_well_formed matching_well_founded
      matching_sound matching_complete dickson.

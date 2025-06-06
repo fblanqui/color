@@ -218,7 +218,7 @@ Section S.
     induction l; simpl; intros. contr. destruct H.
     exists a. exists p. auto.
     ded (IHl _ H). do 3 destruct H0. destruct H1. subst t. exists x. exists x0.
-    intuition.
+    intuition auto with *.
   Qed.
 
   Arguments in_vars_shift_terms [t l p] _.

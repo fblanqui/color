@@ -14,9 +14,9 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Vector Program.
-From Coq.Structures Require Import Equalities.
-From Coq Require Import Morphisms.
+From Stdlib Require Import Vector Program.
+From Stdlib Require Import Structures.Equalities.
+From Stdlib Require Import Morphisms.
 From CoLoR Require Import LogicUtil NatUtil EqUtil ListUtil BoolUtil RelUtil.
 
 Notation vector := Vector.t.
@@ -1581,8 +1581,8 @@ Section Vforall2.
 
   Proof.
     induction v1; simpl; intros.
-    destruct v2. intuition. intuition.
-    destruct v2. intuition.
+    destruct v2. intuition. intuition auto with *.
+    destruct v2. intuition auto with *.
     rewrite andb_eq, f_ok, IHv1. tauto.
   Qed.
 
@@ -1718,7 +1718,7 @@ Section Vexists.
     (bVexists v = true <-> Vexists v).
 
   Proof.
-    induction v; simpl. intuition. split; intros.
+    induction v; simpl. intuition auto with *. split; intros.
     rewrite orb_eq in H0. destruct H0. rewrite H in H0. auto. auto.
     rewrite IHv in H0. auto. intros. rewrite H. tauto. auto.
     destruct H0. rewrite <- H in H0. rewrite H0. refl. auto.

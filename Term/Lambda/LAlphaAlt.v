@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil LAlpha RelUtil BoolUtil.
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 
 (***********************************************************************)
 (** * Other definitions of alpha-equivalence. *)

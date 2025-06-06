@@ -11,7 +11,7 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import Setoid Relations List Utf8.
+From Stdlib Require Import Setoid Relations List Utf8.
 
 Inductive trans_clos (A : Type) (R : relation A) : relation A:=
   | t_step : forall x y, R x y -> trans_clos R x y

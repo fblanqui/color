@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import ClassicalDescription.
+From Stdlib Require Import ClassicalDescription.
 
 Arguments constructive_definite_description [A P] _.
 

@@ -10,7 +10,7 @@ there is a loop in a TRS
 
 Set Implicit Arguments.
 
-From Coq Require Import Euclid Wf_nat.
+From Stdlib Require Import Euclid Wf_nat.
 From CoLoR Require Import LogicUtil ATrs ListUtil RelUtil AMatching ListDec
      APosition NatUtil.
 

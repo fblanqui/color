@@ -41,7 +41,7 @@ Section S.
     assert (length l <= length (x++x0)). apply IHl.
     tauto. unfold incl in *|-* . intros. apply in_or_app. destruct (em a0 a).
     subst a0. tauto. assert (In a0 x \/ In a0 (a::x0)). apply in_app_or.
-    rewrite <- (proj1 H1). apply H0. simpl. tauto. simpl in H4. intuition.
+    rewrite <- (proj1 H1). apply H0. simpl. tauto. simpl in H4. intuition auto with *.
     rewrite (length_app x x0) in H2. simpl. lia. 
   Qed.
 
@@ -93,7 +93,7 @@ Section S.
 
   Proof.
     induction l; simpl; intros. intuition. destruct H. ded (IHl m H0).
-    decomp H1. intuition. subst a. apply H. apply in_appr. exact H3.
+    decomp H1. intuition auto with *. subst a. apply H. apply in_appr. exact H3.
     apply (H5 x); hyp.
   Qed.
 
@@ -130,7 +130,7 @@ Section S.
     assert (xal : In x (a :: l)). right. hyp.
     apply lm in xal. rewrite in_app in xal.
     assert (x <> a). intro. subst. contr. firstorder auto with datatypes exfalso.
-    gen (IHl _ l_nodup lm1m2). rewrite !app_length. simpl. lia.
+    gen (IHl _ l_nodup lm1m2). rewrite !length_app. simpl. lia.
   Qed.
 
   Lemma nodup_remove (x : A) :
@@ -160,7 +160,7 @@ Section S.
   Proof.
     intros hl hi hj. gen (nth_In x hi). set (a := nth i l x). intros h e.
     destruct (In_nodup_elim h hl) as [l1 [l2 [n0 [n1 n2]]]].
-    rewrite n0, app_length in hi, hj. simpl in hi, hj.
+    rewrite n0, length_app in hi, hj. simpl in hi, hj.
     destruct (lt_dec j (length l1)).
     (* j < length l1 *)
     assert (aj : a = nth j l1 x). rewrite e, n0, app_nth1; auto.
@@ -230,9 +230,9 @@ Section S.
     exists p, greatest_nodup_prefix_aux acc l = rev acc ++ p.
 
   Proof.
-    induction l; simpl; intros. exists nil. rewrite <- app_nil_end. refl.
-    case (In_dec eq_dec a acc); intro. exists nil. rewrite <- app_nil_end. refl.
-    ded (IHl (a::acc)). destruct H. rewrite H. simpl. rewrite app_ass. simpl.
+    induction l; simpl; intros. exists nil. rewrite app_nil_r. refl.
+    case (In_dec eq_dec a acc); intro. exists nil. rewrite app_nil_r. refl.
+    ded (IHl (a::acc)). destruct H. rewrite H. simpl. rewrite <- app_assoc. simpl.
     exists (a::x). refl.
   Qed.
 
@@ -247,7 +247,7 @@ Section S.
     absurd (In a acc). apply H0. auto. exact i.
     assert (forall x, In x l -> ~In x (a::acc)). intuition. destruct H3.
     subst a. auto. eapply H0. right. apply H2. exact H3.
-    rewrite (IHl (a::acc) H1 H2). rewrite app_ass. refl.
+    rewrite (IHl (a::acc) H1 H2). rewrite <- app_assoc. refl.
   Qed.
 
   Arguments greatest_nodup_prefix_aux_app _ [l acc] _ _.
@@ -257,8 +257,8 @@ Section S.
     = greatest_nodup_prefix_aux (rev l) m.
 
   Proof.
-    intros. assert (rev l = rev l ++ nil). apply app_nil_end. rewrite H0.
-    apply greatest_nodup_prefix_aux_app. exact H. simpl. auto.
+    intros. assert (rev l = rev l ++ nil). rewrite app_nil_r. reflexivity.
+    rewrite H0. apply greatest_nodup_prefix_aux_app. exact H. simpl. auto.
   Qed.
 
   Arguments greatest_nodup_prefix_app _ [l] _.
@@ -268,11 +268,11 @@ Section S.
 
   Proof.
     induction l; simpl; intros. refl. destruct H.
-    assert (l = l++nil). apply app_nil_end. rewrite H1.
+    assert (l = l++nil). rewrite app_nil_r. reflexivity. rewrite H1.
     assert (forall x, In x l -> ~In x (a::nil)). simpl. intuition.
     subst a. auto.
     rewrite (greatest_nodup_prefix_aux_app nil H0 H2). simpl.
-    rewrite rev_unit, rev_involutive, <- app_nil_end. refl.
+    rewrite rev_unit, rev_involutive, app_nil_r. refl.
   Qed.
 
   Lemma greatest_nodup_prefix_intro: forall l,
@@ -295,11 +295,11 @@ Section S.
     simpl. auto.
     (* exists p, l = greatest_nodup_prefix l ++ p *)
     assert (exists p, l = greatest_nodup_prefix l ++ p). destruct IHl.
-    exists nil. rewrite <- H3. apply app_nil_end.
+    exists nil. rewrite <- H3. rewrite app_nil_r. reflexivity.
     decomp H3. exists (x1::x2). exact H4.
     (* greatest_nodup_prefix_app (x::x0++x1) H2 *)
     decomp H3. rewrite H0 in H4. rewrite H4.
-    assert (a::(x++a::x0)++x1 = (a::x)++a::x0++x1). rewrite app_ass. refl.
+    assert (a::(x++a::x0)++x1 = (a::x)++a::x0++x1). rewrite <- app_assoc. refl.
     rewrite H3. clear H3.
     rewrite (greatest_nodup_prefix_app (a::x0++x1) H2). simpl.
     case (In_dec eq_dec a (rev x ++ a :: nil)); intros.
@@ -329,7 +329,7 @@ Section S.
 
   Proof.
     intro. ded (greatest_nodup_prefix_intro l). destruct H.
-    exists nil. rewrite <- H. apply app_nil_end.
+    exists nil. rewrite <- H. rewrite app_nil_r. reflexivity.
     decomp H. exists (x::x0). exact H0.
   Qed.
 
@@ -350,7 +350,7 @@ Section S.
 
   Proof.
     intro. ded (nodup_intro l). destruct H.
-    exists l. exists nil. rewrite <- app_nil_end. auto.
+    exists l. exists nil. rewrite app_nil_r. auto.
     decomp H. exists x. exists (x0::x1). auto.
   Qed.
 

@@ -13,7 +13,7 @@ Set Implicit Arguments.
 From CoLoR Require Export AInterpretation.
 From CoLoR Require Import ATerm RelUtil ASubstitution NaryFunction AContext
      VecUtil SN ARelation LogicUtil.
-From Coq Require Import Lia PeanoNat.
+From Stdlib Require Import Lia PeanoNat.
 
 Section S.
 

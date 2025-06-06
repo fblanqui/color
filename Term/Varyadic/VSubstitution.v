@@ -9,7 +9,7 @@ substitutions
 
 Set Implicit Arguments.
 
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 From CoLoR Require Import LogicUtil VTerm.
 
 Section S.

@@ -11,7 +11,7 @@ order property, and is a lifting.
 *)
 
 From CoLoR Require Import RelExtras ListUtil AccUtil LogicUtil.
-From Coq Require Peano_dec.
+From Stdlib Require Peano_dec.
 
 Module LexOrder (ES : Eqset).
 
@@ -168,7 +168,7 @@ Module LexOrder (ES : Eqset).
       right. intro al_nil. inversion al_nil; intuition.
       apply n. apply lex_length with R. hyp.
       destruct (eqA_dec a a0).
-      rewrite e. destruct (IHl l'). intuition.
+      rewrite e. destruct (IHl l'). intuition auto with *.
       left. constructor 2. hyp.
       right. intro ll'. inversion ll'; intuition.
       apply n. congruence.
@@ -192,9 +192,9 @@ Module LexOrder (ES : Eqset).
       destruct l'. inversion H0.
       simpl. inversion H0.
       constructor 1. apply H; auto with datatypes.
-      do 2 rewrite map_length. hyp.
+      do 2 rewrite length_map. hyp.
       constructor 2. apply IHl.
-      intros. apply H; intuition. hyp.
+      intros. apply H; intuition auto with *. hyp.
     Qed.
 
   End Homomorphism.

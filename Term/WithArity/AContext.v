@@ -10,7 +10,7 @@ one-hole contexts
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid.
+From Stdlib Require Import Setoid.
 From CoLoR Require Import LogicUtil VecUtil ListUtil BoolUtil NatUtil RelUtil.
 From CoLoR Require Export ATerm.
 
@@ -382,7 +382,7 @@ Section S.
   Lemma bsubterm_ok : forall t u, bsubterm t u = true <-> subterm t u.
 
   Proof.
-    destruct u; simpl. intuition. destruct H. destruct H. destruct x.
+    destruct u; simpl. intuition auto with *. destruct H. destruct H. destruct x.
     cong. simpl in H0. discr.
     rewrite (bVexists_ok (subterm_eq t)), Vexists_eq. split; intro.
     decomp H. apply subterm_trans_eq1 with x.

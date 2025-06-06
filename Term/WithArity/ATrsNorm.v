@@ -30,7 +30,7 @@ assuming a total ordering >symb on symbols
 
 Set Implicit Arguments.
 
-From Coq Require Import List Compare_dec.
+From Stdlib Require Import List Compare_dec.
 From CoLoR Require Import ATrs ListDec ListSort NatUtil VecUtil.
 
 Section S.

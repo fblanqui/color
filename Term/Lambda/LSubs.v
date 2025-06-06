@@ -16,7 +16,7 @@ simultaneous substitution of any number of variables. *)
 
 Set Implicit Arguments.
 
-From Coq Require Import SetoidList Basics Morphisms.
+From Stdlib Require Import SetoidList Basics Morphisms.
 From CoLoR Require Import BoolUtil LogicUtil RelUtil VecUtil EqUtil.
 From CoLoR Require Export LTerm.
 
@@ -1994,7 +1994,7 @@ In fact, these properties won't be used later. Instead, we will use similar prop
     refl.
     (* app *)
     rewrite IHu1 with (s1:=s1) (s2:=s2), IHu2 with (s1:=s1) (s2:=s2);
-      intuition; apply h; set_iff; auto.
+      intuition auto with *; apply h; set_iff; auto.
     (* lam *)
     rewrite IHu with (s1:=update x (Var x) s1) (s2:=update x (Var x) s2).
     refl. intros y hy. unfold Def.update. eq_dec y x. refl.

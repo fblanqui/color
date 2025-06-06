@@ -1,5 +1,5 @@
-From Coq Require Import List ZArith Lia.
-From Coq Require Zwf.
+From Stdlib Require Import List ZArith Lia.
+From Stdlib Require Zwf.
 
 From CoLoR Require Import weaved_relation equational_theory term_spec terminaison.
 

@@ -9,7 +9,7 @@ proof of dependent choice in classical logic + axiom of choice
 
 Set Implicit Arguments.
 
-From Coq Require Import ClassicalChoice.
+From Stdlib Require Import ClassicalChoice.
 From CoLoR Require Import RelUtil LogicUtil.
 
 Section S.

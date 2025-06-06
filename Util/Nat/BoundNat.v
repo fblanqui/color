@@ -177,7 +177,7 @@ Lemma N_inj_le m n (f : N m -> N n) : injective f -> m <= n.
 
 Proof.
   intro f_inj.
-  assert (e : length (map f (L m)) = m). rewrite map_length, length_L. refl.
+  assert (e : length (map f (L m)) = m). rewrite length_map, length_L. refl.
   rewrite <- e, <- (@length_L n). apply nodup_incl_length_le.
   apply nodup_map_inj. hyp. apply nodup_L.
   intros y hy. destruct y as [y_val y]. apply In_L.

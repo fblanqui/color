@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 on (extended) weakly monotone algebra.
 *)
 
-From Coq Require Import Program.
+From Stdlib Require Import Program.
 From CoLoR Require Import ATrs RelUtil SN AWFMInterpretation AMannaNess ACompat
      ListUtil ARelation LogicUtil OptUtil IntBasedChecker Problem
      NaryFunction Proof.

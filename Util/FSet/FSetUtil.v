@@ -9,7 +9,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import FSets.
+From Stdlib Require Import FSets.
 From CoLoR Require Import LogicUtil RelUtil BoolUtil.
 
 Create HintDb ordered_type.
@@ -100,11 +100,11 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma subset_empty s : s [<=] empty -> s [=] empty.
 
-  Proof. intro hs. rewrite double_inclusion. intuition. Qed.
+  Proof. intro hs. rewrite double_inclusion. intuition auto with *. Qed.
 
   Lemma empty_subset s : s [=] empty <-> s [<=] empty.
 
-  Proof. intuition. Qed.
+  Proof. intuition auto with *. Qed.
 
 (***********************************************************************)
 (** remove *)
@@ -180,7 +180,7 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma Subset_antisym s t : s [=] t <-> (s [<=] t /\ t [<=] s).
 
-  Proof. intuition. Qed.
+  Proof. intuition auto with *. Qed.
 
 (***********************************************************************)
 (** ~In *)
@@ -310,15 +310,15 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma mem_In x s : mem x s = true <-> In x s.
 
-  Proof. intuition. Qed.
+  Proof. intuition auto with *. Qed.
 
   Lemma subset_Subset s t : subset s t = true <-> Subset s t.
 
-  Proof. intuition. Qed.
+  Proof. intuition auto with *. Qed.
 
   Lemma equal_Equal s t : equal s t = true <-> Equal s t.
 
-  Proof. intuition. Qed.
+  Proof. intuition auto with *. Qed.
 
   Lemma rel_equal_Equal : rel_of_bool equal == Equal.
 

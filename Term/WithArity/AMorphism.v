@@ -9,7 +9,7 @@ algebra morphisms
 
 Set Implicit Arguments.
 
-From Coq Require Import List Morphisms Setoid.
+From Stdlib Require Import List Morphisms Setoid.
 From CoLoR Require Import LogicUtil ATrs VecUtil RelUtil SN ARules SetUtil
      NatUtil.
 

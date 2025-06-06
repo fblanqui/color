@@ -11,9 +11,9 @@ useful definitions and lemmas on natural numbers
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Euclid Peano Lia.
-From Coq Require Export Arith.
-From Coq Require Import Compare.
+From Stdlib Require Import Morphisms Euclid Peano Lia.
+From Stdlib Require Export Arith.
+From Stdlib Require Import Compare.
 
 From CoLoR Require Import LogicUtil EqUtil BoolUtil NatCompat RelUtil.
 
@@ -305,7 +305,7 @@ Proof. lia. Qed.
 
 Lemma ge_dec : rel_dec ge.
 
-Proof. intros i j. destruct (le_lt_dec j i); intuition. Defined. 
+Proof. intros i j. destruct (le_lt_dec j i); intuition auto with *. Defined. 
 
 Lemma gt_dec : rel_dec gt.
 

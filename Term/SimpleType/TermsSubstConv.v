@@ -10,7 +10,7 @@ Convertibility of substituted terms.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsSubst.
-From Coq Require Import Arith Lia.
+From Stdlib Require Import Arith Lia.
 
 Module TermsSubstConv (Sig : TermsSig.Signature).
 

@@ -10,7 +10,7 @@ Arithmetic over vectors on some semiring.
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid Morphisms.
+From Stdlib Require Import Setoid Morphisms.
 From CoLoR Require Import VecUtil RelUtil SemiRing OrdSemiRing NatUtil
   LogicUtil.
 

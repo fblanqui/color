@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Setoid Arith List Morphisms.
+From Stdlib Require Import Setoid Arith List Morphisms.
 From CoLoR Require Import closure more_list weaved_relation list_sort term_spec ac.
 
 Set Implicit Arguments.
@@ -54,7 +54,7 @@ rewrite Nat.add_comm; intro; discriminate.
 intros g l IHl l1 l2 Wt; simpl.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g; subst g | intro f_diff_g]; intro P'.
 (* f=g *)
-subst; rewrite Af in P'; rewrite <- app_nil_end in P'.
+subst; rewrite Af in P'; rewrite app_nil_r in P'.
 assert (P : permut (flatten f (map canonical_form l)) (l1 ++ l2)).
 rewrite <- P'; apply quick_permut.
 clear P'; elim (well_formed_unfold Wt); rewrite Af; intros Wl Ll;
@@ -92,15 +92,15 @@ rewrite P4; rewrite <- P1; rewrite <- Q22;
 rewrite <- flatten_app;
 transitivity (flatten f ((canonical_form t1 :: nil) ++ canonical_form t22 :: nil)).
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 apply quick_permut_bis; apply permut_refl.
 apply list_permut_flatten; apply list_permut_app_app.
-rewrite P3; rewrite <- app_nil_end; trivial.
+rewrite P3; rewrite app_nil_r; trivial.
 (* k1 = nil, k4 = nil *)
 right; right; exists t2; exists t1; subst; intuition.
 apply comm; right; trivial.
-rewrite P4; rewrite P2; rewrite <- app_nil_end; apply permut_refl.
-rewrite P1; rewrite P3; rewrite <- app_nil_end; apply permut_refl.
+rewrite P4; rewrite P2; rewrite app_nil_r; apply permut_refl.
+rewrite P1; rewrite P3; rewrite app_nil_r; apply permut_refl.
 (* k2 = nil, k4 = nil *)
 subst; left; apply list_permut.permut_nil with term (@eq term); trivial.
 (* k4 = nil; t2 is decomposed *)
@@ -112,13 +112,13 @@ refine (context_in _ t2 (Term f (t21 :: t22 :: nil)) _ f (t1 :: nil) nil); trivi
 apply trans_clos_is_trans with (Term f (Term f (t1 :: t21 :: nil) :: t22 :: nil)).
 apply r_assoc; trivial.
 apply comm; right; trivial.
-rewrite P4; rewrite <- Q22; rewrite <- app_nil_end; auto.
+rewrite P4; rewrite <- Q22; rewrite app_nil_r; auto.
 transitivity (flatten f ((canonical_form t1 :: nil) ++ canonical_form t21 :: nil)).
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 apply quick_permut_bis; apply permut_refl.
 rewrite P3;
-rewrite <- app_nil_end in P1; rewrite <- P1;
+rewrite app_nil_r in P1; rewrite <- P1;
 rewrite <- Q21;
 rewrite flatten_app; apply list_permut_app_app.
 (* t1 is decomposed, k1 = nil  *)
@@ -133,7 +133,7 @@ apply comm; right; trivial.
 rewrite P4; rewrite <- P2; rewrite <- Q12; 
 transitivity (flatten f ((canonical_form t12 :: nil) ++ canonical_form t2 :: nil)).
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 apply quick_permut_bis; apply permut_refl.
 rewrite flatten_app; apply list_permut_app_app.
 rewrite P3; trivial.
@@ -149,11 +149,11 @@ apply comm; right; trivial.
 apply l_assoc; trivial.
 rewrite P4; auto.
 rewrite P3;
-rewrite <- app_nil_end in P2; rewrite <- P2;
+rewrite app_nil_r in P2; rewrite <- P2;
 rewrite <- Q11;
 transitivity (flatten f ((canonical_form t11 :: nil) ++ canonical_form t2 :: nil)).
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 apply quick_permut_bis; apply permut_refl.
 rewrite flatten_app; apply list_permut_app_app.
 (* t1 and t2 are decomposed *)
@@ -186,14 +186,14 @@ rewrite P4; rewrite <- Q12; rewrite <- Q22.
 transitivity (flatten f (canonical_form t12 :: nil) ++ flatten f (canonical_form t22 :: nil)).
 rewrite <- flatten_app;
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 apply quick_permut_bis; apply permut_refl.
 apply list_permut_app_app.
 rewrite P3; rewrite <- Q11; rewrite <- Q21.
 transitivity (flatten f (canonical_form t11 :: nil) ++  flatten f (canonical_form t21 :: nil)).
 rewrite <- flatten_app;
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 apply quick_permut_bis; apply permut_refl.
 apply list_permut_app_app.
 (* f <> g *)
@@ -303,7 +303,7 @@ apply th_sym; apply IH; trivial; apply flatten_cf_cf with f; trivial.
 rewrite P4; rewrite <- Q2; rewrite <- Q4.
 rewrite <- flatten_app; simpl;
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end; apply quick_permut.
+rewrite Af; rewrite app_nil_r; apply quick_permut.
 Qed.
 
 Lemma swap_left :
@@ -356,7 +356,7 @@ apply IH; trivial; apply flatten_cf_cf with f; trivial.
 rewrite P4; rewrite <- Q2'; rewrite <- Q4;
 rewrite <- flatten_app; simpl;
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end; apply quick_permut.
+rewrite Af; rewrite app_nil_r; apply quick_permut.
 Qed.
 
 Lemma swap_right :
@@ -407,7 +407,7 @@ apply IH; trivial; apply flatten_cf_cf with f; trivial.
 rewrite P3; rewrite <- Q1; rewrite <- Q3.
 rewrite <- flatten_app; simpl;
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end; apply quick_permut.
+rewrite Af; rewrite app_nil_r; apply quick_permut.
 refine (context_in _ _ _ _ f (_ :: nil) nil).
 apply IH; trivial; apply flatten_cf_cf with f; trivial.
 rewrite P4; rewrite Q2; auto.
@@ -467,7 +467,7 @@ apply IH; trivial; apply flatten_cf_cf with f; trivial;
 rewrite P3; rewrite <- Q1; rewrite <- Q3.
 rewrite <- flatten_app; simpl;
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end; apply quick_permut.
+rewrite Af; rewrite app_nil_r; apply quick_permut.
 refine (context_in _ _ _ _ f (_ :: nil) nil).
 assert (Wt24 : well_formed (Term f (t2 :: t4 :: nil))).
 apply well_formed_fold; rewrite Af; split; trivial;
@@ -476,7 +476,7 @@ apply IH; trivial; apply flatten_cf_cf with f; trivial;
 rewrite P4; rewrite <- Q2; rewrite <- Q4.
 rewrite <- flatten_app; simpl;
 generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite Af; rewrite <- app_nil_end; apply quick_permut.
+rewrite Af; rewrite app_nil_r; apply quick_permut.
 Qed.
 
 Global Instance length_morph : Proper (permut ==> eq) (length (A:=term)).
@@ -528,7 +528,7 @@ intros k1 [k2 [k3 [k4 [P1 [P2 [P3 P4]]]]]].
 destruct k1 as [ | h1 k1]; destruct k4 as [ | h4 k4].
 (* commutativity *)
 apply commutativity with n k2 k3; trivial;
-[rewrite <- app_nil_end in P2 | rewrite <- app_nil_end in P4]; trivial.
+[rewrite app_nil_r in P2 | rewrite app_nil_r in P4]; trivial.
 (* swap_left *)
 generalize (swap_left IHn Af Sa1 Wa1 Sa2 Wa2 Sa3 Wa3 Sa4 Wa4 
 k2 k3 (h4 :: k4)); 
@@ -552,7 +552,7 @@ absurd (1 <= 0); auto with arith.
 (* absurd a2=0 *)
 generalize (size_size_aux3 Af Wa2); rewrite P2; intro;
 absurd (1 <= 0); auto with arith.
-rewrite <- app_nil_end in P2; rewrite <- app_nil_end in P4;
+rewrite app_nil_r in P2; rewrite app_nil_r in P4;
 apply H'; trivial.
 destruct k2 as [ | h2 k2]; destruct k3 as [ | h3 k3].
 (* syntactic decomposition *)
@@ -564,14 +564,14 @@ intros [Hk1 | [Hk3 | [Hk4 | H']]]; subst.
 discriminate.
 discriminate.
 discriminate.
-rewrite <- app_nil_end in P1; unfold ac; apply th_sym; apply H'; trivial.
+rewrite app_nil_r in P1; unfold ac; apply th_sym; apply H'; trivial.
 (* associativity *)
 generalize (associativity IHn Af Sa1 Wa1 Sa2 Wa2 Sa3 Wa3 Sa4 Wa4 (h1::k1) (h2 :: k2) (h4::k4)).
 intros [Hk1 | [Hk2 | [Hk4 | H']]]; subst.
 discriminate.
 discriminate.
 discriminate.
-rewrite <- app_nil_end in P3; unfold ac; apply H'; trivial.
+rewrite app_nil_r in P3; unfold ac; apply H'; trivial.
 (* middle commutativity *)
 generalize (middle_commutativity IHn Af Sa1 Wa1 Sa2 Wa2 Sa3 Wa3 Sa4 Wa4
 (h1 :: k1) (h2 :: k2) (h3 :: k3) (h4 :: k4));

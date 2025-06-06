@@ -13,7 +13,7 @@ Set Implicit Arguments.
 From CoLoR Require Import ATrs AInterpretation BoolUtil LogicUtil EqUtil
      VecUtil SN RelUtil AWFMInterpretation NaryFunction NatUtil ARelation
      ARules SetUtil FunUtil VecMax AMorphism.
-From Coq Require Import List.
+From Stdlib Require Import List.
 
 Section S.
 

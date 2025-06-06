@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import SN ASubstitution ATerm RelUtil AContext LogicUtil
      VecUtil NaryFunction.
-From Coq Require Import List.
+From Stdlib Require Import List.
 
 Section S.
 

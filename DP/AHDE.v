@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ADecomp ADuplicateSymb ATrs ListUtil RelSub RelUtil
      AGraph LogicUtil BoolUtil AShift EqUtil ListDec.
-From Coq Require Btauto.
+From Stdlib Require Btauto.
 
 (***********************************************************************)
 (** definition of the hde over graph *)

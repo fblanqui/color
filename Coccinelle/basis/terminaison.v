@@ -1,5 +1,5 @@
-From Coq Require Lia.
-From Coq Require Import Relations Wellfounded.
+From Stdlib Require Lia.
+From Stdlib Require Import Relations Wellfounded.
 Set Implicit Arguments.
 
 Section star.

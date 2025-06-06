@@ -14,7 +14,7 @@ From CoLoR Require Export AContext ASubstitution.
 From CoLoR Require Import ARelation ListNodup LogicUtil VecUtil RelUtil
      ListUtil SN BoolUtil EqUtil NatUtil ListMax VecOrd.
 From CoLoR Require ListDec.
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 
 Section basic_definitions.
 
@@ -580,7 +580,7 @@ Section S.
       intros x y RR'xy.
       destruct RR'xy as [Rxy | Rxy];
         destruct Rxy as [rl [rr [c [s [Rr [dx dy]]]]]]; 
-          subst x; subst y; ex rl rr c s; intuition.
+          subst x; subst y; ex rl rr c s; intuition auto with *.
     Qed.
 
     Lemma hd_red_union : hd_red (R ++ R') << hd_red R U hd_red R'.
@@ -598,7 +598,7 @@ Section S.
       intros x y RR'xy.
       destruct RR'xy as [Rxy | Rxy];
         destruct Rxy as [rl [rr [s [Rr [dx dy]]]]]; 
-          subst x; subst y; ex rl rr s; intuition.
+          subst x; subst y; ex rl rr s; intuition auto with *.
     Qed.
 
   End union.

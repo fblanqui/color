@@ -10,7 +10,7 @@ The eta-reduction relation of simply typed lambda-calculus.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras.
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 From CoLoR Require TermsBeta.
 
 Module TermsEta (Sig : TermsSig.Signature).

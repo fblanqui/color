@@ -12,7 +12,7 @@
 
 (** * Equational theory on a term algebra *)
 
-From Coq Require Import List Relations Wellfounded Arith Setoid.
+From Stdlib Require Import List Relations Wellfounded Arith Setoid.
 From CoLoR Require Import closure more_list weaved_relation dickson term_spec
      equational_theory_spec.
 
@@ -1297,7 +1297,7 @@ Qed.
       destruct IHl with sigma as [ls [tau [H0 [Wls [H1 [H2 [H3 H4]]]]]]]; trivial.
       apply (tail_set _ Hl).
       destruct (Hl t (or_introl _ (eq_refl _)) (tau ++ sigma) H1 H2 H3) as [s [tau' [K0 [Ws [K1 [K2 [K3 K4]]]]]]].
-      exists (s :: ls); exists (tau' ++ tau); rewrite <- ass_app; repeat split; trivial.
+      exists (s :: ls); exists (tau' ++ tau); rewrite <- app_assoc; repeat split; trivial.
       simpl; apply f_equal2.
       assumption.
       rewrite H0.
@@ -1412,21 +1412,21 @@ Qed.
       intros; contradiction.
       exists s; exists (subst_rest (var_list s) sigma); repeat split; trivial.
 (* H0 *)
-      rewrite H0; rewrite <- app_nil_end.
+      rewrite H0; rewrite app_nil_r.
       rewrite <- subst_eq_vars; intros v v_in_s.
       rewrite subst_rest_ok; trivial.
 (* H1 *)
-      intros x u xu_in_rest_sig; apply (H1 x u); rewrite <- app_nil_end; apply (subst_rest_subst _ _ _ _ xu_in_rest_sig). 
+      intros x u xu_in_rest_sig; apply (H1 x u); rewrite app_nil_r; apply (subst_rest_subst _ _ _ _ xu_in_rest_sig). 
 (* H2 *)
-      intros x u v xu_in_rest_sig xv_in_rest_sig; apply (H2 x u v); rewrite <- app_nil_end.
+      intros x u v xu_in_rest_sig xv_in_rest_sig; apply (H2 x u v); rewrite app_nil_r.
       apply (subst_rest_subst _ _ _ _ xu_in_rest_sig). 
       apply (subst_rest_subst _ _ _ _ xv_in_rest_sig). 
 (* H3 *)
-      intros x y u xu_in_rest_sig yu_in_rest_sig; apply (H3 x y u); rewrite <- app_nil_end.
+      intros x y u xu_in_rest_sig yu_in_rest_sig; apply (H3 x y u); rewrite app_nil_r.
       apply (subst_rest_subst _ _ _ _ xu_in_rest_sig). 
       apply (subst_rest_subst _ _ _ _ yu_in_rest_sig). 
 (* H4 *)
-      intros x_in_s; generalize (H4 _ x_in_s); rewrite <- app_nil_end.
+      intros x_in_s; generalize (H4 _ x_in_s); rewrite app_nil_r.
       do 2 rewrite in_map_iff.
       intros [[x' u] [x_eq_x' x_in_sig]]; simpl in x_eq_x'; subst x'.
       exists (x,u); split; trivial.
@@ -1468,7 +1468,7 @@ Qed.
       destruct u1 as [x1 | g1 k1].
       discriminate.
       apply False_rect; apply (H1 _ _ v1_in_sig).
-      injection H0; clear H0; do 2 intro; subst g1 k1; rewrite map_length; apply sym_eq.
+      injection H0; clear H0; do 2 intro; subst g1 k1; rewrite length_map; apply sym_eq.
       destruct (well_formed_unfold W2) as [_ L2]; destruct (F.arity f2); assumption.
 (* 1/1 s1 is a compound term *)
       intros f1 l1 Hl1 [v2 | f2 l2] sigma W1 W2 H1 H2 H3 H41 H42 H0.
@@ -1479,7 +1479,7 @@ Qed.
       destruct u2 as [x2 | g2 k2].
       discriminate.
       apply False_rect; apply (H1 _ _ v2_in_sig).
-      injection H0; clear H0; do 2 intro; subst g2 k2; rewrite map_length; apply sym_eq.
+      injection H0; clear H0; do 2 intro; subst g2 k2; rewrite length_map; apply sym_eq.
       destruct (well_formed_unfold W1) as [_ L1]; destruct (F.arity f1); assumption.
       simpl in H0; injection H0; clear H0; intro H0; intro; subst f2; apply f_equal.
       rewrite var_list_unfold in H41, H42.
@@ -1549,7 +1549,7 @@ Qed.
       apply eq_refl.
       rewrite H0; simpl; rewrite (subst_aux _ H2 _ _ v_in_sig'); apply eq_refl.
       intro H0; injection H0; clear H0; do 2 intro; subst g l.
-      apply False_rect; apply L; rewrite map_length; apply sym_eq.
+      apply False_rect; apply L; rewrite length_map; apply sym_eq.
       destruct (well_formed_unfold Wt) as [_ L']; destruct (F.arity f); assumption.
 (* 1/2 coumpound term *)
       intros f ls Hls sigma t tau Ws H1 H2 H3 H4 Wt.
@@ -1730,8 +1730,8 @@ Qed.
       intro K2'; generalize (K2' Sub); clear K2'.
       replace (length lt1) with (length ls1).
       rewrite nth_error_at_pos; intro; assumption.
-      rewrite <- (map_length (apply_subst sigma) ls1).
-      rewrite Hs1; rewrite map_length; apply eq_refl.
+      rewrite <- (length_map (apply_subst sigma) ls1).
+      rewrite Hs1; rewrite length_map; apply eq_refl.
       split; trivial.
       intros [ | i p].
       intro; discriminate.
@@ -2305,7 +2305,7 @@ Qed.
       destruct (find_mem _ _ X.eq_bool_ok _ _ x_sigma) as [x' [sig1 [sig2 [x_eq_x' K]]]]; subst x'.
       rewrite K; apply in_or_app; right; left; reflexivity.
       intro e; generalize (H1 _ _ x_in_sig); rewrite <- e; simpl.
-      rewrite map_length; intro L; apply L.
+      rewrite length_map; intro L; apply L.
       destruct (well_formed_unfold (proj2 (WR _ _ H'''))) as [_ L']; apply sym_eq; destruct (F.arity g); assumption.
       generalize (H1 x (Term f l2')).
       replace (length k) with (length l2').
@@ -2549,7 +2549,7 @@ Qed.
       destruct l' as [ | g l'].
       apply False_rect; apply (R_var _ _ H2).
       apply False_rect; apply L; injection H0; clear H0; intros; subst.
-      rewrite map_length.
+      rewrite length_map.
       assert (Wf := WR _ _ H2).
       destruct (well_formed_unfold (proj2 Wf)) as [_ L'].
       apply sym_eq; destruct (F.arity f); trivial.

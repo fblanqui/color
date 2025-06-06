@@ -11,7 +11,7 @@ multisets.
 
 Set Implicit Arguments.
 
-From Coq Require Import List Setoid Morphisms.
+From Stdlib Require Import List Setoid Morphisms.
 From CoLoR Require Import RelExtras MultisetCore ListPermutation NatUtil
      ListExtras LogicUtil.
 

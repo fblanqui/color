@@ -12,7 +12,7 @@
 
 (** * Equational theory on a term algebra *)
 
-From Coq Require Import List Relations Wellfounded Arith Setoid.
+From Stdlib Require Import List Relations Wellfounded Arith Setoid.
 From CoLoR Require Import closure more_list weaved_relation dickson term_spec.
 
 Notation " T '-[' R ']->' U " := (R U T) (at level 80) : term_scope .

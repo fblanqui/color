@@ -9,9 +9,9 @@ general results on booleans
 
 Set Implicit Arguments.
 
-From Coq Require Import ZArith Lia.
-From Coq Require Export Bool.
-From Coq Require Setoid.
+From Stdlib Require Import ZArith Lia.
+From Stdlib Require Export Bool.
+From Stdlib Require Setoid.
 
 From CoLoR Require Import LogicUtil.
 
@@ -32,13 +32,13 @@ Ltac bool := autorewrite with bool.
 
 Lemma false_not_true : forall b, b = false <-> ~(b = true).
 
-Proof. destruct b; intuition. Qed.
+Proof. destruct b; intuition auto with *. Qed.
 
 Lemma beq_true : forall b c, b = c <-> (b = true <-> c = true).
 
 Proof.
   split; intro h. subst. tauto. destruct c.
-  tauto. rewrite false_not_true. intuition.
+  tauto. rewrite false_not_true. intuition auto with *.
 Qed.
 
 (***********************************************************************)
@@ -79,7 +79,7 @@ Proof. intros. subst b. subst c. refl. Qed.
 
 Lemma andb_eq : forall b c, b && c = true <-> b = true /\ c = true.
 
-Proof. split. intro. apply andb_elim. hyp. intuition. Qed.
+Proof. split. intro. apply andb_elim. hyp. intuition auto with *. Qed.
 
 Lemma andb_eq_false : forall b c, b && c = false <-> b = false \/ c = false.
 
@@ -107,7 +107,7 @@ Proof. intros. subst. bool. refl. Qed.
 
 Lemma orb_eq : forall b c, b || c = true <-> b = true \/ c = true.
 
-Proof. intuition. destruct b; auto. Qed.
+Proof. intuition auto with *. destruct b; auto. Qed.
 
 (***********************************************************************)
 (** equality *)
@@ -130,7 +130,7 @@ Section dec.
 
   Lemma ko : forall x, f x = false <-> ~P x.
 
-  Proof. intro x. rewrite <- f_ok. destruct (f x); intuition; discr. Qed.
+  Proof. intro x. rewrite <- f_ok. destruct (f x); intuition auto with *; discr. Qed.
 
   Lemma dec : forall x, {P x}+{~P x}.
 

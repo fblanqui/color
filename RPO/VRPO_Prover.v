@@ -10,7 +10,7 @@ converting terms with arities to varyadic terms).
 
 From CoLoR Require Import ATrs VPrecedence VRPO_Status VRPO_Results
   VTerm_of_ATerm ListUtil Preorder SN RelUtil ARelation VSignature LogicUtil.
-From Coq Require Import Arith Wellfounded.
+From Stdlib Require Import Arith Wellfounded.
 
 Set Implicit Arguments.
 
@@ -43,22 +43,22 @@ Module RPO_Prover (Export R : TRPO).
       apply WF_transp_wf. unfold transp.
       apply WF_incl with (fun x y => prec x > prec y).
       intros p q pq. destruct pq.
-      destruct (lt_eq_lt_dec (prec p) (prec q)) as [[pq | pq] | pq]; intuition.
+      destruct (lt_eq_lt_dec (prec p) (prec q)) as [[pq | pq] | pq]; intuition auto with *.
       intro x. apply (@SN_Rof Sig nat prec gt) with (prec x); trivial.
-      apply Acc_transp_SN. apply Acc_incl with lt. intuition. apply lt_wf.
+      apply Acc_transp_SN. apply Acc_incl with lt. intuition auto with *. apply lt_wf.
     Qed.
 
     Lemma leF_dec : rel_dec leF.
 
     Proof.
       intros x y. unfold ltF, ltA, leF, eqA.
-      destruct (le_lt_dec (prec x) (prec y)); intuition.
+      destruct (le_lt_dec (prec x) (prec y)); intuition auto with *.
     Defined.
 
     Lemma leF_preorder : preorder Sig leF.
 
     Proof.
-      unfold leF. intuition.
+      unfold leF. intuition auto with *.
     Qed.
 
     Infix "=F=" := eqF (at level 50).
@@ -85,7 +85,7 @@ Module RPO_Prover (Export R : TRPO).
   Proof.
     intro x. unfold arpo. set (t := vterm_of_aterm x).
     apply SN_Rof with t; trivial. apply Acc_transp_SN. 
-    apply Acc_incl with VRPO.lt. intuition.
+    apply Acc_incl with VRPO.lt. intuition auto with *.
     apply VRPO_Results.wf_lt.
   Qed.
 

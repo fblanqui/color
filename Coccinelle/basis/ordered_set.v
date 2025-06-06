@@ -9,7 +9,7 @@
 (*           *                                                            *)
 (**************************************************************************)
 
-From Coq Require Import Setoid Relations Arith FunInd.
+From Stdlib Require Import Setoid Relations Arith FunInd.
 
 Inductive comp : Type :=
   | Equivalent : comp
