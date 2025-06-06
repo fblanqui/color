@@ -1,32 +1,39 @@
 # following https://github.com/coq-community/docker-coq-action
 
-name: Docker CI
+name: CI
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
   push:
+    paths-ignore:
+      - '**/*.md'
   workflow_dispatch:
 
 jobs:
-  build:
-    # the OS must be GNU/Linux to be able to use the docker-coq-action
+
+  coq:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        coq_version:
-          - dev
-          - '8.20'
-          - '8.19'
-          - '8.18'
-          - '8.17'
-          - '8.16'
-          - '8.15'
-          - '8.14'
       fail-fast: false
+      matrix:
+        coq_version: ['8.20', 8.19, 8.18, 8.17, 8.16, 8.15, 8.14]
     steps:
       - uses: actions/checkout@v4
       - uses: coq-community/docker-coq-action@v1
         with:
           opam_file: 'coq-color.opam'
+          ocaml_version: 5.2.1
           coq_version: ${{ matrix.coq_version }}
+
+  rocq:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rocq_version: [dev, '9.0']
+    container:
+      image: rocq/rocq-prover:${{ matrix.rocq_version }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: opam install -y .
