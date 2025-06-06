@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Definition of log2 (floor) and exp2, and some equalities
 *)
 
-From Coq Require Import Lia PeanoNat.
+From Stdlib Require Import Lia PeanoNat.
 From CoLoR Require Import LogicUtil NatCompat.
 
 Lemma div2_le_n : forall n, Nat.div2 n <= n.

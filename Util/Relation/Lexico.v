@@ -9,7 +9,7 @@ lexicographic ordering
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics.
+From Stdlib Require Import Morphisms Basics.
 From CoLoR Require Import SN LogicUtil NatUtil VecUtil VecOrd ListUtil RelUtil.
 
 (****************************************************************************)
@@ -148,7 +148,7 @@ Section lexn.
   Proof.
     induction n; simpl prodn.
     (* 0 *)
-    intuition. destruct H as [i [hi _]]. lia.
+    intuition auto with *. destruct H as [i [hi _]]. lia.
     (* S *)
     intros [x xs] [y ys]. simpl lexn. split; intro h.
     (* -> *)

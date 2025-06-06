@@ -9,7 +9,7 @@ cap of undefined symbols and aliens of defined symbols
 
 Set Implicit Arguments.
 
-From Coq Require Import Sumbool.
+From Stdlib Require Import Sumbool.
 From CoLoR Require Import LogicUtil ACalls ATrs VecUtil ListUtil NatUtil EqUtil.
 
 Section S.
@@ -226,7 +226,7 @@ Lemma vars_cap_sup : forall x t,
 
 Proof.
 intros x t. pattern t. apply term_ind_forall; clear t; simpl; intros.
-intuition. change (In x (vars_vec v)) in H2.
+intuition auto with *. change (In x (vars_vec v)) in H2.
 change (x > maxvars v) in H1.
 ded (in_vars_vec_elim H2). destruct H3 as [t]. destruct H3.
 ded (vars_max H4). ded (maxvar_in _ _ H5 H3). lia.

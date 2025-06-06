@@ -9,9 +9,9 @@ Some results concerning permutations of lists.
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid Morphisms Basics.
+From Stdlib Require Import Setoid Morphisms Basics.
 From CoLoR Require Import ListExtras NatUtil LogicUtil.
-From Coq Require Export Permutation PermutSetoid Multiset.
+From Stdlib Require Export Permutation PermutSetoid Multiset.
 
 Arguments list_contents [A eqA] _ _.
 Arguments permutation [A eqA] _ _ _.
@@ -47,7 +47,7 @@ Section Multiplicity.
     destruct (eqA_dec a a0).
     lia.
     absurd (eqA a a0); trivial.
-    rewrite H; intuition.
+    rewrite H; intuition auto with *.
     set (w := IHl a0 H); lia.
   Qed.
 
@@ -58,8 +58,8 @@ Section Multiplicity.
     induction l; simpl; intros; trivial.
     destruct (eqA_dec a el); destruct (eqA_dec el a).
     rewrite IHl; lia.
-    absurd (eqA el a); intuition.
-    absurd (eqA a el); intuition.
+    absurd (eqA el a); intuition auto with *.
+    absurd (eqA a el); intuition auto with *.
     rewrite IHl; lia.
   Qed.
 
@@ -120,7 +120,7 @@ Section Permutation.
     intros; intro el.
     destruct (eqA_dec a el).
     assert (eqA el b).
-    apply (Seq_trans A eqA eqA_Equivalence) with a; intuition.
+    apply (Seq_trans A eqA eqA_Equivalence) with a; intuition auto with *.
     rewrite (multiplicity_dropNth_eq eqA_dec eqA_Equivalence l' p el H0 H2).
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 1 in w.
@@ -129,7 +129,7 @@ Section Permutation.
     assert (~eqA el b).
     intro elb.
     absurd (eqA a el); trivial.
-    apply (Seq_trans A eqA eqA_Equivalence) with b; intuition.
+    apply (Seq_trans A eqA eqA_Equivalence) with b; intuition auto with *.
     rewrite (multiplicity_dropNth_neq eqA_dec eqA_Equivalence l' p el H0 H2).
     set (w := H1 el); simpl in w.
     replace (if eqA_dec a el then 1 else 0) with 0 in w.
@@ -150,9 +150,9 @@ Section Permutation.
     auto with datatypes.
     destruct (list_In_nth l' a' a'l') as [p l'p].
     exists p; exists a'; split; [idtac | split]; trivial.
-    intuition.
+    intuition auto with *.
     apply permutation_drop with a a'; trivial.
-    intuition.
+    intuition auto with *.
   Qed.
 
   Lemma permutation_length: forall (l l': list A),
@@ -169,7 +169,7 @@ Section Permutation.
     assert (w := H a); simpl in w; clear H.
     destruct (eqA_dec a a).
     lia.
-    intuition.
+    intuition auto with *.
      (* step *)
     destruct (permutation_cons H) as [p [a' [l'p [aa' ll'p]]]].
     simpl.
@@ -385,7 +385,7 @@ Section ListSim_iso.
     set (w := H0 a); inversion w.
     destruct (eqA_dec a a).
     lia.
-    absurd (eqA a a); intuition.
+    absurd (eqA a a); intuition auto with *.
     inversion H.
     apply permut_refl.
      (* induction step *)
@@ -402,7 +402,7 @@ Section ListSim_iso.
     exists (insert_nth m' p a0); split.
     unfold list_simA; apply list_sim_insert_nth with p a' a0; trivial.
     apply nth_insert_nth; trivial.
-    apply P_eqA_comp with a a0; intuition.
+    apply P_eqA_comp with a a0; intuition auto with *.
     inversion H; intuition.
     rewrite drop_nth_insert_nth; trivial.
     apply permutation_sym.

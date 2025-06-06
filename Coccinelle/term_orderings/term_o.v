@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Relations List.
+From Stdlib Require Import Relations List.
 From CoLoR Require Import list_sort term_spec.
 
 Set Implicit Arguments.

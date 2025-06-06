@@ -63,7 +63,7 @@ Section S.
 
   Proof.
     intros x1 x2. induction n; intros v1 v2.
-    VOtac. intuition. apply left_sym. hyp.
+    VOtac. intuition auto with *. apply left_sym. hyp.
     VSntac v1; VSntac v2. simpl Vadd. intros [[h1 h2]|[h1 h2]].
     Veqtac. apply Vrel1_cons_intro. right. fo.
     subst x2. destruct (Vrel1_cons_elim h2) as [[i1 i2]|[i1 i2]].
@@ -250,7 +250,7 @@ Arguments Vrel1_sub [A R n v1 v2 p q] h _.
 (***********************************************************************)
 (** Compatibility of [Vrel1] with [inclusion] and [same]. *)
 
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 
 Global Instance Vrel1_app_incl n A :
   Proper (inclusion ==> inclusion) (@Vrel1_app n A).
@@ -292,7 +292,7 @@ Proof.
   left. ex i vi x j vj h y. intuition.
   right. ex i vi x j vj h y. intuition.
   intros [h|h]; destruct h as [i [vi [x [j [vj [h [y [h1 [h2 h3]]]]]]]]];
-    ex i vi x j vj h y; intuition.
+    ex i vi x j vj h y; intuition auto with *.
 Qed.
 
 Lemma Vrel1_union n A (R S : relation A) :

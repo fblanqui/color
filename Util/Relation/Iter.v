@@ -10,7 +10,7 @@ iteration of a relation
 
 Set Implicit Arguments.
 
-From Coq Require Import List.
+From Stdlib Require Import List.
 From CoLoR Require Import Path NatUtil RelUtil LogicUtil Log2.
 
 Section S.
@@ -77,7 +77,7 @@ Lemma tc_iter : R! << Iter.
 Proof.
 unfold inclusion. induction 1; simpl; intros. exists 0. auto.
 destruct IHclos_trans1. destruct IHclos_trans2. intuition.
-exists (x0+x1+1). intuition. eapply incl_elim. apply iter_iter.
+exists (x0+x1+1). intuition auto with *. eapply incl_elim. apply iter_iter.
 exists y. auto.
 Qed.
 
@@ -86,7 +86,7 @@ Lemma Iter_split : forall n, Iter << iter_le n U Iter_ge (S n).
 Proof.
 induction n; simpl; intros; unfold inclusion; intros.
 do 2 destruct H. destruct x0. left. auto.
-right. exists (S x0). intuition.
+right. exists (S x0). intuition auto with *.
 ded (IHn _ _ H). destruct H0. left. right. exact H0.
 do 2 destruct H0. case (le_lt_dec x0 (S n)); intro.
 assert (x0 = S n). lia. subst x0. left. left. exact H1.
@@ -119,13 +119,13 @@ Lemma iter_Iter_ge : forall n p, iter n @ Iter_ge p << Iter_ge (n+p+1).
 
 Proof.
 unfold inclusion. intros. do 2 destruct H. do 2 destruct H0.
-exists (n+x1+1). intuition. apply iter_iter. exists x0. intuition.
+exists (n+x1+1). intuition auto with *. apply iter_iter. exists x0. intuition.
 Qed.
 
 Lemma incl_Iter_ge : forall n p, p <= n -> Iter_ge n << Iter_ge p.
 
 Proof.
-unfold inclusion. intros. do 2 destruct H0. exists x0. intuition.
+unfold inclusion. intros. do 2 destruct H0. exists x0. intuition auto with *.
 Qed.
 
 (***********************************************************************)
@@ -198,7 +198,7 @@ Lemma iter_compose : forall p q, iter p @ iter q << iter (p+q+1).
 Proof.
 intros; induction p.
 assert (S(q) = q+1); auto with *.
-simpl; rewrite <- H; simpl; intuition.
+simpl; rewrite <- H; simpl; intuition auto with *.
 unfold inclusion; intros.
 simpl in H; repeat destruct H.
 simpl; unfold compose.
@@ -221,9 +221,9 @@ destruct H as [z]; destruct H. rewrite IHn in H0; rewrite IHn in H.
 destruct H0 as [p]; destruct H as [p']; destruct H0; destruct H.
 exists (p+p'+1). split. lia.
 assert ((iter p' @ iter p) x y). unfold compose; exists z; auto with *.
-assert (p+p'+1=p'+p+1); intuition.
+assert (p+p'+1=p'+p+1); intuition auto with *.
 rewrite H4; apply iter_compose; auto with *.
-rewrite IHn in H; destruct H as [p]; exists p; intuition.
+rewrite IHn in H; destruct H as [p]; exists p; intuition auto with *.
 destruct H as [p]; destruct H; simpl in H.
 
 destruct (le_gt_dec (S p) (exp2 n)).
@@ -233,8 +233,8 @@ lia.
 rewrite H1 in H0. ded (iter_plus_1 _ _ _ _ H0).
 left; unfold compose in *; destruct H2 as [z]; destruct H2.
 exists z; split; rewrite IHn.
-exists (exp2 n -1); intuition; lia.
-exists (p -exp2 n); intuition; lia. 
+exists (exp2 n -1); intuition auto with *; lia.
+exists (p -exp2 n); intuition auto with *; lia. 
 Qed.
 
 Lemma iter_le_same n x y : iter_le2 n x y <-> iter_le n x y.

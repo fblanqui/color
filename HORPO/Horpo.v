@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras RelUtil Terms MultisetOrder
      PairLex MultisetList MultisetTheory AccUtil LogicUtil.
-From Coq Require Import Morphisms Basics.
+From Stdlib Require Import Morphisms Basics.
 
 Module Type Precedence.
 
@@ -243,9 +243,9 @@ Module Horpo (S : TermsSig.Signature)
     apply HApp with Mapp Napp; trivial.
     constructor. destruct LRgt.
     apply pair_mOrd_left; try_solve.
-    inversion Req; intuition.
+    inversion Req; intuition auto with *.
     apply pair_mOrd_right; try_solve.
-    inversion Leq; intuition.
+    inversion Leq; intuition auto with *.
   Qed.
 
   Lemma horpo_app : forall M N (Mapp: isApp M) (Napp: isApp N),

@@ -1,29 +1,23 @@
 # following https://github.com/coq-community/docker-coq-action
 
-name: Docker CI
+name: CI
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
   push:
+    paths-ignore:
+      - '**/*.md'
   workflow_dispatch:
 
 jobs:
-  build:
-    # the OS must be GNU/Linux to be able to use the docker-coq-action
+
+  make:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        coq_version:
-          - dev
-          - '8.20'
-          - '8.19'
-          - '8.18'
-          - '8.17'
-          - '8.16'
-          - '8.15'
-          - '8.14'
       fail-fast: false
+      matrix:
+        coq_version: [dev, '9.0', '8.20', 8.19, 8.18, 8.17, 8.16]
     steps:
       - uses: actions/checkout@v4
       - uses: coq-community/docker-coq-action@v1

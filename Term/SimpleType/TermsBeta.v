@@ -11,7 +11,7 @@ is introduced in this file.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsRed TermsConv LogicUtil.
-From Coq Require Import Setoid PeanoNat Lia.
+From Stdlib Require Import Setoid PeanoNat Lia.
 
 Module TermsBeta (Sig : TermsSig.Signature).
 
@@ -193,10 +193,10 @@ Module TermsBeta (Sig : TermsSig.Signature).
     apply appArg_left with Napp; trivial.
     rewrite (appArgs_app (buildT (TApp TypM1 TypM2)) I); simpl.
     rewrite Margs; rewrite H0.
-    rewrite <- ass_app; auto with datatypes.
+    rewrite <- app_assoc; auto with datatypes.
     rewrite (appArgs_app N Napp); simpl.
     rewrite Nargs.
-    rewrite <- ass_app; auto with datatypes.
+    rewrite <- app_assoc; auto with datatypes.
      (*   - M = @(_, _) *)
     intro M1nApp; simpl in *.
     rewrite appHead_notApp in Mhead; simpl in Mhead. exfalso.
@@ -449,7 +449,7 @@ Module TermsBeta (Sig : TermsSig.Signature).
 	solve [trivial | lia].
     rewrite <- list_app_first_last.
     rewrite <- copy_add; trivial.
-    rewrite <- app_nil_end; trivial.
+    rewrite app_nil_r; trivial.
      (*   - x < i *)
     rewrite !nth_app_left, nth_copy_in.
     simpl.

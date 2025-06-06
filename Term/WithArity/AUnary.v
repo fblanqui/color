@@ -68,7 +68,7 @@ Lemma vars_fun1 : forall f u, vars (Fun1 f u) = vars u.
 
 Proof.
 intros. unfold Fun1. rewrite vars_fun, vars_vec_cast. simpl.
-rewrite <- app_nil_end. refl.
+rewrite app_nil_r. refl.
 Qed.
 
 Lemma maxvar_fun1 : forall f t, maxvar (Fun1 f t) = maxvar t.
@@ -366,8 +366,8 @@ Proof.
 cut (forall t' u, red R # t' u -> forall t, t' = sub s t -> exists v,
   red R # t v /\ sub s v = u). intros. apply H with (t':=sub s t). hyp. refl.
 induction 1; intros; subst.
-destruct (red_ren H). exists x. intuition.
-exists t. intuition.
+destruct (red_ren H). exists x. intuition auto with *.
+exists t. intuition auto with *.
 destruct (IHclos_refl_trans1 t (eq_refl (sub s t))). destruct H1.
 symmetry in H2. destruct (IHclos_refl_trans2 x H2). exists x0. split_all.
 apply rtc_trans with x; hyp.

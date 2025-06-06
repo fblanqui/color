@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 Transitive closure of a finite graph.
 *)
 
-From Coq Require Import OrderedType.
+From Stdlib Require Import OrderedType.
 From CoLoR Require Import RelUtil LogicUtil BoolUtil FGraph.
 From CoLoR Require ListUtil.
 
@@ -226,7 +226,7 @@ the transitive closure of [id x y U g] *)
     intros a b c. unfold Relation_Operators.union, prod.
     rewrite !add_iff. repeat rewrite In_preds_rel, In_succs_rel. split_all.
     (* g a b /\ eq x b /\ eq y c *)
-    (*SLOW*)rewrite H0, H1. intuition.
+    (*SLOW*)rewrite H0, H1. intuition auto with *.
     (* g a b /\ g b x /\ eq y c *)
     left. split_all. right. apply tg with b; hyp.
     (* g a b /\ eq x b /\ g y c *)
@@ -234,7 +234,7 @@ the transitive closure of [id x y U g] *)
     (* g a b /\ g b x /\ g y c *)
     left. split_all. right. apply tg with b; hyp.
     (* g b c /\ eq x a /\ eq y b *)
-    (*SLOW*)rewrite H, H1. intuition.
+    (*SLOW*)rewrite H, H1. intuition auto with *.
     (* g b c /\ g a x /\ eq y b *)
     (*SLOW*)rewrite H1. tauto.
     (* g b c /\ eq x a /\ g y b *)
@@ -260,7 +260,7 @@ the transitive closure of [id x y U g] *)
     rewrite union_incl_eq. split. apply prod_add_incl_tc_id.
     trans (g U id x y). apply incl_union_l. refl. apply incl_tc. refl.
     apply tc_min. 2: hyp. rewrite union_commut. apply R.union_incl.
-    2: refl. intros a b [xa yb]. split; rewrite add_iff; intuition.
+    2: refl. intros a b [xa yb]. split; rewrite add_iff; intuition auto with *.
   Qed.
 
   Lemma succs_trans_add_edge_id : forall x y g,
@@ -422,7 +422,7 @@ using the function [trans_add_edge] now *)
       (* S << R *)
       apply R.union_incl. refl. rewrite union_commut.
       apply R.union_incl. 2: refl.
-      intros u v [xu yv]. unfold prod. rewrite xu, yv, !add_iff. intuition.
+      intros u v [xu yv]. unfold prod. rewrite xu, yv, !add_iff. intuition auto with *.
       (* R << S! *)
       rewrite union_incl_eq. split. apply incl_tc. apply incl_union_l. refl.
       rewrite union_incl_eq. split. rewrite prod_add_incl_tc_id.

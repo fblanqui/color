@@ -1,5 +1,5 @@
-From Coq Require Import Relations List Setoid.
-From Coq Require Inclusion.
+From Stdlib Require Import Relations List Setoid.
+From Stdlib Require Inclusion.
 From CoLoR Require Import weaved_relation closure equational_theory_spec dp modular_dp terminaison.
 
 

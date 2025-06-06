@@ -11,7 +11,7 @@ environments with declarations that are really used in a term.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsEnv LogicUtil.
-From Coq Require Import Arith Lia.
+From Stdlib Require Import Arith Lia.
 
 Module TermsActiveEnv (Sig : TermsSig.Signature).
 
@@ -280,11 +280,11 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     replace (x + n) with (k + n + (x - k)); [apply env_eq_refl | lia].
     rewrite initialSeg_full; autorewrite with datatypes using simpl; try lia.
     rewrite finalSeg_empty; autorewrite with datatypes using simpl; try lia.
-    rewrite <- app_nil_end.
+    rewrite app_nil_r.
     apply env_eq_empty_tail.
      (* function symbol *)
     simpl; unfold liftedEnv.
-    destruct k; unfold finalSeg; simpl; rewrite <- app_nil_end;
+    destruct k; unfold finalSeg; simpl; rewrite app_nil_r;
       change (copy n (None (A:=SimpleType))) with (EmptyEnv ++ copy n None);
 	apply env_eq_empty_tail.
      (* abstraction *)
@@ -349,7 +349,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     lia.
     rewrite initialSeg_full; autorewrite with datatypes using simpl; try lia.
     rewrite finalSeg_empty; autorewrite with datatypes using simpl; try lia.
-    rewrite <- app_nil_end; trivial.
+    rewrite app_nil_r; trivial.
      (* function symbol *)
     destruct n; try_solve.
      (* abstraction *)

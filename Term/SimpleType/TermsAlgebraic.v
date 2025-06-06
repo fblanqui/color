@@ -11,7 +11,7 @@ assumed) encoded via lambda-terms.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsEta LogicUtil.
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 
 Module TermsAlgebraic (Sig : TermsSig.Signature).
 

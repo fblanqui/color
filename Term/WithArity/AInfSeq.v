@@ -10,7 +10,7 @@ WF_absorb. *)
 
 Set Implicit Arguments.
 
-From Coq Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
+From Stdlib Require Import IndefiniteDescription ClassicalChoice ProofIrrelevance
      Lia.
 From CoLoR Require Import RelUtil ATrs LogicUtil ACalls SN InfSeq LeastNat
      ListUtil BoundNat NatUtil VecUtil ADP NotSN_IS ASN BoolUtil ClassicUtil.
@@ -53,7 +53,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
     Proof.
       induction 1; intro hx.
-      ded (undef_red_is_int_red hyp1 H hx). intuition.
+      ded (undef_red_is_int_red hyp1 H hx). intuition auto with *.
       split_all. refl.
       split_all. apply rt_trans with y; tauto. tauto.
     Qed.

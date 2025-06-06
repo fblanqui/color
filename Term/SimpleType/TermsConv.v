@@ -15,8 +15,8 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListPermutation TermsPos ListUtil
      ListExtras LogicUtil.
-From Coq Require Import Compare_dec Setoid Morphisms Lia PeanoNat.
-From Coq Require Psatz.
+From Stdlib Require Import Compare_dec Setoid Morphisms Lia PeanoNat.
+From Stdlib Require Psatz.
 
 Module TermsConv (Sig : TermsSig.Signature).
 

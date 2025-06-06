@@ -257,7 +257,7 @@ Section S.
     Proof.
       apply term_ind with (Q := fun n (v : terms n) =>
         vars_vec (Vmap (sub s) v) = svars (vars_vec v)).
-      simpl. intro. rewrite <- app_nil_end. refl.
+      simpl. intro. rewrite app_nil_r. refl.
       intros. simpl sub. rewrite !vars_fun. hyp.
       refl.
       intros. simpl. rewrite H, svars_app. f_equal. hyp.
@@ -398,7 +398,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
 
   Proof.
     unfold sub_eq_dom, restrict. induction l; simpl. intros. contr.
-    intro. case (eq_nat_dec x a); intuition.
+    intro. case (eq_nat_dec x a); intuition auto with *.
   Qed.
 
   Lemma sub_restrict s t : sub s t = sub (restrict s (vars t)) t.
@@ -464,10 +464,10 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
   Proof.
     intro u; pattern u; apply term_ind_forall; clear u.
     (* var *)
-    intros x t s ht. exists (Var x). intuition.
+    intros x t s ht. exists (Var x). intuition auto with *.
     (* fun *)
     intros f ts IH t s ht. destruct (subterm_eq_split ht).
-    exists (Fun f ts). intuition.
+    exists (Fun f ts). intuition auto with *.
     destruct (subterm_fun_elim H) as [v [hv1 hv2]].
     change (Vin v (Vmap (sub s) ts)) in hv1.
     destruct (Vin_map hv1) as [w [hw1 hw2]]. subst.

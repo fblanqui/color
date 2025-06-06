@@ -1,4 +1,4 @@
-From Coq Require Import Setoid List Relations Wellfounded PeanoNat.
+From Stdlib Require Import Setoid List Relations Wellfounded PeanoNat.
 From CoLoR Require Import weaved_relation list_permut terminaison.
 From CoLoR Require equational_theory equational_extension term subterm_dp.
 
@@ -184,8 +184,8 @@ Module OrdAFS (Eqt : equational_theory_spec.EqTh).
 
       generalize (Nat.le_gt_cases (length l1) i); intros [Hi|Hi].
 
-      rewrite nth_overflow; [| rewrite map_length; assumption ];
-      rewrite nth_overflow; [| rewrite map_length;
+      rewrite nth_overflow; [| rewrite length_map; assumption ];
+      rewrite nth_overflow; [| rewrite length_map;
         apply one_step_list_length_eq in H; rewrite <- H; assumption ].
       apply Tle_refl.
 
@@ -257,12 +257,12 @@ Module OrdAFS (Eqt : equational_theory_spec.EqTh).
       generalize (Nat.le_gt_cases (length l) i); intros [Hi|Hi].
 
       rewrite nth_overflow;
-      [| rewrite map_length; rewrite map_length; assumption ];
+      [| rewrite length_map; rewrite length_map; assumption ];
       rewrite nth_overflow;
-      [| rewrite map_length; assumption ];
+      [| rewrite length_map; assumption ];
       reflexivity.
 
-      rewrite nth_map; [| rewrite map_length; assumption ];
+      rewrite nth_map; [| rewrite length_map; assumption ];
       rewrite nth_map; [| assumption ];
       rewrite nth_map; [| assumption ];
       rewrite <- H; [ reflexivity |];
@@ -508,7 +508,7 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
 
       cut (exists m1, exists m2, exists mm,
         m1 :: m2 :: mm = dissect (length lh) l);
-      [| apply dissect_in; apply Hin; rewrite app_length;
+      [| apply dissect_in; apply Hin; rewrite length_app;
          simpl; pattern (length lh) at 1; rewrite <- Nat.add_0_r;
          apply Nat.add_lt_mono_l; apply Nat.lt_0_succ ].
 
@@ -553,7 +553,7 @@ Module OrdSafeAFS (Eqt : equational_theory_spec.EqTh).
       unfold afs; simpl; destruct (afs_symb f) as [g ns]; simpl;
       f_equal; clear f g.
 
-      rewrite map_length; rewrite map_length; rewrite map_length;
+      rewrite length_map; rewrite length_map; rewrite length_map;
       set (ns0 := afs_rest ns ns (length l)); clearbody ns0; clear ns.
 
       revert l H; induction ns0 as [|i ns];

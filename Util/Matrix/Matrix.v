@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
   Matrices as a functor.
 *)
 
-From Coq Require Import List Setoid Morphisms.
+From Stdlib Require Import List Setoid Morphisms.
 From CoLoR Require Import VecArith OrdSemiRing VecUtil NatUtil LogicUtil
   RelUtil.
 
@@ -181,7 +181,7 @@ Module Matrix (OSRT : OrdSemiRingType).
   Proof.
     unfold vec_to_col_mat, mat_eqA, get_elem. intros u u' uu' i j ip jp.
     rewrite !get_elem_swap. unfold get_col. rewrite !Vnth_map.
-    apply Vforall2_elim_nth. rewrite Vforall2_cons_eq. intuition.
+    apply Vforall2_elim_nth. rewrite Vforall2_cons_eq. intuition auto with *.
     apply Vforall2_elim_nth. hyp.
   Qed.
 

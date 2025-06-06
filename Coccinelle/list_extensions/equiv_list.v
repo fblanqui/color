@@ -9,7 +9,7 @@
 (*           *                                                            *)
 (**************************************************************************)
 
-From Coq Require Import List Relations Setoid.
+From Stdlib Require Import List Relations Setoid.
 
 Lemma equiv_in_list :
   forall (A : Type) (R : relation A) s ll, (forall s t, In (s,t) ll -> R s t) ->

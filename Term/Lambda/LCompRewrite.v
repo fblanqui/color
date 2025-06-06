@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics Lia.
+From Stdlib Require Import Morphisms Basics Lia.
 From CoLoR Require Import LogicUtil RelUtil VecOrd VecUtil LAlpha.
 
 (****************************************************************************)
@@ -224,10 +224,10 @@ Module Make (Export RS : RS_Struct).
       as [[vs [j1 j2]]|[p [ls [r [s [q [vs [h1 [h2 [h3 h4]]]]]]]]]];
         clear H1; subst.
     left. inv_aeq H0; clear H0; subst. exists us1. intuition.
-    exists us0. intuition. exists vs. intuition.
+    exists us0. intuition auto with *. exists vs. intuition auto with *.
     right. rewrite Vcast_refl in i1. inv_aeq H0; clear H0; subst.
     ex p ls r s q vs (Logic.eq_refl (p+q)). split. hyp.
-    rewrite Vcast_refl. intuition. rewrite i0, i2. refl.
+    rewrite Vcast_refl. intuition auto with *. rewrite i0, i2. refl.
   Qed.
 
   Arguments rewrite_aeq_apps_fun [f n us t0] _ : rename.

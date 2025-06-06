@@ -9,7 +9,7 @@ multisets of natural numbers
 
 Set Implicit Arguments.
 
-From Coq Require Import Arith.
+From Stdlib Require Import Arith.
 From CoLoR Require Import MultisetTheory MultisetOrder MultisetList RelExtras.
 
 Module Nat.

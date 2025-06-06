@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 excluded middle and decidability for relations.
 *)
 
-From Coq Require Import Relations.
+From Stdlib Require Import Relations.
 
 From CoLoR Require Import LogicUtil.
 

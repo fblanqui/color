@@ -10,7 +10,7 @@ Set Implicit Arguments.
 From CoLoR Require Import ATropicalBasedInt Matrix OrdSemiRing VecUtil AMonAlg
      SN RelUtil NatUtil AWFMInterpretation LogicUtil AMatrixBasedInt BoolUtil
      ListUtil.
-From Coq.Structures Require Import Equalities.
+From Stdlib Require Import Structures.Equalities.
 
 (* TODO: this should be moved to Matrix.v *)
 Module Import TropicalMatrix := Matrix TropicalOrdSemiRingT.

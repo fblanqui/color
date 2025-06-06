@@ -10,7 +10,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics.
+From Stdlib Require Import Morphisms Basics.
 From CoLoR Require Import RelUtil VecUtil VecOrd LogicUtil SN SetUtil.
 From CoLoR Require Export LBeta LEta.
 

@@ -11,7 +11,7 @@ paths
 
 Set Implicit Arguments.
 
-From Coq Require Arith.
+From Stdlib Require Arith.
 From CoLoR Require Import RelSub ListUtil ListNodup RelUtil LogicUtil
   ListShrink NatUtil ListOccur.
 

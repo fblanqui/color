@@ -11,7 +11,7 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import Setoid Relations List Wellfounded.
+From Stdlib Require Import Setoid Relations List Wellfounded.
 From CoLoR Require Export TransClosure closure more_list.
 
 Inductive one_step_list A (R : relation A) : relation (list A) :=
@@ -188,14 +188,14 @@ destruct IHH' as [u [u' [k1 [k2 [k2' [K1 [K2 [K3 K4]]]]]]]].
 rewrite K2 in H2.
 destruct (in_in_split_set _ _ _ _ _ _ H2) as [[[k [J1 J2]] | [k [J1 J2]]] | [k [J1 J2]]]; subst.
 exists t; exists t'; exists l1; exists (k ++ u :: k2); exists (k ++ u' :: k2'); split; [idtac | split; [idtac | split]].
-rewrite <- ass_app; apply eq_refl.
+rewrite <- app_assoc; apply eq_refl.
 apply eq_refl.
 left; assumption.
 apply rwr_list_chop with (l1 ++ t :: nil) (l1 ++ t :: nil); trivial.
-do 2 rewrite <- ass_app in H'; simpl in H; do 2 rewrite <- ass_app; simpl; trivial.
+do 2 rewrite <- app_assoc in H'; simpl in H; do 2 rewrite <- app_assoc; simpl; trivial.
 exists u; exists u'; exists k1; exists k2; exists (k ++ t' :: l2); split; [idtac | split; [idtac | split]].
 apply eq_refl.
-rewrite <- ass_app; apply eq_refl.
+rewrite <- app_assoc; apply eq_refl.
 assumption.
 apply refl_trans_clos_is_trans with (k ++ t :: l2); trivial.
 right; left.
@@ -227,8 +227,8 @@ intros l1 l2 H; induction H as [l1 l2 H | l1 l2 l3 H1 H2].
 left; right; assumption.
 apply trans_clos_is_trans with (a :: l2); trivial.
 left; right; assumption.
-rewrite <- ass_app; simpl; apply eq_refl.
-rewrite <- ass_app; simpl; apply eq_refl.
+rewrite <- app_assoc; simpl; apply eq_refl.
+rewrite <- app_assoc; simpl; apply eq_refl.
 Qed.
 
 Lemma rwr_list_expand : 

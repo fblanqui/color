@@ -10,7 +10,7 @@ Some additional functions on lists.
 Set Implicit Arguments.
 
 From CoLoR Require Export ListUtil.
-From Coq Require Import Permutation Setoid.
+From Stdlib Require Import Permutation Setoid.
 From CoLoR Require Import NatUtil LogicUtil.
 
 (***********************************************************************)
@@ -130,7 +130,7 @@ Section Seg.
     intros i j x x_j.
     destruct i; simpl.
     destruct j; destruct x; simpl; try solve [lia | trivial].
-    change x at 2 with (0 + x).
+    change x with (0 + x) at 2.
     assert (xj: x < j).
     auto with arith.
     rewrite <- (IHl 0 j x xj); trivial.
@@ -550,7 +550,7 @@ Section CountIn.
     induction l; inversion 1; intro; simpl.
     rewrite H0; destruct (eqA_dec a' a).
     lia.
-    absurd (eqA a' a); intuition.
+    absurd (eqA a' a); intuition auto with *.
     destruct (eqA_dec a' a0).
     lia.
     apply IHl; trivial.
@@ -601,7 +601,7 @@ Section CountIn.
     destruct (eqA_dec el a); trivial.
     set (el'l := nth_some_in l p H).
     assert (el'el: eqA el' el).
-    intuition.
+    intuition auto with *.
     set (w := in_countIn l el'l el'el).
     lia.
   Qed.
@@ -1000,8 +1000,8 @@ Lemma element_at_find_first_eq : forall l x i,
 Proof.
 induction l; simpl; intros. discr. destruct i.
 inversion H. subst x. case (eq_dec a a); intro. exists 0. auto. cong.
-case (eq_dec x a); intro. exists 0. intuition.
-destruct (IHl _ _ H). destruct H0. rewrite H1. exists (S x0). intuition.
+case (eq_dec x a); intro. exists 0. intuition auto with *.
+destruct (IHl _ _ H). destruct H0. rewrite H1. exists (S x0). intuition auto with *.
 Qed.
 
 End Find_more.

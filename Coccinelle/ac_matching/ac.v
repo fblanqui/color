@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Relations List Arith Morphisms.
+From Stdlib Require Import Relations List Arith Morphisms.
 From CoLoR Require Import more_list list_permut list_sort term_spec term_o equational_theory_spec equational_theory.
 
 Set Implicit Arguments.
@@ -591,8 +591,8 @@ forall t, (match t with
                        end) -> well_formed_cf t.
 Proof.
 intro t; destruct t as [v | f l]; trivial.
-intros [Wl Hl]; split; trivial; clear Hl; 
-induction l as [ | t l]; intuition; 
+intros [Wl Hl]; split; trivial; clear Hl;
+induction l as [ | t l]; intuition auto with *;
 apply IHl; intros; apply Wl; right; trivial.
 Qed.
 
@@ -697,7 +697,7 @@ apply (f_equal (fun l => Term f l)); apply sort_is_unique; trivial.
 apply quick_sorted.
 apply permut_sym; apply quick_permut_bis;
 apply permut_sym; rewrite <- permut_cons_inside.
-rewrite <- app_nil_end; apply permut_refl.
+rewrite app_nil_r; apply permut_refl.
 reflexivity.
 generalize (F.Symb.eq_bool_ok f g1); case (F.Symb.eq_bool f g1); [intro f_eq_g1 | intro f_diff_g1].
 absurd (f=g1); trivial.
@@ -705,7 +705,7 @@ apply (f_equal (fun l => Term f l)); apply sort_is_unique; trivial.
 apply quick_sorted.
 apply permut_sym; apply quick_permut_bis;
 apply permut_sym; rewrite <- permut_cons_inside.
-rewrite <- app_nil_end; apply permut_refl.
+rewrite app_nil_r; apply permut_refl.
 reflexivity.
 intros; apply Hrec; trivial; right; trivial.
 intros; apply Wl; right; trivial.
@@ -787,7 +787,7 @@ apply Nat.add_le_mono.
 assert (Wt : well_formed t). apply Wl; left; trivial.
 destruct t as [v | g ll]; simpl; auto with arith.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g | intro f_diff_g].
-subst g; rewrite <- app_nil_end; rewrite Af; rewrite length_quicksort;
+subst g; rewrite app_nil_r; rewrite Af; rewrite length_quicksort;
 apply Nat.le_trans with (length ll).
 elim (well_formed_unfold Wt); rewrite Af; intros _ Lll; rewrite Lll; auto with arith.
 apply IHn; trivial.
@@ -837,7 +837,7 @@ assert (Wt : well_formed_cf t). apply Wl; left; trivial.
 destruct t as [v | g h].
 elim In_u; clear In_u; intro In_u; subst; trivial; contradiction.
 revert In_u; generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g In_u | intros f_diff_g In_u].
-rewrite <- app_nil_end in In_u; apply (well_formed_cf_subterms Wt); trivial.
+rewrite app_nil_r in In_u; apply (well_formed_cf_subterms Wt); trivial.
 elim In_u; clear In_u; intro In_u; subst; trivial; contradiction.
 apply IHl; trivial; intros; apply Wl; right; trivial.
 rewrite length_quicksort; rewrite <- L; unfold ge; apply length_flatten; trivial.
@@ -857,7 +857,7 @@ assert (Wt : well_formed_cf t). apply Wl; left; trivial.
 destruct t as [ v | g ll ].
 elim In_u; clear In_u; intro In_u; subst; trivial; contradiction.
 revert In_u; generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g In_u | intros f_diff_g In_u].
-subst g; rewrite <- app_nil_end in In_u;
+subst g; rewrite app_nil_r in In_u;
 apply well_formed_cf_alien with ll; trivial.
 elim In_u; clear In_u; intro In_u; subst; trivial; contradiction.
 apply (IHm l); trivial.
@@ -884,14 +884,14 @@ intros f t1 t2 Af Wt1 Wt2; destruct t1 as [v1 | f1 l1]; destruct t2 as [v2 | f2 
 simpl; intros; apply permut_length_1; trivial.
 (* t1 = Var v1; t2 = Term f2 l2 *)
 simpl; generalize (F.Symb.eq_bool_ok f f2); case (F.Symb.eq_bool f f2); [intros f_eq_f2; subst f2 | intros f_diff_f2].
-rewrite <- app_nil_end; intro P; absurd (2 <= 1); auto with arith.
+rewrite app_nil_r; intro P; absurd (2 <= 1); auto with arith.
 generalize (permut_length P); simpl;
 intro L; pattern 1 at 2; rewrite L; auto with arith;
 apply well_formed_cf_length with f; trivial.
 intro P; apply permut_length_1; trivial.
 (* t1 = Term f1 l1; t2 = Var v2 *)
 simpl; generalize (F.Symb.eq_bool_ok f f1); case (F.Symb.eq_bool f f1); [intros f_eq_f1; subst f1 | intros f_diff_f1].
-rewrite <- app_nil_end; intro P; absurd (2 <= 1); auto with arith.
+rewrite app_nil_r; intro P; absurd (2 <= 1); auto with arith.
 generalize (permut_length P); simpl;
 intro L; pattern 1 at 2; rewrite <- L; auto with arith;
 apply well_formed_cf_length with f; trivial.
@@ -901,16 +901,16 @@ simpl; generalize (F.Symb.eq_bool_ok f f1); case (F.Symb.eq_bool f f1); [intros 
 (generalize (F.Symb.eq_bool_ok f f2); case (F.Symb.eq_bool f f2); [intros f_eq_f2 P; subst f2 | intros f_diff_f2 P]).
 (* f = f1; f = f2 *)
 apply (f_equal (fun l => Term f l));
-do 2 rewrite <- app_nil_end in P;
+do 2 rewrite app_nil_r in P;
 apply sort_is_unique; trivial; apply well_formed_cf_sorted with f; trivial.
 (*  f = f1; f <> f2 *)
 absurd (2 <= 1); auto with arith.
-rewrite <- app_nil_end in P; generalize (permut_length P); simpl;
+rewrite app_nil_r in P; generalize (permut_length P); simpl;
 intro L; pattern 1 at 2; rewrite <- L; auto with arith;
 apply well_formed_cf_length with f; trivial.
 (* f <> f1; f = f2 *)
 absurd (2 <= 1); auto with arith.
-rewrite <- app_nil_end in P; generalize (permut_length P); simpl;
+rewrite app_nil_r in P; generalize (permut_length P); simpl;
 intro L; pattern 1 at 2; rewrite L; auto with arith;
 apply well_formed_cf_length with f; trivial.
 apply permut_length_1; trivial.
@@ -1003,7 +1003,7 @@ generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g | 
 apply False_rect; apply Al_t1; assumption.
 reflexivity.
 simpl; generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite <- app_nil_end; apply quick_permut_bis; auto.
+rewrite app_nil_r; apply quick_permut_bis; auto.
 Qed.
 
 Lemma flatten_build_cons :
@@ -1125,7 +1125,7 @@ rewrite Af; repeat rewrite quicksort_equation; simpl; auto.
 destruct l as [ | t2 l]; auto.
 simpl; rewrite Af; 
 generalize (F.Symb.eq_bool_ok f f); case (F.Symb.eq_bool f f); [intros _ | intro f_diff_f; apply False_rect; apply f_diff_f; reflexivity].
-rewrite <- app_nil_end; apply permut_sym; 
+rewrite app_nil_r; apply permut_sym; 
 apply quick_permut_bis;
 transitivity (flatten f (map (apply_cf_subst sigma) (t1 :: t2 :: l))); auto;
 apply list_permut_flatten.
@@ -1171,7 +1171,7 @@ rewrite <- permut_app1; apply IHl.
 rewrite <- permut_app2.
 destruct t as [ v | g ll]; simpl; auto.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g; subst g | intros f_diff_g].
-rewrite Af; do 2 rewrite <- app_nil_end; 
+rewrite Af; do 2 rewrite app_nil_r; 
 apply permut_sym; apply quick_permut.
 simpl; generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g; subst g | intros _].
 apply False_rect; apply f_diff_g; reflexivity.
@@ -1218,7 +1218,7 @@ apply well_formed_cf_apply_subst; trivial; apply Wl; left; trivial.
 simpl map;
 destruct (apply_cf_subst sigma t) as [ v | g ll ]; simpl; trivial;
 simpl; generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g; subst g | intros _]; trivial.
-rewrite <- app_nil_end;
+rewrite app_nil_r;
 apply Nat.le_trans with 2; auto with arith;
 apply well_formed_cf_length with f; trivial.
 apply IHl; intros; apply Wl; right; trivial.
@@ -1254,7 +1254,7 @@ case (F.Symb.eq_bool f f1);
 | apply P12 ].
 reflexivity.
 case (F.Symb.eq_bool f f1); case (F.Symb.eq_bool f f2).
-do 2 rewrite <- app_nil_end; apply list_permut_app_app.
+do 2 rewrite app_nil_r; apply list_permut_app_app.
 apply permut_sym; rewrite <- permut_cons_inside; auto.
 reflexivity.
 
@@ -1272,7 +1272,7 @@ apply quick_sorted.
 apply quick_sorted.
 do 2 (apply quick_permut_bis; apply permut_sym).
 generalize (canonical_form t1) (canonical_form t2) (canonical_form t3);
-clear t1 t2 t3; intros t1 t2 t3; rewrite <- app_nil_end.
+clear t1 t2 t3; intros t1 t2 t3; rewrite app_nil_r.
 transitivity ((flatten f (t1 :: t2 :: nil)) ++ (flatten f (t3 :: nil))). 
 rewrite <- permut_app2.
 apply permut_sym; apply quick_permut.
@@ -1283,7 +1283,7 @@ simpl; rewrite <- permut_cons.
 apply quick_permut.
 reflexivity.
 simpl; case (F.Symb.eq_bool f g1).
-rewrite <- app_nil_end; rewrite <- permut_app1; apply quick_permut.
+rewrite app_nil_r; rewrite <- permut_app1; apply quick_permut.
 simpl; rewrite <- permut_cons.
 apply quick_permut.
 reflexivity. 
@@ -1425,7 +1425,7 @@ apply well_formed_cf_is_well_formed_cf_conv; exists t; split; trivial.
 generalize (canonical_form t) Wu; clear t Wt Wu; intros u Wu.
 destruct u as [v | g l]; trivial; simpl.
 simpl; generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intros f_eq_g; subst g | intros f_diff_g].
-rewrite Af; rewrite <- app_nil_end;
+rewrite Af; rewrite app_nil_r;
 generalize (well_formed_cf_length Af Wu); intro Ll;
 destruct (length l) as [ | n].
 absurd (2 <= 0); auto with arith.
@@ -1488,7 +1488,7 @@ destruct (canonical_form t1) as [v1 | f1 ll1];
 destruct (canonical_form t2) as [v2 | f2 ll2]; trivial.
 simpl flatten;
 generalize (F.Symb.eq_bool_ok f f2); case (F.Symb.eq_bool f f2); [intros f_eq_f2; subst f2 | intros f_diff_f2].
-simpl; rewrite <- app_nil_end; simpl; rewrite Af.
+simpl; rewrite app_nil_r; simpl; rewrite Af.
 rewrite (list_size_fold ac_size); rewrite Nat.sub_0_r.
 generalize (well_formed_cf_length Af W2).
 intro Lll2; destruct (length ll2) as [ | n2].
@@ -1510,7 +1510,7 @@ replace (flatten f (Term f1 ll1 :: Term f2 ll2 :: nil)) with
 rewrite length_app.
 simpl; generalize (F.Symb.eq_bool_ok f f1); case (F.Symb.eq_bool f f1); [intros f_eq_f1; subst f1 | intros f_diff_f1];
 (generalize (F.Symb.eq_bool_ok f f2); case (F.Symb.eq_bool f f2); [intros f_eq_f2; subst f2 | intros f_diff_f2]).
-do 2 rewrite <- app_nil_end; rewrite Af;
+do 2 rewrite app_nil_r; rewrite Af;
 do 2 rewrite (list_size_fold ac_size); rewrite list_size_app.
 unfold DOS.A in *; generalize (well_formed_cf_length Af W1);
 intro Lll1; destruct (length ll1) as [ | n1].
@@ -1524,7 +1524,7 @@ do 2 rewrite <- Nat.add_assoc; apply (f_equal (fun n => S (n1 + n)));
 rewrite Nat.add_comm; rewrite <- Nat.add_assoc;
 apply (f_equal (fun n => n2 + n)); apply Nat.add_comm.
 
-rewrite Af; rewrite <- app_nil_end; rewrite list_size_app; simpl;
+rewrite Af; rewrite app_nil_r; rewrite list_size_app; simpl;
 do 2 rewrite (list_size_fold ac_size); simpl; rewrite Nat.add_0_r;
 rewrite (Nat.add_comm (length ll1) 1); simpl; rewrite Nat.sub_0_r;
 unfold DOS.A in *; generalize (well_formed_cf_length Af W1);
@@ -1532,7 +1532,7 @@ intro Lll1; destruct (length ll1) as [ | n1].
 absurd (2 <= 0); auto with arith.
 simpl; rewrite Nat.sub_0_r; rewrite <- Nat.add_assoc; trivial.
 
-rewrite Af; rewrite <- app_nil_end.
+rewrite Af; rewrite app_nil_r.
 do 2 rewrite (list_size_fold ac_size).
 unfold DOS.A in *; generalize (well_formed_cf_length Af W2);
 intro Lll2; destruct (length ll2) as [ | n2].

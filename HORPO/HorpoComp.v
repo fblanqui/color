@@ -10,7 +10,7 @@ Some computability results instantiated for horpo.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras Computability Horpo.
-From Coq Require Import Setoid Morphisms.
+From Stdlib Require Import Setoid Morphisms.
 
 Module HorpoComp (S : TermsSig.Signature)
   (Prec : Horpo.Precedence with Module S := S).

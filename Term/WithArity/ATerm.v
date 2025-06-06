@@ -10,7 +10,7 @@ algebraic terms with fixed arity
 
 Set Implicit Arguments.
 
-From Coq Require Export Vector.
+From Stdlib Require Export Vector.
 From CoLoR Require Export ASignature.
 From CoLoR Require Import ListUtil LogicUtil EqUtil BoolUtil NatUtil VecUtil
      VecMax ListMax.
@@ -221,7 +221,7 @@ Section S.
   Proof.
     intro t. pattern t. apply term_ind_forall2; destruct u.
     simpl. rewrite beq_nat_ok. intuition. inversion H. refl.
-    intuition; discr. intuition; discr.
+    intuition auto with *; discr. intuition auto with *; discr.
     rewrite beq_fun. split; intro. destruct (andb_elim H0).
     rewrite beq_symb_ok in H1. subst f0. apply args_eq.
     ded (beq_vec_ok_in1 H H2). rewrite <- H1. rewrite Vcast_refl. refl.
@@ -384,7 +384,7 @@ a variable occurs in the list as much as it has occurrences in t *)
   Proof.
     intros x t. pattern t. apply term_ind with (Q := fun n (ts : terms n) =>
     In x (vars_vec ts) -> x <= maxvars ts); clear t; intros.
-    simpl in *. intuition. rewrite maxvar_fun. rewrite vars_fun in H0. auto.
+    simpl in *. intuition auto with *. rewrite maxvar_fun. rewrite vars_fun in H0. auto.
     contr. simpl in *.
     destruct (in_app_or H1); unfold maxvars; simpl. apply le_max_intro_l. auto.
     apply le_max_intro_r. auto.
@@ -448,7 +448,7 @@ a variable occurs in the list as much as it has occurrences in t *)
       apply term_ind_forall. intro n; simpl. rewrite (beq_nat_ok x n).
       intuition.
       intros f v Rfv. rewrite var_occurs_in_fun, vars_fun.
-      induction v. simpl. intuition.
+      induction v. simpl. intuition auto with *.
       simpl in Rfv. destruct Rfv as [Rfa Rfv]. simpl. rewrite orb_eq.
       split; intros H. apply in_or_app. rewrite <- Rfa, <- IHv; auto.
       rewrite Rfa, IHv; auto. apply in_app_or. auto.

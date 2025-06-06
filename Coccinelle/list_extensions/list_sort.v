@@ -12,7 +12,7 @@
 
 Set Implicit Arguments.
 
-From Coq Require Import Relations Setoid List Multiset Arith Recdef Morphisms.
+From Stdlib Require Import Relations Setoid List Multiset Arith Recdef Morphisms.
 From CoLoR Require Import more_list list_permut ordered_set.
 
 Ltac dummy a b a_eq_b :=
@@ -394,10 +394,10 @@ intros l2 M; case M; clear M.
 intros e_eq_e' M; case M; clear M.
 intros M _; subst rmv.
 apply (H (l1 ++ l2)).
-rewrite ass_app in P; simpl in P.
+rewrite app_assoc in P; simpl in P.
 assert (P' := permut_add_inside ((a :: la) ++ l1) l2 nil l (sym_eq e_eq_e')); simpl in P'.
 rewrite <- P' in P.
-rewrite ass_app; simpl; assumption.
+rewrite app_assoc; simpl; assumption.
 Qed.
 
 End Make.

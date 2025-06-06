@@ -13,7 +13,7 @@
 
 Set Implicit Arguments. 
 
-From Coq Require Import Relations List Setoid Arith FunInd.
+From Stdlib Require Import Relations List Setoid Arith FunInd.
 From CoLoR Require Import decidable_set more_list list_permut.
 
 Module Type S.

@@ -9,7 +9,7 @@ strict order, monotonicity, well-foundedness
 *)
 
 From CoLoR Require Import VPrecedence ListUtil VTerm RelMidex LogicUtil AccUtil.
-From Coq Require Import Relations Morphisms Basics.
+From Stdlib Require Import Relations Morphisms Basics.
 From CoLoR Require AccUtil ListUtil MultisetListOrder ListLex.
 
 Module Type RPO_Model.

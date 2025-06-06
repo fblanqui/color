@@ -16,7 +16,7 @@ References:
 
 Set Implicit Arguments.
 
-From Coq Require Import Setoid.
+From Stdlib Require Import Setoid.
 From CoLoR Require Import LogicUtil Matrix OrdSemiRing VecUtil AMonAlg
      SN RelUtil AWFMInterpretation NatUtil BigNUtil AMatrixBasedInt.
 Import BigNMatrix.

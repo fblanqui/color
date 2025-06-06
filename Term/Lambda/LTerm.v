@@ -26,8 +26,7 @@ therefore put in a module [Def] in order to be refered later
 
 Set Implicit Arguments.
 
-From Coq Require Import FSets.
-From Coq.Structures Require Import OrderedType.
+From Stdlib Require Import FSets Structures.OrderedType.
 From CoLoR Require Import LogicUtil BoolUtil VecUtil FSetUtil NatUtil RelUtil
      SN SetUtil.
 From CoLoR Require Union.
@@ -513,7 +512,7 @@ End Var.
 
 (** Example of [Var] structure using natural numbers. *)
 
-From Coq Require OrderedTypeEx FSetAVL.
+From Stdlib Require OrderedTypeEx FSetAVL.
 
 Module NatVar <: Var.
 
@@ -617,22 +616,22 @@ Module Make (Export L : L_Struct).
 
   Lemma eqb_true_iff x y : eqb x y = true <-> x = y.
 
-  Proof. eq_dec x y; intuition. Qed.
+  Proof. eq_dec x y; intuition auto with *. Qed.
 
   Lemma eqb_false_iff x y : eqb x y = false <-> x <> y.
 
-  Proof. eq_dec x y. intuition. tauto. Qed.
+  Proof. eq_dec x y. intuition auto with *. tauto. Qed.
 
 (****************************************************************************)
 (** ** Equality on terms. *)
 
   Lemma beq_term_true_iff u v : beq_term u v = true <-> u = v.
 
-  Proof. unfold bool_of_rel. destruct (eq_term_dec u v); intuition. Qed.
+  Proof. unfold bool_of_rel. destruct (eq_term_dec u v); intuition auto with *. Qed.
 
   Lemma beq_term_false_iff u v : beq_term u v = false <-> u <> v.
 
-  Proof. unfold bool_of_rel. destruct (eq_term_dec u v); intuition. Qed.
+  Proof. unfold bool_of_rel. destruct (eq_term_dec u v); intuition auto with *. Qed.
 
   Lemma beq_term_refl u : beq_term u u = true.
 

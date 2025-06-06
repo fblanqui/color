@@ -215,7 +215,7 @@ Section S.
       intros. rewrite (red1_ok is_unary_sig hR) in H. destruct H. decomp H.
       rewrite H0; clear H0. rewrite H3; clear H3.
       rewrite !string_of_term_fill, !string_of_cont_comp, !string_of_cont_cont.
-      simpl. rewrite <- !app_nil_end.
+      simpl. rewrite !app_nil_r.
       set (c := SContext.mkContext (string_of_cont x1) (string_of_cont x2)).
       change (Srs.red (srs_of_trs R) (SContext.fill c (string_of_term x))
         (SContext.fill c (string_of_term x0))). apply Srs.red_rule. clear c.

@@ -1,5 +1,5 @@
 From CoLoR Require Import closure. 
-From Coq Require Import Relation_Operators.
+From Stdlib Require Import Relation_Operators.
 
 Section S.
 

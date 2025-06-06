@@ -52,7 +52,7 @@ Module Type SIG.
 End SIG.
 
 (* DecidableType *)
-From Coq Require Import DecidableType.
+From Stdlib Require Import DecidableType.
 Module DecType (Import S : SIG) <: DecidableType.
   Definition t := @symbol Sig.
   Definition eq := @eq t.
@@ -113,7 +113,7 @@ Ltac weight_inj Fs_ok := rewrite <- (bweight_inj_ok _ Fs_ok);
 (***********************************************************************)
 (** Ordered signatures *)
 
-From Coq Require Import OrderedType.
+From Stdlib Require Import OrderedType.
 
 Module OrdType (Import S : WSIG) <: OrderedType.
 

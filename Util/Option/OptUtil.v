@@ -9,7 +9,7 @@ Utility results about the option/exception type.
 
 Set Implicit Arguments.
 
-From Coq Require Import Bool Program.
+From Stdlib Require Import Bool Program.
 From CoLoR Require Import ListUtil LogicUtil.
 Import ListNotations.
 

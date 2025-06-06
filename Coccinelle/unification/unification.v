@@ -12,7 +12,7 @@
 (** * Unit Equational theory on a term algebra *)
 
 
-From Coq Require Import Arith List Relations.
+From Stdlib Require Import Arith List Relations.
 From CoLoR Require Import closure more_list weaved_relation list_sort term_spec
      equational_theory ac cf_eq_ac rpo.
 

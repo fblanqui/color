@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 *)
 
 From CoLoR Require Import TermsSig Horpo HorpoWf RelExtras Terms LogicUtil.
-From Coq Require Import List Wf_nat.
+From Stdlib Require Import List Wf_nat.
 
 Module BT <: BaseTypes.
 

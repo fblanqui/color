@@ -9,7 +9,7 @@ A specification of termination proofs.
 
 Set Implicit Arguments.
 
-From Coq Require Import ZArith List.
+From Stdlib Require Import ZArith List.
 From CoLoR Require Import ASignature.
 
 Section Proof.

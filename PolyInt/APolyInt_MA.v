@@ -9,7 +9,7 @@ Polynomial interpretations in the setting of monotone algebras.
 
 From CoLoR Require Import APolyInt AMonAlg ZUtil RelUtil PositivePolynom ATrs
   MonotonePolynom LogicUtil BoolUtil.
-From Coq Require List.
+From Stdlib Require List.
 
 Module Type TPolyInt.
   Parameter sig : Signature.

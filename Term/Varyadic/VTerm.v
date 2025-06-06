@@ -11,9 +11,9 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil BoolUtil ListUtil EqUtil ListDec NatUtil
      ListMax.
-From Coq Require Import Peano_dec.
+From Stdlib Require Import Peano_dec.
 From CoLoR Require Export VSignature.
-From Coq Require Export List.
+From Stdlib Require Export List.
 
 Section S.
 
@@ -177,7 +177,7 @@ Lemma beq_ok : forall t u, beq t u = true <-> t = u.
 Proof.
 intro t. pattern t. apply term_ind_forall2; destruct u.
 simpl. rewrite beq_nat_ok. intuition. inversion H. refl.
-intuition; discr. intuition; discr.
+intuition auto with *; discr. intuition auto with *; discr.
 rewrite beq_fun. split; intro. destruct (andb_elim H0).
 rewrite beq_symb_ok in H1. subst f0.
 rewrite beq_list_ok_in in H2. subst l. refl. exact H.

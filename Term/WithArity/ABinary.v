@@ -177,7 +177,7 @@ Section MakeExtSig.
   Proof.
     destruct f; destruct g; simpl.
     rewrite beq_symb_ok. intuition. subst s0. refl. inversion H. refl.
-    intuition. discr. intuition. discr. tauto.
+    intuition auto with *. discr. intuition auto with *. discr. tauto.
   Qed.
 
   Definition ext_sig := mkSignature ext_arity beq_ext_symb_ok.

@@ -1,4 +1,4 @@
-From Coq Require Import List Bool FunInd.
+From Stdlib Require Import List Bool FunInd.
 From CoLoR Require Import weaved_relation closure term_spec terminaison.
 From CoLoR Require equational_theory_spec closure_extension.
 
@@ -260,11 +260,11 @@ Qed.
   Proof.
     intros A aeq_bool f l H.
     functional induction (inb _ aeq_bool f l).
-    simpl;intuition.
+    simpl;intuition auto with *.
     simpl.
     rewrite H.
     case (aeq_bool g f);simpl. clear;intuition.
-    rewrite (IHb). intuition.
+    rewrite (IHb). intuition auto with *.
   Qed.
 
 Section is_def.

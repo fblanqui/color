@@ -9,9 +9,9 @@ vector filtering
 
 Set Implicit Arguments.
 
-From Coq Require Export Vector.
+From Stdlib Require Export Vector.
 From CoLoR Require Export VecBool.
-From Coq Require Import Arith.
+From Stdlib Require Import Arith.
 From CoLoR Require Import VecUtil LogicUtil EqUtil.
 
 Section S.

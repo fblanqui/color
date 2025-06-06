@@ -11,8 +11,8 @@ Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil ASubstitution FSetUtil NatUtil
      BoolUtil EqUtil ATrs ListUtil VecUtil.
-From Coq Require Import OrderedTypeEx.
-From Coq Require FSetAVL.
+From Stdlib Require Import OrderedTypeEx.
+From Stdlib Require FSetAVL.
 
 (***********************************************************************)
 (** sets of variables *)
@@ -155,8 +155,8 @@ destruct (IH H). exists x0. hyp.
 simpl. mem. discr.
 (* Vcons *)
 simpl. intros u n us IH1 IH2. mem. intro. destruct (orb_true_elim H).
-destruct (IH1 e). exists x0. mem. intuition.
-destruct (IH2 e). exists x0. mem. intuition.
+destruct (IH1 e). exists x0. mem. intuition auto with *.
+destruct (IH2 e). exists x0. mem. intuition auto with *.
 Qed.
 
 Lemma vars_subs_intro : forall s x y, mem x (vars (s y)) = true ->

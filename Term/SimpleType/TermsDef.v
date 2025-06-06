@@ -11,7 +11,7 @@ lambda-calculus.
 Set Implicit Arguments.
 
 From CoLoR Require Import RelExtras ListExtras TermsSig.
-From Coq Require Setoid.
+From Stdlib Require Setoid.
 
 Module TermsDef (Sig : Signature).
 

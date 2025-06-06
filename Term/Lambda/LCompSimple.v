@@ -11,7 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics Lia. 
+From Stdlib Require Import Morphisms Basics Lia. 
 From CoLoR Require Import SN VecUtil LogicUtil SetUtil.
 From CoLoR Require Export LSimple LComp.
 
@@ -198,7 +198,7 @@ Module Make (Export ST : ST_Struct)
       forall j (jn : j<n) (jp : j<p), int (Vnth Ts jn) (Vnth ts jp).
 
     Proof.
-      induction Ts; destruct ts; simpl Def.vint; intros hts j jn jp; intuition.
+      induction Ts; destruct ts; simpl Def.vint; intros hts j jn jp; intuition auto with *.
       destruct j; simpl. hyp. apply IHTs. hyp.
     Qed.
 

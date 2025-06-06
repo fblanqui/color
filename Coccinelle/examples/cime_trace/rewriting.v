@@ -1,5 +1,5 @@
-From Coq Require Import Lia Relations Wellfounded.
-From Coq Require Inclusion.
+From Stdlib Require Import Lia Relations Wellfounded.
+From Stdlib Require Inclusion.
 From CoLoR Require Import term.
 From CoLoR Require equational_theory. (* mainly for one_step...*)
 

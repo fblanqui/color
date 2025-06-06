@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Arith List.
+From Stdlib Require Import Arith List.
 From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching
      matching_well_founded.
 
@@ -558,7 +558,7 @@ apply IHl1 with ((u1,u2) :: l) l2; trivial; apply eq_add_S; trivial.
 left; assert (H''' : exists u1, exists u2, occurs_in_term (new_var p) u1 /\ In (u1, u2) l).
 generalize (new_var p) l H1'; clear l H1' W1 W6 Fresh_var_spec H H''; 
 induction l as [ | [u1 u2] l]; [contradiction | idtac]; intros [u12_eq | In_u12].
-exists u1; exists u2; intuition.
+exists u1; exists u2; intuition auto with *.
 generalize (IHl In_u12); 
 intros [u3 [u4 [H1 H2]]]; exists u3; exists u4; split; trivial; right; trivial.
 generalize H'''; clear H'''; intros [u1 [u2 [H''' In_u12]]];

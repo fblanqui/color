@@ -12,8 +12,8 @@ useful definitions and lemmas about integers
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil.
-From Coq Require Export ZArith.
-From Coq Require Import Lia.
+From Stdlib Require Export ZArith.
+From Stdlib Require Import Lia.
 
 (***********************************************************************)
 (** decidability of equality *)
@@ -31,7 +31,7 @@ Fixpoint beq_pos x y :=
 Lemma beq_pos_ok : forall x y, beq_pos x y = true <-> x = y.
 
 Proof.
-induction x; destruct y; simpl; intros; try (intuition; discr).
+induction x; destruct y; simpl; intros; try (intuition auto with *; discr).
 rewrite IHx. intuition. subst. refl. inversion H. refl.
 rewrite IHx. intuition. subst. refl. inversion H. refl.
 Qed.
@@ -150,7 +150,7 @@ Definition is_pos z :=
 
 Lemma is_pos_ok : forall z, is_pos z = true <-> z > 0.
 
-Proof. destruct z; simpl; intuition; discr. Qed.
+Proof. destruct z; simpl; intuition auto with *; discr. Qed.
 
 (***********************************************************************)
 (** non-negative integers *)
@@ -163,7 +163,7 @@ Definition is_not_neg z :=
 
 Lemma is_not_neg_ok : forall z, is_not_neg z = true <-> 0 <= z.
 
-Proof. destruct z; simpl; intuition; discr. Qed.
+Proof. destruct z; simpl; intuition auto with *; discr. Qed.
 
 Notation pos := (fun z => 0 <= z).
 Notation D := (sig pos).
@@ -188,7 +188,7 @@ From CoLoR Require Import RelUtil.
 Definition Dgt := transp Dlt.
 Definition Dge := transp Dle.
 
-From Coq Require Import Zwf Wellfounded.
+From Stdlib Require Import Zwf Wellfounded.
 
 Lemma well_founded_Dlt : well_founded Dlt.
 

@@ -10,7 +10,7 @@ and the corresponding boolean adjacency matrix of size n*n.
 
 Set Implicit Arguments.
 
-From Coq Require Import Bool.
+From Stdlib Require Import Bool.
 From CoLoR Require Import Matrix Path Iter SCC ListExtras OrdSemiRing
   VecUtil RelSub RelUtil NatUtil Log2 LogicUtil BoundNat.
 
@@ -151,11 +151,11 @@ Proof.
 intros.
 unfold mat_unbound.
 destruct (le_gt_dec dim x).
-simpl; intuition.
+simpl; intuition auto with *.
 destruct H; tauto.
 
 destruct (le_gt_dec dim y).
-intuition.
+intuition auto with *.
 destruct H.
 destruct (le_gt_dec dim x0).
 trivial.
@@ -320,7 +320,7 @@ Lemma Gmorph_intersect : forall x y,
 
 Proof.
 intros; unfold GoM. rewrite andb_mat_unbound.
-destruct (M [[x, y]]); destruct (M [[x, y]]); intuition; simpl.
+destruct (M [[x, y]]); destruct (M [[x, y]]); intuition auto with *; simpl.
 Qed.
 
 End GoM_intersection.
@@ -375,7 +375,7 @@ Proof.
 intros. unfold GoM, mat_unbound. split; intros;
 destruct (le_gt_dec dim x); destruct (le_gt_dec dim y);
 try ded (hyp H);
-auto; intuition; try lia; try tauto; try discr.
+auto; intuition auto with *; try lia; try tauto; try discr.
 unfold MoG in H; rewrite mat_build_nth in H.
 destruct (R_dec x y); auto; try discr.
 unfold MoG; rewrite mat_build_nth.

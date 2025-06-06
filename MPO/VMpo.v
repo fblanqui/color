@@ -11,7 +11,7 @@ that it preserves various properties
 From CoLoR Require Import AccUtil MultisetOrder ListExtras RelExtras
   MultisetCore MultisetList MultisetTheory MultisetListOrder VTerm RelUtil
   LogicUtil.
-From Coq Require Import Permutation Arith Setoid.
+From Stdlib Require Import Permutation Arith Setoid.
 
 Module Type VMpo_Struct.
   Parameter Sig : Signature.

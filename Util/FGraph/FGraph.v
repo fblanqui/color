@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 finite graphs
 *)
 
-From Coq Require Import OrderedType.
+From Stdlib Require Import OrderedType.
 From CoLoR Require Import ListUtil FSetUtil FMapUtil RelUtil LogicUtil.
 
 Set Implicit Arguments.

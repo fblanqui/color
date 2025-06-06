@@ -312,7 +312,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
       unfold Rge, R_gt. apply partition_succeq_compat_snd. hyp.
       apply incl_compat with (fst E_ge ++ snd E_ge). unfold incl. intros.
       apply in_or_app. unfold E_ge. apply partition_complete. exact H2.
-      rewrite H0, <- app_nil_end.
+      rewrite H0, app_nil_r.
       unfold E_ge. apply partition_succeq_compat_fst.
     Qed.
 

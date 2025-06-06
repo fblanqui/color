@@ -12,7 +12,7 @@
 
 (** * Termination of rewriting *)
 
-From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
+From Stdlib Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term equational_theory_spec dp.
 
 Module MakeModDP (E : EqTh).
@@ -1636,10 +1636,10 @@ apply Pi2.
 rewrite map_app in H; destruct (in_app_or _ _ _ H) as [H1 | H2]; clear H.
 rewrite in_map_iff in H1; destruct H1 as [l' [H'' H]]; subst t.
 apply in_context; apply H'; apply in_or_app; left; trivial.
-simpl in H2; rewrite <- app_nil_end in H2.
+simpl in H2; rewrite app_nil_r in H2.
 rewrite in_map_iff in H2; destruct H2 as [l' [H'' H]]; subst t.
 apply in_context; apply H'; apply in_or_app; right.
-simpl; rewrite <- app_nil_end; trivial.
+simpl; rewrite app_nil_r; trivial.
 
 intro H; rewrite in_map_iff in H; destruct H as [l' [H'' H]]; subst t.
 apply in_context; apply H'; trivial.

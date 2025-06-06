@@ -61,7 +61,7 @@ Ltac redtac := repeat
 (***********************************************************************)
 (** monotony properties *)
 
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 
 Global Instance red_incl Sig : Proper (subset ==> inclusion) (@red Sig).
 

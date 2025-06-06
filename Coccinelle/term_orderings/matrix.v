@@ -1,5 +1,5 @@
 Set Implicit Arguments. 
-From Coq Require Import Lia List Setoid Peano_dec Eqdep_dec Ring Zwf Morphisms ZArith.
+From Stdlib Require Import Lia List Setoid Peano_dec Eqdep_dec Ring Zwf Morphisms ZArith.
 From CoLoR Require Import interp.
 
 Lemma exist_pi:  forall (A:Type) (P: A -> Prop), (forall a (H1 H2:P a), H1=H2) ->
@@ -198,7 +198,7 @@ Section Definitions.
     simpl;intros.
     symmetry;assumption.
     simpl;intros [a1 v1] [a2 v2] [a3 v3].
-    intuition.
+    intuition auto with *.
   Qed.
 
   Global Instance eq_vec_Equivalence dim : Equivalence (@eq_vec dim).
@@ -4282,7 +4282,7 @@ Module Make_Ordered(R:Ordered_Ring).
 End Make_Ordered.
 
 
-From Coq Require ZArithRing.
+From Stdlib Require ZArithRing.
 
 Module ZRing <: TRing . 
 Definition A := Z.

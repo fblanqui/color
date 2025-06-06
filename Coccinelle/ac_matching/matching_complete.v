@@ -12,7 +12,7 @@
 
 
 
-From Coq Require Import Arith List.
+From Stdlib Require Import Arith List.
 From CoLoR Require Import more_list list_sort term_spec ac cf_eq_ac matching_sound.
 
 Module Type S.
@@ -229,7 +229,7 @@ replace (flatten f (apply_cf_subst sigma (Var v') :: t :: nil)) with
 [idtac | rewrite <- flatten_app; simpl app; trivial]. 
 replace (flatten f (t :: nil)) with (t :: nil).
 apply permut_sym; rewrite <- permut_cons_inside.
-rewrite <- app_nil_end; auto.
+rewrite app_nil_r; auto.
 reflexivity.
 simpl; destruct t as [x | g ll]; trivial.
 generalize (F.Symb.eq_bool_ok f g); case (F.Symb.eq_bool f g); [intro f_eq_g; absurd (f = g); trivial | intros _; trivial].

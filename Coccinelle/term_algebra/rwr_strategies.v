@@ -1,7 +1,7 @@
 
 (** * strategies for rewriting in a term algebra *)
 
-From Coq Require Import List Relations Wellfounded Arith.
+From Stdlib Require Import List Relations Wellfounded Arith.
 From CoLoR Require Import closure decidable_set more_list weaved_relation term_spec
      equational_theory_spec dp rpo.
 

@@ -1,4 +1,4 @@
-From Coq Require Import Setoid Morphisms.
+From Stdlib Require Import Setoid Morphisms.
 
 Set Implicit Arguments.
 

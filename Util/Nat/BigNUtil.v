@@ -16,7 +16,7 @@ From CoLoR Require Import LogicUtil.
 
 From Bignums Require Export BigN. Import BigN.
 
-From Coq Require Import DoubleType.
+From Stdlib Require Import DoubleType.
 
 Section zn2z.
 

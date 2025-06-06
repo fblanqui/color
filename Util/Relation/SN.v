@@ -11,7 +11,7 @@ Inductive definition of strong normalization (inverse of accessibility)
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms List Basics Lia Wellfounded.
+From Stdlib Require Import Morphisms List Basics Lia Wellfounded.
 From CoLoR Require Import LogicUtil RelUtil.
 
 (***********************************************************************)
@@ -422,7 +422,7 @@ Section WF_mod_rev.
   Proof.
     intro wf. cut (WF (E# @ S @ E#)). intro wf'.
     eapply WF_incl. 2: apply wf'.
-    intros x z [y [xy yz]]. exists y. intuition. exists x. intuition.
+    intros x z [y [xy yz]]. exists y. intuition. exists x. intuition auto with *.
     apply absorb_WF_modulo_r. 2: hyp.
     intros x z [y [xy yz]]. destruct yz as [t [yt tz]].
     exists t. intuition. apply rt_trans with y. apply rt_step. hyp. hyp.
@@ -577,9 +577,9 @@ Section wf_mod_shift.
   Proof.
     intro. apply WF_incl with ((T # @ (R U S)) !).
     intros x y Rxy. apply tc_split_inv. apply comp_assoc.
-    destruct Rxy as [z [STxz Rzy]]. exists z. split; [idtac | intuition].
+    destruct Rxy as [z [STxz Rzy]]. exists z. split; [idtac | intuition auto with *].
     apply rtc_union. apply rtc_incl with (S U T); trivial.
-    intros s t STst. destruct STst as [Sst | Tst]; solve [intuition].
+    intros s t STst. destruct STst as [Sst | Tst]; solve [intuition auto with *].
     apply WF_tc. hyp.
   Qed.
   
@@ -599,7 +599,7 @@ Section wf_rel_mod.
     apply WF_incl with (S# @ (R' U S') U S# @ R).
     intros x y Q.
     destruct Q as [z [Sxz [[Rxz | R'xz] | S'xz]]]; 
-      solve [ right; exists z; intuition | left; exists z; intuition].
+      solve [ right; exists z; intuition auto with *| left; exists z; intuition auto with *].
     apply WF_union_mod. hyp.
     apply WF_incl with ((R U S)# @ (R' U S')); [idtac | hyp].
     intros x y Q. destruct Q as [z [Lxz [w [Szw RSwy]]]].
@@ -607,9 +607,9 @@ Section wf_rel_mod.
     constructor 3 with z.
     apply incl_rtc_rtc with (S# @ R); [idtac | intuition].
     intros a b B. destruct B as [c [Sac Rcb]].
-    constructor 3 with c; [idtac | intuition].
-    apply rtc_incl with S; intuition.
-    apply rtc_incl with S; intuition.
+    constructor 3 with c; [idtac | intuition auto with *].
+    apply rtc_incl with S; intuition auto with *.
+    apply rtc_incl with S; intuition auto with *.
   Qed.
 
 End wf_rel_mod.
@@ -623,7 +623,7 @@ Section wf_rel_mod_simpl.
 
   Proof.
     intros. apply WF_incl with ((empty_rel U S)# @ (R' U R)).
-    comp. apply rtc_incl. intuition.
+    comp. apply rtc_incl. intuition auto with *.
     apply wf_rel_mod. hyp.
     apply WF_incl with ((R U S)# @ R'); trivial.
     comp. apply union_empty_r.
@@ -634,7 +634,7 @@ End wf_rel_mod_simpl.
 (***********************************************************************)
 (** ** Termination of the standard ordering on natural numbers. *)
 
-From Coq Require Export Wf_nat.
+From Stdlib Require Export Wf_nat.
 
 Arguments ltof [A] _ _ _.
 Arguments induction_ltof1 [A] _ _ _ _.

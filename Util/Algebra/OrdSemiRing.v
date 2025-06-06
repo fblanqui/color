@@ -8,7 +8,7 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring equipped with two (strict and non-strict) orders.
 *)
 
-From Coq Require Import Morphisms.
+From Stdlib Require Import Morphisms.
 From CoLoR Require Export SemiRing.
 From CoLoR Require Import RelDec RelUtil SN RelExtras NatUtil LogicUtil ZUtil.
 From CoLoR Require BigNUtil.
@@ -360,7 +360,7 @@ Module ArcticOrdSemiRingT <: OrdSemiRingType.
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
 
   Proof.
-    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition.
+    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition auto with *.
     inversion H1. subst. hyp. discr.
   Qed.
 
@@ -513,7 +513,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
     forall v, is_above_zero v = true <-> ge v (Fin 0).
 
   Proof.
-    intro. destruct v; simpl; intuition.
+    intro. destruct v; simpl; intuition auto with *.
     destruct z. right. refl. left. simpl. auto with zarith. discr.
     rewrite is_not_neg_ok. destruct H. simpl in H. auto with zarith.
     inversion H. auto with zarith.
@@ -607,7 +607,7 @@ Module ArcticBZOrdSemiRingT <: OrdSemiRingType.
 
   Proof.
     unfold ge, gt. destruct x as [x|]; destruct y as [y|];
-      try destruct z as [z|]; simpl; intuition.
+      try destruct z as [z|]; simpl; intuition auto with *.
     inversion H1. subst. hyp. discr.
   Qed.
 
@@ -844,7 +844,7 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
   Lemma ge_gt_compat2 : forall x y z, x >> y -> y >>= z -> x >> z.
 
   Proof.
-    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition;
+    unfold ge, gt. destruct x; destruct y; destruct z; simpl; intuition auto with *;
     try discr.
     inversion H1. subst. hyp.
   Qed.

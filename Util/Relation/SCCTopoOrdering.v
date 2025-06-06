@@ -10,7 +10,7 @@ We represent the quotient of the Domain by SCC with a function to nat.
 
 Set Implicit Arguments.
 
-From Coq Require Import Permutation Multiset Heap PermutSetoid.
+From Stdlib Require Import Permutation Multiset Heap PermutSetoid.
 From CoLoR Require Import AdjMat RelUtil ListExtras LogicUtil VecUtil NatUtil
      RelSub Path SortUtil ListNodup OptUtil BoundNat SCC SCC_dec Total.
 
@@ -190,7 +190,7 @@ isolated points are also considered as SCC *)
   Proof.
     induction l; intros; simpl in *.
     unfold Rquo', Rquo in H. do 2 destruct H. exists x0; intuition.
-    destruct H2; exists x1; intuition.
+    destruct H2; exists x1; intuition auto with *.
     destruct H. unfold Rquo', Rquo in H. do 2 destruct H. exists x0; intuition.
     destruct H3; destruct H. ded (IHl _ _ H0). do 2 destruct H4.
     do 2 destruct H5; exists x3. intuition. eapply t_trans; eauto.
@@ -215,12 +215,12 @@ isolated points are also considered as SCC *)
     right. split; auto. apply t_step; auto. cut(R# x3 x2).
     intro. ded (rtc_split H8). destruct H9; try tauto. subst x3; congruence.
     assert (R# x3 x0). cut (SCC' x3 x0).
-    intro. do 2 destruct H8. subst x3; intuition.
+    intro. do 2 destruct H8. subst x3; intuition auto with *.
     destruct H8. apply tc_incl_rtc. intuition.
     rewrite SCC'_tag_exact. split. congruence. rewrite H6. discr.
     eapply rt_trans; eauto. assert (R# x0 x1). apply tc_incl_rtc. intuition.
     eapply rt_trans; eauto. cut (SCC' x1 x2).
-    intro. do 2 destruct H10. subst x1; intuition. destruct H10.
+    intro. do 2 destruct H10. subst x1; intuition auto with *. destruct H10.
     apply tc_incl_rtc. intuition.
     rewrite SCC'_tag_exact. split. congruence. rewrite H3. discr.
   Qed.
@@ -252,7 +252,7 @@ isolated points are also considered as SCC *)
 
 (***********************************************************************)
 (* SCCs sorting *)
-
+  
   Lemma sorted_SCC' :
     {m : list nat | sort RT m & permutation eq_nat_dec (nats_decr_lt dim) m}.
 
@@ -277,7 +277,7 @@ isolated points are also considered as SCC *)
     eapply multiplicity_nodup. intros. unfold permutation in *.
     unfold meq in *. rewrite <- p, multiplicity_L. refl.
 
-    apply treesort. ded (HF (nats_decr_lt dim)). destruct H; intuition.
+    apply treesort. ded (HF (nats_decr_lt dim)). destruct H; intuition auto with *.
     intros. unfold total in H4. destruct x as [x xdim]. destruct y as [y ydim].
     assert (trichotomy (fun x y => F (nats_decr_lt dim) x y = true) x y).
     apply H4; rewrite <- In_nats_decr_lt; auto.

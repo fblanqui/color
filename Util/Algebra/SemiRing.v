@@ -8,8 +8,8 @@ See the COPYRIGHTS and LICENSE files.
 Semi-ring structure.
 *)
 
-From Coq Require Export Ring Ring_theory.
-From Coq Require Import Relations Arith Compare Bool Setoid Morphisms.
+From Stdlib Require Export Ring Ring_theory.
+From Stdlib Require Import Relations Arith Compare Bool Setoid Morphisms.
 From CoLoR Require Import RelDec LogicUtil RelExtras EqUtil NatUtil ZUtil.
 
 (***********************************************************************)
@@ -169,7 +169,7 @@ Module BigNSemiRing := SemiRing BigNSemiRingT.
 (***********************************************************************)
 (** Integers as a semi-ring *)
 
-From Coq Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 Module Int <: SetA.
   Definition A := Z.
@@ -299,7 +299,7 @@ Definition beq_ArcticDom x y :=
 Lemma beq_ArcticDom_ok : forall x y, beq_ArcticDom x y = true <-> x = y.
 
 Proof.
-unfold beq_ArcticDom. destruct x; destruct y; simpl; try (intuition; discr).
+unfold beq_ArcticDom. destruct x; destruct y; simpl; try (intuition auto with *; discr).
 rewrite beq_nat_ok. intuition. inversion H. refl.
 Qed.
 
@@ -312,7 +312,7 @@ Definition is_finite v :=
 Lemma is_finite_ok : forall v, is_finite v = true <-> v <> MinusInf.
 
 Proof.
-  intro. destruct v; simpl; intuition. discr.
+  intro. destruct v; simpl; intuition auto with *. discr.
 Qed.
 
 Module Arctic <: SetA.
@@ -442,7 +442,7 @@ Definition beq_ArcticBZDom x y :=
 Lemma beq_ArcticBZDom_ok x y : beq_ArcticBZDom x y = true <-> x = y.
 
 Proof.
-  unfold beq_ArcticBZDom. destruct x; destruct y; simpl; try (intuition; discr).
+  unfold beq_ArcticBZDom. destruct x; destruct y; simpl; try (intuition auto with *; discr).
   rewrite beq_Z_ok. intuition. subst. refl. inversion H. refl.
 Qed.
 
@@ -567,7 +567,7 @@ Definition tropical_is_finite v :=
 
 Lemma tropical_is_finite_ok v : tropical_is_finite v = true <-> v <> PlusInf.
 
-Proof. destruct v; simpl; intuition. discr. Qed.
+Proof. destruct v; simpl; intuition auto with *. discr. Qed.
 
 Definition beq_TropicalDom x y :=
   match x, y with
@@ -579,7 +579,7 @@ Definition beq_TropicalDom x y :=
 Lemma beq_TropicalDom_ok x y : beq_TropicalDom x y = true <-> x = y.
 
 Proof.
-  unfold beq_TropicalDom. destruct x; destruct y; simpl; try (intuition; discr).
+  unfold beq_TropicalDom. destruct x; destruct y; simpl; try (intuition auto with *; discr).
   rewrite beq_nat_ok. intuition. inversion H. refl.
 Qed.
 

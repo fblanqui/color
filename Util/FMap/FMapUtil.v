@@ -10,7 +10,7 @@ Wrapper for Coq's FMaps definition + additional facts
 
 Set Implicit Arguments.
 
-From Coq Require Import FMaps FSetInterface.
+From Stdlib Require Import FMaps FSetInterface.
 From CoLoR Require Import LogicUtil RelUtil BoolUtil ListUtil FSetUtil.
 
 Module Make (Export XMap : FMapInterface.S).
@@ -384,7 +384,7 @@ and satisfies some commutation property. *)
         pattern m; apply map_induction_bis; clear m.
         (* Equal *)
         intros m n mn hm n' nn' b b' bb'. apply Equal_Equiv in mn.
-        2: intuition. trans (fold f m b).
+        2: intuition auto with *. trans (fold f m b).
         sym. apply hm. hyp. refl. apply hm. trans n; hyp. hyp.
         (* Empty *)
         intros m hm b b' bb'. rewrite Equiv_empty in hm.
@@ -483,7 +483,7 @@ and satisfies some commutation property. *)
 
       Proof.
         intros heq fm m m' mm'. rewrite !for_all_eq.
-        apply fold_Equiv; intuition. apply for_all_aux_transp.
+        apply fold_Equiv; intuition auto with *. apply for_all_aux_transp.
       Qed.
 
       Global Instance for_all_m : Reflexive eq ->

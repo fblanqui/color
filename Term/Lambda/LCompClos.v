@@ -15,10 +15,10 @@ After "Inductive-data-type Systems", F. Blanqui, J.-P. Jouannaud and
 
 Set Implicit Arguments.
 
-From Coq Require Import Morphisms Basics.
+From Stdlib Require Import Morphisms Basics.
 From CoLoR Require Import LogicUtil LCompSimple VecUtil RelUtil LCall LCompInt
      SetUtil SN NatUtil LCompRewrite EqUtil.
-From Coq Require Lexicographic_Product.
+From Stdlib Require Lexicographic_Product.
 From CoLoR Require Union Lexico.
 
 

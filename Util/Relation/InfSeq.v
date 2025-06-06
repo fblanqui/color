@@ -13,7 +13,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import RelUtil NatUtil Path LeastNat LogicUtil ClassicUtil
      SN NotSN_IS SortUtil ListUtil.
-From Coq Require Import IndefiniteDescription.
+From Stdlib Require Import IndefiniteDescription.
 
 Section S.
 
@@ -68,9 +68,9 @@ Section S.
       exists (proj1_sig (ch_min h)). destruct (ch_min h). simpl. clear h.
       apply NNPP. intro. assert (h1 : i < g x). lia. destruct x.
       absurd (g 0 <= i). lia.
-      simpl. destruct (ch_min (H 0)). simpl. intuition.
+      simpl. destruct (ch_min (H 0)). simpl. intuition auto with *.
       assert (h2 : g x < i). apply NNPP. intro. cut (S x <= x). lia.
-      intuition.
+      intuition auto with *.
       absurd (f i = a). eapply g_neq. split. apply h2. hyp. hyp.
     Qed.
 
@@ -242,7 +242,7 @@ sequence on a finite codomain *)
   Proof.
     induction As; intros f fin.
     (* nil *)
-    ded (fin 0). intuition.
+    ded (fin 0). intuition auto with *.
     (* cons *)
     destruct (classic (forall i, exists j, j >= i /\ f j = a)).
     (* forall i, exists j, j >= i /\ f j = a *)
@@ -469,7 +469,7 @@ Lemma WF_mod_rev2 : forall E S : relation A, WF (S @ E#) -> WF (E# @ S).
 
 Proof.
   intros E S wf. apply (WF_incl ((E#@S)@E#)).
-  intros x y xy. exists y. intuition.
+  intros x y xy. exists y. intuition auto with *.
   apply (WF_incl (E#@(S@E#))). apply comp_assoc.
   apply WF_absorb. 2: hyp. intros x z [y [xy yz]]. destruct xy as [t [xt ty]].
   exists t. intuition. apply rt_trans with y. hyp. apply rt_step. hyp.

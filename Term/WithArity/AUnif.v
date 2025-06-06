@@ -9,7 +9,7 @@ syntactic unification
 
 Set Implicit Arguments.
 
-From Coq Require Import Relations Wellfounded.
+From Stdlib Require Import Relations Wellfounded.
 From CoLoR Require Import ASubstitution ATerm EqUtil ListUtil LogicUtil VecUtil
      AVariables BoolUtil NatUtil SN AVariables Lexico.
 From CoLoR Require MultisetNat.

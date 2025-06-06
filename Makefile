@@ -21,7 +21,7 @@ time: Makefile.coq
 
 config Makefile.coq:
 	echo -R . $(LIBNAME) $(VFILES) > _CoqProject
-	coq_makefile -f _CoqProject -o Makefile.coq
+	rocq makefile -f _CoqProject -o Makefile.coq
 
 clean:
 	rm -f `find . -name \*~`

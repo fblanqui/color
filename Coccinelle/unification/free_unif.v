@@ -10,7 +10,7 @@
 (**************************************************************************)
 
 
-From Coq Require Import Sumbool Arith Wf_nat Wellfounded List Multiset Relations.
+From Stdlib Require Import Sumbool Arith Wf_nat Wellfounded List Multiset Relations.
 From CoLoR Require Import closure decidable_set ordered_set more_list list_permut list_set list_sort dickson term_spec term.
 
 Lemma Dummy_bool : forall b, negb b = true <-> b = false.
@@ -1324,11 +1324,11 @@ rewrite x_sigma.
 generalize (size_ge_one t2); destruct (size t2) as [ | n2]; 
 [intro; absurd (1 <= 0); auto with arith | intros _ ].
 apply NatMul.mult_is_complete_equiv.
-rewrite <- ass_app; rewrite <- app_comm_cons;
+rewrite <- app_assoc; rewrite <- app_comm_cons;
 rewrite <- NatMul.LP.permut_add_inside.
-rewrite <- ass_app; rewrite <- app_comm_cons; rewrite ass_app;
+rewrite <- app_assoc; rewrite <- app_comm_cons; rewrite app_assoc;
 rewrite <- NatMul.LP.permut_add_inside.
-rewrite ass_app;
+rewrite app_assoc;
 rewrite <- NatMul.LP.permut_app2.
 do 2 rewrite <- list_size_mul_app.
 assert (x_not_in_s1_s2 : ~mem (@eq _) x (s1 ++ s2)).
@@ -2561,7 +2561,7 @@ intro H7; subst u; assert (z_in_x_val := var_in_subterm z _ _ H7 (or_introl _ (e
 rewrite <- var_in_term_is_sound in z_in_x_val.
 rewrite z_not_in_x_val in z_in_x_val; discriminate.
 intro H7; destruct q'; [injection H7; clear H7; intro H7; subst u | discriminate].
-rewrite <- app_nil_end in H4; subst q.
+rewrite app_nil_r in H4; subst q.
 rewrite Hsub in H6; discriminate.
 (* 1/1 discharge of the "equivalent goal" *)
 destruct (var_in_term z (apply_subst ((x, x_val) :: nil) w_val')); [absurd (true = true) | idtac]; trivial.
@@ -2861,10 +2861,10 @@ intros v t; pattern t; apply term_rec3; clear t.
 intros x; unfold VSet.mem; simpl; unfold DecVar.eq_A.
 generalize (X.eq_bool_ok x v); case (X.eq_bool x v); [intro v_eq_x; subst v | intro v_diff_x].
 intuition.
-intuition.
+intuition auto with *.
 intros f l IH; simpl.
 induction l as [ | t l]; simpl.
-unfold VSet.mem; simpl; intuition.
+unfold VSet.mem; simpl; intuition auto with *.
 split; intro H.
 destruct (VSet.union_12 _ _ _ H) as [H1 | H2].
 rewrite (IH t (or_introl _ (eq_refl _))) in H1.

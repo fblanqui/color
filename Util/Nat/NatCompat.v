@@ -1,4 +1,4 @@
-From Coq.Arith Require Import PeanoNat.
+From Stdlib Require Import Arith.PeanoNat.
 (***********************************************************************)
 (** Adapt to the removal of some Arith files in 8.19:
     unidirectional version better suited to implicit arguments.

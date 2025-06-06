@@ -9,7 +9,7 @@ over graph based on unification
 
 Set Implicit Arguments.
 
-From Coq Require Import Lia Compare_dec.
+From Stdlib Require Import Lia Compare_dec.
 From CoLoR Require Import ADecomp AUnif ARenCap ATrs ListUtil RelUtil AGraph
      LogicUtil AShift ACalls BoolUtil ADuplicateSymb ListDec EqUtil AHDE.
 

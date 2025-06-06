@@ -12,9 +12,9 @@
 (* RPO definition extended by Sorin Stratulat by considering a
 quasi-ordering for the precedence instead of an ordering. *)
 
-From Coq Require Import Bool Peano List PeanoNat.
+From Stdlib Require Import Bool Peano List PeanoNat.
 From CoLoR Require Import closure more_list equiv_list list_permut dickson.
-From Coq Require Import Relations Wellfounded Arith Wf_nat Recdef Program Morphisms Lia.
+From Stdlib Require Import Relations Wellfounded Arith Wf_nat Recdef Program Morphisms Lia.
 From CoLoR Require Import term_spec term decidable_set ordered_set NatCompat.
 
 Import ListNotations.
@@ -1683,12 +1683,12 @@ rewrite P' in Q; rewrite app_comm_cons in Q.
 destruct (@ac_syntactic _ _ equiv_equiv _ equiv_bool_ok _ _ _ _ Q) as [k1 [k2 [k3 [k4 [P1 [P2 [P3 P4]]]]]]]. 
 apply (@List_mul bb a (lg ++ k2) (ls' ++ k3) k1).
 rewrite Q'.
-rewrite <- ass_app.
+rewrite <- app_assoc.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial. apply equiv_equiv. apply equiv_equiv.
 rewrite P.
 rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity].
-rewrite <- ass_app.
+rewrite <- app_assoc.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial.  apply equiv_equiv. apply equiv_equiv.
 intros b b_mem_ls'_k3; rewrite <- mem_or_app in b_mem_ls'_k3.
@@ -1747,8 +1747,8 @@ destruct (mem_split_set _ _ equiv_bool_ok _ _ s'_mem_alg) as [u' [alg' [alg'' [s
 simpl in s'_eq_u'; simpl in H; subst.
 assert (P'' : permut0 equiv l' ((alg' ++ alg'') ++ lc)).
 rewrite app_comm_cons in P'; rewrite H in P'.
-rewrite <- ass_app in P'; simpl in P'.
-rewrite <- ass_app; rewrite <- permut0_cons_inside in P'; trivial. apply equiv_equiv.
+rewrite <- app_assoc in P'; simpl in P'.
+rewrite <- app_assoc; rewrite <- permut0_cons_inside in P'; trivial. apply equiv_equiv.
 destruct (mem_split_set _ _ equiv_bool_ok _ _ s_mem_ls) as [u [ls' [ls'' [s_eq_u [H' _]]]]]; 
 simpl in s_eq_u; simpl in H'; subst.
 assert (ls'ls''_lt_alg'alg'' : forall b,
@@ -1798,37 +1798,37 @@ rewrite <- length_app in L'; injection L'; intro L''; symmetry; assumption.
 destruct (alg' ++ alg'') as [ | a' lg'].
 discriminate.
 apply (@List_mul bb a' lg' (ls' ++ ls'') lc); trivial.
-rewrite <- ass_app in P; simpl in P.
+rewrite <- app_assoc in P; simpl in P.
 rewrite <- permut0_cons_inside in P; trivial;[|apply equiv_equiv].
-rewrite <- ass_app; trivial.
+rewrite <- app_assoc; trivial.
 (* 1/2 s in in ls, s' is in lc *)
 destruct (mem_split_set _ _ equiv_bool_ok _ _ s'_mem_lc) as [s'' [lc' [lc'' [s_eq_s'' [H _]]]]].
 simpl in s_eq_s''; simpl in H.
 apply (@List_mul bb a lg ls (lc' ++ lc'')); trivial.
 rewrite H in P.
-rewrite ass_app in P.
+rewrite app_assoc in P.
 rewrite <- permut0_cons_inside in P.
-rewrite ass_app; trivial. 
+rewrite app_assoc; trivial. 
 apply equiv_equiv.
 transitivity s'; trivial.
 rewrite H in P'.
 rewrite app_comm_cons in P'.
-rewrite ass_app in P'.
+rewrite app_assoc in P'.
 rewrite <- permut0_cons_inside in P'; trivial.
-rewrite app_comm_cons; rewrite ass_app; trivial. apply equiv_equiv.
+rewrite app_comm_cons; rewrite app_assoc; trivial. apply equiv_equiv.
 (* 1/1 s in lc *)
 destruct (mem_split_set _ _ equiv_bool_ok _ _ s_mem_lc) as [s'' [lc' [lc'' [s_eq_s'' [H _]]]]].
 simpl in s_eq_s''; simpl in H.
 apply (@List_mul bb a lg ls (lc' ++ lc'')); trivial.
 rewrite H in P.
-rewrite ass_app in P.
+rewrite app_assoc in P.
 rewrite <- permut0_cons_inside in P; trivial. 
-rewrite ass_app; trivial. apply equiv_equiv.
+rewrite app_assoc; trivial. apply equiv_equiv.
 rewrite H in P'.
 rewrite app_comm_cons in P'.
-rewrite ass_app in P'.
+rewrite app_assoc in P'.
 rewrite <- permut0_cons_inside in P'.
-rewrite app_comm_cons; rewrite ass_app; trivial. apply equiv_equiv.
+rewrite app_comm_cons; rewrite app_assoc; trivial. apply equiv_equiv.
 transitivity s; trivial.
 symmetry; trivial.
 Qed.
@@ -2034,7 +2034,7 @@ assert (H: exists ls1, exists ls2,
  (forall b, mem equiv b ls1 -> rpo bb b g) /\
  (forall b, mem equiv b ls2 -> exists a', mem equiv a' (a :: lg) /\ rpo bb b a')).
 clear P'; induction ls as [ | s ls].
-exists (nil : list term); exists (nil : list term); intuition. reflexivity.
+exists (nil : list term); exists (nil : list term); intuition auto with *. reflexivity.
 destruct IHls as [ls1 [ls2 [P' [ls1_lt_g ls2_lt_alg]]]].
 intros b b_in_ls; apply ls_lt_alg; right; trivial.
 destruct (ls_lt_alg s) as [a' [[a'_eq_a | [a'_eq_g | a'_in_lg]] b_lt_a']].
@@ -2067,7 +2067,7 @@ destruct H as [ls1 [ls2 [Pls [ls1_lt_g ls2_lt_alg]]]].
 apply t_trans with (g :: ls2 ++ lc).
 apply t_step; apply (@List_mul_step bb g ls1 (ls2 ++ lc)); auto.
 rewrite P'.
-rewrite ass_app; rewrite <- permut_app2; trivial. apply equiv_equiv. reflexivity.
+rewrite app_assoc; rewrite <- permut_app2; trivial. apply equiv_equiv. reflexivity.
 apply (IHlg (g :: ls2 ++ lc) l a ls2 (g :: lc)); trivial.
 rewrite P.
 simpl; rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity].
@@ -2106,7 +2106,7 @@ assert (H: exists ls1, exists ls2,
  (forall b, mem equiv b ls1 -> rpo bb b g) /\
  (forall b, mem equiv b ls2 -> exists a', mem equiv a' (a :: lg) /\ rpo bb b a')).
 clear P'; induction ls as [ | s ls].
-exists (nil : list term); exists (nil : list term); intuition. reflexivity.
+exists (nil : list term); exists (nil : list term); intuition auto with *. reflexivity.
 destruct IHls as [ls1 [ls2 [P' [ls1_lt_g ls2_lt_alg]]]].
 intros b b_in_ls; apply ls_lt_alg; right; trivial.
 destruct (ls_lt_alg s) as [a' [[a'_eq_a | [a'_eq_g | a'_in_lg]] b_lt_a']].
@@ -2148,7 +2148,7 @@ destruct s_mem_ls2lc as [s_mem_ls2 | s_mem_lc].
 left; rewrite Pls; rewrite <- mem_or_app; right; trivial.
 right; trivial.
 apply (@List_mul_step bb g ls1 (ls2 ++ lc)); reflexivity || auto.
-rewrite P'; rewrite Pls; rewrite ass_app; reflexivity || auto.
+rewrite P'; rewrite Pls; rewrite app_assoc; reflexivity || auto.
 apply (IHlg (g :: ls2 ++ lc) l a ls2 (g :: lc)); trivial.
 rewrite <- permut0_cons_inside; try reflexivity. apply equiv_equiv.
 rewrite P.
@@ -2188,9 +2188,9 @@ destruct (mem_split_set _ _ equiv_bool_ok _ _ b_mem_lc) as [b' [lc1 [lc2 [b_eq_b
 simpl in b_eq_b'; simpl in H.
 left; exists b'; exists (ls ++ (lc1 ++ lc2)); repeat split; trivial.
 rewrite P'; subst lc.
-rewrite ass_app; apply permut0_sym. apply equiv_equiv.
+rewrite app_assoc; apply permut0_sym. apply equiv_equiv.
 rewrite <- permut0_cons_inside;[|apply equiv_equiv|reflexivity]. 
-rewrite ass_app; reflexivity.
+rewrite app_assoc; reflexivity.
 apply (@List_mul_step bb a ls (lc1 ++ lc2)); try reflexivity.
 rewrite app_comm_cons.
 rewrite (@permut0_cons_inside _ _ equiv_equiv _ _ m (a :: lc1) lc2 b_eq_b').
@@ -2739,12 +2739,12 @@ functional induction (remove_equiv_list l1 l2) as
 | H1 l2 t1 l1 H2 H3 H4 H' H IH l1' l2' R].
 (* 1/ 4 *)
 exists (@nil term); simpl; repeat split; reflexivity || auto.
-rewrite <- app_nil_end; reflexivity || auto.
+rewrite app_nil_r; reflexivity || auto.
 (* 1/3 *)
 destruct l2 as [ | t2 l2].
 contradiction.
 exists (@nil term); simpl; repeat split; reflexivity || auto.
-rewrite <- app_nil_end; reflexivity || auto.
+rewrite app_nil_r; reflexivity || auto.
 (* 1/2 *)
 destruct (@remove_equiv_is_sound_some t1 l2 l2' H) as [t2 [t1_eq_t2 P2]].
 destruct (remove_equiv_list l1 l2') as [l1'' l2''].
@@ -2905,10 +2905,10 @@ generalize l k l' k' Pk Pl; clear l k l' k' Pk Pl D IH H.
 induction lc as [ | c lc]; intros l k l' k' Pk Pl k_lt_l.
 inversion k_lt_l as [a lg ls lc' k'' l'' Rk Rl ls_lt_alg]; subst.
 apply (@List_mul bb a lg ls lc'); trivial.
-transitivity k; trivial; symmetry; rewrite <- app_nil_end in Pk; trivial.
-transitivity l; trivial; symmetry; rewrite <- app_nil_end in Pl; trivial.
+transitivity k; trivial; symmetry; rewrite app_nil_r in Pk; trivial.
+transitivity l; trivial; symmetry; rewrite app_nil_r in Pl; trivial.
 assert (H := IHlc l k (l' ++ c :: nil) (k' ++ c :: nil)).
-do 2 rewrite <- ass_app in H; simpl in H.
+do 2 rewrite <- app_assoc in H; simpl in H.
 generalize (H Pk Pl k_lt_l); clear H; intro H.
 apply (@rpo_mul_remove_equiv_aux bb k' l' c c).
 intros t _; apply rpo_antirefl.
@@ -2916,9 +2916,9 @@ reflexivity.
 inversion H as [a lg ls lc' k'' l'' Rk Rl ls_lt_alg]; subst.
 apply (@List_mul bb a lg ls lc'); trivial.
 rewrite <- Rk; rewrite <- permut0_cons_inside;[|apply equiv_equiv|reflexivity].
-rewrite <- app_nil_end; reflexivity || auto.
+rewrite app_nil_r; reflexivity || auto.
 rewrite <- Rl; rewrite <- permut0_cons_inside;[|apply equiv_equiv|reflexivity].
-rewrite <- app_nil_end; reflexivity || auto.
+rewrite app_nil_r; reflexivity || auto.
 let P := constr:(forall u, mem equiv u k' -> exists v,  mem equiv v l' /\ rpo bb u v) in
 assert (H' : {P} + {~ P}).
 assert (IH' : forall u v, mem equiv u k' -> mem equiv v l' -> {rpo bb u v}+{~rpo bb u v}).
@@ -3332,13 +3332,13 @@ functional induction (remove_equiv_eval_list p l1 l2) as
 | H1 l2 t1 l1 H2 H3 H4 H' H IH R
 | H1 l2 t1 l1 H2 H3 H4 H' H].
 (* 1/ 6 *)
-exists (@nil (term * term)); simpl; intuition; intros.
-rewrite <- app_nil_end; apply list_permut.permut_refl; intro; trivial.
+exists (@nil (term * term)); simpl; intuition auto with *; intros.
+rewrite app_nil_r; apply list_permut.permut_refl; intro; trivial.
 (* 1/5 *)
 destruct l2 as [ | t2 l2].
 contradiction.
-exists (@nil (term * term)); simpl; intuition; intros.
-rewrite <- app_nil_end; apply list_permut.permut_refl; intro; trivial.
+exists (@nil (term * term)); simpl; intuition auto with *; intros.
+rewrite app_nil_r; apply list_permut.permut_refl; intro; trivial.
 (* 1/4 *)
 assert (K := remove_equiv_eval_is_sound p t1 l2); rewrite H in K.
 destruct K as [t2' [pt1t2_eq_true P]].
@@ -3403,7 +3403,7 @@ destruct t1 as [v1 | f1 l1]; destruct t2 as [v2 | f2 l2]; simpl.
 (* t1 = Var v1 ; t2 = v2 *)
 generalize (X.eq_bool_ok v1 v2); case (X.eq_bool v1 v2); [intro v1_eq_v2 | intro v1_diff_v2].
 (* v1 = v2 *)
-subst; intuition; apply Eq.
+subst; intuition auto with *; apply Eq.
 (* v1 <> v2 *)
 intro; discriminate.
 (*t1 = Var v1 ; t2 = f2 l2*)
@@ -5836,8 +5836,8 @@ generalize (equiv_eval_is_sound_weak rpo_infos n t1 t2).
 rewrite (Ell _ _ t1t2_in_ll); intro t1_eq_t2; apply t1_eq_t2; apply eq_refl.
 revert Ell' l1_lt_l2 P1 P2; clear; revert l1 l2 l1' l2'; induction ll as [ | [t1 t2] ll];
 intros l1 l2 l1' l2' Ell l1_lt_l2 P1 P2.
-rewrite <- app_nil_end in P1.
-rewrite <- app_nil_end in P2.
+rewrite app_nil_r in P1.
+rewrite app_nil_r in P2.
 inversion l1_lt_l2; subst.
 apply (@List_mul _ a lg ls lc); trivial.
 transitivity l1; [symmetry; apply permut_impl with eq | idtac]; trivial.
@@ -5990,8 +5990,8 @@ generalize (equiv_eval_is_sound_weak rpo_infos n t1 t2).
 rewrite (Ell _ _ t1t2_in_ll); intro t1_eq_t2; apply t1_eq_t2; apply eq_refl.
 revert Ell' l1_lt_l2 P1 P2; clear; revert l1 l2 l1' l2'; induction ll as [ | [t2 t1] ll];
 intros l1 l2 l1' l2' Ell l1_lt_l2 P1 P2.
-rewrite <- app_nil_end in P1.
-rewrite <- app_nil_end in P2.
+rewrite app_nil_r in P1.
+rewrite app_nil_r in P2.
 inversion l1_lt_l2; subst.
 apply (@List_mul _ a lg ls lc); trivial.
 transitivity l1; [symmetry; apply permut_impl with eq | idtac]; trivial.
@@ -6198,10 +6198,10 @@ generalize l k l' k' Pk Pl; clear l k l' k' Pk Pl D.
 induction lc as [ | c lc]; intros l k l' k' Pk Pl k_lt_l.
 inversion k_lt_l as [a lg ls lc' k'' l'' Rk Rl ls_lt_alg]; subst.
 apply (@List_mul bb0 a lg ls lc'); trivial.
-transitivity k; trivial; symmetry; rewrite <- app_nil_end in Pk; trivial.
-transitivity l; trivial; symmetry; rewrite <- app_nil_end in Pl; trivial.
+transitivity k; trivial; symmetry; rewrite app_nil_r in Pk; trivial.
+transitivity l; trivial; symmetry; rewrite app_nil_r in Pl; trivial.
 assert (H := IHlc l k (l' ++ c :: nil) (k' ++ c :: nil)).
-do 2 rewrite <- ass_app in H; simpl in H.
+do 2 rewrite <- app_assoc in H; simpl in H.
 generalize (H Pk Pl k_lt_l); clear H; intro H.
 apply (@rpo_mul_remove_equiv_aux bb0 k' l' c c).
 intros t _; apply rpo_antirefl.
@@ -6209,9 +6209,9 @@ reflexivity.
 inversion H as [a lg ls lc' k'' l'' Rk Rl ls_lt_alg]; subst.
 apply (@List_mul bb0 a lg ls lc'); trivial.
 rewrite <- Rk; rewrite <- permut0_cons_inside;[|apply equiv_equiv|reflexivity].
-rewrite <- app_nil_end; reflexivity || auto.
+rewrite app_nil_r; reflexivity || auto.
 rewrite <- Rl; rewrite <- permut0_cons_inside;[|apply equiv_equiv|reflexivity].
-rewrite <- app_nil_end; reflexivity || auto.
+rewrite app_nil_r; reflexivity || auto.
 
 let P := constr:(forall u, mem equiv u k' -> exists v,  mem equiv v l' /\ rpo bb0 u v) in
 assert (H' : {P} + {~ P}).
@@ -6918,11 +6918,11 @@ destruct B.
 unfold In in In_t2_B.
 contradict In_t2_B.
 apply (@List_mul _ t B A [] (t::B) A).
-rewrite <- app_nil_end.
+rewrite app_nil_r.
 apply permut_refl.
 intros.
 reflexivity.
-rewrite <- app_nil_end.
+rewrite app_nil_r.
 apply permut_refl.
 intros.
 reflexivity.
@@ -6958,12 +6958,12 @@ rewrite P' in Q; rewrite app_comm_cons in Q.
 destruct (@ac_syntactic _ _ equiv_equiv _ equiv_bool_ok _ _ _ _ Q) as [k1 [k2 [k3 [k4 [P1 [P2 [P3 P4]]]]]]].
 apply (@List_mul bb0 a (lg ++ k2) (ls' ++ k3) k1).
 rewrite Q'.
-rewrite <- ass_app.
+rewrite <- app_assoc.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial. apply equiv_equiv. apply equiv_equiv.
 rewrite P.
 rewrite <- permut0_cons;[|apply equiv_equiv|reflexivity].
-rewrite <- ass_app.
+rewrite <- app_assoc.
 rewrite <- permut_app1.
 rewrite list_permut0_app_app; trivial.  apply equiv_equiv. apply equiv_equiv.
 intros b b_mem_ls'_k3; rewrite <- mem_or_app in b_mem_ls'_k3.
@@ -7243,11 +7243,11 @@ destruct A.
 unfold In in In_t1_A.
 contradict In_t1_A.
 apply (@List_mul _ t A B [] (t::A) B).
-rewrite <- app_nil_end.
+rewrite app_nil_r.
 apply permut_refl.
 intros.
 reflexivity.
-rewrite <- app_nil_end.
+rewrite app_nil_r.
 apply permut_refl.
 intros.
 reflexivity.
@@ -7327,7 +7327,7 @@ Lemma rpo_mul_inclusion_right : forall rpo_infos l1 l2 l3, rpo_mul (bb rpo_infos
 Proof.
 induction l1.
 intros.
-rewrite <- app_nil_end in H. rewrite <- app_nil_end in H. trivial.
+rewrite app_nil_r in H. rewrite app_nil_r in H. trivial.
 
 intros.
 apply IHl1.

@@ -12,7 +12,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil RelUtil SN EqUtil.
-From Coq.Structures Require Export OrderedType.
+From Stdlib Require Export Structures.OrderedType.
 
 (***********************************************************************)
 (** Properties of [CompOpp]. *)

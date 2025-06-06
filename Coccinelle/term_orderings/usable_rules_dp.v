@@ -14,7 +14,7 @@
 
 (** * Termination of rewriting *)
 
-From Coq Require Import List Relations Wellfounded Arith Recdef Setoid.
+From Stdlib Require Import List Relations Wellfounded Arith Recdef Setoid.
 From CoLoR Require Import closure more_list weaved_relation term_spec
      equational_theory_spec dp graph_dp terminaison interp.
 
@@ -601,7 +601,7 @@ assert (Acc_ssigma : Interp_dom (apply_subst sigma s)).
 destruct (In_split _ _ s_in_l) as [l1 [l2 H3]].
 apply interp_dom_subterm with (apply_subst sigma (Term f l)) (length l1 :: nil); trivial.
 subst l; simpl; rewrite map_app.
-rewrite <- (map_length (apply_subst sigma) l1); simpl.
+rewrite <- (length_map (apply_subst sigma) l1); simpl.
 rewrite nth_error_at_pos; apply eq_refl.
 apply (proj1 (IHl s s_in_l Acc_ssigma ssigma'' sigma'' Issigma Isigma'')).
 inversion I1 as [ | f1 l1 l1' ll1 Cf1 Hl1 Hl1' Hll1 | f1 l1 l1' ll1 k1 kk1 Df1 Hl1 Hl1' Hll1 Hk1 Hk1' Hkk1]; clear I1; subst.
@@ -898,7 +898,7 @@ apply interp_dom_subterm with
             (Term f
                (map (fun st : term * term => fst st) (ll1 ++ (u, u2) :: ll2)))
             (length lll1 :: nil); trivial.
-subst ll1; simpl; rewrite <- ass_app; rewrite map_app.
+subst ll1; simpl; rewrite <- app_assoc; rewrite map_app.
 rewrite <- (length_map (fun st : term * term => fst st) lll1).
 simpl; rewrite nth_error_at_pos; apply eq_refl.
 apply H6; apply in_or_app; left; trivial.
@@ -919,7 +919,7 @@ apply interp_dom_subterm with
             (Term f
                (map (fun st : term * term => fst st) (ll1 ++ (u, u2) :: ll2)))
             (length (ll1 ++ (u,u2) :: lll1) :: nil); trivial.
-subst ll2; simpl; rewrite app_comm_cons; rewrite ass_app; rewrite map_app.
+subst ll2; simpl; rewrite app_comm_cons; rewrite app_assoc; rewrite map_app.
 rewrite <- (length_map (fun st : term * term => fst st) (ll1 ++ (u,u2) :: lll1)).
 simpl; rewrite nth_error_at_pos; apply eq_refl.
 apply H6; apply in_or_app; do 2 right; trivial.
@@ -1022,7 +1022,7 @@ apply interp_dom_subterm with
             (Term f
                (map (fun st : term * term => fst st) (ll1 ++ (u, u2) :: ll2)))
             (length lll1 :: nil); trivial.
-subst ll1; simpl; rewrite <- ass_app; rewrite map_app.
+subst ll1; simpl; rewrite <- app_assoc; rewrite map_app.
 rewrite <- (length_map (fun st : term * term => fst st) lll1).
 simpl; rewrite nth_error_at_pos; apply eq_refl.
 apply H6; apply in_or_app; left; trivial.
@@ -1043,7 +1043,7 @@ apply interp_dom_subterm with
             (Term f
                (map (fun st : term * term => fst st) (ll1 ++ (u, u2) :: ll2)))
             (length (ll1 ++ (u,u2) :: lll1) :: nil); trivial.
-subst ll2; simpl; rewrite app_comm_cons; rewrite ass_app; rewrite map_app.
+subst ll2; simpl; rewrite app_comm_cons; rewrite app_assoc; rewrite map_app.
 rewrite <- (length_map (fun st : term * term => fst st) (ll1 ++ (u,u2) :: lll1)).
 simpl; rewrite nth_error_at_pos; apply eq_refl.
 apply H6; apply in_or_app; do 2 right; trivial.

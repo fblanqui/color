@@ -10,7 +10,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import AMonAlg Matrix OrdSemiRing VecUtil SN RelUtil
      LogicUtil AMatrixBasedInt.
-From Coq Require Import Setoid Morphisms.
+From Stdlib Require Import Setoid Morphisms.
 
 (** Module type for proving termination with matrix interpretations *)
 Module Type TArcticBasedInt.
@@ -105,7 +105,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
     Proof.
       unfold gtx. intuition. left. apply ge_gt_compat with y; hyp.
-      rewrite H2. rewrite H0 in H. destruct (ge_gt_eq H); intuition.
+      rewrite H2. rewrite H0 in H. destruct (ge_gt_eq H); intuition auto with *.
     Qed.
 
     Variable succ_wf : WF succ.
@@ -186,7 +186,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
     Proof.
       induction v; simpl; intros.
-      VOtac. simpl. right. intuition.
+      VOtac. simpl. right. intuition auto with *.
       VSntac v'. simpl. apply gtx_plus_compat.
       apply IHv. intros. 
       apply Vforall2_elim_nth. change v with (Vtail (Vcons h v)). 
@@ -209,7 +209,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
       Proof.
         unfold dot_product. induction v; intros; simpl.
-        right. intuition.
+        right. intuition auto with *.
         apply gtx_plus_compat.
         apply IHv.
         change v with (Vtail (Vcons h v)). apply Vforall2_tail. hyp.

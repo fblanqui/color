@@ -11,8 +11,7 @@ See the COPYRIGHTS and LICENSE files.
 Set Implicit Arguments.
 
 From CoLoR Require Import LogicUtil OrdUtil LSimple RelUtil.
-From Coq.Structures Require Import Equalities.
-From Coq Require Import Lia.
+From Stdlib Require Import Structures.Equalities Lia.
 From CoLoR Require SetUtil.
 
 
@@ -98,7 +97,7 @@ Definition prec f :=
 We use the lexicographic path ordering with Zero < Succ < Rec A and
 Rec A < Rec B if A < B. *)
 
-From Coq Require Import Compare_dec.
+From Stdlib Require Import Compare_dec.
 
 Module FCmp <: Cmp.
 
@@ -228,7 +227,7 @@ End RS_SystemT.
 (****************************************************************************)
 (** ** [ST] structure (types of function symbols) of System T. *)
 
-From Coq Require FMapAVL.
+From Stdlib Require FMapAVL.
 
 Module ST_SystemT <: ST_Struct.
 

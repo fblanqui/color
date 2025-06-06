@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
 A termination solver using the polynomial interpretations method.
 *)
 
-From Coq Require Import Program.
+From Stdlib Require Import Program.
 From CoLoR Require Import ListUtil LogicUtil ZUtil VecUtil Problem
      ATrs SN APolyInt Polynom RelUtil MonotonePolynom PositivePolynom
      NaryFunction MonAlgChecker IntBasedChecker Proof OptUtil

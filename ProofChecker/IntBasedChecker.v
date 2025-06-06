@@ -7,7 +7,7 @@ See the COPYRIGHTS and LICENSE files.
   A module with results for solvers using interpretations.
 *)
 
-From Coq Require Import Program.
+From Stdlib Require Import Program.
 From CoLoR Require Import LogicUtil OptUtil ATrs NaryFunction
   AInterpretation Proof ListUtil.
 

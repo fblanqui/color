@@ -1,6 +1,6 @@
 From CoLoR Require Import more_list decidable_set list_set.
-From Coq Require Import List Lia FunInd.
-From Coq Require Recdef.
+From Stdlib Require Import List Lia FunInd.
+From Stdlib Require Recdef.
 
 Module Type S.
   Parameter A : Type.

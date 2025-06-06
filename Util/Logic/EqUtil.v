@@ -9,9 +9,9 @@ general lemmas and tactics
 
 Set Implicit Arguments.
 
-From Coq.Structures Require Import Equalities.
-From Coq Require Export EqdepFacts Eqdep_dec.
-From Coq Require Setoid.
+From Stdlib Require Import Structures.Equalities.
+From Stdlib Require Export EqdepFacts Eqdep_dec.
+From Stdlib Require Setoid.
 
 From CoLoR Require Import LogicUtil RelUtil BoolUtil.
 
@@ -107,7 +107,7 @@ Section beq.
   Lemma beq_ko : forall x y, beq x y = false <-> x <> y.
 
   Proof.
-    intros. destruct (beq_ok x y). case_eq (beq x y); intuition.
+    intros. destruct (beq_ok x y). case_eq (beq x y); intuition auto with *.
     rewrite H1 in H4. discr.
   Defined.
 
@@ -193,7 +193,7 @@ Section eq_dec.
   Lemma beq_dec_ko : forall x y, beq_dec x y = false <-> x <> y.
 
   Proof.
-    intros. case (eq_dec x y); case_eq (beq_dec x y); intuition.
+    intros. case (eq_dec x y); case_eq (beq_dec x y); intuition auto with *.
     subst y. rewrite beq_dec_refl in H. discr.
     rewrite beq_dec_ok in H. contr.
   Qed.
