@@ -23,7 +23,7 @@ jobs:
       - uses: coq-community/docker-coq-action@v1
         with:
           opam_file: 'coq-color.opam'
-          ocaml_version: 5.2.1
+          ocaml_version: 4.14
           coq_version: ${{ matrix.coq_version }}
 
   rocq:
