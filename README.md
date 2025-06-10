@@ -5,7 +5,7 @@ CoLoR is a library of formal mathematical definitions and proofs of
 theorems on rewriting theory, &lambda;-calculus and termination whose
 correctness has been mechanically checked by
 the [Rocq](https://rocq-prover.org/) proof assistant. See
-this [paper](http://rewriting.gforge.inria.fr/papers/mscs11.pdf)
+this [paper](http://dx.doi.org/10.1017/S0960129511000120)
 for some presentation. More papers are provided at the end of this file.
 
 Some developments using CoLoR:
@@ -108,14 +108,14 @@ Léo Ducas (ENS Paris, France),
 [Solange Coupet-Grimal](http://pageperso.lif.univ-mrs.fr/~solange.coupet/) (Université de Provence Aix-Marseille I, France),
 William Delobel (Université de Provence Aix-Marseille I, France),
 Sébastien Hinderer (LORIA, France),
-[Frédéric Blanqui](http://rewriting.gforge.inria.fr/) (INRIA, France)
+[Frédéric Blanqui](https://blanqui.gitlabpages.inria.fr/) (INRIA, France)
 
 Bibliography:
 -----------------
 
 - [CoLoR: a Coq library on well-founded rewrite relations and its
 application to the automated verification of termination
-certificates](http://rewriting.gforge.inria.fr/mscs11-pdf.html). F. Blanqui
+certificates](http://dx.doi.org/10.1017/S0960129511000120). F. Blanqui
 and A. Koprowski, MSCS 21(4):827-859, 2011.
 
 - [Coq formalization of the higher-order recursive path
@@ -124,11 +124,11 @@ Applicable Algebra in Engineering Communication and Computing
 20(5-6):379-425, 2009.
 
 - [Automated Verification of Termination
-Certificates](http://rewriting.gforge.inria.fr/rr09color-pdf.html),
+Certificates](https://inria.hal.science/hal-00763495),
 F. Blanqui and A. Koprowski, INRIA Research Report 6949, 2009.
 
 - [Automated Verification of Termination
-Certificates](http://rewriting.gforge.inria.fr/talks/shanghai08.pdf),
+Certificates](https://blanqui.gitlabpages.inria.fr/talks/shanghai08.pdf),
 F. Blanqui, Talk at East China Normal University, Shanghai, 3 December 2008.
 
 - [Termination of rewriting and its
@@ -147,30 +147,25 @@ and J. Waldmann, RTA'08.
 Equivalence](http://dx.doi.org/10.1007/978-3-642-03359-9_21), S. Le
 Roux, TPHOL'07.
 
-- [Certification of Matrix Interpretations in
-Coq](http://color.inria.fr/papers/koprowski07wst.pdf), A. Koprowski
-and H. Zantema, WST'07,
-[[slides]](http://color.inria.fr/papers/koprowski07wst-slides.pdf)
+- Certification of Matrix Interpretations in Coq, A. Koprowski
+and H. Zantema, WST'07.
+<!--[[slides]](http://color.inria.fr/papers/koprowski07wst-slides.pdf)-->
 
-- [Certification de preuves de terminaison basées sur la décomposition
-du graphe des paires de
-dépendance](http://color.inria.fr/papers/ducas07bsc.pdf), L. Ducas,
-B. Sc. thesis, 2007.
+- Certification de preuves de terminaison basées sur la décomposition
+du graphe des paires de dépendance, L. Ducas, B. Sc. thesis, 2007.
 
 - [CoLoR, a Coq Library on Rewriting and
-termination](http://rewriting.gforge.inria.fr/wst06color-pdf.html),
+termination](https://inria.hal.science/inria-00084835),
 F. Blanqui, S. Coupet-Grimal, W. Delobel, S. Hinderer and
 A. Koprowski,
-WST'06. [[slides]](http://rewriting.gforge.inria.fr/wst06color.pdf)
+WST'06. [[slides]](https://blanqui.gitlabpages.inria.fr/talks/wst06color.pdf)
 
-- [A Formalization of the Simply Typed Lambda Calculus in
-Coq](http://color.inria.fr/papers/koprowski06draft.pdf), A. Koprowski,
-Manuscript, 2006.
+- A Formalization of the Simply Typed Lambda Calculus in
+Coq, A. Koprowski, draft, 2006.
 
-- [A Constructive Axiomatization of the Recursive Path
-Ordering](http://color.inria.fr/papers/coupet06tr.pdf),
+- A Constructive Axiomatization of the Recursive Path Ordering,
 S. Coupet-Grimal and W. Delobel, Research report 28, LIF,
-Universit&eacute de la M&eacute;diterran&eacute;e, 2006.
+Universit&eacute de la Méditerranée, 2006.
 
 - [An Effective Proof of the Well-Foundedness of the Multiset Path
 Ordering](http://dx.doi.org/10.1007/s00200-006-0020-y),
@@ -181,23 +176,18 @@ Communication and Computing 17(6):453-469, 2006.
 Ordering](http://dx.doi.org/10.1007/11805618_17), A. Koprowski,
 RTA'06.
 
-- [Une preuve effective de la bonne fondation de l'ordre récursif
-multi-ensemble sur les
-chemins](http://color.inria.fr/papers/coupet06jfla.pdf),
-S. Coupet-Grimal and W. Delobel, JFLA'06.
+- Une preuve effective de la bonne fondation de l'ordre récursif
+multi-ensemble sur les chemins, S. Coupet-Grimal and W. Delobel,
+JFLA'06.
 
-- [Well-foundedness of the Higher-Order Recursive Path Ordering in
-Coq](http://color.inria.fr/papers/koprowski04master.pdf),
+- Well-foundedness of the Higher-Order Recursive Path Ordering in Coq,
 A. Koprowski, Master thesis, 2004.
 
-- [Certification des preuves de termination par interpr&eacute;tations
-polynomiales](http://color.inria.fr/papers/hinderer04master.pdf),
-S. Hinderer, Master thesis, 2004.
+- Certification des preuves de termination par interprétations
+polynomiales, S. Hinderer, Master thesis, 2004.
 
-- [Well-foundedness of the Recursive Path Ordering in
-Coq](http://color.inria.fr/papers/dekleijn04dptd.pdf), N. de Kleijn,
-A. Koprowski and F. van Raamsdonk, Dutch Proof Tools Day, 2004.
+- Well-foundedness of the Recursive Path Ordering in Coq, N. de
+Kleijn, A. Koprowski and F. van Raamsdonk, Dutch Proof Tools Day,
+2004.
 
-- [Well-foundedness of RPO in
-Coq](http://color.inria.fr/papers/dekleijn03master.pdf), N. de Kleijn,
-Master thesis, 2003.
+- Well-foundedness of RPO in Coq, N. de Kleijn, Master thesis, 2003.
