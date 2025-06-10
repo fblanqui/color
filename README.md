@@ -1,10 +1,10 @@
-<font color="red">C</font><font color="orange">o</font><font color="green">L</font><font color="magenta">o</font><font color="blue">R</font>, a Coq library on rewriting theory and termination
+<font color="red">C</font><font color="orange">o</font><font color="green">L</font><font color="magenta">o</font><font color="blue">R</font>, a Rocq library on rewriting theory and termination
 ========================================================
 
 CoLoR is a library of formal mathematical definitions and proofs of
 theorems on rewriting theory, &lambda;-calculus and termination whose
 correctness has been mechanically checked by
-the [Coq](http://coq.inria.fr/) proof assistant. See
+the [Rocq](https://rocq-prover.org/) proof assistant. See
 this [paper](http://rewriting.gforge.inria.fr/papers/mscs11.pdf)
 for some presentation. More papers are provided at the end of this file.
 
@@ -20,12 +20,11 @@ Installation:
 
 Installation with [opam](https://opam.ocaml.org/):
 ```bash
-opam repo add coq-released https://coq.inria.fr/opam/released
+opam repo add rocq-released https://rocq-prover.org/opam/released
 opam update
 opam install --jobs=$n coq-color
 ```
-You can browse the definitions and statements by doing in the source directory `make doc` and
-read `doc/index.html` in your browser.
+You can browse the definitions and statements by doing in the source directory `make doc` and read `doc/index.html` in your browser.
 
 Scripts:
 --------
@@ -34,7 +33,7 @@ CoLoR provides also useful scripts for doing statistics:
 - do `make time` to record the compilation time of each file (then `time_coqc` is used instead of `coqc`)
 - do `./stat_time` to get statistics on compilation time
 - `./stat_coq [<directory>]` (default is `.`) provides the number of definitions, lemmas, etc.
-- `./stat_color` provides the number of Coq lines (including newlines and comments) for the various kinds of formalizations (mathematical structures, data structures, etc.)
+- `./stat_color` provides the number of Rocq lines (including newlines and comments) for the various kinds of formalizations (mathematical structures, data structures, etc.)
 
 Library contents:
 ----------------------
@@ -51,9 +50,9 @@ libraries providing basic meta-theorems and tactics (e.g. irreflexivity) on prop
   * (ordered) semi-rings: a library on semi-rings and ordered semi-rings, and its instantiation on various number data structures (natural numbers, integers, arctic/tropical numbers, etc.)
 
 - Data structures:
-  * libraries extending the Coq standard library on various data structures: booleans, natural numbers, integers, pairs, lists, vectors, finite sets, finite maps, sets, relations, etc.
+  * libraries extending the Rocq standard library on various data structures: booleans, natural numbers, integers, pairs, lists, vectors, finite sets, finite maps, sets, relations, etc.
   * natural numbers: list of natural numbers smaller than some bound, least natural number satisfying some property, logarithmic to base 2, decidability of equality on bigN, maximum/minimum of a list of natural numbers, etc.
-  * lists: an extensive library extending the Coq standard library on lists including many functions and theorems on lists including for instance the number of occurrences of an element, lists with no duplicated elements, a constructive proof of the pigeon-hole principle, lemmas on the permutation of elements, etc.
+  * lists: an extensive library extending the Rocq standard library on lists including many functions and theorems on lists including for instance the number of occurrences of an element, lists with no duplicated elements, a constructive proof of the pigeon-hole principle, lemmas on the permutation of elements, etc.
   * vectors: an extensive library on vectors including many basic functions and theorems on vector manipulation, vector product/lexicographic ordering, vector arithmetic, vector components filtering and permutation
   * matrices: a library on matrices including basic functions and theorems on matrix arithmetic
   * finite multisets: a library on finite multisets including a proof that the multiset extension of a well-founded relation is well-founded
