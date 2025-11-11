@@ -187,7 +187,6 @@ A. Koprowski, Master thesis, 2004.
 polynomiales, S. Hinderer, Master thesis, 2004.
 
 - Well-foundedness of the Recursive Path Ordering in Coq, N. de
-Kleijn, A. Koprowski and F. van Raamsdonk, Dutch Proof Tools Day,
-2004.
+Kleijn, A. Koprowski and F. van Raamsdonk, Dutch Proof Tools Day, 2004.
 
 - Well-foundedness of RPO in Coq, N. de Kleijn, Master thesis, 2003.
