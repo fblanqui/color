@@ -9,8 +9,8 @@ doc/main.html
 *.glob
 *.vo
 CoqMakefile.conf
-Makefile.coq
-Makefile.coq.conf
+rocq.mk
+rocq.mk.conf
 _CoqProject
 *.time
 *.vok

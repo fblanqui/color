@@ -9,19 +9,19 @@ LIBNAME := CoLoR
 
 .PHONY: default config clean clean-dep clean-all clean-doc tags doc install-doc install-dist targz
 
-MAKECOQ := +$(MAKE) -r -f Makefile.coq
+MAKECOQ := +$(MAKE) -r -f rocq.mk
 
 VFILES := $(shell find . -name \*.v | grep -v .\# | sed -e 's|^./||g')
 
-default: Makefile.coq
+default: rocq.mk
 	$(MAKECOQ)
 
-time: Makefile.coq
+time: rocq.mk
 	COQC=./time_coqc make
 
-config Makefile.coq:
+config rocq.mk:
 	echo -R . $(LIBNAME) $(VFILES) > _CoqProject
-	rocq makefile -f _CoqProject -o Makefile.coq
+	rocq makefile -f _CoqProject -o rocq.mk
 
 clean:
 	rm -f `find . -name \*~`
@@ -32,7 +32,7 @@ clean-dep:
 	rm -f `find . -name \*.v.d`
 
 clean-all: clean clean-doc clean-dep
-	rm -f _CoqProject Makefile.coq Makefile.coq.conf stat_time.log `find . -name \*.time`
+	rm -f _CoqProject rocq.mk rocq.mk.conf stat_time.log `find . -name \*.time`
 
 clean-doc:
 	rm -f doc/$(LIBNAME).*.html doc/index.html doc/main.html doc/coqdoc.css
