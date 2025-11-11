@@ -1,6 +1,6 @@
 opam-version: "2.0"
 synopsis: "A library on rewriting theory and termination"
-homepage: "http://color.inria.fr/"
+homepage: "https://github.com/fblanqui/color/"
 license: "CeCILL-2.1"
 bug-reports: "https://github.com/fblanqui/color/issues"
 depends: [
@@ -9,7 +9,7 @@ depends: [
   "rocq-bignums" {>= "9.0"}
 ]
 build: [make "-j%{jobs}%"]
-install: [make "-f" "Makefile.coq" "install"]
+install: [make "-f" "rocq.mk" "install"]
 flags: light-uninstall
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/CoLoR"]
 maintainer: "frederic.blanqui@inria.fr"
@@ -30,7 +30,7 @@ authors: [
   "Sorin Stratulat"
 ]
 tags: [
-  "date:2025-06-10"
+  "date:2025-11-11"
   
   "logpath:CoLoR"
 
