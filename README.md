@@ -20,7 +20,7 @@ Installation:
 
 Installation with [opam](https://opam.ocaml.org/):
 ```bash
-opam repo add -a rocq-released https://rocq-prover.org/opam/released
+opam repo -a --set-default add rocq-released https://rocq-prover.org/opam/released # once
 opam install rocq-color
 ```
 You can browse the definitions and statements by doing in the source directory `make doc` and read `doc/index.html` in your browser.
