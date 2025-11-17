@@ -20,9 +20,8 @@ Installation:
 
 Installation with [opam](https://opam.ocaml.org/):
 ```bash
-opam repo add rocq-released https://rocq-prover.org/opam/released
-opam update
-opam install --jobs=$n coq-color
+opam repo add -a rocq-released https://rocq-prover.org/opam/released
+opam install rocq-color
 ```
 You can browse the definitions and statements by doing in the source directory `make doc` and read `doc/index.html` in your browser.
 
