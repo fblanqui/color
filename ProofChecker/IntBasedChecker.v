@@ -37,11 +37,11 @@ Variable checkInt : Sig -> rawSymInt -> option symInt.
 Fixpoint processInt (ri : rawTrsInt) : option (list symInt) :=
   match ri with
   | nil => Some nil
-  | cons i is =>
+  | cons i si =>
       match checkInt (fst i) (snd i) with
       | None => None
       | Some fi => 
-          match processInt is with
+          match processInt si with
           | None => None
           | Some fis => Some (fi :: fis)
           end

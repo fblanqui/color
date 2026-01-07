@@ -350,9 +350,9 @@ Module Make (Export CP : CP_Struct).
 
   (** Alpha-transitive closure of [=>R]. *)
 
-  Infix "=>R*" := (R_aeq*) (at level 70).
+  Infix "=>R*" := (R_aeq* ) (at level 70).
 
-  Notation satc := (subs_rel (R_aeq*)).
+  Notation satc := (subs_rel (R_aeq* )).
 
   Lemma subs_satc u s s' : satc (fv u) s s' -> subs s u =>R* subs s' u.
 
@@ -574,7 +574,7 @@ Module Make (Export CP : CP_Struct).
     rewrite <- i1. apply clos_aeq_intro_refl. hyp.
     rewrite i2. (*COQ: rewrite <- v0v does not work*)
     gen (proper_atc P_aeq P_red); intro P_reds.
-    assert (h : Proper (Logic.eq ==> R_aeq* ==> aeq ==> R_aeq*) subs_single).
+    assert (h : Proper (Logic.eq ==> R_aeq* ==> aeq ==> R_aeq* ) subs_single).
     apply subs_single_mon_preorder_aeq; class. rewrite <- v0v. hyp.
     (* app_r *)
     rewrite ww', i1. apply IH.

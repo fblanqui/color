@@ -115,7 +115,7 @@ Module Make (Export ST : ST_Struct)
 
   (*COQ: why is it needed?*)
   Infix "=>R" := (clos_aeq (clos_mon Rh)).
-  Infix "=>R*" := (R_aeq*).
+  Infix "=>R*" := (R_aeq* ).
 
 (****************************************************************************)
 (** ** Properties of [supterm_acc]. *)
