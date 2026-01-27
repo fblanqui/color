@@ -184,8 +184,8 @@ such that [f i = a] *)
 
     Let d := 0.
 
-    Definition prefix i := let is := indices i0 in
-      let n := length is in if lt_dec i n then nth i is d else i0 + g (i - n).
+    Definition prefix i := let si := indices i0 in
+      let n := length si in if lt_dec i n then nth i si d else i0 + g (i - n).
 
     Lemma prefix_correct :
       (forall i, f (i0 + g i) = a) -> (forall i, f (prefix i) = a).
@@ -201,8 +201,8 @@ such that [f i = a] *)
       (forall i, g i < g (S i)) -> (forall i, prefix i < prefix (S i)).
 
     Proof.
-      intros hg i. unfold prefix. set (is := indices i0).
-      set (n := length is). destruct (lt_dec (S i) n); destruct (lt_dec i n).
+      intros hg i. unfold prefix. set (si := indices i0).
+      set (n := length si). destruct (lt_dec (S i) n); destruct (lt_dec i n).
       apply Sorted_nth. class. apply indices_Sorted. hyp. hyp. lia.
       lia. assert (n=S i). lia. subst. rewrite H, Nat.sub_diag.
       ded (nth_In d l). destruct (In_indices_aux_elim H0). inversion H1.
@@ -215,15 +215,15 @@ such that [f i = a] *)
       (forall i, f i = a -> exists j, i = prefix j).
 
     Proof.
-      intros hg i e. set (is := indices i0). set (n := length is).
-      assert (n <= i0). unfold n, is. apply indices_length.
+      intros hg i e. set (si := indices i0). set (n := length si).
+      assert (n <= i0). unfold n, si. apply indices_length.
       destruct (lt_ge_dec i i0).
       (* i < i0 *)
       ded (indices_complete l e). destruct (In_nth d H0) as [j [h1 h2]].
-      exists j. unfold prefix. fold is. fold n. destruct (lt_dec j n).
+      exists j. unfold prefix. fold si. fold n. destruct (lt_dec j n).
       hyp. contr.
       (* i >= i0 *)
-      destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold is.
+      destruct (hg _ g0 e) as [j hj]. exists (n+j). unfold prefix. fold si.
       fold n. destruct (lt_dec (n+j) n). lia.
       assert (s : n+j-n=j). lia. rewrite s. hyp.
     Qed.

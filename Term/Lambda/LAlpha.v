@@ -1289,7 +1289,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
     (** [S*] is a quasi-ordering. *)
 
-    Global Instance atc_preorder : PreOrder (S*).
+    Global Instance atc_preorder : PreOrder (S* ).
 
     Proof.
       split.
@@ -1303,7 +1303,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       Variable S_aeq : Proper (aeq ==> aeq ==> impl) S.
 
-      Global Instance atc_aeq : Proper (aeq ==> aeq ==> impl) (S*).
+      Global Instance atc_aeq : Proper (aeq ==> aeq ==> impl) (S* ).
 
       Proof.
         intros x x' xx' y y' yy' h. revert x y h x' xx' y' yy'.
@@ -1314,7 +1314,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       Qed.
 
       (*COQ: if removed, Coq fails in LComp*)
-      Global Instance atc_aeq_iff : Proper (aeq ==> aeq ==> iff) (S*).
+      Global Instance atc_aeq_iff : Proper (aeq ==> aeq ==> iff) (S* ).
 
       Proof.
         intros x x' xx' y y' yy'. split; intro h; eapply atc_aeq.
@@ -1342,7 +1342,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
       Variable subs_S : Proper (Logic.eq ==> S ==> S) subs.
 
-      Global Instance subs_atc : Proper (Logic.eq ==> S* ==> S*) subs.
+      Global Instance subs_atc : Proper (Logic.eq ==> S* ==> S* ) subs.
 
       Proof.
         intros s s' ss' x y xy. subst s'. revert x y xy. induction 1.
@@ -1353,7 +1353,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
 
 (*REMOVE?*)
       Global Instance rename_atc :
-        Proper (Logic.eq ==> Logic.eq ==> S* ==> S*) rename.
+        Proper (Logic.eq ==> Logic.eq ==> S* ==> S* ) rename.
 
       Proof.
         intros x x' xx' y y' yy' u u' uu'. unfold Def.rename.
@@ -1390,7 +1390,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       apply at_step. mon. apply at_aeq. mon. trans (Lam x v); hyp.
     Qed.
 
-    Global Instance App_atc : Monotone S -> Proper (S* ==> S* ==> S*) App.
+    Global Instance App_atc : Monotone S -> Proper (S* ==> S* ==> S* ) App.
 
     Proof.
       intros m u u' uu' v v' vv'. trans (App u' v).
@@ -1402,7 +1402,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
       apply at_step. mon. apply at_aeq. mon. trans (App u' v); hyp.
     Qed.
 
-    Global Instance Lam_atc : Monotone S -> Proper (Logic.eq ==> S* ==> S*) Lam.
+    Global Instance Lam_atc : Monotone S -> Proper (Logic.eq ==> S* ==> S* ) Lam.
 
     Proof.
       intros m x x' xx' u u' uu'. subst x'. revert u u' uu'. induction 1.
