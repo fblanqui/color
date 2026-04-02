@@ -396,7 +396,6 @@ Qed.
    Lemma measure_strictly_monotonic :
     forall l r, (EQT.one_step rules r l) -> well_formed l -> measure r < measure l.
    Proof.
-   Proof.
    intro l; pattern l; apply term_rec3; clear l.
    (* 1/2 variable case *)
    intros v r H; inversion H as [t1 t2 H1 | ]; clear H; subst.
