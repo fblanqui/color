@@ -36,16 +36,16 @@ Module Type MatrixMethodConf.
   Parameter dim : nat.
   Parameter dim_pos : dim > 0.
 
-  Notation vec := (vec dim).
-  Notation eq_vec := (Vforall2 eqA (n:=dim)).
+  Abbreviation vec := (vec dim).
+  Abbreviation eq_vec := (Vforall2 eqA (n:=dim)).
   Notation "x =v y" := (eq_vec x y).
-  Notation mat_eqA := (@mat_eqA dim dim).
-  Notation mat_eqA_st := (@mat_eqA_equiv dim dim). 
-  Notation matrixInt := (matrixInt A matrix).
-  Notation mint := (matrixInt dim).
-  Notation mat := (matrix dim dim).
-  Notation eq_vec_st := (Vforall2_equiv eqA_Equivalence dim).
-  Notation eq_vec_mat_eqA_st := (Vforall2_equiv mat_eqA_st).
+  Abbreviation mat_eqA := (@mat_eqA dim dim).
+  Abbreviation mat_eqA_st := (@mat_eqA_equiv dim dim). 
+  Abbreviation matrixInt := (matrixInt A matrix).
+  Abbreviation mint := (matrixInt dim).
+  Abbreviation mat := (matrix dim dim).
+  Abbreviation eq_vec_st := (Vforall2_equiv eqA_Equivalence dim).
+  Abbreviation eq_vec_mat_eqA_st := (Vforall2_equiv mat_eqA_st).
 
   Parameter trsInt : forall f : sig, mint (arity f).
   Parameter vec_invariant : vec -> Prop.
@@ -117,7 +117,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
     Definition add_matrices i m n (v : vector (matrix m n) i) := 
       Vfold_left_rev (@mat_plus m n) (zero_matrix m n) v.
 
-    Notation mat_vec_prod := (@mat_vec_prod dim dim).
+    Abbreviation mat_vec_prod := (@mat_vec_prod dim dim).
 
     Definition mi_eval_aux n (mi : mint n) (v : vector vec n) : vec :=
       add_vectors (Vmap2 mat_vec_prod (args mi) v) [+] const mi.
@@ -228,7 +228,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
 
       Import ABterm.
 
-      Notation bterm := (bterm sig).
+      Abbreviation bterm := (bterm sig).
 
       (** symbolic computation of term interpretation *)
 
@@ -288,8 +288,8 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
       (** order characteristic for symbolically computed interpretation and 
        its decidability *)
 
-      Notation mat_ge := (@mat_ge dim dim).
-      Notation vec_ge := (@Vforall2 ge dim).
+      Abbreviation mat_ge := (@mat_ge dim dim).
+      Abbreviation vec_ge := (@Vforall2 ge dim).
 
       Definition mint_ge n (l r : mint n) := 
         Vforall2 mat_ge (args l) (args r) /\ Vforall2 ge (AMatrixBasedInt.const l) (AMatrixBasedInt.const r).
@@ -330,7 +330,7 @@ Module MatrixBasedInt (Export MC : MatrixMethodConf).
         end.
       Defined.
 
-      Notation IR_succeq := (IR I succeq).
+      Abbreviation IR_succeq := (IR I succeq).
 
       Definition mint_eval (val : valuation I) k (mi : mint k) : vec :=
         let coefs := Vbuild (fun i (ip : i < k) => dom2vec (val i)) in

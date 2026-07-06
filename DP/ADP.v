@@ -17,9 +17,9 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
-Notation lhs := (@lhs Sig).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
+Abbreviation lhs := (@lhs Sig).
 
 Variable R : rules.
 
@@ -113,7 +113,7 @@ Qed.*)
 (***********************************************************************)
 (** dependency chains *)
 
-Definition chain := int_red R # @ hd_red dp.
+Definition chain := (int_red R) # @ hd_red dp.
 
 Lemma in_calls_chain : forall l r t s, In (mkRule l r) R ->
   In t (calls R r) -> negb_subterm l t = true -> chain (sub s l) (sub s t).
@@ -192,11 +192,11 @@ Qed.
 (***********************************************************************)
 (** fundamental dp theorem *)
 
-Notation capa := (capa R).
-Notation cap := (cap R).
-Notation alien_sub := (alien_sub R).
+Abbreviation capa := (capa R).
+Abbreviation cap := (cap R).
+Abbreviation alien_sub := (alien_sub R).
 
-Notation SNR := (SN (red R)).
+Abbreviation SNR := (SN (red R)).
 
 Lemma chain_min_fun : forall f, defined f R = true
   -> forall ts, SN chain_min (Fun f ts) -> Vforall SNR ts -> SNR (Fun f ts).

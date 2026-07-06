@@ -45,7 +45,7 @@ Module TermsRed (Sig : TermsSig.Signature).
   Section conv_comp.
 
     Variable R : relation Term.
-    Notation Red := (Reduction R).
+    Abbreviation Red := (Reduction R).
 
     Variable R_conv_comp : forall M N M' N' Q,
       M ~(Q) M' -> N ~(Q) N' -> R M N -> env M' = env N' -> R M' N'.
@@ -140,7 +140,7 @@ Module TermsRed (Sig : TermsSig.Signature).
   Section var_comp.
 
     Variable R : relation Term.
-    Notation Red := (Reduction R).
+    Abbreviation Red := (Reduction R).
 
     Variable step_var_consistent : forall M N,
       R M N -> envSubset (activeEnv N) (activeEnv M).
@@ -178,7 +178,7 @@ Module TermsRed (Sig : TermsSig.Signature).
   Section Decidability.
 
     Variable R : relation Term.
-    Notation Red := (Reduction R).
+    Abbreviation Red := (Reduction R).
 
     Variable step_dec : forall M N, {R M N} + {~R M N}.
 

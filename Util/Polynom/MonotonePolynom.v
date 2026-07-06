@@ -250,7 +250,7 @@ Program Definition pstrong_monotone_check n (p : poly n) :
 Next Obligation.
 Proof with auto; try congruence || discr.
   split. 
-  destruct pweak_monotone_check...
-  destruct (check_seq (check_coef_gt0 p))...
-  refine (fun i H => l (N_ H)).
+  destruct pweak_monotone_check. auto. congruence.
+  destruct (check_seq (check_coef_gt0 p)).
+  refine (fun i H => l (N_ H)). congruence.
 Qed.

@@ -19,9 +19,9 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig).
-  Notation subterm_eq := (@subterm_eq Sig).
-  Notation supterm_eq := (@supterm_eq Sig).
+  Abbreviation term := (term Sig).
+  Abbreviation subterm_eq := (@subterm_eq Sig).
+  Abbreviation supterm_eq := (@supterm_eq Sig).
 
 (*****************************************************************************)
 (** general boolean conditions for which [WF (hd_red_mod R D)] is
@@ -48,8 +48,8 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
 
     Lemma undef_rtc_red_is_rtc_int_red
       (hyp1 : forallb (@is_notvar_lhs Sig) R = true) :
-      forall t u, red R # t u ->
-      undefined R t = true -> int_red R # t u /\ undefined R u = true.
+      forall t u, (red R) # t u ->
+      undefined R t = true -> (int_red R) # t u /\ undefined R u = true.
 
     Proof.
       induction 1; intro hx.
@@ -61,7 +61,7 @@ equivalent to [WF (hd_red_Mod (int_red R #) D)] *)
     Lemma WF_hd_red_Mod_int :
       forall (hyp1 : forallb (@is_notvar_lhs Sig) R = true)
              (hyp2 : forallb (undefined_rhs R) D = true),
-      WF (hd_red_Mod (int_red R #) D) -> WF (hd_red_mod R D).
+      WF (hd_red_Mod ((int_red R) #) D) -> WF (hd_red_mod R D).
 
     Proof.
       intros hyp1 hyp2.
@@ -290,7 +290,7 @@ minimal infinite R-sequence *)
       apply ht2. apply subterm_sub. hyp. destruct hv as [hv1 hv2]. hyp.
     Qed.
 
-    Definition Rdp : relation (NTM (red R)) := hd_red_Mod (int_red R #) (dp R).
+    Definition Rdp : relation (NTM (red R)) := hd_red_Mod ((int_red R) #) (dp R).
 
     Lemma Rdp_left_total : forall t, exists u, Rdp t u.
 
@@ -303,8 +303,8 @@ minimal infinite R-sequence *)
       set (k := proj1_sig (ch_min H)).
       assert (hk : hd_red R (f k) (f (S k))). ded (hf k).
       destruct (red_split H0). hyp. ded (ch_minP _ H). contr.
-      assert (hk' : int_red R # (f 0) (f k)).
-      cut (forall i, i <= k -> int_red R # (f 0) (f i)).
+      assert (hk' : (int_red R) # (f 0) (f k)).
+      cut (forall i, i <= k -> (int_red R) # (f 0) (f i)).
       intro h. apply h. refl.
       induction i; intro hi. apply rt_refl. apply rt_trans with (f i).
       apply IHi. lia. apply rt_step. apply NNPP. intro h.
@@ -321,7 +321,7 @@ minimal infinite R-sequence *)
     Qed.
 
     Lemma IS_Min_dp : forall f, IS (red R) f ->
-      exists g, IS (hd_red_Mod (int_red R #) (dp R)) g /\ Min (red R) g.
+      exists g, IS (hd_red_Mod ((int_red R) #) (dp R)) g /\ Min (red R) g.
 
     Proof.
       intros f hf. set (Min' := fun f : nat -> NTM (red R) =>

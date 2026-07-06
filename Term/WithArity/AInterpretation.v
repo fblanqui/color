@@ -17,7 +17,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** interpretation of symbols *)

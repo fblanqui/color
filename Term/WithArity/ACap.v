@@ -16,7 +16,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** we first defined a generic cap as a triple (k,f,v) where
@@ -33,7 +33,7 @@ f acts as an abstract context with k holes *)
 Local Open Scope type_scope.
 Definition Cap := {k : nat & (terms k -> term) * terms k }.
 
-Notation Caps := (vector Cap).
+Abbreviation Caps := (vector Cap).
 
 Definition mkCap := @existT nat (fun k => ((terms k -> term) * terms k)).
 
@@ -87,7 +87,7 @@ Fixpoint Vmap_sum n (cs : Caps n) : terms (sum cs) -> terms n :=
 (***********************************************************************)
 (** function computing the generic cap of a term *)
 
-Notation rule := (@rule Sig). Notation rules := (list rule).
+Abbreviation rule := (@rule Sig). Abbreviation rules := (list rule).
 
 Variable R : rules.
 
@@ -160,7 +160,7 @@ Qed.
 (** concrete cap: it is obtained by applying fcap to a sequence of fresh
 variables greater than the biggest variable in t *)
 
-Notation maxvar := (@maxvar Sig). Notation fresh := (@fresh Sig).
+Abbreviation maxvar := (@maxvar Sig). Abbreviation fresh := (@fresh Sig).
 
 Definition fresh_for (t : term) := fresh (S (maxvar t)).
 
@@ -269,7 +269,7 @@ Qed.
 (***********************************************************************)
 (** properties of the cap wrt calls *)
 
-Notation calls := (calls R).
+Abbreviation calls := (calls R).
 Definition vcalls := vcalls R.
 
 Lemma calls_capa : forall t m,

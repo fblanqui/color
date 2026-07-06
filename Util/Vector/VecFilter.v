@@ -9,6 +9,7 @@ vector filtering
 
 Set Implicit Arguments.
 
+Set Warnings "-warn-library-file-stdlib-vector".
 From Stdlib Require Export Vector.
 From CoLoR Require Export VecBool.
 From Stdlib Require Import Arith.
@@ -18,7 +19,7 @@ Section S.
 
 Variable A : Type.
 
-Notation vec := (vector A).
+Abbreviation vec := (vector A).
 
 Fixpoint Vfilter n (bs : bools n) : vec n -> vec (Vtrue bs) :=
   match bs as bs in vector _ n return vec n -> vec (Vtrue bs) with

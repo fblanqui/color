@@ -20,7 +20,7 @@ Section basic_definitions.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** rules *)
@@ -139,13 +139,13 @@ Section basic_definitions.
     Variables (S : relation term) (E R : rules).
 
     (* relative rewrite step *)
-    Definition red_mod := red E # @ red R.
+    Definition red_mod := (red E) # @ red R.
 
     (* head rewrite step modulo some relation *)
     Definition hd_red_Mod := S @ hd_red R.
 
     (* relative head rewrite step *)
-    Definition hd_red_mod := red E # @ hd_red R.
+    Definition hd_red_mod := (red E) # @ hd_red R.
 
   End rewriting_modulo.
 
@@ -222,8 +222,8 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
   Section rewriting.
 
@@ -234,7 +234,7 @@ Section S.
 
     Proof. intros. unfold red. ex l r c s. auto. Qed.
 
-    Lemma red_empty : forall t u : term, red nil # t u -> t = u.
+    Lemma red_empty : forall t u : term, (red nil) # t u -> t = u.
 
     Proof. intros. induction H. redtac. contr. refl. congruence. Qed.
 
@@ -333,7 +333,7 @@ Section S.
         (Vcast (Vapp t (Vcons (fill x1 (sub x2 x0)) t0)) e). tauto.
     Qed.
 
-    Lemma int_red_rtc_preserve_hd : forall u v, int_red R # u v ->
+    Lemma int_red_rtc_preserve_hd : forall u v, (int_red R) # u v ->
       u=v \/ exists f us vs, u = Fun f us /\ v = Fun f vs.
 
     Proof.
@@ -389,7 +389,7 @@ Section S.
 (** preservation of variables under reduction *)
 
   Definition rules_preserve_vars (R : rules) :=
-    forall l r, In (mkRule l r) R -> vars r [= vars l.
+    forall l r, In (mkRule l r) R -> vars r ⊆ vars l.
 
   Definition brules_preserve_vars (R : rules) :=
     forallb (fun x => ListDec.incl beq_nat (vars (rhs x)) (vars (lhs x))) R.
@@ -406,7 +406,7 @@ Section S.
   Qed.
 
   Lemma rules_preserve_vars_cons : forall a R, rules_preserve_vars (a :: R)
-    <-> vars (rhs a) [= vars (lhs a) /\ rules_preserve_vars R.
+    <-> vars (rhs a) ⊆ vars (lhs a) /\ rules_preserve_vars R.
 
   Proof.
     unfold rules_preserve_vars. split_all. apply H. left. destruct a. refl. fo.
@@ -427,14 +427,14 @@ Section S.
       apply vars_fill_intro.
     Qed.
 
-    Lemma tred_preserve_vars : preserve_vars (red R !).
+    Lemma tred_preserve_vars : preserve_vars ((red R) !).
 
     Proof.
       unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
       trans (vars y); hyp.
     Qed.
 
-    Lemma rtred_preserve_vars : preserve_vars (red R #).
+    Lemma rtred_preserve_vars : preserve_vars ((red R) #).
 
     Proof.
       unfold preserve_vars. induction 1. apply red_preserve_vars. hyp.
@@ -454,12 +454,12 @@ Section S.
       intros. cut (maxvar u <= maxvar t). lia. apply red_maxvar. hyp.
     Qed.
 
-    Lemma rtc_red_maxvar : forall t u, red R # t u -> maxvar u <= maxvar t.
+    Lemma rtc_red_maxvar : forall t u, (red R) # t u -> maxvar u <= maxvar t.
 
     Proof. induction 1. apply red_maxvar. hyp. lia. lia. Qed.
 
     Lemma rtc_red_maxvar0 : forall t u,
-      maxvar t = 0 -> red R # t u -> maxvar u = 0.
+      maxvar t = 0 -> (red R) # t u -> maxvar u = 0.
 
     Proof.
       intros. cut (maxvar u <= maxvar t). lia. apply rtc_red_maxvar. hyp.
@@ -489,7 +489,7 @@ Section S.
   End red_mod.
 
   Lemma rules_preserve_vars_incl : forall R S : rules,
-    R [= S -> rules_preserve_vars S -> rules_preserve_vars R.
+    R ⊆ S -> rules_preserve_vars S -> rules_preserve_vars R.
 
   Proof. fo. Qed.
 
@@ -515,8 +515,8 @@ Section S.
     apply max_ge_compat. hyp. refl.
   Qed.
 
-  Notation rule_dec := (dec_beq (@beq_rule_ok Sig)).
-  Notation remove := (remove rule_dec).
+  Abbreviation rule_dec := (dec_beq (@beq_rule_ok Sig)).
+  Abbreviation remove := (remove rule_dec).
 
   Lemma maxvar_rules_remove : forall a R x y,
     x >= y -> fold_left fold_max R x >= fold_left fold_max (remove a R) y.
@@ -611,15 +611,15 @@ Section S.
     Variables (S S' : relation term) (E E' R R' : rules).
 
     Lemma hd_red_mod_of_hd_red_Mod_int :
-      hd_red_Mod (int_red E #) R << hd_red_mod E R.
+      hd_red_Mod ((int_red E) #) R << hd_red_mod E R.
 
     Proof.
       unfold hd_red_Mod, hd_red_mod.
-      apply compose_incl. assert (int_red E # << red E #).
+      apply compose_incl. assert ((int_red E) # << (red E) #).
       apply rtc_incl. apply int_red_incl_red. eauto. refl.
     Qed.
 
-    Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod (red E #) R << hd_red_mod E R.
+    Lemma hd_red_mod_of_hd_red_Mod : hd_red_Mod ((red E) #) R << hd_red_mod E R.
 
     Proof. unfold hd_red_Mod, hd_red_mod. refl. Qed.
 
@@ -899,7 +899,7 @@ Section S.
   Qed.
 
   Lemma int_red_rtc_min : forall R t u,
-    int_red R # t u -> min (red R) t -> min (red R) u.
+    (int_red R) # t u -> min (red R) t -> min (red R) u.
 
   Proof.
     induction 1; intro hx. eapply int_red_min. apply H. hyp. hyp.
@@ -923,7 +923,7 @@ internal [R]-steps is minimal if:
       forall j, h j < h (S j) /\ hd_red (d :: nil) (g (h j)) (f (S (h j))).
 
   Definition ISModMin (R D : rules) f g :=
-    ISMod (int_red R #) (hd_red D) f g
+    ISMod ((int_red R) #) (hd_red D) f g
     /\ InfRuleApp D f g /\ Min (red R) f /\ Min (red R) g.
 
 End S.

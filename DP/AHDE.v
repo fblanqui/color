@@ -42,8 +42,8 @@ Proof.
 unfold is_restricted. intros. unfold hde in H; tauto.
 Qed.
 
-Notation eq_rule_dec := (@eq_rule_dec Sig).
-Notation eq_symb_dec := (@eq_symb_dec Sig).
+Abbreviation eq_rule_dec := (@eq_rule_dec Sig).
+Abbreviation eq_symb_dec := (@eq_symb_dec Sig).
 
 Lemma hde_dec : forall r1 r2, {hde r1 r2} + {~hde r1 r2}.
 
@@ -67,7 +67,7 @@ Variable Sig : Signature.
 Variables R D : rules Sig.
 
 Lemma int_red_hd_rules_graph_incl_hde :
-  hd_rules_graph (int_red R #) D << hde D.
+  hd_rules_graph ((int_red R) #) D << hde D.
 
 Proof.
 unfold inclusion. intros. destruct x. destruct y. destruct H. destruct H0.
@@ -86,14 +86,14 @@ Section prop_mark_correct.
 
 Variable Sig : Signature.
 
-Notation Sig' := (dup_sig Sig).
+Abbreviation Sig' := (dup_sig Sig).
 
 Variable R D : rules Sig'.
 
 Variable int_hyp : forallb (@is_int_symb_lhs Sig) R = true.
 Variable hd_hyp : forallb (@is_hd_symb_rhs Sig) D = true.
 
-Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph (red R #) D << hde D.
+Lemma dup_hd_rules_graph_incl_hde : hd_rules_graph ((red R) #) D << hde D.
 
 Proof.
 unfold inclusion. intros. apply (@int_red_hd_rules_graph_incl_hde _ R D x y).
@@ -126,8 +126,8 @@ Definition hd_eq (u v : term Sig) :=
 
 (* REMARK: [Inb _ D] can be optimized when D is sorted. *)
 
-Notation mem := (mem (@beq_rule Sig)).
-Notation mem_ok := (mem_ok (@beq_rule_ok Sig)).
+Abbreviation mem := (mem (@beq_rule Sig)).
+Abbreviation mem_ok := (mem_ok (@beq_rule_ok Sig)).
 
 Definition hde_bool r1 r2 :=
   mem r1 D && mem r2 D && hd_eq (rhs r1) (lhs r2).
@@ -158,7 +158,7 @@ Variable Sig : Signature.
 
 Variables R D : rules Sig.
 
-Lemma hde_bool_correct : hd_rules_graph (int_red R #) D << Graph (hde_bool D).
+Lemma hde_bool_correct : hd_rules_graph ((int_red R) #) D << Graph (hde_bool D).
 
 Proof.
 incl_trans (hde D). apply int_red_hd_rules_graph_incl_hde.
@@ -168,14 +168,14 @@ Qed.
 (***********************************************************************)
 (** correctness with marked symbols *)
 
-Notation Sig' := (dup_sig Sig).
+Abbreviation Sig' := (dup_sig Sig).
 
-Notation R' := (dup_int_rules R).
+Abbreviation R' := (dup_int_rules R).
 
 Variable hyp : forallb (@is_notvar_lhs Sig') R' = true.
 
 Lemma hde_bool_mark_correct :
-  hd_rules_graph (red (dup_int_rules R) #) (dup_hd_rules D)
+  hd_rules_graph ((red (dup_int_rules R)) #) (dup_hd_rules D)
   << Graph (hde_bool (dup_hd_rules D)).
 
 Proof.

@@ -30,7 +30,7 @@ Arguments nth_In [A n l] d _.
 
 Ltac elt_type l := match type of l with list ?A => A end.
 
-Infix "[=" := incl (at level 70).
+Infix "⊆" := incl (at level 70).
 
 (***********************************************************************)
 (** Properties of [In] (membership predicate on lists). *)
@@ -146,31 +146,31 @@ Section incl.
 
   Variable A : Type.
 
-  Lemma incl_nil_elim : forall l : list A, l [= nil <-> l = nil.
+  Lemma incl_nil_elim : forall l : list A, l ⊆ nil <-> l = nil.
 
   Proof.
     unfold incl. destruct l; intuition. assert (In a (a::l)). left. refl.
     ded (H _ H0). contr. discr.
   Qed.
 
-  Lemma incl_nil : forall l : list A, nil [= l.
+  Lemma incl_nil : forall l : list A, nil ⊆ l.
 
   Proof. induction l. refl. apply incl_tl. hyp. Qed.
 
-  Lemma incl_cons_l : forall (a : A) l m, a :: l [= m -> In a m /\ l [= m.
+  Lemma incl_cons_l : forall (a : A) l m, a :: l ⊆ m -> In a m /\ l ⊆ m.
 
   Proof. intros a l m. unfold incl. simpl. intuition. Qed.
 
-  Lemma incl_cons_l_in : forall (x : A) l m, x :: l [= m -> In x m.
+  Lemma incl_cons_l_in : forall (x : A) l m, x :: l ⊆ m -> In x m.
 
   Proof. unfold incl. simpl. intros. apply H. left. refl. Qed.
 
-  Lemma incl_cons_l_incl : forall (x : A) l m, x :: l [= m -> l [= m.
+  Lemma incl_cons_l_incl : forall (x : A) l m, x :: l ⊆ m -> l ⊆ m.
 
   Proof. unfold incl. simpl. intros. apply H. tauto. Qed.
 
   Lemma incl_app_elim : forall l1 l2 l3 : list A,
-    l1 ++ l2 [= l3 -> l1 [= l3 /\ l2 [= l3.
+    l1 ++ l2 ⊆ l3 -> l1 ⊆ l3 /\ l2 ⊆ l3.
 
   Proof.
     intuition.
@@ -178,34 +178,34 @@ Section incl.
     trans (l1 ++ l2). apply incl_appr. refl. hyp.
   Qed.
 
-  Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l1 [= l3.
+  Lemma incl_appr_incl : forall l1 l2 l3 : list A, l1 ++ l2 ⊆ l3 -> l1 ⊆ l3.
 
   Proof.
     induction l1; intros. apply incl_nil.
     trans ((a::l1) ++ l2). 2: hyp. apply incl_appl. refl.
   Qed.
 
-  Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 [= l3 -> l2 [= l3.
+  Lemma incl_appl_incl : forall l1 l2 l3 : list A, l1 ++ l2 ⊆ l3 -> l2 ⊆ l3.
 
   Proof.
     induction l1; intros. hyp.
     trans ((a::l1) ++ l2). 2: hyp. apply incl_appr. refl.
   Qed.
 
-  Lemma appl_incl : forall l l2 l2' : list A, l2 [= l2' -> l ++ l2 [= l ++ l2'.
+  Lemma appl_incl : forall l l2 l2' : list A, l2 ⊆ l2' -> l ++ l2 ⊆ l ++ l2'.
 
   Proof. intros. apply app_incl. refl. hyp. Qed.
 
-  Lemma appr_incl : forall l l1 l1' : list A, l1 [= l1' -> l1 ++ l [= l1' ++ l.
+  Lemma appr_incl : forall l l1 l1' : list A, l1 ⊆ l1' -> l1 ++ l ⊆ l1' ++ l.
 
   Proof. intros. apply app_incl. hyp. refl. Qed.
 
   Lemma app_com_incl : forall l1 l2 l3 l4 : list A,
-    (l1 ++ l3) ++ l2 [= l4 -> (l1 ++ l2) ++ l3 [= l4.
+    (l1 ++ l3) ++ l2 ⊆ l4 -> (l1 ++ l2) ++ l3 ⊆ l4.
 
   Proof. unfold incl. intros. apply H. apply in_app_com. hyp. Qed.
 
-  Lemma incl_cons_r : forall x : A, forall m l, l [= x :: m -> In x l \/ l [= m.
+  Lemma incl_cons_r : forall x : A, forall m l, l ⊆ x :: m -> In x l \/ l ⊆ m.
 
   Proof.
     induction l; simpl; intros. right. apply incl_nil.
@@ -216,12 +216,12 @@ Section incl.
 
   Variable eqA_dec : forall x y : A, {x=y}+{~x=y}.
 
-  Lemma not_incl : forall l m, ~ l [= m <-> exists x:A, In x l /\ ~In x m.
+  Lemma not_incl : forall l m, ~ l ⊆ m <-> exists x:A, In x l /\ ~In x m.
 
   Proof.
     induction l; simpl; intros.
     (* nil *)
-    intuition. absurd (nil[=m). hyp. apply incl_nil.
+    intuition. absurd (nil⊆m). hyp. apply incl_nil.
     do 2 destruct H. contr.
     (* cons *)
     split; intro.
@@ -229,7 +229,7 @@ Section incl.
         subst. intro. apply H0. apply H. left. refl.
         intro. absurd (In x m). hyp. apply H1. right. hyp. }
     case (In_dec eqA_dec a m); intro.
-    assert (~l[=m). intro. apply H. unfold incl. intro b. simpl. intuition auto with *.
+    assert (~l⊆m). intro. apply H. unfold incl. intro b. simpl. intuition auto with *.
     rewrite IHl in H0. do 2 destruct H0. exists x. tauto.
     exists a. tauto.
   Qed.
@@ -241,11 +241,11 @@ Arguments incl_app_elim [A l1 l2 l3] _.
 (***********************************************************************)
 (** Strict inclusion. *)
 
-Definition strict_incl A (l m : list A) := l [= m /\ ~m [= l.
+Definition strict_incl A (l m : list A) := l ⊆ m /\ ~m ⊆ l.
 
-Infix "[" := strict_incl (at level 70).
+Infix "⊂" := strict_incl (at level 70).
 
-Lemma strict_incl_tran : forall A (l m n : list A), l [ m -> m [ n -> l [ n.
+Lemma strict_incl_tran : forall A (l m n : list A), l ⊂ m -> m ⊂ n -> l ⊂ n.
 
 Proof.
 unfold strict_incl. intuition. trans m; hyp.
@@ -259,7 +259,7 @@ Proof. intros x y z xy yz. apply strict_incl_tran with y; hyp. Qed.
 (***********************************************************************)
 (** Equivalence (i.e. having the same elements). *)
 
-Definition lequiv {A} (l1 l2 : list A) := l1 [= l2 /\ l2 [= l1.
+Definition lequiv {A} (l1 l2 : list A) := l1 ⊆ l2 /\ l2 ⊆ l1.
 
 Infix "[=]" := lequiv (at level 70).
 
@@ -388,7 +388,7 @@ Section app.
   Qed.
 
   Lemma list_drop_last : forall l m n (a : A),
-    l ++ m = n ++ a::nil -> m <> nil -> exists2 w, w [= m & l ++ w = n.
+    l ++ m = n ++ a::nil -> m <> nil -> exists2 w, w ⊆ m & l ++ w = n.
 
   Proof.
     induction l; intros.
@@ -496,7 +496,12 @@ Section head_tail.
 
 End head_tail.
 
+Create HintDb datatypes.
+
 #[global] Hint Resolve tail_in tail_cons_tail head_app : datatypes.
+
+Create Rewrite HintDb datatypes.
+
 Global Hint Rewrite head_app length_app : datatypes.
 
 (***********************************************************************)
@@ -534,7 +539,7 @@ Section select.
         end
     end.
 
-  Lemma incl_select : forall l, select l [= l.
+  Lemma incl_select : forall l, select l ⊆ l.
 
   Proof.
     induction l; simpl. fo. destruct (f_dec a).
@@ -570,7 +575,7 @@ Section filter.
     induction l; simpl; intros. refl. rewrite IHl. destruct (f a); refl.
   Qed.
 
-  Lemma filter_incl : forall l, filter f l [= l.
+  Lemma filter_incl : forall l, filter f l ⊆ l.
 
   Proof.
     induction l; simpl; intros. refl. case (f a); rewrite IHl.
@@ -654,7 +659,7 @@ Section Inb.
     intuition. apply Inb_intro. hyp. apply Inb_true. hyp.
   Qed.
 
-  Lemma Inb_incl : forall x l l', l [= l' -> Inb x l = true -> Inb x l' = true.
+  Lemma Inb_incl : forall x l l', l ⊆ l' -> Inb x l = true -> Inb x l' = true.
 
   Proof.
     intros. apply Inb_intro. apply H. apply Inb_true. hyp.
@@ -671,7 +676,7 @@ Section Inb.
 
   Definition Inclb (l1 l2 : list A) := forallb (fun x => Inb x l2) l1.
 
-  Lemma Inclb_ok : forall l1 l2, Inclb l1 l2 = true <-> l1 [= l2.
+  Lemma Inclb_ok : forall l1 l2, Inclb l1 l2 = true <-> l1 ⊆ l2.
 
   Proof.
     intros. induction l2. unfold Inclb. simpl. case l1. simpl; split; auto.
@@ -737,7 +742,7 @@ Section remove.
     tauto. rewrite H0. simpl. tauto. simpl. tauto.
   Qed.
 
-  Lemma incl_remove : forall (x : A) l m, ~In x l -> l [= m -> l [= remove x m.
+  Lemma incl_remove : forall (x : A) l m, ~In x l -> l ⊆ m -> l ⊆ remove x m.
 
   Proof.
     induction l; simpl; intros. apply incl_nil. assert (~a=x /\ ~In x l). tauto.
@@ -746,7 +751,7 @@ Section remove.
     apply IHl. auto. apply incl_cons_l_incl with (x := a). exact H0. exact H2.
   Qed.
 
-  Lemma incl_remove2 (x : A) : forall l, remove x l [= l.
+  Lemma incl_remove2 (x : A) : forall l, remove x l ⊆ l.
 
   Proof.
     induction l; simpl. refl. destruct (eq_dec a x).
@@ -791,7 +796,7 @@ Section removes.
 
   Variable (A : Type) (eqdec : forall x y : A, {x=y}+{x<>y}).
 
-  Notation In_dec := (In_dec eqdec).
+  Abbreviation In_dec := (In_dec eqdec).
 
   Fixpoint removes (l m : list A) : list A :=
     match m with
@@ -803,7 +808,7 @@ Section removes.
         end
     end.
 
-  Lemma incl_removes : forall l m, removes l m [= m.
+  Lemma incl_removes : forall l m, removes l m ⊆ m.
 
   Proof.
     unfold incl. induction m; simpl. contr.
@@ -811,7 +816,7 @@ Section removes.
     simpl. intuition.
   Qed.
 
-  Lemma incl_removes_app : forall l m, m [= removes l m ++ l.
+  Lemma incl_removes_app : forall l m, m ⊆ removes l m ++ l.
 
   Proof.
     unfold incl. induction m; simpl. contr. intros. destruct H.
@@ -912,14 +917,14 @@ Section flat.
       | cons x l' => x ++ flat l'
     end.
 
-  Lemma In_incl_flat : forall x l, In x l -> x [= flat l.
+  Lemma In_incl_flat : forall x l, In x l -> x ⊆ flat l.
 
   Proof.
     induction l; simpl; intros. contr. intuition auto with *. subst. apply incl_appl. refl.
   Qed.
 
   Lemma incl_flat_In : forall x c cs l,
-    In x c -> In c cs -> flat cs [= l -> In x l.
+    In x c -> In c cs -> flat cs ⊆ l -> In x l.
 
   Proof. intros. apply H1. apply (In_incl_flat _ _ H0). hyp. Qed.
 
@@ -990,7 +995,7 @@ Section Element_At_List.
         end
     end.
 
-  Notation "l '[' p ']'" := (element_at l p) (at level 50).
+  Notation "l '[' p ']'" := (element_at l p) (at level 1).
 
   Fixpoint replace_at (l : list A) (p : nat) (a : A) : list A :=
     match l with
@@ -1002,7 +1007,7 @@ Section Element_At_List.
         end
     end.
 
-  Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50).
+  Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 1).
 
   Lemma element_at_exists : forall l p,
     p < length l <-> ex (fun a => l[p] = Some a).
@@ -1114,10 +1119,9 @@ End Element_At_List.
 Arguments element_at_in [A x l n] _.
 Arguments element_at_in2 [A x l n] _.
 Arguments in_exists_element_at [A l a] _.
-(*Arguments element_at_exists [A l p].*)
 
-Notation "l '[' p ']'" := (element_at l p) (at level 50) : list_scope.
-Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 50) : list_scope.
+Notation "l '[' p ']'" := (element_at l p) (at level 1) : list_scope.
+Notation "l '[' p ':=' a ']'" := (replace_at l p a) (at level 1) : list_scope.
 
 (***********************************************************************)
 (** Precidate saying that an element [a] in a list has been replaced
@@ -1162,19 +1166,19 @@ Section reverse.
     induction l; simpl; intros. hyp. apply in_or_app. simpl. tauto.
   Qed.
 
-  Lemma incl_rev : forall l : list A, l [= rev l.
+  Lemma incl_rev : forall l : list A, l ⊆ rev l.
 
   Proof.
     unfold incl. intros. apply in_rev. hyp. 
   Qed.
 
-  Lemma rev_incl : forall l : list A, rev l [= l. 
+  Lemma rev_incl : forall l : list A, rev l ⊆ l. 
 
   Proof.
     intros. pose (incl_rev (rev l)). rewrite (rev_involutive l) in i. hyp.
   Qed.
 
-  Lemma incl_rev_intro : forall l l' : list A, rev l [= rev l' -> l [= l'.
+  Lemma incl_rev_intro : forall l l' : list A, rev l ⊆ rev l' -> l ⊆ l'.
 
   Proof.
     intros. trans (rev l). apply incl_rev. trans (rev l'). hyp. apply rev_incl.
@@ -1195,7 +1199,7 @@ Section reverse_tail_recursive.
       | a :: l => rev_append (a :: l') l
     end.
 
-  Notation rev' := (rev_append nil).
+  Abbreviation rev' := (rev_append nil).
 
   Lemma rev_append_rev : forall l l', rev_append l' l = rev l ++ l'.
 
@@ -1229,7 +1233,7 @@ Section reverse_tail_recursive.
 
 End reverse_tail_recursive.
 
-Notation rev' := (rev_append nil).
+Abbreviation rev' := (rev_append nil).
 
 (***********************************************************************)
 (** Given a list [l] and a position [n] in [l], return the pair of
@@ -1257,7 +1261,7 @@ Section split.
 
   Arguments split_aux_correct [l n l1 l2] _ _.
 
-  Notation split := (split_aux nil).
+  Abbreviation split := (split_aux nil).
 
   Lemma split_correct : forall l n l1 l2,
     split l n = Some (l1, l2) -> l = l1 ++ l2.
@@ -1268,7 +1272,7 @@ Section split.
 
 End split.
 
-Notation split := (split_aux nil).
+Abbreviation split := (split_aux nil).
 
 Arguments split_correct [A l n l1 l2] _.
 
@@ -1845,11 +1849,11 @@ Section lookup.
 
   Lemma lookup_prop l : 
     (forall x, In x l -> P (snd x)) -> P default -> P (lookup l).
-  Proof with auto with datatypes.
-    induction l; intros...
+  Proof.
+    induction l; intros; auto with datatypes.
     simpl. destruct a. destruct (@eqA_dec el a).
-    apply (H (a, b))...
-    apply IHl...
+    apply (H (a, b)); auto with datatypes.
+    apply IHl; auto with datatypes.
   Qed.
 
 End lookup.
@@ -1882,7 +1886,7 @@ Section lookup_dep.
     (forall x, In x l -> P (projT2 x)) -> 
     (forall a : A, P (@default a)) -> P (lookup_dep l).
 
-  Proof with auto with datatypes.
+  Proof.
     induction l; intros.
     apply H0.
     simpl. destruct a. destruct (@eqA_dec el x).
@@ -1891,8 +1895,8 @@ Section lookup_dep.
     set (w := eq_ind_r (fun el => x = el) eq_refl e).
     dependent inversion w.
 
-    apply (H (existT b))...
-    apply IHl...
+    apply (H (existT b)); auto with datatypes.
+    apply IHl; auto with datatypes.
   Qed.
 
 End lookup_dep.
@@ -2064,7 +2068,7 @@ Section lforall.
     apply IHl. intros. apply H. auto.
   Qed.
 
-  Lemma lforall_incl l1 l2 : l1 [= l2 -> lforall l2 -> lforall l1.
+  Lemma lforall_incl l1 l2 : l1 ⊆ l2 -> lforall l2 -> lforall l1.
 
   Proof.
     intros. apply lforall_intro. intros. eapply lforall_in. apply H0.

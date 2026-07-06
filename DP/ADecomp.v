@@ -16,8 +16,8 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 (***********************************************************************)
 (** we consider the relation (hd_red_Mod S R) *)
@@ -28,7 +28,7 @@ Section S.
 (***********************************************************************)
 (** a decomposition of a list of rules is a list of list of rules *)
 
-  Notation decomp := (list rules).
+  Abbreviation decomp := (list rules).
 
 (***********************************************************************)
 (** we assume given a decidable graph on rules *)

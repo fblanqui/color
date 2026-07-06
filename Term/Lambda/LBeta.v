@@ -21,22 +21,22 @@ Section beta_top.
 
   Variables F X : Type.
 
-  Notation Te := (@Te F X).
+  Abbreviation Te := (@Te F X).
 
   Variable eq_fun_dec : forall f g : F, {f=g}+{~f=g}.
   Variable eq_var_dec : forall x y : X, {x=y}+{~x=y}.
 
-  Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
-  Notation beq_term := (bool_of_rel eq_term_dec).
+  Abbreviation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
+  Abbreviation beq_term := (bool_of_rel eq_term_dec).
 
   Variable ens_X : Ens X.
 
-  Notation fv := (@fv F X ens_X).
+  Abbreviation fv := (@fv F X ens_X).
 
   Variable var_notin : Ens_type ens_X -> X.
 
-  Notation single := (@single F X eq_var_dec).
-  Notation subs := (@subs F X eq_fun_dec eq_var_dec ens_X var_notin).
+  Abbreviation single := (@single F X eq_var_dec).
+  Abbreviation subs := (@subs F X eq_fun_dec eq_var_dec ens_X var_notin).
 
   Inductive beta_top : relation Te :=
   | beta_top_intro : forall x u v,
@@ -51,10 +51,10 @@ Module Make (Export L : L_Struct).
 
   Module Export A := LAlpha.Make L.
 
-  Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
   Infix "->bh" := beta_top (at level 70).
 
-  Notation beta := (clos_mon beta_top).
+  Abbreviation beta := (clos_mon beta_top).
   Infix "->b" := (clos_mon beta_top) (at level 70).
 
   (** Note that, because [subs] may rename some bound variables, [->b]
@@ -62,7 +62,7 @@ Module Make (Export L : L_Struct).
   beta-reduction [=>b] as the closure by alpha-equivalence of
   [->b]. *)
 
-  Notation beta_aeq := (clos_aeq beta).
+  Abbreviation beta_aeq := (clos_aeq beta).
   Infix "=>b" := (clos_aeq beta) (at level 70).
 
 (****************************************************************************)

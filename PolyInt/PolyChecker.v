@@ -39,7 +39,7 @@ Definition check_poly (n : nat) (p : polynomial) : option (poly n) :=
 
 Definition polyInt n := { p : poly n | pweak_monotone p }.
 
-Notation symPI := (symInt Sig polyInt).
+Abbreviation symPI := (symInt Sig polyInt).
 
 Program Definition symbol_poly_int (f : Sig) (p : polynomial) : option symPI :=
   match check_poly (arity f) p with
@@ -65,12 +65,12 @@ Qed.
 
 Lemma defaultPoly_wm n : pweak_monotone (defaultPoly n).
 
-Proof with simpl; auto with zarith.
-  intros. split... 
+Proof.
+  intros. split; simpl; auto with zarith. 
   apply lforall_intro. intros.
   ded (in_list_of_vec H).
   ded (Vbuild_in (fun i ip => (1%Z, mxi ip)) x H0).
-  decomp H1. subst...
+  decomp H1. subst; simpl; auto with zarith.
 Qed.
 
 Lemma defaultPoly_sm n : pstrong_monotone (defaultPoly n).
@@ -166,9 +166,9 @@ Program Definition check_succ (r : rule Sig) : option (succ (lhs r) (rhs r)) :=
   end.
 
 Next Obligation.
-Proof with try discr; auto.
-  destruct_call coef_pos_check...
-  apply pi_compat_rule...
+Proof.
+  destruct_call coef_pos_check; try discr; auto.
+  apply pi_compat_rule; try discr; auto.
 Qed.
 
 Program Definition check_succeq (r : rule Sig) : option (succeq (lhs r) (rhs r)) :=
@@ -178,9 +178,9 @@ Program Definition check_succeq (r : rule Sig) : option (succeq (lhs r) (rhs r))
   end.
 
 Next Obligation.
-Proof with try discr; auto.
-  destruct_call coef_pos_check...
-  apply pi_compat_rule_weak...
+Proof.
+  destruct_call coef_pos_check; try discr; auto.
+  apply pi_compat_rule_weak; try discr; auto.
 Qed.
 
 End Orders.

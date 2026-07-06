@@ -106,8 +106,8 @@ Section pigeon_hole.
 
   Variables (A : Type) (eq_dec : forall x y : A, {x=y}+{~x=y}).
 
-  Notation occur := (occur eq_dec).
-  Notation delta := (delta eq_dec).
+  Abbreviation occur := (occur eq_dec).
+  Abbreviation delta := (delta eq_dec).
 
   Lemma pigeon_hole : forall s l,
     incl l s -> length l > length s -> exists x : A, occur x l >= 2.

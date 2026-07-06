@@ -18,7 +18,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** we first defined a generic cap as a triple (k,f,v) where
@@ -34,7 +34,7 @@ f acts as an abstract context with k holes *)
 
 Definition Cap := sigT (fun k => ((terms k -> term) * terms k)%type).
 
-Notation Caps := (vector Cap).
+Abbreviation Caps := (vector Cap).
 
 Definition mkCap := @existT nat (fun k => ((terms k -> term) * terms k)%type).
 
@@ -85,7 +85,7 @@ Fixpoint Vmap_sum n (cs : Caps n) : terms (sum cs) -> terms n :=
 (***********************************************************************)
 (** function computing the generic cap of a term *)
 
-Notation rule := (@rule Sig). Notation rules := (list rule).
+Abbreviation rule := (@rule Sig). Abbreviation rules := (list rule).
 
 Variable R : rules.
 
@@ -198,7 +198,7 @@ Ltac single_tac x t :=
     let y := fresh "y" in intro y; intro;
     case_beq_nat x y; [lia | refl]].
 
-Notation In_dec := (In_dec eq_nat_dec).
+Abbreviation In_dec := (In_dec eq_nat_dec).
 
 Lemma ren_cap_intro : forall t k, exists s, t = sub s (ren_cap k t)
   /\ forall x, x < k \/ x >= k + nb_aliens t -> s x = Var x.
@@ -433,7 +433,7 @@ ded (vars_ren_caps i0). lia. case
 Qed.
 
 Lemma rtc_red_sub_ren_cap : forall k u v,
-  red R # u v -> exists s, v = sub s (ren_cap k u).
+  (red R) # u v -> exists s, v = sub s (ren_cap k u).
 
 Proof.
 induction 1; intros. apply red_sub_ren_cap. hyp.

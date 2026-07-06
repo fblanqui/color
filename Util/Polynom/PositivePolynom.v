@@ -15,8 +15,8 @@ From Stdlib Require Import List Lia.
 
 From CoLoR Require ListUtil.
 
-Notation vec := (vector D).
-Notation vals := (@Vmap D Z val _).
+Abbreviation vec := (vector D).
+Abbreviation vals := (@Vmap D Z val _).
 
 Local Open Scope Z_scope.
 
@@ -163,28 +163,28 @@ Qed.
 Lemma coefPos_ge0 : forall n (p : poly n) (m : monom n),
   coef_pos p -> coef m p >= 0.
 
-Proof with auto with zarith.
-  induction p. simpl...
+Proof.
+  induction p. simpl; auto with zarith.
   intros. destruct a. simpl.
   destruct (monom_eq_dec m t).
   subst m. apply Zge_trans with (coef t p).
-  destruct H. simpl in H...
-  apply IHp. destruct H...
-  apply IHp. destruct H...
+  destruct H. simpl in H; auto with zarith.
+  apply IHp. destruct H; auto with zarith.
+  apply IHp. destruct H; auto with zarith.
 Qed.
 
 Lemma coefPos_geC : forall n (p : poly n) (m : monom n) c,
   coef_pos p -> In (c, m) p -> coef m p >= c.
 
-Proof with auto with zarith.
+Proof.
   induction p. simpl. tauto.
   intros. destruct a. simpl.
   destruct (monom_eq_dec m t). subst m.
   destruct H0. injection H0. intros. subst z.
-  destruct H. ded (coefPos_ge0 p t H1)...
+  destruct H. ded (coefPos_ge0 p t H1); auto with zarith.
   apply Zge_trans with (coef t p).
-  simpl in H...
-  apply IHp... destruct H...
+  simpl in H; auto with zarith.
+  apply IHp; auto with zarith. destruct H; auto with zarith.
   destruct H0. congruence.
-  apply IHp... destruct H...
+  apply IHp; auto with zarith. destruct H; auto with zarith.
 Qed.

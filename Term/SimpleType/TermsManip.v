@@ -116,6 +116,8 @@ Module TermsManip (Sig : TermsSig.Signature).
 
   Proof. intro M; term_inv M; congruence. Qed.
 
+  Create Rewrite HintDb terms.
+
   Global Hint Rewrite absBody_term absBody_env abs_type
     using solve [auto with terms] : terms.
 
@@ -1103,7 +1105,7 @@ Module TermsManip (Sig : TermsSig.Signature).
     destruct ML; try_solve.
     rewrite (appUnits_app M Mapp).
     rewrite <- H.
-    rewrite app_ass.
+    rewrite <- app_assoc.
     auto with datatypes.
   Qed.
 

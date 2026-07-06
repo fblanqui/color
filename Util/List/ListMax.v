@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import ListUtil LogicUtil NatUtil.
 
-Notation nats := (list nat).
+Abbreviation nats := (list nat).
 
 (***********************************************************************)
 (** max *)

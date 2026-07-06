@@ -28,13 +28,13 @@ Section S.
   Definition filter_arity f := Vtrue (pi f).
 
   Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
-  Notation Sig' := filter_sig.
+  Abbreviation Sig' := filter_sig.
 
-  Notation term' := (ATerm.term Sig'). Notation Fun' := (@Fun Sig').
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term' := (ATerm.term Sig'). Abbreviation Fun' := (@Fun Sig').
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
-  Notation context' := (context Sig'). Definition Cont' := (@Cont Sig').
-  Notation context := (context Sig).
+  Abbreviation context' := (context Sig'). Definition Cont' := (@Cont Sig').
+  Abbreviation context := (context Sig).
 
 (***********************************************************************)
 (** term filtering *)
@@ -48,12 +48,12 @@ Section S.
 (***********************************************************************)
 (** rule filtering *)
 
-  Notation rule' := (rule Sig'). Notation rules' := (list rule').
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation rule' := (rule Sig'). Abbreviation rules' := (list rule').
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
   Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
 
-  Notation filter_rules := (List.map filter_rule).
+  Abbreviation filter_rules := (List.map filter_rule).
 
 (***********************************************************************)
 (** properties wrt substitutions *)
@@ -82,7 +82,7 @@ Section S.
     Definition filter_ord : relation term :=
       fun t u => succ (filter t) (filter u).
 
-    Notation fsucc := filter_ord.
+    Abbreviation fsucc := filter_ord.
 
 (***********************************************************************)
 (** transitivity *)
@@ -218,9 +218,9 @@ Section S.
 
     Variable succ : relation term'.
 
-    Notation fsucc := (filter_ord succ).
-    Notation succ_eq := (clos_refl succ).
-    Notation fsucc_eq := (filter_ord succ_eq).
+    Abbreviation fsucc := (filter_ord succ).
+    Abbreviation succ_eq := (clos_refl succ).
+    Abbreviation fsucc_eq := (filter_ord succ_eq).
 
     Lemma filter_ord_rc : reflexive fsucc_eq.
 
@@ -264,9 +264,9 @@ Section S.
   Section red.
 
     Variable R : rules.
-    Notation R' := (filter_rules R).
+    Abbreviation R' := (filter_rules R).
 
-    Lemma red_incl_filter_red_rc : red R << filter_ord (red R' %).
+    Lemma red_incl_filter_red_rc : red R << filter_ord ((red R') %).
 
     Proof.
       unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
@@ -281,11 +281,11 @@ Section S.
       rewrite (filter_cont_false f e t c0 t0 (sub s r) H0). refl.
     Qed.
 
-    Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
+    Lemma red_rtc_incl_filter_red_rtc : (red R) # << filter_ord ((red R') #).
 
     Proof.
       unfold inclusion. induction 1.
-      apply incl_filter with (red R' %). apply rc_incl_rtc.
+      apply incl_filter with ((red R') %). apply rc_incl_rtc.
       apply red_incl_filter_red_rc. exact H.
       unfold filter_ord. apply rt_refl.
       unfold filter_ord. apply rt_trans with (filter y).
@@ -308,8 +308,8 @@ Section S.
   Section red_mod.
 
     Variable E R : rules.
-    Notation E' := (filter_rules E).
-    Notation R' := (filter_rules R).
+    Abbreviation E' := (filter_rules E).
+    Abbreviation R' := (filter_rules R).
 
     Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
 

@@ -18,7 +18,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation data := (data Sig).
+  Abbreviation term := (term Sig). Abbreviation data := (data Sig).
 
   Variable E R : rules Sig.
 
@@ -96,7 +96,7 @@ Section S.
 
   Arguments mod_rewrites_correct [ds t us] _.
 
-  Notation default := (Var 0).
+  Abbreviation default := (Var 0).
 
   Lemma mod_FS_red : forall ts t, mod_FS t ts -> forall i, i < length ts ->
     red_mod E R (nth i (t::ts) default) (nth (S i) (t::ts) default).
@@ -158,7 +158,7 @@ Section S.
       ded (matches_correct h3). subst u. refl.
     Qed.
 
-    Lemma red_last_term_g : red E # last_term (g t).
+    Lemma red_last_term_g : (red E) # last_term (g t).
 
     Proof.
       rewrite <- last_term'_g. unfold last_term'. apply FS_rtc.

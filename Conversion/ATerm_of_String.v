@@ -21,8 +21,8 @@ Import Srs.
 
 Variable SSig : VSignature.Signature.
 
-Notation letter := (symbol SSig). Notation string := (string SSig).
-Notation srule := (rule SSig). Notation srules := (rules SSig).
+Abbreviation letter := (symbol SSig). Abbreviation string := (string SSig).
+Abbreviation srule := (rule SSig). Abbreviation srules := (rules SSig).
 
 (***********************************************************************)
 (** corresponding algebraic signature *)
@@ -33,10 +33,10 @@ Import ATrs.
 
 Definition ASig_of_SSig := mkSignature ar (@VSignature.beq_symb_ok SSig).
 
-Notation ASig := ASig_of_SSig.
+Abbreviation ASig := ASig_of_SSig.
 
-Notation term := (term ASig). Notation terms := (vector term).
-Notation context := (context ASig).
+Abbreviation term := (term ASig). Abbreviation terms := (vector term).
+Abbreviation context := (context ASig).
 
 Import AUnary.
 
@@ -47,9 +47,9 @@ Proof. intro. refl. Qed.
 Ltac arity := arity1 is_unary_sig.
 Ltac is_unary := try (exact is_unary_sig).
 
-Notation Fun1 := (Fun1 is_unary_sig). Notation Cont1 := (Cont1 is_unary_sig).
-Notation cont := (cont is_unary_sig).
-Notation term_ind_forall := (term_ind_forall is_unary_sig).
+Abbreviation Fun1 := (Fun1 is_unary_sig). Abbreviation Cont1 := (Cont1 is_unary_sig).
+Abbreviation cont := (cont is_unary_sig).
+Abbreviation term_ind_forall := (term_ind_forall is_unary_sig).
 
 (***********************************************************************)
 (** conversion string <-> term *)
@@ -201,7 +201,7 @@ unfold trs_of_srs. apply in_map. exact H0.
 Qed.
 
 Lemma rtc_red_of_sred : forall x y,
-  Srs.red R # x y -> red (trs_of_srs R) # (term_of_string x) (term_of_string y).
+  (Srs.red R) # x y -> (red (trs_of_srs R)) # (term_of_string x) (term_of_string y).
 
 Proof.
 intros. elim H; intros. apply rt_step. apply red_of_sred. exact H0.
@@ -221,8 +221,8 @@ destruct (in_map_elim lr). destruct H. destruct x. unfold rule_of_srule in H0.
 simpl in H0. inversion H0. rewrite !string_of_term_epi. hyp.
 Qed.
 
-Lemma rtc_sred_of_red : forall t u, red (trs_of_srs R) # t u ->
-  Srs.red R # (string_of_term t) (string_of_term u).
+Lemma rtc_sred_of_red : forall t u, (red (trs_of_srs R)) # t u ->
+  (Srs.red R) # (string_of_term t) (string_of_term u).
 
 Proof.
 induction 1. apply rt_step. apply sred_of_red. hyp.

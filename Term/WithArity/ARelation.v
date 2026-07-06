@@ -17,7 +17,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig).
+  Abbreviation term := (term Sig).
 
 (***********************************************************************)
 (** basic definitions *)
@@ -171,7 +171,7 @@ Section S.
 
     Variable R : relation term.
 
-    Notation E := (R %).
+    Abbreviation E := (R %).
 
     Lemma rc_context_closed :
       weak_context_closed R E -> context_closed E.
@@ -206,7 +206,7 @@ Section S.
 
     Variables (E : relation term) (E_trans : transitive E).
 
-    Notation R := (strict_part E).
+    Abbreviation R := (strict_part E).
 
     Lemma absorb_strict : absorbs_left R E.
 

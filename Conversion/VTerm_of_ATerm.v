@@ -22,8 +22,8 @@ Section S.
 
   Variable ASig : Signature.
 
-  Notation aterm := (term ASig). Notation aterms := (vector aterm).
-  Notation AFun := (@Fun ASig).
+  Abbreviation aterm := (term ASig). Abbreviation aterms := (vector aterm).
+  Abbreviation AFun := (@Fun ASig).
 
 (***********************************************************************)
 (** corresponding varyadic signature *)
@@ -32,10 +32,10 @@ Section S.
 
   Definition VSig_of_ASig := mkSignature (@ASignature.beq_symb_ok ASig).
 
-  Notation VSig := VSig_of_ASig.
+  Abbreviation VSig := VSig_of_ASig.
 
-  Notation vterm := (term VSig). Notation vterms := (list vterm).
-  Notation VFun := (@Fun VSig).
+  Abbreviation vterm := (term VSig). Abbreviation vterms := (list vterm).
+  Abbreviation VFun := (@Fun VSig).
 
 (***********************************************************************)
 (** conversion of terms *)
@@ -98,14 +98,14 @@ Section S.
 
   Import AContext.
 
-  Notation acont := (@context ASig).
-  Notation ACont := (@Cont ASig).
-  Notation afill := fill.
+  Abbreviation acont := (@context ASig).
+  Abbreviation ACont := (@Cont ASig).
+  Abbreviation afill := fill.
 
   Import VContext.
 
-  Notation vcont := (@context VSig).
-  Notation VCont := (@Cont VSig).
+  Abbreviation vcont := (@context VSig).
+  Abbreviation VCont := (@Cont VSig).
 
   Fixpoint vcont_of_acont (c : acont) : vcont :=
     match c with
@@ -127,13 +127,13 @@ Section S.
 
   Import ASubstitution.
 
-  Notation asubs := (@substitution ASig).
-  Notation asub := (@sub ASig).
+  Abbreviation asubs := (@substitution ASig).
+  Abbreviation asub := (@sub ASig).
 
   Import VSubstitution.
 
-  Notation vsubs := (@substitution VSig).
-  Notation vsub := (@sub VSig).
+  Abbreviation vsubs := (@substitution VSig).
+  Abbreviation vsub := (@sub VSig).
 
   Definition vsubs_of_asubs (s : asubs) x := vterm_of_aterm (s x).
 
@@ -154,13 +154,13 @@ Section S.
 
   Import ATrs.
 
-  Notation arule := (@ATrs.rule ASig).
-  Notation ared := (@ATrs.red ASig).
+  Abbreviation arule := (@ATrs.rule ASig).
+  Abbreviation ared := (@ATrs.red ASig).
 
   Import VTrs.
 
-  Notation vrule := (@VTrs.rule VSig).
-  Notation vred := (@VTrs.red VSig).
+  Abbreviation vrule := (@VTrs.rule VSig).
+  Abbreviation vred := (@VTrs.red VSig).
 
   Definition vrule_of_arule (rho : arule) : vrule :=
     let (l,r) := rho in mkRule (vterm_of_aterm l) (vterm_of_aterm r).
@@ -169,7 +169,7 @@ Section S.
 
   Definition vrules_of_arules := List.map vrule_of_arule R.
 
-  Notation S := vrules_of_arules.
+  Abbreviation S := vrules_of_arules.
 
   Lemma vred_of_ared : forall t u,
     ared R t u -> vred S (vterm_of_aterm t) (vterm_of_aterm u).

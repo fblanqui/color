@@ -19,8 +19,8 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (rules Sig).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (rules Sig).
 
   Lemma flat_cont_aux : forall n i, i < n -> i + S (n - S i) = n.
 
@@ -132,8 +132,8 @@ Section S.
       trans (maxvar_rule (mkRule l r)). lia. apply Nat.le_max_l.
     Qed.
 
-    Lemma rtc_red_one_flat_cont_intro : forall t u, red R # t u ->
-      red (flat_rules R) # (fill one_flat_cont t) (fill one_flat_cont u).
+    Lemma rtc_red_one_flat_cont_intro : forall t u, (red R) # t u ->
+      (red (flat_rules R)) # (fill one_flat_cont t) (fill one_flat_cont u).
 
     Proof.
       induction 1. apply rt_step. apply red_one_flat_cont_intro. hyp.
@@ -200,7 +200,7 @@ End FlatCC.
 
 Module FlatCCProps (Import F : FlatCC).
 
-  Notation rules := (rules Sig).
+  Abbreviation rules := (rules Sig).
 
   Section red_mod.
 

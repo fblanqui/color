@@ -29,10 +29,10 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation context := (context Sig).
-Notation substitution := (substitution Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+Abbreviation context := (context Sig).
+Abbreviation substitution := (substitution Sig).
+Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 Definition is_unary := forall f : Sig, 1 = arity f.
 
@@ -294,7 +294,7 @@ Section red_mod.
 Variables (E R : rules)
   (hE : rules_preserve_vars E) (hR : rules_preserve_vars R).
 
-Definition red_mod1 := red1 E # @ red1 R.
+Definition red_mod1 := (red1 E) # @ red1 R.
 
 Lemma red_mod1_eq : red_mod E R == red_mod1.
 
@@ -360,11 +360,11 @@ Qed.
 Arguments red_ren [t u] _.
 
 Lemma rtc_red_ren : forall t u,
-  red R # (sub s t) u -> exists v, red R # t v /\ sub s v = u.
+  (red R) # (sub s t) u -> exists v, (red R) # t v /\ sub s v = u.
 
 Proof.
-cut (forall t' u, red R # t' u -> forall t, t' = sub s t -> exists v,
-  red R # t v /\ sub s v = u). intros. apply H with (t':=sub s t). hyp. refl.
+cut (forall t' u, (red R) # t' u -> forall t, t' = sub s t -> exists v,
+  (red R) # t v /\ sub s v = u). intros. apply H with (t':=sub s t). hyp. refl.
 induction 1; intros; subst.
 destruct (red_ren H). exists x. intuition auto with *.
 exists t. intuition auto with *.

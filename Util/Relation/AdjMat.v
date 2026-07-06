@@ -252,7 +252,7 @@ Qed.
 (** High enough exponentiation is transitive closure *)
 
 Lemma Gmorph_clos_trans : forall x y,
-  GoM (mat_exp_fast M (S (log2 dim))) x y <-> GoM M! x y.
+  GoM (mat_exp_fast M (S (log2 dim))) x y <-> (GoM M)! x y.
 
 Proof.
 split; intros.

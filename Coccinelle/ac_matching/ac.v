@@ -602,7 +602,7 @@ Proof.
 intros f l1; induction l1 as [ | [v1 | g1 ll1]]; simpl; trivial.
 intros l2; rewrite IHl1; trivial.
 intros l2; rewrite IHl1; generalize (F.Symb.eq_bool_ok f g1); case (F.Symb.eq_bool f g1); [intro f_eq_g1 | intro f_diff_g1].
-rewrite app_ass; trivial.
+rewrite <- app_assoc; trivial.
 simpl; trivial.
 Qed.
 
@@ -625,7 +625,7 @@ reflexivity.
 generalize (F.Symb.eq_bool_ok f f1); case (F.Symb.eq_bool f f1); [intro f_eq_f1; subst f1 | intros _].
 transitivity (ll1 ++ flatten f (l2' ++ l2'')).
 rewrite <- permut_app1; trivial.
-rewrite flatten_app; do 2 rewrite <- app_ass; 
+rewrite flatten_app; do 2 rewrite app_assoc; 
 rewrite <- permut_app2;
 apply list_permut_app_app.
 rewrite <- permut_cons_inside.

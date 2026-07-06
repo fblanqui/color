@@ -27,14 +27,14 @@ Module Export Def.
   Section supterm_acc.
 
     Variables F X : Type.
-    Notation Fun := (@Fun F X).
-    Notation Te := (@Te F X).
+    Abbreviation Fun := (@Fun F X).
+    Abbreviation Te := (@Te F X).
 
     Variable So : Type.
-    Notation Ty := (@Ty So).
+    Abbreviation Ty := (@Ty So).
 
     Variable typ : F -> Ty.
-    Notation TypArgs := (@TypArgs F X So typ).
+    Abbreviation TypArgs := (@TypArgs F X So typ).
 
     Variables (Acc : F -> set nat)
       (Acc_arity : forall f i, Acc f i -> i < arity (typ f)).
@@ -69,7 +69,7 @@ Module Type BI_Struct.
   with Definition eq := @Logic.eq So.
 
   Infix "<B" := lt (at level 70).
-  Notation gtB := (transp lt) (only parsing).
+  Abbreviation gtB := (transp lt) (only parsing).
   Infix ">B" := gtB (at level 70).
 
   (** We assume that [ltB] is well-founded (in Coq sense). *)
@@ -94,9 +94,9 @@ Module Type BI_Struct.
 
   (** Notations. *)
 
-  Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation vaeq := (Vforall2 aeq).
-  Notation supterm_acc := (@supterm_acc F X So typ Acc Acc_arity).
+  Abbreviation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation vaeq := (Vforall2 aeq).
+  Abbreviation supterm_acc := (@supterm_acc F X So typ Acc Acc_arity).
 
 End BI_Struct.
 
@@ -388,7 +388,7 @@ of some variant of the following monotone function [G]. *)
     Proof.
       intros X Y XY t [snt ht]. split. hyp. intros f hf ts h i hi.
       apply int_pos with (I:=update I_lt_a X) (a:=a). apply BOrd.eq_dec.
-      (* [update X a [= update Y a] *)
+      (* [update X a ⊆ update Y a] *)
       unfold update. destruct (BOrd.compare a a). refl. hyp. refl.
       intros b n. unfold update. destruct (BOrd.compare b a). refl. fo. refl.
       (* [pos a Ti] *)

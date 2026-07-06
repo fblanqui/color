@@ -276,7 +276,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite Nat.min_r; trivial.
     rewrite finalSeg_copy; trivial.
     rewrite <- copy_split.
-    repeat (rewrite <- app_ass; rewrite <- copy_split).
+    repeat (rewrite app_assoc; rewrite <- copy_split).
     replace (x + n) with (k + n + (x - k)); [apply env_eq_refl | lia].
     rewrite initialSeg_full; autorewrite with datatypes using simpl; try lia.
     rewrite finalSeg_empty; autorewrite with datatypes using simpl; try lia.
@@ -343,7 +343,7 @@ Module TermsActiveEnv (Sig : TermsSig.Signature).
     rewrite initialSeg_copy.
     rewrite Nat.min_r; trivial.
     rewrite finalSeg_copy; [idtac | lia].
-    rewrite <- app_ass.
+    rewrite app_assoc.
     rewrite <- copy_split.
     replace (pred x) with (n + (x - S n)); trivial.
     lia.

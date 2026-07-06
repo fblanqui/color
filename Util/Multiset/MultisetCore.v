@@ -15,6 +15,9 @@ From Stdlib Require Import Relations Psatz.
 
 Declare Scope msets_scope.
 
+Create HintDb multisets.
+Create Rewrite HintDb multisets.
+
 Module Type MultisetCore.
 
   Declare Module Export Sid : RelExtras.Eqset_dec.

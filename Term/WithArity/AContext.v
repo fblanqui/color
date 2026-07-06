@@ -18,7 +18,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** contexts *)
@@ -435,7 +435,7 @@ Section S.
       | Cont H v1 c' v2 => vars_vec v1 ++ cvars c' ++ vars_vec v2
     end.
 
-  Lemma vars_fill_elim : forall t c, vars (fill c t) [= cvars c ++ vars t.
+  Lemma vars_fill_elim : forall t c, vars (fill c t) ⊆ cvars c ++ vars t.
 
   Proof.
     induction c. simpl. refl. simpl fill. rewrite vars_fun. simpl.
@@ -443,16 +443,16 @@ Section S.
     ded (Vin_cast_elim H0). ded (Vin_app H2). destruct H3.
     repeat apply in_appl. apply (vars_vec_in H1 H3).
     simpl in H3. destruct H3. subst x. ded (IHc _ H1).
-    rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
+    rewrite <- app_assoc. apply in_appr. apply in_app_com. apply in_appl. exact H3.
     apply in_appl. repeat apply in_appr. apply (vars_vec_in H1 H3).
   Qed.
 
-  Lemma vars_fill_intro : forall t c, cvars c ++ vars t [= vars (fill c t).
+  Lemma vars_fill_intro : forall t c, cvars c ++ vars t ⊆ vars (fill c t).
 
   Proof.
     induction c. simpl. refl.
     simpl cvars. simpl fill.
-    rewrite vars_fun, vars_vec_cast, vars_vec_app, vars_vec_cons, app_ass.
+    rewrite vars_fun, vars_vec_cast, vars_vec_app, vars_vec_cons, <- app_assoc.
     apply appl_incl. apply app_com_incl. apply appr_incl. exact IHc.
   Qed.
 
@@ -466,7 +466,7 @@ Section S.
         f :: (symbs_vec v1 ++ csymbs c' ++ symbs_vec v2)
     end.
 
-  Lemma symbs_fill_elim : forall t c, symbs (fill c t) [= csymbs c ++ symbs t.
+  Lemma symbs_fill_elim : forall t c, symbs (fill c t) ⊆ csymbs c ++ symbs t.
 
   Proof.
     induction c. simpl. refl. simpl fill. rewrite symbs_fun. simpl.
@@ -475,16 +475,16 @@ Section S.
     ded (Vin_app H2). destruct H3. repeat apply in_appl.
     apply (symbs_vec_in H1 H3). simpl in H3. destruct H3. subst x0.
     ded (IHc _ H1).
-    rewrite app_ass. apply in_appr. apply in_app_com. apply in_appl. exact H3.
+    rewrite <- app_assoc. apply in_appr. apply in_app_com. apply in_appl. exact H3.
     apply in_appl. repeat apply in_appr. apply (symbs_vec_in H1 H3).
   Qed.
 
-  Lemma symbs_fill_intro : forall t c, csymbs c ++ symbs t [= symbs (fill c t).
+  Lemma symbs_fill_intro : forall t c, csymbs c ++ symbs t ⊆ symbs (fill c t).
 
   Proof.
     induction c. simpl. refl. simpl csymbs. simpl fill.
     rewrite symbs_fun, symbs_vec_cast, symbs_vec_app, symbs_vec_cons,
-      <- app_comm_cons, app_ass. intro x. simpl. intro H. destruct H.
+      <- app_comm_cons, <- app_assoc. intro x. simpl. intro H. destruct H.
     subst. left. refl. right. revert x H. apply appl_incl.
     apply app_com_incl. apply appr_incl. exact IHc.
   Qed.

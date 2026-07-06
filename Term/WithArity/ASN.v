@@ -18,12 +18,12 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
   Variable R : rules.
 
-  Notation Red := (@red Sig R). Notation SNR := (SN Red).
+  Abbreviation Red := (@red Sig R). Abbreviation SNR := (SN Red).
 
 (***********************************************************************)
 (** every subterm of an sn term is sn *)
@@ -171,7 +171,7 @@ then [sub s (Fun g vs)] is SN whenever [Fun g vs] is a call in [r] *)
 (***********************************************************************)
 (** relation with the subterm ordering *)
 
-  Notation supterm := (@supterm Sig).
+  Abbreviation supterm := (@supterm Sig).
 
   Lemma WF_supterm : WF supterm.
 

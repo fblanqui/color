@@ -14,7 +14,7 @@ From CoLoR Require Import LogicUtil.
 (***********************************************************************)
 (** Variables are represented by natural numbers. *)
 
-Notation variable := nat (only parsing).
+Abbreviation variable := nat (only parsing).
 
 (***********************************************************************)
 (** Signature with a decidable set of symbols of fixed arity. *)

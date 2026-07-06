@@ -13,4 +13,4 @@ From Stdlib Require Import ClassicalEpsilon.
 
 Arguments constructive_indefinite_description [A P] _.
 
-Notation cid := constructive_indefinite_description.
+Abbreviation cid := constructive_indefinite_description.

@@ -39,7 +39,7 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Definition dim_pos := dim_pos.
 
     Definition trsInt := trsInt.
-    Notation vec := (vec dim).
+    Abbreviation vec := (vec dim).
     Definition vec_at0 (v : vec) := Vnth v dim_pos.
 
     Definition vec_invariant (v : vec) := vec_at0 v >>= A1.
@@ -57,12 +57,12 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
   Section ABI.
 
-    Notation matrixInt := (matrixInt A matrix).
-    Notation mint := (matrixInt dim).
-    Notation mat := (matrix dim dim).
+    Abbreviation matrixInt := (matrixInt A matrix).
+    Abbreviation mint := (matrixInt dim).
+    Abbreviation mat := (matrix dim dim).
 
     Definition Sig := sig.
-    Notation MinusInf := A0.
+    Abbreviation MinusInf := A0.
 
     Variable A0_min : forall x, x >>= MinusInf.
     Variable ge_gt_eq : forall x y, x >>= y -> x >> y \/ x =A= y.
@@ -148,8 +148,8 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
     Variable mi_eval_ok : forall f v,
       vec_invariant (mi_eval_aux (trsInt f) (Vmap dom2vec v)).
 
-    Notation I := (MBI.I mi_eval_ok).
-    Notation IR_succ := (IR I succ).
+    Abbreviation I := (MBI.I mi_eval_ok).
+    Abbreviation IR_succ := (IR I succ).
 
     Definition mat_gt := mat_forall2 gtx (m:=dim) (n:=dim).
     Definition vec_gt := Vforall2 gtx (n:=dim).
@@ -199,10 +199,10 @@ Module ArcticBasedInt (ABI : TArcticBasedInt).
 
       Variables (m n p : nat) (M M' : matrix m n) (N N' : matrix n p).
 
-      Notation vge := (Vforall2 ge).
-      Notation vgt := (Vforall2 gtx).
-      Notation mge := mat_ge.
-      Notation mgt := (mat_forall2 gtx).
+      Abbreviation vge := (Vforall2 ge).
+      Abbreviation vgt := (Vforall2 gtx).
+      Abbreviation mge := mat_ge.
+      Abbreviation mgt := (mat_forall2 gtx).
 
       Lemma arctic_dot_product_mon : forall i (v v' w w' : vector A i), 
         vgt v v' -> vge w w' -> dot_product v w >_0 dot_product v' w'.

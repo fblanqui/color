@@ -51,7 +51,7 @@ Module MatrixInt (MI : TMatrixInt).
     Definition dim_pos := dim_pos.
 
     Definition trsInt := trsInt.
-    Notation vec := (vec dim).
+    Abbreviation vec := (vec dim).
     Definition vec_invariant (v : vec) := True.
 
     Lemma inv_id_matrix : 
@@ -68,7 +68,7 @@ Module MatrixInt (MI : TMatrixInt).
   (** Monotone algebra instantiated to matrices *)
   Module Export MonotoneAlgebra <: MonotoneAlgebraType.
 
-    Notation mint := (matrixInt dim).
+    Abbreviation mint := (matrixInt dim).
 
     Lemma mi_eval_ok : forall f v,
       vec_invariant (mi_eval_aux (trsInt f) (Vmap dom2vec v)).
@@ -125,7 +125,7 @@ Module MatrixInt (MI : TMatrixInt).
       apply intersection_dec. apply succeq_dec. intros x y. apply gt_dec.
     Defined.
 
-    Notation IR_succ := (IR I succ).
+    Abbreviation IR_succ := (IR I succ).
 
     Definition mint_gt n (l r : mint n) := 
       mint_ge l r /\ vec_at0 (const l) > vec_at0 (const r).

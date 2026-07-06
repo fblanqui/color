@@ -16,7 +16,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** list of immediate subterms *)
@@ -74,7 +74,7 @@ Section S.
 (***********************************************************************)
 (** the supterm relation is finitely branching *)
 
-  Notation supterm := (@supterm Sig).
+  Abbreviation supterm := (@supterm Sig).
 
   Lemma fin_branch_supterm : finitely_branching supterm.
 

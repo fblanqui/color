@@ -24,6 +24,7 @@ Module RPO_Results (Export RPO : RPO_Model).
 
   Proof. intros x t H. lt_inversion H; try inversion t_is. Qed.
 
+  #[warnings="-register-all"]
   Inductive in_term_vars : variable -> term -> Prop :=
     | is_var : forall x, in_term_vars x (Var x)
     | is_in_list : forall x f ss,

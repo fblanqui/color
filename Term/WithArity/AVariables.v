@@ -38,8 +38,8 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation terms := (vector term).
+Abbreviation term := (term Sig).
+Abbreviation terms := (vector term).
 
 Fixpoint vars t :=
   match t with
@@ -297,7 +297,7 @@ Qed.
 (***********************************************************************)
 (* preservation of variables under reduction *)
 
-Notation rule := (rule Sig). Notation rules := (rules Sig).
+Abbreviation rule := (rule Sig). Abbreviation rules := (rules Sig).
 
 Definition brule_preserve_vars (a : rule) :=
   subset (vars (rhs a)) (vars (lhs a)).

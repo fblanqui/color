@@ -15,7 +15,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
+Abbreviation term := (term Sig).
 
 Definition notvar (t : term) : Prop :=
   match t with

@@ -226,20 +226,20 @@ Section LexPair.
 
 End LexPair.
 
-Module LexicographicOrder (Import A_ord B_ord : Ord).
+Module LexicographicOrder (A_ord B_ord : Ord).
 
-  Module Import A_ext := OrdLemmas A_ord.
-  Module Import B_ext := OrdLemmas B_ord.
+  Module A_ext := OrdLemmas A_ord.
+  Module B_ext := OrdLemmas B_ord.
  
 (* --- Some shortcuts for convenience *)
-  Notation L := A_ord.S.A.
-  Notation R := B_ord.S.A.
-  Notation eqL := A_ord.S.eqA.
-  Notation eqR := B_ord.S.eqA.
-  Notation gtL := A_ord.gtA.
-  Notation gtR := B_ord.gtA.
-  Notation ltL := A_ext.ltA.
-  Notation ltR := B_ext.ltA.
+  Abbreviation L := A_ord.S.A.
+  Abbreviation R := B_ord.S.A.
+  Abbreviation eqL := A_ord.S.eqA.
+  Abbreviation eqR := B_ord.S.eqA.
+  Abbreviation gtL := A_ord.gtA.
+  Abbreviation gtR := B_ord.gtA.
+  Abbreviation ltL := A_ext.ltA.
+  Abbreviation ltR := B_ext.ltA.
 
   Definition pair := pair L R.
 
@@ -375,23 +375,23 @@ Module LexicographicOrderTriple (A_ord B_ord C_ord : Ord).
 
   Import Notations Relation_Operators.
 
-  Module Import A_ext := OrdLemmas A_ord.
-  Module Import B_ext := OrdLemmas B_ord.
-  Module Import C_ext := OrdLemmas C_ord.
+  Module A_ext := OrdLemmas A_ord.
+  Module B_ext := OrdLemmas B_ord.
+  Module C_ext := OrdLemmas C_ord.
  
 (* --- Some shortcuts for convenience *)
-  Notation L := A_ord.S.A.
-  Notation M := B_ord.S.A.
-  Notation R := C_ord.S.A.
-  Notation eqL := A_ord.S.eqA.
-  Notation eqM := B_ord.S.eqA.
-  Notation eqR := C_ord.S.eqA.
-  Notation gtL := A_ord.gtA.
-  Notation gtM := B_ord.gtA.
-  Notation gtR := C_ord.gtA.
-  Notation ltL := A_ext.ltA.
-  Notation ltM := B_ext.ltA.
-  Notation ltR := C_ext.ltA.
+  Abbreviation L := A_ord.S.A.
+  Abbreviation M := B_ord.S.A.
+  Abbreviation R := C_ord.S.A.
+  Abbreviation eqL := A_ord.S.eqA.
+  Abbreviation eqM := B_ord.S.eqA.
+  Abbreviation eqR := C_ord.S.eqA.
+  Abbreviation gtL := A_ord.gtA.
+  Abbreviation gtM := B_ord.gtA.
+  Abbreviation gtR := C_ord.gtA.
+  Abbreviation ltL := A_ext.ltA.
+  Abbreviation ltM := B_ext.ltA.
+  Abbreviation ltR := C_ext.ltA.
 
   Definition triple := (L * M * R).
   Definition fst3 (t : triple) : L := fst (fst t).

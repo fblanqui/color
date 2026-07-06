@@ -39,8 +39,8 @@ is transitive. *)
 
     Definition filter_sig := mkSignature filter_arity (@beq_symb_ok Sig).
 
-    Notation Sig' := filter_sig. Notation term' := (term Sig').
-    Notation term := (term Sig). Notation terms := (vector term).
+    Abbreviation Sig' := filter_sig. Abbreviation term' := (term Sig').
+    Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** term filtering *)
@@ -54,12 +54,12 @@ is transitive. *)
 (***********************************************************************)
 (** rule filtering *)
 
-    Notation rule := (ATrs.rule Sig). Notation rules := (list rule).
-    Notation rule' := (ATrs.rule Sig'). Notation rules' := (list rule').
+    Abbreviation rule := (ATrs.rule Sig). Abbreviation rules := (list rule).
+    Abbreviation rule' := (ATrs.rule Sig'). Abbreviation rules' := (list rule').
 
     Definition filter_rule a := mkRule (filter (lhs a)) (filter (rhs a)).
 
-    Notation filter_rules := (map filter_rule).
+    Abbreviation filter_rules := (map filter_rule).
 
 (***********************************************************************)
 (** properties of term filtering wrt substitutions *)
@@ -87,7 +87,7 @@ is transitive. *)
       Definition filter_ord : relation term :=
         fun t u => succ (filter t) (filter u).
 
-      Notation fsucc := filter_ord.
+      Abbreviation fsucc := filter_ord.
 
 (***********************************************************************)
 (** preservation of transitivity *)
@@ -244,10 +244,10 @@ is transitive. *)
 
     Section red.
 
-      Variable R : rules. Notation R' := (filter_rules R).
+      Variable R : rules. Abbreviation R' := (filter_rules R).
 
       (*FIXME: define a meta-theorems?*)
-      Lemma red_incl_filter_red_rc : red R << filter_ord (red R'%).
+      Lemma red_incl_filter_red_rc : red R << filter_ord ((red R')%).
 
       Proof.
         unfold inclusion, filter_ord. intros. redtac. subst x. subst y.
@@ -298,11 +298,11 @@ is transitive. *)
         ded (in_map N_val h). contr.
       Qed.
 
-      Lemma red_rtc_incl_filter_red_rtc : red R # << filter_ord (red R' #).
+      Lemma red_rtc_incl_filter_red_rtc : (red R) # << filter_ord ((red R') #).
 
       Proof.
         unfold inclusion. induction 1.
-        apply incl_filter with (red R'%). apply rc_incl_rtc.
+        apply incl_filter with ((red R')%). apply rc_incl_rtc.
         apply red_incl_filter_red_rc. exact H.
         unfold filter_ord. apply rt_refl.
         unfold filter_ord. apply rt_trans with (filter y).
@@ -327,7 +327,7 @@ is transitive. *)
 
       Variable E R : rules.
 
-      Notation E' := (filter_rules E). Notation R' := (filter_rules R).
+      Abbreviation E' := (filter_rules E). Abbreviation R' := (filter_rules R).
 
       Lemma hd_red_mod_filter : hd_red_mod E R << filter_ord (hd_red_mod E' R').
 

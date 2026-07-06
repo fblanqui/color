@@ -13,6 +13,7 @@ From Stdlib Require Import FSets.
 From CoLoR Require Import LogicUtil RelUtil BoolUtil.
 
 Create HintDb ordered_type.
+Create Rewrite HintDb Equal.
 
 Module Make (Export XSet : FSetInterface.S).
 
@@ -33,7 +34,7 @@ Module Make (Export XSet : FSetInterface.S).
 
 (***********************************************************************)
 (** database of Equal-ity lemmas. *)
-
+  
   Global Hint Rewrite union_assoc inter_assoc diff_inter_empty diff_inter_all : Equal.
   Global Hint Rewrite <- add_union_singleton : Equal.
 
@@ -41,6 +42,8 @@ Module Make (Export XSet : FSetInterface.S).
 
 (***********************************************************************)
 (** database of equality lemmas on [mem]. *)
+
+  Create Rewrite HintDb mem.
 
   Global Hint Rewrite empty_b singleton_b remove_b add_b union_b inter_b diff_b
     : mem.
@@ -482,9 +485,10 @@ Module Make (Export XSet : FSetInterface.S).
 
   Lemma notin_replace x y xs : E.eq y x \/ ~In x (replace x y xs).
 
-  Proof with auto with ordered_type.
-    eq_dec y x... unfold replace. case_eq (mem x xs); intro hx; set_iff.
-    right. split_all... right. rewrite not_mem_iff. hyp.
+  Proof.
+    eq_dec y x; auto with ordered_type. unfold replace.
+    case_eq (mem x xs); intro hx; set_iff.
+    right. split_all; auto with ordered_type. right. rewrite not_mem_iff. hyp.
   Qed.
 
   Lemma replace_idem x xs : replace x x xs [=] xs.

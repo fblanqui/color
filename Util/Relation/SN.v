@@ -181,7 +181,7 @@ Section inverse.
 
   Variables (A B : Type) (f : A->B) (R : relation B).
 
-  Notation Rof := (Rof R f).
+  Abbreviation Rof := (Rof R f).
 
   Lemma SN_Rof : forall b, SN R b -> forall a, b = f a -> SN Rof a.
 
@@ -207,7 +207,7 @@ Section rel_inverse.
 
   Variables (A B : Type) (R : relation B) (F : A->B->Prop).
 
-  Notation RoF := (RoF R F).
+  Abbreviation RoF := (RoF R F).
 
   Lemma SN_RoF : forall b, SN R b -> forall a, F a b -> SN RoF a.
 
@@ -287,7 +287,7 @@ Section symprod.
 
   Variable (A B : Type) (gtA : relation A) (gtB : relation B).
 
-  Notation gt := (symprod gtA gtB).
+  Abbreviation gt := (symprod gtA gtB).
 
   Lemma SN_symprod : forall x, SN gtA x -> forall y, SN gtB y -> SN gt (x,y).
 

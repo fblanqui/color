@@ -359,7 +359,7 @@ generalize (in_app_or _ _ _ In_t); clear In_t; intros [In_t | In_t];
 apply in_or_app; [left | right; right]; trivial.
 subst l2 l2''' cp1'.
 replace (l2' ++ Term g2 ll2 :: l2'') with ((l2' ++ Term g2 ll2 :: nil) ++ l2'').
-rewrite <- app_ass; rewrite <- permut_app2.
+rewrite app_assoc; rewrite <- permut_app2.
 refine (permut_trans _ (list_permut_app_app _ _));
 rewrite <- permut_app2.
 assert (new_var_p1_sigma'_eq :=
@@ -398,7 +398,7 @@ absurd (head_symb p1 = g1); trivial.
 apply H; apply in_or_app; right; trivial.
 left; trivial.
 reflexivity.
-rewrite app_ass; simpl; trivial.
+rewrite <- app_assoc; simpl; trivial.
 
 (* l1 = t1 :: _, t1 is a variable v1, v1 has no value, neither plain nor partial *)
 intros _; unfold ac_elementary_solve_term_var_without_val_term in *.
@@ -486,9 +486,9 @@ do 2 rewrite flatten_app; replace (flatten f1 (t2 :: nil)) with (t2 :: nil);
 [idtac | destruct t2 as [ | g2]; simpl; trivial; 
             generalize (F.Symb.eq_bool_ok f1 g2); case (F.Symb.eq_bool f1 g2); [intros f1_eq_g2 | intros _]; trivial; 
             absurd (f1 = g2); trivial; apply (well_formed_cf_alien Af1 W_t2 _ In_t2)].
-rewrite app_ass; rewrite <- app_comm_cons.
+rewrite <- app_assoc; rewrite <- app_comm_cons.
 rewrite <- permut_add_inside.
-rewrite <- app_ass; do 2 rewrite app_nil_r.
+rewrite app_assoc; do 2 rewrite app_nil_r.
 apply permut_sym; 
 rewrite <- (H1 (build f1 (Var (fresh_var pb) :: l1))  (build f1 (l2' ++ l2'')) (or_introl _ (eq_refl _))).
 rewrite build_eq_Term; [idtac | generalize (well_formed_cf_length Af1 W_t1); simpl; trivial].

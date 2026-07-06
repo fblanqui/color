@@ -10,12 +10,13 @@ algebraic terms with fixed arity
 
 Set Implicit Arguments.
 
+Set Warnings "-warn-library-file-stdlib-vector".
 From Stdlib Require Export Vector.
 From CoLoR Require Export ASignature.
 From CoLoR Require Import ListUtil LogicUtil EqUtil BoolUtil NatUtil VecUtil
      VecMax ListMax.
 
-Notation variables := (list variable) (only parsing).
+Abbreviation variables := (list variable) (only parsing).
 
 Section S.
 
@@ -35,7 +36,7 @@ Section S.
 
   Set Elimination Schemes.
 
-  Notation terms := (vector term).
+  Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** induction principles *)
@@ -353,7 +354,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     vars_vec (Vapp ts1 ts2) = vars_vec ts1 ++ vars_vec ts2.
 
   Proof.
-    induction ts1; intros; simpl. refl. rewrite app_ass. f_equal. apply IHts1.
+    induction ts1; intros; simpl. refl. rewrite <- app_assoc. f_equal. apply IHts1.
   Qed.
 
   Lemma vars_vec_cons : forall t n (ts : terms n),
@@ -537,7 +538,7 @@ a variable occurs in the list as much as it has occurrences in t *)
     symbs_vec (Vapp ts1 ts2) = symbs_vec ts1 ++ symbs_vec ts2.
 
   Proof.
-    induction ts1; intros; simpl. refl. rewrite app_ass. f_equal. apply IHts1.
+    induction ts1; intros; simpl. refl. rewrite <- app_assoc. f_equal. apply IHts1.
   Qed.
 
   Lemma symbs_vec_cons : forall t n (ts : terms n),

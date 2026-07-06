@@ -19,7 +19,7 @@ Section def.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig).
+  Abbreviation term := (term Sig).
 
   Record rule : Type := mkRule { lhs : term; rhs : term }.
 
@@ -35,7 +35,7 @@ Section def.
     c <> Hole
     /\ In (mkRule l r) R /\ t1 = fill c (sub s l) /\ t2 = fill c (sub s r).
 
-  Definition red_mod E R := red E # @ red R.
+  Definition red_mod E R := (red E) # @ red R.
 
 End def.
 
@@ -73,7 +73,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation rule := (rule Sig).
+  Abbreviation rule := (rule Sig).
 
   Variable R : list rule.
 

@@ -19,7 +19,7 @@ Module Type WeakRedPair.
 
   Parameter Sig : Signature.
 
-  Notation term := (@term Sig).
+  Abbreviation term := (@term Sig).
 
   Parameter succ : relation term.
   Parameter wf_succ : WF succ.
@@ -48,7 +48,7 @@ End WeakRedPair.
 
 Module WeakRedPairProps (Import WP : WeakRedPair).
 
-  Notation rule := (rule Sig). Notation rules := (rules Sig).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (rules Sig).
 
   Lemma WF_wp_hd_red_mod : forall E R,
     forallb (brule bsucceq) E = true ->

@@ -112,16 +112,16 @@ Module TermsDef (Sig : Signature).
 
    (* Some notation for preterms *)
   Implicit Type Pt : Preterm.
-  Notation "^ f" := (Fun f) (at level 20).
-  Notation "% x" := (Var x) (at level 20).
+  Notation "^ f" := (Fun f) (at level 1).
+  Notation "% x" := (Var x) (at level 1).
   Infix "@@" := App (at level 25, left associativity).
-  Notation "s [ x ]" := (s @@ x) (at level 50).
-  Notation "s [ x , y ]" := (s @@ x @@ y) (at level 50).
-  Notation "s [ x , y , z ]" := (s @@ x @@ y @@ z) (at level 50).
+  Notation "s [ x ]" := (s @@ x) (at level 1).
+  Notation "s [ x , y ]" := (s @@ x @@ y) (at level 1).
+  Notation "s [ x , y , z ]" := (s @@ x @@ y @@ z) (at level 1).
   Notation "s [ x , y , z , w ]" := (s @@ x @@ y @@ z @@ w) 
-    (at level 50).
+    (at level 1).
   Notation "s [ x , y , z , w , v ]" := (s @@ x @@ y @@ z @@ w @@ v) 
-    (at level 50).
+    (at level 1).
   Notation "\ A => M" := (Abs A M) (at level 35).
 
   Reserved Notation "E |- Pt := A" (at level 60).

@@ -26,10 +26,10 @@ Module Export Def.
 
     Variables F X : Type.
 
-    Notation Te := (@Te F X).
-    Notation Var := (@Var F X).
-    Notation Fun := (@Fun F X).
-    Notation Tes := (vector Te).
+    Abbreviation Te := (@Te F X).
+    Abbreviation Var := (@Var F X).
+    Abbreviation Fun := (@Fun F X).
+    Abbreviation Tes := (vector Te).
 
     (** A [call] is made of a function symbol [f] and a vector of terms. *)
 
@@ -42,14 +42,14 @@ Module Export Def.
 
     Variable So : Type.
 
-    Notation Ty := (@Ty So).
-    Notation Tys := (vector Ty).
+    Abbreviation Ty := (@Ty So).
+    Abbreviation Tys := (vector Ty).
 
     (** We assume given a type for each function symbol. *)
 
     Variable typ : F -> Ty.
 
-    Notation TypArgs := (@TypArgs F X So typ).
+    Abbreviation TypArgs := (@TypArgs F X So typ).
 
     (** A [max_call] is a call [mk_call f ts] with [ts] of length
        [arity (typ f)], that is, the maximum number of arguments that
@@ -69,8 +69,8 @@ Module Export Def.
       (eq_var_dec : forall x y : X, {x=y}+{~x=y})
       (ens_X : Ens X) (var_notin : Ens_type ens_X -> X).
 
-    Notation aeq := (@aeq F X eq_fun_dec eq_var_dec ens_X var_notin).
-    Notation clos_vaeq :=
+    Abbreviation aeq := (@aeq F X eq_fun_dec eq_var_dec ens_X var_notin).
+    Abbreviation clos_vaeq :=
       (@clos_vaeq F X eq_fun_dec eq_var_dec ens_X var_notin). 
 
     (** Extension of alpha-equivalence to calls. *)
@@ -228,8 +228,8 @@ Module Type DLQO_Struct.
 
   (** Notations. *)
 
-  Notation gt_call := (@gt_call F X C code gtC).
-  Notation gt_args_lex := (@gt_args_lex F X FOrd.eq_dec XOrd.eq_dec ens_X
+  Abbreviation gt_call := (@gt_call F X C code gtC).
+  Abbreviation gt_args_lex := (@gt_args_lex F X FOrd.eq_dec XOrd.eq_dec ens_X
     var_notin C filter_arity filter).
 
 End DLQO_Struct.
@@ -241,15 +241,15 @@ Module Make (Export ST : ST_Struct).
 
   Module Export A := LAlpha.Make ST.L.
 
-  Notation call := (@call F X).
-  Notation mk_call := (@mk_call F X).
-  Notation max_call := (@max_call F X So typ).
-  Notation max_call_call := (@max_call_call F X So typ).
-  Notation mk_max_call := (@mk_max_call F X So typ).
-  Notation build_max_call := (@build_max_call F X So typ).
-  Notation caeq := (@caeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation mcaeq := (@mcaeq F X So typ FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation gt_red := (@gt_red F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation call := (@call F X).
+  Abbreviation mk_call := (@mk_call F X).
+  Abbreviation max_call := (@max_call F X So typ).
+  Abbreviation max_call_call := (@max_call_call F X So typ).
+  Abbreviation mk_max_call := (@mk_max_call F X So typ).
+  Abbreviation build_max_call := (@build_max_call F X So typ).
+  Abbreviation caeq := (@caeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation mcaeq := (@mcaeq F X So typ FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation gt_red := (@gt_red F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
   (** Inversion lemmas and tactics for [caeq]. *)
 

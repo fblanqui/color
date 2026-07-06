@@ -16,7 +16,7 @@ From Stdlib Require Export ZArith.
 
 (** monomials with n variables *)
 
-Notation monom := (vector nat).
+Abbreviation monom := (vector nat).
 
 Lemma monom_eq_dec : forall n (m1 m2 : monom n), {m1=m2} + {~m1=m2}.
 
@@ -49,7 +49,7 @@ Fixpoint coef n (m : monom n) (p : poly n) : Z :=
 
 (* monomial 1 *)
 
-Notation mone := (Vconst O).
+Abbreviation mone := (Vconst O).
 
 (* monomial x_i for i<n *)
 
@@ -158,7 +158,7 @@ Local Close Scope poly_scope.
 (***********************************************************************)
 (** evaluation *)
 
-Notation vec := (vector Z).
+Abbreviation vec := (vector Z).
 
 From CoLoR Require Import ZUtil.
 

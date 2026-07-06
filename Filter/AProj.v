@@ -16,8 +16,8 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 (***********************************************************************)
 (** projection function *)
@@ -63,7 +63,7 @@ Section proj.
 
     Definition proj_ord : relation term := fun t u => succ (proj t) (proj u).
 
-    Notation psucc := proj_ord.
+    Abbreviation psucc := proj_ord.
 
 (***********************************************************************)
 (** transitivity *)
@@ -143,9 +143,9 @@ Section proj.
 
   Section red.
 
-    Variable R : rules. Notation R' := (proj_rules R).
+    Variable R : rules. Abbreviation R' := (proj_rules R).
 
-    Lemma red_incl_proj_red_rc : red R << proj_ord (red R' %).
+    Lemma red_incl_proj_red_rc : red R << proj_ord ((red R') %).
 
     Proof.
       unfold inclusion, proj_ord. intros. redtac. subst. elim c.
@@ -169,11 +169,11 @@ Section proj.
       change (red R' (fill d t1) (fill d u)). apply red_fill. hyp.
     Qed.
 
-    Lemma red_rtc_incl_proj_red_rtc : red R # << proj_ord (red R' #).
+    Lemma red_rtc_incl_proj_red_rtc : (red R) # << proj_ord ((red R') #).
 
     Proof.
       unfold inclusion. induction 1.
-      apply incl_proj with (red R' %). apply rc_incl_rtc.
+      apply incl_proj with ((red R') %). apply rc_incl_rtc.
       apply red_incl_proj_red_rc. exact H.
       unfold proj_ord. apply rt_refl.
       unfold proj_ord. apply rt_trans with (proj y).
@@ -197,8 +197,8 @@ Section proj.
 
     Variable E R : rules.
 
-    Notation E' := (proj_rules E).
-    Notation R' := (proj_rules R).
+    Abbreviation E' := (proj_rules E).
+    Abbreviation R' := (proj_rules R).
 
     Lemma hd_red_mod_proj : hd_red_mod E R << proj_ord (hd_red_mod E' R').
 

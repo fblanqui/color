@@ -30,16 +30,16 @@ Unset Strict Implicit.
 Section Matching.
   Variable Sig : Signature.
 
-  Notation term      := (@ATerm.term Sig).
-  Notation terms     := (@vector term).
-  Notation vars      := (@AVariables.vars Sig).
-  Notation vars_list := (@AVariables.vars_list Sig).
-  Notation vars_vec  := (@AVariables.vars_vec Sig _).
+  Abbreviation term      := (@ATerm.term Sig).
+  Abbreviation terms     := (@vector term).
+  Abbreviation vars      := (@AVariables.vars Sig).
+  Abbreviation vars_list := (@AVariables.vars_list Sig).
+  Abbreviation vars_vec  := (@AVariables.vars_vec Sig _).
 
-  Notation matching  := (VM.t term) (only parsing).
+  Abbreviation matching  := (VM.t term) (only parsing).
 
-  Notation beq_term  := (@beq_term Sig).
-  Notation beq_terms := (fun x y => beq_vec beq_term x y).
+  Abbreviation beq_term  := (@beq_term Sig).
+  Abbreviation beq_terms := (fun x y => beq_vec beq_term x y).
 
   Notation "x =X y"   := (NatUtil.beq_nat x y) (at level 70, no associativity).
   Notation "f =S g"   := (@beq_symb Sig f g)   (at level 70, no associativity).

@@ -126,10 +126,10 @@ Module HorpoWf (S : TermsSig.Signature)
   Lemma argsComp_appComp_aux :
     forall Px: pair,
       (forall Py: pair, Py <lex Px ->
-	forall M, algebraic M -> term (appHead M) = ^fst Py -> 
+	forall M, algebraic M -> term (appHead M) = ^(fst Py) -> 
           appArgs M = proj1_sig (snd Py) -> CompH M) ->
     forall M N,
-      algebraic M -> term (appHead M) = ^fst Px -> appArgs M = proj1_sig (snd Px) ->
+      algebraic M -> term (appHead M) = ^(fst Px) -> appArgs M = proj1_sig (snd Px) ->
       (forall N', subterm N' N -> M >> N' -> CompH N') ->
       M >> N -> CompH N.
 

@@ -20,7 +20,7 @@ Section S.
 
   Variable A : Type.
 
-  Notation set := (set A).
+  Abbreviation set := (set A).
 
 (****************************************************************************)
 (** * Definition of finiteness *)

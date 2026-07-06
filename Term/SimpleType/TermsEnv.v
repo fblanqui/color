@@ -1866,7 +1866,7 @@ Module TermsEnv (Sig : TermsSig.Signature).
 
   Proof.
     induction E; intros.
-    unfold liftedEnv, finalSeg; destruct k; simpl; rewrite <- 1app_nil_end.
+    unfold liftedEnv, finalSeg; destruct k; simpl; rewrite 1app_nil_r.
     apply env_eq_empty_empty.
     apply emptyEnv_copyNone.
     apply tail_emptyEnv.

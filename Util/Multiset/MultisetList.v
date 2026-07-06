@@ -307,7 +307,7 @@ End SpecConformation.
               mult
               union
               diff : multisets.
-
+  
   #[global] Hint Resolve mult_eqA_compat 
                meq_multeq
                multeq_meq

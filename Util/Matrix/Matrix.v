@@ -25,7 +25,7 @@ Module Matrix (OSRT : OrdSemiRingType).
 (***********************************************************************)
 (** basic definitions *)
 
-  Notation vec := (vector A).
+  Abbreviation vec := (vector A).
 
   (* Matrix represented by a vector of vectors (in a row-wise fashion) *)
   Definition matrix m n := vector (vec n) m.

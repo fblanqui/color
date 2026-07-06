@@ -18,13 +18,13 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
   Variables (S : relation (term Sig)) (R : rules) (hyp : rules_preserve_vars R).
 
-  Notation DPG := (hd_rules_graph S R).
-  Notation rule_eq_dec := (@ATrs.eq_rule_dec Sig).
-  Notation dim := (length R).
+  Abbreviation DPG := (hd_rules_graph S R).
+  Abbreviation rule_eq_dec := (@ATrs.eq_rule_dec Sig).
+  Abbreviation dim := (length R).
 
   Variables (ODPG : relation rule) (over_DPG : DPG << ODPG)
             (restriction : is_restricted ODPG R) (R_nodup : nodup R)
@@ -34,7 +34,7 @@ Section S.
 
   Variables (M : matrix dim dim) (HM : M = SCC_mat_effective hyps) .
 
-  Notation empty := (fun _ _ => False).
+  Abbreviation empty := (fun _ _ => False).
 
   Definition proj1_sig2 T P Q (e : @sig2 T P Q) :=
     match e with
@@ -43,7 +43,7 @@ Section S.
 
   Definition s_SCC's := proj1_sig2 (sorted_SCC' hyps HM).
 
-  Notation ODPGquo' := (Rquo' hyps HM).
+  Abbreviation ODPGquo' := (Rquo' hyps HM).
 
 (***********************************************************************)
 (** s_SCC's properties *)
@@ -79,9 +79,9 @@ Section S.
 (***********************************************************************)
 (** chain restricted to an SCC *)
 
-  Notation SCC' := (SCC' hyps).
-  Notation SCC'_tag := (SCC'_tag hyps).
-  Notation SCC'_dec := (SCC'_dec hyps).
+  Abbreviation SCC' := (SCC' hyps).
+  Abbreviation SCC'_tag := (SCC'_tag hyps).
+  Abbreviation SCC'_dec := (SCC'_dec hyps).
 
   Definition hd_red_SCC' i t1 t2 := exists l, exists r, exists s,
           SCC'_tag HM (mkRule l r) = Some i /\ t1 = sub s l /\ t2 = sub s r.
@@ -108,7 +108,7 @@ Section S.
 (***********************************************************************)
 (** union of chain_SCC' *)
 
-  Notation union := Relation_Operators.union.
+  Abbreviation union := Relation_Operators.union.
 
   Definition sorted_hd_red_Mod_SCC' := map hd_red_Mod_SCC' s_SCC's.
 
@@ -146,7 +146,7 @@ Section S.
 (***********************************************************************)
 (** properties of the total order RT relatively to restricted chain *)
 
-  Notation RT_ODPG := (RT hyps HM).
+  Abbreviation RT_ODPG := (RT hyps HM).
 
   Lemma compose_empty :
     forall i j, RT_ODPG i j -> hd_red_Mod_SCC' j @ hd_red_Mod_SCC' i << empty.

@@ -180,7 +180,7 @@ such that [f i = a] *)
 
     Variables (f : nat -> A) (a : A) (i0 : nat) (g : nat -> nat).
 
-    Notation indices := (indices f a).
+    Abbreviation indices := (indices f a).
 
     Let d := 0.
 

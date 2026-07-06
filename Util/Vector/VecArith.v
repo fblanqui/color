@@ -18,7 +18,7 @@ Module VectorArith (SRT : SemiRingType).
 
   Module Export SR := SemiRing SRT.
 
-  Notation vec := (vector A).
+  Abbreviation vec := (vector A).
 
   Definition zero_vec := Vconst A0.
 

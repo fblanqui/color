@@ -13,6 +13,7 @@
 
 
 From Stdlib Require Import Recdef List Arith Setoid.
+Scheme All for list.
 From CoLoR Require Import closure more_list list_permut list_set decidable_set.
 
 Set Implicit Arguments.
@@ -40,14 +41,14 @@ Module Type Term.
 Declare Module Import F : Signature.
 Declare Module Import X : decidable_set.S.
 
-Notation symbol := Symb.A.
-Notation eq_symb_bool := Symb.eq_bool.
-Notation eq_symb_bool_ok := Symb.eq_bool_ok.
+Abbreviation symbol := Symb.A.
+Abbreviation eq_symb_bool := Symb.eq_bool.
+Abbreviation eq_symb_bool_ok := Symb.eq_bool_ok.
 Parameter eq_symb_bool_refl : forall x, eq_symb_bool x x = true.
 
-Notation variable := X.A.
-Notation eq_var_bool := X.eq_bool.
-Notation eq_var_bool_ok := X.eq_bool_ok.
+Abbreviation variable := X.A.
+Abbreviation eq_var_bool := X.eq_bool.
+Abbreviation eq_var_bool_ok := X.eq_bool_ok.
 Parameter eq_var_bool_refl : forall x, eq_var_bool x x = true.
 
 Declare Module VSet : 
