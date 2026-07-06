@@ -6,7 +6,7 @@ bug-reports: "https://github.com/fblanqui/color/issues"
 depends: [
   "ocaml"
   "rocq-prover" {>= "9.2"}
-  "rocq-bignums" {>= "9.2"}
+  "rocq-bignums" {>= "9.0"}
 ]
 build: [make "-j%{jobs}%"]
 install: [make "-f" "rocq.mk" "install"]
